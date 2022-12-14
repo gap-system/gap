@@ -349,7 +349,7 @@ static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
     Stat                body3;          /* third  stat. of body of loop    */
     UInt                i;              /* loop variable                   */
     Obj                 nfun, dfun;     /* functions for NextIterator and
-                                           IsDoneIterator                  */  
+                                           IsDoneIterator                  */
 
     GAP_ASSERT(1 <= nr && nr <= 3);
 
@@ -574,9 +574,9 @@ static ExecStatus ExecAtomic(Stat stat)
   int lockSP;
   UInt nrexprs,i,j,status;
   Obj o;
-  
+
   nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
-  
+
   j = 0;
   for (i = 1; i <= nrexprs; i++) {
     o = EVAL_EXPR(READ_STAT(stat, 2*i));
@@ -592,13 +592,13 @@ static ExecStatus ExecAtomic(Stat stat)
       j++;
     }
   }
-  
+
   nrexprs = j;
 
   GetLockStatus(nrexprs, tolock, lockstatus);
 
   j = 0;
-  for (i = 0; i < nrexprs; i++) { 
+  for (i = 0; i < nrexprs; i++) {
     switch (lockstatus[i]) {
     case LOCK_STATUS_UNLOCKED:
       tolock[j] = tolock[i];
@@ -1005,8 +1005,8 @@ static inline Int BreakLoopPending(void)
 
 /****************************************************************************
 **
-*F  UnInterruptExecStat()  . . . . .revert the Statement execution jump table 
-**                                   to normal 
+*F  UnInterruptExecStat()  . . . . .revert the Statement execution jump table
+**                                   to normal
 */
 
 static void UnInterruptExecStat(void)
@@ -1020,10 +1020,10 @@ static void UnInterruptExecStat(void)
 **
 *F  UInt TakeInterrupt() . . . . . . . . allow user interrupts
 **
-**  When you call this you promise that the heap is in a normal state, 
+**  When you call this you promise that the heap is in a normal state,
 **  allowing GAP execution in the usual way
 **
-**  This will do nothing (pretty quickly) if Ctrl-C has not been pressed and 
+**  This will do nothing (pretty quickly) if Ctrl-C has not been pressed and
 **  return 0. Otherwise it will respond appropriately. This may result in a
 **  longjmp or in returning to the caller after arbitrary execution of GAP
 **  code including possible garbage collection. In this case 1 is returned.

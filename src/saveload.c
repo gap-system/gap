@@ -51,7 +51,7 @@ static UInt1* LBPointer;
 static UInt1* LBEnd;
 static Obj userHomeExpand;
 
-static Int OpenForSave( Obj fname ) 
+static Int OpenForSave( Obj fname )
 {
   if (SaveFile != -1)
     {
@@ -82,7 +82,7 @@ static void CloseAfterSave( void )
   SaveFile = -1;
 }
 
-static void OpenForLoad( const Char *fname ) 
+static void OpenForLoad( const Char *fname )
 {
   if (LoadFile != -1)
     {
@@ -127,7 +127,7 @@ static UInt1 LOAD_BYTE_BUF(void)
     }
   LBEnd = LoadBuffer + ret;
   LBPointer = LoadBuffer;
-  return *LBPointer++;   
+  return *LBPointer++;
 }
 
 #define LOAD_BYTE()    (UInt1)((LBPointer >= LBEnd) ?\
@@ -338,7 +338,7 @@ static void LoadBagData ( void )
 {
   Bag bag;
   UInt type, flags, size;
-  
+
   /* Recover the size & type */
   type = LoadUInt1();
   flags = LoadUInt1();
@@ -349,7 +349,7 @@ static void LoadBagData ( void )
 
   /* Get GASMAN to set up the bag for me */
   bag = NextBagRestoring( type, flags, size );
-  
+
   /* dispatch */
   (*(LoadObjFuncs[ type ]))(bag);
 }
@@ -398,7 +398,7 @@ static void CheckEndiannessMarker( void )
   if (x != 0x0102030405060708L)
 #else
   if (x != 0x01020304L)
-#endif  
+#endif
     {
       Panic("Saved workspace with incompatible byte order");
     }
@@ -445,10 +445,10 @@ static Bag hit;
 
 static void ScanBag( Bag bag)
 {
-  if (hit == (Bag)0 && 
-      SIZE_BAG(bag) >= fb_minsize && 
-      SIZE_BAG(bag) <= fb_maxsize && 
-      TNUM_BAG(bag) == fb_tnum) 
+  if (hit == (Bag)0 &&
+      SIZE_BAG(bag) >= fb_minsize &&
+      SIZE_BAG(bag) <= fb_maxsize &&
+      TNUM_BAG(bag) == fb_tnum)
     hit = bag;
 }
 
@@ -508,18 +508,18 @@ static Char * GetKernelDescription(void)
 static void WriteSaveHeader( void )
 {
   UInt i;
-  
+
   SaveCStr("GAP workspace");
   SaveCStr(GetKernelDescription());
 
-#ifdef SYS_IS_64_BIT             
+#ifdef SYS_IS_64_BIT
   SaveCStr("64 bit");
 #else
   SaveCStr("32 bit");
 #endif
 
   WriteEndiannessMarker();
-  
+
   SaveCStr("Counts and Sizes");
   for (i = 0; i < GlobalBags.nr; i++) {
       GAP_ASSERT(GlobalBags.cookie[i] != NULL);
@@ -549,13 +549,13 @@ Obj SaveWorkspace( Obj fname )
     ErrorQuit("usage: SaveWorkspace( <filename> )",0,0);
   /* maybe expand fname starting with ~/...   */
   fullname = Call1ArgsInNewReader(userHomeExpand, fname);
-  
+
   if (ModulesPreSave())
     return Fail;
 
   /* Do a full garbage collection */
   CollectBags( 0, 1);
-  
+
   /* Add indices in link words of all bags, for saving inter-bag references */
   NextSaveIndex = 1;
   CallbackForAllBags( AddSaveIndex );
@@ -571,10 +571,10 @@ Obj SaveWorkspace( Obj fname )
       CallbackForAllBags( SaveBagData );
       CloseAfterSave();
     }
-      
+
   /* Finally, reset all the link words */
   CallbackForAllBags( RemoveSaveIndex );
-  
+
   /* Restore situation by calling all post-save methods */
   ModulesPostSave();
 
@@ -620,7 +620,7 @@ void LoadWorkspace( Char * fname )
      }
 
      LoadCStr(buf,256);
-#ifdef SYS_IS_64_BIT             
+#ifdef SYS_IS_64_BIT
      if (!streq(buf,"64 bit"))
 #else
      if (!streq(buf,"32 bit"))
@@ -630,16 +630,16 @@ void LoadWorkspace( Char * fname )
         }
   } else {
      Panic("File %s probably isn't a GAP workspace", fname);
-  } 
-  
+  }
+
   CheckEndiannessMarker();
-  
+
   LoadCStr(buf,256);
   if (!streq(buf,"Counts and Sizes"))
     {
       Panic("Bad divider");
     }
-  
+
   nGlobs = LoadUInt();
   nBags = LoadUInt();
   maxSize = LoadUInt();
@@ -687,7 +687,7 @@ void LoadWorkspace( Char * fname )
     {
       Panic("Bad divider");
     }
-  
+
   SortHandlers(2);
   for (i = 0; i < nBags; i++)
     LoadBagData();
@@ -815,7 +815,7 @@ static Int InitKernel (
     LBPointer = LoadBuffer;
     LBEnd = LoadBuffer;
 
-    /* allow ~/... expansion in SaveWorkspace                              */ 
+    /* allow ~/... expansion in SaveWorkspace                              */
     ImportFuncFromLibrary("UserHomeExpand", &userHomeExpand);
 #endif
 

@@ -311,7 +311,7 @@ static Obj FiltIS_MUTABLE_OBJ(Obj self, Obj obj)
 
 /****************************************************************************
 **
-*F  FiltIS_INTERNALLY_MUTABLE_OBJ(<self>, <obj>) 
+*F  FiltIS_INTERNALLY_MUTABLE_OBJ(<self>, <obj>)
 */
 
 #ifdef HPCGAP
@@ -853,7 +853,7 @@ static void MakeImmutablePosObj(Obj obj)
 {
   CALL_2ARGS( RESET_FILTER_OBJ, obj, IsMutableObjFilt );
   CALL_1ARGS( PostMakeImmutableOp, obj);
-  
+
 }
 
 #ifdef HPCGAP
@@ -952,7 +952,7 @@ static void InitPrintObjStack(ObjectsModuleState * os)
     }
 }
 #endif
-    
+
 /****************************************************************************
 **
 *F  PrintObj( <obj> ) . . . . . . . . . . . . . . . . . . . . print an object
@@ -1803,7 +1803,7 @@ static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
                      0, 0);
     }
 #endif
-    
+
     /* if object is mutable, produce a structural copy                     */
     if ( IS_MUTABLE_OBJ(src) ) {
         src = CopyObj( src, 1 );
@@ -2187,7 +2187,7 @@ static Int InitKernel (
         assert(LoadObjFuncs[ t ] == 0);
         LoadObjFuncs[ t ] = LoadObjError;
     }
-  
+
     /* install the saving functions */
     SaveObjFuncs[ T_COMOBJ ] = SaveComObj;
     SaveObjFuncs[ T_POSOBJ ] = SavePosObj;
@@ -2203,7 +2203,7 @@ static Int InitKernel (
         assert(MakeImmutableObjFuncs[ t ] == 0);
         MakeImmutableObjFuncs[t] = MakeImmutableError;
     }
-    
+
     /* install the makeimmutableing functions */
     MakeImmutableObjFuncs[ T_COMOBJ ] = MakeImmutableComObj;
     MakeImmutableObjFuncs[ T_POSOBJ ] = MakeImmutablePosObj;

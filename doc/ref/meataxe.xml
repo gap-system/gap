@@ -12,7 +12,7 @@
 
 The MeatAxe <Cite Key="Par84"/> is a tool for the examination of submodules of a
 group algebra. It is a basic tool for the examination of group actions on
-finite-dimensional modules. 
+finite-dimensional modules.
 <P/>
 &GAP; uses the improved MeatAxe of Derek Holt and Sarah Rees, and
 also incorporates further improvements of Ivanyos and Lux.
@@ -34,7 +34,7 @@ left modules you will have to transpose the matrices.
  Label="for empty list, the dimension, and a field"/>
 
 <Description>
-creates a MeatAxe module over <A>field</A> from a list of invertible matrices 
+creates a MeatAxe module over <A>field</A> from a list of invertible matrices
 <A>gens</A> which reflect a group's action. If the list of generators is empty,
 the dimension must be given as second argument.
 <P/>
@@ -95,7 +95,7 @@ moved point (see&nbsp;<Ref Attr="LargestMovedPoint" Label="for a list or collect
 
 <Description>
 <Ref Func="TensorProductGModule"/> calculates the tensor product
-of the modules <A>m1</A> and <A>m2</A>. 
+of the modules <A>m1</A> and <A>m2</A>.
 They are assumed to be modules over the same algebra so, in particular,
 they  should have the same number of generators.
 </Description>
@@ -549,7 +549,7 @@ modules. This can be used for computing kernels, images and pre-images.
 <Func Name="MTX.Homomorphisms" Arg='module1, module2'/>
 
 <Description>
-returns a basis of the space of all homomorphisms from the irreducible module 
+returns a basis of the space of all homomorphisms from the irreducible module
 <A>module1</A> to <A>module2</A>.
 </Description>
 </ManSection>
@@ -624,7 +624,7 @@ The standard MeatAxe provided in the &GAP; library is
 based on the MeatAxe in the &GAP;&nbsp;3 package <Package>Smash</Package>,
 originally written by Derek Holt and Sarah Rees <Cite Key="HR94"/>.
 It is accessible via the variable <C>SMTX</C> to which <Ref Var="MTX"/>
-is assigned by default. 
+is assigned by default.
 For the sake of completeness the remaining sections document more technical
 functions of this MeatAxe.
 

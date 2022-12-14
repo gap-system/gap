@@ -27,8 +27,8 @@ group (see&nbsp;<Ref Func="FreeGroup" Label="for given rank"/> for details).
 There are two ways to specify a quotient of the free group: either by giving
 a list of relators or by giving a list of equations.
 
-Relators are just words in the generators of the free group. Equations are 
-represented as pairs of words in the generators of the free group. 
+Relators are just words in the generators of the free group. Equations are
+represented as pairs of words in the generators of the free group.
 
 In either case the generators of the quotient are <E>the images</E> of the free
 generators under the canonical homomorphism from the free group onto the quotient.
@@ -93,7 +93,7 @@ presented groups may run into warning errors, run out of memory or run
 forever. If the FpGroup is (by theory) known to be finite the
 algorithms are guaranteed to terminate (if there is sufficient memory
 available), but the time needed for the calculation cannot be bounded a
-priori. See <Ref Sect="Coset Tables and Coset Enumeration"/> and 
+priori. See <Ref Sect="Coset Tables and Coset Enumeration"/> and
 <Ref Sect="Testing Finiteness of Finitely Presented Groups"/>.
 <P/>
 <Example><![CDATA[
@@ -284,10 +284,10 @@ gap> g := f / [ f.1^2, f.2^3, (f.1*f.2)^5 ];
 gap> h := IsomorphismPermGroup( g );
 [ a, b ] -> [ (1,2)(4,5), (2,3,4) ]
 gap> u:=Subgroup(g,[g.1*g.2]);;rt:=RightTransversal(g,u);
-RightTransversal(<fp group of size 60 on the generators 
+RightTransversal(<fp group of size 60 on the generators
 [ a, b ]>,Group([ a*b ]))
 gap> Image(ActionHomomorphism(g,rt,OnRight));
-Group([ (1,2)(3,4)(5,7)(6,8)(9,10)(11,12), 
+Group([ (1,2)(3,4)(5,7)(6,8)(9,10)(11,12),
   (1,3,2)(4,5,6)(7,8,9)(10,11,12) ])
 ]]></Example>
 
@@ -383,7 +383,7 @@ This standardization of coset tables is
 different from that used in &GAP; versions 4.2 and earlier. Before
 that, we ignored the columns that correspond to inverse generators and
 hence only considered words in the generators of <M>G</M>. We call
-this older ordering the <E>semilenlex</E> standard as it 
+this older ordering the <E>semilenlex</E> standard as it
 also applies to the case of semigroups where no inverses of the generators are known.
 <P/>
 We changed our default from the semilenlex standard to the lenlex
@@ -599,7 +599,7 @@ the following operations might be of use.
 
 As a consequence of the algorithmic insolvabilities mentioned in the
 introduction to this chapter, there cannot be a general method that will
-test whether a given finitely presented group is actually finite. 
+test whether a given finitely presented group is actually finite.
 <P/>
 Therefore testing the finiteness of a finitely presented group
 can be problematic.

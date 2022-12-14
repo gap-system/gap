@@ -517,7 +517,7 @@ static Obj ProdVectorVector(Obj vecL, Obj vecR)
 **  instead of allocating a new for each product and sum.
 **
 **  We now need to supply a handler for this and install it as a library method,
-**  
+**
 */
 static Obj ProdVectorMatrix(Obj vecL, Obj matR)
 {

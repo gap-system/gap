@@ -7,8 +7,8 @@
 Read( "makedocreldata.g" );
 
 doc := ComposedXMLString(
-    GAPInfo.ManualDataRef.pathtodoc, 
-    GAPInfo.ManualDataRef.main, 
+    GAPInfo.ManualDataRef.pathtodoc,
+    GAPInfo.ManualDataRef.main,
     GAPInfo.ManualDataRef.files,
     true);;
 
@@ -24,7 +24,7 @@ if IsInfoClass( op ) then
 elif IsFamily( op ) then
     return "Fam";
 elif not IsFunction( op ) then
-    return "Var";  
+    return "Var";
 elif IsFunction( op ) and not IsOperation( op ) then
     return "Func";
 elif IsOperation( op ) then
@@ -72,7 +72,7 @@ elif IsOperation( op ) then
     return class;
 else
   return fail;
-fi;    
+fi;
 end;
 
 #
@@ -167,7 +167,7 @@ for elt in y do
         for t in matches do
           Print( "Use ", t.name, " with Label:=\"", t.attributes.Label, "\" (for Arg:=\"", t.attributes.Arg, "\")\n");
         od;
-        
+
         referrcount:=referrcount+1;
         continue;
       elif Length(matches2) > 1 then

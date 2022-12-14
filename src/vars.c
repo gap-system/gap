@@ -924,7 +924,7 @@ static Obj EvalIsbList(Expr expr)
       SET_LEN_PLIST(ixs, narg);
       return ISBB_LIST(list, ixs) ? True : False;
     }
-        
+
 }
 
 

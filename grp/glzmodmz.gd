@@ -13,7 +13,7 @@
 
 #############################################################################
 ##
-#F  SizeOfGLdZmodmZ( d, m ) . . . . . . . . . .  Size of the group GL(d,Z/mZ) 
+#F  SizeOfGLdZmodmZ( d, m ) . . . . . . . . . .  Size of the group GL(d,Z/mZ)
 ##
 ##  Computes the order of the group `GL( <d>, Integers mod <m> )' for
 ##  positive integers <d> and <m> > 1.

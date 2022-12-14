@@ -73,7 +73,7 @@ BOOL IS_MACFLOAT(Obj obj)
 static Obj TYPE_MACFLOAT;
 
 static Obj TypeMacfloat(Obj val)
-{  
+{
     return TYPE_MACFLOAT;
 }
 
@@ -164,7 +164,7 @@ static Int LtMacfloat(Obj macfloatL, Obj macfloatR)
 
 /****************************************************************************
 **
-*F  SaveMacfloat( <macfloat> ) . . . . . . . . . . . . . . save a Macfloatean 
+*F  SaveMacfloat( <macfloat> ) . . . . . . . . . . . . . . save a Macfloatean
 **
 */
 #ifdef GAP_ENABLE_SAVELOAD
@@ -179,7 +179,7 @@ static void SaveMacfloat(Obj obj)
 
 /****************************************************************************
 **
-*F  LoadMacfloat( <macfloat> ) . . . . . . . . . . . . . . load a Macfloatean 
+*F  LoadMacfloat( <macfloat> ) . . . . . . . . . . . . . . load a Macfloatean
 **
 */
 #ifdef GAP_ENABLE_SAVELOAD
@@ -201,7 +201,7 @@ Obj NEW_MACFLOAT( Double val )
 
 /****************************************************************************
 **
-*F  ZeroMacfloat(<macfloat> ) . . . . . . . . . . . . . . . . . . . return the zero 
+*F  ZeroMacfloat(<macfloat> ) . . . . . . . . . . . . . . . . . . . return the zero
 **
 */
 
@@ -225,7 +225,7 @@ static Obj AInvMacfloat(Obj f)
 
 /****************************************************************************
 **
-*F  OneMacfloat(<macfloat> ) . . . . . . . . . . . . . . . . . . . return the one 
+*F  OneMacfloat(<macfloat> ) . . . . . . . . . . . . . . . . . . . return the one
 **
 */
 
@@ -359,7 +359,7 @@ static Obj FuncMACFLOAT_STRING(Obj self, Obj s)
   char * endptr;
   UChar *sp = CHARS_STRING(s);
   Obj res= NEW_MACFLOAT((Double) STRTOD((char *)sp,&endptr));
-  if ((UChar *)endptr != sp + GET_LEN_STRING(s)) 
+  if ((UChar *)endptr != sp + GET_LEN_STRING(s))
     return Fail;
   return res;
 }
@@ -436,7 +436,7 @@ MAKEMATHPRIMITIVE(GAMMA,tgamma)
 static Obj FuncSIGN_MACFLOAT(Obj self, Obj f)
 {
   Double vf = VAL_MACFLOAT(f);
-  
+
   return vf == 0. ? INTOBJ_INT(0) : signbit(vf) ? INTOBJ_INT(-1) : INTOBJ_INT(1);
 }
 
@@ -647,14 +647,14 @@ static Int InitKernel (
     LQuoFuncs [ T_MACFLOAT ][ T_MACFLOAT ] = LQuoMacfloat;
     ModFuncs [ T_MACFLOAT ][ T_MACFLOAT ] = ModMacfloat;
     SumFuncs [ T_INT ][ T_MACFLOAT ] = SumIntMacfloat;
-    
+
     /* Probably support mixed ops with small ints in the kernel as well
        on any reasonable system, all small ints should have macfloat equivalents
 
        Anything else, like mixed ops with rationals, we can leave to the library
        at least for a while */
-     
-    
+
+
     return 0;
 }
 

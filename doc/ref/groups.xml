@@ -367,7 +367,7 @@ as they depend on a parameter.
 This section gives only some examples of numerical group attributes, so
 it should not serve as a collection of all numerical group attributes.
 The manual contains more such attributes documented in this manual, for
-example, <Ref Attr="NrConjugacyClasses"/>, 
+example, <Ref Attr="NrConjugacyClasses"/>,
 <Ref Attr="NilpotencyClassOfGroup"/> and others.
 <P/>
 Note also that some functions, such as <Ref Oper="EulerianFunction"/>,
@@ -529,7 +529,7 @@ of <M>G</M>.  Then the group  of 1-cocycles <M>Z^1(  G/M, M  )</M> is
 defined as
 <Display Mode="M">
 Z^1(G/M, M) = \{ \gamma: G/M \rightarrow M \mid \forall g_1, g_2 \in G :
-                                 \gamma(g_1 M \cdot g_2 M ) 
+                                 \gamma(g_1 M \cdot g_2 M )
                                    = \gamma(g_1 M)^{{g_2}} \cdot \gamma(g_2 M) \}
 </Display>
 and is a <M>GF(p)</M>-vector space.
@@ -537,7 +537,7 @@ and is a <M>GF(p)</M>-vector space.
 The group of 1-coboundaries <M>B^1( G/M, M )</M> is defined as
 <Display Mode="M">
 B^1(G/M, M) = \{ \gamma : G/M \rightarrow M \mid \exists m \in M
-                                 \forall g \in G : 
+                                 \forall g \in G :
                                   \gamma(gM) = (m^{{-1}})^g \cdot m \}
 </Display>
 It also is a <M>GF(p)</M>-vector space.
@@ -576,7 +576,7 @@ from computing its Schur cover.
 For example, if <M>G</M> is a finitely presented group, the
 derived subgroup of a Schur cover of <M>G</M> is invariant and isomorphic to
 the <Ref Oper="NonabelianExteriorSquare"/> value of <M>G</M>,
-see <Cite Key="BJR87"/>. 
+see <Cite Key="BJR87"/>.
 
 <Index Subkey="see EpimorphismSchurCover">Darstellungsgruppe</Index>
 <#Include Label="EpimorphismSchurCover">

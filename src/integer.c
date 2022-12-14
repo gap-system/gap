@@ -752,7 +752,7 @@ void PrintInt ( Obj op )
   if ( IS_INTOBJ(op) ) {
     Pr("%>%d%<", INT_INTOBJ(op), 0);
   }
-  
+
   /* print a large integer                                                 */
   else if ( SIZE_INT(op) < 1000 ) {
     CHECK_INT(op);
@@ -951,7 +951,7 @@ Obj IntHexString(Obj str)
 
 
 /****************************************************************************
-**  
+**
 **  Implementation of Log2Int for C integers.
 **
 **  When available, we try to use GCC builtins. Otherwise, fall back to code
@@ -1318,18 +1318,18 @@ Obj AInvInt(Obj op)
 
   // handle small integer
   if (IS_INTOBJ(op)) {
-    
+
     // special case (ugh)
     if (op == INTOBJ_MIN) {
       inv = NewBag( T_INTPOS, sizeof(mp_limb_t) );
       SET_VAL_LIMB0( inv, -INT_INTOBJ_MIN );
     }
-    
+
     // general case
     else {
       inv = INTOBJ_INT(-INT_INTOBJ(op));
     }
-    
+
   }
 
   else {
@@ -1342,14 +1342,14 @@ Obj AInvInt(Obj op)
         inv = NewBag( T_INTNEG, SIZE_OBJ(op) );
       }
     }
-    
+
     else {
       inv = NewBag( T_INTPOS, SIZE_OBJ(op) );
     }
 
     memcpy( ADDR_INT(inv), CONST_ADDR_INT(op), SIZE_OBJ(op) );
   }
-  
+
   CHECK_INT(inv);
   return inv;
 
@@ -1441,7 +1441,7 @@ Obj ProdInt(Obj opL, Obj opR)
 
   /* multiplying two small integers                                        */
   if ( ARE_INTOBJS( opL, opR ) ) {
-    
+
     /* multiply two small integers with a small product                    */
     if ( PROD_INTOBJS( prd, opL, opR ) ) {
       CHECK_INT(prd);
@@ -1468,7 +1468,7 @@ Obj ProdInt(Obj opL, Obj opR)
 
   /* multiply */
   mpz_mul( MPZ_FAKEMPZ(mpzResult), MPZ_FAKEMPZ(mpzL), MPZ_FAKEMPZ(mpzR) );
-  
+
   /* convert result to GAP object and return it */
   CHECK_FAKEMPZ(mpzResult);
   CHECK_FAKEMPZ(mpzL);
@@ -1495,7 +1495,7 @@ static Obj ProdIntObj ( Obj n, Obj op )
   if ( n == INTOBJ_INT(0) ) {
     res = ZERO_SAMEMUT( op );
   }
-  
+
   /* if the integer is one, return the object if immutable -
      if mutable, add the object to its ZeroSameMutability to
      ensure correct mutability propagation                                 */
@@ -1505,12 +1505,12 @@ static Obj ProdIntObj ( Obj n, Obj op )
     else
       res = op;
   }
-  
+
   /* if the integer is minus one, return the inverse of the operand        */
   else if ( n == INTOBJ_INT(-1) ) {
     res = AINV_SAMEMUT( op );
   }
-  
+
   /* if the integer is negative, invert the operand and the integer        */
   else if ( IS_NEG_INT(n) ) {
     res = AINV_SAMEMUT( op );
@@ -1536,7 +1536,7 @@ static Obj ProdIntObj ( Obj n, Obj op )
       k = k / 2;
     }
   }
-  
+
   /* if the integer is large, compute the product by repeated doubling     */
   else if ( IS_INTPOS(n) ) {
     res = 0;
@@ -1552,7 +1552,7 @@ static Obj ProdIntObj ( Obj n, Obj op )
       }
     }
   }
-  
+
   return res;
 }
 
@@ -1606,13 +1606,13 @@ Obj PowInt ( Obj opL, Obj opR )
   else if ( ! IS_INTOBJ(opR) ) {
     ErrorMayQuit("Integer operands: <exponent> is too large", 0, 0);
   }
-  
+
   /* power with a negative exponent */
   else if ( INT_INTOBJ(opR) < 0 ) {
     pow = QUO( INTOBJ_INT(1),
                PowInt( opL, INTOBJ_INT( -INT_INTOBJ(opR)) ) );
   }
-  
+
   /* findme - can we use the gmp function mpz_n_pow_ui? */
 
   /* power with a small positive exponent, do it by a repeated squaring  */
@@ -1626,7 +1626,7 @@ Obj PowInt ( Obj opL, Obj opR )
       i = i / 2;
     }
   }
-  
+
   /* return the power */
   CHECK_INT(pow);
   return pow;
@@ -1642,24 +1642,24 @@ static Obj PowObjInt(Obj op, Obj n)
   Obj                 res = 0;        /* result                          */
   UInt                i, k;           /* loop variables                  */
   mp_limb_t             l;              /* loop variable                   */
-  
+
   CHECK_INT(n);
 
   /* if the integer is zero, return the neutral element of the operand   */
   if ( n == INTOBJ_INT(0) ) {
     return ONE_SAMEMUT( op );
   }
-  
+
   /* if the integer is one, return a copy of the operand                 */
   else if ( n == INTOBJ_INT(1) ) {
     res = CopyObj( op, 1 );
   }
-  
+
   /* if the integer is minus one, return the inverse of the operand      */
   else if ( n == INTOBJ_INT(-1) ) {
     res = INV_SAMEMUT( op );
   }
-  
+
   /* if the integer is negative, invert the operand and the integer      */
   else if ( IS_NEG_INT(n) ) {
     res = INV_SAMEMUT( op );
@@ -1668,7 +1668,7 @@ static Obj PowObjInt(Obj op, Obj n)
     }
     res = POW(res, AINV_SAMEMUT(n));
   }
-  
+
   /* if the integer is small, compute the power by repeated squaring     */
   /* the loop invariant is <result> = <res>^<k> * <op>^<l>, <l> < <k>    */
   /* <res> = 0 means that <res> is the neutral element                   */
@@ -1685,7 +1685,7 @@ static Obj PowObjInt(Obj op, Obj n)
       k = k / 2;
     }
   }
-  
+
   /* if the integer is large, compute the power by repeated squaring     */
   else if ( IS_INTPOS(n) ) {
     res = 0;
@@ -1734,28 +1734,28 @@ Obj ModInt(Obj opL, Obj opR)
 
   /* compute the remainder of two small integers                           */
   if ( ARE_INTOBJS( opL, opR ) ) {
-    
+
     /* get the integer values                                              */
     i = INT_INTOBJ(opL);
     k = INT_INTOBJ(opR);
-    
+
     /* compute the remainder, make sure we divide only positive numbers    */
     i %= k;
     if (i < 0)
         i += k > 0 ? k : -k;
     mod = INTOBJ_INT(i);
   }
-  
+
   /* compute the remainder of a small integer by a large integer           */
   else if ( IS_INTOBJ(opL) ) {
-    
+
     /* the small int -(1<<28) mod the large int (1<<28) is 0               */
     if ( opL == INTOBJ_MIN
          && ( IS_INTPOS(opR) )
          && ( SIZE_INT(opR) == 1 )
          && ( VAL_LIMB0(opR) == -INT_INTOBJ_MIN ) )
       mod = INTOBJ_INT(0);
-    
+
     /* in all other cases the remainder is equal the left operand          */
     else if ( 0 <= INT_INTOBJ(opL) )
       mod = opL;
@@ -1764,23 +1764,23 @@ Obj ModInt(Obj opL, Obj opR)
     else
       mod = SumOrDiffInt( opL, opR, -1 );
   }
-  
+
   /* compute the remainder of a large integer by a small integer           */
   else if ( IS_INTOBJ(opR) ) {
-    
+
     /* get the integer value, make positive                                */
     i = INT_INTOBJ(opR);  if ( i < 0 )  i = -i;
-    
+
     /* check whether right operand is a small power of 2                   */
     if ( !(i & (i-1)) ) {
       c = VAL_LIMB0(opL) & (i-1);
     }
-    
+
     /* otherwise use the gmp function to divide                            */
     else {
       c = mpn_mod_1( (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL), i );
     }
-    
+
     // now c is the absolute value of the actual result. Thus, if the left
     // operand is negative, and c is non-zero, we have to adjust it.
     if (IS_INTPOS(opL) || c == 0)
@@ -1789,9 +1789,9 @@ Obj ModInt(Obj opL, Obj opR)
       // even if opR is INT_INTOBJ_MIN, and hence i is INT_INTOBJ_MAX+1, we
       // have 0 <= i-c <= INT_INTOBJ_MAX, so i-c fits into a small integer
       mod = INTOBJ_INT( i - (Int)c );
-    
+
   }
-  
+
   /* compute the remainder of a large integer modulo a large integer       */
   else {
 
@@ -1809,7 +1809,7 @@ Obj ModInt(Obj opL, Obj opR)
       CHECK_INT(mod);
       return mod;
     }
-    
+
     mod = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(mp_limb_t) );
     ENSURE_BAG(mod);
 
@@ -1821,11 +1821,11 @@ Obj ModInt(Obj opL, Obj opR)
     mpn_tdiv_qr( (mp_ptr)ADDR_INT(quo), (mp_ptr)ADDR_INT(mod), 0,
                  (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL),
                  (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opR)    );
-      
+
     /* reduce to small integer if possible, otherwise shrink bag           */
     mod = GMP_NORMALIZE( mod );
     mod = GMP_REDUCE( mod );
-    
+
     /* make the representative positive                                    */
     if ( IS_NEG_INT(mod) ) {
       if ( IS_INTPOS(opR) )
@@ -1833,9 +1833,9 @@ Obj ModInt(Obj opL, Obj opR)
       else
         mod = SumOrDiffInt( mod, opR, -1 );
     }
-    
+
   }
-  
+
 #if DEBUG_GMP
   assert( !IS_NEG_INT(mod) );
 #endif
@@ -1869,14 +1869,14 @@ Obj QuoInt(Obj opL, Obj opR)
 
   /* divide two small integers                                             */
   if ( ARE_INTOBJS( opL, opR ) ) {
-    
+
     /* the small int -(1<<28) divided by -1 is the large int (1<<28)       */
     if ( opL == INTOBJ_MIN && opR == INTOBJ_INT(-1) ) {
       quo = NewBag( T_INTPOS, sizeof(mp_limb_t) );
       SET_VAL_LIMB0( quo, -INT_INTOBJ_MIN );
       return quo;
     }
-    
+
     /* get the integer values                                              */
     i = INT_INTOBJ(opL);
     k = INT_INTOBJ(opR);
@@ -1885,25 +1885,25 @@ Obj QuoInt(Obj opL, Obj opR)
     // C99 standard guarantees for integer division
     quo = INTOBJ_INT(i / k);
   }
-  
+
   /* divide a small integer by a large one                                 */
   else if ( IS_INTOBJ(opL) ) {
-    
+
     /* the small int -(1<<28) divided by the large int (1<<28) is -1       */
     if ( opL == INTOBJ_MIN
          && IS_INTPOS(opR) && SIZE_INT(opR) == 1
          && VAL_LIMB0(opR) == -INT_INTOBJ_MIN )
       quo = INTOBJ_INT(-1);
-    
+
     /* in all other cases the quotient is of course zero                   */
     else
       quo = INTOBJ_INT(0);
-    
+
   }
-  
+
   /* divide a large integer by a small integer                             */
   else if ( IS_INTOBJ(opR) ) {
-    
+
     k = INT_INTOBJ(opR);
 
     /* allocate a bag for the result and set up the pointers               */
@@ -1913,7 +1913,7 @@ Obj QuoInt(Obj opL, Obj opR)
       quo = NewBag( T_INTNEG, SIZE_OBJ(opL) );
 
     ENSURE_BAG(quo);
-    
+
     if ( k < 0 ) k = -k;
 
     /* use gmp function for dividing by a 1-limb number                    */
@@ -1921,21 +1921,21 @@ Obj QuoInt(Obj opL, Obj opR)
                   (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL),
                   k );
   }
-  
+
   /* divide a large integer by a large integer                             */
   else {
-    
+
     /* trivial case first                                                  */
     if ( SIZE_INT(opL) < SIZE_INT(opR) )
       return INTOBJ_INT(0);
-    
+
     /* create a new bag for the remainder                                  */
     rem = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(mp_limb_t) );
     ENSURE_BAG(rem);
 
     /* allocate a bag for the quotient                                     */
     if ( TNUM_OBJ(opL) == TNUM_OBJ(opR) )
-      quo = NewBag( T_INTPOS, 
+      quo = NewBag( T_INTPOS,
                     (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
     else
       quo = NewBag( T_INTNEG,
@@ -1946,7 +1946,7 @@ Obj QuoInt(Obj opL, Obj opR)
                  (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL),
                  (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opR) );
   }
-  
+
   quo = GMP_NORMALIZE(quo);
   quo = GMP_REDUCE( quo );
   return quo;
@@ -2003,7 +2003,7 @@ Obj RemInt(Obj opL, Obj opR)
 
   /* compute the remainder of two small integers                           */
   if ( ARE_INTOBJS( opL, opR ) ) {
-    
+
     /* get the integer values                                              */
     i = INT_INTOBJ(opL);
     k = INT_INTOBJ(opR);
@@ -2014,24 +2014,24 @@ Obj RemInt(Obj opL, Obj opR)
     // and the invariant i%k == i - (i/k)*k holds
     rem = INTOBJ_INT(i % k);
   }
-  
+
   /* compute the remainder of a small integer by a large integer           */
   else if ( IS_INTOBJ(opL) ) {
-    
+
     /* the small int -(1<<28) rem the large int (1<<28) is 0               */
     if ( opL == INTOBJ_MIN
          && IS_INTPOS(opR) && SIZE_INT(opR) == 1
          && VAL_LIMB0(opR) == -INT_INTOBJ_MIN )
       rem = INTOBJ_INT(0);
-    
+
     /* in all other cases the remainder is equal the left operand          */
     else
       rem = opL;
   }
-  
+
   /* compute the remainder of a large integer by a small integer           */
   else if ( IS_INTOBJ(opR) ) {
-    
+
     /* get the integer value, make positive                                */
     i = INT_INTOBJ(opR);  if ( i < 0 )  i = -i;
 
@@ -2039,7 +2039,7 @@ Obj RemInt(Obj opL, Obj opR)
     if ( !(i & (i-1)) ) {
       c = VAL_LIMB0(opL) & (i-1);
     }
-    
+
     /* otherwise use the gmp function to divide                            */
     else {
       c = mpn_mod_1( (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL), i );
@@ -2050,34 +2050,34 @@ Obj RemInt(Obj opL, Obj opR)
       rem = INTOBJ_INT( c );
     else
       rem = INTOBJ_INT( -(Int)c );
-    
+
   }
-  
+
   /* compute the remainder of a large integer modulo a large integer       */
   else {
-    
+
     /* trivial case first                                                  */
     if ( SIZE_INT(opL) < SIZE_INT(opR) )
       return opL;
-    
+
     rem = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(mp_limb_t) );
     ENSURE_BAG(rem);
-    
+
     quo = NewBag( T_INTPOS,
                   (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
     ENSURE_BAG(quo);
-    
+
     /* and let gmp do the work                                             */
     mpn_tdiv_qr( (mp_ptr)ADDR_INT(quo),  (mp_ptr)ADDR_INT(rem), 0,
                  (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL),
                  (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opR)    );
-    
+
     /* reduce to small integer if possible, otherwise shrink bag           */
     rem = GMP_NORMALIZE( rem );
     rem = GMP_REDUCE( rem );
-    
+
   }
-  
+
   CHECK_INT(rem);
   return rem;
 }
@@ -2622,15 +2622,15 @@ static Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
 /****************************************************************************
 **
 *F  RandomIntegerMT( <mtstr>, <nrbits> )
-**  
-**  Returns an integer with at most <nrbits> bits in uniform distribution. 
-**  <nrbits> must be a small integer. <mtstr> is a string as returned by 
+**
+**  Returns an integer with at most <nrbits> bits in uniform distribution.
+**  <nrbits> must be a small integer. <mtstr> is a string as returned by
 **  InitRandomMT.
-**  
-**  Implementation details are a bit tricky to obtain the same random 
+**
+**  Implementation details are a bit tricky to obtain the same random
 **  integers on 32 bit and 64 bit machines (which have different long
 **  integer digit lengths and different ranges of small integers).
-**  
+**
 */
 static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
 {
@@ -2657,7 +2657,7 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
      else {
        unsigned long  rd;
        rd = nextrandMT_int32(mt);
-       rd += (unsigned long) ((UInt4) nextrandMT_int32(mt) & 
+       rd += (unsigned long) ((UInt4) nextrandMT_int32(mt) &
                               ((UInt4)-1 >> (64-n))) << 32;
        res = INTOBJ_INT((Int)rd);
      }
@@ -2828,14 +2828,14 @@ static Int InitKernel ( StructInitInfo * module )
   /* init filters and functions                                            */
   InitHdlrFiltsFromTable( GVarFilts );
   InitHdlrFuncsFromTable( GVarFuncs );
-  
+
   // set the bag type names (for error messages and debugging)
   InitBagNamesFromTable( BagNames );
 
   /* install the marking functions                                         */
   InitMarkFuncBags( T_INTPOS, MarkNoSubBags );
   InitMarkFuncBags( T_INTNEG, MarkNoSubBags );
-  
+
 #ifdef GAP_ENABLE_SAVELOAD
   /* Install the saving methods */
   SaveObjFuncs [ T_INTPOS ] = SaveInt;
@@ -2843,12 +2843,12 @@ static Int InitKernel ( StructInitInfo * module )
   LoadObjFuncs [ T_INTPOS ] = LoadInt;
   LoadObjFuncs [ T_INTNEG ] = LoadInt;
 #endif
-  
+
   /* install the printing functions                                        */
   PrintObjFuncs[ T_INT    ] = PrintInt;
   PrintObjFuncs[ T_INTPOS ] = PrintInt;
   PrintObjFuncs[ T_INTNEG ] = PrintInt;
-  
+
   /* install the comparison methods                                        */
   for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
     for ( t2 = T_INT; t2 <= T_INTNEG; t2++ ) {
@@ -2856,7 +2856,7 @@ static Int InitKernel ( StructInitInfo * module )
       LtFuncs  [ t1 ][ t2 ] = LtInt;
     }
   }
-  
+
   /* install the unary arithmetic methods                                  */
   for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
     ZeroSameMutFuncs[ t1 ] = ZeroInt;
@@ -2910,7 +2910,7 @@ static Int InitKernel ( StructInitInfo * module )
   MakeBagTypePublic( T_INTPOS );
   MakeBagTypePublic( T_INTNEG );
 #endif
-  
+
   return 0;
 }
 
@@ -2924,7 +2924,7 @@ static Int InitLibrary ( StructInitInfo *    module )
   /* init filters and functions                                            */
   InitGVarFiltsFromTable( GVarFilts );
   InitGVarFuncsFromTable( GVarFuncs );
-  
+
   return 0;
 }
 

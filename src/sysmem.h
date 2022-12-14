@@ -189,7 +189,7 @@ extern Int SyGasmanNumbers[2][9];
 *F  SyMAdviseFree( )  . . . . . . . . . . . . . inform os about unused memory
 **
 **  'SyMAdviseFree' is the function that informs the operating system that
-**  the memory range after the current work space end is not needed by GAP. 
+**  the memory range after the current work space end is not needed by GAP.
 **  This call is purely advisory and does not actually free pages, but
 **  only affects paging behavior.
 **  This function is called by GASMAN after each successfully completed

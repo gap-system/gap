@@ -74,7 +74,7 @@ static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
     copy = ShallowCopyPlist(xk);
     /* first add <power> to <xk>[ gen> ].                                */
     SET_ELM_PLIST(xk, gen, sum);
-    CHANGED_BAG(xk);     
+    CHANGED_BAG(xk);
     sum = ElmPRec( ELM_PLIST(dtpols, gen), evlist );
     sum1 = ElmPRec( ELM_PLIST(dtpols, gen), evlistvec);
     len = LEN_PLIST(sum);
@@ -88,7 +88,7 @@ static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
         {
             help = ELM_PLIST(sum1, i);
             len2 = LEN_PLIST(help);
-            for ( j=1; 
+            for ( j=1;
                   j < len2;
                   j+=2    )
             {
@@ -97,7 +97,7 @@ static void MultGen(Obj xk, UInt gen, Obj power, Obj dtpols)
                 prod = ProdInt( ord, ELM_PLIST(  help, j+1 ) );
                 sum2 = SumInt(ELM_PLIST( xk, CELM( help,j ) ),
                               prod);
-                SET_ELM_PLIST(xk, CELM( help, j ),  
+                SET_ELM_PLIST(xk, CELM( help, j ),
                               sum2 );
                 CHANGED_BAG(xk);
             }
@@ -120,7 +120,7 @@ static Obj Evaluation(Obj vec, Obj xk, Obj power)
     UInt i, len;
     Obj  prod, help;
 
-    if ( IS_POS_INTOBJ(power) &&  
+    if ( IS_POS_INTOBJ(power) &&
          power < ELM_PLIST(vec, 6)     )
         return INTOBJ_INT(0);
     prod = BinomialInt(power, ELM_PLIST(vec, 6) );
@@ -664,9 +664,9 @@ static Obj Conjugatered(Obj x, Obj y, Obj pcp)
 */
 
 static void compress(Obj list)
-{    
+{
     UInt    i, skip, len;
-    
+
     skip = 0;
     i = 2;
     len = LEN_PLIST( list );
@@ -736,7 +736,7 @@ static void ReduceWord(Obj x, Obj pcp)
              (potenz = ELM_PLIST(exponent, gen) ) != 0                    )
         {
             quo = ELM_PLIST(x, i+1);
-            if  ( !IS_INTOBJ(quo) || INT_INTOBJ(quo) >= INT_INTOBJ(potenz) || 
+            if  ( !IS_INTOBJ(quo) || INT_INTOBJ(quo) >= INT_INTOBJ(potenz) ||
                   INT_INTOBJ(quo)<0 )
             {
                 /* reduce the exponent of the generator <gen>            */

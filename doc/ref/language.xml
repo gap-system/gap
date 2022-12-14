@@ -134,8 +134,8 @@ Digits, uppercase and lowercase letters, <B>Space</B>, <B>Tab</B>,
 <P/>
 <Listing><![CDATA[
 "    '    (    )    *    +    ,    -    #
-.    /    :    ;    <    =    >    ~    
-[    \    ]    ^    _    {    }    ! 
+.    /    :    ;    <    =    >    ~
+[    \    ]    ^    _    {    }    !
 ]]></Listing>
 <P/>
 It is possible to use other characters in identifiers by escaping
@@ -281,16 +281,16 @@ and so forth are ordinary identifiers.
 Keywords must not contain whitespace, for example <C>el if</C> is not the
 same as <K>elif</K>.
 <P/>
-<E>Note</E>: 
-Several tokens from the list of keywords above may appear to be normal 
-identifiers representing functions or literals of various kinds but are 
-actually implemented as keywords for technical reasons. The only 
-consequence of this is that those identifiers cannot be re-assigned, and 
-do not actually have function objects bound to them, which could be 
+<E>Note</E>:
+Several tokens from the list of keywords above may appear to be normal
+identifiers representing functions or literals of various kinds but are
+actually implemented as keywords for technical reasons. The only
+consequence of this is that those identifiers cannot be re-assigned, and
+do not actually have function objects bound to them, which could be
 assigned to other variables or passed to functions. These keywords are
-<K>true</K>, <K>false</K>, <Ref Func="Assert"/>, 
+<K>true</K>, <K>false</K>, <Ref Func="Assert"/>,
 <Ref Func="IsBound" Label="for a global variable"/>,
-<Ref Func="Unbind" Label="unbind a variable"/>, 
+<Ref Func="Unbind" Label="unbind a variable"/>,
 <Ref Func="Info"/> and <Ref Func="TryNextMethod"/>.
 <P/>
 <!-- Update the next paragraph to reference HPC-GAP suitably -->
@@ -593,7 +593,7 @@ can be used to delete components or entries, respectively
 The vast majority of variables in &GAP; are defined at the outer
 level (the global scope). They are used to access functions and
 other objects created either in the &GAP; library or packages or in the user's
-code. 
+code.
 <P/>
 Note that for packages there is a mechanism to implement package local
 namespaces on top of this global namespace. See Section <Ref
@@ -601,7 +601,7 @@ Sect="Namespaces"/> for details.
 <Index>namespace</Index>
 <P/>
 Certain special facilities are provided for manipulating global
-variables which are not available for other types of variable (such as 
+variables which are not available for other types of variable (such as
 local variables or function arguments).
 <P/>
 First, such variables may be marked <E>read-only</E> using
@@ -641,10 +641,10 @@ from the use of assignment,
 <Ref Func="Unbind" Label="unbind a variable"/> and
 <Ref Func="IsBound" Label="for a global variable"/>
 statements, in two ways.
-First, these functions always affect global variables, even if 
+First, these functions always affect global variables, even if
 local variables of the same names exist.
 Second, the variable names are passed as strings,
-rather than being written directly into the statements. 
+rather than being written directly into the statements.
 <P/>
 Note that the functions <Ref Func="NamesGVars"/>,
 <Ref Func="NamesSystemGVars"/>, and <Ref Func="NamesUserGVars"/>,
@@ -655,8 +655,8 @@ deal with the <E>global namespace</E>.
 <Func Name="IsReadOnlyGlobal" Arg='name'/>
 
 <Description>
-returns <K>true</K> if the global variable named by the string <A>name</A> is 
-read-only and <K>false</K> otherwise (the default). 
+returns <K>true</K> if the global variable named by the string <A>name</A> is
+read-only and <K>false</K> otherwise (the default).
 </Description>
 </ManSection>
 
@@ -665,7 +665,7 @@ read-only and <K>false</K> otherwise (the default).
 <Func Name="MakeReadOnlyGlobal" Arg='name'/>
 
 <Description>
-marks the global variable named by the string <A>name</A> as read-only. 
+marks the global variable named by the string <A>name</A> as read-only.
 <P/>
 A warning is given if <A>name</A> has no value bound to it or if it is
 already read-only.
@@ -713,7 +713,7 @@ false
 <Func Name="ValueGlobal" Arg='name'/>
 
 <Description>
-returns the value currently bound to the global variable named by the 
+returns the value currently bound to the global variable named by the
 string <A>name</A>. An error is raised if no value is currently bound.
 </Description>
 </ManSection>
@@ -801,7 +801,7 @@ If in package code a global variable that ends with an
 <Q>at</Q>-character <C>@</C> is accessed in any way, the name of the
 package is appended before accessing it. Here, <Q>package code</Q>
 refers to everything which is read with <Ref Func="ReadPackage"/>.
-As the name of the package the entry <C>PackageName</C> in its 
+As the name of the package the entry <C>PackageName</C> in its
 <F>PackageInfo.g</F> file is taken. As for all identifiers,
 this name is case sensitive.
 <P/>
@@ -1185,7 +1185,7 @@ gap> RightCosets( G, Intersection( U, V ) );;
 
 <C><A>function-var</A>( <A>arg-expr</A>[, <A>arg-expr</A>, ...][ : [ <A>option-expr</A> [,<A>option-expr</A>, ....]]])</C>
 <P/>
-As well as passing arguments to a function, providing the mathematical 
+As well as passing arguments to a function, providing the mathematical
 input to its calculation, it is sometimes useful to supply <Q>hints</Q>
 suggesting to &GAP; how the desired result may be computed more
 quickly, or specifying a level of tolerance for random errors in a
@@ -1208,7 +1208,7 @@ and <C>tcselection</C> (with the string <C>"external"</C> as value).
 gap> Size( fpgrp : hard, tcselection := "external" );
 ]]></Log>
 <P/>
-Options supplied with function calls in this way are passed down using 
+Options supplied with function calls in this way are passed down using
 the global options stack described in chapter <Ref Chap="Options Stack"/>,
 so that the call above is exactly equivalent to
 <P/>
@@ -1218,8 +1218,8 @@ gap> Size( fpgrp );
 gap> PopOptions( );
 ]]></Log>
 <P/>
-<E>Note</E> that any option may be passed with any function, whether or not 
-it has any actual meaning for that function, or any function called by 
+<E>Note</E> that any option may be passed with any function, whether or not
+it has any actual meaning for that function, or any function called by
 it. The system provides no safeguard against misspelled option names.
 
 </Subsection>
@@ -1479,7 +1479,7 @@ gap> if i <> 0 then k = 16/i; fi;
 Syntax error: := expected
 if i <> 0 then k = 16/i; fi;
                  ^
-gap> 
+gap>
 ]]></Log>
 <P/>
 As you can see from the example this warning does in particular address
@@ -1866,7 +1866,7 @@ gap> for i in l do
 >    Print( i, " " );
 >    if i mod 2 = 0 then Add( l, 3 * i / 2 ); fi;
 > od; Print( "\n" );
-1 2 3 4 5 6 3 6 9 9 
+1 2 3 4 5 6 3 6 9 9
 gap> l;
 [ 1, 2, 3, 4, 5, 6, 3, 6, 9, 9 ]
 ]]></Example>
@@ -1880,7 +1880,7 @@ gap> for i in l do
 >    Print( i, " " );
 >    l := [];
 > od; Print( "\n" );
-1 2 3 4 5 6 
+1 2 3 4 5 6
 gap> l;
 [  ]
 ]]></Example>
@@ -1923,7 +1923,7 @@ The effect of
 <P/>
 <C>for <A>variable</A> in <A>domain</A> do</C>
 <P/>
-should thus normally be the same as 
+should thus normally be the same as
 <P/>
 <C>for <A>variable</A> in AsList(<A>domain</A>) do</C>
 <P/>

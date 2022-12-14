@@ -1790,7 +1790,7 @@ void IntrIntExpr(IntrState * intr, Obj string, Char * str)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    
+
     Obj val = IntStringInternal(string, str);
     GAP_ASSERT(val != Fail);
 

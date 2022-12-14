@@ -650,6 +650,6 @@ InstallGlobalFunction( "OrbitShortVectors", function ( gens, rep )
 
     Append( orbit, -orbit );
     # The function Immutable in the following statement essentially speeds
-    # up the function PositionSorted in IsomorphismPermGroupImfGroup.  
+    # up the function PositionSorted in IsomorphismPermGroupImfGroup.
     return Immutable( Set( orbit ) );
 end );

@@ -313,7 +313,7 @@ gap> Derivative(p);
 <Section Label="Polynomial Factorization">
 <Heading>Polynomial Factorization</Heading>
 
-At the moment &GAP; provides only methods to factorize 
+At the moment &GAP; provides only methods to factorize
 polynomials over finite fields (see Chapter&nbsp;<Ref Chap="Finite Fields"/>),
 over subfields of cyclotomic fields (see Chapter&nbsp;<Ref Chap="Abelian Number Fields"/>),
 and over algebraic extensions of these
@@ -350,7 +350,7 @@ x_1^6+x_1^5+x_1^4+x_1^3+x_1^2+x_1+Z(2)^0
 gap> Factors( f );
 [ x_1^3+x_1+Z(2)^0, x_1^3+x_1^2+Z(2)^0 ]
 gap> Factors( PolynomialRing( GF(8) ), f );
-[ x_1+Z(2^3), x_1+Z(2^3)^2, x_1+Z(2^3)^3, x_1+Z(2^3)^4, x_1+Z(2^3)^5, 
+[ x_1+Z(2^3), x_1+Z(2^3)^2, x_1+Z(2^3)^3, x_1+Z(2^3)^4, x_1+Z(2^3)^5,
   x_1+Z(2^3)^6 ]
 gap> f:= MinimalPolynomial( Rationals, E(4) );
 x^2+1
@@ -450,7 +450,7 @@ If you need to work with a polynomial ring and its indeterminates the
 following two approaches will produce a ring that contains given variables
 (see section&nbsp;<Ref Sect="Indeterminates"/> for details about the internal numbering):
 Either, first create the ring and then get the indeterminates with
-<Ref Attr="IndeterminatesOfPolynomialRing"/>. 
+<Ref Attr="IndeterminatesOfPolynomialRing"/>.
 <P/>
 <Example><![CDATA[
 gap> r := PolynomialRing(Rationals,["a","b"]);;
@@ -531,7 +531,7 @@ monomial orderings see <Cite Key="coxlittleoshea"/>.
 <P/>
 In &GAP;, monomial orderings are represented by objects that provide a way
 to compare monomials (as polynomials as well as &ndash;for efficiency purposes
-within algorithms&ndash; in the internal representation as lists). 
+within algorithms&ndash; in the internal representation as lists).
 <P/>
 Normally the ordering chosen should be <E>admissible</E>, i.e. it
 must be compatible with products:

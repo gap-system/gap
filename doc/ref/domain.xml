@@ -374,7 +374,7 @@ Here are some typical examples.
 </Item>
 </List>
 <P/>
-Each operational structure <A>Struct</A> has associated with it 
+Each operational structure <A>Struct</A> has associated with it
 a domain category <C>Is<A>Struct</A></C>,
 and operations <C><A>Struct</A>ByGenerators</C> for constructing a domain
 from generators,
@@ -555,8 +555,8 @@ following.
 <Index Subkey="operation">division</Index>
 <Index Subkey="operation">exponentiation</Index>
 <Index Subkey="operation">remainder</Index>
-For details about special methods for <Ref Oper="\*"/>, 
-<Ref Oper="\/"/>, <Ref Oper="\^"/> and <Ref Oper="\mod"/>, 
+For details about special methods for <Ref Oper="\*"/>,
+<Ref Oper="\/"/>, <Ref Oper="\^"/> and <Ref Oper="\mod"/>,
 consult the appropriate index entries for them.
 <!-- % (no Declaration available for them?) -->
 </Description>

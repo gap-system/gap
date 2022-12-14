@@ -220,17 +220,17 @@ static Obj FuncMakeFixedAtomicList(Obj self, Obj list) {
   return (Obj) 0; /* flow control hint */
 }
 
-static Obj FuncIS_ATOMIC_RECORD (Obj self, Obj obj) 
+static Obj FuncIS_ATOMIC_RECORD (Obj self, Obj obj)
 {
         return (TNUM_OBJ(obj) == T_AREC) ? True : False;
 }
 
-static Obj FuncIS_ATOMIC_LIST (Obj self, Obj obj) 
+static Obj FuncIS_ATOMIC_LIST (Obj self, Obj obj)
 {
         return (TNUM_OBJ(obj) == T_ALIST) ? True : False;
 }
 
-static Obj FuncIS_FIXED_ATOMIC_LIST (Obj self, Obj obj) 
+static Obj FuncIS_FIXED_ATOMIC_LIST (Obj self, Obj obj)
 {
         return (TNUM_OBJ(obj) == T_FIXALIST) ? True : False;
 }
@@ -1821,7 +1821,7 @@ static Int InitKernel (
 
   // set the bag type names (for error messages and debugging)
   InitBagNamesFromTable(BagNames);
-  
+
   /* install the kind methods */
   TypeObjFuncs[ T_ALIST ] = TypeAList;
   TypeObjFuncs[ T_FIXALIST ] = TypeAList;

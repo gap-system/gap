@@ -123,7 +123,7 @@ local f,M2,o,e,MM,i;
       M:=M^p;
     fi;
   od;
-  
+
   Assert(1,IsOne(M));
   return o;
 end);
@@ -189,7 +189,7 @@ local oper,n,R,o,nrit,
     TryNextMethod();
   fi;
   p:=Factors(q)[1];
-  if p=2 then 
+  if p=2 then
     if oper=SP then
       return SPRingGeneric(n/2,R);
     else
@@ -204,7 +204,7 @@ local oper,n,R,o,nrit,
   else
     g:=oper(arg[2],n,p);
   fi;
-    
+
   # get the form and get the correct -1's
   f:=InvariantBilinearForm(g).matrix;
 
@@ -341,7 +341,7 @@ local oper,n,R,o,nrit,
 	      k:=MappedWord(j,GeneratorsOfGroup(evrels),gens)^o;
 	    until not IsOne(k);
 	    addmat(k);
-	      
+
 	  fi;
 
 	  # close under action
@@ -437,7 +437,7 @@ local oper,n,R,o,nrit,
     SetSize(g,e);
   fi;
   SetInvariantBilinearForm(g,rec(matrix:=f*oner));
-  
+
   return g;
 end);
 

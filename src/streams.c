@@ -312,7 +312,7 @@ static void READ_INNER(TypInputFile * input)
           {
             AssGVarWithoutReadOnlyCheck( LastReadValueGVar, evalResult);
           }
-        
+
     }
 }
 
@@ -1215,7 +1215,7 @@ static Obj FuncLIST_DIR(Obj self, Obj dirname)
 static Obj FuncCLOSE_FILE(Obj self, Obj fid)
 {
     Int ifid = GetSmallInt(SELF_NAME, fid);
-    
+
     /* call the system dependent function                                  */
     Int ret = SyFclose( ifid );
     return ret == -1 ? Fail : True;
@@ -1248,7 +1248,7 @@ static Obj FuncINPUT_TEXT_FILE(Obj self, Obj filename)
 static Obj FuncIS_END_OF_FILE(Obj self, Obj fid)
 {
     Int ifid = GetSmallInt(SELF_NAME, fid);
-    
+
     Int ret = SyIsEndOfFile( ifid );
     return ret == -1 ? Fail : ( ret == 0 ? False : True );
 }
@@ -1309,7 +1309,7 @@ static Obj FuncPOSITION_FILE(Obj self, Obj fid)
 static Obj FuncREAD_BYTE_FILE(Obj self, Obj fid)
 {
     Int ifid = GetSmallInt(SELF_NAME, fid);
-    
+
     /* call the system dependent function                                  */
     Int ret = SyGetch( ifid );
 
@@ -1320,7 +1320,7 @@ static Obj FuncREAD_BYTE_FILE(Obj self, Obj fid)
 /****************************************************************************
 **
 *F  FuncREAD_LINE_FILE( <self>, <fid> ) . . . . . . . . . . . . . read a line
-**  
+**
 **  This uses fgets and works only if there are no zero characters in <fid>.
 */
 static Obj FuncREAD_LINE_FILE(Obj self, Obj fid)
@@ -1364,7 +1364,7 @@ static Obj FuncREAD_LINE_FILE(Obj self, Obj fid)
 /****************************************************************************
 **
 *F  FuncREAD_ALL_FILE( <self>, <fid>, <limit> )  . . . . . . . read remainder
-**  
+**
 ** more precisely, read until either
 **   (a) we have read at least one byte and no more are available
 **   (b) we have evidence that it will never be possible to read a byte
@@ -1466,7 +1466,7 @@ static Obj FuncSEEK_POSITION_FILE(Obj self, Obj fid, Obj pos)
 
     Int ifid = GetSmallInt(SELF_NAME, fid);
     Int ipos = GetSmallInt(SELF_NAME, pos);
-    
+
     ret = SyFseek( ifid, ipos );
     return ret == -1 ? Fail : True;
 }
@@ -1480,7 +1480,7 @@ static Obj FuncWRITE_BYTE_FILE(Obj self, Obj fid, Obj ch)
 {
     Int ifid = GetSmallInt(SELF_NAME, fid);
     Int ich = GetSmallInt(SELF_NAME, ch);
-    
+
     /* call the system dependent function                                  */
     Int ret = SyEchoch( ich, ifid );
     return ret == -1 ? Fail : True;
@@ -1498,7 +1498,7 @@ static Obj FuncWRITE_STRING_FILE_NC(Obj self, Obj fid, Obj str)
     /* don't check the argument                                            */
     RequireStringRep(SELF_NAME, str);
 
-    
+
     len = GET_LEN_STRING(str);
     ptr = CONST_CSTR_STRING(str);
     while (len > 0) {
@@ -1602,7 +1602,7 @@ static Obj FuncUNIXSelect(Obj self,
   } else {
     n = select(maxfd+1,&infds,&outfds,&excfds,NULL);
   }
-    
+
   if (n >= 0) {
     /* Now run through the lists and call functions if ready: */
 

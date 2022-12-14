@@ -17,11 +17,11 @@
       Only='Text'><E>D</E></Alt><Alt Only='LaTeX'><M>\mathcal{D}</M></Alt>">
    ]>
 
-<!-- the 2.8em parameter causes that in the toc lines for sections more 
+<!-- the 2.8em parameter causes that in the toc lines for sections more
      space is reserved for the section numbers (otherwise the header text
      overwrite some of the wide numbers); similar for subsections      -->
 <?LaTeX ExtraPreamble="
-\makeatletter 
+\makeatletter
 \renewcommand*\l@section{\@dottedtocline{1}{1.5em}{2.8em}}
 \renewcommand*\l@subsection{\@dottedtocline{2}{3.8em}{4.0em}}
 \def\@pnumwidth{2.1em}
@@ -38,10 +38,10 @@
   </Author>
 
   <Copyright>
-    Copyright &copyright; (1987-&RELEASEYEAR;) 
+    Copyright &copyright; (1987-&RELEASEYEAR;)
     for the core part of the &GAP; system by the &GAP; Group.
     <P/>
-    Most parts of this distribution, including the core part of the &GAP; 
+    Most parts of this distribution, including the core part of the &GAP;
     system are distributed under the terms of the GNU General Public License
     Version 2,
     see <URL>https://www.gnu.org/licenses/old-licenses/gpl-2.0.html</URL> or the
@@ -49,7 +49,7 @@
     installation.
     <P/>
     More detailed information about copyright and licenses of parts of this
-    distribution can be found in Section 
+    distribution can be found in Section
     <Ref Sect="Copyright and License"/> of this manual.
     <P/>
     &GAP; has been developed over a long time and has many authors and

@@ -193,7 +193,7 @@ The additional  variable <C>c</C>  is declared as  a  <E>local</E>  variable in 
 <K>local</K> statement  of the function definition.  The <K>local</K> statement, if
 present, must  be the first  statement of  a function  definition.   When
 several local variables are  declared in only one  <K>local</K> statement they
-are separated by commas.                                 
+are separated by commas.
 <P/>
 The  variable <C>c</C>  is  indeed  a local  variable,  that  is local to  the
 function <C>gcd</C>.  If you try  to use the value of <C>c</C> in the main loop you

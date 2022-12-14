@@ -226,7 +226,7 @@ of cyclotomic fields are not needed.
 <Ref Func="GetCyclotomicsLimit"/> returns the current limit on
 conductors of internally represented cyclotomic numbers
 <P/>
-<Ref Func="SetCyclotomicsLimit"/> can be called to increase the 
+<Ref Func="SetCyclotomicsLimit"/> can be called to increase the
 limit on conductors of internally represented cyclotomic numbers. Note that computing in
 large cyclotomic fields using this representation can be both slow and memory-consuming, and
 that other approaches may be better for some problems. See

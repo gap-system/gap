@@ -27,8 +27,8 @@ gapdocdtd := Filename(DirectoriesPackageLibrary("gapdoc"), "../gapdoc.dtd");
 Print("Loading gaprxp . . .");
 if LoadPackage("gaprxp") = true then
   Print(" ok\nParsing with rxp (with validation) . . .\n");
-  resrxp := XMLParseWithRxp(doc[1], [ "-V", "-D", "Book", 
-                                  gapdocdtd]);    
+  resrxp := XMLParseWithRxp(doc[1], [ "-V", "-D", "Book",
+                                  gapdocdtd]);
   Print("ERRORS:\n");
   for a in resrxp.err do
     Print(a,"\n");
@@ -67,7 +67,7 @@ FoldSectioning := function(tree, sectype)
       if not IsBound(r.origcontent) then
         r.origcontent := r.content;
       fi;
-      r.content := Concatenation("___", r.name, 
+      r.content := Concatenation("___", r.name,
                      SubstitutionSublist(String(r.count), " ",""), "\n");
     fi;
   end;
@@ -109,7 +109,7 @@ StringStructure := function(tree)
     if new[i]{[1..Minimum(Length(new[i]),3)]} = "___" then
       iss := true;
     else
-      if iss then 
+      if iss then
         Print("Warning: text after ",new[i-1],"\n",new[i]," . . .\n");
       fi;
       iss := false;
@@ -131,7 +131,7 @@ SectionStructuresWithWarnings := function(tree)
   Print("######  Checking section structures of chapters . . .\n");
   chaps := XMLElements(tree,["Chapter","Appendix"]);
   chapstr := [];
-  for ch in chaps do 
+  for ch in chaps do
     Print("Chapter ", ch.count, "\n");
     FoldSectioning(ch,"Section");
     Add(chapstr, StringStructure(ch));
@@ -140,7 +140,7 @@ SectionStructuresWithWarnings := function(tree)
   Print("######  Checking subsection structures of sections . . .\n");
   secs := XMLElements(tree,["Section"]);
   secstr := [];
-  for s in secs do 
+  for s in secs do
     #Print("Section ", s.count, "\n");
     FoldSectioning(s,"Subsection");
     Add(secstr, StringStructure(s));
@@ -237,7 +237,7 @@ end;
 
 # This finds <A> elements in outside ManSections (should not happen) and
 # strings in <A> elements which are not given in Arg attributes of the
-# current ManSection. 
+# current ManSection.
 CheckAContent := function(tree)
   local c1, c2, fu, g;
 

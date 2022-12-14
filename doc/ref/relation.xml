@@ -50,7 +50,7 @@ This section lists general constructors of relations.
 <Heading>Binary Relations on Points</Heading>
 
 We have special construction methods when the underlying <A>X</A>
-of our relation is the set of integers <M>\{ 1, \ldots, n \}</M>. 
+of our relation is the set of integers <M>\{ 1, \ldots, n \}</M>.
 
 <#Include Label="BinaryRelationOnPoints">
 <#Include Label="RandomBinaryRelationOnPoints">
@@ -79,20 +79,20 @@ of our relation is the set of integers <M>\{ 1, \ldots, n \}</M>.
 
 <Index>equivalence relation</Index>
 An <E>equivalence relation</E> <A>E</A> over the set <A>X</A> is a relation
-on <A>X</A> which is reflexive, symmetric, and transitive. 
+on <A>X</A> which is reflexive, symmetric, and transitive.
 A <E>partition</E> <A>P</A> is a set of subsets of <A>X</A> such that
 for all <M>R, S \in P</M>, <M>R \cap S</M> is the empty set and
-<M>\cup P = X</M>.  
+<M>\cup P = X</M>.
 An equivalence relation induces a partition such that if <M>(x,y) \in E</M>
 then <M>x, y</M> are in the same element of <A>P</A>.
 <P/>
-Like all binary relations in &GAP; equivalence 
+Like all binary relations in &GAP; equivalence
 relations are regarded as general endomorphic mappings (and the operations,
-properties and attributes of general mappings are available). 
-However, partitions provide an efficient way of representing equivalence 
+properties and attributes of general mappings are available).
+However, partitions provide an efficient way of representing equivalence
 relations.  Moreover, only the non-singleton classes
 or blocks are listed allowing for small equivalence relations to be
-represented on infinite sets. Hence the main attribute of equivalence 
+represented on infinite sets. Hence the main attribute of equivalence
 relations is <Ref Attr="EquivalenceRelationPartition"/>
 which provides the partition induced by the given equivalence.
 
@@ -106,7 +106,7 @@ which provides the partition induced by the given equivalence.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Attributes of and Operations on Equivalence Relations">
-<Heading>Attributes of and Operations on Equivalence Relations</Heading> 
+<Heading>Attributes of and Operations on Equivalence Relations</Heading>
 
 <#Include Label="EquivalenceRelationPartition">
 <#Include Label="GeneratorsOfEquivalenceRelationPartition">

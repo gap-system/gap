@@ -104,10 +104,10 @@ we say that the pc presentation of <M>H</M> is <E>confluent</E>.
 Note that &GAP;&nbsp;4 can only work correctly with pc groups defined by a
 confluent pc presentation.
 <P/>
-At the current state of implementations the &GAP; library contains 
-methods to compute with finite polycyclic groups, while the &GAP; 
-package <Package>Polycyclic</Package> by Bettina Eick and Werner Nickel 
-allows also computations with infinite polycyclic groups which are given 
+At the current state of implementations the &GAP; library contains
+methods to compute with finite polycyclic groups, while the &GAP;
+package <Package>Polycyclic</Package> by Bettina Eick and Werner Nickel
+allows also computations with infinite polycyclic groups which are given
 by a pc-presentation.
 <P/>
 <!-- %%  The Pc groups were designed and implemented by Frank Celler and -->
@@ -217,8 +217,8 @@ gap> iso := IsomorphismFpGroupByPcgs( p, "g" );
 gap> F := Image( iso );
 <fp group of size 24 on the generators [ g1, g2, g3, g4 ]>
 gap> RelatorsOfFpGroup( F );
-[ g1^2, g2^-1*g1^-1*g2*g1*g2^-1, g3^-1*g1^-1*g3*g1*g4^-1*g3^-1, 
-  g4^-1*g1^-1*g4*g1*g4^-1*g3^-1, g2^3, g3^-1*g2^-1*g3*g2*g4^-1*g3^-1, 
+[ g1^2, g2^-1*g1^-1*g2*g1*g2^-1, g3^-1*g1^-1*g3*g1*g4^-1*g3^-1,
+  g4^-1*g1^-1*g4*g1*g4^-1*g3^-1, g2^3, g3^-1*g2^-1*g3*g2*g4^-1*g3^-1,
   g4^-1*g2^-1*g4*g2*g3^-1, g3^2, g4^-1*g3^-1*g4*g3, g4^2 ]
 ]]></Example>
 </Description>
@@ -459,7 +459,7 @@ isomorphic extensions of <M>G</M>. However, there may be isomorphic
 extensions of <M>G</M> corresponding to cocycles in different orbits.
 <P/>
 See also the &GAP; package <Package>GrpConst</Package> by Hans Ulrich Besche
-and Bettina Eick that contains methods to construct up to isomorphism 
+and Bettina Eick that contains methods to construct up to isomorphism
 the groups of a given order.
 <P/>
 Finally we note that for the computation of split extensions it is not
@@ -501,16 +501,16 @@ gap> Extension( G, M, co[2] );
 gap> SplitExtension( G, M );
 <pc group of size 8 with 3 generators>
 gap> Extensions( G, M );
-[ <pc group of size 8 with 3 generators>, 
-  <pc group of size 8 with 3 generators>, 
-  <pc group of size 8 with 3 generators>, 
-  <pc group of size 8 with 3 generators>, 
-  <pc group of size 8 with 3 generators>, 
-  <pc group of size 8 with 3 generators>, 
-  <pc group of size 8 with 3 generators>, 
+[ <pc group of size 8 with 3 generators>,
+  <pc group of size 8 with 3 generators>,
+  <pc group of size 8 with 3 generators>,
+  <pc group of size 8 with 3 generators>,
+  <pc group of size 8 with 3 generators>,
+  <pc group of size 8 with 3 generators>,
+  <pc group of size 8 with 3 generators>,
   <pc group of size 8 with 3 generators> ]
 gap> List(last, IdSmallGroup);
-[ [ 8, 5 ], [ 8, 2 ], [ 8, 3 ], [ 8, 3 ], [ 8, 2 ], [ 8, 2 ], 
+[ [ 8, 5 ], [ 8, 2 ], [ 8, 3 ], [ 8, 3 ], [ 8, 2 ], [ 8, 2 ],
   [ 8, 3 ], [ 8, 4 ] ]
 ]]></Example>
 <P/>
@@ -541,17 +541,17 @@ false
 gap> A := AutomorphismGroup( N );
 <group of size 24 with 4 generators>
 gap> iso := IsomorphismPcGroup( A );
-CompositionMapping( Pcgs([ (2,6,5,3), (1,3,5)(2,4,6), (2,5)(3,6), 
+CompositionMapping( Pcgs([ (2,6,5,3), (1,3,5)(2,4,6), (2,5)(3,6),
   (1,4)(3,6) ]) -> [ f1, f2, f3, f4 ], <action isomorphism> )
 gap> H := Image( iso );
 Group([ f1, f2, f3, f4 ])
 gap> G := Subgroup( H, Pcgs(H){[1,2]} );
 Group([ f1, f2 ])
 gap> inv := InverseGeneralMapping( iso );
-[ f1*f2, f2^2*f3, f4, f3 ] -> 
-[ Pcgs([ f1, f2, f3 ]) -> [ f1*f2, f2, f3 ], 
-  Pcgs([ f1, f2, f3 ]) -> [ f2, f1*f2, f3 ], 
-  Pcgs([ f1, f2, f3 ]) -> [ f1*f3, f2, f3 ], 
+[ f1*f2, f2^2*f3, f4, f3 ] ->
+[ Pcgs([ f1, f2, f3 ]) -> [ f1*f2, f2, f3 ],
+  Pcgs([ f1, f2, f3 ]) -> [ f2, f1*f2, f3 ],
+  Pcgs([ f1, f2, f3 ]) -> [ f1*f3, f2, f3 ],
   Pcgs([ f1, f2, f3 ]) -> [ f1, f2*f3, f3 ] ]
 gap> K := SplitExtension( G, inv, N );
 <pc group of size 192 with 7 generators>

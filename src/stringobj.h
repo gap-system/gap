@@ -186,7 +186,7 @@ EXPORT_INLINE void SET_LEN_STRING(Obj list, Int len)
 *F  NEW_STRING( <len> ) . . . . . . . . . . . . . . . . . . make a new string
 **
 **  'NEW_STRING' returns a new string with room for <len> characters. It also
-**  sets its length to len. 
+**  sets its length to len.
 **
 */
 Obj NEW_STRING(Int len);

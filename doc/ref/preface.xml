@@ -13,7 +13,7 @@
 <Heading>Preface</Heading>
 <Index Key="About GAP manual">About &GAP; manual</Index>
 
-Welcome to &GAP;. 
+Welcome to &GAP;.
 This is one of the manuals documenting the core part of &GAP;,
 the others being the <E>&GAP; Tutorial</E>
 <Alt Only="HTML">(see <Ref BookName="tut" Label="Preface"/>)</Alt>
@@ -23,10 +23,10 @@ and <E>HPC-GAP Reference Manual</E>.
 -->
 <P/>
 
-There is also a document <F>CHANGES.md</F> on the 
+There is also a document <F>CHANGES.md</F> on the
 changes from earlier versions in the root directory.
 
-This preface serves not only to introduce <Q>The &GAP; Reference Manual</Q>, 
+This preface serves not only to introduce <Q>The &GAP; Reference Manual</Q>,
 but also as an introduction to the whole system.
 <P/>
 &GAP; stands  for  <E>Groups, Algorithms  and Programming</E>.  The  name was
@@ -37,27 +37,27 @@ programming  for other   algebraic structures,   such as semigroups   and
 algebras.
 <P/>
 This manual, the <E>&GAP; Reference Manual</E> contains the official definitions
-of &GAP; functions. It should contain all the information needed to 
+of &GAP; functions. It should contain all the information needed to
 use &GAP;, and is not intended to be read cover-to-cover.
 <P/>
 To get started a new user may first look at parts of the
 <E>&GAP; Tutorial</E><Alt Only="HTML"> (see
-<Ref BookName="tut" Label="Preface"/>)</Alt>. 
+<Ref BookName="tut" Label="Preface"/>)</Alt>.
 <P/>
 A lot of the functionality of the system and a number of
 contributed extensions are provided as <Q>&GAP; packages</Q>
 which are developed independently of the core part of &GAP; and can be loaded
-into a &GAP; session. Each package comes with a its own manual which is 
+into a &GAP; session. Each package comes with a its own manual which is
 also available through the &GAP; help system.
 <P/>
 This manual is divided into chapters, sections and subsections.
 Chapter&nbsp;<Ref Chap="The Help System"/> describes the <E>help system</E>,
 which provides access to all the  manuals from a running &GAP; session.
-Chapter&nbsp;<Ref Chap="Running GAP"/> gives technical advice for 
-<E>running</E> &GAP;. Chapter&nbsp;<Ref Chap="The Programming Language"/> 
-introduces the &GAP; language, and the next chapters deal with the 
-<E>environment</E> provided by &GAP; for the user. These are followed by 
-the main bulk of chapters which are devoted to the various mathematical 
+Chapter&nbsp;<Ref Chap="Running GAP"/> gives technical advice for
+<E>running</E> &GAP;. Chapter&nbsp;<Ref Chap="The Programming Language"/>
+introduces the &GAP; language, and the next chapters deal with the
+<E>environment</E> provided by &GAP; for the user. These are followed by
+the main bulk of chapters which are devoted to the various mathematical
 structures that &GAP; can handle.
 <P/>
 Subsequent sections of this preface explain the structure of the
@@ -79,7 +79,7 @@ provide copyright and licensing information.
 parts of the system. A complete list of authors, and an approximation
 to the current list of maintainers can be found on the &GAP;
 website at
- <URL>https://www.gap-system.org/Contacts/People/authors.html</URL> and 
+ <URL>https://www.gap-system.org/Contacts/People/authors.html</URL> and
  <URL>https://www.gap-system.org/Contacts/People/modules.html</URL>.
 
 All &GAP; packages have their
@@ -105,7 +105,7 @@ We also include with this distribution a
 number of packages which have not (yet) gone through our refereeing
 process. Some may be accepted in the future, in other cases the
 authors have chosen not to submit them.  More information can be found
-on our website 
+on our website
 (see Section <Ref Sect="Further Information about GAP"/>).
 <P/>
 

@@ -145,7 +145,7 @@ next line
 
 There are a number of <E>special character sequences</E> that can be used
 between the singlequotes of a character literal or between the
-doublequotes of a string literal to specify characters. 
+doublequotes of a string literal to specify characters.
 They consist of a backslash <C>\</C> followed by a second character
 indicating the type of special character sequence, and possibly more characters.
 The following special character sequences are currently defined.
@@ -258,7 +258,7 @@ other</Mark>
 </List>
 <P/>
 Again, if the line is displayed as result of an evaluation,
-those escape sequences are displayed in the same way that they are input. 
+those escape sequences are displayed in the same way that they are input.
 <P/>
 Only  <Ref Func="Print"/>, <Ref Func="PrintTo"/>, or <Ref Func="AppendTo"/>
 send the characters directly to the output stream.
@@ -308,7 +308,7 @@ gap> """Print("\n")""";
 Triple quoted strings are represented internally identically to all other
 strings, they only provide an alternative method of giving strings to GAP.
 
-Triple quoted strings still follow GAP's line editing rules 
+Triple quoted strings still follow GAP's line editing rules
 (<Ref Sect="Special Rules for Input Lines"/>), which state that in normal
 line editing mode, lines starting <C>gap> </C>, <C>> </C> or <C>brk> </C> will
 have this beginning part removed.
@@ -335,16 +335,16 @@ have this beginning part removed.
 The function <Ref Func="EmptyString"/> returns an empty string in
 internal representation which
 has enough memory allocated for <A>len</A> characters. This can be useful
-for creating and filling a string with a known number of entries. 
+for creating and filling a string with a known number of entries.
 <P/>
 The function <Ref Func="ShrinkAllocationString"/> gives back to &GAP;s
 memory manager the physical memory which is allocated for the string
-<A>str</A> in internal representation but not needed by its current 
+<A>str</A> in internal representation but not needed by its current
 number of characters.
 <P/>
-These functions are intended for saving some of &GAP;s memory in certain 
+These functions are intended for saving some of &GAP;s memory in certain
 situations, see the explanations and the example for the analogous
-functions <Ref Func="EmptyPlist"/> and <Ref Func="ShrinkAllocationPlist"/> 
+functions <Ref Func="EmptyPlist"/> and <Ref Func="ShrinkAllocationPlist"/>
 for plain lists.
 </Description>
 </ManSection>
@@ -487,7 +487,7 @@ Sequences of white space characters between other characters are replaced by
 a single space character.
 <P/>
 See <Ref Func="NormalizedWhitespace"/> for a non-destructive version.
-<Example><![CDATA[ 
+<Example><![CDATA[
 gap> s := "   x y \n\n\t\r  z\n   \n";
 "   x y \n\n\t\r  z\n   \n"
 gap> NormalizeWhitespace(s);
@@ -502,7 +502,7 @@ gap> s;
 <ManSection>
 <Func Name="RemoveCharacters" Arg='string, chars'/>
 <Description>
-Both arguments must be strings. This function efficiently removes all 
+Both arguments must be strings. This function efficiently removes all
 characters given in <A>chars</A> from <A>string</A>.
 <Example>
 gap> s := "ab c\ndef\n\ng    h i .\n";
@@ -518,7 +518,7 @@ gap> s;
 <#Include Label="Chomp">
 <#Include Label="StartsWith">
 <#Include Label="StringFormatted">
-        
+
 The following two functions convert basic strings to lists of numbers and
 vice versa. They are useful for examples of text encryption.
 <#Include Label="NumbersString">
@@ -721,35 +721,35 @@ gap> HexStringInt(last);
 <Heading>Obtaining LaTeX Representations of Objects</Heading>
 <Index Subkey="for GAP objects">LaTeX</Index>
 
-For the purpose of generating &LaTeX; source code with &GAP; it is 
-recommended to add new functions which will print the &LaTeX; source 
+For the purpose of generating &LaTeX; source code with &GAP; it is
+recommended to add new functions which will print the &LaTeX; source
 or return &LaTeX; strings for further processing.
 <P/>
 
-An alternative approach could be based on methods for the default &LaTeX; 
+An alternative approach could be based on methods for the default &LaTeX;
 representation for each appropriate type of objects. However, there is
 no clear notion of a default &LaTeX; code for any non-trivial mathematical
 object; moreover, different output may be required in different contexts.
 <P/>
 
-While customisation of such an operation may require changes in a variety 
-of methods that may be distributed all over the library, the user will 
-have a clean overview of the whole process of &LaTeX; code generation if 
-it is contained in a single function. Furthermore, there may be kinds of 
-objects which are not detected by the method selection, or there may be 
+While customisation of such an operation may require changes in a variety
+of methods that may be distributed all over the library, the user will
+have a clean overview of the whole process of &LaTeX; code generation if
+it is contained in a single function. Furthermore, there may be kinds of
+objects which are not detected by the method selection, or there may be
 a need in additional parameters specifying requirements for the output.
 <P/>
 
-This is why having a special purpose function for each particular case 
-is more suitable. &GAP; provides several functions that produce &LaTeX; 
-strings for those situations where this is nontrivial and reasonable. 
+This is why having a special purpose function for each particular case
+is more suitable. &GAP; provides several functions that produce &LaTeX;
+strings for those situations where this is nontrivial and reasonable.
 A useful example is <Ref Func="LaTeXStringDecompositionMatrix"/> from
-the &GAP; library, others can be found entering <C>?LaTeX</C> at the 
-&GAP; prompt. Package authors are encouraged to add an index entry 
+the &GAP; library, others can be found entering <C>?LaTeX</C> at the
+&GAP; prompt. Package authors are encouraged to add an index entry
 <C>LaTeX</C> to the documentation of all &LaTeX; string producing functions.
-This way, entering <C>?LaTeX</C> will give an overview of all documented 
+This way, entering <C>?LaTeX</C> will give an overview of all documented
 functionality in this direction.
- 
+
 </Section>
 </Chapter>
 

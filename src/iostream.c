@@ -885,7 +885,7 @@ static StructGVarFunc GVarFuncs[] = {
 
     { 0, 0, 0, 0, 0 }
 };
-  
+
 /* FIXME/TODO: should probably do some checks preSave for open files etc and
    refuse to save if any are found */
 

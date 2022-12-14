@@ -1,5 +1,5 @@
 # <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE file SYSTEM "bibxmlext.dtd" >                
+<!DOCTYPE file SYSTEM "bibxmlext.dtd" >
 
 <file>
 <!-- some abbreviations of journal names, add more when needed -->
@@ -47,7 +47,7 @@
 <entry id="Abb89"><phdthesis>
   <author>
     <name><first>J. A.</first><last>Abbott</last></name>
-  </author>  
+  </author>
   <title>On  the  Factorization  of  Polynomials over Algebraic
                       Fields</title>
   <school>School of Mathematical Sciences, University of Bath</school>
@@ -59,17 +59,17 @@
   <author>
     <name><first>Dean</first><last>Alvis</last></name>
     <name><first>George</first><last>Lusztig</last></name>
-  </author>  
+  </author>
   <title>Correction to the paper: <C>T</C>he representations and generic
   degrees of the <C>H</C>ecke algebra of type <C><M>H_4</M></C> [<C>J</C>.
-  <C>R</C>eine <C>A</C>ngew. <C>M</C>ath. 
+  <C>R</C>eine <C>A</C>ngew. <C>M</C>ath.
   <C><Alt Only="BibTeX,BibTeXhref">\bf </Alt>336</C> (1982), 201&ndash;212;
               <C>MR</C>0671329 (84a:20013)]</title>
   <journal><value key="jreia"/></journal>
   <year>1994</year>
   <volume>449</volume>
   <pages>217&ndash;218</pages>
-  <note>Correction:  ibid. <Alt Only="BibTeX,BibTeXhref">\bf </Alt> 449, 
+  <note>Correction:  ibid. <Alt Only="BibTeX,BibTeXhref">\bf </Alt> 449,
          217&ndash;218 (1994)</note>
   <crossref>AL82</crossref>
   <issn>0075-4102</issn>
@@ -85,14 +85,14 @@
   <author>
     <name><first>Dean</first><last>Alvis</last></name>
     <name><first>George</first><last>Lusztig</last></name>
-  </author>  
+  </author>
   <title>The representations and generic degrees of the <C>H</C>ecke algebra
               of type <C><M>H_4</M></C></title>
   <journal><value key="jreia"/></journal>
   <year>1982</year>
   <volume>336</volume>
   <pages>201&ndash;212</pages>
-  <note>Correction:  ibid. <Alt Only="BibTeX,BibTeXhref">\bf </Alt> 449, 
+  <note>Correction:  ibid. <Alt Only="BibTeX,BibTeXhref">\bf </Alt> 449,
        217&ndash;218 (1994)</note>
   <crossref>AL94</crossref>
   <issn>0075-4102</issn>
@@ -107,7 +107,7 @@
 <entry id="Alv87"><article>
   <author>
     <name><first>Dean</first><last>Alvis</last></name>
-  </author>  
+  </author>
   <title>The left cells of the <C>C</C>oxeter group of type
       <C><M>H_4</M></C></title>
   <journal><value key="jalge"/></journal>
@@ -128,7 +128,7 @@
     <name><first>D. G.</first><last>Arrell</last></name>
     <name><first>S.</first><last>Manrai</last></name>
     <name><first>M. F.</first><last>Worboys</last></name>
-  </author>  
+  </author>
   <title>A procedure for obtaining simplified defining relations for a
               subgroup</title>
   <booktitle>Groups&ndash;St Andrews 1981 (St Andrews, 1981)</booktitle>
@@ -137,7 +137,7 @@
   <editor>
     <name><first>Colin M.</first><last>Campbell</last></name>
     <name><first>Edmund F.</first><last>Robertson</last></name>
-  </editor>  
+  </editor>
   <volume>71</volume>
   <series>London Math. Soc. Lecture Note Ser.</series>
   <pages>155&ndash;159</pages>
@@ -155,14 +155,14 @@
   <author>
     <name><first>D. G.</first><last>Arrell</last></name>
     <name><first>E. F.</first><last>Robertson</last></name>
-  </author>  
+  </author>
   <title>A modified <C>T</C>odd-<C>C</C>oxeter algorithm</title>
   <booktitle>Computational group theory (Durham, 1982)</booktitle>
   <publisher>Academic Press</publisher>
   <year>1984</year>
   <editor>
     <name><first>Michael D.</first><last>Atkinson</last></name>
-  </editor>  
+  </editor>
   <pages>27&ndash;32</pages>
   <address>London</address>
   <crossref>Durham1982</crossref>
@@ -178,7 +178,7 @@
 <entry id="Art68"><book>
   <author>
     <name><first>E.</first><last>Artin</last></name>
-  </author>  
+  </author>
   <title>Galoissche <C>T</C>heorie</title>
   <publisher>Verlag Harri Deutsch</publisher>
   <year>1973</year>
@@ -196,7 +196,7 @@
 <entry id="Bau91"><phdthesis>
   <author>
     <name><first>Ulrich</first><last>Baum</last></name>
-  </author>  
+  </author>
   <title>Existenz   und   effiziente  <C>K</C>onstruktion  schneller
                       <C>F</C>ouriertransformationen
                       überauflösbarer <C>G</C>ruppen</title>
@@ -211,7 +211,7 @@
   <author>
     <name><first>Ulrich</first><last>Baum</last></name>
     <name><first>Michael</first><last>Clausen</last></name>
-  </author>  
+  </author>
   <title>Computing irreducible representations of supersolvable groups</title>
   <journal><value key="mathc3"/></journal>
   <year>1994</year>
@@ -232,7 +232,7 @@
     <name><first>Gene</first><last>Cooperman</last></name>
     <name><first>Larry</first><last>Finkelstein</last></name>
     <name><first>Ákos</first><last>Seress</last></name>
-  </author>  
+  </author>
   <title>Nearly  Linear  Time Algorithms for Permutation Groups
                       with a Small Base</title>
   <booktitle>Proceedings of the International Symposium on Symbolic
@@ -247,7 +247,7 @@
   <author>
     <name><first>M. J.</first><last>Beetham</last></name>
     <name><first>C. M.</first><last>Campbell</last></name>
-  </author>  
+  </author>
   <title>A note on the <C>T</C>odd-<C>C</C>oxeter coset enumeration
       algorithm</title>
   <journal><value key="proem2"/></journal>
@@ -268,7 +268,7 @@
 <entry id="Ben76"><article>
   <author>
     <name><first>Mark</first><last>Benard</last></name>
-  </author>  
+  </author>
   <title>Schur indices and splitting fields of the unitary reflection
               groups</title>
   <journal><value key="jalge"/></journal>
@@ -287,7 +287,7 @@
   <author>
     <name><first>C. T.</first><last>Benson</last></name>
     <name><first>C. W.</first><last>Curtis</last></name>
-  </author>  
+  </author>
   <title>On the degrees and rationality of certain characters of finite
               <C>C</C>hevalley groups</title>
   <journal><value key="traam"/></journal>
@@ -305,7 +305,7 @@
 <entry id="Ber76"><article>
   <author>
     <name><first>T. R.</first><last>Berger</last></name>
-  </author>  
+  </author>
   <title>Characters and derived length in groups of odd order</title>
   <journal><value key="jalge"/></journal>
   <year>1976</year>
@@ -322,7 +322,7 @@
 <entry id="Besche92"><mastersthesis>
   <author>
     <name><first>Hans Ulrich</first><last>Besche</last></name>
-  </author>  
+  </author>
   <title>Die    <C>B</C>erechnung    von    <C>C</C>haraktergraden    und
                       <C>C</C>harakteren   endlicher   auflösbarer
   <C>G</C>ruppen im <C>C</C>omputeralgebrasystem <C>GAP</C></title>
@@ -338,7 +338,7 @@
   <author>
     <name><first>Hans Ulrich</first><last>Besche</last></name>
     <name><first>Bettina</first><last>Eick</last></name>
-  </author>  
+  </author>
   <title>Construction of finite groups</title>
   <journal><value key="jsymc"/></journal>
   <year>1999</year>
@@ -356,7 +356,7 @@
   <author>
     <name><first>Hans Ulrich</first><last>Besche</last></name>
     <name><first>Bettina</first><last>Eick</last></name>
-  </author>  
+  </author>
   <title>The groups of order at most 1000 except 512 and 768</title>
   <journal><value key="jsymc"/></journal>
   <year>1999</year>
@@ -374,7 +374,7 @@
   <author>
     <name><first>Hans Ulrich</first><last>Besche</last></name>
     <name><first>Bettina</first><last>Eick</last></name>
-  </author>  
+  </author>
   <title>The groups of order <C><M>q^n \cdot p</M></C></title>
   <journal><value key="comma2"/></journal>
   <year>2001</year>
@@ -393,7 +393,7 @@
     <name><first>Hans Ulrich</first><last>Besche</last></name>
     <name><first>Bettina</first><last>Eick</last></name>
     <name><first>E. A.</first><last>O'Brien</last></name>
-  </author>  
+  </author>
   <title>The groups of order at most 2000</title>
   <journal><value key="eraam"/></journal>
   <year>2001</year>
@@ -412,7 +412,7 @@
     <name><first>Hans Ulrich</first><last>Besche</last></name>
     <name><first>Bettina</first><last>Eick</last></name>
     <name><first>E. A.</first><last>O'Brien</last></name>
-  </author>  
+  </author>
   <title>A millennium project: constructing small groups</title>
   <journal><value key="intjac"/></journal>
   <year>2002</year>
@@ -432,7 +432,7 @@
     <name><first>F. Rudolf</first><last>Beyl</last></name>
     <name><first>Ulrich</first><last>Felgner</last></name>
     <name><first>Peter</first><last>Schmid</last></name>
-  </author>  
+  </author>
   <title>On groups occurring as center factor groups</title>
   <journal><value key="jalge"/></journal>
   <year>1979</year>
@@ -451,7 +451,7 @@
   <author>
     <name><first>Bettina</first><last>Eick</last></name>
     <name><first>E. A.</first><last>O'Brien</last></name>
-  </author>  
+  </author>
   <title>Enumerating <C><M>p</M></C>-groups</title>
   <journal><value key="jausma"/></journal>
   <year>1999</year>
@@ -472,7 +472,7 @@
   <author>
     <name><first>Bettina</first><last>Eick</last></name>
     <name><first>E. A.</first><last>O'Brien</last></name>
-  </author>  
+  </author>
   <title>The groups of order <C><M>512</M></C></title>
   <booktitle>Algorithmic algebra and number theory (Heidelberg,
       1997)</booktitle>
@@ -482,7 +482,7 @@
     <name><first>B. H.</first><last>Matzat</last></name>
     <name><first>G.-M.</first><last>Greuel</last></name>
     <name><first>G.</first><last>Hiss</last></name>
-  </editor>  
+  </editor>
   <pages>379&ndash;380</pages>
   <address>Berlin</address>
   <note>Proceedings  of Abschlusstagung des DFG Schwerpunktes
@@ -496,7 +496,7 @@
     <name><first>M. F.</first><last>Newman</last></name>
     <name><first>E. A.</first><last>O'Brien</last></name>
     <name><first>M. R.</first><last>Vaughan-Lee</last></name>
-  </author>  
+  </author>
   <title>Groups and nilpotent <C>L</C>ie rings whose order is the sixth
               power of a prime</title>
   <journal><value key="jalge"/></journal>
@@ -533,7 +533,7 @@
 <entry id="Gir03"><mastersthesis>
   <author>
     <name><first>Boris</first><last>Girnat</last></name>
-  </author>  
+  </author>
   <title><C>K</C>lassifikation der <C>G</C>ruppen bis zur <C>O</C>rdnung
       <C><M>p^5</M></C></title>
   <school>TU Braunschweig</school>
@@ -546,7 +546,7 @@
   <author>
     <name><first>Heiko</first><last>Dietrich</last></name>
     <name><first>Bettina</first><last>Eick</last></name>
-  </author>  
+  </author>
   <title>On the groups of cube-free order</title>
   <journal><value key="jalge"/></journal>
   <year>2005</year>
@@ -564,7 +564,7 @@
 <entry id="Bis89"><mastersthesis>
   <author>
     <name><first>Thomas</first><last>Bischops</last></name>
-  </author>  
+  </author>
   <title>Collectoren im <C>P</C>rogrammsystem <C>GAP</C></title>
   <school>Lehrstuhl   D   für  Mathematik, Rheinisch  Westfälische
                       Technische Hochschule</school>
@@ -577,7 +577,7 @@
   <author>
     <name><first>Wieb</first><last>Bosma</last></name>
     <name><first>John J.</first><last>Cannon</last></name>
-  </author>  
+  </author>
   <title>Handbook of <C>C</C>ayley Functions</title>
   <institution>Department of Pure Mathematics, University of
       Sydney</institution>
@@ -590,7 +590,7 @@
 <entry id="Bou68"><book>
   <author>
     <name><first>N.</first><last>Bourbaki</last></name>
-  </author>  
+  </author>
   <title>Éléments de mathématique. <C>F</C>asc. <C>XXXIV</C>. <C>G</C>roupes
   et algèbres de <C>L</C>ie. <C>C</C>hapitre <C>IV</C>: <C>G</C>roupes de
   <C>C</C>oxeter et systèmes de <C>T</C>its. <C>C</C>hapitre <C>V</C>:
@@ -611,7 +611,7 @@
   <author>
     <name><first>Richard P.</first><last>Brent</last></name>
     <name><first>Graeme L.</first><last>Cohen</last></name>
-  </author>  
+  </author>
   <title>A new lower bound for odd perfect numbers</title>
   <journal><value key="mathc3"/></journal>
   <year>1989</year>
@@ -629,7 +629,7 @@
 <entry id="Bre91"><mastersthesis>
   <author>
     <name><first>Thomas</first><last>Breuer</last></name>
-  </author>  
+  </author>
   <title>Potenzabbildungen,             <C>U</C>ntergruppenfusionen,
                       <C>T</C>afel-<C>A</C>utomorphismen</title>
   <school>Lehrstuhl   D   für  Mathematik, Rheinisch  Westfälische
@@ -643,7 +643,7 @@
   <author>
     <name><first>T.</first><last>Breuer</last></name>
     <name><first>K.</first><last>Lux</last></name>
-  </author>  
+  </author>
   <title>The multiplicity-free permutation characters of the sporadic
               simple groups and their automorphism groups</title>
   <journal><value key="comma2"/></journal>
@@ -662,7 +662,7 @@
 <entry id="Bre97"><article>
   <author>
     <name><first>Thomas</first><last>Breuer</last></name>
-  </author>  
+  </author>
   <title>Integral bases for subfields of cyclotomic fields</title>
   <journal><value key="appae"/></journal>
   <year>1997</year>
@@ -682,7 +682,7 @@
   <author>
     <name><first>Thomas</first><last>Breuer</last></name>
     <name><first>Götz</first><last>Pfeiffer</last></name>
-  </author>  
+  </author>
   <title>Finding possible permutation characters</title>
   <journal><value key="jsymc"/></journal>
   <year>1998</year>
@@ -700,7 +700,7 @@
   <author>
     <name><first>Thomas</first><last>Breuer</last></name>
     <name><first>Steve</first><last>Linton</last></name>
-  </author>  
+  </author>
   <title>The   <C>GAP&nbsp;4</C>   Type   System.   Organizing  Algebraic
                       Algorithms</title>
   <booktitle>ISSAC '98: Proceedings of the 1998 international symposium on
@@ -719,7 +719,7 @@
 <entry id="Bre99"><article>
   <author>
     <name><first>Thomas</first><last>Breuer</last></name>
-  </author>  
+  </author>
   <title>Computing possible class fusions from character tables</title>
   <journal><value key="comma2"/></journal>
   <year>1999</year>
@@ -738,7 +738,7 @@
   <author>
     <name><first>Thomas</first><last>Breuer</last></name>
     <name><first>Simon P.</first><last>Norton</last></name>
-  </author>  
+  </author>
   <title>Improvements to the <C>A</C>tlas</title>
   <pages>297&ndash;327</pages>
   <publisher>The Clarendon Press Oxford University Press</publisher>
@@ -758,7 +758,7 @@
 <entry id="Bri71"><article>
   <author>
     <name><first>E.</first><last>Brieskorn</last></name>
-  </author>  
+  </author>
   <title>Die <C>F</C>undamentalgruppe des <C>R</C>aumes der regulären
       <C>O</C>rbits
               einer endlichen komplexen <C>S</C>piegelungsgruppe</title>
@@ -777,7 +777,7 @@
   <author>
     <name><first>Egbert</first><last>Brieskorn</last></name>
     <name><first>Kyoji</first><last>Saito</last></name>
-  </author>  
+  </author>
   <title>Artin-<C>G</C>ruppen und <C>C</C>oxeter-<C>G</C>ruppen</title>
   <journal><value key="invem"/></journal>
   <year>1972</year>
@@ -794,7 +794,7 @@
   <author>
     <name><first>Michel</first><last>Broué</last></name>
     <name><first>Gunter</first><last>Malle</last></name>
-  </author>  
+  </author>
   <title>Zyklotomische <C>H</C>eckealgebren</title>
   <journal>Astérisque</journal>
   <year>1993</year>
@@ -817,7 +817,7 @@
     <name><first>Michel</first><last>Broué</last></name>
     <name><first>Gunter</first><last>Malle</last></name>
     <name><first>Jean</first><last>Michel</last></name>
-  </author>  
+  </author>
   <title>Generic blocks of finite reductive groups</title>
   <journal>Astérisque</journal>
   <year>1993</year>
@@ -840,7 +840,7 @@
     <name><first>Michel</first><last>Broué</last></name>
     <name><first>Gunter</first><last>Malle</last></name>
     <name><first>Jean</first><last>Michel</last></name>
-  </author>  
+  </author>
   <title>Représentations unipotentes génériques et blocs des
               groupes réductifs finis</title>
   <publisher>Société Mathématique de France</publisher>
@@ -856,7 +856,7 @@
 <entry id="Baker84"><book>
   <author>
     <name><first>Alan</first><last>Baker</last></name>
-  </author>  
+  </author>
   <title>A concise introduction to the theory of numbers</title>
   <publisher>Cambridge University Press</publisher>
   <year>1984</year>
@@ -873,7 +873,7 @@
     <name><first>A. E.</first><last>Brouwer</last></name>
     <name><first>A. M.</first><last>Cohen</last></name>
     <name><first>A.</first><last>Neumaier</last></name>
-  </author>  
+  </author>
   <title>Distance-regular graphs</title>
   <publisher>Springer-Verlag</publisher>
   <year>1989</year>
@@ -895,7 +895,7 @@
     <name><first>Joachim</first><last>Neubüser</last></name>
     <name><first>Hans</first><last>Wondratschek</last></name>
     <name><first>Hans</first><last>Zassenhaus</last></name>
-  </author>  
+  </author>
   <title>Crystallographic groups of four-dimensional space</title>
   <publisher>Wiley-Interscience [John Wiley &amp; Sons]</publisher>
   <year>1978</year>
@@ -913,7 +913,7 @@
     <name><first>Gilbert</first><last>Baumslag</last></name>
     <name><first>Frank B.</first><last>Cannonito</last></name>
     <name><first>Charles F.</first><last>Miller III</last></name>
-  </author>  
+  </author>
   <title>Some recognizable properties of solvable groups</title>
   <journal><value key="mathz"/></journal>
   <year>1981</year>
@@ -933,7 +933,7 @@
     <name><first>Gilbert</first><last>Baumslag</last></name>
     <name><first>Frank B.</first><last>Cannonito</last></name>
     <name><first>Charles F.</first><last>Miller III</last></name>
-  </author>  
+  </author>
   <title>Computable algebra and group embeddings</title>
   <journal><value key="jalge"/></journal>
   <year>1981</year>
@@ -951,7 +951,7 @@
 <entry id="Bourbaki70"><book>
   <author>
     <name><first>N.</first><last>Bourbaki</last></name>
-  </author>  
+  </author>
   <title>Éléments de mathématique. <C>A</C>lgèbre. <C>C</C>hapitres 1
               à 3</title>
   <publisher>Hermann</publisher>
@@ -968,7 +968,7 @@
     <name><first>R.</first><last>Brown</last></name>
     <name><first>D. L.</first><last>Johnson</last></name>
     <name><first>E. F.</first><last>Robertson</last></name>
-  </author>  
+  </author>
   <title>Some computations of nonabelian tensor products of groups</title>
   <journal><value key="jalge"/></journal>
   <year>1987</year>
@@ -987,7 +987,7 @@
   <author>
     <name><first>Francis</first><last>Buekenhout</last></name>
     <name><first>Dimitri</first><last>Leemans</last></name>
-  </author>  
+  </author>
   <title>On the list of finite primitive permutation groups of degree
               <C><M>\leq 50</M></C></title>
   <journal><value key="jsymc"/></journal>
@@ -1005,7 +1005,7 @@
   <author>
     <name><first>Gregory</first><last>Butler</last></name>
     <name><first>John</first><last>McKay</last></name>
-  </author>  
+  </author>
   <title>The transitive groups of degree up to eleven</title>
   <journal><value key="comma2"/></journal>
   <year>1983</year>
@@ -1023,7 +1023,7 @@
 <entry id="Butler93"><article>
   <author>
     <name><first>Greg</first><last>Butler</last></name>
-  </author>  
+  </author>
   <title>The transitive groups of degree fourteen and fifteen</title>
   <journal><value key="jsymc"/></journal>
   <year>1993</year>
@@ -1040,7 +1040,7 @@
 <entry id="Bra89"><phdthesis>
   <author>
     <name><first>R. J.</first><last>Bradford</last></name>
-  </author>  
+  </author>
   <title>On  the  computation  of integral bases and defects of
                       integrity</title>
   <school>School of Mathematical Sciences, University of Bath</school>
@@ -1053,7 +1053,7 @@
     <name><first>Bernard</first><last>Beauzamy</last></name>
     <name><first>Vilmar</first><last>Trevisan</last></name>
     <name><first>Paul S.</first><last>Wang</last></name>
-  </author>  
+  </author>
   <title>Polynomial factorization: sharp bounds, efficient algorithms</title>
   <journal><value key="jsymc"/></journal>
   <year>1993</year>
@@ -1069,7 +1069,7 @@
 <entry id="Bur55"><book>
   <author>
     <name><first>W.</first><last>Burnside</last></name>
-  </author>  
+  </author>
   <title>Theory of groups of finite order</title>
   <publisher>Dover Publications Inc.</publisher>
   <year>1955</year>
@@ -1084,7 +1084,7 @@
 <entry id="But82"><article>
   <author>
     <name><first>Gregory</first><last>Butler</last></name>
-  </author>  
+  </author>
   <title>Computing in permutation and matrix groups. <C>II</C>.
       <C>B</C>acktrack
               algorithm</title>
@@ -1107,7 +1107,7 @@
   <author>
     <name><first>Gregory</first><last>Butler</last></name>
     <name><first>John</first><last>Cannon</last></name>
-  </author>  
+  </author>
   <title>Computing in permutation and matrix groups. <C>III</C>. <C>S</C>ylow
               subgroups</title>
   <journal><value key="jsymc"/></journal>
@@ -1125,7 +1125,7 @@
 <entry id="But85a"><article>
   <author>
     <name><first>Gregory</first><last>Butler</last></name>
-  </author>  
+  </author>
   <title>Effective computation with group homomorphisms</title>
   <journal><value key="jsymc"/></journal>
   <year>1985</year>
@@ -1142,7 +1142,7 @@
 <entry id="Cam71"><mastersthesis>
   <author>
     <name><first>Harvey A.</first><last>Campbell</last></name>
-  </author>  
+  </author>
   <title>An extension of coset enumeration</title>
   <school>McGill University</school>
   <year>1971</year>
@@ -1155,7 +1155,7 @@
 <entry id="Can73"><article>
   <author>
     <name><first>John J.</first><last>Cannon</last></name>
-  </author>  
+  </author>
   <title>Construction of defining relators for finite groups</title>
   <journal><value key="discm"/></journal>
   <year>1973</year>
@@ -1171,7 +1171,7 @@
 <entry id="Car72"><article>
   <author>
     <name><first>R. W.</first><last>Carter</last></name>
-  </author>  
+  </author>
   <title>Conjugacy classes in the <C>W</C>eyl group</title>
   <journal><value key="compo"/></journal>
   <year>1972</year>
@@ -1187,7 +1187,7 @@
 <entry id="Car85"><book>
   <author>
     <name><first>Roger W.</first><last>Carter</last></name>
-  </author>  
+  </author>
   <title>Finite groups of <C>L</C>ie type</title>
   <publisher>John Wiley &amp; Sons Inc.</publisher>
   <year>1985</year>
@@ -1205,7 +1205,7 @@
 <entry id="Car8593"><book>
   <author>
     <name><first>Roger W.</first><last>Carter</last></name>
-  </author>  
+  </author>
   <title>Finite groups of <C>L</C>ie type</title>
   <publisher>John Wiley &amp; Sons Ltd.</publisher>
   <year>1993</year>
@@ -1223,7 +1223,7 @@
 <entry id="Car86"><article>
   <author>
     <name><first>R. W.</first><last>Carter</last></name>
-  </author>  
+  </author>
   <title>Representation theory of the <C><M>0</M></C>-<C>H</C>ecke
       algebra</title>
   <journal><value key="jalge"/></journal>
@@ -1242,7 +1242,7 @@
 <entry id="Car72a"><book>
   <author>
     <name><first>Roger W.</first><last>Carter</last></name>
-  </author>  
+  </author>
   <title>Simple groups of <C>L</C>ie type</title>
   <publisher>John Wiley &amp; Sons, London-New York-Sydney</publisher>
   <year>1972</year>
@@ -1256,7 +1256,7 @@
 <entry id="Car72a89"><book>
   <author>
     <name><first>Roger W.</first><last>Carter</last></name>
-  </author>  
+  </author>
   <title>Simple groups of <C>L</C>ie type</title>
   <publisher>John Wiley &amp; Sons Inc.</publisher>
   <year>1989</year>
@@ -1273,7 +1273,7 @@
 <entry id="Cel92"><mastersthesis>
   <author>
     <name><first>Frank</first><last>Celler</last></name>
-  </author>  
+  </author>
   <title>Kohomologie und <C>N</C>ormalisatoren in <C>GAP</C></title>
   <school>Lehrstuhl   D   für  Mathematik,
                       Rheinisch               Westfälische
@@ -1288,7 +1288,7 @@
     <name><first>F.</first><last>Celler</last></name>
     <name><first>J.</first><last>Neubüser</last></name>
     <name><first>C. R. B.</first><last>Wright</last></name>
-  </author>  
+  </author>
   <title>Some remarks on the computation of complements and normalizers
               in soluble groups</title>
   <journal><value key="actam3"/></journal>
@@ -1309,7 +1309,7 @@
 <entry id="Cha92"><article>
   <author>
     <name><first>Ruth</first><last>Charney</last></name>
-  </author>  
+  </author>
   <title>Artin groups of finite type are biautomatic</title>
   <journal><value key="matha"/></journal>
   <year>1992</year>
@@ -1327,7 +1327,7 @@
 <entry id="Cla97"><article>
   <author>
     <name><first>Michael</first><last>Clausen</last></name>
-  </author>  
+  </author>
   <title>A direct proof of <C>M</C>inkwitz's extension theorem</title>
   <journal><value key="appae"/></journal>
   <year>1997</year>
@@ -1345,7 +1345,7 @@
 <entry id="Coh93"><book>
   <author>
     <name><first>Henri</first><last>Cohen</last></name>
-  </author>  
+  </author>
   <title>A course in computational algebraic number theory</title>
   <publisher>Springer-Verlag</publisher>
   <year>1993</year>
@@ -1362,7 +1362,7 @@
 <entry id="Con90a"><article>
   <author>
     <name><first>S. B.</first><last>Conlon</last></name>
-  </author>  
+  </author>
   <title>Calculating characters of <C><M>p</M></C>-groups</title>
   <journal><value key="jsymc"/></journal>
   <year>1990</year>
@@ -1380,7 +1380,7 @@
 <entry id="Con90b"><article>
   <author>
     <name><first>S. B.</first><last>Conlon</last></name>
-  </author>  
+  </author>
   <title>Computing modular and projective character degrees of soluble
               groups</title>
   <journal><value key="jsymc"/></journal>
@@ -1403,7 +1403,7 @@
     <name><first>S. P.</first><last>Norton</last></name>
     <name><first>R. A.</first><last>Parker</last></name>
     <name><first>R. A.</first><last>Wilson</last></name>
-  </author>  
+  </author>
   <title>Atlas of finite groups</title>
   <publisher>Oxford University Press</publisher>
   <year>1985</year>
@@ -1422,7 +1422,7 @@
     <name><first>John H.</first><last>Conway</last></name>
     <name><first>Alexander</first><last>Hulpke</last></name>
     <name><first>John</first><last>McKay</last></name>
-  </author>  
+  </author>
   <title>On transitive permutation groups</title>
   <journal>LMS J. Comput. Math.</journal>
   <year>1998</year>
@@ -1439,7 +1439,7 @@
   <author>
     <name><first>Gene</first><last>Cooperman</last></name>
     <name><first>Larry</first><last>Finkelstein</last></name>
-  </author>  
+  </author>
   <title>A random base change algorithm for permutation groups</title>
   <journal><value key="jsymc"/></journal>
   <year>1994</year>
@@ -1457,7 +1457,7 @@
     <name><first>T. H.</first><last>Cormen</last></name>
     <name><first>C. E.</first><last>Leiserson</last></name>
     <name><first>R. L.</first><last>Rivest</last></name>
-  </author>  
+  </author>
   <title>Introduction to algorithms</title>
   <publisher>MIT Press</publisher>
   <year>1990</year>
@@ -1499,7 +1499,7 @@
     <name><first>David</first><last>Cox</last></name>
     <name><first>John</first><last>Little</last></name>
     <name><first>Donal</first><last>O'Shea</last></name>
-  </author>  
+  </author>
   <title>Ideals, varieties, and algorithms</title>
   <publisher>Springer-Verlag</publisher>
   <year>1997</year>
@@ -1518,7 +1518,7 @@
   <author>
     <name><first>Charles W.</first><last>Curtis</last></name>
     <name><first>Irving</first><last>Reiner</last></name>
-  </author>  
+  </author>
   <title>Methods of representation theory. <C>V</C>ol. <C>I</C></title>
   <publisher>John Wiley &amp; Sons Inc.</publisher>
   <year>1981</year>
@@ -1537,7 +1537,7 @@
   <author>
     <name><first>Charles W.</first><last>Curtis</last></name>
     <name><first>Irving</first><last>Reiner</last></name>
-  </author>  
+  </author>
   <title>Methods of representation theory. <C>V</C>ol. <C>II</C></title>
   <publisher>John Wiley &amp; Sons Inc.</publisher>
   <year>1987</year>
@@ -1555,7 +1555,7 @@
 <entry id="Del72"><article>
   <author>
     <name><first>Pierre</first><last>Deligne</last></name>
-  </author>  
+  </author>
   <title>Les immeubles des groupes de tresses généralisés</title>
   <journal><value key="invem"/></journal>
   <year>1972</year>
@@ -1571,7 +1571,7 @@
 <entry id="Deo89"><article>
   <author>
     <name><first>Vinay V.</first><last>Deodhar</last></name>
-  </author>  
+  </author>
   <title>A note on subgroups generated by reflections in <C>C</C>oxeter
               groups</title>
   <journal><value key="arcmb1"/></journal>
@@ -1590,7 +1590,7 @@
 <entry id="Dix67"><article>
   <author>
     <name><first>John D.</first><last>Dixon</last></name>
-  </author>  
+  </author>
   <title>High speed computation of group characters</title>
   <journal><value key="numem"/></journal>
   <year>1967</year>
@@ -1607,7 +1607,7 @@
   <author>
     <name><first>John D.</first><last>Dixon</last></name>
     <name><first>Brian</first><last>Mortimer</last></name>
-  </author>  
+  </author>
   <title>The primitive permutation groups of degree less than
       <C><M>1000</M></C></title>
   <journal><value key="matpc"/></journal>
@@ -1628,7 +1628,7 @@
 <entry id="Dix93"><incollection>
   <author>
     <name><first>John D.</first><last>Dixon</last></name>
-  </author>  
+  </author>
   <title>Constructing representations of finite groups</title>
   <booktitle>Groups and computation (New Brunswick, NJ, 1991)</booktitle>
   <publisher>Amer. Math. Soc.</publisher>
@@ -1636,7 +1636,7 @@
   <editor>
     <name><first>Larry</first><last>Finkelstein</last></name>
     <name><first>William M.</first><last>Kantor</last></name>
-  </editor>  
+  </editor>
   <volume>11</volume>
   <series>DIMACS Ser. Discrete Math. Theoret. Comput. Sci.</series>
   <pages>105&ndash;112</pages>
@@ -1651,7 +1651,7 @@
 <entry id="Dre69"><article>
   <author>
     <name><first>Andreas</first><last>Dress</last></name>
-  </author>  
+  </author>
   <title>A characterisation of solvable groups</title>
   <journal><value key="mathz"/></journal>
   <year>1969</year>
@@ -1667,7 +1667,7 @@
 <entry id="DuC91"><manual>
   <author>
     <name><first>F.</first><last>DuCloux</last></name>
-  </author>  
+  </author>
   <title>Coxeter Version 1.0</title>
   <organization>Université de Lyon</organization>
   <address>Lyon, France</address>
@@ -1677,7 +1677,7 @@
 <entry id="Dye90"><article>
   <author>
     <name><first>Matthew</first><last>Dyer</last></name>
-  </author>  
+  </author>
   <title>Reflection subgroups of <C>C</C>oxeter systems</title>
   <journal><value key="jalge"/></journal>
   <year>1990</year>
@@ -1697,7 +1697,7 @@
     <name><first>D. B. A.</first><last>Epstein</last></name>
     <name><first>D. F.</first><last>Holt</last></name>
     <name><first>S. E.</first><last>Rees</last></name>
-  </author>  
+  </author>
   <title>The use of <C>K</C>nuth-<C>B</C>endix methods to solve the word
       problem
               in automatic groups</title>
@@ -1717,7 +1717,7 @@
 <entry id="Eick97"><incollection>
   <author>
     <name><first>Bettina</first><last>Eick</last></name>
-  </author>  
+  </author>
   <title>Special presentations for finite soluble groups and computing
               (pre-)<C>F</C>rattini subgroups</title>
   <booktitle>Groups and computation, II (New Brunswick, NJ, 1995)</booktitle>
@@ -1726,7 +1726,7 @@
   <editor>
     <name><first>Larry</first><last>Finkelstein</last></name>
     <name><first>William M.</first><last>Kantor</last></name>
-  </editor>  
+  </editor>
   <volume>28</volume>
   <series>DIMACS Ser. Discrete Math. Theoret. Comput. Sci.</series>
   <pages>101&ndash;112</pages>
@@ -1742,7 +1742,7 @@
     <name><first>Bettina</first><last>Eick</last></name>
     <name><first>Franz</first><last>Gähler</last></name>
     <name><first>Werner</first><last>Nickel</last></name>
-  </author>  
+  </author>
   <title>Computing maximal subgroups and <C>W</C>yckoff positions of space
               groups</title>
   <journal><value key="actcs1"/></journal>
@@ -1763,7 +1763,7 @@
   <author>
     <name><first>B.</first><last>Eick</last></name>
     <name><first>B.</first><last>Höfling</last></name>
-  </author>  
+  </author>
   <title>The solvable primitive permutation groups of degree at most
               6560</title>
   <journal>LMS J. Comput. Math.</journal>
@@ -1781,7 +1781,7 @@
   <author>
       <name><first>Bettina</first><last>Eick</last></name>
       <name><first>Alexander</first><last>Hulpke</last></name>
-  </author>  
+  </author>
   <title>Computing the maximal subgroups of a permutation group <C>I</C></title>
   <pages>155&ndash;168</pages>
   <crossref>DIMACS3</crossref>
@@ -1790,7 +1790,7 @@
 <entry id="Ellis98"><article>
   <author>
     <name><first>Graham</first><last>Ellis</last></name>
-  </author>  
+  </author>
   <title>On the capability of groups</title>
   <journal><value key="proem2"/></journal>
   <year>1998</year>
@@ -1814,7 +1814,7 @@
     <name><first>Silvio V. F.</first><last>Levy</last></name>
     <name><first>Michael S.</first><last>Paterson</last></name>
     <name><first>William P.</first><last>Thurston</last></name>
-  </author>  
+  </author>
   <title>Word processing in groups</title>
   <publisher>Jones and Bartlett Publishers</publisher>
   <year>1992</year>
@@ -1832,7 +1832,7 @@
     <name><first>D. L.</first><last>Johnson</last></name>
     <name><first>J.</first><last>Neubüser</last></name>
     <name><first>S. V.</first><last>Tsaranov</last></name>
-  </author>  
+  </author>
   <title>The structure of certain <C>C</C>oxeter groups</title>
   <booktitle>Groups '93 Galway/St Andrews, Vol. 1 (Galway, 1993)</booktitle>
   <publisher>Cambridge Univ. Press</publisher>
@@ -1850,14 +1850,14 @@
   <author>
     <name><first>Volkmar</first><last>Felsch</last></name>
     <name><first>Günter</first><last>Sandlöbes</last></name>
-  </author>  
+  </author>
   <title>An interactive program for computing subgroups</title>
   <booktitle>Computational group theory (Durham, 1982)</booktitle>
   <publisher>Academic Press</publisher>
   <year>1984</year>
   <editor>
     <name><first>Michael D.</first><last>Atkinson</last></name>
-  </editor>  
+  </editor>
   <pages>137&ndash;143</pages>
   <address>London</address>
   <crossref>Durham1982</crossref>
@@ -1872,7 +1872,7 @@
   <author>
     <name><first>Volkmar</first><last>Felsch</last></name>
     <name><first>Joachim</first><last>Neubüser</last></name>
-  </author>  
+  </author>
   <title>An algorithm for the computation of conjugacy classes and
               centralizers in <C><M>p</M></C>-groups</title>
   <booktitle>Symbolic and algebraic computation (EUROSAM '79, Internat.
@@ -1881,7 +1881,7 @@
   <year>1979</year>
   <editor>
     <name><first>Edward W.</first><last>Ng</last></name>
-  </editor>  
+  </editor>
   <volume>72</volume>
   <series>Lecture Notes in Comput. Sci.</series>
   <pages>452&ndash;465</pages>
@@ -1898,7 +1898,7 @@
 <entry id="Fon62"><article>
   <author>
     <name><first>Paul</first><last>Fong</last></name>
-  </author>  
+  </author>
   <title>Solvable groups and modular representation theory</title>
   <journal><value key="traam"/></journal>
   <year>1962</year>
@@ -1915,7 +1915,7 @@
 <entry id="Fra82"><article>
   <author>
     <name><first>J. S.</first><last>Frame</last></name>
-  </author>  
+  </author>
   <title>Recursive computation of tensor power components</title>
   <journal><value key="bayms"/></journal>
   <year>1982</year>
@@ -1951,7 +1951,7 @@
 <entry id="Gar69"><article>
   <author>
     <name><first>F. A.</first><last>Garside</last></name>
-  </author>  
+  </author>
   <title>The braid group and other groups</title>
   <journal><value key="quajm3"/></journal>
   <year>1969</year>
@@ -1967,7 +1967,7 @@
 <entry id="Gec94"><article>
   <author>
     <name><first>Meinolf</first><last>Geck</last></name>
-  </author>  
+  </author>
   <title>On the character values of <C>I</C>wahori-<C>H</C>ecke algebras of
               exceptional type</title>
   <journal><value key="prolm2"/></journal>
@@ -1987,7 +1987,7 @@
 <entry id="Gec95"><book>
   <author>
     <name><first>M.</first><last>Geck</last></name>
-  </author>  
+  </author>
   <title>Beiträge   zur  <C>D</C>arstellungstheorie  von
                       <C>I</C>wahori-<C>H</C>ecke <C>A</C>lgebren</title>
   <publisher>Verlag der Augustinus Buchhandlung, Aachen</publisher>
@@ -2000,7 +2000,7 @@
   <author>
     <name><first>Meinolf</first><last>Geck</last></name>
     <name><first>Sungsoon</first><last>Kim</last></name>
-  </author>  
+  </author>
   <title>Bases for the <C>B</C>ruhat-<C>C</C>hevalley order on all finite
               <C>C</C>oxeter groups</title>
   <journal><value key="jalge"/></journal>
@@ -2020,7 +2020,7 @@
   <author>
     <name><first>Meinolf</first><last>Geck</last></name>
     <name><first>Jean</first><last>Michel</last></name>
-  </author>  
+  </author>
   <title>``<C>G</C>ood'' elements of finite <C>C</C>oxeter groups and
   representations of <C>I</C>wahori-<C>H</C>ecke algebras</title>
   <journal><value key="prolm2"/></journal>
@@ -2041,7 +2041,7 @@
   <author>
     <name><first>Meinolf</first><last>Geck</last></name>
     <name><first>Götz</first><last>Pfeiffer</last></name>
-  </author>  
+  </author>
   <title>On the irreducible characters of <C>H</C>ecke algebras</title>
   <journal><value key="advam4"/></journal>
   <year>1993</year>
@@ -2063,7 +2063,7 @@
     <name><first>Frank</first><last>Lübeck</last></name>
     <name><first>Gunter</first><last>Malle</last></name>
     <name><first>Götz</first><last>Pfeiffer</last></name>
-  </author>  
+  </author>
   <title>C<C>HEVIE</C>&ndash;a system for computing and processing generic
               character tables</title>
   <journal><value key="appae"/></journal>
@@ -2083,7 +2083,7 @@
 <entry id="Gla87"><phdthesis>
   <author>
     <name><first>Stephan P.</first><last>Glasby</last></name>
-  </author>  
+  </author>
   <title>Computational  Approaches  to  the  Theory  of  Finite
                       Soluble Groups</title>
   <school>Department of Pure Mathematics, University of Sydney</school>
@@ -2096,7 +2096,7 @@
   <author>
     <name><first>S. P.</first><last>Glasby</last></name>
     <name><first>Michael C.</first><last>Slattery</last></name>
-  </author>  
+  </author>
   <title>Computing intersections and normalizers in soluble groups</title>
   <journal><value key="jsymc"/></journal>
   <year>1990</year>
@@ -2116,7 +2116,7 @@
     <name><first>Ronald L.</first><last>Graham</last></name>
     <name><first>Donald E.</first><last>Knuth</last></name>
     <name><first>Oren</first><last>Patashnik</last></name>
-  </author>  
+  </author>
   <title>Concrete mathematics</title>
   <publisher>Addison-Wesley Publishing Company Advanced Book
       Program</publisher>
@@ -2134,7 +2134,7 @@
   <author>
     <name><first>Tom</first><last>Halverson</last></name>
     <name><first>Arun</first><last>Ram</last></name>
-  </author>  
+  </author>
   <title>Murnaghan-<C>N</C>akayama rules for characters of
       <C>I</C>wahori-<C>H</C>ecke
               algebras of classical type</title>
@@ -2155,7 +2155,7 @@
 <entry id="Hah83"><book>
   <editor>
     <name><first>Theo</first><last>Hahn</last></name>
-  </editor>  
+  </editor>
   <title>International tables for crystallography. <C>V</C>ol.
       <C>A</C></title>
   <publisher>Published for International Union of Crystallography,
@@ -2172,7 +2172,7 @@
 <entry id="Hah95"><book>
   <editor>
     <name><first>Theo</first><last>Hahn</last></name>
-  </editor>  
+  </editor>
   <title>International Tables for Crystallography, <C>V</C>ol.
       <C>A</C></title>
   <publisher>Kluwer, Dordrecht</publisher>
@@ -2186,7 +2186,7 @@
 <entry id="Hall"><book>
   <author>
     <name><first>Marshall</first><last>Hall Jr.</last></name>
-  </author>  
+  </author>
   <title>The theory of groups</title>
   <publisher>The Macmillan Co.</publisher>
   <year>1959</year>
@@ -2201,7 +2201,7 @@
   <author>
     <name><first>Marshall</first><last>Hall Jr.</last></name>
     <name><first>James K.</first><last>Senior</last></name>
-  </author>  
+  </author>
   <title>The groups of order <C><M>2^{n} (n \leq 6)</M></C></title>
   <publisher>The Macmillan Co.</publisher>
   <year>1964</year>
@@ -2227,7 +2227,7 @@
 <entry id="Han88"><phdthesis>
   <author>
     <name><first>Wilhelm</first><last>Hanrath</last></name>
-  </author>  
+  </author>
   <title>Irreduzible <C>D</C>arstellungen von <C>R</C>aumgruppen</title>
   <school>Rheinisch               Westfälische
                       Technische Hochschule</school>
@@ -2239,7 +2239,7 @@
 <entry id="Hav69"><techreport>
   <author>
     <name><first>George</first><last>Havas</last></name>
-  </author>  
+  </author>
   <title>Symbolic and Algebraic Calculation</title>
   <institution>Basser  Department  of Computer Science, University of
                       Sydney</institution>
@@ -2254,14 +2254,14 @@
 <entry id="Hav74b"><inproceedings>
   <author>
     <name><first>George</first><last>Havas</last></name>
-  </author>  
+  </author>
   <title>A <C>R</C>eidemeister-<C>S</C>chreier program</title>
   <booktitle>Proceedings of the Second International Conference on the
   Theory of Groups (Australian Nat. Univ., Canberra, 1973)</booktitle>
   <year>1974</year>
   <editor>
     <name><first>Michael F.</first><last>Newman</last></name>
-  </editor>  
+  </editor>
   <volume>372</volume>
   <series>Lecture Notes in Math.</series>
   <pages>347&ndash;356. Lecture Notes in Math., Vol. 372</pages>
@@ -2283,7 +2283,7 @@
 <entry id="Hav91"><inproceedings>
   <author>
     <name><first>George</first><last>Havas</last></name>
-  </author>  
+  </author>
   <title>Coset enumeration strategies</title>
   <booktitle>Proceedings of the International Symposium on Symbolic
   and Algebraic Computation (ISSAC'91), Bonn 1991</booktitle>
@@ -2297,7 +2297,7 @@
   <author>
     <name><first>George</first><last>Havas</last></name>
     <name><first>Bohdan S.</first><last>Majewski</last></name>
-  </author>  
+  </author>
   <title>Integer matrix diagonalization</title>
   <journal><value key="jsymc"/></journal>
   <year>1997</year>
@@ -2315,7 +2315,7 @@
   <author>
     <name><first>George</first><last>Havas</last></name>
     <name><first>M. F.</first><last>Newman</last></name>
-  </author>  
+  </author>
   <title>Application of computers to questions like those of
               <C>B</C>urnside</title>
   <booktitle>Burnside groups (Proc. Workshop, Univ. Bielefeld, Bielefeld,
@@ -2324,7 +2324,7 @@
   <year>1980</year>
   <editor>
     <name><first>Jens L.</first><last>Mennicke</last></name>
-  </editor>  
+  </editor>
   <volume>806</volume>
   <series>Lecture Notes in Math.</series>
   <pages>211&ndash;230</pages>
@@ -2345,14 +2345,14 @@
     <name><first>P. E.</first><last>Kenne</last></name>
     <name><first>J. S.</first><last>Richardson</last></name>
     <name><first>E. F.</first><last>Robertson</last></name>
-  </author>  
+  </author>
   <title>A <C>T</C>ietze transformation program</title>
   <booktitle>Computational group theory (Durham, 1982)</booktitle>
   <publisher>Academic Press</publisher>
   <year>1984</year>
   <editor>
     <name><first>Michael D.</first><last>Atkinson</last></name>
-  </editor>  
+  </editor>
   <pages>69&ndash;73</pages>
   <address>London</address>
   <crossref>Durham1982</crossref>
@@ -2367,7 +2367,7 @@
     <name><first>T.</first><last>Hawkes</last></name>
     <name><first>I. M.</first><last>Isaacs</last></name>
     <name><first>M.</first><last>Özaydin</last></name>
-  </author>  
+  </author>
   <title>On the <C>M</C>öbius function of a finite group</title>
   <journal><value key="rocmj"/></journal>
   <year>1989</year>
@@ -2388,7 +2388,7 @@
     <name><first>Christoph</first><last>Jansen</last></name>
     <name><first>Klaus</first><last>Lux</last></name>
     <name><first>Richard A.</first><last>Parker</last></name>
-  </author>  
+  </author>
   <title>Computational <C>M</C>odular <C>C</C>haracter <C>T</C>heory</title>
   <howpublished><URL>http://www.math.rwth-aachen.de/~MOC/CoMoChaT/</URL></howpublished>
 </misc></entry>
@@ -2396,7 +2396,7 @@
 <entry id="Holt94"><incollection>
   <author>
     <name><first>Derek F.</first><last>Holt</last></name>
-  </author>  
+  </author>
   <title>The <C>W</C>arwick automatic groups software</title>
   <booktitle>Geometric and computational perspectives on infinite groups
               (Minneapolis, MN and New Brunswick, NJ, 1994)</booktitle>
@@ -2417,7 +2417,7 @@
     <name><first>C. R.</first><last>Leedham-Green</last></name>
     <name><first>E. A.</first><last>O'Brien</last></name>
     <name><first>Sarah</first><last>Rees</last></name>
-  </author>  
+  </author>
   <title>Computing matrix group decompositions with respect to a normal
               subgroup</title>
   <journal><value key="jalge"/></journal>
@@ -2439,7 +2439,7 @@
     <name><first>C. R.</first><last>Leedham-Green</last></name>
     <name><first>E. A.</first><last>O'Brien</last></name>
     <name><first>Sarah</first><last>Rees</last></name>
-  </author>  
+  </author>
   <title>Testing matrix groups for primitivity</title>
   <journal><value key="jalge"/></journal>
   <year>1996</year>
@@ -2458,7 +2458,7 @@
   <author>
     <name><first>Derek F.</first><last>Holt</last></name>
     <name><first>W.</first><last>Plesken</last></name>
-  </author>  
+  </author>
   <title>Perfect groups</title>
   <publisher>The Clarendon Press Oxford University Press</publisher>
   <year>1989</year>
@@ -2477,7 +2477,7 @@
   <author>
     <name><first>Derek F.</first><last>Holt</last></name>
     <name><first>Sarah</first><last>Rees</last></name>
-  </author>  
+  </author>
   <title>Testing modules for irreducibility</title>
   <journal><value key="jausma"/></journal>
   <year>1994</year>
@@ -2512,7 +2512,7 @@
   <author>
     <name><first>George</first><last>Havas</last></name>
     <name><first>Colin</first><last>Ramsay</last></name>
-  </author>  
+  </author>
   <title>Experiments in coset enumeration</title>
   <booktitle>Groups and computation, III (Columbus, OH, 1999)</booktitle>
   <publisher>de Gruyter</publisher>
@@ -2520,7 +2520,7 @@
   <editor>
     <name><first>William M.</first><last>Kantor</last></name>
     <name><first>Ákos</first><last>Seress</last></name>
-  </editor>  
+  </editor>
   <volume>8</volume>
   <series>Ohio State Univ. Math. Res. Inst. Publ.</series>
   <pages>183&ndash;192</pages>
@@ -2536,7 +2536,7 @@
   <author>
     <name><first>George</first><last>Havas</last></name>
     <name><first>Colin</first><last>Ramsay</last></name>
-  </author>  
+  </author>
   <title>Proving a group trivial made easy: a case study in coset
               enumeration</title>
   <journal><value key="bulam2"/></journal>
@@ -2556,7 +2556,7 @@
 <entry id="Howie76"><book>
   <author>
     <name><first>J. M.</first><last>Howie</last></name>
-  </author>  
+  </author>
   <title>An introduction to semigroup theory</title>
   <publisher>Academic Press [Harcourt Brace Jovanovich Publishers]</publisher>
   <year>1976</year>
@@ -2571,7 +2571,7 @@
 <entry id="Hulpke93"><mastersthesis>
   <author>
     <name><first>Alexander</first><last>Hulpke</last></name>
-  </author>  
+  </author>
   <title><C>Zur Berechnung von Charaktertafeln</C></title>
   <school>Lehrstuhl   D   für  Mathematik,
                       Rheinisch               Westfälische
@@ -2583,7 +2583,7 @@
 <entry id="Hulpke96"><phdthesis>
   <author>
     <name><first>Alexander</first><last>Hulpke</last></name>
-  </author>  
+  </author>
   <title>Konstruktion transitiver <C>P</C>ermutationsgruppen</title>
   <school>Rheinisch               Westfälische
                       Technische Hochschule</school>
@@ -2596,7 +2596,7 @@
 <entry id="Hulpke98"><inproceedings>
   <author>
     <name><first>Alexander</first><last>Hulpke</last></name>
-  </author>  
+  </author>
   <title>Computing normal subgroups</title>
   <booktitle>Proceedings of the 1998 International Symposium on Symbolic
               and Algebraic Computation (Rostock)</booktitle>
@@ -2616,7 +2616,7 @@
 <entry id="Hulpke99"><article>
   <author>
     <name><first>Alexander</first><last>Hulpke</last></name>
-  </author>  
+  </author>
   <title>Computing subgroups invariant under a set of automorphisms</title>
   <journal><value key="jsymc"/></journal>
   <year>1999</year>
@@ -2633,7 +2633,7 @@
 <entry id="HulpkeClasses"><article>
   <author>
     <name><first>Alexander</first><last>Hulpke</last></name>
-  </author>  
+  </author>
   <title>Conjugacy classes in finite permutation groups via homomorphic
               images</title>
   <journal><value key="mathc3"/></journal>
@@ -2652,7 +2652,7 @@
 <entry id="HulpkeQuot"><article>
   <author>
     <name><first>Alexander</first><last>Hulpke</last></name>
-  </author>  
+  </author>
   <title>Representing subgroups of finitely presented groups by
               quotient subgroups</title>
   <journal><value key="expma"/></journal>
@@ -2670,7 +2670,7 @@
 <entry id="HulpkeTG"><article>
   <author>
     <name><first>Alexander</first><last>Hulpke</last></name>
-  </author>  
+  </author>
   <title>Constructing transitive permutation groups</title>
   <journal><value key="jsymc"/></journal>
   <year>2005</year>
@@ -2687,7 +2687,7 @@
 <entry id="Hum72"><book>
   <author>
     <name><first>James E.</first><last>Humphreys</last></name>
-  </author>  
+  </author>
   <title>Introduction to <C>L</C>ie algebras and representation theory</title>
   <publisher>Springer-Verlag</publisher>
   <year>1972</year>
@@ -2702,7 +2702,7 @@
 <entry id="Hum78"><book>
   <author>
     <name><first>James E.</first><last>Humphreys</last></name>
-  </author>  
+  </author>
   <title>Introduction to <C>L</C>ie algebras and representation theory</title>
   <publisher>Springer-Verlag</publisher>
   <year>1978</year>
@@ -2720,7 +2720,7 @@
 <entry id="Hum90"><book>
   <author>
     <name><first>James E.</first><last>Humphreys</last></name>
-  </author>  
+  </author>
   <title>Reflection groups and <C>C</C>oxeter groups</title>
   <publisher>Cambridge University Press</publisher>
   <year>1990</year>
@@ -2737,7 +2737,7 @@
 <entry id="Hum90"><book>
   <author>
     <name><first>James E.</first><last>Humphreys</last></name>
-  </author>  
+  </author>
   <title>Reflection groups and <C>C</C>oxeter groups</title>
   <publisher>Cambridge University Press</publisher>
   <year>1990</year>
@@ -2754,7 +2754,7 @@
 <entry id="Hup67"><book>
   <author>
     <name><first>B.</first><last>Huppert</last></name>
-  </author>  
+  </author>
   <title>Endliche <C>G</C>ruppen. <C>I</C></title>
   <publisher>Springer-Verlag</publisher>
   <year>1967</year>
@@ -2770,7 +2770,7 @@
   <author>
     <name><first>Bertram</first><last>Huppert</last></name>
     <name><first>Norman</first><last>Blackburn</last></name>
-  </author>  
+  </author>
   <title>Finite groups. <C>II</C></title>
   <publisher>Springer-Verlag</publisher>
   <year>1982</year>
@@ -2786,7 +2786,7 @@
 <entry id="Hup98"><book>
   <author>
     <name><first>Bertram</first><last>Huppert</last></name>
-  </author>  
+  </author>
   <title>Character theory of finite groups</title>
   <publisher>Walter de Gruyter &amp; Co.</publisher>
   <year>1998</year>
@@ -2803,7 +2803,7 @@
 <entry id="Isa76"><book>
   <author>
     <name><first>I. Martin</first><last>Isaacs</last></name>
-  </author>  
+  </author>
   <title>Character theory of finite groups</title>
   <publisher>Academic Press [Harcourt Brace Jovanovich Publishers]</publisher>
   <year>1976</year>
@@ -2820,7 +2820,7 @@
   <author>
     <name><first>Hiroyuki</first><last>Ishibashi</last></name>
     <name><first>A. G.</first><last>Earnest</last></name>
-  </author>  
+  </author>
   <title>Two-element generation of orthogonal groups over finite
               fields</title>
   <journal><value key="jalge"/></journal>
@@ -2840,9 +2840,9 @@
   <author>
     <name><first>Hiroyuki</first><last>Ishibashi</last></name>
     <name><first>A. G.</first><last>Earnest</last></name>
-  </author>  
+  </author>
   <title>Addendum: ``<C>T</C>wo-element generation of orthogonal groups over
-  finite fields'' [<C>J</C>. <C>A</C>lgebra 
+  finite fields'' [<C>J</C>. <C>A</C>lgebra
     <C><Alt Only="BibTeX,BibTeXhref">\bf </Alt>165</C> (1994), no. 1,
               164&ndash;171; <C>MR</C>1272584 (95b:20069)]</title>
   <journal><value key="jalge"/></journal>
@@ -2861,9 +2861,9 @@
   <author>
     <name><first>Hiroyuki</first><last>Ishibashi</last></name>
     <name><first>A. G.</first><last>Earnest</last></name>
-  </author>  
+  </author>
   <title>Erratum: ``<C>T</C>wo-element generation of orthogonal groups over
-  finite fields'' [<C>J</C>. <C>A</C>lgebra 
+  finite fields'' [<C>J</C>. <C>A</C>lgebra
        <C><Alt Only="BibTeX,BibTeXhref">\bf </Alt>165</C> (1994), no. 1,
               164&ndash;171; <C>MR</C>1272584 (95b:20069)]</title>
   <journal><value key="jalge"/></journal>
@@ -2903,7 +2903,7 @@
     <name><first>Klaus</first><last>Lux</last></name>
     <name><first>Richard</first><last>Parker</last></name>
     <name><first>Robert</first><last>Wilson</last></name>
-  </author>  
+  </author>
   <title>An atlas of <C>B</C>rauer characters</title>
   <publisher>The Clarendon Press Oxford University Press</publisher>
   <year>1995</year>
@@ -2922,7 +2922,7 @@
 <entry id="Joh97"><book>
   <author>
     <name><first>D. L.</first><last>Johnson</last></name>
-  </author>  
+  </author>
   <title>Presentations of groups</title>
   <publisher>Cambridge University Press</publisher>
   <year>1997</year>
@@ -2939,7 +2939,7 @@
 <entry id="Kaup92"><mastersthesis>
   <author>
     <name><first>Ansgar</first><last>Kaup</last></name>
-  </author>  
+  </author>
   <title>Gitterbasen und <C>C</C>haraktere endlicher <C>G</C>ruppen</title>
   <school>Lehrstuhl   D   für  Mathematik,
                       Rheinisch Westfälische
@@ -2953,7 +2953,7 @@
   <author>
     <name><first>David</first><last>Kazhdan</last></name>
     <name><first>George</first><last>Lusztig</last></name>
-  </author>  
+  </author>
   <title>Representations of <C>C</C>oxeter groups and <C>H</C>ecke
       algebras</title>
   <journal><value key="invem"/></journal>
@@ -2974,7 +2974,7 @@
     <name><first>Gregor</first><last>Kemper</last></name>
     <name><first>Frank</first><last>Lübeck</last></name>
     <name><first>Kay</first><last>Magaard</last></name>
-  </author>  
+  </author>
   <title>Matrix generators for the <C>R</C>ee groups
       <C><M>{}^2G_2(q)</M></C></title>
   <journal><value key="comma2"/></journal>
@@ -2992,7 +2992,7 @@
 <entry id="Ker91"><book>
   <author>
     <name><first>Adalbert</first><last>Kerber</last></name>
-  </author>  
+  </author>
   <title>Algebraic combinatorics via finite group actions</title>
   <publisher>Bibliographisches Institut</publisher>
   <year>1991</year>
@@ -3032,7 +3032,7 @@
   <author>
     <name><first>Peter</first><last>Kleidman</last></name>
     <name><first>Martin</first><last>Liebeck</last></name>
-  </author>  
+  </author>
   <title>The subgroup structure of the finite classical groups</title>
   <publisher>Cambridge University Press</publisher>
   <year>1990</year>
@@ -3049,7 +3049,7 @@
 <entry id="Klimyk66"><article>
   <author>
     <name><first>A. U.</first><last>Klimyk</last></name>
-  </author>  
+  </author>
   <title>Decomposition of the direct product of irreducible
   representations of semisimple <C>L</C>ie algebras into irreducible
               representations</title>
@@ -3069,7 +3069,7 @@
 <entry id="Klimyk68"><incollection>
   <author>
     <name><first>A. U.</first><last>Klimyk</last></name>
-  </author>  
+  </author>
   <title>Decomposition  of  a  direct  product  of  irreducible
   representations of a semisimple <C>L</C>ie algebra into
                       irreducible representations</title>
@@ -3085,7 +3085,7 @@
 <entry id="TACP2"><book>
   <author>
     <name><first>Donald E.</first><last>Knuth</last></name>
-  </author>  
+  </author>
   <title>The   Art   of   Computer   Programming,   Volume   2:
                       <C>S</C>eminumerical Algorithms</title>
   <publisher>Addison-Wesley</publisher>
@@ -3096,7 +3096,7 @@
 <entry id="MR0286318"><book>
   <author>
     <name><first>Donald E.</first><last>Knuth</last></name>
-  </author>  
+  </author>
   <title>The art of computer programming. <C>V</C>ol. 2: <C>S</C>eminumerical
               algorithms</title>
   <publisher>Addison-Wesley Publishing Co., Reading, Mass.-London-Don
@@ -3111,7 +3111,7 @@
 <entry id="Lau82"><book>
   <author>
     <name><first>Reinhard</first><last>Laue</last></name>
-  </author>  
+  </author>
   <title>Zur <C>K</C>onstruktion und <C>K</C>lassifikation endlicher
               auflösbarer <C>G</C>ruppen</title>
   <publisher>Universität Bayreuth</publisher>
@@ -3136,14 +3136,14 @@
     <name><first>Reinhard</first><last>Laue</last></name>
     <name><first>Joachim</first><last>Neubüser</last></name>
     <name><first>Ulrich</first><last>Schoenwaelder</last></name>
-  </author>  
+  </author>
   <title>Algorithms for finite soluble groups and the <C>SOGOS</C>
       system</title>
   <booktitle>Computational group theory (Durham, 1982)</booktitle>
   <year>1984</year>
   <editor>
     <name><first>Michael D.</first><last>Atkinson</last></name>
-  </editor>  
+  </editor>
   <pages>105&ndash;135</pages>
   <address>London</address>
   <publisher>Academic Press</publisher>
@@ -3160,7 +3160,7 @@
 <entry id="LeC86"><book>
   <author>
     <name><first>Philippe</first><last>LeChenadec</last></name>
-  </author>  
+  </author>
   <title>Canonical forms in finitely presented algebras</title>
   <publisher>Pitman Publishing Ltd.</publisher>
   <year>1986</year>
@@ -3177,7 +3177,7 @@
   <author>
     <name><first>Charles R.</first><last>Leedham-Green</last></name>
     <name><first>Leonard H.</first><last>Soicher</last></name>
-  </author>  
+  </author>
   <title>Collection from the left and other strategies</title>
   <journal><value key="jsymc"/></journal>
   <year>1990</year>
@@ -3197,7 +3197,7 @@
     <name><first>A. K.</first><last>Lenstra</last></name>
     <name><first>H. W.</first><last>Lenstra Jr.</last></name>
     <name><first>L.</first><last>Lovász</last></name>
-  </author>  
+  </author>
   <title>Factoring polynomials with rational coefficients</title>
   <journal><value key="matha"/></journal>
   <year>1982</year>
@@ -3216,7 +3216,7 @@
 <entry id="Leo80"><article>
   <author>
     <name><first>Jeffrey S.</first><last>Leon</last></name>
-  </author>  
+  </author>
   <title>On an algorithm for finding a base and a strong generating set
               for a group given by generating permutations</title>
   <journal><value key="mathc3"/></journal>
@@ -3239,7 +3239,7 @@
 <entry id="Leon91"><article>
   <author>
     <name><first>Jeffrey S.</first><last>Leon</last></name>
-  </author>  
+  </author>
   <title>Permutation group algorithms based on partitions. <C>I</C>.
               <C>T</C>heory and algorithms</title>
   <journal><value key="jsymc"/></journal>
@@ -3258,7 +3258,7 @@
 <entry id="Lin93"><manual>
   <author>
     <name><first>Steve</first><last>Linton</last></name>
-  </author>  
+  </author>
   <title>Vector Enumeration Programs, version 3</title>
   <year>1993</year>
 </manual></entry>
@@ -3266,7 +3266,7 @@
 <entry id="Lo"><phdthesis>
   <author>
     <name><first>E.</first><last>Lo</last></name>
-  </author>  
+  </author>
   <title>A Polycyclic Quotient Algorithm</title>
   <school>Rutgers University</school>
   <year>1996</year>
@@ -3275,7 +3275,7 @@
 <entry id="L03"><misc>
   <author>
     <name><first>Frank</first><last>Lübeck</last></name>
-  </author>  
+  </author>
   <title>Conway polynomials for finite fields</title>
   <howpublished><URL>http://www.math.rwth-aachen.de:8001/~Frank.Luebeck/data/ConwayPol</URL></howpublished>
   <year>2003</year>
@@ -3286,7 +3286,7 @@
     <name><first>Eugene M.</first><last>Luks</last></name>
     <name><first>Ferenc</first><last>Rákóczi</last></name>
     <name><first>Charles R. B.</first><last>Wright</last></name>
-  </author>  
+  </author>
   <title>Some algorithms for nilpotent permutation groups</title>
   <journal><value key="jsymc"/></journal>
   <year>1997</year>
@@ -3302,7 +3302,7 @@
 <entry id="Lus81"><article>
   <author>
     <name><first>George</first><last>Lusztig</last></name>
-  </author>  
+  </author>
   <title>On a theorem of <C>B</C>enson and <C>C</C>urtis</title>
   <journal><value key="jalge"/></journal>
   <year>1981</year>
@@ -3320,7 +3320,7 @@
 <entry id="Lus85"><book>
   <author>
     <name><first>George</first><last>Lusztig</last></name>
-  </author>  
+  </author>
   <title>Characters of reductive groups over a finite field</title>
   <publisher>Princeton University Press</publisher>
   <year>1984</year>
@@ -3338,7 +3338,7 @@
   <author>
     <name><first>K.</first><last>Lux</last></name>
     <name><first>H.</first><last>Pahlings</last></name>
-  </author>  
+  </author>
   <title>Computational aspects of representation theory of finite
               groups</title>
   <booktitle>Representation theory of finite groups and finite-dimensional
@@ -3347,7 +3347,7 @@
   <editor>
     <name><first>G. O.</first><last>Michler</last></name>
     <name><first>C. M.</first><last>Ringel</last></name>
-  </editor>  
+  </editor>
   <volume>95</volume>
   <series>Progr. Math.</series>
   <pages>37&ndash;64</pages>
@@ -3363,7 +3363,7 @@
 <entry id="Mac81"><article>
   <author>
     <name><first>I. G.</first><last>Macdonald</last></name>
-  </author>  
+  </author>
   <title>Numbers of conjugacy classes in some finite classical groups</title>
   <journal><value key="bulam2"/></journal>
   <year>1981</year>
@@ -3383,7 +3383,7 @@
   <author>
     <name><first>Meena</first><last>Mahajan</last></name>
     <name><first>V.</first><last>Vinay</last></name>
-  </author>  
+  </author>
   <title>Determinant: combinatorics, algorithms, and complexity</title>
   <journal><value key="cjtcs"/></journal>
   <year>1997</year>
@@ -3399,14 +3399,14 @@
 <entry id="Mal96"><inproceedings>
   <author>
     <name><first>Gunter</first><last>Malle</last></name>
-  </author>  
+  </author>
   <title>Degrés relatifs des algèbres cyclotomiques associées aux
               groupes de réflexions complexes de dimension deux</title>
   <booktitle>Finite reductive groups (Luminy, 1994)</booktitle>
   <year>1997</year>
   <editor>
     <name><first>Marc</first><last>Cabanes</last></name>
-  </editor>  
+  </editor>
   <volume>141</volume>
   <series>Progr. Math.</series>
   <pages>311&ndash;332</pages>
@@ -3424,7 +3424,7 @@
   <author>
     <name><first>Leonard</first><last>Soicher</last></name>
     <name><first>John</first><last>McKay</last></name>
-  </author>  
+  </author>
   <title>Computing <C>G</C>alois groups over the rationals</title>
   <journal><value key="jnumt"/></journal>
   <year>1985</year>
@@ -3442,7 +3442,7 @@
 <entry id="McL77"><article>
   <author>
     <name><first>D. H.</first><last>McLain</last></name>
-  </author>  
+  </author>
   <title>An algorithm for determining defining relations of a subgroup</title>
   <journal><value key="glamj"/></journal>
   <year>1977</year>
@@ -3464,7 +3464,7 @@
   <author>
     <name><first>Matthias</first><last>Mecky</last></name>
     <name><first>Joachim</first><last>Neubüser</last></name>
-  </author>  
+  </author>
   <title>Some remarks on the computation of conjugacy classes of
               soluble groups</title>
   <journal><value key="bulam2"/></journal>
@@ -3483,7 +3483,7 @@
 <entry id="Merkwitz98"><mastersthesis>
   <author>
     <name><first>Thomas</first><last>Merkwitz</last></name>
-  </author>  
+  </author>
   <title><C>Markentafeln endlicher Gruppen</C></title>
   <school>Lehrstuhl   D   für  Mathematik,
                       Rheinisch Westfälische
@@ -3496,7 +3496,7 @@
 <entry id="Mni92"><mastersthesis>
   <author>
     <name><first>Jürgen</first><last>Mnich</last></name>
-  </author>  
+  </author>
   <title>Untergruppenverbände                   und
                       auflösbare <C>G</C>ruppen in <C>GAP</C></title>
   <school>Lehrstuhl   D   für  Mathematik,
@@ -3512,7 +3512,7 @@
 <entry id="Mon85"><article>
   <author>
     <name><first>Peter L.</first><last>Montgomery</last></name>
-  </author>  
+  </author>
   <title>Modular multiplication without trial division</title>
   <journal><value key="mathc3"/></journal>
   <year>1985</year>
@@ -3529,7 +3529,7 @@
 <entry id="Mur58"><article>
   <author>
     <name><first>Francis D.</first><last>Murnaghan</last></name>
-  </author>  
+  </author>
   <title>The orthogonal and symplectic groups</title>
   <journal>Comm. Dublin Inst. Adv. Studies. Ser. A, no.</journal>
   <year>1958</year>
@@ -3544,7 +3544,7 @@
   <author>
     <name><first>John</first><last>McKay</last></name>
     <name><first>Kiang Chuen</first><last>Young</last></name>
-  </author>  
+  </author>
   <title>The nonabelian simple groups <C><M>G</M></C>,
   <C><M>|G| &lt; 10^{6}</M></C>&ndash;minimal generating pairs</title>
   <journal><value key="mathc3"/></journal>
@@ -3563,7 +3563,7 @@
 <entry id="Nau90"><manual>
   <author>
     <name><first>B. D.</first><last>McKay</last></name>
-  </author>  
+  </author>
   <title><C>nauty</C>  user's  guide (version 1.5), Technical report
                       TR-CS-90-02</title>
   <organization>Australian National University</organization>
@@ -3574,7 +3574,7 @@
 <entry id="Neb95"><phdthesis>
   <author>
     <name><first>Gabriele</first><last>Nebe</last></name>
-  </author>  
+  </author>
   <title>Endliche rationale <C>M</C>atrixgruppen vom <C>G</C>rad 24</title>
   <school>Rheinisch Westfälische Technische Hochschule</school>
   <year>1995</year>
@@ -3587,7 +3587,7 @@
 <entry id="Neb96"><article>
   <author>
     <name><first>Gabriele</first><last>Nebe</last></name>
-  </author>  
+  </author>
   <title>Finite subgroups of <C><M>GL_n(Q)</M></C> for
       <C><M>25 \leq n \leq 31</M></C></title>
   <journal><value key="comma2"/></journal>
@@ -3606,7 +3606,7 @@
 <entry id="Neu67"><phdthesis>
   <author>
     <name><first>Joachim</first><last>Neubüser</last></name>
-  </author>  
+  </author>
   <title>Die  <C>U</C>ntergruppenverbände  der <C>Gruppen</C>
   der <C>Ordnungen</C> <M>\leq 100</M> mit <C>Ausnahme</C> der
                       <C>Ordnungen</C> 64 und 96</title>
@@ -3620,7 +3620,7 @@
 <entry id="Neu82"><inproceedings>
   <author>
     <name><first>Joachim</first><last>Neubüser</last></name>
-  </author>  
+  </author>
   <title>An elementary introduction to coset table methods in
               computational group theory</title>
   <booktitle>Groups&ndash;St Andrews 1981 (St Andrews, 1981)</booktitle>
@@ -3628,7 +3628,7 @@
   <editor>
     <name><first>Colin M.</first><last>Campbell</last></name>
     <name><first>Edmund F.</first><last>Robertson</last></name>
-  </editor>  
+  </editor>
   <volume>71</volume>
   <series>London Math. Soc. Lecture Note Ser.</series>
   <pages>1&ndash;45</pages>
@@ -3650,7 +3650,7 @@
 <entry id="neukirch"><book>
   <author>
     <name><first>Jürgen</first><last>Neukirch</last></name>
-  </author>  
+  </author>
   <title>Algebraische <C>Z</C>ahlentheorie</title>
   <publisher>Springer, Berlin, Heidelberg and New York</publisher>
   <year>1992</year>
@@ -3660,7 +3660,7 @@
   <author>
     <name><first>Gabriele</first><last>Nebe</last></name>
     <name><first>Wilhelm</first><last>Plesken</last></name>
-  </author>  
+  </author>
   <title>Finite rational matrix groups of degree 16</title>
   <pages>74&ndash;144</pages>
   <publisher>AMS</publisher>
@@ -3681,7 +3681,7 @@
   <author>
     <name><first>G.</first><last>Nebe</last></name>
     <name><first>W.</first><last>Plesken</last></name>
-  </author>  
+  </author>
   <title>Finite rational matrix groups</title>
   <publisher>AMS</publisher>
   <year>1995</year>
@@ -3703,14 +3703,14 @@
     <name><first>Joachim</first><last>Neubüser</last></name>
     <name><first>Herbert</first><last>Pahlings</last></name>
     <name><first>Wilhelm</first><last>Plesken</last></name>
-  </author>  
+  </author>
   <title>C<C>AS</C>; design and use of a system for the handling of
               characters of finite groups</title>
   <booktitle>Computational group theory (Durham, 1982)</booktitle>
   <year>1984</year>
   <editor>
     <name><first>Michael D.</first><last>Atkinson</last></name>
-  </editor>  
+  </editor>
   <pages>195&ndash;247</pages>
   <address>London</address>
   <publisher>Academic Press</publisher>
@@ -3729,7 +3729,7 @@
     <name><first>Joachim</first><last>Neubüser</last></name>
     <name><first>Wilhelm</first><last>Plesken</last></name>
     <name><first>Hans</first><last>Wondratschek</last></name>
-  </author>  
+  </author>
   <title>An emendatory discursion on defining crystal systems</title>
   <journal><value key="match"/></journal>
   <year>1981</year>
@@ -3750,7 +3750,7 @@
 <entry id="New77"><inproceedings>
   <author>
     <name><first>M. F.</first><last>Newman</last></name>
-  </author>  
+  </author>
   <title>Determination of groups of prime-power order</title>
   <booktitle>Group theory (Proc. Miniconf., Australian Nat. Univ.,
               Canberra, 1975)</booktitle>
@@ -3759,7 +3759,7 @@
     <name><first>R. A.</first><last>Bryce</last></name>
     <name><first>J.</first><last>Cossey</last></name>
     <name><first>Michael F.</first><last>Newman</last></name>
-  </editor>  
+  </editor>
   <volume>573</volume>
   <series>Lecture Notes in Math.</series>
   <pages>73&ndash;84. Lecture Notes in Math., Vol. 573</pages>
@@ -3778,7 +3778,7 @@
 <entry id="New90"><article>
   <author>
     <name><first>Michael F.</first><last>Newman</last></name>
-  </author>  
+  </author>
   <title>Proving a group infinite</title>
   <journal><value key="arcmb1"/></journal>
   <year>1990</year>
@@ -3797,7 +3797,7 @@
   <author>
     <name><first>Michael F.</first><last>Newman</last></name>
     <name><first>Eamonn A.</first><last>O'Brien</last></name>
-  </author>  
+  </author>
   <title>A <C>CAYLEY</C> library for the groups of order dividing
       <C><M>128</M></C></title>
   <booktitle>Group theory (Singapore, 1987)</booktitle>
@@ -3805,7 +3805,7 @@
   <editor>
     <name><first>Kai Nah</first><last>Cheng</last></name>
     <name><first>Yu Kiang</first><last>Leong</last></name>
-  </editor>  
+  </editor>
   <pages>437&ndash;442</pages>
   <address>Berlin</address>
   <publisher>de Gruyter</publisher>
@@ -3819,7 +3819,7 @@
 <entry id="Noe02"><mastersthesis>
   <author>
     <name><first>Felix</first><last>Noeske</last></name>
-  </author>  
+  </author>
   <title><C>Zur  Darstellungstheorie der Schurschen Erweiterungen
                       symmetrischer Gruppen</C></title>
   <school>Lehrstuhl   D   für  Mathematik,
@@ -3832,7 +3832,7 @@
 <entry id="OBr90"><article>
   <author>
     <name><first>Eamonn A.</first><last>O'Brien</last></name>
-  </author>  
+  </author>
   <title>The <C><M>p</M></C>-group generation algorithm</title>
   <journal><value key="jsymc"/></journal>
   <year>1990</year>
@@ -3850,7 +3850,7 @@
 <entry id="OBr91"><article>
   <author>
     <name><first>Eamonn A.</first><last>O'Brien</last></name>
-  </author>  
+  </author>
   <title>The groups of order <C><M>256</M></C></title>
   <journal><value key="jalge"/></journal>
   <year>1991</year>
@@ -3867,7 +3867,7 @@
 <entry id="OBr94"><article>
   <author>
     <name><first>Eamonn A.</first><last>O'Brien</last></name>
-  </author>  
+  </author>
   <title>Isomorphism testing for <C><M>p</M></C>-groups</title>
   <journal><value key="jsymc"/></journal>
   <year>1994</year>
@@ -3884,7 +3884,7 @@
 <entry id="OBr95"><inproceedings>
   <author>
     <name><first>Eamonn A.</first><last>O'Brien</last></name>
-  </author>  
+  </author>
   <title>Computing automorphism groups of <C><M>p</M></C>-groups</title>
   <booktitle>Computational algebra and number theory (Sydney,
       1992)</booktitle>
@@ -3892,7 +3892,7 @@
   <editor>
     <name><first>Wieb</first><last>Bosma</last></name>
     <name><first>Alf</first><last>van der Poorten</last></name>
-  </editor>  
+  </editor>
   <volume>325</volume>
   <series><value key="matha2"/></series>
   <pages>83&ndash;90</pages>
@@ -3907,7 +3907,7 @@
   <author>
     <name><first>Michael F.</first><last>Newman</last></name>
     <name><first>Eamonn A.</first><last>O'Brien</last></name>
-  </author>  
+  </author>
   <title>Application of computers to questions like those of
               <C>B</C>urnside. <C>II</C></title>
   <journal><value key="intjac"/></journal>
@@ -3926,7 +3926,7 @@
 <entry id="Ost86"><techreport>
   <author>
     <name><first>Thomas</first><last>Ostermann</last></name>
-  </author>  
+  </author>
   <title>Charaktertafeln von <C>S</C>ylownormalisatoren sporadischer
               einfacher <C>G</C>ruppen</title>
   <institution>Universität Essen</institution>
@@ -3947,7 +3947,7 @@
 <entry id="Pah93"><article>
   <author>
     <name><first>Herbert</first><last>Pahlings</last></name>
-  </author>  
+  </author>
   <title>On the <C>M</C>öbius function of a finite group</title>
   <journal><value key="arcmb1"/></journal>
   <year>1993</year>
@@ -3965,13 +3965,13 @@
 <entry id="Par84"><inproceedings>
   <author>
     <name><first>Richard A.</first><last>Parker</last></name>
-  </author>  
+  </author>
   <title>The computer calculation of modular characters (the meat-axe)</title>
   <booktitle>Computational group theory (Durham, 1982)</booktitle>
   <year>1984</year>
   <editor>
     <name><first>Michael D.</first><last>Atkinson</last></name>
-  </editor>  
+  </editor>
   <pages>267&ndash;274</pages>
   <address>London</address>
   <publisher>Academic Press</publisher>
@@ -3985,7 +3985,7 @@
 <entry id="Pfe91"><mastersthesis>
   <author>
     <name><first>G.</first><last>Pfeiffer</last></name>
-  </author>  
+  </author>
   <title><C>Von Permutationscharakteren und Markentafeln</C></title>
   <school>Lehrstuhl   D   für  Mathematik,
                       Rheinisch               Westfälische
@@ -3998,7 +3998,7 @@
 <entry id="Pfe94a"><article>
   <author>
     <name><first>Götz</first><last>Pfeiffer</last></name>
-  </author>  
+  </author>
   <title>Character tables of <C>W</C>eyl groups in <C>GAP</C></title>
   <journal><value key="bayms"/></journal>
   <year>1994</year>
@@ -4014,7 +4014,7 @@
 <entry id="Pfe94b"><article>
   <author>
     <name><first>Götz</first><last>Pfeiffer</last></name>
-  </author>  
+  </author>
   <title>Young characters on <C>C</C>oxeter basis elements of
   <C>I</C>wahori-<C>H</C>ecke algebras and a <C>M</C>urnaghan-<C>N</C>akayama
               formula</title>
@@ -4034,14 +4034,14 @@
 <entry id="Pfe96"><inproceedings>
   <author>
     <name><first>Götz</first><last>Pfeiffer</last></name>
-  </author>  
+  </author>
   <title>Character values of <C>I</C>wahori-<C>H</C>ecke algebras of type
       <C><M>B</M></C></title>
   <booktitle>Finite reductive groups (Luminy, 1994)</booktitle>
   <year>1997</year>
   <editor>
     <name><first>Marc</first><last>Cabanes</last></name>
-  </editor>  
+  </editor>
   <volume>141</volume>
   <series>Progr. Math.</series>
   <pages>333&ndash;360</pages>
@@ -4058,7 +4058,7 @@
 <entry id="Pfe97"><article>
   <author>
     <name><first>Götz</first><last>Pfeiffer</last></name>
-  </author>  
+  </author>
   <title>The subgroups of <C><M>M_{24}</M></C>, or how to compute the table of
               marks of a finite group</title>
   <journal><value key="expma"/></journal>
@@ -4076,7 +4076,7 @@
 <entry id="Pil83"><book>
   <author>
     <name><first>Günter</first><last>Pilz</last></name>
-  </author>  
+  </author>
   <title>Near-rings</title>
   <publisher>North-Holland Publishing Co.</publisher>
   <year>1983</year>
@@ -4095,7 +4095,7 @@
 <entry id="Ple85"><article>
   <author>
     <name><first>Wilhelm</first><last>Plesken</last></name>
-  </author>  
+  </author>
   <title>Finite unimodular groups of prime degree and circulants</title>
   <journal><value key="jalge"/></journal>
   <year>1985</year>
@@ -4131,7 +4131,7 @@
   <author>
     <name><first>Wilhelm</first><last>Plesken</last></name>
     <name><first>Gabriele</first><last>Nebe</last></name>
-  </author>  
+  </author>
   <title>Finite rational matrix groups</title>
   <pages>1&ndash;73</pages>
   <publisher>AMS</publisher>
@@ -4152,7 +4152,7 @@
   <author>
     <name><first>G.</first><last>Nebe</last></name>
     <name><first>W.</first><last>Plesken</last></name>
-  </author>  
+  </author>
   <title>Finite rational matrix groups</title>
   <journal><value key="memam"/></journal>
   <year>1995</year>
@@ -4171,7 +4171,7 @@
   <author>
     <name><first>Wilhelm</first><last>Plesken</last></name>
     <name><first>Michael</first><last>Pohst</last></name>
-  </author>  
+  </author>
   <title>On  maximal finite irreducible Subgroups of <C>GL(n,Z)</C>.
   <C>I</C>. The five and seven dimensional cases, <C>II</C>. The
                       six dimensional case</title>
@@ -4187,8 +4187,8 @@
   <author>
     <name><first>Wilhelm</first><last>Plesken</last></name>
     <name><first>Michael</first><last>Pohst</last></name>
-  </author>  
-  <title>On maximal finite irreducible subgroups of <C><M>GL(n, Z)</M></C>. 
+  </author>
+  <title>On maximal finite irreducible subgroups of <C><M>GL(n, Z)</M></C>.
     <C>I</C>. <C>T</C>he five and seven dimensional cases</title>
   <journal><value key="mathc3"/></journal>
   <year>1977</year>
@@ -4206,8 +4206,8 @@
   <author>
     <name><first>Wilhelm</first><last>Plesken</last></name>
     <name><first>Michael</first><last>Pohst</last></name>
-  </author>  
-  <title>On maximal finite irreducible subgroups of <C><M>GL(n, Z)</M></C>. 
+  </author>
+  <title>On maximal finite irreducible subgroups of <C><M>GL(n, Z)</M></C>.
       <C>II</C>. <C>T</C>he six dimensional case</title>
   <journal><value key="mathc3"/></journal>
   <year>1977</year>
@@ -4225,7 +4225,7 @@
   <author>
     <name><first>Wilhelm</first><last>Plesken</last></name>
     <name><first>Michael</first><last>Pohst</last></name>
-  </author>  
+  </author>
   <title>On  maximal finite irreducible Subgroups of <C>GL(n,Z)</C>.
   <C>III</C>. The nine dimensional case, <C>IV</C>. Remarks on
   even dimensions with application to n = 8, <C>V</C>. The
@@ -4243,8 +4243,8 @@
   <author>
     <name><first>Wilhelm</first><last>Plesken</last></name>
     <name><first>Michael</first><last>Pohst</last></name>
-  </author>  
-  <title>On maximal finite irreducible subgroups of <C><M>GL(n, Z)</M></C>. 
+  </author>
+  <title>On maximal finite irreducible subgroups of <C><M>GL(n, Z)</M></C>.
       <C>III</C>. <C>T</C>he nine-dimensional case</title>
   <journal><value key="mathc3"/></journal>
   <year>1980</year>
@@ -4263,8 +4263,8 @@
   <author>
     <name><first>Wilhelm</first><last>Plesken</last></name>
     <name><first>Michael</first><last>Pohst</last></name>
-  </author>  
-  <title>On maximal finite irreducible subgroups of <C><M>GL(n, Z)</M></C>. 
+  </author>
+  <title>On maximal finite irreducible subgroups of <C><M>GL(n, Z)</M></C>.
        <C>IV</C>. <C>R</C>emarks on even dimensions with applications
       to
               <C><M>n = 8</M></C></title>
@@ -4285,8 +4285,8 @@
   <author>
     <name><first>Wilhelm</first><last>Plesken</last></name>
     <name><first>Michael</first><last>Pohst</last></name>
-  </author>  
-  <title>On maximal finite irreducible subgroups of <C><M>GL(n, Z)</M></C>. 
+  </author>
+  <title>On maximal finite irreducible subgroups of <C><M>GL(n, Z)</M></C>.
      <C>V</C>. <C>T</C>he eight-dimensional case and a complete
               description of dimensions less than ten</title>
   <journal><value key="mathc3"/></journal>
@@ -4305,7 +4305,7 @@
 <entry id="Poh87"><article>
   <author>
     <name><first>M.</first><last>Pohst</last></name>
-  </author>  
+  </author>
   <title>A modification of the <C>LLL</C> reduction algorithm</title>
   <journal><value key="jsymc"/></journal>
   <year>1987</year>
@@ -4322,7 +4322,7 @@
 <entry id="Ram91"><article>
   <author>
     <name><first>Arun</first><last>Ram</last></name>
-  </author>  
+  </author>
   <title>A <C>F</C>robenius formula for the characters of the <C>H</C>ecke
               algebras</title>
   <journal><value key="invem"/></journal>
@@ -4341,7 +4341,7 @@
 <entry id="Ram99a"><manual>
   <author>
     <name><first>Colin</first><last>Ramsay</last></name>
-  </author>  
+  </author>
   <title><C>ACE</C> for <C>Amateurs</C></title>
   <organization>Centre  for  Discrete  Mathematics  and Computing, The
                       University of Queensland</organization>
@@ -4352,7 +4352,7 @@
 <entry id="Ram99"><manual>
   <author>
     <name><first>C.</first><last>Ramsay</last></name>
-  </author>  
+  </author>
   <title><C>ACE</C> User Manual</title>
   <address>Department   of   Computer   Science   &amp;   Electrical
                       Engineering   and   Department   of  Mathematics,  The
@@ -4366,7 +4366,7 @@
 <entry id="Rin93"><manual>
   <author>
     <name><first>Michael</first><last>Ringe</last></name>
-  </author>  
+  </author>
   <title>The <C>C</C> <C>M</C>eat<C>A</C>xe, Release 1.5</title>
   <organization>Lehrstuhl   D   für  Mathematik,
                       Rheinisch               Westfälische
@@ -4378,7 +4378,7 @@
 <entry id="Rin98"><manual>
   <author>
     <name><first>Michael</first><last>Ringe</last></name>
-  </author>  
+  </author>
   <title>The <C>C</C> <C>M</C>eat<C>A</C>xe, Release 2.3</title>
   <organization>Lehrstuhl   D   für  Mathematik,
                       Rheinisch               Westfälische
@@ -4390,7 +4390,7 @@
 <entry id="Rob88"><article>
   <author>
     <name><first>Edmund F.</first><last>Robertson</last></name>
-  </author>  
+  </author>
   <title>Tietze transformations with weighted substring search</title>
   <journal><value key="jsymc"/></journal>
   <year>1988</year>
@@ -4409,7 +4409,7 @@
   <author>
     <name><first>Colva M.</first><last>Roney-Dougal</last></name>
     <name><first>William R.</first><last>Unger</last></name>
-  </author>  
+  </author>
   <title>The affine primitive permutation groups of degree less than
               1000</title>
   <journal><value key="jsymc"/></journal>
@@ -4427,7 +4427,7 @@
 <entry id="RoneyDougal05"><article>
   <author>
     <name><first>Colva M.</first><last>Roney-Dougal</last></name>
-  </author>  
+  </author>
   <title>The primitive permutation groups of degree less than 2500</title>
   <journal><value key="jalge"/></journal>
   <year>2005</year>
@@ -4445,7 +4445,7 @@
 <entry id="Roy87"><article>
   <author>
     <name><first>Gordon F.</first><last>Royle</last></name>
-  </author>  
+  </author>
   <title>The transitive groups of degree twelve</title>
   <journal><value key="jsymc"/></journal>
   <year>1987</year>
@@ -4480,7 +4480,7 @@
 <entry id="Sco73"><article>
   <author>
     <name><first>L. L.</first><last>Scott</last></name>
-  </author>  
+  </author>
   <title>Modular permutation representations</title>
   <journal><value key="traam"/></journal>
   <year>1973</year>
@@ -4497,7 +4497,7 @@
 <entry id="Sch90"><article>
   <author>
     <name><first>Gerhard J. A.</first><last>Schneider</last></name>
-  </author>  
+  </author>
   <title>Dixon's character table algorithm revisited</title>
   <journal><value key="jsymc"/></journal>
   <year>1990</year>
@@ -4515,7 +4515,7 @@
 <entry id="Scherner92"><mastersthesis>
   <author>
     <name><first>Michael</first><last>Scherner</last></name>
-  </author>  
+  </author>
   <title>Erweiterung        einer        <C>A</C>rithmetik       von
                       <C>K</C>reisteilungskörpern    auf    deren
                       <C>T</C>eilkörper  und deren <C>I</C>mplementation
@@ -4531,7 +4531,7 @@
 <entry id="Schiffer94"><mastersthesis>
   <author>
     <name><first>Ute</first><last>Schiffer</last></name>
-  </author>  
+  </author>
   <title>Cliffordmatrizen</title>
   <school>Lehrstuhl   D   für  Mathematik,
                       Rheinisch               Westfälische
@@ -4544,7 +4544,7 @@
 <entry id="Seress98"><article>
   <author>
     <name><first>Ákos</first><last>Seress</last></name>
-  </author>  
+  </author>
   <title>Nearly linear time algorithms for permutation groups: an
               interplay between theory and practice</title>
   <journal><value key="actam3"/></journal>
@@ -4578,7 +4578,7 @@
   <author>
     <name><first>G. C.</first><last>Shephard</last></name>
     <name><first>J. A.</first><last>Todd</last></name>
-  </author>  
+  </author>
   <title>Finite unitary reflection groups</title>
   <journal>Canadian J. Math.</journal>
   <year>1954</year>
@@ -4592,7 +4592,7 @@
 <entry id="Sho92"><book>
   <author>
     <name><first>M. W.</first><last>Short</last></name>
-  </author>  
+  </author>
   <title>The primitive soluble permutation groups of degree less than
               <C><M>256</M></C></title>
   <publisher>Springer-Verlag</publisher>
@@ -4610,14 +4610,14 @@
 <entry id="Sim70"><inproceedings>
   <author>
     <name><first>Charles C.</first><last>Sims</last></name>
-  </author>  
+  </author>
   <title>Computational methods in the study of permutation groups</title>
   <booktitle>Computational Problems in Abstract Algebra (Proc. Conf.,
               Oxford, 1967) </booktitle>
   <year>1970</year>
   <editor>
     <name><first>John</first><last>Leech</last></name>
-  </editor>  
+  </editor>
   <volume>29</volume>
   <series>Proceedings of a Conference held at Oxford under the auspices
   of the Science Research Council, Atlas Computer Laboratory</series>
@@ -4641,7 +4641,7 @@
 <entry id="Sims90b"><article>
   <author>
     <name><first>Charles C.</first><last>Sims</last></name>
-  </author>  
+  </author>
   <title>Computing the order of a solvable permutation group</title>
   <journal><value key="jsymc"/></journal>
   <year>1990</year>
@@ -4659,7 +4659,7 @@
 <entry id="Sims94"><book>
   <author>
     <name><first>Charles C.</first><last>Sims</last></name>
-  </author>  
+  </author>
   <title>Computation with finitely presented groups</title>
   <publisher>Cambridge University Press</publisher>
   <year>1994</year>
@@ -4676,7 +4676,7 @@
 <entry id="Sims97"><inproceedings>
   <author>
     <name><first>Charles C.</first><last>Sims</last></name>
-  </author>  
+  </author>
   <title>Computing with subgroups of automorphism groups of finite
               groups</title>
   <booktitle>Proceedings of the 1997 International Symposium on Symbolic
@@ -4684,7 +4684,7 @@
   <year>1997</year>
   <editor>
     <name><first>Wolfgang</first><last>Küchlin</last></name>
-  </editor>  
+  </editor>
   <pages>400&ndash;403 (electronic)</pages>
   <address>New York</address>
   <organization>The Association for Computing Machinery</organization>
@@ -4718,14 +4718,14 @@
 <entry id="Soi91"><inproceedings>
   <author>
     <name><first>Leonard H.</first><last>Soicher</last></name>
-  </author>  
+  </author>
   <title>G<C>RAPE</C>: a system for computing with graphs and groups</title>
   <booktitle>Groups and computation (New Brunswick, NJ, 1991)</booktitle>
   <year>1993</year>
   <editor>
     <name><first>Larry</first><last>Finkelstein</last></name>
     <name><first>William M.</first><last>Kantor</last></name>
-  </editor>  
+  </editor>
   <volume>11</volume>
   <series>DIMACS Ser. Discrete Math. Theoret. Comput. Sci.</series>
   <pages>287&ndash;291</pages>
@@ -4740,7 +4740,7 @@
 <entry id="Sou94"><article>
   <author>
     <name><first>Bernd</first><last>Souvignier</last></name>
-  </author>  
+  </author>
   <title>Irreducible finite integral matrix groups of degree <C><M>8</M></C>
       and
               <C><M>10</M></C></title>
@@ -4778,7 +4778,7 @@
 <entry id="Spr81"><book>
   <author>
     <name><first>T. A.</first><last>Springer</last></name>
-  </author>  
+  </author>
   <title>Linear algebraic groups</title>
   <publisher>Birkhäuser Boston</publisher>
   <year>1981</year>
@@ -4794,7 +4794,7 @@
 <entry id="Ste89"><article>
   <author>
     <name><first>John R.</first><last>Stembridge</last></name>
-  </author>  
+  </author>
   <title>On the eigenvalues of representations of reflection groups and
               wreath products</title>
   <journal><value key="pacjm"/></journal>
@@ -4813,7 +4813,7 @@
 <entry id="Tay87"><article>
   <author>
     <name><first>D. E.</first><last>Taylor</last></name>
-  </author>  
+  </author>
   <title>Pairs of Generators for Matrix Groups. <C>I</C></title>
   <journal>The Cayley Bulletin</journal>
   <year>1987</year>
@@ -4824,7 +4824,7 @@
 <entry id="Theissen93"><mastersthesis>
   <author>
     <name><first>Heiko</first><last>Theißen</last></name>
-  </author>  
+  </author>
   <title><C>Methoden zur Bestimmung der rationalen Konjugiertheit
                       in endlichen Gruppen</C></title>
   <school>Lehrstuhl   D   für  Mathematik,
@@ -4838,7 +4838,7 @@
 <entry id="Theissen97"><phdthesis>
   <author>
     <name><first>Heiko</first><last>Theißen</last></name>
-  </author>  
+  </author>
   <title><C>Eine    Methode    zur    Normalisatorberechnung   in
                       Permutationsgruppen  mit  Anwendungen in
                       der Konstruktion primitiver Gruppen</C></title>
@@ -4852,7 +4852,7 @@
 <entry id="Thi87"><mastersthesis>
   <author>
     <name><first>Peter</first><last>Thiemann</last></name>
-  </author>  
+  </author>
   <title><C>SOGOS</C> <C>III</C> - <C>C</C>haraktere und
                       <C>E</C>ffizienzuntersuchung</title>
   <school>Lehrstuhl   D   für  Mathematik,
@@ -4866,13 +4866,13 @@
 <entry id="VL84"><inproceedings>
   <author>
     <name><first>Michael R.</first><last>Vaughan-Lee</last></name>
-  </author>  
+  </author>
   <title>An aspect of the nilpotent quotient algorithm</title>
   <booktitle>Computational group theory (Durham, 1982)</booktitle>
   <year>1984</year>
   <editor>
     <name><first>Michael D.</first><last>Atkinson</last></name>
-  </editor>  
+  </editor>
   <pages>75&ndash;83</pages>
   <address>London</address>
   <publisher>Academic Press</publisher>
@@ -4886,7 +4886,7 @@
 <entry id="VL90a"><article>
   <author>
     <name><first>Michael R.</first><last>Vaughan-Lee</last></name>
-  </author>  
+  </author>
   <title>Collection from the left</title>
   <journal><value key="jsymc"/></journal>
   <year>1990</year>
@@ -4905,7 +4905,7 @@
 <entry id="VL90b"><book>
   <author>
     <name><first>Michael</first><last>Vaughan-Lee</last></name>
-  </author>  
+  </author>
   <title>The restricted <C>B</C>urnside problem</title>
   <publisher>The Clarendon Press Oxford University Press</publisher>
   <year>1990</year>
@@ -4924,7 +4924,7 @@
 <entry id="vdW76"><article>
   <author>
     <name><first>Robert W.</first><last>van der Waall</last></name>
-  </author>  
+  </author>
   <title>On symplectic primitive modules and monomial groups</title>
   <journal>Nederl. Akad. Wetensch. Proc. Ser. A 79, Indag.
       Math.</journal>
@@ -4940,7 +4940,7 @@
 <entry id="Wagon90"><article>
   <author>
     <name><first>Stan</first><last>Wagon</last></name>
-  </author>  
+  </author>
   <title>Editor's corner: the <C>E</C>uclidean algorithm strikes again</title>
   <journal><value key="amemm"/></journal>
   <year>1990</year>
@@ -4958,7 +4958,7 @@
 <entry id="wielandt69"><techreport>
   <author>
     <name><first>Helmut</first><last>Wielandt</last></name>
-  </author>  
+  </author>
   <title>Permutation  groups  through  invariant  relations and
                       invariant functions</title>
   <institution>Department of Mathematics, The Ohio State
@@ -4991,7 +4991,7 @@
     <name><first>Ibrahim A. I.</first><last>Suleiman</last></name>
     <name><first>Peter G.</first><last>Walsh</last></name>
     <name><first>Robert A.</first><last>Wilson</last></name>
-  </author>  
+  </author>
   <title>Generating maximal subgroups of sporadic simple groups</title>
   <journal><value key="comma2"/></journal>
   <year>2001</year>
@@ -5009,7 +5009,7 @@
 <entry id="Wil96"><article>
   <author>
     <name><first>Robert A.</first><last>Wilson</last></name>
-  </author>  
+  </author>
   <title>Standard generators for sporadic simple groups</title>
   <journal><value key="jalge"/></journal>
   <year>1996</year>
@@ -5026,7 +5026,7 @@
 <entry id="Won95"><incollection>
   <author>
     <name><first>Hans</first><last>Wondratschek</last></name>
-  </author>  
+  </author>
   <title>Introduction to space-group symmetry</title>
   <booktitle>International Tables for Crystallography, <C>V</C>ol.
       <C>A</C></booktitle>
@@ -5034,7 +5034,7 @@
   <year>1995</year>
   <editor>
     <name><first>Theo</first><last>Hahn</last></name>
-  </editor>  
+  </editor>
   <pages>711&ndash;735</pages>
   <edition>4th</edition>
   <note>Space-group symmetry</note>
@@ -5044,7 +5044,7 @@
 <entry id="Wur93"><manual>
   <author>
     <name><first>Martin</first><last>Wursthorn</last></name>
-  </author>  
+  </author>
   <title><C>SISYPHOS</C>  Computing  in modular group algebras,
                       Version 0.5</title>
   <organization>Math. Inst. B, 3. Lehrstuhl</organization>
@@ -5055,7 +5055,7 @@
 <entry id="Zagier90"><article>
   <author>
     <name><first>D.</first><last>Zagier</last></name>
-  </author>  
+  </author>
   <title>A one-sentence proof that every prime <C><M>p \equiv 1 \pmod 4</M></C>
       is a sum of two squares</title>
   <journal><value key="amemm"/></journal>
@@ -5074,7 +5074,7 @@
 <entry id="Zum89"><mastersthesis>
   <author>
     <name><first>Matthias</first><last>Zumbroich</last></name>
-  </author>  
+  </author>
   <title><C>Grundlagen</C>        einer        <C>Arithmetik</C>       in
                       <C>Kreisteilungskörpern</C>       und      ihre
                       <C>Implementation</C> in <C>CAS</C></title>
@@ -5089,7 +5089,7 @@
 <entry id="Oxford67"><proceedings>
   <editor>
     <name><first>John</first><last>Leech</last></name>
-  </editor>  
+  </editor>
   <title>Computational problems in abstract algebra</title>
   <year>1970</year>
   <volume>29</volume>
@@ -5108,7 +5108,7 @@
 <entry id="Canberra73"><proceedings>
   <editor>
     <name><first>Michael F.</first><last>Newman</last></name>
-  </editor>  
+  </editor>
   <title>Proceedings of the <C>S</C>econd <C>I</C>nternational
       <C>C</C>onference on
               the <C>T</C>heory of <C>G</C>roups</title>
@@ -5135,7 +5135,7 @@
     <name><first>R. A.</first><last>Bryce</last></name>
     <name><first>J.</first><last>Cossey</last></name>
     <name><first>Michael F.</first><last>Newman</last></name>
-  </editor>  
+  </editor>
   <title>Group theory</title>
   <year>1977</year>
   <volume>573</volume>
@@ -5154,7 +5154,7 @@
 <entry id="Bielefeld77"><proceedings>
   <editor>
     <name><first>Jens L.</first><last>Mennicke</last></name>
-  </editor>  
+  </editor>
   <title>Burnside groups</title>
   <year>1980</year>
   <volume>806</volume>
@@ -5174,7 +5174,7 @@
 <entry id="EUROSAM79"><proceedings>
   <editor>
     <name><first>Edward W.</first><last>Ng</last></name>
-  </editor>  
+  </editor>
   <title>Symbolic and algebraic computation</title>
   <year>1979</year>
   <volume>72</volume>
@@ -5192,7 +5192,7 @@
 <entry id="Durham1982"><proceedings>
   <editor>
     <name><first>Michael D.</first><last>Atkinson</last></name>
-  </editor>  
+  </editor>
   <title>Computational group theory</title>
   <year>1984</year>
   <address>London</address>
@@ -5211,7 +5211,7 @@
   <editor>
     <name><first>Colin M.</first><last>Campbell</last></name>
     <name><first>Edmund F.</first><last>Robertson</last></name>
-  </editor>  
+  </editor>
   <title>Groups&ndash;<C>S</C>t. <C>A</C>ndrews 1981</title>
   <year>1982</year>
   <volume>71</volume>
@@ -5232,7 +5232,7 @@
   <editor>
     <name><first>Kai Nah</first><last>Cheng</last></name>
     <name><first>Yu Kiang</first><last>Leong</last></name>
-  </editor>  
+  </editor>
   <title>Group theory</title>
   <year>1989</year>
   <address>Berlin</address>
@@ -5252,7 +5252,7 @@
   <editor>
     <name><first>G. O.</first><last>Michler</last></name>
     <name><first>C. M.</first><last>Ringel</last></name>
-  </editor>  
+  </editor>
   <title>Representation theory of finite groups and finite-dimensional
               algebras</title>
   <year>1991</year>
@@ -5283,7 +5283,7 @@
 <entry id="ISSAC97"><proceedings>
   <editor>
     <name><first>Wolfgang</first><last>Küchlin</last></name>
-  </editor>  
+  </editor>
   <title>Proceedings of the 1997 <C>I</C>nternational <C>S</C>ymposium on
   <C>S</C>ymbolic and <C>A</C>lgebraic <C>C</C>omputation</title>
   <year>1997</year>
@@ -5300,7 +5300,7 @@
 <entry id="MR1805195"><proceedings>
   <editor>
     <name><first>Oliver</first><last>Gloor</last></name>
-  </editor>  
+  </editor>
   <title>Proceedings of the 1998 <C>I</C>nternational <C>S</C>ymposium on
   <C>S</C>ymbolic and <C>A</C>lgebraic <C>C</C>omputation</title>
   <year>1998</year>
@@ -5318,7 +5318,7 @@
   <editor>
     <name><first>Larry</first><last>Finkelstein</last></name>
     <name><first>William M.</first><last>Kantor</last></name>
-  </editor>  
+  </editor>
   <title>Groups and computation</title>
   <year>1993</year>
   <series>DIMACS Series in Discrete Mathematics and Theoretical Computer
@@ -5338,7 +5338,7 @@
   <editor>
     <name><first>Larry</first><last>Finkelstein</last></name>
     <name><first>William M.</first><last>Kantor</last></name>
-  </editor>  
+  </editor>
   <title>Groups and computation. <C>II</C></title>
   <year>1997</year>
   <series>DIMACS Series in Discrete Mathematics and Theoretical Computer
@@ -5358,7 +5358,7 @@
   <editor>
     <name><first>William M.</first><last>Kantor</last></name>
     <name><first>Ákos</first><last>Seress</last></name>
-  </editor>  
+  </editor>
   <title>Groups and computation. <C>III</C></title>
   <year>2001</year>
   <series>Ohio State University Mathematical Research Institute
@@ -5381,7 +5381,7 @@
     <name><first>Robert</first><last>Gilman</last></name>
     <name><first>Hamish</first><last>Short</last></name>
     <name><first>Charles</first><last>Sims</last></name>
-  </editor>  
+  </editor>
   <title>Geometric and computational perspectives on infinite groups</title>
   <year>1996</year>
   <series>DIMACS Series in Discrete Mathematics and Theoretical Computer
@@ -5406,7 +5406,7 @@
     <name><first>Edmund F.</first><last>Robertson</last></name>
     <name><first>Sean J.</first><last>Tobin</last></name>
     <name><first>James J.</first><last>Ward</last></name>
-  </editor>  
+  </editor>
   <title>Groups '93 <C>G</C>alway/<C>S</C>t. <C>A</C>ndrews. <C>V</C>ol.
       1</title>
   <year>1995</year>
@@ -5430,7 +5430,7 @@
     <name><first>Edmund F.</first><last>Robertson</last></name>
     <name><first>Sean J.</first><last>Tobin</last></name>
     <name><first>James J.</first><last>Ward</last></name>
-  </editor>  
+  </editor>
   <title>Groups '93 <C>G</C>alway/<C>S</C>t. <C>A</C>ndrews. <C>V</C>ol.
       2</title>
   <year>1995</year>
@@ -5450,7 +5450,7 @@
 <entry id="Luminy94"><proceedings>
   <editor>
     <name><first>Marc</first><last>Cabanes</last></name>
-  </editor>  
+  </editor>
   <title>Finite reductive groups</title>
   <year>1997</year>
   <volume>141</volume>
@@ -5544,7 +5544,7 @@
     <name><first>John N.</first><last>Bray</last></name>
     <name><first>Derek F.</first><last>Holt</last></name>
     <name><first>Colva M.</first><last>Roney-Dougal</last></name>
-  </author>  
+  </author>
   <title>The maximal subgroups of the low-dimensional finite classical groups</title>
   <publisher>Cambridge University Press</publisher>
   <year>2013</year>

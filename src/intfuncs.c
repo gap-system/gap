@@ -181,7 +181,7 @@ UInt4 nextrandMT_int32(UInt4* mt)
 // MurmurHash3 was written by Austin Appleby, and is placed in the public
 // domain. The author hereby disclaims copyright to this source code.
 
-/* Minor modifications to get it to compile in C rather than C++ and 
+/* Minor modifications to get it to compile in C rather than C++ and
 integrate with GAP  SL*/
 
 
@@ -247,9 +247,9 @@ void MurmurHash3_x86_32 ( const void * key, int len,
     k1 *= c1;
     k1 = ROTL32(k1,15);
     k1 *= c2;
-    
+
     h1 ^= k1;
-    h1 = ROTL32(h1,13); 
+    h1 = ROTL32(h1,13);
     h1 = h1*5+0xe6546b64;
   }
 
@@ -276,7 +276,7 @@ void MurmurHash3_x86_32 ( const void * key, int len,
   h1 = fmix4(h1);
 
   *(uint32_t*)out = h1;
-} 
+}
 
 #else
 
@@ -298,8 +298,8 @@ static inline uint64_t rotl64 ( uint64_t x, int8_t r )
 // Block read - if your platform needs to do endian-swapping or can only
 // handle aligned reads, do the conversion here
 //
-// The pointer p may not be aligned, which means that directly reading it can 
-// incur a major performance penalty or even trigger a segfault on certain 
+// The pointer p may not be aligned, which means that directly reading it can
+// incur a major performance penalty or even trigger a segfault on certain
 // architectures (e.g. ARM, SPARC). Thus we use memcpy here, with the implicit
 // hope that on archs which don't need this, the compiler will optimize it back
 // into a direct copy (verified to happen with GCC and clang on x86_64)

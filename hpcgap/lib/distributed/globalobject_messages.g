@@ -20,14 +20,14 @@ end;
 
 # GLOBAL_OBJ_HANDLE_MSG is a message containing a handle, sent when a node
 # executes SendHandle function.
-# The format of the message is 
+# The format of the message is
 # *************************
 # * GLOBAL_OBJ_HANDLE_MSG *
 # * --------------------- *
 # * handle                * -- handle being sent
 # * --------------------- *
 # * name                  * -- name of the global variable to which the handle is
-# * --------------------- *    assigned 
+# * --------------------- *    assigned
 # *************************
 
 SendGlobalObjHandleMsg := atomic function (readonly handle, target, name)
@@ -59,15 +59,15 @@ ProcessGlobalObjHandleMsg := function (message)
       handle := OBJ_HANDLE(localId);
     fi;
     if IsIdenticalObj(handle, fail) then
-      handle := GlobalObjHandles.CreateHandleFromMsg (pe, 
+      handle := GlobalObjHandles.CreateHandleFromMsg (pe,
                         owner,
-                        localId, 
-                        immediate, 
-                        accessType);  
+                        localId,
+                        immediate,
+                        accessType);
       if MPI_DEBUG.GA_MAP then MPILog(MPI_DEBUG_OUTPUT.GA_MAP, handle, String(HANDLE_OBJ(handle))); fi;
       ShareSpecialObj(handle);
-      MyInsertHashTable(GAMap, 
-              MakeReadOnlyObj (rec ( pe := pe, localId := localId )), 
+      MyInsertHashTable(GAMap,
+              MakeReadOnlyObj (rec ( pe := pe, localId := localId )),
                                         handle);
     fi;
     if not IsIdenticalObj(name, fail) then
@@ -86,7 +86,7 @@ end;
 
 # SET_BY_HANDLE_MSG is a message that is sent when a node does
 # SetByHandle or SetByHandleList.
-# The format of the message is 
+# The format of the message is
 # *********************
 # * SET_BY_HANDLE_MSG *
 # * ----------------- *
@@ -98,7 +98,7 @@ end;
 # * ----------------- *
 # * index             * -- index of the list to which handle points to
 # *********************    (in the case of SeyByHandleList)
- 
+
 SendSetByHandleMsg := atomic function (readonly handle, value)
   SendMessage (handle!.pe, MESSAGE_TYPES.SET_BY_HANDLE_MSG, handle!.pe, handle!.localId, value);
 end;
@@ -148,7 +148,7 @@ end;
 
 # CHANGE_GLOBAL_COUNT_MSG is a message that is sent when global count
 # for a handle needs to be changed (e.g. when handles are destroyed)
-# Format of the message is 
+# Format of the message is
 # ***************************
 # * CHANGE_GLOBAL_COUNT_MSG *
 # * ----------------------- *
@@ -189,7 +189,7 @@ end;
 # * globalAddrPE      * -- global address PE
 # * ----------------  *
 # * globalAddrLocalId * -- global address local id
-# * ----------------  * 
+# * ----------------  *
 # * storeObj          * -- true if the received object needs to be stored in handle
 # * ----------------  *    (RemoteCloneObj, RemotePullObj)
 # * pullObj           * -- true if the object needs to be pulled from the remote node
@@ -205,7 +205,7 @@ end;
 UnblockWaitingThreads := function (request)
   local thread;
   for thread in request.blockedOnRequest do
-    SendChannel (Tasks.TaskManagerRequests, 
+    SendChannel (Tasks.TaskManagerRequests,
             rec ( worker := thread, type := TASK_MANAGER_REQUESTS.RESUME_BLOCKED_WORKER));
   od;
 end;
@@ -243,13 +243,13 @@ DoSendObj := atomic function (sourceId, storeObj, pullObj, readwrite handle)
         if MPI_DEBUG.OBJECT_TRANSFER then MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " local request"); fi;
         ProcessHandleBlockedQueue (handle, handle!.obj);
       else
-        if MPI_DEBUG.OBJECT_TRANSFER then 
+        if MPI_DEBUG.OBJECT_TRANSFER then
           if pullObj then
-            MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ->-> (", String(sourceId), ") --> ", String(sourceId)); 
+            MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ->-> (", String(sourceId), ") --> ", String(sourceId));
           elif storeObj then
-            MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ++ (", String(sourceId), ") --> ", String(sourceId)); 
+            MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ++ (", String(sourceId), ") --> ", String(sourceId));
           else
-            MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ", String(sourceId), " @@ --> ", String(sourceId)); 
+            MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ", String(sourceId), " @@ --> ", String(sourceId));
           fi;
         fi;
         SendMessage (sourceId, MESSAGE_TYPES.OBJ_MSG,
@@ -270,18 +270,18 @@ DoSendObj := atomic function (sourceId, storeObj, pullObj, readwrite handle)
       Unbind(handle!.obj);
       handle!.control.haveObject := false;
     fi;
-  else 
+  else
     if handle!.owner = processId then        # object under evaluation
       if MPI_DEBUG.OBJECT_TRANSFER then MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " | (obj under eval)"); fi;
       CreateBlockedFetch (handle, sourceId, storeObj, pullObj);
     else                                  # object resides somewhere else
-      if MPI_DEBUG.OBJECT_TRANSFER then 
+      if MPI_DEBUG.OBJECT_TRANSFER then
         if pullObj then
           MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ->-> (", String(sourceId), ") ==> ", String(handle!.owner));
         elif storeObj then
-          MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ++ (", String(sourceId), ") ==> ", String(handle!.owner)); 
+          MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ++ (", String(sourceId), ") ==> ", String(handle!.owner));
         else
-          MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ", sourceId, " @@ ==> ", String(handle!.owner)); 
+          MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ", sourceId, " @@ ==> ", String(handle!.owner));
         fi;
       fi;
       SendMessage (handle!.owner, MESSAGE_TYPES.GET_OBJ_MSG, sourceId, handle!.pe, handle!.localId,
@@ -310,14 +310,14 @@ end;
 # i don't think we need ack messages any more, yes?
 # ACK_MSG is a message that is sent when an object is migrated from one
 # node to the other (using RemotePushObj or RemotePullObj), and when the
-# owner of that object needs to change. 
+# owner of that object needs to change.
 # Format of the message is
 # *******************
 # * ACK_MSG         *
 # * --------------- *
 # * destLocalAddr   * -- local address of a handle on the
 # * --------------- *    destination node (node that receives the message)
-# * sourceId        * -- id of the node 
+# * sourceId        * -- id of the node
 # * --------------- *
 # * sourceLocalAddr * -- local address of a handle on the source node
 # *******************
@@ -338,12 +338,12 @@ end;
 #    fi;
 #  od;
 #  # q : do we need to insert the newly received (pe,addr) pair into GAMap?
-#end; 
+#end;
 
 
 # OBJ_MSG is a message containing an object, which is sent when the object is
 # requested from a remote node (GetHandleObj, RemotePullObj, RemoteCloneObj) or
-# when the object is copied from the source to the destination node 
+# when the object is copied from the source to the destination node
 # (RemoteCopyObj, RemotePushObj).
 # In the comments below, 'sender node' is the node that sent the OBJ_MSG message,
 # and 'receiver node' is the node that is processing it.
@@ -352,11 +352,11 @@ end;
 # * OBJ_MSG tag          *
 # * -------------------- *
 # * globalAddrPE         * -- global address PE
-# * -------------------- * 
+# * -------------------- *
 # * globalAddressLocalId * -- global address local id
 # * -------------------- *
 # * obj                  * -- object being transferred
-# * -------------------- * 
+# * -------------------- *
 # * storeObj             * -- true or false, depending on whether the object needs to
 # * -------------------- *    be stored in the dest node (false for GetHandleObj)
 # * objPushed            * -- true if object is pushed from the source node (using
@@ -374,7 +374,7 @@ ProcessObjMsg := function (message)
   local pe, localId, obj, handle, id, thread, blocked, pushed,
         immediate, accessType, objPushed,
         storeObject, globalCount, sourceLocalAddr, owner;
-  
+
   pe := message.content[1];
   localId := message.content[2];
   obj := ShareSpecialObj(message.content[3]);
@@ -388,7 +388,7 @@ ProcessObjMsg := function (message)
     handle := GlobalObjHandles.CreateHandleFromMsg (pe,
                         owner,
                         localId,
-                        immediate, 
+                        immediate,
                         accessType);
     atomic readwrite GAMap do
       MyInsertHashTable (GAMap, rec ( pe := pe, localId := localId ), handle );
@@ -418,11 +418,11 @@ ProcessObjMsg := function (message)
   atomic readonly handle do
     if MPI_DEBUG.OBJECT_TRANSFER then
       if objPushed then
-        MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " obj (", String(message.source), ",->->,M)"); 
+        MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " obj (", String(message.source), ",->->,M)");
       elif storeObject then
-        MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " obj (", String(message.source), ",++,M)"); 
-      else        
-        MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " obj (", String(message.source), ",@@,X)"); 
+        MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " obj (", String(message.source), ",++,M)");
+      else
+        MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " obj (", String(message.source), ",@@,X)");
       fi;
     fi;
   od;

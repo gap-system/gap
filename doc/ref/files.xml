@@ -72,23 +72,23 @@ should only be used as an informational message for the user.
 <Index Key="GAPInfo.UserGapRoot"><C>GAPInfo.UserGapRoot</C></Index>
 
 When &GAP; is started it determines a list of directories which we
-call the <E>&GAP; root directories</E>. In a running &GAP; session  
+call the <E>&GAP; root directories</E>. In a running &GAP; session
 this list can be found in <C>GAPInfo.RootPaths</C>.
 <P/>
-The core part of &GAP; knows which files to read relative to its root 
-directories. For example when &GAP; wants to read its library file 
-<F>lib/group.gd</F>, it appends this path to each path in 
+The core part of &GAP; knows which files to read relative to its root
+directories. For example when &GAP; wants to read its library file
+<F>lib/group.gd</F>, it appends this path to each path in
 <C>GAPInfo.RootPaths</C> until it finds the path of an existing file.
 The first file found this way is read.
 <P/>
 Furthermore, &GAP; looks for available packages by examining the
-subdirectories <F>pkg/</F> in each of the directories in 
+subdirectories <F>pkg/</F> in each of the directories in
 <C>GAPInfo.RootPaths</C>.
 <P/>
-The root directories are specified via one or several of the 
+The root directories are specified via one or several of the
 <C>-l paths</C> command line options, see <Ref Sect="Command Line Options"/>.
 Furthermore, by default &GAP; automatically prepends a user specific &GAP; root
-directory to the list; this can be avoided by calling &GAP; with 
+directory to the list; this can be avoided by calling &GAP; with
 the <C>-r</C>  option. The name of this user specific directory depends
 on your operating system, it can be found in <C>GAPInfo.UserGapRoot</C>.
 This directory can be used to tell &GAP; about personal preferences,
@@ -157,7 +157,7 @@ output.
 The special filename <C>"*errout*"</C> can be used to print to the standard
 error output file, which is usually connected to the terminal,
 even if the standard output was redirected.
-    
+
 </Section>
 
 
@@ -205,7 +205,7 @@ gap> IsReadableFile( "/bin/date" );     # file `/bin/date' is readable
 true
 gap> IsReadableFile( "/bin/date.new" ); # non-existing `/bin/date.new'
 false
-gap> LastSystemError().message;        
+gap> LastSystemError().message;
 "No such file or directory"
 ]]></Example>
 </Description>
@@ -294,7 +294,7 @@ empties that file.
 except that the output does not overwrite the previous contents of the file,
 but is appended to the file.
 <P/>
-There is an upper limit of 15 on the number of output files 
+There is an upper limit of 15 on the number of output files
 that may be open simultaneously.
 <P/>
 <E>Note</E> that one should be careful not to write to a logfile

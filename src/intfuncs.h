@@ -20,7 +20,7 @@
 
 UInt4 nextrandMT_int32(UInt4 * mt);
 
-/* High quality and speed hash functions -- not currently used 
+/* High quality and speed hash functions -- not currently used
    elsewhere in the kernel but might be a good idea */
 
 void MurmurHash3_x86_32(const void * key, int len, UInt4 seed, void * out);

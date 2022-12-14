@@ -199,7 +199,7 @@ function( filter, n )
     local   g, c;
 
     g := PermList( Concatenation( [2..n], [1] ) );
-    c := GroupByGenerators( [g] );    
+    c := GroupByGenerators( [g] );
     SetSize( c, n );
     SetIsCyclic( c, true );
     if n > 1 then
@@ -375,7 +375,7 @@ InstallOtherMethod( SymmetricGroupCons,
 
 function( filters, dom )
     local   sym,  g;
-    
+
     dom := Set(dom);
     IsRange( dom );
     if Length(dom) < 2  then
@@ -385,7 +385,7 @@ function( filters, dom )
         SetNrMovedPoints(  sym, 0 );
         SetIsPerfectGroup( sym, true );
     else
-        g := [ MappingPermListList( dom, Concatenation( 
+        g := [ MappingPermListList( dom, Concatenation(
                  dom{[2..Length(dom)]}, [ dom[1] ] ) ) ];
         if 2 < Length(dom)  then
             Add( g, ( dom[1], dom[2] ) );

@@ -791,8 +791,8 @@ static Obj Cyclotomic(UInt n, UInt m)
 /****************************************************************************
 **
 *F  find smallest field size containing CF(nl) and CF(nr)
-** Also adjusts the results bag to ensure that it is big enough 
-** returns the field size n, and sets *ml and *mr to n/nl and n/nr 
+** Also adjusts the results bag to ensure that it is big enough
+** returns the field size n, and sets *ml and *mr to n/nl and n/nr
 ** respectively.
 */
 
@@ -802,7 +802,7 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
 {
   UInt n,a,b,c;
   UInt8 n8;
-  
+
   /* get the smallest field that contains both cyclotomics               */
   /* First Euclid's Algorithm for gcd */
   if (nl > nr) {
@@ -819,7 +819,7 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
   }
   *ml = nr/a;
   /* Compute the result (lcm) in 64 bit */
-  n8 = (UInt8)nl * ((UInt8)*ml);  
+  n8 = (UInt8)nl * ((UInt8)*ml);
   /* Check if it is too large for a small int */
   if (n8 > INT_INTOBJ_MAX)
     ErrorMayQuit("This computation would require a cyclotomic field too large to be handled", 0, 0);
@@ -835,7 +835,7 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
           n, (Int)CyclotomicsLimit,
           "You may return after raising the limit with SetCyclotomicsLimit");
   }
-  
+
   /* Finish up */
   *mr = n/nr;
 
@@ -901,7 +901,7 @@ static Obj SumCyc(Obj opL, Obj opR)
     nr = (TNUM_OBJ(opR) != T_CYC ? 1 : INT_INTOBJ( NOF_CYC(opR) ));
 
     n = FindCommonField(nl, nr, &ml, &mr);
- 
+
     /* Copy the left operand into the result                               */
     if ( TNUM_OBJ(opL) != T_CYC ) {
         res = BASE_PTR_PLIST(ResultCyc);

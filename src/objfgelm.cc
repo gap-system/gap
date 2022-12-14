@@ -516,7 +516,7 @@ static Obj Func32Bits_HeadByNumber(Obj self, Obj l, Obj r)
 **  that can occur:
 **
 **  The syllables where the difference  occurs have different generators.  In
-**  this case it is sufficient to compare the two generators.  
+**  this case it is sufficient to compare the two generators.
 **  Example: x^3 < y^3.
 **
 **  The syllables have the same generator but one exponent is the negative of
@@ -558,11 +558,11 @@ static Obj NBits_Less(Obj l, Obj r)
 
     /* get the number of bits for exponents                                */
     ebits = EBITS_WORD(l);
-    
+
     /* get the exponent masks                                              */
     exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
-    
+
     /* Skip the common prefix and determine if the first word is smaller   */
     /* with respect to the lexicographic ordering.                         */
     pl = CONST_DATA_WORD(l);
@@ -1222,15 +1222,15 @@ static Obj NBits_LengthWord(Obj w)
   Obj len, uexp;
   const UIntN *data;
   UIntN pair;
-  
+
   npairs = NPAIRS_WORD(w);
   ebits = EBITS_WORD(w);
   data = CONST_DATA_WORD(w);
-  
+
   /* get the exponent masks                                              */
   exps = (UInt)1 << (ebits-1);
   expm = exps - 1;
-  
+
   len = INTOBJ_INT(0);
   for (i = 0; i < npairs; i++)
     {
@@ -1295,13 +1295,13 @@ static Obj FuncMULT_WOR_LETTREP(Obj self, Obj a, Obj b)
   /* l:=Length(a); */
   l=LEN_PLIST(a);
   if (l==0) {
-    return b; 
-  }  
+    return b;
+  }
   /* m:=Length(b); */
   m=LEN_PLIST(b);
   if (m==0) {
-    return a; 
-  }  
+    return a;
+  }
   /* now we know both lists are length >0 */
 
   /* i:=l; */
@@ -1309,7 +1309,7 @@ static Obj FuncMULT_WOR_LETTREP(Obj self, Obj a, Obj b)
   /* j:=1; */
   j=1;
   /* while i>=1 and j<=m and a[i]=-b[j] do */
-  while ((i>=1)&&(j<=m)&& 
+  while ((i>=1)&&(j<=m)&&
     (INT_INTOBJ(ELM_PLIST(a,i))==-INT_INTOBJ(ELM_PLIST(b,j)))) {
     /* i:=i-1; */
     i--;
@@ -1384,7 +1384,7 @@ static Obj FuncMULT_BYT_LETTREP(Obj self, Obj a, Obj b)
   UInt l,m,i,j,newlen,as,bs,ae,be;
   Obj n;
   const Char *p,*q;
-  
+
   /* short check, if necessary strings are compacted */
   RequireStringRep(SELF_NAME, a);
   RequireStringRep(SELF_NAME, b);
@@ -1393,13 +1393,13 @@ static Obj FuncMULT_BYT_LETTREP(Obj self, Obj a, Obj b)
   /* l:=Length(a); */
   l=GET_LEN_STRING(a);
   if (l==0) {
-    return b; 
-  }  
+    return b;
+  }
   /* m:=Length(b); */
   m=GET_LEN_STRING(b);
   if (m==0) {
-    return a; 
-  }  
+    return a;
+  }
   /* now we know both lists are length >0 */
 
   /* i:=l; */

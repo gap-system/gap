@@ -16,7 +16,7 @@
 #v  TYPES_VEC8BIT . . . . . . . . prepared types for compressed GF(q) vectors
 ##
 ##  A length 4 list of length 257 lists. TYPES_VEC8BIT[1][q] will be the type
-##  of mutable vectors over GF(q), TYPES_VEC8BIT[2][q] is the type of 
+##  of mutable vectors over GF(q), TYPES_VEC8BIT[2][q] is the type of
 ##  immutable vectors. TYPES_VEc8BIT[3][q] is the type of locked vectors.
 ##  The 257th position is bound to 1 to stop the lists
 ##  shrinking.
@@ -25,11 +25,11 @@
 ##  without changing the kernel.
 ##
 
-BindGlobal("TYPES_VEC8BIT", 
-  [ MakeWriteOnceAtomic([]), 
-    MakeWriteOnceAtomic([]), 
-    MakeWriteOnceAtomic([]), 
-    MakeWriteOnceAtomic([]) 
+BindGlobal("TYPES_VEC8BIT",
+  [ MakeWriteOnceAtomic([]),
+    MakeWriteOnceAtomic([]),
+    MakeWriteOnceAtomic([]),
+    MakeWriteOnceAtomic([])
   ]);
 TYPES_VEC8BIT[1][257] := 1;
 TYPES_VEC8BIT[2][257] := 1;
@@ -97,7 +97,7 @@ BindGlobal( "TYPE_FIELDINFO_8BIT", TYPE_KERNEL_OBJECT);
 #M  Length( <vec> )
 ##
 
-InstallOtherMethod( Length, "for a compressed VecFFE", 
+InstallOtherMethod( Length, "for a compressed VecFFE",
         true, [IsList and Is8BitVectorRep], 0, LEN_VEC8BIT);
 
 #############################################################################
@@ -105,7 +105,7 @@ InstallOtherMethod( Length, "for a compressed VecFFE",
 #M  <vec> [ <pos> ]
 ##
 
-InstallOtherMethod( \[\],  "for a compressed VecFFE", 
+InstallOtherMethod( \[\],  "for a compressed VecFFE",
         true, [IsList and Is8BitVectorRep, IsPosInt], 0, ELM_VEC8BIT);
 
 #############################################################################
@@ -118,8 +118,8 @@ InstallOtherMethod( \[\],  "for a compressed VecFFE",
 ##  <vec> may also be converted back into vector rep over a bigger field.
 ##
 
-InstallOtherMethod( \[\]\:\=,  "for a compressed VecFFE", 
-        true, [IsMutable and IsList and Is8BitVectorRep, IsPosInt, IsObject], 
+InstallOtherMethod( \[\]\:\=,  "for a compressed VecFFE",
+        true, [IsMutable and IsList and Is8BitVectorRep, IsPosInt, IsObject],
         0, ASS_VEC8BIT);
 
 #############################################################################
@@ -138,7 +138,7 @@ InstallMethod( Unbind\[\], "for a compressed VecFFE",
 ##
 #M  ViewObj( <vec> )
 ##
-##  Up to length 10, GF(q) vectors are viewed in full, over that a 
+##  Up to length 10, GF(q) vectors are viewed in full, over that a
 ##  description is printed
 ##
 
@@ -163,7 +163,7 @@ end);
 ##
 #M  PrintObj( <vec> )
 ##
-##  Same method as for lists in internal rep. 
+##  Same method as for lists in internal rep.
 ##
 
 InstallMethod( PrintObj, "for a compressed VecFFE",
@@ -236,7 +236,7 @@ end);
 #M  DegreeFFE( <vector> )
 ##
 BindGlobal("Q_TO_DEGREE", # discrete logarithm list
-  MakeImmutable( 
+  MakeImmutable(
   [0,1,1,2,1,0,1,3,2,0,1,0,1,0,0,4,1,0,1,0,0,0,1,0,2,0,3,0,1,0,1,5,0,0,0,0,
   1,0,0,0,1,0,1,0,0,0,1,0,2,0,0,0,1,0,0,0,0,0,1,0,1,0,0,6,0,0,1,0,0,0,1,0,
   1,0,0,0,0,0,1,0,4,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,1,0,0,0,1,0,
@@ -251,7 +251,7 @@ InstallOtherMethod( DegreeFFE, "for 8 bit vectors", true,
 function( vec )
 local q, deg, i, maxdeg;
   q:=Q_VEC8BIT(vec);
-  maxdeg:=Q_TO_DEGREE[q]; 
+  maxdeg:=Q_TO_DEGREE[q];
   # the degree could be smaller. Check or prove.
   if Length(vec) = 0 then
       return 0;
@@ -259,8 +259,8 @@ local q, deg, i, maxdeg;
   deg := DegreeFFE( vec[1] );
   for i  in [ 2 .. Length( vec ) ]  do
     deg := LcmInt( deg, DegreeFFE( vec[i] ) );
-    if deg=maxdeg then 
-        return deg; 
+    if deg=maxdeg then
+        return deg;
     fi;
   od;
   return deg;
@@ -273,12 +273,12 @@ end );
 ##  multi-element access
 ##
 InstallOtherMethod(ELMS_LIST, "for an 8 bit vector and a plain list",
-        true, [IsList and Is8BitVectorRep, 
+        true, [IsList and Is8BitVectorRep,
                IsPlistRep and IsDenseList ], 0,
         ELMS_VEC8BIT);
 
 InstallOtherMethod(ELMS_LIST, "for an 8 bit vector and a range",
-        true, [IsList and Is8BitVectorRep, 
+        true, [IsList and Is8BitVectorRep,
                IsRange and IsInternalRep ], 0,
         ELMS_VEC8BIT_RANGE);
 
@@ -310,7 +310,7 @@ InstallMethod(\*, "for an 8 bit vector and a compatible matrix",
 ##  This is here to catch the case of an element in GF(2^k) 1 < k <= 8,
 ##  in which case we can convert to an 8 bit vector. There is a
 ##  higher-priority method in vecmat.gi which handles GF(2) elements.
-##  
+##
 InstallMethod( \*,
     "for FFE and GF2 vector",
     IsElmsColls,
@@ -333,8 +333,8 @@ end );
 ##
 
 InstallMethod(\*, "for an FFE and an 8 bit vector ",
-        IsElmsColls, [IsFFE and IsInternalRep, 
-                IsRowVector and Is8BitVectorRep], 
+        IsElmsColls, [IsFFE and IsInternalRep,
+                IsRowVector and Is8BitVectorRep],
         0,
         PROD_FFE_VEC8BIT);
 
@@ -369,7 +369,7 @@ end );
 ##
 InstallMethod(\-, "for two 8bit vectors",
         IsIdenticalObj, [IsRowVector and Is8BitVectorRep,
-                IsRowVector and Is8BitVectorRep], 
+                IsRowVector and Is8BitVectorRep],
         0,
         DIFF_VEC8BIT_VEC8BIT );
 
@@ -431,7 +431,7 @@ InstallMethod( AdditiveInverseImmutable, "for an 8 bit vector",
 ##
 #M  ZeroOp( <vec> )
 ##
-##  A  mutable zero vector of the same field and length 
+##  A  mutable zero vector of the same field and length
 ##
 
 InstallMethod( ZeroOp, "for an 8 bit vector",
@@ -585,7 +585,7 @@ InstallOtherMethod( PositionNot, "for 8-bit vector and 0*Z(p)",
 InstallOtherMethod( PositionNonZero, "for 8-bit vector",true,
         [Is8BitVectorRep and IsRowVector],0,
   # POSITION_NONZERO_VEC8BIT ignores the second argument
-  v->POSITION_NONZERO_VEC8BIT(v,0)); 
+  v->POSITION_NONZERO_VEC8BIT(v,0));
 
 InstallOtherMethod( PositionNot, "for 8-bit vector and 0*Z(p) and starting ix",
         IsCollsElmsX, [Is8BitVectorRep and IsRowVector , IsFFE and
@@ -596,7 +596,7 @@ InstallOtherMethod( PositionNot, "for 8-bit vector and 0*Z(p) and starting ix",
 InstallOtherMethod( PositionNonZero, "for 8-bit vector and starting point",true,
         [Is8BitVectorRep and IsRowVector, IsInt],0,
   # POSITION_NONZERO_VEC8BIT3 ignores the second argument
-  function(v,from)  return POSITION_NONZERO_VEC8BIT3(v,0,from); end); 
+  function(v,from)  return POSITION_NONZERO_VEC8BIT3(v,0,from); end);
 
 #############################################################################
 ##
@@ -615,7 +615,7 @@ InstallMethod( Append, "for 8bitm vectors",
 InstallMethod(NumberFFVector,"8bit-vector",true,
   [Is8BitVectorRep and IsRowVector and IsFFECollection,IsPosInt],0,
 function(v,n)
-  if n<>Q_VEC8BIT(v) then TryNextMethod();fi; 
+  if n<>Q_VEC8BIT(v) then TryNextMethod();fi;
   return NUMBER_VEC8BIT(v);
 end);
 
@@ -656,13 +656,13 @@ DISTANCE_VEC8BIT_VEC8BIT);
 InstallOtherMethod( AddCoeffs, "two 8 bit vectors", IsCollsCollsElms,
         [Is8BitVectorRep and IsRowVector,
          Is8BitVectorRep and IsRowVector,
-         IsFFE], 0, 
+         IsFFE], 0,
         ADD_COEFFS_VEC8BIT_3);
 
 InstallOtherMethod( AddCoeffs, "8 bit vector and GF2 vector", IsCollsCollsElms,
         [Is8BitVectorRep and IsRowVector,
          IsGF2VectorRep and IsRowVector,
-         IsFFE], 0, 
+         IsFFE], 0,
         function(v,w, x)
     if IsLockedRepresentationVector(w) then
         TryNextMethod();
@@ -675,7 +675,7 @@ end);
 InstallOtherMethod( AddCoeffs, "GF2 vector and 8 bit vector", IsCollsCollsElms,
         [IsGF2VectorRep and IsRowVector,
          Is8BitVectorRep and IsRowVector,
-         IsFFE], 0, 
+         IsFFE], 0,
         function(v,w, x)
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
@@ -691,12 +691,12 @@ end);
 ##
 InstallOtherMethod( AddCoeffs, "two 8 bit vectors", IsIdenticalObj,
         [Is8BitVectorRep and IsRowVector,
-         Is8BitVectorRep and IsRowVector], 0, 
+         Is8BitVectorRep and IsRowVector], 0,
         ADD_COEFFS_VEC8BIT_2);
 
 InstallOtherMethod( AddCoeffs, "8 bit vector and GF2 vector", IsIdenticalObj,
         [Is8BitVectorRep and IsRowVector,
-         IsGF2VectorRep and IsRowVector], 0, 
+         IsGF2VectorRep and IsRowVector], 0,
         function(v,w)
     if IsLockedRepresentationVector(w) then
         TryNextMethod();
@@ -708,7 +708,7 @@ end);
 
 InstallOtherMethod( AddCoeffs, "GF2 vector and 8 bit vector", IsIdenticalObj,
         [IsGF2VectorRep and IsRowVector,
-         Is8BitVectorRep and IsRowVector], 0, 
+         Is8BitVectorRep and IsRowVector], 0,
         function(v,w)
     if IsLockedRepresentationVector(v) then
         TryNextMethod();
@@ -752,7 +752,7 @@ end);
 
 #############################################################################
 ##
-#M  ShrinkRowVector( <vec> )  
+#M  ShrinkRowVector( <vec> )
 
 InstallMethod( ShrinkRowVector, "8 bit vector", true,
         [IsMutable and IsRowVector and Is8BitVectorRep ],
@@ -768,7 +768,7 @@ end);
 #M  RemoveOuterCoeffs( <vec>, <zero> )
 ##
 
-InstallMethod( RemoveOuterCoeffs, "vec8bit and zero", IsCollsElms, 
+InstallMethod( RemoveOuterCoeffs, "vec8bit and zero", IsCollsElms,
         [ IsMutable and Is8BitVectorRep and IsRowVector, IsFFE and
           IsZero], 0,
         function (v,z)
@@ -794,11 +794,11 @@ InstallMethod( ProductCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
          IsRowVector, IsInt ], 0,
         PROD_COEFFS_VEC8BIT);
 
-InstallOtherMethod( ProductCoeffs, "8 bit vectors, kernel method (2 arg)", 
+InstallOtherMethod( ProductCoeffs, "8 bit vectors, kernel method (2 arg)",
         IsIdenticalObj,
         [Is8BitVectorRep and IsRowVector, Is8BitVectorRep and
          IsRowVector ], 0,
-        function(v,w) 
+        function(v,w)
     return PROD_COEFFS_VEC8BIT(v, Length(v), w, Length(w));
 end);
 
@@ -811,7 +811,7 @@ end);
 ##
 
 BindGlobal("ADJUST_FIELDS_VEC8BIT",
-function(v,w) 
+function(v,w)
   local p,e,v1,w1;
   if Q_VEC8BIT(v)<>Q_VEC8BIT(w) then
     p:=Characteristic(v);
@@ -843,34 +843,34 @@ InstallMethod( ReduceCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
          IsRowVector, IsInt ], 0,
         function(vl, ll, vr, lr)
         local res, adjust;
-        adjust := ADJUST_FIELDS_VEC8BIT(vl,vr);   
+        adjust := ADJUST_FIELDS_VEC8BIT(vl,vr);
         if adjust = fail then
             TryNextMethod();
         else
             SWITCH_OBJ(vl, adjust[1]);
-            vr:=adjust[2];    
+            vr:=adjust[2];
         fi;
-        res := REDUCE_COEFFS_VEC8BIT( vl, ll, 
+        res := REDUCE_COEFFS_VEC8BIT( vl, ll,
             MAKE_SHIFTED_COEFFS_VEC8BIT(vr, lr));
-        if res = fail then 
+        if res = fail then
             TryNextMethod();
         else
             return res;
         fi;
 end);
 
-InstallOtherMethod( ReduceCoeffs, "8 bit vectors, kernel method (2 arg)", 
+InstallOtherMethod( ReduceCoeffs, "8 bit vectors, kernel method (2 arg)",
         IsIdenticalObj,
         [Is8BitVectorRep and IsRowVector and IsMutable, Is8BitVectorRep and
          IsRowVector ], 0,
-        function(v,w) 
+        function(v,w)
     local adjust;
-    adjust := ADJUST_FIELDS_VEC8BIT(v,w);   
+    adjust := ADJUST_FIELDS_VEC8BIT(v,w);
     if adjust = fail then
         TryNextMethod();
     else
         SWITCH_OBJ(v,adjust[1]);
-        w:=adjust[2];    
+        w:=adjust[2];
     fi;
     return REDUCE_COEFFS_VEC8BIT(v, Length(v),
                    MAKE_SHIFTED_COEFFS_VEC8BIT(w, Length(w)));
@@ -886,34 +886,34 @@ InstallMethod( QuotRemCoeffs, "8 bit vectors, kernel method", IsFamXFamY,
          IsRowVector, IsInt ], 0,
         function(vl, ll, vr, lr)
         local res, adjust;
-        adjust := ADJUST_FIELDS_VEC8BIT(vl,vr);   
+        adjust := ADJUST_FIELDS_VEC8BIT(vl,vr);
         if adjust = fail then
             TryNextMethod();
         else
             SWITCH_OBJ(vl,adjust[1]);
-            vr:=adjust[2];    
+            vr:=adjust[2];
         fi;
-        res := QUOTREM_COEFFS_VEC8BIT( vl, ll, 
+        res := QUOTREM_COEFFS_VEC8BIT( vl, ll,
             MAKE_SHIFTED_COEFFS_VEC8BIT(vr, lr));
-        if res = fail then 
+        if res = fail then
             TryNextMethod();
         else
             return res;
         fi;
 end);
 
-InstallOtherMethod( QuotRemCoeffs, "8 bit vectors, kernel method (2 arg)", 
+InstallOtherMethod( QuotRemCoeffs, "8 bit vectors, kernel method (2 arg)",
         IsIdenticalObj,
         [Is8BitVectorRep and IsRowVector and IsMutable, Is8BitVectorRep and
          IsRowVector ], 0,
-        function(v,w) 
+        function(v,w)
     local adjust;
-    adjust := ADJUST_FIELDS_VEC8BIT(v,w);   
+    adjust := ADJUST_FIELDS_VEC8BIT(v,w);
     if adjust = fail then
         TryNextMethod();
     else
         SWITCH_OBJ(v,adjust[1]);
-        w:=adjust[2];    
+        w:=adjust[2];
     fi;
     return QUOTREM_COEFFS_VEC8BIT(v, Length(v),
                    MAKE_SHIFTED_COEFFS_VEC8BIT(w, Length(w)));
@@ -925,8 +925,8 @@ end);
 #M PowerModCoeffs( <vec1>, <len1>, <exp>, <vec2>, <len2> )
 ##
 
-InstallMethod( PowerModCoeffs, 
-        "for 8 bit vectors", 
+InstallMethod( PowerModCoeffs,
+        "for 8 bit vectors",
         IsFamXYFamZ,
         [ Is8BitVectorRep and  IsRowVector, IsInt, IsPosInt,
           Is8BitVectorRep and IsRowVector, IsInt ],
@@ -939,8 +939,8 @@ InstallMethod( PowerModCoeffs,
     if adjust = fail then
         TryNextMethod();
     else
-        v:=adjust[1];    
-        w:=adjust[2];    
+        v:=adjust[1];
+        w:=adjust[2];
     fi;
 
     if exp = 1 then
@@ -1033,8 +1033,8 @@ InstallMethodWithRandomSource( Randomize,
 InstallMethod( MutableCopyMat, "for an 8bit matrix",
   [ Is8BitMatrixRep ],
   function( m )
-    local mm; 
-    mm := List(m,ShallowCopy); 
+    local mm;
+    mm := List(m,ShallowCopy);
     ConvertToMatrixRep(mm,Q_VEC8BIT(m[1]));
     return mm;
   end );
@@ -1053,7 +1053,7 @@ InstallMethod( Matrix, "for a list of vecs, an integer, and an 8bit mat",
         for i in [1..QuoInt(Length(l),rl)] do
             li[i] := l{[(i-1)*rl+1..i*rl]};
         od;
-    else  
+    else
         li:= ShallowCopy(l);
     fi;
     q := Q_VEC8BIT(m[1]);
@@ -1245,7 +1245,7 @@ InstallMethod( DistanceOfVectors, "for two 8bit vectors",
     return DistanceVecFFE(v,w);
   end );
 
-InstallMethod( NewCompanionMatrix, 
+InstallMethod( NewCompanionMatrix,
   "for Is8BitMatrixRep, a polynomial and a ring",
   [ Is8BitMatrixRep, IsUnivariatePolynomial, IsRing ],
   function( ty, po, bd )

@@ -94,7 +94,7 @@ gap> w[1] := l;;
 gap> w;
 WeakPointerObj( [ [ 1, 2, 3 ], , , fail ] )
 gap> CollectGarbage( true );
-gap> w;                
+gap> w;
 WeakPointerObj( [ [ 1, 2, 3 ], , , fail ] )
 ]]></Example>
 <P/>
@@ -148,7 +148,7 @@ Instead use
 Here is an example.
 <P/>
 <Example><![CDATA[
-gap> w := WeakPointerObj( [ 1, , [2,3], fail, rec() ] );   
+gap> w := WeakPointerObj( [ 1, , [2,3], fail, rec() ] );
 WeakPointerObj( [ 1, , [ 2, 3 ], fail, rec(  ) ] )
 gap> SetElmWPObj(w,5,[]);
 gap> w;
@@ -156,7 +156,7 @@ WeakPointerObj( [ 1, , [ 2, 3 ], fail, [  ] ] )
 gap> UnbindElmWPObj(w,1);
 gap> w;
 WeakPointerObj( [ , , [ 2, 3 ], fail, [  ] ] )
-gap> ElmWPObj(w,3);      
+gap> ElmWPObj(w,3);
 [ 2, 3 ]
 gap> ElmWPObj(w,1);
 fail
@@ -171,7 +171,7 @@ gap> 2;; 3;; 4;; CollectGarbage( true );  # clear last, last2, last3
 <M>\ldots</M> we get the following.
 <P/>
 <Log><![CDATA[
-gap> ElmWPObj(w,3);          
+gap> ElmWPObj(w,3);
 fail
 gap> w;
 WeakPointerObj( [ , , , fail ] )
@@ -187,7 +187,7 @@ true
 
 </Section>
 
-    
+
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Accessing Weak Pointer Objects as Lists">
 <Heading>Accessing Weak Pointer Objects as Lists</Heading>
@@ -216,7 +216,7 @@ containing the same objects as the original.
 <P/>
 It is possible to apply <Ref Func="StructuralCopy"/>
 to a weak pointer object, obtaining
-a new weak  pointer object containing copies of  the objects in the original. 
+a new weak  pointer object containing copies of  the objects in the original.
 This <E>may not be safe</E> if a badly timed garbage collection occurs during
 copying.
 <P/>
@@ -224,7 +224,7 @@ Applying <Ref Func="Immutable"/> to a weak pointer object
 produces an immutable plain
 list containing immutable copies of the objects contained in the weak pointer
 object. An immutable weak pointer object is a contradiction in terms.
- 
+
 </Section>
 </Chapter>
 

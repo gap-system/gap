@@ -738,7 +738,7 @@ static void            PrintFunccall1 (
 static void PrintFunccall(Expr call)
 {
   PrintFunccall1( call );
-  
+
   /* print the closing parenthesis                                       */
   Pr(" %2<)", 0, 0);
 }

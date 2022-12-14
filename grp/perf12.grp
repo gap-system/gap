@@ -661,7 +661,7 @@
   # 878460.3 (new)
   [[1,"abcwxyz",
   function(a,b,c,w,x,y,z)
-  return 
+  return
   [[b^2,c^2,a^3,y^-1*z^-1*y*z,(a*c)^2,w^-1*y^-1*w*y,w^-1*z^-1*w*z,
   a^-1*y*a*y^-1,w^-1*x^-1*w*x,x^-1*z^-1*x*z,b*x*b*y^-1,b*z*b*z^-1,
   x^-1*y^-1*x*y,a^-1*w*a*x^-1, c*x*c*x^-1,a^-1*z*a*z^-1,c*y*c*z^-1,
@@ -669,7 +669,7 @@
   [[a,b,x^-1*w]]];
   end,[55]],
   "A5 11^4",0,1,[1],55]
-  
+
   ];
   PERFGRP[307]:=[# 881280.1
   [[2,360,1,2448,1],
@@ -1518,7 +1518,7 @@
   Comm(z,u), Comm(y,u), Comm(x,u), Comm(w,u),
   Comm(v,u), Comm(z,v), Comm(y,v), Comm(x,v),
   Comm(w,v), Comm(z,w), Comm(y,w), Comm(x,w),
-  Comm(z,x), Comm(y,x), Comm(z,y), 
+  Comm(z,x), Comm(y,x), Comm(z,y),
   u^a/(v*w^2*y*z^2), v^a/(v^2*x*y^2), w^a/(w*x),
   x^a/(w*x^2), y^a/(v^2*w*x*y), z^a/(u*v*x),
   u^b/z, v^b/w, w^b/x,

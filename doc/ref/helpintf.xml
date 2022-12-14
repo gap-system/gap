@@ -226,7 +226,7 @@ following values of the <A>type</A> argument.
 <C>"text"</C> </Mark>
 <Item>
   This must return a corresponding text string in a format which can be fed
-  into the <C>Pager</C>, see&nbsp;<Ref Func="Pager"/>. 
+  into the <C>Pager</C>, see&nbsp;<Ref Func="Pager"/>.
 </Item>
 <Mark><C>"url"</C> </Mark>
 <Item>
@@ -260,7 +260,7 @@ following values of the <A>type</A> argument.
 <Section Label="Introducing new Viewer for the Online Help">
 <Heading>Introducing new Viewer for the Online Help</Heading>
 
-To introduce a new viewer for the online help, 
+To introduce a new viewer for the online help,
 one should extend the global record <Ref Var="HELP_VIEWER_INFO"/>,
 the structure of which is explained below.
 

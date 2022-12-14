@@ -14,8 +14,8 @@
 One of the most fundamental datatypes in every programming language is
 the integer type.  &GAP; is no exception.
 <P/>
-&GAP; integers are entered as a sequence of decimal digits optionally 
-preceded by a <Q><C>+</C></Q> sign for positive integers or 
+&GAP; integers are entered as a sequence of decimal digits optionally
+preceded by a <Q><C>+</C></Q> sign for positive integers or
 a <Q><C>-</C></Q> sign for negative integers.
 The size of integers in &GAP; is only limited by the amount of available
 memory, so you can compute with integers having thousands of digits.
@@ -176,9 +176,9 @@ modulo 32.
 <Heading>Random Sources</Heading>
 
 &GAP; provides <Ref Oper="Random" Label="for a list or collection"/> methods
-for many collections of objects. 
-On a lower level these methods use <E>random sources</E> which provide 
-random integers and random choices from lists. 
+for many collections of objects.
+On a lower level these methods use <E>random sources</E> which provide
+random integers and random choices from lists.
 <P/>
 See <Ref Filt="IsRandomSource"/> for the user interface for random sources,
 and Section <Ref Subsect="Implementing new kinds of random sources"/>
@@ -195,7 +195,7 @@ for information about developing new kinds of random sources.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Bitfields">
   <Heading>Bitfields</Heading>
-Bitfields are a low-level feature intended to support efficient 
+Bitfields are a low-level feature intended to support efficient
 subdivision of immediate integers into bitfields of various widths.
 This is typically useful in implementing space-efficient and/or
 cache-efficient data structures. This feature should be used with care

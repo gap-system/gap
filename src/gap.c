@@ -106,7 +106,7 @@ static UInt Time;
 **
 *V  MemoryAllocated . . . . . . . . . . . global variable  'memory_allocated'
 **
-**  'MemoryAllocated' is the global variable 'memory_allocated', 
+**  'MemoryAllocated' is the global variable 'memory_allocated',
 **  which is automatically assigned the amount of memory allocated while
 **  executing the last command.
 */
@@ -746,7 +746,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
             Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
             Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
             for ( UInt k = 0; k < NUM_TYPES; k++ ) {
-                if ( TNAM_TNUM(k) != 0 && 
+                if ( TNAM_TNUM(k) != 0 &&
                      (InfoBags[k].nrLive != 0 ||
                       InfoBags[k].sizeLive != 0 ||
                       InfoBags[k].nrAll != 0 ||
@@ -830,9 +830,9 @@ static Obj FuncGASMAN_STATS(Obj self)
           x = SyGasmanNumbers[i-1][j];
           SET_ELM_PLIST(row, j, ObjInt_Int(x));
         }
-      SET_ELM_PLIST(row, 9, INTOBJ_INT(SyGasmanNumbers[i-1][0]));       
+      SET_ELM_PLIST(row, 9, INTOBJ_INT(SyGasmanNumbers[i-1][0]));
     }
-  return res;      
+  return res;
 }
 
 static Obj FuncGASMAN_MESSAGE_STATUS(Obj self)
@@ -1006,13 +1006,13 @@ static Obj FuncQuitGap(Obj self, Obj args)
   if ( LEN_LIST(args) == 0 ) {
     SystemErrorCode = 0;
   }
-  else if ( LEN_LIST(args) != 1 
+  else if ( LEN_LIST(args) != 1
             || !SetExitValue(ELM_PLIST(args, 1) ) ) {
     ErrorQuit( "usage: QuitGap( [ <return value> ] )", 0, 0);
   }
   STATE(UserHasQUIT) = TRUE;
   GAP_THROW();
-  return (Obj)0; 
+  return (Obj)0;
 }
 
 /****************************************************************************
@@ -1027,7 +1027,7 @@ static Obj FuncForceQuitGap(Obj self, Obj args)
   {
     SyExit(SystemErrorCode);
   }
-  else if ( LEN_LIST(args) != 1 
+  else if ( LEN_LIST(args) != 1
             || !SetExitValue(ELM_PLIST(args, 1) ) ) {
     ErrorQuit( "usage: ForceQuitGap( [ <return value> ] )", 0, 0);
   }
@@ -1048,7 +1048,7 @@ static Obj FuncSHOULD_QUIT_ON_BREAK(Obj self)
 /****************************************************************************
 **
 *F  KERNEL_INFO() ......................record of information from the kernel
-** 
+**
 ** The general idea is to put all kernel-specific info in here, and clean up
 ** the assortment of global variables previously used
 */
@@ -1495,7 +1495,7 @@ void InitializeGap (
         LoadWorkspace(SyRestoring);
         SyRestoring = NULL;
 
-        /* Call POST_RESTORE which is a GAP function that now takes control, 
+        /* Call POST_RESTORE which is a GAP function that now takes control,
            calls the post restore functions and then runs a GAP session */
         if (POST_RESTORE != 0 && IS_FUNC(POST_RESTORE)) {
           Call0ArgsInNewReader(POST_RESTORE);
@@ -1517,9 +1517,9 @@ void InitializeGap (
     /* check initialisation                                                */
     ModulesCheckInit();
 
-    /* read the init files      
-       this now actually runs the GAP session, we only get 
-       past here when we're about to exit. 
+    /* read the init files
+       this now actually runs the GAP session, we only get
+       past here when we're about to exit.
                                            */
     if ( SyLoadSystemInitFile ) {
       GAP_TRY {

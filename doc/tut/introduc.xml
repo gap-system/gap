@@ -20,7 +20,7 @@ This tutorial introduces you to  the &GAP;  system.  It is written  with
 users in mind who have just managed to start &GAP; for the first time on
 their computer and want to learn the basic facts  about &GAP; by playing
 around with some instructive  examples. Therefore, this tutorial contains
-at many  places examples consisting of  several lines of  input  (which 
+at many  places examples consisting of  several lines of  input  (which
 you  should type  on your terminal) followed by the corresponding output  (
 which &GAP; produces as an answer to your input).
 <P/>
@@ -51,7 +51,7 @@ tutorial, you can immediately plunge into the exciting parts of &GAP;
 and  only read detailed  information about  elementary things (in  the
 reference manual) when you really need them.
 <P/>
-Each chapter of this tutorial contains a section with references to the 
+Each chapter of this tutorial contains a section with references to the
 reference manual at the end.
 <P/>
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -77,7 +77,7 @@ more command line options are described in
 Section&nbsp;<Ref Sect="Command Line Options" BookName="ref"/>.)
 <P/>
 <Example><![CDATA[
-gap> 
+gap>
 ]]></Example>
 <P/>
 The usual  way to end a  &GAP; session is  to type <C>quit;</C> at the <C>gap></C>
@@ -85,7 +85,7 @@ prompt. Do not omit the semicolon!
 <P/>
 <Log><![CDATA[
 gap> quit;
-$ 
+$
 ]]></Log>
 <P/>
 On some systems you could type <B>Ctrl-D</B> to yield the same effect.
@@ -94,7 +94,7 @@ second.  Here as always, a combination like <B>Ctrl-D</B> means that you have
 to press the <B>D</B> key while you hold down the <B>Ctrl</B> key.
 <P/>
 On some systems minor changes might be
-necessary. This is explained in &GAP; installation instructions (see the 
+necessary. This is explained in &GAP; installation instructions (see the
 <F>INSTALL</F> file in the &GAP; root directory, or the &GAP; website).
 <!-- TODO: put URL -->
 <P/>
@@ -176,7 +176,7 @@ symbols followed by <C>;</C> and <B>Return</B>.
 <Example><![CDATA[
 gap> (9 - 7) * (5 + 6);
 22
-gap> 
+gap>
 ]]></Example>
 <P/>
 Then &GAP; echoes   the result 22 on the   next line and shows with  the
@@ -450,7 +450,7 @@ printing of the  object of a statement may  be in every case prevented by
 typing a double semicolon.
 <P/>
 <Example><![CDATA[
-gap> w:= 2;; 
+gap> w:= 2;;
 ]]></Example>
 <P/>
 After the assignment the variable evaluates  to that object if evaluated.
@@ -722,7 +722,7 @@ insensitively</E>.  If  there  is  another  <C>?</C>  before  the  <A>topic</A>,
 the parts  of <A>topic</A> which are  separated by white space  are considered as
 <E>beginnings of the first words</E> in an index entry.
 <P/>
-White space is normalized in the search string (and the index entries). 
+White space is normalized in the search string (and the index entries).
 <P/>
 <E>Examples.</E> All the  following queries lead to the chapter  of the reference
 manual which explains the use of &GAP;'s help system in more detail.
@@ -730,7 +730,7 @@ manual which explains the use of &GAP;'s help system in more detail.
 <Log><![CDATA[
 gap> ?Reference: The Help System
 gap> ?  REF : t h s
-gap> ?ref:?  help   system 
+gap> ?ref:?  help   system
 ]]></Log>
 <P/>
 The query <C>??sets</C> shows all help  sections in all books whose index entries

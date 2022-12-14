@@ -498,7 +498,7 @@ static Int LtFFE(Obj opL, Obj opR)
     if ( vL == 0 || vR == 0 ) {
         return (vL == 0 && vR != 0);
     }
-    
+
     /* get the sizes of the fields over which the elements are written */
     qL = SIZE_FF( fL );
     qR = SIZE_FF( fR );
@@ -733,7 +733,7 @@ static Obj AInvFFE(Obj op)
     /* get the operand                                                     */
     v = VAL_FFE( op );
 
-    vX = NEG_FFV( v, sX ); 
+    vX = NEG_FFV( v, sX );
     return NEW_FFE( fX, vX );
 }
 
@@ -1008,7 +1008,7 @@ static Obj InvFFE(Obj op)
     v = VAL_FFE( op );
     if ( v == 0 ) return Fail;
 
-    vX = QUO_FFV( 1, v, sX ); 
+    vX = QUO_FFV( 1, v, sX );
     return NEW_FFE( fX, vX );
 }
 

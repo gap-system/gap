@@ -17,7 +17,7 @@ so in particular all operations for mappings, such as
 <Ref Func="PreImage" Label="set of preimages of the range of a general mapping"/>,
 <Ref Oper="PreImagesRepresentative"/>,
 <Ref Attr="KernelOfMultiplicativeGeneralMapping"/>,
-<Ref Attr="Source"/>, <Ref Attr="Range" Label="of a general mapping"/>, 
+<Ref Attr="Source"/>, <Ref Attr="Range" Label="of a general mapping"/>,
 <Ref Prop="IsInjective"/> and <Ref Prop="IsSurjective"/>
 (see chapter&nbsp;<Ref Chap="Mappings"/>, in particular
 section&nbsp;<Ref Sect="Mappings that Respect Multiplication"/>)
@@ -412,7 +412,7 @@ the automorphism group are done.
 <P/>
 Note that nice homomorphisms inherit down to subgroups, but cannot
 necessarily be extended from a subgroup to the whole group. Thus when
-working with a group of automorphisms, it can be beneficial to 
+working with a group of automorphisms, it can be beneficial to
 enforce calculation of the nice monomorphism for the whole group
 (for example by explicitly calling
 <Ref Oper="Random" Label="for a list or collection"/> and ignoring

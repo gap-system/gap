@@ -476,8 +476,8 @@ gap> m := [v,v,v,v];; ConvertToMatrixRep(m,GF(3));; m;
 < mutable compressed matrix 4x8 over GF(3) >
 ]]></Example>
 <P/>
-All compressed matrices over GF(2) are viewed as 
-<C>&lt;a <A>n</A>x<A>m</A> matrix over GF2></C>, 
+All compressed matrices over GF(2) are viewed as
+<C>&lt;a <A>n</A>x<A>m</A> matrix over GF2></C>,
 while over fields GF(q) for q between 3 and 256, matrices
 with 25 or more entries are viewed in this way, and smaller ones as
 lists of lists.
@@ -501,7 +501,7 @@ compressed over different fields.
 <P/>
 This is enforced by the filter <C>IsLockedRepresentationVector</C>.  When a
 vector becomes part of a compressed matrix, this filter is set for it.
-Assignment, <Ref Oper="Unbind" Label="unbind a list entry"/>,  
+Assignment, <Ref Oper="Unbind" Label="unbind a list entry"/>,
 <Ref Func="ConvertToVectorRep" Label="for a list (and a field)"/> and
 <Ref Func="ConvertToMatrixRep" Label="for a list (and a field)"/>
 are all prevented from altering a vector with this filter.
@@ -509,9 +509,9 @@ are all prevented from altering a vector with this filter.
 <Example><![CDATA[
 gap> v := [Z(2),Z(2)];; ConvertToVectorRep(v,GF(2));; v;
 <a GF2 vector of length 2>
-gap> m := [v,v]; 
+gap> m := [v,v];
 [ <a GF2 vector of length 2>, <a GF2 vector of length 2> ]
-gap> ConvertToMatrixRep(m,GF(2)); 
+gap> ConvertToMatrixRep(m,GF(2));
 2
 gap> m2 := [m[1], [Z(4),Z(4)]]; # now try and mix in some GF(4)
 [ <a GF2 vector of length 2>, [ Z(2^2), Z(2^2) ] ]

@@ -26,7 +26,7 @@ InstallMethod( TrivialGroupCons,
     return filter;
     end );
 
-    
+
 #############################################################################
 ##
 #M  AbelianGroupCons( <IsPcGroup and IsFinite>, <ints> )
@@ -75,7 +75,7 @@ local   pis,  f,  g,  r,  k,  pi,  i,  geni,  j,  name,  ps;
     k:=[];
     g:=GeneratorsOfGroup(f);
     for i in geni do
-      if i=0 then 
+      if i=0 then
         Add(k,One(f));
       else
         Add(k,g[i]);
@@ -153,7 +153,7 @@ function( filter, n )
     if n = 1 then
         f := GroupByRws( SingleCollector( FreeGroup( 0 ), [] ) );
         SetMinimalGeneratingSet (f, []);
-        
+
     else
         pi := Factors( n );
         f  := FreeGroup( IsSyllableWordsFamily, Length(pi) );
@@ -236,7 +236,7 @@ function( filter, n )
   if n = 4 then return CyclicGroup( filter, n ); fi;
   k := n/4;
   d := Factors( k );
-  relords := [2]; 
+  relords := [2];
   Append(relords, d);
   Add( relords, 2 );
   powers := [0];
@@ -322,7 +322,7 @@ function( filters, order, exp )
     n := ( Length(p) - 1 ) / 2;
     p := p[1];
 
-    # determine the required type of the group    
+    # determine the required type of the group
     if p = 2 then
         if n = 1 then
             eps1 := 1;

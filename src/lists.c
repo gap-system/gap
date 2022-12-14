@@ -918,7 +918,7 @@ void            AsssListDefault (
 
             /* get <position>                                              */
           p  = ELMW_LIST( poss, i );
-          
+
           /* select the element                                          */
           obj = ELMW_LIST( objs, i );
           if (IS_INTOBJ(p) )
@@ -1308,7 +1308,7 @@ void            ElmListLevel (
               else
                 elm = ELMB_LIST(list, pos);
               break;
-          
+
             case 2:
                 row = ELM_PLIST(ixs, 1);
                 col = ELM_PLIST(ixs, 2);
@@ -1317,7 +1317,7 @@ void            ElmListLevel (
 
             default:
               elm = ELMB_LIST(list, ixs);
-          
+
             }
 
             /* replace the list with the element                           */
@@ -1468,7 +1468,7 @@ void            AssListLevel (
               else
                 ASSB_LIST(list, pos, obj);
               break;
-          
+
             case 2:
                 row = ELM_PLIST(ixs, 1);
                 col = ELM_PLIST(ixs, 2);
@@ -2061,7 +2061,7 @@ static Int InitKernel (
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         AsssListFuncs[ type ] = AsssListObject;
     }
-    
+
 
     /* make and install the 'IS_DENSE_LIST' filter                         */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -2495,7 +2495,7 @@ static Int CheckInit (
                  (Int)TNAM_TNUM(i), 0);
                 success = 0;
             }
-        }           
+        }
     }
 
     return ! success;

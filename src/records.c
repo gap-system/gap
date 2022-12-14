@@ -93,7 +93,7 @@ UInt            RNamIntg (
     if ( negative ) {
         intg = -intg;
     }
-   
+
     do {
         *--p = '0' + intg % 10;
     } while ( (intg /= 10) != 0 );
@@ -413,16 +413,16 @@ static StructGVarFilt GVarFilts [] = {
 */
 static StructGVarOper GVarOpers [] = {
 
-    { "ELM_REC",  2, "obj, rnam", &ElmRecOper, 
+    { "ELM_REC",  2, "obj, rnam", &ElmRecOper,
       ElmRecHandler, "src/records.c:ELM_REC" },
 
-    { "ISB_REC",  2, "obj, rnam", &IsbRecOper, 
+    { "ISB_REC",  2, "obj, rnam", &IsbRecOper,
       IsbRecHandler, "src/records.c:ISB_REC" },
 
-    { "ASS_REC",  3, "obj, rnam, val", &AssRecOper, 
+    { "ASS_REC",  3, "obj, rnam, val", &AssRecOper,
       AssRecHandler, "src/records.c:ASS_REC" },
 
-    { "UNB_REC",  2, "obj, rnam", &UnbRecOper, 
+    { "UNB_REC",  2, "obj, rnam", &UnbRecOper,
       UnbRecHandler, "src/records.c:UNB_REC" },
 
     { 0, 0, 0, 0, 0, 0 }

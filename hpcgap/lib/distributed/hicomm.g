@@ -11,7 +11,7 @@
 MPISendLock := ShareObj ( rec ( dummy := 0 ) );
 
 MakeReadWriteGVar("MESSAGE_TYPES");
-MESSAGE_TYPES := MakeReadOnlyObj ( rec ( 
+MESSAGE_TYPES := MakeReadOnlyObj ( rec (
                          # global objects/handles messages
                          GLOBAL_OBJ_HANDLE_MSG := 1500,
                          SET_BY_HANDLE_MSG := 1501,
@@ -52,7 +52,7 @@ MakeReadOnlyGVar("MESSAGE_TYPES");
 #ProcessCreateDistributedObjectMsg := function (input, source, dummyObj)
 #    local msg, name, stringCmd, obj, replyMsg,
 #          localRemoteRef, weight, remoteLocalAddr;
-#    
+#
 #    msg := UnpickleMsg (input);
 #    remoteLocalAddr := msg[1];
 #    name := msg[2];
@@ -69,7 +69,7 @@ MakeReadOnlyGVar("MESSAGE_TYPES");
 
 #ProcessAckCreateDistributedObjectMsg := function (input)
 #    local msg, localAddr, remRef, localObj, res;
-#    
+#
 #    msg := UnpickleMsg(input);
 #    localAddr := msg[1];
 #    localObj := OBJ_HANDLE(localAddr);
@@ -80,7 +80,7 @@ MakeReadOnlyGVar("MESSAGE_TYPES");
 
 #ProcessReadDistributedObjectMsg := function (input, source)
 #    local msgList, retList, obj, retLocalAddress, retMsg;
-#    
+#
 #    msgList := UnpickleMsg (input);
 #    retList := [];
 #    obj := OBJ_HANDLE(msgList[1]);
@@ -93,7 +93,7 @@ MakeReadOnlyGVar("MESSAGE_TYPES");
 #ProcessFetchDistributedObjectMsg := function (input, source)
 #    local msgList, retList, obj, retLocalAddress, retMsg,
 #          retRemoteReference;
-    
+
 #    msgList := UnpickleMsg (input);
 #    retList := [];
 #    obj := OBJ_HANDLE(msgList[1]);

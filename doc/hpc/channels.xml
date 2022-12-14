@@ -3,7 +3,7 @@
 
 <Section Label="section:Channels">
   <Heading>Channels</Heading>
-  
+
   Channels are FIFO queues that threads can use to coordinate their activities.
 
 <ManSection>
@@ -204,7 +204,7 @@ See <Ref Func="MultiReceiveChannel"/> for an example.
 <Description>
 <Ref Func="TryMultiSendChannel"/> operates like <Ref Func="MultiSendChannel"/>,
 except that it returns rather than blocking if it
-cannot send any more elements if the channel is full. 
+cannot send any more elements if the channel is full.
 It returns the number of elements it has sent. If <A>channel</A>
 does not have finite capacity, <Ref Func="TryMultiSendChannel"/>
 will always send all elements in the list.

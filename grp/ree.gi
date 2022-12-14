@@ -13,7 +13,7 @@
 #M  ReeGroupCons( <IsMatrixGroup>, <q> )
 ##
 InstallMethod(ReeGroupCons,"matrix",true,
-  [IsMatrixGroup,IsPosInt],0, 
+  [IsMatrixGroup,IsPosInt],0,
 function ( filter, q )
 local theta, m, f, bas, one, zero, x, h, r, gens, G, i;
 
@@ -29,7 +29,7 @@ local theta, m, f, bas, one, zero, x, h, r, gens, G, i;
   zero:=Zero(f);
 
   x:=function(t,u,v)
-    return 
+    return
     [[1,t^theta,-u^theta,(t*u)^theta-v^theta,-u-t^(3*theta+1)-(t*v)^theta,
     -v-(u*v)^theta-t^(3*theta+2)-t^theta*u^(2*theta),
     t^theta*v-u^(theta+1)+t^(4*theta+2)-v^(2*theta)

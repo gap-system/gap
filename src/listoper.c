@@ -259,7 +259,7 @@ Obj             SumListList (
           mutS = mutS || IS_MUTABLE_OBJ(elmR);
           break;
         }
-    
+
     /* loop over the entries and add                                       */
     for ( i = 1; i <= lenS; i++ ) {
       elmL = ELM0_LIST( listL, i ) ;
@@ -507,7 +507,7 @@ static Obj AInvMutListDefault(Obj list)
                 !IS_MUTABLE_OBJ(ELM_PLIST(res,1)))
               {
                 SET_FILT_LIST( res, FN_IS_HOMOG);
-                
+
               }
           }
         else if (HAS_FILT_LIST(list, FN_IS_NDENSE))
@@ -670,7 +670,7 @@ Obj             DiffListScl (
             SET_ELM_PLIST( listD, i, elmD );
             CHANGED_BAG( listD );
           }
-          
+
     }
 
     /* Now adjust the result TNUM info */
@@ -721,14 +721,14 @@ Obj             DiffListList (
         {
           mutD = mutD || IS_MUTABLE_OBJ(elmR);
           break;
-        }    
-           
-    
+        }
+
+
     /* loop over the entries and subtract                                  */
     for ( i = 1; i <= lenD; i++ ) {
         elmL = ELM0_LIST( listL, i );
         elmR = ELM0_LIST( listR, i );
-        
+
 
         /* Now compute the result 6 different cases! */
         if (elmL)
@@ -749,7 +749,7 @@ Obj             DiffListList (
           }
         else
           elmD = 0;
-          
+
         if (elmD)
           {
             SET_ELM_PLIST( listD, i, elmD );
@@ -763,7 +763,7 @@ Obj             DiffListList (
              HAS_FILT_LIST(listR, FN_IS_DENSE) &&
              HAS_FILT_LIST(listL, FN_IS_DENSE))
       SET_FILT_LIST( listD, FN_IS_DENSE );
-    
+
     return listD;
 }
 
@@ -929,7 +929,7 @@ Obj             ProdListList (
 
     if (!listP)
       ErrorMayQuit("Inner product multiplication of lists: no summands", 0, 0);
-    
+
     return listP;
 }
 
@@ -968,7 +968,7 @@ FuncPROD_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR, Obj depthdiff)
                      INT_INTOBJ(depthdiff), 0);
     }
   return prod;
-        
+
 }
 
 
@@ -1009,7 +1009,7 @@ static Obj OneMatrix(Obj mat, UInt mut)
       CheckedMakeImmutable(one);
       ctype = rtype = T_PLIST+IMMUTABLE;
       break;
-      
+
     case 1:
       zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
       one = ONE_SAMEMUT(zero);
@@ -1029,7 +1029,7 @@ static Obj OneMatrix(Obj mat, UInt mut)
       break;
     }
 
-    
+
 
     /* make the identity matrix                                            */
     res = NEW_PLIST(  ctype, len );
@@ -1112,7 +1112,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
         CheckedMakeImmutable(zero);
         CheckedMakeImmutable(one);
         break;
-        
+
       case 1:
         zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
         one = ONE_SAMEMUT(zero);
@@ -1393,7 +1393,7 @@ static Obj FuncADD_ROW_VECTOR_2(Obj self, Obj list1, Obj list2)
 **  each i in the range 1..Length(<list1>). It does very little checking
 **
 **  This version is specialised to the "fast" case where list1 and list2 are
-**  plain lists of cyclotomics 
+**  plain lists of cyclotomics
 */
 static Obj FuncADD_ROW_VECTOR_2_FAST(Obj self, Obj list1, Obj list2)
 {
@@ -1572,7 +1572,7 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
   zerov = ZERO_SAMEMUT(ELMW_LIST(mat, 1));
   zero = ZERO_SAMEMUT(ELMW_LIST(ELMW_LIST(mat, 1), 1));
   one  = ONE( zero );
-    
+
   /* set up res (initially the identity) and matcopy */
   res = NEW_PLIST(T_PLIST,len);
   matcopy = NEW_PLIST(T_PLIST,len);
@@ -1651,7 +1651,7 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
               CALL_3ARGS(AddRowVectorOp, ELM_PLIST(res,k), row2, yi);
             }
         }
-                                 
+
     }
 
   /* Now we adjust mutability. Couldn't do it earlier, because AddRowVector, etc.
@@ -1661,7 +1661,7 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
     case 0:
       CheckedMakeImmutable(res);
       break;
-      
+
     case 1:
       if (IS_MUTABLE_OBJ(mat))
         {
@@ -1675,7 +1675,7 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
     case 2:
       break;
     }
-  
+
   return res;
 }
 
@@ -1695,7 +1695,7 @@ static Obj FuncINV_MAT_DEFAULT_IMMUTABLE(Obj self, Obj mat)
   return InvMatWithRowVecs(mat, 0);
 }
 
-  
+
 /****************************************************************************
 **
 *F  FuncADD_TO_LIST_ENTRIES_PLIST_RANGE( <list>, <range>, <x> )
@@ -1731,7 +1731,7 @@ FuncADD_TO_LIST_ENTRIES_PLIST_RANGE(Obj self, Obj list, Obj range, Obj x)
         }
       else
         SET_ELM_PLIST(list,i,z);
-        
+
     }
   return (Obj) 0;
 }
@@ -1762,33 +1762,33 @@ static Obj  FuncMONOM_TOT_DEG_LEX ( Obj self, Obj u, Obj  v ) {
   if (!IS_PLIST(v) || !IS_DENSE_LIST(v)) {
       RequireArgument(SELF_NAME, v, "must be a dense plain list");
   }
-    
+
   lu = LEN_PLIST( u );
   lv = LEN_PLIST( v );
 
   /* strip off common prefixes                                             */
   i = 1;
-  while ( i <= lu && i <= lv && EQ(ELM_PLIST( u,i ), ELM_PLIST( v,i )) ) 
+  while ( i <= lu && i <= lv && EQ(ELM_PLIST( u,i ), ELM_PLIST( v,i )) )
       i++;
- 
+
   /* Is u a prefix of v ? Return true if u is a proper prefix.             */
   if ( i > lu ) return (lu < lv) ? True : False;
 
   /* Is v a  prefix of u ?                                                 */
   if ( i > lv ) return False;
- 
+
   /* Now determine the lexicographic order.  The monomial is interpreted   */
   /* as a string of indeterminates.                                        */
   if ( i % 2 == 1 ) {
     /* The first difference between u and v is an indeterminate.           */
     lexico = LT(ELM_PLIST( u, i ), ELM_PLIST( v, i )) ? True : False;
-    i++;  
+    i++;
   }
   else {
     /* The first difference between u and v is an exponent.                */
     lexico = LT(ELM_PLIST( v, i ), ELM_PLIST( u, i )) ? True : False;
   }
- 
+
   /* Now add up the remaining exponents in order to compare the total      */
   /* degrees.                                                              */
   total = INTOBJ_INT(0);
@@ -1807,7 +1807,7 @@ static Obj  FuncMONOM_TOT_DEG_LEX ( Obj self, Obj u, Obj  v ) {
     C_DIFF_FIA( total, total, ELM_PLIST( v, i ) );
     i += 2;
   }
- 
+
   if ( EQ( total, INTOBJ_INT(0)) ) return lexico;
 
   return LT( total, INTOBJ_INT(0)) ? True : False;
@@ -1838,7 +1838,7 @@ static Obj  FuncMONOM_GRLEX( Obj self, Obj u, Obj  v ) {
   if (!IS_PLIST(v) || !IS_DENSE_LIST(v)) {
       RequireArgument(SELF_NAME, v, "must be a dense plain list");
   }
-    
+
   lu = LEN_PLIST( u );
   lv = LEN_PLIST( v );
 
@@ -1936,14 +1936,14 @@ static Obj  FuncZIPPED_SUM_LISTS( Obj self, Obj z1, Obj  z2, Obj zero, Obj f ) {
 
       if ( /* this construct is taken from the compiler */
           (Obj)(UInt)(c != False) ) {
-        a=ELM_PLIST(z1,i1); 
+        a=ELM_PLIST(z1,i1);
         AddList(sum,a);
         c=ELM_PLIST(z1,i1+1);
         AddList(sum,c);
         i1=i1+2;
       }
       else {
-        b=ELM_PLIST(z2,i2); 
+        b=ELM_PLIST(z2,i2);
         AddList(sum,b);
         c=ELM_PLIST(z2,i2+1);
         AddList(sum,c);
@@ -1969,7 +1969,7 @@ static Obj  FuncZIPPED_SUM_LISTS( Obj self, Obj z1, Obj  z2, Obj zero, Obj f ) {
 **
 *F  FuncMONOM_PROD(m1,m2)
 **
-**  implements the multiplication of monomials. Both must be plain lists 
+**  implements the multiplication of monomials. Both must be plain lists
 **  of integers.
 */
 static Obj  FuncMONOM_PROD( Obj self, Obj m1, Obj m2 ) {
@@ -2144,13 +2144,13 @@ static Int InitKernel (
 
 
        everything else needs to wait until the library */
-       
+
     for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
       for (t2 = FIRST_REAL_TNUM; t2 < FIRST_LIST_TNUM; t2++ ) {
         SumFuncs[t1][t2] = SumListScl;
         SumFuncs[t2][t1] = SumSclList;
       }
-        
+
     }
     for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
       for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE+IMMUTABLE; t2++) {
@@ -2161,9 +2161,9 @@ static Int InitKernel (
         SumFuncs[t2][t1] = SumListScl;
       }
     }
-        
+
     /* Diff is just like Sum */
-    
+
     for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
       for (t2 = FIRST_REAL_TNUM; t2 < FIRST_LIST_TNUM; t2++ ) {
         DiffFuncs[t1][t2] = DiffListScl;
@@ -2187,8 +2187,8 @@ static Int InitKernel (
 
     It's also less obvious what happens with the empty list
     */
-    
-    
+
+
     for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
       for (t2 = FIRST_REAL_TNUM; t2 < FIRST_LIST_TNUM; t2++ ) {
         ProdFuncs[t1][t2] = ProdListScl;
@@ -2200,7 +2200,7 @@ static Int InitKernel (
         ProdFuncs[t1][t2] = ProdListList;
       }
     }
-    
+
 
     return 0;
 }

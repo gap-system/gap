@@ -13,7 +13,7 @@ DistTaskData := ShareSpecialObj ( rec ( outstandingMessages := 0,
 
 ########### some lower level functionality
 UnblockWorker := function(worker)
-  SendChannel (Tasks.TaskManagerRequests, rec ( type := TASK_MANAGER_REQUESTS.RESUME_BLOCKED_WORKER, 
+  SendChannel (Tasks.TaskManagerRequests, rec ( type := TASK_MANAGER_REQUESTS.RESUME_BLOCKED_WORKER,
                                                         worker := worker));
 end;
 
@@ -54,7 +54,7 @@ SendTaskWithHandle := atomic function (readonly task, readonly handle, dest)
   od;
   toTempUnblock := TryReceiveChannel (task.blockedWorkers, fail);
   while not IsIdenticalObj(toTempUnblock, fail) do
-    SendChannel (Tasks.TaskManagerRequests, rec ( type := TASK_MANAGER_REQUESTS.RESUME_BLOCKED_WORKER, 
+    SendChannel (Tasks.TaskManagerRequests, rec ( type := TASK_MANAGER_REQUESTS.RESUME_BLOCKED_WORKER,
                                                           worker := toTempUnblock.worker));
     toTempUnblock := TryReceiveChannel (task.blockedWorkers, fail);
   od;
@@ -133,7 +133,7 @@ InstallGlobalFunction(SendSteal, function()
  #     return;
  #   fi;
  # od;
- # 
+ #
   repeat
     target := Random([0..commSize-1]);
   until target<>processId;
@@ -156,7 +156,7 @@ ProcessSteal := function (msg, source)
   fi;
   if orig=processId then
     SendChannel (Tasks.TaskManagerRequests, rec ( type := TASK_MANAGER_REQUESTS.UNSUCC_STEAL, worker := 0 ));
-    return;  
+    return;
   fi;
   atomic TaskPoolData do
     if TaskPoolData.TaskPoolLen>1 then
@@ -212,6 +212,6 @@ StopStealing := function()
 end;
 ###########
 
-               
-  
+
+
 

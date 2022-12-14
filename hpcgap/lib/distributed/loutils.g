@@ -28,7 +28,7 @@ BindGlobal ("MPI_DEBUG", rec (
                               OBJECT_TRANSFER := false,
                               TASKS := false));
 MakeReadOnlyObj(MPI_DEBUG);
-                           
+
 BindGlobal ("MPI_DEBUG_OUTPUT", MakeReadOnlyObj ( rec (
         HANDLE_CREATION := 1,
                                    GA_MAP := 2,
@@ -37,7 +37,7 @@ BindGlobal ("MPI_DEBUG_OUTPUT", MakeReadOnlyObj ( rec (
                                    OBJECT_TRANSFER := 5,
                                    TASKS := 6,
                                    LOCAL_TASKS := 7)));
-                           
+
 MSTime := function()
   local t;
   t := CurrentTime();
@@ -106,13 +106,13 @@ end;
 
 ReadEvalFromString := function(str)
   local i, j;
-  if not IsString(str) then 
-    Error("string argument required"); 
+  if not IsString(str) then
+    Error("string argument required");
   fi;
   # The issue is that GAP printing to streams produces "\n\0" sequences.
   # Also, Read( InputTestString( str ) ); wants to see ';'
-  if Length(str) = 0 then 
-    Error("Reading and evaluating null string"); 
+  if Length(str) = 0 then
+    Error("Reading and evaluating null string");
   fi;
   i := CHAR_INT(0);     # In GAP, CHAR_INT(INT_CHAR('\0')) = '0', not '\0'
   str := Filtered(str, x->x<>i);
@@ -141,10 +141,10 @@ end;
 MyLookupHashTable := function (table, key)
   local keys, i, values, p, res;
   res := fail;
-  atomic readonly table do 
+  atomic readonly table do
     keys := table[1];
     values := table[2];
-    
+
     for i in [1..Length(keys)] do
       if keys[i] = key then
         res := values[i];
@@ -175,7 +175,7 @@ end;
 
 MyDeleteHashTable := function (table, key)
   local keys, i, values;
-   atomic readonly table do 
+   atomic readonly table do
     keys := table[1];
     values := table[2];
     for i in [1..Length(keys)] do

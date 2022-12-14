@@ -83,7 +83,7 @@ void SyMsgsBags (
     if (phase > 0)
       {
         SyGasmanNumbers[full][phase] = nr;
-        
+
         /* in a full GC clear the partial numbers */
         if (full)
           SyGasmanNumbers[0][phase] = 0;
@@ -93,7 +93,7 @@ void SyMsgsBags (
         SyGasmanNumbers[full][0]++;
         tstart = SyTime();
       }
-    if (phase == 6) 
+    if (phase == 6)
       {
         UInt x = SyTime() - tstart;
         SyGasmanNumbers[full][7] = x;
@@ -113,7 +113,7 @@ void SyMsgsBags (
         shifted++;
         nr /= 1024;
       }
-      
+
     for ( i = ((phase % 2) == 1 && shifted) ? 6 : 7 ;
           i != 0; i-- ) {
         if      ( 0 < nr ) { str[i-1] = '0' + ( nr) % 10;  ch = ' '; }
@@ -128,7 +128,7 @@ void SyMsgsBags (
     if ((phase % 2) == 1 && shifted == 2)
       str[6] = 'M';
 
-    
+
 
     /* ordinary full garbage collection messages                           */
     if ( 1 <= SyMsgsFlagBags && full ) {
@@ -309,7 +309,7 @@ void SyMAdviseFree(void)
 {
     size_t size;
     void *from;
-    if (!SyMMapStart) 
+    if (!SyMMapStart)
         return;
     from = EndOfWorkspace();
     from = (void *)SyRoundUpToPagesize((UInt) from);

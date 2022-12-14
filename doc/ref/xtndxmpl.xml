@@ -63,17 +63,17 @@ gap> resclass_sum := function( c1, c2 )
 >    if c1[2] <> c2[2] then Error( "different moduli" ); fi;
 >    return [ ( c1[1] + c2[1] ) mod c1[2], c1[2] ];
 > end;;
-gap> 
+gap>
 gap> resclass_diff := function( c1, c2 )
 >    if c1[2] <> c2[2] then Error( "different moduli" ); fi;
 >    return [ ( c1[1] - c2[1] ) mod c1[2], c1[2] ];
 > end;;
-gap> 
+gap>
 gap> resclass_prod := function( c1, c2 )
 >    if c1[2] <> c2[2] then Error( "different moduli" ); fi;
 >    return [ ( c1[1] * c2[1] ) mod c1[2], c1[2] ];
 > end;;
-gap> 
+gap>
 gap> resclass_quo := function( c1, c2 )
 >    local quo;
 >    if c1[2] <> c2[2] then Error( "different moduli" ); fi;
@@ -338,26 +338,26 @@ see&nbsp;<Ref Sect="Declaration and Implementation Part"/>).
 <P/>
 <Example><![CDATA[
 gap> DeclareGlobalFunction( "MyZmodnZ" );
-gap> 
+gap>
 gap> InstallGlobalFunction( MyZmodnZ, function( n )
 >    local F, R;
-> 
+>
 >    if not IsPosInt( n ) then
 >      Error( "<n> must be a positive integer" );
 >    fi;
-> 
+>
 >    # Construct the family of element objects of our ring.
 >    F:= NewFamily( Concatenation( "MyZmod", String( n ), "Z" ),
 >                   IsMyZmodnZObj );
-> 
+>
 >    # Install the data.
 >    F!.modulus:= n;
-> 
+>
 >    # Make the domain.
 >    R:= RingWithOneByGenerators( [ MyZmodnZObj( F, 1 ) ] );
 >    SetIsWholeFamily( R, true );
 >    SetName( R, Concatenation( "(Integers mod ", String(n), ")" ) );
-> 
+>
 >    # Return the ring.
 >    return R;
 > end );
@@ -493,7 +493,7 @@ gap> InstallMethod( \=,
 >    IsIdenticalObj,
 >    [IsMyZmodnZObj and IsMyModulusRep, IsMyZmodnZObj and IsMyModulusRep],
 >    function( x, y ) return x![1] = y![1]; end );
-gap> 
+gap>
 gap> InstallMethod( \<,
 >    "for two elements in Z/nZ (ModulusRep)",
 >    IsIdenticalObj,
@@ -536,12 +536,12 @@ gap> InstallMethod( \+,
 >    function( x, y )
 >    return MyZmodnZObj( FamilyObj( x ), x![1] + y![1] );
 >    end );
-gap> 
+gap>
 gap> InstallMethod( ZeroOp,
 >    "for element in Z/nZ (ModulusRep)",
 >    [ IsMyZmodnZObj ],
 >    x -> MyZmodnZObj( FamilyObj( x ), 0 ) );
-gap> 
+gap>
 gap> InstallMethod( AdditiveInverseOp,
 >    "for element in Z/nZ (ModulusRep)",
 >    [ IsMyZmodnZObj and IsMyModulusRep ],
@@ -608,7 +608,7 @@ gap> InstallMethod( \+,
 >    function( x, y )
 >    return MyZmodnZObj( FamilyObj( x ), x![1] + y );
 >    end );
-gap> 
+gap>
 gap> InstallMethod( \+,
 >    "for integer and element in Z/nZ (ModulusRep)",
 >    [ IsInt, IsMyZmodnZObj and IsMyModulusRep ],
@@ -645,12 +645,12 @@ gap> InstallMethod( \*,
 >    function( x, y )
 >    return MyZmodnZObj( FamilyObj( x ), x![1] * y![1] );
 >    end );
-gap> 
+gap>
 gap> InstallMethod( OneOp,
 >    "for element in Z/nZ (ModulusRep)",
 >    [ IsMyZmodnZObj ],
 >    elm -> MyZmodnZObj( FamilyObj( elm ), 1 ) );
-gap> 
+gap>
 gap> InstallMethod( InverseOp,
 >    "for element in Z/nZ (ModulusRep)",
 >    [ IsMyZmodnZObj and IsMyModulusRep ],
@@ -743,7 +743,7 @@ gap> InstallMethod( PrintObj,
 >    Print( "(Integers mod ",
 >           ElementsFamily( FamilyObj(R) )!.modulus, ")" );
 >    end );
-gap> 
+gap>
 gap> InstallMethod( \mod,
 >    "for `Integers', and a positive integer",
 >    [ IsIntegers, IsPosRat and IsInt ],
@@ -814,7 +814,7 @@ gap> InstallMethod( InverseOp,
 >      and CategoryCollections( CategoryCollections( IsMyZmodnZObj ) ) ],
 >    function( mat )
 >    local one, modulus;
-> 
+>
 >    one:= One( mat[1][1] );
 >    modulus:= FamilyObj( one )!.modulus;
 >    mat:= InverseOp( List( mat, row -> List( row, Int ) ) );
@@ -851,7 +851,7 @@ gap> Factors( last );
 [ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3 ]
 gap> syl3:= SylowSubgroup( g, 3 );;
 gap> gens:= GeneratorsOfGroup( syl3 );
-[ [ [ ( 1 mod 16 ), ( 7 mod 16 ) ], [ ( 11 mod 16 ), ( 14 mod 16 ) ] 
+[ [ [ ( 1 mod 16 ), ( 7 mod 16 ) ], [ ( 11 mod 16 ), ( 14 mod 16 ) ]
      ] ]
 gap> Order( gens[1] );
 3
@@ -868,11 +868,11 @@ By the way, also groups of (invertible) residue classes can be formed,
 but this may be of minor interest.
 <Example><![CDATA[
 gap> g:= Group( x );;  Size( g );
-#I  default `IsGeneratorsOfMagmaWithInverses' method returns `true' for 
+#I  default `IsGeneratorsOfMagmaWithInverses' method returns `true' for
 [ ( 1 mod 16 ) ]
 1
 gap> g:= Group( 3*x );;  Size( g );
-#I  default `IsGeneratorsOfMagmaWithInverses' method returns `true' for 
+#I  default `IsGeneratorsOfMagmaWithInverses' method returns `true' for
 [ ( 3 mod 16 ) ]
 4
 ]]></Example>
@@ -917,12 +917,12 @@ gap> InstallMethod( Random,
 >    [ CategoryCollections( IsMyZmodnZObj ) and IsWholeFamily ],
 >    R -> MyZmodnZObj( ElementsFamily( FamilyObj(R) ),
 >                    Random( 0, Size( R ) - 1 ) ) );
-gap> 
+gap>
 gap> InstallMethod( Size,
 >    "for full ring Z/nZ",
 >    [ CategoryCollections( IsMyZmodnZObj ) and IsWholeFamily ],
 >    R -> ElementsFamily( FamilyObj(R) )!.modulus );
-gap> 
+gap>
 gap> InstallMethod( Units,
 >    "for full ring Z/nZ",
 >    [     CategoryCollections( IsMyZmodnZObj )
@@ -948,7 +948,7 @@ gap> InstallMethod( Units,
 >      and IsWholeFamily and IsRing ],
 >    function( R )
 >    local G, gens;
-> 
+>
 >    gens:= GeneratorsPrimeResidues( Size( R ) ).generators;
 >    if not IsEmpty( gens ) and gens[ 1 ] = 1 then
 >      gens:= gens{ [ 2 .. Length( gens ) ] };
@@ -1032,15 +1032,15 @@ the ones we want.)
 <P/>
 <Log><![CDATA[
 gap> DeclareCategory( "IsMyZmodnZObj", IsScalar );
-gap> 
+gap>
 gap> DeclareCategory( "IsMyZmodnZObjNonprime", IsMyZmodnZObj );
-gap> 
+gap>
 gap> DeclareSynonym( "IsMyZmodpZObj", IsMyZmodnZObj and IsFFE );
-gap> 
+gap>
 gap> DeclareRepresentation( "IsMyModulusRep", IsPositionalObjectRep, [ 1 ] );
-gap> 
+gap>
 gap> DeclareGlobalFunction( "MyZmodnZObj" );
-gap> 
+gap>
 gap> DeclareGlobalFunction( "MyZmodnZ" );
 ]]></Log>
 <P/>
@@ -1079,7 +1079,7 @@ gap> InstallGlobalFunction( MyZmodnZObj, function( Fam, residue )
 
 gap> InstallGlobalFunction( MyZmodnZ, function( n )
 >    local F, R;
-> 
+>
 >    if not ( IsInt( n ) and IsPosRat( n ) ) then
 >      Error( "<n> must be a positive integer" );
 >    elif IsPrimeInt( n ) then
@@ -1099,7 +1099,7 @@ gap> InstallGlobalFunction( MyZmodnZ, function( n )
 >      SetIsWholeFamily( R, true );
 >      SetName( R, Concatenation( "(Integers mod ",String(n),")" ) );
 >    fi;
-> 
+>
 >    # Return the ring resp. field.
 >    return R;
 > end );
@@ -1123,14 +1123,14 @@ gap> InstallMethod( PrintObj,
 >    function( x )
 >    Print( "( ", x![1], " mod ", FamilyObj(x)!.modulus, " )" );
 >    end );
-gap> 
+gap>
 gap> InstallMethod( PrintObj,
 >    "for element in Z/pZ (ModulusRep)",
 >    [ IsMyZmodpZObj and IsMyModulusRep ],
 >    function( x )
 >    Print( "( ", x![1], " mod ", Characteristic(x), " )" );
 >    end );
-gap> 
+gap>
 gap> InstallMethod( \=,
 >    "for two elements in Z/nZ (ModulusRep)",
 >    IsIdenticalObj,
@@ -1153,7 +1153,7 @@ gap> InstallMethod( \=,
 >    function( x, y )
 >    return DegreeFFE( y ) = 1 and x![1] = IntFFE( y );
 >    end );
-gap> 
+gap>
 gap> InstallMethod( \=,
 >    "for internal FFE and element in Z/pZ (ModulusRep)",
 >    IsIdenticalObj,
@@ -1183,7 +1183,7 @@ gap> InstallMethod( \<,
 >    [ IsMyZmodnZObjNonprime and IsMyModulusRep,
 >      IsMyZmodnZObjNonprime and IsMyModulusRep ],
 >    function( x, y ) return x![1] < y![1]; end );
-gap> 
+gap>
 gap> InstallMethod( \<,
 >    "for two elements in Z/pZ (ModulusRep)",
 >    IsIdenticalObj,
@@ -1201,7 +1201,7 @@ gap> InstallMethod( \<,
 >      return LogMod( x![1], r, p ) < LogMod( y![1], r, p );
 >    fi;
 >    end );
-gap> 
+gap>
 gap> InstallMethod( \<,
 >    "for element in Z/pZ (ModulusRep) and internal FFE",
 >    IsIdenticalObj,
@@ -1209,7 +1209,7 @@ gap> InstallMethod( \<,
 >    function( x, y )
 >    return x![1] * One( y ) < y;
 >    end );
-gap> 
+gap>
 gap> InstallMethod( \<,
 >    "for internal FFE and element in Z/pZ (ModulusRep)",
 >    IsIdenticalObj,
@@ -1247,25 +1247,25 @@ gap> InstallMethod( \+,
 >    IsIdenticalObj,
 >    [ IsMyZmodpZObj and IsMyModulusRep, IsFFE and IsInternalRep ],
 >    function( x, y ) return x![1] + y; end );
-gap> 
+gap>
 gap> InstallMethod( \+,
 >    "for internal FFE and element in Z/pZ (ModulusRep)",
 >    IsIdenticalObj,
 >    [ IsFFE and IsInternalRep, IsMyZmodpZObj and IsMyModulusRep ],
 >    function( x, y ) return x + y![1]; end );
-gap> 
+gap>
 gap> InstallMethod( \*,
 >    "for element in Z/pZ (ModulusRep) and internal FFE",
 >    IsIdenticalObj,
 >    [ IsMyZmodpZObj and IsMyModulusRep, IsFFE and IsInternalRep ],
 >    function( x, y ) return x![1] * y; end );
-gap> 
+gap>
 gap> InstallMethod( \*,
 >    "for internal FFE and element in Z/pZ (ModulusRep)",
 >    IsIdenticalObj,
 >    [ IsFFE and IsInternalRep, IsMyZmodpZObj and IsMyModulusRep ],
 >    function( x, y ) return x * y![1]; end );
-gap> 
+gap>
 gap> InstallMethod( InverseOp,
 >    "for element in Z/nZ (ModulusRep, nonprime)",
 >    [ IsMyZmodnZObjNonprime and IsMyModulusRep ],
@@ -1277,7 +1277,7 @@ gap> InstallMethod( InverseOp,
 >    fi;
 >    return residue;
 >    end );
-gap> 
+gap>
 gap> InstallMethod( InverseOp,
 >    "for element in Z/pZ (ModulusRep)",
 >    [ IsMyZmodpZObj and IsMyModulusRep ],
@@ -1323,25 +1323,25 @@ gap> InstallMethod( Enumerator,
 >    F:= ElementsFamily( FamilyObj( R ) );
 >    return List( [ 0 .. Size( R ) - 1 ], x -> MyZmodnZObj( F, x ) );
 >    end );
-gap> 
+gap>
 gap> InstallMethod( Random,
 >    "for full ring Z/nZ",
 >    [ CategoryCollections( IsMyZmodnZObjNonprime ) and IsWholeFamily ],
 >    R -> MyZmodnZObj( ElementsFamily( FamilyObj( R ) ),
 >                    Random( 0, Size( R ) - 1 ) ) );
-gap> 
+gap>
 gap> InstallMethod( Size,
 >    "for full ring Z/nZ",
 >    [ CategoryCollections( IsMyZmodnZObjNonprime ) and IsWholeFamily ],
 >    R -> ElementsFamily( FamilyObj( R ) )!.modulus );
-gap> 
+gap>
 gap> InstallMethod( Units,
 >    "for full ring Z/nZ",
 >    [     CategoryCollections( IsMyZmodnZObjNonprime )
 >      and IsWholeFamily and IsRing ],
 >    function( R )
 >    local G, gens;
-> 
+>
 >    gens:= GeneratorsPrimeResidues( Size( R ) ).generators;
 >    if not IsEmpty( gens ) and gens[ 1 ] = 1 then
 >      gens:= gens{ [ 2 .. Length( gens ) ] };
@@ -1349,7 +1349,7 @@ gap> InstallMethod( Units,
 >    gens:= Flat( gens ) * One( R );
 >    return GroupByGenerators( gens, One( R ) );
 >    end );
-gap> 
+gap>
 gap> InstallTrueMethod( IsFinite,
 >    CategoryCollections( IsMyZmodnZObjNonprime ) and IsDomain );
 ]]></Log>

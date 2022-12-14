@@ -1454,7 +1454,7 @@ static Obj ReducedPowerSmallInt(FinPowConjCol * fc, Obj sc, Obj w, Obj vpow)
 
     /* invert <w> if <pow> is negative                                     */
     if ( pow < 0 ) {
-        
+
         /* check that it has the correct length, unpack <w> into it        */
         if ( fc->vectorWord( vcw, w, num ) == -1 )  {
             memset(ADDR_OBJ(vcw) + 1, 0, sizeof(Int) * num);

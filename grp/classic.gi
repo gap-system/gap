@@ -1969,7 +1969,7 @@ end );
 ## true if <e> is a square element in <fld> and otherwise false.
 BindGlobal( "IsSquareFFE", function( fld, e )
     local char, q;
-    
+
     if IsZero(e) then
         return true;
     else
@@ -1980,7 +1980,7 @@ BindGlobal( "IsSquareFFE", function( fld, e )
             return true;
         fi;
         q := Size(fld);
-        
+
         # If the characteristic of fld is not 2, we know that there are exactly
         # (q+1)/2 elements which are a square (Huppert LA, Theorem 2.5.4). Now observe
         # that for a square element e we have that e^((q-1)/2) = 1. And, thus, the
@@ -1989,7 +1989,7 @@ BindGlobal( "IsSquareFFE", function( fld, e )
         # which proves the line below.
         return IsOne(e^((q-1)/2));
     fi;
-    
+
 end );
 
 
@@ -2005,14 +2005,14 @@ end );
 ## For the definition of Wall forms, see [Tay92, page 163].
 BindGlobal( "SpinorNorm", function( form, fld, m )
     local one;
-    
+
     if Characteristic(fld) = 2 then
         Error("The characteristic of <fld> needs to be odd.");
     fi;
-    
+
     one := OneOfBaseDomain(m);
     if IsOne(m) then return one; fi;
-    
+
     if IsSquareFFE(fld, DeterminantMat( WallForm(form,m).form )) then
         return one;
     else

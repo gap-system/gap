@@ -74,7 +74,7 @@ static inline void FORGET_WP(Obj wp, UInt pos)
 *F  STORE_LEN_WPOBJ(<wp>,<len>) . . . . . . . . set the length of a WP object
 **
 **  'STORE_LEN_WPOBJ' sets the length of the WP object <wp> to <len>.
-** 
+**
 **  Objects at the end of <wp> may evaporate, so the stored length can only
 **  be regarded as an upper bound.
 */
@@ -88,7 +88,7 @@ static inline void STORE_LEN_WPOBJ(Obj wp, Int len)
 **
 *F  STORED_LEN_WPOBJ(<wp>) . . . . . . . . . . . stored length of a WP object
 **
-**  'STORED_LEN_WPOBJ' returns the stored length of the WP object <wp> 
+**  'STORED_LEN_WPOBJ' returns the stored length of the WP object <wp>
 **  as a C integer.
 **
 **  Note that as the list can mutate under your feet, the length may be
@@ -227,9 +227,9 @@ static inline void GROW_WPOBJ(Obj wp, UInt need)
 
 static Obj FuncWeakPointerObj(Obj self, Obj list)
 {
-  Obj wp; 
+  Obj wp;
   Int i;
-  Int len; 
+  Int len;
 #ifdef USE_BOEHM_GC
   /* We need to make sure that the list stays live until
    * after REGISTER_WP(); on architectures that pass
@@ -245,9 +245,9 @@ static Obj FuncWeakPointerObj(Obj self, Obj list)
       ErrorMayQuit("WeakPointerObj: List size too large", 0, 0);
 
   wp = (Obj) NewBag(T_WPOBJ, (len+1)*sizeof(Obj));
-  STORE_LEN_WPOBJ(wp,len); 
-  for (i = 1; i <= len ; i++) 
-    { 
+  STORE_LEN_WPOBJ(wp,len);
+  for (i = 1; i <= len ; i++)
+    {
 #ifdef USE_BOEHM_GC
       Obj tmp = ELM0_LIST(list2, i);
       SET_ELM_WPOBJ(wp, i, tmp);
@@ -256,13 +256,13 @@ static Obj FuncWeakPointerObj(Obj self, Obj list)
 #else
       SET_ELM_WPOBJ(wp, i, ELM0_LIST(list, i));
 #endif
-      CHANGED_BAG(wp);          /* this must be here in case list is 
-                                 in fact an object and causes a GC in the 
+      CHANGED_BAG(wp);          /* this must be here in case list is
+                                 in fact an object and causes a GC in the
                                  element access method */
     }
 
-  return wp; 
-} 
+  return wp;
+}
 
 
 /****************************************************************************
@@ -272,7 +272,7 @@ static Obj FuncWeakPointerObj(Obj self, Obj list)
 **  'LengthWPObj' returns the length of the WP object <wp> as a C integer.
 **  The value cannot be trusted past a garbage collection, as trailing items
 **  may evaporate.
-**   
+**
 **  Any identifiers of trailing objects that have evaporated in a garbage
 **  collection are cleaned up by this function. However, for HPC-GAP, this
 **  only happens if we have exclusive write access.
@@ -374,7 +374,7 @@ static BOOL IsBoundElmWPObj(Obj wp, UInt ipos)
   volatile
 #endif
   Obj elm;
-  if ( LengthWPObj(wp) < ipos ) 
+  if ( LengthWPObj(wp) < ipos )
     {
       return 0;
     }
@@ -410,7 +410,7 @@ static Obj FuncIsBoundElmWPObj(Obj self, Obj wp, Obj pos)
 **
 *F  FuncUnbindElmWPObj(<self>,<wp>,<pos>) . . . Unbind handler for WP objects
 **
-**  GAP  handler for Unbind on WP object. 
+**  GAP  handler for Unbind on WP object.
 */
 
 static Obj FuncUnbindElmWPObj(Obj self, Obj wp, Obj pos)
@@ -533,7 +533,7 @@ static Obj FiltIsWPObj(Obj self, Obj wp)
 **  These functions are installed for GASMAN to use in garbage collection.
 **  The sweeping function must clean up any dead weak pointers encountered so
 **  that, after a full GC, the masterpointers occupied by the dead weak
-**  pointers can be reclaimed.  
+**  pointers can be reclaimed.
 */
 
 #if defined(USE_GASMAN)

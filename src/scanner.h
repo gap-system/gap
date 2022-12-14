@@ -223,7 +223,7 @@ typedef struct {
     // Track the last three symbols, for 'Unbound global' warnings
     UInt   SymbolStartPos[3];
     UInt   SymbolStartLine[3];
-    
+
     // 'NrError' is an integer whose value is the number of errors already
     // found in the current expression. It is set to 0 at the beginning of
     // 'Read' and incremented with each 'SyntaxError' call, including those
@@ -252,7 +252,7 @@ typedef struct {
 **  'SyntaxError' is called from the parser to print error messages for those
 **  errors that are not caught by 'Match',  for example if the left hand side
 **  of an assignment is not a variable, a list element or a record component,
-**  or if two formal arguments of a function have the same identifier.  
+**  or if two formal arguments of a function have the same identifier.
 **
 **  'SyntaxError' first increments 'NrError' by   1.  If 'NrError' is greater
 **  than zero the parser functions  will not create  new bags.  This prevents
@@ -262,7 +262,7 @@ typedef struct {
 **  prevent the printing of multiple error messages for one line, since they
 **  usually  just reflect the  fact  that the parser has not resynchronized
 **  yet.
-** 
+**
 **  'SyntaxWarning' displays in the same way but does not change 'NrError'
 **  or 'lastErrorLine'.
 **

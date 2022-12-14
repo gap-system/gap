@@ -38,20 +38,20 @@ gap> if LoadPackage( "ctbllib" ) &lt;&gt; fail then
 >    fi;
 </Listing>
 
-Moreover, it is recommended to group tests that require packages to be 
+Moreover, it is recommended to group tests that require packages to be
 performed after all other tests are completed.
 
-The directory <F>tst/testinstall</F> contains a subset of tests which are 
+The directory <F>tst/testinstall</F> contains a subset of tests which are
 recommended after installing &GAP;,
 see <URL>https://www.gap-system.org/Download/INSTALL</URL>.
 The idea is that the examples in these <C>.tst</C> files are typical
 &GAP; computations,
 and that running these tests requires only a few minutes.
-The &GAP; script <F>tst/testinstall.g</F> will run the tests in 
+The &GAP; script <F>tst/testinstall.g</F> will run the tests in
 <F>tst/testinstall</F>.
 <P/>
 
-Further tests are contained in <F>tst/teststandard</F>. The script 
+Further tests are contained in <F>tst/teststandard</F>. The script
 <F>tst/teststandard.g</F> will run all tests in both <F>tst/teststandard</F>
 and <F>tst/testinstall</F>.
 <P/>
@@ -89,7 +89,7 @@ output that is prescribed in the test files in <C>tst</C> should be the same
 when &GAP; is run without packages or with all packages available.
 Therefore, the tests in the standard test suite
 (see <Ref Sect="Sect-TestSuite"/>) are run several times,
-in a &GAP; that loads no packages and in a &GAP; that loads all available 
+in a &GAP; that loads no packages and in a &GAP; that loads all available
 packages and/or all available autoloaded packages.
 <P/>
 
@@ -145,8 +145,8 @@ the &GAP; website.
 <P/>
 
 For the manuals in the formats given by the &GAPDoc; package,
-multiply defined labels and non-resolved references will be 
-reported at the manual build stage. 
+multiply defined labels and non-resolved references will be
+reported at the manual build stage.
 <P/>
 
 </Section>
@@ -185,7 +185,7 @@ It consists of
   </Item>
   <Item>
     the tests of packages loading with
-    <Ref BookName="ref" Func="LoadPackage"/> 
+    <Ref BookName="ref" Func="LoadPackage"/>
     and
     <Ref BookName="ref" Func="LoadAllPackages"/>
   </Item>
@@ -193,8 +193,8 @@ It consists of
 
 As is stated in Section <Ref Sect="Sect-CheckPackages"/>,
 each test is run at least twice,
-once in a &GAP; that loads no packages and then 
-in a &GAP; that loads all available 
+once in a &GAP; that loads no packages and then
+in a &GAP; that loads all available
 packages and/or all available autoloaded packages.
 <P/>
 
@@ -243,7 +243,7 @@ Then proceed as follows in the &GAP; root directory.
     then starts a new &GAP; session and calls <Ref BookName="ref" Func="LoadAllPackages"/>
     to check that all packages may be loaded simultaneosuly.
     It require just a few minutes.
-  </Item>  
+  </Item>
 </List>
 
 In each case, &GAP; is called with the command line options

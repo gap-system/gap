@@ -1551,7 +1551,7 @@ UInt ResizeBag (
     /* update the statistics                                               */
     InfoBags[type].sizeLive += new_size - old_size;
 #endif
-    
+
     const Int diff = WORDS_BAG(new_size) - WORDS_BAG(old_size);
 
     // if the real size of the bag doesn't change, not much needs to be done
@@ -1600,7 +1600,7 @@ UInt ResizeBag (
             YoungBags += diff;
         AllocBags += diff;
 
-        // and increase the total amount allocated by the difference 
+        // and increase the total amount allocated by the difference
 #ifdef COUNT_BAGS
         InfoBags[type].sizeAll  += new_size - old_size;
 #endif
@@ -1642,7 +1642,7 @@ UInt ResizeBag (
 #endif
         SizeAllBags             += new_size;
 
-        
+
         CANARY_DISABLE_VALGRIND();
         /* if the bag is already on the changed bags list, keep it there   */
         if ( header->link != bag ) {

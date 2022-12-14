@@ -32,7 +32,7 @@
 
 The example below shows simple manipulation of the Options Stack,
 first using <Ref Func="PushOptions"/> and <Ref Func="PopOptions"/>
-and then using the special function calling syntax. 
+and then using the special function calling syntax.
 <P/>
 <Example><![CDATA[
 gap> foo := function()
@@ -55,7 +55,7 @@ gap> foo( : myopt1, myopt2 := [Z(3),"aardvark"]);
 myopt1 = true myopt2 = [ Z(3), "aardvark" ]
 gap> DisplayOptionsStack();
 [  ]
-gap> 
+gap>
 ]]></Example>
 
 </Section>
