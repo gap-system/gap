@@ -166,7 +166,7 @@ static void StartFakeFuncExpr(IntrState * intr, Obj stackNams)
     GAP_ASSERT(intr->coding == 0);
 
     // switch to coding mode now
-    CodeBegin();
+    CodeBegin(intr->cs);
 
     // code a function expression (with no arguments and locals)
     Obj nams = NEW_PLIST(T_PLIST, 0);
@@ -187,7 +187,7 @@ static void StartFakeFuncExpr(IntrState * intr, Obj stackNams)
         PushPlist(stackNams, nams);
     }
 
-    CodeFuncExprBegin(0, 0, nams, intr->gapnameid, 0);
+    CodeFuncExprBegin(intr->cs, 0, 0, nams, intr->gapnameid, 0);
 }
 
 
@@ -196,10 +196,10 @@ static void FinishAndCallFakeFuncExpr(IntrState * intr, Obj stackNams)
     GAP_ASSERT(intr->coding == 0);
 
     // code a function expression (with one statement in the body)
-    CodeFuncExprEnd(1, TRUE, 0);
+    CodeFuncExprEnd(intr->cs, 1, TRUE, 0);
 
     // switch back to immediate mode and get the function
-    Obj func = CodeEnd(0);
+    Obj func = CodeEnd(intr->cs, 0);
 
     // If we are in a break loop, then we will have created a "dummy" local
     // variable names list to get the counts right. Remove it.
@@ -270,7 +270,7 @@ ExecStatus IntrEnd(IntrState * intr, BOOL error, Obj * result)
 
         /* clean up the coder too                                          */
         if (intr->coding > 0) {
-            CodeEnd(1);
+            CodeEnd(intr->cs, 1);
         }
 
         /* dummy result value (probably ignored)                           */
@@ -292,7 +292,7 @@ ExecStatus IntrEnd(IntrState * intr, BOOL error, Obj * result)
 void IntrAbortCoding(IntrState * intr)
 {
     if (intr->coding) {
-        CodeEnd(1);
+        CodeEnd(intr->cs, 1);
         intr->coding--;
     }
 }
@@ -320,7 +320,7 @@ void IntrFuncCallBegin(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeFuncCallBegin();
+        CodeFuncCallBegin(intr->cs);
         return;
     }
 }
@@ -347,7 +347,7 @@ void IntrFuncCallEnd(IntrState * intr, UInt funccall, UInt options, UInt nr)
     SKIP_IF_RETURNING_NO_PROFILE_HOOK();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeFuncCallEnd(funccall, options, nr);
+        CodeFuncCallEnd(intr->cs, funccall, options, nr);
         return;
     }
 
@@ -445,12 +445,12 @@ void IntrFuncExprBegin(
     SKIP_IF_IGNORING();
 
     if (intr->coding == 0) {
-        CodeBegin();
+        CodeBegin(intr->cs);
     }
     intr->coding++;
 
     /* code a function expression                                          */
-    CodeFuncExprBegin( narg, nloc, nams, intr->gapnameid, startLine );
+    CodeFuncExprBegin(intr->cs, narg, nloc, nams, intr->gapnameid, startLine);
 }
 
 void IntrFuncExprEnd(IntrState * intr, UInt nr, Int endLine)
@@ -463,11 +463,11 @@ void IntrFuncExprEnd(IntrState * intr, UInt nr, Int endLine)
     GAP_ASSERT(intr->coding > 0);
 
     intr->coding--;
-    CodeFuncExprEnd(nr, TRUE, endLine);
+    CodeFuncExprEnd(intr->cs, nr, TRUE, endLine);
 
     if (intr->coding == 0) {
         // switch back to immediate mode and get the function
-        Obj func = CodeEnd(0);
+        Obj func = CodeEnd(intr->cs, 0);
 
         // push the function
         PushObj(intr, func);
@@ -523,7 +523,7 @@ void IntrIfBegin(IntrState * intr)
         return;
     }
     if (intr->coding > 0) {
-        CodeIfBegin();
+        CodeIfBegin(intr->cs);
         return;
     }
 }
@@ -534,7 +534,7 @@ void IntrIfElif(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeIfElif();
+        CodeIfElif(intr->cs);
         return;
     }
 }
@@ -545,7 +545,7 @@ void IntrIfElse(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeIfElse();
+        CodeIfElse(intr->cs);
         return;
     }
 
@@ -565,7 +565,7 @@ void IntrIfBeginBody(IntrState * intr)
         return;
     }
     if (intr->coding > 0) {
-        intr->ignoring = CodeIfBeginBody();
+        intr->ignoring = CodeIfBeginBody(intr->cs);
         return;
     }
 
@@ -598,7 +598,7 @@ Int IntrIfEndBody(IntrState * intr, UInt nr)
         return 0;
     }
     if (intr->coding > 0) {
-        intr->ignoring = CodeIfEndBody(nr);
+        intr->ignoring = CodeIfEndBody(intr->cs, nr);
         return 1;
     }
 
@@ -630,7 +630,7 @@ void IntrIfEnd(IntrState * intr, UInt nr)
     }
 
     if (intr->coding > 0) {
-        CodeIfEnd(nr);
+        CodeIfEnd(intr->cs, nr);
         return;
     }
 
@@ -681,7 +681,7 @@ void IntrForBegin(IntrState * intr, Obj stackNams)
     intr->coding++;
 
     /* code a for loop                                                     */
-    CodeForBegin();
+    CodeForBegin(intr->cs);
 }
 
 void IntrForIn(IntrState * intr)
@@ -692,7 +692,7 @@ void IntrForIn(IntrState * intr)
 
     /* otherwise must be coding                                            */
     GAP_ASSERT(intr->coding > 0);
-    CodeForIn();
+    CodeForIn(intr->cs);
 }
 
 void IntrForBeginBody(IntrState * intr)
@@ -703,7 +703,7 @@ void IntrForBeginBody(IntrState * intr)
 
     /* otherwise must be coding                                            */
     GAP_ASSERT(intr->coding > 0);
-    CodeForBeginBody();
+    CodeForBeginBody(intr->cs);
 }
 
 void IntrForEndBody(IntrState * intr, UInt nr)
@@ -714,7 +714,7 @@ void IntrForEndBody(IntrState * intr, UInt nr)
 
     /* otherwise must be coding                                            */
     GAP_ASSERT(intr->coding > 0);
-    CodeForEndBody(nr);
+    CodeForEndBody(intr->cs, nr);
 }
 
 void IntrForEnd(IntrState * intr, Obj stackNams)
@@ -727,7 +727,7 @@ void IntrForEnd(IntrState * intr, Obj stackNams)
     GAP_ASSERT(intr->coding > 0);
 
     intr->coding--;
-    CodeForEnd();
+    CodeForEnd(intr->cs);
 
     if (intr->coding == 0)
         FinishAndCallFakeFuncExpr(intr, stackNams);
@@ -772,7 +772,7 @@ void IntrWhileBegin(IntrState * intr, Obj stackNams)
     intr->coding++;
 
     /* code a while loop                                                   */
-    CodeWhileBegin();
+    CodeWhileBegin(intr->cs);
 }
 
 void IntrWhileBeginBody(IntrState * intr)
@@ -783,7 +783,7 @@ void IntrWhileBeginBody(IntrState * intr)
 
     /* otherwise must be coding                                            */
     GAP_ASSERT(intr->coding > 0);
-    CodeWhileBeginBody();
+    CodeWhileBeginBody(intr->cs);
 }
 
 void IntrWhileEndBody(IntrState * intr, UInt nr)
@@ -794,7 +794,7 @@ void IntrWhileEndBody(IntrState * intr, UInt nr)
 
     /* otherwise must be coding                                            */
     GAP_ASSERT(intr->coding > 0);
-    CodeWhileEndBody( nr );
+    CodeWhileEndBody(intr->cs, nr);
 }
 
 void IntrWhileEnd(IntrState * intr, Obj stackNams)
@@ -807,7 +807,7 @@ void IntrWhileEnd(IntrState * intr, Obj stackNams)
     GAP_ASSERT(intr->coding > 0);
 
     intr->coding--;
-    CodeWhileEnd();
+    CodeWhileEnd(intr->cs);
 
     if (intr->coding == 0)
         FinishAndCallFakeFuncExpr(intr, stackNams);
@@ -830,7 +830,7 @@ void IntrQualifiedExprBegin(IntrState * intr, UInt qual)
 
     /* otherwise must be coding                                            */
     GAP_ASSERT(intr->coding > 0);
-    CodeQualifiedExprBegin(qual);
+    CodeQualifiedExprBegin(intr->cs, qual);
 }
 
 void IntrQualifiedExprEnd(IntrState * intr)
@@ -841,7 +841,7 @@ void IntrQualifiedExprEnd(IntrState * intr)
 
     /* otherwise must be coding                                            */
     GAP_ASSERT(intr->coding > 0);
-    CodeQualifiedExprEnd();
+    CodeQualifiedExprEnd(intr->cs);
 }
 
 /****************************************************************************
@@ -882,7 +882,7 @@ void IntrAtomicBegin(IntrState * intr, Obj stackNams)
 
     intr->coding++;
 
-    CodeAtomicBegin();
+    CodeAtomicBegin(intr->cs);
 }
 
 void IntrAtomicBeginBody(IntrState * intr, UInt nrexprs)
@@ -893,7 +893,7 @@ void IntrAtomicBeginBody(IntrState * intr, UInt nrexprs)
 
     /* otherwise must be coding                                            */
     GAP_ASSERT(intr->coding > 0);
-    CodeAtomicBeginBody(nrexprs);
+    CodeAtomicBeginBody(intr->cs, nrexprs);
 }
 
 void IntrAtomicEndBody(IntrState * intr, Int nrstats)
@@ -904,7 +904,7 @@ void IntrAtomicEndBody(IntrState * intr, Int nrstats)
 
     // must be coding
     GAP_ASSERT(intr->coding > 0);
-    CodeAtomicEndBody(nrstats);
+    CodeAtomicEndBody(intr->cs, nrstats);
 }
 
 void IntrAtomicEnd(IntrState * intr, Obj stackNams)
@@ -917,7 +917,7 @@ void IntrAtomicEnd(IntrState * intr, Obj stackNams)
     GAP_ASSERT(intr->coding > 0);
 
     intr->coding--;
-    CodeAtomicEnd();
+    CodeAtomicEnd(intr->cs);
 
     if (intr->coding == 0)
         FinishAndCallFakeFuncExpr(intr, stackNams);
@@ -962,7 +962,7 @@ void IntrRepeatBegin(IntrState * intr, Obj stackNams)
     intr->coding++;
 
     /* code a repeat loop                                                  */
-    CodeRepeatBegin();
+    CodeRepeatBegin(intr->cs);
 }
 
 void IntrRepeatBeginBody(IntrState * intr)
@@ -973,7 +973,7 @@ void IntrRepeatBeginBody(IntrState * intr)
 
     /* otherwise must be coding                                            */
     GAP_ASSERT(intr->coding > 0);
-    CodeRepeatBeginBody();
+    CodeRepeatBeginBody(intr->cs);
 }
 
 void IntrRepeatEndBody(IntrState * intr, UInt nr)
@@ -984,7 +984,7 @@ void IntrRepeatEndBody(IntrState * intr, UInt nr)
 
     /* otherwise must be coding                                            */
     GAP_ASSERT(intr->coding > 0);
-    CodeRepeatEndBody( nr );
+    CodeRepeatEndBody(intr->cs, nr);
 }
 
 void IntrRepeatEnd(IntrState * intr, Obj stackNams)
@@ -997,7 +997,7 @@ void IntrRepeatEnd(IntrState * intr, Obj stackNams)
     GAP_ASSERT(intr->coding > 0);
 
     intr->coding--;
-    CodeRepeatEnd();
+    CodeRepeatEnd(intr->cs);
 
     if (intr->coding == 0)
         FinishAndCallFakeFuncExpr(intr, stackNams);
@@ -1022,7 +1022,7 @@ void IntrBreak(IntrState * intr)
 
     /* otherwise must be coding                                            */
     GAP_ASSERT(intr->coding > 0);
-    CodeBreak();
+    CodeBreak(intr->cs);
 }
 
 
@@ -1044,7 +1044,7 @@ void IntrContinue(IntrState * intr)
 
     /* otherwise must be coding                                            */
     GAP_ASSERT(intr->coding > 0);
-    CodeContinue();
+    CodeContinue(intr->cs);
 }
 
 
@@ -1064,7 +1064,7 @@ void IntrReturnObj(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeReturnObj();
+        CodeReturnObj(intr->cs);
         return;
     }
 
@@ -1092,7 +1092,7 @@ void IntrReturnVoid(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeReturnVoid();
+        CodeReturnVoid(intr->cs);
         return;
     }
 
@@ -1219,7 +1219,7 @@ void IntrOrL(IntrState * intr)
         return;
     }
     if (intr->coding > 0) {
-        CodeOrL();
+        CodeOrL(intr->cs);
         return;
     }
 
@@ -1245,7 +1245,7 @@ void IntrOr(IntrState * intr)
         return;
     }
     if (intr->coding > 0) {
-        CodeOr();
+        CodeOr(intr->cs);
         return;
     }
 
@@ -1303,7 +1303,7 @@ void IntrAndL(IntrState * intr)
         return;
     }
     if (intr->coding > 0) {
-        CodeAndL();
+        CodeAndL(intr->cs);
         return;
     }
 
@@ -1329,7 +1329,7 @@ void IntrAnd(IntrState * intr)
         return;
     }
     if (intr->coding > 0) {
-        CodeAnd();
+        CodeAnd(intr->cs);
         return;
     }
 
@@ -1385,7 +1385,7 @@ void IntrNot(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeNot();
+        CodeNot(intr->cs);
         return;
     }
 
@@ -1441,7 +1441,7 @@ void IntrEq(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeEq();
+        CodeEq(intr->cs);
         return;
     }
 
@@ -1463,7 +1463,7 @@ void IntrNe(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeNe();
+        CodeNe(intr->cs);
         return;
     }
 
@@ -1483,7 +1483,7 @@ void IntrLt(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeLt();
+        CodeLt(intr->cs);
         return;
     }
 
@@ -1505,7 +1505,7 @@ void IntrGe(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeGe();
+        CodeGe(intr->cs);
         return;
     }
 
@@ -1521,7 +1521,7 @@ void IntrGt(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeGt();
+        CodeGt(intr->cs);
         return;
     }
 
@@ -1537,7 +1537,7 @@ void IntrLe(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeLe();
+        CodeLe(intr->cs);
         return;
     }
 
@@ -1566,7 +1566,7 @@ void IntrIn(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeIn();
+        CodeIn(intr->cs);
         return;
     }
 
@@ -1607,7 +1607,7 @@ void IntrSum(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeSum();
+        CodeSum(intr->cs);
         return;
     }
 
@@ -1632,7 +1632,7 @@ void IntrAInv(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeAInv();
+        CodeAInv(intr->cs);
         return;
     }
 
@@ -1657,7 +1657,7 @@ void IntrDiff(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeDiff();
+        CodeDiff(intr->cs);
         return;
     }
 
@@ -1683,7 +1683,7 @@ void IntrProd(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeProd();
+        CodeProd(intr->cs);
         return;
     }
 
@@ -1709,7 +1709,7 @@ void IntrQuo(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeQuo();
+        CodeQuo(intr->cs);
         return;
     }
 
@@ -1735,7 +1735,7 @@ void IntrMod(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeMod();
+        CodeMod(intr->cs);
         return;
     }
 
@@ -1761,7 +1761,7 @@ void IntrPow(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodePow();
+        CodePow(intr->cs);
         return;
     }
 
@@ -1795,7 +1795,7 @@ void IntrIntExpr(IntrState * intr, Obj string, Char * str)
     GAP_ASSERT(val != Fail);
 
     if (intr->coding > 0) {
-        CodeIntExpr(val);
+        CodeIntExpr(intr->cs, val);
     }
     else {
         // push the integer value
@@ -1842,7 +1842,7 @@ void IntrFloatExpr(IntrState * intr, Obj string, Char * str)
     if (string == 0)
         string = MakeString(str);
     if (intr->coding > 0) {
-        CodeFloatExpr(string);
+        CodeFloatExpr(intr->cs, string);
         return;
     }
 
@@ -1863,7 +1863,7 @@ void IntrIntObjExpr(IntrState * intr, Obj val)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeIntExpr(val);
+        CodeIntExpr(intr->cs, val);
         return;
     }
 
@@ -1884,7 +1884,7 @@ void IntrTrueExpr(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeTrueExpr();
+        CodeTrueExpr(intr->cs);
         return;
     }
 
@@ -1906,7 +1906,7 @@ void IntrFalseExpr(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeFalseExpr();
+        CodeFalseExpr(intr->cs);
         return;
     }
 
@@ -1929,7 +1929,7 @@ void IntrTildeExpr(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeTildeExpr();
+        CodeTildeExpr(intr->cs);
         return;
     }
 
@@ -1957,7 +1957,7 @@ void IntrCharExpr(IntrState * intr, Char chr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeCharExpr(chr);
+        CodeCharExpr(intr->cs, chr);
         return;
     }
 
@@ -1987,7 +1987,7 @@ void IntrPermCycle(IntrState * intr, UInt nrx, UInt nrc)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodePermCycle(nrx, nrc);
+        CodePermCycle(intr->cs, nrx, nrc);
         return;
     }
 
@@ -2023,7 +2023,7 @@ void IntrPerm(IntrState * intr, UInt nrc)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodePerm(nrc);
+        CodePerm(intr->cs, nrc);
         return;
     }
 
@@ -2065,7 +2065,7 @@ void IntrListExprBegin(IntrState * intr, UInt top)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeListExprBegin(top);
+        CodeListExprBegin(intr->cs, top);
         return;
     }
 
@@ -2096,7 +2096,7 @@ void IntrListExprBeginElm(IntrState * intr, UInt pos)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeListExprBeginElm(pos);
+        CodeListExprBeginElm(intr->cs, pos);
         return;
     }
 
@@ -2116,7 +2116,7 @@ void IntrListExprEndElm(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeListExprEndElm();
+        CodeListExprEndElm(intr->cs);
         return;
     }
 
@@ -2152,7 +2152,7 @@ void IntrListExprEnd(
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeListExprEnd(nr, range, top, tilde);
+        CodeListExprEnd(intr->cs, nr, range, top, tilde);
         return;
     }
 
@@ -2246,7 +2246,7 @@ void IntrStringExpr(IntrState * intr, Obj string)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeStringExpr(string);
+        CodeStringExpr(intr->cs, string);
         return;
     }
 
@@ -2260,7 +2260,7 @@ void IntrPragma(IntrState * intr, Obj pragma)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodePragma( pragma );
+        CodePragma(intr->cs, pragma);
     }
     else {
         // Push a void when interpreting
@@ -2285,7 +2285,7 @@ void IntrRecExprBegin(IntrState * intr, UInt top)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeRecExprBegin(top);
+        CodeRecExprBegin(intr->cs, top);
         return;
     }
 
@@ -2316,7 +2316,7 @@ void IntrRecExprBeginElmName(IntrState * intr, UInt rnam)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeRecExprBeginElmName(rnam);
+        CodeRecExprBeginElmName(intr->cs, rnam);
         return;
     }
 
@@ -2333,7 +2333,7 @@ void IntrRecExprBeginElmExpr(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeRecExprBeginElmExpr();
+        CodeRecExprBeginElmExpr(intr->cs);
         return;
     }
 
@@ -2355,7 +2355,7 @@ void IntrRecExprEndElm(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeRecExprEndElm();
+        CodeRecExprEndElm(intr->cs);
         return;
     }
 
@@ -2385,7 +2385,7 @@ void IntrRecExprEnd(IntrState * intr, UInt nr, UInt top, UInt tilde)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeRecExprEnd(nr, top, tilde);
+        CodeRecExprEnd(intr->cs, nr, top, tilde);
         return;
     }
 
@@ -2419,7 +2419,7 @@ void IntrFuncCallOptionsBegin(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeFuncCallOptionsBegin();
+        CodeFuncCallOptionsBegin(intr->cs);
         return;
     }
 
@@ -2436,7 +2436,7 @@ void IntrFuncCallOptionsBeginElmName(IntrState * intr, UInt rnam)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeFuncCallOptionsBeginElmName(rnam);
+        CodeFuncCallOptionsBeginElmName(intr->cs, rnam);
         return;
     }
 
@@ -2453,7 +2453,7 @@ void IntrFuncCallOptionsBeginElmExpr(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeFuncCallOptionsBeginElmExpr();
+        CodeFuncCallOptionsBeginElmExpr(intr->cs);
         return;
     }
 
@@ -2475,7 +2475,7 @@ void IntrFuncCallOptionsEndElm(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeFuncCallOptionsEndElm();
+        CodeFuncCallOptionsEndElm(intr->cs);
         return;
     }
 
@@ -2506,7 +2506,7 @@ void IntrFuncCallOptionsEndElmEmpty(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeFuncCallOptionsEndElmEmpty();
+        CodeFuncCallOptionsEndElmEmpty(intr->cs);
         return;
     }
 
@@ -2533,7 +2533,7 @@ void IntrFuncCallOptionsEnd(IntrState * intr, UInt nr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeFuncCallOptionsEnd(nr);
+        CodeFuncCallOptionsEnd(intr->cs, nr);
         return;
     }
 }
@@ -2552,7 +2552,7 @@ void IntrAssLVar(IntrState * intr, UInt lvar)
 
     /* otherwise must be coding                                            */
     if (intr->coding > 0)
-        CodeAssLVar(lvar);
+        CodeAssLVar(intr->cs, lvar);
 
     /* Or in the break loop */
     else {
@@ -2570,7 +2570,7 @@ void IntrUnbLVar(IntrState * intr, UInt lvar)
 
     /* otherwise must be coding                                            */
     if (intr->coding > 0)
-        CodeUnbLVar(lvar);
+        CodeUnbLVar(intr->cs, lvar);
 
     /* or in the break loop */
     else {
@@ -2593,7 +2593,7 @@ void IntrRefLVar(IntrState * intr, UInt lvar)
 
     /* otherwise must be coding                                            */
     if (intr->coding > 0)
-        CodeRefLVar(lvar);
+        CodeRefLVar(intr->cs, lvar);
 
     /* or in the break loop */
 
@@ -2615,7 +2615,7 @@ void IntrIsbLVar(IntrState * intr, UInt lvar)
 
     /* otherwise must be coding                                            */
     if (intr->coding > 0)
-        CodeIsbLVar(lvar);
+        CodeIsbLVar(intr->cs, lvar);
 
     /* or debugging */
     else {
@@ -2637,7 +2637,7 @@ void IntrAssHVar(IntrState * intr, UInt hvar)
 
     /* otherwise must be coding                                            */
     if (intr->coding > 0)
-        CodeAssHVar(hvar);
+        CodeAssHVar(intr->cs, hvar);
     /* Or in the break loop */
     else {
         val = PopObj(intr);
@@ -2654,7 +2654,7 @@ void IntrUnbHVar(IntrState * intr, UInt hvar)
 
     /* otherwise must be coding                                            */
     if (intr->coding > 0)
-        CodeUnbHVar(hvar);
+        CodeUnbHVar(intr->cs, hvar);
     /* or debugging */
     else {
         ASS_HVAR(hvar, 0);
@@ -2676,7 +2676,7 @@ void IntrRefHVar(IntrState * intr, UInt hvar)
 
     /* otherwise must be coding                                            */
     if (intr->coding > 0)
-        CodeRefHVar(hvar);
+        CodeRefHVar(intr->cs, hvar);
     /* or debugging */
     else {
         val = OBJ_HVAR(hvar);
@@ -2696,7 +2696,7 @@ void IntrIsbHVar(IntrState * intr, UInt hvar)
 
     /* otherwise must be coding                                            */
     if (intr->coding > 0)
-        CodeIsbHVar(hvar);
+        CodeIsbHVar(intr->cs, hvar);
     /* or debugging */
     else
         PushObj(intr, (OBJ_HVAR(hvar) != (Obj)0) ? True : False);
@@ -2829,8 +2829,8 @@ void IntrAssGVar(IntrState * intr, UInt gvar)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeAssGVar(gvar);
-        return;
+      CodeAssGVar(intr->cs, gvar);
+      return;
     }
 
 
@@ -2850,8 +2850,8 @@ void IntrUnbGVar(IntrState * intr, UInt gvar)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeUnbGVar(gvar);
-        return;
+      CodeUnbGVar(intr->cs, gvar);
+      return;
     }
 
 
@@ -2875,8 +2875,8 @@ void IntrRefGVar(IntrState * intr, UInt gvar)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeRefGVar(gvar);
-        return;
+      CodeRefGVar(intr->cs, gvar);
+      return;
     }
 
 
@@ -2897,7 +2897,7 @@ void IntrIsbGVar(IntrState * intr, UInt gvar)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeIsbGVar(gvar);
+        CodeIsbGVar(intr->cs, gvar);
         return;
     }
 
@@ -2929,7 +2929,7 @@ void IntrAssList(IntrState * intr, Int narg)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeAssList(narg);
+        CodeAssList(intr->cs, narg);
         return;
     }
 
@@ -2974,7 +2974,7 @@ void IntrAsssList(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeAsssList();
+        CodeAsssList(intr->cs);
         return;
     }
 
@@ -3010,7 +3010,7 @@ void IntrAssListLevel(IntrState * intr, Int narg, UInt level)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeAssListLevel(narg, level);
+        CodeAssListLevel(intr->cs, narg, level);
         return;
     }
 
@@ -3047,7 +3047,7 @@ void IntrAsssListLevel(IntrState * intr, UInt level)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeAsssListLevel(level);
+        CodeAsssListLevel(intr->cs, level);
         return;
     }
 
@@ -3081,7 +3081,7 @@ void IntrUnbList(IntrState * intr, Int narg)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeUnbList(narg);
+        CodeUnbList(intr->cs, narg);
         return;
     }
 
@@ -3132,7 +3132,7 @@ void IntrElmList(IntrState * intr, Int narg)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeElmList(narg);
+        CodeElmList(intr->cs, narg);
         return;
     }
 
@@ -3173,7 +3173,7 @@ void IntrElmsList(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeElmsList();
+        CodeElmsList(intr->cs);
         return;
     }
 
@@ -3203,7 +3203,7 @@ void IntrElmListLevel(IntrState * intr, Int narg, UInt level)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeElmListLevel(narg, level);
+        CodeElmListLevel(intr->cs, narg, level);
         return;
     }
 
@@ -3236,7 +3236,7 @@ void IntrElmsListLevel(IntrState * intr, UInt level)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeElmsListLevel(level);
+        CodeElmsListLevel(intr->cs, level);
         return;
     }
 
@@ -3268,7 +3268,7 @@ void IntrIsbList(IntrState * intr, Int narg)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeIsbList(narg);
+        CodeIsbList(intr->cs, narg);
         return;
     }
 
@@ -3314,7 +3314,7 @@ void IntrAssRecName(IntrState * intr, UInt rnam)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeAssRecName(rnam);
+        CodeAssRecName(intr->cs, rnam);
         return;
     }
 
@@ -3342,7 +3342,7 @@ void IntrAssRecExpr(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeAssRecExpr();
+        CodeAssRecExpr(intr->cs);
         return;
     }
 
@@ -3371,7 +3371,7 @@ void IntrUnbRecName(IntrState * intr, UInt rnam)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeUnbRecName(rnam);
+        CodeUnbRecName(intr->cs, rnam);
         return;
     }
 
@@ -3395,7 +3395,7 @@ void IntrUnbRecExpr(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeUnbRecExpr();
+        CodeUnbRecExpr(intr->cs);
         return;
     }
 
@@ -3428,7 +3428,7 @@ void IntrElmRecName(IntrState * intr, UInt rnam)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeElmRecName(rnam);
+        CodeElmRecName(intr->cs, rnam);
         return;
     }
 
@@ -3453,7 +3453,7 @@ void IntrElmRecExpr(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeElmRecExpr();
+        CodeElmRecExpr(intr->cs);
         return;
     }
 
@@ -3480,7 +3480,7 @@ void IntrIsbRecName(IntrState * intr, UInt rnam)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeIsbRecName(rnam);
+        CodeIsbRecName(intr->cs, rnam);
         return;
     }
 
@@ -3505,7 +3505,7 @@ void IntrIsbRecExpr(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeIsbRecExpr();
+        CodeIsbRecExpr(intr->cs);
         return;
     }
 
@@ -3539,7 +3539,7 @@ void IntrAssPosObj(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeAssPosObj();
+        CodeAssPosObj(intr->cs);
         return;
     }
 
@@ -3571,7 +3571,7 @@ void IntrUnbPosObj(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeUnbPosObj();
+        CodeUnbPosObj(intr->cs);
         return;
     }
 
@@ -3606,7 +3606,7 @@ void IntrElmPosObj(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeElmPosObj();
+        CodeElmPosObj(intr->cs);
         return;
     }
 
@@ -3636,7 +3636,7 @@ void IntrIsbPosObj(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeIsbPosObj();
+        CodeIsbPosObj(intr->cs);
         return;
     }
 
@@ -3670,7 +3670,7 @@ void IntrAssComObjName(IntrState * intr, UInt rnam)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeAssComObjName(rnam);
+        CodeAssComObjName(intr->cs, rnam);
         return;
     }
 
@@ -3698,7 +3698,7 @@ void IntrAssComObjExpr(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeAssComObjExpr();
+        CodeAssComObjExpr(intr->cs);
         return;
     }
 
@@ -3727,7 +3727,7 @@ void IntrUnbComObjName(IntrState * intr, UInt rnam)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeUnbComObjName(rnam);
+        CodeUnbComObjName(intr->cs, rnam);
         return;
     }
 
@@ -3751,7 +3751,7 @@ void IntrUnbComObjExpr(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeUnbComObjExpr();
+        CodeUnbComObjExpr(intr->cs);
         return;
     }
 
@@ -3784,7 +3784,7 @@ void IntrElmComObjName(IntrState * intr, UInt rnam)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeElmComObjName(rnam);
+        CodeElmComObjName(intr->cs, rnam);
         return;
     }
 
@@ -3808,7 +3808,7 @@ void IntrElmComObjExpr(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeElmComObjExpr();
+        CodeElmComObjExpr(intr->cs);
         return;
     }
 
@@ -3834,7 +3834,7 @@ void IntrIsbComObjName(IntrState * intr, UInt rnam)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeIsbComObjName(rnam);
+        CodeIsbComObjName(intr->cs, rnam);
         return;
     }
 
@@ -3858,7 +3858,7 @@ void IntrIsbComObjExpr(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeIsbComObjExpr();
+        CodeIsbComObjExpr(intr->cs);
         return;
     }
 
@@ -3887,7 +3887,7 @@ void IntrEmpty(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeEmpty();
+        CodeEmpty(intr->cs);
         return;
     }
 
@@ -3923,7 +3923,7 @@ void IntrInfoBegin(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeInfoBegin();
+        CodeInfoBegin(intr->cs);
         return;
     }
 }
@@ -3943,7 +3943,7 @@ void IntrInfoMiddle(IntrState * intr)
         return;
     }
     if (intr->coding > 0) {
-        CodeInfoMiddle();
+        CodeInfoMiddle(intr->cs);
         return;
     }
 
@@ -3974,7 +3974,7 @@ void IntrInfoEnd(IntrState * intr, UInt narg)
         return;
     }
     if (intr->coding > 0) {
-        CodeInfoEnd(narg);
+        CodeInfoEnd(intr->cs, narg);
         return;
     }
 
@@ -4029,7 +4029,7 @@ void IntrAssertBegin(IntrState * intr)
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
     if (intr->coding > 0) {
-        CodeAssertBegin();
+        CodeAssertBegin(intr->cs);
         return;
     }
 }
@@ -4044,7 +4044,7 @@ void IntrAssertAfterLevel(IntrState * intr)
         return;
     }
     if (intr->coding > 0) {
-        CodeAssertAfterLevel();
+        CodeAssertAfterLevel(intr->cs);
         return;
     }
 
@@ -4066,7 +4066,7 @@ void IntrAssertAfterCondition(IntrState * intr)
         return;
     }
     if (intr->coding > 0) {
-        CodeAssertAfterCondition();
+        CodeAssertAfterCondition(intr->cs);
         return;
     }
 
@@ -4090,7 +4090,7 @@ void IntrAssertEnd2Args(IntrState * intr)
         return;
     }
     if (intr->coding > 0) {
-        CodeAssertEnd2Args();
+        CodeAssertEnd2Args(intr->cs);
         return;
     }
 
@@ -4116,7 +4116,7 @@ void IntrAssertEnd3Args(IntrState * intr)
         return;
     }
     if (intr->coding > 0) {
-        CodeAssertEnd3Args();
+        CodeAssertEnd3Args(intr->cs);
         return;
     }
 
