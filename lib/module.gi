@@ -315,7 +315,7 @@ InstallGlobalFunction( Submodule, function( arg )
         UseBasis( S, gens );
       fi;
       UseSubsetRelation( M, S );
-      
+
       #
       # These cannot be handled by UseSubsetRelation, because they
       # depend on M and S having the same LeftActingDomain
@@ -355,7 +355,7 @@ InstallGlobalFunction( SubmoduleNC, function( arg )
     fi;
     SetParent( S, arg[1] );
     UseSubsetRelation( arg[1], S );
-      
+
     #
     # These cannot be handled by UseSubsetRelation, because they
     # depend on M and S having the same LeftActingDomain

@@ -18,11 +18,11 @@
 ##
 #A  TransformationRepresentation(<obj>)
 ##
-##  This is the transformation representation of the endo general mapping 
+##  This is the transformation representation of the endo general mapping
 ##  <obj>. Note, it is still a general mapping, not a transformation,
 ##  however, composition, equality and \< are all *much* faster.
 ##
-##  Finding the TransformationRepresentation requires a call to 
+##  Finding the TransformationRepresentation requires a call to
 ##  EnumeratorSorted for the Source of the mapping (the set on which
 ##  it acts). This could be very expensive.
 ##

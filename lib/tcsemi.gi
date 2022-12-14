@@ -10,7 +10,7 @@
 ##
 ##	Installed in GAP4 by Andrew Solomon for Semigroups instead of Monoids.
 ##
-##  This file contains implementations for Todd-Coxeter procedure for 
+##  This file contains implementations for Todd-Coxeter procedure for
 ##  fp semigroups. This uses the code written by Götz Pfeiffer
 ##  based on the thesis of T. Walker.
 ##
@@ -26,7 +26,7 @@ DeclareInfoClass("SemigroupToddCoxeterInfo");
 
 #############################################################################
 ##
-#A  CosetTableOfFpSemigroup( cong )  
+#A  CosetTableOfFpSemigroup( cong )
 ##
 ##  A  monoid presentation is  essentially a list  of  pairs of words over an
 ##  alphabet.  In GAP this can be represented by a record |M| with components
@@ -62,12 +62,12 @@ DeclareInfoClass("SemigroupToddCoxeterInfo");
 ##
 ##  The *active list* is a doubly linked list.
 ##
-##            1                 d               last          next 
-##            |                 |                 |             | 
-##            V                 V                 V             V 
+##            1                 d               last          next
+##            |                 |                 |             |
+##            V                 V                 V             V
 ##          |---|---> ... --->|---|---> ... --->|---|-------->|---|---> ...
-##          | 1 |             |   |             |   |         |   | 
-##    0 <---|---|<--- ... <---|---|<--- ... <---|---|         |---|    
+##          | 1 |             |   |             |   |         |   |
+##    0 <---|---|<--- ... <---|---|<--- ... <---|---|         |---|
 ##
 ##  The   forward   references --->   are  stored  in  |forwd|,  the backward
 ##  references  <--- are stored in  |bckwd|.   Three pointers point into this
@@ -80,11 +80,11 @@ DeclareInfoClass("SemigroupToddCoxeterInfo");
 ##  The *free list* is a simply linked list.
 ##
 ##            last          next
-##              |             | 
-##              V             V 
+##              |             |
+##              V             V
 ##    ... --->|---|-------->|---|--->|---|---> ... --->|---|---> 0
 ##            |   |         |   |    |   |             |   |
-##    ... <---|---|         |---|    |---|             |---|        
+##    ... <---|---|         |---|    |---|             |---|
 ##
 ##  Again, the references --->  are  stored in  |forwd|.  The pointer  |next|
 ##  points to its beginning, the last coset points at 0.  The free list might
@@ -99,7 +99,7 @@ DeclareInfoClass("SemigroupToddCoxeterInfo");
 ##  places in |table| where a coset |t|  occurs if this  needs to be replaced
 ##  by a coset |s|.
 ##
-InstallMethod(CosetTableOfFpSemigroup,  
+InstallMethod(CosetTableOfFpSemigroup,
 "for a right congruence on an fp semigroup",
 true,
 [IsRightMagmaCongruence], 0,
@@ -143,10 +143,10 @@ function(cong)
       # make new coset active.
       bckwd[next]:= lust;  lust:= next;  next:= forwd[lust];
       for i in gens do
-         table[i][lust]:= 0;  
+         table[i][lust]:= 0;
          inver[i][lust]:= 0;  #C inver[i][lust]:= [];
       od;
-      table[a][t]:= lust;  
+      table[a][t]:= lust;
       inver[a][lust]:= t;  occur[a][t]:= 0;  #C inver[a][lust]:= [t];
 
       # return new coset.
@@ -182,9 +182,9 @@ function(cong)
       od;
 
       # print out statistics.
-      if 999 < i1000  then 
+      if 999 < i1000  then
          i1000:= 0;
-         Info(SemigroupToddCoxeterInfo, 2, "#I  ", defind, " cosets, ", 
+         Info(SemigroupToddCoxeterInfo, 2, "#I  ", defind, " cosets, ",
 						active, " active, ", defind - active, " killed.\n");
       fi;
 
@@ -253,9 +253,9 @@ function(cong)
       od;
 
       # print out statistics.
-      if 999 < i1000  then 
+      if 999 < i1000  then
          i1000:= 0;
-         Info(SemigroupToddCoxeterInfo, 2, "#I  ", defind, " cosets, ", 
+         Info(SemigroupToddCoxeterInfo, 2, "#I  ", defind, " cosets, ",
 						active, " active, ", defind - active, " killed.\n");
       fi;
 
@@ -337,11 +337,11 @@ function(cong)
                lust:= bckwd[lust];  # delete top of queue.
             else
                bckwd[forwd[t]]:= bckwd[t];  # drop |t| from queue.
-               forwd[bckwd[t]]:= forwd[t]; 
-               forwd[t]:= next;  # link |t| to free list.  
+               forwd[bckwd[t]]:= forwd[t];
+               forwd[t]:= next;  # link |t| to free list.
                forwd[lust]:= t;
-            fi; 
-            next:= t; 
+            fi;
+            next:= t;
             bckwd[t]:= -s;  # leave forwarding address.
 
             # loop over the generators.
@@ -378,21 +378,21 @@ function(cong)
 
                   # draw conclusions.
                   u:= table[i][s];
-                  if u = 0 then 
-                     table[i][s]:= v;  
+                  if u = 0 then
+                     table[i][s]:= v;
 
                      #C AddSet(inver[i][v], s);
                      occur[i][s]:= inver[i][v];  inver[i][v]:= s;
 
                   # stack mismatches such that big is replaced by small.
-                  elif pos[u] < pos[v] then 
-                     l:= l+2;  stack[l-1]:= v;  stack[l]:= u;  
-                  elif pos[v] < pos[u] then 
-                     l:= l+2;  stack[l-1]:= u;  stack[l]:= v;  
+                  elif pos[u] < pos[v] then
+                     l:= l+2;  stack[l-1]:= v;  stack[l]:= u;
+                  elif pos[v] < pos[u] then
+                     l:= l+2;  stack[l-1]:= u;  stack[l]:= v;
                   fi;
 
-               fi;   
-            od;           
+               fi;
+            od;
 
          fi;
 
@@ -422,11 +422,11 @@ function(cong)
 ##  [[0], [0], ..., [0]] and the linked lists look as follows.
 ##
 ##           d last next
-##           | |      | 
-##           V V      V 
-##          |---|---> 0 
-##          | 1 | 
-##    0 <---|---| 
+##           | |      |
+##           V V      V
+##          |---|---> 0
+##          | 1 |
+##    0 <---|---|
 ##
    # initialize.
 	 # get the semigroup on which <cong> is a congruence.
@@ -438,17 +438,17 @@ function(cong)
    gens:= [1..Length(GeneratorsOfSemigroup(M))];
    # we add trivial relations to the semigroup relations to
    # make sure that if the semigroup has a free generator
-   # then it does not stop 
+   # then it does not stop
    semirels := Concatenation(RelationsOfFpSemigroup(M),
 								List(gens,i-> [FreeGeneratorsOfFpSemigroup(M)[i],
 															FreeGeneratorsOfFpSemigroup(M)[i]]));
    rels:= List(semirels, x-> List(x, repLaced));
-   cong:= List(GeneratingPairsOfRightMagmaCongruence(cong), 
+   cong:= List(GeneratingPairsOfRightMagmaCongruence(cong),
 		x-> List(x, y->repLaced(UnderlyingElement(y))));
 
    table:= [];  inver:= [];  occur:= [];
    for i in gens do
-      table[i]:= [0];  
+      table[i]:= [0];
       inver[i]:= [0];  occur[i]:= [];  #C inver[i]:= [[]];
    od;
 
@@ -456,7 +456,7 @@ function(cong)
    lanext:= Int(SemigroupTCInitialTableSize/(3*Length(gens)));
    forwd:= [0];  bckwd:= [0];  pos:= [1];
    lust:= 1;  next:= 0;  la:= 0;
-   d:= 1; 
+   d:= 1;
 
    # first close the congruence tables.
    for r in cong do
@@ -483,7 +483,7 @@ function(cong)
         until la = next;
         Info(SemigroupToddCoxeterInfo, 1, "Lookahead done, ",
                (defind-active) - oldkilled," definitions saved");
-         Info(SemigroupToddCoxeterInfo, 1, "#I  ", defind, " cosets, ", 
+         Info(SemigroupToddCoxeterInfo, 1, "#I  ", defind, " cosets, ",
 						active, " active, ", defind - active, " killed.");
         if active > lanext then
           lanext:= lanext * 2;
@@ -497,7 +497,7 @@ function(cong)
    until d = next;
 
    # print statistics.
-   Info(SemigroupToddCoxeterInfo, 1, "#I  ", defind, 
+   Info(SemigroupToddCoxeterInfo, 1, "#I  ", defind,
 		" cosets defined, maximum ", Length(forwd), ", ", active, " survive.\n");
 
    # shrink coset table: trace coset 1 through |forwd|.
@@ -525,7 +525,7 @@ end);
 
 InstallMethod(IsomorphismTransformationSemigroup,
 "<fp-semigroup>", true,
-[IsFpSemigroup], 0, 
+[IsFpSemigroup], 0,
 function(S)
 	return HomomorphismTransformationSemigroup(S,
 		RightMagmaCongruenceByGeneratingPairs(S,[]));
@@ -554,7 +554,7 @@ function(S,r)
 	########################################################
 	# isofun:
 	# The function which computes the isomorphism - take
-	# the ith  generator of the fp semigroup to the 
+	# the ith  generator of the fp semigroup to the
 	# transformation whose image list is the ith row of the
 	# multiplication table
 	#

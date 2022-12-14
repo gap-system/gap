@@ -229,7 +229,7 @@ DeclareOperation( "RingByGenerators", [ IsCollection ] );
 ##  <#GAPDoc Label="DefaultRingByGenerators">
 ##  <ManSection>
 ##  <Oper Name="DefaultRingByGenerators" Arg='coll'/>
-##  
+##
 ##  <Description>
 ##  For a collection <A>coll</A>, returns a default ring in which
 ##  <A>coll</A> is contained.
@@ -404,7 +404,7 @@ DeclareGlobalFunction( "DefaultRing" );
 ##  <A>gens</A>.
 ##  When the second form, <Ref Func="SubringNC"/> is used,
 ##  it is <E>not</E> checked whether all elements in <A>gens</A> lie in
-##  <A>R</A>. 
+##  <A>R</A>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> R:= Integers;
@@ -437,7 +437,7 @@ DeclareGlobalFunction( "SubringNC" );
 ##  in <A>gens</A>.
 ##  When the second form, <Ref Func="SubringWithOneNC"/> is used,
 ##  it is <E>not</E> checked whether all elements in <A>gens</A> lie in
-##  <A>R</A>. 
+##  <A>R</A>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> R:= SubringWithOne( Integers, [ 4, 6 ] );
@@ -894,7 +894,7 @@ DeclareOperation( "IsUnit", [ IsRing, IsRingElement ] );
 ##  <A>y</A> of elements in a ring <A>R</A> of the same length <M>n</M>
 ##  the unique  polynomial of  degree less than <M>n</M> which has value
 ##  <A>y</A>[<M>i</M>] at <A>x</A><M>[i]</M>,
-##  for all <M>i \in \{ 1, \ldots, n \}</M>. 
+##  for all <M>i \in \{ 1, \ldots, n \}</M>.
 ##  Note that the elements in <A>x</A> must be distinct.
 ##  <Example><![CDATA[
 ##  gap> InterpolatedPolynomial( Integers, [ 1, 2, 3 ], [ 5, 7, 0 ] );
@@ -1294,7 +1294,7 @@ DeclareOperation( "PowerMod",
 ##  other common divisor of <M>r_1, r_2, \ldots</M> is a divisor of <M>d</M>.
 ##  <P/>
 ##  Note that this in particular implies the following:
-##  For the zero element <M>z</M> of <A>R</A>, we have 
+##  For the zero element <M>z</M> of <A>R</A>, we have
 ##  <C>Gcd( <A>r</A>, </C><M>z</M><C> ) = Gcd( </C><M>z</M><C>, <A>r</A> )
 ##  = StandardAssociate( <A>r</A> )</C>
 ##  and <C>Gcd( </C><M>z</M><C>, </C><M>z</M><C> ) = </C><M>z</M>.
@@ -1444,7 +1444,7 @@ DeclareOperation( "GcdRepresentationOp",
 ##  and every other multiple of these elements is a multiple of <M>m</M>.
 ##  <P/>
 ##  Note that this in particular implies the following:
-##  For the zero element <M>z</M> of <A>R</A>, we have 
+##  For the zero element <M>z</M> of <A>R</A>, we have
 ##  <C>Lcm( <A>r</A>, </C><M>z</M><C> ) = Lcm( </C><M>z</M><C>, <A>r</A> )
 ##  = StandardAssociate( <A>r</A> )</C>
 ##  and <C>Lcm( </C><M>z</M><C>, </C><M>z</M><C> ) = </C><M>z</M>.

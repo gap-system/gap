@@ -9,14 +9,14 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file should possibly be called mat8bit.g  (see also vecmat.gd)
-##  It provides some things that the kernel needs from the library 
+##  It provides some things that the kernel needs from the library
 ##
 
 #############################################################################
 ##
 #R  Is8BitMatrixRep( <obj> ) . . . compressed vector over GFQ (3 <= q <= 256)
 ##
-DeclareRepresentation( "Is8BitMatrixRep", 
+DeclareRepresentation( "Is8BitMatrixRep",
         IsPositionalObjectRep and IsRowListMatrix
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns

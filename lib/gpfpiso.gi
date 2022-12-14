@@ -41,7 +41,7 @@ InstallOtherMethod(IsomorphismFpGroupByGeneratorsNC,"supply name",
 function(G,gens)
   return IsomorphismFpGroupByGeneratorsNC(G,gens,"F");
 end);
-  
+
 InstallOtherMethod( IsomorphismFpGroupByCompositionSeries,
                     "supply name", true, [IsGroup], 0,
 function( G )
@@ -378,7 +378,7 @@ function(g,str,N)
       if IsNonabelianSimpleGroup(f) then
         if DataAboutSimpleGroup(f).idSimple.series="A" and
           not IsNaturalAlternatingGroup(f) then
-          # force natural alternating 
+          # force natural alternating
           hom:=hom*IsomorphismGroups(f,
             AlternatingGroup(DataAboutSimpleGroup(f).idSimple.parameter));
 	elif IsPermGroup(f) and
@@ -400,7 +400,7 @@ function(g,str,N)
 	SetIsBijective(j,true);
       od;
       # get the minimal normal subgroups, together with isomorphisms
-      sf:=CompositionSeries(f); 
+      sf:=CompositionSeries(f);
       sf:=sf[Length(sf)-1];
       orb:=[sf];
       tra:=[IdentityMapping(f)];
@@ -461,7 +461,7 @@ function(g,str,N)
       fi;
       Append(gens,List(fgens,i->PreImagesRepresentative(hom,i)));
 
-      # here we really want a composed homomorphism, to avoid extra work for 
+      # here we really want a composed homomorphism, to avoid extra work for
       # a new stabilizer chain
       if not IsOne(hom) then
 	hom:=CompositionMapping2General(a,hom);
@@ -534,7 +534,7 @@ function(g,str,N)
             fi;
           od;
         od;
-        
+
       fi;
 
     else
@@ -720,7 +720,7 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
     Add(rels,MappedWord(i,fpqg,qimg)/decomp(MappedWord(i,fpqg,qreps)));
   od;
   fp:=f/rels;
-  if HasGeneratorsOfGroup(N) then 
+  if HasGeneratorsOfGroup(N) then
     di:=GeneratorsOfGroup(N);
   else
     di:=[];
@@ -773,7 +773,7 @@ local di, hom;
       # not declared total, so an assertion test will fail
       hom:=GroupHomomorphismByImagesNC(k,di.fp,cgens,GeneratorsOfGroup(di.fp):noassert);
       hom!.decompinfo:=MakeImmutable(di);
-      if HasIsSurjective(h) and IsSurjective(h) 
+      if HasIsSurjective(h) and IsSurjective(h)
 	and HasKernelOfMultiplicativeGeneralMapping(h)
 	and m=KernelOfMultiplicativeGeneralMapping(h) then
 	SetIsSurjective(hom,true);
@@ -836,7 +836,7 @@ function( G, gens, str )
                     "for method \"regular\"; the option has been ignored" );
             elif Size( G ) <= method[2] then
                 method := "regular";
-            fi; 
+            fi;
         fi;
         if method = "fast" then
             # use the old method
@@ -1217,7 +1217,7 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
 
         left:=MappedWord(r[1],FreeGeneratorsOfFpMonoid(m),monreal);
         right:=MappedWord(r[2],FreeGeneratorsOfFpMonoid(m),monreal);
-        if not IsOne(diff) then 
+        if not IsOne(diff) then
           right:=right*Product(List(LetterRepAssocWord(UnderlyingElement(diff)),
             x->mgens[Position(nums,x)]));
         fi;
@@ -1279,7 +1279,7 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
     od;
   fi;
 
-  # finally create 
+  # finally create
   m:=FactorFreeMonoidByRelations(fm,rules);
   hom:=MakeFpGroupToMonoidHomType1(fp,m);
 
@@ -1303,7 +1303,7 @@ local pcgs,iso,fp,i,j,gens,numi,ord,fm,fam,mword,k,r,addrule,a,e,m;
   pcgs:=Pcgs(G);
   iso:=IsomorphismFpGroup(G);
   fp:=Range(iso);
-  if List(GeneratorsOfGroup(fp),x->PreImagesRepresentative(iso,x))<>pcgs then 
+  if List(GeneratorsOfGroup(fp),x->PreImagesRepresentative(iso,x))<>pcgs then
     Error("pcgs");
   fi;
   gens:=[];
@@ -1382,10 +1382,10 @@ local f,rels,i,j,gens,coxrel;
   local m,f,g;
     if n=2 then Add(rels,Comm(a,b));
     else
-      if docox then 
+      if docox then
         # coxeter: no negative exponents
-        Add(rels,(a*b)^n); 
-      else 
+        Add(rels,(a*b)^n);
+      else
         # braid: bababa...  = ababab...
         m:=QuoInt(n+1,2);
         f:=Subword((b*a)^m,1,n);
@@ -1469,7 +1469,7 @@ local f,rels,i,j,gens,coxrel;
       for i in [1..6] do
         coxrel(gens[i],gens[7],2);
       od;
-    elif n>8 then 
+    elif n>8 then
       Error("E>8 does not exist");
     fi;
   elif ser="F" and n=4 then
@@ -1565,7 +1565,7 @@ end);
 
 BindGlobal("CanoDC",function(chain,sub,orep)
 local i,j,u,o,r,stb,m,g,img,p,rep,b,expand,dict,act,gens,gf,writestab;
-  
+
   expand:=function(n)
   local e;
     e:=r[n][2];
@@ -1649,7 +1649,7 @@ local i,j,u,o,r,stb,m,g,img,p,rep,b,expand,dict,act,gens,gf,writestab;
 end);
 
 
-# rewriting systems for simple groups based on BN pairs, following 
+# rewriting systems for simple groups based on BN pairs, following
 # (Schmidt,  Finite groups have short rewriting systems. Computational group
 # theory and the theory of groups, II, 185–200, Contemp. Math., 511.)
 BindGlobal("SplitBNRewritingPresentation",function(group,borel,weyl,newstyle)
@@ -1684,7 +1684,7 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
       i:=1;
       while l=false and i<=Length(cs) do
         if Size(Intersection(borel,cs[i]))=1 and Size(cs[i])>=Length(dc)
-          and Size(ClosureGroup(borel,cs[i]))=Size(group) and 
+          and Size(ClosureGroup(borel,cs[i]))=Size(group) and
           Length(Set(Elements(cs[i]),
             x->PositionProperty(dc,y->x in y)))=Length(dc) then
           Info(InfoFpGroup,1,"replaced weyl candidate with better subgroup\n");
@@ -1727,7 +1727,7 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   local i,j,need;
     i:=1;
     repeat
-      # find borel range 
+      # find borel range
       while i<Length(w) and not (w[i] in borelran) do
         i:=i+1;
       od;
@@ -1746,7 +1746,7 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
           need:=Product(bpairs{need});
           need:=ImagesRepresentative(cb.monhom,ImagesRepresentative(isob,need));
           need:=UnderlyingElement(need);
-          if Length(need)>0 then 
+          if Length(need)>0 then
             need:=ReducedForm(brws,need);
           fi;
           w:=Concatenation(w{[1..i-1]},LetterRepAssocWord(need),w{[j+1..Length(w)]});
@@ -1837,7 +1837,7 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
                   fi;
 
                 fi;
-                
+
                 i:=Length(red);
               fi;
             fi;
@@ -2199,7 +2199,7 @@ if rule[1]=rule[2] then return;fi;
     trule:=List(rule,LetterRepAssocWord);
     if rdag<>fail then
       p:=AddRuleKBDAG(rdag,trule[1],Length(rels)+1);
-      if p=fail then 
+      if p=fail then
         # need to reduce rules
         left:=Filtered([1..Length(rels)],
           x->PositionSublist(LetterRepAssocWord(rels[x][1]),trule[1])<>fail);
@@ -2256,9 +2256,9 @@ if rule[1]=rule[2] then return;fi;
     a:=[];
     for i in w do
       if i>0 then
-        Add(a,2*i-1); 
+        Add(a,2*i-1);
       else
-        Add(a,-2*i); 
+        Add(a,-2*i);
       fi;
     od;
     a:=AssocWordByLetterRep(FamilyObj(One(f)),a);
@@ -2383,7 +2383,7 @@ if rule[1]=rule[2] then return;fi;
         for j in [1..Minimum(noncomm[i])-1] do # earlier generators
           a:=weylword(wgens[i]);
           pri:=borelword(bgens[j])*a;
-          pri:=reduce(trawou(pri),rels,rdag,mytzf); 
+          pri:=reduce(trawou(pri),rels,rdag,mytzf);
           a:=[trawou(borelword(bgens[j])*borelword(jj)*a),
               trawou(borelword(jj^Inverse(bgens[j])))*pri];
           addrule(a);
@@ -2430,7 +2430,7 @@ if rule[1]=rule[2] then return;fi;
       stb:=Intersection(borel,borel^(pri^-1));
       Info(InfoFpGroup,2,i," ",Size(stb));
 
-      if Size(stb)>1 then 
+      if Size(stb)>1 then
         can:=CanonicalPcgs(InducedPcgs(pcgs,stb));
         #can:=Filtered(Elements(stb),x->not IsOne(x));
         for j in can do
@@ -2475,7 +2475,7 @@ if rule[1]=rule[2] then return;fi;
         k[i]:=List(k[i],x->a[i]^x);
       od;
       borelelm:=Set(Cartesian(k),x->Product(x));
-    
+
     fi;
 
     for i in wo do
@@ -2715,7 +2715,7 @@ function(G)
 local a,f,iso;
 
   a:=DataAboutSimpleGroup(G);
-  if not IsBound(a.classicalId) 
+  if not IsBound(a.classicalId)
     or ValueOption(NO_PRECOMPUTED_DATA_OPTION)=true then
     TryNextMethod();
   fi;
@@ -2728,7 +2728,7 @@ local a,f,iso;
   f:=Filename(DirectoriesLibrary("grp"), "simplerew.grp");
   if f<>fail then
     f:=ReadAsFunction(f)();
-    f:=First(f,x->x[1][2]=iso.series 
+    f:=First(f,x->x[1][2]=iso.series
       and x[1][3]=iso.parameter);
     if f<>fail then
       a:=BuildRewritingFromData(f);
@@ -2753,7 +2753,7 @@ local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens,gl;
     f:=a.classicalId.parameter[2];
 
     if d=2 and f=7 then d:=3;f:=2;fi;
-    
+
     group:=PSL(d,f);
     act:=group!.actionHomomorphism;
 
@@ -2831,7 +2831,7 @@ local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens,gl;
     gl:=GL(2*d,f);
     sy:=SylowSubgroup(gl,SmallestPrimeDivisor(f));
     sy:=Intersection(g,sy);
-    if Gcd(Size(sy),Size(g)/Size(sy))<>1 then 
+    if Gcd(Size(sy),Size(g)/Size(sy))<>1 then
       Info(InfoWarning,1,"Sylow intersection did not work");
       sy:=SylowSubgroup(g,SmallestPrimeDivisor(f));
     fi;
@@ -2962,7 +2962,7 @@ local p,dat,lev,l,sub,c,s,r,dc;
   for c in sub do
     for s in c do
       if Size(Intersection(l,s))=1 and Size(s)>=Length(dc)
-        and Size(ClosureGroup(l,s))=Size(G) and 
+        and Size(ClosureGroup(l,s))=Size(G) and
         Length(Set(Elements(s),
           x->PositionProperty(dc,y->x in y)))=Length(dc) then
         r:=SplitBNRewritingPresentation(G,l,s,false);

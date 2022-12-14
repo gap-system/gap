@@ -55,7 +55,7 @@
 ##  underlying family for a given rewriting system.
 ##
 ##  <#GAPDoc Label="[2]{rws}">
-##  The key point to note about rewriting systems is that they have 
+##  The key point to note about rewriting systems is that they have
 ##  properties such as
 ##  <Ref Prop="IsConfluent" Label="for a rewriting system"/>
 ##  and attributes such as <Ref Attr="Rules"/>, however
@@ -71,9 +71,9 @@
 ##  rewriting system (in the file <F>lib/kbsemi.gi</F>) uses
 ##  <P/>
 ##  <Log><![CDATA[
-##  kbrws := Objectify(NewType(rwsfam, 
-##    IsMutable and IsKnuthBendixRewritingSystem and 
-##    IsKnuthBendixRewritingSystemRep), 
+##  kbrws := Objectify(NewType(rwsfam,
+##    IsMutable and IsKnuthBendixRewritingSystem and
+##    IsKnuthBendixRewritingSystemRep),
 ##    rec(family:= fam,
 ##    reduced:=false,
 ##    tzrules:=List(relwco,i->
@@ -88,7 +88,7 @@
 ##  in the <Ref Func="Objectify"/>,
 ##  whenever <Ref Prop="IsConfluent" Label="for a rewriting system"/> is
 ##  called,
-##  the appropriate method to determine confluence is called. 
+##  the appropriate method to determine confluence is called.
 ##  <#/GAPDoc>
 ##
 
@@ -139,7 +139,7 @@ DeclareCategory(
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareProperty( 
+DeclareProperty(
     "IsBuiltFromAdditiveMagmaWithInverses",
     IsObject );
 
@@ -187,7 +187,7 @@ DeclareProperty(
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareProperty( 
+DeclareProperty(
     "IsBuiltFromMagmaWithInverses",
     IsObject );
 
@@ -266,7 +266,7 @@ InstallTrueMethod( IsBuiltFromMagmaWithInverses, IsBuiltFromGroup );
 ##
 ##  <Description>
 ##  returns the semigroup or monoid over which <A>rws</A> is
-##  a rewriting system. 
+##  a rewriting system.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -297,7 +297,7 @@ DeclareOperation( "FreeStructureOfRewritingSystem", [IsRewritingSystem]);
 ##  <Attr Name="ConfluentRws" Arg='rws'/>
 ##
 ##  <Description>
-##  Return a new rewriting system defining the same algebra as <A>rws</A> 
+##  Return a new rewriting system defining the same algebra as <A>rws</A>
 ##  which is confluent.
 ##  </Description>
 ##  </ManSection>
@@ -359,7 +359,7 @@ DeclareAttribute(
 ##  <Attr Name="Rules" Arg='rws'/>
 ##
 ##  <Description>
-##  The rules comprising the rewriting system. Note that these may 
+##  The rules comprising the rewriting system. Note that these may
 ##  change through the life of the rewriting system, however they
 ##  will always be a set of defining relations of the algebra
 ##  described by the rewriting system.
@@ -368,7 +368,7 @@ DeclareAttribute(
 ##  <#/GAPDoc>
 ##
 
-##  NOTE: this is an   attribute *but*, normally, rewriting  system  
+##  NOTE: this is an   attribute *but*, normally, rewriting  system
 ##  do not store this attribute.
 ##
 DeclareAttribute(
@@ -421,8 +421,8 @@ DeclareSynonym("OrderOfRewritingSystem", OrderingOfRewritingSystem);
 ##  <Description>
 ##  For a rewriting system <A>rws</A>,
 ##  <Ref Prop="IsConfluent" Label="for a rewriting system"/> returns
-##  <K>true</K> if and only if <A>rws</A> is confluent. 
-##  A rewriting system is <E>confluent</E> if, for every two words 
+##  <K>true</K> if and only if <A>rws</A> is confluent.
+##  A rewriting system is <E>confluent</E> if, for every two words
 ##  <M>u</M> and <M>v</M> in the free algebra <M>T</M> which represent the
 ##  same element  of the algebra <M>A</M> defined by <A>rws</A>,
 ##  <C>ReducedForm( <A>rws</A>, </C><M>u</M> <C>) =
@@ -481,7 +481,7 @@ DeclareProperty( "IsReduced", IsRewritingSystem and IsMutable );
 ##  <Oper Name="AddRule" Arg='rws, rule'/>
 ##
 ##  <Description>
-##  Add  <A>rule</A> to a rewriting system <A>rws</A>. 
+##  Add  <A>rule</A> to a rewriting system <A>rws</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -613,7 +613,7 @@ DeclareOperation(
 ##  </ManSection>
 ##
 DeclareOperation(
-    "ReducedConjugate", 
+    "ReducedConjugate",
     [ IsRewritingSystem,
       IsMultiplicativeElement,
       IsMultiplicativeElement ] );
@@ -631,7 +631,7 @@ DeclareOperation(
 ##  </ManSection>
 ##
 DeclareOperation(
-    "ReducedDifference", 
+    "ReducedDifference",
     [ IsRewritingSystem,
       IsAdditiveElement,
       IsAdditiveElement ] );
@@ -656,7 +656,7 @@ DeclareOperation(
 ##  <#/GAPDoc>
 ##
 DeclareOperation(
-    "ReducedForm", 
+    "ReducedForm",
     [ IsRewritingSystem,
       IsObject ] );
 
@@ -670,7 +670,7 @@ DeclareOperation(
 ##  <Description>
 ##  Given an element <A>u</A> in the free (or term) algebra over which
 ##  <A>rws</A> is defined,
-##  returns <C><A>u</A> = ReducedForm(<A>rws</A>, <A>u</A>)</C>. 
+##  returns <C><A>u</A> = ReducedForm(<A>rws</A>, <A>u</A>)</C>.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -693,7 +693,7 @@ DeclareOperation(
 ##  </ManSection>
 ##
 DeclareOperation(
-    "ReducedInverse", 
+    "ReducedInverse",
     [ IsRewritingSystem,
       IsMultiplicativeElement ] );
 
@@ -711,7 +711,7 @@ DeclareOperation(
 ##
 DeclareOperation(
     "ReducedLeftQuotient",
-    [ IsRewritingSystem, 
+    [ IsRewritingSystem,
       IsMultiplicativeElement,
       IsMultiplicativeElement ] );
 
@@ -728,7 +728,7 @@ DeclareOperation(
 ##  </ManSection>
 ##
 DeclareOperation(
-    "ReducedOne", 
+    "ReducedOne",
     [ IsRewritingSystem ] );
 
 
@@ -745,7 +745,7 @@ DeclareOperation(
 ##
 DeclareOperation(
     "ReducedPower",
-    [ IsRewritingSystem, 
+    [ IsRewritingSystem,
       IsMultiplicativeElement,
       IsInt ] );
 
@@ -767,9 +767,9 @@ DeclareOperation(
 ##  </ManSection>
 ##
 DeclareOperation(
-    "ReducedProduct", 
+    "ReducedProduct",
     [ IsRewritingSystem,
-      IsMultiplicativeElement, 
+      IsMultiplicativeElement,
       IsMultiplicativeElement ] );
 
 
@@ -785,7 +785,7 @@ DeclareOperation(
 ##  </ManSection>
 ##
 DeclareOperation(
-    "ReducedQuotient", 
+    "ReducedQuotient",
     [ IsRewritingSystem,
       IsMultiplicativeElement,
       IsMultiplicativeElement ] );
@@ -803,7 +803,7 @@ DeclareOperation(
 ##  </ManSection>
 ##
 DeclareOperation(
-    "ReducedScalarProduct", 
+    "ReducedScalarProduct",
     [ IsRewritingSystem,
       IsScalar,
       IsAdditiveElement ] );
@@ -839,7 +839,7 @@ DeclareOperation(
 ##  </ManSection>
 ##
 DeclareOperation(
-    "ReducedZero", 
+    "ReducedZero",
     [ IsRewritingSystem ] );
 
 

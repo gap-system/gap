@@ -285,7 +285,7 @@ BIND_GLOBAL( "LEAVE_ALL_NAMESPACES",
         UNB_LIST(NAMESPACES_STACK,i);
     od;
   end );
-    
+
 BIND_GLOBAL( "CURRENT_NAMESPACE",
   function()
     if LEN_LIST(NAMESPACES_STACK) > 0 then

@@ -75,7 +75,7 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#M  ViewObj( <S> )  
+#M  ViewObj( <S> )
 ##	view a [left,right,two-sided] magma ideal
 ##
 
@@ -228,7 +228,7 @@ end );
 
 #############################################################################
 ##
-#F  LeftMagmaIdeal( <gen>, ... ) 
+#F  LeftMagmaIdeal( <gen>, ... )
 #F  RightMagmaIdeal( <gens> )
 #F  MagmaIdeal( <gens> )
 ##
@@ -239,17 +239,17 @@ end );
 # InstallGlobalFunction( MagmaIdeal, function( arg )
 
 #############################################################################
-##                                                        
-#M  AsLeftMagmaIdeal( <D>, <C> )    
+##
+#M  AsLeftMagmaIdeal( <D>, <C> )
 ##
 ##	Regard the list <C> of elements as a left ideal of <D>.
 ##  It is not checked, but assumed, that <C> are all the elements
 ##  of the ideal and that <C> is a subset of <D>.
-##     
+##
 InstallMethod( AsLeftMagmaIdeal,
-    "generic method for a domain and a collection", 
-    IsIdenticalObj,               
-    [ IsDomain, IsCollection ], 0,                                   
+    "generic method for a domain and a collection",
+    IsIdenticalObj,
+    [ IsDomain, IsCollection ], 0,
 
 function( D, C )
     local S;
@@ -267,7 +267,7 @@ end );
 BindGlobal( "EnumeratorOfMagmaIdeal", function( I )
 
     local   gens,       # magma generators of <I>
-            H,          # submagma 
+            H,          # submagma
             gen,        # generator of <I>
 						x,y,				# elements of parent
 						M;					# parent
@@ -312,12 +312,12 @@ InstallMethod( Enumerator,
 ##
 #M  AsSSortedList( <R> )  - for a right magma ideal
 #M  AsSSortedList( <L> )  - for a left magma ideal
-##  
+##
 ##  Lazy methods for listing the elements of a left/right magma ideal
 ##  assuming the object is finite. Should write enumerators some time...
 ##
 InstallMethod( AsSSortedList,
-  "for a right magma ideal", true, 
+  "for a right magma ideal", true,
   [IsRightMagmaIdeal and HasGeneratorsOfRightMagmaIdeal],0,
 function(I)
   local
@@ -343,7 +343,7 @@ end);
 
 
 InstallMethod( AsSSortedList,
-  "for a left magma ideal", true, 
+  "for a left magma ideal", true,
   [IsLeftMagmaIdeal and HasGeneratorsOfLeftMagmaIdeal],0,
 function(I)
   local

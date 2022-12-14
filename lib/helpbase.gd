@@ -7,11 +7,11 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
-##  
+##
 ## The files helpbase.g{d,i} contain the interface between GAP's online help
 ## and the actual help books.
-##  
-  
+##
+
 DeclareGlobalFunction("StringStreamInputTextFile");
 DeclareGlobalFunction("MATCH_BEGIN");
 DeclareGlobalFunction("MATCH_BEGIN_COUNT");

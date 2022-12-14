@@ -11,7 +11,7 @@
 ##  This file contains the data for precomputed Conway polynomials for
 ##  primes
 ##                     1000 < p < 110000
-##  (File is only read by 'ConwayPolynomial' if needed.)     
+##  (File is only read by 'ConwayPolynomial' if needed.)
 
 SET_CONWAYPOLDATA(1009,[
 ,,,[15085570,"RPn"],,[873681994957,"JB"],,,[2700584453,"RPn"],]);

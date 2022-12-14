@@ -17,7 +17,7 @@
 #F  PCGS_STABILIZER( <pcgs>, <pnt>, <op> )  . . . . . . . . . . . . . . local
 ##
 PCGS_STABILIZER := function( arg )
-    local   pcgs,  pnt,  op,  data,  one,  orb,  prod,  n,  s,  i,  
+    local   pcgs,  pnt,  op,  data,  one,  orb,  prod,  n,  s,  i,
             mi,  np,  j,  o,  len,  l1,  k,  l2,  r,  e,  stab,  ros,dict;
 
     pcgs := arg[1];
@@ -165,8 +165,8 @@ end;
 #F  PCGS_STABILIZER_HOMOMORPHIC( <pcgs>, <homs>, <pnt>, <op> )  . . . . local
 ##
 PCGS_STABILIZER_HOMOMORPHIC := function( arg )
-    local   pcgs,  homs,  pnt,  op,  ros,  one,  hone,  orb,  prod,  
-            n,  s,  stab,  i,  mi,  np,  j,  o,  len,  l1,  k,  l2,  
+    local   pcgs,  homs,  pnt,  op,  ros,  one,  hone,  orb,  prod,
+            n,  s,  stab,  i,  mi,  np,  j,  o,  len,  l1,  k,  l2,
             r,  e,  data,dict;
 
     pcgs := arg[1];
@@ -399,7 +399,7 @@ PCGS_NORMALIZER := function( home, pcgs, pnt, modulo )
         op   := PCGS_NORMALIZER_OPD;
         pnt  := ShallowCopy(pnt);
         s    := PCGS_STABILIZER( pcgs, pnt, op, home );
-        
+
     # it is get more complicated
     else
         Info( InfoPcNormalizer, 3, "PCGS_NORMALIZER case E" );
@@ -446,7 +446,7 @@ local   f,  o,  m,  sub,  s,p,op;
     sub := List( sub, x -> ExponentsOfPcElement( modulo, x ) * o );
     sub:=ImmutableMatrix(f,sub);
 
-    # select operation function and prepare matrices if necessary 
+    # select operation function and prepare matrices if necessary
     if p=2 then
       op:=OnSubspacesByCanonicalBasisGF2;
     else
@@ -529,7 +529,7 @@ end;
 #F  PCGS_NORMALIZER_GLASBY( <home>, <norm>, <nis>, <pcgs>, <modulo> )
 ##
 PCGS_NORMALIZER_GLASBY := function( home, pcgs, nis, u1, u2 )
-    local   id,  stb,  data,  pnt,  i,  cnj,  ns,  one,  mats,  sys,  
+    local   id,  stb,  data,  pnt,  i,  cnj,  ns,  one,  mats,  sys,
             sol,  v,  j;
 
     # The situation is as follows:
@@ -599,7 +599,7 @@ end;
 #F  PCGS_NORMALIZER_COBOUNDS( <home>, <norm>, <nis>, <pcgs>, <modulo> )
 ##
 PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
-    local   ns,  us,  gf,  one,  data,  u,  ui,  mats,  t,  l,  i,  b,  
+    local   ns,  us,  gf,  one,  data,  u,  ui,  mats,  t,  l,  i,  b,
             nb,  c,  heads,  k,  ln1,  ln2,  op,  stab,  s,  j,  v;
 
     # The situation is as follows:
@@ -651,7 +651,7 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
         Info( InfoPcNormalizer, 4, "coboundaries are trivial" );
         return PCGS_NORMALIZER( home, pcgs, u1, u2 );
     fi;
-    Info( InfoPcNormalizer, 4, "|coboundaries| = ", 
+    Info( InfoPcNormalizer, 4, "|coboundaries| = ",
           RelativeOrderOfPcElement(home,ns[1]), "^", Length(b) );
 
     # compute the stabilizer
@@ -1026,7 +1026,7 @@ end );
 #M  Normalizer( <pc-group>, <pc-group> )
 ##
 InstallMethod( NormalizerOp, "for groups with home pcgs", IsIdenticalObj,
-    [ IsGroup and HasHomePcgs and CanComputeFittingFree, IsGroup and HasHomePcgs ], 
+    [ IsGroup and HasHomePcgs and CanComputeFittingFree, IsGroup and HasHomePcgs ],
     1, #better than the next method
 function( g, u )
     local   home,  norm,  pcgs;

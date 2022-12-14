@@ -2006,7 +2006,7 @@ InstallMethod( GaloisGroup,
 
     return group;
 end );
-    
+
 
 InstallMethod( Representative,
     [ IsAdditiveMagmaWithZero and IsCyclotomicCollection ],

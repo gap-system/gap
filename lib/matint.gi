@@ -1079,12 +1079,12 @@ local n,zero,nv,new,pip,piv,i,v,p,w,g,nov,pin,now,rat,extra,clean,assign,try;
           p:=PositionNonZero(v,p);
         else
           g:=Gcdex(v[p],piv[p]);
-          # form new pivot with gcd 
+          # form new pivot with gcd
           #w:=g.coeff2*mat[pip[p]]+g.coeff1*v; # automatically normed by Gcdex
           w:=g.coeff2*mat[pip[p]];
           AddRowVector(w,v,g.coeff1); # automatically normed by Gcdex
           now:=w*w;
-          if (not clean) or now>rat*pin[p] then 
+          if (not clean) or now>rat*pin[p] then
             # only reduce a bit, not full gcd
             #v:=v-QuoInt(v[p],piv[p])*mat[pip[p]];
             AddRowVector(v,mat[pip[p]],-QuoInt(v[p],piv[p]));

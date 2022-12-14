@@ -253,7 +253,7 @@ DeclareGlobalFunction( "BestQuoInt" );
 ##  Entering break read-eval-print loop ...
 ##  you can 'quit;' to quit to outer loop, or
 ##  you can 'return;' to continue
-##  brk> gap> 
+##  brk> gap>
 ##  ]]></Log>
 ##  </Description>
 ##  </ManSection>
@@ -354,7 +354,7 @@ DeclareGlobalFunction( "DivisorsInt");
 ##  <Func Name="FactorsInt" Arg='n:RhoTrials:=trials' Label="using Pollard's Rho"/>
 ##
 ##  <Description>
-##  <Ref Func="FactorsInt"/> returns a list of factors of a given integer 
+##  <Ref Func="FactorsInt"/> returns a list of factors of a given integer
 ##  <A>n</A> such that <C>Product( FactorsInt( <A>n</A> ) ) = <A>n</A></C>.
 ##  If <M>|n| \leq 1</M> the list <C>[<A>n</A>]</C> is returned. Otherwise
 ##  the result contains probable primes, sorted by absolute value. The
@@ -370,7 +370,7 @@ DeclareGlobalFunction( "DivisorsInt");
 ##  composite integers.
 ##  In such a case you will get a warning about the use of a probable prime.
 ##  You can switch off these warnings by
-##  <C>SetInfoLevel( InfoPrimeInt, 0 );</C> 
+##  <C>SetInfoLevel( InfoPrimeInt, 0 );</C>
 ##  (also see <Ref Oper="SetInfoLevel"/>).
 ##  <P/>
 ##  The time taken by <Ref Func="FactorsInt"/> is approximately proportional
@@ -399,7 +399,7 @@ DeclareGlobalFunction( "DivisorsInt");
 ##  more advisable to install the <Package>FactInt</Package> package and
 ##  then simply to use the operation <Ref Oper="Factors"/>. The factorization
 ##  of the 8-th Fermat number by Pollard's Rho below takes already a while.
-##  
+##
 ##  <Example><![CDATA[
 ##  gap> FactorsInt( -Factorial(6) );
 ##  [ -2, 2, 2, 2, 3, 3, 5 ]
@@ -410,7 +410,7 @@ DeclareGlobalFunction( "DivisorsInt");
 ##  gap> FactorsInt( 10^42 + 1 );
 ##  [ 29, 101, 281, 9901, 226549, 121499449, 4458192223320340849 ]
 ##  gap> FactorsInt(2^256+1:RhoTrials:=100000000);
-##  [ 1238926361552897, 
+##  [ 1238926361552897,
 ##    93461639715357977769163558199606896584051237541638188580280321 ]
 ##  ]]></Example>
 ##  </Description>
@@ -422,14 +422,14 @@ DeclareGlobalFunction( "FactorsInt" );
 #############################################################################
 ##
 #F  PrimeDivisors( <n> ) . . . . . . . . . . . . . . . list of prime factors
-##  
+##
 ##  <#GAPDoc Label="PrimeDivisors">
 ##  <ManSection>
 ##  <Attr Name="PrimeDivisors" Arg='n'/>
 ##  <Description>
-##  <Ref Attr="PrimeDivisors"/> returns for a non-zero integer <A>n</A> a set 
-##  of its positive (probable) primes divisors. In rare cases the result could 
-##  contain a composite number which passed certain primality tests, see 
+##  <Ref Attr="PrimeDivisors"/> returns for a non-zero integer <A>n</A> a set
+##  of its positive (probable) primes divisors. In rare cases the result could
+##  contain a composite number which passed certain primality tests, see
 ##  <Ref Func="IsProbablyPrimeInt"/> and <Ref Func="FactorsInt"/> for more details.
 ##  <Example>
 ##  gap> PrimeDivisors(-12);
@@ -440,7 +440,7 @@ DeclareGlobalFunction( "FactorsInt" );
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##  
+##
 DeclareAttribute("PrimeDivisors", IsInt);
 
 #############################################################################
@@ -510,18 +510,18 @@ DeclareAttribute("PrimeDivisors", IsInt);
 ##  3 to&nbsp;10.
 ##  (Also see <Ref Func="CheapFactorsInt" BookName="EDIM"/>).
 ##  <Example><![CDATA[
-##  gap> List([0..5],i->PartialFactorization(97^35-1,i)); 
-##  [ [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 
-##        2446338959059521520901826365168917110105972824229555319002965029 ], 
-##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 
+##  gap> List([0..5],i->PartialFactorization(97^35-1,i));
+##  [ [ 2, 2, 2, 2, 2, 3, 11, 31, 43,
+##        2446338959059521520901826365168917110105972824229555319002965029 ],
+##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967,
 ##        2529823122088440042297648774735177983563570655873376751812787 ],
-##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 
+##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967,
 ##        2529823122088440042297648774735177983563570655873376751812787 ],
-##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 39761, 262321, 
-##        242549173950325921859769421435653153445616962914227 ], 
-##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 39761, 262321, 687121, 
-##        352993394104278463123335513593170858474150787 ], 
-##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 39761, 262321, 687121, 
+##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 39761, 262321,
+##        242549173950325921859769421435653153445616962914227 ],
+##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 39761, 262321, 687121,
+##        352993394104278463123335513593170858474150787 ],
+##    [ 2, 2, 2, 2, 2, 3, 11, 31, 43, 967, 39761, 262321, 687121,
 ##        20241187, 504769301, 34549173843451574629911361501 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -565,7 +565,7 @@ DeclareOperation( "PartialFactorization",
 ##  is <M>1</M> or <M>-1</M>.
 ##  <Example><![CDATA[
 ##  gap> Gcdex( 123, 66 );
-##  rec( coeff1 := 7, coeff2 := -13, coeff3 := -22, coeff4 := 41, 
+##  rec( coeff1 := 7, coeff2 := -13, coeff3 := -22, coeff4 := 41,
 ##    gcd := 3 )
 ##  ]]></Example>
 ##  This means <M>3 = 7 * 123 - 13 * 66</M>, <M>0 = -22 * 123 + 41 * 66</M>.
@@ -576,7 +576,7 @@ DeclareOperation( "PartialFactorization",
 ##  rec( coeff1 := 1, coeff2 := 0, coeff3 := 0, coeff4 := 1, gcd := 0 )
 ##  ]]></Example>
 ##  <P/>
-##  <Ref Func="GcdRepresentation" Label="for (a ring and) several elements"/> 
+##  <Ref Func="GcdRepresentation" Label="for (a ring and) several elements"/>
 ##  provides similar functionality over arbitrary Euclidean rings.
 ##  </Description>
 ##  </ManSection>
@@ -695,13 +695,13 @@ DeclareGlobalFunction( "LcmInt" );
 ##  positive integer <A>n</A> with respect to the positive integer
 ##  <A>base</A>, i.e.,
 ##  the largest positive integer <M>e</M> such that
-##  <M><A>base</A>^e \leq <A>n</A></M>. 
+##  <M><A>base</A>^e \leq <A>n</A></M>.
 ##  The function
 ##  <Ref Func="LogInt"/>
 ##  will signal an error if either <A>n</A> or <A>base</A> is not positive.
 ##  <P/>
 ##  For <A>base</A> <M>= 2</M> this is very efficient because the internal
-##  binary representation of the integer is used. 
+##  binary representation of the integer is used.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> LogInt( 1030, 2 );

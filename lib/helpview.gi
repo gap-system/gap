@@ -7,38 +7,38 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
-##  
+##
 ##  The  files  helpview.g{d,i} contain the configuration mechanism  for  the
 ##  different help viewer.
-##  
+##
 
 #############################################################################
-##  
+##
 ##  the user interface for the help viewer choice
-##  
+##
 
 #############################################################################
-##  
+##
 #V  HELP_VIEWER_INFO
-##  
+##
 ##  This record  contains records  for each  possible help  viewer: each
 ##  stores the `.type' of the  output data (currently supported: "text",
 ##  "url", "pdf", "dvi")  and a function `.show' for  showing the output
 ##  data.
-##    
+##
 ##  The  output data  (from  handler.HelpData) must  have the  following
 ##  form:
-##  
+##
 ##  "text":   a format as allowed by `Pager' (usually rec(lines:=text,
 ##            start:=linenr, formatted:=true))
-##  
+##
 ##  "url":    an URL (usually local `file://' URL)
-##  
+##
 ##  "dvi":    a filename or a record rec(file:=filename, page:=pagenr)
 ##            where pagenr is the first page to show
-##  
+##
 ##  "pdf":    same as for "dvi"
-##  
+##
 
 #  The preferred help viewers can be specified via a user preference.
 DeclareUserPreference( rec(
@@ -81,7 +81,7 @@ if ARCH_IS_WINDOWS() then
     fi;
     Print( "Opening help page ", winfilename, " in default windows browser ... \c" );
     Exec( Concatenation("start ", winfilename ) );
-    Print( "done! \n" );         
+    Print( "done! \n" );
   end
   );
 
@@ -89,7 +89,7 @@ if ARCH_IS_WINDOWS() then
 elif ARCH_IS_MAC_OS_X() then
   # html version using macOS default browser
   HELP_VIEWER_INFO.("mac default browser") := rec (
-    type := "url", 
+    type := "url",
     show := function (url)
             Exec ( Concatenation( "osascript <<ENDSCRIPT\n",
                                   "open location \"file://", url, "\"\n",
@@ -97,12 +97,12 @@ elif ARCH_IS_MAC_OS_X() then
             return;
         end
   );
-  
+
   HELP_VIEWER_INFO.browser := HELP_VIEWER_INFO.("mac default browser");
 
   # html version using macOS browser Safari
   HELP_VIEWER_INFO.safari := rec (
-    type := "url", 
+    type := "url",
     show := function (url)
             Exec ( Concatenation( "osascript <<ENDSCRIPT\n",
                                   "tell application \"Safari\"\n",
@@ -115,7 +115,7 @@ elif ARCH_IS_MAC_OS_X() then
 
   # html version using macOS browser Firefox
   HELP_VIEWER_INFO.firefox := rec (
-    type := "url", 
+    type := "url",
     show := function (url)
             Exec ( Concatenation( "osascript <<ENDSCRIPT\n",
                                   "tell application \"Firefox\"\n",
@@ -187,7 +187,7 @@ elif ARCH_IS_MAC_OS_X() then
                 fi;
                 file := file.file;
             fi;
-            Exec( Concatenation(    
+            Exec( Concatenation(
                 "osascript <<ENDSCRIPT\n",
                     "tell application \"Skim\"\n",
                     "activate\n",
@@ -262,7 +262,7 @@ else # UNIX but not macOS
       Exec(Concatenation("chromium-browser \"file://", url,"\" >/dev/null 2>&1 &"));
     end
     );
-    
+
     # html version with konqueror  - doesn't work with 'file://...#...' URLs
     HELP_VIEWER_INFO.konqueror := rec(
     type := "url",
@@ -314,9 +314,9 @@ fi;
 # <bookf>. Used for a hack below: xdvi doesn't provide a -remote control.
 # Having compiled GAPHOME/etc/xrmtcmd.c one can reuse running xdvi's for
 # each help file. This was provided by Alexander Hulpke.
-# 
+#
 # This may not work if several people on the same machine want to use it.
-# 
+#
 # Set "XLSCLIENTSCMD := fail;" to turn this off.
 FWITF:=fail;
 XLSCLIENTSCMD:=false;
@@ -354,7 +354,7 @@ local s,l,a,e,n,c;
         a:=PositionSublist(c,prog);
         e:=Length(c);
         # does the program name occur and is called on the right file?
-        if a<>fail and e>Length(bookf) 
+        if a<>fail and e>Length(bookf)
            and c{[e-Length(bookf)+1..e]}=bookf then
           # now convert n in an integer
           e:=0;
@@ -430,7 +430,7 @@ show := function(file)
     file := file.file;
   fi;
   Exec(Concatenation("xpdf -remote gap4 -raise ",
-                        UserPreference("XpdfOptions"), 
+                        UserPreference("XpdfOptions"),
                         " ", file, " ", page, " 2>/dev/null &"));
 end
 );
@@ -438,7 +438,7 @@ end
 # pdf version with acroread: less nice since there is no start page argument
 # and no remote control.
 # When accessing several sections of the same file in a row this viewer
-# assumes that acroread is still running and only tells the page number 
+# assumes that acroread is still running and only tells the page number
 # to visit.
 ACROREAD_OPTIONS := "";
 ACROREAD_FILE  := "";
@@ -483,12 +483,12 @@ InstallGlobalFunction(SetHelpViewer, function(arg)
   fi;
 
   view := List(arg, LowercaseString);
-  
-  for i in [1..Length(view)] do 
+
+  for i in [1..Length(view)] do
     a := view[i];
     # special handling of help viewer `less'
     if a = "less" then
-      Info(InfoWarning, 2, 
+      Info(InfoWarning, 2,
       "Help viewer \"less\": interpreted as ",
       "viewer \"screen\" and setting:\n#I  ",
       "SetUserPreference(\"Pager\",\"less\");\n#I  ",
@@ -498,7 +498,7 @@ InstallGlobalFunction(SetHelpViewer, function(arg)
       SetUserPreference("PagerOptions", ["-f","-r","-a","-i","-M","-j2"]);
       view[i] := "screen";
     elif a = "more" then
-      Info(InfoWarning, 2, 
+      Info(InfoWarning, 2,
       "Help viewer \"more\": interpreted as ",
       "viewer \"screen\" and setting:\n#I  ",
       "SetUserPreferences(\"Pager\", \"more\");\n#I  ",
@@ -515,10 +515,10 @@ InstallGlobalFunction(SetHelpViewer, function(arg)
   if not "screen" in view then
     Add(view, "screen");
   fi;
-  SetUserPreference("HelpViewers", Filtered(view, a-> a<>fail));  
+  SetUserPreference("HelpViewers", Filtered(view, a-> a<>fail));
   if Length( UserPreference("HelpViewers") ) > 1 then
     Info( InfoWarning, 2, "Trying to use\n#I  ",
-          UserPreference("HelpViewers"), 
+          UserPreference("HelpViewers"),
           "\n#I  (in this order) as help viewer.");
   else
     Info(InfoWarning, 2, Concatenation(

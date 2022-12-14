@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file deals with macfloats 
+##  This file deals with macfloats
 ##
 
 #############################################################################
@@ -18,7 +18,7 @@
 INSTALLFLOATCREATOR("for IsIEEE754FloatRep and integer",
         [ IsIEEE754FloatRep, IsInt ],
         function ( filter, n )
-    
+
     local  x, b, pow, sgn;
 
     if n < 0 then n := -n; sgn := -1; else sgn := 1; fi;
@@ -82,7 +82,7 @@ InstallMethod( Exp2, "for macfloats", [ IsIEEE754FloatRep ], EXP2_MACFLOAT );
 InstallMethod( Expm1, "for macfloats", [ IsIEEE754FloatRep ], EXPM1_MACFLOAT );
 if IsBound(EXP10_MACFLOAT) then
     InstallMethod( Exp10, "for macfloats", [ IsIEEE754FloatRep ], EXP10_MACFLOAT );
-fi;    
+fi;
 
 InstallMethod( Sqrt, "for macfloats", [ IsIEEE754FloatRep ], SQRT_MACFLOAT );
 InstallMethod( CubeRoot, "for macfloats", [ IsIEEE754FloatRep ], CBRT_MACFLOAT );
@@ -125,7 +125,7 @@ SetIsWholeFamily(IEEE754_PSEUDOFIELD,true);
 SetZero(IEEE754_PSEUDOFIELD,MACFLOAT_INT(0));
 SetOne(IEEE754_PSEUDOFIELD,MACFLOAT_INT(1));
 InstallMethod( \in, [IsIEEE754FloatRep,IsIEEE754PseudoField], ReturnTrue);
-        
+
 BindGlobal("IEEE754FLOAT", rec(
     constants := rec(
         DIG := 15,
@@ -147,7 +147,7 @@ BindGlobal("IEEE754FLOAT", rec(
 SetIsUFDFamily(IEEE754FloatsFamily,true);
 SetZero(IEEE754FloatsFamily, NewFloat(IsIEEE754FloatRep,0));
 SetOne(IEEE754FloatsFamily, NewFloat(IsIEEE754FloatRep,0));
-        
+
 InstallMethod( PrecisionFloat, "for macfloats", [ IsIEEE754FloatRep ], x->IEEE754FLOAT.constants.MANT_DIG );
 
 IEEE754FLOAT.constants.EPSILON := LDEXP_MACFLOAT(MACFLOAT_INT(1),1-IEEE754FLOAT.constants.MANT_DIG);

@@ -58,7 +58,7 @@
 ##  gap> SimplifyPresentation( P );
 ##  #I  there are 8 generators and 30 relators of total length 148
 ##  gap> B1 := FpGroupPresentation( P );
-##  <fp group on the generators [ _x1, _x2, _x3, _x4, _x6, _x7, _x8, _x11 
+##  <fp group on the generators [ _x1, _x2, _x3, _x4, _x6, _x7, _x8, _x11
 ##   ]>
 ##  gap> # Compute normal subgroup generators for B1'.
 ##  gap> gens := GeneratorsOfGroup( B1 );;
@@ -456,7 +456,7 @@ DeclareGlobalFunction("PresentationAugmentedCosetTable");
 ##  <A>string</A><C>1</C>, <A>string</A><C>2</C>, <M>\ldots</M>,
 ##  the default string is <C>"_x"</C>.
 ##  You may access the <M>i</M>-th of these generators by
-##  <M>P</M><C>!.</C><M>i</M>. 
+##  <M>P</M><C>!.</C><M>i</M>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -977,7 +977,7 @@ DeclareGlobalFunction("RewriteWord");
 
 #############################################################################
 ##
-#F  DecodedTreeEntry(<tree>,<imgs>,<nr>) 
+#F  DecodedTreeEntry(<tree>,<imgs>,<nr>)
 ##
 ##  <ManSection>
 ##  <Func Name="DecodedTreeEntry" Arg='tree,imgs,nr'/>
@@ -992,7 +992,7 @@ DeclareGlobalFunction("DecodedTreeEntry");
 
 #############################################################################
 ##
-#F  GeneratorTranslationAugmentedCosetTable(<aug>) 
+#F  GeneratorTranslationAugmentedCosetTable(<aug>)
 ##
 ##  <ManSection>
 ##  <Func Name="GeneratorTranslationAugmentedCosetTable" Arg='aug'/>
@@ -1008,7 +1008,7 @@ DeclareGlobalFunction("GeneratorTranslationAugmentedCosetTable");
 
 #############################################################################
 ##
-#F  SecondaryGeneratorWordsAugmentedCosetTable(<aug>) 
+#F  SecondaryGeneratorWordsAugmentedCosetTable(<aug>)
 ##
 ##  <ManSection>
 ##  <Func Name="SecondaryGeneratorWordsAugmentedCosetTable" Arg='aug'/>
@@ -1023,7 +1023,7 @@ DeclareGlobalFunction("SecondaryGeneratorWordsAugmentedCosetTable");
 
 #############################################################################
 ##
-#F  CopiedAugmentedCosetTable(<aug>) 
+#F  CopiedAugmentedCosetTable(<aug>)
 ##
 ##  <ManSection>
 ##  <Func Name="CopiedAugmentedCosetTable" Arg='aug'/>

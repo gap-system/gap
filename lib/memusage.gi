@@ -15,7 +15,7 @@
 ##
 InstallGlobalFunction( MemoryUsage, function( o )
     local isImmediateObj, visit, mem, cache, todo, i, sub;
-    
+
     isImmediateObj := x -> TNUM_OBJ(x) in [T_INT, T_FFE];
     visit := function(sub)
         if not isImmediateObj(sub) and not FIND_OBJ_SET(cache, sub) then
@@ -27,13 +27,13 @@ InstallGlobalFunction( MemoryUsage, function( o )
     if isImmediateObj(o) then
         return MU_MemPointer;
     fi;
-    
+
     mem := 0;
     todo := [ o ];
     cache := OBJ_SET(todo);
     while Length(todo) > 0 do
         o := Remove(todo);
-        
+
         if IsFamily(o) or IsType(o) then
             # Intentionally ignore families and types
             continue;

@@ -174,12 +174,12 @@ IsCollsXElmsX := function( F1, F2, F3, F4 )
 end;
 
 IsElmsCollsXX := function( F1, F2, F3, F4)
-    return HasElementsFamily( F2 ) and 
+    return HasElementsFamily( F2 ) and
            IsIdenticalObj(F1, ElementsFamily(F2));
 end;
 
 IsCollsElmsXX := function( F1, F2, F3, F4)
-    return HasElementsFamily( F1 ) and 
+    return HasElementsFamily( F1 ) and
            IsIdenticalObj(F2, ElementsFamily(F1));
 end;
 

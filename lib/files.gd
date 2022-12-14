@@ -21,7 +21,7 @@
 ##  <Filt Name="IsDirectory" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  <Ref Filt="IsDirectory"/> is a category of directories. 
+##  <Ref Filt="IsDirectory"/> is a category of directories.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -109,7 +109,7 @@ DeclareGlobalFunction( "DirectoryHome" );
 ##
 ##  <Description>
 ##  returns a directory object for the user's desktop directory as defined on
-##  many modern operating systems. 
+##  many modern operating systems.
 ##  The function is intended to provide a cross-platform interface to a
 ##  directory that is easily accessible by the user.
 ##  <P/>
@@ -264,7 +264,7 @@ DeclareOperation( "Read", [ IsString ] );
 ##  <P/>
 ##  <Log><![CDATA[
 ##  local a;
-##  
+##
 ##  a := 10;
 ##  return a*10;
 ##  ]]></Log>
@@ -296,7 +296,7 @@ DeclareOperation( "ReadAsFunction", [ IsString ] );
 ##
 ##  <Description>
 ##  This function returns a list of filenames/directory names that reside in
-##  the directory <A>dir</A>. The argument <A>dir</A> can either be given as 
+##  the directory <A>dir</A>. The argument <A>dir</A> can either be given as
 ##  a string indicating the name of the directory or as a directory object
 ##  (see <Ref Filt="IsDirectory"/>).
 ##  If an error occurs (the specified directory does not exist or has no
@@ -319,7 +319,7 @@ DeclareGlobalFunction("DirectoryContents");
 #############################################################################
 ##
 #F  IsDirectoryPath(<name>)
-## 
+##
 BIND_GLOBAL("IsDirectoryPath", function(dirname)
   local str;
   if IsDirectory(dirname) then
@@ -453,7 +453,7 @@ end );
 ##  In this case <Ref Func="LastSystemError"/> can be used to get information
 ##  about the error.
 ##  <P/>
-##  A warning message is given if more than 1000 temporary directories are 
+##  A warning message is given if more than 1000 temporary directories are
 ##  created in any &GAP; session.
 ##  </Description>
 ##  </ManSection>
@@ -483,13 +483,13 @@ BIND_GLOBAL( "DirectoryTemporary", function( arg )
 
   # remember directory name
   Add( GAPInfo.DirectoriesTemporary, dir );
-  
+
   DIRECTORY_TEMPORARY_COUNT := DIRECTORY_TEMPORARY_COUNT + 1;
   if DIRECTORY_TEMPORARY_COUNT = DIRECTORY_TEMPORART_LIMIT then
       Info(InfoTempDirectories,1, DIRECTORY_TEMPORART_LIMIT, " temporary directories made in this session");
       DIRECTORY_TEMPORART_LIMIT := DIRECTORY_TEMPORART_LIMIT*10;
   fi;
-  
+
   return Directory(dir);
 end );
 
@@ -750,15 +750,15 @@ end );
 ##  <P/>
 ##  &GAP; will call your preferred editor if you call
 ##  <C>SetUserPreference("Editor", <A>path</A>);</C>
-##  where <A>path</A> is the  path to your editor, 
+##  where <A>path</A> is the  path to your editor,
 ##  e.g., <F>/usr/bin/vim</F>.
-##  On Windows you can use <C>edit.com</C>. 
+##  On Windows you can use <C>edit.com</C>.
 ##  <P/>
 ##  Under macOS, you should use
-##  <C>SetUserPreference("Editor", "open");</C>, this will open 
-##  the file in the default editor. If you call 
+##  <C>SetUserPreference("Editor", "open");</C>, this will open
+##  the file in the default editor. If you call
 ##  <C>SetUserPreference("EditorOptions", ["-t"]);</C>, the file
-##  will open in <F>TextEdit</F>, and 
+##  will open in <F>TextEdit</F>, and
 ##  <C>SetUserPreference("EditorOptions", ["-a", "&lt;appl&gt;"]);</C>
 ##  will open the file using the application <C>&lt;appl&gt;</C>.
 ##  <P/>

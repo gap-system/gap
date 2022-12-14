@@ -31,7 +31,7 @@ function(kbrws)
   SetRules(rws,StructuralCopy(Rules(kbrws)));
   rws!.tzrules:=StructuralCopy(kbrws!.tzrules);
   rws!.tzordering:=StructuralCopy(kbrws!.tzordering);
-  
+
   SetIsReduced(rws,true);
   SetIsConfluent(rws,true);
   SetFamilyForRewritingSystem(rws, FamilyForRewritingSystem(kbrws));
@@ -69,7 +69,7 @@ InstallMethod(ReducedConfluentRewritingSystem,
 [IsFpMonoid], 0,
 function(M)
 	local wordord;
-	
+
 	wordord := ShortLexOrdering(ElementsFamily(FamilyObj(
           FreeMonoidOfFpMonoid(M))));
   return ReducedConfluentRewritingSystem(M,wordord);
@@ -96,7 +96,7 @@ function(S,ordering)
     return ReducedConfluentRewritingSystem(S);
   fi;
 
-  # we start by building a knuth bendix rws for the semigroup 
+  # we start by building a knuth bendix rws for the semigroup
   kbrws := KnuthBendixRewritingSystem(S,ordering);
   # then we make it confluent (and reduced)
   MakeConfluent(kbrws);
@@ -344,10 +344,10 @@ end);
 #M  GeneratorsOfRws(<RWS>)
 ##
 
-InstallOtherMethod(GeneratorsOfRws, 
-"for a monoid rewriting system", true, 
-[IsRewritingSystem and IsBuiltFromSemigroup], 0, 
-function(rws) 
+InstallOtherMethod(GeneratorsOfRws,
+"for a monoid rewriting system", true,
+[IsRewritingSystem and IsBuiltFromSemigroup], 0,
+function(rws)
 return GeneratorsOfSemigroup(FreeSemigroupOfRewritingSystem(rws));
 
 end);
@@ -357,10 +357,10 @@ end);
 #M  GeneratorsOfRws(<RWS>)
 ##
 
-InstallOtherMethod(GeneratorsOfRws, 
-"for a monoid rewriting system", true, 
-[IsRewritingSystem and IsBuiltFromMonoid], 0, 
-function(rws) 
+InstallOtherMethod(GeneratorsOfRws,
+"for a monoid rewriting system", true,
+[IsRewritingSystem and IsBuiltFromMonoid], 0,
+function(rws)
 return GeneratorsOfMonoid(FreeMonoidOfRewritingSystem(rws));
 
 end);

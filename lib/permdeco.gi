@@ -16,7 +16,7 @@
 InstallMethod( FittingFreeLiftSetup, "permutation", true, [ IsPermGroup ],0,
 function( G )
 local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
-  
+
   r:=SolvableRadical(G);
   if Size(r)=1 then
     hom:=IdentityMapping(G);
@@ -32,7 +32,7 @@ local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
          " -> ",NrMovedPoints(Image(A)));
     hom:=hom*A;
   fi;
-  
+
   pcgs := TryPcgsPermGroup( G,r, false, false, true );
   if not IsPcgs( pcgs )  then
     return fail;
@@ -272,7 +272,7 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
     i:=i+1;
   od;
   Info(InfoGroup,1,"Build ",Length(outs)," copies");
-  if Length(stabs)=1 then 
+  if Length(stabs)=1 then
     # the group is given in a representation in which there is a centralizer
     # in Sn
     a:=tryrep(IdentityMapping(G),infinity);
@@ -296,7 +296,7 @@ local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   p:=GroupHomomorphismByImagesNC(G,a,GeneratorsOfGroup(G),p);
 
   a:=tryrep(p,4*NrMovedPoints(G));
-  if a<>fail then 
+  if a<>fail then
     if iso<>fail then
       a[2]:=iso*a[2];
     fi;
@@ -409,8 +409,8 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
     # nothing outer possible
     a:=Image(Thom);
   else
-    # get the induced automorphism action of elements 
-    ng:=SmallGeneratingSet(norm); 
+    # get the induced automorphism action of elements
+    ng:=SmallGeneratingSet(norm);
     autos:=List(ng,i->GroupHomomorphismByImagesNC(T,T,
                         GeneratorsOfGroup(T),
                         List(GeneratorsOfGroup(T),
@@ -438,12 +438,12 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
       # we get this by looking at the action of
       #   reps[k] *   i    *   reps[k^img]^-1
       # 1   ->    k  ->  k^img    ->           1
-      # on the first component. 
+      # on the first component.
       act:=reps[k]*i*(reps[k^img]^-1);
       # this must be multiplied *before* permuting
       gimg:=ImageElm(embs[k],ImageElm(Thom,act))*gimg;
     od;
-    #gimg:=RestrictedPermNC(gimg,MovedPoints(w)); 
+    #gimg:=RestrictedPermNC(gimg,MovedPoints(w));
     Add(genimages,gimg);
   od;
 

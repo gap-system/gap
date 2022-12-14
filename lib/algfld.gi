@@ -274,7 +274,7 @@ end );
 
 #############################################################################
 ##
-#M  ExtRepOfObj     
+#M  ExtRepOfObj
 ##
 ##  The external representation of an algebraic element is a coefficient
 ##  list (in the primitive element)
@@ -324,7 +324,7 @@ end);
 
 #############################################################################
 ##
-#F  AlgExtElm      A `nicer' ObjByExtRep, that shrinks/grows a list to the 
+#F  AlgExtElm      A `nicer' ObjByExtRep, that shrinks/grows a list to the
 ##                 correct length and tries to get to the BaseField
 ##                 representation
 ##
@@ -822,7 +822,7 @@ InstallMethod(MinimalPolynomial,"AlgElm",true,
 function(f,e,inum)
 local fam,c,m;
   fam:=FamilyObj(e);
-  if ElementsFamily(FamilyObj(f))<>CoefficientsFamily(FamilyObj(e)) 
+  if ElementsFamily(FamilyObj(f))<>CoefficientsFamily(FamilyObj(e))
     or fam!.baseField<>f then
     TryNextMethod();
   fi;
@@ -874,7 +874,7 @@ end);
 #   p:=CoefficientsOfUnivariatePolynomial(p);
 #   return -p[Length(p)-1];
 # end);
-# 
+#
 # #############################################################################
 # ##
 # #M  Norm
@@ -1165,7 +1165,7 @@ end );
 #############################################################################
 ##
 #F  AlgebraicPolynomialModP(<field>,<pol>,<indetimage>,<prime>) . .  internal
-##      reduces <pol> mod <prime> to a polynomial over <field>, mapping 
+##      reduces <pol> mod <prime> to a polynomial over <field>, mapping
 ##      'alpha' of f to <indetimage>
 ##
 BindGlobal("AlgebraicPolynomialModP",function(fam,f,a,p)
@@ -1331,7 +1331,7 @@ local irrfacs, coeffring, i, ind, coeffs, der, g;
   ind:= IndeterminateNumberOfLaurentPolynomial( pol );
   coeffs:= CoefficientsOfLaurentPolynomial( pol );
   if coeffs[2]>0 then
-    return false; 
+    return false;
   fi;
 
   # Now compute the quotient of `pol' by the g.c.d. with its derivative,
@@ -1421,7 +1421,7 @@ local n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
       ffp:=List(fft,i->AlgebraicPolynomialModP(kfam,i,roots[j],p));
       nowroots:=Filtered(allroots,i->ForAny(ffp,j->Value(j,i)=Zero(k)));
       gut := Length(nowroots)=Sum(ffd{combi});
-      j:=j+1; 
+      j:=j+1;
     od;
     if gut then
       Info(InfoPoly,2,"block found");
@@ -1441,7 +1441,7 @@ local n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
     decom:=[];
     # compute decompositions
     for i in blocks do
-      # compute h 
+      # compute h
       hp:=(X(e)-a)*Product(ff{i});
       hpc:=Filtered(CoefficientsOfUnivariatePolynomial(hp),i->not IsAlgBFRep(i));
       gut:=0;

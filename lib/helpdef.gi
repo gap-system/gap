@@ -7,40 +7,40 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
-##  
+##
 ##  The  files  helpdef.g{d,i}  contain  the  `default'  help  book  handler
 ##  functions, which implement access of GAP's online help to help documents
 ##  produced  from `gapmacro.tex'-  .tex and  .msk files  using buildman.pe,
 ##  tex, pdftex and convert.pl.
-##  
+##
 ##  The function  which converts the  TeX sources  to text for  the "screen"
 ##  viewer is outsourced into `helpt2t.g{d,i}'.
-##  
-  
+##
+
 ################ ???????????????????????????? ###############################
 
 
 #############################################################################
-##  
-#F  GapLibToc2Gap( <tocfile> )  . . . . . . . . . . . . . reading .toc file 
-##  
+##
+#F  GapLibToc2Gap( <tocfile> )  . . . . . . . . . . . . . reading .toc file
+##
 ##  reads a manual.toc file of GAP library book and returns list of entries
 ##  of form [[chapnr, secnr], pagenr]. Used in `default' ReadSix.
-##  
+##
 ##  This allows  to  use     xdvi  and  acroread/xpdf conveniently  as help
 ##  browser.
-##  
+##
 InstallGlobalFunction(GapLibToc2Gap, function(file)
   local   stream,  str,  getarg,  p,  l,  res,  a,  s,  pos,  r;
-  
+
   stream := StringStreamInputTextFile(file);
   if stream=fail then
     return fail;
   fi;
   str := ReadAll(stream);
   CloseStream(stream);
-  
-  # get next argument in {...} after pos (need to handle nested {}'s) 
+
+  # get next argument in {...} after pos (need to handle nested {}'s)
   getarg := function(str, pos)
     local   l,  level,  p;
     l := Length(str);
@@ -55,7 +55,7 @@ InstallGlobalFunction(GapLibToc2Gap, function(file)
       elif str[p] = '{' then
         level := level+1;
       elif str[p] = '}' then
-        if level = 0 then 
+        if level = 0 then
           break;
         else
           level := level-1;
@@ -65,14 +65,14 @@ InstallGlobalFunction(GapLibToc2Gap, function(file)
     od;
     return [pos, p];
   end;
-  
+
   p := Position(str, '\\');
   l := Length(str);
-  res := []; 
-  
+  res := [];
+
   while p <> fail do
     # read one .toc entry
-    if p+12 < l and (str{[p..p+12]} = "\\chapcontents" or 
+    if p+12 < l and (str{[p..p+12]} = "\\chapcontents" or
                str{[p..p+11]} = "\\seccontents") then
       a := [getarg(str, p+12)];
       Add(a, getarg(str, a[1][2]+1));
@@ -85,7 +85,7 @@ InstallGlobalFunction(GapLibToc2Gap, function(file)
                  x='.') then
         pos := Position(s, '.');
         if pos=fail then
-          # chapter entry 
+          # chapter entry
           r := [[Int(s), 0]];
         else
           # chapter and section number
@@ -101,10 +101,10 @@ InstallGlobalFunction(GapLibToc2Gap, function(file)
       p := Position(str, '\\', p);
     fi;
   od;
-  
+
   return res;
 end);
-        
+
 ##  here are more functions which are used by the `default' handler
 ##  functions (see their use below).
 #############################################################################
@@ -180,7 +180,7 @@ InstallGlobalFunction(HELP_PRINT_SECTION_URL, function(arg)
     if d[Length(d)] = '/' then
       d := d{[1..Length(d)-1]};
     fi;
-    
+
     # find `doc'
     pos:=Length(d)-2;
     while pos>0 and (d[pos]<>'d' or d[pos+1]<>'o' or d[pos+2]<>'c') do
@@ -206,7 +206,7 @@ InstallGlobalFunction(HELP_PRINT_SECTION_URL, function(arg)
     if IsDirectory(book) then
       path := Filename([Directory(d)], fn);
     else
-      path := Filename(List(GAPInfo.RootPaths, Directory), 
+      path := Filename(List(GAPInfo.RootPaths, Directory),
                      Concatenation(d, "/", fn));
     fi;
     if path = fail then
@@ -219,7 +219,7 @@ InstallGlobalFunction(HELP_PRINT_SECTION_URL, function(arg)
       if IsDirectory(book) then
         path := Filename([Directory(d)], fn);
       else
-        path := Filename(List(GAPInfo.RootPaths, Directory), 
+        path := Filename(List(GAPInfo.RootPaths, Directory),
                        Concatenation(d, "/", fn));
       fi;
     fi;
@@ -231,7 +231,7 @@ InstallGlobalFunction(HELP_PRINT_SECTION_URL, function(arg)
       od;
       path:=Concatenation(path,"#SECT",section);
     fi;
-    return path;    
+    return path;
 end);
 
 # now the handlers
@@ -242,13 +242,13 @@ atomic HELP_REGION do # acquire lock for HELP_BOOK_HANDLER
 ##  (need to parse a text file in this case, this function still
 ##  looks pretty long winded)
 HELP_BOOK_HANDLER.default.ReadSix := function(stream)
-  local   fname,  readNumber, pos,  n,  c,  s,  x,  f,  line,  subline,  
-          entries,  c1,  c2,  i,  name,  num,  s1,  sec,  s2,  j,  x1,  
+  local   fname,  readNumber, pos,  n,  c,  s,  x,  f,  line,  subline,
+          entries,  c1,  c2,  i,  name,  num,  s1,  sec,  s2,  j,  x1,
           w,  f1,  res,  toc;
-  
+
   # name of file
   fname := ShallowCopy(stream![2]);
-  
+
   # numbers
   readNumber := function( str )
     local   n;
@@ -278,7 +278,7 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
       elif line[1] = 'I'  then
         Add( x, subline);
       elif line[1] = 'F'  then
-        if ForAll([Maximum(Length(f)-10, 1)..Length(f)], 
+        if ForAll([Maximum(Length(f)-10, 1)..Length(f)],
                   i-> f[i] <> subline) then
           Add( f, subline);
         fi;
@@ -290,23 +290,23 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
     fi;
   until IsEndOfStream(stream);
   CloseStream(stream);
-  
+
   entries := [];
   # parse the chapters information
   c1 := [];
   c2 := [];
   for line  in c  do
-    
+
     # first the filename
     pos  := Position( line, ' ' );
     name := line{[1..pos-1]};
-    
+
     # then the chapter number
     num := readNumber(line);
-    
+
     # then the chapter name
     while pos <= Length(line) and line[pos] = ' '  do pos := pos+1;  od;
-    
+
     # store that information in <c1> and <c2>
     c1[num] := name;
     c2[num] := line{[pos..Length(line)]};
@@ -315,22 +315,22 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
   # parse the sections information
   s1 := List( c1, x -> [] );
   for line  in s  do
-    
+
     # chapter and section number
     pos := 1;
     num := readNumber(line);
     sec := readNumber(line);
-    
+
     # then the section name
     while pos < Length(line) and line[pos] = ' '  do pos := pos+1;  od;
-    
+
     # store the information in <s1>
     s1[num][sec] := line{[pos..Length(line)]};
     if pos = Length(line) then
       Print("#W  Empty section name ", num, ".", sec,"\n");
     fi;
   od;
-  
+
   # convert sections and chapters to lower case
   s2 := [];
   for i  in [ 1 .. Length(s1) ]  do
@@ -341,43 +341,43 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
   for i  in [ 1 .. Length(c2) ]  do
     Add( s2, [ c2[i], SIMPLE_STRING(c2[i]), "C", i, 0 ] );
   od;
-  
+
   # parse the index information
   x1 := [];
   for line  in x  do
-    
+
     # chapter and section number
     pos := 1;
     num := readNumber(line);
     sec := readNumber(line);
-    
+
     # then the index entry
     while pos <= Length(line) and line[pos] = ' '  do pos := pos+1;  od;
-    
+
     # store the information in <x1>
     w := line{[pos..Length(line)]};
     Add( x1, [ w, SIMPLE_STRING(w), "I", num, sec ] );
   od;
-  
+
   # parse the function information
   f1 := [];
   for line  in f  do
-    
+
     # chapter and section number
     pos := 1;
     num := readNumber(line);
     sec := readNumber(line);
-    
+
     # then the index entry
     while pos <= Length(line) and line[pos] = ' '  do pos := pos+1;  od;
-    
+
     # store the information in <x1>
-    w := line{[pos..Length(line)]};    
+    w := line{[pos..Length(line)]};
     Add( f1, [ w, SIMPLE_STRING(w), "F", num, sec ] );
   od;
 
   res := rec(
-          formats       := ["text", "url"],   
+          formats       := ["text", "url"],
           filenames   := Immutable(c1),
 # the following three are not made immutable to allow change of names (if it
 # is found out that several sections have the same name).
@@ -387,7 +387,7 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
           chappos     := [],
           entries := Concatenation(s2, x1, f1)
         );
-  
+
   # trying to read page numbers from manual.toc file
   fname{[Length(fname)-2..Length(fname)]} := "toc";
   toc := GapLibToc2Gap(fname);
@@ -410,13 +410,13 @@ end;
 
 HELP_BOOK_HANDLER.default.ShowChapters := function( book )
   local   info,  chap,  i;
-  
+
   info := HELP_BOOK_INFO(book);
   if info = fail  then
     Print( "Help: unknown book \"", book, "\"\n" );
            return false;
   fi;
-  
+
   # print the chapters
   chap := ShallowCopy(info.chapters);
   Sort(chap);
@@ -435,7 +435,7 @@ HELP_BOOK_HANDLER.default.ShowSections := function( book )
     Print( "Help: unknown book \"", book, "\"\n" );
            return false;
   fi;
-  
+
   # print the sections
   lines := [ FILLED_LINE( "Table of Sections", info.bookname, '_' ) ];
   for chap  in [ 1 .. Length(info.chapters) ]  do
@@ -458,7 +458,7 @@ HELP_BOOK_HANDLER.default.MatchPrevChap := function(book, entrynr)
   else
     nr :=  First([1..Length(info.entries)], i-> info.entries[i]{[3,4]} =
                ["C", chnr-1]);
-  fi;  
+  fi;
   return [info, nr];
 end;
 
@@ -473,7 +473,7 @@ end;
 
 HELP_BOOK_HANDLER.default.MatchPrev := function(book, entrynr)
   local   info,  entry,  chnr,  secnr,  nr;
-  
+
   info := HELP_BOOK_INFO(book);
   entry := info.entries[entrynr];
   chnr := entry[4];
@@ -494,7 +494,7 @@ end;
 
 HELP_BOOK_HANDLER.default.MatchNext := function(book, entrynr)
   local   info,  entry,  chnr,  secnr,  nr;
-  
+
   info := HELP_BOOK_INFO(book);
   entry := info.entries[entrynr];
   chnr := entry[4];
@@ -505,15 +505,15 @@ HELP_BOOK_HANDLER.default.MatchNext := function(book, entrynr)
     nr := First([1..Length(info.entries)], i-> info.entries[i]{[3,4,5]}
                 = ["C", chnr+1, 0]);
   fi;
-  
+
   return [info, nr];
 end;
 
-##  
+##
 ##  The default search for matches is easy, just MATCH_BEGIN (if frombegin
 ##  = true), resp.  IS_SUBSTRING is used for content of second position in
 ##  .entries. The topic is assumed to be normalized already.
-##  
+##
 HELP_BOOK_HANDLER.default.SearchMatches := function (book, topic, frombegin)
   local info, exact, match, rank, m, i;
   info := HELP_BOOK_INFO(book);
@@ -535,7 +535,7 @@ HELP_BOOK_HANDLER.default.SearchMatches := function (book, topic, frombegin)
       fi;
     fi;
   od;
-  
+
   # sort by rank if applicable
   if frombegin = true then
     SortParallel(rank, match);
@@ -547,7 +547,7 @@ end;
 ##  the `default' handler for HelpData delegates to functions from above
 HELP_BOOK_HANDLER.default.HelpData := function(book, entrynr, type)
   local   info,  entry,  chnr,  secnr,  pos,  res,  r;
-  
+
   info := HELP_BOOK_INFO(book);
   entry := info.entries[entrynr];
   chnr := entry[4];
@@ -557,7 +557,7 @@ HELP_BOOK_HANDLER.default.HelpData := function(book, entrynr, type)
   if type = "ref" then
     return HELP_BOOK_HANDLER.HelpDataRef(info, entrynr);
   fi;
-  
+
   if type = "secnr" then
     r := "";
     Append(r, String(chnr));
@@ -567,23 +567,23 @@ HELP_BOOK_HANDLER.default.HelpData := function(book, entrynr, type)
     fi;
     return [[chnr, secnr, 0], r];
   fi;
-    
-  if not type in info.formats then 
+
+  if not type in info.formats then
     return fail;
   fi;
-  
+
   if type = "text" then
     if entry[3] = "F" then
       return HELP_PRINT_SECTION_TEXT(info, chnr, secnr, entry[1]);
-    else 
+    else
       return HELP_PRINT_SECTION_TEXT(info, chnr, secnr);
     fi;
   fi;
-  
+
   if type = "url" then
     return HELP_PRINT_SECTION_URL(info, chnr, secnr);
   fi;
-  
+
   if type = "dvi" then
     pos := PositionSorted(info.pagenumbers, [[chnr, secnr],-1]);
     if IsBound(info.pagenumbers[pos]) and info.pagenumbers[pos][1] =
@@ -591,7 +591,7 @@ HELP_BOOK_HANDLER.default.HelpData := function(book, entrynr, type)
       return rec(file := info.dvifile, page := info.pagenumbers[pos][2]);
     fi;
   fi;
-  
+
   if type = "pdf" then
     pos := PositionSorted(info.pagenumbers, [[chnr, secnr],-1]);
     if IsBound(info.pagenumbers[pos]) and info.pagenumbers[pos][1] =

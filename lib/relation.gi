@@ -9,9 +9,9 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file contains the implementation for binary relations, equivalence
-##  relations and equivalence classes on and over sets. 
+##  relations and equivalence classes on and over sets.
 ##
-##  If the underlying set is the set of n points {1..n} then a special 
+##  If the underlying set is the set of n points {1..n} then a special
 ##  representation is used to represent binary relations over them.
 ##
 ##  Maintenance and further development by:
@@ -23,16 +23,16 @@
 
 ############################################################################
 ##
-##  Table of Contents for relation.gi 
+##  Table of Contents for relation.gi
 ##      A. Representations
 ##         1. Binary Relations (general)
 ##         2. Binary Relation on points i.e. domain [1..n]
 ##         3. Equivalence Relations
-##         4. Equivalence Class 
+##         4. Equivalence Class
 ##
 ##      B. Constructor functions for binary relations (general)
-##         1. Identity relation 
-##         2. Empty relation 
+##         1. Identity relation
+##         2. Empty relation
 ##
 ##      C. Properties of Binary relations (general case)
 ##         1. IsReflexive
@@ -53,7 +53,7 @@
 ##      E. Constructors for binary relations on points
 ##         1. BinaryRelationOnPoints (= BinaryRelationByListOfImages)
 ##         2. Random binary relation on n points
-##         3. Identity relation 
+##         3. Identity relation
 ##         4. Empty relation
 ##         5. AsBinaryRelationOnPoints
 ##
@@ -68,8 +68,8 @@
 ##      H. Closure operations for binary relations on points
 ##         (Same operations as general case only using the specialized
 ##          representation)
-## 
-##      I. Operations and methods for binary relations on points 
+##
+##      I. Operations and methods for binary relations on points
 ##         1. ImagesElm (compatibility with GeneralMapping)
 ##         2. PreImagesElm (compatibility with GeneralMapping)
 ##         3. \=, \in, \<
@@ -84,7 +84,7 @@
 ##         2. EquivalenceRelationByRelation
 ##         3. EquivalenceRelationByProperty
 ##         4. EquivalenceRelationByPairs
-##        
+##
 ##      K. Attributes operations and methods of equivalence relations
 ##         1. EquivalenceRelationPartition
 ##         2. GeneratorsOfEquivalenceRelationPartition
@@ -92,17 +92,17 @@
 ##         4. MeetEquivalenceRelations
 ##         5. \=
 ##         6. ImagesElm (compatibility with GeneralMapping)
-##         7. PreImagesElm (compatibility with GeneralMapping)  
+##         7. PreImagesElm (compatibility with GeneralMapping)
 ##         8. PrintObj
-## 
-##      L. Constructors of equivalence classes            
+##
+##      L. Constructors of equivalence classes
 ##         1. EquivalenceClassOfElement
 ##         2. EquivalenceClasses
-## 
+##
 ##      M. Operations and methods of equivalence classes
-##         1. \=, \in 
+##         1. \=, \in
 ##         2. PrintObj, Enumerator
-##         3. \< 
+##         3. \<
 ##         4. ImagesRepresentative
 ##         6. PreImagesRepresentative
 ##
@@ -121,25 +121,25 @@
 ##
 ##  Representation for a binary relation on an arbitrary set of elements
 ##
-DeclareRepresentation("IsBinaryRelationDefaultRep", 
+DeclareRepresentation("IsBinaryRelationDefaultRep",
 	IsAttributeStoringRep ,[]);
 
 ############################################################################
 ##
 #R  IsBinaryRelationOnPointsRep(<obj>)
 ##
-##  Special case that the underlying set is the points 1..n 
+##  Special case that the underlying set is the points 1..n
 ##
-DeclareRepresentation("IsBinaryRelationOnPointsRep", 
+DeclareRepresentation("IsBinaryRelationOnPointsRep",
 	IsAttributeStoringRep ,[]);
 
 ############################################################################
 ##
 #R  IsEquivalenceRelationDefaultRep(<obj>)
 ##
-##  Representation of generatl equivalence classes 
+##  Representation of generatl equivalence classes
 ##
-DeclareRepresentation("IsEquivalenceRelationDefaultRep", 
+DeclareRepresentation("IsEquivalenceRelationDefaultRep",
 	IsAttributeStoringRep ,[]);
 
 #############################################################################
@@ -198,13 +198,13 @@ InstallGlobalFunction(BinaryRelationByElements,
 
 ############################################################################
 ##
-##  Properties of binary relations on arbitrary sets  
+##  Properties of binary relations on arbitrary sets
 ##
 ############################################################################
 
 ############################################################################
 ##
-#P  IsReflexiveBinaryRelation(<rel>)                                
+#P  IsReflexiveBinaryRelation(<rel>)
 ##
 InstallMethod(IsReflexiveBinaryRelation,
               "reflexive test binary relation", true,
@@ -228,7 +228,7 @@ InstallMethod(IsReflexiveBinaryRelation,
 
 ############################################################################
 ##
-#P  IsSymmetricBinaryRelation(<rel>)                                
+#P  IsSymmetricBinaryRelation(<rel>)
 ##
 ##  Depends on Images and Preimages returning SSorted lists.
 ##
@@ -238,7 +238,7 @@ InstallMethod(IsSymmetricBinaryRelation,
     function(m)
         local e,el;
 
-        # test for trivial relation 
+        # test for trivial relation
         if HasIsOne(m) and IsOne(m) then
             return true;
         fi;
@@ -259,7 +259,7 @@ InstallMethod(IsSymmetricBinaryRelation,
 
 ############################################################################
 ##
-#P  IsTransitiveBinaryRelation(<rel>)                                
+#P  IsTransitiveBinaryRelation(<rel>)
 ##
 ##  Assumes that Images returns a sorted list
 ##
@@ -268,7 +268,7 @@ InstallMethod(IsTransitiveBinaryRelation,
     function(m)
         local e,el,i,im;
 
-        # test for trivial relation 
+        # test for trivial relation
         if HasIsOne(m) and IsOne(m) then
             return true;
         fi;
@@ -292,7 +292,7 @@ InstallMethod(IsTransitiveBinaryRelation,
 
 ############################################################################
 ##
-#P  IsAntisymmetricBinaryRelation(<rel>)                                
+#P  IsAntisymmetricBinaryRelation(<rel>)
 ##
 InstallMethod(IsAntisymmetricBinaryRelation,
         "test for Antisymmetry of a binary relation", true,
@@ -300,7 +300,7 @@ InstallMethod(IsAntisymmetricBinaryRelation,
     function(rel)
         local e,el,i;
 
-        # test for trivial relation 
+        # test for trivial relation
         if HasIsOne(rel) and IsOne(rel) then
             return true;
         fi;
@@ -323,7 +323,7 @@ InstallMethod(IsAntisymmetricBinaryRelation,
 
 ############################################################################
 ##
-#P  IsPreOrderBinaryRelation(<rel>)                                
+#P  IsPreOrderBinaryRelation(<rel>)
 ##
 InstallMethod(IsPreOrderBinaryRelation,
         "test for whether a binary relation is a preorder", true,
@@ -337,7 +337,7 @@ InstallMethod(IsPreOrderBinaryRelation,
 
 ############################################################################
 ##
-#P  IsPartialOrderBinaryRelation(<rel>)                                
+#P  IsPartialOrderBinaryRelation(<rel>)
 ##
 InstallMethod(IsPartialOrderBinaryRelation,
         "test for whether a binary relation is a partial order", true,
@@ -352,7 +352,7 @@ InstallMethod(IsPartialOrderBinaryRelation,
 
 #############################################################################
 ##
-#P  IsPartialOrderBinaryRelation(<rel>)                                
+#P  IsPartialOrderBinaryRelation(<rel>)
 ##
 InstallMethod(IsLatticeOrderBinaryRelation,
         "test for whether a binary relation is a lattice order", true,
@@ -361,12 +361,12 @@ function(rel)
   local a,b,  # elements of the relation
         intersection, # intersection of downsets of a and b
         nrel; # new relation defined on the intersection
-        
+
   # a lattice order is defined on a partial order
   if not IsPartialOrderBinaryRelation(rel) then
     return false;
   fi;
-  
+
   # checking the existence of a top element (unique maximal)
   if not Number(Source(rel), x->[x]=Images(rel,x)) = 1 then
     return false;
@@ -392,18 +392,18 @@ end);
 
 ############################################################################
 ##
-#P  IsEquivalenceRelation(<rel>)                                
+#P  IsEquivalenceRelation(<rel>)
 ##
 InstallMethod(IsEquivalenceRelation,
         "test for equivalence relation", true,
         [IsBinaryRelation], 0,
-    function(rel) 
+    function(rel)
         return
             IsTotal(rel) and
-            IsReflexiveBinaryRelation(rel) and 
-            IsSymmetricBinaryRelation(rel) and 
+            IsReflexiveBinaryRelation(rel) and
+            IsSymmetricBinaryRelation(rel) and
             IsTransitiveBinaryRelation(rel);
-    
+
     end );
 
 ############################################################################
@@ -417,11 +417,11 @@ InstallMethod(IsEquivalenceRelation,
 
 ############################################################################
 ##
-#O  ReflexiveClosureBinaryRelation(<Rel>)                             
+#O  ReflexiveClosureBinaryRelation(<Rel>)
 ##
 
 ##  This will die if the elements set of the underlying relation
-##  is not finite. Can install more specific methods for relations over 
+##  is not finite. Can install more specific methods for relations over
 ##  infinite domains where we can do better.
 ##
 InstallMethod(ReflexiveClosureBinaryRelation,
@@ -429,7 +429,7 @@ InstallMethod(ReflexiveClosureBinaryRelation,
     function(r)
         local ur,i,d, newrel;
 
-        if HasIsReflexiveBinaryRelation(r) and 
+        if HasIsReflexiveBinaryRelation(r) and
                  IsReflexiveBinaryRelation(r) then
             return r;
         fi;
@@ -445,14 +445,14 @@ InstallMethod(ReflexiveClosureBinaryRelation,
             SetIsReflexiveBinaryRelation(newrel, true);
 
         # ReflexiveClosure preserves Transitivity.
-        if HasIsTransitiveBinaryRelation(r) then 
-            SetIsTransitiveBinaryRelation(newrel, 
+        if HasIsTransitiveBinaryRelation(r) then
+            SetIsTransitiveBinaryRelation(newrel,
                 IsTransitiveBinaryRelation(r));
         fi;
- 
+
         # ReflexiveClosure preserves Symmetry.
-        if HasIsSymmetricBinaryRelation(r) then 
-            SetIsSymmetricBinaryRelation(newrel, 
+        if HasIsSymmetricBinaryRelation(r) then
+            SetIsSymmetricBinaryRelation(newrel,
                 IsSymmetricBinaryRelation(r));
         fi;
 
@@ -462,11 +462,11 @@ InstallMethod(ReflexiveClosureBinaryRelation,
 
 ############################################################################
 ##
-#O  SymmetricClosureBinaryRelation(<Rel>)                              
+#O  SymmetricClosureBinaryRelation(<Rel>)
 ##
 
 ##  This will die if the elements set of the underlying relation
-##  is not finite. Can install more specific methods for relations over 
+##  is not finite. Can install more specific methods for relations over
 ##  infinite domains where we can do better.
 ##
 InstallMethod(SymmetricClosureBinaryRelation,
@@ -474,7 +474,7 @@ InstallMethod(SymmetricClosureBinaryRelation,
     function(r)
         local ur,i,t,d, newrel;
 
-        if HasIsSymmetricBinaryRelation(r) and 
+        if HasIsSymmetricBinaryRelation(r) and
                  IsSymmetricBinaryRelation(r) then
             return r;
         fi;
@@ -490,43 +490,43 @@ InstallMethod(SymmetricClosureBinaryRelation,
         SetIsSymmetricBinaryRelation(newrel, true);
 
         # SymmetricClosure preserves Reflexivity.
-        if HasIsReflexiveBinaryRelation(r) then 
+        if HasIsReflexiveBinaryRelation(r) then
             SetIsReflexiveBinaryRelation(newrel, IsReflexiveBinaryRelation(r));
         fi;
 
         return newrel;
 
-    end );   
+    end );
 
 ############################################################################
 ##
-#O  TransitiveClosureBinaryRelation(<Rel>)                             
+#O  TransitiveClosureBinaryRelation(<Rel>)
 ##
 ##
 ##  This is a modified version of the Floyd-Warshall method
 ##  of solving the all-pairs shortest-paths problem on a directed graph. Its
 ##  asymptotic runtime is O(n^3) where n is the size of the vertex set. It
 ##  only assumes there is an arbitrary (but fixed) ordering of the vertex set.
-##  
+##
 
 ##  This will die if the elements set of the underlying relation
-##  is not finite. Can install more specific methods for relations over 
+##  is not finite. Can install more specific methods for relations over
 ##  infinite domains where we can do better.
 ##
 InstallMethod(TransitiveClosureBinaryRelation,
         "for binary relation", true,
         [IsBinaryRelation], 0,
     function(r)
-        local t,        # a list of sets that provides an adjacency list 
+        local t,        # a list of sets that provides an adjacency list
                         #   representation of the graph involved
               el,       # those elements involved in the underlying relation
               i,j,      # index variables
-              p,        # 2-tuples that make up the closure 
+              p,        # 2-tuples that make up the closure
               d,        # Domain of the given relation
-              newrel;   # New transitive relation 
+              newrel;   # New transitive relation
 
         # if the given relation is already transitive the just return
-        if HasIsTransitiveBinaryRelation(r) and 
+        if HasIsTransitiveBinaryRelation(r) and
                  IsTransitiveBinaryRelation(r) then
             return r;
         fi;
@@ -539,9 +539,9 @@ InstallMethod(TransitiveClosureBinaryRelation,
 
         ## Assumes Images returns a Sorted list -- makes sure t is
         ##     mutable as well as its elements
-        t := List(el, i->ShallowCopy(Images(r,i))); 
+        t := List(el, i->ShallowCopy(Images(r,i)));
 
-        # if \i in t[j] then everything related to \i 
+        # if \i in t[j] then everything related to \i
         # should be in t[j].
         for i in [1..Length(el)] do
             for j in [1..Length(el)]  do
@@ -549,9 +549,9 @@ InstallMethod(TransitiveClosureBinaryRelation,
                     UniteSet(t[j],t[i]);
                 fi;
             od;
-        od;  
+        od;
 
-        # Build the new set of underlying relations for the 
+        # Build the new set of underlying relations for the
         # transitive closure from the adjacency list
         p := [];
         for i in [1..Length(el)] do
@@ -564,12 +564,12 @@ InstallMethod(TransitiveClosureBinaryRelation,
         SetIsTransitiveBinaryRelation(newrel, true);
 
         # TransitiveClosure preserves Reflexivity.
-        if HasIsReflexiveBinaryRelation(r) then 
+        if HasIsReflexiveBinaryRelation(r) then
             SetIsReflexiveBinaryRelation(newrel, IsReflexiveBinaryRelation(r));
         fi;
 
         # TransitiveClosure preserves Symmetry.
-        if HasIsSymmetricBinaryRelation(r) then 
+        if HasIsSymmetricBinaryRelation(r) then
             SetIsSymmetricBinaryRelation(newrel, IsSymmetricBinaryRelation(r));
         fi;
 
@@ -578,7 +578,7 @@ InstallMethod(TransitiveClosureBinaryRelation,
 
 ############################################################################
 ##
-#O  HasseDiagramBinaryRelation(<rel>)                              
+#O  HasseDiagramBinaryRelation(<rel>)
 ##
 ##  If <rel> is a partial order then return the smallest relation contained
 ##  in <rel> whose reflexive and transitive closure is equal to <rel>
@@ -593,8 +593,8 @@ InstallMethod(HasseDiagramBinaryRelation,
               lc,             # pairs (x, covers(x)) for x in d
               tups,           # elements of the hasse diagram relation
               h,              # the resulting hasse diagram
-              
-                              # internal functions: 
+
+                              # internal functions:
               HDBRMinElts,    #    to find minimal elements
               HDBREltCovers,  #    to find the cover of an element
               HDBRListCovers; #    to find the set of covers
@@ -605,12 +605,12 @@ InstallMethod(HasseDiagramBinaryRelation,
 
         ## return the minimal elements of a list under rel
         HDBRMinElts := function(list, rel)
-        
-            ## x minimal if 
+
+            ## x minimal if
             ##  {y in list | y<>x and y in PreImagesElm( rel,x)} is empty
             ##
             return Filtered(list,
-              x->IsEmpty(Filtered(list, y-> (y <> x) and 
+              x->IsEmpty(Filtered(list, y-> (y <> x) and
                                               (y in PreImagesElm(rel,x)))));
         end;
 
@@ -621,12 +621,12 @@ InstallMethod(HasseDiagramBinaryRelation,
             xunder := Filtered(ImagesElm(rel,x), y-> y <> x);
             return HDBRMinElts(xunder,rel);
         end;
-              
+
         ## for a list, return the set of pairs (x, covers(x))
         HDBRListCovers := function(list,rel)
             return List(list, x->[x, HDBREltCovers(x, rel)]);
         end;
-  
+
         d := UnderlyingDomainOfBinaryRelation(rel);
         lc := HDBRListCovers(AsList(d), rel);
         tups := [];
@@ -635,12 +635,12 @@ InstallMethod(HasseDiagramBinaryRelation,
                 Append(tups, [DirectProductElement([i[1], j])]);
             od;
         od;
-        h := GeneralMappingByElements(d,d, tups);         
+        h := GeneralMappingByElements(d,d, tups);
         SetIsHasseDiagram(h, true);
         SetPartialOrderOfHasseDiagram(h,rel);
         return h;
     end);
-                                                    
+
 #############################################################################
 ##
 #F  PartialOrderByOrderingFunction(<dom>,<orderfunc>
@@ -652,14 +652,14 @@ InstallGlobalFunction(PartialOrderByOrderingFunction,
     function(d,of)
         local i,j,        # iterators
               tup,        # set of defining tuples
-              po;         # resulting partial order              
+              po;         # resulting partial order
 
         ## Check the input
         ##
         if not IsDomain(d) then
             Error("Partial Orders are only constructible over domains");
         fi;
-          
+
         ## Construct a set of tuples which defines the partial order
         ##
         tup :=[];
@@ -669,45 +669,45 @@ InstallGlobalFunction(PartialOrderByOrderingFunction,
                     Add(tup,DirectProductElement([i,j]));
                 fi;
             od;
-        od;    
+        od;
         po := BinaryRelationByElements(d,tup);
-        
+
         ## If the relation constructed is not a partial order return fail
         ##
         if not IsReflexiveBinaryRelation(po) or
-           not IsTransitiveBinaryRelation(po) or 
+           not IsTransitiveBinaryRelation(po) or
            not IsAntisymmetricBinaryRelation(po) then
             return fail;
-        else    
-            return po; 
-        fi;    
+        else
+            return po;
+        fi;
     end);
 
-                                                    
+
 ############################################################################
 ##
 #O  StronglyConnectedComponents(<R>)
 ##
 ##  returns an equivalence relation on the vertices of the relation.
-##  
+##
 InstallMethod(StronglyConnectedComponents, "for general binary relations",
         true, [IsBinaryRelation],0,
     function(rel)
         local r,        # representation of rel as a binary relation on points
-              e,        # Equivalence relation representation of the 
+              e,        # Equivalence relation representation of the
                         # predecessor subgraph
-              s,        # Sorted list of the source of rel 
+              s,        # Sorted list of the source of rel
               DFS,      # Depth first search functions
               DFSVisit,    ## Recursive
-              DFSVisitNR,  ## Non Recursive 
+              DFSVisitNR,  ## Non Recursive
                         # Global variables for DFS
-              time,     # time        
-              color,    # 0=white, 1=gray, 2=black 
+              time,     # time
+              color,    # 0=white, 1=gray, 2=black
               adj,      # adjacency list i.e. successors of rel
               pi,       # predecessor subgraph
               dtime,    # discover time
               ftime;    # finish time
- 
+
         ## Recursive version of a depth first visit
         ##
         DFSVisit := function(u)
@@ -720,27 +720,27 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
                     pi[v] := u;
                     DFSVisit(v);
                 fi;
-            od; 
+            od;
             color[u] := 2;
             ftime[u] := time+1;
             time := time +1;
         end;
-  
+
         ## Non recursive implementation of a depth first visit
-        ##   from a vertex using a stack explicitly to remember 
+        ##   from a vertex using a stack explicitly to remember
         ##   its depth recursion.
         ##
         DFSVisitNR := function(s)
-        
+
             local v,u,         ## vertices
                   stack, top;  ## stack variables
 
             top:=1;
             stack := [s];
             pi[s] :=s;
-            
+
             ## Loop until we can discover no more vertices from s
-            ##    
+            ##
             while not top=0 do
 
                 ## Initialization for the top of the stack
@@ -753,7 +753,7 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
                 ## Find the first undiscovered vertex adjacent to u
                 ##
                 v := First(adj[u],x->color[x]=0);
-             
+
                 ## If no undiscovered vertices exist pop the vertex u
                 ##   from the stack and record its finish time and color
                 ##   it fully discovered
@@ -780,9 +780,9 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
             od;
         end;
 
-  
+
         ## V is an ordering of the vertices which indicate
-        ##     how they are to be iterated through 
+        ##     how they are to be iterated through
         ##     during the depth first search
         ##
         DFS := function(rel, V)
@@ -795,7 +795,7 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
 
             time := 0;
             for u in V do
-                if color[u] = 0 then 
+                if color[u] = 0 then
                     DFSVisitNR(u);
                 fi;
             od;
@@ -819,25 +819,25 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
 
         ## Transpose the relation (i.e. take its inverse) and
         ##    complete a DFS searching the vertices in decreasing
-        ##    order of the finish time in the first DFS 
+        ##    order of the finish time in the first DFS
         ##
         #DFS(r^-1, List(Reversed(AsSortedList(ftime)),i->
         #    Position(ftime,i)));
 
         ## Find the strongly connected components which are the
         ##     partitions of pi
-        ##        
+        ##
         #e := EquivalenceRelationPartition(
         #         EquivalenceRelationByRelation(
         #             BinaryRelationTransformation(
         #                 Transformation(pi))));
 
-        ## Translate the partition of the equivalence relation on points 
-        ##    representing the strongly connected components into the 
+        ## Translate the partition of the equivalence relation on points
+        ##    representing the strongly connected components into the
         ##    source set.
         ##
         s := AsSSortedList(Source(rel));
-        return EquivalenceRelationByPartitionNC(Source(rel), 
+        return EquivalenceRelationByPartitionNC(Source(rel),
                    List(e, i->s{i}));
     end);
 
@@ -859,7 +859,7 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
 ############################################################################
 
 ############################################################################
-##  For compatibility with earlier versions 
+##  For compatibility with earlier versions
 ##
 DeclareSynonym("ImagesListOfBinaryRelation",Successors);
 DeclareSynonym("BinaryRelationByListOfImages", BinaryRelationOnPoints);
@@ -885,7 +885,7 @@ InstallGlobalFunction(BinaryRelationOnPointsNC,
 
         d:= Length(lst);
         fam:= GeneralMappingsFamily(FamilyObj(1), FamilyObj(1));
-        rel:= Objectify(NewType(fam, IsBinaryRelation and 
+        rel:= Objectify(NewType(fam, IsBinaryRelation and
                   IsBinaryRelationOnPointsRep and
                       IsNonSPGeneralMapping), rec());
 
@@ -903,12 +903,12 @@ InstallGlobalFunction(BinaryRelationOnPoints,
         ## Check to see if the given list is dense
         #
         if not IsDenseList(lst) then
-            Error("List, ",lst,",must be dense");              
+            Error("List, ",lst,",must be dense");
         fi;
-    
+
         ## Check to see if the list defines a relation on 1..n
         #
-        if not ForAll(Flat(lst),x->x in [1..Length(lst)]) then 
+        if not ForAll(Flat(lst),x->x in [1..Length(lst)]) then
             Error("List ,", lst,", does not represent a binary relation on 1 .. n");
         fi;
 
@@ -921,11 +921,11 @@ InstallGlobalFunction(BinaryRelationOnPoints,
 #F  AsBinaryRelationOnPoints(<trans>)
 #F  AsBinaryRelationOnPoints(<perm>)
 ##
-##  return the relation on n points represented by general relation, 
+##  return the relation on n points represented by general relation,
 ##  transformation or permutation, If <rel> is a binary relation on points
 ##  then just return <rel>.
 ##
-InstallGlobalFunction(AsBinaryRelationOnPoints, 
+InstallGlobalFunction(AsBinaryRelationOnPoints,
     function(rel)
         local el;
 
@@ -937,11 +937,11 @@ InstallGlobalFunction(AsBinaryRelationOnPoints,
             return AsBinaryRelationOnPoints(AsTransformation(rel));
         fi;
 
-        if IsBinaryRelation(rel) and 
+        if IsBinaryRelation(rel) and
                IsBinaryRelationOnPointsRep(rel) then
             return rel;
         fi;
-   
+
         if IsBinaryRelation(rel) then
             el := AsSSortedList(Source(rel));
             return BinaryRelationOnPoints(
@@ -980,29 +980,29 @@ InstallGlobalFunction(RandomBinaryRelationOnPoints,
 #P  IsEquivalenceRelation(<rel>)
 ##
 ##
-InstallMethod(IsReflexiveBinaryRelation, "for binary relations on points", 
+InstallMethod(IsReflexiveBinaryRelation, "for binary relations on points",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     rel -> ForAll([1..DegreeOfBinaryRelation(rel)],
                i->i in Successors(rel)[i])
     );
 
-InstallMethod(IsSymmetricBinaryRelation, "for binary relations on points", 
+InstallMethod(IsSymmetricBinaryRelation, "for binary relations on points",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     rel -> ForAll([1..DegreeOfBinaryRelation(rel)],
              i-> ForAll(Successors(rel)[i], j-> i in Successors(rel)[j] ))
     );
 
-InstallMethod(IsTransitiveBinaryRelation, "for binary relations on points", 
+InstallMethod(IsTransitiveBinaryRelation, "for binary relations on points",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     rel -> ForAll([1..DegreeOfBinaryRelation(rel)], i->
-               ForAll(Successors(rel)[i], j-> 
+               ForAll(Successors(rel)[i], j->
                    IsSubset(Successors(rel)[i],Successors(rel)[j])))
     );
 
 InstallMethod(IsAntisymmetricBinaryRelation, "for binary relations on points",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     rel -> ForAll([1..DegreeOfBinaryRelation(rel)], i->
-               ForAll(Successors(rel)[i], 
+               ForAll(Successors(rel)[i],
                    j-> j=i or (not j=i and not i in Successors(rel)[j])))
     );
 
@@ -1057,7 +1057,7 @@ InstallMethod(SymmetricClosureBinaryRelation, "for binary relations on points",
         od;
 
         newrel := BinaryRelationOnPointsNC(suc);
-        if HasIsReflexiveBinaryRelation(rel) then 
+        if HasIsReflexiveBinaryRelation(rel) then
             SetIsReflexiveBinaryRelation(newrel, IsReflexiveBinaryRelation(rel));
         fi;
 
@@ -1072,7 +1072,7 @@ InstallMethod(TransitiveClosureBinaryRelation, "for binary relations on points",
 
         suc := List(Successors(rel),x->ShallowCopy(x));
 
-        # if \i in suc[j] then everything related to \i 
+        # if \i in suc[j] then everything related to \i
         # should be in suc[j].
         for i in [1..DegreeOfBinaryRelation(rel)] do
             for j in [1..DegreeOfBinaryRelation(rel)]  do
@@ -1080,7 +1080,7 @@ InstallMethod(TransitiveClosureBinaryRelation, "for binary relations on points",
                     UniteSet(suc[j],suc[i]);
                 fi;
             od;
-        od;  
+        od;
         return BinaryRelationOnPointsNC(suc);
     end);
 
@@ -1097,8 +1097,8 @@ InstallMethod(TransitiveClosureBinaryRelation, "for binary relations on points",
 ##
 ##  For binary relations over [1..n] represented as a list of images
 ##
-InstallMethod(ImagesElm, 
-        "for binary relations over [1..n] with images list", 
+InstallMethod(ImagesElm,
+        "for binary relations over [1..n] with images list",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep, IsPosInt], 0,
     function( rel, n )
         if not n in [1..DegreeOfBinaryRelation(rel)] then
@@ -1113,8 +1113,8 @@ InstallMethod(ImagesElm,
 ##
 ##  For binary relations over [1..n] represented as a list of images
 ##
-InstallMethod(PreImagesElm, 
-        "for binary rels over [1..n] with images list", 
+InstallMethod(PreImagesElm,
+        "for binary rels over [1..n] with images list",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep, IsPosInt], 0,
     function( rel, n )
         return Filtered([1..DegreeOfBinaryRelation(rel)],
@@ -1131,7 +1131,7 @@ InstallMethod(PreImagesElm,
 InstallMethod(Successors, "for a generic relation", true,
         [IsBinaryRelation], 0,
     function(r)
-        local eldom;   # Elements of the domain 
+        local eldom;   # Elements of the domain
 
         eldom:= AsSSortedList(UnderlyingDomainOfBinaryRelation(r));
         if not IsRange(eldom) or eldom[1] <> 1 then
@@ -1148,7 +1148,7 @@ InstallMethod(Successors, "for a generic relation", true,
 ##  \=  True if successors lists are equal (by construction each image is
 ##      a set of integers so there is a canonical form to check)
 ##
-##  \in determines whether a tuple [x,y] in rel  
+##  \in determines whether a tuple [x,y] in rel
 ##
 ##  \<  compares successors list
 ##
@@ -1211,7 +1211,7 @@ InstallMethod( \*, "for binary relations on points", true,
         [IsBinaryRelation and IsBinaryRelationOnPointsRep,
          IsBinaryRelation and IsBinaryRelationOnPointsRep], 0,
     function( relL, relR )
-  
+
         if DegreeOfBinaryRelation(relL)<>DegreeOfBinaryRelation(relR) then
             Error("The binary relations must have the same degree");
         fi;
@@ -1224,7 +1224,7 @@ InstallOtherMethod( \*, "for transformation and binary relation on points", true
         [IsTransformation,
          IsBinaryRelation and IsBinaryRelationOnPointsRep], 0,
     function( t, rel )
-  
+
         if DegreeOfTransformation(t)<>DegreeOfBinaryRelation(rel) then
             Error("Transformation and binary relation must have the same degree");
         fi;
@@ -1234,7 +1234,7 @@ InstallOtherMethod( \*, "for transformation and binary relation on points", true
     end);
 
 InstallOtherMethod( \*, "for binary relation on points and transformation", true,
-        [IsBinaryRelation and 
+        [IsBinaryRelation and
          IsBinaryRelationOnPointsRep, IsTransformation], 0,
     function( rel, t )
         return rel * BinaryRelationTransformation(t);
@@ -1269,12 +1269,12 @@ InstallOtherMethod( \*, "for list and binary relation on points", true,
 #M  \+ ( <rel>, <rel> )      -- Union
 #M  \- ( <trans>, <rel> )    -- Difference
 ##
-##  Set operations for binary relations on points 
-##     Union 
+##  Set operations for binary relations on points
+##     Union
 ##     Difference
 ##
 InstallMethod( \+, "for binary relations on points", true,
-        [IsBinaryRelation and IsBinaryRelationOnPointsRep, 
+        [IsBinaryRelation and IsBinaryRelationOnPointsRep,
          IsBinaryRelation and IsBinaryRelationOnPointsRep], 0,
     function( rel1, rel2 )
 
@@ -1283,7 +1283,7 @@ InstallMethod( \+, "for binary relations on points", true,
         fi;
         return
             BinaryRelationOnPoints(List([1..DegreeOfBinaryRelation(rel1)],
-                i-> Union(Successors(rel1)[i],Successors(rel2)[i]))); 
+                i-> Union(Successors(rel1)[i],Successors(rel2)[i])));
     end);
 
 InstallMethod( \-, "for binary relations on points", true,
@@ -1303,7 +1303,7 @@ InstallMethod( \-, "for binary relations on points", true,
 ##
 #M  \^ ( <int>, <rel> )      Images of an integer in domain
 #M  \^ ( <trans>, <rel> )    Union of the images of the set
-#M  \^ ( <list>, <rel> )     List of images for each element in the list  
+#M  \^ ( <list>, <rel> )     List of images for each element in the list
 ##
 ##
 #############################################################################
@@ -1428,15 +1428,15 @@ InstallGlobalFunction(EquivalenceRelationByPartition,
 	if not  (IsSubset(X, AsSortedList(Concatenation(subsX)))) then
 		Error("Input does not describe a partition");
 	fi;
-	
-	fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)), 
+
+	fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)),
 		ElementsFamily(FamilyObj(X)) );
 
         ## Get rid of singletons and possible empty blocks
         subsX := Filtered(subsX, i->Length(i)>1);
 
 	# Create the default type for the elements.
-        rel :=  Objectify(NewType(fam, 
+        rel :=  Objectify(NewType(fam,
 		IsEquivalenceRelation and IsEquivalenceRelationDefaultRep), rec());
 	SetEquivalenceRelationPartition(rel, subsX);
 	SetSource(rel, X);
@@ -1456,15 +1456,15 @@ InstallGlobalFunction(EquivalenceRelationByPartitionNC,
     function(X, subsX)
 	local fam, rel;
 
-	fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)), 
+	fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)),
 		ElementsFamily(FamilyObj(X)) );
 
 	# Create the default type for the elements.
-        rel :=  Objectify(NewType(fam, 
+        rel :=  Objectify(NewType(fam,
 		IsEquivalenceRelation and IsEquivalenceRelationDefaultRep), rec());
 
         ## The only assurance is singletons and empty blocks are removed
-        ## 
+        ##
 	SetEquivalenceRelationPartition(rel, Filtered(subsX, i->Length(i)>1));
 	SetSource(rel, X);
 	SetRange(rel, X);
@@ -1474,17 +1474,17 @@ InstallGlobalFunction(EquivalenceRelationByPartitionNC,
 
 #############################################################################
 ##
-#F  EquivalenceRelationByRelation( <rel> )                       
+#F  EquivalenceRelationByRelation( <rel> )
 ##
 ##  Checks for special cases to improve efficiency otherwise
-##  use general attributes and call EquivalenceRelationByPairs 
+##  use general attributes and call EquivalenceRelationByPairs
 ##
 InstallGlobalFunction(EquivalenceRelationByRelation,
     function(r)
         local i,j,tups;
 
-        ## Special cases that do not require finding the underlying 
-        ##     relation i.e. having the mapping methods find 
+        ## Special cases that do not require finding the underlying
+        ##     relation i.e. having the mapping methods find
         ##     all tuples using images of elements
         ##
         if IsBinaryRelation(r) and IsBinaryRelationOnPointsRep(r) then
@@ -1496,7 +1496,7 @@ InstallGlobalFunction(EquivalenceRelationByRelation,
             od;
             return EquivalenceRelationByPairs(
                 UnderlyingDomainOfBinaryRelation(r),tups);
-        fi; 
+        fi;
 
         if IsTransformation(r) then
             return EquivalenceRelationByRelation(
@@ -1520,17 +1520,17 @@ InstallGlobalFunction(EquivalenceRelationByRelation,
 InstallGlobalFunction(EquivalenceRelationByProperty,
     function(X, property )
         local fam, rel;
-	
-        fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)), 
+
+        fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)),
         ElementsFamily(FamilyObj(X)) );
 
         # Create the default type for the elements.
-        rel :=  Objectify(NewType(fam, IsEquivalenceRelation 
+        rel :=  Objectify(NewType(fam, IsEquivalenceRelation
             and IsEquivalenceRelationDefaultRep and IsNonSPGeneralMapping), rec());
         SetSource(rel, X);
         SetRange(rel, X);
         Setter(property)(rel, true);
-        
+
         return rel;
     end);
 
@@ -1539,11 +1539,11 @@ InstallGlobalFunction(EquivalenceRelationByProperty,
 #F  EquivalenceRelationByPairs( <D>, <pairs> )
 #F  EquivalenceRelationByPairsNC( <D>, <pairs> )
 ##
-##  Construct the smallest equivalence relation containing <pairs>  
+##  Construct the smallest equivalence relation containing <pairs>
 ##
 ##  The closure algorithm uses a variant of Tarjan's set merge method.
-##  It runs in nearly linear time, O(n g(n)) where g(n) is a slow growing function 
-##  (optimally the inverse of Ackerman's function) 
+##  It runs in nearly linear time, O(n g(n)) where g(n) is a slow growing function
+##  (optimally the inverse of Ackerman's function)
 ##
 ##  The NC version assumes that <D> is a domain and <pairs> are tuples (or lists
 ##      of length 2) of the form (a,b) where a<>b
@@ -1563,25 +1563,25 @@ InstallGlobalFunction(EquivalenceRelationByPairsNC,
         ##
         ## Make a mutable copy of pairs
         ##
-        if (IsSet(pairs)) or 
+        if (IsSet(pairs)) or
            (HasIsDuplicateFreeList(pairs) and IsDuplicateFreeList(pairs)) then
             C := List(pairs,x->ShallowCopy(x));
         else
-            C := DuplicateFreeList(List(pairs,x->ShallowCopy(x))); 
+            C := DuplicateFreeList(List(pairs,x->ShallowCopy(x)));
         fi;
 
         ##
-        ## Use Tarjan's merge method to find the equivalence relation 
-        ##     generated by the pairs (expressed as a set of non-trivial 
+        ## Use Tarjan's merge method to find the equivalence relation
+        ##     generated by the pairs (expressed as a set of non-trivial
         ##     blocks determined by the input pairs).
-         
+
         ## The first pair will be our starting forest.
-        ##   
+        ##
         forest := [C[1]];
 
         ##
         ## Put each pair in its appropriate block and merge blocks
-        ##     as necessary 
+        ##     as necessary
         ##
         for i in C do
 
@@ -1592,16 +1592,16 @@ InstallGlobalFunction(EquivalenceRelationByPairsNC,
                 if p1>Length(forest) and i[1] in forest[j] then
                     p1 := j;
                     if p2 <=Length(forest) then break; fi;
-                fi;    
+                fi;
                 if p2>Length(forest) and i[2] in forest[j] then
                     p2 := j;
                     if p1<=Length(forest) then break; fi;
-                fi;    
+                fi;
             od;
 
             ##
             ## For the pair (a,b) if a is in one block and b is in another
-            ##     merge the two blocks 
+            ##     merge the two blocks
             ##
             if p1<=Length(forest) and p2<=Length(forest) and not p1=p2 then
                 Append(forest[p1],forest[p2]);
@@ -1609,11 +1609,11 @@ InstallGlobalFunction(EquivalenceRelationByPairsNC,
                 if not p2=Length(forest) then
                     forest[p2]:=forest[Length(forest)];
                     Unbind(forest[Length(forest)]);
-                fi;                       
+                fi;
 
             ##
             ##  These cases are if only one of the components
-            ##      is in a block 
+            ##      is in a block
             ##
             elif p1<=Length(forest) and p2>Length(forest) then
                 Add(forest[p1],i[2]);
@@ -1626,7 +1626,7 @@ InstallGlobalFunction(EquivalenceRelationByPairsNC,
             elif p1>Length(forest) and p2>Length(forest) then
                 Add(forest,i);
             fi;
-        od;                                     
+        od;
 
         return EquivalenceRelationByPartitionNC(d,forest);
 
@@ -1634,7 +1634,7 @@ InstallGlobalFunction(EquivalenceRelationByPairsNC,
 
 InstallGlobalFunction(EquivalenceRelationByPairs,
     function(d,pairs)
- 
+
         local C,       #Set of given pairs of the form (a,b), a<>b
               i,j,     #index variables
               p1,p2,   #indexes to blocks to merge
@@ -1655,34 +1655,34 @@ InstallGlobalFunction(EquivalenceRelationByPairs,
         ## If no pairs are given return the diagonal equivalence
         ##
         if IsEmpty(pairs) then
-            return EquivalenceRelationByPartitionNC(d,[]);      
+            return EquivalenceRelationByPartitionNC(d,[]);
         fi;
 
-        ## Make sure that all of the pairs are indeed pairs 
+        ## Make sure that all of the pairs are indeed pairs
         if ForAny(pairs,x->not Length(x)=2 ) then
             Error("Usage error, pairs must be tuples of length 2");
         fi;
 
-        ## Make sure that all of the elements in the pairs are in 
+        ## Make sure that all of the elements in the pairs are in
         ##    the domain
         if ForAny(pairs,x->not x[1] in d or not x[2] in d) then
             Error("One of more element pairs contain elements not in the domain");
-        fi; 
+        fi;
 
-        ## 
+        ##
         ## Filter out all pairs of the form (a,a).
         ##   If this filtered set is empty return the diagonal
-        ##   equivalence 
+        ##   equivalence
         ## Make a mutable copy of pairs so we don't inadvertently alter
-        ##   pairs 
+        ##   pairs
         ##
         C := List(Filtered(pairs,x->not x[1]=x[2]), y->ShallowCopy(y));
 
         ##
         ## Return diagonal relation if all pairs are of the form (a,a)
         ##
-        if IsEmpty(C) then 
-            return EquivalenceRelationByPartitionNC(d,[]); 
+        if IsEmpty(C) then
+            return EquivalenceRelationByPartitionNC(d,[]);
         fi;
 
         C := Set(C);
@@ -1696,10 +1696,10 @@ InstallGlobalFunction(EquivalenceRelationByPairs,
 #A  EquivalenceRelationPartition(<equiv>)
 ##
 ##
-InstallMethod( EquivalenceRelationPartition, 
+InstallMethod( EquivalenceRelationPartition,
         "compute the partition for an arbitrary equiv rel", true,
         [IsEquivalenceRelation], 0,
-    
+
     function( equiv )
         local part;
 
@@ -1709,7 +1709,7 @@ InstallMethod( EquivalenceRelationPartition,
         fi;
 
         return  EquivalenceRelationPartition(
-                    EquivalenceRelationByPairs(Source(equiv), 
+                    EquivalenceRelationByPairs(Source(equiv),
                     AsList(UnderlyingRelation(equiv))));
     end);
 
@@ -1721,11 +1721,11 @@ InstallMethod( EquivalenceRelationPartition,
 ##  JoinEquivalenceRelations(<equiv1>,<equiv2>) -- form the smallest
 ##  equivalence relation containing both equivalence relations.
 ##
-##  MeetEquivalenceRelations( <equiv1>,<equiv2> ) -- computes the 
+##  MeetEquivalenceRelations( <equiv1>,<equiv2> ) -- computes the
 ##  intersection of the two equivalence relations.
 ##
-InstallMethod( JoinEquivalenceRelations, 
-        "join of two equivalence relations", true, 
+InstallMethod( JoinEquivalenceRelations,
+        "join of two equivalence relations", true,
         [IsEquivalenceRelation, IsEquivalenceRelation], 0,
     function(er1, er2)
          if Source(er1)<>Source(er2) then
@@ -1736,8 +1736,8 @@ InstallMethod( JoinEquivalenceRelations,
                         GeneratorsOfEquivalenceRelationPartition(er2)) );
     end);
 
-InstallMethod( MeetEquivalenceRelations, 
-        "meet of two equivalence relations", true, 
+InstallMethod( MeetEquivalenceRelations,
+        "meet of two equivalence relations", true,
         [IsEquivalenceRelation, IsEquivalenceRelation], 0,
     function(er1, er2)
 
@@ -1750,13 +1750,13 @@ InstallMethod( MeetEquivalenceRelations,
         if Source(er1)<>Source(er2) then
             Error("usage: <equiv1> and <equiv2> must have the same source");
         fi;
-    
+
         part1 := EquivalenceRelationPartition(er1);
         part2 := EquivalenceRelationPartition(er2);
         part  := [];
 
         ## Find the intersection of each pair of blocks
-        ##     
+        ##
         for i in part1 do
             for j in part2 do
                 Add(part, Intersection(i,j));
@@ -1779,15 +1779,15 @@ InstallMethod( MeetEquivalenceRelations,
 #A  GeneratorsOfEquivalenceRelationPartition( <equiv> )
 ##
 ##
-InstallMethod(GeneratorsOfEquivalenceRelationPartition, 
+InstallMethod(GeneratorsOfEquivalenceRelationPartition,
         "generators for an equivalence with a partition", true,
         [IsEquivalenceRelation], 0,
     function(equiv)
         local gens, b,j,part;
-  
+
         part := EquivalenceRelationPartition(equiv);
         gens:=[];
- 
+
         for b in part do
             for j in [1..Length(b)-1] do
                 AddSet(gens,AsSSortedList([b[j],b[j+1]]));
@@ -1798,14 +1798,14 @@ InstallMethod(GeneratorsOfEquivalenceRelationPartition,
 
 #############################################################################
 ##
-#M  \= for equivalence relations 
+#M  \= for equivalence relations
 ##
 InstallMethod(\=, "for eqivalence relations", IsIdenticalObj,
         [IsEquivalenceRelation, IsEquivalenceRelation], 0,
     function(x, y)
 
-        local p,  ## partition  
-              f;  ## first partition 
+        local p,  ## partition
+              f;  ## first partition
 
         ## Check if sources are equal
         ##
@@ -1819,33 +1819,33 @@ InstallMethod(\=, "for eqivalence relations", IsIdenticalObj,
             return Successors(x)=Successors(y);
         fi;
 
-        ## Look at partitions -- they are not in any canonical 
-        ##     form. 
+        ## Look at partitions -- they are not in any canonical
+        ##     form.
         ##
-        if (HasEquivalenceRelationPartition(x) and 
+        if (HasEquivalenceRelationPartition(x) and
                HasEquivalenceRelationPartition(y)) then
 
             ## Similar lengths of partitions
             ##
-            if Length(EquivalenceRelationPartition(x)) <> 
+            if Length(EquivalenceRelationPartition(x)) <>
                    Length(EquivalenceRelationPartition(y)) then
                 return false;
             fi;
 
             ## Similar lengths of the partition elements
             ##
-            if Set(EquivalenceRelationPartition(x), i->Length(i)) <> 
+            if Set(EquivalenceRelationPartition(x), i->Length(i)) <>
                Set(EquivalenceRelationPartition(y), i->Length(i)) then
                return false;
-            fi; 
-     
-            ## OK need to take a deeper look at the partition           
+            fi;
+
+            ## OK need to take a deeper look at the partition
             ##
-            
-            for p in EquivalenceRelationPartition(x) do 
+
+            for p in EquivalenceRelationPartition(x) do
                 f := First(EquivalenceRelationPartition(y), i->p[1] in i);
                 if f=fail then return false; fi;
-                if not Set(f)=Set(p) then return false; fi;  
+                if not Set(f)=Set(p) then return false; fi;
             od;
 
             return true;
@@ -1864,22 +1864,22 @@ InstallMethod(\=, "for eqivalence relations", IsIdenticalObj,
 ##
 ##  This method should be selected over all others since it assumes
 ##  that the partition information has already been computed.
-##  It has been given a +1 rank which WILL NEED TUNING when  the 
+##  It has been given a +1 rank which WILL NEED TUNING when  the
 ##  other methods are in.
 ##
 InstallMethod(\in, "for eq relation with partition", true,
         [IsList, IsEquivalenceRelation and HasEquivalenceRelationPartition], 1,
     function(tup, rel)
         local f;   # first block that contains first tuple component
-       
-        if Length(tup) <> 2 then 
+
+        if Length(tup) <> 2 then
             Error("Left hand side must be of length 2");
-        elif FamilyObj(tup) <> 
+        elif FamilyObj(tup) <>
             FamilyObj(UnderlyingDomainOfBinaryRelation(rel)) then
             Error("Left hand side must contain elements of relation's domain");
         fi;
 
-        ## if tuple is of the form (x,x) then it is in relation     
+        ## if tuple is of the form (x,x) then it is in relation
         ##
         if tup[1]=tup[2] then
            return true;
@@ -1889,7 +1889,7 @@ InstallMethod(\in, "for eq relation with partition", true,
         ##
         f := First(EquivalenceRelationPartition(rel), b->tup[1] in b);
 
-        if f=fail then 
+        if f=fail then
             return false;         ## no block contains tup[1]
         else
             return tup[2] in f;   ## tup[1] in non-trivial block
@@ -1918,12 +1918,12 @@ InstallMethod( PreImagesRepresentative, "equivalence relations",
 
 #############################################################################
 ##
-#M  ImagesElm( <rel>, <elm> )        for equivalence relations with partition 
+#M  ImagesElm( <rel>, <elm> )        for equivalence relations with partition
 ##
-InstallMethod( ImagesElm, 
+InstallMethod( ImagesElm,
         "for equivalence relation with partition and element",
         FamSourceEqFamElm,
-        [IsEquivalenceRelation and HasEquivalenceRelationPartition, 
+        [IsEquivalenceRelation and HasEquivalenceRelationPartition,
          IsObject],0,
     function( rel, elm )
         local p;
@@ -1942,15 +1942,15 @@ InstallMethod( ImagesElm,
 ##
 #M  PreImagesElm( <rel>, <elm> )     for equivalence relations with partition
 ##
-InstallMethod( PreImagesElm, 
-        "equivalence relations with partition and element", 
+InstallMethod( PreImagesElm,
+        "equivalence relations with partition and element",
         FamRangeEqFamElm,
-        [IsEquivalenceRelation and HasEquivalenceRelationPartition, 
+        [IsEquivalenceRelation and HasEquivalenceRelationPartition,
          IsObject],0,
     function( rel, elm )
         ## Images and preimages are the same
         ##
-        return ImagesElm(rel, elm); 
+        return ImagesElm(rel, elm);
     end);
 
 #############################################################################
@@ -1965,11 +1965,11 @@ InstallMethod( PrintObj, "for an equivalence relation", true,
 
 #############################################################################
 ##
-#M  EquivalenceClasses( <E> ) 
+#M  EquivalenceClasses( <E> )
 ##
 ##	Wraparound function which calls the two-argument method
 ##
-InstallMethod(EquivalenceClasses, "wraparound to call 2-argument version", 
+InstallMethod(EquivalenceClasses, "wraparound to call 2-argument version",
         true, [IsEquivalenceRelation], 0,
     e->EquivalenceClasses(e, UnderlyingDomainOfBinaryRelation(e))
     );
@@ -1982,14 +1982,14 @@ InstallMethod(EquivalenceClasses, "wraparound to call 2-argument version",
 ##  This generic method will not terminate for an equivalence over an
 ##  infinite set.
 ##
-InstallOtherMethod(EquivalenceClasses, "for a generic equivalence relation", 
+InstallOtherMethod(EquivalenceClasses, "for a generic equivalence relation",
         true, [IsEquivalenceRelation, IsCollection], 0,
     function(E, D)
 
         local d, classes, iter, elm, p;
 
         ## If we already have a partition then return the equivalence
-        ##     class with first element as represenative 
+        ##     class with first element as represenative
         ##
         classes := [];
         if HasEquivalenceRelationPartition(E) then
@@ -2052,7 +2052,7 @@ InstallOtherMethod(EquivalenceClasses, "for a generic equivalence relation",
 InstallMethod(EquivalenceClassOfElementNC, "no check", true,
         [IsEquivalenceRelation, IsObject], 0,
    function(rel, rep)
- 
+
        local new;
 
        new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
@@ -2119,7 +2119,7 @@ InstallMethod(\in, "for element and equivalence class", true,
 ##
 #M  Enumerator( <C> )
 ##
-##  An enumerator for equivalence classes of relations 
+##  An enumerator for equivalence classes of relations
 ##  where we know the Partition
 ##
 InstallMethod( Enumerator, "for equivalence classes", true,
@@ -2165,7 +2165,7 @@ InstallMethod(\=, "for two equivalence classes",
 #M  \<( <x1>, <x2> )
 ##
 ##  The total order on equivalence classes used for creating sets, etc.
-##  Relies on the total order of the underlying set. This is a 
+##  Relies on the total order of the underlying set. This is a
 ##  VERY INEFFICIENT method because it relies on finding the smallest
 ##  element of an equivalence class. AVOID USING THIS IF POSSIBLE!!
 ##

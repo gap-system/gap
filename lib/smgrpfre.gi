@@ -274,7 +274,7 @@ InstallMethod( Enumerator,
                NumberElement := NumberElement_FreeSemigroup,
 
                family       := ElementsFamily( FamilyObj( S ) ),
-               nrgenerators := Length( ElementsFamily( 
+               nrgenerators := Length( ElementsFamily(
                                            FamilyObj( S ) )!.names ) ) );
     end );
 
@@ -303,8 +303,8 @@ InstallMethod( Size,
       return infinity;
     fi;
     end );
-    
-    
+
+
     #
     # I suspect this methos subsumes the one above SL
     #
@@ -322,9 +322,9 @@ InstallMethod( Size,
         od;
         return 1;
     end);
-        
-    
-    
+
+
+
 #############################################################################
 ##
 #M  Random( <S> ) . . . . . . . . . . . .  random element of a free semigroup
@@ -368,7 +368,7 @@ InstallMethod( MagmaGeneratorsOfFamily,
                  i -> ObjByExtRep( F, 1, 1, [ i, 1 ] ) ) );
 
 # GeneratorsOfSemigroup returns the generators in ascending order
-    
+
 InstallMethod( GeneratorsSmallest,
         "for a free semigroup",
         [ IsFreeSemigroup ],

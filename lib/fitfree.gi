@@ -17,7 +17,7 @@ InstallGlobalFunction(AttemptPermRadicalMethod,function(G,T)
 local R;
   if not IsPermGroup(G) then return fail;fi;
 
-  if not (HasFittingFreeLiftSetup(G) or HasSolvableRadical(G)) then 
+  if not (HasFittingFreeLiftSetup(G) or HasSolvableRadical(G)) then
     # do not force radical method if it was not tried
     return false;
   fi;
@@ -33,7 +33,7 @@ local R;
 
   if T="CENT" then
     # centralizer/element conjugacy -- degree compares well with radical
-    # factor, but 
+    # factor, but
     return NrMovedPoints(G)^2>Size(G)/Size(R);
   else
     # Task not yet covered
@@ -375,7 +375,7 @@ local f;
 end );
 
 # evaluate homomorphism given by generators
-# 
+#
 InstallGlobalFunction(TFEvalRFHom,function(
   # generators for whole group
   pcgs,pcgsimgs, # radical part
@@ -499,7 +499,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
 	  # not known -- add to generators
 	  Add(stabfacimg,fe);
 
-	  if IsRecord(st) then 
+	  if IsRecord(st) then
 	    if st.left<>fail then
 	      Error("cannot happen");
 	      st:=st.left/st.right;
@@ -580,7 +580,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
     # factor group. Both times we can check that we have the correct orbit.
 
     # ratio 1: full orbit/stab known, ratio <2 stab cannot grow any more.
-    ratio:=5; 
+    ratio:=5;
     vp:=1; # position in orbit to process
 
     # solvable iteration
@@ -648,7 +648,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
     stage:=2;
 
     # ratio 1: full orbit/stab known, ratio <2 stab cannot grow any more.
-    ratio:=5; 
+    ratio:=5;
     vp:=1;
     while vp<=Length(orb) do
       for genum in [1..Length(gens)] do
@@ -801,7 +801,7 @@ local sel,orb,dict,reps,repwords,vp,img,cont,minpo,genum,rep,repword,p,
 	Add(orb,img);
 	AddDictionary(dict,img,Length(orb));
 	Add(repwords,repword);
-	if img in stops then 
+	if img in stops then
 	  minpo:=Length(orb);
 	  cont:=false;
 	fi;
@@ -901,7 +901,7 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,gens;
       fphom:=GroupGeneralMappingByImagesNC(ocr.complement,fp,gens,
 	GeneratorsOfGroup(fp));
       RUN_IN_GGMBI:=false;
-      
+
     fi;
   od;
   return SubgroupByFittingFreeData(G,sg,sf,InducedPcgsByPcSequenceNC(pcgs,sp));
@@ -1024,7 +1024,7 @@ local G,gp,p,r,s,c,i,a,pp,prime,sy,k,b,dc,H,e,j,forbid;
         #H:=ClosureGroup(j,sy^k[1]);
         H:=ClosureGroupQuick(G,j,sy^k[1]);
 	# discard whole group and those that have all primes
-	if Index(G,H)>1 and not ForAll(gp,x->IsInt(Size(H)/x)) 
+	if Index(G,H)>1 and not ForAll(gp,x->IsInt(Size(H)/x))
 	  and not ForAny(forbid,x->IsInt(Size(H)/x)) then
 	  if ForAll(e,x->H<>x) and
 	     ForAll(e,x->RepresentativeAction(G,H,x)=fail) then
@@ -1119,7 +1119,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,prd,k,nk,map,ns,all,hl,hcomp,
   hl:=[];
   for i in o do
     p:=Intersection(Factors(Size(d[i[1]])),pi);
-    if Length(p)=0 then 
+    if Length(p)=0 then
       h:=[,[TrivialSubgroup(d[i[1]])]];
     else
       h:=Halleen(d[i[1]],p);
@@ -1393,7 +1393,7 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,
 	fphom:=GroupGeneralMappingByImagesNC(ocr.complement,fp,gens,
 	  GeneratorsOfGroup(fp));
 	RUN_IN_GGMBI:=false;
-	
+
       fi;
     od;
     if Length(pcgs)>0 then
@@ -1446,7 +1446,7 @@ function(G,pi)
 local l;
   if IsPermGroup(G) or IsPcGroup(G) then TryNextMethod();fi;
 
-  if Set(Factors(Size(G)))=[pi] then 
+  if Set(Factors(Size(G)))=[pi] then
     SetIsPGroup(G,true);
     SetPrimePGroup(G, pi);
     return G;

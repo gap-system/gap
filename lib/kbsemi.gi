@@ -10,7 +10,7 @@
 ##
 ##  This file contains code for the Knuth-Bendix rewriting system for semigroups
 ##  and monoids.
-##  
+##
 
 InstallGlobalFunction(EmptyKBDAG,function(genids)
 local offset,deadend;
@@ -43,7 +43,7 @@ local offset,node,j,a;
         node[a]:=ShallowCopy(d.deadend); # at least one symbol more
         node:=node[a];
       fi;
-    elif IsList(node[a]) then 
+    elif IsList(node[a]) then
       if j<Length(left) then
         node:=node[a]; # go to next letter
       else
@@ -86,7 +86,7 @@ local backpoint,i,a,node,offset;
     fi;
     a:=a-1;
   od;
-  
+
 end);
 
 InstallGlobalFunction(RuleAtPosKBDAG,function(d,w,p)
@@ -134,7 +134,7 @@ local offset,node,j,a,idx,left,recurse;
     else
       flag:=true;
       for i in n do
-        if IsList(i) then 
+        if IsList(i) then
           recurse(i);
           flag:=false;
         elif IsInt(i) then
@@ -151,11 +151,11 @@ end);
 ############################################################################
 ##
 #R  IsKnuthBendixRewritingSystemRep(<obj>)
-## 
+##
 ##  reduced - is the system known to be reduced
 ##  fam - the family of elements of the fp smg/monoid
 ##
-DeclareRepresentation("IsKnuthBendixRewritingSystemRep", 
+DeclareRepresentation("IsKnuthBendixRewritingSystemRep",
   IsComponentObjectRep,
   ["family", "tzrules","pairs2check", "reduced", "ordering"]);
 
@@ -163,14 +163,14 @@ DeclareRepresentation("IsKnuthBendixRewritingSystemRep",
 #############################################################################
 ##
 #F  CreateKnuthBendixRewritingSystem(<fam>, <wordord>)
-##  
-##  <wordord> is a  reduction ordering 
+##
+##  <wordord> is a  reduction ordering
 ##  (compatible with left and right multiplication).
-##  
+##
 ##  A Knuth Bendix rewriting system consists of a list of relations,
 ##  which we call rules, and a list of pairs of numbers (pairs2check).
 ##  Each lhs of a rule has to be greater than its rhs
-##  (so when we apply a rule to a word, we are effectively reducing it - 
+##  (so when we apply a rule to a word, we are effectively reducing it -
 ##  according to the ordering considered)
 ##  Each number in a pair of the list pairs2check
 ##  refers to one of the rules. A pair corresponds to a pair
@@ -179,7 +179,7 @@ DeclareRepresentation("IsKnuthBendixRewritingSystemRep",
 ##
 ##  Note that at this stage the kb rws obtained might not be reduced
 ##  (the same relation might even appear several times).
-##  
+##
 InstallGlobalFunction(CreateKnuthBendixRewritingSystem,
 function(fam, wordord)
 local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
@@ -201,7 +201,7 @@ local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
     return Unique(q);
   end;
 
-  # generates the list of all pairs (x,y) 
+  # generates the list of all pairs (x,y)
   # where x,y are distinct elements of the set [1..n]
   CantorList:=function(n)
      local i,j,l;
@@ -226,11 +226,11 @@ local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
       "Can only create a KB rewriting system for an fp semigroup or monoid");
   fi;
 
-  # check the second argument is a reduction ordering 
+  # check the second argument is a reduction ordering
   if not (IsOrdering(wordord) and IsReductionOrdering(wordord)) then
     Error("Second argument must be a reduction ordering");
   fi;
-  
+
   if IsElementOfFpMonoidFamily(fam) then
     w:=CollectionsFamily(fam)!.wholeMonoid;
     r:=RelationsOfFpMonoid(w);
@@ -244,14 +244,14 @@ local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
   fi;
 
 
-  rwsfam := NewFamily("Family of Knuth-Bendix Rewriting systems", 
+  rwsfam := NewFamily("Family of Knuth-Bendix Rewriting systems",
     IsKnuthBendixRewritingSystem);
 
   relwco:=relations_with_correct_order(r,wordord);
 
-  kbrws := Objectify(NewType(rwsfam, 
-    IsMutable and IsKnuthBendixRewritingSystem and 
-    IsKnuthBendixRewritingSystemRep), 
+  kbrws := Objectify(NewType(rwsfam,
+    IsMutable and IsKnuthBendixRewritingSystem and
+    IsKnuthBendixRewritingSystemRep),
     rec(family:= fam,
     reduced:=false,
     tzrules:=List(relwco,i->
@@ -273,7 +273,7 @@ local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
     kbrws!.tzordering:=false;
   fi;
   if IsElementOfFpMonoidFamily(fam) then
-    SetIsBuiltFromMonoid(kbrws,true); 
+    SetIsBuiltFromMonoid(kbrws,true);
   else
     SetIsBuiltFromSemigroup(kbrws,true);
   fi;
@@ -291,7 +291,7 @@ end);
 ##
 InstallMethod(ReduceRules,
 "for a Knuth Bendix rewriting system", true,
-[ IsKnuthBendixRewritingSystem and IsKnuthBendixRewritingSystemRep and IsMutable ], 0, 
+[ IsKnuthBendixRewritingSystem and IsKnuthBendixRewritingSystemRep and IsMutable ], 0,
 function(rws)
   local
         r,      # local copy of the rules
@@ -358,7 +358,7 @@ end);
 
 InstallOtherMethod(AddRule,
   "Fallback Method, call AddRuleReduced", true,
-  [ IsKnuthBendixRewritingSystem and IsMutable 
+  [ IsKnuthBendixRewritingSystem and IsMutable
      and IsKnuthBendixRewritingSystemRep, IsList ], -1,
 function(kbrws,v)
   Info(InfoWarning,1,"Fallback method -- calling `AddRuleReduced` instead");
@@ -370,7 +370,7 @@ end);
 #O  AddRuleReduced(<RWS>, <tzrule>)
 ##
 ##  Add a rule to a rewriting system and, if the system is already
-##  reduced it will remain reduced. Note, this also changes the pairs 
+##  reduced it will remain reduced. Note, this also changes the pairs
 ##  of rules to check.
 ##
 ##  given a pair v of words that have to be equal it checks whether that
@@ -383,7 +383,7 @@ end);
 ##
 InstallOtherMethod(AddRuleReduced,
   "for a Knuth Bendix rewriting system and a rule", true,
-  [ IsKnuthBendixRewritingSystem and IsMutable 
+  [ IsKnuthBendixRewritingSystem and IsMutable
      and IsKnuthBendixRewritingSystemRep, IsList ], 0,
 function(kbrws,v)
 
@@ -417,8 +417,8 @@ function(kbrws,v)
     fi;
 
     #given a Knuth Bendix Rewriting System, kbrws,
-    #removes rule i of the set of rules of kbrws and    
-    #modifies the list pairs2check in such a way that the previous indexes 
+    #removes rule i of the set of rules of kbrws and
+    #modifies the list pairs2check in such a way that the previous indexes
     #are modified so they correspond to same pairs as before
     remove_rule:=function(i)
       local j,q,a,k,l;
@@ -442,7 +442,7 @@ function(kbrws,v)
 
       if ptc then
         #delete pairs of indexes that include i
-        #and change occurrences of indexes k greater than i in the 
+        #and change occurrences of indexes k greater than i in the
         #list of pairs and change them to k-1
         #So we'll construct a new list with the right pairs
         l:=[];
@@ -463,21 +463,21 @@ function(kbrws,v)
 
     #given a Knuth Bendix Rewriting System this function returns it
     #with the given extra rule adjoined to the set of rules
-    #and the necessary pairs adjoined to pairs2check 
+    #and the necessary pairs adjoined to pairs2check
     #(the pairs that we have to put in pairs2check correspond to the
     #new rule together with all the ones that were in the set of rules
     #previously)
     add_rule:=function(u,kbrws)
       local q,l,i,n;
 
-      #insert rule 
+      #insert rule
       Add(kbrws!.tzrules,u);
       if kbdag<>fail then
         l:=AddRuleKBDAG(kbdag,u[1],Length(kbrws!.tzrules));
         if l<>true then Error("rulesubset"); fi;
       fi;
       #VerifyKBDAG(kbdag,kbrws!.tzrules);
-    
+
       if ptc then
         #insert new pairs
         l:=kbrws!.pairs2check;
@@ -486,12 +486,12 @@ function(kbrws,v)
         for i in [1..n-1] do
           Append(l,[[i,n],[n,i]]);
         od;
-    
+
         kbrws!.pairs2check:=l;
       fi;
     end;
 
-    #the stack is a list of pairs of words such that if two words form a pair 
+    #the stack is a list of pairs of words such that if two words form a pair
     #they have to be equivalent, that is, they have to reduce to same word
 
     #TODO
@@ -501,7 +501,7 @@ function(kbrws,v)
 
     #while the stack is non empty
     while not(IsEmpty(s)) do
-    
+
     #VerifyKBDAG(kbdag,kbrws!.tzrules);
       #pop the first rule from the stack
       #use rules available to reduce both sides of rule
@@ -527,10 +527,10 @@ function(kbrws,v)
         #Now we have to check if by adjoining this rule
         #any of the other active ones become redundant
 
-        n:=Length(kbrws!.tzrules); 
+        n:=Length(kbrws!.tzrules);
         # go descending to avoid having to reindex
         for k in [n,n-1..1] do
-          
+
           #if lhs of rule k contains lhs of new rule
           #as a subword then we delete rule k
           #but add it to the stack, since it has to still hold
@@ -547,9 +547,9 @@ function(kbrws,v)
         add_rule([a,b],kbrws);
         kbrws!.reduced := false;
 
-        n:=Length(kbrws!.tzrules); 
+        n:=Length(kbrws!.tzrules);
         for k in [n,n-1..1] do
-          #else if rhs of rule k contains the new rule 
+          #else if rhs of rule k contains the new rule
           #as a subword then we use the new rule
           #to reduce that rhs
           if  PositionSublist(kbrws!.tzrules[k][2],a,0)<>fail then
@@ -569,14 +569,14 @@ end);
 #############################################################################
 ##
 #M  MakeKnuthBendixRewritingSystemConfluent (<KBRWS>)
-##  
+##
 ##  RWS is a Knuth Bendix Rewriting System
 ##  This function takes a Knuth Bendix Rws (ie a set of rules
 ##  and a set of pairs which indicate the rules that
 ##  still have to be checked for confluence) and
 ##  applies the Knuth Bendix algorithm for strigs to it to get a reduced
 ##  confluent rewriting system.
-## 
+##
 ##  Confluence means the following: if w is a word which can be reduced
 ##  using two different rules, say w->u and w->v, then the irreducible forms
 ##  of u and v are the same word.
@@ -588,7 +588,7 @@ end);
 ##  obtain a reduced rws, meaning that there are not redundant rules
 ##
 ##  Note (see Sims, `Computation with finitely presented groups', 1994)
-##  a reduced confluent rewriting system for a semigroup with a given set of 
+##  a reduced confluent rewriting system for a semigroup with a given set of
 ##  generators is unique, under a given ordering.
 InstallGlobalFunction( MakeKnuthBendixRewritingSystemConfluent,
 function ( rws )
@@ -687,7 +687,7 @@ local   pn,lp,rl,p,i;              #loop variables
     i:=kbrws!.pairs2check[p];
     p:=KBOverlaps(i[1],i[2],kbrws,p)+1;
     lp:=Length(kbrws!.pairs2check);
-    if Length(kbrws!.tzrules)>rl 
+    if Length(kbrws!.tzrules)>rl
       or AbsInt(lp-pn)>10000 then
       Info(InfoKnuthBendix,1,Length(kbrws!.tzrules)," rules, ",
 			    lp," pairs");
@@ -719,8 +719,8 @@ function(kbrws)
   local rws;
 
   MakeKnuthBendixRewritingSystemConfluent(kbrws);
-  # if the semigroup of the kbrws does not have a 
-  # ReducedConfluentRws build one from kbrws and then store it in 
+  # if the semigroup of the kbrws does not have a
+  # ReducedConfluentRws build one from kbrws and then store it in
   # the semigroup
   if not HasReducedConfluentRewritingSystem(
            SemigroupOfRewritingSystem(kbrws)) then
@@ -740,9 +740,9 @@ function(kbrws)
   local rws;
 
   MakeKnuthBendixRewritingSystemConfluent(kbrws);
-  # if the monoid of the kbrws does not have a 
-  # ReducedConfluentRws build one from kbrws and then store it in 
-  # the monoid 
+  # if the monoid of the kbrws does not have a
+  # ReducedConfluentRws build one from kbrws and then store it in
+  # the monoid
   if not HasReducedConfluentRewritingSystem(
             MonoidOfRewritingSystem(kbrws)) then
    rws := ReducedConfluentRwsFromKbrwsNC(kbrws);
@@ -790,7 +790,7 @@ end);
 
 
 #############################################################################
-## 
+##
 #M  KnuthBendixRewritingSystem(<fam>)
 #M  KnuthBendixRewritingSystem(<fam>,<wordord>)
 #M  KnuthBendixRewritingSystem(<m>)
@@ -799,10 +799,10 @@ end);
 #M  KnuthBendixRewritingSystem(<s>,<wordord>)
 ##
 ##  creates the Knuth Bendix rewriting system for a family of
-##  word of an fp monoid or semigroup 
+##  word of an fp monoid or semigroup
 ##  using a supplied reduction ordering.
 ##
-##  We also allow using a function giving the ordering 
+##  We also allow using a function giving the ordering
 ##  to assure compatibility with gap4.2
 ##  In that case the function <lteq> should be the less than or equal
 ##  function of a reduction ordering (no checking is performed)
@@ -821,7 +821,7 @@ function(fam,wordord)
 
   kbrws := CreateKnuthBendixRewritingSystem(fam,wordord);
 
-  return kbrws; 
+  return kbrws;
 end);
 
 InstallMethod(KnuthBendixRewritingSystem,
@@ -838,7 +838,7 @@ function(fam,wordord)
 
   kbrws := CreateKnuthBendixRewritingSystem(fam,wordord);
 
-  return kbrws; 
+  return kbrws;
 end);
 
 InstallOtherMethod(KnuthBendixRewritingSystem,
@@ -848,7 +848,7 @@ function(s,wordord)
   local kbrws,fam;
 
   fam := ElementsFamily(FamilyObj(s));
-  return KnuthBendixRewritingSystem(fam,wordord); 
+  return KnuthBendixRewritingSystem(fam,wordord);
 end);
 
 InstallOtherMethod(KnuthBendixRewritingSystem,
@@ -858,7 +858,7 @@ function(m,wordord)
   local kbrws,fam;
 
   fam := ElementsFamily(FamilyObj(m));
-  return KnuthBendixRewritingSystem(fam,wordord); 
+  return KnuthBendixRewritingSystem(fam,wordord);
 end);
 
 InstallOtherMethod(KnuthBendixRewritingSystem,
@@ -887,14 +887,14 @@ end);
 
 
 #############################################################################
-##  
-#M  KnuthBendixRewritingSystem(<m>) 
-## 
+##
+#M  KnuthBendixRewritingSystem(<m>)
+##
 ##  Create the a KB rewriting system for the fp monoid <m> using the
 ##  shortlex order.
-## 
+##
 InstallOtherMethod(KnuthBendixRewritingSystem,
-"for an fp monoid", true, 
+"for an fp monoid", true,
 [IsFpMonoid], 0,
 function(m)
   return KnuthBendixRewritingSystem(m,
@@ -903,7 +903,7 @@ function(m)
 end);
 
 InstallOtherMethod(KnuthBendixRewritingSystem,
-"for an fp semigroup", true, 
+"for an fp semigroup", true,
 [IsFpSemigroup], 0,
 function(s)
   return KnuthBendixRewritingSystem(s,
@@ -913,24 +913,24 @@ end);
 
 
 #############################################################################
-##  
-#M  MonoidOfRewritingSystem(<KB RWS>) 
-## 
+##
+#M  MonoidOfRewritingSystem(<KB RWS>)
+##
 ##  for a Knuth Bendix Rewriting System
 ##  returns the monoid of the rewriting system
 ##
-InstallMethod(MonoidOfRewritingSystem, 
-"for a Knuth Bendix rewriting system", true, 
+InstallMethod(MonoidOfRewritingSystem,
+"for a Knuth Bendix rewriting system", true,
 [IsRewritingSystem and IsBuiltFromMonoid], 0,
 function(kbrws)
   local fam;
-    
+
   fam := FamilyForRewritingSystem(kbrws);
   return CollectionsFamily(fam)!.wholeMonoid;
 end);
 
 #############################################################################
-## 
+##
 #M  SemigroupOfRewritingSystem(<KB RWS>)
 ##
 ##  for a Knuth Bendix Rewriting System
@@ -941,7 +941,7 @@ InstallMethod(SemigroupOfRewritingSystem,
 [IsRewritingSystem and IsBuiltFromSemigroup], 0,
 function(kbrws)
   local fam;
-    
+
   fam := FamilyForRewritingSystem(kbrws);
   return CollectionsFamily(fam)!.wholeSemigroup;
 end);
@@ -985,7 +985,7 @@ end);
 ##
 ##  for a rewriting system rws
 ##  returns the order used by the rewriting system
-##  
+##
 InstallMethod(OrderingOfRewritingSystem,
 "for a Knuth Bendix rewriting system", true,
 [IsKnuthBendixRewritingSystem and IsKnuthBendixRewritingSystemRep], 0,
@@ -999,7 +999,7 @@ end);
 #A  FamilyForRewritingSystem(<rws>)
 ##
 ##  for a rewriting system rws
-## 
+##
 InstallMethod(FamilyForRewritingSystem,
 "for a Knuth Bendix rewriting system", true,
 [IsKnuthBendixRewritingSystem and IsKnuthBendixRewritingSystemRep], 0,
@@ -1014,18 +1014,18 @@ end);
 ##
 ##
 InstallMethod(ViewObj, "for a Knuth Bendix rewriting system", true,
-[IsKnuthBendixRewritingSystem and IsBuiltFromMonoid], 0, 
-function(kbrws) 
-  Print("Knuth Bendix Rewriting System for "); 
+[IsKnuthBendixRewritingSystem and IsBuiltFromMonoid], 0,
+function(kbrws)
+  Print("Knuth Bendix Rewriting System for ");
   Print(MonoidOfRewritingSystem(kbrws));
   Print(" with rules \n");
   Print(Rules(kbrws));
 end);
 
 InstallMethod(ViewObj, "for a Knuth Bendix rewriting system", true,
-[IsKnuthBendixRewritingSystem and IsBuiltFromSemigroup], 0, 
-function(kbrws) 
-  Print("Knuth Bendix Rewriting System for "); 
+[IsKnuthBendixRewritingSystem and IsBuiltFromSemigroup], 0,
+function(kbrws)
+  Print("Knuth Bendix Rewriting System for ");
   Print(SemigroupOfRewritingSystem(kbrws));
   Print(" with rules \n");
   Print(Rules(kbrws));
@@ -1036,7 +1036,7 @@ end);
 ##
 #M ShallowCopy
 ##
-InstallMethod( ShallowCopy, 
+InstallMethod( ShallowCopy,
   "for a Knuth Bendix rewriting system",
   true,
   [IsKnuthBendixRewritingSystem and IsKnuthBendixRewritingSystemRep], 0,
@@ -1062,18 +1062,18 @@ end);
 ##
 #M \=
 ##
-InstallMethod( \=, 
+InstallMethod( \=,
   "for two Knuth-Bendix rewriting systems",
   IsIdenticalObj,
   [IsKnuthBendixRewritingSystem and IsKnuthBendixRewritingSystemRep,
-  IsKnuthBendixRewritingSystem and IsKnuthBendixRewritingSystemRep],0,  
+  IsKnuthBendixRewritingSystem and IsKnuthBendixRewritingSystemRep],0,
   function(rws1,rws2)
-  return 
+  return
     rws1!.family=rws2!.family
     and
     IsSubset(rws1!.tzrules,rws2!.tzrules)
     and
     IsSubset(rws2!.tzrules,rws1!.tzrules)
-    and 
+    and
     rws1!.ordering=rws2!.ordering;
   end);

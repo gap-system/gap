@@ -29,7 +29,7 @@ InstallGlobalFunction( FpGroupPcGroupSQ, function( G )
                 w := w * f[k]^(-v[k]);
             od;
             rels[i][j] := w;
-        od; 
+        od;
         p := RelativeOrderOfPcElement( g, g[i] );
         w := f[i]^p;
         v := ExponentsOfPcElement( g, g[i]^p );
@@ -210,7 +210,7 @@ BindGlobal( "FastExtSQ", function( G, M, c,check )
     z:=Zero(field);
     Mgens := M.generators;
     if Length(Mgens) = 0 then
-        return AbelianGroup( List([1..M.dimension], 
+        return AbelianGroup( List([1..M.dimension],
                               x -> Characteristic(M.field)));
     fi;
     d := Length(Mgens[1]);
@@ -219,7 +219,7 @@ BindGlobal( "FastExtSQ", function( G, M, c,check )
     F:=FreeGroup(IsSyllableWordsFamily,d+n);
     fam:=FamilyObj(One(F));
 
-    orders := Concatenation( RelativeOrders(pcgs), List( [1..d], 
+    orders := Concatenation( RelativeOrders(pcgs), List( [1..d],
                                        x -> Characteristic( field ) ) );
 
     col:=SingleCollector(GeneratorsOfGroup(F),orders);
@@ -299,7 +299,7 @@ end );
 ##
 #M  Extension( G, M, c )
 ##
-InstallMethod( Extension, "generic method for pc groups", true, 
+InstallMethod( Extension, "generic method for pc groups", true,
     [ CanEasilyComputePcgs, IsObject, IsVector ], 0,
 function(G,M,c)
   return FastExtSQ(G, M, c,true );
@@ -312,7 +312,7 @@ end);
 ##
 #M  ExtensionNC( G, M, c )
 ##
-InstallMethod( ExtensionNC, "generic method for pc groups", true, 
+InstallMethod( ExtensionNC, "generic method for pc groups", true,
     [ CanEasilyComputePcgs, IsObject, IsVector ], 0,
 function(G,M,c)
   return FastExtSQ(G, M, c,false );
@@ -324,7 +324,7 @@ end);
 ##
 InstallMethod( Extensions,
     "generic method for pc groups",
-    true, 
+    true,
     [ CanEasilyComputePcgs, IsObject],
     0,
 function( G, M )
@@ -522,7 +522,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
       # search through automorphism group for projection image and reps,
       # then add module automorphisms
       gens:=GeneratorsOfGroup(G);
-      if A=fail then 
+      if A=fail then
         A:=AutomorphismGroup(G);
       fi;
       triso:=IsomorphismPermGroup(A);
@@ -607,7 +607,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 
     Dos:=Size(D);
 
-    # compute stabilizer of K in A 
+    # compute stabilizer of K in A
     if Length( larg ) <= 3 or not larg[4] then
 
       # get kernel of oper
@@ -619,8 +619,8 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
           K1:=CanonicalPcgsWrtFamilyPcgs(Centre(K));
           K1nontriv:=Length(K1)>0;
           K2:=CanonicalPcgsWrtFamilyPcgs(K);
-          f := function( pt, a ) 
-                 return CanonicalPcgsWrtFamilyPcgs(Group(List(pt,i->Image( a[1], i )))); 
+          f := function( pt, a )
+                 return CanonicalPcgsWrtFamilyPcgs(Group(List(pt,i->Image( a[1], i ))));
                end;
         else
           K1:=Centre(K);
@@ -724,7 +724,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 
       elif Size(G)>20000 then
         # if G is too large we cannot write out elements
-        elmlist:=fail; 
+        elmlist:=fail;
         f:=basicact;
       else
 
@@ -874,7 +874,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
       l:=Size(D);
       if Length(gens)>3 then
         # reduce generator number
-        
+
         u:=SmallGeneratingSet(D);
         if IsSubset(gens,u) then
           Info( InfoMatOrb, 3, "Reduce generators subset");
@@ -906,9 +906,9 @@ end );
 #F MatrixOperationOfCPGroup( cc, gens )
 ##
 MatrixOperationOfCPGroup := function( cc, gens  )
-    local mats, base, pcgs, ords, imgs, n, d, fpgens, fprels, H, pcgsH, 
+    local mats, base, pcgs, ords, imgs, n, d, fpgens, fprels, H, pcgsH,
     l, g, imgl, k, i, j, rel, tail, m, tails, prei, h,field;
- 
+
 
     mats := List( gens, x -> [] );
     base := Basis( Image( cc.cohom ) );
@@ -930,11 +930,11 @@ MatrixOperationOfCPGroup := function( cc, gens  )
         H := ExtensionSQ( cc.collector, cc.group, cc.module, prei[h] );
         pcgsH := Pcgs( H );
 
-        # loop over generators 
+        # loop over generators
         for l in [1..Length(gens)] do
             g := gens[l];
             imgl := List( imgs[l], x -> MappedPcElement( x, pcgs, pcgsH ) );
-            
+
             if imgl <> pcgs then
 
                 # compute tails of relators in H
@@ -949,7 +949,7 @@ MatrixOperationOfCPGroup := function( cc, gens  )
                         tail := MappedWord( rel, fpgens, imgl );
 
                         # conjugating element
-                        if not IsBound( cc.module.isCentral ) or 
+                        if not IsBound( cc.module.isCentral ) or
                            not cc.module.isCentral then
                             if i = j then
                                 m := imgl[i]^ords[i];
@@ -996,7 +996,7 @@ end;
 ##
 InstallMethod( ExtensionRepresentatives,
     "generic method for pc groups",
-    true, 
+    true,
     [ CanEasilyComputePcgs, IsRecord, IsGroup ],
     0,
 function( G, M, C )
@@ -1045,13 +1045,13 @@ end;
 MatOrbs := function( mats, dim, field )
     local p, q, r, l, n, seen, reps, rest, i, v, orb, j, w, im, h, mat, rep;
 
-    # set up 
+    # set up
     p := Characteristic( field );
     q := p^dim;
     r := p^dim - 1;
     l := List( [1..dim], x -> p );
     n := Length( mats );
-   
+
     # set up large boolean list
     seen := [];
     seen[q] := false;
@@ -1092,7 +1092,7 @@ end;
 
 #############################################################################
 ##
-#F NonSplitExtensions( G, M [, reduce] ) 
+#F NonSplitExtensions( G, M [, reduce] )
 ##
 NonSplitExtensions := function( arg )
     local G, M, C, cc, cohom, mats, CP, all, red, c;
@@ -1122,18 +1122,18 @@ NonSplitExtensions := function( arg )
     # if reduction is suppressed
     elif IsBound( arg[3] ) and not arg[3] then
         all := NormedRowVectors( Image(cc.cohom) );
-        all := List( all, x -> ExtensionSQ(cohom.collector, G, M, 
+        all := List( all, x -> ExtensionSQ(cohom.collector, G, M,
                                PreImagesRepresentative(cc.cohom,x )));
         red := false;
 
     # sometimes we do not want to reduce
-    elif not IsBound( arg[3] ) 
+    elif not IsBound( arg[3] )
         and Size(Image(cc.cohom)) < 10
         and not (HasIsFrattiniFree( G ) and IsFrattiniFree( G ))
         and not HasAutomorphismGroup( G )
     then
         all := NormedRowVectors( Image(cc.cohom) );
-        all := List( all, x -> ExtensionSQ(cc.collector, G, M, 
+        all := List( all, x -> ExtensionSQ(cc.collector, G, M,
                                PreImagesRepresentative(cc.cohom, x )));
         red := false;
 
@@ -1152,7 +1152,7 @@ NonSplitExtensions := function( arg )
         Info( InfoExtReps, 2, "   Ext: found ",Length(all)," orbits ");
 
         # create extensions and add info
-        all := List( all, x -> ExtensionSQ(cc.collector, G, M, 
+        all := List( all, x -> ExtensionSQ(cc.collector, G, M,
                                PreImagesRepresentative(cc.cohom, x )));
     fi;
 
@@ -1173,7 +1173,7 @@ end;
 ##
 InstallMethod( SplitExtension,
     "generic method for pc groups",
-    true, 
+    true,
     [ CanEasilyComputePcgs, IsObject ],
     0,
 function( G, M )
@@ -1182,13 +1182,13 @@ end );
 
 InstallOtherMethod( SplitExtension,
     "generic method for pc groups",
-    true, 
+    true,
     [ CanEasilyComputePcgs, IsObject, CanEasilyComputePcgs ],
     0,
 function( G, aut, N )
     local pcgsG, fpg, n, gensG, pcgsN, fpn, d, gensN, F, gensF, relators,
           rel, new, g, e, t, l, i, j, k, H, m, relsN, relsG;
-    
+
     pcgsG := Pcgs( G );
     fpg   := Range( IsomorphismFpGroupByPcgs( pcgsG, "g" ) );
     n     := Length( pcgsG );
@@ -1200,7 +1200,7 @@ function( G, aut, N )
     d     := Length( pcgsN );
     gensN := GeneratorsOfGroup( FreeGroupOfFpGroup( fpn ) );
     relsN := RelatorsOfFpGroup( fpn );
-   
+
     F := FreeGroup(IsSyllableWordsFamily, n + d );
     gensF := GeneratorsOfGroup( F );
     relators := [];
@@ -1226,12 +1226,12 @@ function( G, aut, N )
             for k in [1..d] do
                 t := t * gensF[n+k]^e[k];
             od;
-            
+
             # add new relator
             Add( relators, l * t );
         od;
     od;
-            
+
     # relators of N
     for rel in relsN do
         new := MappedWord( rel, gensN, gensF{[n+1..n+d]} );

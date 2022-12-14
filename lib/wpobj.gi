@@ -13,13 +13,13 @@
 
 #############################################################################
 ##
-#M  <wp> [<pos>]  access function for weak pointer objects   
+#M  <wp> [<pos>]  access function for weak pointer objects
 ##
 ##  We cannot use the kernel function directly, as it returns fail for unbound
 ##  see comments in wpobj.gd for the reason.
 ##
 
-InstallMethod(\[\], 
+InstallMethod(\[\],
         "method for a weak pointer object",
         true,
         [ IsWeakPointerObject, IsPosInt ],
@@ -39,19 +39,19 @@ end);
 #M <wp> [<pos>] := <obj>  weak pointer object member assignment
 ##
 
-InstallMethod(\[\]\:\=, 
+InstallMethod(\[\]\:\=,
         "method for a weak pointer object",
         true,
         [ IsWeakPointerObject and IsMutable, IsPosInt, IsObject ],
         0,
         SetElmWPObj);
-        
+
 #############################################################################
 ##
 #M  Length( <wp> ) note that the answer may not stay valid
 ##
 
-InstallMethod(Length, 
+InstallMethod(Length,
         "method for a weak pointer object",
         true,
         [ IsWeakPointerObject ],
@@ -63,7 +63,7 @@ InstallMethod(Length,
 #M  IsBound(<wp>[<pos>]) note that the answer may not stay valid
 ##
 
-InstallMethod(IsBound\[\], 
+InstallMethod(IsBound\[\],
         "method for a weak pointer object",
         true,
         [ IsWeakPointerObject, IsPosInt ],
@@ -73,10 +73,10 @@ InstallMethod(IsBound\[\],
 
 #############################################################################
 ##
-#M  Unbind(<wp>[<pos>]) 
+#M  Unbind(<wp>[<pos>])
 ##
 
-InstallMethod(Unbind\[\], 
+InstallMethod(Unbind\[\],
         "method for a weak pointer object",
         true,
         [ IsWeakPointerObject and IsMutable, IsPosInt ],
@@ -90,7 +90,7 @@ InstallMethod(Unbind\[\],
 ##  objects cannot be printed
 ##
 
-InstallMethod(PrintObj,   
+InstallMethod(PrintObj,
         "method for a weak pointer object",
         true,
         [ IsWeakPointerObject ],
@@ -121,7 +121,7 @@ end);
 ##  objects cannot be printed
 ##
 
-InstallMethod(ViewObj,   
+InstallMethod(ViewObj,
         "method for a weak pointer object",
         true,
         [ IsWeakPointerObject ],
@@ -149,7 +149,7 @@ end);
 
 #############################################################################
 ##
-#M  ShallowCopy(<wp>)  
+#M  ShallowCopy(<wp>)
 ##
 ##  Note that we do not use wp[i] access (see wpobj.gd for explanation)
 ##

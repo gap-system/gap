@@ -221,7 +221,7 @@ DeclareRepresentation( "IsSyllableAssocWordRep",
 ##  <#/GAPDoc>
 ##
 if IsHPCGAP then
-DeclareRepresentation( "IsLetterAssocWordRep", 
+DeclareRepresentation( "IsLetterAssocWordRep",
                        IsAssocWord and IsAtomicPositionalObjectRep, [] );
 else
 DeclareRepresentation( "IsLetterAssocWordRep",
@@ -258,7 +258,7 @@ DeclareRepresentation( "IsWLetterAssocWordRep", IsLetterAssocWordRep, [] );
 ##  <Filt Name="IsLetterWordsFamily" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  A letter word family stores words by default in letter form. 
+##  A letter word family stores words by default in letter form.
 ##  <P/>
 ##  Internally, there are letter representations that use integers (4 Byte)
 ##  to represent a generator and letter representations that use single bytes
@@ -377,9 +377,9 @@ InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
 ##  <Oper Name="AssignGeneratorVariables" Arg='G'/>
 ##
 ##  <Description>
-##  If <A>G</A> is a group, whose generators are represented by symbols (for 
+##  If <A>G</A> is a group, whose generators are represented by symbols (for
 ##  example a free group, a finitely presented group or a pc group) this
-##  function assigns these generators to global variables with the same 
+##  function assigns these generators to global variables with the same
 ##  names.
 ##  <P/>
 ##  The aim of this function is to make it easy in interactive use to work

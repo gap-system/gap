@@ -161,7 +161,7 @@ DeclareAttribute( "DirectFactorsOfGroup", IsGroup );
 ##  <Attr Name="CharacteristicFactorsOfGroup" Arg="G"/>
 ##
 ##  <Description>
-##    For a finite group this function returns a list 
+##    For a finite group this function returns a list
 ##    of characteristic subgroups [<M>G_1</M>, .., <M>G_r</M>] such
 ##    that <A>G</A> = <M>G_1</M> x .. x <M>G_r</M> and none of the <M>G_i</M>
 ##    is a direct product of characteristic subgroups.
@@ -196,7 +196,7 @@ DeclareAttribute( "CharacteristicFactorsOfGroup", IsGroup );
 ##    (4) <G> = <G1> * .. * <Gr> as the complex product.
 ##    (5) $Gi \cap (G1 * .. * G_{i-1} * G_{i+1} * .. * Gr) = 1$.
 ##
-##  Factorization of a permutation group into a direct product 
+##  Factorization of a permutation group into a direct product
 ##  ==========================================================
 ##
 ##  Def.: Seien G1, .., Gr endliche Gruppen, dann ist
@@ -233,24 +233,24 @@ DeclareAttribute( "CharacteristicFactorsOfGroup", IsGroup );
 ##  Remark:
 ##   The normal subgroup lattice of G does not contain
 ##   all the information needed for the normal subgroup lattice
-##   of G2 for a decomposition G = G1 x G2. However let 
+##   of G2 for a decomposition G = G1 x G2. However let
 ##   G = G1 x .. x Gr be finest direct product decomposition
 ##   then all Gi are normal subgroups in G. Thus all Gi occur in
-##   the set NormalSubgroups(G) and we may split G recursively 
+##   the set NormalSubgroups(G) and we may split G recursively
 ##   without recomputing normal subgroup lattices for factors.
 ##
 ##  Method to enumerate factorizations given the divisors:
 ##   Consider a strictly increasing chain
 ##     1  <  a1 < a2 < .. < a_n  <  A
-##   of positive divisors of an integer A. 
+##   of positive divisors of an integer A.
 ##   The task is to enumerate all pairs 1 <= i <= j <= n
 ##   such that a_i*a_j = A. This is done by
 ##
-##   i := 1;  
+##   i := 1;
 ##   j := n;
-##   while i <= j do                   
-##     while j > i and a_i*a_j > A do 
-##       j := j-1; 
+##   while i <= j do
+##     while j > i and a_i*a_j > A do
+##       j := j-1;
 ##     end while;
 ##     if a_i*a_j = A then
 ##       "found i <= j with a_i*a_j = A"
@@ -260,11 +260,11 @@ DeclareAttribute( "CharacteristicFactorsOfGroup", IsGroup );
 ##
 ##   which is based on the following fact:
 ##   Lemma:
-##      Let i1 <= j1, i2 <= j2 be such that 
+##      Let i1 <= j1, i2 <= j2 be such that
 ##      a_i1*a_j1 = a_i2*a_j2 = A, then
 ##        i2 > i1 ==> j2 < j1.
 ##   Proof:
-##      i2 > i1 
+##      i2 > i1
 ##      ==> a_i2 > a_i1  by strictly increasing a's
 ##      ==> a_i1*a_j1 = A = a_i2*a_j2 > a_i1*a_j2 by *a_j2
 ##      ==> a_j1 > a_j2 by /a_i1
@@ -363,7 +363,7 @@ DeclareGlobalFunction( "SemidirectDecompositionsOfFiniteGroup" );
 ##
 ##  Literatur:
 ##    [1] Huppert Bd. I, Springer 1983.
-##    [2] M. Hall: Theory of Groups. 2nd ed., 
+##    [2] M. Hall: Theory of Groups. 2nd ed.,
 ##        Chelsea Publ. Co., 1979 NY.
 ##
 ##  Zerlegung eines semidirekten Produkts, Grundlagen
@@ -381,7 +381,7 @@ DeclareGlobalFunction( "SemidirectDecompositionsOfFiniteGroup" );
 ##      (1) |H| * |N| = |G| und
 ##      (2) |H meet N| = 1.
 ##    Dann gibt es ein f mit G = H semidirect[f] N.
-##  Bew.: [2], Th. 6.5.3. 
+##  Bew.: [2], Th. 6.5.3.
 ##
 ##  Lemma2:
 ##    Sei G = H semidirect[phi] N und h in H, n in N, dann ist auch
@@ -414,7 +414,7 @@ DeclareAttribute( "SemidirectDecompositions", IsGroup );
 ##    A <E>decomposition type</E> <A>type</A> is denoted by a specification
 ##    of the form
 ##    <Log><![CDATA[
-##    <type> ::= 
+##    <type> ::=
 ##      <integer>                 ; cyclic group of prime power order
 ##    | ["non-split", <integer>]  ; non-split extension; size annotated
 ##    | ["x", <type>, .., <type>] ; non-trivial direct product (ass., comm.)
@@ -498,7 +498,7 @@ InstallTrueMethod( IsGeneralisedQuaternionGroup, HasGeneralisedQuaternionGenerat
 ##  <Attr Name="QuasiDihedralGenerators" Arg="G"/>
 ##
 ##  <Description>
-##    Indicates whether the group <A>G</A> is a quasidihedral group 
+##    Indicates whether the group <A>G</A> is a quasidihedral group
 ##    of size <M>N = 2^(k+1)</M>, <M>k >= 2</M>. If it is, methods may set
 ##    the attribute <C>QuasiDihedralGenerators</C> to [<A>t</A>,<A>s</A>],
 ##    where <A>t</A> and <A>s</A> are two elements such that <A>G</A> =
@@ -531,11 +531,11 @@ InstallTrueMethod( IsGroup, IsPSL );
 
 #############################################################################
 ##
-#A  ParametersOfGroupViewedAsPSL 
-#A  ParametersOfGroupViewedAsSL  
+#A  ParametersOfGroupViewedAsPSL
+#A  ParametersOfGroupViewedAsSL
 #A  ParametersOfGroupViewedAsGL
 ##
-##  triples (n,p,e) such that the group is isomorphic to PSL(n,p^e), SL(n,p^e) 
+##  triples (n,p,e) such that the group is isomorphic to PSL(n,p^e), SL(n,p^e)
 ##  and GL(n,p^e) respectively
 ##
 ##  <ManSection>
@@ -607,7 +607,7 @@ DeclareAttribute( "GLUnderlyingField", IsGroup );
 ##      |GL(n, p, e)|  = Product(p^(e n) - p^(e k) : k in [0..n-1])
 ##      |SL(n, p, e)|  = |GL(n, p, e)| / (p^e - 1)
 ##      |PSL(n, p, e)| = |SL(n, p, e)| / gcd(p^e - 1, n)
-##  
+##
 DeclareGlobalFunction( "SizeGL" );
 DeclareGlobalFunction( "SizeSL" );
 DeclareGlobalFunction( "SizePSL" );
@@ -631,7 +631,7 @@ DeclareGlobalFunction( "SizePSL" );
 ##  </ManSection>
 ##
 ##  Lemma (o.B.):
-##  Es bezeichne 
+##  Es bezeichne
 ##
 ##    gl(n, p, e)  = Product(p^(e n) - p^(e k) : k in [0..n-1])
 ##    sl(n, p, e)  = gl(n, p, e) / (p^e - 1)
@@ -647,15 +647,15 @@ DeclareGlobalFunction( "SizePSL" );
 ##  und in diesen F"allen sind die dazugeh"origen Gruppen auch
 ##  isomorph. Dar"uberhinaus existieren genau die folgenden
 ##  sporadischen "Ubereinstimmungen
-##  
+##
 ##    psl(2, 2, 2) = psl(2, 5, 1) = 60    ; PSL(2, 4) ~= PSL(2, 5) ~= A5
 ##    psl(2, 7, 1) = psl(3, 2, 1) = 168   ; PSL(2, 7) ~= PSL(3, 2)
 ##    psl(4, 2, 1) = psl(3, 2, 2) = 20160 ; PSL(4, 2) not~= PSL(3, 4)
-##   
-##  wobei in den ersten beiden F"allen die dazugeh"origen Gruppen 
+##
+##  wobei in den ersten beiden F"allen die dazugeh"origen Gruppen
 ##  isomorph sind, im letzten Fall aber nicht! Die Gruppen PSL(4, 2)
 ##  und PSL(3, 4) sind "uber das Zentrum ihrer 2-Sylowgruppen
-##  unterscheidbar (Huppert: S.185). 
+##  unterscheidbar (Huppert: S.185).
 ##  Es bezeichne Z1, Z2 die Zentren der 2-Sylowgruppen von PSL(4, 2)
 ##  bzw. PSL(3, 4). Dann ist |Z1| = 2 und |Z2| = 4.
 ##
@@ -692,7 +692,7 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##  the following form: <P/>
 ##  <Listing><![CDATA[
 ##    StructureDescription(<G>) ::=
-##        1                                 ; trivial group 
+##        1                                 ; trivial group
 ##      | C<size>                           ; finite cyclic group
 ##      | Z                                 ; infinite cyclic group
 ##      | A<degree>                         ; alternating group
@@ -875,7 +875,7 @@ DeclareGlobalFunction( "LinearGroupParameters" );
 ##    "20x2", "5xD8", "5xQ8", "2x(5:4)", "2^2xD10", "10x2^2" ]
 ##  gap> List(AllTransitiveGroups(DegreeAction,6),
 ##  >         G->StructureDescription(G:short));
-##  [ "6", "S3", "D12", "A4", "3xS3", "2xA4", "S4", "S4", "S3xS3", 
+##  [ "6", "S3", "D12", "A4", "3xS3", "2xA4", "S4", "S4", "S3xS3",
 ##    "(3^2):4", "2xS4", "A5", "(S3xS3):2", "S5", "A6", "S6" ]
 ##  gap> StructureDescription(SmallGroup(504,7));
 ##  "C7 : (C9 x Q8)"

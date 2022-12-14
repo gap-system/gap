@@ -10,7 +10,7 @@
 ##
 ##  This file contains a constructor specifically for sparse vectors
 ##  in the sorted list representation and associated arithmetic methods
-##  
+##
 ##
 
 
@@ -21,7 +21,7 @@
 ##
 ##
 
-InstallGlobalFunction(SparseVectorBySortedListNC, 
+InstallGlobalFunction(SparseVectorBySortedListNC,
         function(arg)
     local poss, vals, length, z,l;
     poss := arg[1];
@@ -82,13 +82,13 @@ end);
 
 #############################################################################
 ##
-#M  ZeroOp                 
+#M  ZeroOp
 ##
 
-InstallMethod(ZeroMutable, [IsSparseRowVector and IsSparseListBySortedListRep and IsAdditiveElement], 
+InstallMethod(ZeroMutable, [IsSparseRowVector and IsSparseListBySortedListRep and IsAdditiveElement],
         s-> SparseVectorBySortedListNC([],[],s![SL_LENGTH], s![SL_DEFAULT]));
 
-InstallMethod(ZeroSameMutability, [IsSparseRowVector and IsSparseListBySortedListRep and IsAdditiveElement], 
+InstallMethod(ZeroSameMutability, [IsSparseRowVector and IsSparseListBySortedListRep and IsAdditiveElement],
         function(s)
     local v;
     v := SparseVectorBySortedListNC([],[],s![SL_LENGTH], s![SL_DEFAULT]);
@@ -99,12 +99,12 @@ InstallMethod(ZeroSameMutability, [IsSparseRowVector and IsSparseListBySortedLis
 end);
 
 
-    
+
 InstallMethod(AdditiveInverseOp, [IsSparseRowVector and IsSparseListBySortedListRep],
         s-> SparseVectorBySortedListNC(s![SL_POSS], AdditiveInverseOp(s![SL_VALS]),
                 s![SL_LENGTH], s![SL_DEFAULT]));
 
-InstallMethod(AdditiveInverseSameMutability, [IsSparseRowVector and IsSparseListBySortedListRep and IsAdditiveElement], 
+InstallMethod(AdditiveInverseSameMutability, [IsSparseRowVector and IsSparseListBySortedListRep and IsAdditiveElement],
         function(s)
     local v;
     v := SparseVectorBySortedListNC(s![SL_POSS], AdditiveInverseOp(s![SL_VALS]),
@@ -115,7 +115,7 @@ InstallMethod(AdditiveInverseSameMutability, [IsSparseRowVector and IsSparseList
     return v;
 end);
 
-InstallMethod(\+, IsIdenticalObj, [IsSparseRowVector and IsSparseListBySortedListRep, IsSparseRowVector and IsSparseListBySortedListRep], 
+InstallMethod(\+, IsIdenticalObj, [IsSparseRowVector and IsSparseListBySortedListRep, IsSparseRowVector and IsSparseListBySortedListRep],
         function(s1,s2)
     local i1,i2, rposs, rvals,poss1,poss2,vals1,vals2, len1,len2,s;
     i1 := 1;
@@ -156,14 +156,14 @@ InstallMethod(\+, IsIdenticalObj, [IsSparseRowVector and IsSparseListBySortedLis
         Add(rposs,poss2[i2]);
         Add(rvals,vals2[i2]);
         i2 := i2+1;
-    od;        
+    od;
     return SparseVectorBySortedListNC( rposs, rvals,
-                   Maximum(s1![SL_LENGTH], s2![SL_LENGTH]), 
+                   Maximum(s1![SL_LENGTH], s2![SL_LENGTH]),
                    s1![SL_DEFAULT]);
 end);
-            
-InstallOtherMethod(AddRowVector, IsIdenticalObj, [IsSparseRowVector and IsSparseListBySortedListRep and IsMutable, 
-        IsSparseRowVector and IsSparseListBySortedListRep], 
+
+InstallOtherMethod(AddRowVector, IsIdenticalObj, [IsSparseRowVector and IsSparseListBySortedListRep and IsMutable,
+        IsSparseRowVector and IsSparseListBySortedListRep],
         function(s1,s2)
     local i1,i2, rposs, rvals,poss1,poss2,vals1,vals2, len1,len2,s;
     if s1![SL_LENGTH] <> s2![SL_LENGTH] then
@@ -207,14 +207,14 @@ InstallOtherMethod(AddRowVector, IsIdenticalObj, [IsSparseRowVector and IsSparse
         Add(rposs,poss2[i2]);
         Add(rvals,vals2[i2]);
         i2 := i2+1;
-    od;        
+    od;
     s1![SL_POSS] := rposs;
     s1![SL_VALS] := rvals;
     return;
 end);
 
-InstallOtherMethod(AddRowVector, IsFamFamX, [IsSparseRowVector and IsSparseListBySortedListRep and IsMutable, 
-        IsSparseRowVector and IsSparseListBySortedListRep, IsMultiplicativeElement], 
+InstallOtherMethod(AddRowVector, IsFamFamX, [IsSparseRowVector and IsSparseListBySortedListRep and IsMutable,
+        IsSparseRowVector and IsSparseListBySortedListRep, IsMultiplicativeElement],
         function(s1,s2,x)
     local i1,i2, rposs, rvals,poss1,poss2,vals1,vals2, len1,len2,s;
     if s1![SL_LENGTH] <> s2![SL_LENGTH] then
@@ -258,12 +258,12 @@ InstallOtherMethod(AddRowVector, IsFamFamX, [IsSparseRowVector and IsSparseListB
         Add(rposs,poss2[i2]);
         Add(rvals,vals2[i2]*x);
         i2 := i2+1;
-    od;        
+    od;
     s1![SL_POSS] := rposs;
     s1![SL_VALS] := rvals;
     return;
 end);
-            
+
 InstallMethod(DIFF, [IsSparseRowVector and IsSparseListBySortedListRep, IsSparseRowVector and IsSparseListBySortedListRep],
         function(v1,v2) return SUM(v1, AINV(v2)); end);
 
@@ -275,7 +275,7 @@ end);
 
 InstallMethod( \*, [IsSparseRowVector and IsSparseListBySortedListRep, IsMultiplicativeElement],
         function(v,x)
-    if IsList(x) then 
+    if IsList(x) then
         TryNextMethod();
     fi;
     if x = v![SL_DEFAULT] then
@@ -284,10 +284,10 @@ InstallMethod( \*, [IsSparseRowVector and IsSparseListBySortedListRep, IsMultipl
     return SparseVectorBySortedListNC( v![SL_POSS], v![SL_VALS]*x,
                    v![SL_LENGTH], v![SL_DEFAULT]);
 end);
-    
+
 InstallMethod( \*, [IsMultiplicativeElement, IsSparseRowVector and IsSparseListBySortedListRep],
         function(x,v)
-    if IsList(x) then 
+    if IsList(x) then
         TryNextMethod();
     fi;
     if x = v![SL_DEFAULT] then
@@ -332,20 +332,20 @@ InstallMethod( ShallowCopy, [IsSparseRowVector and IsSparseListBySortedListRep],
 
 InstallMethod( DefaultRingByGenerators, [IsSparseRowVector and
         IsSparseListBySortedListRep],
-        function(s) 
-    if Length(s![SL_VALS]) > 0 then 
+        function(s)
+    if Length(s![SL_VALS]) > 0 then
         return DefaultRing(s![SL_VALS]);
-    else 
+    else
         return DefaultRing([s![SL_DEFAULT]]);
     fi;
 end );
 
 InstallMethod( DefaultFieldByGenerators, [IsSparseRowVector and
         IsSparseListBySortedListRep],
-        function(s) 
-    if Length(s![SL_VALS]) > 0 then 
+        function(s)
+    if Length(s![SL_VALS]) > 0 then
         return DefaultField(s![SL_VALS]);
-    else 
+    else
         return DefaultField([s![SL_DEFAULT]]);
     fi;
 end );
@@ -404,13 +404,13 @@ InstallOtherMethod( AddCoeffs, IsIdenticalObj, [IsSparseListBySortedListRep and
         Add(rposs,poss2[i2]);
         Add(rvals,vals2[i2]);
         i2 := i2+1;
-    od;        
+    od;
     s1![SL_POSS] := rposs;
     s1![SL_VALS] := rvals;
     s1![SL_LENGTH] := llen;
     return;
 end);
-        
+
 InstallOtherMethod( AddCoeffs, IsFamFamX, [IsSparseListBySortedListRep and
         IsSparseRowVector and IsMutable,IsSparseListBySortedListRep and
         IsSparseRowVector, IsMultiplicativeElement],
@@ -468,10 +468,10 @@ InstallOtherMethod( AddCoeffs, IsFamFamX, [IsSparseListBySortedListRep and
         Add(rposs,poss2[i2]);
         Add(rvals,x*vals2[i2]);
         i2 := i2+1;
-    od;        
+    od;
     s1![SL_POSS] := rposs;
     s1![SL_VALS] := rvals;
     s1![SL_LENGTH] := llen;
     return;
 end);
-        
+

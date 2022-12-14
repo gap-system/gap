@@ -134,7 +134,7 @@ function(G,dom,all)
   fi;
   savemem:=ValueOption("savemem");
   n:=Length(dom);
-  if n>20 and ForAll(dom,x->IsSubset(G,x)) 
+  if n>20 and ForAll(dom,x->IsSubset(G,x))
     and NrMovedPoints(G)>1000 then
     #and NrMovedPoints(G)*1000>Size(G) then
 
@@ -162,7 +162,7 @@ function(G,dom,all)
     Add(ptbas,p);
     b:=Set(Orbit(dom[1],p));
     un:=Union(un,b);
-    if ForAny([1..Length(dom)],x->Set(Orbit(dom[x],p))<>b 
+    if ForAny([1..Length(dom)],x->Set(Orbit(dom[x],p))<>b
       and ForAll([1..Length(pbas)],z->domo[x][z]=domo[1][z]))
        then
       Add(pbas,p);
@@ -182,7 +182,7 @@ function(G,dom,all)
   #domoj:=List([1..Length(pbas)],x->domo{[1..Length(domo)]}[x]);
   domoj:=List([1..Length(pbas)],x->List([1..Length(allo)],
 	  y->Filtered([1..Length(dom)],z->domo[z][x]=y)));
-              
+
 
   b:=BlistList([1..l],[1..n]);
   ll:=QuoInt(Size(G),Minimum(List(dom,Size)));
@@ -207,7 +207,7 @@ function(G,dom,all)
       gp:=t;
     fi;
     r:=rec(representative:=gp,pos:=p);
-    if ll<20 and IndexNC(G,gp)<10000 and lsd*20<Length(dom) then 
+    if ll<20 and IndexNC(G,gp)<10000 and lsd*20<Length(dom) then
       t:=OrbitStabilizer(G,gp);
       ll:=Length(t.orbit);
       Info(InfoLattice,5,"orblen=",ll);
@@ -429,7 +429,7 @@ end);
 ##
 ##  subgroup stabilizer
 InstallMethod( StabilizerOp, "with domain, use normalizer", true,
-    [ IsGroup, IsList, IsGroup, IsList, IsList, IsFunction ], 
+    [ IsGroup, IsList, IsGroup, IsList, IsList, IsFunction ],
     # raise over special methods for pcgs et. al.
     200,
 function( G, D, sub, U, V, op )
@@ -440,7 +440,7 @@ function( G, D, sub, U, V, op )
 end );
 
 InstallOtherMethod( StabilizerOp, "use normalizer", true,
-    [ IsGroup, IsGroup, IsList, IsList, IsFunction ], 
+    [ IsGroup, IsGroup, IsList, IsList, IsFunction ],
     # raise over special methods for pcgs et. al.
     200,
 function( G, sub, U, V, op )
@@ -641,7 +641,7 @@ local pats,spats,lpats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,
 		      lrep1:=RepresentativeAction(allorbs[k][5][m][1],
 			allorbs[k][1]{sela},partimg,OnSetsSets);
 		    fi;
-		    if lrep1=fail then 
+		    if lrep1=fail then
   #if RepresentativeAction(je[1],allorbs[k][1],orbs,OnSetsSets)<>fail then Error("HEH");fi;
 		      lrep:=fail;
 		    else

@@ -104,7 +104,7 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
         Add(outp, JoinStringsWithSeparator(lines{[1..i-1]}, "\n"));
         Add(outp[1], '\n');
       fi;
-    elif Length(lines[i]) = 0 and ignorecomments = true and i < Length(lines) 
+    elif Length(lines[i]) = 0 and ignorecomments = true and i < Length(lines)
          and StartsWith(lines[i+1], "#") then
       # ignore an empty line followed by comment lines
       Add(ign, i);
@@ -320,16 +320,16 @@ InstallGlobalFunction(CREATE_LOCAL_VARIABLES_BAG, function(namelist)
     return EvalString(func);
 end);
 
-##  
+##
 ##  <#GAPDoc Label="Test">
 ##  <ManSection>
 ##  <Func Name="Test" Arg='fname[, optrec]'/>
 ##  <Returns><K>true</K> or <K>false</K>.</Returns>
 ##  <Description>
-##  The argument <Arg>fname</Arg> must be the name of a file or an 
+##  The argument <Arg>fname</Arg> must be the name of a file or an
 ##  open input stream. The content of this file or stream should contain
 ##  &GAP; input and output. The function <Ref Func="Test" /> runs the input
-##  lines, compares the actual output with the output stored in 
+##  lines, compares the actual output with the output stored in
 ##  <Arg>fname</Arg> and reports differences. With an optional record as
 ##  argument <Arg>optrec</Arg> details of this process can be adjusted.
 ##  Note that the <C>rewriteToFile</C> option is especially useful for
@@ -337,7 +337,7 @@ end);
 ##  <P/>
 ##  More precisely, the content of <Arg>fname</Arg> must have the following
 ##  format. <Br/>
-##  Lines starting with <C>"gap> "</C> are considered as &GAP; input, 
+##  Lines starting with <C>"gap> "</C> are considered as &GAP; input,
 ##  they can be followed by lines starting with <C>"> "</C> if the input is
 ##  continued over several lines. <Br/>
 ##  To allow for comments in <Arg>fname</Arg> the following lines are ignored
@@ -370,7 +370,7 @@ end);
 ##  ]]></Log>
 ##  </Item>
 ##  <Mark>#@exec gapcode</Mark>
-##  <Item>Execute the code <C>gapcode</C> before any test in the input is run. 
+##  <Item>Execute the code <C>gapcode</C> before any test in the input is run.
 ##  This allows defining global variables when using <C>#@local</C>.
 ##  </Item>
 ##  <Mark>#@if EXPR ...  [#@else] ... #@fi</Mark>
@@ -402,7 +402,7 @@ end);
 ##  </Item>
 ##  </List>
 ##  By default the actual &GAP; output is compared exactly with the
-##  stored output, and if these are different some information about the 
+##  stored output, and if these are different some information about the
 ##  differences is printed.
 ##  <P/>
 ##  If any differences are found then <Ref Func="Test" /> returns <K>false</K>,
@@ -457,15 +457,15 @@ end);
 ##  </Item>
 ##  <Mark><C>writeTimings</C></Mark>
 ##  <Item>If this is bound to a string it is considered as a file name,
-##  that file is written and contains timing information for each input 
+##  that file is written and contains timing information for each input
 ##  in <Arg>fname</Arg>. </Item>
 ##  <Mark><C>compareTimings</C></Mark>
-##  <Item>If this is bound to a string it is considered as name of a file to 
+##  <Item>If this is bound to a string it is considered as name of a file to
 ##  which timing information was stored via <C>writeTimings</C> in a previous
-##  call. The new timings are compared to the stored ones. 
-##  By default only commands which take more than a threshold of 
+##  call. The new timings are compared to the stored ones.
+##  By default only commands which take more than a threshold of
 ##  100 milliseconds are considered, and only differences of more than 20% are
-##  considered significant. These defaults can be overwritten by assigning a 
+##  considered significant. These defaults can be overwritten by assigning a
 ##  list <C>[timingfile, threshold, percentage]</C> to this component.
 ##  (The default of <C>compareTimings</C> is <K>false</K>.)</Item>
 ##  <Mark><C>reportTimeDiff</C></Mark>
@@ -478,7 +478,7 @@ end);
 ##  input starting with <C>"STOP_TEST"</C> is not checked.</Item>
 ##  <!--  don't document now, needs some work to become useful
 ##  <Mark><C>breakOnError</C></Mark>
-##  <Item>If this is <K>true</K> then &GAP; enters a break loop in case of 
+##  <Item>If this is <K>true</K> then &GAP; enters a break loop in case of
 ##  an error (default is <K>false</K>).</Item>
 ##  -->
 ##  <Mark><C>showProgress</C></Mark>
@@ -497,10 +497,10 @@ end);
 ##  lines of the test file which had differences in their output, instead
 ##  of returning <K>true</K> or <K>false</K>.</Item>
 ##  </List>
-## 
+##
 ##  <Log><![CDATA[
 ##  gap> tnam := Filename(DirectoriesLibrary(), "../doc/ref/demo.tst");;
-##  gap> mask := function(str) return Concatenation("| ", 
+##  gap> mask := function(str) return Concatenation("| ",
 ##  >          JoinStringsWithSeparator(SplitString(str, "\n", ""), "\n| "),
 ##  >          "\n"); end;;
 ##  gap> Print(mask(StringFile(tnam)));
@@ -508,7 +508,7 @@ end);
 ##  | #
 ##  | gap> g := Group((1,2), (1,2,3));
 ##  | Group([ (1,2), (1,2,3) ])
-##  | 
+##  |
 ##  | # another comment following an empty line
 ##  | # the following fails:
 ##  | gap> a := 13+29;
@@ -537,7 +537,7 @@ end);
 ##  | #
 ##  | gap> g := Group((1,2), (1,2,3));
 ##  | Group([ (1,2), (1,2,3) ])
-##  | 
+##  |
 ##  | # another comment following an empty line
 ##  | # the following fails:
 ##  | gap> a := 13+29;
@@ -546,7 +546,7 @@ end);
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##  
+##
 DeclareGlobalName("TextAttr"); # from GAPDoc
 DeclareGlobalName("DefaultReportDiffColors"); # initialized in Test() or by the user
 BindGlobal("DefaultReportDiff", function(inp, expout, found, fnam, line, time)
@@ -588,12 +588,12 @@ end);
 InstallGlobalFunction("Test", function(arg)
   local fnam, nopts, opts, full, pf, failures, lines, ign, new,
         cT, ok, oldtimes, thr, delta, len, c, i, j, d, localdef, line;
-  
+
   # get arguments and set options
   fnam := arg[1];
   if Length(arg) > 1 and IsRecord(arg[2]) then
     nopts := arg[2];
-  else 
+  else
     nopts := rec();
   fi;
   if not IsBound(DefaultReportDiffColors) then
@@ -667,7 +667,7 @@ InstallGlobalFunction("Test", function(arg)
     fi;
   fi;
 
-  # remember the full input 
+  # remember the full input
   if not opts.isStream then
     full := StringFile(fnam);
     if full = fail then
@@ -680,7 +680,7 @@ InstallGlobalFunction("Test", function(arg)
   if opts.subsWindowsLineBreaks = true then
     full := ReplacedString(full, "\r\n", "\n");
   fi;
-  
+
   # split input into GAP input, GAP output and comments
   pf := ParseTestInput(full, opts.ignoreComments, fnam);
 
@@ -700,7 +700,7 @@ InstallGlobalFunction("Test", function(arg)
       ErrorNoReturn("Invalid #@ test option: ", line);
     fi;
   od;
-  
+
   # run the GAP inputs and collect the outputs and the timings
   failures := RunTests(pf, opts, fnam);
 
@@ -721,7 +721,7 @@ InstallGlobalFunction("Test", function(arg)
       for j in [1..Number(pf.inp[i], c-> c = '\n')] do
         Append(new[pf.pos[i]], lines[pf.pos[i]+j-1]);
         Add(new[pf.pos[i]], '\n');
-      od; 
+      od;
       if PositionSublist(pf.inp[i], "STOP_TEST") <> 1 then
         Append(new[pf.pos[i]], pf.cmp[i]);
         if pf.cmp[i] <> "" and Last(pf.cmp[i]) <> '\n' then
@@ -757,11 +757,11 @@ InstallGlobalFunction("Test", function(arg)
       fi;
       if Length(cT) > 2 and IsInt(cT[3]) then
         delta := cT[3];
-      else 
+      else
         delta := 10;
       fi;
       for i in [1..Length(pf.inp)] do
-        if oldtimes[i] >= thr and 
+        if oldtimes[i] >= thr and
            AbsInt(oldtimes[i] - pf.times[i])/oldtimes[i] > delta/100 then
           opts.reportTimeDiff(pf.inp[i], fnam, pf.pos[i], oldtimes[i], pf.times[i]);
         fi;
@@ -845,15 +845,15 @@ end);
 ##  of GAP set to success or fail, depending on if all tests passed (defaults to <K>false</K>).
 ##  </Item>
 ##  </List>
-## 
+##
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 InstallGlobalFunction( "TestDirectory", function(arg)
     local  testTotalFailures, testFailedFiles, totalTime, totalMem, STOP_TEST_CPY,
-           basedirs, nopts, opts, testOptions, earlyStop, 
-           showProgress, suppressStatusMessage, exitGAP, c, files, 
-           filetimes, filemems, recurseFiles, f, i, startTime, 
+           basedirs, nopts, opts, testOptions, earlyStop,
+           showProgress, suppressStatusMessage, exitGAP, c, files,
+           filetimes, filemems, recurseFiles, f, i, startTime,
            startMem, testResult, time, mem, startGcTime, gctime,
            totalGcTime, filegctimes, GcTime;
 
@@ -862,23 +862,23 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   totalTime := 0;
   totalMem := 0;
   totalGcTime := 0;
-  
+
   STOP_TEST_CPY := STOP_TEST;
   # wrap STOP_TEST_QUIET to drop the return value so it does not get printed below
   STOP_TEST := function(arg) CallFuncList( STOP_TEST_QUIET, arg ); end;
-  
+
   if IsString(arg[1]) or IsDirectory(arg[1]) then
     basedirs := [arg[1]];
   else
     basedirs := arg[1];
   fi;
-    
+
   if Length(arg) > 1 and IsRecord(arg[2]) then
     nopts := arg[2];
   else
     nopts := rec();
   fi;
-  
+
   opts := rec(
     testOptions := rec(),
     earlyStop := false,
@@ -888,22 +888,22 @@ InstallGlobalFunction( "TestDirectory", function(arg)
     exclude := [],
     exitGAP := false,
   );
-  
+
   for c in RecNames(nopts) do
     opts.(c) := nopts.(c);
   od;
   opts.exclude := Set(opts.exclude);
   opts.testOptions.returnNumFailures := true;
-  
+
   if opts.exitGAP then
     GapExitCode(1);
   fi;
-  
+
   files := [];
   filetimes := [];
-  filemems := [];  
-  filegctimes := [];  
-  
+  filemems := [];
+  filegctimes := [];
+
   recurseFiles := function(dirs, prefix)
     local dircontents, testfiles, t, testrecs, shortName, recursedirs, d, subdirs;
     if Length(dirs) = 0 then return; fi;
@@ -931,7 +931,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
       recurseFiles(subdirs, Concatenation(prefix,d,"/"));
     od;
   end;
-  
+
   files := [];
   for f in basedirs do
     if not IsString(f) and IsList(f) and ForAll(f, IsDirectoryPath) then
@@ -948,14 +948,14 @@ InstallGlobalFunction( "TestDirectory", function(arg)
   if opts.showProgress then
     Print( "Architecture: ", GAPInfo.Architecture, "\n\n" );
   fi;
-  
+
   for i in [1..Length(files)] do
     if opts.showProgress then
       Print("testing: ", files[i].name, "\n");
     fi;
-    
+
     startTime := Runtime();
-    startMem := TotalMemoryAllocated();    
+    startMem := TotalMemoryAllocated();
     startGcTime := TOTAL_GC_TIME();
 
     if opts.rewriteToFile then
@@ -977,29 +977,29 @@ InstallGlobalFunction( "TestDirectory", function(arg)
       testFailedFiles := testFailedFiles + 1;
     fi;
     testTotalFailures := testTotalFailures + testResult;
-    
+
     time := Runtime() - startTime;
-    mem := TotalMemoryAllocated() - startMem;    
-    gctime := TOTAL_GC_TIME() - startGcTime;    
+    mem := TotalMemoryAllocated() - startMem;
+    gctime := TOTAL_GC_TIME() - startGcTime;
     filetimes[i] := time;
-    filemems[i] := mem;    
-    filegctimes[i] := gctime;    
+    filemems[i] := mem;
+    filegctimes[i] := gctime;
     totalTime := totalTime + time;
-    totalMem := totalMem + mem;    
-    totalGcTime := totalGcTime + gctime;    
-    
+    totalMem := totalMem + mem;
+    totalGcTime := totalGcTime + gctime;
+
     if opts.showProgress then
-        Print( String( time, 8 ), " ms (",String(gctime)," ms GC) and ", 
-               StringOfMemoryAmount( mem ), 
+        Print( String( time, 8 ), " ms (",String(gctime)," ms GC) and ",
+               StringOfMemoryAmount( mem ),
                " allocated for ", files[i].shortName, "\n" );
     fi;
-  od;       
-  
+  od;
+
   STOP_TEST := STOP_TEST_CPY;
-  
+
   Print("-----------------------------------\n");
   Print( "total",
-         String( totalTime, 10 ), " ms (",String( totalGcTime )," ms GC) and ", 
+         String( totalTime, 10 ), " ms (",String( totalGcTime )," ms GC) and ",
          StringOfMemoryAmount( totalMem )," allocated\n" );
   Print( "     ", String( testTotalFailures, 10 ), " failures in " );
   if testTotalFailures > 0 then
@@ -1024,7 +1024,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
       QuitGap(1);
     fi;
   fi;
-  
+
   return testTotalFailures = 0;
 end);
 
@@ -1079,23 +1079,23 @@ elif not IsBound( GAPInfo.PackagesInfo.(pkgname)[1].TestFile ) then
     # Since a TestFile is not required, technically we passed "all" tests
     return true;
 else
-    testfile := Filename( DirectoriesPackageLibrary( pkgname, "" ), 
+    testfile := Filename( DirectoriesPackageLibrary( pkgname, "" ),
                           GAPInfo.PackagesInfo.(pkgname)[1].TestFile );
     str:= StringFile( testfile );
     if not IsString( str ) then
-        Print( "#I Test file `", testfile, "' for package `", pkgname, 
+        Print( "#I Test file `", testfile, "' for package `", pkgname,
         " version ", GAPInfo.PackagesInfo.(pkgname)[1].Version, " is not readable\n" );
         return fail;
     fi;
     if EndsWith(testfile,".tst") then
         if Test( testfile, rec(compareFunction := "uptowhitespace") ) then
             Print( "#I  No errors detected while testing package ", pkgname,
-                   " version ", GAPInfo.PackagesInfo.(pkgname)[1].Version, 
+                   " version ", GAPInfo.PackagesInfo.(pkgname)[1].Version,
                    "\n#I  using the test file `", testfile, "'\n");
             return true;
         else
-            Print( "#I  Errors detected while testing package ", pkgname, 
-                   " version ", GAPInfo.PackagesInfo.(pkgname)[1].Version, 
+            Print( "#I  Errors detected while testing package ", pkgname,
+                   " version ", GAPInfo.PackagesInfo.(pkgname)[1].Version,
                    "\n#I  using the test file `", testfile, "'\n");
             return false;
         fi;

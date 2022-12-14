@@ -135,11 +135,11 @@ InstallImmediateMethod( GeneratorsOfSemigroup,
 IsMonoid and HasGeneratorsOfMonoid and IsAttributeStoringRep, 0,
 function(M)
 
-  if Length(GeneratorsOfMonoid(M)) = infinity then 
+  if Length(GeneratorsOfMonoid(M)) = infinity then
     TryNextMethod();
   fi;
 
-  if CanEasilyCompareElements(One(M)) and One(M) in GeneratorsOfMonoid(M) then 
+  if CanEasilyCompareElements(One(M)) and One(M) in GeneratorsOfMonoid(M) then
     return GeneratorsOfMonoid(M);
   fi;
   return Concatenation([One(M)], GeneratorsOfMonoid(M));
@@ -258,44 +258,44 @@ InstallMethod( IsCommutative,
 #F  Monoid( <gens>, <id> )
 ##
 
-InstallGlobalFunction(Monoid, 
+InstallGlobalFunction(Monoid,
 function( arg )
   local out, i;
-  
-  if Length(arg) = 0 or (Length(arg) = 1 and HasIsEmpty(arg[1]) 
-      and IsEmpty(arg[1])) then 
+
+  if Length(arg) = 0 or (Length(arg) = 1 and HasIsEmpty(arg[1])
+      and IsEmpty(arg[1])) then
     ErrorNoReturn("Usage: cannot create a monoid with no generators,");
   fi;
 
   out := [];
   for i in [1 .. Length(arg)] do
     if i = Length(arg) and IsRecord(arg[i]) then
-      if not IsGeneratorsOfSemigroup(out) then 
+      if not IsGeneratorsOfSemigroup(out) then
         ErrorNoReturn("Usage: Monoid(<gen>,...), Monoid(<gens>), ",
                       "Monoid(<D>)," );
       fi;
       return MonoidByGenerators(out, arg[i]);
-    elif IsMultiplicativeElementWithOne(arg[i]) or IsMatrix(arg[i]) then 
+    elif IsMultiplicativeElementWithOne(arg[i]) or IsMatrix(arg[i]) then
       Add(out, arg[i]);
-    elif IsListOrCollection(arg[i]) then 
-      if IsGeneratorsOfSemigroup(arg[i]) then 
+    elif IsListOrCollection(arg[i]) then
+      if IsGeneratorsOfSemigroup(arg[i]) then
         if HasGeneratorsOfSemigroup(arg[i]) or IsMagmaIdeal(arg[i]) then
           Append(out, GeneratorsOfSemigroup(arg[i]));
-        elif IsList(arg[i]) then 
+        elif IsList(arg[i]) then
           Append(out, arg[i]);
-        else 
+        else
           Append(out, AsList(arg[i]));
         fi;
-      elif not IsEmpty(arg[i]) then 
+      elif not IsEmpty(arg[i]) then
         ErrorNoReturn("Usage: Monoid(<gen>,...), Monoid(<gens>), ",
                       "Monoid(<D>)," );
       fi;
-    else 
+    else
       ErrorNoReturn("Usage: Monoid(<gen>,...), Monoid(<gens>), ",
                     "Monoid(<D>)," );
     fi;
   od;
-  if not IsGeneratorsOfSemigroup(out) then 
+  if not IsGeneratorsOfSemigroup(out) then
     ErrorNoReturn("Usage: Monoid(<gen>,...), Monoid(<gens>), ",
     "Monoid(<D>),");
   fi;

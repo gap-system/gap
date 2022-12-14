@@ -30,18 +30,18 @@ DeclareInfoClass("InfoMorph");
 ##  <P/>
 ##  Note that current methods for the calculation of the automorphism group
 ##  of a group <M>G</M> require <M>G</M> to be a permutation group or
-##  a pc group to be efficient. For groups in other representations the 
+##  a pc group to be efficient. For groups in other representations the
 ##  calculation is likely very slow.
 ##  <P/>
-##  Also, the <Package>AutPGrp</Package> package installs enhanced methods 
-##  for <Ref Attr="AutomorphismGroup"/> for finite <M>p</M>-groups, and 
-##  the <Package>FGA</Package> package - for finitely generated subgroups 
-##  of free groups. 
-##  <P/> 
-##  Methods may be installed for <Ref Attr="AutomorphismGroup"/> 
+##  Also, the <Package>AutPGrp</Package> package installs enhanced methods
+##  for <Ref Attr="AutomorphismGroup"/> for finite <M>p</M>-groups, and
+##  the <Package>FGA</Package> package - for finitely generated subgroups
+##  of free groups.
+##  <P/>
+##  Methods may be installed for <Ref Attr="AutomorphismGroup"/>
 ##  for other domains, such as e.g. for linear codes in the
-##  <Package>GUAVA</Package> package, loops in the <Package>loops</Package>  
-##  package and nilpotent Lie algebras in the <Package>Sophus</Package> 
+##  <Package>GUAVA</Package> package, loops in the <Package>loops</Package>
+##  package and nilpotent Lie algebras in the <Package>Sophus</Package>
 ##  package (see package manuals for their descriptions).
 ##  </Description>
 ##  </ManSection>
@@ -134,11 +134,11 @@ DeclareAttribute( "AutomorphismDomain", IsGroupOfAutomorphisms );
 ##  gap> au:=AutomorphismGroup(g);
 ##  <group of size 8 with 3 generators>
 ##  gap> GeneratorsOfGroup(au);
-##  [ Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) -> 
-##      [ (1,2)(3,4), (1,2,3,4), (1,3)(2,4) ], 
-##    Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) -> 
-##      [ (1,3), (1,2,3,4), (1,3)(2,4) ], 
-##    Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) -> 
+##  [ Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) ->
+##      [ (1,2)(3,4), (1,2,3,4), (1,3)(2,4) ],
+##    Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) ->
+##      [ (1,3), (1,2,3,4), (1,3)(2,4) ],
+##    Pcgs([ (2,4), (1,2,3,4), (1,3)(2,4) ]) ->
 ##      [ (2,4), (1,4,3,2), (1,3)(2,4) ] ]
 ##  gap> NiceObject(au);
 ##  Group([ (1,2,4,6), (1,4)(2,6), (2,6)(3,5) ])
@@ -577,7 +577,7 @@ DeclareOperation("GQuotients",[IsGroup,IsGroup]);
 ##  Group([ (1,2,3,4), (1,2) ])
 ##  gap> h:=Group((3,4),(1,2));;
 ##  gap> emb:=IsomorphicSubgroups(g,h);
-##  [ [ (3,4), (1,2) ] -> [ (1,2), (3,4) ], 
+##  [ [ (3,4), (1,2) ] -> [ (1,2), (3,4) ],
 ##    [ (3,4), (1,2) ] -> [ (1,3)(2,4), (1,2)(3,4) ] ]
 ##  ]]></Example>
 ##  </Description>

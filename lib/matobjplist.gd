@@ -70,7 +70,7 @@ DeclareRepresentation( "IsPlistVectorRep",
 ##    (see <Ref Attr="BaseDomain" Label="for a matrix object"/>),
 ##  </Item>
 ##  <Item>
-##    an empty vector in the representation of each row, 
+##    an empty vector in the representation of each row,
 ##  </Item>
 ##  <Item>
 ##    the number of columns

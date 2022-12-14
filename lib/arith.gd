@@ -379,8 +379,8 @@ DeclareSynonym( "IsMultiplicativeElementWithOneTable",
 ##  <Filt Name="IsMultiplicativeElementWithZero" Arg='elt' Type='Category'/>
 ##  <Returns><K>true</K> or <K>false</K>.</Returns>
 ##  <Description>
-##  This is the category of elements in a family which can be the operands of 
-##  <C>*</C> (multiplication) and the operation 
+##  This is the category of elements in a family which can be the operands of
+##  <C>*</C> (multiplication) and the operation
 ##  <Ref Oper="MultiplicativeZeroOp"/>.
 ##  <Example><![CDATA[
 ##  gap> S:=Semigroup(Transformation( [ 1, 1, 1 ] ));;
@@ -612,7 +612,7 @@ DeclareCategory( "IsGeneralizedRowVector",
 
 #############################################################################
 ##
-#C  IsMultiplicativeGeneralizedRowVector( <list> )  . . . . 
+#C  IsMultiplicativeGeneralizedRowVector( <list> )  . . . .
 ##          objects that comply with new list multiplication rules
 ##
 ##  <#GAPDoc Label="IsMultiplicativeGeneralizedRowVector">
@@ -999,7 +999,7 @@ DeclareCategoryCollections("IsZDFRECollection");
 ##  For technical reasons laid out at the top of Chapter <Ref Chap="Matrices"/>,
 ##  the filter <Ref Filt="IsMatrix"/> is a synonym for a table of ring elements,
 ##  (see <Ref Filt="IsTable"/> and <Ref Filt="IsRingElement"/>). This means that
-##  <Ref Filt="IsMatrix"/> returns <K>true</K> for tables such as 
+##  <Ref Filt="IsMatrix"/> returns <K>true</K> for tables such as
 ##  <C>[[1,2],[3]]</C>.
 ##  If necessary, <Ref Prop="IsRectangularTable"/> can be used to test whether
 ##  an object is a list of homogeneous lists of equal lengths manually.
@@ -1481,7 +1481,7 @@ DeclareOperationKernel( "+", [ IsExtAElement, IsExtAElement ], SUM );
 ##
 ##  <Description>
 ##  <Ref Attr="AdditiveInverseImmutable"/>,
-##  <Ref Oper="AdditiveInverseMutable"/>, and 
+##  <Ref Oper="AdditiveInverseMutable"/>, and
 ##  <Ref Oper="AdditiveInverseSameMutability"/> all return the
 ##  additive inverse of <A>elm</A>.
 ##  <P/>
@@ -1524,7 +1524,7 @@ DeclareOperationKernel( "AdditiveInverseMutable",
     [ IsAdditiveElementWithInverse ], AINV_MUT);
 DeclareSynonym( "AdditiveInverseOp", AdditiveInverseMutable);
 
-DeclareOperationKernel( "AdditiveInverseSameMutability", 
+DeclareOperationKernel( "AdditiveInverseSameMutability",
     [ IsAdditiveElementWithInverse ], AINV_SAMEMUT );
 
 
@@ -1532,7 +1532,7 @@ DeclareOperationKernel( "AdditiveInverseSameMutability",
 ##
 #O  `<elm1>-<elm2>' . . . . . . . . . . . . . . .  difference of two elements
 ##
-DeclareOperationKernel( "-", 
+DeclareOperationKernel( "-",
 	[ IsExtAElement, IsNearAdditiveElementWithInverse ], DIFF );
 
 
@@ -1549,7 +1549,7 @@ DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 #A  One( <obj> )
 #A  Identity( <obj> )
 #O  OneMutable( <obj> )  . . . . . . . .  multiplicative neutral of an element
-#O  OneOp( <obj> )  
+#O  OneOp( <obj> )
 #O  OneSameMutability( <obj> )
 ##
 ##  <#GAPDoc Label="OneImmutable">
@@ -1588,7 +1588,7 @@ DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 ##  <Ref Oper="OneOp"/> is a synonym of <Ref Oper="OneMutable"/>.
 ##  <P/>
 ##  If <A>obj</A> is a domain or a family then <Ref Attr="One"/> is defined
-##  as the identity element of all elements in <A>obj</A>, 
+##  as the identity element of all elements in <A>obj</A>,
 ##  provided that all these elements have the same identity.
 ##  For example, the family of all cyclotomics has the identity element
 ##  <C>1</C>,
@@ -2151,7 +2151,7 @@ DeclareOperation( "UnderlyingElement", [ IsObject ] );
 ##  <Prop Name="IsIdempotent" Arg='elt'/>
 ##
 ##  <Description>
-##  returns <K>true</K> iff <A>elt</A> is its own square. 
+##  returns <K>true</K> iff <A>elt</A> is its own square.
 ##  (Even if <Ref Prop="IsZero"/> returns <K>true</K> for <A>elt</A>.)
 ##  </Description>
 ##  </ManSection>

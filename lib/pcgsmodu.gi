@@ -156,7 +156,7 @@ local   wd,  filter,  new,  i,nupa;
   fi;
 
   # check which filter to use
-  filter := IsModuloPcgs and IsModuloTailPcgsRep 
+  filter := IsModuloPcgs and IsModuloTailPcgsRep
 	    and IsModuloTailPcgsByListRep;
 
   if IsSubset(home,factor) then
@@ -171,7 +171,7 @@ local   wd,  filter,  new,  i,nupa;
   fi;
 
   # this can be more messy -- do not use
-  if HasIsFamilyPcgs(home) 
+  if HasIsFamilyPcgs(home)
       and IsFamilyPcgs(home) then
     filter:=filter and IsNumeratorParentPcgsFamilyPcgs;
   fi;
@@ -225,7 +225,7 @@ function( home, list, modulo )
     pcsexp,denexp,bascha,idx,sep,sed,mat;
 
     # <list> is a pcgs for the sum of <list> and <modulo>
-    if IsPcgs(list) and (ParentPcgs(modulo) = list or IsSubset(list,modulo)) 
+    if IsPcgs(list) and (ParentPcgs(modulo) = list or IsSubset(list,modulo))
       then
         pcgs := list;
         wm   := List( modulo, x -> DepthOfPcElement( pcgs, x ) );
@@ -250,7 +250,7 @@ function( home, list, modulo )
     fi;
 
     # check which filter to use
-    filter := IsModuloPcgs and 
+    filter := IsModuloPcgs and
 	      HasDenominatorOfModuloPcgs and HasNumeratorOfModuloPcgs;
 
     depthsInParent:=fail; # do not set by default
@@ -263,7 +263,7 @@ function( home, list, modulo )
 	  filter:=filter and IsSubsetInducedNumeratorModuloTailPcgsRep;
 	  depthsInParent:=pcgs!.depthsInParent{wd};
 	  # is everything even family induced?
-	  if HasIsParentPcgsFamilyPcgs(pcgs) 
+	  if HasIsParentPcgsFamilyPcgs(pcgs)
 	     and IsParentPcgsFamilyPcgs(pcgs) then
 	    filter:=filter and IsNumeratorParentPcgsFamilyPcgs;
 	  fi;
@@ -293,7 +293,7 @@ function( home, list, modulo )
 	  if
 	    Length(Union(depthsInParent,dd))=Length(depthsInParent)+Length(dd)
 	    then
-           
+
 	    # we can use the parent layers to calculate exponents
 	    filter:=filter and IsNumeratorParentLayersForExponentsRep;
 	  else
@@ -1081,7 +1081,7 @@ end);
 
 InstallOtherMethod( PcElementByExponentsNC,
     "modulo subset induced wrt family pcgs,index", true,
-    [ IsModuloPcgs and 
+    [ IsModuloPcgs and
       IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
       and IsNumeratorParentPcgsFamilyPcgs,
       IsRowVector and IsCyclotomicCollection,
@@ -1100,7 +1100,7 @@ end);
 ##
 InstallMethod( PcElementByExponentsNC,
     "modulo subset induced wrt family pcgs, FFE", true,
-    [ IsModuloPcgs and 
+    [ IsModuloPcgs and
       IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
       and IsNumeratorParentPcgsFamilyPcgs,
       IsRowVector and IsFFECollection ], 0,
@@ -1114,7 +1114,7 @@ end);
 
 InstallOtherMethod( PcElementByExponentsNC,
     "modulo subset induced wrt family pcgs, FFE, index", true,
-    [ IsModuloPcgs and 
+    [ IsModuloPcgs and
       IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
       and IsNumeratorParentPcgsFamilyPcgs,
       IsRowVector and IsCyclotomicCollection,
@@ -1129,7 +1129,7 @@ end);
 
 InstallMethod( ExponentsConjugateLayer,"subset induced modulo pcgs",
   IsCollsElmsElms,
-  [ IsModuloPcgs and 
+  [ IsModuloPcgs and
     IsSubsetInducedNumeratorModuloTailPcgsRep and IsPrimeOrdersPcgs
     and IsNumeratorParentPcgsFamilyPcgs,
   IsMultiplicativeElementWithInverse,IsMultiplicativeElementWithInverse],0,

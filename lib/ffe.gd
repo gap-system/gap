@@ -250,7 +250,7 @@ DeclareCategoryCollections( "IsFFECollColl" );
 ##  Finite field elements are ordered in &GAP; (by <Ref Oper="\&lt;"/>)
 ##  first by characteristic and then by their degree
 ##  (i.e. the sizes of the smallest fields containing them).
-##  Amongst irreducible elements of a given field, the ordering 
+##  Amongst irreducible elements of a given field, the ordering
 ##  depends on which of these categories the elements of the field belong to
 ##  (all irreducible elements of a given field should belong to the same one)
 ##  <P/>
@@ -357,7 +357,7 @@ BIND_GLOBAL( "GALOIS_FIELDS", NEW_SORTED_CACHE(true) );
 ##  <Oper Name="LargeGaloisField" Arg='p, n'/>
 ##
 ##  <Description>
-##  Ideally these would be declared for IsPosInt, but this 
+##  Ideally these would be declared for IsPosInt, but this
 ##  causes problems with reading order.
 ##  <P/>
 ##  <!-- other construction possibilities?-->
@@ -641,7 +641,7 @@ DeclareOperation( "IntVecFFE", [ IsRowVector and IsFFECollection ] );
 
 #############################################################################
 ##
-#A  AsInternalFFE( <ffe> )  
+#A  AsInternalFFE( <ffe> )
 ##
 ##  <#GAPDoc Label="AsInternalFFE">
 ##  <ManSection>
@@ -665,7 +665,7 @@ DeclareAttribute( "AsInternalFFE", IsFFE);
 ##  <Oper Name="RootFFE" Arg='F, z, k'/>
 ##
 ##  <Description>
-##  <Ref Func="RootFFE"/> returns a finite field element 
+##  <Ref Func="RootFFE"/> returns a finite field element
 ##  <A>r</A> from <A>F</A> whose <A>k</A>-th power is <A>z</A>.
 ##  If no such element exists
 ##  then

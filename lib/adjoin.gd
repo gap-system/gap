@@ -8,8 +8,8 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file contains the declarations for functions pertaining to 
-##  adjoining an identity element to a semigroup. 
+##  This file contains the declarations for functions pertaining to
+##  adjoining an identity element to a semigroup.
 ##
 
 
@@ -24,9 +24,9 @@ DeclareRepresentation("IsMonoidByAdjoiningIdentityEltRep", IsPositionalObjectRep
 
 ###########################################################################
 ##
-#A  MonoidByAdjoiningIdentity( <semigroup> ) 
+#A  MonoidByAdjoiningIdentity( <semigroup> )
 ##
-##  this attribute stores the monoid obtained from <semigroup> by adjoining 
+##  this attribute stores the monoid obtained from <semigroup> by adjoining
 ##  an identity. Even if <semigroup> happens to be a monoid, the resultant
 ##  monoid has a new identity adjoined.
 ##
@@ -35,7 +35,7 @@ DeclareAttribute("MonoidByAdjoiningIdentity", IsSemigroup);
 
 ###########################################################################
 ##
-#A  UnderlyingSemigroupOfMonoidByAdjoiningIdentity( <monoid> ) 
+#A  UnderlyingSemigroupOfMonoidByAdjoiningIdentity( <monoid> )
 ##
 ##  this attribute stores the original semigroup that <monoid> was made from.
 ##
@@ -44,7 +44,7 @@ DeclareAttribute("UnderlyingSemigroupOfMonoidByAdjoiningIdentity", IsMonoidByAdj
 
 ###########################################################################
 ##
-#A  MonoidByAdjoiningIdentityElt( <elt> ) 
+#A  MonoidByAdjoiningIdentityElt( <elt> )
 ##
 ##  the result of this function is the corresponding element in the category
 ##  MonoidByAdjoiningIdentityElt with IsOne set to false.
@@ -54,9 +54,9 @@ DeclareAttribute("MonoidByAdjoiningIdentityElt", IsMultiplicativeElement and IsA
 
 ###########################################################################
 ##
-#A  UnderlyingSemigroupOfMonoidByAdjoiningIdentity( <monoidelt> ) 
+#A  UnderlyingSemigroupOfMonoidByAdjoiningIdentity( <monoidelt> )
 ##
-##  this attribute stores the original semigroup element that <monoidelt> 
+##  this attribute stores the original semigroup element that <monoidelt>
 ##  was made from.
 ##
 

@@ -50,7 +50,7 @@ BlownUpMatrix := function ( B, mat )
         od;
     od;
 
-    # translate it into big matrix 
+    # translate it into big matrix
     new := List( [1..Length(big)*d], x -> [] );
     for i in [1..Length(big)] do
         for j in [1..Length(big)] do
@@ -75,7 +75,7 @@ InstallGlobalFunction( BlownUpModule, function( modu, E, F )
     B := AsField( F, E );
     if Dimension( B ) = 1 then return modu; fi;
     B := Basis( B );
- 
+
     #mats := List( modu.generators, x -> TransposedMat(BlownUpMat(B, x)));
     mats:=List(modu.generators,x ->ImmutableMatrix(F,BlownUpMatrix(B,x)));
     return GModuleByMats( mats, F );
@@ -102,13 +102,13 @@ end );
 ##
 InstallGlobalFunction( FpOfModules, function( pcgs, modus )
     local words, traces, trset, word, exp, new, i, newset, n;
-   
+
     n      := Length( modus );
     words  := ShallowCopy( AsList( pcgs ) );
-    traces := List( modus, x -> Concatenation( [x.dimension], 
+    traces := List( modus, x -> Concatenation( [x.dimension],
                                 List(x.generators, y -> TraceMat( y ))));
     trset  := Set( traces );
-  
+
     # iterate computation of elements
     while Length( trset ) < Length( modus ) do
         word := Random( GroupOfPcgs( pcgs ) );
@@ -131,7 +131,7 @@ InstallGlobalFunction( FpOfModules, function( pcgs, modus )
     return rec( words  := words,
                 traces := traces );
 end );
-        
+
 #############################################################################
 ##
 #F EquivalenceType( <fp>, <modu> ) . . . . . . . . . . use chars to find type
@@ -169,7 +169,7 @@ InstallGlobalFunction( GaloisConjugates, function( modu, F )
     local d, p, conj, k, mats, r, i, new;
 
     # set up
-    d := Dimension( F );   
+    d := Dimension( F );
     p := Characteristic( F );
     conj := [ modu ];
 
@@ -215,7 +215,7 @@ InstallGlobalFunction( InducedModule, function( pcgsS, modu )
     r := RelativeOrderOfPcElement( pcgsS, g );
     zero := Immutable( NullMat( d, d, modu.field ) );
     id   := Immutable( IdentityMat( d, modu.field ) );
-   
+
     # the first matrix
     mat := List( [1..r], x -> List( [1..r], y -> zero ) );
     exp := ExponentsOfPcElement( pcgsS, g^r, [2..m] );
@@ -231,11 +231,11 @@ InstallGlobalFunction( InducedModule, function( pcgsS, modu )
         for j in [1..r] do
             h := pcgsS[i]^(g^(j-1));
             exp := ExponentsOfPcElement( pcgsS, h, [2..m] );
-            mat[j][j] := MappedVector( exp, modu.generators ); 
+            mat[j][j] := MappedVector( exp, modu.generators );
         od;
         Add( mats, ImmutableMatrix(modu.field,FlatBlockMat( mat ) ));
     od;
-    
+
     return GModuleByMats( mats, modu.field );
 end );
 
@@ -294,7 +294,7 @@ InstallGlobalFunction( InducedModuleByFieldReduction,
 
     # construct module and return
     mats := List(Concatenation( [matg], matsN ),i->ImmutableMatrix(K,i));
-    newm := GModuleByMats( mats, K ); 
+    newm := GModuleByMats( mats, K );
     return newm;
 end );
 
@@ -302,8 +302,8 @@ end );
 ##
 #F ExtensionsOfModule( <pcgsS>, <modu>, <conj>, <dim> ) . . .extended modules
 ##
-InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim ) 
-    local r, new, E, p, dE, exp, gmat, iso, e, c, mats, newm, f, d, b, 
+InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim )
+    local r, new, E, p, dE, exp, gmat, iso, e, c, mats, newm, f, d, b,
           L, j, w, g, k;
 
     # set up
@@ -314,7 +314,7 @@ InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim )
     # set up fields
     E  := modu.field;
     p  := Characteristic( E );
-    dE := Dimension( E ); 
+    dE := Dimension( E );
 
     # compute matrix to g^r in N
     exp  := ExponentsOfPcElement( pcgsS, g^r, [2..Length(pcgsS)] );
@@ -377,7 +377,7 @@ InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim )
                  i->ImmutableMatrix(E,i));
             newm := GModuleByMats( mats, E );
             Add( new, newm );
-            c := c * PrimitiveRoot( E ) ^ QuoInt( p^dE-1, r ); 
+            c := c * PrimitiveRoot( E ) ^ QuoInt( p^dE-1, r );
         od;
         return new;
     fi;
@@ -417,7 +417,7 @@ InstallGlobalFunction( InitAbsAndIrredModules, function( r, F, dim )
 
         if r <> p then
             f := Indeterminate( F );
-            f := Sum( List([1..r], x -> f^(x-1) ) );    
+            f := Sum( List([1..r], x -> f^(x-1) ) );
             f := Factors( PolynomialRing( F ), f );
             l := DegreeOfLaurentPolynomial( f[1] );
             b := l * d;
@@ -464,7 +464,7 @@ end );
 ##
 InstallGlobalFunction( LiftAbsAndIrredModules,
     function( pcgsS, pcgsN, modrec, dim )
-    local todo, fp, new, i, modu, E, conj, type, s, gal, types, r, un, j, 
+    local todo, fp, new, i, modu, E, conj, type, s, gal, types, r, un, j,
           g, galfp, small, sconj, irred, absirr, n, F, irr, dF;
 
     # split modules into parts
@@ -503,7 +503,7 @@ InstallGlobalFunction( LiftAbsAndIrredModules,
             if dim = 0 or r * dF * small.dimension <= dim then
                 Add( new, InducedModule( pcgsS, modu ) );
             fi;
-            
+
             # filter out the modules also inducing to the new one
             un := [type];
             for j in [1..r-2] do
@@ -526,11 +526,11 @@ InstallGlobalFunction( LiftAbsAndIrredModules,
                 #                                    e := e * l  (f mod)
                 #                                    e := e * r  (1 mod)
                 Append( new, ExtensionsOfModule( pcgsS, modu, conj, dim ) );
-            else 
+            else
 
                 # absirr: dimension d := d * r -- field e := e / r
-                # irr   : dimension d := d    
-                Add( new, InducedModuleByFieldReduction( 
+                # irr   : dimension d := d
+                Add( new, InducedModuleByFieldReduction(
                           pcgsS, modu, conj, gal[s], s));
             fi;
         fi;
@@ -540,14 +540,14 @@ InstallGlobalFunction( LiftAbsAndIrredModules,
     for i in [1..Length(new)] do
         E := new[i].field;
         irr := BlownUpModule( new[i], E, F );
-        new[i] := rec( irred := irr, 
+        new[i] := rec( irred := irr,
                        absirr := new[i] );
-    od;    
+    od;
 
     # return
     return new;
 end );
-             
+
 #############################################################################
 ##
 #F AbsAndIrredModules( <G>, <F>, <dim> ) . . . . . . . . . . . . . . . .local
@@ -559,13 +559,13 @@ InstallGlobalFunction( AbsAndIrredModules, function( G, F, dim )
     if dim < 0 then Error("dimension limit must be non-negative"); fi;
     if dim > 0 and Dimension( F ) > dim then return [,[]]; fi;
 
-    # set up 
+    # set up
     pcgs  := Pcgs( G );
     m     := Length( pcgs );
 
-    if m = 0 and (dim = 0 or Dimension( F ) <= dim) then 
+    if m = 0 and (dim = 0 or Dimension( F ) <= dim) then
         return [rec( irred  := TrivialModule( 0, F ),
-   		     absirr := TrivialModule( 0, F ))]; 
+   		     absirr := TrivialModule( 0, F ))];
     elif m = 0 then return [pcgs,[]]; fi;
 
     # the first step is separated - too many problems with empty lists
@@ -578,8 +578,8 @@ InstallGlobalFunction( AbsAndIrredModules, function( G, F, dim )
         pcgsN := InducedPcgsByPcSequence( pcgs, pcgs{[i+1..m]} );
         modrec := LiftAbsAndIrredModules( pcgsS, pcgsN, modrec, dim );
     od;
-  
-    # return 
+
+    # return
     return [pcgs,modrec];
 end );
 
@@ -589,7 +589,7 @@ end );
 ##
 InstallMethod( AbsolutIrreducibleModules,
     "method for group with pcgs and finite prime field",
-    true, 
+    true,
     [ IsGroup and CanEasilyComputePcgs, IsField and IsFinite and IsPrimeField, IsInt ],
     0,
 
@@ -609,7 +609,7 @@ end );
 ##
 InstallMethod( IrreducibleModules,
     "generic method for groups with pcgs",
-    true, 
+    true,
     [ IsGroup and CanEasilyComputePcgs, IsField and IsFinite and IsPrimeField, IsInt ],
     0,
 

@@ -45,7 +45,7 @@ InstallGlobalFunction(GasmanStatistics,
                        freekb := row[5],
                        totalkb := row[6],
                        time := row[7],
-                       cumulative := row[8]);                       
+                       cumulative := row[8]);
     if raw[1][1] <> 0 then
         cooked.partial := convertrow(raw[1]);
     fi;
@@ -53,7 +53,7 @@ InstallGlobalFunction(GasmanStatistics,
         cooked.full := convertrow(raw[2]);
     fi;
     cooked.npartial := raw[1][9];
-    cooked.nfull := raw[2][9];    
+    cooked.nfull := raw[2][9];
     return cooked;
 end );
 fi;
@@ -72,7 +72,7 @@ InstallGlobalFunction(GasmanMessageStatus,
         return "none";
     elif stat = 1 then
         return "full";
-    else 
+    else
         return "all";
     fi;
 end );
@@ -111,7 +111,7 @@ fi;
 #F  GasmanLimits( )
 ##
 if GAPInfo.KernelInfo.GC = "GASMAN" then
-InstallGlobalFunction(GasmanLimits, 
+InstallGlobalFunction(GasmanLimits,
         function()
     local raw, r;
     raw := GASMAN_LIMITS();

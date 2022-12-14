@@ -13,13 +13,13 @@
 ##  and will benefit from compilation.
 ##
 
-# Functions to create objects 
+# Functions to create objects
 
 LAUR_POL_BY_EXTREP:=function(rfam,coeff,val,inum)
 local f,typ,lc;
 
 # trap code for unreduced coeffs.
-# if Length(coeffs[1])>0 
+# if Length(coeffs[1])>0
 #    and (IsZero(coeffs[1][1]) or IsZero(coeffs[1][Length(coeffs[1])])) then
 #   Error("zero coeff!");
 # fi;
@@ -39,7 +39,7 @@ local f,typ,lc;
   else
     typ := rfam!.threeLaurentPolynomialTypes[1];
   fi;
-  
+
   # slightly better to do this after the Length has been determined
   if IsFFECollection(coeff) and IS_PLIST_REP(coeff) then
     f:=DefaultRing(coeff);
@@ -51,7 +51,7 @@ local f,typ,lc;
     fi;
   fi;
 
-  
+
   # objectify. We have to be *fast*. Thus we don't even call
   # `ObjectifyWithAttributes' but `Objectify' itself.
 
@@ -87,7 +87,7 @@ local coefs, ind, extrep, i, shift,fam;
     fi;
   od;
   return extrep;
-  
+
 end;
 
 INDETS_POLY_EXTREP:=function(extrep)
@@ -301,12 +301,12 @@ local   ext,  i,  j;
       else
 	Add( ext, [] );
 	Add( ext, cofs[i+1] );
-      fi; 
-    fi; 
-  od; 
-  
+      fi;
+    fi;
+  od;
+
   return ext;
-  
+
 end;
 
 UNIV_FUNC_BY_EXTREP:=function(rfam,ncof,dcof,val,inum)
@@ -321,14 +321,14 @@ local f;
     fi;
   fi;
 
-  # slightly better to do this after the Length id determined 
+  # slightly better to do this after the Length id determined
   if IsFFECollection(ncof) and IS_PLIST_REP(ncof) then
     ConvertToVectorRep(ncof);
   fi;
   if IsFFECollection(dcof) and IS_PLIST_REP(dcof) then
     ConvertToVectorRep(dcof);
   fi;
-  
+
   # objectify. We have to be *fast*. Thus we don't even call
   # `ObjectifyWithAttributes' but `Objectify' itself.
 
@@ -344,9 +344,9 @@ local f;
 end;
 
 #############################################################################
-# 
-# Functions for dealing with monomials 
-# The monomials are represented as Zipped Lists. 
+#
+# Functions for dealing with monomials
+# The monomials are represented as Zipped Lists.
 # i.e. sorted lists [i1,e1,i2, e2,...] where i1<i2<...are the indeterminates
 # from smallest to largest
 #
@@ -548,7 +548,7 @@ local l, m, i, j, c, e;
   return c;
 end);
 
-# Arithmetic 
+# Arithmetic
 
 ADDITIVE_INV_RATFUN:=function( obj )
     local   fam,  i, newnum;
@@ -708,7 +708,7 @@ local   quot, lcq,  lmq,  mon,  i, coeff;
       #  compute -q*mon;
       mon  := ZippedProduct(q,[mon,-coeff],
         fam!.zeroCoefficient,fam!.zippedProduct);
-  
+
       # add it to p
       p:=ZippedSum(p,mon,fam!.zeroCoefficient,fam!.zippedSum);
   od;
@@ -730,7 +730,7 @@ local   indn,  fam,  zero,  l,  r,  val,  sum;
     fi;
   else
     indn:=CIUnivPols(left,right);
-    if indn=fail then 
+    if indn=fail then
       TryNextMethod();
     fi;
   fi;
@@ -787,7 +787,7 @@ local   indn,  fam,  zero,  l,  r,  val,  sum;
     fi;
   else
     indn:=CIUnivPols(left,right);
-    if indn=fail then 
+    if indn=fail then
       TryNextMethod();
     fi;
   fi;
@@ -844,7 +844,7 @@ local   indn,  fam,  prd,  l,  r,  m,  n, val;
     fi;
   else
     indn:=CIUnivPols(left,right);
-    if indn=fail then 
+    if indn=fail then
       TryNextMethod();
     fi;
   fi;
@@ -1032,7 +1032,7 @@ local indn,l,r,ln,ld,rn,rd,g,m,n;
     fi;
   else
     indn:=CIUnivPols(left,right);
-    if indn=fail then 
+    if indn=fail then
       TryNextMethod();
     fi;
   fi;
@@ -1085,7 +1085,7 @@ local indn,l,r,ln,ld,rn,rd,g,m,n;
     fi;
   else
     indn:=CIUnivPols(left,right);
-    if indn=fail then 
+    if indn=fail then
       TryNextMethod();
     fi;
   fi;
@@ -1135,7 +1135,7 @@ local l,r,indn,ld,rd,ln,rn,g,fam,zero,val;
     fi;
   else
     indn:=CIUnivPols(left,right);
-    if indn=fail then 
+    if indn=fail then
       TryNextMethod();
     fi;
   fi;
@@ -1246,7 +1246,7 @@ local q,p,e,i,j,cnt,sel,si;
     # true quotient
     return [[[],fam!.oneCoefficient],q,num];
   fi;
-  
+
   q:=HeuristicCancelPolynomialsExtRep(fam,num,den);
   if IsList(q) then
     # we got something
@@ -1289,7 +1289,7 @@ local q,p,e,i,j,cnt,sel,si;
 	      num[i][j+1]:=num[i][j+1]-e[p]; #reduce
 	    fi;
 	  od;
-	
+
 	  # remove indeterminates with exponent zero
 	  sel:=[];
 	  for si in [2,4..Length(num[i])] do
@@ -1305,7 +1305,7 @@ local q,p,e,i,j,cnt,sel,si;
 	p:=ShallowCopy(den[1]);
 	i:=[2,4..Length(p)];
 	p{i}:=p{i}-e; # reduce exponents
-	
+
 	# remove indeterminates with exponent zero
 	sel:=[];
 	for si in i do

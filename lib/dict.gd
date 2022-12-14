@@ -11,24 +11,24 @@
 ##  This file contains the declarations for dictionaries and for improved
 ##  hash tables.
 ##
-##  In the hash tables, we hash by keys and also store a value.  Keys 
-##  cannot be removed from the table, but the corresponding value can be 
-##  changed.  Fast access to last hash index allows you to efficiently store 
+##  In the hash tables, we hash by keys and also store a value.  Keys
+##  cannot be removed from the table, but the corresponding value can be
+##  changed.  Fast access to last hash index allows you to efficiently store
 ##  more than one array of values -- this facility should be used with care.
 ##
-##  This code works for any kind of object, provided you have a KeyIntDense 
-##  method to convert the key into a positive integer.  
+##  This code works for any kind of object, provided you have a KeyIntDense
+##  method to convert the key into a positive integer.
 ##  This method should ideally be implemented efficiently in the core.
 ##
-##  Note that, for efficiency, it is currently impossible to create a 
+##  Note that, for efficiency, it is currently impossible to create a
 ##  hash table with non-positive integers.
 ##
 ##  Requires: nothing
-##  Exports: 
+##  Exports:
 ##      Category IsHash.
-##      Representations IsDenseHashRep and IsSparseHashRep.  
+##      Representations IsDenseHashRep and IsSparseHashRep.
 ##      Operations PrintHashWithNames, Iterator, GetHashEntry, AddHashEntry,
-##        GetHashEntryAtLastIndex, SetHashEntryAtLastIndex, SetHashEntry, 
+##        GetHashEntryAtLastIndex, SetHashEntryAtLastIndex, SetHashEntry,
 ##        [AddHashEntryAtLastIndex], HashFunct, KeyIntDense.
 ##      Functions DenseHash, SparseHash.
 ##      Variables MaxViewSize, LastHashIndex.
@@ -86,12 +86,12 @@ DeclareCategory("IsLookupDictionary",IsDictionary);
 ##
 ##  <Description>
 ##  The category of hash tables for arbitrary objects (provided an <C>IntKey</C>
-##  function 
+##  function
 ##  is defined).
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareCategory( "IsHash", IsLookupDictionary );  
+DeclareCategory( "IsHash", IsLookupDictionary );
 
 #############################################################################
 ##
@@ -230,7 +230,7 @@ DeclareOperation("KnowsDictionary",[IsDictionary,IsObject]);
 ##
 ##  <Description>
 ##  adds <A>key</A> to the dictionary <A>dict</A>, storing the associated
-##  value <A>val</A> in case <A>dict</A> is a lookup dictionary. 
+##  value <A>val</A> in case <A>dict</A> is a lookup dictionary.
 ##  If <A>key</A> is not an object of the kind for
 ##  which the dictionary was specified, or if <A>key</A> is known already to
 ##  <A>dict</A>, the results are unpredictable.
@@ -427,9 +427,9 @@ DeclareFilter( "TableHasIntKeyFun" );
 ##  Dense hash tables
 ##
 ##  Used for hashing dense sets without collisions, in particular integers.
-##  Stores keys as an unordered list and values as an 
+##  Stores keys as an unordered list and values as an
 ##  array with holes.  The position of a value is given by
-##  KeyIntDense of the key, and so KeyIntDense must be one-to-one.  
+##  KeyIntDense of the key, and so KeyIntDense must be one-to-one.
 ##
 #############################################################################
 #############################################################################
@@ -475,10 +475,10 @@ DeclareGlobalFunction( "DenseHashTable" );
 ##
 ##  Sparse hash tables
 ##
-##  Used for hashing sparse sets.  Stores keys as an array with fail 
+##  Used for hashing sparse sets.  Stores keys as an array with fail
 ##  denoting an empty position, stores values as an array with holes.
-##  Uses HashFunct applied to KeyInt of the key.  DefaultHashLength 
-##  is the default starting hash table length; the table is doubled 
+##  Uses HashFunct applied to KeyInt of the key.  DefaultHashLength
+##  is the default starting hash table length; the table is doubled
 ##  when it becomes half full.
 ##
 #############################################################################
@@ -492,7 +492,7 @@ DeclareGlobalFunction( "DenseHashTable" );
 ##  <Filt Name="IsSparseHashRep" Arg='obj' Type='Representation'/>
 ##
 ##  <Description>
-##  The sparse representation for hash tables.  
+##  The sparse representation for hash tables.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -508,7 +508,7 @@ BindGlobal("DefaultSparseHashRepType",
   NewType( DictionariesFamily, IsSparseHashRep and IsMutable and IsCopyable ));
 
 BindGlobal("DefaultSparseHashWithIKRepType",
-        NewType( DictionariesFamily, IsSparseHashRep and TableHasIntKeyFun 
+        NewType( DictionariesFamily, IsSparseHashRep and TableHasIntKeyFun
                 and IsMutable and IsCopyable));
 
 #############################################################################
@@ -569,7 +569,7 @@ DeclareSynonym("DoubleHashArraySize", DoubleHashDictSize);
 ##  <Func Name="IntegerHashFunction" Arg='key, i, size'/>
 ##
 ##  <Description>
-##  This will be a good double hashing function for any reasonable 
+##  This will be a good double hashing function for any reasonable
 ##  <C>KeyInt</C> (see <Cite Key="CLR90" Where="p.235"/>).
 ##  </Description>
 ##  </ManSection>

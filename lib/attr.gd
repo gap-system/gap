@@ -70,7 +70,7 @@ DeclareInfoClass("InfoAttributes");
 ##  gap> g := Group((1,2,3,4,5),(1,2,3));
 ##  Group([ (1,2,3,4,5), (1,2,3) ])
 ##  gap> KnownAttributesOfObject(g);
-##  [ "LargestMovedPoint", "GeneratorsOfMagmaWithInverses", 
+##  [ "LargestMovedPoint", "GeneratorsOfMagmaWithInverses",
 ##    "MultiplicativeNeutralElement" ]
 ##  gap> SetInfoLevel(InfoAttributes,3);
 ##  gap> DisableAttributeValueStoring(Size);
@@ -78,9 +78,9 @@ DeclareInfoClass("InfoAttributes");
 ##  gap> Size(g);
 ##  60
 ##  gap> KnownAttributesOfObject(g);
-##  [ "OneImmutable", "LargestMovedPoint", "NrMovedPoints", 
-##    "MovedPoints", "GeneratorsOfMagmaWithInverses", 
-##    "MultiplicativeNeutralElement", "StabChainMutable", 
+##  [ "OneImmutable", "LargestMovedPoint", "NrMovedPoints",
+##    "MovedPoints", "GeneratorsOfMagmaWithInverses",
+##    "MultiplicativeNeutralElement", "StabChainMutable",
 ##    "StabChainOptions" ]
 ##  gap> Size(g);
 ##  60
@@ -89,9 +89,9 @@ DeclareInfoClass("InfoAttributes");
 ##  gap> Size(g);
 ##  60
 ##  gap> KnownAttributesOfObject(g);
-##  [ "Size", "OneImmutable", "LargestMovedPoint", "NrMovedPoints", 
-##    "MovedPoints", "GeneratorsOfMagmaWithInverses", 
-##    "MultiplicativeNeutralElement", "StabChainMutable", 
+##  [ "Size", "OneImmutable", "LargestMovedPoint", "NrMovedPoints",
+##    "MovedPoints", "GeneratorsOfMagmaWithInverses",
+##    "MultiplicativeNeutralElement", "StabChainMutable",
 ##    "StabChainOptions" ]
 ##  ]]></Example>
 ##  </Description>

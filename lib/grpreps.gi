@@ -20,7 +20,7 @@ InstallGlobalFunction( RegularModuleByGens, function( G, gens, F )
     d    := Length(elms);
     zero := NullMat( d, d, F );
     for i in [1..Length( gens )] do
-        mat := List( zero, ShallowCopy ); 
+        mat := List( zero, ShallowCopy );
         for j in [1..d] do
             o := Position( elms, elms[j]*gens[i] );
             mat[j][o] := One( F );
@@ -32,7 +32,7 @@ end );
 
 InstallMethod( RegularModule,
     "generic method for groups",
-    true, 
+    true,
     [ IsGroup, IsField ],
     0,
 function( G, F )
@@ -53,7 +53,7 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,clos,bas,rad;
     # linear representations come from G/G'
     gens:=GeneratorsOfGroup(G);
     a:=DerivedSubgroup(G);
-    if Size(a)=Size(G) then 
+    if Size(a)=Size(G) then
       return [gens,[TrivialModule(Length(gens),F)]];
     else
       a:=MaximalAbelianQuotient(G);
@@ -118,7 +118,7 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,clos,bas,rad;
 
         bas:=Concatenation(bas{[1..rad]},sub,clos);
         rad:=rad+Length(sub);
-       
+
       fi;
     od;
   fi;
@@ -136,7 +136,7 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,clos,bas,rad;
     if not IsZero(v) then
       sub:=MTX.SpinnedBasis(v,mats,modu.field);
       sub:=ImmutableMatrix(modu.field,TriangulizedMat(sub));
-      if not sub in subs then 
+      if not sub in subs then
         Add(subs,sub);
       fi;
     fi;
@@ -270,7 +270,7 @@ local n,mats,mo,moduln,i,j,k,t,cnt,p,ext,emo;
       Info(InfoMeatAxe,1,i," ",j," yields  ",List(t,x->x.dimension));
       for k in t do
         MTX.IsIrreducible(k);
-        if ForAll(moduln,x->MTX.Isomorphism(k,x)=fail) then 
+        if ForAll(moduln,x->MTX.Isomorphism(k,x)=fail) then
           Add(moduln,k);
           if MTX.IsAbsolutelyIrreducible(k) then
             cnt:=cnt-1;
@@ -304,7 +304,7 @@ end);
 ##
 InstallMethod( AbsolutelyIrreducibleModules,
     "generic method for groups and finite field",
-    true, 
+    true,
     [ IsGroup, IsField and IsFinite, IsInt ],
     0,
 function( G, F, dim )

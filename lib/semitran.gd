@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file contains the declarations for basics of transformation semigroup 
+##  This file contains the declarations for basics of transformation semigroup
 ##
 
 DeclareSynonym("IsTransformationSemigroup", IsSemigroup and

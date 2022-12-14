@@ -66,7 +66,7 @@ InstallMethod( ViewString,
     true,
     [ IsMagma ], 0,
     function( M )
-    return "<magma>";    
+    return "<magma>";
     end );
 
 InstallMethod( ViewString,
@@ -382,9 +382,9 @@ InstallMethod(Idempotents,"for finite magmas", true,
      local I, m;
      I := [];
 
-     for m in AsList(M) do  
-         if m*m=m then     
-             Add(I,m);    
+     for m in AsList(M) do
+         if m*m=m then
+             Add(I,m);
          fi;
      od;
      return I;
@@ -976,13 +976,13 @@ InstallTrueMethod(HasMultiplicativeNeutralElement, IsMagmaWithOne);
 InstallMethod(MultiplicativeNeutralElement,
     "for a magma-with-one",
     true,
-    [HasMultiplicativeNeutralElement and IsMagmaWithOne], GETTER_FLAGS+1, 
+    [HasMultiplicativeNeutralElement and IsMagmaWithOne], GETTER_FLAGS+1,
     One );
 
 InstallMethod(SetMultiplicativeNeutralElement,
     "for a magma-with-one",
     true,
-    [IsMagma, IsBool], 0, 
+    [IsMagma, IsBool], 0,
 function(m, b)
     if b<>fail then
       TryNextMethod();
@@ -1079,7 +1079,7 @@ BindGlobal( "ClosureMagmaDefault", function( M, elm )
     gens:= Concatenation( gens, [ elm ] );
     C:= MagmaByGenerators( gens );
     UseSubsetRelation( C, M );
-    
+
     # if the elements of <M> are known then extend this list
     # (multiply each element from the left and right with the new
     # generator, and then multiply with all elements until the

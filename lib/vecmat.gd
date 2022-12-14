@@ -176,8 +176,8 @@ DeclareGlobalFunction( "CopyToVectorRepNC");
 ##  which will never copy a matrix (or any rows of it) but may fail if it
 ##  encounters rows locked in the wrong representation, or various other
 ##  more technical problems. Most users should use <Ref Oper="ImmutableMatrix"/>
-##  instead. The NC versions of the function do less checking of the 
-##  argument and may cause unpredictable results or crashes if given 
+##  instead. The NC versions of the function do less checking of the
+##  argument and may cause unpredictable results or crashes if given
 ##  unsuitable arguments.
 ##
 ##  Called with one argument <A>list</A>,

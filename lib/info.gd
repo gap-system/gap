@@ -24,7 +24,7 @@
 ##  SetInfoLevel( <class>, <level> ) to set desired printing levels and
 ##  Info( <selector>, <level>, <data>, <moredata>, ... ) to selectively print
 ##  <data>, <moredata>, etc. There is SetInfoHandler( <class>, <fun> ) to
-##  customize the way the <data>, etc. are printed. 
+##  customize the way the <data>, etc. are printed.
 ##
 ##  Also available are InfoLevel( <class> ) to inspect the level, and
 ##  SetAllInfoLevels( <level> )
@@ -125,15 +125,15 @@ DeclareOperation("InfoLevel", [IsInfoClass]);
 #############################################################################
 ##
 #O  SetInfoHandler( <selector>, <handler> )
-##  
+##
 ##  <handler> must be of the form  function(selector, level, moreargsfrominfo)
-##  
+##
 DeclareGlobalFunction("SetInfoHandler");
 DeclareGlobalFunction("DefaultInfoHandler");
 
 #############################################################################
 ##
-##  
+##
 DeclareGlobalFunction("UnbindInfoOutput");
 DeclareGlobalFunction("SetInfoOutput");
 DeclareGlobalFunction("InfoOutput");

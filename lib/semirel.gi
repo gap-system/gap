@@ -103,7 +103,7 @@ function(X)
     SetSource(rel, X);
     SetRange(rel, X);
     SetIsLeftSemigroupCongruence(rel,true);
-    
+
     if HasIsFinite(X) and IsFinite(X) then
        SetIsFiniteSemigroupGreensRelation(rel, true);
     fi;
@@ -252,9 +252,9 @@ end);
 #O  GreensHClassOfElement(<semigroup>, <representative>)
 ##
 
-InstallMethod(GreensRClassOfElement, "for a semigroup and object", 
+InstallMethod(GreensRClassOfElement, "for a semigroup and object",
 IsCollsElms,
-[IsSemigroup and HasIsFinite and IsFinite, IsObject], 
+[IsSemigroup and HasIsFinite and IsFinite, IsObject],
 function(s,e)
   return EquivalenceClassOfElementNC( GreensRRelation(s), e );
 end);
@@ -275,14 +275,14 @@ function(s,e)
 end);
 
 
-InstallMethod(GreensDClassOfElement, "for a semigroup and object", 
+InstallMethod(GreensDClassOfElement, "for a semigroup and object",
 IsCollsElms,
 [IsSemigroup and HasIsFinite and IsFinite, IsObject],
 function(s,e)
   return EquivalenceClassOfElementNC( GreensDRelation(s), e );
 end);
 
-InstallMethod(GreensJClassOfElement, "for a semigroup and object", 
+InstallMethod(GreensJClassOfElement, "for a semigroup and object",
 IsCollsElms,
 [IsSemigroup and HasIsFinite and IsFinite, IsObject],
 function(s,e)
@@ -291,7 +291,7 @@ end);
 
 #
 
-InstallMethod(CanonicalGreensClass, "for a Green's class", 
+InstallMethod(CanonicalGreensClass, "for a Green's class",
 [IsGreensClass],
 function(class)
   local x, canon;
@@ -444,12 +444,12 @@ end);
 
 #JDM this should be 5 methods
 
-InstallOtherMethod(EquivalenceClassOfElementNC, 
-"for a Green's relation and object", 
+InstallOtherMethod(EquivalenceClassOfElementNC,
+"for a Green's relation and object",
 [IsEquivalenceRelation and IsGreensRelation, IsObject],
 function(rel, rep)
   local filts, new;
-  
+
   filts:=IsEquivalenceClass and IsEquivalenceClassDefaultRep;
   if IsGreensRRelation(rel) then
     filts:=filts and IsGreensRClass;
@@ -462,7 +462,7 @@ function(rel, rep)
   elif IsGreensJRelation(rel) then
     filts:=filts and IsGreensJClass;
   fi;
-  
+
   new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)), filts), rec());
 
   SetEquivalenceClassRelation(new, rel);
@@ -610,7 +610,7 @@ InstallMethod(GreensDClasses, "for a semigroup", true, [IsSemigroup], 0,
 function(semi)
   local lrel, rrel, INT_L, INT_R, elts, INT_Rclasses, INT_Lclasses,
   INT_Dclasses, index, pos, INT_rc, INT_hc, INT_lc, new, newINT, Dclasses,
-  Lclasses, Rclasses, Hclasses, LHclasses, RHclasses, i, j, positions, R, L; 
+  Lclasses, Rclasses, Hclasses, LHclasses, RHclasses, i, j, positions, R, L;
 
   ## compute the join of the R- and L-relations
 
@@ -633,7 +633,7 @@ function(semi)
     #JDM isn't it enough that INT_lc contains a single element in
     #JDM INT_Dclasses[something].
     if pos=fail then
-      index:=index+1; Add(Rclasses, []); 
+      index:=index+1; Add(Rclasses, []);
       Add(Hclasses, []); Add(positions, []);
       Add(INT_Rclasses, []);
 
@@ -894,7 +894,7 @@ end );
 ## included because it may give a quicker way of finding a presentation for
 ## <semigroup> than the extended algorithm.
 
-InstallMethod(FroidurePinSimpleAlg, "for a finite monoid", 
+InstallMethod(FroidurePinSimpleAlg, "for a finite monoid",
 [IsMonoid and HasIsFinite and IsFinite and HasGeneratorsOfMonoid],
 function(semi)
   local  gens, concreteelts, free, freegens, fpelts, rules, Last, upos, u, i,
@@ -961,14 +961,14 @@ end);
 ##
 
 InstallMethod(FroidurePinExtendedAlg, "for a finite semigroup",
-[IsSemigroup], 
+[IsSemigroup],
 function(m)
   local gens, k, free, freegens, actualelts, fpelts, rules, i, u, v, Last,
         currentlength, b, s, r, newelt, j, p, new, length, newword, first,
         final, prefix, suffix, next, postmult, reducedflags, premult, fpsemi,
         old, sortedelts, pos, semi, perm, free2, one;
 
-  if not IsFinite(m) then 
+  if not IsFinite(m) then
     return fail;
   fi;
 
@@ -1037,12 +1037,12 @@ function(m)
 	if not reducedflags[s][i] then  # if s*a_i is not reduced
 	  r:=postmult[s][i];            # r=s*a_i
 	  if fpelts[r]=One(free) then   # r=1
-	    postmult[u][i]:=b+1; 
+	    postmult[u][i]:=b+1;
             reducedflags[u][i]:=true;   # u*a_i=b and it is reduced
 	  else
 	    postmult[u][i]:=postmult[premult[prefix[r]][b]][final[r]];
             #\rho(u*a_i)=\rho(\rho(b*r)*l(r))
-	    reducedflags[u][i]:=(newword=fpelts[postmult[u][i]]); 
+	    reducedflags[u][i]:=(newword=fpelts[postmult[u][i]]);
             # if \rho(u*a_i)=u*a_i then true
 	  fi;
         else
@@ -1052,19 +1052,19 @@ function(m)
           if old<=Last and newelt=sortedelts[old] then
             old:=pos[old];
 	    Add(rules, [newword, fpelts[old]]);
-	    postmult[u][i]:=old; 
+	    postmult[u][i]:=old;
             reducedflags[u][i]:=false;  # u*a_i represents the same elt as
                                         # fpelts[j] and is (hence) not reduced
 	  else
-            Add(fpelts, newword); Add(first, b); Add(final, i);   
+            Add(fpelts, newword); Add(first, b); Add(final, i);
             # add all its info to the table
-            Add(prefix,u); Add(suffix, postmult[suffix[u]][i]);   
+            Add(prefix,u); Add(suffix, postmult[suffix[u]][i]);
             # u=b*suffix(u)*a_i
             Add(postmult, []); Add(reducedflags, []); Add(premult, []);
             Add(length, length[u]+1); Add(actualelts, newelt);
 
 	    Last:=Last+1;
-	    postmult[u][i]:=Last; reducedflags[u][i]:=true;   
+	    postmult[u][i]:=Last; reducedflags[u][i]:=true;
             # the word u*a_i is a new elt
             # and is hence reduced
 
@@ -1172,7 +1172,7 @@ function(m)
     sortedelts := List(sortedelts,
     UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt);
     actualelts:=List(actualelts,
-     UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt); 
+     UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt);
 
     premult:=Permuted(OnTuplesTuples(premult, perm), perm);
     postmult:=Permuted(OnTuplesTuples(postmult, perm), perm);

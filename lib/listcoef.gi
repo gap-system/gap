@@ -44,7 +44,7 @@ InstallMethod( AddRowVector,
 InstallMethod( AddRowVector,
         "kernel method for small lists",
         IsCollsCollsElmsXX,
-        
+
     [ IsSmallList and IsDenseList and IsMutable,
       IsDenseList,
       IsMultiplicativeElement,
@@ -65,11 +65,11 @@ InstallMethod( AddRowVector,
     0,
         function( l1, l2, m, f, t )
     local   i;
-    
+
     for i  in [ f .. t ]  do
         l1[i] := l1[i] + m * l2[i];
     od;
-end 
+end
   );
 
 L1_IMMUTABLE_ERROR:=function(arg)
@@ -124,7 +124,7 @@ InstallOtherMethod( AddRowVector,
       IsGF2VectorRep,
       IS_FFE and IsInternalRep ],0,
         ADDCOEFFS_GF2VEC_GF2VEC_MULT );
-        
+
 InstallOtherMethod( AddRowVector,
         "kernel method for vecffe (5 args -- ignores last 2)",
         IsCollsCollsElmsXX,
@@ -142,7 +142,7 @@ InstallOtherMethod( AddRowVector,
       IsRowVector and IsPlistRep and IsFFECollection,
       IS_FFE and IsInternalRep ],0,
         ADD_ROWVECTOR_VECFFES_3 );
-        
+
 InstallOtherMethod( AddRowVector, "generic method 3 args",
     IsCollsCollsElms,
     [ IsDenseList and IsMutable,
@@ -155,7 +155,7 @@ local   i;
         l1[i] := l1[i] + m * l2[i];
     od;
 end );
-        
+
 InstallOtherMethod( AddRowVector,"error if immutable",true,
     [ IsList,IsObject,IsObject],0,L1_IMMUTABLE_ERROR);
 
@@ -216,7 +216,7 @@ InstallOtherMethod( AddRowVector,
     [ IsGF2VectorRep and IsMutable,
       IsGF2VectorRep],0,
         ADDCOEFFS_GF2VEC_GF2VEC );
-        
+
 InstallOtherMethod( AddRowVector,"error if immutable",true,
     [ IsList,IsObject],0,
         L1_IMMUTABLE_ERROR);
@@ -380,8 +380,8 @@ InstallOtherMethod( ShrinkRowVector,"error if immutable",true,
 #M  PadCoeffs
 ##
 
-InstallMethod(PadCoeffs, 
-        "pad with supplied value", 
+InstallMethod(PadCoeffs,
+        "pad with supplied value",
         IsCollsXElms,
         [IsList and IsMutable, IsPosInt, IsObject],
         function(l,n,x)
@@ -393,9 +393,9 @@ InstallMethod(PadCoeffs,
     return;
 end);
 
-InstallMethod(PadCoeffs, 
-        "pad with zero", 
-        [IsList and IsMutable and IsAdditiveElementWithZeroCollection, 
+InstallMethod(PadCoeffs,
+        "pad with zero",
+        [IsList and IsMutable and IsAdditiveElementWithZeroCollection,
          IsPosInt],
         function(l,n)
     local   len,  z,  i;
@@ -589,12 +589,12 @@ function( l1, n1, l2, n2 )
     while 0 < n1 and l1[n1] = zero  do
         n1 := n1 - 1;
     od;
-        
+
     # reduce coeffs
     while n1 >= n2  do
         q := -l1[n1]/l2[n2];
         l := n1-n2;
-        for i  in [ n1-n2+1 .. n1 ]  do 
+        for i  in [ n1-n2+1 .. n1 ]  do
             l1[i] := l1[i]+q*l2[i-n1+n2];
             if l1[i] <> zero  then
                 l := i;
@@ -654,12 +654,12 @@ function( l1, n1, l2, n2, p )
     while 0 < n2 and l1[n1] = zero  do
         n1 := n1 - 1;
     od;
-        
+
     # reduce coeffs
     while n1 >= n2  do
         q := -l1[n1]/l2[n2] mod p;
         l := n1-n2;
-        for i  in [ n1-n2+1 .. n1 ]  do 
+        for i  in [ n1-n2+1 .. n1 ]  do
             l1[i] := (l1[i]+q*l2[i-n1+n2] mod p) mod p;
             if l1[i] <> zero  then
                 l := i;
@@ -704,7 +704,7 @@ function( l1, n1, p )
         return l1;
     fi;
     zero := Zero(l1[1]);
-        
+
     # reduce coeffs
     n2 := 0;
     for i  in [ 1 .. n1 ]  do
@@ -747,8 +747,8 @@ InstallMethod( QuotRemCoeffs,"generic",
         [IsList, IsInt, IsList, IsInt],
 function( l1, n1, l2, n2 )
     local   zero,  rem,  quot,  q,  l,  i;
-    
-    
+
+
     # catch trivial cases
     if 0 = n2  then
         Error( "<l2> must be non-zero" );
@@ -765,7 +765,7 @@ function( l1, n1, l2, n2 )
     while 0 < n1 and l1[n1] = zero  do
         n1 := n1 - 1;
     od;
-    
+
     rem := l1{[1..n1]};
     quot := ListWithIdenticalEntries(n1-n2+1,zero);
     # reduce coeffs
@@ -773,7 +773,7 @@ function( l1, n1, l2, n2 )
         q := rem[n1]/l2[n2];
         l := n1-n2;
         quot[l+1] := q;
-        for i  in [ n1-n2+1 .. n1 ]  do 
+        for i  in [ n1-n2+1 .. n1 ]  do
             rem[i] := rem[i]-q*l2[i-n1+n2];
             if rem[i] <> zero  then
                 l := i;
@@ -783,8 +783,8 @@ function( l1, n1, l2, n2 )
     od;
     return [quot,rem];
 end );
-        
-        
+
+
 #############################################################################
 ##
 #M  QuotRemCoeffs( <list1>, <list2> )
@@ -990,7 +990,7 @@ end );
 
 #############################################################################
 ##
-#F  QuotRemPolList( <f>, <g>) 
+#F  QuotRemPolList( <f>, <g>)
 ##
 ##  Quotient and  Remainder  of polynomials   given as  list,  is  needed for
 ##  algebraic extensions and fits best here.
@@ -1103,7 +1103,7 @@ InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
     # build the data structures
     f:=AsSSortedList(f);
     Assert(1,f[1]=Zero(f[1]));
-    
+
     # get differences between field entries (so we can get the next vector
     # with one addition)
     fdi:=[];
@@ -1111,9 +1111,9 @@ InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
         fdi[j-1]:=f[j]-f[j-1];
     od;
     Add(fdi,-f[Length(f)]); # the subtraction multiple we need at the end.
-    
+
     fdip := List(fdi, x-> Position(fdi,x));
-    
+
     # veclis contains for each vector in mat a list of its fdi-multiples.
     # using this list we do not need any scalar arithmetic in the loops below.
     veclis:=[];
@@ -1132,15 +1132,15 @@ InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
     od;
 
     d:=ListWithIdenticalEntries(Length(vec)+1,0);
-    
+
     q := Length(f);
-    if q = 2 then 
+    if q = 2 then
         # gf2 case
-        # zero out trailing bits. 
+        # zero out trailing bits.
         # This is not time relevant and easier to do in
-        # the library by calling kernel functions 
+        # the library by calling kernel functions
         # which do it as a side effect.
-        
+
         for i in veclis do
             for j in i{[1..Length(i)-1]} do
                 DIST_GF2VEC_GF2VEC(j,j);
@@ -1152,7 +1152,7 @@ InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
         #
         # 8 bit case, have to get everything over one field!
         #
-        
+
         ok8 := true;
         for i in veclis do
             for j in [1..q] do
@@ -1172,17 +1172,17 @@ InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
                 ok8 := false;
             fi;
         fi;
-        
+
         if ok8 then
             DISTANCE_DISTRIB_VEC8BITS( veclis, vec, d);
             return d;
         fi;
     fi;
-    
+
     # no kernel method available, use library recursion
     DistVecClosVecLib(veclis,vec,d,
             ZeroOp(vec),1,Length(veclis),
-            Length(veclis[1])-2 # -2: last entry is `false', 
+            Length(veclis[1])-2 # -2: last entry is `false',
             # entry -1 the negative
             );
 
@@ -1198,10 +1198,10 @@ end);
 AClosVecLib:=function(veclis,vec,sum,pos,l,m,cnt,stop,bd,bv,coords,bcoords)
     local i,di,vp;
     if    # if this vector has coeff 0 there must be at least cnt+1 free positions
-        # to come up with the right number of vectors 
+        # to come up with the right number of vectors
       (l>cnt+pos) then
         bd:=AClosVecLib(veclis,vec,sum,pos+1,l,m,cnt,stop,bd,bv,coords,bcoords);
-        
+
         if bd<=stop then
             return bd;
         fi;
@@ -1253,19 +1253,19 @@ AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
             return Zero(vec);
         fi;
     fi;
-   
+
     if cnt > Length(mat) then
       Error("First list needs at least ", cnt, " vectors . . .\n");
     fi;
-    
+
     ConvertToMatrixRepNC(mat,Size(f));
     ConvertToVectorRepNC(vec,f);
-    
+
     # build the data structures
     f:=AsSSortedList(f);
     q := Length(f);
     Assert(1,f[1]=Zero(f[1]));
-    
+
     # get differences between field entries (so we can get the next vector
     # with one addition)
     fdi:=[];
@@ -1273,10 +1273,10 @@ AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
         fdi[j-1]:=f[j]-f[j-1];
     od;
     Add(fdi,-f[Length(f)]); # the subtraction multiple we need at the end.
-    
+
     fdip := List(fdi, x-> Position(fdi,x));
 
-    
+
         # veclis contains for each vector in mat a list of its fdi-multiples.
         # using this list we do not need any scalar arithmetic in the loops below.
     veclis:=[];
@@ -1293,8 +1293,8 @@ AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
         od;
         Add(veclis,mults);
     od;
-    
-    if q = 2 then 
+
+    if q = 2 then
         # gf2 case
         # zero out trailing bits. This is not time relevant and easier to do in
         # the library by calling kernel functions which do it as a side effect.
@@ -1316,7 +1316,7 @@ AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
         #
         # 8 bit case, have to get everything over one field!
         #
-        
+
         ok8 := true;
         for i in veclis do
             for j in [1..q] do
@@ -1336,7 +1336,7 @@ AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
                 ok8 := false;
             fi;
         fi;
-        
+
         if ok8 then
             if coords then
                 b := A_CLOSEST_VEC8BIT_COORDS(veclis,vec,cnt-1,stop);
@@ -1352,7 +1352,7 @@ AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
         c := ListWithIdenticalEntries(Length(mat),0);
         bc:= ListWithIdenticalEntries(Length(mat),0);
         AClosVecLib(veclis,vec,ZeroOp(vec),1,Length(veclis),
-                Length(f)-1, 
+                Length(f)-1,
                 cnt-1,        # the routine uses 0 offset
                 stop,
                 Length(b)+1,  # value 1 larger than worst
@@ -1361,7 +1361,7 @@ AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
         return [b,f{1+bc}];
     else
         AClosVecLib(veclis,vec,ZeroOp(vec),1,Length(veclis),
-                Length(f)-1, 
+                Length(f)-1,
                 cnt-1,        # the routine uses 0 offset
                 stop,
                 Length(b)+1,  # value 1 larger than worst
@@ -1369,7 +1369,7 @@ AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
         ConvertToVectorRepNC(b);
         return b;
     fi;
-end;        
+end;
 
 
 InstallMethod(AClosestVectorCombinationsMatFFEVecFFE,"generic",
@@ -1406,9 +1406,9 @@ end);
 
 CosetLeadersInner := function(vl, v, w, weight, pos, record, felts,q, tofind)
     local found, i, j;
-    
+
     found := 0;
-    
+
     # if just one more vector is needed, then shift to a loop
     # to avoid recursion overhead
     if weight = 1 then
@@ -1426,7 +1426,7 @@ CosetLeadersInner := function(vl, v, w, weight, pos, record, felts,q, tofind)
             v[j] := felts[1];
         od;
     else
-    
+
         # option 1, do nothing in position pos
         if Length(v) >= pos + weight then
             found := found + CosetLeadersInner( vl, v, w, weight, pos+1,
@@ -1435,7 +1435,7 @@ CosetLeadersInner := function(vl, v, w, weight, pos, record, felts,q, tofind)
                 return found;
             fi;
         fi;
-        
+
         # option 2, add each multiple and recurse
         for i in [1..q-1] do
             AddRowVector(w, vl[pos][i]);
@@ -1457,9 +1457,9 @@ MakeReadOnlyGlobal("CosetLeadersInner");
 InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
         [IsMatrix,IsFFECollection and IsField],0,
         function(mat,f)
-    local q, leaders, tofind, n,m, t, vl, i, felts, fds, 
+    local q, leaders, tofind, n,m, t, vl, i, felts, fds,
           fdps, v,j,x, w, record, nzfelts, weight, ok8;
-    
+
     record := function(v,w)
         local sy,x,u;
         sy := NumberFFVector(v,q);
@@ -1474,7 +1474,7 @@ InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
         fi;
         return 0;
     end;
-            
+
     q := Size(f);
     n := Length(mat[1]);
     m := Length(mat);
@@ -1493,7 +1493,7 @@ InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
         v := t[i];
         vl[i] := [];
         for j in [1..q+1] do
-            if fdps[j] < j then 
+            if fdps[j] < j then
                 Add(vl[i], vl[i][fdps[j]]);
             else
                 Add(vl[i], v*fds[j]);
@@ -1504,7 +1504,7 @@ InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
     v := ListWithIdenticalEntries(n, felts[1]);
     w := ZeroOp(t[1]);
     if 2 <= q and q < 256 then
-        
+
         # 8 bit case, need to get all vectors over the right field
         ok8 := true;
         if q <> ConvertToVectorRepNC(v,q) then
@@ -1527,10 +1527,10 @@ InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
         ok8 := false;
     fi;
     leaders := [Immutable(v)];
-    
+
     # this line checks that the required number of coset leaders
     # CAN be stored in a plain list
-    
+
     leaders[tofind+1] := false;
     tofind := tofind -1;
     weight := 0;
@@ -1543,18 +1543,18 @@ InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
             tofind := tofind - COSET_LEADERS_INNER_GF2( vl, weight,
                               tofind, leaders);
         elif ok8 then
-            tofind := tofind - COSET_LEADERS_INNER_8BITS( vl, weight, 
+            tofind := tofind - COSET_LEADERS_INNER_8BITS( vl, weight,
                               tofind, leaders, felts);
         else
             tofind := tofind - CosetLeadersInner(vl, v, w, weight, 1,
                               record, felts, q, tofind);
         fi;
     od;
-    
+
     Unbind(leaders[q^m+1]);
     return leaders;
 end);
-   
+
 
 #############################################################################
 ##
@@ -1565,7 +1565,7 @@ end);
 ##
 ##  kernel method for plain lists of cyclotomics, plain ranges and integers
 ##
-InstallMethod( AddToListEntries, "fast kernel method", true, 
+InstallMethod( AddToListEntries, "fast kernel method", true,
         [IsList and IsPlistRep and IsMutable and IsCyclotomicCollection,
-         IsRange and IsRangeRep, IsInt], 0, 
+         IsRange and IsRangeRep, IsInt], 0,
         ADD_TO_LIST_ENTRIES_PLIST_RANGE);

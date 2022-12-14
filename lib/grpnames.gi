@@ -542,12 +542,12 @@ InstallGlobalFunction( DirectFactorsOfGroupFromList,
     for s1 in Difference(Set(sizes),[Size(G),1]) do
       i := PositionSet(sizes,s1);
       s2 := Size(G)/s1;
-      if s1 <= s2 then 
+      if s1 <= s2 then
         repeat
           if s2 > s1 then
             j := PositionSet(sizes,s2);
             if j = fail then break; fi;
-          else 
+          else
             j := i + 1;
           fi;
           while j <= Size(sizes) and sizes[j] = s2 do
@@ -877,7 +877,7 @@ InstallMethod( DecompositionTypesOfGroup,
 
   function ( G )
 
-    local  AG, a,  # abelian invariants; an invariant 
+    local  AG, a,  # abelian invariants; an invariant
            CS,     # conjugacy classes of non-(1-or-G) subgroups
            H,      # a subgroup (possibly normal)
            N,      # a normal subgroup
@@ -908,7 +908,7 @@ InstallMethod( DecompositionTypesOfGroup,
                       N -> IsNormal(G,N)) do
       for H in List(CS, Representative) do # Lemma1 (`SemidirectFactors...')
         if    Size(H)*Size(N) = Size(G)
-          and IsTrivial(NormalIntersection(N,H)) 
+          and IsTrivial(NormalIntersection(N,H))
         then
           # recursion (exponentially) on (semi-)factors
           TH := DecompositionTypesOfGroup(H);
@@ -924,13 +924,13 @@ InstallMethod( DecompositionTypesOfGroup,
                 else Add(T,tH); fi;
                 if   IsList(tN) and tN[1] = "x"
                 then Append(T,tN{[2..Length(tN)]});
-                else Add(T,tN); fi; 
+                else Add(T,tN); fi;
                 Sort(T);
                 AddSet(DTypes,Concatenation(["x"],T));
               od;
             od;
           else
-            # non-direct, non-trivial G = H semidirect N 
+            # non-direct, non-trivial G = H semidirect N
             for tH in TH do
               for tN in TN do
                 AddSet(DTypes,[":",tH,tN]);
@@ -1120,7 +1120,7 @@ InstallMethod( IsQuasiDihedralGroup,
     n := N/2;
 
     # G = <t, s | s^(2^n) = t^2 = 1, s^t = s^(-1 + 2^(n-1))>.
-    # ==> Comm(s, t) = s^-1 t s t = s^(-2+2^(n-1)) 
+    # ==> Comm(s, t) = s^-1 t s t = s^(-2+2^(n-1))
     # ==> G' = < s^(-2+2^(n-1)) >, |G'| = n/2.
     G1 := DerivedSubgroup(G);
     if not ( IsCyclic(G1) and Size(G1) = n/2 ) then return false; fi;
@@ -1136,15 +1136,15 @@ InstallMethod( IsQuasiDihedralGroup,
     if not ( IsCyclic(Zn) and Size(Zn) = n ) then return false; fi;
 
     # now Zn is normal in G and Zn = < s | s^n = 1 >
-    # now remain only the possibilities for the structure: 
+    # now remain only the possibilities for the structure:
     #   dihedral, quaternion, quasidihedral
     repeat t := Random(G); until not t in Zn;
 
     # detect cases: dihedral, quaternion
     if   ForAll(GeneratorsOfGroup(Zn), s -> s^t*s = s^0)
     then return false; fi;
- 
-    # choose t in Zn of order 2   
+
+    # choose t in Zn of order 2
     repeat
       t := Random(G);
     until not( t in Zn and Order(t) = 2 ); # prob = 1/4
@@ -1228,7 +1228,7 @@ InstallOtherMethod( IsNaturalAlternatingGroup, "for non-permutation group",
 ##
 #M  IsSymmetricGroup( <G> ) . . . . . . . . . . . . . . . . .  generic method
 ##
-##  This method additionally sets the attribute `SymmetricDegree' in case 
+##  This method additionally sets the attribute `SymmetricDegree' in case
 ##  <G> is isomorphic to a natural symmetric group.
 ##
 InstallMethod( IsSymmetricGroup,
@@ -1374,7 +1374,7 @@ InstallGlobalFunction( LinearGroupParameters,
 
     # Betrachte N = |GL(n,q)|. Dann gilt f"ur n >= 2
     #   (1) nu_p(N) = e * Binomial(n,2) und
-    #   (2) (q - 1)^n teilt N.  
+    #   (2) (q - 1)^n teilt N.
     npeGL := [ ]; npeSL := [ ]; npePSL := [ ];
     if N = 1 then
       return rec( npeGL := npeGL, npeSL := npeSL, npePSL := npePSL );
@@ -1428,8 +1428,8 @@ InstallMethod( IsPSL,
     if Length(npes) = 0 then return false; fi;
 
     # more than one npe-triple should only
-    # occur in the cases |G| in [60, 168, 20160] 
-    if   Length(npes) > 1 and not( Size(G) in [60, 168, 20160] ) 
+    # occur in the cases |G| in [60, 168, 20160]
+    if   Length(npes) > 1 and not( Size(G) in [60, 168, 20160] )
     then Error("algebraic panic! probably npe does not work"); fi;
 
     # set the parameters
@@ -1443,7 +1443,7 @@ InstallMethod( IsPSL,
     if npes[1] = [2, 2, 1] then
       if IsAbelian(G) then return false; fi;
       SetParametersOfGroupViewedAsPSL(G,npe); return true;
-  
+
     # PSL(2, 3)
     elif npes[1] = [2, 3, 1] then
       if Size(DerivedSubgroup(G)) <> 4 then return false; fi;
@@ -1510,7 +1510,7 @@ InstallMethod( IsSL,
     if Length(npes) > 1 then
       Error("algebraic panic! this should not occur");
     fi;
-    npes := npes[1]; 
+    npes := npes[1];
 
     # catch the cases:
     #   SL(2, 2) ~= S3, SL(2, 3)
@@ -1529,7 +1529,7 @@ InstallMethod( IsSL,
     # other cases, in which the contained PSL is simple
     else
 
-      # calculate the centre C of G, which should have the 
+      # calculate the centre C of G, which should have the
       # size gcd(n, p^e - 1), and if so, check if G/C (which
       # should be the corresponding PSL) is simple
       C := Centre(G);
@@ -1591,7 +1591,7 @@ InstallMethod( IsGL,
     # check if G has appropriate size
     npes := LinearGroupParameters(Size(G)).npeGL;
     if Length(npes) = 0 then return false; fi;
-  
+
     # more than one npe-triple should never occur
     if Length(npes) > 1 then
       Error("algebraic panic! this should not occur");
@@ -1620,8 +1620,8 @@ InstallMethod( IsGL,
       G1 := DerivedSubgroup(G);
       if Index(G, G1) <> npes[2]^npes[3] - 1 then return false; fi;
 
-      # calculate the centre C1 of G1, which should have the 
-      # size gcd(n, p^e - 1), and if so, check if G1/C1 
+      # calculate the centre C1 of G1, which should have the
+      # size gcd(n, p^e - 1), and if so, check if G1/C1
       # (which should be the corresponding PSL) is simple
       C1 := Centre(G1);
       if   Size(C1) <> Gcd(npes[1],npes[2]^npes[3] - 1)

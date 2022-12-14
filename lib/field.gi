@@ -261,7 +261,7 @@ InstallMethod( ViewString,
     if HasSize( F ) and IsInt( Size( F ) ) then
       return Concatenation("<field of size ", String(Size( F )), ">" );
     else
-      return Concatenation( "<field in characteristic ", 
+      return Concatenation( "<field in characteristic ",
                             String(Characteristic( F )), ">" );
     fi;
     end );
@@ -1112,7 +1112,7 @@ InstallMethod( EuclideanDegree,
 InstallMethod( QuotientRemainder,
     "for a division ring, and two ring elements",
     IsCollsElmsElms,
-    [ IsDivisionRing, IsRingElement, IsRingElement ], 
+    [ IsDivisionRing, IsRingElement, IsRingElement ],
     function ( F, r, s )
     if not r in F then
       TryNextMethod(); # FIXME: or error?

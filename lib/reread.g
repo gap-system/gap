@@ -78,7 +78,7 @@ BindGlobal("Reread",
 end);
 
 
-BindGlobal("RereadAndCheckFunc", 
+BindGlobal("RereadAndCheckFunc",
         function( path )
     local func;
     func := ReadAndCheckFunc(path);

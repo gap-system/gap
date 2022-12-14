@@ -30,7 +30,7 @@ function( g, S )
     fi;
     m := MovedPoints(S);
     l := NrMovedPoints(S);
-   
+
     if g = One( g )  then
         return true;
     elif l = 0  then
@@ -58,7 +58,7 @@ end );
 ##
 InstallOtherMethod( RepresentativeActionOp, "natural alternating group",
   true, [ IsNaturalAlternatingGroup, IsObject, IsObject, IsFunction ],
-  # the objects might be group elements: rank up       
+  # the objects might be group elements: rank up
   {} -> 2*RankFilter(IsMultiplicativeElementWithInverse),
 function ( G, d, e, opr )
 local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
@@ -199,7 +199,7 @@ function ( G, p )
     # make the Sylow subgroup
     S := SubgroupNC( G, sgs );
     SetSize(S,p^Length(sgs));
-   
+
 
     # add the stabilizer chain
     #MakeStabChainStrongGenerators( S, Reversed([1..G.degree]), sgs );
@@ -285,7 +285,7 @@ local hom;
 end);
 
 InstallMethod( IsomorphismFpGroup, "alternating group, supply name", true,
-    [ IsAlternatingGroup ], 
+    [ IsAlternatingGroup ],
     40, # override `IsSimple...' method
 function(G)
   if Size(G)=1 then TryNextMethod();fi;
@@ -717,7 +717,7 @@ function( g, S )
 
     m := MovedPoints(S);
     l := NrMovedPoints(S);
-   
+
     if g = One( g )  then
         return true;
     elif l = 0  then
@@ -797,7 +797,7 @@ BindGlobal("FLOYDS_ALGORITHM", function(rs, deg, even)
     return rnd;
 end);
 
-   
+
 
 InstallMethodWithRandomSource( Random,
     "for a random source and a natural symmetric group: floyd's algorithm",
@@ -940,7 +940,7 @@ SYMGP_STABILIZER := function(sym, arg...)
     k := Length(arg);
     act := arg[k];
     pt := arg[k-3];
-   
+
     if arg[k-1] <> arg[k-2] then
         TryNextMethod();
     fi;
@@ -969,7 +969,7 @@ SYMGP_STABILIZER := function(sym, arg...)
         fi;
     elif act = OnTuplesTuples and IsList(pt) and ForAll(pt, x->IsList(x) and ForAll(x,IsPosInt)) then
         stab := SymmetricGroup(Difference(mov,Set(Flat(pt))));
-        nat := true;       
+        nat := true;
     elif act = OnTuplesSets and IsList(pt) and ForAll(pt, x-> IsSet(x) and ForAll(x,IsPosInt)) then
         bls := List(mov, x-> List(pt, y-> x in y));
         mov1 := ShallowCopy(mov);
@@ -991,7 +991,7 @@ SYMGP_STABILIZER := function(sym, arg...)
         if Length(part) > 1 then
             Add(parts, part);
         fi;
-       
+
         gens := [];
         size := 1;
         for part in parts do
@@ -1011,29 +1011,29 @@ SYMGP_STABILIZER := function(sym, arg...)
     return stab;
 end;
 
-       
 
-       
-           
-       
+
+
+
+
 
 InstallOtherMethod( StabilizerOp,"symmetric group", true,
     [ IsNaturalSymmetricGroup, IsObject, IsList, IsList, IsFunction ],
-  # the objects might be a group element: rank up      
+  # the objects might be a group element: rank up
         {} -> RankFilter(IsMultiplicativeElementWithInverse) +
         RankFilter(IsSolvableGroup),
         SYMGP_STABILIZER);
 
 InstallOtherMethod( StabilizerOp,"symmetric group", true,
     [ IsNaturalSymmetricGroup, IsDomain, IsObject, IsList, IsList, IsFunction ],
-  # the objects might be a group element: rank up      
+  # the objects might be a group element: rank up
         {} -> RankFilter(IsMultiplicativeElementWithInverse) +
         RankFilter(IsSolvableGroup),
         SYMGP_STABILIZER);
 
 InstallOtherMethod( StabilizerOp,"alternating group", true,
     [ IsNaturalAlternatingGroup, IsObject, IsList, IsList, IsFunction ],
-  # the objects might be a group element: rank up      
+  # the objects might be a group element: rank up
         {} -> RankFilter(IsMultiplicativeElementWithInverse) +
         RankFilter(IsSolvableGroup),
 function(g, arg...)
@@ -1049,7 +1049,7 @@ end);
 
 InstallOtherMethod( StabilizerOp,"alternating group", true,
     [ IsNaturalAlternatingGroup, IsDomain, IsObject, IsList, IsList, IsFunction ],
-  # the objects might be a group element: rank up      
+  # the objects might be a group element: rank up
         {} -> RankFilter(IsMultiplicativeElementWithInverse) +
         RankFilter(IsSolvableGroup),
         function(g, arg...)
@@ -1081,7 +1081,7 @@ function ( G, g )
             mov,        # moved points of group
             siz,        # size of centraliser
             l;
-   
+
     # test for internal rep
     if HasGeneratorsOfGroup(G) and
       not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
@@ -1112,7 +1112,7 @@ function ( G, g )
             counts[l] := counts[l]+1;
         fi;
     od;
-   
+
     # loop over the cycles
     for cycle  in cycles  do
         l := Length(cycle);
@@ -1132,18 +1132,18 @@ function ( G, g )
       fi;
 
   od;
- 
+
   siz := 1;
   for l in [1..Length(counts)] do
       if IsBound(counts[l]) then
           siz := siz*l^counts[l]*Factorial(counts[l]);
       fi;
   od;
- 
+
   # make the centralizer
   C := SubgroupNC(  G , sgs );
   SetSize(C,siz);
- 
+
 
   # return the centralizer
   return C;
@@ -1604,7 +1604,7 @@ end);
 ##
 InstallOtherMethod( RepresentativeActionOp, "for natural symmetric group",
     true, [ IsNaturalSymmetricGroup, IsObject, IsObject, IsFunction ],
-  # the objects might be group elements: rank up       
+  # the objects might be group elements: rank up
   {} -> 2*RankFilter(IsMultiplicativeElementWithInverse),
 function ( G, d, e, opr )
 local dom,n,sortfun,max,cd,ce,p1,p2;
@@ -1713,8 +1713,8 @@ local   S,          # <p>-Sylow subgroup of <G>, result
     # make the Sylow subgroup
     S := SubgroupNC(  G , sgs );
     SetSize(S,p^Length(sgs));
-   
-   
+
+
     if Size( S ) > 1 then
         SetIsPGroup( S, true );
         SetPrimePGroup( S, p );
@@ -1769,7 +1769,7 @@ function ( G )
 end);
 
 InstallMethod( IsomorphismFpGroup, "symmetric group, supply name", true,
-    [ IsSymmetricGroup ], 
+    [ IsSymmetricGroup ],
     30, # override `IsNatural...' method
 function(G)
   return IsomorphismFpGroup(G,
@@ -2031,7 +2031,7 @@ local dom, l, sgs, nondupbase;
   fi;
   dom:=Set(MovedPoints(G));
   l:=Length(dom);
- 
+
   if IsBound(r.base) then
       nondupbase:=DuplicateFreeList(r.base);
       dom:=Concatenation(Filtered(nondupbase,i->i in dom),Difference(dom,nondupbase));

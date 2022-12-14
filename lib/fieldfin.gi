@@ -603,11 +603,11 @@ InstallMethod( CanonicalBasis,
 
 
 #############################################################################
-##  
+##
 #M  NormalBase( <F>, <elm> )
-##  
+##
 ##  For finite fields just search.
-##  
+##
 InstallMethod( NormalBase,
 "for a finite field and scalar",
     [ IsField and IsFinite, IsScalar ],

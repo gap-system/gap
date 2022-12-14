@@ -207,7 +207,7 @@ InstallMethod( TwoSidedIdealByGenerators,
     SetRightActingRingOfIdeal( I, R );
     return I;
     end );
-    
+
 
 #############################################################################
 ##
@@ -274,7 +274,7 @@ InstallMethod( RightIdealByGenerators,
     function( R, gens )
     return TwoSidedIdealByGenerators( R, gens );
     end );
-    
+
 
 #############################################################################
 ##
@@ -682,7 +682,7 @@ InstallMethod( GeneratorsOfRightIdeal,
              and HasGeneratorsOfTwoSidedIdeal ], 0,
     GeneratorsOfRing );
 
-     
+
 #############################################################################
 ##
 #M  \+( <I1>, <I2> )  . . . . . . . . . . . . . . . . . . . sum of two ideals
@@ -891,7 +891,7 @@ InstallMethod(IsSubset,"2-sided ideal in ring, naive",IsIdenticalObj,
 function(R,I)
   if IsIdenticalObj(R,RightActingRingOfIdeal(I)) and
      IsIdenticalObj(R,LeftActingRingOfIdeal(I)) then
-     return IsSubset(R,GeneratorsOfTwoSidedIdeal(I)); 
+     return IsSubset(R,GeneratorsOfTwoSidedIdeal(I));
    fi;
    TryNextMethod();
 end);

@@ -32,7 +32,7 @@ DeclareSynonymAttr( "IsMagmaHomomorphism",
 
 #############################################################################
 ##
-#F  MagmaHomomorphismByFunctionNC( <G>, <H>, <fn> ) 
+#F  MagmaHomomorphismByFunctionNC( <G>, <H>, <fn> )
 ##
 ##  <#GAPDoc Label="MagmaHomomorphismByFunctionNC">
 ##  <ManSection>
@@ -49,7 +49,7 @@ DeclareGlobalFunction( "MagmaHomomorphismByFunctionNC");
 
 #############################################################################
 ##
-#F  MagmaIsomorphismByFunctionsNC( <G>, <H>, <fn>, <inv> ) 
+#F  MagmaIsomorphismByFunctionsNC( <G>, <H>, <fn>, <inv> )
 ##
 ##  <ManSection>
 ##  <Func Name="MagmaIsomorphismByFunctionsNC" Arg='G, H, fn, inv'/>
@@ -74,7 +74,7 @@ DeclareGlobalFunction( "MagmaIsomorphismByFunctionsNC");
 ##  <Description>
 ##  returns a mapping from the magma <A>f</A> with <M>n</M> generators to the
 ##  magma <A>s</A> with <M>n</M> generators,
-##  which maps the <M>i</M>-th generator of <A>f</A> to the 
+##  which maps the <M>i</M>-th generator of <A>f</A> to the
 ##  <M>i</M>-th generator of <A>s</A>.
 ##  </Description>
 ##  </ManSection>

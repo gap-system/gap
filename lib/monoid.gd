@@ -115,7 +115,7 @@ DeclareOperation( "MonoidByGenerators", [ IsCollection ] );
 ##  <Oper Name="AsMonoid" Arg='C'/>
 ##
 ##  <Description>
-##  If <A>C</A> is a collection whose elements form a monoid, 
+##  If <A>C</A> is a collection whose elements form a monoid,
 ##  then <Ref Oper="AsMonoid"/> returns this monoid.
 ##  Otherwise <K>fail</K> is returned.
 ##  </Description>
@@ -272,7 +272,7 @@ DeclareSynonymAttr( "TrivialSubmonoid", TrivialSubmagmaWithOne );
 ##  (see&nbsp;<Ref Sect="Representations for Associative Words"/>).
 ##  If no such filter is given, a letter representation is used.
 ##  <P/>
-##  For more on associative words see 
+##  For more on associative words see
 ##  Chapter&nbsp;<Ref Chap="Associative Words"/>.
 ##
 ##  <Example><![CDATA[

@@ -976,7 +976,7 @@ InstallMethod( WeylOrbitIterator,
                IsDoneIterator := IsDoneIterator_WeylOrbit,
                NextIterator   := NextIterator_WeylOrbit,
 #T no `ShallowCopy'!
-               ShallowCopy:= function( iter ) 
+               ShallowCopy:= function( iter )
                       return rec( root:= ShallowCopy( iter!.root ),
                         currentWeight:= ShallowCopy( iter!.currentWeight ),
                         stack:= ShallowCopy( iter!.stack ),
@@ -2212,9 +2212,9 @@ end );
 
 ############################################################################
 ##
-##                                               
 ##
-##  The next few functions are implementations for vector search tables. 
+##
+##  The next few functions are implementations for vector search tables.
 ##  The ideas
 ##  used in this implementation are from Macaulay 2 by Dan Grayson and
 ##  Mike Stillman.
@@ -2327,7 +2327,7 @@ InstallMethod( Insert,
                     q.nxt := p;
                 fi;
             fi;
-            
+
             # Need to add a zero layer to the current variable.
             if p.var > iVar then
                 iVar := p.var;
@@ -2383,7 +2383,7 @@ InstallMethod( Search,
         if T!.top = 0 then
             return fail;
         fi;
-        
+
         p := T!.top;
         while true do
             p := p.right;
@@ -2416,8 +2416,8 @@ InstallMethod( Search,
 ##
 ## construct an empty search table or a search table containing <data>
 ## keyed by <keys>. The list <keys> must contain integer lists which are
-## interpreted as exponents for variables.           
-## 
+## interpreted as exponents for variables.
+##
 ## The lists <keys> and <data> must be the same length as well.
 ##
 InstallGlobalFunction( VectorSearchTable,
@@ -2432,7 +2432,7 @@ InstallGlobalFunction( VectorSearchTable,
         fi;
 
         fam := NewFamily("VectorSearchTableFam", IsVectorSearchTable);
-        T := Objectify( NewType(fam, 
+        T := Objectify( NewType(fam,
                                 IsVectorSearchTableDefaultRep and IsMutable),
                         rec( top := 0) );
 
@@ -2658,7 +2658,7 @@ end );
 InstallGlobalFunction( LeftReduceUEALatticeElement,
         function( novar, G, lms, lmtab, p )
 
-    local   fam,  reduced,  rem,  res,  m1,  k,  g,  diff,  cme,  mon,  
+    local   fam,  reduced,  rem,  res,  m1,  k,  g,  diff,  cme,  mon,
             cflmg,  j,  fac,  fac1,  cf,  lm;
 
     # We left-reduce the UEALattice element `p' modulo the elements in `G'.
@@ -2677,10 +2677,10 @@ InstallGlobalFunction( LeftReduceUEALatticeElement,
         m1:= LeadingUEALatticeMonomial( novar, rem );
         k:= 1;
         reduced:= false;
-            
+
         k:= Search( lmtab, m1[2] );
         if k <> fail then
-            
+
             g:= G[k];
             diff:= ShallowCopy( m1[2] );
             cme:= g![1];
@@ -2700,15 +2700,15 @@ InstallGlobalFunction( LeftReduceUEALatticeElement,
             cf:= LeadingUEALatticeMonomial( novar, fac1 )[3];
             rem:= rem - (m1[3]/cf)*fac1;
             reduced:= true;
-    
-        
+
+
         else
             lm:= ObjByExtRep( fam, [ m1[1], m1[3] ] );
             res:= res + lm;
-            rem:= rem-lm; 
+            rem:= rem-lm;
         fi;
-        
-            
+
+
     od;
 
     return res;
@@ -2736,7 +2736,7 @@ InstallMethod( ExtRepOfObj,
         [ IsWeightRepElement and IsPackedElementDefaultRep ], 0,
         function( v )
     return v![1];
-    
+
 end );
 
 
@@ -2792,7 +2792,7 @@ InstallMethod(\+,
 
         # See whether in `lu' there is a vector with the same number as
         # `lv[k]'. If not, then insert...
-        
+
 #        p := PositionSorted(vecs, [lv[k]]);
         p:= PositionSorted( vecs, lv[k], function( a, b ) return a[1] < b[1];
                                                                 end );
@@ -2842,9 +2842,9 @@ InstallMethod(\*,
         [ IsWeightRepElement and IsPackedElementDefaultRep, IsRingElement ], 0,
         function( u, scal )
     local lu,k;
-    
+
     if IsZero( scal ) then return ZeroOp( u ); fi;
-    
+
     lu:= ShallowCopy( u![1] );
     for k in [2,4..Length(lu)] do
         lu[k]:= scal*lu[k];
@@ -2859,7 +2859,7 @@ InstallMethod(\*,
         [ IsRingElement, IsWeightRepElement and IsPackedElementDefaultRep ], 0,
         function( scal, u  )
     local lu,k;
-    
+
     if IsZero( scal ) then return ZeroOp( u ); fi;
 
     lu:= ShallowCopy( u![1] );
@@ -2920,8 +2920,8 @@ InstallOtherMethod(\^,
         [ IsRingElement, IsWeightRepElement and IsPackedElementDefaultRep], 0,
         function( x, u )
 
-    local   fam,  G,  L,  wvecs,  j,  hwv,  hw,  g,  elt,  lu,  m,  k,  
-            n,  em,  er,  i,  len,  cf,  mon,  pos,  f,  mons,  cfts,  
+    local   fam,  G,  L,  wvecs,  j,  hwv,  hw,  g,  elt,  lu,  m,  k,
+            n,  em,  er,  i,  len,  cf,  mon,  pos,  f,  mons,  cfts,
             p,  im;
 
     fam:= FamilyObj( u );
@@ -3071,7 +3071,7 @@ TriangulizeWeightRepElementList:= function( ww )
     SortParallel( ww, basechange,
             function( u, v ) return u![1][1][1] < v![1][1][1]; end );
     heads:= [ ];
-    k:= 1;        
+    k:= 1;
     while k <= Length( ww ) do
         if IsZero( ww[k] ) then
             Unbind( ww[k] );
@@ -3094,7 +3094,7 @@ TriangulizeWeightRepElementList:= function( ww )
                     for b in basechange[k] do
                         b1:= [ b[1], -cf*b[2] ];
                         pos := PositionSorted( basechange[i], [b1[1]]);
-                        if Length( basechange[i] ) < pos or 
+                        if Length( basechange[i] ) < pos or
                            basechange[i][pos][1] <> b1[1] then
                             Add(basechange[i], b1, pos);
                         else
@@ -3108,7 +3108,7 @@ TriangulizeWeightRepElementList:= function( ww )
         fi;
         # sort the lists again...
         # get rid of the zeros first (if any)...
-        
+
         for i in [1..Length(ww)] do
             if IsZero( ww[i] ) then
                 Unbind( ww[i] );
@@ -3116,12 +3116,12 @@ TriangulizeWeightRepElementList:= function( ww )
             fi;
         od;
         ww:= Filtered( ww, x -> IsBound( x ) );
-        basechange:= Filtered( basechange, x -> IsBound( x ) ); 
-                
+        basechange:= Filtered( basechange, x -> IsBound( x ) );
+
         SortParallel( ww, basechange,
                 function( u, v )
                         return u![1][1][1] < v![1][1][1]; end );
-                  
+
     od;
     return rec( echelonbas:= ww, heads:= heads, basechange:= basechange );
 end;
@@ -3247,30 +3247,30 @@ InstallMethod( HighestWeightModule,
 
   function( L, hw )
 
-    local   NormalizedLeftReduction,  ggg,  famU,  R,  n,  posR,  V,  
-            lcombs,  fundB,  novar,  rank,  char,  orbs,  k,  it,  
-            orb,  www,  levels,  weights,  wd,  levwd,  i,  w,  j,  
-            w1,  lev,  lents,  maxlev,  cfs,  G,  Glms,  paths,  GB,  
-            lms,  lmtab,  curlev,  ccc,  mons,  pos,  m,  em,  z,  
-            pos1,  Glmsk,  Gk,  isdone,  mmm,  lm,  prelcm,  l,  
-            multiplicity,  sps,  sortmn,  we_had_enough,  le,  f,  
-            m1a,  g,  m2a,  lcm,  pp,  w2,  e1,  e2,  fac1,  fac2,  
-            comp,  vec,  ecomp,  vecs,  cfsc,  ec,  wvecs,  no,  fam,  
+    local   NormalizedLeftReduction,  ggg,  famU,  R,  n,  posR,  V,
+            lcombs,  fundB,  novar,  rank,  char,  orbs,  k,  it,
+            orb,  www,  levels,  weights,  wd,  levwd,  i,  w,  j,
+            w1,  lev,  lents,  maxlev,  cfs,  G,  Glms,  paths,  GB,
+            lms,  lmtab,  curlev,  ccc,  mons,  pos,  m,  em,  z,
+            pos1,  Glmsk,  Gk,  isdone,  mmm,  lm,  prelcm,  l,
+            multiplicity,  sps,  sortmn,  we_had_enough,  le,  f,
+            m1a,  g,  m2a,  lcm,  pp,  w2,  e1,  e2,  fac1,  fac2,
+            comp,  vec,  ecomp,  vecs,  cfsc,  ec,  wvecs,  no,  fam,
             B,  delmod,  delB, lexord, longmon;
-    
-    
+
+
     lexord:= function( novar, m1, m2 )
-    
+
         # m1, m2 are two monomials in extrep, deg lex order...
-    
+
         local   d1,  d2,  n1,  k,  n2,  o,  pos;
-        
+
         d1:= Sum(m1{[2,4..Length(m1)]});
         d2:= Sum(m2{[2,4..Length(m2)]});
         if d1<>d2 then
             return d1<d2;
         fi;
-        
+
         n1:= ListWithIdenticalEntries( novar, 0 );
         for k in [1,3..Length(m1)-1] do
             n1[m1[k]]:= m1[k+1];
@@ -3279,7 +3279,7 @@ InstallMethod( HighestWeightModule,
         for k in [1,3..Length(m2)-1] do
             n2[m2[k]]:= m2[k+1];
         od;
-        
+
         o:= n2-n1;
         pos:= PositionProperty( o, x -> x <> 0 );
         if pos = fail then
@@ -3409,8 +3409,8 @@ InstallMethod( HighestWeightModule,
     # `paths' is the list of normal monomials of each weight in `weights'.
     # `GB' is the Groebner basis, now as a flat list, `lms' are the
     # corresponding leading monomials.
-    # `lmtab' will be the search table of leading monomials of `G'. 
-    # 
+    # `lmtab' will be the search table of leading monomials of `G'.
+    #
 
     G:= [ [ ] ];
     Glms:= [ [ ] ];
@@ -3499,19 +3499,19 @@ InstallMethod( HighestWeightModule,
         for j in [1..Length(w)] do
 
             for i in [1..Length(mons[j])] do
-                
+
                 lm:= mons[j][i]![1][1];
                 longmon:= ListWithIdenticalEntries( n, 0 );
                 for l in [1,3..Length(lm)-1] do
                     longmon[lm[l]]:= lm[l+1];
-                od; 
+                od;
                 if Search( lmtab, longmon ) <> fail then
-                    
-                    # This means that `longmon' reduces modulo `G', 
+
+                    # This means that `longmon' reduces modulo `G',
                     # so we get rid of it.
                     Unbind( mons[j][i] );
                 fi;
-            od;                
+            od;
             mons[j]:= Filtered( mons[j], x -> IsBound(x) );
 
             Glmsk[j]:= [ ];
@@ -3521,8 +3521,8 @@ InstallMethod( HighestWeightModule,
             # `w[j]' is not a weight of the representation; this means that
             # there are no normal monomials of weight `w[j]'. Hence we can
             # add all candidates in `mons' to the Groebner basis.
-                
-                
+
+
                 Gk[j]:= mons[j];
                 Glmsk[j]:= List( Gk[j], x -> 1 );
 
@@ -3550,31 +3550,31 @@ InstallMethod( HighestWeightModule,
                                      fi;
                                      return 0;
                                  end );
-                                 
+
         # Let `a', `b' be two monomials of the same weight; then `a' can only
         # be a factor of `b' if we have `a=b'. So reduction within a
-        # weight component is the same as linear algebra. We use the 
+        # weight component is the same as linear algebra. We use the
         # mutable bases in `sps' to perform the linear algebra.
-    
+
         sps:= [ ];
-        sortmn:= [ ];                         
+        sortmn:= [ ];
         for j in [1..Length(w)] do
             if not isdone[j] then
                 mmm[j]:= mons[j];
                 if Length( mmm[j] ) = multiplicity[j] then
                     isdone[j]:= true;
                 else
-                    
-                    sps[j]:= MutableBasis( Rationals, [], 
+
+                    sps[j]:= MutableBasis( Rationals, [],
                                      [1..Length(mmm[j])]*0 );
                     sortmn[j]:= List( mmm[j], x -> ExtRepOfObj(x)[1] );
                     Sort( sortmn[j], function(x,y) return
                              lexord( novar, y, x ); end );
-                      
+
                 fi;
             fi;
         od;
-        
+
 
         we_had_enough:= ForAll( isdone, x -> x );
         le:= Length(GB);
@@ -3643,16 +3643,16 @@ InstallMethod( HighestWeightModule,
                                    comp );
                     if comp <> 0*comp then
 
-                        vec:= ListWithIdenticalEntries( Length( sortmn[pp] ), 
+                        vec:= ListWithIdenticalEntries( Length( sortmn[pp] ),
                                       0 );
                         ecomp:= comp![1];
                         for l in [1,3..Length(ecomp)-1] do
                             vec[ Position( sortmn[pp], ecomp[l] )]:=
                               ecomp[l+1];
                         od;
-                   
+
                         CloseMutableBasis( sps[pp], vec );
-                   
+
                         isdone[pp]:=  multiplicity[pp] = Length( mmm[pp] )-
                                       Length( BasisVectors( sps[pp] ) );
                         if isdone[pp] then
@@ -3665,69 +3665,69 @@ InstallMethod( HighestWeightModule,
         od;     # loop over i
 
         for j in [1..Length(w)] do
-            
+
             if multiplicity[j] > 0 then
-                
-                # We add the elements that we get from the mutable bases to 
+
+                # We add the elements that we get from the mutable bases to
                 # the Groebner basis. We have to use the order of monomials
                 # that is used by GAP to multiply, i.e., not the deglex order.
                 # (Otherwise everything messes up.)
-                
+
                 if IsBound( sps[j] ) then
-              
+
                     vecs:= BaseMat( BasisVectors( sps[j] ) );
-       
+
                 else
                     vecs:= [ ];
                 fi;
-                
+
                 for l in [1..Length(vecs)] do
                     ecomp:= [ ];
                     cfsc:= [ ];
                     for i in [1..Length(vecs[l])] do
                         if vecs[l][i] <> 0*vecs[l][i] then
-                            
+
                             Add( ecomp, sortmn[j][i] );
                             Add( cfsc, vecs[l][i] );
                         fi;
-                        
+
                     od;
                     SortParallel( ecomp, cfsc );
                     ec:= [ ];
                     for i in [1..Length(ecomp)] do
-                        Add( ec, ecomp[i] ); 
+                        Add( ec, ecomp[i] );
                         Add( ec, cfsc[i] );
                     od;
-                    
-                    Add( Gk[j], ObjByExtRep( famU, ec ) ); 
+
+                    Add( Gk[j], ObjByExtRep( famU, ec ) );
                 od;
-                
+
                 Glmsk[j]:= List( Gk[j], x -> LeadingUEALatticeMonomial(
                                   novar, x )[ 4 ] );
-                
+
                 le:= Length(GB);
                 Append( GB, Gk[j] );
                 Append( lms, Glmsk[j] );
-                
+
                 # Update the search table....
-                
+
                 for i in [1..Length(Gk[j])] do
                     lm:= Gk[j][i]![1][ Glmsk[j][i] ];
                     longmon:= ListWithIdenticalEntries( n, 0 );
                     for l in [1,3..Length(lm)-1] do
                         longmon[lm[l]]:= lm[l+1];
-                    od; 
-                    Insert( lmtab, longmon, le+i ); 
+                    od;
+                    Insert( lmtab, longmon, le+i );
                 od;
-                
+
                 # Get rid of the monomials that reduce....
-                
+
                 for i in [1..Length(mmm[j])] do
                     lm:= mmm[j][i]![1][1];
                     longmon:= ListWithIdenticalEntries( n, 0 );
                     for l in [1,3..Length(lm)-1] do
                         longmon[lm[l]]:= lm[l+1];
-                    od; 
+                    od;
                     if Search( lmtab, longmon ) <> fail then
                         Unbind( mmm[j][i] );
                     fi;
@@ -3735,26 +3735,26 @@ InstallMethod( HighestWeightModule,
                 mmm[j]:= Filtered( mmm[j], x -> IsBound(x) );
                 paths[Position(weights,w[j])]:= mmm[j];
             else
-                
+
                 # In this case the weight s not a weight of the representation;
                 # we only update the Groebner basis, and the search table.
-                
+
                 le:= Length(GB);
                 Append( GB, Gk[j] );
                 Append( lms, Glmsk[j] );
-                
+
                 for i in [1..Length(Gk[j])] do
                     lm:= Gk[j][i]![1][ Glmsk[j][i] ];
                     longmon:= ListWithIdenticalEntries( n, 0 );
                     for l in [1,3..Length(lm)-1] do
                         longmon[lm[l]]:= lm[l+1];
                     od;
-                    Insert( lmtab, longmon, le+i ); 
+                    Insert( lmtab, longmon, le+i );
                 od;
             fi;
-            
-            
-            
+
+
+
         od;
         Append( G, Gk );
 
@@ -3802,7 +3802,7 @@ InstallMethod( HighestWeightModule,
     SetBasis( V, B );
     SetDimension( V, Length( wvecs ) );
     return V;
-    
+
 end );
 
 

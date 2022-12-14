@@ -25,7 +25,7 @@
 ##
 ##  For Example:
 ##      153.0(17) is  1*17^(-2) + 5*17^(-1) + 3*17^0 and
-##    '15'3.0(17) is 15*17^(-1) + 3*17^0 
+##    '15'3.0(17) is 15*17^(-1) + 3*17^0
 ##
 PrintPadicExpansion := function( ppower, int, prime, precision )
     local   pos,  flag,  z,  k,  r;
@@ -218,7 +218,7 @@ end;
 ##  by        MultMatrixPadicNumbersByCoefficientsList.        (see        in
 ##  PadicExtensionNumberFamily)
 ##
-##  So I get the structure-constants m_ijk if 
+##  So I get the structure-constants m_ijk if
 ##    B_i*B_j = SUM(k=1,...,n) m_ijk B_k
 ##  simply by M[ B[i,j], k].
 ##
@@ -246,7 +246,7 @@ end;
 
 #############################################################################
 ##
-#M  ShiftedPadicNumber( <padic>, <shift> ) 
+#M  ShiftedPadicNumber( <padic>, <shift> )
 ##
 ##  ShiftedPadicNumber  takes a p-adic number <padic>  and an integer <shift>
 ##  and returns the  p-adic number   c, that is   <padic> *  p^<shift>.   The
@@ -375,8 +375,8 @@ BindGlobal("PADICS_FAMILIES", []);
 InstallGlobalFunction( PurePadicNumberFamily, function( p, precision )
     local   str,  fam;
 
-    if not IsPrimeInt( p ) then 
-        Error( "<p> must be a prime" ); 
+    if not IsPrimeInt( p ) then
+        Error( "<p> must be a prime" );
     fi;
     if (not IsInt( precision )) or (precision < 0) then
         Error( "<precision> must be a positive integer" );
@@ -410,7 +410,7 @@ end );
 ##  represented as a list of  length 2 such  that the  number is p^list[1]  *
 ##  list[2].  It is easily guaranteed that  list[2] is never divisible by the
 ##  prime p.  By that we have always maximum precision.
-##  
+##
 InstallMethod( PadicNumber, "for a pure p-adic family and a list",
     true,
     [ IsPurePadicNumberFamily,
@@ -623,7 +623,7 @@ function( a, b )
 
     # different valuation: c[2] is NOT divisible by p!
     if a![1] < b![1] then
-        c := [ a![1], 
+        c := [ a![1],
                (a![2]+fam!.prime^(b![1]-a![1])*b![2]) mod fam!.modulus ];
 
     # equal valuation: c[2] MAY BE divisible by p! So check that.
@@ -741,13 +741,13 @@ end );
 ##  number  out   of  L is  represented   as   a coeff.-list   for  the basis
 ##  {1,x,x^2,...,y,xy,x^2y,...} of L.   <precision> is the number of "digits"
 ##  that all the coeff. have.
-##  
+##
 InstallGlobalFunction( PadicExtensionNumberFamily,
     function( p, precision, unram, ram )
     local   str,  fam,  yem1;
 
-    if not IsPrimeInt( p ) then 
-        Error( "<p> must be a prime" ); 
+    if not IsPrimeInt( p ) then
+        Error( "<p> must be a prime" );
     fi;
     if (not IsInt( precision )) or (precision < 0) then
         Error( "<precision> must be a positive integer" );
@@ -768,7 +768,7 @@ InstallGlobalFunction( PadicExtensionNumberFamily,
     fam!.e           := Length(ram)-1;
     fam!.n           := fam!.e * fam!.f;
     fam!.M           := KroneckerProduct(
-                         MultMatrixPadicNumbersByCoefficientsList(ram), 
+                         MultMatrixPadicNumbersByCoefficientsList(ram),
                          MultMatrixPadicNumbersByCoefficientsList(unram) );
     fam!.B           := StructureConstantsPadicNumbers(fam!.e, fam!.f);
 
@@ -810,7 +810,7 @@ end );
 ##  divisible by the prime p.
 ##
 ##  For example: in PadicExtensionNumberFamily(3, 5, [1,1,1], [1,1])
-##    the number (1.2000, 0.1210)(3) may be 
+##    the number (1.2000, 0.1210)(3) may be
 ##      [ 0, [ 1.2000, 0.1210 ] ]   or
 ##      [-1, [ 12.000, 1.2100 ] ]  here the coeff. have to be multiplied
 ##                                 by p^(-1)
@@ -1053,7 +1053,7 @@ InstallMethod( InverseOp,
     0,
 
 function(x)
-    local   fam,  val,  coeffppart,  coeffypart,  ppart,  z,  L,  k,  j,  
+    local   fam,  val,  coeffppart,  coeffypart,  ppart,  z,  L,  k,  j,
             Lp,  E,  Beta,  ppot,  Beta_k,  c,  addppart;
 
     if IsZero(x)  then
@@ -1063,7 +1063,7 @@ function(x)
     # need a copy of x later:
     z := Objectify( fam!.defaultType, [x![1], ShallowCopy(x![2])] );
 
-    # if x = [ppart, [x_1,...,x_n]] then 
+    # if x = [ppart, [x_1,...,x_n]] then
     # Valuation(x) = ppart*fam!.e + coeffppart*fam!.e + coeffypart
     val := Valuation(x);
     if fam!.e > 1 then
@@ -1073,10 +1073,10 @@ function(x)
     fi;
     ppart := x![1];
     coeffppart := (val - ppart*fam!.e - coeffypart) / fam!.e;
-    # so x = p^(ppart + coeffppart) * y^coeffypart * z 
+    # so x = p^(ppart + coeffppart) * y^coeffypart * z
     # and z is divisible neither by y nor by p, so it has Valuation 0
     # and can be inverted.
-    # We don't have y^(-1) but y^(e-1) which is p*y^(-1) 
+    # We don't have y^(-1) but y^(e-1) which is p*y^(-1)
     # so z = x * y^(e-1)^coeffypart * p^(-ppart-coeffppart-coeffypart).
     # at least there is the coeffppart in z![2]:
     if coeffppart > 0 then
@@ -1102,7 +1102,7 @@ function(x)
     for k in [1..fam!.n] do
         L[k] := [];
         for j in [1..fam!.n] do
-            L[k][j]:=Sum(List([1..fam!.n], 
+            L[k][j]:=Sum(List([1..fam!.n],
                              i -> z![2][i] * fam!.M[ fam!.B[i][j] ][ k ] ));
         od;
     od;
@@ -1262,8 +1262,8 @@ function (a, b)
     fam := FamilyObj( a );
 
     ## zwei Nullvektoren der Laenge (2f-1)(2e-1):
-    vec := List( [1..(2*fam!.f-1)*(2*fam!.e-1)], i->0 ); 
-    addvec := List( [1..(2*fam!.f-1)*(2*fam!.e-1)], i->0 ); 
+    vec := List( [1..(2*fam!.f-1)*(2*fam!.e-1)], i->0 );
+    addvec := List( [1..(2*fam!.f-1)*(2*fam!.e-1)], i->0 );
 
     ## Koeff. von b eintragen
     for bj in [1..fam!.e] do

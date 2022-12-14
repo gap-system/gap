@@ -42,7 +42,7 @@ DeclareCategory( "IsGeneralPcgs",
 ##
 ##  <Description>
 ##  The category of modulo pcgs. Note that each pcgs is a modulo pcgs for
-##  the trivial subgroup. 
+##  the trivial subgroup.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -58,7 +58,7 @@ DeclareCategory("IsModuloPcgs",IsGeneralPcgs);
 ##  <Filt Name="IsPcgs" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  The category of pcgs. 
+##  The category of pcgs.
 ##  <Example><![CDATA[
 ##  gap> G := Group((1,2,3,4),(1,2));;
 ##  gap> p := Pcgs(G);
@@ -124,7 +124,7 @@ DeclareRepresentation(
 ##  constructs a pcgs for the elements family <A>fam</A> from the elements in
 ##  the list <A>pcs</A>. The elements must lie in the family <A>fam</A>.
 ##  <Ref Oper="PcgsByPcSequence"/> and its <C>NC</C> variant will always
-##  create a new pcgs which is not induced by any other pcgs 
+##  create a new pcgs which is not induced by any other pcgs
 ##  (cf. <Ref Oper="InducedPcgsByPcSequence"/>).
 ##  <Example><![CDATA[
 ##  gap> fam := FamilyObj( (1,2) );; # the family of permutations
@@ -240,9 +240,9 @@ DeclareAttribute(
 ##  gap> IsPrimeOrdersPcgs(p);
 ##  true
 ##  gap> PcSeries(p);
-##  [ Group([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
-##    Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
-##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,3)(2,4) ]), Group(()) 
+##  [ Group([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ]),
+##    Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]),
+##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,3)(2,4) ]), Group(())
 ##   ]
 ##  ]]></Example>
 ##  </Description>
@@ -282,7 +282,7 @@ DeclareAttribute( "PcSeries", IsPcgs );
 ##  returns <K>true</K> if the pcgs <A>pcgs</A> refines an elementary abelian
 ##  series.
 ##  <Ref Attr="IndicesEANormalSteps"/> then gives the indices in the Pcgs,
-##  at which the subgroups of this series start. 
+##  at which the subgroups of this series start.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -389,7 +389,7 @@ DeclareGlobalFunction( "BoundedRefinementEANormalSeries" );
 ##  returns <K>true</K> if the pcgs <A>pcgs</A> refines an central elementary
 ##  abelian series.
 ##  <Ref Attr="IndicesCentralNormalSteps"/> then gives the indices in the
-##  pcgs, at which the subgroups of this series start. 
+##  pcgs, at which the subgroups of this series start.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -484,7 +484,7 @@ DeclareAttribute("CentralNormalSeriesByPcgs",IsPcgs);
 ##  returns <K>true</K> if the pcgs <A>pcgs</A> refines a <M>p</M>-central
 ##  elementary abelian series for a <M>p</M>-group.
 ##  <Ref Attr="IndicesPCentralNormalStepsPGroup"/> then gives the indices in
-##  the pcgs, at which the subgroups of this series start. 
+##  the pcgs, at which the subgroups of this series start.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -578,7 +578,7 @@ DeclareAttribute("PCentralNormalSeriesByPcgsPGroup",IsPcgs);
 ##  <Description>
 ##  returns <K>true</K> if the pcgs <A>pcgs</A> refines a chief series.
 ##  <Ref Attr="IndicesChiefNormalSteps"/> then gives the indices in the pcgs,
-##  at which the subgroups of this series start. 
+##  at which the subgroups of this series start.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -662,12 +662,12 @@ DeclareAttribute( "IndicesChiefNormalSteps", IsPcgs );
 ##  [ 1, 2, 3, 5 ]
 ##  gap> g:=Group((1,2,3,4),(1,5)(2,6)(3,7)(4,8));;
 ##  gap> p:=PcgsCentralSeries(g);
-##  Pcgs([ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8), 
+##  Pcgs([ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8),
 ##    (1,4,3,2)(5,6,7,8), (1,3)(2,4)(5,7)(6,8) ])
 ##  gap> IndicesCentralNormalSteps(p);
 ##  [ 1, 2, 4, 5, 6 ]
 ##  gap> q:=PcgsPCentralSeriesPGroup(g);
-##  Pcgs([ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8), 
+##  Pcgs([ (1,5)(2,6)(3,7)(4,8), (5,6,7,8), (5,7)(6,8),
 ##    (1,4,3,2)(5,6,7,8), (1,3)(2,4)(5,7)(6,8) ])
 ##  gap> IndicesPCentralNormalStepsPGroup(q);
 ##  [ 1, 3, 5, 6 ]
@@ -727,7 +727,7 @@ DeclareAttribute( "NormalSeriesByPcgs", IsPcgs);
 ##  <Prop Name="IsPrimeOrdersPcgs" Arg='pcgs'/>
 ##
 ##  <Description>
-##  tests whether the relative orders of <A>pcgs</A> are prime numbers. 
+##  tests whether the relative orders of <A>pcgs</A> are prime numbers.
 ##  Many algorithms require a pcgs to have this property.
 ##  The operation&nbsp;<Ref Attr="IsomorphismRefinedPcGroup"/>
 ##  can be of help here.
@@ -852,7 +852,7 @@ DeclareOperation( "DifferenceOfPcElement", [ IsPcgs, IsObject, IsObject ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ExponentOfPcElement", 
+DeclareOperation( "ExponentOfPcElement",
                   [ IsModuloPcgs, IsObject, IsPosInt ] );
 
 #############################################################################
@@ -885,9 +885,9 @@ DeclareOperation( "ExponentsOfPcElement",
 ##  <Description>
 ##  returns the exponents of
 ##  <C><A>pcgs</A>[<A>i</A>]^<A>pcgs</A>[<A>j</A>]</C> with respect to
-##  <A>pcgs</A>. For the family pcgs or pcgs induced by it (see section 
-##  <Ref Sect="Subgroups of Polycyclic Groups - Induced Pcgs"/>), this 
-##  might be faster than computing the element and computing its exponent 
+##  <A>pcgs</A>. For the family pcgs or pcgs induced by it (see section
+##  <Ref Sect="Subgroups of Polycyclic Groups - Induced Pcgs"/>), this
+##  might be faster than computing the element and computing its exponent
 ##  vector.
 ##  </Description>
 ##  </ManSection>
@@ -908,9 +908,9 @@ DeclareOperation( "ExponentsOfConjugate",
 ##  For <M>p = <A>pcgs</A>[<A>i</A>]</M> this function returns the
 ##  exponent vector with respect to <A>pcgs</A> of the element <M>p^e</M>
 ##  where <M>e</M> is the relative order of <A>p</A> in <A>pcgs</A>.
-##  For the family pcgs or pcgs induced by it (see section 
-##  <Ref Sect="Subgroups of Polycyclic Groups - Induced Pcgs"/>), this 
-##  might be faster than computing the element and computing its exponent 
+##  For the family pcgs or pcgs induced by it (see section
+##  <Ref Sect="Subgroups of Polycyclic Groups - Induced Pcgs"/>), this
+##  might be faster than computing the element and computing its exponent
 ##  vector.
 ##  </Description>
 ##  </ManSection>

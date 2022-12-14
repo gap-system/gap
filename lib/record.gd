@@ -200,6 +200,6 @@ IsSet( IdentifierLetters ); # ensure GAP knows that this is a set
 ##
 #F  SetNamesForFunctionsInRecord( <rec-name>[, <record> ][, <field-names>])
 ##
-##  set the names of functions bound to components of a record. 
+##  set the names of functions bound to components of a record.
 ##
 DeclareGlobalFunction("SetNamesForFunctionsInRecord");

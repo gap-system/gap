@@ -21,7 +21,7 @@ DeclareGlobalFunction("Partition");
 ##
 DeclareGlobalFunction("PartitionSortedPoints");
 
-      
+
 #############################################################################
 ##
 #F  IsPartition( <P> )  . . . . . . . . . . . . test if object is a partition

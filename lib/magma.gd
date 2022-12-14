@@ -394,7 +394,7 @@ DeclareOperation( "AsSubmagma", [ IsDomain, IsCollection ] );
 ##  the closure of <A>gens</A> under multiplication <Ref Oper="\*"/>
 ##  is <A>M</A>.
 ##  <P/>
-##  For a free magma, each generator can also be accessed using 
+##  For a free magma, each generator can also be accessed using
 ##  the <C>.</C> operator (see <Ref Attr="GeneratorsOfDomain"/>).
 ##  </Description>
 ##  </ManSection>
@@ -417,7 +417,7 @@ DeclareAttribute( "GeneratorsOfMagma", IsMagma );
 ##  that is, the closure of <A>gens</A> under multiplication <Ref Oper="\*"/>
 ##  and <Ref Attr="One"/> is <A>M</A>.
 ##  <P/>
-##  For a free magma with one, each generator can also be accessed using 
+##  For a free magma with one, each generator can also be accessed using
 ##  the <C>.</C> operator (see <Ref Attr="GeneratorsOfDomain"/>).
 ##  </Description>
 ##  </ManSection>
@@ -641,7 +641,7 @@ DeclareAttribute( "MultiplicativeNeutralElement", IsMagma );
 ##  <P/>
 ##  <Ref Attr="Center"/> is just a synonym for <Ref Attr="Centre"/>.
 ##  <P/>
-##  For associative magmas we have that 
+##  For associative magmas we have that
 ##  <C>Centre( <A>M</A> ) = Centralizer( <A>M</A>, <A>M</A> )</C>,
 ##  see&nbsp;<Ref Oper="Centralizer" Label="for a magma and a submagma"/>.
 ##  <P/>

@@ -14,7 +14,7 @@
 
 #############################################################################
 ##
-#F  TriangulizedGeneratorsByMatrix(<gens>,<M>,<F>) 
+#F  TriangulizedGeneratorsByMatrix(<gens>,<M>,<F>)
 ##  triangulize and make base
 ##
 InstallGlobalFunction(TriangulizedGeneratorsByMatrix,function (gens,M,F)
@@ -132,8 +132,8 @@ local  hom,fg,fpi,fpg,nt,fam;
 
   else
     if (Index(ocr.group,nt)>Size(nt)^3
-	  or Index(ocr.group,nt)>500000) and 
-	  (not KnownNaturalHomomorphismsPool(ocr.group,nt) or 
+	  or Index(ocr.group,nt)>500000) and
+	  (not KnownNaturalHomomorphismsPool(ocr.group,nt) or
 	  DegreeNaturalHomomorphismsPool(ocr.group,nt)>10000) then
       # computing a factor representation may be too hard
       hom:=false;
@@ -148,7 +148,7 @@ local  hom,fg,fpi,fpg,nt,fam;
       or (IsPermGroup(Range(hom)) and Length(MovedPoints(Range(hom)))
 			     <Length(MovedPoints(ocr.group))*2)
       or (HasIsomorphismFpGroup(fg) and not IsBound(ocr.generators)))
-    then 
+    then
       Info(InfoCoh,1,"using factor representation");
       if IsBound(ocr.generators) then
 	fpi:=IsomorphismFpGroupByGeneratorsNC(fg,List(ocr.generators,
@@ -214,11 +214,11 @@ InstallGlobalFunction(OCAddGenerators,function(ocr,G)
 
   # though using the method selection would be nicer,here the decisions are
   # that involved we actually have to use a dispatcher
-  if IsBound(ocr.inPcComplement) # the pc complement routines interface 
-                                 # directly,giving generators that form an 
+  if IsBound(ocr.inPcComplement) # the pc complement routines interface
+                                 # directly,giving generators that form an
 				 # pcgs
      or ((IsPcGroup(G) or
-       (IsBound(ocr.generators) and IsGeneralPcgs(ocr.generators))) 
+       (IsBound(ocr.generators) and IsGeneralPcgs(ocr.generators)))
        and not IsBound(ocr.factorpres)) then
     OCAddGeneratorsPcgs(ocr,G);
   else
@@ -257,7 +257,7 @@ local i,base;
     	    ocr.logTable[LogFFE(i*One(ocr.field),
 				      PrimitiveRoot(ocr.field))+1]:=i;
     	od;
-    fi;    
+    fi;
 
     # 'moduleMap' is constructed using 'Exponents'.
     ocr.moduleMap:=function(x)
@@ -406,7 +406,7 @@ InstallMethod(OCAddToFunctions2,"pc group",true,[IsRecord,IsModuloPcgs],
 local  gens;
 
   gens:=ocr.complementGens;
-  
+
 
   if not IsBound(ocr.complementToCocycle)  then
 
@@ -969,7 +969,7 @@ local   mat, i, j, v, vv;
             fi;
             if j in ocr.smallGeneratingSet  then
                 if j = n and v>0   then
-                    mat:=mat*ocr.powerMatrices[j][v]	
+                    mat:=mat*ocr.powerMatrices[j][v]
     	    	    	  +ocr.sumMatrices[j][v];
                 elif j = n and v<0  then
                     mat:=(mat - ocr.sumMatrices[j][-v])
@@ -1296,7 +1296,7 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
             if R[i]<>ocr.zero  then
     	    	Info(InfoCoh,1,"OCOneCocycles: no split extension");
                 isSplit:=false;
-                if onlySplit  then  
+                if onlySplit  then
     	    	    return isSplit;
     	    	fi;
             fi;
@@ -1341,7 +1341,7 @@ local   cobounds,cocycles,    # base of one coboundaries and cocycles
     for i in [1 .. Length(S[1])] do
         if  S[i][i] = ocr.zero  then
             row:=ShallowCopy(L0);
-            for k in [1 .. i-1] do	
+            for k in [1 .. i-1] do
     	    	row[k]:=S[k][i];
     	    od;
             row[i]:=- One(ocr.field);
@@ -1404,7 +1404,7 @@ local ocr;
   fi;
 
   ocr:=rec(modulePcgs:=M);
-  if IsGroup(G) then 
+  if IsGroup(G) then
     ocr.group:=G;
   else
     ocr.group:= GroupByGenerators(G);
@@ -1437,7 +1437,7 @@ local   ocr,erg;
   fi;
 
   ocr:=rec(modulePcgs:=M);
-  if IsGroup(G) then 
+  if IsGroup(G) then
     ocr.group:=G;
   else
     ocr.group:= GroupByGenerators(G);
@@ -1488,7 +1488,7 @@ local oc,l;
   if not oc.isSplitExtension  then
     return [];
   else
-    if Dimension(oc.oneCocycles)=Dimension(oc.oneCoboundaries) then 
+    if Dimension(oc.oneCocycles)=Dimension(oc.oneCoboundaries) then
       return [oc.complement];
     else
       l:=BaseSteinitzVectors(BasisVectors(Basis(oc.oneCocycles)),

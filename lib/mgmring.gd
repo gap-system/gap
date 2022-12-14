@@ -46,7 +46,7 @@
 ##      or a free magma-with-one or a free monoid, respectively.
 ##  </Item>
 ##  </List>
-##  Note that formally, polynomial rings in &GAP; are not constructed 
+##  Note that formally, polynomial rings in &GAP; are not constructed
 ##  as free magma rings.
 ##  <P/>
 ##  Furthermore, a free Lie algebra is <E>not</E> a magma ring,
@@ -267,7 +267,7 @@ DeclareCategoryCollections( "IsElementOfMagmaRingModuloRelations" );
 ##   Type='Category'/>
 ##
 ##  <Description>
-##  The family category for the category 
+##  The family category for the category
 ##  <Ref Filt="IsElementOfMagmaRingModuloRelations" />.
 ##  </Description>
 ##  </ManSection>

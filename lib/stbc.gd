@@ -701,7 +701,7 @@ DeclareGlobalFunction( "MinimalElementCosetStabChain" );
 ##  <Func Name="SCMinSmaGens" Arg='G,S,emptyset,identity element,flag'/>
 ##
 ##  <Description>
-##  This function computes a stabilizer chain for a minimal base image and 
+##  This function computes a stabilizer chain for a minimal base image and
 ##  a smallest generating set w.r.t. this base for a permutation
 ##  group.
 ##  <P/>

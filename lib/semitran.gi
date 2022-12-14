@@ -45,19 +45,19 @@ InstallMethod(NrMovedPoints, "for a transformation semigroup",
 s-> NrMovedPoints(GeneratorsOfSemigroup(s)));
 
 InstallMethod(LargestMovedPoint, "for a transformation semigroup",
-[IsTransformationSemigroup and HasGeneratorsOfSemigroup], 
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 s-> LargestMovedPoint(GeneratorsOfSemigroup(s)));
 
 InstallMethod(SmallestMovedPoint, "for a transformation semigroup",
-[IsTransformationSemigroup and HasGeneratorsOfSemigroup], 
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 s-> SmallestMovedPoint(GeneratorsOfSemigroup(s)));
 
 InstallMethod(LargestImageOfMovedPoint, "for a transformation semigroup",
-[IsTransformationSemigroup and HasGeneratorsOfSemigroup], 
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 s-> LargestImageOfMovedPoint(GeneratorsOfSemigroup(s)));
 
 InstallMethod(SmallestImageOfMovedPoint, "for a transformation semigroup",
-[IsTransformationSemigroup and HasGeneratorsOfSemigroup], 
+[IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 s-> SmallestImageOfMovedPoint(GeneratorsOfSemigroup(s)));
 
 #
@@ -79,7 +79,7 @@ InstallMethod(AsMonoid,
 "for transformation semigroup with generators",
 [IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 function(S)
-  if MultiplicativeNeutralElement(S) = fail then 
+  if MultiplicativeNeutralElement(S) = fail then
     return fail;
   fi;
   return Range(IsomorphismTransformationMonoid(S));
@@ -91,7 +91,7 @@ InstallTrueMethod(IsFinite, IsTransformationSemigroup);
 
 #
 
-InstallMethod(DegreeOfTransformationSemigroup, 
+InstallMethod(DegreeOfTransformationSemigroup,
 "for a transformation semigroup with generators",
 [IsTransformationSemigroup and HasGeneratorsOfSemigroup],
 function(s)
@@ -100,11 +100,11 @@ end);
 
 #
 
-InstallMethod(DegreeOfTransformationSemigroup, 
+InstallMethod(DegreeOfTransformationSemigroup,
 "for a transformation group with generators",
 [IsTransformationSemigroup and HasGeneratorsOfGroup],
 function(S)
-  if not IsEmpty(GeneratorsOfGroup(S)) then 
+  if not IsEmpty(GeneratorsOfGroup(S)) then
     return DegreeOfTransformationCollection(GeneratorsOfGroup(S));
   else # What is an example where this can happen?
     return DegreeOfTransformationCollection(GeneratorsOfSemigroup(S));
@@ -129,7 +129,7 @@ function( h )
     ErrorNoReturn("can only create isomorphisms of group H-classes");
   fi;
 
-  elts:=[]; 
+  elts:=[];
   enum := Enumerator( h );
   permgroup:=Group(());
   i := 1;
@@ -160,7 +160,7 @@ function( s )
   if not ForAll(egens, g->IsMapping(g)) then
     return fail;
   fi;
-  
+
   gens := List(egens, g->TransformationRepresentation(g)!.transformation);
   mapfun := a -> TransformationRepresentation(a)!.transformation;
 
@@ -184,18 +184,18 @@ function(d)
   else
     gens:=List([1..3], x-> EmptyPlist(d));
     gens[1][d]:=1; gens[2][1]:=2; gens[2][2]:=1; gens[3][d]:=1;
-    for i in [1..d-1] do 
+    for i in [1..d-1] do
       gens[1][i]:=i+1;
       gens[3][i]:=i;
     od;
-    for i in [3..d] do 
+    for i in [3..d] do
       gens[2][i]:=i;
     od;
     Apply(gens, Transformation);
   fi;
 
   s:=Monoid(gens);
-  
+
   SetSize(s,d^d);
   SetIsFullTransformationSemigroup(s,true);
   SetIsRegularSemigroup(s, true);
@@ -204,7 +204,7 @@ end);
 
 #
 
-InstallMethod(IsFullTransformationSemigroup, "for a semigroup", 
+InstallMethod(IsFullTransformationSemigroup, "for a semigroup",
 [IsSemigroup], ReturnFalse);
 
 #
@@ -213,10 +213,10 @@ InstallMethod(IsFullTransformationSemigroup, "for a transformation semigroup",
 [IsTransformationSemigroup],
 function(s)
   local n, t;
-  
+
   n := DegreeOfTransformationSemigroup(s);
 
-  if n = 0 and HasIsTrivial(s) and IsTrivial(s) then 
+  if n = 0 and HasIsTrivial(s) and IsTrivial(s) then
     return true;
   elif HasSize(s) then
     return Size(s)=n^n;
@@ -228,7 +228,7 @@ end);
 
 #
 
-InstallMethod(\in, 
+InstallMethod(\in,
 "for a transformation and a full transformation semigroup",
 [IsTransformation, IsFullTransformationSemigroup],
 function(e,tn)
@@ -238,24 +238,24 @@ end);
 #
 
 InstallMethod(Enumerator, "for a full transformation semigroup",
-[IsFullTransformationSemigroup], 5, 
+[IsFullTransformationSemigroup], 5,
 #to beat the method for an acting semigroup with generators
 function(S)
   local n, Membership, PrintObj;
-  
+
   n:=DegreeOfTransformationSemigroup(S);
-  
+
   return EnumeratorByFunctions(S, rec(
-    
+
     ElementNumber:=function(enum, pos)
-      if pos>n^n then 
+      if pos>n^n then
         return fail;
       fi;
       return TransformationNumber(pos, n);
     end,
 
     NumberElement:=function(enum, elt)
-      if DegreeOfTransformation(elt)>n then 
+      if DegreeOfTransformation(elt)>n then
         return fail;
       fi;
       return NumberTransformation(elt, n);
@@ -284,22 +284,22 @@ function(S)
   local en, gens, dom, act, pos, T;
 
   en := EnumeratorSorted(S);
-  
-  if HasGeneratorsOfSemigroup(S) then 
+
+  if HasGeneratorsOfSemigroup(S) then
     gens := GeneratorsOfSemigroup(S);
   else
     gens := en;
   fi;
 
-  if HasMultiplicativeNeutralElement(S) 
-    and MultiplicativeNeutralElement(S) <> fail then 
+  if HasMultiplicativeNeutralElement(S)
+    and MultiplicativeNeutralElement(S) <> fail then
     dom := en;
     act := OnRight;
     pos := Position(en, MultiplicativeNeutralElement(S));
-  else 
+  else
     dom := [1 .. Length(en) + 1];
     act := function(i, x)
-      if i <= Length(en) then 
+      if i <= Length(en) then
         return Position(en, en[i] * x);
       fi;
       return Position(en, x);
@@ -310,9 +310,9 @@ function(S)
   T := Semigroup(List(gens, x -> TransformationOp(x, dom, act)));
   UseIsomorphismRelation(S, T);
 
-  return MagmaIsomorphismByFunctionsNC(S, 
-                                       T, 
-                                       x -> TransformationOp(x, dom, act), 
+  return MagmaIsomorphismByFunctionsNC(S,
+                                       T,
+                                       x -> TransformationOp(x, dom, act),
                                        x -> en[pos ^ x]);
 end);
 
@@ -382,9 +382,9 @@ function(S)
                                        inv);
 end);
 
-InstallMethod(IsomorphismTransformationSemigroup, 
-"for a transformation semigroup", 
-[IsTransformationSemigroup], 
+InstallMethod(IsomorphismTransformationSemigroup,
+"for a transformation semigroup",
+[IsTransformationSemigroup],
 SUM_FLAGS,
 IdentityMapping);
 
@@ -402,20 +402,20 @@ function(S)
   inv := function(x)
     local out, j, i;
     out := [];
-    for i in [1 .. n - 1] do 
+    for i in [1 .. n - 1] do
       j := i ^ x;
-      if j <> n then 
+      if j <> n then
         out[i] := j;
-      else 
+      else
         out[i] := 0;
       fi;
     od;
     return PartialPerm(out);
   end;
 
-  return MagmaIsomorphismByFunctionsNC(S, 
-                                       T, 
-                                       x -> AsTransformation(x, n), 
+  return MagmaIsomorphismByFunctionsNC(S,
+                                       T,
+                                       x -> AsTransformation(x, n),
                                        inv);
 end);
 
@@ -423,8 +423,8 @@ InstallMethod(IsomorphismTransformationMonoid, "for partial perm semigroup",
 [IsPartialPermSemigroup],
 function(S)
   local n, T, inv;
-  
-  if not (IsMonoid(S) or One(S) <> fail) then 
+
+  if not (IsMonoid(S) or One(S) <> fail) then
     ErrorNoReturn("the argument must be a semigroup with a ",
                   "multiplicative neutral element");
     # in the case of partial perm semigroups having a One is the equivalent to
@@ -440,31 +440,31 @@ function(S)
   inv := function(x)
     local out, j, i;
     out := [];
-    for i in [1 .. n - 1] do 
+    for i in [1 .. n - 1] do
       j := i ^ x;
-      if j <> n then 
+      if j <> n then
         out[i] := j;
-      else 
+      else
         out[i] := 0;
       fi;
     od;
     return PartialPerm(out);
   end;
 
-  return MagmaIsomorphismByFunctionsNC(S, 
-                                       T, 
-                                       x -> AsTransformation(x, n), 
+  return MagmaIsomorphismByFunctionsNC(S,
+                                       T,
+                                       x -> AsTransformation(x, n),
                                        inv);
 end);
 
 # Isomorphisms from perm groups to transformation semigroups/monoids
 
-InstallMethod(IsomorphismTransformationMonoid, 
+InstallMethod(IsomorphismTransformationMonoid,
 "for a perm group with generators",
-[IsPermGroup and HasGeneratorsOfGroup], 
+[IsPermGroup and HasGeneratorsOfGroup],
 function(G)
   local S;
-  
+
   S := Monoid(List(GeneratorsOfGroup(G), AsTransformation));
   UseIsomorphismRelation(G, S);
   SetIsGroupAsSemigroup(S, true);
@@ -472,12 +472,12 @@ function(G)
   return MagmaIsomorphismByFunctionsNC(G, S, AsTransformation, AsPermutation);
 end);
 
-InstallMethod(IsomorphismTransformationSemigroup, 
+InstallMethod(IsomorphismTransformationSemigroup,
 "for a perm group with generators",
-[IsPermGroup and HasGeneratorsOfGroup], 
+[IsPermGroup and HasGeneratorsOfGroup],
 function(G)
   local S;
-  
+
   # The next line has to use Semigroup instead of Monoid so that S has the
   # correct set of generators
   S := Semigroup(List(GeneratorsOfGroup(G), AsTransformation));
@@ -493,24 +493,24 @@ function(S)
   local en, gens, dom, act, pos, T;
 
   en := EnumeratorSorted(S);
-  
-  if HasGeneratorsOfSemigroup(S) then 
+
+  if HasGeneratorsOfSemigroup(S) then
     gens := GeneratorsOfSemigroup(S);
   else
     gens := en;
   fi;
 
-  if HasMultiplicativeNeutralElement(S) 
-    and MultiplicativeNeutralElement(S) <> fail then 
+  if HasMultiplicativeNeutralElement(S)
+    and MultiplicativeNeutralElement(S) <> fail then
     dom := en;
     act := function(pt, x)
       return x * pt;
     end;
     pos := Position(en, MultiplicativeNeutralElement(S));
-  else 
+  else
     dom := [1 .. Length(en) + 1];
     act := function(i, x)
-      if i <= Length(en) then 
+      if i <= Length(en) then
         return Position(en, x * en[i]);
       fi;
       return Position(en, x);
@@ -520,8 +520,8 @@ function(S)
 
   T := Semigroup(List(gens, x -> TransformationOp(x, dom, act)));
 
-  return MagmaIsomorphismByFunctionsNC(S, 
-                                       T, 
-                                       x -> TransformationOp(x, dom, act), 
+  return MagmaIsomorphismByFunctionsNC(S,
+                                       T,
+                                       x -> TransformationOp(x, dom, act),
                                        x -> en[pos ^ x]);
 end);

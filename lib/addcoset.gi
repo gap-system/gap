@@ -257,12 +257,12 @@ InstallMethod( Intersection2,
 #############################################################################
 ##
 #M  PrintObj( <A> ) . . . . . . . . . . . . . . . . . . for an additive coset
-##                
+##
 InstallMethod( PrintObj,
     "for an additive coset",
     true,
     [ IsAdditiveCoset ], 0,
-    function( A )                             
+    function( A )
     Print( "( ", Representative( A ), " + ",
            AdditivelyActingDomain( A ), " )" );
     end );

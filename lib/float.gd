@@ -41,7 +41,7 @@ BindGlobal("INSTALLFLOATCREATOR", function(arg)
         InstallMethod(MakeFloat,arg[1],arg[2],arg[3],arg[4]);
     else
         Error("INSTALLFLOATCREATOR only coded for 3-argument or 4-argument version");
-    fi;        
+    fi;
 end);
 
 #############################################################################
@@ -156,7 +156,7 @@ DeclareAttribute("Gamma", IsFloat);
 ##     itself.
 ##   </Description>
 ## </ManSection>
-## 
+##
 ## <ManSection>
 ##   <Attr Name="PrecisionFloat" Arg="x"/>
 ##   <Returns>The precision of <A>x</A></Returns>
@@ -165,7 +165,7 @@ DeclareAttribute("Gamma", IsFloat);
 ##     of the floating-point number <A>x</A>.
 ##   </Description>
 ## </ManSection>
-## 
+##
 ## <ManSection>
 ##   <Attr Name="SignBit" Arg="x"/>
 ##   <Attr Name="SignFloat" Arg="x"/>

@@ -18,10 +18,10 @@
 ##
 #R  IsTransformationRepOfEndo(<obj>)
 ##
-##  An endomorphism of a finite domain <D> with EnumeratorSorted can be 
+##  An endomorphism of a finite domain <D> with EnumeratorSorted can be
 ##  represented as transformation on  [1 .. Length(EnumeratorSorted(D))]
 ##
-DeclareRepresentation("IsTransformationRepOfEndo", 
+DeclareRepresentation("IsTransformationRepOfEndo",
 IsComponentObjectRep and IsAttributeStoringRep,
 ["transformation"]);
 
@@ -29,7 +29,7 @@ IsComponentObjectRep and IsAttributeStoringRep,
 ##
 #F  EndoMappingByTransformation(<dom>, <gmfam>, <trans>)
 ##
-##  Creates an endo general mapping from <dom> to itself 
+##  Creates an endo general mapping from <dom> to itself
 ##  in the general mappings family <gmfam>, described by transformation
 ##  <trans>. At present this is a private function.
 ##
@@ -56,7 +56,7 @@ end);
 ##  The user must deliberately put endomorphisms into this representation
 ##  since it calls enumerator sorted on the Source.
 ##
-InstallMethod(TransformationRepresentation, 
+InstallMethod(TransformationRepresentation,
 "for an endo general mapping", true,
 [IsEndoMapping], 0,
 function(m)
@@ -68,20 +68,20 @@ function(m)
 
 	# create the type if necessary
 	if not IsBound(FamilyObj(m)!.transtype) then
-		FamilyObj(m)!.transtype := NewType(FamilyObj(m), 
-			IsEndoMapping and IsNonSPGeneralMapping 
+		FamilyObj(m)!.transtype := NewType(FamilyObj(m),
+			IsEndoMapping and IsNonSPGeneralMapping
 			and IsTransformationRepOfEndo);
 	fi;
 
-	trans:= Transformation(List([1 .. Size(Source(m))], 
-		i -> Position(EnumeratorSorted(Source(m)), 
+	trans:= Transformation(List([1 .. Size(Source(m))],
+		i -> Position(EnumeratorSorted(Source(m)),
 			EnumeratorSorted(Source(m))[i]^m)));
 
 	return EndoMappingByTransformation(Source(m),FamilyObj(m), trans);
 
 end);
 
-InstallMethod(TransformationRepresentation, 
+InstallMethod(TransformationRepresentation,
 "for an endo general mapping", true,
 [IsEndoMapping and IsTransformationRepOfEndo], 0,m->m);
 
@@ -91,9 +91,9 @@ InstallMethod(TransformationRepresentation,
 ##
 ##  Note: this is the dual of \*
 ##
-InstallMethod(CompositionMapping2, 
+InstallMethod(CompositionMapping2,
 	"IsTransformationRepOfEndo, IsTransformationRepOfEndo", IsIdenticalObj,
-  [IsTransformationRepOfEndo and IsEndoMapping, 
+  [IsTransformationRepOfEndo and IsEndoMapping,
 	IsTransformationRepOfEndo and IsEndoMapping], 0,
 function(n, m)
   local mntrans;
@@ -142,9 +142,9 @@ InstallMethod( CompositionMapping2,
 ##
 #M  \=( <endo>, <endo> )  . . . for IsTransformationRepOfEndo
 ##
-InstallMethod(\=, 
+InstallMethod(\=,
 	"IsTransformationRepOfEndo, IsTransformationRepOfEndo", IsIdenticalObj,
-  [IsTransformationRepOfEndo and IsEndoMapping, 
+  [IsTransformationRepOfEndo and IsEndoMapping,
 	IsTransformationRepOfEndo and IsEndoMapping], 0,
 function(m, n)
 
@@ -156,9 +156,9 @@ function(m, n)
 end);
 
 
-InstallMethod(\=, 
+InstallMethod(\=,
 	"IsTransformationRepOfEndo, IsEndoMapping", IsIdenticalObj,
-  [IsTransformationRepOfEndo and IsEndoMapping, 
+  [IsTransformationRepOfEndo and IsEndoMapping,
 	IsEndoMapping], 0,
 function(m, n)
 
@@ -170,9 +170,9 @@ function(m, n)
 end);
 
 
-InstallMethod(\=, 
+InstallMethod(\=,
 	"IsEndoMapping, IsTransformationRepOfEndo", IsIdenticalObj,
-  [IsEndoMapping, 
+  [IsEndoMapping,
 	IsTransformationRepOfEndo and IsEndoMapping], 0,
 function(m, n)
 
@@ -188,19 +188,19 @@ end);
 ##
 #M  \<( <endo>, <endo> )  . . . for IsTransformationRepOfEndo
 ##
-InstallMethod(\<, 
+InstallMethod(\<,
 	"IsTransformationRepOfEndo, IsTransformationRepOfEndo", IsIdenticalObj,
-  [IsEndoMapping and IsTransformationRepOfEndo, 
+  [IsEndoMapping and IsTransformationRepOfEndo,
 	IsEndoMapping and IsTransformationRepOfEndo], 0,
 function(m, n)
-  return TransformationRepresentation(m)!.transformation < 
+  return TransformationRepresentation(m)!.transformation <
 		TransformationRepresentation(n)!.transformation;
 end);
 
 
-InstallMethod(\<, 
+InstallMethod(\<,
 	"IsEndoMapping, IsTransformationRepOfEndo", IsIdenticalObj,
-  [IsEndoMapping, 
+  [IsEndoMapping,
 	IsEndoMapping and IsTransformationRepOfEndo], 0,
 function(m, n)
 	if Source(n) <> Source(m) then
@@ -210,14 +210,14 @@ function(m, n)
 		TryNextMethod();
 	fi;
 
-  return TransformationRepresentation(m)!.transformation < 
+  return TransformationRepresentation(m)!.transformation <
 		TransformationRepresentation(n)!.transformation;
 end);
 
 
-InstallMethod(\<, 
+InstallMethod(\<,
 	"IsTransformationRepOfEndo, IsEndoMapping", IsIdenticalObj,
-  [IsEndoMapping and IsTransformationRepOfEndo, 
+  [IsEndoMapping and IsTransformationRepOfEndo,
 	IsEndoMapping], 0,
 function(m, n)
 	if Source(n) <> Source(m) then
@@ -227,7 +227,7 @@ function(m, n)
 		TryNextMethod();
 	fi;
 
-  return TransformationRepresentation(m)!.transformation < 
+  return TransformationRepresentation(m)!.transformation <
 		TransformationRepresentation(n)!.transformation;
 end);
 

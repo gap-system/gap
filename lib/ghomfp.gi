@@ -76,7 +76,7 @@ end);
 InstallMethod( IsSingleValued,
   "map from whole fp group or free group to perm, std. gens: test relators",
   true,
-  [IsFromFpGroupStdGensGeneralMappingByImages and 
+  [IsFromFpGroupStdGensGeneralMappingByImages and
    IsToPermGroupGeneralMappingByImages],0,
 function(hom)
 local s, bas, sg, o, gi, l, p, rel, start, i;
@@ -160,7 +160,7 @@ end);
 
 #############################################################################
 ##
-#F  SecondaryImagesAugmentedCosetTable(<aug>,<gens>,<genimages>) 
+#F  SecondaryImagesAugmentedCosetTable(<aug>,<gens>,<genimages>)
 ##
 InstallGlobalFunction(SecondaryImagesAugmentedCosetTable,function(aug)
 local si,sw,i,ug,tt,p;
@@ -202,7 +202,7 @@ end);
 
 #############################################################################
 ##
-#M  CosetTableFpHom(<hom>) 
+#M  CosetTableFpHom(<hom>)
 ##
 InstallMethod(CosetTableFpHom,"for fp homomorphisms",true,
   [ IsFromFpGroupGeneralMappingByImages and IsGroupGeneralMappingByImages],0,
@@ -240,13 +240,13 @@ end);
 #M  ImagesRepresentative( <hom>, <elm> )
 ##
 InstallMethod( ImagesRepresentative, "map from (sub)fp group, rewrite",
-  FamSourceEqFamElm, 
+  FamSourceEqFamElm,
   [ IsFromFpGroupGeneralMappingByImages and IsGroupGeneralMappingByImages,
     IsMultiplicativeElementWithInverse ], 0,
 function( hom, word )
 local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e,eval;
   # catch trivial group
-  if HasMappingGeneratorsImages(hom) 
+  if HasMappingGeneratorsImages(hom)
     and Length(MappingGeneratorsImages(hom)[1])=0 then
     return One(Range(hom));
   fi;
@@ -354,7 +354,7 @@ local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e,eval;
   fi;
 
   # make sure we got back to start
-  if c<>1 then 
+  if c<>1 then
     Error("<elm> is not contained in the source group");
   fi;
 
@@ -367,7 +367,7 @@ InstallMethod( ImagesRepresentative,
   "simple tests on equal words to check whether the `generators' are mapped",
   FamSourceEqFamElm,
   [ IsFromFpGroupGeneralMappingByImages and IsGroupGeneralMappingByImages,
-    IsMultiplicativeElementWithInverse ], 
+    IsMultiplicativeElementWithInverse ],
   # this is a better method than the previous, as it will probably avoid
   # rewriting.
     1,
@@ -400,12 +400,12 @@ function(hom)
 local k;
   k:=PreImage(hom,TrivialSubgroup(Range(hom)));
 
-  if HasIsSurjective(hom) and IsSurjective( hom ) and 
-     HasIndexInWholeGroup( Source(hom) ) 
+  if HasIsSurjective(hom) and IsSurjective( hom ) and
+     HasIndexInWholeGroup( Source(hom) )
      and HasRange(hom) # surjective action homomorphisms do not store
                        # the range by default
      and HasSize( Range( hom ) ) then
-          SetIndexInWholeGroup( k, 
+          SetIndexInWholeGroup( k,
                  IndexInWholeGroup( Source(hom) ) * Size( Range(hom) ));
   fi;
   return k;
@@ -416,7 +416,7 @@ end);
 #M  CoKernelOfMultiplicativeGeneralMapping( <hom> )
 ##
 InstallMethod( CoKernelOfMultiplicativeGeneralMapping, "GHBI from fp grp", true,
- [ IsFromFpGroupGeneralMappingByImages 
+ [ IsFromFpGroupGeneralMappingByImages
    and IsGroupGeneralMappingByImages ], 0,
 function(map)
 local so,fp,isofp,rels,mapi;
@@ -424,7 +424,7 @@ local so,fp,isofp,rels,mapi;
   # relators in the generators on the genimages and take the normal closure.
   so:=Source(map);
   mapi:=MappingGeneratorsImages(map);
-  if Length(GeneratorsOfGroup(so))=0 
+  if Length(GeneratorsOfGroup(so))=0
     or ForAll(GeneratorsOfGroup(so),x->IsOne(UnderlyingElement(x))) then
     rels:=ShallowCopy(mapi[2]);
   else
@@ -509,7 +509,7 @@ local t,w,c,q,chom,tg,hi,u;
   w:=FamilyObj(s)!.wholeGroup;
 
   # permutation action on the cosets
-  c:=CosetTableInWholeGroup(s); 
+  c:=CosetTableInWholeGroup(s);
   c:=List(c{[1,3..Length(c)-1]},PermList);
   q:=Group(c,());  # `c' arose from `PermList'
   chom:=GroupHomomorphismByImagesNC(w,q,GeneratorsOfGroup(w),c);
@@ -525,7 +525,7 @@ local t,w,c,q,chom,tg,hi,u;
 end);
 
 BindGlobal("IsTransPermStab1",function(G,U)
-  return IsPermGroup(G) and IsTransitive(G,MovedPoints(G)) 
+  return IsPermGroup(G) and IsTransitive(G,MovedPoints(G))
     and (1 in MovedPoints(G)) and Length(Orbit(U,1))=1
     and Size(G)/Size(U)=Length(MovedPoints(G));
 end);
@@ -569,7 +569,7 @@ local s,t,p,w,c,q,chom,tg,thom,hi,i,lp,max;
     q:=s!.quot;
     c:=GeneratorsOfGroup(q);
   else
-    c:=CosetTableInWholeGroup(s); 
+    c:=CosetTableInWholeGroup(s);
     c:=List(c{[1,3..Length(c)-1]},PermList);
     q:=Group(c,());  # `c' arose from `PermList'
     if IsBound(s!.quot) and HasSize(s!.quot) then
@@ -683,7 +683,7 @@ InstallMethod( IsConjugatorIsomorphism,
 InstallMethod( CompositionMapping2,
     "for gp. hom. and fp. hom, transferring the coset table",
     FamSource1EqFamRange2,
-    [ IsGroupHomomorphism, 
+    [ IsGroupHomomorphism,
       IsGroupHomomorphism and IsFromFpGroupGeneralMappingByImages and
       HasCosetTableFpHom], 0,
 function( hom1, hom2 )
@@ -741,7 +741,7 @@ local mapi;
           i->Length(i)=1 and i[1]>0) ) then
     TryNextMethod();
   fi;
-  if Length(mapi[2])=0 then 
+  if Length(mapi[2])=0 then
     mapi:=One(Source(hom));
   else
     mapi:=MappedWord(elm,mapi[2],mapi[1]);
@@ -805,7 +805,7 @@ local aug,w,p,pres,f,fam,opt;
     opt.generatorsLimit:=ValueOption("generatorsLimit");
   fi;
 
-  TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup); 
+  TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup);
   if ValueOption("cheap")=true then
     TzGo(pres);
   else
@@ -860,7 +860,7 @@ local aug,w,p,pres,f,fam,G,trace;
   fi;
   # get an augmented coset table from the group. It must be compatible with
   # `gens', so we must always use MTC.
-  
+
   # use new MTC
   w:=FamilyObj(u)!.wholeGroup;
   aug:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(w),
@@ -879,7 +879,7 @@ local aug,w,p,pres,f,fam,G,trace;
   fi;
   # check that we have the exact generators as we want and no rearrangement
   # or so happened.
-  Assert(0,Length(GeneratorsOfPresentation(pres))=Length(gens) 
+  Assert(0,Length(GeneratorsOfPresentation(pres))=Length(gens)
     and pres!.primarywords=[1..Length(gens)]);
 
   # new free group
@@ -924,7 +924,7 @@ local H, pres,map,mapi,opt;
     opt.protected:=ValueOption("protected");
   fi;
 
-  opt.printLevel:=InfoLevel(InfoFpGroup); 
+  opt.printLevel:=InfoLevel(InfoFpGroup);
   TzInitGeneratorImages(pres);
   if ValueOption("easy")=true then
     # case of old `SimplifiedFpGroup`, use default strategy parameters
@@ -998,7 +998,7 @@ function(G,N)
 local T,m;
 
   # try to use rewriting if the index is not too big.
-  if IndexInWholeGroup(G)>1 and IndexInWholeGroup(G)<=1000 
+  if IndexInWholeGroup(G)>1 and IndexInWholeGroup(G)<=1000
     and HasGeneratorsOfGroup(N) and not
     HasCosetTableInWholeGroup(N) then
     T:=IsomorphismFpGroup(G);
@@ -1029,7 +1029,7 @@ end);
 
 InstallMethod(NaturalHomomorphismByNormalSubgroupOp,
   "for subgroups of fp groups by quotient rep.",IsIdenticalObj,
-    [IsSubgroupFpGroup, 
+    [IsSubgroupFpGroup,
      IsSubgroupFpGroup and IsSubgroupOfWholeGroupByQuotientRep ],0,
 function(G,N)
 local Q,B,Ggens,gens,hom;
@@ -1049,7 +1049,7 @@ end);
 
 InstallMethod(NaturalHomomorphismByNormalSubgroupOp,
   "trivial image fp case",IsIdenticalObj,
-    [IsSubgroupFpGroup, 
+    [IsSubgroupFpGroup,
      IsSubgroupFpGroup and IsWholeFamily ],0,
 function(G,N)
 local Q,Ggens,gens,hom;
@@ -1088,27 +1088,27 @@ local m,s,g,i,j,rel,gen,img,fin,hom,gens;
     od;
   od;
 
-  if Length(m)>0 then  
+  if Length(m)>0 then
     m:=ReducedRelationMat(m);
     s:=NormalFormIntMat(m,25); # 9+16: SNF with transforms, destructive
     SetAbelianInvariants(f,AbelianInvariantsOfList(DiagonalOfMat(s.normal)));
-   
+
     if Length(m[1])>s.rank then
       img:=[];
-      for i in [1..s.rank] do  
+      for i in [1..s.rank] do
         Add(img,s.normal[i][i]);
         Add(rel,g.(i)^s.normal[i][i]);
       od;
       Append(img,ListWithIdenticalEntries(Length(gen)-s.rank,0));
       g:=g/rel;
       fin:=false;
-    else  
+    else
       # Not `AbelianInvariantsOfList' as the structure of the group is as
       # given by the normal form
       g:=AbelianGroup(DiagonalOfMat(s.normal));
       fin:=true;
     fi;
-  
+
     gen:=GeneratorsOfGroup(g);
     s:=s.coltrans;
     img:=[];
@@ -1119,7 +1119,7 @@ local m,s,g,i,j,rel,gen,img,fin,hom,gens;
       od;
       Add(img,m);
     od;
-  else 
+  else
     g:=g/rel;
     fin:=Length(gen)=0;
     img:=GeneratorsOfGroup(g);
@@ -1143,7 +1143,7 @@ local phi,m;
   phi:=AttributeValueNotSet(IsomorphismFpGroup,U:
     eliminationsLimit:=50,
     generatorsLimit:=Length(GeneratorsOfGroup(Parent(U)))*LogInt(IndexInWholeGroup(U),2),
-    cheap); 
+    cheap);
   m:=MaximalAbelianQuotient(Image(phi));
   SetAbelianInvariants(U,AbelianInvariants(Image(phi)));
   return phi*MaximalAbelianQuotient(Image(phi));
@@ -1169,7 +1169,7 @@ local aug,r,sec,t,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn;
   Info( InfoFpGroup, 1, "Abelian presentation with ",
     Length(aug.subgroupGenerators), " generators");
 
-  # make vectors 
+  # make vectors
   expwrd:=function(l)
   local v,i;
     v:=ListWithIdenticalEntries(r,0);
@@ -1256,7 +1256,7 @@ LargerQuotientBySubgroupAbelianization,function(hom,u)
 local v,aiu,aiv,G,primes,irrel,ma,mau,a,k,gens,imgs,q,dec,deco,piv,co;
   v:=PreImage(hom,u);
   aiu:=AbelianInvariants(u);
-  
+
   G:= FamilyObj(v)!.wholeGroup;
   aiv:=AbelianInvariantsSubgroupFpGroup( G, v:cheap:=false );
   if aiv=fail then
@@ -1388,7 +1388,7 @@ local F,str;
     fi;
     F:=FreeGroup(Length(GeneratorsOfGroup(G)),str);
   fi;
-  return 
+  return
     GroupHomomorphismByImagesNC(F,G,GeneratorsOfGroup(F),GeneratorsOfGroup(G));
 end);
 
@@ -1410,7 +1410,7 @@ local s,r,fam,fas,fpf,mapi;
   s:=SubgroupNC(s,mapi[1]);
   fam:=FamilyObj(One(r));
   fas:=FamilyObj(One(s));
-  if IsPermCollection(s) or IsMatrixCollection(s) 
+  if IsPermCollection(s) or IsMatrixCollection(s)
      or IsPcGroup(s) or CanEasilyCompareElements(s) then
     # in the long run this should be the inverse of the source restricted
     # mapping (or the corestricted inverse) but that does not work well with

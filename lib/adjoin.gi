@@ -8,16 +8,16 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file contains the implementations for functions pertaining to 
-##  adjoining an identity element to a semigroup. 
+##  This file contains the implementations for functions pertaining to
+##  adjoining an identity element to a semigroup.
 ##
 
 ###########################################################################
 ##
-#M  AdjoinedIdentityFamily( <fam> ) 
+#M  AdjoinedIdentityFamily( <fam> )
 ##
 
-InstallMethod(AdjoinedIdentityFamily, [IsFamily], 
+InstallMethod(AdjoinedIdentityFamily, [IsFamily],
         function(fam)
     local   afam;
     afam := NewFamily(Concatenation("AdjoinedIdentityFamily(",fam!.NAME,")"),
@@ -28,18 +28,18 @@ end);
 
 ###########################################################################
 ##
-#M  AdjoinedIdentityDefaultType( <fam> ) 
+#M  AdjoinedIdentityDefaultType( <fam> )
 ##
 
 InstallMethod(AdjoinedIdentityDefaultType, [IsFamily],
-        function(fam) 
-    return NewType(fam, IsMonoidByAdjoiningIdentityEltRep and 
+        function(fam)
+    return NewType(fam, IsMonoidByAdjoiningIdentityEltRep and
                    IsMonoidByAdjoiningIdentityElt);
 end);
 
 ###########################################################################
 ##
-#A  MonoidByAdjoiningIdentityElt( <elt> ) 
+#A  MonoidByAdjoiningIdentityElt( <elt> )
 ##
 ##  the result of this function is the corresponding element in the category
 ##  MonoidByAdjoiningIdentityElt with IsOne set to false.
@@ -57,10 +57,10 @@ end);
 
 ###########################################################################
 ##
-#M  <elt1> \* <elt2> 
+#M  <elt1> \* <elt2>
 ##
-##  returns <elt2> if <elt1> represents the identity, <elt1> if <elt2> 
-##  represents the identity, and otherwise returns the value of 
+##  returns <elt2> if <elt1> represents the identity, <elt1> if <elt2>
+##  represents the identity, and otherwise returns the value of
 ##  MonoidByAdjoiningIdentityElt for product of the underlying
 ##  elements.
 ##
@@ -79,7 +79,7 @@ end);
 
 ###########################################################################
 ##
-#M  <elt1> \< <elt2> 
+#M  <elt1> \< <elt2>
 ##
 ##  compares underlying elements if they exist, and considers the representative
 ##  of the identity to be the least element otherwise.
@@ -99,11 +99,11 @@ end);
 
 ###########################################################################
 ##
-#M  <elt1> \= <elt2> 
+#M  <elt1> \= <elt2>
 ##
-##  returns true if both elements represent the identity, false if one does 
+##  returns true if both elements represent the identity, false if one does
 ##  and the other doesn't, otherwise compares underlying elements.
-## 
+##
 
 InstallMethod(\=,         IsIdenticalObj,
         [IsMonoidByAdjoiningIdentityElt, IsMonoidByAdjoiningIdentityElt],
@@ -140,8 +140,8 @@ end);
 ##  returns the monoid obtained from <semigroup> by adjoining an identity.
 ##
 
-InstallMethod(MonoidByAdjoiningIdentity, [IsSemigroup and HasGeneratorsOfSemigroup], 
-        function( s )	
+InstallMethod(MonoidByAdjoiningIdentity, [IsSemigroup and HasGeneratorsOfSemigroup],
+        function( s )
 	local m;
         m:=Monoid(List(GeneratorsOfSemigroup(s), MonoidByAdjoiningIdentityElt));
 	SetUnderlyingSemigroupOfMonoidByAdjoiningIdentity(m, s);
@@ -154,10 +154,10 @@ end);
 ##
 ##  returns the underlying element of the MonoidByAdjoiningIdentityElt <elt>.
 ##
-  
+
 InstallMethod(UnderlyingSemigroupElementOfMonoidByAdjoiningIdentityElt,
         [IsMonoidByAdjoiningIdentityElt],
-        x->x![1]); 
+        x->x![1]);
 
 InstallMethod(PrintObj, [IsMonoidByAdjoiningIdentityElt],
         function(me)

@@ -49,7 +49,7 @@ EvalFpCoc := function( coc, desc )
         od;
         return result;
 
-    else 
+    else
         # test how often the word [ a, b ] * a^2 is hit
         targets := List( coc[ desc[ 2 ] ], x -> x[ 1 ] );
         map := [ 1 .. Length( targets ) ];
@@ -58,9 +58,9 @@ EvalFpCoc := function( coc, desc )
         fcd4 := Flat( coc[ desc[ 4 ] ] );
         for g1 in Flat( coc[ desc[ 3 ] ] ) do
             for g2 in fcd4 do
-                if desc[ 1 ] = 4 then 
+                if desc[ 1 ] = 4 then
                     pos := Position( targets, Comm( g1, g2 ) * g1 ^ 2 );
-                else 
+                else
                 # desc[ 1 ] = 5
                     pos := Position( targets, Comm( g1, g2 ) * g1 ^ 3 );
                 fi;
@@ -129,7 +129,7 @@ SplitUpSublistsByFpFunc := function( list )
    result := [ ];
    finps := [ ];
    for i in [ 1 .. Length( list ) ] do
-      if list[ i ].isUnique then 
+      if list[ i ].isUnique then
          Add( result, [ list [ i ] ] );
          Add( finps, false );
       else
@@ -167,7 +167,7 @@ end;
 ##
 CodeGenerators := function( gens, spcgs )
 
-   local  layers, first, one, pcgs, sgrps, dep, lay, 
+   local  layers, first, one, pcgs, sgrps, dep, lay,
           numf, pos, e, tpos, found, et, p;
 
    gens   := ShallowCopy( gens );
@@ -176,7 +176,7 @@ CodeGenerators := function( gens, spcgs )
    one    := OneOfPcgs( spcgs );
    pcgs   := [ ];
    sgrps  := [ ];
-   
+
    numf   := 0;
    pos    := 0;
 
@@ -189,7 +189,7 @@ CodeGenerators := function( gens, spcgs )
          lay := layers[ dep ];
          tpos := first[ lay + 1 ];
          found := false;
-         
+
          while tpos > first[ lay ] and not found and e <> one do
             tpos := tpos - 1;
             if not IsBound( pcgs[ tpos ] ) then

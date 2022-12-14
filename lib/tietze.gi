@@ -307,7 +307,7 @@ local P,F, fgens, freegens, frels, G, gens, names, numgens, origin,
         origin!.preImagesNewGens := Immutable( T!.preImagesNewGens );
     fi;
     SetTietzeOrigin( G, origin );
-    
+
     return G;
 end );
 
@@ -338,11 +338,11 @@ InstallGlobalFunction( PresentationFpGroup, function ( arg )
     fi;
 
     # Create the Presentation.
-    T := Objectify( NewType( PresentationsFamily, 
+    T := Objectify( NewType( PresentationsFamily,
                                  IsPresentationDefaultRep
-                             and IsPresentation                            
+                             and IsPresentation
                              and IsMutable ),
-                    rec() ); 
+                    rec() );
     tietze := ListWithIdenticalEntries( TZ_LENGTHTIETZE, 0 );
     tietze[TZ_OCCUR]:=false;
     T!.tietze := tietze;
@@ -382,7 +382,7 @@ InstallGlobalFunction( PresentationFpGroup, function ( arg )
     T!.identity:=Identity( F );
 
     # since T is mutable, we must set this attribute "manually"
-    SetTzOptions(T,TzOptions(T));    
+    SetTzOptions(T,TzOptions(T));
 
     # initialize some Tietze options
     TzOptions(T).protected := 0;
@@ -1658,7 +1658,7 @@ InstallGlobalFunction( TzEliminateGen, function ( T, num )
                 if gen > 0 then  word := -1 * Reversed( word );  fi;
                 TzUpdateGeneratorImages( T, num, word );
             fi;
-            
+
             # mark gen to be redundant.
             invs[numgens+1-num] := 0;
             tietze[TZ_NUMREDUNDS] := tietze[TZ_NUMREDUNDS] + 1;
@@ -1724,7 +1724,7 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
 #if occTotals<>false and occTotals <> NEW_OCCUR[1] then
 #Error("cla1");
 #elif occTotals<>false and occRelNums <> NEW_OCCUR[2] then
-#Error("cla2"); 
+#Error("cla2");
 #elif occTotals<>false and occMultiplicities <> NEW_OCCUR[3] then
 #  Error("cla3"); fi;
 
@@ -1819,8 +1819,8 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
                 if AbsInt(k)=i then total:=total+1;fi;
               od;
     #if total>0 then Print(j,":",i,":",total,"\n");fi;
-              if total>0 and 
-                (total<num or 
+              if total>0 and
+                (total<num or
                 (total=num and Length(rels[j])<olen) or
                 (total=num and Length(rels[j])=olen and j<occRelNums[i])
                 ) then
@@ -1901,7 +1901,7 @@ InstallGlobalFunction( TzEliminateGen1, function ( T )
   #if occTotals<>false and occTotals <> NEW_OCCUR[1] then
   #Error("bla1");
   #  elif occTotals<>false and occRelNums <> NEW_OCCUR[2] then
-  #Error("bla2"); 
+  #Error("bla2");
   #  elif occTotals<>false and occMultiplicities <> NEW_OCCUR[3] then
   #    Error("bla3"); fi;
     fi;
@@ -1934,7 +1934,7 @@ end );
 ##  (3) The  total length of the relators  has not yet grown  to a percentage
 ##      greater than the parameter TzOptions(T).expandLimit.
 ##  (4) The  next  elimination  will  not  extend the total length to a value
-##      greater  than  the parameter  TzOptions(T).lengthLimit  or  the value 
+##      greater  than  the parameter  TzOptions(T).lengthLimit  or  the value
 ##      2^31-1.
 ##
 ##  If a  second argument  has been  specified,  then it is  assumed  that we
@@ -2269,7 +2269,7 @@ end );
 ##  presentation in the given Tietze record.
 ##
 ##  If "silent" is specified as true, then the printing of the status line
-##  by `TzGo' is suppressed if the Tietze option `printLevel' (see "Tietze 
+##  by `TzGo' is suppressed if the Tietze option `printLevel' (see "Tietze
 ##  Options") has a value less than 2.
 ##
 ##  rels    is the set of relators.
@@ -3052,7 +3052,7 @@ InstallGlobalFunction( TzPrintLengths, function ( T )
 end );
 
 
-############################################################################# 
+#############################################################################
 ##
 #M  TzOptions(<P>)
 ##
@@ -3653,8 +3653,8 @@ InstallGlobalFunction( TzSort, function ( T )
         Error( "argument must be a Presentation" );
     fi;
 
-    if T!.tietze[TZ_NUMRELS] > 0 then  
-      TzSortC( T!.tietze );  
+    if T!.tietze[TZ_NUMRELS] > 0 then
+      TzSortC( T!.tietze );
       T!.tietze[TZ_OCCUR]:=false;
     fi;
 end );
@@ -3800,7 +3800,7 @@ end );
 ##
 InstallGlobalFunction( TzSubstituteCyclicJoins, function ( T )
 
-    local exp1, exp2, exponents, gen, gen2, gens, i, invs, lengths, 
+    local exp1, exp2, exponents, gen, gen2, gens, i, invs, lengths,
           num1, num2, numgens, numrels, printlevel, rel, rels,
           tietze;
 

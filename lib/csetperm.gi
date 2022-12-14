@@ -17,7 +17,7 @@
 ##
 InstallGlobalFunction( MinimizeExplicitTransversal, function( U, maxmoved )
     local   explicit,  lenflock,  flock,  lenblock,  index,  s;
-    
+
     if     IsBound( U.explicit )
        and IsBound( U.stabilizer )  then
         explicit := U.explicit;
@@ -159,7 +159,7 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
     local   orb,  pimg,  img,  vert,  s,  t,  index,
             block,  B,  blist,  pos,  sliced,  lenflock,  i,  j,
             ss,  tt,t1,t1lim,found,tl,vimg;
-    
+
     # iterated image
     vimg:=function(point,list)
     local i;
@@ -178,11 +178,11 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
         U.flock    := U.explicit;
     else
         AddCosetInfoStabChain( G.stabilizer, U.stabilizer, maxmoved );
-        
+
         # U.index := [G_1:U_1];
         U.index := U.stabilizer.index * Length( G.orbit ) / Length( U.orbit );
 	Info(InfoCoset,5,"U.index=",U.index);
-        
+
         # block := 1 ^ <U,G_1>; is a block for G.
         block := OrbitPerms( Concatenation( U.generators,
                  G.stabilizer.generators ), G.orbit[ 1 ] );
@@ -202,7 +202,7 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
                            G.transversal[ t ];
             od;
         fi;
-        
+
         # flock := { G.transversal[ B[1] ] | B in block system };
         blist := BlistList( G.orbit, block );
         pos := Position( blist, false );
@@ -228,7 +228,7 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
             pos := Position( blist, false, pos );
         od;
         G.orbit := block;
-        
+
         # Let <s> loop over the transversal elements in the stabilizer.
         U.repsStab := List( [ 1 .. U.lenblock ], x ->
                            BlistList( [ 1 .. U.stabilizer.index ], [  ] ) );
@@ -236,7 +236,7 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
                                       [ 1 .. U.stabilizer.index ] );
         index := U.stabilizer.index * lenflock;
         s := 1;
-        
+
         # For  large  indices, store only   the  numbers of  the  transversal
         # elements needed.
         if not IsBound( U.explicit )  then
@@ -244,7 +244,7 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
             # If  the   stabilizer   is the   topmost  level   with  explicit
             # transversal, this must contain minimal coset representatives.
             MinimizeExplicitTransversal( U.stabilizer, maxmoved );
-            
+
 	    # if there are over 200 points, do a cheap test first.
 	    t1lim:=Length(G.orbit);
 	    if t1lim>200 then
@@ -320,7 +320,7 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
                 od;
                 s := s + 1;
             od;
-            
+
         # For small indices, store a transversal explicitly.
         else
             for ss  in U.stabilizer.flock  do
@@ -343,7 +343,7 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
             Unbind( U.stabilizer.explicit );
             Unbind( U.stabilizer.flock    );
         fi;
-                    
+
     fi;
 end );
 
@@ -353,27 +353,27 @@ end );
 ##
 InstallGlobalFunction( NumberCoset, function( G, U, r )
     local   num,  b,  t,  u,  g1,  pnt,  bpt;
-    
+
     if IsEmpty( G.genlabels )  or  U.index = 1  then
         return 1;
     fi;
-    
+
     # Find the block number of $r$.
     bpt := G.orbit[ 1 ];
     b := QuoInt( Position( G.orbit, bpt ^ r ) - 1, U.lenblock );
-        
+
     # For small indices, look at the explicit transversal.
     if IsBound( U.explicit )  then
         return b * U.lenflock + Position( U.explicit,
                MinimalElementCosetStabChain( U, r / U.flock[ b + 1 ] ) );
     fi;
-        
+
     pnt := G.orbit[ b * U.lenblock + 1 ];
     while pnt <> bpt  do
         r   := r   * G.transversal[ pnt ];
         pnt := pnt ^ G.transversal[ pnt ];
     od;
-    
+
     # Now $r$ stabilises the block. Find the first $t in G/G_1$ such that $Ur
     # = Ust$ for $s in G_1$. In this code, G.orbit[ <t> ] = bpt ^ $t$.
     num := b * U.stabilizer.index * U.lenblock / Length( U.orbit );
@@ -385,7 +385,7 @@ InstallGlobalFunction( NumberCoset, function( G, U, r )
         t := t + 1;
         pnt := G.orbit[ t ] / r;
     od;
-        
+
     # $r/t = u.g_1$ with $u in U, g_1 in G_1$, hence $t/r.u = g_1^-1$.
     u := U.identity;
     while pnt ^ u <> bpt  do
@@ -395,7 +395,7 @@ InstallGlobalFunction( NumberCoset, function( G, U, r )
     while bpt ^ g1 <> bpt  do
         g1 := g1 * G.transversal[ bpt ^ g1 ];
     od;
-                
+
     # The number of $r$  is the number of $g_1$  plus an offset <num> for
     # the earlier values of $t$.
     return num + SizeBlist( U.repsStab[ t ]{ [ 1 ..
@@ -419,7 +419,7 @@ InstallGlobalFunction( CosetNumber, function( arg )
         if tup = false  then  return G.identity;
                         else  return tup;         fi;
     fi;
-    
+
     # Find the block $b$ addressed by <num>.
     if IsBound( U.explicit )  then
         index := U.lenflock;
@@ -429,7 +429,7 @@ InstallGlobalFunction( CosetNumber, function( arg )
     fi;
     b := QuoInt( num - 1, index );
     num := ( num - 1 ) mod index + 1;
-        
+
     # For small indices, look at the explicit transversal.
     if IsBound( U.explicit )  then
         if tup = false  then
@@ -438,7 +438,7 @@ InstallGlobalFunction( CosetNumber, function( arg )
             return List( tup, t -> t / U.flock[ b + 1 ] / U.explicit[ num ] );
         fi;
     fi;
-        
+
     # Otherwise, find the point $t$ addressed by <num>.
     t := 1;
     len := SizeBlist( U.repsStab[ t ] );
@@ -450,7 +450,7 @@ InstallGlobalFunction( CosetNumber, function( arg )
     if len < U.stabilizer.index  then
         num := PositionNthTrueBlist( U.repsStab[ t ], num );
     fi;
-        
+
     # Find the representative $s$ in   the stabilizer addressed by <num>  and
     # return $st$.
     rep := G.identity;
@@ -510,7 +510,7 @@ local s,c,mp,o,i,step,a;
 	fi;
 	s:=Stabilizer(s,a,OnSets);
 	step:=true;
-      elif Index(G,U)>NrMovedPoints(U) 
+      elif Index(G,U)>NrMovedPoints(U)
 	  and IsPrimitive(s,o[i]) and not IsPrimitive(U,o[i]) then
 	Info(InfoCoset,2,"AC: blocks");
 	s:=Stabilizer(s,Set(MaximalBlocks(U,o[i]),Set),

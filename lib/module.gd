@@ -395,7 +395,7 @@ DeclareSynonymAttr( "TrivialSubmodule", TrivialSubadditiveMagmaWithZero );
 ##  returns the domain <A>D</A> viewed as a left module.
 ##  <Example><![CDATA[
 ##  gap> coll:= [[0*Z(2),0*Z(2)], [Z(2),0*Z(2)], [0*Z(2),Z(2)], [Z(2),Z(2)]];
-##  [ [ 0*Z(2), 0*Z(2) ], [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ], 
+##  [ [ 0*Z(2), 0*Z(2) ], [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ],
 ##    [ Z(2)^0, Z(2)^0 ] ]
 ##  gap> AsLeftModule( GF(2), coll );
 ##  <vector space of dimension 2 over GF(2)>

@@ -60,7 +60,7 @@ InstallMethod( PowerMap,
               od;
               erg[i]:=a;
             fi;
-              
+
           od;
         else
           erg:= PowerMapOp( tbl, n );

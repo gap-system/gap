@@ -67,8 +67,8 @@ GlasbyStabilizer := function( pcgs, A, B, pcgsL )
     local   f,  transl,  matA,  pt;
 
     f     := GF( Order( pcgsL[1] ) );
-    
-    transl := function( a ) 
+
+    transl := function( a )
         return ExponentsOfPcElement(pcgsL,SiftedPcElement(B,a)) * One(f);
     end;
 
@@ -95,7 +95,7 @@ end;
 ##
 AvoidedLayers := function( pcgs, pcgsH, pcgsK )
 
-    local occur, h, k, first, next, avoided, primes, p, sylow, res, i, 
+    local occur, h, k, first, next, avoided, primes, p, sylow, res, i,
           firsts, weights;
 
     # get the gens, which do not occur in H or K
@@ -146,9 +146,9 @@ end;
 #F  GlasbyIntersection
 ##
 GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
-    local m, G, first, weights, avoid, A, B, i, start, next, HmN, KmN, 
+    local m, G, first, weights, avoid, A, B, i, start, next, HmN, KmN,
           sum, pcgsS, pcgsR, C, D,
-          new, U, deptH, deptK,pcgsL,depthS,depthN; 
+          new, U, deptH, deptK,pcgsL,depthS,depthN;
 
     # compute a cgs for <H> and <K>
     G := GroupOfPcgs( pcgs );
@@ -173,9 +173,9 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
         depthN := [next..m];
         if not start in avoid then
 	    #pcgsN := InducedPcgsByPcSequenceNC( pcgs, pcgs{depthN} );
-            HmN := pcgsH{Filtered( [1..Length(deptH)], 
+            HmN := pcgsH{Filtered( [1..Length(deptH)],
                          x -> start <= deptH[x] and next > deptH[x] )};
-            KmN := pcgsK{Filtered( [1..Length(deptK)], 
+            KmN := pcgsK{Filtered( [1..Length(deptK)],
                          x -> start <= deptK[x] and next > deptK[x] )};
 
             #pcgsHmN := Concatenation( HmN, pcgsN );
@@ -212,7 +212,7 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
 		  pcgsL:=ModuloTailPcgsByList(pcgs,
 					      pcgs{Difference(depthS,depthN)},
 					      depthN);
-		  
+
 		fi;
 
                 C := GlasbyStabilizer( pcgs, A, B, pcgsL );
@@ -275,7 +275,7 @@ end;
 ##
 InstallMethod( Intersection2,
     "groups with pcgs",
-    true, 
+    true,
     [ IsGroup and HasHomePcgs,
       IsGroup and HasHomePcgs ],
     0,
@@ -290,16 +290,16 @@ function( U, V )
     fi;
 
     # check for trivial cases
-    if IsInt(Size(V)/Size(U)) 
+    if IsInt(Size(V)/Size(U))
        and ForAll( GeneratorsOfGroup(U), x -> x in V ) then
         return U;
     # here we can test Size(V)<Size(U): if they are the same the test before
     # would have found out.
-    elif Size(V)<Size(U) and IsInt(Size(U)/Size(V)) 
+    elif Size(V)<Size(U) and IsInt(Size(U)/Size(V))
       and ForAll( GeneratorsOfGroup(V), x -> x in U ) then
         return V;
     fi;
-    
+
     G := GroupOfPcgs(home);
     if Size(U) < GS_SIZE  then
         return SubgroupNC( G, Filtered( AsList(U), x -> x in V and
@@ -334,7 +334,7 @@ end );
 InstallMethod( NormalIntersection,
     "method for two groups with home pcgs",
     IsIdenticalObj, [ IsGroup and HasHomePcgs, IsGroup and HasHomePcgs],
-function( G, H ) 
+function( G, H )
 local home;
   home:=HomePcgs(G);
   if home<>HomePcgs(H) then

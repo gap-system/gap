@@ -101,9 +101,9 @@ DeclareAttribute( "CanonicalPcgsWrtHomePcgs", IsGroup );
 ##  <Attr Name="FamilyPcgs" Arg='grp'/>
 ##
 ##  <Description>
-##  returns a <Q>natural</Q> pcgs of a pc group <A>grp</A> 
-##  (with respect to which pcgs operations as described in 
-##  Chapter&nbsp;<Ref Chap="Polycyclic Groups"/> are particularly 
+##  returns a <Q>natural</Q> pcgs of a pc group <A>grp</A>
+##  (with respect to which pcgs operations as described in
+##  Chapter&nbsp;<Ref Chap="Polycyclic Groups"/> are particularly
 ##  efficient).
 ##  </Description>
 ##  </ManSection>
@@ -181,7 +181,7 @@ DeclareGlobalFunction( "InducedPcgs" );
 ##
 ##  <Description>
 ##  computes a pcgs for <A>grp</A> which is induced by <A>pcgs</A>. <A>pcgs</A> must not
-##  be an induced pcgs. This operation should not be called directly. 
+##  be an induced pcgs. This operation should not be called directly.
 ##  Instead, please use <C>InducedPcgs</C> which caches its results.
 ##  </Description>
 ##  </ManSection>
@@ -256,7 +256,7 @@ DeclareAttribute(
 ##  <Attr Name="Pcgs" Arg='G'/>
 ##
 ##  <Description>
-##  returns a pcgs for the group <A>G</A>. 
+##  returns a pcgs for the group <A>G</A>.
 ##  If <A>grp</A> is not polycyclic it returns <K>fail</K> <E>and this result
 ##  is not  stored as attribute value</E>,
 ##  in particular in this case the filter <C>HasPcgs</C> is <E>not</E> set
@@ -297,7 +297,7 @@ DeclareAttribute( "GeneralizedPcgs", IsGroup );
 ##  pcgs at low costs.
 ##  This filter is used in the method selection mainly.
 ##  Note that this filter may change its value from <K>false</K> to
-##  <K>true</K>. 
+##  <K>true</K>.
 ##
 ##  <Example><![CDATA[
 ##  gap> G := Group( (1,2,3,4),(1,2) );
@@ -353,7 +353,7 @@ DeclareOperation( "SubgroupByPcgs", [IsGroup, IsPcgs] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "AffineAction", 
+DeclareOperation( "AffineAction",
     [ IsList, IsMatrix, IsFunction, IsFunction ] );
 
 
@@ -407,7 +407,7 @@ InstallTrueMethod(
 ##  gap> spec := SpecialPcgs( G );
 ##  Pcgs([ f1, f2, f3, f4, f5, f6 ])
 ##  gap> LGWeights( spec );
-##  [ [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 3 ], [ 1, 2, 2 ], [ 1, 2, 2 ], 
+##  [ [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 3 ], [ 1, 2, 2 ], [ 1, 2, 2 ],
 ##    [ 1, 3, 2 ] ]
 ##  gap> mpcgs := InducedPcgsByPcSequence( spec, spec{[4,5,6]} );
 ##  Pcgs([ f4, f5, f6 ])
@@ -416,12 +416,12 @@ InstallTrueMethod(
 ##  gap> modu := mpcgs mod npcgs;
 ##  [ f4, f5 ]
 ##  gap> mat:=LinearActionLayer( G, spec{[1,2,3]}, modu );
-##  [ <an immutable 2x2 matrix over GF2>, 
-##    <an immutable 2x2 matrix over GF2>, 
+##  [ <an immutable 2x2 matrix over GF2>,
+##    <an immutable 2x2 matrix over GF2>,
 ##    <an immutable 2x2 matrix over GF2> ]
 ##  gap> Print( mat, "\n" );
-##  [ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ], 
-##    [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ], 
+##  [ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ],
+##    [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ],
 ##    [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] ]
 ##  ]]></Example>
 ##  </Description>

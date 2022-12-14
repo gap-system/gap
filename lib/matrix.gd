@@ -315,7 +315,7 @@ DeclareAttribute( "DepthOfUpperTriangularMatrix", IsMatrix );
 ##  <P/>
 ##  These methods assume implicitly that <A>mat</A> is defined over an
 ##  integral domain whose quotient field is implemented in &GAP;. For
-##  matrices defined over an arbitrary commutative ring with one 
+##  matrices defined over an arbitrary commutative ring with one
 ##  see&nbsp;<Ref Oper="DeterminantMatDivFree"/>.
 ##  </Description>
 ##  </ManSection>
@@ -368,8 +368,8 @@ DeclareSynonym( "DeterminantMatDestructive", DeterminantMatrixDestructive );
 ##  <Oper Name="DeterminantMatDivFree" Arg='mat'/>
 ##
 ##  <Description>
-##  return the determinant of a square matrix <A>mat</A> over an arbitrary 
-##  commutative ring with one using the division free method of 
+##  return the determinant of a square matrix <A>mat</A> over an arbitrary
+##  commutative ring with one using the division free method of
 ##  Mahajan and Vinay <Cite Key="MV97"/>.
 ##  </Description>
 ##  </ManSection>
@@ -390,7 +390,7 @@ DeclareSynonym( "DeterminantMatDivFree", DeterminantMatrixDivFree );
 ##  <Description>
 ##  is a list of length 2, the first being the number of rows, the second
 ##  being the number of columns of the matrix <A>mat</A>. If <A>mat</A> is
-##  malformed, that is, it is not a <Ref Prop="IsRectangularTable"/>, 
+##  malformed, that is, it is not a <Ref Prop="IsRectangularTable"/>,
 ##  returns <K>fail</K>.
 ##  <Example><![CDATA[
 ##  gap> DimensionsMat([[1,2,3],[4,5,6]]);
@@ -431,16 +431,16 @@ DeclareAttribute( "DimensionsMat", IsMatrix );
 ##  gap> ElementaryDivisorsMat(mat);
 ##  [ 1, 3, 0 ]
 ##  gap> x:=Indeterminate(Rationals,"x");;
-##  gap> mat:=mat*One(x)-x*mat^0;       
+##  gap> mat:=mat*One(x)-x*mat^0;
 ##  [ [ -x+1, 2, 3 ], [ 4, -x+5, 6 ], [ 7, 8, -x+9 ] ]
 ##  gap> ElementaryDivisorsMat(PolynomialRing(Rationals,1),mat);
 ##  [ 1, 1, x^3-15*x^2-18*x ]
 ##  gap> mat:=KroneckerProduct(CompanionMat((x-1)^2),
 ##  >                          CompanionMat((x^3-1)*(x-1)));;
 ##  gap> mat:=mat*One(x)-x*mat^0;
-##  [ [ -x, 0, 0, 0, 0, 0, 0, 1 ], [ 0, -x, 0, 0, -1, 0, 0, -1 ], 
-##    [ 0, 0, -x, 0, 0, -1, 0, 0 ], [ 0, 0, 0, -x, 0, 0, -1, -1 ], 
-##    [ 0, 0, 0, -1, -x, 0, 0, -2 ], [ 1, 0, 0, 1, 2, -x, 0, 2 ], 
+##  [ [ -x, 0, 0, 0, 0, 0, 0, 1 ], [ 0, -x, 0, 0, -1, 0, 0, -1 ],
+##    [ 0, 0, -x, 0, 0, -1, 0, 0 ], [ 0, 0, 0, -x, 0, 0, -1, -1 ],
+##    [ 0, 0, 0, -1, -x, 0, 0, -2 ], [ 1, 0, 0, 1, 2, -x, 0, 2 ],
 ##    [ 0, 1, 0, 0, 0, 2, -x, 0 ], [ 0, 0, 1, 1, 0, 0, 2, -x+2 ] ]
 ##  gap> ElementaryDivisorsMat(PolynomialRing(Rationals,1),mat);
 ##  [ 1, 1, 1, 1, 1, 1, x-1, x^7-x^6-2*x^4+2*x^3+x-1 ]
@@ -479,43 +479,43 @@ DeclareGlobalFunction( "ElementaryDivisorsMatDestructive" );
 ##  <Example><![CDATA[
 ##  gap> mat:=KroneckerProduct(CompanionMat((x-1)^2),CompanionMat((x^3-1)*(x-1)));;
 ##  gap> mat:=mat*One(x)-x*mat^0;
-##  [ [ -x, 0, 0, 0, 0, 0, 0, 1 ], [ 0, -x, 0, 0, -1, 0, 0, -1 ], 
-##    [ 0, 0, -x, 0, 0, -1, 0, 0 ], [ 0, 0, 0, -x, 0, 0, -1, -1 ], 
-##    [ 0, 0, 0, -1, -x, 0, 0, -2 ], [ 1, 0, 0, 1, 2, -x, 0, 2 ], 
+##  [ [ -x, 0, 0, 0, 0, 0, 0, 1 ], [ 0, -x, 0, 0, -1, 0, 0, -1 ],
+##    [ 0, 0, -x, 0, 0, -1, 0, 0 ], [ 0, 0, 0, -x, 0, 0, -1, -1 ],
+##    [ 0, 0, 0, -1, -x, 0, 0, -2 ], [ 1, 0, 0, 1, 2, -x, 0, 2 ],
 ##    [ 0, 1, 0, 0, 0, 2, -x, 0 ], [ 0, 0, 1, 1, 0, 0, 2, -x+2 ] ]
 ##  gap> t:=ElementaryDivisorsTransformationsMat(PolynomialRing(Rationals,1),mat);
-##  rec( coltrans := [ [ 0, 0, 0, 0, 0, 0, 1/6*x^2-7/9*x-1/18, -3*x^3-x^2-x-1 ], 
-##        [ 0, 0, 0, 0, 0, 0, -1/6*x^2+x-1, 3*x^3-3*x^2 ], 
-##        [ 0, 0, 0, 0, 0, 1, -1/18*x^4+1/3*x^3-1/3*x^2-1/9*x, x^5-x^4+2*x^2-2*x 
+##  rec( coltrans := [ [ 0, 0, 0, 0, 0, 0, 1/6*x^2-7/9*x-1/18, -3*x^3-x^2-x-1 ],
+##        [ 0, 0, 0, 0, 0, 0, -1/6*x^2+x-1, 3*x^3-3*x^2 ],
+##        [ 0, 0, 0, 0, 0, 1, -1/18*x^4+1/3*x^3-1/3*x^2-1/9*x, x^5-x^4+2*x^2-2*x
 ##           ], [ 0, 0, 0, 0, -1, 0, -1/9*x^3+1/2*x^2+1/9*x, 2*x^4+x^3+x^2+2*x ],
-##        [ 0, -1, 0, 0, 0, 0, -2/9*x^2+19/18*x, 4*x^3+x^2+x ], 
-##        [ 0, 0, -1, 0, 0, -x, 1/18*x^5-1/3*x^4+1/3*x^3+1/9*x^2, 
-##            -x^6+x^5-2*x^3+2*x^2 ], 
-##        [ 0, 0, 0, -1, x, 0, 1/9*x^4-2/3*x^3+2/3*x^2+1/18*x, 
-##            -2*x^5+2*x^4-x^2+x ], 
-##        [ 1, 0, 0, 0, 0, 0, 1/6*x^3-7/9*x^2-1/18*x, -3*x^4-x^3-x^2-x ] ], 
-##    normal := [ [ 1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0, 0, 0, 0 ], 
-##        [ 0, 0, 1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 1, 0, 0, 0, 0 ], 
-##        [ 0, 0, 0, 0, 1, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 1, 0, 0 ], 
-##        [ 0, 0, 0, 0, 0, 0, x-1, 0 ], 
-##        [ 0, 0, 0, 0, 0, 0, 0, x^7-x^6-2*x^4+2*x^3+x-1 ] ], 
-##    rowtrans := [ [ 1, 0, 0, 0, 0, 0, 0, 0 ], [ 1, 1, 0, 0, 0, 0, 0, 0 ], 
-##        [ 0, 0, 1, 0, 0, 0, 0, 0 ], [ 1, 0, 0, 1, 0, 0, 0, 0 ], 
-##        [ -x+2, -x, 0, 0, 1, 0, 0, 0 ], 
-##        [ 2*x^2-4*x+2, 2*x^2-x, 0, 2, -2*x+1, 0, 0, 1 ], 
-##        [ 3*x^3-6*x^2+3*x, 3*x^3-2*x^2, 2, 3*x, -3*x^2+2*x, 0, 1, 2*x ], 
-##        [ 1/6*x^8-7/6*x^7+2*x^6-4/3*x^5+7/3*x^4-4*x^3+13/6*x^2-7/6*x+2, 
+##        [ 0, -1, 0, 0, 0, 0, -2/9*x^2+19/18*x, 4*x^3+x^2+x ],
+##        [ 0, 0, -1, 0, 0, -x, 1/18*x^5-1/3*x^4+1/3*x^3+1/9*x^2,
+##            -x^6+x^5-2*x^3+2*x^2 ],
+##        [ 0, 0, 0, -1, x, 0, 1/9*x^4-2/3*x^3+2/3*x^2+1/18*x,
+##            -2*x^5+2*x^4-x^2+x ],
+##        [ 1, 0, 0, 0, 0, 0, 1/6*x^3-7/9*x^2-1/18*x, -3*x^4-x^3-x^2-x ] ],
+##    normal := [ [ 1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0, 0, 0, 0 ],
+##        [ 0, 0, 1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 1, 0, 0, 0, 0 ],
+##        [ 0, 0, 0, 0, 1, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 1, 0, 0 ],
+##        [ 0, 0, 0, 0, 0, 0, x-1, 0 ],
+##        [ 0, 0, 0, 0, 0, 0, 0, x^7-x^6-2*x^4+2*x^3+x-1 ] ],
+##    rowtrans := [ [ 1, 0, 0, 0, 0, 0, 0, 0 ], [ 1, 1, 0, 0, 0, 0, 0, 0 ],
+##        [ 0, 0, 1, 0, 0, 0, 0, 0 ], [ 1, 0, 0, 1, 0, 0, 0, 0 ],
+##        [ -x+2, -x, 0, 0, 1, 0, 0, 0 ],
+##        [ 2*x^2-4*x+2, 2*x^2-x, 0, 2, -2*x+1, 0, 0, 1 ],
+##        [ 3*x^3-6*x^2+3*x, 3*x^3-2*x^2, 2, 3*x, -3*x^2+2*x, 0, 1, 2*x ],
+##        [ 1/6*x^8-7/6*x^7+2*x^6-4/3*x^5+7/3*x^4-4*x^3+13/6*x^2-7/6*x+2,
 ##            1/6*x^8-17/18*x^7+13/18*x^6-5/18*x^5+35/18*x^4-31/18*x^3+1/9*x^2-x+\
-##  2, 1/9*x^5-5/9*x^4+1/9*x^3-1/9*x^2+14/9*x-1/9, 
-##            1/6*x^6-5/6*x^5+1/6*x^4-1/6*x^3+11/6*x^2-1/6*x, 
-##            -1/6*x^7+17/18*x^6-13/18*x^5+5/18*x^4-35/18*x^3+31/18*x^2-1/9*x+1, 
-##            1, 1/18*x^5-5/18*x^4+1/18*x^3-1/18*x^2+23/18*x-1/18, 
+##  2, 1/9*x^5-5/9*x^4+1/9*x^3-1/9*x^2+14/9*x-1/9,
+##            1/6*x^6-5/6*x^5+1/6*x^4-1/6*x^3+11/6*x^2-1/6*x,
+##            -1/6*x^7+17/18*x^6-13/18*x^5+5/18*x^4-35/18*x^3+31/18*x^2-1/9*x+1,
+##            1, 1/18*x^5-5/18*x^4+1/18*x^3-1/18*x^2+23/18*x-1/18,
 ##            1/9*x^6-5/9*x^5+1/9*x^4-1/9*x^3+14/9*x^2-1/9*x ] ] )
 ##  gap> t.rowtrans*mat*t.coltrans;
-##  [ [ 1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0, 0, 0, 0 ], 
-##    [ 0, 0, 1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 1, 0, 0, 0, 0 ], 
-##    [ 0, 0, 0, 0, 1, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 1, 0, 0 ], 
-##    [ 0, 0, 0, 0, 0, 0, x-1, 0 ], 
+##  [ [ 1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0, 0, 0, 0 ],
+##    [ 0, 0, 1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 1, 0, 0, 0, 0 ],
+##    [ 0, 0, 0, 0, 1, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 1, 0, 0 ],
+##    [ 0, 0, 0, 0, 0, 0, x-1, 0 ],
 ##    [ 0, 0, 0, 0, 0, 0, 0, x^7-x^6-2*x^4+2*x^3+x-1 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -879,7 +879,7 @@ DeclareOperation( "SemiEchelonMatDestructive", [ IsMatrix and IsMutable] );
 ##  </List>
 ##  <Example><![CDATA[
 ##  gap> SemiEchelonMatTransformation([[1,2,3],[0,0,1]]);
-##  rec( coeffs := [ [ 1, 0 ], [ 0, 1 ] ], heads := [ 1, 0, 2 ], 
+##  rec( coeffs := [ [ 1, 0 ], [ 0, 1 ] ], heads := [ 1, 0, 2 ],
 ##    relations := [  ], vectors := [ [ 1, 2, 3 ], [ 0, 0, 1 ] ] )
 ##  ]]></Example>
 ##  </Description>
@@ -1029,7 +1029,7 @@ DeclareSynonym( "MutableTransposedMat", TransposedMatMutable ); # needed?
 ##  <Description>
 ##  <C>MutableTransposedMatDestructive</C> returns the transpose of the mutable
 ##  matrix <A>mat</A>. It may, but does not have to, destroy the contents
-##  of <A>mat</A> in the process. In particular, the returned matrix may be 
+##  of <A>mat</A> in the process. In particular, the returned matrix may be
 ##  identical to <A>mat</A>, having been transposed in place.
 ##  </Description>
 ##  </ManSection>
@@ -1370,8 +1370,8 @@ DeclareGlobalFunction( "BaseFixedSpace" );
 ##  </List>
 ##  <Example><![CDATA[
 ##  gap> BaseSteinitzVectors(IdentityMat(3,1),[[11,13,15]]);
-##  rec( factorspace := [ [ 0, 1, 15/13 ], [ 0, 0, 1 ] ], 
-##    factorzero := [ 0, 0, 0 ], heads := [ -1, 1, 2 ], 
+##  rec( factorspace := [ [ 0, 1, 15/13 ], [ 0, 0, 1 ] ],
+##    factorzero := [ 0, 0, 0 ], heads := [ -1, 1, 2 ],
 ##    subspace := [ [ 1, 13/11, 15/11 ] ] )
 ##  ]]></Example>
 ##  </Description>
@@ -1492,7 +1492,7 @@ DeclareOperation( "DiagonalizeMat", [IsRing,IsMatrix and IsMutable] );
 ##  gap> IdentityMat(3);
 ##  [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]
 ##  gap> IdentityMat(2,Integers mod 15);
-##  [ [ ZmodnZObj( 1, 15 ), ZmodnZObj( 0, 15 ) ], 
+##  [ [ ZmodnZObj( 1, 15 ), ZmodnZObj( 0, 15 ) ],
 ##    [ ZmodnZObj( 0, 15 ), ZmodnZObj( 1, 15 ) ] ]
 ##  gap> IdentityMat(2,Z(3));
 ##  [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ]
@@ -1550,7 +1550,7 @@ DeclareSynonym( "MutableCopyMat", MutableCopyMatrix );
 ##  gap> NullMat(3,2);
 ##  [ [ 0, 0 ], [ 0, 0 ], [ 0, 0 ] ]
 ##  gap> NullMat(2,2,Integers mod 15);
-##  [ [ ZmodnZObj( 0, 15 ), ZmodnZObj( 0, 15 ) ], 
+##  [ [ ZmodnZObj( 0, 15 ), ZmodnZObj( 0, 15 ) ],
 ##    [ ZmodnZObj( 0, 15 ), ZmodnZObj( 0, 15 ) ] ]
 ##  gap> NullMat(3,2,Z(3));
 ##  [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ]
@@ -1725,10 +1725,10 @@ DeclareGlobalFunction( "ReflectionMat" );
 ##  Optionally, a random source <A>rs</A> can be supplied.
 ##  <Example><![CDATA[
 ##  gap> m := RandomInvertibleMat(4);
-##  [ [ -4, 1, 0, -1 ], [ -1, -1, 1, -1 ], [ 1, -2, -1, -2 ], 
+##  [ [ -4, 1, 0, -1 ], [ -1, -1, 1, -1 ], [ 1, -2, -1, -2 ],
 ##    [ 0, -1, 2, -2 ] ]
 ##  gap> m^-1;
-##  [ [ -1/8, -11/24, 1/24, 1/4 ], [ 1/4, -13/12, -1/12, 1/2 ], 
+##  [ [ -1/8, -11/24, 1/24, 1/4 ], [ 1/4, -13/12, -1/12, 1/2 ],
 ##    [ -1/8, 5/24, -7/24, 1/4 ], [ -1/4, 3/4, -1/4, -1/2 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -1861,7 +1861,7 @@ DeclareSynonymAttr( "TraceMat", TraceMatrix );
 ##  <Example><![CDATA[
 ##  gap> mat:=[[1,2,3],[4,5,6],[7,8,9]];;
 ##  gap> JordanDecomposition(mat);
-##  [ [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ], 
+##  [ [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ],
 ##    [ [ 0, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 0 ] ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -1986,8 +1986,8 @@ DeclareSynonym("OnSubspacesByCanonicalBasisGF2",OnSubspacesByCanonicalBasis);
 ##  If fields <A>F</A> and <A>E</A> are given, then <A>F</A> must be a
 ##  subfield of <A>E</A>, and <A>mat</A> must have entries in <A>E</A>.
 ##  Then <Ref Attr="CharacteristicPolynomial"/> returns the characteristic
-##  polynomial of the <A>F</A>-linear mapping induced by <A>mat</A> 
-##  on the underlying <A>E</A>-vector space of <A>mat</A>. In this case, 
+##  polynomial of the <A>F</A>-linear mapping induced by <A>mat</A>
+##  on the underlying <A>E</A>-vector space of <A>mat</A>. In this case,
 ##  the characteristic polynomial is computed using <Ref Func="BlownUpMat"/>
 ##  for the field extension of <M>E/F</M> generated by the default field.
 ##  Thus, if <M>F = E</M>, the result is the same as for the one argument
@@ -2004,9 +2004,9 @@ DeclareSynonym("OnSubspacesByCanonicalBasisGF2",OnSubspacesByCanonicalBasis);
 ##  Note that, up to &GAP; version 4.4.6,
 ##  <Ref Attr="CharacteristicPolynomial"/> only  allowed to specify one field
 ##  (corresponding to <A>F</A>) as an argument.
-##  That usage has been disabled because its definition turned out to be 
+##  That usage has been disabled because its definition turned out to be
 ##  ambiguous and may have lead to unexpected results. (To ensure
-##  backward compatibility, it is still possible to use the old form 
+##  backward compatibility, it is still possible to use the old form
 ##  if <A>F</A> contains the default field of the matrix,
 ##  see&nbsp;<Ref Attr="DefaultFieldOfMatrix"/>,
 ##  but this feature will disappear in future versions of &GAP;.)
@@ -2030,9 +2030,9 @@ DeclareSynonym("OnSubspacesByCanonicalBasisGF2",OnSubspacesByCanonicalBasis);
 ##
 DeclareAttribute( "CharacteristicPolynomial", IsMatrix );
 DeclareOperation( "CharacteristicPolynomial", [ IsMatrix, IsPosInt ] );
-DeclareOperation( "CharacteristicPolynomial", 
+DeclareOperation( "CharacteristicPolynomial",
     [ IsRing, IsRing, IsMatrix, IsPosInt ] );
-DeclareOperation( "CharacteristicPolynomial", 
+DeclareOperation( "CharacteristicPolynomial",
     [ IsRing, IsRing, IsMatrix ] );
 
 
@@ -2172,7 +2172,7 @@ DeclareOperation("BaseField",[IsObject]);
 ##
 ##  <Description>
 ##  returns a new mutable identity matrix in the same representation as
-##  <A>matrix</A> with <A>rows</A> rows. 
+##  <A>matrix</A> with <A>rows</A> rows.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -2188,7 +2188,7 @@ DeclareOperation("BaseField",[IsObject]);
 ##
 ##  <Description>
 ##  Find a rational vector <A>x</A> that maximizes <M><A>x</A>\cdot<A>c</A></M>, subject
-##  to the constraint <M><A>A</A>\cdot<A>x</A>\le<A>b</A></M>. 
+##  to the constraint <M><A>A</A>\cdot<A>x</A>\le<A>b</A></M>.
 ##  <Example><![CDATA[
 ##  gap> A:=[[3,1,1,4],[1,-3,2,3],[2,1,3,-1]];;
 ##  gap> b:=[12,7,10];;c:=[2,4,3,1];;

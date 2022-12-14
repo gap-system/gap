@@ -14,7 +14,7 @@
 
 ###########################################################################
 ##  Generic methods for random sources.
-##  
+##
 # The generic initializer of a random source creates a dummy object of the
 # right type and then calls 'Init'.
 InstallMethod(RandomSource, [IsOperation, IsObject], function(rep, seed)
@@ -31,7 +31,7 @@ InstallMethod(Reset, [IsRandomSource], function(rs)
   return Reset(rs, 1);
 end);
 
-# Generic fallback methods, such that it is sufficient to install Random for 
+# Generic fallback methods, such that it is sufficient to install Random for
 # lists or for pairs of integers.
 InstallMethod(Random, [IsRandomSource, IsInt, IsInt], function(rs, a, b)
   local  d, x, r, y;

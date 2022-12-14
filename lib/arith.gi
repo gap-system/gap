@@ -28,8 +28,8 @@
 ##
 ##  It would be good if we could eventually get rid of this method.
 ##
-InstallOtherMethod(One, "for a multiplicative element with one collection", 
-[IsMultiplicativeElementWithOneCollection], 
+InstallOtherMethod(One, "for a multiplicative element with one collection",
+[IsMultiplicativeElementWithOneCollection],
 function(coll)
   if IsMultiplicativeElementWithOne( coll ) then
     # The fact that 'coll' is an element counts more

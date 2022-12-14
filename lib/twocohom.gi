@@ -11,13 +11,13 @@
 
 #############################################################################
 ##
-#F  CollectedWordSQ( C, u, v ) 
+#F  CollectedWordSQ( C, u, v )
 ##
 ##  The tail of  a conjugate  i^j  (i>j) or a   power i^p (i=j) is  stored at
 ##  posiition (i^2-i)/2+j
 ##
 InstallGlobalFunction( CollectedWordSQ, function( C, u, v )
-    local   w, p, c, m, g, n, i, j, x, mx, l1, l2, l; 
+    local   w, p, c, m, g, n, i, j, x, mx, l1, l2, l;
 
     # convert lists in to word/module pair
     if IsList(v)  then
@@ -226,7 +226,7 @@ InstallGlobalFunction( CollectorSQ, function( G, M, isSplit )
     end;
 
     # convert relators into list of lists
-    if IsPcgs( G ) then 
+    if IsPcgs( G ) then
         pcgs := G;
     else
         pcgs := Pcgs( G );
@@ -267,7 +267,7 @@ InstallGlobalFunction( CollectorSQ, function( G, M, isSplit )
     r.mone  :=ImmutableMatrix(M.field,(IdentityMat(M.dimension, M.field)));
     r.mzero :=ImmutableMatrix(M.field,Zero(r.mone));
 
-    # add avoid 
+    # add avoid
     r.avoid := [];
     if isSplit  then
         k := Characteristic( M.field );
@@ -366,7 +366,7 @@ InstallGlobalFunction( SolutionSQ, function( C, eq )
         Append( n, eq.vzero );
     od;
 
-    # generated position 
+    # generated position
     C.unavoidable := [];
     j := 1;
     for i  in [ 1 .. eq.nrels ]  do
@@ -459,7 +459,7 @@ end );
 ##
 InstallGlobalFunction( TwoCocyclesSQ, function( C, G, M )
     local   pairs, i,  j,  k, w1, w2, eq, p, n;
-            
+
     # get number of generators
     n := Length(Pcgs(G));
 
@@ -634,15 +634,15 @@ InstallGlobalFunction( TwoCohomologySQ, function( C, G, M )
     fi;
     return cc;
 end );
-     
+
 #############################################################################
 ##
 #M  TwoCocycles( G, M )
 ##
 InstallMethod( TwoCocycles,
     "generic method for pc groups",
-    true, 
-    [ IsPcGroup, IsObject ], 
+    true,
+    [ IsPcGroup, IsObject ],
     0,
 
 function( G, M )
@@ -657,8 +657,8 @@ end );
 ##
 InstallMethod( TwoCoboundaries,
     "generic method for pc groups",
-    true, 
-    [ IsPcGroup, IsObject ], 
+    true,
+    [ IsPcGroup, IsObject ],
     0,
 
 function( G, M )
@@ -675,8 +675,8 @@ end );
 ##
 InstallMethod( TwoCohomology,
     "generic method for pc groups",
-    true, 
-    [ IsPcGroup, IsObject ], 
+    true,
+    [ IsPcGroup, IsObject ],
     0,
 
 function( G, M )
@@ -694,14 +694,14 @@ function( G, M )
                 module := M,
                 collector := C,
                 isPcCohomology:=true,
-                cohom := 
+                cohom :=
                 NaturalHomomorphismBySubspaceOntoFullRowSpace(co,cb),
                 presentation := FpGroupPcGroupSQ( G ) );
 end );
 
 # code for generic 2-cohomology (solvable not required)
 
-InstallMethod( TwoCohomologyGeneric,"generic, using rewriting system",true, 
+InstallMethod( TwoCohomologyGeneric,"generic, using rewriting system",true,
   [IsGroup and IsFinite,IsObject],0,
 function(G,mo)
 local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
@@ -745,7 +745,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
     return a;
   end;
 
-  # normalform word and collect the tails 
+  # normalform word and collect the tails
   collectail:=function(wrd)
   local v,tail,i,j,s,p,mm;
     v:=List(rules,x->zero);
@@ -761,7 +761,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
         p:=rulpos[p];
         tail:=wrd{[i+Length(rules[p][1])..Length(wrd)]};
         wrd:=Concatenation(wrd{[1..i-1]},rules[p][2],tail);
-        if p in hastail then 
+        if p in hastail then
           if IsIdenticalObj(v[p],zero) then
             v[p]:=mapped(tail);
           else
@@ -787,7 +787,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
 #    fm:=IsomorphismFpMonoid(fpg);
 #    mon:=Range(fm);
 #
-#    if IsBound(mon!.confl) then 
+#    if IsBound(mon!.confl) then
 #      tzrules:=mon!.confl;
 #    else
 #      kb:=KnuthBendixRewritingSystem(mon);
@@ -840,7 +840,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       Add(rules,r);
       if Length(r[1])>2 or
         (Length(r[1])=2 and (Length(r[2])>0 or formalinverse[r[1][1]]<>r[1][2]))
-        then 
+        then
           AddSet(hastail,Length(rules));
       fi;
     else
@@ -972,7 +972,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       od;
     od;
     Add(olen,Length(BasisVectors(eqs)));
-    if Length(olen)>3 and 
+    if Length(olen)>3 and
       # if twice stayed the same after increase
       olen[Length(olen)]=olen[Length(olen)-2] and
       olen[Length(olen)]<>olen[Length(olen)-3] then
@@ -1227,7 +1227,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
 #    local i,w;
 #      w:=One(ext);
 #      for i in wrd do
-#        w:=w*exte[i]; 
+#        w:=w*exte[i];
 #      od;
 #      return w;
 #    end;
@@ -1343,13 +1343,13 @@ local hom,mats,mode,m,min,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
       a:=MatricesStabilizerOneDim(module.field,mats);
       if a<>false then
         # quotient module
-        # basis: supplemental vector and submodule basis 
+        # basis: supplemental vector and submodule basis
         bas:=BaseSteinitzVectors(IdentityMat(module.dimension,GF(p)),
           NullspaceMat(TransposedMat(a{[1]})));
         bas:=Concatenation(bas.factorspace,bas.subspace);
 
         # assume we have a generating set for the SDP consisting of the
-        # complement gens, and one element of the module. 
+        # complement gens, and one element of the module.
         cy:=CyclicGroup(IsPermGroup,p).1; # p-cycle
         ugens:=[];
 
@@ -1561,7 +1561,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
     od;
 
     # Any killed generators -- use just the same word expression
-    if r.presentation.killrelators<>[] then 
+    if r.presentation.killrelators<>[] then
       for i in Filtered(killgens,IsOddInt) do
         new:=AssocWordByLetterRep(fffam,[i]);
         new:=[new,ReducedForm(frew,new)];
@@ -1593,7 +1593,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
     # mapped to the generator. (This will have been skipped in the
     # monrulpos.)
     for i in rels do
-      if Length(i[2])=0 and Length(i[1])=2 
+      if Length(i[2])=0 and Length(i[1])=2
         and Length(Set(LetterRepAssocWord(i[1])))=1 then
         new:=LetterRepAssocWord(i[1])[1];
         if IsOddInt(new) then
@@ -1813,7 +1813,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
                   Add(rels,gens[nn+i]^gens[j]/
                      LinearCombinationPcgs(gens{[nn+1..nn+dim]},mmats[j][i]));
                 od;
-              od;       
+              od;
 
               #extended presentation
 
@@ -1876,7 +1876,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
                         KernelOfMultiplicativeGeneralMapping(quot));
                     fi;
                   fi;
-                  
+
 
                   step:=step+1;
                 od;
@@ -1953,7 +1953,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
                 IndexNC(Range(e),i));
               if IndexNC(Range(e),i)*IndexNC(p,m)<
                   # consider permdegree up to
-                  100000 
+                  100000
                   # as manageable
                 then
                 e:=PreImage(e,i);
@@ -2006,7 +2006,7 @@ local bas,ran,mats,o;
   if Length(coh.cohomology)=1 and Size(coh.module.field)=2 then
     # 1-dim space over GF(2)
     return [coh.zero,coh.cohomology[1]];
-  fi; 
+  fi;
   # make basis
   bas:=Concatenation(coh.coboundaries,coh.cohomology);
   ran:=[Length(coh.coboundaries)+1..Length(bas)];

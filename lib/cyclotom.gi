@@ -173,7 +173,7 @@ InstallMethod( ImaginaryPart,
 ##  <#GAPDoc Label="ExtRepOfObj:cyclotomics">
 ##  <ManSection>
 ##  <Meth Name="ExtRepOfObj" Arg='cyc' Label="for a cyclotomic"/>
-##  
+##
 ##  <Description>
 ##  The external representation of a cyclotomic <A>cyc</A> with conductor
 ##  <M>n</M> (see <Ref Attr="Conductor" Label="for a cyclotomic"/> is

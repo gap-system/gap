@@ -190,7 +190,7 @@ InstallMethod( IntersectSet,
           i:= i+1;
       fi;
     od;
-    
+
     end );
 
 

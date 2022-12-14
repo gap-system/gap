@@ -60,14 +60,14 @@ DeclareGlobalFunction("Factorial");
 ##  <M>{{n \choose k}}</M> of integers <A>n</A> and <A>k</A>. This is defined by
 ##  the conditions <M>{{n \choose k}} = 0</M> for <M>k &lt; 0</M>,
 ##  <M>{{0 \choose k}} = 0</M> for <M>k \neq 0</M>, <M>{{0 \choose 0}} =
-##  1</M> and the relation 
+##  1</M> and the relation
 ##  <M>{{n \choose k}} = {{n-1 \choose k}} + {{n-1 \choose k-1}}</M>
 ##  for all <M>n</M> and <M>k</M>.
 ##  <P/>
 ##  There are many ways of describing this function. For example,
 ##  if <M>n \geq 0</M> and <M>0 \leq k \leq n</M>, then
 ##  <M>{{n \choose k}} = n! / (k! (n-k)!)</M> and for <M>n &lt; 0</M> and
-##  <M>k \geq 0</M> we have <M>{{n \choose k}} = 
+##  <M>k \geq 0</M> we have <M>{{n \choose k}} =
 ##  (-1)^k {{-n+k-1 \choose k}}</M>.
 ##  <P/>
 ##  If <M>n \geq 0</M> then <M>{{n \choose k}}</M> is
@@ -313,7 +313,7 @@ DeclareGlobalFunction("Stirling2");
 ##  <P/>
 ##  To loop over combinations of a larger multiset use <Ref
 ##  Func="IteratorOfCombinations" /> which produces combinations one by one
-##  and may save a lot of memory. Another memory efficient representation of 
+##  and may save a lot of memory. Another memory efficient representation of
 ##  the list of all combinations is provided by <Ref
 ##  Func="EnumeratorOfCombinations" />.
 ##  </Description>
@@ -334,14 +334,14 @@ DeclareGlobalFunction("Combinations");
 ##  <Func Name="EnumeratorOfCombinations" Arg='mset'/>
 ##
 ##  <Description>
-##  <Ref Func="IteratorOfCombinations" /> returns an <Ref Oper="Iterator" /> 
+##  <Ref Func="IteratorOfCombinations" /> returns an <Ref Oper="Iterator" />
 ##  for  combinations (see <Ref Func="Combinations"/>) of the given multiset
 ##  <A>mset</A>. If a non-negative integer <A>k</A> is given as second argument
 ##  then only the combinations with <A>k</A> entries are produced, otherwise
-##  all combinations. 
+##  all combinations.
 ##  <P/>
 ##  <Ref Func="EnumeratorOfCombinations"/> returns an <Ref Attr="Enumerator" />
-##  of the given multiset <A>mset</A>. Currently only a variant without second 
+##  of the given multiset <A>mset</A>. Currently only a variant without second
 ##  argument <A>k</A> is implemented.
 ##  <P/>
 ##  The ordering of combinations from these functions can be different and also
@@ -381,7 +381,7 @@ DeclareGlobalFunction( "EnumeratorOfCombinations" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Combinations( [1,2,2,3] );
-##  [ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 2 ], [ 1, 2, 2, 3 ], [ 1, 2, 3 ], 
+##  [ [  ], [ 1 ], [ 1, 2 ], [ 1, 2, 2 ], [ 1, 2, 2, 3 ], [ 1, 2, 3 ],
 ##    [ 1, 3 ], [ 2 ], [ 2, 2 ], [ 2, 2, 3 ], [ 2, 3 ], [ 3 ] ]
 ##  gap> # number of different hands in a game of poker:
 ##  gap> NrCombinations( [1..52], 5 );
@@ -673,7 +673,7 @@ DeclareGlobalFunction( "IteratorOfTuples" );
 ##  returns the number of <C>Tuples(<A>set</A>,<A>k</A>)</C>.
 ##  <Example><![CDATA[
 ##  gap> Tuples( [1,2,3], 2 );
-##  [ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], 
+##  [ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 2, 1 ], [ 2, 2 ], [ 2, 3 ],
 ##    [ 3, 1 ], [ 3, 2 ], [ 3, 3 ] ]
 ##  gap> NrTuples( [1..10], 5 );
 ##  100000
@@ -736,10 +736,10 @@ DeclareGlobalFunction("PermutationsList");
 ##  returns the number of <C>PermutationsList(<A>mset</A>)</C>.
 ##  <Example><![CDATA[
 ##  gap> PermutationsList( [1,2,3] );
-##  [ [ 1, 2, 3 ], [ 1, 3, 2 ], [ 2, 1, 3 ], [ 2, 3, 1 ], [ 3, 1, 2 ], 
+##  [ [ 1, 2, 3 ], [ 1, 3, 2 ], [ 2, 1, 3 ], [ 2, 3, 1 ], [ 3, 1, 2 ],
 ##    [ 3, 2, 1 ] ]
 ##  gap> PermutationsList( [1,1,2,2] );
-##  [ [ 1, 1, 2, 2 ], [ 1, 2, 1, 2 ], [ 1, 2, 2, 1 ], [ 2, 1, 1, 2 ], 
+##  [ [ 1, 1, 2, 2 ], [ 1, 2, 1, 2 ], [ 1, 2, 2, 1 ], [ 2, 1, 1, 2 ],
 ##    [ 2, 1, 2, 1 ], [ 2, 2, 1, 1 ] ]
 ##  gap> NrPermutationsList( [1,2,2,3,3,3,4,4,4,4] );
 ##  12600
@@ -806,17 +806,17 @@ DeclareGlobalFunction("Derangements");
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Derangements( [1,2,3,4] );
-##  [ [ 2, 1, 4, 3 ], [ 2, 3, 4, 1 ], [ 2, 4, 1, 3 ], [ 3, 1, 4, 2 ], 
-##    [ 3, 4, 1, 2 ], [ 3, 4, 2, 1 ], [ 4, 1, 2, 3 ], [ 4, 3, 1, 2 ], 
+##  [ [ 2, 1, 4, 3 ], [ 2, 3, 4, 1 ], [ 2, 4, 1, 3 ], [ 3, 1, 4, 2 ],
+##    [ 3, 4, 1, 2 ], [ 3, 4, 2, 1 ], [ 4, 1, 2, 3 ], [ 4, 3, 1, 2 ],
 ##    [ 4, 3, 2, 1 ] ]
 ##  gap> NrDerangements( [1..10] );
 ##  1334961
 ##  gap> Int( 10^7*NrPermutationsList([1..10])/last );
 ##  27182816
 ##  gap> Derangements( [1,1,2,2,3,3] );
-##  [ [ 2, 2, 3, 3, 1, 1 ], [ 2, 3, 1, 3, 1, 2 ], [ 2, 3, 1, 3, 2, 1 ], 
-##    [ 2, 3, 3, 1, 1, 2 ], [ 2, 3, 3, 1, 2, 1 ], [ 3, 2, 1, 3, 1, 2 ], 
-##    [ 3, 2, 1, 3, 2, 1 ], [ 3, 2, 3, 1, 1, 2 ], [ 3, 2, 3, 1, 2, 1 ], 
+##  [ [ 2, 2, 3, 3, 1, 1 ], [ 2, 3, 1, 3, 1, 2 ], [ 2, 3, 1, 3, 2, 1 ],
+##    [ 2, 3, 3, 1, 1, 2 ], [ 2, 3, 3, 1, 2, 1 ], [ 3, 2, 1, 3, 1, 2 ],
+##    [ 3, 2, 1, 3, 2, 1 ], [ 3, 2, 3, 1, 1, 2 ], [ 3, 2, 3, 1, 2, 1 ],
 ##    [ 3, 3, 1, 1, 2, 2 ] ]
 ##  gap> NrDerangements( [1,2,2,3,3,3,4,4,4,4] );
 ##  338
@@ -869,12 +869,12 @@ DeclareGlobalFunction("PartitionsSet");
 ##  returns the number of <C>PartitionsSet(<A>set</A>,<A>k</A>)</C>.
 ##  <Example><![CDATA[
 ##  gap> PartitionsSet( [1,2,3] );
-##  [ [ [ 1 ], [ 2 ], [ 3 ] ], [ [ 1 ], [ 2, 3 ] ], [ [ 1, 2 ], [ 3 ] ], 
+##  [ [ [ 1 ], [ 2 ], [ 3 ] ], [ [ 1 ], [ 2, 3 ] ], [ [ 1, 2 ], [ 3 ] ],
 ##    [ [ 1, 2, 3 ] ], [ [ 1, 3 ], [ 2 ] ] ]
 ##  gap> PartitionsSet( [1,2,3,4], 2 );
-##  [ [ [ 1 ], [ 2, 3, 4 ] ], [ [ 1, 2 ], [ 3, 4 ] ], 
-##    [ [ 1, 2, 3 ], [ 4 ] ], [ [ 1, 2, 4 ], [ 3 ] ], 
-##    [ [ 1, 3 ], [ 2, 4 ] ], [ [ 1, 3, 4 ], [ 2 ] ], 
+##  [ [ [ 1 ], [ 2, 3, 4 ] ], [ [ 1, 2 ], [ 3, 4 ] ],
+##    [ [ 1, 2, 3 ], [ 4 ] ], [ [ 1, 2, 4 ], [ 3 ] ],
+##    [ [ 1, 3 ], [ 2, 4 ] ], [ [ 1, 3, 4 ], [ 2 ] ],
 ##    [ [ 1, 4 ], [ 2, 3 ] ] ]
 ##  gap> NrPartitionsSet( [1..6] );
 ##  203
@@ -947,9 +947,9 @@ DeclareGlobalFunction("Partitions");
 ##  returns the number of <C>Partitions(<A>set</A>,<A>k</A>)</C>.
 ##  <Example><![CDATA[
 ##  gap> Partitions( 7 );
-##  [ [ 1, 1, 1, 1, 1, 1, 1 ], [ 2, 1, 1, 1, 1, 1 ], [ 2, 2, 1, 1, 1 ], 
-##    [ 2, 2, 2, 1 ], [ 3, 1, 1, 1, 1 ], [ 3, 2, 1, 1 ], [ 3, 2, 2 ], 
-##    [ 3, 3, 1 ], [ 4, 1, 1, 1 ], [ 4, 2, 1 ], [ 4, 3 ], [ 5, 1, 1 ], 
+##  [ [ 1, 1, 1, 1, 1, 1, 1 ], [ 2, 1, 1, 1, 1, 1 ], [ 2, 2, 1, 1, 1 ],
+##    [ 2, 2, 2, 1 ], [ 3, 1, 1, 1, 1 ], [ 3, 2, 1, 1 ], [ 3, 2, 2 ],
+##    [ 3, 3, 1 ], [ 4, 1, 1, 1 ], [ 4, 2, 1 ], [ 4, 3 ], [ 5, 1, 1 ],
 ##    [ 5, 2 ], [ 6, 1 ], [ 7 ] ]
 ##  gap> Partitions( 8, 3 );
 ##  [ [ 3, 3, 2 ], [ 4, 2, 2 ], [ 4, 3, 1 ], [ 5, 2, 1 ], [ 6, 1, 1 ] ]
@@ -1049,12 +1049,12 @@ DeclareGlobalFunction("OrderedPartitions");
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> OrderedPartitions( 5 );
-##  [ [ 1, 1, 1, 1, 1 ], [ 1, 1, 1, 2 ], [ 1, 1, 2, 1 ], [ 1, 1, 3 ], 
-##    [ 1, 2, 1, 1 ], [ 1, 2, 2 ], [ 1, 3, 1 ], [ 1, 4 ], [ 2, 1, 1, 1 ], 
-##    [ 2, 1, 2 ], [ 2, 2, 1 ], [ 2, 3 ], [ 3, 1, 1 ], [ 3, 2 ], 
+##  [ [ 1, 1, 1, 1, 1 ], [ 1, 1, 1, 2 ], [ 1, 1, 2, 1 ], [ 1, 1, 3 ],
+##    [ 1, 2, 1, 1 ], [ 1, 2, 2 ], [ 1, 3, 1 ], [ 1, 4 ], [ 2, 1, 1, 1 ],
+##    [ 2, 1, 2 ], [ 2, 2, 1 ], [ 2, 3 ], [ 3, 1, 1 ], [ 3, 2 ],
 ##    [ 4, 1 ], [ 5 ] ]
 ##  gap> OrderedPartitions( 6, 3 );
-##  [ [ 1, 1, 4 ], [ 1, 2, 3 ], [ 1, 3, 2 ], [ 1, 4, 1 ], [ 2, 1, 3 ], 
+##  [ [ 1, 1, 4 ], [ 1, 2, 3 ], [ 1, 3, 2 ], [ 1, 4, 1 ], [ 2, 1, 3 ],
 ##    [ 2, 2, 2 ], [ 2, 3, 1 ], [ 3, 1, 2 ], [ 3, 2, 1 ], [ 4, 1, 1 ] ]
 ##  gap> NrOrderedPartitions(20);
 ##  524288
@@ -1116,7 +1116,7 @@ DeclareGlobalFunction("RestrictedPartitions");
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> RestrictedPartitions( 8, [1,3,5,7] );
-##  [ [ 1, 1, 1, 1, 1, 1, 1, 1 ], [ 3, 1, 1, 1, 1, 1 ], [ 3, 3, 1, 1 ], 
+##  [ [ 1, 1, 1, 1, 1, 1, 1, 1 ], [ 3, 1, 1, 1, 1, 1 ], [ 3, 3, 1, 1 ],
 ##    [ 5, 1, 1, 1 ], [ 5, 3 ], [ 7, 1 ] ]
 ##  gap> NrRestrictedPartitions(50,[1,2,5,10,20,50]);
 ##  451
@@ -1140,15 +1140,15 @@ DeclareGlobalFunction("NrRestrictedPartitions");
 ##  <Func Name="IteratorOfPartitions" Arg='n'/>
 ##
 ##  <Description>
-##  For a positive integer <A>n</A>, <Ref Func="IteratorOfPartitions" /> 
+##  For a positive integer <A>n</A>, <Ref Func="IteratorOfPartitions" />
 ##  returns an iterator
-##  (see&nbsp;<Ref Sect="Iterators"/>) of the set of partitions 
+##  (see&nbsp;<Ref Sect="Iterators"/>) of the set of partitions
 ##  of <A>n</A> (see&nbsp;<Ref Func="Partitions"/>).
 ##  The partitions of <A>n</A> are returned in lexicographic order.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##  
+##
 DeclareGlobalFunction( "IteratorOfPartitions" );
 
 
@@ -1296,9 +1296,9 @@ DeclareGlobalFunction("PartitionTuples");
 ##  returns the number of <C>PartitionTuples( <A>n</A>, <A>r</A> )</C>.
 ##  <Example><![CDATA[
 ##  gap> PartitionTuples(3, 2);
-##  [ [ [ 1, 1, 1 ], [  ] ], [ [ 1, 1 ], [ 1 ] ], [ [ 1 ], [ 1, 1 ] ], 
-##    [ [  ], [ 1, 1, 1 ] ], [ [ 2, 1 ], [  ] ], [ [ 1 ], [ 2 ] ], 
-##    [ [ 2 ], [ 1 ] ], [ [  ], [ 2, 1 ] ], [ [ 3 ], [  ] ], 
+##  [ [ [ 1, 1, 1 ], [  ] ], [ [ 1, 1 ], [ 1 ] ], [ [ 1 ], [ 1, 1 ] ],
+##    [ [  ], [ 1, 1, 1 ] ], [ [ 2, 1 ], [  ] ], [ [ 1 ], [ 2 ] ],
+##    [ [ 2 ], [ 1 ] ], [ [  ], [ 2, 1 ] ], [ [ 3 ], [  ] ],
 ##    [ [  ], [ 3 ] ] ]
 ##  ]]></Example>
 ##  </Description>

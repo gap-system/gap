@@ -277,10 +277,10 @@
 ##  gap> a5:= TableOfMarks( "A5" );
 ##  TableOfMarks( "A5" )
 ##  gap> mat:=
-##  > [ [ 60, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 30, 2, 0, 0, 0, 0, 0, 0, 0 ], 
-##  >   [ 20, 0, 2, 0, 0, 0, 0, 0, 0 ], [ 15, 3, 0, 3, 0, 0, 0, 0, 0 ], 
-##  >   [ 12, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 10, 2, 1, 0, 0, 1, 0, 0, 0 ], 
-##  >   [ 6, 2, 0, 0, 1, 0, 1, 0, 0 ], [ 5, 1, 2, 1, 0, 0, 0, 1, 0 ], 
+##  > [ [ 60, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 30, 2, 0, 0, 0, 0, 0, 0, 0 ],
+##  >   [ 20, 0, 2, 0, 0, 0, 0, 0, 0 ], [ 15, 3, 0, 3, 0, 0, 0, 0, 0 ],
+##  >   [ 12, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 10, 2, 1, 0, 0, 1, 0, 0, 0 ],
+##  >   [ 6, 2, 0, 0, 1, 0, 1, 0, 0 ], [ 5, 1, 2, 1, 0, 0, 0, 1, 0 ],
 ##  >   [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ];;
 ##  gap> TableOfMarks( mat );
 ##  TableOfMarks( <9 classes> )
@@ -460,14 +460,14 @@ DeclareGlobalFunction( "LatticeSubgroupsByTom" );
 ##  7:   6 2 . . 1 . 1
 ##  8:   5 1 2 1 . . . 1
 ##  9:   1 1 1 1 1 1 1 1 1
-##  
+##
 ##  gap> Display( tom, rec( classes:= [ 1, 2, 3, 4, 8 ] ) );
 ##  1:  60
 ##  2:  30 2
 ##  3:  20 . 2
 ##  4:  15 3 . 3
 ##  8:   5 1 2 1 1
-##  
+##
 ##  gap> Display( tom, rec( form:= "subgroups" ) );
 ##  1:  1
 ##  2:  1  1
@@ -478,7 +478,7 @@ DeclareGlobalFunction( "LatticeSubgroupsByTom" );
 ##  7:  1  5  . . 1  . 1
 ##  8:  1  3  4 1 .  . . 1
 ##  9:  1 15 10 5 6 10 6 5 1
-##  
+##
 ##  gap> Display( tom, rec( form:= "supergroups" ) );
 ##  1:   1
 ##  2:  15 1
@@ -489,7 +489,7 @@ DeclareGlobalFunction( "LatticeSubgroupsByTom" );
 ##  7:   6 2 . . 1 . 1
 ##  8:   5 1 2 1 . . . 1
 ##  9:   1 1 1 1 1 1 1 1 1
-##  
+##
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -550,19 +550,19 @@ DeclareCategory( "IsTableOfMarks", IsObject );
 ##  2:  3 3
 ##  3:  2 . 2
 ##  4:  1 1 1 1
-##  
+##
 ##  gap> sorted:= SortedTom( tom, (2,3) );;  Display( sorted );
 ##  1:  6
 ##  2:  2 2
 ##  3:  3 . 3
 ##  4:  1 1 1 1
-##  
+##
 ##  gap> wrong:= SortedTom( tom, (1,2) );;  Display( wrong );
 ##  1:  3
 ##  2:  . 6
 ##  3:  . 2 2
 ##  4:  1 1 1 1
-##  
+##
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -720,11 +720,11 @@ DeclareGlobalFunction( "ConvertToTableOfMarks" );
 ##  gap> a5:= TableOfMarks( "A5" );
 ##  TableOfMarks( "A5" )
 ##  gap> MarksTom( a5 );
-##  [ [ 60 ], [ 30, 2 ], [ 20, 2 ], [ 15, 3, 3 ], [ 12, 2 ], 
-##    [ 10, 2, 1, 1 ], [ 6, 2, 1, 1 ], [ 5, 1, 2, 1, 1 ], 
+##  [ [ 60 ], [ 30, 2 ], [ 20, 2 ], [ 15, 3, 3 ], [ 12, 2 ],
+##    [ 10, 2, 1, 1 ], [ 6, 2, 1, 1 ], [ 5, 1, 2, 1, 1 ],
 ##    [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ]
 ##  gap> SubsTom( a5 );
-##  [ [ 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 2, 4 ], [ 1, 5 ], [ 1, 2, 3, 6 ], 
+##  [ [ 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 2, 4 ], [ 1, 5 ], [ 1, 2, 3, 6 ],
 ##    [ 1, 2, 5, 7 ], [ 1, 2, 3, 4, 8 ], [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -763,8 +763,8 @@ DeclareAttribute( "SubsTom", IsTableOfMarks );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> NrSubsTom( a5 );
-##  [ [ 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 3, 1 ], [ 1, 1 ], [ 1, 3, 1, 1 ], 
-##    [ 1, 5, 1, 1 ], [ 1, 3, 4, 1, 1 ], [ 1, 15, 10, 5, 6, 10, 6, 5, 1 ] 
+##  [ [ 1 ], [ 1, 1 ], [ 1, 1 ], [ 1, 3, 1 ], [ 1, 1 ], [ 1, 3, 1, 1 ],
+##    [ 1, 5, 1, 1 ], [ 1, 3, 4, 1, 1 ], [ 1, 15, 10, 5, 6, 10, 6, 5, 1 ]
 ##   ]
 ##  gap> OrdersTom( a5 );
 ##  [ 1, 2, 3, 4, 5, 6, 10, 12, 60 ]
@@ -826,7 +826,7 @@ DeclareAttribute( "LengthsTom", IsTableOfMarks );
 ##  <Example><![CDATA[
 ##  gap> a6:= TableOfMarks( "A6" );;
 ##  gap> ClassTypesTom( a6 );
-##  [ 1, 2, 3, 3, 4, 5, 6, 6, 7, 7, 8, 9, 10, 11, 11, 12, 13, 13, 14, 15, 
+##  [ 1, 2, 3, 3, 4, 5, 6, 6, 7, 7, 8, 9, 10, 11, 11, 12, 13, 13, 14, 15,
 ##    15, 16 ]
 ##  ]]></Example>
 ##  </Description>
@@ -873,8 +873,8 @@ DeclareAttribute( "ClassTypesTom", IsTableOfMarks );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> ClassNamesTom( a6 );
-##  [ "1", "2", "3a", "3b", "5", "4", "(4)_2a", "(4)_2b", "(6)a", "(6)b", 
-##    "(8)", "(9)", "(10)", "(12)a", "(12)b", "(18)", "(24)a", "(24)b", 
+##  [ "1", "2", "3a", "3b", "5", "4", "(4)_2a", "(4)_2b", "(6)a", "(6)b",
+##    "(8)", "(9)", "(10)", "(12)a", "(12)b", "(18)", "(24)a", "(24)b",
 ##    "(36)", "(60)a", "(60)b", "(360)" ]
 ##  ]]></Example>
 ##  </Description>
@@ -906,8 +906,8 @@ DeclareAttribute( "ClassNamesTom", IsTableOfMarks );
 ##  <Example><![CDATA[
 ##  gap> fus:= FusionsTom( a6 );;
 ##  gap> fus[1];
-##  [ "L3(4)", 
-##    [ 1, 2, 3, 3, 14, 5, 9, 7, 15, 15, 24, 26, 27, 32, 33, 50, 57, 55, 
+##  [ "L3(4)",
+##    [ 1, 2, 3, 3, 14, 5, 9, 7, 15, 15, 24, 26, 27, 32, 33, 50, 57, 55,
 ##        63, 73, 77, 90 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -980,10 +980,10 @@ DeclareAttribute( "UnderlyingGroup", IsTableOfMarks );
 ##  gap> IdempotentsTom( a5 );
 ##  [ 1, 1, 1, 1, 1, 1, 1, 1, 9 ]
 ##  gap> IdempotentsTomInfo( a5 );
-##  rec( 
-##    fixpointvectors := [ [ 1, 1, 1, 1, 1, 1, 1, 1, 0 ], 
-##        [ 0, 0, 0, 0, 0, 0, 0, 0, 1 ] ], 
-##    primidems := [ [ 1, -2, -1, 0, 0, 1, 1, 1 ], 
+##  rec(
+##    fixpointvectors := [ [ 1, 1, 1, 1, 1, 1, 1, 1, 0 ],
+##        [ 0, 0, 0, 0, 0, 0, 0, 0, 1 ] ],
+##    primidems := [ [ 1, -2, -1, 0, 0, 1, 1, 1 ],
 ##        [ -1, 2, 1, 0, 0, -1, -1, -1, 1 ] ] )
 ##  ]]></Example>
 ##  </Description>
@@ -1046,10 +1046,10 @@ DeclareAttribute( "Identifier", IsTableOfMarks );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> MatTom( a5 );
-##  [ [ 60, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 30, 2, 0, 0, 0, 0, 0, 0, 0 ], 
-##    [ 20, 0, 2, 0, 0, 0, 0, 0, 0 ], [ 15, 3, 0, 3, 0, 0, 0, 0, 0 ], 
-##    [ 12, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 10, 2, 1, 0, 0, 1, 0, 0, 0 ], 
-##    [ 6, 2, 0, 0, 1, 0, 1, 0, 0 ], [ 5, 1, 2, 1, 0, 0, 0, 1, 0 ], 
+##  [ [ 60, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 30, 2, 0, 0, 0, 0, 0, 0, 0 ],
+##    [ 20, 0, 2, 0, 0, 0, 0, 0, 0 ], [ 15, 3, 0, 3, 0, 0, 0, 0, 0 ],
+##    [ 12, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 10, 2, 1, 0, 0, 1, 0, 0, 0 ],
+##    [ 6, 2, 0, 0, 1, 0, 1, 0, 0 ], [ 5, 1, 2, 1, 0, 0, 0, 1, 0 ],
 ##    [ 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -1090,8 +1090,8 @@ DeclareAttribute( "MatTom", IsTableOfMarks );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> MoebiusTom( a5 );
-##  rec( ex := [ -60, 4, 2,,, -1, -1, -1, 1 ], hyp := [  ], 
-##    mu := [ -60, 4, 2,,, -1, -1, -1, 1 ], 
+##  rec( ex := [ -60, 4, 2,,, -1, -1, -1, 1 ], hyp := [  ],
+##    mu := [ -60, 4, 2,,, -1, -1, -1, 1 ],
 ##    nu := [ -1, 2, 1,,, -1, -1, -1, 1 ] )
 ##  gap> tom:= TableOfMarks( "M12" );;
 ##  gap> moebius:= MoebiusTom( tom );;
@@ -1177,7 +1177,7 @@ DeclareAttribute( "WeightsTom", IsTableOfMarks );
 ##  gap> for i in [ 1 .. 6 ] do
 ##  > Print( i, ": ", IsCyclicTom(a5, i), "  " );
 ##  > od;  Print( "\n" );
-##  1: true  2: true  3: true  4: false  5: true  6: false  
+##  1: true  2: true  3: true  4: false  5: true  6: false
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1709,7 +1709,7 @@ DeclareOperation( "IntersectionsTom",
 ##  2:  3 1
 ##  3:  2 . 2
 ##  4:  1 1 1 1
-##  
+##
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2141,14 +2141,14 @@ DeclareOperation( "PossibleFusionsCharTableTom",
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> PermCharsTom( a5c, a5 );
-##  [ Character( CharacterTable( "A5" ), [ 60, 0, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 30, 2, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 20, 0, 2, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 15, 3, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 12, 0, 0, 2, 2 ] ), 
-##    Character( CharacterTable( "A5" ), [ 10, 2, 1, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 6, 2, 0, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 5, 1, 2, 0, 0 ] ), 
+##  [ Character( CharacterTable( "A5" ), [ 60, 0, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 30, 2, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 20, 0, 2, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 15, 3, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 12, 0, 0, 2, 2 ] ),
+##    Character( CharacterTable( "A5" ), [ 10, 2, 1, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 6, 2, 0, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ), [ 5, 1, 2, 0, 0 ] ),
 ##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ) ]
 ##  gap> PermCharsTom( fus, a5 )[1];
 ##  [ 60, 0, 0, 0, 0 ]
@@ -2193,7 +2193,7 @@ DeclareOperation( "PermCharsTom", [ IsOrdinaryTable, IsTableOfMarks ] );
 ##  2:  3 3
 ##  3:  2 . 2
 ##  4:  1 1 1 1
-##  
+##
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2237,7 +2237,7 @@ DeclareOperation( "TableOfMarksCyclic", [ IsPosInt ] );
 ##   8:   2 . 2 . 2 . . 2
 ##   9:   2 . . 2 2 . . . 2
 ##  10:   1 1 1 1 1 1 1 1 1 1
-##  
+##
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2267,7 +2267,7 @@ DeclareOperation( "TableOfMarksDihedral", [ IsPosInt ] );
 ##  4:   4 . . 4
 ##  5:   2 2 . 2 2
 ##  6:   1 1 1 1 1 1
-##  
+##
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

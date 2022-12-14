@@ -10,10 +10,10 @@
 ##
 ##  This file contains functions to construct semisimple Lie algebras of type
 ##  $A_n$, $B_n$, $C_n$, $D_n$, $E_6$, $E_7$, $E_8$, $F_4$, $G_2$,
-##  as s.c. algebras. Also there are the restricted Lie algebras 
+##  as s.c. algebras. Also there are the restricted Lie algebras
 ##  of types W,H,K,S.
 ##
-##  The algorithm used for types $A-G$ is the one described in 
+##  The algorithm used for types $A-G$ is the one described in
 ##  Kac, Infinite Dimensional Lie Algebras, and de Graaf, Lie Algebras:
 ##  Theory and Algorithms.
 ##
@@ -92,13 +92,13 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
           eps,             # The so-called "epsilon"-function.
           epsmat,          # A matrix used to calculate the eps-function.
           dim,             # The dimension of the Lie algebra.
-          C,               # Cartan matrix 
+          C,               # Cartan matrix
           L,               # Lie algebra, result
           vectors,         # vectors spanning a Cartan subalgebra
           CSA,             # List of indices of the basis vectors of a Cartan
                            # subalgebra.
           e,
-          inds,            # List of indices. 
+          inds,            # List of indices.
           r,r1,r2,         # Roots.
           roots,           # List of roots.
           primes,          # List of lists of corresponding roots.
@@ -106,45 +106,45 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
           cfs,             # List of coefficient lists.
           d,               # Order of the diagram automorphism.
           found,           # Boolean.
-          a,            
-          q, 
+          a,
+          q,
           perm,            # Permutation representing the diagram automorphism.
           shorts,
           posR,            # Positive roots.
           CartanMatrixToPositiveRoots; # Function for determining the
                                        # positive roots.
-    
-    
+
+
     CartanMatrixToPositiveRoots:= function( C )
-        
-        local   rank,  posr,  ready,  ind,  le,  i,  a,  j,  ej,  r,  b,  
+
+        local   rank,  posr,  ready,  ind,  le,  i,  a,  j,  ej,  r,  b,
                 q;
-        
+
         rank:= Length( C );
-        
+
         # `posr' will be a list of the positive roots. We start with the
         # simple roots, which are simply unit vectors.
-        
+
         posr:= IdentityMat( rank );
-        
+
         ready:= false;
         ind:= 1;
         le:= rank;
         while ind <= le  do
-            
+
             # We loop over those elements of `posR' that have been found in
             # the previous round, i.e., those at positions ranging from
             # `ind' to `le'.
-            
+
             le:= Length( posr );
             for i in [ind..le] do
                 a:= posr[i];
-                
+
                 # We determine whether a+ej is a root (where ej is the j-th
                 # simple root.
                 for j in [1..rank] do
                     ej:= posr[j];
-                    
+
                     # We determine the maximum number `r' such that a-r*ej is
                     # a root.
                     r:= -1;
@@ -152,37 +152,37 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                     while b in posr do
                         b:= b-ej;
                         r:=r+1;
-                    od; 
+                    od;
                     q:= r-LinearCombination( TransposedMat( C )[j], a );
-                    if q>0 and (not a+ej in posr ) then 
+                    if q>0 and (not a+ej in posr ) then
                         Add( posr, a+ej );
                     fi;
                 od;
             od;
             ind:= le+1;
             le:= Length( posr );
-        od; 
-        
+        od;
+
         return posr;
     end;
-    
-    
+
+
     # The following function is the so-called epsilon function.
     eps:= function( a, b, epm )
         local rk;
-        
+
         rk:= Length( epm );
         return Product( [1..rk],i ->
                        Product( [1..rk], j ->
                                epm[i][j] ^ ( a[i]*b[j] ) ) );
     end;
-    
+
     if type in [ "A", "D", "E" ] then
-        
-        # We are in the simply-laced case. Here we construct the root 
+
+        # We are in the simply-laced case. Here we construct the root
         # system and the matrix of the epsilon function. Then we can
         # fill the multiplication table directly.
-        
+
         C:= 2*IdentityMat( n );
         if type = "A" then
             for i in [1..n-1] do
@@ -196,17 +196,17 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
             for i in [1..n-2] do
                 C[i][i+1]:= -1;
                 C[i+1][i]:= -1;
-            od;        
+            od;
             C[n-2][n]:=-1;
             C[n][n-2]:= -1;
         else
-            
+
             C:= [
                  [ 2, 0, -1, 0, 0, 0, 0, 0 ], [ 0, 2, 0, -1, 0, 0, 0, 0 ],
                  [ -1, 0, 2, -1, 0, 0, 0, 0 ], [ 0, -1, -1, 2, -1, 0, 0, 0 ],
                  [ 0, 0, 0, -1, 2, -1, 0, 0 ], [ 0, 0, 0, 0, -1, 2, -1, 0 ],
                  [ 0, 0, 0, 0, 0, -1, 2, -1 ], [ 0, 0, 0, 0, 0, 0, -1, 2 ] ];
-            
+
             if n = 6 then
                 C:= C{ [ 1 .. 6 ] }{ [ 1 .. 6 ] };
             elif n = 7 then
@@ -216,16 +216,16 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
             fi;
         fi;
         R:= CartanMatrixToPositiveRoots( C );
-        
-    
+
+
         # We conctruct `epsmat', which satisfies
         #                  /
         #                 |-1 if i=j,
         #  epsmat[i][j] = |-1 if i and j are connected, and i>j
-        #                 | 1 if i and j are not connected or i<j. 
+        #                 | 1 if i and j are not connected or i<j.
         #                  \
         # (where `connected' means connected in the Dynkin diagram.
-        
+
         epsmat:= [];
         for i in [ 1 .. n ] do
             epsmat[i]:= [];
@@ -237,17 +237,17 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                 epsmat[i][j]:= (-1)^C[i][j];
             od;
         od;
-        
+
         lenR:= Length( R );
         dim:= 2*lenR + n;
-        
+
         posR:= List( R, r -> Zero(F)*r );
 
         # Initialize the s.c. table
         T:= EmptySCTable( dim, Zero(F), "antisymmetric" );
 
         lst:= [ 1 .. n ] + 2 * lenR;
-        
+
         for i in [1..lenR] do
             for j in [i..lenR] do
                 Rij:= R[i]+R[j];
@@ -259,36 +259,36 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                 fi;
                 if i = j and T[i][j+lenR] = [[],[]] then
                     # We form the product x_{\alpha_i}*x_{-\alpha_i}, which
-                    # will be an element of the Cartan subalgebra. 
-                
-                    inds:= Filtered( [1..n], x -> R[i][x] <> 0 );  
+                    # will be an element of the Cartan subalgebra.
+
+                    inds:= Filtered( [1..n], x -> R[i][x] <> 0 );
                     T[i][j+lenR]:= [ lst{inds}, R[i]{inds}*One(F) ];
                     T[j+lenR][i]:= [ lst{inds}, -R[i]{inds}*One(F) ];
                 fi;
             od;
         od;
         for i in [1..lenR] do
-            for j in [1..lenR] do    
+            for j in [1..lenR] do
                 Rij:= R[i]-R[j];
                 if Rij in R then
                     k:= Position(R,Rij);
-                    SetEntrySCTable( T, i, j+lenR, 
+                    SetEntrySCTable( T, i, j+lenR,
                             [-One(F)*eps(R[i],-R[j],epsmat),k] );
                 elif -Rij in R then
                     k:= Position(R,-Rij);
-                    SetEntrySCTable( T, i, j+lenR, 
+                    SetEntrySCTable( T, i, j+lenR,
                             [One(F)*eps(R[i],-R[j],epsmat),k+lenR] );
                 fi;
             od;
             for j in [1..n] do
-                
+
                 # We take care of the comutation relations of the form
                 # [h_j,x_{\beta_i}]= < \beta_i, \alpha_j > x_{\beta_i}.
                 cc:= LinearCombination( R[i], C[j] );
                 if cc <> 0*cc then
-                    
+
                     posR[i][j]:= One(F)*cc;
-                    
+
                     T[2*lenR+j][i]:=[[i],[One(F)*cc]];
                     T[i][2*lenR+j]:=[[i],[-One(F)*cc]];
                     T[2*lenR+j][i+lenR]:=[[i+lenR],[-One(F)*cc]];
@@ -298,25 +298,25 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
         od;
 
         L:= LieAlgebraByStructureConstants( F, T );
-        
+
         # A Cartan subalgebra is spanned by the last 'n' basis elements.
         CSA:= [ dim-n+1 .. dim ];
         vectors:= BasisVectors( CanonicalBasis( L ) ){ CSA };
         SetCartanSubalgebra( L, SubalgebraNC( L, vectors, "basis" ) );
         SetIsRestrictedLieAlgebra( L, Characteristic( F ) > 0 );
-        
+
     elif type in [ "B", "C", "F", "G" ] then
-        
+
         # Now we are in the non simply laced case. In each case we construct
         # a simply laced root system, which has a diagram automorphism.
-        # We take an epsilon function which is invariant under the diagram 
+        # We take an epsilon function which is invariant under the diagram
         # automorphism. Furthermore, the permutation `perm' will represent
-        # the diagram aotomorphism as acting on the roots (so that 
+        # the diagram aotomorphism as acting on the roots (so that
         # Permuted( r, perm ) is the result of applying the diagram
         # automorphism to the root r).
-        
-        if type = "B" then 
-            
+
+        if type = "B" then
+
             # In this case we construct D_{n+1}.
             if n <= 1 then
                 Error( "<n> must be >= 2");
@@ -325,11 +325,11 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
             for i in [1..n-1] do
                 C[i][i+1]:= -1;
                 C[i+1][i]:= -1;
-            od;        
+            od;
             C[n-1][n+1]:=-1;
             C[n+1][n-1]:= -1;
             R:= CartanMatrixToPositiveRoots( C );
-            
+
             epsmat:= NullMat( n+1, n+1 ) + 1;
             for i in [ 1 .. n-1 ] do
                 epsmat[i+1][i]:= -1;
@@ -338,12 +338,12 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
             epsmat[n+1][n-1]:= -1;
             epsmat[n][n]:= -1;
             epsmat[n+1][n+1]:= -1;
-            
+
             perm:= (n,n+1);
             d:= 2;
-            
+
         elif type = "C" then
-            
+
             # In this case we construct A_{2n-1}.
             if n < 2 then
                 Error( "<n> must be >= 3");
@@ -352,9 +352,9 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
             for i in [1..2*n-2] do
                 C[i][i+1]:= -1;
                 C[i+1][i]:= -1;
-            od;        
+            od;
             R:= CartanMatrixToPositiveRoots( C );
-            
+
             epsmat:= NullMat( 2*n-1, 2*n-1 ) + 1;
             for i in [ 1 .. n-1 ] do
                 epsmat[i][i+1]:= -1;
@@ -365,54 +365,54 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                 epsmat[i][i]:= -1;
             od;
             epsmat[2*n-1][2*n-1]:= -1;
-            
+
             perm:= ();
             for i in [1..n-1] do
                 perm:= perm*(i,2*n-i);
             od;
-            d:= 2; 
-            
+            d:= 2;
+
         elif type = "F" then
-            
+
             # In this case we construct E_6.
             if n <> 4 then
                 Error( "<n> must be equal to 4");
             fi;
-            
+
             C:= IdentityMat( 6 );
             C[1][3]:=-1; C[2][4]:=-1; C[3][4]:=-1; C[4][5]:=-1; C[5][6]:=-1;
             C:= C+TransposedMat( C );
             R:= CartanMatrixToPositiveRoots( C );
-            
+
             epsmat:= NullMat( 6, 6 ) + 1;
             for i in [1..6] do epsmat[i][i]:= -1; od;
             epsmat[1][3]:=-1; epsmat[3][4]:=-1; epsmat[5][4]:=-1;
             epsmat[6][5]:=-1; epsmat[2][4]:=-1;
 
             perm:= (1,6)*(3,5);
-            d:= 2; 
-            
+            d:= 2;
+
         elif type = "G" then
-            
+
             # In this case we conctruct D_4.
             if n <> 2 then
                 Error( "<n> must be equal to 2");
             fi;
-            
+
             C:= IdentityMat( 4 );
-            C[1][2]:=-1; C[2][3]:=-1; C[2][4]:=-1; 
+            C[1][2]:=-1; C[2][3]:=-1; C[2][4]:=-1;
             C:= C+TransposedMat( C );
             R:= CartanMatrixToPositiveRoots( C );
-            
+
             epsmat:= NullMat( 4, 4 ) + 1;
             for i in [1..4] do epsmat[i][i]:= -1; od;
             epsmat[1][2]:=-1; epsmat[4][2]:=-1; epsmat[3][2]:=-1;
 
             perm:= (1,3,4);
-            d:= 3; 
-            
+            d:= 3;
+
         fi;
-        
+
         # Now `roots' will be the list of positive roots of the resulting Lie
         # algebra. They are formed from the roots in `R' by applying the
         # diagram automorphism. If a r\in R is invariant under the
@@ -420,9 +420,9 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
         # the root itself). Otherwise we add \frac{1}{d}(r+\phi(r)+\cdots
         # + \phi^{d-1}(r)), where \phi is the diagram automorphism.
         # In this case the prime of the root are all \phi^i(r).
-        
+
         if d = 2 then
-            
+
             roots:= [ ];
             primes:= [ ];
             for r in R do
@@ -433,14 +433,14 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                 else
                     if not (r+r1)/2 in roots then
                         Add( roots, (r+r1)/2 );
-                        Add( primes, [ r, r1 ] ); 
-                    fi; 
+                        Add( primes, [ r, r1 ] );
+                    fi;
                 fi;
             od;
-            
+
             B:= Basis( VectorSpace( Rationals, roots{[1..n]} ),roots{[1..n]});
             cfs:= List( roots, x -> Coefficients( B, x ) );
-            
+
         elif d = 3 then
             roots:= [ ];
             primes:= [ ];
@@ -453,21 +453,21 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                     r2:= (r+r1+Permuted(r1,perm))/3;
                     if not r2 in roots then
                         Add( roots, r2 );
-                        Add( primes, [ r, r1, Permuted( r1, perm ) ] ); 
-                    fi; 
+                        Add( primes, [ r, r1, Permuted( r1, perm ) ] );
+                    fi;
                 fi;
             od;
 
             B:= Basis( VectorSpace( Rationals, roots{[1..n]} ),roots{[1..n]});
             cfs:= List( roots, x -> Coefficients( B, x ) );
         fi;
-        
+
         # `shorts' will be a list of indices indicating where the
         # short simple roots are. The coefficients on those places
         # in `cfs' need to be divided by `d'.
-        
+
         shorts:= Filtered( [1..n], ii -> Length( primes[ii] ) > 1 );
-        for i in [1..Length(cfs)] do 
+        for i in [1..Length(cfs)] do
             for j in shorts do
                 cfs[i][j]:= cfs[i][j]/d;
             od;
@@ -476,19 +476,19 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
         Append( R, -R );
         lenR:= Length( roots );
         dim:= 2*lenR + n;
-        
+
         posR:= List( [1..lenR], ii -> List( [1..n], jj -> Zero( F ) ) );
-        
+
         # Initialize the s.c. table
         T:= EmptySCTable( dim, Zero(F), "antisymmetric" );
-        
+
         lst:= [ 1 .. n ] + 2 * lenR;
-        
+
         for i in [1..lenR] do
             for j in [i..lenR] do
                 Rij:= roots[i]+roots[j];
                 if Rij in roots then
-                    
+
                     # We look for `r' in `primes[i]' and `r1' in `primes[j]'
                     # such that `r+r1' lies in `R'.
                     found:= false;
@@ -502,25 +502,25 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                             fi;
                         od;
                     od;
-                    
+
                     # `q' will be the maximal integer such that `roots[i]-
                     # roots[j]' is a root.
-                    
+
                     k:= Position( roots, Rij );
                     q:=0; a:= roots[i] - roots[j];
                     while a in roots or -a in roots do
                         q:=q+1;
                         a:= a-roots[j];
                     od;
-                    
+
                     e:= eps(r,r1,epsmat)*(q+1)*One(F);
                     SetEntrySCTable( T, i, j, [ e, k ] );
                     SetEntrySCTable( T, i+lenR, j+lenR, [ -e, k+lenR ] );
                 fi;
                 if i = j and T[i][j+lenR] = [[],[]] then
                     # We form the product x_{\alpha_i}*x_{-\alpha_i}, which
-                    # will be an element of the Cartan subalgebra. 
-                    
+                    # will be an element of the Cartan subalgebra.
+
                     inds:= Filtered( [1..n], x -> cfs[i][x] <> 0 );
                     if Length( primes[i] ) = 1 then
                         T[i][j+lenR]:= [ lst{inds}, cfs[i]{inds}*One(F) ];
@@ -528,12 +528,12 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                     else
                         T[i][j+lenR]:= [ lst{inds}, cfs[i]{inds}*d*One(F) ];
                         T[j+lenR][i]:= [ lst{inds}, -cfs[i]{inds}*d*One(F) ];
-                    fi; 
+                    fi;
                 fi;
             od;
         od;
         for i in [1..lenR] do
-            for j in [1..lenR] do    
+            for j in [1..lenR] do
                 Rij:= roots[i]-roots[j];
                 if Rij in roots then
 
@@ -555,10 +555,10 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                         q:=q+1;
                         a:= a+roots[j];
                     od;
-                    
-                    SetEntrySCTable( T, i, j+lenR, 
+
+                    SetEntrySCTable( T, i, j+lenR,
                             [-One(F)*(q+1)*eps(r,-r1,epsmat),k] );
-                    
+
                 elif -Rij in roots then
 
                     found:= false;
@@ -579,24 +579,24 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                         q:=q+1;
                         a:= a+roots[j];
                     od;
-                    SetEntrySCTable( T, i, j+lenR, 
+                    SetEntrySCTable( T, i, j+lenR,
                             [One(F)*(q+1)*eps(r,-r1,epsmat),k+lenR] );
                 fi;
             od;
             for j in [1..n] do
-                
+
                 # Now we take care of the relations [h,x_{\beta}]....
-                
+
                 cc:= LinearCombination( roots[i], C[j] );
                 if Length( primes[j] ) > 1 then
                     # i.e., `roots[j]' is "short".
                     cc:= d*cc;
                 fi;
-                
+
                 if cc <> 0*cc then
-                    
+
                     posR[i][j]:= One(F)*cc;
-                    
+
                     T[2*lenR+j][i]:=[[i],[One(F)*cc]];
                     T[i][2*lenR+j]:=[[i],[-One(F)*cc]];
                     T[2*lenR+j][i+lenR]:=[[i+lenR],[-One(F)*cc]];
@@ -604,19 +604,19 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                 fi;
             od;
         od;
-        
+
         L:= LieAlgebraByStructureConstants( F, T );
-        
+
         # A Cartan subalgebra is spanned by the last 'n' basis elements.
         CSA:= [ dim-n+1 .. dim ];
         vectors:= BasisVectors( CanonicalBasis( L ) ){ CSA };
         SetCartanSubalgebra( L, SubalgebraNC( L, vectors, "basis" ) );
         SetIsRestrictedLieAlgebra( L, Characteristic( F ) > 0 );
-        
+
     fi;
-        
+
     R:= Objectify( NewType( NewFamily( "RootSystemFam", IsObject ),
-                IsAttributeStoringRep and IsRootSystemFromLieAlgebra ), 
+                IsAttributeStoringRep and IsRootSystemFromLieAlgebra ),
                 rec() );
     SetUnderlyingLieAlgebra( R, L );
     SetPositiveRoots( R, posR );
@@ -627,11 +627,11 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                                  vectors ] );
     SetPositiveRootVectors( R, CanonicalBasis(L){[1..lenR]} );
     SetNegativeRootVectors( R, CanonicalBasis(L){[lenR+1..2*lenR]} );
-    SetChevalleyBasis( L, [ PositiveRootVectors( R ), 
+    SetChevalleyBasis( L, [ PositiveRootVectors( R ),
                             NegativeRootVectors( R ),
                             vectors ] );
-    
-    if not ( Characteristic( F ) in [ 2, 3 ] ) then 
+
+    if not ( Characteristic( F ) in [ 2, 3 ] ) then
 
         C:= 2*IdentityMat( n );
         for i in [1..n] do
@@ -644,24 +644,24 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
                         r:= r+posR[j];
                     od;
                     C[i][j]:= -q;
-                fi;           
+                fi;
             od;
         od;
 
         SetCartanMatrix( R, C );
-        
+
         SetSemiSimpleType( L, Concatenation( type, String( n ) ) );
     fi;
-    
+
     SetRootSystem( L, R );
 
-    if Characteristic( F ) = 0 then 
+    if Characteristic( F ) = 0 then
        SetIsSimpleAlgebra( L, true );
     fi;
 
     return L;
-    
-        
+
+
 end;
 
 
@@ -1224,13 +1224,13 @@ end;
 ##
 ##  The Melikyan Lie algebra is most conveniently constructed by
 ##  viewing it as the direct sum of a Witt type Lie algebra and two
-##  of its modules. This is the presentation described by 
-##  M.I. Kuznetsov, The Melikyan algebras as Lie algebras of the 
+##  of its modules. This is the presentation described by
+##  M.I. Kuznetsov, The Melikyan algebras as Lie algebras of the
 ##  type G2, Comm. Algebra 19 (1991).
-##  
-##  The Melikyan Lie algebra is parametrized by two positive 
-##  integers, n1 and n2, and can only be defined over fields of 
-##  characteristic 5. It can be decomposed into a 2*5^(n1 + n2)-dimensional 
+##
+##  The Melikyan Lie algebra is parametrized by two positive
+##  integers, n1 and n2, and can only be defined over fields of
+##  characteristic 5. It can be decomposed into a 2*5^(n1 + n2)-dimensional
 ##  subalgebra isomorphic to W(n1, n2), having a basis of monomials
 ##  X1^i1 X2^i2 dXk where 0 <= i1 < 5^n1, 0 <= i2 < 5^n2, k in {1, 2}; a
 ##  5^(n1 + n2)-dimensional module of this subalgebra which we call O,
@@ -1242,7 +1242,7 @@ end;
 ##
 ##  The multiplication is described in the above paper and in the code
 ##  below. We use lists of symbolic descriptions for the basis
-##  elements: [i1, i2] for X1^i1 X2^i2 and [[i1, i2], k] for either 
+##  elements: [i1, i2] for X1^i1 X2^i2 and [[i1, i2], k] for either
 ##  X1^i1 X2^i2 dXk or X1^i1 X2^i2 dXk^tilde. All valid such
 ##  symbolic descriptions can be found in two lists, OBasis and
 ##  WBasis, respectively. In the basis of the full algebra, we first
@@ -1277,53 +1277,53 @@ SimpleLieAlgebraTypeM := function (n, F)
        then
         Error ("<n> must be a list of two positive integers");
     fi;
-    
+
     if Characteristic (F) <> 5 then
         Error ("<F> must be a field of characteristic 5");
     fi;
-    
+
     n1 := n [1];
     n2 := n [2];
     dimO := 5^(n1 + n2);
     dimW := 2*dimO;
-    
+
     one := One (F);
     zero := Zero (F);
-    
-    # The element [a, b] of OBasis represents the element 
+
+    # The element [a, b] of OBasis represents the element
     #    X1^a X2^b / (a! b!)
     # of the truncated polynomial ring.
     OBasis := Cartesian ([0 .. 5^n1 - 1], [0 .. 5^n2 - 1]);
-    
+
     # The position of an OBasis element in the basis.
     posO := function (o)
         return o [2] + 5^n2 * o [1] + 1;
-    end;    
-    
+    end;
+
     # Given two OBasis elements x1 and x2, returns a list with a
-    # coefficient coeff and the position pos of a basis element, such 
-    # that 
+    # coefficient coeff and the position pos of a basis element, such
+    # that
     #    x1 * x2 = coeff * OBasis [pos]
     OProduct := function (x1, x2)
         local pow;
         pow := ShallowCopy (x1 + x2);
         if pow [1] < 5^n1 and pow [2] < 5^n2 then
             return [Binomial (pow [1], x1 [1]) *
-                    (Binomial (pow [2], x1 [2]) * one), 
+                    (Binomial (pow [2], x1 [2]) * one),
                     posO (pow)];
         else
             return [zero, 1];
         fi;
-    end;    
-    
+    end;
+
     # The element [[a, b], c] of WBasis represents the element
     #    O dXc
     # where O is the element of OBasis represented by [a, b].
     WBasis := Cartesian (OBasis, [1, 2]);
-    
+
     # The divergence: f dX1 + g dX2 -> dX1 (f) + dX2 (g), maps WBasis
     # elements to OBasis elements. Note: if the result is 0, we return
-    # that instead of the OBasis element. 
+    # that instead of the OBasis element.
     div := function (abc)
         local ab, pos;
         if abc [1] [abc [2]] = 0 then
@@ -1333,20 +1333,20 @@ SimpleLieAlgebraTypeM := function (n, F)
         ab := ShallowCopy (abc [1]);
         ab [pos] := ab [pos] - 1;
         return ab;
-    end;    
-        
+    end;
+
     # The position of the WBasis element [OBasis (o), c] in the basis,
     # where o is the number of an OBasis element.
     posW := function (o, c)
         return 2 * o + c - 2;
-    end;    
-        
+    end;
+
     # Given a WBasis element [[a1, b1], c1] and an OBasis element [a2,
     # b2], representing the usual monomials, this function computes
     #    p = X1^a1 X2^a2 (dXc1 X1^a2 X2^b2),
     # and returns a list [pos, coeff] with the position in OBasis of
     # the basis element this is a multiple of, and its coefficient; so
-    # that 
+    # that
     #    p = coeff * OBasis [pos].
     WOProduct := function (w1, x2)
         local pow, prod;
@@ -1356,16 +1356,16 @@ SimpleLieAlgebraTypeM := function (n, F)
             return OProduct (w1 [1], pow);
         else
             return [zero, 1];
-        fi;        
-    end;    
-    
+        fi;
+    end;
+
     # Given two WBasis elements [[a1, b1], c1] and [[a2, b2], c2],
     # representing the usual monomials, this
-    # function computes 
-    #    p = X1^a1 X2^a2 (dXc1 (X1^a2 X2^b2)) dXc2, 
+    # function computes
+    #    p = X1^a1 X2^a2 (dXc1 (X1^a2 X2^b2)) dXc2,
     # and returns a list [pos, coeff] with the position in WBasis of
     # the basis element this is a multiple of, and its coefficient; so
-    # that 
+    # that
     #    p = coeff * WBasis [pos].
     WProduct := function (x1, x2)
         local prod;
@@ -1374,13 +1374,13 @@ SimpleLieAlgebraTypeM := function (n, F)
             return [prod [1], posW (prod [2], x2 [2])];
         else
             return [zero, 1];
-        fi;        
+        fi;
     end;
-    
+
     # The bracket on W is defined as mapping x1, x2 to their
     # commutator, where the multiplication is as above. This function
     # returns a list ls of, alternatingly, coefficients and positions,
-    # such that the bracket of x1 and x2 is equal to 
+    # such that the bracket of x1 and x2 is equal to
     #   ls [1] * WBasis [ls [2]] + ls [3] * WBasis [ls [4]].
     # However, if any coefficient is 0, the corresponding list
     # elements are omitted. So the list returned has length 4, 2 or 0.
@@ -1390,15 +1390,15 @@ SimpleLieAlgebraTypeM := function (n, F)
         if prod [1] <> zero then
             result := prod;
         else
-            result := [];            
+            result := [];
         fi;
         prod := WProduct (x2, x1);
         if prod [1] <> zero then
             Append (result, [- prod [1], prod [2]]);
         fi;
         return result;
-    end;    
-    
+    end;
+
     # The order of the basis elements is: first the basis elements of
     # W, then of O, then of Wtilde. Definitions of W, Wtilde and O can
     # be found in H. Strade, Simple Lie Algebras over Fields of
@@ -1406,7 +1406,7 @@ SimpleLieAlgebraTypeM := function (n, F)
     # This is the realization found in M.I. Kuznetsov, The Melikian
     # algebras as Lie algebras of the type G2, Comm. Algebra 19
     # (1991), 1281-1312.
-    
+
     # tildify adds cst to each even position in ls. It is useful for
     # mapping a result of WBracket from W to Wtilde, or an OBasis
     # element to the correct position in the full basis.
@@ -1417,8 +1417,8 @@ SimpleLieAlgebraTypeM := function (n, F)
             ls [i] := ls [i] + cst;
             i := i + 2;
         od;
-    end;    
-    
+    end;
+
     # clean is a function that 'cleans' a list before submission to
     # SetEntrySCTable. That is, if any positions are the same, the
     # coefficients are added.
@@ -1433,40 +1433,40 @@ SimpleLieAlgebraTypeM := function (n, F)
                 Unbind (ls [i]);
             else
                 ps.(ls [i]) := i;
-            fi;            
+            fi;
             i := i + 2;
         od;
         return Compacted (ls);
-    end;    
-    
+    end;
+
     table := EmptySCTable (dimO + 2 * dimW, Zero (F), "antisymmetric");
-    
+
     for i in [1 .. dimW] do
         w1 := WBasis [i];
         for j in [1 .. dimW] do
             w2 := WBasis [j];
-            
+
             if i < j then
                 # Compute the product for w1 and w2 in W.
                 # This is simply [w1, w2].
                 SetEntrySCTable (table, i, j, clean (WBracket (w1, w2)));
-                
-                
+
+
                 # Compute the product for w1 and w2 in WTilde.
                 # This is f1g2 - f2g1 if w1 = f1d1 + f2d2, w2 = g1d1 +
-                # g2d2. 
+                # g2d2.
                 if w1 [2] <> w2 [2] then
                     prod := OProduct (w1 [1], w2 [1]);
                     if prod [1] <> zero then
-                        SetEntrySCTable (table, i + dimW + dimO, 
+                        SetEntrySCTable (table, i + dimW + dimO,
                                 j + dimW + dimO,
                                 [(3 - 2 * w1 [2]) * # This is the coefficient
                                                     # plus or minus one.
                                  prod [1], prod [2] + dimW]);
-                    fi;                    
+                    fi;
                 fi;
             fi;
-            
+
             # Compute the product for w1 in W, w2 in WTilde.
             # This is defined as [w1, w2]^tilde + 2 div(w1) w2^tilde
             # [w1, w2]^tilde:
@@ -1477,16 +1477,16 @@ SimpleLieAlgebraTypeM := function (n, F)
             if d <> 0 then
                 term := OProduct (d, w2 [1]);
                 if term [1] <> zero then
-                    Append (result, [2 * term [1], 
+                    Append (result, [2 * term [1],
                             posW (term [2], w2 [2]) + dimW + dimO]);
                 fi;
             fi;
             SetEntrySCTable (table, i, j + dimW + dimO, clean (result));
         od;
-        
+
         for j in [1 .. dimO] do
             x2 := OBasis [j];
-            
+
             # Compute the product for w1 in W, x2 in O.
             # This is w1 (x2) - 2 div (w1) x2.
             # w1 (x2):
@@ -1498,20 +1498,20 @@ SimpleLieAlgebraTypeM := function (n, F)
                 if term [1] <> zero then
                     Append (result, [-2 * term [1], term [2]]);
                 fi;
-            fi;            
+            fi;
             tildify (result, dimW);
             SetEntrySCTable (table, i, j + dimW, clean (result));
-            
+
             # Compute the product for w1 in Wtilde, x2 in O.
-            # This is - x2 w1^un-tilde. 
+            # This is - x2 w1^un-tilde.
             # We put it in the table as the product of x2 and w1, so
             # that we don't have to bother with the minus sign.
             result := OProduct (x2, w1 [1]);
-            SetEntrySCTable (table, j + dimW, i + dimW + dimO, 
+            SetEntrySCTable (table, j + dimW, i + dimW + dimO,
                     [result [1], posW (result [2], w1 [2])]);
-        od;        
+        od;
     od;
-    
+
     for i in [1 .. dimO] do
         x1 := OBasis [i];
         for j in [i + 1 .. dimO] do
@@ -1531,45 +1531,45 @@ SimpleLieAlgebraTypeM := function (n, F)
             # - 2 x2 dX1(x1) dX2:
             term := WProduct ([x2, 1], [x1, 2]);
             Append (result, [- 2 * term [1], term [2]]);
-            
+
             tildify (result, dimW + dimO);
-            
-            SetEntrySCTable (table, i + dimW, j + dimW, 
+
+            SetEntrySCTable (table, i + dimW, j + dimW,
                     clean (result));
         od;
     od;
-    
+
     result := LieAlgebraByStructureConstants (F, table);
 
     SetIsRestrictedLieAlgebra (result, n1 = 1 and n2 = 1);
-    
-    degrees := Concatenation (List (WBasis, lst -> 
-                       lst [1] * [[2, 1], [1, 2]] + 
+
+    degrees := Concatenation (List (WBasis, lst ->
+                       lst [1] * [[2, 1], [1, 2]] +
                        \[\]([[-2, -1], [-1, -2]], lst [2])),
                        List (OBasis, lst ->
                              lst * [[2, 1], [1, 2]] + [-1, -1]),
                        List (WBasis, lst ->
                              lst [1] * [[2, 1], [1, 2]] +
                              \[\]([[-1, 0], [0, -1]], lst [2])));
-    GradingFunction := d -> Subspace (result, 
+    GradingFunction := d -> Subspace (result,
                                Basis(result) {Positions (degrees, d)});
     SetGrading (result, rec(
-            source :=  
+            source :=
             FreeLeftModule(Integers, [[1, 0], [0, 1]], "basis"),
             hom_components := GradingFunction,
-            non_zero_hom_components := Set (degrees)));        
-    
+            non_zero_hom_components := Set (degrees)));
+
 #    GradingFunction := function (d)
 #        local degsum, r, oposns;
 #        r := d[1] + d[2] mod 3;
 #        if r = 0 then
-#            
+#
 #        degsum := (d [1] + d [2] - r) / 3 + 1;
 #        oposns := List ([Maximum (0, degsum - 5^n2 + 1) ..
-#                         Minimum (degsum, 5^n1 - 1)], 
+#                         Minimum (degsum, 5^n1 - 1)],
 #                        i -> posO ([i, degsum - i]));
-#        if r = 0 then	
-#            return SubspaceNC (result, 
+#        if r = 0 then
+#            return SubspaceNC (result,
 #                           Basis (result) {Concatenation (
 #                                   List (oposns, p -> posW (p, 1)),
 #                                   List (oposns, p -> posW (p, 2)))},
@@ -1586,12 +1586,12 @@ SimpleLieAlgebraTypeM := function (n, F)
 #                           "basis");
 #        fi;
 #    end;
-#    SetGrading (result, 
-#            rec (min_degree := -3, 
-#        	 max_degree := 3 * (5^n1 + 5^n2) - 7, 
+#    SetGrading (result,
+#            rec (min_degree := -3,
+#        	 max_degree := 3 * (5^n1 + 5^n2) - 7,
 #        	 source := Integers,
 #                 hom_components := GradingFunction));
-    
+
     return result;
 end;
 
@@ -1606,7 +1606,7 @@ InstallGlobalFunction( SimpleLieAlgebra, function( type, n, F )
     local A;
 
     # Check the arguments.
-    if not ( IsString( type ) and ( IsInt( n ) or IsList( n ) ) and 
+    if not ( IsString( type ) and ( IsInt( n ) or IsList( n ) ) and
       IsRing( F ) ) then
       Error( "<type> must be a string, <n> an integer, <F> a ring" );
     fi;

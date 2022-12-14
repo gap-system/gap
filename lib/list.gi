@@ -1581,7 +1581,7 @@ InstallMethod( PositionProperty,
         if IsBound( list[i] ) then
         	if func( list[ i ] ) then
             	return i;
-            fi;	
+            fi;
         fi;
     od;
     return fail;
@@ -1600,12 +1600,12 @@ InstallMethod( PositionProperty,
       if IsBound( list[i] ) then
         if func( list[i] ) then
           return i;
-        fi;  
+        fi;
       fi;
     od;
     return fail;
     end );
-    
+
 InstallMethod( PositionProperty,
     "for dense list and function",
     [ IsDenseList, IsFunction ],
@@ -1797,7 +1797,7 @@ InstallMethod( PositionSublist,
     [IsList,IsList,IS_INT],
     function( list,sub,start )
       local n, m, next, j, max, c, i;
-  
+
   n:=Length(list);
   m:=Length(sub);
   start:=Position(list, sub[1], start);
@@ -1838,7 +1838,7 @@ InstallMethod( PositionSublist,
     return fail;
 
   fi;
-   
+
   # otherwise repeat with Manber
   i:=start;
   j:=1;
@@ -1966,7 +1966,7 @@ InstallMethod( Add, "three arguments general version",
     return;
 end);
 
-          
+
 #############################################################################
 ##
 #M  Remove(<list>[,<pos>])
@@ -2353,7 +2353,7 @@ end );
 ##
 #M  SortBy( <list>, <func> )
 ##
-    
+
 InstallMethod( SortBy, "for a mutable list and a function",
         [IsList and IsMutable, IsFunction ],
         function(list, func)
@@ -2371,7 +2371,7 @@ InstallMethod( StableSortBy, "for a mutable list and a function",
     StableSortParallel(images, list);
     return;
 end);
-    
+
 #############################################################################
 ##
 #F  SORT_MUTABILITY_ERROR_HANDLER( <list> )
@@ -2428,12 +2428,12 @@ InstallMethod( Sortex,
     if not IsSmallList( list ) then
       Error( "<list> must have length at most ", MAX_SIZE_LIST_INTERNAL );
     fi;
-    
+
     n := Length(list);
     index := [1..n];
     StableSortParallel(list, index);
     return PermList(index)^-1;
-    
+
     end );
 
 InstallMethod( Sortex,
@@ -2446,7 +2446,7 @@ InstallMethod( Sortex,
     if not IsSmallList( list ) then
       Error( "<list> must have length at most ", MAX_SIZE_LIST_INTERNAL );
   fi;
-  
+
     n := Length(list);
     index := [1..n];
     StableSortParallel(list, index, comp);
@@ -2519,7 +2519,7 @@ InstallMethod( StableSortParallel,
     [ IsList and IsMutable,
       IsList and IsMutable ],
     STABLE_SORT_PARA_LIST );
-    
+
 #############################################################################
 ##
 #M  SortParallel( <sorted>, <list> )
@@ -2617,7 +2617,7 @@ InstallMethod( MaximumList,
     od;
     return max;
     end );
-    
+
 InstallMethod( MaximumList,
     "for a list and a seed",
     [ IsList, IsObject ],
@@ -2630,7 +2630,7 @@ InstallMethod( MaximumList,
     od;
     return max;
     end );
-    
+
 InstallMethod( MaximumList,
     "for a range",
     [ IsRange ],
@@ -2771,7 +2771,7 @@ InstallMethod( MinimumList,
     fi;
     return min;
     end );
-    
+
 InstallMethod( MinimumList,
     "for a sorted list",
     [ IsSSortedList ],
@@ -2839,7 +2839,7 @@ InstallMethod( Permuted,
 ##
 #F  First( <C>, <func> )  . . .  find first element in a list with a property
 ##
-InstallEarlyMethod( First, 
+InstallEarlyMethod( First,
     function ( C )
     local tnum, elm;
     tnum:= TNUM_OBJ( C );
@@ -3609,7 +3609,7 @@ InstallMethod( \*,
           IsPlistRep and IsRectangularTable],
         function(m1,m2)
     local prod, row;
-    if ForAny(m2, r-> not IsPlistRep(r)) or 
+    if ForAny(m2, r-> not IsPlistRep(r)) or
        ForAny(m1, r-> not IsPlistRep(r)) then
       TryNextMethod();
     fi;
@@ -3914,11 +3914,11 @@ InstallMethod( PositionNot, "default method ", [IsList, IsObject, IsInt ],
 
 InstallOtherMethod( PositionNot, "default value of third argument ",
         [IsList, IsObject],
-        function(l,x) 
-    return POSITION_NOT(l,x,0); 
+        function(l,x)
+    return POSITION_NOT(l,x,0);
 end
   );
-    
+
 InstallMethod( PositionNonZero, "default method", [IsHomogeneousList],
         function(l)
     if Length(l) = 0 then
@@ -3936,7 +3936,7 @@ InstallMethod( PositionNonZero, "default method with start", [IsHomogeneousList,
     return POSITION_NOT(l, Zero(l[1]), from);
 end);
 
-        
+
 #############################################################################
 ##
 #M  CanEasilyCompareElements( <obj> )
@@ -4065,7 +4065,7 @@ local i,n,s;
       Add(b,false);
     od;
     Add(s,DECODE_BITS_TO_HEX(b,1));
-  fi;  
+  fi;
   if IsOddInt(Length(s)) then Add(s,'0'); fi;
   return s;
 end);

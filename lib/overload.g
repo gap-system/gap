@@ -27,7 +27,7 @@
 ##
 ##  Note that operations such as `IsCommutative' are not of this type,
 ##  since the result means the same for any multiplicative structure.
-##  
+##
 ##  The key requirement is that no object ever exists which inherits from
 ##  two types with distinct meanings.
 ##  Whenever this happens, there *must* be a method installed for the meet
@@ -96,8 +96,8 @@ InstallMethod( Degree, [ IsRationalFunction ],
 ##
 DeclareOperation( "DerivedSeries", [ IsObject ] );
 
-# DerivedSeriesOfAlgebra no longer exists! (There are the functions 
-# LieDerivedSeries and PowerSubalgebraSeries). 
+# DerivedSeriesOfAlgebra no longer exists! (There are the functions
+# LieDerivedSeries and PowerSubalgebraSeries).
 #
 InstallMethod( DerivedSeries, [ IsAlgebra ],
   function( A )
@@ -340,7 +340,7 @@ InstallMethod( Kernel, [ IsClassFunction ], KernelOfCharacter );
 ##
 DeclareOperation( "LowerCentralSeries", [ IsObject ] );
 
-# LowerCentralSeries is now called LieLowerCentralSeries. 
+# LowerCentralSeries is now called LieLowerCentralSeries.
 #
 InstallMethod( LowerCentralSeries, [ IsAlgebra ],
   function(A)

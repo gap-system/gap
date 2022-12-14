@@ -35,7 +35,7 @@ DeclareInfoClass("InfoFitFree");
 ##  can be used for a group, that is whether a method for
 ##  <Ref Func="FittingFreeLiftSetup"/> is available for <A>grp</A>.
 ##  Note that this filter may change its value from <K>false</K> to
-##  <K>true</K>. 
+##  <K>true</K>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -125,7 +125,7 @@ InstallTrueMethod(CanComputeFittingFree,HasFittingFreeLiftSetup);
 ##  components:
 ##  <C>parentffs</C> The record returned by
 ##  <Ref Func="FittingFreeLiftSetup"> for <G>.
-##  <C>rest</C> A restriction of 
+##  <C>rest</C> A restriction of
 ##  the <C>factorhom</C> for <A>G</A> to <A>U</A>, defined on generators of
 ##  <A>U</A>.
 ##  <C>ker</C> The kernel of this map.

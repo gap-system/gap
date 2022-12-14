@@ -123,7 +123,7 @@ DeclareGlobalFunction( "ConwayPol" );
 ##  the origin of that particular polynomial.
 ##  <P/>
 ##  For some purposes it may be enough to have any primitive polynomial for
-##  an extension of a finite field instead of the Conway polynomial, 
+##  an extension of a finite field instead of the Conway polynomial,
 ##  see&nbsp;<Ref Func="RandomPrimitivePolynomial"/> below.
 ##  <Example><![CDATA[
 ##  gap> ConwayPolynomial( 2, 5 );  ConwayPolynomial( 3, 7 );
@@ -157,7 +157,7 @@ DeclareGlobalFunction( "IsCheapConwayPolynomial" );
 
 ############################################################################
 ##
-#F  RandomPrimitivePolynomial( <F>, <n>[, <i> ] ) . . . . . random primitive polynomial over finite field 
+#F  RandomPrimitivePolynomial( <F>, <n>[, <i> ] ) . . . . . random primitive polynomial over finite field
 ##
 ##  <#GAPDoc Label="RandomPrimitivePolynomial">
 ##  <ManSection>
@@ -167,7 +167,7 @@ DeclareGlobalFunction( "IsCheapConwayPolynomial" );
 ##  For a finite field <A>F</A> and a positive integer <A>n</A> this function
 ##  returns a primitive polynomial of degree <A>n</A> over <A>F</A>,
 ##  that is a zero of  this polynomial has maximal multiplicative order
-##  <M>|<A>F</A>|^n-1</M>. 
+##  <M>|<A>F</A>|^n-1</M>.
 ##  If <A>i</A> is given then the polynomial is written in variable number
 ##  <A>i</A> over <A>F</A>
 ##  (see&nbsp;<Ref Oper="Indeterminate" Label="for a ring (and a number)"/>),

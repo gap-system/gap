@@ -123,7 +123,7 @@ DeclareGlobalFunction( "EXReducePermutationActionPairs" );
 ##  <Func Name="CompatiblePairs" Arg='[A,] G, M[, D]'/>
 ##
 ##  <Description>
-##  returns the group of compatible pairs of the group <A>G</A> with the 
+##  returns the group of compatible pairs of the group <A>G</A> with the
 ##  <A>G</A>-module <A>M</A> as subgroup of the direct product
 ##  Aut(<A>G</A>) <M>\times</M> Aut(<A>M</A>).
 ##  Here Aut(<A>M</A>) is considered as subgroup of a general linear group.
@@ -200,25 +200,25 @@ DeclareOperation( "Extensions", [ CanEasilyComputePcgs, IsObject ] );
 ##  gap> P := CompatiblePairs( G, M, D );
 ##  <group of size 6 with 2 generators>
 ##  gap> ExtensionRepresentatives( G, M, P );
-##  [ <pc group of size 8 with 3 generators>, 
-##    <pc group of size 8 with 3 generators>, 
-##    <pc group of size 8 with 3 generators>, 
+##  [ <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
 ##    <pc group of size 8 with 3 generators> ]
 ##  gap> Extensions( G, M );
-##  [ <pc group of size 8 with 3 generators>, 
-##    <pc group of size 8 with 3 generators>, 
-##    <pc group of size 8 with 3 generators>, 
-##    <pc group of size 8 with 3 generators>, 
-##    <pc group of size 8 with 3 generators>, 
-##    <pc group of size 8 with 3 generators>, 
-##    <pc group of size 8 with 3 generators>, 
+##  [ <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
+##    <pc group of size 8 with 3 generators>,
 ##    <pc group of size 8 with 3 generators> ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ExtensionRepresentatives", 
+DeclareOperation( "ExtensionRepresentatives",
                     [CanEasilyComputePcgs, IsObject, IsObject] );
 
 #############################################################################

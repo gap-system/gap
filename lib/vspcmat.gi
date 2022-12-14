@@ -95,7 +95,7 @@ InstallHandlingByNiceBasis( "IsNonGaussianMatrixSpace", rec(
                        mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
           return true;
         fi;
- 
+
         if IsDivisionRing( F ) then
           SetFilterObj( V, IsGaussianMatrixSpace );
           return fail;
@@ -383,7 +383,7 @@ InstallMethod( IsSemiEchelonized,
     else
       return HeadsInfoOfSemiEchelonizedMats( BasisVectors( B ),
                                          DimensionOfVectors( V ) ) <> fail;
-      
+
 #T change the basis from relative to seb ?
     fi;
     end );

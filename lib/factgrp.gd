@@ -31,7 +31,7 @@
 ##  The existing methods seem to work reasonably well for permutation groups
 ##  and pc groups, for other kinds of groups it might be necessary to
 ##  implement completely new methods.
-##  
+##
 
 #############################################################################
 ##
@@ -97,7 +97,7 @@ DeclareInfoClass("InfoFactor");
 ##    <C>group</C> is the corresponding group.
 ##    <C>ker</C> is a list of normal subgroups, which defines the arrangements.
 ##          It is sorted.
-##    <C>ops</C> is a list which gives the best know actions for each normal 
+##    <C>ops</C> is a list which gives the best know actions for each normal
 ##          subgroup. Its entries are either Homomorphisms from G or
 ##  generator lists (G.generators images) or lists of integers. In the
 ##  latter case the factor is subdirect product of the factors with
@@ -227,7 +227,7 @@ DeclareSynonym( "ImproveOperationDegreeByBlocks",
 ##  <Ref Func="SmallerDegreePermutationRepresentation"/>.
 ##  <P/>
 ##  If the option cheap is given less work is spent on trying to get a small
-##  degree representation, if the value of this option is set to the string 
+##  degree representation, if the value of this option is set to the string
 ##  "skip" the identity mapping is returned. (This is useful if a function
 ##  called internally might try a degree reduction.)
 ##  <P/>
@@ -283,7 +283,7 @@ DeclareGlobalFunction("AddNaturalHomomorphismsPool");
 
 #############################################################################
 ##
-#F  LockNaturalHomomorphismsPool(<G>,<N>)  . .  store flag to prohibit changes 
+#F  LockNaturalHomomorphismsPool(<G>,<N>)  . .  store flag to prohibit changes
 ##
 ##  <ManSection>
 ##  <Func Name="LockNaturalHomomorphismsPool" Arg='G,N'/>
@@ -351,7 +351,7 @@ DeclareGlobalFunction("GetNaturalHomomorphismsPool");
 
 #############################################################################
 ##
-#F  DegreeNaturalHomomorphismsPool(<G>,<N>) degree for action for G/N 
+#F  DegreeNaturalHomomorphismsPool(<G>,<N>) degree for action for G/N
 ##
 ##  <ManSection>
 ##  <Func Name="DegreeNaturalHomomorphismsPool" Arg='G,N'/>
@@ -377,7 +377,7 @@ DeclareGlobalFunction("DegreeNaturalHomomorphismsPool");
 ##  already known actions in the <C>NaturalHomomorphismsPool(<A>G</A>)</C> by considering
 ##  intransitive representations for subdirect products. Any new or better
 ##  homomorphism obtained this way is stored (see
-##  <Ref Func="AddNaturalHomomorphismsPool"/>). 
+##  <Ref Func="AddNaturalHomomorphismsPool"/>).
 ##  If the optional parameter <A>N</A> is given, only actions which have <A>N</A> in their
 ##  kernel are considered.
 ##  The function keeps track of already considered subdirect products, thus
@@ -404,7 +404,7 @@ DeclareGlobalFunction("PullBackNaturalHomomorphismsPool");
 
 #############################################################################
 ##
-#F  TryQuotientsFromFactorSubgroups(<hom>,<ker>,<bound>) 
+#F  TryQuotientsFromFactorSubgroups(<hom>,<ker>,<bound>)
 ##
 ##  <ManSection>
 ##  <Func Name="TryQuotientsFromFactorSubgroups" Arg='hom,ker,bound'/>

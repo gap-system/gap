@@ -209,22 +209,22 @@ end );
 #M  AlgebraHomomorphismByFunction( <A>, <B>, <f> )
 #M  AlgebraWithOneHomomorphismByFunction( <A>, <B>, <f> )
 ##
-InstallMethod( AlgebraHomomorphismByFunction, 
+InstallMethod( AlgebraHomomorphismByFunction,
     "for two algebras and a function",
-    true, 
+    true,
     [ IsAlgebra, IsAlgebra, IsFunction ],
     function( A, B, f )
-    return Objectify( TypeOfDefaultGeneralMapping( A, B, 
+    return Objectify( TypeOfDefaultGeneralMapping( A, B,
 	IsSPMappingByFunctionRep and IsAlgebraHomomorphism ), rec(fun:=f) );
     end);
 
-InstallMethod(AlgebraWithOneHomomorphismByFunction, 
+InstallMethod(AlgebraWithOneHomomorphismByFunction,
     "for two algebras and a function",
     true,
     [ IsAlgebraWithOne, IsAlgebraWithOne, IsFunction ],
     function( A, B, f )
-    return Objectify( TypeOfDefaultGeneralMapping( A, B, 
-	IsSPMappingByFunctionRep and IsAlgebraWithOneHomomorphism ), 
+    return Objectify( TypeOfDefaultGeneralMapping( A, B,
+	IsSPMappingByFunctionRep and IsAlgebraWithOneHomomorphism ),
         rec(fun:=f) );
     end);
 
@@ -1346,10 +1346,10 @@ InstallOtherMethod( RepresentativeLinearOperation,
 ##  <Example><![CDATA[
 ##  gap> L:= FullMatrixLieAlgebra( Rationals, 3 );;
 ##  gap> C:= LieCentre( L );
-##  <two-sided ideal in <Lie algebra of dimension 9 over Rationals>, 
+##  <two-sided ideal in <Lie algebra of dimension 9 over Rationals>,
 ##    (dimension 1)>
 ##  gap> hom:= NaturalHomomorphismByIdeal( L, C );
-##  <linear mapping by matrix, <Lie algebra of dimension 
+##  <linear mapping by matrix, <Lie algebra of dimension
 ##  9 over Rationals> -> <Lie algebra of dimension 8 over Rationals>>
 ##  gap> ImagesSource( hom );
 ##  <Lie algebra of dimension 8 over Rationals>

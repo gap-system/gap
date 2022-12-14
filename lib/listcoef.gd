@@ -95,7 +95,7 @@ DeclareSynonym( "AddRowVector", AddVector );
 ##
 DeclareOperation(
     "AddCoeffs",
-        [ IsMutable and IsList, 
+        [ IsMutable and IsList,
           IsList, IsList, IsList, IsMultiplicativeElement ] );
 
 
@@ -138,7 +138,7 @@ DeclareSynonym( "MultVector", MultVectorLeft );
 ##  <A>list1</A> modulo <A>modulus</A>.
 ##  After reducing it shrinks the list to remove trailing zeroes.
 ##  If the optional argument <A>len1</A> is used, it reduces
-##  only first <A>len1</A> elements of the list. 
+##  only first <A>len1</A> elements of the list.
 ##  <Example><![CDATA[
 ##  gap> l:=[1,2,3,4];;CoeffsMod(l,2);
 ##  [ 1, 0, 1 ]
@@ -337,7 +337,7 @@ DeclareOperation(
 ##  <Oper Name="QuotRemCoeffs" Arg='list1[, len1], list2[, len2]'/>
 ##
 ##  <Description>
-##  returns a length 2 list containing the quotient and remainder from the 
+##  returns a length 2 list containing the quotient and remainder from the
 ##  division of the polynomial represented by
 ##  (the first <A>len1</A> entries of) <A>list1</A> by that represented by
 ##  (the first <A>len2</A> entries of) <A>list2</A>
@@ -517,7 +517,7 @@ DeclareOperation(
 ##
 DeclareOperation("PadCoeffs",[IsList and IsMutable, IsPosInt, IsObject]);
 DeclareOperation( "PadCoeffs",
-    [ IsList and IsMutable and IsAdditiveElementWithZeroCollection, 
+    [ IsList and IsMutable and IsAdditiveElementWithZeroCollection,
       IsPosInt ] );
 
 

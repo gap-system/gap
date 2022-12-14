@@ -364,7 +364,7 @@ local S,c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort,clim,worked,pp,
   # in this case.
 
   u:=Intersection(S,avoid);
-  if IsNormal(G,u) and IsNormal(G,avoid) 
+  if IsNormal(G,u) and IsNormal(G,avoid)
     and HasSolvableFactorGroup(G,u) then
     setupc();
     clim:=Minimum(Maximum(QuoInt(Sum(c,Size),4),10),1000);
@@ -395,7 +395,7 @@ local S,c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort,clim,worked,pp,
         # would it contribute to avoid outside S?
         if elm in avoid or
           ForAny(Set(Factors(Order(elm))),e->elm^e in avoid and not elm^e in S)
-        then 
+        then
           # cannot be good
           return false;
         fi;
@@ -420,11 +420,11 @@ local S,c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort,clim,worked,pp,
     abort:=true;
   fi;
 
-  if abort=false then 
+  if abort=false then
     # we actually found the subgroup
     Info(InfoMorph,2,"SubgroupProperty finds index ",IndexNC(G,worked));
     return worked;
-  fi; 
+  fi;
 
   Info(InfoMorph,2,"SubgroupProperty did ",tstcnt," tests and improved by ",
     IndexNC(S,S1));
@@ -488,7 +488,7 @@ local S,c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort,clim,worked,pp,
       cnt:=0;
       for b in t do
         new:=PreImagesRepresentative(hom,b);
-        if (pp=false or new^pp in S) and locond(new) then 
+        if (pp=false or new^pp in S) and locond(new) then
           S:=ClosureGroup(S,new);
           have:=true;
           cnt:=cnt+1;
@@ -537,7 +537,7 @@ local S,c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort,clim,worked,pp,
         for i in [1..Length(b)] do
           CompletionBar(InfoMorph,3,"SubgroupsAboveBlocks ",i/Length(b));
           c:=First(b[i],x->x>1);
-          if cond(t[c]) then 
+          if cond(t[c]) then
             S:=ClosureGroup(S,t[c]);
             good:=true;
           fi;
@@ -656,7 +656,7 @@ local cs,nr,u,no,un,S,rad,res,ise,uno;
     un:=SubgroupConditionAboveAux(no,cond,u,Intersection(no,cs[nr+1]));
     Info(InfoMorph,2,
       "Step ",nr,": ",IndexNC(cs[nr],cs[nr+1])," to ",IndexNC(un,u));
-    if not IsSubset(S,un) then 
+    if not IsSubset(S,un) then
       S:=ClosureGroup(S,un);
       uno:=false;
     fi;
@@ -795,7 +795,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	if Size(Aperm)>sz then
 	  ac:=Unique(List(ac,x->ClosureGroup(Aperm,x)));
 	fi;
-	
+
 	i:=First([Length(ac),Length(ac)-1..1],x->Size(ac[x])/sz<=lim);
 	sub:=ac[i];
       else
@@ -935,7 +935,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	      " -> ",NrMovedPoints(Range(Q)));
     hom:=hom*Q;
     Q:=Image(hom,G);
-  fi; 
+  fi;
 
   ma:=MaximalSubgroupClassesSol(G);
 
@@ -962,10 +962,10 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
       Q:=Image(hom,G);
       # degree reduction called for?
-      if IsPermGroup(Q) and Size(N)>1 
+      if IsPermGroup(Q) and Size(N)>1
         and (isBadPermrep(Q) or NrMovedPoints(Q)>1000) then
         q:=SmallerDegreePermutationRepresentation(Q:cheap);
-        if NrMovedPoints(Q)>1000 
+        if NrMovedPoints(Q)>1000
           and NrMovedPoints(Q)=NrMovedPoints(Image(q)) then
           q:=SmallerDegreePermutationRepresentation(Q);
         fi;
@@ -1035,7 +1035,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	    Info(InfoMorph,2,"insert2");
 	  fi;
           N:=ser[i+1]; # the added normal
-          if rada<>fail 
+          if rada<>fail
              and ForAny(GeneratorsOfGroup(rada),x->N<>Image(x,N)) then
             Info(InfoMorph,3,"radical automorphism stabilizer");
             SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
@@ -1054,14 +1054,14 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     D:=Centralizer(Zm,Mim);
 
     innC:=List(GeneratorsOfGroup(D),d->InnerAutomorphism(Q,d));
-    
+
     D:=List(innC,inn->List(ocr.generators,o->Image(inn,o)));
     D:=List(D,d->List([1..Length(ocr.generators)],i->ocr.generators[i]^-1*d[i]));
     D:=List(D,d->ocr.listToCocycle(d));
     TriangulizeMat(D);
     D:=Filtered(D,x->x<>0*x);
 
-    b:=BaseSteinitzVectors(b,D).factorspace; 
+    b:=BaseSteinitzVectors(b,D).factorspace;
 
     C:=[];
     if Size(Group(ocr.generators))<Size(Q) then
@@ -1071,7 +1071,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     fi;
     for j  in b  do
       oneC := ocr.cocycleToList( j );
-      imgs:=List([1..Length(ocr.generators)],i->ocr.generators[i]*oneC[i]); 
+      imgs:=List([1..Length(ocr.generators)],i->ocr.generators[i]*oneC[i]);
       oneC:=GroupHomomorphismByImagesNC(Q,Q,Concatenation(ocr.generators,extra),Concatenation(imgs,extra));
       Assert(2,IsBijective(oneC));
       Add(C,oneC);
@@ -1081,7 +1081,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     if lastperm<>fail then
       AQiso:=lastperm;
-      AQP:=Group(List(GeneratorsOfGroup(AQ),x->ImagesRepresentative(AQiso,x))); 
+      AQP:=Group(List(GeneratorsOfGroup(AQ),x->ImagesRepresentative(AQiso,x)));
     else
       makeaqiso();
     fi;
@@ -1093,7 +1093,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       innB:=Group(One(DefaultFieldOfMatrixGroup(maut))*
 		      List(innB,inn->List(MPcgs,m->ExponentsOfPcElement(MPcgs,Image(inn,m)))));
 
-      tmpAut:=SubgroupNC(maut,Filtered(GeneratorsOfGroup(maut),aut->not aut in innB));		
+      tmpAut:=SubgroupNC(maut,Filtered(GeneratorsOfGroup(maut),aut->not aut in innB));
 
       gens:=GeneratorsOfGroup(ocr.complement);
       for a  in GeneratorsOfGroup(tmpAut)  do
@@ -1283,7 +1283,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     AQI:=SubgroupNC(A,innB);
     SetInnerAutomorphismsAutomorphismGroup(A,AQI);
     AQ:=A;
-    if Size(KernelOfMultiplicativeGeneralMapping(hom))>1 
+    if Size(KernelOfMultiplicativeGeneralMapping(hom))>1
       or ValueOption("delaypermrep")<>true then
       makeaqiso();
       if not IsIdenticalObj(A,AQ) then
@@ -1295,7 +1295,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
     # do we use induced radical automorphisms to help next step?
     if Size(KernelOfMultiplicativeGeneralMapping(hom))>1 and
-      Size(A)>10^8 
+      Size(A)>10^8
       #(
       ## potentially large GL
       #Size(GL(Length(MPcgs),RelativeOrders(MPcgs)[1]))>10^10 and
@@ -1309,7 +1309,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 	if IsElementaryAbelian(r) and Size(r)>1 then
 	  B:=Pcgs(r);
 	  rf:=GF(RelativeOrders(B)[1]);
-	  ind:=Filtered(ser,x->IsSubset(r,x) and Size(x)>1 and Size(x)<Size(r)); 
+	  ind:=Filtered(ser,x->IsSubset(r,x) and Size(x)>1 and Size(x)<Size(r));
 	  ind:=List(ind,x->List(GeneratorsOfGroup(x),y->ExponentsOfPcElement(B,y)));
 	  ind:=List(ind,x->x*One(rf));
 	  ind:=SpaceAndOrbitStabilizer(Length(B),rf,ind,[]);
@@ -1414,7 +1414,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 		jorpo[2]:=Position(jorb,j[2]);
 	      fi;
 	      if Length(jorb)>Length(j) then
-		B:=ActionHomomorphism(AQP,jorb,C[2],C[1],asAutom); 
+		B:=ActionHomomorphism(AQP,jorb,C[2],C[1],asAutom);
 		substb:=Group(List(C[2],x->ImagesRepresentative(B,x)),());
 		substb:=Stabilizer(substb,Set(jorpo),OnSets);
 		substb:=PreImage(B,substb);
@@ -1629,7 +1629,7 @@ local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
       clg:=List(j,x->cg{Filtered([1..Length(cg)],y->pg[y]=x)});
       clh:=List(j,x->ch{Filtered([1..Length(ch)],y->ph[y]=x)});
       # also use classes of size 1 for compare
-      Append(clg,List(ng,x->[x])); 
+      Append(clg,List(ng,x->[x]));
       Append(clh,List(nh,x->[x]));
       # sort larger first
       SortParallel(clg,clh,function(a,b) return Size(a[1])>Size(b[1]);end);
@@ -1784,22 +1784,22 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
   if List(nG,Size)<>List(nH,Size) then return fail;fi;
 
   for i in [2..Length(nG)] do
-    K:=Filtered([1..Length(nG)],x->Size(nG[x])*2=Size(nG[i]) 
+    K:=Filtered([1..Length(nG)],x->Size(nG[x])*2=Size(nG[i])
 	  and IsSubset(nG[i],nG[x]));
     if Length(K)>0 then
       K:=K[1];
       # We are seeking an isomorphism, not the full automorphism group of
       # GxG. It is thus sufficient, if we find the subgroup Aut(G)\wr 2.
 
-      
+
       # We now found that G and H have two characteristic subgroups A<B with
       # [B:A]=2. An isomorphism swapping G and H will need to map B to B and
       # A to A. Furthermore, in the factor modulo A_G xA_H, a generator of
-      # B_G must be swappes with a generator of B_H. 
+      # B_G must be swappes with a generator of B_H.
       # This implies that A_G\times A_H, together with the diagonal of B is
       # characteristic in Aut(A)\wr 2. We thus may add this subgroup as
       # ``characteristic'' to improve the series.
-    
+
       Add(cG,ClosureGroup(
 	ClosureGroup(Image(e1,nG[K]),Image(e2,nH[K])),
 	  Image(e1,First(GeneratorsOfGroup(nG[i]),x->not x in nG[K]))

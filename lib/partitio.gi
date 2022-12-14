@@ -13,7 +13,7 @@
 ##  permutation groups.
 ##
 ##  A *partition* is a mutable record with the following components.
-##  \beginitems                             
+##  \beginitems
 ##  `points':  &
 ##       a list of all points contained in the partition, such that
 ##       points from the same cell are neighboured
@@ -28,7 +28,7 @@
 ##
 ##  `lengths': &
 ##       a list of the cell lengths
-##  \enditems                             
+##  \enditems
 ##
 
 
@@ -38,7 +38,7 @@
 ##
 InstallGlobalFunction( Partition, function( list )
     local   P,  i,  c;
-    
+
     P := rec( points := Concatenation( list ),
               firsts := [  ],
              lengths := [  ] );
@@ -62,7 +62,7 @@ InstallGlobalFunction( Partition, function( list )
     return P;
 end );
 
-      
+
 #############################################################################
 ##
 #F  IsPartition( <P> )  . . . . . . . . . . . . test if object is a partition
@@ -92,7 +92,7 @@ end );
 ##
 InstallGlobalFunction( Cells, function( Pi )
     local  cells,  i;
-    
+
     cells := [  ];
     for i  in Reversed( [ 1 .. NumberCells( Pi ) ] )  do
         cells[ i ] := Cell( Pi, i );
@@ -133,7 +133,7 @@ end );
 ##
 InstallGlobalFunction( Fixcells, function( P )
     local   fix,  i;
-    
+
     fix := [  ];
     for i  in [ 1 .. Length( P.lengths ) ]  do
         if P.lengths[ i ] = 1  then
@@ -174,7 +174,7 @@ end);
 
 InstallGlobalFunction( SplitCell, function( P, i, Q, j, g, out )
 local   a,  b,  l,  B,  tmp,  m,  x, inflag, outflag,test,k,Pcop,acop,maxmov;
-  
+
   # If none or  all  points are  moved out,  do  not change <P>  and return
   # 'false'.
 
@@ -186,13 +186,13 @@ local   a,  b,  l,  B,  tmp,  m,  x, inflag, outflag,test,k,Pcop,acop,maxmov;
   # right.
 
   # if B is passed, we moved too many (or all) points
-  if IsInt(out)  then  
+  if IsInt(out)  then
     maxmov:=out;
   else
     maxmov:=P.lengths[i]-1; # maximum number to be moved out: Cellength-1
   fi;
 
-  if IsPartition(Q) 
+  if IsPartition(Q)
     # if P.points is a range, or g not internal, we would crash
     and IsPlistRep(P.points) and IsInternalRep(g) then
     a:=SPLIT_PARTITION(P.points,Q.cellno,j,g,[a,l,maxmov]);
@@ -248,7 +248,7 @@ local   a,  b,  l,  B,  tmp,  m,  x, inflag, outflag,test,k,Pcop,acop,maxmov;
   P.firsts[ m ] := a;
   P.lengths[ m ] := l - a + 1;
   P.lengths[ i ] := P.lengths[ i ] - P.lengths[ m ];
-  
+
   return P.lengths[ m ];
 end );
 
@@ -264,17 +264,17 @@ end );
 ##
 InstallGlobalFunction( IsolatePoint, function( P, a )
     local   i,  pos,  l,  m;
-    
+
     i := P.cellno[ a ];
     if P.lengths[ i ] = 1  then
         return false;
     fi;
-    
+
     pos := Position( P.points, a, P.firsts[ i ] - 1 );
     l := P.firsts[ i ] + P.lengths[ i ] - 1;
     P.points[ pos ] := P.points[ l ];
     P.points[ l ] := a;
-    
+
     m := Length( P.firsts ) + 1;
     P.cellno[ a ] := m;
     P.firsts[ m ] := l;
@@ -301,21 +301,21 @@ end );
 ##
 InstallGlobalFunction( UndoRefinement, function( P )
 local M, pfm, plm, m;
-    
+
     M := Length( P.firsts );
     pfm:=P.firsts[M];
     if pfm = 1  then
         return false;
     fi;
     plm:=P.lengths[M];
-    
+
     # Fuse the last cell with the one stored before it in `<P>.points'.
     m := P.cellno[ P.points[ pfm - 1 ] ];
     P.lengths[ m ] := P.lengths[ m ] + plm;
     P.cellno{ P.points { [ pfm .. pfm + plm - 1 ] } } := m + 0 * [ 1 .. plm ];
     Unbind( P.firsts[ M ] );
     Unbind( P.lengths[ M ] );
-    
+
     return m;
 end );
 
@@ -342,7 +342,7 @@ end );
 ##
 InstallGlobalFunction( FixcellPoint, function( P, old )
     local   lens,  poss,  p;
-    
+
     lens := P.lengths;
     poss := Filtered( [ 1 .. Length( lens ) ], i ->
                     not i in old  and  lens[ i ] = 1 );
@@ -367,7 +367,7 @@ end );
 ##
 InstallGlobalFunction( FixcellsCell, function( P, Q, old )
     local   K,  I,  i,  k,  start;
-    
+
     K := [  ];  I := [  ];
     for i  in [ 1 .. NumberCells( P ) ]  do
         start := P.firsts[ i ];

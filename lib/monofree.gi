@@ -79,7 +79,7 @@ InstallMethod( Enumerator,
                NumberElement := NumberElement_FreeMonoid,
 
                family        := ElementsFamily( FamilyObj( M ) ),
-               nrgenerators  := Length( ElementsFamily( 
+               nrgenerators  := Length( ElementsFamily(
                                             FamilyObj( M ) )!.names ) ) );
     end );
 
@@ -166,9 +166,9 @@ InstallMethod( MagmaGeneratorsOfFamily,
     # Return the magma generators.
     return gens;
     end );
-    
+
 # GeneratorsOfMonoid returns the generators in ascending order
-    
+
 InstallMethod( GeneratorsSmallest,
         "for a free monoid",
         [ IsFreeMonoid ],

@@ -14,7 +14,7 @@
 ##  We take advantage of knowing conjugacy class representatives
 ##  as words in generators.
 InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
-  local pcgs, hom, Gab, abinv, exp, e, Ee, genexp, 
+  local pcgs, hom, Gab, abinv, exp, e, Ee, genexp,
         clexps, tab, irgens, a, lin, c, res, j, i, sz;
   if Size(G) = 1 then
     return [TrivialCharacter(G)];
@@ -37,7 +37,7 @@ InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
   IndependentGeneratorsOfAbelianGroup(Gab);
   genexp := List(pcgs, x-> IndependentGeneratorExponents(Gab, x^hom));
   # exponent vectors of class representatives of G
-  clexps := List(ConjugacyClasses(G), 
+  clexps := List(ConjugacyClasses(G),
                  c-> ExponentsOfPcElement(pcgs, Representative(c)));
   # irgens are the dual generators of G/G'
   tab := CharacterTable(G);
@@ -725,8 +725,8 @@ end );
 ##
 InstallMethod( IrrConlon, [ "IsGroup" ],
 function( G )
-  local pcgs, clreps, ct, irr, tr, Cs, normal, N, hom, Cab, abgens, 
-        ind, coreps, evals, xg, K, sz, h, qu, genqu, multi, mods, 
+  local pcgs, clreps, ct, irr, tr, Cs, normal, N, hom, Cab, abgens,
+        ind, coreps, evals, xg, K, sz, h, qu, genqu, multi, mods,
         ch, c, ms, vals, cval, k, C, x, g, t, i, j, r, tm, new;
   pcgs := Pcgs(G);
   # return no characters if G is not solvable
@@ -796,7 +796,7 @@ function( G )
         sz := Size( C ) / Size( K );
         # find the characters with kernel K
         #    (maybe better with Hermite normal form?)
-        h := NaturalHomomorphismByNormalSubgroupNC( Cab, 
+        h := NaturalHomomorphismByNormalSubgroupNC( Cab,
                SubgroupNC( Cab, List( GeneratorsOfGroup( K ), y-> y^hom ) ) );
         qu := Image( h );
         # if sz is not a prime power there are several generators
@@ -1982,11 +1982,11 @@ BindGlobal( "IrreducibleRepresentationsByBaumClausen", function( G )
     mrep:= [];
     info:= BaumClausenInfo( G );
     lg:= Length( info.pcgs );
-    
+
     if info.lin=[[]] then # trivial group
         return [GroupHomomorphismByImagesNC(G,Group([[1]]),[],[])];
     fi;
-    
+
     # Compute the images of linear representations on the pcgs.
     for rep in info.lin do
       gcd := Gcd( rep );
@@ -2100,7 +2100,7 @@ InstallMethod( IrrBaumClausen,
           rep,            # loop over the representations
           l,              # list of monomial matrices
           gcd,            # g.c.d. of the exponents in `rep'
-          q,              # 
+          q,              #
           o,              # order of root of unity
           e,              # exponent
           Ee,             # complex root of unity needed for `rep'
@@ -2145,7 +2145,7 @@ InstallMethod( IrrBaumClausen,
     Ee:= List( [ 0 .. q-1 ], i -> Ee^i );
 
     if IsPcGroup( G ) then
-      # We can efficiently compute the linear characters independently (and 
+      # We can efficiently compute the linear characters independently (and
       # take advantage if they were computed before)
       irreducibles := ShallowCopy( LinearCharacters( G ) );
     else
@@ -2186,7 +2186,7 @@ InstallMethod( IrrBaumClausen,
           for k in [ 1 .. deg ] do
             if perm[k] = k then
               e := (diag[k] / gcd) mod o;
-              trace[e+1]:= trace[e+1] + 1; 
+              trace[e+1]:= trace[e+1] + 1;
             fi;
           od;
           # We append the character values to the exponents lists

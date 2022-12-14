@@ -255,8 +255,8 @@ DeclareGlobalFunction("ApproximateSuborbitsStabilizerPermGroup");
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> AllBlocks(g);
-##  [ [ 1, 8 ], [ 1, 2, 3, 8 ], [ 1, 4, 5, 8 ], [ 1, 6, 7, 8 ], [ 1, 3 ], 
-##    [ 1, 3, 5, 7 ], [ 1, 3, 4, 6 ], [ 1, 5 ], [ 1, 2, 5, 6 ], [ 1, 2 ], 
+##  [ [ 1, 8 ], [ 1, 2, 3, 8 ], [ 1, 4, 5, 8 ], [ 1, 6, 7, 8 ], [ 1, 3 ],
+##    [ 1, 3, 5, 7 ], [ 1, 3, 4, 6 ], [ 1, 5 ], [ 1, 2, 5, 6 ], [ 1, 2 ],
 ##    [ 1, 2, 4, 7 ], [ 1, 4 ], [ 1, 7 ], [ 1, 6 ] ]
 ##  ]]></Example>
 ##  <P/>
@@ -276,7 +276,7 @@ DeclareGlobalFunction("ApproximateSuborbitsStabilizerPermGroup");
 ##  gap> g:=Group((1,2,3,4,5,6,7,8),(1,2));;
 ##  gap> bs:=[[1,2,3,4],[5,6,7,8]];;
 ##  gap> Stabilizer(g,bs,OnSetsDisjointSets);
-##  Group([ (6,7), (5,6), (5,8), (2,3), (3,4)(5,7), (1,4), 
+##  Group([ (6,7), (5,6), (5,8), (2,3), (3,4)(5,7), (1,4),
 ##    (1,5,4,8)(2,6,3,7) ])
 ##  ]]></Example>
 ##  </Description>
@@ -467,7 +467,7 @@ DeclareAttribute( "ONanScottType", IsPermGroup );
 ##  <Ref Attr="IsomorphismTypeInfoFiniteSimpleGroup" Label="for a group"/>),
 ##  and <C>width</C> for the number of direct factors.
 ##  <P/>
-##  If <A>G</A> does not act primitively on its moved points, an error is returned. 
+##  If <A>G</A> does not act primitively on its moved points, an error is returned.
 ##  <Example><![CDATA[
 ##  gap> g:=AlternatingGroup(5);;
 ##  gap> h:=DirectProduct(g,g);;
@@ -481,7 +481,7 @@ DeclareAttribute( "ONanScottType", IsPermGroup );
 ##  gap> ONanScottType(ac);
 ##  "3a"
 ##  gap> SocleTypePrimitiveGroup(ac);
-##  rec( 
+##  rec(
 ##    name := "A(5) ~ A(1,4) = L(2,4) ~ B(1,4) = O(3,4) ~ C(1,4) = S(2,4) \
 ##  ~ 2A(1,4) = U(2,4) ~ A(1,5) = L(2,5) ~ B(1,5) = O(3,5) ~ C(1,5) = S(2,\
 ##  5) ~ 2A(1,5) = U(2,5)", parameter := 5, series := "A", width := 2 )
@@ -517,7 +517,7 @@ DeclareGlobalFunction( "DiagonalSocleAction" );
 ##  This functions tries to find cheaply a smaller domain on which the
 ##  permutation group <A>g</A> acts faithfully. It returns a monomorphism from
 ##  <A>g</A> onto an isomorphic group of smaller degree or <K>fail</K> if no such
-##  domain is found. 
+##  domain is found.
 ##  <P/>
 ##  In contrast to <C>SmallerDegreePermutationRepresentation</C> little effort
 ##  is spent on fincting completely different actions. The degree obtained
@@ -542,7 +542,7 @@ DeclareGlobalFunction("MovedPointsPerms");
 ##  <Attr Name="OrbitsMovedPoints" Arg='G'/>
 ##
 ##  <Description>
-##  For a permutation group <A>G</A>, this attribute returns the orbits on the points moved 
+##  For a permutation group <A>G</A>, this attribute returns the orbits on the points moved
 ##  as a set of sets.
 ##  <Example><![CDATA[
 ##  gap> OrbitsMovedPoints(Group((9,5),(7,3,2)));

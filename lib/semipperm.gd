@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file contains the implementation of some basics for partial perm 
+##  This file contains the implementation of some basics for partial perm
 ##  semigroups.
 
 DeclareSynonym("IsPartialPermSemigroup", IsSemigroup and

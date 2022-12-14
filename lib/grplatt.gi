@@ -177,7 +177,7 @@ end);
 InstallOtherMethod( \[\], "for classes of subgroups",
   true, [ IsConjugacyClassSubgroupsRep, IsPosInt],0,ClassElementLattice );
 
-InstallMethod( StabilizerOfExternalSet, true, [ IsConjugacyClassSubgroupsRep ], 
+InstallMethod( StabilizerOfExternalSet, true, [ IsConjugacyClassSubgroupsRep ],
     # override potential pc method
     10,
 function(xset)
@@ -388,7 +388,7 @@ local   G,		   # group
     od;
     Info(InfoLattice,1,"powers computed");
 
-    if func<>false and 
+    if func<>false and
       (noperf or func in SOLVABILITY_IMPLYING_FUNCTIONS) then
       Info(InfoLattice,1,"Ignoring perfect subgroups");
       perfect:=[];
@@ -681,7 +681,7 @@ local   G,		   # group
 	    # unbind the stuff we dont need any more
 	    perfectZups[i]:=[];
 
-	  fi; 
+	  fi;
 	  # if IsPerfectGroup(I) and Length(Factors(Size(I))) = layer the...
         od; # for i  in [1..Length(perfect)]  do
 
@@ -850,9 +850,9 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
   # but since most people will have tomlib loaded anyway, this doesn't
   # seem worth the effort.
   #if IsPackageMarkedForLoading("tomlib","")=true then
-    cefastersize:=1; 
+    cefastersize:=1;
   #else
-  #  cefastersize:=40000; 
+  #  cefastersize:=40000;
   #fi;
 
   makesubgroupclasses:=function(g,l)
@@ -901,7 +901,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
       return LatticeByCyclicExtension(G,[u->IsSubset(H,u),u->IsSubset(H,u)]);
     elif select<>fail then
       return LatticeByCyclicExtension(G,select);
-    elif (HasIsSimpleGroup(G) and IsSimpleGroup(G)) 
+    elif (HasIsSimpleGroup(G) and IsSimpleGroup(G))
       or Size(G)<=cefastersize then
       # in the simple case we cannot go back into trivial fitting case
       # or cyclic extension is faster as group is small
@@ -1228,7 +1228,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
   od;
 
   # some `select'ions remove the trivial subgroup
-  if select<>fail and not ForAny(u[1],x->Size(x)=1) 
+  if select<>fail and not ForAny(u[1],x->Size(x)=1)
     and select(TrivialSubgroup(G)) then
     Add(nn,ConjugacyClassSubgroups(G,TrivialSubgroup(G)));
   fi;
@@ -1304,7 +1304,7 @@ end);
 
 #############################################################################
 ##
-#M  ConjugacyClassesPerfectSubgroups 
+#M  ConjugacyClassesPerfectSubgroups
 ##
 InstallMethod(ConjugacyClassesPerfectSubgroups,"generic",true,[IsGroup],0,
 function(G)
@@ -1487,7 +1487,7 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
 	      params:=rec(gens:=bg,from:=u);
 	      emb:=MorClassLoop(G,bi,params,
 		# all injective homs = 1+2+8
-	        11); 
+	        11);
 	      #emb:=MorClassLoop(G,bi,rec(type:=2,what:=3,gens:=bg,from:=u,
 	      #		elms:=false,size:=Size(u)));
 	      Info(InfoLattice,2,Length(emb)," embeddings");
@@ -1967,7 +1967,7 @@ local G,	# group
 			      List(ocr.modulePcgs,x->One(k)),
 			      List(GeneratorsOfGroup(M),x->One(k)) ));
 
-		  else 
+		  else
                     # generators should correspond to factorfphom
 		    # comment out as homomorphism is different
 		    # Assert(1,List(ocr.generators,
@@ -1983,7 +1983,7 @@ local G,	# group
 			      MappingGeneratorsImages(ocr.factorfphom)[2],
 			      List(GeneratorsOfGroup(M),
 				x->One(Range(ocr.factorfphom)))));
-                    
+
 		  fi;
                   #SetSize(Image(qhom),Size(Image(ocr.factorfphom)));
                   SetKernelOfMultiplicativeGeneralMapping(qhom,M);
@@ -2052,7 +2052,7 @@ local G,	# group
 		  fi;
 		  Info(InfoLattice,2,"vectors=",Length(vs));
 		fi;
-	        
+
 
 		# try to catch some solvable cases that look awful
 		if Size(vs)>1000 and Length(PrimeDivisors(Index(j,N)))<=2
@@ -2102,7 +2102,7 @@ local G,	# group
 	      idx:=LogInt(Index(j,M),jg);
               C:=List(GeneratorsOfGroup(M),x->ExponentsOfPcElement(r,x))*Z(jg)^0;
               C:=Filtered(TriangulizedMat(C),x->not IsZero(x));
-              l:=Filtered(l,x->Length(x)=idx 
+              l:=Filtered(l,x->Length(x)=idx
                 and RankMat(Concatenation(x,C))=Length(r));
               l:=List(l,x->ClosureGroup(N,List(x,
                 y->PcElementByExponents(r,y))));
@@ -2131,7 +2131,7 @@ local G,	# group
 			      cs:=Size(a)/Size(n)*Size(b);
 			      return IsInt(cs*Size(m)/idx)
 				      and not cs>idx
-				      and (Size(m)>1 
+				      and (Size(m)>1
 				          or Size(Intersection(C,b))=1);
 			      end,
 		  normal:=true));
@@ -2148,7 +2148,7 @@ local G,	# group
         fi;
 
       od;
-      
+
     else
       # nonabelian factor.
       if still then
@@ -2193,7 +2193,7 @@ local G,	# group
         cnt:=cnt+1;
       # in permgroups try to pick an involution that does not move all
       # points. This can make the core of C to be computed quicker.
-      until not (IsPermGroup(M) and cnt<10 
+      until not (IsPermGroup(M) and cnt<10
                 and Length(MovedPoints(inv))=Length(MovedPoints(M)));
 
 
@@ -2348,7 +2348,7 @@ local n,i,s;
   else
     n:=NormalSubgroups(G);
   fi;
-  
+
   n:=Filtered(n,i->2=Number(n,j->IsSubset(i,j)));
   s:=n[1];
   for i in [2..Length(n)] do
@@ -2439,7 +2439,7 @@ local uind,subs,incl,i,j,k,m,gens,t,c,p,conj,bas,basl,r;
       if m=fail then TryNextMethod();fi;
     fi;
     m:=Filtered(m,x->IndexNC(subs[i],U) mod IndexNC(subs[i],x)=0);
-    
+
     if IsPermGroup(G) then
       # test orbit split
       bas:=List(Orbits(U,MovedPoints(G)),Length);
@@ -2474,7 +2474,7 @@ local uind,subs,incl,i,j,k,m,gens,t,c,p,conj,bas,basl,r;
 	  # is it new?
 	  p:=PositionProperty(subs,x->IndexNC(G,x)=IndexNC(G,c) and
 	    ForAll(GeneratorsOfGroup(c),y->y in x));
-	  if p<>fail then 
+	  if p<>fail then
 	    Add(incl,[p,i]);
 	    if bas=fail then
 	      bas:=PositionProperty(t,x->IsIdenticalObj(x,k));
@@ -3039,7 +3039,7 @@ local n,pool,ext,sz,lsz,t,f,i,ns;
       fi;
       for f in FusionsTom(t) do
 	if ForAny(ns,x->x=f[1]{[1..Minimum(Length(f[1]),Length(x))]})
-	#f[1]{[1..Minimum(Length(f[1]),Length(n))]} in ns 
+	#f[1]{[1..Minimum(Length(f[1]),Length(n))]} in ns
 	and not f[1] in pool then
 	  Add(pool,f[1]);
 	fi;
@@ -3049,7 +3049,7 @@ local n,pool,ext,sz,lsz,t,f,i,ns;
   ext:=List(ext,x->[x[1],Concatenation(r.tomName,".",x[2])]);
 
   # an extension A_n.2 is called S_n
-  if Length(n)>1 and n[1]='A' 
+  if Length(n)>1 and n[1]='A'
     and ForAll([2..Length(n)],x->n[x] in CHARS_DIGITS) then
     Add(ext,[2,Concatenation("S",n{[2..Length(n)]})]);
   fi;
@@ -3212,7 +3212,7 @@ local act,offset,G,lim,cond,dosub,all,alln,m,i,j,jn,new,old,t,k,conjg;
       old:=all{old};
       if Length(old)>1 then
         # do we go through normalizer transversal
-        if QuoInt(IndexNC(act,jn),Length(old))<1000 
+        if QuoInt(IndexNC(act,jn),Length(old))<1000
           or not (IsPermGroup(G) or IsPcGroup(G)) then
           t:=RightTransversal(act,jn);
           k:=1;
@@ -3458,7 +3458,7 @@ local c,n,deg,ind,core,i,j,sum,ma,h,ig,dec,bm,m,sel,ds,ise,cnt,
   c:=ConjugacyClassesSubgroups(G);
   # sort by reversed order to get core by inclusion test
   c:=ShallowCopy(c); # allow sorting
-  SortBy(c,x->-Size(Representative(x))); 
+  SortBy(c,x->-Size(Representative(x)));
   cind:=[];
   nind:=[];
   n:=[];
@@ -3635,7 +3635,7 @@ local d,ind,i,ma,ab,a,p,b,c,e,n;
   # make a p-group
   ind:=List(Collected(Factors(ind)),x->x[1]^x[2]);
   Sort(ind);
-  if Length(ind)>1 then 
+  if Length(ind)>1 then
     i:=Minimum(PositionSorted(ind,limit),Length(ind));
     RemoveSet(ind,i);
     ind:=List(ind,SmallestPrimeDivisor);
@@ -3698,7 +3698,7 @@ local d,ind,i,ma,ab,a,p,b,c,e,n;
     fi;
   fi;
   if Size(G)>1 and MemoryUsage(G.1)*Length(GeneratorsOfGroup(G))>
-    # if the storage size of generators is more than 
+    # if the storage size of generators is more than
     10000
     # then try to reduce the generating set.
   then
@@ -3737,15 +3737,15 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
       a:=CompositionSeries(sub);
       m:=1;
       for i in [2..Length(a)] do
-        if IndexNC(a[i-1],a[i])>m and 
+        if IndexNC(a[i-1],a[i])>m and
           not HasAbelianFactorGroup(a[i-1],a[i]) then
           m:=Maximum(IndexNC(a[i-1],a[i]),m);
         fi;
       od;
       # big (hope simple) bits
-      if m>=10^7 and (not IsPerfectGroup(sub)) 
+      if m>=10^7 and (not IsPerfectGroup(sub))
         # proper abelian factor
-        and IndexNC(sub,PerfectResiduum(sub)) in [2..bound] 
+        and IndexNC(sub,PerfectResiduum(sub)) in [2..bound]
         # not all abelian is direct factor
         and IndexNC(sub,
           ClosureGroup(PerfectResiduum(sub),SolvableRadical(sub)))>1 then
@@ -3782,7 +3782,7 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
       m:=MaximalSubgroupClassReps(sub:cheap:=false);
     fi;
 
-    # remove duplicates 
+    # remove duplicates
     m:=Filtered(m,x->ForAll(l,y->Size(x)<>Size(y) or
         ForAny(GeneratorsOfGroup(x),z->not z in y)));
 
@@ -3810,7 +3810,7 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
         while tb=infinity do
           for j in [1..Length(a)] do
             for k in [1..j-1] do
-              if IsBound(a[j]) and IsBound(a[k]) 
+              if IsBound(a[j]) and IsBound(a[k])
                 and Size(a[j])*bound>=2*i and Size(a[k])*bound>=2*i then
                 b:=Intersection(a[j],a[k]);
                 if Size(b)*bound>=i then
@@ -3842,7 +3842,7 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
 
   return IteratorByFunctions(rec(NextIterator:=function(iter)
              local a,b,m,i,j;
-              
+
               if Length(l)=0 then
                 # no groups there. Start getting new ones
                 a:=Filtered(process,x->Size(x)>=divs[Length(divs)]);
@@ -3855,9 +3855,9 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
               fi;
 
               if Size(l[Length(l)])<divs[Length(divs)] then
-                # new size. 
+                # new size.
 
-                if Length(process)>0 
+                if Length(process)>0
                  and Size(process[Length(process)])<=limit then
                   # switch to lattice
                   a:=Size(l[Length(l)]);
@@ -3918,7 +3918,7 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
              end));
 end);
 
-# Utility function 
+# Utility function
 # MinimalInclusionsGroups(l)
 # returns a list of all inclusion indices [a,b] where l[a] is maximal subgroup
 # of l[b].
@@ -3938,7 +3938,7 @@ local s,p,incl,cont,i,j,done;
       if not j in done and s[j]>s[i] and s[j] mod s[i]=0 then
         if IsSubset(l[j],l[i]) then
           Add(incl,[i,j]);
-          done:=Union(done,cont[j]); 
+          done:=Union(done,cont[j]);
         fi;
       fi;
     od;

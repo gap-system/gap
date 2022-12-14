@@ -13,7 +13,7 @@
 
 #############################################################################
 ##
-#F  MagmaHomomorphismByFunctionNC( <G>, <H>, <fn> ) 
+#F  MagmaHomomorphismByFunctionNC( <G>, <H>, <fn> )
 ##
 ##  Creates the homomorphism from G to H without checking
 ##  that <fn> is a homomorphism.
@@ -21,7 +21,7 @@
 InstallGlobalFunction( MagmaHomomorphismByFunctionNC,
 function( G, H, imgfn )
 	local   hom;
-	
+
 	if not (IsMagma(G) and IsMagma(H) and IsFunction(imgfn)) then
 		Error("Usage: MagmaHomomorphismByFunctionNC(<Magma>,<Magma>,<fn>)");
 	fi;
@@ -41,8 +41,8 @@ end );
 InstallGlobalFunction( MagmaIsomorphismByFunctionsNC,
 function( G, H, imgfn, preimgfn )
 	local   hom;
-	
-	if not (IsMagma(G) and IsMagma(H) and IsFunction(imgfn) 
+
+	if not (IsMagma(G) and IsMagma(H) and IsFunction(imgfn)
 		and IsFunction(preimgfn)) then
 		Error("Usage: MagmaIsomorphismByFunctionsNC(<Magma>,<Magma>,<fn>,<inv>)");
 	fi;

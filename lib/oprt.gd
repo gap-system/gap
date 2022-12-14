@@ -155,7 +155,7 @@ DeclareAttribute( "ActingDomain", IsExternalSet );
 ##  gap> FunctionAction(e)=OnRight;
 ##  true
 ##  gap> HomeEnumerator(e);
-##  [ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3), (1,2,4), (1,3,2), 
+##  [ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3), (1,2,4), (1,3,2),
 ##    (1,3,4), (1,3)(2,4), (1,4,2), (1,4,3), (1,4)(2,3) ]
 ##  ]]></Example>
 ##  </Description>
@@ -819,7 +819,7 @@ local str, orbish, func,isnotest;
 	Error( "usage: ", name, "(<xset>,<pnt>)\n",
 	      "or ", name, "(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])" );
       fi;
-      
+
       if not IsBound( gens )  then
 	  if (not IsPermGroup(G)) and CanEasilyComputePcgs( G )  then
 	    gens := Pcgs( G );
@@ -901,7 +901,7 @@ end );
 ##  <P/>
 ##  By default the homomorphism returned by
 ##  <Ref Func="ActionHomomorphism" Label="for a group, an action domain, etc."/>
-##  is not necessarily surjective (its 
+##  is not necessarily surjective (its
 ##  <Ref Attr="Range" Label="of a general mapping"/> value is the full
 ##  symmetric group) to avoid unnecessary computation of the image.
 ##  If the optional string argument <C>"surjective"</C> is given,
@@ -986,10 +986,10 @@ DeclareAttribute( "SurjectiveActionHomomorphismAttr", IsExternalSet );
 ##  [ 1, 4, 3 ],[ 2, 1, 3 ],[ 2, 1, 4 ],[ 2, 3, 1 ],[ 2, 3, 4 ],
 ##  [ 2, 4, 1 ],[ 2, 4, 3 ],[ 3, 1, 2 ],[ 3, 1, 4 ],[ 3, 2, 1 ], ...]>
 ##  gap> Print(s,"\n");
-##  [ [ 1, 2, 3 ], [ 1, 2, 4 ], [ 1, 3, 2 ], [ 1, 3, 4 ], [ 1, 4, 2 ], 
-##    [ 1, 4, 3 ], [ 2, 1, 3 ], [ 2, 1, 4 ], [ 2, 3, 1 ], [ 2, 3, 4 ], 
-##    [ 2, 4, 1 ], [ 2, 4, 3 ], [ 3, 1, 2 ], [ 3, 1, 4 ], [ 3, 2, 1 ], 
-##    [ 3, 2, 4 ], [ 3, 4, 1 ], [ 3, 4, 2 ], [ 4, 1, 2 ], [ 4, 1, 3 ], 
+##  [ [ 1, 2, 3 ], [ 1, 2, 4 ], [ 1, 3, 2 ], [ 1, 3, 4 ], [ 1, 4, 2 ],
+##    [ 1, 4, 3 ], [ 2, 1, 3 ], [ 2, 1, 4 ], [ 2, 3, 1 ], [ 2, 3, 4 ],
+##    [ 2, 4, 1 ], [ 2, 4, 3 ], [ 3, 1, 2 ], [ 3, 1, 4 ], [ 3, 2, 1 ],
+##    [ 3, 2, 4 ], [ 3, 4, 1 ], [ 3, 4, 2 ], [ 4, 1, 2 ], [ 4, 1, 3 ],
 ##    [ 4, 2, 1 ], [ 4, 2, 3 ], [ 4, 3, 1 ], [ 4, 3, 2 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -1114,7 +1114,7 @@ local str, orbish, func;
       else
 	Error( "usage: ", name, "(<G>[,<Omega>],<pnts>[,<gens>,<acts>][,<act>])" );
       fi;
-      
+
       if not IsBound( gens )  then
 	  if (not IsPermGroup(G)) and CanEasilyComputePcgs( G )  then
 	    gens := Pcgs( G );
@@ -1213,7 +1213,7 @@ DeclareGlobalFunction( "Action" );
 ##  creates the external set for the action <A>act</A> of <A>G</A> on <A>Omega</A>.
 ##  <A>Omega</A> can be either a proper set, or a domain which is represented as
 ##  described in <Ref Sect="Domains"/> and <Ref Chap="Collections"/>, or (to use
-##  less memory but with a slower performance) an enumerator 
+##  less memory but with a slower performance) an enumerator
 ##  (see <Ref Attr="Enumerator"/> ) of this domain.
 ##  <P/>
 ##  The result is undefined if <A>G</A> does not act on <A>Omega</A>.
@@ -1222,13 +1222,13 @@ DeclareGlobalFunction( "Action" );
 ##  gap> e:=ExternalSet(g,[1..4]);
 ##  <xset:[ 1, 2, 3, 4 ]>
 ##  gap> e:=ExternalSet(g,g,OnRight);
-##  <xset:[ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3), (1,2,4), (1,3,2), 
+##  <xset:[ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3), (1,2,4), (1,3,2),
 ##    (1,3,4), (1,3)(2,4), (1,4,2), (1,4,3), (1,4)(2,3) ]>
 ##  gap> Orbits(e);
-##  [ [ (), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,4,2), 
+##  [ [ (), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3), (2,4,3), (1,4,2),
 ##        (1,2,3), (1,3,4), (2,3,4), (1,3,2), (1,4,3), (1,2,4) ] ]
 ##  ]]></Example>
-##  
+##
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1390,7 +1390,7 @@ OrbitsishOperation( "Orbits", OrbitsishReq, false, NewAttribute );
 ##
 ##  <Description>
 ##  returns a list of the orbits of <A>G</A> on the domain <A>Omega</A>
-##  (given as lists) under the action <A>act</A> or under 
+##  (given as lists) under the action <A>act</A> or under
 ##  <Ref Func="OnPoints"/> if no action function is given.
 ##  <P/>
 ##  This operation is often faster than
@@ -1409,17 +1409,17 @@ OrbitsishOperation( "Orbits", OrbitsishReq, false, NewAttribute );
 ##  gap> Orbits(g,[1..5]);
 ##  [ [ 1, 3, 2, 4 ], [ 5 ] ]
 ##  gap> OrbitsDomain(g,Arrangements([1..4],3),OnTuples);
-##  [ [ [ 1, 2, 3 ], [ 3, 1, 2 ], [ 1, 4, 2 ], [ 2, 3, 1 ], [ 2, 1, 4 ], 
-##        [ 3, 4, 1 ], [ 1, 3, 4 ], [ 4, 2, 1 ], [ 4, 1, 3 ], 
-##        [ 2, 4, 3 ], [ 3, 2, 4 ], [ 4, 3, 2 ] ], 
-##    [ [ 1, 2, 4 ], [ 3, 1, 4 ], [ 1, 4, 3 ], [ 2, 3, 4 ], [ 2, 1, 3 ], 
-##        [ 3, 4, 2 ], [ 1, 3, 2 ], [ 4, 2, 3 ], [ 4, 1, 2 ], 
+##  [ [ [ 1, 2, 3 ], [ 3, 1, 2 ], [ 1, 4, 2 ], [ 2, 3, 1 ], [ 2, 1, 4 ],
+##        [ 3, 4, 1 ], [ 1, 3, 4 ], [ 4, 2, 1 ], [ 4, 1, 3 ],
+##        [ 2, 4, 3 ], [ 3, 2, 4 ], [ 4, 3, 2 ] ],
+##    [ [ 1, 2, 4 ], [ 3, 1, 4 ], [ 1, 4, 3 ], [ 2, 3, 4 ], [ 2, 1, 3 ],
+##        [ 3, 4, 2 ], [ 1, 3, 2 ], [ 4, 2, 3 ], [ 4, 1, 2 ],
 ##        [ 2, 4, 1 ], [ 3, 2, 1 ], [ 4, 3, 1 ] ] ]
 ##  gap> OrbitsDomain(g,GF(2)^2,[(1,2,3),(1,4)(2,3)],
 ##  > [[[Z(2)^0,Z(2)^0],[Z(2)^0,0*Z(2)]],[[Z(2)^0,0*Z(2)],[0*Z(2),Z(2)^0]]]);
-##  [ [ <an immutable GF2 vector of length 2> ], 
-##    [ <an immutable GF2 vector of length 2>, 
-##        <an immutable GF2 vector of length 2>, 
+##  [ [ <an immutable GF2 vector of length 2> ],
+##    [ <an immutable GF2 vector of length 2>,
+##        <an immutable GF2 vector of length 2>,
 ##        <an immutable GF2 vector of length 2> ] ]
 ##  ]]></Example>
 ##  <P/>
@@ -1441,8 +1441,8 @@ OrbitsishOperation( "OrbitsDomain", OrbitsishReq, false, NewAttribute );
 ##  <Oper Name="OrbitLength" Arg='G[, Omega], pnt[, gens, acts][, act]'/>
 ##
 ##  <Description>
-##  computes the length of the orbit of <A>pnt</A> under 
-##  the action function <A>act</A> or <Ref Func="OnPoints"/> 
+##  computes the length of the orbit of <A>pnt</A> under
+##  the action function <A>act</A> or <Ref Func="OnPoints"/>
 ##  if no action function is given.
 ##  </Description>
 ##  </ManSection>
@@ -1770,7 +1770,7 @@ OrbitishFO( "MaximalBlocks",
 ##  The result is undefined if the action is not transitive.
 ##  <Example><![CDATA[
 ##  gap> RepresentativesMinimalBlocks(g,[1..8]);
-##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 1, 5 ], [ 1, 6 ], [ 1, 7 ], 
+##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 1, 5 ], [ 1, 6 ], [ 1, 7 ],
 ##    [ 1, 8 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -1906,7 +1906,7 @@ OrbitsishOperation( "IsTransitive", OrbitsishReq, false, NewProperty );
 ##  primitive in the sense of preserving a direct sum of vector spaces.
 ##  To do this use <C>IsPrimitiveMatrixGroup</C> or
 ##  <C>IsPrimitive</C> from the package <Package>IRREDSOL</Package>.
-##  
+##
 ##  <Example><![CDATA[
 ##  gap> IsPrimitive(g,Orbit(g,(1,2)(3,4)));
 ##  true
@@ -2074,7 +2074,7 @@ OrbitsishOperation( "RankAction", OrbitsishReq, false, NewAttribute );
 ##  If an external set <A>xset</A> is given,
 ##  the permutation domain is the <Ref Attr="HomeEnumerator"/> value
 ##  of this external set (see Section&nbsp;<Ref Sect="External Sets"/>).
-##  Note that the points of the returned permutation refer to the positions 
+##  Note that the points of the returned permutation refer to the positions
 ##  in <A>Omega</A>, even if <A>Omega</A> itself consists of integers.
 ##  <P/>
 ##  If <A>g</A> does not leave the domain invariant, or does not map the
@@ -2330,8 +2330,8 @@ DeclareOperation( "RepresentativeActionOp",
 ##  gap> Stabilizer(g,[1,2],OnTuples);
 ##  Group(())
 ##  gap> orbstab:=OrbitStabilizer(g,[1,2],OnSets);
-##  rec( 
-##    orbit := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ], 
+##  rec(
+##    orbit := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ],
 ##        [ 2, 4 ] ], stabilizer := Group([ (1,2)(3,4) ]) )
 ##  gap> Parent(orbstab.stabilizer);
 ##  Group([ (1,3,2), (2,4,3) ])
@@ -2389,7 +2389,7 @@ DeclareGlobalFunction( "StabilizerPcgs" );
 ##  <Description>
 ##  This operation should not be called by a user. It is documented however
 ##  for purposes to extend or maintain the group actions package
-##  (the word <Q>package</Q> here refers to the &GAP; functionality for 
+##  (the word <Q>package</Q> here refers to the &GAP; functionality for
 ##  group actions, not to a &GAP; package).
 ##  <P/>
 ##  <Ref Oper="OrbitStabilizerAlgorithm"/> performs an orbit stabilizer
@@ -2473,14 +2473,14 @@ DeclareGlobalFunction( "StabilizerOfBlockNC" );
 ##  true
 ##  gap> SetName(c[3],"my_group");;
 ##  gap> a:=AbelianSubfactorAction(g,c[3],c[4]);
-##  [ [ (1,8,10,7,3,5)(2,4,12,9,11,6), (1,9,5,6,3,10)(2,11,12,8,4,7) ] -> 
-##      [ <an immutable 2x2 matrix over GF2>, 
-##        <an immutable 2x2 matrix over GF2> ], 
+##  [ [ (1,8,10,7,3,5)(2,4,12,9,11,6), (1,9,5,6,3,10)(2,11,12,8,4,7) ] ->
+##      [ <an immutable 2x2 matrix over GF2>,
+##        <an immutable 2x2 matrix over GF2> ],
 ##    MappingByFunction( my_group, ( GF(2)^
-##      2 ), function( e ) ... end, function( r ) ... end ), 
+##      2 ), function( e ) ... end, function( r ) ... end ),
 ##    Pcgs([ (2,9,3,8)(4,11,5,10), (1,6,12,7)(4,10,5,11) ]) ]
 ##  gap> mat:=Image(a[1],g);
-##  Group([ <an immutable 2x2 matrix over GF2>, 
+##  Group([ <an immutable 2x2 matrix over GF2>,
 ##    <an immutable 2x2 matrix over GF2> ])
 ##  gap> Size(mat);
 ##  3
@@ -2552,7 +2552,7 @@ DeclareOperation( "AbelianSubfactorAction",[IsGroup,IsGroup,IsGroup] );
 ##  (1,3)(2,4)
 ##  gap> g:= Group( (1,2,3), (2,3,4) );;
 ##  gap> Orbit( g, (), OnRight );
-##  [ (), (1,2,3), (2,3,4), (1,3,2), (1,3)(2,4), (1,2)(3,4), (2,4,3), 
+##  [ (), (1,2,3), (2,3,4), (1,3,2), (1,3)(2,4), (1,2)(3,4), (2,4,3),
 ##    (1,4,2), (1,4,3), (1,3,4), (1,2,4), (1,4)(2,3) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2586,7 +2586,7 @@ DeclareOperation( "AbelianSubfactorAction",[IsGroup,IsGroup,IsGroup] );
 ##  (1,2,4)
 ##  gap> g:= Group( (1,2,3), (2,3,4) );;
 ##  gap> Orbit( g, (), OnLeftInverse );
-##  [ (), (1,3,2), (2,4,3), (1,2,3), (1,3)(2,4), (1,2)(3,4), (2,3,4), 
+##  [ (), (1,3,2), (2,4,3), (1,2,3), (1,3)(2,4), (1,2)(3,4), (2,3,4),
 ##    (1,2,4), (1,3,4), (1,4,3), (1,4,2), (1,4)(2,3) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2655,7 +2655,7 @@ DeclareOperation( "AbelianSubfactorAction",[IsGroup,IsGroup,IsGroup] );
 ##  [ (1,3), (2,3) ]
 ##  gap> g:= Group( (1,2,3), (2,3,4) );;
 ##  gap> Orbit( g, [ 1, 2 ], OnTuples );
-##  [ [ 1, 2 ], [ 2, 3 ], [ 1, 3 ], [ 3, 1 ], [ 3, 4 ], [ 2, 1 ], 
+##  [ [ 1, 2 ], [ 2, 3 ], [ 1, 3 ], [ 3, 1 ], [ 3, 4 ], [ 2, 1 ],
 ##    [ 1, 4 ], [ 4, 1 ], [ 4, 2 ], [ 3, 2 ], [ 2, 4 ], [ 4, 3 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -2740,7 +2740,7 @@ DeclareGlobalFunction("OnLines");
 ##  [ [ 1, 4 ], [ 2, 3 ] ]
 ##  gap> g:= Group( (1,2,3), (2,3,4) );;
 ##  gap> Orbit( g, [ [ 1, 2 ], [ 3, 4 ] ], OnSetsSets );
-##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ], 
+##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ],
 ##    [ [ 1, 3 ], [ 2, 4 ] ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -2789,8 +2789,8 @@ DeclareGlobalFunction( "OnSetsDisjointSets" );
 ##  [ [ 1, 4 ], [ 2, 3 ] ]
 ##  gap> g:= Group( (1,2,3), (2,3,4) );;
 ##  gap> Orbit( g, [ [ 1, 2 ], [ 3, 4 ] ], OnSetsTuples );
-##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ], 
-##    [ [ 1, 3 ], [ 4, 2 ] ], [ [ 2, 4 ], [ 3, 1 ] ], 
+##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 1, 4 ], [ 2, 3 ] ],
+##    [ [ 1, 3 ], [ 4, 2 ] ], [ [ 2, 4 ], [ 3, 1 ] ],
 ##    [ [ 2, 1 ], [ 4, 3 ] ], [ [ 3, 2 ], [ 4, 1 ] ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -2818,8 +2818,8 @@ DeclareGlobalFunction("OnSetsTuples");
 ##  [ [ 1, 3 ], [ 1, 4 ] ]
 ##  gap> g:= Group( (1,2,3), (2,3,4) );;
 ##  gap> Orbit( g, [ [ 1, 2 ], [ 3, 4 ] ], OnTuplesSets );
-##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 2, 3 ], [ 1, 4 ] ], 
-##    [ [ 1, 3 ], [ 2, 4 ] ], [ [ 3, 4 ], [ 1, 2 ] ], 
+##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 2, 3 ], [ 1, 4 ] ],
+##    [ [ 1, 3 ], [ 2, 4 ] ], [ [ 3, 4 ], [ 1, 2 ] ],
 ##    [ [ 1, 4 ], [ 2, 3 ] ], [ [ 2, 4 ], [ 1, 3 ] ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -2844,11 +2844,11 @@ DeclareGlobalFunction("OnTuplesSets");
 ##  [ [ 3, 1 ], [ 1, 4 ] ]
 ##  gap> g:=Group((1,2,3),(2,3,4));;
 ##  gap> Orbit(g,[[1,2],[3,4]],OnTuplesTuples);
-##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 2, 3 ], [ 1, 4 ] ], 
-##    [ [ 1, 3 ], [ 4, 2 ] ], [ [ 3, 1 ], [ 2, 4 ] ], 
-##    [ [ 3, 4 ], [ 1, 2 ] ], [ [ 2, 1 ], [ 4, 3 ] ], 
-##    [ [ 1, 4 ], [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 2 ] ], 
-##    [ [ 4, 2 ], [ 1, 3 ] ], [ [ 3, 2 ], [ 4, 1 ] ], 
+##  [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 2, 3 ], [ 1, 4 ] ],
+##    [ [ 1, 3 ], [ 4, 2 ] ], [ [ 3, 1 ], [ 2, 4 ] ],
+##    [ [ 3, 4 ], [ 1, 2 ] ], [ [ 2, 1 ], [ 4, 3 ] ],
+##    [ [ 1, 4 ], [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 2 ] ],
+##    [ [ 4, 2 ], [ 1, 3 ] ], [ [ 3, 2 ], [ 4, 1 ] ],
 ##    [ [ 2, 4 ], [ 3, 1 ] ], [ [ 4, 3 ], [ 2, 1 ] ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -2867,7 +2867,7 @@ DeclareGlobalFunction("OnTuplesTuples");
 ##  <Description>
 ##  returns a domain which will contain the orbit of <A>pnt</A> under the action
 ##  <A>act</A>  of the group
-##  generated by <A>acts</A>. (Such a domain can be helpful for obtaining 
+##  generated by <A>acts</A>. (Such a domain can be helpful for obtaining
 ##  a dictionary.)
 ##  The default method returns <K>fail</K> to indicate that no special domain is
 ##  defined, a special method exists for matrix groups over finite fields.

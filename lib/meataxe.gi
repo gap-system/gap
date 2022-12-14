@@ -407,7 +407,7 @@ SMTX_SpinnedBasis:=function( arg  )
    for i in [1..Length(ans)] do
      w:=ans[i];
      j:=w[PositionNonZero(w)];
-     if not IsOne(j) then 
+     if not IsOne(j) then
        ans[i]:=j^-1*ans[i];
      fi;
    od;

@@ -11,7 +11,7 @@
 
 #############################################################################
 ##
-##  1. methods for elements of fp monoids 
+##  1. methods for elements of fp monoids
 ##
 
 #############################################################################
@@ -29,7 +29,7 @@ InstallMethod( ElementOfFpMonoid,
 
 #############################################################################
 ##
-#M  UnderlyingElement( <elm> )  . . . . . . for element of fp monoid 
+#M  UnderlyingElement( <elm> )  . . . . . . for element of fp monoid
 ##
 InstallMethod( UnderlyingElement,
         "for an element of an fp monoid (default repres.)",
@@ -87,7 +87,7 @@ InstallMethod( \=,
 
                         m := CollectionsFamily(FamilyObj(x1))!.wholeMonoid;
       rws:= ReducedConfluentRewritingSystem(m);
-        
+
       return ReducedForm(rws, UnderlyingElement(x1)) =
           ReducedForm(rws, UnderlyingElement(x2));
 
@@ -150,7 +150,7 @@ InstallMethod( FpMonoidOfElementOfFpMonoid,
 #M  FpGrpMonSmgOfFpGrpMonSmgElement( <elm> )
 ##
 ##      for an fp monoid element <elm> returns the fp monoid to which
-##      <elm> belongs to 
+##      <elm> belongs to
 ##
 InstallMethod(FpGrpMonSmgOfFpGrpMonSmgElement,
   "for an element of an fp monoid", true,
@@ -160,7 +160,7 @@ InstallMethod(FpGrpMonSmgOfFpGrpMonSmgElement,
 
 #############################################################################
 ##
-##  2. methods for fp monoids 
+##  2. methods for fp monoids
 ##
 
 #############################################################################
@@ -215,7 +215,7 @@ function( F, rels )
     if Length(gens) > Length(rels) then
       SetIsFinite(s, false);
     fi;
-        
+
     return s;
 end);
 
@@ -239,7 +239,7 @@ InstallMethod( ViewObj,
 ##
 #M  FreeGeneratorsOfFpMonoid( S )
 ##
-##  Generators of the underlying free monoid 
+##  Generators of the underlying free monoid
 ##
 InstallMethod( FreeGeneratorsOfFpMonoid,
     "for a finitely presented monoid",
@@ -251,7 +251,7 @@ InstallMethod( FreeGeneratorsOfFpMonoid,
 ##
 #M  FreeMonoidOfFpMonoid( S )
 ##
-##  Underlying free monoid of an fpmonoid 
+##  Underlying free monoid of an fpmonoid
 ##
 InstallMethod( FreeMonoidOfFpMonoid,
     "for a finitely presented monoid",
@@ -311,14 +311,14 @@ InstallMethod(HomomorphismFactorSemigroup,
 function(s, c)
   local
     srels,  # the relations of c
-    frels,  # srels converted into pairs of words in the free monoid 
+    frels,  # srels converted into pairs of words in the free monoid
     fp;     # the monoid under construction
 
   if not s = Source(c) then
     TryNextMethod();
   fi;
 
-  # make the relations, relations of the free monoid 
+  # make the relations, relations of the free monoid
   srels := GeneratingPairsOfMagmaCongruence(c);
   frels := List(srels, x->[UnderlyingElement(x[1]),UnderlyingElement(x[2])]);
 
@@ -339,8 +339,8 @@ function(f, s)
     function(w)
       local
         i,      # loop var
-        prodt,  # product in the target monoid 
-        gens,   # generators of the target monoid 
+        prodt,  # product in the target monoid
+        gens,   # generators of the target monoid
         v;      # ext rep as <gen>, <exp> pairs
 
       if Length(w) = 0 then
@@ -379,7 +379,7 @@ InstallMethod( NaturalHomomorphismByGenerators,
     [  IsFpMonoid, IsMonoid and HasGeneratorsOfMonoid], 0,
 function(f, s)
   local
-      psi; # the homom from the free monoid 
+      psi; # the homom from the free monoid
 
   if Size(GeneratorsOfMonoid(f)) <> Size(GeneratorsOfMonoid(s)) then
     Error("Monoids must have the same rank.");
@@ -393,11 +393,11 @@ function(f, s)
     return fail;
   fi;
 
-  # now create the homomorphism from the fp mon 
+  # now create the homomorphism from the fp mon
   return MagmaHomomorphismByFunctionNC(f, s, e->UnderlyingElement(e)^psi);
 end);
 
-InstallMethod(IsomorphismFpSemigroup, "for an fp monoid", [IsFpMonoid], 
+InstallMethod(IsomorphismFpSemigroup, "for an fp monoid", [IsFpMonoid],
 function(M)
   local FMtoFS, FStoFM, FM, FS, id, rels, next, S, map, inv, x, rel;
 
@@ -421,16 +421,16 @@ function(M)
     return ObjByExtRep(FamilyObj(id), wlist);
   end;
 
-  # Convert a word in the free semigroup into a word in the free monoid. 
+  # Convert a word in the free semigroup into a word in the free monoid.
   FStoFM := function(id, w)
     local wlist, i;
 
-    wlist := ExtRepOfObj(w); 
+    wlist := ExtRepOfObj(w);
 
     if Length(wlist) = 0 or (wlist = [1, 1]) then # it is the identity
       return id;
     fi;
-    
+
     # have to decrease each entry by one because of the identity generator
     wlist := ShallowCopy(wlist);
     for i in [1 .. 1 / 2 * (Length(wlist))] do
@@ -438,7 +438,7 @@ function(M)
     od;
     return ObjByExtRep(FamilyObj(id), wlist);
   end;
-                
+
   FM := FreeMonoidOfFpMonoid(M);
   FS := FreeSemigroup(List(GeneratorsOfSemigroup(FM), String));
 
@@ -447,7 +447,7 @@ function(M)
   # Add the relations that make id an identity
   rels := [[id * id, id]];
   for x in GeneratorsOfSemigroup(FS) do
-    if x <> id then 
+    if x <> id then
       Add(rels, [id * x, x]);
       Add(rels, [x * id, x]);
     fi;
@@ -456,17 +456,17 @@ function(M)
   # Rewrite the fp monoid relations as relations over FS
   for rel in RelationsOfFpMonoid(M) do
     next := [FMtoFS(id, rel[1]), FMtoFS(id, rel[2])];
-    Add(rels, next);    
+    Add(rels, next);
   od;
 
   # finally create the fp semigroup
-  S := FS / rels; 
+  S := FS / rels;
 
   map := x -> ElementOfFpSemigroup(FamilyObj(S.1),
                                    FMtoFS(id, UnderlyingElement(x)));
 
-  inv := x -> Image(NaturalHomomorphismByGenerators(FM, M), 
-                    FStoFM(One(FM), UnderlyingElement(x))); 
+  inv := x -> Image(NaturalHomomorphismByGenerators(FM, M),
+                    FStoFM(One(FM), UnderlyingElement(x)));
 
  return MagmaIsomorphismByFunctionsNC(M, S, map, inv);
 end);

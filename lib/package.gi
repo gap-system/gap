@@ -608,7 +608,7 @@ InstallGlobalFunction( LogPackageLoadingMessage, function( arg )
     if IsString( message ) then
       message:= [ message ];
     fi;
-    if severity <= PACKAGE_WARNING 
+    if severity <= PACKAGE_WARNING
        and UserPreference("UseColorsInTerminal") = true
        and IsBound( TextAttr )
        and IsRecord( TextAttr ) then
@@ -1121,7 +1121,7 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
       sep:= ListWithIdenticalEntries( len, '-' );
     fi;
     Add( sep, '\n' );
-    
+
     str:= "";
 
     # Add package name and version number.
@@ -1455,7 +1455,7 @@ BindGlobal( "LoadPackage_ReadImplementationParts",
 ##  This function is called by `LoadPackage'.
 ##
 BindGlobal( "GetPackageNameForPrefix", function( prefix )
-    local len, lowernames, name, allnames, indent, pos, sep; 
+    local len, lowernames, name, allnames, indent, pos, sep;
 
     len:= Length( prefix );
     lowernames:= [];
@@ -1845,8 +1845,8 @@ DeclareUserPreference( rec(
 For backwards compatibility, the default lists most of packages \
 that were autoloaded in &GAP; 4.4 (add or remove packages as you like)."
     ],
-  default:= [ "autpgrp", "alnuth", "crisp", "ctbllib", "factint", "fga", 
-              "irredsol", "laguna", "polenta", "polycyclic", "resclasses", 
+  default:= [ "autpgrp", "alnuth", "crisp", "ctbllib", "factint", "fga",
+              "irredsol", "laguna", "polenta", "polycyclic", "resclasses",
               "sophus", "tomlib" ],
   values:= function() return RecNames( GAPInfo.PackagesInfo ); end,
   multi:= true,
@@ -2067,7 +2067,7 @@ InstallGlobalFunction( GAPDocManualLabFromSixFile,
     bookname:= LowercaseString( bookname );
     entries:= List( entries,
                      entry -> Concatenation( "\\makelabel{", bookname, ":",
-                                       esctex(NormalizedWhitespace(entry[1])), 
+                                       esctex(NormalizedWhitespace(entry[1])),
                                        "}{", SecNumber( entry[3] ), "}{",
                                        entry[7], "}\n" ) );
     # forget entries that contain a character from "\\*+/=" in label,
@@ -2078,7 +2078,7 @@ InstallGlobalFunction( GAPDocManualLabFromSixFile,
                           "lab" );
     # add marker line
     entries := Concatenation (
-        [Concatenation ("\\GAPDocLabFile{", bookname,"}\n")], 
+        [Concatenation ("\\GAPDocLabFile{", bookname,"}\n")],
         entries);
     FileString( file, Concatenation( entries ) );
     Info( InfoWarning, 1, "File: ", file, " written." );
@@ -2250,13 +2250,13 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
     TestMandat( record, "ArchiveFormats", IsString, "a string" );
     TestOption( record, "TextFiles", IsStringList, "a list of strings" );
     TestOption( record, "BinaryFiles", IsStringList, "a list of strings" );
-    TestOption( record, "TextBinaryFilesPatterns", 
-        x -> IsStringList(x) and 
+    TestOption( record, "TextBinaryFilesPatterns",
+        x -> IsStringList(x) and
              ForAll( x, i -> Length(i) > 0 ) and
-             ForAll( x, i -> i[1] in ['T','B'] ),  
+             ForAll( x, i -> i[1] in ['T','B'] ),
         "a list of strings, each started with 'T' or 'B'" );
-    if Number( [ IsBound(record.TextFiles), 
-                 IsBound(record.BinaryFiles), 
+    if Number( [ IsBound(record.TextFiles),
+                 IsBound(record.BinaryFiles),
                  IsBound(record.TextBinaryFilesPatterns) ],
                a -> a=true ) > 1 then
       Print("#W  only one of TextFiles, BinaryFiles or TextBinaryFilesPatterns\n");
@@ -2277,8 +2277,8 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         TestOption( subrec, "IsMaintainer", IsProperBool,
             "`true' or `false'" );
         if IsBound( subrec.IsMaintainer ) then
-          if subrec.IsMaintainer = true and 
-               not ( IsBound( subrec.Email ) or 
+          if subrec.IsMaintainer = true and
+               not ( IsBound( subrec.Email ) or
                      IsBound( subrec.WWWHome ) or
                      IsBound( subrec.PostalAddress ) ) then
             Print( "#E  one of the components `Email', `WWWHome', `PostalAddress'\n",
@@ -2314,7 +2314,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
       if IsBound( record.SourceRepository ) then
         TestMandat( record.SourceRepository, "Type", IsString, "a string" );
         TestMandat( record.SourceRepository, "URL", IsString, "a string" );
-      fi;  
+      fi;
     fi;
     TestOption( record, "IssueTrackerURL", IsURL, "a string started with http://, https:// or ftp://" );
     TestOption( record, "SupportEmail", IsString, "a string" );
@@ -2827,13 +2827,13 @@ StringBibXMLEntry:= "dummy";
 
 InstallGlobalFunction( Cite, function(arg)
   local name, bib, key, parse, year, en, pkginfo;
-  if Length(arg)=0 then 
+  if Length(arg)=0 then
     name:="GAP";
   else
     name := NormalizedWhitespace(arg[1]);
   fi;
-  if LowercaseString(name) = "gap" then 
-    name:="GAP"; 
+  if LowercaseString(name) = "gap" then
+    name:="GAP";
   else
     # use spelling as in packages PackageInfo.g
     pkginfo := InstalledPackageVersion(name);
@@ -2842,7 +2842,7 @@ InstallGlobalFunction( Cite, function(arg)
   fi;
   if Length(arg)<=1 then
     bib:= BibEntry( name );
-  elif Length(arg)>2 then 
+  elif Length(arg)>2 then
     Error("`Cite' takes no more than two arguments");
   else
     key:=arg[2];
@@ -2885,20 +2885,20 @@ InstallGlobalFunction( Cite, function(arg)
 
     Print("If you are not using BibTeX, here is the bibliography entry produced \n",
           "by BibTeX (in bibliography style `alpha'):\n\n",
-          "\\bibitem[GAP]{GAP4}\n", 
+          "\\bibitem[GAP]{GAP4}\n",
           "\\emph{GAP -- Groups, Algorithms, and Programming}, ",
-          "Version ", GAPInfo.Version, ",\n", 
+          "Version ", GAPInfo.Version, ",\n",
           "The GAP~Group (", year, "), \\verb+https://www.gap-system.org+.\n\n");
     Print(
-    "If you have (predominantly) used one or more particular GAP packages,\n", 
-    "please cite these packages in addition to GAP itself (either check the\n", 
+    "If you have (predominantly) used one or more particular GAP packages,\n",
+    "please cite these packages in addition to GAP itself (either check the\n",
     "package documentation for the suggestions, or use a scheme like:\n\n",
 
     "[PKG]\n",
     "<Author name(s)>, <package name>, <package long title>, \n",
     "Version <package version> (<package date>), (GAP package),\n",
     "<package URL>.\n\n",
-    
+
     "You may also produce citation samples for a GAP package by entering\n\n",
     "    Cite(\"packagename\");\n\n",
     "in a GAP installation with the working version of this package available.\n\n");
@@ -3082,7 +3082,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
           # Create a comment from the list of strings that describe filters.
           return [ NameFunction( entry[1][1] ),
                    entry[1][ Length( entry[1] ) ],
-                   entry[2], entry[3], Concatenation( "for ", 
+                   entry[2], entry[3], Concatenation( "for ",
                    JoinStringsWithSeparator( entry[1][ pos ], ", " ) ) ];
         else
           # We know no comment.

@@ -99,7 +99,7 @@ BIND_GLOBAL("ShareKernelObj", RETURN_FIRST);
 BIND_GLOBAL("ShareInternalObj", RETURN_FIRST);
 BIND_GLOBAL("ShareSpecialObj", RETURN_FIRST);
 BIND_GLOBAL("ShareSingleObjWithPrecedence", RETURN_FIRST);
-BIND_GLOBAL("ShareSingleObj", RETURN_FIRST); 
+BIND_GLOBAL("ShareSingleObj", RETURN_FIRST);
 BIND_GLOBAL("ShareSingleLibraryObj", RETURN_FIRST);
 BIND_GLOBAL("ShareSingleKernelObj", RETURN_FIRST);
 BIND_GLOBAL("ShareSingleInternalObj", RETURN_FIRST);

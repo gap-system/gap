@@ -248,7 +248,7 @@ local i,D,o,divs,pows,norms,next,nnorms,oq,lelm,from,n,k,m,nu,zen,pr,orb,lo,
     o:=Order(elm);
     Info(InfoClasses,2,"process new class ",Length(classes)+1,
          " element order ",o);
-    
+
     # gho through the divisors lattice
     divs:=Filtered(DivisorsInt(o),x->x>1);
     pows:=[1];
@@ -408,7 +408,7 @@ end);
 ##
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . .  of a group
 ##
-InstallMethod( ConjugacyClasses, "test options", [ IsGroup ], 
+InstallMethod( ConjugacyClasses, "test options", [ IsGroup ],
   GETTER_FLAGS-1, # this method tests options which would override the method
 	       # selection. Therefore we get the highest possible value
 	       # below the getter.
@@ -425,7 +425,7 @@ end);
 
 DEFAULT_CLASS_ORBIT_LIMIT:=500;
 InstallGlobalFunction(ConjugacyClassesForSmallGroup,function(G)
-  if ValueOption("noaction")=fail and 
+  if ValueOption("noaction")=fail and
    (HasAsSSortedList(G) or HasAsList(G) or Size(G)<=DEFAULT_CLASS_ORBIT_LIMIT)
     then
       return ConjugacyClassesByOrbits(G);
@@ -600,7 +600,7 @@ BindGlobal( "ElementNumber_RationalClassGroup", function( enum, pos )
     pow := QuoInt( pos, Length( T ) ) + 1;
     if Length( gal ) < pow then
       Error( "<enum>[", pos + 1, "] must have an assigned value" );
-    fi; 
+    fi;
     pos := pos mod Length( T ) + 1;
     # if gal[pow]=0 then the element is the identity anyhow, no need to worry.
     return ( rep ^ T[ pos ] ) ^ Int( gal[ pow ] );
@@ -831,7 +831,7 @@ end);
 #InstallMethod( RationalClasses,"solvable",[ CanEasilyComputePcgs ], 20,
 #    function( G )
 #    local   rcls,  cls,  cl,  c,  sum, size;
-#    
+#
 #    size := Size(G);
 #    rcls := [  ];
 #    if IsPrimePowerInt( size )  then

@@ -9,7 +9,7 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file should possibly be called vec8bit.g  (see also vecmat.gd)
-##  It provides some things that the kernel needs from the library 
+##  It provides some things that the kernel needs from the library
 ##
 
 #############################################################################
@@ -26,7 +26,7 @@ MakeImmutable(PRIMES_COMPACT_FIELDS);
 ##
 #R  Is8BitVectorRep( <obj> ) . . . compressed vector over GFQ (3 <= q <= 256)
 ##
-DeclareRepresentation( "Is8BitVectorRep", 
+DeclareRepresentation( "Is8BitVectorRep",
         IsDataObjectRep and IsVectorObj
     and IsNoImmediateMethodsObject
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);

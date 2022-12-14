@@ -23,7 +23,7 @@
 ##
 ##  Here I should have the list of components that every quotient system
 ##  *must* have and a list of operations for which there *must* be methods
-##  installed. 
+##  installed.
 ##
 DeclareCategory( "IsQuotientSystem", IsObject );
 
@@ -40,7 +40,7 @@ DeclareInfoClass( "InfoQuotientSystem" );
 ##
 ##  Here I should have a list of components that every p-quotient system
 ##  *must* have and a list of operations for which there *must* be methods
-##  installed. 
+##  installed.
 ##
 DeclareProperty( "IsPQuotientSystem", IsQuotientSystem );
 InstallTrueMethod( IsQuotientSystem, IsPQuotientSystem );
@@ -52,7 +52,7 @@ InstallTrueMethod( IsQuotientSystem, IsPQuotientSystem );
 ##
 ##  Here I should have a list of components that every nilpotent quotient
 ##  system *must* have and a list of operations for which there *must* be
-##  methods installed. 
+##  methods installed.
 ##
 DeclareProperty( "IsNilpQuotientSystem", IsQuotientSystem );
 InstallTrueMethod( IsQuotientSystem, IsNilpQuotientSystem );
@@ -62,7 +62,7 @@ InstallTrueMethod( IsQuotientSystem, IsNilpQuotientSystem );
 ##
 #O  QuotientSystem  . . . . . . . . . . . . . . . . . . declare the operation
 ##
-DeclareOperation( "QuotientSystem", 
+DeclareOperation( "QuotientSystem",
         [ IsObject, IsPosInt, IsPosInt, IsString ] );
 
 #############################################################################
@@ -89,7 +89,7 @@ DeclareOperation( "GetDefinitionNC",
 ##
 #O  SetDefinitionNC . . . . . . . . . . . . . . . . . . declare the operation
 ##
-DeclareOperation( "SetDefinitionNC",   
+DeclareOperation( "SetDefinitionNC",
         [IsQuotientSystem, IsPosInt, IsObject] );
 
 
@@ -205,7 +205,7 @@ DeclareOperation( "TraceDefinition", [IsQuotientSystem, IsPosInt] );
 #############################################################################
 ##
 #E  Emacs . . . . . . . . . . . . . . . . . . . . . . . . . . emacs variables
-##  
+##
 ##  Local Variables:
 ##  mode:               outline
 ##  tab-width:          4

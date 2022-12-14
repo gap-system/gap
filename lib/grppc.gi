@@ -71,7 +71,7 @@ function( grp )
     return igs;
 end );
 
-InstallMethod( InducedPcgsWrtFamilyPcgs,"whole family", true, 
+InstallMethod( InducedPcgsWrtFamilyPcgs,"whole family", true,
   [ IsPcGroup and IsWholeFamily], 0,
 FamilyPcgs);
 
@@ -83,7 +83,7 @@ FamilyPcgs);
 InstallMethod( InducedPcgsWrtHomePcgs,"from generators", true, [ IsGroup ], 0,
     function( G )
     local   home, ind;
-    
+
     home := HomePcgs( G );
     if HasPcgs(G) and IsInducedPcgs(Pcgs(G))  then
         if IsIdenticalObj(home,ParentPcgs(Pcgs(G)))  then
@@ -95,7 +95,7 @@ InstallMethod( InducedPcgsWrtHomePcgs,"from generators", true, [ IsGroup ], 0,
     return ind;
 end );
 
-InstallMethod( InducedPcgsWrtHomePcgs,"pc group: home=family", true, 
+InstallMethod( InducedPcgsWrtHomePcgs,"pc group: home=family", true,
   [ IsPcGroup ], 0,
   InducedPcgsWrtFamilyPcgs);
 
@@ -105,7 +105,7 @@ InstallMethod( InducedPcgsWrtHomePcgs,"pc group: home=family", true,
 ##
 InstallGlobalFunction( InducedPcgs, function(pcgs, G)
   local cache, i, igs;
-  
+
   if not IsPcgs(pcgs) then
      Error("InducedPcgs: <pcgs> must be a pcgs");
   fi;
@@ -122,7 +122,7 @@ InstallGlobalFunction( InducedPcgs, function(pcgs, G)
      fi;
      i := i + 2;
   od;
-  
+
   igs := InducedPcgsOp( pcgs, G );
   SetGroupOfPcgs (igs, G);
 
@@ -130,15 +130,15 @@ InstallGlobalFunction( InducedPcgs, function(pcgs, G)
   if not HasPcgs(G) then
      SetPcgs (G, igs);
   fi;
-  
+
   # set home pcgs stuff
   if not HasHomePcgs(G) then
      SetHomePcgs (G, pcgs);
   fi;
   if IsIdenticalObj (HomePcgs(G), pcgs) then
      SetInducedPcgsWrtHomePcgs (G, igs);
-  fi;  
-  
+  fi;
+
   return igs;
 end );
 
@@ -146,36 +146,36 @@ end );
 ##
 #M  InducedPcgsOp
 ##
-InstallMethod (InducedPcgsOp, "generic method", 
+InstallMethod (InducedPcgsOp, "generic method",
    IsIdenticalObj, [IsPcgs, IsGroup],
    function (pcgs, G)
-      return InducedPcgsByGenerators( 
+      return InducedPcgsByGenerators(
           ParentPcgs(pcgs), GeneratorsOfGroup( G ) );
    end);
-	
+
 #############################################################################
 ##
 #M  InducedPcgsOp
 ##
-InstallMethod (InducedPcgsOp, "sift existing pcgs", 
+InstallMethod (InducedPcgsOp, "sift existing pcgs",
    IsIdenticalObj, [IsPcgs, IsGroup and HasPcgs],
    function (pcgs, G)
-      local seq,    # pc sequence wrt pcgs (and its parent) 
+      local seq,    # pc sequence wrt pcgs (and its parent)
             depths, # depths of this sequence
             len,    # length of the sequence
             pos,    # index
             x,      # a group element
             d;      # depth of x
-            
+
       pcgs := ParentPcgs (pcgs);
-      seq := [];  
+      seq := [];
       depths := [];
       len := 0;
       for x in Reversed (Pcgs (G)) do
          # sift x through seq
          d := DepthOfPcElement (pcgs, x);
          pos := PositionSorted (depths, d);
-   
+
          while pos <= len and depths[pos] = d do
             x := ReducedPcElement (pcgs, x, seq[pos]);
             d := DepthOfPcElement (pcgs, x);
@@ -194,12 +194,12 @@ InstallMethod (InducedPcgsOp, "sift existing pcgs",
      return InducedPcgsByPcSequenceNC (pcgs, seq, depths);
    end);
 
-	
+
 #############################################################################
 ##
 #M  ComputedInducedPcgses
 ##
-InstallMethod (ComputedInducedPcgses, "default method", [IsGroup], 
+InstallMethod (ComputedInducedPcgses, "default method", [IsGroup],
    G -> []);
 
 
@@ -215,7 +215,7 @@ InstallGlobalFunction(SetInducedPcgs,function(home,G,pcgs)
   if IsIdenticalObj(ParentPcgs(pcgs),home) then
      Append (ComputedInducedPcgses(G), [home, pcgs]);
      if IsIdenticalObj(HomePcgs(G),home) then
-        SetInducedPcgsWrtHomePcgs(G,pcgs); 
+        SetInducedPcgsWrtHomePcgs(G,pcgs);
      fi;
   fi;
   SetGroupOfPcgs (pcgs, G);
@@ -334,7 +334,7 @@ end);
 
 #############################################################################
 ##
-#M  GroupWithGenerators( <gens> ) . . . . . . . . . . . . group by generators 
+#M  GroupWithGenerators( <gens> ) . . . . . . . . . . . . group by generators
 #M  GroupWithGenerators( <gens>, <id> )
 ##
 ##  These methods override the generic code. They are installed for
@@ -366,7 +366,7 @@ end );
 InstallOtherMethod( GroupWithGenerators,
     "method for pc collection and identity element",
     IsCollsElms, [ IsCollection and
-    IsMultiplicativeElementWithInverseByPolycyclicCollectorCollection 
+    IsMultiplicativeElementWithInverseByPolycyclicCollectorCollection
     and IsFinite,
     IsMultiplicativeElementWithInverseByPolycyclicCollector] ,
     0,
@@ -435,7 +435,7 @@ InstallMethod( \in,
 
 function( elm, grp )
     local pcgs, ppcgs;
-    
+
     pcgs := InducedPcgsWrtHomePcgs (grp);
     ppcgs := ParentPcgs (pcgs);
     if Length (pcgs) = Length (ppcgs) or not CanEasilyTestMembership (GroupOfPcgs(ppcgs)) then
@@ -463,7 +463,7 @@ InstallMethod( \in,
 
 function( elm, grp )
     local pcgs, ppcgs;
-    
+
     for pcgs in ComputedInducedPcgses(grp) do
         ppcgs := ParentPcgs (pcgs);
         if Length (pcgs) < Length (ppcgs) and CanEasilyTestMembership (GroupOfPcgs(ppcgs)) then
@@ -550,7 +550,7 @@ end );
 ##
 #M  SubgroupByPcgs( <G>, <pcgs> )
 ##
-InstallMethod( SubgroupByPcgs, "subgroup with pcgs", 
+InstallMethod( SubgroupByPcgs, "subgroup with pcgs",
                true, [IsGroup, IsPcgs], 0,
 function( G, pcgs )
     local U;
@@ -582,7 +582,7 @@ InstallGlobalFunction( VectorSpaceByPcgsOfElementaryAbelianGroup,
     dim  := Length( pcgs );
     if IsBound( arg[2] ) then
         field := arg[2];
-    elif dim > 0 then 
+    elif dim > 0 then
         field := GF( RelativeOrderOfPcElement( pcgs, pcgs[1] ) );
     else
         Error("trivial vectorspace, need field \n");
@@ -604,7 +604,7 @@ local gens, pcgs, field, m,mat,i,j;
             gens := GeneratorsOfGroup( arg[1] );
         elif IsPcgs( arg[1] ) then
             gens := AsList( arg[1] );
-        else 
+        else
             gens := arg[1];
         fi;
         pcgs := arg[2];
@@ -624,7 +624,7 @@ local gens, pcgs, field, m,mat,i,j;
 # the following code takes too much time, as it has to create obvious pc
 # elements again from vectors with 1 nonzero entry.
 #    V := Immutable( IdentityMat(Length(pcgs),field) );
-#    linear := function( x, g ) 
+#    linear := function( x, g )
 #              return ExponentsOfPcElement( pcgs,
 #                     PcElementByExponentsNC( pcgs, x )^g ) * One(field);
 #              end;
@@ -643,7 +643,7 @@ local gens, pcgs, field, m,mat,i,j;
   return m;
 
 end );
-    
+
 #############################################################################
 ##
 #F  AffineActionLayer( <G>, <pcgs>, <transl> )
@@ -667,16 +667,16 @@ InstallGlobalFunction( AffineActionLayer, function( arg )
         pcgs := arg[3];
         transl := arg[4];
     fi;
-       
+
     # in the trivial case we cannot do anything
-    if Length( pcgs ) = 0 then 
+    if Length( pcgs ) = 0 then
         Error("layer is trivial . . . field is not defined \n");
     fi;
 
     # construct matrix rep
     field := GF( RelativeOrderOfPcElement( pcgs, pcgs[1] ) );
     V:= Immutable( IdentityMat(Length(pcgs),field) );
-    linear := function( x, g ) 
+    linear := function( x, g )
               return ExponentsConjugateLayer(pcgs,
                      PcElementByExponentsNC( pcgs, x ),g ) * One(field);
               end;
@@ -688,7 +688,7 @@ end );
 #M  AffineAction( <gens>, <V>, <linear>, <transl> )
 ##
 InstallMethod( AffineAction,"generators",
-    true, 
+    true,
     [ IsList,
       IsMatrix,
       IsFunction,
@@ -719,8 +719,8 @@ local mats, gens, zero,one, g, mat, i, vec;
 end );
 
 InstallOtherMethod( AffineAction,"group",
-    true, 
-    [ IsGroup, 
+    true,
+    [ IsGroup,
       IsMatrix,
       IsFunction,
       IsFunction ],
@@ -730,8 +730,8 @@ function( G, V, linear, transl )
 end );
 
 InstallOtherMethod( AffineAction,"group2",
-    true, 
-    [ IsGroup, 
+    true,
+    [ IsGroup,
       IsList,
       IsMatrix,
       IsFunction,
@@ -742,8 +742,8 @@ function( G, gens, V, linear, transl )
 end );
 
 InstallOtherMethod( AffineAction,"pcgs",
-    true, 
-    [ IsPcgs, 
+    true,
+    [ IsPcgs,
       IsMatrix,
       IsFunction,
       IsFunction ],
@@ -760,7 +760,7 @@ end );
 ##
 InstallMethod( ClosureGroup,
     "groups with home pcgs",
-    IsIdenticalObj, 
+    IsIdenticalObj,
     [ IsGroup and HasHomePcgs,
       IsGroup and HasHomePcgs ],
     0,
@@ -775,7 +775,7 @@ function( U, H )
     pcgsU := InducedPcgs(home,U);
     pcgsH := InducedPcgs(home,H);
     if Length( pcgsU ) < Length( pcgsH )  then
-        new := InducedPcgsByPcSequenceAndGenerators( home, pcgsH, 
+        new := InducedPcgsByPcSequenceAndGenerators( home, pcgsH,
                GeneratorsOfGroup( U ) );
     else
         new := InducedPcgsByPcSequenceAndGenerators( home, pcgsU,
@@ -829,7 +829,7 @@ end );
 ##
 InstallMethod( CommutatorSubgroup,
     "groups with home pcgs",
-    true, 
+    true,
     [ IsGroup and HasHomePcgs,
       IsGroup and HasHomePcgs ],
     0,
@@ -837,7 +837,7 @@ InstallMethod( CommutatorSubgroup,
 function( U, V )
     local   pcgsU,  pcgsV,  home,  C,  u,  v;
 
-    # check 
+    # check
     home := HomePcgs(U);
     if home <> HomePcgs( V ) then
         TryNextMethod();
@@ -933,9 +933,9 @@ end );
 ##
 #M  ConjugateSubgroups( <G>, <U> )
 ##
-InstallMethod( ConjugateSubgroups, 
+InstallMethod( ConjugateSubgroups,
     "groups with home pcgs",
-    IsIdenticalObj, 
+    IsIdenticalObj,
     [ IsGroup and HasHomePcgs,
       IsGroup and HasHomePcgs ],
     0,
@@ -985,7 +985,7 @@ end );
 ##
 InstallMethod( CoreOp,
     "pcgs computable groups",
-    true, 
+    true,
     [ IsGroup and CanEasilyComputePcgs,
       IsGroup ],
     0,
@@ -1027,14 +1027,14 @@ end );
 ##
 InstallMethod( EulerianFunction,
     "pcgs computable groups using special pcgs",
-    true, 
+    true,
     [ IsGroup and CanEasilyComputePcgs,
       IsPosInt ],
     0,
 
 function( G, n )
-    local   spec,  first,  weights,  m,  i,  phi,  start,  
-            next,  p,  d,  r,  j,  pcgsS,  pcgsN,  pcgsL,  mats,  
+    local   spec,  first,  weights,  m,  i,  phi,  start,
+            next,  p,  d,  r,  j,  pcgsS,  pcgsN,  pcgsL,  mats,
             modu,  max,  series,  comps,  sub,  new,  index,  order;
 
     spec := SpecialPcgs( G );
@@ -1046,7 +1046,7 @@ function( G, n )
     # the first head
     i := 1;
     phi := 1;
-    while i <= Length(first)-1 and 
+    while i <= Length(first)-1 and
           weights[first[i]][1] = 1 and weights[first[i]][2] = 1 do
         start := first[i];
         next  := first[i+1];
@@ -1072,7 +1072,7 @@ function( G, n )
             mats  := LinearActionLayer( spec, pcgsL );
             modu  := GModuleByMats( mats,  GF(p) );
             max   := MTX.BasesMaximalSubmodules( modu );
-            
+
             # compute series
             series := [ Immutable( IdentityMat(d, GF(p)) ) ];
             comps  := [];
@@ -1082,10 +1082,10 @@ function( G, n )
                 if Length( sub ) = 0 then
                     new := max;
                 else
-                    new := Filtered( max, x -> 
+                    new := Filtered( max, x ->
                                   RankMat( Concatenation( x, sub ) ) < d );
                 fi;
-                Add( comps, Sum( List( new, x -> p^(d - Length(x)) ) ) ); 
+                Add( comps, Sum( List( new, x -> p^(d - Length(x)) ) ) );
                 Add( series, sub );
                 max := Difference( max, new );
             od;
@@ -1115,17 +1115,17 @@ function( G, n )
 end );
 
 RedispatchOnCondition(EulerianFunction,true,[IsGroup,IsPosInt],
-  [IsSolvableGroup,IsPosInt], 
+  [IsSolvableGroup,IsPosInt],
   1 # make the priority higher than the default method computing
     # the table of marks
-  ); 
+  );
 
 #############################################################################
 ##
 #M  LinearAction( <gens>, <basisvectors>, <linear>  )
 ##
 InstallMethod( LinearAction,
-    true, 
+    true,
     [ IsList,
       IsMatrix,
       IsFunction ],
@@ -1135,7 +1135,7 @@ function( gens, base, linear )
 local  i,mats;
 
     # catch trivial cases
-    if Length( gens ) = 0 then 
+    if Length( gens ) = 0 then
         return [];
     fi;
 
@@ -1152,8 +1152,8 @@ local  i,mats;
 end );
 
 InstallOtherMethod( LinearAction,
-    true, 
-    [ IsGroup, 
+    true,
+    [ IsGroup,
       IsMatrix,
       IsFunction ],
     0,
@@ -1163,8 +1163,8 @@ function( G, base, linear )
 end );
 
 InstallOtherMethod( LinearAction,
-    true, 
-    [ IsPcgs, 
+    true,
+    [ IsPcgs,
       IsMatrix,
       IsFunction ],
     0,
@@ -1174,8 +1174,8 @@ function( pcgs, base, linear )
 end );
 
 InstallOtherMethod( LinearAction,
-    true, 
-    [ IsGroup, 
+    true,
+    [ IsGroup,
       IsList,
       IsMatrix,
       IsFunction ],
@@ -1192,7 +1192,7 @@ end );
 ##
 InstallMethod( NormalClosureOp,
     "groups with home pcgs",
-    true, 
+    true,
     [ IsGroup and HasHomePcgs,
       IsGroup and HasHomePcgs ],
     0,
@@ -1206,7 +1206,7 @@ function( G, U )
         return U;
     fi;
     home := HomePcgs(U);
-    if home <> HomePcgs(G) then 
+    if home <> HomePcgs(G) then
         TryNextMethod();
     fi;
 
@@ -1252,7 +1252,7 @@ function(rs, grp)
     local   p;
 
     p := Pcgs(grp);
-    if Length( p ) = 0 then 
+    if Length( p ) = 0 then
         return One( grp );
     else
         return Product( p, x -> x^Random(rs, 1, RelativeOrderOfPcElement(p,x)) );
@@ -1278,7 +1278,7 @@ local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
   if IsTrivial( U )  then
     return H;
   fi;
-  
+
   if IsSubgroup(H,U) then
     G:=H;
     inequal:=false;
@@ -1356,9 +1356,9 @@ local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
     else
       N!.capH:=N;
     fi;
-    
+
     cls[ 1 ].candidates:=cls[ 1 ].representative;
-    if allcent 
+    if allcent
        or cent(home, cls[ 1 ].centralizerpcgs, N, Ldep )  then
       cls:=CentralStepClEANS( home,H, U, N, cls[ 1 ],false );
     else
@@ -1392,7 +1392,7 @@ InstallMethod( CentralizerOp,
     [ IsGroup and CanEasilyComputePcgs and IsFinite,
       IsMultiplicativeElementWithInverse ],
     0,  # in solvable permutation groups, backtrack seems preferable
-        
+
 function( G, g )
     return CentralizerSolvableGroup( G, GroupByGenerators( [ g ] ), g );
 end );
@@ -1406,7 +1406,7 @@ InstallMethod( CentralizerOp,
 
 function( G, H )
 local   h,P;
-  
+
   P:=Parent(G);
   for h  in MinimalGeneratingSet( H )  do
       G := CentralizerSolvableGroup( G,H, h );
@@ -1430,7 +1430,7 @@ InstallOtherMethod( RepresentativeActionOp,
     0,
 
 function( G, d, e, opr )
-    if opr <> OnPoints or not (IsPcGroup(G) or (d in G and e in G)) or 
+    if opr <> OnPoints or not (IsPcGroup(G) or (d in G and e in G)) or
        not (d in G and e in G) then
         TryNextMethod();
     fi;
@@ -1464,7 +1464,7 @@ local G,	   # common parent
       return H;
     fi;
 
-    if elm in H then 
+    if elm in H then
       G:=H;
     else
       G:=ClosureGroup(H,elm);
@@ -1546,7 +1546,7 @@ local G,	   # common parent
 #    cls := List( candidates, c -> cl );
 #    tra := List( candidates, c -> One( H ) );
     tra:=One(H);
-    
+
     # Now go back through the factors by all groups in the elementary abelian
     # series.
     for step  in [ step + 1 .. Length( eas ) ]  do
@@ -1568,9 +1568,9 @@ local G,	   # common parent
         else
 	  N!.capH := N;
         fi;
-    
+
 	cl.candidates := cl.representative;
-	if allcent 
+	if allcent
 	   or cent(home,cl.centralizerpcgs, N, Ldep)  then
 	    cl := CentralStepClEANS( home,G, H, N, cl,true )[1];
 	else
@@ -1582,7 +1582,7 @@ local G,	   # common parent
 	else
 	  cl.centralizerpcgs:=InducedPcgsByPcSequenceNC(home,cl.cengen);
 	fi;
-	
+
     od;
 
     if not IsBound(cl.centralizer) then
@@ -1622,7 +1622,7 @@ InstallOtherMethod( ElementaryAbelianSeries,"list of pcgs computable groups",
 function( S )
 local   home,i,  N,  O,  I,  E,  L;
 
-  if Length(S)=0 or not CanEasilyComputePcgs(S[1]) then 
+  if Length(S)=0 or not CanEasilyComputePcgs(S[1]) then
     TryNextMethod();
   fi;
 
@@ -1669,7 +1669,7 @@ end);
 ##
 InstallMethod(\<,"cgs comparison",IsIdenticalObj,[IsPcGroup,IsPcGroup],0,
 function( G, H )
-  return Reversed( CanonicalPcgsWrtFamilyPcgs(G) ) 
+  return Reversed( CanonicalPcgsWrtFamilyPcgs(G) )
        < Reversed( CanonicalPcgsWrtFamilyPcgs(H) );
 end);
 
@@ -2023,7 +2023,7 @@ local e,	# EAS
     # map v,no
     #fv:=ClosureGroup(m,V);
     #img:=CanonicalPcgs(InducedPcgsByGenerators(pcgs,GeneratorsOfGroup(fv)));
-    
+
 #    if true then
 
     nopcgs:=InducedPcgs(pcgs,no);
@@ -2050,7 +2050,7 @@ local e,	# EAS
 
 	# trim m-part
 	u:=List(u,i->CanonicalPcElement(pcgsm,i));
-	return u; 
+	return u;
       end;
     else
       min:=fv;
@@ -2094,7 +2094,7 @@ local e,	# EAS
       fi;
       minrep:=te;
     fi;
-    
+
 #
 #
 #     nno:=Normalizer(no,fv);
@@ -2163,7 +2163,7 @@ local e,	# EAS
     V:=V^minrep;
   od;
 
-  if iso<>false then 
+  if iso<>false then
     V:=PreImage(iso,V);
     no:=PreImage(iso,no);
     ce:=PreImagesRepresentative(iso,ce);
@@ -2328,7 +2328,7 @@ InstallTrueMethod( CanEasilyComputePcgs, IsGroup and HasFamilyPcgs );
 #M  CanEasilyTestMembership
 ##
 
-# InstallTrueMethod(CanEasilyTestMembership,CanEasilyComputePcgs); 
+# InstallTrueMethod(CanEasilyTestMembership,CanEasilyComputePcgs);
 # we cannot test membership using a pcgs
 
 # InstallTrueMethod(CanComputeSize, CanEasilyComputePcgs); #unnecessary
@@ -2464,13 +2464,13 @@ InstallMethod(MinimalGeneratingSet,
     "compute via Smith normal form",
         [IsGroup and CanEasilyComputePcgs and IsAbelian], {} -> RankFilter(IsPcGroup),
     function(G)
-    
+
         local pcgs, matrix, snf, gens, cti, row, g, i;
-        
+
         if IsTrivial (G) then
             return [];
         fi;
-        
+
         pcgs := Pcgs (G);
         matrix:=List([1..Length(pcgs)],i->List(ExponentsOfRelativePower(pcgs,i)));
         for i in [1..Length(pcgs)] do
@@ -2487,7 +2487,7 @@ InstallMethod(MinimalGeneratingSet,
                 Add(gens,g);
             fi;
         od;
-        
+
         return gens;
     end);
 
@@ -2497,16 +2497,16 @@ InstallMethod(MinimalGeneratingSet,
 #M  ExponentOfPGroupAndElm( <G>, <bound> )
 ##
 
-# Return exponent and probably also an element of high order. If exponent is 
+# Return exponent and probably also an element of high order. If exponent is
 # found to be larger than bound, just return the result found so far.
-# 
+#
 # JS: A result of Higman detailed on p564 of C. Sims Computation with
 # F. P. Groups shows that an element of maximal order in a p-group
 # exists where its weight with respect to a special pcgs is at most
 # the p-class of the group.  Furthermore we need only check normed
 # row vectors as exponent vectors since every cyclic subgroup has a
 # generator with a normed row vector for exponents.
-# 
+#
 # This function just checks all such vectors using a simple backtrack
 # method.  It handles the case of the trivial group and a regular
 # p-group specially.
@@ -2557,7 +2557,7 @@ InstallMethod( Exponent,"finite solvable group",
   true,[IsGroup and IsSolvableGroup and IsFinite],0,
 function(G)
 local exp, primes, p;
-  if IsPGroup(G) then 
+  if IsPGroup(G) then
     return ExponentOfPGroupAndElm(G,Size(G))[1];
   fi;
   TryNextMethod();
@@ -2637,7 +2637,7 @@ function(G,p,e)
 local g,H,fix_order,T;
   H:=Omega_LowerBound(G,p,e);
   fix_order:=function(g) while not IsOne(g^(p^e)) do g:=g^p; od; return g; end;
-  if NilpotencyClassOfGroup(G) < p 
+  if NilpotencyClassOfGroup(G) < p
   then T:=RightTransversal(G,H);
   else T:=G;
   fi;
@@ -2685,7 +2685,7 @@ end);
 #
 # The algorithm is NOT fast.
 #
-# In detail a random central element, z, of order p is 
+# In detail a random central element, z, of order p is
 # selected and K is returned where K/<z> = Omega(G/<z>,p,e).
 #
 # Assumed: G is a p-group, e is a positive integer
@@ -2717,7 +2717,7 @@ end);
 # Omega(G,p,e) is a normal, characteristic, fully invariant subgroup that
 # behaves nicely under group homomorphisms. In particular
 # if Omega(G/N)=K/N then Omega(G) <= K. If Omega(G) <= K,
-# then Omega(G)=Omega(K). 
+# then Omega(G)=Omega(K).
 #
 # Hence the general strategy is to find good upper bounds K for
 # Omega(G), and then compute Omega(K) instead. It is difficult
@@ -2758,8 +2758,8 @@ local H,K,Knew,fails,gens,r, timerFunc;
     K:=Knew;
   od;
 
-  if (H=K) then 
-    return K; 
+  if (H=K) then
+    return K;
   fi;
 
   # Step 2, reduce until we have fail lots of times in a row
@@ -2781,7 +2781,7 @@ local H,K,Knew,fails,gens,r, timerFunc;
     K:=Knew;
   od;
   if(H=K) then return K; fi;
-  
+
   # Step 4: If K<G, then we have reduced the problem, so just ask for Omega(K,p,e) directly.
   if(K<>G) then return Omega(K,p,e); fi;
 
@@ -2800,7 +2800,7 @@ InstallMethod( OmegaOp, "for p groups", true,
         [ IsGroup, IsPosInt, IsPosInt ], 0,
 function( G, p, n )
 local   gens,  q,  gen,  ord,  o;
-  
+
   # trivial cases
   if n=0 then return TrivialSubgroup(G);fi;
 
@@ -2821,16 +2821,16 @@ local   gens,  q,  gen,  ord,  o;
     TryNextMethod();
   fi;
 
-  if ForAll(Pcgs(G),g->IsOne(g^(p^n))) then 
+  if ForAll(Pcgs(G),g->IsOne(g^(p^n))) then
     return G;
-  elif(Size(G)<2^15) then 
+  elif(Size(G)<2^15) then
     return Omega_Search(G,p,n);
-  else 
+  else
     return Omega_Sims(G,p,n);
   fi;
 end);
 
-    
+
 ############################################################################
 ##
 #M  HallSubgroupOp (<grp>, <pi>)
@@ -2842,8 +2842,8 @@ InstallMethod (HallSubgroupOp, "via IsomoprhismPcGroup", true,
         iso := IsomorphismPcGroup (grp);
         return PreImagesSet (iso, HallSubgroup (ImagesSource (iso), pi));
     end);
-    
-    
+
+
 ############################################################################
 ##
 #M  HallSubgroupOp (<grp>, <pi>)
@@ -2863,7 +2863,7 @@ InstallMethod (SylowComplementOp, "via IsomoprhismPcGroup", true,
         iso := IsomorphismPcGroup (grp);
         return PreImagesSet (iso, SylowComplement (ImagesSource (iso), p));
     end);
-    
+
 
 ############################################################################
 ##
@@ -2876,7 +2876,7 @@ RedispatchOnCondition(SylowComplementOp,true,[IsGroup,IsPosInt],
 InstallMethod( FittingFreeLiftSetup, "pc group", true, [ IsPcGroup ],0,
 function( G )
 local   pcgs;
-  
+
   pcgs:=PcgsElementaryAbelianSeries(G);
   return rec(pcgs:=pcgs,
              depths:=IndicesEANormalSteps(pcgs),

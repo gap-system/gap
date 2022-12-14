@@ -77,7 +77,7 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareCategory( "IsZmodnZObj", IsScalar and IsAssociativeElement 
+DeclareCategory( "IsZmodnZObj", IsScalar and IsAssociativeElement
     and IsCommutativeElement and IsAdditivelyCommutativeElement );
 DeclareCategory( "IsZmodnZObjNonprime", IsZmodnZObj );
 DeclareSynonym( "IsZmodpZObj", IsZmodnZObj and IsFFE );

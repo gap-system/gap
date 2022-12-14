@@ -11,7 +11,7 @@
 
 
 #############################################################################
-##  
+##
 #F  AbelianPQuotient  . . . . . . . . . . .  initialize an abelian p-quotient
 ##
 ##  <ManSection>
@@ -37,7 +37,7 @@ DeclareGlobalFunction( "AbelianPQuotient" );
 ##  in form  of a quotient system.
 ##  The quotient system can be converted into an epimorphism from <A>F</A>
 ##  onto the <A>p</A>-group computed by the function
-##  <Ref Oper="EpimorphismQuotientSystem"/>. 
+##  <Ref Oper="EpimorphismQuotientSystem"/>.
 ##  <P/>
 ##  For a group <M>G</M> define the exponent-<M>p</M> central series of
 ##  <M>G</M> inductively by <M>{\cal P}_1(G) = G</M> and
@@ -45,7 +45,7 @@ DeclareGlobalFunction( "AbelianPQuotient" );
 ##  The factor groups modulo the terms of the lower
 ##  exponent-<M>p</M> central series are <M>p</M>-groups.
 ##  The group <M>G</M> has <M>p</M>-class
-##  <M>c</M> if <M>{\cal P}_c(G) \neq {\cal P}_{{c+1}}(G) = 1</M>. 
+##  <M>c</M> if <M>{\cal P}_c(G) \neq {\cal P}_{{c+1}}(G) = 1</M>.
 ##  <P/>
 ##  The algorithm computes successive quotients modulo the terms of the
 ##  exponent-<M>p</M> central series of <A>F</A>.
@@ -72,7 +72,7 @@ DeclareGlobalFunction( "AbelianPQuotient" );
 ##  for computations within the factor <A>p</A>-group.
 ##  <A>ctype</A> must either be <C>"single"</C> in which case a simple
 ##  collector from the left is used or <C>"combinatorial"</C> in which case
-##  a combinatorial collector from the left is used. 
+##  a combinatorial collector from the left is used.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -174,7 +174,7 @@ DeclareOperation( "EpimorphismQuotientSystem", [IsQuotientSystem] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> GQuotients(fp,Group((1,2,3),(1,2)));
-##  [ [ f1, f2 ] -> [ (1,2), (2,3) ], [ f1, f2 ] -> [ (2,3), (1,2,3) ], 
+##  [ [ f1, f2 ] -> [ (1,2), (2,3) ], [ f1, f2 ] -> [ (2,3), (1,2,3) ],
 ##    [ f1, f2 ] -> [ (1,2,3), (2,3) ] ]
 ##  ]]></Example>
 ##  </Description>

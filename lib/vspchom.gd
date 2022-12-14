@@ -291,7 +291,7 @@ DeclareProperty( "IsPseudoCanonicalBasisFullHomModule", IsBasis );
 ##  gap> V:= Rationals^2;;
 ##  gap> W:= VectorSpace( Rationals, [ [ 1, 0, 1 ], [ 1, 2, 3 ] ] );;
 ##  gap> H:= Hom( Rationals, V, W );
-##  Hom( Rationals, ( Rationals^2 ), <vector space over Rationals, with 
+##  Hom( Rationals, ( Rationals^2 ), <vector space over Rationals, with
 ##  2 generators> )
 ##  gap> Dimension( H );
 ##  4

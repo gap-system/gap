@@ -31,7 +31,7 @@ DEBUG.FUNCTION := function() return 0; end;
 
 Debug := function(arg)
   local execpath,f,i,j,l,name,oldversion,p,t;
- 
+
   # evaluate arguments:
   if Length(arg) < 1 or Length(arg) > 2 then
     Print("Usage: Debug( <func> [ ,<name> ] );\n");
@@ -39,8 +39,8 @@ Debug := function(arg)
     Print("       and   <name> is a string.\n");
     return;
   fi;
-  
-  # find the first argument: 
+
+  # find the first argument:
   #   our function (or a number of a previously debugged one)
   f := arg[1];
   if IsInt(f) then
@@ -56,10 +56,10 @@ Debug := function(arg)
     Print("       and   <name> is a string.\n");
     return;
   else
-      
+
     # find function in the list of debugged functions:
     i := 1;
-    while i <= Length(DEBUG.LIST) and 
+    while i <= Length(DEBUG.LIST) and
           (not(IsBound(DEBUG.LIST[i])) or DEBUG.LIST[i].func <> f) do
       i := i + 1;
     od;
@@ -84,7 +84,7 @@ Debug := function(arg)
 
   # The following is necessary to preserve the old version:
   if i > Length(DEBUG.LIST) then
-    Read(t);    
+    Read(t);
     oldversion := DEBUG.FUNCTION;
   fi;
 
@@ -110,7 +110,7 @@ Debug := function(arg)
     Add(DEBUG.LIST,rec(func := f,old := oldversion,name := name,count := 1));
     # i is now equal to Length(DEBUG.LIST)
   fi;
-  
+
   Print("This is debug function #",i,".\n");
 end;
 
@@ -120,8 +120,8 @@ DebugFind := function(f)
   if IsFunction(f) then
     # find function among debugged functions:
     nr := 1;
-    while nr <= Length(DEBUG.LIST) and 
-          (not(IsBound(DEBUG.LIST[nr])) or 
+    while nr <= Length(DEBUG.LIST) and
+          (not(IsBound(DEBUG.LIST[nr])) or
            not(IsIdenticalObj(DEBUG.LIST[nr].func,f))) do
       nr := nr + 1;
     od;
@@ -158,7 +158,7 @@ UnDebug := function(f)
   REREADING := false;
   MakeReadOnlyGVar("REREADING");
   Unbind(DEBUG.LIST[nr]);
-  
+
   # Inform user:
   Print("Undebugging function #",nr,".\n");
 end;

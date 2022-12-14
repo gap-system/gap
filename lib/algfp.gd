@@ -177,11 +177,11 @@ DeclareAttribute( "NiceNormalFormByExtRepFunction", IsFamily );
 ##  <ManSection>
 ##  <Attr Name="NiceAlgebraMonomorphism" Arg='A'/>
 ##  <Description>
-##  If <A>A</A> is an associative algebra with one, returns 
+##  If <A>A</A> is an associative algebra with one, returns
 ##  an isomorphism from <A>A</A> onto a matrix algebra
 ##  (see <Ref Attr="IsomorphismMatrixAlgebra"/> for an example).
-##  If <A>A</A> is a finitely presented Lie algebra, returns an isomorphism 
-##  from <A>A</A> onto a Lie algebra defined by a structure constants table 
+##  If <A>A</A> is a finitely presented Lie algebra, returns an isomorphism
+##  from <A>A</A> onto a Lie algebra defined by a structure constants table
 ##  (see <Ref Sect="Finitely Presented Lie Algebras"/> for an example).
 ##  </Description>
 ##  </ManSection>
@@ -192,7 +192,7 @@ DeclareAttribute( "NiceNormalFormByExtRepFunction", IsFamily );
 ##  The `NiceAlgebraMonomorphism' value of the algebra stored in
 ##  the `wholeFamily' component of the elements family of <A>
 ##  is used to define the `\<' relation of algebra elements.
-#T  use it also for a ``nice normal form''! 
+#T  use it also for a ``nice normal form''!
 ##
 ##  If a f.p.~algebra <A> knows the value of `NiceAlgebraMonomorphism'
 ##  then it can be handled via the mechanism of nice bases

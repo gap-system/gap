@@ -97,7 +97,7 @@ DeclareAttribute("ComputedAscendingChains",IsGroup,
 ##  <Description>
 ##  <A>c</A> is an ascending chain in the Group <A>G</A>. The task of this routine is
 ##  to refine <A>c</A>, i.e., if there is a "link" <M>U>L</M> in <A>c</A> with <M>[U:L]</M> too big,
-##  this procedure tries to find subgroups <M>G_0,...,G_n</M> of <A>G</A>; such that 
+##  this procedure tries to find subgroups <M>G_0,...,G_n</M> of <A>G</A>; such that
 ##  <M>U=G_0>...>G_n=L</M>. This is done by extending L inductively: Since normal
 ##  steps can help in further calculations, the routine first tries to
 ##  extend to the normalizer in U. If the subgroup is self-normalizing,
@@ -116,7 +116,7 @@ DeclareGlobalFunction("RefinedChain");
 
 #############################################################################
 ##
-#O  CanonicalRightCosetElement( U, g )    canonical representative of U*g 
+#O  CanonicalRightCosetElement( U, g )    canonical representative of U*g
 ##
 ##  <#GAPDoc Label="CanonicalRightCosetElement">
 ##  <ManSection>
@@ -220,8 +220,8 @@ DeclareOperation("DoubleCoset",[IsGroup,IsObject,IsGroup]);
 ##  subgroups of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> dc:=DoubleCosets(g,u,v);
-##  [ DoubleCoset(Group( [ (1,2,3), (1,2) ] ),(),Group( [ (3,4) ] )), 
-##    DoubleCoset(Group( [ (1,2,3), (1,2) ] ),(1,3)(2,4),Group( 
+##  [ DoubleCoset(Group( [ (1,2,3), (1,2) ] ),(),Group( [ (3,4) ] )),
+##    DoubleCoset(Group( [ (1,2,3), (1,2) ] ),(1,3)(2,4),Group(
 ##      [ (3,4) ] )), DoubleCoset(Group( [ (1,2,3), (1,2) ] ),(1,4)
 ##      (2,3),Group( [ (3,4) ] )) ]
 ##  gap> List(dc,Representative);
@@ -353,7 +353,7 @@ DeclareProperty( "IsBiCoset", IsRightCoset );
 ##  returns the right coset of <A>U</A> with representative <A>g</A>,
 ##  which is the set of all elements of the form <M>ug</M> for all
 ##  <M>u \in <A>U</A></M>.  <A>g</A> must be an
-##  element of a larger group <A>G</A> which contains <A>U</A>. 
+##  element of a larger group <A>G</A> which contains <A>U</A>.
 ##  For element operations such as <K>in</K> a right coset behaves like a set of
 ##  group elements.
 ##  <P/>
@@ -405,9 +405,9 @@ DeclareOperation("RightCoset",[IsGroup,IsObject]);
 ##  <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> RightCosets(g,u);
-##  [ RightCoset(Group( [ (1,2,3), (1,2) ] ),()), 
-##    RightCoset(Group( [ (1,2,3), (1,2) ] ),(1,3)(2,4)), 
-##    RightCoset(Group( [ (1,2,3), (1,2) ] ),(1,4)(2,3)), 
+##  [ RightCoset(Group( [ (1,2,3), (1,2) ] ),()),
+##    RightCoset(Group( [ (1,2,3), (1,2) ] ),(1,3)(2,4)),
+##    RightCoset(Group( [ (1,2,3), (1,2) ] ),(1,4)(2,3)),
 ##    RightCoset(Group( [ (1,2,3), (1,2) ] ),(1,2)(3,4)) ]
 ##  ]]></Example>
 ##  </Description>

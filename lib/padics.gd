@@ -23,7 +23,7 @@
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareCategory( "IsPadicNumber", IsScalar 
+DeclareCategory( "IsPadicNumber", IsScalar
     and IsAssociativeElement and IsCommutativeElement );
 
 DeclareCategoryCollections( "IsPadicNumber" );
@@ -171,7 +171,7 @@ DeclareOperation( "Valuation",  [ IsObject ] );
 ##  The second form takes a pure <M>p</M>-adic numbers family <A>purefam</A>
 ##  and a list <A>list</A> of length two, and returns the number
 ##  <M>p</M><C>^</C><A>list</A><C>[1] * </C><A>list</A><C>[2]</C>.
-##  It must be guaranteed that no entry of <A>list</A><C>[2]</C> is 
+##  It must be guaranteed that no entry of <A>list</A><C>[2]</C> is
 ##  divisible by the prime <M>p</M>.
 ##  (Otherwise precision will get lost.)
 ##  <P/>

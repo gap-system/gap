@@ -43,7 +43,7 @@ InstallMethod( StabChainOp,"trivial group",
   [ IsPermGroup and IsTrivial, IsRecord ],
     function( G, options )
     local   S,  T,  pnt;
-    
+
     S := EmptyStabChain( [  ], One( G ) );
     if     IsBound( options.base )
        and (        IsBound( options.reduced )
@@ -63,7 +63,7 @@ InstallMethod( StabChainOp,"group and option",
   [ IsPermGroup, IsRecord ],
     function( G, options )
     local   S,  T,  degree,  pcgs;
-    
+
     # If a stabilizer chain <S> is already known, modify it.
     if HasStabChainMutable( G )  then
         S := StructuralCopy( StabChainMutable( G ) );
@@ -78,11 +78,11 @@ InstallMethod( StabChainOp,"group and option",
         elif IsBound( options.reduced )  and  options.reduced  then
             ReduceStabChain( S );
         fi;
-        
+
     # Otherwise construct a new GAP object <S>.
     else
         CopyOptionsDefaults( G, options );
-        
+
         # For solvable groups, use the pcgs algorithm.
         pcgs := [  ];
         if     options.tryPcgs and (not IsBound(options.base))
@@ -129,14 +129,14 @@ InstallMethod( StabChainOp,"group and option",
         else
             degree := LargestMovedPoint( G );
             if degree > 100  then
-                
+
                 # random Schreier-Sims
                 S := StabChainRandomPermGroup(
                          ShallowCopy( GeneratorsOfGroup( G ) ), One( G ),
                          options );
-                
+
             else
-            
+
                 # ordinary Schreier Sims
                 S := EmptyStabChain( [  ], One( G ) );
                 Unbind( S.generators );
@@ -157,17 +157,17 @@ InstallMethod( StabChainOp,"group and option",
 		else
 		  S.generators:=[];
                 fi;
-                
+
             fi; # random / deterministic
         fi;
-        
+
         # Now extend <S>, if desired.
         if not options.reduced  and  IsBound( options.base )  then
             ExtendStabChain( S, options.base );
         fi;
-        
+
     fi;
-   
+
     # if the parent is random, this group should be also
     # at base change or strong gens constr, may be no info about random
     if IsBound( options.random ) then
@@ -177,7 +177,7 @@ InstallMethod( StabChainOp,"group and option",
         fi;
         StabChainOptions( G ).random := options.random;
     fi;
-    
+
     SetStabChainMutable( G, S );
     return S;
 end );
@@ -259,15 +259,15 @@ InstallGlobalFunction(CopyStabChain,function( C1 )
         UniteSet( S.labels[ len ], S.translabels );
         S := S.stabilizer;
     od;
-    
+
     # Second pass: Find the new positions of the labels.
     for xlab  in Xlabels  do
         need := xlab[ Length( xlab ) ];
-        
+
         # If all labels are needed, change nothing.
         if Length( need ) = Length( xlab ) - 1  then
             Unbind( xlab[ Length( xlab ) ] );
-            
+
         else
             poss := [  ];
             for i  in [ 1 .. Length( need ) ]  do
@@ -276,7 +276,7 @@ InstallGlobalFunction(CopyStabChain,function( C1 )
             Add( xlab, poss );
         fi;
     od;
-    
+
     # Third pass: Update the genlabels and translabels.
     S := C;
     while IsBound( S.stabilizer )  do
@@ -288,7 +288,7 @@ InstallGlobalFunction(CopyStabChain,function( C1 )
         fi;
         S := S.stabilizer;
     od;
-    
+
     # Fourth pass: Update the labels.
     for xlab  in Xlabels  do
         len := Length( xlab );
@@ -346,7 +346,7 @@ InstallGlobalFunction(CopyOptionsDefaults,function( G, options )
 	  fi;
         fi;
     fi;
-    
+
     # See whether we know the exact size.
     if not IsBound( options.size )  then
         if HasSize( G )  then
@@ -355,7 +355,7 @@ InstallGlobalFunction(CopyOptionsDefaults,function( G, options )
             options.size := StabChainOptions( G ).size;
         fi;
     fi;
-    
+
     # Copy the default values.
     for name  in RecNames( DefaultStabChainOptions )  do
         if not IsBound( options.( name ) )  then
@@ -366,7 +366,7 @@ InstallGlobalFunction(CopyOptionsDefaults,function( G, options )
             fi;
         fi;
     od;
-    
+
     # In the case of random construction, see whether  we know an upper limit
     # for the size.
     if IsBound( options.size ) then
@@ -429,14 +429,14 @@ local   base,sgs,one,S,  T,  pnt, genlabels;
 
     return S;
 end);
-    
+
 #############################################################################
 ##
 #F  GroupStabChain( <arg> ) . . . . . . make (sub)group from stabilizer chain
 ##
 InstallGlobalFunction(GroupStabChain,function( arg )
 local   S,  G,  P,L;
-    
+
     if Length( arg ) = 1  then
         S := arg[ 1 ];
 	if not IsBound(S.generators) then
@@ -469,7 +469,7 @@ end);
 ##
 InstallGlobalFunction( DepthSchreierTrees, function( S )
     local   depths,  gens,  dep,  pnt,  sum,  i;
-    
+
     depths := "";
     gens := [  ];
     while IsBound( S.stabilizer )  do
@@ -522,34 +522,34 @@ InstallGlobalFunction( AddGeneratorsExtendSchreierTree, function( S, new )
             Add( old, false );
             Add( ald, true );
             Add( S.genlabels, Length( S.labels ) );
-            Add( newlabs, Length(S.labels));            
+            Add( newlabs, Length(S.labels));
         elif not ald[ pos ]  then
             Add( S.genlabels, pos );
-            Add( newlabs, pos);            
+            Add( newlabs, pos);
         fi;
         if     IsBound( S.generators )
            and pos <> 1 and not gen in S.generators  then
             Add( S.generators, gen );
         fi;
     od;
-                          
+
     # Extend the orbit and the transversal with the new labels.
 #    len := Length( S.orbit );
  #   i := 1;
-    
-    
-    
+
+
+
     #
     # New kernel functions take over from the GAP code in comments here.
-    # the speedup is considerable. 
+    # the speedup is considerable.
     #
-    
+
     # move tests outside loops as much as possible
     Assert(1,newlabs = Filtered(S.genlabels, j->not old[j]));
-    
+
     if IsBound( S.cycles )  then
         AGESTC(S.orbit, newlabs, S.cycles, S.labels, S.translabels, S.transversal, S.genlabels);
-        
+
         # for i in [1..len] do
         #     for j in newlabs do
         #         img := S.orbit[ i ] / S.labels[ j ];
@@ -560,12 +560,12 @@ InstallGlobalFunction( AddGeneratorsExtendSchreierTree, function( S, new )
         #             S.transversal[ img ] := S.labels[ j ];
         #             Add( S.orbit, img );
         #             Add( S.cycles, false);
-                    
+
         #         fi;
         #     od;
         # od;
-        
-                
+
+
         # while i <= Length( S.orbit )  do
         #     for j  in S.genlabels  do
         #         img := S.orbit[ i ] / S.labels[ j ];
@@ -576,16 +576,16 @@ InstallGlobalFunction( AddGeneratorsExtendSchreierTree, function( S, new )
         #             S.transversal[ img ] := S.labels[ j ];
         #             Add( S.orbit, img );
         #             Add( S.cycles, false);
-                    
+
         #         fi;
         #     od;
         #     i := i + 1;
         # od;
-        
+
     else
 
         AGEST(S.orbit, newlabs,  S.labels, S.translabels, S.transversal, S.genlabels);
-        
+
         # for i in [1..len] do
         #     for j in newlabs do
         #         img := S.orbit[ i ] / S.labels[ j ];
@@ -596,8 +596,8 @@ InstallGlobalFunction( AddGeneratorsExtendSchreierTree, function( S, new )
         #         fi;
         #     od;
         # od;
-        
-                
+
+
         # while i <= Length( S.orbit )  do
         #     for j  in S.genlabels  do
         #         img := S.orbit[ i ] / S.labels[ j ];
@@ -619,7 +619,7 @@ end );
 ##
 InstallGlobalFunction( ChooseNextBasePoint, function( S, base, newgens )
     local   i,  pnt,  bpt,  pos;
-    
+
     i := 1;
     while     i <= Length( base )
           and ForAll( newgens, gen -> base[ i ] ^ gen = base[ i ] )  do
@@ -632,7 +632,7 @@ InstallGlobalFunction( ChooseNextBasePoint, function( S, base, newgens )
     else
         pnt := 1;
     fi;
-    
+
     # If <pnt> is before  the base point <bpt>  of  <S>, insert a  new level.
     # `Before' means (1) <pnt> before <bpt> in <base> or (2) <pnt> in <base>,
     # <bpt> not in <base> or (3) <pnt> less than <bpt> both not in <base>.
@@ -653,8 +653,8 @@ InstallGlobalFunction( ChooseNextBasePoint, function( S, base, newgens )
             Unbind( S.stabilizer.relativeOrders );
             Unbind( S.stabilizer.base           );
         fi;
-    fi; 
-    
+    fi;
+
 end );
 
 #############################################################################
@@ -678,7 +678,7 @@ InstallGlobalFunction( StabChainStrong, function( S, newgens, options )
         newgens := List( newgens, gen -> PermOnEnumerator
                          ( Enumerator( S.identity ), gen ) );
     fi;
-        
+
     # Determine the next base point.
     if IsBound( options.nextBasePoint )  then
         if not IsBound( S.orbit )  then
@@ -701,7 +701,7 @@ InstallGlobalFunction( StabChainStrong, function( S, newgens, options )
             StabChainStrong( S.stabilizer, [ gen ], options );
         fi;
     od;
-    
+
     # Compute the Schreier generators (seems to work better backwards).
     if IsBound( S.cycles )  then
         pnts := ListBlist( [ 1 .. Length( S.orbit ) ], S.cycles );
@@ -726,7 +726,7 @@ InstallGlobalFunction( StabChainStrong, function( S, newgens, options )
 
           # Avoid computing Schreier generators that will be trivial.
           if S.translabels[ p / g ] <> S.genlabels[ j ]  then
-            
+
             # If a base is known, use it to test the Schreier generator.
             if IsBound( options.knownBase )  then
                 if not MembershipTestKnownBase( S,
@@ -741,7 +741,7 @@ InstallGlobalFunction( StabChainStrong, function( S, newgens, options )
                         od;
                         rep := r;
                     fi;
-                    
+
                     sch := rep / g;
                     img := pnt ^ sch;
                     while img <> pnt  do
@@ -750,7 +750,7 @@ InstallGlobalFunction( StabChainStrong, function( S, newgens, options )
                     od;
                     StabChainStrong( S.stabilizer, [ sch ], options );
                 fi;
-                
+
             # If no  base is known, construct the  Schreier generator and put
             # it in the chain if it is non-trivial.
             else
@@ -759,7 +759,7 @@ InstallGlobalFunction( StabChainStrong, function( S, newgens, options )
                     StabChainStrong( S.stabilizer, [ sch ], options );
                 fi;
             fi;
-            
+
           fi;
         od;
     od;
@@ -771,11 +771,11 @@ end );
 #F  StabChainForcePoint( <S>, <pnt> ) . . . . . . . .  force <pnt> into orbit
 ##
 InstallGlobalFunction( StabChainForcePoint, function( S, pnt )
-    
+
     # Do nothing if <pnt> is already in the orbit of <S>.
     if    not IsBound( S.translabels )
        or not IsBound( S.translabels[ pnt ] )  then
-        
+
         # If all generators of <S> fix <pnt>, insert a trivial stabilizer.
         if IsFixedStabilizer( S, pnt )  then
             InsertTrivialStabilizer( S, pnt );
@@ -805,7 +805,7 @@ InstallGlobalFunction( StabChainSwap, function( S )
             img,        # image $b^{Rep(S,pnt)^-}$
             gen,        # new generator of $T_b$
             i;          # loop variable
-    
+
     # get the two basepoints $a$ and $b$ that we have to switch
     a := S.orbit[ 1 ];
     b := S.stabilizer.orbit[ 1 ];
@@ -830,16 +830,16 @@ InstallGlobalFunction( StabChainSwap, function( S )
         # choose a point $pnt \in a^S \ a^{T_b}$ with representative $s$
         repeat
             ind := ind + 1;
-            
+
             # If <ind> exceeds the length of  <S>.orbit, <S> was an incorrect
             # stabilizer chain.
             if ind > Length( S.orbit )  then
                 return false;
             fi;
-            
+
             pnt := S.orbit[ ind ];
         until not IsBound( Tstab.translabels[ pnt ] );
-        
+
         # find out what $s^-$ does with $b$ (without computing $s$!)
         img := b;
         i := pnt;
@@ -886,7 +886,7 @@ InstallGlobalFunction( StabChainSwap, function( S )
         S.stabilizer.translabels := Tstab.translabels;
         S.stabilizer.transversal := Tstab.transversal;
     fi;
-    
+
     return true;
 end );
 
@@ -897,7 +897,7 @@ end );
 ##
 InstallGlobalFunction( LabsLims, function( lab, hom, labs, lims )
     local   pos;
-    
+
     pos := Position( labs, lab );
     if pos = fail  then
         AddSet( labs, lab );
@@ -929,16 +929,16 @@ InstallGlobalFunction( ConjugateStabChain, function( arg )
     if Length( arg ) > 4  then  cond := arg[ 5 ];
                           else  cond := S -> IsBound( S.stabilizer );  fi;
     newlevs := [  ];
-    
+
     # Prepare common  lists for the labels and  their images at the different
     # levels.
     labs := [ S.identity ];
     lims := [ T.identity ];
-    
+
     # Loop over the stabilizer chain.
     while cond( S )  do
         len := Length( S.labels );
-        
+
         # If this is a  new  labels component, map  the  labels and mark  the
         # component so that it can be recognized at deeper levels.
         if len = 0  or  IsPerm( S.labels[ len ] )  then
@@ -955,7 +955,7 @@ InstallGlobalFunction( ConjugateStabChain, function( arg )
                                 labpos := labpos,
                              genlabels := Set( S.genlabels ) ) );
             Add( newlevs, S.labels );
-            
+
         # The current labels component is not  new, so take the mapped labels
         # from the   mark  that was  inserted  when the  component  was first
         # encountered.
@@ -964,7 +964,7 @@ InstallGlobalFunction( ConjugateStabChain, function( arg )
             labpos := S.labels[ len ].labpos;
             UniteSet( S.labels[ len ].genlabels, S.genlabels );
         fi;
-        
+
         # Map the orbit and edges.
         edges := [  ];
         if IsPerm( map )  and  IsPerm( hom )  then
@@ -979,7 +979,7 @@ InstallGlobalFunction( ConjugateStabChain, function( arg )
                 if not IsBound( edges[ img ] )  then
                     Add( orbit, img );
                     pos := labpos[ S.translabels[ pnt ] ];
-                    
+
                     # We can  already map  the  labels that appear   as edges
                     # because we know that their images  will be distinct and
                     # non-trivial.
@@ -989,7 +989,7 @@ InstallGlobalFunction( ConjugateStabChain, function( arg )
                         pos := Length( labels );
                         labpos[ S.translabels[ pnt ] ] := pos;
                     fi;
-                
+
                     edges[ img ] := pos;
                 fi;
             od;
@@ -997,7 +997,7 @@ InstallGlobalFunction( ConjugateStabChain, function( arg )
                 T.labpos := labpos;
             fi;
         fi;
-        
+
         # Build a level of <T>  (`genlabels' will be completed when  `labpos'
         # is complete).
         T.labels      := labels;
@@ -1006,16 +1006,16 @@ InstallGlobalFunction( ConjugateStabChain, function( arg )
         T.translabels := edges;
         T.transversal := [  ];
         T.transversal{ orbit } := labels{ edges{ orbit } };
-        
+
         # Step down to the stabilizer.
         S := S.stabilizer;
         if not IsBound( T.stabilizer )  then
             T.stabilizer := EmptyStabChain( T.labels, T.identity );
         fi;
         T := T.stabilizer;
-                          
+
     od;
-                      
+
     # For   the distinct labels  components  of  the original  chain, map the
     # labels that  did  not appear     as edges  and   remove the   auxiliary
     # components.
@@ -1036,7 +1036,7 @@ InstallGlobalFunction( ConjugateStabChain, function( arg )
         od;
         Unbind( L[ Length( L ) ] );
     od;
-    
+
     # Now that all labels have been mapped, complete  the `genlabels' and put
     # in `generators'.
     if not IsPerm( hom )  then
@@ -1054,11 +1054,11 @@ InstallGlobalFunction( ConjugateStabChain, function( arg )
         L.generators := L.labels{ L.genlabels };
         L := L.stabilizer;
     od;
-    
+
     # Return the mapped stabilizer from the first level  where <cond> was not
     # satisfied (i.e., the ``end'' of the original chain).
     return T;
-    
+
 end );
 
 #############################################################################
@@ -1072,31 +1072,31 @@ end );
 InstallGlobalFunction(ChangeStabChain,function( arg )
 local   G,  base,  reduced,
 	cnj,  S,  newBase,  old,  new,  i;
-    
+
     # Get the arguments.
     G := arg[ 1 ];
     base := arg[ 2 ];
     if Length( arg ) > 2  then  reduced := arg[ 3 ];
                           else  reduced := true;      fi;
-    
+
     cnj := G.identity;
     S := G;
     newBase := [  ];
     i := 1;
     while IsBound( S.stabilizer )  or  i <= Length( base )  do
         old := BasePoint( S );
-        
+
         # Cut off unwanted trivial stabilizers at the end.
         if     Length( S.genlabels ) = 0
            and ( reduced = true  or  i > Length( base ) )  then
             RemoveStabChain( S );
             i := Length( base ) + 1;
-            
+
         # Determine the new base point for this level.
         elif i <= Length( base )  then
             new := base[ i ] / cnj;
             i := i + 1;
-            
+
             # Stabilizer chain extension.
             if reduced = -1  then
                 AddSet( newBase, new );
@@ -1108,7 +1108,7 @@ local   G,  base,  reduced,
                     fi;
                 fi;
                 S := S.stabilizer;
-                
+
             # Base change. Return `false' if <S> turns out to be incorrect.
             elif reduced = false  or  not IsFixedStabilizer( S, new )  then
                 if IsBound( S.stabilizer )  then
@@ -1123,7 +1123,7 @@ local   G,  base,  reduced,
                 AddSet( newBase, S.orbit[ 1 ] );
                 S := S.stabilizer;
             fi;
-            
+
         # Delete unwanted trivial  stabilizers  (e.g., double  points  in the
         # base).
         elif    old in newBase
@@ -1145,20 +1145,20 @@ local   G,  base,  reduced,
             else
                 Unbind( S.stabilizer );
             fi;
-            
+
         # Simply move down the stabilizer chain (to look for double points).
         else
             AddSet( newBase, old );
             S := S.stabilizer;
         fi;
-        
+
     od;
-    
+
     # Conjugate to move all the points to the beginning of their orbit.
     if cnj <> S.identity  then
         ConjugateStabChain( G, G, cnj, cnj );
     fi;
-    
+
     return true;
 end);
 
@@ -1185,7 +1185,7 @@ end);
 ##
 InstallGlobalFunction(EmptyStabChain,function( arg )
 local   S;
-    
+
     S := rec(  labels := arg[ 1 ],
             genlabels := [  ],
            generators := [  ],
@@ -1219,7 +1219,7 @@ InstallGlobalFunction( InitializeSchreierTree, function( S, pnt )
         S.transimages := [  ];  S.transimages[ pnt ] := S.idimage;
     fi;
 end );
-    
+
 #############################################################################
 ##
 #F  InsertTrivialStabilizer( <S>, <pnt> ) . .  add redundant base point <pnt>
@@ -1242,7 +1242,7 @@ end );
 ##
 InstallGlobalFunction(RemoveStabChain,function( S )
 local  name;
-    
+
     for name  in RecNames( S )  do
         if name <> "identity"  and  name <> "idimage"  then
             Unbind( S.( name ) );
@@ -1285,7 +1285,7 @@ end );
 ##
 InstallGlobalFunction( InverseRepresentative, function( S, pnt )
 local   bpt,  rep,te;
-    
+
     bpt := S.orbit[ 1 ];
     rep := S.identity;
     while pnt <> bpt  do
@@ -1302,7 +1302,7 @@ end );
 ##
 InstallGlobalFunction( QuickInverseRepresentative, function( S, pnt )
 local   bpt,  rep,  lab,  pow;
-    
+
     bpt := S.orbit[ 1 ];
     rep := S.identity;
     lab := S.translabels[ pnt ];
@@ -1326,7 +1326,7 @@ end );
 ##
 InstallGlobalFunction( InverseRepresentativeWord, function( S, pnt )
 local   word,  bpt;
-    
+
     word := [  ];
     bpt := S.orbit[ 1 ];
     while pnt <> bpt  do
@@ -1344,7 +1344,7 @@ end );
 ##
 InstallGlobalFunction(SiftedPermutation,function( S, g )
 local   bpt,  img;
-    
+
     # The  following     condition   tests     `IsBound(S.stabilizer)',   not
     # `IsEmpty(S.genlabels)'. This is necessary because  the function may  be
     # called with an inconsistent chain from `NormalClosure'.
@@ -1373,10 +1373,10 @@ end);
 ##
 InstallGlobalFunction(MinimalElementCosetStabChain,function( S, g )
 local   p,i,a,bp,pp;
-    
+
     while not IsEmpty( S.genlabels )  do
-	
-	if IsPlistRep(S.orbit) and IsPosInt(S.orbit[1]) 
+
+	if IsPlistRep(S.orbit) and IsPosInt(S.orbit[1])
 	  and IsInternalRep(g) then
 	  p:=SMALLEST_IMG_TUP_PERM(S.orbit,g);
 	else
@@ -1402,7 +1402,7 @@ local   p,i,a,bp,pp;
     od;
     return g;
 end);
-        
+
 #############################################################################
 ##
 #M  MembershipTestKnownBase( <S>, <knownBase>, <word> ) . . . with known base
@@ -1413,7 +1413,7 @@ InstallMethod( MembershipTestKnownBase, "stabchain, base, word",true,
   [ IsRecord, IsList and IsCyclotomicCollection, IsList ], 0,
     function( S, knownBase, word )
     local   base,  g,  i,  j,  bpt;
-    
+
     base := Concatenation( BaseStabChain( S ), knownBase );
     for g  in word  do
         if IsPerm( g )  then
@@ -1461,7 +1461,7 @@ end );
 ##
 InstallGlobalFunction(BaseStabChain,function( S )
     local   base;
-    
+
     base := [  ];
     while IsBound( S.stabilizer )  do
         Add( base, S.orbit[ 1 ] );
@@ -1478,7 +1478,7 @@ end);
 ##
 InstallGlobalFunction(SizeStabChain,function( S )
     local   size;
-    
+
     size := 1;
     while not IsEmpty( S.genlabels )  do
         size := size * Length( S.orbit );
@@ -1493,7 +1493,7 @@ end);
 ##
 InstallGlobalFunction(StrongGeneratorsStabChain,function( S )
     local   sgs;
-    
+
     sgs := [  ];
     while not IsEmpty( S.generators )  do
         UniteSet( sgs, S.generators );
@@ -1510,7 +1510,7 @@ end);
 ##
 InstallGlobalFunction(IndicesStabChain,function( S )
     local   ind;
-    
+
     ind := [  ];
     while IsBound( S.stabilizer )  do
         Add( ind, Length( S.orbit ) );
@@ -1527,7 +1527,7 @@ end);
 ##
 InstallGlobalFunction(ListStabChain,function( S )
     local   list;
-    
+
     list := [  ];
     while IsBound( S.stabilizer )  do
         Add( list, S );
@@ -1563,7 +1563,7 @@ end );
 ##
 #F  SCMinSmaGens(<G>,<S>,<emptyset>,<identity element>,<flag>)
 ##
-##  This function computes a stabilizer chain for a minimal base image and 
+##  This function computes a stabilizer chain for a minimal base image and
 ##  a smallest generating set wrt. this base for a permutation
 ##  group.
 ##
@@ -1667,7 +1667,7 @@ local   Sgens,      # smallest generating system of <S>, result
     # pre-multiply with the element mapping the base to the smallest base
     gen:=pre*gen;
 
-    # add this generator to the generators list 
+    # add this generator to the generators list
     Add( gens, gen );
     #NC is safe -- always use parent(G)
     span:=ClosureSubgroupNC(span,gen);
@@ -1775,7 +1775,7 @@ function(iter)
     local l, re;
 
     if iter!.state = 0 then
-        if Length(iter!.pos) = 0 then 
+        if Length(iter!.pos) = 0 then
             iter!.state := 2;
         else
             iter!.state := 1;
@@ -1846,7 +1846,7 @@ InstallMethod( ViewObj,"stabilizer chain records", true,
   [ IsRecord ], 0,
 function(r)
 local sz;
-  if not (IsBound(r.stabilizer) and IsBound(r.generators) and 
+  if not (IsBound(r.stabilizer) and IsBound(r.generators) and
           IsBound(r.orbit) and IsBound(r.identity) and
           IsBound(r.transversal)) then
     TryNextMethod();
