@@ -1269,7 +1269,7 @@ SimpleLieAlgebraTypeM := function (n, F)
             WBracket,    # The commutator of two elements of WBasis
                          #   w.r.t. WProduct.
             degrees,     # The list of degrees of different components.
-	    GradingFunction, # The function giving the grading components.
+            GradingFunction, # The function giving the grading components.
             tildify, clean, # Utility functions.
             table,  i,  w1,  j,  w2, result,  term,  prod,  x2,  x1, d;
                          # Temporary results and counters.
@@ -1588,8 +1588,8 @@ SimpleLieAlgebraTypeM := function (n, F)
 #    end;
 #    SetGrading (result,
 #            rec (min_degree := -3,
-#        	 max_degree := 3 * (5^n1 + 5^n2) - 7,
-#        	 source := Integers,
+#                max_degree := 3 * (5^n1 + 5^n2) - 7,
+#                source := Integers,
 #                 hom_components := GradingFunction));
 
     return result;

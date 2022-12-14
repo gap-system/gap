@@ -78,8 +78,8 @@ function(f,p,check)
 
   impattr:=IsAlgebraicElement and CanEasilySortElements and IsZDFRE;
   fam:=NewFamily("AlgebraicElementsFamily(...)",IsAlgebraicElement,
-	 impattr,
-	 IsAlgebraicElementFamily and CanEasilySortElements);
+         impattr,
+         IsAlgebraicElementFamily and CanEasilySortElements);
 
   # The two types
   fam!.baseType := NewType(fam,IsAlgBFRep);
@@ -194,7 +194,7 @@ if Length(extra)>0 and IsString(extra[1]) then
     if IsFinite(f) then
       SetIsFinite(e,true);
       if HasSize(f) then
-	SetSize(e,Size(f)^fam!.deg);
+        SetSize(e,Size(f)^fam!.deg);
       fi;
     else
       SetIsNumberField(e,true);
@@ -501,10 +501,10 @@ local fam,b,d,i;
       # and whether the vector is too short.
       i:=Length(b)+1;
       while i<=fam!.deg do
-	if not IsBound(b[i]) then
-	  b[i]:=fam!.zeroCoefficient;
-	fi;
-	i:=i+1;
+        if not IsBound(b[i]) then
+          b[i]:=fam!.zeroCoefficient;
+        fi;
+        i:=i+1;
       od;
       return Objectify(fam!.extType,[b]);
     fi;
@@ -1036,7 +1036,7 @@ local fam;
     fam:=FamilyObj(elms[1]);
     if ForAll(elms,i->FamilyObj(i)=fam) then
       if IsBound(fam!.wholeExtension) then
-	return fam!.wholeExtension;
+        return fam!.wholeExtension;
       fi;
     fi;
   fi;
@@ -1062,9 +1062,9 @@ local l,f,i,j,k,gens;
     for j in i do
       for k in j do
         if not k in f then
-	  gens:=Concatenation(gens,[k]);
-	  f:=DefaultFieldByGenerators(gens);
-	fi;
+          gens:=Concatenation(gens,[k]);
+          f:=DefaultFieldByGenerators(gens);
+        fi;
       od;
     od;
   od;
@@ -1118,14 +1118,14 @@ local coeffring, basring, theta, xind, yind, x, y, coeffs, G, c, val, k, T,
     G:= Zero( basring );
     for i in [ 1 .. Length( coeffs ) ] do
       if IsAlgBFRep( coeffs[i] ) then
-	G:= G + coeffs[i]![1] * x^i;
+        G:= G + coeffs[i]![1] * x^i;
       else
-	c:= coeffs[i]![1];
-	val:= c[1];
-	for j in [ 2 .. Length( c ) ] do
-	  val:= val + c[j] * y^(j-1);
-	od;
-	G:= G + val * x^i;
+        c:= coeffs[i]![1];
+        val:= c[1];
+        for j in [ 2 .. Length( c ) ] do
+          val:= val + c[j] * y^(j-1);
+        od;
+        G:= G + val * x^i;
       fi;
     od;
 
@@ -1234,7 +1234,7 @@ local opt,irrfacs, coeffring, i, factors, ind, coeffs, val,
   val:= coeffs[2];
   coeffs:= coeffs[1];
   factors:= ListWithIdenticalEntries( val,
-		IndeterminateOfUnivariateRationalFunction( pol ) );
+                IndeterminateOfUnivariateRationalFunction( pol ) );
 
   if Length( coeffs ) = 1 then
 
@@ -1249,7 +1249,7 @@ local opt,irrfacs, coeffring, i, factors, ind, coeffs, val,
     # The polynomial is a linear polynomial times a power of the indet.
     factors[1]:= coeffs[2] * factors[1];
     factors[ val+1 ]:= LaurentPolynomialByExtRepNC( FamilyObj( pol ),
-			    [coeffs[1] / coeffs[2], One(coeffring)],0,ind );
+                            [coeffs[1] / coeffs[2], One(coeffring)],0,ind );
     StoreFactorsPol( coeffring, pol, factors );
     PopOptions();
     return factors;
@@ -1279,9 +1279,9 @@ local opt,irrfacs, coeffring, i, factors, ind, coeffs, val,
       Add( factors, factor );
       q:= Quotient( R, g, factor );
       while q <> fail do
-	Add( factors, factor );
-	g:= q;
-	q:= Quotient( R, g, factor );
+        Add( factors, factor );
+        g:= q;
+        q:= Quotient( R, g, factor );
       od;
     od;
   fi;

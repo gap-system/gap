@@ -63,8 +63,8 @@ InstallMethod( AlgebraGeneralMappingByImages,
     function( S, R, gens, imgs )
 
     local map,        # general mapping from <S> to <R>, result
-	  filter,
-	  i,basic;
+          filter,
+          i,basic;
 
     # Handle the case that `gens' is a basis or empty.
     # We can form a left module general mapping directly.
@@ -89,22 +89,22 @@ InstallMethod( AlgebraGeneralMappingByImages,
 
     # type setting
     filter:=IsSPGeneralMapping
-	    and IsAlgebraGeneralMapping
-	    and IsAlgebraGeneralMappingByImagesDefaultRep;
+            and IsAlgebraGeneralMapping
+            and IsAlgebraGeneralMappingByImagesDefaultRep;
 
     #special case: test whether polynomial ring is mapped via 1 and free
     #generators
     if IsPolynomialRing(S) then
       basic:=ForAll(imgs,x->ForAll(imgs,y->x*y=y*x));
       for i in [1..Length(gens)] do
-	if IsOne(gens[i]) then
-	  if not IsOne(imgs[i]) then basic:=false;fi;
-	elif not gens[i] in IndeterminatesOfPolynomialRing(S) then
-	  basic:=false;
-	fi;
+        if IsOne(gens[i]) then
+          if not IsOne(imgs[i]) then basic:=false;fi;
+        elif not gens[i] in IndeterminatesOfPolynomialRing(S) then
+          basic:=false;
+        fi;
       od;
       if basic=true then
-	filter:=filter and IsPolynomialRingDefaultGeneratorMapping;
+        filter:=filter and IsPolynomialRingDefaultGeneratorMapping;
       fi;
     fi;
 
@@ -215,7 +215,7 @@ InstallMethod( AlgebraHomomorphismByFunction,
     [ IsAlgebra, IsAlgebra, IsFunction ],
     function( A, B, f )
     return Objectify( TypeOfDefaultGeneralMapping( A, B,
-	IsSPMappingByFunctionRep and IsAlgebraHomomorphism ), rec(fun:=f) );
+        IsSPMappingByFunctionRep and IsAlgebraHomomorphism ), rec(fun:=f) );
     end);
 
 InstallMethod(AlgebraWithOneHomomorphismByFunction,
@@ -224,7 +224,7 @@ InstallMethod(AlgebraWithOneHomomorphismByFunction,
     [ IsAlgebraWithOne, IsAlgebraWithOne, IsFunction ],
     function( A, B, f )
     return Objectify( TypeOfDefaultGeneralMapping( A, B,
-	IsSPMappingByFunctionRep and IsAlgebraWithOneHomomorphism ),
+        IsSPMappingByFunctionRep and IsAlgebraWithOneHomomorphism ),
         rec(fun:=f) );
     end);
 
@@ -254,8 +254,8 @@ function( map )
 local mapi;
   mapi:=MappingGeneratorsImages(map);
   Print( "AlgebraWithOneHomomorphismByImages( ",
-	  Source( map ), ", ", Range( map ), ", ",
-	  mapi[1], ", ", mapi[2], " )" );
+          Source( map ), ", ", Range( map ), ", ",
+          mapi[1], ", ", mapi[2], " )" );
 end );
 
 InstallMethod( PrintObj, "for an algebra hom. b.i.", true,
@@ -265,8 +265,8 @@ function( map )
 local mapi;
   mapi:=MappingGeneratorsImages(map);
   Print( "AlgebraHomomorphismByImages( ",
-	  Source( map ), ", ", Range( map ), ", ",
-	  mapi[1], ", ", mapi[2], " )" );
+          Source( map ), ", ", Range( map ), ", ",
+          mapi[1], ", ", mapi[2], " )" );
 end );
 
 InstallMethod( PrintObj, "for an algebra-with-one g.m.b.i", true,
@@ -276,8 +276,8 @@ function( map )
 local mapi;
   mapi:=MappingGeneratorsImages(map);
   Print( "AlgebraWithOneGeneralMappingByImages( ",
-	  Source( map ), ", ", Range( map ), ", ",
-	  mapi[1], ", ", mapi[2], " )" );
+          Source( map ), ", ", Range( map ), ", ",
+          mapi[1], ", ", mapi[2], " )" );
 end );
 
 InstallMethod( PrintObj, "for an algebra g.m.b.i", true,
@@ -287,8 +287,8 @@ function( map )
 local mapi;
   mapi:=MappingGeneratorsImages(map);
   Print( "AlgebraGeneralMappingByImages( ",
-	  Source( map ), ", ", Range( map ), ", ",
-	  mapi[1], ", ", mapi[2], " )" );
+          Source( map ), ", ", Range( map ), ", ",
+          mapi[1], ", ", mapi[2], " )" );
 end );
 
 
@@ -662,7 +662,7 @@ InstallMethod( CompositionMapping2,
     local comp,        # composition of <map2> and <map1>, result
           gens,
           genimages,
-	  mapi1,mapi2;
+          mapi1,mapi2;
 
     mapi1:=MappingGeneratorsImages(map1);
     mapi2:=MappingGeneratorsImages(map2);

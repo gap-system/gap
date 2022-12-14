@@ -1141,7 +1141,7 @@ InstallMethod( PthPowerImage,
 
 InstallMethod( PthPowerImage, "for an element of a restricted Lie algebra",
     [ IsJacobianElement ], # weaker filter, we maybe only discovered later
-      			   # that the algebra is restricted
+                           # that the algebra is restricted
     function(x)
     local fam;
     fam := FamilyObj(x);
@@ -1157,7 +1157,7 @@ InstallMethod( PthPowerImage, "for an element of a restricted Lie algebra and an
     if not IsBound(fam!.pMapping) then TryNextMethod(); fi;
     while n>0 do
         x := PTHPOWERIMAGE_PPI_VEC(fam!.fullSCAlgebra,fam!.zerocoeff,Characteristic(fam),fam!.basisVectors,fam!.pMapping,ExtRepOfObj(x),x);
-	n := n-1;
+        n := n-1;
     od;
     return x;
 end);
@@ -1168,10 +1168,10 @@ InstallMethod( PClosureSubalgebra, "for a subalgebra of restricted jacobian elem
     local i, p, oldA;
 
     repeat
-	oldA := A;
+        oldA := A;
         for i in Basis(oldA) do
-      	    A := ClosureLeftModule(A,PthPowerImage(i));
-    	od;
+            A := ClosureLeftModule(A,PthPowerImage(i));
+        od;
     until A=oldA;
     return A;
 end);
@@ -3748,13 +3748,14 @@ InstallGlobalFunction( FreeLieAlgebra, function( arg )
                     z := Concatenation(x[1],y[1]);
                     if z<y[1] and x[1]<y[1] and (x[2]=fail or x[2]>=y[1]) then
                         Add(B[d],[z,y[1],x[3]*y[3]]);
+
                     fi;
                 od; od;
             od;
         od;
         if degree<1 then B := []; else B := B[degree]; fi;
         return FreeLeftModule( R, List( B,
-		p->ElementOfMagmaRing( F, zero, [ one ], [ p[3] ] )), Zero(L));
+                p->ElementOfMagmaRing( F, zero, [ one ], [ p[3] ] )), Zero(L));
     end) );
     # Return the ring.
     return L;
@@ -3892,9 +3893,9 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
                fi;
              od;
 
-       	     if u[1]=u[2] then
+             if u[1]=u[2] then
                # the whole expression `s' reduces to zero.
-	       ll:= Filtered([1..Length(todo)], x->x<>k);
+               ll:= Filtered([1..Length(todo)], x->x<>k);
                todo:= todo{ll};
              else
                if Flat([u[1]]) > Flat([u[2]]) then

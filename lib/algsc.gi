@@ -243,9 +243,9 @@ InstallMethod( String,
       zero:= Zero( elm[1] );
 
       if elm[ depth ] <> one then
-	Add(s,'(');
-	Append(s,String(elm[ depth ]));
-	Append(s, ")*" );
+        Add(s,'(');
+        Append(s,String(elm[ depth ]));
+        Append(s, ")*" );
       fi;
       Append(s, names[ depth ] );
 
@@ -253,11 +253,11 @@ InstallMethod( String,
         if elm[i] <> zero then
           Add(s, '+' );
           if elm[i] <> one then
-	    Add(s,'(');
-	    Append(s,String(elm[ i ]));
-	    Append(s, ")*" );
+            Add(s,'(');
+            Append(s,String(elm[ i ]));
+            Append(s, ")*" );
           fi;
-	  Append(s, names[ i ] );
+          Append(s, names[ i ] );
         fi;
       od;
 

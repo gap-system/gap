@@ -141,7 +141,7 @@ local ocr,fphom,fpg,free,len,dim,tmp,L0,S,R,rels,mat,r,RS,i,g,v,cnt;
   fpg:=FreeGeneratorsOfFpGroup(Range(fphom));
   ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(fphom))];
   ocr.generators:=List(GeneratorsOfGroup(Range(fphom)),
-			i->PreImagesRepresentative(fphom,i));
+                        i->PreImagesRepresentative(fphom,i));
   OCAddMatrices(ocr,ocr.generators);
   OCAddRelations(ocr,ocr.generators);
   OCAddSumMatrices(ocr,ocr.generators);
@@ -171,7 +171,7 @@ local ocr,fphom,fpg,free,len,dim,tmp,L0,S,R,rels,mat,r,RS,i,g,v,cnt;
   free:=FreeGroup(Length(ocr.generators),"f");
   ocr.free:=free;
   ocr.decomp:=GroupGeneralMappingByImages(Image(nat,G),free,
-	ocr.factorgens,GeneratorsOfGroup(free));
+        ocr.factorgens,GeneratorsOfGroup(free));
 
   # Initialize system.
   len:=Length(ocr.generators);
@@ -194,8 +194,8 @@ local ocr,fphom,fpg,free,len,dim,tmp,L0,S,R,rels,mat,r,RS,i,g,v,cnt;
     for g  in [1..len]  do
       RS:=OCEquationMatrix(ocr,rels[i],g);
       for v in RS do
-	Append(mat[r],v);
-	r:=r+1;
+        Append(mat[r],v);
+        r:=r+1;
       od;
     od;
   od;
@@ -261,9 +261,9 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
   v:=[];
   rels:=ocr.relators;
   genimages:=List(ocr.factorgens,i->MappedWord(
-	        ImagesRepresentative(ocr.decomp,Image(fhom,i)),
-		GeneratorsOfGroup(ocr.free),
-		ocr.generators));
+                ImagesRepresentative(ocr.decomp,Image(fhom,i)),
+                GeneratorsOfGroup(ocr.free),
+                ocr.generators));
   for i in [1..Length(rels)] do
     v1:=OCEquationVectorAutom(ocr,rels[i],genimages);
     Add(v,v1);
@@ -308,18 +308,18 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
       l:=Length(ocr.modulePcgs);
       for i in [1..Length(genimages)] do
         v1:=s{[(i-1)*l+1..(i*l)]}*psim;
-	for j in [1..Length(v1)] do
-	  t[(i-1)*l+j]:=v1[j];
-	od;
+          for j in [1..Length(v1)] do
+            t[(i-1)*l+j]:=v1[j];
+          od;
       od;
       s:=ocr.cocycleToList(t);
       for i in [1..Length(genimages)] do
-	genimages[i]:=genimages[i]*s[i];
+        genimages[i]:=genimages[i]*s[i];
       od;
 
       # later use NC version
       hom:=GroupHomomorphismByImagesNC(ocr.group,ocr.group,
-	      ocr.generators,genimages);
+              ocr.generators,genimages);
       Assert(2,IsBijective(hom));
       return hom;
     fi;
@@ -762,15 +762,15 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     if isBadPermrep(AQP) then
       a:=SmallerDegreePermutationRepresentation(AQP:cheap);
       if NrMovedPoints(Image(a))<NrMovedPoints(AQP) then
-	Info(InfoMorph,3,"Permdegree reduced ",
-	      NrMovedPoints(AQP),"->",NrMovedPoints(Image(a)));
-	AQiso:=AQiso*a;
-	b:=Image(a,AQP);
-	if Length(GeneratorsOfGroup(b))>Length(GeneratorsOfGroup(AQP)) then
-	  b:=Group(List(GeneratorsOfGroup(AQP),x->ImagesRepresentative(a,x)));
-	  SetSize(b,Size(AQP));
-	fi;
-	AQP:=b;
+        Info(InfoMorph,3,"Permdegree reduced ",
+              NrMovedPoints(AQP),"->",NrMovedPoints(Image(a)));
+        AQiso:=AQiso*a;
+        b:=Image(a,AQP);
+        if Length(GeneratorsOfGroup(b))>Length(GeneratorsOfGroup(AQP)) then
+          b:=Group(List(GeneratorsOfGroup(AQP),x->ImagesRepresentative(a,x)));
+          SetSize(b,Size(AQP));
+        fi;
+        AQP:=b;
       fi;
     fi;
 
@@ -783,31 +783,31 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       sz:=Size(Aperm);
       if Size(gp)/Size(Aperm)>lim then
         no:=Normalizer(gp,Aperm);
-	if Size(no)>Size(Aperm) and Size(no)<Size(gp) then
-	  stablim(no,cond,lim);
-	fi;
+        if Size(no)>Size(Aperm) and Size(no)<Size(gp) then
+          stablim(no,cond,lim);
+        fi;
       else
-	no:=Aperm;
+        no:=Aperm;
       fi;
       if Size(gp)/Size(Aperm)>lim then
-	ac:=AscendingChain(gp,Aperm);
-	List(Union(List(ac,GeneratorsOfGroup)),cond); # try generators...
-	if Size(Aperm)>sz then
-	  ac:=Unique(List(ac,x->ClosureGroup(Aperm,x)));
-	fi;
+        ac:=AscendingChain(gp,Aperm);
+        List(Union(List(ac,GeneratorsOfGroup)),cond); # try generators...
+        if Size(Aperm)>sz then
+          ac:=Unique(List(ac,x->ClosureGroup(Aperm,x)));
+        fi;
 
-	i:=First([Length(ac),Length(ac)-1..1],x->Size(ac[x])/sz<=lim);
-	sub:=ac[i];
+        i:=First([Length(ac),Length(ac)-1..1],x->Size(ac[x])/sz<=lim);
+        sub:=ac[i];
       else
-	sub:=gp;
+        sub:=gp;
       fi;
       if Size(sub)>Size(Aperm) and not IsSubset(no,sub) then
-	SubgroupProperty(sub,cond,Aperm);
+        SubgroupProperty(sub,cond,Aperm);
       fi;
       same:=Size(Aperm)=sz;
       if not same then
-	Info(InfoMorph,3,"stablim improves by ",Size(Aperm)/sz,
-	" remaining ",Size(gp)/Size(Aperm));
+        Info(InfoMorph,3,"stablim improves by ",Size(Aperm)/sz,
+        " remaining ",Size(gp)/Size(Aperm));
       fi;
     until same;
     return sub=gp;
@@ -829,29 +829,29 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     somechar:=ValueOption("someCharacteristics");
     if somechar<>fail then
       if IsRecord(somechar) then
-	if IsBound(somechar.orbits) then
-	  scharorb:=somechar.orbits;
-	fi;
-	somechar:=somechar.subgroups;
+        if IsBound(somechar.orbits) then
+          scharorb:=somechar.orbits;
+        fi;
+        somechar:=somechar.subgroups;
       fi;
       for i in somechar do
-	d:=RefinedSubnormalSeries(d,i);
+        d:=RefinedSubnormalSeries(d,i);
       od;
     fi;
     for i in PrimeDivisors(Size(r)) do
       u:=PCore(r,i);
       if Size(u)>1 then
-	d:=RefinedSubnormalSeries(d,u);
-	j:=1;
-	repeat
-	  v:=Agemo(u,i,j);
-	  if Size(v)>1 then
-	    d:=RefinedSubnormalSeries(d,v);
-	  fi;
-	  j:=j+1;
-	until Size(v)=1;
-	j:=1;
-	repeat
+        d:=RefinedSubnormalSeries(d,u);
+        j:=1;
+        repeat
+          v:=Agemo(u,i,j);
+          if Size(v)>1 then
+            d:=RefinedSubnormalSeries(d,v);
+          fi;
+          j:=j+1;
+        until Size(v)=1;
+        j:=1;
+        repeat
           if Size(u)>=2^24 then
             v:=u; # bail out as method for `Omega` will do so.
           else
@@ -862,7 +862,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
             j:=j+1;
           fi;
 
-	until Size(v)=Size(u);
+        until Size(v)=Size(u);
       fi;
 
     od;
@@ -910,13 +910,13 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       u:=ClosureSubgroup(u,SylowSubgroup(i,p));
       v:=ser[Length(ser)];
       while not HasElementaryAbelianFactorGroup(u,v) do
-	gens:=Filtered(GeneratorsOfGroup(u),x->not x in v);
+        gens:=Filtered(GeneratorsOfGroup(u),x->not x in v);
         e:=List(gens,x->First([1..bd],a->x^(p^a) in v));
-	e:=p^(Maximum(e)-1);
-	for j in gens do
-	  v:=ClosureSubgroup(v,j^e);
-	od;
-	Add(ser,v);
+        e:=p^(Maximum(e)-1);
+        for j in gens do
+          v:=ClosureSubgroup(v,j^e);
+        od;
+        Add(ser,v);
       od;
       Add(ser,u);
     od;
@@ -928,11 +928,11 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
   hom:=ff.factorhom;
   Q:=Image(hom,G);
   if IsPermGroup(Q) and NrMovedPoints(Q)/Size(Q)*Size(Socle(Q))
-	>SufficientlySmallDegreeSimpleGroupOrder(Size(Q)) then
+        >SufficientlySmallDegreeSimpleGroupOrder(Size(Q)) then
     # just in case the radical factor hom is inherited.
     Q:=SmallerDegreePermutationRepresentation(Q:cheap);
     Info(InfoMorph,3,"Radical factor degree reduced ",NrMovedPoints(Range(hom)),
-	      " -> ",NrMovedPoints(Range(Q)));
+              " -> ",NrMovedPoints(Range(Q)));
     hom:=hom*Q;
     Q:=Image(hom,G);
   fi;
@@ -979,8 +979,8 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
       # inherit radical factor map
       q:=GroupHomomorphismByImagesNC(Q,Range(ff.factorhom),
-	List(GeneratorsOfGroup(G),x->ImagesRepresentative(hom,x)),
-	List(GeneratorsOfGroup(G),x->ImagesRepresentative(ff.factorhom,x)));
+        List(GeneratorsOfGroup(G),x->ImagesRepresentative(hom,x)),
+        List(GeneratorsOfGroup(G),x->ImagesRepresentative(ff.factorhom,x)));
       b:=Image(hom,ff.radical);
       SetSolvableRadical(Q,b);
       AddNaturalHomomorphismsPool(Q,b,q);
@@ -988,9 +988,9 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       # Use known maximals for Frattini
       for j in ma do
         D:=Image(hom,j);
-	if not IsSubset(D,b) then
-	  b:=Core(Q,NormalIntersection(b,D));
-	fi;
+        if not IsSubset(D,b) then
+          b:=Core(Q,NormalIntersection(b,D));
+        fi;
       od;
       SetIsNilpotentGroup(b,true);
       SetFrattiniSubgroup(Q,b);
@@ -999,8 +999,8 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       Mim:=Image(hom,M);
       MPcgs:=Pcgs(Mim);
       q:=GroupHomomorphismByImagesNC(Q,OQ,
-	List(GeneratorsOfGroup(G),x->ImagesRepresentative(hom,x)),
-	List(GeneratorsOfGroup(G),x->ImagesRepresentative(lhom,x)));
+        List(GeneratorsOfGroup(G),x->ImagesRepresentative(hom,x)),
+        List(GeneratorsOfGroup(G),x->ImagesRepresentative(lhom,x)));
       AddNaturalHomomorphismsPool(Q,Mim,q);
 
       mo:=GModuleByMats(LinearActionLayer(GeneratorsOfGroup(Q),MPcgs),GF(RelativeOrders(MPcgs)[1]));
@@ -1008,32 +1008,32 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       ocr:=OneCocycles(Q,Mim);
       split:=ocr.isSplitExtension;
       if not split then
-	# test: Semisimple and Frattini
-	b:=MTX.BasisRadical(mo);
-	fratsim:=Length(b)=0;
-	if not fratsim then
-	  b:=List(b,x->PreImagesRepresentative(hom,PcElementByExponents(MPcgs,x)));
-	  for j in b do
-	    N:=ClosureSubgroup(N,b);
-	  od;
-	  # insert
-	  for j in [Length(ser),Length(ser)-1..i+1] do
-	    ser[j+1]:=ser[j];
-	  od;
-	  ser[i+1]:=N;
-	  Info(InfoMorph,2,"insert1");
-	else
-	  # Frattini?
-	  fratsim:=IsSubset(FrattiniSubgroup(Q),Mim);
-	  if not fratsim then
-	    N:=Intersection(FrattiniSubgroup(Q),Mim);
-	    # insert
-	    for j in [Length(ser),Length(ser)-1..i+1] do
-	      ser[j+1]:=ser[j];
-	    od;
-	    ser[i+1]:=PreImage(hom,N);
-	    Info(InfoMorph,2,"insert2");
-	  fi;
+        # test: Semisimple and Frattini
+        b:=MTX.BasisRadical(mo);
+        fratsim:=Length(b)=0;
+        if not fratsim then
+          b:=List(b,x->PreImagesRepresentative(hom,PcElementByExponents(MPcgs,x)));
+          for j in b do
+            N:=ClosureSubgroup(N,b);
+          od;
+          # insert
+          for j in [Length(ser),Length(ser)-1..i+1] do
+            ser[j+1]:=ser[j];
+          od;
+          ser[i+1]:=N;
+          Info(InfoMorph,2,"insert1");
+        else
+          # Frattini?
+          fratsim:=IsSubset(FrattiniSubgroup(Q),Mim);
+          if not fratsim then
+            N:=Intersection(FrattiniSubgroup(Q),Mim);
+            # insert
+            for j in [Length(ser),Length(ser)-1..i+1] do
+              ser[j+1]:=ser[j];
+            od;
+            ser[i+1]:=PreImage(hom,N);
+            Info(InfoMorph,2,"insert2");
+          fi;
           N:=ser[i+1]; # the added normal
           if rada<>fail
              and ForAny(GeneratorsOfGroup(rada),x->N<>Image(x,N)) then
@@ -1042,7 +1042,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
             NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
             rada:=Stabilizer(rada,N,asAutom);
           fi;
-	fi;
+        fi;
       fi;
     until split or fratsim;
 
@@ -1091,15 +1091,15 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       # find noninner of B
       innB:=List(SmallGeneratingSet(Zm),z->InnerAutomorphism(Q,z));
       innB:=Group(One(DefaultFieldOfMatrixGroup(maut))*
-		      List(innB,inn->List(MPcgs,m->ExponentsOfPcElement(MPcgs,Image(inn,m)))));
+                      List(innB,inn->List(MPcgs,m->ExponentsOfPcElement(MPcgs,Image(inn,m)))));
 
       tmpAut:=SubgroupNC(maut,Filtered(GeneratorsOfGroup(maut),aut->not aut in innB));
 
       gens:=GeneratorsOfGroup(ocr.complement);
       for a  in GeneratorsOfGroup(tmpAut)  do
-	imM:=List(a,i->PcElementByExponents(MPcgs,i));
-	imM:=GroupHomomorphismByImagesNC(Q,Q,Concatenation(MPcgs,gens),Concatenation(imM,gens));
-	Assert(2,IsBijective(imM));
+        imM:=List(a,i->PcElementByExponents(MPcgs,i));
+        imM:=GroupHomomorphismByImagesNC(Q,Q,Concatenation(MPcgs,gens),Concatenation(imM,gens));
+        Assert(2,IsBijective(imM));
         Add(B,imM);
       od;
 
@@ -1111,29 +1111,29 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       cond:=function(perm)
       local aut,newgens,mo2,iso,a;
         if perm in Aperm then
-	  return true;
-	fi;
+          return true;
+        fi;
         aut:=PreImagesRepresentative(AQiso,perm);
-	newgens:=List(gens,x->PreImagesRepresentative(comiso,
-	  ImagesRepresentative(aut,ImagesRepresentative(comiso,x))));
+        newgens:=List(gens,x->PreImagesRepresentative(comiso,
+          ImagesRepresentative(aut,ImagesRepresentative(comiso,x))));
 
         mo2:=GModuleByMats(LinearActionLayer(newgens,MPcgs),mo.field);
-	iso:=MTX.IsomorphismModules(mo,mo2);
-	if iso=fail then
-	  return false;
-	else
-	  # build associated auto
+        iso:=MTX.IsomorphismModules(mo,mo2);
+        if iso=fail then
+          return false;
+        else
+          # build associated auto
 
-	  a:=GroupHomomorphismByImagesNC(Q,Q,Concatenation(gens,MPcgs),
-	          Concatenation(newgens,
+          a:=GroupHomomorphismByImagesNC(Q,Q,Concatenation(gens,MPcgs),
+                  Concatenation(newgens,
                    List(MPcgs,x->PcElementByExponents(MPcgs,
-		     (ExponentsOfPcElement(MPcgs,x)*One(mo.field))*iso  ))));
-	 Assert(2,IsBijective(a));
+                     (ExponentsOfPcElement(MPcgs,x)*One(mo.field))*iso  ))));
+         Assert(2,IsBijective(a));
          Add(A,a);
-	 Add(Apa,perm);
-	 Aperm:=ClosureGroup(Aperm,perm);
+         Add(Apa,perm);
+         Aperm:=ClosureGroup(Aperm,perm);
          return true;
-	fi;
+        fi;
       end;
 
     else
@@ -1344,16 +1344,16 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       B:=MappingGeneratorsImages(AQiso);
       res:=List(B[1],x->
         GroupHomomorphismByImagesNC(rf,rf,GeneratorsOfGroup(rf),
-	  List(GeneratorsOfGroup(rf),y->ImagesRepresentative(x,y))));
+          List(GeneratorsOfGroup(rf),y->ImagesRepresentative(x,y))));
 
       ind:=[];
       for j in GeneratorsOfGroup(rada) do
-	k:=GroupHomomorphismByImagesNC(rf,rf,
+        k:=GroupHomomorphismByImagesNC(rf,rf,
           GeneratorsOfGroup(rf),
-	  List(GeneratorsOfGroup(rf),
-	    y->ImagesRepresentative(hom,ImagesRepresentative(j,
-	         PreImagesRepresentative(hom,y)))));
-	Assert(2,IsBijective(k));
+          List(GeneratorsOfGroup(rf),
+            y->ImagesRepresentative(hom,ImagesRepresentative(j,
+                 PreImagesRepresentative(hom,y)))));
+        Assert(2,IsBijective(k));
         Add(ind,k);
       od;
 
@@ -1370,83 +1370,83 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
       if Size(ind)<Size(res) then
         # reduce to subgroup that induces valid automorphisms
-	Info(InfoMorph,1,"Radical autos reduce by factor ",Size(res)/Size(ind));
+        Info(InfoMorph,1,"Radical autos reduce by factor ",Size(res)/Size(ind));
         resperm:=IsomorphismPermGroup(C);
-	proj:=GroupHomomorphismByImagesNC(AQP,Image(resperm),
-	  B[2],List(GeneratorsOfGroup(res),x->ImagesRepresentative(resperm,x)));
-	C:=PreImage(proj,Image(resperm,ind));
-	C:=List(SmallGeneratingSet(C),x->PreImagesRepresentative(AQiso,x));
-	AQ:=Group(C);
-	SetIsFinite(AQ,true);
-	SetIsGroupOfAutomorphismsFiniteGroup(AQ,true);
+        proj:=GroupHomomorphismByImagesNC(AQP,Image(resperm),
+          B[2],List(GeneratorsOfGroup(res),x->ImagesRepresentative(resperm,x)));
+        C:=PreImage(proj,Image(resperm,ind));
+        C:=List(SmallGeneratingSet(C),x->PreImagesRepresentative(AQiso,x));
+        AQ:=Group(C);
+        SetIsFinite(AQ,true);
+        SetIsGroupOfAutomorphismsFiniteGroup(AQ,true);
         makeaqiso();
       fi;
 
       # # hook for using existing characteristics to reduce for next step
       if somechar<>fail then
         u:=Filtered(Unique(List(somechar,x->Image(hom,x))),x->Size(x)>1);
-	u:=Filtered(u,s->ForAny(GeneratorsOfGroup(AQ),h->Image(h,s)<>s));
-	SortBy(u,Size);
-	Info(InfoMorph,1,"Forced characteristics ",List(u,Size));
+        u:=Filtered(u,s->ForAny(GeneratorsOfGroup(AQ),h->Image(h,s)<>s));
+        SortBy(u,Size);
+        Info(InfoMorph,1,"Forced characteristics ",List(u,Size));
 
-	if scharorb<>fail then
-	  # these are subgroups for which certain orbits must be stabilized.
-	  C:=List(Reversed(scharorb),x->List(x,y->Image(hom,y)));
-	  C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(Q));
-	  Info(InfoMorph,1,"Forced orbits ",List(C,x->Size(x[1])));
-	  Append(u,C);
-	fi;
+        if scharorb<>fail then
+          # these are subgroups for which certain orbits must be stabilized.
+          C:=List(Reversed(scharorb),x->List(x,y->Image(hom,y)));
+          C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(Q));
+          Info(InfoMorph,1,"Forced orbits ",List(C,x->Size(x[1])));
+          Append(u,C);
+        fi;
 
-	if Length(u)>0 then
-	  C:=MappingGeneratorsImages(AQiso);
-	  if C[2]<>GeneratorsOfGroup(AQP) then
-	    C:=[List(GeneratorsOfGroup(AQP),
-	             x->PreImagesRepresentative(AQiso,x)),
-		     GeneratorsOfGroup(AQP)];
-	  fi;
-	  for j in u do
-	    if IsList(j) then
-	      # stabilizer set of subgroups
-	      jorb:=ShallowCopy(Orbit(AQP,j[1],C[2],C[1],asAutom));
-	      jorpo:=[Position(jorb,j[1]),Position(jorb,j[2])];
-	      if jorpo[2]=fail then
-	        Append(jorb,Orbit(AQP,j[1],C[2],C[1],asAutom));
-		jorpo[2]:=Position(jorb,j[2]);
-	      fi;
-	      if Length(jorb)>Length(j) then
-		B:=ActionHomomorphism(AQP,jorb,C[2],C[1],asAutom);
-		substb:=Group(List(C[2],x->ImagesRepresentative(B,x)),());
-		substb:=Stabilizer(substb,Set(jorpo),OnSets);
-		substb:=PreImage(B,substb);
-		Info(InfoMorph,2,"Stabilize characteristic orbit ",Size(j[1]),
-		  " :",Size(AQP)/Size(substb) );
-	      else
-	        substb:=AQP;
-	      fi;
+        if Length(u)>0 then
+          C:=MappingGeneratorsImages(AQiso);
+          if C[2]<>GeneratorsOfGroup(AQP) then
+            C:=[List(GeneratorsOfGroup(AQP),
+                     x->PreImagesRepresentative(AQiso,x)),
+                 GeneratorsOfGroup(AQP)];
+          fi;
+          for j in u do
+            if IsList(j) then
+              # stabilizer set of subgroups
+              jorb:=ShallowCopy(Orbit(AQP,j[1],C[2],C[1],asAutom));
+              jorpo:=[Position(jorb,j[1]),Position(jorb,j[2])];
+              if jorpo[2]=fail then
+                Append(jorb,Orbit(AQP,j[1],C[2],C[1],asAutom));
+            jorpo[2]:=Position(jorb,j[2]);
+              fi;
+              if Length(jorb)>Length(j) then
+            B:=ActionHomomorphism(AQP,jorb,C[2],C[1],asAutom);
+            substb:=Group(List(C[2],x->ImagesRepresentative(B,x)),());
+            substb:=Stabilizer(substb,Set(jorpo),OnSets);
+            substb:=PreImage(B,substb);
+            Info(InfoMorph,2,"Stabilize characteristic orbit ",Size(j[1]),
+              " :",Size(AQP)/Size(substb) );
+              else
+                substb:=AQP;
+              fi;
 
 
-	    else
-	      substb:=Stabilizer(AQP,j,C[2],C[1],asAutom);
-	      Info(InfoMorph,2,"Stabilize characteristic subgroup ",Size(j),
-		" :",Size(AQP)/Size(substb) );
-	    fi;
-	    if Size(substb)<Size(AQP) then
-	      B:=Size(substb);
-	      substb:=SmallGeneratingSet(substb);
-	      AQP:=Group(substb);
-	      SetSize(AQP,B);
-	      C:=[List(substb,x->PreImagesRepresentative(AQiso,x)),substb];
-	    fi;
+        else
+          substb:=Stabilizer(AQP,j,C[2],C[1],asAutom);
+          Info(InfoMorph,2,"Stabilize characteristic subgroup ",Size(j),
+        " :",Size(AQP)/Size(substb) );
+        fi;
+        if Size(substb)<Size(AQP) then
+          B:=Size(substb);
+          substb:=SmallGeneratingSet(substb);
+          AQP:=Group(substb);
+          SetSize(AQP,B);
+          C:=[List(substb,x->PreImagesRepresentative(AQiso,x)),substb];
+        fi;
 
-	  od;
-	  AQ:=Group(C[1]);
-	  SetIsFinite(AQ,true);
-	  SetIsGroupOfAutomorphismsFiniteGroup(AQ,true);
-	  SetSize(AQ,Size(AQP));
-	  #AQP:=Group(C[2]); # ensure small gen set
-	  #SetSize(AQP,Size(AQ));
-	  makeaqiso();
-	fi;
+      od;
+      AQ:=Group(C[1]);
+      SetIsFinite(AQ,true);
+      SetIsGroupOfAutomorphismsFiniteGroup(AQ,true);
+      SetSize(AQ,Size(AQP));
+      #AQP:=Group(C[2]); # ensure small gen set
+      #SetSize(AQP,Size(AQ));
+      makeaqiso();
+    fi;
       fi;
 
       lastperm:=AQiso;
@@ -1713,7 +1713,7 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
      and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
       Info(InfoPerformance,2,"Using Small Groups Library");
       if IdGroup(a)<>IdGroup(b) then
-	return false;
+        return false;
       fi;
     fi;
     return true;
@@ -1785,7 +1785,7 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
 
   for i in [2..Length(nG)] do
     K:=Filtered([1..Length(nG)],x->Size(nG[x])*2=Size(nG[i])
-	  and IsSubset(nG[i],nG[x]));
+          and IsSubset(nG[i],nG[x]));
     if Length(K)>0 then
       K:=K[1];
       # We are seeking an isomorphism, not the full automorphism group of
@@ -1801,9 +1801,9 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
       # ``characteristic'' to improve the series.
 
       Add(cG,ClosureGroup(
-	ClosureGroup(Image(e1,nG[K]),Image(e2,nH[K])),
-	  Image(e1,First(GeneratorsOfGroup(nG[i]),x->not x in nG[K]))
-	 *Image(e2,First(GeneratorsOfGroup(nH[i]),x->not x in nH[K]))));
+        ClosureGroup(Image(e1,nG[K]),Image(e2,nH[K])),
+          Image(e1,First(GeneratorsOfGroup(nG[i]),x->not x in nG[K]))
+         *Image(e2,First(GeneratorsOfGroup(nH[i]),x->not x in nH[K]))));
 
     fi;
   od;
@@ -1821,7 +1821,7 @@ local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
   #if NrMovedPoints(api)>5000 then
   #  K:=SmallerDegreePermutationRepresentation(api);
   #  Info(InfoMorph,2,"Permdegree reduced ",
-#	  NrMovedPoints(api),"->",NrMovedPoints(Image(K)));
+#         NrMovedPoints(api),"->",NrMovedPoints(Image(K)));
 #    iso:=iso*K;
 #    api:=Image(iso);
 #  fi;

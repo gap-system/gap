@@ -1836,7 +1836,7 @@ InstallMethod( IsSubset,
     # catch trivial case
     if IsSubset(GeneratorsOfLeftOperatorRing(D1),
                   GeneratorsOfLeftOperatorRing(D2)) then
-	return true;
+        return true;
     fi;
     return IsSubset( D1, GeneratorsOverIntersection( D2,
                              GeneratorsOfLeftOperatorRing( D2 ),
