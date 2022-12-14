@@ -36,8 +36,8 @@ enum { MAX_ARITY = 4 };
 
 typedef Obj (*CompileFuncT)(Obj node, Expr expr);
 typedef Obj (*CompileArgT)(Expr expr);
-typedef Expr (*CodeFuncT)(Obj node);
-typedef Expr (*CodeArgT)(Obj node);
+typedef Expr (*CodeFuncT)(CodeState * cs, Obj node);
+typedef Expr (*CodeArgT)(CodeState * cs, Obj node);
 
 
 typedef struct {
@@ -179,6 +179,12 @@ static Obj SyntaxTreeRNam(Expr expr)
     return NAME_RNAM(expr);
 }
 
+static Expr SyntaxTreeCodeRNamObj(CodeState * cs, Obj node)
+{
+    return RNamObj(node);
+}
+
+
 static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
 {
     int       i;
@@ -229,10 +235,10 @@ static Obj SyntaxTreeDefaultCompiler(Obj result, Expr expr)
     return result;
 }
 
-static Stat SyntaxTreeDefaultStatCoder(Obj);
-static Stat SyntaxTreeDefaultExprCoder(Obj);
+static Stat SyntaxTreeDefaultStatCoder(CodeState *, Obj);
+static Stat SyntaxTreeDefaultExprCoder(CodeState *, Obj);
 
-static Expr SyntaxTreeDefaultCoder(Obj node)
+static Expr SyntaxTreeDefaultCoder(CodeState * cs, Obj node)
 {
 
     RequirePlainRec("SyntaxTreeDefaultCoder", node);
@@ -242,7 +248,7 @@ static Expr SyntaxTreeDefaultCoder(Obj node)
     CompilerT comp = Compilers[tnum];
 
     if (comp.code != SyntaxTreeDefaultCoder) {
-        return comp.code(node);
+        return comp.code(cs, node);
     }
 
     // compute how big the statement/expression we are generating needs to
@@ -267,7 +273,7 @@ static Expr SyntaxTreeDefaultCoder(Obj node)
     }
 
     // reserve space for the statement or expressions
-    Expr expr = NewStatOrExpr(tnum, slots * sizeof(Expr), 0);
+    Expr expr = NewStatOrExpr(cs, tnum, slots * sizeof(Expr), 0);
 
     Int  i;
     UInt offset = 0;
@@ -282,11 +288,11 @@ static Expr SyntaxTreeDefaultCoder(Obj node)
                 }
                 else if (comp.args[i].isStat) {
                     WRITE_EXPR(expr, i + offset,
-                               SyntaxTreeDefaultStatCoder(elem));
+                               SyntaxTreeDefaultStatCoder(cs, elem));
                 }
                 else {
                     WRITE_EXPR(expr, i + offset,
-                               SyntaxTreeDefaultExprCoder(elem));
+                               SyntaxTreeDefaultExprCoder(cs, elem));
                 }
             }
             // offset gets set one bigger final time around loop
@@ -294,7 +300,7 @@ static Expr SyntaxTreeDefaultCoder(Obj node)
         }
         else {
             Obj subast = ElmRecST(tnum, node, comp.args[i].argname);
-            WRITE_EXPR(expr, i + offset, comp.args[i].argcode(subast));
+            WRITE_EXPR(expr, i + offset, comp.args[i].argcode(cs, subast));
         }
     }
 
@@ -303,28 +309,28 @@ static Expr SyntaxTreeDefaultCoder(Obj node)
 
 
 // Checks if node codes a statement
-static Stat SyntaxTreeDefaultStatCoder(Obj node)
+static Stat SyntaxTreeDefaultStatCoder(CodeState * cs, Obj node)
 {
     RequirePlainRec("SyntaxTreeDefaultStatCoder", node);
     Int tnum = GetTypeTNum(node);
     if (!(FIRST_STAT_TNUM <= tnum && tnum <= LAST_STAT_TNUM))
         ErrorQuit("tried to code expression %s as statement",
                   (Int)Compilers[tnum].name, 0);
-    return (Stat)SyntaxTreeDefaultCoder(node);
+    return (Stat)SyntaxTreeDefaultCoder(cs, node);
 }
 
 // Checks if node codes an expression
-static Expr SyntaxTreeDefaultExprCoder(Obj node)
+static Expr SyntaxTreeDefaultExprCoder(CodeState * cs, Obj node)
 {
     RequirePlainRec("SyntaxTreeDefaultExprCoder", node);
     UInt1 tnum = GetTypeTNum(node);
     if (!(FIRST_EXPR_TNUM <= tnum && tnum <= LAST_EXPR_TNUM))
         ErrorQuit("tried to code statement %s as expression",
                   (Int)Compilers[tnum].name, 0);
-    return (Expr)SyntaxTreeDefaultCoder(node);
+    return (Expr)SyntaxTreeDefaultCoder(cs, node);
 }
 
-static Expr SyntaxTreeCodeGVar(Obj name)
+static Expr SyntaxTreeCodeGVar(CodeState * cs, Obj name)
 {
     RequireStringRep("SyntaxTreeCodeGVar", name);
     return GVarName(CONST_CSTR_STRING(name));
@@ -336,12 +342,17 @@ static Obj SyntaxTreeRefLVar(Obj result, Expr expr)
     return result;
 }
 
-static Expr SyntaxTreeCodeRefLVar(Obj node)
+static Expr SyntaxTreeCodeRefLVar(CodeState * cs, Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeRefLVar", node);
     Obj lvar = ElmRecST(EXPR_REF_LVAR, node, "lvar");
     RequireSmallInt("SyntaxTreeCodeRefLVar", lvar);
     return REF_LVAR_LVAR(INT_INTOBJ(lvar));
+}
+
+static Expr SyntaxTreeCodeObjInt(CodeState * cs, Obj node)
+{
+    return UInt_ObjInt(node);
 }
 
 static Obj SyntaxTreeEvalCompiler(Obj result, Expr expr)
@@ -388,22 +399,22 @@ static Obj SyntaxTreeRangeExpr(Obj result, Expr expr)
     return result;
 }
 
-static Expr SyntaxTreeCodeRangeExpr(Obj node)
+static Expr SyntaxTreeCodeRangeExpr(CodeState * cs, Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeRangeExpr", node);
     UInt hassecond = ISB_REC(node, RNamName("second"));
     UInt size = hassecond ? 3 : 2;
-    Expr result = NewStatOrExpr(EXPR_RANGE, size * sizeof(Expr), 0);
+    Expr result = NewStatOrExpr(cs, EXPR_RANGE, size * sizeof(Expr), 0);
     WRITE_EXPR(
         result, 0,
-        SyntaxTreeDefaultExprCoder(ElmRecST(EXPR_RANGE, node, "first")));
+        SyntaxTreeDefaultExprCoder(cs, ElmRecST(EXPR_RANGE, node, "first")));
     WRITE_EXPR(
         result, size - 1,
-        SyntaxTreeDefaultExprCoder(ElmRecST(EXPR_RANGE, node, "last")));
+        SyntaxTreeDefaultExprCoder(cs, ElmRecST(EXPR_RANGE, node, "last")));
     if (hassecond) {
         WRITE_EXPR(result, 1,
                    SyntaxTreeDefaultExprCoder(
-                       ElmRecST(EXPR_RANGE, node, "second")));
+                       cs, ElmRecST(EXPR_RANGE, node, "second")));
     }
     return result;
 }
@@ -444,13 +455,13 @@ static Obj SyntaxTreeRecExpr(Obj result, Expr expr)
     return result;
 }
 
-static Expr SyntaxTreeCodeRecExpr(Obj node)
+static Expr SyntaxTreeCodeRecExpr(CodeState * cs, Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeRecExpr", node);
     UInt1 tnum = GetTypeTNum(node);
     Obj   keyvalue = ElmRecST(tnum, node, "keyvalue");
     UInt  len = LEN_LIST(keyvalue);
-    Expr  record = NewStatOrExpr(tnum, 2 * len * sizeof(Expr), 0);
+    Expr  record = NewStatOrExpr(cs, tnum, 2 * len * sizeof(Expr), 0);
     for (int i = 0; i < len; i++) {
         Obj  keyvaluepair = ELM_LIST(keyvalue, i + 1);
         Obj  keynode = ElmRecST(tnum, keyvaluepair, "key");
@@ -460,9 +471,9 @@ static Expr SyntaxTreeCodeRecExpr(Obj node)
             key = INTEXPR_INT(RNamObj(keynode));
         }
         else {
-            key = SyntaxTreeDefaultExprCoder(keynode);
+            key = SyntaxTreeDefaultExprCoder(cs, keynode);
         }
-        Expr value = SyntaxTreeDefaultExprCoder(valuenode);
+        Expr value = SyntaxTreeDefaultExprCoder(cs, valuenode);
         WRITE_EXPR(record, 2 * i, key);
         WRITE_EXPR(record, 2 * i + 1, value);
     }
@@ -487,20 +498,20 @@ static Obj SyntaxTreeFloatEager(Obj result, Expr expr)
     return result;
 }
 
-static Expr SyntaxTreeCodeFloatLazy(Obj node)
+static Expr SyntaxTreeCodeFloatLazy(CodeState * cs, Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeFloatLazy", node);
     Obj value = ElmRecST(EXPR_FLOAT_LAZY, node, "value");
-    return CodeLazyFloatExpr(value, 0);
+    return CodeLazyFloatExpr(cs, value, 0);
 }
 
-static Expr SyntaxTreeCodeFloatEager(Obj node)
+static Expr SyntaxTreeCodeFloatEager(CodeState * cs, Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeFloatEager", node);
     Obj  value = ElmRecST(EXPR_FLOAT_EAGER, node, "value");
     Obj  string = ElmRecST(EXPR_FLOAT_EAGER, node, "string");
     Obj  mark = ElmRecST(EXPR_FLOAT_EAGER, node, "mark");
-    Expr fl = NewStatOrExpr(EXPR_FLOAT_EAGER, 3 * sizeof(UInt), 0);
+    Expr fl = NewStatOrExpr(cs, EXPR_FLOAT_EAGER, 3 * sizeof(UInt), 0);
     WRITE_EXPR(fl, 0, AddValueToBody(value));
     WRITE_EXPR(fl, 1, AddValueToBody(string));
     WRITE_EXPR(fl, 2, (UInt)CHAR_VALUE(mark));
@@ -541,26 +552,26 @@ static Obj SyntaxTreeCompilePragma(Obj result, Stat stat)
     return result;
 }
 
-static Expr SyntaxTreeCodeIf(Obj node)
+static Expr SyntaxTreeCodeIf(CodeState * cs, Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeIf", node);
     UInt1 tnum = GetTypeTNum(node);
     Obj   branches = ElmRecST(tnum, node, "branches");
     UInt  len = LEN_LIST(branches);
-    Expr  ifexpr = NewStatOrExpr(tnum, 2 * len * sizeof(Expr), 0);
+    Expr  ifexpr = NewStatOrExpr(cs, tnum, 2 * len * sizeof(Expr), 0);
     for (int i = 0; i < len; i++) {
         Obj  condbodypair = ELM_LIST(branches, i + 1);
         Obj  conditionnode = ElmRecST(tnum, condbodypair, "condition");
         Obj  bodynode = ElmRecST(tnum, condbodypair, "body");
-        Expr condition = SyntaxTreeDefaultExprCoder(conditionnode);
-        Stat body = SyntaxTreeDefaultStatCoder(bodynode);
+        Expr condition = SyntaxTreeDefaultExprCoder(cs, conditionnode);
+        Stat body = SyntaxTreeDefaultStatCoder(cs, bodynode);
         WRITE_EXPR(ifexpr, 2 * i, condition);
         WRITE_EXPR(ifexpr, 2 * i + 1, body);
     }
     return ifexpr;
 }
 
-static Expr SyntaxTreeCodeImmediateInteger(Obj node)
+static Expr SyntaxTreeCodeImmediateInteger(CodeState * cs, Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeImmediateInteger", node);
     Obj value = ElmRecST(EXPR_INT, node, "value");
@@ -569,23 +580,23 @@ static Expr SyntaxTreeCodeImmediateInteger(Obj node)
     return INTEXPR_INT(INT_INTOBJ(value));
 }
 
-static Expr SyntaxTreeCodeValue(Obj node)
+static Expr SyntaxTreeCodeValue(CodeState * cs, Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeValue", node);
     UInt1 tnum = GetTypeTNum(node);
     Obj   value = ElmRecST(tnum, node, "value");
-    Expr  expr = NewStatOrExpr(tnum, sizeof(UInt), 0);
+    Expr  expr = NewStatOrExpr(cs, tnum, sizeof(UInt), 0);
     Int   ix = AddValueToBody(value);
     WRITE_EXPR(expr, 0, ix);
     return expr;
 }
 
-static Expr SyntaxTreeCodeChar(Obj node)
+static Expr SyntaxTreeCodeChar(CodeState * cs, Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeChar", node);
     Obj  chr = ElmRecST(EXPR_CHAR, node, "value");
     Char currchar = CHAR_VALUE(chr);
-    Expr lit = NewStatOrExpr(EXPR_CHAR, sizeof(UInt), 0);
+    Expr lit = NewStatOrExpr(cs, EXPR_CHAR, sizeof(UInt), 0);
     WRITE_EXPR(lit, 0, currchar);
     return lit;
 }
@@ -627,7 +638,7 @@ static Obj SyntaxTreeFunc(Obj result, Obj func)
     return result;
 }
 
-static Expr SyntaxTreeCodeFunc(Obj node)
+static Expr SyntaxTreeCodeFunc(CodeState * cs, Obj node)
 {
     RequirePlainRec("SyntaxTreeCodeFunc", node);
     Int narg = INT_INTOBJ(ElmRecST(EXPR_FUNC, node, "narg"));
@@ -637,23 +648,25 @@ static Expr SyntaxTreeCodeFunc(Obj node)
     if (variadic == True) {
         narg = -narg;
     }
-    CodeFuncExprBegin(narg, nloc, nams, 0, 0);
+    CodeFuncExprBegin(cs, narg, nloc, nams, 0, 0);
     Obj  stat_rec = ElmRecST(EXPR_FUNC, node, "stats");
     Obj  body_stats = ElmRecST(EXPR_FUNC, stat_rec, "statements");
     UInt nr_stats = LEN_LIST(body_stats);
     for (int i = 1; i <= nr_stats; i++) {
-        Expr current = SyntaxTreeDefaultStatCoder(ELM_LIST(body_stats, i));
+        Expr current =
+            SyntaxTreeDefaultStatCoder(cs, ELM_LIST(body_stats, i));
         PushStat(current);
     }
-    return CodeFuncExprEnd(nr_stats, FALSE, 0);
+    return CodeFuncExprEnd(cs, nr_stats, FALSE, 0);
 }
 
 static Obj FuncSYNTAX_TREE_CODE(Obj self, Obj tree)
 {
     RequirePlainRec(SELF_NAME, tree);
-    CodeBegin();
-    SyntaxTreeCodeFunc(tree);
-    Obj func = CodeEnd(0);
+    CodeState cs;
+    CodeBegin(&cs);
+    SyntaxTreeCodeFunc(&cs, tree);
+    Obj func = CodeEnd(&cs, 0);
     if (IsbPRec(tree, RNamName("name"))) {
         Obj name = ELM_REC(tree, RNamName("name"));
         SET_NAME_FUNC(func, name);
@@ -734,14 +747,16 @@ static const CompilerT Compilers[] = {
     COMPILER_(STAT_RETURN_VOID),
 
     COMPILER_(STAT_ASS_LVAR,
-              ARG_EXPR("lvar", ObjInt_UInt, UInt_ObjInt),
+              ARG_EXPR("lvar", ObjInt_UInt, SyntaxTreeCodeObjInt),
               ARG_EXPR_("rhs")),
-    COMPILER_(STAT_UNB_LVAR, ARG_EXPR("lvar", ObjInt_UInt, UInt_ObjInt)),
+    COMPILER_(STAT_UNB_LVAR,
+              ARG_EXPR("lvar", ObjInt_UInt, SyntaxTreeCodeObjInt)),
 
     COMPILER_(STAT_ASS_HVAR,
-              ARG_EXPR("hvar", ObjInt_UInt, UInt_ObjInt),
+              ARG_EXPR("hvar", ObjInt_UInt, SyntaxTreeCodeObjInt),
               ARG_EXPR_("rhs")),
-    COMPILER_(STAT_UNB_HVAR, ARG_EXPR("hvar", ObjInt_UInt, UInt_ObjInt)),
+    COMPILER_(STAT_UNB_HVAR,
+              ARG_EXPR("hvar", ObjInt_UInt, SyntaxTreeCodeObjInt)),
 
     COMPILER_(STAT_ASS_GVAR,
               ARG_EXPR("gvar", NameGVar, SyntaxTreeCodeGVar),
@@ -750,25 +765,30 @@ static const CompilerT Compilers[] = {
 
     COMPILER_(
         STAT_ASS_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos"), ARG_EXPR_("rhs")),
-    COMPILER_(
-        STAT_ASS_MAT, ARG_EXPR_("list"), ARG_EXPR_("row"), ARG_EXPR_("col"), ARG_EXPR_("rhs")),
-    COMPILER_(
-        STAT_ASSS_LIST, ARG_EXPR_("list"), ARG_EXPR_("poss"), ARG_EXPR_("rhss")),
+    COMPILER_(STAT_ASS_MAT,
+              ARG_EXPR_("list"),
+              ARG_EXPR_("row"),
+              ARG_EXPR_("col"),
+              ARG_EXPR_("rhs")),
+    COMPILER_(STAT_ASSS_LIST,
+              ARG_EXPR_("list"),
+              ARG_EXPR_("poss"),
+              ARG_EXPR_("rhss")),
     COMPILER_(STAT_ASS_LIST_LEV,
               ARG_EXPR_("lists"),
               ARG_EXPR_("pos"),
               ARG_EXPR_("rhss"),
-              ARG_EXPR("level", ObjInt_UInt, UInt_ObjInt)),
+              ARG_EXPR("level", ObjInt_UInt, SyntaxTreeCodeObjInt)),
     COMPILER_(STAT_ASSS_LIST_LEV,
               ARG_EXPR_("lists"),
               ARG_EXPR_("poss"),
               ARG_EXPR_("rhss"),
-              ARG_EXPR("level", ObjInt_UInt, UInt_ObjInt)),
+              ARG_EXPR("level", ObjInt_UInt, SyntaxTreeCodeObjInt)),
     COMPILER_(STAT_UNB_LIST, ARG_EXPR_("list"), ARG_EXPR_("pos")),
 
     COMPILER_(STAT_ASS_REC_NAME,
               ARG_EXPR_("record"),
-              ARG_EXPR("rnam", SyntaxTreeRNam, RNamObj),
+              ARG_EXPR("rnam", SyntaxTreeRNam, SyntaxTreeCodeRNamObj),
               ARG_EXPR_("rhs")),
     COMPILER_(STAT_ASS_REC_EXPR,
               ARG_EXPR_("record"),
@@ -776,8 +796,9 @@ static const CompilerT Compilers[] = {
               ARG_EXPR_("rhs")),
     COMPILER_(STAT_UNB_REC_NAME,
               ARG_EXPR_("record"),
-              ARG_EXPR("rnam", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(STAT_UNB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+              ARG_EXPR("rnam", SyntaxTreeRNam, SyntaxTreeCodeRNamObj)),
+    COMPILER_(
+        STAT_UNB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
 
     COMPILER_(STAT_ASS_POSOBJ,
               ARG_EXPR_("posobj"),
@@ -787,7 +808,7 @@ static const CompilerT Compilers[] = {
 
     COMPILER_(STAT_ASS_COMOBJ_NAME,
               ARG_EXPR_("comobj"),
-              ARG_EXPR("rnam", SyntaxTreeRNam, RNamObj),
+              ARG_EXPR("rnam", SyntaxTreeRNam, SyntaxTreeCodeRNamObj),
               ARG_EXPR_("rhs")),
     COMPILER_(STAT_ASS_COMOBJ_EXPR,
               ARG_EXPR_("comobj"),
@@ -795,11 +816,12 @@ static const CompilerT Compilers[] = {
               ARG_EXPR_("rhs")),
     COMPILER_(STAT_UNB_COMOBJ_NAME,
               ARG_EXPR_("comobj"),
-              ARG_EXPR("rnam", SyntaxTreeRNam, RNamObj)),
+              ARG_EXPR("rnam", SyntaxTreeRNam, SyntaxTreeCodeRNamObj)),
     COMPILER_(
         STAT_UNB_COMOBJ_EXPR, ARG_EXPR_("comobj"), ARG_EXPR_("expression")),
 
-    COMPILER_(STAT_INFO, ARG_EXPR_("sel"), ARG_EXPR_("lev"), ARGS_EXPR("args")),
+    COMPILER_(
+        STAT_INFO, ARG_EXPR_("sel"), ARG_EXPR_("lev"), ARGS_EXPR("args")),
     COMPILER_(STAT_ASSERT_2ARGS, ARG_EXPR_("level"), ARG_EXPR_("condition")),
     COMPILER_(STAT_ASSERT_3ARGS,
               ARG_EXPR_("level"),
@@ -865,10 +887,13 @@ static const CompilerT Compilers[] = {
     //           references to LVARs, so we have to treat
     //           them specially here
     COMPILER(EXPR_REF_LVAR, SyntaxTreeRefLVar, SyntaxTreeCodeRefLVar),
-    COMPILER_(EXPR_ISB_LVAR, ARG_EXPR("lvar", ObjInt_UInt, UInt_ObjInt)),
+    COMPILER_(EXPR_ISB_LVAR,
+              ARG_EXPR("lvar", ObjInt_UInt, SyntaxTreeCodeObjInt)),
 
-    COMPILER_(EXPR_REF_HVAR, ARG_EXPR("hvar", ObjInt_UInt, UInt_ObjInt)),
-    COMPILER_(EXPR_ISB_HVAR, ARG_EXPR("hvar", ObjInt_UInt, UInt_ObjInt)),
+    COMPILER_(EXPR_REF_HVAR,
+              ARG_EXPR("hvar", ObjInt_UInt, SyntaxTreeCodeObjInt)),
+    COMPILER_(EXPR_ISB_HVAR,
+              ARG_EXPR("hvar", ObjInt_UInt, SyntaxTreeCodeObjInt)),
 
     COMPILER_(EXPR_REF_GVAR, ARG_EXPR("gvar", NameGVar, SyntaxTreeCodeGVar)),
     COMPILER_(EXPR_ISB_GVAR, ARG_EXPR("gvar", NameGVar, SyntaxTreeCodeGVar)),
@@ -881,30 +906,32 @@ static const CompilerT Compilers[] = {
     COMPILER_(EXPR_ELM_LIST_LEV,
               ARG_EXPR_("lists"),
               ARGS_EXPR("pos"),
-              ARG_EXPR("level", ObjInt_UInt, UInt_ObjInt)),
+              ARG_EXPR("level", ObjInt_UInt, SyntaxTreeCodeObjInt)),
     COMPILER_(EXPR_ELMS_LIST_LEV,
               ARG_EXPR_("lists"),
               ARG_EXPR_("poss"),
-              ARG_EXPR("level", ObjInt_UInt, UInt_ObjInt)),
+              ARG_EXPR("level", ObjInt_UInt, SyntaxTreeCodeObjInt)),
     COMPILER_(EXPR_ISB_LIST, ARG_EXPR_("list"), ARGS_EXPR("pos")),
     COMPILER_(EXPR_ELM_REC_NAME,
               ARG_EXPR_("record"),
-              ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(EXPR_ELM_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+              ARG_EXPR("name", SyntaxTreeRNam, SyntaxTreeCodeRNamObj)),
+    COMPILER_(
+        EXPR_ELM_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
     COMPILER_(EXPR_ISB_REC_NAME,
               ARG_EXPR_("record"),
-              ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
-    COMPILER_(EXPR_ISB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
+              ARG_EXPR("name", SyntaxTreeRNam, SyntaxTreeCodeRNamObj)),
+    COMPILER_(
+        EXPR_ISB_REC_EXPR, ARG_EXPR_("record"), ARG_EXPR_("expression")),
     COMPILER_(EXPR_ELM_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
     COMPILER_(EXPR_ISB_POSOBJ, ARG_EXPR_("posobj"), ARG_EXPR_("pos")),
     COMPILER_(EXPR_ELM_COMOBJ_NAME,
               ARG_EXPR_("comobj"),
-              ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
+              ARG_EXPR("name", SyntaxTreeRNam, SyntaxTreeCodeRNamObj)),
     COMPILER_(
         EXPR_ELM_COMOBJ_EXPR, ARG_EXPR_("comobj"), ARG_EXPR_("expression")),
     COMPILER_(EXPR_ISB_COMOBJ_NAME,
               ARG_EXPR_("comobj"),
-              ARG_EXPR("name", SyntaxTreeRNam, RNamObj)),
+              ARG_EXPR("name", SyntaxTreeRNam, SyntaxTreeCodeRNamObj)),
     COMPILER_(
         EXPR_ISB_COMOBJ_EXPR, ARG_EXPR_("comobj"), ARG_EXPR_("expression")),
 };

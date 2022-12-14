@@ -19,11 +19,14 @@
 #ifndef GAP_INTRPRTR_H
 #define GAP_INTRPRTR_H
 
+#include "code.h"
 #include "common.h"
 #include "gap.h"
 
 
 struct IntrState {
+    //
+    CodeState cs[1];
 
     // If 'IntrIgnoring' is non-zero, the interpreter is currently ignoring
     // actions. The interpreter switches to this mode for the right operand of
