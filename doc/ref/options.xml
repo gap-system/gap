@@ -55,7 +55,7 @@ gap> foo( : myopt1, myopt2 := [Z(3),"aardvark"]);
 myopt1 = true myopt2 = [ Z(3), "aardvark" ]
 gap> DisplayOptionsStack();
 [  ]
-gap>
+gap> 
 ]]></Example>
 
 </Section>

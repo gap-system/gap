@@ -558,7 +558,7 @@ variable should have to continue the computation.
 <Log><![CDATA[
 brk> return 9;  # we had tried to enter the divisor 9 but typed 0 ...
 1/9
-gap>
+gap> 
 ]]></Log>
 
 </Subsection>
@@ -632,7 +632,7 @@ gap> ErrorNoTraceBack := function(arg) # arg is special variable that GAP
 >                                      # knows to treat as list of arg's
 >      local SavedOnBreak, ENTBOnBreak;
 >      SavedOnBreak := OnBreak;        # save current value of OnBreak
->
+> 
 >      ENTBOnBreak := function()       # our `local' OnBreak
 >      local s;
 >        for s in arg do
@@ -640,7 +640,7 @@ gap> ErrorNoTraceBack := function(arg) # arg is special variable that GAP
 >        od;
 >        OnBreak := SavedOnBreak;      # restore OnBreak afterwards
 >      end;
->
+> 
 >      OnBreak := ENTBOnBreak;
 >      Error();
 >    end;
