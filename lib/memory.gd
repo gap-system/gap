@@ -13,9 +13,9 @@
 #############################################################################
 
 
-DeclareFilter("IsObjWithMemoryRankFilter",100); 
+DeclareFilter("IsObjWithMemoryRankFilter",100);
 
-DeclareRepresentation("IsObjWithMemory", 
+DeclareRepresentation("IsObjWithMemory",
     IsComponentObjectRep and IsObjWithMemoryRankFilter and
     IsMultiplicativeElementWithInverse, ["slp","n","el"]);
 

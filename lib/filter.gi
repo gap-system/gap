@@ -62,7 +62,7 @@ BIND_GLOBAL( "IdOfFilterByName",
 ##  <Description>
 ##  finds the filter with name <A>name</A> in the global FILTERS list. This
 ##  is useful to find filters that were created but not bound to a global
-##  variable. 
+##  variable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

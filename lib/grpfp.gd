@@ -515,7 +515,7 @@ TCENUM:=GAPTCENUM;
 ##  </List>
 ##  <P/>
 ##  <Ref Func="CosetTableFromGensAndRels"/> processes two options (see
-##  chapter&nbsp;<Ref Chap="Options Stack"/>): 
+##  chapter&nbsp;<Ref Chap="Options Stack"/>):
 ##  <List>
 ##  <Mark><C>max</C></Mark>
 ##  <Item>
@@ -642,7 +642,7 @@ DeclareGlobalFunction("StandardizeTable2");
 DeclareAttribute( "CosetTableInWholeGroup", IsGroup );
 DeclareOperation( "TryCosetTableInWholeGroup", [IsGroup] );
 
-InstallTrueMethod(CanEasilyTestMembership, 
+InstallTrueMethod(CanEasilyTestMembership,
   IsSubgroupFpGroup and HasCosetTableInWholeGroup);
 
 
@@ -847,7 +847,7 @@ DeclareAttribute("AsSubgroupOfWholeGroupByQuotient", IsSubgroupFpGroup);
 ##  <A>index</A>.
 ##  <Example><![CDATA[
 ##  gap> li:=LowIndexSubgroupsFpGroup( g, TrivialSubgroup( g ), 10 );
-##  [ Group(<fp, no generators known>), Group(<fp, no generators known>), 
+##  [ Group(<fp, no generators known>), Group(<fp, no generators known>),
 ##    Group(<fp, no generators known>), Group(<fp, no generators known>) ]
 ##  ]]></Example>
 ##  <P/>
@@ -1292,7 +1292,7 @@ DeclareGlobalFunction("FibonacciGroup");
 ##  <Attr Name="FPFaithHom" Arg='fam'/>
 ##
 ##  <Description>
-##  For the elements family <A>fam</A> of a finite fp group <A>G</A> this returns an 
+##  For the elements family <A>fam</A> of a finite fp group <A>G</A> this returns an
 ##  isomorphism to a permutation
 ##  or a pc group isomorphic to <A>G</A>.
 ##  </Description>

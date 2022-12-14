@@ -7,15 +7,15 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
-##  
+##
 ##  A demo for customizing the GAP prompt.
-##  
+##
 ##  To switch off the coloring of prompt and input call
 ##     ColorPrompt(false);
-##  
+##
 ##  The variable ANSI_COLORS used in earlier versions is no longer
 ##  supported, see GAPInfo.UserPreferences.UseColorsInTerminal.
-##  
+##
 
 # see comment below
 if not IsBound(STDOut) then
@@ -33,7 +33,7 @@ PrintPromptHook := CPROMPT;
 EndLineHook := function() end;
 
 ############################################################################
-##  
+##
 #F  ColorPrompt( <bool> ) . . . . . . (un)set using a colored prompt and input
 #F  ColorPrompt( <bool>, <optrec> ) . . . . . . . . .  same with customization
 ##
@@ -96,7 +96,7 @@ EndLineHook := function() end;
 ##  </Item>
 ##  <Mark><C>TextPrompt</C></Mark>
 ##  <Item>
-##    a no argument function returning the string with the text 
+##    a no argument function returning the string with the text
 ##    of the prompt, but without any escape sequences.
 ##    The current standard prompt is returned by <C>CPROMPT()</C>.
 ##    But note that changing the standard prompts makes the automatic removal
@@ -145,7 +145,7 @@ BindGlobal( "ColorPrompt", function(arg)
       r.(a) := arg[2].(a);
     od;
   fi;
-      
+
   if b <> true then
     Unbind(PrintPromptHook);
     Unbind(EndLineHook);
@@ -153,7 +153,7 @@ BindGlobal( "ColorPrompt", function(arg)
   fi;
 
   # The colored interface
-  # We stored STDOut above to avoid overwriting the last system error with 
+  # We stored STDOut above to avoid overwriting the last system error with
   # a function call.
   # To print the prompt
   PrintPromptHook := function()
@@ -180,7 +180,7 @@ BindGlobal( "ColorPrompt", function(arg)
         WriteAll(STDOut, r.MarkupStdPrompt());
       fi;
     fi;
-    # use this instead of Print such that the column counter for the 
+    # use this instead of Print such that the column counter for the
     # command line editor is correct
     PRINT_CPROMPT(r.TextPrompt());
     # another color for input

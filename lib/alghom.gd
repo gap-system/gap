@@ -48,7 +48,7 @@
 ##  gap> B:= FullMatrixAlgebra( Rationals, 2 );;
 ##  gap> bA:= BasisVectors( Basis( A ) );; bB:= BasisVectors( Basis( B ) );;
 ##  gap> f:= AlgebraGeneralMappingByImages( A, B, bA, bB );
-##  [ e, i, j, k ] -> [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 1 ], [ 0, 0 ] ], 
+##  [ e, i, j, k ] -> [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 1 ], [ 0, 0 ] ],
 ##    [ [ 0, 0 ], [ 1, 0 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ]
 ##  gap> Images( f, bA[1] );
 ##  <add. coset of <algebra over Rationals, with 16 generators>>
@@ -153,7 +153,7 @@ DeclareOperation( "AlgebraHomomorphismByImagesNC",
 ##  gap> B:= FullMatrixAlgebra( Rationals, 2 );;
 ##  gap> bA:= BasisVectors( Basis( A ) );; bB:= BasisVectors( Basis( B ) );;
 ##  gap> f:=AlgebraWithOneGeneralMappingByImages(A,B,bA{[2,3,4]},bB{[1,2,3]});
-##  [ i, j, k, e ] -> [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 1 ], [ 0, 0 ] ], 
+##  [ i, j, k, e ] -> [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 1 ], [ 0, 0 ] ],
 ##    [ [ 0, 0 ], [ 1, 0 ] ], [ [ 1, 0 ], [ 0, 1 ] ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -258,15 +258,15 @@ DeclareOperation( "AlgebraWithOneHomomorphismByImagesNC",
 
 #############################################################################
 ##
-#O  AlgebraHomomorphismByFunction( <A>, <B>, <f> ), 
+#O  AlgebraHomomorphismByFunction( <A>, <B>, <f> ),
 ##
 ##  <#GAPDoc Label="AlgebraHomomorphismbyFunction">
 ##  <ManSection>
 ##  <Oper Name="AlgebraHomomorphismByFunction" Arg="A B f"/>
 ##  <Oper Name="AlgebraWithOneHomomorphismByFunction" Arg="A B f"/>
 ##  <Description>
-##  These functions construct an algebra homomorphism from the algebra 
-##  <A>A</A> to the algebra <A>B</A> using a one-argument function <A>f</A>. 
+##  These functions construct an algebra homomorphism from the algebra
+##  <A>A</A> to the algebra <A>B</A> using a one-argument function <A>f</A>.
 ##  They do not check that the function actually defines a homomorphism.
 ##  <Example><![CDATA[
 ##  gap> A := MatrixAlgebra( Rationals, 2 );;
@@ -279,9 +279,9 @@ DeclareOperation( "AlgebraWithOneHomomorphismByImagesNC",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "AlgebraHomomorphismByFunction", 
+DeclareOperation( "AlgebraHomomorphismByFunction",
     [ IsAlgebra, IsAlgebra, IsFunction ] );
-DeclareOperation( "AlgebraWithOneHomomorphismByFunction", 
+DeclareOperation( "AlgebraWithOneHomomorphismByFunction",
     [ IsAlgebraWithOne, IsAlgebraWithOne, IsFunction ] );
 
 #############################################################################
@@ -320,8 +320,8 @@ DeclareOperation( "AlgebraWithOneHomomorphismByFunction",
 ##  gap> V:= FullRowSpace( Rationals, 2 );
 ##  ( Rationals^2 )
 ##  gap> f:=OperationAlgebraHomomorphism( B, Basis( V ), OnRight );
-##  <op. hom. Algebra( Rationals, 
-##  [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 0 ], [ 0, 1 ] ] 
+##  <op. hom. Algebra( Rationals,
+##  [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 0 ], [ 0, 1 ] ]
 ##   ] ) -> matrices of dim. 2>
 ##  gap> Image( f, m1 );
 ##  [ [ 1, 0 ], [ 0, 0 ] ]
@@ -384,7 +384,7 @@ DeclareOperation( "MakePreImagesInfoOperationAlgebraHomomorphism",
 ##  gap> A:= QuaternionAlgebra( Rationals );
 ##  <algebra-with-one of dimension 4 over Rationals>
 ##  gap> f:= IsomorphismFpAlgebra( A );
-##  [ e, i, j, k, e ] -> [ [(1)*x.1], [(1)*x.2], [(1)*x.3], [(1)*x.4], 
+##  [ e, i, j, k, e ] -> [ [(1)*x.1], [(1)*x.2], [(1)*x.3], [(1)*x.4],
 ##    [(1)*<identity ...>] ]
 ##  ]]></Example>
 ##  </Description>
@@ -452,7 +452,7 @@ DeclareSynonymAttr( "IsomorphismMatrixAlgebra", IsomorphismMatrixFLMLOR );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> IsomorphismSCAlgebra( GF(8) );
-##  CanonicalBasis( GF(2^3) ) -> CanonicalBasis( <algebra of dimension 
+##  CanonicalBasis( GF(2^3) ) -> CanonicalBasis( <algebra of dimension
 ##  3 over GF(2)> )
 ##  gap> IsomorphismSCAlgebra( GF(2)^[2,2] );
 ##  CanonicalBasis( ( GF(2)^

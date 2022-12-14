@@ -90,13 +90,13 @@ DeclareGlobalFunction( "StandardScalarProduct" );
 ##  x_i = (b_i A') \bmod p,  b_{{i+1}} = (b_i - x_i A) / p,
 ##    i = 0, 1, 2, \ldots .
 ##  </Display>
-##  By induction, we get                                                     
+##  By induction, we get
 ##  <Display Mode="M">
 ##  p^{{i+1}} b_{{i+1}} + \left( \sum_{{j = 0}}^i p^j x_j \right) A = b.
 ##  </Display>
 ##  If there is an integral solution <M>x</M> then it is unique,
 ##  and there is an index <M>l</M> such that <M>b_{{l+1}}</M> is zero
-##  and <M>x = \sum_{{j = 0}}^l p^j x_j</M>.               
+##  and <M>x = \sum_{{j = 0}}^l p^j x_j</M>.
 ##  <P/>
 ##  There are two useful generalizations of this idea.
 ##  First, <M>A</M> need not be square; it is only necessary that there is
@@ -327,12 +327,12 @@ DeclareGlobalFunction( "DecompositionInt" );
 ##  >                [ 16, 0, 1, 1, 1 ], [ 20, 0, -1, 0, 0 ],
 ##  >                [ 25, 1, 1, 0, 0 ] ];;
 ##  gap> LLLReducedBasis( vectors, "linearcomb" );
-##  rec( B := [ 5, 36/5, 12, 50/3 ], 
-##    basis := [ [ 1, 1, 1, 1, 1 ], [ 1, 1, -2, 1, 1 ], 
-##        [ -1, 3, -1, -1, -1 ], [ -3, 1, 0, 2, 2 ] ], 
-##    mue := [ [  ], [ 2/5 ], [ -1/5, 1/3 ], [ 2/5, 1/6, 1/6 ] ], 
-##    relations := [ [ -1, 0, -1, 0, 1 ] ], 
-##    transformation := [ [ 0, -1, 1, 0, 0 ], [ -1, -2, 0, 2, 0 ], 
+##  rec( B := [ 5, 36/5, 12, 50/3 ],
+##    basis := [ [ 1, 1, 1, 1, 1 ], [ 1, 1, -2, 1, 1 ],
+##        [ -1, 3, -1, -1, -1 ], [ -3, 1, 0, 2, 2 ] ],
+##    mue := [ [  ], [ 2/5 ], [ -1/5, 1/3 ], [ 2/5, 1/6, 1/6 ] ],
+##    relations := [ [ -1, 0, -1, 0, 1 ] ],
+##    transformation := [ [ 0, -1, 1, 0, 0 ], [ -1, -2, 0, 2, 0 ],
 ##        [ 1, -2, 0, 1, 0 ], [ -1, -2, 1, 1, 0 ] ] )
 ##  ]]></Example>
 ##  </Description>
@@ -392,12 +392,12 @@ DeclareGlobalFunction( "LLLReducedBasis" );
 ##  gap> g:= [ [ 4, 6, 5, 2, 2 ], [ 6, 13, 7, 4, 4 ],
 ##  >    [ 5, 7, 11, 2, 0 ], [ 2, 4, 2, 8, 4 ], [ 2, 4, 0, 4, 8 ] ];;
 ##  gap> LLLReducedGramMat( g );
-##  rec( B := [ 4, 4, 75/16, 168/25, 32/7 ], 
-##    mue := [ [  ], [ 1/2 ], [ 1/4, -1/8 ], [ 1/2, 1/4, -2/25 ], 
-##        [ -1/4, 1/8, 37/75, 8/21 ] ], relations := [  ], 
-##    remainder := [ [ 4, 2, 1, 2, -1 ], [ 2, 5, 0, 2, 0 ], 
-##        [ 1, 0, 5, 0, 2 ], [ 2, 2, 0, 8, 2 ], [ -1, 0, 2, 2, 7 ] ], 
-##    transformation := [ [ 1, 0, 0, 0, 0 ], [ -1, 1, 0, 0, 0 ], 
+##  rec( B := [ 4, 4, 75/16, 168/25, 32/7 ],
+##    mue := [ [  ], [ 1/2 ], [ 1/4, -1/8 ], [ 1/2, 1/4, -2/25 ],
+##        [ -1/4, 1/8, 37/75, 8/21 ] ], relations := [  ],
+##    remainder := [ [ 4, 2, 1, 2, -1 ], [ 2, 5, 0, 2, 0 ],
+##        [ 1, 0, 5, 0, 2 ], [ 2, 2, 0, 8, 2 ], [ -1, 0, 2, 2, 7 ] ],
+##    transformation := [ [ 1, 0, 0, 0, 0 ], [ -1, 1, 0, 0, 0 ],
 ##        [ -1, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], [ -2, 0, 1, 0, 1 ] ] )
 ##  ]]></Example>
 ##  </Description>
@@ -436,11 +436,11 @@ DeclareGlobalFunction( "LLLReducedGramMat" );
 ##  If the optional argument <C>"positive"</C> is entered,
 ##  only those vectors <M>x</M> with nonnegative entries are computed.
 ##  <Example><![CDATA[
-##  gap> g:= [ [ 2, 1, 1 ], [ 1, 2, 1 ], [ 1, 1, 2 ] ];;  
+##  gap> g:= [ [ 2, 1, 1 ], [ 1, 2, 1 ], [ 1, 1, 2 ] ];;
 ##  gap> ShortestVectors(g,4);
-##  rec( norms := [ 4, 2, 2, 4, 2, 4, 2, 2, 2 ], 
-##    vectors := [ [ -1, 1, 1 ], [ 0, 0, 1 ], [ -1, 0, 1 ], [ 1, -1, 1 ], 
-##        [ 0, -1, 1 ], [ -1, -1, 1 ], [ 0, 1, 0 ], [ -1, 1, 0 ], 
+##  rec( norms := [ 4, 2, 2, 4, 2, 4, 2, 2, 2 ],
+##    vectors := [ [ -1, 1, 1 ], [ 0, 0, 1 ], [ -1, 0, 1 ], [ 1, -1, 1 ],
+##        [ 0, -1, 1 ], [ -1, -1, 1 ], [ 0, 1, 0 ], [ -1, 1, 0 ],
 ##        [ 1, 0, 0 ] ] )
 ##  ]]></Example>
 ##  </Description>

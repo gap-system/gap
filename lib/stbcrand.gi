@@ -16,8 +16,8 @@
 ##
 #F  StabChainRandomPermGroup( <gens>, <id>, <opts> )  .  random Schreier-Sims
 ##
-##  The  method  consists of  2  phases:  a  heuristic construction  and  
-##  either a deterministic or two random checking phases. 
+##  The  method  consists of  2  phases:  a  heuristic construction  and
+##  either a deterministic or two random checking phases.
 ##  In the random checking  phases,  we  take random  elements of
 ##  created set, multiply by  random subproduct of  generators, and sift down
 ##  by dividing with the  appropriate coset representatives. The stabchain is
@@ -71,7 +71,7 @@ InstallGlobalFunction( StabChainRandomPermGroup, function( gens, id, options)
     if options.random = 1000 then
        #case of deterministic computation with known size
        k := 1;
-    else 
+    else
        k:=First([1..14],x->(3/5)^x<1-options.random/1000);
     fi;
 
@@ -85,7 +85,7 @@ InstallGlobalFunction( StabChainRandomPermGroup, function( gens, id, options)
 	options:=ShallowCopy(options);
 	Unbind(options.knownBase);
     fi;
-    if options.random <= 200 then 
+    if options.random <= 200 then
        param[2] := 2;
        param[4] := 2;
     fi;
@@ -146,7 +146,7 @@ InstallGlobalFunction( StabChainRandomPermGroup, function( gens, id, options)
         #throw away one-element orbits
         orbits:=[];
         j:=0;
-        for i in [1..Length(orbits2)] do 
+        for i in [1..Length(orbits2)] do
             if Length(orbits2[i]) >1 then
                j:=j+1; orbits[j]:= orbits2[i];
             fi;
@@ -190,29 +190,29 @@ InstallGlobalFunction( StabChainRandomPermGroup, function( gens, id, options)
             # we have an incorrect stabilizer chain
             # repeat checking until a new element is discovered
             result := id;
-            if options.random = 1000 then 
-                if correct then 
+            if options.random = 1000 then
+                if correct then
                    result := SCRStrongGenTest(S,[1,10/S.diam,0,0,0,0],orbits,
                                       basesize,base,correct,missing);
-                else 
-                   result := SCRStrongGenTest2(S,[0,0,1,10/S.diam,0,0]); 
-                fi; 
-                if result = id then 
+                else
+                   result := SCRStrongGenTest2(S,[0,0,1,10/S.diam,0,0]);
+                fi;
+                if result = id then
                    T := SCRRestoredRecord(S);
-                   result := VerifySGS(T,missing,correct); 
+                   result := VerifySGS(T,missing,correct);
                 fi;
                 if result = id then
                    Print("Warning, computed and given size differ","\n");
                    ready := true;
                    S := T;
-                else 
-                   if not IsPerm(result) then 
-                      repeat 
+                else
+                   if not IsPerm(result) then
+                      repeat
                          result := SCRStrongGenTest2(S,[0,0,1,10/S.diam,0,0]);
                       until result <> id;
                    fi;
-                   new := [result]; 
-                fi; 
+                   new := [result];
+                fi;
             else
                warning := 0;
                if correct then
@@ -246,26 +246,26 @@ InstallGlobalFunction( StabChainRandomPermGroup, function( gens, id, options)
         else
             #no information or only upper bound about Size(S)
             if options.random = 1000 then
-              if correct then 
+              if correct then
                    result := SCRStrongGenTest(S,[1,10/S.diam,0,0,0,0],orbits,
                                       basesize,base,correct,missing);
-               else 
-                   result := SCRStrongGenTest2(S,[0,0,1,10/S.diam,0,0]); 
+               else
+                   result := SCRStrongGenTest2(S,[0,0,1,10/S.diam,0,0]);
                fi;
-               if result = id then 
+               if result = id then
                   T := SCRRestoredRecord(S);
-                  result := VerifySGS(T,missing,correct); 
-               fi; 
-               if result = id then 
-                  S := T; 
+                  result := VerifySGS(T,missing,correct);
+               fi;
+               if result = id then
+                  S := T;
                   ready := true;
-               else 
-                  if not IsPerm(result) then 
-                     repeat 
+               else
+                  if not IsPerm(result) then
+                     repeat
                         result := SCRStrongGenTest2(S,[0,0,1,10/S.diam,0,0]);
                      until result <> id;
                   fi;
-                  new := [result]; 
+                  new := [result];
                fi;
             else
                # Print("entering SGT", "\n");
@@ -286,12 +286,12 @@ InstallGlobalFunction( StabChainRandomPermGroup, function( gens, id, options)
                    fi;
                fi;
             fi;   # random checking or not, when size is not known
-        fi;   # size known 
+        fi;   # size known
     od;
 
-    #restore usual record elements 
+    #restore usual record elements
     if not IsBound(S.labels) then
-       S := SCRRestoredRecord(S); 
+       S := SCRRestoredRecord(S);
     fi;
     return S;
 end );
@@ -679,16 +679,16 @@ end );
 
      return g;
  end;
- 
- 
- 
+
+
+
  InstallGlobalFunction( SCRSift, function(S,g)
      local result;
-     
+
 #     return SCRSiftOld(S, g);
-     
+
      result :=  SCR_SIFT_HELPER(S, g, Maximum(LargestMovedPoint(g),LargestMovedPoint(S!.generators)));
-     
+
 #     Assert(2,result = SCRSiftOld(S, g));
      return result;
 end);
@@ -979,7 +979,7 @@ InstallGlobalFunction( SCRRandomString, function ( n )
           range;    # Upper value of range used for getting ints
 
     range := 2^28-1;
-    
+
     string:=[];
     k:=QuoInt(n-1,28);
     for i in [0..k-1] do
@@ -1007,13 +1007,13 @@ end );
 ##
 InstallGlobalFunction( SCRRandomSubproduct, function( list, id )
     local string,  # 0-1 string containing the exponents of elements of list
-          random,  # the random subproduct 
+          random,  # the random subproduct
           i;       # loop variable
 
     string := SCRRandomString(Length(list));
     random := id;
     for i in [1 .. Length(list)] do
-        if string[i] = 1 then 
+        if string[i] = 1 then
             random := random*list[i];
         fi;
     od;
@@ -1039,8 +1039,8 @@ InstallGlobalFunction( SCRExtendRecord, function(G)
     for i in [1 .. len - 1] do
         # list[len - i].real := list[len - i].generators;
 
-        if Length(list[len - i].orbit) = 1 then 
-            # in this case, SCRSchTree will not do anything; 
+        if Length(list[len - i].orbit) = 1 then
+            # in this case, SCRSchTree will not do anything;
             # we have to define records treedepth, aux, and diameter
             list[len - i].treedepth := 0;
             list[len - i].aux := list[len - i + 1].aux;
@@ -1068,7 +1068,7 @@ end );
 ##
 InstallGlobalFunction( SCRRestoredRecord, function( G )
     local   sgs,  T,  S,  l,  lab,  pnt,o,ind;
-    
+
     S := G;
     sgs := [ S.identity ];
     while IsBound( S.stabilizer )  do
@@ -1090,7 +1090,7 @@ InstallGlobalFunction( SCRRestoredRecord, function( G )
 	# identical and thus element comparisons are relatively
 	# infrequent
 	while Length(o)>0 do
-	  
+
 	  ind:=S.transversal[o[1]];
 	  ind:=Filtered([1..Length(o)],
 		  i->IsIdenticalObj(S.transversal[o[i]],ind));
@@ -1128,9 +1128,9 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
  #z is an involution, moving first base point
  # correct is boolean telling whether a base is known
  # if yes, missing contains the base points which do not occur in the base of S
- local pt1,            # the first base point 
+ local pt1,            # the first base point
        zinv,           # inverse of z
-       pt2,            # pt1^zinv 
+       pt2,            # pt1^zinv
        flag,           # Boolean; true if z exchanges pt1 and pt2
        stab,           # the stabilizer of pt1 in S
        chain,          # stab after base change, to bring pt2 first
@@ -1139,41 +1139,41 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
        g,              # generator of stabpt2
        where1,         # stores which orbit of stab pts of S.orbit belong to
        orbit1count,    # index running through orbits of stab
-       leaders,        # list of orbit representatives of stab 
-       i, j, l,        # loop variables 
-       residue,        # result of sifting as word 
+       leaders,        # list of orbit representatives of stab
+       i, j, l,        # loop variables
+       residue,        # result of sifting as word
        where2,         # boolean list to mark orbits of stabpt2 as processed
        k,              # point of an orbit of stab
-       gen,            # a generator of stab 
-       transversal,    # transversal of stab, on all of its orbits 
+       gen,            # a generator of stab
+       transversal,    # transversal of stab, on all of its orbits
        orb,            # an orbit of stabpt2
        img,            # image of a point at computation of orb
        pnt,            # a point from orb
-       w1, w2, w3, w4, # words/permutations coding coset representatives 
+       w1, w2, w3, w4, # words/permutations coding coset representatives
        w1inv,          # inverse of w1
        schgen;         # Schreier generator
 
-    pt1 := S.orbit[1]; 
-    zinv := z^(-1); 
-    pt2 := pt1^zinv; 
+    pt1 := S.orbit[1];
+    zinv := z^(-1);
+    pt2 := pt1^zinv;
     result := S.identity;
-    stab := S.stabilizer; 
-    if pt2^zinv = pt1 then 
-       flag := true; 
+    stab := S.stabilizer;
+    if pt2^zinv = pt1 then
+       flag := true;
        result := SCRSift(stab, z^2);
-    else 
-       flag := false; 
+    else
+       flag := false;
     fi;
 
     # store which orbit of stab the pts of S.orbit belong to
     # in each orbit, compute transversals from a representative
     where1 := []; # orbits of stab
     leaders := [pt2];
-    orbit1count := 1; 
-    transversal := []; 
+    orbit1count := 1;
+    transversal := [];
     transversal[pt2] := S.identity;
     where1[pt2] := 1;
-    orb := [pt2]; 
+    orb := [pt2];
     j := 1;
     while j <= Length( orb )  do
     for gen  in stab.generators  do
@@ -1187,10 +1187,10 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
        j := j + 1;
     od;
     for i in S.orbit do
-        if not IsBound(where1[i]) then 
+        if not IsBound(where1[i]) then
            orbit1count := orbit1count + 1;
-           Add(leaders, i); 
-           orb := [i]; 
+           Add(leaders, i);
+           orb := [i];
            where1[i] := orbit1count;
            transversal[i] := S.identity;
            j := 1;
@@ -1206,31 +1206,31 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
              j := j + 1;
            od;
         fi;
-    od; 
+    od;
 
    # check that conjugates of point stabilizers of stab are subgroups of stab
-   chain:=StructuralCopy(stab); 
+   chain:=StructuralCopy(stab);
    for j in [1..Length(leaders)] do
-       if result = S.identity then 
-           i := leaders[Length(leaders)+1-j]; 
+       if result = S.identity then
+           i := leaders[Length(leaders)+1-j];
            ChangeStabChain( chain, [i], false );
-           if i = pt2 then 
-              w1 := z; 
-              w1inv := zinv; 
-           else 
+           if i = pt2 then
+              w1 := z;
+              w1inv := zinv;
+           else
               w1 := CosetRepAsWord(pt1, i, S.transversal);
-              w1 := Product(w1); 
-              w1inv := w1^(-1); 
+              w1 := Product(w1);
+              w1inv := w1^(-1);
            fi;
-           for g in chain.stabilizer.generators do 
-               if result = S.identity then       
-                  if correct then 
+           for g in chain.stabilizer.generators do
+               if result = S.identity then
+                  if correct then
                      residue := SiftAsWord(stab, [w1inv,g,w1]);
-                     if residue[2] <> 0 then 
+                     if residue[2] <> 0 then
                         result := Product(residue[1]);
-                     else 
-                        l := 0; 
-                        while ( l < Length(missing) ) and ( result = S.identity ) do 
+                     else
+                        l := 0;
+                        while ( l < Length(missing) ) and ( result = S.identity ) do
                            l:=l+1;
                               if ImageInWord(missing[l],residue[1])
                                   <> missing[l]  then
@@ -1239,7 +1239,7 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
                               fi;
                         od;
                      fi;
-                  else 
+                  else
                      result := SCRSift(stab, w1inv*g*w1);
                   fi;
                fi;
@@ -1247,14 +1247,14 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
        fi;
    od;
 
- if result = S.identity then  
+ if result = S.identity then
     stabpt2 := chain.stabilizer;
-    # process orbits of stabpt2 
-    where2:= BlistList( [1..Length(where1)],[] ) ; 
-    for i in S.orbit do 
-        if result = S.identity and (not where2[i]) then 
-           orb := [i]; 
-           where2[i] := true; 
+    # process orbits of stabpt2
+    where2:= BlistList( [1..Length(where1)],[] ) ;
+    for i in S.orbit do
+        if result = S.identity and (not where2[i]) then
+           orb := [i];
+           where2[i] := true;
            for pnt  in orb  do
                for gen  in stabpt2.generators  do
                    img := pnt^gen;
@@ -1264,12 +1264,12 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
                    fi;
                od;
            od;
- 
-           # if we hit a new orbit of stabpt2 
-           # and if z exchanges pt1 and pt2 then 
-           # mark the orbit 
-           if flag and not where2[i^z] then 
-              orb := [i^z]; 
+
+           # if we hit a new orbit of stabpt2
+           # and if z exchanges pt1 and pt2 then
+           # mark the orbit
+           if flag and not where2[i^z] then
+              orb := [i^z];
               where2[i^z] := true;
               for pnt  in orb  do
                  for gen  in stabpt2.generators  do
@@ -1279,35 +1279,35 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
                        where2[img] := true;
                     fi;
                  od;
-              od; 
-           fi; 
+              od;
+           fi;
 
            # compute Schreier generator either as a word or perm
-           # if i is not a fixed point of z, 
+           # if i is not a fixed point of z,
            # we have to compute a Schreier generator
            w1 := CosetRepAsWord(pt1, leaders[where1[i]], S.transversal);
-           w2 := CosetRepAsWord(leaders[where1[i]], i, transversal); 
+           w2 := CosetRepAsWord(leaders[where1[i]], i, transversal);
            w3 := CosetRepAsWord(leaders[where1[i^z]], i^z, transversal);
-           if where1[i] <> where1[i^z] then 
+           if where1[i] <> where1[i^z] then
                w4 := CosetRepAsWord(pt1,leaders[where1[i^z]], S.transversal);
-           else 
+           else
                w4 := w1;
            fi;
-           schgen := (Product(w1))^(-1)*(Product(w2))^(-1); 
-           if correct then 
+           schgen := (Product(w1))^(-1)*(Product(w2))^(-1);
+           if correct then
                schgen := Concatenation([schgen,z],w3,w4);
-           else 
-               schgen := schgen*z*Product(w3)*Product(w4);  
-           fi; 
- 
+           else
+               schgen := schgen*z*Product(w3)*Product(w4);
+           fi;
+
            # sift Schreier generator either as a word or perm
-           if correct then 
-              residue := SiftAsWord(stab, schgen); 
-              if residue[2] <> 0 then 
-                 result := Product(residue[1]); 
+           if correct then
+              residue := SiftAsWord(stab, schgen);
+              if residue[2] <> 0 then
+                 result := Product(residue[1]);
               else
-                  l := 0; 
-                  while ( l < Length(missing) ) and ( result = S.identity ) do 
+                  l := 0;
+                  while ( l < Length(missing) ) and ( result = S.identity ) do
                      l:=l+1;
                      if ImageInWord(missing[l],residue[1])
                                <> missing[l]  then
@@ -1317,11 +1317,11 @@ InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
                   od;
                fi;
            else
-              result := SCRSift(stab, schgen); 
-           fi; 
+              result := SCRSift(stab, schgen);
+           fi;
         fi;  # result = S.identity and not where2[i]
      od;
- fi; 
+ fi;
 
  return result;
 
@@ -1331,43 +1331,43 @@ end );
 ##
 #F  VerifySGS( <S>, <missing>, <correct> )  . . . . . . . . . .  verification
 ##
-InstallGlobalFunction( VerifySGS, function(S,missing,correct) 
+InstallGlobalFunction( VerifySGS, function(S,missing,correct)
  # correct is boolean telling whether a base is known
  # if yes, missing contains the base points which do not occur in the base of S
  local n,         # degree of S
        list,      # list of subgroups in stabchain
        result,    # result of the test
        len,       # length of list
-       i,l,       # loop variables 
+       i,l,       # loop variables
        residue,   # result of sifting as word
-       temp,      # subgroup of S we currently work with 
-       temp2,     # temp, with possible extension on blocks 
-       gen,       # the generator whose addition we verify 
+       temp,      # subgroup of S we currently work with
+       temp2,     # temp, with possible extension on blocks
+       gen,       # the generator whose addition we verify
        longer,    # generator list of temp, after gen is added
-       gencount,  # counts the generators to be verified 
+       gencount,  # counts the generators to be verified
        set,       # set of orbit of temp
        orbit,     # orbit of temp after adding gen
-       blks,      # images of block when gen is added 
-       extension, # list of length 2; first coord. is temp2, extended by 
+       blks,      # images of block when gen is added
+       extension, # list of length 2; first coord. is temp2, extended by
                   # the action on blks, second coord. is newgen
-       newgen,    # the extension of gen 
+       newgen,    # the extension of gen
        leader,    # first point in orbit of temp2
        block,     # block containing leader
        point,     # another point from block
        pos;       # position of set in blks
 
  n := LargestMovedPoint(S.generators);
- list := ListStabChain(S); 
- len := Length(list); 
+ list := ListStabChain(S);
+ len := Length(list);
  result := S.identity;
- 
+
  # verify the subgroup chain from bottom up
  i := 1;
  while i < len  and  result = S.identity  do
      temp := ShallowCopy(list[len - i + 1]);
      InsertTrivialStabilizer(temp, list[len -i].orbit[1]);
-     gencount := 0; 
- 
+     gencount := 0;
+
      # add one generator a time
      while (gencount < Length(list[len - i].generators)) and (result= S.identity ) do
          gencount := gencount + 1;
@@ -1375,14 +1375,14 @@ InstallGlobalFunction( VerifySGS, function(S,missing,correct)
          set := Set( temp.orbit );
 
          # if adding gen did not change the fundamental orbit, just sift gen
-         if set = OnSets(set,gen) then 
-            if correct then 
+         if set = OnSets(set,gen) then
+            if correct then
                residue := SiftAsWord(temp, [gen]);
-               if residue[2] <> 0 then 
+               if residue[2] <> 0 then
                   result := Product(residue[1]);
-               else 
-                  l := 0; 
-                  while ( l < Length(missing) ) and ( result = S.identity ) do 
+               else
+                  l := 0;
+                  while ( l < Length(missing) ) and ( result = S.identity ) do
                      l:=l+1;
                      if ImageInWord(missing[l],residue[1])
                                <> missing[l]  then
@@ -1391,15 +1391,15 @@ InstallGlobalFunction( VerifySGS, function(S,missing,correct)
                      fi;
                   od;
                fi;
-            else 
+            else
                result := SCRSift(temp, gen);
             fi;
-         # if the fundamental orbit increased, compute block system 
+         # if the fundamental orbit increased, compute block system
          # obtained when adding gen
-         else 
+         else
             if Length(set) =1 then
-                temp2 := temp; 
-                newgen := gen; 
+                temp2 := temp;
+                newgen := gen;
             # otherwise, compute the action on blocks
             else
                 longer := Concatenation(temp.generators, [gen]);
@@ -1411,53 +1411,53 @@ InstallGlobalFunction( VerifySGS, function(S,missing,correct)
                     pos := Position( blks, set );
                     extension := ExtensionOnBlocks( temp, n, blks, [gen] );
                     temp2 := extension[1];
-                    newgen := extension[2][1]; 
-                    InsertTrivialStabilizer(temp2, n + pos); 
+                    newgen := extension[2][1];
+                    InsertTrivialStabilizer(temp2, n + pos);
                 fi;
-            fi; 
- 
+            fi;
+
             # first generator in first group can be verified easily
-            if i=1 and Length(set) =1 then 
+            if i=1 and Length(set) =1 then
                 result := newgen^(CycleLengthOp(newgen,temp2.orbit[1]));
-                AddGeneratorsExtendSchreierTree(temp2, [newgen]); 
+                AddGeneratorsExtendSchreierTree(temp2, [newgen]);
             elif result = S.identity then
                 AddGeneratorsExtendSchreierTree( temp2, [ newgen ] );
-                blks := Blocks( GroupByGenerators(temp2.generators), 
-                                temp2.orbit); 
-                if Length(blks) > 1 then 
-                   leader := temp2.orbit[1]; 
-                   block := First(blks, x -> leader in x); 
-                   point := First(block, x -> x <> leader); 
+                blks := Blocks( GroupByGenerators(temp2.generators),
+                                temp2.orbit);
+                if Length(blks) > 1 then
+                   leader := temp2.orbit[1];
+                   block := First(blks, x -> leader in x);
+                   point := First(block, x -> x <> leader);
                    newgen := Product(CosetRepAsWord(leader ,point,
-                                       temp2.transversal)); 
-                   temp2 := temp2.stabilizer; 
-                   InsertTrivialStabilizer(temp2, leader); 
-                   AddGeneratorsExtendSchreierTree(temp2, [newgen]); 
+                                       temp2.transversal));
+                   temp2 := temp2.stabilizer;
+                   InsertTrivialStabilizer(temp2, leader);
+                   AddGeneratorsExtendSchreierTree(temp2, [newgen]);
                    result := VerifyStabilizer(temp2,newgen,missing,correct);
-                   if leader > n then 
+                   if leader > n then
                       AddGeneratorsExtendSchreierTree(temp,[RestrictedPermNC
-                          (newgen, [1..n])]); 
-                   else 
+                          (newgen, [1..n])]);
+                   else
                       temp := temp2;
-                   fi; 
+                   fi;
                    gencount := gencount - 1;
-                else 
-                   result := VerifyStabilizer(temp2,newgen,missing,correct); 
-                   if temp2.orbit[1] > n then 
-                      AddGeneratorsExtendSchreierTree(temp,[gen]); 
-                   fi; 
-                fi; 
+                else
+                   result := VerifyStabilizer(temp2,newgen,missing,correct);
+                   if temp2.orbit[1] > n then
+                      AddGeneratorsExtendSchreierTree(temp,[gen]);
+                   fi;
+                fi;
                 if result <> S.identity and temp2.orbit[1] > n then
                      result := RestrictedPermNC(result, [1..n]);
-                fi; 
-                                
-            fi; 
+                fi;
+
+            fi;
         fi;
     od;
     i := i + 1;
  od;
- 
- return result; 
+
+ return result;
 
 end );
 
@@ -1468,19 +1468,19 @@ end );
 InstallGlobalFunction( ExtensionOnBlocks, function( S, n, blks, elms )
     local   where,  j,  k,  hom,  T,  newelms;
 
-      # list which block the elements of the orbit belong to 
-      where := []; 
+      # list which block the elements of the orbit belong to
+      where := [];
       for j in [1..Length(blks)] do
           for k in blks[j] do
               where[k] := j;
           od;
-      od; 
+      od;
 
       hom := function( g )
           local  perm,  j;
-          
+
           perm := [1..n];
-          for j in [1..Length(blks)] do 
+          for j in [1..Length(blks)] do
               perm[n+j] := n+where[blks[j][1]^g];
           od;
           perm := PermList(perm);
@@ -1489,20 +1489,20 @@ InstallGlobalFunction( ExtensionOnBlocks, function( S, n, blks, elms )
 
       T := EmptyStabChain( [  ], S.identity );
       ConjugateStabChain( S, T, hom, S.identity );
-      
+
       # construct extensions of permutations in elms
       newelms := List( elms, hom );
 
-      return [ T, newelms ]; 
+      return [ T, newelms ];
 end );
-  
+
 #############################################################################
 ##
 #F  ClosureRandomPermGroup( <G>, <genlist>, <options> ) make closure randomly
 ##
 InstallGlobalFunction( ClosureRandomPermGroup,
     function( G, genlist, options )
-    local  k,          # number of pairs of subproducts of generators in 
+    local  k,          # number of pairs of subproducts of generators in
                        # testing result
            givenbase,  # ordering from which initial base points should
                        # be chosen
@@ -1522,7 +1522,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
                         # chain is incorrect
            base,        # ordering of domain from which base points are taken
            missing,     # if a correct base was provided by input, missing
-                       # contains those points of it which are not in 
+                       # contains those points of it which are not in
                        # constructed base
            cnt,        # iteration counter
            correct;     # boolean; true if a correct base is given
@@ -1531,53 +1531,53 @@ InstallGlobalFunction( ClosureRandomPermGroup,
 
     gens := Filtered( genlist, gen -> not(IsOne(SCRSift(G,gen))) );
     if Length(gens) > 0  then
-        
+
         G.identity := One(gens[1]) ;
         if options.random = 1000 then
             #case of deterministic computation with known size
             k := 1;
-        else 
+        else
             k:=First([1..14],x->(3/5)^x<1-options.random/1000);
         fi;
-        if IsBound(options.knownBase) then 
+        if IsBound(options.knownBase) then
             param := [k,4,0,0,0,0];
         else
             param := [QuoInt(k,2),4,QuoInt(k+1,2),4,50,5];
         fi;
-        if options.random <= 200 then 
+        if options.random <= 200 then
             param[2] := 2;
             param[4] := 2;
         fi;
-        
-#param[1] = number of pairs of random subproducts from generators in 
+
+#param[1] = number of pairs of random subproducts from generators in
 #           first checking phase
 #param[2] = (number of random elements from created set)/S.diam
-#           in first checking phase 
-#param[3] = number of pairs of random subproducts from generators in 
+#           in first checking phase
+#param[3] = number of pairs of random subproducts from generators in
 #           second checking phase
 #param[4] = (number of random elements from created set)/S.diam
-#           in second checking phase 
+#           in second checking phase
 #param[5] = maximum size of orbits in  which we evaluate words on all
 #           points of orbit
-#param[6] = minimum number of random points from orbit to plug in to check 
+#param[6] = minimum number of random points from orbit to plug in to check
 #           whether given word is identity on orbit
 
         degree := LargestMovedPoint( Union( G.generators, gens ) );
 
         # prepare input of construction
-        if IsBound(options.base) then 
+        if IsBound(options.base) then
             givenbase := options.base;
         else
             givenbase := [];
         fi;
-        
+
         if IsBound(options.knownBase) then
             correct := true;
         else
             correct := false;
         fi;
-        
-        if correct then 
+
+        if correct then
             # if correct  base was given as input,
             # no need for orbit information
             base := Set( givenbase );
@@ -1589,10 +1589,10 @@ InstallGlobalFunction( ClosureRandomPermGroup,
             base := Concatenation(givenbase,Difference(options.knownBase,
                                                        givenbase));
             missing := Difference(options.knownBase,BaseStabChain(G));
-            basesize := []; 
+            basesize := [];
             where := [];
             orbits := [];
-        else 
+        else
             # create ordering of domain used in choosing base points and
             # compute orbit information
             base := Set( givenbase );
@@ -1607,14 +1607,14 @@ InstallGlobalFunction( ClosureRandomPermGroup,
             #throw away one-element orbits
             orbits:=[];
             j:=0;
-            for i in [1..Length(orbits2)] do 
+            for i in [1..Length(orbits2)] do
                 if Length(orbits2[i]) >1 then
                     j:=j+1; orbits[j]:= orbits2[i];
                 fi;
             od;
-            basesize:=[]; 
+            basesize:=[];
             where:=[];
-            for i in [1..Length(orbits)] do 
+            for i in [1..Length(orbits)] do
                 basesize[i]:=0;
                 for j in [1..Length(orbits[i])] do
                     where[orbits[i][j]]:=i;
@@ -1627,46 +1627,46 @@ InstallGlobalFunction( ClosureRandomPermGroup,
                 param[3] := k;
             fi;
         fi;
-        
+
         if not IsBound(G.aux) then
             SCRExtendRecord(G);
         fi;
         new := gens;
-       
+
         #the first call of SCRMakeStabStrong has top:=false
         #in order to add gens to the generating set of G;
         #further calls have top:=true, in order not to add
         #output of SCRStrongGenTest to generating set.
-        #remark: adding gens to the generating set of G before 
+        #remark: adding gens to the generating set of G before
         #calling SCRMakeStabStrong gives a nasty error if first base
         #point changes
         for g in gens do
-            if not(IsOne(SCRSift(G,g))) then 
+            if not(IsOne(SCRSift(G,g))) then
                 SCRMakeStabStrong (G,[g],param,orbits,
                         where,basesize,base,correct,missing,false);
             fi;
         od;
 
 	cnt:=0;
-        ready := false; 
-        while not ready do 
+        ready := false;
+        while not ready do
           if    IsBound(options.limit)
-            and SizeStabChain(G)=options.limit 
+            and SizeStabChain(G)=options.limit
           then
               ready := true;
-          else 
-              # we do a little random testing, to ensure heuristically a 
-              # correct result 
-              if correct then 
+          else
+              # we do a little random testing, to ensure heuristically a
+              # correct result
+              if correct then
                   result := SCRStrongGenTest(G,[1,10/G.diam,0,0,0,0],orbits,
                                       basesize,base,correct,missing);
-              else 
-                  result := SCRStrongGenTest2(G,[0,0,1,10/G.diam,0,0]); 
+              else
+                  result := SCRStrongGenTest2(G,[0,0,1,10/G.diam,0,0]);
               fi;
               if not(IsPerm(result) and IsOne(result)) then
                   new := [result];
-                  ready := false; 
-              elif options.random = 1000 then 
+                  ready := false;
+              elif options.random = 1000 then
                   G.restored := SCRRestoredRecord(G);
                   result := VerifySGS( G.restored, missing, correct );
 		  cnt:=cnt+1;
@@ -1678,7 +1678,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
 		    return StabChainRandomPermGroup(G.generators,G.identity,
 		            options);
 		  fi;
-              elif options.random > 0 then 
+              elif options.random > 0 then
                   result := SCRStrongGenTest
                           (G,param,orbits,basesize,base,correct,missing);
               fi;
@@ -1692,41 +1692,41 @@ InstallGlobalFunction( ClosureRandomPermGroup,
                   ready := false;
               elif correct or options.random = 0 or options.random = 1000 then
                   ready := true;
-              else 
+              else
                   result := SCRStrongGenTest2(G,param);
                   if IsPerm(result) and IsOne(result) then
                       ready := true;
-                  else 
+                  else
                       new := [result];
                       ready := false;
                   fi;
-              fi; 
-              if not ready then 
-		Unbind(G.restored); 
+              fi;
+              if not ready then
+		Unbind(G.restored);
                 SCRMakeStabStrong (G,new,param,orbits,
                         where,basesize,base,correct,missing,true);
 		#Print("D ",SizeStabChain(G),"\n");
               fi;
           fi;
-        od; 
-        
-        if not IsBound(options.temp) or options.temp = false then 
-             if IsBound( G.restored ) then 
-                G := G.restored; 
-             else 
-                G := SCRRestoredRecord(G); 
-             fi; 
-        else 
+        od;
+
+        if not IsBound(options.temp) or options.temp = false then
+             if IsBound( G.restored ) then
+                G := G.restored;
+             else
+                G := SCRRestoredRecord(G);
+             fi;
+        else
              G.basesize := basesize;
              G.correct := correct;
              G.orbits := orbits;
              G.missing := missing;
              G.base := base;
         fi;
-        
+
     fi; # if Length(gens) > 0
-    
-    
+
+
     # return the closure
     return G;
 

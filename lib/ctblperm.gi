@@ -102,7 +102,7 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
     enum:=Enumerator(G);
     D.enum:=enum;
     D.ClassElement:=ClassElementSmallGroup;
-    
+
     D.classMap:=ListWithIdenticalEntries(Size(G),D.klanz);
     for j in [1..D.klanz-1] do
       for i in Orbit(G,D.classreps[j]) do
@@ -188,7 +188,7 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
         # select moved points 1 and 2
         fos:=MovedPoints(G);
         D.p1:=fos[1];
-        D.p2:=fos[2]; 
+        D.p2:=fos[2];
 
         fs  := Stabilizer(G,D.p1);
         fos := First(OrbitsDomain(fs,[1..D.permdegree]),o->D.p2 in o);

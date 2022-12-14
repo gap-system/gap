@@ -49,7 +49,7 @@ DeclareSynonym("IsFromFpGroupHomomorphism",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsFromFpGroupGeneralMappingByImages",
-      IsFromFpGroupGeneralMapping and IsGroupGeneralMappingByImages, 
+      IsFromFpGroupGeneralMapping and IsGroupGeneralMappingByImages,
       [ "generators", "genimages" ] );
 DeclareSynonym("IsFromFpGroupHomomorphismByImages",
   IsFromFpGroupGeneralMappingByImages and IsMapping);
@@ -116,7 +116,7 @@ DeclareProperty( "IsWordDecompHomomorphism",IsGroupGeneralMappingByImages);
 
 #############################################################################
 ##
-#A  CosetTableFpHom(<hom>) 
+#A  CosetTableFpHom(<hom>)
 ##
 ##  <ManSection>
 ##  <Attr Name="CosetTableFpHom" Arg='hom'/>
@@ -136,7 +136,7 @@ DeclareAttribute("CosetTableFpHom",IsGeneralMapping,"mutable");
 
 #############################################################################
 ##
-#F  SecondaryImagesAugmentedCosetTable(<aug>,<gens>,<genimages>) 
+#F  SecondaryImagesAugmentedCosetTable(<aug>,<gens>,<genimages>)
 ##
 ##  <ManSection>
 ##  <Func Name="SecondaryImagesAugmentedCosetTable" Arg='aug,gens,genimages'/>
@@ -151,7 +151,7 @@ DeclareGlobalFunction("SecondaryImagesAugmentedCosetTable");
 
 #############################################################################
 ##
-#F  TrySecondaryImages(<aug>) 
+#F  TrySecondaryImages(<aug>)
 ##
 ##  <ManSection>
 ##  <Func Name="TrySecondaryImages" Arg='aug'/>
@@ -318,9 +318,9 @@ DeclareAttribute("EpimorphismFromFreeGroup",IsGroup);
 ##  gap> q:=DefiningQuotientHomomorphism(l[6]);;p:=Image(q);Size(p);
 ##  Group([ (4,5,6), (1,2,3)(4,6,5), (2,4,6,3,5) ])
 ##  360
-##  gap> s:=LargerQuotientBySubgroupAbelianization(q,SylowSubgroup(p,3)); 
+##  gap> s:=LargerQuotientBySubgroupAbelianization(q,SylowSubgroup(p,3));
 ##  Group(<fp, no generators known>)
-##  gap> Size(Image(DefiningQuotientHomomorphism(s))); 
+##  gap> Size(Image(DefiningQuotientHomomorphism(s)));
 ##  193273528320
 ##  ]]></Example>
 ##  </Description>

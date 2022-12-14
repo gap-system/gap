@@ -13,11 +13,11 @@
 ##
 #M  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . . via nice monomorphism
 ##
-InstallMethod( Pcgs, "via niceomorphism", true, 
+InstallMethod( Pcgs, "via niceomorphism", true,
   [ IsGroup and IsHandledByNiceMonomorphism ], 0,
     function( G )
     local   nice,  npcgs,  pcgs;
-    
+
     nice := NiceMonomorphism( G );
     npcgs := Pcgs( NiceObject( G ) );
     if npcgs = fail  then
@@ -52,7 +52,7 @@ InstallOtherMethod( DepthOfPcElement, true,
                    ImagesRepresentative( NiceMonomorphism( pcgs ), g ),
                    depth );
 end );
-    
+
 #############################################################################
 ##
 #M  LeadingExponentOfPcElement( <pcgs>, <g> ) . . . . . via nice monomorphism

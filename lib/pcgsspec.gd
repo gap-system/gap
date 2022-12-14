@@ -154,7 +154,7 @@ DeclareAttribute( "LGFirst", IsPcgs );
 ##  gap> spec := SpecialPcgs( G );
 ##  Pcgs([ f1, f2, f3, f4, f5, f6 ])
 ##  gap> LGWeights(spec);
-##  [ [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 3 ], 
+##  [ [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 3 ],
 ##    [ 1, 2, 2 ] ]
 ##  gap> LGLayers(spec);
 ##  [ 1, 1, 1, 1, 2, 3 ]
@@ -165,7 +165,7 @@ DeclareAttribute( "LGFirst", IsPcgs );
 ##  gap> p := SpecialPcgs( Pcgs( SmallGroup( 96, 120 ) ) );
 ##  Pcgs([ f1, f2, f3, f4, f5, f6 ])
 ##  gap> LGWeights(p);
-##  [ [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 2, 2 ], [ 1, 3, 2 ], 
+##  [ [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 1, 2 ], [ 1, 2, 2 ], [ 1, 3, 2 ],
 ##    [ 2, 1, 3 ] ]
 ##  ]]></Example>
 ##  <P/>

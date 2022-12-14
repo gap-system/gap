@@ -56,7 +56,7 @@
 ##  <#/GAPDoc>
 ##
 ##  <#GAPDoc Label="[2]{mapping}">
-##  <Ref Attr="Source"/> and <Ref Attr="Range" Label="of a general mapping"/> 
+##  <Ref Attr="Source"/> and <Ref Attr="Range" Label="of a general mapping"/>
 ##  are basic operations for general mappings.
 ##  <Ref Attr="UnderlyingRelation"/> is secondary, its default method sets up
 ##  a domain that delegates tasks to the general mapping.
@@ -882,7 +882,7 @@ DeclareOperation( "ImageElm", [ IsMapping, IsObject ] );
 ##  <A>elm</A> of the source of the mapping <A>map</A> under <A>map</A>,
 ##  i.e., the unique element of the range to which <A>map</A> maps
 ##  <A>elm</A>.
-##  This can also be expressed as <A>elm</A><C>^</C><A>map</A> or as 
+##  This can also be expressed as <A>elm</A><C>^</C><A>map</A> or as
 ##  <A>map</A><C>( </C><A>elm</A><C> )</C>.
 ##  <P/>
 ##  Note that <A>map</A> must be total and single valued,
@@ -892,7 +892,7 @@ DeclareOperation( "ImageElm", [ IsMapping, IsObject ] );
 ##  <C>Image( <A>map</A>, <A>coll</A> )</C> is the image of the subset
 ##  <A>coll</A> of the source of the mapping <A>map</A> under <A>map</A>,
 ##  i.e., the subset of the range to which <A>map</A> maps elements of
-##  <A>coll</A>. <P/> 
+##  <A>coll</A>. <P/>
 ##  <A>coll</A> may be a proper set or a domain.
 ##  The result will be either a proper set or a domain.
 ##  Note that in this case <A>map</A> may also be multi-valued.
@@ -902,8 +902,8 @@ DeclareOperation( "ImageElm", [ IsMapping, IsObject ] );
 ##  <C>Image( <A>map</A>, <A>coll</A> )</C> can also be expressed as <C><A>map</A>(<A>coll</A>)</C> and
 ##  <C>Image( <A>map</A>, <A>elm</A> )</C> as  <C><A>map</A>(<A>elm</A>)</C>.
 ##  Those using this notation should remember that composition of mappings in &GAP;
-##  still follows the conventions appropriate for mapping acting from the right, so that 
-##  <C>(<A>map1</A>*<A>map2</A>)(<A>x</A>)</C> is equivalent to 
+##  still follows the conventions appropriate for mapping acting from the right, so that
+##  <C>(<A>map1</A>*<A>map2</A>)(<A>x</A>)</C> is equivalent to
 ##  <C><A>map2</A>(<A>map1</A>(<A>x</A>))</C>    <P/>
 ##  <Ref Func="Image" Label="set of images of the source of a general mapping"/>
 ##  delegates to <Ref Attr="ImagesSource"/> when called
@@ -1437,7 +1437,7 @@ DeclareGlobalFunction( "GeneralMappingByElements" );
 
 
 #############################################################################
-##                                         
+##
 #F  MappingByFunction( <S>, <R>, <fun>[, <invfun>] )
 #F  MappingByFunction( <S>, <R>, <fun>, `false', <prefun> )
 ##

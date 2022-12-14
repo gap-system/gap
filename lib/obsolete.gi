@@ -34,11 +34,11 @@
 #             h,          # gap width in shell sort
 #             k, l,       # loop variables
 #             max, omax;  # maximal entry and overall maximal entry
-#             
+#
 #     # give some information
 #     Info( InfoMatrix, 1, "DiagonalizeMat called" );
 #     omax := 0;
-# 
+#
 #     # get the number of rows and columns
 #     nrrows := Length( mat );
 #     if nrrows <> 0  then
@@ -48,13 +48,13 @@
 #     fi;
 #     rownorms := [];
 #     colnorms := [];
-# 
+#
 #     # loop over the diagonal positions
 #     d := 1;
 #     Info( InfoMatrix, 2, "  divisors:" );
-# 
+#
 #     while d <= nrrows and d <= nrcols  do
-# 
+#
 #         # find the maximal entry
 #         Info( InfoMatrix, 3, "    d=", d );
 #         if 3 <= InfoLevel( InfoMatrix ) then
@@ -72,7 +72,7 @@
 #             Info( InfoMatrix, 3, "    max=", max );
 #             if omax < max  then omax := max;  fi;
 #         fi;
-# 
+#
 #         # compute the Euclidean norms of the rows and columns
 #         for k  in [ d .. nrrows ]  do
 #             row := mat[k];
@@ -83,7 +83,7 @@
 #             colnorms[l] := col * col;
 #         od;
 #         Info( InfoMatrix, 3, "    n" );
-# 
+#
 #         # push rows containing only zeroes down and forget about them
 #         for k  in [ nrrows, nrrows-1 .. d ]  do
 #             if k < nrrows and rownorms[k] = 0  then
@@ -98,7 +98,7 @@
 #                 nrrows := nrrows - 1;
 #             fi;
 #         od;
-# 
+#
 #         # quit if there are no more nonzero entries
 #         if nrrows < d  then
 #             #N  1996/04/30 mschoene should 'break'
@@ -106,7 +106,7 @@
 #             Info( InfoMatrix, 1, "DiagonalizeMat returns" );
 #             return;
 #         fi;
-# 
+#
 #         # push columns containing only zeroes right and forget about them
 #         for l  in [ nrcols, nrcols-1 .. d ]  do
 #             if l < nrcols and colnorms[l] = 0  then
@@ -121,7 +121,7 @@
 #                 nrcols := nrcols - 1;
 #             fi;
 #         od;
-# 
+#
 #         # sort the rows with respect to their norms
 #         h := 1;  while 9 * h + 4 < nrrows-(d-1)  do h := 3 * h + 1;  od;
 #         while 0 < h  do
@@ -139,7 +139,7 @@
 #             od;
 #             h := QuoInt( h, 3 );
 #         od;
-# 
+#
 #         # choose a pivot in the '<mat>{[<d>..]}{[<d>..]}' submatrix
 #         # the pivot must be the topmost nonzero entry in its column,
 #         # now that the rows are sorted with respect to their norm
@@ -156,7 +156,7 @@
 #             fi;
 #         od;
 #         Info( InfoMatrix, 3, "    p" );
-# 
+#
 #         # move the pivot to the diagonal and make it positive
 #         if d <> pivk  then
 #             row       := mat[d];
@@ -171,7 +171,7 @@
 #         if mat[d][d] < 0  then
 #             MultVector(mat[d],-1);
 #         fi;
-# 
+#
 #         # now perform row operations so that the entries in the
 #         # <d>-th column have absolute value at most pivot/2
 #         clear := true;
@@ -188,7 +188,7 @@
 #             clear := clear and mat[k][d] = 0;
 #         od;
 #         Info( InfoMatrix, 3, "    c" );
-# 
+#
 #         # now perform column operations so that the entries in
 #         # the <d>-th row have absolute value at most pivot/2
 #         col := mat{[d..nrrows]}[d];
@@ -204,10 +204,10 @@
 #             clear := clear and mat[d][l] = 0;
 #         od;
 #         Info( InfoMatrix, 3, "    r" );
-# 
+#
 #         # repeat until the <d>-th row and column are totally cleared
 #         while not clear  do
-# 
+#
 #             # compute the Euclidean norms of the rows and columns
 #             # that have a nonzero entry in the <d>-th column resp. row
 #             for k  in [ d .. nrrows ]  do
@@ -223,7 +223,7 @@
 #                 fi;
 #             od;
 #             Info( InfoMatrix, 3, "    n" );
-# 
+#
 #             # choose a pivot in the <d>-th row or <d>-th column
 #             pivk := 0;  pivl := 0;
 #             norm := Maximum(rownorms) * Maximum(colnorms) + 1;
@@ -240,7 +240,7 @@
 #                 fi;
 #             od;
 #             Info( InfoMatrix, 3, "    p" );
-# 
+#
 #             # move the pivot to the diagonal and make it positive
 #             if d <> pivk  then
 #                 row       := mat[d];
@@ -255,7 +255,7 @@
 #             if mat[d][d] < 0  then
 #                 MultVector(mat[d],-1);
 #             fi;
-# 
+#
 #             # now perform row operations so that the entries in the
 #             # <d>-th column have absolute value at most pivot/2
 #             clear := true;
@@ -272,7 +272,7 @@
 #                 clear := clear and mat[k][d] = 0;
 #             od;
 #             Info( InfoMatrix, 3, "    c" );
-# 
+#
 #             # now perform column operations so that the entries in
 #             # the <d>-th row have absolute value at most pivot/2
 #             col := mat{[d..nrrows]}[d];
@@ -288,18 +288,18 @@
 #                 clear := clear and mat[d][l] = 0;
 #             od;
 #             Info( InfoMatrix, 3, "    r" );
-# 
+#
 #         od;
-# 
+#
 #         # print the diagonal entry (for information only)
 #         Info( InfoMatrix, 3, "    div=" );
 #         Info( InfoMatrix, 2, "      ", mat[d][d] );
-# 
+#
 #         # go on to the next diagonal position
 #         d := d + 1;
-# 
+#
 #     od;
-# 
+#
 #     # close with some more information
 #     Info( InfoMatrix, 3, "  overall maximal entry ", omax );
 #     Info( InfoMatrix, 1, "DiagonalizeMat returns" );
@@ -361,7 +361,7 @@ end );
 #     ShrinkRowVector(l1);
 #     return Length(l1);
 # end );
-# 
+#
 # InstallOtherMethod( ShrinkCoeffs,"error if immutable",
 #     [ IsList ],
 #     L1_IMMUTABLE_ERROR);
@@ -394,7 +394,7 @@ end );
 #         "the operation `ShrinkCoeffs' is not supported anymore,\n",
 #         "#I  use `ShrinkRowVector' instead" );
 #     return SHRINKCOEFFS_GF2VEC(l1);
-# end ); 
+# end );
 
 
 #############################################################################
@@ -431,7 +431,7 @@ end );
 ##
 ##  <ManSection>
 ##  <Func Name="LaTeX" Arg='obj1, obj2, ...'/>
-##  
+##
 ##  <Description>
 ##  Returns a LaTeX string describing the objects <A>obj1</A>, <A>obj2</A>, ... .
 ##  This string can for example be pasted to a &LaTeX; file, or one can use
@@ -600,7 +600,7 @@ local fam, ext, str, zero, one, mone, le, c, s, b, ind, i, j;
 	  Append(str,IndeterminateName(fam,ind));
 	else
 	  Append(str,"x_{");
-	  Append(str,String(ind)); 
+	  Append(str,String(ind));
 	  Add(str,'}');
 	fi;
 	if 1 <> ext[i][j+1]  then
@@ -717,11 +717,11 @@ end);
 ##
 # InstallGlobalFunction( ConnectGroupAndCharacterTable, function( arg )
 #     local G, tbl, arec, ccl, compat;
-#     
+#
 #     Info( InfoObsolete, 1,
 #         "the function `ConnectGroupAndCharacterTable' is not supported anymore,\n",
 #         "#I  use `CharacterTableWithStoredGroup' instead" );
-# 
+#
 #     # Get and check the arguments.
 #     if   Length( arg ) = 2 and IsGroup( arg[1] )
 #                            and IsOrdinaryTable( arg[2] ) then
@@ -733,45 +733,45 @@ end);
 #     else
 #       Error( "usage: ConnectGroupAndCharacterTable(<G>,<tbl>[,<arec>])" );
 #     fi;
-# 
+#
 #     G   := arg[1];
 #     tbl := arg[2];
-# 
+#
 #     if HasUnderlyingGroup( tbl ) then
 #       Error( "<tbl> has already underlying group" );
 #     elif HasOrdinaryCharacterTable( G ) then
 #       Error( "<G> has already a character table" );
 #     fi;
-# 
+#
 #     ccl:= ConjugacyClasses( G );
 # #T How to exploit the known character table
 # #T if the conjugacy classes of <G> are not yet computed?
-# 
+#
 #     if IsList( arec ) then
 #       compat:= arec;
 #     else
 #       compat:= CompatibleConjugacyClasses( G, ccl, tbl, arec );
 #     fi;
-# 
+#
 #     if IsList( compat ) then
-# 
+#
 #       # Permute the classes if necessary.
 #       if compat <> [ 1 .. Length( compat ) ] then
 #         ccl:= ccl{ compat };
 #       fi;
-# 
+#
 #       # The identification is unique, store attribute values.
 #       SetUnderlyingGroup( tbl, G );
 #       SetOrdinaryCharacterTable( G, tbl );
 #       SetConjugacyClasses( tbl, ccl );
 #       SetIdentificationOfConjugacyClasses( tbl, compat );
-# 
+#
 #       return true;
-# 
+#
 #     else
 #       return false;
 #     fi;
-# 
+#
 #     end );
 
 
@@ -779,7 +779,7 @@ end);
 ##
 #F  ViewLength( <len> )
 ##
-##  <Ref Func="View"/> will usually display objects in short form if they 
+##  <Ref Func="View"/> will usually display objects in short form if they
 ##  would need more than <A>len</A> lines. The default is 3.
 ##  This function was moved to obsoletes before GAP 4.7 beta release,
 ##  since there is now a user preference mechanism to specify it:
@@ -795,7 +795,7 @@ end);
 #     GAPInfo.ViewLength:= arg[1];
 #   fi;
 # end );
-# 
+#
 
 
 #############################################################################
@@ -999,7 +999,7 @@ local p,str,all,l,which;
     fi;
     p:=p-3;
   od;
-  if all then 
+  if all then
     HIDDEN_GVARS:=[];
   fi;
 end);

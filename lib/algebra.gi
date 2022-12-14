@@ -357,9 +357,9 @@ InstallMethod( LieAlgebraByDomain,
              k:= cji[1][m];
              cfs[k]:= cfs[k] - cji[2][m];
            od;
-           
+
            cij:= [ ];
-           
+
            for m in [1..n] do
              if cfs[m] <> zero then
                  Add( cij, cfs[m] );
@@ -1828,7 +1828,7 @@ InstallMethod( IsSubset,
 
     F1:= LeftActingDomain( D1 );
     F2:= LeftActingDomain( D2 );
-    if not ( HasIsDivisionRing( F1 ) and IsDivisionRing( F1 ) and 
+    if not ( HasIsDivisionRing( F1 ) and IsDivisionRing( F1 ) and
              HasIsDivisionRing( F2 ) and IsDivisionRing( F2 ) ) then
       TryNextMethod();
     fi;
@@ -1852,7 +1852,7 @@ InstallMethod( IsSubset,
 
     F1:= LeftActingDomain( D1 );
     F2:= LeftActingDomain( D2 );
-    if not ( HasIsDivisionRing( F1 ) and IsDivisionRing( F1 ) and 
+    if not ( HasIsDivisionRing( F1 ) and IsDivisionRing( F1 ) and
              HasIsDivisionRing( F2 ) and IsDivisionRing( F2 ) ) then
       TryNextMethod();
     fi;
@@ -2855,14 +2855,14 @@ InstallMethod( Basis,
     "for an associative FLMLOR",
     [ IsFLMLOR and IsAssociative ],
         function( A )
-    local  mb;    
+    local  mb;
 
     # If generators as left module are known
     # we do not need to multiply at all.
     if HasGeneratorsOfLeftModule( A ) then
       TryNextMethod();
     fi;
-  
+
     mb:= MutableBasisOfClosureUnderAction(
              LeftActingDomain( A ),
              GeneratorsOfLeftOperatorRing( A ),
@@ -2872,7 +2872,7 @@ InstallMethod( Basis,
              Zero( A ),
              infinity );
     return ImmutableBasis( mb, A );
-    
+
     end );
 
 
@@ -2915,23 +2915,23 @@ InstallMethod( Basis,
     "for a Lie algebra",
     [ IsLieAlgebra ],
     function( A )
-    local  mb;    
+    local  mb;
 
     # If generators as left module are known
     # we do not need to multiply at all.
     if HasGeneratorsOfLeftModule( A ) then
       TryNextMethod();
     fi;
-    
+
     mb:= MutableBasisOfClosureUnderAction(
              LeftActingDomain( A ),
              GeneratorsOfLeftOperatorRing( A ),
              "left",
-             GeneratorsOfLeftOperatorRing( A ),       
+             GeneratorsOfLeftOperatorRing( A ),
              \*,
              Zero( A ),
              infinity );
-    return ImmutableBasis( mb, A );    
+    return ImmutableBasis( mb, A );
     end );
 
 
@@ -3180,7 +3180,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
                SetChevalleyBasis( L, RV );
            fi;
        fi;
-       
+
        if HasSemiSimpleType( A1 ) and HasSemiSimpleType( A2 ) then
            SetSemiSimpleType( L, Concatenation( SemiSimpleType(A1)," ",
                    SemiSimpleType( A2 ) ) );
@@ -3346,16 +3346,16 @@ BindGlobal( "FreeAlgebraConstructor", function( name, magma )
       Error( "usage: ", name, "( <R>, <rank> )\n",
                  "or ", name, "( <R>, <name1>, ... )" );
     fi;
-    
+
     M := magma( names );
-    
+
     # Construct the algebra as free magma algebra of a free magma over `R'.
     A := FreeMagmaRing( R, M );
 
     # Store the names.
     F := ElementsFamily( FamilyObj( A ) );
     F!.names:= names;
-    
+
     # Install grading
     if HasOne(M) then i := 0; else i := 1; fi;
     SetGrading( A, rec(min_degree := i,

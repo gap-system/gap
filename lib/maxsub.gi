@@ -19,12 +19,12 @@
 #############################################################################
 ##
 #F MaxSubmodsByPcgs( G, pcgs, field )
-## 
+##
 BindGlobal("MaxSubmodsByPcgs",function( G, pcgs, field )
     local mats, modu, max, pcgD, pcgN, i, base, sub;
     mats := LinearOperationLayer( G, pcgs );
     modu := GModuleByMats( mats, Length(pcgs), field );
-    if modu.dimension=1 then 
+    if modu.dimension=1 then
       max:=[[]];
     else
       max  := MTX.BasesMaximalSubmodules( modu );
@@ -61,7 +61,7 @@ end);
 ##
 BindGlobal("ComplementClassesByPcgsModulo",
 function( G, fampcgs,pcgs,fphom,words,wordgens,wordimgs)
-    local ocr, cc, cb, co, field, z, V, reps, cls, r, cl,den,gen,ggens; 
+    local ocr, cc, cb, co, field, z, V, reps, cls, r, cl,den,gen,ggens;
 
     den:=DenominatorOfModuloPcgs(pcgs);
     # the mysterious one-cocycle record
@@ -128,7 +128,7 @@ end);
 #############################################################################
 ##
 #F HeadComplementGens( gensG, pcgsT, pcgsA, field )
-## 
+##
 BindGlobal("HeadComplementGens",function( gensG, pcgsT, pcgsA, field )
     local gensK, g, V, M, t, h, b, v, A, B, l, s, a;
 
@@ -137,7 +137,7 @@ BindGlobal("HeadComplementGens",function( gensG, pcgsT, pcgsA, field )
 
     # loop over gensG
     for g in gensG do
-        
+
         # set up system of linear equations
         V := [];
         M := List( [1..Length(pcgsA)], x -> [] );
@@ -156,7 +156,7 @@ BindGlobal("HeadComplementGens",function( gensG, pcgsT, pcgsA, field )
             od;
         od;
 
-        # solve system 
+        # solve system
         s := SolutionMat( M, V );
         a := PcElementByExponents( pcgsA, s );
         Add( gensK, g*a );
@@ -170,7 +170,7 @@ end);
 ##
 BindGlobal("MaximalSubgroupClassesSol",function(G)
     local pcgs, spec, first, weights, m, max, i, gensG, f, n, p, w, field,
-          pcgsN, pcgsM, pcgsF, modus, modu, oper, L, cl, K, R, I, hom, 
+          pcgsN, pcgsM, pcgsF, modus, modu, oper, L, cl, K, R, I, hom,
           V, W, new, index, pcgsT, gensK, pcgsL, pcgsML, M, H,ff,S,
 	  fphom,mgi,sel,words,wordgens,pcgp,homliftlevel,pcgrppcgs,
 	  fam,wordfpgens,wordpre;
@@ -219,7 +219,7 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
         field := GF(p);
         if w[2] = 1 then
 	  Info(InfoLattice,2,"start layer with weight ", w," ^ ",n-f);
-      
+
 	  # if necessary extent the fphom
 	  if homliftlevel+1<f then
             pcgsM := InducedPcgsByPcSequenceNC( spec, spec{[homliftlevel+1..f-1]} );
@@ -247,7 +247,7 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
 
 	  # lift to maximal subgroups
 	  if w[1] = 1 and Length(gensG) = 0 then
-	
+
 	    # this is the trivial case
 	    for modu in modus do
 	      L:=Concatenation(spec{[1..f-1]},NumeratorOfModuloPcgs( modu ) );
@@ -266,7 +266,7 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
 	      pcgsML := pcgsM mod pcgsL;
 	      if true or not IsCentralModule( G, pcgsML ) then
 		Info(InfoLattice,3,"  compute complement classes ",
-		  Length(pcgsML)); 
+		  Length(pcgsML));
 		cl := ComplementClassesByPcgsModulo( G, ff.pcgs,
 			pcgsML, fphom,words,wordgens, mgi[2]{sel});
 		Append( max, cl );
@@ -297,10 +297,10 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
     else
 
 	# here we use head complements
-	Info(InfoLattice,2,"  compute head complement"); 
+	Info(InfoLattice,2,"  compute head complement");
 	index := Filtered( [1..m], x -> weights[x][1] = w[1]-1
 				    and weights[x][2] = 1
-				    and weights[x][3] <> p ); 
+				    and weights[x][3] <> p );
 	pcgsT := Concatenation( spec{index}, pcgsM );
 	pcgsT := InducedPcgsByPcSequenceNC( spec, pcgsT );
 	pcgsT := pcgsT mod pcgsM;
@@ -364,7 +364,7 @@ BindGlobal("MaxesByLattice",function(G)
 local  c, maxs,lat,sel,reps;
 
   c:=ConjugacyClassesSubgroups(G);
-  c:=Filtered(c,x->Size(Representative(x))<Size(G)); 
+  c:=Filtered(c,x->Size(Representative(x))<Size(G));
   reps:=List(c,Representative);
   sel:=Filtered([1..Length(c)],x->ForAll(reps,y->Size(y)<=Size(reps[x]) or
 	not IsSubset(y,reps[x])));
@@ -492,7 +492,7 @@ local hom,embs,s,k,agens,ad,i,j,perm,dia,ggens,e,tgens,d,m,reco,emba,outs,id;
   tgens:=GeneratorsOfGroup(t);
   d:=List(tgens,i->Image(embs[1],i));
   s:=Subgroup(w,d);
-  k:=TrivialSubgroup(w); # the first component autos can be undone. 
+  k:=TrivialSubgroup(w); # the first component autos can be undone.
   agens:=GeneratorsOfGroup(a);
   ad:=List(agens,i->Image(embs[1],i));
   for i in [2..n] do
@@ -548,7 +548,7 @@ local m,id,epi,H,ids,ft;
   m:=TomDataMaxesAlmostSimple(G);
   if m<>fail then return m;fi;
 
-  if IsNonabelianSimpleGroup(G) then 
+  if IsNonabelianSimpleGroup(G) then
     # following is stopgap for L
     id:=DataAboutSimpleGroup(G);
     ids:=id.idSimple;
@@ -559,7 +559,7 @@ local m,id,epi,H,ids,ft;
       epi:=IsomorphismGroups(G,H);
       m:=List(m,x->PreImage(epi,x));
       return m;
-    elif IsBound(ids.parameter) and IsList(ids.parameter) 
+    elif IsBound(ids.parameter) and IsList(ids.parameter)
       and Length(ids.parameter)=2 and ForAll(ids.parameter,IsInt) then
 
       # O(odd,2) is stored as SP(odd-1,2)
@@ -567,7 +567,7 @@ local m,id,epi,H,ids,ft;
         ids:=rec(name:=ids.name,parameter:=ids.parameter,series:="C",
         shortname:=ids.shortname);
         ft:=ids;
-      else 
+      else
         ft:=fail;
       fi;
 
@@ -632,7 +632,7 @@ local dom, o, t1, a1, t1d, proj, reps, ts, ta, tb, s1, i, fix, wnew, max, iso, t
   t1:=Image(Embedding(w,1),t);
   a1:=Image(Embedding(w,1),a);
   t1d:=Set(MovedPoints(t1));
-  if not IsSubset(o[1],t1d) then 
+  if not IsSubset(o[1],t1d) then
     o:=Reversed(o);
   fi;
   # get the ts corresponding to points
@@ -694,7 +694,7 @@ local dom, o, t1, a1, t1d, proj, reps, ts, ta, tb, s1, i, fix, wnew, max, iso, t
 end);
 
 BindGlobal("MaxesType4bc",function(w,g,a,t,n)
-local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug, 
+local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
   bl, lb, u, phi, uphi, ws, ew, ueg, r, i, emb, j, b,ue,ke,scp,s,nlb,
   comp;
 
@@ -931,7 +931,7 @@ for mm in lmax do mm!.type:="3b";od;
 
 
 	if Length(dorb[dn])>5
-	   and not IsSolvableGroup(Action(q,d{dorb[dn]})) 
+	   and not IsSolvableGroup(Action(q,d{dorb[dn]}))
 	   and "5" in types then
 	  # Twisted wreath product (TW)
 	  if not ValueOption("cheap")=true then
@@ -950,7 +950,7 @@ for mm in lmax do mm!.type:="3b";od;
     for dn in comb do
       a1:=dorba[dn[1]];
       a2:=dorba[dn[2]];
-      
+
       if Size(a1[3])>Size(a2[3]) then
 	anew:=EmbedAutomorphisms(a1[3],a2[3],a1[4],a2[4]);
 	a1emb:=anew[2];
@@ -987,7 +987,7 @@ for mm in lmax do mm!.type:="4a";od;
 	  Append(maxes,lmax);
 	fi;
       fi;
-      
+
     od;
 
   fi;
@@ -1041,7 +1041,7 @@ local all,m,sel,i,new,containedconj;
 
   containedconj:=function(g,u,v)
   local m,n,dc,i;
-    if not IsInt(Size(u)/Size(v)) then 
+    if not IsInt(Size(u)/Size(v)) then
       return false;
     fi;
     m:=Normalizer(g,u);

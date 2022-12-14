@@ -17,7 +17,7 @@
 # so it is not guaranteed that the resulting semigroup is 0-simple)
 # 2) subsemigroups U of 1), which defined by a generating set and are Rees matrix
 # semigroups, i.e. U=I'xG'xJ' where the whole family if IxGxJ and I', J' subsets
-# of I, J and G' a subsemigroup of G. 
+# of I, J and G' a subsemigroup of G.
 # 3) subsemigroups of 1) obtained by removing an index or element of the
 # underlying semigroup, and hence are also Rees matrix semigroups.
 # 4) subsemigroups of 1) defined by generating sets which are not
@@ -56,18 +56,18 @@ function(R)
 end);
 
 InstallMethod(IsFinite, "for a Rees 0-matrix subsemigroup",
-[IsReesZeroMatrixSubsemigroup], 
+[IsReesZeroMatrixSubsemigroup],
 function(R)
-  if HasIsFinite(ParentAttr(R)) and IsFinite(ParentAttr(R))then 
+  if HasIsFinite(ParentAttr(R)) and IsFinite(ParentAttr(R))then
     return true;
   fi;
   TryNextMethod();
 end);
 
 InstallMethod(IsFinite, "for a Rees matrix subsemigroup",
-[IsReesMatrixSubsemigroup], 
+[IsReesMatrixSubsemigroup],
 function(R)
-  if HasIsFinite(ParentAttr(R)) and IsFinite(ParentAttr(R)) then 
+  if HasIsFinite(ParentAttr(R)) and IsFinite(ParentAttr(R)) then
     return true;
   fi;
   TryNextMethod();
@@ -76,7 +76,7 @@ end);
 #
 
 InstallMethod(IsIdempotent, "for a Rees 0-matrix semigroup element",
-[IsReesZeroMatrixSemigroupElement], 
+[IsReesZeroMatrixSemigroupElement],
 function(x)
   local matrix_entry, g;
 
@@ -97,19 +97,19 @@ end);
 
 #
 
-InstallTrueMethod(IsRegularSemigroup, 
+InstallTrueMethod(IsRegularSemigroup,
 IsReesMatrixSemigroup and IsSimpleSemigroup);
 
 #
 
 InstallMethod(IsRegularSemigroup, "for a Rees 0-matrix semigroup",
-[IsReesZeroMatrixSemigroup], 
+[IsReesZeroMatrixSemigroup],
 function(R)
   local mat;
 
   mat := Matrix(R);
   if HasIsGroupAsSemigroup(UnderlyingSemigroup(R))
-      and IsGroupAsSemigroup(UnderlyingSemigroup(R)) then 
+      and IsGroupAsSemigroup(UnderlyingSemigroup(R)) then
     return ForAll(Rows(R), i -> ForAny(Columns(R), j -> mat[j,i]<>0))
       and ForAll(Columns(R), j -> ForAny(Rows(R), i -> mat[j,i]<>0));
   else
@@ -119,8 +119,8 @@ end);
 
 #
 
-InstallMethod(IsSimpleSemigroup, 
-"for a subsemigroup of a Rees matrix semigroup with an underlying semigroup", 
+InstallMethod(IsSimpleSemigroup,
+"for a subsemigroup of a Rees matrix semigroup with an underlying semigroup",
 [IsReesMatrixSubsemigroup and HasUnderlyingSemigroup],
 R-> IsSimpleSemigroup(UnderlyingSemigroup(R)));
 
@@ -132,22 +132,22 @@ R-> IsSimpleSemigroup(UnderlyingSemigroup(R)));
 # and should always be the one chosen for Rees matrix subsemigroups with known
 # underlying semigroup, whether finite or infinite.
 
-InstallMethod(IsSimpleSemigroup, 
-"for finite subsemigroup of a Rees matrix semigroup with underlying semigroup", 
+InstallMethod(IsSimpleSemigroup,
+"for finite subsemigroup of a Rees matrix semigroup with underlying semigroup",
 [IsReesMatrixSubsemigroup and HasUnderlyingSemigroup and IsFinite],
 R -> IsSimpleSemigroup(UnderlyingSemigroup(R)));
 
 # check that the matrix has no rows or columns consisting entirely of 0s
 # and that the underlying semigroup is simple
 
-InstallMethod(IsZeroSimpleSemigroup, "for a Rees 0-matrix semigroup", 
+InstallMethod(IsZeroSimpleSemigroup, "for a Rees 0-matrix semigroup",
 [IsReesZeroMatrixSemigroup],
 function(R)
   local i, mat;
 
   mat := Matrix(R);
   if ForAny(Columns(R), j -> ForAll(Rows(R), i -> mat[j,i] = 0))
-      or ForAny(Rows(R), i -> ForAll(Columns(R), j -> mat[j,i] = 0)) then 
+      or ForAny(Rows(R), i -> ForAll(Columns(R), j -> mat[j,i] = 0)) then
     return false;
   fi;
   return IsSimpleSemigroup(UnderlyingSemigroup(R));
@@ -159,16 +159,16 @@ InstallMethod(IsReesMatrixSemigroup, "for a semigroup", [IsSemigroup], ReturnFal
 
 #
 
-InstallMethod(IsReesMatrixSemigroup, 
-"for a Rees matrix subsemigroup with generators", 
-[IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup], 
-function(R) 
+InstallMethod(IsReesMatrixSemigroup,
+"for a Rees matrix subsemigroup with generators",
+[IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup],
+function(R)
   local gens, I, J;
-  
-  if IsWholeFamily(R) then 
+
+  if IsWholeFamily(R) then
     return true;
   fi;
-  
+
   # it is still possible that <R> is a Rees matrix semigroup, if, for example,
   # we have a subsemigroup specified by generators which equals a subsemigroup
   # obtained by removing a row, in the case that <R> is not simple.
@@ -176,7 +176,7 @@ function(R)
   I:=Set(gens, x-> x![1]);
   J:=Set(gens, x-> x![3]);
 
-  return ForAll(GeneratorsOfReesMatrixSemigroupNC(ParentAttr(R), I, 
+  return ForAll(GeneratorsOfReesMatrixSemigroupNC(ParentAttr(R), I,
     Semigroup(List(AsSSortedList(R), x-> x![2])), J), x-> x in R);
 end);
 
@@ -187,54 +187,54 @@ ReturnFalse);
 
 #
 
-InstallMethod(IsReesZeroMatrixSemigroup, 
-"for a Rees 0-matrix subsemigroup with generators", 
-[IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup], 
-function(R) 
+InstallMethod(IsReesZeroMatrixSemigroup,
+"for a Rees 0-matrix subsemigroup with generators",
+[IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup],
+function(R)
   local gens, pos, elts, I, J;
-  
-  if IsWholeFamily(R) then 
+
+  if IsWholeFamily(R) then
     return true;
   fi;
 
   # it is still possible that <R> is a Rees 0-matrix semigroup, if, for
   # example, we have a subsemigroup specified by generators which equals a
   # subsemigroup obtained by removing a row, in the case that <R> is not simple.
- 
-  if MultiplicativeZero(R)<>MultiplicativeZero(ParentAttr(R)) then 
+
+  if MultiplicativeZero(R)<>MultiplicativeZero(ParentAttr(R)) then
     return false; #Rees 0-matrix semigroups always contain the 0.
   fi;
-  
+
   gens := Unique(GeneratorsOfSemigroup(R));
   pos:=Position(gens, MultiplicativeZero(R));
-  if pos<>fail then 
+  if pos<>fail then
     if Size(gens) = 1 then
       return false;
     fi;
     gens:=ShallowCopy(gens);
     Remove(gens, pos);
   fi;
-  
-  elts:=ShallowCopy(AsSSortedList(R)); 
+
+  elts:=ShallowCopy(AsSSortedList(R));
   RemoveSet(elts, MultiplicativeZero(R));
 
   I:=Set(gens, x-> x![1]);
   J:=Set(gens, x-> x![3]);
-  
-  return ForAll(GeneratorsOfReesZeroMatrixSemigroupNC(ParentAttr(R), I, 
+
+  return ForAll(GeneratorsOfReesZeroMatrixSemigroupNC(ParentAttr(R), I,
     Semigroup(List(elts, x-> x![2])), J), x-> x in R);
 end);
 
 #
 
 InstallMethod(ReesMatrixSemigroup, "for a semigroup and a rectangular table",
-[IsSemigroup, IsRectangularTable], 
+[IsSemigroup, IsRectangularTable],
 function(S, mat)
   local fam, R, type, x;
-  
-  for x in mat do 
+
+  for x in mat do
     if ForAny(x, s-> not s in S) then
-      ErrorNoReturn("the entries of the second argument (a rectangular ", 
+      ErrorNoReturn("the entries of the second argument (a rectangular ",
                     "table) must belong to the first argument (a semigroup)");
     fi;
   od;
@@ -252,21 +252,21 @@ function(S, mat)
 
   # store the type of the elements in the semigroup
   type:=NewType(fam, IsReesMatrixSemigroupElement and IsPositionalObjectRep);
-  
+
   fam!.type:=type;
-  SetTypeReesMatrixSemigroupElements(R, type); 
+  SetTypeReesMatrixSemigroupElements(R, type);
   SetReesMatrixSemigroupOfFamily(fam, R);
 
   SetMatrixOfReesMatrixSemigroup(R, mat);
   SetUnderlyingSemigroup(R, S);
   SetRowsOfReesMatrixSemigroup(R, [1..Length(mat[1])]);
   SetColumnsOfReesMatrixSemigroup(R, [1..Length(mat)]);
-  
-  if HasIsSimpleSemigroup(S) and IsSimpleSemigroup(S) then 
+
+  if HasIsSimpleSemigroup(S) and IsSimpleSemigroup(S) then
     SetIsSimpleSemigroup(R, true);
   fi;
-  
-  if HasIsFinite(S) then 
+
+  if HasIsFinite(S) then
     SetIsFinite(R, IsFinite(S));
   fi;
 
@@ -324,7 +324,7 @@ function(S, mat)
   # cannot set IsZeroSimpleSemigroup to be <true> here since the matrix may
   # contain a row or column consisting entirely of 0s!
   # WW Also S might not be a simple semigroup (which is necessary)!
-  if IsGroup(S) or (HasIsFinite(S) and IsFinite(S)) then 
+  if IsGroup(S) or (HasIsFinite(S) and IsFinite(S)) then
     GeneratorsOfSemigroup(R);
   fi;
   SetIsSimpleSemigroup(R, false);
@@ -350,7 +350,7 @@ InstallMethod(ViewObj, "for a subsemigroup of a Rees matrix semigroup",
 
 InstallMethod(PrintObj, "for a subsemigroup of a Rees matrix semigroup",
 [IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup],
-function(R) 
+function(R)
   Print("\><subsemigroup of \>",
         Length(Rows(ParentAttr(R))), "x", Length(Columns(ParentAttr(R))),
         "\< Rees matrix semigroup \>with ",
@@ -377,7 +377,7 @@ InstallMethod(ViewObj, "for a subsemigroup of a Rees 0-matrix semigroup",
 
 InstallMethod(PrintObj, "for a subsemigroup of a Rees 0-matrix semigroup",
 [IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup],
-function(R) 
+function(R)
   Print("\><subsemigroup of \>",
         Length(Rows(ParentAttr(R))), "x", Length(Columns(ParentAttr(R))),
         "\< Rees 0-matrix semigroup \>with ",
@@ -411,7 +411,7 @@ end);
 
 #
 
-InstallMethod(Size, "for a Rees matrix semigroup", 
+InstallMethod(Size, "for a Rees matrix semigroup",
 [IsReesMatrixSemigroup],
 function(R)
   if Size(UnderlyingSemigroup(R))=infinity then
@@ -423,7 +423,7 @@ end);
 
 #
 
-InstallMethod(Size, "for a Rees 0-matrix semigroup", 
+InstallMethod(Size, "for a Rees 0-matrix semigroup",
 [IsReesZeroMatrixSemigroup],
 function(R)
   if Size(UnderlyingSemigroup(R))=infinity then
@@ -435,9 +435,9 @@ end);
 
 #
 
-InstallMethod(Representative, 
-"for a subsemigroup of Rees matrix semigroup with generators", 
-[IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup], 2, 
+InstallMethod(Representative,
+"for a subsemigroup of Rees matrix semigroup with generators",
+[IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup], 2,
 # to beat the other method
 function(R)
   return GeneratorsOfSemigroup(R)[1];
@@ -445,30 +445,30 @@ end);
 
 #
 
-InstallMethod(Representative, "for a Rees matrix semigroup", 
-[IsReesMatrixSemigroup], 
+InstallMethod(Representative, "for a Rees matrix semigroup",
+[IsReesMatrixSemigroup],
 function(R)
-  return Objectify(TypeReesMatrixSemigroupElements(R), 
+  return Objectify(TypeReesMatrixSemigroupElements(R),
    [Rows(R)[1], Representative(UnderlyingSemigroup(R)), Columns(R)[1],
     Matrix(R)]);
 end);
 
 #
 
-InstallMethod(Representative, 
-"for a subsemigroup of Rees 0-matrix semigroup with generators", 
-[IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup], 2, 
-# to beat the other method 
+InstallMethod(Representative,
+"for a subsemigroup of Rees 0-matrix semigroup with generators",
+[IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup], 2,
+# to beat the other method
 function(R)
   return GeneratorsOfSemigroup(R)[1];
 end);
 
 #
 
-InstallMethod(Representative, "for a Rees 0-matrix semigroup", 
-[IsReesZeroMatrixSemigroup], 
+InstallMethod(Representative, "for a Rees 0-matrix semigroup",
+[IsReesZeroMatrixSemigroup],
 function(R)
-  return Objectify(TypeReesMatrixSemigroupElements(R), 
+  return Objectify(TypeReesMatrixSemigroupElements(R),
    [Rows(R)[1], Representative(UnderlyingSemigroup(R)), Columns(R)[1],
     Matrix(R)]);
 end);
@@ -477,28 +477,28 @@ end);
 #
 
 InstallMethod(Enumerator, "for a Rees matrix semigroup",
-[IsReesMatrixSemigroup],    
+[IsReesMatrixSemigroup],
 function( R )
-  
+
   return EnumeratorByFunctions(R, rec(
-    
-    enum:=EnumeratorOfCartesianProduct(Rows(R),           
+
+    enum:=EnumeratorOfCartesianProduct(Rows(R),
        Enumerator(UnderlyingSemigroup(R)), Columns(R), [Matrix(R)]),
-    
+
     NumberElement:=function(enum, x)
       if FamilyObj(x) <> ElementsFamily(FamilyObj(R)) then
         return fail;
       fi;
       return Position(enum!.enum, [x![1], x![2], x![3], x![4]]);
     end,
-    
+
     ElementNumber:=function(enum, n)
       return Objectify(TypeReesMatrixSemigroupElements(R), enum!.enum[n]);
     end,
-    
+
     Length:=enum-> Length(enum!.enum),
 
-    PrintObj:=function(enum) 
+    PrintObj:=function(enum)
       Print("<enumerator of Rees matrix semigroup>");
       return;
     end));
@@ -509,38 +509,38 @@ end);
 InstallMethod(Enumerator, "for a Rees 0-matrix semigroup",
 [IsReesZeroMatrixSemigroup and HasUnderlyingSemigroup],
 function( R )
-  
+
   return EnumeratorByFunctions(R, rec(
-    
-    enum:=EnumeratorOfCartesianProduct(Rows(R),           
+
+    enum:=EnumeratorOfCartesianProduct(Rows(R),
        Enumerator(UnderlyingSemigroup(R)), Columns(R), [Matrix(R)]),
-    
+
     NumberElement:=function(enum, x)
       local pos;
 
       if FamilyObj(x) <> ElementsFamily(FamilyObj(R)) then
         return fail;
-      elif IsMultiplicativeZero(R, x) then 
+      elif IsMultiplicativeZero(R, x) then
         return 1;
       fi;
-      
+
       pos:=Position(enum!.enum, [x![1], x![2], x![3], x![4]]);
-      if pos=fail then 
+      if pos=fail then
         return fail;
       fi;
       return pos+1;
     end,
-    
+
     ElementNumber:=function(enum, n)
-      if n=1 then 
+      if n=1 then
         return MultiplicativeZero(R);
       fi;
       return Objectify(TypeReesMatrixSemigroupElements(R), enum!.enum[n-1]);
     end,
-    
+
     Length:=enum-> Length(enum!.enum)+1,
 
-    PrintObj:=function(enum) 
+    PrintObj:=function(enum)
       Print("<enumerator of Rees 0-matrix semigroup>");
       return;
     end));
@@ -550,19 +550,19 @@ end);
 # to subsemigroups defined by a generating set, which happen to be
 # simple/0-simple.
 
-InstallMethod(MatrixOfReesMatrixSemigroup, "for a Rees matrix semigroup with generators", 
-[IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup], 
+InstallMethod(MatrixOfReesMatrixSemigroup, "for a Rees matrix semigroup with generators",
+[IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup],
 function(R)
-  if not IsReesMatrixSemigroup(R) then 
+  if not IsReesMatrixSemigroup(R) then
     return fail;
   fi;
   return MatrixOfReesMatrixSemigroup(ParentAttr(R));
 end);
 
-InstallMethod(MatrixOfReesZeroMatrixSemigroup, "for a Rees 0-matrix semigroup with generators", 
-[IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup], 
+InstallMethod(MatrixOfReesZeroMatrixSemigroup, "for a Rees 0-matrix semigroup with generators",
+[IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup],
 function(R)
-  if not IsReesZeroMatrixSemigroup(R) then 
+  if not IsReesZeroMatrixSemigroup(R) then
     return fail;
   fi;
   return MatrixOfReesZeroMatrixSemigroup(ParentAttr(R));
@@ -574,24 +574,24 @@ InstallOtherMethod(Matrix, [IsReesZeroMatrixSubsemigroup], MatrixOfReesZeroMatri
 
 #
 
-InstallMethod(RowsOfReesMatrixSemigroup, "for a Rees matrix semigroup with generators", 
-[IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup], 
+InstallMethod(RowsOfReesMatrixSemigroup, "for a Rees matrix semigroup with generators",
+[IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup],
 function(R)
-  if not IsReesMatrixSemigroup(R) then 
+  if not IsReesMatrixSemigroup(R) then
     return fail;
   fi;
   return SetX(GeneratorsOfSemigroup(R), x-> x![1]);
 end);
 
-InstallMethod(RowsOfReesZeroMatrixSemigroup, "for a Rees 0-matrix semigroup with generators", 
-[IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup], 
+InstallMethod(RowsOfReesZeroMatrixSemigroup, "for a Rees 0-matrix semigroup with generators",
+[IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup],
 function(R)
   local out;
-  if not IsReesZeroMatrixSemigroup(R) then 
+  if not IsReesZeroMatrixSemigroup(R) then
     return fail;
   fi;
   out:=SetX(GeneratorsOfSemigroup(R), x-> x![1]);
-  if out[1]=0 then 
+  if out[1]=0 then
     Remove(out, 1);
   fi;
   return out;
@@ -599,27 +599,27 @@ end);
 
 #
 
-InstallMethod(ColumnsOfReesMatrixSemigroup, "for a Rees matrix semigroup with generators", 
-[IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup], 
+InstallMethod(ColumnsOfReesMatrixSemigroup, "for a Rees matrix semigroup with generators",
+[IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup],
 function(R)
-  if not IsReesMatrixSemigroup(R) then 
+  if not IsReesMatrixSemigroup(R) then
     return fail;
   fi;
   return SetX(GeneratorsOfSemigroup(R), x-> x![3]);
 end);
 
-InstallMethod(ColumnsOfReesZeroMatrixSemigroup, "for a Rees 0-matrix semigroup with generators", 
-[IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup], 
+InstallMethod(ColumnsOfReesZeroMatrixSemigroup, "for a Rees 0-matrix semigroup with generators",
+[IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup],
 function(R)
   local out, x;
-  
-  if not IsReesZeroMatrixSemigroup(R) then 
+
+  if not IsReesZeroMatrixSemigroup(R) then
     return fail;
   fi;
 
   out:=[];
-  for x in GeneratorsOfSemigroup(R) do 
-    if x![1]<>0 then 
+  for x in GeneratorsOfSemigroup(R) do
+    if x![1]<>0 then
       AddSet(out, x![3]);
     fi;
   od;
@@ -630,23 +630,23 @@ end);
 # these methods only apply to subsemigroups which happen to be Rees matrix
 # semigroups
 
-InstallMethod(UnderlyingSemigroup, 
+InstallMethod(UnderlyingSemigroup,
 "for a Rees matrix semigroup with generators",
-[IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup], 
+[IsReesMatrixSubsemigroup and HasGeneratorsOfSemigroup],
 function(R)
   local gens, i, S, U;
-   
-  if not IsReesMatrixSemigroup(R) then 
+
+  if not IsReesMatrixSemigroup(R) then
     return fail;
   fi;
 
   gens:=List(AsSSortedList(R), x-> x![2]);
 
-  if IsGeneratorsOfMagmaWithInverses(gens) then 
+  if IsGeneratorsOfMagmaWithInverses(gens) then
     i:=1;
-    S:=UnderlyingSemigroup(ParentAttr(R)); 
+    S:=UnderlyingSemigroup(ParentAttr(R));
     U:=Group(gens[1]);
-    while Size(U)<Size(S) and i<Length(gens) do 
+    while Size(U)<Size(S) and i<Length(gens) do
       i:=i+1;
       U:=ClosureGroup(U, gens[i]);
     od;
@@ -661,13 +661,13 @@ end);
 # these methods only apply to subsemigroups which happen to be Rees matrix
 # semigroups
 
-InstallMethod(UnderlyingSemigroup, 
+InstallMethod(UnderlyingSemigroup,
 "for a Rees 0-matrix semigroup with generators",
-[IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup], 
+[IsReesZeroMatrixSubsemigroup and HasGeneratorsOfSemigroup],
 function(R)
   local gens, i, S, U;
-   
-  if not IsReesZeroMatrixSemigroup(R) then 
+
+  if not IsReesZeroMatrixSemigroup(R) then
     return fail;
   fi;
 
@@ -675,12 +675,12 @@ function(R)
   gens:=Filtered(AsSSortedList(R), x-> x![1]<>0);
   Apply(gens, x-> x![2]);
   gens := Set(gens);
-  
-  if IsGeneratorsOfMagmaWithInverses(gens) then 
+
+  if IsGeneratorsOfMagmaWithInverses(gens) then
     i:=1;
-    S:=UnderlyingSemigroup(ParentAttr(R)); 
+    S:=UnderlyingSemigroup(ParentAttr(R));
     U:=Group(gens[1]);
-    while Size(U)<Size(S) and i<Length(gens) do 
+    while Size(U)<Size(S) and i<Length(gens) do
       i:=i+1;
       U:=ClosureGroup(U, gens[i]);
     od;
@@ -693,12 +693,12 @@ end);
 
 # again only for subsemigroups defined by generators...
 
-InstallMethod(TypeReesMatrixSemigroupElements, 
+InstallMethod(TypeReesMatrixSemigroupElements,
 "for a subsemigroup of Rees matrix semigroup",
 [IsReesMatrixSubsemigroup],
 R -> TypeReesMatrixSemigroupElements(ParentAttr(R)));
 
-InstallMethod(TypeReesMatrixSemigroupElements, 
+InstallMethod(TypeReesMatrixSemigroupElements,
 "for a subsemigroup of Rees 0-matrix semigroup",
 [IsReesZeroMatrixSubsemigroup],
 R -> TypeReesMatrixSemigroupElements(ParentAttr(R)));
@@ -709,23 +709,23 @@ InstallGlobalFunction(RMSElement,
 function(R, i, s, j)
   local out;
 
-  if not (IsReesMatrixSubsemigroup(R) 
+  if not (IsReesMatrixSubsemigroup(R)
      or IsReesZeroMatrixSubsemigroup(R)) then
-    ErrorNoReturn("the first argument must be a Rees matrix semigroup", 
+    ErrorNoReturn("the first argument must be a Rees matrix semigroup",
                   " or Rees 0-matrix semigroup");
   fi;
 
   if (HasIsReesMatrixSemigroup(R) and IsReesMatrixSemigroup(R)) or
-    (HasIsReesZeroMatrixSemigroup(R) and IsReesZeroMatrixSemigroup(R)) then 
-    if not i in Rows(R) then 
+    (HasIsReesZeroMatrixSemigroup(R) and IsReesZeroMatrixSemigroup(R)) then
+    if not i in Rows(R) then
       ErrorNoReturn("the second argument (a positive integer) does not ",
                     "belong to the rows of the first argument (a Rees ",
                     "(0-)matrix semigroup)");
-    elif not j in Columns(R) then 
+    elif not j in Columns(R) then
       ErrorNoReturn("the fourth argument (a positive integer) does not ",
                     "belong to the columns of the first argument (a Rees ",
                     "(0-)matrix semigroup)");
-    elif not s in UnderlyingSemigroup(R) then 
+    elif not s in UnderlyingSemigroup(R) then
       ErrorNoReturn("the second argument does not belong to the",
                     "underlying semigroup of the first argument (a Rees ",
                     "(0-)matrix semgiroup)");
@@ -733,11 +733,11 @@ function(R, i, s, j)
     return Objectify(TypeReesMatrixSemigroupElements(R), [i, s, j, Matrix(R)]);
   fi;
 
-  out:=Objectify(TypeReesMatrixSemigroupElements(R), 
+  out:=Objectify(TypeReesMatrixSemigroupElements(R),
    [i, s, j, Matrix(ParentAttr(R))]);
 
   if not out in R then # for the case R is defined by a generating set
-    ErrorNoReturn("the arguments do not describe an element of the first ", 
+    ErrorNoReturn("the arguments do not describe an element of the first ",
                   "argument (a Rees (0-)matrix semigroup)");
   fi;
   return out;
@@ -745,14 +745,14 @@ end);
 
 #
 
-InstallMethod(RowOfReesMatrixSemigroupElement, 
-"for a Rees matrix semigroup element", [IsReesMatrixSemigroupElement], 
+InstallMethod(RowOfReesMatrixSemigroupElement,
+"for a Rees matrix semigroup element", [IsReesMatrixSemigroupElement],
 x-> x![1]);
 
 #
 
-InstallMethod(RowOfReesZeroMatrixSemigroupElement, 
-"for a Rees 0-matrix semigroup element", [IsReesZeroMatrixSemigroupElement], 
+InstallMethod(RowOfReesZeroMatrixSemigroupElement,
+"for a Rees 0-matrix semigroup element", [IsReesZeroMatrixSemigroupElement],
 function(x)
   if x![1] = 0 then
     return fail;
@@ -762,14 +762,14 @@ end);
 
 #
 
-InstallMethod(UnderlyingElementOfReesMatrixSemigroupElement, 
-"for a Rees matrix semigroup element", [IsReesMatrixSemigroupElement], 
+InstallMethod(UnderlyingElementOfReesMatrixSemigroupElement,
+"for a Rees matrix semigroup element", [IsReesMatrixSemigroupElement],
 x-> x![2]);
 
 #
 
-InstallMethod(UnderlyingElementOfReesZeroMatrixSemigroupElement, 
-"for a Rees 0-matrix semigroup element", [IsReesZeroMatrixSemigroupElement], 
+InstallMethod(UnderlyingElementOfReesZeroMatrixSemigroupElement,
+"for a Rees 0-matrix semigroup element", [IsReesZeroMatrixSemigroupElement],
 function(x)
   if x![1] = 0 then
     return fail;
@@ -779,14 +779,14 @@ end);
 
 #
 
-InstallMethod(ColumnOfReesMatrixSemigroupElement, 
-"for a Rees matrix semigroup element", [IsReesMatrixSemigroupElement], 
+InstallMethod(ColumnOfReesMatrixSemigroupElement,
+"for a Rees matrix semigroup element", [IsReesMatrixSemigroupElement],
 x-> x![3]);
 
 #
 
-InstallMethod(ColumnOfReesZeroMatrixSemigroupElement, 
-"for a Rees 0-matrix semigroup element", [IsReesZeroMatrixSemigroupElement], 
+InstallMethod(ColumnOfReesZeroMatrixSemigroupElement,
+"for a Rees 0-matrix semigroup element", [IsReesZeroMatrixSemigroupElement],
 function(x)
   if x![1] = 0 then
     return fail;
@@ -842,9 +842,9 @@ end);
 #
 
 InstallMethod(ELM_LIST, "for a Rees matrix semigroup element",
-[IsReesMatrixSemigroupElement, IsPosInt], 
+[IsReesMatrixSemigroupElement, IsPosInt],
 function(x, i)
-  if i > 3 then 
+  if i > 3 then
     ErrorNoReturn("the second argument must be 1, 2, or 3");
   fi;
   return x![i];
@@ -853,12 +853,12 @@ end);
 #
 
 InstallMethod(ELM_LIST, "for a Rees 0-matrix semigroup element",
-[IsReesZeroMatrixSemigroupElement, IsPosInt], 
+[IsReesZeroMatrixSemigroupElement, IsPosInt],
 function(x, i)
-  if x![1] = 0 then 
+  if x![1] = 0 then
     ErrorNoReturn("the first argument (an element of a Rees 0-matrix ",
                   "semigroup) must be non-zero");
-  elif i > 3 then 
+  elif i > 3 then
     ErrorNoReturn("the second argument must be 1, 2, or 3");
   fi;
   return x![i];
@@ -872,7 +872,7 @@ InstallMethod(ZeroOp, "for a Rees matrix semigroup element",
 #
 
 InstallMethod(ZeroOp, "for a Rees 0-matrix semigroup element",
-[IsReesZeroMatrixSemigroupElement], 
+[IsReesZeroMatrixSemigroupElement],
 function(x)
   return MultiplicativeZero(ReesMatrixSemigroupOfFamily(FamilyObj(x)));
 end);
@@ -885,29 +885,29 @@ InstallMethod(MultiplicativeZeroOp, "for a Rees matrix semigroup",
 #
 
 InstallMethod(\*, "for elements of a Rees matrix semigroup",
-IsIdenticalObj, 
+IsIdenticalObj,
 [IsReesMatrixSemigroupElement, IsReesMatrixSemigroupElement],
 function(x, y)
-  return Objectify(FamilyObj(x)!.type, 
+  return Objectify(FamilyObj(x)!.type,
    [x![1], x![2]*x![4][x![3]][y![1]]*y![2], y![3], x![4]]);
 end);
 
 #
 
 InstallMethod(\*, "for elements of a Rees 0-matrix semigroup",
-IsIdenticalObj, 
+IsIdenticalObj,
 [IsReesZeroMatrixSemigroupElement, IsReesZeroMatrixSemigroupElement],
 function(x, y)
   local p;
-  
-  if x![1]=0 then 
-    return x; 
-  elif y![1]=0 then 
+
+  if x![1]=0 then
+    return x;
+  elif y![1]=0 then
     return y;
   fi;
-  
-  p:=x![4][x![3]][y![1]]; 
-  if p=0 then 
+
+  p:=x![4][x![3]][y![1]];
+  if p=0 then
     return Objectify(FamilyObj(x)!.type, [0]);
   fi;
   return Objectify(FamilyObj(x)!.type, [x![1], x![2]*p*y![2], y![3], x![4]]);
@@ -919,7 +919,7 @@ InstallMethod(\<, "for elements of a Rees matrix semigroup",
 IsIdenticalObj,
 [IsReesMatrixSemigroupElement, IsReesMatrixSemigroupElement],
 function(x, y)
-  return x![1]<y![1] or (x![1]=y![1] and x![2]<y![2]) 
+  return x![1]<y![1] or (x![1]=y![1] and x![2]<y![2])
     or (x![1]=y![1] and x![2]=y![2] and x![3]<y![3]);
 end);
 
@@ -929,13 +929,13 @@ InstallMethod(\<, "for elements of a Rees 0-matrix semigroup",
 IsIdenticalObj,
 [IsReesZeroMatrixSemigroupElement, IsReesZeroMatrixSemigroupElement],
 function(x, y)
-  if x![1]=0 then 
+  if x![1]=0 then
     return y![1]<>0;
-  elif y![1]=0 then 
+  elif y![1]=0 then
     return false;
   fi;
 
-  return x![1]<y![1] or (x![1]=y![1] and x![2]<y![2]) 
+  return x![1]<y![1] or (x![1]=y![1] and x![2]<y![2])
     or (x![1]=y![1] and x![2]=y![2] and x![3]<y![3]);
 end);
 
@@ -954,7 +954,7 @@ InstallMethod(\=, "for elements of a Rees 0-matrix semigroup",
 IsIdenticalObj,
 [IsReesZeroMatrixSemigroupElement, IsReesZeroMatrixSemigroupElement],
 function(x, y)
-  if x![1]=0 then 
+  if x![1]=0 then
     return y![1]=0;
   fi;
   return x![1]=y![1] and x![2]=y![2] and x![3]=y![3];
@@ -978,18 +978,18 @@ end);
 
 #
 
-InstallMethod(IsWholeFamily, "for a subsemigroup of a Rees matrix semigroup", 
-[IsReesMatrixSubsemigroup], 
+InstallMethod(IsWholeFamily, "for a subsemigroup of a Rees matrix semigroup",
+[IsReesMatrixSubsemigroup],
 function(R)
   local S;
 
   if Size(R)=Size(ReesMatrixSemigroupOfFamily(ElementsFamily(FamilyObj(R))))
-   then 
-    if not HasMatrixOfReesMatrixSemigroup(R) then # <R> is defined by generators 
+   then
+    if not HasMatrixOfReesMatrixSemigroup(R) then # <R> is defined by generators
       S:=ParentAttr(R);
-      SetMatrixOfReesMatrixSemigroup(R, Matrix(S));  
+      SetMatrixOfReesMatrixSemigroup(R, Matrix(S));
       SetUnderlyingSemigroup(R, UnderlyingSemigroup(S));
-      SetRowsOfReesMatrixSemigroup(R, Rows(S));            
+      SetRowsOfReesMatrixSemigroup(R, Rows(S));
       SetColumnsOfReesMatrixSemigroup(R, Columns(S));
     fi;
     return true;
@@ -1000,18 +1000,18 @@ end);
 
 #
 
-InstallMethod(IsWholeFamily, "for a subsemigroup of a Rees 0-matrix semigroup", 
-[IsReesZeroMatrixSubsemigroup], 
+InstallMethod(IsWholeFamily, "for a subsemigroup of a Rees 0-matrix semigroup",
+[IsReesZeroMatrixSubsemigroup],
 function(R)
   local S;
 
   if Size(R)=Size(ReesMatrixSemigroupOfFamily(ElementsFamily(FamilyObj(R))))
-   then 
-    if not HasMatrixOfReesZeroMatrixSemigroup(R) then # <R> is defined by generators 
+   then
+    if not HasMatrixOfReesZeroMatrixSemigroup(R) then # <R> is defined by generators
       S:=ParentAttr(R);
-      SetMatrixOfReesZeroMatrixSemigroup(R, Matrix(S));  
+      SetMatrixOfReesZeroMatrixSemigroup(R, Matrix(S));
       SetUnderlyingSemigroup(R, UnderlyingSemigroup(S));
-      SetRowsOfReesZeroMatrixSemigroup(R, Rows(S));            
+      SetRowsOfReesZeroMatrixSemigroup(R, Rows(S));
       SetColumnsOfReesZeroMatrixSemigroup(R, Columns(S));
     fi;
     return true;
@@ -1023,41 +1023,41 @@ end);
 # generators for the subsemigroup generated by <IxUxJ>, when <R> is a Rees
 # matrix semigroup (and not only a subsemigroup).
 
-InstallGlobalFunction(GeneratorsOfReesMatrixSemigroupNC, 
+InstallGlobalFunction(GeneratorsOfReesMatrixSemigroupNC,
 function(R, I, U, J)
   local P, type, i, j, gens, u;
-  
+
   P:=Matrix(R);   type:=TypeReesMatrixSemigroupElements(R);
-  
-  if IsGroup(U) then 
+
+  if IsGroup(U) then
     i:=I[1];   j:=J[1];
-    if IsTrivial(U) then 
+    if IsTrivial(U) then
       gens:=[Objectify(type, [i, P[j][i]^-1, j, P])];
     else
-      gens:=List(GeneratorsOfGroup(U), x-> 
+      gens:=List(GeneratorsOfGroup(U), x->
        Objectify( type, [i, x*P[j][i]^-1, j, P]));
     fi;
-    
-    if Length(I)>Length(J) then 
-      for i in [2..Length(J)] do 
+
+    if Length(I)>Length(J) then
+      for i in [2..Length(J)] do
         Add(gens, Objectify(type, [I[i], One(U), J[i], P]));
       od;
-      for i in [Length(J)+1..Length(I)] do 
+      for i in [Length(J)+1..Length(I)] do
         Add(gens, Objectify(type, [I[i], One(U), J[1], P]));
       od;
     else
-      for i in [2..Length(I)] do 
+      for i in [2..Length(I)] do
         Add(gens, Objectify(type, [I[i], One(U), J[i], P]));
       od;
-      for i in [Length(I)+1..Length(J)] do 
+      for i in [Length(I)+1..Length(J)] do
         Add(gens, Objectify(type, [I[1], One(U), J[i], P]));
       od;
     fi;
   else
     gens:=[];
-    for i in I do 
-      for u in U do 
-        for j in J do 
+    for i in I do
+      for u in U do
+        for j in J do
           Add(gens, Objectify(type, [i, u, j, P]));
         od;
       od;
@@ -1069,37 +1069,37 @@ end);
 # generators for the subsemigroup generated by <IxUxJ>, when <R> is a Rees
 # matrix semigroup (and not only a subsemigroup).
 
-InstallGlobalFunction(GeneratorsOfReesZeroMatrixSemigroupNC, 
+InstallGlobalFunction(GeneratorsOfReesZeroMatrixSemigroupNC,
 function(R, I, U, J)
   local P, type, i, j, gens, k, u;
 
   P:=Matrix(R);   type:=TypeReesMatrixSemigroupElements(R);
   i:=I[1];        j:=First(J, j-> P[j][i]<>0);
 
-  if IsGroup(U) and IsRegularSemigroup(R) and not j=fail then 
-    if IsTrivial(U) then 
+  if IsGroup(U) and IsRegularSemigroup(R) and not j=fail then
+    if IsTrivial(U) then
       gens:=[Objectify(type, [i, P[j][i]^-1, j, P])];
     else
-      gens:=List(GeneratorsOfGroup(U), x-> 
+      gens:=List(GeneratorsOfGroup(U), x->
         Objectify(type, [i, x*P[j][i]^-1, j, P]));
     fi;
 
-    for k in J do 
-      if k<>j then 
+    for k in J do
+      if k<>j then
         Add(gens, Objectify(type, [i, One(U), k, P]));
       fi;
     od;
-    
-    for k in I do 
-      if k<>i then 
+
+    for k in I do
+      if k<>i then
         Add(gens, Objectify(type, [k, One(U), j, P]));
       fi;
     od;
-  else 
+  else
     gens:=[];
-    for i in I do 
-      for u in U do 
-        for j in J do 
+    for i in I do
+      for u in U do
+        for j in J do
           Add(gens, Objectify(type, [i, u, j, P]));
         od;
       od;
@@ -1115,25 +1115,25 @@ end);
 # generators for the subsemigroup generated by <IxUxJ>, when <R> is a Rees
 # matrix semigroup (and not only a subsemigroup).
 
-InstallMethod(GeneratorsOfReesMatrixSemigroup, 
+InstallMethod(GeneratorsOfReesMatrixSemigroup,
 "for a Rees matrix subsemigroup, rows, semigroup, columns",
-[IsReesMatrixSubsemigroup, IsList, IsSemigroup, IsList], 
+[IsReesMatrixSubsemigroup, IsList, IsSemigroup, IsList],
 function(R, I, U, J)
 
-  if not IsReesMatrixSemigroup(R) then 
+  if not IsReesMatrixSemigroup(R) then
     ErrorNoReturn("the first argument must be a Rees matrix semigroup");
-  elif not IsSubset(Rows(R), I) or IsEmpty(I) then 
+  elif not IsSubset(Rows(R), I) or IsEmpty(I) then
     ErrorNoReturn("the second argument must be a non-empty subset of the ",
                   "rows of the first argument (a Rees matrix semigroup)");
-  elif not IsSubsemigroup(UnderlyingSemigroup(R), U) then 
+  elif not IsSubsemigroup(UnderlyingSemigroup(R), U) then
     ErrorNoReturn("the third argument must be a subsemigroup of the ",
                   "underlying semigroup of the first argument (a Rees matrix ",
                   "semigroup)");
-  elif not IsSubset(Columns(R), J) or IsEmpty(J) then 
+  elif not IsSubset(Columns(R), J) or IsEmpty(J) then
     ErrorNoReturn("the fourth argument must be a non-empty subset of the ",
                   "columns of the first argument (a Rees matrix semigroup)");
   fi;
-  
+
   return GeneratorsOfReesMatrixSemigroupNC(R, I, U, J);
 end);
 
@@ -1144,21 +1144,21 @@ end);
 # generators for the subsemigroup generated by <IxUxJ>, when <R> is a Rees
 # matrix semigroup (and not only a subsemigroup).
 
-InstallMethod(GeneratorsOfReesZeroMatrixSemigroup, 
+InstallMethod(GeneratorsOfReesZeroMatrixSemigroup,
 "for a Rees 0-matrix semigroup, rows, semigroup, columns",
-[IsReesZeroMatrixSubsemigroup, IsList, IsSemigroup, IsList], 
+[IsReesZeroMatrixSubsemigroup, IsList, IsSemigroup, IsList],
 function(R, I, U, J)
 
-  if not IsReesZeroMatrixSemigroup(R) then 
+  if not IsReesZeroMatrixSemigroup(R) then
     ErrorNoReturn("the first argument must be a Rees 0-matrix semigroup");
-  elif not IsSubset(Rows(R), I) or IsEmpty(I) then 
+  elif not IsSubset(Rows(R), I) or IsEmpty(I) then
     ErrorNoReturn("the second argument must be a non-empty subset of the ",
                   "rows of the first argument (a Rees 0-matrix semigroup)");
-  elif not IsSubsemigroup(UnderlyingSemigroup(R), U) then 
+  elif not IsSubsemigroup(UnderlyingSemigroup(R), U) then
     ErrorNoReturn("the third argument must be a subsemigroup of the ",
                   "underlying semigroup of the first argument (a Rees ",
                   "0-matrix semigroup)");
-  elif not IsSubset(Columns(R), J) or IsEmpty(J) then 
+  elif not IsSubset(Columns(R), J) or IsEmpty(J) then
     ErrorNoReturn("the fourth argument must be a non-empty subset of the ",
                   "columns of the first argument (a Rees 0-matrix semigroup)");
   fi;
@@ -1169,7 +1169,7 @@ end);
 #
 
 InstallMethod(GeneratorsOfSemigroup, "for a Rees matrix semigroup",
-[IsReesMatrixSemigroup], 
+[IsReesMatrixSemigroup],
 function(R)
   return GeneratorsOfReesMatrixSemigroupNC(R, Rows(R), UnderlyingSemigroup(R),
    Columns(R));
@@ -1178,46 +1178,46 @@ end);
 #
 
 InstallMethod(GeneratorsOfSemigroup, "for a Rees 0-matrix semigroup",
-[IsReesZeroMatrixSemigroup], 
+[IsReesZeroMatrixSemigroup],
 function(R)
   local gens;
 
   gens:=GeneratorsOfReesZeroMatrixSemigroupNC(R, Rows(R),
    UnderlyingSemigroup(R), Columns(R));
-  if ForAll(Rows(R), i-> ForAll(Columns(R), j-> Matrix(R)[j][i]<>0)) then 
+  if ForAll(Rows(R), i-> ForAll(Columns(R), j-> Matrix(R)[j][i]<>0)) then
     Add(gens, MultiplicativeZero(R));
   fi;
   return gens;
 end);
 
-# Note that it is possible that the rows and columns of the matrix only contain 
-# the zero element, if the resulting semigroup were taken to be in 
-# IsReesMatrixSemigroup then it would belong to IsReesMatrixSemigroup and 
-# IsReesZeroMatrixSubsemigroup, so that its elements belong to 
-# IsReesZeroMatrixSemigroupElement but not to IsReesMatrixSemigroupElement 
-# (since this makes reference to the whole family used to create the 
-# semigroups). On the other hand, if we simply exclude the 0, then every method 
-# for IsReesZeroMatrixSemigroup is messed up because we assume that they always 
-# contain the 0.  
-# 
-# Hence we always include the 0 element, even if all the matrix 
-# entries corresponding to I and J are non-zero. 
+# Note that it is possible that the rows and columns of the matrix only contain
+# the zero element, if the resulting semigroup were taken to be in
+# IsReesMatrixSemigroup then it would belong to IsReesMatrixSemigroup and
+# IsReesZeroMatrixSubsemigroup, so that its elements belong to
+# IsReesZeroMatrixSemigroupElement but not to IsReesMatrixSemigroupElement
+# (since this makes reference to the whole family used to create the
+# semigroups). On the other hand, if we simply exclude the 0, then every method
+# for IsReesZeroMatrixSemigroup is messed up because we assume that they always
+# contain the 0.
+#
+# Hence we always include the 0 element, even if all the matrix
+# entries corresponding to I and J are non-zero.
 
-InstallMethod(ReesZeroMatrixSubsemigroup, 
+InstallMethod(ReesZeroMatrixSubsemigroup,
 "for a Rees 0-matrix semigroup, rows, semigroup, columns",
-[IsReesZeroMatrixSubsemigroup, IsList, IsSemigroup, IsList], 
+[IsReesZeroMatrixSubsemigroup, IsList, IsSemigroup, IsList],
 function(R, I, U, J)
-   
-  if not IsReesZeroMatrixSemigroup(R) then 
+
+  if not IsReesZeroMatrixSemigroup(R) then
     ErrorNoReturn("the first argument must be a Rees 0-matrix semigroup");
-  elif not IsSubset(Rows(R), I) or IsEmpty(I) then 
+  elif not IsSubset(Rows(R), I) or IsEmpty(I) then
     ErrorNoReturn("the second argument must be a non-empty subset of the ",
                   "rows of the first argument (a Rees 0-matrix semigroup)");
-  elif not IsSubsemigroup(UnderlyingSemigroup(R), U) then 
+  elif not IsSubsemigroup(UnderlyingSemigroup(R), U) then
     ErrorNoReturn("the third argument must be a subsemigroup of the ",
                   "underlying semigroup of the first argument (a Rees ",
                   "0-matrix semigroup)");
-  elif not IsSubset(Columns(R), J) or IsEmpty(J) then 
+  elif not IsSubset(Columns(R), J) or IsEmpty(J) then
     ErrorNoReturn("the fourth argument must be a non-empty subset of the ",
                   "columns of the first argument (a Rees 0-matrix semigroup)");
   fi;
@@ -1225,11 +1225,11 @@ function(R, I, U, J)
   return ReesZeroMatrixSubsemigroupNC(R, I, U, J);
 end);
 
-InstallGlobalFunction(ReesZeroMatrixSubsemigroupNC, 
+InstallGlobalFunction(ReesZeroMatrixSubsemigroupNC,
 function(R, I, U, J)
   local S;
 
-  if U=UnderlyingSemigroup(R) and ForAny(Matrix(R){J}{I}, x-> 0 in x) then 
+  if U=UnderlyingSemigroup(R) and ForAny(Matrix(R){J}{I}, x-> 0 in x) then
     S:=Objectify( NewType( FamilyObj(R),
      IsReesZeroMatrixSubsemigroup and IsAttributeStoringRep ), rec() );
     SetTypeReesMatrixSemigroupElements(S, TypeReesMatrixSemigroupElements(R));
@@ -1241,7 +1241,7 @@ function(R, I, U, J)
     SetParentAttr(S, R);
 
     #it might be that all the matrix entries corresponding to I and J are zero
-    #and so we can't set IsZeroSimpleSemigroup here. 
+    #and so we can't set IsZeroSimpleSemigroup here.
     SetMultiplicativeZero(S, MultiplicativeZero(R));
     SetIsSimpleSemigroup(S, false);
     SetIsReesZeroMatrixSemigroup(S, true);
@@ -1253,21 +1253,21 @@ end);
 
 #
 
-InstallMethod(ReesMatrixSubsemigroup, 
+InstallMethod(ReesMatrixSubsemigroup,
 "for a Rees matrix semigroup, rows, semigroup, columns",
-[IsReesMatrixSubsemigroup, IsList, IsSemigroup, IsList], 
+[IsReesMatrixSubsemigroup, IsList, IsSemigroup, IsList],
 function(R, I, U, J)
-  
-  if not IsReesMatrixSemigroup(R) then 
+
+  if not IsReesMatrixSemigroup(R) then
     ErrorNoReturn("the first argument must be a Rees matrix semigroup");
-  elif not IsSubset(Rows(R), I) or IsEmpty(I) then 
+  elif not IsSubset(Rows(R), I) or IsEmpty(I) then
     ErrorNoReturn("the second argument must be a non-empty subset of the ",
                   "rows of the first argument (a Rees matrix semigroup)");
-  elif not IsSubsemigroup(UnderlyingSemigroup(R), U) then 
+  elif not IsSubsemigroup(UnderlyingSemigroup(R), U) then
     ErrorNoReturn("the third argument must be a subsemigroup of the ",
                   "underlying semigroup of the first argument (a Rees ",
                   "matrix semigroup)");
-  elif not IsSubset(Columns(R), J) or IsEmpty(J) then 
+  elif not IsSubset(Columns(R), J) or IsEmpty(J) then
     ErrorNoReturn("the fourth argument must be a non-empty subset of the ",
                   "columns of the first argument (a Rees matrix semigroup)");
   fi;
@@ -1277,11 +1277,11 @@ end);
 
 #
 
-InstallGlobalFunction(ReesMatrixSubsemigroupNC, 
+InstallGlobalFunction(ReesMatrixSubsemigroupNC,
 function(R, I, U, J)
   local S;
-    
-  if U=UnderlyingSemigroup(R) then 
+
+  if U=UnderlyingSemigroup(R) then
     S:=Objectify( NewType( FamilyObj(R),
       IsReesMatrixSubsemigroup and IsAttributeStoringRep ), rec() );
     SetTypeReesMatrixSemigroupElements(S, TypeReesMatrixSemigroupElements(R));
@@ -1296,7 +1296,7 @@ function(R, I, U, J)
       SetIsSimpleSemigroup(S, true);
     fi;
     SetIsReesMatrixSemigroup(S, true);
-    SetIsZeroSimpleSemigroup(S, false); 
+    SetIsZeroSimpleSemigroup(S, false);
     return S;
   fi;
   return Semigroup(GeneratorsOfReesMatrixSemigroupNC(R, I, U, J));
@@ -1419,14 +1419,14 @@ function(S)
 
   map := _InjectionPrincipalFactor(D, ReesZeroMatrixSemigroup);
 
-  # the below is necessary since map is not defined on the zero of S 
+  # the below is necessary since map is not defined on the zero of S
   inj := function(x)
     if x = MultiplicativeZero(S) then
       return MultiplicativeZero(Range(map));
     fi;
     return x ^ map;
   end;
-  
+
   inv := function(x)
     if x = MultiplicativeZero(Range(map)) then
       return MultiplicativeZero(S);
@@ -1434,7 +1434,7 @@ function(S)
     return x ^ InverseGeneralMapping(map);
   end;
 
-  return MagmaIsomorphismByFunctionsNC(S, 
+  return MagmaIsomorphismByFunctionsNC(S,
                                        Range(map),
                                        inj,
                                        inv);
@@ -1463,7 +1463,7 @@ end);
 
 # so that we can find Green's relations etc
 
-InstallMethod(MonoidByAdjoiningIdentity, [IsReesMatrixSubsemigroup], 
+InstallMethod(MonoidByAdjoiningIdentity, [IsReesMatrixSubsemigroup],
 function(R)
   local M;
   M:=Monoid(List(GeneratorsOfSemigroup(R), MonoidByAdjoiningIdentityElt));
@@ -1473,7 +1473,7 @@ end);
 
 # so that we can find Green's relations etc
 
-InstallMethod(MonoidByAdjoiningIdentity, [IsReesZeroMatrixSubsemigroup], 
+InstallMethod(MonoidByAdjoiningIdentity, [IsReesZeroMatrixSubsemigroup],
 function(R)
   local M;
   M:=Monoid(List(GeneratorsOfSemigroup(R), MonoidByAdjoiningIdentityElt));
@@ -1521,20 +1521,20 @@ InstallMethod(IsomorphismReesMatrixSemigroup, "for a Rees matrix subsemigroup",
 [IsReesMatrixSubsemigroup],
 function(U)
   local P, V, iso, inv, hom;
-    
+
     if not IsReesMatrixSemigroup(U) then
       TryNextMethod();
-    elif IsWholeFamily(U) then 
+    elif IsWholeFamily(U) then
       return MagmaIsomorphismByFunctionsNC(U, U, IdFunc, IdFunc);
     fi;
-    
-    V:=ReesMatrixSemigroup(UnderlyingSemigroup(U), 
+
+    V:=ReesMatrixSemigroup(UnderlyingSemigroup(U),
      List(Matrix(U){Columns(U)}, x-> x{Rows(U)}));
    #JDM doing Matrix(U){Columns(U)}{Rows(U)} the resulting object does not know
    #IsRectangularTable, and doesn't store this after it is calculated.
-    
+
     iso := function(u)
-      return RMSElement(V, Position(Rows(U),u![1]), u![2], 
+      return RMSElement(V, Position(Rows(U),u![1]), u![2],
        Position(Columns(U),u![3]));
     end;
 

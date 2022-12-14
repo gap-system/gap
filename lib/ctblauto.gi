@@ -139,11 +139,11 @@ BindGlobal( "MatAutomorphismsFamily",
           FindSubgroupProperty;  # local function to extend the stab. chain
 
     famlength:= Length( permutations );
-        
+
     # Select an optimal base that allows us to prune the tree efficiently.
     nonbase:= Difference( [ 1 .. Length( family) ],
                           BaseStabChain( chainG ) );
-    
+
     # Call a modified version of `SubgroupProperty'.
     # Besides the parameter `K', we introduce the new parameter `allowed',
     # a list of same length as `permutations';
@@ -152,17 +152,17 @@ BindGlobal( "MatAutomorphismsFamily",
     # `permutations[<i>] * Stab( family> ) / <x>'.
     # Initially this is `permutations' itself, but `allowed' is updated
     # whenever an image of a base point is chosen.
-    
+
     # Find a subgroup $U$ of $G$ which preserves the property <prop>,
     # i.e., $prop( x )$ implies $prop( x * u )$ for all $x \in G, u \in U$.
     # (Note:  This subgroup is changed in the algorithm, be careful!)
     # Make this subgroup as large as possible with reasonable effort!
-    
+
     # Improvement in our special situation:
     # We may add those generators <gen> of $G$ that stabilize the whole row
     # family, i.e. for which holds
     # `<family>[i] = <family>[ i^ ( x^-1 * gen * x ) ]'.
-    
+
     stabilizes:= function( family, gen, x )
       local i;
       for i in [ 1 .. Length( family ) ] do
@@ -187,7 +187,7 @@ BindGlobal( "MatAutomorphismsFamily",
 
     # Initialize `allowed'.
     allowed:= ListWithIdenticalEntries( famlength, permutations );
-    
+
     # Search through the whole group $G = G * Id$ for an element with <prop>.
 
     # Search for an element in a coset $S * s$ of some stabilizer $S$ of $G$.
@@ -257,7 +257,7 @@ BindGlobal( "MatAutomorphismsFamily",
 
         # Search the coset $S.stabilizer * ss$ and return if successful.
 
-        # In our special situation, we adjust `allowed': 
+        # In our special situation, we adjust `allowed':
         newallowed:= [];
         for i in [ 1 .. famlength ] do
           newallowed[i]:= Filtered( allowed[i], x -> p^x in
@@ -434,11 +434,11 @@ InstallMethod( MatrixAutomorphisms,
 
     fam:= FamiliesOfRows( mat, maps );
     mat:= Concatenation( mat, maps );
-    
+
     # Step 2:
     # Distribute the columns into families using only the fact that
     # row families of length 1 must be fixed by every automorphism.
-    
+
     nonfixedpoints:= [ [ 1 .. Length( mat[1] ) ] ];
     i:= 1;
     while i <= Length( fam.famreps ) and Length( fam.families[i] ) = 1 do
@@ -457,14 +457,14 @@ InstallMethod( MatrixAutomorphisms,
       nonfixedpoints:= Filtered( nonfixedpoints, x -> 1 < Length(x) );
       i:= i+1;
     od;
-    
+
     # Step 3:
     # Refine the column families using the fact that members of a family
     # must have the same sorted column in the restriction to every row
     # family.
     # Since trivial row families are already examined, we consider only
     # nontrivial ones.
-    
+
     while i <= Length( fam.famreps ) do
       row:= MutableTransposedMat( mat{ fam.families[i] } );
       for j in row do
@@ -481,17 +481,17 @@ InstallMethod( MatrixAutomorphisms,
       nonfixedpoints:= Filtered( nonfixedpoints, x -> 1 < Length(x) );
       i:= i+1;
     od;
-    
+
     if IsEmpty( nonfixedpoints ) then
       Info( InfoMatrix, 2,
             "MatAutomorphisms: return trivial group without hard test" );
       return GroupByGenerators( [], () );
     fi;
-    
+
     # Step 4:
     # Compute a direct product of symmetric groups that covers the
     # group of matrix automorphisms.
-    
+
     G:= [];
     for i in nonfixedpoints do
       Add( G, ( i[1], i[2] ) );
@@ -501,33 +501,33 @@ InstallMethod( MatrixAutomorphisms,
       fi;
     od;
     G:= GroupByGenerators( G );
-    
+
     # Step 5:
     # Enter the backtrack search for permutation groups.
-    
+
     permutations:= fam.permutations;
     famreps:= fam.famreps;
     G:= StabChain( G );
-    
+
     Info( InfoMatrix, 2,
           "MatAutomorphisms: There are ", Length( permutations ),
           " families (",
           Number( permutations, x -> Length(x) =1 ),
           " trivial)" );
-    
+
     for i in [ 1 .. Length( famreps ) ] do
       if 1 < Length( permutations[i] ) then
-    
+
         Info( InfoMatrix, 2,
               "MatAutomorphismsFamily called for family no. ", i );
-    
+
         # First convert <famreps>[i] to `family': `family[<k>]' is the list
         # of all positions <j> in <famreps>[i] with
         # `<famreps>[i][<k>] = <famreps>[i][<j>]'.
         # So each permutation stabilizing <famreps>[i] will have to map <k>
         # to a point in `<family>[<k>]'.
         # (Note that <famreps>[i] is sorted.)
-    
+
         famrep:= famreps[i];
         support:= Length( famrep );
         family:= [ ];
@@ -591,7 +591,7 @@ InstallMethod( TableAutomorphisms,
           admissible;   # generators that commute with all power maps
 
     # Compute the matrix automorphisms.
-    maut:= MatrixAutomorphisms( characters, 
+    maut:= MatrixAutomorphisms( characters,
                                 [ OrdersClassRepresentatives( tbl ),
                                   SizesCentralizers( tbl ) ],
                                 subgroup );
@@ -601,8 +601,8 @@ InstallMethod( TableAutomorphisms,
     # Check whether all generators commute with all power maps.
     powermap:= List( PrimeDivisors( Size( tbl ) ),
                      p -> PowerMap( tbl, p ) );
-    admissible:= Filtered( gens, 
-                           perm -> ForAll( powermap, 
+    admissible:= Filtered( gens,
+                           perm -> ForAll( powermap,
                                          x -> ForAll( [ 1 .. nccl ],
                                          y -> x[ y^perm ] = x[y]^perm ) ) );
 
@@ -616,7 +616,7 @@ InstallMethod( TableAutomorphisms,
             "TableAutomorphisms: ",
             "not all matrix automorphisms admissible" );
       admissible:= SubgroupProperty( maut,
-                       perm -> ForAll( powermap, 
+                       perm -> ForAll( powermap,
                                  x -> ForAll( [ 1 .. nccl ],
                                         y -> x[ y^perm ] = x[y]^perm ) ),
                                      GroupByGenerators( admissible, () ) );
@@ -669,14 +669,14 @@ BindGlobal( "TransformingPermutationFamily",
           allowed,                # list of lists of admissible points
           ElementPropertyCoset,   # local function to loop over a coset
           nonbase;                # list of nonbase points
-    
+
     # Step a:
     # Replace permutations `p' in `fam1' by `bij_col^(-1) * p',
     # initialize `allowed'.
-    
+
     permutations:= List( fam1, x -> LeftQuotient( bij_col, x ) );
     allowed:= ListWithIdenticalEntries( Length( fam1 ), fam2 );
-    
+
     # Step b:
     # Define the local function `ElementProperty'.
     # It is exactly the same function as the one in `MatAutomorphismsFamily',
@@ -686,19 +686,19 @@ BindGlobal( "TransformingPermutationFamily",
 
       local i, j, points, p, ss, LL, elm, newallowed, union;
 
-      if IsEmpty( S.generators ) then                                     
+      if IsEmpty( S.generators ) then
         for i in [ 1 .. Length( permutations ) ] do
-          for p in nonbase do                             
+          for p in nonbase do
             allowed[i]:= Filtered( allowed[i],
                            x -> ( p^s )^x in family[ p^permutations[i] ] );
-          od;                                                             
-          if IsEmpty( allowed[i] ) then       
-            return fail;                
-          fi;                                     
-        od;                                                            
+          od;
+          if IsEmpty( allowed[i] ) then
+            return fail;
+          fi;
+        od;
         return s;
-      fi;                                                            
-    
+      fi;
+
       points:= SSortedList( OnTuples( S.orbit, s ) );
 
       for i in [ 1 .. Length( permutations ) ] do
@@ -787,7 +787,7 @@ InstallMethod( TransformingPermutations,
                   rows    := (),
                   group   := GroupByGenerators( [], () ) );
     fi;
-    
+
     # Step 1:
     # Set up and check the bijection of row families using the fact that
     # sorted rows must be equal.
@@ -797,7 +797,7 @@ InstallMethod( TransformingPermutations,
     # the representative, and then sorts this list *stable* (using `Sortex')
     # according to the length of the family, so the bijection must
     # be the identity.
-    
+
 #T check invariants first (matrix dimensions!)
     fam1:= FamiliesOfRows( mat1, [] );
     fam2:= FamiliesOfRows( mat2, [] );
@@ -806,17 +806,17 @@ InstallMethod( TransformingPermutations,
             "TransformingPermutations: no bijection of row families" );
       return fail;
     fi;
-    
+
     # Step 2:
     # Initialize a bijection of column families using that row
     # families of length 1 must be in bijection, i.e. the column
     # families are constant on these rows.
     # We will have `bij_col[1][i]' in bijection with `bij_col[2][i]'.
-    
+
     bij_col:= [];
     bij_col[1]:= [ [ 1 .. Length( mat1[1] ) ] ]; # trivial column families
     bij_col[2]:= [ [ 1 .. Length( mat1[1] ) ] ];
-    
+
     for i in [ 1 .. Length( fam1.famreps ) ] do
       if Length( fam1.families[i] ) = 1 then
         row1:= mat1[ fam1.families[i][1] ];
@@ -855,7 +855,7 @@ InstallMethod( TransformingPermutations,
         od;
       fi;
     od;
-    
+
     # Step 3:
     # Refine the column families and the bijection using that members
     # of a column family must have the same sorted column in the
@@ -863,7 +863,7 @@ InstallMethod( TransformingPermutations,
     # are already examined, now only use the nontrivial row families.
     # Except that now the values are sorted lists, the algorithm is
     # the same as in step 2.
-    
+
     for i in [ 1 .. Length( fam1.famreps ) ] do
       if Length( fam1.families[i] ) > 1 then
         row1:= MutableTransposedMat( mat1{ fam1.families[i] } );
@@ -906,10 +906,10 @@ InstallMethod( TransformingPermutations,
         od;
       fi;
     od;
-    
+
     # Choose an arbitrary bijection of columns
     # that respects the bijection of column families.
-    
+
     bijection:= [];
     for i in [ 1 .. Length( bij_col[1] ) ] do
       for j in [ 1 .. Length( bij_col[1][i] ) ] do
@@ -917,12 +917,12 @@ InstallMethod( TransformingPermutations,
       od;
     od;
     nonfixedpoints:= Filtered( bij_col[2], x -> 1 < Length(x) );
-    
+
     # Step 4:
     # Compute a direct prouct of symmetric groups that covers the
     # group of table automorphisms of mat2, using column families
     # given by `bij_col[2]'.
-    
+
     G:= [];
     for i in nonfixedpoints do
       Add( G, ( i[1], i[2] ) );
@@ -932,15 +932,15 @@ InstallMethod( TransformingPermutations,
       fi;
     od;
     G:= StabChain( GroupByGenerators( G, () ) );
-    
+
     # Step 5:
     # Enter the backtrack search for permutation groups.
 
     Info( InfoMatrix, 2,
           "TransformingPermutations: start of backtrack search" );
-    
+
     bij_col:= PermList( bijection );
-    
+
     # Now loop over the row families;
     # first convert `famreps[i]' to `family';
     # `family[<k>]' is the list of all
@@ -949,7 +949,7 @@ InstallMethod( TransformingPermutations,
     # So each permutation stabilizing `famreps[i]' will have to map
     # <k> to a point in `family[<k>]'.
     # (Note that `famreps[i]' is sorted.)
-    
+
     for i in [ 1 .. Length( fam1.famreps ) ] do
       if Length( fam1.permutations[i] ) > 1 then
         famrep:= fam1.famreps[i];
@@ -985,7 +985,7 @@ InstallMethod( TransformingPermutations,
     return rec( columns := bij_col,
                 rows    := Sortex( List( mat1, x -> Permuted( x, bij_col ) ) )
                            / Sortex( ShallowCopy( mat2 ) ),
-                group   := GroupStabChain( G ) ); 
+                group   := GroupStabChain( G ) );
     end );
 
 
@@ -1045,9 +1045,9 @@ InstallMethod( TransformingPermutationsCharacterTables,
     if trans = fail then
       return fail;
     fi;
-    gens:= GeneratorsOfGroup( trans.group );                               
+    gens:= GeneratorsOfGroup( trans.group );
     nccl:= NrConjugacyClasses( tbl2 );
-    
+
     # Compute the subgroup of table automorphisms of `tbl2' if it is not
     # yet stored.
     # Note that we know the group of matrix automorphisms already,
@@ -1064,7 +1064,7 @@ InstallMethod( TransformingPermutationsCharacterTables,
                            perm -> ForAll( powermap2,
                                          x -> ForAll( [ 1 .. nccl ],
                                          y -> x[ y^perm ] = x[y]^perm ) ) );
-    
+
       if Length( admissible ) = Length( gens ) then
         admissible:= trans.group;
       else
@@ -1072,7 +1072,7 @@ InstallMethod( TransformingPermutationsCharacterTables,
               "TransformingPermutationsCharTables: ",
               "not all matrix automorphisms admissible" );
         admissible:= SubgroupProperty( trans.group,
-                         perm -> ForAll( powermap2, 
+                         perm -> ForAll( powermap2,
                                    x -> ForAll( [ 1 .. nccl ],
                                           y -> x[y^perm] = x[y]^perm ) ),
                                        GroupByGenerators( admissible, () ) );
@@ -1082,7 +1082,7 @@ InstallMethod( TransformingPermutationsCharacterTables,
       SetAutomorphismsOfTable( tbl2, admissible );
 
     fi;
-    
+
     pi:= trans.columns;
 
     orders1:= OrdersClassRepresentatives( tbl1 );
@@ -1097,7 +1097,7 @@ InstallMethod( TransformingPermutationsCharacterTables,
       trans.group:= admissible;
 
     else
-    
+
       # Look if there is a coset of `trans.group' over `admissible' that
       # consists of transforming permutations.
       prop:= s -> ForAll( [ 1 .. Length( primes ) ],

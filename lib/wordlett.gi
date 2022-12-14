@@ -247,7 +247,7 @@ local e,i;
   e:=ListWithIdenticalEntries(Length(FamilyObj(w)!.names),0);
   w:=ERepLettWord(w);
   to:= 2 * to - 1;
-  if to>Length(w) then 
+  if to>Length(w) then
     to:=Length(w)-1;
   fi;
   for i in [ from, from + 2 .. to ] do
@@ -325,11 +325,11 @@ local l,m,p,q,i;
     q:=AbsInt(b[i]);
     if p<q then
       return true;
-    elif p>q then 
+    elif p>q then
       return false;
-    elif a[i]<b[i] then 
+    elif a[i]<b[i] then
       return true;
-    elif a[i]>b[i] then 
+    elif a[i]>b[i] then
       return false;
     fi;
   od;
@@ -533,7 +533,7 @@ function( w, from, to )
 local l;
   if to<from then
     if IsMultiplicativeElementWithOne(w) then
-      return One(FamilyObj(w)); 
+      return One(FamilyObj(w));
     else
       Error("<from> must be less than or equal to <to>");
     fi;
@@ -608,7 +608,7 @@ local i,l,fam,e,m,mm,p,inv;
   IsSSortedList(gens1);
 
   # are the genimages simple generators themselves?
-  if IsAssocWordWithInverseCollection(gens2) 
+  if IsAssocWordWithInverseCollection(gens2)
      and ForAll(gens2,i->Length(i)=1 and not IsStraightLineProgElm(i)) then
     e:= List( gens2, i->LetterRepAssocWord(i)[1] );
     if Length(e)=Length(Set(e,AbsInt)) then
@@ -658,7 +658,7 @@ local i,l,fam,e,m,mm,p,inv;
     elif x[i]<0 then
       # was the inverse give/precomputed
       p:= Position(gens1,-x[i]);
-      if p=fail then 
+      if p=fail then
         # unmapped letter gen
         mm:=AssocWordByLetterRep(fam,[x[i]]);
       elif IsBound(inv[p]) then
@@ -670,9 +670,9 @@ local i,l,fam,e,m,mm,p,inv;
       # unmapped letter gen
       mm:=AssocWordByLetterRep(fam,[x[i]]);
     fi;
-    
+
     if m=fail then
-      m:=mm; 
+      m:=mm;
     elif mm<>fail then
       m:=m*mm;
     else

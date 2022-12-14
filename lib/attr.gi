@@ -14,7 +14,7 @@
 
 #############################################################################
 ##
-#F  EnableAttributeValueStoring( <attr> ) tell the attribute to resume 
+#F  EnableAttributeValueStoring( <attr> ) tell the attribute to resume
 ##                                           storing values
 ##
 

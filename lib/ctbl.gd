@@ -936,31 +936,31 @@ InstallIsomorphismMaintenance( CharacterDegrees,
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Irr( SymmetricGroup( 4 ) );
-##  [ Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, -1, 1, 1, -1 
-##       ] ), Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), 
-##      [ 3, -1, -1, 0, 1 ] ), 
+##  [ Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, -1, 1, 1, -1
+##       ] ), Character( CharacterTable( Sym( [ 1 .. 4 ] ) ),
+##      [ 3, -1, -1, 0, 1 ] ),
 ##    Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 2, 0, 2, -1, 0 ] )
-##      , Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), 
-##      [ 3, 1, -1, 0, -1 ] ), 
-##    Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1, 1 ] ) 
+##      , Character( CharacterTable( Sym( [ 1 .. 4 ] ) ),
+##      [ 3, 1, -1, 0, -1 ] ),
+##    Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1, 1 ] )
 ##   ]
 ##  gap> Irr( SymmetricGroup( 4 ), 2 );
-##  [ Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 1, 1 ] ), 
+##  [ Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 1, 1 ] ),
 ##    Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 2, -1 ] ) ]
 ##  gap> Irr( CharacterTable( "A5" ) );
-##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), 
-##      [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ), 
-##    Character( CharacterTable( "A5" ), 
-##      [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ), 
-##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
+##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ),
+##      [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ),
+##    Character( CharacterTable( "A5" ),
+##      [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ),
+##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ),
 ##    Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ) ]
 ##  gap> Irr( CharacterTable( "A5" ) mod 2 );
-##  [ Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] ), 
-##    Character( BrauerTable( "A5", 2 ), 
-##      [ 2, -1, E(5)+E(5)^4, E(5)^2+E(5)^3 ] ), 
-##    Character( BrauerTable( "A5", 2 ), 
-##      [ 2, -1, E(5)^2+E(5)^3, E(5)+E(5)^4 ] ), 
+##  [ Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] ),
+##    Character( BrauerTable( "A5", 2 ),
+##      [ 2, -1, E(5)+E(5)^4, E(5)^2+E(5)^3 ] ),
+##    Character( BrauerTable( "A5", 2 ),
+##      [ 2, -1, E(5)^2+E(5)^3, E(5)+E(5)^4 ] ),
 ##    Character( BrauerTable( "A5", 2 ), [ 4, 1, -1, -1 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -1007,7 +1007,7 @@ DeclareAttributeSuppCT( "Irr", IsNearlyCharacterTable,
 ##  <Example><![CDATA[
 ##  gap> LinearCharacters( SymmetricGroup( 4 ) );
 ##  [ Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1, 1 ] ),
-##    Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, -1, 1, 1, -1 
+##    Character( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 1, -1, 1, 1, -1
 ##       ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -1170,21 +1170,21 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  gap> List( tables, Size );
 ##  [ 3, 24, 60, 120 ]
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "C5" ) );
-##  rec( name := "Z(5)", parameter := 5, series := "Z", shortname := "C5" 
+##  rec( name := "Z(5)", parameter := 5, series := "Z", shortname := "C5"
 ##   )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "S3" ) );
 ##  fail
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "S6(3)" ) );
-##  rec( name := "C(3,3) = S(6,3)", parameter := [ 3, 3 ], series := "C", 
+##  rec( name := "C(3,3) = S(6,3)", parameter := [ 3, 3 ], series := "C",
 ##    shortname := "S6(3)" )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "O7(3)" ) );
-##  rec( name := "B(3,3) = O(7,3)", parameter := [ 3, 3 ], series := "B", 
+##  rec( name := "B(3,3) = O(7,3)", parameter := [ 3, 3 ], series := "B",
 ##    shortname := "O7(3)" )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "A8" ) );
-##  rec( name := "A(8) ~ A(3,2) = L(4,2) ~ D(3,2) = O+(6,2)", 
+##  rec( name := "A(8) ~ A(3,2) = L(4,2) ~ D(3,2) = O+(6,2)",
 ##    parameter := 8, series := "A", shortname := "A8" )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( CharacterTable( "L3(4)" ) );
-##  rec( name := "A(2,4) = L(3,4)", parameter := [ 3, 4 ], series := "L", 
+##  rec( name := "A(2,4) = L(3,4)", parameter := [ 3, 4 ], series := "L",
 ##    shortname := "L3(4)" )
 ##  ]]></Example>
 ##  </Description>
@@ -2335,9 +2335,9 @@ DeclareOperation( "ClassPositionsOfNormalClosure",
 ##  <Example><![CDATA[
 ##  gap> tbl:= CharacterTable( "L3(2)" );;
 ##  gap> pbl:= PrimeBlocks( tbl, 2 );
-##  rec( block := [ 1, 1, 1, 1, 1, 2 ], 
-##    centralcharacter := [ [ ,, 56,, 24 ], [ ,, -7,, 3 ] ], 
-##    defect := [ 3, 0 ], height := [ 0, 0, 0, 1, 0, 0 ], 
+##  rec( block := [ 1, 1, 1, 1, 1, 2 ],
+##    centralcharacter := [ [ ,, 56,, 24 ], [ ,, -7,, 3 ] ],
+##    defect := [ 3, 0 ], height := [ 0, 0, 0, 1, 0, 0 ],
 ##    relevant := [ 3, 5 ] )
 ##  ]]></Example>
 ##  </Description>
@@ -2449,11 +2449,11 @@ DeclareGlobalFunction( "SameBlock" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> BlocksInfo( CharacterTable( "L3(2)" ) mod 2 );
-##  [ rec( basicset := [ 1, 2, 3 ], 
-##        decinv := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
-##        defect := 3, modchars := [ 1, 2, 3 ], 
-##        ordchars := [ 1, 2, 3, 4, 5 ] ), 
-##    rec( basicset := [ 6 ], decinv := [ [ 1 ] ], defect := 0, 
+##  [ rec( basicset := [ 1, 2, 3 ],
+##        decinv := [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
+##        defect := 3, modchars := [ 1, 2, 3 ],
+##        ordchars := [ 1, 2, 3, 4, 5 ] ),
+##    rec( basicset := [ 6 ], decinv := [ [ 1 ] ], defect := 0,
 ##        modchars := [ 4 ], ordchars := [ 6 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2501,7 +2501,7 @@ DeclareAttributeSuppCT( "BlocksInfo", IsNearlyCharacterTable, "mutable",
 ##  gap> modtbl:= CharacterTable( "L3(2)" ) mod 2;
 ##  BrauerTable( "L3(2)", 2 )
 ##  gap> DecompositionMatrix( modtbl );
-##  [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 1, 1, 0 ], 
+##  [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 1, 1, 0 ],
 ##    [ 1, 1, 1, 0 ], [ 0, 0, 0, 1 ] ]
 ##  gap> DecompositionMatrix( modtbl, 1 );
 ##  [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ], [ 0, 1, 1 ], [ 1, 1, 1 ] ]
@@ -2626,8 +2626,8 @@ DeclareGlobalFunction( "LaTeXStringDecompositionMatrix" );
 ##  of <A>tbl</A> and <A>subtbl</A>.
 ##  The containment of the underlying groups of <A>subtbl</A> and <A>tbl</A>
 ##  is <E>not</E> checked;
-##  so the distinction between 
-##  <Ref Oper="Index" Label="for a group and its subgroup"/> 
+##  so the distinction between
+##  <Ref Oper="Index" Label="for a group and its subgroup"/>
 ##  and <Ref Oper="IndexNC" Label="for a group and its subgroup"/>
 ##  is not made for character tables.
 ##  </Description>
@@ -2893,7 +2893,7 @@ DeclareOperation( "ClassMultiplicationCoefficient",
 ##  gap> ClassStructureCharTable( tbl, [ 2, 2, 2, 4 ] );
 ##  1848
 ##  gap> MatClassMultCoeffsCharTable( tbl, 2 );
-##  [ [ 0, 1, 0, 0, 0, 0 ], [ 21, 4, 3, 4, 0, 0 ], [ 0, 8, 6, 8, 7, 7 ], 
+##  [ [ 0, 1, 0, 0, 0, 0 ], [ 21, 4, 3, 4, 0, 0 ], [ 0, 8, 6, 8, 7, 7 ],
 ##    [ 0, 8, 6, 1, 7, 7 ], [ 0, 0, 3, 4, 0, 7 ], [ 0, 0, 3, 4, 7, 0 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -2925,7 +2925,7 @@ DeclareGlobalFunction( "MatClassMultCoeffsCharTable" );
 ##  the number of <M>n</M>-tuples <M>(g_1, g_2, \ldots, g_n)</M> of elements
 ##  <M>g_i \in C_i</M> with <M>g_1 g_2 \cdots g_n = 1</M>.
 ##  Note the difference to the definition of the class multiplication
-##  coefficients in 
+##  coefficients in
 ##  <Ref Oper="ClassMultiplicationCoefficient"
 ##  Label="for character tables"/>.
 ##  <P/>
@@ -3173,7 +3173,7 @@ DeclareAttribute( "ComputedBrauerTables", IsOrdinaryTable, "mutable" );
 ##  <Ref Func="CharacterTableRegular"/> returns the <Q>table head</Q> of the
 ##  <A>p</A>-modular Brauer character table of <A>tbl</A>.
 ##  This is the restriction of <A>tbl</A> to its <A>p</A>-regular classes,
-##  like the return value of <Ref Oper="BrauerTable" 
+##  like the return value of <Ref Oper="BrauerTable"
 ##  Label="for a character table, and a prime integer"/>,
 ##  but without the irreducible Brauer characters.
 ##  (In general, these characters are hard to compute,
@@ -3525,48 +3525,48 @@ DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
 ##  gap> tbl:= CharacterTable( "A5" );;
 ##  gap> Display( tbl );
 ##  A5
-##  
+##
 ##       2  2  2  .  .  .
 ##       3  1  .  1  .  .
 ##       5  1  .  .  1  1
-##  
+##
 ##         1a 2a 3a 5a 5b
 ##      2P 1a 1a 3a 5b 5a
 ##      3P 1a 2a 1a 5b 5a
 ##      5P 1a 2a 3a 1a 1a
-##  
+##
 ##  X.1     1  1  1  1  1
 ##  X.2     3 -1  .  A *A
 ##  X.3     3 -1  . *A  A
 ##  X.4     4  .  1 -1 -1
 ##  X.5     5  1 -1  .  .
-##  
+##
 ##  A = -E(5)-E(5)^4
 ##    = (1-Sqrt(5))/2 = -b5
 ##  gap> CharacterTableDisplayDefaults.User:= rec(
 ##  >        powermap:= "ATLAS", centralizers:= "ATLAS", chars:= false );;
 ##  gap> Display( CharacterTable( "A5" ) );
 ##  A5
-##  
+##
 ##      60  4  3  5  5
-##  
+##
 ##   p      A  A  A  A
 ##   p'     A  A  A  A
 ##      1A 2A 3A 5A B*
-##  
+##
 ##  gap> options:= rec( chars:= 4, classes:= [ tbl.3a .. tbl.5a ],
 ##  >                   centralizers:= false, indicator:= true,
 ##  >                   powermap:= [ 2 ] );;
 ##  gap> Display( tbl, options );
 ##  A5
-##  
+##
 ##            3a 5a
 ##         2P 3a 5b
 ##         2
 ##  X.4    +   1 -1
 ##  gap> SetDisplayOptions( tbl, options );  Display( tbl );
 ##  A5
-##  
+##
 ##            3a 5a
 ##         2P 3a 5b
 ##         2
@@ -3749,14 +3749,14 @@ DeclareGlobalFunction( "PrintCharacterTable" );
 ##  gap> s3:= CharacterTable( "Symmetric", 3 );;
 ##  gap> Display( CharacterTableDirectProduct( c2, s3 ) );
 ##  C2xSym(3)
-##  
+##
 ##       2  2  2  1  2  2  1
 ##       3  1  .  1  1  .  1
-##  
+##
 ##         1a 2a 3a 2b 2c 6a
 ##      2P 1a 1a 3a 1a 1a 3a
 ##      3P 1a 2a 1a 2b 2c 2b
-##  
+##
 ##  X.1     1 -1  1  1 -1  1
 ##  X.2     2  . -1  2  . -1
 ##  X.3     1  1  1  1  1  1
@@ -3840,14 +3840,14 @@ DeclareGlobalFunction( "CharacterTableHeadOfFactorGroupByFusion" );
 ##  CharacterTable( "Sym(4)/[ 1, 3 ]" )
 ##  gap> Display( f );
 ##  Sym(4)/[ 1, 3 ]
-##  
+##
 ##       2  1  1  .
 ##       3  1  .  1
-##  
+##
 ##         1a 2a 3a
 ##      2P 1a 1a 3a
 ##      3P 1a 2a 1a
-##  
+##
 ##  X.1     1 -1  1
 ##  X.2     2  . -1
 ##  X.3     1  1  1
@@ -3930,17 +3930,17 @@ DeclareOperation( "CharacterTableFactorGroup",
 ##  gap> d8:= CharacterTable( "Dihedral", 8 );
 ##  CharacterTable( "Dihedral(8)" )
 ##  gap> nsg:= ClassPositionsOfNormalSubgroups( d8 );
-##  [ [ 1 ], [ 1, 3 ], [ 1 .. 3 ], [ 1, 3, 4 ], [ 1, 3 .. 5 ], [ 1 .. 5 ] 
+##  [ [ 1 ], [ 1, 3 ], [ 1 .. 3 ], [ 1, 3, 4 ], [ 1, 3 .. 5 ], [ 1 .. 5 ]
 ##   ]
 ##  gap> isod8:= CharacterTableIsoclinic( d8, nsg[3] );;
 ##  gap> Display( isod8 );
 ##  Isoclinic(Dihedral(8))
-##  
+##
 ##       2  3  2  3  2  2
-##  
+##
 ##         1a 4a 2a 4b 4c
 ##      2P 1a 2a 1a 2a 2a
-##  
+##
 ##  X.1     1  1  1  1  1
 ##  X.2     1  1  1 -1 -1
 ##  X.3     1 -1  1  1 -1
@@ -3949,7 +3949,7 @@ DeclareOperation( "CharacterTableFactorGroup",
 ##  gap> t1:= CharacterTable( SmallGroup( 27, 3 ) );;
 ##  gap> t2:= CharacterTable( SmallGroup( 27, 4 ) );;
 ##  gap> nsg:= ClassPositionsOfNormalSubgroups( t1 );
-##  [ [ 1 ], [ 1, 4, 8 ], [ 1, 2, 4, 5, 8 ], [ 1, 3, 4, 7, 8 ], 
+##  [ [ 1 ], [ 1, 4, 8 ], [ 1, 2, 4, 5, 8 ], [ 1, 3, 4, 7, 8 ],
 ##    [ 1, 4, 6, 8, 11 ], [ 1, 4, 8, 9, 10 ], [ 1 .. 11 ] ]
 ##  gap> iso1:= CharacterTableIsoclinic( t1, rec( k:= 1,
 ##  >               normalSubgroup:= nsg[3] ) );;
@@ -4005,8 +4005,8 @@ DeclareOperation( "CharacterTableFactorGroup",
 ##  gap> SourceOfIsoclinicTable( isod8 );
 ##  [ CharacterTable( "Dihedral(8)" ), [ 1 .. 3 ], [ 3 ], 3 ]
 ##  gap> SourceOfIsoclinicTable( iso1 );
-##  rec( centralElement := 4, k := 1, 
-##    outerClasses := [ [ 3, 6, 9 ], [ 7, 10, 11 ] ], p := 3, 
+##  rec( centralElement := 4, k := 1,
+##    outerClasses := [ [ 3, 6, 9 ], [ 7, 10, 11 ] ], p := 3,
 ##    table := CharacterTable( <pc group of size 27 with 3 generators> ) )
 ##  ]]></Example>
 ##  <P/>
@@ -4097,7 +4097,7 @@ DeclareOperation( "CharacterTableIsoclinic",
 ##  gap> nsg:= ClassPositionsOfNormalSubgroups( t );
 ##  [ [ 1 ], [ 1, 3 ], [ 1, 3, 4 ], [ 1 .. 5 ] ]
 ##  gap> rest:= List( nsg, c -> CharacterTableOfNormalSubgroup( t, c ) );
-##  [ CharacterTable( "Rest(Sym(4),[ 1 ])" ), fail, fail, 
+##  [ CharacterTable( "Rest(Sym(4),[ 1 ])" ), fail, fail,
 ##    CharacterTable( "Rest(Sym(4),[ 1 .. 5 ])" ) ]
 ##  ]]></Example>
 ##  <P/>
@@ -4109,11 +4109,11 @@ DeclareOperation( "CharacterTableIsoclinic",
 ##  gap> g:= SchurCoverOfSymmetricGroup( 5, 3, 1 );;
 ##  gap> c:= CyclicGroup( 4 );;
 ##  gap> dp:= DirectProduct( g, c );;
-##  gap> diag:= First( Elements( Centre( dp ) ), 
+##  gap> diag:= First( Elements( Centre( dp ) ),
 ##  >                  x -> Order( x ) = 2 and
 ##  >                       not x in Image( Embedding( dp, 1 ) ) and
 ##  >                       not x in Image( Embedding( dp, 2 ) ) );;
-##  gap> fact:= Image( NaturalHomomorphismByNormalSubgroup( dp, 
+##  gap> fact:= Image( NaturalHomomorphismByNormalSubgroup( dp,
 ##  >                      Subgroup( dp, [ diag ] ) ));;
 ##  gap> t:= CharacterTable( fact );;
 ##  gap> Size( t );
@@ -4416,14 +4416,14 @@ DeclareGlobalFunction( "SortedCharacterTable" );
 ##  CharacterTable( "Sym(4)" )
 ##  gap> Display( tbl );
 ##  Sym(4)
-##  
+##
 ##       2  3  2  3  .  2
 ##       3  1  .  .  1  .
-##  
+##
 ##         1a 2a 2b 3a 4a
 ##      2P 1a 1a 1a 3a 2b
 ##      3P 1a 2a 2b 1a 4a
-##  
+##
 ##  X.1     1 -1  1  1 -1
 ##  X.2     3 -1 -1  .  1
 ##  X.3     2  .  2 -1  .
@@ -4447,14 +4447,14 @@ DeclareGlobalFunction( "SortedCharacterTable" );
 ##  [ [ 1 ], [ 1, 2 ], [ 1 .. 3 ], [ 1 .. 5 ] ]
 ##  gap> Display( srt3 );
 ##  Sym(4)
-##  
+##
 ##       2  3  3  .  2  2
 ##       3  1  .  1  .  .
-##  
+##
 ##         1a 2a 3a 2b 4a
 ##      2P 1a 1a 3a 1a 2a
 ##      3P 1a 2a 1a 2b 4a
-##  
+##
 ##  X.1     1  1  1  1  1
 ##  X.2     1  1  1 -1 -1
 ##  X.3     2  2 -1  .  .
@@ -4609,10 +4609,10 @@ DeclareGlobalFunction( "NormalSubgroupClasses" );
 ##  gap> tbl:= CharacterTable( g );
 ##  CharacterTable( S4 )
 ##  gap> irr:= Irr( g );
-##  [ Character( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] ), 
-##    Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ), 
-##    Character( CharacterTable( S4 ), [ 2, 0, 2, -1, 0 ] ), 
-##    Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] ), 
+##  [ Character( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] ),
+##    Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ),
+##    Character( CharacterTable( S4 ), [ 2, 0, 2, -1, 0 ] ),
+##    Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] ),
 ##    Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] ) ]
 ##  gap> kernel:= KernelOfCharacter( irr[3] );;
 ##  gap> AsSet(kernel);

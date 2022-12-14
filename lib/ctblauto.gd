@@ -125,10 +125,10 @@ DeclareOperation( "MatrixAutomorphisms", [ IsMatrix, IsList, IsPermGroup ] );
 ##  <Example><![CDATA[
 ##  gap> tbld8:= CharacterTable( "Dihedral", 8 );;
 ##  gap> irrd8:= Irr( tbld8 );
-##  [ Character( CharacterTable( "Dihedral(8)" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "Dihedral(8)" ), [ 1, 1, 1, -1, -1 ] ), 
-##    Character( CharacterTable( "Dihedral(8)" ), [ 1, -1, 1, 1, -1 ] ), 
-##    Character( CharacterTable( "Dihedral(8)" ), [ 1, -1, 1, -1, 1 ] ), 
+##  [ Character( CharacterTable( "Dihedral(8)" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "Dihedral(8)" ), [ 1, 1, 1, -1, -1 ] ),
+##    Character( CharacterTable( "Dihedral(8)" ), [ 1, -1, 1, 1, -1 ] ),
+##    Character( CharacterTable( "Dihedral(8)" ), [ 1, -1, 1, -1, 1 ] ),
 ##    Character( CharacterTable( "Dihedral(8)" ), [ 2, 0, -2, 0, 0 ] ) ]
 ##  gap> orders:= OrdersClassRepresentatives( tbld8 );
 ##  [ 1, 4, 2, 2, 2 ]
@@ -218,10 +218,10 @@ DeclareOperation( "TransformingPermutations", [ IsMatrix, IsMatrix ] );
 ##  <Example><![CDATA[
 ##  gap> tblq8:= CharacterTable( "Quaternionic", 8 );;
 ##  gap> irrq8:= Irr( tblq8 );
-##  [ Character( CharacterTable( "Q8" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "Q8" ), [ 1, 1, 1, -1, -1 ] ), 
-##    Character( CharacterTable( "Q8" ), [ 1, -1, 1, 1, -1 ] ), 
-##    Character( CharacterTable( "Q8" ), [ 1, -1, 1, -1, 1 ] ), 
+##  [ Character( CharacterTable( "Q8" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "Q8" ), [ 1, 1, 1, -1, -1 ] ),
+##    Character( CharacterTable( "Q8" ), [ 1, -1, 1, 1, -1 ] ),
+##    Character( CharacterTable( "Q8" ), [ 1, -1, 1, -1, 1 ] ),
 ##    Character( CharacterTable( "Q8" ), [ 2, 0, -2, 0, 0 ] ) ]
 ##  gap> OrdersClassRepresentatives( tblq8 );
 ##  [ 1, 4, 2, 4, 4 ]

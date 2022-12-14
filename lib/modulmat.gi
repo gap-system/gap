@@ -107,7 +107,7 @@ InstallMethod( IsMatrixModule,
 
 #############################################################################
 ##
-#M  IsMatrixModule .  return `false' for objects which are not free left modules 
+#M  IsMatrixModule .  return `false' for objects which are not free left modules
 ##
 InstallOtherMethod( IsMatrixModule,
     "return `false' for objects which are not free left modules",

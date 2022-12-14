@@ -93,14 +93,14 @@ InstallTrueMethod( IsFiniteOrderElementCollection, IsGroup and IsFinite );
 ##  If <A>G</A> has been created by the command
 ##  <Ref Oper="GroupWithGenerators"/> with argument <A>gens</A>,
 ##  then the list returned by <Ref Attr="GeneratorsOfGroup"/>
-##  will be equal to <A>gens</A>. For such a group, each generator 
-##  can also be accessed using the <C>.</C> operator 
+##  will be equal to <A>gens</A>. For such a group, each generator
+##  can also be accessed using the <C>.</C> operator
 ##  (see <Ref Attr="GeneratorsOfDomain"/>): for a positive integer
 ##  <M>i</M>, <C><A>G</A>.i</C> returns the <M>i</M>-th element of
 ##  the list returned by <Ref Attr="GeneratorsOfGroup"/>. Moreover,
-##  if <A>G</A> is a free group, and <C>name</C> is the name of a 
-##  generator of <A>G</A> then <C><A>G</A>.name</C> also returns 
-##  this generator. 
+##  if <A>G</A> is a free group, and <C>name</C> is the name of a
+##  generator of <A>G</A> then <C><A>G</A>.name</C> also returns
+##  this generator.
 ##  <Example><![CDATA[
 ##  gap> g:=GroupWithGenerators([(1,2,3,4),(1,2)]);
 ##  Group([ (1,2,3,4), (1,2) ])
@@ -322,7 +322,7 @@ DeclareFilter( "CanEasilyTestMembership" );
 ##  (via <Ref Attr="IndependentGeneratorsOfAbelianGroup"/>) and
 ##  then can decompose arbitrary group elements with respect to these
 ##  generators using <Ref Oper="IndependentGeneratorExponents"/>.
-##  
+##
 ##  It is used by the method selection to decide whether an algorithm
 ##  that relies on these two operations may be used.
 ##  </Description>
@@ -461,12 +461,12 @@ InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
 ##  A finite p-group <A>G</A> is said to be a <E>powerful <M>p</M>-group</E>
 ##  if the commutator subgroup <M>[<A>G</A>,<A>G</A>]</M> is contained in
 ##  <M><A>G</A>^{p}</M> if the prime <M>p</M> is odd, or if
-##  <M>[<A>G</A>,<A>G</A>]</M> is contained in <M><A>G</A>^{4}</M> 
-##  if <M>p = 2</M>. The subgroup <M><A>G</A>^{p}</M> is called the first 
+##  <M>[<A>G</A>,<A>G</A>]</M> is contained in <M><A>G</A>^{4}</M>
+##  if <M>p = 2</M>. The subgroup <M><A>G</A>^{p}</M> is called the first
 ##  Agemo subgroup, (see&nbsp;<Ref Func="Agemo"/>).
-##  <Ref Prop="IsPowerfulPGroup"/> returns <K>true</K> if <A>G</A> is a 
-##  powerful <M>p</M>-group, and <K>false</K> otherwise. 
-##  <E>Note: </E>This function returns <K>true</K> if <A>G</A> is the trivial 
+##  <Ref Prop="IsPowerfulPGroup"/> returns <K>true</K> if <A>G</A> is a
+##  powerful <M>p</M>-group, and <K>false</K> otherwise.
+##  <E>Note: </E>This function returns <K>true</K> if <A>G</A> is the trivial
 ##  group.
 ##  </Description>
 ##  </ManSection>
@@ -495,11 +495,11 @@ InstallTrueMethod( IsPGroup, IsPowerfulPGroup );
 ##  (see&nbsp;<Ref Prop="IsPGroup"/>), <Ref Attr="PrimePGroup"/> returns
 ##  the prime integer <M>p</M>;
 ##  if <A>G</A> is trivial then <Ref Attr="PrimePGroup"/> returns
-##  <K>fail</K>. 
+##  <K>fail</K>.
 ##  Otherwise an error is issued.
 ##  <P/>
-##  (One should avoid a common error of writing 
-##  <C>if IsPGroup(g) then ... PrimePGroup(g) ...</C> where the code 
+##  (One should avoid a common error of writing
+##  <C>if IsPGroup(g) then ... PrimePGroup(g) ...</C> where the code
 ##  represented by dots assumes that <C>PrimePGroup(g)</C> is an integer.)
 ##  </Description>
 ##  </ManSection>
@@ -881,7 +881,7 @@ DeclareProperty( "IsPolycyclicGroup", IsGroup );
 InstallTrueMethod( IsGroup, IsPolycyclicGroup );
 InstallTrueMethod( IsSolvableGroup, IsPolycyclicGroup );
 InstallTrueMethod( IsPolycyclicGroup, IsSolvableGroup and IsFinite );
-InstallTrueMethod( IsPolycyclicGroup, 
+InstallTrueMethod( IsPolycyclicGroup,
                      IsNilpotentGroup and IsFinitelyGeneratedGroup );
 
 #############################################################################
@@ -989,8 +989,8 @@ DeclareAttribute( "AsGroup", IsCollection );
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));;
 ##  gap> ChiefSeries(g);
-##  [ Group([ (1,2,3,4), (1,2) ]), 
-##    Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
+##  [ Group([ (1,2,3,4), (1,2) ]),
+##    Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]),
 ##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group(()) ]
 ##  ]]></Example>
 ##  </Description>
@@ -1121,9 +1121,9 @@ DeclareOperation( "CompositionSeriesThrough", [IsGroup,IsList] );
 ##  simple factors.
 ##  <Example><![CDATA[
 ##  gap> CompositionSeries(g);
-##  [ Group([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
-##    Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), 
-##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,3)(2,4) ]), Group(()) 
+##  [ Group([ (3,4), (2,4,3), (1,4)(2,3), (1,3)(2,4) ]),
+##    Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]),
+##    Group([ (1,4)(2,3), (1,3)(2,4) ]), Group([ (1,3)(2,4) ]), Group(())
 ##   ]
 ##  gap> DisplayCompositionSeries(Group((1,2,3,4,5,6,7),(1,2)));
 ##  G (2 gens, size 5040)
@@ -1150,7 +1150,7 @@ DeclareGlobalFunction( "DisplayCompositionSeries" );
 ##  <Description>
 ##  returns the conjugacy classes of elements of <A>G</A> as a list of
 ##  class objects of <A>G</A>
-##  (see&nbsp;<Ref Oper="ConjugacyClass"/> for details). 
+##  (see&nbsp;<Ref Oper="ConjugacyClass"/> for details).
 ##  It is guaranteed that the class of the
 ##  identity is in the first position, the further arrangement depends on
 ##  the method chosen (and might be different for equal but not identical
@@ -1252,7 +1252,7 @@ DeclareAttribute( "ConjugacyClassesMaximalSubgroups", IsGroup );
 ##  <Ref Attr="ConjugacyClassesMaximalSubgroups"/>.
 ##  <Example><![CDATA[
 ##  gap> MaximalSubgroups(Group((1,2,3),(1,2)));
-##  [ Group([ (1,2,3) ]), Group([ (2,3) ]), Group([ (1,2) ]), 
+##  [ Group([ (1,2,3) ]), Group([ (2,3) ]), Group([ (1,2) ]),
 ##    Group([ (1,3) ]) ]
 ##  ]]></Example>
 ##  </Description>
@@ -1308,7 +1308,7 @@ DeclareOperation("MaxesAlmostSimple",[IsGroup]);
 ##  For a function <A>prop</A> that tests for a property that persists
 ##  under taking subgroups, this function returns conjugacy class
 ##  representatives of the subgroups of <A>G</A> that are maximal subject to
-##  this property. 
+##  this property.
 ##  <Example><![CDATA[
 ##  gap> max:=MaximalPropertySubgroups(AlternatingGroup(8),IsNilpotent);;
 ##  gap> List(max,Size);
@@ -1423,12 +1423,12 @@ DeclareAttribute( "ConjugacyClassesPerfectSubgroups", IsGroup );
 ##  <Ref Attr="Representative"/>.
 ##  <Example><![CDATA[
 ##  gap> ConjugacyClassesSubgroups(g);
-##  [ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (3,4) ] )^G, 
-##    Group( [ (2,4,3) ] )^G, Group( [ (1,4)(2,3), (1,3)(2,4) ] )^G, 
-##    Group( [ (3,4), (1,2)(3,4) ] )^G, 
+##  [ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (3,4) ] )^G,
+##    Group( [ (2,4,3) ] )^G, Group( [ (1,4)(2,3), (1,3)(2,4) ] )^G,
+##    Group( [ (3,4), (1,2)(3,4) ] )^G,
 ##    Group( [ (1,3,2,4), (1,2)(3,4) ] )^G, Group( [ (3,4), (2,4,3) ] )^G,
-##    Group( [ (1,4)(2,3), (1,3)(2,4), (3,4) ] )^G, 
-##    Group( [ (1,4)(2,3), (1,3)(2,4), (2,4,3) ] )^G, 
+##    Group( [ (1,4)(2,3), (1,3)(2,4), (3,4) ] )^G,
+##    Group( [ (1,4)(2,3), (1,3)(2,4), (2,4,3) ] )^G,
 ##    Group( [ (1,4)(2,3), (1,3)(2,4), (2,4,3), (3,4) ] )^G ]
 ##  ]]></Example>
 ##  </Description>
@@ -1456,12 +1456,12 @@ DeclareAttribute( "ConjugacyClassesSubgroups", IsGroup );
 ##  gap> l:=LatticeSubgroups(g);
 ##  <subgroup lattice of Sym( [ 1 .. 4 ] ), 11 classes, 30 subgroups>
 ##  gap> ConjugacyClassesSubgroups(l);
-##  [ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (3,4) ] )^G, 
-##    Group( [ (2,4,3) ] )^G, Group( [ (1,4)(2,3), (1,3)(2,4) ] )^G, 
-##    Group( [ (3,4), (1,2)(3,4) ] )^G, 
+##  [ Group( () )^G, Group( [ (1,3)(2,4) ] )^G, Group( [ (3,4) ] )^G,
+##    Group( [ (2,4,3) ] )^G, Group( [ (1,4)(2,3), (1,3)(2,4) ] )^G,
+##    Group( [ (3,4), (1,2)(3,4) ] )^G,
 ##    Group( [ (1,3,2,4), (1,2)(3,4) ] )^G, Group( [ (3,4), (2,4,3) ] )^G,
-##    Group( [ (1,4)(2,3), (1,3)(2,4), (3,4) ] )^G, 
-##    Group( [ (1,4)(2,3), (1,3)(2,4), (2,4,3) ] )^G, 
+##    Group( [ (1,4)(2,3), (1,3)(2,4), (3,4) ] )^G,
+##    Group( [ (1,4)(2,3), (1,3)(2,4), (2,4,3) ] )^G,
 ##    Group( [ (1,4)(2,3), (1,3)(2,4), (2,4,3), (3,4) ] )^G ]
 ##  ]]></Example>
 ##  </Description>
@@ -1621,12 +1621,12 @@ DeclareAttribute( "CommutatorLength", IsGroup );
 ##  <pc group of size 729 with 6 generators>
 ##  gap> JenningsSeries( G );
 ##  [ <pc group of size 729 with 6 generators>, Group([ f3, f4, f5, f6 ]),
-##    Group([ f4, f5, f6 ]), Group([ f5, f6 ]), Group([ f5, f6 ]), 
-##    Group([ f5, f6 ]), Group([ f6 ]), Group([ f6 ]), Group([ f6 ]), 
+##    Group([ f4, f5, f6 ]), Group([ f5, f6 ]), Group([ f5, f6 ]),
+##    Group([ f5, f6 ]), Group([ f6 ]), Group([ f6 ]), Group([ f6 ]),
 ##    Group([ <identity> of ... ]) ]
 ##  gap> DimensionsLoewyFactors(G);
-##  [ 1, 2, 4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22, 23, 25, 26, 
-##    27, 27, 27, 27, 27, 27, 27, 27, 27, 26, 25, 23, 22, 20, 19, 17, 16, 
+##  [ 1, 2, 4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22, 23, 25, 26,
+##    27, 27, 27, 27, 27, 27, 27, 27, 27, 26, 25, 23, 22, 20, 19, 17, 16,
 ##    14, 13, 11, 10, 8, 7, 5, 4, 2, 1 ]
 ##  ]]></Example>
 ##  </Description>
@@ -2111,8 +2111,8 @@ DeclareAttribute( "SolvableRadical", IsGroup );
 ##  <Ref Oper="RationalClass"/>.)
 ##  <Example><![CDATA[
 ##  gap> RationalClasses(DerivedSubgroup(g));
-##  [ RationalClass( AlternatingGroup( [ 1 .. 4 ] ), () ), 
-##    RationalClass( AlternatingGroup( [ 1 .. 4 ] ), (1,2)(3,4) ), 
+##  [ RationalClass( AlternatingGroup( [ 1 .. 4 ] ), () ),
+##    RationalClass( AlternatingGroup( [ 1 .. 4 ] ), (1,2)(3,4) ),
 ##    RationalClass( AlternatingGroup( [ 1 .. 4 ] ), (1,2,3) ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2355,8 +2355,8 @@ DeclareAttribute( "SylowSystem", IsGroup );
 ##  <K>fail</K> if the group <A>G</A> is not solvable.
 ##  <Example><![CDATA[
 ##  gap> HallSystem(h);
-##  [ Group([  ]), Group([ f1, f2 ]), Group([ f1, f2, f3 ]), 
-##    Group([ f1, f2, f3, f4 ]), Group([ f1, f2, f4 ]), Group([ f3 ]), 
+##  [ Group([  ]), Group([ f1, f2 ]), Group([ f1, f2, f3 ]),
+##    Group([ f1, f2, f3, f4 ]), Group([ f1, f2, f4 ]), Group([ f3 ]),
 ##    Group([ f3, f4 ]), Group([ f4 ]) ]
 ##  gap> List(last,Size);
 ##  [ 1, 4, 12, 60, 20, 3, 15, 5 ]
@@ -2666,10 +2666,10 @@ DeclareOperation( "CommutatorSubgroup", [ IsGroup, IsGroup ] );
 ##  <Oper Name="ConjugateGroup" Arg='G, obj'/>
 ##
 ##  <Description>
-##  returns the conjugate group of <A>G</A>, obtained by applying the 
+##  returns the conjugate group of <A>G</A>, obtained by applying the
 ##  conjugating element <A>obj</A>.
 ##  <P/>
-##  To form a conjugate (group) by any object acting via <C>^</C>, 
+##  To form a conjugate (group) by any object acting via <C>^</C>,
 ##  one can also use the infix operator <C>^</C>.
 ##  <Example><![CDATA[
 ##  gap> ConjugateGroup(g,(1,5));
@@ -2697,9 +2697,9 @@ DeclareOperation( "ConjugateGroup", [ IsGroup, IsObject ] );
 ##  element <A>g</A>.
 ##  <P/>
 ##  If <A>G</A> has no parent group, it just delegates to the
-##  call to <Ref Oper="ConjugateGroup"/> with the same arguments. 
+##  call to <Ref Oper="ConjugateGroup"/> with the same arguments.
 ##  <P/>
-##  To form a conjugate (subgroup) by any object acting via <C>^</C>, 
+##  To form a conjugate (subgroup) by any object acting via <C>^</C>,
 ##  one can also use the infix operator <C>^</C>.
 ##  </Description>
 ##  </ManSection>
@@ -2792,7 +2792,7 @@ InParentFOA( "Core", IsGroup, IsGroup, DeclareAttribute );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> tab := CosetTable(g, Subgroup(g, [ g.1, g.2*g.1*g.2*g.1*g.2^-1 ]));
-##  [ [ 1, 4, 5, 2, 3 ], [ 1, 4, 5, 2, 3 ], [ 2, 3, 1, 4, 5 ], 
+##  [ [ 1, 4, 5, 2, 3 ], [ 1, 4, 5, 2, 3 ], [ 2, 3, 1, 4, 5 ],
 ##    [ 3, 1, 2, 4, 5 ] ]
 ##  gap> List( last, PermList );
 ##  [ (2,4)(3,5), (2,4)(3,5), (1,2,3), (1,3,2) ]
@@ -3189,7 +3189,7 @@ DeclareOperation( "IsSubnormal", [ IsGroup, IsGroup ] );
 ##  <Oper Name="NormalClosure" Arg='G, list' Label="for group and a list"/>
 ##
 ##  <Description>
-##  The normal closure of <A>U</A> in <A>G</A> is the smallest normal subgroup 
+##  The normal closure of <A>U</A> in <A>G</A> is the smallest normal subgroup
 ##  of the closure of <A>G</A> and <A>U</A> which contains <A>U</A>.
 ##  <P/>
 ##  The second argument may also be a list of group elements, in which
@@ -3517,8 +3517,8 @@ KeyDependentOperation( "SylowComplement", IsGroup, IsPosInt, "prime" );
 ##  gap> Size(u);
 ##  12
 ##  gap> h:=PSL(3,5);;
-##  gap> HallSubgroup(h,[2,3]);  
-##  [ <permutation group of size 96 with 6 generators>, 
+##  gap> HallSubgroup(h,[2,3]);
+##  [ <permutation group of size 96 with 6 generators>,
 ##    <permutation group of size 96 with 6 generators> ]
 ##  gap> u := HallSubgroup(h,[3,31]);;
 ##  gap> Size(u); StructureDescription(u);
@@ -3641,7 +3641,7 @@ DeclareOperation( "Factorization",
 ##
 ##  <Description>
 ##  For a group <A>G</A> with a generating set given in
-##  <Ref Attr="GeneratorsOfGroup"/>, 
+##  <Ref Attr="GeneratorsOfGroup"/>,
 ##  this function calculates the number of elements whose shortest expression as
 ##  words in the generating set is of a particular length. It returns a list
 ##  <A>L</A>, whose <M>i+1</M> entry counts the number of elements whose
@@ -3650,7 +3650,7 @@ DeclareOperation( "Factorization",
 ##  <A>radius</A> are counted. Otherwise the group must be finite and all
 ##  elements are enumerated.
 ##  <Example><![CDATA[
-##  gap> GrowthFunctionOfGroup(MathieuGroup(12));  
+##  gap> GrowthFunctionOfGroup(MathieuGroup(12));
 ##  [ 1, 5, 19, 70, 255, 903, 3134, 9870, 25511, 38532, 16358, 382 ]
 ##  gap> GrowthFunctionOfGroup(MathieuGroup(12),2);
 ##  [ 1, 5, 19 ]
@@ -4110,9 +4110,9 @@ DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
 ##  <Example><![CDATA[
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup(
 ##  >                             Group((4,5)(6,7),(1,2,4)(3,5,6)));
-##  rec( 
+##  rec(
 ##    name := "A(1,7) = L(2,7) ~ B(1,7) = O(3,7) ~ C(1,7) = S(2,7) ~ 2A(1,\
-##  7) = U(2,7) ~ A(2,2) = L(3,2)", parameter := [ 2, 7 ], series := "L", 
+##  7) = U(2,7) ~ A(2,2) = L(3,2)", parameter := [ 2, 7 ], series := "L",
 ##    shortname := "L3(2)" )
 ##  ]]></Example>
 ##  <P/>
@@ -4127,12 +4127,12 @@ DeclareOperation( "IntermediateSubgroups", [IsGroup, IsGroup] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( 5 );
-##  rec( name := "Z(5)", parameter := 5, series := "Z", shortname := "C5" 
+##  rec( name := "Z(5)", parameter := 5, series := "Z", shortname := "C5"
 ##   )
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup( 6 );
 ##  fail
 ##  gap> IsomorphismTypeInfoFiniteSimpleGroup(Size(SymplecticGroup(6,3))/2);
-##  rec( 
+##  rec(
 ##    name := "cannot decide from size alone between B(3,3) = O(7,3) and C\
 ##  (3,3) = S(6,3)", parameter := [ 3, 3 ] )
 ##  ]]></Example>
@@ -4194,16 +4194,16 @@ DeclareGlobalFunction( "SmallSimpleGroup" );
 ##  <Example>
 ##  gap> List(AllSmallNonabelianSimpleGroups([1..1000000]),
 ##  >         StructureDescription);
-##  [ "A5", "PSL(3,2)", "A6", "PSL(2,8)", "PSL(2,11)", "PSL(2,13)", 
-##    "PSL(2,17)", "A7", "PSL(2,19)", "PSL(2,16)", "PSL(3,3)", 
-##    "PSU(3,3)", "PSL(2,23)", "PSL(2,25)", "M11", "PSL(2,27)", 
-##    "PSL(2,29)", "PSL(2,31)", "A8", "PSL(3,4)", "PSL(2,37)", "O(5,3)", 
-##    "Sz(8)", "PSL(2,32)", "PSL(2,41)", "PSL(2,43)", "PSL(2,47)", 
-##    "PSL(2,49)", "PSU(3,4)", "PSL(2,53)", "M12", "PSL(2,59)", 
-##    "PSL(2,61)", "PSU(3,5)", "PSL(2,67)", "J1", "PSL(2,71)", "A9", 
-##    "PSL(2,73)", "PSL(2,79)", "PSL(2,64)", "PSL(2,81)", "PSL(2,83)", 
-##    "PSL(2,89)", "PSL(3,5)", "M22", "PSL(2,97)", "PSL(2,101)", 
-##    "PSL(2,103)", "HJ", "PSL(2,107)", "PSL(2,109)", "PSL(2,113)", 
+##  [ "A5", "PSL(3,2)", "A6", "PSL(2,8)", "PSL(2,11)", "PSL(2,13)",
+##    "PSL(2,17)", "A7", "PSL(2,19)", "PSL(2,16)", "PSL(3,3)",
+##    "PSU(3,3)", "PSL(2,23)", "PSL(2,25)", "M11", "PSL(2,27)",
+##    "PSL(2,29)", "PSL(2,31)", "A8", "PSL(3,4)", "PSL(2,37)", "O(5,3)",
+##    "Sz(8)", "PSL(2,32)", "PSL(2,41)", "PSL(2,43)", "PSL(2,47)",
+##    "PSL(2,49)", "PSU(3,4)", "PSL(2,53)", "M12", "PSL(2,59)",
+##    "PSL(2,61)", "PSU(3,5)", "PSL(2,67)", "J1", "PSL(2,71)", "A9",
+##    "PSL(2,73)", "PSL(2,79)", "PSL(2,64)", "PSL(2,81)", "PSL(2,83)",
+##    "PSL(2,89)", "PSL(3,5)", "M22", "PSL(2,97)", "PSL(2,101)",
+##    "PSL(2,103)", "HJ", "PSL(2,107)", "PSL(2,109)", "PSL(2,113)",
 ##    "PSL(2,121)", "PSL(2,125)", "O(5,4)" ]
 ##  </Example>
 ##  </Description>
@@ -4377,7 +4377,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> M12 := MathieuGroup( 12 );
-##  Group([ (1,2,3,4,5,6,7,8,9,10,11), (3,7,11,8)(4,10,5,6), 
+##  Group([ (1,2,3,4,5,6,7,8,9,10,11), (3,7,11,8)(4,10,5,6),
 ##    (1,12)(2,11)(3,6)(4,8)(5,9)(7,10) ])
 ##  gap> gens := GeneratorsOfGroup( M12 );;
 ##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens );;
@@ -4427,10 +4427,10 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  </List>
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens : 
+##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens :
 ##  >                                           method := "regular" );;
 ##  #I  the image group has 3 gens and 11 rels of total length 92
-##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens : 
+##  gap> iso := IsomorphismFpGroupByGenerators( M12, gens :
 ##  >                                           method := "fast" );;
 ##  #I  the image group has 3 gens and 176 rels of total length 3821
 ##  ]]></Example>
@@ -4449,13 +4449,13 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  gap> G := ImfMatrixGroup( 5, 1, 3 );
 ##  ImfMatrixGroup(5,1,3)
 ##  gap> gens := GeneratorsOfGroup( G );
-##  [ [ [ -1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
-##        [ -1, -1, -1, -1, 2 ], [ -1, 0, 0, 0, 1 ] ], 
-##    [ [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], 
+##  [ [ [ -1, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0 ], [ 0, 0, 0, 1, 0 ],
+##        [ -1, -1, -1, -1, 2 ], [ -1, 0, 0, 0, 1 ] ],
+##    [ [ 0, 1, 0, 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ],
 ##        [ 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1 ] ] ]
 ##  gap> iso := IsomorphismFpGroupByGenerators( G, gens );;
 ##  #I  the image group has 2 gens and 8 rels of total length 88
-##  gap> iso := IsomorphismFpGroupByGenerators( G, gens : 
+##  gap> iso := IsomorphismFpGroupByGenerators( G, gens :
 ##  >                                           method := "regular");;
 ##  #I  the image group has 2 gens and 6 rels of total length 56
 ##  gap> SetInfoLevel( InfoFpGroup, 0 );
@@ -4465,7 +4465,7 @@ DeclareAttribute( "IsomorphismFpGroup", IsGroup );
 ##  , 0, 0 ], [ 0, 0, 1, 0, 0 ], [ 0, 0, 0, 1, 0 ], [ 1, 0, 0, 0, 0 ], [ 0\
 ##  , 0, 0, 0, 1 ] ] ]->[ F1, F2 ]>
 ##  gap> ConstituentsCompositionMapping(iso);
-##  [ <action isomorphism>, 
+##  [ <action isomorphism>,
 ##    [ (2,3,4)(5,6)(8,9,10), (1,2,3,5)(6,7,8,9) ] -> [ F1, F2 ] ]
 ##  ]]></Example>
 ##  <P/>
@@ -4735,7 +4735,7 @@ DeclareGlobalFunction("GroupEnumeratorByClosure");
 ##  <Example><![CDATA[
 ##  gap> g:=TransitiveGroup(18,950);;
 ##  gap> l:=LowIndexSubgroups(g,20);;Collected(List(l,x->Index(g,x)));
-##  [ [ 1, 1 ], [ 2, 1 ], [ 5, 1 ], [ 6, 1 ], [ 10, 2 ], [ 12, 3 ], [ 15, 1 ], 
+##  [ [ 1, 1 ], [ 2, 1 ], [ 5, 1 ], [ 6, 1 ], [ 10, 2 ], [ 12, 3 ], [ 15, 1 ],
 ##    [ 16, 2 ], [ 18, 1 ], [ 20, 9 ] ]
 ##  ]]></Example>
 ##  </Description>

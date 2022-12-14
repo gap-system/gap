@@ -114,7 +114,7 @@ InstallGlobalFunction( StringToStraightLineProgram,
 
       # Simply create a word.
       extrep:= [];
-      while not IsEmpty( string ) do 
+      while not IsEmpty( string ) do
         len:= Length( string );
         pos:= First( [ 1 .. len ], i -> string{ [ 1 .. i ] } in gens );
         if pos = fail then return false; fi;
@@ -731,7 +731,7 @@ end );
 InstallGlobalFunction( CompositionOfStraightLinePrograms,
     function( prog2, prog1 )
 
-    local lines, len, lastline, inp2, max, i, pos, line; 
+    local lines, len, lastline, inp2, max, i, pos, line;
 
     lines:= ShallowCopy( LinesOfStraightLineProgram( prog1 ) );
     len:= Length( lines );
@@ -842,7 +842,7 @@ InstallGlobalFunction( "IntegratedStraightLineProgram",
        or not ForAll( listofprogs, IsStraightLineProgram ) then
       Error( "<listofprogs> must be a nonempty list ",
              "of straight line programs" );
-    fi; 
+    fi;
     n:= NrInputsOfStraightLineProgram( listofprogs[1] );
     if not ForAll( listofprogs,
                    prog -> NrInputsOfStraightLineProgram( prog ) = n ) then
@@ -865,7 +865,7 @@ InstallGlobalFunction( "IntegratedStraightLineProgram",
       # If necessary protect the original generators from being replaced,
       # and work with a shifted copy.
       shiftgens:= false;
-      if ForAny( proglines, line ->     Length( line ) = 2 
+      if ForAny( proglines, line ->     Length( line ) = 2
                                     and IsList( line[1] )
                                     and line[2] in [ 1 .. n ] ) then
         Append( lines, List( [ 1 .. n ], i -> [ [ i, 1 ], i + offset ] ) );
@@ -1519,7 +1519,7 @@ local a,b,	# lines of slp
 #fi;
 #    Assert(1,not
 #    ForAny([1..Length(l)],i->ForAny([1..i-1],j->PositionSublist(l[i],l[j])<>fail)));
-    
+
     Assert(3,Length(Set(l))=Length(l));
     l:=StraightLineProgElm(seed,StraightLineProgramNC(l,seen));
     Assert(2,EvalStraightLineProgElm(aob)*EvalStraightLineProgElm(bob)=
@@ -1927,7 +1927,7 @@ local l,m;
 end);
 
 InstallOtherMethod( CycleLengthOp, "straight line program perms", true,
-  [ IsPerm and IsStraightLineProgElm, IsInt ],1, 
+  [ IsPerm and IsStraightLineProgElm, IsInt ],1,
 function(p,e)
 local i,f;
   i:=0;
@@ -1940,7 +1940,7 @@ local i,f;
 end);
 
 InstallOtherMethod( CycleOp, "straight line program perms", true,
-  [ IsPerm and IsStraightLineProgElm, IsInt ],1, 
+  [ IsPerm and IsStraightLineProgElm, IsInt ],1,
 function(p,e)
 local c,i,f;
   i:=0;
@@ -1955,19 +1955,19 @@ local c,i,f;
 end);
 
 InstallOtherMethod( CycleStructurePerm, "straight line program perms", true,
-  [ IsPerm and IsStraightLineProgElm ],1, 
+  [ IsPerm and IsStraightLineProgElm ],1,
 function(p)
   return CycleStructurePerm(EvalStraightLineProgElm(p));
 end);
 
 InstallOtherMethod( SignPerm, "straight line program perms", true,
-  [ IsPerm and IsStraightLineProgElm ],1, 
+  [ IsPerm and IsStraightLineProgElm ],1,
 function(p)
   return SignPerm(EvalStraightLineProgElm(p));
 end);
 
 InstallOtherMethod( RestrictedPermNC, "straight line program perms", true,
-  [ IsPerm and IsStraightLineProgElm,IsList ],1, 
+  [ IsPerm and IsStraightLineProgElm,IsList ],1,
 function(p,l)
   return RestrictedPermNC(EvalStraightLineProgElm(p),l);
 end);
@@ -2168,7 +2168,7 @@ local z,d,l,count,b;
   end;
   count(n);
 
-  if Length(l)>0 and Length(l[Length(l)])=0 then 
+  if Length(l)>0 and Length(l[Length(l)])=0 then
     return One(r[1]);
   fi;
   return StraightLineProgElm(r,StraightLineProgramNC(l,Length(r)));
@@ -2210,7 +2210,7 @@ InstallGlobalFunction( SLPChangesSlots,
         elif i < Length(l) then
             Error( "Bad line in slp: ",i );
         else
-            Add(changes,0); 
+            Add(changes,0);
             # the last line does not change anything in this case
         fi;
     od;
@@ -2230,7 +2230,7 @@ InstallGlobalFunction( SLPChangesSlots,
 ##  initialized with [1..nrinps] and which contains in the end the set
 ##  of slots used.
 ##  ll is any list.
-##  This functions goes backwards through the slp and adds exactly those 
+##  This functions goes backwards through the slp and adds exactly those
 ##  lines of the slp to ll that have to be executed to produce the
 ##  result (in backward order). All lines are transformed into type 2
 ##  lines ([assocword,slot]). Note that needed is changed underways.
@@ -2307,11 +2307,11 @@ InstallGlobalFunction( SLPReversedRenumbered,
 ##  k. The argument
 ##  k may be an integer or a list of integers. If k is an integer,
 ##  the resulting slp calculates only the result with that number
-##  in the original output tuple. 
+##  in the original output tuple.
 ##  If k is a list of integers, the resulting slp calculates those
-##  results with indices k in the original output tuple. 
+##  results with indices k in the original output tuple.
 ##  In both cases the resulting slp
-##  does only what is necessary. Obviously, the slp must have a line with 
+##  does only what is necessary. Obviously, the slp must have a line with
 ##  enough expressions (lists) for the supplied k as its last line.
 ##  slp is either an slp or a pair where the first entry are the lines
 ##  of the slp and the second is the number of inputs.
@@ -2353,7 +2353,7 @@ InstallGlobalFunction( RestrictOutputsOfSLP,
         if Length(word) > 2 then
             ll[1] := [ShallowCopy(word),biggest+1];
             AddSet(slotsused,biggest+1);
-        fi;   
+        fi;
         lastline := fail;
         # if Length(word)=2 and word[2]=1 then the last result is the result
         # if the SLP has actually no lines, then we fix this further down!
@@ -2367,7 +2367,7 @@ InstallGlobalFunction( RestrictOutputsOfSLP,
             Add(lastline,ShallowCopy(word));
         od;
     fi;
-    
+
     SLPOnlyNeededLinesBackward(l,i-1,nrinps,changes,needed,slotsused,ll);
     # Now we have the program in reversed order in ll. The slots used
     # during that calculation are in slotsused. We want to renumber
@@ -2400,7 +2400,7 @@ InstallGlobalFunction( RestrictOutputsOfSLP,
 #F  IntermediateResultOfSLP( <slp>, <k> )
 ##
 ##  Returns a new slp that calculates only the value of slot <k>
-##  at the end of <slp> doing only what is necessary. 
+##  at the end of <slp> doing only what is necessary.
 ##  slp is either an slp or a pair where the first entry are the lines
 ##  of the slp and the second is the number of inputs.
 ##  Note that this assumes a general SLP with possible overwriting.
@@ -2426,7 +2426,7 @@ InstallGlobalFunction( IntermediateResultOfSLP,
     biggest := changes[Length(changes)];
     slotsused := [1..nrinps];   # set of slots used at all
     needed := [];  # here we mark the needed entries for the rest of the prog.
-    needed[k] := true; 
+    needed[k] := true;
     # we are interested only in the value of slot k in the end
     ll := [];   # Here we collect the lines of the result, but reversed
     i := Length(l);
@@ -2446,7 +2446,7 @@ InstallGlobalFunction( IntermediateResultOfSLP,
     return StraightLineProgramNC(lll, nrinps);
     #  TO BE DEBUGGED HERE
   end);
-              
+
 ##
 #F  IntermediateResultsOfSLPWithoutOverwriteInner( ... )
 ##
@@ -2519,7 +2519,7 @@ InstallGlobalFunction( IntermediateResultsOfSLPWithoutOverwriteInner,
 ##  <slp> is either a slp or a pair where the first entry is the lines
 ##  of the slp and the second is the number of inputs.
 ##
-InstallGlobalFunction( IntermediateResultsOfSLPWithoutOverwrite, 
+InstallGlobalFunction( IntermediateResultsOfSLPWithoutOverwrite,
   function(slp,k)
     local i,invtab,line,lll,nrinps,r;
 
@@ -2565,7 +2565,7 @@ InstallGlobalFunction( IntermediateResultOfSLPWithoutOverwrite,
         return StraightLineProgramNC(r[3], r[1]);
     fi;
   end);
-              
+
 ##
 #F  ProductOfStraightLinePrograms( <s1>, <s2> )
 ##
@@ -2637,11 +2637,11 @@ InstallGlobalFunction( ProductOfStraightLinePrograms,
     fi;
     return StraightLineProgramNC(l3,nrinps);
   end);
- 
+
 ##
 #F  RewriteStraightLineProgram(<s>,<l>,<lsu>,<inputs>,<tabuslots>)
 ##
-##  The purpose of this function is the following: Append the slp <s> to 
+##  The purpose of this function is the following: Append the slp <s> to
 ##  the one currently built in <l>.
 ##  The prospective inputs are already standing somewhere and some
 ##  slots may not be used by the new copy of <s> within <l>.
@@ -2653,7 +2653,7 @@ InstallGlobalFunction( ProductOfStraightLinePrograms,
 ##  inputs are, that the copy of <s> in <l> should work on, that is, its length
 ##  must be equal to the number of inputs <s> takes. <tabuslots> is a list of
 ##  slot numbers which will not be overwritten by the new copy of <s> in <l>.
-##  This function changes <l> and returns a record with components 
+##  This function changes <l> and returns a record with components
 ##  `l' being <l>, `results' being
 ##  a list of slot numbers, in which the results of <s> are stored in the end
 ##  and `lsu' being the number of the largest slot used by <l> up to now.
@@ -2785,7 +2785,7 @@ function(s1,inputs1,s2,inputs2,newnrinputs)
   # program is generated with newnrinputs inputs, that calculates the product
   # of the result of s1, given the values in the slots inputs1 as inputs
   # and the result of s2, given the values in the slots inputs2 as inputs
-  # inputs1 and inputs2 may overlap, in which case the first program 
+  # inputs1 and inputs2 may overlap, in which case the first program
   # might have to be rewritten, not to overwrite the inputs.
   local nr1,nr2,x,y;
   nr1 := NrInputsOfStraightLineProgram(s1);
@@ -2799,7 +2799,7 @@ function(s1,inputs1,s2,inputs2,newnrinputs)
   Add(y.l,[x.results[1],1,y.results[1],1]);
   return StraightLineProgramNC(y.l,newnrinputs);
 end);
-            
+
 ##
 #A  SlotUsagePattern( <s> )
 ##
@@ -2812,7 +2812,7 @@ end);
 ##  is known: First of all,
 ##  intermediate results which are not actually needed later on are
 ##  not computed at all, and once an intermediate result is used for
-##  the last time in this SLP, it is discarded. The latter leads to 
+##  the last time in this SLP, it is discarded. The latter leads to
 ##  the fact that the evaluation of the SLP needs less memory.
 ##  </Description>
 ##  </ManSection>
@@ -2939,8 +2939,8 @@ InstallMethod( ResultOfStraightLineProgram,
 
           # Delete unused stuff:
           if IsBound(sup.deletions[step]) then
-              for i in sup.deletions[step] do 
-                  Unbind(r[i]); 
+              for i in sup.deletions[step] do
+                  Unbind(r[i]);
                   nrslots := nrslots-1;
               od;
           fi;
@@ -3011,8 +3011,8 @@ InstallMethod( LargestNrSlots, "for a straight line program",
 
           # Delete unused stuff:
           if IsBound(sup.deletions[step]) then
-              for i in sup.deletions[step] do 
-                  Unbind(r[i]); 
+              for i in sup.deletions[step] do
+                  Unbind(r[i]);
                   nrslots := nrslots-1;
               od;
           fi;

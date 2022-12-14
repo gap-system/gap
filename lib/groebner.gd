@@ -164,7 +164,7 @@ DeclareAttribute("OccuringVariableIndices",IsMonomialOrdering);
 ##  gap> lexord:=MonomialLexOrdering();grlexord:=MonomialGrlexOrdering();
 ##  MonomialLexOrdering()
 ##  MonomialGrlexOrdering()
-##  gap> f:=2*x+3*y+4*z+5*x^2-6*z^2+7*y^3;          
+##  gap> f:=2*x+3*y+4*z+5*x^2-6*z^2+7*y^3;
 ##  7*y^3+5*x^2-6*z^2+2*x+3*y+4*z
 ##  gap> LeadingMonomialOfPolynomial(f,lexord);
 ##  x^2
@@ -241,24 +241,24 @@ DeclareOperation("LeadingTermOfPolynomial",
 ##  <M>x_1</M> is larger than <M>x_2</M> and so on.
 ##  If <A>vari</A> is given, and is a list of variables or variable indices,
 ##  instead this arrangement of variables (in descending order; i.e. the
-##  first variable is larger than the second) is 
+##  first variable is larger than the second) is
 ##  used as the underlying order of variables.
 ##  <Example><![CDATA[
 ##  gap> l:=List(Tuples([1..3],3),i->x^(i[1]-1)*y^(i[2]-1)*z^(i[3]-1));
-##  [ 1, z, z^2, y, y*z, y*z^2, y^2, y^2*z, y^2*z^2, x, x*z, x*z^2, x*y, 
-##    x*y*z, x*y*z^2, x*y^2, x*y^2*z, x*y^2*z^2, x^2, x^2*z, x^2*z^2, 
+##  [ 1, z, z^2, y, y*z, y*z^2, y^2, y^2*z, y^2*z^2, x, x*z, x*z^2, x*y,
+##    x*y*z, x*y*z^2, x*y^2, x*y^2*z, x*y^2*z^2, x^2, x^2*z, x^2*z^2,
 ##    x^2*y, x^2*y*z, x^2*y*z^2, x^2*y^2, x^2*y^2*z, x^2*y^2*z^2 ]
 ##  gap> Sort(l,MonomialComparisonFunction(MonomialLexOrdering()));l;
-##  [ 1, z, z^2, y, y*z, y*z^2, y^2, y^2*z, y^2*z^2, x, x*z, x*z^2, x*y, 
-##    x*y*z, x*y*z^2, x*y^2, x*y^2*z, x*y^2*z^2, x^2, x^2*z, x^2*z^2, 
+##  [ 1, z, z^2, y, y*z, y*z^2, y^2, y^2*z, y^2*z^2, x, x*z, x*z^2, x*y,
+##    x*y*z, x*y*z^2, x*y^2, x*y^2*z, x*y^2*z^2, x^2, x^2*z, x^2*z^2,
 ##    x^2*y, x^2*y*z, x^2*y*z^2, x^2*y^2, x^2*y^2*z, x^2*y^2*z^2 ]
 ##  gap> Sort(l,MonomialComparisonFunction(MonomialLexOrdering([y,z,x])));l;
-##  [ 1, x, x^2, z, x*z, x^2*z, z^2, x*z^2, x^2*z^2, y, x*y, x^2*y, y*z, 
-##    x*y*z, x^2*y*z, y*z^2, x*y*z^2, x^2*y*z^2, y^2, x*y^2, x^2*y^2, 
+##  [ 1, x, x^2, z, x*z, x^2*z, z^2, x*z^2, x^2*z^2, y, x*y, x^2*y, y*z,
+##    x*y*z, x^2*y*z, y*z^2, x*y*z^2, x^2*y*z^2, y^2, x*y^2, x^2*y^2,
 ##    y^2*z, x*y^2*z, x^2*y^2*z, y^2*z^2, x*y^2*z^2, x^2*y^2*z^2 ]
 ##  gap> Sort(l,MonomialComparisonFunction(MonomialLexOrdering([z,x,y])));l;
-##  [ 1, y, y^2, x, x*y, x*y^2, x^2, x^2*y, x^2*y^2, z, y*z, y^2*z, x*z, 
-##    x*y*z, x*y^2*z, x^2*z, x^2*y*z, x^2*y^2*z, z^2, y*z^2, y^2*z^2, 
+##  [ 1, y, y^2, x, x*y, x*y^2, x^2, x^2*y, x^2*y^2, z, y*z, y^2*z, x*z,
+##    x*y*z, x*y^2*z, x^2*z, x^2*y*z, x^2*y^2*z, z^2, y*z^2, y^2*z^2,
 ##    x*z^2, x*y*z^2, x*y^2*z^2, x^2*z^2, x^2*y*z^2, x^2*y^2*z^2 ]
 ##  ]]></Example>
 ##  </Description>
@@ -284,7 +284,7 @@ DeclareGlobalFunction("MonomialLexOrdering");
 ##  <M>x_1</M> is larger than <M>x_2</M> and so on.
 ##  If <A>vari</A> is given, and is a list of variables or variable indices,
 ##  instead this arrangement of variables (in descending order; i.e. the
-##  first variable is larger than the second) is 
+##  first variable is larger than the second) is
 ##  used as the underlying order of variables.
 ##  </Description>
 ##  </ManSection>
@@ -304,26 +304,26 @@ DeclareGlobalFunction("MonomialGrlexOrdering");
 ##  This function creates a <Q>grevlex</Q> ordering.
 ##  In this ordering monomials are compared first by total degree and then
 ##  backwards lexicographically.
-##  (This is different than <Q>grlex</Q> ordering with variables reversed.) 
+##  (This is different than <Q>grlex</Q> ordering with variables reversed.)
 ##  <P/>
 ##  The variables are ordered according to their (internal) index, i.e.,
 ##  <M>x_1</M> is larger than <M>x_2</M> and so on.
 ##  If <A>vari</A> is given, and is a list of variables or variable indices,
 ##  instead this arrangement of variables (in descending order; i.e. the
-##  first variable is larger than the second) is 
+##  first variable is larger than the second) is
 ##  used as the underlying order of variables.
 ##  <Example><![CDATA[
 ##  gap> Sort(l,MonomialComparisonFunction(MonomialGrlexOrdering()));l;
-##  [ 1, z, y, x, z^2, y*z, y^2, x*z, x*y, x^2, y*z^2, y^2*z, x*z^2, 
-##    x*y*z, x*y^2, x^2*z, x^2*y, y^2*z^2, x*y*z^2, x*y^2*z, x^2*z^2, 
+##  [ 1, z, y, x, z^2, y*z, y^2, x*z, x*y, x^2, y*z^2, y^2*z, x*z^2,
+##    x*y*z, x*y^2, x^2*z, x^2*y, y^2*z^2, x*y*z^2, x*y^2*z, x^2*z^2,
 ##    x^2*y*z, x^2*y^2, x*y^2*z^2, x^2*y*z^2, x^2*y^2*z, x^2*y^2*z^2 ]
 ##  gap> Sort(l,MonomialComparisonFunction(MonomialGrevlexOrdering()));l;
-##  [ 1, z, y, x, z^2, y*z, x*z, y^2, x*y, x^2, y*z^2, x*z^2, y^2*z, 
-##    x*y*z, x^2*z, x*y^2, x^2*y, y^2*z^2, x*y*z^2, x^2*z^2, x*y^2*z, 
+##  [ 1, z, y, x, z^2, y*z, x*z, y^2, x*y, x^2, y*z^2, x*z^2, y^2*z,
+##    x*y*z, x^2*z, x*y^2, x^2*y, y^2*z^2, x*y*z^2, x^2*z^2, x*y^2*z,
 ##    x^2*y*z, x^2*y^2, x*y^2*z^2, x^2*y*z^2, x^2*y^2*z, x^2*y^2*z^2 ]
 ##  gap> Sort(l,MonomialComparisonFunction(MonomialGrlexOrdering([z,y,x])));l;
-##  [ 1, x, y, z, x^2, x*y, y^2, x*z, y*z, z^2, x^2*y, x*y^2, x^2*z, 
-##    x*y*z, y^2*z, x*z^2, y*z^2, x^2*y^2, x^2*y*z, x*y^2*z, x^2*z^2, 
+##  [ 1, x, y, z, x^2, x*y, y^2, x*z, y*z, z^2, x^2*y, x*y^2, x^2*z,
+##    x*y*z, y^2*z, x*z^2, y*z^2, x^2*y^2, x^2*y*z, x*y^2*z, x^2*z^2,
 ##    x*y*z^2, y^2*z^2, x^2*y^2*z, x^2*y*z^2, x*y^2*z^2, x^2*y^2*z^2 ]
 ##  ]]></Example>
 ##  </Description>
@@ -380,7 +380,7 @@ DeclareGlobalFunction("EliminationOrdering");
 ##  <Example><![CDATA[
 ##  gap> bas:=[x^3*y*z,x*y^2*z,z*y*z^3+x];;
 ##  gap> pol:=x^7*z*bas[1]+y^5*bas[3]+x*z;;
-##  gap> PolynomialReduction(pol,bas,MonomialLexOrdering()); 
+##  gap> PolynomialReduction(pol,bas,MonomialLexOrdering());
 ##  [ -y*z^5, [ x^7*z, 0, y^5+z ] ]
 ##  gap> PolynomialReducedRemainder(pol,bas,MonomialLexOrdering());
 ##  -y*z^5
@@ -410,7 +410,7 @@ DeclareGlobalFunction("PolynomialDivisionAlgorithm");
 ##  remainder after the reduction. The second entry is a list of quotients
 ##  corresponding to <A>gens</A>.
 ##  <P/>
-##  Note that the strategy used by <Ref Func="PolynomialReduction"/> differs from the 
+##  Note that the strategy used by <Ref Func="PolynomialReduction"/> differs from the
 ##  standard textbook reduction algorithm, which is provided by
 ##  <Ref Func="PolynomialDivisionAlgorithm"/>.
 ##  </Description>
@@ -472,7 +472,7 @@ DeclareGlobalFunction("PolynomialReducedRemainder");
 ##  <Example><![CDATA[
 ##  gap> l:=[x^2+y^2+z^2-1,x^2+z^2-y,x-y];;
 ##  gap> GroebnerBasis(l,MonomialLexOrdering());
-##  [ x^2+y^2+z^2-1, x^2+z^2-y, x-y, -y^2-y+1, -z^2+2*y-1, 
+##  [ x^2+y^2+z^2-1, x^2+z^2-y, x-y, -y^2-y+1, -z^2+2*y-1,
 ##    1/2*z^4+2*z^2-1/2 ]
 ##  gap> GroebnerBasis(l,MonomialLexOrdering([z,x,y]));
 ##  [ x^2+y^2+z^2-1, x^2+z^2-y, x-y, -y^2-y+1 ]
@@ -514,7 +514,7 @@ DeclareSynonym("GrobnerBasis",GroebnerBasis);
 ##  <Example><![CDATA[
 ##  gap> ReducedGroebnerBasis(l,MonomialGrlexOrdering());
 ##  [ x-y, z^2-2*y+1, y^2+y-1 ]
-##  gap> ReducedGroebnerBasis(l,MonomialLexOrdering());    
+##  gap> ReducedGroebnerBasis(l,MonomialLexOrdering());
 ##  [ z^4+4*z^2-1, -1/2*z^2+y-1/2, -1/2*z^2+x-1/2 ]
 ##  gap> ReducedGroebnerBasis(l,MonomialLexOrdering([y,z,x]));
 ##  [ x^2+x-1, z^2-2*x+1, -x+y ]

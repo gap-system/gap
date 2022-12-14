@@ -48,7 +48,7 @@ InstallMethod(Length, "for sparse list by sorted list", [IsSparseListBySortedLis
 ##
 
 InstallMethod( SparseStructureOfList, "sparse list by sorted list",
-        [IsSparseListBySortedListRep and IsList], 
+        [IsSparseListBySortedListRep and IsList],
         sl -> [ sl![SL_DEFAULT], sl![SL_POSS], sl![SL_VALS]]);
 
 
@@ -57,7 +57,7 @@ InstallMethod( SparseStructureOfList, "sparse list by sorted list",
 #M  <sl> [ <pos> ]  -- list element access, bypassing the generic function
 ##
 
-InstallMethod(\[\], "access to SLbySL (shortcut)", 
+InstallMethod(\[\], "access to SLbySL (shortcut)",
         [IsSparseListBySortedListRep and IsList, IsPosInt],
         function(v,i)
     local   p;
@@ -80,7 +80,7 @@ end);
 ##  This is the main constructor, responsible for assembling the data structure
 ##  (easy) and assigning the appropriate type (harder)
 ##
-##  All lists in this representation know their length, of course, and 
+##  All lists in this representation know their length, of course, and
 ##  so know if they are finite and/or small. Otherwise, we just need
 ##  to sort out  whether we are a table
 ##
@@ -88,7 +88,7 @@ end);
 InstallGlobalFunction(SparseListBySortedListNC, function(poss, vals, length, default)
     local   filt,  fam,  type,  l;
     filt := IsMutable and IsList and IsDenseList and IsSparseList and
-            IsListDefault 
+            IsListDefault
             and IsSparseListBySortedListRep and HasLength and
             HasIsSmallList and HasIsFinite and IsHomogeneousList and IsCollection;
     if length = 0 then
@@ -100,7 +100,7 @@ InstallGlobalFunction(SparseListBySortedListNC, function(poss, vals, length, def
     if length < infinity then
         filt := filt and IsFinite;
     fi;
-    if IsList(default) then  
+    if IsList(default) then
         filt := filt and IsTable;
     fi;
     fam := CollectionsFamily(FamilyObj(default));
@@ -156,45 +156,45 @@ InstallGlobalFunction(SparseListBySortedList, function(poss, vals, length, defau
             p := Position(vals, default, p);
         od;
     fi;
-    
+
     #
     # This cleans up after removal of defaults
     #
-    
+
     poss := Compacted(poss);
     vals := Compacted(vals);
-    
+
     return SparseListBySortedListNC( poss, vals, length, default);
 end);
 
 #############################################################################
 ##
-#M ShallowCopy( <sl> ) 
+#M ShallowCopy( <sl> )
 ##
 
-InstallMethod(ShallowCopy, "sparse list by sorted list", 
+InstallMethod(ShallowCopy, "sparse list by sorted list",
         [IsSparseListBySortedListRep and IsDenseList],
         function(sl)
-    return SparseListBySortedListNC(  ShallowCopy(sl![SL_POSS]), 
-                   ShallowCopy(sl![SL_VALS]),sl![SL_LENGTH], 
+    return SparseListBySortedListNC(  ShallowCopy(sl![SL_POSS]),
+                   ShallowCopy(sl![SL_VALS]),sl![SL_LENGTH],
                    sl![SL_DEFAULT]);
 end);
 
 #############################################################################
 ##
-#M  <sl>[<pos>] := <obj> 
+#M  <sl>[<pos>] := <obj>
 ##
-##  This is a little complicated because of the various cases, and 
+##  This is a little complicated because of the various cases, and
 ##  the possible need to adjust the type
 ##
 
 InstallMethod( \[\]\:\=, "sparse list by sorted list", IsCollsXElms,
         [ IsSparseListBySortedListRep and IsList and IsMutable,
-        IsPosInt, IsObject ], 
+        IsPosInt, IsObject ],
         function(sl, pos, obj)
     local   poss,  vals,  p,  l,  newfilt;
     #
-    # If the resulting list will have a hole then we have to make it a 
+    # If the resulting list will have a hole then we have to make it a
     # plain list
     #
     if sl![SL_LENGTH] <> infinity and pos > sl![SL_LENGTH] + 1 then
@@ -202,18 +202,18 @@ InstallMethod( \[\]\:\=, "sparse list by sorted list", IsCollsXElms,
         sl[pos] := obj;
         return;
     fi;
-    
+
     #
     # Otherwise we stay sparse. There are four cases according to
     # whether the list currently has a non-default entry in that position
-    # and whether the value to be assigned is the default. In one case 
+    # and whether the value to be assigned is the default. In one case
     # there is nothing to do.
     #
-    
+
     #
     # First adjust the length
     #
-    
+
     if sl![SL_LENGTH] <> infinity and pos = sl![SL_LENGTH] + 1 then
         sl![SL_LENGTH] := pos;
         if pos > MAX_SIZE_LIST_INTERNAL then
@@ -221,21 +221,21 @@ InstallMethod( \[\]\:\=, "sparse list by sorted list", IsCollsXElms,
             SetFilterObj(sl, HasIsSmallList);
         fi;
     fi;
-    
+
     #
     # Now actually change the list
     #
-      
+
     poss := sl![SL_POSS];
     vals := sl![SL_VALS];
     p := PositionSorted( poss, pos);
     if p <= Length (poss) and poss[p] = pos then
         if obj = sl![SL_DEFAULT] then
-            
+
             #
             # Case 1 default replacing a non-default
             #
-            
+
             l := Length(vals);
             RemoveSet(poss, pos);
             vals{[p..l-1]} := vals{[p+1..l]};
@@ -266,7 +266,7 @@ end);
 ##
 #M  Unbind( <sl> [ <pos> ] )
 ##
-##  Note that this is NOT the way to set an entry back to the default 
+##  Note that this is NOT the way to set an entry back to the default
 ##  unless you are unbinding the last entry, this will always make
 ##  a plain list.
 ##
@@ -296,12 +296,12 @@ InstallMethod( Unbind\[\], "sparse list by sorted list",
 end);
 
 
-InstallMethod( ListOp, "sparse list by sorted list", 
+InstallMethod( ListOp, "sparse list by sorted list",
         [ IsSparseListBySortedListRep and IsList, IsFunction],
         function(sl,func)
     return SparseListBySortedListNC( sl![SL_POSS],
-                   List(sl![SL_VALS], func), 
-                   sl![SL_LENGTH], 
+                   List(sl![SL_VALS], func),
+                   sl![SL_LENGTH],
                    func(sl![SL_DEFAULT]));
 end);
 
@@ -322,7 +322,7 @@ InstallMethod(Append, "two compatible sparse sorted lists",
     fi;
     Append(sl1![SL_VALS], ss[3]);
     poss := sl1![SL_POSS];
-    
+
     # This ShallowCopy is needed in the case where sl1 and sl2 are identical
     poss2 := ShallowCopy(ss[2]);
     for i in poss2 do
@@ -352,7 +352,7 @@ InstallMethod(Permuted, "sparse list", [IsSparseListBySortedListRep
     return SparseListBySortedListNC( poss, vals, sl![SL_LENGTH], sl![SL_DEFAULT]);
 end);
 
-InstallMethod( FilteredOp, "sparse list", [IsSparseListBySortedListRep 
+InstallMethod( FilteredOp, "sparse list", [IsSparseListBySortedListRep
         and IsSparseList, IsFunction],
         function(sl, filt)
     local   skipped,  iposs,  oposs,  ivals,  ovals,  i,  newlen;
@@ -432,15 +432,15 @@ InstallMethod(PositionNot, [IsSparseListBySortedListRep and
         else
             return poss[l]+1;
         fi;
-                
+
     else
         return sl![SL_LENGTH]+1;
     fi;
 end);
-            
-            
 
-            
-    
-    
-    
+
+
+
+
+
+

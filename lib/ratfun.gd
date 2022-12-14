@@ -83,7 +83,7 @@ DeclareCategoryCollections( "IsRationalFunction" );
 ##  </ManSection>
 ##
 DeclareCategory("IsPolynomialFunctionsFamilyElement",IsPolynomialFunction);
-DeclareCategory("IsRationalFunctionsFamilyElement", 
+DeclareCategory("IsRationalFunctionsFamilyElement",
   IsRationalFunction and IsPolynomialFunctionsFamilyElement );
 
 #############################################################################
@@ -144,7 +144,7 @@ DeclareCategory("IsRationalFunctionOverField", IsRationalFunction );
 ##
 ##  <Description>
 ##  creates a   family  containing rational functions  with   coefficients
-##  in <A>fam</A>. 
+##  in <A>fam</A>.
 ##  All elements of the <Ref Attr="RationalFunctionsFamily"/> are
 ##  rational functions (see&nbsp;<Ref Filt="IsRationalFunction"/>).
 ##  </Description>
@@ -417,7 +417,7 @@ DeclareRepresentation("IsRationalFunctionDefaultRep",
 ##  <#/GAPDoc>
 ##
 DeclareRepresentation("IsPolynomialDefaultRep",
-    IsComponentObjectRep and IsAttributeStoringRep 
+    IsComponentObjectRep and IsAttributeStoringRep
     and IsPolynomialFunction and IsPolynomial,["zeroCoefficient","numerator"]);
 
 
@@ -1077,7 +1077,7 @@ DeclareOperation( "UnivariateRationalFunctionByCoefficients",
 ##  The second version takes an univariate rational function and specializes
 ##  the value of its indeterminate to <A>val</A>.
 ##  Again, an optional argument <A>one</A> may be given.
-##  <C>Value( <A>upol</A>, <A>val</A> )</C> can also be expressed as <C>upol( 
+##  <C>Value( <A>upol</A>, <A>val</A> )</C> can also be expressed as <C>upol(
 ##  <A>val</A> )</C>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -1101,7 +1101,7 @@ DeclareOperation("Value",[IsPolynomialFunction,IsList,IsList]);
 
 #############################################################################
 ##
-#F  OnIndeterminates(<poly>,<perm>) 
+#F  OnIndeterminates(<poly>,<perm>)
 ##
 ##  <#GAPDoc Label="OnIndeterminates">
 ##  <ManSection>
@@ -1145,7 +1145,7 @@ DeclareGlobalFunction("OnIndeterminates");
 ##  </Item>
 ##  <Mark><C>coefficients</C>:</Mark>
 ##  <Item>
-##     A (corresponding) list of coefficients. 
+##     A (corresponding) list of coefficients.
 ##  </Item>
 ##  </List>
 ##  </Description>
@@ -1175,7 +1175,7 @@ DeclareGlobalFunction("ConstituentsPolynomial");
 ##  <Func Name="MonomialExtGrlexLess" Arg='a,b'/>
 ##
 ##  <Description>
-##  implements comparison of monomial in their external representation by a 
+##  implements comparison of monomial in their external representation by a
 ##  <Q>grlex</Q> order with <M>x_1>x_2</M>
 ##  (This is exactly the same as the ordering by
 ##  <Ref Func="MonomialGrlexOrdering"/>,
@@ -1275,7 +1275,7 @@ DeclareGlobalFunction("LeadingMonomialPosExtRep");
 ##  <Ref Oper="PolynomialCoefficientsOfPolynomial"/> returns the
 ##  coefficient list (whose entries are polynomials not involving the
 ##  indeterminate <A>ind</A>) describing the polynomial <A>pol</A> viewed as
-##  a polynomial in <A>ind</A>. 
+##  a polynomial in <A>ind</A>.
 ##  Instead of the indeterminate,
 ##  <A>ind</A> can also be an indeterminate number.
 ##  <Example><![CDATA[
@@ -1530,7 +1530,7 @@ DeclareGlobalFunction("QuotientPolynomialsExtRep");
 ##  takes two polynomials <A>left</A> and <A>right</A>
 ##  and computes their quotient. No test is performed whether the arguments
 ##  indeed  are polynomials.
-##  Depending on the integer variable <A>mode</A>, which may take values in 
+##  Depending on the integer variable <A>mode</A>, which may take values in
 ##  a range from 1 to 4, it returns respectively:
 ##  <Enum>
 ##  <Item>
@@ -1575,21 +1575,21 @@ DeclareGlobalFunction("GcdCoeffs");
 ##  <Func Name="UnivariatenessTestRationalFunction" Arg='f'/>
 ##
 ##  <Description>
-##  takes a rational function <A>f</A> and tests whether it is univariate 
+##  takes a rational function <A>f</A> and tests whether it is univariate
 ##  rational function (or even a Laurent polynomial). It returns a list
-##  <C>[isunivariate, indet, islaurent, cofs]</C>. 
+##  <C>[isunivariate, indet, islaurent, cofs]</C>.
 ##  <P/>
-##  If <A>f</A> is a univariate rational function then <C>isunivariate</C> 
-##  is <K>true</K> and <C>indet</C> is the number of the appropriate 
+##  If <A>f</A> is a univariate rational function then <C>isunivariate</C>
+##  is <K>true</K> and <C>indet</C> is the number of the appropriate
 ##  indeterminate.
 ##  <P/>
 ##  Furthermore, if <A>f</A> is a Laurent polynomial, then <C>islaurent</C>
-##  is also <K>true</K>. In this case the fourth entry, <C>cofs</C>, is 
-##  the value of the attribute <Ref Attr="CoefficientsOfLaurentPolynomial"/> 
+##  is also <K>true</K>. In this case the fourth entry, <C>cofs</C>, is
+##  the value of the attribute <Ref Attr="CoefficientsOfLaurentPolynomial"/>
 ##  for <A>f</A>.
 ##  <P/>
-##  If <C>isunivariate</C> is <K>true</K> but <C>islaurent</C> is 
-##  <K>false</K>, then <C>cofs</C> is the value of the attribute 
+##  If <C>isunivariate</C> is <K>true</K> but <C>islaurent</C> is
+##  <K>false</K>, then <C>cofs</C> is the value of the attribute
 ##  <Ref Attr="CoefficientsOfUnivariateRationalFunction"/> for <A>f</A>.
 ##  <P/>
 ##  Otherwise, each entry of the returned list is equal to <K>fail</K>.

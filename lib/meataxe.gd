@@ -48,10 +48,10 @@ DeclareGlobalFunction("PermutationGModule");
 #F  TensorProductGModule ( m1, m2 )  . . tensor product of two G-modules
 ##
 ## TensorProductGModule calculates the tensor product of smash
-## modules m1 and m2. 
+## modules m1 and m2.
 ## They are assumed to be modules over the same algebra so, in particular,
 ## they  should have the same number of generators.
-## 
+##
 DeclareGlobalFunction("TensorProductGModule");
 
 ###############################################################################
@@ -60,7 +60,7 @@ DeclareGlobalFunction("TensorProductGModule");
 ##
 ## WedgeGModule calculates the wedge product of a G-module.
 ## That is the action on antisymmetrix tensors.
-## 
+##
 DeclareGlobalFunction("WedgeGModule");
 
 ###############################################################################
@@ -69,16 +69,16 @@ DeclareGlobalFunction("WedgeGModule");
 ##
 ## DualGModule calculates the dual of a G-module.
 ## The matrices of the module are inverted and transposed.
-## 
+##
 DeclareGlobalFunction("DualGModule");
 
 ###############################################################################
 ##
-#F TestModulesFitTogether(m1,m2) 
+#F TestModulesFitTogether(m1,m2)
 ##
 ##  Given two modules <m1> and <m2> this routine tests whether both have the
 ##  same number of generators and are defined over the same field.
-## 
+##
 DeclareGlobalFunction("TestModulesFitTogether");
 
 DeclareInfoClass("InfoMeatAxe");
@@ -91,7 +91,7 @@ MTX:=SMTX;
 SMTX.Getter := function(string)
   MakeImmutable(string);
   return function(module)
-    if not (IsBound(module.smashMeataxe) and 
+    if not (IsBound(module.smashMeataxe) and
             IsBound(module.smashMeataxe.(string))) then
       return fail;
     else

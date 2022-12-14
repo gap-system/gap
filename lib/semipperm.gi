@@ -42,9 +42,9 @@ InstallOtherMethod(OneImmutable, "for a partial perm semigroup",
 [IsPartialPermSemigroup],
 function(S)
   local x;
-  if HasGeneratorsOfSemigroup(S) then 
+  if HasGeneratorsOfSemigroup(S) then
     x := OneImmutable(GeneratorsOfSemigroup(S));
-  else 
+  else
     x := OneImmutable(AsList(S));
   fi;
 
@@ -57,7 +57,7 @@ end);
 # The next method matches more than one declaration, hence the
 # InstallOtherMethod to avoid warnings on startup
 
-InstallOtherMethod(OneImmutable, "for a partial perm monoid", 
+InstallOtherMethod(OneImmutable, "for a partial perm monoid",
 [IsPartialPermMonoid],
 function(S)
   return One(GeneratorsOfSemigroup(S));
@@ -139,14 +139,14 @@ InstallMethod(LargestMovedPoint, "for a partial perm semigroup",
 [IsPartialPermSemigroup], s-> LargestMovedPoint(GeneratorsOfSemigroup(s)));
 
 InstallMethod(LargestImageOfMovedPoint, "for a partial perm semigroup",
-[IsPartialPermSemigroup], 
+[IsPartialPermSemigroup],
 s-> LargestImageOfMovedPoint(GeneratorsOfSemigroup(s)));
 
 InstallMethod(SmallestMovedPoint, "for a partial perm semigroup",
 [IsPartialPermSemigroup], s-> SmallestMovedPoint(GeneratorsOfSemigroup(s)));
 
 InstallMethod(SmallestImageOfMovedPoint, "for a partial perm semigroup",
-[IsPartialPermSemigroup], 
+[IsPartialPermSemigroup],
 s-> SmallestImageOfMovedPoint(GeneratorsOfSemigroup(s)));
 
 #
@@ -160,7 +160,7 @@ function(s)
   gens:=ShallowCopy(GeneratorsOfSemigroup(s));
   for f in gens do
     pos:=Position(gens, f^-1);
-    if pos<>fail and f<>f^-1 then 
+    if pos<>fail and f<>f^-1 then
       Remove(gens, pos);
     fi;
   od;
@@ -190,7 +190,7 @@ end);
 #
 
 InstallImmediateMethod(GeneratorsOfSemigroup,
-IsPartialPermSemigroup and HasGeneratorsOfInverseSemigroup, 0, 
+IsPartialPermSemigroup and HasGeneratorsOfInverseSemigroup, 0,
 function(s)
   local gens, f;
 
@@ -208,13 +208,13 @@ end);
 #
 
 InstallImmediateMethod(GeneratorsOfMonoid,
-IsPartialPermMonoid and HasGeneratorsOfInverseMonoid, 0, 
+IsPartialPermMonoid and HasGeneratorsOfInverseMonoid, 0,
 function(s)
   local gens, pos, f;
 
   gens:=ShallowCopy(GeneratorsOfInverseMonoid(s));
   for f in gens do
-    if DomainOfPartialPerm(f)<>ImageSetOfPartialPerm(f) 
+    if DomainOfPartialPerm(f)<>ImageSetOfPartialPerm(f)
      and not f^-1 in gens then
       Add(gens, f^-1);
     fi;
@@ -231,26 +231,26 @@ InstallMethod(IsomorphismPartialPermSemigroup, "for a semigroup",
 function(S)
   local set, iso, gens, T;
 
-  if not IsInverseSemigroup(S) then 
+  if not IsInverseSemigroup(S) then
     ErrorNoReturn("the argument must be an inverse semigroup");
   fi;
-  
+
   set := AsSet(S);
 
   iso := function(x)
     local dom;
     dom := Set(set * InversesOfSemigroupElement(S, x)[1]);
     return PartialPermNC(List(dom, y -> Position(set, y)),
-                         List(List(dom, y -> y * x), 
+                         List(List(dom, y -> y * x),
                               y -> Position(set, y)));
   end;
 
-  if HasGeneratorsOfSemigroup(S) then 
+  if HasGeneratorsOfSemigroup(S) then
     gens := GeneratorsOfSemigroup(S);
   else
     gens := set;
   fi;
-  
+
   T := InverseSemigroup(List(gens, iso));
   UseIsomorphismRelation(S, T);
 
@@ -282,7 +282,7 @@ function(S)
 end);
 
 # Isomorphisms from a partial perm semigroups/monoids to a partial perm
-# semigroup/monoid 
+# semigroup/monoid
 
 InstallMethod(IsomorphismPartialPermSemigroup, "for a partial perm semigroup",
 [IsPartialPermSemigroup],
@@ -290,13 +290,13 @@ function(S)
   return MagmaIsomorphismByFunctionsNC(S, S, IdFunc, IdFunc);
 end);
 
-InstallMethod(IsomorphismPartialPermMonoid, "for a partial perm monoid", 
-[IsPartialPermMonoid], 
+InstallMethod(IsomorphismPartialPermMonoid, "for a partial perm monoid",
+[IsPartialPermMonoid],
 function(S)
   return MagmaIsomorphismByFunctionsNC(S, S, IdFunc, IdFunc);
 end);
 
-InstallMethod(IsomorphismPartialPermMonoid, 
+InstallMethod(IsomorphismPartialPermMonoid,
 "for a partial perm semigroup",
 [IsPartialPermSemigroup],
 function(S)
@@ -310,14 +310,14 @@ function(S)
   # In this case One(S) = MultiplicativeNeutralElement(S), but we want to make
   # sure that the range of the returned isomorphism is really a monoid
 
-  if IsInverseSemigroup(S) and HasGeneratorsOfInverseSemigroup(S) then 
+  if IsInverseSemigroup(S) and HasGeneratorsOfInverseSemigroup(S) then
     T := AsInverseMonoid(S);
-  else 
+  else
     T := AsMonoid(S);
   fi;
   UseIsomorphismRelation(S, T);
 
-  return MagmaIsomorphismByFunctionsNC(S, T, IdFunc, IdFunc); 
+  return MagmaIsomorphismByFunctionsNC(S, T, IdFunc, IdFunc);
 end);
 
 # Isomorphism from an inverse transformation semigroup/monoid to a partial perm
@@ -350,7 +350,7 @@ end);
 
 # Isomorphisms from perm groups to partial perm semigroups/monoids
 
-InstallMethod(IsomorphismPartialPermMonoid, 
+InstallMethod(IsomorphismPartialPermMonoid,
 "for a perm group with generators",
 [IsPermGroup and HasGeneratorsOfGroup],
 function(G)
@@ -365,9 +365,9 @@ function(G)
   UseIsomorphismRelation(G, S);
   SetIsGroupAsSemigroup(S, true);
 
-  return MagmaIsomorphismByFunctionsNC(G, 
-                                       S, 
-                                       p -> AsPartialPerm(p, dom), 
+  return MagmaIsomorphismByFunctionsNC(G,
+                                       S,
+                                       p -> AsPartialPerm(p, dom),
                                        AsPermutation);
 end);
 
@@ -387,9 +387,9 @@ function(G)
   UseIsomorphismRelation(G, S);
   SetIsGroupAsSemigroup(S, true);
 
-  return MagmaIsomorphismByFunctionsNC(G, 
-                                       S, 
-                                       p -> AsPartialPerm(p, dom), 
+  return MagmaIsomorphismByFunctionsNC(G,
+                                       S,
+                                       p -> AsPartialPerm(p, dom),
                                        AsPermutation);
 end);
 #
@@ -425,7 +425,7 @@ function(S)
                    DegreeOfPartialPermSemigroup(S), ">");
 end);
 
-#InstallMethod(IsSymmetricInverseSemigroup, 
+#InstallMethod(IsSymmetricInverseSemigroup,
 #"for a semigroup", [IsSemigroup], ReturnFalse);
 
 #
@@ -441,14 +441,14 @@ end);
 
 #
 
-InstallMethod(NaturalPartialOrder, 
+InstallMethod(NaturalPartialOrder,
 "for an inverse partial perm semigroup",
 [IsPartialPermSemigroup and IsInverseSemigroup],
 function(s)
   local elts, p, n, out, i, j;
 
-  elts:=ShallowCopy(AsSSortedList(s));  
-  p:=Sortex(elts, ShortLexLeqPartialPerm)^-1; 
+  elts:=ShallowCopy(AsSSortedList(s));
+  p:=Sortex(elts, ShortLexLeqPartialPerm)^-1;
   n:=Length(elts);
   out:=List([1..n], x-> []);
   for i in [n, n-1..2] do
@@ -465,14 +465,14 @@ end);
 
 #
 
-InstallMethod(ReverseNaturalPartialOrder, 
+InstallMethod(ReverseNaturalPartialOrder,
 "for an inverse partial perm semigroup",
 [IsPartialPermSemigroup and IsInverseSemigroup],
 function(s)
   local elts, p, n, out, i, j;
 
-  elts:=ShallowCopy(AsSSortedList(s));  
-  p:=Sortex(elts, ShortLexLeqPartialPerm)^-1; 
+  elts:=ShallowCopy(AsSSortedList(s));
+  p:=Sortex(elts, ShortLexLeqPartialPerm)^-1;
   n:=Length(elts);
   out:=List([1..n], x-> []);
   for i in [1..n-1] do

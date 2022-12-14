@@ -30,7 +30,7 @@
 ##  true
 ##  gap> f:=One(AutomorphismGroup(SymmetricGroup(3)));
 ##  IdentityMapping( Sym( [ 1 .. 3 ] ) )
-##  gap> IsFunction(f);         
+##  gap> IsFunction(f);
 ##  false
 ##  ]]></Example>
 ##  </Description>
@@ -55,11 +55,11 @@ DeclareCategoryKernel( "IsFunction",
 ##  Every operation is a function, but not vice versa.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> MinimalPolynomial;  
+##  gap> MinimalPolynomial;
 ##  <Operation "MinimalPolynomial">
 ##  gap> IsOperation(MinimalPolynomial);
 ##  true
-##  gap> IsFunction(MinimalPolynomial);         
+##  gap> IsFunction(MinimalPolynomial);
 ##  true
 ##  gap> Factorial;
 ##  function( n ) ... end
@@ -286,7 +286,7 @@ BIND_GLOBAL( "FilenameFunc", FILENAME_FUNC );
 ##  <Ref Func="StartlineFunc"/> returns the line number in this file
 ##  where the definition of <A>func</A> starts.
 ##  <P/>
-##  <Ref Func="EndlineFunc"/> behaves similarly and returns the line number 
+##  <Ref Func="EndlineFunc"/> behaves similarly and returns the line number
 ##  in this file where the definition of <A>func</A> ends.
 ##  <P/>
 ##  <Log><![CDATA[
@@ -370,7 +370,7 @@ end);
 ##  <Description>
 ##  returns the result, when calling function <A>func</A> with the arguments
 ##  given in the list <A>args</A>,
-##  i.e.&nbsp;<A>args</A> is <Q>unwrapped</Q> so that <A>args</A> 
+##  i.e.&nbsp;<A>args</A> is <Q>unwrapped</Q> so that <A>args</A>
 ##  appears as several arguments to <A>func</A>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -451,9 +451,9 @@ DeclareOperationKernel( "CallFuncListWrap", [IS_OBJECT, IS_LIST], CALL_FUNC_LIST
 ##  and always returns <K>true</K>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> f:=ReturnTrue;  
+##  gap> f:=ReturnTrue;
 ##  function( arg... ) ... end
-##  gap> f();  
+##  gap> f();
 ##  true
 ##  gap> f(42);
 ##  true
@@ -478,9 +478,9 @@ BIND_GLOBAL( "ReturnTrue", RETURN_TRUE );
 ##  and always returns <K>false</K>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> f:=ReturnFalse;  
+##  gap> f:=ReturnFalse;
 ##  function( arg... ) ... end
-##  gap> f();  
+##  gap> f();
 ##  false
 ##  gap> f("any_string");
 ##  false
@@ -505,11 +505,11 @@ BIND_GLOBAL( "ReturnFalse", RETURN_FALSE );
 ##  and always returns <K>fail</K>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> oops:=ReturnFail;  
+##  gap> oops:=ReturnFail;
 ##  function( arg... ) ... end
-##  gap> oops();  
+##  gap> oops();
 ##  fail
-##  gap> oops(-42);  
+##  gap> oops(-42);
 ##  fail
 ##  ]]></Example>
 ##  </Description>
@@ -520,7 +520,7 @@ BIND_GLOBAL( "ReturnFail", RETURN_FAIL );
 
 #############################################################################
 ##
-#F  ReturnNothing( ... ) . . . . . . . . . . . . . . . . . . 
+#F  ReturnNothing( ... ) . . . . . . . . . . . . . . . . . .
 ##
 ##  <#GAPDoc Label="ReturnNothing">
 ##  <ManSection>
@@ -544,7 +544,7 @@ BIND_GLOBAL( "ReturnNothing", RETURN_NOTHING );
 
 #############################################################################
 ##
-#F  ReturnFirst( ... ) . . . . . . . . . . . . . . . . . . 
+#F  ReturnFirst( ... ) . . . . . . . . . . . . . . . . . .
 ##
 ##  <#GAPDoc Label="ReturnFirst">
 ##  <ManSection>
@@ -584,11 +584,11 @@ BIND_GLOBAL( "ReturnFirst", RETURN_FIRST );
 ##  one or more arguments, returning only the first.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> id:=IdFunc;  
+##  gap> id:=IdFunc;
 ##  function( object ) ... end
-##  gap> id(42);  
+##  gap> id(42);
 ##  42
-##  gap> f:=id(SymmetricGroup(3));                 
+##  gap> f:=id(SymmetricGroup(3));
 ##  Sym( [ 1 .. 3 ] )
 ##  gap> s:=One(AutomorphismGroup(SymmetricGroup(3)));
 ##  IdentityMapping( Sym( [ 1 .. 3 ] ) )
@@ -647,6 +647,6 @@ InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
         if isvarg then
             Print("...");
         fi;
-    fi;    
+    fi;
     Print(" ) ... end");
 end);

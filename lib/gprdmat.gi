@@ -103,7 +103,7 @@ function(D,i)
 local   emb,info;
   info := DirectProductInfo(D);
   if IsBound(info.embeddings[i]) then return info.embeddings[i]; fi;
-  
+
   emb := Objectify(NewType(GeneralMappingsFamily(FamilyObj(One(D)),
 						 FamilyObj(One(D))),
 		  IsEmbeddingDirectProductMatrixGroup),
@@ -112,7 +112,7 @@ local   emb,info;
   SetSource(emb,info.groups[i]);
 
   info.embeddings[i] := emb;
-  
+
   return emb;
 end);
 
@@ -229,7 +229,7 @@ InstallMethod(KernelOfMultiplicativeGeneralMapping,
     true,[ IsProjectionDirectProductMatrixGroup ],0,
     function(prj)
     local   D, gens, i, K,info;
-    
+
     D := Source(prj);
     gens :=Concatenation(prj!.info.compgens{
 	      Difference([1..Length(prj!.info.compgens)],[prj!.component])});
@@ -326,7 +326,7 @@ function( W, i )
 local   emb, info;
     info := WreathProductInfo( W );
     if IsBound( info.embeddings[i] ) then return info.embeddings[i]; fi;
-    
+
     if i<=info.degI then
       emb := Objectify( NewType(
 		GeneralMappingsFamily(FamilyObj(One(W)),FamilyObj(One(W))),
@@ -344,7 +344,7 @@ local   emb, info;
     SetRange( emb, W );
 
     info.embeddings[i] := emb;
-    
+
     return emb;
 end );
 
@@ -364,7 +364,7 @@ local info,a;
   a{emb!.range}{emb!.range}:=m;
   return ImmutableMatrix(info.field,a);
 end);
-  
+
 #############################################################################
 ##
 #M  PreImagesRepresentative( <emb>, <g> ) . . . . . . . . . . .  of embedding

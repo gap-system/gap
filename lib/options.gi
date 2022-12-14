@@ -47,7 +47,7 @@ InstallGlobalFunction( PushOptions,
     else
         merged := ShallowCopy(opts);
     fi;
-        
+
     Add(OptionsStack,merged);
     Info(InfoOptions,1, "Pushing ",opts);
 end);
@@ -91,7 +91,7 @@ end);
 ##  Returns fail if option has never been bound
 ##
 
-InstallGlobalFunction( ValueOption, 
+InstallGlobalFunction( ValueOption,
         function(tag)
     local top,len;
     len := Length(OptionsStack);
@@ -117,7 +117,7 @@ end);
 ##
 #F  DisplayOptionsStack( )                          display the options stack
 ##
-##  This function prints a human-readable display of all currently set 
+##  This function prints a human-readable display of all currently set
 ##  options
 ##
 

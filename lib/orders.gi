@@ -13,7 +13,7 @@
 
 #############################################################################
 ##
-#M  OrderingsFamily(<F>) 
+#M  OrderingsFamily(<F>)
 ##
 InstallMethod( OrderingsFamily,
   "for a family", true, [IsFamily], 0,
@@ -24,7 +24,7 @@ InstallMethod( OrderingsFamily,
     ord_imp := IsObject;
     return NewFamily( "OrderingsFamily(...)",ord_req,ord_imp);
 
-end); 
+end);
 
 
 ######################################################################
@@ -38,7 +38,7 @@ InstallMethod( ViewObj,
     Print("Ordering");
   end);
 
-  
+
 ######################################################################
 ##
 ##  Creating orderings
@@ -51,22 +51,22 @@ InstallMethod( ViewObj,
 ##  creates an orderings for the elements of the family fam
 ##  with LessThan given by <fun>
 ##  and with the properties list in <list>
-##  
+##
 BindGlobal("CreateOrderingByLtFunction",
 function( fam, fun, list)
-    local ord,prop; 
-    
+    local ord,prop;
+
     if NumberArgumentsFunction(fun)<>2 then
       return Error("Function for orderings has to have two arguments");
     fi;
-    
-    ord := Objectify( 
-            NewType( OrderingsFamily( fam ), 
+
+    ord := Objectify(
+            NewType( OrderingsFamily( fam ),
             IsAttributeStoringRep),rec());
 
     SetFamilyForOrdering(ord, fam);
     SetLessThanFunction(ord, fun);
-    
+
     # now set the properties in list to true
     for prop in list do
       Setter(prop)(ord,true);
@@ -83,22 +83,22 @@ end);
 ##  creates an orderings for the elements of the family fam
 ##  with LessThanOrequal given by <fun>
 ##  and with the properties list in <list>
-## 
+##
 BindGlobal("CreateOrderingByLteqFunction",
 function( fam, fun, list)
     local ord,prop;
-   
+
     if NumberArgumentsFunction(fun)<>2 then
       return Error("Function for orderings has to have two arguments");
     fi;
-   
+
     ord := Objectify(
             NewType( OrderingsFamily( fam ),
             IsAttributeStoringRep),rec());
 
     SetFamilyForOrdering(ord, fam);
     SetLessThanOrEqualFunction(ord, fun);
-   
+
     # now set the properties in list to true
     for prop in list do
       Setter(prop)(ord,true);
@@ -112,7 +112,7 @@ end);
 ##
 #M  OrderingByLessThanFunctionNC( <fam>, <fun> )
 ##
-InstallMethod( OrderingByLessThanFunctionNC, 
+InstallMethod( OrderingByLessThanFunctionNC,
   "for a family and a function", true,
   [IsFamily, IsFunction], 0,
   function(fam, fun)
@@ -120,7 +120,7 @@ InstallMethod( OrderingByLessThanFunctionNC,
   end);
 
 
-    
+
 InstallOtherMethod( OrderingByLessThanFunctionNC,
   "for a family, a function, and a list of properties", true,
   [IsFamily,IsFunction,IsList], 0,
@@ -140,7 +140,7 @@ InstallMethod( OrderingByLessThanOrEqualFunctionNC,
     return CreateOrderingByLteqFunction(fam,fun,[]);
   end);
 
-   
+
 InstallOtherMethod( OrderingByLessThanOrEqualFunctionNC,
   "for a family, a function, and a list of properties", true,
   [IsFamily,IsFunction,IsList], 0,
@@ -184,7 +184,7 @@ InstallMethod( LessThanFunction,
     return fun;
 end);
 
-    
+
 #############################################################################
 ##
 #A  IsLessThanUnder( <ord>, <obj1>, <obj2> )
@@ -194,12 +194,12 @@ InstallMethod( IsLessThanUnder,
   [IsOrdering, IsObject,IsObject], 0,
   function( ord, obj1, obj2 )
     local fun;
-    
+
     if FamilyObj(obj1)<>FamilyObj(obj2) then
       Error("Can only compare objects belonging to the same family");
     fi;
     if FamilyObj(ord)<>OrderingsFamily(FamilyObj(obj1)) then
-      Error(ord," and ",obj1,obj2," do not have compatible families"); 
+      Error(ord," and ",obj1,obj2," do not have compatible families");
     fi;
     fun := LessThanFunction(ord);
     return fun(obj1,obj2);
@@ -216,7 +216,7 @@ InstallMethod( IsLessThanOrEqualUnder,
   [IsOrdering,IsObject,IsObject], 0,
   function( ord, obj1, obj2 )
     local fun;
-    
+
     fun := LessThanOrEqualFunction(ord);
     return fun(obj1,obj2);
 
@@ -245,13 +245,13 @@ InstallMethod( IsIncomparableUnder,
     if not (FamilyObj(ord)=OrderingsFamily(FamilyObj(obj1))) then
       Error("`ord' is not an ordering in `OrderingsFamily(obj1)'");
     fi;
-    
+
     # if we know that the ordering is total
     # then any pair of elements is comparable
     if HasIsTotalOrdering(ord) and IsTotalOrdering(ord) then
       return false;
     fi;
-  
+
     lteqfun := LessThanOrEqualFunction( ord );
     # now check that neither obj1 is less than or equal to obj2
     # nor obj2 is less than or equal to obj1
@@ -266,7 +266,7 @@ end);
 
 ######################################################################
 ##
-##  Orderings on families of associative words  
+##  Orderings on families of associative words
 ##
 
 #############################################################################
@@ -299,7 +299,7 @@ function(fam,alphabet)
         fi;
       od;
       # at this time the shortest one is a prefix of the other one
-      # or they are equal      
+      # or they are equal
       return Length(w1)<Length(w2);
     end;
 
@@ -317,7 +317,7 @@ InstallOtherMethod( LexicographicOrdering,
   true,
   [IsFamily and IsAssocWordFamily], 0,
   function(fam)
-    local gens;         # the generating set  
+    local gens;         # the generating set
 
   # first find out if fam is a family of free semigroup or monoid
   # because we need to get a list of generators (in the default order)
@@ -352,7 +352,7 @@ InstallMethod( LexicographicOrdering,
   fi;
 
   # now check that the elements of alphabet lie in the right family
-  if ElementsFamily(FamilyObj(alphabet))<>fam then      
+  if ElementsFamily(FamilyObj(alphabet))<>fam then
     Error("Elements of `alphabet' should be in family `fam'");
   fi;
 
@@ -453,7 +453,7 @@ InstallOtherMethod( LexicographicOrdering,
   true,
   [IsFreeMonoid,IsList], 0,
   function(f,gensord)
-    return LexicographicOrdering(ElementsFamily(FamilyObj(f)),gensord); 
+    return LexicographicOrdering(ElementsFamily(FamilyObj(f)),gensord);
 end);
 
 
@@ -468,7 +468,7 @@ end);
 #B  ShortLexOrderingNC ( <fam>, <alphabet> )
 ##
 ##  We implement these for families of elements of free smg and monoids
-##  In the first form returns the ShortLexOrdering for the elements of fam 
+##  In the first form returns the ShortLexOrdering for the elements of fam
 ##  with the generators of the freeSmg (or freeMonoid) in the default order.
 ##  In the second form returns the ShortLexOrdering for the elements of fam
 ##  with the generators of the freeSmg (or freeMonoid) in the following order:
@@ -476,7 +476,7 @@ end);
 ##
 BindGlobal("ShortLexOrderingNC",
 function(fam,alphabet)
-local ltfun, ord; 
+local ltfun, ord;
 
   # the less than function
   ltfun := function(w1,w2)
@@ -574,10 +574,10 @@ InstallMethod( ShortLexOrdering,
     # now check that the elements of alphabet lie in the right family
     if ElementsFamily(FamilyObj(alphabet))<>fam then
       Error("Elements of `alphabet' should be in family `fam'");
-    fi; 
+    fi;
 
     # alphabet has to be a list of size Length(gens)
-    # and all gens have to appear in the alphabet 
+    # and all gens have to appear in the alphabet
     if Length(alphabet)<>Length(gens) or Set(alphabet)<>gens then
       Error("`fam' and `alphabet' are not compatible");
     fi;
@@ -589,7 +589,7 @@ end);
 
 
 InstallOtherMethod( ShortLexOrdering,
-  "for a family of free words of a free semigroup or free  monoid and a list", 
+  "for a family of free words of a free semigroup or free  monoid and a list",
   true, [IsFamily and IsAssocWordFamily,IsList], 0,
   function(fam,orderofgens)
 
@@ -604,7 +604,7 @@ InstallOtherMethod( ShortLexOrdering,
     elif IsBound(fam!.freeMonoid) then
       gens := GeneratorsOfMonoid(fam!.freeMonoid);
     else
-      TryNextMethod();  
+      TryNextMethod();
     fi;
 
     # we have to do some checking
@@ -637,8 +637,8 @@ InstallOtherMethod( ShortLexOrdering,
 
 
 InstallOtherMethod( ShortLexOrdering,
-  "for a free semigroup and a list of generators in the required order", 
-  IsElmsColls, 
+  "for a free semigroup and a list of generators in the required order",
+  IsElmsColls,
   [IsFreeSemigroup, IsList and IsAssocWordCollection], 0,
   function(f,alphabet)
     return ShortLexOrdering( ElementsFamily(FamilyObj(f)),alphabet);
@@ -646,8 +646,8 @@ InstallOtherMethod( ShortLexOrdering,
 
 
 InstallOtherMethod( ShortLexOrdering,
-  "for a free monoid and a list of generators in the required order ", 
-  IsElmsColls, 
+  "for a free monoid and a list of generators in the required order ",
+  IsElmsColls,
   [IsFreeMonoid,IsList and IsAssocWordCollection], 0,
   function(f,alphabet)
     return ShortLexOrdering( ElementsFamily(FamilyObj(f)),alphabet);
@@ -665,7 +665,7 @@ InstallOtherMethod( ShortLexOrdering,
 InstallOtherMethod( ShortLexOrdering,
   "for a free monoid and a list", true,
   [IsFreeMonoid,IsList], 0,
-  function(f,gensorder) 
+  function(f,gensorder)
     return ShortLexOrdering( ElementsFamily(FamilyObj(f)),gensorder);
   end);
 
@@ -683,11 +683,11 @@ InstallOtherMethod( ShortLexOrdering,
 InstallGlobalFunction( IsShortLexLessThanOrEqual,
 function( u, v )
   local fam,ord;
-  
+
   fam := FamilyObj(u);
   ord := ShortLexOrdering(fam);
 
-  return IsLessThanOrEqualUnder(ord,u,v); 
+  return IsLessThanOrEqualUnder(ord,u,v);
 end);
 
 
@@ -728,7 +728,7 @@ function(fam,alphabet,wt)
 
     # then if the sum of the weights of w1 is less than
     # the sum of the weight of w2 then returns true
-    # so we calculate the weight of w1 
+    # so we calculate the weight of w1
     w1wt := wordwt(w1);
     w2wt := wordwt(w2);
     if w1wt<w2wt then
@@ -779,7 +779,7 @@ function(fam,alphabet,wt)
   fi;
 
   return ord;
-  
+
 end);
 
 
@@ -811,7 +811,7 @@ InstallMethod( WeightLexOrdering,
 
     # alphabet and wt both have to be lists of size Length(gens)
     # and all gens have to appear in the alphabet
-    if Length(alphabet)<>Length(gens) or Length(wt)<>Length(gens) 
+    if Length(alphabet)<>Length(gens) or Length(wt)<>Length(gens)
           or Set(alphabet)<> gens then
       Error("`alphabet' and `wt' are not compatible with `fam'");
     fi;
@@ -821,7 +821,7 @@ end);
 
 
 InstallOtherMethod( WeightLexOrdering,
-  "for a family of words of a free semigroup or free monoid, and two lists", 
+  "for a family of words of a free semigroup or free monoid, and two lists",
   true, [IsFamily and IsAssocWordFamily,IsList,IsList], 0,
   function(fam,orderofgens,wt)
 
@@ -839,7 +839,7 @@ InstallOtherMethod( WeightLexOrdering,
 
   # alphabet and wt both have to be lists of size Length(gens)
   # and all gens have to appear in the alphabet
-  if Length(orderofgens)<>Length(gens) or Length(wt)<>Length(gens) 
+  if Length(orderofgens)<>Length(gens) or Length(wt)<>Length(gens)
     or Set(orderofgens)<> [1..Length(gens)] then
     Error("`orderofgens' and `wt' are not compatible with `fam'");
   fi;
@@ -853,8 +853,8 @@ end);
 
 
 InstallOtherMethod( WeightLexOrdering,
-  "for a free semigroup, a list of generators and a list of weights", 
-  true, 
+  "for a free semigroup, a list of generators and a list of weights",
+  true,
   [IsFreeSemigroup,IsList and IsAssocWordCollection,IsList], 0,
   function(f,alphabet,wt)
     return WeightLexOrdering( ElementsFamily(FamilyObj(f)),alphabet,wt);
@@ -863,7 +863,7 @@ InstallOtherMethod( WeightLexOrdering,
 
 InstallOtherMethod( WeightLexOrdering,
   "for a free monoid, a list of generators and a list of weights",
-  true, 
+  true,
   [IsFreeMonoid,IsList and IsAssocWordCollection,IsList], 0,
   function(f,alphabet,wt)
     return WeightLexOrdering( ElementsFamily(FamilyObj(f)),alphabet,wt);
@@ -872,7 +872,7 @@ InstallOtherMethod( WeightLexOrdering,
 
 InstallOtherMethod( WeightLexOrdering,
   "for a free semigroup, a list giving ordering on generators and a list of weights",
-  true, 
+  true,
   [IsFreeSemigroup,IsList,IsList], 0,
   function(f,orderofgens,wt)
     return WeightLexOrdering( ElementsFamily(FamilyObj(f)),orderofgens,wt);
@@ -898,15 +898,15 @@ InstallOtherMethod( WeightLexOrdering,
 #B  BasicWreathProductOrderingNC( <fam>, <alphabet>)
 ##
 ##  We implement these for families of elements of free smg and monoids
-##  In the first form returns the BasicWreathProductOrdering for the 
-##  elements of fam with the generators of the freeSmg (or freeMonoid) 
+##  In the first form returns the BasicWreathProductOrdering for the
+##  elements of fam with the generators of the freeSmg (or freeMonoid)
 ##  in the default order.
-##  In the second form returns the BasicWreathProductOrdering for the 
-##  elements of fam with the generators of the freeSmg (or freeMonoid) 
+##  In the second form returns the BasicWreathProductOrdering for the
+##  elements of fam with the generators of the freeSmg (or freeMonoid)
 ##  in the following order:
 ##  gens[i]<gens[j] if and only if orderofgens[i]<orderofgens[j]
 ##
-##  So with the given order on the generators 
+##  So with the given order on the generators
 ##  u<v if u'<v' where u=xu'y and v=xv'y
 ##  So, if u and v have no common prefix, u is less than v wrt this ordering if
 ##    (i) maxletter(v) > maxletter(u); or
@@ -1035,13 +1035,13 @@ function(fam,alphabet)
 
     # we start by building the function that gives the order on the alphabet
     ltgens := function(x,y)
-      return Position(alphabet,x)< Position(alphabet,y);      
+      return Position(alphabet,x)< Position(alphabet,y);
     end;
 
-    if u=v then 
+    if u=v then
       return false;
     fi;
-  
+
     l := LengthOfLongestCommonPrefixOfTwoAssocWords( u, v);
     if l<>0 then
       # if u is a proper prefix of v (ie l=|u|) then u<v
@@ -1063,7 +1063,7 @@ function(fam,alphabet)
 
     # so now u and v have no common prefixes
     # (in particular they are not equal)
-    
+
     while m>0 and n>0 do
       if ltgens(Subword( v, n, n),Subword( u, m, m)) then
         n := n - 1;
@@ -1192,14 +1192,14 @@ end);
 
 
 InstallOtherMethod(BasicWreathProductOrdering,
-  "for a free semigroup", true, 
+  "for a free semigroup", true,
   [IsFreeSemigroup], 0,
   f-> BasicWreathProductOrderingNC(ElementsFamily(FamilyObj(f)),
-          GeneratorsOfSemigroup(f))); 
+          GeneratorsOfSemigroup(f)));
 
 
 InstallOtherMethod(BasicWreathProductOrdering,
-  "for a free monoid", true, 
+  "for a free monoid", true,
   [IsFreeMonoid], 0,
   f-> BasicWreathProductOrderingNC(ElementsFamily(FamilyObj(f)),
           GeneratorsOfMonoid(f)));
@@ -1243,7 +1243,7 @@ InstallOtherMethod(BasicWreathProductOrdering,
 ##
 ##  for two associative words <u> and <v>.
 ##  It returns true if <u> is less than or equal to <v>, with
-##  respect to the basic wreath product ordering. 
+##  respect to the basic wreath product ordering.
 ##  (we have this function here to assure compatibility with gap4.2).
 ##
 InstallGlobalFunction( IsBasicWreathLessThanOrEqual,
@@ -1265,11 +1265,11 @@ end);
 #M  WreathProductOrdering( <f>, <gensord>, <levels>)
 ##
 ##  We implement these for families of elements of free smg and monoids
-##  In the first form returns the WreathProductOrdering for the 
-##  elements of fam with the generators of the freeSmg (or freeMonoid) 
+##  In the first form returns the WreathProductOrdering for the
+##  elements of fam with the generators of the freeSmg (or freeMonoid)
 ##  in the default order.
-##  In the second form returns the WreathProductOrdering for the 
-##  elements of fam with the generators of the freeSmg (or freeMonoid) 
+##  In the second form returns the WreathProductOrdering for the
+##  elements of fam with the generators of the freeSmg (or freeMonoid)
 ##  in the following order:
 ##  gens[i]<gens[j] if and only if orderofgens[i]<orderofgens[j]
 ##
@@ -1278,7 +1278,7 @@ end);
 ##  That is, levels[i] is the level of the generator that comes i-th
 ##  in the new ordering.
 ##
-##  So with the given order on the generators 
+##  So with the given order on the generators
 ##  u<v if u'<v' where u=xu'y and v=xv'y
 ##  So, if u and v have no common prefix, u is less than v wrt this ordering if
 ##    (i) u_max < v_max in the shortlex ordering, where u_max, v_max are
@@ -1313,7 +1313,7 @@ end);
 InstallMethod(WreathProductOrdering,
   "for a family of words of a free semigroup or free monoid and a list",
   true, [IsAssocWordFamily and IsFamily, IsList, IsList], 0,
-  function(fam,orderofgens,levels) 
+  function(fam,orderofgens,levels)
     local i,  # loop variable
        gens,  # the generators of the semigroup or monoid
      ltgens,  # the function giving the order on the alphabet
@@ -1350,17 +1350,17 @@ InstallMethod(WreathProductOrdering,
    ug_lev, vg_lev,  #levels of urrent generators of u, v
      sl_lev,  #level at which one of the words  u,v  is
         #smaller in the shortlex ordering
-                     sl,  #sl=1 or 2 if u or v, resp., is 
-        #smaller in the shortlex ordering at level sl_lev.   
+                     sl,  #sl=1 or 2 if u or v, resp., is
+        #smaller in the shortlex ordering at level sl_lev.
         #note sl=0 <=> sl_lev=0.
           tgens,levgens;  #functions on generators
-  
+
     # we start by building the function that gives the order on
     # the alphabet
     # we construct it from the list <orderofgens>
     ltgens := function(x,y)
       return Position(orderofgens,Position(gens,x))<
-          Position(orderofgens,Position(gens,y));     
+          Position(orderofgens,Position(gens,y));
     end;
 
     #and similarly for the level function on the alphabet
@@ -1368,10 +1368,10 @@ InstallMethod(WreathProductOrdering,
       return levels[Position(orderofgens,Position(gens,x))];
     end;
 
-    if u=v then 
+    if u=v then
       return false;
     fi;
-  
+
     if Length(u)=0 then
       return true;
     fi;
@@ -1402,7 +1402,7 @@ InstallMethod(WreathProductOrdering,
       n := Length( v );
     sl_lev := 0;
     sl := 0;
-      
+
     #We now start scanning u,v from right to left.
     #sl_lev denotes the level of the block of generators
     #which is currently distinguishing between u,v.
@@ -1410,7 +1410,7 @@ InstallMethod(WreathProductOrdering,
     #Initially sl_lev=sl=0. This can also occur later if either
     # (i) we read two equal generators in u,v at a higher level
     #     than sl_lev. Then everything to the right of these
-    #     equal generators becomes irrelevant. 
+    #     equal generators becomes irrelevant.
     #(ii) we read a generator in u or v at a higher level than
     #     sl_lev that is not matched by a generator at the same
     #     level in the other word. We keep scanning backwards
@@ -1429,7 +1429,7 @@ InstallMethod(WreathProductOrdering,
       fi;
         if m = 0 then
           #we have reached the beginning of u, but
-          #u might be ahead in shortlex at sl_lev 
+          #u might be ahead in shortlex at sl_lev
             if  sl <> 2 or vg_lev >= sl_lev then
         #u is certainly smaller
         return true;
@@ -1526,7 +1526,7 @@ InstallOtherMethod(WreathProductOrdering,
     fi;
 
     # we have to do some checking
-    # alphabet has to be a list of size Length(gens)    
+    # alphabet has to be a list of size Length(gens)
     # all gens have to appear in the list
     n := Length(gens);
     if Length(alphabet)<>n or Set(alphabet)<>gens then
@@ -1547,17 +1547,17 @@ InstallOtherMethod(WreathProductOrdering,
   end);
 
 InstallOtherMethod(WreathProductOrdering,
-  "for a free semigroup", true, 
+  "for a free semigroup", true,
   [IsFreeSemigroup,IsList], 0,
   function(f,levels)
-        return WreathProductOrdering(ElementsFamily(FamilyObj(f)),levels); 
+        return WreathProductOrdering(ElementsFamily(FamilyObj(f)),levels);
   end);
 
 InstallOtherMethod(WreathProductOrdering,
-  "for a free monoid", true, 
+  "for a free monoid", true,
   [IsFreeMonoid,IsList], 0,
   function(f,levels)
-        return WreathProductOrdering(ElementsFamily(FamilyObj(f)),levels); 
+        return WreathProductOrdering(ElementsFamily(FamilyObj(f)),levels);
   end);
 
 InstallOtherMethod(WreathProductOrdering,

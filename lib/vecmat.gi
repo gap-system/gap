@@ -37,7 +37,7 @@ BindGlobal( "TYPE_LIST_GF2VEC",
 ##
 BindGlobal( "TYPE_LIST_GF2VEC_IMM",
   NewType( CollectionsFamily( FFEFamily(2) ),
-          IsHomogeneousList and IsListDefault and IsNoImmediateMethodsObject 
+          IsHomogeneousList and IsListDefault and IsNoImmediateMethodsObject
            and IsCopyable and IsGF2VectorRep )
 );
 
@@ -48,7 +48,7 @@ BindGlobal( "TYPE_LIST_GF2VEC_IMM",
 ##
 BindGlobal( "TYPE_LIST_GF2VEC_IMM_LOCKED",
   NewType( CollectionsFamily( FFEFamily(2) ),
-          IsHomogeneousList and IsListDefault and IsNoImmediateMethodsObject 
+          IsHomogeneousList and IsListDefault and IsNoImmediateMethodsObject
            and IsCopyable and IsGF2VectorRep and IsLockedRepresentationVector)
 );
 
@@ -59,7 +59,7 @@ BindGlobal( "TYPE_LIST_GF2VEC_IMM_LOCKED",
 ##
 BindGlobal( "TYPE_LIST_GF2VEC_LOCKED",
   NewType( CollectionsFamily( FFEFamily(2) ),
-          IsHomogeneousList and IsListDefault and IsNoImmediateMethodsObject 
+          IsHomogeneousList and IsListDefault and IsNoImmediateMethodsObject
            and IsCopyable and IsGF2VectorRep and
           IsLockedRepresentationVector and IsMutable)
 );
@@ -85,7 +85,7 @@ BindGlobal( "TYPE_LIST_GF2MAT",
 BindGlobal( "TYPE_LIST_GF2MAT_IMM",
   NewType( CollectionsFamily(CollectionsFamily(FFEFamily(2))),
           IsMatrix and IsListDefault and IsCopyable and IsGF2MatrixRep
-          and IsNoImmediateMethodsObject 
+          and IsNoImmediateMethodsObject
           and IsSmallList and IsFFECollColl and
           HasIsRectangularTable and IsRectangularTable)
 );
@@ -190,7 +190,7 @@ InstallOtherMethod( ASS_LIST,
 #    else
 #        ASS_PLIST_DEFAULT( list, pos, val );
 #        # force kernel to notice that this is now a list of FFEs
-#        ConvertToVectorRep( list ); 
+#        ConvertToVectorRep( list );
 #    fi;
 #end );
 
@@ -322,7 +322,7 @@ InstallMethod( ZeroSameMutability,
     true,
     [ IsRowVector and IsListDefault and IsGF2VectorRep],
         0,
-        function(v) 
+        function(v)
     local z;
     if IsMutable(v) then
         TryNextMethod();
@@ -442,7 +442,7 @@ function( a, b )
         return ZeroSameMutability(a);
     elif b = GF2One  then
         if IsMutable(a) then
-            return ShallowCopy(a); 
+            return ShallowCopy(a);
             else
                 return a;
             fi;
@@ -522,7 +522,7 @@ end );
 InstallMethod( PadCoeffs,
     "for GF2 vector",
     true,
-        [ IsMutable and IsRowVector and IsAdditiveElementWithZeroCollection and IsGF2VectorRep, 
+        [ IsMutable and IsRowVector and IsAdditiveElementWithZeroCollection and IsGF2VectorRep,
           IsPosInt ],
         0,
         function(v,len)
@@ -530,16 +530,16 @@ InstallMethod( PadCoeffs,
         RESIZE_GF2VEC(v,len);
     fi;
 end);
-    
+
 #############################################################################
 ##
 #M  QuotRemCoeffs( <gf2vec>, <len>, <gf2vec>, <len> )
 ##
-InstallMethod( QuotRemCoeffs, 
+InstallMethod( QuotRemCoeffs,
         "GF2 vectors",
         [ IsRowVector and IsGF2VectorRep, IsInt, IsRowVector and IsGF2VectorRep, IsInt],
         QUOTREM_COEFFS_GF2VEC);
-    
+
 #############################################################################
 ##
 #M  NormedRowVector( <v> )
@@ -707,7 +707,7 @@ end );
 BindGlobal("SHALLOWCOPY_GF2MAT",
 function(mat)
     local   copy,  i, len;
-    
+
     len := mat![1];
     copy := [ len ];
     for i  in [2..len+1] do
@@ -715,7 +715,7 @@ function(mat)
     od;
     Objectify( TYPE_LIST_GF2MAT, copy );
     return copy;
-end); 
+end);
 
 InstallMethod( ShallowCopy,
         "for GF2 matrix",
@@ -742,7 +742,7 @@ InstallMethod( AdditiveInverseOp,
         0,
         function(mat)
     local   copy,  i, len;
-    
+
     len := mat![1];
     copy := [ len ];
     for i  in [2..len+1] do
@@ -751,7 +751,7 @@ InstallMethod( AdditiveInverseOp,
     od;
     Objectify( TYPE_LIST_GF2MAT, copy );
     return copy;
-end); 
+end);
 
 #############################################################################
 ##
@@ -764,7 +764,7 @@ InstallMethod( AdditiveInverseSameMutability,
         0,
         function(mat)
     local   copy,  i, len,r ;
-    
+
     if not IsMutable(mat) then
         return mat;
     fi;
@@ -781,7 +781,7 @@ InstallMethod( AdditiveInverseSameMutability,
     od;
     Objectify( TYPE_LIST_GF2MAT, copy );
     return copy;
-end); 
+end);
 
 
 
@@ -894,9 +894,9 @@ BindGlobal("GF2IdentityMatrix", function(n, imm)
     fi;
     return id;
 end);
-        
-        
-        
+
+
+
 
 InstallMethod( OneOp,
     "for GF2 Matrix",
@@ -1151,7 +1151,7 @@ InstallMethod( \*,
     [ IsMatrix and IsListDefault and IsGF2MatrixRep,
       IsMatrix and IsListDefault and IsGF2MatrixRep ],
     0,
-        
+
         PROD_GF2MAT_GF2MAT );
 
 #############################################################################
@@ -1214,7 +1214,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
     if IsGF2VectorRep(v) and (Length(arg) = 1 or arg[2] = 2 or arg[2] = LOCAL_COPY_GF2) then
         return 2;
     fi;
-    
+
     if Is8BitVectorRep(v) then
         q0 := Q_VEC8BIT(v);
         if Length(arg) = 1 then
@@ -1249,20 +1249,20 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
                     PLAIN_VEC8BIT(v);
                     return q;
                 fi;
-                    
-            fi; 
+
+            fi;
         fi;
     fi;
-    
-	
-    if (Length(v) = 0 and Length(arg) = 1) or 
+
+
+    if (Length(v) = 0 and Length(arg) = 1) or
       (Length(v) >0 and not IsRowVector(v))  then
         return fail;
     fi;
-    
+
     # if the representation of v is already locked, then
     # we ignore a second arguments and just report on the vector
-    
+
     if IsLockedRepresentationVector(v) then
         if IsGF2VectorRep(v) then
             q := 2;
@@ -1275,19 +1275,19 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
             arg[2] := Size(arg[2]);
         fi;
         if Length(arg) = 2 and q <> arg[2] then
-          Info(InfoWarning, 1, 
+          Info(InfoWarning, 1,
           "ConvertToVectorRep: locked vector not converted to different field");
         fi;
-        return q;    
+        return q;
     fi;
-    
-    
+
+
     #
     # Ask the kernel to check the list for us.
     # We have to do this, even in an NC version because the list might contain
     # elements of large finite fields
     #
-        
+
     if not IS_VECFFE(v) then
         if IsFFECollection(v) then
             # now we might have some elements in a large field representation
@@ -1315,9 +1315,9 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
             return fail;
         fi;
     else
-        common := COMMON_FIELD_VECFFE(v);   
+        common := COMMON_FIELD_VECFFE(v);
     fi;
-    
+
     #
     # see if the user gave us q
     #
@@ -1327,14 +1327,14 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
             q := field;
             Assert(2,IsPrimePowerInt(q));
         elif IsField(field) then
-            q := Size(field); 
+            q := Size(field);
         else
             Error("q not a field or positive integer");
         fi;
     else
         q := fail;
     fi;
-    
+
     #
     # if there is a field, we go to work
     #
@@ -1364,7 +1364,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
         CONV_GF2VEC(v); # safe to call this even with an invalid argument
         return 2;
     elif q <= 256 then
-        if common <> q then 
+        if common <> q then
             if IsPlistRep(v) and  GcdInt(common,q) > 1  then
                 common := SMALLEST_FIELD_VECFFE(v);
             fi;
@@ -1375,7 +1375,7 @@ InstallGlobalFunction(ConvertToVectorRepNC,function( arg )
         Assert(2, ForAll(v, elm -> elm in GF(q)));
         CONV_VEC8BIT(v,q);
         return q;
-    else    
+    else
         return fail;
     fi;
 end);
@@ -1556,7 +1556,7 @@ end);
 
 #############################################################################
 ##
-#F  ImmutableMatrix( <field>, <matrix> [,<change>] ) 
+#F  ImmutableMatrix( <field>, <matrix> [,<change>] )
 ##
 BindGlobal("DoImmutableMatrix", function(field,matrix,change)
 local sf, rep, ind, ind2, row, i,big,l,nr;
@@ -1604,10 +1604,10 @@ local sf, rep, ind, ind2, row, i,big,l,nr;
 
   # get the indices of the rows that need changing the representation.
   ind:=[]; # rows to convert
-  ind2:=[]; # rows to rebuild 
+  ind2:=[]; # rows to rebuild
   for i in [1..nr] do
     if not rep(matrix[i]) then
-      if big or IsLockedRepresentationVector(matrix[i]) 
+      if big or IsLockedRepresentationVector(matrix[i])
         or (IsMutable(matrix[i]) and not change) then
         Add(ind2,i);
       else
@@ -1831,10 +1831,10 @@ InstallOtherMethod( PositionNot, "for GF(2) vector and 0*Z(2)",
 InstallMethod( PositionNot, "for GF(2) vector and 0*Z(2) and offset",
         IsCollsElmsX, [IsGF2VectorRep and IsRowVector , IsFFE and
                 IsZero, IsInt], 0,
-        function(v,z,z1) 
-    return POSITION_NONZERO_GF2VEC3(v,z,z1); 
+        function(v,z,z1)
+    return POSITION_NONZERO_GF2VEC3(v,z,z1);
 end);
-        
+
 #############################################################################
 ##
 #M  Append( <vecl>, <vecr> )
@@ -1844,7 +1844,7 @@ InstallMethod( Append, "for GF2 vectors",
         true, [IsGF2VectorRep and IsMutable and IsList,
                IsGF2VectorRep and IsList], 0,
         APPEND_GF2VEC);
-        
+
 #############################################################################
 ##
 #M  ShallowCopy( <vec> ) . . . for GF2 vectors
@@ -1861,14 +1861,14 @@ InstallMethod( ShallowCopy,
 InstallOtherMethod(PositionNonZero, "for GF(2) vector",true,
         [IsGF2VectorRep and IsRowVector],0,
   # POSITION_NONZERO_GF2VEC ignores the second argument
-  v-> POSITION_NONZERO_GF2VEC(v,0)); 
+  v-> POSITION_NONZERO_GF2VEC(v,0));
 
 InstallOtherMethod(PositionNonZero, "for GF(2) vector and offset",true,
         [IsGF2VectorRep and IsRowVector, IsInt],0,
         # POSITION_NONZERO_GF2VEC3 ignores the second argument
         function(v, from)
     return  POSITION_NONZERO_GF2VEC3(v,0,from);
-end); 
+end);
 
 #############################################################################
 ##
@@ -1895,7 +1895,7 @@ end);
 InstallMethod(NumberFFVector,"GF2-Vector",true,
   [IsGF2VectorRep and IsRowVector and IsFFECollection,IsPosInt],0,
 function(v,n)
-  if n<>2 then TryNextMethod();fi; 
+  if n<>2 then TryNextMethod();fi;
   return NUMBER_GF2VEC(v);
 end);
 
@@ -1932,8 +1932,8 @@ function(F,v)
   # the family ensures the field is in the correct characteristic.
   return true;
 end);
-  
-  
+
+
 #############################################################################
 ##
 #M  DefaultFieldOfMatrix( <ffe-mat> )
@@ -1985,7 +1985,7 @@ InstallMethod( RightShiftRowVector, "gf2 vector, fill with zeros", IsCollsXElms,
 
 #############################################################################
 ##
-#M  ShrinkRowVector( <vec> )  
+#M  ShrinkRowVector( <vec> )
 
 InstallMethod( ShrinkRowVector, "GF2 vector", true,
         [IsMutable and IsRowVector and IsGF2VectorRep ],
@@ -2001,7 +2001,7 @@ end);
 #M  RemoveOuterCoeffs( <vec>, <zero> )
 ##
 
-InstallMethod( RemoveOuterCoeffs, "gf2vec and zero", IsCollsElms, 
+InstallMethod( RemoveOuterCoeffs, "gf2vec and zero", IsCollsElms,
         [ IsMutable and IsGF2VectorRep and IsRowVector, IsFFE and
           IsZero], 0,
         function (v,z)
@@ -2026,12 +2026,12 @@ InstallMethod( ProductCoeffs, "GF2 vectors, kernel method", IsFamXFamY,
         [IsGF2VectorRep and IsRowVector, IsInt, IsGF2VectorRep and
          IsRowVector, IsInt ], 0,
         PROD_COEFFS_GF2VEC);
-        
-InstallOtherMethod( ProductCoeffs, "Gf2 vectors, kernel method (2 arg)", 
+
+InstallOtherMethod( ProductCoeffs, "Gf2 vectors, kernel method (2 arg)",
         IsIdenticalObj,
         [IsGF2VectorRep and IsRowVector, IsGF2VectorRep and
          IsRowVector ], 0,
-        function(v,w) 
+        function(v,w)
     return PROD_COEFFS_GF2VEC(v, Length(v), w, Length(w));
 end);
 
@@ -2045,12 +2045,12 @@ InstallMethod( ReduceCoeffs, "GF2 vectors, kernel method", IsFamXFamY,
         [IsGF2VectorRep and IsRowVector and IsMutable, IsInt, IsGF2VectorRep and
          IsRowVector, IsInt ], 0,
         REDUCE_COEFFS_GF2VEC);
-        
-InstallOtherMethod( ReduceCoeffs, "Gf2 vectors, kernel method (2 arg)", 
+
+InstallOtherMethod( ReduceCoeffs, "Gf2 vectors, kernel method (2 arg)",
         IsIdenticalObj,
         [IsGF2VectorRep and IsRowVector and IsMutable, IsGF2VectorRep and
          IsRowVector ], 0,
-        function(v,w) 
+        function(v,w)
     return REDUCE_COEFFS_GF2VEC(v, Length(v), w, Length(w));
 end);
 
@@ -2059,11 +2059,11 @@ end);
 #M PowerModCoeffs( <vec1>, <len1>, <exp>, <vec2>, <len2> )
 ##
 
-InstallMethod( PowerModCoeffs, "for gf2vectors", IsFamXYFamZ, 
-        [IsGF2VectorRep and IsRowVector, IsInt, IsPosInt, 
+InstallMethod( PowerModCoeffs, "for gf2vectors", IsFamXYFamZ,
+        [IsGF2VectorRep and IsRowVector, IsInt, IsPosInt,
          IsGF2VectorRep and IsRowVector, IsInt], 0,
         function( v, lv, exp, w, lw)
-    
+
     local pow, lpow, bits, i;
     if exp = 1 then
         pow := ShallowCopy(v);
@@ -2163,7 +2163,7 @@ InstallMethod(DomainForAction,"vector/permgrp",true,
   [IsList,IsList,IsFunction],0,
 function(pnt,acts,act)
 local l,f;
-  if (not (ForAll(acts,IsPerm) and ForAll(pnt,IsScalar))) 
+  if (not (ForAll(acts,IsPerm) and ForAll(pnt,IsScalar)))
      or (act<>Permuted) then
     TryNextMethod(); # strange operation, might extend the domain
   fi;
@@ -2188,10 +2188,10 @@ end);
 BindGlobal("GF2_AHEAD_OF_8BIT_RANK", 10);
 
 #
-# If mat is in the GF2 special representation, then we do 
+# If mat is in the GF2 special representation, then we do
 # have to copy it, but we know that the rows of the result will
 # already be in GF2 special representation, so we skip the conversion
-# step in the generic method 
+# step in the generic method
 #
 
 
@@ -2206,11 +2206,11 @@ InstallMethod(SemiEchelonMat, "shortcut method for GF2 matrices",
     return res;
     end );
 
-InstallMethod(SemiEchelonMatTransformation, 
+InstallMethod(SemiEchelonMatTransformation,
         "kernel method for plain lists of GF2 vectors",
         true,
         [ IsMatrix and IsFFECollColl and IsGF2MatrixRep],
-        0, 
+        0,
         function(mat)
     local res;
     res := SemiEchelonMatTransformationDestructive( List( mat, ShallowCopy) );
@@ -2227,19 +2227,19 @@ InstallMethod(SemiEchelonMatTransformation,
 # plain lists
 #
 
-InstallMethod(SemiEchelonMatDestructive, 
+InstallMethod(SemiEchelonMatDestructive,
         "kernel method for plain lists of GF2 vectors",
         true,
         [ IsPlistRep and IsMatrix and IsMutable and IsFFECollColl ],
-        GF2_AHEAD_OF_8BIT_RANK, 
+        GF2_AHEAD_OF_8BIT_RANK,
         SEMIECHELON_LIST_GF2VECS);
-        
 
-InstallMethod(SemiEchelonMatTransformationDestructive, 
+
+InstallMethod(SemiEchelonMatTransformationDestructive,
         "kernel method for plain lists of GF2 vectors",
         true,
         [ IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
-        GF2_AHEAD_OF_8BIT_RANK, 
+        GF2_AHEAD_OF_8BIT_RANK,
         SEMIECHELON_LIST_GF2VECS_TRANSFORMATIONS);
 
 
@@ -2255,7 +2255,7 @@ InstallMethod(TriangulizeMat,
         "kernel method for plain list of GF2 vectors",
         true,
         [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
-        GF2_AHEAD_OF_8BIT_RANK, 
+        GF2_AHEAD_OF_8BIT_RANK,
         TRIANGULIZE_LIST_GF2VECS);
 
 ##
@@ -2302,7 +2302,7 @@ InstallMethod(DeterminantMatDestructive,
         "kernel method for plain list of GF2 vectors",
         true,
         [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
-        GF2_AHEAD_OF_8BIT_RANK, 
+        GF2_AHEAD_OF_8BIT_RANK,
         DETERMINANT_LIST_GF2VECS);
 
 #############################################################################
@@ -2314,16 +2314,16 @@ InstallMethod(DeterminantMatDestructive,
 InstallOtherMethod(RankMatDestructive,
         "kernel method for plain list of GF2 vectors",
         [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
-        GF2_AHEAD_OF_8BIT_RANK, 
+        GF2_AHEAD_OF_8BIT_RANK,
         RANK_LIST_GF2VECS);
-       
+
 
 InstallMethod(NestingDepthM, [IsGF2MatrixRep], m->2);
 InstallMethod(NestingDepthA, [IsGF2MatrixRep], m->2);
 InstallMethod(NestingDepthM, [IsGF2VectorRep], m->1);
 InstallMethod(NestingDepthA, [IsGF2VectorRep], m->1);
 
-InstallMethod(PostMakeImmutable, [IsGF2MatrixRep], 
+InstallMethod(PostMakeImmutable, [IsGF2MatrixRep],
         function(m)
     local i;
     for i in [2..m![1]] do
@@ -2376,7 +2376,7 @@ InstallMethodWithRandomSource( Randomize,
   function( rs, v )
     local i;
     MultVector(v,0);
-    for i in [1..Length(v)] do 
+    for i in [1..Length(v)] do
         if Random(rs,0,1) = 1 then v[i] := Z(2); fi;
     od;
     return v;
@@ -2385,8 +2385,8 @@ InstallMethodWithRandomSource( Randomize,
 InstallMethod( MutableCopyMat, "for a gf2 matrix",
   [ IsGF2MatrixRep ],
   function( m )
-    local mm; 
-    mm := List(m,ShallowCopy); 
+    local mm;
+    mm := List(m,ShallowCopy);
     ConvertToMatrixRep(mm,2);
     return mm;
   end );
@@ -2407,7 +2407,7 @@ InstallMethod( Matrix, "for a list of vecs, an integer, and a gf2 mat",
         for i in [1..QuoInt(Length(l),rl)] do
             li[i] := l{[(i-1)*rl+1..i*rl]};
         od;
-    else  
+    else
         li:= ShallowCopy(l);
     fi;
     # FIXME: Does not work for matrices m with no rows
@@ -2439,7 +2439,7 @@ InstallMethod( CopySubVector, "for two gf2 vectors, and two ranges",
         TryNextMethod();
     fi;
   end );
-  
+
   InstallMethod( CopySubVector, "for two gf2 vectors, and two lists",
   [IsGF2VectorRep, IsGF2VectorRep and IsMutable, IsList, IsList],
         function( v, w, f, t )
@@ -2601,7 +2601,7 @@ InstallMethod( DistanceOfVectors, "for two gf2 vectors",
     return DistanceVecFFE(v,w);
   end );
 
-InstallMethod( NewCompanionMatrix, 
+InstallMethod( NewCompanionMatrix,
   "for IsGF2MatrixRep, a polynomial and a ring",
   [ IsGF2MatrixRep, IsUnivariatePolynomial, IsRing ],
   function( ty, po, bd )

@@ -65,7 +65,7 @@
 ##  ugly vectors (see&nbsp;<Ref Sect="Vector Spaces Handled By Nice Bases"/>) is invariant
 ##  under closures of the basis;
 ##  this is the case for example if the vectors are matrices, Lie objects,
-##  or elements of structure constants algebras. 
+##  or elements of structure constants algebras.
 ##  <P/>
 ##  There are mutable bases that use special information to perform their
 ##  tasks; examples are mutable bases of Gaussian row and matrix spaces.
@@ -194,7 +194,7 @@ DeclareOperation( "NrBasisVectors", [ IsMutableBasis ] );
 ##  <Example><![CDATA[
 ##  gap> MB:= MutableBasis( Rationals, [ [ 1, 1 ], [ 2, 2 ] ] );;
 ##  gap> B:= ImmutableBasis( MB );
-##  SemiEchelonBasis( <vector space of dimension 1 over Rationals>, 
+##  SemiEchelonBasis( <vector space of dimension 1 over Rationals>,
 ##  [ [ 1, 1 ] ] )
 ##  gap> UnderlyingLeftModule( B );
 ##  <vector space of dimension 1 over Rationals>

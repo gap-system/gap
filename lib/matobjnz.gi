@@ -8,7 +8,7 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 
-# represent vectors/matrices over Z/nZ by nonnegative integer lists 
+# represent vectors/matrices over Z/nZ by nonnegative integer lists
 # in the range [0..n-1], but reduce after
 # arithmetic. This way avoid always wrapping all entries separately
 
@@ -167,7 +167,7 @@ InstallMethod( PostMakeImmutable, "for a zmodnz vector", [ IsZmodnZVectorRep ],
 #     if not IsMutable(v) then SetFilterObj(v,IsMutable); fi;
 #     return v;
 #   end );
-# 
+#
 # InstallMethod( ZeroVector, "for an integer and a zmodnz matrix",
 #   [ IsInt, IsZmodnZMatrixRep ],
 #   function( l, m )
@@ -555,7 +555,7 @@ InstallMethod( AdditiveInverseMutable, "for a zmodnz vector",
 #   function( v )
 #     return Objectify(TypeObj(v),[v![BDPOS],ZeroSameMutability(v![ELSPOS])]);
 #   end );
-# 
+#
 # InstallMethod( ZeroImmutable, "for a zmodnz vector", [ IsZmodnZVectorRep ],
 #   function( v )
 #     local res;
@@ -1504,7 +1504,7 @@ end );
 # Minimal/Characteristic  Polynomial stuff
 #############################################################################
 ##
-##  Variant of 
+##  Variant of
 #F  Matrix_OrderPolynomialInner( <fld>, <mat>, <vec>, <spannedspace> )
 ##
 BindGlobal( "ZModnZMOPI",function( fld, mat, vec, vecs)

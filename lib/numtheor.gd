@@ -16,7 +16,7 @@
 ##  called the <E>prime residue group</E>.
 ##  The order of this group is <M>\phi(m)</M> (see&nbsp;<Ref Oper="Phi"/>),
 ##  and <M>\lambda(m)</M> (see&nbsp;<Ref Oper="Lambda"/>) is its exponent.
-##  This group is cyclic if and only if <M>m</M> is 2, 4, 
+##  This group is cyclic if and only if <M>m</M> is 2, 4,
 ##  an odd prime power <M>p^n</M>, or twice an odd prime power <M>2 p^n</M>.
 ##  In this case the generators  of the group, i.e., elements of order
 ##  <M>\phi(m)</M>,
@@ -259,7 +259,7 @@ DeclareGlobalFunction( "IsPrimitiveRootMod" );
 ##  is strictly larger than <A>start</A>.
 ##  <Example><![CDATA[
 ##  gap> # largest primitive root for a prime less than 2000:
-##  gap> PrimitiveRootMod( 409 ); 
+##  gap> PrimitiveRootMod( 409 );
 ##  21
 ##  gap> PrimitiveRootMod( 541, 2 );
 ##  10
@@ -312,10 +312,10 @@ DeclareGlobalFunction( "PrimitiveRootMod" );
 ##  gap> GeneratorsPrimeResidues( 1 );
 ##  rec( exponents := [  ], generators := [  ], primes := [  ] )
 ##  gap> GeneratorsPrimeResidues( 4*3 );
-##  rec( exponents := [ 2, 1 ], generators := [ 7, 5 ], 
+##  rec( exponents := [ 2, 1 ], generators := [ 7, 5 ],
 ##    primes := [ 2, 3 ] )
 ##  gap> GeneratorsPrimeResidues( 8*9*5 );
-##  rec( exponents := [ 3, 2, 1 ], 
+##  rec( exponents := [ 3, 2, 1 ],
 ##    generators := [ [ 271, 181 ], 281, 217 ], primes := [ 2, 3, 5 ] )
 ##  ]]></Example>
 ##  </Description>
@@ -332,7 +332,7 @@ DeclareGlobalFunction( "GeneratorsPrimeResidues" );
 ##  <#GAPDoc Label="Jacobi">
 ##  <ManSection>
 ##  <Func Name="Jacobi" Arg='n, m'/>
-##  
+##
 ##  <Description>
 ##  <Index>quadratic residue</Index>
 ##  <Index Subkey="quadratic">residue</Index>
@@ -341,7 +341,7 @@ DeclareGlobalFunction( "GeneratorsPrimeResidues" );
 ##  <A>n</A> modulo the integer <A>m</A>.
 ##  It is defined as follows:
 ##  <P/>
-##  If <M>n</M> and <M>m</M> are not coprime then <M>J(n,m) = 0</M>.  
+##  If <M>n</M> and <M>m</M> are not coprime then <M>J(n,m) = 0</M>.
 ##  Furthermore, <M>J(n,1) = 1</M> and <M>J(n,-1) = -1</M> if <M>m &lt; 0</M>
 ##  and  <M>+1</M>  otherwise.
 ##  And for odd <M>n</M> it is <M>J(n,2) = (-1)^k</M> with
@@ -377,7 +377,7 @@ DeclareGlobalFunction( "GeneratorsPrimeResidues" );
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##  
+##
 DeclareGlobalFunction( "Jacobi" );
 
 
@@ -395,7 +395,7 @@ DeclareGlobalFunction( "Jacobi" );
 ##  <Ref Func="Legendre"/> returns the value of the <E>Legendre symbol</E>
 ##  of the integer <A>n</A> modulo the positive integer <A>m</A>.
 ##  <P/>
-##  The value  of  the Legendre  symbol <M>L(n/m)</M> is 1 if  <M>n</M> is a 
+##  The value  of  the Legendre  symbol <M>L(n/m)</M> is 1 if  <M>n</M> is a
 ##  <E>quadratic residue</E> modulo <M>m</M>, i.e., if there exists an integer <M>r</M> such
 ##  that <M>r^2 \equiv n \pmod{m}</M> and <M>-1</M> otherwise.
 ##  <P/>
@@ -458,7 +458,7 @@ DeclareGlobalFunction( "Legendre" );
 ##  <Ref Func="RootMod"/> is efficient even for large values of <A>m</A>,
 ##  in fact the most time is usually spent factoring <A>m</A>
 ##  (see <Ref Func="FactorsInt"/>).
-##  
+##
 ##  <Example><![CDATA[
 ##  gap> # note 'RootMod' does not return 8 in this case but -8:
 ##  gap> RootMod( 64, 1009 );
@@ -488,7 +488,7 @@ DeclareGlobalFunction( "RootMod" );
 ##
 ##  <Description>
 ##  <Ref Func="RootsMod"/> computes the set of <A>k</A>th roots of the
-##  integer <A>n</A> modulo the positive integer <A>m</A>, i.e., the list of 
+##  integer <A>n</A> modulo the positive integer <A>m</A>, i.e., the list of
 ##  all <M>r</M> such that <M>r^{<A>k</A>} \equiv <A>n</A> \pmod{<A>m</A>}</M>.
 ##  If only the arguments <A>n</A> and <A>m</A> are given,
 ##  the default value for <A>k</A> is <M>2</M>.
@@ -807,7 +807,7 @@ DeclareGlobalFunction( "TwoSquares" );
 ##  that is the exponent <M>e</M> such that <M>p^e</M> is the largest
 ##  power of <A>p</A> that divides <A>n</A>.
 ##  The valuation of zero is infinity.
-##  
+##
 ##  <Example><![CDATA[
 ##  gap> PValuation(100,2);
 ##  2

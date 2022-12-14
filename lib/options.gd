@@ -20,7 +20,7 @@
 ##  <M>p</M>-Quotient algorithm.
 ##  <P/>
 ##  The basis of this system is a global stack of records. All the
-##  entries of each record are thought of as options settings, and the 
+##  entries of each record are thought of as options settings, and the
 ##  effective setting of an option is given by the topmost record
 ##  in which the relevant field is bound.
 ##  <P/>
@@ -38,7 +38,7 @@
 ##  <Ref Subsect="Function Call With Options"/> for details. The full form
 ##  can be used where the same options are to run across several
 ##  calls, or where the <C>DoSomething</C> procedure is actually an infix
-##  operator, or other function with special syntax. 
+##  operator, or other function with special syntax.
 ##  <P/>
 ##  An alternative to this system is the use of additional optional
 ##  arguments in procedure calls. This is not felt to be sufficient
@@ -199,7 +199,7 @@ DeclareGlobalFunction( "DisplayOptionsStack");
 ##  <InfoClass Name="InfoOptions"/>
 ##
 ##  <Description>
-##  This info class can be used to enable messages about options being 
+##  This info class can be used to enable messages about options being
 ##  changed (level 1) or accessed (level 2).
 ##  </Description>
 ##  </ManSection>

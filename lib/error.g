@@ -182,7 +182,7 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
         LEAVE_ALL_NAMESPACES();
         JUMP_TO_CATCH(1);
     fi;
-        
+
     if IsBound(options.justQuit) then
         justQuit := options.justQuit;
         if not justQuit in [false, true] then
@@ -193,7 +193,7 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
     else
         justQuit := false;
     fi;
-        
+
     if IsBound(options.mayReturnVoid) then
         mayReturnVoid := options.mayReturnVoid;
         if not mayReturnVoid in [false, true] then
@@ -204,7 +204,7 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
     else
         mayReturnVoid := false;
     fi;
-        
+
     if IsBound(options.mayReturnObj) then
         mayReturnObj := options.mayReturnObj;
         if not mayReturnObj in [false, true] then
@@ -215,7 +215,7 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
     else
         mayReturnObj := false;
     fi;
-     
+
     if IsBound(options.printThisStatement) then
         printThisStatement := options.printThisStatement;
         if not printThisStatement in [false, true] then
@@ -226,7 +226,7 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
     else
         printThisStatement := true;
     fi;
-        
+
     if IsBound(options.lateMessage) then
         lateMessage := options.lateMessage;
         if not lateMessage in [false, true] and not IsString(lateMessage) then
@@ -237,7 +237,7 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
     else
         lateMessage := "";
     fi;
-        
+
     # Local functions that print the user feedback.
     printEarlyMessage := function(stream)
         PrintTo(stream, "Error, ");

@@ -18,7 +18,7 @@ function(fam)
   return NewType(fam,IsObjWithMemory);
 end);
 
-InstallGlobalFunction( GeneratorsWithMemory, 
+InstallGlobalFunction( GeneratorsWithMemory,
   function(l)
     # l is a list of objects
     local i,ll,o,r,slp;
@@ -98,7 +98,7 @@ InstallGlobalFunction( StripStabChain,
     od;
     if IsBound(S.transversal) then
         for i in [1..Length(S.transversal)] do
-            if IsBound(S.transversal[i]) and 
+            if IsBound(S.transversal[i]) and
                IsObjWithMemory(S.transversal[i]) then
                 S.transversal[i] := S.transversal[i]!.el;
             fi;
@@ -120,7 +120,7 @@ InstallGlobalFunction( CopyMemory,
     hwm := rec(slp := gwm!.slp, n := gwm!.n, el := h);
     return Objectify(TypeOfObjWithMemory(FamilyObj(h)),hwm);
   end);
-  
+
 InstallGlobalFunction( GroupWithMemory,
   function(gens)
     # gens a list of generators
@@ -136,7 +136,7 @@ InstallGlobalFunction( GroupWithMemory,
 
 InstallGlobalFunction( SLPOfElm,
   function(elm)
-    # Returns a straight line program to write elm as in the original 
+    # Returns a straight line program to write elm as in the original
     # generators.
     if elm!.n = 0 then
         return StraightLineProgramNC( [[1,0]], elm!.slp.nogens );
@@ -148,12 +148,12 @@ InstallGlobalFunction( SLPOfElm,
 
 InstallGlobalFunction( SLPOfElms,
   function(elms)
-    # Returns a straight line program to write elm as in the original 
+    # Returns a straight line program to write elm as in the original
     # generators.
     if ForAny(elms{[2..Length(elms)]}, x -> not IsIdenticalObj(elms[1]!.slp, x!.slp)) then
         ErrorNoReturn("SLPOfElms: the slp components of all elements must be identical");
     fi;
-    return IntermediateResultsOfSLPWithoutOverwrite( 
+    return IntermediateResultsOfSLPWithoutOverwrite(
                [elms[1]!.slp.prog,elms[1]!.slp.nogens], List(elms,x->x!.n) );
   end);
 
@@ -185,7 +185,7 @@ InstallMethod( PrintObj, "objects with memory", true, [IsObjWithMemory],0,
     Print(" with mem>");
 end);
 
-InstallMethod( \*, "objects with memory", true, 
+InstallMethod( \*, "objects with memory", true,
   [IsObjWithMemory,IsObjWithMemory],0,
   function(a,b)
     local r,slp;
@@ -276,7 +276,7 @@ InstallMethod( InverseOp, "objects with memory", true,
     return r;
   end);
 
-InstallMethod( \^, "objects with memory", true, 
+InstallMethod( \^, "objects with memory", true,
   [IsObjWithMemory,IsInt],0,
   function(a,b)
     local r,slp;
@@ -456,7 +456,7 @@ InstallOtherMethod( \*, "for a matrix with memory and a scalar",
   [ IsMatrixOrMatrixObj and IsObjWithMemory, IsScalar ], 0,
   { M , s} ->  M!.el * s );
 
-InstallOtherMethod(ProjectiveOrder,"object with memory", 
+InstallOtherMethod(ProjectiveOrder,"object with memory",
   [IsObjWithMemory],0,
   function(a)
     return ProjectiveOrder(a!.el);

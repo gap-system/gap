@@ -148,15 +148,15 @@ InstallTrueMethod( IsDuplicateFree, IsDomain );
 ##  operational structures.
 ##  <P/>
 ##  For many domains that have <E>natural generators by construction</E>
-##  (for example, the natural generators of a free group of rank two 
-##  are the two generators stored as value of the attribute 
-##  <Ref Attr="GeneratorsOfGroup"/>, and the natural generators of 
-##  a free associative algebra are those generators stored as value of 
-##  the attribute <Ref Attr="GeneratorsOfAlgebra"/>), each <E>natural</E> 
+##  (for example, the natural generators of a free group of rank two
+##  are the two generators stored as value of the attribute
+##  <Ref Attr="GeneratorsOfGroup"/>, and the natural generators of
+##  a free associative algebra are those generators stored as value of
+##  the attribute <Ref Attr="GeneratorsOfAlgebra"/>), each <E>natural</E>
 ##  generator can be accessed using the <C>.</C> operator. For a domain
-##  <A>D</A>, <C><A>D</A>.i</C> returns the <M>i</M>-th generator if 
-##  <M>i</M> is a positive integer, and if <C>name</C> is the name of a 
-##  generator of <A>D</A> then <C><A>D</A>.name</C> returns this generator. 
+##  <A>D</A>, <C><A>D</A>.i</C> returns the <M>i</M>-th generator if
+##  <M>i</M> is a positive integer, and if <C>name</C> is the name of a
+##  generator of <A>D</A> then <C><A>D</A>.name</C> returns this generator.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> G := DihedralGroup(IsPermGroup, 4);;
@@ -340,11 +340,11 @@ DeclareGlobalFunction( "InstallAccessToGenerators" );
 ##  This section describes how you can add  new <Q>in parent attributes</Q>
 ##  (see&nbsp;<Ref Sect="Constructing Subdomains"/>
 ##  and <Ref Sect="Parents"/>).
-##  As an example, we describe how 
+##  As an example, we describe how
 ##  <Ref Oper="Index" Label="for a group and its subgroup"/>
 ##  and its related functions are implemented.
 ##  <P/>
-##  There are two operations 
+##  There are two operations
 ##  <Ref Oper="Index" Label="for a group and its subgroup"/> and
 ##  <C>IndexOp</C>,
 ##  and an attribute <C>IndexInParent</C>.
@@ -357,7 +357,7 @@ DeclareGlobalFunction( "InstallAccessToGenerators" );
 ##  see&nbsp;<Ref Sect="Attributes"/>),
 ##  namely <C>D -> IndexOp( Parent( D ), D )</C>.
 ##  <P/>
-##  The operation <Ref Oper="Index" Label="for a group and its subgroup"/> 
+##  The operation <Ref Oper="Index" Label="for a group and its subgroup"/>
 ##  proceeds as follows.
 ##  <List>
 ##  <Item>
@@ -374,7 +374,7 @@ DeclareGlobalFunction( "InstallAccessToGenerators" );
 ##  </Item>
 ##  </List>
 ##  (Note that it is in principle possible to install even
-##  <Ref Oper="Index" Label="for a group and its subgroup"/> 
+##  <Ref Oper="Index" Label="for a group and its subgroup"/>
 ##  and <C>IndexOp</C> methods
 ##  for a number of arguments different from two,
 ##  with <Ref Func="InstallOtherMethod"/>, see <Ref Sect="Attributes"/>).
@@ -409,7 +409,7 @@ DeclareGlobalFunction( "InstallAccessToGenerators" );
 ##  ]]></Log>
 ##  <P/>
 ##  Note that no methods need be installed for
-##  <Ref Oper="Index" Label="for a group and its subgroup"/> 
+##  <Ref Oper="Index" Label="for a group and its subgroup"/>
 ##  and <C>IndexInParent</C>.
 ##  </Description>
 ##  </ManSection>

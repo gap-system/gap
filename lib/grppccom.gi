@@ -300,7 +300,7 @@ local K, N, Z, SN, B, L, LL, SNpcgs, mats, i;
       if IsBound(cor.condition)  then
 	for i  in L  do
 	  K:=ocr.cocycleToComplement(i);
-	  if cor.condition(cor, K)  then  
+	  if cor.condition(cor, K)  then
 	    Add(LL, rec(complement:=K, centralizer:=S));
 	  fi;
 	od;
@@ -560,7 +560,7 @@ local   p, ocr;
     # If <K> and <M> are coprime, <K> splits.
     Info(InfoComplement,3,"CONextComplements: coprime case, <K> splits" );
     ocr:=rec( group:=K, module:=M,
-	modulePcgs:=InducedPcgs(cor.pcgs,M), 
+	modulePcgs:=InducedPcgs(cor.pcgs,M),
                 pcgs:=cor.pcgs, inPcComplement:=true);
 
     if IsBound( cor.generators )  then
@@ -890,7 +890,7 @@ local   H, E,  cor,  a,  i,  fun2,pcgs,home;
     #Info(InfoComplement,2,"Complements: computing p prime sets" );
     #a  :=NaturalHomomorphism( G, G / N );
     #cor:=PPrimeSetsOC( Image( a ) );
-    #cor.generators:=List( cor.generators, x -> 
+    #cor.generators:=List( cor.generators, x ->
     #                    PreImagesRepresentative( a, x ) );
     cor:=rec(home:=home,generators:=pcgs mod InducedPcgs(pcgs,N));
     cor.useCentralSK:=true;
@@ -905,7 +905,7 @@ local   H, E,  cor,  a,  i,  fun2,pcgs,home;
 end );
 
 
-InstallMethod( ComplementClassesRepresentativesSolvableNC, "pc groups", 
+InstallMethod( ComplementClassesRepresentativesSolvableNC, "pc groups",
   IsIdenticalObj, [CanEasilyComputePcgs,CanEasilyComputePcgs], 0,
 function(G,N)
   return List( COComplementsMain(G, N, true, false), G -> G.complement );
@@ -938,7 +938,7 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
 
   K:=ClosureGroup(M,Intersection(H,N));
   f:=Size(H)/Size(K);
-  
+
   # find prime that gives normal characteristic subgroup
   primes:=PrimeDivisors(f);
   if Length(primes)=1 then
@@ -1031,7 +1031,7 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
 	for z in GeneratorsOfGroup(cn[j]) do
 	  nz:=[z];
 	  gp:=List(ocr.generators,x->Image(shom,x^z));
-	  if gp=shomgens then 
+	  if gp=shomgens then
 	    # no action on qs/qk -- action on cohomology is affine
 
 	    # linear part
@@ -1049,7 +1049,7 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
 	    MakeImmutable(mat);
 	    Add(nz,mat);
 
-	    if IsOne(nz[2]) and IsZero(nz[3]) then 
+	    if IsOne(nz[2]) and IsZero(nz[3]) then
 	      nz[4]:=fail; # indicate that element does not act
 	    fi;
 
@@ -1066,7 +1066,7 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
 	local genpos,l;
 	  genpos:=PositionProperty(acterlist,x->a=x[1]);
 	  if genpos=fail then
-	    if IsOne(a) then 
+	    if IsOne(a) then
 	      # the action test always does the identity, so its worth
 	      # catching this as we have many short orbits
 	      return cy;

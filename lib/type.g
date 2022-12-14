@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file defines the format of families and types. Some functions 
+##  This file defines the format of families and types. Some functions
 ##  are moved to type1.g, which is compiled
 ##
 
@@ -445,7 +445,7 @@ FamilyOfFamilies!.TYPES         := [];
 FamilyOfFamilies!.nTYPES          := 0;
 FamilyOfFamilies!.HASH_SIZE       := 100;
 
-# for caching types of homogeneous lists, assigned in kernel when needed 
+# for caching types of homogeneous lists, assigned in kernel when needed
 if IsHPCGAP then
     FamilyOfFamilies!.TYPES_LIST_FAM  := MakeWriteOnceAtomic(AtomicList(27));
 else
@@ -483,7 +483,7 @@ FamilyOfTypes!.TYPES            := [];
 FamilyOfTypes!.nTYPES          := 0;
 FamilyOfTypes!.HASH_SIZE       := 100;
 
-# for caching types of homogeneous lists, assigned in kernel when needed 
+# for caching types of homogeneous lists, assigned in kernel when needed
 if IsHPCGAP then
     FamilyOfTypes!.TYPES_LIST_FAM  := MakeWriteOnceAtomic(AtomicList(27));
 else

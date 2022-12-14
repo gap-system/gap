@@ -89,7 +89,7 @@ local   pcgs,D,pnt,acts,act,
 end);
 
 InstallGlobalFunction(Pcgs_OrbitStabilizer,function(pcgs,D,pnt,acts,act)
-  local pcs, new,dep; 
+  local pcs, new,dep;
   pcs := Pcs_OrbitStabilizer( pcgs, D,pnt, acts, act );
   dep:=pcs.depths;
   if not IsIdenticalObj(pcgs,ParentPcgs(pcgs)) then
@@ -140,7 +140,7 @@ local acts,act;
     return Pcgs_OrbitStabilizer(arg[1],false,arg[2],acts,act).stabpcgs;
   fi;
 end);
-        
+
 
 # This function does the same as the following method, however it does dot
 # create an immutable copy of the orbit (which could be expensive)
@@ -230,7 +230,7 @@ InstallGlobalFunction( SetCanonicalRepresentativeOfExternalOrbitByPcgs,
         acts := xset!.operators;
         act  := xset!.funcOperation;
     fi;
-    
+
     orb := [ pnt ];
     len := ListWithIdenticalEntries( Length( pcgs ) + 1, 0 );
     len[ Length( len ) ] := 1;
@@ -241,7 +241,7 @@ InstallGlobalFunction( SetCanonicalRepresentativeOfExternalOrbitByPcgs,
         img := act( pnt, acts[ i ] );
         pos := PositionCanonical( D, img );
         if not bit[ pos ]  then
-            
+
             # The current generator moves the orbit as a block.
             Add( orb, img );  bit[ pos ] := true;
             if pos < min  then
@@ -265,9 +265,9 @@ InstallGlobalFunction( SetCanonicalRepresentativeOfExternalOrbitByPcgs,
                     fi;
                 od;
             od;
-            
+
         else
-          
+
             # The current generator leaves the orbit invariant.
             pos := Position( orb, img );
             stb := ListWithIdenticalEntries( Length( pcgs ), 0 );
@@ -281,7 +281,7 @@ InstallGlobalFunction( SetCanonicalRepresentativeOfExternalOrbitByPcgs,
                 pos := ( pos - 1 ) mod len[ ii ] + 1;
             od;
             Add( S, LinearCombinationPcgs( pcgs, stb ) );
-            
+
         fi;
         len[ i ] := Length( orb );
     od;
@@ -303,7 +303,7 @@ InstallGlobalFunction( SetCanonicalRepresentativeOfExternalOrbitByPcgs,
         SetActorOfExternalSet( xset,
                 LinearCombinationPcgs( pcgs, oper ) ^ -1 );
     fi;
-            
+
     # <S> is a reversed IGS.
     if not HasStabilizerOfExternalSet( xset )  then
         S    := InducedPcgsByPcSequenceNC( ParentPcgs(pcgs), Reversed( S ) );
@@ -317,7 +317,7 @@ InstallGlobalFunction( SetCanonicalRepresentativeOfExternalOrbitByPcgs,
 #        fi;
         SetStabilizerOfExternalSet( xset, stab );
     fi;
-    
+
 end );
 
 #############################################################################
@@ -328,7 +328,7 @@ InstallMethod( Enumerator, "<xorb by pcgs>", true,
         [ IsExternalOrbit and IsExternalSetByPcgs ], 0,
     function( xorb )
     local   orbstab;
-    
+
     orbstab := OrbitStabilizer( xorb, Representative( xorb ) );
     SetStabilizerOfExternalSet( xorb, orbstab.stabilizer );
     return orbstab.orbit;
@@ -343,7 +343,7 @@ InstallMethod( CanonicalRepresentativeOfExternalSet,
         [ IsExternalOrbit and IsExternalSetByPcgs ], 0,
     function( xorb )
     local   oper;
-    
+
     oper := ActorOfExternalSet( xorb );
     if HasCanonicalRepresentativeOfExternalSet( xorb )  then
         return CanonicalRepresentativeOfExternalSet( xorb );
@@ -438,7 +438,7 @@ end);
 #           IsList, IsFunction ], 0,
 #     function( G, D, d, e, pcgs, acts, act )
 #     local   dset,  eset;
-#     
+#
 #     dset := ExternalOrbit( G, D, d, pcgs, acts, act );
 #     eset := ExternalOrbit( G, D, e, pcgs, acts, act );
 #     return ActorOfExternalSet( dset ) /

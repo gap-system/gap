@@ -99,7 +99,7 @@ DeclareGlobalFunction("CollectGarbage");
 ##  <C>livebags</C>and <C>livekb</C> only to the numbers and total size of the
 ##  young bags that were considered for garbage collection, and survived.
 ##  <P/>
-##  The <C>npartial</C> and <C>nfull</C> components will contain the number 
+##  The <C>npartial</C> and <C>nfull</C> components will contain the number
 ##  of full and partial garbage collections performed since &GAP; started.
 ##  </Description>
 ##  </ManSection>
@@ -127,7 +127,7 @@ DeclareGlobalFunction("GasmanStatistics");
 ##  <C>"none"</C>, <C>"full"</C>, or <C>"all"</C>,
 ##  depending on whether the garbage collector is currently set to print
 ##  messages on
-##  no collections, full collections only, or all collections, respectively. 
+##  no collections, full collections only, or all collections, respectively.
 ##  <P/>
 ##  Calling <Ref Func="SetGasmanMessageStatus"/> with the argument
 ##  <A>stat</A>, which should be one of the three strings mentioned above,

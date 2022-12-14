@@ -130,13 +130,13 @@ Transatlantic(VerifyStabilizer);
 
 
 
-# optional args: 
+# optional args:
 #    list of names to check (default NamesGVars()),
-#    list of pairs to substitute 
+#    list of pairs to substitute
 BindGlobal("CheckSynonyms", function(arg)
   local pairs, a, p2, allnames, md, mnd, nid, ok, d, nd, n2, doc, p, n;
   # default pairs to check
-  pairs := [ [ "lizer", "liser" ], 
+  pairs := [ [ "lizer", "liser" ],
              [ "enter", "entre" ],
              [ "Solvable", "Soluble" ],
            ];
@@ -144,7 +144,7 @@ BindGlobal("CheckSynonyms", function(arg)
   allnames := NamesGVars();
 
   # can be overwritten by arguments
-  for a in arg do 
+  for a in arg do
     if IsList(a) and ForAll(a, IsString) then
       allnames := a;
     fi;
@@ -162,14 +162,14 @@ BindGlobal("CheckSynonyms", function(arg)
     fi;
   od;
   Append(pairs, List(pairs, p-> [p[2], p[1]]));
- 
+
   md := [];
   mnd := [];
   nid := [];
   ok := [];
   d := [];
   nd := [];
-  for p in pairs do 
+  for p in pairs do
     Print("Checking pair ", p, "\n");
     for n in allnames do
       n2 := ReplacedString(n, p[1], p[2]);
@@ -184,7 +184,7 @@ BindGlobal("CheckSynonyms", function(arg)
         else
           if not IsIdenticalObj(ValueGlobal(n), ValueGlobal(n2)) then
             Add(nid, [n, n2]);
-          else 
+          else
             if doc = [true, true] then
               AddSet(ok, Set([n,n2]));
             elif doc = [false, false] then

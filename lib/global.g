@@ -28,7 +28,7 @@
 #############################################################################
 ##
 #F  VALUE_GLOBAL ( <name> ) .  . . . . . . . . . .access a global by its name
-## 
+##
 ##  VALUE_GLOBAL ( <name> ) returns the value currently bound to the global
 ##  variable named by the string <name>. An error is raised if no value
 ##  is currently bound
@@ -40,7 +40,7 @@ VALUE_GLOBAL := VAL_GVAR;
 #############################################################################
 ##
 #F  ISBOUND_GLOBAL ( <name> ) .  . . . check if a global is bound by its name
-## 
+##
 ##  ISBOUND_GLOBAL ( <name> ) returns true if a value currently bound
 ##  to the global variable named by the string <name> and false otherwise
 ##
@@ -51,7 +51,7 @@ ISBOUND_GLOBAL := ISB_GVAR;
 #############################################################################
 ##
 #F  UNBIND_GLOBAL ( <name> ) .  . . . . . . . . .unbind a global  by its name
-## 
+##
 ##  UNBIND_GLOBAL ( <name> ) removes any value currently bound
 ##  to the global variable named by the string <name>. Nothing is returned.
 ##
@@ -86,7 +86,7 @@ IS_CONSTANT_GLOBAL := IsConstantGVar;
 #F  MAKE_READ_ONLY_GLOBAL ( <name> ) . . . . make a global variable read-only
 ##
 ##  MAKE_READ_ONLY_GLOBAL ( <name> ) marks the global variable named
-##  by the string <name> as read-only. 
+##  by the string <name> as read-only.
 ##
 
 MAKE_READ_ONLY_GLOBAL := MakeReadOnlyGVar;
@@ -131,7 +131,7 @@ MAKE_READ_ONLY_GLOBAL("REREADING");
 ##  way to create and set "official" global variable (such as
 ##  Operations and Categories)
 ##
-  
+
 BIND_GLOBAL := function( name, val)
     if not REREADING and ISBOUND_GLOBAL( name ) then
         if (IS_READ_ONLY_GLOBAL(name)) then
@@ -149,7 +149,7 @@ MAKE_READ_ONLY_GLOBAL("BIND_GLOBAL");
 BIND_CONSTANT := function( name, val)
     # Ignore attempts to reassign an identical value, to simplify
     # rereading files
-    if ISBOUND_GLOBAL( name ) and 
+    if ISBOUND_GLOBAL( name ) and
        IS_IDENTICAL_OBJ( val, VAL_GVAR( name ) ) then
        return;
     fi;

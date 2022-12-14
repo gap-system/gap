@@ -45,7 +45,7 @@
 ##  permutation characters,
 ##  using that such a class function <M>\pi</M> must have at least the
 ##  following properties.
-##  (For details, see&nbsp;<Cite Key="Isa76" Where="Theorem 5.18."/>), 
+##  (For details, see&nbsp;<Cite Key="Isa76" Where="Theorem 5.18."/>),
 ##
 ##  <List>
 ##  <Mark>(a)</Mark>
@@ -195,31 +195,31 @@
 ##  gap> psi:= Sum( Irr( t ){ [ 1, 3, 6 ] } );
 ##  Character( CharacterTable( "A6" ), [ 15, 3, 0, 3, 1, 0, 0 ] )
 ##  gap> info:= PermCharInfo( t, psi );
-##  rec( ATLAS := [ "1a+5b+9a" ], bound := [ [ 1, 3, 8, 8, 6, 24, 24 ] ], 
-##    contained := [ [ 1, 9, 0, 8, 6, 0, 0 ] ], 
-##    display := 
-##      rec( 
-##        chars := [ [ 15, 3, 0, 3, 1, 0, 0 ], [ 1, 9, 0, 8, 6, 0, 0 ], 
-##            [ 1, 3, 8, 8, 6, 24, 24 ] ], classes := [ 1, 2, 4, 5 ], 
+##  rec( ATLAS := [ "1a+5b+9a" ], bound := [ [ 1, 3, 8, 8, 6, 24, 24 ] ],
+##    contained := [ [ 1, 9, 0, 8, 6, 0, 0 ] ],
+##    display :=
+##      rec(
+##        chars := [ [ 15, 3, 0, 3, 1, 0, 0 ], [ 1, 9, 0, 8, 6, 0, 0 ],
+##            [ 1, 3, 8, 8, 6, 24, 24 ] ], classes := [ 1, 2, 4, 5 ],
 ##        letter := "I" ) )
 ##  gap> Display( t, info.display );
 ##  A6
-##  
+##
 ##       2  3  3  .  2
 ##       3  2  .  2  .
 ##       5  1  .  .  .
-##  
+##
 ##         1a 2a 3b 4a
 ##      2P 1a 1a 3b 2a
 ##      3P 1a 2a 1a 4a
 ##      5P 1a 2a 3b 4a
-##  
+##
 ##  I.1    15  3  3  1
 ##  I.2     1  9  8  6
 ##  I.3     1  3  8  6
 ##  gap> j1:= CharacterTable( "J1" );;
 ##  gap> psi:= TrivialCharacter( CharacterTable( "7:6" ) )^j1;
-##  Character( CharacterTable( "J1" ), [ 4180, 20, 10, 0, 0, 2, 1, 0, 0, 
+##  Character( CharacterTable( "J1" ), [ 4180, 20, 10, 0, 0, 2, 1, 0, 0,
 ##    0, 0, 0, 0, 0, 0 ] )
 ##  gap> PermCharInfo( j1, psi ).ATLAS;
 ##  [ "1a+56aabb+76aaab+77aabbcc+120aaabbbccc+133a^{4}bbcc+209a^{5}" ]
@@ -276,13 +276,13 @@ DeclareGlobalFunction( "PermCharInfo" );
 ##  [ 1, 3, 3, 4, 5 ]
 ##  gap> permchars:= List( [ [1], [1,2], [1,7], [1,3,4,4,6,6,7] ],
 ##  >                      l -> Sum( Irr( t2 ){ l } ) );
-##  [ Character( CharacterTable( "A5.2" ), [ 1, 1, 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5.2" ), [ 2, 2, 2, 2, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5.2" ), [ 6, 2, 0, 1, 0, 2, 0 ] ), 
+##  [ Character( CharacterTable( "A5.2" ), [ 1, 1, 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5.2" ), [ 2, 2, 2, 2, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5.2" ), [ 6, 2, 0, 1, 0, 2, 0 ] ),
 ##    Character( CharacterTable( "A5.2" ), [ 30, 2, 0, 0, 6, 0, 0 ] ) ]
 ##  gap> info:= PermCharInfoRelative( t, t2, permchars );;
 ##  gap> info.ATLAS;
-##  [ "1a^+", "1a^{\\pm}", "1a^++5a^-", 
+##  [ "1a^+", "1a^{\\pm}", "1a^++5a^-",
 ##    "1a^++3ab+4(a^+)^{2}+5a^+a^{\\pm}" ]
 ##  ]]></Example>
 ##  </Description>
@@ -385,14 +385,14 @@ DeclareGlobalFunction( "PermCharInfoRelative" );
 ##  <Example><![CDATA[
 ##  gap> tbl:= CharacterTable( "A5" );;
 ##  gap> rat:= RationalizedMat( Irr( tbl ) );
-##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 6, -2, 0, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
+##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ), [ 6, -2, 0, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ),
 ##    Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ) ]
 ##  gap> tup:= Filtered( Tuples( [ 0, 1 ], 4 ), x -> not IsZero( x ) );
-##  [ [ 0, 0, 0, 1 ], [ 0, 0, 1, 0 ], [ 0, 0, 1, 1 ], [ 0, 1, 0, 0 ], 
-##    [ 0, 1, 0, 1 ], [ 0, 1, 1, 0 ], [ 0, 1, 1, 1 ], [ 1, 0, 0, 0 ], 
-##    [ 1, 0, 0, 1 ], [ 1, 0, 1, 0 ], [ 1, 0, 1, 1 ], [ 1, 1, 0, 0 ], 
+##  [ [ 0, 0, 0, 1 ], [ 0, 0, 1, 0 ], [ 0, 0, 1, 1 ], [ 0, 1, 0, 0 ],
+##    [ 0, 1, 0, 1 ], [ 0, 1, 1, 0 ], [ 0, 1, 1, 1 ], [ 1, 0, 0, 0 ],
+##    [ 1, 0, 0, 1 ], [ 1, 0, 1, 0 ], [ 1, 0, 1, 1 ], [ 1, 1, 0, 0 ],
 ##    [ 1, 1, 0, 1 ], [ 1, 1, 1, 0 ], [ 1, 1, 1, 1 ] ]
 ##  gap> lincomb:= List( tup, coeff -> coeff * rat );;
 ##  gap> List( lincomb, psi -> TestPerm1( tbl, psi ) );
@@ -405,17 +405,17 @@ DeclareGlobalFunction( "PermCharInfoRelative" );
 ##  CharacterTable( "A7" )
 ##  gap> perms:= PermChars( tbl, rec( degree:= 315 ) );
 ##  [ Character( CharacterTable( "A7" ), [ 315, 3, 0, 0, 3, 0, 0, 0, 0 ] )
-##      , Character( CharacterTable( "A7" ), 
+##      , Character( CharacterTable( "A7" ),
 ##      [ 315, 15, 0, 0, 1, 0, 0, 0, 0 ] ) ]
 ##  gap> TestPerm4( tbl, perms );
-##  [ Character( CharacterTable( "A7" ), [ 315, 15, 0, 0, 1, 0, 0, 0, 0 
+##  [ Character( CharacterTable( "A7" ), [ 315, 15, 0, 0, 1, 0, 0, 0, 0
 ##       ] ) ]
 ##  gap> perms:= PermChars( tbl, rec( degree:= 15 ) );
 ##  [ Character( CharacterTable( "A7" ), [ 15, 3, 0, 3, 1, 0, 0, 1, 1 ] ),
-##    Character( CharacterTable( "A7" ), [ 15, 3, 3, 0, 1, 0, 3, 1, 1 ] ) 
+##    Character( CharacterTable( "A7" ), [ 15, 3, 3, 0, 1, 0, 3, 1, 1 ] )
 ##   ]
 ##  gap> TestPerm5( tbl, perms, tbl mod 5 );
-##  [ Character( CharacterTable( "A7" ), [ 15, 3, 0, 3, 1, 0, 0, 1, 1 ] ) 
+##  [ Character( CharacterTable( "A7" ), [ 15, 3, 0, 3, 1, 0, 0, 1, 1 ] )
 ##   ]
 ##  ]]></Example>
 ##  </Description>
@@ -510,8 +510,8 @@ DeclareGlobalFunction( "TestPerm5" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> deg220:= PermChars( m11, 220 );
-##  [ Character( m11, [ 220, 4, 4, 0, 0, 4, 0, 0, 0, 0 ] ), 
-##    Character( m11, [ 220, 12, 4, 4, 0, 0, 0, 0, 0, 0 ] ), 
+##  [ Character( m11, [ 220, 4, 4, 0, 0, 4, 0, 0, 0, 0 ] ),
+##    Character( m11, [ 220, 12, 4, 4, 0, 0, 0, 0, 0, 0 ] ),
 ##    Character( m11, [ 220, 20, 4, 0, 0, 2, 0, 0, 0, 0 ] ) ]
 ##  ]]></Example>
 ##  <P/>
@@ -554,8 +554,8 @@ DeclareGlobalFunction( "TestPerm5" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> PermChars( m11, rec( torso:= [ 220 ] ) );
-##  [ Character( m11, [ 220, 4, 4, 0, 0, 4, 0, 0, 0, 0 ] ), 
-##    Character( m11, [ 220, 20, 4, 0, 0, 2, 0, 0, 0, 0 ] ), 
+##  [ Character( m11, [ 220, 4, 4, 0, 0, 4, 0, 0, 0, 0 ] ),
+##    Character( m11, [ 220, 20, 4, 0, 0, 2, 0, 0, 0, 0 ] ),
 ##    Character( m11, [ 220, 12, 4, 4, 0, 0, 0, 0, 0, 0 ] ) ]
 ##  gap> PermChars( m11, rec( torso:= [ 220,,,,, 2 ] ) );
 ##  [ Character( m11, [ 220, 20, 4, 0, 0, 2, 0, 0, 0, 0 ] ) ]
@@ -650,16 +650,16 @@ DeclareGlobalFunction( "PermChars" );
 ##  <Example><![CDATA[
 ##  gap> tbl:= CharacterTable( "M11" );;
 ##  gap> PermComb( tbl, rec( degree:= 110 ) );
-##  [ Character( CharacterTable( "M11" ), 
-##      [ 110, 6, 2, 2, 0, 0, 2, 2, 0, 0 ] ), 
-##    Character( CharacterTable( "M11" ), 
-##      [ 110, 6, 2, 6, 0, 0, 0, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "M11" ), [ 110, 14, 2, 2, 0, 2, 0, 0, 0, 
+##  [ Character( CharacterTable( "M11" ),
+##      [ 110, 6, 2, 2, 0, 0, 2, 2, 0, 0 ] ),
+##    Character( CharacterTable( "M11" ),
+##      [ 110, 6, 2, 6, 0, 0, 0, 0, 0, 0 ] ),
+##    Character( CharacterTable( "M11" ), [ 110, 14, 2, 2, 0, 2, 0, 0, 0,
 ##        0 ] ) ]
 ##  gap> # Now compute only multiplicity free permutation characters.
 ##  gap> bounds:= List( RationalizedMat( Irr( tbl ) ), x -> 1 );;
 ##  gap> PermComb( tbl, rec( degree:= 110, maxmult:= bounds ) );
-##  [ Character( CharacterTable( "M11" ), 
+##  [ Character( CharacterTable( "M11" ),
 ##      [ 110, 6, 2, 2, 0, 0, 2, 2, 0, 0 ] ) ]
 ##  ]]></Example>
 ##  </Description>

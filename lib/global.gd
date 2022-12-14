@@ -89,7 +89,7 @@ DeclareGlobalFunction("IsBoundGlobal");
 ##
 ##  <Description>
 ##  IsAutoGlobal ( <A>name</A> ) returns true if there is a global variable
-##  named <A>name</A>, declared using 
+##  named <A>name</A>, declared using
 ##  <Ref Func="DeclareAutoreadableVariables"/>, which has not yet been
 ##  accessed. This means reading this variable's value will cause code
 ##  to be executed.
@@ -158,7 +158,7 @@ DeclareGlobalFunction("IsConstantGlobal");
 ##
 ##  <Description>
 ##  MakeReadOnlyGlobal ( <A>name</A> ) marks the global variable named
-##  by the string <A>name</A> as read-only. 
+##  by the string <A>name</A> as read-only.
 ##  <P/>
 ##  A warning is given if <A>name</A> has no value bound to it or if it is
 ##  already read-only

@@ -212,7 +212,7 @@ local cla,clb,i,j,k,imgs,bd,r,rep,b2,ex2,split,dc,
     k:=Order(i);
     rep:=[];
     for j in [1..Length(clb)] do
-      if Order(Representative(clb[j]))=k 
+      if Order(Representative(clb[j]))=k
          and (Size(a)/Size(clb[j])) mod bd=0 then
         if not IsBound(r[j]) then
           r[j]:=Size(Centralizer(g,Representative(clb[j])));
@@ -234,7 +234,7 @@ local cla,clb,i,j,k,imgs,bd,r,rep,b2,ex2,split,dc,
 
   r:=conjugate(g,a,gens,1);
 
-  if onlyone then 
+  if onlyone then
     # get one
     if Length(r)=0 then
       return fail;
@@ -289,7 +289,7 @@ local o,b,img,G1,c,m,mt,hardlimit,gens,t,k,intersize;
 
       m:=Filtered(m,x->Size(x) mod Size(U)=0 and Size(x)>Size(U));
       SortBy(m,x->Size(G)/Size(x));
-      
+
       gens:=SmallGeneratingSet(U);
       for c in m do
         if Index(G,c)<50000 then
@@ -303,7 +303,7 @@ local o,b,img,G1,c,m,mt,hardlimit,gens,t,k,intersize;
           od;
         else
           t:=DoConjugateInto(G,c,U,true:intersize:=intersize,onlyone:=true);
-          if t<>fail and t<>[] then 
+          if t<>fail and t<>[] then
             Info(InfoCoset,2,"Found Size ",Size(c));
             return c^(Inverse(t));
           fi;
@@ -332,7 +332,7 @@ local o,b,img,G1,c,m,mt,hardlimit,gens,t,k,intersize;
     fi;
   fi;
 
-  if Index(G,U)>hardlimit then 
+  if Index(G,U)>hardlimit then
     Info(InfoWarning,1,
       "will have to use permutation action of degree bigger than ", hardlimit);
   fi;
@@ -373,8 +373,8 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,hardlimit,cheap,olda;
     bound:=c;
   fi;
 
-  c:=[];  
-  for i in [2..Length(cc)] do  
+  c:=[];
+  for i in [2..Length(cc)] do
     Add(c,cc[i-1]);
     if Index(cc[i],cc[i-1]) > bound then
       a:=AsSubgroup(Parent(cc[i]),cc[i-1]);
@@ -595,7 +595,7 @@ end);
 ##
 BindGlobal( "ElementNumber_DoubleCoset", function( enum, pos )
     pos:= pos-1;
-    return enum!.leftgroupEnumerator[ ( pos mod enum!.leftsize )+1 ] 
+    return enum!.leftgroupEnumerator[ ( pos mod enum!.leftsize )+1 ]
            * enum!.rightCosetReps[ QuoInt( pos, enum!.leftsize )+1 ];
 end );
 
@@ -607,7 +607,7 @@ BindGlobal( "NumberElement_DoubleCoset", function( enum, elm )
     p:= (p-1) * enum!.leftsize
         + Position( enum!.leftgroupEnumerator,
                     elm / enum!.rightCosetReps[p], 0 );
-    return p; 
+    return p;
 end );
 
 InstallMethod( Enumerator,
@@ -623,7 +623,7 @@ InstallMethod( Enumerator,
              rightCosetReps := RepresentativesContainedRightCosets( d ) ) ) );
 
 
-RightCosetCanonicalRepresentativeDeterminator := 
+RightCosetCanonicalRepresentativeDeterminator :=
 function(U,a)
   return [CanonicalRightCosetElement(U,a)];
 end;
@@ -727,7 +727,7 @@ local c;
   if ActingDomain(a)<>ActingDomain(b) then TryNextMethod();fi;
   if not IsBiCoset(a) then # product does not require b to be bicoset
     ErrorNoReturn("right cosets can only be multiplied if the left operand is a bicoset");
-  fi; 
+  fi;
   c:=RightCoset(ActingDomain(a), Representative(a) * Representative(b) );
   if HasIsBiCoset(b) then
     SetIsBiCoset(c,IsBiCoset(b));
@@ -819,7 +819,7 @@ end);
 # disabled because of comparison incompatibilities
 #InstallMethod(\<,"RightCosets",IsIdenticalObj,[IsRightCoset,IsRightCoset],0,
 #function(a,b)
-#  # this comparison is *NOT* necessarily equivalent to a comparison of the 
+#  # this comparison is *NOT* necessarily equivalent to a comparison of the
 #  # element lists!
 #  if ActingDomain(a)<>ActingDomain(b) then
 #    return ActingDomain(a)<ActingDomain(b);
@@ -846,11 +846,11 @@ InstallMethod(CanonicalRightCosetElement,"generic",IsCollsElms,
   [IsGroup,IsObject],0,
 function(U,e)
 local l;
-  l:=List(AsList(U),i->i*e); 
+  l:=List(AsList(U),i->i*e);
   return Minimum(l);
 end);
 
-# TODO: In the long run this should become a more general operation, 
+# TODO: In the long run this should become a more general operation,
 # but for the moment it is specialized for the application at hand
 BindGlobal("DCFuseSubgroupOrbits",function(P,G,reps,act,lim,count)
 local live,orbs,orbset,done,nr,p,o,os,orbitextender,bahn,i,j,enum,dict,map,pam;
@@ -902,7 +902,7 @@ local live,orbs,orbset,done,nr,p,o,os,orbitextender,bahn,i,j,enum,dict,map,pam;
       os:=[Position(enum,reps[nr])];
       AddDictionary(dict,os[1],nr);
       p:=orbitextender(o,os,1,lim,nr);
-      if p<0 then 
+      if p<0 then
         # new orbit
         Info(InfoCoset,4,nr," lives");
         Add(live,nr);
@@ -915,7 +915,7 @@ local live,orbs,orbset,done,nr,p,o,os,orbitextender,bahn,i,j,enum,dict,map,pam;
         i:=1;
         while Length(orbs)>count do
           # one orbit too many
-          if ForAll(orbs,x->Length(x)>=lim) then 
+          if ForAll(orbs,x->Length(x)>=lim) then
             if lim<20000 then
               lim:=lim*2;
             else
@@ -975,7 +975,7 @@ end);
 #############################################################################
 ##
 #F  CalcDoubleCosets( <G>, <A>, <B> ) . . . . . . . . .  double cosets: A\G/B
-## 
+##
 ##  DoubleCosets routine using an
 ##  ascending chain of subgroups from A to G, using the fact, that a
 ##  double coset is an union of right cosets
@@ -1092,14 +1092,14 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
       od;
 
       p:=LargestMovedPoint(a);
-      tryfct(p,OnPoints); 
-          
+      tryfct(p,OnPoints);
+
       for i in Orbits(Stabilizer(a,p),Difference(MovedPoints(a),[p])) do
         tryfct(Set([i[1],p]),OnSets);
       od;
-          
+
     fi;
-    
+
     if maxidx(c)>badlimit then
 
       r:=ShallowCopy(TryMaximalSubgroupClassReps(a:cheap));
@@ -1157,7 +1157,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
     tra[step]:=t;
 
     # is it worth using a permutation representation?
-    if (step>1 or cano) and Length(t)<badlimit and IsPermGroup(G) and 
+    if (step>1 or cano) and Length(t)<badlimit and IsPermGroup(G) and
       not normal then
       # in this case, we can beneficially compute the action once and then use
       # homomorphism methods to obtain the permutation image
@@ -1183,7 +1183,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
     else
       Info(InfoCoset,1,"Step :",indx,": ",Length(r)," double cosets");
     fi;
-    
+
 
     # is this the last step?
     unten:=step=Length(c)-1 and cano=false;
@@ -1200,7 +1200,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
     for nu in [1..Length(r)] do
       lst:=stabs[nu];
       Info(InfoCoset,4,"number ",nu,", |stab|=",Size(lst));
-      sifa:=Size(a2)*Size(b)/Size(lst); 
+      sifa:=Size(a2)*Size(b)/Size(lst);
       p:=r[nu];
       pinv:=p^-1;
       blist:=BlistList([1..indx],[]);
@@ -1256,7 +1256,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
         orbcnt:=orbcnt+1;
 
         i:=1;
-        while i<=Length(o) 
+        while i<=Length(o)
           # will not grab if nonreg,. orbiut and stabilizer not computed,
           # but comparatively low cost and huge help if hom=fail
           and Size(st)*Length(o)<Size(lst) do
@@ -1300,7 +1300,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
           Add(nstab,st);
         fi;
 
-        if cano and step=1 and not normal then 
+        if cano and step=1 and not normal then
           Add(omi,mo);
           Add(omiz,Length(o));
         fi;
@@ -1446,7 +1446,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
           od;
           i:=i+1;
         od;
-        
+
         if calcs then
           stb:=st^(rep[mop]);
         fi;
@@ -1483,7 +1483,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
     sizes:=[];
     for i in [1..Length(r)] do
       lr:=Intersection(a,b^(r[i]^-1));
-      # size of double coset and 
+      # size of double coset and
       Add(sizes,[Size(a)*Size(b)/Size(lr),
                  Length(OrbitsDomain(Image(hom,lr),[1..Length(t)],OnPoints))]);
     od;
@@ -1611,7 +1611,7 @@ InstallMethod(RightTransversalOp, "generic, use RightCosets",
   IsIdenticalObj,[IsGroup,IsGroup],0,
 function(G,U)
   return Objectify( NewType( FamilyObj( G ),
-                    IsRightTransversalViaCosetsRep and IsList and 
+                    IsRightTransversalViaCosetsRep and IsList and
                     IsDuplicateFreeList and IsAttributeStoringRep ),
           rec( group := G,
             subgroup := U,
@@ -1708,7 +1708,7 @@ local trans,m,i;
   od;
   m:=Reversed(m);
   trans:=Objectify(NewType(FamilyObj(G),
-                        IsFactoredTransversalRep and IsList 
+                        IsFactoredTransversalRep and IsList
                         and IsDuplicateFreeList and IsAttributeStoringRep),
           rec(group:=G,
               subgroup:=S,

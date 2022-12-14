@@ -160,11 +160,11 @@ end );
 ##  Method to allow mappings to be used like functions when appropriate
 
 InstallMethod(CallFuncList, [IsGeneralMapping, IsList],
-        function(map, lst) 
-    if Length(lst) <> 1 then 
-        TryNextMethod(); 
-    fi; 
-    return Image(map, lst[1]); 
+        function(map, lst)
+    if Length(lst) <> 1 then
+        TryNextMethod();
+    fi;
+    return Image(map, lst[1]);
 end);
 
 
@@ -413,7 +413,7 @@ InstallGlobalFunction( CompositionMapping, function ( arg )
         fi;
 
         if     HasIsTotal( com ) and IsTotal( com )
-           and HasIsTotal( nxt ) and IsTotal( nxt ) 
+           and HasIsTotal( nxt ) and IsTotal( nxt )
            and ((HasImagesSource(com) and
            CanComputeIsSubset(Source(nxt),ImagesSource(com)) and
            IsSubset(Source(nxt),ImagesSource(com)))
@@ -521,7 +521,7 @@ end );
 #       TryNextMethod();
 #     fi;
 #     end );
-# 
+#
 # InstallImmediateMethod( IsSingleValued,
 #     IsGeneralMapping and HasInverseGeneralMapping, 0,
 #     function( map )
@@ -532,7 +532,7 @@ end );
 #       TryNextMethod();
 #     fi;
 #     end );
-# 
+#
 # InstallImmediateMethod( IsSurjective,
 #     IsGeneralMapping and HasInverseGeneralMapping, 0,
 #     function( map )
@@ -543,7 +543,7 @@ end );
 #       TryNextMethod();
 #     fi;
 #     end );
-# 
+#
 # InstallImmediateMethod( IsTotal,
 #     IsGeneralMapping and HasInverseGeneralMapping, 0,
 #     function( map )
@@ -574,7 +574,7 @@ InstallMethod( IsTotal, "for a general mapping", true,
       return IsSubset( PreImagesRange( map ), Source( map ) );
     fi;
     end );
-    
+
 
 #############################################################################
 ##
@@ -605,7 +605,7 @@ InstallMethod( IsSingleValued, "for a general mapping", true,
     [ IsGeneralMapping ], 0,
     function( map )
 
-    if HasIsSurjective( map ) and IsSurjective( map ) 
+    if HasIsSurjective( map ) and IsSurjective( map )
        and CanComputeSize(Range(map)) and CanComputeSize(Source(map)) then
 
       # For a single-valued and surjective general mapping,
@@ -648,7 +648,7 @@ InstallMethod( IsInjective, "for a general mapping", true,
 
       # For a total and injective general mapping,
       # the source cannot be larger than the range.
-      if Size( Range( map ) ) < Size( Source( map ) ) 
+      if Size( Range( map ) ) < Size( Source( map ) )
        and CanComputeSize(Range(map)) and CanComputeSize(Source(map)) then
         return false;
       fi;
@@ -688,7 +688,7 @@ InstallMethod( IsInjective, "for a mapping", true,
 
     # For a total and injective general mapping,
     # the source cannot be larger than the range.
-    if Size( Range( map ) ) < Size( Source( map ) ) 
+    if Size( Range( map ) ) < Size( Source( map ) )
        and CanComputeSize(Range(map)) and CanComputeSize(Source(map)) then
       return false;
 
@@ -861,8 +861,8 @@ InstallMethod( InverseOp,
     if IsEndoGeneralMapping( map ) and IsBijective( map ) then
       inv := InverseGeneralMapping( map );
       SetIsEndoGeneralMapping( inv, true );
-      SetIsBijective (inv, true); # this may seem superfluous, but  
-           # IsInjective may create an InverseGeneralMapping which does not 
+      SetIsBijective (inv, true); # this may seem superfluous, but
+           # IsInjective may create an InverseGeneralMapping which does not
            # know that it is bijective
       return inv;
     else
@@ -1034,7 +1034,7 @@ InstallMethod( ImagesRepresentative,
     FamSourceEqFamElm,
     [ IsNonSPGeneralMapping, IsObject ], 0,
     function( map, elm )
-    local  
+    local
             imgs;       # all images of <elm> under <map>
 
     # get all images of <elm> under <map>
@@ -1509,7 +1509,7 @@ InstallMethod( Size,
       TryNextMethod();
     fi;
     end );
-    
+
 
 #############################################################################
 ##
@@ -1522,7 +1522,7 @@ InstallMethod( IsGeneratorsOfMagmaWithInverses,
     "for a collection of general mappings",
     true,
     [ IsGeneralMappingCollection ], 0,
-    mappinglist -> ForAll( mappinglist, map -> 
+    mappinglist -> ForAll( mappinglist, map ->
     (HasIsBijective(map) and IsBijective(map)) or Inverse( map ) <> fail ) );
 
 #############################################################################

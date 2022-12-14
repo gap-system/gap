@@ -215,7 +215,7 @@ local a,n,t,
       str;
 
   n:=Length(names);
-  if (PRINTWORDPOWERS=true 
+  if (PRINTWORDPOWERS=true
    or (IsInt(PRINTWORDPOWERS) and Length(l)<PRINTWORDPOWERS)) and
      ValueOption("printnopowers")<>true then
     if Length(l)>0 and n=infinity then
@@ -484,7 +484,7 @@ InstallMethod( OneOp,
 InstallMethod( \^,
     "for an 8 bits assoc. word, and zero (in small integer rep)",
     true,
-    [ Is8BitsAssocWord and IsMultiplicativeElementWithOne, 
+    [ Is8BitsAssocWord and IsMultiplicativeElementWithOne,
       IsZeroCyc and IsSmallIntRep ], 0,
     8Bits_Power );
 
@@ -583,7 +583,7 @@ InstallMethod( OneOp,
 InstallMethod( \^,
     "for a 16 bits assoc. word, and zero (in small integer rep)",
     true,
-    [ Is16BitsAssocWord and IsMultiplicativeElementWithOne, 
+    [ Is16BitsAssocWord and IsMultiplicativeElementWithOne,
       IsZeroCyc and IsSmallIntRep ], 0,
     16Bits_Power );
 
@@ -682,7 +682,7 @@ InstallMethod( OneOp,
 InstallMethod( \^,
     "for a 32 bits assoc. word, and zero (in small integer rep)",
     true,
-    [ Is32BitsAssocWord and IsMultiplicativeElementWithOne, 
+    [ Is32BitsAssocWord and IsMultiplicativeElementWithOne,
       IsZeroCyc and IsSmallIntRep ], 0,
     32Bits_Power );
 
@@ -755,10 +755,10 @@ InstallMethod( \=,
     [ IsInfBitsAssocWord, IsInfBitsAssocWord ], 0,
     InfBits_Equal );
 
-InfBits_Less := function( u, v ) 
+InfBits_Less := function( u, v )
     local   lu, lv,      # length of u/v as a list
             len,         # difference in length of u/v as words
-            i,           # loop variable  
+            i,           # loop variable
             lexico;      # flag for the lexicoghraphic ordering of u and v
 
     u := u![1]; lu := Length(u);
@@ -796,7 +796,7 @@ InfBits_Less := function( u, v )
                     lexico := u[i-1] < v[i+1];
                 else
                     ## Ignoring the common prefix, v is empty.
-                    return false;  
+                    return false;
                 fi;
             else
                 ##  |u[i]| < |v[i]|
@@ -1209,7 +1209,7 @@ InstallGlobalFunction( InfiniteListOfNames, function( arg )
     SetIsFinite( list, false );
     SetIsEmpty( list, false );
     if IsHPCGAP then
-      MakeReadOnlyObj( list );    
+      MakeReadOnlyObj( list );
     fi;
     SetLength( list, infinity );
 #T meaningless since not attribute storing!
@@ -1346,7 +1346,7 @@ InstallGlobalFunction( InfiniteListOfGenerators, function( arg )
     SetIsFinite( list, false );
     SetIsEmpty( list, false );
     if IsHPCGAP then
-      MakeReadOnlyObj( list );    
+      MakeReadOnlyObj( list );
     fi;
     SetLength( list, infinity );
 #T meaningless since not attribute storing!
@@ -1573,7 +1573,7 @@ InstallOtherMethod( ExponentSums,
     [ IsGroup, IsAssocWord ], 0,
 function( f, w )
 local l,gens,g,i,p;
-  
+
   Info(InfoWarning,2,"obsolete undocumented method");
   gens:=List(FreeGeneratorsOfFpGroup(f),x->ExtRepOfObj(x));
   g:=gens{[1..Length(gens)]}[1];

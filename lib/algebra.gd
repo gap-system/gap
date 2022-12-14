@@ -17,8 +17,8 @@
 ##  <#GAPDoc Label="[1]{algebra}">
 ##  An algebra is a vector space equipped with a bilinear map
 ##  (multiplication).
-##  This chapter describes the functions in &GAP; that deal with 
-##  general algebras and associative algebras. 
+##  This chapter describes the functions in &GAP; that deal with
+##  general algebras and associative algebras.
 ##  <P/>
 ##  Algebras in &GAP; are vector spaces in a natural way.
 ##  So all the functionality for vector spaces
@@ -252,14 +252,14 @@ DeclareAttribute( "GeneratorsOfLeftOperatorRingWithOne",
 ##  <Description>
 ##  returns a list of elements that generate <A>A</A> as an algebra.
 ##  <P/>
-##  For a free algebra, each generator can also be accessed using 
+##  For a free algebra, each generator can also be accessed using
 ##  the <C>.</C> operator (see <Ref Attr="GeneratorsOfDomain"/>).
 ##  <Example><![CDATA[
 ##  gap> m:= [ [ 0, 1, 2 ], [ 0, 0, 3 ], [ 0, 0, 0 ] ];;
 ##  gap> A:= AlgebraWithOne( Rationals, [ m ] );
 ##  <algebra-with-one over Rationals, with 1 generator>
 ##  gap> GeneratorsOfAlgebra( A );
-##  [ [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ], 
+##  [ [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ],
 ##    [ [ 0, 1, 2 ], [ 0, 0, 3 ], [ 0, 0, 0 ] ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -280,9 +280,9 @@ DeclareSynonymAttr( "GeneratorsOfFLMLOR", GeneratorsOfLeftOperatorRing );
 ##
 ##  <Description>
 ##  returns a list of elements of <A>A</A>
-##  that generate <A>A</A> as an algebra with one. 
+##  that generate <A>A</A> as an algebra with one.
 ##  <P/>
-##  For a free algebra with one, each generator can also be accessed using 
+##  For a free algebra with one, each generator can also be accessed using
 ##  the <C>.</C> operator (see <Ref Attr="GeneratorsOfDomain"/>).
 ##  <Example><![CDATA[
 ##  gap> m:= [ [ 0, 1, 2 ], [ 0, 0, 3 ], [ 0, 0, 0 ] ];;
@@ -349,13 +349,13 @@ DeclareAttribute( "PowerSubalgebraSeries", IsAlgebra );
 ##  <Example><![CDATA[
 ##  gap> A:= QuaternionAlgebra( Rationals );;
 ##  gap> AdjointBasis( Basis( A ) );
-##  Basis( <vector space over Rationals, with 4 generators>, 
-##  [ [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ], 
+##  Basis( <vector space over Rationals, with 4 generators>,
+##  [ [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ],
 ##    [ [ 0, -1, 0, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, -1 ], [ 0, 0, 1, 0 ] ]
-##      , 
+##      ,
 ##    [ [ 0, 0, -1, 0 ], [ 0, 0, 0, 1 ], [ 1, 0, 0, 0 ], [ 0, -1, 0, 0 ] ]
-##      , 
-##    [ [ 0, 0, 0, -1 ], [ 0, 0, -1, 0 ], [ 0, 1, 0, 0 ], [ 1, 0, 0, 0 ] 
+##      ,
+##    [ [ 0, 0, 0, -1 ], [ 0, 0, -1, 0 ], [ 0, 1, 0, 0 ], [ 1, 0, 0, 0 ]
 ##       ] ] )
 ##  ]]></Example>
 ##  </Description>
@@ -375,7 +375,7 @@ DeclareAttribute( "AdjointBasis", IsBasis );
 ##
 ##  <Description>
 ##  Let <A>A</A> be an algebra and let <A>B</A>
-##  be the basis that is output by <C>AdjointBasis( Basis( <A>A</A> ) )</C>. 
+##  be the basis that is output by <C>AdjointBasis( Basis( <A>A</A> ) )</C>.
 ##  This function returns a list of indices.
 ##  If <M>i</M> is an index belonging to this list,
 ##  then <M>ad x_i</M> is a basis vector of the matrix space
@@ -437,20 +437,20 @@ DeclareAttribute( "RadicalOfAlgebra", IsAlgebra );
 ##  gap> A:= GroupRing( Rationals, G );
 ##  <algebra-with-one over Rationals, with 2 generators>
 ##  gap> dd:= DirectSumDecomposition( A );
-##  [ <two-sided ideal in 
-##        <algebra-with-one of dimension 24 over Rationals>, 
-##        (1 generator)>, 
-##    <two-sided ideal in 
-##        <algebra-with-one of dimension 24 over Rationals>, 
-##        (1 generator)>, 
-##    <two-sided ideal in 
-##        <algebra-with-one of dimension 24 over Rationals>, 
-##        (1 generator)>, 
-##    <two-sided ideal in 
-##        <algebra-with-one of dimension 24 over Rationals>, 
-##        (1 generator)>, 
-##    <two-sided ideal in 
-##        <algebra-with-one of dimension 24 over Rationals>, 
+##  [ <two-sided ideal in
+##        <algebra-with-one of dimension 24 over Rationals>,
+##        (1 generator)>,
+##    <two-sided ideal in
+##        <algebra-with-one of dimension 24 over Rationals>,
+##        (1 generator)>,
+##    <two-sided ideal in
+##        <algebra-with-one of dimension 24 over Rationals>,
+##        (1 generator)>,
+##    <two-sided ideal in
+##        <algebra-with-one of dimension 24 over Rationals>,
+##        (1 generator)>,
+##    <two-sided ideal in
+##        <algebra-with-one of dimension 24 over Rationals>,
 ##        (1 generator)> ]
 ##  gap> List( dd, Dimension );
 ##  [ 1, 1, 4, 9, 9 ]
@@ -458,10 +458,10 @@ DeclareAttribute( "RadicalOfAlgebra", IsAlgebra );
 ##  <Example><![CDATA[
 ##  gap> L:= FullMatrixLieAlgebra( Rationals, 5 );;
 ##  gap> DirectSumDecomposition( L );
-##  [ <two-sided ideal in 
+##  [ <two-sided ideal in
 ##        <two-sided ideal in <Lie algebra of dimension 25 over Rationals>
-##              , (dimension 1)>, (dimension 1)>, 
-##    <two-sided ideal in 
+##              , (dimension 1)>, (dimension 1)>,
+##    <two-sided ideal in
 ##        <two-sided ideal in <Lie algebra of dimension 25 over Rationals>
 ##              , (dimension 24)>, (dimension 24)> ]
 ##  ]]></Example>
@@ -763,7 +763,7 @@ DeclareSynonym( "AsSubalgebraWithOne", AsSubFLMLORWithOne );
 ##  see <Ref Func="SetEntrySCTable"/>.
 ##  <Example><![CDATA[
 ##  gap> EmptySCTable( 2, Zero( GF(5) ), "antisymmetric" );
-##  [ [ [ [  ], [  ] ], [ [  ], [  ] ] ], 
+##  [ [ [ [  ], [  ] ], [ [  ], [  ] ] ],
 ##    [ [ [  ], [  ] ], [ [  ], [  ] ] ], -1, 0*Z(5) ]
 ##  ]]></Example>
 ##  </Description>
@@ -801,7 +801,7 @@ DeclareGlobalFunction( "EmptySCTable" );
 ##  gap> T:= EmptySCTable( 2, 0 );;
 ##  gap> SetEntrySCTable( T, 1, 1, [ 1/2, 1, 2/3, 2 ] );
 ##  gap> T;
-##  [ [ [ [ 1, 2 ], [ 1/2, 2/3 ] ], [ [  ], [  ] ] ], 
+##  [ [ [ [ 1, 2 ], [ 1/2, 2/3 ] ], [ [  ], [  ] ] ],
 ##    [ [ [  ], [  ] ], [ [  ], [  ] ] ], 0, 0 ]
 ##  ]]></Example>
 ##  </Description>
@@ -1053,7 +1053,7 @@ DeclareSynonym( "ClosureAlgebra", ClosureLeftOperatorRing );
 ##  <Example><![CDATA[
 ##  gap> A:= QuaternionAlgebra( Rationals );;
 ##  gap> g:= GeneratorsOfAlgebra( A );;
-##  gap> B:= MutableBasisOfClosureUnderAction( Rationals, 
+##  gap> B:= MutableBasisOfClosureUnderAction( Rationals,
 ##  >                                g, "left", [ g[1] ], \*, Zero(A), 4 );
 ##  <mutable basis over Rationals, 4 vectors>
 ##  gap> BasisVectors( B );
@@ -1090,7 +1090,7 @@ DeclareGlobalFunction( "MutableBasisOfClosureUnderAction" );
 ##  gap> L:= FullMatrixLieAlgebra( Rationals, 4 );;
 ##  gap> m1:= Random( L );;
 ##  gap> m2:= Random( L );;
-##  gap> MutableBasisOfNonassociativeAlgebra( Rationals, [ m1, m2 ], 
+##  gap> MutableBasisOfNonassociativeAlgebra( Rationals, [ m1, m2 ],
 ##  > Zero( L ), 16 );
 ##  <mutable basis over Rationals, 16 vectors>
 ##  ]]></Example>
@@ -1433,7 +1433,7 @@ DeclareSynonym( "SubalgebraWithOneNC", SubFLMLORWithOneNC );
 ##  gap> A:= FullMatrixAlgebra( GF( 7 ), 4 );;
 ##  gap> L:= LieAlgebra( A );
 ##  <Lie algebra of dimension 16 over GF(7)>
-##  gap> mats:= [ [ [ 1, 0 ], [ 0, -1 ] ], [ [ 0, 1 ], [ 0, 0 ] ], 
+##  gap> mats:= [ [ [ 1, 0 ], [ 0, -1 ] ], [ [ 0, 1 ], [ 0, 0 ] ],
 ##  >             [ [ 0, 0 ], [ 1, 0] ] ];;
 ##  gap> L:= LieAlgebra( Rationals, mats );
 ##  <Lie algebra over Rationals, with 3 generators>
@@ -1687,13 +1687,13 @@ DeclareGlobalFunction( "LieAlgebraByStructureConstants" );
 ##  <Description>
 ##  <Ref Func="RestrictedLieAlgebraByStructureConstants"/> does the same as
 ##  <Ref Func="LieAlgebraByStructureConstants"/>, and has the same meaning of
-##  all arguments, except that the result is assumed to be a restricted Lie 
-##  algebra (see <Ref Label="Restricted Lie algebras"/>) with the <M>p</M>-map 
+##  all arguments, except that the result is assumed to be a restricted Lie
+##  algebra (see <Ref Label="Restricted Lie algebras"/>) with the <M>p</M>-map
 ##  given by the additional argument <A>pmapping</A>. This last argument is a
-##  list of the length equal to the dimension of the algebra; its <M>i</M>-th 
+##  list of the length equal to the dimension of the algebra; its <M>i</M>-th
 ##  entry specifies the <M>p</M>-th power of the <M>i</M>-th basis vector
-##  in the same format <C>[ coeff1, position1, coeff2, position2, ... ]</C> as 
-##  <Ref Func="SetEntrySCTable"/> uses to specify entries of the structure 
+##  in the same format <C>[ coeff1, position1, coeff2, position2, ... ]</C> as
+##  <Ref Func="SetEntrySCTable"/> uses to specify entries of the structure
 ##  constants table.
 ##  <P/>
 ##  Note that the function does not check whether
@@ -1701,12 +1701,12 @@ DeclareGlobalFunction( "LieAlgebraByStructureConstants" );
 ##  specifies a legitimate <M>p</M>-mapping.
 ##  <P/>
 ##  The following example creates a commutative restricted Lie algebra of dimension
-##  3, in which the <M>p</M>-th power of the <M>i</M>-th basis element is 
+##  3, in which the <M>p</M>-th power of the <M>i</M>-th basis element is
 ##  the <M>i+1</M>-th basis element (except for the 3rd basis element which
 ##  goes to zero).
 ##  <Example><![CDATA[
 ##  gap> T:= EmptySCTable( 3, Zero(GF(5)), "antisymmetric" );;
-##  gap> L:= RestrictedLieAlgebraByStructureConstants( 
+##  gap> L:= RestrictedLieAlgebraByStructureConstants(
 ##  >                                     GF(5), T, [[1,2],[1,3],[]] );
 ##  <Lie algebra of dimension 3 over GF(5)>
 ##  gap> List(Basis(L),PthPowerImage);
@@ -2033,19 +2033,19 @@ DeclareSynonym( "CentralIdempotentsOfAlgebra",
 ##  subalgebra complementary to the radical of <A>L</A>.
 ##  This function returns a list with two components.
 ##  The first component is a Levi-Malcev subalgebra, the second the radical.
-##  This function is implemented for associative and Lie algebras. 
+##  This function is implemented for associative and Lie algebras.
 ##  <Example><![CDATA[
 ##  gap> m:= [ [ 1, 2, 0 ], [ 0, 1, 3 ], [ 0, 0, 1] ];;
 ##  gap> A:= Algebra( Rationals, [ m ] );;
 ##  gap> LeviMalcevDecomposition( A );
-##  [ <algebra of dimension 1 over Rationals>, 
+##  [ <algebra of dimension 1 over Rationals>,
 ##    <algebra of dimension 2 over Rationals> ]
 ##  ]]></Example>
 ##  <Example><![CDATA[
 ##  gap> L:= FullMatrixLieAlgebra( Rationals, 5 );;
 ##  gap> LeviMalcevDecomposition( L );
-##  [ <Lie algebra of dimension 24 over Rationals>, 
-##    <two-sided ideal in <Lie algebra of dimension 25 over Rationals>, 
+##  [ <Lie algebra of dimension 24 over Rationals>,
+##    <two-sided ideal in <Lie algebra of dimension 25 over Rationals>,
 ##        (dimension 1)> ]
 ##  ]]></Example>
 ##  </Description>
@@ -2115,7 +2115,7 @@ DeclareSynonym( "IsLieNilpotentElement", IsNilpotentElement);
 ##  Let <M>G</M> be an Abelian group and <M>A</M> an algebra.
 ##  Then <M>A</M> is said to be graded over <M>G</M> if for every
 ##  <M>g \in G</M> there is a subspace <M>A_g</M> of <M>A</M> such that
-##  <M>A_g \cdot A_h \subset A_{{g+h}}</M> for <M>g, h \in G</M>. 
+##  <M>A_g \cdot A_h \subset A_{{g+h}}</M> for <M>g, h \in G</M>.
 ##  In &GAP;&nbsp;4 a <E>grading</E> of an algebra is a record containing the
 ##  following components.
 ##  <List>
@@ -2139,18 +2139,18 @@ DeclareSynonym( "IsLieNilpotentElement", IsNilpotentElement);
 ##    is analogous to <C>min_degree</C>.
 ##  </Item>
 ##  </List>
-##  We note that there are no methods to compute a grading of an 
+##  We note that there are no methods to compute a grading of an
 ##  arbitrary algebra; however some algebras get a natural grading when
-##  they are constructed (see <Ref Attr="JenningsLieAlgebra"/>, 
+##  they are constructed (see <Ref Attr="JenningsLieAlgebra"/>,
 ##  <Ref Func="NilpotentQuotientOfFpLieAlgebra"/>).
 ##  <P/>
-##  We note also that these components may be not enough to handle 
+##  We note also that these components may be not enough to handle
 ##  the grading efficiently, and another record component may be needed.
-##  For instance in a Lie algebra <M>L</M> constructed by 
+##  For instance in a Lie algebra <M>L</M> constructed by
 ##  <Ref Attr="JenningsLieAlgebra"/>, the length of the of the range
-##  <C>[ Grading(L)!.min_degree .. Grading(L)!.max_degree ]</C> may be 
+##  <C>[ Grading(L)!.min_degree .. Grading(L)!.max_degree ]</C> may be
 ##  non-polynomial in the dimension of <M>L</M>.
-##  To handle efficiently this situation, an optional component can be 
+##  To handle efficiently this situation, an optional component can be
 ##  used:
 ##  <List>
 ##  <Mark><C>non_zero_hom_components</C></Mark>
@@ -2165,7 +2165,7 @@ DeclareSynonym( "IsLieNilpotentElement", IsNilpotentElement);
 ##  gap> L:= JenningsLieAlgebra( G );
 ##  <Lie algebra of dimension 6 over GF(3)>
 ##  gap> g:= Grading( L );
-##  rec( hom_components := function( d ) ... end, max_degree := 9, 
+##  rec( hom_components := function( d ) ... end, max_degree := 9,
 ##    min_degree := 1, source := Integers )
 ##  gap> g.hom_components( 3 );
 ##  <vector space over GF(3), with 1 generator>

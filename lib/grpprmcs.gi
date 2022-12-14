@@ -45,11 +45,11 @@ InstallGlobalFunction( DisplayCompositionSeries, function( S )
     if IsGroup( S )  then
         S := CompositionSeries( S );
     fi;
-    
+
     # if we know the composition series, we know orders of groups, so we may
     # enforce their computation before calling GroupString to display them.
     Perform( S, Size );
-    
+
     Print( GroupString( S[1], "G" ), "\n" );
     for i  in [2..Length(S)]  do
       f:=Image(NaturalHomomorphismByNormalSubgroup(S[i-1],S[i]));
@@ -297,8 +297,8 @@ InstallGlobalFunction( NonPerfectCSPG,
     for g in StabChainMutable( workgroup ).generators do
         if not (g in oldworkup)  then
             # check for error in random computation of derived subgroup
-	    Assert(1, ForAll ( StabChainMutable( oldworkup ).generators, 
-	                      x->(x^g in oldworkup) )); 
+	    Assert(1, ForAll ( StabChainMutable( oldworkup ).generators,
+	                      x->(x^g in oldworkup) ));
             workup := ClosureGroup(oldworkup, g);
             order := Size(workup)/Size(oldworkup);
             orderlist := Factors(Integers,order);
@@ -413,13 +413,13 @@ InstallGlobalFunction( PerfectCSPG,
             if IsTrivial(stab2) then
 
                prime := Factors(Integers,whichcase[2])[1];
-               N:=Group(One(K));	       
+               N:=Group(One(K));
                repeat
 	         kerelement:=Random(K);
                  if NrMovedPoints(kerelement)=LargestMovedPoint(K) and
-		     IsOne(kerelement^prime) then 
+		     IsOne(kerelement^prime) then
                      ker2:=kerelement^Random(K);
-                     if Comm(kerelement,ker2)=One(K) then 
+                     if Comm(kerelement,ker2)=One(K) then
                         N := NormalClosure(K, SubgroupNC(K,[kerelement]));
                      fi;
                  fi;
@@ -2623,7 +2623,7 @@ local new,start,n,i,tail, up,u,v;
       od;
 #Print("A",List([1..Length(new)-1],x->Size(new[x+1])/Size(new[x])),"\n");
 
-      # now ser[i] contains n. 
+      # now ser[i] contains n.
       for i in tail do
 	Add(new,NormalIntersection(n,ser[i]));
       od;
@@ -2697,7 +2697,7 @@ local G,H,nser,U,i,j,k,cs,n,mat,mats,row,p,one,m,v,ser,gens,r,dim,im,
     ocs:=cs;
     # add composition factors which are normal
     n:=2;
-    while n<=Length(cs) and Length(through)=0 and 
+    while n<=Length(cs) and Length(through)=0 and
       # IsNormal(H,cs[n]) do
       ForAll(GeneratorsOfGroup(H),x->ForAll(GeneratorsOfGroup(cs[n]),
                                        y->y^x in cs[n])) do

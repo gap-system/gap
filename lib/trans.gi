@@ -33,7 +33,7 @@ InstallMethod(NumberTransformation,
 [IsTransformation, IsPosInt],
 function(t, n)
   local a, i;
-  if DegreeOfTransformation(t) > n then 
+  if DegreeOfTransformation(t) > n then
     ErrorNoReturn("the second argument must be greater than or equal to the ",
                   "degree of the first argument (a transformation)");
   fi;
@@ -50,7 +50,7 @@ InstallMethod(TransformationNumber,
 function(a, n)
   local l, q, i;
 
-  if a > n ^ n then 
+  if a > n ^ n then
     ErrorNoReturn("the first argument must be at most ", n ^ n);
   fi;
 
@@ -68,7 +68,7 @@ InstallMethod(TransformationNumber,
 "for a positive integer and zero",
 [IsPosInt, IsZeroCyc],
 function(a, n)
-  if a > 1 then 
+  if a > 1 then
     ErrorNoReturn("the first argument must be at most 1");
   fi;
   return IdentityTransformation;
@@ -115,7 +115,7 @@ InstallMethod(TransformationListList, "for a list and list",
 [IsList, IsList],
 function(src, ran)
   if ForAll(src, IsPosInt) and ForAll(ran, IsPosInt) and IsDenseList(src)
-      and IsDenseList(ran) and Length(ran) = Length(src)  
+      and IsDenseList(ran) and Length(ran) = Length(src)
       and IsDuplicateFree(src) then
     return TransformationListListNC(src, ran);
   fi;
@@ -145,7 +145,7 @@ InstallMethod(OnKernelAntiAction, "for a list and transformation",
 [IsHomogeneousList, IsTransformation],
 function(ker, f)
 
-  if not IsFlatKernelOfTransformation(ker) then 
+  if not IsFlatKernelOfTransformation(ker) then
     ErrorNoReturn("the first argument does not describe the ",
                   "flat kernel of a transformation");
   fi;
@@ -269,7 +269,7 @@ InstallMethod(ConstantTransformation, "for a pos int and pos int",
 [IsPosInt, IsPosInt],
 function(m, n)
   if m < n then
-    ErrorNoReturn("the first argument (a positive integer) must be greater ", 
+    ErrorNoReturn("the first argument (a positive integer) must be greater ",
                   "than or equal to the second (a positive integer)");
   fi;
   return Transformation(ListWithIdenticalEntries(m, n));
@@ -286,7 +286,7 @@ InstallMethod(IsFlatKernelOfTransformation, "for a homogeneous list",
 [IsHomogeneousList],
 function(ker)
   local m, i;
-  if Length(ker) = 0 or not IsPosInt(ker[1]) then 
+  if Length(ker) = 0 or not IsPosInt(ker[1]) then
     return false;
   fi;
   m := 1;

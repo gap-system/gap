@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file is a first stab at a special posobj-based representation 
+##  This file is a first stab at a special posobj-based representation
 ##  for 8 bit matrices, mimicking the one for GF(2)
 ##
 ##  all rows must be the same length and written over the same field
@@ -19,7 +19,7 @@
 #V  TYPES_MAT8BIT . . . . . . . . prepared types for compressed GF(q) vectors
 ##
 ##  A length 2 list of length 257 lists. TYPES_MAT8BIT[1][q] will be the type
-##  of mutable vectors over GF(q), TYPES_MAT8BIT[2][q] is the type of 
+##  of mutable vectors over GF(q), TYPES_MAT8BIT[2][q] is the type of
 ##  immutable vectors. The 257th position is bound to 1 to stop the lists
 ##  shrinking.
 ##
@@ -51,7 +51,7 @@ InstallGlobalFunction(TYPE_MAT8BIT,
     if not IsBound(TYPES_MAT8BIT[col][q]) then
         filts := IsHomogeneousList and IsListDefault and IsCopyable and
                  Is8BitMatrixRep and IsSmallList and IsOrdinaryMatrix and
-                 IsRingElementTable and IsNoImmediateMethodsObject and 
+                 IsRingElementTable and IsNoImmediateMethodsObject and
                  HasIsRectangularTable and IsRectangularTable;
         if mut then filts := filts and IsMutable; fi;
         type := NewType(CollectionsFamily(FamilyObj(GF(q))),filts);
@@ -140,7 +140,7 @@ end);
 ##
 #M  ViewObj( <mat> )
 ##
-##  Up to 25 entries,  GF(q) matrices are viewed in full, over that a 
+##  Up to 25 entries,  GF(q) matrices are viewed in full, over that a
 ##  description is printed
 ##
 
@@ -165,7 +165,7 @@ end);
 ##
 #M  PrintObj( <mat> )
 ##
-##  Same method as for lists in internal rep. 
+##  Same method as for lists in internal rep.
 ##
 
 InstallMethod( PrintObj, "for a compressed MatFFE",
@@ -190,10 +190,10 @@ end);
 ##
 ##
 
-InstallMethod(ShallowCopy, "for a compressed MatFFE", 
-        true, [Is8BitMatrixRep and IsSmallList], 0, 
-        function(m) 
-    local c,i,l; 
+InstallMethod(ShallowCopy, "for a compressed MatFFE",
+        true, [Is8BitMatrixRep and IsSmallList], 0,
+        function(m)
+    local c,i,l;
     l := m![1];
     c := [l];
     for i in [2..l+1] do
@@ -207,7 +207,7 @@ end );
 ##
 #M PositionCanonical( <mat> , <vec> )
 ##
-    
+
 InstallMethod( PositionCanonical,
     "for 8bit matrices lists, fall back on `Position'",
     true, # the list may be non-homogeneous.
@@ -215,8 +215,8 @@ InstallMethod( PositionCanonical,
     function( list, obj )
     return Position( list, obj, 0 );
 end );
-    
-    
+
+
 
 #############################################################################
 ##
@@ -251,7 +251,7 @@ InstallMethod( \-, "for two 8 bit matrices in same characteristic",
 InstallGlobalFunction(ConvertToMatrixRep,
         function( arg )
     local m,qs, v,  q, givenq, q1, LeastCommonPower, lens;
-    
+
     LeastCommonPower := function(qs)
         local p, d, x, i;
         if Length(qs) = 0 then
@@ -269,10 +269,10 @@ InstallGlobalFunction(ConvertToMatrixRep,
         od;
         return p^d;
     end;
-        
-             
+
+
     qs := [];
-    
+
     m := arg[1];
     if Length(arg) > 1 then
         q1 := arg[2];
@@ -294,7 +294,7 @@ InstallGlobalFunction(ConvertToMatrixRep,
     else
         givenq := false;
     fi;
-    
+
     if Length(m) = 0 then
         if givenq then
             return q1;
@@ -302,7 +302,7 @@ InstallGlobalFunction(ConvertToMatrixRep,
             return fail;
         fi;
     fi;
-    
+
     #
     # If we are already compressed, then our rows are certainly
     #  locked, so we will not be able to change representation
@@ -315,7 +315,7 @@ InstallGlobalFunction(ConvertToMatrixRep,
             return fail;
         fi;
     fi;
-    
+
     if IsGF2MatrixRep(m) then
         if not givenq or q1 = 2 then
             return 2;
@@ -323,11 +323,11 @@ InstallGlobalFunction(ConvertToMatrixRep,
             return fail;
         fi;
     fi;
-    
+
     #
     # Pass 1, get all rows compressed, and find out what fields we have
     #
-    
+
     #    mut := false;
     lens := [];
     for v in m do
@@ -343,70 +343,70 @@ InstallGlobalFunction(ConvertToMatrixRep,
         AddSet(lens, Length(v));
 #        mut := mut or IsMutable(v);
     od;
-    
+
     #
     # We may know that there is no common field
     # or that we can't win for some other reason
     #
-    if 
-      #      mut or 
+    if
+      #      mut or
       Length(lens) > 1 or lens[1] = 0 or
-      fail in qs  or true in qs then 
+      fail in qs  or true in qs then
         return fail;
     fi;
-    
+
     #
     # or it may be easy
     #
     if Length(qs) = 1 then
-        q := qs[1]; 
+        q := qs[1];
     else
-        
+
         #
         # Now work out the common field
         #
         q := LeastCommonPower(qs);
-        
+
         if q = fail then
             return fail;
         fi;
-        
+
         if givenq and q1 <> q then
             Error("ConvertToMatrixRep( <mat>, <q> ): not all entries of <mat> written over <q>");
         fi;
-        
+
         #
         # Now try and rewrite all the rows over this field
         # this may fail if some rows are locked over a smaller field
         #
-        
+
         for v in m do
             if q <> ConvertToVectorRepNC(v,q) then
                 return fail;
             fi;
         od;
     fi;
-    
+
     if q <= 256 then
         ConvertToMatrixRepNC(m,q);
     fi;
-    
+
     return q;
-end);    
+end);
 
 
-InstallGlobalFunction(ConvertToMatrixRepNC, function(arg)    
+InstallGlobalFunction(ConvertToMatrixRepNC, function(arg)
     local   v, m,  q, result;
     if Length(arg) = 1 then
         return ConvertToMatrixRep(arg[1]);
-    else 
+    else
         m := arg[1];
         q := arg[2];
     fi;
     if Length(m)=0 then
         return ConvertToMatrixRep(m,q);
     fi;
-    if not IsInt(q) then 
+    if not IsInt(q) then
         q := Size(q);
     fi;
     if Is8BitMatrixRep(m) then
@@ -434,8 +434,8 @@ end);
 #M <vec> * <mat>
 ##
 
-InstallMethod( \*, "8 bit vector * 8 bit matrix", IsElmsColls, 
-        [ Is8BitVectorRep and IsRowVector and IsRingElementList, 
+InstallMethod( \*, "8 bit vector * 8 bit matrix", IsElmsColls,
+        [ Is8BitVectorRep and IsRowVector and IsRingElementList,
           Is8BitMatrixRep and IsMatrix
           ], 0,
         PROD_VEC8BIT_MAT8BIT);
@@ -446,8 +446,8 @@ InstallMethod( \*, "8 bit vector * 8 bit matrix", IsElmsColls,
 #M <mat> * <vec>
 ##
 
-InstallMethod( \*, "8 bit matrix * 8 bit vector", IsCollsElms, 
-        [           Is8BitMatrixRep and IsMatrix, 
+InstallMethod( \*, "8 bit matrix * 8 bit vector", IsCollsElms,
+        [           Is8BitMatrixRep and IsMatrix,
                 Is8BitVectorRep and IsRowVector and IsRingElementList
           ], 0,
         PROD_MAT8BIT_VEC8BIT);
@@ -457,8 +457,8 @@ InstallMethod( \*, "8 bit matrix * 8 bit vector", IsCollsElms,
 #M <mat> * <mat>
 ##
 
-InstallMethod( \*, "8 bit matrix * 8 bit matrix", IsIdenticalObj, 
-        [           Is8BitMatrixRep and IsMatrix, 
+InstallMethod( \*, "8 bit matrix * 8 bit matrix", IsIdenticalObj,
+        [           Is8BitMatrixRep and IsMatrix,
                 Is8BitMatrixRep and IsMatrix
           ], 0,
         PROD_MAT8BIT_MAT8BIT);
@@ -515,7 +515,7 @@ end);
 ##
 
 InstallMethod( \*, "8 bit matrix * internal FFE", IsCollCollsElms,
-        [         
+        [
                 Is8BitMatrixRep and IsMatrix,
                 IsFFE and IsInternalRep
           ], 0,
@@ -606,7 +606,7 @@ InstallMethod(AdditiveInverseSameMutability, "8 bit matrix", true,
     fi;
     return neg;
 end);
-    
+
 
 
 #############################################################################
@@ -674,14 +674,14 @@ InstallMethod( ZeroSameMutability, "8 bit matrix", true,
     fi;
     return z;
 end);
-        
+
 #############################################################################
 ##
 #M InverseOp(<mat>)
 ##
 
 InstallMethod( InverseOp, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse 
+        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
 	# the following are banalities, but they are required to get the
 	# ranking right
         and IsOrdinaryMatrix and IsSmallList and
@@ -698,7 +698,7 @@ InstallMethod( InverseOp, "8 bit matrix", true,
 ##
 
 InstallMethod( InverseSameMutability, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse 
+        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
 	# the following are banalities, but they are required to get the
 	# ranking right
         and IsOrdinaryMatrix and IsSmallList and
@@ -713,7 +713,7 @@ InstallMethod( InverseSameMutability, "8 bit matrix", true,
 ##
 
 InstallMethod( OneSameMutability, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse 
+        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
 	# the following are banalities, but they are required to get the
 	# ranking right
         and IsOrdinaryMatrix and IsSmallList and
@@ -743,7 +743,7 @@ InstallMethod( OneSameMutability, "8 bit matrix", true,
 end);
 
 InstallMethod( OneMutable, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse 
+        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
 	# the following are banalities, but they are required to get the
 	# ranking right
         and IsOrdinaryMatrix and IsSmallList and
@@ -763,7 +763,7 @@ InstallMethod( OneMutable, "8 bit matrix", true,
     ConvertToMatrixRepNC(o, Q_VEC8BIT(v));
     return o;
 end);
-    
+
 
 
 
@@ -773,7 +773,7 @@ end);
 ##
 
 InstallMethod( One, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse 
+        [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
 	# the following are banalities, but they are required to get the
 	# ranking right
         and IsOrdinaryMatrix and IsSmallList and
@@ -801,13 +801,13 @@ InstallGlobalFunction( RepresentationsOfMatrix,
     fi;
     if IsMutable(m) then
         Print("Mutable ");
-    else 
+    else
         Print("Immutable ");
     fi;
     if not IsMatrix(m) then
         if IsMutable(m) then
             Print("Mutable ");
-        else 
+        else
             Print("Immutable ");
         fi;
         Print("Vector: ");
@@ -824,7 +824,7 @@ InstallGlobalFunction( RepresentationsOfMatrix,
                 Print("known to be vector of cyclotomics ");
             fi;
         else
-            Print(" not a compressed or plain list, representations: ", 
+            Print(" not a compressed or plain list, representations: ",
                   RepresentationsOfObject(m)," ");
         fi;
         if IsLockedRepresentationVector(m) then
@@ -896,8 +896,8 @@ InstallGlobalFunction( RepresentationsOfMatrix,
 #        Objectify(TYPE_MAT8BIT(Q_VEC8BIT(v), true), l);
 #   fi;
 #end);
-    
-            
+
+
 #############################################################################
 ##
 #M  DefaultFieldOfMatrix( <ffe-mat> )
@@ -942,14 +942,14 @@ InstallOtherMethod( MutableTransposedMat, "for a compressed 8 bit matrix",
         true, [IsMatrix and IsFFECollColl and
         Is8BitMatrixRep ], 0,
         TRANSPOSED_MAT8BIT);
-    
+
 
 #############################################################################
 ##
 #M  SemiEchelonMat
 ##
 #
-# If mat is in the  special representation, then we do 
+# If mat is in the  special representation, then we do
 # have to copy it, but we know that the rows of the result will
 # already be in special representation, so don't convert
 #
@@ -988,12 +988,12 @@ InstallMethod(SemiEchelonMatDestructive, "kernel method for plain lists of 8bit 
         0,
         SEMIECHELON_LIST_VEC8BITS
         );
-        
-InstallMethod(SemiEchelonMatTransformationDestructive, 
+
+InstallMethod(SemiEchelonMatTransformationDestructive,
         " kernel method for plain lists of 8 bit vectors",
         true,
         [ IsMatrix and IsFFECollColl and IsPlistRep and IsMutable],
-        0, 
+        0,
         SEMIECHELON_LIST_VEC8BITS_TRANSFORMATIONS);
 
 
@@ -1007,7 +1007,7 @@ InstallMethod(TriangulizeMat,
         "kernel method for plain list of GF2 vectors",
         true,
         [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
-        0, 
+        0,
         TRIANGULIZE_LIST_VEC8BITS);
 
 InstallMethod(TriangulizeMat,
@@ -1046,7 +1046,7 @@ InstallMethod(DeterminantMatDestructive,
         "kernel method for plain list of GF2 vectors",
         true,
         [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
-        0, 
+        0,
         DETERMINANT_LIST_VEC8BITS);
 
 #############################################################################
@@ -1059,13 +1059,13 @@ InstallOtherMethod(RankMatDestructive,
         "kernel method for plain list of GF2 vectors",
         [IsMatrix and IsPlistRep and IsFFECollColl and IsMutable],
         RANK_LIST_VEC8BITS);
-  
+
 InstallMethod(NestingDepthM, [Is8BitMatrixRep], m->2);
 InstallMethod(NestingDepthA, [Is8BitMatrixRep], m->2);
 InstallMethod(NestingDepthM, [Is8BitVectorRep], m->1);
 InstallMethod(NestingDepthA, [Is8BitVectorRep], m->1);
 
-InstallMethod(PostMakeImmutable, [Is8BitMatrixRep], 
+InstallMethod(PostMakeImmutable, [Is8BitMatrixRep],
         function(m)
     local i;
     for i in [2..m![1]] do

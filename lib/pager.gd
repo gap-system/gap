@@ -7,14 +7,14 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
-##  
+##
 ##  The  files  pager.g{d,i}  contain  the `Pager'  utility.  A  rudimentary
 ##  version of this  was integrated in first versions of  GAP's help system.
 ##  But this utility is certainly useful for other purposes as well.
-##  
+##
 
 #############################################################################
-##  
+##
 #F  Pager( <lines> ) . . . . . . . . . . . . display text on screen in a pager
 
 ##  <#GAPDoc Label="Pager">
@@ -23,7 +23,7 @@
 ##
 ##  <Description>
 ##  This function can be used to display a text on screen using a pager,
-##  i.e., the text is shown page by page. 
+##  i.e., the text is shown page by page.
 ##  <P/>
 ##  There is a default builtin pager in &GAP; which has very limited
 ##  capabilities but should work on any system.
@@ -52,18 +52,18 @@
 ##  <P/>
 ##  The argument <A>lines</A> can have one of the following forms:
 ##  <P/>
-##  <Enum> 
-##  <Item> 
+##  <Enum>
+##  <Item>
 ##   a string (i.e., lines are separated by newline characters)
 ##  </Item>
 ##  <Item>
-##   a list of strings (without  newline characters) 
+##   a list of strings (without  newline characters)
 ##  which are interpreted as lines of the text to be shown
 ##  </Item>
 ##  <Item>
 ##   a record with component <C>lines</C> as in 1. or 2. and
 ##  optional further components
-##  </Item> 
+##  </Item>
 ##  </Enum>
 ##  <P/>
 ##  In case&nbsp;3. currently the following additional components are used:
@@ -104,7 +104,7 @@
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##  
+##
 
 DeclareGlobalFunction("Pager");
 

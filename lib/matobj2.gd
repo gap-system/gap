@@ -1278,7 +1278,7 @@ DeclareOperation( "Matrix", [ IsList ]);
 ##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
 ##  of <A>M</A> (provided that such a representation exists).
 ##  <P/>
-##  The idea is that there should be an efficient way to 
+##  The idea is that there should be an efficient way to
 ##  form the product <M>v</M><A>M</A>.
 ##  </Description>
 ##  </ManSection>
@@ -1752,12 +1752,12 @@ DeclareOperation( "[]:=", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt, IsObject ] 
 ##  <ManSection>
 ##  <Oper Name="MultMatrixRowLeft" Arg='mat,i,elm'/>
 ##  <Oper Name="MultMatrixRow" Arg='mat,i,elm'/>
-##  
+##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Multiplies the <A>i</A>-th row of the mutable matrix <A>mat</A> with the scalar 
+##  Multiplies the <A>i</A>-th row of the mutable matrix <A>mat</A> with the scalar
 ##  <A>elm</A> from the left in-place.
 ##  <P/>
 ##  <Ref Oper="MultMatrixRow"/> is a synonym of <Ref Oper="MultMatrixRowLeft"/>. This was chosen
@@ -1775,12 +1775,12 @@ DeclareSynonym( "MultMatrixRow", MultMatrixRowLeft);
 ##  <#GAPDoc Label="MultMatrixRowRight">
 ##  <ManSection>
 ##  <Oper Name="MultMatrixRowRight" Arg='M,i,elm'/>
-##  
+##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Multiplies the <A>i</A>-th row of the mutable matrix <A>M</A> with the scalar 
+##  Multiplies the <A>i</A>-th row of the mutable matrix <A>M</A> with the scalar
 ##  <A>elm</A> from the right in-place.
 ##  </Description>
 ##  </ManSection>
@@ -1794,12 +1794,12 @@ DeclareOperation( "MultMatrixRowRight", [ IsMatrixOrMatrixObj and IsMutable, IsI
 ##  <ManSection>
 ##  <Oper Name="MultMatrixColumnRight" Arg='M,i,elm'/>
 ##  <Oper Name="MultMatrixColumn" Arg='M,i,elm'/>
-##  
+##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Multiplies the <A>i</A>-th column of the mutable matrix <A>M</A> with the scalar 
+##  Multiplies the <A>i</A>-th column of the mutable matrix <A>M</A> with the scalar
 ##  <A>elm</A> from the right in-place.
 ##  <P/>
 ##  <Ref Oper="MultMatrixColumn"/> is a synonym of <Ref Oper="MultMatrixColumnRight"/>. This was
@@ -1817,12 +1817,12 @@ DeclareSynonym( "MultMatrixColumn",  MultMatrixColumnRight);
 ##  <#GAPDoc Label="MultMatrixColumnLeft">
 ##  <ManSection>
 ##  <Oper Name="MultMatrixColumnLeft" Arg='M,i,elm'/>
-##  
+##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Multiplies the <A>i</A>-th column of the mutable matrix <A>M</A> with the scalar 
+##  Multiplies the <A>i</A>-th column of the mutable matrix <A>M</A> with the scalar
 ##  <A>elm</A> from the left in-place.
 ##  </Description>
 ##  </ManSection>
@@ -1836,12 +1836,12 @@ DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixOrMatrixObj and IsMutable, I
 ##  <ManSection>
 ##  <Oper Name="AddMatrixRowsLeft" Arg='M,i,j,elm'/>
 ##  <Oper Name="AddMatrixRows" Arg='M,i,j,elm'/>
-##  
+##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>M</A> to its <A>i</A>-th 
+##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>M</A> to its <A>i</A>-th
 ##  row in-place. The <A>j</A>-th row is multiplied with <A>elm</A> from the left.
 ##  <P/>
 ##  <Ref Oper="AddMatrixRows"/> is a synonym of <Ref Oper="AddMatrixRowsLeft"/>. This was chosen
@@ -1859,12 +1859,12 @@ DeclareSynonym( "AddMatrixRows", AddMatrixRowsLeft);
 ##  <#GAPDoc Label="AddMatrixRowsRight">
 ##  <ManSection>
 ##  <Oper Name="AddMatrixRowsRight" Arg='M,i,j,elm'/>
-##  
+##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>M</A> to its <A>i</A>-th 
+##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>M</A> to its <A>i</A>-th
 ##  row in-place. The <A>j</A>-th row is multiplied with <A>elm</A> from the right.
 ##  </Description>
 ##  </ManSection>
@@ -1878,12 +1878,12 @@ DeclareOperation( "AddMatrixRowsRight", [ IsMatrixOrMatrixObj and IsMutable, IsI
 ##  <ManSection>
 ##  <Oper Name="AddMatrixColumnsRight" Arg='M,i,j,elm'/>
 ##  <Oper Name="AddMatrixColumns" Arg='M,i,j,elm'/>
-##  
+##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>M</A> to its <A>i</A>-th 
+##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>M</A> to its <A>i</A>-th
 ##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the right.
 ##  <P/>
 ##  <Ref Oper="AddMatrixColumns"/> is a synonym of <Ref Oper="AddMatrixColumnsRight"/>. This was
@@ -1901,12 +1901,12 @@ DeclareSynonym( "AddMatrixColumns", AddMatrixColumnsRight);
 ##  <#GAPDoc Label="AddMatrixColumnsLeft">
 ##  <ManSection>
 ##  <Oper Name="AddMatrixColumnsLeft" Arg='M,i,j,elm'/>
-##  
+##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
 ##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>M</A> to its <A>i</A>-th 
+##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>M</A> to its <A>i</A>-th
 ##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the left.
 ##  </Description>
 ##  </ManSection>
@@ -1919,7 +1919,7 @@ DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixOrMatrixObj and IsMutable, I
 ##  <#GAPDoc Label="SwapMatrixRows">
 ##  <ManSection>
 ##  <Oper Name="SwapMatrixRows" Arg='M,i,j'/>
-##  
+##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
@@ -1936,7 +1936,7 @@ DeclareOperation( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, IsInt, 
 ##  <#GAPDoc Label="SwapMatrixColumns">
 ##  <ManSection>
 ##  <Oper Name="SwapMatrixColumns" Arg='M,i,j'/>
-##  
+##
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>

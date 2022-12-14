@@ -46,7 +46,7 @@ end);
 
 #
 
-InstallMethod(AsInverseMonoid, "for an inverse monoid", 
+InstallMethod(AsInverseMonoid, "for an inverse monoid",
 [IsInverseMonoid], 100, IdFunc );
 
 #
@@ -114,44 +114,44 @@ InstallGlobalFunction(InverseMonoid,
 function(arg)
   local out, i;
 
-  if Length(arg) = 0 or (Length(arg) = 1 and HasIsEmpty(arg[1]) 
-      and IsEmpty(arg[1])) then 
+  if Length(arg) = 0 or (Length(arg) = 1 and HasIsEmpty(arg[1])
+      and IsEmpty(arg[1])) then
     ErrorNoReturn("Usage: cannot create an inverse monoid with no ",
                   "generators,");
   fi;
-  
-  out := []; 
-  for i in [1 .. Length(arg)] do 
-    if i = Length(arg) and IsRecord(arg[i]) then 
-      if not IsGeneratorsOfInverseSemigroup(out) then 
-        ErrorNoReturn("Usage: InverseMonoid(<gen>,...), ", 
+
+  out := [];
+  for i in [1 .. Length(arg)] do
+    if i = Length(arg) and IsRecord(arg[i]) then
+      if not IsGeneratorsOfInverseSemigroup(out) then
+        ErrorNoReturn("Usage: InverseMonoid(<gen>,...), ",
                       "InverseMonoid(<gens>), InverseMonoid(<D>),");
       fi;
       return InverseMonoidByGenerators(out, arg[i]);
-    elif IsMultiplicativeElementWithOne(arg[i]) or IsMatrix(arg[i]) then 
+    elif IsMultiplicativeElementWithOne(arg[i]) or IsMatrix(arg[i]) then
       Add(out, arg[i]);
-    elif IsListOrCollection(arg[i]) then 
-      if IsGeneratorsOfInverseSemigroup(arg[i]) then 
-        if HasGeneratorsOfInverseSemigroup(arg[i]) then 
+    elif IsListOrCollection(arg[i]) then
+      if IsGeneratorsOfInverseSemigroup(arg[i]) then
+        if HasGeneratorsOfInverseSemigroup(arg[i]) then
           Append(out, GeneratorsOfInverseSemigroup(arg[i]));
         elif HasGeneratorsOfSemigroup(arg[i]) or IsMagmaIdeal(arg[i]) then
           Append(out, GeneratorsOfSemigroup(arg[i]));
-        elif IsList(arg[i]) then 
+        elif IsList(arg[i]) then
           Append(out, arg[i]);
         else
           Append(out, AsList(arg[i]));
         fi;
-      elif not IsEmpty(arg[i]) then 
-          ErrorNoReturn("Usage: InverseMonoid(<gen>,...), ", 
+      elif not IsEmpty(arg[i]) then
+          ErrorNoReturn("Usage: InverseMonoid(<gen>,...), ",
                         "InverseMonoid(<gens>), InverseMonoid(<D>),");
       fi;
-    else 
-        ErrorNoReturn("Usage: InverseMonoid(<gen>,...), ", 
+    else
+        ErrorNoReturn("Usage: InverseMonoid(<gen>,...), ",
                       "InverseMonoid(<gens>), InverseMonoid(<D>),");
     fi;
   od;
-  if not IsGeneratorsOfInverseSemigroup(out) then 
-    ErrorNoReturn("Usage: InverseMonoid(<gen>,...), ", 
+  if not IsGeneratorsOfInverseSemigroup(out) then
+    ErrorNoReturn("Usage: InverseMonoid(<gen>,...), ",
                   "InverseMonoid(<gens>), InverseMonoid(<D>),");
   fi;
   return InverseMonoidByGenerators(out);
@@ -163,44 +163,44 @@ InstallGlobalFunction(InverseSemigroup,
 function(arg)
   local out, i;
 
-  if Length(arg) = 0 or (Length(arg) = 1 and HasIsEmpty(arg[1]) 
-      and IsEmpty(arg[1])) then 
-    ErrorNoReturn("Usage: cannot create an inverse semigroup with no ", 
+  if Length(arg) = 0 or (Length(arg) = 1 and HasIsEmpty(arg[1])
+      and IsEmpty(arg[1])) then
+    ErrorNoReturn("Usage: cannot create an inverse semigroup with no ",
                   "generators,");
   fi;
 
-  out := []; 
-  for i in [1 .. Length(arg)] do 
-    if i = Length(arg) and IsRecord(arg[i]) then 
-      if not IsGeneratorsOfInverseSemigroup(out) then 
-        ErrorNoReturn("Usage: InverseSemigroup(<gen>, ...), ", 
+  out := [];
+  for i in [1 .. Length(arg)] do
+    if i = Length(arg) and IsRecord(arg[i]) then
+      if not IsGeneratorsOfInverseSemigroup(out) then
+        ErrorNoReturn("Usage: InverseSemigroup(<gen>, ...), ",
                       "InverseSemigroup(<gens>), InverseSemigroup(<D>),");
       fi;
       return InverseSemigroupByGenerators(out, arg[i]);
-    elif IsMultiplicativeElement(arg[i]) or IsMatrix(arg[i]) then 
+    elif IsMultiplicativeElement(arg[i]) or IsMatrix(arg[i]) then
       Add(out, arg[i]);
-    elif IsListOrCollection(arg[i]) then 
-      if IsGeneratorsOfInverseSemigroup(arg[i]) then 
-        if HasGeneratorsOfInverseSemigroup(arg[i]) then 
+    elif IsListOrCollection(arg[i]) then
+      if IsGeneratorsOfInverseSemigroup(arg[i]) then
+        if HasGeneratorsOfInverseSemigroup(arg[i]) then
           Append(out, GeneratorsOfInverseSemigroup(arg[i]));
         elif HasGeneratorsOfSemigroup(arg[i]) or IsMagmaIdeal(arg[i]) then
           Append(out, GeneratorsOfSemigroup(arg[i]));
-        elif IsList(arg[i]) then 
+        elif IsList(arg[i]) then
           Append(out, arg[i]);
         else
           Append(out, AsList(arg[i]));
         fi;
-      elif not IsEmpty(arg[i]) then 
-          ErrorNoReturn("Usage: InverseSemigroup(<gen>, ...), ", 
+      elif not IsEmpty(arg[i]) then
+          ErrorNoReturn("Usage: InverseSemigroup(<gen>, ...), ",
                         "InverseSemigroup(<gens>), InverseSemigroup(<D>),");
       fi;
-    else 
-      ErrorNoReturn("Usage: InverseSemigroup(<gen>, ...), ", 
+    else
+      ErrorNoReturn("Usage: InverseSemigroup(<gen>, ...), ",
                     "InverseSemigroup(<gens>), InverseSemigroup(<D>),");
     fi;
   od;
-  if not IsGeneratorsOfInverseSemigroup(out) then 
-    ErrorNoReturn("Usage: InverseSemigroup(<gen >, ...), ", 
+  if not IsGeneratorsOfInverseSemigroup(out) then
+    ErrorNoReturn("Usage: InverseSemigroup(<gen >, ...), ",
                   "InverseSemigroup(<gens>), InverseSemigroup(<D>),");
   fi;
   return InverseSemigroupByGenerators(out);
@@ -289,7 +289,7 @@ end);
 
 #
 
-InstallMethod(InverseSubsemigroupNC, 
+InstallMethod(InverseSubsemigroupNC,
 "for an inverse semigroup and collection",
 [IsInverseSemigroup, IsCollection],
 function(s, gens)
@@ -301,11 +301,11 @@ end);
 
 #
 
-InstallMethod(InverseSubsemigroup, 
+InstallMethod(InverseSubsemigroup,
 "for an inverse semigroup and collection",
 [IsInverseSemigroup, IsCollection],
 function(s, gens)
-  if ForAll(gens, x-> x in s) then 
+  if ForAll(gens, x-> x in s) then
     return InverseSubsemigroupNC(s, gens);
   fi;
   ErrorNoReturn("the specified elements do not belong to the first argument,");
@@ -313,7 +313,7 @@ end);
 
 #
 
-InstallMethod(InverseSubmonoidNC, 
+InstallMethod(InverseSubmonoidNC,
 "for an inverse monoid and collection",
 [IsInverseMonoid, IsCollection],
 function(s, gens)
@@ -326,12 +326,12 @@ end);
 
 #
 
-InstallMethod(InverseSubmonoid, 
+InstallMethod(InverseSubmonoid,
 "for an inverse monoid and collection",
 [IsInverseMonoid, IsCollection],
 function(s, gens)
-  if ForAll(gens, x-> x in s) then 
-    if One(s)<>One(gens) then 
+  if ForAll(gens, x-> x in s) then
+    if One(s)<>One(gens) then
       Append(gens, One(s));
     fi;
     return InverseSubmonoidNC(s, gens);
@@ -341,7 +341,7 @@ end);
 
 #
 
-InstallMethod(IsSubsemigroup, 
+InstallMethod(IsSubsemigroup,
 "for an inverse semigroup and inverse semigroup with generators",
 [IsInverseSemigroup, IsInverseSemigroup and HasGeneratorsOfInverseSemigroup],
 function(s, t)
@@ -351,10 +351,10 @@ end);
 #
 
 InstallMethod(\=, "for an inverse semigroups with generators",
-[IsInverseSemigroup and HasGeneratorsOfInverseSemigroup, 
+[IsInverseSemigroup and HasGeneratorsOfInverseSemigroup,
 IsInverseSemigroup and HasGeneratorsOfInverseSemigroup],
 function(s, t)
-return ForAll(GeneratorsOfInverseSemigroup(s), x-> x in t) 
+return ForAll(GeneratorsOfInverseSemigroup(s), x-> x in t)
  and ForAll(GeneratorsOfInverseSemigroup(t), x-> x in s);
 end);
 
@@ -376,7 +376,7 @@ InstallMethod( String,
     "for a inverse semigroup with known generators as an inverse semigroup",
     [ IsInverseSemigroup and HasGeneratorsOfInverseSemigroup ],
     function( S )
-    return STRINGIFY( "InverseSemigroup( ", 
+    return STRINGIFY( "InverseSemigroup( ",
      GeneratorsOfInverseSemigroup( S ), " )" );
     end );
 
@@ -384,7 +384,7 @@ InstallMethod( String,
     "for a inverse semigroup with known generators as a semigroup",
     [ IsInverseSemigroup and HasGeneratorsOfSemigroup ],
     function( S )
-    return STRINGIFY( "Semigroup( ", 
+    return STRINGIFY( "Semigroup( ",
      GeneratorsOfSemigroup( S ), " )" );
     end );
 
@@ -392,7 +392,7 @@ InstallMethod( PrintString,
     "for a inverse semigroup with known generators",
     [ IsInverseSemigroup and HasGeneratorsOfInverseSemigroup ],
     function( S )
-    return PRINT_STRINGIFY( "InverseSemigroup( ", 
+    return PRINT_STRINGIFY( "InverseSemigroup( ",
      GeneratorsOfInverseSemigroup( S ), " )" );
     end );
 
@@ -432,7 +432,7 @@ InstallMethod( String,
     "for a inverse monoid with known generators as a monoid",
     [ IsInverseMonoid and HasGeneratorsOfMonoid ],
     function( S )
-    return STRINGIFY( "Monoid( ", 
+    return STRINGIFY( "Monoid( ",
      GeneratorsOfMonoid( S ), " )" );
     end );
 
@@ -440,7 +440,7 @@ InstallMethod( String,
     "for a inverse monoid with known generators as an inverse monoid",
     [ IsInverseMonoid and HasGeneratorsOfInverseMonoid ],
     function( S )
-    return STRINGIFY( "InverseMonoid( ", 
+    return STRINGIFY( "InverseMonoid( ",
      GeneratorsOfInverseMonoid( S ), " )" );
     end );
 
@@ -449,7 +449,7 @@ InstallMethod( PrintString,
     "for a inverse monoid with known generators",
     [ IsInverseMonoid and HasGeneratorsOfInverseMonoid ],
     function( S )
-    return PRINT_STRINGIFY( "InverseMonoid( ", 
+    return PRINT_STRINGIFY( "InverseMonoid( ",
      GeneratorsOfInverseMonoid( S ), " )" );
     end );
 
@@ -483,8 +483,8 @@ InstallMethod( AsInverseMonoid,
 
 #
 
-InstallMethod( IsRegularSemigroupElement, 
-"for an inverse semigroup", IsCollsElms, 
+InstallMethod( IsRegularSemigroupElement,
+"for an inverse semigroup", IsCollsElms,
 [IsInverseSemigroup, IsAssociativeElement],
 function(s, x)
 return x in s;

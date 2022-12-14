@@ -268,10 +268,10 @@ DeclareProperty( "IsBergerCondition", IsClassFunction );
 ##  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] )
 ##  gap> TestHomogeneous( chi, n );
 ##  rec( character := Character( CharacterTable( Group(
-##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
-##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
+##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ],
+##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ],
 ##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ),
-##    [ 1, -1, 1, -1, 1 ] ), comment := "restriction checked", 
+##    [ 1, -1, 1, -1, 1 ] ), comment := "restriction checked",
 ##    isHomogeneous := false, multiplicity := 1 )
 ##  gap> chi:= Irr( Sl23 )[4];
 ##  Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] )
@@ -298,7 +298,7 @@ DeclareGlobalFunction( "TestHomogeneous" );
 ##  <Description>
 ##  For a character <A>chi</A> of a group <M>G</M>,
 ##  <Ref Prop="IsPrimitiveCharacter"/> returns <K>true</K> if <A>chi</A> is
-##  not induced from any proper subgroup, and <K>false</K> otherwise. This 
+##  not induced from any proper subgroup, and <K>false</K> otherwise. This
 ##  currently only works for characters of soluble groups.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -352,10 +352,10 @@ DeclareProperty( "IsPrimitiveCharacter", IsClassFunction );
 ##  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] )
 ##  gap> TestQuasiPrimitive( chi );
 ##  rec( character := Character( CharacterTable( Group(
-##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 
-##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ], 
+##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ],
+##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ],
 ##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ),
-##    [ 1, -1, 1, -1, 1 ] ), comment := "restriction checked", 
+##    [ 1, -1, 1, -1, 1 ] ), comment := "restriction checked",
 ##    isQuasiPrimitive := false )
 ##  ]]></Example>
 ##  </Description>
@@ -403,12 +403,12 @@ DeclareProperty( "IsQuasiPrimitive", IsClassFunction );
 ##  [ false, false, false, false, false, false, true ]
 ##  gap> List( Irr( S4 ){ [ 1, 3, 4 ] },
 ##  >          TestInducedFromNormalSubgroup );
-##  [ rec( comment := "linear character", isInduced := false ), 
-##    rec( character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), 
-##          [ 1, 1, E(3)^2, E(3) ] ), 
-##        comment := "induced from component '.character'", 
-##        isInduced := true ), 
-##    rec( comment := "all maximal normal subgroups checked", 
+##  [ rec( comment := "linear character", isInduced := false ),
+##    rec( character := Character( CharacterTable( Alt( [ 1 .. 4 ] ) ),
+##          [ 1, 1, E(3)^2, E(3) ] ),
+##        comment := "induced from component '.character'",
+##        isInduced := true ),
+##    rec( comment := "all maximal normal subgroups checked",
 ##        isInduced := false ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -636,7 +636,7 @@ DeclareAttribute( "TestMonomialQuick", IsGroup );
 ##  groups of order at most <Ref Var="TestMonomialUseLattice"/>.
 ##  The default value of <A>uselattice</A> is <K>false</K>.
 ##  <P/>
-##  For a group whose lattice must not be used, it may happen that 
+##  For a group whose lattice must not be used, it may happen that
 ##  <Ref Attr="TestMonomial" Label="for a group"/> cannot prove or disprove
 ##  monomiality; then the result
 ##  record contains the component <C>isMonomial</C> with value <C>"?"</C>.
@@ -652,7 +652,7 @@ DeclareAttribute( "TestMonomialQuick", IsGroup );
 ##  gap> TestMonomial( S4 );
 ##  rec( comment := "abelian by supersolvable group", isMonomial := true )
 ##  gap> TestMonomial( Sl23 );
-##  rec( comment := "list Delta( G ) contains entry > 1", 
+##  rec( comment := "list Delta( G ) contains entry > 1",
 ##    isMonomial := false )
 ##  ]]></Example>
 ##  </Description>
@@ -725,14 +725,14 @@ TestMonomialUseLattice := 1000;
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> TestSubnormallyMonomial( S4 );
-##  rec( character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 
-##       ] ), comment := "found non-SM character", 
+##  rec( character := Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1
+##       ] ), comment := "found non-SM character",
 ##    isSubnormallyMonomial := false )
 ##  gap> TestSubnormallyMonomial( Irr( S4 )[4] );
-##  rec( comment := "all subnormal subgroups checked", 
+##  rec( comment := "all subnormal subgroups checked",
 ##    isSubnormallyMonomial := false )
 ##  gap> TestSubnormallyMonomial( DerivedSubgroup( S4 ) );
-##  rec( comment := "all irreducibles checked", 
+##  rec( comment := "all irreducibles checked",
 ##    isSubnormallyMonomial := true )
 ##  ]]></Example>
 ##  </Description>
@@ -806,7 +806,7 @@ DeclareProperty( "IsSubnormallyMonomial", IsClassFunction );
 ##  gap> IsSubnormallyMonomial( DerivedSubgroup( S4 ) );
 ##  true
 ##  gap> TestRelativelySM( DerivedSubgroup( S4 ) );
-##  rec( 
+##  rec(
 ##    comment := "normal subgroups are abelian or have nilpotent factor gr\
 ##  oup", isRelativelySM := true )
 ##  ]]></Example>

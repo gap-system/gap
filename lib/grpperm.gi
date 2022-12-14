@@ -199,7 +199,7 @@ end );
 ##
 InstallGlobalFunction( OrbitPerms, function( gens, d )
     local   max,  orb,  new,  pnt,  img,  gen;
-  
+
         # get the largest point <max> moved by the group <G>
         max := LargestMovedPoint( gens );
 
@@ -238,7 +238,7 @@ end );
 ##
 InstallGlobalFunction( OrbitsPerms, function( gens, D )
     local   max,  dom,  new,  orbs,  fst,  orb,  pnt,  gen,  img;
-    
+
         # get the largest point <max> moved by the group <G>
         max := LargestMovedPoint( gens );
         dom := BlistList( [1..max], D );
@@ -284,7 +284,7 @@ InstallGlobalFunction( OrbitsPerms, function( gens, D )
             Add( orbs, [ pnt ] );
 	  fi;
         od;
-        
+
         return orbs;
 end );
 
@@ -295,7 +295,7 @@ end );
 ##
 SmallestMovedPointPerms := function( C )
     local   min,  m,  gen;
-    
+
     min := infinity;
     for gen  in C  do
         if not IsOne( gen ) then
@@ -323,11 +323,11 @@ InstallMethod( SmallestMovedPoint,
 
 #############################################################################
 ##
-#M  LargestMovedPoint( <C> )  . . . . . . .  for a collection of permutations 
+#M  LargestMovedPoint( <C> )  . . . . . . .  for a collection of permutations
 ##
 LargestMovedPointPerms := function( C )
     local   max,  m,  gen;
-    
+
     max := 0;
     for gen  in C  do
         if not IsOne( gen )  then
@@ -355,11 +355,11 @@ InstallMethod( LargestMovedPoint,
 
 #############################################################################
 ##
-#F  MovedPoints( <C> )  . . . . . . . . . .  for a collection of permutations 
+#F  MovedPoints( <C> )  . . . . . . . . . .  for a collection of permutations
 ##
 InstallGlobalFunction(MovedPointsPerms,function( C )
     local   mov,  gen,  pnt;
-    
+
     mov := [  ];
     for gen  in C  do
         if gen <> One( gen )  then
@@ -390,11 +390,11 @@ end);
 
 #############################################################################
 ##
-#M  NrMovedPoints( <C> )  . . . . . . . . .  for a collection of permutations 
+#M  NrMovedPoints( <C> )  . . . . . . . . .  for a collection of permutations
 ##
 NrMovedPointsPerms := function( C )
     local mov, sma, pnt, gen;
-    
+
     mov := 0;
     sma := SmallestMovedPoint( C );
     if sma = infinity  then
@@ -511,7 +511,7 @@ function ( G, H )
   # try to use one existing stab chain
   if HasStabChainMutable(H) or HasStabChainImmutable(H) then
     return Size(G)=Size(H) and ForAll(GeneratorsOfGroup(G),gen->gen in H);
-  fi;   
+  fi;
   return Size(G)=Size(H) and ForAll(GeneratorsOfGroup(H),gen->gen in G);
 end);
 
@@ -579,7 +579,7 @@ BindGlobal( "NumberElement_PermGroup",
     while Length( S.genlabels ) <> 0  do
         img := S.orbit[ 1 ] ^ elm;
         #pos := pos + val * ( Position( S.orbit, img ) - 1 );
-        if IsBound(S.orbitpos[img]) then 
+        if IsBound(S.orbitpos[img]) then
           pos := pos + val * S.orbitpos[img];
           #val := val * Length( S.orbit );
           val := val * S.ol;
@@ -718,7 +718,7 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
     fi;
 
     # is the closure normalizing?
-    if Length(gens)=1 and 
+    if Length(gens)=1 and
        ForAll(gens,i->ForAll(GeneratorsOfGroup(G),j->j^i in G)) then
       g:=gens[1];
       if Size(G)>1 then
@@ -882,11 +882,11 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
     # make list of conjugates to be added to N
     repeat
         gensN := [  ];
-        for i  in [ 1 .. 10 ]  do 
+        for i  in [ 1 .. 10 ]  do
             genG := SCRRandomSubproduct( gensG, One( G ) );
             cnj  := SCRRandomSubproduct( Concatenation(
                         GeneratorsOfGroup( N ), gensN ), One( G ) ) ^ genG;
-            if not cnj in N  then 
+            if not cnj in N  then
                 Add( gensN, cnj );
             fi;
         od;
@@ -894,7 +894,7 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
            N := ClosureGroup( N, gensN, options );
         fi;
     until IsEmpty( gensN );
-    
+
     # Guarantee that all conjugates are in the normal  closure: Loop over all
     # generators of N
     gensN := ShallowCopy( GeneratorsOfGroup( N ) );
@@ -913,7 +913,7 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
         od;
 
     od;
-    
+
     # Verify the stabilizer chain.
     chain := StabChainMutable( N );
     if not IsBound( chain.orbits )  then
@@ -926,20 +926,20 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
         correct := chain.correct;
         rchain  := SCRRestoredRecord( chain );
         result  := VerifySGS( rchain, missing, correct );
-        if not IsPerm(result) then 
-            repeat 
+        if not IsPerm(result) then
+            repeat
                 result := SCRStrongGenTest2(chain,[0,0,1,10/chain.diam,0,0]);
             until result <> one;
         fi;
         chain := rchain;
     else
         k := First([0..14],x->(3/5)^x <= 1-random/1000);
-        if IsBound(options.knownBase) then 
+        if IsBound(options.knownBase) then
             param := [k,4,0,0,0,0];
         else
             param := [QuoInt(k,2),4,QuoInt(k+1,2),4,50,5];
         fi;
-        if options.random <= 200 then 
+        if options.random <= 200 then
             param[2] := 2;
             param[4] := 2;
         fi;
@@ -958,7 +958,7 @@ BindGlobal("DoNormalClosurePermGroup",function ( G, U )
 
     # give N the proper randomness
     StabChainOptions(N).random:=random;
-    
+
     # return the normal closure
     UseSubsetRelation( N, U );
     return N;
@@ -981,7 +981,7 @@ end);
 InstallMethod( ConjugateGroup, "<P>, <g>", true, [ IsPermGroup, IsPerm ], 0,
 function( G, g )
 local   H,  S;
-    
+
     H := GroupByGenerators( OnTuples( GeneratorsOfGroup( G ), g ), One( G ) );
     if HasStabChainMutable(G) then
       S := EmptyStabChain( [  ], One( H ) );
@@ -1005,7 +1005,7 @@ InstallMethod( CommutatorSubgroup, "permgroups", IsIdenticalObj,
             CUV,     # closure of U,V
             doneCUV, # boolean; true if CUV is computed
             u,       # random subproduct of U.generators
-            v,       # random subproduct of V.generators 
+            v,       # random subproduct of V.generators
             comm,    # commutator of u,v
             list,    # list of commutators
             i;       # loop variable
@@ -1013,7 +1013,7 @@ InstallMethod( CommutatorSubgroup, "permgroups", IsIdenticalObj,
     # [ <U>, <V> ] = normal closure of < [ <u>, <v> ] >.
     C := TrivialSubgroup( U );
     doneCUV := false;
-    
+
     # if there are lot of generators, use random subproducts
     if Length( GeneratorsOfGroup( U ) ) *
        Length( GeneratorsOfGroup( V ) ) > 10  then
@@ -1041,12 +1041,12 @@ InstallMethod( CommutatorSubgroup, "permgroups", IsIdenticalObj,
         until IsEmpty( list );
     fi;
 
-    # do the deterministic method; it will also check correctness 
+    # do the deterministic method; it will also check correctness
     list := [];
     for u  in GeneratorsOfGroup( U )  do
         for v  in GeneratorsOfGroup( V )  do
            comm := Comm( u, v );
-           if not comm in C then 
+           if not comm in C then
                Add( list, comm );
            fi;
         od;
@@ -1073,7 +1073,7 @@ end );
 InstallMethod( DerivedSubgroup,"permgrps",true, [ IsPermGroup ], 0,
     function( G )
     local   D,          # derived subgroup of <G>, result
-            g, h,       # random subproducts of generators 
+            g, h,       # random subproducts of generators
             comm,       # their commutator
             list,       # list of commutators
             i,j;  # loop variables
@@ -1082,18 +1082,18 @@ InstallMethod( DerivedSubgroup,"permgrps",true, [ IsPermGroup ], 0,
     D := TrivialSubgroup( G );
 
     # if there are >4 generators, use random subproducts
-    if Length( GeneratorsOfGroup( G ) ) > 4 then 
-        repeat 
+    if Length( GeneratorsOfGroup( G ) ) > 4 then
+        repeat
             list := [];
             for i in [1..10] do
                 g := SCRRandomSubproduct( GeneratorsOfGroup( G ), One( G ) );
                 h := SCRRandomSubproduct( GeneratorsOfGroup( G ), One( G ) );
                 comm := Comm( g, h );
-                if not comm in D then  
+                if not comm in D then
                    Add( list, comm );
                 fi;
             od;
-            if Length(list) > 0 then 
+            if Length(list) > 0 then
               D := ClosureGroup(D,list,rec( random := 0,
                                                temp := true ) );
               # force closure test
@@ -1113,7 +1113,7 @@ InstallMethod( DerivedSubgroup,"permgrps",true, [ IsPermGroup ], 0,
          for j  in [ 1 .. i - 1 ]  do
              comm := Comm( GeneratorsOfGroup( G )[i],
                            GeneratorsOfGroup( G )[j] );
-             if not comm in D then 
+             if not comm in D then
                  Add( list, comm );
              fi;
          od;
@@ -1302,7 +1302,7 @@ local som,elvth,fct,gens,new,l,i,j,a,b,bound;
   fi;
 
   elvth:=One(G);
-  fct:=function(G) 
+  fct:=function(G)
     elvth:=elvth*Product([1..Random(1,5)],x->Random(GeneratorsOfGroup(G))^Random(-3,3));
     return elvth;
   end;
@@ -1347,7 +1347,7 @@ local som,elvth,fct,gens,new,l,i,j,a,b,bound;
   until i>bound;
   return true;
 end);
-  
+
 InstallMethod( IsSolvableGroup,"for permgrp", true, [ IsPermGroup ], 0,
 function(G)
 local pcgs;
@@ -1422,13 +1422,13 @@ end);
 # InstallMethod( DerivedSeriesOfGroup,"for permgrp", true, [ IsPermGroup ], 0,
 #     function( G )
 #     local  pcgs,  series;
-# 
+#
 #     if   (not DefaultStabChainOptions.tryPcgs
 #        or ( HasIsSolvableGroup( G )  and  not IsSolvableGroup( G ) ))
 #        and not (HasIsSolvableGroup(G) and IsSolvableGroup(G)) then
 #         TryNextMethod();
 #     fi;
-#     
+#
 #     pcgs := TryPcgsPermGroup( G, false, true, false );
 #     if not IsPcgs( pcgs )  then
 #         TryNextMethod();
@@ -1451,11 +1451,11 @@ InstallMethod( LowerCentralSeriesOfGroup,"for permgrp", true, [ IsPermGroup ], 0
     local  pcgs,  series;
 
     if    not DefaultStabChainOptions.tryPcgs
-       or HasIsNilpotentGroup( G )  and  not IsNilpotentGroup( G ) 
+       or HasIsNilpotentGroup( G )  and  not IsNilpotentGroup( G )
        and not (HasIsNilpotentGroup(G) and IsNilpotentGroup(G)) then
         TryNextMethod();
     fi;
-    
+
     pcgs := TryPcgsPermGroup( G, true, true, false );
     if not IsPcgs( pcgs )  then
         TryNextMethod();
@@ -1470,7 +1470,7 @@ InstallMethod( LowerCentralSeriesOfGroup,"for permgrp", true, [ IsPermGroup ], 0
 end );
 
 InstallOtherMethod( ElementaryAbelianSeries, "perm group", true,
- [ IsPermGroup and IsFinite], 
+ [ IsPermGroup and IsFinite],
   # we want this to come *before* the method for Pcgs computable groups
   RankFilter(IsPermGroup and CanEasilyComputePcgs and IsFinite)
   -RankFilter(IsPermGroup and IsFinite),
@@ -1488,14 +1488,14 @@ end);
 #        [ IsList ], 0,
 #    function( list )
 #    local  pcgs;
-#    
+#
 #    if    IsEmpty( list )
 #       or not DefaultStabChainOptions.tryPcgs
 #       or (      HasIsSolvableGroup( list[ 1 ] )
 #            and not IsSolvableGroup( list[ 1 ] ) )  then
 #        TryNextMethod();
 ##    fi;
-#    
+#
 ##    pcgs := TryPcgsPermGroup( list, false, false, true );
 #    if not IsPcgs( pcgs )  then  return fail;
 #                           else  return ElementaryAbelianSeries( pcgs );  fi;
@@ -1553,7 +1553,7 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
             T,          # <p>-Sylow subgroup in the image of <f>
             g, g2,      # one <p> element of <G>
             C, C2;      # centralizer of <g> in <G>
-    
+
     # get the size of the <p>-Sylow subgroup
     q := 1;  while Size( G ) mod (q * p) = 0  do q := q * p;  od;
 
@@ -1641,19 +1641,19 @@ InstallMethod( Socle,"test primitive", true, [ IsPermGroup ], 0,
     function( G )
     local   Omega,  deg,  shortcut,  coll,  d,  m,  c,  ds,  L,  z,  ord,
             p,  i;
-    
+
     Omega := MovedPoints( G );
-    
+
     if not IsPrimitive( G, Omega )  then
         TryNextMethod();
     fi;
-    
+
     # Affine groups first.
     L := Earns( G, Omega );
     if L <> []  then
         return L[1];
     fi;
-    
+
     deg := Length( Omega );
     if deg >= 6103515625  then
         TryNextMethod();
@@ -1679,7 +1679,7 @@ InstallMethod( Socle,"test primitive", true, [ IsPermGroup ], 0,
     #        return ds[ Length( ds ) ];
     #    fi;
     fi;
-    
+
     coll := Collected( Factors(Integers, Size( G ) ) );
     if deg < 78125  then
         p := coll[ Length( coll ) ][ 1 ];
@@ -1710,7 +1710,7 @@ InstallMethod( Socle,"test primitive", true, [ IsPermGroup ], 0,
     fi;
     return L;
 end );
-    
+
 #############################################################################
 ##
 #M  FrattiniSubgroup( <G> ) . . . . . . . . . . . .  for permutation p-groups
@@ -1918,7 +1918,7 @@ local i,j,l,m;
       if j>1 then
         if IsBound(m[j-1]) then
           m[j-1]:=m[j-1]+1;
-        else 
+        else
           m[j-1]:=1;
         fi;
       fi;
@@ -1959,7 +1959,7 @@ local oa,ob,q,aa,m,e,tst,s,c,p,g;
   m:=1; # order modulo which power is OK so far
   e:=1;
   while m<ob do
-    tst:=aa^e/b; 
+    tst:=aa^e/b;
     s:=SmallestMovedPoint(tst); # a point on which there might be a difference
     if s=infinity then # found it
       return q*e mod oa;
@@ -1978,7 +1978,7 @@ end);
 
 #############################################################################
 ##
-#M  SmallGeneratingSet(<G>) 
+#M  SmallGeneratingSet(<G>)
 ##
 InstallMethod(SmallGeneratingSet,"random and generators subset, randsims",true,
   [IsPermGroup],0,
@@ -2251,7 +2251,7 @@ local dom,s,cs,t,ts,o,m,stb;
 
     # now test Dixon&Mortimer, p.126, Case 1: R1 (projection of pt. stab
     # onto one direct factor) is proper subgroup of T1.
-    
+
     #if Size(ClosureSubgroup(m,stb))<Size(s) then
     # Since m is normal, this projection is a proper subgroup iff m does not
     # act transitively
@@ -2266,7 +2266,7 @@ local dom,s,cs,t,ts,o,m,stb;
     if Size(stb)=Size(t) then # type 3
       # in the a case the socle is not minimal
       #if Size(NormalClosure(G,t))<Size(s) then
-      if Length(Orbit(G,t))<Length(cs)-1 then 
+      if Length(Orbit(G,t))<Length(cs)-1 then
 	return "3a";
       else
         return "3b";
@@ -2274,7 +2274,7 @@ local dom,s,cs,t,ts,o,m,stb;
     else
       # Same argument as for 3:
       #if Size(NormalClosure(G,t))<Size(s) then
-      if Length(Orbit(G,t))<Length(cs)-1 then 
+      if Length(Orbit(G,t))<Length(cs)-1 then
 	return "4a";
       else
         return "4b";
@@ -2290,7 +2290,7 @@ end);
 InstallMethod(SocleTypePrimitiveGroup,"primitive permgroups",true,
   [IsPermGroup],0,function(G)
 local s,cs,t,id,r;
-  if not IsPrimitive(G) then 
+  if not IsPrimitive(G) then
     ErrorNoReturn("<G> must be primitive on its moved points");
   fi;
   s:=Socle(G);
@@ -2313,7 +2313,7 @@ BindGlobal("STGSelFunc",function(a,b)
   if IsFunction(b) then
     return b(a);
   elif IsList(b) and not IsString(b) then
-   if IsList(a) and a=b then 
+   if IsList(a) and a=b then
      return true;
    fi;
    return a in b;

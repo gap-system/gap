@@ -482,7 +482,7 @@ DeclareSynonym( "NumberField", AbelianNumberField );
 ##  gap> f:= AsField( Field( [ Sqrt(-2) ] ), CF(8) );;
 ##  gap> # a cycl. field over a non-cycl. field
 ##  gap> b:= CanonicalBasis( f );;  BasisVectors( b );
-##  [ 1/2+1/2*E(8)-1/2*E(8)^2-1/2*E(8)^3, 
+##  [ 1/2+1/2*E(8)-1/2*E(8)^2-1/2*E(8)^3,
 ##    1/2-1/2*E(8)+1/2*E(8)^2+1/2*E(8)^3 ]
 ##  gap> Coefficients( b, Sqrt(-2) );
 ##  [ E(8)+E(8)^3, E(8)+E(8)^3 ]
@@ -518,7 +518,7 @@ DeclareSynonym( "NumberField", AbelianNumberField );
 ##  <M><A>n</A> = \prod_{{p \in P}} p^{{\nu_p}}</M>, and
 ##  <M><A>m</A> = \prod_{{p \in P}} p^{{\mu_p}}</M>
 ##  with <M>\mu_p \leq \nu_p</M>.
-##  Let <M>e_l =</M> <C>E</C><M>(l)</M> for any positive integer <M>l</M>, 
+##  Let <M>e_l =</M> <C>E</C><M>(l)</M> for any positive integer <M>l</M>,
 ##  and
 ##  <M>\{ e_{{n_1}}^j \}_{{j \in J}} \otimes \{ e_{{n_2}}^k \}_{{k \in K}} =
 ##  \{ e_{{n_1}}^j \cdot e_{{n_2}}^k \}_{{j \in J, k \in K}}</M>.

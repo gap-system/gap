@@ -66,7 +66,7 @@ InstallOtherMethod( Directory, "directory", [ IsDirectory ], IdFunc );
 #############################################################################
 ##
 #M  EQ( <dir1>, <dir2> ) . . . . . . . . . . . equality for directory objects
-##  
+##
 InstallMethod( EQ,
    "for two directories",
    [ IsDirectory, IsDirectory ],
@@ -170,7 +170,7 @@ InstallMethod( ExternalFilename, "for a directory list and a string",
 #############################################################################
 ##
 #F  DirectoryContents(<name>)
-## 
+##
 InstallGlobalFunction(DirectoryContents, function(dirname)
   local str;
   if IsDirectory(dirname) then
@@ -224,7 +224,7 @@ end );
 InstallMethod( ReadAsFunction,
     "string",
     [ IsString ],
-    name -> READ_AS_FUNC( UserHomeExpand( name ) ) );  
+    name -> READ_AS_FUNC( UserHomeExpand( name ) ) );
 
 
 #############################################################################
@@ -270,7 +270,7 @@ InstallGlobalFunction( Edit, function( name )
         Error( "cannot locate editor `", UserPreference("Editor"),
                           "' (reset via SetUserPreference(\"Editor\", ...))" );
     fi;
-    ret := Process( DirectoryCurrent(), editor, InputTextUser(), 
+    ret := Process( DirectoryCurrent(), editor, InputTextUser(),
                     OutputTextUser(), Concatenation(
                     UserPreference("EditorOptions"), [ name ]) );
     if ret <> 0  then

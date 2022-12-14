@@ -38,8 +38,8 @@ DeclareInfoClass( "InfoSQ" );
 ##  gap> a := F.1;; b := F.2;; c := F.3;; d := F.4;;
 ##  gap> rels := [a^2, b^3, c^2, d^2, Comm(b,a)/b, Comm(c,a)/d, Comm(d,a),
 ##  >             Comm(c,b)/(c*d), Comm(d,b)/c, Comm(d,c)];
-##  [ a^2, b^3, c^2, d^2, b^-1*a^-1*b*a*b^-1, c^-1*a^-1*c*a*d^-1, 
-##    d^-1*a^-1*d*a, c^-1*b^-1*c*b*d^-1*c^-1, d^-1*b^-1*d*b*c^-1, 
+##  [ a^2, b^3, c^2, d^2, b^-1*a^-1*b*a*b^-1, c^-1*a^-1*c*a*d^-1,
+##    d^-1*a^-1*d*a, c^-1*b^-1*c*b*d^-1*c^-1, d^-1*b^-1*d*b*c^-1,
 ##    d^-1*c^-1*d*c ]
 ##  gap> G := F / rels;
 ##  <fp group on the generators [ a, b, c, d ]>
@@ -178,7 +178,7 @@ DeclareSynonym( "SQ", SolvableQuotient);
 ##
 ##  <Description>
 ##  computes an epimorphism from the finitely presented group <A>fpgrp</A>
-##  to the largest solvable quotient given by <A>param</A> (specified as in 
+##  to the largest solvable quotient given by <A>param</A> (specified as in
 ##  <Ref Func="SolvableQuotient" Label="for a f.p. group and a size"/>).
 ##  <P/>
 ##  <Example><![CDATA[

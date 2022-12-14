@@ -54,9 +54,9 @@ InstallGlobalFunction( ContinuedFractionExpansionOfRoot,
           x0 := x0 - step;
         else
           x0 := x0 + step;
-        fi; 
-        step := step/2; 
-      od;   
+        fi;
+        step := step/2;
+      od;
       if ValuePol(Pi,x0) > 0 then
         ai := x0 - 1;
       else

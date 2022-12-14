@@ -17,7 +17,7 @@
 #M  AddGenerators( <rws>, <gens> )
 ##
 InstallMethod( AddGenerators,
-    true, 
+    true,
     [ IsRewritingSystem and IsMutable,
       IsHomogeneousList ],
     0,
@@ -179,17 +179,17 @@ end );
 ##
 #M  ReducedComm( <rws>, <left>, <right> )
 ##
-InstallMethod( ReducedComm, 
+InstallMethod( ReducedComm,
     "ReducedLeftQuotient/ReducedProduct",
     IsIdenticalObjFamiliesRwsObjObj,
-    [ IsRewritingSystem and IsBuiltFromGroup, 
+    [ IsRewritingSystem and IsBuiltFromGroup,
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
     0,
 
 function( rws, left, right )
-    return ReducedLeftQuotient( rws, 
-        ReducedProduct( rws, right, left ), 
+    return ReducedLeftQuotient( rws,
+        ReducedProduct( rws, right, left ),
         ReducedProduct( rws, left, right ) );
 end );
 
@@ -201,7 +201,7 @@ end );
 InstallMethod( ReducedConjugate,
     "ReducedLeftQuotient/ReducedProduct",
     IsIdenticalObjFamiliesRwsObjObj,
-    [ IsRewritingSystem and IsBuiltFromGroup, 
+    [ IsRewritingSystem and IsBuiltFromGroup,
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ], 0,
 
@@ -232,7 +232,7 @@ end );
 ##
 #M  ReducedInverse( <rws>, <obj> )
 ##
-InstallMethod( ReducedInverse, 
+InstallMethod( ReducedInverse,
     "ReducedForm",
     IsIdenticalObjFamiliesRwsObj,
     [ IsRewritingSystem and IsBuiltFromMagmaWithInverses,
@@ -265,7 +265,7 @@ end );
 ##
 #M  ReducedOne( <rws> )
 ##
-InstallMethod( ReducedOne, 
+InstallMethod( ReducedOne,
     "ReducedForm",
     true,
     [ IsRewritingSystem and IsBuiltFromMagmaWithOne ],
@@ -280,7 +280,7 @@ end );
 ##
 #M  ReducedPower( <rws>, <obj>, <pow> )
 ##
-InstallMethod( ReducedPower, 
+InstallMethod( ReducedPower,
     "ReducedProduct/ReducedInverse",
     IsIdenticalObjFamiliesRwsObjXXX,
     [ IsRewritingSystem and IsBuiltFromGroup,
@@ -392,7 +392,7 @@ end );
 ##
 #M  ReducedZero( <rws> )
 ##
-InstallMethod( ReducedOne, 
+InstallMethod( ReducedOne,
     "ReducedForm",
     true,
     [ IsRewritingSystem and IsBuiltFromAdditiveMagmaWithInverses ],
@@ -406,7 +406,7 @@ end );
 ##
 #M  IsReducedForm( <rws>,<w> )
 ##
-InstallMethod(IsReducedForm, 
+InstallMethod(IsReducedForm,
 	"for a rewriting system and an object", true,
 	[IsRewritingSystem,IsObject],
 	function(rws,w)

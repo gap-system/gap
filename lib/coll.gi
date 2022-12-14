@@ -51,7 +51,7 @@ end );
 # this file, so we created it earlier and "force" it to be the CollectionsFamily of
 # CharsFamily here.
 #
-    
+
 SetElementsFamily( StringFamily, CharsFamily);
 SetCollectionsFamily( CharsFamily, StringFamily);
 
@@ -173,7 +173,7 @@ InstallMethod( IsWholeFamily,
 #  method, as the immediate method would get called for every group that
 #  knows it is finite but does not know its size -- e.g.  permutation, pc.
 #  The benefit of this is minimal beyond showing off a feature.
-InstallMethod( Size,true, [IsCollection and HasIsFinite], 
+InstallMethod( Size,true, [IsCollection and HasIsFinite],
   100, # rank above object-specific methods
     function ( C )
     if IsFinite( C ) then
@@ -189,7 +189,7 @@ InstallImmediateMethod( Size,
 InstallMethod( Size,
     "for a collection",
     [ IsCollection ],
-    C -> Length( Enumerator( C ) ) ); 
+    C -> Length( Enumerator( C ) ) );
 
 
 #############################################################################
@@ -353,7 +353,7 @@ InstallImmediateMethod( Enumerator,
 
 InstallMethod( Enumerator,
     "for a collection with known `AsList' value",
-    [ IsCollection and HasAsList ], 
+    [ IsCollection and HasAsList ],
     SUM_FLAGS, # we don't want to compute anything anew -- this is already a
                # known result as good as any.
     AsList );
@@ -573,7 +573,7 @@ BIND_GLOBAL( "ElementNumber_Subset", function( senum, num )
 
 BIND_GLOBAL( "NumberElement_Subset", function( senum, elm )
     local pos;
-    
+
     pos:= Position( senum!.list, elm );
     if pos = fail or not senum!.blist[ pos ] then
       return fail;
@@ -584,7 +584,7 @@ BIND_GLOBAL( "NumberElement_Subset", function( senum, elm )
 
 BIND_GLOBAL( "PositionCanonical_Subset", function( senum, elm )
     local pos;
-    
+
     pos:= PositionCanonical( senum!.list, elm );
     if pos = fail or not senum!.blist[ pos ] then
       return fail;
@@ -774,8 +774,8 @@ local l;
 end);
 
 InstallMethod( AsSortedList, "for a list or collection",
-        true, [ IsListOrCollection ], 0, 
-        function(l) 
+        true, [ IsListOrCollection ], 0,
+        function(l)
     local s;
     s := SortedList(l);
     MakeImmutable(s);
@@ -844,9 +844,9 @@ InstallOtherMethod( Iterator,
 #############################################################################
 ##
 #M  List( <iter> ) . . . . . . return list of remaining objects in an iterator
-##  
+##
 ##  Does not change the iterator.
-##  
+##
 InstallOtherMethod( ListOp,
     "for an iterator",
     [ IsIterator ],
@@ -993,7 +993,7 @@ end );
 ##
 #F  ConcatenationIterators( <iters> ) . . . . . . . combine list of iterators
 ##  to one iterator
-##  
+##
 BIND_GLOBAL("NextIterator_Concatenation", function(it)
   local i, it1, res;
   i := it!.i;
@@ -1029,7 +1029,7 @@ BIND_GLOBAL("ConcatenationIterators", function(iters)
     i := i,
     iters := iters,
             ));
-end);  
+end);
 
 #############################################################################
 ##
@@ -2183,7 +2183,7 @@ InstallGlobalFunction( Perform, function(l, f)
         f(x);
     od;
 end);
-      
+
 
 #############################################################################
 ##
@@ -2539,10 +2539,10 @@ InstallMethod( Union2,
 ## IsRangeRep because it is loaded early.
 ##
 InstallGlobalFunction(Union, function(arg)
-    local  tounite, handles, x, useUnion2, rangeSeen, distinct, 
-           lasthandle, i, h, u, allDense, smallest, secondsmallest, 
-           largest, ranges, sets, singletons, rd, singleton, min, max, 
-           smin, s, stride, goal, data, sizebound, needed, minNeeded, 
+    local  tounite, handles, x, useUnion2, rangeSeen, distinct,
+           lasthandle, i, h, u, allDense, smallest, secondsmallest,
+           largest, ranges, sets, singletons, rd, singleton, min, max,
+           smin, s, stride, goal, data, sizebound, needed, minNeeded,
            rstart, r, rmax, split, r2, newneeded;
     #
     # Union of one list is assumed to run over the list
@@ -2583,13 +2583,13 @@ InstallGlobalFunction(Union, function(arg)
             return Set(x);
         else
             return x;
-        fi;        
+        fi;
     fi;
     #
     # if we spotted anything except a plain list or range then we use
     # Union2 and UniteSet since the objects might have good methods installed
     #T could be cleverer if the first "non-plain" object is late in a long list
-    #T but it's not clear whether the clever thing is to unite all the rest, or 
+    #T but it's not clear whether the clever thing is to unite all the rest, or
     #T to start with the external object.
     #
     if useUnion2 then
@@ -2620,14 +2620,14 @@ InstallGlobalFunction(Union, function(arg)
         fi;
     od;
     tounite := distinct;
-    
+
     if Length(tounite) = 1 then
         x := tounite[1];
         if IsList(x) then
             return Set(x);
         else
             return x;
-        fi;        
+        fi;
     fi;
     #
     # if we have nothing but plain lists then it is at most linear in space and time
@@ -2639,25 +2639,25 @@ InstallGlobalFunction(Union, function(arg)
         return u;
     fi;
     #
-    # Next pass looks at all entries of lists and the defining data of ranges     
+    # Next pass looks at all entries of lists and the defining data of ranges
     # linear in the total memory occupied by the (remaining) input.
     # in this pass we will notice any elements that are not small integers and also
-    # work out what range the union is, if in fact it is a range. 
+    # work out what range the union is, if in fact it is a range.
     #
-    
+
     smallest := infinity;
     secondsmallest := infinity;
     largest := -infinity;
     ranges := [];
     sets := [];
     singletons := [];
-    
-    
-    
+
+
+
     for x in tounite do
         rd := fail;
         singleton := false;
-              
+
         if Length(x) = 1 then
             singleton := true;
             min := x[1];
@@ -2699,10 +2699,10 @@ InstallGlobalFunction(Union, function(arg)
         # or x was NOT a range rd is fail and s contains x sorted and with duplicates removed
         # but x does consist entirely of small integers
         #
-        # Furthermore min, smin and max contain the smallest, second smallest and largest 
+        # Furthermore min, smin and max contain the smallest, second smallest and largest
         # entries of x (except if singleton is true)
         #
-        
+
         if singleton then
             if not IsSmallIntRep(min) then
                 return Set(Concatenation(tounite));
@@ -2713,7 +2713,7 @@ InstallGlobalFunction(Union, function(arg)
         else
             Add(ranges,rd);
         fi;
-           
+
         if min < smallest then
             secondsmallest := smallest;
             smallest := min;
@@ -2727,71 +2727,71 @@ InstallGlobalFunction(Union, function(arg)
             largest := max;
         fi;
     od;
-    
+
     singletons := Set(singletons);
     Add(sets, singletons);
-    
+
     # So, if we get to here we know that everything is small integers and that if the result is a range
     # then we know which range it is. Now we somehow have to work out if it actually is that range or not
     # it's not too hard to check if it is a subset of that range (indeed if the stride is 1 we know it is).
     # but we're trying hard to avoid time or space proportional to the size of that range.
-    
+
     # Since we know by this point that we started with at least one range, we know we had
     # at least two values, so if the result is a range it will have a defined stride
-    
+
     stride := secondsmallest - smallest;
     if (largest - smallest) mod stride <> 0 then
         return Set(Concatenation(tounite));
     fi;
-    
+
     goal := [smallest, secondsmallest .. largest];
-    
-        
+
+
     #
     # We want the stride 1 ranges in front, ordered by starting position
     #
-    
+
     data := List(ranges, r-> [r[2]-r[1],r[1],-Length(r)]);
     SortParallel(data,ranges);
-    
+
     #
     # Check for inclusion
     #
-    
+
     if stride > 1 and
         (ForAny(ranges, r->not r[1] in goal or (r[2]-r[1]) mod stride <> 0) or
             ForAny(sets, s-> ForAny(s, a -> not a in goal))) then
        return Set(Concatenation(tounite));
     fi;
-    
-    
+
+
     #
     # So now we have the hard part. We need to check that the whole range is actually covered
     #
-    
-    
+
+
     #
-    # Start with an easy size bound    
+    # Start with an easy size bound
     #
-    
+
     sizebound := Sum(sets,Size) + Sum(ranges, Size);
-    
+
     if sizebound < Size(goal) then
         #
         # Even if everything is disjoint there are not enough points to cover the range
         #
         return Set(Concatenation(tounite));
     fi;
-    
+
     #
-    # We can deal with the ranges with matching stride super-quickly by 
+    # We can deal with the ranges with matching stride super-quickly by
     # sweeping through them in order
     #
     needed := [];
     minNeeded := goal[1];
     rstart := Length(ranges)+1;
     for i in [1..Length(ranges)] do
-        r := ranges[i];       
+        r := ranges[i];
         if r[2] -r[1] > stride then
             #
             # passed all the stuff with matching stride, leave the rest to the more complex
@@ -2821,17 +2821,17 @@ InstallGlobalFunction(Union, function(arg)
     if minNeeded <= largest then
         Add(needed,[minNeeded, minNeeded+stride.. largest]);
     fi;
-    
+
     if needed = [] then
         return goal;
     fi;
-    
-   
+
+
     # Finally then, we are in a case where we really need to be clever, so
     # We keep track of the points in goal we haven't seen yet as we run through the ranges
     # of non-matching stride
     # But we represent them as a union of ranges.
-                    
+
     split := function(r, r2)
         local  outs, max2, max, stride, stride2, i;
         #
@@ -2843,33 +2843,33 @@ InstallGlobalFunction(Union, function(arg)
         if Length(r) = 1 then
             #
             # This case is simpler
-            if not r[1] in r2 then 
+            if not r[1] in r2 then
                 Add(outs,r);
             fi;
             return outs;
         fi;
         max := r[Length(r)];
-        
+
         #
         # There is a good kernel intersection for two ranges
         # replacing r2 by the intersection (which is always a range)
         # makes the next part simpler
         #
         r2 := Intersection(r2,r);
-        
+
         #
         # We might miss completely
         #
-        
+
         if Length(r2) = 0 then
             Add(outs,r);
             return outs;
         fi;
-        
+
         max2 := r2[Length(r2)];
-        
+
         #
-        # In general we have the bit before r2, the bit after and 
+        # In general we have the bit before r2, the bit after and
         # the stuff within r2 but which it misses
         #
         stride := r[2]-r[1];
@@ -2887,10 +2887,10 @@ InstallGlobalFunction(Union, function(arg)
                 od;
             fi;
         fi;
-        
+
         return outs;
     end;
-    
+
     #
     # Now we subtract the ranges we have from the goal
     #
@@ -2901,11 +2901,11 @@ InstallGlobalFunction(Union, function(arg)
         od;
         needed := newneeded;
     od;
-    
+
     #
     # and then any remaining points must be in the sets
     #
-    
+
     if ForAny(needed, r-> ForAny(r, x-> ForAll(sets, s -> not x in s))) then
         return Set(Concatenation(tounite));
     else

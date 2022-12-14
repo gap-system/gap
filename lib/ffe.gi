@@ -101,7 +101,7 @@ InstallOtherMethod( DegreeFFE,
     [ IsRowVector and IsFFECollection ],
     function( list )
     local deg, i;
-    
+
     #
     # Those length zero vectors for which this makes sense have
     # representation-specific methods
@@ -175,14 +175,14 @@ InstallGlobalFunction( FFEFamily, function( p )
       # large characteristic
       F:= GET_FROM_SORTED_CACHE( FAMS_FFE_LARGE, p, function()
 
-        F:= NewFamily( "FFEFamily", IsFFE, 
+        F:= NewFamily( "FFEFamily", IsFFE,
                        CanEasilySortElements,
                        CanEasilySortElements );
         SetCharacteristic( F, p );
 
         # Store the type for the representation of prime field elements
         # via residues.
-        F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge 
+        F!.typeOfZmodnZObj:= NewType( F, IsZmodpZObjLarge
           and IsModulusRep and IsZDFRE);
 
         SetOne(  F, ZmodnZObj( F, 1 ) );
@@ -258,9 +258,9 @@ end );
 ##
 #T other construction possibilities?
 ##
-    
-    
-InstallMethod( LargeGaloisField, 
+
+
+InstallMethod( LargeGaloisField,
         [IsPosInt],
         function(q)
     local p,d;
@@ -270,7 +270,7 @@ InstallMethod( LargeGaloisField,
     Assert(1, IsPrimeInt(p));
     return LargeGaloisField(p,d);
 end);
-    
+
 
 InstallMethod( LargeGaloisField,
         [IsPosInt, IsPosInt],
@@ -392,7 +392,7 @@ InstallGlobalFunction( GaloisField, function ( arg )
 
       subfield:= p;
       p:= Characteristic( subfield );
-      
+
       d1 := DegreeOverPrimeField(subfield);
       # if the degree of the extension is given
       if   IsInt( d )  then
@@ -649,7 +649,7 @@ InstallMethod( PrintObj, "for a field of FFEs",
         [ IsField and IsFFECollection ], 10, function( F )
     Print( ViewString(F) );
 end );
-    
+
 
 
 #############################################################################
@@ -885,7 +885,7 @@ InstallMethod( Int,
 
 #############################################################################
 ##
-#M  IntFFESymm( <z> ) 
+#M  IntFFESymm( <z> )
 ##
 InstallMethod(IntFFESymm,"FFE",true,[ IsFFE ],0,
 function(z)
@@ -1121,7 +1121,7 @@ InstallMethod( AsInternalFFE, [IsFFE and IsInternalRep],
 ##
 #M  AsInternalFFE( <non-ffe> )
 ##
-InstallOtherMethod( AsInternalFFE, [IsObject], 
+InstallOtherMethod( AsInternalFFE, [IsObject],
         function(x)
     if not IsFFE(x) then
         return fail;
@@ -1132,7 +1132,7 @@ end);
 
 #############################################################################
 ##
-#M  RootFFE( <z>, <k> ) 
+#M  RootFFE( <z>, <k> )
 ##
 InstallMethod(RootFFE,"use field order",IsCollsElmsX,
   [IsField,IsFFE,IsPosInt],0,

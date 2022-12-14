@@ -71,7 +71,7 @@ InstallOtherMethod( \^,
 
 #############################################################################
 ##
-#M  IsRowModule .  return `false' for objects which are not free left modules 
+#M  IsRowModule .  return `false' for objects which are not free left modules
 ##
 InstallOtherMethod( IsRowModule,
     "return `false' for objects which are not free left modules",

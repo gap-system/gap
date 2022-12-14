@@ -412,7 +412,7 @@ DeclareOperation( "AsPlist", [IsListOrCollection] );
 ##  brk> l[4] := 16;;  # assigning a value
 ##  brk> return;       # to escape the break-loop
 ##  16
-##  gap> 
+##  gap>
 ##  ]]></Log>
 ##  <P/>
 ##  Observe that requesting the value of <C>l[4]</C>, which was not
@@ -999,7 +999,7 @@ DeclareOperation( "PositionProperty", [ IsList, IsFunction, IS_INT ] );
 ##  2
 ##  ]]></Example>
 ##  <P/>
-##  <Ref Func="Maximum" Label="for various objects"/> and 
+##  <Ref Func="Maximum" Label="for various objects"/> and
 ##  <Ref Func="Minimum" Label="for various objects"/>
 ##  allow you to find the maximum or minimum element of a list directly.
 ##  </Description>
@@ -1127,7 +1127,7 @@ DeclareOperation( "PositionSublist", [ IsList,IsList,IS_INT ] );
 ##  <Description>
 ##  returns <K>true</K> if <A>sub</A> matches a sublist of <A>list</A> from
 ##  position <C>1</C> (or position <A>at</A>, in the case of three arguments),
-##  or <K>false</K>, otherwise. 
+##  or <K>false</K>, otherwise.
 ##  If <A>sub</A> is empty <K>true</K> is returned.
 ##  If <A>list</A> is empty but <A>sub</A> is non-empty
 ##  <K>false</K> is returned.
@@ -1135,7 +1135,7 @@ DeclareOperation( "PositionSublist", [ IsList,IsList,IS_INT ] );
 ##  If you actually want to know whether there is an <A>at</A> for which
 ##  <C>IsMatchingSublist( <A>list</A>, <A>sub</A>, <A>at</A> )</C> is true,
 ##  use a construction like
-##  <C>PositionSublist( <A>list</A>, <A>sub</A> ) &tlt;&tgt; fail</C> instead 
+##  <C>PositionSublist( <A>list</A>, <A>sub</A> ) &tlt;&tgt; fail</C> instead
 ##  (see <Ref Oper="PositionSublist"/>); it's more efficient.
 ##  </Description>
 ##  </ManSection>
@@ -1430,7 +1430,7 @@ DeclareOperation( "Collected", [ IsList ] );
 ##  Therefore <Ref Oper="DuplicateFreeList"/> can be used even if the
 ##  elements of <A>list</A> do not lie in the same family.
 ##  Otherwise, if <A>list</A> contains objects that can be compared with
-##  <Ref Oper="\&lt;"/> then it is much more efficient to use 
+##  <Ref Oper="\&lt;"/> then it is much more efficient to use
 ##  <Ref Oper="Set"/> instead of <Ref Oper="DuplicateFreeList"/>.
 ##  <P/>
 ##  <Ref Oper="Unique"/> is a synonym for <Ref Oper="DuplicateFreeList"/>.
@@ -1576,27 +1576,27 @@ DeclareOperation( "ReversedOp", [ IsDenseList ] );
 ##  <Oper Name="Shuffle" Arg='list'/>
 ##
 ##  <Description>
-##  The argument <A>list</A> must be a dense mutable list. This operation 
-##  permutes the entries of <A>list</A> randomly (in place), and returns 
+##  The argument <A>list</A> must be a dense mutable list. This operation
+##  permutes the entries of <A>list</A> randomly (in place), and returns
 ##  <A>list</A>.
 ##  <Example>
 ##  gap> Reset(GlobalMersenneTwister, 12345);; # make manual tester happy
 ##  gap> l := [1..20];
 ##  [ 1 .. 20 ]
 ##  gap> m := Shuffle(ShallowCopy(l));
-##  [ 8, 13, 1, 3, 20, 15, 4, 7, 5, 18, 6, 12, 16, 11, 2, 10, 19, 17, 9, 
+##  [ 8, 13, 1, 3, 20, 15, 4, 7, 5, 18, 6, 12, 16, 11, 2, 10, 19, 17, 9,
 ##    14 ]
 ##  gap> l;
 ##  [ 1 .. 20 ]
 ##  gap> Shuffle(l);;
 ##  gap> l;
-##  [ 19, 5, 7, 20, 16, 1, 10, 15, 12, 11, 13, 2, 14, 3, 4, 17, 6, 8, 9, 
+##  [ 19, 5, 7, 20, 16, 1, 10, 15, 12, 11, 13, 2, 14, 3, 4, 17, 6, 8, 9,
 ##    18 ]
 ##  </Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##  
+##
 DeclareOperation( "Shuffle", [IsDenseList and IsMutable] );
 
 
@@ -1849,7 +1849,7 @@ DeclareOperation( "StableSortParallel",
 ##  gap> Maximum( [ -123, 700, 123, 0, -1000 ] );
 ##  700
 ##  gap> # lists are compared elementwise:
-##  gap> Maximum( [1,2], [0,15], [1,5], [2,-11] );  
+##  gap> Maximum( [1,2], [0,15], [1,5], [2,-11] );
 ##  [ 2, -11 ]
 ##  ]]></Example>
 ##  To get the index of the maximum element use <Ref Func="PositionMaximum"/>
@@ -1986,10 +1986,10 @@ DeclareOperation( "MinimumList", [ IsList, IsObject ] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Cartesian( [1,2], [3,4], [5,6] );
-##  [ [ 1, 3, 5 ], [ 1, 3, 6 ], [ 1, 4, 5 ], [ 1, 4, 6 ], [ 2, 3, 5 ], 
+##  [ [ 1, 3, 5 ], [ 1, 3, 6 ], [ 1, 4, 5 ], [ 1, 4, 6 ], [ 2, 3, 5 ],
 ##    [ 2, 3, 6 ], [ 2, 4, 5 ], [ 2, 4, 6 ] ]
 ##  gap> Cartesian( [1,2,2], [1,1,2] );
-##  [ [ 1, 1 ], [ 1, 1 ], [ 1, 2 ], [ 2, 1 ], [ 2, 1 ], [ 2, 2 ], 
+##  [ [ 1, 1 ], [ 1, 1 ], [ 1, 2 ], [ 2, 1 ], [ 2, 1 ], [ 2, 2 ],
 ##    [ 2, 1 ], [ 2, 1 ], [ 2, 2 ] ]
 ##  ]]></Example>
 ##  </Description>

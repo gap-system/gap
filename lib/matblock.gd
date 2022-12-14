@@ -15,7 +15,7 @@
 ##  <#GAPDoc Label="[1]{matblock}">
 ##  Block matrices are a special representation of matrices which can save a
 ##  lot of memory if large matrices have a block structure with lots of zero
-##  blocks. &GAP; uses the representation <C>IsBlockMatrixRep</C> 
+##  blocks. &GAP; uses the representation <C>IsBlockMatrixRep</C>
 ##  to store block matrices.
 ##  <Index Key="IsBlockMatrixRep">IsBlockMatrixRep</Index>
 ##  <#/GAPDoc>

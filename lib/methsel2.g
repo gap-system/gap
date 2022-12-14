@@ -36,19 +36,19 @@ ApplicableMethod := fail;
 ##  .Arguments --     the arguments as a plain (immutable) list
 ##  .isVerbose --     if the operation was being traced
 ##  .isConstructor -- if the operation is a constructor
-##  .Precedence --    the "precedence" of the method sought 0 for 
+##  .Precedence --    the "precedence" of the method sought 0 for
 ##                    first choice, 1 after one TryNextMethod(), etc.
 ##  </Description>
 ##  </ManSection>
 ##
 HANDLE_METHOD_NOT_FOUND := function ( INF )
-  local no_method_found, linebreak, ShowArguments, ShowArgument, ShowDetails, ShowMethods, 
+  local no_method_found, linebreak, ShowArguments, ShowArgument, ShowDetails, ShowMethods,
              ShowOtherMethods, argument_index;
 
 
 #############################################################################
 ##
-#F  ShowArguments( )  . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+#F  ShowArguments( )  . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 ##
 ##  <#GAPDoc Label="ShowArguments">
 ##  <ManSection>
@@ -70,7 +70,7 @@ end;
 
 #############################################################################
 ##
-#F  ShowArgument(<nr>)  . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+#F  ShowArgument(<nr>)  . . . . . . . . . . . . . . . . . . . . . . . . . . .
 ##
 ##  <#GAPDoc Label="ShowArgument">
 ##  <ManSection>
@@ -89,7 +89,7 @@ end;
 ##  <#/GAPDoc>
 ##
 ShowArgument := function( arg )
-  if LENGTH(arg) <> 1 or not IS_INT(arg[1]) or arg[1] <= 0 
+  if LENGTH(arg) <> 1 or not IS_INT(arg[1]) or arg[1] <= 0
      or arg[1] > LENGTH(INF.Arguments) then
     Print( "Usage: `ShowArgument( <nr> )' where <nr> is an integer between ",
            1," and ",LENGTH(INF.Arguments),"\n");
@@ -100,7 +100,7 @@ end;
 
 #############################################################################
 ##
-#F  ShowDetails( )  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+#F  ShowDetails( )  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 ##
 ##  <#GAPDoc Label="ShowDetails">
 ##  <ManSection>
@@ -137,7 +137,7 @@ end;
 
 #############################################################################
 ##
-#F  ShowMethods( [<verbosity>] )  . . . . . . . . . . . . . . . . . . . . . . 
+#F  ShowMethods( [<verbosity>] )  . . . . . . . . . . . . . . . . . . . . . .
 ##
 ##  <#GAPDoc Label="ShowMethods">
 ##  <ManSection>
@@ -174,7 +174,7 @@ end;
 
 #############################################################################
 ##
-#F  ShowOtherMethods( [<verbosity>] ) . . . . . . . . . . . . . . . . . . . . 
+#F  ShowOtherMethods( [<verbosity>] ) . . . . . . . . . . . . . . . . . . . .
 ##
 ##  <#GAPDoc Label="ShowOtherMethods">
 ##  <ManSection>
@@ -223,7 +223,7 @@ end;
 # Remember, we are in the function `HANDLE_METHOD_NOT_FOUND'!
 
   no_method_found := "";
-  APPEND_LIST(no_method_found, 
+  APPEND_LIST(no_method_found,
         "no method found! For debugging hints type ?Recovery from NoMethodFound\n" );
 
   APPEND_LIST(no_method_found, "Error, no ");
@@ -240,7 +240,7 @@ end;
       if linebreak then
         APPEND_LIST(no_method_found, "\n");
         linebreak := false;
-      fi; 
+      fi;
       APPEND_LIST(no_method_found, "The ");
       APPEND_LIST(no_method_found, Ordinal(argument_index));
       APPEND_LIST(no_method_found, " argument is 'fail' which might point to an earlier problem\n" );

@@ -63,7 +63,7 @@
 ##  gap> Size(d);
 ##  216
 ##  gap> e:=Embedding(d,2);
-##  2nd embedding into Group([ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), 
+##  2nd embedding into Group([ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9),
 ##    (7,8) ])
 ##  gap> Image(e,(1,2));
 ##  (4,5)
@@ -93,7 +93,7 @@ DeclareOperation( "DirectProductOp", [ IsList, IsSemigroup ] );
 ##  <Func Name="PcgsDirectProduct" Arg='D, pcgsop, indsop, filter'/>
 ##
 ##  <Description>
-##  constructs a new pcgs from pcgses of the components of D, setting 
+##  constructs a new pcgs from pcgses of the components of D, setting
 ##  the necessary indices for the new pcgs and sets the property
 ##  specified by filter.
 ##  </Description>
@@ -314,12 +314,12 @@ DeclareOperation( "SemidirectProduct",
 ##  gap> p:=Group((1,2,3));
 ##  Group([ (1,2,3) ])
 ##  gap> w:=WreathProduct(g,p);
-##  Group([ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8), 
+##  Group([ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8),
 ##    (1,4,7)(2,5,8)(3,6,9) ])
 ##  gap> Size(w);
 ##  648
 ##  gap> Embedding(w,1);
-##  1st embedding into Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), 
+##  1st embedding into Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9),
 ##    (7,8), (1,4,7)(2,5,8)(3,6,9) ] )
 ##  gap> Image(Embedding(w,3));
 ##  Group([ (7,8,9), (7,8) ])
@@ -432,7 +432,7 @@ DeclareGlobalFunction( "SubdirectProducts" );
 ##  <Func Name="FreeProduct" Arg='list' Label="for a list"/>
 ##
 ##  <Description>
-##  constructs a finitely presented group which is the free product of 
+##  constructs a finitely presented group which is the free product of
 ##  the groups given as arguments.
 ##  If the group arguments are not finitely presented groups,
 ##  then <Ref Attr="IsomorphismFpGroup"/> must be defined for them.

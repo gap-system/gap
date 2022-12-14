@@ -118,17 +118,17 @@ InstallMethod( \<,
     LT_LIST_LIST_DEFAULT );
 
 LT_LIST_LIST_FINITE := function( list1, list2 )
-    
+
     local len, i;
-    
+
     # We ask for being small in order to catch the default methods
     # directly in the next call if possible.
     if IsSmallList( list1 ) and IsSmallList( list2 ) then
       return LT_LIST_LIST_DEFAULT( list1, list2 );
     else
-        
+
       len:= Minimum( Length( list1 ), Length( list2 ) );
-      i:= 1;                      
+      i:= 1;
       while i <= len do
         if list1[i] < list2[i] then
           return true;
@@ -151,18 +151,18 @@ InstallMethod( \<,
 #############################################################################
 ##
 #M  String( <obj> ) . . . . . . . . . . . . default String method for objects
-##  
-##      
+##
+##
 InstallMethod(String, [IsObject], o-> "<object>");
 
 #############################################################################
 ##
 #M  PrintObj( <obj> ) . . . . . . . . . . . default Print method for objects
-##  
-##      
+##
+##
 InstallMethod(PrintObj, "default method delegating to PrintString",
   [IsObject], function(o) Print(PrintString(o)); end );
-  
+
 #############################################################################
 ##
 #M  PrintString( <obj> ) . . . . . . . . . . . . default delegating to String
@@ -203,7 +203,7 @@ InstallGlobalFunction( StripLineBreakCharacters,
   function(st)
     local res,c;
     res := EmptyString(Length(st));
-    for c in st do 
+    for c in st do
         if c <> '\<' and c <> '\>' then
             Add(res,c);
         fi;
@@ -289,8 +289,8 @@ InstallMethod( PrintString,
       IsZeroCyc ],
     0,
 
-function( str, zero ) 
-    return PrintString( str ); 
+function( str, zero )
+    return PrintString( str );
 end );
 
 
@@ -371,8 +371,8 @@ InstallMethod( String,
       IsZeroCyc ],
     0,
 
-function( str, zero ) 
-    return ShallowCopy(String( str )); 
+function( str, zero )
+    return ShallowCopy(String( str ));
 end );
 
 
@@ -416,7 +416,7 @@ InstallMethod( ViewObj,
     true,
     [ IsObject ],
     1, # beat the PrintObj installation in oper1.g
-    function ( obj )  
+    function ( obj )
       local st;
       st := ViewString(obj);
       if not(IsIdenticalObj(st,DEFAULTVIEWSTRING)) then
@@ -632,7 +632,7 @@ InstallMethod( Display,
         "generic: use DisplayString or otherwise PrintObj",
         true,
         [ IsObject ], 0,
-  function( obj ) 
+  function( obj )
     local st;
     st := DisplayString(obj);
     if IsIdenticalObj(st,DEFAULTDISPLAYSTRING) then
@@ -641,7 +641,7 @@ InstallMethod( Display,
         Print(st);
     fi;
 end );
-    
+
 
 #############################################################################
 ##
@@ -654,14 +654,14 @@ InstallMethod( DisplayString,
         "generic: return default string",
         true,
         [ IsObject ], -1,
-  function( obj ) 
+  function( obj )
     return DEFAULTDISPLAYSTRING;
   end );
 
 #############################################################################
 ##
 #M  PostMakeImmutable( <obj> ) . . . . . . . . . . . . .do nothing in general
-##  
+##
 
 InstallMethod( PostMakeImmutable,
         "unless otherwise directed, do nothing",
@@ -680,7 +680,7 @@ end );
 InstallMethod( SetName, "generic test routine", true, [ IsObject,IsObject ],
   # override setter
   SUM_FLAGS+1,
-function( obj,str ) 
+function( obj,str )
   if not IsString(str) then
     Error("SetName: <name> must be a string");
   fi;
@@ -689,11 +689,11 @@ end );
 
 #############################################################################
 ##
-#V  TYPE_KERNEL_OBJECT  
+#V  TYPE_KERNEL_OBJECT
 ##
 ##
 ##
-##  TYPE_KERNEL_OBJECT is the type of data objects used internally in the 
+##  TYPE_KERNEL_OBJECT is the type of data objects used internally in the
 ##  kernel which have no significant &GAP; callable methods and should not
 ##  normally be seen at &GAP; level. These are typically lookup tables or
 ##  buffers created and used within the kernel and containing binary data only

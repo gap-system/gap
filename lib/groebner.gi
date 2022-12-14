@@ -218,7 +218,7 @@ InstallMonomialOrdering(MonomialLexOrdering,
 	fi;
 	i:=i+2;
       od;
-      if not has then 
+      if not has then
 	# b has no variable as large as am. thus a is bigger
 	return false;
       elif ret<>fail then
@@ -363,7 +363,7 @@ InstallMonomialOrdering(MonomialGrlexOrdering,
 	fi;
 	i:=i+2;
       od;
-      if not has then 
+      if not has then
 	# b has no variable as large as am. thus a is bigger
 	return false;
       elif ret<>fail then
@@ -448,7 +448,7 @@ InstallMonomialOrdering(MonomialGrevlexOrdering,
 ##  If these submonomial are equal, the submonomials given by the other
 ##  variables are compared by a graded lexicographic ordering (with respect
 ##  to the variable order given in <rest>, if called with two parameters).
-##  
+##
 ##  Both <elim> and <rest> may be a list of variables of a list of variable
 ##  indices.
 InstallGlobalFunction(EliminationOrdering,function(arg)
@@ -896,7 +896,7 @@ BindGlobal("SyzygyCriterion",function(baslte,i,j,t,B)
 local li, lj, lcm, a, b, k;
   lcm:=false;
   for k in [1..t] do
-    if k<>i and k<>j and 
+    if k<>i and k<>j and
       (not Set([i,k]) in B) and (not Set([j,k]) in B) then
 
         if lcm=false then
@@ -1044,7 +1044,7 @@ local ov,i,d;
   if ov<>true then
     for i in elms do
       d:=Difference(OccuringVariableIndices(i),ov);
-      if Length(d)>0 then 
+      if Length(d)>0 then
         Error("Ordering is undefined for variables ",
 	  List(d,j->Indeterminate(DefaultRing([FamilyObj(i)!.zeroCoefficient]),j)));
       fi;
@@ -1133,7 +1133,7 @@ InstallMethod(ReducedGroebnerBasis,"ideal",true,
 function(I,order)
 local bas;
   # do some tests
-  if HasStoredGroebnerBasis(I) 
+  if HasStoredGroebnerBasis(I)
     and IsIdenticalObj(StoredGroebnerBasis(I)[2],order) then
     bas:=StoredGroebnerBasis(I)[1];
   else
@@ -1176,14 +1176,14 @@ InstallOtherMethod(GcdOp,"multivariate Gcd based on Groebner bases",
 # Output: a gcd of f,g in R
 function(R,f,g)
 local basis_elt,p,t,F,vars,vars2,GB,coeff_t;
-  F:=CoefficientsRing(R); 
+  F:=CoefficientsRing(R);
   vars:=IndeterminatesOfPolynomialRing(R);
   t:=Indeterminate(F,vars);
   vars2:=Concatenation([t],vars);
   GB:=ReducedGroebnerBasis([t*f,(1-t)*g],MonomialLexOrdering(vars2));
   for basis_elt in GB do
     coeff_t:=PolynomialCoefficientsOfPolynomial(basis_elt,t);
-    if Length(coeff_t)=1 then 
+    if Length(coeff_t)=1 then
       return StandardAssociate(f*g/coeff_t[1]);
     fi;
   od;

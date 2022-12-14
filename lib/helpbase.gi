@@ -7,10 +7,10 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
-##  
+##
 ## The files helpbase.g{d,i} contain the interface between GAP's online help
 ## and the actual help books.
-##  
+##
 
 if IsHPCGAP then
   HELP_REGION:=NewSpecialRegion("HELP_REGION");
@@ -19,20 +19,20 @@ else
 fi;
 
 #############################################################################
-##  
+##
 #F  # # # # # internal utility functions dealing with strings  # # # # # # #
-##  
+##
 
 #############################################################################
-##  
-#F  StringStreamInputTextFile( <filename> ) . . . . . . .  
+##
+#F  StringStreamInputTextFile( <filename> ) . . . . . . .
 ##                 content of file as string stream, all '\r' are removed
-##  
+##
 ##  This is useful for text files with text to display, because the files
 ##  can come with UNIX or DOS/Win line breaks.
 ##  If this turns out to be of general interest, it can be officially
 ##  documented.
-##  
+##
 InstallGlobalFunction(StringStreamInputTextFile, function(fname)
   local s;
   s := StringFile(fname);
@@ -44,23 +44,23 @@ InstallGlobalFunction(StringStreamInputTextFile, function(fname)
 end);
 
 #############################################################################
-##  
+##
 #F  IsDocumentedWord( <word>[, false ] ) . . . . . . .  check documentation for
 #F  <word> in a search string
-##  
+##
 ##  Returns 'true' if <word> appears as word in some search string of the help
 ##  system. By default this is checked case sensitively. If the optional second
 ##  argument 'false' is given, the check is case insensitive.
-##  
+##
 ##  This utility will first be used in some debug tools showing what is newly
 ##  installed by loading a package. Can be documented if desired.
-##  
+##
 # avoid warning for vars from GAPDoc package
 if not IsBound(StripEscapeSequences) then
   StripEscapeSequences := 0;
 fi;
 
-BindGlobal( "IsDocumentedWord", function( arg ) 
+BindGlobal( "IsDocumentedWord", function( arg )
   local inid, word, case, simple, cword, book, matches, a, match;
 
   inid:= Union( CHARS_DIGITS, CHARS_UALPHA, "_", CHARS_LALPHA );
@@ -85,14 +85,14 @@ BindGlobal( "IsDocumentedWord", function( arg )
 end);
 
 #############################################################################
-## 
+##
 ##  TRANSATL . . . . . . . . . . list of pairs of different spelling patterns
 ##
 ##  One could add more patterns following the following rules:
 ##  - Each element of `TRANSATL' should be a list of length two.
-##  - Do not use capital letters; instead, truncate the first letter 
+##  - Do not use capital letters; instead, truncate the first letter
 ##    of the word if might or might not be capitalised.
-##  - Usage of patterns where one of spelling variants is an initial 
+##  - Usage of patterns where one of spelling variants is an initial
 ##    substring of another is permitted.
 ##  - Modification of these rules (or using the patterns where one of
 ##    spelling variants is the trailing substring of another) may require
@@ -114,29 +114,29 @@ BindGlobal( "TRANSATL", MakeImmutable(
 #############################################################################
 ##
 ##  HELP_SEARCH_ALTERNATIVES
-## 
+##
 ##  This function is used by HELP_GET_MATCHES to check if the search topic
 ##  might have different spellings, looking for patterns from `TRANSATL'.
-##  
+##
 ##  It returns a list of suggested spellings of a string, for example:
 ##
 ##  gap> HELP_SEARCH_ALTERNATIVES("TriangulizeMat");
 ##  [ "TrianguliseMat", "TriangulizeMat" ]
 ##  gap> HELP_SEARCH_ALTERNATIVES("CentralizerSolvableGroup");
-##  [ "CentraliserSolubleGroup", "CentraliserSolvableGroup", 
+##  [ "CentraliserSolubleGroup", "CentraliserSolvableGroup",
 ##    "CentralizerSolubleGroup", "CentralizerSolvableGroup" ]
 ##
-##  This approach may suggest wrong spellings for topics containing the 
-##  substring "Size" or "size", since it's not possible to detect whether 
+##  This approach may suggest wrong spellings for topics containing the
+##  substring "Size" or "size", since it's not possible to detect whether
 ##  "size" is a part of another word or a word itself (e.g. both spellings
-##  "emphasize" and  "emphasise" may be used). However, this only creates 
+##  "emphasize" and  "emphasise" may be used). However, this only creates
 ##  a tiny and really neglectible overhead (try e.g. `??SizesCentralisers'
-##  or `??Centralizers, Normalizers and Intersections'); however it ensures 
-##  that help searches may be successful even if they use inconsistent 
-##  spelling. In practice, we expect that the majority of help searches 
-##  will match no more than one pattern. One could use the utility function 
-##  `FindMultiSpelledHelpEntries' below to see that the help system contains 
-##  about a dozen of entries which contains two occurrences of some patterns, 
+##  or `??Centralizers, Normalizers and Intersections'); however it ensures
+##  that help searches may be successful even if they use inconsistent
+##  spelling. In practice, we expect that the majority of help searches
+##  will match no more than one pattern. One could use the utility function
+##  `FindMultiSpelledHelpEntries' below to see that the help system contains
+##  about a dozen of entries which contains two occurrences of some patterns,
 ##  and none with three or more of them.
 ##
 ##  In addition, it ensures that the search for system setters and testers
@@ -162,14 +162,14 @@ for pattern in TRANSATL do
     pos  := POSITION_SUBSTRING( topic, variant, 0 );
     while pos <> fail do
       Add( where, pos );
-      Add( what, rec( start   := pos, 
+      Add( what, rec( start   := pos,
                       finish  := pos+Length(variant)-1,
-                      variant := variant, 
-                      pattern := pattern ) );   
+                      variant := variant,
+                      pattern := pattern ) );
       pos := POSITION_SUBSTRING( topic, variant, pos+Length(variant) );
     od;
-  od;   
-  if Length(where) > 0 then # we have at least one match 
+  od;
+  if Length(where) > 0 then # we have at least one match
     # now check if we have a double match ( like in "catalogue" and "catalog" )
     if Length( Set( where ) ) = Length( where ) then
       # no double matches, just store the data (SortParallel will be applied later)
@@ -255,25 +255,25 @@ end);
 
 #############################################################################
 ##
-#F  FindMultiSpelledHelpEntries() . . . . . . check documentation for entries 
+#F  FindMultiSpelledHelpEntries() . . . . . . check documentation for entries
 ##                             which might have 2 or more different spellings
 ##
 ##  This utility may be used in checks of the help system by GAP developers.
 ##
 ##  `HELP_GET_MATCHES' uses `HELP_SEARCH_ALTERNATIVES' to look for other possible
-##  spellings, e.g. Normaliser/Normalizer, Center/Centre, Solvable/Soluble, 
-##  Analyse/Analyze, Factorisation/Factorization etc. 
+##  spellings, e.g. Normaliser/Normalizer, Center/Centre, Solvable/Soluble,
+##  Analyse/Analyze, Factorisation/Factorization etc.
 ##
 ##  "FindMultiSpelledHelpEntries" reports help entries that contains more
 ##  than one occurrence of spelling patterns from the `TRANSATL' list.
 ##  It may falsely report entries containing the substring "Size" or "size",
-##  since it's not possible to detect whether "size" is a part of another 
+##  since it's not possible to detect whether "size" is a part of another
 ##  word or a word itself (e.g. both spellings "emphasize" and  "emphasise"
 ##  may be used).
 ##
 BindGlobal( "FindMultiSpelledHelpEntries", function( )
 local report, pair, word, book, matches, a, match, patterns, i, j, w, pos, nr, hits;
-report:=[];               
+report:=[];
 for pair in TRANSATL do
   word := pair[1];
   for book in HELP_KNOWN_BOOKS[1] do
@@ -284,7 +284,7 @@ for pair in TRANSATL do
       for i in [1..Length(TRANSATL)] do
         patterns[i]:=[];
         for j in [1..Length(TRANSATL[i])] do
-          w:=TRANSATL[i][j];               
+          w:=TRANSATL[i][j];
           nr:=0;
           pos := POSITION_SUBSTRING( match, w, 0 );
           while pos <> fail do
@@ -296,7 +296,7 @@ for pair in TRANSATL do
       od;
       # we just check that there are two or more matches, but in principle
       # we calculated all to distinguish between different cases: different
-      # patterns; different spellings of same pattern; same spelling of 
+      # patterns; different spellings of same pattern; same spelling of
       # same pattern appears more than once.
       hits := Sum(Flat(patterns));
       if hits >= 1 then
@@ -314,15 +314,15 @@ fi;
 
 
 #############################################################################
-##  
+##
 #F  MATCH_BEGIN( <a>, <b> )
-##  
+##
 ##  tries to match beginning of words, where words are separated by single
 ##  spaces; return `true' or `false'.
-##  
+##
 ##  No form of  normalization is applied to  <a> or <b>, so this  should be done
 ##  before calling MATCH_BEGIN.
-##  
+##
 InstallGlobalFunction(MATCH_BEGIN, function( a, b )
     local p,q;
 
@@ -385,7 +385,7 @@ InstallGlobalFunction(MATCH_BEGIN_COUNT, function( a, b )
     fi;
     # cope with blanks
     if MATCH_BEGIN(a{[1..q-1]},b{[1..p-1]}) then
-      r := MATCH_BEGIN_COUNT(a{[q+1..Length(a)]},b{[p+1..Length(b)]}); 
+      r := MATCH_BEGIN_COUNT(a{[q+1..Length(a)]},b{[p+1..Length(b)]});
       if r >= 0 then
         if p = q then
           return 1+r;
@@ -397,18 +397,18 @@ InstallGlobalFunction(MATCH_BEGIN_COUNT, function( a, b )
       fi;
     else
       return -1;
-    fi; 
+    fi;
   fi;
 end);
 
 
 #############################################################################
-##  
+##
 #F  FILLED_LINE( <left>, <right>, <fill> )
-##  
+##
 ##  return string starting with string <left>, a number of characters <fill>
 ##  and ending with string <right> 6 characters before end of screen.
-##  
+##
 InstallGlobalFunction(FILLED_LINE, function( l, r, f )
     local   w,  n;
 
@@ -425,7 +425,7 @@ InstallGlobalFunction(FILLED_LINE, function( l, r, f )
     if w-7 < Length(l) + Length(r)  then
         r := Concatenation( r{[1..w-7-Length(l)]}, "..." );
     fi;
- 
+
     w := w - Length(l) - Length(r);
     n := ShallowCopy(l);
     Add( n, ' ' );
@@ -466,30 +466,30 @@ end);
 
 
 #############################################################################
-##  
+##
 ##  Each book for GAP's help system  has to be initialized by entries in
 ##  HELP_KNOWN_BOOKS. These contain a short name (a single word), a long
 ##  name and the directory of the documentation.
-##  
+##
 ##  For  the   main  books   of  the  GAP   library  this   is  included
 ##  here,   for    packages   these   initializations   are    done   by
 ##  `LoadPackageDocumentation'.
-##  
+##
 ##  In the  path for a  help book  there must be   a file `manual.six'. It
 ##  contains the  indexing information used for  the search of  a topic in
 ##  the GAP help. The  format of the file is  not prescribed. But if it is
 ##  different from the current GAP  library documentation format then  the
 ##  first line must be
-##  
+##
 ##  #SIXFORMAT myownformat
-##  
+##
 ##  Then a  function HELP_BOOK_HANDLER.myownformat.ReadSix is used to read
 ##  the rest of the file. (See HELP_BOOK_HANDLER below.)
-##  
+##
 # in first list: normalized names of books
-# in second list: for each book a list 
-#                 [short name, long name, 
-#                  directory containing the manual.six file] 
+# in second list: for each book a list
+#                 [short name, long name,
+#                  directory containing the manual.six file]
 BindGlobal("HELP_KNOWN_BOOKS", [[],[]]);
 if IsHPCGAP then
   LockAndMigrateObj(HELP_KNOWN_BOOKS,HELP_REGION);
@@ -571,18 +571,18 @@ end);
 
 
 #############################################################################
-##  
+##
 #V  HELP_BOOK_HANDLER
-##  
+##
 ##  We use a record to store handler for different tasks with a help book.
 ##  The handler  for  the current  library books  is called "default".   A
 ##  handler is a record with some  functions as components, at least there
 ##  must be:
-##  
+##
 ##  - ReadSix          # reading a BOOK_INFO from a manual.six stream
 ##  - ShowChapters     # returns text or lines with chapter headers
 ##  - ShowSections     # same for section headers
-##  - SearchMatches    # returns list of numbers referring to entries in 
+##  - SearchMatches    # returns list of numbers referring to entries in
 ##                     # BOOK_INFO's .entries list
 ##  - MatchPrevChap    # number of match for "<<" (last in HELP_LAST.BOOK
 ##  - MatchNextChap    # number of match for ">>"  and HELP_LAST.MATCH)
@@ -595,14 +595,14 @@ end);
 ##                     # details)
 ##  The `default' handler functions will be assigned helpdef.g, see there for
 ##  more details on the interfaces of each of these functions.
-##  
+##
 BindGlobal("HELP_BOOK_HANDLER", rec(default:=rec()));
 if IsHPCGAP then
   LockAndMigrateObj(HELP_BOOK_HANDLER,HELP_REGION);
 fi;
 
 #############################################################################
-##  
+##
 #V  HELP_BOOKS_INFO . . . . . . . . . . . . .  collected info about the books
 ##
 ##  The record <HELP_BOOKS_INFO>  contains for each loaded  help book an
@@ -611,39 +611,39 @@ fi;
 ##  components, which are used by this generic interface to the help system:
 ##
 ##  bookname:
-##  
+##
 ##    The short name of the book, e.g. "ref", "matrix", "EDIM".
-##  
-##  entries: 
-##  
+##
+##  entries:
+##
 ##    List of entries for the  search, each entry must  be a list. In  the
 ##    first position there must be a string which is shown for this match,
 ##    in case several matches for a topic where found.
-##  
+##
 ##  formats: (not necessary ???)
-##    
+##
 ##    List of output formats available for this book (like ["text", "url", ..]),
 ##    this must contain at least "text".
-##    
+##
 ##  The  remaining positions  in    the  .entries lists and/or     further
 ##  components  in  this help  book record  depend  on  the format  of the
 ##  documentation and the corresponding handler functions.
-##  
+##
 BindGlobal("HELP_BOOKS_INFO", rec());
 if IsHPCGAP then
   LockAndMigrateObj(HELP_BOOKS_INFO,HELP_REGION);
 fi;
 
 #############################################################################
-##  
+##
 #F  HELP_BOOK_INFO( <book> )  . . . . . . . . . . . . . get info about a book
-##  
+##
 ##  Returns  the  corresponding HELP_BOOKS_INFO  entry  or  reads  in  the
 ##  corresponding manual.six file, if not yet done.
-##  
-##  <book> must be a record, which is just returned, or the short name of a 
+##
+##  <book> must be a record, which is just returned, or the short name of a
 ##  known book.
-##  
+##
 InstallGlobalFunction(HELP_BOOK_INFO, function( book )
   local pos, bnam, nnam, path, dirs, six, stream, line, handler;
 
@@ -651,11 +651,11 @@ InstallGlobalFunction(HELP_BOOK_INFO, function( book )
   if IsRecord(book)  then
     return book;
   fi;
-  
+
   book := LowercaseString(book);
   pos := Position(HELP_KNOWN_BOOKS[1], book);
   if pos = fail  then
-    # try to match beginning 
+    # try to match beginning
     pos := Filtered(HELP_KNOWN_BOOKS[1], bn-> MATCH_BEGIN(bn, book));
     if Length(pos) = 0 then
       # give up
@@ -666,7 +666,7 @@ InstallGlobalFunction(HELP_BOOK_INFO, function( book )
   fi;
   # now we have the (short) name of the book
   bnam := HELP_KNOWN_BOOKS[1][pos];
-  
+
   if IsBound(HELP_BOOKS_INFO.(bnam)) then
     # done
     return HELP_BOOKS_INFO.(bnam);
@@ -720,7 +720,7 @@ InstallGlobalFunction(HELP_BOOK_INFO, function( book )
     return fail;
   fi;
   HELP_BOOKS_INFO.(bnam) := HELP_BOOK_HANDLER.(handler).ReadSix(stream);
-  
+
   # adjust some entries used on the interface level
   HELP_BOOKS_INFO.(bnam).handler := handler;
   HELP_BOOKS_INFO.(bnam).bookname := HELP_KNOWN_BOOKS[2][pos][1];
@@ -730,25 +730,25 @@ InstallGlobalFunction(HELP_BOOK_INFO, function( book )
 end);
 
 #############################################################################
-##  
-##  
+##
+##
 #F  # # # # # # # # # # generic show functions  # # # # # # # # # # # # # # #
-##  
+##
 
 #############################################################################
-##  
+##
 ##  The central  function for the help  system is, of course,  `HELP' below.
 ##  Depending on  the search  string it may  trigger different  actions. The
 ##  functions for these actions are defined first. Many of them delegate the
 ##  actual work to the handler functions for the available books.
-##  
+##
 
 
 
 #############################################################################
-##  
+##
 #F  HELP_SHOW_BOOKS( ignored... ) . . . . . . . . . . .  show available books
-##  
+##
 InstallGlobalFunction(HELP_SHOW_BOOKS, function( arg )
   local books;
 
@@ -766,7 +766,7 @@ end);
 ##
 InstallGlobalFunction(HELP_SHOW_CHAPTERS, function(book)
   local info;
-  # delegate to handler 
+  # delegate to handler
   info := HELP_BOOK_INFO(book);
   if info = fail then
     Print("#W Help: Book ", book, " not found.\n");
@@ -784,7 +784,7 @@ end);
 ##
 InstallGlobalFunction(HELP_SHOW_SECTIONS, function(book)
   local info;
-  # delegate to handler 
+  # delegate to handler
   info := HELP_BOOK_INFO(book);
   if info = fail then
     Print("#W Help: Book ", book, " not found.\n");
@@ -797,12 +797,12 @@ InstallGlobalFunction(HELP_SHOW_SECTIONS, function(book)
 end);
 
 #############################################################################
-##  
+##
 #F  HELP_PRINT_MATCH( <match> ) . . . . . . the core function which finally
 ##  gets the data for displaying the help and displays it
-##  
+##
 ##  <match> is [book, entrynr]
-##  
+##
 InstallGlobalFunction(HELP_PRINT_MATCH, function(match)
   local book, entrynr, viewer, hv, pos, type, data;
   book := HELP_BOOK_INFO(match[1]);
@@ -820,7 +820,7 @@ InstallGlobalFunction(HELP_PRINT_MATCH, function(match)
     HELP_LAST.NEXT_VIEWER := false;
   fi;
   for viewer in hv do
-    # type of data we need now depends on help viewer 
+    # type of data we need now depends on help viewer
     type := HELP_VIEWER_INFO.(viewer).type;
     # get the data via appropriate handler
     data := HELP_BOOK_HANDLER.(book.handler).HelpData(book, entrynr, type);
@@ -838,9 +838,9 @@ InstallGlobalFunction(HELP_PRINT_MATCH, function(match)
 end);
 
 #############################################################################
-##  
+##
 #F  HELP_SHOW_PREV_CHAPTER( <book> ) . . . . . . . . show chapter introduction
-##  
+##
 InstallGlobalFunction(HELP_SHOW_PREV_CHAPTER, function( arg )
   local   info,  match;
   if HELP_LAST.BOOK = 0 then
@@ -848,7 +848,7 @@ InstallGlobalFunction(HELP_SHOW_PREV_CHAPTER, function( arg )
     return;
   fi;
   info := HELP_BOOK_INFO(HELP_LAST.BOOK);
-  match := HELP_BOOK_HANDLER.(info.handler).MatchPrevChap(info, 
+  match := HELP_BOOK_HANDLER.(info.handler).MatchPrevChap(info,
                    HELP_LAST.MATCH);
   if match[2] = fail then
     Print("Help:  no match found.\n");
@@ -869,7 +869,7 @@ InstallGlobalFunction(HELP_SHOW_NEXT_CHAPTER, function( arg )
     return;
   fi;
   info := HELP_BOOK_INFO(HELP_LAST.BOOK);
-  match := HELP_BOOK_HANDLER.(info.handler).MatchNextChap(info, 
+  match := HELP_BOOK_HANDLER.(info.handler).MatchNextChap(info,
                    HELP_LAST.MATCH);
   if match[2] = fail then
     Print("Help:  no match found.\n");
@@ -890,7 +890,7 @@ InstallGlobalFunction(HELP_SHOW_PREV, function( arg )
     return;
   fi;
   info := HELP_BOOK_INFO(HELP_LAST.BOOK);
-  match := HELP_BOOK_HANDLER.(info.handler).MatchPrev(info, 
+  match := HELP_BOOK_HANDLER.(info.handler).MatchPrev(info,
                    HELP_LAST.MATCH);
   if match[2] = fail then
     Print("Help:  no match found.\n");
@@ -911,7 +911,7 @@ InstallGlobalFunction(HELP_SHOW_NEXT, function( arg )
     return;
   fi;
   info := HELP_BOOK_INFO(HELP_LAST.BOOK);
-  match := HELP_BOOK_HANDLER.(info.handler).MatchNext(info, 
+  match := HELP_BOOK_HANDLER.(info.handler).MatchNext(info,
                    HELP_LAST.MATCH);
   if match[2] = fail then
     Print("Help:  no match found.\n");
@@ -941,9 +941,9 @@ end);
 
 #############################################################################
 ##
-#F  HELP_GET_MATCHES( <book>, <topic>, <frombegin> )  . . .  search through 
+#F  HELP_GET_MATCHES( <book>, <topic>, <frombegin> )  . . .  search through
 #F  the books
-##  
+##
 ##  This function returns a list of two lists [exact, match] and these lists
 ##  consist of  pairs [book,  entrynumber], where  book is  a help  book and
 ##  entrynumber is the number of a  match in book.entries. As the names say,
@@ -968,7 +968,7 @@ InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
   if IsString(books) or IsRecord(books) then
     books := [books];
   fi;
-  
+
   # collect the matches (by number)
   books := List(books, HELP_BOOK_INFO);
   for b in books do
@@ -985,13 +985,13 @@ InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
       fi;
     od;
   od;
-  
+
   # we now join the two lists, this way the exact matches are displayed
   # first in case of multiple matches
   # Note: before GAP 4.5 this was only done in case of substring search.
   match := Concatenation(exact, match);
   exact := [];
-  
+
   # check if all matches point to the same subsection of the same book,
   # in that case we only keep the first match which then will be displayed
   # immediately
@@ -1005,7 +1005,7 @@ InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
       return m[2];
     fi;
   end;
-  if Length(match) > 1 and Length(Set(match, 
+  if Length(match) > 1 and Length(Set(match,
                             m-> [m[1].bookname,getsecnum(m)])) = 1 then
     match := [match[1]];
   fi;
@@ -1094,7 +1094,7 @@ fi;
 ##
 #F  HELP_SHOW_MATCHES( <book>, <topic>, <frombegin> )  . . .  show list of
 #F  matches or single match directly
-##  
+##
 InstallGlobalFunction(HELP_SHOW_MATCHES, function( books, topic, frombegin )
   local   exact,  match,  x,  lines,  cnt,  i,  str,  n, width, line;
 
@@ -1102,22 +1102,22 @@ InstallGlobalFunction(HELP_SHOW_MATCHES, function( books, topic, frombegin )
   x := HELP_GET_MATCHES( books, topic, frombegin );
   exact := x[1];
   match := x[2];
-  
+
   # no topic found
   if 0 = Length(match) and 0 = Length(exact)  then
     Print( "Help: no matching entry found\n" );
     return false;
-    
+
   # one exact or together one topic found
   elif 1 = Length(exact) or (0 = Length(exact) and 1 = Length(match)) then
     if Length(exact) = 0 then exact := match; fi;
     i := exact[1];
-    str := Concatenation("Help: Showing `", i[1].bookname,": ", 
+    str := Concatenation("Help: Showing `", i[1].bookname,": ",
                                                i[1].entries[i[2]][1], "'\n");
     # to avoid line breaking when str contains escape sequences:
     n := 0;
     while n < Length(str) do
-      Print(str{[n+1..Minimum(Length(str), 
+      Print(str{[n+1..Minimum(Length(str),
                                     n + QuoInt(SizeScreen()[1] ,2))]}, "\c");
       n := n + QuoInt(SizeScreen()[1] ,2);
     od;
@@ -1126,7 +1126,7 @@ InstallGlobalFunction(HELP_SHOW_MATCHES, function( books, topic, frombegin )
 
   # more than one topic found, show overview in pager
   else
-    lines := 
+    lines :=
         ["Help: several entries match this topic - type ?2 to get match [2]"];
     HELP_LAST.TOPICS:=[];
     cnt := 0;
@@ -1156,9 +1156,9 @@ InstallGlobalFunction(HELP_SHOW_FROM_LAST_TOPICS, function(nr)
 end);
 
 ##  A generic function for HELP_BOOK_HANDLER.(handler).HelpData(b, e, "ref")
-##  This can be used to resolve cross references between books. The function 
+##  This can be used to resolve cross references between books. The function
 ##  returns a list r with six entries:
-##  
+##
 ##    - r[1]    search string including book name       "ref: Xyz"
 ##    - r[2]    (sub)section number as string           "5.14.2" or "3.1"
 ##    - r[3]    name of dvi-file (or fail)              "/doc/path/manual.dvi"
@@ -1166,14 +1166,14 @@ end);
 ##    - r[5]    page number for r[3], r[4] (or fail)    37
 ##    - r[6]    URL (or fail)                           "/doc/htm/ch3.html#s4"
 ##    - r[7]    [chnr, secnr, subsecnr]                 [5,14,2] or [3,1,0]
-##  
+##
 HELP_BOOK_HANDLER.HelpDataRef := function(book, entrynr)
   local    info,  handler,  entry,  chnr,  secnr,  pos,  res,  r;
 
   info := HELP_BOOK_INFO(book);
   handler := info.handler;
   entry := info.entries[entrynr];
- 
+
   # the search and reference string
   res := [ Concatenation(info.bookname, ": ", entry[1]) ];
   # the section number string
@@ -1195,11 +1195,11 @@ HELP_BOOK_HANDLER.HelpDataRef := function(book, entrynr)
     res[4] := r.file;
     if not IsBound(res[5]) then
       res[5] := r.page;
-    fi; 
+    fi;
   fi;
   if not IsBound(res[5]) then
     res[5] := fail;
-  fi;      
+  fi;
   # URL
   r := HELP_BOOK_HANDLER.(handler).HelpData(info, entrynr, "url");
   if r = fail then
@@ -1235,18 +1235,18 @@ end);
 
 
 #############################################################################
-##  
+##
 #F  HELP( <string> )  . . . . . . . . . . . . . . .  deal with a help request
-##  
-# here we store the last 16 requests 
+##
+# here we store the last 16 requests
 HELP_RING_IDX :=  0;
 HELP_RING_SIZE := 16;
-BindGlobal("HELP_BOOK_RING", ListWithIdenticalEntries( HELP_RING_SIZE, 
+BindGlobal("HELP_BOOK_RING", ListWithIdenticalEntries( HELP_RING_SIZE,
                                              ["tutorial"] ));
 if IsHPCGAP then
   LockAndMigrateObj(HELP_BOOK_RING,HELP_REGION);
 fi;
-BindGlobal("HELP_TOPIC_RING", ListWithIdenticalEntries( HELP_RING_SIZE, 
+BindGlobal("HELP_TOPIC_RING", ListWithIdenticalEntries( HELP_RING_SIZE,
                                              "welcome to gap" ));
 if IsHPCGAP then
   LockAndMigrateObj(HELP_TOPIC_RING,HELP_REGION);
@@ -1258,7 +1258,7 @@ if IsHPCGAP then
 fi;
 # here we store the last shown topic, initialized with 0 (leading to
 # show "Tutorial: Help", see below)
-BindGlobal("HELP_LAST", rec(MATCH := 0, BOOK := 0, 
+BindGlobal("HELP_LAST", rec(MATCH := 0, BOOK := 0,
              NEXT_VIEWER := false, TOPICS := []));
 NAMES_SYSTEM_GVARS:= "to be defined in init.g";
 
@@ -1270,7 +1270,7 @@ InstallGlobalFunction(HELP, function( str )
     Remove( origstr );
   od;
   nwostr := NormalizedWhitespace(origstr);
-  
+
   # extract the book
   p := Position( str, ':' );
   if p <> fail  then
@@ -1279,18 +1279,18 @@ InstallGlobalFunction(HELP, function( str )
   else
       book := "";
   fi;
-  
+
   # normalizing for search
   book := SIMPLE_STRING(book);
   str := SIMPLE_STRING(str);
-  
+
   # we check if `book' MATCH_BEGINs some of the available books
   books := Filtered(HELP_KNOWN_BOOKS[1], bn-> MATCH_BEGIN(bn, book));
   if Length(book) > 0 and Length(books) = 0 then
     Print("Help: None of the available books matches (try: '?books').\n");
     return;
   fi;
-  
+
   # function to add a topic to the ring
   move := false;
   add  := function( books, topic, orig_topic )
@@ -1301,8 +1301,8 @@ InstallGlobalFunction(HELP, function( str )
           HELP_ORIG_TOPIC_RING[HELP_RING_IDX+1] := orig_topic;
       fi;
   end;
-  
-  # if the topic is empty show the last shown one again 
+
+  # if the topic is empty show the last shown one again
   if  book = "" and str = ""  then
        if HELP_LAST.BOOK = 0 then
          HELP("Tutorial: Help");
@@ -1321,7 +1321,7 @@ InstallGlobalFunction(HELP, function( str )
          HELP_PRINT_MATCH( [HELP_LAST.BOOK, HELP_LAST.MATCH] );
        fi;
        return;
-  
+
   # if the topic is '-' we are interested in the previous search again
   elif book = "" and str = "-" and Length(nwostr) = 1  then
       HELP_RING_IDX := (HELP_RING_IDX-1) mod HELP_RING_SIZE;
@@ -1338,11 +1338,11 @@ InstallGlobalFunction(HELP, function( str )
       origstr := HELP_ORIG_TOPIC_RING[HELP_RING_IDX+1];
       move := true;
   fi;
-  
+
   # number means topic from HELP_LAST.TOPICS list
   if book = "" and ForAll(str, a-> a in "0123456789") then
       HELP_SHOW_FROM_LAST_TOPICS(Int(str));
-    
+
   # if the topic is '<' we are interested in the one before 'LastTopic'
   elif book = "" and str = "<" and Length(nwostr) = 1  then
       HELP_SHOW_PREV();
@@ -1386,7 +1386,7 @@ InstallGlobalFunction(HELP, function( str )
   # if the topic is '?<string>' search the index for any entries for
   # which <string> is a substring (as opposed to an abbreviation)
   elif Length(str) > 0 and str[1] = '?'  then
-      str := str{[2..Length(str)]};    
+      str := str{[2..Length(str)]};
       NormalizeWhitespace(str);
       origstr := origstr{[2..Length(origstr)]};
       if HELP_SHOW_MATCHES( books, str, false : HELP_TOPIC:= origstr ) then
@@ -1399,9 +1399,9 @@ InstallGlobalFunction(HELP, function( str )
   elif origstr in NAMES_SYSTEM_GVARS then
       Print( "Help: '", origstr, "' is currently undocumented.\n",
              "      For details, try ?Undocumented Variables\n" );
-  elif book = "" and 
+  elif book = "" and
                  ForAny(HELP_KNOWN_BOOKS[1], bk -> MATCH_BEGIN(bk, str)) then
-      Print( "Help: Are you looking for a certain book? (Trying '?", origstr, 
+      Print( "Help: Are you looking for a certain book? (Trying '?", origstr,
              ":' ...\n");
       HELP( Concatenation(origstr, ":") );
   else

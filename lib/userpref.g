@@ -29,17 +29,17 @@
 ##  <Func Name="UserPreference" Arg="[package, ]name"/>
 ##  <Func Name="ShowUserPreferences" Arg="package1, package2, ..."/>
 ##  <Func Name="WriteGapIniFile" Arg="[dir][,][ignorecurrent]"/>
-##  
+##
 ##  <Description>
-##  
+##
 ##  Some aspects of the behaviour of &GAP; can be customized by the user via
 ##  <Emph>user preferences</Emph>.  Examples include  the way  help sections
 ##  are displayed or the use of colors in the terminal. <P/>
-##  
+##
 ##  User preferences are  specified via a pair of strings,  the first is the
 ##  (case insensitive) name of a package (or <C>"GAP"</C> for the core &GAP;
 ##  library) and the second is some arbitrary case sensitive string. <P/>
-##  
+##
 ##  User   preferences  can   be  set   to  some   <A>value</A>  with   <Ref
 ##  Func="SetUserPreference"/>. The  current value of a  user preference can
 ##  be found with <Ref Func="UserPreference"/>. In both cases, if no package
@@ -49,7 +49,7 @@
 ##
 ##  The stored values of user preferences are always immutable,
 ##  see Section <Ref Sect="Mutability and Copyability"/>. <P/>
-##  
+##
 ##  The function <Ref Func="ShowUserPreferences"/> with no argument shows in
 ##  a  pager  an  overview  of  all known  user  preferences  together  with
 ##  some  explanation  and  the  current  value.  If  one  or  more  strings
@@ -59,7 +59,7 @@
 ##  <Ref Func="BrowseUserPreferences" BookName="browse"/> which gives an
 ##  overview of the known user preferenes and also admits editing the
 ##  values of the preferences. <P/>
-##  
+##
 ##  The easiest way to  make use of user preferences is  probably to use the
 ##  function <Ref  Func="WriteGapIniFile"/>, usually without  argument. This
 ##  function creates a file <F>gap.ini</F>  in your user specific &GAP; root
@@ -70,18 +70,18 @@
 ##  currently do not  have their default value. You can  then edit that file
 ##  to customize (further)  the user preferences for  future &GAP; sessions.
 ##  <P/>
-##  
+##
 ##  Should a  later version  of &GAP;  or some  packages introduce  new user
 ##  preferences then you can  call <Ref Func="WriteGapIniFile"/> again since
 ##  it  will set  the previously  known  user preferences  to their  current
 ##  values. <P/>
-##  
+##
 ##  Optionally,  a  different  directory for  the  resulting  <F>gap.ini</F>
 ##  file    can   be    specified   as    argument   <A>dir</A>    to   <Ref
 ##  Func="WriteGapIniFile"/>. Another optional argument is the boolean value
 ##  <K>true</K>, if this  is given, the settings of all  user preferences in
 ##  the current session are ignored. <P/>
-##  
+##
 ##  Note that  your <F>gap.ini</F> file is  read by &GAP; very  early during
 ##  its startup process. A consequence  is that the <A>value</A> argument in
 ##  a call of <Ref Func="SetUserPreference"/>  must be some very basic &GAP;
@@ -94,7 +94,7 @@
 ##  <Ref Func="SetUserPreference"/> from your  <F>gap.ini</F> file into your
 ##  <F>gaprc</F>  file (also  in the  directory <C>GAPInfo.UserGapRoot</C>).
 ##  This file is read much later. <P/>
-##  
+##
 ##  <Example>
 ##  gap> SetUserPreference( "Pager", "less" );
 ##  gap> SetUserPreference("PagerOptions",
@@ -102,32 +102,32 @@
 ##  gap> UserPreference("Pager");
 ##  "less"
 ##  </Example>
-##  
+##
 ##  The first two lines of this example will cause &GAP; to use the programm
 ##  <C>less</C> as  a pager.  This is highly  recommended if  <C>less</C> is
 ##  available on  your system. The  last line displays the  current setting.
 ##  <P/>
-##  
-##  </Description> 
+##
+##  </Description>
 ##  </ManSection>
-##  
+##
 ##  <ManSection>
 ##  <Func Name="DeclareUserPreference" Arg="record"/>
-##  
+##
 ##  <Description>
-##  
+##
 ##  This  function can  be used  (also in  packages) to  introduce new  user
 ##  preferences. It declares  a user preference, determines  a default value
 ##  and contains documentation  of the user preference.  After declaration a
 ##  user preference will be shown with <Ref Func="ShowUserPreferences"/> and
 ##  <Ref Func="WriteGapIniFile"/>. <P/>
-##  
+##
 ##  When  this  declaration  is  evaluated  it  is  checked,  if  this  user
 ##  preference is  already set in the  current session. If not  the value of
 ##  the user  preference is set to  its default. (Do not  use <K>fail</K> as
 ##  default  value  since this  indicated  that  a  user preference  is  not
 ##  set.)<P/>
-##  
+##
 ##  The argument <A>record</A> of <Ref Func="DeclareUserPreference"/> must be
 ##  a record with the following components.
 ##  <P/>
@@ -209,7 +209,7 @@
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##  
+##
 #T Concerning the `values' lists in the declaration:
 #T - What shall happen if several preferences are declared together?
 #T   It may be that the admissible choices for the second preference depend
@@ -607,7 +607,7 @@ BindGlobal( "ShowStringUserPreference", function( data )
 ##
 BindGlobal( "StringUserPreferences", function( arg )
     local ignorecurrent, pref, str, pkglist, pkgname, done, name, data;
-    
+
     if Length(arg) > 0 and arg[1] = true then
       ignorecurrent := true;
     else
@@ -659,7 +659,7 @@ BindGlobal( "ShowUserPreferences", function(arg)
       pkglist := List(arg, LowercaseString);
     else
       # if no list given use all  packages with preferences, "gap" first
-      pkglist := Concatenation(  [ "gap" ], 
+      pkglist := Concatenation(  [ "gap" ],
                        Difference( RecNames( pref ), [ "gap" ] ) );
     fi;
 
@@ -674,7 +674,7 @@ BindGlobal( "ShowUserPreferences", function(arg)
         nam := GAPInfo.PackagesInfo.(pkgname)[1].PackageName;
       elif pkgname = "gap" then
         nam := "GAP";
-      else 
+      else
         nam := pkgname;
       fi;
       Append( str, nam );
@@ -829,9 +829,9 @@ BindGlobal( "XMLForUserPreferences", function( pkgname )
 BindGlobal( "WriteGapIniFile", function( arg )
   local ignorecurrent, f, df, ret, target, str, res;
   # check if current settings should be used
-  if true in arg then 
+  if true in arg then
     ignorecurrent := true;
-  else 
+  else
     ignorecurrent := false;
   fi;
   # check if target directory is given as string or directory object

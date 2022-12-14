@@ -327,7 +327,7 @@ local d,p;
 	  if D.degreePool[p][2]>1 then
 	    d:=D.degreePool[p][1];
 	  fi;
-	  p:=p+1;  
+	  p:=p+1;
 	od;
 	# degreeBound
 	d:=RootInt(D.deg-(D.num-1)*d);
@@ -580,7 +580,7 @@ local ml,nu,ret,r,p,v,alo,ofs,orb,i,j,inv,b;
   for r in D.raeume do
     # recreate all images
     orb:=Orbit(D.characterMorphisms,r,
-      function(raum,el) 
+      function(raum,el)
       local img;
         img:=D.asCharacterMorphism(raum.base[1],el);
 	img:=First(D.raeume,
@@ -593,7 +593,7 @@ local ml,nu,ret,r,p,v,alo,ofs,orb,i,j,inv,b;
 	  img:=rec(base:=List(raum.base,i->D.asCharacterMorphism(i,el)),
 	           dim:=raum.dim);
 	fi;
-        return img; 
+        return img;
       end);
     for i in orb do
       if not IsMutable(i) then
@@ -631,7 +631,7 @@ DxEigenbase := function(M,f)
   k:=Length(M);
 
   minpol:=MinimalPolynomial(BaseDomain(M),M);
-  
+
   Assert(2,IsDuplicateFree(RootsOfUPol(minpol)));
   eigenvalues:=Set(RootsOfUPol(minpol));
   dim:=0;
@@ -648,7 +648,7 @@ DxEigenbase := function(M,f)
   if dim<>Length(M) then
     Error("Failed to calculate eigenspaces.");
   fi;
-  
+
   Assert(3, ForAll([1..Length(bases)],j->bases[j]*M = bases[j]*eigenvalues[j]));
   return rec(base:=bases,
              values:=eigenvalues);
@@ -1172,7 +1172,7 @@ InstallGlobalFunction( DxDegreeCandidates, function(arg)
   if Length(arg)>1 then
     anz:=arg[2];
     degrees:=[];
-    if Length(D.degreePool)=0 then 
+    if Length(D.degreePool)=0 then
       return [];
     fi;
     r:=RootInt(Int((D.deg-(D.num-anz)*D.degreePool[1][1]^2)/anz));
@@ -1218,7 +1218,7 @@ InstallGlobalFunction( DxSplitDegree, function(D,space,r)
   gorb:=D.galoisOrbits[r];
   fix:=Length(gorb)=1;
   if not fix then
-    # Galois group acts trivial ? (seen if constant values on 
+    # Galois group acts trivial ? (seen if constant values on
     # rational class)
     i:=1;
     fix:=true;
@@ -1550,7 +1550,7 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
   tm.re:=[];
   for i in tm.a do
     f:=Factors(i);
- 
+
     Add(tm.ro,f[1]);
     Add(tm.re,Length(f));
   od;
@@ -1758,7 +1758,7 @@ StandardClassMatrixColumn := function(D,M,r,t)
     M[D.inversemap[r],t]:=D.classiz[r];
   else
     orb:=DxGaloisOrbits(D,r);
-    z:=D.classreps[t]; 
+    z:=D.classreps[t];
     c:=orb.orbits[t][1];
     if c<>t then
       p:=RepresentativeAction(Stabilizer(orb.group,r),c,t);
@@ -1995,7 +1995,7 @@ local G,     # group
   while not IsPrimeInt(prime) do
     prime:=prime+exp;
   od;
-  
+
   f:=GF(prime);
   Info(InfoCharacterTable,1,"choosing prime ",prime);
 
@@ -2054,7 +2054,7 @@ local G,     # group
     # CharacterMorphisms.
     D.raeume[1].stabilizer:=CharacterMorphismGroup(D);
     m:=First(D.classes,i->Size(i)>1);
-    if m<>fail and Size(m)>8 then 
+    if m<>fail and Size(m)>8 then
       D.maycent:=true;
     fi;
   fi;
@@ -2128,7 +2128,7 @@ end );
 #F  DixontinI(<D>)  . . . . . . . . . . . . . . . .  reverse initialisation
 ##
 ##  Return everything modified by the Dixon-Algorithm to its former status.
-##  the old group is returned,character table is sorted according to its 
+##  the old group is returned,character table is sorted according to its
 ##  classes
 ##
 InstallGlobalFunction( DixontinI, function(D)
@@ -2256,7 +2256,7 @@ InstallMethod( Irr,
       od;
     od;
     Assert( 1, IsCollection( bijection ) and IsEmpty( cclnice ) );
-    
+
     # Compute the values of the irreducibles of the nice object.
     irr:= List( Irr( nice ), ValuesOfClassFunction );
 
@@ -2276,9 +2276,9 @@ end );
 # The following code implements a naive version of
 # Dixon, John D.
 # Constructing representations of finite groups.
-# Groups and computation (New Brunswick, NJ, 1991), 105--112, 
-# DIMACS Ser. Discrete Math. Theoret. Comput. Sci., 11, 
-# Amer. Math. Soc., Providence, RI, 1993. 
+# Groups and computation (New Brunswick, NJ, 1991), 105--112,
+# DIMACS Ser. Discrete Math. Theoret. Comput. Sci., 11,
+# Amer. Math. Soc., Providence, RI, 1993.
 
 
 BindGlobal("CholeskyDecomp",function(A)
@@ -2292,7 +2292,7 @@ local n,i,j,aii,Li,L;
     elif IsRat(aii) then
       aii:=ER(NumeratorRat(aii))/ER(DenominatorRat(aii));
     else
-      return fail; 
+      return fail;
       Error("huch");
     fi;
     Li:=IdentityMat(n);
@@ -2361,7 +2361,7 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
     od;
     return s;
   end;
-  
+
   AF:=function(elm)
   local elmi,mat,i,j;
     elmi:=elm^-1;
@@ -2427,7 +2427,7 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
       bw:=wert;
       balonin:=alonin;
     fi;
-  until bw<Size(G) or cnt>30 
+  until bw<Size(G) or cnt>30
 	# bw*1000<average
         or bw*1000*cnt<sum;
   x:=bx;
@@ -2482,7 +2482,7 @@ InstallGlobalFunction(IrreducibleRepresentationsDixon,function(arg)
 local G,chi,reps,r,i,gensp;
   G:=arg[1];
   if Length(arg)=1 then
-    chi:=Irr(G); 
+    chi:=Irr(G);
   elif IsClassFunction(arg[2]) and IsCharacter(arg[2]) then
     chi:=[arg[2]];
   elif IsList(arg[2]) and ForAll(arg[2],IsCharacter) then

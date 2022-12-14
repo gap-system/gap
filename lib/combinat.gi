@@ -199,7 +199,7 @@ end);
 ##
 #F  IteratorOfCombinations( <mset>[, <k> ] )
 #F  EnumeratorOfCombinations( <mset> )
-##  
+##
 InstallGlobalFunction(EnumeratorOfCombinations, function(mset)
   local c, max, l, mods, size, els, ElementNumber, NumberElement;
   c := Collected(mset);
@@ -275,7 +275,7 @@ BindGlobal("NextIterator_Combinations_set", function(it)
       comb[i] := comb[i] + 1;
       comb{[1..i-1]} := [1..i-1];
       break;
-    fi;     
+    fi;
   od;
   # check if done
   if k = 0 or comb[k] > len then
@@ -284,7 +284,7 @@ BindGlobal("NextIterator_Combinations_set", function(it)
   return res;
 end);
 
-# helper function to substitute elements described by r!.comb[j], 
+# helper function to substitute elements described by r!.comb[j],
 # j in [1..i] by smallest possible ones
 BindGlobal("Distr_Combinations", function(r, i)
   local max, kk, l, comb, j;
@@ -296,7 +296,7 @@ BindGlobal("Distr_Combinations", function(r, i)
     kk := kk + comb[j];
     comb[j] := 0;
   od;
-  for i in [1..l] do 
+  for i in [1..l] do
     if kk <= max[i] then
       comb[i] := kk;
       break;
@@ -325,7 +325,7 @@ BindGlobal("NextIterator_Combinations_mset", function(it)
   od;
   # now find next combination if there is one;
   # for this find smallest element which can be substituted by the next
-  # larger element and reset the previous ones to the smallest 
+  # larger element and reset the previous ones to the smallest
   # possible ones
   i := 1;
   while i < l and (comb[i] = 0 or comb[i+1] = max[i+1]) do
@@ -375,7 +375,7 @@ InstallGlobalFunction(IteratorOfCombinations,  function(mset, arg...)
     # in case of a proper set 'mset' we use 'comb' for indices of
     # elements in current combination; this way the generation
     # of the actual combinations is a bit more efficient than below in the
-    # general case of a multiset 
+    # general case of a multiset
     comb := [1..k];
     NextFunc := NextIterator_Combinations_set;
   else
@@ -760,12 +760,12 @@ end);
 #F  IteratorOfCartesianProduct( list1, list2, ... )
 #F  IteratorOfCartesianProduct( list )
 ##
-##  All elements of the cartesian product of lists 
+##  All elements of the cartesian product of lists
 ##  <list1>, <list2>, ... are returned in the lexicographic order.
 ##
 BindGlobal( "IsDoneIterator_Cartesian", iter -> ( iter!.next = false ) );
 
-BindGlobal( "NextIterator_Cartesian", 
+BindGlobal( "NextIterator_Cartesian",
     function( iter )
     local succ, n, sets, res, i, k;
     succ := iter!.next;
@@ -795,8 +795,8 @@ BindGlobal( "NextIterator_Cartesian",
     return res;
     end);
 
-BindGlobal( "ShallowCopy_Cartesian", 
-            iter -> rec( 
+BindGlobal( "ShallowCopy_Cartesian",
+            iter -> rec(
                       sets := iter!.sets,
                      sizes := iter!.sizes,
                          n := iter!.n,
@@ -823,7 +823,7 @@ BindGlobal( "IteratorOfCartesianProduct2",
            n              := n,                      # number of sets
            next           := 0 * [ 1 .. n ] + 1 ) ); # list of 1's
     end);
-    
+
 InstallGlobalFunction( "IteratorOfCartesianProduct",
     function( arg )
     # this mimics usage of functions Cartesian and Cartesian2
@@ -833,43 +833,43 @@ InstallGlobalFunction( "IteratorOfCartesianProduct",
     return IteratorOfCartesianProduct2( arg );
     end);
 
-BindGlobal( "NumberElement_Cartesian", 
-function(enum, x)    
+BindGlobal( "NumberElement_Cartesian",
+function(enum, x)
   local n, mults, colls, sum, pos, i;
 
   n:=enum!.n;
   mults:=enum!.mults;
   colls:=enum!.colls;
 
-  if Length(x)<>n then 
+  if Length(x)<>n then
     return fail;
   fi;
 
   sum:=0;
-  for i in [1..n-1] do 
+  for i in [1..n-1] do
     pos:=Position(colls[i], x[i]);
-    if pos=fail then 
+    if pos=fail then
       return fail;
-    else 
+    else
       pos:=pos-1;
     fi;
     sum:=sum+pos*mults[i];
   od;
-  
+
   pos:=Position(colls[n], x[n]);
-  
-  if pos=fail then 
+
+  if pos=fail then
     return fail;
   fi;
 
   return sum+pos;
 end);
 
-BindGlobal( "ElementNumber_Cartesian", 
+BindGlobal( "ElementNumber_Cartesian",
 function(enum, x)
   local n, mults, out, i, colls;
 
-  if x>Length(enum) then 
+  if x>Length(enum) then
     return fail;
   fi;
 
@@ -893,15 +893,15 @@ end);
 BindGlobal( "EnumeratorOfCartesianProduct2",
   function(colls)
   local new_colls, mults, k, out, i, j;
-    
-    if (not ForAll(colls, IsFinite)) or not (ForAll(colls, IsCollection) or 
+
+    if (not ForAll(colls, IsFinite)) or not (ForAll(colls, IsCollection) or
      ForAll(colls, IsEnumeratorByFunctions)) then
       ErrorNoReturn("usage: each argument must be a finite collection or enumerator,");
     fi;
 
-    new_colls:=[]; 
-    for i in [1..Length(colls)] do 
-      if IsDomain(colls[i]) then 
+    new_colls:=[];
+    for i in [1..Length(colls)] do
+      if IsDomain(colls[i]) then
         new_colls[i]:=Enumerator(colls[i]);
       else
         new_colls[i]:=colls[i];
@@ -909,16 +909,16 @@ BindGlobal( "EnumeratorOfCartesianProduct2",
     od;
 
     mults:=List(new_colls, Length);
-    for i in [1..Length(new_colls)-1] do 
+    for i in [1..Length(new_colls)-1] do
       k:=1;
-      for j in [i+1..Length(new_colls)] do 
+      for j in [i+1..Length(new_colls)] do
         k:=k*Length(new_colls[j]);
       od;
       mults[i]:=k;
     od;
     mults[Length(new_colls)]:=0;
 
-    out:=EnumeratorByFunctions(ListsFamily, 
+    out:=EnumeratorByFunctions(ListsFamily,
       rec( NumberElement := NumberElement_Cartesian,
            ElementNumber := ElementNumber_Cartesian,
            mults:=mults,
@@ -928,11 +928,11 @@ BindGlobal( "EnumeratorOfCartesianProduct2",
     SetIsFinite(out, true);
     return out;
 end);
-    
+
 InstallGlobalFunction( "EnumeratorOfCartesianProduct",
     function( arg )
     # this mimics usage of functions Cartesian and Cartesian2
-    if IsEmpty(arg) or ForAny(arg, IsEmpty) then 
+    if IsEmpty(arg) or ForAny(arg, IsEmpty) then
       return [];
     elif Length( arg ) = 1  then
         return EnumeratorOfCartesianProduct2( arg[1] );
@@ -1044,7 +1044,7 @@ InstallGlobalFunction( EnumeratorOfTuples, function( set, k )
 ##
 #F  IteratorOfTuples( <set>, <n> )
 ##
-##  All ordered tuples of length <n> of the set <set> 
+##  All ordered tuples of length <n> of the set <set>
 ##  are returned in lexicographic order.
 ##
 BindGlobal( "IsDoneIterator_Tuples", iter -> ( iter!.next = false ) );
@@ -1075,19 +1075,19 @@ BindGlobal( "NextIterator_Tuples", function( iter )
     return iter!.set{t};
     end );
 
-BindGlobal( "ShallowCopy_Tuples", 
+BindGlobal( "ShallowCopy_Tuples",
     iter -> rec( m    := iter!.m,
                  n    := iter!.n,
                  last := iter!.last,
                  set  := iter!.set,
                  next := ShallowCopy( iter!.next ) ) );
 
-InstallGlobalFunction( "IteratorOfTuples", 
+InstallGlobalFunction( "IteratorOfTuples",
     function( s, n )
-    
+
     if not ( n=0 or IsPosInt( n ) ) then
         Error( "The second argument <n> must be a non-negative integer" );
-    fi; 
+    fi;
 
     if not ( IsCollection( s ) and IsFinite( s ) or IsEmpty( s ) and n=0 ) then
     	if s = [] then
@@ -1108,7 +1108,7 @@ InstallGlobalFunction( "IteratorOfTuples",
            ShallowCopy    := ShallowCopy_Tuples,
            set            := s,
            m              := Size(s),
-           last           := 0 * [1..n] + ~!.m,                  
+           last           := 0 * [1..n] + ~!.m,
            n              := n,
            next           := 0 * [ 1 .. n ] + 1 ) );
     end );
@@ -1603,7 +1603,7 @@ BindGlobal( "GPartitionsEasy", function(n)
   # part k.
   # In the second stage we only have to add the correct greatest part to get
   # a partition of n.
-  # Note that `GPartitions' improves this by including the work for the 
+  # Note that `GPartitions' improves this by including the work for the
   # second step in the first one, such that less garbage objects are generated.
   # n must be a natural number >= 1.
   local B,j,k,l,p,res;
@@ -1611,7 +1611,7 @@ BindGlobal( "GPartitionsEasy", function(n)
   for k in [1..QuoInt(n,2)] do
     # Now we add all partitions for all entries of B with greatest part k.
     Add(B[n-k],[k]);   # the trivial partition with greatest part k
-    for j in [n-k-1,n-k-2..k] do   
+    for j in [n-k-1,n-k-2..k] do
       # exactly in those are partitions with greatest part k. Think!
       # we handle B[j] (partitions of n-j) with greatest part k
       for p in B[j+k] do    # those are partitions of n-j-k
@@ -1636,7 +1636,7 @@ end );
 BindGlobal( "GPartitions", function(n)
   # Returns a list of all Partitions of n, sorted lexicographically.
   # Algorithm/Proof: See first the comment of `GPartitionsEasy'.
-  # This function does exactly the same as `GPartitionsEasy' by the same 
+  # This function does exactly the same as `GPartitionsEasy' by the same
   # algorithm, but it produces nearly no garbage, because in contrast
   # to `GPartitionsEasy' the greatest part added in the second stage is
   # already added in the first stage.
@@ -1646,7 +1646,7 @@ BindGlobal( "GPartitions", function(n)
   for k in [1..QuoInt(n,2)] do
     # Now we add all partitions for all entries of B with greatest part k.
     Add(B[n-k],[n-k,k]);   # the trivial partition with greatest part k
-    for j in [n-k-1,n-k-2..k] do   
+    for j in [n-k-1,n-k-2..k] do
       # exactly in those are partitions with greatest part k. Think!
       # we handle B[j] (partitions of n-j) with greatest part k
       for p in B[j+k] do    # those are partitions of n-j-k
@@ -1665,14 +1665,14 @@ BindGlobal( "GPartitionsNrPartsHelper", function(n,m,ones)
   # Helper function for GPartitionsNrParts (see below) for the case
   # m > n. This is used only internally if m > QuoInt(n,2), because then
   # the standard routine does not work. Here we just calculate all partitions
-  # of n and append a part m to it. We use exactly the algorithm in 
+  # of n and append a part m to it. We use exactly the algorithm in
   # `GPartitions'.
   local B,j,k,p,res;
   B := List([1..n-1],x->[]);
   for k in [1..QuoInt(n,2)] do
     # Now we add all partitions for all entries of B with greatest part k.
     Add(B[n-k],ones[m]+ones[k]);   # the trivial partition with greatest part k
-    for j in [n-k-1,n-k-2..k] do   
+    for j in [n-k-1,n-k-2..k] do
       # exactly in those are partitions with greatest part k. Think!
       # we handle B[j] (partitions of n-j) with greatest part k
       for p in B[j+k] do    # those are partitions of n-j-k
@@ -1748,7 +1748,7 @@ BindGlobal( "GPartitionsNrParts", function(n,m)
   for t in [2..m-1] do
     BB := List([1..QuoInt(n,2)],i->[]);
     pos := m+1-t;  # here we add a number, this is also number of parts to add
-    for j in [1..QuoInt(n,2)] do   
+    for j in [1..QuoInt(n,2)] do
       # run through B[j] and add greatest part:
       for p in B[j] do
         # add all possible greatest parts:
@@ -1924,12 +1924,12 @@ BindGlobal( "GPartitionsGreatestLEEasy", function(n,m)
   # objects are generated.
   # n and m must be a natural numbers >= 1.
   local B,j,k,l,p,res;
-  if m >= n then return GPartitions(n); fi;   # a special case 
+  if m >= n then return GPartitions(n); fi;   # a special case
   B := List([1..n-1],x->[]);
   for k in [1..Minimum(QuoInt(n,2),m)] do
     # Now we add all partitions for all entries of B with greatest part k.
     Add(B[n-k],[k]);   # the trivial partition with greatest part k
-    for j in [n-k-1,n-k-2..k] do   
+    for j in [n-k-1,n-k-2..k] do
       # exactly in those are partitions with greatest part k. Think!
       # we handle B[j] (partitions of n-j) with greatest part k
       for p in B[j+k] do    # those are partitions of n-j-k
@@ -1957,12 +1957,12 @@ BindGlobal( "GPartitionsGreatestLE", function(n,m)
   # This is done by doing all the work necessary for step 2 already in step 1.
   # n and m must be a natural numbers >= 1.
   local B,j,k,l,p,res;
-  if m >= n then return GPartitions(n); fi;   # a special case 
+  if m >= n then return GPartitions(n); fi;   # a special case
   B := List([1..n-1],x->[]);
   for k in [1..Minimum(QuoInt(n,2),m)] do
     # Now we add all partitions for all entries of B with greatest part k.
     Add(B[n-k],[n-k,k]);   # the trivial partition with greatest part k
-    for j in [n-k-1,n-k-2..k] do   
+    for j in [n-k-1,n-k-2..k] do
       # exactly in those are partitions with greatest part k. Think!
       # we handle B[j] (partitions of n-j) with greatest part k
       for p in B[j+k] do    # those are partitions of n-j-k
@@ -2001,7 +2001,7 @@ function(n,m)
     return parts;
 end);
 
- 
+
 #############################################################################
 ##
 #F  PartitionsGreatestEQ( <n>, <m> ) . . . . set of partitions of n parts = n
@@ -2013,14 +2013,14 @@ BindGlobal( "GPartitionsGreatestEQHelper", function(n,m)
   # Helper function for GPartitionsGreatestEQ (see below) for the case
   # m > n. This is used only internally if m > QuoInt(n,2), because then
   # the standard routine does not work. Here we just calculate all partitions
-  # of n and append a part m to it. We use exactly the algorithm in 
+  # of n and append a part m to it. We use exactly the algorithm in
   # `GPartitions'.
   local B,j,k,l,p;
   B := List([1..n],x->[]);
   for k in [1..QuoInt(n,2)] do
     # Now we add all partitions for all entries of B with greatest part k.
     Add(B[n-k],[m,n-k,k]);   # the trivial partition with greatest part k
-    for j in [n-k-1,n-k-2..k] do   
+    for j in [n-k-1,n-k-2..k] do
       # exactly in those are partitions with greatest part k. Think!
       # we handle B[j] (partitions of n-j) with greatest part k
       for p in B[j+k] do    # those are partitions of n-j-k
@@ -2045,7 +2045,7 @@ BindGlobal( "GPartitionsGreatestEQ", function(n,m)
   # This is the same as `Partitions(n,m)' in the GAP library.
   # n and m must be a natural numbers >= 1.
   local B,j,k,l,p,res;
-  if m > n then return []; fi;     # a special case 
+  if m > n then return []; fi;     # a special case
   if m = n then return [[m]]; fi;  # another special case
   n := n - m;    # this is >= 1
   if m >= n then return GPartitionsGreatestEQHelper(n,m); fi;
@@ -2053,7 +2053,7 @@ BindGlobal( "GPartitionsGreatestEQ", function(n,m)
   for k in [1..Minimum(QuoInt(n,2),m)] do
     # Now we add all partitions for all entries of B with greatest part k.
     Add(B[n-k],[m,n-k,k]);   # the trivial partition with greatest part k
-    for j in [n-k-1,n-k-2..k] do   
+    for j in [n-k-1,n-k-2..k] do
       # exactly in those are partitions with greatest part k. Think!
       # we handle B[j] (partitions of n-j) with greatest part k
       for p in B[j+k] do    # those are partitions of n-j-k
@@ -2406,7 +2406,7 @@ BindGlobal( "NextIterator_Partitions", function( iter)
       while 0 < k and part[ m-1 ] = part[k] do
         k:= k-1;
       od;
-      succ:= part{ [ 1 .. k ] }; 
+      succ:= part{ [ 1 .. k ] };
       k:= k+1;
       succ[k]:= part[k] + 1;
       Append( succ, 0 * [ 1 .. iter!.n - Sum( succ, 0 ) ] + 1 );
@@ -2416,7 +2416,7 @@ BindGlobal( "NextIterator_Partitions", function( iter)
     return part;
     end );
 
-BindGlobal( "ShallowCopy_Partitions", 
+BindGlobal( "ShallowCopy_Partitions",
     iter -> rec( n:= iter!.n, next:= ShallowCopy( iter!.next ) ) );
 
 InstallGlobalFunction( "IteratorOfPartitions", function( n )
@@ -2440,10 +2440,10 @@ InstallGlobalFunction( "IteratorOfPartitions", function( n )
 #F  IteratorOfPartitionsSet( <set> [, <k> [, <flag> ] ]  )
 ##
 ##  If $B_0, B_1, \ldots, B_m$ are subsets forming a partition of
-##  $\{1, 2, \ldots, n\}$, then the partition can be described by the 
-##  restricted growth string $a_1 a_2 \ldots a_n$, where $a_i = j$ if 
+##  $\{1, 2, \ldots, n\}$, then the partition can be described by the
+##  restricted growth string $a_1 a_2 \ldots a_n$, where $a_i = j$ if
 ##  $i \in B_j$. We may assume $a_1 = 0$ and then a restricted growth string
-##  satisfies $a_i \leq Max(\{a_1, a_2, \ldots, a_{i-1}\}) + 1$ for 
+##  satisfies $a_i \leq Max(\{a_1, a_2, \ldots, a_{i-1}\}) + 1$ for
 ##  $i =2, 3, \ldots, n$. We may increment through restricted growth strings
 ##  by incrementing $a_i$ for the largest $i$ such that the inequality is not
 ##  tight, and setting $a_j=0$ for all $j>i$.
@@ -2719,7 +2719,7 @@ InstallGlobalFunction(PartitionTuples,function( n, r )
    res := [];
    for k  in [ 1 .. n-1 ]  do
        for t  in pm[n-k]  do
-           for i  in [ t.pos[k] .. r ]  do 
+           for i  in [ t.pos[k] .. r ]  do
                t1 := List( t.tup, ShallowCopy );
                s := [k];
                Append( s, t.tup[i] );
@@ -2782,7 +2782,7 @@ end);
 
 ##############################################################################
 ##
-#F  LucasMod(P,Q,N,k) - return the reduction modulo N of the k'th terms of 
+#F  LucasMod(P,Q,N,k) - return the reduction modulo N of the k'th terms of
 ##  the Lucas Sequences U,V associated to x^2+Px+Q.
 ##
 ##  Recursive version is a trivial modification of the above function, but
@@ -2794,7 +2794,7 @@ end);
 ##
 ##  See lib/primality.gi for a faster implementation.
 ##
-InstallMethod(LucasMod, 
+InstallMethod(LucasMod,
 "recursive version, reduce mod N regularly",
 [IsInt,IsInt,IsInt,IsInt],
 function(P,Q,N,k)
@@ -2891,7 +2891,7 @@ local g,i,a,sol,l,r,pos;
     r:=r-a*w[pos];
     if pos=Length(l) then
       # solution?
-      if r=0 then Add(sol,ShallowCopy(l));fi; 
+      if r=0 then Add(sol,ShallowCopy(l));fi;
       # now go back and decrement prior
       r:=r+l[pos]*w[pos];
       l[pos]:=-1;

@@ -7,16 +7,16 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
-##  
+##
 ##  The  files  helpdef.g{d,i}  contain  the  `default'  help  book  handler
 ##  functions, which implement access of GAP's online help to help documents
 ##  produced  from `gapmacro.tex'-  .tex and  .msk files  using buildman.pe,
 ##  tex, pdftex and convert.pl.
-##  
+##
 ##  The function  which converts the  TeX sources  to text for  the "screen"
 ##  viewer is outsourced into `helpt2t.g{d,i}'.
-##  
-  
+##
+
 DeclareGlobalFunction("GapLibToc2Gap");
 DeclareGlobalName("HELP_CHAPTER_BEGIN");
 DeclareGlobalName("HELP_SECTION_BEGIN");

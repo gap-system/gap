@@ -31,7 +31,7 @@ InstallMethod(\[\], [IsSparseList, IsPosInt],
             fi;
         else
             if IsBound(ss[1]) then
-                return ss[1]; 
+                return ss[1];
             else
                 Error("Entry of sparse list is not bound");
             fi;
@@ -39,8 +39,8 @@ InstallMethod(\[\], [IsSparseList, IsPosInt],
     else
         Error("Entry of sparse list is not bound");
     fi;
-end);                
-                
+end);
+
 #############################################################################
 ##
 #M IsBound(<sl>[<pos>]) list element test
@@ -60,19 +60,19 @@ InstallMethod(IsBound\[\], [IsSparseList, IsPosInt],
     else
         return false;
     fi;
-end);                
-    
+end);
+
 
 #############################################################################
 ##
-#M ViewObj( <sl> ) 
+#M ViewObj( <sl> )
 ##
 
 InstallMethod(ViewObj,  "sparse lists", [IsSparseList and IsDenseList],
-        function(sl) 
+        function(sl)
     local   ss, poss,  vals,  i;
     ss := SparseStructureOfList( sl );
-    Print("<< sparse list length ", Length(sl), 
+    Print("<< sparse list length ", Length(sl),
           " default ");
     if IsBound(ss[1]) then
         ViewObj( ss[1]);
@@ -98,7 +98,7 @@ end);
 ##
 #F PLAIN_SL ( <sl> ) convert a sparse list in place to a plain list
 ##
-##  
+##
 
 BindGlobal("PLAIN_SL", function(sl)
     if not IsPlistRep(sl) then
@@ -185,7 +185,7 @@ InstallMethod(NumberOp, "sparse list", [IsSparseList, IsFunction],
     ss := SparseStructureOfList(sl);
     if IsBound(ss[1]) and func(ss[1]) then
         n := Length(sl) - Length(ss[2]);
-    else 
+    else
         n := 0;
     fi;
     return n + Number(ss[3],func);
@@ -202,7 +202,7 @@ end);
 ##
 
 
-InstallMethod(ForAllOp, 
+InstallMethod(ForAllOp,
         "sparse list", [IsSparseList, IsFunction],
         function(sl, func)
     local   ss;
@@ -219,7 +219,7 @@ end);
 ##  default value may not actually appear anywhere in the list
 ##
 
-InstallMethod(ForAnyOp, 
+InstallMethod(ForAnyOp,
         "sparse list", [IsSparseList, IsFunction],
         function(sl, func)
     local   ss;
@@ -227,18 +227,18 @@ InstallMethod(ForAnyOp,
     return ForAny(ss[3], func) or (Length(ss[2]) <> Length(sl) and
                    IsBound(ss[1]) and func(ss[1]));
 end);
-           
+
 #############################################################################
 ##
 #M  IsSparseRowVector( <sl> )
 ##
 
-InstallMethod( IsSparseRowVector, 
+InstallMethod( IsSparseRowVector,
         "sparse list", [IsSparseList],
         function( sl )
     local ss;
     ss := SparseStructureOfList(sl);
-    return IsBound(ss[1]) and IsDenseList(ss[3]) and 
+    return IsBound(ss[1]) and IsDenseList(ss[3]) and
            ForAll(ss[3], x->ss[1] = ZeroOp(x));
 end);
 
@@ -248,7 +248,7 @@ end);
 #M  SparseStructureOfList( <list>, <prescribed-default> )
 ##
 
-InstallMethod(SparseStructureOfList, 
+InstallMethod(SparseStructureOfList,
         "find a sparse structure for any finite list",
         [IsList and IsFinite],
         function(l)
@@ -259,7 +259,7 @@ InstallMethod(SparseStructureOfList,
     fi;
 end);
 
-InstallOtherMethod(SparseStructureOfList, 
+InstallOtherMethod(SparseStructureOfList,
         "any list, with prescribed default",
         [IsList and IsFinite, IsObject],
         function (l, def)

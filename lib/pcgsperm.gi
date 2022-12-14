@@ -34,7 +34,7 @@ InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
     L := [  ];
     if IsBound( G.relativeOrders )  then  relord := G.relativeOrders;
                                     else  relord := false;             fi;
-    
+
     # Loop over the stabilizer chain.
     while z <> S.identity  do
 
@@ -45,7 +45,7 @@ InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
             InsertTrivialStabilizer( S, SmallestMovedPoint( z ) );
             Unbind( S.stabilizer.relativeOrders );
         fi;
-        
+
         # Extend the orbit.
         orb := S.orbit;
         pnt := orb[ 1 ];
@@ -62,12 +62,12 @@ InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
             m := m + 1;
             img := img / z;
         od;
-        
+
         # Let  $m   =  p_1p_2...p_l$.  Then  instead   of  entering <z>  into
         # '<G>.translabels' <d> times, enter $z^d$ once, for $d=p_1p_2...p_k$
         # (where $k<=l$).
         if m > 1  then
-            
+
             # If <m> = 1, the current level <A> has not been extended and <z>
             # has been shifted  into <w> in  the next level. <w> or something
             # further down, which will extend a  future level, must be put in
@@ -78,7 +78,7 @@ InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
                 A := A.stabilizer;
             od;
             A := A.stabilizer;
-            
+
             f := 1;
             for p  in Factors(Integers, m )  do
                 if relord <> false  then
@@ -93,7 +93,7 @@ InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
                 f := f * p;
                 z := z ^ p;
             od;
-    
+
         fi;
 
         # Find a cofactor to <z> such that the product fixes <pnt>.
@@ -103,16 +103,16 @@ InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
                         else  z := z * S.labels[ -edg ];       fi;
             edg := S.translabels[ pnt ^ z ];
         od;
-    
+
 	# Go down one step in the stabilizer chain.
 	S := S.stabilizer;
- 
+
     od;
-    
+
     if pos = 1  then
         return false;
     fi;
-    
+
     # Correct   the `genlabels' and   `translabels'  entries and  install the
     # `generators'.
     S := G;  i := 0;  pos := pos - 1;
@@ -138,7 +138,7 @@ InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
 	od;
         S := S.stabilizer;
     od;
-    
+
     return true;
 end );
 
@@ -156,28 +156,28 @@ InstallGlobalFunction( ExtendSeriesPermGroup, function(
             lev,     # the level of the series which is to be extended
             dep,     # the depth of <s> in <G>
             bound )  # a bound on the depth, for solvability/nilpotency tests
-                         
+
     local   M0,  M1,  C,  X,  oldX,  T,  t,  u,  w,  r,  done,
             ndep,  ord,  gcd,  p;
-    
+
     # If we are too deep in the derived series, give up.
     if dep > bound  then
         return s;
     fi;
-    
+
     if desc  then
-        
+
         # If necessary, add a new (trivial) subgroup to the series.
         if lev + 2 > Length( series )  then
             series[ lev + 2 ] := StructuralCopy( series[ lev + 1 ] );
         fi;
-    
+
         M0 := series[ lev + 1 ];
         M1 := series[ lev + 2 ];
         X := M0.labels{ [ 2 .. Length( M0.labels )
                              - Length( M1.labels ) + 1 ] };
         r := lev + 2;
-        
+
     # If the  series  need not be   fastest-descending, prepare to add  a new
     # group to the list.
     else
@@ -186,17 +186,17 @@ InstallGlobalFunction( ExtendSeriesPermGroup, function(
         X := [  ];
         r := 1;
     fi;
-    
+
     # For elementary abelian factors, find a suitable prime.
     if IsInt( elab )  then
         p := elab;
     elif elab  then
-        
+
         # For central series, the prime must be given.
         if cent  then
           Error("cannot construct central el ab series with varying primes");
         fi;
-      
+
         ord := Order( s );
         if not IsEmpty( X )  then
             gcd := GcdInt( ord, Order( X[ 1 ] ) );
@@ -206,14 +206,14 @@ InstallGlobalFunction( ExtendSeriesPermGroup, function(
         fi;
         p := Factors(Integers, ord )[ 1 ];
     fi;
-    
+
     # Loop over all conjugates of <s>.
     C := [ s ];
     while not IsEmpty( C )  do
         t := C[ 1 ];
         C := C{ [ 2 .. Length( C ) ] };
         if not MembershipTestKnownBase( M0, G, t )  then
-            
+
             # Form  all necessary  commutators with  <t>   and for elementary
             # abelian factors also a <p>th power.
             if cent  then  T := SSortedList( GeneratorsOfGroup( G ) );
@@ -227,7 +227,7 @@ InstallGlobalFunction( ExtendSeriesPermGroup, function(
                     done := true;
                     w := t ^ p;         ndep := dep;
                 fi;
-            
+
                 # If   the commutator or  power  is not  in <M1>, recursively
                 # extend <M1>.
                 if not MembershipTestKnownBase( M1, G, w )  then
@@ -237,7 +237,7 @@ InstallGlobalFunction( ExtendSeriesPermGroup, function(
                         return w;
                     fi;
                     M1 := series[ r ];
-                    
+
                     # The enlarged <M1> also pushes up <M0>.
                     M0 := StructuralCopy( M1 );
                     oldX := X;
@@ -253,15 +253,15 @@ InstallGlobalFunction( ExtendSeriesPermGroup, function(
                         done := true;
                     fi;
                 fi;
-                
+
             od;
-            
+
             # Add <t> to <M0> and register its conjugates.
             if AddNormalizingElementPcgs( M0, t )  then
                 Add( X, t );
             fi;
             UniteSet( C, List( GeneratorsOfGroup( G ), g -> t ^ g ) );
-            
+
         fi;
     od;
 
@@ -277,7 +277,7 @@ InstallGlobalFunction( ExtendSeriesPermGroup, function(
             Add( series, M0, 1 );
         fi;
     fi;
-    
+
     return true;
 end );
 
@@ -314,10 +314,10 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
       if IsTrivial( G )  then  G := [ G ];
 			  else  G := [ G, U ];  fi;
     fi;
-    
+
     # Otherwise start  with stabilizer chain  of  <U> with identical `labels'
     # components on all levels.
-    if IsGroup( U )  then                               
+    if IsGroup( U )  then
         if IsTrivial( U )  and  not HasStabChainMutable( U )  then
             U := EmptyStabChain( [  ], One( U ) );
         else
@@ -348,7 +348,7 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
         fi;
     fi;
 
-    
+
     # The `genlabels' at every level of $U$ must be sets.
     S := U;
     while not IsEmpty( S.genlabels )  do
@@ -358,13 +358,13 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
 
     grp := G[ 1 ];
     whole := IsTrivial( G[ Length( G ) ] );
-    
+
     oldlen := Length( U.labels );
     series := [ U ];
     series[ 1 ].relativeOrders := [  ];
 
     if not IsTrivial( grp )  then
-        
+
         # The derived  length of  <G> was  bounded by  Dixon. The  nilpotency
         # class of <G> is at most Max( log_p(d)-1 ).
         deg := NrMovedPoints( grp );
@@ -378,7 +378,7 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
            and Length( Factors(Integers, Size( grp ) ) ) < bound  then
             bound := Length( Factors(Integers, Size( grp ) ) );
         fi;
-        
+
         for step  in Reversed( [ 1 .. Length( G ) - 1  ] )  do
             for y  in GeneratorsOfGroup( G[ step ] )  do
                 if not y in GeneratorsOfGroup( G[ step + 1 ] )  then
@@ -389,7 +389,7 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
                         if not cent  then
                             SetIsSolvableGroup( grp, false );
                         fi;
-                        
+
                         # In case of  failure, return two ``witnesses'':  The
                         # pcgs   of   the solvable  normal   subgroup  of <G>
                         # constructed    so   far,     and   an  element   in
@@ -399,13 +399,13 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
                                  GroupStabChain( grp, series[ 1 ], true ),
                                  series, oldlen,false ),
                                  w ];
-                        
+
                     fi;
                 fi;
             od;
         od;
     fi;
-    
+
     # Construct the pcgs object.
     if whole  then  filter := IsPcgsPermGroupRep;
               else  filter := IsModuloPcgsPermGroupRep;  fi;
@@ -447,10 +447,10 @@ BindGlobal("ExtendSeriesPGParticular", function(
             G,       # the group in which factors are to be normal
             series,  # the series being constructed
             adds)     # the elements to be added to `series[ <lev> ]'
-			
+
   local   M0,  M1,  C,  X,  oldX,  T,  t,  u,  w,  r,  done,
 	  ord,  p,ap,s;
-  
+
   # As series  need not be   fastest-descending, prepare to add  a new
   # group to the list.
   M1 := series[ 1 ];
@@ -478,7 +478,7 @@ BindGlobal("ExtendSeriesPGParticular", function(
   while not IsEmpty( C )  do
     t := C[ 1 ];
     if not MembershipTestKnownBase( M0, G, t )  then
-      
+
       # Form  all necessary  commutators with  <t>   and for elementary
       # abelian factors also a <p>th power.
       T := SSortedList( X );
@@ -491,15 +491,15 @@ BindGlobal("ExtendSeriesPGParticular", function(
 	  done := true;
 	  w := t ^ p;
 	fi;
-    
-	# If   the commutator or  power  is not  in <M1>, 
+
+	# If   the commutator or  power  is not  in <M1>,
 	# it was not a proper pcgs
 	if not MembershipTestKnownBase( M1, G, w )  then
 	  return w;
 	fi;
-	
+
       od;
-      
+
       ap:=ap+1;
       t:=adds[ap];
 
@@ -523,11 +523,11 @@ BindGlobal("ExtendSeriesPGParticular", function(
 end );
 
 InstallGlobalFunction(PermgroupSuggestPcgs,function(G,pcseq)
-local   grp,  pcgs,  U,  oldlen,  series,  y,  w,  
+local   grp,  pcgs,  U,  oldlen,  series,  y,  w,
 	bound,  deg,  step,  i,  S,  filter,gens;
 
   U := TrivialSubgroup( G );
-  G := [ G, U ]; 
+  G := [ G, U ];
   # Otherwise start  with stabilizer chain  of  <U> with identical `labels'
   # components on all levels.
   U := EmptyStabChain( [  ], One( U ) );
@@ -540,7 +540,7 @@ local   grp,  pcgs,  U,  oldlen,  series,  y,  w,
   od;
 
   grp := G[ 1 ];
-  
+
   series := [ U ];
   series[ 1 ].relativeOrders := [  ];
 
@@ -699,7 +699,7 @@ function(filter,G,series,oldlen,iselab)
       Add( first, Length( series[ i ].labels ) );
     od;
     first:=first[ 1 ] - first + 1;
-    
+
 
     filter:=filter and IsPcgs and IsPrimeOrdersPcgs;
     attr:=[];
@@ -750,7 +750,7 @@ InstallMethod(EANormalSeriesByPcgs,"perm group rep",true,
    NorSerPermPcgs);
 
 InstallOtherMethod(EANormalSeriesByPcgs,"perm group modulo rep",true,
-  [IsModuloPcgsPermGroupRep and IsPcgsElementaryAbelianSeries],0, 
+  [IsModuloPcgsPermGroupRep and IsPcgsElementaryAbelianSeries],0,
   NorSerPermPcgs);
 
 #############################################################################
@@ -781,7 +781,7 @@ end );
 InstallGlobalFunction( ExponentsOfPcElementPermGroup,
     function( pcgs, g, mindepth, maxdepth, mode )
     local   exp,  base,  bimg,  r,  depth,  img,  H,  bpt,  gen,  e,  i;
-    
+
     if mode = 'e'  then
         exp := ListWithIdenticalEntries( maxdepth - mindepth + 1, 0 );
     fi;
@@ -789,15 +789,15 @@ InstallGlobalFunction( ExponentsOfPcElementPermGroup,
     bimg  := OnTuples( base, g );
     r     := Length( base );
     depth := mindepth;
-    
+
     while depth <= maxdepth  do
-        
+
         # Determine the depth of <g>.
         repeat
             img := ShallowCopy( bimg );
             gen := pcgs!.pcSequence[ depth ];
             depth := depth + 1;
-        
+
             # Find the base level of the <depth>th generator, remove the part
             # of <g> moving the earlier basepoints.
             H := pcgs!.stabChain;
@@ -812,16 +812,16 @@ InstallGlobalFunction( ExponentsOfPcElementPermGroup,
                 bpt := H.orbit[ 1 ];
                 i := i + 1;
             od;
-            
+
         until depth > maxdepth  or  H.translabels[ img[ i ] ] = depth;
-        
+
         # If  `H.translabels[  img[  i ] ]  =   depth', then <g>  is  not the
         # identity.
         if H.translabels[ img[ i ] ] = depth  then
             if mode = 'd'  then
                 return depth - 1;
             fi;
-           
+
             # Determine the <depth>th exponent.
             e := RelativeOrders( pcgs )[ depth - 1 ];
             i := img[ i ];
@@ -829,19 +829,19 @@ InstallGlobalFunction( ExponentsOfPcElementPermGroup,
                 e := e - 1;
                 i := i ^ gen;
             until H.translabels[ i ] <> depth;
-            
+
             if mode = 'l'  then
                 return e;
             elif mode='s' then
 	      return [depth-1,e];
             fi;
-            
+
             # Remove the appropriate  power  of the <depth>th  generator  and
             # iterate.
             exp[ depth - mindepth ] := e;
             g := LeftQuotient( gen ^ e, g );
             bimg := OnTuples( base, g );
-            
+
         fi;
     od;
     if   mode = 'd'  then  return maxdepth + 1;
@@ -883,7 +883,7 @@ InstallGlobalFunction( PermpcgsPcGroupPcgs, function( pcgs, index, isPcgsCentral
                 if isPcgsCentral then
                     start := index[ i + 1 ];
                     for n2  in [ index[ i2 ] .. index[ i2 + 1 ] - 1 ]  do
-                        SetConjugateNC( sc, n, n2, 
+                        SetConjugateNC( sc, n, n2,
                             GeneratorsOfRws( sc )[ n ]*
 			LinearCombinationPcgs( gens,
                             ExponentsOfPcElement( pcgs, Comm
@@ -901,8 +901,8 @@ InstallGlobalFunction( PermpcgsPcGroupPcgs, function( pcgs, index, isPcgsCentral
             od;
             start := index[ i + 1 ];
             for n2  in [ index[ i ] .. n - 1 ]  do
-                SetConjugateNC( sc, n, n2, 
-		    GeneratorsOfRws( sc )[ n ]*LinearCombinationPcgs( gens, 
+                SetConjugateNC( sc, n, n2,
+		    GeneratorsOfRws( sc )[ n ]*LinearCombinationPcgs( gens,
                       ExponentsOfPcElement( pcgs, Comm
                       ( pcgs[ n ], pcgs[ n2 ] ) ) ) );
             od;
@@ -923,7 +923,7 @@ InstallGlobalFunction( SolvableNormalClosurePermGroup, function( G, H )
 
     U := CopyStabChain( StabChainImmutable( TrivialSubgroup( G ) ) );
     oldlen := Length( U.labels );
-    
+
     # The `genlabels' at every level of $U$ must be sets.
     S := U;
     while not IsEmpty( S.genlabels )  do
@@ -937,14 +937,14 @@ InstallGlobalFunction( SolvableNormalClosurePermGroup, function( G, H )
 
     U.relativeOrders := [  ];
     series := [ U ];
-    
+
     # The derived length of <G> is at most (5 log_3(deg(<G>)))/2 (Dixon).
     bound := Int( LogInt( Maximum(1,NrMovedPoints( G ) ^ 5), 3 ) / 2 );
     if     HasSize( G )
        and Length( Factors(Integers, Size( G ) ) ) < bound  then
         bound := Length( Factors(Integers, Size( G ) ) );
     fi;
-    
+
     if IsGroup( H )  then
         H := GeneratorsOfGroup( H );
     fi;
@@ -959,7 +959,7 @@ InstallGlobalFunction( SolvableNormalClosurePermGroup, function( G, H )
     U := GroupStabChain( G, series[ 1 ], true );
     SetIsSolvableGroup( U, true );
     SetIsNormalInParent( U, true );
-    
+
     # remember the pcgs
     SetPcgs(U,PcgsStabChainSeries(IsPcgsPermGroupRep,U,series,oldlen,false));
 
@@ -990,7 +990,7 @@ InstallMethod( Pcgs, "Sims's method", true, [ IsPermGroup ],
         100,  # to override method ``from indep. generators of abelian group''
     function( G )
     local   pcgs;
-    
+
     pcgs := TryPcgsPermGroup( G, false, false, true );
     if not IsPcgs( pcgs )  then
       return fail;
@@ -1015,7 +1015,7 @@ InstallMethod( HomePcgs, "use a perm pcgs if possible", true,
     [ IsPermGroup and HasPcgs ],
     function( G )
     local   pcgs;
-    
+
     pcgs := Pcgs( G );
     if IsPcgsPermGroupRep( pcgs ) then
         if HasParentPcgs( pcgs ) then
@@ -1033,7 +1033,7 @@ InstallMethod( HomePcgs, "try to compute a perm pcgs", true,
     [ IsPermGroup ],
     function( G )
     local   pcgs;
-    
+
     pcgs := TryPcgsPermGroup( G, false, false, true );
 
     if not IsPcgs( pcgs )  then
@@ -1054,7 +1054,7 @@ end );
 InstallMethod( GroupOfPcgs, true, [ IsPcgs and IsPcgsPermGroupRep ], 0,
     function( pcgs )
     local   G;
-    
+
     G := GroupStabChain( pcgs!.stabChain );
     SetPcgs( G, pcgs );
     return G;
@@ -1076,7 +1076,7 @@ InstallMethod( PcSeries, true, [ IsPcgs and IsPcgsPermGroupRep ], 0,
         Add( series, GroupStabChain( G, CopyStabChain( N ), true ) );
     od;
     return Reversed( series );
-end );        
+end );
 
 #############################################################################
 ##
@@ -1094,9 +1094,9 @@ local   tail,  i,ins,pins,ran,filt,attr;
 
   ins:=pins{[i..Length(pins)]}-from+1;
 
-  filt:=IsPcgs 
+  filt:=IsPcgs
 	#NOT PcgsPermGroupRep -- otherwise we get wrong exponents!
-	#and IsPcgsPermGroupRep 
+	#and IsPcgsPermGroupRep
 	and IsPrimeOrdersPcgs
 	and IsInducedPcgs and IsInducedPcgsRep and IsTailInducedPcgsRep
 	and HasParentPcgs;
@@ -1164,7 +1164,7 @@ InstallMethod( InducedPcgsWrtHomePcgs, "tail of perm pcgs", true,
         [ IsMemberPcSeriesPermGroup and HasHomePcgs ], 0,
 function( U )
 local   pcgs,par,ran;
-  
+
   pcgs := PcgsMemberPcSeriesPermGroup( U );
   par:=HomePcgs(U);
   SetFilterObj( pcgs, IsInducedPcgs and IsInducedPcgsRep);
@@ -1235,7 +1235,7 @@ InstallOtherMethod( DepthOfPcElement,"permpcgs,start", true,
     return ExponentsOfPcElementPermGroup( pcgs, g, depth, Length( pcgs ),
                    'd' );
 end );
-    
+
 #############################################################################
 ##
 #M  LeadingExponentOfPcElement( <pcgs>, <g> ) . . . . . . . . for perm groups
@@ -1245,7 +1245,7 @@ InstallMethod( LeadingExponentOfPcElement, true,
     function( pcgs, g )
     return ExponentsOfPcElementPermGroup( pcgs, g, 1, Length( pcgs ), 'l' );
 end );
-    
+
 #############################################################################
 ##
 #M  ExponentsOfPcElement( <pcgs>, <g> [ , <poss> ] )  . . . . for perm groups
@@ -1318,7 +1318,7 @@ local r,i,p,A,f,a;
   atomic readonly GENERAL_MAPPING_REGION do # for HPC-GAP; does nothing in plain GAP
   while i<=Length(f) do
     a:=ElmWPObj(f,i);
-    if a<>fail and IsBound(a!.DefiningPcgs) 
+    if a<>fail and IsBound(a!.DefiningPcgs)
        and RelativeOrders(a!.DefiningPcgs)=r then
       # right type PCGS -- test relations
       a:=a!.DefiningPcgs;
@@ -1355,7 +1355,7 @@ end);
 InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
     function( G )
     local   iso,  A,  pcgs,p,i;
-    
+
     # Make  a pcgs   based on  an  elementary   abelian series (good  for  ag
     # routines).
     pcgs:=PcgsElementaryAbelianSeries(G);
@@ -1368,7 +1368,7 @@ InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
 
     iso := GroupHomomorphismByImagesNC( G, A, pcgs, GeneratorsOfGroup( A ) );
     SetIsBijective( iso, true );
-    
+
     return iso;
 end );
 
@@ -1421,7 +1421,7 @@ end);
 ##
 ##  method for solvable perm groups -- it is cheaper to translate to a pc
 ##  group
-InstallMethod( CalcMaximalSubgroupClassReps,"solvable perm group",true, 
+InstallMethod( CalcMaximalSubgroupClassReps,"solvable perm group",true,
     [ IsPermGroup and CanEasilyComputePcgs and IsFinite ], 0,
 function(G)
 local hom,m;

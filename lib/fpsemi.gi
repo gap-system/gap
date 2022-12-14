@@ -58,14 +58,14 @@ InstallMethod( \*,
     [ IsElementOfFpSemigroup, IsElementOfFpSemigroup ],
     0,
     function( x1, x2 )
-    return ElementOfFpSemigroup(FamilyObj(x1), 
+    return ElementOfFpSemigroup(FamilyObj(x1),
 			UnderlyingElement(x1)*UnderlyingElement(x2));
     end );
 
 #############################################################################
 ##
 #M  \<( <x1>, <x2> )
-## 
+##
 ##
 InstallMethod( \<,
     "for two elements of a f.p. semigroup",
@@ -85,7 +85,7 @@ InstallMethod( \<,
 #############################################################################
 ##
 #M  \=( <x1>, <x2> )
-## 
+##
 ##
 InstallMethod( \=,
     "for two elements of a f.p. semigroup",
@@ -93,13 +93,13 @@ InstallMethod( \=,
     [ IsElementOfFpSemigroup, IsElementOfFpSemigroup ],
     0,
     function( x1, x2 )
-			local S, RWS; 
+			local S, RWS;
 
 			# This line could be improved - find out how it's done
 			# for groups
 			S := CollectionsFamily(FamilyObj(x1))!.wholeSemigroup;
 			RWS := ReducedConfluentRewritingSystem(S);
-			return ReducedForm(RWS, UnderlyingElement(x1)) = 
+			return ReducedForm(RWS, UnderlyingElement(x1)) =
 					ReducedForm(RWS, UnderlyingElement(x2));
     end );
 
@@ -137,10 +137,10 @@ InstallMethod(FpGrpMonSmgOfFpGrpMonSmgElement,
 ##
 #M  FactorFreeSemigroupByRelations(<F>,<rels>) .. Create an FpSemigroup
 ##
-##  Note: If the semigroup has fewer relations than generators, 
+##  Note: If the semigroup has fewer relations than generators,
 ##  then the semigroup is certainly infinite.
 ##
-InstallGlobalFunction( FactorFreeSemigroupByRelations, 
+InstallGlobalFunction( FactorFreeSemigroupByRelations,
 function( F, rels )
 
     local S, fam, gens, r;
@@ -159,14 +159,14 @@ function( F, rels )
     # Create a new family.
     fam := NewFamily( "FamilyElementsFpSemigroup", IsElementOfFpSemigroup );
 
-    # Create the default type for the elements - 
+    # Create the default type for the elements -
 		# putting IsElementOfFpSemigroup ensures that lists of these things
 		# have CategoryCollections(IsElementOfFpSemigroup).
 
     fam!.freeSemigroup := F;
     fam!.relations := Immutable( rels );
 
-    fam!.defaultType := NewType( fam, IsElementOfFpSemigroup 
+    fam!.defaultType := NewType( fam, IsElementOfFpSemigroup
 			and IsPackedElementDefaultRep );
 
     # Create the semigroup.
@@ -192,11 +192,11 @@ end);
 
 #############################################################################
 ##
-#M  HomomorphismFactorSemigroup(<F>, <C> ) 
+#M  HomomorphismFactorSemigroup(<F>, <C> )
 ##
-##  for free semigroup and congruence 
+##  for free semigroup and congruence
 ##
-InstallMethod(HomomorphismFactorSemigroup, 
+InstallMethod(HomomorphismFactorSemigroup,
     "for a free semigroup and a congruence",
     true,
     [ IsFreeSemigroup, IsSemigroupCongruence ],
@@ -209,18 +209,18 @@ function(s, c)
 		TryNextMethod();
 	fi;
 	fp := FactorFreeSemigroupByRelations(s, GeneratingPairsOfMagmaCongruence(c));
-	return MagmaHomomorphismByFunctionNC(s, fp, 
+	return MagmaHomomorphismByFunctionNC(s, fp,
 		x->ElementOfFpSemigroup(ElementsFamily(FamilyObj(fp)),x) );
-	
+
 end);
 
 #############################################################################
 ##
-#M  HomomorphismFactorSemigroup(<F>, <C> ) 
+#M  HomomorphismFactorSemigroup(<F>, <C> )
 ##
-##  for fp semigroup and congruence 
+##  for fp semigroup and congruence
 ##
-InstallMethod(HomomorphismFactorSemigroup, 
+InstallMethod(HomomorphismFactorSemigroup,
     "for an fp semigroup and a congruence",
     true,
     [ IsFpSemigroup, IsSemigroupCongruence ],
@@ -239,16 +239,16 @@ function(s, c)
 	srels := GeneratingPairsOfMagmaCongruence(c);
 	frels := List(srels, x->[UnderlyingElement(x[1]),UnderlyingElement(x[2])]);
 
-	fp := FactorFreeSemigroupByRelations(FreeSemigroupOfFpSemigroup(s), 
+	fp := FactorFreeSemigroupByRelations(FreeSemigroupOfFpSemigroup(s),
 		Concatenation(frels, RelationsOfFpSemigroup(s)));
-	return MagmaHomomorphismByFunctionNC(s, fp, 
+	return MagmaHomomorphismByFunctionNC(s, fp,
 		x->ElementOfFpSemigroup(ElementsFamily(FamilyObj(fp)),UnderlyingElement(x)) );
-	
+
 end);
 
 #############################################################################
 ##
-#M  FreeSemigroupOfFpSemigroup( S ) 
+#M  FreeSemigroupOfFpSemigroup( S )
 ##
 ##  Underlying free semigroup of an fp semigroup
 ##
@@ -278,8 +278,8 @@ InstallMethod( Size,
 
 #############################################################################
 ##
-#M  FreeGeneratorsOfFpSemigroup( S )  
-##  
+#M  FreeGeneratorsOfFpSemigroup( S )
+##
 ##  Generators of the underlying free semigroup
 ##
 InstallMethod( FreeGeneratorsOfFpSemigroup,
@@ -291,8 +291,8 @@ InstallMethod( FreeGeneratorsOfFpSemigroup,
 
 #############################################################################
 ##
-#M  ViewObj( S )  
-##  
+#M  ViewObj( S )
+##
 ##  View a semigroup S
 ##
 InstallMethod( ViewObj,
@@ -336,7 +336,7 @@ InstallMethod( RelationsOfFpSemigroup,
 #O  NaturalHomomorphismByGenerators( <f>, <s> )
 ##
 ##  returns a mapping from the free semigroup <f> with <n> generators to the
-##  semigroup <s> with <n> generators, which maps the ith generator to the 
+##  semigroup <s> with <n> generators, which maps the ith generator to the
 ##  ith generator.
 ##
 BindGlobal("FreeSemigroupNatHomByGeneratorsNC",
@@ -355,7 +355,7 @@ function(f, s)
 
       gens := GeneratorsOfSemigroup(s);
       v := ExtRepOfObj(w);
-      prodt := gens[v[1]]^v[2]; 
+      prodt := gens[v[1]]^v[2];
       for i in [2 .. Length(v)/2] do
         prodt := prodt*gens[v[2*i-1]]^v[2*i];
       od;
@@ -384,7 +384,7 @@ InstallMethod( NaturalHomomorphismByGenerators,
     true,
     [  IsFpSemigroup, IsSemigroup and HasGeneratorsOfSemigroup], 0,
 function(f, s)
-	local 
+	local
 			psi; # the homom from the free semi
 
 	if Size(GeneratorsOfSemigroup(f)) <> Size(GeneratorsOfSemigroup(s)) then
@@ -399,6 +399,6 @@ function(f, s)
 		return fail;
 	fi;
 
-	# now create the homomorphism from the fp semi	
+	# now create the homomorphism from the fp semi
 	return MagmaHomomorphismByFunctionNC(f, s, e->UnderlyingElement(e)^psi);
 end);

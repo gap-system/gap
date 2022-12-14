@@ -15,7 +15,7 @@
 #############################################################################
 ##
 ##  Faithful, irreducible representations of minimal degree of the double
-##  covers of symmetric groups can be constructed inductively using the 
+##  covers of symmetric groups can be constructed inductively using the
 ##  methods of https://arxiv.org/abs/0911.3794
 ##
 ##  The inductive formulation uses a number of helper routines which are
@@ -30,7 +30,7 @@ Perform( [1], function(x)
 
 
 ##  let 2S+(n) = < t_1, ..., t_(n-1) > subject to the relations
-##    (t_i)^2 = z for 1 <= i <= n-1, 
+##    (t_i)^2 = z for 1 <= i <= n-1,
 ##    z^2 = 1,
 ##    ( t_i*t_(i+1) )^3 = z for 1 <= i <= n-2,
 ##    t_i*t_j = z*t_j*t_i for 1 <= i, j <= n-1 with | i - j | > 1.
@@ -55,7 +55,7 @@ SpinDimSym:= function( n, p )
         return 2^((n-1)/2);
     fi;
 end;
-    
+
 ##  SanityCheckPos
 ##  IN  A record containing the matrices in T, the degree of the symmetric
 ##      group n, and the characteristic f the field p
@@ -74,7 +74,7 @@ SanityCheckPos := function( input )
       Print("#I SanityCheckPos: Wrong characteristic: ",input.p," vs. ",Characteristic(input.T[1]),"\n");
       return false;
     fi;
-  
+
     if SpinDimSym( input.n, input.p ) <> Length( input.T[1] ) then
         Print( "#I SanityCheckPos: Wrong degree: ",SpinDimSym( input.n, input.p )," vs. ",Length( input.T[1] ),"\n" );
         return false;
@@ -89,7 +89,7 @@ SanityCheckPos := function( input )
         if not IsOne(-input.T[i]^2) then
             Print( "#I SanityCheckPos: Wrong order for T[",i,"]\n");
             return false;
-        fi; 
+        fi;
     od;
     for i in [ 1 .. input.n-2 ] do
         if not IsOne( -( input.T[i]*input.T[i+1] )^3 ) then
@@ -128,7 +128,7 @@ SanityCheckPos := function( input )
       fi;
     fi;
 
-    return true; 
+    return true;
 end;
 
 ##  SanityCheckNeg
@@ -139,7 +139,7 @@ end;
 ##      components Sym and Alt if present.
 SanityCheckNeg := function( S, p )
     local d, deg, z, t, i, j;
-  
+
     d:= Length( S );
     deg:= Length( S[1] );
     if SpinDimSym( d+1, p ) <> deg then
@@ -151,7 +151,7 @@ SanityCheckNeg := function( S, p )
         if not IsOne( S[i]^2 ) then
             Print( "#I SanityCheckNeg: order failed at position ", i, "\n" );
             return false;
-        fi; 
+        fi;
     od;
     for i in [ 1 .. d-1 ] do
         if not IsOne( ( S[i]*S[i+1] )^3 ) then
@@ -166,9 +166,9 @@ SanityCheckNeg := function( S, p )
         od;
     od;
     #Print( "#I SanityCheckNeg: all relations satisfied\n" );
-    return true; 
+    return true;
 end;
-        
+
 ##  bmat -- blck matrix maker
 ##  IN  the blocks a,b,c,d of the matrix [[a,b],[c,d]]
 ##  OUT a normal matrix with the same entries as the corresponding block
@@ -202,7 +202,7 @@ S:= function( old )
   if IsBound( old.Sym ) then
     new.Sym := [];
     if new.n < 5
-    then new.Sym[1] := Product(Reversed(new.T)); 
+    then new.Sym[1] := Product(Reversed(new.T));
     else new.Sym[1] := bmat( 0*old.Sym[1], (-1)^new.n*old.Sym[1], -old.Sym[1], (-1)^new.n*old.T[new.n-2]*old.Sym[1] );
     fi;
     new.Sym[2] := new.T[1];
@@ -211,7 +211,7 @@ S:= function( old )
   if IsBound( old.Alt ) then
     new.Alt := [];
     if IsOddInt(new.n)
-    then new.Alt[1] := new.Sym[1]; 
+    then new.Alt[1] := new.Sym[1];
     else new.Alt[1] := -new.T[new.n-1]*new.Sym[1];
     fi;
     new.Alt[2] := new.T[new.n-1]*new.T[new.n-2];
@@ -320,7 +320,7 @@ end;
 coeffS3:= function( p )
   if 0 = p then return E(4);
   elif 2 = p then return Z(2);
-  elif 1 = p mod 4 then return Z(p)^((p-1)/4); 
+  elif 1 = p mod 4 then return Z(p)^((p-1)/4);
   else return Z(p^2)^((p^2-1)/4);
   fi;
 end;
@@ -351,7 +351,7 @@ S3:= function( old )
 
   if IsBound( old.Alt ) then
     new.Alt := [];
-    if IsOddInt( new.n ) 
+    if IsOddInt( new.n )
     then new.Alt[1] := new.Sym[1];
     else new.Alt[1] := mid.Alt[1];
     fi;
@@ -364,7 +364,7 @@ end;
 
 ##  spinsteps
 ##  IN  the degree n and characteristic p > 2
-##  OUT a list which describes the steps of construction 
+##  OUT a list which describes the steps of construction
 spinsteps:= function( n, p )
   local d, k, kmodp, parity;
   d:= [];
@@ -408,16 +408,16 @@ BasicSpinRepSymPos := function( n, p )
     ## get the spin reps for 2S(4)
     z := coeffS3(p);
     if p = 0 then
-        M:= rec( 
+        M:= rec(
           n := 2,
           p := 0,
-          T := [ [ [ z ] ] ], 
-          Sym := [~.T[1]], 
+          T := [ [ [ z ] ] ],
+          Sym := [~.T[1]],
           Alt :=[]
-        ); 
+        );
         M:= S2( M );
     elif p = 2 then
-        M:= rec( 
+        M:= rec(
           n := 2,
           p := 2,
           T := [ [ [ z ] ] ],
@@ -426,7 +426,7 @@ BasicSpinRepSymPos := function( n, p )
         );
         M:= S1( S( M ) );
     elif p = 3 then
-        M:= rec( 
+        M:= rec(
           n := 3,
           p := 3,
           T := [ [ [ z ] ], [ [ z ] ] ],
@@ -435,7 +435,7 @@ BasicSpinRepSymPos := function( n, p )
         );
         M:= S( M );
     else # p>3
-        M:= rec( 
+        M:= rec(
            n := 2,
            p := p,
            T := [ [ [ z ] ] ],
@@ -453,7 +453,7 @@ BasicSpinRepSymPos := function( n, p )
             for i in [ 1 .. k ] do
                 M:= S2( M );
             od;
-        else 
+        else
             k:= (n-5)/2;
             for i in [ 1 .. k ] do
                 M:= S2( M );
@@ -510,7 +510,7 @@ end;
 ##
 ##  Method Installations
 ##
-     
+
 InstallGlobalFunction( BasicSpinRepresentationOfSymmetricGroup,
 function(arg)
   local n, p, s, mats;
@@ -524,7 +524,7 @@ function(arg)
   return mats;
 end );
 
-InstallMethod( SchurCoverOfSymmetricGroup, 
+InstallMethod( SchurCoverOfSymmetricGroup,
   "Use Lukas Maas's inductive construction of a basic spin rep",
   [ IsPosInt, IsInt, IsInt ],
 function( n, p, s )
@@ -557,7 +557,7 @@ function( n, p, s )
 
   return grp;
 end );
-  
+
 InstallMethod( DoubleCoverOfAlternatingGroup,
   "Use Lukas Maas's inductive construction of a basic spin rep",
   [ IsPosInt, IsInt ],
@@ -750,16 +750,16 @@ function( alt )
     z := Z(25);
     gen := [
       [ [ z^ 0, z^16, z^22, z^ 8, z^ 8, z^13 ],
-        [ z^ 0, z^22, z^ 0, z^ 7, z^11, z^16 ], 
+        [ z^ 0, z^22, z^ 0, z^ 7, z^11, z^16 ],
         [ z^11, z^ 7, z^ 0, z^ 6, z^10, z^ 7 ],
-        [ z^ 2, z^ 0, z^ 3, z* 0, z^18, z^21 ], 
+        [ z^ 2, z^ 0, z^ 3, z* 0, z^18, z^21 ],
         [ z^21, z^ 9, z^ 2, z^12, z^ 5, z^20 ],
         [ z   , z^ 5, z^ 2, z^ 4, z^16, z^ 6 ] ],
-      [ [ z^18, z^23, z^ 0, z^ 2, z^23, z^17 ], 
-        [ z^ 2, z^10, z^17, z* 0, z^ 0, z^18 ], 
-        [ z^17, z^ 4, z^12, z^23, z^22, z^ 4 ], 
-        [ z   , z^12, z   , z^18, z^11, z^ 2 ], 
-        [ z^21, z^ 4, z^15, z^ 8, z^19, z* 0 ], 
+      [ [ z^18, z^23, z^ 0, z^ 2, z^23, z^17 ],
+        [ z^ 2, z^10, z^17, z* 0, z^ 0, z^18 ],
+        [ z^17, z^ 4, z^12, z^23, z^22, z^ 4 ],
+        [ z   , z^12, z   , z^18, z^11, z^ 2 ],
+        [ z^21, z^ 4, z^15, z^ 8, z^19, z* 0 ],
         [ z^ 8, z^ 6, z^14, z^18, z^18, z^ 9 ] ] ];
     grp := Group( gen );
 
@@ -782,17 +782,17 @@ function( alt )
   elif deg = 7 then
     z := Z(25);
     gen := [
-      [ [ z* 0, z^14, z^10, z^19, z^11, z^ 6 ], 
-        [ z^19, z^12, z^ 9, z   , z^ 0, z    ], 
-        [ z^ 8, z^18, z^10, z^ 2, z^20, z^15 ], 
-        [ z^ 2, z^ 0, z^23, z^ 0, z^12, z^ 5 ], 
-        [ z^20, z^ 8, z^20, z^23, z^16, z^ 0 ], 
+      [ [ z* 0, z^14, z^10, z^19, z^11, z^ 6 ],
+        [ z^19, z^12, z^ 9, z   , z^ 0, z    ],
+        [ z^ 8, z^18, z^10, z^ 2, z^20, z^15 ],
+        [ z^ 2, z^ 0, z^23, z^ 0, z^12, z^ 5 ],
+        [ z^20, z^ 8, z^20, z^23, z^16, z^ 0 ],
         [ z^10, z^ 2, z^13, z^ 5, z^20, z^11 ] ],
-      [ [ z^ 7, z^ 6, z^10, z^23, z^ 6, z^ 0 ], 
-        [ z^14, z^19, z^ 9, z^22, z^ 2, z^ 0 ], 
-        [ z^10, z^16, z^17, z^15, z^17, z^14 ], 
-        [ z^ 0, z^17, z^10, z^13, z   , z^ 6 ], 
-        [ z^13, z^ 9, z^ 2, z^12, z^ 8, z^ 7 ], 
+      [ [ z^ 7, z^ 6, z^10, z^23, z^ 6, z^ 0 ],
+        [ z^14, z^19, z^ 9, z^22, z^ 2, z^ 0 ],
+        [ z^10, z^16, z^17, z^15, z^17, z^14 ],
+        [ z^ 0, z^17, z^10, z^13, z   , z^ 6 ],
+        [ z^13, z^ 9, z^ 2, z^12, z^ 8, z^ 7 ],
         [ z^ 8, z^ 8, z^16, z^23, z^ 4, z^19 ] ] ];
 
     grp := Group( gen );

@@ -51,10 +51,10 @@ InstallGlobalFunction(PrintArray,function( array )
     local   arr,  max,  l,  k,maxp,compact,bl;
 
     compact:=ValueOption("compact")=true;
-    if compact then 
+    if compact then
       maxp:=0;
       bl:="";
-    else 
+    else
       maxp:=1;
       bl:=" ";
     fi;
@@ -78,7 +78,7 @@ InstallGlobalFunction(PrintArray,function( array )
 	  max:=List([1..Length(arr[1])],
 	    x->Maximum(List([1..Length(arr)],y->Length(arr[y][x]))));
 	else
-	  max := Maximum( List( arr, 
+	  max := Maximum( List( arr,
                     function(x)
                          if Length(x) = 0 then
                              return 1;
@@ -309,7 +309,7 @@ InstallMethod( AdditiveInverseSameMutability,
 InstallMethod( AdditiveInverseOp,
     "for a null map matrix",
     [ IsNullMapMatrix ],
-    null -> null );    
+    null -> null );
 
 InstallMethod( \*,
     "for two null map matrices",
@@ -702,7 +702,7 @@ InstallMethod( Display,
 InstallMethod( CharacteristicPolynomial,
     "supply field and indeterminate 1",
     [ IsMatrix ],
-    mat -> CharacteristicPolynomialMatrixNC( 
+    mat -> CharacteristicPolynomialMatrixNC(
             DefaultFieldOfMatrix( mat ), mat, 1 ) );
 
 
@@ -926,14 +926,14 @@ end);
 #           phi,     # `Phi( d )'
 #           c,       # `d'-th cyclotomic polynomial
 #           q;       # quotient and remainder
-# 
+#
 #     # Before we start with expensive calculations,
 #     # we check whether the matrix has a *small* order.
 #     ord:= OrderMatTrial( cycmat, OrderMatLimit - 1 );
 #     if ord <> fail then
 #       return ord;
 #     fi;
-# 
+#
 #     # Check that the argument is an invertible square matrix.
 #     m:= NrRows( cycmat );
 #     if m <> NrCols( cycmat ) then
@@ -945,13 +945,13 @@ end);
 # #T its trace could be checked, too.
 # #T Additionally, if `mat' consists of (algebraic) integers
 # #T and the inverse does not then the order of `mat' is infinite.
-# 
+#
 #     # If the order is finite then the trace must be an algebraic integer.
 #     trace:= TraceMat( cycmat );
 #     if not IsIntegralCyclotomic( trace ) then
 #       return infinity;
 #     fi;
-# 
+#
 #     # If the order is finite then the absolute value of the trace
 #     # is bounded by the dimension of the matrix.
 # #T compute this (approximately) for arbitrary cyclotomics
@@ -959,28 +959,28 @@ end);
 #     if IsInt( trace ) and NrRows( cycmat ) < AbsInt( trace ) then
 #       return infinity;
 #     fi;
-# 
+#
 #     # Compute the minimal polynomial of the matrix.
 #     minpol:= MinimalPolynomial( Rationals, cycmat );
 #     n:= DegreeOfLaurentPolynomial( minpol );
-# 
+#
 #     # The order is finite if and only if the minimal polynomial
 #     # is a product of cyclotomic polynomials.
 #     # (Note that cyclotomic polynomials over the rationals are irreducible.)
-# 
+#
 #     # A necessary condition is that the constant term of the polynomial
 #     # is $\pm 1$, since this holds for every cyclotomic polynomial.
 #     if AbsInt( Value( minpol, 0 ) ) <> 1 then
 #       return infinity;
 #     fi;
-# 
+#
 #     # Another necessary condition is that no irreducible factor
 #     # may occur more than once.
 #     # (Note that the minimal polynomial divides $X^{ord} - 1$.)
 #     if not IsOne( Gcd( minpol, Derivative( minpol ) ) ) then
 #       return infinity;
 #     fi;
-# 
+#
 #     # Compute an upper bound `t' for the numbers $i$ with the property
 #     # that $\varphi(i) \leq n$ holds.
 #     # (Let $p_k$ denote the $k$-th prime divisor of $i$,
@@ -1003,11 +1003,11 @@ end);
 #       t:= t * p;
 #       l:= l * ( p - 1 );
 #     od;
-# 
+#
 #     # Divide by each possible cyclotomic polynomial.
 #     ord:= 1;
 #     for d in [ 1 .. t ] do
-# 
+#
 #       phi:= Phi( d );
 #       if phi <= n then
 #         c:= CyclotomicPolynomial( Rationals, d );
@@ -1017,16 +1017,16 @@ end);
 #           n:= n - phi;
 #           ord:= Lcm( ord, d );
 #           if n = 0 then
-# 
+#
 #             # The minimal polynomial is a product of cyclotomic polynomials.
 #             return ord;
-# 
+#
 #           fi;
 #         fi;
 #       fi;
-# 
+#
 #     od;
-# 
+#
 #     # The matrix has infinite order.
 #     return infinity;
 #     end );
@@ -1134,7 +1134,7 @@ InstallMethod( Order, "ordinary matrix of finite field elements", true,
     local   o;
     # catch the (unlikely in GL but likely in group theory...) case that mat
     # has a small order
-    
+
     # the following limit is very crude but seems to work OK. It picks small
     # orders but still does not cost too much if the order gets larger.
     if NrRows(mat) <> NrCols(mat) then
@@ -1142,13 +1142,13 @@ InstallMethod( Order, "ordinary matrix of finite field elements", true,
     fi;
     o:=Characteristic(mat[1,1])^DegreeFFE(mat[1,1]); # size of field of
                                                      # first entry
-    o:=QuoInt(NrRows(mat),o)*5; 
+    o:=QuoInt(NrRows(mat),o)*5;
 
     o:=OrderMatTrial(mat,o);
     if o<>fail then
         return o;
     fi;
-    
+
     o := ProjectiveOrder(mat);
     return o[1] * Order( o[2] );
 end );
@@ -1245,7 +1245,7 @@ end );
 #M  OneOfBaseDomain( <mat> )
 #M  ZeroOfBaseDomain( <mat> )
 #M  RowsOfMatrix( <mat> )
-#M  NumberRows( <mat> ) 
+#M  NumberRows( <mat> )
 #M  NumberColumns( <mat> )
 #M  ConstructingFilter( <mat> )
 ##
@@ -1916,7 +1916,7 @@ end);
 ##
 # this is a very naive implementation but it should work for any euclidean
 # ring.
-InstallMethod( DiagonalizeMat, 
+InstallMethod( DiagonalizeMat,
   "method for general Euclidean Ring",
   true, [ IsEuclideanRing,IsMatrix and IsMutable], 0,function(R,M)
   return DoDiagonalizeMat(R,M,false,false);
@@ -2195,7 +2195,7 @@ InstallOtherMethod( TriangulizedNullspaceMatDestructive,
     function( mat )
     local ns;
     ns := SemiEchelonMatTransformationDestructive(mat).relations;
-    if IsPlistRep(ns) and Length(ns)>0 
+    if IsPlistRep(ns) and Length(ns)>0
       # filter for vector objects, not compressed FF vectors
       and ForAll(ns,x->IsVectorObj(x) and not IsDataObjectRep(x)) then
       ns:=Matrix(BaseDomain(mat),ns);
@@ -2291,7 +2291,7 @@ InstallMethod( GeneralisedEigenspaces,
       S:=[];
       for eval in GeneralisedEigenvalues(F,A) do
         M:=TriangulizedNullspaceMat( Value( eval, A ) );
-        if IsMatrixObj(M) and not IsMatrix(M) then 
+        if IsMatrixObj(M) and not IsMatrix(M) then
           M:=RowsOfMatrix(M); fi;
         Add(S,VectorSpace(F,M));
       od;
@@ -2521,12 +2521,12 @@ BindGlobal("DoSemiEchelonMatTransformationDestructive", function(f, mat )
 
     nrows := NrRows( mat );
     ncols := NrCols( mat );
-    
+
     if f = fail then
         f := mat[1,1];
     fi;
     zero := Zero(f);
-    
+
     heads   := ListWithIdenticalEntries( ncols, 0 );
     vectors := [];
 
@@ -3581,21 +3581,21 @@ InstallGlobalFunction( BasisNullspaceModN, function( M, n )
        return List (NullspaceMat (M*One(GF(n))),
           v -> List (v, IntFFE));
     fi;
-    
+
     # compute the Smith normal form S for M, i.e., S = R M C
     snf := NormalFormIntMat (M, 1+4);
 
     # compute the nullspace of S mod n
     null := IdentityMat (Length (M));
-    
+
     for i in [1..snf.rank] do
         null[i,i] := n/GcdInt (n, snf.normal[i,i]);
     od;
-    
+
     # nullM = null*R is the nullspace of M C mod n
     # since solutions do not change under elementary matrices
     # nullM is also the nullspace for M
-    
+
     nullM := null*snf.rowtrans mod n;
     Assert (1, ForAll (nullM, v -> v*M mod n =0*M[1]));
     return nullM;
@@ -3839,7 +3839,7 @@ end );
 ##
 InstallGlobalFunction( RandomUnimodularMat, function ( arg )
 local  rs, m, mat, c, i, j, k, l, a, b, v, w, gcd,dom;
-    
+
     dom:=ValueOption("domain");
     if dom=fail or dom=false then
       dom:=Integers;
@@ -4279,7 +4279,7 @@ InstallMethod( BaseOrthogonalSpaceMat,
 # simplex method, code by Ken Monks, AH
 
 #in matrix M, row reduce to get 1s
-#in exactly the columns given by 
+#in exactly the columns given by
 #L a list of indices
 BindGlobal("TriangulizeMatPivotColumns",function(M,L)
 local idx,i;
@@ -4296,17 +4296,17 @@ local idx,i;
 
 end);
 
-#inputs a linear form c and maximizes it subject to 
+#inputs a linear form c and maximizes it subject to
 #the constraints Ax <= b where all entries of b are nonnegative.
 InstallGlobalFunction(SimplexMethod,function(A,b,c)
 local M, n, p, vars, slackVars, i, id, bestMove,
   newNonzero, len, ratios, newZero, positiveRatios, point, value,Val;
 
-  Val:=function(M,vars,slackVars,len,x) 
-      if x in vars then 
-          return 0; 
-      else return M[Position(slackVars,x)+1,len]; 
-      fi; 
+  Val:=function(M,vars,slackVars,len,x)
+      if x in vars then
+          return 0;
+      else return M[Position(slackVars,x)+1,len];
+      fi;
   end;
 
    #check the size of the data is legit
@@ -4320,38 +4320,38 @@ local M, n, p, vars, slackVars, i, id, bestMove,
    id:=IdentityMat(p,Rationals);
 
    #build the augmented matrix
-   
-   #first row   
+
+   #first row
    M:=[Concatenation([1],-c,List([1..p+1],x->0))];
    #the rest of the rows
-   for i in [1..p] do 
+   for i in [1..p] do
        Add(M,Concatenation([0],A[i],id[i],[b[i]]));
    od;
-      
+
    len:=Size(M[1]);
 
    #initialize the feasible starting vertex
-   if ForAll(b,x->not x<0) then 
-       vars:=[2..2+n-1];      
+   if ForAll(b,x->not x<0) then
+       vars:=[2..2+n-1];
        slackVars:=[2+n..n+p+1];
    else
        return "Invalid data: not all constraints nonnegative!";
    fi;
-   
+
    #Print("slackVars are ",slackVars ,"\n");
    #Print("vars are ",vars,"\n");
    #Display(M);
-   
+
    TriangulizeMatPivotColumns(M,Concatenation([1],slackVars));
    #Display(M);
    #bestMove is the coeff var that will become nonzero
    bestMove:=Minimum(List(vars,i->M[1,i]));
    newNonzero:=vars[Position(List(vars,i->M[1,i]),bestMove)];
-   
+
    #Print(newNonzero, " is the new nonzero guy \n");
-   
+
    while bestMove<0  do
-        
+
        #see if figure is unbounded
        #Print("about to do some ratios \n");
        #Print(List([1..p],x-> M[x+1,newNonzero]), " is what we're going to divide by \n");
@@ -4359,19 +4359,19 @@ local M, n, p, vars, slackVars, i, id, bestMove,
        #Print("done doing some ratios");
        positiveRatios:=Filtered(ratios,x -> x>0);
        if Size(positiveRatios)=0 then return "Feasible region unbounded!"; fi;
-       
+
        #Print("Feasible region still looks bounded. \n");
 
        #figure out who will become zero
-       newZero:=slackVars[Position(ratios,Minimum(positiveRatios))];       
-       
-       #Print(newZero, " is the new zero guy \n");       
-       
+       newZero:=slackVars[Position(ratios,Minimum(positiveRatios))];
+
+       #Print(newZero, " is the new zero guy \n");
+
        Remove(slackVars,Position(slackVars,newZero));
        Remove(vars,Position(vars,newNonzero));
        Add(vars,newZero);
        Add(slackVars,newNonzero);
-       
+
        slackVars:=Set(slackVars);
        vars:=Set(vars);
 
@@ -4381,17 +4381,17 @@ local M, n, p, vars, slackVars, i, id, bestMove,
        TriangulizeMatPivotColumns(M,Concatenation([1],slackVars));
        #Display(M);
        bestMove:=Minimum(List(vars,i->M[1,i]));
-       
+
        newNonzero:=vars[Position(List(vars,i->M[1,i]),bestMove)];
        #Print(newNonzero," is the new nonzero guy");
 
    od;
-   
+
    #calculate the original point and the max value there
-   
+
    point:=List([2..2+n-1],x -> Val(M,vars,slackVars,len,x));
    value:=point*c;
-   
+
    return [point,value];
 end);
 
@@ -4415,8 +4415,8 @@ end);
 ##    # now we are sure that we need at most Length(mat) matrix multiplications
 ##    return Value(pol, mat);
 ##  end);
-##  
-# next iteration, conjugate matrix such that it is often very sparse 
+##
+# next iteration, conjugate matrix such that it is often very sparse
 # (a companion matrix), could still be improved, maybe with kernel functions
 # for compact matrices (FL)
 BindGlobal("POW_MAT_INT", function(mat, n)
@@ -4465,7 +4465,7 @@ BindGlobal("POW_MAT_INT", function(mat, n)
     for a in id do
       r := addb(b,a);
       if r = true then
-        repeat 
+        repeat
           Add(t, a);
           a := a*m;
           r := addb(b,a);

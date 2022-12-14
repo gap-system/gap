@@ -305,7 +305,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
     if not IS_OPERATION(oper)  then
         Error( "<oper> is not an operation" );
     fi;
-    
+
     # Check whether this in fact installs an implication.
     if    FLAGS_FILTER(oper) <> false
       and (method = true or method = RETURN_TRUE)
@@ -410,7 +410,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
           i := i + SIZE_IMMEDIATE_METHOD_ENTRY;
       od;
 
-      # Now is a good time to see if the method is already there 
+      # Now is a good time to see if the method is already there
       if REREADING then
           replace := false;
           k := i;
@@ -424,7 +424,7 @@ BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
               k := k+SIZE_IMMEDIATE_METHOD_ENTRY;
           od;
       fi;
-      
+
       # push the other functions back
       if not REREADING or not replace then
           imm{[SIZE_IMMEDIATE_METHOD_ENTRY+i+1..SIZE_IMMEDIATE_METHOD_ENTRY+LEN_LIST(imm)]} := imm{[i+1..LEN_LIST(imm)]};
@@ -470,9 +470,9 @@ end );
 ##  If supplied, <A>info</A> should be a short but informative string
 ##  that describes the situation in which the method is called.
 ##  <P/>
-##  An immediate method is called automatically as soon as the object lies 
+##  An immediate method is called automatically as soon as the object lies
 ##  in <A>filter</A>, provided that the value is not yet known.
-##  Afterwards the attribute setter is called in order to store the value, 
+##  Afterwards the attribute setter is called in order to store the value,
 ##  unless the method exits via <Ref Func="TryNextMethod"/>.
 ##  <P/>
 ##  Note the difference to <Ref Func="InstallMethod"/>
@@ -845,9 +845,9 @@ end );
 ##  DeclareFilter( "IsMyFilter" );
 ##  DeclareFilter( "IsMyOtherFilter" );
 ##  BindGlobal( "MyFamily", NewFamily( "MyFamily" ) );
-##  
+##
 ##  DeclareConstructor( "NewMyObj", [ IsMyObj ] );
-##  
+##
 ##  InstallMethod( NewMyObj,
 ##  [ IsMyObj ],
 ##  function( filter )
@@ -981,7 +981,7 @@ BIND_GLOBAL( "DeclareOperation", function ( name, filters )
         fi;
         ADD_LIST( filt, FLAGS_FILTER( filter ) );
       od;
-      
+
       req := GET_OPER_FLAGS(gvar);
       if IsHPCGAP then
         req := FromAtomicList(req);  # so that we can search in it
@@ -1284,7 +1284,7 @@ end );
 ##  </List>
 ##  <P/>
 ##  When a value of such mutable attribute is set
-##  then this value itself is stored, not an immutable copy of it, 
+##  then this value itself is stored, not an immutable copy of it,
 ##  and it is the user's responsibility to set an object that is mutable.
 ##  This is useful for an attribute whose value is some partial information
 ##  that may be completed later.
@@ -1405,7 +1405,7 @@ function(name, op, filter, rank, mutable)
     # `op' is not an attribute (tester) and not a property (tester),
     # or `op' is a filter; in any case, `op' is not an attribute.
 
-    # if `op' has no one argument declarations we can turn it into 
+    # if `op' has no one argument declarations we can turn it into
     # an attribute
     req := GET_OPER_FLAGS(op);
     for reqs in req do
@@ -1756,12 +1756,12 @@ DeclareOperationKernel( "ViewObj", [ IS_OBJECT ], VIEW_OBJ );
 ##  <Oper Name="ViewString" Arg='obj'/>
 ##
 ##  <Description>
-##  <Ref Oper="ViewString"/> returns a string which would be displayed 
+##  <Ref Oper="ViewString"/> returns a string which would be displayed
 ##  by <Ref Oper="ViewObj"/> for an
-##  object. Note that no method for <Ref Oper="ViewString"/> may 
+##  object. Note that no method for <Ref Oper="ViewString"/> may
 ##  delegate to any of
 ##  the operations <Ref Oper="Display"/>, <Ref Oper="ViewObj"/>,
-##  <Ref Oper="DisplayString"/> or <Ref Oper="PrintObj"/> to avoid 
+##  <Ref Oper="DisplayString"/> or <Ref Oper="PrintObj"/> to avoid
 ##  circular delegations.
 ##  </Description>
 ##  </ManSection>
@@ -1809,7 +1809,7 @@ end );
 ##  <Func Name="TraceMethods" Arg='oprs' Label ="for a list of operations"/>
 ##
 ##  <Description>
-##  After the call of <C>TraceMethods</C>,  whenever a method of one of 
+##  After the call of <C>TraceMethods</C>,  whenever a method of one of
 ##  the operations <A>opr1</A>, <A>opr2</A>, ... is called, the
 ##  information string used in the installation of the method is printed.
 ##  The second form has the same effect for each operation from the list

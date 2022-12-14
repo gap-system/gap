@@ -16,7 +16,7 @@
 #############################################################################
 ##
 ##  <#GAPDoc Label="[1]{alglie}">
-##  A Lie algebra <M>L</M> is an algebra such that 
+##  A Lie algebra <M>L</M> is an algebra such that
 ##  <M>x x = 0</M> and <M>x(yz) + y(zx) + z(xy) = 0</M>
 ##  for all <M>x, y, z \in L</M>.
 ##  A common way of creating a Lie algebra is by taking an associative
@@ -25,11 +25,11 @@
 ##  is usually denoted by  <M>[x,y]</M>,
 ##  but in &GAP; this denotes the list of the elements <M>x</M> and <M>y</M>;
 ##  hence the product of elements is made by the usual <C>*</C>.
-##  This gives no problems when dealing with Lie algebras given by a 
+##  This gives no problems when dealing with Lie algebras given by a
 ##  table of structure constants.
 ##  However, for matrix Lie algebras the situation is not so easy
 ##  as <C>*</C> denotes the ordinary (associative) matrix multiplication.
-##  In &GAP; this problem is solved by wrapping 
+##  In &GAP; this problem is solved by wrapping
 ##  elements of a matrix Lie algebra up as <C>LieObject</C>s,
 ##  and then define  the <C>*</C> for <C>LieObject</C>s to be the commutator
 ##  (see <Ref Sect="Lie Objects"/>).
@@ -46,7 +46,7 @@
 ##  <Prop Name="IsLieAbelian" Arg='L'/>
 ##
 ##  <Description>
-##  returns <K>true</K> if <A>L</A> is a Lie algebra such that each 
+##  returns <K>true</K> if <A>L</A> is a Lie algebra such that each
 ##  product of elements in <A>L</A> is zero, and <K>false</K> otherwise.
 ##  <Example><![CDATA[
 ##  gap>  T:= EmptySCTable( 5, 0, "antisymmetric" );;
@@ -123,7 +123,7 @@ DeclareProperty( "IsRestrictedLieAlgebra", IsAlgebra and IsLieAlgebra );
 ##  <Attr Name="LieDerivedSubalgebra" Arg='L'/>
 ##
 ##  <Description>
-##  is the (Lie) derived subalgebra of the Lie algebra <A>L</A>.  
+##  is the (Lie) derived subalgebra of the Lie algebra <A>L</A>.
 ##  <Example><![CDATA[
 ##  gap>  L:= FullMatrixLieAlgebra( GF( 3 ), 3 );
 ##  <Lie algebra over GF(3), with 5 generators>
@@ -146,13 +146,13 @@ DeclareAttribute( "LieDerivedSubalgebra", IsAlgebra and IsLieAlgebra );
 ##  <Attr Name="LieDerivedSeries" Arg='L'/>
 ##
 ##  <Description>
-##  is the (Lie) derived series of the Lie algebra <A>L</A>.  
+##  is the (Lie) derived series of the Lie algebra <A>L</A>.
 ##  <Example><![CDATA[
 ##  gap> mats:= [ [[1,0],[0,0]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
 ##  gap> L:= LieAlgebra( Rationals, mats );;
 ##  gap> LieDerivedSeries( L );
-##  [ <Lie algebra of dimension 3 over Rationals>, 
-##    <Lie algebra of dimension 1 over Rationals>, 
+##  [ <Lie algebra of dimension 3 over Rationals>,
+##    <Lie algebra of dimension 1 over Rationals>,
 ##    <Lie algebra of dimension 0 over Rationals> ]
 ##  ]]></Example>
 ##  </Description>
@@ -196,12 +196,12 @@ DeclareProperty( "IsLieSolvable", IsAlgebra and IsLieAlgebra );
 ##  <Attr Name="LieLowerCentralSeries" Arg='L'/>
 ##
 ##  <Description>
-##  is the (Lie) lower central series of the Lie algebra <A>L</A>.  
+##  is the (Lie) lower central series of the Lie algebra <A>L</A>.
 ##  <Example><![CDATA[
 ##  gap> mats:= [ [[ 1, 0 ], [ 0, 0 ]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
 ##  gap> L:=LieAlgebra( Rationals, mats );;
 ##  gap> LieLowerCentralSeries( L );
-##  [ <Lie algebra of dimension 3 over Rationals>, 
+##  [ <Lie algebra of dimension 3 over Rationals>,
 ##    <Lie algebra of dimension 1 over Rationals> ]
 ##  ]]></Example>
 ##  </Description>
@@ -225,8 +225,8 @@ DeclareAttribute( "LieLowerCentralSeries", IsAlgebra and IsLieAlgebra );
 ##  gap> mats:= [ [[ 1, 0 ], [ 0, 0 ]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
 ##  gap> L:=LieAlgebra( Rationals, mats );;
 ##  gap> LieUpperCentralSeries( L );
-##  [ <two-sided ideal in <Lie algebra of dimension 3 over Rationals>, 
-##        (dimension 1)>, <Lie algebra of dimension 0 over Rationals> 
+##  [ <two-sided ideal in <Lie algebra of dimension 3 over Rationals>,
+##        (dimension 1)>, <Lie algebra of dimension 0 over Rationals>
 ##   ]
 ##  ]]></Example>
 ##  </Description>
@@ -251,16 +251,16 @@ DeclareAttribute( "LieUpperCentralSeries", IsAlgebra and IsLieAlgebra );
 ##  adjoint mapping, that is,
 ##  the set <M>\{ a \in L : \forall x \in L: a x = 0 \}</M>.
 ##  <P/>
-##  In characteristic <M>2</M> this may differ from the usual centre 
-##  (that is the set of all <M>a \in L</M> such that <M>a x = x a</M> 
-##  for all <M>x \in L</M>). 
+##  In characteristic <M>2</M> this may differ from the usual centre
+##  (that is the set of all <M>a \in L</M> such that <M>a x = x a</M>
+##  for all <M>x \in L</M>).
 ##  Therefore, this operation is named <Ref Attr="LieCentre"/>
-##  and not <Ref Attr="Centre"/>. 
+##  and not <Ref Attr="Centre"/>.
 ##  <Example><![CDATA[
 ##  gap> L:= FullMatrixLieAlgebra( GF(3), 3 );
 ##  <Lie algebra over GF(3), with 5 generators>
 ##  gap> LieCentre( L );
-##  <two-sided ideal in <Lie algebra of dimension 9 over GF(3)>, 
+##  <two-sided ideal in <Lie algebra of dimension 9 over GF(3)>,
 ##    (dimension 1)>
 ##  ]]></Example>
 ##  </Description>
@@ -285,7 +285,7 @@ DeclareSynonymAttr( "LieCenter", LieCentre );
 ##  <Attr Name="Derivations" Arg='B'/>
 ##
 ##  <Description>
-##  These functions all return the matrix Lie algebra of derivations 
+##  These functions all return the matrix Lie algebra of derivations
 ##  of the algebra <M>A</M> with basis <A>B</A>.
 ##  <P/>
 ##  <C>RightDerivations( <A>B</A> )</C> returns the algebra of derivations
@@ -298,7 +298,7 @@ DeclareSynonymAttr( "LieCenter", LieCentre );
 ##  <C>LeftDerivations( <A>B</A> )</C> returns the Lie algebra of derivations
 ##  represented by their left action on the algebra <M>A</M>.
 ##  So the matrices contained in the algebra output by
-##  <C>LeftDerivations( <A>B</A> )</C> are the transposes of the 
+##  <C>LeftDerivations( <A>B</A> )</C> are the transposes of the
 ##  matrices contained in the output of <C>RightDerivations( <A>B</A> )</C>.
 ##  <P/>
 ##  <Ref Attr="Derivations"/> is just a synonym for
@@ -384,7 +384,7 @@ DeclareAttribute( "CartanSubalgebra",
 ##  gap> B:= Basis( L );
 ##  CanonicalBasis( <Lie algebra of dimension 11 over GF(11)> )
 ##  gap> PthPowerImages( B );
-##  [ 0*v.1, v.2, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 
+##  [ 0*v.1, v.2, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1,
 ##    0*v.1 ]
 ##  ]]></Example>
 ##  </Description>
@@ -468,7 +468,7 @@ DeclareOperation( "AdjointAssociativeAlgebra",
 ##  gap> mats:= [ [[1,0],[0,0]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
 ##  gap> L:= LieAlgebra( Rationals, mats );;
 ##  gap> LieNilRadical( L );
-##  <two-sided ideal in <Lie algebra of dimension 3 over Rationals>, 
+##  <two-sided ideal in <Lie algebra of dimension 3 over Rationals>,
 ##    (dimension 2)>
 ##  ]]></Example>
 ##  </Description>
@@ -491,7 +491,7 @@ DeclareAttribute( "LieNilRadical", IsAlgebra and IsLieAlgebra );
 ##  <Example><![CDATA[
 ##  gap> L:= FullMatrixLieAlgebra( Rationals, 3 );;
 ##  gap> LieSolvableRadical( L );
-##  <two-sided ideal in <Lie algebra of dimension 9 over Rationals>, 
+##  <two-sided ideal in <Lie algebra of dimension 9 over Rationals>,
 ##    (dimension 1)>
 ##  ]]></Example>
 ##  </Description>
@@ -629,7 +629,7 @@ DeclareAttribute( "LieNormalizerInParent", IsAlgebra and IsLieAlgebra );
 ##  The adjoint map is the left multiplication by <A>x</A>.
 ##  The <M>i</M>-th column of the resulting matrix represents the image of
 ##  the <M>i</M>-th basis vector of <A>B</A> under left multiplication by
-##  <A>x</A>. 
+##  <A>x</A>.
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
 ##  gap> AdjointMatrix( Basis( L ), Basis( L )[1] );
@@ -653,7 +653,7 @@ DeclareOperation( "AdjointMatrix", [ IsBasis, IsRingElement ] );
 ##  <Description>
 ##  is the orthogonal complement of the subspace <A>U</A> of the Lie algebra
 ##  <A>L</A> with respect to the Killing form <M>\kappa</M>, that is,
-##  the set <M>U^{{\perp}} = \{ x \in L; \kappa( x, y ) = 0 \hbox{ for all } 
+##  the set <M>U^{{\perp}} = \{ x \in L; \kappa( x, y ) = 0 \hbox{ for all }
 ##  y \in L \}</M>.
 ##  <P/>
 ##  <M>U^{{\perp}}</M> is a subspace of <A>L</A>, and if <A>U</A> is an ideal
@@ -719,18 +719,18 @@ DeclareAttribute( "PowerS", IsAlgebra and IsLieAlgebra );
 ##  <Oper Name="PthPowerImage" Arg='x, n' Label="for element and integer" />
 ##
 ##  <Description>
-##  This function computes the image of an element <A>x</A> of a restricted 
+##  This function computes the image of an element <A>x</A> of a restricted
 ##  Lie algebra under its <M>p</M>-map.
 ##  <P/>
-##  In the first form, a basis of the Lie algebra is provided; this basis 
-##  stores the <M>p</M>th powers of its elements. It is the traditional 
+##  In the first form, a basis of the Lie algebra is provided; this basis
+##  stores the <M>p</M>th powers of its elements. It is the traditional
 ##  form, provided for backwards compatibility.
-##  <P/> 
+##  <P/>
 ##  In its second form, only the element <A>x</A> is provided. It is the only
-##  form for elements of Lie algebras with no predetermined basis, such as 
+##  form for elements of Lie algebras with no predetermined basis, such as
 ##  those constructed by <Ref Attr="LieObject"/>.
-##  <P/> 
-##  In its third form, an extra non-negative integer <A>n</A> is specified; 
+##  <P/>
+##  In its third form, an extra non-negative integer <A>n</A> is specified;
 ##  the <M>p</M>-mapping is iterated <A>n</A> times on the element <A>x</A>.
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra( "W", [1], GF(11) );;
@@ -794,8 +794,8 @@ DeclareOperation("PClosureSubalgebra", [IsLieAlgebra and IsJacobianElementCollec
 ##  <Func Name="FindSl2" Arg='L, x'/>
 ##
 ##  <Description>
-##  This function tries to find a subalgebra <M>S</M> of the Lie algebra 
-##  <A>L</A> with <M>S</M> isomorphic to <M>sl_2</M> and such that the 
+##  This function tries to find a subalgebra <M>S</M> of the Lie algebra
+##  <A>L</A> with <M>S</M> isomorphic to <M>sl_2</M> and such that the
 ##  nilpotent element <A>x</A> of <A>L</A> is contained in <M>S</M>.
 ##  If such an algebra exists then it is returned,
 ##  otherwise <K>fail</K> is returned.
@@ -840,11 +840,11 @@ DeclareCategory( "IsRootSystem", IsObject );
 ##  <Filt Name="IsRootSystemFromLieAlgebra" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  Category of root systems that come from (semisimple) Lie algebras. 
-##  They often have special attributes such as 
-##  <Ref Attr="UnderlyingLieAlgebra"/>, 
+##  Category of root systems that come from (semisimple) Lie algebras.
+##  They often have special attributes such as
+##  <Ref Attr="UnderlyingLieAlgebra"/>,
 ##  <Ref Attr="PositiveRootVectors"/>,
-##  <Ref Attr="NegativeRootVectors"/>, 
+##  <Ref Attr="NegativeRootVectors"/>,
 ##  <Ref Attr="CanonicalGenerators"/>.
 ##  </Description>
 ##  </ManSection>
@@ -880,7 +880,7 @@ DeclareAttribute( "UnderlyingLieAlgebra", IsRootSystemFromLieAlgebra );
 ##  <Attr Name="RootSystem" Arg='L'/>
 ##
 ##  <Description>
-##  <Ref Attr="RootSystem"/> calculates the root system of the semisimple 
+##  <Ref Attr="RootSystem"/> calculates the root system of the semisimple
 ##  Lie algebra <A>L</A> with a split Cartan subalgebra.
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra( "G", 2, Rationals );
@@ -944,8 +944,8 @@ DeclareAttribute( "NegativeRoots", IsRootSystem );
 ##  <Description>
 ##  A list of positive root vectors of the root system <A>R</A> that comes
 ##  from a Lie algebra <C>L</C>. This is a list in bijection with the list
-##  <C>PositiveRoots( L )</C> (see&nbsp;<Ref Attr="PositiveRoots"/>). The 
-##  root vector is a non-zero element of the root space (in <C>L</C>) of 
+##  <C>PositiveRoots( L )</C> (see&nbsp;<Ref Attr="PositiveRoots"/>). The
+##  root vector is a non-zero element of the root space (in <C>L</C>) of
 ##  the corresponding root.
 ##  </Description>
 ##  </ManSection>
@@ -965,8 +965,8 @@ DeclareAttribute( "PositiveRootVectors", IsRootSystemFromLieAlgebra );
 ##  <Description>
 ##  A list of negative root vectors of the root system <A>R</A> that comes
 ##  from a Lie algebra <C>L</C>. This is a list in bijection with the list
-##  <C>NegativeRoots( L )</C> (see&nbsp;<Ref Attr="NegativeRoots"/>). The 
-##  root vector is a non-zero element of the root space (in <C>L</C>) of 
+##  <C>NegativeRoots( L )</C> (see&nbsp;<Ref Attr="NegativeRoots"/>). The
+##  root vector is a non-zero element of the root space (in <C>L</C>) of
 ##  the corresponding root.
 ##  </Description>
 ##  </ManSection>
@@ -1001,7 +1001,7 @@ DeclareAttribute( "SimpleSystem", IsRootSystem );
 ##  <Attr Name="CartanMatrix" Arg='R'/>
 ##
 ##  <Description>
-##  The Cartan matrix of the root system <A>R</A>, relative to the simple 
+##  The Cartan matrix of the root system <A>R</A>, relative to the simple
 ##  roots in <C>SimpleSystem( <A>R</A> )</C> (see&nbsp;<Ref Attr="SimpleSystem"/>).
 ##  </Description>
 ##  </ManSection>
@@ -1043,7 +1043,7 @@ DeclareAttribute( "BilinearFormMat", IsRootSystem );
 ##  <C>L</C>.
 ##  This function returns <M>3l</M> generators of <A>L</A>,
 ##  <M>x_1, \ldots, x_l, y_1, \ldots, y_l, h_1, \ldots, h_l</M>,
-##  where <M>x_i</M> lies in the root space corresponding to the 
+##  where <M>x_i</M> lies in the root space corresponding to the
 ##  <M>i</M>-th simple root of the root system of <A>L</A>,
 ##  <M>y_i</M> lies in the root space corresponding to <M>-</M> the
 ##  <M>i</M>-th simple root,
@@ -1094,8 +1094,8 @@ DeclareAttribute( "CanonicalGenerators", IsRootSystemFromLieAlgebra );
 ##  <Attr Name="ChevalleyBasis" Arg='L'/>
 ##
 ##  <Description>
-##  Here <A>L</A> must be a semisimple Lie algebra with a split Cartan 
-##  subalgebra. Then <C>ChevalleyBasis(<A>L</A>)</C> returns a list 
+##  Here <A>L</A> must be a semisimple Lie algebra with a split Cartan
+##  subalgebra. Then <C>ChevalleyBasis(<A>L</A>)</C> returns a list
 ##  consisting of three sublists.
 ##  Together these sublists form a Chevalley basis of <A>L</A>. The first
 ##  list contains the positive root vectors, the second list contains the
@@ -1105,7 +1105,7 @@ DeclareAttribute( "CanonicalGenerators", IsRootSystemFromLieAlgebra );
 ##  gap> L:= SimpleLieAlgebra( "G", 2, Rationals );
 ##  <Lie algebra of dimension 14 over Rationals>
 ##  gap> ChevalleyBasis( L );
-##  [ [ v.1, v.2, v.3, v.4, v.5, v.6 ], 
+##  [ [ v.1, v.2, v.3, v.4, v.5, v.6 ],
 ##    [ v.7, v.8, v.9, v.10, v.11, v.12 ], [ v.13, v.14 ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -1126,16 +1126,16 @@ DeclareAttribute( "ChevalleyBasis", IsLieAlgebra );
 ##  <Description>
 ##  This function constructs the simple Lie algebra of type given by the
 ##  string <A>type</A> and rank <A>n</A> over the field <A>F</A>. The string
-##  <A>type</A> must be one of <C>"A"</C>, <C>"B"</C>, <C>"C"</C>, <C>"D"</C>, 
-##  <C>"E"</C>, <C>"F"</C>, <C>"G"</C>, <C>"H"</C>, <C>"K"</C>, <C>"S"</C>, 
-##  <C>"W"</C> or <C>"M"</C>. For the types <C>A</C> to <C>G</C>, <A>n</A> 
-##  must be a positive integer. The last five types only exist over fields of 
-##  characteristic <M>p>0</M>. If the type is <C>H</C>, then <A>n</A> must be 
+##  <A>type</A> must be one of <C>"A"</C>, <C>"B"</C>, <C>"C"</C>, <C>"D"</C>,
+##  <C>"E"</C>, <C>"F"</C>, <C>"G"</C>, <C>"H"</C>, <C>"K"</C>, <C>"S"</C>,
+##  <C>"W"</C> or <C>"M"</C>. For the types <C>A</C> to <C>G</C>, <A>n</A>
+##  must be a positive integer. The last five types only exist over fields of
+##  characteristic <M>p>0</M>. If the type is <C>H</C>, then <A>n</A> must be
 ##  a list of positive integers of even length.
-##  If the type is <C>K</C>, then <A>n</A> must be a list of positive 
+##  If the type is <C>K</C>, then <A>n</A> must be a list of positive
 ##  integers of odd length.
-##  For the types <C>S</C> and <C>W</C>, <A>n</A> must be a list of positive 
-##  integers of any length. 
+##  For the types <C>S</C> and <C>W</C>, <A>n</A> must be a list of positive
+##  integers of any length.
 ##  If the type is <C>M</C>, then the Melikyan algebra is constructed.
 ##  In this case <A>n</A> must be a list of two positive integers.
 ##  This Lie algebra only exists over fields of characteristic <M>5</M>.
@@ -1148,9 +1148,9 @@ DeclareAttribute( "ChevalleyBasis", IsLieAlgebra );
 ##  and the Lie algebras of type <M>K_n</M> where <M>n</M> is a list of
 ##  length 1.
 ##  <P/>
-##  If <A>type</A> is one of <C>A</C>, <C>B</C>, <C>C</C>, <C>D</C>, 
-##  <C>E</C>, <C>F</C>, <C>G</C>, and <A>F</A> is a field of characteristic 
-##  zero, then the basis of the returned Lie algebra is a Chevalley basis. 
+##  If <A>type</A> is one of <C>A</C>, <C>B</C>, <C>C</C>, <C>D</C>,
+##  <C>E</C>, <C>F</C>, <C>G</C>, and <A>F</A> is a field of characteristic
+##  zero, then the basis of the returned Lie algebra is a Chevalley basis.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> SimpleLieAlgebra( "E", 6, Rationals );
@@ -1249,7 +1249,7 @@ DeclareAttribute(
 ##   Label="for ring and several names"/>
 ##
 ##  <Description>
-##  Returns a free Lie algebra of rank <A>rank</A> over the ring <A>R</A>. 
+##  Returns a free Lie algebra of rank <A>rank</A> over the ring <A>R</A>.
 ##  <C>FreeLieAlgebra( <A>R</A>, <A>name1</A>, <A>name2</A>,...)</C> returns
 ##  a free Lie algebra over <A>R</A> with generators named <A>name1</A>,
 ##  <A>name2</A>, and so on.
@@ -1288,7 +1288,7 @@ DeclareCategory( "IsFamilyElementOfFreeLieAlgebra",
 
 #############################################################################
 ##
-#C  IsFptoSCAMorphism( <map> )  
+#C  IsFptoSCAMorphism( <map> )
 ##
 ##  <ManSection>
 ##  <Filt Name="IsFptoSCAMorphism" Arg='map' Type='Category'/>
@@ -1300,7 +1300,7 @@ DeclareCategory( "IsFamilyElementOfFreeLieAlgebra",
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareCategory( "IsFptoSCAMorphism", IsAlgebraGeneralMapping and IsTotal and 
+DeclareCategory( "IsFptoSCAMorphism", IsAlgebraGeneralMapping and IsTotal and
                                       IsSingleValued );
 
 ##############################################################################
@@ -1312,16 +1312,16 @@ DeclareCategory( "IsFptoSCAMorphism", IsAlgebraGeneralMapping and IsTotal and
 ##  <Func Name="FpLieAlgebraByCartanMatrix" Arg='C'/>
 ##
 ##  <Description>
-##  Here <A>C</A> must be a Cartan matrix. The function returns the 
-##  finitely-presented Lie algebra over the field of rational numbers 
-##  defined by this Cartan matrix. By Serre's theorem, this Lie algebra is a 
+##  Here <A>C</A> must be a Cartan matrix. The function returns the
+##  finitely-presented Lie algebra over the field of rational numbers
+##  defined by this Cartan matrix. By Serre's theorem, this Lie algebra is a
 ##  semisimple Lie algebra, and its root system has Cartan matrix <A>C</A>.
 ##  <Example><![CDATA[
 ##  gap> C:= [ [ 2, -1 ], [ -3, 2 ] ];;
 ##  gap> K:= FpLieAlgebraByCartanMatrix( C );
 ##  <Lie algebra over Rationals, with 6 generators>
 ##  gap> h:= NiceAlgebraMonomorphism( K );
-##  [ [(1)*x1], [(1)*x2], [(1)*x3], [(1)*x4], [(1)*x5], [(1)*x6] ] -> 
+##  [ [(1)*x1], [(1)*x2], [(1)*x3], [(1)*x4], [(1)*x5], [(1)*x6] ] ->
 ##  [ v.1, v.2, v.3, v.4, v.5, v.6 ]
 ##  gap> SemiSimpleType( Range( h ) );
 ##  "G2"
@@ -1343,7 +1343,7 @@ DeclareGlobalFunction( "FpLieAlgebraByCartanMatrix" );
 ##  <Func Name="FpLieAlgebraEnumeration" Arg='FpL, max, weights, ishom'/>
 ##
 ##  <Description>
-##  When called with one argument, which is a finitely presented Lie 
+##  When called with one argument, which is a finitely presented Lie
 ##  algebra, this function computes a homomorphism to an sc algebra.
 ##  More arguments can be used to compute nilpotent quotients (see comments
 ##  to this function in the file alglie.gi).
@@ -1379,15 +1379,15 @@ DeclareGlobalFunction( "FpLieAlgebraEnumeration" );
 ##  number of generators of <A>FpL</A>) consisting of <M>1</M>'s.
 ##  <P/>
 ##  If the relators of <A>FpL</A> are homogeneous,
-##  then the resulting  algebra is naturally graded. 
+##  then the resulting  algebra is naturally graded.
 ##  <Example><![CDATA[
 ##  gap> L:= FreeLieAlgebra( Rationals, "x", "y" );;
 ##  gap> g:= GeneratorsOfAlgebra(L);; x:= g[1]; y:= g[2];
 ##  (1)*x
 ##  (1)*y
-##  gap> rr:=[ ((y*x)*x)*x-6*(y*x)*y, 
+##  gap> rr:=[ ((y*x)*x)*x-6*(y*x)*y,
 ##  >          3*((((y*x)*x)*x)*x)*x-20*(((y*x)*x)*x)*y ];
-##  [ (-1)*(x*(x*(x*y)))+(6)*((x*y)*y), 
+##  [ (-1)*(x*(x*(x*y)))+(6)*((x*y)*y),
 ##    (-3)*(x*(x*(x*(x*(x*y)))))+(20)*(x*(x*((x*y)*y)))+(
 ##      -20)*((x*(x*y))*(x*y)) ]
 ##  gap> K:= L/rr;
@@ -1397,7 +1397,7 @@ DeclareGlobalFunction( "FpLieAlgebraEnumeration" );
 ##  gap> L:= Range( h );
 ##  <Lie algebra of dimension 50 over Rationals>
 ##  gap> Grading( L );
-##  rec( hom_components := function( d ) ... end, max_degree := 50, 
+##  rec( hom_components := function( d ) ... end, max_degree := 50,
 ##    min_degree := 1, source := Integers )
 ##  ]]></Example>
 ##  </Description>
@@ -1424,7 +1424,7 @@ DeclareGlobalFunction( "NilpotentQuotientOfFpLieAlgebra" );
 ##  i.e., they can be viewed as vector spaces over <C>GF</C><M>(p)</M>.
 ##  Now the Jennings-Lie algebra <M>L</M> of <A>G</A> is the direct sum
 ##  of those vector spaces.
-##  The Lie bracket on <M>L</M> is induced by the commutator in <A>G</A>. 
+##  The Lie bracket on <M>L</M> is induced by the commutator in <A>G</A>.
 ##  Furthermore, the map <M>g \mapsto g^p</M> in <A>G</A> induces a
 ##  <M>p</M>-map in <M>L</M> making <M>L</M> into a restricted Lie algebra.
 ##  In the canonical basis of <M>L</M> this <M>p</M>-map is added as an
@@ -1448,10 +1448,10 @@ DeclareAttribute( "JenningsLieAlgebra", IsGroup );
 ##
 ##  <Description>
 ##  Here <A>G</A> is a nontrivial <M>p</M>-group.
-##  <C>PCentralLieAlgebra( <A>G</A> )</C> does the same as 
+##  <C>PCentralLieAlgebra( <A>G</A> )</C> does the same as
 ##  <Ref Attr="JenningsLieAlgebra"/> except that the
 ##  <M>p</M>-central series is used instead of the Jennings series
-##  (see&nbsp;<Ref Oper="PCentralSeries"/>). This function also returns 
+##  (see&nbsp;<Ref Oper="PCentralSeries"/>). This function also returns
 ##  a graded Lie algebra. However, it is not necessarily restricted.
 ##  <Example><![CDATA[
 ##  gap> G:= SmallGroup( 3^6, 123 );
@@ -1463,11 +1463,11 @@ DeclareAttribute( "JenningsLieAlgebra", IsGroup );
 ##  gap> PthPowerImages( Basis( L ) );
 ##  [ v.6, 0*v.1, 0*v.1, 0*v.1, 0*v.1, 0*v.1 ]
 ##  gap> g:= Grading( L );
-##  rec( hom_components := function( d ) ... end, max_degree := 3, 
+##  rec( hom_components := function( d ) ... end, max_degree := 3,
 ##    min_degree := 1, source := Integers )
 ##  gap> List( [1,2,3], g.hom_components );
-##  [ <vector space over GF(3), with 3 generators>, 
-##    <vector space over GF(3), with 2 generators>, 
+##  [ <vector space over GF(3), with 3 generators>,
+##    <vector space over GF(3), with 2 generators>,
 ##    <vector space over GF(3), with 1 generator> ]
 ##  ]]></Example>
 ##  </Description>
@@ -1485,14 +1485,14 @@ DeclareAttribute( "PCentralLieAlgebra", IsGroup );
 ##  <Attr Name="NaturalHomomorphismOfLieAlgebraFromNilpotentGroup" Arg='L'/>
 ##
 ##  <Description>
-##  This is an attribute of Lie algebras created by 
-##  <Ref Attr="JenningsLieAlgebra"/> or <Ref Attr="PCentralLieAlgebra"/>. 
-##  Then <A>L</A> is the direct sum of quotients of successive terms of the 
-##  Jennings, or <M>p</M>-central series of a <M>p</M>-group G. Let <C>Gi</C> 
+##  This is an attribute of Lie algebras created by
+##  <Ref Attr="JenningsLieAlgebra"/> or <Ref Attr="PCentralLieAlgebra"/>.
+##  Then <A>L</A> is the direct sum of quotients of successive terms of the
+##  Jennings, or <M>p</M>-central series of a <M>p</M>-group G. Let <C>Gi</C>
 ##  be the <M>i</M>-th term in this series, and let
 ##  <C>f = NaturalHomomorphismOfLieAlgebraFromNilpotentGroup( <A>L</A> )</C>,
-##  then for <C>g</C> in <C>Gi</C>, <C>f( <A>g</A>, <A>i</A> )</C> returns the 
-##  element of <A>L</A> (lying in the <M>i</M>-th homogeneous component) 
+##  then for <C>g</C> in <C>Gi</C>, <C>f( <A>g</A>, <A>i</A> )</C> returns the
+##  element of <A>L</A> (lying in the <M>i</M>-th homogeneous component)
 ##  corresponding to <C>g</C>.
 ##  </Description>
 ##  </ManSection>

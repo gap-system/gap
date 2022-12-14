@@ -55,7 +55,7 @@
 ##  <P/>
 ##  If a program of a &GAP; package which does not only consist of &GAP;
 ##  code needs to be launched in a directory relative to certain data
-##  libraries, then the first entry of <Ref Func="DirectoriesPackageLibrary"/> 
+##  libraries, then the first entry of <Ref Func="DirectoriesPackageLibrary"/>
 ##  should be used.
 ##  The argument of <Ref Func="DirectoriesPackageLibrary"/> should be the path to the
 ##  data library relative to the package directory.
@@ -97,8 +97,8 @@
 ##  <P/>
 ##  <A>stream-in</A> is the input stream that delivers the characters to the
 ##  process.
-##  For portability it should either be <Ref Func="InputTextNone"/> 
-##  (if the process reads no characters), <Ref Func="InputTextUser"/>, 
+##  For portability it should either be <Ref Func="InputTextNone"/>
+##  (if the process reads no characters), <Ref Func="InputTextUser"/>,
 ##  the result of a call to <Ref Oper="InputTextFile"/>
 ##  from which no characters have been read, or the result of a call to
 ##  <Ref Oper="InputTextString"/>.
@@ -132,7 +132,7 @@
 ##  "/bin/date"
 ##  ]]></Log>
 ##  <P/>
-##  The next example shows how to execute <C>date</C> with no argument and no input, 
+##  The next example shows how to execute <C>date</C> with no argument and no input,
 ##  and collect the output into a string stream.
 ##  <P/>
 ##  <Log><![CDATA[
@@ -179,7 +179,7 @@ DeclareOperation( "Process",
 ##  ]]></Log>
 ##  <P/>
 ##  <Ref Func="Exec"/> calls the more general operation <Ref Oper="Process"/>.
-##  The function <Ref Func="Edit"/> should be used to call an editor from 
+##  The function <Ref Func="Edit"/> should be used to call an editor from
 ##  within &GAP;.
 ##  </Description>
 ##  </ManSection>

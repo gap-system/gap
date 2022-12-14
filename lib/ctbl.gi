@@ -2476,7 +2476,7 @@ InstallMethod( ClassPositionsOfSupersolvableResiduum,
 ##
 #F  ClassPositionsOfPCore( <ordtbl>, <p> )
 ##
-InstallMethod( ClassPositionsOfPCore, 
+InstallMethod( ClassPositionsOfPCore,
     "for an ordinary table and a pos. integer",
     [ IsOrdinaryTable, IsPosInt ],
     function( ordtbl, p )

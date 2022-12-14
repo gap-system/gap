@@ -11,7 +11,7 @@
 ##  This file contains  the  functions   needed  for a  direct computation of
 ##  the  character values of  wreath  products  of a  group  $G$  with $S_n$,
 ##  the   symmetric group  on   n points.
-##  
+##
 
 
 #############################################################################
@@ -70,7 +70,7 @@ InstallGlobalFunction( PowerWreath, function(sub_pm, ptuple, p)
           fi;
        od;
     od;
-       
+
     for k in power do
        Sort(k, function(a,b) return a>b; end);
     od;
@@ -105,7 +105,7 @@ InstallGlobalFunction( InductionScheme, function(n)
           sign:= 1;
 
           for j in [1..i]  do
-             if i-j in beta then 
+             if i-j in beta then
                 sign:= -sign;
              else
                 if j = m then
@@ -194,7 +194,7 @@ InstallGlobalFunction( MatCharsWreathSymmetric, function( tbl, n)
 	 ni:= np[1][i]; pi:= np[2][i];
 	 for k in [1..ni] do
 	    for l in scheme[ni][pi][k] do
-	       np[1][i]:= ni-k; 
+	       np[1][i]:= ni-k;
 	       if l < 0 then
 		  np[2][i]:= -l;
 		  sign:= -1;
@@ -250,7 +250,7 @@ InstallGlobalFunction( MatCharsWreathSymmetric, function( tbl, n)
     #  construct the columns.
     pm:= List([1..n-1], x->[]);
     Info( InfoCharacterTable, 2, "Cycles:" );
-    for m in [1..QuoInt(n,2)] do 
+    for m in [1..QuoInt(n,2)] do
 
        # the $m$-cycle in all possible places
        Info( InfoCharacterTable, 2, m );
@@ -279,7 +279,7 @@ InstallGlobalFunction( MatCharsWreathSymmetric, function( tbl, n)
     for k in [1..n-1] do
        Info( InfoCharacterTable, 2, k );
        for t in pm[n-k] do
-	 for i in [t.pos[k]..r] do 
+	 for i in [t.pos[k]..r] do
 	    col:= charCol(n, t.col, k, i);
 	    for j in [1..np] do
 	       Add(res[j], col[j]);
@@ -318,22 +318,22 @@ InstallGlobalFunction( CharValueSymmetric, function(n, beta, pi)
     od;
 
     #  degree case.
-    if  k = 1  then 
-       
+    if  k = 1  then
+
        #  find all beads.
        val:= 1;
        for i in [o+1..Length(beta)] do
           val:= val * (beta[i] - o);
-    
+
           #  find other free places.
           for j in [o+1..beta[i]-1] do
              if  not j in beta then
                 val:= val * (beta[i]-j);
              fi;
           od;
-    
+
        od;
-    
+
        return Factorial(n)/val;
     fi;
 
@@ -364,7 +364,7 @@ InstallGlobalFunction( CharValueSymmetric, function(n, beta, pi)
           #  compute new beta set.
           gamma:= Difference(beta, [i]);
           AddSet(gamma, i-k);
-          
+
           #  enter recursion.
           val:= val + sign * CharValueSymmetric(n-k, gamma, rho);
        fi;
@@ -403,12 +403,12 @@ BindGlobal( "CharTableSymmetric", Immutable( rec(
             res:= 1; last:= 0; k:= 1;
             for p in pi do
                res:= res * p;
-               if p = last then 
+               if p = last then
                   k:= k+1;
                   res:= res * k;
                else
                   k:= 1;
-               fi; 
+               fi;
                last:= p;
             od;
             return res;
@@ -424,13 +424,13 @@ BindGlobal( "CharTableSymmetric", Immutable( rec(
     matrix:=
         function(n)
           local scheme, beta, pm, i, m, k, t, col, np, res, charCol;
-      
+
           scheme:= InductionScheme(n);
-      
+
           #  how to construct a new column.
           charCol:= function(m, t, k)
              local i, col, pi, val;
-      
+
              col:= [];
              for pi in scheme[m] do
                 val:= 0;
@@ -445,19 +445,19 @@ BindGlobal( "CharTableSymmetric", Immutable( rec(
              od;
              return col;
           end;
-      
+
           #  construct the columns.
           pm:= List([1..n-1], x-> []);
           for m in [1..QuoInt(n,2)] do
              Add(pm[m], charCol(m, [1], m));
-      
+
              for k in [m+1..n-m] do
                 for t in pm[k-m] do
                    Add(pm[k], charCol(k, t, m));
                 od;
              od;
           od;
-      
+
           #  collect and transpose.
           np:= Length(scheme[n]);
           res:= List([1..np], x-> []);
@@ -469,12 +469,12 @@ BindGlobal( "CharTableSymmetric", Immutable( rec(
                 od;
              od;
           od;
-      
+
           col:= charCol(n, [1], n);
           for i in [1..np] do
              Add(res[i], col[i]);
           od;
-      
+
           return res;
         end,
     domain:=
@@ -500,7 +500,7 @@ BindGlobal( "CharTableAlternating", Immutable( rec(
     classparam:=
         [ function(n)
             local labels, pi, pdodd;
-        
+
             pdodd:= function(pi)
                local i;
                if pi[1] mod 2 = 0 then
@@ -513,7 +513,7 @@ BindGlobal( "CharTableAlternating", Immutable( rec(
                od;
                return true;
             end;
-        
+
             labels:= [];
             for pi in Partitions(n) do
                if SignPartition(pi) = 1 then
@@ -525,13 +525,13 @@ BindGlobal( "CharTableAlternating", Immutable( rec(
                   fi;
                fi;
             od;
-        
+
             return labels;
           end ],
     charparam:=
         [ function(n)
             local alpha, labels;
-        
+
             labels:= [];
             for alpha in Partitions(n) do
                if alpha = AssociatedPartition(alpha) then
@@ -541,7 +541,7 @@ BindGlobal( "CharTableAlternating", Immutable( rec(
                   Add(labels, alpha);
                fi;
             od;
-        
+
             return labels;
           end ],
     centralizers:=
@@ -563,11 +563,11 @@ BindGlobal( "CharTableAlternating", Immutable( rec(
     powermap:=
         [ function(n, lbl, prime)
             local val, prod;
-        
+
             #  split case.
             if Length(lbl) = 2 and not IsInt(lbl[2])  then
                prod:= Product( lbl[1], 1 );
-               
+
                #  coprime case needs complicated check.
                if prod mod prime <>  0 then
                   val:= EB(prod);
@@ -584,14 +584,14 @@ BindGlobal( "CharTableAlternating", Immutable( rec(
                   return [1, PowerPartition(lbl[1], prime)];
                fi;
             fi;
-        
+
             #  ordinary case.
             return [1, PowerPartition(lbl, prime)];
           end ],
     irreducibles:=
         [ [ function(n, alpha, pi)
               local val;
-          
+
               if Length(alpha) = 2 and not IsInt(alpha[2]) then
                  if Length(pi) = 2 and not IsInt(pi[2]) then
                     val:= CharTableSymmetric!.irreducibles[1][1](n,
@@ -609,7 +609,7 @@ BindGlobal( "CharTableAlternating", Immutable( rec(
                     val:= CharTableSymmetric!.irreducibles[1][1](n,
                               alpha[1], pi)/2;
                  fi;
-          
+
               else
                  if Length(pi) = 2 and not IsInt(pi[2]) then
                     val:= CharTableSymmetric!.irreducibles[1][1](n,
@@ -619,7 +619,7 @@ BindGlobal( "CharTableAlternating", Immutable( rec(
                               alpha, pi);
                  fi;
               fi;
-          
+
               return val;
             end ] ],
     wholetable := function( gtab, n )
@@ -788,7 +788,7 @@ InstallGlobalFunction( CharValueWeylB, function(n, beta, pi)
     for s in [1, 2] do
 
        #  determine offset.
-       o:= 0;  
+       o:= 0;
        lb:= Length(beta[s]);
        while o < lb and beta[s][o+1] = o do
           o:= o+1;
@@ -851,7 +851,7 @@ BindGlobal( "CharTableWeylB", Immutable( rec(
     orders:=
         [ function(n, lbl)
             local ord;
-            
+
             ord:= 1;
             if lbl[1] <> [] then
                ord:= Lcm(lbl[1]);
@@ -859,7 +859,7 @@ BindGlobal( "CharTableWeylB", Immutable( rec(
             if lbl[2] <> [] then
                ord:= Lcm(ord, 2 * Lcm(lbl[2]));
             fi;
-        
+
             return ord;
           end ],
     powermap:=
@@ -900,7 +900,7 @@ BindGlobal( "CharTableWeylD", rec(
     classparam:=
         [ function(n)
             local labels, pi;
-        
+
             labels:= [];
             for pi in PartitionTuples(n, 2) do
                if Length(pi[2]) mod 2 = 0 then
@@ -912,15 +912,15 @@ BindGlobal( "CharTableWeylD", rec(
                   fi;
                fi;
             od;
-        
+
             return labels;
           end ],
     charparam:=
         [ function(n)
             local alpha, labels;
-        
+
             labels:= [];
-            
+
             for alpha in PartitionTuples(n, 2) do
                if alpha[1] = alpha[2] then
                   Add(labels, [alpha[1], '+']);
@@ -929,7 +929,7 @@ BindGlobal( "CharTableWeylD", rec(
                   Add(labels, alpha);
                fi;
             od;
-        
+
             return labels;
           end ],
     centralizers:=
@@ -943,7 +943,7 @@ BindGlobal( "CharTableWeylD", rec(
     orders:=
         [ function(n, lbl)
             local ord;
-        
+
             ord:= 1;
             if lbl[1] <> [] then
                ord:= Lcm(lbl[1]);
@@ -951,13 +951,13 @@ BindGlobal( "CharTableWeylD", rec(
             if lbl[2] <> [] and IsList(lbl[2]) then
                ord:= Lcm(ord, 2*Lcm(lbl[2]));
             fi;
-        
+
             return ord;
           end ],
     powermap:=
         [ function(n, lbl, pow)
             local power;
-        
+
             if not IsList(lbl[2]) then
                power:= PowerPartition(lbl[1], pow);
                if ForAll(power, x-> x mod 2 = 0) then
@@ -977,7 +977,7 @@ BindGlobal( "CharTableWeylD", rec(
     irreducibles:=
         [ [ function(n, alpha, pi)
               local delta, val;
-          
+
               if not IsList(alpha[2]) then
                  delta:= [alpha[1], alpha[1]];
                  if not IsList(pi[2]) then
@@ -1003,7 +1003,7 @@ BindGlobal( "CharTableWeylD", rec(
                     val:= CharTableWeylB!.irreducibles[1][1](n, alpha, pi);
                  fi;
               fi;
-          
+
               return val;
             end ] ],
     domain:=
@@ -1092,7 +1092,7 @@ InstallGlobalFunction( CharacterValueWreathSymmetric,
     for s in [1..r] do
 
        #  determine offset.
-       o:= 0;  
+       o:= 0;
        lb:= Length(beta[s]);
        while o < lb and beta[s][o+1] = o do
           o:= o+1;

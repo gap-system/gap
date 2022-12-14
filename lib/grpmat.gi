@@ -221,7 +221,7 @@ end);
 ##  The boolean <sort> indicates, whether the domain will be sorted.
 BindGlobal("DoSparseLinearActionOnFaithfulSubset",
 function(G,act,sort)
-local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads, 
+local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
       orb, delay, permimg, maxlim, starti, ll, ltwa, img, v, en, p, kill,
       i, lo, imgs, xset, hom, R;
 
@@ -256,7 +256,7 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
   maxlim:=200000;
 
   starti:=1;
-  while Length(partbas)<dim or 
+  while Length(partbas)<dim or
     (act=OnLines and not OnLines(Sum(base),One(G)) in orb) do
     Info(InfoGroup,2,"dim=",Length(partbas)," ",
          "|orb|=",Length(orb));
@@ -434,7 +434,7 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
   if act <> OnLines then
     SetIsInjective(hom, true); # we know by construction that it is injective.
   fi;
-  
+
   R:=Group(permimg,()); # `permimg' arose from `PermList'
   SetBaseOfGroup(R,xset!.basePermImage);
 
@@ -1251,7 +1251,7 @@ InstallGlobalFunction( "BlowUpIsomorphism", function( matgrp, B )
 #############################################################################
 ##
 #M  InvariantBilinearForm( <matgrp> )
-##  
+##
 InstallMethod( InvariantBilinearForm,
     "for a matrix group with known `InvariantQuadraticForm'",
     [ IsMatrixGroup and HasInvariantQuadraticForm ],

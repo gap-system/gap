@@ -69,7 +69,7 @@
 ##  (see&nbsp;<Ref Func="FreeMagma" Label="for given rank"/>)
 ##  lie in the category <Ref Filt="IsWord"/>;
 ##  similarly, elements in free magmas-with-one
-##  (see&nbsp;<Ref Func="FreeMagmaWithOne" Label="for given rank"/>) 
+##  (see&nbsp;<Ref Func="FreeMagmaWithOne" Label="for given rank"/>)
 ##  lie in the category <Ref Filt="IsWordWithOne"/>, and so on.
 ##  <P/>
 ##  <Ref Filt="IsWord"/> is mainly a <Q>common roof</Q> for the two

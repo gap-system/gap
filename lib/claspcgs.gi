@@ -24,7 +24,7 @@
 ##
 InstallGlobalFunction( SubspaceVectorSpaceGroup, function( N, p, gens,howmuch )
 local   zero,  one,  r,  ran,  n,  nan,  cg,  pos,  Q,  i,  j,  v;
-    
+
     one:=One( GF( p ) );  zero:=0 * one;
     r:=Length( N );       ran:=[ 1 .. r ];
     n:=Length( gens );    nan:=[ 1 .. n ];
@@ -34,7 +34,7 @@ local   zero,  one,  r,  ran,  n,  nan,  cg,  pos,  Q,  i,  j,  v;
     else
         Q:=ShallowCopy( gens );
     fi;
-    
+
     cg:=rec( matrix        :=[  ],
 	       one           :=one,
                baseComplement:=ShallowCopy( ran ),
@@ -49,7 +49,7 @@ local   zero,  one,  r,  ran,  n,  nan,  cg,  pos,  Q,  i,  j,  v;
 	cg.needed    :=[];
         return cg;
     fi;
-    
+
     for i  in nan  do
         cg.matrix[ i ]:=Concatenation( Q[ i ], zero * nan );
         cg.matrix[ i ][ r + i ]:=one;
@@ -92,9 +92,9 @@ local   zero,  one,  r,  ran,  n,  nan,  cg,  pos,  Q,  i,  j,  v;
             i:=Length( N );
 
         fi;
-        i:=i + 1; 
+        i:=i + 1;
     od;
-    
+
     if IsEmpty( cg.needed )  then
         cg.inverse:=NullMapMatrix;
     else
@@ -122,7 +122,7 @@ local   zero,  one,  r,  ran,  n,  nan,  cg,  pos,  Q,  i,  j,  v;
         cg.projection:=cg.projection ^ Q;
         cg.projection:=cg.projection{ ran }{ cg.baseComplement };
 	cg.projection:=ImmutableMatrix(p,cg.projection,true);
-        
+
     fi;
 
     return Immutable(cg);
@@ -139,12 +139,12 @@ end );
 ##
 InstallGlobalFunction( KernelHcommaC, function( N, h, C, howmuch )
 local   i,  tmp,  v,x;
-    
+
     x:=List( C, c -> Comm( h, c ) );
 
     N!.subspace:=SubspaceVectorSpaceGroup(N,RelativeOrders(N)[1],x,howmuch);
     tmp:=[  ];
-    for i  in [ N!.subspace.commutator + 1 .. 
+    for i  in [ N!.subspace.commutator + 1 ..
                 N!.subspace.commutator + N!.subspace.centralizer ]  do
         v:=N!.subspace.matrix[ i ];
         tmp[ i - N!.subspace.commutator ]:=PcElementByExponentsNC( C,
@@ -236,7 +236,7 @@ local   classes,    # classes to be constructed, the result
                             operator:=One( H ) );
             Add( classes, c );
         fi;
-        
+
     else
         gens:=N!.subspace.baseComplement;
         for w  in field ^ Length( gens )  do
@@ -255,7 +255,7 @@ end );
 #F  CorrectConjugacyClass(<home>,<h>,<n>,<stabpcgs>,<N>,<depth>,<cNh>,<off> )
 ##    cf. MN89
 ##
-InstallGlobalFunction( CorrectConjugacyClass, 
+InstallGlobalFunction( CorrectConjugacyClass,
 function( home, h, n, stab, N,depthlev, cNh,off )
 local   cl,  comm,  s, ostab;
 
@@ -288,7 +288,7 @@ local   cl,  comm,  s, ostab;
     #stab:=ExtendedPcgs(cNh,stab);
     stab:=Concatenation(stab,cNh);
   fi;
-      
+
   cl:=rec( representative:=h * n,
 		cengen:=stab );
   return cl;
@@ -333,7 +333,7 @@ local  classes,    # classes to be constructed, the result
     Cgens:=cl.centralizerpcgs;
     field:=GF( RelativeOrders( N )[ 1 ] );
     h:=cl.representative;
-    
+
     # Determine the subspace $[h,N]$ and calculate the centralizer of <h>.
     kern:=DenominatorOfModuloPcgs( N!.capH );
     img:=KernelHcommaC( N, h, N!.capH,2 );
@@ -460,7 +460,7 @@ local  classes,    # classes to be constructed, the result
             fi;
             Add( classes, c );
         od;
-        
+
     else
       #xset:=ExternalSet( C, aff, gens, imgs );
       #k:=ExternalOrbitsStabilizers( xset );
@@ -567,7 +567,7 @@ local  G,  home,  # the group and the home pcgs
        inflev,  # InfoLevel flag
        nexpo,	# N-Exponents of the elements of N conjugated
        allcent;	# DivisorsInt(Size(G)) (used for Info)
-  
+
 
   inflev:=InfoLevel(InfoClasses)>1;
   mode:=arg[2];  # explained below whenever it appears
@@ -604,7 +604,7 @@ local  G,  home,  # the group and the home pcgs
   else
     consider:=true;
   fi;
-  
+
   # Treat the case of a trivial group.
   if IsTrivial(H) then
     if mode=4 then  # test conjugacy of two elements
@@ -622,7 +622,7 @@ local  G,  home,  # the group and the home pcgs
 
     return cls;
   fi;
-  
+
   # Calculate a (central)  elementary abelian series  with all pcgs induced
   # w.r.t. <homepcgs>.
 
@@ -701,7 +701,7 @@ local  G,  home,  # the group and the home pcgs
 
 	# form a factor by i and go to this factor at the first time (index
 	# step) no factor representation was given
-	mustlift[step]:=true; 
+	mustlift[step]:=true;
 	liftkerns[step]:=eas[i];
 	step:=i+1;
       fi;
@@ -847,7 +847,7 @@ Error("This case disabled -- code not yet corrected");
     else
       N!.capH:=N;
     fi;
-    
+
     # Identification of classes.
     # Rational classes or identification of classes.
     if  candidates<>false then
@@ -859,11 +859,11 @@ Error("This case disabled -- code not yet corrected");
              cls[2].representative in K then
         return fail;
       fi;
-      
+
       blist:=BlistList([1 .. Length(cls)], []);
       pos:=Position(blist, false);
       while pos<>fail  do
-        
+
         # Find a team of candidates with same image under <modK>.
         cl:=cls[pos];
         cl.representative:=PcElementByExponentsNC(mK,
@@ -906,7 +906,7 @@ Error("This case disabled -- code not yet corrected");
 	  Info(InfoClasses,5,"general case");
           newcls:=GeneralStepClEANS(fhome, QH, QG, N, nexpo, cl,false);
         fi;
-        
+
         # Update <cls>, <opr> and <exp>.
         for i  in [1 .. Length(team)]  do
           for q  in team[i]  do
@@ -914,7 +914,7 @@ Error("This case disabled -- code not yet corrected");
             opr[q]:=opr[q] * newcls[i].operator;
           od;
         od;
-        
+
         pos:=Position(blist, false, pos);
       od;
 
@@ -923,8 +923,8 @@ Error("This case disabled -- code not yet corrected");
       for cli in [1..Length(cls)]  do
 
 	cl:=cls[cli];
-	if consider=true 
-	 or consider(fhome,cl.representative,cl.centralizerpcgs,K,L) 
+	if consider=true
+	 or consider(fhome,cl.representative,cl.centralizerpcgs,K,L)
 	  then
 	  if allcent or cent(fhome,cl.centralizerpcgs, N, Ldep) then
 	    news:=CentralStepClEANS(fhome,QG, QG, N, cl,false);
@@ -973,7 +973,7 @@ Error("This case disabled -- code not yet corrected");
       i.centralizer:=SubgroupByPcgs(G,i.centralizerpcgs);
     fi;
   od;
-  
+
   if candidates<>false then  # add operators (and exponents)
     for i  in [1 .. Length(cls)]  do
       cls[i].operator:=opr[i];
@@ -1013,8 +1013,8 @@ local  G,home,  # the group and the home pcgs
        i,c,   # loop variables
        nexpo,	# N-Exponents of the elements of N conjugated
        allcent;	# DivisorsInt(Size(G)) (used for Info)
-  
-  G:=dat.group; 
+
+  G:=dat.group;
   mode:=0;
 
   # <candidates> is a list  of elements whose classes  will be output  (but
@@ -1024,7 +1024,7 @@ local  G,home,  # the group and the home pcgs
   H:=G;
 
   cls:=ShallowCopy(candidates);
-  
+
   if IsBound(dat.eas) then
     eas:=dat.eas;
     indstep:=dat.indstep;
@@ -1191,13 +1191,13 @@ local  G,home,  # the group and the home pcgs
     first:=false;
 
     N!.capH:=N;
-    
+
     # Identification of classes.
 
     blist:=BlistList([1 .. Length(cls)], []);
     pos:=Position(blist, false);
     while pos<>fail  do
-      
+
       # Find a team of candidates with same image under <modK>.
       cl:=cls[pos];
       cl.candidates:=[];
@@ -1238,7 +1238,7 @@ local  G,home,  # the group and the home pcgs
         Info(InfoClasses,5,"general case");
         newcls:=GeneralStepClEANS(home, H, G, N, nexpo, cl,false);
       fi;
-      
+
       # Update <cls>, <opr> and <exp>.
       for i  in [1 .. Length(team)]  do
 
@@ -1247,7 +1247,7 @@ local  G,home,  # the group and the home pcgs
           opr[q]:=opr[q] * newcls[i].operator;
         od;
       od;
-      
+
       pos:=Position(blist, false, pos);
     od;
 
@@ -1267,7 +1267,7 @@ InstallGlobalFunction(CentralizerSizeLimitConsiderFunction,function(sz)
            return Product(RelativeOrders(cenp))/Size(K)<=sz;
 	  end;
 end);
-    
+
 #############################################################################
 ##
 #M  ActorOfExternalSet( <cl> ) . . . . . . . . . conj. cl. of solv. groups
@@ -1276,7 +1276,7 @@ InstallMethod( ActorOfExternalSet, true,
         [ IsConjugacyClassGroupRep ], 0,
     function( cl )
     local   G,  rep;
-    
+
     G:=ActingDomain( cl );
     if not CanEasilyComputePcgs( G )  then
         TryNextMethod();
@@ -1345,7 +1345,7 @@ local  G,  home,  # the group and the home pcgs
        c,  i,     # loop variables
        opt,	# options
        divi;	# DivisorsInt(Size(G)) (used for Info)
-  
+
 
   G:=arg[1];
 
@@ -1380,7 +1380,7 @@ local  G,  home,  # the group and the home pcgs
   #else
   #  consider:=true;
   #fi;
-  
+
   # Treat the case of a trivial group.
   if IsTrivial(H) then
     if mode=4 then  # test conjugacy of two elements
@@ -1410,7 +1410,7 @@ local  G,  home,  # the group and the home pcgs
 
     return cls;
   fi;
-  
+
   # Calculate a (central)  elementary abelian series  with all pcgs induced
   # w.r.t. <homepcgs>.
 
@@ -1494,7 +1494,7 @@ local  G,  home,  # the group and the home pcgs
   else
     cls:=[cl];
   fi;
-  
+
   # Now go back through the factors by all groups in the elementary abelian
   # series.
   for step  in [step + 1 .. Length(eas)]  do
@@ -1522,7 +1522,7 @@ local  G,  home,  # the group and the home pcgs
     else
       N!.capH:=N;
     fi;
-    
+
     # Rational classes or identification of classes.
     if  mode mod 2=1
        or candidates<>false then
@@ -1530,7 +1530,7 @@ local  G,  home,  # the group and the home pcgs
       mL:=ModuloPcgsByPcSequenceNC(home, home, Lp);
     fi;
 
-    
+
     # Identification of classes.
     if candidates<>false then
       if   mode=4  # test conjugacy of two elements
@@ -1538,11 +1538,11 @@ local  G,  home,  # the group and the home pcgs
              cls[2].representative in K then
         return fail;
       fi;
-      
+
       blist:=BlistList([1 .. Length(cls)], []);
       pos:=Position(blist, false);
       while pos<>fail  do
-        
+
         # Find a team of candidates with same image under <modK>.
         cl:=cls[pos];
         cl.representative:=PcElementByExponentsNC(mK,
@@ -1584,7 +1584,7 @@ local  G,  home,  # the group and the home pcgs
         else
           newcls:=GeneralStepClEANS(home, H, G, N, cl);
         fi;
-        
+
         # Update <cls>, <opr> and <exp>.
         for i  in [1 .. Length(team)]  do
           for q  in team[i]  do
@@ -1599,12 +1599,12 @@ local  G,  home,  # the group and the home pcgs
                 # inverses of what we need.
                 exp[q]:=exp[q] /
                       newcls[i].exponent mod ord;
-                
+
               fi;
             fi;
           od;
         od;
-        
+
         pos:=Position(blist, false, pos);
       od;
 
@@ -1646,12 +1646,12 @@ local  G,  home,  # the group and the home pcgs
 # fi
       od;
       cls:=newcls;
-      
+
     else
       newcls:=[];
       for cl  in cls  do
 
-	#if consider=true or consider(fhome,cl.representative,cl.centralizerpcgs,K,L) 
+	#if consider=true or consider(fhome,cl.representative,cl.centralizerpcgs,K,L)
 	  #then
 	  if cent(cl, N, L) then
 	    news:=CentralStepClEANS(home,G, G, N, cl);
@@ -1685,7 +1685,7 @@ local  G,  home,  # the group and the home pcgs
       return opr[1] / opr[2];
     fi;
   fi;
-  
+
   if candidates<>false then  # add operators (and exponents)
     for i  in [1 .. Length(cls)]  do
       cls[i].operator:=opr[i];
@@ -1703,7 +1703,7 @@ end);
 ##
 InstallGlobalFunction( OrderModK, function( h, mK )
     local   ord,  d,  o;
-    
+
     ord:=1;
     d:=DepthOfPcElement( mK, h );
     while d <= Length( mK )  do
@@ -1724,7 +1724,7 @@ end );
 ##
 BindGlobal("OldSubspaceVectorSpaceGroup", function( N, p, gens )
     local   zero,  one,  r,  ran,  n,  nan,  cg,  pos,  Q,  i,  j,  v;
-    
+
     one:=One( GF( p ) );  zero:=0 * one;
     r:=Length( N );       ran:=[ 1 .. r ];
     n:=Length( gens );    nan:=[ 1 .. n ];
@@ -1734,7 +1734,7 @@ BindGlobal("OldSubspaceVectorSpaceGroup", function( N, p, gens )
     else
         Q:=ShallowCopy( gens );
     fi;
-    
+
     cg:=rec( matrix        :=[  ],
 	       needed        := [],
 	       one           :=one,
@@ -1749,7 +1749,7 @@ BindGlobal("OldSubspaceVectorSpaceGroup", function( N, p, gens )
         cg.inverse:=NullMapMatrix;
         return cg;
     fi;
-    
+
     for i  in nan  do
         cg.matrix[ i ]:=Concatenation( Q[ i ], zero * nan );
         cg.matrix[ i ][ r + i ]:=one;
@@ -1788,9 +1788,9 @@ BindGlobal("OldSubspaceVectorSpaceGroup", function( N, p, gens )
             i:=Length( N );
 
         fi;
-        i:=i + 1; 
+        i:=i + 1;
     od;
-    
+
     if IsEmpty( cg.needed )  then
         cg.inverse:=NullMapMatrix;
     else
@@ -1818,7 +1818,7 @@ BindGlobal("OldSubspaceVectorSpaceGroup", function( N, p, gens )
         cg.projection:=cg.projection ^ Q;
         cg.projection:=cg.projection{ ran }{ cg.baseComplement };
 	cg.projection:=ImmutableMatrix(p,cg.projection,true);
-        
+
     fi;
 
     return Immutable(cg);
@@ -1835,11 +1835,11 @@ end );
 ##
 BindGlobal("OldKernelHcommaC", function( N, h, C )
     local   i,  tmp,  v;
-    
+
     N!.subspace := OldSubspaceVectorSpaceGroup( N, RelativeOrders( N )[ 1 ],
                            List( C, c -> Comm( h, c ) ) );
     tmp := [  ];
-    for i  in [ N!.subspace.commutator + 1 .. 
+    for i  in [ N!.subspace.commutator + 1 ..
                 N!.subspace.commutator + N!.subspace.centralizer ]  do
         v := N!.subspace.matrix[ i ];
         tmp[ i - N!.subspace.commutator ] := PcElementByExponentsNC( C,
@@ -1858,7 +1858,7 @@ end );
 InstallGlobalFunction( CentralStepConjugatingElement,
   function( N, h, k1, k2, l, cN )
     local   v,  conj;
-    
+
     v:=ExponentsOfPcElement( N, h ^ -l * h ^ cN * k1 * k2 ^ -l );
     conj:=LinearCombinationPcgs( N!.CmodK{ N!.subspace.needed },
                     v * N!.subspace.inverse,OneOfPcgs( N ) );
@@ -1894,7 +1894,7 @@ InstallGlobalFunction( CentralStepRatClPGroup,
     h  :=cl.representative;
     ohN:=OrderModK( h, mK );
     oh :=OrderModK( h, mL );
-    
+
     classes:=[  ];
     if oh = 1  then
 
@@ -1903,7 +1903,7 @@ InstallGlobalFunction( CentralStepRatClPGroup,
         gal:=GroupByPrimeResidues( [  ], p );
         gal!.type:=3;
         gal!.operators:=[  ];
-        
+
         if IsBound( cl.candidates )  then
             for c  in cl.candidates  do
                 l:=LeadingExponentOfPcElement( N, c );
@@ -1957,10 +1957,10 @@ InstallGlobalFunction( CentralStepRatClPGroup,
             candexps:=List( cl.candidates, c ->
                 ExponentsOfPcElement( N, c ) ) * N!.subspace.projection;
         fi;
-    
+
         # If <p> = 2, use a projection operation.
         if p = 2  then
-            
+
             # Construct the preimage of $Gal(hN)$ in $Z_oh^*$.
             if ohN <= 2  then
                 preimage:=GroupByPrimeResidues( [ -1, 5 ], oh );
@@ -1985,13 +1985,13 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                       ( cl.galoisGroup!.operators, [ One( G ) ] );
                 fi;
             fi;
-            
+
             # Construct the image of the homomorphism <preimage> -> <K>.
             Q:=[  ];
             for i  in [ 1 .. Length( GeneratorsOfGroup( preimage ) ) ]  do
 
 #Assert(2,LeftQuotient(h^Int(GeneratorsOfGroup(preimage)[i]),
-#                      h^preimage!.operators[i]) in 
+#                      h^preimage!.operators[i]) in
 #		      Group(NumeratorOfModuloPcgs(N)));
 
                 Add( Q, ExponentsOfPcElement( N, LeftQuotient( h ^
@@ -2002,7 +2002,7 @@ InstallGlobalFunction( CentralStepRatClPGroup,
             K:=InducedPcgsByPcSequenceNC( N,
                          N{ N!.subspace.baseComplement } );
             K!.subspace:=OldSubspaceVectorSpaceGroup( K, p, Q );
-            
+
             # Project the factors in <N> onto a complement to <Q>.
             if IsBound( cl.candidates )  then
                 v:=List( candexps, ShallowCopy );
@@ -2021,17 +2021,17 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                     exps[ i ]:=LinearCombinationPcgs(
 		      GeneratorsOfGroup(preimage){K!.subspace.needed},
 		      v[ i ],One(preimage));
-                    conj[ i ]:=LinearCombinationPcgs( 
+                    conj[ i ]:=LinearCombinationPcgs(
 		      preimage!.operators { K!.subspace.needed }, v[ i ],
 		      One(G));
                 od;
-            
+
             # In the  construction case,  the complement  to <Q>  is a set of
             # representatives.
             else
                 reps:=EnumeratorByPcgs( K, K!.subspace.baseComplement );
             fi;
-            
+
             # The kernel of the homomorphism into  <K> is the Galois group of
             # <h>.
             if IsTrivial( preimage )  then  # pre = < 1 >
@@ -2060,7 +2060,7 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                         gens:=[ GeneratorsOfGroup( preimage )[ 1 ] *
                                   GeneratorsOfGroup( preimage )[ 2 ] ];
                         oprs:=[ preimage!.operators          [ 1 ] *
-                                  preimage!.operators          [ 2 ] ]; 
+                                  preimage!.operators          [ 2 ] ];
                         type:=2;
                     else
                         gens:=[ GeneratorsOfGroup( preimage )[ 2 ] ^ j ];
@@ -2069,7 +2069,7 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                     fi;
                 fi;
             fi;
-            
+
         # If <p> <> 2, use an affine operation of a cyclic group generated by
         # <preimage>.
         else
@@ -2095,17 +2095,17 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                  ExponentsOfPcElement( N, LeftQuotient( h ^ Int( preimage ),
                          h ^ operator ) ) * N!.subspace.projection );
             opr:=function( k, l )
-                return 
+                return
 		#AH, jun3 2001: without the pcgs filtereing we might get
 		# extra kernel elements. I have no idea how this was
 		# originally avoided. This is rather a workaround than a fix
 		# -- the whole code should be rewritten cleanly.
 		PcElementByExponentsNC(N,ExponentsOfPcElement(N,
-		( v * k ) ^ ( 1 / Int( l ) mod p ) 
+		( v * k ) ^ ( 1 / Int( l ) mod p )
 		));
             end;
             xset:=ExternalSet( cyc, K, opr );
-            
+
             reps:=[  ];
             exps:=[  ];
             if IsBound( cl.candidates )  then
@@ -2124,14 +2124,14 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                     Add( exps, preimage ^ Size( orb ) );
                 od;
             fi;
-            
+
         fi;
-            
+
         # If <reps> is a set of  representatives of the orbits then <h><reps>
         # is a set of representatives of the rational classes in <hN>.
         for l  in [ 1 .. Length( reps ) ]  do
             k:=reps[ l ];
-            
+
             # Construct  the   Galois  group and find   conjugating  elements
             # corresponding to its generator(s).
             if p <> 2  then
@@ -2148,26 +2148,26 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                      ( N, h, k, k, Int( GeneratorsOfGroup( gal )[ i ] ),
                        oprs[ i ] ) );
             od;
-            
+
             C:=SubgroupNC( G, N!.CmodL );
             c:=rec( representative:=h * k,
                          centralizer:=C,
                          galoisGroup:=gal );
             if IsBound( cl.candidates )  then
-                
+
                 # cl.candidates[l] ^ c.operator =
                 # c.representative ^ c.exponent (DIFFERS from (c^o^e=r)!)
                 c.exponent:=Int( exps[ l ] );
                 c.operator:=CentralStepConjugatingElement
                     ( N, h, cl.candidates[ l ], k, c.exponent, conj[ l ] );
-                
+
                 if IsBound( cl.kernel )  then
                     c.kernel:=N;
                 fi;
             fi;
             Add( classes, c );
         od;
-        
+
     fi;
     return classes;
 end );
@@ -2189,13 +2189,13 @@ end);
 InstallMethod( \=,"classes for pc group", IsIdenticalObj,
     [ IsExternalOrbit and IsConjugacyClassGroupRep and
     CategoryCollections(IsElementFinitePolycyclicGroup),
-    IsExternalOrbit and IsConjugacyClassGroupRep and 
+    IsExternalOrbit and IsConjugacyClassGroupRep and
     CategoryCollections(IsElementFinitePolycyclicGroup) ],
 function( cl1, cl2 )
   if not IsIdenticalObj( ActingDomain( cl1 ), ActingDomain( cl2 ) )  then
       TryNextMethod();
   fi;
-  return Size(cl1)=Size(cl2) and 
+  return Size(cl1)=Size(cl2) and
     CanonicalRepresentativeOfExternalSet(cl1)
       =CanonicalRepresentativeOfExternalSet(cl2);
 end );

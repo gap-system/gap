@@ -13,7 +13,7 @@
 
 #############################################################################
 ##
-#F  Print_Value(<val>)   
+#F  Print_Value(<val>)
 ##
 ##  <ManSection>
 ##  <Func Name="Print_Value" Arg='val'/>
@@ -170,7 +170,7 @@ local oper,narg,args,skip,verbos,fams,flags,i,j,methods,flag,flag2,
     Print("#I  Searching Method for ",NameFunction(oper)," with ",
           Pluralize(narg, "argument"), ":\n");
   fi;
-  if verbos > 0 then 
+  if verbos > 0 then
     Print("#I  Total: ", Pluralize(Length(methods), "entry"), "\n");
   fi;
   for i in [1..Length(methods)] do
@@ -312,12 +312,12 @@ end);
 ##     IsSupersolvableGroup
 ##     IsSolvableGroup
 ##     IsNilpotentByFinite
-##  
-##  
+##
+##
 ##  May imply with:
 ##  +IsFinitelyGeneratedGroup
 ##     IsPolycyclicGroup
-##  
+##
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -449,16 +449,16 @@ end);
 ##
 ##  <Description>
 ##  This shows the file containing the source code of the function or method
-##  <A>func</A> in a pager (see <Ref Func="Pager"/>). The display starts at 
+##  <A>func</A> in a pager (see <Ref Func="Pager"/>). The display starts at
 ##  a line shortly before the code of <A>func</A>.<P/>
-##  
+##
 ##  For operations <A>func</A> the function shows the source code of the
 ##  declaration of <A>func</A>. Operations can have several declarations, use
 ##  the optional second argument to specify which one should be shown (in the
 ##  order the declarations were read); the default is to show the first.<P/>
-##  
+##
 ##  For kernel functions the function tries to show the C source code.<P/>
-##  
+##
 ##  If GAP cannot find a file containing the source code this will be indicated.
 ##  <P/>
 ##  Usage examples:<Br/>

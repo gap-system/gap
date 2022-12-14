@@ -186,7 +186,7 @@ DeclareGlobalFunction( "DayDMY" );
 ##  <C>[ day, month, year, hour, minute, second ]</C>.
 ##  The remarks on the Gregorian calendar in the section on
 ##  <Ref Func="DayDMY"/> apply here as well.
-##  The last three arguments must lie in the appropriate ranges. 
+##  The last three arguments must lie in the appropriate ranges.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -593,7 +593,7 @@ MakeReadOnlyGlobal("ReplacedString"); # function defined in `init.g'.
 ##  see <Ref Sect="Operations for Input Streams"/> for an example.
 ##  <P/>
 ##  If <Ref Func="EvalString"/> is used inside a function, then it doesn't
-##  know about the local variables and the arguments of the function. 
+##  know about the local variables and the arguments of the function.
 ##  A possible workaround is to define global variables in advance, and
 ##  then to assign the values of the local variables to the global ones,
 ##  like in the example below.
@@ -728,10 +728,10 @@ DeclareGlobalFunction( "EndsWith" );
 #############################################################################
 ##
 ## IntChar(<char>) . . . . . . .  integer in [0..255] corresponding to <char>
-## CharInt(<int>)  . . . . . . character corresponding to <int> from [0..255] 
+## CharInt(<int>)  . . . . . . character corresponding to <int> from [0..255]
 ## SIntChar(<char>) . . signed integer in [-128..127] corresponding to <char>
-## CharSInt(<int>) . . .  character corresponding to <int> from [-128 .. 127] 
-## The signed and unsigned integer functions behave the same for values 
+## CharSInt(<int>) . . .  character corresponding to <int> from [-128 .. 127]
+## The signed and unsigned integer functions behave the same for values
 ## in the range [0..127].
 
 DeclareSynonym( "IntChar",  INT_CHAR);
@@ -743,7 +743,7 @@ DeclareSynonym( "CharSInt", CHAR_SINT);
 #############################################################################
 ##
 #F  StringFile( <name> ) . . . . . . return content of file <name> as string
-#F  FileString( <name>, <string>[, <append> ] ) . . write <string> to <name> 
+#F  FileString( <name>, <string>[, <append> ] ) . . write <string> to <name>
 ##
 ##  <ManSection>
 ##  <Func Name="StringFile" Arg='name'/>
@@ -837,7 +837,7 @@ BindGlobal("BHINT", MakeImmutable("\>\<"));
 
 #############################################################################
 ##
-#F StringOfMemoryAmount( <m> )    returns an appropriate human-readable string 
+#F StringOfMemoryAmount( <m> )    returns an appropriate human-readable string
 ##                        representation of <m> bytes
 ##
 ##
@@ -846,7 +846,7 @@ BindGlobal("BHINT", MakeImmutable("\>\<"));
 ##  <Func Name="StringOfMemoryAmount" Arg='numbytes'/>
 ##
 ##  <Description>
-##  This function returns a human-readable string representing 
+##  This function returns a human-readable string representing
 ##  <Arg>numbytes</Arg> of memory. It is used in printing amounts of memory
 ##  allocated by tests and benchmarks. Binary prefixes (representing powers of
 ##  1024) are used.

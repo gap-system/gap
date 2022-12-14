@@ -30,7 +30,7 @@ local map;
         ElementsFamily(FamilyObj(arg[2]))),
                                IsSPMappingByFunctionRep
                            and IsSingleValued
-                           and IsTotal 
+                           and IsTotal
 			   and IsGroupToAdditiveGroupHomomorphism ),
                        rec( fun:= arg[3] ) );
 

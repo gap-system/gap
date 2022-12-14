@@ -118,7 +118,7 @@ InstallMethod( ObjByExtRep,
 BindGlobal( "BasisOfAlgebraModule",
     function( V, vectors )
     local B, delmod, vecs;
-    
+
     B:= Objectify( NewType( FamilyObj( V ),
                             IsFiniteBasisDefault and
                             IsBasisOfAlgebraModuleElementSpace and
@@ -200,8 +200,8 @@ end );
 
 #############################################################################
 ##
-#M  RightAlgebraModuleByGenerators( <A>, <op>, <gens> ) 
-#M  RightAlgebraModuleByGenerators( <A>, <op>, <gens>, "basis" ) 
+#M  RightAlgebraModuleByGenerators( <A>, <op>, <gens> )
+#M  RightAlgebraModuleByGenerators( <A>, <op>, <gens>, "basis" )
 ##
 ##  The elements of an algebra module lie in the representation
 ##  `IsPackedElementDefaultRep': if <v> is an element of an algebra
@@ -216,7 +216,7 @@ InstallMethod( RightAlgebraModuleByGenerators,
       local F,V;
 
       F:= LeftActingDomain( A );
-      V:= VectorSpace( F, gens );      
+      V:= VectorSpace( F, gens );
       return RightAlgebraModule( A, op, V );
 
 end );
@@ -282,7 +282,7 @@ true,
       return BiAlgebraModule( A, B, opl, opr, V );
 
 end );
-  
+
 #############################################################################
 ##
 #M  LeftAlgebraModule( <A>, <op>, <V> )
@@ -305,12 +305,12 @@ InstallMethod( LeftAlgebraModule,
                      IsPackedElementDefaultRep );
       gens:= GeneratorsOfLeftModule( V );
       if gens <> [] then
-          g:= List( GeneratorsOfLeftModule( V ), 
+          g:= List( GeneratorsOfLeftModule( V ),
                     x -> Objectify( type, [ x ] ) );
       else
           g:= [ Objectify( type, [ Zero(V) ] ) ];
       fi;
-      
+
       W:= Objectify( NewType( FamilyObj( g ),
                             IsLeftModule and IsAttributeStoringRep ),
                    rec() );
@@ -325,7 +325,7 @@ InstallMethod( LeftAlgebraModule,
       SetIsAlgebraModule( W, true );
       SetLeftActingAlgebra( W, A );
       SetUnderlyingLeftModule( W, V );
-      
+
       if HasBasis( V ) then
           B:= Objectify( NewType( FamilyObj( W ),
                       IsFiniteBasisDefault and
@@ -337,8 +337,8 @@ InstallMethod( LeftAlgebraModule,
           B!.delegateBasis:= Basis( V );
           SetDimension( W, Dimension(V) );
           SetBasis( W, B );
-      fi;          
-      
+      fi;
+
       return W;
 
 end );
@@ -366,12 +366,12 @@ InstallMethod( RightAlgebraModule,
                      IsPackedElementDefaultRep );
       gens:= GeneratorsOfLeftModule( V );
       if gens <> [] then
-          g:= List( GeneratorsOfLeftModule( V ), 
+          g:= List( GeneratorsOfLeftModule( V ),
                     x -> Objectify( type, [ x ] ) );
       else
           g:= [ Objectify( type, [ Zero(V) ] ) ];
       fi;
-      
+
       W:= Objectify( NewType( FamilyObj( g ),
                             IsLeftModule and IsAttributeStoringRep ),
                    rec() );
@@ -398,13 +398,13 @@ InstallMethod( RightAlgebraModule,
           B!.delegateBasis:= Basis( V );
           SetDimension( W, Dimension(V) );
           SetBasis( W, B );
-      fi;          
-      
+      fi;
+
       return W;
 
 end );
-  
-  
+
+
 #############################################################################
 ##
 #M  BiAlgebraModule( <A>, <B>, <opl>, <opr>, <V> )
@@ -429,12 +429,12 @@ InstallMethod( BiAlgebraModule,
                        IsPackedElementDefaultRep );
       gens:= GeneratorsOfLeftModule( V );
       if gens <> [] then
-          g:= List( GeneratorsOfLeftModule( V ), 
+          g:= List( GeneratorsOfLeftModule( V ),
                     x -> Objectify( type, [ x ] ) );
       else
           g:= [ Objectify( type, [ Zero(V) ] ) ];
       fi;
-      
+
       W:= Objectify( NewType( FamilyObj( g ),
                             IsLeftModule and IsAttributeStoringRep ),
                    rec() );
@@ -452,7 +452,7 @@ InstallMethod( BiAlgebraModule,
       SetRightActingAlgebra( W, B );
       SetZero( ElementsFamily( FamilyObj( W ) ), Zero( g[1] ) );
       SetUnderlyingLeftModule( W, V );
-      
+
       if HasBasis( V ) then
           Ba:= Objectify( NewType( FamilyObj( W ),
                       IsFiniteBasisDefault and
@@ -464,12 +464,12 @@ InstallMethod( BiAlgebraModule,
           Ba!.delegateBasis:= Basis( V );
           SetDimension( W, Dimension(V) );
           SetBasis( W, Ba );
-      fi;          
-      
+      fi;
+
       return W;
 
-end );  
-  
+end );
+
 
 ############################################################################
 ##
@@ -929,7 +929,7 @@ end );
 ##
 BindGlobal("_SubAlgebraModuleHelper", function( V, gens, args... )
     local sub, isBasis;
-    
+
     if Length(args)>0 and args[1]<>"basis" then
         Error( "Usage: SubAlgebraModule( <V>, <gens>, <str>) where the last argument is string \"basis\"" );
     fi;
@@ -1012,7 +1012,7 @@ InstallMethod( LeftModuleByHomomorphismToMatAlg,
      fi;
 
      bas:= IdentityMat( Length(zero), LeftActingDomain(A) );
-     return LeftAlgebraModuleByGenerators( A, 
+     return LeftAlgebraModuleByGenerators( A,
                       function( x, v ) return Image( f, x )*v; end,
                       bas, "basis");
 
@@ -1041,7 +1041,7 @@ InstallMethod( RightModuleByHomomorphismToMatAlg,
      fi;
 
      bas:= IdentityMat( Length(zero), LeftActingDomain(A) );
-     return RightAlgebraModuleByGenerators( A, 
+     return RightAlgebraModuleByGenerators( A,
                     function( v, x ) return v*Image( f, x ); end,
                       bas, "basis");
 
@@ -1057,7 +1057,7 @@ InstallMethod( AdjointModule,
    "for an algebra",
    true, [ IsAlgebra ], 0,
     function( A )
-    
+
     return LeftAlgebraModule( A, function( a, b ) return a*b; end, A);
 
 end );
@@ -1193,7 +1193,7 @@ InstallMethod( NaturalHomomorphismBySubAlgebraModule,
 
     f:= NaturalHomomorphismBySubspace( V, W );
     quot:= ImagesSource( f );
-    
+
     if IsTrivial(quot) then
         quot := SubAlgebraModule( V, [], "basis" );
         nathom := ZeroMapping( V, quot );
@@ -1391,12 +1391,12 @@ InstallMethod(\+,
     zero:= FamilyObj( u )!.zeroCoefficient;
     sum:=  ZippedSum( lu, lv, zero, [\<,\+] );
     if Length( sum ) >= 2 then
-        if sum[1] = [] and sum[2] = zero then 
+        if sum[1] = [] and sum[2] = zero then
             Unbind( sum[1] );
             Unbind( sum[2] );
             sum:= Filtered( sum , x -> IsBound(x) );
         fi;
-    fi;          
+    fi;
     if sum = [ ] then sum:= [ [], zero ]; fi;
     res:= ObjByExtRep( FamilyObj( u ), sum );
     if u![2] and v![2] then res![2]:= true; fi;
@@ -1429,7 +1429,7 @@ InstallMethod(\*,
         [ IsMonomialElement and IsMonomialElementRep, IsRingElement ], 0,
         function( u, scal )
     local lu,k,res;
-    
+
     if IsZero(scal) then return Zero(u); fi;
     lu:= ShallowCopy( u![1] );
     for k in [2,4..Length(lu)] do
@@ -1447,7 +1447,7 @@ InstallMethod(\*,
         [ IsRingElement, IsMonomialElement and IsMonomialElementRep ], 0,
         function( scal, u  )
     local lu,k,res;
-    
+
     if IsZero(scal) then return Zero(u); fi;
     lu:= ShallowCopy( u![1] );
     for k in [2,4..Length(lu)] do
@@ -1922,9 +1922,9 @@ InstallMethod( TensorProductOp,
         true, [ IsDenseList, IsVectorSpace ], 0,
         function( list, list1 )
 
-    local   F,  fam,  type,  gens,  i,  gV,  gens1,  ten,  v,  ten1,  
+    local   F,  fam,  type,  gens,  i,  gV,  gens1,  ten,  v,  ten1,
             VT,  BT;
-    
+
     # We first make the family of the tensor elements, and construct
     # a basis of the tensor space. Note that if the arguments do not
     # know how to compute bases, then the rewriting of tensors to normal
@@ -1932,11 +1932,11 @@ InstallMethod( TensorProductOp,
     # and therefore we have a basis of the tensor space as well.
 
     F:= LeftActingDomain( list1 );
-    
+
     if not ForAll( list, x -> LeftActingDomain(x) = F ) then
         Error("all vector spaces must be defined over the same field.");
     fi;
-    
+
     fam:= NewFamily( "TensorElementsFam", IsTensorElement );
     type:= NewType( fam, IsMonomialElementRep );
     fam!.monomialElementDefaultType:= type;
@@ -1961,7 +1961,7 @@ InstallMethod( TensorProductOp,
         od;
         gens:= gens1;
     od;
-    
+
     Sort( gens );
 
     gens:= List( gens, x -> ObjByExtRep( fam, [ x , One(F) ] ) );
@@ -1982,7 +1982,7 @@ InstallMethod( TensorProductOp,
     BT!.baseChange:= List( [ 1..Length(gens)], x -> [ [ x, One(F) ] ] );
     BT!.heads:= List( gens, x -> ExtRepOfObj(x)[1] );
     BT!.zeroCoefficient:= Zero( F );
-    SetBasis( VT, BT );    
+    SetBasis( VT, BT );
     return VT;
 
 end );
@@ -2016,8 +2016,8 @@ InstallMethod( TensorProductOfAlgebraModules,
         "for a list of algebra modules",
         true, [ IsDenseList ], 0,
         function( list )
-    
-    local   left_lie_action,  right_lie_action,  VT,  A,  B,  lefta,  
+
+    local   left_lie_action,  right_lie_action,  VT,  A,  B,  lefta,
             righta,  Tprod;
 
     # There are two types of actions on a tensor product: left and right.
@@ -2036,7 +2036,7 @@ InstallMethod( TensorProductOfAlgebraModules,
                 Add( res, etn[k+1] );
             od;
         od;
-        return ConvertToNormalFormMonomialElement( 
+        return ConvertToNormalFormMonomialElement(
                              ObjByExtRep( FamilyObj(tn), res ) );
     end;
 
@@ -2054,12 +2054,12 @@ InstallMethod( TensorProductOfAlgebraModules,
                 Add( res, etn[k+1] );
             od;
         od;
-        return ConvertToNormalFormMonomialElement( 
+        return ConvertToNormalFormMonomialElement(
                        ObjByExtRep( FamilyObj( tn ), res ) );
     end;
 
     # Now we make the tensor module, we need to consider a few cases...
-    
+
     VT:= TensorProduct( list );
 
     if IsLeftAlgebraModuleElementCollection( list[1] ) then
@@ -2128,7 +2128,7 @@ InstallMethod( TensorProductOfAlgebraModules,
 
         Tprod:= RightAlgebraModule( A, righta, VT );
     fi;
-    
+
     return Tprod;
 
 end );
@@ -2272,14 +2272,14 @@ InstallMethod( ConvertToNormalFormMonomialElement,
         cfts:= Filtered( cfts, x -> IsBound( x ) );
         wedge_inds:= Filtered( wedge_inds, x -> IsBound( x ) );
     od;
-    
+
     # Merge wedges and coefficients, apply permutations to make the wedges
     # increasing, take equal wedges together.
-    
+
     for i in [1..Length(tensors)] do
-        
+
         # The tensors with duplicate entries are zero, we get rid of them.
-        
+
         if not IsDuplicateFree( wedge_inds[i] ) then
             Unbind( wedge_inds[i] );
             Unbind( tensors[i] );
@@ -2289,20 +2289,20 @@ InstallMethod( ConvertToNormalFormMonomialElement,
             tensors[i]:= Permuted( tensors[i], perm );
             cfts[i]:= SignPerm( perm )*cfts[i];
         fi;
-        
+
     od;
-    
+
     tensors:= Filtered( tensors, x -> IsBound(x) );
     wedge_inds:= Filtered( wedge_inds, x -> IsBound(x) );
     cfts:= Filtered( cfts, x -> IsBound(x) );
-    
+
     perm:= Sortex( tensors );
     cfts:= Permuted( cfts, perm );
     wedge_inds:= Permuted( wedge_inds, perm );
     res:= [ ];
     len:= 0;
     for i in [1..Length(tensors)] do
-        
+
         if len > 0 and tensors[i] = res[len-1] then
             res[len]:= res[len]+cfts[i];
             if res[len] = 0*res[len] then
@@ -2332,15 +2332,15 @@ InstallMethod( ExteriorPower,
         "for a vector space and an integer",
         true, [ IsLeftModule, IsInt ], 0,
         function( V, n )
-    
-    local   F,  fam,  type,  combs,  gens,  i,  VT,  BT;    
+
+    local   F,  fam,  type,  combs,  gens,  i,  VT,  BT;
 
     # We first make the family of the wedge elements, and construct
     # a basis of the exterior product. Note that if the arguments do not
     # know how to compute bases, then the rewriting of wedges to normal
     # forms will fail. Hence we can assume that every module has a basis,
     # and therefore we have a basis of the exterior power as well.
-    
+
 
     F:= LeftActingDomain( V );
     fam:= NewFamily( "WedgeElementsFam", IsWedgeElement );
@@ -2353,15 +2353,15 @@ InstallMethod( ExteriorPower,
     combs:= Combinations( [1..Dimension(V)], n );
     gens:= List( combs, x -> Basis(V){x} );
     gens:= List( gens, x -> ObjByExtRep( fam, [ x , One(F) ] ) );
-    
+
     for i in [1..Length(gens)] do
         gens[i]![2]:= true;
     od;
-    
+
     Sort( gens );
-    
+
     # we know a basis of VT:
-    
+
     if gens = [ ]  then
         VT := VectorSpace( F, [ ObjByExtRep( fam, [] ) ] );
     else
@@ -2375,21 +2375,21 @@ InstallMethod( ExteriorPower,
     SetBasis( VT, BT );
     SetDimension( VT, Length(gens) );
     return VT;
-    
+
 end);
 
 
 #############################################################################
 ##
-#M  ExteriorPowerOfAlgebraModule( <V>, <k> ) 
+#M  ExteriorPowerOfAlgebraModule( <V>, <k> )
 ##
 InstallMethod( ExteriorPowerOfAlgebraModule,
         "for an algebra module and an integer",
         true, [ IsAlgebraModule, IsInt ], 0,
         function( V, n )
-    
-    local   left_lie_action,  right_lie_action,  VT,  A,  B,  lefta,  
-            righta,  Ext;    
+
+    local   left_lie_action,  right_lie_action,  VT,  A,  B,  lefta,
+            righta,  Ext;
 
     # There are two types of actions on an exterior power: left and right.
 
@@ -2407,7 +2407,7 @@ InstallMethod( ExteriorPowerOfAlgebraModule,
                 Add( res, etn[k+1] );
             od;
         od;
-        return ConvertToNormalFormMonomialElement( 
+        return ConvertToNormalFormMonomialElement(
                        ObjByExtRep( FamilyObj(tn), res ) );
     end;
 
@@ -2425,7 +2425,7 @@ InstallMethod( ExteriorPowerOfAlgebraModule,
                 Add( res, etn[k+1] );
             od;
         od;
-        return ConvertToNormalFormMonomialElement( 
+        return ConvertToNormalFormMonomialElement(
                        ObjByExtRep( FamilyObj(tn), res ) );
     end;
 
@@ -2557,7 +2557,7 @@ InstallMethod( ConvertToNormalFormMonomialElement,
         res![2]:= true;
         return res;
     fi;
-    
+
     symmetric_inds:= List( tensors, x -> [] );
 
     for i in [1..rank] do
@@ -2610,15 +2610,15 @@ InstallMethod( ConvertToNormalFormMonomialElement,
     # Merge symmetric elements and coefficients, apply permutations to make
     # the symmetric elements
     # increasing, take equal symmetric elements together.
-    
+
     for i in [1..Length(tensors)] do
-        
+
         perm:= Sortex( symmetric_inds[i] );
         tensors[i]:= Permuted( tensors[i], perm );
-        
+
     od;
-    
-    
+
+
     perm:= Sortex( tensors );
     cfts:= Permuted( cfts, perm );
     symmetric_inds:= Permuted( symmetric_inds, perm );
@@ -2657,9 +2657,9 @@ InstallMethod( SymmetricPower,
         "for an algebra module and an integer",
         true, [ IsLeftModule, IsInt ], 0,
         function( V, n )
-    
+
     local   F,  fam,  type,  combs,  gens,  i,  VT,  BT;
-    
+
     # We first make the family of the symmetric elements, and construct
     # a basis of the symmetric product. Note that if the arguments do not
     # know how to compute bases, then the rewriting of symmetrics to normal
@@ -2680,11 +2680,11 @@ InstallMethod( SymmetricPower,
     for i in [1..Length(gens)] do
         gens[i]![2]:= true;
     od;
-    
+
     Sort( gens );
-    
+
     # we know a basis of VT:
-    
+
     VT:= VectorSpace( F, gens );
     BT:= BasisOfMonomialSpace( VT, gens );
     BT!.echelonBasis:= gens;
@@ -2698,14 +2698,14 @@ end);
 
 ############################################################################
 ##
-#M  SymmetricPowerOfAlgebraModule( <V>, <k> ) 
+#M  SymmetricPowerOfAlgebraModule( <V>, <k> )
 ##
 InstallMethod( SymmetricPowerOfAlgebraModule,
         "for an algebra module and an integer",
         true, [ IsAlgebraModule, IsInt ], 0,
         function( V, n )
-    
-    local   left_lie_action,  right_lie_action,  VT,  A,  B,  lefta,  
+
+    local   left_lie_action,  right_lie_action,  VT,  A,  B,  lefta,
             righta,  Symm;
 
 
@@ -2725,7 +2725,7 @@ InstallMethod( SymmetricPowerOfAlgebraModule,
                 Add( res, etn[k+1] );
             od;
         od;
-        return ConvertToNormalFormMonomialElement( 
+        return ConvertToNormalFormMonomialElement(
                        ObjByExtRep( FamilyObj(tn), res ) );
     end;
 
@@ -2743,12 +2743,12 @@ InstallMethod( SymmetricPowerOfAlgebraModule,
                 Add( res, etn[k+1] );
             od;
         od;
-        return ConvertToNormalFormMonomialElement( 
+        return ConvertToNormalFormMonomialElement(
                        ObjByExtRep( FamilyObj(tn), res ) );
     end;
 
     VT:= SymmetricPower( V, n );
-    
+
     # Now we make the symmetric power, we need to consider a few cases...
 
     if IsLeftAlgebraModuleElementCollection( V ) then
@@ -2908,7 +2908,7 @@ InstallMethod( \*,
         function( u, scal )
 
     local   eu,  k;
-    
+
     if IsZero(scal) then return Zero(u); fi;
     eu:= ShallowCopy( u![1] );
     for k in [2,4..Length(eu)] do
@@ -2927,7 +2927,7 @@ InstallMethod( \*,
         function( scal, u )
 
     local   eu,  k;
-    
+
     if IsZero(scal) then return Zero(u); fi;
     eu:= ShallowCopy( u![1] );
     for k in [2,4..Length(eu)] do
@@ -3586,7 +3586,7 @@ InstallMethod( TranslatorSubalgebra,
      [ IsAlgebraModule, IsFreeLeftModule, IsFreeLeftModule ], 0,
      function( V, U, W )
 
-     local alg, isleft, x, u, n, s, r, t, a, i, j, k, l, c, eqs, eqno, b, bas; 
+     local alg, isleft, x, u, n, s, r, t, a, i, j, k, l, c, eqs, eqno, b, bas;
 
     if Dimension( U ) = 0 then
        return ActingAlgebra( V );
@@ -3651,8 +3651,8 @@ InstallMethod( TranslatorSubalgebra,
 
     # If W is a sub-algebra-module, then the result is a subalgebra,
     # otherwise it is just a subspace.
-    if HasIsAlgebraModule(W) and IsAlgebraModule( W ) then 
-       return SubalgebraNC( alg, bas, "basis" ); 
+    if HasIsAlgebraModule(W) and IsAlgebraModule( W ) then
+       return SubalgebraNC( alg, bas, "basis" );
     else
        return Subspace( alg, bas, "basis" );
     fi;

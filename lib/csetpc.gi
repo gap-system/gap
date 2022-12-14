@@ -145,13 +145,13 @@ local r,st,nr,nst,ind,sff,f,m,i,j,ao,Npcgs,v,isi,
 	mats:=[];
 	Upcgs:=InducedPcgs(sp,U);
         for u in Upcgs do
-          m:=[]; 
+          m:=[];
           for j in wg do
 	    Add(m,Concatenation((ExponentsConjugateLayer(Npcgs,j,u)*one)*wproj,
-	                        [zero])); 
+	                        [zero]));
 	  od;
 	  Add(m,Concatenation((ExponentsOfPcElement(Npcgs,
-	                         sff.factorization(u).n)*one)*wproj,[one])); 
+	                         sff.factorization(u).n)*one)*wproj,[one]));
 	  m:=ImmutableMatrix(prime,m);
 	  Add(mats,m);
 	od;
@@ -183,7 +183,7 @@ local r,st,nr,nst,ind,sff,f,m,i,j,ao,Npcgs,v,isi,
 	  ao:=rec(
                   representatives:=W,
                   stabilizers:=List(W,i->U)
-	      ); 
+	      );
 	fi;
 
 	for j in [1..Length(ao.representatives)] do

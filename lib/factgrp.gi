@@ -104,7 +104,7 @@ local G, N, op, pool, p, c, perm, ch, diff, nch, nd, involved, i;
       fi;
     fi;
   fi;
-  
+
   # check whether we have already a better operation (or whether this normal
   # subgroup is locked)
 
@@ -230,7 +230,7 @@ end);
 ##                                                               (or obvious)
 ##
 InstallGlobalFunction(KnownNaturalHomomorphismsPool,function(G,N)
-  return N=G or Size(N)=1 
+  return N=G or Size(N)=1
       or PositionSet(NaturalHomomorphismsPool(G).ker,N)<>fail;
 end);
 
@@ -336,7 +336,7 @@ local G,pool,p,comb,i,c,perm,l,isi,N,discard,Npos,psub,pder,new,co,pos,j,k;
 
   if Size(Intersection(pool.ker{p}))>Size(N) then
     # cannot reach N
-    return; 
+    return;
   fi;
 
   # determine inclusion, derived
@@ -379,7 +379,7 @@ local G,pool,p,comb,i,c,perm,l,isi,N,discard,Npos,psub,pder,new,co,pos,j,k;
         or ForAny(Intersection(psub[co[1]],psub[co[2]]),
           x->pool.cost[x]<=pool.cost[co[1]]+pool.cost[co[2]])
         # or both intersect in an abelian factor?
-        or (N<>fail and pder[co[1]]<>fail and pder[co[1]]=pder[co[2]] 
+        or (N<>fail and pder[co[1]]<>fail and pder[co[1]]=pder[co[2]]
             and pder[co[1]]<>Npos)) then
         c:=Intersection(pool.ker[co[1]],pool.ker[co[2]]);
 
@@ -400,7 +400,7 @@ local G,pool,p,comb,i,c,perm,l,isi,N,discard,Npos,psub,pder,new,co,pos,j,k;
           isi:=Set(isi);
 
           perm:=AddNaturalHomomorphismsPool(G,c,isi,Sum(pool.cost{co}));
-          if pos=fail then 
+          if pos=fail then
             pos:=Position(pool.ker,c);
             p:=List(p,i->i^perm);
             new:=List(new,i->i^perm);
@@ -422,7 +422,7 @@ local G,pool,p,comb,i,c,perm,l,isi,N,discard,Npos,psub,pder,new,co,pos,j,k;
 
             # add new c if needed
             for j in p do
-              if IsSubset(pool.ker[j],c) then 
+              if IsSubset(pool.ker[j],c) then
                 AddSet(psub[j],pos);
                 if pool.cost[j]>=pool.cost[pos] then
                   AddSet(discard,j);
@@ -451,7 +451,7 @@ local G,pool,p,comb,i,c,perm,l,isi,N,discard,Npos,psub,pder,new,co,pos,j,k;
               Size(pool.ker[co[1]])," ",Size(pool.ker[co[2]]),
                 " yields ",Size(c));
         fi;
-        
+
       fi;
       i:=i+1;
     od;
@@ -575,13 +575,13 @@ local pool, dom, o, op, Go, j, b, i,allb,newb,mov,allbold,onlykernel,k,
     o:=OrbitsDomain(G,dom);
     o:=Set(o,Set);
 
-    # do orbits and test for blocks 
+    # do orbits and test for blocks
     for i in o do
       if Length(i)<>Length(dom) or
 	# only works if domain are the first n points
 	not (1 in dom and 2 in dom and IsRange(dom)) then
 	op:=ActionHomomorphism(G,i,"surjective");
-	Range(op:onlyimage); #`onlyimage' forces same generators 
+	Range(op:onlyimage); #`onlyimage' forces same generators
         AddNaturalHomomorphismsPool(G,Stabilizer(G,i,OnTuples),
 			    op,Length(i));
         type:=1;
@@ -606,7 +606,7 @@ local pool, dom, o, op, Go, j, b, i,allb,newb,mov,allbold,onlykernel,k,
 
           #Add(bl,Immutable(Set(b)));
           op:=ActionHomomorphism(G,Set(b),OnSets,"surjective");
-          ImagesSource(op:onlyimage); #`onlyimage' forces same generators 
+          ImagesSource(op:onlyimage); #`onlyimage' forces same generators
           k:=KernelOfMultiplicativeGeneralMapping(op);
           if onlykernel<>fail and k=onlykernel and Length(b)<found then
             found:=Length(b);
@@ -810,7 +810,7 @@ totalcnt, interrupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
 	fi;
 	totalcnt:=totalcnt+1;
 	if KnownNaturalHomomorphismsPool(G,N) and
-	  Minimum(IndexNC(G,v),knowi)<hard 
+	  Minimum(IndexNC(G,v),knowi)<hard
 	     and 5*totalcnt>Minimum(IndexNC(G,v),knowi,1000) then
 	  # interrupt if we're already quite good
 	  interrupt:=true;
@@ -822,11 +822,11 @@ totalcnt, interrupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
 	# (das brauchen wir, um in einigen trivialen F"allen abbrechen zu
 	# k"onnen)
 #Print("nu=",Length(GeneratorsOfGroup(nu))," : ",Size(nu),"\n");
-      until 
-        
+      until
+
         # der Index ist nicht so klein, da"s wir keine Chance haben
 	((not bigperm or
-	Length(Orbit(nu,MovedPoints(G)[1]))<NrMovedPoints(G)) and 
+	Length(Orbit(nu,MovedPoints(G)[1]))<NrMovedPoints(G)) and
 	(IndexNC(G,nu)>50 or Factorial(IndexNC(G,nu))>=IndexNC(G,N)) and
 	not IsNormal(G,nu)) or IsSubset(u,nu) or interrupt;
 
@@ -841,7 +841,7 @@ totalcnt, interrupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
 
     if IndexNC(G,u)<knowi then
 
-      #Print("Index:",IndexNC(G,u),"\n");    
+      #Print("Index:",IndexNC(G,u),"\n");
 
       if simple and u<>G then
 	cor:=TrivialSubgroup(G);
@@ -873,7 +873,7 @@ totalcnt, interrupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
 	else
 	  max:=TryMaximalSubgroupClassReps(u:inmax,cheap);
 	fi;
-        max:=Filtered(max,x->IndexNC(G,x)<knowi and IsSubset(x,N)); 
+        max:=Filtered(max,x->IndexNC(G,x)<knowi and IsSubset(x,N));
         for i in max do
 	  cor:=Core(G,i);
 	  AddNaturalHomomorphismsPool(G,cor,i,IndexNC(G,i));
@@ -941,7 +941,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,bl,
     hom:=MaximalAbelianQuotient(G);
     i:=IndependentGeneratorsOfAbelianGroup(Image(hom));
     o:=List(i,Order);
-    if ValueOption("norecurse")<>true and 
+    if ValueOption("norecurse")<>true and
       Product(o)>20 and Sum(o)*4<NrMovedPoints(G) then
       Info(InfoFactor,2,"append abelian rep");
       s:=AbelianGroup(IsPermGroup,o);
@@ -1017,7 +1017,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,bl,
     return IdentityMapping(G);
   fi; # intransitive treatment
 
-  
+
 
   # if the original group has no stabchain we probably do not want to keep
   # it (or a homomorphisms pool) there -- make a copy for working
@@ -1047,7 +1047,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,bl,
       improve:=false;
       bl:=Blocks(H,MovedPoints(H));
       map:=ActionHomomorphism(G,bl,OnSets,"surjective");
-      ImagesSource(map:onlyimage); #`onlyimage' forces same generators 
+      ImagesSource(map:onlyimage); #`onlyimage' forces same generators
       bl:=KernelOfMultiplicativeGeneralMapping(map);
       AddNaturalHomomorphismsPool(G,bl,map);
       if Size(bl)=1 then
@@ -1074,7 +1074,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,bl,
     hom:=hom*map;
     H:=Image(map);
   fi;
-  
+
   o:=DegreeNaturalHomomorphismsPool(H,TrivialSubgroup(H));
   if cheap<>true and (IsBool(o) or o*2>=NrMovedPoints(H)) then
     s:=GenericFindActionKernel(H,TrivialSubgroup(H),NrMovedPoints(H));
@@ -1162,7 +1162,7 @@ local gimg,img,dom,b,improve,bp,bb,i,k,bestdeg,subo,op,bc,bestblock,bdom,
 	    fi;
 	    if Length(bb)>1 and not (bb[1] in bp or Length(bb)>bestdeg) then
 	      Info(InfoFactor,3,"found block system ",Length(bb));
-	      # new nontriv. system found 
+	      # new nontriv. system found
 	      AddSet(bp,bb[1]);
 	      # store action
 	      op:=1;# remove old homomorphism to free memory
@@ -1404,7 +1404,7 @@ local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
     while i<=Length(dom) do
       j:=i;
       while j<Length(dom)
-        #and HasElementaryAbelianFactorGroup(dom[i-1],dom[j+1]) 
+        #and HasElementaryAbelianFactorGroup(dom[i-1],dom[j+1])
         and IndexNC(dom[i-1],dom[j+1])<=2000 do
         j:=j+1;
       od;
@@ -1484,7 +1484,7 @@ local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
       cnt:=Filtered(OrbitsDomain(s,dom),i->Length(i)>1);
       for i in cnt do
 	v:=ClosureGroup(N,Stabilizer(s,i[1]));
-	if Size(v)>Size(N) and IndexNC(G,v)<2000 
+	if Size(v)>Size(N) and IndexNC(G,v)<2000
 	  and not ForAny(badnormals,j->IsSubset(v,j)) then
 	  u:=Core(G,v);
 	  if Size(u)>Size(N) and IsSubset(u,N) and not u in badnormals then
@@ -1558,7 +1558,7 @@ local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
 		# the permimage won't be sufficiently large
 		AddSet(badcomb,Immutable(comb));
 	      fi;
-	      if idx<bestdeg and Size(G)>Size(o) 
+	      if idx<bestdeg and Size(G)>Size(o)
 	      and not ForAny(badnormals,i->IsSubset(o,i)) then
 		m:=Core(G,o);
 		if Size(m)>Size(N) and IsSubset(m,N) then
@@ -1593,7 +1593,7 @@ local pool, dom, bestdeg, blocksdone, o, s, badnormals, cnt, v, u, oo, m,
       Info(InfoFactor,2,"Blocks improve to ",bestdeg);
     fi;
 
-    if bestdeg=IndexNC(G,N) or 
+    if bestdeg=IndexNC(G,N) or
       (bestdeg>400 and not(bestdeg<=2*NrMovedPoints(G))) then
       if GenericFindActionKernel(G,N,bestdeg,s)<>fail then
 	blocksdone:=true;
@@ -1644,14 +1644,14 @@ BindGlobal("FACTGRP_TRIV",Group([],()));
 ##
 #M  NaturalHomomorphismByNormalSubgroup( <G>, <N> )  . .  mapping G ->> G/N
 ##                             this function returns an epimorphism from G
-##  with kernel N. The range of this mapping is a suitable (isomorphic) 
+##  with kernel N. The range of this mapping is a suitable (isomorphic)
 ##  permutation group (with which we can compute much easier).
 InstallMethod(NaturalHomomorphismByNormalSubgroupOp,
   "search for operation",IsIdenticalObj,[IsGroup,IsGroup],0,
 function(G,N)
 local proj,h,pool;
 
-  # catch the trivial case N=G 
+  # catch the trivial case N=G
   if CanComputeIndex(G,N) and IndexNC(G,N)=1 then
     h:=FACTGRP_TRIV;  # a new group is created
     h:=GroupHomomorphismByImagesNC( G, h, GeneratorsOfGroup( G ),
@@ -1659,7 +1659,7 @@ local proj,h,pool;
     SetKernelOfMultiplicativeGeneralMapping( h, G );
     return h;
   fi;
- 
+
   # catch trivial case N=1 (IsTrivial might not be set)
   if (HasSize(N) and Size(N)=1) or (HasGeneratorsOfGroup(N) and
     ForAll(GeneratorsOfGroup(N),IsOne)) then
@@ -1691,7 +1691,7 @@ local proj,h,pool;
   h:=DegreeNaturalHomomorphismsPool(G,N);
   if h<>fail and RootInt(h^3,2)<IndexNC(G,N) then
     h:=GetNaturalHomomorphismsPool(G,N);
-  else 
+  else
     h:=fail;
   fi;
 
@@ -1737,7 +1737,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp,
   IsIdenticalObj, [ IsPermGroup, IsPermGroup ], 0,
 function( G, N )
 local   map,  pcgs, A, filter,p,i;
-    
+
   if KnownNaturalHomomorphismsPool(G,N) then
     A:=DegreeNaturalHomomorphismsPool(G,N);
     if A<50 or (IsInt(A) and A<IndexNC(G,N)/LogInt(IndexNC(G,N),2)^2) then
@@ -1772,7 +1772,7 @@ local   map,  pcgs, A, filter,p,i;
             IsToPcGroupGeneralMappingByImages and
             IsGroupGeneralMappingByPcgs and
             IsMapping and IsSurjective and
-            HasSource and HasRange and 
+            HasSource and HasRange and
             HasPreImagesRange and HasImagesSource and
             HasKernelOfMultiplicativeGeneralMapping;
 
@@ -1782,14 +1782,14 @@ local   map,  pcgs, A, filter,p,i;
   ObjectifyWithAttributes( map,
   NewType( GeneralMappingsFamily
 	  ( ElementsFamily( FamilyObj( G ) ),
-	    ElementsFamily( FamilyObj( A ) ) ), filter ), 
+	    ElementsFamily( FamilyObj( A ) ) ), filter ),
 	    Source,G,
 	    Range,A,
 	    PreImagesRange,G,
 	    ImagesSource,A,
 	    KernelOfMultiplicativeGeneralMapping,N
 	    );
-  
+
   return map;
 end );
 
@@ -1809,7 +1809,7 @@ end);
 
 #############################################################################
 ##
-#F  TryQuotientsFromFactorSubgroups(<hom>,<ker>,<bound>) 
+#F  TryQuotientsFromFactorSubgroups(<hom>,<ker>,<bound>)
 ##
 InstallGlobalFunction(TryQuotientsFromFactorSubgroups,function(hom,ker,bound)
 local s,p,k,it,u,v,d,ma,mak,lev,sub,low;

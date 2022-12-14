@@ -169,7 +169,7 @@ end;
 
 
 #############################################################################
-InstallMethod( IsConfluent, 
+InstallMethod( IsConfluent,
     "method for finite polycyclic rewriting systems",
     true,
     [ IsPolycyclicCollector and IsFinite ],
@@ -188,7 +188,7 @@ InstallMethod( IsConfluent,
         0,
         function( pcp )
     local   n,  k,  j,  i,  ev1,  ev2, g, orders;
-    
+
     n := NumberGeneratorsOfRws(pcp);
     g := GeneratorsOfRws(pcp);
     orders := RelativeOrders(pcp);
@@ -199,7 +199,7 @@ InstallMethod( IsConfluent,
             for i in [j-1,j-2..1] do
                 Info( InfoConfluence, 2, "check ", k, " ", j, " ", i, "\n" );
                 ev1 := ReducedProduct( pcp, g[k],
-	                               ReducedProduct( pcp, g[j], g[i] ) ); 
+	                               ReducedProduct( pcp, g[j], g[i] ) );
                 ev2 := ReducedProduct( pcp, ReducedProduct( pcp, g[k], g[j] ),
                                        g[i]   );
                 if ev1 <> ev2 then
@@ -209,7 +209,7 @@ InstallMethod( IsConfluent,
             od;
         od;
     od;
-    
+
     # j^m i = j^(m-1) (j i)
     for j in [n,n-1..1] do
         for i in [j-1,j-2..1] do
@@ -227,7 +227,7 @@ InstallMethod( IsConfluent,
             fi;
         od;
     od;
-    
+
     # j * i^m = (j i) * i^(m-1)
     for j in [n,n-1..1] do
         for i in [j-1,j-2..1] do
@@ -245,7 +245,7 @@ InstallMethod( IsConfluent,
             fi;
         od;
     od;
-    
+
     # i^m i = i i^m
     for i in [n,n-1..1] do
         if  orders[i] <> 0 then
@@ -260,8 +260,8 @@ InstallMethod( IsConfluent,
             fi;
         fi;
     od;
-        
-    # j = (j -i) i 
+
+    # j = (j -i) i
     for i in [n,n-1..1] do
         if  orders[i] = 0  then
             for j in [i+1..n] do
@@ -278,7 +278,7 @@ InstallMethod( IsConfluent,
             od;
         fi;
     od;
-    
+
     # i = -j (j i)
     for j in [n,n-1..1] do
         if  orders[j] = 0  then
@@ -290,7 +290,7 @@ InstallMethod( IsConfluent,
                     Print( "Inconsistency at ", -j, " ", j, " ", i, "\n" );
                     return false;
                 fi;
-                
+
                 if  orders[i] = 0  then
                     Info(InfoConfluence,2,"check ",-j," ",j," ",-i,"\n");
                     ev1 := ReducedProduct( pcp, ReducedInverse( pcp, g[j] ),
@@ -452,7 +452,7 @@ end );
 
 #############################################################################
 InstallMethod( CollectWordOrFail,
-    IsIdenticalObjFamiliesColXXXObj, 
+    IsIdenticalObjFamiliesColXXXObj,
     [ IsPolycyclicCollector and IsUpToDatePolycyclicCollector,
       IsList,
       IsMultiplicativeElementWithInverse ], 0,
@@ -606,7 +606,7 @@ end );
 
 
 #############################################################################
-InstallMethod( SetCommutatorNC,"elements", 
+InstallMethod( SetCommutatorNC,"elements",
     IsIdenticalObjFamiliesColObjObjObj,
     [ IsPowerConjugateCollector and IsMutable,
       IsMultiplicativeElementWithInverse,
@@ -800,17 +800,17 @@ function( coll, l, r, z, y, x )
         l[y] := 1;
         status := CollectWordOrFail( coll, l, GetConjugateNC( coll, z, y ) );
         if status = true then
-            status := CollectWordOrFail( coll, l, 
+            status := CollectWordOrFail( coll, l,
                               coll![SCP_RWS_GENERATORS][x] );
         fi;
     until status = true;
 
     ##  z (y x) = x z^x y^x
-    repeat 
+    repeat
         r[x] := 1;
         status := CollectWordOrFail( coll, r, GetConjugateNC( coll, z, x ) );
         if status = true then
-            status := CollectWordOrFail( coll, r, 
+            status := CollectWordOrFail( coll, r,
                               GetConjugateNC( coll, y, x ) );
         fi;
     until status = true;
@@ -831,12 +831,12 @@ function( coll, l, r, b, n, a )
 
     ##  if this routine is used for computing tails, then the tail t is
     ##                            t = l-r
-    
+
     ##  b^n a
     repeat
         status := CollectWordOrFail( coll, l, GetPowerNC( coll, b ) );
         if status = true then
-            status := CollectWordOrFail( coll, l, 
+            status := CollectWordOrFail( coll, l,
                               coll![SCP_RWS_GENERATORS][a] );
         fi;
     until status = true;
@@ -844,10 +844,10 @@ function( coll, l, r, b, n, a )
     ##  b^(n-1) (b a) = b^(n-1) a b^a
     repeat
         r[b] := n-1;
-        status := CollectWordOrFail( coll, r, 
+        status := CollectWordOrFail( coll, r,
                           coll![SCP_RWS_GENERATORS][a] );
         if status = true then
-            status := CollectWordOrFail( coll, r, 
+            status := CollectWordOrFail( coll, r,
                               GetConjugateNC( coll, b, a ) );
         fi;
     until status = true;
@@ -866,7 +866,7 @@ InstallMethod( EvaluateOverlapBAN,
           IsPosInt, IsPosInt, IsPosInt ], 0,
 function( coll, l, r, z, y, n )
     local   status;
-                    
+
     ##  if this routine is used for computing tails, then the tail t is
     ##                            t = l-r
 
@@ -875,7 +875,7 @@ function( coll, l, r, z, y, n )
         l[y] := 1;
         status := CollectWordOrFail( coll, l, GetConjugateNC( coll, z, y ) );
         if status = true then
-            status := CollectWordOrFail( coll, l, 
+            status := CollectWordOrFail( coll, l,
                               coll![SCP_RWS_GENERATORS][y]^(n-1) );
         fi;
     until status = true;
@@ -903,13 +903,13 @@ function( coll, l, r, a, n )
     repeat
         status := CollectWordOrFail( coll, l, GetPowerNC( coll, a ) );
         if status = true then
-            status := CollectWordOrFail( coll, l, 
+            status := CollectWordOrFail( coll, l,
                               coll![SCP_RWS_GENERATORS][a] );
         fi;
     until status = true;
 
     ##  a (a^n)
-    repeat 
+    repeat
         r[a] := 1;
         status := CollectWordOrFail( coll, r, GetPowerNC( coll, a ) );
     until status = true;

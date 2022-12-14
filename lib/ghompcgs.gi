@@ -42,17 +42,17 @@ local hom, pcgs, pcgsimgs, H, filter, G;
 
     pcgs := hom2!.sourcePcgs;
 
-    pcgsimgs := List( hom2!.sourcePcgsImages, 
+    pcgsimgs := List( hom2!.sourcePcgsImages,
                       x -> ImageElm( hom1, x ) );
 
     G := Source( hom2 );
     H := Range( hom1 );
 
     filter:=IsGroupGeneralMappingByPcgs and IsMapping;
-    if IsSubset(Source(hom1),ImagesSource(hom2)) then 
+    if IsSubset(Source(hom1),ImagesSource(hom2)) then
       filter:=filter and IsTotal; # we can transfer totality
     fi;
-    
+
     if IsPcGroup( G ) then
       filter := filter and IsPcGroupGeneralMappingByImages;
     fi;
@@ -69,7 +69,7 @@ local hom, pcgs, pcgsimgs, H, filter, G;
               sourcePcgsImages := pcgsimgs);
 
     ObjectifyWithAttributes(hom,
-              NewType( 
+              NewType(
                 GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
                                        ElementsFamily( FamilyObj( H ) ) ),
                 filter ),
@@ -87,7 +87,7 @@ end );
 #M  CompositionMapping2( <hom1>, <hom2> )
 ##
 InstallMethod( CompositionMapping2, "method for two pc group automorphisms",
-  IsIdenticalObj, 
+  IsIdenticalObj,
   [ IsPcGroupHomomorphismByImages and IsToPcGroupHomomorphismByImages and
     IsTotal and IsInjective and IsSurjective,
     IsPcGroupHomomorphismByImages and IsToPcGroupHomomorphismByImages and
@@ -101,7 +101,7 @@ local fam,hom, pcgs, pcgsimgs, G;
     TryNextMethod();
   fi;
   pcgs := hom2!.sourcePcgs;
-  pcgsimgs := List( hom2!.sourcePcgsImages, 
+  pcgsimgs := List( hom2!.sourcePcgsImages,
                     x -> ImageElm(hom1, x ) );
 
   G := Source( hom2 );
@@ -282,7 +282,7 @@ end);
 ##
 InversePcgs := function( hom )
     local pcgs, new,
-          idR, idD, gensInv, imgsInv, gensKer, gens, imgs, i, u, v, 
+          idR, idD, gensInv, imgsInv, gensKer, gens, imgs, i, u, v,
           uw, tmp, vw, j;
 
     # if it is known then return
@@ -350,11 +350,11 @@ InversePcgs := function( hom )
                 fi;
             od;
         od;
-      
+
         # add it
-        hom!.rangePcgs := InducedPcgsByPcSequenceNC( pcgs, gensInv ); 
+        hom!.rangePcgs := InducedPcgsByPcSequenceNC( pcgs, gensInv );
         hom!.rangePcgsPreimages := Immutable(imgsInv);
-        
+
         # we have the kernel also, if needed (or we check).
         if not HasKernelOfMultiplicativeGeneralMapping(hom)
           or InfoLevel(InfoAttributes)>1 then
@@ -376,7 +376,7 @@ InversePcgs := function( hom )
         # and return
         return;
       fi;
-      
+
       # otherwise we have to do some work
       pcgs := Pcgs( Image( hom ) );
       new:=MappingGeneratorsImages(hom);
@@ -390,7 +390,7 @@ InversePcgs := function( hom )
 ##
 #M  KernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . . . .  via images
 ##
-InstallMethod( KernelOfMultiplicativeGeneralMapping, 
+InstallMethod( KernelOfMultiplicativeGeneralMapping,
                "method for homs from pc group into pc group or perm group",
                true,
                [ IsPcGroupHomomorphismByImages and
@@ -444,7 +444,7 @@ end );
 ##
 #M  KernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . . . .  via images
 ##
-InstallMethod( KernelOfMultiplicativeGeneralMapping, 
+InstallMethod( KernelOfMultiplicativeGeneralMapping,
                "method for homs from pc group",
                true,
                [ IsPcGroupHomomorphismByImages ],
@@ -505,11 +505,11 @@ end);
 ##
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
 ##
-InstallMethod( PreImagesRepresentative, "method for pcgs hom", 
+InstallMethod( PreImagesRepresentative, "method for pcgs hom",
   FamRangeEqFamElm,
   [ IsToPcGroupHomomorphismByImages,IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
-    local  pcgsR, exp, imgs, pre, i;  
+    local  pcgsR, exp, imgs, pre, i;
 
     # precompute pcgs
     InversePcgs( hom );
@@ -524,7 +524,7 @@ function( hom, elm )
       fi;
     od;
     return pre;
-end); 
+end);
 
 #############################################################################
 ##
@@ -534,10 +534,10 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
         [ IsPcGroup, IsPcGroup ], 0,
     function( G, N )
     local   pcgsG,  pcgsN,  pcgsK,  pcgsF,  F,  hom,pF,i,imgs;
-    
+
     if HasSpecialPcgs(G) and HasInducedPcgsWrtSpecialPcgs(N) then
       pcgsG := SpecialPcgs( G );
-      pcgsN := InducedPcgs(pcgsG, N ); 
+      pcgsN := InducedPcgs(pcgsG, N );
       pcgsK:=pcgsN;
     else
       pcgsG := Pcgs( G );
@@ -637,8 +637,8 @@ end );
 ##
 #M  <hom1> = <hom2> . . . . . . . . . . . . . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( \=, "pc group homomorphisms",IsIdenticalObj, 
-               [ IsPcGroupHomomorphismByImages, 
+InstallMethod( \=, "pc group homomorphisms",IsIdenticalObj,
+               [ IsPcGroupHomomorphismByImages,
                  IsPcGroupHomomorphismByImages ], 1,
     function( hom1, hom2 )
     if    Source( hom1 ) <> Source( hom2 )

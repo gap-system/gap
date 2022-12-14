@@ -290,7 +290,7 @@ InstallMethod( PositionNonZero, "for a plist vector", [ IsPlistVectorRep ],
     return PositionNonZero( v![ELSPOS] );
   end );
 
-InstallOtherMethod( PositionNonZero, "for a plist vector and start", 
+InstallOtherMethod( PositionNonZero, "for a plist vector and start",
   [ IsPlistVectorRep,IsInt ],
   function( v,s )
     return PositionNonZero( v![ELSPOS],s );

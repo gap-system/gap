@@ -1480,7 +1480,7 @@ InstallMethod( PermutationCharacter,
 #T     [ IsGroup and IsSmallGroup, IsGroup and IsSmallGroup ],
 #T     function( G, U )
 #T     local E, I, tbl;
-#T 
+#T
 #T     E := AsList( U );
 #T     I := Size( G ) / Length( E );
 #T     tbl:= OrdinaryCharacterTable( G );
@@ -2330,7 +2330,7 @@ InstallMethod( DeterminantOfCharacter,
 #T > whereas  it might happen
 #T > that f has rational or integer coefficients ,
 #T > i.e. all the irrationalies cancel)
-#T 
+#T
 #T For example, if the character values in question are rational
 #T one can use Galois sums of the irreducible characters of the cyclic
 #T subgroup instead of the irreducible characters when computing
@@ -4268,7 +4268,7 @@ InstallGlobalFunction( FrobeniusCharacterValue, function( value, p )
       ConvertToVectorRepNC( x, p );
       ConvertToVectorRepNC( value, p );
 
-      value:= PowerModEvalPol( conwaypol, 
+      value:= PowerModEvalPol( conwaypol,
                   value,
                   PowerModCoeffs( x, 2, power, conwaypol, k+1 ) );
       if IsEmpty( value ) then
@@ -4461,16 +4461,16 @@ end );
 # # alternative implementation
 # ReductionToFiniteField2:= function( value, p )
 #     local frob, d, z, one, zero, conwaypol, x;
-# 
+#
 #     frob:= FrobeniusCharacterValue( value, p );
 #     if frob = fail then
 #       return fail;
 #     elif IsZero( frob ) then
 #       return [ Zero( Indeterminate( GF(p) ) ), 1 ];
 #     fi;
-# 
+#
 #     d:= DegreeFFE( frob );
-# 
+#
 #     if d = 1 then
 #       return [ frob * One( Indeterminate( GF(p) ) ), 1 ];
 #     elif p^d <= MAXSIZE_GF_INTERNAL then
@@ -4481,7 +4481,7 @@ end );
 #       x:= [ zero, one ];
 #       ConvertToVectorRepNC( conwaypol, p );
 #       ConvertToVectorRepNC( x, p );
-# 
+#
 #       # Note that `LogFFE' returns a nonzero value.
 #       frob:= PowerModCoeffs( x, 2, LogFFE( frob, z ), conwaypol, d+1 );
 #       frob:= UnivariatePolynomialByCoefficients( FamilyObj( one ),

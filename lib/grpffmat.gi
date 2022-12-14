@@ -117,7 +117,7 @@ local gen, d, f;
   gen := GeneratorsOfGroup( grp );
   return MTX.IsAbsolutelyIrreducible(
     GModuleByMats(NonemptyGeneratorsOfGroup(grp),DefaultFieldOfMatrixGroup(grp))) and
-    ForAll(gen, x-> DeterminantMat(x) = One(f)) 
+    ForAll(gen, x-> DeterminantMat(x) = One(f))
 	    and Size(grp) = Size(SL(d, Size(f)));
 end );
 
@@ -130,7 +130,7 @@ MakeThreadLocal("FULLGLNICOCACHE"); # avoid recreating same homom. repeatedly
 FULLGLNICOCACHE:=[];
 InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
     local   field,  dim,  V,  xset,  nice;
-    
+
     field := FieldOfMatrixGroup( grp );
     dim   := DimensionOfMatrixGroup( grp );
 
@@ -156,7 +156,7 @@ InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
     fi;
     # because we act on the full space we are canonical.
     SetIsCanonicalNiceMonomorphism(nice,true);
-    if Size(V)>10^5 then 
+    if Size(V)>10^5 then
       # store only one big one and have it get thrown out quickly
       FULLGLNICOCACHE[1]:=[Size(field),dim,nice];
     else
@@ -184,8 +184,8 @@ local tt;
   if HasSize(grp) and Size(grp)<tt then
     tt:=Size(grp);
   fi;
-  if IsTrivial(grp) 
-     or Size(FieldOfMatrixGroup(Parent(grp)))^DimensionOfMatrixGroup(grp)>tt 
+  if IsTrivial(grp)
+     or Size(FieldOfMatrixGroup(Parent(grp)))^DimensionOfMatrixGroup(grp)>tt
          then
     # if the permutation image would be too large, compute the orbit.
     TryNextMethod();
@@ -218,7 +218,7 @@ InstallMethod( Size,
 
 function( G )
     local   n,  q,  size,  qi,  i;
-    
+
     n := DimensionOfMatrixGroup(G);
     q := Size( FieldOfMatrixGroup(G) );
     size := q-1;
@@ -255,7 +255,7 @@ InstallMethod( \in, "general linear group", IsElmsColls,
            and ForAll( mat, row -> IsSubset( FieldOfMatrixGroup( G ), row ) )
            and Length( mat ) = RankMat( mat );
 end );
-        
+
 InstallMethod( \in, "special linear group", IsElmsColls,
     [ IsMatrix, IsFFEMatrixGroup and IsFinite and IsNaturalSL ], 0,
     function( mat, G )
@@ -265,15 +265,15 @@ InstallMethod( \in, "special linear group", IsElmsColls,
            and Length( mat ) = RankMat( mat )
 	   and DeterminantMat(mat)=One(FieldOfMatrixGroup( G ));
 end );
-        
+
 
 #############################################################################
 ##
 #F  SizePolynomialUnipotentClassGL( <la> ) . . . . . . centralizer order of
 #F  unipotent elements in GL_n( q )
-##  
+##
 ##  <la> must be a partition of the natural number n.
-##  
+##
 ##  This function returns a  pair [coefficient list, valuation] defining a
 ##  polynomial over the integers, having the following property: The order
 ##  of the centralizer of a unipotent element in GL_n(q), q a prime power,
@@ -287,10 +287,10 @@ SizePolynomialUnipotentClassGL := function(la)
     n := Sum(la);
     nla := Sum(lad, i->i*(i-1)/2);
     ri := List([1..Maximum(la)], i-> Number(la, x-> x=i));
-  
-## the following should be 
+
+## the following should be
 ##    T := Indeterminate(Rationals);
-##    phila := Product(Concatenation(List(ri, 
+##    phila := Product(Concatenation(List(ri,
 ##               r-> List([1..r], j-> (1-T^j)))));
 ##    return T^(n+2*nla)*Value(phila,1/T);
 ##    but for now (or ever?) we avoid polynomials
@@ -308,34 +308,34 @@ end;
 
 #############################################################################
 ##
-#M  ConjugacyClassesOfNaturalGroup( <G> ) 
-##  
+#M  ConjugacyClassesOfNaturalGroup( <G> )
+##
 InstallGlobalFunction( ConjugacyClassesOfNaturalGroup,
 function( G, flag )
-  local   mycartesian,  fill,  myval, pols,  nrpols,  pairs,  
-          types,  a,  a2,  pos,  i,  tup,  arr,  mat,  cen,  b,  
+  local   mycartesian,  fill,  myval, pols,  nrpols,  pairs,
+          types,  a,  a2,  pos,  i,  tup,  arr,  mat,  cen,  b,
           c, cl, powerpol, one, n, q, cls, new, o, m, rep, gcd;
-  
+
   # to handle single argument
   mycartesian := function(arg)
-    if Length(arg[1]) = 1 then 
+    if Length(arg[1]) = 1 then
       return List(arg[1][1], x-> [x]);
     else
       return Cartesian(arg[1]);
     fi;
   end;
-  
+
   # small helper
   fill := function(l, pos, val)
     l := ShallowCopy(l);
     l{pos} := val;
     return l;
   end;
-  
+
   # since polynomials are just lists of coefficients
   powerpol := function(c, r)
     local   pr,  i;
-    if r=1 then 
+    if r=1 then
       return c;
     else
       pr := c;
@@ -345,7 +345,7 @@ function( G, flag )
       return pr;
     fi;
   end;
-  
+
   # Value for polynomials as [coeffs,val]
   myval := function(p, x)
     local   r,  c;
@@ -361,16 +361,16 @@ function( G, flag )
   q := Size( FieldOfMatrixGroup( G ) );
   o := Size( G );
   cls := [];
-  
-  
+
+
   # irreducible polynomials up to degree n
-  pols := List([1..n], 
+  pols := List([1..n],
                i-> AllIrreducibleMonicPolynomialCoeffsOfDegree(i, q));
 
   # remove minimal polynomial of 0
   pols[1] := Difference(pols[1],[[0,1]*Z(q)^0]);
   nrpols := List(pols, Length);
-  
+
   # parameters for semisimple class types
   # typ in types is of form [[m1,n1],...,[mr,nr]] standing for a centralizer
   # of type GL_m1(q^n1) x ... x GL_mr(q^nr)
@@ -380,7 +380,7 @@ function( G, flag )
 
   # 'Reversed' to get central elements first
   types := Reversed(Set(types));
-  
+
   for a in types do
     a2 := List(a,x->x[2]);
     pos := [];
@@ -390,19 +390,19 @@ function( G, flag )
     for i in [1..Length(a2)] do
       Add(pos[a2[i]], i);
     od;
-    
+
     # find representatives of semisimple classes corresponding to type
     tup := [[]];
     for i in Set(a2) do
       arr := Arrangements([1..nrpols[i]], Length(pos[i]));
       tup := Concatenation(List(tup, b-> List(arr, c-> fill(b, pos[i], c))));
     od;
-    
+
     # merge with 'a' to remove duplicates
-    tup := List(tup, b-> List([1..Length(a)], 
+    tup := List(tup, b-> List([1..Length(a)],
                      i-> Concatenation(a[i],[b[i]])));
     tup := Set(tup,Set);
-    
+
     # now append partitions for distinguishing the unipotent parts
     tup := Concatenation(List(tup, a->
                    Cartesian(List(a,x->List(Partitions(x[1]),b->
@@ -416,8 +416,8 @@ function( G, flag )
     for i in [1..Gcd(q-1, n)-1] do
       rep[i][n,n] := Z(q)^i;
     od;
-  fi;           
-  
+  fi;
+
   # now convert into actual matrices and compute centralizer order
   cl := [];
   one :=  One(GF(q));
@@ -433,11 +433,11 @@ function( G, flag )
     mat := one * DirectSumMat(List(mat, CompanionMat));
 
     # in the sl-case we have to split this class
-    if flag then 
+    if flag then
       if DeterminantMat(mat)=Z(q)^0 then
         gcd := Gcd(Concatenation(List(a, b-> b[4])));
         gcd := Gcd(gcd, q-1);
-        mat := [mat];                    
+        mat := [mat];
         for i in [1..gcd-1] do
           Add(mat, mat[1]^rep[i]);
         od;
@@ -562,7 +562,7 @@ end);
 
 #############################################################################
 ##
-#F  NrConjugacyClassesSLIsogeneous( <n>, <q>, <f> )  
+#F  NrConjugacyClassesSLIsogeneous( <n>, <q>, <f> )
 ##
 ##  Class number for group isogeneous to SL(n,q)
 ##
@@ -570,7 +570,7 @@ InstallGlobalFunction(NrConjugacyClassesSLIsogeneous,
 function(n,q,f)
   return Sum(Cartesian(DivisorsInt(Gcd(  f,q - 1)),
                        DivisorsInt(Gcd(n/f,q - 1))),
-             d ->   Phi(d[1]) * Phi2_Md(d[2]) 
+             d ->   Phi(d[1]) * Phi2_Md(d[2])
                   * NrConjugacyClassesGL(n/Product(d),q))/(q - 1);
 end);
 
@@ -620,7 +620,7 @@ end);
 
 #############################################################################
 ##
-#F  NrConjugacyClassesSUIsogeneous( <n>, <q>, <f> ) 
+#F  NrConjugacyClassesSUIsogeneous( <n>, <q>, <f> )
 ##
 ##  Class number for group isogeneous to SU(n,q)
 ##
@@ -628,7 +628,7 @@ InstallGlobalFunction(NrConjugacyClassesSUIsogeneous,
 function(n,q,f)
   return Sum(Cartesian(DivisorsInt(Gcd(  f,q + 1)),
                        DivisorsInt(Gcd(n/f,q + 1))),
-             d ->   Phi(d[1]) * Phi2_Md(d[2]) 
+             d ->   Phi(d[1]) * Phi2_Md(d[2])
                   * NrConjugacyClassesGU(n/Product(d),q))/(q + 1);
 end);
 
@@ -707,7 +707,7 @@ end );
 InstallMethod( NrConjugacyClasses,
                "for GU(n,q)",
                true,
-               [ IsFFEMatrixGroup and IsFinite 
+               [ IsFFEMatrixGroup and IsFinite
                  and IsFullSubgroupGLorSLRespectingSesquilinearForm ],
                0,
 function ( G )
@@ -729,7 +729,7 @@ end );
 InstallMethod( NrConjugacyClasses,
                "for natural SU",
                true,
-               [ IsFFEMatrixGroup and IsFinite 
+               [ IsFFEMatrixGroup and IsFinite
                  and IsFullSubgroupGLorSLRespectingSesquilinearForm
                  and IsSubgroupSL ],
                0,
@@ -799,7 +799,7 @@ local G,PG,cl,c,i,r,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
 
   sel:=[1..Length(cl)];
   fcl:=[]; # cached factor group classes
-  if z=1 then 
+  if z=1 then
     fus:=List(sel,x->[x]);
   else
     # fuse maximally under centre multiplication

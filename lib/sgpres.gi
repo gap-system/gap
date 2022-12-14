@@ -74,7 +74,7 @@ InstallGlobalFunction( AbelianInvariantsSubgroupFpGroupRrs,
 function ( G, H )
 local M;
   M:=RelatorMatrixAbelianizedSubgroupRrs( G, H );
-  if M=fail then 
+  if M=fail then
     if ValueOption("cheap")=true then return fail;fi;
     Info(InfoWarning,1,
       "exponent too large, abelianized coset enumeration aborted");
@@ -705,7 +705,7 @@ end );
 #############################################################################
 ##
 #M  CosetTableBySubgroup(<G>,<H>)
-## 
+##
 ##  returns a coset table for the action of <G> on the cosets of <H>. The
 ##  columns of the table correspond to the `GeneratorsOfGroup(<G>)'.
 ##
@@ -1095,7 +1095,7 @@ InstallGlobalFunction( PresentationAugmentedCosetTable,
 
     # Since T is mutable, we must set this attribite "manually"
     SetTzOptions(T, TzOptions(T));
-    
+
     # handle relators of length 1 or 2, but do not eliminate any primary
     # generators.
     TzOptions(T).protected := tree[TR_PRIMARY];
@@ -1202,11 +1202,11 @@ InstallGlobalFunction( PresentationNormalClosureRrs,
     # create a Tietze record for the resulting presentation.
     T := PresentationAugmentedCosetTable( aug, string );
 
-    # handle relators of length 1 or 2, but do not eliminate any primary     
-    # generators.      
-    TzOptions(T).protected := T!.tree[TR_PRIMARY];                              
+    # handle relators of length 1 or 2, but do not eliminate any primary
+    # generators.
+    TzOptions(T).protected := T!.tree[TR_PRIMARY];
     TzHandleLength1Or2Relators( T );
-    T!.hasRun1Or2:=true;       
+    T!.hasRun1Or2:=true;
     TzOptions(T).protected := 0;
 
     # sort the relators.
@@ -2132,7 +2132,7 @@ local cft, ct, w,l,c,i,j,g,e,ind;
   od;
 
   # make sure we got back to start
-  if c<>1 then 
+  if c<>1 then
     return fail;
   fi;
   return w;
@@ -2141,7 +2141,7 @@ end);
 
 #############################################################################
 ##
-#F  DecodedTreeEntry(<tree>,<imgs>,<nr>) 
+#F  DecodedTreeEntry(<tree>,<imgs>,<nr>)
 ##
 InstallGlobalFunction(DecodedTreeEntry,function(tree,imgs,nr)
 local eval,t1,t2;
@@ -2170,7 +2170,7 @@ end);
 
 #############################################################################
 ##
-#F  GeneratorTranslationAugmentedCosetTable(<aug>) 
+#F  GeneratorTranslationAugmentedCosetTable(<aug>)
 ##
 ## decode the secondary generators as words in the primary generators, using
 ## the `.subgroupGenerators' and their subset `.primarySubgroupGenerators'.
@@ -2200,7 +2200,7 @@ end);
 
 #############################################################################
 ##
-#F  SecondaryGeneratorWordsAugmentedCosetTable(<aug>) 
+#F  SecondaryGeneratorWordsAugmentedCosetTable(<aug>)
 ##
 InstallGlobalFunction(SecondaryGeneratorWordsAugmentedCosetTable,function(aug)
 local tt;
@@ -2214,7 +2214,7 @@ end);
 
 #############################################################################
 ##
-#F  CopiedAugmentedCosetTable(<aug>) 
+#F  CopiedAugmentedCosetTable(<aug>)
 ##
 ##  returns a new augmented coset table, equal to the old one. The
 ##  components of this new table are immutable, but new components may be
@@ -2226,7 +2226,7 @@ InstallGlobalFunction(CopiedAugmentedCosetTable,function(aug)
 local t,j;
   if IsBound(aug.isNewAugmentedTable) then
     t:=rec(isNewAugmentedTable:=true);
-    for j in 
+    for j in
       [ "A", "aug", "ct", "defcount", "from", "homgenims", "homgens",
       "index", "n", "offset", "primaryImages", "rels","one","useAddition",
       "secondary", "secount", "secondaryImages", "subgens" ] do
@@ -2499,7 +2499,7 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
       for i in [Length(DATA.subgens)+1..DATA.secount] do
         if ForAll(DATA.secondary[i],x->x in ws) then
           p:=PositionSublist(w,DATA.secondary[i]);
-          while p<>fail do 
+          while p<>fail do
             w:=WordProductLetterRep(w{[1..p-1]},
               [i],w{[p+Length(DATA.secondary[i])..Length(w)]});
             ws:=Set(w);
@@ -2647,7 +2647,7 @@ local f,b,r,i,j;
     b:=c[-w[j]+offset][b];
     j:=j-1;
   od;
-  if j<=i then 
+  if j<=i then
     w[1]:=i;w[2]:=f;w[3]:=j;w[4]:=b;
     return true;
   fi;
@@ -2674,9 +2674,9 @@ local c,offset,f,b,r,i,j,t;
 
   j:=DATA.scandata[3]; # result of backward scan
   b:=DATA.scandata[4];
-  if j<i then 
+  if j<i then
     NEWTC_Coincidence(DATA,f,b);
-  elif j=i then 
+  elif j=i then
     # deduction
     c[w[i]+offset][f]:=b;
     c[-w[i]+offset][b]:=f;
@@ -2708,9 +2708,9 @@ local c,offset,f,b,r,i,j,t;
 #    b:=c[-w[j]+offset][b];
 #    j:=j-1;
 #  od;
-#  if j<i then 
+#  if j<i then
 #    Coincidence(DATA,f,b);
-#  elif j=i then 
+#  elif j=i then
 #    # deduction
 #    c[w[i]+offset][f]:=b;
 #    c[-w[i]+offset][b]:=f;
@@ -2765,13 +2765,13 @@ local c,offset,f,b,r,i,j,fp,bp,t;
     b:=c[-w[j]+offset][b];
     j:=j-1;
   od;
-  if j<i then 
+  if j<i then
     if DATA.useAddition then
       NEWTC_ModifiedCoincidence(DATA,f,b,-fp+bp);
     else
       NEWTC_ModifiedCoincidence(DATA,f,b,WordProductLetterRep(-Reversed(fp),bp));
     fi;
-  elif j=i then 
+  elif j=i then
     # deduction
     c[w[i]+offset][f]:=b;
     c[-w[i]+offset][b]:=f;
@@ -2811,10 +2811,10 @@ local c,offset,f,b,r,i,j;
       b:=c[-w[j]+offset][b];
       j:=j-1;
     od;
-    if j<i then 
+    if j<i then
 
       NEWTC_Coincidence(DATA,f,b);
-    elif j=i then 
+    elif j=i then
       # deduction
       c[w[i]+offset][f]:=b;
       c[-w[i]+offset][b]:=f;
@@ -2833,7 +2833,7 @@ local c,offset,f,b,r,i,j,fp,bp;
   f:=alpha;i:=1;
   fp:=DATA.one;
   r:=Length(w);
-  b:=alpha;j:=r; 
+  b:=alpha;j:=r;
   bp:=y;
   while i<=j do #N
     # forward scan
@@ -2863,13 +2863,13 @@ local c,offset,f,b,r,i,j,fp,bp;
       b:=c[-w[j]+offset][b];
       j:=j-1;
     od;
-    if j<i then 
+    if j<i then
       if DATA.useAddition then
         NEWTC_ModifiedCoincidence(DATA,f,b,-fp+bp);
       else
         NEWTC_ModifiedCoincidence(DATA,f,b,WordProductLetterRep(-Reversed(fp),bp));
       fi;
-    elif j=i then 
+    elif j=i then
       # deduction
       c[w[i]+offset][f]:=b;
       c[-w[i]+offset][b]:=f;
@@ -2905,7 +2905,7 @@ local ded,offset,pair,alpha,x,p,w;
         else
           NEWTC_Scan(DATA,alpha,w);
         fi;
-        if p[alpha]<alpha then 
+        if p[alpha]<alpha then
           break; # coset has been eliminated
         fi;
       od;
@@ -2921,7 +2921,7 @@ local ded,offset,pair,alpha,x,p,w;
           else
             NEWTC_Scan(DATA,alpha,w);
           fi;
-          if p[alpha]<alpha then 
+          if p[alpha]<alpha then
             break; # coset has been eliminated
           fi;
         od;
@@ -3020,7 +3020,7 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
       DATA.one:=[];
     fi;
     aug:=List([1..offset+m],x->[]);Unbind(aug[offset]);
-    pp:=[DATA.one]; 
+    pp:=[DATA.one];
     DATA.aug:=aug;
     DATA.pp:=pp;
     DATA.secondary:=[];
@@ -3166,9 +3166,9 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
     od;
 
     # conditions for compression: Over half the table used, and
-    if 2*DATA.n>DATA.limit and 
+    if 2*DATA.n>DATA.limit and
       # at least 33% trash (4=1+1/0.33)
-      ( 4*DATA.dead>DATA.n or 
+      ( 4*DATA.dead>DATA.n or
       # over limtrigger and at least 2% (55=1+1/0.02) trash
       (51*DATA.dead>DATA.n and DATA.n>DATA.limtrigger) )  then
 
@@ -3217,7 +3217,7 @@ end;
 # cyclic (if given and 1 generator do special case of cyclic rewriting)
 InstallGlobalFunction(NEWTC_CosetEnumerator,function(arg)
 local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,timerFunc,addtrace;
-  
+
   timerFunc := GET_TIMER_FROM_ReproducibleBehaviour();
 
   freegens:=arg[1];
@@ -3285,7 +3285,7 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,tim
     if first<>true then
       Info(InfoFpGroup,1,"Reduced ",first," definitions to ",e.defcount);
     fi;
-    if aug then 
+    if aug then
       # finally do the augmented with best
       e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,true,bw:
           # that's what we had last time -- no need to whine
@@ -3327,7 +3327,7 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,tim
     aug.from:=e.data.from;
   fi;
   return aug;
-end);  
+end);
 
 NEWTC_Rewrite:=function(arg)
 local DATA,start,w,offset,c,i,j;
@@ -3390,7 +3390,7 @@ local p,new,start,half;
   half:=QuoInt(Length(r),2)+1;
   p:=PositionSublist(new,r{[half..Length(r)]});
   if p<>fail and p<half then
-    if new{[1..p-1]}=r{[half-p+1..half-1]} 
+    if new{[1..p-1]}=r{[half-p+1..half-1]}
       and new{[Length(new)-half+p+1..Length(new)]}=r{[1..half-p]} then
 
       new:=new{[Length(r)-half+p+1..Length(new)-half+p]};
@@ -3404,8 +3404,8 @@ local p,new,start,half;
   fi;
 
   p:=PositionSublist(new,r{[1..half-1]});
-  if p<>fail and p>=Length(new)-Length(r)+1 
-    and new{[p..Length(new)]}=r{[1..Length(new)-p+1]} 
+  if p<>fail and p>=Length(new)-Length(r)+1
+    and new{[p..Length(new)]}=r{[1..Length(new)-p+1]}
     and p>Length(new)+p-1 and
     new{[1..Length(r)-Length(new)+p-1]}=r{[Length(new)-p+2..Length(r)]} then
 
@@ -3495,7 +3495,7 @@ function ( G, H )
 end );
 
 # DATA, [parameter,string]
-# parameter is: 
+# parameter is:
 # 0: Full reduction
 # 1: Do a quick reduction without trying to eliminate all secondary gens.
 # -1: No relators
@@ -3650,7 +3650,7 @@ local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
       TzEliminate(pres,i);
     od;
     Assert(0,Length(GeneratorsOfPresentation(pres))=subnum);
-    
+
   fi;
   r:=List(GeneratorsOfPresentation(pres){[1..subnum]},
     x->LetterRepAssocWord(x)[1]);
