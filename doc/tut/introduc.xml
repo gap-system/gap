@@ -77,7 +77,7 @@ more command line options are described in
 Section&nbsp;<Ref Sect="Command Line Options" BookName="ref"/>.)
 <P/>
 <Example><![CDATA[
-gap>
+gap> 
 ]]></Example>
 <P/>
 The usual  way to end a  &GAP; session is  to type <C>quit;</C> at the <C>gap></C>
@@ -176,7 +176,7 @@ symbols followed by <C>;</C> and <B>Return</B>.
 <Example><![CDATA[
 gap> (9 - 7) * (5 + 6);
 22
-gap>
+gap> 
 ]]></Example>
 <P/>
 Then &GAP; echoes   the result 22 on the   next line and shows with  the
