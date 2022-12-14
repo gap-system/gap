@@ -31,7 +31,7 @@ local map;
                                IsSPMappingByFunctionRep
                            and IsSingleValued
                            and IsTotal
-			   and IsGroupToAdditiveGroupHomomorphism ),
+                           and IsGroupToAdditiveGroupHomomorphism ),
                        rec( fun:= arg[3] ) );
 
     # inverse function given
@@ -43,7 +43,7 @@ local map;
         ElementsFamily(FamilyObj(arg[2]))),
                                IsSPMappingByFunctionWithInverseRep
                            and IsBijective
-			   and IsGroupToAdditiveGroupHomomorphism ),
+                           and IsGroupToAdditiveGroupHomomorphism ),
                        rec( fun    := arg[3],
                             invFun := arg[4] ) );
 

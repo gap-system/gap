@@ -142,10 +142,10 @@ end);
 
 InstallMethod(MonoidByAdjoiningIdentity, [IsSemigroup and HasGeneratorsOfSemigroup],
         function( s )
-	local m;
+        local m;
         m:=Monoid(List(GeneratorsOfSemigroup(s), MonoidByAdjoiningIdentityElt));
-	SetUnderlyingSemigroupOfMonoidByAdjoiningIdentity(m, s);
-      	return m;
+        SetUnderlyingSemigroupOfMonoidByAdjoiningIdentity(m, s);
+        return m;
 end);
 
 ###########################################################################

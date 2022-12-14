@@ -1533,7 +1533,7 @@ DeclareOperationKernel( "AdditiveInverseSameMutability",
 #O  `<elm1>-<elm2>' . . . . . . . . . . . . . . .  difference of two elements
 ##
 DeclareOperationKernel( "-",
-	[ IsExtAElement, IsNearAdditiveElementWithInverse ], DIFF );
+        [ IsExtAElement, IsNearAdditiveElementWithInverse ], DIFF );
 
 
 #############################################################################
