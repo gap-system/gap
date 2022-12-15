@@ -28,7 +28,14 @@
 ##  a vector object (see <Ref Filt="IsVectorObj"/>) that can occur as a row
 ##  in a row list matrix
 ##  (see Section <Ref Subsect="Operations for Row List Matrix Objects"/>).
-##  It is internally represented as a positional object
+##  <P/>
+##  <Ref Filt="IsPlistVectorRep"/> implies <Ref Filt="IsCopyable"/>,
+##  thus vector objects in this representation can be mutable.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+##  <A>obj</A> is internally represented as a positional object
 ##  (see <Ref Filt="IsPositionalObjectRep"/> that stores 2 entries:
 ##  <Enum>
 ##  <Item>
@@ -40,12 +47,6 @@
 ##    a plain list (see <Ref Filt="IsPlistRep"/> of its entries.
 ##  </Item>
 ##  </Enum>
-##  <P/>
-##  <Ref Filt="IsPlistVectorRep"/> implies <Ref Filt="IsCopyable"/>,
-##  thus vector objects in this representation can be mutable.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsPlistVectorRep",
         IsVectorObj and IsPositionalObjectRep
@@ -65,7 +66,14 @@ DeclareRepresentation( "IsPlistVectorRep",
 ##  An object <A>obj</A> in <Ref Filt="IsPlistMatrixRep"/> describes
 ##  a matrix object (see <Ref Filt="IsMatrixObj"/>) that behaves similar to
 ##  a list of its rows, in the sense of <Ref Filt="IsRowListMatrix"/>.
-##  It is internally represented as a positional object
+##  <P/>
+##  <Ref Filt="IsPlistMatrixRep"/> implies <Ref Filt="IsCopyable"/>,
+##  thus matrix objects in this representation can be mutable.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+##  <A>obj</A> is internally represented as a positional object
 ##  (see <Ref Filt="IsPositionalObjectRep"/>) that stores 4 entries:
 ##  <Enum>
 ##  <Item>
@@ -84,12 +92,6 @@ DeclareRepresentation( "IsPlistVectorRep",
 ##    each of them being an object in <Ref Filt="IsPlistVectorRep"/>.
 ##  </Item>
 ##  </Enum>
-##  <P/>
-##  <Ref Filt="IsPlistMatrixRep"/> implies <Ref Filt="IsCopyable"/>,
-##  thus matrix objects in this representation can be mutable.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
 ##
 DeclareRepresentation( "IsPlistMatrixRep",
         IsRowListMatrix and IsPositionalObjectRep
