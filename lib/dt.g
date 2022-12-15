@@ -103,7 +103,7 @@ end );
 ##  'Dt_IsEqualMonomial' returns "true" if <vec1> and <vec2> represent the
 ##  same  monomial, and "false" otherwise.
 BindGlobal( "Dt_IsEqualMonomial", function(vec1,vec2)
-    local  i,j;
+    local  i;
 
     if  Length(vec1) <> Length(vec2)  then
         return false;
@@ -181,7 +181,7 @@ end );
 ##  <pols>,  such that afterwards <pols> represents a simplified polynomial.
 ##
 BindGlobal( "Dt_add", function(pol, pols, pr)
-    local  i,j,k,rel, pos, flag;
+    local  j,k,rel, pos, flag;
 
     # first sort the deep thought monomial <pol> to compare it with the
     # monomials contained in <pols>.
@@ -279,7 +279,7 @@ end );
 ##  by the rewriting system <dtrws>
 ##
 CalcOrder := function(word, dtrws)
-    local gcd, m, pcp;
+    local gcd, m;
 
     if  Length(word) = 0  then
         return 1;
@@ -358,7 +358,7 @@ end );
 ##  polynomial f_l modulo the order of the l-th generator.
 ##
 BindGlobal( "ReduceCoefficientsOfRws", function(dtrws)
-    local  i,j,k,l, pseudoreps;
+    local  i,j,k, pseudoreps;
 
     pseudoreps := dtrws![PC_DEEP_THOUGHT_POLS];
     i := 1;
@@ -395,7 +395,7 @@ end );
 ##  Dt_GetMax returns the maximal value for pos(tree) if num(tree) = <number>.
 ##
 BindGlobal( "Dt_GetMax", function(tree, number, pr)
-    local rel, max, position;
+    local rel, position;
 
     if  Length(tree) = 5  then
         return tree[5];

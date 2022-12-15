@@ -248,7 +248,6 @@ end;
 #F  DxIsInSpace(v,space)
 ##
 DxIsInSpace := function(v,r)
-local nr,nc,m,i,j;
   return SolutionMat(Matrix(BaseDomain(r.base[1]),r.base),v)<>fail;
 end;
 

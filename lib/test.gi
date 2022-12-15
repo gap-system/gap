@@ -168,7 +168,7 @@ end);
 
 InstallGlobalFunction(RunTests, function(tests, inopts, fnam)
   local opts, breakOnError, alwaysPrintTracebackOnError, inp, outp,
-        pos, cmp, times, ttime, nrlines, s, res, fres, t, f, i, gaproot,
+        pos, cmp, times, ttime, nrlines, s, res, fres, t, f, i,
         localbag, failures, testsize, size;
   # don't enter break loop in case of error during test
   opts := rec( breakOnError := false, alwaysPrintTracebackOnError:= false,
@@ -855,7 +855,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
            showProgress, suppressStatusMessage, exitGAP, c, files,
            filetimes, filemems, recurseFiles, f, i, startTime,
            startMem, testResult, time, mem, startGcTime, gctime,
-           totalGcTime, filegctimes, GcTime;
+           totalGcTime, filegctimes;
 
   testTotalFailures := 0;
   testFailedFiles := 0;

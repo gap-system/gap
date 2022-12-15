@@ -95,7 +95,6 @@ InstallGlobalFunction( StringToStraightLineProgram,
     local pos,
           extrep,
           len,
-          sub,
           ppos,
           exp,
           sign,
@@ -2410,8 +2409,8 @@ InstallGlobalFunction( RestrictOutputsOfSLP,
 ##
 InstallGlobalFunction( IntermediateResultOfSLP,
   function(slp,k)
-    local biggest,changes,i,invtab,j,kk,kl,l,line,ll,lll,needed,nrinps,
-          resultslot,slotsused;
+    local biggest,changes,i,invtab,l,ll,lll,needed,nrinps,
+          slotsused;
 
     if IsStraightLineProgram(slp) then
         l := LinesOfStraightLineProgram( slp );

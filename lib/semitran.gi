@@ -241,7 +241,7 @@ InstallMethod(Enumerator, "for a full transformation semigroup",
 [IsFullTransformationSemigroup], 5,
 #to beat the method for an acting semigroup with generators
 function(S)
-  local n, Membership, PrintObj;
+  local n;
 
   n:=DegreeOfTransformationSemigroup(S);
 

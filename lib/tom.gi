@@ -138,7 +138,6 @@ InstallGlobalFunction( TableOfMarksByLattice, function( G )
           subs,
           normalizers,
           derivedSubgroups,
-          gens,
           tom,
           mrks,              # marks for one class
           ind,               # index of <I> in <N>
@@ -157,7 +156,7 @@ InstallGlobalFunction( TableOfMarksByLattice, function( G )
           Jzups,             # zuppos of a conjugate of <I>
           Kzups,             # zuppos of a representative in <classes>
           reps,              # transversal of <N> in <G>
-          i,k,l,r;           # loop variables
+          i,k,r;           # loop variables
 
 #T Is this necessary at all?
     LatticeSubgroups( G );
@@ -1338,7 +1337,7 @@ InstallMethod( ClassTypesTom,
     "for a table of marks",
     [ IsTableOfMarks ],
     function( tom )
-    local i, j, done, nrsubs, subs, order, type, struct, nrtypes;
+    local i, j, nrsubs, subs, order, type, struct, nrtypes;
 
     nrsubs:= NrSubsTom(tom);
     subs:= SubsTom(tom);
@@ -1985,7 +1984,7 @@ InstallMethod( DerivedSubgroupTom,
     function( tom, sub )
     local set, primes, normalsubs, minindex, p, nrsubs, ext, pos, extp,
           extps, sub1, sub2, result, i, j, indexsub1, indexsub2, index, int,
-          notnormal, res, factorel, normsub1, norm, res1, oddord, order,
+          notnormal, res, factorel, norm, oddord,
           normext, bool, n, orders, subs, isnormal, grd, der, poss;
 
     # Check whether the derived subgroup has been computed already.
@@ -2008,7 +2007,7 @@ InstallMethod( DerivedSubgroupTom,
 
       # Compute the possibilities.
       isnormal:=function(tom,sub1,sub2)
-          local sub, result, res;
+          local sub, result;
           result:=false;
           if ContainedTom(tom,sub1,sub2)=1 then
               result:=true;
@@ -2730,7 +2729,7 @@ InstallMethod( EulerianFunction,
 InstallMethod( IntersectionsTom,
     [ IsTableOfMarks, IsPosInt, IsPosInt ],
     function(tom,a,b)
-    local i, j, k, h, line, dec, marks, subs;
+    local i, j, k, h, line, marks, subs;
 
     # get the attributes and initialize
     marks:= MarksTom(tom);
@@ -2770,7 +2769,7 @@ InstallMethod( FactorGroupTom,
     [ IsTableOfMarks, IsPosInt ],
     function( tom, nor )
     local marks, subs, sub, pos, pos1, subsf, marksf, facmarks, facsubs,
-          members, hom, facgens, facpos, facnorms, facgroup, elm, result;
+          members, hom, facgens, facpos, facgroup, elm, result;
 
     marks:= MarksTom( tom );
     subs:= SubsTom( tom );
@@ -3098,7 +3097,6 @@ InstallMethod( PossibleFusionsCharTableTom,
           stab,
           clean,
           transfer,
-          descend,
           powertbl,
           powertom,
           invcycfus,
@@ -3591,8 +3589,7 @@ InstallMethod( TableOfMarksCyclic,
     "for a positive integer",
     [ IsPosInt ],
     function( n )
-    local obj, progs, subs, marks, classNames, derivedSubgroups,
-          normalizer, i, j, divs, index, group;
+    local obj, progs, subs, marks, classNames, i, j, divs, index, group;
 
     # Initialize, \ldots
     divs:= DivisorsInt(n);

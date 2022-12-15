@@ -213,7 +213,7 @@ InstallGlobalFunction( Extract, function( arg )
 
     # try and error for the chosen vector
     possiblies := function( start, solmat, testvect, acidx, lines )
-    local i, j, remainder, toogreat, equal, solmatback, testvec;
+    local i, j, toogreat, equal, solmatback, testvec;
 
     testvec := ShallowCopy( testvect );
     toogreat := false;
@@ -324,7 +324,7 @@ InstallGlobalFunction( Extract, function( arg )
 
     # correct the norm if all other conditions are filled
     correctnorm := function( remainder, solmat, pos, max, acidx, lines )
-    local i, r, newsol, ret;
+    local i, newsol, ret;
     if remainder = 0 and pos <= missing + 1 then
        newsol := true;
        for i in [1..solcount[k]] do
@@ -590,7 +590,7 @@ end );
 InstallGlobalFunction( Decreased, function( arg )
     local
         # indices
-          m, n, m1, n1, i, i1, i2, i3, i4, j, jj, j1, j2, j3,
+          m, n, n1, i, i1, i2, i3, i4, j, jj, j1, j2, j3,
         # booleans
           ende1, ende2, ok, change, delline, delcolumn,
         # help fields
@@ -610,7 +610,7 @@ InstallGlobalFunction( Decreased, function( arg )
 
     Idxset := function()
     # update indices
-    local i1, j1;
+    local i1, j1, m1;
     i1 := 0;
     for i in [1..m] do
        if not delline[i] then
@@ -1080,7 +1080,7 @@ end );
 #F                                        [, \"positive\"], <dim> )
 ##
 InstallGlobalFunction( OrthogonalEmbeddingsSpecialDimension, function ( arg )
-    local  red, dim, reducibles, matrix, tbl, emb, dec, i, s, irred;
+    local  red, dim, reducibles, tbl, emb, dec, i, s, irred;
     # check input
     if Length( arg ) < 4 then
        Error( "please specify desired dimension\n",
@@ -1144,7 +1144,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
       m, n,
     # help fields
       found, foundpos,
-      z, zw, nullcount, nullgenerate,
+      z, nullcount, nullgenerate,
       maxentry, max, ind, irred, irredcount, red,
       blockcount, blocks, perm, addtest, preirred,
     # Gram matrix
@@ -1152,7 +1152,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
     # characters
       y, y2,
     # variables for recursion
-      root, rootcount, solution, ligants, ligantscount, glblock, begin,
+      root, rootcount, solution, ligants, ligantscount, begin,
       depth, choice, ende, sol,
     # functions
       callreduced, nullset, maxset, Search, Add, DnSearch, test;

@@ -191,7 +191,6 @@ end;
 
 # Tasks.Initialize just fires off the task manager.
 Tasks.Initialize := function()
-  local i;
   threadId := 0;
   TaskManager := CreateThread(Tasks.TaskManagerFunc);
   MakeReadOnlyGVar ("TaskManager");
@@ -203,8 +202,7 @@ end;
 
 # Creates a task without binding it to a worker
 Tasks.CreateTask := function(arglist)
-  local i, channels, task, request, args, adopt, adopted, ds,p,
-        addToTaskPool, q;
+  local i, task, args, adopt, adopted, ds,p;
 
   args := arglist{[2..Length(arglist)]};
   adopt := AtomicList([]);
@@ -256,7 +254,7 @@ CullIdleTasks := function()
 end;
 
 ExecuteTask:= atomic function(readwrite task)
-  local channels, t, taskdata, worker;
+  local worker;
 
   task.started := true;
   task.complete := false;
@@ -322,12 +320,11 @@ ImmediateTask := function(arg)
 end;
 
 DelayTask := function(arg)
-  local task;
   return Tasks.CreateTask(arg);
 end;
 
 WaitTask := function(arg)
-  local task, taskresult, i, p;
+  local task, p;
 
   atomic readonly arg[1] do
     if Length(arg) = 1 and IsList(arg[1]) then
@@ -369,7 +366,7 @@ end;
 WaitTasks := WaitTask;
 
 WaitAnyTask := function(arg)
-  local i, len, task, taskresult, channels, ch;
+  local len, task;
 
   atomic arg[1] do
     if Length(arg) = 1 and IsList(arg[1]) then
@@ -453,10 +450,7 @@ end;
 
 # Function executed by a task manager
 Tasks.TaskManagerFunc := function()
-  local i, worker, request, requestType,
-        taskToFinish, toUnblock,
-        totalTasks, blockedWorkersChannel, taskMap,
-        toResume, taskman;
+  local i, worker, request, requestType, toResume, taskman;
 
   taskman := rec ( activeWorkers := 0,
                    blockedWorkers := 0,

@@ -1511,7 +1511,7 @@ end);
 
 # module automorphism group
 BindGlobal("SMTX_ModuleAutomorphisms",function(m)
-  local f, h, hb, hbi, bas, auts, autorder, dim, nb, nbi, r, q, w, Fqr, gl, a, subm, nilbase, homs, sub, endos, au, aubas, it, coeffs, cnt, ol, ind, i, j, g, k;
+  local f, h, hb, hbi, bas, auts, autorder, dim, nb, nbi, r, q, w, Fqr, gl, a, subm, nilbase, homs, i, j, g, k;
   f:=m.field;
   h:=MTX.HomogeneousComponents(m);
   # construct basis for each homogeneous component

@@ -1308,7 +1308,7 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "OPER_SetupAttribute", function(getter, flags, mutflag, filter, rank, name)
-    local   setter,  tester,   nname;
+    local   setter,  tester;
 
     # add  setter and tester to the list of operations
     setter := SETTER_FILTER( getter );
@@ -1432,8 +1432,7 @@ function(name, op, filter, rank, mutable)
 end);
 
 BIND_GLOBAL( "DeclareAttribute", function ( name, filter, args... )
-    local gvar, req, reqs, setter, tester,
-              attr, mutflag, flags, rank;
+    local gvar, req, attr, mutflag, rank;
 
     if not IS_STRING( name ) then
         Error( "<name> must be a string");
@@ -1847,7 +1846,6 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "TraceAllMethods", function( arg )
-    local   fun;
     TraceMethods(OPERATIONS);
 end );
 
@@ -1909,7 +1907,6 @@ end );
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "UntraceAllMethods", function( arg )
-    local   fun;
     UntraceMethods(OPERATIONS);
 end );
 
@@ -2147,7 +2144,7 @@ PRINT_REORDERED_METHODS := false;
 
 BIND_GLOBAL( "RECALCULATE_ALL_METHOD_RANKS", function()
     local  oper, n, changed, meths, nmethods, i, base, rank, flags, j, req,
-           req2, k, l, entrysize;
+           k, l, entrysize;
 
     for oper in OPERATIONS do
         for n in [0..6] do

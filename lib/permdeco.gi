@@ -150,11 +150,11 @@ end );
 #  until false;
 #end;
 InstallGlobalFunction(AutomorphismRepresentingGroup,function(G,autos)
-local G0,a0,tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
+local tryrep,sel,selin,a,s,dom,iso,stabs,outs,map,i,j,p,found,seln,
   sub,d;
 
   tryrep:=function(rep,bound)
-  local Gi,repi,maps,v,w,cen,hom;
+  local Gi,maps,v,w,cen,hom;
      Gi:=Image(rep,G);
      if not IsSubset(MovedPoints(Gi),[1..LargestMovedPoint(Gi)]) then
        rep:=rep*ActionHomomorphism(Gi,MovedPoints(Gi),"surjective");

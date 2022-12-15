@@ -778,7 +778,7 @@ end;
 #F  MultiActionsHomomorphism(G,pnts,ops)
 ##
 InstallGlobalFunction(MultiActionsHomomorphism,function(G,pnts,ops)
-  local gens,homs,trans,n,d,gs,i,j,mgi,ran,hom,imgs,c;
+  local gens,homs,trans,n,d,i,j,mgi,ran,hom,imgs,c;
   gens:=GeneratorsOfGroup(G);
   homs:=[];
   trans:=[];
@@ -1123,8 +1123,6 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,r,
         doml,   # maximal orbit length
         dict,   # dictionary
         blico,  # copy of initial blist (to find out the true domain)
-        blif,   # flag on whether a blist is given
-        crossind,       # index D (via blist) -> orbit position
         ind,    # stabilizer index
         indh,   # 1/2 stabilizer index
         increp, # do we still want to increase the rep list?
@@ -1401,7 +1399,7 @@ InstallMethod( OrbitStabilizerAlgorithm,"use stabilizer size",true,
    IsList,IsList,IsRecord],0,
 function( G,D,blist,gens,acts, dopr )
 local pr,hom,pgens,pacts,pdopr,erg,cs,i,dict,orb,stb,rep,getrep,q,img,gen,
-  gena,actsinv,j,k,e,l,orbl,pcgs;
+  gena,j,k,e,l,orbl,pcgs;
   if HasSize(G) and Size(G)>10^5
     # not yet implemented for blist case
     and blist=false then
@@ -1494,8 +1492,7 @@ InstallMethod( OrbitStabilizerAlgorithm,"collect stabilizer generators",true,
 function( G,D,blist,gens, acts, dopr )
 local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
         stabsub,        # stabilizer seed
-        dict,           # dictionary
-        crossind;       # index D (via blist) -> orbit position
+        dict;           # dictionary
 
   d:=Immutable(dopr.pnt);
   if IsBound(dopr.act) then
@@ -3339,7 +3336,7 @@ end );
 InstallMethod( PreImagesRepresentative,"IsLinearActionHomomorphism",
   FamRangeEqFamElm, [ IsLinearActionHomomorphism, IsPerm ], 0,
 function( hom, elm )
-  local   V,  base,  mat,  b,xset,lab,f;
+  local   V, xset,lab,f;
 
   # is this method applicable? Test whether the domain contains a vector
   # space basis (respectively just get this basis).
@@ -3377,7 +3374,7 @@ end );
 InstallMethod( PreImagesRepresentative,"IsProjectiveActionHomomorphism",
   FamRangeEqFamElm, [ IsProjectiveActionHomomorphism, IsPerm ], 0,
 function( hom, elm )
-  local   V,  base,  mat,  b,xset,lab,f,dim,start,time,sol,i;
+  local   V,  mat, xset,lab,f,dim,sol,i;
 
   # is this method applicable? Test whether field
   # finite, that the domain contains a vector
@@ -3426,7 +3423,7 @@ end);
 InstallMethod(LinearActionBasis,"find basis in domain",true,
   [IsLinearActionHomomorphism],0,
 function(hom)
-local xset,dom,D,b,t,i,r,pos;
+local xset,D,b,t,i,r,pos;
   xset:=UnderlyingExternalSet(hom);
   if Size(xset)=0 then
     return fail;
@@ -3472,7 +3469,7 @@ end);
 InstallOtherMethod(LinearActionBasis,"projective with extra vector",true,
   [IsProjectiveActionHomomorphism],0,
 function(hom)
-local xset,dom,D,b,t,i,r,binv,pos,kero,dets,roots,dim,f;
+local xset,D,b,t,i,r,binv,pos,kero,dets,roots,dim,f;
   xset:=UnderlyingExternalSet(hom);
   if Size(xset)=0 then
     return fail;

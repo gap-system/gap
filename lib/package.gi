@@ -287,8 +287,7 @@ end );
 ##  In earlier versions, this function had an argument; now we ignore it.
 ##
 InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
-    local dirs, pkgdirs, pkgdir, ignore, names, noauto, name, pkgpath,
-          file, files, subdir, str, record, r, pkgname, version;
+    local dirs, pkgdirs, pkgdir, ignore, name, files, record, r;
 
     if IsBound( GAPInfo.PackagesInfoInitialized ) and
        GAPInfo.PackagesInfoInitialized = true then
@@ -1295,7 +1294,7 @@ end );
 #F  RereadPackage( [<name>, ]<file> )
 ##
 InstallGlobalFunction( ReadPackage, function( arg )
-    local pos, relpath, pkgname, namespace, filename, rflc, rfc;
+    local pos, relpath, pkgname, namespace, filename;
 
     # Note that we cannot use `ReadAndCheckFunc' because this calls
     # `READ_GAP_ROOT', but here we have to read the file in one of those
@@ -1397,7 +1396,7 @@ InstallGlobalFunction( LoadPackageDocumentation, function( arg )
 ##
 BindGlobal( "LoadPackage_ReadImplementationParts",
     function( secondrun, banner )
-    local pair, info, bannerstring, u, pkgname, namespace;
+    local pair, info, bannerstring, pkgname, namespace;
 
     for pair in secondrun do
       namespace := pair[1].PackageName;
@@ -1511,7 +1510,7 @@ BindGlobal( "GetPackageNameForPrefix", function( prefix )
 InstallGlobalFunction( LoadPackage, function( arg )
     local name, Name, version, banner, loadsuggested, msg, depinfo, path,
           pair, i, order, paths, cycle, secondrun, pkgname, pos, info,
-          filename, read;
+          filename;
 
     # Get the arguments.
     if Length( arg ) = 0 then
@@ -1892,7 +1891,7 @@ The level can be changed in a running session using \
   ) );
 
 InstallGlobalFunction( AutoloadPackages, function()
-    local banner, msg, pair, excludedpackages, name, record, neededPackages;
+    local msg, pair, excludedpackages, name, record, neededPackages;
 
     SetInfoLevel( InfoPackageLoading,
         UserPreference( "InfoPackageLoadingLevel" ) );
@@ -2921,7 +2920,7 @@ NamesUserGVars   := "dummy";
 InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
     local test, cache, cache2, PkgName, realname, new, new_up_to_case,
           redeclared, newmethod, pos, key_dependent_operation, rules,
-          localBindGlobal, rule, loaded, pkg, args, docmark, done, result,
+          localBindGlobal, rule, loaded, args, docmark, done, result,
           subrule, added, prev, subresult, entry, isrelevant, guesssource,
           protected;
 

@@ -1639,7 +1639,7 @@ end );
 ##
 InstallMethod( Socle,"test primitive", true, [ IsPermGroup ], 0,
     function( G )
-    local   Omega,  deg,  shortcut,  coll,  d,  m,  c,  ds,  L,  z,  ord,
+    local   Omega,  deg,  coll,  ds,  L,  z,  ord,
             p,  i;
 
     Omega := MovedPoints( G );
@@ -1745,8 +1745,8 @@ end );
 ##
 InstallGlobalFunction( ApproximateSuborbitsStabilizerPermGroup,
     function(G,punkt)
-    local one, orbit, trans, stab, gen, pnt, img, norb, no, i, j, changed,
-          processStabGen, currPt,currGen, stgp, orblen, gens,Ggens;
+    local one, orbit, trans, stab, gen, pnt, img, i, changed,
+          processStabGen, currPt,currGen, orblen, gens,Ggens;
 
     one:= One( G );
   if HasStabChainMutable( G ) and punkt in StabChainMutable(G).orbit then
@@ -2225,7 +2225,7 @@ end );
 ##
 InstallMethod(ONanScottType,"primitive permgroups",true,[IsPermGroup],0,
 function(G)
-local dom,s,cs,t,ts,o,m,stb;
+local dom,s,cs,t,m,stb;
   dom:=MovedPoints(G);
   if not IsPrimitive(G,dom) then
     Error("<G> must be primitive");

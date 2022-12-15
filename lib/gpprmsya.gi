@@ -555,7 +555,7 @@ end;
 # see Ákos Seress, Permutation group algorithms. Cambridge Tracts in
 # Mathematics, 152. Section 10.2 for the background of this function.
 BindGlobal("DoSnAnGiantTest",function(g,dom,kind)
-local bound, n, i, p, cycles, l, pnt;
+local bound, n, i, p, l, pnt;
   pnt := dom[1];
   n:=Length(dom);
   # From the above reference we see that with these bounds this function
@@ -1436,7 +1436,7 @@ InstallMethod( NormalizerOp, "subgp of natural alternating group",
 # false indicates the method does not work
 BindGlobal("SubgpConjSymmgp",function(s,g,h)
 local og,oh,cb,cc,cac,perm1,perm2,
-  dom,n,a,c,b,b2,w,p1,p2,perm,t,ac,ac2,no,no2,i,j;
+  dom,n,a,c,b,b2,w,p1,p2,perm,t,ac,ac2,no,no2,i;
 
 
   p1:=Set(MovedPoints(g));

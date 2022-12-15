@@ -179,7 +179,7 @@ InstallMethod( IsGroupOfAutomorphismsFiniteGroup,"default",true,
 BindGlobal("AutomorphismWreathEmbedding",function(au,g)
 local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
       img, j, conj, sm, cen, n, w, emb, ge, no,reps,synom,ginn,oemb,act,
-      imgs,ogens,genimgs,oo,op;
+      ogens,genimgs,oo,op;
 
   gens:=GeneratorsOfGroup(g);
   if Size(Centre(g))>1 then
@@ -367,8 +367,8 @@ end);
 ##
 # try to find a small faithful action for an automorphism group
 InstallGlobalFunction(AssignNiceMonomorphismAutomorphismGroup,function(au,g)
-local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
-      doelms,ser,pos, v, val, o, i, j, comb, best,actbase,action,finish,
+local hom, allinner, gens, c, ran, r, cen, img, dom, u, orbs,
+      ser,pos, o, i, j, best,actbase,action,finish,
       bestdeg,deg,baddegree,auo,of,cl,store, offset,claselms,fix,new,
       preproc,postproc;
 
@@ -1698,7 +1698,7 @@ end);
 ##                      as possible generators from the first classes in <cl>
 ##
 InstallGlobalFunction(MorFindGeneratingSystem,function(arg)
-local G,cl,lcl,len,comb,combc,com,a,cnt,s,alltwo;
+local G,cl,lcl,len,comb,combc,com,a,alltwo;
   G:=arg[1];
   cl:=arg[2];
   Info(InfoMorph,1,"FindGenerators");
@@ -1744,7 +1744,7 @@ end);
 ##
 InstallGlobalFunction(Morphium,function(G,H,DoAuto)
 local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
-      gens,i,c,hom,free,elms,price,result,rels,inns,bcl,vsu;
+      gens,i,c,hom,elms,price,result,inns,bcl,vsu;
 
   if IsSolvableGroup(G) and CanEasilyComputePcgs(G) then
     gens:=MinimalGeneratingSet(G);

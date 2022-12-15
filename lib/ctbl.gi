@@ -2824,7 +2824,6 @@ InstallMethod( PrimeBlocksOp,
           blockreps,
           families,
           representatives,
-          sameblock,
           central,
           found,
           ppart,
@@ -4812,8 +4811,6 @@ BindGlobal( "CharacterTableDisplayDefault", function( tbl, options )
           p,                 # characteristic
           ind2,              # 2nd indicator
           iwsum,             # total width of (OD and) indicator columns
-          entry,             # run over 'oddata'
-          pos,               # position in 'cnr'
           stringEntry,       # local function
           stringEntryData,   # data accessed by `stringEntry'
           cc,                # column number
@@ -5958,7 +5955,7 @@ InstallMethod( CharacterTableFactorGroup,
     "for a Brauer table, and a list of class positions",
     [ IsBrauerTable, IsList and IsCyclotomicCollection ],
     function( modtbl, classes )
-    local p, ordtbl, sizes, fus, kernel, n, size, ordfact, modfact, factirr,
+    local p, ordtbl, sizes, fus, kernel, ordfact, modfact, factirr,
           proj;
 
     p:= UnderlyingCharacteristic( modtbl );

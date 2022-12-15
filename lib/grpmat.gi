@@ -912,7 +912,7 @@ InstallMethod( GroupWithGenerators,
     [ IsFFECollCollColl ],
 #T ???
 function( gens )
-local G,typ,f;
+local G,f;
 
   if not IsFinite(gens) then TryNextMethod(); fi;
 
@@ -930,7 +930,7 @@ InstallMethod( GroupWithGenerators,
   "list of matrices with identity", IsCollsElms,
   [ IsFFECollCollColl,IsMultiplicativeElementWithInverse and IsFFECollColl],
 function( gens, id )
-local G,typ,f;
+local G,f;
 
   if not IsFinite(gens) then TryNextMethod(); fi;
 
@@ -950,7 +950,7 @@ InstallMethod( GroupWithGenerators,
   [ IsList and IsEmpty,
     IsMultiplicativeElementWithInverse and IsFFECollColl],
 function( gens, id )
-local G,fam,typ,f;
+local G,f;
 
   f:=DefaultScalarDomainOfMatrixList([id]);
   id:=ImmutableMatrix(f,id);
@@ -967,7 +967,7 @@ InstallMethod( GroupWithGenerators, "list of zmodnz matrices",
     [ IsZmodnZObjNonprimeCollCollColl ],
 #T ???
 function( gens )
-local G,typ,f;
+local G,f;
 
   if not IsFinite(gens) then TryNextMethod(); fi;
 
@@ -986,7 +986,7 @@ InstallMethod( GroupWithGenerators,
   [ IsZmodnZObjNonprimeCollCollColl,IsMultiplicativeElementWithInverse and
   IsZmodnZObjNonprimeCollColl],
 function( gens, id )
-local G,typ,f;
+local G,f;
 
   if not IsFinite(gens) then TryNextMethod(); fi;
 
@@ -1006,7 +1006,7 @@ InstallMethod( GroupWithGenerators,
   [ IsList and IsEmpty,
     IsMultiplicativeElementWithInverse and IsZmodnZObjNonprimeCollColl],
 function( gens, id )
-local G,fam,typ,f;
+local G,f;
 
   f:=DefaultScalarDomainOfMatrixList([id]);
   id:=ImmutableMatrix(f,id);

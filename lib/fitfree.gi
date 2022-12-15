@@ -1054,8 +1054,8 @@ local G,gp,p,r,s,c,i,a,pp,prime,sy,k,b,dc,H,e,j,forbid;
 end);
 
 BindGlobal("HallsFittingFree",function(G,pi)
-local s,d,c,act,o,i,j,h,p,hf,img,n,prd,k,nk,map,ns,all,hl,hcomp,
-  reps,orb,m,mk,shall,marks,t,thom,b,ntb,hom,dser,pcgs,
+local s,d,c,act,o,i,j,h,p,hf,img,n,prd,k,ns,all,hl,hcomp,
+  shall,t,thom,b,ntb,hom,dser,pcgs,
   fphom,fp,gens,imgs,ocr,elabser,cgens,a,kim,r,z;
 
   # get elementary abelian series from -> to

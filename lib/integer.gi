@@ -1097,8 +1097,6 @@ end);
 #F  PrimePowerInt( <n> )  . . . . . . . . . . . . . . . . prime powers of <n>
 ##
 InstallGlobalFunction(PrimePowersInt,function( n )
-    local   p,  pows,  lst;
-
     if n = 1  then
         return [];
     elif n = 0  then

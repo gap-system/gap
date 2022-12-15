@@ -1276,7 +1276,7 @@ InstallGlobalFunction(StringOfMemoryAmount, function(m)
 end);
 
 InstallGlobalFunction(PrintToFormatted, function(stream, s, data...)
-    local pos, len, outstr, nextbrace, endbrace,
+    local pos, len, nextbrace, endbrace,
           argcounter, var,
           splitReplacementField, toprint, namedIdUsed;
 

@@ -69,7 +69,6 @@ end;
 ErrorNoReturn := Error;
 
 ErrorInner := function(options, message)
-    local x;
     Print("Error before error-handling is initialized: ");
     Print(message);
     if SHOULD_QUIT_ON_BREAK() then
@@ -812,8 +811,7 @@ end );
 ##
 
 BindGlobal( "ShowPackageInformation", function()
-  local linelen, indent, btop, vert, bbot, print_info,
-        cmpdist, ld, f, packagenames;
+  local linelen, indent, print_info, packagenames;
 
   linelen:= SizeScreen()[1] - 2;
   print_info:= function( prefix, values, suffix )

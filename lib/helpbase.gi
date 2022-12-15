@@ -645,7 +645,7 @@ fi;
 ##  known book.
 ##
 InstallGlobalFunction(HELP_BOOK_INFO, function( book )
-  local pos, bnam, nnam, path, dirs, six, stream, line, handler;
+  local pos, bnam, path, dirs, six, stream, line, handler;
 
   # if this is already a record return it
   if IsRecord(book)  then
@@ -951,7 +951,7 @@ end);
 ##  remaining ones.
 ##
 InstallGlobalFunction(HELP_GET_MATCHES, function( books, topic, frombegin )
-  local exact, match, em, b, x, topics, transatl, pair, newtopic, getsecnum;
+  local exact, match, em, b, x, topics, getsecnum;
 
   # First we try to produce some suggestions for possible different spellings
   # (see the global variable 'TRANSATL' for the list of spelling patterns).
@@ -1168,7 +1168,7 @@ end);
 ##    - r[7]    [chnr, secnr, subsecnr]                 [5,14,2] or [3,1,0]
 ##
 HELP_BOOK_HANDLER.HelpDataRef := function(book, entrynr)
-  local    info,  handler,  entry,  chnr,  secnr,  pos,  res,  r;
+  local    info,  handler,  entry,  secnr,  res,  r;
 
   info := HELP_BOOK_INFO(book);
   handler := info.handler;

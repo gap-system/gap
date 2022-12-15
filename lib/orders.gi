@@ -480,7 +480,6 @@ local ltfun, ord;
 
   # the less than function
   ltfun := function(w1,w2)
-    local x,y,i;
 
     # if w1=w2 then w1 is certainly not less than w2
     if w1=w2 then
@@ -703,7 +702,7 @@ BindGlobal("WeightLexOrderingNC",
 function(fam,alphabet,wt)
   local wordwt,       # function that given a word returns its weight
         ltfun,        # the less than function
-                                auxalph,
+        auxalph,
         ord;          # the ordering
 
   #########################################################
@@ -745,7 +744,7 @@ function(fam,alphabet,wt)
   SetOrderingOnGenerators(ord,alphabet);
   SetWeightOfGenerators(ord,wt);
 
-        auxalph := ShallowCopy(alphabet);
+  auxalph := ShallowCopy(alphabet);
   auxalph := List(auxalph,i->GeneratorSyllable(i,1));
   ord!.alphnums:=auxalph;
   if IsSSortedList(auxalph) then
@@ -927,7 +926,7 @@ function(fam,alphabet)
         ord;              # the ordering
 
   nltfun := function(u,v)
-    local l,m,n,ltgens,eu,ev,mp,np,me,ne;
+    local l,eu,ev,mp,np,me,ne;
 
     eu:=ExtRepOfObj(u);
     ev:=ExtRepOfObj(v);
@@ -1031,7 +1030,7 @@ function(fam,alphabet)
   # this is obsolete but for tests
 
   oltfun := function(u,v)
-    local l,m,n,ltgens,eu,ev,mp,np,me,ne;
+    local l,m,n,ltgens;
 
     # we start by building the function that gives the order on the alphabet
     ltgens := function(x,y)
@@ -1353,7 +1352,7 @@ InstallMethod(WreathProductOrdering,
                      sl,  #sl=1 or 2 if u or v, resp., is
         #smaller in the shortlex ordering at level sl_lev.
         #note sl=0 <=> sl_lev=0.
-          tgens,levgens;  #functions on generators
+          levgens;  #functions on generators
 
     # we start by building the function that gives the order on
     # the alphabet

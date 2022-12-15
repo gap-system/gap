@@ -175,7 +175,7 @@ end;
 InstallMethod(SparseIntKey,"for lists of vectors",true,
     [ IsFFECollColl,IsObject ], 0,
 function(m,v)
-local f,n;
+local f;
 if not (IsList(m) and IS_PLIST_REP(m) and ForAll(m,i->IsRowVector(i))) then
     TryNextMethod();
   fi;

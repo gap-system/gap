@@ -208,7 +208,6 @@ InstallMethod( ViewObj,
     "for a direct product element",
     [ IsDirectProductElement ],
     function( dpelm )
-    local i;
     Print( "DirectProductElement( " );
     Print( ViewString( AsList( (dpelm) ) ) );
     Print(" )");

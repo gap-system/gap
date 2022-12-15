@@ -173,7 +173,7 @@ BindGlobal("SplitCellTestfun2",function(Q,pt,no)
 end);
 
 InstallGlobalFunction( SplitCell, function( P, i, Q, j, g, out )
-local   a,  b,  l,  B,  tmp,  m,  x, inflag, outflag,test,k,Pcop,acop,maxmov;
+local   a,  b,  l,  B,  tmp,  m, test,maxmov;
 
   # If none or  all  points are  moved out,  do  not change <P>  and return
   # 'false'.

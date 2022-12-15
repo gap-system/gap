@@ -669,7 +669,7 @@ InstallEqMethodForMappingsFromGenerators := function( IsStruct,
         [ IsGeneralMapping and IsSingleValued and respects ],
         0,
         function( map )
-        local preim, gen;
+        local gen;
         if   not IsStruct( Source( map ) ) then
           TryNextMethod();
         elif     HasIsInjective( map ) and not IsInjective( map ) then

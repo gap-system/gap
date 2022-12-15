@@ -1072,7 +1072,7 @@ RedispatchOnCondition(Derivative,true,
 InstallOtherMethod(Derivative,"uratfun",true,
   [IsUnivariateRationalFunction],0,
 function(ratfun)
-local num,den,R,cf,pow,dr,a;
+local num,den,R,cf,pow,dr;
   # try to be good for the case of iterated derivatives by using if the
   # denominator is a power
   num:=NumeratorOfRationalFunction(ratfun);

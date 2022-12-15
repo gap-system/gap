@@ -79,7 +79,7 @@ InstallMethod( PowerMap,
     "for a character table, and two integers",
     [ IsNearlyCharacterTable, IsInt, IsInt ],
     function( tbl, n, class )
-    local known, erg;
+    local known;
 
     if IsPosInt( n ) and IsSmallIntRep( n ) then
       known:= ComputedPowerMaps( tbl );
@@ -170,7 +170,7 @@ InstallOtherMethod( PowerMapOp,
     "for ordinary table, integer, positive integer",
     [ IsOrdinaryTable, IsInt, IsPosInt ],
     function( tbl, n, class )
-    local i, powermap, image, range, pmap;
+    local i, powermap, image;
 
     powermap:= ComputedPowerMaps( tbl );
     if n = 1 then
@@ -758,7 +758,7 @@ InstallMethod( FusionConjugacyClasses,
     "for two nearly character tables",
     [ IsNearlyCharacterTable, IsNearlyCharacterTable ],
     function( tbl1, tbl2 )
-    local hom, fus;
+    local fus;
 
     # Check whether the fusion map is stored already.
     fus:= GetFusionMap( tbl1, tbl2 );
@@ -2562,7 +2562,7 @@ end );
 ##
 BindGlobal( "StepModGauss",
     function( matrix, moduls, nonzerocol, col )
-    local i, k, x, y, z, a, b, c, d, val, stepmodgauss;
+    local i, k, z, a, b, c, d, val, stepmodgauss;
 
     if IsEmpty( matrix ) then
       return fail;
@@ -2636,7 +2636,7 @@ end );
 ##
 InstallGlobalFunction( ContainedDecomposables,
     function( constituents, moduls, parachar, func )
-    local i, x, matrix, fusion, newmoduls, candidate, classes,
+    local i, x, matrix, fusion, newmoduls, candidate,
           nonzerocol,
           possibilities,   # global list of all $\chi$
                            # that satisfy $'func'( \chi )$
@@ -3640,7 +3640,7 @@ InstallGlobalFunction( PowerMapsAllowedBySymmetrizations,
 
     allowedmaps:= function( chars, pow, indeterminateness, numbofposs,
                             powerchars )
-    local i, j, class, possibilities, poss, newpow, newpowerchars, newindet,
+    local i, j, class, possibilities, poss, newpow, newindet,
           newnumbofposs, copy;
     remain:= Filtered( [ 1 .. Length(chars) ], i->indeterminateness[i] > 1 );
     chars:=             chars{ remain };
@@ -3764,7 +3764,6 @@ InstallGlobalFunction( InitFusion, function( subtbl, tbl )
           suborders,
           sameord,
           elm,
-          errors,
           choice;
 
     # Check the arguments.
@@ -4067,8 +4066,7 @@ InstallGlobalFunction( ConsiderTableAutomorphisms,
           image,
           orb,
           im,
-          found,
-          prop;
+          found;
 
     # step 1: Compute the subgroup of <grp> that acts on all images
     #         under <parafus>; if <parafus> contains all possible subgroup

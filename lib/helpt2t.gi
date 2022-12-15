@@ -27,7 +27,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
         info, chap, filename, stream, p, q, lico,
         line, i, j, lines, IsIgnoredLine, macro, macroarg, tail,
         ttenv, text, verbatim, nontex, item, initem, displaymath, align,
-        lastblank, singleline, rund, blanks, SetArg, FlushLeft, Gather,
+        lastblank, singleline, rund, SetArg, FlushLeft, Gather,
         width, buff, EmptyLine, ll, start, keynotfound, verb, URLends;
 
   # flush buffer ... then add empty line

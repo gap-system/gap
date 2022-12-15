@@ -150,7 +150,7 @@ end);
 ##
 ##
 InstallGlobalFunction(SNFofREF , function(R,destroy)
-local k,g,b,ii,m1,m2,t,tt,si,n,m,i,j,r,jj,piv,d,gt,tmp,A,T,TT,kk;
+local k,g,b,ii,t,si,n,m,i,j,r,piv,d,A,T;
 
   Info(InfoMatInt,1,"SNFofREF - initializing work matrix");
   n := NrRows(R);
@@ -291,7 +291,7 @@ BindGlobal("BITLISTS_NFIM", MakeImmutable(
 #
 BindGlobal("DoNFIM", function(mat, options)
 local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
-      t, tmp, i, q, R, rank, signdet;
+      t, tmp, i, q, R, signdet;
 
   if not (IsMatrix(mat)
          or (IsList(mat) and Length(mat)=1
@@ -759,7 +759,7 @@ InstallOtherMethod(BaseIntMat,"empty",true,
 InstallMethod(BaseIntersectionIntMats,"use HNF",true,
   [IsMatrix and IsCyclotomicCollColl,IsMatrix and IsCyclotomicCollColl],0,
 function( M1, M2 )
-local M, Q, r, T;
+local M, r, T;
   M := Concatenation( M1, M2 );
   r := NormalFormIntMat( M, 4 );
   T := r.rowtrans{[r.rank+1..Length(M)]}{[1..Length(M1)]};
@@ -1004,7 +1004,7 @@ InstallOtherMethod( AbelianInvariantsOfList,
 # Reduce a list of abelianized relations: Heuristic reduction without
 # making big vectors, iterate three times. Does not aim to do full HNF
 InstallGlobalFunction(ReducedRelationMat,function(mat)
-local n,zero,nv,new,pip,piv,i,v,p,w,g,nov,pin,now,rat,extra,clean,assign,try;
+local n,zero,nv,new,pip,piv,i,v,p,w,g,pin,now,rat,extra,clean,assign,try;
 
   nv:=v->v*SignInt(v[PositionNonZero(v)]);
   assign:=function(p,v)

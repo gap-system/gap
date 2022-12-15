@@ -213,11 +213,10 @@ InstallGlobalFunction( StratMeetPartition, function( arg )
             i,      # result of call to `SpliltCell'
             pnt,    # fixpoint to be processed
             cellsP, #\
-            blist,  #  >see explanation below
-            blist2, #/
+            blist,  #/ see explanation below
             splits,
             lS,
-            rap,  cell,  nrcells;
+            cell,  nrcells;
 
     if not IsPartition( arg[ 1 ] )  then  rbase := arg[ 1 ];  p := 2;
                                     else  rbase := false;     p := 1;  fi;
@@ -417,7 +416,7 @@ end);
 InstallGlobalFunction( Suborbits, function( arg )
     local   H,  tofix,  b,  Omega,  suborbits,  len,  bylen,
             G,  GG,  a,  conj,  ran,  subs,  all,  k,  pnt,  orb,  gen,
-            perm,  omega,  P,  cell,  part,  p,  i, sublique,la,bl,
+            perm,  omega,  P,  cell,  part,  p,  i, la,bl,
             rep,rep2,te,stabgens;
 
     # Get the arguments.
@@ -638,7 +637,6 @@ local  dom,  # operation domain for the group
         typ,  # types of <key> information that occur
         sub,  # suborbit as list of integers
         csiz,
-        ls,
         pos;  # position of cell with given <key> in <P>
 
   if IsInt( k ) and IsBound( subs.orbitalPartitions[ k ] ) then
@@ -1138,8 +1136,7 @@ InstallGlobalFunction( PartitionBacktrack,
     PBEnumerate := function( d, wasTriv )
         local  undoto,   # number of cells of <P> wanted after undoing
                oldprm,   #\
-               oldrgt,   #  > old values of <image>
-               oldprm2,  #/
+               oldprm2,  #/  old values of <image>
                a,        # current R-base point
                m,        # initial number of candidates in <orb>
                max,      # maximal number of candidates still needed
@@ -1978,7 +1975,6 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
            doneblox,   # blox already considered
            doneroot,   # roots of orbital graphs already considered
            tra,        # degree of transitivity of <E>
-           op,
            cp,
            len,  i,  range;
 
@@ -2193,7 +2189,7 @@ end );
 ##
 InstallGlobalFunction( RepOpSetsPermGroup, function( arg )
     local   G,  Phi,  Psi,  repr,  Omega,  rbase,  L,  R,  P,  Q,  p,  Pr,
-            gens,  cell,  i,phitail;
+            i,phitail;
 
     G   := arg[ 1 ];
     Phi := Set( arg[ 2 ] );
@@ -2315,8 +2311,7 @@ local  Omega,      # a common operation domain for <G>, <E> and <F>
         Pr,         # property
         baspts,     # base for group
         eran,       # range
-        oe,of,sets,
-        pre,l,map,
+        map,
         bailout,
         i,j, size; # loop/auxiliary variables
 

@@ -2081,7 +2081,7 @@ end );
 #F  RewriteWord( <aug>, <word> )
 ##
 InstallGlobalFunction(RewriteWord,function ( aug, word )
-local cft, ct, w,l,c,i,j,g,e,ind;
+local cft, ct, w,l,c,i,g,ind;
 
   # check the type.
   Assert(1,aug.type=2);
@@ -2203,7 +2203,6 @@ end);
 #F  SecondaryGeneratorWordsAugmentedCosetTable(<aug>)
 ##
 InstallGlobalFunction(SecondaryGeneratorWordsAugmentedCosetTable,function(aug)
-local tt;
   if not IsBound(aug.secondaryWords) then
     aug.secondaryWords:=Immutable(
     List(GeneratorTranslationAugmentedCosetTable(aug),i->
@@ -2541,7 +2540,7 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
   end;
 
   MMerge:=function(k,a,w)
-  local phi,psi,mu,nu;
+  local phi,psi;
     phi:=MRep(k);
     psi:=MRep(a);
     if phi>psi then
@@ -2931,7 +2930,7 @@ local ded,offset,pair,alpha,x,p,w;
 end;
 
 NEWTC_DoCosetEnum:=function(freegens,freerels,subgens,aug,trace)
-local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
+local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
   oldead,with,collapse,j,from,pp,PERCFACT,ap,ordertwo;
 
   # indicate at what change threshold display of coset Nr. should happen
@@ -3500,7 +3499,7 @@ end );
 # 1: Do a quick reduction without trying to eliminate all secondary gens.
 # -1: No relators
 InstallGlobalFunction(NEWTC_PresentationMTC,function(arg)
-local DATA,rels,i,j,w,f,r,s,fam,new,ri,a,offset,p,rset,re,start,stack,pres,
+local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
   subnum,bad,warn,parameter,str;
 
   DATA:=arg[1];

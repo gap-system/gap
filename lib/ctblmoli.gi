@@ -569,7 +569,6 @@ end );
 InstallGlobalFunction( MolienSeriesWithGivenDenominator,
     function( molser, list )
     local info,
-          denominfo,
           x,
           one,
           denom,

@@ -1568,7 +1568,7 @@ InstallMethod( Characteristic,
   "for an elements family of a magma ring quotient",
   [ IsElementOfMagmaRingModuloSpanOfZeroFamily ],
   function( fam )
-    local A,n,one,x;
+    local A,one;
     A := fam!.magmaring;
     one := One(A);
     if Zero(A) = one then

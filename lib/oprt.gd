@@ -1084,7 +1084,7 @@ local str, orbish, func;
 
     # Create the wrapper function.
     func := function( arg )
-    local   G,  D,  pnt,  gens,  acts,  act,   p,  attrG,  result,le;
+    local   G,  D,  pnt,  gens,  acts,  act,   p,  result,le;
 
       # Get the arguments.
       if 2 <= Length( arg ) then

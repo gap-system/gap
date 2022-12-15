@@ -843,7 +843,7 @@ InstallMethod(\-, [IsFFE,IsFFE],
 ##
 
 FFECONWAY.ProdConwayOtherFFEs := function(x1,x2)
-    local   fam,  cc,  v,  c;
+    local   fam,  cc,  v;
     fam := FamilyObj(x1);
     cc := FFECONWAY.CoeffsOverCommonField(x1,x2);
     v := ProductCoeffs(cc[1],cc[2]);

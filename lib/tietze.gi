@@ -464,7 +464,6 @@ end );
 InstallGlobalFunction( PresentationRegularPermutationGroupNC, function ( G )
     local   cosets,       # right cosets of G by its trivial subgroup H
             F,            # given free group
-            R,            # record containing an fp group isomorphic to G
             P,            # presentation to be consructed
             ng1,          # position number of identity element in G
             idword,       # identity element of F

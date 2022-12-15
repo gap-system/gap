@@ -291,7 +291,7 @@ InstallAttributeMethodByGroupGeneralMappingByImages( IsSurjective );
 #M  GroupGeneralMappingByImages( <G>, <H>, <gens>, <imgs> ) . . . . make GHBI
 ##
 BindGlobal("DoGGMBINC",function( G, H, gens, imgs )
-local   filter,  hom,pcgs,imgso,mapi,l,obj_args,p;
+local   filter,  hom,pcgs,mapi,l,obj_args,p;
 
   hom := rec();
   # generators := Immutable( gens ),
@@ -1431,7 +1431,7 @@ RedispatchOnCondition(IsomorphismPermGroup,true,[IsGroup],[IsFinite],0);
 ## group should be in either the filter KnowsHowToDecompose or the filter
 ## CanEasilyComputeWithIndependentGensAbelianGroup.
 BindGlobal( "IsomorphismAbelianGroupViaIndependentGenerators", function ( filter, G )
-  local gens, imgs, off, i, n, g, K, inv, nice;
+  local gens, imgs, i, g, K, nice;
 
   if IsTrivial( G ) then
     K := TrivialGroup( filter );

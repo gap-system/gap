@@ -253,7 +253,7 @@ end );
     local func;
     func := function(installType)
         return function(args...)
-            local str, filterpos, filtercopy, i, func, info;
+            local filterpos, i, func, info;
 
             # Check we understand arguments
             # Second value must be an info string

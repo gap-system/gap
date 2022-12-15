@@ -321,7 +321,6 @@ DeclareGlobalFunction("DirectoryContents");
 #F  IsDirectoryPath(<name>)
 ##
 BIND_GLOBAL("IsDirectoryPath", function(dirname)
-  local str;
   if IsDirectory(dirname) then
     dirname := dirname![1];
   fi;
@@ -467,7 +466,7 @@ InfoTempDirectories := fail;
 
 
 BIND_GLOBAL( "DirectoryTemporary", function( arg )
-    local   dir,drive,a;
+    local   dir;
 
     # check arguments
     if 1 < Length(arg)  then

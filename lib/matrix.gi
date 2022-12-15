@@ -396,7 +396,7 @@ end );
 #N  performance benefit
 ##
 BindGlobal( "Matrix_OrderPolynomialInner", function( fld, mat, vec, vecs)
-    local d, w, p, one, zero, zeroes, piv,  pols, x, t;
+    local d, w, p, one, zero, zeroes, piv,  pols, x;
     Info(InfoMatrix,2,"Order Polynomial Inner on ",NrRows(mat),
          " x ",NrCols(mat)," matrix over ",fld," with ",
          Number(vecs)," basis vectors already given");
@@ -476,7 +476,7 @@ end );
 ##
 BindGlobal( "Matrix_CharacteristicPolynomialSameField",
     function( fld, mat, ind)
-    local i, n, ords, base, imat, vec, one,cp,op,zero,fam;
+    local i, n, base, imat, vec, one,cp,op,zero,fam;
     Info(InfoMatrix,1,"Characteristic Polynomial called on ",
          NrRows(mat)," x ",NrCols(mat)," matrix over ",fld);
     imat := ImmutableMatrix(fld,mat);
@@ -520,8 +520,8 @@ end );
 #F  Matrix_MinimalPolynomialSameField( <fld>, <mat>, <ind> )
 ##
 BindGlobal( "Matrix_MinimalPolynomialSameField", function( fld, mat, ind )
-    local i, n, ords, base, imat, vec, one,cp,zero, fam,
-          processVec, mp, dim, span,op,w, piv,j,ring;
+    local i, n, base, imat, vec, one, zero, fam,
+          mp, dim, span,op,w, piv,j;
 
     Info(InfoMatrix,1,"Minimal Polynomial called on ",
          NrRows(mat)," x ",NrCols(mat)," matrix over ",fld);
@@ -755,7 +755,7 @@ InstallMethod( CharacteristicPolynomial, "spinning over field",
     end,
     [ IsField, IsField, IsOrdinaryMatrix, IsPosInt ],
     function( F, E, mat, inum )
-        local fld, B;
+        local B;
 
         if not IsSubset (E, F) then
             Error ("<F> must be a subfield of <E>.");
@@ -1703,7 +1703,7 @@ InstallOtherMethod( DimensionsMat,
 
 BindGlobal("DoDiagonalizeMat",function(arg)
 local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l, n, start, d,
-      typ, ed, posi,posj, a, b, qr, c, i,j,left,right,cleanout, alldivide,basmat,origtran;
+      ed, posi,posj, a, b, qr, c, i,j,left,right,cleanout, alldivide,basmat,origtran;
 
   R:=arg[1];
   M:=arg[2];
@@ -2868,7 +2868,7 @@ InstallOtherMethod( SolutionMatDestructive,
     [ IsMatrixOrMatrixObj and IsMutable,
       IsListOrCollection and IsMutable],
         function( mat, vec )
-    local i,ncols,sem, vno, z,x, row, sol;
+    local i,ncols,sem, vno, z,x, sol;
     ncols := Length(vec);
     z := ZeroOfBaseDomain(mat);
     sol := ListWithIdenticalEntries(NrRows(mat),z);
@@ -3513,7 +3513,7 @@ end );
 #F  NullMat( <m>, <n> [, <F>] ) . . . . . . . . . null matrix of a given size
 ##
 InstallGlobalFunction( NullMat, function ( arg )
-    local   null, m, n, zero, row, i, k, f;
+    local   null, m, n, zero, row, i, f;
 
     if Length(arg) = 2  then
         m    := arg[1];
@@ -3574,7 +3574,7 @@ end );
 #F  BasisNullspaceModN( <M>, <n> ) . .  basis of the nullspace of <M> mod <n>
 ##
 InstallGlobalFunction( BasisNullspaceModN, function( M, n )
-    local snf, null, nullM, i, gcdex;
+    local snf, null, nullM, i;
 
     # if n is a  prime, Gaussian elimination is fastest
     if IsPrimeInt (n) then

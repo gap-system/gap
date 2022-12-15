@@ -183,11 +183,8 @@ end );
 ##
 InstallGlobalFunction( MagmaByMultiplicationTableCreator,
     function( arg )
-    local F,      # the family of objects
-          n,      # dimension of `A'
+    local n,      # dimension of `A'
           range,  # the range `[ 1 .. n ]'
-          elms,   # sorted list of elements
-          M,      # the magma, result
           filts;
 
     if IsBound(arg[3]) then

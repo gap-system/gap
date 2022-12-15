@@ -167,7 +167,7 @@ end;
 PCGS_STABILIZER_HOMOMORPHIC := function( arg )
     local   pcgs,  homs,  pnt,  op,  ros,  one,  hone,  orb,  prod,
             n,  s,  stab,  i,  mi,  np,  j,  o,  len,  l1,  k,  l2,
-            r,  e,  data,dict;
+            r,  e,  dict;
 
     pcgs := arg[1];
     homs := arg[2];

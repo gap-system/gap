@@ -144,7 +144,7 @@ end );
 
 
 BIND_GLOBAL( "NewFamily", function ( arg )
-    local typeOfFamilies, name, req, imp, filter;
+    local typeOfFamilies, name, req, imp;
 
     if not LEN_LIST(arg) in [1..4] then
         Error( "usage: NewFamily( <name> [, <req> [, <imp> [, <famfilter> ] ] ] )" );

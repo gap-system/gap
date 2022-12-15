@@ -61,7 +61,7 @@ end);
 ##
 BindGlobal("ComplementClassesByPcgsModulo",
 function( G, fampcgs,pcgs,fphom,words,wordgens,wordimgs)
-    local ocr, cc, cb, co, field, z, V, reps, cls, r, cl,den,gen,ggens;
+    local ocr, cc, cb, co, field, z, V, reps, cls, r, den,ggens;
 
     den:=DenominatorOfModuloPcgs(pcgs);
     # the mysterious one-cocycle record
@@ -171,8 +171,8 @@ end);
 BindGlobal("MaximalSubgroupClassesSol",function(G)
     local pcgs, spec, first, weights, m, max, i, gensG, f, n, p, w, field,
           pcgsN, pcgsM, pcgsF, modus, modu, oper, L, cl, K, R, I, hom,
-          V, W, new, index, pcgsT, gensK, pcgsL, pcgsML, M, H,ff,S,
-          fphom,mgi,sel,words,wordgens,pcgp,homliftlevel,pcgrppcgs,
+          V, W, index, pcgsT, gensK, pcgsL, pcgsML, M, H,ff,S,
+          fphom,mgi,sel,words,wordgens,homliftlevel,
           fam,wordfpgens,wordpre;
 
     # set up
@@ -361,7 +361,7 @@ local m,f,i;
 end);
 
 BindGlobal("MaxesByLattice",function(G)
-local  c, maxs,lat,sel,reps;
+local  c, maxs,sel,reps;
 
   c:=ConjugacyClassesSubgroups(G);
   c:=Filtered(c,x->Size(Representative(x))<Size(G));
@@ -695,7 +695,7 @@ end);
 
 BindGlobal("MaxesType4bc",function(w,g,a,t,n)
 local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
-  bl, lb, u, phi, uphi, ws, ew, ueg, r, i, emb, j, b,ue,ke,scp,s,nlb,
+  bl, lb, u, uphi, ws, ew, ueg, r, i, emb, j, b,ue,scp,s,nlb,
   comp;
 
   m:=[];

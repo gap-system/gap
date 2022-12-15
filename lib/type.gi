@@ -99,7 +99,7 @@ InstallOtherMethod( ViewString,
     [ IsType ],
     0,
 function ( type )
-    local  res, family, flags, data, fnams;
+    local  res, family, flags, data;
 
     res := "<Type: (";
     family := type![POS_FAMILY_TYPE];
@@ -149,8 +149,7 @@ end);
 
 InstallGlobalFunction( TypeOfOperation,
 function(oper)
-    local type, flags, types, catok, repok, propok, seenprop,
-          t, res;
+    local type, flags, types, catok, repok, propok, seenprop, t;
     if not IsOperation(oper) then
         ErrorNoReturn("<oper> must be an operation");
     fi;

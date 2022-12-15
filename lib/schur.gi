@@ -23,7 +23,7 @@
 ##    library.
 
 BindGlobal("SchurCoverFP",function( G )
-local g, i, m, n, r, D, I, M, M2,fgens,rels,gens,Drels,nam;
+local g, i, m, n, r, D, M, M2,fgens,rels,gens,Drels,nam;
 
   fgens:=FreeGeneratorsOfFpGroup(G);
   rels:=RelatorsOfFpGroup(G);
@@ -178,8 +178,8 @@ local u,a,b,i,j,c,x,y;
 end);
 
 InstallGlobalFunction(SchuMu,function(g,p)
-local s,pcgs,n,iso,H,l,cov,der,pco,ng,gens,imgs,ran,zer,i,j,e,a,
-      mult,rels,de,epi,mul,hom,dc,q,qs,mq;
+local s,pcgs,n,l,cov,der,pco,ng,gens,imgs,ran,zer,i,j,e,a,
+      rels,de,epi,mul,hom,dc,q,qs;
   s:=SylowSubgroup(g,p);
   if IsCyclic(s) then
     return InverseGeneralMapping(IsomorphismPcGroup(s));
@@ -419,8 +419,7 @@ local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp,pos;
 end);
 
 InstallGlobalFunction(RelatorFixedMultiplier,function(hom,p)
-local G,B,P,F,FH,U,s,D,shom,i,j,v,r,ri,iso,rank,bas,basr,row,rel,sol,
-      Dg,Dgi,car,dgh,snf,mat;
+local G,B,P,F,FH,s,D,i,j,v,ri,rank,bas,basr,row,rel,sol,snf,mat;
   G:=Source(hom);
   rank:=Length(GeneratorsOfGroup(G));
   B:=ImagesSource(hom);

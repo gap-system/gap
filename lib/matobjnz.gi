@@ -417,7 +417,7 @@ end );
 InstallOtherMethod( AddRowVector, "for plist, zmodnz vector, and a scalar",
   [ IsPlistRep and IsMutable, IsZmodnZVectorRep, IsObject ],
 function( a, b, s )
-local i,m;
+local i;
   if not ForAll(a,IsModulusRep) then TryNextMethod();fi;
   for i in [1..Length(a)] do
     a[i]:=a[i]+b[i]*s;
@@ -427,7 +427,7 @@ end);
 InstallOtherMethod( AddRowVector, "for plist, plist vector, and a scalar",
   [ IsPlistRep and IsMutable, IsPlistVectorRep, IsObject ],
 function( a, b, s )
-local i,m;
+local i;
   for i in [1..Length(a)] do
     a[i]:=a[i]+b[i]*s;
   od;
@@ -684,7 +684,7 @@ InstallMethod( NewIdentityMatrix,
   "for IsZmodnZMatrixRep, a ring, and an int",
   [ IsZmodnZMatrixRep, IsRing, IsInt ],
   function( filter, basedomain, dim )
-    local mat, one, i;
+    local mat, i;
     mat := NewZeroMatrix(filter, basedomain, dim, dim);
 #    one := One(basedomain);
     for i in [1..dim] do
@@ -817,7 +817,6 @@ InstallMethod( PrintObj, "for a zmodnz matrix", [ IsZmodnZMatrixRep ],
 
 InstallMethod( Display, "for a zmodnz matrix", [ IsZmodnZMatrixRep ],
   function( m )
-    local i;
     Print("<");
     if not IsMutable(m) then Print("immutable "); fi;
     Print(Length(m![ROWSPOS]),"x",m![RLPOS],"-matrix over ",m![BDPOS],":\n");
@@ -1578,8 +1577,8 @@ InstallOtherMethod( MinimalPolynomial, "ZModnZ, spinning over field",
     IsElmsCollsX,
     [ IsField and IsFinite, IsMatrixObj, IsPosInt ],
 function( fld, mat, ind )
-    local i, n, ords, base, vec, one,cp,zero, fam,
-          processVec, mp, dim, span,op,w, piv,j;
+    local i, n, base, vec, one,zero, fam,
+          mp, dim, span,op,w, piv,j;
 
     Info(InfoMatrix,1,"Minimal Polynomial called on ",
          NrRows(mat)," x ",NrCols(mat)," matrix over ",fld);
@@ -1642,7 +1641,7 @@ end);
 InstallOtherMethod( CharacteristicPolynomialMatrixNC, "zmodnz spinning over field",
     IsElmsCollsX,
     [ IsField, IsMatrixObj, IsPosInt ], function( fld, mat, ind)
-local i, n, ords, base, imat, vec, one,cp,op,zero,fam;
+local i, n, base, imat, vec, one,cp,op,zero,fam;
     Info(InfoMatrix,1,"Characteristic Polynomial called on ",
     NrRows(mat)," x ",NrCols(mat)," matrix over ",fld);
     imat := ImmutableMatrix(fld,mat);

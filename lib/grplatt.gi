@@ -716,7 +716,7 @@ end);
 BindGlobal("VectorspaceComplementOrbitsLattice",function(n,a,c,ker)
 local s, m, dim, p, field, one, bas, I, l, avoid, li, gens, act, actfun,
       rep, max, baselist, ve, new, lb, newbase, e, orb, stb, tr, di,
-      cont, j, img, idx, stabilizer, i, base, d, gn;
+      cont, j, img, idx, i, base, d, gn;
   m:=ModuloPcgs(a,ker);
   dim:=Length(m);
   p:=RelativeOrders(m)[1];
@@ -839,9 +839,9 @@ end);
 #M  LatticeViaRadical(<G>[,<H>])  . . . . . . . . . .  lattice of subgroups
 ##
 InstallGlobalFunction(LatticeViaRadical,function(arg)
-  local G,H,HN,HNI,ser,pcgs,u,hom,f,c,nu,nn,nf,a,e,kg,k,ohom,mpcgs,gf,
+  local G,H,HN,HNI,ser,pcgs,u,hom,f,c,nu,nn,nf,a,e,kg,k,mpcgs,gf,
   act,nts,orbs,n,ns,nim,fphom,as,p,isn,isns,lmpc,npcgs,ocr,v,
-  com,cg,i,j,w,ii,first,cgs,cs,presmpcgs,select,fselect,
+  com,cg,i,j,w,ii,first,cgs,presmpcgs,select,fselect,
   makesubgroupclasses,cefastersize;
 
   #group order below which cyclic extension is usually faster
@@ -1537,8 +1537,6 @@ function (L)
             cnt,               # count for information messages
             classes,           # list of all classes
             I,                 # representative of a class
-            Ielms,             # elements of <I>
-            Izups,             # zuppos blist of <I>
             N,                 # normalizer of <I>
             Jgens,             # zuppos of a conjugate of <I>
             Kgroup,             # zuppos of a representative in <classes>
@@ -3061,7 +3059,7 @@ end);
 InstallMethod(TomDataAlmostSimpleRecognition,"generic",true,
   [IsGroup],0,
 function(G)
-local T,t,hom,inf,nam,i,aut;
+local T,t,hom,inf,nam,i;
 
   T:=PerfectResiduum(G);
   inf:=DataAboutSimpleGroup(T);

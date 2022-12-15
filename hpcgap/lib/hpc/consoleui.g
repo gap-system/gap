@@ -345,7 +345,7 @@ BindGlobal("AddOutput@", function(threadid, text, is_prompt, deferred)
 end);
 
 BindGlobal("AddOutputCommand@", function(threadid, text)
-  local history, prompt;
+  local history;
   if StartsWith(text, "!") and OutputHistoryIncompleteLine@[threadid] then
     DelayedPrompt@ := OutputContext@(1, threadid);
   fi;
@@ -695,7 +695,7 @@ BindGlobal("CommandPrevious@", function(line)
 end);
 
 BindGlobal("CommandReplay@", function(line)
-  local values, num, id, thread, history, newlines;
+  local values, num, thread, history, newlines;
   values := GetArg@(line);
   num := SMALLINT_STR(values[1]);
   if num = 0 then
@@ -752,7 +752,7 @@ BindGlobal("CommandSource@", function(line)
 end);
 
 BindGlobal("CommandAlias@", function(line)
-  local values, alias, list, header;
+  local values, alias, header;
   atomic Region@ do
     values := GetArg@(line);
     if values[1] = "" then
@@ -863,7 +863,7 @@ od;
 DeclareGlobalFunction("RunCommandWithAliases@"); # Needed for recursion
 
 InstallGlobalFunction("RunCommandWithAliases@", function(string, aliases)
-  local values, command, arguments, choices, func, line, i, c, recursive;
+  local values, command, arguments, choices, func, c, recursive;
   values := GetArg@(string);
   command := values[1];
   if Length(command) > 0 and IsDigitChar(command[1]) then
@@ -1004,7 +1004,7 @@ BindGlobal("MainLoop@", function(mainthreadinfo)
 end);
 
 BindGlobal("InputLoop@", function()
-  local packet, stdin, stdout, line;
+  local stdin, line;
   ControlThread@ := true;
   stdin := INPUT_TEXT_FILE("*stdin*");
   while true do
@@ -1109,7 +1109,6 @@ BindGlobal("ConsoleUISelectThread", function(thread)
 end);
 
 BindGlobal("ConsoleUIOutputHistory", function(thread, lines)
-  local history;
   if not IsBound(ThreadName@[thread+1]) then
     return fail;
   fi;

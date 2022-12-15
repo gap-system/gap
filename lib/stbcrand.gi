@@ -1067,7 +1067,7 @@ end );
 ##  restores usual group records after random stabilizer chain construction
 ##
 InstallGlobalFunction( SCRRestoredRecord, function( G )
-    local   sgs,  T,  S,  l,  lab,  pnt,o,ind;
+    local   sgs,  T,  S,  l,  pnt,o,ind;
 
     S := G;
     sgs := [ S.identity ];

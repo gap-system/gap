@@ -308,7 +308,7 @@ end);
 ##         operation kernels, don't continue anything which is smaller than N
 ##
 InstallGlobalFunction(CloseNaturalHomomorphismsPool,function(arg)
-local G,pool,p,comb,i,c,perm,l,isi,N,discard,Npos,psub,pder,new,co,pos,j,k;
+local G,pool,p,comb,i,c,perm,isi,N,discard,Npos,psub,pder,new,co,pos,j,k;
 
   G:=arg[1];
   pool:=NaturalHomomorphismsPool(G);
@@ -649,7 +649,7 @@ end);
 
 BindGlobal("DoActionBlocksForKernel",
 function(G,mustfaithful)
-local pool, dom, o, bl, op, Go, j, b, i,allb,newb,movl;
+local dom, o, bl, j, b, allb,newb;
 
   dom:=MovedPoints(G);
   # orbits
@@ -1736,7 +1736,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp,
   "test if known/try solvable factor for permutation groups",
   IsIdenticalObj, [ IsPermGroup, IsPermGroup ], 0,
 function( G, N )
-local   map,  pcgs, A, filter,p,i;
+local   map,  pcgs, A, filter;
 
   if KnownNaturalHomomorphismsPool(G,N) then
     A:=DegreeNaturalHomomorphismsPool(G,N);

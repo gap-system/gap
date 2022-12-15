@@ -71,7 +71,7 @@ LockAndMigrateObj(LineEditKeyHandlers, CommandLineRegion);
 # args: [linestr, ch, ppos, length, yankstr]
 # returns: [linestr, ppos, yankstr]
 BindGlobal("LineEditKeyHandler", function(l)
-  local res, lin;
+  local res;
   atomic CommandLineRegion do
     if not IsBound(LineEditKeyHandlers[l[2]+1]) then
       return [l[1], l[3], l[5]];

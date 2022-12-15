@@ -230,7 +230,7 @@ function(cong)
    end;
 
    laTrace:= function(w)
-      local s, t, a, b, u, v, x;
+      local s, t, a, b, u, v;
 
       # tracing |la| through left of |w| gives |s|.
       s:= la;

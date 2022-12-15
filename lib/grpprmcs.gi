@@ -364,13 +364,9 @@ InstallGlobalFunction( PerfectCSPG,
                         # minimal normal subgroup
             N,          # normal subgroup of K
             prime,      # prime dividing order of degree of K
-            stab1,      # stabilizer of first base point in K
             stab2,      # stabilizer of first two base points in K
             kerelement, # element of normal subgroup
             ker2,       # conjugate of kerelement
-            word,       # random element of stab1 as word
-            x,y,        # first two base points of K
-            i,j,        # loop variables
             H,          # normalizer, and then centralizer of stab2
             L,          # set of moved points of stab2
             op,         # operation of H on N
@@ -1940,8 +1936,6 @@ end );
 InstallGlobalFunction( CentralizerNormalCSPG, function(G,N)
     local   n,          # degree of G
             orbits,     # list of orbits of G
-            list,       # ordering of permutation domain
-                        # such that G orbits are consecutive
             base,       # lexicographically smallest (in list) base of G
             i,j,        # loop variables
             reps,       # array recording which orbit of G the points in
@@ -1964,7 +1958,6 @@ InstallGlobalFunction( CentralizerNormalCSPG, function(G,N)
             centrnorm,  # centralizer of NN in GG restricted to Sym(orbit)
             inverse2,   # inverse of the conjugating permutation of tchom2
             g,          # loop variable for generators
-            image,      # generator of centrnorm, as it acts on domain
             central;    # centralizer of NN in GG
 
     if IsTrivial(N)  then
@@ -2344,7 +2337,7 @@ InstallGlobalFunction( IntersectionNormalClosurePermGroup,
     function(arg)
     local   G,H,        # the groups to be handled
             n,          # maximum of degrees of G,H
-            i,j,        # loop variables
+            i,          # loop variables
             conperm,    # perm exchanging first and second n points
             newgens,    # set of extended generators
             options,    # options record for stabilizer computation

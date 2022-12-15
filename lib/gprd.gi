@@ -572,7 +572,7 @@ end);
 InstallMethod( Projection,"pc subdirect product", true,
       [ IsGroup and HasSubdirectProductInfo, IsPosInt ], 0,
 function( S, i )
-local   prj, info;
+local info;
   if not i in [1,2] then
     Error("only 2 embeddings");
   fi;
@@ -902,7 +902,6 @@ end);
 ##
 InstallGlobalFunction( ListWreathProductElement,
 function(G, x, testDecomposition...)
-  local info;
   if Length(testDecomposition) = 0 then
     testDecomposition := true;
   elif Length(testDecomposition) = 1 then
@@ -992,7 +991,7 @@ InstallMethod(OneOp,"wreath elements",true,[IsWreathProductElement],0,
 InstallMethod(InverseOp,"wreath elements",true,
   [IsWreathProductElement],0,
 function(x)
-local l,p,i,j,info,fam;
+local l,p,i,info,fam;
   fam:=FamilyObj(x);
   info:=fam!.info;
   l:=[];
@@ -1273,7 +1272,7 @@ InstallMethod( SemidirectProduct,"group with fp",true,
 InstallMethod( Embedding,"of semidirect product and integer",true,
     [ IsGroup and HasSemidirectProductInfo, IsPosInt ], 0,
 function( P, i )
-local info, G, imgs, hom;
+local info;
 
   info := SemidirectProductInfo( P );
   if IsBound( info.embeddings[i] ) then

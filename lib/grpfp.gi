@@ -840,8 +840,7 @@ function( G )
             rel,        # a relator of <G>
             p,          # position of <g> or its inverse in <gens>
             i,          # loop variable
-            word,r,
-            inv;
+            word;
 
   Fam := ElementsFamily( FamilyObj( G ) );
   gens := FreeGeneratorsOfFpGroup( G );
@@ -893,7 +892,7 @@ InstallMethod( IsInfiniteAbelianizationGroup,
   "for a subgroup of a finitely presented group", true,
   [ IsSubgroupFpGroup ], 0,
 function(H)
-    local G,mat,r;
+    local G,mat;
 
   if IsGroupOfFamily(H) then
     TryNextMethod();
@@ -2079,7 +2078,7 @@ end);
 InstallOtherMethod(FactorCosetAction,
   "list of fp groups",IsElmsColls,
   [IsSubgroupFpGroup and IsWholeFamily,IsList],0,function(g,l)
-local ind,q,is,i;
+local ind,q,is;
   l:=List(l,x->Core(g,x));
   ind:=List(l,IndexInWholeGroup);
   Print("Found ",Length(l)," subgroups, core indices:\n",Collected(ind),"\n");
@@ -2277,7 +2276,6 @@ BindGlobal( "IsDoneIterator_LowIndexSubgroupsFpGroup", function( iter )
           excludeWords, # words to be excluded, sorted by start generator
           subs,         # number of found subgroups of <G>
           sub,          # one subgroup
-          gens,         # generators of <sub>
           table,        # coset table
           nrgens,       # 2*(number of generators)+1
           nrcos,        # number of cosets in the coset table
@@ -2292,7 +2290,6 @@ BindGlobal( "IsDoneIterator_LowIndexSubgroupsFpGroup", function( iter )
           coinc,        # 'true' if a coincidence happened
           gen,          # current generator
           cos,          # current coset
-          rels,         # representatives for the relators
           relsGen,      # relators sorted by start generator
           subgroup,     # rows for the subgroup gens
           nrsubgrp,     # number of subgroups
@@ -2300,19 +2297,17 @@ BindGlobal( "IsDoneIterator_LowIndexSubgroupsFpGroup", function( iter )
           later,        # 'later[<i>]' is <> 0 if <i> is smaller than 1
           nrfix,        # index of a subgroup in its normalizer
           pair,         # loop variable for subgroup generators as pairs
-          rel,          # loop variable for relators
           triple,       # loop variable for relators as triples
           r, s,         # renumbering lists
           x, y,         # loop variables
           g, c, d,      # loop variables
-          p,            # generator position numbers
           length,       # relator length
           numgen,
           numcos,
           perms,        # permutations on the cosets
           Q,            # Quotient group
           done,
-          i, j;         # loop variables
+          i;            # loop variables
 
     # Do nothing if we know already that the iterator is exhausted,
     # or if we know already the next subgroup.
@@ -3533,7 +3528,7 @@ end );
 ##  is automatically cyclically reduced).
 ##
 InstallGlobalFunction( RelatorRepresentatives, function ( rels )
-local reps, word, length, fam, reversed, cyc, min, g, rel, i,j;
+local reps, word, length, fam, reversed, cyc, min, rel, i,j;
 
     reps := [ ];
 
@@ -3678,11 +3673,10 @@ local   gens,                   # group generators
         table,                  # coset table
         ignore,                 # if true, ignore square relators
         relsGen,                # resulting list
-        rel, cyc,               # one relator and cyclic permutation
+        rel,                    # one relator and cyclic permutation
         length, extleng,        # length and extended length of rel
         base, base2,            # base length of rel
         gen,                    # one generator in rel
-        exp,                    # syllable exponent
         es,                     # exponents sum
         nums, invnums,          # numbers list and inverse
         cols, invcols,          # columns list and inverse
@@ -5363,7 +5357,7 @@ end);
 # this function might not terminate if there is an infinite index.
 # for infinite index we'd need a nilpotent quotient
 CoSuFp:=function(G,U)
-local f,i,j,rels,H,iso,img,quo,hom;
+local f,i,j,rels,H,iso,quo,hom;
   if not IsNormal(G,U) then
     TryNextMethod();
   fi;

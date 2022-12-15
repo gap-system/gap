@@ -138,7 +138,7 @@ end;
 ##      satisfy the presentation for 2S-(n) given above.  Also checks the
 ##      components Sym and Alt if present.
 SanityCheckNeg := function( S, p )
-    local d, deg, z, t, i, j;
+    local d, deg, i, j;
 
     d:= Length( S );
     deg:= Length( S[1] );
@@ -401,7 +401,7 @@ end;
 
 ##  construction of a basic spin rep. of 2S+(n) in characteristic p
 BasicSpinRepSymPos := function( n, p )
-    local z, M, k, i, kmodp, steps;
+    local z, M, k, i, steps;
     if not IsPosInt(n) or not IsInt(p) or n < 4 or not ( p = 0 or IsPrime( p ) ) then
         return fail;
     fi;

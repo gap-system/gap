@@ -85,7 +85,7 @@ InstallMethod( DeepThoughtCollectorByGenerators,
     0,
 
 function( efam, gens, orders )
-    local   i,  dt,  m,  bits,  type,  fam;
+    local   i,  dt,  type,  fam;
 
     # create the correct family
     fam := NewFamily( "PowerConjugateCollectorFamily",
@@ -407,7 +407,7 @@ InstallMethod( SetPower,
     0,
 
 function( dtrws, i, rhs )
-    local   fam,  m,  n,  l;
+    local   fam,  m;
 
     # check the family (this cannot be done in install)
     fam := UnderlyingFamily(dtrws);
@@ -479,7 +479,7 @@ InstallMethod( SetConjugate,
     0,
 
 function( dtrws, i, j, rhs )
-    local   fam,  m,  n,  l;
+    local  m;
 
     # check <i> and <j>
     if i <= 1  then
@@ -754,7 +754,7 @@ InstallMethod(CollectWordOrFail,
     0,
 
 function(dtrws, l, word)
-    local i,j, help, help1,ext;
+    local i, help, help1,ext;
 
     if  not IsUpToDatePolycyclicCollector(dtrws)  then
         UpdatePolycyclicCollector(dtrws);

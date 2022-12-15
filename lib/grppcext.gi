@@ -734,7 +734,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
       preimlist:=List(tmp,x->[x,List(Ggens,y->PreImagesRepresentative(x,y))]);
 
       f:=function( tup, elm )
-      local gens,i,p;
+      local gens,p;
         p:=PositionProperty(preimlist,x->IsIdenticalObj(x[1],elm[1]));
         if p=fail then
           gens := List( Ggens, x -> PreImagesRepresentative( elm[1], x ) );

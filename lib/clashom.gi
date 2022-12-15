@@ -17,7 +17,7 @@
 
 # get classes from classical group if possible.
 BindGlobal("ClassesFromClassical",function(G)
-local H,hom,d,cl;
+local hom,d,cl;
   if IsPermGroup(G) and (IsNaturalAlternatingGroup(G)  or
     IsNaturalSymmetricGroup(G)) then
     return ConjugacyClasses(G); # there is a method for this
@@ -1649,7 +1649,7 @@ BindGlobal("LiftClassesEANonsolvGeneral",
            h,          # preimage `cl.representative' under <hom>
            cg,
            cNh,        # centralizer of <h> in <N>
-           C,  gens,   # preimage `Centralizer( cl )' under <hom>
+           gens,   # preimage `Centralizer( cl )' under <hom>
            r,          # dimension of <N>
            ran,        # constant range `[ 1 .. r ]'
            aff,        # <N> as affine space
@@ -1658,28 +1658,16 @@ BindGlobal("LiftClassesEANonsolvGeneral",
            rep,# set of classes with canonical representatives
            c,  i, # loop variables
            PPcgs,denomdepths,
-           reduce,
-           corr,
            correctionfactor,
-           stabfac,
            stabfacgens,
            stabfacimg,
            stabrad,
-           sz,gpsz,subsz,solvsz,
-           orblock,
-           stage,
-           b,j,
-           p,vp,genum,
-           st,gpe,
-           fe,epi,
-           repword,repwords,radidx,img,
-           radrange,farange,
-           ratio,
-           reps,
-           deno,docorrect,
-           k,failcnt,orpo,
-           stabilizergen,stabstack,
-           comm,s,stab;# for class correction
+           gpsz,subsz,solvsz,
+           b,
+           fe,
+           radidx,
+           deno,
+           comm;# for class correction
 
   correctingelement:=function(h,rep,fe)
   local comm;
@@ -1814,7 +1802,6 @@ local  classes,            # classes to be constructed, the result
         comms,
         mats,
         decomp,
-        reduce,
         gens,
         radidx,
         stabrad,stabfacgens,stabfacimg,stabrsubsz,relo,orblock,fe,st,
@@ -1822,7 +1809,6 @@ local  classes,            # classes to be constructed, the result
         subsz,solvsz,i,j,
         v,
         h,              # preimage `cl.representative' under <hom>
-        C,              # preimage `Centralizer( cl )' under <hom>
         w,              # coefficient vectors for projection along $[h,N]$
         c;              # loop variable
 
@@ -2005,10 +1991,9 @@ end);
 ##
 BindGlobal("LiftClassesEATrivRep",
   function( H, Npcgs, cl, fants,hom, pcisom,solvtriv)
-    local  classes,    # classes to be constructed, the result
-           h,field,one,solvsz,radidx,gens,imgs,M,bas,
-           gpsz,c,i,npcgsact,usent,dim,found,nsgens,ntgens,nsimgs,mo,
-           basis, ssidx,cpidx,compl,pcgsimgs,pcgssel,
+    local  h,field,one,solvsz,radidx,gens,imgs,M,bas,
+           gpsz,c,i,npcgsact,usent,dim,found,nsgens,nsimgs,mo,
+           pcgsimgs,pcgssel,
            sel,pcgs,fasize,nsfgens,fgens,a,norb,fstab,rep,reps,frep,freps,
            orb,p,rsgens,el,img,j,basinv,newo,orbslev,ssd,result,o,subs,orbsub,
            sgens,sfgens,z,minvecs,orpo,norpo,maxorb,
@@ -2161,7 +2146,7 @@ BindGlobal("LiftClassesEATrivRep",
   od;
 
   IteratedMinimizer:=function(vec,allcands)
-  local i,stops,a,cands,mapper,fmapper,stabfacgens,stabradgens,stabfacimgs,
+  local i,a,cands,mapper,fmapper,stabfacgens,stabradgens,stabfacimgs,
         range,lcands,lvec;
     cands:=allcands;
     mapper:=One(Source(hom));
@@ -2352,8 +2337,6 @@ local r,        #radical
       fants,
       d,
       solvtriv,
-      M,N,      # normal subgrops
-      ind,      # indices
       i,        #loop
       new,      # new classes
       cl,ncl;   # classes
@@ -2556,7 +2539,7 @@ BindGlobal("LiftConCandCenNonsolvGeneral",
            h,          # preimage `cl.representative' under <hom>
            cg,
            cNh,        # centralizer of <h> in <N>
-           C,  gens,   # preimage `Centralizer( cl )' under <hom>
+           gens,       # preimage `Centralizer( cl )' under <hom>
            r,          # dimension of <N>
            ran,        # constant range `[ 1 .. r ]'
            aff,        # <N> as affine space
@@ -2565,30 +2548,21 @@ BindGlobal("LiftConCandCenNonsolvGeneral",
            rep,# set of classes with canonical representatives
            c,  i, # loop variables
            PPcgs,denomdepths,
-           reduce,
            corr,
            correctionfactor,
            censize,cenradsize,
-           stabfac,
            stabfacgens,
            stabfacimgs,
            stabrad,
-           sz,gpsz,subsz,solvsz,
+           gpsz,subsz,solvsz,
            orblock,
-           stage,
-           b,j,x,
-           minimal,minstab,mappingelm,
-           p,vp,genum,
-           st,gpe,
-           fe,epi,
-           repword,repwords,radidx,img,
-           radrange,farange,
-           ratio,
-           deno,docorrect,
-           k,failcnt,orpo,
-           stabilizergen,stabstack,
+           b,x,
+           minimal,mappingelm,
+           p,
+           fe,
+           repwords,radidx,
            sel,
-           comm,s,stab;# for class correction
+           comm;# for class correction
 
   correctingelement:=function(h,rep,fe)
   local comm;
@@ -2806,7 +2780,6 @@ local r,        #radical
       prereps,  # fixed factor class reps preimages
       pcgs,mpcgs, #(modulo) pcgs
       pcisom,
-      gens,
       ser,      # series
       radsize,len,ntrihom,
       mran,nran,fran,
@@ -2819,12 +2792,10 @@ local r,        #radical
       d,
       solvtriv,
       select,sel,pos,
-      M,N,      # normal subgrops
-      ind,      # indices
       i,j,      #loop
       new,      # new classes
       classrange,
-      cl,ncl;   # classes
+      cl;   # classes
 
   # it seems to be cleaner (and avoids deferring abelian factors) if we
   # factor out the radical first. (Note: The radical method for perm groups

@@ -464,7 +464,7 @@ end );
 ##
 InstallGlobalFunction( LiftAbsAndIrredModules,
     function( pcgsS, pcgsN, modrec, dim )
-    local todo, fp, new, i, modu, E, conj, type, s, gal, types, r, un, j,
+    local todo, fp, new, i, modu, E, conj, type, s, gal, r, un, j,
           g, galfp, small, sconj, irred, absirr, n, F, irr, dF;
 
     # split modules into parts
@@ -553,7 +553,7 @@ end );
 #F AbsAndIrredModules( <G>, <F>, <dim> ) . . . . . . . . . . . . . . . .local
 ##
 InstallGlobalFunction( AbsAndIrredModules, function( G, F, dim )
-    local pcgs, m, modrec, i, pcgsS, pcgsN, r, irr;
+    local pcgs, m, modrec, i, pcgsS, pcgsN, r;
 
     # check
     if dim < 0 then Error("dimension limit must be non-negative"); fi;

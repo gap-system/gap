@@ -183,7 +183,7 @@ InstallMethod( PrefrattiniSubgroup,
     0,
 
 function( G )
-    local   pcgs,  spec,  first,  weights,  m,  pref,  i,  start,
+    local   spec,  first,  weights,  m,  pref,  i,  start,
             next,  p,  pcgsS,  pcgsN,  pcgsL,  mats,  modu,  rad,
             elms,  P;
 
@@ -546,7 +546,7 @@ RedispatchOnCondition( MaximalNormalSubgroups, true,
 #F  ModifyMinGens( <pcgsG>, <pcgsS>, <pcgsL>, <min> )
 ##
 ModifyMinGens := function( pcgs, pcgsS, pcgsL, min )
-    local pcgsF, g, i, new, pcgsT, pcgsV;
+    local pcgsF, g, i, new, pcgsT;
 
     # set up
     pcgsF := pcgsS mod pcgsL;
@@ -615,7 +615,7 @@ InstallMethod( MinimalGeneratingSet,
 
 function( G )
     local spec, weights, first, m, mingens, i, start, next, j,
-          pcgsN, pcgsS, pcgsU;
+          pcgsN, pcgsS;
 
     if IsTrivial(G)  then
         return [];

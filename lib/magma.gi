@@ -708,7 +708,7 @@ InstallOtherMethod( MagmaWithOneByGenerators,
 #M  MagmaWithInversesByGenerators( <gens> ) . . . . . . . .  for a collection
 ##
 MakeMagmaWithInversesByFiniteGenerators:=function(family,gens)
-local M,typ,id,fam;
+local M;
 
   M:=MakeGroupyObj(family, IsMagmaWithInverses, gens, fail);
 

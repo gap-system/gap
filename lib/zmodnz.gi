@@ -738,7 +738,7 @@ InstallMethod( StandardAssociateUnit,
     IsCollsElms,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing, IsZmodnZObj and IsModulusRep ],
     function ( R, r )
-      local m, n, u, pd, p, d, e, x, residues, moduli;
+      local m, n, u, pd, p, d, x, residues, moduli;
       # zero is associated to itself, so return identity
       if r![1] = 0 then
         return ZmodnZObj( FamilyObj( r ), 1 );
@@ -1078,9 +1078,7 @@ end ) );
 #F  ZmodnZ( <n> ) . . . . . . . . . . . . . . .  construct `Integers mod <n>'
 ##
 InstallGlobalFunction( ZmodnZ, function( n )
-    local pos,
-          F,
-          R;
+    local F, R;
 
     if not IsInt( n ) then
       Error( "<n> must be an integer" );

@@ -63,8 +63,6 @@ InstallGlobalFunction( AddGeneratorsGenimagesExtendSchreierTree,
     local   old,        # genlabels before extension
             len,        # initial length of the orbit of <S>
             img,        # image during orbit algorithm
-            pos,        # label positions
-            ind,        # index of new labels
             i,  j;      # loop variables
 
     # check duplicates
@@ -584,7 +582,7 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
 end );
 
 DoShortwordBasepoint:=function(shorb)
-local dom, l, n, i, j,o,ld,mp,lp,x;
+local dom, l, n, i, j,o,mp,lp,x;
   # do not take all elements but a sampler
   #if Length(shorb)>10000 then
   #  mp:=[1..Length(shorb)];
@@ -667,7 +665,6 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
             orb,
             orbf,       # indicates with which generator the image was obtained
             dict,
-            cnt,
             short,
             FillTransversalShort,
             BuildOrb,
@@ -771,7 +768,7 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
       # This is similar to Minkwitz' approach and produces much shorter
       # words when decoding.
       FillTransversalShort:=function(stb,size)
-      local l,i,bpt,m,elm,wrd,z,j,dict,fc,mfc;
+      local l,i,bpt,elm,wrd,z,j,dict,fc,mfc;
         mfc:=Minimum(maxstor*10,gsize/size);
         bpt:=stb.orbit[1];
         stb.norbit:=ShallowCopy(stb.orbit);
@@ -1709,7 +1706,7 @@ function(hom,U)
 end);
 
 RanImgSrcSurjBloho:=function(hom)
-local gens,imgs,ran,dom;
+local gens,imgs,ran;
 # using stabchain info will produce just too many generators
   if ValueOption("onlyimage")=fail and HasStabChainMutable(Source(hom))
     and NrMovedPoints(Source(hom))<20000 then

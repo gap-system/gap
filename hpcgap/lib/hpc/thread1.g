@@ -158,7 +158,6 @@ NewSpecialRegion := function(arg)
 end;
 
 LockAndMigrateObj := function(obj, target)
-  local lock;
   if IsShared(target) and not HaveWriteAccess(target) then
     atomic target do
       MIGRATE(obj, target);
