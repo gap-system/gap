@@ -331,9 +331,9 @@ affect some users directly.
 
 #### New packages redistributed with GAP
 
-- **classicpres** 1.22: Classical Group Presentations, by Alexander Hulpke, Eamonn O'Brien, Charles Leedham-Green, Madeleine Whybrow, Giovanni de Franceschi
-- **StandardFF** 0.9.4: Standard finite fields and cyclic generators, by Frank Lübeck
-- **UGALY** 4.0.3: Universal Groups Acting LocallY, by Khalil Hannouch, Stephan Tornier
+- [**classicpres**](http://www.math.colostate.edu/~hulpke/classicpres) 1.22: Classical Group Presentations, by Alexander Hulpke, Eamonn O'Brien, Charles Leedham-Green, Madeleine Whybrow, Giovanni de Franceschi
+- [**StandardFF**](https://www.math.rwth-aachen.de/~Frank.Luebeck/gap/StandardFF) 0.9.4: Standard finite fields and cyclic generators, by Frank Lübeck
+- [**UGALY**](https://gap-packages.github.io/UGALY) 4.0.3: Universal Groups Acting LocallY, by Khalil Hannouch, Stephan Tornier
 
 #### Updated packages redistributed with GAP
 

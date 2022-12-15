@@ -47,11 +47,12 @@ def main(old_json_file, new_json_file):
         for p in sorted(added):
             pkg = new_json[p]
             name = pkg["PackageName"]
+            home = new["PackageWWWHome"]
             desc = pkg["Subtitle"]
             vers = pkg["Version"]
             authors = [x["FirstNames"]+" "+x["LastName"] for x in pkg["Persons"] if x["IsAuthor"]]
             authors = ", ".join(authors)
-            print(f"- **{name}** {vers}: {desc}, by {authors}")
+            print(f"- [**{name}**]({home}) {vers}: {desc}, by {authors}")
         print()
 
     #
@@ -75,9 +76,8 @@ def main(old_json_file, new_json_file):
         print(f"""
 #### Updated packages redistributed with GAP
 
-The GAP {new_gap_version} distribution contains {len(new_json)}
-packages, of which {len(updated)} have been updated since GAP
-{old_gap_version}. The full list of updated packages is given below:
+The GAP {new_gap_version} distribution contains {len(new_json)} packages, of which {len(updated)} have been
+updated since GAP {old_gap_version}. The full list of updated packages is given below:
 """.lstrip())
         for p in sorted(updated):
             old = old_json[p]
