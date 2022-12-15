@@ -485,7 +485,7 @@ end);
 ##
 InstallMethod(\*,"AlgElm*AlgElm",IsIdenticalObj,[IsKroneckerConstRep,IsKroneckerConstRep],0,
 function(x,y)
-local fam,b,d,i;
+local fam,b,i;
   fam:=FamilyObj(x);
   b:=ProductCoeffs(x![1],y![1]);
   while Length(b)<fam!.deg do
@@ -1072,7 +1072,7 @@ local l,f,i,j,k,gens;
 end);
 
 InstallGlobalFunction(AlgExtEmbeddedPol,function(ext,pol)
-local f, cof;
+local cof;
    cof:=CoefficientsOfUnivariatePolynomial(pol);
    return UnivariatePolynomial(ext,cof*One(ext),
              IndeterminateNumberOfUnivariateRationalFunction(pol));
@@ -1353,7 +1353,7 @@ end);
 ##
 InstallGlobalFunction(IdealDecompositionsOfPolynomial,function(f)
 local n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
-      gut,avoid,blocks,g,m,decom,z,R,scale,allowed,hp,hpc,a,kfam,only;
+      gut,avoid,blocks,g,m,decom,z,allowed,hp,hpc,a,kfam,only;
 
   only:=ValueOption("onlyone")=true;
   n:=DegreeOfUnivariateLaurentPolynomial(f);

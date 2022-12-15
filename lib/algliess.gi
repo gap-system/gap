@@ -1349,7 +1349,7 @@ SimpleLieAlgebraTypeM := function (n, F)
     # that
     #    p = coeff * OBasis [pos].
     WOProduct := function (w1, x2)
-        local pow, prod;
+        local pow;
         if x2 [w1 [2]] > 0 then
             pow := ShallowCopy (x2);
             pow [w1 [2]] := pow [w1 [2]] - 1;
