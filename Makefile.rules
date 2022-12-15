@@ -939,7 +939,7 @@ endif
 ########################################################################
 
 GAPARGS=
-TESTGAPcore = $(abs_builddir)/bin/gap.sh --quitonbreak -b -q -r $(GAPARGS)
+TESTGAPcore = $(abs_builddir)/gap --quitonbreak -b -q -r $(GAPARGS)
 TESTGAPauto = $(TESTGAPcore) -m 100m -o 1g -x 80
 TESTGAP = $(TESTGAPauto) -A
 

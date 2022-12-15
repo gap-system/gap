@@ -19,7 +19,7 @@ for i in [1..Length(exstut)] do
        ", WS",
 ##         ", RS",
 ##         ", WSRS",
-       ");' | ../../bin/gap.sh -b -r -A -q -L wsp > ", resfile ));
+       ");' | ../../gap -b -r -A -q -L wsp > ", resfile ));
   str := StringFile(resfile);
   if str{[Length(str)-22..Length(str)]} = "# Running list 1 . . .\n" then
     RemoveFile(resfile);
