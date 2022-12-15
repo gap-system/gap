@@ -502,7 +502,7 @@ InstallMethod( IsSingleValued,
     "for algebra g.m.b.i.",
     [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep ],
 function(map)
-local S,gi,i,basic;
+local S;
   S:=Source(map);
 
   # rewriting to left modules is not feasible for infinite dimensional

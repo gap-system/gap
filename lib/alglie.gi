@@ -1165,7 +1165,7 @@ end);
 InstallMethod( PClosureSubalgebra, "for a subalgebra of restricted jacobian elements",
     [ IsLieAlgebra and IsJacobianElementCollection ],
     function(A)
-    local i, p, oldA;
+    local i, oldA;
 
     repeat
         oldA := A;

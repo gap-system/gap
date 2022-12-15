@@ -86,7 +86,7 @@ end;
 # of representatives and can be used to deduce the module automorphism
 # belonging to a factor group automorphism.
 BindGlobal("AGSRFindRels",function(nat,newgens)
-local C,M,p,all,gens,sub,q,hom,fp,rels,new,pre,sel,i,free,cnt;
+local C,M,p,all,gens,sub,q,hom,fp,rels,new,pre,i,free,cnt;
   M:=KernelOfMultiplicativeGeneralMapping(nat);
   C:=Centralizer(Source(nat),M);
   if not IsSubset(FrattiniSubgroup(C),M) then
@@ -334,7 +334,7 @@ end);
 # First try `SubgroupProperty`, but when it stalls attempt to find
 # minimal supergroups and prove that none of them satisfies.
 BindGlobal("SubgroupConditionAboveAux",function(G,cond,S1,avoid)
-local S,c,hom,q,a,b,i,t,int,bad,have,ups,up,new,u,good,abort,clim,worked,pp,
+local S,c,hom,q,a,b,i,t,have,ups,new,u,good,abort,clim,worked,pp,
   cnt,locond,tstcnt,setupc,havetest;
 
   setupc:=function()
@@ -704,7 +704,7 @@ end);
 # component subgroups, orbits
 BindGlobal("AutomGrpSR",function(G)
 local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
-      b,fratsim,AQ,OQ,Zm,D,innC,bas,oneC,imgs,C,maut,innB,tmpAut,imM,a,A,B,
+      b,fratsim,AQ,OQ,Zm,D,innC,oneC,imgs,C,maut,innB,tmpAut,imM,a,A,B,
       cond,sub,AQI,AQP,AQiso,rf,res,resperm,proj,Aperm,Apa,precond,ac,
       comiso,extra,mo,rada,makeaqiso,ind,lastperm,actbase,somechar,stablim,
       scharorb,asAutom,jorb,jorpo,substb,isBadPermrep,ma,nosucl,nosuf,rlgf;
@@ -1143,7 +1143,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       ocr:=AGSRPrepareAutomLift( Q, MPcgs, q );
 
       precond:=function(perm)
-      local aut,newgens,mo2,iso,a;
+      local aut,newgens,mo2;
         if perm in Aperm then
 	  return true;
 	fi;
@@ -1547,7 +1547,7 @@ end);
 BindGlobal("AGSRMatchedCharacteristics",function(g,h)
 local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
   props:=function(a,chars)
-  local p,b,i,r,der;
+  local p,b,der;
     der:=function(u)
       if u in chars then
         Add(p,-Position(chars,u));
@@ -1699,8 +1699,8 @@ end);
 # only of use as long as we don't yet have a Cannon/Holt version of
 # isomorphism available and there are many generators
 InstallGlobalFunction(PatheticIsomorphism,function(G,H)
-local d,a,map,possibly,cG,cH,nG,nH,i,j,sel,u,v,asAutomorphism,K,L,conj,e1,e2,
-      iso,api,good,gens,pre,aab,as;
+local d,a,map,possibly,cG,nG,nH,i,j,u,v,asAutomorphism,K,L,conj,e1,e2,
+      iso,api,gens,pre,aab,as;
 
   possibly:=function(a,b)
     if Size(a)<>Size(b) then
