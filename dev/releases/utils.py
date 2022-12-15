@@ -102,6 +102,7 @@ def patchfile(path, pattern, repl):
 
 # download file at the given URL to path `dst`
 def download(url, dst):
+    notice(f"Downlading {url} to {dst}")
     res = subprocess.run(["curl", "-L", "-C", "-", "-o", dst, url])
     if res.returncode != 0:
         error('failed downloading ' + url)
