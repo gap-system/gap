@@ -95,6 +95,12 @@ make -j8 || exit 125
 echo "HEAD: "$(git rev-parse HEAD)
 echo "Running tests..."
 
+if [-x bin/gap.sh ] ; then
+  GAP=bin/gap.sh
+else
+  GAP=./gap
+fi
+
 echo '
 # if ErrorLevel is not defined, something is very wrong, so skip the commit
 if not IsBound(ErrorLevel) then
@@ -131,4 +137,4 @@ else
   Print("Commit is bad\\n");
   QuitGap(1);
 fi;
-' | bin/gap.sh -A -b -q
+' | ${GAP} -A -b -q

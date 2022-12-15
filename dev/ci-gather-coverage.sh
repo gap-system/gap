@@ -12,7 +12,7 @@ set -ex
 SRCDIR=${SRCDIR:-$PWD}
 
 # Make sure any Error() immediately exits GAP with exit code 1.
-GAP="bin/gap.sh --quitonbreak --alwaystrace -q"
+GAP="./gap --quitonbreak --alwaystrace -q"
 
 # change into BUILDDIR (creating it if necessary), and turn it into an absolute path
 if [[ -n "$BUILDDIR" ]]

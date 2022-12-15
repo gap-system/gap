@@ -1526,9 +1526,7 @@ void InitializeGap (
         if ( READ_GAP_ROOT("lib/init.g") == 0 ) {
                 Pr( "gap: hmm, I cannot find 'lib/init.g' maybe",
                     0, 0);
-                Pr( " use option '-l <gaproot>'?\n If you ran the GAP"
-                    " binary directly, try running the 'gap.sh' or 'gap.bat'"
-                    " script instead.", 0, 0);
+                Pr( " use option '-l <gaproot>'?", 0, 0);
             }
       }
       GAP_CATCH {

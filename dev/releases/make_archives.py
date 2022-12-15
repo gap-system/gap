@@ -179,7 +179,7 @@ with working_directory(tmpdir + "/" + basename):
     for x in [ ["package-infos", "PackageInfos-to-JSON"], ["help-links", "HelpLinks-to-JSON"] ]:
         notice(f"Constructing {x[0]} JSON file")
         json_output = subprocess.run(
-                ["./bin/gap.sh", "-r", "--quiet", "--quitonbreak", f"dev/releases/{x[1]}.g"],
+                ["./gap", "-r", "--quiet", "--quitonbreak", f"dev/releases/{x[1]}.g"],
                 check=True, capture_output=True, text=True)
         formatted_json = json.dumps(json.loads(json_output.stdout), indent=2)
         with working_directory(tmpdir):
