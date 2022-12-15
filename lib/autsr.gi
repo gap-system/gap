@@ -1145,41 +1145,41 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       precond:=function(perm)
       local aut,newgens,mo2;
         if perm in Aperm then
-	  return true;
-	fi;
+          return true;
+        fi;
         aut:=PreImagesRepresentative(AQiso,perm);
-	newgens:=List(GeneratorsOfGroup(Q),
-	  x->PreImagesRepresentative(q,Image(aut,ImagesRepresentative(q,x))));
+        newgens:=List(GeneratorsOfGroup(Q),
+          x->PreImagesRepresentative(q,Image(aut,ImagesRepresentative(q,x))));
         mo2:=GModuleByMats(LinearActionLayer(newgens,MPcgs),mo.field);
-	return MTX.IsomorphismModules(mo,mo2)<>fail;
+        return MTX.IsomorphismModules(mo,mo2)<>fail;
       end;
 
       cond:=function(perm)
       local aut,newgens,mo2,iso,a;
         if perm in Aperm then
-	  return true;
-	fi;
+          return true;
+        fi;
         aut:=PreImagesRepresentative(AQiso,perm);
-	newgens:=List(GeneratorsOfGroup(Q),
-	  x->PreImagesRepresentative(q,Image(aut,ImagesRepresentative(q,x))));
+        newgens:=List(GeneratorsOfGroup(Q),
+          x->PreImagesRepresentative(q,Image(aut,ImagesRepresentative(q,x))));
         mo2:=GModuleByMats(LinearActionLayer(newgens,MPcgs),mo.field);
-	iso:=MTX.IsomorphismModules(mo,mo2);
-	if iso=fail then
-	  return false;
-	else
-	  # build associated auto
-	  a:=AGSRAutomLift(ocr,q,aut,iso);
-	  if a=fail then
-	    #Print("test failed\n");
-	    return false;
-	  else
-	    Add(A,a);
-	    Add(Apa,perm);
-	    Aperm:=ClosureGroup(Aperm,perm);
-	    #Print("test succeeded\n");
-	    return true;
-	  fi;
-	fi;
+        iso:=MTX.IsomorphismModules(mo,mo2);
+        if iso=fail then
+          return false;
+        else
+          # build associated auto
+          a:=AGSRAutomLift(ocr,q,aut,iso);
+          if a=fail then
+            #Print("test failed\n");
+            return false;
+          else
+            Add(A,a);
+            Add(Apa,perm);
+            Aperm:=ClosureGroup(Aperm,perm);
+            #Print("test succeeded\n");
+            return true;
+          fi;
+        fi;
       end;
 
     fi;
@@ -1189,15 +1189,15 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
     Apa:=[];
     # note: we do not include AQI here, so might need to add later
     Aperm:=SubgroupNC(AQP,List(GeneratorsOfGroup(AQI),
-	    x->ImagesRepresentative(AQiso,x)));
+            x->ImagesRepresentative(AQiso,x)));
 
     # try to find some further generators
     if Size(AQP)/Size(Aperm)>100 then
       for j in SpecialPcgs(SolvableRadical(AQP)) do
-	cond(j);
+        cond(j);
       od;
       for j in GeneratorsOfGroup(AQP) do
-	cond(j);
+        cond(j);
       od;
     fi;
 
@@ -1246,8 +1246,8 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       k:=ImagesRepresentative(AQiso,ac);
       if not k in Aperm then
         Add(Apa,k);
-	Aperm:=ClosureGroup(Aperm,k);
-	Add(A,InnerAutomorphism(Q,GeneratorsOfGroup(Q)[j]));
+        Aperm:=ClosureGroup(Aperm,k);
+        Add(A,InnerAutomorphism(Q,GeneratorsOfGroup(Q)[j]));
       fi;
       j:=j+1;
     od;
@@ -1306,35 +1306,35 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
      and ValueOption("noradicalaut")<>true then
 
       if rada=fail then
-	if IsElementaryAbelian(r) and Size(r)>1 then
-	  B:=Pcgs(r);
-	  rf:=GF(RelativeOrders(B)[1]);
-	  ind:=Filtered(ser,x->IsSubset(r,x) and Size(x)>1 and Size(x)<Size(r));
-	  ind:=List(ind,x->List(GeneratorsOfGroup(x),y->ExponentsOfPcElement(B,y)));
-	  ind:=List(ind,x->x*One(rf));
-	  ind:=SpaceAndOrbitStabilizer(Length(B),rf,ind,[]);
-	  rada:=List(GeneratorsOfGroup(ind),x->
-	    GroupHomomorphismByImagesNC(r,r,B,List(x,y->PcElementByExponents(B,List(y,Int)))));
-	  rada:=Group(rada);
-	  SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
-	  NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
-	else
-	  ind:=IsomorphismPcGroup(r);
-	  rada:=AutomorphismGroup(Image(ind,r):someCharacteristics:=fail,autactbase:=fail);
-	  # we only consider those homomorphism that stabilize the series we use
-	  for k in List(ser,x->Image(ind,x)) do
-	    if ForAny(GeneratorsOfGroup(rada),x->Image(x,k)<>k) then
-	      Info(InfoMorph,3,"radical automorphism stabilizer");
-	      NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
+        if IsElementaryAbelian(r) and Size(r)>1 then
+          B:=Pcgs(r);
+          rf:=GF(RelativeOrders(B)[1]);
+          ind:=Filtered(ser,x->IsSubset(r,x) and Size(x)>1 and Size(x)<Size(r));
+          ind:=List(ind,x->List(GeneratorsOfGroup(x),y->ExponentsOfPcElement(B,y)));
+          ind:=List(ind,x->x*One(rf));
+          ind:=SpaceAndOrbitStabilizer(Length(B),rf,ind,[]);
+          rada:=List(GeneratorsOfGroup(ind),x->
+            GroupHomomorphismByImagesNC(r,r,B,List(x,y->PcElementByExponents(B,List(y,Int)))));
+          rada:=Group(rada);
+          SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
+          NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
+        else
+          ind:=IsomorphismPcGroup(r);
+          rada:=AutomorphismGroup(Image(ind,r):someCharacteristics:=fail,autactbase:=fail);
+          # we only consider those homomorphism that stabilize the series we use
+          for k in List(ser,x->Image(ind,x)) do
+            if ForAny(GeneratorsOfGroup(rada),x->Image(x,k)<>k) then
+              Info(InfoMorph,3,"radical automorphism stabilizer");
+              NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
               SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
-	      rada:=Stabilizer(rada,k,asAutom);
-	    fi;
-	  od;
-	  # move back to bad degree
-	  rada:=Group(List(GeneratorsOfGroup(rada),
-	    x-> InducedAutomorphism(InverseGeneralMapping(ind),x)));
+              rada:=Stabilizer(rada,k,asAutom);
+            fi;
+          od;
+          # move back to bad degree
+          rada:=Group(List(GeneratorsOfGroup(rada),
+            x-> InducedAutomorphism(InverseGeneralMapping(ind),x)));
 
-	fi;
+        fi;
       fi;
 
       rf:=Image(hom,r);
