@@ -24,7 +24,7 @@ InstallGlobalFunction(Factorial, FACTORIAL_INT);
 #F  GaussianCoefficient( <n>, <k>, <q> ) . . . . . . . .  number of subspaces
 ##
 InstallGlobalFunction(GaussianCoefficient,function ( n, k, q )
-local   gc, i, j;
+local   gc, i;
   if   k < 0 or n<0 or k>n  then
     return 0;
   else
@@ -804,7 +804,7 @@ BindGlobal( "ShallowCopy_Cartesian",
 
 BindGlobal( "IteratorOfCartesianProduct2",
     function( listsets )
-    local s, n, x;
+    local s, n;
     if not ForAll( listsets, IsListOrCollection ) and ForAll( listsets, IsFinite ) then
       Error( "Each argument must be a finite list or collection" );
     fi;
@@ -2870,7 +2870,7 @@ InstallGlobalFunction(Bernoulli,
 
 
 InstallGlobalFunction(AllLinearDiophantineSolutions,function(w,count,s)
-local g,i,a,sol,l,r,pos;
+local g,a,sol,l,r,pos;
   if Length(w)=0 then return [];fi;
   g:=Gcd(w);
   if s mod g<>0 then

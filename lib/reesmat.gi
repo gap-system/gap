@@ -1486,7 +1486,7 @@ end);
 InstallMethod(IsomorphismReesZeroMatrixSemigroup,
 "for a Rees 0-matrix subsemigroup", [IsReesZeroMatrixSubsemigroup],
 function(U)
-  local V, iso, inv, hom;
+  local V, iso, inv;
 
   if not IsReesZeroMatrixSemigroup(U) then
     TryNextMethod();
@@ -1520,7 +1520,7 @@ end);
 InstallMethod(IsomorphismReesMatrixSemigroup, "for a Rees matrix subsemigroup",
 [IsReesMatrixSubsemigroup],
 function(U)
-  local P, V, iso, inv, hom;
+  local V, iso, inv;
 
     if not IsReesMatrixSemigroup(U) then
       TryNextMethod();

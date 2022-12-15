@@ -50,7 +50,7 @@ InstallMethod(NestingDepthA, [IsFFECollColl and IsGeneralizedRowVector],
 
 InstallMethod(NestingDepthM, [IsFFECollColl and IsOrdinaryMatrix and IsMultiplicativeGeneralizedRowVector],
            function(m)
-    local t,row;
+    local t;
     t := TNUM_OBJ(m[1]);
     if FIRST_LIST_TNUM > t or LAST_LIST_TNUM < t then
         TryNextMethod();
@@ -1796,7 +1796,7 @@ InstallMethod( PositionSublist,
     "list,sub,pos",
     [IsList,IsList,IS_INT],
     function( list,sub,start )
-      local n, m, next, j, max, c, i;
+      local n, m, next, j, max, i;
 
   n:=Length(list);
   m:=Length(sub);
@@ -3159,7 +3159,7 @@ end );
 ##
 BindGlobal( "SUM_LISTS_SPECIAL",
     function( left, right, depthleft, depthright )
-    local result, len1, len2, i, depth, depth2, x;
+    local result, len1, len2, i, depth, depth2;
 
     result:= [];
     len1:= Length( left );
@@ -4041,7 +4041,7 @@ BLISTZERO:=MakeImmutable(BlistList([1..8],[]));
 HEXNIBBLES:=MakeImmutable("0123456789ABCDEF");
 
 DECODE_BITS_TO_HEX:=function(b,i)
-local n,v;
+local v;
   v:=0;
   if b[i+0] then v:=v+8; fi;
   if b[i+1] then v:=v+4; fi;
@@ -4125,7 +4125,7 @@ local i,n,s,t,u,zero;
 end);
 
 InstallGlobalFunction(BlistStringDecode,function(arg)
-local s,b,i,j,zero,l;
+local s,b,i,j,l;
   s:=arg[1];
   b:=[];
   i:=1;

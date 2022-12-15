@@ -372,7 +372,7 @@ InstallMethod( ImagesRepresentative,
   # rewriting.
     1,
 function( hom, elm )
-local he,ue,p,mapi;
+local ue,p,mapi;
   ue:=UnderlyingElement(elm);
   if IsLetterAssocWordRep(ue) and IsOne(ue) then
     return One(Range(hom));
@@ -505,7 +505,7 @@ end);
 ##
 ##  induce <hom> def. on <u> up to the full group
 InstallGlobalFunction(InducedRepFpGroup,function(thom,s)
-local t,w,c,q,chom,tg,hi,u;
+local w,c,q,chom,u;
   w:=FamilyObj(s)!.wholeGroup;
 
   # permutation action on the cosets
@@ -756,7 +756,7 @@ end);
 InstallOtherMethod(IsomorphismFpGroup,"subgroups of fp group",true,
   [IsSubgroupFpGroup,IsString],0,
 function(u,str)
-local aug,w,p,pres,f,fam,opt;
+local aug,w,pres,f,fam,opt;
   if HasIsWholeFamily(u) and IsWholeFamily(u) then
     return IdentityMapping(u);
   fi;
@@ -850,7 +850,7 @@ InstallMethod(IsomorphismFpGroupByGeneratorsNC,"subgroups of fp group",
   [IsSubgroupFpGroup,IsList and IsMultiplicativeElementWithInverseCollection,
    IsString],0,
 function(u,gens,nam)
-local aug,w,p,pres,f,fam,G,trace;
+local aug,w,pres,f,trace;
 
   trace:=[];
 
@@ -1071,7 +1071,7 @@ end);
 InstallMethod(MaximalAbelianQuotient,"whole fp group",
         true, [IsSubgroupFpGroup and IsWholeFamily], 0,
 function(f)
-local m,s,g,i,j,rel,gen,img,fin,hom,gens;
+local m,s,g,i,j,rel,gen,img,fin,hom;
 
   # since f is the full group, exponent sums are with respect to its
   # generators.
@@ -1152,7 +1152,7 @@ end);
 InstallMethod(MaximalAbelianQuotient,
         "subgroups of fp. abelian rewriting", true, [IsSubgroupFpGroup], 0,
 function(u)
-local aug,r,sec,t,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn;
+local aug,r,sec,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn;
   if (HasIsWholeFamily(u) and IsWholeFamily(u))
   # catch trivial case of rank 0 group
    or Length(GeneratorsOfGroup(FamilyObj(u)!.wholeGroup))=0 then

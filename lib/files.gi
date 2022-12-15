@@ -172,7 +172,6 @@ InstallMethod( ExternalFilename, "for a directory list and a string",
 #F  DirectoryContents(<name>)
 ##
 InstallGlobalFunction(DirectoryContents, function(dirname)
-  local str;
   if IsDirectory(dirname) then
     dirname := dirname![1];
   else

@@ -341,7 +341,7 @@ InstallMethod(\*,"assoc words in W letter rep",IsIdenticalObj,
   [IsAssocWord and IsWLetterAssocWordRep,
    IsAssocWord and IsWLetterAssocWordRep],0,
 function(a,b)
-local fam,l,m,i,j;
+local fam;
   fam:=FamilyObj(a);
   a:=a![1];
   b:=b![1];
@@ -360,7 +360,7 @@ InstallMethod(\*,"assoc words in B letter rep",IsIdenticalObj,
   [IsAssocWord and IsBLetterAssocWordRep,
    IsAssocWord and IsBLetterAssocWordRep],0,
 function(a,b)
-local fam,l,m,i,j;
+local fam;
   fam:=FamilyObj(a);
   a:=a![1];
   b:=b![1];
@@ -376,7 +376,7 @@ end);
 
 # power: exponent must be not equal zero.
 AssocWWorLetRepPow:=function(w,e)
-local fam,a,l,m,i,j,mp,pt,head,tail,mid;
+local fam,a,l,i,j,mp,pt,head,tail,mid;
   fam:=FamilyObj(w);
   a:=w![1];
   l:=Length(a);
@@ -444,7 +444,7 @@ InstallMethod(\^,"assoc word in W letter rep and negative integer",true,
 
 # power: exponent must be not equal zero.
 AssocBWorLetRepPow:=function(w,e)
-local fam,a,l,m,i,j,mp,pt,head,tail,mid;
+local fam,a,l,i,j,mp,pt,head,tail,mid;
   fam:=FamilyObj(w);
   a:=w![1];
   l:=Length(a);

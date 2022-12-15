@@ -468,6 +468,5 @@ InstallMethod( Units,
   "zmodnze : for full ring Z/nZ(m)",
   [ CategoryCollections( IsZmodnZepsObj ) and IsWholeFamily and IsRing ],
 function( R )
-  local x;
   return Group( Filtered(AsList(R), IsUnit ) );
 end );

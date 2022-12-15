@@ -349,7 +349,7 @@ InstallMethod( GroupWithGenerators,
     # override methods for `IsList' or `IsEmpty'.
     10,
 function( gens )
-local G,fam,typ,id,pcgs;
+local G,fam,id,pcgs;
 
   fam:=FamilyObj(gens);
   pcgs:=DefiningPcgs(ElementsFamily(fam));
@@ -371,7 +371,7 @@ InstallOtherMethod( GroupWithGenerators,
     IsMultiplicativeElementWithInverseByPolycyclicCollector] ,
     0,
 function( gens, id )
-local G,fam,typ,pcgs;
+local G,fam,pcgs;
 
   fam:=FamilyObj(gens);
   pcgs:=DefiningPcgs(ElementsFamily(fam));
@@ -391,7 +391,7 @@ InstallOtherMethod( GroupWithGenerators,
     # override methods for `IsList' or `IsEmpty'.
     10,
 function( empty, id )
-local G,fam,typ,pcgs;
+local G,fam,pcgs;
 
   fam:= CollectionsFamily( FamilyObj( id ) );
   pcgs:=DefiningPcgs(ElementsFamily(fam));
@@ -1034,7 +1034,7 @@ InstallMethod( EulerianFunction,
 
 function( G, n )
     local   spec,  first,  weights,  m,  i,  phi,  start,
-            next,  p,  d,  r,  j,  pcgsS,  pcgsN,  pcgsL,  mats,
+            next,  p,  d,  j,  pcgsS,  pcgsN,  pcgsL,  mats,
             modu,  max,  series,  comps,  sub,  new,  index,  order;
 
     spec := SpecialPcgs( G );
@@ -1829,7 +1829,7 @@ end );
 ##  The returned boolean indicates if there are commuting generators.
 ##
 InstallGlobalFunction( PrintPcPresentation, function(G, commBool)
-    local pcgs, n, F, gens, i, pis, exp, t, h, rel, commPower, j, trivialCommutators;
+    local pcgs, n, F, gens, i, pis, exp, t, h, commPower, j, trivialCommutators;
 
     pcgs:=Pcgs(G);
     n:=Length(pcgs);
@@ -2556,7 +2556,6 @@ end);
 InstallMethod( Exponent,"finite solvable group",
   true,[IsGroup and IsSolvableGroup and IsFinite],0,
 function(G)
-local exp, primes, p;
   if IsPGroup(G) then
     return ExponentOfPGroupAndElm(G,Size(G))[1];
   fi;
@@ -2621,7 +2620,7 @@ end);
 BindGlobal("Omega_LowerBound_RANDOM",100); # number of random elements to test
 BindGlobal("Omega_LowerBound",
 function(G,p,e)
-local gens,H,fix_order;
+local H,fix_order;
   fix_order:=function(g) while not IsOne(g^(p^e)) do g:=g^p; od; return g; end;
   H:=Subgroup(G,List(Pcgs(G),fix_order));
   H:=ClosureGroup(H,List([1..Omega_LowerBound_RANDOM],i->fix_order(Random(G))));
@@ -2741,7 +2740,7 @@ BindGlobal("Omega_Sims_RUNTIME",5000);
 #-Charles Sims
 BindGlobal("Omega_Sims",
 function(G,p,e)
-local H,K,Knew,fails,gens,r, timerFunc;
+local H,K,Knew,fails,r, timerFunc;
 
   timerFunc := GET_TIMER_FROM_ReproducibleBehaviour();
 

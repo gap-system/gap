@@ -460,7 +460,7 @@ DeclareGlobalFunction("SetNameObject");
 DeclareGlobalFunction("SetExecutionObject");
 
 InstallGlobalFunction(CosetDecomposition,function(G,S)
-local i,l,e,t;
+local i,l,e;
   e:=AsSSortedList(S);
   l:=[e];
   for i in RightTransversal(G,S) do
@@ -845,7 +845,7 @@ InstallGlobalFunction(NumbersString,function(arg)
 end);
 
 InstallGlobalFunction(StringNumbers,function(arg)
-  local message,modulus,table,tenpow,bound,l,m,i,p;
+  local message,modulus,table,tenpow,bound,l,i;
   l:=arg[1];
   modulus:=arg[2];
   if Length(arg)>2 then
@@ -917,7 +917,7 @@ end);
 
 # up to G-conjugacy
 InstallGlobalFunction(AllHomomorphismClasses,function(H,G)
-local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
+local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,sg,c,i;
 
   if not HasIsFinite(H) then
     Info(InfoPerformance,1,"Forcing finiteness test -- might not terminate");

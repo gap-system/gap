@@ -90,7 +90,7 @@ end);
 
 InstallMethod(GreensRRelation, "for a semigroup", true, [IsSemigroup], 0,
 function(X)
-    local fam, rel, sc;
+    local fam, rel;
 
     fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)),
              ElementsFamily(FamilyObj(X)) );
@@ -543,7 +543,7 @@ end);
 
 InstallMethod(GreensRClasses, "for a semigroup", true, [IsSemigroup], 0,
 function( semi )
-local rrel, sc, i, classes, x, rc;
+local rrel, sc, i, classes, rc;
 
   rrel:=GreensRRelation(semi);
 
@@ -574,7 +574,7 @@ x-> GreensRClasses(CanonicalGreensClass(x)));
 
 InstallOtherMethod(GreensLClasses, "for a semigroup", true, [IsSemigroup], 0,
    function( semi )
-   local lrel, sc, i, classes, x, lc;
+   local lrel, sc, i, classes, lc;
 
    lrel:=GreensLRelation(semi);
 
@@ -964,8 +964,8 @@ InstallMethod(FroidurePinExtendedAlg, "for a finite semigroup",
 [IsSemigroup],
 function(m)
   local gens, k, free, freegens, actualelts, fpelts, rules, i, u, v, Last,
-        currentlength, b, s, r, newelt, j, p, new, length, newword, first,
-        final, prefix, suffix, next, postmult, reducedflags, premult, fpsemi,
+        currentlength, b, s, r, newelt, p, new, length, newword, first,
+        final, prefix, suffix, postmult, reducedflags, premult, fpsemi,
         old, sortedelts, pos, semi, perm, free2, one;
 
   if not IsFinite(m) then
@@ -1264,7 +1264,7 @@ InstallMethod(GreensHRelation, "for free semigroups", true,
 InstallMethod(SemigroupHomomorphismByImagesNC, "for a semigroup, semigroup, list", true,
               [IsSemigroup, IsSemigroup, IsList], 0,
 function(S, T, imgslist)
-local hom, filter;
+local hom;
 
  if Size(S)<>Length(imgslist) then
     Error("<S> and <T> must have the same size");

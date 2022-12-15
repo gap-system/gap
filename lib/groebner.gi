@@ -477,7 +477,7 @@ local elimvar, nam, ord1, othvar, ord2,ov,neword;
   neword:=MakeMonomialOrdering(
     Concatenation("EliminationOrdering(",nam,")"),
     function(a,b)
-    local la, lb, asel, bsel, ah, bh, i,neword ;
+    local la, lb, asel, bsel, ah, bh, i;
       la:=Length(a);
       lb:=Length(b);
       asel:=[];
@@ -1175,7 +1175,7 @@ InstallOtherMethod(GcdOp,"multivariate Gcd based on Groebner bases",
 # Input: f, g are multivariate polys in R=F[x1,...,xn]
 # Output: a gcd of f,g in R
 function(R,f,g)
-local basis_elt,p,t,F,vars,vars2,GB,coeff_t;
+local basis_elt,t,F,vars,vars2,GB,coeff_t;
   F:=CoefficientsRing(R);
   vars:=IndeterminatesOfPolynomialRing(R);
   t:=Indeterminate(F,vars);

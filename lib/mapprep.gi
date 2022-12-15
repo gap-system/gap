@@ -1864,7 +1864,7 @@ InstallMethod( PreImagesRepresentative,
     FamRangeEqFamElm,
     [ IsGeneralRestrictedMappingRep, IsObject ], 0,
     function( res, elm )
-    local preim, rep;
+    local preim;
     preim:= PreImagesRepresentative( res!.map, elm );
     if preim = fail then
       # 'elm' has no preimages under 'res!.map', so it has none under 'res'.

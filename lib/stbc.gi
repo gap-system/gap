@@ -505,10 +505,8 @@ end );
 InstallGlobalFunction( AddGeneratorsExtendSchreierTree, function( S, new )
     local   gen,  pos,  # new generator and its position in <S>.labels
             old,  ald,  # genlabels before extension
-            len,        # initial length of the orbit of <S>
-            img,        # image during orbit algorithm
             newlabs,    # selected labels
-            i,  j;      # loop variable
+            j;          # loop variable
 
     # Put in the new labels.
     old := BlistList( [ 1 .. Length( S.labels ) ], S.genlabels );

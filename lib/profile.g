@@ -886,7 +886,7 @@ if IsHPCGAP then
 fi;
 
 BIND_GLOBAL( "ProfileGlobalFunctions", function( arg )
-    local name, func, funcs;
+    local name, func;
     if 0 = Length(arg) then
         DisplayProfile( PROFILED_GLOBAL_FUNCTIONS );
     elif arg[1] = true then
@@ -924,7 +924,7 @@ end);
 PROFILED_GLOBAL_VARIABLE_FUNCTIONS := [];
 
 BIND_GLOBAL( "ProfileFunctionsInGlobalVariables", function( arg )
-    local name, func, funcs;
+    local name, func;
     if 0 = Length(arg) then
         DisplayProfile( PROFILED_GLOBAL_VARIABLE_FUNCTIONS );
     elif arg[1] then

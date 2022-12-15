@@ -306,7 +306,7 @@ InstallMethod(ClosureGroup,"by niceo",
   IsCollsElms,[IsGroup and IsHandledByNiceMonomorphism,
                IsMultiplicativeElementWithInverse],0,
 function( obj1, obj2 )
-    local   nice,no,  img,  img1,pos1,pos2;;
+    local   nice,no,  img,  img1;
     nice := NiceMonomorphism(obj1);
     img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
     if img = fail or

@@ -1386,7 +1386,7 @@ end);
 #F  CopyToVectorRep( <v>, <q> )
 ##
 InstallGlobalFunction(CopyToVectorRep,function( v, q )
-    local vc, common, field, res;
+    local vc, common, res;
 
     # Handle fast, certain cases where there is no work. Microseconds count here
 
@@ -1487,7 +1487,7 @@ end);
 ##  finite field, and all elements of v lie in this field.
 ##
 InstallGlobalFunction(CopyToVectorRepNC,function( v, q )
-    local common, field, res;
+    local common, res;
 
     # Handle fast, certain cases where there is no work. Microseconds count here
 
@@ -2109,7 +2109,6 @@ InstallMethod(DomainForAction,"FFE vector/matrix",IsElmsCollCollsX,
   #T method for finite rings and there could be one for infinite fields. AH
   [IsVector and IsFFECollection,IsList,IsFunction],0,
 function(pnt,acts,act)
-local l,f;
   if (not ForAll(acts,IsMatrix)) or
     (act<>OnPoints and act<>OnLines and act<>OnRight
                    and act<>OnSubspacesByCanonicalBasisConcatenations) or
@@ -2141,7 +2140,7 @@ InstallMethod(DomainForAction,"matrix/matrix",IsElmsCollsX,
   #T method for finite rings and there could be one for infinite fields. AH
   [IsMatrix and IsFFECollColl,IsList,IsFunction],0,
 function(pnt,acts,act)
-local l,f,vkey;
+local l,f;
   if (not ForAll(acts,IsMatrix)) or
     (act<>OnPoints and act<>OnSubspacesByCanonicalBasis and act<>OnRight) then
     TryNextMethod(); # strange operation, might extend the domain
@@ -2162,7 +2161,6 @@ end);
 InstallMethod(DomainForAction,"vector/permgrp",true,
   [IsList,IsList,IsFunction],0,
 function(pnt,acts,act)
-local l,f;
   if (not (ForAll(acts,IsPerm) and ForAll(pnt,IsScalar)))
      or (act<>Permuted) then
     TryNextMethod(); # strange operation, might extend the domain

@@ -380,10 +380,10 @@ end);
 InstallGlobalFunction(NormalizerViaRadical,function(G,U)
 local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
   central,f,ngm,npm,no2pcgs,part,stb,mods,famo,part0,nopcgs,uff,ufg,prev,
-  famo2,ufr,dims,vecs,ovecs,vecsz,l,prop,properties,clusters,clusterspaces,
+  ufr,dims,vecs,ovecs,vecsz,l,prop,properties,clusters,clusterspaces,
   fs,i,v1,o1,p1,
   orblens,stabilizespaceandupdate,dual,myact,bound,boundbas,ranges,j,module,sumos,
-  minimalsubs,localinduce,lmpcgs,tst,nonzero,sel,myact2,tailnum,lfamo;
+  minimalsubs,localinduce,lmpcgs,nonzero,sel,myact2,tailnum,lfamo;
 
 #timer:=List([1..15],x->0);
   localinduce:=function(seq)
@@ -923,7 +923,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
           Product(RelativeOrders(lfamo))," cobounds:",Size(f)^Length(bound));
 
         myact:=function(l,gen)
-          local pos,map,l0;
+          local pos,map;
 
           # make l  the conjugated generator list
           l:=List([1..Length(part)],

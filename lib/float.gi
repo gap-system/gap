@@ -187,7 +187,7 @@ end);
 # inner converter from string to float
 ################################################################
 BindGlobal("CONVERT_FLOAT_LITERAL", function(s)
-    local i,l,f,s1,s2;
+    local i,l,f,s1;
     f:= FLOAT_STRING(s);
     if f<>fail then return f; fi;
 
@@ -408,7 +408,7 @@ end);
 
 InstallMethod( ExtRepOfObj, "for floats", [ IsFloat ], -1,
         function(obj)
-    local p, v, sgn;
+    local p, v;
     if IsZero(obj) then # special treatment for 0 and -0
         if 1/obj > Zero(obj) then
             return [0,0];
@@ -611,7 +611,7 @@ end);
 
 InstallMethod( Cyc, "for floats", [ IsFloat ], -1,
         function(x)
-    local n, len, e, minlen, minn, mine, prec;
+    local prec;
 
     prec := ValueOption("bits");
     if not IsPosInt(prec) then prec := PrecisionFloat(x); fi;

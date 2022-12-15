@@ -296,7 +296,7 @@ end;
 #F StabilizerByMatrixOperation( C, v, cohom )
 ##
 StabilizerByMatrixOperation := function( C, v, cohom )
-local translate, gens, oper, fac, ind, vec, tmp;
+local translate, gens, oper, tmp;
 
     # the trivial case
     if Size( C ) = 1 then return C; fi;
@@ -793,7 +793,7 @@ end;
 
 InstallGlobalFunction(SpaceAndOrbitStabilizer,function(n,field,ospaces,osporb)
 local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
-      gens,one,spl,ngens,m,sz,a,sporb,notyet,canonicalform,doonedim,spaces,
+      gens,one,spl,m,sz,a,sporb,notyet,canonicalform,spaces,
       sofars,b,act,pairs,direct,subs,allstab;
 
   # replace later by better functions
@@ -1136,7 +1136,7 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
           pcgsH, pcgsN, N, epi, mats, M, autos, ocr, elms, e, list, imgs,
           auto, tmp, hom, gens, P, C, B, D, pcsA, rels, iso, xset,
           gensA, new,as,somechar,scharorb,asAutom,actbase,
-          quotimg,eN,field,act,spaces,sporb,npcgs,nM;
+          quotimg,eN,field,spaces,sporb,npcgs,nM;
 
     asAutom:=function(sub,hom) return Image(hom,sub);end;
 

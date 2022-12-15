@@ -336,7 +336,6 @@ COEFFS_SEMI_ECH_BASIS:=function( B, v )
     local vectors,   # basis vectors of `B'
           heads,     # heads info of `B'
           len,       # length of `v'
-          zero,      # zero of the field
           coeff,     # coefficients list, result
           i,         # loop over `v'
           pos;       # heads position

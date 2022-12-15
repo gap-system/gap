@@ -291,7 +291,6 @@ function(
         rank,    # Length( names )
         opt,
         init,
-        word,
         x, y1, y2;
 
   # Set up defaults.

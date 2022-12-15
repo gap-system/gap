@@ -723,7 +723,6 @@ InstallMethod( CorrespondingPermutations,
           pt,       # one point to map
           im,       # actual image class
           orb,      # possible image points
-          len,      # length of 'orb'
           found,    # image point found? (boolean value)
           j,        # loop over 'orb'
           list,     # one list in 'part'
@@ -885,8 +884,7 @@ InstallOtherMethod( CorrespondingPermutations,
     "for a char. table, a hom. list, and a list of group elements",
     [ IsOrdinaryTable, IsHomogeneousList, IsHomogeneousList ],
     function( tbl, values, elms )
-    local G,        # underlying group
-          classes,  # list of conjugacy classes
+    local classes,  # list of conjugacy classes
           perms,    # list of permutations, result
           part,     # partition that has to be respected
           base,     # base of aut. group
@@ -895,7 +893,6 @@ InstallOtherMethod( CorrespondingPermutations,
           pt,       # one point to map
           im,       # actual image class
           orb,      # possible image points
-          len,      # length of 'orb'
           found,    # image point found? (boolean value)
           j,        # loop over 'orb'
           list,     # one list in 'part'
@@ -1543,8 +1540,6 @@ InstallMethod( IsCharacter,
     "for a Brauer table, and a homogeneous list",
     [ IsBrauerTable, IsHomogeneousList ],
     function( tbl, list )
-    local chi, scpr;
-
     # Proper characters have positive degree.
     if list[1] <= 0 then
       return false;
@@ -1638,7 +1633,7 @@ InstallMethod( ScalarProduct,
     "for two class functions",
     [ IsClassFunction, IsClassFunction ],
     function( chi, psi )
-    local tbl, i, size, weights, scalarproduct;
+    local tbl;
 
     tbl:= UnderlyingCharacterTable( chi );
     if tbl <> UnderlyingCharacterTable( psi ) then
@@ -1901,8 +1896,7 @@ InstallMethod( ConstituentsOfCharacter,
     "for an ordinary table, and a homogeneous list",
     [ IsOrdinaryTable, IsHomogeneousList ],
     function( tbl, chi )
-    local irr,    # irreducible characters of `tbl'
-          const,  # list of constituents, result
+    local const,  # list of constituents, result
           proper, # is `chi' a proper character
           i,      # loop over `irr'
           scpr;   # one scalar product
@@ -4011,7 +4005,7 @@ InstallMethod( SymmetricPower,
 ##
 InstallGlobalFunction( RefinedSymmetrizations,
     function( tbl, chars, m, func )
-    local i, classes, components,
+    local classes, components,
           F2, F3, F4, F5, F6,
           M1,
           M2, M11,

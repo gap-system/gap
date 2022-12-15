@@ -467,7 +467,7 @@ InstallMethod( CompanionMatrix,
     "for a polynomial and a matrix or matrix object",
   [ IsUnivariatePolynomial, IsMatrixOrMatrixObj ],
   function( po, m )
-    local l, n, q, ll, i, one;
+    local l, n, ll, i, one;
     one := OneOfBaseDomain( m );
     l := CoefficientsOfUnivariatePolynomial(po);
     n := Length(l)-1;
@@ -512,7 +512,7 @@ InstallMethod( CompanionMatrix,
 InstallMethod( KroneckerProduct, "for two matrices",
   [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj ],
   function( A, B )
-    local rowsA, rowsB, colsA, colsB, newclass, AxB, i, j;
+    local rowsA, rowsB, colsA, colsB, AxB, i, j;
 
     if not IsIdenticalObj(BaseDomain(A),BaseDomain(B)) then
         ErrorNoReturn("KroneckerProduct: Matrices not over same base domain");

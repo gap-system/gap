@@ -1474,7 +1474,7 @@ InstallPcgsSeriesFromIndices:=function(series,indices)
     [IsPcgs and HasIndicesNormalSteps],
      {} -> -RankFilter(HasIndicesNormalSteps),
   function(pcgs)
-  local p,l,g,h,i,ipcgs,home;
+  local l,home;
     home:=ParentPcgs(pcgs);
     l:=IndicesNormalSteps(pcgs);
     Info(InfoWarning,1,

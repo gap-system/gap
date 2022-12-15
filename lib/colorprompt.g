@@ -130,7 +130,7 @@ EndLineHook := function() end;
 ##  <#/GAPDoc>
 ##
 BindGlobal( "ColorPrompt", function(arg)
-  local b, r, a, s;
+  local b, r, a;
   b := arg[1];
   r := rec(
          MarkupStdPrompt := "\033[1m\033[34m",

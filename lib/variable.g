@@ -169,7 +169,7 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
 end);
 
 BIND_GLOBAL( "InstallFlushableValueFromFunction", function( gvar, func )
-    local initval, flushfunc, ret;
+    local ret;
 
     # Initialize the variable.
     ret := func();

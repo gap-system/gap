@@ -556,7 +556,7 @@ local  G,  home,  # the group and the home pcgs
        cli,     # index
        news,    # new classes obtained in step
        cl,      # class looping over <cls>
-       opr, exp,  # (candidates[i]^opr[i])^exp[i]=cls[i].representative
+       opr,     # (candidates[i]^opr[i])^exp[i]=cls[i].representative
        team,    # team of candidates with same image modulo <K>
        blist,pos,q, # these control grouping of <cls> into <team>s
        p,       # prime dividing $|G|$
@@ -988,7 +988,7 @@ end);
 ##
 InstallGlobalFunction(MultiClassIdsPc, function(dat,candidates)
 local  G,home,  # the group and the home pcgs
-       H,Hp,    # acting group
+       H,       # acting group
        liftkerns,
        first,
        levdat,leda,
@@ -1000,13 +1000,10 @@ local  G,home,  # the group and the home pcgs
        indstep, # indice normal steps
        Ldep,    # depth of L in pcgs
        Kp,mK,Lp,mL, # induced and modulo pcgs's
-       LcapH,KcapH, # intersections
        N,   cent,   # elementary abelian factor, for affine action
        cls, newcls, # classes in range/source of homomorphism
-       cli,     # index
-       news,    # new classes obtained in step
        cl,      # class looping over <cls>
-       opr, exp,  # (candidates[i]^opr[i])^exp[i]=cls[i].representative
+       opr,     # (candidates[i]^opr[i])^exp[i]=cls[i].representative
        team,    # team of candidates with same image modulo <K>
        blist,pos,q, # these control grouping of <cls> into <team>s
        p,       # prime dividing $|G|$

@@ -1870,8 +1870,8 @@ end;
 ## over the larger field.
 SMTX.FieldGenCentMat:=function( module )
    local e, F, R, q, qe, minpol, pp,
-         M, v, M0, v0, C, C0, centmat, newcentmat, genpol, looking,
-         i, l, okd;
+         centmat, newcentmat, genpol, looking,
+         okd;
 
   if SMTX.FGCentMat(module)=fail then
     if SMTX.IsMTXModule(module) = false then

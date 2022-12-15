@@ -602,7 +602,7 @@ InstallMethod( SplitWordTail,
         true,
         [ IsPQuotientSystem, IsAssocWord ], 0,
 function( qs, w )
-    local   n,  c,  one,  zero,  i,  h,  t,  j;
+    local   n,  c,  one,  zero,  i,  h,  t;
 
     n := GeneratorNumberOfQuotient(qs);
     c := qs!.numberOfHighestWeightGenerators;

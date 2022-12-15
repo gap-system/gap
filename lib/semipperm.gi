@@ -210,7 +210,7 @@ end);
 InstallImmediateMethod(GeneratorsOfMonoid,
 IsPartialPermMonoid and HasGeneratorsOfInverseMonoid, 0,
 function(s)
-  local gens, pos, f;
+  local gens, f;
 
   gens:=ShallowCopy(GeneratorsOfInverseMonoid(s));
   for f in gens do

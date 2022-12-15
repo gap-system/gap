@@ -1653,12 +1653,12 @@ end);
 # (Schmidt,  Finite groups have short rewriting systems. Computational group
 # theory and the theory of groups, II, 185–200, Contemp. Math., 511.)
 BindGlobal("SplitBNRewritingPresentation",function(group,borel,weyl,newstyle)
-local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
+local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   lev,ord,monb,mons,gp,trawo,trawou,hom,tst,dc,dcreps,act,decomp,ranb,ranw,
   nofob,nofow,reduce,pcgs,can,pri,stb,addrule,invmap,jj,wo,pciso,
   borelelm,borelran,borelreduce,bpairs,brws,specialborelreduce,
   rdag,mdag,wdag,dcnum,dcfix,
-  rt,dcnums,rti,sel,maketzf,mytzf,csetperm,pc,bpcgs,noncomm,noncelm,
+  rt,dcnums,rti,maketzf,mytzf,csetperm,pc,bpcgs,noncomm,noncelm,
   wgens,weylword,borelword,coxrels,ha,directerr,bhom,ac,relab,ostab,dcr,single;
 
   specialborelreduce:=false;
@@ -2024,7 +2024,7 @@ local isob,isos,iso,gens,u,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   relab:=true;
 
   decomp:=function(elm)
-  local pos,rep,a;
+  local rep,a;
     if elm in borel then return [elm,One(borel),One(borel)];fi;
 
     a:=dcr(elm);

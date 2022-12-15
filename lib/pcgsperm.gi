@@ -287,7 +287,7 @@ end );
 ##
 InstallGlobalFunction(TryPcgsPermGroup,function(arg)
     local   grp,  pcgs,  U,  oldlen,  series,  y,  w,  whole,
-            bound,  deg,  step,  i,  S,  filter,A,G,cent,desc,elab,gens;
+            bound,  deg,  step,  i,  S,  filter,A,G,cent,desc,elab;
 
     A:=arg[1];
     cent:=arg[Length(arg)-2];
@@ -523,8 +523,7 @@ BindGlobal("ExtendSeriesPGParticular", function(
 end );
 
 InstallGlobalFunction(PermgroupSuggestPcgs,function(G,pcseq)
-local   grp,  pcgs,  U,  oldlen,  series,  y,  w,
-        bound,  deg,  step,  i,  S,  filter,gens;
+local   grp,  pcgs,  U,  series,   w, bound,  deg,  S,  filter;
 
   U := TrivialSubgroup( G );
   G := [ G, U ];
@@ -586,7 +585,7 @@ InstallMethod(PcgsByPcSequenceNC,"perm group, Sims' algorithm",true,
   [IsFamily,IsHomogeneousList and IsPermCollection],0,
 
 function( efam, pcs )
-    local   rws,  pfa,  pcgs,  pag,  id,  g,  dg,  i,  new,
+    local   pfa,  pcgs,  pag,  id,  g,  dg,  i,  new,
     ord,codepths,pagpow,sorco,filter;
 
     # quick check
@@ -1145,7 +1144,7 @@ InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
   [ IsPcgsPermGroupRep and IsPrimeOrdersPcgs and IsPcgs,
     IsList and IsPermCollection ], 0,
 function( pcgs, pcs )
-local   l,igs,  i,ran,ins;
+local   l,i,ran;
 
   l := Length( pcgs )-Length( pcs );
   i := Position( pcgs!.permpcgsNormalSteps, l+1 );
@@ -1354,7 +1353,7 @@ end);
 ##
 InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
     function( G )
-    local   iso,  A,  pcgs,p,i;
+    local   iso,  A,  pcgs;
 
     # Make  a pcgs   based on  an  elementary   abelian series (good  for  ag
     # routines).

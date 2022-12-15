@@ -134,7 +134,7 @@ local ch,c,z,i,j,k,h,hi,his,zv,f;
 end);
 
 InstallGlobalFunction(SumRootsPol,function(f,m)
-local cc,den,ch,n,nn,p,fam,i,j,w,pl,b,c,k,mp,degs,newdeg,ndeg,mc,rest;
+local cc,den,ch,n,nn,p,fam,i,j,w,pl,b,c,k,mp,degs,mc;
   if LeadingCoefficient(f)<>1 then
     Error("f must be monic");
   fi;
@@ -270,7 +270,7 @@ end);
 #F  ProductRootsPol( <f>, <m> ) . . . . . . . . . . . . . . .  compute f^{xm}
 ##
 InstallGlobalFunction(ProductRootsPol,function(f,m)
-local c,ch,n,nn,p,fam,i,j,h,w,q,fc;
+local c,ch,n,nn,p,fam,i,j,h,w,q;
   Info(InfoGalois,3,"ProductRootsPol ",m);
   fam:=CoefficientsFamily(FamilyObj(f));
   ch:=Characteristic(fam);
@@ -312,7 +312,7 @@ end);
 ##  is taken by random. An added true will also return the <trans> polynomial.
 ##
 InstallGlobalFunction(Tschirnhausen,function(arg)
-local pol, fam, inum, x, r;
+local pol, fam, inum, r;
   pol:=arg[1];
   fam:=CoefficientsFamily(FamilyObj(pol));
   inum:=IndeterminateNumberOfUnivariateRationalFunction(pol);
@@ -342,7 +342,7 @@ end);
 #F  TwoSeqPol( <f>, <m> ) . . . . . . . . . . . . . . . . . . compute f^{1+m}
 ##
 InstallGlobalFunction(TwoSeqPol,function(pol,m)
-local f,c,ch,n,nn,p,fam,i,j,h,w,q;
+local f,c,ch,n,nn,p,fam,i,j,w,q;
   Info(InfoGalois,3,"TwoSeqPol ",m);
   f:=pol;
   fam:=CoefficientsFamily(FamilyObj(f));
@@ -548,8 +548,8 @@ end);
 #F  ProbabilityShapes(<pol>,[<discard>]) . . . . . . . . . Tschebotareff test
 ##
 InstallGlobalFunction(ProbabilityShapes,function(arg)
-local f,n,i,sh,fu,ps,pps,ind,keineu,ba,bk,j,k,a,anz,pm,
-      cnt,cand,d,alt,p,g,weg,fac;
+local f,n,i,sh,fu,ps,pps,ind,keineu,ba,bk,j,a,anz,pm,
+      cnt,cand,d,alt,p,weg,fac;
   Info(InfoPerformance,2,"Using Transitive Groups Library");
   f:=arg[1];
   f:=f/LeadingCoefficient(f);
@@ -707,7 +707,7 @@ end);
 ##  The use of the 2nd argument is experimental and is not documented.
 ##
 BindGlobal("DoGaloisType",function(arg)
-local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
+local f,n,p,cand,noca,alt,d,co,dco,res,resf,pat,i,j,k,
       orbs,GetResolvent,norb,act,repro,minpol,ext,ncand,pos,step,lens,gudeg,
       typ,pkt,fun,factors,stabs,stanr,nostanr,degs,GetProperty,
       GrabCodedLengths,UnParOrbits,cnt,polring,basring,indet,indnum,

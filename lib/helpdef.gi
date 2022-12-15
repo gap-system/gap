@@ -409,7 +409,7 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
 end;
 
 HELP_BOOK_HANDLER.default.ShowChapters := function( book )
-  local   info,  chap,  i;
+  local   info,  chap;
 
   info := HELP_BOOK_INFO(book);
   if info = fail  then
@@ -428,7 +428,7 @@ HELP_BOOK_HANDLER.default.ShowChapters := function( book )
 end;
 
 HELP_BOOK_HANDLER.default.ShowSections := function( book )
-  local   info,  lines,  chap,  sec,  i;
+  local   info,  lines,  chap,  sec;
 
   info := HELP_BOOK_INFO(book);
   if info = fail  then
@@ -546,7 +546,7 @@ end;
 
 ##  the `default' handler for HelpData delegates to functions from above
 HELP_BOOK_HANDLER.default.HelpData := function(book, entrynr, type)
-  local   info,  entry,  chnr,  secnr,  pos,  res,  r;
+  local   info,  entry,  chnr,  secnr,  pos,  r;
 
   info := HELP_BOOK_INFO(book);
   entry := info.entries[entrynr];

@@ -66,7 +66,7 @@ end );
 
 InstallMethod(ViewObj,true,[IsCyc],100,
 function(x)
-local a,p, d, e, b, i;
+local a;
   if IsRat(x) or TEACHMODE<>true or Conductor(x)=4 then
     TryNextMethod();
   fi;

@@ -100,7 +100,7 @@ BIND_GLOBAL("PRETTY_PRINT_VARS", function(context)
 end);
 
 BIND_GLOBAL("WHERE", function(depth, context, showlocals)
-    local bottom, lastcontext, f, args;
+    local bottom, lastcontext, f;
     if depth <= 0 then
         return;
     fi;

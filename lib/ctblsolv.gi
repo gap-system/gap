@@ -990,7 +990,6 @@ InstallMethod( BaumClausenInfo,
           min,           #
           minval,        #
           ssr,           #
-          next,          #
           X,             # one matrix for `Xlist'
           nextlinear,    # extensions of `linear'
           nextnonlin1,   # nonlinear repr. arising from `linear'
@@ -2093,9 +2092,7 @@ InstallMethod( IrrBaumClausen,
           lg,             # composition length
           exps,           # exponents of class representatives
           cr,             # exps sorted
-          dobylevel,      # generate matrices and traces of class reps
           i, j, jj, k,    # loop variables
-          t,              # intermediate representation value
           irreducibles,   # list of irreducible characters
           rep,            # loop over the representations
           l,              # list of monomial matrices

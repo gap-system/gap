@@ -85,7 +85,7 @@ end);
 InstallMethod( FactorsSquarefree,"univariate polynomial over finite field",
     true, [ IsFiniteFieldPolynomialRing, IsUnivariatePolynomial, IsRecord ],0,
 function( R, f, opt )
-local   br,  ind,  c,  facs,  deg,  px,  pow,  cyc,  gcd,d,powc,fc,fam;
+local   br,  ind,  c,  facs,  deg,  px, cyc,  gcd,d,powc,fc,fam;
 
   br  := CoefficientsRing(R);
   ind := IndeterminateNumberOfLaurentPolynomial(f);
@@ -727,7 +727,7 @@ InstallOtherMethod( ProjectiveOrder,
     "divide and conquer for univariate polynomials", true,
     [ IsUnivariatePolynomial ],0,
 function( f )
-local   v,  R,  U,  x,  O,  n,  g,  q,  o,rem,bas;
+local   v,  R,  U,  x,  O,  n,  g,  q,  o,  bas;
 
   # <f> must not be divisible by x.
   v := CoefficientsOfLaurentPolynomial(f);

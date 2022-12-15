@@ -1443,7 +1443,7 @@ end );
 PermGroupStabilizerOp:=function(arg)
     local   K,          # stabilizer <K>, result
             S,  base,
-            G,d,gens,acts,act,dom;
+            G,d,gens,acts,act;
 
  # get arguments, ignoring a given domain
  G:=arg[1];

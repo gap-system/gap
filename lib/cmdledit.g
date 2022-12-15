@@ -890,7 +890,7 @@ BindGlobal("STANDARD_EXTENDERS", rec(
 
 # C-i: Completion as GAP level function
 GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
-    local cf, pos, word, wordplace, idbnd, i, cmps, r, searchlist, cand, c, j,
+    local cf, pos, word, wordplace, idbnd, i, cmps, r, searchlist, cand, j,
           completeFilter, completeExtender, extension, hasbang;
 
       completeFilter := function(filterlist, partial)

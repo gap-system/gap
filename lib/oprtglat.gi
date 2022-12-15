@@ -24,7 +24,7 @@ end );
 #M  MinimumGroupOnSubgroupsOrbit(G,H [,N_G(H)]) minimum of orbit of H under G
 ##
 InstallGlobalFunction( MinimumGroupOnSubgroupsOrbit, function(arg)
-local cont,lim,s,i,j,m,Hc,o,og;
+local cont,lim,s,i,j,m,Hc,o;
   # try some orbit calculation first (at most orbit of length 20) to avoid
   # normalizer calculations.
   cont:=true;
@@ -126,8 +126,8 @@ InstallMethod(SubgroupsOrbitsAndNormalizers,"perm group on list",true,
   [IsPermGroup,IsList,IsBool],0,
 function(G,dom,all)
   local savemem, n, l, o, pts, pbas, ptbas, un, domo, p, b, allo, ll, gp, t,
-  sel, r, i, gens, rorbs, tl, selz, fcnt, rem, sely, j, torbs, torb, iinv,
-  ti, cl,lsd,domoj,startn;
+  sel, r, i, gens, rorbs, tl, selz, rem, sely, j, torb, iinv,
+  cl,lsd,domoj,startn;
 
   if Length(dom)=0 then
     return dom;
@@ -452,7 +452,7 @@ end );
 
 InstallGlobalFunction(PermPreConjtestGroups,function(G,l)
 local pats,spats,lpats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,
-      allco,panu,gpcl,i,j,k,Gm,a,corbs,orbun,dict,norb,m,ornums,sornums,
+      allco,panu,gpcl,i,j,k,Gm,a,corbs,dict,norb,m,ornums,sornums,
       ssornums,sel,sela,statra,lrep,gpcl2,je,lrep1,partimg,nobail,cnt,hpos;
 
   if not IsPermGroup(G) then

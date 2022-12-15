@@ -265,7 +265,7 @@ end );
 ##
 InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
     local F, G, pcgsG, n, H, pcgsH, d, gensf, pcgsN, htil, gtil, mtil,mtilinv,
-          w, e, g, m, i, A, V, rel, l, v, mats, j, t, mat, k, elms, imgs,
+          w, e, g, m, i, A, V, rel, l, v, mats, j, mat, k, elms, imgs,
           lift, null, vec, new, U, sol, sub, elm, r,tval,tvalp,
           ex,pos,i1,genid,rels,reln,stopi;
 

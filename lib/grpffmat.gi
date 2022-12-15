@@ -56,7 +56,7 @@ end);
 InstallMethod(DefaultScalarDomainOfMatrixList,"finite field matrices",true,
   [IsListOrCollection and IsFFECollCollColl],0,
 function(list)
-local   deg,  mat,  row,  char,  B;
+local   deg,  mat,  char,  B;
   if Length(list)=0 then Error("list must be nonempty");fi;
   if ForAll( list, HasBaseDomain ) then
     B:= BaseDomain( list[1] );
@@ -491,7 +491,6 @@ InstallMethod( ConjugacyClasses, "for natural sl", true,
 InstallMethod(ConjugacyClasses,"matrix groups: test naturality",true,
   [IsFFEMatrixGroup and IsFinite and IsHandledByNiceMonomorphism],0,
 function(g)
-local mon,cl,clg,c,i;
   if (((not HasIsNaturalGL(g)) and IsNaturalGL(g))
       or ((not HasIsNaturalSL(g)) and IsNaturalSL(g))) then
     # redispatch as we found something out
@@ -745,7 +744,7 @@ end );
 
 
 InstallGlobalFunction(ClassesProjectiveImage,function(act)
-local G,PG,cl,c,i,r,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
+local G,PG,cl,c,i,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
       real,goal,good,e;
 
   G:=Source(act);

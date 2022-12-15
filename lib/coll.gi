@@ -641,7 +641,7 @@ InstallGlobalFunction( EnumeratorOfSubset,
 ##
 InstallGlobalFunction( List,
     function( arg )
-    local tnum, C, func, res, i, elm, l;
+    local tnum, C, func, res, i, l;
     l := Length(arg);
     if l = 0 or l > 2 then
       ErrorNoReturn( "usage: List( <C>[, <func>] )" );
@@ -918,7 +918,7 @@ DeclareSynonym( "IsIteratorByFunctions",
     IsIteratorByFunctionsRep and IsIterator );
 
 InstallGlobalFunction( IteratorByFunctions, function( record )
-    local filter, Fam, enum;
+    local filter;
 
     if not ( IsRecord( record ) and IsBound( record.NextIterator )
                                 and IsBound( record.IsDoneIterator )
@@ -2540,7 +2540,7 @@ InstallMethod( Union2,
 ##
 InstallGlobalFunction(Union, function(arg)
     local  tounite, handles, x, useUnion2, rangeSeen, distinct,
-           lasthandle, i, h, u, allDense, smallest, secondsmallest,
+           lasthandle, i, h, u, smallest, secondsmallest,
            largest, ranges, sets, singletons, rd, singleton, min, max,
            smin, s, stride, goal, data, sizebound, needed, minNeeded,
            rstart, r, rmax, split, r2, newneeded;

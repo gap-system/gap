@@ -640,7 +640,7 @@ end);
 InstallMethod(LaTeXObj,"assoc word in letter rep",true,
   [IsAssocWord and IsLetterAssocWordRep],0,
 function(elm)
-local names,len,i,g,h,e,a,s;
+local names,len,i,g,h,e,s;
 
   names:= ShallowCopy(FamilyObj( elm )!.names);
   for i in [1..Length(names)] do

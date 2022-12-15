@@ -228,7 +228,7 @@ InstallMethod(KernelOfMultiplicativeGeneralMapping,
   "matrix direct product projection",
     true,[ IsProjectionDirectProductMatrixGroup ],0,
     function(prj)
-    local   D, gens, i, K,info;
+    local   D, gens, K,info;
 
     D := Source(prj);
     gens :=Concatenation(prj!.info.compgens{

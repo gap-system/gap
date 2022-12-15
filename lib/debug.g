@@ -30,7 +30,7 @@ DEBUG.CURRENT_FUNC := fail;
 DEBUG.FUNCTION := function() return 0; end;
 
 Debug := function(arg)
-  local execpath,f,i,j,l,name,oldversion,p,t;
+  local execpath,f,i,l,name,oldversion,t;
 
   # evaluate arguments:
   if Length(arg) < 1 or Length(arg) > 2 then

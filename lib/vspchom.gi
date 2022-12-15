@@ -951,7 +951,7 @@ InstallOtherMethod( \+,
     function( map1, map2 )
     local gens,
           genimages,
-          mapi1,mapi2,
+          mapi2,
           sum;
 
     # Check that the linear mappings can be added.

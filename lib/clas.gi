@@ -733,7 +733,7 @@ local rcls, cl, mark, rep, c, o, cop, same, sub, pow, p, i, j,closure,
       dec,ggg;
 
   closure:=function(sub,gens,m)
-  local test, t, i, Error;
+  local test, t, i;
     # dimino algorithm for normal subgroup
     test:=[1];
     while Length(test)>0 do

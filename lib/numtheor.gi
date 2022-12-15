@@ -1374,7 +1374,6 @@ end );
 
 
 InstallGlobalFunction(PValuation,function(n,p)
-local v;
   if not IsInt(p) or not IsRat(n) or p = 0 then
     Error("wrong parameters");
   fi;

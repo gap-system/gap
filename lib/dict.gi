@@ -184,7 +184,6 @@ end);
 InstallMethod(KnowsDictionary,"for list dictionaries",true,
   [IsListDictionary,IsObject],0,
 function(d,x)
-local p;
     return x in d!.list;
 end);
 
@@ -290,7 +289,6 @@ end);
 InstallMethod(LookupDictionary,"for position dictionaries",true,
   [IsPositionLookupDictionary,IsObject],0,
 function(d,x)
-local p;
   x:=PositionCanonical(d!.domain,x);
   if d!.blist[x] then
     return d!.vals[x];
@@ -655,7 +653,6 @@ InstallMethod( ViewObj, "for sparse hash tables", true,
 InstallMethod( PrintHashWithNames, "for sparse hash tables", true,
     [ IsSparseHashRep, IsString, IsString ], 0,
     function( hash, keyName, valueName )
-        local key;
         Print(keyName, ": ", HashKeyEnumerator( hash ), "\n");
         Print(valueName, ": ", Enumerator( hash ));
     end );
@@ -755,7 +752,7 @@ end);
 #M  AddDictionary(<dict>,<key>,<val>)
 ##
 BindGlobal("HashDictAddDictionary",function(hash,key,value)
-local index,intkey,i,cnt;
+local index,intkey,i;
   intkey := hash!.intKeyFun(key);
 #  cnt:=0;
   repeat
@@ -898,7 +895,7 @@ end);
 InstallMethod(LookupDictionary,"for hash tables that know their int key",true,
   [IsHash and IsSparseHashRep and TableHasIntKeyFun,IsObject],0,
 function( hash, key )
-local index,intkey,i,cnt;
+local index,intkey,i;
   intkey := hash!.intKeyFun(key);
   for i in [0..hash!.ProbingDepth] do
     index:=HashClashFct(intkey,i,hash!.LengthArray);

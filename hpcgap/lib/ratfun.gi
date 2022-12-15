@@ -1116,7 +1116,7 @@ end);
 InstallMethod( \*, "rat-fun * rat-fun", IsIdenticalObj,
     [ IsRationalFunction, IsRationalFunction ], 0,
 function( left, right )
-local fam,t,num,ii,tt,den;
+local fam,t,num,tt,den;
 
   fam:=FamilyObj(left);
   if (HasIsZero(left) and IsZero(left)) or
@@ -1194,7 +1194,7 @@ end );
 InstallMethod( \+, "rat-fun + rat-fun", IsIdenticalObj,
     [ IsRationalFunction, IsRationalFunction ], 0,
 function( left, right )
-local fam,num,den,lnum,rnum,lden,rden,q,t,tmp,tmpp,i;
+local fam,num,den,lnum,rnum,lden,rden,t,tmp,tmpp,i;
 
   fam:=FamilyObj(left);
   if HasIsPolynomial(left) and IsPolynomial(left) then

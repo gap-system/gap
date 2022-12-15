@@ -1338,9 +1338,7 @@ InstallMethod( TestMonomial,
           rest,      # restriction of `chi' to `T'
           j,         # loop over irreducibles of `T'
           psi,       # character of `T'
-          testmon,   # test for monomiality
-          orbits,    # orbits of irreducibles of `T'
-          poss;      # list of possibly nonmonomial characters
+          testmon;   # test for monomiality
 
     Info( InfoMonomial, 1, "TestMonomial called" );
 

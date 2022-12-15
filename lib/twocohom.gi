@@ -704,16 +704,16 @@ end );
 InstallMethod( TwoCohomologyGeneric,"generic, using rewriting system",true,
   [IsGroup and IsFinite,IsObject],0,
 function(G,mo)
-local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
+local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       len1,l2,m,start,formalinverse,hastail,one,zero,new,v1,v2,collectail,
-      findtail,colltz,mapped,mapped2,onemat,zerovec,max,mal,s,p,genkill,
+      findtail,colltz,mapped,mapped2,onemat,zerovec,mal,p,genkill,
       c,nvars,htpos,zeroq,r,ogens,bds,model,q,pre,pcgs,miso,ker,solvec,rulpos,
-      nonone,lenpre,jv,olen,dag;
+      nonone,olen,dag;
 
 
   # collect the word in factor group
   colltz:=function(a)
-  local i,j,s,mm,p;
+  local i,p;
 
     # collect from left
     i:=1;
@@ -747,7 +747,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
 
   # normalform word and collect the tails
   collectail:=function(wrd)
-  local v,tail,i,j,s,p,mm;
+  local v,tail,i,p;
     v:=List(rules,x->zero);
 
     # collect from left
@@ -1072,7 +1072,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
 
   # normalform word and collect the tails
   r.tailforword:=function(wrd,zy)
-  local v,i,j,s,p,mm,w,tail;
+  local v,i,j,p,w,tail;
     v:=zerovec;
 
     # collect from left
@@ -1139,7 +1139,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
 
     # normalform word and collect the tails
     collectail:=function(wrd)
-    local v,i,j,s,p,mm,w,tail;
+    local v,i,j,p,w,tail;
       v:=zerovec;
 
       # collect from left
@@ -1298,7 +1298,7 @@ local n,ran,r,d,p,i,j;
 end);
 
 BindGlobal("PermrepSemidirectModule",function(G,module)
-local hom,mats,mode,m,min,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
+local hom,mats,m,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
   if not MTX.IsIrreducible(module) then Error("reducible");fi;
   p:=Size(module.field);
   if not IsPrime(p) then Error("must be over prime field");fi;
@@ -1420,7 +1420,7 @@ local hom,mats,mode,m,min,i,j,mo,bas,a,l,ugens,gi,r,cy,act,k,it,p;
 end);
 
 BindGlobal("RandomSubgroupNotIncluding",function(g,n,time)
-local best,i,u,v,start,cnt,runtime;
+local best,u,v,start,cnt,runtime;
   runtime:=GET_TIMER_FROM_ReproducibleBehaviour();
   start:=runtime();
   best:=TrivialSubgroup(g);
@@ -1438,7 +1438,7 @@ local best,i,u,v,start,cnt,runtime;
 end);
 
 InstallGlobalFunction(FpGroupCocycle,function(arg)
-local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
+local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
       it,hom,trysy,prime,mindeg,fps,ei,mgens,mwrd,nn,newfree,mfpi,mmats,sub,
       tab,tab0,evalprod,gensmrep,invsmrep,zerob,step,simi,simiq,wasbold,
       mon,ord,mn,melmvec,killgens,frew,fffam,ofgens,rws,formalinverse;
@@ -1446,7 +1446,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
   # function to evaluate product (as integer list) in gens (and their
   # inverses invs) with corresponding action mats
   evalprod:=function(w,gens,invs,mats)
-  local new,i,a;
+  local new,i;
     new:=[[],zerob];
     for i in w do
       if i>0 then

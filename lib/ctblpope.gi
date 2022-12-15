@@ -450,7 +450,7 @@ InstallMethod( Inequalities,
    end;
 
    project:= function(tuete, dir)
-      local i, j, k, l, C, sum, com, lo, lu, conO, conU,
+      local i, C, sum, com, lo, lu, conO, conU,
             lineO, lineU, lc, kombi, res;
 
       Info( InfoCharacterTable, 2, "project(", dir, ")" );
@@ -618,11 +618,11 @@ InstallMethod( Inequalities,
 ##
 InstallGlobalFunction( Permut, function( tbl, arec )
     local tbl_size, permel, sortedchars,
-          a, amin, amax, c, ncha, len, i, j, k, l, permch,
-          Conditor, comb, cond, X, divs, pm, minR, maxR,
-          d, sub, del, s, nccl, root, other,
-          time1, time2, total, free, const, lowerBound, upperBound,
-          einfug, solveKnot, nextLevel, insertValue, suche;
+          a, amin, amax, c, ncha, i, j, permch,
+          Conditor, cond, X, minR, maxR,
+          s, nccl,
+          total, free, const, lowerBound, upperBound,
+          solveKnot, nextLevel, insertValue, suche;
 
     # Check the arguments.
     if not IsOrdinaryTable( tbl ) then
@@ -673,7 +673,7 @@ InstallGlobalFunction( Permut, function( tbl, arec )
     end;
 
     nextLevel:= function(const, free)
-       local h, i, j, p, c, con, cond, unten, oben, maxu, mino,
+       local h, i, c, con, cond, unten, oben, maxu, mino,
              unique, first, mindeg, maxdeg;
 
        unique:= [];
@@ -761,7 +761,7 @@ InstallGlobalFunction( Permut, function( tbl, arec )
     end;
 
     solveKnot:= function(const, free)
-       local i, p, s, char;
+       local i, s, char;
 
        free:= ShallowCopy(free);
        if Set(free) = [false] then
@@ -823,7 +823,7 @@ InstallGlobalFunction( Permut, function( tbl, arec )
 
        suche:= function(s)
           local unten, oben, i, j, char,
-                maxu, mino, c;
+                maxu, mino;
 
           unten:= [];
           oben:= [];
@@ -901,7 +901,7 @@ end );
 #F  PermBounds( <tbl>, <degree>[, <ratirr>] )  .  boundary points for simplex
 ##
 InstallGlobalFunction( PermBounds, function( arg )
-   local tbl, degree, X, irreds, i, j, h, o, dim, nccl, ncha, c, dir, root,
+   local tbl, degree, X, irreds, i, j, dim, nccl, ncha, c, root,
          ineq, other, rho, pos, vec, deglist, point;
 
    tbl:= arg[1];
@@ -1538,7 +1538,7 @@ InstallGlobalFunction( PermCandidates,
     # step 4: backtrack
 
     evaluate:= function( candidate, rest, nonzerocol, uniques )
-    local i, j, col, val, row, quot, extracted, step, erster, descendclass;
+    local i, j, row, extracted, step, erster, descendclass;
     rest:= [ rest ];
     extracted:= erase_uniques( [ uniques ], nonzerocol, candidate, rest );
     rest:= rest[1];
@@ -1826,7 +1826,7 @@ InstallGlobalFunction( PermCandidatesFaithful,
           tbl_powermap,      # attribute of `tbl'
           i, x, N, nccl, faithful, families, j, primes, orbits, factors,
           pparts, cyclics, divs, roots, powers, matrix, fusion, inverse,
-          union, moduls, classes, nonfaithsum, rest, uniques, collfaithful,
+          moduls, classes, nonfaithsum, rest, uniques, collfaithful,
           orig_nonfaithful, difference, nonzerocol, possibilities,
           ischaracter, erase, min_number, impossible, remain,
           ncha, pos, fusionperm, shrink, ppart, myset, newfaithful,
@@ -2356,7 +2356,7 @@ InstallGlobalFunction( PermCandidatesFaithful,
     #
     evaluate:=
           function(difference,rest,nonzerocol,unique,local_upper,local_lower)
-    local i, j, col, val, row, quot, extracted, step, first, descendclass;
+    local i, j, row, extracted, step, first, descendclass;
     rest:= [ rest ];
     extracted:= erase( [ unique ], nonzerocol, difference, rest, local_upper,
                        local_lower );
@@ -2517,7 +2517,7 @@ InstallGlobalFunction( PermCharInfo, function( arg )
           tbl_size,           # attribute of `tbl'
           tbl_irreducibles,   # attribute of `tbl'
           tbl_classes,        # attribute of `tbl'
-          i, j, k, order, cont, bound, alp, degreeset, irreds, chi,
+          i, j, order, cont, bound, alp, degreeset, irreds, chi,
           ATLAS, ATL, error, scprs, cont1, bound1, char, chars;
 
     if   1 < Length( arg ) and Length( arg ) < 4

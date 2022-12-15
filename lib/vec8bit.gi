@@ -891,7 +891,7 @@ InstallMethod( PowerModCoeffs,
           Is8BitVectorRep and IsRowVector, IsInt ],
         0,
         function( v, lv, exp, w, lw)
-    local wshifted, pow, lpow, bits, i,p,e;
+    local wshifted, pow, lpow, bits, i;
 
     # ensure both vectors are in the same field
     if ADJUST_FIELDS_VEC8BIT(v, w) = fail then

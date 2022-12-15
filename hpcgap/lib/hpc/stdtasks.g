@@ -405,7 +405,7 @@ BindGlobal("MakeAsyncTask", atomic function(readwrite task)
 end);
 
 BindGlobal("ScheduleTask", function(arg)
-  local cond, task, trigger;
+  local cond, task;
   cond := arg[1];
   atomic readonly cond do
     if IS_LIST(cond) then
@@ -422,7 +422,7 @@ BindGlobal("ScheduleTask", function(arg)
 end);
 
 BindGlobal("ScheduleAsyncTask", function(arg)
-  local cond, task, trigger;
+  local cond, task;
   cond := arg[1];
   atomic readonly cond do
     if IS_LIST(cond) then

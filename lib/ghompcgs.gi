@@ -222,7 +222,7 @@ InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
   "for GMBPCGS: evaluate relations",true,
   [ IsGroupGeneralMappingByPcgs ],0,
 function(map)
-local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,R,C,mapi;
+local pcgs,pcgsimg,r,i,j,k,o,elm,img,exp,sp,C,mapi;
   C:=TrivialSubgroup(Range(map));
   pcgs:=map!.sourcePcgs;
   pcgsimg:=map!.sourcePcgsImages;

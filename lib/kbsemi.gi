@@ -323,7 +323,7 @@ end);
 # use bit lists to reduce the numbers of rules to test
 # this should ultimately become part of the kernel routine
 BindGlobal("ReduceLetterRepWordsRewSysNew",function(tzrules,w,dag)
-local old,pat,cf,has,n,p,back;
+local has,n,p,back;
   if not IsRecord(dag) then
     return ReduceLetterRepWordsRewSys(tzrules,w);
   fi;
@@ -468,7 +468,7 @@ function(kbrws,v)
     #new rule together with all the ones that were in the set of rules
     #previously)
     add_rule:=function(u,kbrws)
-      local q,l,i,n;
+      local l,i,n;
 
       #insert rule
       Add(kbrws!.tzrules,u);
@@ -845,7 +845,7 @@ InstallOtherMethod(KnuthBendixRewritingSystem,
 "for an fp semigroup and an order on the family of words of the underlying free semigroup", true,
 [IsFpSemigroup, IsOrdering], 0,
 function(s,wordord)
-  local kbrws,fam;
+  local fam;
 
   fam := ElementsFamily(FamilyObj(s));
   return KnuthBendixRewritingSystem(fam,wordord);
@@ -855,7 +855,7 @@ InstallOtherMethod(KnuthBendixRewritingSystem,
 "for an fp monoid and an order on the family of words of the underlying free monoid", true,
 [IsFpMonoid, IsOrdering], 0,
 function(m,wordord)
-  local kbrws,fam;
+  local fam;
 
   fam := ElementsFamily(FamilyObj(m));
   return KnuthBendixRewritingSystem(fam,wordord);
@@ -974,7 +974,6 @@ end);
 InstallMethod(TzRules,"for a Knuth Bendix rewriting system", true,
   [IsKnuthBendixRewritingSystem and IsKnuthBendixRewritingSystemRep], 0,
 function(kbrws)
-local fam;
   return List(kbrws!.tzrules,i->[ShallowCopy(i[1]),ShallowCopy(i[2])]);
 end);
 

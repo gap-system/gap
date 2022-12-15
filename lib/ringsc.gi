@@ -342,7 +342,6 @@ InstallGlobalFunction( RingByStructureConstants, function( arg )
     local T,      # structure constants table
           n,      # dimensions of structure matrices
           moduli, # additive orders of generators
-          zero,   # zero of `R'
           names,  # names of the ring generators
           Fam,    # the family of ring elements
           A,      # the ring, result
@@ -1077,7 +1076,7 @@ end );
 InstallMethod( DirectSumOp, "for a list (of rings), and a ring", true,
     [ IsList, IsRing ], 0,
 function( list, gp )
-local ids, tup, first, i, G, gens, g, new, D, prop;
+local ids, tup, first, i, G, gens, g, new, D;
 
   # Check the arguments.
   if IsEmpty( list ) then

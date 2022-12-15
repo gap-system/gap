@@ -192,7 +192,7 @@ InstallMethod( \[\]\:\=, "sparse list by sorted list", IsCollsXElms,
         [ IsSparseListBySortedListRep and IsList and IsMutable,
         IsPosInt, IsObject ],
         function(sl, pos, obj)
-    local   poss,  vals,  p,  l,  newfilt;
+    local   poss,  vals,  p,  l;
     #
     # If the resulting list will have a hole then we have to make it a
     # plain list

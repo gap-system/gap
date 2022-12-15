@@ -84,7 +84,7 @@ end );
 # Find element in G to conjugate B into A
 # call with G,A,B;
 InstallGlobalFunction(DoConjugateInto,function(g,a,b,onlyone)
-local cla,clb,i,j,k,imgs,bd,r,rep,b2,ex2,split,dc,
+local cla,clb,i,j,k,bd,r,rep,b2,dc,
   gens,conjugate;
 
   Info(InfoCoset,2,"call DoConjugateInto ",Size(g)," ",Size(a)," ",Size(b));
@@ -268,7 +268,7 @@ end);
 ##  the operation of G on the Right Cosets of U.
 ##
 InstallGlobalFunction( IntermediateGroup, function(G,U)
-local o,b,img,G1,c,m,mt,hardlimit,gens,t,k,intersize;
+local o,b,img,G1,c,m,hardlimit,gens,t,k,intersize;
 
   if U=G then
     return fail;
@@ -364,7 +364,7 @@ end );
 #F  RefinedChain(<G>,<c>) . . . . . . . . . . . . . . . .  refine chain links
 ##
 InstallGlobalFunction(RefinedChain,function(G,cc)
-local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,hardlimit,cheap,olda;
+local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,cheap,olda;
   bound:=(10*LogInt(Size(G),10)+1)*Maximum(Factors(Size(G)));
   bound:=Minimum(bound,20000);
   cheap:=ValueOption("cheap")=true;
@@ -985,7 +985,7 @@ local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
       stabs, dcs, homs, tra, a1, a2, indx, normal, hom, omi, omiz,c1,
       unten, compst, s, nr, nstab, lst, sifa, pinv, blist, bsz, cnt,
       ps, e, mop, mo, lstgens, lstgensop, rep, st, o, oi, i, img, ep,
-      siz, rt, j, canrep,stab,step,nu,doneidx,orbcnt,posi,
+      siz, rt, j, canrep,step,nu,doneidx,orbcnt,posi,
       sizes,cluster,sel,lr,lstabs,ssizes,num,
       actlimit, uplimit, badlimit,avoidlimit;
 

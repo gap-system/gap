@@ -1422,7 +1422,7 @@ end);
 InstallMethod(ReadByte, "iostream",
 [IsInputOutputStreamByPtyRep and IsInputOutputStream],
         function(stream)
-    local buf, ret;
+    local buf;
     buf := READ_IOSTREAM(stream![1], 1);
     if buf = fail or Length(buf) = 0 then
         stream![4] := true;
@@ -1617,7 +1617,7 @@ end);
 InstallMethod(WriteAll, "iostream", [IsInputOutputStreamByPtyRep and
        IsInputOutputStream, IsString],
         function(stream, text)
-    local ret,s;
+    local ret;
     ret := WRITE_IOSTREAM( stream![1], text,Length(text));
     if ret < Length(text) then
         return fail;
@@ -1835,7 +1835,7 @@ InstallGlobalFunction( "InstallCharReadHookFunc",
 ##
 InstallGlobalFunction( "UnInstallCharReadHookFunc",
   function(s,f)
-    local fd,i,l;
+    local i,l;
     # no checking of arguments because no harm is done in case of garbage!
     l := Length(OnCharReadHookInFuncs);
     i := l;

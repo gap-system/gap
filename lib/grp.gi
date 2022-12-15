@@ -110,7 +110,6 @@ end);
 InstallMethod(MinimalGeneratingSet,"test solvable and 2-generator noncyclic",
   true, [IsGroup and IsFinite],0,
 function(G)
-local i;
   if not HasIsSolvableGroup(G) and IsSolvableGroup(G) and
      CanEasilyComputePcgs(G) then
     # discovered solvable -- redo
@@ -349,7 +348,6 @@ InstallMethod( IsPGroup,
     "generic method (check order of the group or of generators if nilpotent)",
     [ IsGroup ],
     function( G )
-    local s, gen, ord;
 
     # We inspect orders of group generators if the group order is not yet
     # known *and* the group knows to be nilpotent or is abelian;
@@ -370,7 +368,6 @@ InstallMethod( IsPGroup,
     "for nilpotent groups",
     [ IsGroup and IsNilpotentGroup ],
     function( G )
-    local s, gen, ord;
 
     if HasSize( G ) and IsFinite( G ) then
       return IS_PGROUP_FROM_SIZE( G );
@@ -1566,7 +1563,7 @@ end);
 InstallMethod(MaximalSubgroupClassReps,"default, catch dangerous options",
   true,[IsGroup],0,
 function(G)
-local H,a,m,i,l;
+local a,m,i,l;
   # use ``try'' and set flags so that a known partial result is not used
   m:=TryMaximalSubgroupClassReps(G:
           cheap:=false,intersize:=false,inmax:=false,nolattice:=false);
@@ -4717,7 +4714,6 @@ InstallMethod( GroupWithGenerators,
     "generic method for collection",
     [ IsCollection ],
 function( gens )
-local G,typ;
 
   if IsGroup(gens) then
     Info( InfoPerformance, 1,
@@ -4734,7 +4730,6 @@ InstallMethod( GroupWithGenerators,
     "generic method for collection and identity element",
     IsCollsElms, [ IsCollection, IsMultiplicativeElementWithInverse ],
 function( gens, id )
-local G,typ;
 
   if IsGroup(gens) then
     Info( InfoPerformance, 1,
@@ -4750,7 +4745,7 @@ end );
 InstallMethod( GroupWithGenerators,"method for empty list and element",
   [ IsList and IsEmpty, IsMultiplicativeElementWithInverse ],
   function( empty, id )
-local G,fam,typ;
+local fam;
 
   fam:= CollectionsFamily( FamilyObj( id ) );
 

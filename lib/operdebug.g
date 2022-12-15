@@ -17,7 +17,7 @@
 # prints lines of format
 #   name of operation;nr of args;filename:line (of method installation);rank
 BIND_GLOBAL("WriteMethodOverview", function(fname)
-  local name, sline, relname, f;
+  local sline, relname, f;
   relname := function(path)
     local ls, s;
     for s in GAPInfo.RootPaths do

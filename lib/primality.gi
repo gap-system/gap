@@ -801,7 +801,7 @@ end);
 ##############################################################################
 InstallGlobalFunction(PrimalityProof_VerifyStructure,
 function(N,witnesses)
-  local Fs,Ls,F,L,B,BF,BL, MaxB, B1, B2, F1s, F2s, R1s, R2s, F1, F2, R1, R2, r, s,
+  local Fs,Ls,BF,BL, MaxB, B1, B2, F1s, F2s, R1s, R2s, F1, F2, R1, R2, r, s,
     QuadraticEstimate, GotOne, rets;
   MaxB:=10^6;
 

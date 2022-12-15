@@ -1700,7 +1700,7 @@ end );
 InstallMethod(IndicesEANormalSteps,"inherit from parent",true,
   [IsInducedPcgs and HasParentPcgs],0,
 function(pcgs)
-local l,i,p,ind,a,b,d;
+local i,p,ind,a,b,d;
   p:=ParentPcgs(pcgs);
   if not HasIndicesEANormalSteps(p) then
     TryNextMethod();
