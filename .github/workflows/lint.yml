@@ -1,0 +1,26 @@
+name: "Lint"
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - "master"
+      - "stable-*.*"
+  schedule:
+    # Every day at 3:10 AM UTC
+    - cron: '10 3 * * *'
+
+jobs:
+  gaplint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check out the repository"
+        uses: actions/checkout@v3
+      - name: "Set up Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: "Install gaplint with pip"
+        run: pip install gaplint==1.1.3
+      - name: "Run gaplint lib/*.gi lib/*.gd . . ."
+        run: gaplint lib/*.g* hpcgap/lib/*.g* grp/*.g lib/hpc/*.g hpcgap/lib/hpc/*.g
