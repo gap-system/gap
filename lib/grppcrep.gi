@@ -178,7 +178,7 @@ InstallGlobalFunction( GaloisConjugates, function( modu, F )
       mats := List( modu.generators, x -> false );
       r    := RemInt( p^k, p^d-1 );
       for i in [1..Length(mats)] do
-	mats[i]:=ImmutableMatrix(F,List(modu.generators[i],x->List(x,y->y^r)));
+        mats[i]:=ImmutableMatrix(F,List(modu.generators[i],x->List(x,y->y^r)));
       od;
       new := GModuleByMats( mats, F );
       Add( conj, new );
@@ -339,26 +339,26 @@ InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim )
 
       # if we have roots of unity in an extension of E
       if r <> p then
-	  f := Indeterminate( E );
-	  f := Sum( List( [1..r], x -> f^(x-1) ) );
-	  f := Factors( PolynomialRing( E ), f );
-	  d := DegreeOfLaurentPolynomial( f[1] );
-	  b := dE * d;
+          f := Indeterminate( E );
+          f := Sum( List( [1..r], x -> f^(x-1) ) );
+          f := Factors( PolynomialRing( E ), f );
+          d := DegreeOfLaurentPolynomial( f[1] );
+          b := dE * d;
 
-	  # construct new field of dimension b
-	  if dim = 0 or b * modu.dimension <= dim then
-	    L := GF(p^b);
-	    for j in [1..Length(f)] do
-	      w := PrimitiveRoot( L ) ^ ((p^b - 1)/r);
-	      while Value( f[j], w ) <> Zero( E ) do
-		w := w * PrimitiveRoot( L )^ ((p^b - 1)/r);
-	      od;
-	      mats:=List(Concatenation([w*c*iso],modu.generators),
-	        i->ImmutableMatrix(L,i));
-	      newm := GModuleByMats( mats, L );
-	      Add( new, newm );
-	    od;
-	  fi;
+          # construct new field of dimension b
+          if dim = 0 or b * modu.dimension <= dim then
+            L := GF(p^b);
+            for j in [1..Length(f)] do
+              w := PrimitiveRoot( L ) ^ ((p^b - 1)/r);
+              while Value( f[j], w ) <> Zero( E ) do
+                w := w * PrimitiveRoot( L )^ ((p^b - 1)/r);
+              od;
+              mats:=List(Concatenation([w*c*iso],modu.generators),
+                i->ImmutableMatrix(L,i));
+              newm := GModuleByMats( mats, L );
+              Add( new, newm );
+            od;
+          fi;
       fi;
       return new;
     fi;
@@ -389,7 +389,7 @@ InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim )
         L := GF( p^b );
         c := PrimitiveRoot( L ) ^ QuoInt( LogFFE( e, PrimitiveRoot( L ) ), r );
         mats:=List(Concatenation([c*iso],modu.generators),
-	           i->ImmutableMatrix(L,i));
+                   i->ImmutableMatrix(L,i));
         newm := GModuleByMats( mats, L );
         Add( new, newm );
     fi;
@@ -428,8 +428,8 @@ InstallGlobalFunction( InitAbsAndIrredModules, function( r, F, dim )
                 for j in [ 1..Length( f ) ] do
                     w := PrimitiveRoot(E)^QuoInt( p^b-1, r );
                     while Value( f[j], w ) <> Zero( F ) do
-	                w := w * PrimitiveRoot(E)^QuoInt( p^b-1, r );
-	            od;
+                        w := w * PrimitiveRoot(E)^QuoInt( p^b-1, r );
+                    od;
                     modu := GModuleByMats( [ImmutableMatrix(E,[[w]])], E );
                     Add( new, modu );
                 od;
@@ -565,7 +565,7 @@ InstallGlobalFunction( AbsAndIrredModules, function( G, F, dim )
 
     if m = 0 and (dim = 0 or Dimension( F ) <= dim) then
         return [rec( irred  := TrivialModule( 0, F ),
-   		     absirr := TrivialModule( 0, F ))];
+                     absirr := TrivialModule( 0, F ))];
     elif m = 0 then return [pcgs,[]]; fi;
 
     # the first step is separated - too many problems with empty lists

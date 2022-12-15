@@ -14,7 +14,7 @@
 
 #############################################################################
 ##
-#C  IsDirectory	. . . . . . . . . . . . . . . . . . . category of directories
+#C  IsDirectory . . . . . . . . . . . . . . . . . . . category of directories
 ##
 ##  <#GAPDoc Label="IsDirectory">
 ##  <ManSection>

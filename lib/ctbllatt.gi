@@ -1509,7 +1509,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
     od;
     i := 1;
     j := 0;
-    next[ 1	] := 1;
+    next[ 1 ] := 1;
     while j < n do
        blockcount := blockcount + 1;
        blocks.begin[ blockcount ] := i;

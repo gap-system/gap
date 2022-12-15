@@ -78,74 +78,74 @@ function( efam, pcs )
         new := [];
         ord := [];
         id  := One(pcs[1]);
-     	for i  in [ Length(pcs), Length(pcs)-1 .. 1 ]  do
+        for i  in [ Length(pcs), Length(pcs)-1 .. 1 ]  do
             g  := pcs[i];
-      	    dg := DepthOfPcElement( pfa, g );
+            dg := DepthOfPcElement( pfa, g );
             while g <> id and IsBound(pag[dg])  do
-          	g  := ReducedPcElement( pfa, g, pag[dg] );
-     	    	dg := DepthOfPcElement( pfa, g );
+                g  := ReducedPcElement( pfa, g, pag[dg] );
+                dg := DepthOfPcElement( pfa, g );
             od;
             if g <> id  then
-           	pag[dg] := g;
+                pag[dg] := g;
                 new[dg] := i;
                 ord[i]  := RelativeOrderOfPcElement( pfa, g );
             fi;
-     	od;
-	if not IsHomogeneousList(ord) then
-	  Error("not all relative orders given");
-	fi;
+        od;
+        if not IsHomogeneousList(ord) then
+          Error("not all relative orders given");
+        fi;
 
-	if IsSSortedList(new) and Length(new)=Length(pfa) then
-	  # we have the same sequence, same depths, just changed by
-	  # multiplying elements of a lower level
-	  pcgs := PcgsByPcSequenceCons(
-		      IsPcgsDefaultRep,
-		      IsPcgs and IsSortedPcgsRep,
-		      efam,
-		      pcs,[] );
-	else
-	  pcgs := PcgsByPcSequenceCons(
-		      IsPcgsDefaultRep,
-		      IsPcgs and IsUnsortedPcgsRep,
-		      efam,
-		      pcs,[] );
+        if IsSSortedList(new) and Length(new)=Length(pfa) then
+          # we have the same sequence, same depths, just changed by
+          # multiplying elements of a lower level
+          pcgs := PcgsByPcSequenceCons(
+                      IsPcgsDefaultRep,
+                      IsPcgs and IsSortedPcgsRep,
+                      efam,
+                      pcs,[] );
+        else
+          pcgs := PcgsByPcSequenceCons(
+                      IsPcgsDefaultRep,
+                      IsPcgs and IsUnsortedPcgsRep,
+                      efam,
+                      pcs,[] );
         fi;
 
         pcgs!.sortedPcSequence := pag;
         pcgs!.newDepths        := new;
         pcgs!.sortingPcgs      := pfa;
 
-	# Precompute the leading coeffs and the powers of pag up to the
-	# relative order
+        # Precompute the leading coeffs and the powers of pag up to the
+        # relative order
         pagpow:=[];
-	sorco:=[];
-	for i in [1..Length(pag)] do
-	  if IsBound(pag[i]) then
-	    pagpow[i]:=
-	      List([1..RelativeOrderOfPcElement(pfa,pag[i])-1],j->pag[i]^j);
-	    sorco[i]:=LeadingExponentOfPcElement(pfa,pag[i]);
-	  fi;
-	od;
-	pcgs!.sortedPcSeqPowers:=pagpow;
+        sorco:=[];
+        for i in [1..Length(pag)] do
+          if IsBound(pag[i]) then
+            pagpow[i]:=
+              List([1..RelativeOrderOfPcElement(pfa,pag[i])-1],j->pag[i]^j);
+            sorco[i]:=LeadingExponentOfPcElement(pfa,pag[i]);
+          fi;
+        od;
+        pcgs!.sortedPcSeqPowers:=pagpow;
         pcgs!.sortedPcSequenceLeadCoeff:=sorco;
 
-	# codepths[i]: the minimum pcgs-depth that can be implied by pag-depth i
-	codepths:=[];
-	for dg in [1..Length(new)] do
-	  g:=Length(new)+1;
-	  for i in [dg..Length(new)] do
-	    if IsBound(new[i]) and new[i]<g then
-	      g:=new[i];
-	    fi;
-	  od;
-	  codepths[dg]:=g;
-	od;
-	pcgs!.minimumCodepths:=codepths;
+        # codepths[i]: the minimum pcgs-depth that can be implied by pag-depth i
+        codepths:=[];
+        for dg in [1..Length(new)] do
+          g:=Length(new)+1;
+          for i in [dg..Length(new)] do
+            if IsBound(new[i]) and new[i]<g then
+              g:=new[i];
+            fi;
+          od;
+          codepths[dg]:=g;
+        od;
+        pcgs!.minimumCodepths:=codepths;
         SetRelativeOrders( pcgs, ord );
-	if IsSortedPcgsRep(pcgs) then
-	  pcgs!.inversePowers:=
-	                List([1..Length(pfa)],i->(1/sorco[i]) mod ord[i]);
-	fi;
+        if IsSortedPcgsRep(pcgs) then
+          pcgs!.inversePowers:=
+                        List([1..Length(pfa)],i->(1/sorco[i]) mod ord[i]);
+        fi;
     fi;
 
     # that it
@@ -454,17 +454,17 @@ local d,q,l,i,j,k,n,g,v,res;
     g:=c[i];
     if g<d[1] then
       for j in [1..c[i+1]] do
-	# conjugate the vector once by summing the conjugates in each entry
-	res:=ShallowCopy(m!.zeroVector);
-	for k in [1..l] do
-	  if e[k]>0 then
-	    v:=ExponentsOfConjugate(p,d[k],g);
-	    for n in [1..l] do
-	      res[n]:=(res[n]+e[k]*v[d[n]]) mod q;
-	    od;
-	  fi;
-	od;
-	e:=res;
+        # conjugate the vector once by summing the conjugates in each entry
+        res:=ShallowCopy(m!.zeroVector);
+        for k in [1..l] do
+          if e[k]>0 then
+            v:=ExponentsOfConjugate(p,d[k],g);
+            for n in [1..l] do
+              res[n]:=(res[n]+e[k]*v[d[n]]) mod q;
+            od;
+          fi;
+        od;
+        e:=res;
       od;
     fi;
   od;
@@ -944,25 +944,25 @@ function( pcgs, elm, pos )
     # sift element through the sorted system
     step:=0; # the index in pcgs up to which we have already computed exponents
     while elm <> id  do
-	#compute the next depth `dep' at which we have an exponent in pcgs.
+        #compute the next depth `dep' at which we have an exponent in pcgs.
         g   := elm;
         dep := Length(pcgs)+1;
         while g <> id  do
-	    # do this by stepping down in pag
+            # do this by stepping down in pag
             dg := DepthOfPcElement( pfa, g );
 
-	    if codepths[dg]>dep then
-	      # once we have reached pfa-depth dg, we cannot achieve `dep'
-	      # any longer. So we may stop the descent through pfa here
-	      g:=id;
+            if codepths[dg]>dep then
+              # once we have reached pfa-depth dg, we cannot achieve `dep'
+              # any longer. So we may stop the descent through pfa here
+              g:=id;
             elif IsBound(pcs[dg])  then
                 ll  := LeadingExponentOfPcElement( pfa, g );
                 #lr  := LeadingExponentOfPcElement( pfa, pcs[dg]);
                 lr  := pcsl[dg]; # precomputed value
                 #ord := RelativeOrderOfPcElement( pfa, g );
-		# the relative order is of course the rel. ord. in pfa
-		# at depth dg.
-		ord:=relords[dg];
+                # the relative order is of course the rel. ord. in pfa
+                # at depth dg.
+                ord:=relords[dg];
                 ll  := (ll/lr mod ord);
                 #g   := LeftQuotient( pcs[dg]^ll, g );
                 g   := LeftQuotient( pcspow[dg][ll], g ); #precomputed
@@ -970,17 +970,17 @@ function( pcgs, elm, pos )
                 if new[dg] < dep  then
                     dep := new[dg];
                     led := ll;
-		    if dep<=step+1 then
-		      # this is the minimum possible pcgs-depth at this
-		      # point
-		      g:=id;
-		    fi;
+                    if dep<=step+1 then
+                      # this is the minimum possible pcgs-depth at this
+                      # point
+                      g:=id;
+                    fi;
                 fi;
             else
                 Error( "<elm> must lie in group defined by <pcgs>" );
             fi;
         od;
-	step:=dep;
+        step:=dep;
         if dep = pos  then
             return led;
         fi;
@@ -1049,42 +1049,42 @@ function( pcgs, elm )
     # sift element through the sorted system
     step:=0; # the index in pcgs up to which we have already computed exponents
     while elm <> id  do
-	#compute the next depth `dep' at which we have an exponent in pcgs.
+        #compute the next depth `dep' at which we have an exponent in pcgs.
         g   := elm;
         dep := Length(pcgs)+1;
         while g <> id  do
-	    # do this by stepping down in pag
+            # do this by stepping down in pag
             dg := DepthOfPcElement( pfa, g );
-	    if codepths[dg]>dep then
-	      # once we have reached pfa-depth dg, we cannot achieve `dep'
-	      # any longer. So we may stop the descent through pfa here
-	      g:=id;
+            if codepths[dg]>dep then
+              # once we have reached pfa-depth dg, we cannot achieve `dep'
+              # any longer. So we may stop the descent through pfa here
+              g:=id;
             elif IsBound(pcs[dg])  then
                 ll  := LeadingExponentOfPcElement( pfa, g );
                 #lr  := LeadingExponentOfPcElement( pfa, pcs[dg]);
                 lr  := pcsl[dg]; # precomputed value
                 #ord := RelativeOrderOfPcElement( pfa, g );
-		# the relative order is of course the rel. ord. in pfa
-		# at depth dg.
-		ord:=relords[dg];
+                # the relative order is of course the rel. ord. in pfa
+                # at depth dg.
+                ord:=relords[dg];
                 ll  := (ll/lr mod ord);
                 #g   := LeftQuotient( pcs[dg]^ll, g );
                 g   := LeftQuotient( pcspow[dg][ll], g ); #precomputed
                 if new[dg] < dep  then
                     dep := new[dg];
                     led := ll;
-		    if dep<=step+1 then
-		      # this is the minimum possible pcgs-depth at this
-		      # point
-		      g:=id;
-		    fi;
+                    if dep<=step+1 then
+                      # this is the minimum possible pcgs-depth at this
+                      # point
+                      g:=id;
+                    fi;
                 fi;
             else
                 Error( "<elm> must lie in group defined by <pcgs>" );
             fi;
         od;
         exp[dep] := led;
-	step:=dep;
+        step:=dep;
         #elm := LeftQuotient( pcgs[dep]^led, elm );
         elm := LeftQuotientPowerPcgsElement( pcgs,dep,led, elm );
     od;
@@ -1127,36 +1127,36 @@ function( pcgs, elm,range )
     # sift element through the sorted system
     step:=0; # the index in pcgs up to which we have already computed exponents
     while elm <> id  do
-	#compute the next depth `dep' at which we have an exponent in pcgs.
+        #compute the next depth `dep' at which we have an exponent in pcgs.
         g   := elm;
         dep := Length(pcgs)+1;
         while g <> id  do
-	    # do this by stepping down in pag
+            # do this by stepping down in pag
             dg := DepthOfPcElement( pfa, g );
 
-	    if codepths[dg]>dep then
-	      # once we have reached pfa-depth dg, we cannot achieve `dep'
-	      # any longer. So we may stop the descent through pfa here
-	      g:=id;
+            if codepths[dg]>dep then
+              # once we have reached pfa-depth dg, we cannot achieve `dep'
+              # any longer. So we may stop the descent through pfa here
+              g:=id;
             elif IsBound(pcs[dg])  then
                 ll  := LeadingExponentOfPcElement( pfa, g );
                 #lr  := LeadingExponentOfPcElement( pfa, pcs[dg]);
                 lr  := pcsl[dg]; # precomputed value
                 #ord := RelativeOrderOfPcElement( pfa, g );
-		# the relative order is of course the rel. ord. in pfa
-		# at depth dg.
-		ord:=relords[dg];
+                # the relative order is of course the rel. ord. in pfa
+                # at depth dg.
+                ord:=relords[dg];
                 ll  := (ll/lr mod ord);
                 #g   := LeftQuotient( pcs[dg]^ll, g );
                 g   := LeftQuotient( pcspow[dg][ll], g ); #precomputed
                 if new[dg] < dep  then
                     dep := new[dg];
                     led := ll;
-		    if dep<=step+1 then
-		      # this is the minimum possible pcgs-depth at this
-		      # point
-		      g:=id;
-		    fi;
+                    if dep<=step+1 then
+                      # this is the minimum possible pcgs-depth at this
+                      # point
+                      g:=id;
+                    fi;
                 fi;
             else
                 Error( "<elm> must lie in group defined by <pcgs>" );
@@ -1164,11 +1164,11 @@ function( pcgs, elm,range )
         od;
 
         exp[dep] := led;
-	step:=dep;
-	if dep>=max then
-	  # we have found all exponents, may stop
-	  break;
-	fi;
+        step:=dep;
+        if dep>=max then
+          # we have found all exponents, may stop
+          break;
+        fi;
         #elm := LeftQuotient( pcgs[dep]^led, elm );
         elm := LeftQuotientPowerPcgsElement( pcgs,dep,led, elm );
     od;
@@ -1254,24 +1254,24 @@ function( pcgs, elm )
 
     # sift element through the sorted system
     while elm <> id  do
-	# do this by stepping down in pag
+        # do this by stepping down in pag
         dg := DepthOfPcElement( pfa, elm );
 
-	if codepths[dg]>dep then
-	  # once we have reached pfa-depth dg, we cannot achieve `dep'
-	  # any longer. So we may stop the descent through pfa here
-	  elm:=id;
-	elif IsBound(pcs[dg])  then
+        if codepths[dg]>dep then
+          # once we have reached pfa-depth dg, we cannot achieve `dep'
+          # any longer. So we may stop the descent through pfa here
+          elm:=id;
+        elif IsBound(pcs[dg])  then
             ll  := LeadingExponentOfPcElement( pfa, elm );
-	    #lr  := LeadingExponentOfPcElement( pfa, pcs[dg]);
-	    lr  := pcsl[dg]; # precomputed value
-	    #ord := RelativeOrderOfPcElement( pfa, elm );
-	    # the relative order is of course the rel. ord. in pfa
-	    # at depth dg.
-	    ord:=relords[dg];
-	    ll  := (ll/lr mod ord);
-	    #elm := LeftQuotient( pcs[dg]^ll, elm);
-	    elm := LeftQuotient( pcspow[dg][ll], elm ); #precomputed
+            #lr  := LeadingExponentOfPcElement( pfa, pcs[dg]);
+            lr  := pcsl[dg]; # precomputed value
+            #ord := RelativeOrderOfPcElement( pfa, elm );
+            # the relative order is of course the rel. ord. in pfa
+            # at depth dg.
+            ord:=relords[dg];
+            ll  := (ll/lr mod ord);
+            #elm := LeftQuotient( pcs[dg]^ll, elm);
+            elm := LeftQuotient( pcspow[dg][ll], elm ); #precomputed
 
             if new[dg] < dep  then
                 dep := new[dg];
@@ -1400,18 +1400,18 @@ local   pcgs, g,ord,cord,ppc,q,r,gcd,p1,p2,i,j,e1,pows,exps,rord;
     od;
     if e1=false then
       if Length(exps)>0 then
-	# compose from the exponents in exps:
-	e1:=OneOfPcgs(pcgs);
-	while p1>1 and ForAny(exps,i->i<p1 and i^3>p1) do
-	  j:=First([Length(exps),Length(exps)-1..1],i->exps[i]<p1
-	                                               and exps[i]^3>p1);
-	  q:=QuoInt(p1,exps[j]);
-	  e1:=e1*pows[j]^q;
-	  p1:=p1 mod exps[j];
-	od;
-	e1:=e1*g^p1;
+        # compose from the exponents in exps:
+        e1:=OneOfPcgs(pcgs);
+        while p1>1 and ForAny(exps,i->i<p1 and i^3>p1) do
+          j:=First([Length(exps),Length(exps)-1..1],i->exps[i]<p1
+                                                       and exps[i]^3>p1);
+          q:=QuoInt(p1,exps[j]);
+          e1:=e1*pows[j]^q;
+          p1:=p1 mod exps[j];
+        od;
+        e1:=e1*g^p1;
       else
-	e1:=g^p1;
+        e1:=g^p1;
       fi;
     fi;
 
@@ -1423,31 +1423,31 @@ local   pcgs, g,ord,cord,ppc,q,r,gcd,p1,p2,i,j,e1,pows,exps,rord;
     e1:=false;
     while e1=false and j>0 do
       if IsInt(p2/exps[j]) then
-	q:=p2/exps[j];
+        q:=p2/exps[j];
         e1:=pows[j]^q;
 
-	# the remaining powers in case they can be used
+        # the remaining powers in case they can be used
         r:=Filtered([j..Length(exps)],k->IsInt(exps[k]/p2));
-	pows:=pows{r};
-	exps:=exps{r}/p2;
+        pows:=pows{r};
+        exps:=exps{r}/p2;
         Assert(1,ForAll([1..Length(exps)],x->e1^exps[x]=pows[x]));
       fi;
       j:=j-1;
     od;
     if e1=false then
       if Length(exps)>0 then
-	# compose from the exponents in exps;
-	e1:=OneOfPcgs(pcgs);
-	while p2>1 and ForAny(exps,i->i<p2 and i^3>p2) do
-	  j:=First([Length(exps),Length(exps)-1..1],i->exps[i]<p2
-	                                               and exps[i]^3>p2);
-	  q:=QuoInt(p2,exps[j]);
-	  e1:=e1*pows[j]^q;
-	  p2:=p2 mod exps[j];
-	od;
-	e1:=e1*g^p2;
+        # compose from the exponents in exps;
+        e1:=OneOfPcgs(pcgs);
+        while p2>1 and ForAny(exps,i->i<p2 and i^3>p2) do
+          j:=First([Length(exps),Length(exps)-1..1],i->exps[i]<p2
+                                                       and exps[i]^3>p2);
+          q:=QuoInt(p2,exps[j]);
+          e1:=e1*pows[j]^q;
+          p2:=p2 mod exps[j];
+        od;
+        e1:=e1*g^p2;
       else
-	e1:=g^p2;
+        e1:=g^p2;
       fi;
       exps:=[]; # we can't use any of the precomputed powers
     fi;

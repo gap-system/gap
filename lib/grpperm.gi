@@ -280,9 +280,9 @@ InstallGlobalFunction( OrbitsPerms, function( gens, D )
 
         # add the remaining points of <D>, they are fixed
         for pnt  in D do
-	  if pnt>max then
+          if pnt>max then
             Add( orbs, [ pnt ] );
-	  fi;
+          fi;
         od;
 
         return orbs;
@@ -628,7 +628,7 @@ local e,S,i,p;
     for i in [1..Maximum(S.orbit)] do
       p:=Position(S.orbit,i);
       if p<>fail then
-	S.orbitpos[i]:=p-1;
+        S.orbitpos[i]:=p-1;
       fi;
     od;
     S:=S.stabilizer;
@@ -706,8 +706,8 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
     local   C,          # closure of < <G>, <obj> >, result
             P, inpar,   # parent of the closure
             g,          # an element of gens
-	    o,		# order
-	    newgens,    # new generator list
+            o,          # order
+            newgens,    # new generator list
             chain;      # the stabilizer chain created
 
     options:=ShallowCopy(options); # options will be overwritten
@@ -722,11 +722,11 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
        ForAll(gens,i->ForAll(GeneratorsOfGroup(G),j->j^i in G)) then
       g:=gens[1];
       if Size(G)>1 then
-	o:=First(Difference(DivisorsInt(Order(g)),[1]),j->g^j in G);
-	options.limit:=Size(G)*o;
+        o:=First(Difference(DivisorsInt(Order(g)),[1]),j->g^j in G);
+        options.limit:=Size(G)*o;
       else
-	o:=First(Difference(DivisorsInt(Order(g)),[1]),j->IsOne(g^j));
-	options.limit:=o;
+        o:=First(Difference(DivisorsInt(Order(g)),[1]),j->IsOne(g^j));
+        options.limit:=o;
       fi;
       options.size:=options.limit;
       #Print(options.limit,"<<\n");
@@ -760,13 +760,13 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
 #        fi;
 #        pcgs:=TryPcgsPermGroup( [ C, G ], false, false, false );
 #        if IsPcgs( pcgs )  then
-#	  chain:=pcgs!.stabChain;
-#	  if inpar  then  C := GroupStabChain( P, chain, true );
-#		    else  C := GroupStabChain( chain );           fi;
-#	  SetStabChainOptions( C, rec( random := options.random ) );
+#          chain:=pcgs!.stabChain;
+#          if inpar  then  C := GroupStabChain( P, chain, true );
+#                    else  C := GroupStabChain( chain );           fi;
+#          SetStabChainOptions( C, rec( random := options.random ) );
 #
-#	  UseSubsetRelation( C, G );
-#	  return C;
+#          UseSubsetRelation( C, G );
+#          return C;
 #        fi;
 #    fi;
 
@@ -795,10 +795,10 @@ BindGlobal("DoClosurePrmGp",function( G, gens, options )
     newgens:=Concatenation(GeneratorsOfGroup(G),gens);
     if Length(chain.generators)<=Length(newgens) then
       if inpar  then  C := GroupStabChain( P, chain, true );
-		else  C := GroupStabChain( chain );           fi;
+                else  C := GroupStabChain( chain );           fi;
     else
       if inpar  then  C := SubgroupNC(P,newgens);
-		else  C := Group( newgens,One(G) );           fi;
+                else  C := Group( newgens,One(G) );           fi;
       SetStabChainMutable(C,chain);
     fi;
     SetStabChainOptions( C, rec( random := options.random ) );
@@ -1035,7 +1035,7 @@ InstallMethod( CommutatorSubgroup, "permgroups", IsIdenticalObj,
                   doneCUV := true;
               fi;
               # force closure test
-	      StabChainOptions(C).random:=DefaultStabChainOptions.random;
+              StabChainOptions(C).random:=DefaultStabChainOptions.random;
               C := DoNormalClosurePermGroup( CUV, C );
            fi;
         until IsEmpty( list );
@@ -1058,8 +1058,8 @@ InstallMethod( CommutatorSubgroup, "permgroups", IsIdenticalObj,
            CUV := ClosureGroup( U, V );
            doneCUV := true;
         fi;
-	# force closure test
-	StabChainOptions(C).random:=DefaultStabChainOptions.random;
+        # force closure test
+        StabChainOptions(C).random:=DefaultStabChainOptions.random;
         C := DoNormalClosurePermGroup( CUV, C );
     fi;
 
@@ -1097,11 +1097,11 @@ InstallMethod( DerivedSubgroup,"permgrps",true, [ IsPermGroup ], 0,
               D := ClosureGroup(D,list,rec( random := 0,
                                                temp := true ) );
               # force closure test
-	      if IsBound(StabChainOptions(G).random) then
-		StabChainOptions(D).random:=StabChainOptions(G).random;
-	      else
-		StabChainOptions(D).random:=DefaultStabChainOptions.random;
-	      fi;
+              if IsBound(StabChainOptions(G).random) then
+                StabChainOptions(D).random:=StabChainOptions(G).random;
+              else
+                StabChainOptions(D).random:=DefaultStabChainOptions.random;
+              fi;
                D := DoNormalClosurePermGroup( G, D );
             fi;
         until list = [];
@@ -1121,12 +1121,12 @@ InstallMethod( DerivedSubgroup,"permgrps",true, [ IsPermGroup ], 0,
     if not IsEmpty( list )  then
         D := ClosureGroup(D,list,rec( random := 0,
                                         temp := true ) );
-	# give D a proper randomness
-	if IsBound(StabChainOptions(G).random) then
-	  StabChainOptions(D).random:=StabChainOptions(G).random;
-	else
-	  StabChainOptions(D).random:=DefaultStabChainOptions.random;
-	fi;
+        # give D a proper randomness
+        if IsBound(StabChainOptions(G).random) then
+          StabChainOptions(D).random:=StabChainOptions(G).random;
+        else
+          StabChainOptions(D).random:=DefaultStabChainOptions.random;
+        fi;
 
         D := DoNormalClosurePermGroup( G, D );
     fi;
@@ -1583,7 +1583,7 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
     # if the group is not transitive work with the transitive constituents
     D := MovedPoints( G );
     if not IsTransitive( G, D )  then
-	Info(InfoGroup,1,"PermSylow: transitive");
+        Info(InfoGroup,1,"PermSylow: transitive");
         S := G;
         D := ShallowCopy( D );
         while q < Size( S )  do
@@ -1599,7 +1599,7 @@ InstallGlobalFunction( SylowSubgroupPermGroup, function( G, p )
     # if the group is not primitive work in the image first
     B := Blocks( G, D );
     if Length( B ) <> 1  then
-	Info(InfoGroup,1,"PermSylow: blocks");
+        Info(InfoGroup,1,"PermSylow: blocks");
         f := ActionHomomorphism( G, B, OnSets,"surjective" );
         T := SylowSubgroupPermGroup( Range( f ), p );
         if Size( T ) < Size( Range( f ) )  then
@@ -1754,7 +1754,7 @@ InstallGlobalFunction( ApproximateSuborbitsStabilizerPermGroup,
 # stabilizer, a trivial orbit algorithm seems best.
     return Concatenation([[punkt]],
               OrbitsDomain(Stabilizer(G,punkt),
-	                   Difference(MovedPoints(G),[punkt])));
+                           Difference(MovedPoints(G),[punkt])));
 #    orbit:=Difference(StabChainMutable(G).orbit,[punkt]);
 #    stab:=Stabilizer(G,punkt));
 #    # catch trivial case
@@ -1766,7 +1766,7 @@ InstallGlobalFunction( ApproximateSuborbitsStabilizerPermGroup,
 #    processStabGen:=function()
 #      stgp:=stgp+1;
 #      if stgp>Length(stab) then
-#	StabGenAvailable:=false;
+#        StabGenAvailable:=false;
 #      fi;
 #      return stab[stgp-1];
 #    end;
@@ -1781,10 +1781,10 @@ InstallGlobalFunction( ApproximateSuborbitsStabilizerPermGroup,
     for pnt  in orbit  do
       for gen  in Ggens do
         img:=pnt^gen;
-	if not IsBound( trans[ img ] )  then
-	  Add( orbit, img );
-	  trans[img ] := gen;
-	fi;
+        if not IsBound( trans[ img ] )  then
+          Add( orbit, img );
+          trans[img ] := gen;
+        fi;
       od;
     od;
     orblen:=Length(orbit);
@@ -1797,17 +1797,17 @@ InstallGlobalFunction( ApproximateSuborbitsStabilizerPermGroup,
     processStabGen:=function()
     local punkt,img,a,b,gen;
       if Random(1,2)=1 then
-	# next one
-	currGen:=currGen+1;
-	if currGen>Length(Ggens) then
-	  currGen:=1;
-	  currPt:=currPt+1;
-	  if currPt>Length(orbit) then
-	    return ();
-	  fi;
-	fi;
-	a:=currPt;
-	b:=currGen;
+        # next one
+        currGen:=currGen+1;
+        if currGen>Length(Ggens) then
+          currGen:=1;
+          currPt:=currPt+1;
+          if currPt>Length(orbit) then
+            return ();
+          fi;
+        fi;
+        a:=currPt;
+        b:=currGen;
       else
         a:=Random(1, Length(orbit));
         b:=Random(1, Length(Ggens));
@@ -1815,21 +1815,21 @@ InstallGlobalFunction( ApproximateSuborbitsStabilizerPermGroup,
       # map a with b
       img:=orbit[a]^Ggens[b];
       if img=orbit[a] then
-	return ();
+        return ();
       else
-	punkt:=orbit[a];
-	gen:=Ggens[b];
-	while punkt<>orbit[1] do
-	  gen:=trans[punkt]*gen;
-	  punkt:=punkt/trans[punkt];
-	od;
-	if orbit[1]^gen<>img then Error("EHEH"); fi;
-	punkt:=img;
-	while punkt<>orbit[1] do
-	  gen:=gen/trans[punkt];
-	  punkt:=punkt/trans[punkt];
-	od;
-	if orbit[1]^gen<>orbit[1] then Error("UHEH"); fi;
+        punkt:=orbit[a];
+        gen:=Ggens[b];
+        while punkt<>orbit[1] do
+          gen:=trans[punkt]*gen;
+          punkt:=punkt/trans[punkt];
+        od;
+        if orbit[1]^gen<>img then Error("EHEH"); fi;
+        punkt:=img;
+        while punkt<>orbit[1] do
+          gen:=gen/trans[punkt];
+          punkt:=punkt/trans[punkt];
+        od;
+        if orbit[1]^gen<>orbit[1] then Error("UHEH"); fi;
       fi;
       return gen;
     end;
@@ -2083,7 +2083,7 @@ InstallGlobalFunction( GeneratorsSmallestStab, function ( S )
             orb,        # basic orbit of <S>
             pnt,        # one point in <orb>
             T,          # stabilizer in <S>
-	    o2,img,oo,og; # private orbit algorithm
+            o2,img,oo,og; # private orbit algorithm
 
     # handle the anchor case
     if Length(S.generators) = 0  then
@@ -2123,18 +2123,18 @@ InstallGlobalFunction( GeneratorsSmallestStab, function ( S )
         #SubtractSet( orb,
         #    Orbit( GroupByGenerators( gens, S.identity ), S.orbit[1] ) );
 
-	# here we want to be really fast, so use a private orbit algorithm
-	o2:=[S.orbit[1]];
-	RemoveSet(orb,S.orbit[1]);
-	for oo in o2 do
-	  for og in gens do
-	    img:=oo^og;
-	    if img in orb then
-	      Add(o2,img);
-	      RemoveSet(orb,img);
-	    fi;
-	  od;
-	od;
+        # here we want to be really fast, so use a private orbit algorithm
+        o2:=[S.orbit[1]];
+        RemoveSet(orb,S.orbit[1]);
+        for oo in o2 do
+          for og in gens do
+            img:=oo^og;
+            if img in orb then
+              Add(o2,img);
+              RemoveSet(orb,img);
+            fi;
+          od;
+        od;
 
     od;
 
@@ -2267,7 +2267,7 @@ local dom,s,cs,t,ts,o,m,stb;
       # in the a case the socle is not minimal
       #if Size(NormalClosure(G,t))<Size(s) then
       if Length(Orbit(G,t))<Length(cs)-1 then
-	return "3a";
+        return "3a";
       else
         return "3b";
       fi;
@@ -2275,7 +2275,7 @@ local dom,s,cs,t,ts,o,m,stb;
       # Same argument as for 3:
       #if Size(NormalClosure(G,t))<Size(s) then
       if Length(Orbit(G,t))<Length(cs)-1 then
-	return "4a";
+        return "4a";
       else
         return "4b";
       fi;
@@ -2298,8 +2298,8 @@ local s,cs,t,id,r;
   t:=cs[Length(cs)-1];
   id:=IsomorphismTypeInfoFiniteSimpleGroup(t);
   r:=rec(series:=id.series,
-	     width:=Length(cs)-1,
-	     name:=id.name);
+             width:=Length(cs)-1,
+             name:=id.name);
   if IsBound(id.parameter) then
     r.parameter:=id.parameter;
   else

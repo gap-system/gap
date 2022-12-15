@@ -39,7 +39,7 @@ GlasbyCover := function( S, A, B, pcgsK )
         z := S.factorization(LeftQuotient( A[i], B[i]) );
         A[ i ] := A[ i ] * z.u;
 
-	# what is the aim of this arithmetic? We can save one inversion
+        # what is the aim of this arithmetic? We can save one inversion
         #B[ i ] := B[ i ] * ( z.n / SiftedPcElement( pcgsK, z.n ) ) ^ -1;
         B[ i ] := B[ i ] * (SiftedPcElement( pcgsK, z.n )/z.n);
     od;
@@ -169,10 +169,10 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
     for i in [ 1..Length(first)-1 ] do
         start := first[i];
         next  := first[i+1];
-	depthS := depthN;
+        depthS := depthN;
         depthN := [next..m];
         if not start in avoid then
-	    #pcgsN := InducedPcgsByPcSequenceNC( pcgs, pcgs{depthN} );
+            #pcgsN := InducedPcgsByPcSequenceNC( pcgs, pcgs{depthN} );
             HmN := pcgsH{Filtered( [1..Length(deptH)],
                          x -> start <= deptH[x] and next > deptH[x] )};
             KmN := pcgsK{Filtered( [1..Length(deptK)],
@@ -186,14 +186,14 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
             #pcgsKF  := pcgsKmN mod pcgsN;
 
 
-	    # SumFactorizationFunction takes *LISTS* as arguments 2,3, so we
-	    # don't need to make pcgs at all.
+            # SumFactorizationFunction takes *LISTS* as arguments 2,3, so we
+            # don't need to make pcgs at all.
             #pcgsHF := ModuloTailPcgsByList(pcgs,HmN,[next..m]);
             #pcgsKF := ModuloTailPcgsByList(pcgs,KmN,[next..m]);
             #sum := SumFactorizationFunctionPcgs( pcgs, pcgsHF, pcgsKF, pcgsN );
 
-	    # and `SFF' now takes a tail depth, so the expensive sifting to
-	    # find the identity can be ignored.
+            # and `SFF' now takes a tail depth, so the expensive sifting to
+            # find the identity can be ignored.
             sum := SumFactorizationFunctionPcgs( pcgs, HmN, KmN, next );
 
             # Maybe there is nothing left to stabilize.
@@ -201,19 +201,19 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
                 C := ShallowCopy( AsList( A ) );
                 D := ShallowCopy( AsList( B ) );
             else
-		# GlasbyStabilizer would make a pcgs out of it first anyhow
-	        B     := InducedPcgsByPcSequenceNC( pcgs, B );
+                # GlasbyStabilizer would make a pcgs out of it first anyhow
+                B     := InducedPcgsByPcSequenceNC( pcgs, B );
                 if Length(sum.sum)>0 then
-		  pcgsS := InducedPcgsByPcSequenceNC( pcgs, pcgs{depthS} );
-		  pcgsR := Concatenation( sum.sum, pcgs{depthN} );
-		  pcgsR := InducedPcgsByPcSequenceNC( pcgs, pcgsR );
-		  pcgsL:=pcgsS mod pcgsR;
+                  pcgsS := InducedPcgsByPcSequenceNC( pcgs, pcgs{depthS} );
+                  pcgsR := Concatenation( sum.sum, pcgs{depthN} );
+                  pcgsR := InducedPcgsByPcSequenceNC( pcgs, pcgsR );
+                  pcgsL:=pcgsS mod pcgsR;
                 else
-		  pcgsL:=ModuloTailPcgsByList(pcgs,
-					      pcgs{Difference(depthS,depthN)},
-					      depthN);
+                  pcgsL:=ModuloTailPcgsByList(pcgs,
+                                              pcgs{Difference(depthS,depthN)},
+                                              depthN);
 
-		fi;
+                fi;
 
                 C := GlasbyStabilizer( pcgs, A, B, pcgsL );
                 C := ShallowCopy( AsList( C ) );

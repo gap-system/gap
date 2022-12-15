@@ -1831,7 +1831,7 @@ function( v )
     local   depth;
 
     if 0 < Length(v)  then
-	depth:=PositionNonZero( v );
+        depth:=PositionNonZero( v );
         if depth <= Length(v) then
             return Inverse(v[depth]) * v;
         else
@@ -1876,7 +1876,7 @@ BindGlobal( "NumberElement_ExtendedVectors", function( enum, elm )
     # length 0 vectors (see e.g. issue #2117, PR #2125)
     if Length( elm ) = 1 then return 1; fi;
     return Position( enum!.spaceEnumerator,
-		     elm{ [ 1 .. Length( elm ) - 1 ] } );
+                     elm{ [ 1 .. Length( elm ) - 1 ] } );
 end );
 
 BindGlobal( "NumberElement_ExtendedVectorsFF", function( enum, elm )

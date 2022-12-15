@@ -690,11 +690,11 @@ local pcgs,gens,U,e,i,j,pa,ros,smallpcgs,exp;
   # make entry 1 above the diagonal
   for i  in [ 1 .. Length(smallpcgs)-1 ]  do
       for j  in [ i+1 .. Length(smallpcgs) ]  do
-	  exp := ExponentOfPcElement( pa, smallpcgs[i], DepthOfPcElement(
-	      pa, smallpcgs[j] ) );
-	  if exp <> 1  then
-	      smallpcgs[i]:=smallpcgs[i]*smallpcgs[j]^(ros[j]-exp+1);
-	  fi;
+          exp := ExponentOfPcElement( pa, smallpcgs[i], DepthOfPcElement(
+              pa, smallpcgs[j] ) );
+          if exp <> 1  then
+              smallpcgs[i]:=smallpcgs[i]*smallpcgs[j]^(ros[j]-exp+1);
+          fi;
       od;
   od;
 

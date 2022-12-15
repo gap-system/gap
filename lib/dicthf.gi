@@ -95,7 +95,7 @@ local f,n,bytelen,data,qq,i;
       #return x->HashKeyBag(x,101,data[1],data[2]);
       return function(x)
              if not Is8BitVectorRep(x) or
-	       Q_VEC8BIT(x)<>n then
+               Q_VEC8BIT(x)<>n then
                  Info(InfoWarning,1,"un- or miscompressed vector");
                  x:=ShallowCopy(x);
                  ConvertToVectorRep(x,n);

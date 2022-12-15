@@ -99,7 +99,7 @@ GAPInfo.UserPreferences.Pager := UserPreference("Pager");
 
 #############################################################################
 ##
-#F  PAGER_BUILTIN( <lines> )	. . . . . . . . . . . . . . . .  format lines
+#F  PAGER_BUILTIN( <lines> )    . . . . . . . . . . . . . . . .  format lines
 ##
 # If  the text contains ANSI color sequences we reset  the terminal before
 # we print the last line.

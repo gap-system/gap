@@ -120,14 +120,14 @@ local new,t,i,step,lstep,z,zz,j,a,k,good,bad,lim,plim;
     if ForAll([1..plim],x->l[j]=l[j+x]) then
       k:=j+plim;
       while k<Length(l) and l[j]=l[k+1] do
-	k:=k+1;
+        k:=k+1;
       od;
       zz:=[0,l[j],k-j+1];
       a:=Position(t,zz);
       if a=fail then
-	new:=new+1;
-	t[new]:=zz;
-	a:=new;
+        new:=new+1;
+        t[new]:=zz;
+        a:=new;
       fi;
       l:=Concatenation(l{[1..j-1]},[a+n],l{[k+1..Length(l)]});
     fi;
@@ -149,49 +149,49 @@ local new,t,i,step,lstep,z,zz,j,a,k,good,bad,lim,plim;
       k:=i;
       lim:=i+step-1;
       while good and k<=lim do
-	good:=l[k]=l[k+step];
-	if bad and l[k]<>l[i] then bad:=false;fi;
-	k:=k+1;
+        good:=l[k]=l[k+step];
+        if bad and l[k]<>l[i] then bad:=false;fi;
+        k:=k+1;
       od;
 
       if good and not bad then
-	# found # step match of nonidentity pattern
+        # found # step match of nonidentity pattern
 
-	# did we recognize a power of a power only?
-	a:=First(Difference(DivisorsInt(step),[1,step]),
-	  d->ForAll([1..step/d],q->ForAll([0..d-1],x->
-	    l[i+x]=l[i+q*d+x])));
+        # did we recognize a power of a power only?
+        a:=First(Difference(DivisorsInt(step),[1,step]),
+          d->ForAll([1..step/d],q->ForAll([0..d-1],x->
+            l[i+x]=l[i+q*d+x])));
 
         if a<>fail then
 #Print(i," ",a," ",step," ",z,"\n");
-	  # a is the length of the subpattern we should have recognized.
-	  step:=a;
-	  zz:=z-2*step+1;
-	fi;
+          # a is the length of the subpattern we should have recognized.
+          step:=a;
+          zz:=z-2*step+1;
+        fi;
 
-	# any further match?
-	j:=i+step;
-	while j<=zz and ForAll([j..j+step-1],x->l[x]=l[x+step]) do
-	  j:=j+step;
-	od;
+        # any further match?
+        j:=i+step;
+        while j<=zz and ForAll([j..j+step-1],x->l[x]=l[x+step]) do
+          j:=j+step;
+        od;
 
-	new:=new+1;
-	t[new]:=l{[i..i+step-1]}; # new unit
-	zz:=1+(j-i)/step;
+        new:=new+1;
+        t[new]:=l{[i..i+step-1]}; # new unit
+        zz:=1+(j-i)/step;
 
-	l:=Concatenation(l{[1..i-1]},ListWithIdenticalEntries(zz,new+n),
-			l{[j+step..z]});
-	i:=i+zz-1; # position after the repeat
-	z:=Length(l);
-	if step<>lstep then
-	  # we temporarily used a shorter length -- reset
-	  step:=lstep;
-	  i:=i;
-	fi;
-	# we only need to use the *rest* for pattern length. This will help
-	# for huge powers of short expressions.
-	lstep:=Minimum(lstep,QuoInt(z-zz,2));
-	zz:=z-2*step+1;
+        l:=Concatenation(l{[1..i-1]},ListWithIdenticalEntries(zz,new+n),
+                        l{[j+step..z]});
+        i:=i+zz-1; # position after the repeat
+        z:=Length(l);
+        if step<>lstep then
+          # we temporarily used a shorter length -- reset
+          step:=lstep;
+          i:=i;
+        fi;
+        # we only need to use the *rest* for pattern length. This will help
+        # for huge powers of short expressions.
+        lstep:=Minimum(lstep,QuoInt(z-zz,2));
+        zz:=z-2*step+1;
 
       fi;
       i:=i+1;
@@ -239,20 +239,20 @@ local a,n,t,
       t:=a[2][word[i]-n];
       # is it a power stored specially?
       if t[1]=0 then
-	if t[2]<0 then
-	  Append( str, names[ -t[2] ] );
-	  Append( str, "^-" );
-	  Append( str, String(t[3]));
-	else
-	  Append( str, names[ t[2] ] );
-	  Append( str, "^" );
-	  Append( str, String(t[3]));
-	fi;
+        if t[2]<0 then
+          Append( str, names[ -t[2] ] );
+          Append( str, "^-" );
+          Append( str, String(t[3]));
+        else
+          Append( str, names[ t[2] ] );
+          Append( str, "^" );
+          Append( str, String(t[3]));
+        fi;
       else
-	# decode longer word -- it will occur as power, so use ()
-	Add(str,'(');
-	Append(str,DoNSAW(t,names,Filtered(a[2],x->x[1]=0)));
-	Add(str,')');
+        # decode longer word -- it will occur as power, so use ()
+        Add(str,'(');
+        Append(str,DoNSAW(t,names,Filtered(a[2],x->x[1]=0)));
+        Add(str,')');
       fi;
     elif word[i]<0 then
       Append( str, names[ -word[i] ] );
@@ -264,7 +264,7 @@ local a,n,t,
       j:=i;
       i:=i+1;
       while i<=Length(word) and word[j]=word[i] do
-	i:=i+1;
+        i:=i+1;
       od;
       Add( str, '^' );
       Append( str, String(exp*(i-j)) );
@@ -1264,9 +1264,9 @@ InstallMethod( \[\],
       return list![2][i];
     elif IsAssocWordFamily( list![1] ) then
       if IsLetterWordsFamily(list![1]) then
-	return AssocWordByLetterRep( list![1], [ i ] );
+        return AssocWordByLetterRep( list![1], [ i ] );
       else
-	return ObjByExtRep( list![1], [ i, 1 ] );
+        return ObjByExtRep( list![1], [ i, 1 ] );
       fi;
     else
       return ObjByExtRep( list![1], i );
@@ -1416,25 +1416,25 @@ local e,lg,i,num,mex;
    for num in word do
      if num<0 then
        if -num=lg then
-	 # increase exponent
+         # increase exponent
          e[i]:=e[i]-1;
-	 mex:=Maximum(mex,-e[i]);
+         mex:=Maximum(mex,-e[i]);
        else
-	 # add new generator/exponent pair
+         # add new generator/exponent pair
          Append(e,[-num,-1]);
-	 lg:=-num;
-	 i:=i+2;
+         lg:=-num;
+         i:=i+2;
        fi;
      else
        if num=lg then
-	 # increase exponent
+         # increase exponent
          e[i]:=e[i]+1;
-	 mex:=Maximum(mex,e[i]);
+         mex:=Maximum(mex,e[i]);
        else
-	 # add new generator/exponent pair
+         # add new generator/exponent pair
          Append(e,[num,1]);
-	 lg:=num;
-	 i:=i+2;
+         lg:=num;
+         i:=i+2;
        fi;
      fi;
    od;
@@ -1460,25 +1460,25 @@ local ind,e,lg,i,num,mex;
    for num in word do
      if num<0 then
        if -num=lg then
-	 # increase exponent
+         # increase exponent
          e[i]:=e[i]-1;
-	 mex:=Maximum(mex,-e[i]);
+         mex:=Maximum(mex,-e[i]);
        else
-	 # add new generator/exponent pair
+         # add new generator/exponent pair
          Append(e,[ind[-num],-1]);
-	 lg:=-num;
-	 i:=i+2;
+         lg:=-num;
+         i:=i+2;
        fi;
      else
        if num=lg then
-	 # increase exponent
+         # increase exponent
          e[i]:=e[i]+1;
-	 mex:=Maximum(mex,e[i]);
+         mex:=Maximum(mex,e[i]);
        else
-	 # add new generator/exponent pair
+         # add new generator/exponent pair
          Append(e,[ind[num],1]);
-	 lg:=num;
-	 i:=i+2;
+         lg:=num;
+         i:=i+2;
        fi;
      fi;
    od;
@@ -1600,7 +1600,7 @@ local i;
       w:=Concatenation(w{[1..i-1]},w{[i+2..Length(w)]});
       # there could be cancellation of previous
       if i>1 then
-	i:=i-1;
+        i:=i-1;
       fi;
     else
       i:=i+1;
@@ -1622,13 +1622,13 @@ local l,r,i,j,b,p,lc;
       i:=Length(l);
       j:=1;
       while i>0 and j<=b and l[i]=-r[j] do
-	i:=i-1;j:=j+1;
+        i:=i-1;j:=j+1;
       od;
       if j>b then
-	l:=l{[1..i]};
+        l:=l{[1..i]};
         lc:=true;
       elif i=0 then
-	l:=r{[j..b]};
+        l:=r{[j..b]};
         lc:=true;
       else
         if j=1 and lc then

@@ -118,7 +118,7 @@ local r,st,nr,nst,ind,sff,f,m,i,j,ao,Npcgs,v,isi,
       wbase:=v;
     else
       isi:=List(sff.intersection,
-			    i->ExponentsOfPcElement(Npcgs,i)*one);
+                            i->ExponentsOfPcElement(Npcgs,i)*one);
       wbase:=BaseSteinitzVectors(v,isi).factorspace;
     fi;
 
@@ -130,7 +130,7 @@ local r,st,nr,nst,ind,sff,f,m,i,j,ao,Npcgs,v,isi,
 
       wg:=[];
       for i in wbase do
-	Add(wg,PcElementByExponentsNC(Npcgs,i));
+        Add(wg,PcElementByExponentsNC(Npcgs,i));
       od;
 
       W:=false;
@@ -138,64 +138,64 @@ local r,st,nr,nst,ind,sff,f,m,i,j,ao,Npcgs,v,isi,
       nr:=[];
       nst:=[];
       for i in [1..Length(r)] do
-	x:=r[i];#FactorAgWord(r[i],fgi);
+        x:=r[i];#FactorAgWord(r[i],fgi);
         U:=ConjugateGroup(st[i],x^(-1));
 
-	# build matrices
-	mats:=[];
-	Upcgs:=InducedPcgs(sp,U);
+        # build matrices
+        mats:=[];
+        Upcgs:=InducedPcgs(sp,U);
         for u in Upcgs do
           m:=[];
           for j in wg do
-	    Add(m,Concatenation((ExponentsConjugateLayer(Npcgs,j,u)*one)*wproj,
-	                        [zero]));
-	  od;
-	  Add(m,Concatenation((ExponentsOfPcElement(Npcgs,
-	                         sff.factorization(u).n)*one)*wproj,[one]));
-	  m:=ImmutableMatrix(prime,m);
-	  Add(mats,m);
-	od;
-	# modify later: if U trivial
-	if Length(mats)>0 then
+            Add(m,Concatenation((ExponentsConjugateLayer(Npcgs,j,u)*one)*wproj,
+                                [zero]));
+          od;
+          Add(m,Concatenation((ExponentsOfPcElement(Npcgs,
+                                 sff.factorization(u).n)*one)*wproj,[one]));
+          m:=ImmutableMatrix(prime,m);
+          Add(mats,m);
+        od;
+        # modify later: if U trivial
+        if Length(mats)>0 then
 
-	  affsp:=ExtendedVectors(FullRowSpace(f,Length(wg)));
-	  ao:=ExternalSet(U,affsp,Upcgs,mats);
-	  ao:=ExternalOrbits(ao);
-	  ao:=rec(representatives:=List(ao,i->
-	    PcElementByExponentsNC(Npcgs,(Representative(i){dr})*wbase)),
-	          stabilizers:=List(ao,StabilizerOfExternalSet));
+          affsp:=ExtendedVectors(FullRowSpace(f,Length(wg)));
+          ao:=ExternalSet(U,affsp,Upcgs,mats);
+          ao:=ExternalOrbits(ao);
+          ao:=rec(representatives:=List(ao,i->
+            PcElementByExponentsNC(Npcgs,(Representative(i){dr})*wbase)),
+                  stabilizers:=List(ao,StabilizerOfExternalSet));
 
-	else
+        else
 
-	  if W=false then
-	    if Length(wg)=0 then
-	      W:=[One(G)];
-	    else
-	      en:=Enumerator(FullRowSpace(f,Length(wg)));
-	      W:=[];
-	      wgr:=[1..Length(wg)];
-	      for u in en do
-		Add(W,Product(wgr,j->wg[j]^IntFFE(u[j])));
-	      od;
-	    fi;
-	  fi;
+          if W=false then
+            if Length(wg)=0 then
+              W:=[One(G)];
+            else
+              en:=Enumerator(FullRowSpace(f,Length(wg)));
+              W:=[];
+              wgr:=[1..Length(wg)];
+              for u in en do
+                Add(W,Product(wgr,j->wg[j]^IntFFE(u[j])));
+              od;
+            fi;
+          fi;
 
-	  ao:=rec(
+          ao:=rec(
                   representatives:=W,
                   stabilizers:=List(W,i->U)
-	      );
-	fi;
+              );
+        fi;
 
-	for j in [1..Length(ao.representatives)] do
-	  Add(nr,ao.representatives[j]*x);
-	  # we will finally just need the stabilizers size and not the
-	  # stabilizer
-	  if ind<ll then
-	    Add(nst,ConjugateGroup(ao.stabilizers[j],x));
-	  else
-	    Add(nst,ao.stabilizers[j]);
-	  fi;
-	od;
+        for j in [1..Length(ao.representatives)] do
+          Add(nr,ao.representatives[j]*x);
+          # we will finally just need the stabilizers size and not the
+          # stabilizer
+          if ind<ll then
+            Add(nst,ConjugateGroup(ao.stabilizers[j],x));
+          else
+            Add(nst,ao.stabilizers[j]);
+          fi;
+        od;
       od;
       r:=nr;
       st:=nst;
@@ -247,7 +247,7 @@ local elements, g, u, e, i,t,depths,gens,p;
                            and IsRightTransversalPcGroupRep ),
           rec( group :=G,
             subgroup :=U,
-	    canonReps:=[]));
+            canonReps:=[]));
 
   elements := [One(G)];
   p := Pcgs( G );
@@ -258,8 +258,8 @@ local elements, g, u, e, i,t,depths,gens,p;
       u := One(G);
       e := ShallowCopy( elements );
       for i  in [1..RelativeOrderOfPcElement(p,g)-1]  do
-	  u := u * g;
-	  UniteSet( elements, e * u );
+          u := u * g;
+          UniteSet( elements, e * u );
       od;
   od;
   Assert(1,Length(elements)=Index(G,U));

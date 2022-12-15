@@ -82,8 +82,8 @@ InstallGlobalFunction( StabChainRandomPermGroup, function( gens, id, options)
         param:=[k,4,0,0,0,0];
     else
         param:=[QuoInt(k,2),4,QuoInt(k+1,2),4,50,5];
-	options:=ShallowCopy(options);
-	Unbind(options.knownBase);
+        options:=ShallowCopy(options);
+        Unbind(options.knownBase);
     fi;
     if options.random <= 200 then
        param[2] := 2;
@@ -364,10 +364,10 @@ InstallGlobalFunction( SCRMakeStabStrong,
 
         # on top level, we want to keep the original generators
         if not top or Length(S.generators) = 0  then
-	  for j in new do
-	    StretchImportantSLPElement(j);
-	  od;
-	  Append(S.generators,new);
+          for j in new do
+            StretchImportantSLPElement(j);
+          od;
+          Append(S.generators,new);
         fi;
         #construct orbit of basepoint
         SCRSchTree(S,new);
@@ -1085,27 +1085,27 @@ InstallGlobalFunction( SCRRestoredRecord, function( G )
         S.generators  := G.generators;
         S.orbit       := G.orbit;
         S.transversal := G.transversal;
-	o:=ShallowCopy(S.orbit);
-	# check identity of transversal elements first: Most are
-	# identical and thus element comparisons are relatively
-	# infrequent
-	while Length(o)>0 do
+        o:=ShallowCopy(S.orbit);
+        # check identity of transversal elements first: Most are
+        # identical and thus element comparisons are relatively
+        # infrequent
+        while Length(o)>0 do
 
-	  ind:=S.transversal[o[1]];
-	  ind:=Filtered([1..Length(o)],
-		  i->IsIdenticalObj(S.transversal[o[i]],ind));
-	  for l in sgs do
-	    if S.transversal[o[1]]=S.labels[l] then
-	      for pnt in o{ind} do # all these transv. elements are same
-		S.translabels[ pnt ] := l;
-	      od;
-	    fi;
-	  od;
-	  o:=o{Difference([1..Length(o)],ind)}; # the rest
-	od;
+          ind:=S.transversal[o[1]];
+          ind:=Filtered([1..Length(o)],
+                  i->IsIdenticalObj(S.transversal[o[i]],ind));
+          for l in sgs do
+            if S.transversal[o[1]]=S.labels[l] then
+              for pnt in o{ind} do # all these transv. elements are same
+                S.translabels[ pnt ] := l;
+              od;
+            fi;
+          od;
+          o:=o{Difference([1..Length(o)],ind)}; # the rest
+        od;
 
-	    #was:
-	    # (The element comparisons could be expensive)
+            #was:
+            # (The element comparisons could be expensive)
             #for pnt  in S.orbit  do
             #    if S.transversal[ pnt ] = lab  then
             #        S.translabels[ pnt ] := l;
@@ -1647,7 +1647,7 @@ InstallGlobalFunction( ClosureRandomPermGroup,
             fi;
         od;
 
-	cnt:=0;
+        cnt:=0;
         ready := false;
         while not ready do
           if    IsBound(options.limit)
@@ -1669,15 +1669,15 @@ InstallGlobalFunction( ClosureRandomPermGroup,
               elif options.random = 1000 then
                   G.restored := SCRRestoredRecord(G);
                   result := VerifySGS( G.restored, missing, correct );
-		  cnt:=cnt+1;
-		  if cnt>99 then
-		    # in rare cases this loop iterates for a very long time.
-		    # In this case, rather create a new chain, than try to
-		    # fix the problematic one
-		    #Error("infinite loop?");
-		    return StabChainRandomPermGroup(G.generators,G.identity,
-		            options);
-		  fi;
+                  cnt:=cnt+1;
+                  if cnt>99 then
+                    # in rare cases this loop iterates for a very long time.
+                    # In this case, rather create a new chain, than try to
+                    # fix the problematic one
+                    #Error("infinite loop?");
+                    return StabChainRandomPermGroup(G.generators,G.identity,
+                            options);
+                  fi;
               elif options.random > 0 then
                   result := SCRStrongGenTest
                           (G,param,orbits,basesize,base,correct,missing);
@@ -1702,10 +1702,10 @@ InstallGlobalFunction( ClosureRandomPermGroup,
                   fi;
               fi;
               if not ready then
-		Unbind(G.restored);
+                Unbind(G.restored);
                 SCRMakeStabStrong (G,new,param,orbits,
                         where,basesize,base,correct,missing,true);
-		#Print("D ",SizeStabChain(G),"\n");
+                #Print("D ",SizeStabChain(G),"\n");
               fi;
           fi;
         od;

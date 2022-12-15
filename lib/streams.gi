@@ -133,7 +133,7 @@ end);
 
 #############################################################################
 ##
-#M  Read( <input-stream> )	. . . . . . . . . .  read stream as GAP input
+#M  Read( <input-stream> )  . . . . . . . . . . . .  read stream as GAP input
 ##
 InstallOtherMethod( Read,
     "input stream",
@@ -507,7 +507,7 @@ end );
 
 #############################################################################
 ##
-#R  IsInputTextFileRep	. . . . .  representation of a input text file stream
+#R  IsInputTextFileRep  . . . . .  representation of a input text file stream
 ##
 DeclareRepresentation(
     "IsInputTextFileRep",
@@ -701,7 +701,7 @@ end);
 
 #############################################################################
 ##
-#R  IsInputTextNoneRep	. . . . . . representation of dummy input text stream
+#R  IsInputTextNoneRep  . . . . . . representation of dummy input text stream
 ##
 DeclareRepresentation(
     "IsInputTextNoneRep",
@@ -711,7 +711,7 @@ DeclareRepresentation(
 
 #############################################################################
 ##
-#V  InputTextNoneType	. . . . . . . . . . . type of dummy input text stream
+#V  InputTextNoneType   . . . . . . . . . . . type of dummy input text stream
 ##
 InputTextNoneType := NewType(
     StreamsFamily,
@@ -730,7 +730,7 @@ end );
 
 #############################################################################
 ##
-#M  IsEndOfStream( <input-text-none> )	. . . . . . . always at end-of-stream
+#M  IsEndOfStream( <input-text-none> )  . . . . . . . always at end-of-stream
 ##
 InstallMethod( IsEndOfStream,
     "input text none",
@@ -740,7 +740,7 @@ ReturnTrue );
 
 #############################################################################
 ##
-#M  PositionStream( <input-text-none> )	. . . . . . . always at end-of-stream
+#M  PositionStream( <input-text-none> ) . . . . . . . always at end-of-stream
 ##
 InstallMethod( PositionStream,
     "input text none",
@@ -1172,7 +1172,7 @@ end);
 
 #############################################################################
 ##
-#R  IsOutputTextNoneRep	. . . . .  representation of dummy output text stream
+#R  IsOutputTextNoneRep . . . . .  representation of dummy output text stream
 ##
 DeclareRepresentation(
     "IsOutputTextNoneRep",

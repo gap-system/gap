@@ -576,7 +576,7 @@ local a, l, b, i;
     l:=Filtered(l,i->not i in "([-)]");
     for i in [1..Length(l)] do
       if l[i] in CHARS_DIGITS then
-	l[i]:=Position(CHARS_DIGITS,l[i])-1;
+        l[i]:=Position(CHARS_DIGITS,l[i])-1;
       fi;
     od;
   elif Length(arg)=1 and IsInt(arg[1]) then
@@ -608,22 +608,22 @@ InstallGlobalFunction(CheckDigitTestFunction,function(len,modulo,scalars)
     if Length(l)=len or Length(l)=len-1 then
       s:=0;
       for i in [1..len-1] do
-	s:=s+scalars[i]*l[i] mod modulo;
+        s:=s+scalars[i]*l[i] mod modulo;
       od;
       s:=s/(-scalars[len]) mod modulo;
       if s=10 then
-	s:='X';
+        s:='X';
       fi;
       if Length(l)=len then
-	if s=l[len] then
-	  Print("Checksum test satisfied\n");
-	else
-	  Print("Checksum test failed\n");
-	fi;
-	return s=l[len];
+        if s=l[len] then
+          Print("Checksum test satisfied\n");
+        else
+          Print("Checksum test failed\n");
+        fi;
+        return s=l[len];
       else # length=l-1
-	Print("Check Digit is ",s,"\n");
-	return s;
+        Print("Check Digit is ",s,"\n");
+        return s;
       fi;
     fi;
     Error("number is of wrong length");
@@ -655,8 +655,8 @@ local l,str,m,i,j,p;
     for j in [1..l] do
       p:=operation(elm[i],elm[j]);
       if not p in elm then
-	Add(elm,p);
-	Add(str,String(p));
+        Add(elm,p);
+        Add(str,String(p));
       fi;
     od;
   od;
@@ -736,7 +736,7 @@ return function(o,n)
   local p;
   if not CanEasilyCompareElements(FamilyObj(o)) then
     Error("Element is in family without efficient equality test.\n",
-	  "This can cause problems");
+          "This can cause problems");
   fi;
   p:=PositionProperty(OBJLIST,x->x[1]=o);
   if p<>fail then
@@ -818,7 +818,7 @@ InstallGlobalFunction(NumbersString,function(arg)
     table:=arg[3];
   else
     table:=Concatenation(ListWithIdenticalEntries(9,0)," ",
-	     CHARS_UALPHA,CHARS_DIGITS,CHARS_SYMBOLS);
+             CHARS_UALPHA,CHARS_DIGITS,CHARS_SYMBOLS);
     message:=UppercaseString(message);
   fi;
   if modulus<Length(table) then
@@ -852,7 +852,7 @@ InstallGlobalFunction(StringNumbers,function(arg)
     table:=arg[3];
   else
     table:=Concatenation(ListWithIdenticalEntries(9,0)," ",
-	     CHARS_UALPHA,CHARS_DIGITS,CHARS_SYMBOLS);
+             CHARS_UALPHA,CHARS_DIGITS,CHARS_SYMBOLS);
   fi;
   if modulus<Length(table) then
     Error("modulus must be at least as large as the translation table");
@@ -953,46 +953,46 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
   if IsFinite(H) then
     repeat
       if cnt=0 then
-	# first the small gen syst.
+        # first the small gen syst.
         if IsSolvableGroup(H) and CanEasilyComputePcgs(H) then
           gens:=MinimalGeneratingSet(H);
         else
           gens:=SmallGeneratingSet(H);
         fi;
-	sg:=Length(gens);
+        sg:=Length(gens);
       else
-	# then something random
-	repeat
-	  if Length(gens)>2 and Random(1,2)=1 then
-	    # try to get down to 2 gens
-	    gens:=List([1,2],i->Random(H));
-	  else
-	    gens:=List([1..sg],i->Random(H));
-	  fi;
-	  # try to get small orders
-	  for k in [1..Length(gens)] do
-	    go:=Order(gens[k]);
-	    # try a p-element
-	    if Random(1,3*Length(gens))=1 then
-	      gens[k]:=gens[k]^(go/(Random(Factors(go))));
-	    fi;
-	  od;
+        # then something random
+        repeat
+          if Length(gens)>2 and Random(1,2)=1 then
+            # try to get down to 2 gens
+            gens:=List([1,2],i->Random(H));
+          else
+            gens:=List([1..sg],i->Random(H));
+          fi;
+          # try to get small orders
+          for k in [1..Length(gens)] do
+            go:=Order(gens[k]);
+            # try a p-element
+            if Random(1,3*Length(gens))=1 then
+              gens[k]:=gens[k]^(go/(Random(Factors(go))));
+            fi;
+          od;
 
-	until Index(H,SubgroupNC(H,gens))=1;
+        until Index(H,SubgroupNC(H,gens))=1;
       fi;
 
       go:=List(gens,Order);
       imgs:=List(go,i->Filtered(cl,j->IsInt(i/Order(Representative(j)))));
       Info(InfoMorph,3,go,":",Product(imgs,i->Sum(i,Size)));
       if Product(imgs,i->Sum(i,Size))<bw then
-	bg:=gens;
-	bo:=go;
-	bi:=imgs;
-	bw:=Product(imgs,i->Sum(i,Size));
+        bg:=gens;
+        bo:=go;
+        bi:=imgs;
+        bw:=Product(imgs,i->Sum(i,Size));
       elif Set(go)=Set(bo) then
-	# we hit the orders again -> sign that we can't be
-	# completely off track
-	cnt:=cnt+Int(bw/Size(G)*3);
+        # we hit the orders again -> sign that we can't be
+        # completely off track
+        cnt:=cnt+Int(bw/Size(G)*3);
       fi;
       cnt:=cnt+1;
     until bw/Size(G)*3<cnt;

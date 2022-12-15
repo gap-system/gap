@@ -953,17 +953,17 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
             od;
             for k in c do
 
-	      if model<>fail and not IsZero(solvec*k) then
-		Error("model does not fit");
-	      fi;
-	      #AddSet(eqs,ImmutableVector(field,k));
-	      #k:=SiftedVector(eqs,ImmutableVector(field,k));
+              if model<>fail and not IsZero(solvec*k) then
+                Error("model does not fit");
+              fi;
+              #AddSet(eqs,ImmutableVector(field,k));
+              #k:=SiftedVector(eqs,ImmutableVector(field,k));
   #Add(alleeqs,ImmutableVector(field,k));
-	      k:=SiftedVector(eqs,k);
-	      if not IsZero(k) then
-		CloseMutableBasis(eqs,ImmutableVector(field,k));
+              k:=SiftedVector(eqs,k);
+              if not IsZero(k) then
+                CloseMutableBasis(eqs,ImmutableVector(field,k));
 
-	      fi;
+              fi;
 
             od;
           fi;
@@ -980,7 +980,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,kb,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
       k:=List(BasisVectors(eqs),ShallowCopy);;
       TriangulizeMat(k);
       eqs:=MutableBasis(field,
-	List(k,x->ImmutableVector(field,x)),zeroq);
+        List(k,x->ImmutableVector(field,x)),zeroq);
     fi;
 
   od;
@@ -1736,15 +1736,15 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,old,sim,
             # take set stabilizer of orbit points.
             e:=Set(List(Orbits(p,MovedPoints(p)),x->x[1]));
             m:=Stabilizer(p,e,OnSets);
-	    if IndexNC(p,m)>10*NrMovedPoints(p) then
-	      m:=Intersection(MaximalSubgroupClassReps(p));
-	    fi;
-	    if IndexNC(p,m)>10*NrMovedPoints(p) then
-	      m:=p; # after all..
-	      wasbold:=false;
-	    else
-	      wasbold:=true;
-	    fi;
+            if IndexNC(p,m)>10*NrMovedPoints(p) then
+              m:=Intersection(MaximalSubgroupClassReps(p));
+            fi;
+            if IndexNC(p,m)>10*NrMovedPoints(p) then
+              m:=p; # after all..
+              wasbold:=false;
+            else
+              wasbold:=true;
+            fi;
           fi;
           Info(InfoExtReps,3,"Found index ",Index(p,m));
           e:=fail;

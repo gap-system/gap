@@ -27,7 +27,7 @@
 ##  <#/GAPDoc>
 ##
 DeclareSynonymAttr( "IsMagmaHomomorphism",
-	IsMapping and RespectsMultiplication );
+        IsMapping and RespectsMultiplication );
 
 
 #############################################################################

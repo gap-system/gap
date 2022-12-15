@@ -28,7 +28,7 @@ local d;
   else
     f:=Indeterminate(ring)^2-d;
     if IsIrreducibleRingElement(PolynomialRing(ring,
-		      [IndeterminateNumberOfUnivariateRationalFunction(f)]),f)
+                      [IndeterminateNumberOfUnivariateRationalFunction(f)]),f)
       then
       return -1;
     else
@@ -237,7 +237,7 @@ local cc,den,ch,n,nn,p,fam,i,j,w,pl,b,c,k,mp,degs,newdeg,ndeg,mc,rest;
 #            degs:=ndeg;
 #          fi;
 #        fi;
-#	Info(InfoGalois,3,"yields degrees ",degs);
+#        Info(InfoGalois,3,"yields degrees ",degs);
 #      fi;
     od;
 
@@ -317,14 +317,14 @@ local pol, fam, inum, x, r;
   fam:=CoefficientsFamily(FamilyObj(pol));
   inum:=IndeterminateNumberOfUnivariateRationalFunction(pol);
   pol:=UnivariatePolynomialByCoefficients(fam,
-	 CoefficientsOfUnivariatePolynomial(pol),inum+1);
+         CoefficientsOfUnivariatePolynomial(pol),inum+1);
   if Length(arg)>1 and IsPolynomial(arg[2]) then
     r:=CoefficientsOfUnivariatePolynomial(arg[2]);
   else
     repeat
       r:=List([1..Minimum(DegreeOfUnivariateLaurentPolynomial(pol),
-			  Random([2,2,2,2,3,3,3,4,5,6]))],
-	      i->One(fam)*Random(Integers));
+                          Random([2,2,2,2,3,3,3,4,5,6]))],
+              i->One(fam)*Random(Integers));
     until not IsZero(r[Length(r)]);
   fi;
   r:=UnivariatePolynomialByCoefficients(fam,r,inum+1);
@@ -380,7 +380,7 @@ local f,c,ch,n,nn,p,fam,i,j,h,w,q;
     c:=Reversed(c);
     Add(c, One( fam ) );
     c:=UnivariatePolynomialByCoefficients(fam,c,
-	 IndeterminateNumberOfUnivariateRationalFunction(pol));
+         IndeterminateNumberOfUnivariateRationalFunction(pol));
     p:=1;
   until DegreeOfUnivariateLaurentPolynomial(Gcd(c,Derivative(c)))=0;
   return c;
@@ -593,7 +593,7 @@ local f,n,i,sh,fu,ps,pps,ind,keineu,ba,bk,j,k,a,anz,pm,
   repeat
     repeat
       repeat
-	p:=NextPrimeInt(p);
+        p:=NextPrimeInt(p);
       until not IsInt(d/p);
       pm:=PolynomialModP(f,p);
     until
@@ -616,7 +616,7 @@ local f,n,i,sh,fu,ps,pps,ind,keineu,ba,bk,j,k,a,anz,pm,
         for i in [2..QuoInt(Lcm(ps),2)] do
           pps:=PowerPartition(ps,i);
           Sort(pps);
-	  pps:=Reversed(pps);
+          pps:=Reversed(pps);
           fu[Position(sh,pps)-1]:=true;
         od;
       elif ForAny([1..NrTransitiveGroups(n)],i->TRANSProperties(n,i)[5]=fu) then
@@ -660,7 +660,7 @@ local n,i,sh,fu,ps,pps,ind,keineu,avoid,cf;
   # Nenner mit in den Z"ahler bringen
   cf:=CoefficientsOfUnivariatePolynomial(f);
   avoid:=Lcm(Concatenation([NumeratorRat(d),DenominatorRat(d)],
-		List(cf,DenominatorRat),[NumeratorRat(cf[Length(cf)])]));
+                List(cf,DenominatorRat),[NumeratorRat(cf[Length(cf)])]));
   Info(InfoGalois,1,"Partitions Test");
   n:=DegreeOfUnivariateLaurentPolynomial(f);
 
@@ -683,8 +683,8 @@ local n,i,sh,fu,ps,pps,ind,keineu,avoid,cf;
         # add power cycleshapes, we just need the powers to |g|/2
         for i in [2..QuoInt(Lcm(ps),2)] do
           pps:=PowerPartition(ps,i);
-	  Sort(pps);
-	  pps:=Reversed(pps);
+          Sort(pps);
+          pps:=Reversed(pps);
           fu[Position(sh,pps)-1]:=true;
         od;
       elif ForAny([1..NrTransitiveGroups(n)],i->TRANSProperties(n,i)[5]=fu) then
@@ -718,7 +718,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
   local i;
     for i in l{[9..Length(l)]} do
       if i[1]=prop then
-	return i;
+        return i;
       fi;
     od;
     return false;
@@ -756,7 +756,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
                               i->Factors(Value(i,indet^2))));
           # replace X^2
           p:=Value(p,indet^2);
-	  StoreFactorsPol(polring,p,pf);
+          StoreFactorsPol(polring,p,pf);
           orbs[nr]:=p;
         else
           orbs[nr]:=GaloisSetResolvent(pol,4);
@@ -783,8 +783,8 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
     for i in l do
       i:=AbsInt(i);
       while i>1000 do
-	Add(m,i mod 1000);
-	i:=i-1000;
+        Add(m,i mod 1000);
+        i:=i-1000;
       od;
       Add(m,i);
     od;
@@ -918,8 +918,8 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
   # discriminating property
 
   repro:=Union(List(cand,
-	     i->List(TRANSProperties(n,i){[9..Length(TRANSProperties(n,i))]},
-	             j->j[1])));
+             i->List(TRANSProperties(n,i){[9..Length(TRANSProperties(n,i))]},
+                     j->j[1])));
 
   # filter out the properties we cannot use
   repro:=Filtered(repro,i->i>0);
@@ -943,11 +943,11 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
           co[i]:=co[i][1]; # throw away unneeded list
           dco[i]:=UnParOrbits(co[i]);
         od;
-	degs:=List(Filtered(co,i->IsBound(i)),GrabCodedLengths);
+        degs:=List(Filtered(co,i->IsBound(i)),GrabCodedLengths);
 
         res:=GetResolvent(f,act);
-	resf:=Factors(polring,res:factoroptions:=rec(onlydegs:=Union(degs)));
-	StoreFactorsPol(polring,res,resf);
+        resf:=Factors(polring,res:factoroptions:=rec(onlydegs:=Union(degs)));
+        StoreFactorsPol(polring,res,resf);
         pat:=Collected(List(resf,DegreeOfUnivariateLaurentPolynomial));
 
         cand:=Filtered(cand,i->dco[i]=pat);
@@ -966,9 +966,9 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
           Info(InfoGalois,1,"Alternating subgroup orbits on ",
                           norb[act mod 10]);
           minpol:=indet^2-
-	    Product(List(Filtered(Collected(Factors(NumeratorRat(d))),
+            Product(List(Filtered(Collected(Factors(NumeratorRat(d))),
                                i->not IsInt(i[2]/2)),i->i[1]))/
-	    Product(List(Filtered(Collected(Factors(DenominatorRat(d))),
+            Product(List(Filtered(Collected(Factors(DenominatorRat(d))),
                                i->not IsInt(i[2]/2)),i->i[1]));
         else
           Info(InfoGalois,1,"point stabilizer orbits on ",norb[act mod 10]);
@@ -977,7 +977,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
         act:=act mod 10;
 
         ext:=AlgebraicExtension(basring,minpol);
-	extring:=PolynomialRing(ext,[indnum]);
+        extring:=PolynomialRing(ext,[indnum]);
         res:=List(Factors(GetResolvent(f,act)),
                  i->AlgExtEmbeddedPol(ext,i));
         lens:=[];
@@ -1138,7 +1138,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
         for minpol in stabs do
           stanr:=Difference([1..Length(stabs)],nostanr);
           ext:=AlgebraicExtension(basring,minpol);
-	  extring:=PolynomialRing(ext,[indnum]);
+          extring:=PolynomialRing(ext,[indnum]);
           res:=List(Factors(GetResolvent(f,act)),
                    i->AlgExtEmbeddedPol(ext,i));
           lens:=[];
@@ -1193,9 +1193,9 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
                     for k in dco[j] do
                       # we may not unbind, since sublist will fail otherwise
                       lpos:=Position(dco[j],pat);
-		      if lpos=fail then
-			lpos:=Position(dco[j],[pat]);
-		      fi;
+                      if lpos=fail then
+                        lpos:=Position(dco[j],[pat]);
+                      fi;
                       k[lpos]:="weg";
                     od;
                   fi;

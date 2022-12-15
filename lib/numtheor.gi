@@ -512,7 +512,7 @@ RootModPrimePower := function ( n, k, p, l )
     # handle the case that the root may not lift
     elif k = p  then
 
-	Info( InfoNumtheor, 3, "k=p case" );
+        Info( InfoNumtheor, 3, "k=p case" );
 
         # compute the root mod $p^{l/2}$, or $p^{l/2+1}$ if 32 divides $p^l$
         if 2 < p  or l < 5  then
@@ -521,17 +521,17 @@ RootModPrimePower := function ( n, k, p, l )
             s := RootModPrimePower( n, k, p, QuoInt(l+3,2) );
         fi;
 
-	if s=fail then
-	  r:=fail;
-	else
-	  # lift the root to $p^l$, use higher precision
-	  Info( InfoNumtheor, 2, " lift root with Newton / Hensel" );
-	  t := PowerModInt( s, k-1, p^(l+1) );
-	  r := (s + (n - t * s) / (k * t)) mod p^l;
-	  if PowerModInt(r,k,p^l) <> n mod p^l  then
-	      r := fail;
-	  fi;
-	fi;
+        if s=fail then
+          r:=fail;
+        else
+          # lift the root to $p^l$, use higher precision
+          Info( InfoNumtheor, 2, " lift root with Newton / Hensel" );
+          t := PowerModInt( s, k-1, p^(l+1) );
+          r := (s + (n - t * s) / (k * t)) mod p^l;
+          if PowerModInt(r,k,p^l) <> n mod p^l  then
+              r := fail;
+          fi;
+        fi;
 
     # otherwise lift the root with Newton / Hensel
     else
@@ -542,16 +542,16 @@ RootModPrimePower := function ( n, k, p, l )
         else
             s := RootModPrimePower( n, k, p, QuoInt(l+3,2) );
         fi;
-	Info( InfoNumtheor, 3, "lift case s=",s );
+        Info( InfoNumtheor, 3, "lift case s=",s );
 
-	if s=fail then
-	  r:=fail;
-	else
-	  # lift the root to $p^l$
-	  Info( InfoNumtheor, 2, " lift root with Newton / Hensel" );
-	  t := PowerModInt( s, k-1, p^l );
-	  r := (s + (n - t * s) / (k * t)) mod p^l;
-	fi;
+        if s=fail then
+          r:=fail;
+        else
+          # lift the root to $p^l$
+          Info( InfoNumtheor, 2, " lift root with Newton / Hensel" );
+          t := PowerModInt( s, k-1, p^l );
+          r := (s + (n - t * s) / (k * t)) mod p^l;
+        fi;
 
     fi;
 
@@ -572,8 +572,8 @@ InstallGlobalFunction( RootMod, function ( arg )
             ii,                 # inverse of <qq> mod <q>
             r,                  # <k>th root of <n> mod <qq>
             s,                  # <k>th root of <n> mod <q>
-	    f, # factors
-	    i; # loop
+            f, # factors
+            i; # loop
 
     # get the arguments
     if   Length(arg) = 2  then n := arg[1];  k := 2;       m := arg[2];
@@ -591,19 +591,19 @@ InstallGlobalFunction( RootMod, function ( arg )
       f:=Factors(k);
       l:=n;
       for i in f do
-	l:=RootMod(l,i,m);
-	if l=fail then
-	  Info( InfoNumtheor, 2, "must try multiple roots");
-	  # it failed. This might have been because of taking the wrong root
-	  # do again with all roots
-	  l:=RootsMod(n,k,m);
-	  if Length(l)=0 then
-	    return fail;
-	  else
-	    return l[1];
-	  fi;
+        l:=RootMod(l,i,m);
+        if l=fail then
+          Info( InfoNumtheor, 2, "must try multiple roots");
+          # it failed. This might have been because of taking the wrong root
+          # do again with all roots
+          l:=RootsMod(n,k,m);
+          if Length(l)=0 then
+            return fail;
+          else
+            return l[1];
+          fi;
 
-	fi;
+        fi;
 
       od;
       return l;
@@ -768,7 +768,7 @@ RootsModPrimePower := function ( n, k, p, l )
     # handle the case that the roots split
     elif k = p  then
 
-	Info( InfoNumtheor, 3, "k=p case" );
+        Info( InfoNumtheor, 3, "k=p case" );
 
         # compute the root mod $p^{l/2}$, or $p^{l/2+1}$ if 32 divides $p^l$
         if 2 < p  or l < 5  then
@@ -824,7 +824,7 @@ InstallGlobalFunction( RootsMod, function ( arg )
             p,                  # prime divisor of <m>
             q,                  # power of <p>
             l,                  # <q> = <p>^<l>
-	    f, # factors
+            f,                  # factors
             qq,                 # product of prime powers dividing <m>
             ii,                 # inverse of <qq> mod <q>
             rr,                 # <k>th roots of <n> mod <qq>
@@ -849,7 +849,7 @@ InstallGlobalFunction( RootsMod, function ( arg )
       f:=Factors(k);
       l:=[n];
       for ii in f do
-	l:=Concatenation(List(l,x->RootsMod(x,ii,m)));
+        l:=Concatenation(List(l,x->RootsMod(x,ii,m)));
       od;
       return l;
     fi;
@@ -1065,7 +1065,7 @@ local ai, m, m2, am, l, g, c, p, i;
       p:=PositionSorted(g,c);
       # positionsorted gives position to insert -- so we have to check
       if p<=m and g[p]=c then
-	return l[p]*m+i;
+        return l[p]*m+i;
       fi;
       c:=c*ai mod n;
     od;
@@ -1163,7 +1163,7 @@ local fact, s, t, Q, R, MN, M, N, rep, d, k, theta, Qp,o,i;
     if d<ord then
       k:=(rep[2]*s*N/d);
       if Gcd(DenominatorRat(k),ord)<>1 then
-	return fail; # can't invert (can't happen if not primitive root)
+        return fail; # can't invert (can't happen if not primitive root)
       fi;
       k:=k mod ord;
       theta:=PowerMod(r,ord/d,p);

@@ -682,11 +682,11 @@ end);
 
 InstallMethod( InverseOp, "8 bit matrix", true,
         [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
-	# the following are banalities, but they are required to get the
-	# ranking right
+        # the following are banalities, but they are required to get the
+        # ranking right
         and IsOrdinaryMatrix and IsSmallList and
-	IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
-	],
+        IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
+        ],
         0,
         INV_MAT8BIT_MUTABLE);
 
@@ -699,11 +699,11 @@ InstallMethod( InverseOp, "8 bit matrix", true,
 
 InstallMethod( InverseSameMutability, "8 bit matrix", true,
         [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
-	# the following are banalities, but they are required to get the
-	# ranking right
+        # the following are banalities, but they are required to get the
+        # ranking right
         and IsOrdinaryMatrix and IsSmallList and
-	IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
-	],
+        IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
+        ],
         0,
         INV_MAT8BIT_SAME_MUTABILITY);
 
@@ -714,11 +714,11 @@ InstallMethod( InverseSameMutability, "8 bit matrix", true,
 
 InstallMethod( OneSameMutability, "8 bit matrix", true,
         [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
-	# the following are banalities, but they are required to get the
-	# ranking right
+        # the following are banalities, but they are required to get the
+        # ranking right
         and IsOrdinaryMatrix and IsSmallList and
-	IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
-	],
+        IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
+        ],
         0,
         function(m)
     local   v,  o,  one,  i,  w;
@@ -744,11 +744,11 @@ end);
 
 InstallMethod( OneMutable, "8 bit matrix", true,
         [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
-	# the following are banalities, but they are required to get the
-	# ranking right
+        # the following are banalities, but they are required to get the
+        # ranking right
         and IsOrdinaryMatrix and IsSmallList and
-	IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
-	],
+        IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
+        ],
         0,
         function(m)
     local   v,  o,  one,  i,  w;
@@ -774,11 +774,11 @@ end);
 
 InstallMethod( One, "8 bit matrix", true,
         [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
-	# the following are banalities, but they are required to get the
-	# ranking right
+        # the following are banalities, but they are required to get the
+        # ranking right
         and IsOrdinaryMatrix and IsSmallList and
-	IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
-	],
+        IsCommutativeElementCollColl and IsRingElementTable and IsFFECollColl
+        ],
         0,
         function(m)
     local   o;

@@ -24,7 +24,7 @@
 HELP_FLUSHRIGHT:=true;
 InstallGlobalFunction(HELP_PRINT_SECTION_TEXT, function(arg)
 local   book, chapter, section, key, subkey, MatchKey, ssectypes,
-	info, chap, filename, stream, p, q, lico,
+        info, chap, filename, stream, p, q, lico,
         line, i, j, lines, IsIgnoredLine, macro, macroarg, tail,
         ttenv, text, verbatim, nontex, item, initem, displaymath, align,
         lastblank, singleline, rund, blanks, SetArg, FlushLeft, Gather,
@@ -965,11 +965,11 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
 
                       if HELP_FLUSHRIGHT and ' ' in line then
                           # remove leading and trailing blanks
-			  ll:=1;
-			  while ll<Length(line) and line[ll]=' ' do
-			    ll:=ll+1;
-			  od;
-			  line:=line{[ll..Length(line)]};
+                          ll:=1;
+                          while ll<Length(line) and line[ll]=' ' do
+                            ll:=ll+1;
+                          od;
+                          line:=line{[ll..Length(line)]};
                           ll:=Length(line);
                           while ll>0 and line[ll]=' ' do
                               ll:=ll-1;

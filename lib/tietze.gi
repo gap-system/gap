@@ -127,17 +127,17 @@ local flags, leng, lengths, numrels, rel, rels, tietze,l,imgs,i,j,a,fam;
       l:=word^0;
       for i in LetterRepAssocWord(word) do
         if i<0 then
-	  a:=-Reversed(imgs[-i]);
-	else
-	  a:=imgs[i];
-	fi;
-	for j in a do
-	  if j>0 then
-	    l:=l*T!.generators[j];
-	  else
-	    l:=l/T!.generators[-j];
-	  fi;
-	od;
+          a:=-Reversed(imgs[-i]);
+        else
+          a:=imgs[i];
+        fi;
+        for j in a do
+          if j>0 then
+            l:=l*T!.generators[j];
+          else
+            l:=l/T!.generators[-j];
+          fi;
+        od;
       od;
 
       word:=l;
@@ -1326,7 +1326,7 @@ local prepare,gens,rels,sel,cnt,i,alde,freq;
       idx:=Difference(idx,sel);
       sel:=Concatenation(sel,idx);
       if Length(sel)<20 and freq<lim then
-	freq:=freq+1;
+        freq:=freq+1;
       fi;
     until Length(sel)>=20 or freq=lim;
 

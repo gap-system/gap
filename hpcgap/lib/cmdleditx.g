@@ -82,9 +82,9 @@ BindGlobal("LineEditKeyHandler", function(l)
 ##            IS_STRING_REP(res[3]) and LENGTH(res[3]) < 32768 and
 ##            res[2] < l[4] and res[2] <= LENGTH(res[1])+1) then
     if not (IsSmallIntRep(res) and res >= 0) and not (IsStringRep(res[1]) and
-	    Length(res[1]) < l[4]-1 and
-	    IsStringRep(res[3]) and Length(res[3]) < 32768 and
-	    res[2] < l[4] and res[2] <= Length(res[1])+1) then
+            Length(res[1]) < l[4]-1 and
+            IsStringRep(res[3]) and Length(res[3]) < 32768 and
+            res[2] < l[4] and res[2] <= Length(res[1])+1) then
       Error("Key handler for line editing produced invalid result.");
     fi;
     return res;
@@ -398,13 +398,13 @@ GAPInfo.History.PrevLine := function(start)
     first := pos;
     repeat
       if PositionSublist(hist.Lines[pos], start) = 1 then
-	hist.Pos := pos;
-	return hist.Lines[pos];
+        hist.Pos := pos;
+        return hist.Lines[pos];
       fi;
       if pos > 1 then
-	pos := pos - 1;
+        pos := pos - 1;
       else
-	pos := Length(hist.Lines);
+        pos := Length(hist.Lines);
       fi;
     until pos = first;
   od;

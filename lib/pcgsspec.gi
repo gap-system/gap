@@ -598,23 +598,23 @@ function( pcgs )
         # change to complement base
         Info(InfoSpecPcgs, 1, "exhibit complement system");
         pcgssys := PcgsSystemWithComplementSystem( pcgssys );
-	if IsBound(pcgssys.pcgs!.LGWeights) then
-	  # pcgs is reused -- force new one
-	  pcgssys.pcgs:=PcgsByPcSequence(FamilyObj(OneOfPcgs(pcgs)),
-	    pcgssys.pcgs!.pcSequence);
-	fi;
+        if IsBound(pcgssys.pcgs!.LGWeights) then
+          # pcgs is reused -- force new one
+          pcgssys.pcgs:=PcgsByPcSequence(FamilyObj(OneOfPcgs(pcgs)),
+            pcgssys.pcgs!.pcSequence);
+        fi;
 
         # create the special pcgs
         newpcgs := pcgssys.pcgs;
         SetIsSpecialPcgs( newpcgs, true );
 
-	w:=pcgssys.weights;
-	if w[Length(w)][1]=1 then
-	  SetIndicesCentralNormalSteps( newpcgs, pcgssys.first );
-	  if Length(Set(RelativeOrders(newpcgs)))=1 then
-	    SetIndicesPCentralNormalStepsPGroup( newpcgs, pcgssys.first );
-	  fi;
-	fi;
+        w:=pcgssys.weights;
+        if w[Length(w)][1]=1 then
+          SetIndicesCentralNormalSteps( newpcgs, pcgssys.first );
+          if Length(Set(RelativeOrders(newpcgs)))=1 then
+            SetIndicesPCentralNormalStepsPGroup( newpcgs, pcgssys.first );
+          fi;
+        fi;
 
         SetLGWeights( newpcgs, pcgssys.weights );
         SetLGLayers( newpcgs, pcgssys.layers );
@@ -625,7 +625,7 @@ function( pcgs )
         SetIsPrimeOrdersPcgs( newpcgs, true );
     fi;
     if HasGroupOfPcgs (pcgs) then
-	SetGroupOfPcgs (newpcgs, GroupOfPcgs (pcgs));
+        SetGroupOfPcgs (newpcgs, GroupOfPcgs (pcgs));
     fi;
     return newpcgs;
 end );
@@ -727,7 +727,7 @@ local s,H,iso,pc,w;
   SetLGFirst(pc,LGFirst(s));
   SetIsSpecialPcgs(pc,true);
   if Length(LGWeights(pc)) = 0 or LGWeights(pc)[Length(LGWeights(pc))][1]=1 then
-	SetIsPcgsCentralSeries(pc,true);
+        SetIsPcgsCentralSeries(pc,true);
   fi;
   SetIndicesEANormalSteps( pc, LGFirst(pc) );
   SetIndicesChiefNormalSteps( pc, LGFirst(pc) );

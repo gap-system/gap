@@ -9,7 +9,6 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file contains the declarations for semigroups defined by rws.
-## JDM
 
 ############################################################################
 ##
@@ -36,11 +35,11 @@ function(kbrws)
   SetIsConfluent(rws,true);
   SetFamilyForRewritingSystem(rws, FamilyForRewritingSystem(kbrws));
   SetOrderingOfRewritingSystem(rws,OrderingOfRewritingSystem(kbrws));
-	if IsElementOfFpSemigroupFamily(FamilyForRewritingSystem(kbrws)) then
-		SetIsBuiltFromSemigroup(rws,true);
-	elif IsElementOfFpMonoidFamily(FamilyForRewritingSystem(kbrws)) then
-		SetIsBuiltFromMonoid(rws,true);
-	fi;
+  if IsElementOfFpSemigroupFamily(FamilyForRewritingSystem(kbrws)) then
+    SetIsBuiltFromSemigroup(rws,true);
+  elif IsElementOfFpMonoidFamily(FamilyForRewritingSystem(kbrws)) then
+    SetIsBuiltFromMonoid(rws,true);
+  fi;
 
   return rws;
 
@@ -57,9 +56,9 @@ InstallMethod(ReducedConfluentRewritingSystem,
 "for an fp semigroup", true,
 [IsFpSemigroup], 0,
 function(S)
-	local wordord;
+  local wordord;
 
-	wordord := ShortLexOrdering(ElementsFamily(FamilyObj(
+  wordord := ShortLexOrdering(ElementsFamily(FamilyObj(
           FreeSemigroupOfFpSemigroup(S))));
   return ReducedConfluentRewritingSystem(S,wordord);
 end);
@@ -68,14 +67,12 @@ InstallMethod(ReducedConfluentRewritingSystem,
 "for an fp monoid", true,
 [IsFpMonoid], 0,
 function(M)
-	local wordord;
+  local wordord;
 
-	wordord := ShortLexOrdering(ElementsFamily(FamilyObj(
-          FreeMonoidOfFpMonoid(M))));
+  wordord := ShortLexOrdering(ElementsFamily(FamilyObj(
+             FreeMonoidOfFpMonoid(M))));
   return ReducedConfluentRewritingSystem(M,wordord);
 end);
-
-
 
 ############################################################################
 ##
@@ -111,7 +108,6 @@ function(S,ordering)
   fi;
 
   return rws;
-
 end);
 
 InstallOtherMethod(ReducedConfluentRewritingSystem,
@@ -141,9 +137,7 @@ function(M,ordering)
   fi;
 
   return rws;
-
 end);
-
 
 ############################################################################
 ##
@@ -159,8 +153,8 @@ InstallOtherMethod(ReducedConfluentRewritingSystem,
 [IsFpSemigroup, IsFunction], 0,
 function(S,lteq)
   return ReducedConfluentRewritingSystem(S,
-					OrderingByLessThanOrEqualFunctionNC(ElementsFamily(FamilyObj(
-					FreeSemigroupOfFpSemigroup(S))),lteq,[IsReductionOrdering]));
+                                        OrderingByLessThanOrEqualFunctionNC(ElementsFamily(FamilyObj(
+                                        FreeSemigroupOfFpSemigroup(S))),lteq,[IsReductionOrdering]));
 end);
 
 #############################################################################
@@ -222,9 +216,7 @@ function(rws)
 
   # at this stage we know that the rws is confluent
   return true;
-
 end);
-
 
 ############################################################################
 ##
@@ -275,12 +267,7 @@ local v;
        ReduceLetterRepWordsRewSys(rws!.tzrules,LetterRepAssocWord(w)));
 
   return v;
-
 end);
-
-
-
-
 
 #############################################################################
 ##
@@ -296,7 +283,6 @@ function(rws,w)
               "Usage: ReducedForm(<rws>, <w>)", "- <w> in FreeSemigroupRewritingSystem(<rws>)") );;
   fi;
   return ReduceWordUsingRewritingSystem(rws,w);
-
 end);
 
 InstallMethod(ReducedForm,
@@ -309,10 +295,7 @@ function(rws,w)
       Error( Concatenation( "Usage: ReducedForm(<rws>, <w>)", "- <w> in FreeMonoidOfRewritingSystem(<rws>)") );;
   fi;
   return ReduceWordUsingRewritingSystem(rws,w);
-
 end);
-
-
 
 #############################################################################
 ##
@@ -349,7 +332,6 @@ InstallOtherMethod(GeneratorsOfRws,
 [IsRewritingSystem and IsBuiltFromSemigroup], 0,
 function(rws)
 return GeneratorsOfSemigroup(FreeSemigroupOfRewritingSystem(rws));
-
 end);
 
 #############################################################################
@@ -362,5 +344,4 @@ InstallOtherMethod(GeneratorsOfRws,
 [IsRewritingSystem and IsBuiltFromMonoid], 0,
 function(rws)
 return GeneratorsOfMonoid(FreeMonoidOfRewritingSystem(rws));
-
 end);

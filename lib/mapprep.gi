@@ -120,14 +120,14 @@ local com;        # composition of <map1> and <map2>, result
   # Make the general mapping.
   if IsSPGeneralMapping( map1 ) and IsSPGeneralMapping( map2 ) then
     com:= Objectify( TypeOfDefaultGeneralMapping( Source( map1 ),
-						  Range( map2 ),
-		      IsCompositionMappingRep and IsSPGeneralMapping ),
-		    rec() );
+                                                  Range( map2 ),
+                      IsCompositionMappingRep and IsSPGeneralMapping ),
+                    rec() );
   else
     com:= Objectify( TypeOfDefaultGeneralMapping( Source( map1 ),
-						  Range( map2 ),
-		      IsCompositionMappingRep and IsNonSPGeneralMapping ),
-		    rec() );
+                                                  Range( map2 ),
+                      IsCompositionMappingRep and IsNonSPGeneralMapping ),
+                    rec() );
   fi;
 
   # Enter the identifying information.
@@ -544,7 +544,7 @@ InstallGlobalFunction( MappingByFunction, function ( arg )
 
     # ensure that the source and range are domains
     if not (IsDomain(arg[1]) and IsDomain(arg[2])) then
-	    Error("MappingByFunction: Source and Range must be domains");
+        Error("MappingByFunction: Source and Range must be domains");
     fi;
 
     # no inverse function given
@@ -569,7 +569,7 @@ InstallGlobalFunction( MappingByFunction, function ( arg )
                            and IsBijective ),
                        rec( fun    := arg[3],
                             invFun := arg[4],
-			    prefun := arg[4]) );
+                            prefun := arg[4]) );
 
     fi;
 
@@ -1143,10 +1143,10 @@ BindGlobal( "ImmediateImplicationsIdentityMapping", function( idmap )
     if IsMagma( source ) then
       SetRespectsMultiplication( idmap, true );
       if IsMagmaWithOne( source ) then
-	SetRespectsOne( idmap, true );
-	if IsMagmaWithInverses( source ) then
-	  SetRespectsInverses( idmap, true );
-	fi;
+        SetRespectsOne( idmap, true );
+        if IsMagmaWithInverses( source ) then
+          SetRespectsInverses( idmap, true );
+        fi;
       fi;
     fi;
 
@@ -1154,16 +1154,16 @@ BindGlobal( "ImmediateImplicationsIdentityMapping", function( idmap )
     if IsAdditiveMagma( source ) then
       SetRespectsAddition( idmap, true );
       if IsAdditiveMagmaWithZero( source ) then
-	SetRespectsZero( idmap, true );
-	if IsAdditiveGroup( source ) then
-	  SetRespectsAdditiveInverses( idmap, true );
+        SetRespectsZero( idmap, true );
+        if IsAdditiveGroup( source ) then
+          SetRespectsAdditiveInverses( idmap, true );
 
           # linear structure
           if IsLeftModule( source ) then
             SetRespectsScalarMultiplication( idmap, true );
           fi;
 
-	fi;
+        fi;
       fi;
     fi;
 end );
@@ -1439,10 +1439,10 @@ BindGlobal( "ImmediateImplicationsZeroMapping", function( zeromap )
     if IsMagma( source ) then
       SetRespectsMultiplication( zeromap, true );
       if IsMagmaWithOne( source ) then
-	SetRespectsOne( zeromap, false );
-	if IsMagmaWithInverses( source ) then
-	  SetRespectsInverses( zeromap, false );
-	fi;
+        SetRespectsOne( zeromap, false );
+        if IsMagmaWithInverses( source ) then
+          SetRespectsInverses( zeromap, false );
+        fi;
       fi;
     fi;
 
@@ -1450,10 +1450,10 @@ BindGlobal( "ImmediateImplicationsZeroMapping", function( zeromap )
     if IsAdditiveMagma( source ) then
       SetRespectsAddition( zeromap, true );
       if IsAdditiveMagmaWithZero( source ) then
-	SetRespectsZero( zeromap, true );
-	if IsAdditiveGroup( source ) then
-	  SetRespectsAdditiveInverses( zeromap, true );
-	fi;
+        SetRespectsZero( zeromap, true );
+        if IsAdditiveGroup( source ) then
+          SetRespectsAdditiveInverses( zeromap, true );
+        fi;
       fi;
     fi;
 
@@ -1742,10 +1742,10 @@ local filter, res, prop;
   res!.map:= map;
 
   for prop in [IsSingleValued, IsTotal, IsInjective, RespectsMultiplication, RespectsInverses,
-	  RespectsAddition, RespectsAdditiveInverses, RespectsScalarMultiplication] do
-	if Tester(prop)(map) and prop(map) then
-		Setter(prop)(res, true);
-	fi;
+          RespectsAddition, RespectsAdditiveInverses, RespectsScalarMultiplication] do
+    if Tester(prop)(map) and prop(map) then
+      Setter(prop)(res, true);
+    fi;
   od;
 
   # Return the restriction.
@@ -1765,7 +1765,7 @@ InstallMethod( ImagesElm,
     local im;
     im:= ImagesElm( res!.map, elm );
     if not ( (HasIsSingleValued(res) and IsSingleValued(res)) or
-	(HasIsSingleValued(res!.map) and IsSingleValued(res!.map)) ) then
+        (HasIsSingleValued(res!.map) and IsSingleValued(res!.map)) ) then
       im:=Intersection(Range(res),im);
     fi;
     return im;
@@ -1784,7 +1784,7 @@ InstallMethod( ImagesSet,
     local im;
     im:= ImagesSet( res!.map, elms );
     if not ( (HasIsSingleValued(res) and IsSingleValued(res)) or
-	(HasIsSingleValued(res!.map) and IsSingleValued(res!.map)) ) then
+        (HasIsSingleValued(res!.map) and IsSingleValued(res!.map)) ) then
       im:=Intersection(Range(res),im);
     fi;
     return im;
@@ -1829,7 +1829,7 @@ InstallMethod( PreImagesElm,
     local preim;
     preim:= PreImagesElm( res!.map, elm );
     if not ( (HasIsInjective(res) and IsInjective(res)) or
-	(HasIsInjective(res!.map) and IsInjective(res!.map)) ) then
+        (HasIsInjective(res!.map) and IsInjective(res!.map)) ) then
       preim:=Intersection(Source(res),preim);
     fi;
     return preim;
@@ -1848,7 +1848,7 @@ InstallMethod( PreImagesSet,
     local preim;
     preim:= PreImagesSet( res!.map, elms );
     if not ( (HasIsInjective(res) and IsInjective(res)) or
-	(HasIsInjective(res!.map) and IsInjective(res!.map)) ) then
+        (HasIsInjective(res!.map) and IsInjective(res!.map)) ) then
       preim:=Intersection(Source(res),preim);
     fi;
     return preim;

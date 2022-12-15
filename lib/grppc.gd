@@ -64,7 +64,7 @@ InstallTrueMethod( IsGeneratorsOfMagmaWithInverses,
 
 #############################################################################
 ##
-#A  CanonicalPcgsWrtFamilyPcgs( <grp> )	. . . . . . .  with respect to family
+#A  CanonicalPcgsWrtFamilyPcgs( <grp> ) . . . . . . .  with respect to family
 ##
 ##  <ManSection>
 ##  <Attr Name="CanonicalPcgsWrtFamilyPcgs" Arg='grp'/>

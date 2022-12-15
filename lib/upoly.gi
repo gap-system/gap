@@ -51,7 +51,7 @@ local d;
     return IsIrreducibleRingElement(LeftActingDomain(R),f);
   else
     return Length(Factors(R,f:  factoroptions:=
-		    rec(stopdegs:=[1..DegreeOfLaurentPolynomial(f)-1]) ))<=1;
+                    rec(stopdegs:=[1..DegreeOfLaurentPolynomial(f)-1]) ))<=1;
   fi;
 end);
 
@@ -78,9 +78,9 @@ local roots,factor,f,fact,fie,m,inum;
     if DegreeOfLaurentPolynomial(factor)=1 then
       factor:=CoefficientsOfLaurentPolynomial(factor);
       if factor[2]=0 then
-	Add(roots,-factor[1][1]/factor[1][2]);
+        Add(roots,-factor[1][1]/factor[1][2]);
       else
-	Add(roots,0*factor[1][1]);
+        Add(roots,0*factor[1][1]);
       fi;
     fi;
   od;

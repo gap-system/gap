@@ -90,7 +90,7 @@ function(s, c)
   if not s = Source(c) then
     TryNextMethod();
   fi;
-	return HomomorphismQuotientSemigroup(c);
+  return HomomorphismQuotientSemigroup(c);
 end);
 
 #############################################################################
@@ -105,5 +105,5 @@ InstallMethod( ViewObj,
     [ IsQuotientSemigroup], 0,
     function( S )
     Print( "<quotient of ",QuotientSemigroupPreimage(S)," by ",
-			QuotientSemigroupCongruence(S),">");
+           QuotientSemigroupCongruence(S),">");
     end );

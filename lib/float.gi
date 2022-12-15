@@ -702,46 +702,46 @@ InstallOtherMethod(RationalFunctionsFamily, "floats pseudofield",
 
   # default type for polynomials
   fam!.defaultPolynomialType := NewType( fam,
-	  IsPolynomial and IsPolynomialDefaultRep and
-	  HasExtRepPolynomialRatFun);
+          IsPolynomial and IsPolynomialDefaultRep and
+          HasExtRepPolynomialRatFun);
 
   # default type for univariate laurent polynomials
   fam!.threeLaurentPolynomialTypes :=
     [ NewType( fam,
-	  IsLaurentPolynomial
-	  and IsLaurentPolynomialDefaultRep and
-	  HasIndeterminateNumberOfLaurentPolynomial and
-	  HasCoefficientsOfLaurentPolynomial),
+          IsLaurentPolynomial
+          and IsLaurentPolynomialDefaultRep and
+          HasIndeterminateNumberOfLaurentPolynomial and
+          HasCoefficientsOfLaurentPolynomial),
 
-	  NewType( fam,
-	    IsLaurentPolynomial
-	    and IsLaurentPolynomialDefaultRep and
-	    HasIndeterminateNumberOfLaurentPolynomial and
-	    HasCoefficientsOfLaurentPolynomial and
-	    IsConstantRationalFunction and IsUnivariatePolynomial),
+          NewType( fam,
+            IsLaurentPolynomial
+            and IsLaurentPolynomialDefaultRep and
+            HasIndeterminateNumberOfLaurentPolynomial and
+            HasCoefficientsOfLaurentPolynomial and
+            IsConstantRationalFunction and IsUnivariatePolynomial),
 
-	  NewType( fam,
-	    IsLaurentPolynomial and IsLaurentPolynomialDefaultRep and
-	    HasIndeterminateNumberOfLaurentPolynomial and
-	    HasCoefficientsOfLaurentPolynomial and
-	    IsUnivariatePolynomial)];
+          NewType( fam,
+            IsLaurentPolynomial and IsLaurentPolynomialDefaultRep and
+            HasIndeterminateNumberOfLaurentPolynomial and
+            HasCoefficientsOfLaurentPolynomial and
+            IsUnivariatePolynomial)];
 
   # default type for univariate rational functions
   fam!.univariateRatfunType := NewType( fam,
-	  IsUnivariateRationalFunctionDefaultRep  and
-	  HasIndeterminateNumberOfLaurentPolynomial and
-	  HasCoefficientsOfUnivariateRationalFunction);
+          IsUnivariateRationalFunctionDefaultRep  and
+          HasIndeterminateNumberOfLaurentPolynomial and
+          HasCoefficientsOfUnivariateRationalFunction);
 
   fam!.defaultRatFunType := NewType( fam,
           IsRationalFunctionDefaultRep and
-	  HasExtRepNumeratorRatFun and HasExtRepDenominatorRatFun);
+          HasExtRepNumeratorRatFun and HasExtRepDenominatorRatFun);
 
   # functions to add zipped lists
   fam!.zippedSum := [ MONOM_GRLEX, \+ ];
 
   # functions to multiply zipped lists
   fam!.zippedProduct := [ MONOM_PROD,
-			  MONOM_GRLEX, \+, \* ];
+                          MONOM_GRLEX, \+, \* ];
 
   # set the one and zero coefficient
   fam!.zeroCoefficient := Zero(pf);

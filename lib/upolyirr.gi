@@ -135,6 +135,6 @@ function( degree, field )
     coeffs := AllIrreducibleMonicPolynomialCoeffsOfDegree(degree,q);
     fam := FamilyObj( Zero(field) );
     return List( coeffs,
-	   x -> LaurentPolynomialByCoefficients( fam, x, 0, nr ) );
+           x -> LaurentPolynomialByCoefficients( fam, x, 0, nr ) );
 end );
 

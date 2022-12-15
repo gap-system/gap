@@ -199,7 +199,7 @@ InstallMethod( IsConfluent,
             for i in [j-1,j-2..1] do
                 Info( InfoConfluence, 2, "check ", k, " ", j, " ", i, "\n" );
                 ev1 := ReducedProduct( pcp, g[k],
-	                               ReducedProduct( pcp, g[j], g[i] ) );
+                                       ReducedProduct( pcp, g[j], g[i] ) );
                 ev2 := ReducedProduct( pcp, ReducedProduct( pcp, g[k], g[j] ),
                                        g[i]   );
                 if ev1 <> ev2 then
@@ -231,7 +231,7 @@ InstallMethod( IsConfluent,
     # j * i^m = (j i) * i^(m-1)
     for j in [n,n-1..1] do
         for i in [j-1,j-2..1] do
-	    if  orders[i] <> 0  then
+            if  orders[i] <> 0  then
                 Info( InfoConfluence, 2, "check ", j, " ", i, "^m\n" );
                 ev1 := ReducedProduct( pcp, g[j],
                                        ReducedPower(pcp, g[i], orders[i])  );

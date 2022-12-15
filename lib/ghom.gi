@@ -34,7 +34,7 @@ function( arg )
 
     if not IsGroup(arrgh[2]) then
       arrgh:=Concatenation([arrgh[1],Group(arrgh[Length(arrgh)])],
-	                   arrgh{[2..Length(arrgh)]});
+                           arrgh{[2..Length(arrgh)]});
     fi;
 
     G := arrgh[1]; H := arrgh[2];

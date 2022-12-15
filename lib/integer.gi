@@ -707,9 +707,9 @@ InstallGlobalFunction(FactorsInt,function ( n )
 
     # let `FactorsRho' do the work
       if ValueOption("RhoTrials") <> fail then
-	tmp := FactorsRho( n, 1, 16,  ValueOption("RhoTrials") );
+        tmp := FactorsRho( n, 1, 16,  ValueOption("RhoTrials") );
       else
-	tmp := FactorsRho( n, 1, 16, 8192 );
+        tmp := FactorsRho( n, 1, 16, 8192 );
       fi;
     if 0 < Length(tmp[2])  then
       if ValueOption("quiet")<>true then
@@ -742,7 +742,7 @@ InstallGlobalFunction(FactorsInt,function ( n )
           od;
         fi;
       else
-	factors := Concatenation( factors, tmp[2] );
+        factors := Concatenation( factors, tmp[2] );
       fi;
     fi;
     factors := Concatenation( factors, tmp[1] );
@@ -1102,9 +1102,9 @@ InstallGlobalFunction(PrimePowersInt,function( n )
     if n = 1  then
         return [];
     elif n = 0  then
-    	Error( "<n> must be non zero" );
+        Error( "<n> must be non zero" );
     elif n < 0  then
-    	n := -1 * n;
+        n := -1 * n;
     fi;
     return Flat(Collected(Factors(Integers,n)));
 
@@ -1439,7 +1439,7 @@ InstallMethod( Iterator,
             end,
         IsDoneIterator := ReturnFalse,
         ShallowCopy := iter -> rec( counter:= iter!.counter ),
-	PrintObj := function(iter)
+        PrintObj := function(iter)
             local msg;
             msg := "<iterator of Integers at ";
             if iter!.counter mod 2 = 0 then

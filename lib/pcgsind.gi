@@ -130,7 +130,7 @@ local   pcgs,pcs,depths,efam,  filter,  j,  l,  i,  m,  d,  igs,  tmp,
         fi;
     od;
     if m < i  then
-	susef:=true;
+        susef:=true;
         filter := filter and IsCanonicalPcgs and IsSubsetInducedPcgsRep;
         if 0 < Length(pcgs) and pcgs[Length(pcgs)-Length(pcs)+1]=pcs[1]  then
             filter := filter and IsTailInducedPcgsRep;
@@ -175,13 +175,13 @@ local   pcgs,pcs,depths,efam,  filter,  j,  l,  i,  m,  d,  igs,  tmp,
         od;
     else
       for i  in [ 1 .. Length(pcs) ]  do
-	if depths=fail then
-	  tmp := DepthOfPcElement( pcgs, pcs[i] );
-	else
-	  tmp:=depths[i];
-	fi;
-	igsdepthsInParent[i] := tmp;
-	igsdepthMapFromParent[tmp] := i;
+        if depths=fail then
+          tmp := DepthOfPcElement( pcgs, pcs[i] );
+        else
+          tmp:=depths[i];
+        fi;
+        igsdepthsInParent[i] := tmp;
+        igsdepthMapFromParent[tmp] := i;
       od;
     fi;
     igsdepthMapFromParent[Length(pcgs)+1] := Length(pcs)+1;
@@ -1314,8 +1314,8 @@ function( pcgs, elm, pos )
         d := DepthOfPcElement( pa, elm );
         if not IsBound(map[d])  then
             Error( "<elm> lies not in group defined by <pcgs>" );
-	elif map[d]>Length(pcgs) then
-	  return exp;
+        elif map[d]>Length(pcgs) then
+          return exp;
         fi;
         ll := LeadingExponentOfPcElement( pa, elm );
         #lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
@@ -1356,8 +1356,8 @@ function( pcgs, elm )
         d := DepthOfPcElement( pa, elm );
         if not IsBound(map[d])  then
             Error( "<elm> lies not in group defined by <pcgs>" );
-	elif map[d]>Length(pcgs) then
-	  return exp;
+        elif map[d]>Length(pcgs) then
+          return exp;
         fi;
         ll := LeadingExponentOfPcElement( pa, elm );
         #lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
@@ -1397,20 +1397,20 @@ function( pcgs, elm,range )
     ros := RelativeOrders(pa);
     while elm <> id  do
         d := DepthOfPcElement( pa, elm );
-	if not IsBound(map[d])  then
-	  Error( "<elm> lies not in group defined by <pcgs>" );
-	elif map[d]>max then
-	  # we have reached the maximum of the range we asked for. Thus we
-	  # can stop calculating exponents now, all further exponents would
-	  # be discarded anyhow
-	  elm:=id;
-	else
-	  ll := LeadingExponentOfPcElement( pa, elm );
-	  #lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
-	  lr := lc[d];
-	  exp[map[d]] := ll / lr mod ros[d];
-	  #elm := LeftQuotient( pcgs[map[d]]^exp[map[d]], elm );
-	  elm := LeftQuotientPowerPcgsElement( pcgs,map[d],exp[map[d]], elm );
+        if not IsBound(map[d])  then
+          Error( "<elm> lies not in group defined by <pcgs>" );
+        elif map[d]>max then
+          # we have reached the maximum of the range we asked for. Thus we
+          # can stop calculating exponents now, all further exponents would
+          # be discarded anyhow
+          elm:=id;
+        else
+          ll := LeadingExponentOfPcElement( pa, elm );
+          #lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
+          lr := lc[d];
+          exp[map[d]] := ll / lr mod ros[d];
+          #elm := LeftQuotient( pcgs[map[d]]^exp[map[d]], elm );
+          elm := LeftQuotientPowerPcgsElement( pcgs,map[d],exp[map[d]], elm );
         fi;
     od;
     exp:=exp{range};
@@ -1447,15 +1447,15 @@ local   pa, l, map,  d,lc,ro,tail;
 
   while d<=l do
     if not IsBound(map[d])  then
-	return elm;
+        return elm;
     elif d>=tail then
       # from this level on every level in the parent is also in the pcgs,
       # so we can clean out completely
       return OneOfPcgs(pcgs);
     fi;
     elm := LeftQuotientPowerPcgsElement(pcgs,map[d],
-		  (LeadingExponentOfPcElement(pa,elm)/lc[d] mod ro[d])
-	    ,elm);
+                  (LeadingExponentOfPcElement(pa,elm)/lc[d] mod ro[d])
+            ,elm);
     d := DepthOfPcElement( pa, elm );
   od;
   return elm;
@@ -1563,75 +1563,75 @@ local e,s,d,o,j,bj,bjo,ro,max,id,seen,wseen,igs,chain,new,old,u,up,uw,cw,x,c;
 
       # if <uw> has reached <chain>, we can ignore <u>
       if uw < chain  then
-	up := [];
-	repeat
-	  if igs[uw] <> id  then
+        up := [];
+        repeat
+          if igs[uw] <> id  then
 #T we may not replace by elements of pcgs because that might change the
 #T group.
-#	    if chain <= uw+1  then
-#	      # all powers would be cancelled out
-#	      u := id;
-#	    else
-	      u:=u/igs[uw]^((LeadingExponentOfPcElement(pcgs,u)
-		             / LeadingExponentOfPcElement(pcgs,igs[uw]))
-		      mod ro[uw] );
-#	    fi;
-	  else
-	    AddSet( seen, u );
-	    wseen[uw] := true;
-	    Add( up, u );
-	    if chain <= uw+1  then
-	      u := id;
-	    else
-	      u := u ^ ro[uw];
-	    fi;
-	  fi;
-	  if u <> id  then
-	    uw := DepthOfPcElement( pcgs, u );
-	  fi;
-	until u = id or chain <= uw;
+#           if chain <= uw+1  then
+#             # all powers would be cancelled out
+#             u := id;
+#           else
+              u:=u/igs[uw]^((LeadingExponentOfPcElement(pcgs,u)
+                             / LeadingExponentOfPcElement(pcgs,igs[uw]))
+                      mod ro[uw] );
+#           fi;
+          else
+            AddSet( seen, u );
+            wseen[uw] := true;
+            Add( up, u );
+            if chain <= uw+1  then
+              u := id;
+            else
+              u := u ^ ro[uw];
+            fi;
+          fi;
+          if u <> id  then
+            uw := DepthOfPcElement( pcgs, u );
+          fi;
+        until u = id or chain <= uw;
 
-	# add the commutators with the powers of <u>
-	for u  in up  do
-	  for x in igs  do
-	    if x<>id and ( DepthOfPcElement(pcgs,x) + 1 < chain
-		        or DepthOfPcElement(pcgs,u) + 1 < chain ) then
-	      c := Comm( u, x );
-	      if not c in seen  then
-		cw := DepthOfPcElement( pcgs, c );
-		wseen[cw] := true;
-		AddSet( new, c );
-		AddSet( seen, c );
-	      fi;
-	    fi;
-	  od;
-	od;
+        # add the commutators with the powers of <u>
+        for u  in up  do
+          for x in igs  do
+            if x<>id and ( DepthOfPcElement(pcgs,x) + 1 < chain
+                        or DepthOfPcElement(pcgs,u) + 1 < chain ) then
+              c := Comm( u, x );
+              if not c in seen  then
+                cw := DepthOfPcElement( pcgs, c );
+                wseen[cw] := true;
+                AddSet( new, c );
+                AddSet( seen, c );
+              fi;
+            fi;
+          od;
+        od;
 
-	# enter the generators <up> into <igs>
-	for x  in up  do
-	  igs[DepthOfPcElement(pcgs,x)] := x;
-	od;
+        # enter the generators <up> into <igs>
+        for x  in up  do
+          igs[DepthOfPcElement(pcgs,x)] := x;
+        od;
 
 #T we may not replace by elements of pcgs because that might change the
 #T group.
-#	# update the chain
-#	while 1 < chain and wseen[chain-1]  do
-#	  chain := chain-1;
-#	od;
+#       # update the chain
+#       while 1 < chain and wseen[chain-1]  do
+#         chain := chain-1;
+#       od;
 #
-#	for i  in [ chain .. max ]  do
-#	  if igs[i] = id  then
-#	    igs[i] := pcgs[i];
-#	    for j  in [ 1 .. chain-1 ]  do
-#	      c := Comm( igs[i], igs[j] );
-#	      if not c in seen  then
-#		AddSet( seen, c );
-#		AddSet( new, c );
-#		wseen[DepthOfPcElement(pcgs,c)] := true;
-#	      fi;
-#	    od;
-#	  fi;
-#	od;
+#       for i  in [ chain .. max ]  do
+#         if igs[i] = id  then
+#           igs[i] := pcgs[i];
+#           for j  in [ 1 .. chain-1 ]  do
+#             c := Comm( igs[i], igs[j] );
+#             if not c in seen  then
+#               AddSet( seen, c );
+#               AddSet( new, c );
+#               wseen[DepthOfPcElement(pcgs,c)] := true;
+#             fi;
+#           od;
+#         fi;
+#       od;
 
       fi;
     od;
@@ -1664,7 +1664,7 @@ local e,s,d,o,j,bj,bjo,ro,max,id,seen,wseen,igs,chain,new,old,u,up,uw,cw,x,c;
     bjo:=o;
     while j<=Length(e) do
       if e[j][d]<>0 and e[j][d]<bjo then
-	bj:=j;
+        bj:=j;
         bjo:=e[j][d];
       fi;
       j:=j+1;
@@ -1677,15 +1677,15 @@ local e,s,d,o,j,bj,bjo,ro,max,id,seen,wseen,igs,chain,new,old,u,up,uw,cw,x,c;
       #change norm
       if bjo<>1 then
         bjo:=1/bjo mod o; # inverse order
-	igs[s]:=igs[s]^bjo;
-	e[s]:=ExponentsOfPcElement(pcgs,igs[s]);
+        igs[s]:=igs[s]^bjo;
+        e[s]:=ExponentsOfPcElement(pcgs,igs[s]);
       fi;
       # clean out
       for j in [1..Length(e)] do
         if j<>s and e[j][d]<>0 then
-	  igs[j]:=igs[j]/igs[s]^e[j][d];
-	  e[j]:=ExponentsOfPcElement(pcgs,igs[j]);
-	fi;
+          igs[j]:=igs[j]/igs[s]^e[j][d];
+          e[j]:=ExponentsOfPcElement(pcgs,igs[j]);
+        fi;
       od;
     fi;
     d:=d+1;
@@ -1712,7 +1712,7 @@ local l,i,p,ind,a,b,d;
     b:=First([a..Length(d)],x->d[x]>=i);
     if b<>fail then
       if not b in ind then
-	Add(ind,b);
+        Add(ind,b);
       fi;
       a:=b;
     fi;

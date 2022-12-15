@@ -152,17 +152,17 @@ local u,a,b,i,j,c,x,y;
   repeat
     for i in [1..Length(g)] do
       for j in [1..i-1] do
-	c:=Comm(g[i],g[j]^x);
-	if not c in u then
-	  Add(a,c);
-	  Add(b,Comm(h[i],h[j]^y));
-	  u:=ClosureGroup(u,c);
-	  if IsSubgroup(u,mul) then
-	    a:=CanonicalPcgsByGeneratorsWithImages(pcgs,a,b);
-	    return List(GeneratorsOfGroup(mul),
-		i->i/PcElementByExponentsNC(a[2],ExponentsOfPcElement(a[1],i)));
-	  fi;
-	fi;
+        c:=Comm(g[i],g[j]^x);
+        if not c in u then
+          Add(a,c);
+          Add(b,Comm(h[i],h[j]^y));
+          u:=ClosureGroup(u,c);
+          if IsSubgroup(u,mul) then
+            a:=CanonicalPcgsByGeneratorsWithImages(pcgs,a,b);
+            return List(GeneratorsOfGroup(mul),
+                i->i/PcElementByExponentsNC(a[2],ExponentsOfPcElement(a[1],i)));
+          fi;
+        fi;
       od;
     od;
     #in rare cases we also need commutators of conjugates.
@@ -258,13 +258,13 @@ local s,pcgs,n,iso,H,l,cov,der,pco,ng,gens,imgs,ran,zer,i,j,e,a,
     if Order(dc[i])>1 then # the trivial element will not do anything
       q:=Intersection(s,ConjugateSubgroup(s,dc[i]^-1));
       if Size(q)>1 then
-	qs:=PreImage(epi,q);
-	# factor generators
-	gens:=GeneratorsOfGroup(qs);
-	# their conjugates
-	imgs:=List(gens,j->PreImagesRepresentative(epi,Image(epi,j)^dc[i]));
-	rels:=ClosureGroup(rels,CommutGenImgs(pco,gens,imgs,
-			    Intersection(mul,DerivedSubgroup(qs))));
+        qs:=PreImage(epi,q);
+        # factor generators
+        gens:=GeneratorsOfGroup(qs);
+        # their conjugates
+        imgs:=List(gens,j->PreImagesRepresentative(epi,Image(epi,j)^dc[i]));
+        rels:=ClosureGroup(rels,CommutGenImgs(pco,gens,imgs,
+                            Intersection(mul,DerivedSubgroup(qs))));
       fi;
     fi;
     i:=i+1;
@@ -385,8 +385,8 @@ local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp,pos;
     # take care of inverses
     for l in [1..Length(i)] do
       if i[l]<0 then
-	#i[l]:=-i[l];
-	a:=a*invlist[-i[l]];
+        #i[l]:=-i[l];
+        a:=a*invlist[-i[l]];
       fi;
     od;
 
@@ -395,16 +395,16 @@ local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp,pos;
       k:=T[j];
       h:=One(D);
       for l in i do
-	if l<0 then
-	  g:=Inverse(gens[-l]);
-	else
-	  g:=gens[l];
-	fi;
-	np:=k*g;
-	nk:=TL[PositionCanonical(T,np)];
-	#h:=h*PreImagesRepresentative(s,np/nk);
-	h:=h*elp[Position(el,np/nk)];
-	k:=nk;
+        if l<0 then
+          g:=Inverse(gens[-l]);
+        else
+          g:=gens[l];
+        fi;
+        np:=k*g;
+        nk:=TL[PositionCanonical(T,np)];
+        #h:=h*PreImagesRepresentative(s,np/nk);
+        h:=h*elp[Position(el,np/nk)];
+        k:=nk;
       od;
 
       #Print(PreImagesRepresentative(s,Image(s,h))*h,"\n");
@@ -499,21 +499,21 @@ local G,B,P,F,FH,U,s,D,shom,i,j,v,r,ri,iso,rank,bas,basr,row,rel,sol,
 end);
 
 BindGlobal("MulExt",function(G,pl)
-local hom,	#isomorphism fp
-      ng,ngl,	# nr generators,list
-      s,sl,	# SchuMu,list
-      ab,ms,	# abelian invariants, multiplier size
-      pll,	# relevant primes
-      F,	# free group
-      rels,	# relators
-      rel2,	# cohomology relators
-      ce,	# corestriction
-      p,pp,	# prime, index
-      mg,	# multiplier generators
-      sdc,	# decomposition function
+local hom,      #isomorphism fp
+      ng,ngl,   # nr generators,list
+      s,sl,     # SchuMu,list
+      ab,ms,    # abelian invariants, multiplier size
+      pll,      # relevant primes
+      F,        # free group
+      rels,     # relators
+      rel2,     # cohomology relators
+      ce,       # corestriction
+      p,pp,     # prime, index
+      mg,       # multiplier generators
+      sdc,      # decomposition function
       gens,free,# generators
-      i,j,	# loop
-      q,qhom;	# quotient
+      i,j,      # loop
+      q,qhom;   # quotient
 
 
 
@@ -564,12 +564,12 @@ local hom,	#isomorphism fp
     s:=sl[pp];
     mg:=IsomorphismPermGroup(KernelOfMultiplicativeGeneralMapping(s));
     mg:=List(IndependentGeneratorsOfAbelianGroup(Image(mg)),
-	  i->PreImagesRepresentative(mg,i));
+          i->PreImagesRepresentative(mg,i));
     sdc:=ListWithIdenticalEntries(ngl[Length(ngl)],One(Source(s)));
     sdc{[ngl[pp]+1..ngl[pp+1]]}:=mg;
 
     sdc:=GroupHomomorphismByImagesNC(F,KernelOfMultiplicativeGeneralMapping(s),
-	  GeneratorsOfGroup(F),sdc);
+          GeneratorsOfGroup(F),sdc);
 
     gens:=GeneratorsOfGroup(F){[ngl[pp]+1..ngl[pp+1]]};
     ce:=CorestEval(hom,s);
@@ -577,9 +577,9 @@ local hom,	#isomorphism fp
     for i in gens do
       Add(rels,i^Order(Image(sdc,i)));
       for j in GeneratorsOfGroup(F) do
-	if i<>j then
-	  Add(rels,Comm(i,j));
-	fi;
+        if i<>j then
+          Add(rels,Comm(i,j));
+        fi;
       od;
     od;
 
@@ -611,8 +611,8 @@ local hom,	#isomorphism fp
   fi;
   qhom:=GroupHomomorphismByImages(q,G,GeneratorsOfGroup(q),
           Concatenation(List(GeneratorsOfGroup(Source(hom)),i->Image(hom,i)),
-	    List([ng+1..Length(GeneratorsOfGroup(q))],
-	         i->One(G)) ));
+            List([ng+1..Length(GeneratorsOfGroup(q))],
+                 i->One(G)) ));
   SetIsSurjective(qhom,true);
   SetSize(Source(qhom),Size(G)*ms);
 

@@ -276,8 +276,8 @@ local l,e;
   e:=a![1];
   l:=Length(e);
   return Objectify(FamilyObj(a)!.letterWordType,
-	  # invert and revert
-	  [-Immutable(e{[l,l-1..1]})]);
+          # invert and revert
+          [-Immutable(e{[l,l-1..1]})]);
 end);
 
 InstallMethod(InverseOp,"assoc word in B letter rep",true,
@@ -421,8 +421,8 @@ local fam,a,l,m,i,j,mp,pt,head,tail,mid;
     mid:=[];
     for i in [l,l-1..1] do
       if e>pt then
-	e:=e-pt;
-	Append(mid,mp[i]);
+        e:=e-pt;
+        Append(mid,mp[i]);
       fi;
       pt:=QuoInt(pt,2);
     od;
@@ -489,8 +489,8 @@ local fam,a,l,m,i,j,mp,pt,head,tail,mid;
     mid:="";
     for i in [l,l-1..1] do
       if e>pt then
-	e:=e-pt;
-	mid:=Concatenation(mid,mp[i]);
+        e:=e-pt;
+        mid:=Concatenation(mid,mp[i]);
       fi;
       pt:=QuoInt(pt,2);
     od;
@@ -617,17 +617,17 @@ local i,l,fam,e,m,mm,p,inv;
       m:=ShallowCopy(x);
       i:=1;
       while i<=l and IsList(m) do
-	p:=Position(gens1,AbsInt(m[i]));
-	if p=fail then
-	  m:=fail; # extra generators in word -- could be overlap, dangerous
-	else
-	  m[i]:=e[p]*SignInt(m[i]);
-	fi;
-	i:=i+1;
+        p:=Position(gens1,AbsInt(m[i]));
+        if p=fail then
+          m:=fail; # extra generators in word -- could be overlap, dangerous
+        else
+          m[i]:=e[p]*SignInt(m[i]);
+        fi;
+        i:=i+1;
       od;
       # all worked?
       if IsList(m) then
-	return AssocWordByLetterRep(FamilyObj(gens2[1]),m);
+        return AssocWordByLetterRep(FamilyObj(gens2[1]),m);
       fi;
       #no -- go the long way
     fi;

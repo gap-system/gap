@@ -20,15 +20,15 @@
 ##
 InstallGlobalFunction( MagmaHomomorphismByFunctionNC,
 function( G, H, imgfn )
-	local   hom;
+  local   hom;
 
-	if not (IsMagma(G) and IsMagma(H) and IsFunction(imgfn)) then
-		Error("Usage: MagmaHomomorphismByFunctionNC(<Magma>,<Magma>,<fn>)");
-	fi;
+  if not (IsMagma(G) and IsMagma(H) and IsFunction(imgfn)) then
+    Error("Usage: MagmaHomomorphismByFunctionNC(<Magma>,<Magma>,<fn>)");
+  fi;
 
-	hom := MappingByFunction(G, H, imgfn);
-	SetIsMagmaHomomorphism(hom, true);
-	return hom;
+  hom := MappingByFunction(G, H, imgfn);
+  SetIsMagmaHomomorphism(hom, true);
+  return hom;
 end );
 
 #############################################################################
@@ -40,14 +40,14 @@ end );
 ##
 InstallGlobalFunction( MagmaIsomorphismByFunctionsNC,
 function( G, H, imgfn, preimgfn )
-	local   hom;
+  local   hom;
 
-	if not (IsMagma(G) and IsMagma(H) and IsFunction(imgfn)
-		and IsFunction(preimgfn)) then
-		Error("Usage: MagmaIsomorphismByFunctionsNC(<Magma>,<Magma>,<fn>,<inv>)");
-	fi;
+  if not (IsMagma(G) and IsMagma(H) and IsFunction(imgfn)
+    and IsFunction(preimgfn)) then
+    Error("Usage: MagmaIsomorphismByFunctionsNC(<Magma>,<Magma>,<fn>,<inv>)");
+  fi;
 
-	hom := MappingByFunction(G, H, imgfn,preimgfn);
-	SetIsMagmaHomomorphism(hom, true);
-	return hom;
+  hom := MappingByFunction(G, H, imgfn,preimgfn);
+  SetIsMagmaHomomorphism(hom, true);
+  return hom;
 end );

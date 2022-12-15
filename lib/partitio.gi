@@ -215,23 +215,23 @@ local   a,  b,  l,  B,  tmp,  m,  x, inflag, outflag,test,k,Pcop,acop,maxmov;
     while a < b  do
       # Decrease <b> until a point remains in the cell.
       repeat
-	b := b - 1;
-	# $b < B$ means that more than <out> points move out.
-	if b < B  then
-	  return false;
-	fi;
+        b := b - 1;
+        # $b < B$ means that more than <out> points move out.
+        if b < B  then
+          return false;
+        fi;
       until not test(Q,P.points[ b ] ^ g,j);
 
       # Increase <a> until a point moved out.
       repeat
-	a := a + 1;
+        a := a + 1;
       until (a>b) or test(Q,P.points[ a ] ^ g,j);
 
       # Swap the points.
       if a < b  then
-	tmp := P.points[ a ];
-	P.points[ a ] := P.points[ b ];
-	P.points[ b ] := tmp;
+        tmp := P.points[ a ];
+        P.points[ a ] := P.points[ b ];
+        P.points[ b ] := tmp;
       fi;
 
     od;

@@ -8,7 +8,7 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##	Installed in GAP4 by Andrew Solomon for Semigroups instead of Monoids.
+##  Installed in GAP4 by Andrew Solomon for Semigroups instead of Monoids.
 ##
 ##  This file contains implementations for Todd-Coxeter procedure for
 ##  fp semigroups. This uses the code written by Götz Pfeiffer
@@ -106,7 +106,7 @@ true,
 function(cong)
 
    local i, r, d, la,             # loop variables,
-		 M,                     # the semigroup,
+         M,                     # the semigroup,
          gens, rels,            # generators |[1..n]| and relations,
          semirels,              # the rels of the semigroup plus x=x, x\in gens
          table, inver, occur,   # the coset table and its inverse,
@@ -185,7 +185,7 @@ function(cong)
       if 999 < i1000  then
          i1000:= 0;
          Info(SemigroupToddCoxeterInfo, 2, "#I  ", defind, " cosets, ",
-						active, " active, ", defind - active, " killed.\n");
+              active, " active, ", defind - active, " killed.\n");
       fi;
 
       a:= w[1][Length(w[1])];
@@ -256,7 +256,7 @@ function(cong)
       if 999 < i1000  then
          i1000:= 0;
          Info(SemigroupToddCoxeterInfo, 2, "#I  ", defind, " cosets, ",
-						active, " active, ", defind - active, " killed.\n");
+              active, " active, ", defind - active, " killed.\n");
       fi;
 
       a:= w[1][Length(w[1])];
@@ -402,19 +402,19 @@ function(cong)
 
    # how to switch to words over |[1..n]|.
    #repLaced:= w-> List(List(w), x-> Position(M.generators, x));
-	#transforms a word into a list of integers
-	word_to_list:=function(u)
-	  local i,k,n,l;
+        #transforms a word into a list of integers
+        word_to_list:=function(u)
+          local i,k,n,l;
 
-	  n:=Length(ExtRepOfObj(u));
-	  l:=[];
-	  for i in [1..n/2] do
-	    for k in [1..ExtRepOfObj(u)[2*i]] do
-	      Add(l,ExtRepOfObj(u)[2*i-1]);
-	    od;
-	  od;
-	  return l;
-	end;
+          n:=Length(ExtRepOfObj(u));
+          l:=[];
+          for i in [1..n/2] do
+            for k in [1..ExtRepOfObj(u)[2*i]] do
+              Add(l,ExtRepOfObj(u)[2*i-1]);
+            od;
+          od;
+          return l;
+        end;
 
    repLaced:= w-> word_to_list(w);
 
@@ -429,22 +429,22 @@ function(cong)
 ##    0 <---|---|
 ##
    # initialize.
-	 # get the semigroup on which <cong> is a congruence.
-	 M := Source(cong);
-	 # Make sure <M> is an fp semigroup
-	 if not IsFpSemigroup(M) then
-		 Error("right congruence of an fp-semigroup expected");
-	 fi;
+         # get the semigroup on which <cong> is a congruence.
+         M := Source(cong);
+         # Make sure <M> is an fp semigroup
+         if not IsFpSemigroup(M) then
+             Error("right congruence of an fp-semigroup expected");
+         fi;
    gens:= [1..Length(GeneratorsOfSemigroup(M))];
    # we add trivial relations to the semigroup relations to
    # make sure that if the semigroup has a free generator
    # then it does not stop
    semirels := Concatenation(RelationsOfFpSemigroup(M),
-								List(gens,i-> [FreeGeneratorsOfFpSemigroup(M)[i],
-															FreeGeneratorsOfFpSemigroup(M)[i]]));
+                             List(gens,i-> [FreeGeneratorsOfFpSemigroup(M)[i],
+                             FreeGeneratorsOfFpSemigroup(M)[i]]));
    rels:= List(semirels, x-> List(x, repLaced));
    cong:= List(GeneratingPairsOfRightMagmaCongruence(cong),
-		x-> List(x, y->repLaced(UnderlyingElement(y))));
+                x-> List(x, y->repLaced(UnderlyingElement(y))));
 
    table:= [];  inver:= [];  occur:= [];
    for i in gens do
@@ -472,8 +472,8 @@ function(cong)
       od;
 
       if active > lanext then
-		Info(SemigroupToddCoxeterInfo, 1, "Entering Lookahead");
-		oldkilled:= defind - active;
+                Info(SemigroupToddCoxeterInfo, 1, "Entering Lookahead");
+                oldkilled:= defind - active;
         la:= d;
         repeat
           for r in rels do
@@ -484,7 +484,7 @@ function(cong)
         Info(SemigroupToddCoxeterInfo, 1, "Lookahead done, ",
                (defind-active) - oldkilled," definitions saved");
          Info(SemigroupToddCoxeterInfo, 1, "#I  ", defind, " cosets, ",
-						active, " active, ", defind - active, " killed.");
+                                                active, " active, ", defind - active, " killed.");
         if active > lanext then
           lanext:= lanext * 2;
         fi;
@@ -498,7 +498,7 @@ function(cong)
 
    # print statistics.
    Info(SemigroupToddCoxeterInfo, 1, "#I  ", defind,
-		" cosets defined, maximum ", Length(forwd), ", ", active, " survive.\n");
+                " cosets defined, maximum ", Length(forwd), ", ", active, " survive.\n");
 
    # shrink coset table: trace coset 1 through |forwd|.
    occur:= 0;  pos:= [];  inver:= [];  i:= 0;  d:= 1;
@@ -527,8 +527,8 @@ InstallMethod(IsomorphismTransformationSemigroup,
 "<fp-semigroup>", true,
 [IsFpSemigroup], 0,
 function(S)
-	return HomomorphismTransformationSemigroup(S,
-		RightMagmaCongruenceByGeneratingPairs(S,[]));
+        return HomomorphismTransformationSemigroup(S,
+                RightMagmaCongruenceByGeneratingPairs(S,[]));
 end);
 
 
@@ -538,44 +538,44 @@ InstallMethod( HomomorphismTransformationSemigroup,
     [ IsFpSemigroup, IsRightMagmaCongruence ],
     0,
 function(S,r)
-	local
-		cotab,		# the coset table of the semigroup
-		isofun,		# the function describing the isomorphism
-		ts;				# the transformation semigroup
+        local
+        cotab,          # the coset table of the semigroup
+        isofun,         # the function describing the isomorphism
+        ts;             # the transformation semigroup
 
-	if not S = Source(r) then
-		TryNextMethod();
-	fi;
+        if not S = Source(r) then
+            TryNextMethod();
+        fi;
 
-	# make a transformation monoid on the congruence classes.
-	cotab := CosetTableOfFpSemigroup(r);
-	ts := Semigroup(List(cotab, Transformation));
+        # make a transformation monoid on the congruence classes.
+        cotab := CosetTableOfFpSemigroup(r);
+        ts := Semigroup(List(cotab, Transformation));
 
-	########################################################
-	# isofun:
-	# The function which computes the isomorphism - take
-	# the ith  generator of the fp semigroup to the
-	# transformation whose image list is the ith row of the
-	# multiplication table
-	#
-	isofun := function(x)
-		local
-			i,			# counter
-			prod,		# accumulates the value of the image
-			gensts,	# generators of the transformation semigroup
-			extr;		# ext rep of x
+        ########################################################
+        # isofun:
+        # The function which computes the isomorphism - take
+        # the ith  generator of the fp semigroup to the
+        # transformation whose image list is the ith row of the
+        # multiplication table
+        #
+        isofun := function(x)
+            local
+                i,      # counter
+                prod,   # accumulates the value of the image
+                gensts, # generators of the transformation semigroup
+                extr;   # ext rep of x
 
-		extr := ExtRepOfObj(UnderlyingElement(x));
-		gensts := GeneratorsOfSemigroup(ts);
+            extr := ExtRepOfObj(UnderlyingElement(x));
+            gensts := GeneratorsOfSemigroup(ts);
 
-		prod := One(Transformation(cotab[1]));
-		for i in [1 .. Length(extr)/2] do
-			prod  := prod * gensts[extr[2*i-1]]^extr[2*i];
-		od;
-		return prod;
-	end;
-	########################################################
-	# isofun end
+            prod := One(Transformation(cotab[1]));
+            for i in [1 .. Length(extr)/2] do
+                prod  := prod * gensts[extr[2*i-1]]^extr[2*i];
+            od;
+            return prod;
+        end;
+        ########################################################
+        # isofun end
 
-	return MagmaHomomorphismByFunctionNC(S, ts, isofun);
+        return MagmaHomomorphismByFunctionNC(S, ts, isofun);
 end);

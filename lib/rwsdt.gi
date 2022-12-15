@@ -60,7 +60,7 @@ function( fgrp, i )
 
     gens := GeneratorsOfGroup(fgrp);
     if  i < 0  or  i = 1  then
-	Error("need zero or integer greater than ",1);
+        Error("need zero or integer greater than ",1);
     fi;
     orders := i + 0*[1..Length(gens)];
 
@@ -162,7 +162,7 @@ function( dtrws )
     gens := dtrws![PC_GENERATORS];
     ords := dtrws![PC_EXPONENTS];
     for i  in [ 1 .. dtrws![PC_NUMBER_OF_GENERATORS] ]  do
-	if IsBound( ords[i] )  then
+        if IsBound( ords[i] )  then
             if IsBound( dtrws![PC_POWERS][i] )  then
                 Add( rels, gens[i]^ords[i] /
                            InfBits_AssocWord( dtrws![PC_DEFAULT_TYPE],
@@ -170,7 +170,7 @@ function( dtrws )
             else
                 Add( rels, gens[i]^ords[i] );
             fi;
-	fi;
+        fi;
     od;
 
     # and now the conjugates
@@ -209,22 +209,22 @@ function( dtrws, orders )
     for  i in orders  do
         if  (not IsInt(i)  and  i <> infinity)  or  i < 0  or  i=1  then
             Error( "relative orders must be zero or infinity or integers greater than 1" );
-	fi;
+        fi;
     od;
     orders := ShallowCopy(orders);
     for  i in [1..Length(orders)]  do
-	if  IsBound(orders[i])  then
-	    if  orders[i] = 0  or  orders[i] = infinity  then
-	        Unbind(orders[i]);
-	    fi;
-	fi;
+        if  IsBound(orders[i])  then
+            if  orders[i] = 0  or  orders[i] = infinity  then
+                Unbind(orders[i]);
+            fi;
+        fi;
     od;
     dtrws![PC_EXPONENTS] := orders;
     if  Length(orders) < dtrws![PC_NUMBER_OF_GENERATORS]  or
         not IsHomogeneousList( orders )                        then
-	SetIsFinite( dtrws, false );
+        SetIsFinite( dtrws, false );
     else
-	SetIsFinite( dtrws, true );
+        SetIsFinite( dtrws, true );
     fi;
 end   );
 
@@ -245,26 +245,26 @@ InstallMethod( SetRelativeOrder,
 function( dtrws, i, ord )
 
     if  i <= 0  then
-	Error("<i> must be positive");
+        Error("<i> must be positive");
     fi;
     if  i > dtrws![PC_NUMBER_OF_GENERATORS]  then
-	Error( "<i> must be at most ", dtrws![PC_NUMBER_OF_GENERATORS] );
+        Error( "<i> must be at most ", dtrws![PC_NUMBER_OF_GENERATORS] );
     fi;
     if  (not IsInt(ord)  and  ord <> infinity)  or  ord < 0  or  ord=1  then
-	Error( "relative order must be zero or infinity or an integer greater than 1" );
+        Error( "relative order must be zero or infinity or an integer greater than 1" );
     fi;
     if  ord = infinity  or  ord = 0  then
-	if  IsBound( dtrws![PC_EXPONENTS][i] )  then
-	    Unbind( dtrws![PC_EXPONENTS][i] );
-	    SetIsFinite( dtrws, false );
-	fi;
+        if  IsBound( dtrws![PC_EXPONENTS][i] )  then
+            Unbind( dtrws![PC_EXPONENTS][i] );
+            SetIsFinite( dtrws, false );
+        fi;
     else
-	dtrws![PC_EXPONENTS][i] := ord;
-	if  0 in RelativeOrders( dtrws )  then
-	    SetIsFinite( dtrws, false );
-	else
-	    SetIsFinite( dtrws, true );
-	fi;
+        dtrws![PC_EXPONENTS][i] := ord;
+        if  0 in RelativeOrders( dtrws )  then
+            SetIsFinite( dtrws, false );
+        else
+            SetIsFinite( dtrws, true );
+        fi;
     fi;
 end   );
 
@@ -286,12 +286,12 @@ function( dtrws )
 
     orders := ShallowCopy( dtrws![PC_EXPONENTS] );
     for  i in [1..Length(orders)]  do
-	if  not IsBound(orders[i])  then
-	    orders[i] := 0;
-	fi;
+        if  not IsBound(orders[i])  then
+            orders[i] := 0;
+        fi;
     od;
     for  i in [ Length(orders)+1..dtrws![PC_NUMBER_OF_GENERATORS] ]  do
-	orders[i] := 0;
+        orders[i] := 0;
     od;
     return orders;
 end
@@ -434,15 +434,15 @@ function( dtrws, i, rhs )
             Error("<rhs> is not reduced");
         fi;
         if  m < NumberSyllables(rhs)  then
-	    if  GeneratorSyllable(rhs, m) >= GeneratorSyllable(rhs, m+1)  then
-		Error("<rhs> is not reduced");
-	    fi;
-  	fi;
+            if  GeneratorSyllable(rhs, m) >= GeneratorSyllable(rhs, m+1)  then
+                Error("<rhs> is not reduced");
+            fi;
+        fi;
     od;
 
     # check that the rhs lies underneath i
     if  NumberSyllables(rhs) > 0  and  GeneratorSyllable(rhs, 1) <= i  then
-	Error("illegal <rhs>");
+        Error("illegal <rhs>");
     fi;
 
     # enter the rhs
@@ -461,10 +461,10 @@ end );
 DeepThoughtCollector_SetConjugateNC := function(dtrws, i, j, rhs)
 
     if IsBound(dtrws![PC_CONJUGATES][i])  then
-	dtrws![PC_CONJUGATES][i][j] := ExtRepOfObj(rhs);
+        dtrws![PC_CONJUGATES][i][j] := ExtRepOfObj(rhs);
     else
-	dtrws![PC_CONJUGATES][i] := [];
-	dtrws![PC_CONJUGATES][i][j] := ExtRepOfObj(rhs);
+        dtrws![PC_CONJUGATES][i] := [];
+        dtrws![PC_CONJUGATES][i][j] := ExtRepOfObj(rhs);
     fi;
 end;
 
@@ -508,16 +508,16 @@ function( dtrws, i, j, rhs )
             Error("<rhs> is not reduced");
         fi;
         if  m < NumberSyllables(rhs)  then
-	    if  GeneratorSyllable(rhs, m) >= GeneratorSyllable(rhs, m+1)  then
-		Error("<rhs> is not reduced");
-	    fi;
-  	fi;
+            if  GeneratorSyllable(rhs, m) >= GeneratorSyllable(rhs, m+1)  then
+                Error("<rhs> is not reduced");
+            fi;
+        fi;
     od;
 
     # check that the rhs defines a nilpotent relation
     if  GeneratorSyllable(rhs, 1) <> i  or
         ExponentSyllable(rhs, 1) <> 1  then
-    	Error("rhs does not define a nilpotent relation");
+        Error("rhs does not define a nilpotent relation");
     fi;
 
     # install the conjugate relator
@@ -541,32 +541,32 @@ function( dtrws )
     local i,j;
 
     if  IsUpToDatePolycyclicCollector(dtrws)  then
-	return;
+        return;
     fi;
 
     # complete dtrws
     for  i in [2..dtrws![PC_NUMBER_OF_GENERATORS]]  do
-	if  not IsBound( dtrws![PC_CONJUGATES][i] )  then
-	    dtrws![PC_CONJUGATES][i] := [];
-	fi;
+        if  not IsBound( dtrws![PC_CONJUGATES][i] )  then
+            dtrws![PC_CONJUGATES][i] := [];
+        fi;
     od;
 
     # remove trivial rhs's
     for  i in [2..Length(dtrws![PC_CONJUGATES])]  do
-	for  j in [1..i-1]  do
-	    if  IsBound(dtrws![PC_CONJUGATES][i][j])  then
-	        if  Length(dtrws![PC_CONJUGATES][i][j]) = 2  then
-		    Unbind( dtrws![PC_CONJUGATES][i][j] );
-	        fi;
-	    fi;
-	od;
+        for  j in [1..i-1]  do
+            if  IsBound(dtrws![PC_CONJUGATES][i][j])  then
+                if  Length(dtrws![PC_CONJUGATES][i][j]) = 2  then
+                    Unbind( dtrws![PC_CONJUGATES][i][j] );
+                fi;
+            fi;
+        od;
     od;
     for  i in [1..dtrws![PC_NUMBER_OF_GENERATORS]]  do
-	    if  IsBound( dtrws![PC_POWERS][i])  then
-	        if  Length(dtrws![PC_POWERS][i]) = 0  then
-		    Unbind( dtrws![PC_POWERS][i] );
-	        fi;
-	    fi;
+            if  IsBound( dtrws![PC_POWERS][i])  then
+                if  Length(dtrws![PC_POWERS][i]) = 0  then
+                    Unbind( dtrws![PC_POWERS][i] );
+                fi;
+            fi;
     od;
 
     # Compute the deep thought polynomials
@@ -757,10 +757,10 @@ function(dtrws, l, word)
     local i,j, help, help1,ext;
 
     if  not IsUpToDatePolycyclicCollector(dtrws)  then
-	UpdatePolycyclicCollector(dtrws);
+        UpdatePolycyclicCollector(dtrws);
     fi;
     if  NumberSyllables(word) = 0  then
-	return true;
+        return true;
     fi;
     ext := ExtRepOfObj(word);
     i := 1;
@@ -768,29 +768,29 @@ function(dtrws, l, word)
 
     # reduce ext and store the result in help
     while  i < Length(ext)  do
-	Append(help, [ ext[i], ext[i+1] ] );
-	if  i+1 = Length(ext)  or  ext[i] >= ext[i+2]  then
-	    break;
-	fi;
-	i := i+2;
+        Append(help, [ ext[i], ext[i+1] ] );
+        if  i+1 = Length(ext)  or  ext[i] >= ext[i+2]  then
+            break;
+        fi;
+        i := i+2;
     od;
     i := i+2;
     help1 := [];
     while  i < Length(ext)  do
-	Append( help1, [ ext[i], ext[i+1] ] );
-	if  i+1 = Length(ext)  or  ext[i] >= ext[i+2]  then
-	    help := DTMultiply(help, help1, dtrws);
-	    help1 := [];
-	fi;
-	i := i+2;
+        Append( help1, [ ext[i], ext[i+1] ] );
+        if  i+1 = Length(ext)  or  ext[i] >= ext[i+2]  then
+            help := DTMultiply(help, help1, dtrws);
+            help1 := [];
+        fi;
+        i := i+2;
     od;
 
     # convert l into ExtRep of a word and store the result in help1
     help1 := [];
     for  i in [1..Length(l)]  do
-	if  l[i] <> 0  then
-	    Append( help1, [ i, l[i] ] );
-	fi;
+        if  l[i] <> 0  then
+            Append( help1, [ i, l[i] ] );
+        fi;
     od;
 
     # compute the product of help1 and help
@@ -798,10 +798,10 @@ function(dtrws, l, word)
 
     # convert the result into an exponent vector and store the result in l
     for  i in [1..Length(l)]  do
-	l[i] := 0;
+        l[i] := 0;
     od;
     for  i in [1,3..Length(help)-1]  do
-	l[ help[i] ] := help[i+1];
+        l[ help[i] ] := help[i+1];
     od;
     return true;
 end   );
@@ -824,9 +824,9 @@ function(dtrws, l)
 
     res := [];
     for  i in [1..Length(l)]  do
-	if  l[i] <> 0  then
-	    Append( res, [ i, l[i] ] );
-	fi;
+        if  l[i] <> 0  then
+            Append( res, [ i, l[i] ] );
+        fi;
     od;
     return InfBits_AssocWord( dtrws![PC_DEFAULT_TYPE], res );
 end  );

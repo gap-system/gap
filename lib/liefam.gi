@@ -48,7 +48,7 @@ InstallMethod( LieFamily,
 
     # Make the family of Lie elements.
     F:= NewFamily( "LieFamily(...)", filt,CanEasilySortElements,
-				     CanEasilySortElements);
+                                     CanEasilySortElements);
     SetUnderlyingFamily( F, Fam );
 
     if HasCharacteristic( Fam ) then
@@ -302,18 +302,18 @@ InstallMethod( \^,
 #M  PthPowerImage( <lie_obj> ) . . . . . . . . .  for a restricted Lie object
 ##
 InstallMethod(PthPowerImage, "for restricted Lie object",
-	[ IsRestrictedLieObject ],
+        [ IsRestrictedLieObject ],
         function(x)
     return LieObject(x![1]^Characteristic(FamilyObj(x)));
 end);
 InstallMethod(PthPowerImage, "for restricted Lie object and integer",
-	[ IsRestrictedLieObject, IsInt ],
+        [ IsRestrictedLieObject, IsInt ],
         function(x,n)
     local y;
     y := x![1];
     while n>0 do
-	y := y^Characteristic(FamilyObj(x));
-	n := n-1;
+        y := y^Characteristic(FamilyObj(x));
+        n := n-1;
     od;
     return LieObject(y);
 end);

@@ -202,10 +202,10 @@ function( filter, imp, efam, pcs,attl )
     fi;
     if one<>fail then
       attl:=Concatenation([pcgs, NewType( fam, imp and HasOneOfPcgs),
-			  Length,Length(pcs),OneOfPcgs,one],attl);
+                          Length,Length(pcs),OneOfPcgs,one],attl);
     else
       attl:=Concatenation([pcgs, NewType( fam, imp ),
-			  Length,Length(pcs)],attl);
+                          Length,Length(pcs)],attl);
     fi;
 
     # convert record into component object
@@ -550,7 +550,7 @@ local i,ro;
     ro:=RelativeOrders(arg[1]);
     for i in [1..Length(ro)] do
       if ro[i]<>0 and IsRat(arg[2][i])
-	 and (arg[2][i]<0 or arg[2][i]>=ro[i]) then
+         and (arg[2][i]<0 or arg[2][i]>=ro[i]) then
         Error("Exponent out of range!");
       fi;
     od;
@@ -923,10 +923,10 @@ function( pcgs, n, u, pcgsM )
     ros := RelativeOrders(pcgs);
     for al  in I  do
         ar := id;
-	if IsInt(pcgsM) then
-	  if DepthOfPcElement(pcgs,al)>=pcgsM then
-	    al:=id;
-	  fi;
+        if IsInt(pcgsM) then
+          if DepthOfPcElement(pcgs,al)>=pcgsM then
+            al:=id;
+          fi;
         elif not IsBool( pcgsM ) then
             al := SiftedPcElement( pcgsM, al );
         fi;
@@ -938,11 +938,11 @@ function( pcgs, n, u, pcgsM )
                    / LeadingExponentOfPcElement( pcgs, ls[z] )
                    mod ros[z];
             al := LeftQuotient( ls[z]^tmp, al );
-	    if IsInt(pcgsM) then
-	      if DepthOfPcElement(pcgs,al)>=pcgsM then
-		al:=id;
-	      fi;
-	    elif not IsBool( pcgsM ) then
+            if IsInt(pcgsM) then
+              if DepthOfPcElement(pcgs,al)>=pcgsM then
+                al:=id;
+              fi;
+            elif not IsBool( pcgsM ) then
                 al := SiftedPcElement( pcgsM, al );
             fi;
             ar := LeftQuotient( rs[z]^tmp, ar );
@@ -957,11 +957,11 @@ function( pcgs, n, u, pcgsM )
             z := DepthOfPcElement( pcgs, ar );
             while ar <> id and is[z] <> id  do
                 ar := ReducedPcElement( pcgs, ar, is[z] );
-		if IsInt(pcgsM) then
-		  if DepthOfPcElement(pcgs,ar)>=pcgsM then
-		    ar:=id;
-		  fi;
-		elif not IsBool( pcgsM ) then
+                if IsInt(pcgsM) then
+                  if DepthOfPcElement(pcgs,ar)>=pcgsM then
+                    ar:=id;
+                  fi;
+                elif not IsBool( pcgsM ) then
                     ar := SiftedPcElement( pcgsM, ar );
                 fi;
                 z  := DepthOfPcElement( pcgs, ar );
@@ -1587,16 +1587,16 @@ local u, n, o, j, i, d, ro, n2, ea, ran;
     j:=o; # generator currently conjugated
     while j>0 do
       repeat
-	i:=1; # conjugating generator
-	while i<o do
-	  d:=DepthOfPcElement(p,p[j]^p[i]);
-	  if d<o then
-	    # NT is larger than expected
-	    o:=d;
-	  fi;
-	  i:=i+1;
-	od;
-	j:=j-1;
+        i:=1; # conjugating generator
+        while i<o do
+          d:=DepthOfPcElement(p,p[j]^p[i]);
+          if d<o then
+            # NT is larger than expected
+            o:=d;
+          fi;
+          i:=i+1;
+        od;
+        j:=j-1;
       until j<o;
       # we've found another normal step
       Add(n,o);
@@ -1616,21 +1616,21 @@ local u, n, o, j, i, d, ro, n2, ea, ran;
       ran:=[n[i]..n[j]-1]; #pcgs range
       o:=Set(ro{ran});
       if Length(o)>1 then
-	ea:=false; # could this ever happen anyhow?
+        ea:=false; # could this ever happen anyhow?
       fi;
       o:=o[1];
       if ForAny(p{ran},x->DepthOfPcElement(p,x^o)<n[j]) then
-	ea:=false; # not exponent p
+        ea:=false; # not exponent p
       fi;
       if ForAny(p{ran},
-		k->ForAny(p{ran},x->DepthOfPcElement(p,Comm(x,k))<n[j])) then
-	ea:=false; # not abelian
+                k->ForAny(p{ran},x->DepthOfPcElement(p,Comm(x,k))<n[j])) then
+        ea:=false; # not abelian
       fi;
     until ea=false or j=Length(n);
     if ea=false then
       j:=j-1; # last ea step
       if j=i then
-	return false; # not EA series, even first step failed.
+        return false; # not EA series, even first step failed.
       fi;
       Add(n2,n[j]);
       i:=j;

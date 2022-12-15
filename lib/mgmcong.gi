@@ -84,7 +84,8 @@ InstallMethod( PrintObj,
 #############################################################################
 ##
 #M  ViewObj( <S> )
-##	view a [left,right,two-sided] magma congruence
+##
+##  view a [left,right,two-sided] magma congruence
 ##
 
 ##  left magma congruence
@@ -278,17 +279,17 @@ InstallMethod( MagmaCongruenceByGeneratingPairs,
     IsElmsColls,
     [ IsMagma, IsList ], 0,
     function( M, gens )
-				local c;
+      local c;
 
 
-        c :=  LR2MagmaCongruenceByGeneratingPairsCAT(M, gens,
-                   IsMagmaCongruence);
+      c :=  LR2MagmaCongruenceByGeneratingPairsCAT(M, gens,
+           IsMagmaCongruence);
 
-				if HasIsSemigroup(M) and IsSemigroup(M) then
-					SetIsSemigroupCongruence(c,true);
-				fi;
+      if HasIsSemigroup(M) and IsSemigroup(M) then
+        SetIsSemigroupCongruence(c,true);
+      fi;
 
-				return c;
+      return c;
     end );
 
 
@@ -297,16 +298,16 @@ InstallMethod( MagmaCongruenceByGeneratingPairs,
     true,
     [ IsMagma, IsList and IsEmpty ], 0,
     function( M, gens )
-				local c;
+      local c;
 
-        c :=  LR2MagmaCongruenceByGeneratingPairsCAT(M, gens,
-                   IsMagmaCongruence);
+      c :=  LR2MagmaCongruenceByGeneratingPairsCAT(M, gens,
+           IsMagmaCongruence);
 
-				if HasIsSemigroup(M) and IsSemigroup(M) then
-					SetIsSemigroupCongruence(c,true);
-				fi;
+      if HasIsSemigroup(M) and IsSemigroup(M) then
+        SetIsSemigroupCongruence(c,true);
+      fi;
 
-				return c;
+      return c;
     end );
 
 #############################################################################
@@ -929,13 +930,13 @@ InstallMethod( \in, "for a magma congruence class", true,
 ##
 #M  Enumerator( <C> )
 ##
-##	Enumerator for a magma congruence class.
+##  Enumerator for a magma congruence class.
 ##
 InstallMethod( Enumerator, "for a magma congruence class", true,
     [IsCongruenceClass], 0,
 
     function(class)
-	local   cong;  # the congruence of which class is a class
+        local   cong;  # the congruence of which class is a class
 
         cong := EquivalenceClassRelation(class);
 
@@ -1070,7 +1071,7 @@ InstallMethod(EquivalenceClassOfElement, "for right magma congruence with checki
 #############################################################################
 ##
 #M  ImagesElm( <rel>, <elm> )  . . . for a  magma congruence
-##  																	assume we can compute the partition
+##  assume we can compute the partition
 ##
 InstallMethod( ImagesElm,
     "for magma congruence and element",
@@ -1083,7 +1084,7 @@ InstallMethod( ImagesElm,
 #############################################################################
 ##
 #M  ImagesElm( <rel>, <elm> )  . . . for a left magma congruence
-##  																	assume we can compute the partition
+##  assume we can compute the partition
 ##
 InstallMethod( ImagesElm,
     "for magma congruence and element",
@@ -1096,7 +1097,7 @@ InstallMethod( ImagesElm,
 #############################################################################
 ##
 #M  ImagesElm( <rel>, <elm> )  . . . for a  right magma congruence
-##  																	assume we can compute the partition
+##  assume we can compute the partition
 ##
 InstallMethod( ImagesElm,
     "for magma congruence and element",

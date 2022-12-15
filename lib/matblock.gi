@@ -103,12 +103,12 @@ InstallGlobalFunction( BlockMatrix, function( arg )
 
         #Error( "two blocks for position [", newblocks[i][1], "][",
         #       newblocks[i][2], "]" );
-	newblocks:=Concatenation(newblocks{[1..i-1]},
-	     [[newblocks[i][1],newblocks[i][2],
-	       newblocks[i][3]+newblocks[i+1][3]]],
-	     newblocks{[i+2..Length(newblocks)]});
+        newblocks:=Concatenation(newblocks{[1..i-1]},
+             [[newblocks[i][1],newblocks[i][2],
+               newblocks[i][3]+newblocks[i+1][3]]],
+             newblocks{[i+2..Length(newblocks)]});
       else
-	i:=i+1;
+        i:=i+1;
       fi;
     od;
 

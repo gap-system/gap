@@ -122,7 +122,7 @@
 ##  Representation for a binary relation on an arbitrary set of elements
 ##
 DeclareRepresentation("IsBinaryRelationDefaultRep",
-	IsAttributeStoringRep ,[]);
+        IsAttributeStoringRep, []);
 
 ############################################################################
 ##
@@ -131,7 +131,7 @@ DeclareRepresentation("IsBinaryRelationDefaultRep",
 ##  Special case that the underlying set is the points 1..n
 ##
 DeclareRepresentation("IsBinaryRelationOnPointsRep",
-	IsAttributeStoringRep ,[]);
+        IsAttributeStoringRep, []);
 
 ############################################################################
 ##
@@ -140,7 +140,7 @@ DeclareRepresentation("IsBinaryRelationOnPointsRep",
 ##  Representation of generatl equivalence classes
 ##
 DeclareRepresentation("IsEquivalenceRelationDefaultRep",
-	IsAttributeStoringRep ,[]);
+        IsAttributeStoringRep, []);
 
 #############################################################################
 ##
@@ -151,7 +151,7 @@ DeclareRepresentation("IsEquivalenceRelationDefaultRep",
 ##  Representation specific methods are installed here.
 ##
 DeclareRepresentation("IsEquivalenceClassDefaultRep", IsAttributeStoringRep
-	and IsComponentObjectRep, rec());
+        and IsComponentObjectRep, rec());
 
 ############################################################################
 ############################################################################
@@ -285,7 +285,7 @@ InstallMethod(IsTransitiveBinaryRelation,
                 if not IsSubset(im,Images(m,i)) then
                     return false;
                 fi;
-	    od;
+            od;
         od;
         return true;
     end);
@@ -456,7 +456,7 @@ InstallMethod(ReflexiveClosureBinaryRelation,
                 IsSymmetricBinaryRelation(r));
         fi;
 
-	return newrel;
+        return newrel;
 
     end );
 
@@ -600,8 +600,8 @@ InstallMethod(HasseDiagramBinaryRelation,
               HDBRListCovers; #    to find the set of covers
 
         while not IsPartialOrderBinaryRelation(rel) do
-	    Error("Relation ",rel," is not a partial order");
-	od;
+            Error("Relation ",rel," is not a partial order");
+        od;
 
         ## return the minimal elements of a list under rel
         HDBRMinElts := function(list, rel)
@@ -1413,36 +1413,36 @@ InstallMethod(PrintObj, "for a binary relation on  n points", true,
 ##
 InstallGlobalFunction(EquivalenceRelationByPartition,
     function(X, subsX)
-	local fam, rel;
+        local fam, rel;
 
-	if not IsDomain(X) then
-		Error("Equivalence relations only constructible over domains");
-	fi;
+        if not IsDomain(X) then
+                Error("Equivalence relations only constructible over domains");
+        fi;
 
-	# make sure there are no repetitions
-	if not IsSet(AsSortedList(Concatenation(subsX))) then
-		Error("Input does not describe a partition");
-	fi;
+        # make sure there are no repetitions
+        if not IsSet(AsSortedList(Concatenation(subsX))) then
+                Error("Input does not describe a partition");
+        fi;
 
         #check that subsX is contained in X
-	if not  (IsSubset(X, AsSortedList(Concatenation(subsX)))) then
-		Error("Input does not describe a partition");
-	fi;
+        if not  (IsSubset(X, AsSortedList(Concatenation(subsX)))) then
+                Error("Input does not describe a partition");
+        fi;
 
-	fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)),
-		ElementsFamily(FamilyObj(X)) );
+        fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)),
+                ElementsFamily(FamilyObj(X)) );
 
         ## Get rid of singletons and possible empty blocks
         subsX := Filtered(subsX, i->Length(i)>1);
 
-	# Create the default type for the elements.
+        # Create the default type for the elements.
         rel :=  Objectify(NewType(fam,
-		IsEquivalenceRelation and IsEquivalenceRelationDefaultRep), rec());
-	SetEquivalenceRelationPartition(rel, subsX);
-	SetSource(rel, X);
-	SetRange(rel, X);
+                IsEquivalenceRelation and IsEquivalenceRelationDefaultRep), rec());
+        SetEquivalenceRelationPartition(rel, subsX);
+        SetSource(rel, X);
+        SetRange(rel, X);
 
-	return rel;
+        return rel;
     end);
 
 #############################################################################
@@ -1454,22 +1454,22 @@ InstallGlobalFunction(EquivalenceRelationByPartition,
 ##
 InstallGlobalFunction(EquivalenceRelationByPartitionNC,
     function(X, subsX)
-	local fam, rel;
+        local fam, rel;
 
-	fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)),
-		ElementsFamily(FamilyObj(X)) );
+        fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)),
+                ElementsFamily(FamilyObj(X)) );
 
-	# Create the default type for the elements.
+        # Create the default type for the elements.
         rel :=  Objectify(NewType(fam,
-		IsEquivalenceRelation and IsEquivalenceRelationDefaultRep), rec());
+                IsEquivalenceRelation and IsEquivalenceRelationDefaultRep), rec());
 
         ## The only assurance is singletons and empty blocks are removed
         ##
-	SetEquivalenceRelationPartition(rel, Filtered(subsX, i->Length(i)>1));
-	SetSource(rel, X);
-	SetRange(rel, X);
+        SetEquivalenceRelationPartition(rel, Filtered(subsX, i->Length(i)>1));
+        SetSource(rel, X);
+        SetRange(rel, X);
 
-	return rel;
+        return rel;
     end);
 
 #############################################################################
@@ -1645,9 +1645,9 @@ InstallGlobalFunction(EquivalenceRelationByPairs,
         ## Parameter checking
         ##     d=domain, elms=list
         ##
-	if not IsDomain(d) then
+        if not IsDomain(d) then
             Error("Equivalence relations only constructible over domains");
-	fi;
+        fi;
         if not IsList(pairs) then
             Error("Second parameter must be a list of 2-tuples");
         fi;
@@ -1967,7 +1967,7 @@ InstallMethod( PrintObj, "for an equivalence relation", true,
 ##
 #M  EquivalenceClasses( <E> )
 ##
-##	Wraparound function which calls the two-argument method
+##  Wraparound function which calls the two-argument method
 ##
 InstallMethod(EquivalenceClasses, "wraparound to call 2-argument version",
         true, [IsEquivalenceRelation], 0,
@@ -2077,9 +2077,9 @@ InstallMethod(EquivalenceClassOfElement, "with checking", true,
 
 #############################################################################
 ##
-#M	PrintObj( <C> )
+#M  PrintObj( <C> )
 ##
-##	Display an equivalence class.
+##  Display an equivalence class.
 ##
 InstallMethod(PrintObj, "for an eq. class", true,
         [IsEquivalenceClass],0,

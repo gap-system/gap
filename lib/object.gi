@@ -433,7 +433,7 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( ViewString, "for an object with name", true,
                [ HasName ], SUM_FLAGS,  # override anything specific
-	       Name );
+               Name );
 
 
 #############################################################################

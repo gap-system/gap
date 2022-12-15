@@ -2477,7 +2477,7 @@ local Rep,Merge,ct,offset,l,q,i,c,x,d,p,mu,nu;
         else
           ct[x+offset][mu]:=nu;
           ct[-x+offset][nu]:=mu;
-	  NEWTC_AddDeduction(DATA.deductions,[mu,x]);
+          NEWTC_AddDeduction(DATA.deductions,[mu,x]);
         fi;
       fi;
     od;
@@ -2580,40 +2580,40 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
     i:=i+1;
     for x in DATA.A do
       if ct[x+offset][c]<>0 then
-	d:=ct[x+offset][c];
-	ct[-x+offset][d]:=0;
-	mu:=MRep(c);
-	nu:=MRep(d);
-	if ct[x+offset][mu]<>0 then
-	  if DATA.useAddition then
-	    v:=-pp[d]-aug[x+offset][c]+pp[c]+aug[x+offset][mu];
-	  else
-	    v:=WordProductLetterRep(-Reversed(pp[d]),-Reversed(aug[x+offset][c]),
-		pp[c],aug[x+offset][mu]);
-	  fi;
-	  MMerge(nu,ct[x+offset][mu],v);
-	elif ct[-x+offset][nu]<>0 then
-	  if DATA.useAddition then
-	    v:=-pp[c]+aug[x+offset][c]+pp[d]+aug[-x+offset][nu];
-	  else
-	    v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],
-		  pp[d],aug[-x+offset][nu]);
-	  fi;
-	  MMerge(mu,ct[-x+offset][nu],v);
-	else
-	  ct[x+offset][mu]:=nu;
-	  ct[-x+offset][nu]:=mu;
-	  if DATA.useAddition then
-	    v:=-pp[c]+aug[x+offset][c]+pp[d];
-	    aug[x+offset][mu]:=v;
-	    aug[-x+offset][nu]:=-v;
-	  else
-	    v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],pp[d]);
-	    aug[x+offset][mu]:=v;
-	    aug[-x+offset][nu]:=-Reversed(v);
-	  fi;
-	  NEWTC_AddDeduction(DATA.deductions,[mu,x]);
-	fi;
+        d:=ct[x+offset][c];
+        ct[-x+offset][d]:=0;
+        mu:=MRep(c);
+        nu:=MRep(d);
+        if ct[x+offset][mu]<>0 then
+          if DATA.useAddition then
+            v:=-pp[d]-aug[x+offset][c]+pp[c]+aug[x+offset][mu];
+          else
+            v:=WordProductLetterRep(-Reversed(pp[d]),-Reversed(aug[x+offset][c]),
+                pp[c],aug[x+offset][mu]);
+          fi;
+          MMerge(nu,ct[x+offset][mu],v);
+        elif ct[-x+offset][nu]<>0 then
+          if DATA.useAddition then
+            v:=-pp[c]+aug[x+offset][c]+pp[d]+aug[-x+offset][nu];
+          else
+            v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],
+                  pp[d],aug[-x+offset][nu]);
+          fi;
+          MMerge(mu,ct[-x+offset][nu],v);
+        else
+          ct[x+offset][mu]:=nu;
+          ct[-x+offset][nu]:=mu;
+          if DATA.useAddition then
+            v:=-pp[c]+aug[x+offset][c]+pp[d];
+            aug[x+offset][mu]:=v;
+            aug[-x+offset][nu]:=-v;
+          else
+            v:=WordProductLetterRep(-Reversed(pp[c]),aug[x+offset][c],pp[d]);
+            aug[x+offset][mu]:=v;
+            aug[-x+offset][nu]:=-Reversed(v);
+          fi;
+          NEWTC_AddDeduction(DATA.deductions,[mu,x]);
+        fi;
       fi;
     od;
   od;
@@ -3072,20 +3072,20 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,ds,dr,
         w:=w[1]; # get word from value
       fi;
       repeat
-	i:=1;
-	ap:=1;
-	while ap<=Length(w) do
-	  a:=w[ap];
-	  if ct[a+offset][i]=0 then
-	    dr:=NEWTC_Define(DATA,i,a);
-	    if dr=fail then return fail;fi;
-	    NEWTC_ProcessDeductions(DATA);
-	    #i:=p[i]; # in case there is a change
-	    ap:=Length(w)+10;
-	  fi;
-	  i:=ct[a+offset][i];
-	  ap:=ap+1;
-	od;
+        i:=1;
+        ap:=1;
+        while ap<=Length(w) do
+          a:=w[ap];
+          if ct[a+offset][i]=0 then
+            dr:=NEWTC_Define(DATA,i,a);
+            if dr=fail then return fail;fi;
+            NEWTC_ProcessDeductions(DATA);
+            #i:=p[i]; # in case there is a change
+            ap:=Length(w)+10;
+          fi;
+          i:=ct[a+offset][i];
+          ap:=ap+1;
+        od;
       until ap=Length(w)+1;
     od;
   fi;
@@ -3270,8 +3270,8 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,tim
           limit:=e.limit);
       if e=fail then return fail;fi;
       if e.defcount/bl<98/100 then
-	bl:=e.defcount;
-	bw:=ShallowCopy(trace);
+        bl:=e.defcount;
+        bw:=ShallowCopy(trace);
       fi;
 
       # 2% improvement threshold
@@ -3363,9 +3363,9 @@ local p,new,start,half;
     p:=PositionSublist(s,r,start);
     while p<>fail do
       if start>Length(s) or Length(new)=0 or new[Length(new)]<>-s[start] then
-	Append(new,s{[start..p-1]});
+        Append(new,s{[start..p-1]});
       else
-	new:=WordProductLetterRep(new,s{[start..p-1]});
+        new:=WordProductLetterRep(new,s{[start..p-1]});
       fi;
       start:=p+Length(r);
       p:=PositionSublist(s,r,start);

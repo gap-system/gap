@@ -30,7 +30,7 @@ DeclareGlobalFunction("RootsRepresentativeFFPol");
 
 #############################################################################
 ##
-#F  OrderKnownDividendList( <l>, <pp> )	. . . . . . . . . . . . . . . . local
+#F  OrderKnownDividendList( <l>, <pp> ) . . . . . . . . . . . . . . . . local
 ##
 ##  Computes  an  integer  n  such  that  OnSets( <l>, n ) contains  only one
 ##  element e.  <pp> must be a list of prime powers of an integer d such that

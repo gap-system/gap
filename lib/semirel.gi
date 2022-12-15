@@ -93,12 +93,12 @@ function(X)
     local fam, rel, sc;
 
     fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)),
-	     ElementsFamily(FamilyObj(X)) );
+             ElementsFamily(FamilyObj(X)) );
 
     # Create the default type for the elements.
     rel :=  Objectify(NewType(fam,
-	       IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
-	       and IsGreensRRelation), rec());
+               IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
+               and IsGreensRRelation), rec());
 
     SetSource(rel, X);
     SetRange(rel, X);
@@ -116,12 +116,12 @@ function(X)
     local fam, rel;
 
     fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)),
-	    ElementsFamily(FamilyObj(X)) );
+            ElementsFamily(FamilyObj(X)) );
 
     # Create the default type for the elements.
     rel :=  Objectify(NewType(fam,
-	    IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
-	    and IsGreensLRelation), rec());
+            IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
+            and IsGreensLRelation), rec());
 
     SetSource(rel, X);
     SetRange(rel, X);
@@ -138,12 +138,12 @@ function(X)
     local fam, rel;
 
     fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)),
-	    ElementsFamily(FamilyObj(X)) );
+            ElementsFamily(FamilyObj(X)) );
 
     # Create the default type for the elements.
     rel :=  Objectify(NewType(fam,
-	    IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
-	    and IsGreensJRelation), rec());
+            IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
+            and IsGreensJRelation), rec());
 
     SetSource(rel, X);
     SetRange(rel, X);
@@ -159,12 +159,12 @@ function(X)
     local fam, rel;
 
     fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)),
-	    ElementsFamily(FamilyObj(X)) );
+            ElementsFamily(FamilyObj(X)) );
 
     # Create the default type for the elements.
     rel :=  Objectify(NewType(fam,
-	    IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
-	    and IsGreensDRelation), rec());
+            IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
+            and IsGreensDRelation), rec());
 
     SetSource(rel, X);
     SetRange(rel, X);
@@ -181,12 +181,12 @@ function(X)
     local fam, rel;
 
     fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(X)),
-	    ElementsFamily(FamilyObj(X)) );
+            ElementsFamily(FamilyObj(X)) );
 
     # Create the default type for the elements.
     rel :=  Objectify(NewType(fam,
-	    IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
-	    and IsGreensHRelation), rec());
+            IsEquivalenceRelation and IsEquivalenceRelationDefaultRep
+            and IsGreensHRelation), rec());
 
     SetSource(rel, X);
     SetRange(rel, X);
@@ -337,15 +337,15 @@ InstallMethod(ImagesElm, "for a Green's equivalence", true, [IsGreensRelation, I
     semi:=Source(rel);
 
     if IsGreensRRelation(rel) then
-	    exp:=GreensRClassOfElement(semi, elm);
+        exp:=GreensRClassOfElement(semi, elm);
     elif IsGreensLRelation(rel) then
-	    exp:=GreensLClassOfElement(semi, elm);
+        exp:=GreensLClassOfElement(semi, elm);
     elif IsGreensHRelation(rel) then
-	    exp:=GreensHClassOfElement(semi, elm);
+        exp:=GreensHClassOfElement(semi, elm);
     elif IsGreensDRelation(rel) then
-	    exp:=GreensDClassOfElement(semi, elm);
+        exp:=GreensDClassOfElement(semi, elm);
     elif IsGreensJRelation(rel) then
-	    exp:=GreensJClassOfElement(semi, elm);
+        exp:=GreensJClassOfElement(semi, elm);
     fi;
 
     return AsSSortedList(exp);
@@ -373,7 +373,7 @@ end);
 ##
 
 InstallMethod(AsSSortedList, "for a Green's class", true, [IsGreensClass], 0,
-	x-> AsSSortedList(CanonicalGreensClass(x)));
+        x-> AsSSortedList(CanonicalGreensClass(x)));
 
 #################
 #################
@@ -740,7 +740,7 @@ x -> Filtered(GreensHClasses(ParentAttr(x)), y -> Representative(y) in x));
 InstallMethod(IsRegularDClass, "for a Green's D class", true,
         [IsGreensDClass],0,
         x-> ForAny(GreensRClassOfElement(ParentAttr(x), Representative(x)),
-		    IsIdempotent));
+                    IsIdempotent));
 
 InstallMethod(IsGreensLessThanOrEqual, "for two Green's classes",
 [IsGreensClass, IsGreensClass],
@@ -857,18 +857,18 @@ local dclasses, layer, class, len, i, D;
 
    for class in dclasses do
      Add(layer[RankOfTransformation(Representative(class))], [class,
-	Size(GreensHClasses(class)[1]), IsRegularDClass(class)]);
+        Size(GreensHClasses(class)[1]), IsRegularDClass(class)]);
    od;
 
    len:= Length(layer);
    for i in [len, len-1..1] do
         if layer[i] <> [] then
-	    for D in layer[i] do
-	  	Print("Rank ", i, ", H-class size ", D[2]);
-		if D[3] then
+            for D in layer[i] do
+                Print("Rank ", i, ", H-class size ", D[2]);
+                if D[3] then
                   Print(", regular \n");
- 	        else
- 		  Print(", non-regular \n");
+                else
+                  Print(", non-regular \n");
                 fi;
 
                 DisplayEggBoxOfDClass(D[1]);
@@ -1032,30 +1032,30 @@ function(m)
 
       for i in [1..k] do #loop over generators
 
-	newword:=fpelts[u]*freegens[i]; # newword=u*a_i
+        newword:=fpelts[u]*freegens[i]; # newword=u*a_i
 
-	if not reducedflags[s][i] then  # if s*a_i is not reduced
-	  r:=postmult[s][i];            # r=s*a_i
-	  if fpelts[r]=One(free) then   # r=1
-	    postmult[u][i]:=b+1;
+        if not reducedflags[s][i] then  # if s*a_i is not reduced
+          r:=postmult[s][i];            # r=s*a_i
+          if fpelts[r]=One(free) then   # r=1
+            postmult[u][i]:=b+1;
             reducedflags[u][i]:=true;   # u*a_i=b and it is reduced
-	  else
-	    postmult[u][i]:=postmult[premult[prefix[r]][b]][final[r]];
+          else
+            postmult[u][i]:=postmult[premult[prefix[r]][b]][final[r]];
             #\rho(u*a_i)=\rho(\rho(b*r)*l(r))
-	    reducedflags[u][i]:=(newword=fpelts[postmult[u][i]]);
+            reducedflags[u][i]:=(newword=fpelts[postmult[u][i]]);
             # if \rho(u*a_i)=u*a_i then true
-	  fi;
+          fi;
         else
 
-	  newelt:=actualelts[u]*gens[i];      # newelt=nu(u*a_i)
+          newelt:=actualelts[u]*gens[i];      # newelt=nu(u*a_i)
           old:=PositionSorted(sortedelts, newelt);
           if old<=Last and newelt=sortedelts[old] then
             old:=pos[old];
-	    Add(rules, [newword, fpelts[old]]);
-	    postmult[u][i]:=old;
+            Add(rules, [newword, fpelts[old]]);
+            postmult[u][i]:=old;
             reducedflags[u][i]:=false;  # u*a_i represents the same elt as
                                         # fpelts[j] and is (hence) not reduced
-	  else
+          else
             Add(fpelts, newword); Add(first, b); Add(final, i);
             # add all its info to the table
             Add(prefix,u); Add(suffix, postmult[suffix[u]][i]);
@@ -1063,8 +1063,8 @@ function(m)
             Add(postmult, []); Add(reducedflags, []); Add(premult, []);
             Add(length, length[u]+1); Add(actualelts, newelt);
 
-	    Last:=Last+1;
-	    postmult[u][i]:=Last; reducedflags[u][i]:=true;
+            Last:=Last+1;
+            postmult[u][i]:=Last; reducedflags[u][i]:=true;
             # the word u*a_i is a new elt
             # and is hence reduced
 
@@ -1073,7 +1073,7 @@ function(m)
             CopyListEntries( pos, old, 1, pos, old+1, 1, Last-old );
             pos[old] := Last;
 
-	  fi;
+          fi;
        fi;
      od;
 
@@ -1085,7 +1085,7 @@ function(m)
     while u<=Last and length[u]=currentlength do
       p:=prefix[u];
       for i in [1..k] do
-	premult[u][i]:=postmult[premult[p][i]][final[u]];
+        premult[u][i]:=postmult[premult[p][i]][final[u]];
         # \rho(a_i*u)=\rho(\rho(a_i*p)*final(u))
       od;
       u:=u+1;
@@ -1270,7 +1270,7 @@ local hom, filter;
     Error("<S> and <T> must have the same size");
   fi;
 
-	#SetAsSSortedList(imgslist, imgslist);
+  #SetAsSSortedList(imgslist, imgslist);
   hom:=rec(imgslist:=imgslist);
 
 Objectify(NewType( GeneralMappingsFamily
@@ -1306,7 +1306,7 @@ function(hom, x)
   local preimgs, imgs;
 
   if HasInverseGeneralMapping(hom) then
-	  return ImageElm(InverseGeneralMapping(hom), x);
+    return ImageElm(InverseGeneralMapping(hom), x);
   fi;
 
   imgs:=hom!.imgslist;

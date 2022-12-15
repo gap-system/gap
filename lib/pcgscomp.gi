@@ -151,14 +151,14 @@ local   series,  exps,  id,  depth,  exp,ml;
 
     while elm <> id  do
         while elm in series[depth]  do
-	  depth := depth + 1;
+          depth := depth + 1;
         od;
         exp := 0;
         repeat
             exp := exp+1;
-	    if depth<2 or depth>ml then
-	      return fail;
-	    fi;
+            if depth<2 or depth>ml then
+              return fail;
+            fi;
             elm := LeftQuotient( pcgs[depth-1], elm );
         until elm in series[depth];
         exps[depth-1] := exp;
@@ -206,10 +206,10 @@ local   grp,  series,  i,hasro;
     series := [ grp ];
     for i  in [ 2 .. Length(pcgs)+1 ]  do
       if hasro then
-	# pcgs is all in place -- use induced pcgs for generators to build
-	# series after pcgs is at work
+        # pcgs is all in place -- use induced pcgs for generators to build
+        # series after pcgs is at work
         Add( series, SubgroupByPcgs( grp,
-	  InducedPcgsByPcSequenceNC(pcgs,pcgs{[ i .. Length(pcgs) ]} ) ));
+          InducedPcgsByPcSequenceNC(pcgs,pcgs{[ i .. Length(pcgs) ]} ) ));
       else
         # pcgs is being built. Don't induce, but just use subgroup.
         Add( series, SubgroupNC( grp, pcgs{[ i .. Length(pcgs) ]} ) );

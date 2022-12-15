@@ -871,9 +871,9 @@ local aug,w,p,pres,f,fam,G,trace;
   pres:=NEWTC_PresentationMTC(aug,1,nam);
   if Length(GeneratorsOfPresentation(pres))>Length(gens) then
     aug:=NEWTC_CosetEnumerator(FreeGeneratorsOfFpGroup(w),
-	  RelatorsOfFpGroup(w),
-	  List(gens,UnderlyingElement),
-	  true,trace);
+          RelatorsOfFpGroup(w),
+          List(gens,UnderlyingElement),
+          true,trace);
 
     pres:=NEWTC_PresentationMTC(aug,0,nam);
   fi;

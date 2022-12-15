@@ -193,49 +193,49 @@ local oper,narg,args,skip,verbos,fams,flags,i,j,methods,flag,flag2,
     j:=1;
     while j<=narg and (flag or verbos>3) and not m.early do
       if j=1 and isconstructor then
-	flag2:=IS_SUBSET_FLAGS(m.argFilt[j],flags[j]);
+        flag2:=IS_SUBSET_FLAGS(m.argFilt[j],flags[j]);
       else
-	flag2:=IS_SUBSET_FLAGS(flags[j],m.argFilt[j]);
+        flag2:=IS_SUBSET_FLAGS(flags[j],m.argFilt[j]);
       fi;
       flag:=flag and flag2;
       if flag2=false and verbos>2 then
-	need:=NamesFilter(m.argFilt[j]);
-	if j=1 and isconstructor then
-	  Print("#I   - ",Ordinal(j)," argument must be ",
-		need,"\n");
-	else
-	  has:=NamesFilter(flags[j]);
-	  Print("#I   - ",Ordinal(j)," argument needs ",
-		Filtered(need,i->not i in has),"\n");
-	fi;
+        need:=NamesFilter(m.argFilt[j]);
+        if j=1 and isconstructor then
+          Print("#I   - ",Ordinal(j)," argument must be ",
+                need,"\n");
+        else
+          has:=NamesFilter(flags[j]);
+          Print("#I   - ",Ordinal(j)," argument needs ",
+                Filtered(need,i->not i in has),"\n");
+        fi;
       fi;
       j:=j+1;
     od;
     if flag then
       if m.early or fams=fail or CallFuncList(m.famPred,fams) then
-	if verbos=1 then
-	  Print("#I  Method ",i,": ``",nam,"''");
+        if verbos=1 then
+          Print("#I  Method ",i,": ``",nam,"''");
           if IsBound(m.location) then
             Print(" at ", m.location[1], ":", m.location[2]);
-	  elif LocationFunc(oper) <> fail then
-	    Print(" at ",LocationFunc(oper));
-	  fi;
-	  Print(" , value: ");
-	  Print_Value_SFF(val);
-	  Print("\n");
-	fi;
-	if verbos>5 then
-	  Print("#I  Function Body:\n");
-	  Print(oper);
-	fi;
-	if skip=0 then
-	  return oper;
-	else
-	  Add(erg,oper);
-	  skip:=skip-1;
-	  if verbos>0 then
-	    Print("#I  Skipped:\n");
-	  fi;
+          elif LocationFunc(oper) <> fail then
+            Print(" at ",LocationFunc(oper));
+          fi;
+          Print(" , value: ");
+          Print_Value_SFF(val);
+          Print("\n");
+        fi;
+        if verbos>5 then
+          Print("#I  Function Body:\n");
+          Print(oper);
+        fi;
+        if skip=0 then
+          return oper;
+        else
+          Add(erg,oper);
+          skip:=skip-1;
+          if verbos>0 then
+            Print("#I  Skipped:\n");
+          fi;
         fi;
       elif verbos>2 then
         Print("#I   - bad family relations\n");

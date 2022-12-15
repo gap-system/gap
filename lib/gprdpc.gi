@@ -267,9 +267,9 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
   pggens:=gens{[b2+1..b3]};
   phgens:=gens{[b3+1..Length(gens)]};
   coll:=SingleCollector(F,Concatenation(
-			RelativeOrders(fp),
-			RelativeOrders(pkg),
-			RelativeOrders(pkh)
+                        RelativeOrders(fp),
+                        RelativeOrders(pkg),
+                        RelativeOrders(pkh)
                         ));
   id:=One(F);
 
@@ -333,7 +333,7 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
       w:=w*LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,comm),One(F));
 
       if w<>id then
-	SetCommutator(coll,j,i,w);
+        SetCommutator(coll,j,i,w);
       fi;
     od;
 
@@ -343,7 +343,7 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
       w:=LinearCombinationPcgs(pggens,ExponentsOfPcElement(pkg,comm),One(F));
 
       if w<>id then
-	SetCommutator(coll,j+b2,i,w);
+        SetCommutator(coll,j+b2,i,w);
       fi;
     od;
 
@@ -353,7 +353,7 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
       w:=LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,comm),One(F));
 
       if w<>id then
-	SetCommutator(coll,j+b3,i,w);
+        SetCommutator(coll,j+b3,i,w);
       fi;
     od;
 
@@ -367,7 +367,7 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
       w:=LinearCombinationPcgs(pggens,e,One(F));
 
       if w<>id then
-	SetCommutator(coll,j+b2,i+b2,w);
+        SetCommutator(coll,j+b2,i+b2,w);
       fi;
     od;
   od;
@@ -380,7 +380,7 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
       w:=LinearCombinationPcgs(phgens,e,One(F));
 
       if w<>id then
-	SetCommutator(coll,j+b3,i+b3,w);
+        SetCommutator(coll,j+b3,i+b3,w);
       fi;
     od;
   od;
@@ -397,9 +397,9 @@ local mg,mh,kg,kh,pkg,pkh,fp,fh,F,coll,gens,fpgens,pggens,phgens,i,j,
     e:=ExponentsOfPcElement(fp,gi[i]);
     Add(comm,LinearCombinationPcgs(fpgens,e,One(w))
             *LinearCombinationPcgs(pggens,ExponentsOfPcElement(pkg,
-	      LeftQuotient(LinearCombinationPcgs(fp,e,One(G)),gi[i])),One(w))
+              LeftQuotient(LinearCombinationPcgs(fp,e,One(G)),gi[i])),One(w))
             *LinearCombinationPcgs(phgens,ExponentsOfPcElement(pkh,
-	      LeftQuotient(LinearCombinationPcgs(fh,e,One(H)),hi[i])),One(w)));
+              LeftQuotient(LinearCombinationPcgs(fh,e,One(H)),hi[i])),One(w)));
   od;
 
   return [w,comm];
@@ -429,8 +429,8 @@ local pg,ph,kg,kh,ig,ih,mg,mh,S,info;
   ph:=GroupHomomorphismByImagesNC(S[1],H,S[2],ph);
   S:=S[1];
   info:=rec(groups:=[G,H],
-	    homomorphisms:=[gh,hh],
-	    projections:=[pg,ph]);
+            homomorphisms:=[gh,hh],
+            projections:=[pg,ph]);
   SetSubdirectProductInfo(S,info);
   return S;
 end);

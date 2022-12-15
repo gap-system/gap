@@ -29,12 +29,12 @@ PcGroupClassMatrixColumn := function(D,M,r,t)
       p:=RepresentativeAction(orb.group,c,t);
       # was the first column of the galois class active?
       if ForAny([1..NrRows(M)],i->M[i,c]>0) then
-	for i in D.classrange do
-	  M[i^p][t]:=M[i][c];
-	od;
+        for i in D.classrange do
+          M[i^p][t]:=M[i][c];
+        od;
         Info(InfoCharacterTable,2,"Computing column ",t,
           " : by GaloisImage");
-	return;
+        return;
       fi;
     fi;
 

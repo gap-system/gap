@@ -165,17 +165,17 @@ InstallGlobalFunction( MatCharsWreathSymmetric, function( tbl, n)
     for i in [1..n] do
        pts[i]:= PartitionTuples(i, r);
        for j in [1..Length(pts[i])] do
-	 np:= [[], []];
-	 for t in pts[i][j] do
-	    s:= Sum( t, 0 );
-	    Add(np[1], s);
-	    if s = 0 then
-	       Add(np[2], 1);
-	    else
-	       Add(np[2], Position( partitions[s], t, 0 ));
-	    fi;
-	 od;
-	 pts[i][j]:= np;
+         np:= [[], []];
+         for t in pts[i][j] do
+            s:= Sum( t, 0 );
+            Add(np[1], s);
+            if s = 0 then
+               Add(np[2], 1);
+            else
+               Add(np[2], Position( partitions[s], t, 0 ));
+            fi;
+         od;
+         pts[i][j]:= np;
        od;
     od;
 
@@ -187,29 +187,29 @@ InstallGlobalFunction( MatCharsWreathSymmetric, function( tbl, n)
 
        res:= [];
        for i in [1..r] do
-	 res[i]:= List([1..n], x-> []);
+         res[i]:= List([1..n], x-> []);
        od;
 
        for i in [1..r] do
-	 ni:= np[1][i]; pi:= np[2][i];
-	 for k in [1..ni] do
-	    for l in scheme[ni][pi][k] do
-	       np[1][i]:= ni-k;
-	       if l < 0 then
-		  np[2][i]:= -l;
-		  sign:= -1;
-	       else
-		  np[2][i]:= l;
-		  sign:= 1;
-	       fi;
-	       if k = n then
-		  Add(res[i][k], sign);
-	       else
-		  Add(res[i][k], sign * Position(pts[n-k], np));
-	       fi;
-	    od;
-	 od;
-	 np[1][i]:= ni; np[2][i]:= pi;
+         ni:= np[1][i]; pi:= np[2][i];
+         for k in [1..ni] do
+            for l in scheme[ni][pi][k] do
+               np[1][i]:= ni-k;
+               if l < 0 then
+                  np[2][i]:= -l;
+                  sign:= -1;
+               else
+                  np[2][i]:= l;
+                  sign:= 1;
+               fi;
+               if k = n then
+                  Add(res[i][k], sign);
+               else
+                  Add(res[i][k], sign * Position(pts[n-k], np));
+               fi;
+            od;
+         od;
+         np[1][i]:= ni; np[2][i]:= pi;
        od;
        return res;
     end;
@@ -221,7 +221,7 @@ InstallGlobalFunction( MatCharsWreathSymmetric, function( tbl, n)
        Info( InfoCharacterTable, 2, i );
        res[i]:= [];
        for np in pts[i] do
-	 Add(res[i], hooks(np, i));
+         Add(res[i], hooks(np, i));
        od;
     od;
     scheme:= res;
@@ -232,17 +232,17 @@ InstallGlobalFunction( MatCharsWreathSymmetric, function( tbl, n)
 
        col:= [];
        for pi in scheme[n] do
-	 val:= 0;
-	 for j in [1..r] do
-	    for i in pi[j][k] do
-	       if i < 0 then
-		  val:= val - tbl_irreducibles[j][p] * t[-i];
-	       else
-		  val:= val + tbl_irreducibles[j][p] * t[i];
-	       fi;
-	    od;
-	 od;
-	 Add(col, val);
+         val:= 0;
+         for j in [1..r] do
+            for i in pi[j][k] do
+               if i < 0 then
+                  val:= val - tbl_irreducibles[j][p] * t[-i];
+               else
+                  val:= val + tbl_irreducibles[j][p] * t[i];
+               fi;
+            od;
+         od;
+         Add(col, val);
        od;
        return col;
     end;
@@ -255,20 +255,20 @@ InstallGlobalFunction( MatCharsWreathSymmetric, function( tbl, n)
        # the $m$-cycle in all possible places
        Info( InfoCharacterTable, 2, m );
        for i in [1..r] do
-	 s:= [1..n]*0+1;
-	 s[m]:= i;
-	 Add(pm[m], rec(col:= charCol(m, [1], m, i), pos:= s));
+         s:= [1..n]*0+1;
+         s[m]:= i;
+         Add(pm[m], rec(col:= charCol(m, [1], m, i), pos:= s));
        od;
 
        # add the $m$-cycle to everything you know
        for k in [m+1..n-m] do
-	 for t in pm[k-m] do
-	    for i in [t.pos[m]..r] do
-	       s:= ShallowCopy(t.pos);
-	       s[m]:= i;
-	       Add(pm[k], rec(col:= charCol(k, t.col, m, i), pos:= s));
-	    od;
-	 od;
+         for t in pm[k-m] do
+            for i in [t.pos[m]..r] do
+               s:= ShallowCopy(t.pos);
+               s[m]:= i;
+               Add(pm[k], rec(col:= charCol(k, t.col, m, i), pos:= s));
+            od;
+         od;
        od;
     od;
 
@@ -279,19 +279,19 @@ InstallGlobalFunction( MatCharsWreathSymmetric, function( tbl, n)
     for k in [1..n-1] do
        Info( InfoCharacterTable, 2, k );
        for t in pm[n-k] do
-	 for i in [t.pos[k]..r] do
-	    col:= charCol(n, t.col, k, i);
-	    for j in [1..np] do
-	       Add(res[j], col[j]);
-	    od;
-	 od;
+         for i in [t.pos[k]..r] do
+            col:= charCol(n, t.col, k, i);
+            for j in [1..np] do
+               Add(res[j], col[j]);
+            od;
+         od;
        od;
     od;
 
     for i in [1..r] do
        col:= charCol(n, [1], n, i);
        for j in [1..np] do
-	 Add(res[j], col[j]);
+         Add(res[j], col[j]);
        od;
     od;
 
@@ -1174,9 +1174,9 @@ InstallGlobalFunction( CharacterTableWreathSymmetric, function( sub, n )
     for i in [1..nccl] do
        orders[i]:= 1;
        for j in [1..nccs] do
-	 if parts[i][j] <> [] then
-	    orders[i]:= Lcm(orders[i], suborders[j]*Lcm(parts[i][j]));
-	 fi;
+         if parts[i][j] <> [] then
+            orders[i]:= Lcm(orders[i], suborders[j]*Lcm(parts[i][j]));
+         fi;
        od;
     od;
     tbl.OrdersClassRepresentatives:= orders;

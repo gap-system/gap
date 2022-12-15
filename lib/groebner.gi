@@ -63,9 +63,9 @@ BindGlobal("InstallMonomialOrdering",function(ord,ordfun,idxord,
       nam:=Concatenation(ordname,"(",nam,")");
       neword:=MakeMonomialOrdering(nam,
         function(a,b)
-	  # for each variable give its index position.
-	  return idxord(a,b,List([1..Maximum(idx)],i->Position(idx,i)));
-	end);
+          # for each variable give its index position.
+          return idxord(a,b,List([1..Maximum(idx)],i->Position(idx,i)));
+        end);
       neword!.idxarrangement:=Immutable(idx);
       neword!.type:=Immutable(type);
       SetOccuringVariableIndices(neword,ov);
@@ -98,15 +98,15 @@ local fun;
       if Length(e)=2 then
         le:=1;
       else
-	le:=LeadingMonomialPosExtRep(fam,e,fun);
+        le:=LeadingMonomialPosExtRep(fam,e,fun);
       fi;
       if Length(f)=2 then
         lf:=1;
       else
-	lf:=LeadingMonomialPosExtRep(fam,f,fun);
+        lf:=LeadingMonomialPosExtRep(fam,f,fun);
       fi;
       if fun(e[le],f[lf]) then
-	return true;
+        return true;
       elif e[le]<>f[lf] then
         return false;
       fi;
@@ -134,13 +134,13 @@ InstallMonomialOrdering(MonomialLexOrdering,
     while i<l and i<m do
     # in this ordering x_1>x_2
       if a[i]>b[i] then
-	return true;
+        return true;
       elif a[i]<b[i] then
-	return false;
+        return false;
       elif a[i+1]<b[i+1] then
-	return true;
+        return true;
       elif a[i+1]>b[i+1] then
-	return false;
+        return false;
       fi;
       i:=i+2;
     od;
@@ -167,63 +167,63 @@ InstallMonomialOrdering(MonomialLexOrdering,
       am:=infinity;
       ap:=0;
       while i<l do
-	ai:=idx[a[i]];
-	if ai>min and ai<am then
-	  # smaller pos (i.e. larger) variable found
-	  am:=ai;
-	  ap:=i;
-	fi;
-	i:=i+2;
+        ai:=idx[a[i]];
+        if ai>min and ai<am then
+          # smaller pos (i.e. larger) variable found
+          am:=ai;
+          ap:=i;
+        fi;
+        i:=i+2;
       od;
       if am=infinity then
-	# no variable left in a. Test what is left in b
-	i:=1;
-	has:=false;
-	while i<m do
-	  bi:=idx[b[i]];
-	  if bi>min then
-	    # b has variables left. So a is smaller
-	    return true;
-	  fi;
-	  i:=i+2;
-	od;
-	# b also not. thus a must be equal to b
-	return false;
+        # no variable left in a. Test what is left in b
+        i:=1;
+        has:=false;
+        while i<m do
+          bi:=idx[b[i]];
+          if bi>min then
+            # b has variables left. So a is smaller
+            return true;
+          fi;
+          i:=i+2;
+        od;
+        # b also not. thus a must be equal to b
+        return false;
       fi;
 
       # now search for am in b
       i:=1;
       has:=false;
       while i<m do
-	bi:=idx[b[i]];
-	if bi>min then
-	  if bi<am then
-	    # b has a larger (smaller pos) variable left. Thus b is bigger.
-	    return true;
-	  elif bi=am then
-	    # the same variable occurs.
-	    has:=true;
-	    if a[ap+1]>b[i+1] then
+        bi:=idx[b[i]];
+        if bi>min then
+          if bi<am then
+            # b has a larger (smaller pos) variable left. Thus b is bigger.
+            return true;
+          elif bi=am then
+            # the same variable occurs.
+            has:=true;
+            if a[ap+1]>b[i+1] then
 
-	      # a exponent is bigger
-	      ret:=false; # unless a smaller (larger pos) variable found
-	    elif a[ap+1]<b[i+1] then
-	      # b exponent is bigger
-	      ret:=true; # unless a smaller (larger pos) variable found
-	    else
-	      # same exponents -- cannot decide on this variable
-	      ret:=fail;
-	    fi;
-	  fi;
-	fi;
-	i:=i+2;
+              # a exponent is bigger
+              ret:=false; # unless a smaller (larger pos) variable found
+            elif a[ap+1]<b[i+1] then
+              # b exponent is bigger
+              ret:=true; # unless a smaller (larger pos) variable found
+            else
+              # same exponents -- cannot decide on this variable
+              ret:=fail;
+            fi;
+          fi;
+        fi;
+        i:=i+2;
       od;
       if not has then
-	# b has no variable as large as am. thus a is bigger
-	return false;
+        # b has no variable as large as am. thus a is bigger
+        return false;
       elif ret<>fail then
-	# b has no larger variable than am  buty has am. Use the comparison
-	return ret;
+        # b has no larger variable than am  buty has am. Use the comparison
+        return ret;
       fi;
       min:=am; # will increase until no variable in a left
     until false;
@@ -262,13 +262,13 @@ InstallMonomialOrdering(MonomialGrlexOrdering,
     while i<l and i<m do
     # in this ordering x_1>x_2
       if a[i]>b[i] then
-	return true;
+        return true;
       elif a[i]<b[i] then
-	return false;
+        return false;
       elif a[i+1]<b[i+1] then
-	return true;
+        return true;
       elif a[i+1]>b[i+1] then
-	return false;
+        return false;
       fi;
       i:=i+2;
     od;
@@ -312,63 +312,63 @@ InstallMonomialOrdering(MonomialGrlexOrdering,
       am:=infinity;
       ap:=0;
       while i<l do
-	ai:=idx[a[i]];
-	if ai>min and ai<am then
-	  # smaller pos (i.e. larger) variable found
-	  am:=ai;
-	  ap:=i;
-	fi;
-	i:=i+2;
+        ai:=idx[a[i]];
+        if ai>min and ai<am then
+          # smaller pos (i.e. larger) variable found
+          am:=ai;
+          ap:=i;
+        fi;
+        i:=i+2;
       od;
       if am=infinity then
-	# no variable left in a. Test what is left in b
-	i:=1;
-	has:=false;
-	while i<m do
-	  bi:=idx[b[i]];
-	  if bi>min then
-	    # b has variables left. So a is smaller
-	    return true;
-	  fi;
-	  i:=i+2;
-	od;
-	# b also not. thus a must be equal to b
-	return false;
+        # no variable left in a. Test what is left in b
+        i:=1;
+        has:=false;
+        while i<m do
+          bi:=idx[b[i]];
+          if bi>min then
+            # b has variables left. So a is smaller
+            return true;
+          fi;
+          i:=i+2;
+        od;
+        # b also not. thus a must be equal to b
+        return false;
       fi;
 
       # now search for am in b
       i:=1;
       has:=false;
       while i<m do
-	bi:=idx[b[i]];
-	if bi>min then
-	  if bi<am then
-	    # b has a larger (smaller pos) variable left. Thus b is bigger.
-	    return true;
-	  elif bi=am then
-	    # the same variable occurs.
-	    has:=true;
-	    if a[ap+1]>b[i+1] then
+        bi:=idx[b[i]];
+        if bi>min then
+          if bi<am then
+            # b has a larger (smaller pos) variable left. Thus b is bigger.
+            return true;
+          elif bi=am then
+            # the same variable occurs.
+            has:=true;
+            if a[ap+1]>b[i+1] then
 
-	      # a exponent is bigger
-	      ret:=false; # unless a smaller (larger pos) variable found
-	    elif a[ap+1]<b[i+1] then
-	      # b exponent is bigger
-	      ret:=true; # unless a smaller (larger pos) variable found
-	    else
-	      # same exponents -- cannot decide on this variable
-	      ret:=fail;
-	    fi;
-	  fi;
-	fi;
-	i:=i+2;
+              # a exponent is bigger
+              ret:=false; # unless a smaller (larger pos) variable found
+            elif a[ap+1]<b[i+1] then
+              # b exponent is bigger
+              ret:=true; # unless a smaller (larger pos) variable found
+            else
+              # same exponents -- cannot decide on this variable
+              ret:=fail;
+            fi;
+          fi;
+        fi;
+        i:=i+2;
       od;
       if not has then
-	# b has no variable as large as am. thus a is bigger
-	return false;
+        # b has no variable as large as am. thus a is bigger
+        return false;
       elif ret<>fail then
-	# b has no larger variable than am  buty has am. Use the comparison
-	return ret;
+        # b has no larger variable than am  buty has am. Use the comparison
+        return ret;
       fi;
       min:=am; # will increase until no variable in a left
     until false;
@@ -408,17 +408,17 @@ InstallMonomialOrdering(MonomialGrevlexOrdering,
     while i>0 and j>0 do
     # in this ordering x_1>x_2
       if a[i]>b[j] then
-	# case x/0 -- a not bigger
-	return true;
+        # case x/0 -- a not bigger
+        return true;
       elif a[i]<b[j] then
-	# case 0/x  a bigger
-	return false;
+        # case 0/x  a bigger
+        return false;
       elif a[i+1]<b[j+1] then
-	# a-b is negative
-	return false;
+        # a-b is negative
+        return false;
       elif a[i+1]>b[j+1] then
-	# a-b is positive
-	return true;
+        # a-b is positive
+        return true;
       fi;
       i:=i-2;
       j:=j-2;
@@ -482,26 +482,26 @@ local elimvar, nam, ord1, othvar, ord2,ov,neword;
       lb:=Length(b);
       asel:=[];
       for i in [1,3..la-1] do
-	if a[i] in elimvar then
-	  Add(asel,i);
-	  Add(asel,i+1);
-	fi;
+        if a[i] in elimvar then
+          Add(asel,i);
+          Add(asel,i+1);
+        fi;
       od;
       bsel:=[];
       for i in [1,3..lb-1] do
-	if b[i] in elimvar then
-	  Add(bsel,i);
-	  Add(bsel,i+1);
-	fi;
+        if b[i] in elimvar then
+          Add(bsel,i);
+          Add(bsel,i+1);
+        fi;
       od;
       ah:=a{asel};
       bh:=b{bsel};
       if ah=bh then
-	ah:=a{Difference([1..la],asel)};
-	bh:=b{Difference([1..lb],bsel)};
-	return ord2(ah,bh);
+        ah:=a{Difference([1..la],asel)};
+        bh:=b{Difference([1..lb],bsel)};
+        return ord2(ah,bh);
       else
-	return ord1(ah,bh);
+        return ord1(ah,bh);
       fi;
     end);
   SetOccuringVariableIndices(neword,ov);
@@ -652,29 +652,29 @@ local fam,quot,elist,lmp,lmo,lmc,x,y,z,mon,mon2,qmon,noreduce,
       qmon:=[]; # potential quotient
       noreduce:=false;
       while noreduce=false and z<=Length(mon2) and pos<=Length(mon) do
-	if mon[pos]>mon2[z] then
-	  noreduce:=true; # indet in mon2 does not occur in mon -> does not
-			  # divide
-	elif mon[pos]<mon2[z] then
-	  Append(qmon,mon{[pos,pos+1]}); # indet only in mon
-	  pos:=pos+2;
-	else
-	  # the indets are the same
-	  di:=mon[pos+1]-mon2[z+1];
-	  if di>0 then
-	    #divides and there is remainder
-	    Append(qmon,[mon[pos],di]);
-	  elif di<0 then
-	    noreduce:=true; # exponent to small
-	  fi;
-	  pos:=pos+2;
-	  z:=z+2;
-	fi;
+        if mon[pos]>mon2[z] then
+          noreduce:=true; # indet in mon2 does not occur in mon -> does not
+                          # divide
+        elif mon[pos]<mon2[z] then
+          Append(qmon,mon{[pos,pos+1]}); # indet only in mon
+          pos:=pos+2;
+        else
+          # the indets are the same
+          di:=mon[pos+1]-mon2[z+1];
+          if di>0 then
+            #divides and there is remainder
+            Append(qmon,[mon[pos],di]);
+          elif di<0 then
+            noreduce:=true; # exponent to small
+          fi;
+          pos:=pos+2;
+          z:=z+2;
+        fi;
       od;
 
       # if there is a tail in mon2 left, cannot divide
       if z<=Length(mon2) then
-	noreduce:=true;
+        noreduce:=true;
       fi;
       y:=y+1;
     od;
@@ -699,7 +699,7 @@ local fam,quot,elist,lmp,lmo,lmc,x,y,z,mon,mon2,qmon,noreduce,
       quot[y]:=quot[y]+qmon;
 
       qmex:=ZippedProduct(qmex,elist[y],
-	     fam!.zeroCoefficient,fam!.zippedProduct);
+             fam!.zeroCoefficient,fam!.zippedProduct);
       qmex:=ZippedSum(ep,qmex,fam!.zeroCoefficient,fam!.zippedSum);
 
       #poly:=PolynomialByExtRep(fam,ep);
@@ -751,29 +751,29 @@ local opoly, fam, elist, lmp, lmo, lmc, ep, rem, noreduce, x, mon, y, mon2,
       qmon:=[]; # potential quotient
       noreduce:=false;
       while noreduce=false and z<=Length(mon2) and pos<=Length(mon) do
-	if mon[pos]>mon2[z] then
-	  noreduce:=true; # indet in mon2 does not occur in mon -> does not
-			  # divide
-	elif mon[pos]<mon2[z] then
-	  Append(qmon,mon{[pos,pos+1]}); # indet only in mon
-	  pos:=pos+2;
-	else
-	  # the indets are the same
-	  di:=mon[pos+1]-mon2[z+1];
-	  if di>0 then
-	    #divides and there is remainder
-	    Append(qmon,[mon[pos],di]);
-	  elif di<0 then
-	    noreduce:=true; # exponent to small
-	  fi;
-	  pos:=pos+2;
-	  z:=z+2;
-	fi;
+        if mon[pos]>mon2[z] then
+          noreduce:=true; # indet in mon2 does not occur in mon -> does not
+                          # divide
+        elif mon[pos]<mon2[z] then
+          Append(qmon,mon{[pos,pos+1]}); # indet only in mon
+          pos:=pos+2;
+        else
+          # the indets are the same
+          di:=mon[pos+1]-mon2[z+1];
+          if di>0 then
+            #divides and there is remainder
+            Append(qmon,[mon[pos],di]);
+          elif di<0 then
+            noreduce:=true; # exponent to small
+          fi;
+          pos:=pos+2;
+          z:=z+2;
+        fi;
       od;
 
       # if there is a tail in mon2 left, cannot divide
       if z<=Length(mon2) then
-	noreduce:=true;
+        noreduce:=true;
       fi;
       y:=y+1;
     od;
@@ -792,7 +792,7 @@ local opoly, fam, elist, lmp, lmo, lmc, ep, rem, noreduce, x, mon, y, mon2,
       # reduce!
       qmex:=[qmon,-ep[x+1]/lmc[y]];
       qmex:=ZippedProduct(qmex,elist[y],
-	     fam!.zeroCoefficient,fam!.zippedProduct);
+             fam!.zeroCoefficient,fam!.zippedProduct);
       qmex:=ZippedSum(ep,qmex,fam!.zeroCoefficient,fam!.zippedSum);
 
       #qmon:=PolynomialByExtRepNC(fam,[qmon,ep[x+1]/lmc[y]]); #quotient monomial
@@ -841,29 +841,29 @@ local fam,quot,elist,lmp,lmo,lmc,x,y,z,mon,mon2,qmon,noreduce,
       qmon:=[]; # potential quotient
       noreduce:=false;
       while noreduce=false and z<=Length(mon2) and pos<=Length(mon) do
-	if mon[pos]>mon2[z] then
-	  noreduce:=true; # indet in mon2 does not occur in mon -> does not
-			  # divide
-	elif mon[pos]<mon2[z] then
-	  Append(qmon,mon{[pos,pos+1]}); # indet only in mon
-	  pos:=pos+2;
-	else
-	  # the indets are the same
-	  di:=mon[pos+1]-mon2[z+1];
-	  if di>0 then
-	    #divides and there is remainder
-	    Append(qmon,[mon[pos],di]);
-	  elif di<0 then
-	    noreduce:=true; # exponent to small
-	  fi;
-	  pos:=pos+2;
-	  z:=z+2;
-	fi;
+        if mon[pos]>mon2[z] then
+          noreduce:=true; # indet in mon2 does not occur in mon -> does not
+                          # divide
+        elif mon[pos]<mon2[z] then
+          Append(qmon,mon{[pos,pos+1]}); # indet only in mon
+          pos:=pos+2;
+        else
+          # the indets are the same
+          di:=mon[pos+1]-mon2[z+1];
+          if di>0 then
+            #divides and there is remainder
+            Append(qmon,[mon[pos],di]);
+          elif di<0 then
+            noreduce:=true; # exponent to small
+          fi;
+          pos:=pos+2;
+          z:=z+2;
+        fi;
       od;
 
       # if there is a tail in mon2 left, cannot divide
       if z<=Length(mon2) then
-	noreduce:=true;
+        noreduce:=true;
       fi;
       y:=y+1;
     od;
@@ -900,69 +900,69 @@ local li, lj, lcm, a, b, k;
       (not Set([i,k]) in B) and (not Set([j,k]) in B) then
 
         if lcm=false then
-	  li:=baslte[i];
-	  lj:=baslte[j];
-	  lcm:=[];
-	  a:=1;
-	  b:=1;
-	  while a<Length(li) and b<Length(lj) do
-	    if li[a]<lj[b] then
-	      # li variable is smaller
-	      Add(lcm,li[a]);
-	      Add(lcm,li[a+1]);
-	      a:=a+2;
-	    elif li[a]>lj[b] then
-	      # lj-variable is smaller
-	      Add(lcm,lj[b]);
-	      Add(lcm,lj[b+1]);
-	      b:=b+2;
-	    else
-	      # same variable
-	      Add(lcm,li[a]);
-	      Add(lcm,Maximum(li[a+1],lj[b+1]));
-	      a:=a+2;
-	      b:=b+2;
-	    fi;
-	  od;
-	  # add remaining tails. Only one of these loops is run
-	  while a<Length(li) do
-	    Add(lcm,li[a]);
-	    Add(lcm,li[a+1]);
-	    a:=a+2;
-	  od;
-	  while b<Length(lj) do
-	    Add(lcm,lj[b]);
-	    Add(lcm,lj[b+1]);
-	    b:=b+2;
-	  od;
-	fi;
+          li:=baslte[i];
+          lj:=baslte[j];
+          lcm:=[];
+          a:=1;
+          b:=1;
+          while a<Length(li) and b<Length(lj) do
+            if li[a]<lj[b] then
+              # li variable is smaller
+              Add(lcm,li[a]);
+              Add(lcm,li[a+1]);
+              a:=a+2;
+            elif li[a]>lj[b] then
+              # lj-variable is smaller
+              Add(lcm,lj[b]);
+              Add(lcm,lj[b+1]);
+              b:=b+2;
+            else
+              # same variable
+              Add(lcm,li[a]);
+              Add(lcm,Maximum(li[a+1],lj[b+1]));
+              a:=a+2;
+              b:=b+2;
+            fi;
+          od;
+          # add remaining tails. Only one of these loops is run
+          while a<Length(li) do
+            Add(lcm,li[a]);
+            Add(lcm,li[a+1]);
+            a:=a+2;
+          od;
+          while b<Length(lj) do
+            Add(lcm,lj[b]);
+            Add(lcm,lj[b+1]);
+            b:=b+2;
+          od;
+        fi;
 
-	# does baslte[k] divide?
-	li:=baslte[k];
-	a:=1;
-	b:=1;
-	while a<Length(li) and b<Length(lcm) do
-	  # lcm has extra variables?
-	  while b<Length(lcm) and li[a]>lcm[b] do
-	    b:=b+2;
-	  od;
-	  # test whether variable OK and variable power not bigger
-	  if b<Length(lcm) then
-	    if li[a]=lcm[b] and li[a+1]<=lcm[b+1] then
-	      a:=a+2;
-	      b:=b+2;
-	    else
-	      # either a has an extra (smaller) variable or a bigger
-	      # exponent. In both cases division fails which we indicate by
-	      # only b running out
-	      b:=Length(lcm)+1;
-	    fi;
-	  fi;
-	od;
-	# if b has variables left or a and b both ran out, we're fine
-	if b<Length(lcm) or (b>Length(lcm) and a>Length(li)) then
-	  return true;
-	fi;
+        # does baslte[k] divide?
+        li:=baslte[k];
+        a:=1;
+        b:=1;
+        while a<Length(li) and b<Length(lcm) do
+          # lcm has extra variables?
+          while b<Length(lcm) and li[a]>lcm[b] do
+            b:=b+2;
+          od;
+          # test whether variable OK and variable power not bigger
+          if b<Length(lcm) then
+            if li[a]=lcm[b] and li[a+1]<=lcm[b+1] then
+              a:=a+2;
+              b:=b+2;
+            else
+              # either a has an extra (smaller) variable or a bigger
+              # exponent. In both cases division fails which we indicate by
+              # only b running out
+              b:=Length(lcm)+1;
+            fi;
+          fi;
+        od;
+        # if b has variables left or a and b both ran out, we're fine
+        if b<Length(lcm) or (b>Length(lcm) and a>Length(li)) then
+          return true;
+        fi;
     fi;
   od;
   return false;
@@ -986,30 +986,30 @@ BindGlobal("GAPGBASIS",MakeImmutable(rec(
       Remove(B, 1);
 
       if Length(Intersection(baslte[i]{[1,3..Length(baslte[i])-1]},
-	                    baslte[j]{[1,3..Length(baslte[j])-1]}))=0 then
-	Info(InfoGroebner,2,"Pair (",i,",",j,") avoided by product criterion");
+                            baslte[j]{[1,3..Length(baslte[j])-1]}))=0 then
+        Info(InfoGroebner,2,"Pair (",i,",",j,") avoided by product criterion");
       elif SyzygyCriterion(baslte,i,j,t,B) then
-	Info(InfoGroebner,2,"Pair (",i,",",j,") avoided by chain criterion");
+        Info(InfoGroebner,2,"Pair (",i,",",j,") avoided by chain criterion");
       else
-	s:=SPolynomial(bas[i],bas[j],order);
-	if InfoLevel(InfoGroebner)<3 then
-	  Info(InfoGroebner,2,"Spol(",i,",",j,")");
-	else
-	  Info(InfoGroebner,3,"Spol(",i,",",j,")=",s);
-	fi;
-	s:=PolynomialReducedRemainder(s,bas,orderext);
-	if not IsZero(s) then
-	  Info(InfoGroebner,3,"reduces to ",s);
-	  Add(bas,s);
-	  s:=ExtRepPolynomialRatFun(s);
-	  Add(baslte,s[LeadingMonomialPosExtRep(fam,s,orderext)]);
-	  t:=t+1;
-	  # add new pairs
-	  for i in [1..t-1] do
-	    Add(B,[i,t]);
-	  od;
-	  Info(InfoGroebner,1,"|bas|=",t,", ",Length(B)," pairs left");
-	fi;
+        s:=SPolynomial(bas[i],bas[j],order);
+        if InfoLevel(InfoGroebner)<3 then
+          Info(InfoGroebner,2,"Spol(",i,",",j,")");
+        else
+          Info(InfoGroebner,3,"Spol(",i,",",j,")=",s);
+        fi;
+        s:=PolynomialReducedRemainder(s,bas,orderext);
+        if not IsZero(s) then
+          Info(InfoGroebner,3,"reduces to ",s);
+          Add(bas,s);
+          s:=ExtRepPolynomialRatFun(s);
+          Add(baslte,s[LeadingMonomialPosExtRep(fam,s,orderext)]);
+          t:=t+1;
+          # add new pairs
+          for i in [1..t-1] do
+            Add(B,[i,t]);
+          od;
+          Info(InfoGroebner,1,"|bas|=",t,", ",Length(B)," pairs left");
+        fi;
       fi;
     od;
     return bas;
@@ -1046,7 +1046,7 @@ local ov,i,d;
       d:=Difference(OccuringVariableIndices(i),ov);
       if Length(d)>0 then
         Error("Ordering is undefined for variables ",
-	  List(d,j->Indeterminate(DefaultRing([FamilyObj(i)!.zeroCoefficient]),j)));
+          List(d,j->Indeterminate(DefaultRing([FamilyObj(i)!.zeroCoefficient]),j)));
       fi;
     od;
   fi;
@@ -1112,12 +1112,12 @@ local orderext, bas, i, l, nomod, pol;
              bas{Difference([1..l],[i])},orderext);
       if pol<>bas[i] then nomod:=false;fi;
       if IsZero(pol) then
-	bas[i]:=bas[l];
-	Unbind(bas[l]);
-	l:=l-1;
+        bas[i]:=bas[l];
+        Unbind(bas[l]);
+        l:=l-1;
       else
-	bas[i]:=pol;
-	i:=i+1;
+        bas[i]:=pol;
+        i:=i+1;
       fi;
     od;
   until nomod;
@@ -1211,22 +1211,22 @@ local orderext, bas, baslte, fam, t, B, i, j, s;
     i:=i[2];
       s:=SPolynomial(bas[i],bas[j],order);
       if InfoLevel(InfoGroebner)<3 then
-	Info(InfoGroebner,2,"Spol(",i,",",j,")");
+        Info(InfoGroebner,2,"Spol(",i,",",j,")");
       else
-	Info(InfoGroebner,3,"Spol(",i,",",j,")=",s);
+        Info(InfoGroebner,3,"Spol(",i,",",j,")=",s);
       fi;
       s:=PolynomialReducedRemainder(s,bas,orderext);
       if not IsZero(s) then
-	Info(InfoGroebner,3,"reduces to ",s);
-	Add(bas,s);
-	s:=ExtRepPolynomialRatFun(s);
-	Add(baslte,s[LeadingMonomialPosExtRep(fam,s,orderext)]);
-	t:=t+1;
-	# add new pairs
-	for i in [1..t] do
-	  Add(B,[i,t]);
-	od;
-	Info(InfoGroebner,1,"|bas|=",t,", ",Length(B)," pairs left");
+        Info(InfoGroebner,3,"reduces to ",s);
+        Add(bas,s);
+        s:=ExtRepPolynomialRatFun(s);
+        Add(baslte,s[LeadingMonomialPosExtRep(fam,s,orderext)]);
+        t:=t+1;
+        # add new pairs
+        for i in [1..t] do
+          Add(B,[i,t]);
+        od;
+        Info(InfoGroebner,1,"|bas|=",t,", ",Length(B)," pairs left");
       fi;
     # remove first entry of B
     for j in [2..Length(B)] do
@@ -1300,18 +1300,18 @@ local ord,b,ind,num,c,corners,i,j,a,rem,bound,mon,n,monb,dim,sc,k,l,char,hom;
       a[i]:=0;
       i:=i-1;
       if i>0 then
-	a[i]:=a[i]+1;
+        a[i]:=a[i]+1;
       fi;
     od;
 
     if i>0 then
       if ForAny(corners,x->ForAll([1..n],j->x[j]<=a[j])) then
-	# set last coordinate to become 0 again
-	a[n]:=bound[n];
-	i:=n;
+        # set last coordinate to become 0 again
+        a[n]:=bound[n];
+        i:=n;
       else
-	Add(mon,ShallowCopy(a));
-	i:=Length(a);
+        Add(mon,ShallowCopy(a));
+        i:=Length(a);
       fi;
     fi;
   until i=0;
@@ -1328,18 +1328,18 @@ local ord,b,ind,num,c,corners,i,j,a,rem,bound,mon,n,monb,dim,sc,k,l,char,hom;
       rem:=PolynomialReducedRemainder(mon[i]*mon[j],b,ord);
       a:=rem;
       if not IsZero(a) then
-	a:=Coefficients(monb,a);
-	if char>0 then
-	  a:=List(a,Int);
-	fi;
-	l:=[];
-	for k in [1..dim] do
-	  if not IsZero(a[k]) then
-	    Add(l,a[k]);
-	    Add(l,k);
-	  fi;
-	od;
-	SetEntrySCTable(sc,i,j,l);
+        a:=Coefficients(monb,a);
+        if char>0 then
+          a:=List(a,Int);
+        fi;
+        l:=[];
+        for k in [1..dim] do
+          if not IsZero(a[k]) then
+            Add(l,a[k]);
+            Add(l,k);
+          fi;
+        od;
+        SetEntrySCTable(sc,i,j,l);
       fi;
     od;
   od;
@@ -1401,12 +1401,12 @@ end);
 #             bas{Difference([1..Length(bas)],[i])},orderext);
 #      if pol<>bas[i] then nomod:=false;fi;
 #      if IsZero(pol) then
-#	bas[i]:=bas[l];
-#	Unbind(bas[l]);
-#	l:=l-1;
+#        bas[i]:=bas[l];
+#        Unbind(bas[l]);
+#        l:=l-1;
 #      else
-#	bas[i]:=pol;
-#	i:=i+1;
+#        bas[i]:=pol;
+#        i:=i+1;
 #      fi;
 #    od;
 #  until nomod;

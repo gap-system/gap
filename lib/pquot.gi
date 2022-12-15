@@ -1166,10 +1166,10 @@ function( G, p, n, collector )
     ##  Create the collector.
     if collector = "combinatorial" then
         qs.collector := CombinatorialCollector(
-	  FreeGroup(IsSyllableWordsFamily, n, "a" ), p );
+          FreeGroup(IsSyllableWordsFamily, n, "a" ), p );
     else
         qs.collector := SingleCollector(
-	  FreeGroup(IsSyllableWordsFamily, n, "a" ), p );
+          FreeGroup(IsSyllableWordsFamily, n, "a" ), p );
     fi;
 
     qs.collector![SCP_INVERSES] :=
@@ -1475,8 +1475,8 @@ function( arg )
         Info( InfoQuotientSystem, 2, "  Define new generators." );
         if DefineNewGenerators( qs ) = fail then
           if noninteractive then
-	    return fail;
-	  else
+            return fail;
+          else
             Error( "Collector not large enough ",
                    "to define generators for the next class.\n",
                    "To return the current quotient (of class ",
@@ -1484,7 +1484,7 @@ function( arg )
                    "and `quit;' otherwise.\n" );
 
             return qs;
-	  fi;
+          fi;
         fi;
 
         Info( InfoQuotientSystem, 2, "  Compute tails." );
@@ -1862,35 +1862,35 @@ local a,h,i,q,d,img,geni,gen,hom,lcs,c,sqa,cnqs,genum;
     for i in a do
         if n <> fail then
           # caveat: The PQ gives p-class. We might have to go to a higher
-	  # p-class to get the corresponding nilpotency class
-	  c:=n;
-	  cnqs:=1;
-	  #T the way we run the pq iteratively is a bit stupid. Once the
-	  #T interface is documented it would be better to run it iteratively
-	  repeat
-	    sqa:=cnqs;
-	    c:=c+1;
+          # p-class to get the corresponding nilpotency class
+          c:=n;
+          cnqs:=1;
+          #T the way we run the pq iteratively is a bit stupid. Once the
+          #T interface is documented it would be better to run it iteratively
+          repeat
+            sqa:=cnqs;
+            c:=c+1;
             genum:=Minimum(8192,(c*Length(GeneratorsOfGroup(g)))^2);
             q := PQuotient(g,i,c,genum);
 
-	    # try to increase the number of generators in time
-	    if q!.numberOfGenerators*8>genum then
-	      genum:=genum*16;
-	    fi;
+            # try to increase the number of generators in time
+            if q!.numberOfGenerators*8>genum then
+              genum:=genum*16;
+            fi;
 
-	    q := EpimorphismQuotientSystem( q );
-	    lcs:=LowerCentralSeriesOfGroup(Image(q));
-	    # size of the class-n quotient bit so far
-	    cnqs:=Index(lcs[1],lcs[Minimum(Length(lcs),n+1)]);
-	  until cnqs=sqa; # the class-n-quotient did not grow
-	  if Length(lcs)>n+1 then
-	    # take only the top bit
-	    q:=q*NaturalHomomorphismByNormalSubgroupNC(lcs[1],lcs[n+1]);
-	  fi;
+            q := EpimorphismQuotientSystem( q );
+            lcs:=LowerCentralSeriesOfGroup(Image(q));
+            # size of the class-n quotient bit so far
+            cnqs:=Index(lcs[1],lcs[Minimum(Length(lcs),n+1)]);
+          until cnqs=sqa; # the class-n-quotient did not grow
+          if Length(lcs)>n+1 then
+            # take only the top bit
+            q:=q*NaturalHomomorphismByNormalSubgroupNC(lcs[1],lcs[n+1]);
+          fi;
         else
-	  q := PQuotient(g,i,1000,
-	    Maximum(256,(40*Length(GeneratorsOfGroup(g)))^2));
-	  q := EpimorphismQuotientSystem( q );
+          q := PQuotient(g,i,1000,
+            Maximum(256,(40*Length(GeneratorsOfGroup(g)))^2));
+          q := EpimorphismQuotientSystem( q );
         fi;
         Add(h,q);
     od;

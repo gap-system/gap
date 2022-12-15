@@ -207,7 +207,7 @@ local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
      local i,j,l;
      l:=[];
      for i in [1..n] do
-					Add(l,[i,i]);
+          Add(l,[i,i]);
           for j in [1..i-1] do
                Append(l,[[i,j],[j,i]]);
           od;
@@ -513,13 +513,13 @@ function(kbrws,v)
       #if both sides reduce to different words
       #have to adjoin a new rule to the set of rules
       if not(a=b) then
-	#TODO
-	if kbrws!.tzordering=false then
-	  c:=IsLessThanUnder(kbrws!.ordering,
-	    AssocWordByLetterRep(fam,a),AssocWordByLetterRep(fam,b));
-	else
-	  c:=kbrws!.tzordering(a,b);
-	fi;
+        #TODO
+        if kbrws!.tzordering=false then
+          c:=IsLessThanUnder(kbrws!.ordering,
+            AssocWordByLetterRep(fam,a),AssocWordByLetterRep(fam,b));
+        else
+          c:=kbrws!.tzordering(a,b);
+        fi;
         if c then
           c:=a; a:=b; b:=c;
         fi;
@@ -646,12 +646,12 @@ local u,v,m,k,a,c,lsu,lsv,lu,eq,i,j;
 
       #we change rws, if necessary, so a=c is verified
       if a <> c then
-	# `AddRuleReduced' might affect the pairs. So first throw away the
-	# `old' pairs
-	kbrws!.pairs2check:=
-	  kbrws!.pairs2check{[p+1..Length(kbrws!.pairs2check)]};
-	p:=0; # no remaining pair was looked at
-	AddRuleReduced(kbrws,[a,c]);
+        # `AddRuleReduced' might affect the pairs. So first throw away the
+        # `old' pairs
+        kbrws!.pairs2check:=
+          kbrws!.pairs2check{[p+1..Length(kbrws!.pairs2check)]};
+        p:=0; # no remaining pair was looked at
+        AddRuleReduced(kbrws,[a,c]);
       fi;
     fi;
     k:=k+1;
@@ -690,7 +690,7 @@ local   pn,lp,rl,p,i;              #loop variables
     if Length(kbrws!.tzrules)>rl
       or AbsInt(lp-pn)>10000 then
       Info(InfoKnuthBendix,1,Length(kbrws!.tzrules)," rules, ",
-			    lp," pairs");
+                            lp," pairs");
       rl:=Length(kbrws!.tzrules)+50;
       pn:=lp;
     fi;
@@ -868,7 +868,7 @@ function(s,lt)
   local wordord,fam;
 
   wordord := OrderingByLessThanOrEqualFunctionNC(ElementsFamily
-	      (FamilyObj(FreeSemigroupOfFpSemigroup(s))),lt,[IsReductionOrdering]);
+              (FamilyObj(FreeSemigroupOfFpSemigroup(s))),lt,[IsReductionOrdering]);
   fam := ElementsFamily(FamilyObj(s));
   return KnuthBendixRewritingSystem(fam,wordord);
 end);
@@ -880,7 +880,7 @@ function(m,lt)
   local wordord,fam;
 
   wordord := OrderingByLessThanOrEqualFunctionNC(ElementsFamily
-	      (FamilyObj(FreeMonoidOfFpMonoid(m))),lt,[IsReductionOrdering]);
+              (FamilyObj(FreeMonoidOfFpMonoid(m))),lt,[IsReductionOrdering]);
   fam := ElementsFamily(FamilyObj(m));
   return KnuthBendixRewritingSystem(fam,wordord);
 end);

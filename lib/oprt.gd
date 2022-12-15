@@ -764,107 +764,107 @@ local str, orbish, func,isnotest;
 
       # Get the arguments.
       if Length( arg ) <= 2 and IsExternalSet( arg[ 1 ] )  then
-	  xset := arg[ 1 ];
-	  if Length(arg)>1 then
-	    # force immutability
-	    pnt := Immutable(arg[ 2 ]);
-	  else
-	      # `Blocks' like operations
-	      pnt:=[];
-	  fi;
+          xset := arg[ 1 ];
+          if Length(arg)>1 then
+            # force immutability
+            pnt := Immutable(arg[ 2 ]);
+          else
+              # `Blocks' like operations
+              pnt:=[];
+          fi;
 
-	  G := ActingDomain( xset );
-	  if realenum then
-	    D:=Enumerator(xset);
-	  else
-	    if HasHomeEnumerator( xset )  then
-		D := HomeEnumerator( xset );
-	    fi;
-	  fi;
-	  if IsExternalSetByActorsRep( xset )  then
-	      gens := xset!.generators;
-	      acts := xset!.operators;
-	      act  := xset!.funcOperation;
-	  else
-	      act := FunctionAction( xset );
-	  fi;
+          G := ActingDomain( xset );
+          if realenum then
+            D:=Enumerator(xset);
+          else
+            if HasHomeEnumerator( xset )  then
+                D := HomeEnumerator( xset );
+            fi;
+          fi;
+          if IsExternalSetByActorsRep( xset )  then
+              gens := xset!.generators;
+              acts := xset!.operators;
+              act  := xset!.funcOperation;
+          else
+              act := FunctionAction( xset );
+          fi;
       elif 2 <= Length( arg ) then
-	  le:=Length(arg);
-	  G := arg[ 1 ];
-	  if IsFunction( arg[ le ] )  then
-	      act := arg[ le ];
-	      le:=le-1;
-	  else
-	      act := OnPoints;
-	  fi;
-	  if     Length( arg ) > 2
-	    and famrel( FamilyObj( arg[ 2 ] ), FamilyObj( arg[ 3 ] ) )
-	    # for blocks on the groups elements
-	    and not (IsOperation(usetype) and le=4)
-	    then
-	      D := arg[ 2 ];
-	      if IsDomain( D )  then
-	   if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
-	      fi;
-	      p := 3;
-	  else
-	      p := 2;
-	  fi;
-	  pnt := Immutable(arg[ p ]);
-	  if Length( arg ) > p + 1  then
-	      gens := arg[ p + 1 ];
-	      acts := arg[ p + 2 ];
-	  fi;
+          le:=Length(arg);
+          G := arg[ 1 ];
+          if IsFunction( arg[ le ] )  then
+              act := arg[ le ];
+              le:=le-1;
+          else
+              act := OnPoints;
+          fi;
+          if     Length( arg ) > 2
+            and famrel( FamilyObj( arg[ 2 ] ), FamilyObj( arg[ 3 ] ) )
+            # for blocks on the groups elements
+            and not (IsOperation(usetype) and le=4)
+            then
+              D := arg[ 2 ];
+              if IsDomain( D )  then
+           if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
+              fi;
+              p := 3;
+          else
+              p := 2;
+          fi;
+          pnt := Immutable(arg[ p ]);
+          if Length( arg ) > p + 1  then
+              gens := arg[ p + 1 ];
+              acts := arg[ p + 2 ];
+          fi;
       else
-	Error( "usage: ", name, "(<xset>,<pnt>)\n",
-	      "or ", name, "(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])" );
+        Error( "usage: ", name, "(<xset>,<pnt>)\n",
+              "or ", name, "(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])" );
       fi;
 
       if not IsBound( gens )  then
-	  if (not IsPermGroup(G)) and CanEasilyComputePcgs( G )  then
-	    gens := Pcgs( G );
-	  else
-	    gens := GeneratorsOfGroup( G );
-	  fi;
-	  acts := gens;
+          if (not IsPermGroup(G)) and CanEasilyComputePcgs( G )  then
+            gens := Pcgs( G );
+          else
+            gens := GeneratorsOfGroup( G );
+          fi;
+          acts := gens;
       fi;
 
       if not isnotest then
-	# `Blocks' has <pnt> a list of points
-	pnt:=TestIdentityAction(acts,pnt,act);
+        # `Blocks' has <pnt> a list of points
+        pnt:=TestIdentityAction(acts,pnt,act);
       fi;
 
       # In  the  case of `[Maximal]Blocks',  where  $G$  is a permutation group
       # acting on its moved points, use an attribute for $G$.
       attrG := IsOperation( usetype )
-	  and gens = acts
-	  and act = OnPoints
-	  and not IsBound( D )
-	  and HasMovedPoints( G )
-	  and pnt = MovedPoints( G );
+          and gens = acts
+          and act = OnPoints
+          and not IsBound( D )
+          and HasMovedPoints( G )
+          and pnt = MovedPoints( G );
       if attrG  and  IsBound( xset )  and  Tester( usetype )( xset )  then
-	  result := usetype( xset );
+          result := usetype( xset );
       elif attrG  and  Tester( usetype )( G )  then
-	  result := usetype( G );
+          result := usetype( G );
       elif usetype = true  and  IsBound( xset )  then
-	  result := orbish( G, xset, pnt, gens, acts, act );
+          result := orbish( G, xset, pnt, gens, acts, act );
       elif IsBound( D )  then
-	  result := orbish( G, D, pnt, gens, acts, act );
+          result := orbish( G, D, pnt, gens, acts, act );
       else
 
-	  # The following line is also executed  when `Blocks(<G>, <Omega>, <act>)'
-	  # is called to compute blocks with no  seed, but then <pnt> is really
-	  # <Omega>, i.e., the operation domain!
-	  result := orbish( G, pnt, gens, acts, act );
+          # The following line is also executed  when `Blocks(<G>, <Omega>, <act>)'
+          # is called to compute blocks with no  seed, but then <pnt> is really
+          # <Omega>, i.e., the operation domain!
+          result := orbish( G, pnt, gens, acts, act );
 
       fi;
 
       # Store the result in the case of an attribute `[Maximal]BlocksAttr'.
       if attrG  then
-	  if IsBound( xset )  then
-	      Setter( usetype )( xset, result );
-	  fi;
-	  Setter( usetype )( G, result );
+          if IsBound( xset )  then
+              Setter( usetype )( xset, result );
+          fi;
+          Setter( usetype )( G, result );
       fi;
 
       return result;
@@ -1088,40 +1088,40 @@ local str, orbish, func;
 
       # Get the arguments.
       if 2 <= Length( arg ) then
-	  le:=Length(arg);
-	  G := arg[ 1 ];
-	  if IsFunction( arg[ le ] )  then
-	      act := arg[ le ];
-	  else
-	      act := OnPoints;
-	  fi;
-	  if     Length( arg ) > 2
-	    and famrel( FamilyObj( arg[ 2 ] ), FamilyObj( arg[ 3 ] ) )
-	    then
-	      D := arg[ 2 ];
-	      if IsDomain( D )  then
-	   if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
-	      fi;
-	      p := 3;
-	  else
-	      p := 2;
-	  fi;
-	  pnt := Immutable(arg[ p ]);
-	  if Length( arg ) > p + 1  then
-	      gens := arg[ p + 1 ];
-	      acts := arg[ p + 2 ];
-	  fi;
+          le:=Length(arg);
+          G := arg[ 1 ];
+          if IsFunction( arg[ le ] )  then
+              act := arg[ le ];
+          else
+              act := OnPoints;
+          fi;
+          if     Length( arg ) > 2
+            and famrel( FamilyObj( arg[ 2 ] ), FamilyObj( arg[ 3 ] ) )
+            then
+              D := arg[ 2 ];
+              if IsDomain( D )  then
+           if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
+              fi;
+              p := 3;
+          else
+              p := 2;
+          fi;
+          pnt := Immutable(arg[ p ]);
+          if Length( arg ) > p + 1  then
+              gens := arg[ p + 1 ];
+              acts := arg[ p + 2 ];
+          fi;
       else
-	Error( "usage: ", name, "(<G>[,<Omega>],<pnts>[,<gens>,<acts>][,<act>])" );
+        Error( "usage: ", name, "(<G>[,<Omega>],<pnts>[,<gens>,<acts>][,<act>])" );
       fi;
 
       if not IsBound( gens )  then
-	  if (not IsPermGroup(G)) and CanEasilyComputePcgs( G )  then
-	    gens := Pcgs( G );
-	  else
-	    gens := GeneratorsOfGroup( G );
-	  fi;
-	  acts := gens;
+          if (not IsPermGroup(G)) and CanEasilyComputePcgs( G )  then
+            gens := Pcgs( G );
+          else
+            gens := GeneratorsOfGroup( G );
+          fi;
+          acts := gens;
       fi;
 
       for p in pnt do
@@ -1129,9 +1129,9 @@ local str, orbish, func;
       od;
 
       if IsBound( D )  then
-	  result := orbish( G, D, pnt, gens, acts, act );
+          result := orbish( G, D, pnt, gens, acts, act );
       else
-	  result := orbish( G, pnt, gens, acts, act );
+          result := orbish( G, pnt, gens, acts, act );
       fi;
 
       return result;

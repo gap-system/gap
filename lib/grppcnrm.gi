@@ -36,7 +36,7 @@ PCGS_STABILIZER := function( arg )
 
         # store representatives in <r>
         orb  := [ pnt ];
-	AddDictionary(dict,pnt,1);
+        AddDictionary(dict,pnt,1);
         prod := [ 1 ];
         n    := [];
         s    := [];
@@ -61,7 +61,7 @@ PCGS_STABILIZER := function( arg )
                     l2 := l1 + len;
                     for j  in [ 1 .. len ]  do
                         orb[j+l2] := op( orb[j+l1], mi );
-			AddDictionary(dict,orb[j+l2],j+l2);
+                        AddDictionary(dict,orb[j+l2],j+l2);
                     od;
                     l1 := l2;
                 od;
@@ -99,7 +99,7 @@ PCGS_STABILIZER := function( arg )
 
         # store representatives in <r>
         orb  := [ pnt ];
-	AddDictionary(dict,pnt,1);
+        AddDictionary(dict,pnt,1);
         prod := [ 1 ];
         n    := [];
         s    := [];
@@ -124,7 +124,7 @@ PCGS_STABILIZER := function( arg )
                     l2 := l1 + len;
                     for j  in [ 1 .. len ]  do
                         orb[j+l2] := op( data, orb[j+l1], mi );
-			AddDictionary(dict,orb[j+l2],j+l2);
+                        AddDictionary(dict,orb[j+l2],j+l2);
                     od;
                     l1 := l2;
                 od;
@@ -193,7 +193,7 @@ PCGS_STABILIZER_HOMOMORPHIC := function( arg )
 
         # store representatives in <r>
         orb  := [ pnt ];
-	AddDictionary(dict,pnt,1);
+        AddDictionary(dict,pnt,1);
         prod := [ 1 ];
         n    := [];
         s    := [];
@@ -218,7 +218,7 @@ PCGS_STABILIZER_HOMOMORPHIC := function( arg )
                     l2 := l1 + len;
                     for j  in [ 1 .. len ]  do
                         orb[j+l2] := op( orb[j+l1], mi );
-			AddDictionary(dict,orb[j+l2],j+l2);
+                        AddDictionary(dict,orb[j+l2],j+l2);
                     od;
                     l1 := l2;
                 od;
@@ -534,19 +534,19 @@ PCGS_NORMALIZER_GLASBY := function( home, pcgs, nis, u1, u2 )
 
     # The situation is as follows:
     #
-    #	    	S
-    #	    	 \
-    #	    	  \
-    #	    	   Us
-    #	    	  /  \
-    #	    	 /    \
-    #	       U1      Ns       N
-    #	    	 \    /  \     /
-    #	    	  \  /	  \   /
-    #	    	   U2	   NiS
-    #                \	  /
-    #	    	      \	 /
-    #	    	       Un
+    #                    S
+    #                     \
+    #                      \
+    #                       Us
+    #                      /  \
+    #                     /    \
+    #                    U1      Ns       N
+    #                      \    /  \     /
+    #                       \  /    \   /
+    #                        U2      NiS
+    #                         \     /
+    #                          \   /
+    #                           Un
     #
     # and <S> stabilizes <U2>
 
@@ -576,10 +576,10 @@ PCGS_NORMALIZER_GLASBY := function( home, pcgs, nis, u1, u2 )
     one := One(mats[1]);
     sys := [];
     for i  in [ 1 .. Length(mats[1]) ]  do
-    	sys[i] := [];
-    	for j  in [ 1 .. Length(mats) ]  do
-    	    Append( sys[i], one[i] - mats[j][i] );
-    	od;
+        sys[i] := [];
+        for j  in [ 1 .. Length(mats) ]  do
+            Append( sys[i], one[i] - mats[j][i] );
+        od;
     od;
     sol := TriangulizedNullspaceMat(sys);
     for v  in sol  do
@@ -604,19 +604,19 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
 
     # The situation is as follows:
     #
-    #	    	S
-    #	    	 \
-    #	    	  \
-    #	    	   Us
-    #	    	  /  \
-    #	    	 /    \
-    #	       U1      Ns       N
-    #	    	 \    /  \     /
-    #	    	  \  /	  \   /
-    #	    	   U2	   NiS
-    #                \	  /
-    #	    	      \	 /
-    #	    	       Un
+    #                    S
+    #                     \
+    #                      \
+    #                       Us
+    #                      /  \
+    #                     /    \
+    #                   U1      Ns       N
+    #                     \    /  \     /
+    #                      \  /    \   /
+    #                       U2      NiS
+    #                         \    /
+    #                          \  /
+    #                           Un
     #
     # and <S> stabilizes <U2>
 
@@ -636,10 +636,10 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     t := One(mats[1]);
     l := [];
     for i  in [ 1 .. Length(mats[1]) ]  do
-    	l[i] := [];
-    	for j  in [ 1 .. Length(mats) ]  do
-    	    Append( l[i], t[i]-mats[j][i] );
-    	od;
+        l[i] := [];
+        for j  in [ 1 .. Length(mats) ]  do
+            Append( l[i], t[i]-mats[j][i] );
+        od;
     od;
     b  := TriangulizedGeneratorsByMatrix( ns, l, gf );
     nb := b[1];
@@ -662,11 +662,11 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     k := 1;
     i := 1;
     while i <= Length(b) and k <= Length(b[1])  do
-    	if IntFFE(b[i][k]) <> 0  then
-    	    heads[i] := k;
-	    i := i+1;
-    	fi;
-	k := k+1;
+        if IntFFE(b[i][k]) <> 0  then
+            heads[i] := k;
+        i := i+1;
+        fi;
+        k := k+1;
     od;
 
     # now the function which acts on the coboundaries
@@ -674,28 +674,28 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     ln2  := Length(u);
 
     op := function( v, x )
-    	local	w,  i;
+        local        w,  i;
 
         # add the coboundary <v> to <u>
-    	w := ShallowCopy(u);
-    	for i  in [ 1 .. ln2 ]  do
+        w := ShallowCopy(u);
+        for i  in [ 1 .. ln2 ]  do
             w[i] := w[i] * PcElementByExponentsNC(ns, v{[(i-1)*ln1+1..i*ln1]});
-    	od;
+        od;
 
         # operate with <x> on <w> and normalize modulo <u2>
         w := PCGS_NORMALIZER_OPE( data, w, x );
 
         # convert back into a vector
-    	v := [];
-    	for i  in [ 1 .. ln2 ]  do
-    	    Append( v, ExponentsOfPcElement( ns, ui[i]*w[i] ) );
-    	od;
-    	v := v * One(gf);
-    	v := ImmutableVector(gf, v);
-    	for i  in [ 1 .. Length(heads) ]  do
-            v := v - v[heads[i]] * b[i];
-    	od;
-    	return Immutable(v);
+        v := [];
+        for i  in [ 1 .. ln2 ]  do
+            Append( v, ExponentsOfPcElement( ns, ui[i]*w[i] ) );
+        od;
+        v := v * One(gf);
+        v := ImmutableVector(gf, v);
+        for i  in [ 1 .. Length(heads) ]  do
+          v := v - v[heads[i]] * b[i];
+        od;
+        return Immutable(v);
     end;
 
     # compute the blockstabilizer
@@ -709,15 +709,15 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     nb := List( nb, x -> x ^ -1 );
     for i  in [ 1 .. Length(stab) ]  do
         s := PCGS_NORMALIZER_OPE( data, u, stab[i] );
-    	v := [];
-    	for j  in [ 1 .. ln2 ]  do
-    	    Append( v, ExponentsOfPcElement( ns, ui[j]*s[j] ) );
-    	od;
-    	for j  in [ 1 .. Length(heads) ]  do
-    	    if v[heads[j] ] <> 0  then
-    	    	stab[i] := stab[i] * ( nb[j]^v[heads[j]] );
-    	    fi;
-    	od;
+        v := [];
+        for j  in [ 1 .. ln2 ]  do
+            Append( v, ExponentsOfPcElement( ns, ui[j]*s[j] ) );
+        od;
+        for j  in [ 1 .. Length(heads) ]  do
+            if v[heads[j] ] <> 0  then
+                stab[i] := stab[i] * ( nb[j]^v[heads[j]] );
+            fi;
+        od;
     od;
 
     # return sum of <L>, <C> and <U1>
@@ -735,31 +735,31 @@ end;
 ##  can be used to fine tune the normalizer computation:
 ##
 ##  <f1>    if 'true', intersections with the same prime than  the module are
-##  	    computed  using    one  cobounds.   Otherwise an  ordinary  orbit
-##  	    stabilizer algorithm is used.
+##          computed  using    one  cobounds.   Otherwise an  ordinary  orbit
+##          stabilizer algorithm is used.
 ##
 ##  <f2>    if 'true', intersections with different prime than the module are
-##  	    computed using one cobounds.  Otherwise the method of computation
-##  	    depends on the flag <f3>.
+##          computed using one cobounds.  Otherwise the method of computation
+##          depends on the flag <f3>.
 ##
 ##  <f3>    if 'true' and <f2> is  'false', then intersections with different
-##  	    prime than  the  module  are computed  using Glasby's  algorithm.
-##  	    Otherwise a ordinary orbit stabilizer algorithm is used.
+##          prime than  the  module  are computed  using Glasby's  algorithm.
+##          Otherwise a ordinary orbit stabilizer algorithm is used.
 ##
 ##  <f4>    if 'true', the first  intersection  is computed   using    linear
-##  	    operations.  Otherwise a ordinary orbit  stabilizer  algorithm is
-##  	    used.
+##          operations.  Otherwise a ordinary orbit  stabilizer  algorithm is
+##          used.
 ##
 PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
 
-    local   g,	    	    # home pcgs of <pcgs>
-            e,  r,   	    # elementary abelian series of <G> and its length
-            ue,	    	    # factor pcgs <pcgs><e>[i] mod <e>[i]
+    local   g,              # home pcgs of <pcgs>
+            e,  r,          # elementary abelian series of <G> and its length
+            ue,             # factor pcgs <pcgs><e>[i] mod <e>[i]
             uk,  uj,  ui_1, # intersections of <pcgs> with <e>[x]
-            s,  si_1,	    # stabilizer and its intersection with <e>[i-1]
+            s,  si_1,       # stabilizer and its intersection with <e>[i-1]
             ei_1,           # <e>[i-1] mod <e>[i]
-            pj,  pi_1,	    # primes of <e>[j] and <e>[i-1]
-            st,	    	    # used for checking the algorithm
+            pj,  pi_1,      # primes of <e>[j] and <e>[i-1]
+            st,             # used for checking the algorithm
             i,  j,  k,      # loops
             pcgs,           # pcgs of <u>
             id,             # identity element
@@ -770,7 +770,7 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
     id := OneOfPcgs(g);
     e  := ElementaryAbelianSubseries(g);
     if e = fail  then
-	Info( InfoPcNormalizer, 1, "Computing el.ab. PCGS" );
+        Info( InfoPcNormalizer, 1, "Computing el.ab. PCGS" );
         s := SpecialPcgs(g);
         k := NaturalIsomorphismByPcgs( GroupOfPcgs(g), s );
         if ElementaryAbelianSubseries(Pcgs(Image(k))) = fail  then
@@ -789,7 +789,7 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
 
     # If <r> = 2,  <g> is abelian, so we can return <g>
     if r = 2  then
-    	return g;
+        return g;
     fi;
 
     # compute the closure of <pcgs> and <e>[i]
@@ -806,22 +806,22 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
     # start with <g>/<e>[3] because <g>/<e>[2] is abelian
     for i  in [ 3 .. r ]  do
 
-    	# <s> = Normalizer( <G>/<E>[i-1], <pcgs> )
-    	#
-    	# The first step looks like ( U = <pcgs> )
-    	#
-    	#   	    S
-    	#   	      \
-    	#   	       \
-    	#   	U        Ei-1
-    	#   	 \  	/
-    	#   	  \    /
-    	#   	   Ui-1
-    	#   	       \
-    	#   	    	\
-    	#   	    	 Ei
+        # <s> = Normalizer( <G>/<E>[i-1], <pcgs> )
         #
-    	# Now get  the complete preimage of <s>  in  <g>/<e>[i] and start the
+        # The first step looks like ( U = <pcgs> )
+        #
+        #               S
+        #                 \
+        #                  \
+        #           U        Ei-1
+        #            \      /
+        #             \    /
+        #              Ui-1
+        #                  \
+        #                   \
+        #                    Ei
+        #
+        # Now get  the complete preimage of <s>  in  <g>/<e>[i] and start the
         # whole computation for that factorgroup.
 
         s := NumeratorOfModuloPcgs(s) mod e[i];
@@ -874,7 +874,7 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
 
             # check the stabilizer
             Assert( 3, Stabilizer( GroupOfPcgs(st), GroupOfPcgs(ui_1),
-	               function(U,g) return U^g;end)
+                       function(U,g) return U^g;end)
                      = GroupOfPcgs(s) );
 
             # now <ui_1> must be stabilized by <s>
@@ -897,25 +897,25 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
                 fi;
             od;
 
-    	    # The next step for <s> = Normalizer( <uk> ) is
-    	    #
-    	    #       S
-    	    #        \    Ej
-    	    #         \  /  \
-    	    #   U      **    \
-    	    #    \    /  \    Ek
-    	    #     \  /    \  /  \
-    	    #      Uj      **    \
-    	    #        \    /  \    Ei-1
-    	    #         \  /    \  /
-    	    # 	       Uk      Si-1
-    	    #            \     /
-    	    #             \   /
-    	    #              Ui-1
-    	    #	    	     \
-    	    #                 \
-    	    #                  Ei
-    	    #
+            # The next step for <s> = Normalizer( <uk> ) is
+            #
+            #       S
+            #        \    Ej
+            #         \  /  \
+            #   U      **    \
+            #    \    /  \    Ek
+            #     \  /    \  /  \
+            #      Uj      **    \
+            #        \    /  \    Ei-1
+            #         \  /    \  /
+            #          Uk      Si-1
+            #            \     /
+            #             \   /
+            #              Ui-1
+            #                \
+            #                 \
+            #                  Ei
+            #
             # If <j> = 0 or  <s> and <u> have  the same <E>[i-1] intersection
             # we are finished with this step.
 
@@ -952,7 +952,7 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
 
                 # check the stabilizer
                 Assert( 3, Stabilizer( GroupOfPcgs(st), GroupOfPcgs(uj),
-			 function(U,g) return U^g;end)
+                         function(U,g) return U^g;end)
                          = GroupOfPcgs(s) );
 
                 # now <uj> must be stabilized by <s>

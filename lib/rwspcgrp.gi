@@ -221,21 +221,21 @@ local   names,  word,  len,  i,s;
     if len < 0 then
         return "<identity> of ...";
     else
-	s:="";
+        s:="";
         i := 1;
         while i < len do
-	    Append(s,names[ word[i] ]);
+            Append(s,names[ word[i] ]);
             if word[i+1] <> 1 then
                 Add(s,'^');
                 Append(s, String(word[i+1]) );
             fi;
-	    Add(s,'*');
+            Add(s,'*');
             i := i+2;
         od;
-	Append(s,names[word[i]] );
+        Append(s,names[word[i]] );
         if word[i+1] <> 1 then
-	    Add(s,'^');
-	    Append(s,String(word[ i+1 ]));
+            Add(s,'^');
+            Append(s,String(word[ i+1 ]));
         fi;
     fi;
     return s;

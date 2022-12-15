@@ -520,8 +520,8 @@ local ltfun, ord;
       elif Length(a)>Length(b) then
         return false;
       else
-	return List(a,i->SignInt(i)*ord!.alphpos[AbsInt(i)])<
-	       List(b,i->SignInt(i)*ord!.alphpos[AbsInt(i)]);
+        return List(a,i->SignInt(i)*ord!.alphpos[AbsInt(i)])<
+               List(b,i->SignInt(i)*ord!.alphpos[AbsInt(i)]);
       fi;
     end);
   fi;
@@ -703,7 +703,7 @@ BindGlobal("WeightLexOrderingNC",
 function(fam,alphabet,wt)
   local wordwt,       # function that given a word returns its weight
         ltfun,        # the less than function
-				auxalph,
+                                auxalph,
         ord;          # the ordering
 
   #########################################################
@@ -745,7 +745,7 @@ function(fam,alphabet,wt)
   SetOrderingOnGenerators(ord,alphabet);
   SetWeightOfGenerators(ord,wt);
 
-	auxalph := ShallowCopy(alphabet);
+        auxalph := ShallowCopy(alphabet);
   auxalph := List(auxalph,i->GeneratorSyllable(i,1));
   ord!.alphnums:=auxalph;
   if IsSSortedList(auxalph) then
@@ -772,8 +772,8 @@ function(fam,alphabet,wt)
       elif wa>wb then
         return false;
       else
-	return List(a,i->SignInt(i)*ord!.alphpos[AbsInt(i)])<
-	       List(b,i->SignInt(i)*ord!.alphpos[AbsInt(i)]);
+        return List(a,i->SignInt(i)*ord!.alphpos[AbsInt(i)])<
+               List(b,i->SignInt(i)*ord!.alphpos[AbsInt(i)]);
       fi;
     end);
   fi;
@@ -921,9 +921,9 @@ InstallOtherMethod( WeightLexOrdering,
 BindGlobal("BasicWreathProductOrderingNC",
 function(fam,alphabet)
   local ltfun,            # the less than function
-	oltfun,
-	nltfun,
-	alphpos,
+        oltfun,
+        nltfun,
+        alphpos,
         ord;              # the ordering
 
   nltfun := function(u,v)
@@ -944,32 +944,32 @@ function(fam,alphabet)
     if l<>0 or (l=0 and (IsEmpty(eu) or IsEmpty(ev))) then
       if IsEvenInt(l) then
         # disagree on generator or ran out
-	# if u is a proper prefix of v (ie l=|u|) then u<v
-	if Length(eu)=l then
-	  return true;
-	# but if v is a proper prefix of u then u>v
-	elif Length(ev)=l then
-	  return false;
+        # if u is a proper prefix of v (ie l=|u|) then u<v
+        if Length(eu)=l then
+          return true;
+        # but if v is a proper prefix of u then u>v
+        elif Length(ev)=l then
+          return false;
         fi;
         eu:=eu{[l+1..Length(eu)]};
         ev:=ev{[l+1..Length(ev)]};
       elif SignInt(eu[l+1])=SignInt(ev[l+1]) then
         # disagree on exponent
-	# if u is a proper prefix of v (ie l=|u|) then u<v
-	if Length(eu)=l+1 and AbsInt(eu[l+1])<AbsInt(ev[l+1]) then
-	  return true;
-	# but if v is a proper prefix of u then u>v
-	elif Length(ev)=l+1 and AbsInt(eu[l+1])>AbsInt(ev[l+1]) then
-	  return false;
-	fi;
-	if AbsInt(eu[l+1])<AbsInt(ev[l+1]) then
-	  ev:=ev{[l..Length(ev)]};
-	  ev[2]:=ev[2]-eu[l+1];
-	  eu:=eu{[l+2..Length(eu)]};
-	else
-	  eu:=eu{[l..Length(eu)]};
-	  eu[2]:=eu[2]-ev[l+1];
-	  ev:=ev{[l+2..Length(ev)]};
+        # if u is a proper prefix of v (ie l=|u|) then u<v
+        if Length(eu)=l+1 and AbsInt(eu[l+1])<AbsInt(ev[l+1]) then
+          return true;
+        # but if v is a proper prefix of u then u>v
+        elif Length(ev)=l+1 and AbsInt(eu[l+1])>AbsInt(ev[l+1]) then
+          return false;
+        fi;
+        if AbsInt(eu[l+1])<AbsInt(ev[l+1]) then
+          ev:=ev{[l..Length(ev)]};
+          ev[2]:=ev[2]-eu[l+1];
+          eu:=eu{[l+2..Length(eu)]};
+        else
+          eu:=eu{[l..Length(eu)]};
+          eu[2]:=eu[2]-ev[l+1];
+          ev:=ev{[l+2..Length(ev)]};
         fi;
       else
         eu:=eu{[l..Length(eu)]};
@@ -987,35 +987,35 @@ function(fam,alphabet)
     while mp>0 and np>0 do
       if ord!.alphpos[ev[np]]<ord!.alphpos[eu[mp]] then
         ne:=ne-1;
-	if ne=0 then
-	  np:=np-2;
-	  if np>0 then
-	    ne:=ev[np+1];
-	  fi;
-	fi;
+        if ne=0 then
+          np:=np-2;
+          if np>0 then
+            ne:=ev[np+1];
+          fi;
+        fi;
       elif ord!.alphpos[eu[mp]]<ord!.alphpos[ev[np]] then
         me:=me-1;
-	if me=0 then
-	  mp:=mp-2;
-	  if mp>0 then
-	    me:=eu[mp+1];
-	  fi;
-	fi;
+        if me=0 then
+          mp:=mp-2;
+          if mp>0 then
+            me:=eu[mp+1];
+          fi;
+        fi;
       else
         ne:=ne-1;
-	if ne=0 then
-	  np:=np-2;
-	  if np>0 then
-	    ne:=ev[np+1];
-	  fi;
-	fi;
+        if ne=0 then
+          np:=np-2;
+          if np>0 then
+            ne:=ev[np+1];
+          fi;
+        fi;
         me:=me-1;
-	if me=0 then
-	  mp:=mp-2;
-	  if mp>0 then
-	    me:=eu[mp+1];
-	  fi;
-	fi;
+        if me=0 then
+          mp:=mp-2;
+          if mp>0 then
+            me:=eu[mp+1];
+          fi;
+        fi;
       fi;
     od;
 

@@ -707,10 +707,10 @@ InstallOtherMethod( EnumeratorSorted,
 
 InstallOtherMethod( EnumeratorSorted, "for a list", [ IsList ],
 function(l)
-	if IsSSortedList(l) then
-		return l;
-	fi;
-	return AsSSortedListList(AsPlist(l));
+    if IsSSortedList(l) then
+      return l;
+    fi;
+    return AsSSortedListList(AsPlist(l));
 end);
 
 
@@ -1579,9 +1579,9 @@ InstallMethod( PositionProperty,
     local i;
     for i in [ 1 .. Length( list ) ] do
         if IsBound( list[i] ) then
-        	if func( list[ i ] ) then
-            	return i;
-            fi;
+           if func( list[ i ] ) then
+               return i;
+           fi;
         fi;
     od;
     return fail;
@@ -2986,9 +2986,9 @@ InstallGlobalFunction( ListN, function ( arg )
     len := Length(arg[1]);
 
     if not IsFunction(func) then
-	Error("Last argument must be a function");
+        Error("Last argument must be a function");
     elif ForAny( arg, a -> not IsList(a) or Length(a) <> len ) then
-	Error("<arg1>, ..., <argn> must be lists of the same length");
+        Error("<arg1>, ..., <argn> must be lists of the same length");
     fi;
 
     return List( [1..len],
@@ -3866,7 +3866,7 @@ function( list )
     if 0 = Length(list) and IsInternalRep(list)  then
         PrintObj( list );
     elif 0 < Length(list) and IsString(list)  then
-	View(list); # there is a special method for strings
+        View(list); # there is a special method for strings
     else
         Print( "\>\>[ \>\>" );
         for i  in [ 1 .. Length(list) ]  do

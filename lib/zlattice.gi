@@ -479,7 +479,7 @@ end );
 ##  system.
 ##
 InstallMethod( Decomposition, "for a matrix of cyclotomics, a vector and a depth",
-	[IsMatrix,IsList,IsObject],
+        [IsMatrix,IsList,IsObject],
         function( A, B, depth_or_nonnegative )
     local i, intA, intB, newintA, newintB, result, choice, inforec;
 
@@ -1881,9 +1881,9 @@ InstallGlobalFunction( LLLint, function( arg )
       za:=d[j]*(b[k]*b[j]);
       ne:=1;
       for i in [1..j-1] do
-	nne:=d[i]*d[i+1];
-	za:=za*nne-d[j]*mu[k][i]*mu[j][i]*ne;
-	ne:=ne*nne;
+        nne:=d[i]*d[i+1];
+        za:=za*nne-d[j]*mu[k][i]*mu[j][i]*ne;
+        ne:=ne*nne;
       od;
       mu[k][j]:=za/ne;
     od;
@@ -1911,25 +1911,25 @@ InstallGlobalFunction( LLLint, function( arg )
       ne:=d[k];
       za:=mu[k][k-1];
       if za<0 then
-	za:=-za;
-	s:=-1;
+        za:=-za;
+        s:=-1;
       else
-	s:=1;
+        s:=1;
       fi;
       nne:=ne/2;
       if IsInt(nne) then
-	za:=za+nne;
+        za:=za+nne;
       else
-	za:=2*za+ne;
-	ne:=ne*2;
+        za:=2*za+ne;
+        ne:=ne*2;
       fi;
       r:=s*QuoInt(za,ne);
       if r<>0 then
-	b[k]:=b[k]-r*b[k-1];
-	for j in [1..k-2] do
-	  mu[k][j]:=mu[k][j]-r*mu[k-1][j];
-	od;
-	mu[k][k-1]:=mu[k][k-1]-r*d[k];
+        b[k]:=b[k]-r*b[k-1];
+        for j in [1..k-2] do
+          mu[k][j]:=mu[k][j]-r*mu[k-1][j];
+        od;
+        mu[k][k-1]:=mu[k][k-1]-r*d[k];
       fi;
 
       mue:=mu[k][k-1];
@@ -1938,108 +1938,108 @@ InstallGlobalFunction( LLLint, function( arg )
 
       if d[k]*d[k]*cn-mue*mue*cd>dkpv then
 
-	#(2)
-	Info( InfoZLattice, 2, "swap ", k-1, " <-> ", k );
+        #(2)
+        Info( InfoZLattice, 2, "swap ", k-1, " <-> ", k );
 
-	muea:=mue;
-	dkm:=d[k];
-	dkma:=dkm;
+        muea:=mue;
+        dkm:=d[k];
+        dkma:=dkm;
 
         ca1:=1;
-	ca2:=0;
-	cb1:=0;
-	cb2:=1;
+        ca2:=0;
+        cb1:=0;
+        cb2:=1;
 
-	# iterierter vektor-ggT
-	repeat
-	  dkm:=(dkp+mue*mue)/dkm;
-	  tw:=ca1;
-	  ca1:=cb1;
-	  cb1:=tw;
-	  tw:=ca2;
-	  ca2:=cb2;
-	  cb2:=tw;
+        # iterierter vektor-ggT
+        repeat
+          dkm:=(dkp+mue*mue)/dkm;
+          tw:=ca1;
+          ca1:=cb1;
+          cb1:=tw;
+          tw:=ca2;
+          ca2:=cb2;
+          cb2:=tw;
 
-	  ne:=dkm;
-	  za:=mue;
-	  if za<0 then
-	    za:=-za;
-	    s:=-1;
-	  else
-	    s:=1;
-	  fi;
-	  nne:=ne/2;
-	  if IsInt(nne) then
-	    za:=za+nne;
-	  else
-	    za:=2*za+ne;
-	    ne:=ne*2;
-	  fi;
-	  r:=s*QuoInt(za,ne);
-
-	  if r<>0 then
-	    cb1:=cb1-r*ca1;
-	    cb2:=cb2-r*ca2;
-	    mue:=mue-r*dkm;
+          ne:=dkm;
+          za:=mue;
+          if za<0 then
+            za:=-za;
+            s:=-1;
+          else
+            s:=1;
           fi;
-	until dkm*dkm*cn-mue*mue*cd<=dkpv;
+          nne:=ne/2;
+          if IsInt(nne) then
+            za:=za+nne;
+          else
+            za:=2*za+ne;
+            ne:=ne*2;
+          fi;
+          r:=s*QuoInt(za,ne);
 
-	d[k]:=dkm;
+          if r<>0 then
+            cb1:=cb1-r*ca1;
+            cb2:=cb2-r*ca2;
+            mue:=mue-r*dkm;
+          fi;
+        until dkm*dkm*cn-mue*mue*cd<=dkpv;
+
+        d[k]:=dkm;
         mu[k][k-1]:=mue;
 
-	tw:=ca1*b[k-1]+ca2*b[k];
-	b[k]:=cb1*b[k-1]+cb2*b[k];
-	b[k-1]:=tw;
+        tw:=ca1*b[k-1]+ca2*b[k];
+        b[k]:=cb1*b[k-1]+cb2*b[k];
+        b[k-1]:=tw;
 
-	if k>2 then
-	  sel:=[1..k-2];
-	  muk:=mu[k]{sel};
-	  mum:=mu[k-1]{sel};
-	  tw:=ca1*mum+ca2*muk;
-	  mu[k]{sel}:=cb1*mum+cb2*muk;
-	  mu[k-1]{sel}:=tw;
+        if k>2 then
+          sel:=[1..k-2];
+          muk:=mu[k]{sel};
+          mum:=mu[k-1]{sel};
+          tw:=ca1*mum+ca2*muk;
+          mu[k]{sel}:=cb1*mum+cb2*muk;
+          mu[k-1]{sel}:=tw;
         fi;
 
-	for j in [k+1..dim] do
-	  za:=ca1*dkma+ca2*muea;
-	  tw:=(za*mu[j][k-1]+ca2*mu[j][k]*d[k-1])/dkma;
-	  mu[j][k]:=(((cb1*dkma+cb2*muea)*dkm-mue*za)*mu[j][k-1]+
-		     (cb2*dkm-ca2*mue)*d[k-1]*mu[j][k])/dkma/d[k-1];
-	  mu[j][k-1]:=tw;
-	od;
+        for j in [k+1..dim] do
+          za:=ca1*dkma+ca2*muea;
+          tw:=(za*mu[j][k-1]+ca2*mu[j][k]*d[k-1])/dkma;
+          mu[j][k]:=(((cb1*dkma+cb2*muea)*dkm-mue*za)*mu[j][k-1]+
+                     (cb2*dkm-ca2*mue)*d[k-1]*mu[j][k])/dkma/d[k-1];
+          mu[j][k-1]:=tw;
+        od;
 
-	if k>2 then
-	  k:=k-1;
-	fi;
+        if k>2 then
+          k:=k-1;
+        fi;
       else
-	for l in [2..k-1] do
-	  #reduce(k-l);
+        for l in [2..k-1] do
+          #reduce(k-l);
 
-	  ne:=d[k-l+1];
-	  za:=mu[k][k-l];
-	  if za<0 then
-	    za:=-za;
-	    s:=-1;
-	  else
-	    s:=1;
-	  fi;
-	  nne:=ne/2;
-	  if IsInt(nne) then
-	    za:=za+nne;
-	  else
-	    za:=2*za+ne;
-	    ne:=ne*2;
-	  fi;
-	  r:=s*QuoInt(za,ne);
-	  if r<>0 then
-	    b[k]:=b[k]-r*b[k-l];
-	    for j in [1..k-l-1] do
-	      mu[k][j]:=mu[k][j]-r*mu[k-l][j];
-	    od;
-	    mu[k][k-l]:=mu[k][k-l]-r*d[k-l+1];
-	  fi;
-	od;
-	k:=k+1;
+          ne:=d[k-l+1];
+          za:=mu[k][k-l];
+          if za<0 then
+            za:=-za;
+            s:=-1;
+          else
+            s:=1;
+          fi;
+          nne:=ne/2;
+          if IsInt(nne) then
+            za:=za+nne;
+          else
+            za:=2*za+ne;
+            ne:=ne*2;
+          fi;
+          r:=s*QuoInt(za,ne);
+          if r<>0 then
+            b[k]:=b[k]-r*b[k-l];
+            for j in [1..k-l-1] do
+              mu[k][j]:=mu[k][j]-r*mu[k-l][j];
+            od;
+            mu[k][k-l]:=mu[k][k-l]-r*d[k-l+1];
+          fi;
+        od;
+        k:=k+1;
       fi;
     od;
 

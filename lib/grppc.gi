@@ -182,7 +182,7 @@ InstallMethod (InducedPcgsOp, "sift existing pcgs",
             pos := PositionSorted (depths, d);
          od;
          if d> Length(pcgs) then
-         	Error ("Panic: Pcgs (G) does not seem to be a pcgs");
+            Error ("Panic: Pcgs (G) does not seem to be a pcgs");
          else
             seq{[pos+1..len+1]} := seq{[pos..len]};
             depths{[pos+1..len+1]} := depths{[pos..len]};
@@ -227,8 +227,8 @@ end);
 ##
 InstallMethod( Pcgs, "fail if not solvable", true,
         [ IsGroup and HasIsSolvableGroup ],
-	SUM_FLAGS, # for groups for which we know that they are not solvable
-	           # this is the best we can do.
+        SUM_FLAGS, # for groups for which we know that they are not solvable
+                   # this is the best we can do.
     function( G )
     if not IsSolvableGroup( G )  then  return fail;
                                  else  TryNextMethod();  fi;
@@ -314,8 +314,8 @@ local p,cs,csi,l,i,pcs,ins,j,u;
     for j in Reversed(Filtered(csi[i],k->not k in cs[i+1])) do
       if not j in u then
         Add(pcs,j);
-	#NC is safe
-	u:=ClosureSubgroupNC(u,j);
+        #NC is safe
+        u:=ClosureSubgroupNC(u,j);
       fi;
     od;
     if Length(pcs)<>Length(csi[i]) then
@@ -440,7 +440,7 @@ function( elm, grp )
     ppcgs := ParentPcgs (pcgs);
     if Length (pcgs) = Length (ppcgs) or not CanEasilyTestMembership (GroupOfPcgs(ppcgs)) then
         TryNextMethod();
-	fi;
+    fi;
     if elm in GroupOfPcgs (ppcgs) then
         return SiftedPcElement(InducedPcgsWrtHomePcgs(grp),elm) = One(grp);
     else
@@ -711,7 +711,7 @@ local mats, gens, zero,one, g, mat, i, vec;
         od;
         Add( vec, one );
         Add( mat, vec );
-	mat:=ImmutableMatrix(Characteristic(one),mat,true);
+        mat:=ImmutableMatrix(Characteristic(one),mat,true);
         Add( mats, mat );
     od;
     return mats;
@@ -955,7 +955,7 @@ function( G, U )
 
     # <G> acts on this <pcgs> via conjugation
     f := function( c, g )
-	#was: CanonicalPcgs( HomomorphicInducedPcgs( home, c, g ) );
+        #was: CanonicalPcgs( HomomorphicInducedPcgs( home, c, g ) );
         return CorrespondingGeneratorsByModuloPcgs(home,List(c,i->i^g));
     end;
 
@@ -965,11 +965,11 @@ function( G, U )
     for i in [1..Length(orb)] do
         L := Subgroup( H, orb[i] );
         SetHomePcgs( L, home );
-	if not(IsPcgs(orb[i])) then
-	  ip:=InducedPcgsByPcSequenceNC(home,orb[i]);
-	else
-	  ip:=orb[i];
-	fi;
+        if not(IsPcgs(orb[i])) then
+          ip:=InducedPcgsByPcSequenceNC(home,orb[i]);
+        else
+          ip:=orb[i];
+        fi;
         SetInducedPcgsWrtHomePcgs( L, ip );
         SetGroupOfPcgs (ip, L);
         res[i] := L;
@@ -1142,7 +1142,7 @@ local  i,mats;
     # compute matrices
     if Length(base)>0 then
       mats := List( gens, x -> ImmutableMatrix(Characteristic(base),
-				List( base, y -> linear( y, x ) ),true ));
+                                List( base, y -> linear( y, x ) ),true ));
     else
       mats:=List(gens,i->[]);
     fi;
@@ -1262,14 +1262,14 @@ end );
 BindGlobal( "CentralizerSolvableGroup", function(H,U,elm)
 local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
        Hp,    # a pcgs for <H>
-       inequal,	# G<>H flag
+       inequal, # G<>H flag
        eas,     # elementary abelian series in <G> through <U>
        step,    # counter looping over <eas>
        K,  L,   # members of <eas>
        Kp,Lp, # induced and modulo pcgs's
        KcapH,LcapH, # pcgs's of intersections with <H>
        N,   cent,   # elementary abelian factor, for affine action
-       cls,  # classes in range/source of homomorphism
+       cls,     # classes in range/source of homomorphism
        opr,     # (elm^opr)=cls.representative
        p,       # prime dividing $|G|$
        nexpo,indstep,Ldep,allcent;
@@ -1413,7 +1413,7 @@ local   h,P;
   od;
   G:=AsSubgroup(P,G);
   Assert(2,ForAll(GeneratorsOfGroup(G),i->ForAll(GeneratorsOfGroup(H),
-						j->Comm(i,j)=One(G))));
+                                                j->Comm(i,j)=One(G))));
   return G;
 end );
 
@@ -1445,12 +1445,12 @@ InstallMethod(CentralizerModulo,"pcgs computable groups, for elm",
   IsCollsCollsElms,[IsGroup and CanEasilyComputePcgs, IsGroup and
   CanEasilyComputePcgs, IsMultiplicativeElementWithInverse],0,
 function(H,NT,elm)
-local G,	   # common parent
+local G,           # common parent
       home,Hp,     # the home pcgs, induced pcgs
       eas, step,   # elementary abelian series in <G> through <U>
-      ea2,	   # used for factor series
+      ea2,         # used for factor series
       K,    L,     # members of <eas>
-      Kp,Lp,    # induced and modulo pcgs's
+      Kp,Lp,       # induced and modulo pcgs's
       KcapH,LcapH, # pcgs's of intersections with <H>
       N,   cent,   # elementary abelian factor, for affine action
       tra,         # transversal for candidates
@@ -1484,29 +1484,29 @@ local G,	   # common parent
     eas:=fail;
     if IsPGroup( G ) then
         p := PrimePGroup(G);
-	home:=PcgsPCentralSeriesPGroup(G);
-	eas:=PCentralNormalSeriesByPcgsPGroup(home);
-	if NT in eas then
-	  cent := ReturnTrue;
-	else
-	  eas:=fail; # useless
-	fi;
+        home:=PcgsPCentralSeriesPGroup(G);
+        eas:=PCentralNormalSeriesByPcgsPGroup(home);
+        if NT in eas then
+          cent := ReturnTrue;
+        else
+          eas:=fail; # useless
+        fi;
     fi;
 
     if eas=fail then
-	home:=PcgsElementaryAbelianSeries([G,NT]);
-	eas:=EANormalSeriesByPcgs(home);
-	cent:=function(pcgs,grpg,Npcgs,dep)
-	      local i,j;
-		for i in grpg do
-		  for j in Npcgs do
-		    if DepthOfPcElement(pcgs,Comm(j,i))<dep then
-		      return false;
-		    fi;
-		  od;
-		od;
-		return true;
-	      end;
+        home:=PcgsElementaryAbelianSeries([G,NT]);
+        eas:=EANormalSeriesByPcgs(home);
+        cent:=function(pcgs,grpg,Npcgs,dep)
+              local i,j;
+                for i in grpg do
+                  for j in Npcgs do
+                    if DepthOfPcElement(pcgs,Comm(j,i))<dep then
+                      return false;
+                    fi;
+                  od;
+                od;
+                return true;
+              end;
 
     fi;
     indstep:=IndicesEANormalSteps(home);
@@ -1516,12 +1516,12 @@ local G,	   # common parent
     eas:=[];
     for i in ea2 do
       if not i in eas then
-	Add(eas,i);
+        Add(eas,i);
       fi;
     od;
     for i in eas do
       if not HasHomePcgs(i) then
-	SetHomePcgs(i,ParentPcgs(home));
+        SetHomePcgs(i,ParentPcgs(home));
       fi;
     od;
 
@@ -1539,8 +1539,8 @@ local G,	   # common parent
     fi;
 
     cl := rec( representative := elm,
-		  centralizer := H,
-		  centralizerpcgs := InducedPcgs(home,H ));
+                  centralizer := H,
+                  centralizerpcgs := InducedPcgs(home,H ));
     tra := One( H );
 
 #    cls := List( candidates, c -> cl );
@@ -1553,35 +1553,35 @@ local G,	   # common parent
         K  := L;
         Kp := Lp;
         L  := eas[ step ];
-	Ldep:=indstep[step];
+        Ldep:=indstep[step];
         Lp := InducedPcgs(home, L );
         N  := Kp mod Lp;
         #SetFilterObj( N, IsPcgs );
-	allcent:=cent(home,home,N,Ldep);
-	if allcent=false then
-	  nexpo:=LinearActionLayer(home{[1..indstep[step-1]-1]},N);
-	fi;
-	if not IsIdenticalObj( G, H )  then
-	  KcapH   := LcapH;
-	  LcapH   := NormalIntersectionPcgs( home, Hp, Lp );
-	  N!.capH := KcapH mod LcapH;
+        allcent:=cent(home,home,N,Ldep);
+        if allcent=false then
+          nexpo:=LinearActionLayer(home{[1..indstep[step-1]-1]},N);
+        fi;
+        if not IsIdenticalObj( G, H )  then
+          KcapH   := LcapH;
+          LcapH   := NormalIntersectionPcgs( home, Hp, Lp );
+          N!.capH := KcapH mod LcapH;
         else
-	  N!.capH := N;
+          N!.capH := N;
         fi;
 
-	cl.candidates := cl.representative;
-	if allcent
-	   or cent(home,cl.centralizerpcgs, N, Ldep)  then
-	    cl := CentralStepClEANS( home,G, H, N, cl,true )[1];
-	else
-	    cl := GeneralStepClEANS( home,G, H, N,nexpo, cl,true )[1];
-	fi;
-	tra := tra * cl.operator;
-	if IsModuloPcgs(cl.cengen) then
-	  cl.centralizerpcgs:=cl.cengen;
-	else
-	  cl.centralizerpcgs:=InducedPcgsByPcSequenceNC(home,cl.cengen);
-	fi;
+        cl.candidates := cl.representative;
+        if allcent
+           or cent(home,cl.centralizerpcgs, N, Ldep)  then
+            cl := CentralStepClEANS( home,G, H, N, cl,true )[1];
+        else
+            cl := GeneralStepClEANS( home,G, H, N,nexpo, cl,true )[1];
+        fi;
+        tra := tra * cl.operator;
+        if IsModuloPcgs(cl.cengen) then
+          cl.centralizerpcgs:=cl.cengen;
+        else
+          cl.centralizerpcgs:=InducedPcgsByPcSequenceNC(home,cl.cengen);
+        fi;
 
     od;
 
@@ -1643,20 +1643,20 @@ local   home,i,  N,  O,  I,  E,  L;
     L := [ S[ i ] ];
     for E  in O  do
       I := IntersectionSumPcgs(home, InducedPcgs(home,E),
-	InducedPcgs(home,S[ i ]) );
+        InducedPcgs(home,S[ i ]) );
       I.sum:=SubgroupByPcgs(S[1],I.sum);
       I.intersection:=SubgroupByPcgs(S[1],I.intersection);
       if not I.sum in N  then
-	  Add( N, I.sum );
+          Add( N, I.sum );
       fi;
       if not I.intersection in L  then
-	  Add( L, I.intersection );
+          Add( L, I.intersection );
       fi;
     od;
   od;
   for E  in L  do
       if not E in N  then
-	  Add( N, E );
+          Add( N, E );
       fi;
   od;
   return N;
@@ -1687,7 +1687,7 @@ InstallGlobalFunction( GapInputPcGroup, function(U,name)
             wordString,
             newLines,
             lines,
-	    ne,
+            ne,
             i,j;
 
 
@@ -1761,11 +1761,11 @@ InstallGlobalFunction( GapInputPcGroup, function(U,name)
       if ne<>One(U) then
         Add(lines,Concatenation("[",String(i),",",
             wordString(ne),"]"));
-	if i<Length(gens) then
-	  Add(lines,",\n");
-	else
-	  Add(lines,"\n");
-	fi;
+        if i<Length(gens) then
+          Add(lines,",\n");
+        else
+          Add(lines,"\n");
+        fi;
       fi;
     od;
     Add(lines,"];\nfor x in r do SetPower(rws,x[1],x[2]);od;\n");
@@ -1775,8 +1775,8 @@ InstallGlobalFunction( GapInputPcGroup, function(U,name)
     # Add the commutator presentation part.
     for i  in [1 .. Length(gens) - 1]  do
         for j  in [i + 1 .. Length(gens)]  do
-	  ne:=Comm(gens[j],gens[i]);
-	  if ne<>One(U) then
+          ne:=Comm(gens[j],gens[i]);
+          if ne<>One(U) then
             if i <> Length(gens) - 1 or j <> i + 1  then
                 Add(lines,Concatenation("[",String(j),",",String(i),",",
                     wordString(ne),"],\n"));
@@ -1934,31 +1934,31 @@ InstallMethod( KnowsHowToDecompose,
 ##
 InstallGlobalFunction( CanonicalSubgroupRepresentativePcGroup,
     function(G,U)
-local e,	# EAS
+local e,        # EAS
       pcgs,     # himself
-      iso,	# isomorphism to EAS group
-      start,	# index of largest abelian quotient
-      i,	# loop
-      n,	# e[i]
+      iso,      # isomorphism to EAS group
+      start,    # index of largest abelian quotient
+      i,        # loop
+      n,        # e[i]
       m,        # e[i+1]
-      pcgsm,	# pcgs(m)
-      mpcgs,	# pcgs mod pcgsm
-      V,	# canon. rep
-      fv,	# <V,m>
-      fvgens,	# gens(fv)
-      no,	# its normalizer
-      orb,	# orbit
-      o,	# orb index
-      nno,	# growing normalizer
+      pcgsm,    # pcgs(m)
+      mpcgs,    # pcgs mod pcgsm
+      V,        # canon. rep
+      fv,       # <V,m>
+      fvgens,   # gens(fv)
+      no,       # its normalizer
+      orb,      # orbit
+      o,        # orb index
+      nno,      # growing normalizer
       min,
-      minrep,	# minimum indicator
-  #   p,	# orbit pos.
-      one,	# 1
-      abc,	# abelian case indicator
-      nopcgs,	#pcgs(no)
-      te,	# transversal exponents
-      opfun,	# operation function
-      ce;	# conj. elm
+      minrep,   # minimum indicator
+  #   p,        # orbit pos.
+      one,      # 1
+      abc,      # abelian case indicator
+      nopcgs,   #pcgs(no)
+      te,       # transversal exponents
+      opfun,    # operation function
+      ce;       # conj. elm
 
   if not IsSubgroup(G,U) then
     Error("#W  CSR Closure\n");
@@ -1975,7 +1975,7 @@ local e,	# EAS
     m:=List(pcgs,i->ExponentsOfPcElement(FamilyPcgs(G),i));
     G!.chiefSeriesPcgsIsFamilyInduced:=
       ForAll(m,i->Number(i,j->j<>0)=1) and ForAll(m,i->Number(i,j->j=1)=1)
-				       and m=Reversed(Set(m));
+                                       and m=Reversed(Set(m));
     if not G!.chiefSeriesPcgsIsFamilyInduced then
       # compute isom. &c.
       V:=PcGroupWithPcgs(pcgs);
@@ -2041,16 +2041,16 @@ local e,	# EAS
 
       # operation function: operate on the cgs modulo m
       opfun:=function(u,e)
-	u:=CorrespondingGeneratorsByModuloPcgs(mpcgs,List(u,j->j^e));
+        u:=CorrespondingGeneratorsByModuloPcgs(mpcgs,List(u,j->j^e));
 #UU:=ShallowCopy(u);
-#	NORMALIZE_IGS(mpcgs,u);
+#        NORMALIZE_IGS(mpcgs,u);
 #if UU<>u then
 #  Error("hier2");
 #fi;
 
-	# trim m-part
-	u:=List(u,i->CanonicalPcElement(pcgsm,i));
-	return u;
+        # trim m-part
+        u:=List(u,i->CanonicalPcElement(pcgsm,i));
+        return u;
       end;
     else
       min:=fv;
@@ -2073,7 +2073,7 @@ local e,	# EAS
     for o in [2..Length(orb)] do
       if orb[o]<min then
         min:=orb[o];
-	minrep:=o;
+        minrep:=o;
       fi;
     od;
 
@@ -2083,14 +2083,14 @@ local e,	# EAS
       o:=2;
       while minrep<>1 do
         while abc[o]>=minrep do
-	  o:=o+1;
-	od;
-	te[o-1]:=-QuoInt(minrep-1,abc[o]);
-	minrep:=(minrep-1) mod abc[o]+1;
+          o:=o+1;
+        od;
+        te[o-1]:=-QuoInt(minrep-1,abc[o]);
+        minrep:=(minrep-1) mod abc[o]+1;
       od;
       te:=LinearCombinationPcgs(nopcgs,te)^-1;
       if opfun(orb[1],te)<>min then
-	Error("wrong repres!");
+        Error("wrong repres!");
       fi;
       minrep:=te;
     fi;
@@ -2122,16 +2122,16 @@ local e,	# EAS
 #      minrep:=one;
 #      for o in rep do
 #        if o<>one then
-#	  # matrix image of rep
-#	  orb:=ExponentsOfPcElement(nopcgs,o);
-#	  orb:=Product([1..Length(orb)],i->lop[i]^orb[i]);
-#	  orb:=List(fvgens*orb,ShallowCopy);
-#	  TriangulizeMat(orb);
-#	  if orb<min then
-#	    min:=orb;
-#	    minrep:=o;
-#	  fi;
-#	fi;
+#          # matrix image of rep
+#          orb:=ExponentsOfPcElement(nopcgs,o);
+#          orb:=Product([1..Length(orb)],i->lop[i]^orb[i]);
+#          orb:=List(fvgens*orb,ShallowCopy);
+#          TriangulizeMat(orb);
+#          if orb<min then
+#            min:=orb;
+#            minrep:=o;
+#          fi;
+#        fi;
 #      od;
 #
 #    else
@@ -2139,21 +2139,21 @@ local e,	# EAS
 #      NORMALIZE_IGS(mpcgs,min);
 #      minrep:=one;
 #      for o in rep do
-#	if o<>one then
-#	  if Length(fvgens)=1 then
-#	    orb:=fvgens[1]^o;
-#	    orb:=orb^(1/LeadingExponentOfPcElement(mpcgs,orb)
-#		      mod RelativeOrderOfPcElement(mpcgs,orb));
-#	    orb:=[orb];
-#	  else
-#	    orb:=CorrespondingGeneratorsByModuloPcgs(mpcgs,List(fvgens,j->j^o));
-#	    NORMALIZE_IGS(mpcgs,orb);
-#	  fi;
-#	  if orb<min then
-#	    min:=orb;
-#	    minrep:=o;
-#	  fi;
-#	fi;
+#        if o<>one then
+#          if Length(fvgens)=1 then
+#            orb:=fvgens[1]^o;
+#            orb:=orb^(1/LeadingExponentOfPcElement(mpcgs,orb)
+#                      mod RelativeOrderOfPcElement(mpcgs,orb));
+#            orb:=[orb];
+#          else
+#            orb:=CorrespondingGeneratorsByModuloPcgs(mpcgs,List(fvgens,j->j^o));
+#            NORMALIZE_IGS(mpcgs,orb);
+#          fi;
+#          if orb<min then
+#            min:=orb;
+#            minrep:=o;
+#          fi;
+#        fi;
 #      od;
 #    fi;
 
@@ -2188,7 +2188,7 @@ local cl;
     SetRepresentative(cl,U);
     SetFunctionAction(cl,OnPoints);
     SetCanonicalRepresentativeDeterminatorOfExternalSet(cl,
-	CanonicalSubgroupRepresentativePcGroup);
+        CanonicalSubgroupRepresentativePcGroup);
     return cl;
 end);
 
@@ -2232,13 +2232,13 @@ local home,e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
     # already do it?
     if Size(ser[i])<Size(n) then
       if not IsNormal(U,ser[i]) then
-	# assuming the last was normal we intersect the conjugates and get a
-	# new normal with still ea. factor
-	ser[i]:=Core(U,ser[i]);
-	# intersect the rest of the series.
-	for j in [i+1..Length(ser)-1] do
-	  ser[j]:=Intersection(ser[i],ser[j]);
-	od;
+        # assuming the last was normal we intersect the conjugates and get a
+        # new normal with still ea. factor
+        ser[i]:=Core(U,ser[i]);
+        # intersect the rest of the series.
+        for j in [i+1..Length(ser)-1] do
+          ser[j]:=Intersection(ser[i],ser[j]);
+        od;
       fi;
       Add(e,ser[i]);
       n:=ser[i];
@@ -2265,11 +2265,11 @@ local home,e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
       cs:=cs{[2..Length(cs)]};
       Info(InfoPcGroup,2,Length(cs)-1," compositionFactors");
       for j in cs do
-	n:=e[i];
-	for k in j do
-	  n:=ClosureGroup(n,PcElementByExponentsNC(mpcgs,List(k,IntFFE)));
-	od;
-	Add(ser,n);
+        n:=e[i];
+        for k in j do
+          n:=ClosureGroup(n,PcElementByExponentsNC(mpcgs,List(k,IntFFE)));
+        od;
+        Add(ser,n);
       od;
     fi;
   od;
@@ -2417,7 +2417,7 @@ InstallTrueMethod(CanEasilyComputeWithIndependentGensAbelianGroup,
 ##
 InstallMethod(IndependentGeneratorsOfAbelianGroup,
   "Use Pcgs and NormalFormIntMat to find the independent generators",
-	[IsGroup and CanEasilyComputePcgs and IsAbelian],0,
+        [IsGroup and CanEasilyComputePcgs and IsAbelian],0,
 function(G)
 local matrix, snf, base, ord, cti, row, g, o, cf, j, i;
 
@@ -2441,13 +2441,13 @@ local matrix, snf, base, ord, cti, row, g, o, cf, j, i;
       cf:=Collected(Factors(o));
       if Length(cf)>1 then
         for j in cf do
-	  j:=j[1]^j[2];
-	  Add(ord,j);
-	  Add(base,g^(o/j));
-	od;
+          j:=j[1]^j[2];
+          Add(ord,j);
+          Add(base,g^(o/j));
+        od;
       else
-	Add(base,g);
-	Add(ord,o);
+        Add(base,g);
+        Add(ord,o);
       fi;
     fi;
   od;
@@ -2808,11 +2808,11 @@ local   gens,  q,  gen,  ord,  o;
     q := p^n;
     gens := [  ];
     for gen  in IndependentGeneratorsOfAbelianGroup( G )  do
-	ord := Order( gen );
-	o := GcdInt( ord, q );
-	if o <> 1  then
-	    Add( gens, gen ^ ( ord / o ) );
-	fi;
+        ord := Order( gen );
+        o := GcdInt( ord, q );
+        if o <> 1  then
+            Add( gens, gen ^ ( ord / o ) );
+        fi;
     od;
     return SubgroupNC( G, gens );
   fi;
@@ -2880,8 +2880,8 @@ local   pcgs;
   pcgs:=PcgsElementaryAbelianSeries(G);
   return rec(pcgs:=pcgs,
              depths:=IndicesEANormalSteps(pcgs),
-	     radical:=G,
-	     pcisom:=IdentityMapping(G),
-	     factorhom:=NaturalHomomorphismByNormalSubgroupNC(G,G));
+             radical:=G,
+             pcisom:=IdentityMapping(G),
+             factorhom:=NaturalHomomorphismByNormalSubgroupNC(G,G));
 
 end );
