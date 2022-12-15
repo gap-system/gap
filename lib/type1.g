@@ -292,7 +292,7 @@ BIND_GLOBAL( "NEW_TYPE", function ( family, flags, data, parent )
     fi;
 
     SET_TYPE_POSOBJ( type, TypeOfTypes );
-    
+
     # check the size of the cache before storing this type
     if 3*family!.nTYPES > family!.HASH_SIZE then
         ncache := [];
@@ -465,7 +465,7 @@ end );
 ##  <Func Name="TypeObj" Arg='obj'/>
 ##
 ##  <Description>
-##  returns the type of the object <A>obj</A>. 
+##  returns the type of the object <A>obj</A>.
 ##  <P/>
 ##  The type of an object is itself an object.
 ##  <P/>
@@ -659,7 +659,7 @@ local type, newtype;
     else
         ErrorNoReturn("cannot set filter for internal object");
     fi;
-    
+
     # run immediate methods
     if not ( IGNORE_IMMEDIATE_METHODS
              or IsNoImmediateMethodsObject(obj) ) then
@@ -757,7 +757,7 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
     type := arg[2];
     flags := FlagsType(type);
     extra := [];
-    
+
     if not IS_SUBSET_FLAGS(
                flags,
                IsAttributeStoringRepFlags
@@ -771,7 +771,7 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
         for i in [3,5..LEN_LIST(arg)-1] do
             attr := arg[i];
             val := arg[i+1];
-            
+
             # This first case is the case of a property
             if 0 <> FLAG1_FILTER(attr) then
               if val then
@@ -779,14 +779,14 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
               else
                 nflags := AND_FLAGS(nflags, FLAGS_FILTER(Tester(attr)));
               fi;
-                
+
             # Now we have to check that no one has installed non-standard
             # setter methods
             elif LEN_LIST( METHODS_OPERATION( Setter( attr ), 2) )
                  <> LENGTH_SETTER_METHODS_2 then
                 ADD_LIST(extra, attr);
                 ADD_LIST(extra, val);
-                
+
             # Otherwise we are dealing with a normal stored attribute
             # so store it in the record and set the tester
             else
@@ -794,7 +794,7 @@ BIND_GLOBAL( "ObjectifyWithAttributes", function (arg)
                 nflags := AND_FLAGS(nflags, FLAGS_FILTER(Tester(attr)));
             fi;
         od;
-        if not IS_SUBSET_FLAGS(flags,nflags) then 
+        if not IS_SUBSET_FLAGS(flags,nflags) then
             flags := WITH_IMPS_FLAGS(AND_FLAGS(flags, nflags));
             type := NEW_TYPE( FamilyType(type), flags, DataType(type), fail );
         fi;

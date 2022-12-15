@@ -776,7 +776,7 @@ DeclareAttribute( "ImaginaryPart", IsList );
 ##  The unary version returns the division ring as vector space over
 ##  <C>FieldOverItselfByGenerators( <A>gens</A> )</C>.
 ##  <P/>
-##  <Ref Oper="FieldByGenerators"/> is just a synonym for 
+##  <Ref Oper="FieldByGenerators"/> is just a synonym for
 ##  <Ref Oper="DivisionRingByGenerators"/>.
 ##  </Description>
 ##  </ManSection>

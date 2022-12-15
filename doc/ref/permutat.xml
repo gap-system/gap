@@ -132,7 +132,7 @@ false
   <Description>
     Partial permutations and transformations which define permutations
     (mathematically) can be converted into &GAP; permutations using
-    <C>AsPermutation</C>; see Chapters <Ref Chap="Transformations"/> and 
+    <C>AsPermutation</C>; see Chapters <Ref Chap="Transformations"/> and
     <Ref Chap="Partial permutations"/> for more details about transformations
     and partial permutations.
 
@@ -143,17 +143,17 @@ false
         <C>AsPermutation</C> returns this permutation.  If <A>f</A> does not
         permute its image, then <K>fail</K> is returned. <P/>
       </Item>
-    
+
       <Mark>for transformations</Mark>
       <Item>
         A transformation is a permutation if and only if its rank equals its
         degree. If a transformation in &GAP; is a permutation, then
         <C>AsPermutation</C> returns this permutation.  If <A>f</A> is not a
-        permutation, then <K>fail</K> is returned. 
+        permutation, then <K>fail</K> is returned.
       </Item>
     </List>
 
-    The function 
+    The function
     <Ref Func="Permutation" Label="for a group, an action domain, etc."/> can
     also be used to convert partial permutations and transformations into
     permutations where appropriate.
@@ -169,7 +169,7 @@ gap> AsPermutation(f);
 fail
 gap> f:=Transformation( [ 5, 8, 3, 5, 8, 6, 2, 2, 7, 8 ] );;
 gap> AsPermutation(f);
-fail  
+fail
 gap> f:=Transformation( [ 1, 3, 6, 6, 2, 10, 2, 3, 10, 5 ] );;
 gap> AsPermutation(f);
 fail

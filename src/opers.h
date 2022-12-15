@@ -228,7 +228,7 @@ EXPORT_INLINE Int ENABLED_ATTR(Obj oper)
 
 /****************************************************************************
 **
-*F  SET_ENABLED_ATTR( <oper>, <on> ) . set a new value that records whether 
+*F  SET_ENABLED_ATTR( <oper>, <on> ) . set a new value that records whether
 **                                       storing is enabled for an operation
 */
 EXPORT_INLINE void SET_ENABLED_ATTR(Obj oper, Int on)

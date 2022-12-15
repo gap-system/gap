@@ -165,7 +165,7 @@ admits the calls
 i.e., the third argument may be omitted.
 The translation to the appropriate call of <C>OrbitOp</C> or
 <C>BlocksOp</C>,
-for either operation with five or six arguments, 
+for either operation with five or six arguments,
 is handled via <A>famrel</A>.
 <P/>
 As a  consequence, there must not only be methods for <C>OrbitOp</C>
@@ -211,7 +211,7 @@ gap> Blocks( s4, MovedPoints(s4), [1,2] );
 [ [ 1, 2, 3, 4 ] ]
 gap> Tester( BlocksAttr )( s4 );
 false
-gap> Blocks( s4, MovedPoints(s4) );       
+gap> Blocks( s4, MovedPoints(s4) );
 [ [ 1, 2, 3, 4 ] ]
 gap> Tester( BlocksAttr )( s4 );  BlocksAttr( s4 );
 true

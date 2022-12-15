@@ -1,6 +1,6 @@
-<!-- 
+<!--
 
-  website.xml          GAP documentation    
+  website.xml          GAP documentation
 
   Copyright (C) 2005,  The GAP Group
 
@@ -11,20 +11,20 @@ Maintaining www.gap-system.org
 <Chapter Label="Chap-GAPWeb">
 <Heading>Maintaining the &GAP; website</Heading>
 
-This chapter describes how the information accessible on 
-<URL Text="www.gap-system.org">https://www.gap-system.org/</URL> is stored 
+This chapter describes how the information accessible on
+<URL Text="www.gap-system.org">https://www.gap-system.org/</URL> is stored
 and collected, and how it is transformed into web pages.
 
 <Section Label="WPOverview">
 <Heading>Overview</Heading>
 
-The &GAP; website (in the following just called <Q>website</Q>) has 
+The &GAP; website (in the following just called <Q>website</Q>) has
 a tree structure for easier navigation and overview. Each node and each
-leaf of the tree is a web page. Every single page 
+leaf of the tree is a web page. Every single page
 resides somewhere in this tree. This position is shown in the
 navigation bar on the left hand side, and the user can navigate through
 the tree using this navigation bar. However, pages can still link to other
-pages that reside in some other branch of the tree. 
+pages that reside in some other branch of the tree.
 
 <P/>
 All the sources for the web pages are kept in the git repository
@@ -35,9 +35,9 @@ git clone https://github.com/gap-system/GapWWW
 </Verb>
 
 The web server in St Andrews also uses its clone, updates it to the latest
-revision of the &master; branch, runs the Jekyll tool and then 
+revision of the &master; branch, runs the Jekyll tool and then
 serves the pages. Another named branch is called &testing; and it is served
-on the password protected version of the &GAP; website at 
+on the password protected version of the &GAP; website at
 <URL>https://test.gap-system.org</URL> where work in progress may
 be published to be reviewed internally.
 
@@ -45,7 +45,7 @@ be published to be reviewed internally.
 The &GAP; website has some pages that are treated specially such as the &GAP;
 manuals, the pages for the &GAP; packages, the pages for the &GAP;
 bibliography, and the (old) &GAP; forum archive. The setup for these special
-pages is described in Sections <Ref Sect="WPManuals"/> to 
+pages is described in Sections <Ref Sect="WPManuals"/> to
 <Ref Sect="WPForum"/> in this chapter.
 </Section>
 
@@ -57,25 +57,25 @@ There are several possible workflows dependently on how much efforts
 you would like to commit to the website maintenance.
 <P/>
 
-A minimalistic scenario for small improvements (e.g. correcting details 
-and fixing typos) only requires to install 
+A minimalistic scenario for small improvements (e.g. correcting details
+and fixing typos) only requires to install
 <URL Text="git">https://git-scm.com/</URL> and then:
 <Enum>
 <Item>
 Clone the Website repository: <C>git clone https://github.com/gap-system/GapWWW</C>
 </Item>
 <Item>
-Make changes in a feature branch 
+Make changes in a feature branch
 </Item>
 <Item>
-Submit your changes as GitHub pull request so that website administrator(s) 
+Submit your changes as GitHub pull request so that website administrator(s)
 can review and merge this update.
 </Item>
 </Enum>
 
 If you are one of website administrator(s), then you will also need to
-be able to access the web server in St Andrews via <C>ssh</C> to run 
-certain update scripts and copy necessary data. 
+be able to access the web server in St Andrews via <C>ssh</C> to run
+certain update scripts and copy necessary data.
 </Section>
 
 
@@ -92,7 +92,7 @@ The source files for the web site are kept in the git repository
 <C>https://github.com/gap-system/GapWWW</C>. You may clone it by doing
 
 <Verb>
-git clone https://github.com/gap-system/GapWWW 
+git clone https://github.com/gap-system/GapWWW
 </Verb>
 
 This command creates in your current directory a directory <F>GapWWW</F>
@@ -103,14 +103,14 @@ Source files are treated like any other source file in the git repository,
 that is you can update, modify, commit, add, remove them as usual.
 <P/>
 
-The only thing one has to understand with respect to git is which 
+The only thing one has to understand with respect to git is which
 implications the branch in which the change has appeared will have on the
 process of its publication:
 <List>
 <Item>
 Changes in the &master; branch will not be automatically published on
 the web server. They will be reviewed by the website administrator who
-will then have to run the update script on the server in St Andrews as 
+will then have to run the update script on the server in St Andrews as
 described in Section <Ref Sect="WPwebserver"/> to make them available online.
 </Item>
 <Item>
@@ -122,8 +122,8 @@ work in progress) will not be visible anywhere.
 
 A little comment on the rationale behind this setup might be in order.
 It allows that more than one person works independently on the
-website and those people exchange versions via git, without 
-publishing them immediately. The actual guidelines who does what 
+website and those people exchange versions via git, without
+publishing them immediately. The actual guidelines who does what
 in this process should be agreed on separately.
 <P/>
 
@@ -132,7 +132,7 @@ in this process should be agreed on separately.
 <Section Label="WPwebserver">
     <Heading>The web server in St Andrews</Heading>
 
-Currently, the actually published version of the web site is contained in 
+Currently, the actually published version of the web site is contained in
 the directory <F>/gap/GapWWW</F> on the following machine in St Andrews:
 <Verb>
     gap-web.host.cs.st-andrews.ac.uk
@@ -175,7 +175,7 @@ Finally, to update the actual website, use the following:
 <Heading>Installation on the web server</Heading>
 
 This section describes the procedure to install the &GAP; web site on
-a machine from scratch. Thus, this section is usually not needed 
+a machine from scratch. Thus, this section is usually not needed
 because all this is already done on the machine
 <F>gap-web.host.cs.st-andrews.ac.uk</F>. However, if one wants to have an exact
 copy of the web site or have to install it somewhere anew, this
@@ -195,7 +195,7 @@ section is needed.
   a web server if pages shall be published
 </Item>
 <Item>
-  a copy of the full <F>doc</F> directory from a &GAP; installation for 
+  a copy of the full <F>doc</F> directory from a &GAP; installation for
     references into the manual (this can reside on some web site)
 </Item>
 <Item>
@@ -213,9 +213,9 @@ section is needed.
 Clone the git repository GapWWW:
 
 <Verb>
-git clone https://github.com/gap-system/GapWWW 
+git clone https://github.com/gap-system/GapWWW
 </Verb>
-            
+
 This creates a subdirectory <F>GapWWW</F> in the current directory.
 </Item>
 
@@ -223,14 +223,14 @@ This creates a subdirectory <F>GapWWW</F> in the current directory.
 Unpack some (frozen) subtrees, which are in archives:
 
 <Verb>
-    cd GapWWW  
+    cd GapWWW
     gzip -dc ForumArchive.tar.gz | tar xvf -
-    cd Gap3  
+    cd Gap3
     gzip -dc Manual3.tar.gz | tar xvf -
-    cd ..    
+    cd ..
 </Verb>
 
-</Item>      
+</Item>
 
 <Item>
 TODO/FIXME/WARNING: everything after this is outdated!!!
@@ -241,13 +241,13 @@ Edit <F>GapWWW/lib/config</F>, see that file for instructions:
 <Verb>
     vi lib/config
 </Verb>
-             
+
     In this file a few variables have to be defined to adapt the web pages
     to the local conditions.
 </Item>
 
 <Item>
-Copy a whole <F>doc</F> directory of a &GAP; distribution to the place 
+Copy a whole <F>doc</F> directory of a &GAP; distribution to the place
 mentioned in <F>GapWWW/lib/config</F> (see step 4.) in the variable
 <C>GAPManualLink</C> (this is <F>GapWWW/Manuals</F> in the current setup).
 </Item>
@@ -255,16 +255,16 @@ mentioned in <F>GapWWW/lib/config</F> (see step 4.) in the variable
 <Item>
 The files for the &GAP; bibliography have been included into this directory
 tree in the repository.
-             
+
 <P/>
 Create the html and PDF versions by:
-             
+
 <Verb>
     cd Doc/Bib
     gap4 convbib.g
-    cd ../.. 
+    cd ../..
 </Verb>
-             
+
 Some more information about this is in <F>GapWWW/Doc/Bib/INFO</F>
 which is unchanges since 2010 and may be somewhat outdated.
 </Item>
@@ -273,27 +273,27 @@ which is unchanges since 2010 and may be somewhat outdated.
 Install package manuals:
 
 <P/>
-    Copy the result of Frank's scripts to the place mentioned in 
+    Copy the result of Frank's scripts to the place mentioned in
     <F>GapWWW/lib/config</F> (in the variable <F>pkgmixerpath</F>).
-    (currently, this is <F>GapWWW/Manuals</F>, copy the whole <F>pkg</F> 
+    (currently, this is <F>GapWWW/Manuals</F>, copy the whole <F>pkg</F>
     directory)
 
 <P/>
-    To update the package pages, copy all <F>.mixer</F> files and 
-    <F>pkgconf.py</F> to <F>GapWWW/Packages</F> and rerun the 
+    To update the package pages, copy all <F>.mixer</F> files and
+    <F>pkgconf.py</F> to <F>GapWWW/Packages</F> and rerun the
     <Package>Mixer</Package>.
 </Item>
 
 <Item>
-Make sure that the file  
+Make sure that the file
        <F>GapWWW/lib/AllLinksOfAllHelpSections.data</F> is always up-to-date
      (this has to be adjusted whenever the released manuals change).
 
 <P/>
-     In the development version of &GAP; there is a file 
+     In the development version of &GAP; there is a file
      <F>dev/LinksOfAllHelpSections.g</F>.
      Read this with a current &GAP; version with all currently released
-     packages installed and call <C>WriteAllLinksOfAllHelpSections()</C>, 
+     packages installed and call <C>WriteAllLinksOfAllHelpSections()</C>,
      this writes the file <F>AllLinksOfAllHelpSections.data</F>. It has
      then to be checked in to its place under the <F>GapWWW</F> tree.
      Do not forget to publish the latest revision.
@@ -321,7 +321,7 @@ git pull
 </Verb>
 
 in the <F>GapWWW</F> directory, followed by a
-             
+
 <Verb>
   jekyll build
 </Verb>
@@ -372,7 +372,7 @@ point to.
 <Heading>The &GAP; packages on the web pages</Heading>
 
 The archives and web pages for the &GAP; packages are generated
-by yet another set of tools described in Chapter <Ref Chap="Chap-PkgDist"/>. 
+by yet another set of tools described in Chapter <Ref Chap="Chap-PkgDist"/>.
 These generate for every package a <F>.mixer</F>-file and for all packages
 together a file <F>pkgconf.py</F>. All these files have to be put
 under version control in the directory <F>GapWWW/Packages</F>. These nodes then only
@@ -386,13 +386,13 @@ there.
 
 Until December 2003 the &GAP; forum archive was handled by a tool written
 especially for this task. At that point it was switched to <C>mailman</C>,
-a generic tool for mailing list, which also does the archiving. 
+a generic tool for mailing list, which also does the archiving.
 Therefore the old forum archives are frozen in form of a huge amount
 of HTML pages. These are not kept under version control as single files but as one big
-binary archive under <F>GapWWW/ForumArchive.tar.gz</F>. 
+binary archive under <F>GapWWW/ForumArchive.tar.gz</F>.
 
 <P/>
-To install those pages in a checked out working copy one just has to 
+To install those pages in a checked out working copy one just has to
 extract this archive by doing
 
 <Verb>

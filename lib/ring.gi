@@ -598,7 +598,7 @@ InstallMethod( IsSubset,
 
     gens:= GeneratorsOfRingWithOne( S );
     return IsSubset( R, gens ) and
-           ( ( IsRingWithOne( R ) and not IsEmpty( gens ) ) 
+           ( ( IsRingWithOne( R ) and not IsEmpty( gens ) )
              or One( S ) in R );
     end );
 
@@ -1237,7 +1237,7 @@ InstallGlobalFunction( Gcd, function ( arg )
 #T        Error("<R> must be a Euclidean ring");
 #T    fi;
 
-    
+
     # compute the gcd by iterating
     gcd := StandardAssociate(R,ns[1]);
     for i  in [2..Length(ns)]  do

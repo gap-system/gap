@@ -94,7 +94,7 @@ static Obj FuncApplyRel(Obj self,
                         Obj app, /* handle of the application list  */
                         Obj rel) /* handle of the relator           */
 {
-    
+
     Int                 lp;             /* left pointer into relator       */
     Int                 lc;             /* left coset to apply to          */
     Int                 rp;             /* right pointer into relator      */
@@ -844,7 +844,7 @@ static Int TreeEntryC ( void )
             return 0;
         }
         for ( k = 1; k <= leng; k++ ) {
-            if ( ptWord[k] != INTOBJ_INT(0) )  { 
+            if ( ptWord[k] != INTOBJ_INT(0) )  {
                 break;
             }
         }
@@ -1031,7 +1031,7 @@ static Int AddCosetFactor2 (
             for ( i = 1;  i <= leng;  i++ ) {
                 if ( ! SUM_INTOBJS( sum, ptWord[i], ptFac[i] ) ) {
                     return 1;
-                    /* used to be unrecoverable error message: 
+                    /* used to be unrecoverable error message:
                     ErrorQuit(
                         "exponent too large, Modified Todd-Coxeter aborted",
                         0, 0); */
@@ -1047,7 +1047,7 @@ static Int AddCosetFactor2 (
             for ( i = 1;  i <= leng;  i++ ) {
                 if ( ! DIFF_INTOBJS( sum, ptWord[i], ptFac[i] ) ) {
                     return 1;
-                    /* used to be unrecoverable error message: 
+                    /* used to be unrecoverable error message:
                     ErrorQuit(
                         "exponent too large, Modified Todd-Coxeter aborted",
                         0, 0); */
@@ -1363,7 +1363,7 @@ static Obj FuncCopyRel(Obj self, Obj rel) /* the given relator */
 
     /*  Copy the relator to the new bag                                    */
     while ( leng > 0 ) {
-        *ptCopy++ = *ptRel++; 
+        *ptCopy++ = *ptRel++;
         leng--;
     }
 
@@ -1419,7 +1419,7 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
     for ( k = 1;  k < leng;  k++ ) {
         next = INT_INTOBJ( ptRel[k] );
         if ( next > max ) {
-            max = next; 
+            max = next;
             i = k;
         }
         else if ( next <= min ) {
@@ -1442,7 +1442,7 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
                     break;
                 }
                 else if ( INT_INTOBJ(ptRel[kk]) > INT_INTOBJ(ptRel[ii]) ) {
-                    i = k; 
+                    i = k;
                     break;
                 }
             }
@@ -1486,7 +1486,7 @@ static Obj FuncMakeCanonical(Obj self, Obj rel) /* the given relator */
                 break;
             }
             else if ( - INT_INTOBJ(ptRel[jj]) > INT_INTOBJ(ptRel[ii]) ) {
-                i = leng; 
+                i = leng;
                 break;
             }
         }
@@ -1734,11 +1734,11 @@ static Obj FuncTreeEntry(Obj self, Obj tree, Obj word)
 
             /*  Check if there is already a tree entry [u,v] or [-v,-u]    */
             if ( u < -v ) {
-                t1 = u; 
+                t1 = u;
                 t2 = v;
             }
             else {
-                t1 = -v; 
+                t1 = -v;
                 t2 = -u;
             }
             uabs = ( u > 0 ) ? u : -u;
@@ -1998,7 +1998,7 @@ static UInt RelatorScan(Obj t, UInt di, Obj r)
     }
 
     if (i>(m+1)) {
-      if (p==di) 
+      if (p==di)
         return 1;
       else
         return 0;
@@ -2021,7 +2021,7 @@ static UInt RelatorScan(Obj t, UInt di, Obj r)
     }
 
     if (j<i) {
-      if (p==pa) 
+      if (p==pa)
         return 1;
       else
         return 0;
@@ -2172,7 +2172,7 @@ static Obj FuncLOWINDEX_IS_FIRST(Obj self,
       while ((ok==1)&&(g<=mm)) {
         ga=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,g),b));
         de=INT_INTOBJ(ELM_PLIST(ELM_PLIST(t,g),mu[b]));
-        if ((ga==0)||(de==0)) 
+        if ((ga==0)||(de==0))
           ok=0;
         else {
           if (nu[de]==0) {
@@ -2180,7 +2180,7 @@ static Obj FuncLOWINDEX_IS_FIRST(Obj self,
             mu[l]=de;
             nu[de]=l;
           }
-          if (nu[de]<ga) 
+          if (nu[de]<ga)
             return False;
           else {
             if (nu[de]>ga) {
@@ -2213,7 +2213,7 @@ static Obj FuncLOWINDEX_PREPARE_RELS(Obj self, Obj r) /* rels */
       rel=ELM_PLIST(ri,j); /* single relator */
       l=LEN_PLIST(rel);
       rp=(UInt*)ADDR_OBJ(rel);
-      for (k=1;k<=l;k++) 
+      for (k=1;k<=l;k++)
         rp[k]=INT_INTOBJ((Obj)rp[k]); /* convert relator entries to C-integers */
       /* change type */
       RetypeBag(rel,T_DATOBJ);
@@ -2258,13 +2258,13 @@ static Obj FuncTC_QUICK_SCAN(Obj self,
 
   /*  # forward scan */
   /*  while i<=r and c[w[i]+offset][f]<>0 do */
-  while ((i<=r) && 
+  while ((i<=r) &&
     ((ff=INT_INTOBJ(ELM_PLIST(ELM_PLIST(c,INT_INTOBJ(ELM_PLIST(w,i))+offset),f)))
         !=0) ) {
     /*    f:=c[w[i]+offset][f];  Use extra variable so old f remains if
      *    i-condition triggered */
     f=ff;
-    i++;  
+    i++;
   }
 
   if (i>r) {
@@ -2279,7 +2279,7 @@ static Obj FuncTC_QUICK_SCAN(Obj self,
 /*  #backward scan */
   b=alpha; j=r;
   /*  while j>=i and c[-w[j]+offset][b]<>0 do */
-  while ((j>=i) && 
+  while ((j>=i) &&
     ((bb=INT_INTOBJ(ELM_PLIST(ELM_PLIST(c,-INT_INTOBJ(ELM_PLIST(w,j))+offset),b)))
       !=0) ) {
 

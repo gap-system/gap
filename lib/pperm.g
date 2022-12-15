@@ -8,7 +8,7 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 
-DeclareCategoryKernel("IsPartialPerm", IsMultiplicativeElementWithInverse 
+DeclareCategoryKernel("IsPartialPerm", IsMultiplicativeElementWithInverse
 and IsMultiplicativeElementWithZero and IsAssociativeElement, IS_PPERM);
 
 DeclareCategoryCollections( "IsPartialPerm" );

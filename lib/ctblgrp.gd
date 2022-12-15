@@ -263,7 +263,7 @@ DeclareGlobalFunction("DxOnedimCleanout");
 ##  <Func Name="BestSplittingMatrix" Arg='D'/>
 ##
 ##  <Description>
-##  returns the number of the class sum matrix that is assumed to yield the 
+##  returns the number of the class sum matrix that is assumed to yield the
 ##  best (cost/earning ration) split. This matrix then will be the next one
 ##  computed and used.
 ##  <P/>
@@ -321,7 +321,7 @@ DeclareGlobalFunction( "DixonInit" );
 ##  <Ref Func="BestSplittingMatrix"/> and the options described for this
 ##  function apply here.
 ##  <P/>
-##  <Ref Func="DixonSplit"/> returns the number of the class that was 
+##  <Ref Func="DixonSplit"/> returns the number of the class that was
 ##  used for splitting if a split was performed, and <K>fail</K> otherwise.
 ##  </Description>
 ##  </ManSection>
@@ -438,7 +438,7 @@ DeclareGlobalFunction("IrreducibleRepresentationsDixon");
 ##  Given a group <A>G</A> and a list of characters and representations of
 ##  <A>G</A>, this function returns a permutation of the representations
 ##  (via <Ref Func="Permuted"/>),
-##  that will ensure characters and representations are ordered compatibly. 
+##  that will ensure characters and representations are ordered compatibly.
 ##  </Description>
 ##  </ManSection>
 ##

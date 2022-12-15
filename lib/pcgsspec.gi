@@ -16,7 +16,7 @@
 ##
 PrimePowerPcSequence := function( pcgs )
     local   new,  i,  p;
-    
+
     new := List( [1..Length(pcgs)], x -> false );
     p   := RelativeOrders( pcgs );
     for i in [1..Length(pcgs)] do
@@ -40,7 +40,7 @@ ModifyPcgs := function( pcgs, wf, list, weights, work, g, wt )
     h := ReducedPcElement( pcgs, list[d], g );
     S := PrimePowerComponents( h );
 
-    # insert h in base 
+    # insert h in base
     if weights[ d ] < wt  then
 
         Info(InfoSpecPcgs, 3, " insert ", g );
@@ -56,20 +56,20 @@ ModifyPcgs := function( pcgs, wf, list, weights, work, g, wt )
         od;
 
         # ModifyPcgs with components of h
-        for s  in S  do 
-            ModifyPcgs( pcgs, wf, list, weights, work, s, 
+        for s  in S  do
+            ModifyPcgs( pcgs, wf, list, weights, work, s,
                         wf.adj( pcgs, s, tmp ));
         od;
         return d;
 
-    # base is not changed 
+    # base is not changed
     else
-         
+
         # modify with components of gg
         min := Length( pcgs ) + 1;
         for s  in S  do
             tmp := wf.adj( pcgs, s, wt );
-            min := Minimum( min, 
+            min := Minimum( min,
                    ModifyPcgs(pcgs, wf, list, weights, work , s, tmp) );
         od;
         return min;
@@ -82,11 +82,11 @@ end;
 #F  PcgsSystemWithWf( <pcgs> <wf> )
 ##
 PcgsSystemWithWf := function( pcgs, wf )
-    local   ppcgs,  m,  list,  weights,  work,  nilp,  h,  i,  j,  g,  S,  
+    local   ppcgs,  m,  list,  weights,  work,  nilp,  h,  i,  j,  g,  S,
             pos,  s,  wt,  newpcgs,  wset,  layers,  first;
 
     ppcgs := PrimePowerPcSequence( pcgs );
-   
+
     # initialise
     m    := Length( pcgs );
     list := ShallowCopy( ppcgs );
@@ -98,7 +98,7 @@ PcgsSystemWithWf := function( pcgs, wf )
     h := 1;
     while h <= nilp+1 do
 
-        # run through powers and commutators 
+        # run through powers and commutators
         Info(InfoSpecPcgs, 2, " start layer ",h);
         i := 1;
         while i <= m  do
@@ -106,7 +106,7 @@ PcgsSystemWithWf := function( pcgs, wf )
             while j <= i  do
                 if wf.relevant( pcgs, weights, i, j, h ) and work[i][j]  then
                     Info(InfoSpecPcgs, 3, " try ",i," ",j);
- 
+
                     # set work flag new
                     if wf.useful( weights, i, j, h ) then
                         work[ i ][ j ] := false;
@@ -122,10 +122,10 @@ PcgsSystemWithWf := function( pcgs, wf )
                     pos := m + 1;
                     for s  in S  do
                         wt := wf.weight( pcgs, weights, i, j, h, s );
-                        pos := Minimum( pos, 
+                        pos := Minimum( pos,
                         ModifyPcgs( pcgs, wf, list, weights, work, s, wt ) );
                     od;
-    
+
                     # if necessary, set indices new
                     if pos <= i  then
                         i := pos;
@@ -148,8 +148,8 @@ PcgsSystemWithWf := function( pcgs, wf )
     SortParallel( weights, list );
 
     # compute pcgs - be careful!
-    if ppcgs = AsList( pcgs ) and 
-       ForAll( [1..m], x -> DepthOfPcElement(pcgs, list[x]) = x ) 
+    if ppcgs = AsList( pcgs ) and
+       ForAll( [1..m], x -> DepthOfPcElement(pcgs, list[x]) = x )
     then
         newpcgs := pcgs;
     else
@@ -162,7 +162,7 @@ PcgsSystemWithWf := function( pcgs, wf )
     wset := Set( weights );
     layers := List( [1..m], x -> Position( wset, weights[x] ) );
 
-    # set up first 
+    # set up first
     first := [1];
     for i in [2..m] do
         if weights[i] <> weights[i-1] then
@@ -171,8 +171,8 @@ PcgsSystemWithWf := function( pcgs, wf )
     od;
     Add( first, m+1 );
 
-    return rec( pcgs    := newpcgs, 
-                weights := weights, 
+    return rec( pcgs    := newpcgs,
+                weights := weights,
                 layers  := layers,
                 first   := first );
 end;
@@ -186,7 +186,7 @@ PcgsSystemLGSeries := function( pcgs )
     local wf;
 
     # set up weight function
-    wf := rec( 
+    wf := rec(
 
         adj := function( pcgs, g, wt )
             wt := ShallowCopy( wt );
@@ -203,7 +203,7 @@ PcgsSystemLGSeries := function( pcgs )
                 return true;
             else
                 if w[i][1] = w[j][1]  then
-                    if w[i][1] = h-1 and w[i][3] = w[j][3] and 
+                    if w[i][1] = h-1 and w[i][3] = w[j][3] and
                       (w[i][2] = 1 or w[j][2] = 1)  then
                         return true;
                     elif w[i][1] = h  and w[i][3] <> w[j][3]  then
@@ -215,11 +215,11 @@ PcgsSystemLGSeries := function( pcgs )
                     fi;
                 elif w[i][1] >= h+1 and w[j][1] >= h+1 then
                      return true;
-                elif w[i][1] = h+1  and w[j][1] <= h  and w[j][2] = 1  then 
+                elif w[i][1] = h+1  and w[j][1] <= h  and w[j][2] = 1  then
                      return true;
-                elif w[i][1] <= h  and w[j][1] = h+1  and w[i][2] = 1  then 
+                elif w[i][1] <= h  and w[j][1] = h+1  and w[i][2] = 1  then
                      return true;
-                else 
+                else
                      return false;
                 fi;
             fi;
@@ -253,7 +253,7 @@ PcgsSystemLGSeries := function( pcgs )
         end,
 
         useful := function( w, i, j, h )
-    
+
             if i = j and w[i][1] >= h+1 then
                 return false;
             elif i<>j and w[i][1] = w[j][1] and w[i][1] >= h+1 and
@@ -297,19 +297,19 @@ LeastBadHallLayer := function( pcgssys, i )
             while k <= Length( exponents )  do
 
                 # test primes
-                if exponents[k] <> 0 and 
-                   pi <> pcgssys.weights[k+i][3] and 
-                   pj <> pcgssys.weights[k+i][3] 
+                if exponents[k] <> 0 and
+                   pi <> pcgssys.weights[k+i][3] and
+                   pj <> pcgssys.weights[k+i][3]
                 then
                     bad := Minimum( bad, k+i );
-                    k := Length( exponents ) + 1;  
+                    k := Length( exponents ) + 1;
                 else
                     k := k + 1;
                 fi;
             od;
         fi;
 
-        # if bad is minimal return; otherwise go on 
+        # if bad is minimal return; otherwise go on
         if i = bad -1  then
             return bad;
         fi;
@@ -324,17 +324,17 @@ end;
 ##
 PcgsSystemWithHallSystem := function( pcgssys )
     local m, i, k, n, F,
-          layer, start, next, size, base, 
-          V, M, 
+          layer, start, next, size, base,
+          V, M,
           pi, pk, field, id,
-          g, v, A, I, B, l, test, aij, 
+          g, v, A, I, B, l, test, aij,
           new, solution, j, subs;
 
     # set up
     m   := Length( pcgssys.pcgs );
     F   := FamilyObj(OneOfPcgs(pcgssys.pcgs));
 
-    # find starting index 
+    # find starting index
     n := m;
     while 1 <= n and pcgssys.weights[n][1] = pcgssys.weights[m][1] do
          n := n - 1;
@@ -355,7 +355,7 @@ PcgsSystemWithHallSystem := function( pcgssys )
             size  := next - start;
             base  := pcgssys.pcgs{[start..next-1]};
 
-            # InitializeSystem inhomogenous system  
+            # InitializeSystem inhomogeneous system
             V := [];
             M := List([1..size], x -> []);
 
@@ -369,9 +369,9 @@ PcgsSystemWithHallSystem := function( pcgssys )
             g := pcgssys.pcgs[ i ] ^ pi;
             v := ExponentsOfPcElement( pcgssys.pcgs, g, [start..next-1] );
             v := v * id;
- 
+
             # set up matrix
-            A := List( base, x -> ExponentsOfPcElement( 
+            A := List( base, x -> ExponentsOfPcElement(
                        pcgssys.pcgs, x^pcgssys.pcgs[i], [start..next-1] ) );
             A := A * id;
             I := A ^ 0;
@@ -396,7 +396,7 @@ PcgsSystemWithHallSystem := function( pcgssys )
 
                 # corresponding matrix
                 aij := pcgssys.pcgs[j] ^ pcgssys.pcgs[i];
-                A := List( base, x -> ExponentsOfPcElement( 
+                A := List( base, x -> ExponentsOfPcElement(
                                  pcgssys.pcgs, x^aij, [start..next-1] ) );
                 A := A * id;
                 I := A ^ 0;
@@ -440,7 +440,7 @@ LeastBadComplementLayer := function( pcgssys, i )
 
     # look through commutators
     for j in [ 1 .. m ] do
-        if pcgssys.weights[j][1] >= pcgssys.weights[i][1] and 
+        if pcgssys.weights[j][1] >= pcgssys.weights[i][1] and
            pcgssys.weights[j][3] <> p then
             w := Comm( pcgssys.pcgs[j], pcgssys.pcgs[i] );
             if DepthOfPcElement( pcgssys.pcgs, w ) <= m then
@@ -449,7 +449,7 @@ LeastBadComplementLayer := function( pcgssys, i )
 
                 # run through exponent list until bad entry is found
                 while k <= Length( exponents )  do
-                    if exponents[k] <> 0 and 
+                    if exponents[k] <> 0 and
                        pcgssys.weights[i+k][1] = pcgssys.weights[j][1] + 1 and
                        pcgssys.weights[i+k][2] = 1  and
                        pcgssys.weights[i+k][3] = p  then
@@ -478,10 +478,10 @@ end;
 #F  PcgsSystemWithComplementSystem( <pcgssys> )
 ##
 PcgsSystemWithComplementSystem := function( pcgssys )
-    local m, F, n, i, k, 
+    local m, F, n, i, k,
           layer, start, next, size, base,
           V, M, l,
-          pi, pk, field, 
+          pi, pk, field,
           nil, test, j, g, v, aij, A, B,
           solution, new, subs;
 
@@ -509,7 +509,7 @@ PcgsSystemWithComplementSystem := function( pcgssys )
             size  := next - start;
             base  := pcgssys.pcgs{[start..next-1]};
 
-            # InitializeSystem inhomogenous system  
+            # InitializeSystem inhomogeneous system
             V := [];
             M := List([1..size], x -> []);
 
@@ -520,7 +520,7 @@ PcgsSystemWithComplementSystem := function( pcgssys )
 
             # pic the p'-generators in the head above
             nil  := pcgssys.weights[k][1]-1;
-            test := Filtered( [1..m], x -> pcgssys.weights[x][3] <> pi 
+            test := Filtered( [1..m], x -> pcgssys.weights[x][3] <> pi
                                       and  pcgssys.weights[x][1] = nil );
             for j in test do
                 g := Comm( pcgssys.pcgs[j], pcgssys.pcgs[i] );
@@ -529,7 +529,7 @@ PcgsSystemWithComplementSystem := function( pcgssys )
 
                 # corresponding matrix
                 aij := pcgssys.pcgs[j] ^ pcgssys.pcgs[i];
-                A := List( base, x -> ExponentsOfPcElement( 
+                A := List( base, x -> ExponentsOfPcElement(
                            pcgssys.pcgs, x^aij, [start..next-1] ) );
                 A := A * One(field);
                 B := A - A ^ 0;
@@ -648,7 +648,7 @@ function( pcgs )
         fi;
     od;
     Add( h, Length( w ) + 1 );
-    return h; 
+    return h;
 end);
 
 #############################################################################
@@ -669,7 +669,7 @@ function( pcgs )
         od;
         Add( t, j );
     od;
-    return t; 
+    return t;
 end);
 
 #############################################################################
@@ -840,7 +840,7 @@ end );
 ##
 #M LGLayers( pcgs )
 ##
-InstallMethod( LGLayers, 
+InstallMethod( LGLayers,
                "for induced wrt special",
                true,
                [IsInducedPcgsWrtSpecialPcgs],
@@ -867,7 +867,7 @@ end );
 ##
 #M LGFirst( pcgs )
 ##
-InstallMethod( LGFirst, 
+InstallMethod( LGFirst,
                "for induced wrt special",
                true,
                [IsInducedPcgsWrtSpecialPcgs],
@@ -893,11 +893,11 @@ end );
 ##
 #M LGLength( G )
 ##
-InstallMethod( LGLength, 
+InstallMethod( LGLength,
                "for groups",
                true,
-               [ IsGroup ],                         
-               0,                                     
+               [ IsGroup ],
+               0,
 function( G )
 
     if not IsSolvableGroup( G ) then
@@ -911,7 +911,7 @@ end );
 #M  PClassPGroup( <G> )   . . . . . . . . . .  . . . . . . <p>-central series
 ##
 InstallMethod( PClassPGroup,
-    "for groups with special pcgs",                                       
+    "for groups with special pcgs",
     true, [ IsPGroup and HasSpecialPcgs ], 1,
     function( G )
 
@@ -923,7 +923,7 @@ InstallMethod( PClassPGroup,
 #M  RankPGroup( <G> ) . . . . . . . . . . . .  . . . . . . <p>-central series
 ##
 InstallMethod( RankPGroup,
-    "for groups with special pcgs",                                       
+    "for groups with special pcgs",
     true, [ IsPGroup and HasSpecialPcgs ], 1,
     function( G )
 
@@ -986,7 +986,7 @@ PcgsElAbSerFromSpecPcgs:=function(G)
 local s;
   if HasHomePcgs(G)
      and IsPcgsElementaryAbelianSeries(InducedPcgsWrtHomePcgs(G)) then
-    return InducedPcgsWrtHomePcgs(G); 
+    return InducedPcgsWrtHomePcgs(G);
     # prefer the `HomePcgs' because wrt. it we store inducedness and for pc
     # groups its the family pcgs wrt. calculations are quicker
   fi;

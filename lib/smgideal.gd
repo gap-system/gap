@@ -66,7 +66,7 @@ InstallTrueMethod(IsMagmaIdeal, IsSemigroupIdeal);
 ##  <Attr Name="ReesCongruenceOfSemigroupIdeal" Arg='I'/>
 ##
 ##  <Description>
-##  A two sided ideal <A>I</A> of a semigroup <A>S</A>  defines a congruence on 
+##  A two sided ideal <A>I</A> of a semigroup <A>S</A>  defines a congruence on
 ##  <A>S</A> given by <M>\Delta \cup I \times I</M>.
 ##  </Description>
 ##  </ManSection>

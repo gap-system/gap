@@ -497,7 +497,7 @@ DeclareGlobalFunction( "IntegratedStraightLineProgram" );
 ##  A straight line program element has a <E>seed</E>
 ##  (a list of group elements) and a straight line program
 ##  on the same number of generators as the length of this seed,
-##  its value is the value of the evaluated straight line program. 
+##  its value is the value of the evaluated straight line program.
 ##  <P/>
 ##  At the moment, the entries of the straight line program have to be
 ##  simple lists (i.e. of the first form).
@@ -538,7 +538,7 @@ DeclareGlobalFunction( "IntegratedStraightLineProgram" );
 DeclareFilter("StraightLineProgramElmRankFilter",100);
 
 DeclareRepresentation("IsStraightLineProgElm",
-  IsMultiplicativeElementWithInverse and IsPositionalObjectRep 
+  IsMultiplicativeElementWithInverse and IsPositionalObjectRep
   and StraightLineProgramElmRankFilter,[]);
 
 
@@ -709,7 +709,7 @@ DeclareGlobalFunction( "SLPChangesSlots" );
 ##  initialized with [1..nrinps] and which contains in the end the set
 ##  of slots used.
 ##  ll is any list.
-##  This functions goes backwards through the slp and adds exactly those 
+##  This functions goes backwards through the slp and adds exactly those
 ##  lines of the slp to ll that have to be executed to produce the
 ##  result (in backward order). All lines are transformed into type 2
 ##  lines ([assocword,slot]). Note that needed is changed underways.
@@ -746,11 +746,11 @@ DeclareGlobalFunction( "SLPReversedRenumbered" );
 ##  <A>k</A>. The argument
 ##  <A>k</A> may be an integer or a list of integers. If <A>k</A> is an integer,
 ##  the resulting slp calculates only the result with that number
-##  in the original output tuple. 
+##  in the original output tuple.
 ##  If <A>k</A> is a list of integers, the resulting slp calculates those
-##  results with indices <A>k</A> in the original output tuple. 
+##  results with indices <A>k</A> in the original output tuple.
 ##  In both cases the resulting slp
-##  does only what is necessary. Obviously, the slp must have a line with 
+##  does only what is necessary. Obviously, the slp must have a line with
 ##  enough expressions (lists) for the supplied <A>k</A> as its last line.
 ##  <A>slp</A> is either an slp or a pair where the first entry are the lines
 ##  of the slp and the second is the number of inputs.
@@ -769,7 +769,7 @@ DeclareGlobalFunction( "RestrictOutputsOfSLP" );
 ##
 ##  <Description>
 ##  Returns a new slp that calculates only the value of slot <A>k</A>
-##  at the end of <A>slp</A> doing only what is necessary. 
+##  at the end of <A>slp</A> doing only what is necessary.
 ##  slp is either an slp or a pair where the first entry are the lines
 ##  of the slp and the second is the number of inputs.
 ##  Note that this assumes a general SLP with possible overwriting.
@@ -860,7 +860,7 @@ DeclareGlobalFunction( "ProductOfStraightLinePrograms" );
 ##  <Func Name="RewriteStraightLineProgram" Arg='s,l,lsu,inputs,tabuslots'/>
 ##
 ##  <Description>
-##  The purpose of this function is the following: Append the slp <A>s</A> to 
+##  The purpose of this function is the following: Append the slp <A>s</A> to
 ##  the one currently built in <A>l</A>.
 ##  The prospective inputs are already standing somewhere and some
 ##  slots may not be used by the new copy of <A>s</A> within <A>l</A>.
@@ -872,7 +872,7 @@ DeclareGlobalFunction( "ProductOfStraightLinePrograms" );
 ##  inputs are, that the copy of <A>s</A> in <A>l</A> should work on, that is, its length
 ##  must be equal to the number of inputs <A>s</A> takes. <A>tabuslots</A> is a list of
 ##  slot numbers which will not be overwritten by the new copy of <A>s</A> in <A>l</A>.
-##  This function changes <A>l</A> and returns a record with components 
+##  This function changes <A>l</A> and returns a record with components
 ##  <C>l</C> being <A>l</A>, <C>results</C> being
 ##  a list of slot numbers, in which the results of <A>s</A> are stored in the end
 ##  and <C>lsu</C> being the number of the largest slot used by <A>l</A> up to now.
@@ -922,7 +922,7 @@ DeclareGlobalFunction( "NewProductOfStraightLinePrograms" );
 ##  is known: First of all,
 ##  intermediate results which are not actually needed later on are
 ##  not computed at all, and once an intermediate result is used for
-##  the last time in this SLP, it is discarded. The latter leads to 
+##  the last time in this SLP, it is discarded. The latter leads to
 ##  the fact that the evaluation of the SLP needs less memory.
 ##  </Description>
 ##  </ManSection>

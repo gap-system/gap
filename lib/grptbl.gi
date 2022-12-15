@@ -105,8 +105,8 @@ end );
 ##  (cf. the discussion for issue 4480),
 ##  a collection of magma by multiplication table elements will always be
 ##  acceptable as generators, provided each one individually has an inverse.
-##    
-InstallMethod( IsGeneratorsOfMagmaWithInverses, 
+##
+InstallMethod( IsGeneratorsOfMagmaWithInverses,
         "for a collection of magma by mult table elements",
         [IsCollection],
         function(c)
@@ -115,7 +115,7 @@ InstallMethod( IsGeneratorsOfMagmaWithInverses,
     fi;
     TryNextMethod();
 end);
-    
+
 
 #############################################################################
 ##
@@ -190,7 +190,7 @@ InstallGlobalFunction( MagmaByMultiplicationTableCreator,
           M,      # the magma, result
           filts;
 
-    if IsBound(arg[3]) then 
+    if IsBound(arg[3]) then
       filts:=IsMagmaByMultiplicationTableObj and arg[3];
     else
       filts:=IsMagmaByMultiplicationTableObj;
@@ -285,7 +285,7 @@ InstallGlobalFunction( MagmaWithInversesByMultiplicationTable, function( A )
           elms,   # sorted list of elements
           M;      # the magma, result
 
-    M:= MagmaByMultiplicationTableCreator( A, 
+    M:= MagmaByMultiplicationTableCreator( A,
             MagmaWithInversesByGenerators );
 
     # Check that `A' admits a left and right identity element.
@@ -321,7 +321,7 @@ end );
 ##
 #F  SemigroupByMultiplicationTable( <A> )
 ##
-InstallGlobalFunction( SemigroupByMultiplicationTable, 
+InstallGlobalFunction( SemigroupByMultiplicationTable,
 function( A )
   local n, range, i, j, k;
 
@@ -334,21 +334,21 @@ function( A )
          and ForAll( A, row -> ForAll( row, x -> x in range ) ) then
 
         # check associativity
-        for i in range do 
-          for j in range do 
-            for k in range do 
-              if A[A[i][j]][k]<>A[i][A[j][k]] then 
+        for i in range do
+          for j in range do
+            for k in range do
+              if A[A[i][j]][k]<>A[i][A[j][k]] then
                 return fail;
               fi;
             od;
           od;
         od;
-        
+
         return MagmaByMultiplicationTableCreatorNC(A, MagmaByGenerators,
          IsAssociativeElement and IsMagmaByMultiplicationTableObj);
       fi;
     fi;
-    Error( "<A> must be a square matrix with entries in `[ 1 .. n ]'" ); 
+    Error( "<A> must be a square matrix with entries in `[ 1 .. n ]'" );
 end );
 
 
@@ -356,7 +356,7 @@ end );
 ##
 #F  MonoidByMultiplicationTable( <A> )
 ##
-InstallGlobalFunction( MonoidByMultiplicationTable, 
+InstallGlobalFunction( MonoidByMultiplicationTable,
 function( A )
   local n, range, onepos, M, i, j, k;
 
@@ -366,7 +366,7 @@ function( A )
 
     if     Length( A[1] ) = n
        and ForAll( A, row -> ForAll( row, x -> x in range ) ) then
-    
+
       # Check that `A' admits a left and right identity element.
       onepos:= Position( A, [ 1 .. n ] );
       if onepos = fail or A{ [ 1 .. n ] }[ onepos ] <> [ 1 .. n ] then
@@ -374,10 +374,10 @@ function( A )
       fi;
 
       # check associativity
-      for i in range do 
-        for j in range do 
-          for k in range do 
-            if A[A[i][j]][k]<>A[i][A[j][k]] then 
+      for i in range do
+        for j in range do
+          for k in range do
+            if A[A[i][j]][k]<>A[i][A[j][k]] then
               return fail;
             fi;
           od;
@@ -394,7 +394,7 @@ function( A )
       return M;
     fi;
   fi;
-  Error( "<A> must be a square matrix with entries in `[ 1 .. n ]'" ); 
+  Error( "<A> must be a square matrix with entries in `[ 1 .. n ]'" );
 end );
 
 

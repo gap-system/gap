@@ -692,7 +692,7 @@ InstallGlobalFunction( "InstallHandlingByNiceBasis",
                      x -> IsIdenticalObj( filter, x[1] ) );
       entry[3] := record.detect;
     od;
-    
+
     InstallTrueMethod( IsHandledByNiceBasis, filter );
     filter:= IsFreeLeftModule and filter;
 

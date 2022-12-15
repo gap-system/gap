@@ -76,7 +76,7 @@ InstallTrueMethod( IsListDefault, IsInternalRep and IsList );
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##  
+##
 ##  This filter is a Property, not a Category, because it is not
 ##  always possible to determine cheaply the length of a row (which
 ##  might be some sort of Enumerator).  If the rows are plain lists
@@ -150,7 +150,7 @@ BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_IMMUTABLE", NewType( ListsFamily,
 
 #############################################################################
 ##
-#V  TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE  . . . 
+#V  TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE  . . .
 ##
 ##  <ManSection>
 ##  <Var Name="TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE"/>
@@ -164,7 +164,7 @@ BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE", NewType( ListsFamily,
 
 #############################################################################
 ##
-#V  TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE  . . . 
+#V  TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE  . . .
 ##
 ##  <ManSection>
 ##  <Var Name="TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE"/>
@@ -179,7 +179,7 @@ BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE", NewType( ListsFamily,
 
 #############################################################################
 ##
-#V  TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE  . 
+#V  TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE  .
 ##
 ##  <ManSection>
 ##  <Var Name="TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE"/>
@@ -193,7 +193,7 @@ BIND_GLOBAL( "TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE", NewType( ListsFamily,
 
 #############################################################################
 ##
-#V  TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE  . 
+#V  TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE  .
 ##
 ##  <ManSection>
 ##  <Var Name="TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE"/>
@@ -248,37 +248,37 @@ BIND_GLOBAL( "TYPE_LIST_EMPTY_IMMUTABLE", NewType( ListsFamily,
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_BLIST_MUT", 
+BIND_GLOBAL( "TYPE_BLIST_MUT",
   NewType( CollectionsFamily(BooleanFamily),
-    IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and
     IS_BLIST_REP ) );
-BIND_GLOBAL( "TYPE_BLIST_IMM", 
+BIND_GLOBAL( "TYPE_BLIST_IMM",
   NewType( CollectionsFamily(BooleanFamily),
-    IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and
     IS_BLIST_REP ) );
-BIND_GLOBAL( "TYPE_BLIST_NSORT_MUT", 
+BIND_GLOBAL( "TYPE_BLIST_NSORT_MUT",
   NewType( CollectionsFamily(BooleanFamily),
-    IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and
     IS_BLIST_REP and Tester(IsSSortedList) ) );
-BIND_GLOBAL( "TYPE_BLIST_NSORT_IMM", 
+BIND_GLOBAL( "TYPE_BLIST_NSORT_IMM",
   NewType( CollectionsFamily(BooleanFamily),
-    IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and
     IS_BLIST_REP and Tester(IsSSortedList) ) );
-BIND_GLOBAL( "TYPE_BLIST_SSORT_MUT", 
+BIND_GLOBAL( "TYPE_BLIST_SSORT_MUT",
   NewType( CollectionsFamily(BooleanFamily),
-    IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and
     IS_BLIST_REP and Tester(IsSSortedList) and IsSSortedList ) );
-BIND_GLOBAL( "TYPE_BLIST_SSORT_IMM", 
+BIND_GLOBAL( "TYPE_BLIST_SSORT_IMM",
   NewType( CollectionsFamily(BooleanFamily),
-    IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and
     IS_BLIST_REP and Tester(IsSSortedList) and IsSSortedList ) );
 BIND_GLOBAL( "TYPE_BLIST_EMPTY_MUT",
   NewType( CollectionsFamily(BooleanFamily),
-    IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IsMutable and IsInternalRep and IsDenseList and IsHomogeneousList and
     IS_BLIST_REP and IsEmpty and Tester(IsEmpty) ) );
-BIND_GLOBAL( "TYPE_BLIST_EMPTY_IMM", 
+BIND_GLOBAL( "TYPE_BLIST_EMPTY_IMM",
   NewType( CollectionsFamily(BooleanFamily),
-    IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and 
+    IsCopyable and IsInternalRep and IsDenseList and IsHomogeneousList and
     IS_BLIST_REP and IsEmpty and Tester(IsEmpty) ) );
 
 #############################################################################
@@ -289,8 +289,8 @@ BIND_GLOBAL( "TYPE_BLIST_EMPTY_IMM",
 ##  <Func Name="TYPE_LIST_HOM" Arg='family, isMutable, sort, table'/>
 ##
 ##  <Description>
-##  Return the type of a homogenous list whose elements are in <family>, with
-##  additional properties indicated by <isMutable>, <sort> and <table>.
+##  Return the type of a homogeneous list whose elements are in <family>,
+##  with additional properties indicated by <isMutable>, <sort> and <table>.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -405,7 +405,7 @@ DeclareCategoryKernel( "IsRange",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareRepresentationKernel( "IsRangeRep",                                   
+DeclareRepresentationKernel( "IsRangeRep",
     IsInternalRep, IS_RANGE_REP );
 
 
@@ -460,8 +460,8 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_RANGE_SSORT_MUTABLE", 
-        NewType(CollectionsFamily(CyclotomicsFamily), 
+BIND_GLOBAL( "TYPE_RANGE_SSORT_MUTABLE",
+        NewType(CollectionsFamily(CyclotomicsFamily),
                 IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                 Tester(IsSSortedList) and IsRange and IsMutable and
@@ -480,8 +480,8 @@ BIND_GLOBAL( "TYPE_RANGE_SSORT_MUTABLE",
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_RANGE_NSORT_MUTABLE", 
-        NewType(CollectionsFamily(CyclotomicsFamily), 
+BIND_GLOBAL( "TYPE_RANGE_NSORT_MUTABLE",
+        NewType(CollectionsFamily(CyclotomicsFamily),
                 IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                 Tester(IsSSortedList) and IsRange and IsMutable
@@ -500,8 +500,8 @@ BIND_GLOBAL( "TYPE_RANGE_NSORT_MUTABLE",
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_RANGE_SSORT_IMMUTABLE", 
-        NewType(CollectionsFamily(CyclotomicsFamily), 
+BIND_GLOBAL( "TYPE_RANGE_SSORT_IMMUTABLE",
+        NewType(CollectionsFamily(CyclotomicsFamily),
                 IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                 Tester(IsSSortedList) and IsRange and
@@ -520,11 +520,11 @@ BIND_GLOBAL( "TYPE_RANGE_SSORT_IMMUTABLE",
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "TYPE_RANGE_NSORT_IMMUTABLE", 
-        NewType(CollectionsFamily(CyclotomicsFamily), 
+BIND_GLOBAL( "TYPE_RANGE_NSORT_IMMUTABLE",
+        NewType(CollectionsFamily(CyclotomicsFamily),
                 IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
-                Tester(IsSSortedList) and IsRange 
+                Tester(IsSSortedList) and IsRange
                 and IsRangeRep and IsInternalRep));
 
 
@@ -541,7 +541,7 @@ BIND_GLOBAL( "TYPE_RANGE_NSORT_IMMUTABLE",
 ##  <Description>
 ##  A boolean list (<Q>blist</Q>) is a list that has no holes and contains
 ##  only <K>true</K> and <K>false</K>.
-##  Boolean lists can be represented in an efficient compact form, see 
+##  Boolean lists can be represented in an efficient compact form, see
 ##  <Ref Sect="More about Boolean Lists"/>  for details.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -586,12 +586,12 @@ DeclareCategoryKernel( "IsBlist", IsHomogeneousList, IS_BLIST );
 ##  <Func Name="ConvertToBlistRep"  Arg='blist' />
 ##  <Returns><K>true</K> or <K>false</K></Returns>
 ##  <Description>
-##  The first function is a filter that returns <K>true</K> if 
-##  the object <A>obj</A> is 
-##  a boolean list in compact representation and <K>false</K> otherwise, 
+##  The first function is a filter that returns <K>true</K> if
+##  the object <A>obj</A> is
+##  a boolean list in compact representation and <K>false</K> otherwise,
 ##  see  <Ref Sect="More about Boolean Lists"/>.<P/>
-##  
-##  The second function converts the object <A>blist</A> to a boolean list 
+##
+##  The second function converts the object <A>blist</A> to a boolean list
 ##  in compact representation and returns <K>true</K> if this is possible.
 ##  Otherwise <A>blist</A> is unchanged and <K>false</K> is returned.
 ##  <Example>
@@ -599,7 +599,7 @@ DeclareCategoryKernel( "IsBlist", IsHomogeneousList, IS_BLIST );
 ##  [ true, false, true ]
 ##  gap> IsBlistRep(l);
 ##  true
-##  gap> l := [true, false, 1]; 
+##  gap> l := [true, false, 1];
 ##  [ true, false, 1 ]
 ##  gap> l[3] := false;
 ##  false

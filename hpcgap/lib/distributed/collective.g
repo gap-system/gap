@@ -10,14 +10,14 @@
 
 ParEval := function( command )
   local result, i, msg;
-  
+
   msg := Concatenation(IO_Pickle(processId), IO_Pickle(MESSAGE_TYPES.EVAL_MSG), command);
   for i in [0..commSize-1] do
     if i<>processId then
       MPI_Send(msg, i, MESSAGE_TYPES.EVAL_MSG);
     fi;
   od;
-  
+
   result := ReadEvalFromString( PrintToString (command) );
 
   if result = NO_RET_VAL then return; fi;
@@ -32,8 +32,8 @@ ParDeclareGlobalFunction := function( name )
   fi;
   ParEval( Concatenation("DeclareGlobalFunction(\"", name, "\")") );
 end;
-  
-  
+
+
 ParInstallGlobalFunction := function (name, f)
   if IsString(name) then
     ParDeclareGlobalFunction( name );

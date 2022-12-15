@@ -36,8 +36,8 @@ InstallMethod( PrintObj,
     "record",
     [ IsRecord ],
 ## Changed to use sorted component names to make printing nicer to read and
-## independent of session (i.e., the ordering in which component names were 
-## first used). Except for the sorting of components this does the same as 
+## independent of session (i.e., the ordering in which component names were
+## first used). Except for the sorting of components this does the same as
 ## the former (now removed) kernel function FuncPRINT_PREC_DEFAULT.
     function( record )
     local com, i, snam, nam, names, order;
@@ -59,7 +59,7 @@ InstallMethod( PrintObj,
         # easy if nam is integer or valid identifier:
         if ForAll(nam, x-> x in IdentifierLetters) and Size(nam) > 0 then
           Print(nam, "\< := \>");
-        else 
+        else
           # otherwise we use (...) syntax:
           snam := String(nam);
           Print("("); View(snam); Print(")\< := \>");
@@ -133,7 +133,7 @@ InstallMethod( ViewObj,
         # easy if nam is integer or valid identifier:
         if ForAll(nam, x-> x in IdentifierLetters) and Size(nam) > 0 then
           Print(nam, " := ");
-        else 
+        else
           # otherwise we use (...) syntax:
           snam := String(nam);
           Print("("); View(snam); Print(") := ");
@@ -203,9 +203,9 @@ end);
 ##
 #F  SetNamesForFunctionsInRecord( <rec-name>[, <record> ][, <field-names>])
 ##
-##  set the names of functions bound to components of a record. 
+##  set the names of functions bound to components of a record.
 ##
-InstallGlobalFunction(SetNamesForFunctionsInRecord, 
+InstallGlobalFunction(SetNamesForFunctionsInRecord,
 function(arg)
     local recname, next, record, fields, field;
     if LENGTH(arg) = 0 or not IS_STRING(arg[1]) then

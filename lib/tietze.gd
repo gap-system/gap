@@ -516,7 +516,7 @@ DeclareGlobalFunction("PresentationRegularPermutationGroupNC");
 ##  gap> G := GeneralLinearGroup( 2, 7 );
 ##  GL(2,7)
 ##  gap> GeneratorsOfGroup( G );
-##  [ [ [ Z(7), 0*Z(7) ], [ 0*Z(7), Z(7)^0 ] ], 
+##  [ [ [ Z(7), 0*Z(7) ], [ 0*Z(7), Z(7)^0 ] ],
 ##    [ [ Z(7)^3, Z(7)^0 ], [ Z(7)^3, 0*Z(7) ] ] ]
 ##  gap> Size( G );
 ##  2016
@@ -1841,7 +1841,7 @@ DeclareGlobalFunction("TzSearch");
 ##  <P/>
 ##  The idea is to find pairs of relators <M>r_1</M> and <M>r_2</M> of length
 ##  <M>l_1</M> and <M>l_2</M>, respectively, such that <M>l_1</M> is even,
-##  <M>l_1 \leq l_2</M>, and <M>r_1</M> and <M>r_2</M> coincide (possibly 
+##  <M>l_1 \leq l_2</M>, and <M>r_1</M> and <M>r_2</M> coincide (possibly
 ##  after inverting or conjugating one of them) in some maximal subword
 ##  <M>w</M> of length at least <M>l_1/2</M>.
 ##  Let <M>l</M> be the length of <M>w</M>. Then, if <M>l > l_1/2</M>,

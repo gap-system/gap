@@ -243,7 +243,7 @@ function( efam, pcs )
     #T  96/09/26 fceller  do some checks
     return PcgsByPcSequenceNC( efam, pcs );
 end );
-    
+
 
 #############################################################################
 InstallMethod( PcgsByPcSequence,
@@ -585,7 +585,7 @@ end);
 ##
 #M  HeadPcElementByNumber( <8bits-pcgs>, <8bits-word>, <num> )
 ##
-InstallMethod( HeadPcElementByNumber, "family pcgs (8bits)", 
+InstallMethod( HeadPcElementByNumber, "family pcgs (8bits)",
   IsCollsElmsX, [ IsPcgs and IsFamilyPcgs,
     IsMultiplicativeElementWithInverseByRws and Is8BitsPcWordRep, IsInt ], 0,
 function( pcgs, elm, pos )
@@ -596,7 +596,7 @@ end );
 ##
 #M  CleanedTailPcElement( <8bits-pcgs>, <8bits-word>, <num> )
 ##
-InstallMethod( CleanedTailPcElement, "family pcgs (8bits)", 
+InstallMethod( CleanedTailPcElement, "family pcgs (8bits)",
   IsCollsElmsX, [ IsPcgs and IsFamilyPcgs,
     IsMultiplicativeElementWithInverseByRws and Is8BitsPcWordRep, IsInt ], 0,
 function( pcgs, elm, pos )
@@ -671,7 +671,7 @@ InstallMethod( ExponentsOfPcElement, "family pcgs/16 bit",IsCollsElms,
 #M  ExponentsOfPcElement( <16bits-pcgs>, <elm>,<range> )
 ##
 InstallOtherMethod( ExponentsOfPcElement, "family pcgs/16 bit",IsCollsElmsX,
-     [ IsPcgs and IsFamilyPcgs, Is16BitsPcWordRep,IsList ], 
+     [ IsPcgs and IsFamilyPcgs, Is16BitsPcWordRep,IsList ],
      0,
 function( pcgs, elm,range )
   return 16Bits_ExponentsOfPcElement(pcgs,elm){range};
@@ -889,7 +889,7 @@ function( pcgs, elm )
     if elm = id  then
         return Length(pcgs)+1;
     fi;
-        
+
     # sift element through the sorted system
     while elm <> id  do
         dg := DepthOfPcElement( pfa, elm );
@@ -940,7 +940,7 @@ function( pcgs, elm, pos )
     pcspow := pcgs!.sortedPcSeqPowers;
     new := pcgs!.newDepths;
     codepths:=pcgs!.minimumCodepths;
-        
+
     # sift element through the sorted system
     step:=0; # the index in pcgs up to which we have already computed exponents
     while elm <> id  do
@@ -964,7 +964,7 @@ function( pcgs, elm, pos )
 		# at depth dg.
 		ord:=relords[dg];
                 ll  := (ll/lr mod ord);
-                #g   := LeftQuotient( pcs[dg]^ll, g ); 
+                #g   := LeftQuotient( pcs[dg]^ll, g );
                 g   := LeftQuotient( pcspow[dg][ll], g ); #precomputed
 
                 if new[dg] < dep  then
@@ -1026,7 +1026,7 @@ InstallMethod( ExponentsOfPcElement,
     0,
 
 function( pcgs, elm )
-    local   pfa,  pcs,  new,  dep,  id,  exp,  g,  dg,  ll,  lr,  ord,  
+    local   pfa,  pcs,  new,  dep,  id,  exp,  g,  dg,  ll,  lr,  ord,
             led,pcsl,relords,pcspow,codepths,step;
 
     id  := OneOfPcgs(pcgs);
@@ -1068,7 +1068,7 @@ function( pcgs, elm )
 		# at depth dg.
 		ord:=relords[dg];
                 ll  := (ll/lr mod ord);
-                #g   := LeftQuotient( pcs[dg]^ll, g ); 
+                #g   := LeftQuotient( pcs[dg]^ll, g );
                 g   := LeftQuotient( pcspow[dg][ll], g ); #precomputed
                 if new[dg] < dep  then
                     dep := new[dg];
@@ -1103,7 +1103,7 @@ InstallOtherMethod( ExponentsOfPcElement,
       IsObject,IsList ],
     0,
 function( pcgs, elm,range )
-    local   pfa,  pcs,  new,  dep,  id,  exp,  g,  dg,  ll,  lr,  ord,  
+    local   pfa,  pcs,  new,  dep,  id,  exp,  g,  dg,  ll,  lr,  ord,
             led,pcsl,max,step,codepths,pcspow,relords;
 
     id  := OneOfPcgs(pcgs);
@@ -1123,7 +1123,7 @@ function( pcgs, elm,range )
     pcspow := pcgs!.sortedPcSeqPowers;
     new := pcgs!.newDepths;
     codepths:=pcgs!.minimumCodepths;
-        
+
     # sift element through the sorted system
     step:=0; # the index in pcgs up to which we have already computed exponents
     while elm <> id  do
@@ -1147,7 +1147,7 @@ function( pcgs, elm,range )
 		# at depth dg.
 		ord:=relords[dg];
                 ll  := (ll/lr mod ord);
-                #g   := LeftQuotient( pcs[dg]^ll, g ); 
+                #g   := LeftQuotient( pcs[dg]^ll, g );
                 g   := LeftQuotient( pcspow[dg][ll], g ); #precomputed
                 if new[dg] < dep  then
                     dep := new[dg];
@@ -1270,7 +1270,7 @@ function( pcgs, elm )
 	    # at depth dg.
 	    ord:=relords[dg];
 	    ll  := (ll/lr mod ord);
-	    #elm := LeftQuotient( pcs[dg]^ll, elm); 
+	    #elm := LeftQuotient( pcs[dg]^ll, elm);
 	    elm := LeftQuotient( pcspow[dg][ll], elm ); #precomputed
 
             if new[dg] < dep  then
@@ -1323,7 +1323,7 @@ InstallMethod( Order,
 
     pcgs := DefiningPcgs( FamilyObj( g ) );
     rorders := RelativeOrders( pcgs );
-    
+
     one := g^0;
     ord := 1;
 
@@ -1359,7 +1359,7 @@ local   pcgs, g,ord,cord,ppc,q,r,gcd,p1,p2,i,j,e1,pows,exps,rord;
   if not IsPrimeOrdersPcgs( pcgs ) then
     TryNextMethod(); # don't bother with optimizing the other case
   fi;
-  
+
   g:=el;
   ord := 1;
   exps:=[];
@@ -1403,7 +1403,7 @@ local   pcgs, g,ord,cord,ppc,q,r,gcd,p1,p2,i,j,e1,pows,exps,rord;
 	# compose from the exponents in exps:
 	e1:=OneOfPcgs(pcgs);
 	while p1>1 and ForAny(exps,i->i<p1 and i^3>p1) do
-	  j:=First([Length(exps),Length(exps)-1..1],i->exps[i]<p1 
+	  j:=First([Length(exps),Length(exps)-1..1],i->exps[i]<p1
 	                                               and exps[i]^3>p1);
 	  q:=QuoInt(p1,exps[j]);
 	  e1:=e1*pows[j]^q;

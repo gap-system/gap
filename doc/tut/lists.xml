@@ -33,7 +33,7 @@ Sets, ranges, row vectors, and matrices are introduced as special kinds
 of lists in&nbsp;<Ref Sect="Sets"/>, <Ref Sect="Ranges"/>,
 <Ref Sect="Vectors and Matrices"/>.
 Handy list operations are shown in&nbsp;<Ref Sect="List Operations"/>.
-Finally we explain how to use records in&nbsp;<Ref Sect="Plain Records"/>. 
+Finally we explain how to use records in&nbsp;<Ref Sect="Plain Records"/>.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -159,7 +159,7 @@ gap> lll:= [true, "This is a String",,, 3];
 [ true, "This is a String",,, 3 ]
 ]]></Example>
 <P/>
-In the same way a list may be part of another  list. 
+In the same way a list may be part of another  list.
 <P/>
 <Example><![CDATA[
 gap> lll[3]:= [4,5,6];; lll;
@@ -288,7 +288,7 @@ types have subobjects.
 To clarify this statement consider the following assignments.
 <P/>
 <Example><![CDATA[
-gap> i:= 1;; j:= i;; i:= i+1;; 
+gap> i:= 1;; j:= i;; i:= i+1;;
 ]]></Example>
 <P/>
 By adding 1 to <C>i</C> the value of <C>i</C> has  changed.   What  happens to <C>j</C>?
@@ -328,7 +328,7 @@ The function <Ref Func="Immutable" BookName="ref"/> takes as argument a list
 and returns an immutable copy of it,
 i.e., a list  which  looks exactly like the   old one, but has  two extra
 properties:
-(1)&nbsp;The new list is immutable, i.e.,  the list itself and its subobjects 
+(1)&nbsp;The new list is immutable, i.e.,  the list itself and its subobjects
     cannot be changed.
 (2)&nbsp;In constructing the copy, every part of  the list that can be changed
     has been copied, so that changes to the  old list will not affect the
@@ -539,12 +539,12 @@ Given a list <C>pp</C> of permutations we can form their product by means of a
 <Example><![CDATA[
 gap> pp:= [ (1,3,2,6,8)(4,5,9), (1,6)(2,7,8), (1,5,7)(2,3,8,6),
 >           (1,8,9)(2,3,5,6,4), (1,9,8,6,3,4,7,2)];;
-gap> prod:= ();        
+gap> prod:= ();
 ()
 gap> for p in pp do
->       prod:= prod*p;    
+>       prod:= prod*p;
 >    od;
-gap> prod;        
+gap> prod;
 (1,8,4,2,3,6,5,9)
 ]]></Example>
 <P/>
@@ -591,8 +591,8 @@ The  <K>while</K> loop has the following syntax
 <P/>
 <K>while</K> <A>condition</A> <K>do</K> <A>statements</A> <K>od</K><C>;</C>
 <P/>
-The <K>while</K>  loop loops over the <A>statements</A>  as long as  the 
-<A>condition</A> evaluates  to  <K>true</K>. Like the <K>for</K> loop the <K>while</K> loop 
+The <K>while</K>  loop loops over the <A>statements</A>  as long as  the
+<A>condition</A> evaluates  to  <K>true</K>. Like the <K>for</K> loop the <K>while</K> loop
 is terminated by the keyword <K>od</K> followed by a semicolon.
 <P/>
 We can use  our list <C>primes</C> to perform a very simple factorization.  We
@@ -684,7 +684,7 @@ The function <Ref Func="Product" BookName="ref"/> takes a list
 as its argument and computes  the
 product  of  the  elements  of the  list.   This  is possible whenever  a
 multiplication of  the elements of the list is defined.
-So <Ref Func="Product" BookName="ref"/> 
+So <Ref Func="Product" BookName="ref"/>
 executes a loop over all elements of the list.
 <P/>
 There are other often used loops available as functions.
@@ -737,7 +737,7 @@ gap> primes{ [1 .. 10] };
 <P/>
 Finally we mention the function <Ref Func="ForAll" BookName="ref"/>
 that checks whether a property
-holds for all elements of a list. It takes as its arguments  a list and a 
+holds for all elements of a list. It takes as its arguments  a list and a
 function that returns a boolean value.
 <Ref Func="ForAll" BookName="ref"/> checks whether the
 function returns <K>true</K> for all elements of the list.
@@ -951,7 +951,7 @@ record is automatically resized to hold the new component.
 gap> date.time:= rec(hour:= 19, minute:= 23, second:= 12);
 rec( hour := 19, minute := 23, second := 12 )
 gap> date;
-rec( day := 14, month := "Jul", 
+rec( day := 14, month := "Jul",
   time := rec( hour := 19, minute := 23, second := 12 ), year := 1997 )
 ]]></Example>
 <P/>

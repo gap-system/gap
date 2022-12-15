@@ -10,12 +10,12 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 &GAP; is a <E>free</E>, <E>open</E> and <E>extensible</E> software package for
-computation in discrete abstract algebra. The terms <Q>free</Q> and <Q>open</Q> 
-describe the conditions under which the system is distributed -- in brief, it 
-is <E>free of charge</E> (except possibly for the immediate costs of delivering 
-it to you), you are <E>free to pass it on</E> within certain limits, and 
+computation in discrete abstract algebra. The terms <Q>free</Q> and <Q>open</Q>
+describe the conditions under which the system is distributed -- in brief, it
+is <E>free of charge</E> (except possibly for the immediate costs of delivering
+it to you), you are <E>free to pass it on</E> within certain limits, and
 all of the workings of the system are <E>open for you to examine and change</E>.
-Details of these conditions can be found in Section 
+Details of these conditions can be found in Section
 <Ref Sect="Copyright and License" BookName="ref"/>.
 <P/>
 The system is <Q>extensible</Q> in that you can write your own  programs  in
@@ -29,13 +29,13 @@ and on our website.
 Development of &GAP; began at Lehrstuhl D für Mathematik,
 RWTH-Aachen, under the leadership of Joachim Neubüser
 in 1985. Version 2.4 was released in 1988 and version 3.1 in 1992.
-In 1997 coordination of 
+In 1997 coordination of
 &GAP; development, now very much an international effort, was
 transferred to St Andrews.  A complete internal redesign and almost
 complete rewrite of the system was completed over the following years and
 version 4.1 was released in July 1999.
-A sign of the further internationalization of the project was the 
-&GAP;&nbsp;4.4 release in 2004, which has been coordinated from 
+A sign of the further internationalization of the project was the
+&GAP;&nbsp;4.4 release in 2004, which has been coordinated from
 Colorado State University, Fort Collins.
 <P/>
 More information on the motivation and development of &GAP; to date,
@@ -44,7 +44,7 @@ can be found on our website in a section entitled
 <URL>https://www.gap-system.org/Doc/History/history.html</URL>.
 <P/>
 For those readers who have used an earlier version of &GAP;, an
-overview of the changes from &GAP;&nbsp;4.4 and a brief 
+overview of the changes from &GAP;&nbsp;4.4 and a brief
 summary of changes from earlier versions is given in <F>CHANGES.md</F>
 file in the main directory.
 <P/>
@@ -73,8 +73,8 @@ a number of packages. The core system consists of four main parts.
     </Item>
     <Item>
       a small set of system functions allowing the &GAP; programmer to handle
-      files and execute external programs in a uniform way, regardless of 
-      the particular operating system in use. 
+      files and execute external programs in a uniform way, regardless of
+      the particular operating system in use.
     </Item>
     <Item>
       a  set  of programming tools  for   testing, debugging, and timing
@@ -118,7 +118,7 @@ small utilities which we hope you will find useful.
 package contains &GAP; code and its own documentation and may also
 contain data files or external programs to which the &GAP; code
 provides an interface.  These packages may be loaded into &GAP; using
-the <Ref Func="LoadPackage" BookName="ref"/> command, and both the package 
+the <Ref Func="LoadPackage" BookName="ref"/> command, and both the package
 and its documentation are then available just as if they were parts of the
 core system. Some packages may be loaded automatically, when &GAP; is
 started, if they are present. Some packages, because they depend on
@@ -141,12 +141,12 @@ package mechanism. Other packages contain functionality which has
 never been part of the core system, and may extend it substantially,
 implementing specific algorithms to enhance its capabilities, providing
 data libraries, interfaces to other computer algebra systems and
-data sources such as the electronic version of the Atlas of Finite Group 
+data sources such as the electronic version of the Atlas of Finite Group
 Representations; therefore, installation and usage of packages is recommended.
 <P/>
-Further details about &GAP; packages can be found in chapter 
+Further details about &GAP; packages can be found in chapter
 <Ref BookName="ref" Chap="Using and Developing GAP Packages"/>, and on the
-&GAP; website here: <URL>https://www.gap-system.org/Packages/packages.html</URL>. 
+&GAP; website here: <URL>https://www.gap-system.org/Packages/packages.html</URL>.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->

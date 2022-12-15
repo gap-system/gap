@@ -17,7 +17,7 @@
 <Heading>Groups and Homomorphisms</Heading>
 
 In this chapter we will show  some computations with groups. The examples
-deal mostly with permutation groups, because they are the easiest 
+deal mostly with permutation groups, because they are the easiest
 to input.
 The functions mentioned here, like <Ref Func="Group" BookName="ref"/>,
 <Ref Func="Size" BookName="ref"/> or
@@ -149,9 +149,9 @@ whose image is the factor group.
 <P/>
 <Example><![CDATA[
 gap> hom := NaturalHomomorphismByNormalSubgroup( norm, elab );
-[ (2,3)(6,7), (3,4)(7,8), (3,5)(4,6), (5,7)(6,8), (5,6)(7,8), 
+[ (2,3)(6,7), (3,4)(7,8), (3,5)(4,6), (5,7)(6,8), (5,6)(7,8),
   (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,5)(2,6)(3,7)(4,8)
- ] -> [ (1,2)(5,6), (2,3)(6,7), (2,4)(3,5), (4,6)(5,7), (4,5)(6,7), 
+ ] -> [ (1,2)(5,6), (2,3)(6,7), (2,4)(3,5), (4,6)(5,7), (4,5)(6,7),
   (), (), () ]
 gap> f := Image( hom );
 Group([ (1,2)(5,6), (2,3)(6,7), (2,4)(3,5), (4,6)(5,7), (4,5)(6,7),
@@ -205,9 +205,9 @@ names are of course not available for non-simple groups.)
 <Example><![CDATA[
 gap> IsSimple( f ); IsomorphismTypeInfoFiniteSimpleGroup( f );
 true
-rec( 
+rec(
   name := "A(1,7) = L(2,7) ~ B(1,7) = O(3,7) ~ C(1,7) = S(2,7) ~ 2A(1,\
-7) = U(2,7) ~ A(2,2) = L(3,2)", parameter := [ 2, 7 ], series := "L", 
+7) = U(2,7) ~ A(2,2) = L(3,2)", parameter := [ 2, 7 ], series := "L",
   shortname := "L3(2)" )
 gap> SetName( f, "L_3(2)" );
 ]]></Example>
@@ -232,7 +232,7 @@ split extension of the elementary abelian group <M>2^3</M>  with this image of
 <P/>
 <Example><![CDATA[
 gap> op := Action( norm, elab );
-Group([ (), (), (), (5,6)(7,8), (5,7)(6,8), (3,4)(7,8), (3,5)(4,6), 
+Group([ (), (), (), (5,6)(7,8), (5,7)(6,8), (3,4)(7,8), (3,5)(4,6),
   (2,3)(6,7) ])
 gap> IsSubgroup( a8, op ); IsSubgroup( norm, op );
 true
@@ -277,7 +277,7 @@ gap> ccl := ConjugacyClasses( a8 );; Length( ccl );
 gap> List( ccl, c -> Order( Representative( c ) ) );
 [ 1, 2, 2, 3, 6, 3, 4, 4, 5, 15, 15, 6, 7, 7 ]
 gap> List( ccl, Size );
-[ 1, 210, 105, 112, 1680, 1120, 2520, 1260, 1344, 1344, 1344, 3360, 
+[ 1, 210, 105, 112, 1680, 1120, 2520, 1260, 1344, 1344, 1344, 3360,
   2880, 2880 ]
 ]]></Example>
 <P/>
@@ -385,7 +385,7 @@ Group([ (1,2,4), (6,7,8), (3,6,8), (5,8,6), (1,2)(3,8) ])
 ]]></Example>
 <P/>
 Alternatively, it is possible to create action homomorphisms immediately
-(without creating the action first) by giving the same set of arguments to 
+(without creating the action first) by giving the same set of arguments to
 <Ref Func="ActionHomomorphism" BookName="ref"/>.
 <Example><![CDATA[
 gap> nophom := ActionHomomorphism( a8, AsList(class) );
@@ -509,8 +509,8 @@ For the action on cosets there is the added complication that not
 every group element is in the transversal (as the last example shows) but
 the action on cosets of a subgroup
 usually will not preserve a chosen set of coset representatives.
-Because of this issue, all action functionality actually uses 
-<Ref Func="PositionCanonical" BookName="ref"/> instead of 
+Because of this issue, all action functionality actually uses
+<Ref Func="PositionCanonical" BookName="ref"/> instead of
 <Ref Func="Position" BookName="ref"/>. In general, for elements contained in
 a list,
 <Ref Func="PositionCanonical" BookName="ref"/> returns the same as
@@ -587,7 +587,7 @@ But we cannot use the default action <Ref Func="OnPoints" BookName="ref"/>
 because powering a list by a permutation via the caret operator <C>^</C>
 is not defined. So we must tell the functions from the actions package how
 the group elements operate on the elements of  the domain
-(here and below, the word <Q>package</Q> refers to the &GAP; functionality 
+(here and below, the word <Q>package</Q> refers to the &GAP; functionality
 for group actions, not to a &GAP; package). In our example
 we can do this by simply passing <Ref Func="OnPairs" BookName="ref"/>
 as an optional last argument.
@@ -836,8 +836,8 @@ gap> orb:=Set(orb);;
 gap> blocks := Blocks( a8, orb );; Length( blocks );
 15
 gap> Set(blocks[1]);
-[ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,4)(2,3)(5,8)(6,7), 
-  (1,5)(2,6)(3,7)(4,8), (1,6)(2,5)(3,8)(4,7), (1,7)(2,8)(3,5)(4,6), 
+[ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,4)(2,3)(5,8)(6,7),
+  (1,5)(2,6)(3,7)(4,8), (1,6)(2,5)(3,8)(4,7), (1,7)(2,8)(3,5)(4,6),
   (1,8)(2,7)(3,6)(4,5) ]
 ]]></Example>
 <P/>
@@ -1096,7 +1096,7 @@ the mapping was surjective).
 <Section Label="Nice Monomorphisms">
 <Heading>Nice Monomorphisms</Heading>
 
-For some types of groups, the best method for calculations in it is to use 
+For some types of groups, the best method for calculations in it is to use
 instead an isomorphic
 group in a <Q>better</Q> representation (say, a permutation group).
 We call an injective homomorphism,
@@ -1155,7 +1155,7 @@ gap> hom := NiceMonomorphism( grp );
 <action isomorphism>
 gap> p :=Image(hom,grp);
 Group([ (4,7)(5,8)(6,9), (2,7,6)(3,4,8) ])
-gap> cc := ConjugacyClasses( grp );; ForAll(cc, x-> x in gcls); 
+gap> cc := ConjugacyClasses( grp );; ForAll(cc, x-> x in gcls);
 true
 gap> ForAll(gcls, x->x in cc); # cc and gcls might be ordered differently
 true
@@ -1179,7 +1179,7 @@ gap> aut := AutomorphismGroup( p );; NiceMonomorphism(aut);;
 gap> niceaut := NiceObject( aut );
 Group([ (1,4,2,3), (1,5,4)(2,6,3), (1,2)(3,4), (3,4)(5,6) ])
 gap> IsomorphismGroups( niceaut, SymmetricGroup( 4 ) );
-[ (1,4,2,3), (1,5,4)(2,6,3), (1,2)(3,4), (3,4)(5,6) ] -> 
+[ (1,4,2,3), (1,5,4)(2,6,3), (1,2)(3,4), (3,4)(5,6) ] ->
 [ (1,4,2,3), (1,4,2), (1,2)(3,4), (1,3)(2,4) ]
 ]]></Example>
 <P/>

@@ -193,7 +193,7 @@ InstallMethod( Iterator,
         NextIterator := NextIterator_Rationals,
         IsDoneIterator := ReturnFalse,
         ShallowCopy := ShallowCopy_Rationals,
-                                    
+
         actualn   := 0,
         up        := false,
         sign      := -1,
@@ -330,7 +330,7 @@ local r,f,i,s;
   else
     s:=[];
   fi;
-  if Length(arg)>1 then 
+  if Length(arg)>1 then
     f:=arg[2];
   else
     f:=10;

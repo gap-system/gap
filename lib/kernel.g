@@ -129,7 +129,7 @@ STRING_LOWER := function( str )
   local i, res;
   if STRING_LOWER_TRANS = 0 then
     STRING_LOWER_TRANS := "";
-    for i in [0..255] do 
+    for i in [0..255] do
       STRING_LOWER_TRANS[i+1] := CHAR_INT(i);
     od;
     STRING_LOWER_TRANS{1+[65..90]} := STRING_LOWER_TRANS{1+[97..122]};
@@ -195,10 +195,10 @@ Runtimes := function()
   local res, rt, cmp, a, i;
   res := rec();
   rt := RUNTIMES();
-  cmp := ["user_time", "system_time", 
-          "user_time_children", "system_time_children"]; 
+  cmp := ["user_time", "system_time",
+          "user_time_children", "system_time_children"];
   if IS_INT(rt) then
-    for a in cmp do 
+    for a in cmp do
       res.(a) := fail;
     od;
     res.(cmp[1]) := rt;

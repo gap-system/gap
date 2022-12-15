@@ -12,19 +12,19 @@
 ##
 ##  <#GAPDoc Label="[1]{semiquo}">
 ##  For a semigroup <M>S</M>,
-##  elements of a quotient semigroup are equivalence classes of 
+##  elements of a quotient semigroup are equivalence classes of
 ##  elements of the <Ref Attr="QuotientSemigroupPreimage"/> value
 ##  under the congruence given by the value of
 ##  <Ref Attr="QuotientSemigroupCongruence"/>.
 ##  <P/>
-##  It is probably most useful for calculating the elements of 
+##  It is probably most useful for calculating the elements of
 ##  the equivalence classes by using <Ref Func="Elements"/> or by looking at
 ##  the images of elements of <Ref Attr="QuotientSemigroupPreimage"/> under
 ##  the map returned by <Ref Attr="QuotientSemigroupHomomorphism"/>,
 ##  which maps the <Ref Attr="QuotientSemigroupPreimage"/> value to <A>S</A>.
 ##  <P/>
 ##  For intensive computations in a quotient semigroup, it is probably
-##  worthwhile finding another representation as the equality test 
+##  worthwhile finding another representation as the equality test
 ##  could involve enumeration of the elements of the congruence classes
 ##  being compared.
 ##  <#/GAPDoc>
@@ -40,7 +40,7 @@
 ##  <Filt Name="IsQuotientSemigroup" Arg='S' Type='Category'/>
 ##
 ##  <Description>
-##  is the category of semigroups constructed from another semigroup 
+##  is the category of semigroups constructed from another semigroup
 ##  and a congruence on it.
 ##  </Description>
 ##  </ManSection>
@@ -57,8 +57,8 @@ DeclareCategory("IsQuotientSemigroup", IsSemigroup);
 ##  <Func Name="HomomorphismQuotientSemigroup" Arg='cong'/>
 ##
 ##  <Description>
-##  for a congruence <A>cong</A> and a semigroup <A>S</A>. 
-##  Returns the homomorphism from <A>S</A> to the quotient of <A>S</A> 
+##  for a congruence <A>cong</A> and a semigroup <A>S</A>.
+##  Returns the homomorphism from <A>S</A> to the quotient of <A>S</A>
 ##  by <A>cong</A>.
 ##  </Description>
 ##  </ManSection>

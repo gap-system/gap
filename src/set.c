@@ -131,12 +131,12 @@ Obj SetList (
       {
       case 0:
         break;
-        
+
       case 1:
         SET_FILT_LIST(set, FN_IS_NHOMOG);
         SET_FILT_LIST(set, FN_IS_SSORT);
         break;
-        
+
       case 2:
         SET_FILT_LIST( set, FN_IS_HOMOG );
         SET_FILT_LIST( set, FN_IS_SSORT );
@@ -361,7 +361,7 @@ static Obj FuncADD_SET(Obj self, Obj set, Obj obj)
                                    conclude more */
       if ( ! IS_MUTABLE_OBJ(obj) ) {
                                 /* a one element list is automatically
-                                   homogenous  and ssorted */
+                                   homogeneous  and ssorted */
         if (len == 0 )
           {
             if (IS_CYC(obj))
@@ -574,7 +574,7 @@ static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
 **  that is not a proper set, in which case 'Set' is silently applied to it.
 */
 
-static UInt InterSetInner1( Obj set1, Obj set2, UInt len1, UInt len2) 
+static UInt InterSetInner1( Obj set1, Obj set2, UInt len1, UInt len2)
 {
   UInt lenr, i1,i2;
   Obj e1,e2;
@@ -603,7 +603,7 @@ static UInt InterSetInner1( Obj set1, Obj set2, UInt len1, UInt len2)
 
 /* set1 should be the smaller set. setr should be the one
    in which to put the results; */
-static UInt InterSetInner2( Obj set1, Obj set2, Obj setr, UInt len1, UInt len2) 
+static UInt InterSetInner2( Obj set1, Obj set2, Obj setr, UInt len1, UInt len2)
 {
   UInt i1,i2=1,bottom,top,middle,lenr=0,found;
   Obj e1,e2;
@@ -651,7 +651,7 @@ static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2)
     len2 = LEN_PLIST( set2 );
 
     /* decide how to do the calculation and do it */
-    if (len1 < len2) 
+    if (len1 < len2)
       {
         UInt x = len2;
         UInt ll = 0;
@@ -727,7 +727,7 @@ static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2)
 **  is not a proper set, in which case 'Set' is silently applied to it.
 */
 
-static UInt SubtrSetInner1( Obj set1, Obj set2, UInt len1, UInt len2) 
+static UInt SubtrSetInner1( Obj set1, Obj set2, UInt len1, UInt len2)
 {
   UInt lenr, i1,i2;
   Obj e1,e2;
@@ -762,7 +762,7 @@ static UInt SubtrSetInner1( Obj set1, Obj set2, UInt len1, UInt len2)
 }
 
 /* set1 should be smaller. */
-static UInt SubtrSetInner2( Obj set1, Obj set2, UInt len1, UInt len2) 
+static UInt SubtrSetInner2( Obj set1, Obj set2, UInt len1, UInt len2)
 {
   UInt i1,i2=1,bottom,top,middle,lenr=0, found;
   Obj e1,e2;
@@ -801,7 +801,7 @@ static Obj FuncSUBTR_SET(Obj self, Obj set1, Obj set2)
     UInt                len1;           /* length  of left  set            */
     UInt                len2;           /* length  of right set            */
     UInt                lenr;           /* length  of result set           */
-    UInt                x;            
+    UInt                x;
     UInt                ll;
 
     RequireMutableSet(SELF_NAME, set1);

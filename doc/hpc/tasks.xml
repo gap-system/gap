@@ -124,7 +124,7 @@ gap> TaskResult(t);
         the final task until the others are complete, making it more efficient, since no additional worker thread needs to be
         occupied.
 
-      </Description>  
+      </Description>
     </ManSection>
 
     <ManSection>
@@ -140,7 +140,7 @@ gap> TaskResult(t);
       <Description>
         <Ref Func="RunAsyncTask"/> creates an asynchronous task. It works like <Ref Func="RunTask"/>, except that its result will be
         ignored.
-      </Description> 
+      </Description>
     </ManSection>
 
     <ManSection>
@@ -387,7 +387,7 @@ gap> AchieveMilestone(m);
 ]]></Example>
       </Description>
     </ManSection>>
-    
+
     <ManSection>
       <Func Name="IsMilestoneAchieved" Arg='milestone'/>
       <Description>

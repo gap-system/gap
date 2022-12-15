@@ -310,7 +310,7 @@ static Obj DoWrap6args(
 **  the other slots of a function.
 */
 
-/* Pull this out to avoid repetition, since it gets a little more complex in 
+/* Pull this out to avoid repetition, since it gets a little more complex in
    the presence of partially variadic functions */
 
 NORETURN static void NargError(Obj func, Int actual)
@@ -455,7 +455,7 @@ static ALWAYS_INLINE Obj DoProfNNNargs (
     UInt                timeElse;       /* time    spent elsewhere         */
     UInt                timeCurr;       /* time    spent in current funcs. */
     UInt8               storElse;       /* storage spent elsewhere         */
-    UInt8               storCurr;       /* storage spent in current funcs. */ 
+    UInt8               storCurr;       /* storage spent in current funcs. */
 
     /* get the profiling bag                                               */
     prof = PROF_FUNC( PROF_FUNC( self ) );
@@ -633,7 +633,7 @@ static UInt HandlerSortingStatus = 0;
 
 static TypeHandlerInfo HandlerFuncs[MAX_HANDLERS];
 static UInt NHandlerFuncs = 0;
- 
+
 void InitHandlerFunc (
     ObjFunc             hdlr,
     const Char *        cookie )
@@ -693,7 +693,7 @@ void CheckAllHandlers(void)
 }
 
 static int IsLessHandlerInfo (
-    TypeHandlerInfo *           h1, 
+    TypeHandlerInfo *           h1,
     TypeHandlerInfo *           h2,
     UInt                        byWhat )
 {
@@ -716,7 +716,7 @@ void SortHandlers( UInt byWhat )
     return;
   len = NHandlerFuncs;
   h = 1;
-  while ( 9*h + 4 < len ) 
+  while ( 9*h + 4 < len )
     { h = 3*h + 1; }
   while ( 0 < h ) {
     for ( i = h; i < len; i++ ) {
@@ -767,7 +767,7 @@ ObjFunc HandlerOfCookie(
 {
   Int i,top,bottom,middle;
   Int res;
-  if (HandlerSortingStatus != 2) 
+  if (HandlerSortingStatus != 2)
     {
       for (i = 0; i < NHandlerFuncs; i++)
         {
@@ -816,7 +816,7 @@ Obj NewFunction (
 {
     return NewFunctionT( T_FUNCTION, sizeof(FuncBag), name, narg, nams, hdlr );
 }
-    
+
 
 /****************************************************************************
 **
@@ -833,7 +833,7 @@ Obj NewFunctionC (
 {
     return NewFunction(MakeImmString(name), narg, ArgStringToList(nams), hdlr);
 }
-    
+
 
 /****************************************************************************
 **
@@ -1017,7 +1017,7 @@ static void PrintFunction(Obj func)
       isvarg = TRUE;
       narg = -narg;
     }
-    
+
     for ( i = 1; i <= narg; i++ ) {
 #ifdef HPCGAP
         if (LCKS_FUNC(func)) {
@@ -1146,7 +1146,7 @@ Obj CallFuncList ( Obj func, Obj list )
     Obj                 list2;          /* list of arguments               */
     Obj                 arg;            /* one argument                    */
     UInt                i;              /* loop variable                   */
-   
+
 
     if (TNUM_OBJ(func) == T_FUNCTION) {
 
@@ -1384,7 +1384,7 @@ static Obj FuncPROFILE_FUNC(Obj self, Obj func)
 
     /* install profiling                                                   */
     prof = PROF_FUNC(func);
-    
+
     /* install new handlers                                                */
     if ( TNUM_OBJ(prof) != T_FUNCTION ) {
         copy = NewBag( TNUM_OBJ(func), SIZE_OBJ(func) );

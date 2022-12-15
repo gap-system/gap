@@ -10,22 +10,22 @@
 ##
 ##  This file initializes Deep Thought.
 ##
-##  Deep Thought deals with trees.  A tree < tree > is a concatenation of 
+##  Deep Thought deals with trees.  A tree < tree > is a concatenation of
 ##  several nodes where each node is a 5-tuple of immediate integers.  If
 ##  < tree > is an atom it contains only one node,  thus it is itself a
 ##  5-tuple. If < tree > is not an atom we obtain its list representation by
 ##
 ##  < tree >  :=  topnode(<tree>) concat left(<tree>) concat right(<tree>) .
 ##
-##  Let us denote the i-th node of <tree> by (<tree>, i)  and the tree rooted 
+##  Let us denote the i-th node of <tree> by (<tree>, i)  and the tree rooted
 ##  at (<tree>, i) by tree(<tree>, i).  Let <a> be tree(<tree>, i)
 ##  The first entry of (<tree>, i) is pos(a),
-##  and the second entry is num(a). The third entry of (<tree>, i) gives a 
-##  mark.(<tree>, i)[3] = 1  means that (<tree>, i) is marked,  
+##  and the second entry is num(a). The third entry of (<tree>, i) gives a
+##  mark.(<tree>, i)[3] = 1  means that (<tree>, i) is marked,
 ##  (<tree>, i)[3] = 0 means that (<tree>, i) is not marked. The fourth entry
 ##  of (<tree>, i) contains the number of nodes of tree(<tree>, i).  The
-##  fifth entry of (<tree>, i) finally contains a boundary for 
-##  pos( tree(<tree>, i) ).  (<tree>, i)[5] <= 0 means that 
+##  fifth entry of (<tree>, i) finally contains a boundary for
+##  pos( tree(<tree>, i) ).  (<tree>, i)[5] <= 0 means that
 ##  pos( tree(<tree>, i) ) is unbounded.  If tree(<tree>, i) is an atom we
 ##  already know that pos( tree(<tree>, i) ) is unbound.  Thus we then can
 ##  use the fifth component of (<tree>, i) to store the side.  In this case
@@ -97,14 +97,14 @@ end );
 
 #############################################################################
 ##
-#F  Dt_IsEqualMonomial(<vec1>, <vec2>) . . . . . .  test if <vec1> and <vec2> 
+#F  Dt_IsEqualMonomial(<vec1>, <vec2>) . . . . . .  test if <vec1> and <vec2>
 ##                                                represent the same monomial
 ##
 ##  'Dt_IsEqualMonomial' returns "true" if <vec1> and <vec2> represent the
 ##  same  monomial, and "false" otherwise.
 BindGlobal( "Dt_IsEqualMonomial", function(vec1,vec2)
     local  i,j;
-  
+
     if  Length(vec1) <> Length(vec2)  then
         return false;
     fi;
@@ -127,13 +127,13 @@ end );
 #F  Dt_Sort2(<vector>) . . . . . . . . . . . . . . . .  sort a formula vector
 ##
 ##  'Dt_Sort2' sorts the pairs of integers in the formula vector <vector>
-##  representing the binomial coefficients such that 
+##  representing the binomial coefficients such that
 ##  <vector>[5] < <vector>[7] < .. < vector[m-1],  where m is the length
 ##  of <vector>.  This is done for a easier comparison of formula vectors.
 ##
 BindGlobal( "Dt_Sort2", function(vector)
     local  i,list1,list2;
-    
+
     list1 := vector{[5,7..Length(vector)-1]};
     list2 := vector{[6,8..Length(vector)]};
     SortParallel(list1,list2);
@@ -182,7 +182,7 @@ end );
 ##
 BindGlobal( "Dt_add", function(pol, pols, pr)
     local  i,j,k,rel, pos, flag;
-    
+
     # first sort the deep thought monomial <pol> to compare it with the
     # monomials contained in <pols>.
     Dt_Sort2(pol);
@@ -202,7 +202,7 @@ BindGlobal( "Dt_add", function(pol, pols, pr)
         if  Dt_IsEqualMonomial( pol, pols[pos].evlist[k] )  then
             rel := pr[ pol[3] ][ pol[4] ];
             for  j in [3,5..Length(rel)-1]  do
-                pols[pos].evlistvec[k][ rel[j] ] := 
+                pols[pos].evlistvec[k][ rel[j] ] :=
                   pols[pos].evlistvec[k][ rel[j] ] + pol[2]*rel[j+1];
             od;
             flag := 1;
@@ -230,11 +230,11 @@ end );
 ##
 BindGlobal( "Dt_Convert", function(sortedpols)
     local  k,res;
-    
+
     if  Length(sortedpols) = 0  then
         return  0;
     fi;
-    res := rec(evlist := [], 
+    res := rec(evlist := [],
                evlistvec :=[]);
     for  k in sortedpols  do
         Append(res.evlist, k.evlist);
@@ -280,7 +280,7 @@ end );
 ##
 CalcOrder := function(word, dtrws)
     local gcd, m, pcp;
-    
+
     if  Length(word) = 0  then
         return 1;
     fi;
@@ -304,7 +304,7 @@ MakeReadOnlyGlobal( "CalcOrder" );
 ##
 BindGlobal( "CompleteOrdersOfRws", function(dtrws)
     local  i,j;
-    
+
     dtrws![PC_ORDERS] := [];
     for  i in [dtrws![PC_NUMBER_OF_GENERATORS],dtrws![PC_NUMBER_OF_GENERATORS]-1..1]
          do
@@ -332,7 +332,7 @@ end );
 ##
 BindGlobal( "Dt_RemoveHoles", function( list )
     local  skip, i;
-    
+
     skip := 0;
     i := 1;
     while  i <= Length(list)  do
@@ -359,7 +359,7 @@ end );
 ##
 BindGlobal( "ReduceCoefficientsOfRws", function(dtrws)
     local  i,j,k,l, pseudoreps;
-    
+
     pseudoreps := dtrws![PC_DEEP_THOUGHT_POLS];
     i := 1;
     while  IsRecord(pseudoreps[i])  do
@@ -370,8 +370,8 @@ BindGlobal( "ReduceCoefficientsOfRws", function(dtrws)
                           pseudoreps[i].evlistvec[j][k] <
                           -dtrws![PC_ORDERS][ pseudoreps[i].evlistvec[j][k-1] ]/2)
                     then
-                    pseudoreps[i].evlistvec[j][k] := 
-                      pseudoreps[i].evlistvec[j][k] mod 
+                    pseudoreps[i].evlistvec[j][k] :=
+                      pseudoreps[i].evlistvec[j][k] mod
                       dtrws![PC_ORDERS][ pseudoreps[i].evlistvec[j][k-1] ];
                 fi;
             od;
@@ -391,12 +391,12 @@ end );
 #############################################################################
 ##
 ##  Dt_GetMax( <tree>, <number>, <pr> )
-##  
-##  Dt_GetMax returns the maximal value for pos(tree) if num(tree) = <number>.  
+##
+##  Dt_GetMax returns the maximal value for pos(tree) if num(tree) = <number>.
 ##
 BindGlobal( "Dt_GetMax", function(tree, number, pr)
     local rel, max, position;
-    
+
     if  Length(tree) = 5  then
         return tree[5];
     else
@@ -430,11 +430,11 @@ end );
 #############################################################################
 ##
 #F  Dt_GetNumRight( <tree> )
-##  
+##
 ##  Dt_GetNumRight  returns num( right( tree ) ).
 ##
 BindGlobal( "Dt_GetNumRight", function(tree)
-    
+
     if Length(tree) <> 4  then
         return  tree[ 5*(tree[9]+1)+2 ];
     fi;
@@ -451,18 +451,18 @@ end );
 #F  Calcrepsn(<n>, <avec>, <pr>, <max>)
 ##
 ##  'Calcrepsn' returns the polynomials f_{n1},...,f_{nm} which have to be
-##  evaluated when computing word*g_n^(y_n).  Here m denotes the composition 
-##  length of the nilpotent group G given by the presentation <pr>.  This is 
+##  evaluated when computing word*g_n^(y_n).  Here m denotes the composition
+##  length of the nilpotent group G given by the presentation <pr>.  This is
 ##  done  by first calculating a complete system of <n>-pseudo-representatives
 ##  for the presentation <pr> with boundary <max>. Then this system is used
 ##  to get the required polynomials
 ##
 ##  If g_n is in the center of the group determined by the presentation <pr>
-##  then there don't exist any representatives except for the atoms and 
+##  then there don't exist any representatives except for the atoms and
 ##  finally 0 will be returned.
 ##
 BindGlobal( "Calcrepsn", function(n, avec, pr, max)
-    
+
     local i,j,k,l,       #  loop variables
           x,y,z,a,b,c,   #  trees
           reps,          #  list of pseudo-representatives
@@ -471,7 +471,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
           hilf,
           pos,
           start,
-          max1, max2;    #  maximal values for pos(x) and pos(y)   
+          max1, max2;    #  maximal values for pos(x) and pos(y)
     reps := [];
     pols := [];
 
@@ -493,9 +493,9 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
         #  to get the representatives of the non-atoms loop over j and k
         #  and determine the representatives for all trees <z> with
         #  num(<z>) = i,  num( left(<z>) ) = j,  num( right(<z>) ) = k
-        #  Since for all 1 <= l <= m the group generated by 
-        #  {g_(avec[l]),..,g_m} is in the center of the group generated  
-        #  by {g_l,..,g_m} it suffices to loop over all 
+        #  Since for all 1 <= l <= m the group generated by
+        #  {g_(avec[l]),..,g_m} is in the center of the group generated
+        #  by {g_l,..,g_m} it suffices to loop over all
         #  j <= min(i-1, avec[n]-1). Also it is sufficient only to loop over
         #  k while avec[k] is bigger than j.
         for j in [n+1..boundary] do
@@ -509,8 +509,8 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                     fi;
                     for x in [start..Length(reps[j])] do
                         for y in reps[k] do
-                            if Length(reps[j][x]) = 5  
-                               or  k >= reps[j][x][ 5*(reps[j][x][9]+1)+2 ]  
+                            if Length(reps[j][x]) = 5
+                               or  k >= reps[j][x][ 5*(reps[j][x][9]+1)+2 ]
                                then
                                 max1 := Dt_GetMax(reps[j][x], j, pr);
                                 max2 := Dt_GetMax(y, k, pr);
@@ -554,7 +554,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                     fi;
                     for x in [start..Length(reps[j])]  do
                         for y in reps[k]  do
-                            if Length(reps[j][x]) = 5  
+                            if Length(reps[j][x]) = 5
                                or  k >= Dt_GetNumRight(reps[j][x])  then
                                 # since reps[j] and reps[k] may contain
                                 # pseudo-representatives which are trees
@@ -565,7 +565,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                                 max2 := Dt_GetMax(y, k, pr);
                                 if  Length(reps[j][x]) <> 4  then
                                     if  reps[j][x][2] <> j  then
-                                        # we have to ensure that 
+                                        # we have to ensure that
                                         # num( <reps>[j][x] ) = j when we
                                         # construct a new pseudo-representative
                                         # out of it.
@@ -577,7 +577,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                                     a[5] := max1;
                                 else
                                     if  reps[j][x][3] <> j  then
-                                        # we have to ensure that 
+                                        # we have to ensure that
                                         # num( <reps>[j][x] ) = j when we
                                         # construct a new pseudo-representative
                                         # out of it.
@@ -611,7 +611,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                                     fi;
                                     b[4] := max2;
                                 fi;
-                                # now finally construct the 
+                                # now finally construct the
                                 # pseudo-representative and add it to
                                 # reps
                                 z := [a, b, i, 0];
@@ -641,14 +641,14 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
                 if  reps[i][j][3] = i  then
                     GetPols(reps[i][j], pr, pols);
                 fi;
-            # the second case: reps[i][j] is a tree    
+            # the second case: reps[i][j] is a tree
             elif  reps[i][j][1] <> 0  then
                 if  reps[i][j][2] = i  then
                     UnmarkTree(reps[i][j]);
                     hilf := MakeFormulaVector(reps[i][j], pr);
                     Dt_add(hilf, pols, pr);
                 fi;
-            # the third case: reps[i][j] is a deep thought monomial    
+            # the third case: reps[i][j] is a deep thought monomial
             else
                 Dt_add(reps[i][j], pols, pr);
             fi;
@@ -669,12 +669,12 @@ end );
 #F  Calcreps2( <pr> ) . . . . . . . . . . compute the Deep-Thought-polynomials
 ##
 ##  'Calcreps2' returns the polynomials which have to be evaluated when
-##  computing word*g_n^(y_n) for all <dtbound> <= n <= m where m is the 
+##  computing word*g_n^(y_n) for all <dtbound> <= n <= m where m is the
 ##  number of generators in the given presentation <pr>.
 ##
 BindGlobal( "Calcreps2", function(pr, max, dtbound)
     local  i,reps,avec,max2, max1;
-    
+
     reps := [];
     avec := Dt_Mkavec(pr);
     if  max >= Length(pr)  then

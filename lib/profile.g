@@ -63,7 +63,7 @@ end);
 ##  - the footer line showing ``OTHER'' contains a value (total memory
 ##    allocated) in column 4,
 ##  - the table really contains the rows for those functions that satisfy the
-##    conditions defined for `GAPInfo.ProfileThreshold' (its definition 
+##    conditions defined for `GAPInfo.ProfileThreshold' (its definition
 ##    says `<=' but the old implementation checked `<'),
 ##  - the ``TOTAL'' and ``OTHER'' lines show the summation over all profiled
 ##    functions, including the ones for which no line is shown due to the
@@ -1093,13 +1093,13 @@ STOP_TEST_QUIET := function( name, args... )
       Error( "`STOP_TEST' command without `START_TEST' command for `",
              name, "'" );
     fi;
-    
+
     if GAPInfo.TestData.START_NAME <> name then
       Info( InfoWarning, 2, "`STOP_TEST' command with name `", name,
             "' after `START_TEST' ", "command with name `",
             GAPInfo.TestData.START_NAME, "'" );
     fi;
-    
+
     time:= Runtime() - GAPInfo.TestData.START_TIME;
     SetAssertionLevel( GAPInfo.TestData.AssertionLevel );
     SetInfoLevel( InfoPerformance, GAPInfo.TestData.InfoPerformanceLevel );
@@ -1107,16 +1107,16 @@ STOP_TEST_QUIET := function( name, args... )
     Unbind( GAPInfo.TestData.START_TIME );
     Unbind( GAPInfo.TestData.START_NAME );
     Unbind( GAPInfo.TestData.InfoPerformanceLevel );
-    
+
     return time;
 end;
 
 STOP_TEST := function( name, args... )
     local time;
-    
+
     time := STOP_TEST_QUIET( name );
-    
+
     Print( name, "\n" );
     Print( "msecs: ", time, "\n" );
-    
+
 end;

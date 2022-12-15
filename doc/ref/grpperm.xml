@@ -479,7 +479,7 @@ Note: Since the structure is recursive, <E>never print a stabilizer chain!</E>
 <Mark><C>orbit</C> </Mark>
 <Item>
         the vertices of  the Schreier tree,  which  form the basic  orbit
-        <M>b_i^{{G^{(i)}}}</M>, ordered in such a way that the base point 
+        <M>b_i^{{G^{(i)}}}</M>, ordered in such a way that the base point
         <M>b_i</M> is in the first position in the orbit.
 </Item>
 <Mark><C>transversal</C></Mark>
@@ -494,7 +494,7 @@ Note: Since the structure is recursive, <E>never print a stabilizer chain!</E>
 </Item>
 <Mark><C>translabels</C></Mark>
 <Item>
-  An index list such that 
+  An index list such that
   <C>transversal</C><M>[j] =</M>
   <C>labels</C><M>[</M> <C>translabels</C><M>[j] ]</M>.
   This list takes up comparatively little memory and is used to speed

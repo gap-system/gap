@@ -132,7 +132,7 @@ the <Ref Func="LOCK"/> and <Ref Func="UNLOCK"/> primitives.
 </ManSection>
 
   </Section>
-  
+
   <Section Label="Migration to the public region">
     <Heading>Migration to the public region</Heading>
 
@@ -161,7 +161,7 @@ barriers, or other mechanisms.
 </Description>
 </ManSection>
   </Section>
-  
+
   <Section Label="Memory barriers">
     <Heading>Memory barriers</Heading>
 
@@ -214,9 +214,9 @@ Conversely, the <Ref Func="ORDERED_READ"/> function ensures that reads that occu
 </Description>
 </ManSection>
   </Section>
-  
-  
-  
+
+
+
   <Section Label="Object manipulation">
     <Heading>Object manipulation</Heading>
 

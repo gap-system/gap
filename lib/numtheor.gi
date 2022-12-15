@@ -28,8 +28,8 @@ InstallGlobalFunction( PrimeResidues, function ( m )
 
     # make <m> it nonnegative, handle trivial cases
     if m < 0  then m := -m;  fi;
-    if m < Length(PrimeResiduesCache)  then 
-      return ShallowCopy(PrimeResiduesCache[m+1]);  
+    if m < Length(PrimeResiduesCache)  then
+      return ShallowCopy(PrimeResiduesCache[m+1]);
     fi;
 
     # remove the multiples of all prime divisors
@@ -59,8 +59,8 @@ InstallMethod( Phi,
 
     # make <m> it nonnegative, handle trivial cases
     if m < 0  then m := -m;  fi;
-    if m < Length(PrimeResiduesCache) then 
-      return Length(PrimeResiduesCache[m+1]);  
+    if m < Length(PrimeResiduesCache) then
+      return Length(PrimeResiduesCache[m+1]);
     fi;
 
     # compute $phi$
@@ -88,8 +88,8 @@ InstallMethod( Lambda,
 
     # make <m> it nonnegative, handle trivial cases
     if m < 0  then m := -m;  fi;
-    if m < Length(PrimeResiduesCache) then 
-      return Length(PrimeResiduesCache[m+1]);  
+    if m < Length(PrimeResiduesCache) then
+      return Length(PrimeResiduesCache[m+1]);
     fi;
 
     # loop over all prime factors $p$ of $m$
@@ -592,12 +592,12 @@ InstallGlobalFunction( RootMod, function ( arg )
       l:=n;
       for i in f do
 	l:=RootMod(l,i,m);
-	if l=fail then 
+	if l=fail then
 	  Info( InfoNumtheor, 2, "must try multiple roots");
-	  # it failed. This might have been because of taking the wrong root 
+	  # it failed. This might have been because of taking the wrong root
 	  # do again with all roots
 	  l:=RootsMod(n,k,m);
-	  if Length(l)=0 then 
+	  if Length(l)=0 then
 	    return fail;
 	  else
 	    return l[1];
@@ -1044,7 +1044,7 @@ local ai, m, m2, am, l, g, c, p, i;
   ai:=Gcdex(a,n);
   if ai.gcd=1 then
     # coprime case -- use Shanks's method
-    # don't make the list longer than 5 million entries 
+    # don't make the list longer than 5 million entries
     m:=Minimum(RootInt(n,2)+1,5*10^6);
     m2:=QuoInt(n,m)+1; # remaining part
     # calculate a^m mod n once
@@ -1232,9 +1232,9 @@ end);
 
 
 #############################################################################
-##                                         
+##
 #M  Sigma( <n> )  . . . . . . . . . . . . . . . sum of divisors of an integer
-##            
+##
 InstallMethod( Sigma,
                "sum of divisors of an integer",
                true, [ IsInt ], 0,
@@ -1246,19 +1246,19 @@ InstallMethod( Sigma,
     # make <n> it nonnegative, handle trivial cases
     if n < 0  then n := -n;  fi;
     if n = 0  then Error("Sigma: <n> must not be 0");  fi;
-    if n <= Length(DivisorsIntCache) then 
-      return Sum(DivisorsIntCache[n]);  
+    if n <= Length(DivisorsIntCache) then
+      return Sum(DivisorsIntCache[n]);
     fi;
 
     # loop over all prime $p$ factors of $n$
     sigma := 1;
     for p in PrimeDivisors(n) do
 
-        # compute $p^e$ and $k = 1+p+p^2+..p^e$                              
+        # compute $p^e$ and $k = 1+p+p^2+..p^e$
         q := p;  k := 1 + p;
         while n mod (q * p) = 0  do q := q * p;  k := k + q;  od;
-    
-        # combine with the value found so far      
+
+        # combine with the value found so far
         sigma := sigma * k;
     od;
 
@@ -1267,7 +1267,7 @@ InstallMethod( Sigma,
 
 
 #############################################################################
-##                                         
+##
 #M  Tau( <n> )  . . . . . . . . . . . . . .  number of divisors of an integer
 ##
 InstallMethod( Tau,
@@ -1281,19 +1281,19 @@ InstallMethod( Tau,
     # make <n> it nonnegative, handle trivial cases
     if n < 0  then n := -n;  fi;
     if n = 0  then Error("Tau: <n> must not be 0");  fi;
-    if n <= Length(DivisorsIntCache) then 
-      return Length(DivisorsIntCache[n]);  
+    if n <= Length(DivisorsIntCache) then
+      return Length(DivisorsIntCache[n]);
     fi;
 
     # loop over all prime factors $p$ of $n$
     tau := 1;
     for p in PrimeDivisors(n) do
 
-        # compute $p^e$ and $k = e+1$                                        
+        # compute $p^e$ and $k = e+1$
         q := p;  k := 2;
         while n mod (q * p) = 0  do q := q * p;  k := k + 1;  od;
-    
-        # combine with the value found so far      
+
+        # combine with the value found so far
         tau := tau * k;
     od;
 
@@ -1302,9 +1302,9 @@ InstallMethod( Tau,
 
 
 #############################################################################
-##                                         
+##
 #F  MoebiusMu( <n> )  . . . . . . . . . . . . . .  Moebius inversion function
-##            
+##
 InstallGlobalFunction( MoebiusMu, function ( n )
     local  factors;
 
@@ -1315,7 +1315,7 @@ InstallGlobalFunction( MoebiusMu, function ( n )
     factors := Factors(Integers, n );
     if factors <> Set( factors )  then return 0;  fi;
     return (-1) ^ Length(factors);
-end );                                                                        
+end );
 
 
 #############################################################################

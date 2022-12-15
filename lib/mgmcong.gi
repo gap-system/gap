@@ -38,7 +38,7 @@ InstallMethod( PrintObj,
     true,
     [ IsLeftMagmaCongruence and HasGeneratingPairsOfMagmaCongruence ], 0,
     function( S )
-        Print( "LeftMagmaCongruence( ", 
+        Print( "LeftMagmaCongruence( ",
                GeneratingPairsOfMagmaCongruence( S ), " )" );
     end );
 
@@ -57,7 +57,7 @@ InstallMethod( PrintObj,
     true,
     [ IsRightMagmaCongruence and HasGeneratingPairsOfMagmaCongruence ], 0,
     function( S )
-        Print( "RightMagmaCongruence( ", 
+        Print( "RightMagmaCongruence( ",
                GeneratingPairsOfMagmaCongruence( S ), " )" );
     end );
 
@@ -77,13 +77,13 @@ InstallMethod( PrintObj,
     true,
     [ IsMagmaCongruence and HasGeneratingPairsOfMagmaCongruence ], 0,
     function( S )
-        Print( "MagmaCongruence( ", 
+        Print( "MagmaCongruence( ",
                 GeneratingPairsOfMagmaCongruence( S ), " )" );
     end );
 
 #############################################################################
 ##
-#M  ViewObj( <S> )  
+#M  ViewObj( <S> )
 ##	view a [left,right,two-sided] magma congruence
 ##
 
@@ -102,8 +102,8 @@ InstallMethod( ViewObj,
     true,
     [ IsLeftMagmaCongruence and HasGeneratingPairsOfMagmaCongruence ], 0,
     function( S )
-        Print( "<LeftMagmaCongruence with ", 
-               Length( GeneratingPairsOfMagmaCongruence( S ) ), 
+        Print( "<LeftMagmaCongruence with ",
+               Length( GeneratingPairsOfMagmaCongruence( S ) ),
                " generating pairs>" );
     end );
 
@@ -122,8 +122,8 @@ InstallMethod( ViewObj,
     true,
     [ IsRightMagmaCongruence and HasGeneratingPairsOfMagmaCongruence ], 0,
     function( S )
-        Print( "<RightMagmaCongruence with ", 
-               Length( GeneratingPairsOfMagmaCongruence( S ) ), 
+        Print( "<RightMagmaCongruence with ",
+               Length( GeneratingPairsOfMagmaCongruence( S ) ),
                " generating pairs>" );
     end );
 
@@ -142,20 +142,20 @@ InstallMethod( ViewObj,
     true,
     [ IsMagmaCongruence and HasGeneratingPairsOfMagmaCongruence ], 0,
     function( S )
-        Print( "<MagmaCongruence with ", 
-               Length( GeneratingPairsOfMagmaCongruence( S ) ), 
+        Print( "<MagmaCongruence with ",
+               Length( GeneratingPairsOfMagmaCongruence( S ) ),
                " generating pairs>" );
     end );
 
 #############################################################################
 ##
-#M  LR2MagmaCongruenceByGeneratingPairsCAT(<F>,<rels>,<category>) 
+#M  LR2MagmaCongruenceByGeneratingPairsCAT(<F>,<rels>,<category>)
 ##
 ##  create the magma congruence with generating pairs <rels> as
-##  a <category> where <category> is IsLeftMagmaCongruence, 
+##  a <category> where <category> is IsLeftMagmaCongruence,
 ##  IsRightMagmaCongruence or IsMagmaCongruence.
 ##
-InstallGlobalFunction( LR2MagmaCongruenceByGeneratingPairsCAT, 
+InstallGlobalFunction( LR2MagmaCongruenceByGeneratingPairsCAT,
 function(F, gens, category )
 
     local r, cong, fam;
@@ -170,9 +170,9 @@ function(F, gens, category )
     # Create the equivalence relation
     fam := GeneralMappingsFamily( ElementsFamily(FamilyObj(F)),
                ElementsFamily(FamilyObj(F)) );
-    
+
     # Create the default type for the elements.
-    cong := Objectify(NewType(fam, 
+    cong := Objectify(NewType(fam,
                 category and IsEquivalenceRelationDefaultRep), rec());
     SetSource(cong, F);
     SetRange(cong, F);
@@ -180,12 +180,12 @@ function(F, gens, category )
     # Add the generators in the appropriate attribute
     #    They are all set in a common place with special names
     #    as needed
-    if (category = IsMagmaCongruence) then 
+    if (category = IsMagmaCongruence) then
         SetGeneratingPairsOfMagmaCongruence(cong, Immutable(gens));
-    elif (category = IsLeftMagmaCongruence) then  
-        SetGeneratingPairsOfLeftMagmaCongruence(cong, Immutable(gens)); 
-    elif (category = IsRightMagmaCongruence) then 
-        SetGeneratingPairsOfRightMagmaCongruence(cong, Immutable(gens)); 
+    elif (category = IsLeftMagmaCongruence) then
+        SetGeneratingPairsOfLeftMagmaCongruence(cong, Immutable(gens));
+    elif (category = IsRightMagmaCongruence) then
+        SetGeneratingPairsOfRightMagmaCongruence(cong, Immutable(gens));
     else
         Error("Invalid category ",category," of Magma congruence");
     fi;
@@ -195,17 +195,17 @@ end);
 
 #############################################################################
 ##
-#M  LR2MagmaCongruenceByPartitionNCCAT(<F>,<part>,<category>) 
+#M  LR2MagmaCongruenceByPartitionNCCAT(<F>,<part>,<category>)
 ##
 ##  create the magma congruence with partition <part> as
-##  a <category> where <category> is IsLeftMagmaCongruence, 
+##  a <category> where <category> is IsLeftMagmaCongruence,
 ##  IsRightMagmaCongruence or IsMagmaCongruence.
 ##
 ##  <part> is a list of lists containing (at least) all of the non singleton
-##  blocks of the partition.  It is not checked that <part> is actually 
+##  blocks of the partition.  It is not checked that <part> is actually
 ##  a congruence in the category specified.
 ##
-InstallGlobalFunction( LR2MagmaCongruenceByPartitionNCCAT, 
+InstallGlobalFunction( LR2MagmaCongruenceByPartitionNCCAT,
 function(F, part, cat)
 
     local cong, fam;
@@ -219,9 +219,9 @@ function(F, part, cat)
     # Create the equivalence relation
     fam :=  GeneralMappingsFamily( ElementsFamily(FamilyObj(F)),
                 ElementsFamily(FamilyObj(F)) );
-    
+
     # Create the default type for the elements.
-    cong :=  Objectify(NewType(fam, 
+    cong :=  Objectify(NewType(fam,
                  cat and IsEquivalenceRelationDefaultRep), rec());
     SetSource(cong, F);
     SetRange(cong, F);
@@ -242,7 +242,7 @@ InstallMethod( LeftMagmaCongruenceByGeneratingPairs,
     IsElmsColls,
     [ IsMagma, IsList ], 0,
     function( M, gens )
-        return LR2MagmaCongruenceByGeneratingPairsCAT(M, gens, 
+        return LR2MagmaCongruenceByGeneratingPairsCAT(M, gens,
                    IsLeftMagmaCongruence);
     end );
 
@@ -251,7 +251,7 @@ InstallMethod( LeftMagmaCongruenceByGeneratingPairs,
     true,
     [ IsMagma, IsList and IsEmpty ], 0,
     function( M, gens )
-        return LR2MagmaCongruenceByGeneratingPairsCAT(M, gens, 
+        return LR2MagmaCongruenceByGeneratingPairsCAT(M, gens,
                    IsLeftMagmaCongruence);
     end );
 
@@ -260,7 +260,7 @@ InstallMethod( RightMagmaCongruenceByGeneratingPairs,
     IsElmsColls,
     [ IsMagma, IsList ], 0,
     function( M, gens )
-        return LR2MagmaCongruenceByGeneratingPairsCAT(M, gens, 
+        return LR2MagmaCongruenceByGeneratingPairsCAT(M, gens,
                IsRightMagmaCongruence);
     end );
 
@@ -269,7 +269,7 @@ InstallMethod( RightMagmaCongruenceByGeneratingPairs,
     true,
     [ IsMagma, IsList and IsEmpty ], 0,
     function( M, gens )
-        return LR2MagmaCongruenceByGeneratingPairsCAT(M, gens, 
+        return LR2MagmaCongruenceByGeneratingPairsCAT(M, gens,
                    IsRightMagmaCongruence);
     end );
 
@@ -279,9 +279,9 @@ InstallMethod( MagmaCongruenceByGeneratingPairs,
     [ IsMagma, IsList ], 0,
     function( M, gens )
 				local c;
-				
 
-        c :=  LR2MagmaCongruenceByGeneratingPairsCAT(M, gens, 
+
+        c :=  LR2MagmaCongruenceByGeneratingPairsCAT(M, gens,
                    IsMagmaCongruence);
 
 				if HasIsSemigroup(M) and IsSemigroup(M) then
@@ -299,7 +299,7 @@ InstallMethod( MagmaCongruenceByGeneratingPairs,
     function( M, gens )
 				local c;
 
-        c :=  LR2MagmaCongruenceByGeneratingPairsCAT(M, gens, 
+        c :=  LR2MagmaCongruenceByGeneratingPairsCAT(M, gens,
                    IsMagmaCongruence);
 
 				if HasIsSemigroup(M) and IsSemigroup(M) then
@@ -313,7 +313,7 @@ InstallMethod( MagmaCongruenceByGeneratingPairs,
 ##
 #M  EquivalenceClasses( <E> )
 ##
-##  For a MagmaCongruence 
+##  For a MagmaCongruence
 ##
 InstallMethod(EquivalenceClasses,
     "for magma congruences", true, [IsMagmaCongruence], 0,
@@ -340,7 +340,7 @@ InstallMethod( \*,
     IsIdenticalObj,
     [ IsCongruenceClass, IsCongruenceClass ],
     0,
-    
+
     function( x1, x2 )
         if EquivalenceClassRelation(x1) <> EquivalenceClassRelation(x2) then
             Error("Can only multiply classes of the same congruence");
@@ -353,7 +353,7 @@ InstallMethod( \*,
 ##
 #M  One(<congruence class>)
 ##
-##  It is installed as 
+##  It is installed as
 ##  OtherMethod to appease GAP since the selection filters
 ##  IsCongruenceClass and IsMultiplicativeElementWithOne
 ##  match two declarations of One - the first filter for domains,
@@ -371,68 +371,68 @@ InstallOtherMethod(One,
 ##
 #F  MagmaCongruencePartition(<cong>,<partialcond>)
 ##
-##  This function sets one of the two attributes 
+##  This function sets one of the two attributes
 ##
 ##       EquivalenceRelationPartition
 ##       PartialClosureOfCongruence
 ##
 ##  depending on whether full closure is found or partial closure is
-##  found. Both of these attributes are partitions of the magma's 
+##  found. Both of these attributes are partitions of the magma's
 ##  elements. If a previously computed PartialClosureOfCongruence satisfies
 ##  the <partialcond> no computations are performed.
 ##
 ##  A left magma congruence, right magma congruence, and magma congruence
 ##  is the smallest equivalence relation containing the generating pairs
-##  closed under the operations of left multiplication, right 
+##  closed under the operations of left multiplication, right
 ##  multiplication or both respectively.
 ##
-##  If the magma is infinite (or very large) it may not be possible to compute 
-##  the entire partition. <partialcond> allows for a stop condition (possibly) 
-##  short of full closure. The function <partialcond> takes two parameters 
-##  (congruence, forest). Other variables that might be needed by <partialcond> 
-##  should be assigned to globals variables before MagmaCongruencePartition is 
-##  called. 
+##  If the magma is infinite (or very large) it may not be possible to compute
+##  the entire partition. <partialcond> allows for a stop condition (possibly)
+##  short of full closure. The function <partialcond> takes two parameters
+##  (congruence, forest). Other variables that might be needed by <partialcond>
+##  should be assigned to globals variables before MagmaCongruencePartition is
+##  called.
 ##
 ##  A PartialClosureOfCongruence reflects a partial computation that can be used
 ##  in subsequent computations. Hence it is a mutable attribute.
 ##
-##  A partial closure is also provided if either one block or the number of 
-##  blocks exceeds 64,000 in length. The partial closure attribute is stored for 
+##  A partial closure is also provided if either one block or the number of
+##  blocks exceeds 64,000 in length. The partial closure attribute is stored for
 ##  the user to inspect.
 ##
-##  This algorithm is based on Atkinson et. al. (Group Theory on a 
+##  This algorithm is based on Atkinson et. al. (Group Theory on a
 ##  Microcomputer, in Computational Group Theory, 1984).
 ##
 ##  Non-trivial blocks are considered trees and the block system a forest
 ##
-##  Data representation: 
-##     o Forest is a list of non-empty lists with no holes. 
-##     o Each list in the forest represents a non-empty tree of depth 1 
+##  Data representation:
+##     o Forest is a list of non-empty lists with no holes.
+##     o Each list in the forest represents a non-empty tree of depth 1
 ##       with root the first element (hence it has at least 2 elements).
-##  
-##     If follows from the data representations that full path compression 
+##
+##     If follows from the data representations that full path compression
 ##     is used.
 ##
 ##     The merging of blocks can only be done via list Append.
-##     This insures that the root of the left tree being merged does not change 
-##     and hence is an invariant. 
+##     This insures that the root of the left tree being merged does not change
+##     and hence is an invariant.
 ##
 ######################################################################
 BindGlobal("MagmaCongruencePartition",
     function(cong,partialcond)
-	
+
         local C,         #Initial branches (given pairs)
               forest,    #Forest in which each tree is a block
               i,p,g,j,   #index variables
               r1,r2,     #roots of possible blocks to merge
               p1,p2,     #positions of the blocks
               gens,      #Required generators (in generality all the elements
-              maxlimit,  #Maximum size for either a partition or number of 
+              maxlimit,  #Maximum size for either a partition or number of
                          #    partition;
               checklimit,#Function for checking limit
               equivrel;  #Initial forest (if there is not partial closure)
 
-        ## Set up limits on the size and number of partitions we can 
+        ## Set up limits on the size and number of partitions we can
         ##    create a check function
         ##
         maxlimit := 64000;
@@ -440,7 +440,7 @@ BindGlobal("MagmaCongruencePartition",
             if Length(forest) >= maxlimit then return true; fi;
             if First(forest, x->Length(x)>=maxlimit) <> fail then return true; fi;
             return false;
-        end; 
+        end;
 
         ## check that we know the generators ....
         ##
@@ -448,20 +448,20 @@ BindGlobal("MagmaCongruencePartition",
             Error("MagmaCongruencePartition requires GeneratingPairsOfMagmaCongruence");
         fi;
 
-        if not ((HasGeneratorsOfMagma(Source(cong)) or 
-                HasGeneratorsOfMagmaWithInverses(Source(cong))) or 
+        if not ((HasGeneratorsOfMagma(Source(cong)) or
+                HasGeneratorsOfMagmaWithInverses(Source(cong))) or
                (HasIsFinite(Source(cong)) and IsFinite(Source(cong)) )) then
             Error("MagmaCongruencePartition requires generators for underlying semigroup or list of all elements");
         fi;
-		
-        ## does the partition already exist if so return done deal 
+
+        ## does the partition already exist if so return done deal
         ##
-        if HasEquivalenceRelationPartition(cong) then 
+        if HasEquivalenceRelationPartition(cong) then
             return;
         fi;
 
         ## check to see if we are to generate the trivial relation
-        ## 
+        ##
         ## Filter all pairs of the form (a,a).
         ##   if this filtered set is empty return the diagonal
         ##   equivalence
@@ -469,11 +469,11 @@ BindGlobal("MagmaCongruencePartition",
         C := List(Filtered(GeneratingPairsOfMagmaCongruence(cong),
                  x->not x[1]=x[2]), y->ShallowCopy(y));
 
-        if IsEmpty(C) then 
-            SetEquivalenceRelationPartition(cong,[]); 
+        if IsEmpty(C) then
+            SetEquivalenceRelationPartition(cong,[]);
             return;
         fi;
- 
+
         C := Set(C);
 
         ## Set the forest either to the partial closure from a previous
@@ -486,14 +486,14 @@ BindGlobal("MagmaCongruencePartition",
         else
             equivrel := EquivalenceRelationPartition(
                             EquivalenceRelationByPairsNC(Source(cong),C));
-            forest := List(equivrel, x->ShallowCopy(x));          
+            forest := List(equivrel, x->ShallowCopy(x));
         fi;
 
         ## Check partial closure might be fulfilled by initial closure
-        ## 
+        ##
         if partialcond(cong,forest) then
             SetPartialClosureOfCongruence(cong,forest);
-            cong!.C := MakeImmutable(C); 
+            cong!.C := MakeImmutable(C);
             return;
         fi;
 
@@ -508,14 +508,14 @@ BindGlobal("MagmaCongruencePartition",
         ## else use elements of the magma
         ##
         if HasGeneratorsOfMagmaWithInverses(Source(cong)) and
-               HasIsAssociative(Source(cong)) and 
+               HasIsAssociative(Source(cong)) and
                    IsAssociative(Source(cong)) then
             gens := GeneratorsOfMagmaWithInverses(Source(cong));
         elif HasGeneratorsOfMagma(Source(cong)) and
-                 HasIsAssociative(Source(cong)) and 
+                 HasIsAssociative(Source(cong)) and
                      IsAssociative(Source(cong)) then
             gens := GeneratorsOfMagma(Source(cong));
-        elif HasGeneratorsOfMagma(Source(cong)) and 
+        elif HasGeneratorsOfMagma(Source(cong)) and
                  HasIsFinite(Source(cong)) and
                      IsFinite(Source(cong)) then
             gens := AsSSortedList(Source(cong));
@@ -528,7 +528,7 @@ BindGlobal("MagmaCongruencePartition",
         ##    determining the closure wrt left and right
         ##    translations following Atkinson et. al.
         ##
-        repeat 
+        repeat
 
             p := C[1];
             RemoveSet(C,C[1]);
@@ -542,19 +542,19 @@ BindGlobal("MagmaCongruencePartition",
                     ##
                     ## Search the forest to see if each right translation
                     ##     is in one of the blocks (trees) in the forest
-                    ##     Get out a soon as both are found 
+                    ##     Get out a soon as both are found
                     ##
                     for i in [1..Length(forest)] do
                         if p1>Length(forest) and p[1]*g in forest[i] then
                             r1 := forest[i][1];
                             p1 := i;
                             if p2<=Length(forest) then break; fi;
-                        fi; 
+                        fi;
                         if p2>Length(forest) and p[2]*g in forest[i] then
                             r2 := forest[i][1];
                             p2 := i;
-                            if p1<=Length(forest) then break; fi; 
-                        fi; 
+                            if p1<=Length(forest) then break; fi;
+                        fi;
                     od;
 
                     ##
@@ -562,13 +562,13 @@ BindGlobal("MagmaCongruencePartition",
                     ##     blocks already defined make the element
                     ##     a root to a potential block
                     ##
-                    if p1=Length(forest)+1 then 
+                    if p1=Length(forest)+1 then
                         r1:=p[1]*g;
                     fi;
-                    if p2=Length(forest)+1 then 
+                    if p2=Length(forest)+1 then
                         r2:=p[2]*g;
                     fi;
-                    ## 
+                    ##
                     ## If the roots are different
                     ##     merge the blocks they represent
                     ##
@@ -576,17 +576,17 @@ BindGlobal("MagmaCongruencePartition",
                         ##
                         ## Merging of two existing blocks
                         ##     we must complete the Append and
-                        ##     get rid of the one block without 
+                        ##     get rid of the one block without
                         ##     leaving a hole
                         ##
-                        if p1<=Length(forest) and p2<=Length(forest) and 
+                        if p1<=Length(forest) and p2<=Length(forest) and
                                not p1=p2 then
                             Append(forest[p1],forest[p2]);
                             Unbind(forest[p2]);
 
                             ## No holes are left is at the end otherwise
                             ##    move the last one into the middle
-                            if not p2=Length(forest) then 
+                            if not p2=Length(forest) then
                                 forest[p2]:=forest[Length(forest)];
                                 Unbind(forest[Length(forest)]);
                             fi;
@@ -610,10 +610,10 @@ BindGlobal("MagmaCongruencePartition",
 
                 fi;
 
-                if IsLeftMagmaCongruence(cong) then 
+                if IsLeftMagmaCongruence(cong) then
 
                     ##
-                    ## Complete the left translations in an exact 
+                    ## Complete the left translations in an exact
                     ##     manner as above
                     ##
 
@@ -625,28 +625,28 @@ BindGlobal("MagmaCongruencePartition",
                             r1 := forest[i][1];
                             p1 := i;
                             if p2<=Length(forest) then break; fi;
-                        fi; 
+                        fi;
                             if p2>Length(forest) and g*p[2] in forest[i] then
                             r2 := forest[i][1];
                             p2 := i;
-                            if p1<=Length(forest) then break; fi; 
-                        fi; 
+                            if p1<=Length(forest) then break; fi;
+                        fi;
                     od;
 
-                    if p1=Length(forest)+1 then 
+                    if p1=Length(forest)+1 then
                         r1:=g*p[1];
                     fi;
- 
-                    if p2=Length(forest)+1 then 
+
+                    if p2=Length(forest)+1 then
                         r2:=g*p[2];
                     fi;
-  
+
                     if r1<>r2 then
-                        if p1<=Length(forest) and p2<=Length(forest) 
+                        if p1<=Length(forest) and p2<=Length(forest)
                                and not p1=p2 then
                             Append(forest[p1],forest[p2]);
                             Unbind(forest[p2]);
-                            if not p2=Length(forest) then 
+                            if not p2=Length(forest) then
                                 forest[p2]:=forest[Length(forest)];
                                 Unbind(forest[Length(forest)]);
                             fi;
@@ -660,7 +660,7 @@ BindGlobal("MagmaCongruencePartition",
                         AddSet(C,[r1,r2]);
                     fi;
                 fi;
-            od; 
+            od;
 
             ## Exit conditions are:
             ##     full closure is complete
@@ -672,24 +672,24 @@ BindGlobal("MagmaCongruencePartition",
         ## Set the equivalence partition if we have full closure
         ##
         if IsEmpty(C) then
-            SetEquivalenceRelationPartition(cong,forest); 
+            SetEquivalenceRelationPartition(cong,forest);
 
-        ## Set partial closure if partialcond is met or 
+        ## Set partial closure if partialcond is met or
         ##   size limit has been reached
         ##
         elif partialcond(cong,forest) then
             SetPartialClosureOfCongruence(cong,forest);
-            cong!.C := MakeImmutable(C); 
+            cong!.C := MakeImmutable(C);
         elif checklimit() then
             Info(InfoWarning,1,
                 "The congruence has either over 64,000 blocks or a \n",
                 "#I block with over 64,000 elements. Hence only a\n",
                 "#I a partial closure has been completed. You may view\n",
                 "#I this partition using the 'PartialClosureOfCongruence'\n",
-                "#I attribute"); 
+                "#I attribute");
             SetPartialClosureOfCongruence(cong,forest);
-            cong!.C := MakeImmutable(C); 
-        else 
+            cong!.C := MakeImmutable(C);
+        else
             Error("error, internal error in mgmcong.gi");
         fi;
     end);
@@ -705,13 +705,13 @@ InstallMethod(EquivalenceRelationPartition,
     "for a left congruence on a magma",
     true,
     [IsLeftMagmaCongruence], 0,
-    
+
     function(cong) # cong a congruence.
-	
+
         # close the congruence with respect to left mult.
-        MagmaCongruencePartition(cong,function(x,y) return false; end);           
-        return EquivalenceRelationPartition(cong); 
- 
+        MagmaCongruencePartition(cong,function(x,y) return false; end);
+        return EquivalenceRelationPartition(cong);
+
     end);
 
 ######################################################################
@@ -729,8 +729,8 @@ InstallMethod(EquivalenceRelationPartition,
     function(cong) # cong a congruence.
 
         # close the congruence with respect to right mult.
-        MagmaCongruencePartition(cong,function(x,y) return false; end);           
-        return EquivalenceRelationPartition(cong); 
+        MagmaCongruencePartition(cong,function(x,y) return false; end);
+        return EquivalenceRelationPartition(cong);
 
     end);
 
@@ -749,9 +749,9 @@ InstallMethod(EquivalenceRelationPartition,
     function(cong) # cong a congruence.
 
         # close the congruence with respect to left and right mult.
-        MagmaCongruencePartition(cong,function(x,y) return false; end);           
-        return EquivalenceRelationPartition(cong); 
- 
+        MagmaCongruencePartition(cong,function(x,y) return false; end);
+        return EquivalenceRelationPartition(cong);
+
     end);
 
 #############################################################################
@@ -761,17 +761,17 @@ InstallMethod(EquivalenceRelationPartition,
 ## Find the transitive closure of equivalence relations represented by
 ##    cong1 and cong2
 ##
-InstallMethod(JoinMagmaCongruences, 
+InstallMethod(JoinMagmaCongruences,
     "for magma congruences", true,
     [IsMagmaCongruence, IsMagmaCongruence],0,
 
     function(c1,c2)
-        local 
+        local
             er,      # Join is equivalence relations
             cong;    # Join congruence
 
         # Check to see that the both congruences have the same
-        #     parent magma 
+        #     parent magma
         #
         if Source(c1)<>Source(c2) then
             Error("usage: the source of <cong1> and <cong2> must be the same");
@@ -779,23 +779,23 @@ InstallMethod(JoinMagmaCongruences,
 
         # Find the join of the two congruences ar equivalence relations
         #
-        er := JoinEquivalenceRelations(c1,c2); 
+        er := JoinEquivalenceRelations(c1,c2);
 
         # Create the congruence and set the partition to that of
         #     of er
         #
-        cong := LR2MagmaCongruenceByGeneratingPairsCAT(Source(c1), 
+        cong := LR2MagmaCongruenceByGeneratingPairsCAT(Source(c1),
             Union(GeneratingPairsOfMagmaCongruence(c1),
                       GeneratingPairsOfMagmaCongruence(c2)),
             IsMagmaCongruence);
-       
+
         cong!.EquivalenceRelationPartition := EquivalenceRelationPartition(er);
-        
+
         if HasIsAssociative(Source(c1)) and IsAssociative(Source(c1)) then
             SetIsSemigroupCongruence(cong,true);
         fi;
         return cong;
-    end);  
+    end);
 
 #############################################################################
 ##
@@ -809,12 +809,12 @@ InstallMethod(MeetMagmaCongruences,
     [IsMagmaCongruence, IsMagmaCongruence],0,
 
     function(c1,c2)
-        local 
+        local
             er,      # Meet os equivalence relations
             cong;    # Meet congruence
 
         # Check to see that the both congruences have the same
-        #     parent magma 
+        #     parent magma
         #
         if Source(c1)<>Source(c2) then
             Error("The source of <cong1> and <cong2> must be the same");
@@ -822,18 +822,18 @@ InstallMethod(MeetMagmaCongruences,
 
         # Find the meet of the two congruences as equivalence relations
         #
-        er := MeetEquivalenceRelations(c1,c2); 
+        er := MeetEquivalenceRelations(c1,c2);
 
         # Create the congruence and set the partition to that of
         #     of er
         #
-        cong := LR2MagmaCongruenceByGeneratingPairsCAT(Source(c1), 
+        cong := LR2MagmaCongruenceByGeneratingPairsCAT(Source(c1),
             Intersection(GeneratingPairsOfMagmaCongruence(c1),
                       GeneratingPairsOfMagmaCongruence(c2)),
             IsMagmaCongruence);
-       
+
         cong!.EquivalenceRelationPartition := EquivalenceRelationPartition(er);
-        
+
         if HasIsAssociative(Source(c1)) and IsAssociative(Source(c1)) then
             SetIsSemigroupCongruence(cong,true);
         fi;
@@ -849,14 +849,14 @@ InstallMethod(MeetMagmaCongruences,
 ##  If <C> is infinite, this will not necessarily terminate.
 ##
 InstallMethod( \in, "for a magma congruence class", true,
-     [IsObject, IsCongruenceClass], 0, 
+     [IsObject, IsCongruenceClass], 0,
 
      function(x, C)
          local
              partialclosure,           #Partial closure
              part,                     #Partition
-             rep,           
-             rel, 
+             rep,
+             rel,
              class,
              GLOBAL_SEARCH_ELEMENT,
              GLOBAL_REP;
@@ -870,7 +870,7 @@ InstallMethod( \in, "for a magma congruence class", true,
          # quick check to see if element is representative
          if x=Representative(C) then return true; fi;
 
-         ## If the partition has been computed let the equivalence relation 
+         ## If the partition has been computed let the equivalence relation
          ## method deal with it
          if HasEquivalenceRelationPartition(EquivalenceClassRelation(C)) then
              TryNextMethod();
@@ -880,30 +880,30 @@ InstallMethod( \in, "for a magma congruence class", true,
          ##
          if HasPartialClosureOfCongruence(EquivalenceClassRelation(C)) then
              part := PartialClosureOfCongruence(EquivalenceClassRelation(C));
-             rep := Representative(C); 
+             rep := Representative(C);
              class := First(part,y->rep in y);
-         
+
              # the partial closure has the elements in the same class
              #    return true
-             if class <> fail and x in class then 
+             if class <> fail and x in class then
                  return true;
-             fi; 
+             fi;
          fi;
 
          ## Need to see if a partial closure can give an answer
          ##     NOT possible to give a negative solution if the number
          ##     of blocks or the size of a block is infinite
          ##
-         GLOBAL_REP := Representative(C); 
+         GLOBAL_REP := Representative(C);
          GLOBAL_SEARCH_ELEMENT := x;
-         rel := EquivalenceClassRelation(C);            
+         rel := EquivalenceClassRelation(C);
 
-         ## These global variables are constant and used 
+         ## These global variables are constant and used
          ##     in the following partial closure test:
-         ##     stop when the search element is found in 
+         ##     stop when the search element is found in
          ##     a block with the class's representative
          ##
-         partialclosure := 
+         partialclosure :=
              function(cong, forest)
                  local block;
                  block := First(forest,y-> GLOBAL_SEARCH_ELEMENT in y);
@@ -913,9 +913,9 @@ InstallMethod( \in, "for a magma congruence class", true,
          MagmaCongruencePartition(rel, partialclosure);
 
          ## We might have gotten a full closure from this call if so
-         ##     delegate the next method to determine if we have 
+         ##     delegate the next method to determine if we have
          ##     the element in the class
-         ## Otherwise the partial condition must have been satisfied 
+         ## Otherwise the partial condition must have been satisfied
          ##    return true
          ##
          if HasEquivalenceRelationPartition(rel) then
@@ -939,14 +939,14 @@ InstallMethod( Enumerator, "for a magma congruence class", true,
 
         cong := EquivalenceClassRelation(class);
 
-        ## if the partition is already known, just go through the 
+        ## if the partition is already known, just go through the
         ## generic equivalence class method else compute the partition
         ## then get lazy and call generic equivalence
         ##
         if HasEquivalenceRelationPartition(EquivalenceClassRelation(class)) then
             TryNextMethod();
         else
-            MagmaCongruencePartition(cong,function(x,y) return false; end);           
+            MagmaCongruencePartition(cong,function(x,y) return false; end);
             TryNextMethod();
         fi;
 
@@ -964,21 +964,21 @@ InstallMethod( Enumerator, "for a magma congruence class", true,
 ##      membership tests (for example when checking membership of a
 ##      transformation in a monoid, we use Greens relations and classes).
 ##
-InstallMethod(EquivalenceClassOfElementNC, 
-"for magma congruence with no check", 
+InstallMethod(EquivalenceClassOfElementNC,
+"for magma congruence with no check",
 [IsMagmaCongruence, IsObject],
 function(rel, rep)
   local filts, new;
 
   filts:= IsCongruenceClass and IsEquivalenceClassDefaultRep;
-  
-  if IsMultiplicativeElementWithOne(rep) then 
+
+  if IsMultiplicativeElementWithOne(rep) then
     filts:=filts and IsMultiplicativeElementWithOne;
   else
     filts:=filts and IsMultiplicativeElement;
   fi;
 
-  if IsAssociativeElement(rep) then 
+  if IsAssociativeElement(rep) then
     filts:=filts and IsAssociativeElement;
   fi;
 
@@ -990,7 +990,7 @@ function(rel, rep)
   return new;
 end);
 
-InstallMethod(EquivalenceClassOfElementNC, 
+InstallMethod(EquivalenceClassOfElementNC,
         "for magma congruence with no check", true,
         [IsLeftMagmaCongruence, IsObject], 0,
 function(rel, rep)
@@ -998,11 +998,11 @@ function(rel, rep)
 
     if IsMultiplicativeElementWithOne(rep) then
          new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
-                   IsCongruenceClass and IsEquivalenceClassDefaultRep 
+                   IsCongruenceClass and IsEquivalenceClassDefaultRep
                    and IsMultiplicativeElementWithOne), rec());
     else
          new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
-                   IsCongruenceClass and IsEquivalenceClassDefaultRep 
+                   IsCongruenceClass and IsEquivalenceClassDefaultRep
                    and IsMultiplicativeElement), rec());
     fi;
 
@@ -1012,7 +1012,7 @@ function(rel, rep)
     return new;
 end);
 
-InstallMethod(EquivalenceClassOfElementNC, 
+InstallMethod(EquivalenceClassOfElementNC,
     "for magma congruence with no check", true,
     [IsRightMagmaCongruence, IsObject], 0,
     function(rel, rep)
@@ -1020,11 +1020,11 @@ InstallMethod(EquivalenceClassOfElementNC,
 
         if IsMultiplicativeElementWithOne(rep) then
              new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
-                       IsCongruenceClass and IsEquivalenceClassDefaultRep 
+                       IsCongruenceClass and IsEquivalenceClassDefaultRep
                        and IsMultiplicativeElementWithOne), rec());
         else
              new:= Objectify(NewType(CollectionsFamily(FamilyObj(rep)),
-                       IsCongruenceClass and IsEquivalenceClassDefaultRep 
+                       IsCongruenceClass and IsEquivalenceClassDefaultRep
                        and IsMultiplicativeElement), rec());
         fi;
 

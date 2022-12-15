@@ -309,7 +309,7 @@ end;
 ##  with the image of <A>G</A> this permits efficient computations in the factor
 ##  group.
 ##  The homomorphism returned is not necessarily surjective, so
-##  <Ref Attr="ImagesSource"/> should be used instead of 
+##  <Ref Attr="ImagesSource"/> should be used instead of
 ##  <Ref Attr="Range" Label="of a general mapping"/>
 ##  to get a group isomorphic to the factor group.
 ##  The <C>NC</C> variant does not check whether <A>N</A> is normal in

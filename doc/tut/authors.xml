@@ -21,7 +21,7 @@ editions.
 <List>
 <Mark>Kernel</Mark>
 <Item>
-Frank Celler&nbsp;(A), Steve Linton&nbsp;(AM), Frank Lübeck&nbsp;(AM), 
+Frank Celler&nbsp;(A), Steve Linton&nbsp;(AM), Frank Lübeck&nbsp;(AM),
 Werner Nickel&nbsp;(AM), Martin Schönert&nbsp;(A)
 </Item>
 <Mark>Automorphism groups of finite pc groups </Mark>
@@ -30,7 +30,7 @@ Bettina Eick&nbsp;(A), Werner Nickel&nbsp;(M)
 </Item>
 <Mark>Binary Relations </Mark>
 <Item>
-Robert Morse&nbsp;(AM), Andrew Solomon&nbsp;(A) 
+Robert Morse&nbsp;(AM), Andrew Solomon&nbsp;(A)
 </Item>
 <Mark>Characters and Character Degrees of certain solvable groups </Mark>
 <Item>
@@ -42,7 +42,7 @@ Alexander Hulpke&nbsp;(AM)
 </Item>
 <Mark>Classical Groups </Mark>
 <Item>
-Thomas Breuer&nbsp;(AM), Frank Celler&nbsp;(A), Stefan Kohl&nbsp;(AM), 
+Thomas Breuer&nbsp;(AM), Frank Celler&nbsp;(A), Stefan Kohl&nbsp;(AM),
 Frank Lübeck&nbsp;(AM), Heiko Theißen&nbsp;(A)
 </Item>
 <Mark>Congruences of magmas, semigroups and monoids </Mark>
@@ -63,7 +63,7 @@ Alexander Hulpke&nbsp;(AM)
 </Item>
 <Mark>Documentation Utilities </Mark>
 <Item>
-Frank Celler&nbsp;(A), Heiko Theißen&nbsp;(A), Alexander Hulpke&nbsp;(A), 
+Frank Celler&nbsp;(A), Heiko Theißen&nbsp;(A), Alexander Hulpke&nbsp;(A),
 Willem de Graaf&nbsp;(A), Steve Linton&nbsp;(A), Werner Nickel&nbsp;(A), Greg Gamble&nbsp;(AM)
 </Item>
 <Mark>Factor groups </Mark>
@@ -183,7 +183,7 @@ Bettina Eick&nbsp;(AM)
 <Mark>Strings and Characters </Mark>
 <Item>
 
-Martin Schönert&nbsp;(A), Frank Celler&nbsp;(A), Thomas Breuer&nbsp;(A), 
+Martin Schönert&nbsp;(A), Frank Celler&nbsp;(A), Thomas Breuer&nbsp;(A),
 Frank Lübeck&nbsp;(AM)
 </Item>
 <Mark>Structure Descriptions for Finite Groups </Mark>
@@ -212,7 +212,7 @@ Volkmar Felsch&nbsp;(A), Werner Nickel&nbsp;(M)
 </Item>
 <Mark>Transformation semigroups </Mark>
 <Item>
-Isabel Araújo&nbsp;(A), Robert Arthur&nbsp;(A), Robert F. Morse&nbsp;(AM), 
+Isabel Araújo&nbsp;(A), Robert Arthur&nbsp;(A), Robert F. Morse&nbsp;(AM),
 Andrew Solomon&nbsp;(A)
 </Item>
 <Mark>Transitive groups library </Mark>

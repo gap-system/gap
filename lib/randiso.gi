@@ -11,7 +11,7 @@
 
 #############################################################################
 ##
-#F FingerprintFF( G ) 
+#F FingerprintFF( G )
 ##
 FingerprintFF := function( G )
     local orb, ord, res, po, i, typ;
@@ -44,13 +44,13 @@ end;
 ##
 #F OmegaAndLowerPCentralSeries( G )
 ##
-InstallMethod( OmegaAndLowerPCentralSeries, 
-               "omega and lower central", 
-               true, 
-               [IsPcGroup], 
+InstallMethod( OmegaAndLowerPCentralSeries,
+               "omega and lower central",
+               true,
+               [IsPcGroup],
                0,
 function( G )
-    local spec, first, i, ser1, ser2, pcgs, new, U, L, 
+    local spec, first, i, ser1, ser2, pcgs, new, U, L,
           pcgsU, pcgsL, pcgsUL, gens, N, sizes, j;
 
     # first get LG series
@@ -58,7 +58,7 @@ function( G )
     first := LGFirst( spec );
     ser1  := [G];
     for i in [2..Length(first)] do
-        pcgs := InducedPcgsByPcSequenceNC( spec, 
+        pcgs := InducedPcgsByPcSequenceNC( spec,
                 spec{[first[i]..Length(spec)]} );
         Add( ser1, SubgroupByPcgs( G, pcgs ) );
     od;
@@ -68,7 +68,7 @@ function( G )
     new  := [G];
     sizes:= [Size(G)];
     for i in [1..Length(ser1)-1] do
-        U := ser1[i]; 
+        U := ser1[i];
         L := ser1[i+1];
         pcgsU := Pcgs(U);
         pcgsL := Pcgs(L);
@@ -76,7 +76,7 @@ function( G )
         if Length( pcgsUL ) > 1 then
             for j in [2..Length(ser2)-1] do
                 gens := GeneratorsOfGroup( Intersection( U, ser2[j] ) );
-                pcgs := InducedPcgsByPcSequenceAndGenerators( 
+                pcgs := InducedPcgsByPcSequenceAndGenerators(
                         spec, pcgsL, gens );
                 pcgs := CanonicalPcgs( pcgs );
                 N    := SubgroupByPcgs( G, pcgs );
@@ -109,7 +109,7 @@ function( G )
         if Length( pcgsUL ) > 1 then
             for j in [2..Length(ser2)-1] do
                 gens := GeneratorsOfGroup( Intersection( U, ser2[j] ) );
-                pcgs := InducedPcgsByPcSequenceAndGenerators( 
+                pcgs := InducedPcgsByPcSequenceAndGenerators(
                         spec, pcgsL, gens );
                 pcgs := CanonicalPcgs( pcgs );
                 N    := SubgroupByPcgs( G, pcgs );
@@ -158,7 +158,7 @@ RelatorsCode := function( code, size, gens )
     else
         indices := f;
     fi;
- 
+
     # initialize relators
     rels := [];
     rr   := [];
@@ -185,7 +185,7 @@ RelatorsCode := function( code, size, gens )
         t := CoefficientsMultiadic( indices, n mod size );
         g := gens[1]^0;
         for j in [1..l] do
-            if t[j] > 0 then 
+            if t[j] > 0 then
                 g := g * gens[j]^t[j];
             fi;
         od;
@@ -218,7 +218,7 @@ end;
 #F PcGroupCode( <code>, <size> )
 ##
 InstallGlobalFunction( PcGroupCode, function( code, size )
-    local F, gens; 
+    local F, gens;
 
     # catch trivial case
     if size = 1 then
@@ -235,7 +235,7 @@ end );
 
 #############################################################################
 ##
-#F CodePcgs( <pcgs> ) 
+#F CodePcgs( <pcgs> )
 ##
 InstallGlobalFunction( CodePcgs, function( pcgs )
     local code, indices, l, mi, i, base, nt, r, j, size;
@@ -293,7 +293,7 @@ end );
 
 #############################################################################
 ##
-#F CodePcGroup( <G> ) 
+#F CodePcGroup( <G> )
 ##
 InstallGlobalFunction( CodePcGroup, function( G )
     return CodePcgs( Pcgs( G ) );
@@ -324,7 +324,7 @@ InstallGlobalFunction( PcGroupCodeRec, function( r )
         fi;
 
         SetIsNilpotentGroup( H, r.first[2]=1 );
-        if not IsBool( r.socledim ) and 
+        if not IsBool( r.socledim ) and
            not HasIsSupersolvableGroup( H ) then
             SetIsSupersolvableGroup( H, ForAll( r.socledim, x -> x=1 ) );
         fi;
@@ -376,18 +376,18 @@ end;
 #F RandomPcgsSylowSubgroup( S, p )
 ##
 RandomPcgsSylowSubgroup := function( S, p )
-    local refin, n, subl, bases, pcgss, i, pcgsV, pcgsF, m, top, h, t, g, 
+    local refin, n, subl, bases, pcgss, i, pcgsV, pcgsF, m, top, h, t, g,
           l, list;
 
     # use omega series and lower p-central series
     refin := OmegaAndLowerPCentralSeries( S );
     n     := Length( refin );
- 
-    # set up 
+
+    # set up
     subl  := List( [1..n-1], x -> [] );
     bases := List( [1..n-1], x -> [] );
     pcgss := List( [1..n-1], x -> Pcgs( refin[x] ) mod Pcgs( refin[x+1] ) );
-    
+
     # start to fill up sub
     for i in [1..n-1] do
 
@@ -419,7 +419,7 @@ RandomPcgsSylowSubgroup := function( S, p )
                 Add( subl[i], g );
                 top := top + 1;
             fi;
-            
+
             # check in powers and commutators
             list := [g^p];
             Append( list, List( subl[i], x -> Comm(x,g) ) );
@@ -441,7 +441,7 @@ end;
 ##
 #F RandomSpecialPcgsCoded( G )
 ##
-## Returns a random code defining a special pcgs of <G>.  
+## Returns a random code defining a special pcgs of <G>.
 InstallGlobalFunction( RandomSpecialPcgsCoded, function( G )
     local pcgs, l, weights, first, primes, sylow, npcs, i, s, n, p, S,
           seq, pcgssys, ppcs, pfirst, j, d, k;
@@ -486,12 +486,12 @@ InstallGlobalFunction( RandomSpecialPcgsCoded, function( G )
         Add( pfirst[j], pfirst[j][k] + d );
         s := pfirst[j][k];
         n := pfirst[j][k+1];
-        
+
         # sift in
         npcs[i] := ppcs[j]{[s..n-1]};
     od;
     npcs := Concatenation( npcs );
-        
+
     # compute corresponding special pcgs
     seq := PcgsByPcSequenceNC( FamilyObj( One( G ) ), npcs );
     pcgssys := rec( pcgs := seq,
@@ -541,10 +541,10 @@ InstallGlobalFunction( RandomIsomorphismTest, function( list, n )
                     if j <> i then
                         if code in codes[j] then
                             found := true;
-                        else 
+                        else
                             j := j + 1;
                         fi;
-                    else 
+                    else
                         j := j + 1;
                     fi;
                 od;
@@ -566,8 +566,8 @@ InstallGlobalFunction( RandomIsomorphismTest, function( list, n )
 		# just for information
         c := c+1;
         if c mod 10 = 0 then
-            Info( InfoRandIso, 3, "     ", c, " loops, ", 
-                  rem, " groups ", 
+            Info( InfoRandIso, 3, "     ", c, " loops, ",
+                  rem, " groups ",
                   conds{ Filtered( [ 1 .. Length( list ) ],
 		  x -> Length( codes[ x ] ) > 0 ) }," doubles ",
 	 	  List( codes{ Filtered( [ 1 .. Length( list ) ],
@@ -575,7 +575,7 @@ InstallGlobalFunction( RandomIsomorphismTest, function( list, n )
 		  " presentations");
         fi;
     od;
-    
+
     # cut out information
     for i in [1..Length(list)] do
         Unbind( list[i].group );
@@ -587,7 +587,7 @@ end );
 
 #############################################################################
 ##
-#F ReducedByIsomorphisms( list ) 
+#F ReducedByIsomorphisms( list )
 ##
 InstallGlobalFunction( ReducedByIsomorphisms, function( list )
     local subl, fins, i, fin, j, done,H;
@@ -595,11 +595,11 @@ InstallGlobalFunction( ReducedByIsomorphisms, function( list )
     # the trivial cases
     if Length( list ) = 0 then return list; fi;
 
-    if Length( list ) = 1 then 
+    if Length( list ) = 1 then
         list[1].isUnique := true;
-        return list; 
+        return list;
     fi;
- 
+
     Info( InfoRandIso, 1, "  reduce ", Length(list), " groups " );
 
     # first split the list
@@ -608,12 +608,12 @@ InstallGlobalFunction( ReducedByIsomorphisms, function( list )
     subl  := [];
     fins  := [];
     for i in [1..Length(list)] do
-        if list[i].isUnique then 
+        if list[i].isUnique then
             Add( done, list[i] );
         else
             H   := PcGroupCode( list[i].code, list[i].order );
             fin := FingerprintFF( H );
-            fin := Concatenation( list[i].extdim, fin ); 
+            fin := Concatenation( list[i].extdim, fin );
             j   := Position( fins, fin );
             if IsBool( j ) then
                 Add( subl, [list[i]] );
@@ -626,7 +626,7 @@ InstallGlobalFunction( ReducedByIsomorphisms, function( list )
 
     # now remove isomorphic copies
     for i in [1..Length(subl)] do
-        Info( InfoRandIso, 2, "   Iso: reduce list of length ", 
+        Info( InfoRandIso, 2, "   Iso: reduce list of length ",
                                Length(subl[i]));
         subl[i] := RandomIsomorphismTest( subl[i], 10 );
         if Length( subl[i] ) = 1 then
@@ -638,8 +638,8 @@ InstallGlobalFunction( ReducedByIsomorphisms, function( list )
 
     subl := Compacted( subl );
     Sort( subl, function( x, y ) return Length(x)<Length(y); end );
-   
-    # return 
+
+    # return
     return Concatenation( done, subl );
 end );
 

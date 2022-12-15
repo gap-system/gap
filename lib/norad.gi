@@ -141,7 +141,7 @@ local d,orb,len,S,depths,rel,stb,img,pos,i,j,k,ii,po,rep,sg,sf,sfs,fr,first,
 	  return fail;
 	fi;
 	for k in [i+1..i+po-1] do
-	  img:=act(orb[k],acts[j]); 
+	  img:=act(orb[k],acts[j]);
   #F if LookupDictionary(d,img)<>fail then Error("err3");fi;
 	  Add(orb,img);
 	  AddDictionary(d,img,Length(orb));
@@ -151,7 +151,7 @@ local d,orb,len,S,depths,rel,stb,img,pos,i,j,k,ii,po,rep,sg,sf,sfs,fr,first,
 	if Length(orb)>brutelimit then
 
 	  orb:=[];d:=1; #clean memory
-	  
+
 	  # projective action is fine, as we want to fix space
 	  Info(InfoFitFree,1,"act on whole space, fix in perm action");
 	  permact:=Action(GroupWithGenerators(Concatenation(acts,pcgsacts)),
@@ -182,7 +182,7 @@ local d,orb,len,S,depths,rel,stb,img,pos,i,j,k,ii,po,rep,sg,sf,sfs,fr,first,
 	      pcgs:=Reversed(S));
 
 	fi;
-	
+
       else
         # get stabilizing element
 	blp:=QuoInt((pos-1),po)+1; # which block position are we?
@@ -224,7 +224,7 @@ local d,orb,len,S,depths,rel,stb,img,pos,i,j,k,ii,po,rep,sg,sf,sfs,fr,first,
 	    fra:=fra/acts[k];
 	  od;
 	  img:=act(pnt,fra); # that's where fr now maps it to
-	  
+
 	  # find correcting pcgs element
 	  pos:=LookupDictionary(d,img);
 
@@ -248,7 +248,7 @@ local d,orb,len,S,depths,rel,stb,img,pos,i,j,k,ii,po,rep,sg,sf,sfs,fr,first,
 	  fi;
 	fi;
       fi;
-      
+
     od;
     i:=i+po; # can jump in Pcgs-orbit steps, as we always form all p-images
 
@@ -302,7 +302,7 @@ local i,stb;
       ngm:=List(ngm,x->TransposedMat(x^-1));
       npm:=List(npm,x->TransposedMat(x^-1));
     fi;
-    
+
   od;
   return rec(gens:=ng,imgs:=nf,pcgs:=np);
 end);
@@ -349,7 +349,7 @@ local expandvec,bassrc,basimg,transl,getbasimg,gettransl,myact2;
     if not IsBound(basimg[p]) then
       basimg[p]:=[];
     fi;
-    if Length(bassrc)=0 then 
+    if Length(bassrc)=0 then
       sol:=fail;
     else
       sol:=SolutionMat(bassrc,fv);
@@ -441,7 +441,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 		    lvecs:=xlvecs,
 		    action:=OnRight,
 		    stop:=stabsz));
-    
+
 
     if IsBound(stb.byinduced) then
       Info(InfoFitFree,2,"early stop by induced action ",stabsz);
@@ -516,7 +516,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 
     # number of pcgs generators in the kernel
     tailnum:=Maximum(0,Length(pcgs)-ser.depths[d]);
-    
+
     mran:=[ser.depths[d-1]..len];
     nopcgs:=InducedPcgsByPcSequenceNC(pcgs,pcgs{mran});
     nran:=[ser.depths[d]..len];
@@ -604,7 +604,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 	      List(MTX.BasesMinimalSubmodules(module),x->VectorSpace(f,x));
 
 	    if GaussianCoefficient(Length(sub[1]),Length(sub),Size(f))>5*10^5
-	      and Size(f)^Length(sub)/(Size(f)-1)<10000 
+	      and Size(f)^Length(sub)/(Size(f)-1)<10000
 	      and Size(f)^Length(sub)/(Size(f)-1)<2000 then
 
 	      # is the calculation potentially expensive?
@@ -616,7 +616,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 		    actrange:=[1..Length(np)-tailnum]);
 
 	      if stb=fail then
-		
+
 		# it failed. Now get vectors
 		Info(InfoFitFree,2,"use vectors of ",Size(f)^Length(sub));
 
@@ -677,7 +677,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 		  # sum could be 0
 		  vecsz:=Concatenation(vecs,[Zero(vecs[1])]);
 		  Add(dims,-1);
-		  
+
 		  i:=1;
 		  while i<=Length(clusters) do
 		    l:=i;
@@ -771,7 +771,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 
 	#add: for any depth changed from last time.
 	if Length(part)>0 and Length(famo)>0 and
-	  DepthOfPcElement(pcgs,part[1])<ser.depths[j+1] 
+	  DepthOfPcElement(pcgs,part[1])<ser.depths[j+1]
 	  then
 
 	  # Act on complements by action on 1-cohomology group
@@ -888,7 +888,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
       sumos:=Reversed(MTX.BasesCompositionSeries(module));
       sumos:=sumos{[2..Length(sumos)]};
       Info(InfoFitFree,2,"Module layers ",List(sumos,Length));
-      
+
       p1:=0;
       o1:=1;
       repeat
@@ -896,7 +896,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
         while p1<Length(sumos) and Length(sumos[o1])-Length(sumos[p1+1])<10 do
           p1:=p1+1;
         od;
-        
+
         sub:=List(sumos[p1],x->PcElementByExponents(famo,x));
         sub:=InducedPcgsByGeneratorsNC(NumeratorOfModuloPcgs(famo),Concatenation(DenominatorOfModuloPcgs(famo),sub));
         lfamo:=NumeratorOfModuloPcgs(famo) mod sub;
@@ -1042,12 +1042,12 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 
         o1:=p1;
       until p1=Length(sumos);
-        
+
     fi;
   od;
 
   return SubgroupByFittingFreeData(G,ng,nf,np);
-  
+
 end);
 
 InstallMethod( NormalizerOp,"solvable radical", IsIdenticalObj,

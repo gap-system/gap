@@ -45,7 +45,7 @@
 ##  For a positive integer <A>n</A> this function returns a list <A>l</A>,
 ##  consisting of the digits of <A>n</A> in decimal representation.
 ##  <Example><![CDATA[
-##  gap> ListOfDigits(3142);   
+##  gap> ListOfDigits(3142);
 ##  [ 3, 1, 4, 2 ]
 ##  ]]></Example>
 ##  </Description>
@@ -68,7 +68,7 @@ DeclareGlobalFunction("ListOfDigits");
 ##  to the ring specified by the coefficients of <A>p</A> via
 ##  <Ref Func="DefaultRing" Label="for ring elements"/>).
 ##  <Example><![CDATA[
-##  gap> x:=X(Rationals,"x");;p:=x^4-1;    
+##  gap> x:=X(Rationals,"x");;p:=x^4-1;
 ##  x^4-1
 ##  gap> RootsOfPolynomial(p);
 ##  [ 1, -1 ]
@@ -135,17 +135,17 @@ DeclareGlobalFunction("ShowGcd");
 ##  +        | 0*Z(2)   Z(2)^0   Z(2^2)   Z(2^2)^2
 ##  ---------+------------------------------------
 ##  0*Z(2)   | 0*Z(2)   Z(2)^0   Z(2^2)   Z(2^2)^2
-##  Z(2)^0   | Z(2)^0   0*Z(2)   Z(2^2)^2 Z(2^2)  
-##  Z(2^2)   | Z(2^2)   Z(2^2)^2 0*Z(2)   Z(2)^0  
-##  Z(2^2)^2 | Z(2^2)^2 Z(2^2)   Z(2)^0   0*Z(2)  
-##  
-##gap> ShowMultiplicationTable(GF(4));             
+##  Z(2)^0   | Z(2)^0   0*Z(2)   Z(2^2)^2 Z(2^2)
+##  Z(2^2)   | Z(2^2)   Z(2^2)^2 0*Z(2)   Z(2)^0
+##  Z(2^2)^2 | Z(2^2)^2 Z(2^2)   Z(2)^0   0*Z(2)
+##
+##gap> ShowMultiplicationTable(GF(4));
 ##*        | 0*Z(2)   Z(2)^0   Z(2^2)   Z(2^2)^2
 ##---------+------------------------------------
-##0*Z(2)   | 0*Z(2)   0*Z(2)   0*Z(2)   0*Z(2)  
+##0*Z(2)   | 0*Z(2)   0*Z(2)   0*Z(2)   0*Z(2)
 ##Z(2)^0   | 0*Z(2)   Z(2)^0   Z(2^2)   Z(2^2)^2
-##Z(2^2)   | 0*Z(2)   Z(2^2)   Z(2^2)^2 Z(2)^0  
-##Z(2^2)^2 | 0*Z(2)   Z(2^2)^2 Z(2)^0   Z(2^2)  
+##Z(2^2)   | 0*Z(2)   Z(2^2)   Z(2^2)^2 Z(2)^0
+##Z(2^2)^2 | 0*Z(2)   Z(2^2)^2 Z(2)^0   Z(2^2)
 
 ##  ]]></Example>
 ##  </Description>
@@ -171,10 +171,10 @@ DeclareGlobalFunction("ShowAdditionTable");
 ##  corresponding to one coset. The first sublist is the elements list of the
 ##  subgroup, the other lists are arranged accordingly.
 ##  <Example><![CDATA[
-##  gap> CosetDecomposition(SymmetricGroup(4),SymmetricGroup(3));          
-##  [ [ (), (2,3), (1,2), (1,2,3), (1,3,2), (1,3) ], 
-##    [ (1,4), (1,4)(2,3), (1,2,4), (1,2,3,4), (1,3,2,4), (1,3,4) ], 
-##    [ (1,4,2), (1,4,2,3), (2,4), (2,3,4), (1,3)(2,4), (1,3,4,2) ], 
+##  gap> CosetDecomposition(SymmetricGroup(4),SymmetricGroup(3));
+##  [ [ (), (2,3), (1,2), (1,2,3), (1,3,2), (1,3) ],
+##    [ (1,4), (1,4)(2,3), (1,2,4), (1,2,3,4), (1,3,2,4), (1,3,4) ],
+##    [ (1,4,2), (1,4,2,3), (2,4), (2,3,4), (1,3)(2,4), (1,3,4,2) ],
 ##    [ (1,4,3), (1,4,3,2), (1,2,4,3), (1,2)(3,4), (2,4,3), (3,4) ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -196,7 +196,7 @@ DeclareGlobalFunction("CosetDecomposition");
 ##  representatives of all homomorphisms <M><A>G</A> to <A>H</A></M> up to
 ##  <A>H</A>-conjugacy.
 ##  <Example><![CDATA[
-##  gap> AllHomomorphismClasses(SymmetricGroup(4),SymmetricGroup(3)); 
+##  gap> AllHomomorphismClasses(SymmetricGroup(4),SymmetricGroup(3));
 ##  [ [ (2,4,3), (1,4,2,3) ] -> [ (), () ],
 ##    [ (2,4,3), (1,4,2,3) ] -> [ (), (1,2) ],
 ##    [ (2,4,3), (1,4,2,3) ] -> [ (1,2,3), (1,2) ] ]
@@ -223,7 +223,7 @@ DeclareGlobalFunction("AllHomomorphismClasses");
 ##  grow quickly, <Ref Func="AllHomomorphismClasses"/> should be used in most
 ##  cases.
 ##  <Ref Func="AllEndomorphisms"/> returns all homomorphisms from
-##  <A>G</A> to itself, 
+##  <A>G</A> to itself,
 ##  <Ref Func="AllAutomorphisms"/> returns all bijective endomorphisms.
 ##  <Example><![CDATA[
 ##  gap> AllHomomorphisms(SymmetricGroup(3),SymmetricGroup(3));
@@ -253,14 +253,14 @@ DeclareGlobalFunction("AllHomomorphisms");
 ##  <Func Name="AllSubgroups" Arg='G'/>
 ##
 ##  <Description>
-##  For a finite group <A>G</A> 
+##  For a finite group <A>G</A>
 ##  <Ref Func="AllSubgroups"/> returns a list of all subgroups of <A>G</A>,
 ##  intended primarily for use in class for small examples.
 ##  This list will quickly get very long and in general use of
 ##  <Ref Attr="ConjugacyClassesSubgroups"/> is recommended.
 ##  <Example><![CDATA[
 ##  gap> AllSubgroups(SymmetricGroup(3));
-##  [ Group(()), Group([ (2,3) ]), Group([ (1,2) ]), Group([ (1,3) ]), 
+##  [ Group(()), Group([ (2,3) ]), Group([ (1,2) ]), Group([ (1,3) ]),
 ##    Group([ (1,2,3) ]), Group([ (1,2,3), (2,3) ]) ]
 ##  ]]></Example>
 ##  </Description>
@@ -295,11 +295,11 @@ end);
 ##  strings of <A>l</A> digits (including the check digits), the check consists
 ##  of taking the standard product of the vector of digits with the fixed vector
 ##  <A>f</A> modulo <A>m</A>; the result needs to be 0.
-##  
+##
 ##  The function returns a function that then can be used for testing or
 ##  determining check digits.
 ##  <Example><![CDATA[
-##  gap> isbntest:=CheckDigitTestFunction(10,11,[1,2,3,4,5,6,7,8,9,-1]); 
+##  gap> isbntest:=CheckDigitTestFunction(10,11,[1,2,3,4,5,6,7,8,9,-1]);
 ##  function( arg... ) ... end
 ##  gap> isbntest("038794680");
 ##  Check Digit is 2
@@ -330,7 +330,7 @@ DeclareGlobalFunction("CheckDigitTestFunction");
 ##  returns the missing check digit). The number can be specified as integer, as
 ##  string (for example in case of leading zeros) or as a sequence of arguments,
 ##  each representing a single digit.
-##  
+##
 ##  The check digits tested are the 10-digit ISBN (International Standard Book
 ##  Number) using <Ref Func="CheckDigitISBN"/> (since arithmetic is module 11, a
 ##  digit 11 is represented by an X);
@@ -376,16 +376,16 @@ DeclareGlobalFunction("CheckDigitTestFunction");
 ##  <Func Name="NumbersString" Arg='s,m [,table]'/>
 ##
 ##  <Description>
-##  <Ref Func="NumbersString"/> takes a string message <A>s</A> and 
+##  <Ref Func="NumbersString"/> takes a string message <A>s</A> and
 ##  returns a list of integers, each not exceeding the integer <A>m</A>
 ##  that encode the
 ##  message using  the scheme <M>A=11</M>, <M>B=12</M> and so on (and
-##  converting lower case to upper case). 
+##  converting lower case to upper case).
 ##  If a list of characters is given in <A>table</A>,
 ##  it is used instead for encoding).
 ##  <Example><![CDATA[
 ##  gap> l:=NumbersString("Twas brillig and the slithy toves",1000000);
-##  [ 303311, 291012, 281922, 221917, 101124, 141030, 181510, 292219, 
+##  [ 303311, 291012, 281922, 221917, 101124, 141030, 181510, 292219,
 ##    301835, 103025, 321529 ]
 ##  ]]></Example>
 ##  </Description>
@@ -404,9 +404,9 @@ DeclareGlobalFunction("NumbersString");
 ##
 ##  <Description>
 ##  <Ref Func="StringNumbers"/> takes a list <A>l</A> of integers that was
-##  encoded using <Ref Func="NumbersString"/> and the size integer <A>m</A>, 
+##  encoded using <Ref Func="NumbersString"/> and the size integer <A>m</A>,
 ##  and returns a
-##  message string, using  the scheme <M>A=11</M>, <M>B=12</M> and so on. 
+##  message string, using  the scheme <M>A=11</M>, <M>B=12</M> and so on.
 ##  If a list of characters is given in <A>table</A>,
 ##  it is used instead for decoding).
 ##  <Example><![CDATA[
@@ -439,10 +439,10 @@ DeclareGlobalFunction("StringNumbers");
 ##  Since use of this features potentially slows down the whole print
 ##  process, this function should be used sparingly.
 ##  <Example><![CDATA[
-##  gap> SetNameObject(3,"three"); 
+##  gap> SetNameObject(3,"three");
 ##  gap> Filtered([1..10],IsPrimeInt);
 ##  [ 2, three, 5, 7 ]
-##  gap> SetNameObject(3,fail);   
+##  gap> SetNameObject(3,fail);
 ##  gap> Filtered([1..10],IsPrimeInt);
 ##  [ 2, 3, 5, 7 ]
 ##  ]]></Example>
@@ -588,11 +588,11 @@ local a, l, b, i;
       a:=(a-b)/10;
     od;
     l:=Reversed(l);
-  elif Length(arg)=1 and IsList(arg[1]) 
-    and ForAll(arg[1],i->(IsInt(i) and 0<=i and 9>=i) 
+  elif Length(arg)=1 and IsList(arg[1])
+    and ForAll(arg[1],i->(IsInt(i) and 0<=i and 9>=i)
      or (i in CHARS_UALPHA)) then
      l:=ShallowCopy(arg[1]);
-  elif IsList(arg) and ForAll(arg,i->(IsInt(i) and 0<=i and 9>=i) 
+  elif IsList(arg) and ForAll(arg,i->(IsInt(i) and 0<=i and 9>=i)
      or (i in CHARS_UALPHA)) then
      l:=ShallowCopy(arg);
   else
@@ -830,7 +830,7 @@ InstallGlobalFunction(NumbersString,function(arg)
   m:=0;
   for i in message do
     p:=Position(table,i);
-    if p=fail then 
+    if p=fail then
       Error("Symbol ",i,"is not encodable");
     fi;
     if m<bound then
@@ -1021,7 +1021,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
   # find all homs
   emb:=MorClassLoop(G,bi,params,
     # all homs = 1+8
-    9); 
+    9);
   Info(InfoMorph,2,Length(emb)," homomorphisms");
   # skipped removal of duplicate images
   return emb;

@@ -28,7 +28,7 @@ InstallMethod( SuzukiGroupCons,
     [ IsMatrixGroup and IsFinite,
       IsInt and IsPosRat ],
     0,
-    
+
 function ( filter, q )
 
   local G,f;
@@ -71,7 +71,7 @@ InstallMethod( SuzukiGroupCons,
     [ IsPermGroup and IsFinite,
       IsInt and IsPosRat ],
     0,
-    
+
 function ( filter, q )
 
   local G,Ovoid,f,r,a,b,v;

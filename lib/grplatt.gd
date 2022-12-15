@@ -184,14 +184,14 @@ DeclareAttribute("Zuppos",IsGroup);
 ##  However &GAP; cannot analyze the function <A>func</A> for its implication
 ##  but can only apply it. If it is known that <A>func</A> implies solvability,
 ##  the computation of the perfect subgroups can be avoided by giving a
-##  third parameter <A>noperf</A> set to <K>true</K>. 
+##  third parameter <A>noperf</A> set to <K>true</K>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> g:=WreathProduct(Group((1,2,3),(1,2)),Group((1,2,3,4)));;
 ##  gap> l:=LatticeByCyclicExtension(g,function(G)
 ##  > return Size(G) in [1,2,3,6];end);
-##  <subgroup lattice of <permutation group of size 5184 with 
-##  9 generators>, 47 classes, 
+##  <subgroup lattice of <permutation group of size 5184 with
+##  9 generators>, 47 classes,
 ##  2628 subgroups, restricted under further condition l!.func>
 ##  ]]></Example>
 ##  <P/>
@@ -199,7 +199,7 @@ DeclareAttribute("Zuppos",IsGroup);
 ##  following example shows:
 ##  <Example><![CDATA[
 ##  gap> LatticeSubgroups(g);
-##  <subgroup lattice of <permutation group of size 5184 with 
+##  <subgroup lattice of <permutation group of size 5184 with
 ##  9 generators>, 566 classes, 27134 subgroups>
 ##  ]]></Example> ##  </Description>
 ##  </ManSection>
@@ -238,7 +238,7 @@ DeclareGlobalFunction("LatticeViaRadical");
 ##  of the representative of this class.
 ##  Every maximal subgroup is indicated by a list of the form <M>[ c, n ]</M>
 ##  which means that the <M>n</M>-th subgroup in class number <M>c</M> is a
-##  maximal subgroup of the representative. 
+##  maximal subgroup of the representative.
 ##  <P/>
 ##  The number <M>n</M> corresponds to access via
 ##  <Ref Oper="ClassElementLattice"/>
@@ -246,12 +246,12 @@ DeclareGlobalFunction("LatticeViaRadical");
 ##  See also <Ref Attr="MinimalSupergroupsLattice"/>.
 ##  <Example><![CDATA[
 ##  gap> MaximalSubgroupsLattice(l);
-##  [ [  ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], 
-##    [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ] ], [ [ 3, 1 ], [ 3, 6 ], [ 2, 3 ] ], 
-##    [ [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ] ], 
-##    [ [ 7, 1 ], [ 6, 1 ], [ 5, 1 ] ], 
-##    [ [ 5, 1 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ], 
-##    [ [ 10, 1 ], [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 8, 1 ], [ 8, 2 ], 
+##  [ [  ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], [ [ 1, 1 ] ],
+##    [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ] ], [ [ 3, 1 ], [ 3, 6 ], [ 2, 3 ] ],
+##    [ [ 2, 3 ] ], [ [ 4, 1 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ] ],
+##    [ [ 7, 1 ], [ 6, 1 ], [ 5, 1 ] ],
+##    [ [ 5, 1 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ],
+##    [ [ 10, 1 ], [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 8, 1 ], [ 8, 2 ],
 ##        [ 8, 3 ], [ 8, 4 ] ] ]
 ##  gap> last[6];
 ##  [ [ 3, 1 ], [ 3, 6 ], [ 2, 3 ] ]
@@ -295,11 +295,11 @@ DeclareAttribute("MaximalSubgroupsLattice",IsLatticeSubgroupsRep);
 ##  See also <Ref Attr="MaximalSubgroupsLattice"/>.
 ##  <Example><![CDATA[
 ##  gap> MinimalSupergroupsLattice(l);
-##  [ [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], 
-##        [ 3, 4 ], [ 3, 5 ], [ 3, 6 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], 
-##        [ 4, 4 ] ], [ [ 5, 1 ], [ 6, 2 ], [ 7, 2 ] ], 
-##    [ [ 6, 1 ], [ 8, 1 ], [ 8, 3 ] ], [ [ 8, 1 ], [ 10, 1 ] ], 
-##    [ [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 10, 1 ] ], [ [ 9, 1 ] ], 
+##  [ [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ],
+##        [ 3, 4 ], [ 3, 5 ], [ 3, 6 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ],
+##        [ 4, 4 ] ], [ [ 5, 1 ], [ 6, 2 ], [ 7, 2 ] ],
+##    [ [ 6, 1 ], [ 8, 1 ], [ 8, 3 ] ], [ [ 8, 1 ], [ 10, 1 ] ],
+##    [ [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 10, 1 ] ], [ [ 9, 1 ] ],
 ##    [ [ 9, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], [  ] ]
 ##  gap> last[3];
 ##  [ [ 6, 1 ], [ 8, 1 ], [ 8, 3 ] ]
@@ -338,7 +338,7 @@ DeclareAttribute("MinimalSupergroupsLattice",IsLatticeSubgroupsRep);
 ##  <P/>
 ##  Subgroups are labelled in the form <C><A>i</A>-<A>j</A></C> where <A>i</A> is the number of
 ##  the class of subgroups and <A>j</A> the number within this class. Normal
-##  subgroups are represented by a box. 
+##  subgroups are represented by a box.
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> DotFileLatticeSubgroups(l,"s4lat.dot");
@@ -433,7 +433,7 @@ DeclareGlobalFunction("TomDataSubgroupsAlmostSimple");
 ##  This function computes representatives of the conjugacy classes of
 ##  subgroups of the finite group <A>G</A> such that the subgroups can be
 ##  obtained as <A>lim</A>-fold iterated maximal subgroups.
-##  
+##
 ##  If a function <A>cond</A> is given, only subgroups for which this
 ##  function returns true (also for their intermediate overgroups) is
 ##  returned. If also a function <A>dosub</A> is given, maximal subgroups
@@ -502,7 +502,7 @@ DeclareSynonym("EmbeddedConjugates",ContainedConjugates);
 ##  <Oper Name="ContainingConjugates" Arg='G, A, B'/>
 ##
 ##  <Description>
-##  For <M>A,B \leq G</M> this operation returns all <A>G</A> conjugates of <A>A</A> 
+##  For <M>A,B \leq G</M> this operation returns all <A>G</A> conjugates of <A>A</A>
 ##  that contain <A>B</A>.
 ##  The function returns a list of pairs of subgroup and conjugating element.
 ##  <Example><![CDATA[
@@ -578,7 +578,7 @@ DeclareGlobalFunction("DescSubgroupIterator");
 
 DeclareGlobalFunction("SubgroupConditionAbove");
 
-# Utility function 
+# Utility function
 # MinimalInclusionsGroups(l)
 # returns a list of all inclusion indices [a,b] where l[a] is maximal subgroup
 # of l[b].

@@ -1,6 +1,6 @@
-<!-- 
+<!--
 
-  documentation.xml          GAP documentation    
+  documentation.xml          GAP documentation
 
   Copyright (C) 2005,  The GAP Group
 
@@ -12,14 +12,14 @@ Organization and compilation of GAP documentation.
 <Heading>Maintaining the &GAP; documentation</Heading>
 
 This chapter explains shortly how the &GAP; documentation is organized
-and how to produce the viewable documents from the sources. 
+and how to produce the viewable documents from the sources.
 
 <Section Label="Sect-DocDirs">
 <Heading>The source of the &GAP; documentation</Heading>
 
 Mention that manual examples should fit in 72 character width, and
 that examples should run as shown if all examples within a chapter
-are run in a fresh  &GAP; in default configuration with 
+are run in a fresh  &GAP; in default configuration with
 <C>ScreenSize([72]);</C>.
 
 </Section>
@@ -34,7 +34,7 @@ make doc
 ]]></Verb>
 
 in the &GAP; root directory. This will compile each of the three main &GAP;
-manuals twice to ensure that cross-references are resolved. 
+manuals twice to ensure that cross-references are resolved.
 <P/>
 
 If you need to compile a single manual book, call
@@ -42,8 +42,8 @@ If you need to compile a single manual book, call
 gap makedocrel.g
 ]]></Verb>
 in the corresponding directory (<F>ref</F>, <F>tut</F>, <F>hpc</F> or <F>dev</F>).
-This is convenient when you're working on the documentation and want to 
-check if the changed manual book compiles, so you need not to recompile 
+This is convenient when you're working on the documentation and want to
+check if the changed manual book compiles, so you need not to recompile
 all manual books from scratch.
 
 </Section>

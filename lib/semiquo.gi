@@ -13,10 +13,10 @@
 
 #############################################################################
 ##
-#F  HomomorphismQuotientSemigroup(<cong>) 
+#F  HomomorphismQuotientSemigroup(<cong>)
 ##
 ##
-InstallGlobalFunction(HomomorphismQuotientSemigroup, 
+InstallGlobalFunction(HomomorphismQuotientSemigroup,
 function(cong)
   local S, Qrep, efam, filters, Q, Qgens;
 
@@ -27,14 +27,14 @@ function(cong)
   S := Source(cong);
   Qrep := EquivalenceClassOfElementNC(cong, Representative(S));
   efam := FamilyObj(Qrep);
-  
+
   filters := IsSemigroup and IsQuotientSemigroup and IsAttributeStoringRep;
-  
+
   if IsMonoid(S) then
     filters := filters and IsMagmaWithOne;
   fi;
-  
-  if HasIsFinite(S) and IsFinite(S) then 
+
+  if HasIsFinite(S) and IsFinite(S) then
     filters := filters and IsFinite;
   fi;
 
@@ -43,7 +43,7 @@ function(cong)
   SetRepresentative(Q, Qrep);
   SetQuotientSemigroupPreimage(Q, S);
   SetQuotientSemigroupCongruence(Q, cong);
-  SetQuotientSemigroupHomomorphism(Q, MagmaHomomorphismByFunctionNC(S, Q, 
+  SetQuotientSemigroupHomomorphism(Q, MagmaHomomorphismByFunctionNC(S, Q,
    x->EquivalenceClassOfElementNC(cong,x)));
 
   efam!.quotient := Q;
@@ -63,7 +63,7 @@ function(cong)
   # method for GeneratorsOfMagma, if we know
   # GeneratorsOfMagmaWithInverses.
   if HasGeneratorsOfMagma(S) or
-     HasGeneratorsOfMagmaWithInverses(S) or 
+     HasGeneratorsOfMagmaWithInverses(S) or
      HasGeneratorsOfSemigroup(S) then
       Qgens := List( GeneratorsOfSemigroup(S),
                      s -> s^QuotientSemigroupHomomorphism(Q));
@@ -95,8 +95,8 @@ end);
 
 #############################################################################
 ##
-#M  ViewObj( S )  
-##  
+#M  ViewObj( S )
+##
 ##  View a quotient semigroup S
 ##
 InstallMethod( ViewObj,

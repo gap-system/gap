@@ -61,7 +61,7 @@ CheckGlobalName := function( name )
       Error("CheckGlobalName: the argument must be a string");
     fi;
     if ForAny(name, l -> not l in IdentifierLetters) then
-        Info(InfoWarning + InfoGlobal, 2, 
+        Info(InfoWarning + InfoGlobal, 2,
              "suspicious global variable name ", name);
     fi;
 end;
@@ -69,7 +69,7 @@ end;
 #############################################################################
 ##
 #M  ValueGlobal ( <name> )  . . . . . . . . . . . access a global by its name
-## 
+##
 ##  ValueGlobal ( <name> ) returns the value currently bound to the global
 ##  variable named by the string <name>. An error is raised if no value
 ##  is currently bound
@@ -81,18 +81,18 @@ InstallGlobalFunction( ValueGlobal, VALUE_GLOBAL );
 #############################################################################
 ##
 #M  IsBoundGlobal ( <name> )  . . . .  check if a global is bound by its name
-## 
+##
 ##  IsBoundGlobal ( <name> ) returns true if a value currently bound
 ##  to the global variable named by the string <name> and false otherwise
 ##
 
 
-InstallGlobalFunction( IsBoundGlobal, 
+InstallGlobalFunction( IsBoundGlobal,
         function (name)
     local isbound;
     CheckGlobalName( name );
     isbound := ISBOUND_GLOBAL(name);
-    Info( InfoGlobal, 3, 
+    Info( InfoGlobal, 3,
           "IsBoundGlobal: called for ", name, " returned ", isbound);
     return isbound;
 end);
@@ -101,15 +101,15 @@ end);
 #############################################################################
 ##
 #M  IsAutoGlobal ( <name> )  . . . .  check if a global is automatic
-## 
+##
 
 
-InstallGlobalFunction( IsAutoGlobal, 
+InstallGlobalFunction( IsAutoGlobal,
         function (name)
     local isauto;
     CheckGlobalName( name );
     isauto := IS_AUTO_GVAR(name);
-    Info( InfoGlobal, 3, 
+    Info( InfoGlobal, 3,
           "IsAutoGlobal: called for ", name, " returned ", isauto);
     return isauto;
 end);
@@ -117,20 +117,20 @@ end);
 #############################################################################
 ##
 #M  UnbindGlobal ( <name> ) . . . . . . . . . .  unbind a global  by its name
-## 
+##
 ##  UnbindGlobal ( <name> ) removes any value currently bound
 ##  to the global variable named by the string <name>. Nothing is returned
 ##
 ##  A warning is given isf <name> was not bound
 ##  The global variable named by <name> must be writable,
 ##  otherwise an error is raised.
-## 
+##
 
-InstallGlobalFunction( UnbindGlobal, 
+InstallGlobalFunction( UnbindGlobal,
         function (name)
     CheckGlobalName( name );
     if not ISBOUND_GLOBAL( name ) then
-        Info( InfoWarning + InfoGlobal, 1, 
+        Info( InfoWarning + InfoGlobal, 1,
               "UnbindGlobal: ", name, " already unbound");
     fi;
     Info( InfoGlobal, 2, "UnbindGlobal: called for ", name);
@@ -146,12 +146,12 @@ end);
 ##  named by the string <name> is read-only and false otherwise (the default)
 ##
 
-InstallGlobalFunction( IsReadOnlyGlobal, 
+InstallGlobalFunction( IsReadOnlyGlobal,
         function (name)
     local isro;
     CheckGlobalName( name );
     isro := IS_READ_ONLY_GLOBAL(name);
-    Info( InfoGlobal, 3, 
+    Info( InfoGlobal, 3,
           "IsReadOnlyGlobal: called for ", name, " returned ", isro);
     return isro;
 end);
@@ -186,18 +186,18 @@ end);
 ##  already read-only
 ##
 
-InstallGlobalFunction( MakeReadOnlyGlobal, 
+InstallGlobalFunction( MakeReadOnlyGlobal,
         function (name)
     CheckGlobalName( name );
     if name in ["time", "last", "last2", "last3", "~"] then
         Error("Making ",name," read-only is not a good idea!");
     fi;
     if not ISBOUND_GLOBAL( name ) then
-        Info( InfoWarning + InfoGlobal, 1, 
+        Info( InfoWarning + InfoGlobal, 1,
               "MakeReadOnlyGlobal: ", name, " no value bound");
     fi;
     if IS_READ_ONLY_GLOBAL( name ) then
-        Info( InfoWarning + InfoGlobal, 1, 
+        Info( InfoWarning + InfoGlobal, 1,
               "MakeReadOnlyGlobal: ", name, " already read-only");
     fi;
     Info( InfoGlobal, 2, "MakeReadOnlyGlobal: called for ", name);
@@ -215,11 +215,11 @@ end);
 ##  A warning is given if <name> is already read-write
 ##
 
-InstallGlobalFunction( MakeReadWriteGlobal, 
+InstallGlobalFunction( MakeReadWriteGlobal,
         function (name)
     CheckGlobalName( name );
     if not IS_READ_ONLY_GLOBAL( name ) then
-        Info( InfoWarning + InfoGlobal, 1, 
+        Info( InfoWarning + InfoGlobal, 1,
               "MakeReadWriteGlobal: ", name, " already read-write");
     fi;
     Info( InfoGlobal, 2, "MakeReadWriteGlobal: called for ", name);
@@ -236,11 +236,11 @@ end);
 ##  A warning is given if <name> is already constant
 ##
 
-InstallGlobalFunction( MakeConstantGlobal, 
+InstallGlobalFunction( MakeConstantGlobal,
         function (name)
     CheckGlobalName( name );
     if IS_CONSTANT_GLOBAL( name ) then
-        Info( InfoWarning + InfoGlobal, 1, 
+        Info( InfoWarning + InfoGlobal, 1,
               "MakeConstantGlobal: ", name, " already constant");
     fi;
     Info( InfoGlobal, 2, "MakeConstantGlobal: called for ", name);
@@ -259,9 +259,9 @@ end);
 ##  Operations and Categories)
 ##
 ##  An error is given if <name> already had a value bound.
-##  
+##
 
-InstallGlobalFunction( BindGlobal, 
+InstallGlobalFunction( BindGlobal,
         function (name, value)
     CheckGlobalName( name );
     Info( InfoGlobal, 2, "BindGlobal: called to set ", name, " to ", value);
@@ -269,7 +269,7 @@ InstallGlobalFunction( BindGlobal,
 end);
 
 
-InstallGlobalFunction( BindConstant, 
+InstallGlobalFunction( BindConstant,
         function (name, value)
     CheckGlobalName( name );
     Info( InfoGlobal, 2, "BindConstant: called to set ", name, " to ", value);

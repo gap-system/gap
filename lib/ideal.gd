@@ -402,7 +402,7 @@ DeclareAttribute( "RightActingRingOfIdeal", IsRing );
 ##  gap> C:= Subalgebra( B, Basis( B ){[1..9]} );
 ##  <algebra over Rationals, with 9 generators>
 ##  gap> I:= AsTwoSidedIdeal( B, C );
-##  <two-sided ideal in <algebra of dimension 18 over Rationals>, 
+##  <two-sided ideal in <algebra of dimension 18 over Rationals>,
 ##    (9 generators)>
 ##  ]]></Example>
 ##  </Description>

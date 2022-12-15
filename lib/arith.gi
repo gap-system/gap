@@ -28,8 +28,8 @@
 ##
 ##  It would be good if we could eventually get rid of this method.
 ##
-InstallOtherMethod(One, "for a multiplicative element with one collection", 
-[IsMultiplicativeElementWithOneCollection], 
+InstallOtherMethod(One, "for a multiplicative element with one collection",
+[IsMultiplicativeElementWithOneCollection],
 function(coll)
   if IsMultiplicativeElementWithOne( coll ) then
     # The fact that 'coll' is an element counts more
@@ -103,7 +103,7 @@ InstallOtherMethod( Zero,
     return elm;
     end );
 #T In cases where the OneOp result will normally be immutable, we could install
-#T OneOp itself as a method for OneAttr. This is worse if the result is mutable,
+#T OneOp itself as a method for OneImmutable. This is worse if the result is mutable,
 #T because a call to MakeImmutable is replaced by one to Immutable, but still
 #T works. This reduces the indirection to a method selection in these cases,
 #T which takes less than 1 microsecond on my system.
@@ -123,7 +123,7 @@ InstallOtherMethod( ZeroSameMutability,
     if IsMutable( obj ) then
       TryNextMethod();
     fi;
-    return ZeroAttr( obj );
+    return ZeroImmutable( obj );
     end );
 
 
@@ -174,7 +174,7 @@ InstallMethod( Zero,
 #M  ZeroOp( <elm> )
 ##
 ##  If <elm> is not copyable (and hence immutable) then we may call the
-##  generic method for `ZeroAttr' that tries to fetch a stored zero from the
+##  generic method for `ZeroImmutable' that tries to fetch a stored zero from the
 ##  family of <elm>.
 ##
 InstallMethod( ZeroOp,
@@ -236,7 +236,7 @@ InstallOtherMethod( AdditiveInverseSameMutability,
     if IsMutable( elm ) then
       TryNextMethod();
     fi;
-    a:= AdditiveInverseAttr( elm );
+    a:= AdditiveInverseImmutable( elm );
     MakeImmutable( a );
     return a;
     end );
@@ -360,7 +360,7 @@ InstallMethod( One,
 #M  OneOp( <elm> )
 ##
 ##  If <elm> is not copyable (and hence immutable) then we may call the
-##  generic method for `OneAttr' that tries to fetch a stored identity from
+##  generic method for `OneImmutable' that tries to fetch a stored identity from
 ##  the family of <elm>.
 ##
 InstallMethod( OneOp,
@@ -480,7 +480,7 @@ InstallOtherMethod( \/,
 #T
 #T  This is there to handle some mgrvs, like [,2] which might not
 #T  be IsExtRElement. In fact, plain lists will be caught by the
-#T  kernel and x/y turned into  x*InverseSM(y). This method is thus
+#T  kernel and x/y turned into  x*InverseSameMutability(y). This method is thus
 #T  needed only for compressed matrices and other external objects
 #T
 #T  It isn't clear that this is the right long-term solution. It might

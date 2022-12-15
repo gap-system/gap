@@ -70,7 +70,7 @@
 ##  <#/GAPDoc>
 ##
 if IsHPCGAP then
-DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsAtomicPositionalObjectRep, 
+DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsAtomicPositionalObjectRep,
     [ 1, 2 ] );
 else
 DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsPositionalObjectRep,
@@ -1564,14 +1564,14 @@ end );
 ##
 ##  (via delegations)
 ##
-InstallMethod( Characteristic, 
+InstallMethod( Characteristic,
   "for an elements family of a magma ring quotient",
   [ IsElementOfMagmaRingModuloSpanOfZeroFamily ],
   function( fam )
     local A,n,one,x;
     A := fam!.magmaring;
     one := One(A);
-    if Zero(A) = one then 
+    if Zero(A) = one then
         return 1;
     else
         return Characteristic(LeftActingDomain(A));

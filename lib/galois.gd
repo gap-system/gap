@@ -36,7 +36,7 @@ DeclareInfoClass("InfoGalois");
 ##
 ##  <Description>
 ##  Let <A>f</A> be an irreducible polynomial with rational coefficients. This
-##  function returns the type of Gal(<A>f</A>) 
+##  function returns the type of Gal(<A>f</A>)
 ##  (considered as a transitive permutation group of the roots of <A>f</A>). It
 ##  returns a number <A>i</A> if Gal(<A>f</A>) is permutation isomorphic to
 ##  <C>TransitiveGroup(<A>n</A>,<A>i</A>)</C> where <A>n</A> is the degree of <A>f</A>.

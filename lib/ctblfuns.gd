@@ -237,7 +237,7 @@ DeclareGlobalFunction( "CharacterString" );
 ##  gap> chi:= TrivialCharacter( s5 );
 ##  Character( CharacterTable( "A5.2" ), [ 1, 1, 1, 1, 1, 1, 1 ] )
 ##  gap> chi ^ m11;
-##  Character( CharacterTable( "M11" ), [ 66, 10, 3, 2, 1, 1, 0, 0, 0, 0 
+##  Character( CharacterTable( "M11" ), [ 66, 10, 3, 2, 1, 1, 0, 0, 0, 0
 ##   ] )
 ##  gap> Determinant( irrs5[4] );
 ##  Character( CharacterTable( "A5.2" ), [ 1, 1, 1, 1, -1, -1, -1 ] )
@@ -365,23 +365,23 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> grps:= Filtered( AllSmallGroups( 8 ), g -> not IsAbelian( g ) );
-##  [ <pc group of size 8 with 3 generators>, 
+##  [ <pc group of size 8 with 3 generators>,
 ##    <pc group of size 8 with 3 generators> ]
 ##  gap> t1:= CharacterTable( grps[1] );  SetName( t1, "t1" );
 ##  CharacterTable( <pc group of size 8 with 3 generators> )
 ##  gap> t2:= CharacterTable( grps[2] );  SetName( t2, "t2" );
 ##  CharacterTable( <pc group of size 8 with 3 generators> )
 ##  gap> irr1:= Irr( grps[1] );
-##  [ Character( t1, [ 1, 1, 1, 1, 1 ] ), 
-##    Character( t1, [ 1, -1, -1, 1, 1 ] ), 
-##    Character( t1, [ 1, -1, 1, 1, -1 ] ), 
-##    Character( t1, [ 1, 1, -1, 1, -1 ] ), 
+##  [ Character( t1, [ 1, 1, 1, 1, 1 ] ),
+##    Character( t1, [ 1, -1, -1, 1, 1 ] ),
+##    Character( t1, [ 1, -1, 1, 1, -1 ] ),
+##    Character( t1, [ 1, 1, -1, 1, -1 ] ),
 ##    Character( t1, [ 2, 0, 0, -2, 0 ] ) ]
 ##  gap> irr2:= Irr( grps[2] );
-##  [ Character( t2, [ 1, 1, 1, 1, 1 ] ), 
-##    Character( t2, [ 1, -1, -1, 1, 1 ] ), 
-##    Character( t2, [ 1, -1, 1, 1, -1 ] ), 
-##    Character( t2, [ 1, 1, -1, 1, -1 ] ), 
+##  [ Character( t2, [ 1, 1, 1, 1, 1 ] ),
+##    Character( t2, [ 1, -1, -1, 1, 1 ] ),
+##    Character( t2, [ 1, -1, 1, 1, -1 ] ),
+##    Character( t2, [ 1, 1, -1, 1, -1 ] ),
 ##    Character( t2, [ 2, 0, 0, -2, 0 ] ) ]
 ##  gap> irr1 = irr2;
 ##  true
@@ -431,10 +431,10 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  <Example><![CDATA[
 ##  gap> g:= SymmetricGroup( 4 );;  tbl:= CharacterTable( g );;
 ##  gap> SetName( tbl, "S4" );  irr:= Irr( g );
-##  [ Character( S4, [ 1, -1, 1, 1, -1 ] ), 
-##    Character( S4, [ 3, -1, -1, 0, 1 ] ), 
-##    Character( S4, [ 2, 0, 2, -1, 0 ] ), 
-##    Character( S4, [ 3, 1, -1, 0, -1 ] ), 
+##  [ Character( S4, [ 1, -1, 1, 1, -1 ] ),
+##    Character( S4, [ 3, -1, -1, 0, 1 ] ),
+##    Character( S4, [ 2, 0, 2, -1, 0 ] ),
+##    Character( S4, [ 3, 1, -1, 0, -1 ] ),
 ##    Character( S4, [ 1, 1, 1, 1, 1 ] ) ]
 ##  gap> 2 * irr[5];
 ##  Character( S4, [ 2, 2, 2, 2, 2 ] )
@@ -501,8 +501,8 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Inverse( List( irr, ValuesOfClassFunction ) );
-##  [ [ 1/24, 1/8, 1/12, 1/8, 1/24 ], [ -1/4, -1/4, 0, 1/4, 1/4 ], 
-##    [ 1/8, -1/8, 1/4, -1/8, 1/8 ], [ 1/3, 0, -1/3, 0, 1/3 ], 
+##  [ [ 1/24, 1/8, 1/12, 1/8, 1/24 ], [ -1/4, -1/4, 0, 1/4, 1/4 ],
+##    [ 1/8, -1/8, 1/4, -1/8, 1/8 ], [ 1/3, 0, -1/3, 0, 1/3 ],
 ##    [ -1/4, 1/4, 0, -1/4, 1/4 ] ]
 ##  ]]></Example>
 ##  <P/>
@@ -511,8 +511,8 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> irr[1] * irr{ [ 1 .. 3 ] };
-##  [ Character( S4, [ 1, 1, 1, 1, 1 ] ), 
-##    Character( S4, [ 3, 1, -1, 0, -1 ] ), 
+##  [ Character( S4, [ 1, 1, 1, 1, 1 ] ),
+##    Character( S4, [ 3, 1, -1, 0, -1 ] ),
 ##    Character( S4, [ 2, 0, 2, -1, 0 ] ) ]
 ##  ]]></Example>
 ##  <P/>
@@ -547,13 +547,13 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  gap> irr[3] ^ 3;
 ##  Character( S4, [ 8, 0, 8, -1, 0 ] )
 ##  gap> lin:= LinearCharacters( DerivedSubgroup( g ) );
-##  [ Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1 ] ), 
+##  [ Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1 ] ),
 ##    Character( CharacterTable( Alt( [ 1 .. 4 ] ) ),
 ##    [ 1, 1, E(3), E(3)^2 ] ),
 ##    Character( CharacterTable( Alt( [ 1 .. 4 ] ) ),
 ##    [ 1, 1, E(3)^2, E(3) ] ) ]
 ##  gap> List( lin, chi -> chi ^ (1,2) );
-##  [ Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1 ] ), 
+##  [ Character( CharacterTable( Alt( [ 1 .. 4 ] ) ), [ 1, 1, 1, 1 ] ),
 ##    Character( CharacterTable( Alt( [ 1 .. 4 ] ) ),
 ##    [ 1, 1, E(3)^2, E(3) ] ),
 ##    Character( CharacterTable( Alt( [ 1 .. 4 ] ) ),
@@ -584,7 +584,7 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  gap> Characteristic( irr[1] );
 ##  0
 ##  gap> irrmod2:= Irr( g, 2 );
-##  [ Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 1, 1 ] ), 
+##  [ Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 1, 1 ] ),
 ##    Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 2, -1 ] ) ]
 ##  gap> Characteristic( irrmod2[1] );
 ##  0
@@ -777,16 +777,16 @@ DeclareOperation( "CorrespondingPermutations",
 ##  Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] )
 ##  gap> Display( chi );
 ##  A5
-##  
+##
 ##       2  2  2  .  .  .
 ##       3  1  .  1  .  .
 ##       5  1  .  .  1  1
-##  
+##
 ##         1a 2a 3a 5a 5b
 ##      2P 1a 1a 3a 5b 5a
 ##      3P 1a 2a 1a 5b 5a
 ##      5P 1a 2a 3a 1a 1a
-##  
+##
 ##  Y.1     1  1  1  1  1
 ##  ]]></Example>
 ##  </Description>
@@ -1011,11 +1011,11 @@ DeclareAttribute( "TrivialCharacter", IsGroup );
 ##  gap> NaturalCharacter( SymmetricGroup( 3 ) );
 ##  Character( CharacterTable( Sym( [ 1 .. 3 ] ) ), [ 3, 1, 0 ] )
 ##  gap> NaturalCharacter( Group( [ [ 0, -1 ], [ 1, -1 ] ] ) );
-##  Character( CharacterTable( Group([ [ [ 0, -1 ], [ 1, -1 ] ] ]) ), 
+##  Character( CharacterTable( Group([ [ [ 0, -1 ], [ 1, -1 ] ] ]) ),
 ##  [ 2, -1, -1 ] )
 ##  gap> d8:= DihedralGroup( 8 );;  hom:= IsomorphismPermGroup( d8 );;
 ##  gap> NaturalCharacter( hom );
-##  Character( CharacterTable( <pc group of size 8 with 3 generators> ), 
+##  Character( CharacterTable( <pc group of size 8 with 3 generators> ),
 ##  [ 8, 0, 0, 0, 0 ] )
 ##  ]]></Example>
 ##  </Description>
@@ -1295,7 +1295,7 @@ DeclareOperation( "MatScalarProducts",
 ##  1
 ##  gap> ScalarProduct( tbl, [ 1, 1, 1, 1, 1 ], Sum( Irr( tbl ) ) );
 ##  1
-##  gap> tbl2:= tbl mod 2;  
+##  gap> tbl2:= tbl mod 2;
 ##  BrauerTable( "A5", 2 )
 ##  gap> chi:= Irr( tbl2 )[1];
 ##  Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] )
@@ -1306,10 +1306,10 @@ DeclareOperation( "MatScalarProducts",
 ##  gap> chars:= Irr( tbl ){ [ 2 .. 4 ] };;
 ##  gap> chars:= Set( Tensored( chars, chars ) );;
 ##  gap> MatScalarProducts( Irr( tbl ), chars );
-##  [ [ 0, 0, 0, 1, 1 ], [ 1, 1, 0, 0, 1 ], [ 1, 0, 1, 0, 1 ], 
+##  [ [ 0, 0, 0, 1, 1 ], [ 1, 1, 0, 0, 1 ], [ 1, 0, 1, 0, 1 ],
 ##    [ 0, 1, 0, 1, 1 ], [ 0, 0, 1, 1, 1 ], [ 1, 1, 1, 1, 1 ] ]
 ##  gap> MatScalarProducts( tbl, chars );
-##  [ [ 2 ], [ 1, 3 ], [ 1, 2, 3 ], [ 2, 2, 1, 3 ], [ 2, 1, 2, 2, 3 ], 
+##  [ [ 2 ], [ 1, 3 ], [ 1, 2, 3 ], [ 2, 2, 1, 3 ], [ 2, 1, 2, 2, 3 ],
 ##    [ 2, 3, 3, 3, 3, 5 ] ]
 ##  gap> List( chars, Norm );
 ##  [ 2, 3, 3, 3, 3, 5 ]
@@ -1346,8 +1346,8 @@ DeclareOperation( "Norm", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> List( Irr( S4 ), CentreOfCharacter );
-##  [ Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), Group(()), 
-##    Group([ (1,2)(3,4), (1,3)(2,4) ]), Group(()), 
+##  [ Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), Group(()),
+##    Group([ (1,2)(3,4), (1,3)(2,4) ]), Group(()),
 ##    Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]) ]
 ##  ]]></Example>
 ##  </Description>
@@ -1405,7 +1405,7 @@ DeclareAttribute( "ClassPositionsOfCentre", IsHomogeneousList );
 ##  gap> nat:= NaturalCharacter( S4 );
 ##  Character( CharacterTable( S4 ), [ 4, 2, 0, 1, 0 ] )
 ##  gap> ConstituentsOfCharacter( nat );
-##  [ Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] ), 
+##  [ Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] ),
 ##    Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -1722,7 +1722,7 @@ DeclareOperation( "DeterminantOfCharacter",
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> chi:= Irr( CharacterTable( "A5" ) )[2];
-##  Character( CharacterTable( "A5" ), 
+##  Character( CharacterTable( "A5" ),
 ##  [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] )
 ##  gap> List( [ 1 .. 5 ], i -> Eigenvalues( chi, i ) );
 ##  [ [ 3 ], [ 2, 1 ], [ 1, 1, 1 ], [ 0, 1, 1, 0, 1 ], [ 1, 0, 0, 1, 1 ] ]
@@ -1754,17 +1754,17 @@ DeclareOperation( "EigenvaluesChar",
 ##  gap> irra5:= Irr( CharacterTable( "A5" ) );;
 ##  gap> chars1:= irra5{ [ 1 .. 3 ] };;  chars2:= irra5{ [ 2, 3 ] };;
 ##  gap> Tensored( chars1, chars2 );
-##  [ Character( CharacterTable( "A5" ), 
-##      [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ), 
-##    Character( CharacterTable( "A5" ), 
-##      [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ), 
-##    Character( CharacterTable( "A5" ), 
-##      [ 9, 1, 0, -2*E(5)-E(5)^2-E(5)^3-2*E(5)^4, 
-##        -E(5)-2*E(5)^2-2*E(5)^3-E(5)^4 ] ), 
-##    Character( CharacterTable( "A5" ), [ 9, 1, 0, -1, -1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 9, 1, 0, -1, -1 ] ), 
-##    Character( CharacterTable( "A5" ), 
-##      [ 9, 1, 0, -E(5)-2*E(5)^2-2*E(5)^3-E(5)^4, 
+##  [ Character( CharacterTable( "A5" ),
+##      [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ),
+##    Character( CharacterTable( "A5" ),
+##      [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ),
+##    Character( CharacterTable( "A5" ),
+##      [ 9, 1, 0, -2*E(5)-E(5)^2-E(5)^3-2*E(5)^4,
+##        -E(5)-2*E(5)^2-2*E(5)^3-E(5)^4 ] ),
+##    Character( CharacterTable( "A5" ), [ 9, 1, 0, -1, -1 ] ),
+##    Character( CharacterTable( "A5" ), [ 9, 1, 0, -1, -1 ] ),
+##    Character( CharacterTable( "A5" ),
+##      [ 9, 1, 0, -E(5)-2*E(5)^2-2*E(5)^3-E(5)^4,
 ##        -2*E(5)-E(5)^2-E(5)^3-2*E(5)^4 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -1907,16 +1907,16 @@ DeclareOperation( "RestrictedClassFunction",
 ##  gap> RestrictedClassFunction( Irr( s5 )[2], a5 );
 ##  Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] )
 ##  gap> RestrictedClassFunctions( Irr( s5 ), a5 );
-##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 6, -2, 0, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ), 
+##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ), [ 6, -2, 0, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ),
+##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ),
+##    Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ),
 ##    Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ) ]
 ##  gap> hom:= NaturalHomomorphismByNormalSubgroup( S4, der );;
 ##  gap> RestrictedClassFunctions( Irr( Image( hom ) ), hom );
-##  [ Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] ), 
+##  [ Character( CharacterTable( S4 ), [ 1, 1, 1, 1, 1 ] ),
 ##    Character( CharacterTable( S4 ), [ 1, -1, 1, 1, -1 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2029,10 +2029,10 @@ DeclareOperation( "InducedClassFunction",
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> InducedClassFunctions( Irr( a5 ), s5 );
-##  [ Character( CharacterTable( "A5.2" ), [ 2, 2, 2, 2, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5.2" ), [ 8, 0, 2, -2, 0, 0, 0 ] ), 
+##  [ Character( CharacterTable( "A5.2" ), [ 2, 2, 2, 2, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5.2" ), [ 8, 0, 2, -2, 0, 0, 0 ] ),
 ##    Character( CharacterTable( "A5.2" ), [ 10, 2, -2, 0, 0, 0, 0 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2078,10 +2078,10 @@ DeclareOperation( "InducedClassFunctions",
 ##  gap> fus:= PossibleClassFusions( a5, s5 );
 ##  [ [ 1, 2, 3, 4, 4 ] ]
 ##  gap> InducedClassFunctionsByFusionMap( a5, s5, Irr( a5 ), fus[1] );
-##  [ Character( CharacterTable( "A5.2" ), [ 2, 2, 2, 2, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5.2" ), [ 8, 0, 2, -2, 0, 0, 0 ] ), 
+##  [ Character( CharacterTable( "A5.2" ), [ 2, 2, 2, 2, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5.2" ), [ 6, -2, 0, 1, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5.2" ), [ 8, 0, 2, -2, 0, 0, 0 ] ),
 ##    Character( CharacterTable( "A5.2" ), [ 10, 2, -2, 0, 0, 0, 0 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2148,15 +2148,15 @@ DeclareOperation( "Induced", [ IsObject, IsObject, IsObject, IsObject ] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> InducedCyclic( a5, "all" );
-##  [ Character( CharacterTable( "A5" ), [ 12, 0, 0, 2, 2 ] ), 
-##    Character( CharacterTable( "A5" ), 
-##      [ 12, 0, 0, E(5)^2+E(5)^3, E(5)+E(5)^4 ] ), 
-##    Character( CharacterTable( "A5" ), 
-##      [ 12, 0, 0, E(5)+E(5)^4, E(5)^2+E(5)^3 ] ), 
-##    Character( CharacterTable( "A5" ), [ 20, 0, -1, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 20, 0, 2, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 30, -2, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 30, 2, 0, 0, 0 ] ), 
+##  [ Character( CharacterTable( "A5" ), [ 12, 0, 0, 2, 2 ] ),
+##    Character( CharacterTable( "A5" ),
+##      [ 12, 0, 0, E(5)^2+E(5)^3, E(5)+E(5)^4 ] ),
+##    Character( CharacterTable( "A5" ),
+##      [ 12, 0, 0, E(5)+E(5)^4, E(5)^2+E(5)^3 ] ),
+##    Character( CharacterTable( "A5" ), [ 20, 0, -1, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 20, 0, 2, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 30, -2, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 30, 2, 0, 0, 0 ] ),
 ##    Character( CharacterTable( "A5" ), [ 60, 0, 0, 0, 0 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2258,15 +2258,15 @@ DeclareSynonym( "Reduced", ReducedClassFunctions );
 ##  gap> chars:= Irr( tbl ){ [ 2 .. 4 ] };;
 ##  gap> chars:= Set( Tensored( chars, chars ) );;
 ##  gap> red:= ReducedClassFunctions( chars );
-##  rec( 
-##    irreducibles := 
-##      [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##        Character( CharacterTable( "A5" ), 
-##          [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ), 
-##        Character( CharacterTable( "A5" ), 
-##          [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ), 
-##        Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
-##        Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ) ], 
+##  rec(
+##    irreducibles :=
+##      [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##        Character( CharacterTable( "A5" ),
+##          [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ),
+##        Character( CharacterTable( "A5" ),
+##          [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ),
+##        Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ),
+##        Character( CharacterTable( "A5" ), [ 5, 1, -1, 0, 0 ] ) ],
 ##    remainders := [  ] )
 ##  ]]></Example>
 ##  </Description>
@@ -2311,9 +2311,9 @@ DeclareSynonym( "ReducedOrdinary", ReducedCharacters );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> IrreducibleDifferences( a5, chars, "triangle" );
-##  [ Character( CharacterTable( "A5" ), 
-##      [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ), 
-##    Character( CharacterTable( "A5" ), 
+##  [ Character( CharacterTable( "A5" ),
+##      [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ),
+##    Character( CharacterTable( "A5" ),
 ##      [ 3, -1, 0, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2370,16 +2370,16 @@ DeclareGlobalFunction( "IrreducibleDifferences" );
 ##  <Example><![CDATA[
 ##  gap> tbl:= CharacterTable( "A5" );;
 ##  gap> Symmetrizations( Irr( tbl ){ [ 1 .. 3 ] }, 3 );
-##  [ VirtualCharacter( CharacterTable( "A5" ), [ 0, 0, 0, 0, 0 ] ), 
-##    VirtualCharacter( CharacterTable( "A5" ), [ 0, 0, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), 
-##      [ 8, 0, -1, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ), 
-##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), 
-##      [ 8, 0, -1, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ), 
+##  [ VirtualCharacter( CharacterTable( "A5" ), [ 0, 0, 0, 0, 0 ] ),
+##    VirtualCharacter( CharacterTable( "A5" ), [ 0, 0, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ),
+##      [ 8, 0, -1, -E(5)-E(5)^4, -E(5)^2-E(5)^3 ] ),
+##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ),
+##      [ 8, 0, -1, -E(5)^2-E(5)^3, -E(5)-E(5)^4 ] ),
 ##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2415,10 +2415,10 @@ DeclareSynonym( "Symmetrisations", Symmetrizations );
 ##  <Example><![CDATA[
 ##  gap> tbl:= CharacterTable( "A5" );;
 ##  gap> SymmetricParts( tbl, Irr( tbl ), 3 );
-##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 20, 0, 2, 0, 0 ] ), 
+##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 20, 0, 2, 0, 0 ] ),
 ##    Character( CharacterTable( "A5" ), [ 35, 3, 2, 0, 0 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2446,10 +2446,10 @@ DeclareGlobalFunction( "SymmetricParts" );
 ##  <Example><![CDATA[
 ##  gap> tbl:= CharacterTable( "A5" );;
 ##  gap> AntiSymmetricParts( tbl, Irr( tbl ), 3 );
-##  [ VirtualCharacter( CharacterTable( "A5" ), [ 0, 0, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
+##  [ VirtualCharacter( CharacterTable( "A5" ), [ 0, 0, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ),
 ##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2481,10 +2481,10 @@ DeclareGlobalFunction( "AntiSymmetricParts" );
 ##  <Example><![CDATA[
 ##  gap> t:= CharacterTable( "A5" );;
 ##  gap> List( Irr( t ), chi -> ExteriorPower( chi, 3 ) );
-##  [ VirtualCharacter( CharacterTable( "A5" ), [ 0, 0, 0, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ), 
+##  [ VirtualCharacter( CharacterTable( "A5" ), [ 0, 0, 0, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ), [ 4, 0, 1, -1, -1 ] ),
 ##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2516,10 +2516,10 @@ DeclareOperation( "ExteriorPower", [ IsClassFunction, IsPosInt ] );
 ##  <Example><![CDATA[
 ##  gap> t:= CharacterTable( "A5" );;
 ##  gap> List( Irr( t ), chi -> SymmetricPower( chi, 3 ) );
-##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
-##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ), 
-##    Character( CharacterTable( "A5" ), [ 20, 0, 2, 0, 0 ] ), 
+##  [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ),
+##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 10, -2, 1, 0, 0 ] ),
+##    Character( CharacterTable( "A5" ), [ 20, 0, 2, 0, 0 ] ),
 ##    Character( CharacterTable( "A5" ), [ 35, 3, 2, 0, 0 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2589,18 +2589,18 @@ DeclareSynonym( "RefinedSymmetrisations", RefinedSymmetrizations );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> tbl:= CharacterTable( "A8" );;  chi:= Irr( tbl )[2];
-##  Character( CharacterTable( "A8" ), [ 7, -1, 3, 4, 1, -1, 1, 2, 0, -1, 
+##  Character( CharacterTable( "A8" ), [ 7, -1, 3, 4, 1, -1, 1, 2, 0, -1,
 ##    0, 0, -1, -1 ] )
 ##  gap> OrthogonalComponents( tbl, [ chi ], 3 );
-##  [ ClassFunction( CharacterTable( "A8" ), 
-##      [ 21, -3, 1, 6, 0, 1, -1, 1, -2, 0, 0, 0, 1, 1 ] ), 
-##    ClassFunction( CharacterTable( "A8" ), 
-##      [ 27, 3, 7, 9, 0, -1, 1, 2, 1, 0, -1, -1, -1, -1 ] ), 
-##    ClassFunction( CharacterTable( "A8" ), 
-##      [ 105, 1, 5, 15, -3, 1, -1, 0, -1, 1, 0, 0, 0, 0 ] ), 
-##    ClassFunction( CharacterTable( "A8" ), 
-##      [ 35, 3, -5, 5, 2, -1, -1, 0, 1, 0, 0, 0, 0, 0 ] ), 
-##    ClassFunction( CharacterTable( "A8" ), 
+##  [ ClassFunction( CharacterTable( "A8" ),
+##      [ 21, -3, 1, 6, 0, 1, -1, 1, -2, 0, 0, 0, 1, 1 ] ),
+##    ClassFunction( CharacterTable( "A8" ),
+##      [ 27, 3, 7, 9, 0, -1, 1, 2, 1, 0, -1, -1, -1, -1 ] ),
+##    ClassFunction( CharacterTable( "A8" ),
+##      [ 105, 1, 5, 15, -3, 1, -1, 0, -1, 1, 0, 0, 0, 0 ] ),
+##    ClassFunction( CharacterTable( "A8" ),
+##      [ 35, 3, -5, 5, 2, -1, -1, 0, 1, 0, 0, 0, 0, 0 ] ),
+##    ClassFunction( CharacterTable( "A8" ),
 ##      [ 77, -3, 13, 17, 2, 1, 1, 2, 1, 0, 0, 0, 2, 2 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2647,18 +2647,18 @@ DeclareGlobalFunction( "OrthogonalComponents" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> tbl:= CharacterTable( "U3(3)" );;  chi:= Irr( tbl )[2];
-##  Character( CharacterTable( "U3(3)" ), 
+##  Character( CharacterTable( "U3(3)" ),
 ##  [ 6, -2, -3, 0, -2, -2, 2, 1, -1, -1, 0, 0, 1, 1 ] )
 ##  gap> SymplecticComponents( tbl, [ chi ], 3 );
-##  [ ClassFunction( CharacterTable( "U3(3)" ), 
-##      [ 14, -2, 5, -1, 2, 2, 2, 1, 0, 0, 0, 0, -1, -1 ] ), 
-##    ClassFunction( CharacterTable( "U3(3)" ), 
-##      [ 21, 5, 3, 0, 1, 1, 1, -1, 0, 0, -1, -1, 1, 1 ] ), 
-##    ClassFunction( CharacterTable( "U3(3)" ), 
-##      [ 64, 0, -8, -2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 ] ), 
-##    ClassFunction( CharacterTable( "U3(3)" ), 
-##      [ 14, 6, -4, 2, -2, -2, 2, 0, 0, 0, 0, 0, -2, -2 ] ), 
-##    ClassFunction( CharacterTable( "U3(3)" ), 
+##  [ ClassFunction( CharacterTable( "U3(3)" ),
+##      [ 14, -2, 5, -1, 2, 2, 2, 1, 0, 0, 0, 0, -1, -1 ] ),
+##    ClassFunction( CharacterTable( "U3(3)" ),
+##      [ 21, 5, 3, 0, 1, 1, 1, -1, 0, 0, -1, -1, 1, 1 ] ),
+##    ClassFunction( CharacterTable( "U3(3)" ),
+##      [ 64, 0, -8, -2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 ] ),
+##    ClassFunction( CharacterTable( "U3(3)" ),
+##      [ 14, 6, -4, 2, -2, -2, 2, 0, 0, 0, 0, 0, -2, -2 ] ),
+##    ClassFunction( CharacterTable( "U3(3)" ),
 ##      [ 56, -8, 2, 2, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2890,17 +2890,17 @@ DeclareGlobalFunction( "SizeOfFieldOfDefinition" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> irr:= Irr( CharacterTable( "A5" ) mod 2 );
-##  [ Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] ), 
-##    Character( BrauerTable( "A5", 2 ), 
-##      [ 2, -1, E(5)+E(5)^4, E(5)^2+E(5)^3 ] ), 
-##    Character( BrauerTable( "A5", 2 ), 
-##      [ 2, -1, E(5)^2+E(5)^3, E(5)+E(5)^4 ] ), 
+##  [ Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] ),
+##    Character( BrauerTable( "A5", 2 ),
+##      [ 2, -1, E(5)+E(5)^4, E(5)^2+E(5)^3 ] ),
+##    Character( BrauerTable( "A5", 2 ),
+##      [ 2, -1, E(5)^2+E(5)^3, E(5)+E(5)^4 ] ),
 ##    Character( BrauerTable( "A5", 2 ), [ 4, 1, -1, -1 ] ) ]
 ##  gap> List( irr, phi -> SizeOfFieldOfDefinition( phi, 2 ) );
 ##  [ 2, 4, 4, 2 ]
 ##  gap> RealizableBrauerCharacters( irr, 2 );
-##  [ Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] ), 
-##    ClassFunction( BrauerTable( "A5", 2 ), [ 4, -2, -1, -1 ] ), 
+##  [ Character( BrauerTable( "A5", 2 ), [ 1, 1, 1, 1 ] ),
+##    ClassFunction( BrauerTable( "A5", 2 ), [ 4, -2, -1, -1 ] ),
 ##    Character( BrauerTable( "A5", 2 ), [ 4, 1, -1, -1 ] ) ]
 ##  ]]></Example>
 ##  </Description>
@@ -2934,7 +2934,7 @@ DeclareGlobalFunction( "RealizableBrauerCharacters" );
 ##  4
 ##  gap> Dimension( w );
 ##  5
-##  
+##
 ##  Note that for generating a group of class functions,
 ##  one should use the two-argument version of
 ##  <Ref Func="Group" Label="for a list of generators (and an identity element)"/>,
@@ -2942,7 +2942,7 @@ DeclareGlobalFunction( "RealizableBrauerCharacters" );
 ##  group generated by the matrix of the intended generating class functions
 ##  if this matrix is invertible.
 ##  % Otherwise it seems to work, but why?
-##  
+##
 ##  gap> g:= CyclicGroup( 4 );;
 ##  gap> irr:= Irr( g );;
 ##  gap> Size( Group( irr ) );
@@ -3070,12 +3070,12 @@ DeclareGlobalFunction( "OrbitRepresentativesCharacters" );
 ##  <Example><![CDATA[
 ##  gap> mat:= [ [ 1, 1, 1, 1 ], [ 2, -1, 0, 0 ], [ 4, 4, 1, 1 ] ];;
 ##  gap> coll:= CollapsedMat( mat, [] );
-##  rec( fusion := [ 1, 2, 3, 3 ], 
+##  rec( fusion := [ 1, 2, 3, 3 ],
 ##    mat := [ [ 1, 1, 1 ], [ 2, -1, 0 ], [ 4, 4, 1 ] ] )
 ##  gap> List( last.mat, x -> x{ last.fusion } ) = mat;
 ##  true
 ##  gap> coll:= CollapsedMat( mat, [ [ 1, 1, 1, 2 ] ] );
-##  rec( fusion := [ 1, 2, 3, 4 ], 
+##  rec( fusion := [ 1, 2, 3, 4 ],
 ##    mat := [ [ 1, 1, 1, 1 ], [ 2, -1, 0, 0 ], [ 4, 4, 1, 1 ] ] )
 ##  ]]></Example>
 ##  </Description>

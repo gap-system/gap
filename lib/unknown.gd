@@ -143,8 +143,8 @@
 ##  <#/GAPDoc>
 ##
 DeclareCategory( "IsUnknown", IsCyclotomic );
-    
-    
+
+
 #############################################################################
 ##
 #V  LargestUnknown  . . . . . . . . . . . . largest used index for an unknown

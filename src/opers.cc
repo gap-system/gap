@@ -164,7 +164,7 @@ static void LoadFlags(Obj flags)
     sub = LoadSubObj();  SET_TRUES_FLAGS( flags, sub );
     sub = LoadSubObj();  SET_HASH_FLAGS( flags, sub );
     sub = LoadSubObj();  SET_AND_CACHE_FLAGS( flags, sub );
-    
+
     len = NRB_FLAGS(flags);
     ptr = BLOCKS_FLAGS(flags);
     for ( i = 1;  i <= len;  i++ )
@@ -240,7 +240,7 @@ static Obj FuncHASH_FLAGS(Obj self, Obj flags)
         /* now the more significant */
         hash = (hash + (*ptr % HASH_FLAGS_SIZE) * x) % HASH_FLAGS_SIZE;
         x    = (31 * x) % HASH_FLAGS_SIZE;
-        
+
         ptr+= 2;
     }
 #endif
@@ -273,7 +273,7 @@ static Obj FuncTRUES_FLAGS(Obj self, Obj flags)
     /* compute the number of 'true'-s just as in 'FuncSizeBlist'            */
     nrb = NRB_FLAGS(flags);
     ptr = (UInt*)BLOCKS_FLAGS(flags);
-    n = COUNT_TRUES_BLOCKS(ptr, nrb);    
+    n = COUNT_TRUES_BLOCKS(ptr, nrb);
 
     /* make the sublist (we now know its size exactly)                    */
     sub = NEW_PLIST_IMM( T_PLIST, n );
@@ -489,7 +489,7 @@ static Obj FuncSUB_FLAGS(Obj self, Obj flags1, Obj flags2)
             *ptr++ = *ptr1++ & ~ *ptr2++;
         for (      ; i <= size1; i++ )
             *ptr++ = *ptr1++;
-    }        
+    }
 
     return flags;
 }
@@ -622,7 +622,7 @@ static Obj FuncAND_FLAGS(Obj self, Obj flags1, Obj flags2)
             *ptr++ = *ptr1++ | *ptr2++;
         for (      ; i <= size1; i++ )
             *ptr++ = *ptr1++;
-    }        
+    }
 
     /* store result in the cache                                           */
 #   ifdef AND_FLAGS_HASH_SIZE
@@ -974,11 +974,11 @@ static Obj DoSetAndFilter(Obj self, Obj obj, Obj val)
     /* call the first 'and'-ed function                                    */
     op = FLAG1_FILT( self );
     CALL_2ARGS( op, obj, val );
-    
+
     /* call the second 'and'-ed function                                   */
     op = FLAG2_FILT( self );
     CALL_2ARGS( op, obj, val );
-    
+
     /* return 'void'                                                       */
     return 0;
 }
@@ -1003,7 +1003,7 @@ static Obj SetterAndFilter(Obj getter)
 
     return SETTR_FILT(getter);
 }
-        
+
 
 /****************************************************************************
 **
@@ -1048,14 +1048,14 @@ static Obj DoSetFilter(Obj self, Obj obj, Obj val)
     Int                 flag1;
     Obj                 type;
     Obj                 flags;
-    
+
     /* get the flag for the getter                                         */
     flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
-    
+
     /* get the type of the object and its flags                            */
     type  = TYPE_OBJ( obj );
     flags = FLAGS_TYPE( type );
-    
+
     /* return the value of the feature                                     */
     if ( val != SAFE_ELM_FLAGS( flags, flag1 ) ) {
         ErrorMayQuit("filter is already set the other way", 0, 0);
@@ -1087,17 +1087,17 @@ Obj DoFilter (
     Int                 flag1;
     Obj                 type;
     Obj                 flags;
-    
+
     /* get the flag for the getter                                         */
     flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
-    
+
     /* get the type of the object and its flags                            */
     type  = TYPE_OBJ( obj );
     flags = FLAGS_TYPE( type );
-    
+
     /* return the value of the feature                                     */
     val = SAFE_ELM_FLAGS( flags, flag1 );
-    
+
     /* return the value                                                    */
     return val;
 }
@@ -1112,7 +1112,7 @@ Obj NewFilter (
     Obj                 setter;
     Int                 flag1;
     Obj                 flags;
-    
+
     flag1 = ++CountFlags;
 
     GAP_ASSERT(hdlr);
@@ -1130,7 +1130,7 @@ Obj NewFilter (
     SET_TESTR_FILT(getter, ReturnTrueFilter);
     CHANGED_BAG(getter);
 
-    return getter;    
+    return getter;
 }
 
 static Obj FuncIS_FILTER(Obj self, Obj obj)
@@ -1147,17 +1147,17 @@ static Obj DoAndFilter(Obj self, Obj obj)
 {
     Obj                 val;
     Obj                 op;
-    
+
     /* call the first 'and'-ed function                                    */
     op = FLAG1_FILT( self );
     val = CALL_1ARGS( op, obj );
     if ( val != True )  return False;
-    
+
     /* call the second 'and'-ed function                                   */
     op = FLAG2_FILT( self );
     val = CALL_1ARGS( op, obj );
     if ( val != True )  return False;
-    
+
     /* return 'true'                                                       */
     return True;
 }
@@ -1243,7 +1243,7 @@ static Obj SetterReturnTrueFilter(Obj getter)
     SET_FLAG2_FILT(setter, INTOBJ_INT(0));
     CHANGED_BAG(setter);
 
-    return setter;    
+    return setter;
 }
 
 static Obj DoReturnTrueFilter(Obj self, Obj obj)
@@ -1273,7 +1273,7 @@ static Obj NewReturnTrueFilter(void)
 
     // the tester also returns true, so we can reuse the getter
     SET_TESTR_FILT(getter, getter);
-        
+
     return getter;
 }
 
@@ -1450,7 +1450,7 @@ static void FixTypeIDs( Bag b ) {
     {
       SET_ID_TYPE(b, INTOBJ_INT(NextTypeID));
       NextTypeID++;
-    } 
+    }
 }
 
 #endif
@@ -1513,7 +1513,7 @@ static inline Obj TYPE_OBJ_FEO(Obj obj)
    The effectiveness of this cache is vital for GAP's performance */
 
 
-/* The next few functions deal with finding and allocating if necessary the cache 
+/* The next few functions deal with finding and allocating if necessary the cache
    for a given operation and number of arguments, and some locking in HPC-GAP */
 
 
@@ -2327,14 +2327,14 @@ Obj DoAttribute (
     if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return DoOperation1Args( self, obj );
     }
-    
+
     /* call the operation to compute the value                             */
     val = DoOperation1Args( self, obj );
     if (val == 0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
     }
     val = CopyObj( val, 0 );
-    
+
     /* set the value (but not for internal objects)                        */
     if ( ENABLED_ATTR( self ) == 1 && !IS_MUTABLE_OBJ( obj ) ) {
         switch ( TNUM_OBJ( obj ) ) {
@@ -2348,9 +2348,9 @@ Obj DoAttribute (
             DoSetAttribute( SETTR_FILT(self), obj, val );
         }
     }
-    
+
     /* return the value                                                    */
-    return val;    
+    return val;
 }
 
 
@@ -2378,14 +2378,14 @@ static Obj DoVerboseAttribute(Obj self, Obj obj)
     if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return DoVerboseOperation1Args( self, obj );
     }
-    
+
     /* call the operation to compute the value                             */
     val = DoVerboseOperation1Args( self, obj );
     if (val == (Obj)0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
     }
     val = CopyObj( val, 0 );
-    
+
     /* set the value (but not for internal objects)                        */
     if ( ENABLED_ATTR( self ) == 1  && !IS_MUTABLE_OBJ( obj ) ) {
         switch ( TNUM_OBJ( obj ) ) {
@@ -2399,9 +2399,9 @@ static Obj DoVerboseAttribute(Obj self, Obj obj)
             DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
         }
     }
-    
+
     /* return the value                                                    */
-    return val;    
+    return val;
 }
 
 
@@ -2427,7 +2427,7 @@ static Obj DoMutableAttribute(Obj self, Obj obj)
     if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return DoOperation1Args( self, obj );
     }
-    
+
     /* call the operation to compute the value                             */
     val = DoOperation1Args( self, obj );
     if (val == 0) {
@@ -2446,9 +2446,9 @@ static Obj DoMutableAttribute(Obj self, Obj obj)
             DoSetAttribute( SETTR_FILT(self), obj, val );
         }
     }
-    
+
     /* return the value                                                    */
-    return val;    
+    return val;
 }
 
 
@@ -2474,7 +2474,7 @@ static Obj DoVerboseMutableAttribute(Obj self, Obj obj)
     if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return DoVerboseOperation1Args( self, obj );
     }
-    
+
     /* call the operation to compute the value                             */
     val = DoVerboseOperation1Args( self, obj );
     if (val == 0) {
@@ -2493,9 +2493,9 @@ static Obj DoVerboseMutableAttribute(Obj self, Obj obj)
             DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
         }
     }
-    
+
     /* return the value                                                    */
-    return val;    
+    return val;
 }
 
 
@@ -2582,7 +2582,7 @@ static void SetupAttribute(Obj attr, Obj setter, Obj tester, Int flag2)
     SET_ENABLED_ATTR(attr, 1);
     CHANGED_BAG(attr);
 }
-  
+
 
 Obj NewAttribute (
     Obj                 name,
@@ -2593,7 +2593,7 @@ Obj NewAttribute (
     Obj                 setter;
     Obj                 tester;
     Int                 flag2;
-    
+
     flag2 = ++CountFlags;
 
     setter = MakeSetter(name, 0, flag2, DoSetAttribute);
@@ -2604,13 +2604,13 @@ Obj NewAttribute (
 
     SetupAttribute(getter, setter, tester, flag2);
 
-    return getter;    
+    return getter;
 }
 
 
 /****************************************************************************
 **
-*F  ConvertOperationIntoAttribute( <oper> )  transform an operation (which 
+*F  ConvertOperationIntoAttribute( <oper> )  transform an operation (which
 **  should not have any one-argument declarations) into an attribute
 */
 
@@ -2827,7 +2827,7 @@ Obj NewProperty (
     Int                 flag1;
     Int                 flag2;
     Obj                 flags;
-    
+
     flag1 = ++CountFlags;
     flag2 = ++CountFlags;
 
@@ -2856,7 +2856,7 @@ Obj NewProperty (
     SET_TESTR_FILT(setter, tester);
 
     /* return the getter                                                   */
-    return getter;    
+    return getter;
 }
 
 
@@ -3088,7 +3088,7 @@ static Obj FuncNEW_PROPERTY(Obj self, Obj name)
 */
 static Obj FuncNEW_GLOBAL_FUNCTION(Obj self, Obj name)
 {
-    Obj                 args;           
+    Obj                 args;
     Obj                 list;
 
     RequireStringRep(SELF_NAME, name);
@@ -3391,7 +3391,7 @@ static Obj FuncOPERS_CACHE_INFO(Obj self)
     SET_ELM_PLIST(list, 9, INTOBJ_INT(WITH_HIDDEN_IMPS_MISS));
     SET_ELM_PLIST(list, 10, INTOBJ_INT(WITH_IMPS_FLAGS_HIT));
     SET_ELM_PLIST(list, 11, INTOBJ_INT(WITH_IMPS_FLAGS_MISS));
-    
+
     /* Now we need to convert the 3d matrix of cache hit counts (by
        precedence, location found and number of arguments) into a three
        dimensional GAP matrix (tensor) */
@@ -3690,7 +3690,7 @@ static Int InitKernel (
     InitHandlerFunc( (ObjFunc)DoSetAndFilter,            "dsaf"                                  );
     InitHandlerFunc( (ObjFunc)DoReturnTrueFilter,        "src/opers.c:DoReturnTrueFilter"        );
     InitHandlerFunc( (ObjFunc)DoSetReturnTrueFilter,     "src/opers.c:DoSetReturnTrueFilter"     );
-    
+
     InitHandlerFunc( (ObjFunc)DoAttribute,               "da"                                    );
     InitHandlerFunc( (ObjFunc)DoSetAttribute,            "dsa"                                   );
     InitHandlerFunc( (ObjFunc)DoTestAttribute,           "src/opers.c:DoTestAttribute"           );
@@ -3704,7 +3704,7 @@ static Int InitKernel (
 
     InitHandlerFunc( (ObjFunc)DoSetterFunction,          "dtf"                                   );
     InitHandlerFunc( (ObjFunc)DoGetterFunction,          "dgf"                                   );
-    
+
     InitHandlerFunc( (ObjFunc)DoOperation0Args,          "o0"                                    );
     InitHandlerFunc( (ObjFunc)DoOperation1Args,          "o1"                                    );
     InitHandlerFunc( (ObjFunc)DoOperation2Args,          "o2"                                    );
@@ -3722,7 +3722,7 @@ static Int InitKernel (
     InitHandlerFunc( (ObjFunc)DoVerboseOperation5Args,   "src/opers.c:DoVerboseOperation5Args"   );
     InitHandlerFunc( (ObjFunc)DoVerboseOperation6Args,   "src/opers.c:DoVerboseOperation6Args"   );
     InitHandlerFunc( (ObjFunc)DoVerboseOperationXArgs,   "src/opers.c:DoVerboseOperationXArgs"   );
-    
+
     InitHandlerFunc( (ObjFunc)DoConstructor0Args,        "src/opers.c:DoConstructor0Args"        );
     InitHandlerFunc( (ObjFunc)DoConstructor1Args,        "src/opers.c:DoConstructor1Args"        );
     InitHandlerFunc( (ObjFunc)DoConstructor2Args,        "src/opers.c:DoConstructor2Args"        );
@@ -3747,17 +3747,17 @@ static Int InitKernel (
     ImportGVarFromLibrary( "TYPE_FLAGS", &TYPE_FLAGS );
     TypeObjFuncs[ T_FLAGS ] = TypeFlags;
 
-    
+
     /* set up hidden implications                                          */
     InitGlobalBag( &WITH_HIDDEN_IMPS_FLAGS_CACHE, "src/opers.c:WITH_HIDDEN_IMPS_FLAGS_CACHE");
     InitGlobalBag( &HIDDEN_IMPS, "src/opers.c:HIDDEN_IMPS");
-    
+
     /* set up implications                                                 */
     InitGlobalBag( &WITH_IMPS_FLAGS_CACHE, "src/opers.c:WITH_IMPS_FLAGS_CACHE");
     InitGlobalBag( &IMPLICATIONS_SIMPLE, "src/opers.c:IMPLICATIONS_SIMPLE");
     InitGlobalBag( &IMPLICATIONS_COMPOSED, "src/opers.c:IMPLICATIONS_COMPOSED");
-    
-    /* make the 'true' operation                                           */  
+
+    /* make the 'true' operation                                           */
     InitGlobalBag( &ReturnTrueFilter, "src/opers.c:ReturnTrueFilter" );
 
     /* install the (function) copies of global variables                   */
@@ -3865,7 +3865,7 @@ static Int InitLibrary (
     SET_REGION(WITH_IMPS_FLAGS_CACHE, REGION(IMPLICATIONS_SIMPLE));
 #endif
 
-    /* make the 'true' operation                                           */  
+    /* make the 'true' operation                                           */
     ReturnTrueFilter = NewReturnTrueFilter();
     AssReadOnlyGVar( GVarName( "IS_OBJECT" ), ReturnTrueFilter );
 

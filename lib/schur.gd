@@ -119,13 +119,13 @@ DeclareAttribute( "EpimorphismSchurCover", IsGroup );
 ##  (Note that the last command from the example will take some time.)
 ##  <P/>
 ##  The &GAP;&nbsp;4.4.12 manual contained examples for larger groups e.g.
-##  <M>M_{22}</M>. However, some issues that may very rarely (and not 
+##  <M>M_{22}</M>. However, some issues that may very rarely (and not
 ##  easily reproducibly) lead to wrong results were discovered in the code
-##  capable of handling larger groups, and in &GAP;&nbsp;4.5 it was replaced 
-##  by a more reliable basic method. To deal with larger groups, one can use 
+##  capable of handling larger groups, and in &GAP;&nbsp;4.5 it was replaced
+##  by a more reliable basic method. To deal with larger groups, one can use
 ##  the function <Ref BookName="cohomolo" Func="SchurMultiplier"/> from the
-##  <Package>cohomolo</Package> package. Also, additional methods for 
-##  <Ref Attr="AbelianInvariantsMultiplier"/> are installed in the 
+##  <Package>cohomolo</Package> package. Also, additional methods for
+##  <Ref Attr="AbelianInvariantsMultiplier"/> are installed in the
 ##  <Package>Polycyclic</Package> package for pcp-groups.
 ##  </Description>
 ##  </ManSection>
@@ -135,7 +135,7 @@ DeclareAttribute( "AbelianInvariantsMultiplier", IsGroup );
 
 ##############################################################################
 ####  Derived functions.                                       Robert F. Morse
-####  
+####
 ##############################################################################
 ##
 #A  Epicentre(<G>)
@@ -200,7 +200,7 @@ DeclareOperation("EpimorphismNonabelianExteriorSquare", [IsGroup]);
 
 ##############################################################################
 ##
-#P  IsCentralFactor(<G>) 
+#P  IsCentralFactor(<G>)
 ##
 ##  <#GAPDoc Label="IsCentralFactor">
 ##  <ManSection>
@@ -210,7 +210,7 @@ DeclareOperation("EpimorphismNonabelianExteriorSquare", [IsGroup]);
 ##  This function determines if there exists a group <M>H</M> such that
 ##  <A>G</A> is isomorphic to the quotient <M>H/Z(H)</M>.
 ##  A group with this property is called in literature <E>capable</E>.
-##  A group being capable is 
+##  A group being capable is
 ##  equivalent to the epicentre of <A>G</A> being trivial,
 ##  see <Cite Key="BFS79"/>.
 ##  </Description>

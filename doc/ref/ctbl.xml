@@ -534,8 +534,8 @@ before feeding them in the machinery of the Dixon-algorithm.
 <Example><![CDATA[
 gap> l.irreducibles[1];
 Character( CharacterTable( PSL(4, 3) ),
- [ 640, -8, -8, -8, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-  0, 0, 0, 0, E(13)^7+E(13)^8+E(13)^11, E(13)^4+E(13)^10+E(13)^12, 
+ [ 640, -8, -8, -8, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, E(13)^7+E(13)^8+E(13)^11, E(13)^4+E(13)^10+E(13)^12,
   E(13)^2+E(13)^5+E(13)^6, E(13)+E(13)^3+E(13)^9, 0 ] )
 gap> l:=List(l.irreducibles,ValuesOfClassFunction);;
 gap> DxIncludeIrreducibles( d, l );

@@ -23,10 +23,10 @@ gap> m2 := [ [   Z(3),   Z(3), Z(3)^0 ],
 >            [ Z(3)^0, 0*Z(3),   Z(3) ] ];;
 gap> m := Group( m1, m2 );
 Group(
-[ 
-  [ [ Z(3)^0, Z(3)^0, Z(3) ], [ Z(3), 0*Z(3), Z(3) ], 
-      [ 0*Z(3), Z(3), 0*Z(3) ] ], 
-  [ [ Z(3), Z(3), Z(3)^0 ], [ Z(3), 0*Z(3), Z(3) ], 
+[
+  [ [ Z(3)^0, Z(3)^0, Z(3) ], [ Z(3), 0*Z(3), Z(3) ],
+      [ 0*Z(3), Z(3), 0*Z(3) ] ],
+  [ [ Z(3), Z(3), Z(3)^0 ], [ Z(3), 0*Z(3), Z(3) ],
       [ Z(3)^0, 0*Z(3), Z(3) ] ] ])
 ]]></Example>
 
@@ -61,7 +61,7 @@ that represent a faithful action on vectors.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Actions of Matrix Groups">
 <Heading>Actions of Matrix Groups</Heading>
-                                                                                
+
 <#Include Label="[1]{grpmat}">
 <#Include Label="ProjectiveActionOnFullSpace">
 <#Include Label="ProjectiveActionHomomorphismMatrixGroup">

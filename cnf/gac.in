@@ -18,16 +18,16 @@
 ##  files (suffix '.o').
 ##
 ##  If '-d' is given then the code is compiled for dynamic loading
-##  
+##
 ##  If  neither '-c' nor '-C'  is given,  then 'gac'  compiles the code completely,
 ##  producing a  new kernel for static compilation or a dynamically loadable '.so'
 ##  file for dynamic compilation.
 ##
-##  If '-c' is given,  then 'gac' only compiles the input files to 
+##  If '-c' is given,  then 'gac' only compiles the input files to
 ##  '.o' object files, which must be further linked to make a static kernel or
 ##  dynamically loadable module
 ##
-##  If '-C is given, then 'gac' only compiles the input files to C code, which 
+##  If '-C is given, then 'gac' only compiles the input files to C code, which
 ##  will require compilation and linking to be usable.
 ##
 ##  The option '-o <output>' tells 'gac' to name the output file <output>.
@@ -152,7 +152,7 @@ c_link_dyn () {
 
 #############################################################################
 ##
-#F process_o_file <basename> <filename> 
+#F process_o_file <basename> <filename>
 ##
 ## Compile according to comp_mode and comp_howfar
 ##
@@ -171,7 +171,7 @@ process_o_file () {
 
 #############################################################################
 ##
-#F process_c_file <basename> <filename> 
+#F process_c_file <basename> <filename>
 ##
 ## Compile according to comp_mode and comp_howfar
 ##
@@ -185,13 +185,13 @@ process_c_file () {
        temps_o="${temps_o} ${o_file}"
     elif [ "X$output" != "X" ]; then
        o_file=$output
-    else 
+    else
        o_file=${name}.o
     fi
     c_compile $o_file $c_file
     if [ $comp_howfar = "link" ]; then
       process_o_file $name $o_file
-    fi 
+    fi
 }
 
 #############################################################################
@@ -238,7 +238,7 @@ process_gap_file () {
      c_file=$output
   fi
   gap_compile_in=$input
-  gap_compile_name=$input  
+  gap_compile_name=$input
   if [ $comp_mode = "comp_static" ]; then
     gap_compile_id=Init_${name}
   else
@@ -293,7 +293,7 @@ while [ $# -gt 0 ]; do
     -C|--create-c)        comp_howfar="c_code";;
 
     -o|--output)          shift; output="$1";;
-  
+
     -save-temps)          savetemps="true";;
 
     -k|--gap-compiler)    shift; gap_compiler="$1";;
@@ -393,7 +393,7 @@ if [ $comp_howfar = "link" ]; then
 
     if [ "X${output}" = "X" ]; then output="${name}.so"; fi
     c_link_dyn ${output} "${objects}"
-    
+
     if [ "$savetemps" = "true" ]; then
         notice "Leaving object files " ${temps_o}
     else

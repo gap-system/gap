@@ -169,7 +169,7 @@ DeclareProperty( "IsNumeratorParentPcgsFamilyPcgs", IsModuloPcgs );
 ##  parent pcgs of <A>mpcgs</A> and <A>mpcgs</A> must be the modulo pcgs for
 ##  an abelian layer. (This is the usual case when acting on a chief
 ##  factor). In this case if <A>mpcgs</A> is induced by the family pcgs (see
-##  section <Ref Sect="Subgroups of Polycyclic Groups - Induced Pcgs"/>), 
+##  section <Ref Sect="Subgroups of Polycyclic Groups - Induced Pcgs"/>),
 ##  the exponents can be computed directly by looking up exponents without
 ##  having to compute in the group and having to collect a potential tail.
 ##  </Description>

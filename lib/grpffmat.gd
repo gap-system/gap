@@ -102,7 +102,7 @@ DeclareGlobalFunction( "ConjugacyClassesOfNaturalGroup" );
 ##  <Func Name="Phi2_Md" Arg='n'/>
 ##
 ##  <Description>
-##  This is a utility function for the computation of the class numbers of 
+##  This is a utility function for the computation of the class numbers of
 ##  SL(n,q), PSL(n,q), SU(n,q) and PSU(n,q). It is a variant of the Euler
 ##  Phi function defined by Macdonald in <Cite Key="Mac81"/>.
 ##  </Description>

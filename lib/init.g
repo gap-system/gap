@@ -150,7 +150,7 @@ CHECK_INSTALL_METHOD := true;
 #F  ReadGapRoot( <name> ) . . . . . . . . . .  read file from GAP's root area
 ##
 ##  <Ref Func="READ_GAP_ROOT"/> runs through &GAP;'s root directories
-##  (see <Ref Sect="GAP Root Directories"/>), 
+##  (see <Ref Sect="GAP Root Directories"/>),
 ##  reads the first readable file with name <A>name</A> relative to the root
 ##  directory, and then returns <K>true</K> if a file was read or
 ##  <K>false</K> if no readable file <A>name</A> was found in any root
@@ -367,17 +367,17 @@ CallAndInstallPostRestore( function()
   local env, pos, enc, a, PositionSublist;
   PositionSublist := function (str, sub)
     local i;
- 
+
     for i in [1..Length(str)-Length(sub)+1] do
-       if str{[i..i+Length(sub)-1]}=sub then 
-         return i; 
-       fi; 
+       if str{[i..i+Length(sub)-1]}=sub then
+         return i;
+       fi;
     od;
     return fail;
   end;
 
   # we leave the GAPInfo.TermEncodingOverwrite for gaprc
-  # for a moment, but don't document it - doesn't work with 
+  # for a moment, but don't document it - doesn't work with
   # loaded workspaces
   if not IsBound(GAPInfo.TermEncodingOverwrite) then
     if IsList(GAPInfo.SystemEnvironment) then
@@ -534,8 +534,8 @@ CallAndInstallPostRestore( function()
 ##  it can still be changed easily
 ##
 BindGlobal("NO_PRECOMPUTED_DATA_OPTION","NoPrecomputedData");
-        
-     
+
+
 if not ( GAPInfo.CommandLineOptions.q or GAPInfo.CommandLineOptions.b ) then
     Print (" Loading the library \c");
 fi;
@@ -573,13 +573,13 @@ end );
 # help system, profiling
 ReadOrComplete( "lib/read4.g" );
 
-# Here are a few general user preferences which may be useful for 
+# Here are a few general user preferences which may be useful for
 # various purposes. They are self-explaining.
 DeclareUserPreference( rec(
   name:= "UseColorsInTerminal",
   description:= [
     "Almost all current terminal emulations support color display, \
-setting this to 'true' implies a default display of most manuals with \
+setting this to <K>true</K> implies a default display of most manuals with \
 color markup. It may influence the display of other things in the future."
     ],
   default:= true,
@@ -589,7 +589,7 @@ color markup. It may influence the display of other things in the future."
 DeclareUserPreference( rec(
   name:= "ViewLength",
   description:= [
-    "A bound for the number of lines printed when 'View'ing some large objects."
+    "A bound for the number of lines printed when <C>View</C>ing some large objects."
     ],
   default:= 3,
   check:= val -> IsInt( val ) and 0 <= val,
@@ -597,15 +597,15 @@ DeclareUserPreference( rec(
 DeclareUserPreference( rec(
   name:= "ReproducibleBehaviour",
   description:= [
-    "This preference disables code in GAP which changes behaviour based on time \
+    "This preference disables code in &GAP; which changes behaviour based on time \
 spent, and therefore can produce different results depending on how much time is \
 taken by other programs running on the same computer. This option may lead to \
 slower or lower-quality results.\
 \n\
-Note that many algorithms in GAP use the global random number generator, which is \
-NOT affected by this option. This only tries to ensure the same version of GAP, \
+Note that many algorithms in &GAP; use the global random number generator, which is \
+NOT affected by this option. This only tries to ensure the same version of &GAP;, \
 with the same package versions loaded, on the same machine, running the same code, \
-in a fresh GAP session, will produce the same results."
+in a fresh &GAP; session, will produce the same results."
     ],
   default:= false,
   values:= [ true, false ],
@@ -659,8 +659,8 @@ end );
 DeclareUserPreference( rec(
   name:= "ReadObsolete",
   description:= [
-    "May be useful to say 'false' here to check if you are using commands \
-which may vanish in a future version of GAP"
+    "May be useful to say <K>false</K> here to check if you are using commands \
+which may vanish in a future version of &GAP;"
     ],
   default:= true,
   values:= [ true, false ],
@@ -760,9 +760,9 @@ end );
 
 #############################################################################
 ##
-##  Install SaveCommandLineHistory as exit function and read history from 
+##  Install SaveCommandLineHistory as exit function and read history from
 ##  file, depending on user preference.
-##  
+##
 CallAndInstallPostRestore( function()
   if UserPreference("SaveAndRestoreHistory") = true then
     InstallAtExit(SaveCommandLineHistory);
@@ -795,9 +795,9 @@ CallAndInstallPostRestore( function()
           GAPInfo.gaprc:= "gap.rc";
         fi;
         if IsString(GAPInfo.gaprc) and READ( GAPInfo.gaprc ) then
-          Info(InfoWarning, 1, 
+          Info(InfoWarning, 1,
             "You are using an old ",GAPInfo.gaprc, " file. ");
-          Info(InfoWarning, 1, 
+          Info(InfoWarning, 1,
             "See '?Ref: The former .gaprc file' for hints to upgrade.");
           GAPInfo.HasReadGAPRC:= true;
         fi;

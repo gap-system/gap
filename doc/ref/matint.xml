@@ -36,7 +36,7 @@ of integer matrices.
 The Hermite Normal Form (HNF) <M>H</M> of an integer matrix <M>A</M> is
 a row equivalent upper triangular form such that all off-diagonal entries
 are reduced modulo the diagonal entry of the column they are in.
-There exists a unique unimodular matrix <M>Q</M> such that <M>Q A = H</M>. 
+There exists a unique unimodular matrix <M>Q</M> such that <M>Q A = H</M>.
 <P/>
 The Smith Normal Form <M>S</M> of an integer matrix <M>A</M> is
 the unique equivalent diagonal form with <M>S_i</M> dividing <M>S_j</M> for
@@ -61,7 +61,7 @@ All routines described in this section build on the <Q>workhorse</Q> routine
 <!-- %\ Declaration{SNFNormDriven} -->
 <!-- %\ Declaration{SNFofREF} -->
 <!-- %\ Declaration{HNFNormDriven} -->
- 
+
 </Section>
 
 

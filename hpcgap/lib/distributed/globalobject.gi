@@ -39,16 +39,16 @@ BindGlobal ("REQUEST_TYPES", MakeReadOnlyObj( rec (
         CLONE_OBJ := 2,
         PULL_OBJ := 3,
         BLOCKED_FETCH := 4,
-        PUSH_OBJ := 5,                   
+        PUSH_OBJ := 5,
         COPY_OBJ := 6,
-        ACK := 7)));                   
-                           
-DeclareRepresentation( "IsGlobalObjectHandleRep", 
+        ACK := 7)));
+
+DeclareRepresentation( "IsGlobalObjectHandleRep",
                        IsNonAtomicComponentObjectRep,
         ["pe", "localId", "owner", "accessType", "immediate", "obj", "control"] );
 
 GlobalObjectHandleDefaultType :=
-  NewType( GlobalObjectHandlesFamily, 
+  NewType( GlobalObjectHandlesFamily,
            IsGlobalObjectHandleRep and IsGlobalObjectHandle);
 
 InstallMethod (ViewObj, "for global object handles",
@@ -74,7 +74,7 @@ ReadLib ("distributed/globalobject_messages.g");
 ReadLib ("distributed/globalobject_io.g");
 
 #################################################################################
-# functions that deal with requests (created via calls to <...>NonBlocking 
+# functions that deal with requests (created via calls to <...>NonBlocking
 # functions)
 InstallGlobalFunction (RequestCompleted, atomic function (readonly request)
   return request.completed;
@@ -179,7 +179,7 @@ end;
 
 InstallGlobalFunction (CreateHandleFromObj, function (arg)
   local objToStore, handle, obj, accessType, immediate;
-  
+
   obj := arg[1];
   if Length(arg)>1 then
     accessType := arg[2];
@@ -191,17 +191,17 @@ InstallGlobalFunction (CreateHandleFromObj, function (arg)
   else
     immediate := true;
   fi;
-  
+
   if immediate or (not IsThreadLocal(obj)) then
     objToStore := obj;
   else
     objToStore := ShareSpecialObj(obj);
   fi;
-  
+
   handle := GlobalObjHandles.CreateHandle (processId,
                     processId,
                     immediate,
-                    accessType, 
+                    accessType,
                     objToStore);
   handle!.localId := HANDLE_OBJ(handle);
   atomic readwrite GAMap do
@@ -211,7 +211,7 @@ InstallGlobalFunction (CreateHandleFromObj, function (arg)
   if MPI_DEBUG.HANDLE_CREATION then MPILog(MPI_DEBUG_OUTPUT.HANDLE_CREATION, handle); fi;
   ShareSpecialObj(handle);
   return handle;
-  
+
 end);
 
 InstallGlobalFunction (CreateTaskResultHandle, function (task)
@@ -227,7 +227,7 @@ InstallGlobalFunction (CreateTaskResultHandle, function (task)
   atomic readwrite HandlesMap do
     MyInsertHashTable (TaskResultHandles, HANDLE_OBJ(handle), handle);
   od;
-  
+
   return handle;
 end);
 
@@ -286,10 +286,10 @@ end;
 
 InstallGlobalFunction (Destroy, atomic function (readwrite handle)
   local localCount, globalCount;
-  
+
   localCount := GlobalObjHandles.GetLocalCount(handle);
   globalCount := GlobalObjHandles.GetGlobalCount(handle);
-  
+
   if localCount<>0 then
     Error("Cannot destroy handle in use on local node\n");
   elif handle!.pe<>processId then
@@ -297,8 +297,8 @@ InstallGlobalFunction (Destroy, atomic function (readwrite handle)
   elif globalCount<>0 then
     Error("Cannot destroy handle referenced from other nodes\n");
   fi;
-  
-  if MPI_DEBUG.HANDLE_CREATION then MPILog(MPI_DEBUG_OUTPUT.HANDLE_DELETION, handle); fi;  
+
+  if MPI_DEBUG.HANDLE_CREATION then MPILog(MPI_DEBUG_OUTPUT.HANDLE_DELETION, handle); fi;
   atomic HandlesMap do
     MyDeleteHashTable (HandlesMap, handle);
   od;
@@ -319,7 +319,7 @@ end);
 #        to be fixed in this way
 InstallGlobalFunction (GetHandleObjNonBlocking, atomic function (readwrite handle)
   local objCopy, request;
-  
+
   GlobalObjHandles.HaveAccessCheck(handle);
   request := rec ( completed := false, type := REQUEST_TYPES.GET_OBJ, pe := processId, pullObj := false, storeObj := false);
   if not handle!.control.haveObject then
@@ -363,7 +363,7 @@ InstallGlobalFunction (GetHandleObj, function (handle)
   return request.obj;
 end);
 
-InstallGlobalFunction (SendHandle, atomic function (readwrite handle, pe)  
+InstallGlobalFunction (SendHandle, atomic function (readwrite handle, pe)
   GlobalObjHandles.HaveAccessCheck(handle);
   GlobalObjHandles.IncreaseGlobalCount(handle);
   SendGlobalObjHandleMsg (handle, pe);
@@ -426,7 +426,7 @@ InstallGlobalFunction (RemoteCopyObj, atomic function (readwrite handle, pe)
 end);
 
 # this is a bid dodgy...what if object is under evaluation or something?
-DoPushObj := function (handle, request) 
+DoPushObj := function (handle, request)
   if MPI_DEBUG.OBJECT_TRANSFER then MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ->-> ", String(request.pe)); fi;
   if not handle!.control.haveObject then
     if MPI_DEBUG.OBJECT_TRANSFER then MPILog(MPI_DEBUG_OUTPUT.OBJECT_TRANSFER, handle, " ->-> (", String(request.pe),
@@ -449,13 +449,13 @@ DoPushObj := function (handle, request)
     od;
     request.completed := true;
   fi;
-  
+
   handle!.control.haveObject := false;
   handle!.owner := request.pe;
   Unbind(handle!.obj);
   return request;
-end;  
-  
+end;
+
 InstallGlobalFunction (RemotePushObjNonBlocking, atomic function (readwrite handle, pe)
   local p, request;
   GlobalObjHandles.HaveAccessCheck(handle);

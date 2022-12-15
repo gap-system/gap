@@ -83,10 +83,10 @@ end );
 ##
 #M  SetPower( <cc>, <i>, <rhs> )  . . . . . . . . combinatorial collector rep
 ##
-InstallMethod( SetPower, 
+InstallMethod( SetPower,
     "combinatorial collector rep",
     IsIdenticalObjFamiliesColXXXObj,
-    [ IsPowerConjugateCollector and IsFinite and 
+    [ IsPowerConjugateCollector and IsFinite and
       IsCombinatorialCollectorRep and IsMutable,
       IsInt,
       IsMultiplicativeElementWithInverse ],
@@ -232,7 +232,7 @@ end );
 
 #############################################################################
 InstallMethod( CombinatorialCollector,
-    true, 
+    true,
     [ IsList,
       IsList ],
     0,
@@ -353,7 +353,7 @@ end );
 
 #############################################################################
 ##
-#M  ViewObj( <cc> ) . . . . . . . . . . . . . .  of a combinatorial collector 
+#M  ViewObj( <cc> ) . . . . . . . . . . . . . .  of a combinatorial collector
 ##
 
 
@@ -361,7 +361,7 @@ end );
 InstallMethod( ViewObj,
     "combinatorial collector rep",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
+    [ IsPowerConjugateCollector and IsFinite and
       IsCombinatorialCollectorRep ],
     0,
 
@@ -374,7 +374,7 @@ end );
 InstallMethod( ViewObj,
     "combinatorial collector rep (up to date)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
+    [ IsPowerConjugateCollector and IsFinite and
       IsCombinatorialCollectorRep and IsUpToDatePolycyclicCollector ],
     0,
 
@@ -387,7 +387,7 @@ end );
 InstallMethod( ViewObj,
     "combinatorial collector rep (8 Bits)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
+    [ IsPowerConjugateCollector and IsFinite and
       Is8BitsSingleCollectorRep and IsCombinatorialCollectorRep ],
     0,
 
@@ -400,7 +400,7 @@ end );
 InstallMethod( ViewObj,
     "combinatorial collector rep (8 Bits, up to date)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
+    [ IsPowerConjugateCollector and IsFinite and
       Is8BitsSingleCollectorRep and IsCombinatorialCollectorRep and
       IsUpToDatePolycyclicCollector ],
     0,
@@ -414,7 +414,7 @@ end );
 InstallMethod( ViewObj,
     "combinatorial collector rep (16 Bits)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
+    [ IsPowerConjugateCollector and IsFinite and
       Is16BitsSingleCollectorRep and IsCombinatorialCollectorRep ],
     0,
 
@@ -427,8 +427,8 @@ end );
 InstallMethod( ViewObj,
     "combinatorial collector rep (16 Bits, up to date)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
-      Is16BitsSingleCollectorRep and IsCombinatorialCollectorRep and 
+    [ IsPowerConjugateCollector and IsFinite and
+      Is16BitsSingleCollectorRep and IsCombinatorialCollectorRep and
       IsUpToDatePolycyclicCollector ],
     0,
 
@@ -441,7 +441,7 @@ end );
 InstallMethod( ViewObj,
     "combinatorial collector rep (32 Bits)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
+    [ IsPowerConjugateCollector and IsFinite and
       Is32BitsSingleCollectorRep and IsCombinatorialCollectorRep ],
     0,
 
@@ -454,8 +454,8 @@ end );
 InstallMethod( ViewObj,
     "combinatorial collector rep (32 Bits, up to date)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
-      Is32BitsSingleCollectorRep and IsCombinatorialCollectorRep and 
+    [ IsPowerConjugateCollector and IsFinite and
+      Is32BitsSingleCollectorRep and IsCombinatorialCollectorRep and
       IsUpToDatePolycyclicCollector ],
     0,
 
@@ -474,7 +474,7 @@ end );
 InstallMethod( PrintObj,
     "combinatorial collector",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
+    [ IsPowerConjugateCollector and IsFinite and
       IsCombinatorialCollectorRep ],
     0,
 
@@ -488,7 +488,7 @@ end );
 InstallMethod( PrintObj,
     "combinatorial collector (up to date)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
+    [ IsPowerConjugateCollector and IsFinite and
       IsCombinatorialCollectorRep and IsUpToDatePolycyclicCollector ],
     0,
 
@@ -502,7 +502,7 @@ end );
 InstallMethod( PrintObj,
     "combinatorial collector rep (8 Bits)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
+    [ IsPowerConjugateCollector and IsFinite and
       Is8BitsSingleCollectorRep and IsCombinatorialCollectorRep ],
     0,
 
@@ -516,8 +516,8 @@ end );
 InstallMethod( PrintObj,
     "combinatorial collector rep (8 Bits, up to date)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
-      Is8BitsSingleCollectorRep and IsCombinatorialCollectorRep and 
+    [ IsPowerConjugateCollector and IsFinite and
+      Is8BitsSingleCollectorRep and IsCombinatorialCollectorRep and
       IsUpToDatePolycyclicCollector ],
     0,
 
@@ -531,7 +531,7 @@ end );
 InstallMethod( PrintObj,
     "combinatorial collector rep (16 Bits)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
+    [ IsPowerConjugateCollector and IsFinite and
       Is16BitsSingleCollectorRep and IsCombinatorialCollectorRep ],
     0,
 
@@ -545,8 +545,8 @@ end );
 InstallMethod( PrintObj,
     "combinatorial collector rep (16 Bits, up to date)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
-      Is16BitsSingleCollectorRep and IsCombinatorialCollectorRep and 
+    [ IsPowerConjugateCollector and IsFinite and
+      Is16BitsSingleCollectorRep and IsCombinatorialCollectorRep and
       IsUpToDatePolycyclicCollector ],
     0,
 
@@ -560,7 +560,7 @@ end );
 InstallMethod( PrintObj,
     "combinatorial collector rep (32 Bits)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
+    [ IsPowerConjugateCollector and IsFinite and
       Is32BitsSingleCollectorRep and IsCombinatorialCollectorRep ],
     0,
 
@@ -574,8 +574,8 @@ end );
 InstallMethod( PrintObj,
     "combinatorial collector rep (32 Bits, up to date)",
     true,
-    [ IsPowerConjugateCollector and IsFinite and 
-      Is32BitsSingleCollectorRep and IsCombinatorialCollectorRep and 
+    [ IsPowerConjugateCollector and IsFinite and
+      Is32BitsSingleCollectorRep and IsCombinatorialCollectorRep and
       IsUpToDatePolycyclicCollector ],
     0,
 

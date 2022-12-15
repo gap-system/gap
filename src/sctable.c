@@ -11,21 +11,21 @@
 **  and the multiplication of two elements using a structure constants table.
 **
 **  Structure constants tables in GAP have the following layout
-**  
+**
 **        [ [ 1 ],
 **          ...
 **          [ i ],  ---> [ [ 1 ], ..., [ j ], ..., [ n ] ]
 **          ...                          |
 **          [ n ],                       |
-**          flag,                        |  
-**          zero ]                       V  
+**          flag,                        |
+**          zero ]                       V
 **                                       [ [ k        , ... ],
 **                                         [ c_{ij}^k , ... ]  ]
 **
 **  where the two outer lists for i and j are full lists  of the dimension of
-**  the underlying vectorspace,   and the lists for k and c_{ij}^k are stored 
+**  the underlying vectorspace,   and the lists for k and c_{ij}^k are stored
 **  sparsely, that is, only for those k with non-zero c_{ij}^k.
-**  
+**
 **  The last two elements of the outermost list have a special meaning.
 **
 **  The flag is an integer that indicates  whether the product defined by the
@@ -34,7 +34,7 @@
 **  zero is the zero element of the coefficient ring/field of the algebra.
 **
 **  NOTE: most of the code consists of dimension- and type checks,  as a user
-**        can fool around with SCTables as s/he likes. 
+**        can fool around with SCTables as s/he likes.
 */
 
 #include "sctable.h"
@@ -260,7 +260,7 @@ static Obj FuncSC_TABLE_PRODUCT(Obj self, Obj table, Obj list1, Obj list2)
             row = ELM_LIST( table, i );
             for ( j = i+1; j <= dim; j++ ) {
                 bj = ELM_LIST( list2, j );
-                aj = ELM_LIST( list1, j ); 
+                aj = ELM_LIST( list1, j );
                 if ( EQ( aj, zero ) && EQ( bj, zero ) )  continue;
                 c1 = PROD( ai, bj );
                 c2 = PROD( aj, bi );

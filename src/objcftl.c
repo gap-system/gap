@@ -12,12 +12,12 @@
 **  presentations.
 **
 **  This code (in particular the function "CollectPolycyc") is used exclusively by
-**  the polycyclic package. So in an ideal world, we'd turn it into a kernel      
-**  extensions that is shipped with polycyclic. However, doing so could lead to a 
-**  significant number of people not being able to use polycyclic (as they would   
-**  not know how to compile a kernel extension). And polycyclic is a very central 
-**  package upon which tons of other packages depend... so for now, we leave this 
-**  code here.                                                                    
+**  the polycyclic package. So in an ideal world, we'd turn it into a kernel
+**  extensions that is shipped with polycyclic. However, doing so could lead to a
+**  significant number of people not being able to use polycyclic (as they would
+**  not know how to compile a kernel extension). And polycyclic is a very central
+**  package upon which tons of other packages depend... so for now, we leave this
+**  code here.
 */
 
 #include "objcftl.h"
@@ -71,7 +71,7 @@ static inline Obj FastAInvInt(Obj x)
 
 #define IS_INT_ZERO( n )  ((n) == INTOBJ_INT(0))
 
-#define GET_COMMUTE( g )  INT_INTOBJ(ELM_PLIST(commute,(g))) 
+#define GET_COMMUTE( g )  INT_INTOBJ(ELM_PLIST(commute,(g)))
 
 #define GET_EXPONENT( g ) ( ((g) <= LEN_PLIST(exp)) ? \
                             ELM_PLIST( exp, (g) ) : (Obj)0 )
@@ -100,7 +100,7 @@ static inline Obj FastAInvInt(Obj x)
   SET_ELM_PLIST( est,  st, ELM_PLIST( word, 2 ) ); \
   CHANGED_BAG( wst ); CHANGED_BAG( west ); CHANGED_BAG( est ); }
 
-                                
+
 static void AddIn(Obj list, Obj w, Obj e)
 {
 
@@ -189,7 +189,7 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
               else if( IS_NEG_INT( s ) ) {
                   t = ModInt( s, e );
                   SET_ELM_PLIST( list, h, t ); CHANGED_BAG( list );
-              
+
                   if( (y = GET_IPOWER( h )) ) {
                       e = QuoInt( s, e );
                       if( !IS_INT_ZERO( t ) ) e = DecInt( e );
@@ -206,21 +206,21 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
       }
       else {
         if( g == GET_COMMUTE( g ) ) {
-          s = ELM_PLIST( list, g ); 
-          t = ELM_PLIST( est, st ); 
+          s = ELM_PLIST( list, g );
+          t = ELM_PLIST( est, st );
           C_SUM_FIA( ge, s, t );
           SET_ELM_PLIST( est, st, INTOBJ_INT(0) );
         }
         else {
           /* Assume that the top of the exponent stack is non-zero. */
           e = ELM_PLIST( est, st );
-          
+
           if( IS_POS_INT( e ) ) {
             e = DecInt( e );
             SET_ELM_PLIST( est, st, e ); CHANGED_BAG( est );
             conj  = CONST_ADDR_OBJ(pcp)[PC_CONJUGATES];
             iconj = CONST_ADDR_OBJ(pcp)[PC_INVERSECONJUGATES];
-            
+
             ge = IncInt( ELM_PLIST( list, g ) );
           }
           else {
@@ -228,14 +228,14 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
             SET_ELM_PLIST( est, st, e ); CHANGED_BAG( est );
             conj  = CONST_ADDR_OBJ(pcp)[PC_CONJUGATESINVERSE];
             iconj = CONST_ADDR_OBJ(pcp)[PC_INVERSECONJUGATESINVERSE];
-            
+
             ge = DecInt( ELM_PLIST( list, g ) );
           }
         }
         SET_ELM_PLIST( list, g, ge );  CHANGED_BAG( list );
 
 
-        /* Reduce the exponent.  We delay putting the power onto the 
+        /* Reduce the exponent.  We delay putting the power onto the
            stack until all the conjugates are on the stack.  The power is
            stored in  y, its exponent in ge.  */
         y = (Obj)0;
@@ -243,29 +243,29 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
             if( !LtInt( ge, e ) ) {
                 mge = ModInt( ge, e );
                 SET_ELM_PLIST( list, g, mge ); CHANGED_BAG( list );
-            
+
                 if( (y = GET_POWER( g )) ) ge = QuoInt( ge, e );
             }
             else if( IS_NEG_INT( ge ) ) {
                 mge = ModInt( ge, e );
                 SET_ELM_PLIST( list, g, mge ); CHANGED_BAG( list );
-            
+
                 if( (y = GET_IPOWER( g )) ) {
                     ge = QuoInt( ge, e );
-                    if( !IS_INT_ZERO( mge ) ) 
+                    if( !IS_INT_ZERO( mge ) )
                         ge = DecInt( ge );
                     ge = AInvInt(ge);
                 }
             }
         }
-        
+
         hh = h = GET_COMMUTE( g );
-        
+
         /* Find the place where we start to collect. */
         for( ; h > g; h-- ) {
             e = ELM_PLIST( list, h );
             if( !IS_INT_ZERO(e) ) {
-            
+
                 if( IS_POS_INT( e ) ) {
                     if( GET_CONJ( h, g ) ) break;
                 }
@@ -276,12 +276,12 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
         }
 
         /* Put those onto the stack, if necessary. */
-        if( h > g || y != (Obj)0 ) 
+        if( h > g || y != (Obj)0 )
           for( ; hh > h; hh-- ) {
             e = ELM_PLIST( list, hh );
             if( !IS_INT_ZERO(e) ) {
               SET_ELM_PLIST( list, hh, INTOBJ_INT(0) );
-              
+
               if( IS_POS_INT( e ) ) {
                   x = ELM_PLIST(  gens, hh );
               }
@@ -289,19 +289,19 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
                   x = ELM_PLIST( igens, hh );
                   e = FastAInvInt(e);
               }
-              
+
               PUSH_STACK( x, e );
             }
           }
-        
-        
+
+
         for( ; h > g; h-- ) {
           e = ELM_PLIST( list, h );
           if( !IS_INT_ZERO(e) ) {
             SET_ELM_PLIST( list, h, INTOBJ_INT(0) );
-            
+
             x = IS_POS_INT( e ) ? GET_CONJ( h, g ) : GET_ICONJ( h, g );
-            
+
             if( x == (Obj)0 )  {
               x = IS_POS_INT( e ) ? ELM_PLIST( gens, h ) : ELM_PLIST( igens, h );
             }
@@ -311,7 +311,7 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
             PUSH_STACK( x, e );
           }
         }
-        
+
         if( y != (Obj)0 ) PUSH_STACK( y, ge );
       }
 

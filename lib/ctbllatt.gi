@@ -14,7 +14,7 @@
 
 
 #############################################################################
-##  
+##
 #F  LLL( <tbl>, <characters>[, <y>][, \"sort\"][, \"linearcomb\"] )
 ##
 InstallGlobalFunction( LLL, function( arg )
@@ -90,7 +90,7 @@ InstallGlobalFunction( LLL, function( arg )
     for i in [ 1 .. Length( lllrb.basis ) ] do
 
       v:= lllrb.basis[i];
-      if v[1] < 0 then 
+      if v[1] < 0 then
         v:= AdditiveInverse( v );
         if IsBound( lllrb.transformation ) then
           lll.transformation[i]:= AdditiveInverse( lll.transformation[i] );
@@ -143,26 +143,26 @@ end );
 ##
 InstallGlobalFunction( Extract, function( arg )
 
-    local  
-    
+    local
+
     # indices
           i, j, k, l, n,
     # input arrays
           tbl, y, gram, missing,
     # booleans
           deeper, iszero, used, nullbegin, nonmissing,
-          maxnorm, minnorm, normbound, maxsum, solmat, 
+          maxnorm, minnorm, normbound, maxsum, solmat,
           f, squares, sfind, choicecollect, sequence,
-          dependies, solcollect, sum, solcount, max, sumac, kmax, 
-          solution, 
+          dependies, solcollect, sum, solcount, max, sumac, kmax,
+          solution,
     # functions
-          next, zeroset, possiblies, update, correctnorm,  
+          next, zeroset, possiblies, update, correctnorm,
           maxsquare, square, ident, begin;
-    
+
     # choosing next vector for combination
     next := function( lines, solumat, acidx )
     local i, j, solmat, testvec, idxback;
-    
+
     while acidx <= n and k + n - acidx >= kmax do
        solmat := List( solumat, ShallowCopy );
        if k = 0 then
@@ -186,40 +186,40 @@ InstallGlobalFunction( Extract, function( arg )
        k := k + 1;
        f[k] := sequence[acidx];
        testvec := [];
-       for i in [1..k] do 
+       for i in [1..k] do
           testvec[i] := gram[f[k]][f[i]];
        od;
        zeroset( solmat, testvec, lines );
-       acidx := acidx + 1; 
+       acidx := acidx + 1;
        possiblies( 1, solmat, testvec, acidx, lines );
        k := k - 1;
     od;
     end;
-    
+
     # filling zero in places that fill already the conditions
     zeroset := function( solmat, testvec, lines )
     local i, j;
-    
-    for i in [1..k-1] do  
+
+    for i in [1..k-1] do
        if testvec[i] = 0 then
-          for j in [1..lines] do  
-             if solmat[j][i] <> 0 and not IsBound( solmat[j][k] ) then 
+          for j in [1..lines] do
+             if solmat[j][i] <> 0 and not IsBound( solmat[j][k] ) then
                 solmat[j][k] := 0;
              fi;
           od;
        fi;
     od;
     end;
-    
+
     # try and error for the chosen vector
     possiblies := function( start, solmat, testvect, acidx, lines )
     local i, j, remainder, toogreat, equal, solmatback, testvec;
-    
+
     testvec := ShallowCopy( testvect );
     toogreat := false;
-    equal := true; 
+    equal := true;
     if k > 1 then
-       for i in [1..k-1] do    
+       for i in [1..k-1] do
           if testvec[i] < 0 then
              toogreat := true;
           fi;
@@ -254,7 +254,7 @@ InstallGlobalFunction( Extract, function( arg )
              solmat[start][k] := solmat[start][k] + 1;
              testvec := update( -1, testvec, start, solmat );
              equal := true;
-             for i in [1..k-1] do    
+             for i in [1..k-1] do
                 if testvec[i] < 0 then
                    toogreat := true;
                 fi;
@@ -268,10 +268,10 @@ InstallGlobalFunction( Extract, function( arg )
           od;
        fi;
     fi;
-    if equal and not toogreat then 
+    if equal and not toogreat then
        solmatback := List( solmat, ShallowCopy );
-       for i in [1..missing] do          
-          if not IsBound( solmat[i][k] ) then        
+       for i in [1..missing] do
+          if not IsBound( solmat[i][k] ) then
              solmat[i][k] := 0;
           fi;
        od;
@@ -291,9 +291,9 @@ InstallGlobalFunction( Extract, function( arg )
                 deeper := false;
                 if testvec[i] = 0 then
                    deeper := true;
-                else 
+                else
                    for j in [1..missing] do
-                      if solmat[j][i] <> 0 and not IsBound(solmat[j][k]) then 
+                      if solmat[j][i] <> 0 and not IsBound(solmat[j][k]) then
                         deeper := true;
                       fi;
                    od;
@@ -308,22 +308,22 @@ InstallGlobalFunction( Extract, function( arg )
        od;
     fi;
     end;
-    
+
     # update the remaining conditions to fill
     update := function( x, testvec, start, solmat )
     local i;
-    for i in [1..k-1] do    
+    for i in [1..k-1] do
        if solmat[start][i] <> 0 then
           testvec[i] := testvec[i] + solmat[start][i] * x;
        fi;
     od;
-    testvec[k] := testvec[k] - square( solmat[start][k] ) 
+    testvec[k] := testvec[k] - square( solmat[start][k] )
                              + square( solmat[start][k] + x );
     return testvec;
     end;
-    
+
     # correct the norm if all other conditions are filled
-    correctnorm := function( remainder, solmat, pos, max, acidx, lines )           
+    correctnorm := function( remainder, solmat, pos, max, acidx, lines )
     local i, r, newsol, ret;
     if remainder = 0 and pos <= missing + 1 then
        newsol := true;
@@ -350,7 +350,7 @@ InstallGlobalFunction( Extract, function( arg )
                 next( lines, solmat, acidx );
              fi;
           fi;
-       else 
+       else
           ret := max;
        fi;
     else
@@ -358,7 +358,7 @@ InstallGlobalFunction( Extract, function( arg )
           i := maxsquare( remainder, max );
           while i > 0 do
              solmat[pos][k] := i;
-             i := correctnorm( remainder-square( i ), 
+             i := correctnorm( remainder-square( i ),
                                solmat, pos+1, i, acidx, lines + 1);
              i := i - 1;
           od;
@@ -373,19 +373,19 @@ InstallGlobalFunction( Extract, function( arg )
     fi;
     return ret;
     end;
-    
+
     # compute the maximum squarenumber lower then given integer
-    maxsquare := function( value, max ) 
+    maxsquare := function( value, max )
     local i;
-    
+
     i := 1;
     while square( i ) <= value and i <= max do
           i := i + 1;
     od;
     return i-1;
     end;
-    
-    square := function( i ) 
+
+    square := function( i )
     if i = 0 then
        return( 0 );
     else
@@ -395,17 +395,17 @@ InstallGlobalFunction( Extract, function( arg )
        return squares[i];
     fi;
     end;
-    
-    ident := function( a, b ) 
+
+    ident := function( a, b )
     # lists the identities of the two given sequences and counts them
     local i, j, k, zi, zz, la, lb;
     la := Length( a );
     lb := Length( b );
     zi := [];
     zz := 0;
-    for i in [1..la] do  
+    for i in [1..la] do
        j := 1;
-       repeat 
+       repeat
           if a[i] = b[j] then
              k :=1;
              while k <= zz and j <> zi[k] do
@@ -422,7 +422,7 @@ InstallGlobalFunction( Extract, function( arg )
     od;
     return( zz );
     end;
-    
+
     # looking for character that can stand at the beginning
     begin := function( i )
     local ind;
@@ -433,7 +433,7 @@ InstallGlobalFunction( Extract, function( arg )
           if ForAll( ComputedPowerMaps( tbl )[2], IsInt ) then
 #T ??
              ind := AbsInt( Indicator( tbl, [y[i]], 2 )[1]);
-             if gram[i][i] - 1 <= ind 
+             if gram[i][i] - 1 <= ind
              or ( gram[i][i] = 4 and ind = 1 ) then
                 return true;
              fi;
@@ -442,7 +442,7 @@ InstallGlobalFunction( Extract, function( arg )
     fi;
     return false;
     end;
-    
+
     # check input parameters
     if IsNearlyCharacterTable( arg[1] ) then
        tbl := arg[1];
@@ -469,7 +469,7 @@ InstallGlobalFunction( Extract, function( arg )
        missing := n;
        nonmissing := true;
     fi;
-    
+
     # main program
     maxnorm := 0;
     minnorm := gram[1][1];
@@ -488,20 +488,20 @@ InstallGlobalFunction( Extract, function( arg )
     for i in [1..missing] do
        solmat[i] := [];
     od;
-    for i in [1..n] do  
+    for i in [1..n] do
        solcount[i] := 0;
        used[i] := false;
        solcollect[i] := [];
        choicecollect[i] := [];
     od;
-    for i in [1..n] do  
+    for i in [1..n] do
        if gram[i][i] > maxnorm then
           maxnorm := gram[i][i];
        else
           if gram[i][i] < minnorm then
              minnorm := gram[i][i];
           fi;
-       fi; 
+       fi;
     od;
     j := 0;
     for i in [minnorm..maxnorm] do
@@ -530,7 +530,7 @@ InstallGlobalFunction( Extract, function( arg )
        for i in [normbound[j].first..normbound[j].last] do
           if gram[i][i] = normbound[j].norm then
              sum[i] := 0;
-             for k in [1..n] do  
+             for k in [1..n] do
                 sum[i] := sum[i] + gram[i][k];
              od;
              if sum[i] > maxsum[j] then
@@ -538,7 +538,7 @@ InstallGlobalFunction( Extract, function( arg )
              fi;
           fi;
        od;
-    od; 
+    od;
     k := 1;
     sequence := [];
     i:= 1;
@@ -546,7 +546,7 @@ InstallGlobalFunction( Extract, function( arg )
        max := maxsum[i];
        sumac := 0;
        for j in [normbound[i].first..normbound[i].last] do
-          if gram[j][j] = normbound[i].norm and sum[j] > sumac 
+          if gram[j][j] = normbound[i].norm and sum[j] > sumac
           and sum[j] <= max and not used[j] then
              sequence[k] := j;
              sumac := sum[j];
@@ -575,7 +575,7 @@ InstallGlobalFunction( Extract, function( arg )
           od;
           if not iszero then
              l := l + 1;
-             solution.solution[i][l] := solcollect[kmax][i][j];  
+             solution.solution[i][l] := solcollect[kmax][i][j];
           fi;
        od;
     od;
@@ -587,27 +587,27 @@ end );
 ##
 #F  Decreased( <tbl>, <chars>, <decompmat>, [ <choice> ] )
 ##
-InstallGlobalFunction( Decreased, function( arg ) 
-    local 
+InstallGlobalFunction( Decreased, function( arg )
+    local
         # indices
-          m, n, m1, n1, i, i1, i2, i3, i4, j, jj, j1, j2, j3, 
+          m, n, m1, n1, i, i1, i2, i3, i4, j, jj, j1, j2, j3,
         # booleans
           ende1, ende2, ok, change, delline, delcolumn,
         # help fields
-          deleted, kgv, l1, l2, l3, dim, ident, 
+          deleted, kgv, l1, l2, l3, dim, ident,
         # matrices
-          invmat, remmat, remmat2, solmat, nonzero, 
+          invmat, remmat, remmat2, solmat, nonzero,
         # double-indices
-          columnidx, lineidx, system, components, compo2, 
+          columnidx, lineidx, system, components, compo2,
         # output-fields
           sol, red, redcount, irred,
         # help fields
-          IRS, SFI, lc, nc, char, char1, entries, 
+          IRS, SFI, lc, nc, char, char1, entries,
         # input fields
-          tbl, y, choice, 
+          tbl, y, choice,
         # functions
           Idxset, Identset, Invadd, Invmult, Nonzeroset;
-    
+
     Idxset := function()
     # update indices
     local i1, j1;
@@ -628,7 +628,7 @@ InstallGlobalFunction( Decreased, function( arg )
     od;
     n1 := j1;
     end;
-    
+
     Identset := function( veca, vecb )
 #T just one place where this is called ...
     # count identities of veca and vecb and store "non-identities"
@@ -639,7 +639,7 @@ InstallGlobalFunction( Decreased, function( arg )
     j := 1;
     nonid := [];
     nic := 0;
-    for i in [1..la] do  
+    for i in [1..la] do
        while j <= lb and veca[i] > vecb[j] do
           nic := nic + 1;
           nonid[nic] := vecb[j];
@@ -658,36 +658,36 @@ InstallGlobalFunction( Decreased, function( arg )
     r := rec( nonid := nonid, id := n  );
     return( r );
     end;
-    
+
     Invadd := function( j1, j2, l )
     # addition of two lines of invmat
     local i;
-    for i in [1..n] do  
+    for i in [1..n] do
        if invmat[i][j2] <> 0 then
           invmat[i][j1] := invmat[i][j1] - l * invmat[i][j2];
        fi;
     od;
     end;
-    
+
     Invmult := function( j1, l )
     # multiply line of invmat
     local i;
     if l <> 1 then
-       for i in [1..n] do  
+       for i in [1..n] do
           if invmat[i][j1] <> 0 then
              invmat[i][j1] := invmat[i][j1] * l;
           fi;
        od;
     fi;
     end;
-    
-    Nonzeroset := function( j ) 
+
+    Nonzeroset := function( j )
     # entries <> 0 in j-th column of 'solmat'
-    
+
     local i, j1;
     nonzero[j] := [];
     j1 := 0;
-    for i in [1..m] do  
+    for i in [1..m] do
        if solmat[i][j] <> 0 then
           j1 := j1 + 1;
           nonzero[j][j1] := i;
@@ -695,10 +695,10 @@ InstallGlobalFunction( Decreased, function( arg )
     od;
     entries[j] := j1;
     end;
-    
+
     # check input parameters
     if Length( arg ) < 3 or Length( arg ) > 4 then
-      Error( "usage: Decreased( <tbl>, <list of char>,\n", 
+      Error( "usage: Decreased( <tbl>, <list of char>,\n",
              "<decomposition matrix>, [<choice>] )" );
     fi;
 
@@ -706,21 +706,21 @@ InstallGlobalFunction( Decreased, function( arg )
        tbl := arg[1];
     else
        Error( "first argument must be a nearly character table\n",
-              "usage: Decreased( <tbl>, <list of char>,\n", 
+              "usage: Decreased( <tbl>, <list of char>,\n",
               "<decomposition matrix>, [<choice>] )" );
     fi;
     if IsList( arg[2] ) and IsList( arg[2][1] ) then
        y := arg[2];
     else
        Error( "second argument must be list of characters\n",
-              "usage: Decreased( <tbl>, <list of char>,\n", 
+              "usage: Decreased( <tbl>, <list of char>,\n",
               "<decomposition matrix>, [<choice>] )" );
     fi;
     if IsList( arg[3] ) and IsList( arg[3][1] ) then
        solmat := List( arg[3], ShallowCopy );
     else
        Error( "third argument must be decomposition matrix\n",
-              "usage: Decreased( <tbl>, <list of char>,\n", 
+              "usage: Decreased( <tbl>, <list of char>,\n",
               "<decomposition-matrix>, [<choice>] )" );
     fi;
     if not IsBound( arg[4] ) then
@@ -729,14 +729,14 @@ InstallGlobalFunction( Decreased, function( arg )
        choice := arg[4];
     else
        Error( "forth argument contains choice of characters\n",
-           "usage: Decreased( <tbl>, <list of char>,\n", 
+           "usage: Decreased( <tbl>, <list of char>,\n",
            "<decomposition-matrix>, [<choice>] )" );
     fi;
-     
+
     # initialisations
     lc := Length( y[1] );
     nc := [];
-    for i in [1..lc] do  
+    for i in [1..lc] do
        nc[i] := 0;
     od;
     columnidx := [];
@@ -752,10 +752,10 @@ InstallGlobalFunction( Decreased, function( arg )
     # number of columns
     n := Length( solmat[1] );
     invmat := IdentityMat( n );
-    for i in [1..m] do  
+    for i in [1..m] do
        delline[i] := false;
     od;
-    for j in [1..n] do   
+    for j in [1..n] do
        delcolumn[j] := false;
     od;
     i := 1;
@@ -764,7 +764,7 @@ InstallGlobalFunction( Decreased, function( arg )
     while i <= m do
        if not delline[i] then
           entries[i] := 0;
-          for j in [1..n] do  
+          for j in [1..n] do
              if solmat[i][j] <> 0 and not delcolumn[j] then
                 entries[i] := entries[i] + 1;
                 if entries[i] = 1 then
@@ -775,7 +775,7 @@ InstallGlobalFunction( Decreased, function( arg )
           if entries[i] = 1 then
              delcolumn[nonzero[i]] := true;
              delline[i] := true;
-             j := 1; 
+             j := 1;
              while j < i and solmat[j][nonzero[i]] = 0 do
                 j := j + 1;
              od;
@@ -795,9 +795,9 @@ InstallGlobalFunction( Decreased, function( arg )
        fi;
     od;
     Idxset();
-    
+
     deleted := m - Length(lineidx);
-    for j in [1..n] do  
+    for j in [1..n] do
        Nonzeroset( j );
     od;
     ende1 := false;
@@ -808,17 +808,17 @@ InstallGlobalFunction( Decreased, function( arg )
        while j <= n do
           if entries[j] = 1 then
              change := false;
-             for jj in [1..n] do  
+             for jj in [1..n] do
                 if (delcolumn[j] and delcolumn[jj])
                 or not delcolumn[j] then
-                   if solmat[nonzero[j][1]][jj] <> 0 and jj <> j then 
+                   if solmat[nonzero[j][1]][jj] <> 0 and jj <> j then
                       change := true;
-                      kgv := Lcm( solmat[nonzero[j][1]][j], 
+                      kgv := Lcm( solmat[nonzero[j][1]][j],
                               solmat[nonzero[j][1]][jj] );
                       l1 := kgv / solmat[nonzero[j][1]][jj];
                       Invmult( jj, l1 );
                       for i1 in [1..Length( nonzero[jj] )] do
-                         solmat[nonzero[jj][i1]][jj] 
+                         solmat[nonzero[jj][i1]][jj]
                                := solmat[nonzero[jj][i1]][jj] * l1;
                       od;
                       Invadd( jj, j, kgv/solmat[nonzero[j][1]][j] );
@@ -918,7 +918,7 @@ InstallGlobalFunction( Decreased, function( arg )
                       if solmat[components[i1]][system[i2]] = 0 then
                          ok := false;
                       else
-                         for i3 in [1..i1-1] do    
+                         for i3 in [1..i1-1] do
                             if solmat[components[i3]][system[i2]] <> 0 then
                                ok := false;
                             fi;
@@ -930,10 +930,10 @@ InstallGlobalFunction( Decreased, function( arg )
                    until ok or i2 > Length( system );
                    if ok then
                       for i3 in [1..Length( system )] do
-                         if i3 <> i2 
+                         if i3 <> i2
                             and solmat[components[i1]][system[i3]] <> 0 then
                             change := true;
-                            kgv := Lcm( solmat[components[i1]][system[i3]], 
+                            kgv := Lcm( solmat[components[i1]][system[i3]],
                                        solmat[components[i1]][system[i2]] );
                             l2 := kgv / solmat[components[i1]][system[i2]];
                             l3 := kgv / solmat[components[i1]][system[i3]];
@@ -977,11 +977,11 @@ InstallGlobalFunction( Decreased, function( arg )
           ende1 := true;
        fi;
     od;
-    
+
     # check, if
     #    the transformation of solmat allows computation of new irreducibles
     remmat := [];
-    for i in [1..m] do  
+    for i in [1..m] do
        remmat[i] := [];
        delline[i] := true;
     od;
@@ -994,7 +994,7 @@ InstallGlobalFunction( Decreased, function( arg )
 
     # computation of character
        char := ShallowCopy( nc );
-       for i in [1..n] do  
+       for i in [1..n] do
           if invmat[i][j] <> 0 then
              char := char + invmat[i][j] * y[choice[i]];
           fi;
@@ -1028,14 +1028,14 @@ InstallGlobalFunction( Decreased, function( arg )
 
    # test if 'char1' can be an irreducible character
           if    char1[1] = 0
-             or ForAny( char1, x -> not IsCycInt(x) ) 
-             or ScalarProduct( tbl, char1, char1 ) <> 1 
+             or ForAny( char1, x -> not IsCycInt(x) )
+             or ScalarProduct( tbl, char1, char1 ) <> 1
              or ( IsCyc( SFI ) and ( ( IRS and AbsInt( SFI ) <> 1 ) or
                                      ( not IRS and SFI <> 0 ) ) )   then
             Info( InfoCharacterTable, 2,
                   "Decreased : computation of ",
                   Ordinal( Length( irred ) + 1 ), " character failed" );
-            return fail;   
+            return fail;
           else
 
     # irreducible character found
@@ -1050,7 +1050,7 @@ InstallGlobalFunction( Decreased, function( arg )
           if char <> nc then
              redcount := redcount + 1;
              red[redcount] := ClassFunction( tbl, char );
-             for i in [1..m] do  
+             for i in [1..m] do
                 remmat[i][redcount] := solmat[i][j];
                 if solmat[i][j] <> 0 then
                    delline[i] := false;
@@ -1062,7 +1062,7 @@ InstallGlobalFunction( Decreased, function( arg )
     od;
     i1 := 0;
     remmat2 := [];
-    for i in [1..m] do  
+    for i in [1..m] do
        if not delline[i] then
           i1 := i1 + 1;
           remmat2[i1] := remmat[i];
@@ -1079,7 +1079,7 @@ end );
 #F  OrthogonalEmbeddingsSpecialDimension( <tbl>, <reducibles>, <grammat>,
 #F                                        [, \"positive\"], <dim> )
 ##
-InstallGlobalFunction( OrthogonalEmbeddingsSpecialDimension, function ( arg )  
+InstallGlobalFunction( OrthogonalEmbeddingsSpecialDimension, function ( arg )
     local  red, dim, reducibles, matrix, tbl, emb, dec, i, s, irred;
     # check input
     if Length( arg ) < 4 then
@@ -1144,7 +1144,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
       m, n,
     # help fields
       found, foundpos,
-      z, zw, nullcount, nullgenerate, 
+      z, zw, nullcount, nullgenerate,
       maxentry, max, ind, irred, irredcount, red,
       blockcount, blocks, perm, addtest, preirred,
     # Gram matrix
@@ -1154,13 +1154,13 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
     # variables for recursion
       root, rootcount, solution, ligants, ligantscount, glblock, begin,
       depth, choice, ende, sol,
-    # functions	
+    # functions
       callreduced, nullset, maxset, Search, Add, DnSearch, test;
-    
+
     # counts zeroes in given line
     nullset := function( g, i )
     local j;
-    
+
     nullcount[ i ] := 0;
     for j in [ 1..n ] do
        if g[ j ] = 0 then
@@ -1168,11 +1168,11 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
        fi;
     od;
     end;
-    
+
     # searches line with most non-zero-entries
     maxset := function( )
     local i;
-    
+
     maxentry := 1;
     max := n;
     for i in [ 1..n ] do
@@ -1182,11 +1182,11 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
        fi;
     od;
     end;
-    
+
     # searches lines to add in order to produce zeroes
     Search := function( j )
     local signum;
-    
+
     nullgenerate := 0;
     if g[ j ][ maxentry ] > 0 then
        signum := -1;
@@ -1205,7 +1205,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
        if g[ j ][ maxentry ] < 0 then
           signum := 1;
           for k in [ 1..n ] do
-             if k <> maxentry and k <> j then 
+             if k <> maxentry and k <> j then
                 if g[ maxentry ][ k ] <> 0 then
                    if g[ j ][ k ] = -g[ maxentry ][ k ] then
                       nullgenerate := nullgenerate + 1;
@@ -1223,12 +1223,12 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
        j := j + 1;
     fi;
     end;
-    
+
     # adds two lines/columns
     Add := function( i, j )
     local k;
-    
-       y[ i ] := y[ i ] - g[ i ][ j ] * y[ j ];  
+
+       y[ i ] := y[ i ] - g[ i ][ j ] * y[ j ];
        g[ i ] := g[ i ] - g[ i ][ j ] * g[ j ];
        for k in [ 1..i-1 ] do
           g[ k ][ i ] := g[ i ][ k ];
@@ -1238,11 +1238,11 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
           g[ k ][ i ] := g[ i ][ k ];
        od;
     end;
-    
+
     # backtrack-search for dn-lattice
     DnSearch := function( begin, depth, oldchoice )
     local connections, connect, i1, j1, choice, found;
-    
+
     choice := ShallowCopy( oldchoice );
     if depth = 3 then
        # d4-lattice found !!!
@@ -1253,7 +1253,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
           found := false;
           while not found and i1 < n do
              i1 := i1 + 1;
-             if i1 <> root[ j ] and i1 <> choice[ 1 ] 
+             if i1 <> root[ j ] and i1 <> choice[ 1 ]
              and i1 <> choice[ 2 ] and i1 <> choice[ 3 ] then
                 connections := 0;
                 for j1 in [1..3] do
@@ -1295,7 +1295,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
        od;
     fi;
     end;
-    
+
     test := function(z)
     # some tests for the found characters
     local result, IRS, SFI, i1, y1, ind, testchar;
@@ -1319,15 +1319,15 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
       SFIbool := false;
     fi;
     if SFIbool then
-       if ForAny( testchar, x -> IsRat(x) and not IsInt(x) ) 
-          or ScalarProduct( tbl, testchar, testchar ) <> 1 
-          or testchar[1] = 0  
-          or ( IRS and AbsInt( SFI ) <> 1 ) 
+       if ForAny( testchar, x -> IsRat(x) and not IsInt(x) )
+          or ScalarProduct( tbl, testchar, testchar ) <> 1
+          or testchar[1] = 0
+          or ( IRS and AbsInt( SFI ) <> 1 )
           or ( not IRS and SFI <> 0 ) then
          result := false;
        fi;
     else
-       if ForAny( testchar, x -> IsRat(x) and not IsInt(x) ) 
+       if ForAny( testchar, x -> IsRat(x) and not IsInt(x) )
           or ScalarProduct( tbl, testchar, testchar ) <> 1
           or testchar[1] = 0 then
          result := false;
@@ -1335,9 +1335,9 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
     fi;
     return result;
     end;
-    
+
     # reduce whole lattice with the found irreducible
-    callreduced := function() 
+    callreduced := function()
     z[ 1 ] := z[ 1 ]/ 2 ;
     if ScalarProduct( tbl, z[ 1 ], z[ 1 ] ) = 1 then
        irredcount := irredcount + 1;
@@ -1353,7 +1353,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
        y2 := Concatenation( y2, red.remainders );
     fi;
     end;
-    
+
     # check input parameters
     if not IsNearlyCharacterTable( tbl ) then
        Error( "first argument must be a nearly character table\n",
@@ -1382,9 +1382,9 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
     fi;
     y2        := [  ];
     irred     := [  ];
-    
+
     if not empty then
-    
+
     n := Length( y );
     for i in [1..n] do
        if g[i][i] <> 2 then
@@ -1436,7 +1436,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
              maxentry := 1;
           fi;
        od;
-    
+
     # 2 step-search in order to produce zeroes
     # 2_0_Box-Method
        change := false;
@@ -1465,7 +1465,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
                          for k in [ 1..n ] do
                             if addtest[ k ] = 0 then
                                nullgenerate := nullgenerate + 1;
-                            else 
+                            else
                                if AbsInt( addtest[ k ] ) > 1 then
                                   addable := false;
                                fi;
@@ -1475,7 +1475,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
                             nullgenerate := nullgenerate - nullcount[ i ];
                             for k in [ 1..n ] do
                                if k <> i and k <> j then
-                                  if addtest[ k ] 
+                                  if addtest[ k ]
                                      = addtest[ j ] * g[ j ][ k ] then
                                      if g[ j ][ k ] <> 0 then
                                         nullgenerate := nullgenerate + 1;
@@ -1546,7 +1546,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
     g := Permuted( g, perm );
     y := y2;
     y2 := [  ];
-    
+
     # search for d4/d5 - lattice
     for i in [1..blockcount] do
        n := blocks.ende[ i ] - blocks.begin[ i ] + 1;
@@ -1594,7 +1594,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
           od;
        fi;
 
-    # test of the found irreducibles  
+    # test of the found irreducibles
        if solution = 1 then
           # treatment of D4-lattice
           found := 0;
@@ -1626,18 +1626,18 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
           if found = 1 then
              z := [z[foundpos]];
              callreduced();
-          fi;  
-        
+          fi;
+
        else
           # treatment of D5-lattice
           if solution = 2 then
              if choice [ 1 ] <> choice [ 4 ] then
                 z[ 1 ] := y[ blocks.begin[ i ] + choice[ 1 ] - 1 ];
                 if choice [ 2 ] <> choice [ 4 ] then
-                   z[ 1 ] 
+                   z[ 1 ]
                         := z[ 1 ] + y[ blocks.begin[ i ] + choice[ 2 ] - 1 ];
                 else
-                   z[ 1 ] 
+                   z[ 1 ]
                         := z[ 1 ] + y[ blocks.begin[ i ] + choice[ 3 ] - 1 ];
                 fi;
              else
@@ -1652,8 +1652,8 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
             Append( y2, y{ [ blocks.begin[i] .. blocks.ende[i] ] } );
           fi;
        fi;
-    od;            
-    
+    od;
+
     if irredcount > 0 then
        g := MatScalarProducts( tbl, y2, y2 );
     fi;
@@ -1671,7 +1671,7 @@ end );
 ##
 InstallGlobalFunction( DnLatticeIterative, function( tbl, red )
     local dnlat, red1, norms, i, reduc, irred, norm2, g;
-    
+
     # check input parameters
     if not IsNearlyCharacterTable( tbl ) then
        Error( "first argument must be a nearly character table\n",
@@ -1702,7 +1702,7 @@ InstallGlobalFunction( DnLatticeIterative, function( tbl, red )
              Add( norm2, reduc[i] );
           fi;
        od;
-       g := MatScalarProducts( tbl, norm2, norm2 ); 
+       g := MatScalarProducts( tbl, norm2, norm2 );
        dnlat := DnLattice( tbl, g, norm2 );
        Append( irred, dnlat.irreducibles );
        red1:= ReducedClassFunctions( tbl, dnlat.irreducibles, reduc );

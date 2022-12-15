@@ -52,7 +52,7 @@ DeclareCategoryKernel( "IsObject", IS_OBJECT, IS_OBJECT );
 ##  <Description>
 ##  <Ref Func="IsIdenticalObj"/> tests whether the objects
 ##  <A>obj1</A> and <A>obj2</A> are identical (that is they are either
-##  equal immediate objects or are both stored at the same location in 
+##  equal immediate objects or are both stored at the same location in
 ##  memory.
 ##  <P/>
 ##  If two copies of a simple constant object
@@ -281,13 +281,13 @@ BIND_GLOBAL( "Immutable", IMMUTABLE_COPY_OBJ );
 ##  <Oper Name="ShallowCopy" Arg='obj'/>
 ##
 ##  <Description>
-##  <Ref Oper="ShallowCopy"/> returns a <E>new mutable</E> object <E>equal</E> 
+##  <Ref Oper="ShallowCopy"/> returns a <E>new mutable</E> object <E>equal</E>
 ##  to its argument, if this is possible.
 ##  The subobjects of <C>ShallowCopy( <A>obj</A> )</C> are <E>identical</E>
 ##  to the subobjects of <A>obj</A>.
 ##  <P/>
 ##  If &GAP; does not support a mutable form of the immutable object <A>obj</A>
-##  (see&nbsp;<Ref Sect="Mutability and Copyability"/>) then 
+##  (see&nbsp;<Ref Sect="Mutability and Copyability"/>) then
 ##  <Ref Oper="ShallowCopy"/> returns <A>obj</A> itself.
 ##  <P/>
 ##  Since <Ref Oper="ShallowCopy"/> is an operation, the concrete meaning of
@@ -430,8 +430,8 @@ DeclareAttribute( "InfoText", IsObject, "mutable" );
 ##  "123"
 ##  "[ 1, 2, 3 ]"
 ##  ]]></Example>
-##  <Ref Attr="String"/> must not put in additional control 
-##  characters <C>\&lt;</C> (ASCII 1) and <C>\&gt;</C> (ASCII 2) 
+##  <Ref Attr="String"/> must not put in additional control
+##  characters <C>\&lt;</C> (ASCII 1) and <C>\&gt;</C> (ASCII 2)
 ##  that allow proper line breaks.
 ##  </Description>
 ##  </ManSection>
@@ -502,8 +502,8 @@ end);
 ##  "123"
 ##  "[ 1, 2, 3 ]"
 ##  ]]></Example>
-##  <Ref Oper="PrintString"/> is entitled to put in additional control 
-##  characters <C>\&lt;</C> (ASCII 1) and <C>\&gt;</C> (ASCII 2) 
+##  <Ref Oper="PrintString"/> is entitled to put in additional control
+##  characters <C>\&lt;</C> (ASCII 1) and <C>\&gt;</C> (ASCII 2)
 ##  that allow proper line breaks. See <Ref Func="StripLineBreakCharacters"/>
 ##  for a function to get rid of these control characters.
 ##  </Description>
@@ -524,7 +524,7 @@ DeclareOperation( "PrintString", [ IsObject, IS_INT ] );
 ##
 ##  <Description>
 ##  This function takes a string <A>st</A> as an argument and removes all
-##  control characters <C>\&lt;</C> (ASCII 1) and <C>\&gt;</C> (ASCII 2) 
+##  control characters <C>\&lt;</C> (ASCII 1) and <C>\&gt;</C> (ASCII 2)
 ##  which are used by
 ##  <Ref Oper="PrintString"/> and <Ref Oper="PrintObj"/> to ensure proper
 ##  line breaking. A new string with these characters removed is returned.
@@ -585,7 +585,7 @@ DeclareOperation( "Display", [ IsObject ] );
 ##  <Oper Name="DisplayString" Arg='obj'/>
 ##
 ##  <Description>
-##  Returns a string which could be used to 
+##  Returns a string which could be used to
 ##  display the object <A>obj</A> in a nice, formatted way which is easy to
 ##  read (but might be difficult for machines to understand).
 ##  The actual format used for this depends on the type of <A>obj</A>.
@@ -687,13 +687,13 @@ DeclareOperation( "ObjByExtRep", [ IsFamily, IsObject ] );
 ##  <Oper Name="KnownAttributesOfObject" Arg='object'/>
 ##
 ##  <Description>
-##  returns a list of the names of the attributes whose values are known for 
+##  returns a list of the names of the attributes whose values are known for
 ##  <A>object</A>.
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2),(1,2,3));;Size(g);;
 ##  gap> KnownAttributesOfObject(g);
-##  [ "Size", "OneImmutable", "NrMovedPoints", "MovedPoints", 
-##    "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", 
+##  [ "Size", "OneImmutable", "NrMovedPoints", "MovedPoints",
+##    "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement",
 ##    "HomePcgs", "Pcgs", "StabChainMutable", "StabChainOptions" ]
 ##  ]]></Example>
 ##  </Description>
@@ -764,15 +764,15 @@ DeclareOperation( "KnownPropertiesOfObject", [ IsObject ] );
 ##    "IsInfiniteAbelianizationGroup", "IsNilpotentByFinite",
 ##    "IsTorsionFree", "IsFreeAbelian" ]
 ##  gap> KnownTruePropertiesOfObject(g);
-##  [ "IsNonTrivial", "IsFinite", "CanEasilyCompareElements", 
-##    "CanEasilySortElements", "IsDuplicateFree", 
-##    "IsGeneratorsOfMagmaWithInverses", "IsAssociative", 
-##    "IsFinitelyGeneratedMagma", "IsGeneratorsOfSemigroup", 
-##    "IsSimpleSemigroup", "IsRegularSemigroup", "IsInverseSemigroup", 
-##    "IsCompletelyRegularSemigroup", "IsCompletelySimpleSemigroup", 
-##    "IsGroupAsSemigroup", "IsMonoidAsSemigroup", "IsOrthodoxSemigroup", 
-##    "IsFinitelyGeneratedMonoid", "IsFinitelyGeneratedGroup", 
-##    "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose", 
+##  [ "IsNonTrivial", "IsFinite", "CanEasilyCompareElements",
+##    "CanEasilySortElements", "IsDuplicateFree",
+##    "IsGeneratorsOfMagmaWithInverses", "IsAssociative",
+##    "IsFinitelyGeneratedMagma", "IsGeneratorsOfSemigroup",
+##    "IsSimpleSemigroup", "IsRegularSemigroup", "IsInverseSemigroup",
+##    "IsCompletelyRegularSemigroup", "IsCompletelySimpleSemigroup",
+##    "IsGroupAsSemigroup", "IsMonoidAsSemigroup", "IsOrthodoxSemigroup",
+##    "IsFinitelyGeneratedMonoid", "IsFinitelyGeneratedGroup",
+##    "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose",
 ##    "IsSolvableGroup", "IsPolycyclicGroup", "IsNilpotentByFinite" ]
 ##  ]]></Example>
 ##  </Description>

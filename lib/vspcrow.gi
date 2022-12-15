@@ -976,7 +976,7 @@ InstallMethod( Intersection2,
     function( V, W )
     local S,          # intersection of `V' and `W', result
           mat;        # basis vectors of the intersection
-    
+
     if   DimensionOfVectors( V ) <> DimensionOfVectors( W ) then
       S:= [];
     elif Dimension( V ) = 0 then

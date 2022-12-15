@@ -25,7 +25,7 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareCategory( "IsAlgebraicElement", IsScalar and IsZDFRE and 
+DeclareCategory( "IsAlgebraicElement", IsScalar and IsZDFRE and
                     IsAssociativeElement and IsAdditivelyCommutativeElement
                     and IsCommutativeElement);
 DeclareCategoryCollections( "IsAlgebraicElement");
@@ -91,7 +91,7 @@ DeclareAttribute( "AlgebraicElementsFamilies",
 ##
 ##  <Description>
 ##  Arguments: base field, polynomial, check
-##  If check is true, then the irreducibility of the polynomial in 
+##  If check is true, then the irreducibility of the polynomial in
 ##  polynomial ring over base field is checked.
 ##  </Description>
 ##  </ManSection>
@@ -119,7 +119,7 @@ DeclareOperation( "AlgebraicElementsFamily",
 ##  of <A>L</A> holds a root of <A>f</A> in <A>L</A>.
 ##  By default this root is printed as <C>a</C>, this string can be
 ##  overwritten with the optional argument <A>nam</A>. <P/>
-##  
+##
 ##  The first version of the command checks that the polynomial <A>f</A>
 ##  is an irreducible polynomial over <A>K</A>. This check is skipped with
 ##  the <C>NC</C> variant.
@@ -153,7 +153,7 @@ DeclareOperation( "AlgebraicExtensionNC",
 ##  <Func Name="MaxNumeratorCoeffAlgElm" Arg='a'/>
 ##
 ##  <Description>
-##  maximal (absolute value, in numerator) 
+##  maximal (absolute value, in numerator)
 ##  coefficient in the representation of algebraic elm. <A>a</A>
 ##  </Description>
 ##  </ManSection>

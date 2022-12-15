@@ -155,7 +155,7 @@ MakeImmutable( Primes );
 ##
 ##  More factors of cyclotomic numbers are now available via the FactInt
 ##  package. This should be cleaned up.
-##  
+##
 InstallFlushableValue( Primes2, [
 10047871, 10567201, 10746341, 12112549, 12128131, 12207031, 12323587,
 12553493, 12865927, 13097927, 13264529, 13473433, 13821503, 13960201,
@@ -340,7 +340,7 @@ ADD_SET(Primes2, 5926187589691497537793497756719);
 ADD_SET(Primes2, 4330075309599657322634371042967428373533799534566765522517);
 # for 97^97-1
 ADD_SET(Primes2, 549180361199324724418373466271912931710271534073773);
-ADD_SET(Primes2,  85411410016592864938535742262164288660754818699519364051241927961077872028620787589587608357877); 
+ADD_SET(Primes2,  85411410016592864938535742262164288660754818699519364051241927961077872028620787589587608357877);
 
 InstallFlushableValue(ProbablePrimes2, []);
 IsSSortedList( ProbablePrimes2 );
@@ -404,7 +404,7 @@ end);
 ##
 #F  CoefficientsQadic( <i>, <q> ) . . . . . .  <q>-adic representation of <i>
 ##
-InstallMethod( CoefficientsQadic, "for two integers", 
+InstallMethod( CoefficientsQadic, "for two integers",
     true, [ IsInt, IsInt ], 0,
 function( i, q )
     local i1, res, l, qq, i2;
@@ -412,7 +412,7 @@ function( i, q )
         Error("2nd argument of CoefficientsQadic should be greater than 1\n");
     fi;
     if i < 0 then
-        # if FR package is loaded and supplies an implementation 
+        # if FR package is loaded and supplies an implementation
         # to return a periodic list for negative i
         TryNextMethod();
     fi;
@@ -479,8 +479,8 @@ InstallGlobalFunction(DivisorsInt,function ( n )
     # make <n> it nonnegative, handle trivial cases, and get prime factors
     if n < 0  then n := -n;  fi;
     if n = 0  then Error("DivisorsInt: <n> must not be 0");  fi;
-    if n <= Length(DivisorsIntCache)  then 
-        return DivisorsIntCache[n];  
+    if n <= Length(DivisorsIntCache)  then
+        return DivisorsIntCache[n];
     fi;
     factors := Factors(Integers, n );
 
@@ -633,8 +633,8 @@ MakeReadOnlyGlobal( "FactorsRho" );
 #############################################################################
 ##
 #F  FactorsInt( <n> ) . . . . . . . . . . . . . . prime factors of an integer
-#F  FactorsInt( <n> : RhoTrials := <trials>) 
-#F  FactorsInt( <n> : quiet) 
+#F  FactorsInt( <n> : RhoTrials := <trials>)
+#F  FactorsInt( <n> : quiet)
 ##
 ##  In the second form, FactorsRho is called with a limit of <trials>
 ##  on the number of trials is performs. The  default is 8192.
@@ -663,31 +663,35 @@ InstallGlobalFunction(FactorsInt,function ( n )
     od;
 
     # do trial divisions by known primes
+    atomic readonly Primes2 do
     for p  in Primes2  do
         while n mod p = 0  do Add( factors, p );  n := n / p;  od;
         if p^2 > n then break; fi;
         if n = 1  then factors[1] := sign*factors[1];  return factors;  fi;
     od;
-    
+    od;
+
     # do trial divisions by known probable primes (and issue warning, if found)
     tmp := [];
+    atomic readonly ProbablePrimes2 do
     for p  in ProbablePrimes2  do
-        while n mod p = 0  do 
-          AddSet(tmp, p); 
-          Add( factors, p );  
-          n := n / p;  
+        while n mod p = 0  do
+          AddSet(tmp, p);
+          Add( factors, p );
+          n := n / p;
         od;
         if n = 1  then break; fi;
     od;
+    od;
     if Length(tmp) > 0 then
-        Info(InfoPrimeInt, 1 , 
+        Info(InfoPrimeInt, 1 ,
         "FactorsInt: used the following factor(s) which are probably primes:");
         for p in tmp do
           Info(InfoPrimeInt, 1, "      ", p);
         od;
     fi;
     if n = 1  then factors[1] := sign*factors[1];  return factors;  fi;
-          
+
 
     # handle perfect powers
     p := SmallestRootInt( n );
@@ -722,7 +726,7 @@ InstallGlobalFunction(FactorsInt,function ( n )
           # moment:
           return Factors(n_orig);
         else
-          Error( "sorry,  cannot factor ", tmp[2], 
+          Error( "sorry,  cannot factor ", tmp[2],
             "\ntype 'return;' to try again with a larger number of trials in\n",
             "FactorsRho (or use option 'RhoTrials')\n");
           if ValueOption("RhoTrials") <> fail then
@@ -751,9 +755,9 @@ end);
 #############################################################################
 ##
 #F  PrimeDivisors( <n> ) . . . . . . . . . . . . . . list of prime divisors
-##  
+##
 ##  delegating to Factors
-##  
+##
 InstallMethod( PrimeDivisors, "for integer", [ IsInt ], function(n)
   if n = 0 then
     Error( "<n> must be non zero" );
@@ -820,24 +824,28 @@ InstallMethod( PartialFactorization,
     fi;
 
     # do trial divisions by known primes
+    atomic readonly Primes2 do
     for p in Primes2 do
       while n mod p = 0 do Add( factors, p ); n := n / p; od;
       if n = 1 then CheckAndSortFactors(); return factors; fi;
     od;
+    od;
 
     # do trial divisions by known probable primes
     tmp := [];
+    atomic readonly ProbablePrimes2 do
     for p in ProbablePrimes2 do
-      while n mod p = 0 do 
-        AddSet(tmp, p); 
-        Add( factors, p );  
-        n := n / p;  
+      while n mod p = 0 do
+        AddSet(tmp, p);
+        Add( factors, p );
+        n := n / p;
       od;
       if n = 1 then break; fi;
     od;
+    od;
 
     if n = 1 then CheckAndSortFactors(); return factors; fi;
-          
+
     # handle perfect powers
     root := SmallestRootInt( n );
     if root < n then
@@ -991,11 +999,11 @@ InstallGlobalFunction(LogInt,function ( n, base )
     local   log, p;
 
     # check arguments
-    if not IsInt(n) or n    <= 0  then 
-        Error("<n> must be a positive integer");  
+    if not IsInt(n) or n    <= 0  then
+        Error("<n> must be a positive integer");
     fi;
-    if not IsInt(base) or base <= 1  then 
-        Error("<base> must be an integer greater than 1");  
+    if not IsInt(base) or base <= 1  then
+        Error("<base> must be an integer greater than 1");
     fi;
 
     # `log(b)' returns $log_b(n)$ and divides `n' by `b^log(b)'
@@ -1006,9 +1014,9 @@ InstallGlobalFunction(LogInt,function ( n, base )
 ##          if b > n  then return 2 * i;
 ##          else  n := QuoInt( n, b );  return 2 * i + 1;  fi;
 ##      end;
-##  
+##
 ##      return log( base );
-  if n < base then 
+  if n < base then
     return 0;
   elif base = 2 then
     return Log2Int(n);
@@ -1024,7 +1032,7 @@ InstallGlobalFunction(LogInt,function ( n, base )
       p := p * base;
     od;
     return log;
-  elif base = 10 then  
+  elif base = 10 then
     log := QuoInt(Log2Int(n) * 10^6 , 3321929);
     return log + LogInt(QuoInt(n, 10^log), 10);
   else
@@ -1213,32 +1221,32 @@ end);
 ##
 InstallMethod( RingByGenerators,
     "method that catches the cases of `Integers' and subrings of `Integers'",
-    [ IsCyclotomicCollection ], 
+    [ IsCyclotomicCollection ],
     SUM_FLAGS, # test this before doing anything else
     function( elms )
       if ForAll( elms, IsInt ) then
         # check that the number of generators is bigger than one
-        # to avoid infinite recursion    
+        # to avoid infinite recursion
         if Length( elms ) > 1 then
           return RingByGenerators( [ Gcd(elms) ] );
         elif elms[1] = 1 then
           return Integers;
         else
-          TryNextMethod();        
+          TryNextMethod();
         fi;
       else
         TryNextMethod();
       fi;
     end );
-    
-    
+
+
 #############################################################################
 ##
 #M  RingWithOneByGenerators( <elms> ) . . . . ring generated by some integers
 ##
 InstallMethod( RingWithOneByGenerators,
     "method that catches the cases of `Integers'",
-    [ IsCyclotomicCollection ], 
+    [ IsCyclotomicCollection ],
     SUM_FLAGS, # test this before doing anything else
     function( elms )
       if ForAll( elms, IsInt ) then
@@ -1246,8 +1254,8 @@ InstallMethod( RingWithOneByGenerators,
       else
         TryNextMethod();
       fi;
-    end );    
-    
+    end );
+
 
 #############################################################################
 ##
@@ -1255,7 +1263,7 @@ InstallMethod( RingWithOneByGenerators,
 ##
 InstallMethod( DefaultRingByGenerators,
     "method that catches the cases of `(Gaussian)Integers' and cycl. fields",
-    [ IsCyclotomicCollection ], 
+    [ IsCyclotomicCollection ],
     SUM_FLAGS, # test this before doing anything else
     function( elms )
       if ForAll( elms, IsInt ) then
@@ -1267,7 +1275,7 @@ InstallMethod( DefaultRingByGenerators,
       fi;
     end );
 
-    
+
 #############################################################################
 ##
 #M  DefaultRingByGenerators( <mats> ) .  for a list of n x n integer matrices
@@ -1279,21 +1287,21 @@ InstallMethod( DefaultRingByGenerators,
   function ( mats )
     local d;
     if IsEmpty(mats) or not ForAll(mats,IsRectangularTable and IsMatrix) then
-       TryNextMethod(); 
+       TryNextMethod();
     fi;
     d := Length( mats[1] );
     if d=0 then
-       TryNextMethod(); 
+       TryNextMethod();
     fi;
     if not ForAll( mats, m -> Length(m)=d and Length(m[1])=d ) then
-       TryNextMethod(); 
-    fi;    
+       TryNextMethod();
+    fi;
     if not ForAll( mats, m -> ForAll( m, r -> ForAll(r,IsInt))) then
-       TryNextMethod(); 
+       TryNextMethod();
     fi;
     return FullMatrixAlgebra(Integers,d);
   end );
-  
+
 
 #############################################################################
 ##
@@ -1444,7 +1452,7 @@ InstallMethod( Iterator,
           end,
         counter := 0 ) ) );
 
-        
+
 #############################################################################
 ##
 #M  Iterator( PositiveIntegers )
@@ -1461,7 +1469,7 @@ InstallMethod( Iterator,
         ShallowCopy := iter -> rec( counter:= iter!.counter ),
 
         counter := 0 ) ) ); # 0, since we first increment then return
-        
+
 
 #############################################################################
 ##
@@ -1733,13 +1741,13 @@ end);
 ##
 #M  Iterator( <posint> ) . . . . . . . . . . . . .give more informative error
 ##
-##  This method is mainly there to trap the "natural" error 
+##  This method is mainly there to trap the "natural" error
 ##  for i in 3 do ... od;
 ##
 
-InstallOtherMethod(Iterator, "more helpful error for integers", true,     
-        [IsPosInt], 0, 
-        function(n) 
+InstallOtherMethod(Iterator, "more helpful error for integers", true,
+        [IsPosInt], 0,
+        function(n)
     Error("You cannot loop over the integer ",n,
           " did you mean the range [1..",n,"]");
 end);
@@ -1749,9 +1757,9 @@ end);
 DeclareUserPreference( rec(
   name:= "MaxBitsIntView",
   description:= [
-    "Maximal bit length of integers to 'view' unabbreviated.  \
-Default is about 30 lines of a 80 character wide terminal.  \
-Set this to '0' to avoid abbreviated ints."
+    "Maximal bit length of integers to <C>View</C> unabbreviated.  \
+Default is about <M>30</M> lines of a <M>80</M> character wide terminal.  \
+Set this to <C>0</C> to avoid abbreviated ints."
     ],
   default:= 8000,
   check:= val -> IsInt( val ) and 0 <= val,
@@ -1760,7 +1768,7 @@ Set this to '0' to avoid abbreviated ints."
 InstallMethod(ViewString, "for integer", [IsInt], function(n)
   local mb, l, start, trail;
   mb := UserPreference("MaxBitsIntView");
-  if not IsSmallIntRep(n) and mb <> fail and 
+  if not IsSmallIntRep(n) and mb <> fail and
       mb > 64 and Log2Int(n) > mb then
     if n < 0 then
       l := LogInt(-n, 10);

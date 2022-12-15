@@ -399,7 +399,7 @@ static Obj FuncONE_SAMEMUT(Obj self, Obj obj)
 */
 ArithMethod1 InvFuncs [LAST_REAL_TNUM+1];
 
-    
+
 /****************************************************************************
 **
 *F  InvObject( <obj> )  . . . . . . . . . . . . . . . . . . . .  call methsel
@@ -1164,7 +1164,7 @@ static Obj PowObject(Obj opL, Obj opR)
 */
 static Obj VerbosePowObject(Obj opL, Obj opR)
 {
-   
+
   Obj val;
   val = DoVerboseOperation2Args( PowOper, opL, opR );
   RequireValue("POW", val);
@@ -1665,7 +1665,7 @@ static Int InitKernel (
     }
     InstallModObject(0);
 
-    
+
     return 0;
 }
 

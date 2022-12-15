@@ -10,7 +10,7 @@
 ##
 ##  This file contains the implementation of the methods for SchurMultiplier
 ##  and Darstellungsgruppen.
-##  
+##
 
 ##    Take a finite presentation F/R for a group G and compute a presentation
 ##    of one of G's representation groups (Darstellungsgruppen, Schur covers).
@@ -20,11 +20,11 @@
 ##
 ##    No attempt is made to reduce the number of generators in the
 ##    presentation.  This can be done using the Tietze routines from the GAP
-##    library. 
+##    library.
 
 BindGlobal("SchurCoverFP",function( G )
 local g, i, m, n, r, D, I, M, M2,fgens,rels,gens,Drels,nam;
-  
+
   fgens:=FreeGeneratorsOfFpGroup(G);
   rels:=RelatorsOfFpGroup(G);
   n := Length( fgens );
@@ -35,7 +35,7 @@ local g, i, m, n, r, D, I, M, M2,fgens,rels,gens,Drels,nam;
   else
     r:=First(Concatenation(CHARS_LALPHA,CHARS_UALPHA),
       x->not ForAny(nam,y->x in y));
-    if r=fail then 
+    if r=fail then
       r:="extra"; # unlikely to have the same name, will just print weirdly
       # but not calculate wrongly
     else
@@ -46,29 +46,29 @@ local g, i, m, n, r, D, I, M, M2,fgens,rels,gens,Drels,nam;
   for i in [1..m] do
     Add(nam,Concatenation(r,String(i)));
   od;
-  
+
   D := FreeGroup(nam);
   gens:=GeneratorsOfGroup(D);
   Drels := [];
   for i in [1..m] do
     r := rels[i];
-    Add(Drels, MappedWord( r, fgens, gens{[1..n]} ) / gens[n+i] );   
+    Add(Drels, MappedWord( r, fgens, gens{[1..n]} ) / gens[n+i] );
   od;
   for g in gens{[1..n]} do
     for r in gens{[n+1..n+m]} do
       Add( Drels, Comm( r, g ) );
     od;
   od;
-  
+
   M := [];
   for r in rels do
     Add( M, List( fgens, g->ExponentSumWord( r, g ) ) );
   od;
-  
+
   M{[1..m]}{[n+1..n+m]} := IdentityMat(m);
   M := HermiteNormalFormIntegerMat( M );
   M:=Filtered(M,i->not IsZero(i));
-  
+
   r := 1; i := 1;
   while r <= m and i <= n do
     while i <= n and M[r][i] = 0 do
@@ -77,7 +77,7 @@ local g, i, m, n, r, D, I, M, M2,fgens,rels,gens,Drels,nam;
     if i <= n then  r := r+1; fi;
   od;
   r := r-1;
-  
+
   if r > 0 then
     M2 := M{[1..r]}{[n+1..n+m]};
     M2 := HermiteNormalFormIntegerMat( M2 );
@@ -110,7 +110,7 @@ InstallMethod(EpimorphismSchurCover,"generic, via fp group",true,[IsGroup],1,
                    D,  G,
                    GeneratorsOfGroup(D), AsSSortedList(G));
     fi;
-    ## 
+    ##
     ##
     iso:=IsomorphismFpGroup(G);
     F:=ImagesSource(iso);
@@ -136,7 +136,7 @@ InstallMethod(EpimorphismSchurCover,"generic, via fp group",true,[IsGroup],1,
            i->MappedWord(i,p!.generators,GeneratorsOfGroup(D)));
   SetKernelOfMultiplicativeGeneralMapping(hom,SubgroupNC(D,Dgens));
 
-  return hom; 
+  return hom;
 end);
 
 
@@ -302,7 +302,7 @@ end);
 # <hom> is a homomorphism from a finite group onto an fp group. It returns
 # an isomorphism from the same group onto an isomorphic fp group <F>, such
 # that no negative exponent occurs in the relators of <F>.
-# 
+#
 BindGlobal("PositiveExponentsPresentationFpHom",function(hom)
 local G,F,geni,ro,fam,r,i,j,rel,n,e;
   G:=Image(hom);
@@ -384,7 +384,7 @@ local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp,pos;
 
     # take care of inverses
     for l in [1..Length(i)] do
-      if i[l]<0 then 
+      if i[l]<0 then
 	#i[l]:=-i[l];
 	a:=a*invlist[-i[l]];
       fi;
@@ -395,7 +395,7 @@ local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp,pos;
       k:=T[j];
       h:=One(D);
       for l in i do
-	if l<0 then 
+	if l<0 then
 	  g:=Inverse(gens[-l]);
 	else
 	  g:=gens[l];
@@ -410,7 +410,7 @@ local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp,pos;
       #Print(PreImagesRepresentative(s,Image(s,h))*h,"\n");
       #a:=a/PreImagesRepresentative(s,Image(s,h))*h;
       a:=a/h*elp[Position(el,Image(s,h))];
-      
+
     od;
     Add(evals,[r,a]);
   od;
@@ -515,7 +515,7 @@ local hom,	#isomorphism fp
       i,j,	# loop
       q,qhom;	# quotient
 
-      
+
 
   # eliminate useless primes
   pl:=Intersection(pl,
@@ -651,7 +651,7 @@ InstallMethod(SchurCover,"general: Holt's algorithm",true,[IsGroup],0,
 ############################################################################
 ##
 ##  Additional attributes and properties                     Robert F. Morse
-##  derived from computing the Schur Cover 
+##  derived from computing the Schur Cover
 ##  of a group.
 ##
 ##  A Epicentre
@@ -684,7 +684,7 @@ InstallMethod(Epicentre,"Naive Method",true,[IsGroup],0,
 ##
 InstallOtherMethod(Epicentre,"Naive method",true,[IsGroup,IsGroup],0,
     function(G,N)
-        TryNextMethod();    
+        TryNextMethod();
     end
 );
 
@@ -698,24 +698,24 @@ InstallOtherMethod(Epicentre,"Naive method",true,[IsGroup,IsGroup],0,
 ##
 InstallMethod(NonabelianExteriorSquare, "Naive method", true, [IsGroup],0,
     G->DerivedSubgroup(SchurCover(G)));
-    
+
 #############################################################################
 ##
 #O  EpimorphismNonabelianExteriorSquare(<G>)
-##  
-##  Computes the mapping $G\wedge G \to G$. The kernel of this 
+##
+##  Computes the mapping $G\wedge G \to G$. The kernel of this
 ##  mapping is isomorphic to the Schur Multiplicator.
 ##
-InstallMethod(EpimorphismNonabelianExteriorSquare, "Naive method", true, 
+InstallMethod(EpimorphismNonabelianExteriorSquare, "Naive method", true,
     [IsGroup],0,
     function(G)
         local epi, ## Epimorphism from the Schur cover to G
               D;   ## Derived subgroup of the Schur Cover
-      
+
         epi := EpimorphismSchurCover(G);
         D   := DerivedSubgroup(Source(epi));
 
-        ## Compute the restricted mapping of epi from 
+        ## Compute the restricted mapping of epi from
         ## D --> G
         ##
         ## Need to check that D is trivial i.e. has no generators.
@@ -723,7 +723,7 @@ InstallMethod(EpimorphismNonabelianExteriorSquare, "Naive method", true,
         ## elements rather than generators.
         ##
         if IsTrivial(D) then
-    
+
             return GroupHomomorphismByImages(
                        D, Image(epi,D),
                        AsSSortedList(D), AsSSortedList(Image(epi,D)));
@@ -733,15 +733,15 @@ InstallMethod(EpimorphismNonabelianExteriorSquare, "Naive method", true,
                    D, Image(epi,D),
                    GeneratorsOfGroup(D),
                    List(GeneratorsOfGroup(D),x->Image(epi,x)));
-            
-    end 
+
+    end
 );
 
 #############################################################################
 ##
 #P  IsCentralFactor(<G>)
-## 
-##  Dertermines if $G$ is a central factor of some group $H$ or not. 
+##
+##  Dertermines if $G$ is a central factor of some group $H$ or not.
 ##
 InstallMethod(IsCentralFactor, "Naive method", true, [IsGroup], 0,
     G -> IsTrivial(Epicentre(G)));

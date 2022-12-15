@@ -8,7 +8,7 @@
 <!-- %% -->
 
 
-Copyright &copyright; (1987-&RELEASEYEAR;) by the &GAP; Group, 
+Copyright &copyright; (1987-&RELEASEYEAR;) by the &GAP; Group,
 <P/>
 incorporating the Copyright &copyright; 1999, 2000  by
         School of Mathematical and Computational Sciences,
@@ -27,12 +27,12 @@ with &GAP; is usually with the package authors or their institutions.
 &GAP; is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version. For details, see 
+(at your option) any later version. For details, see
 the file <F>LICENSE</F> in the root directory of the &GAP; distribution or see
 <URL>https://www.gnu.org/licenses/gpl.html</URL>.
 <P/>
 If you obtain &GAP; please send us a short notice to that effect, e.g.,
-an e-mail message to the address <Email>support@gap-system.org</Email>. 
+an e-mail message to the address <Email>support@gap-system.org</Email>.
 This helps us to keep track of the number of &GAP; users.
 <P/>
 If you publish a mathematical result that was partly obtained using

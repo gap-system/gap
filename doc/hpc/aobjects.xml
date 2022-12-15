@@ -111,7 +111,7 @@ gap> FromAtomicList(al);
 ]]></Example>
 </Description>
 </ManSection>
-     
+
 <ManSection>
     <Func Name="ATOMIC_ADDITION"
       Arg='atomic_list, index, value'/>
@@ -239,7 +239,7 @@ error.
       Arg='obj'/>
 
 <Description>
-<Ref Func="MakeReadWriteAtomic"/> is the inverse of <Ref Func="MakeWriteOnceAtomic"/> 
+<Ref Func="MakeReadWriteAtomic"/> is the inverse of <Ref Func="MakeWriteOnceAtomic"/>
 and <Ref Func="MakeStrictWriteOnceAtomic"/> in that the
 replacement policy is being changed to being rewritable: Elements can be replaced even if they are already bound.
 </Description>

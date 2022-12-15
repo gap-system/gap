@@ -15,7 +15,7 @@
 
 #############################################################################
 ##
-#F  SimpleGroup( <id> [,<param1>[,<param2>[] )  
+#F  SimpleGroup( <id> [,<param1>[,<param2>[] )
 ##
 ##  <#GAPDoc Label="SimpleGroup">
 ##  <ManSection>
@@ -37,7 +37,7 @@
 ##  PSL(3,5)
 ##  gap> Size(g);
 ##  372000
-##  gap> g:=SimpleGroup("PSp6",2);    
+##  gap> g:=SimpleGroup("PSp6",2);
 ##  PSp(6,2)
 ##  ]]></Example>
 ##  </Description>
@@ -81,8 +81,8 @@ DeclareGlobalFunction("EpimorphismFromClassical");
 ##  <Example><![CDATA[
 ##  gap> it:=SimpleGroupsIterator(20000);
 ##  <iterator>
-##  gap> List([1..8],x->NextIterator(it)); 
-##  [ A8, PSL(3,4), PSL(2,37), PSp(4,3), Sz(8), PSL(2,32), PSL(2,41), 
+##  gap> List([1..8],x->NextIterator(it));
+##  [ A8, PSL(3,4), PSL(2,37), PSp(4,3), Sz(8), PSL(2,32), PSL(2,41),
 ##    PSL(2,43) ]
 ##  gap> it:=SimpleGroupsIterator(1,2000);;
 ##  gap> l:=[];;for i in it do Add(l,i);od;l;
@@ -113,7 +113,7 @@ BindGlobal("SIMPLE_GROUPS_ITERATOR_RANGE",10^27);
 ##  <Example><![CDATA[
 ##  gap> ClassicalIsomorphismTypeFiniteSimpleGroup(SimpleGroup("O+",8,2));
 ##  rec( parameter := [ 8, 2 ], series := "O+" )
-##  gap> IsomorphismTypeInfoFiniteSimpleGroup(SimpleGroup("O+",8,2));     
+##  gap> IsomorphismTypeInfoFiniteSimpleGroup(SimpleGroup("O+",8,2));
 ##  rec( name := "D(4,2) = O+(8,2)", parameter := [ 4, 2 ], series := "D" )
 ##  ]]></Example>
 ##  </Description>

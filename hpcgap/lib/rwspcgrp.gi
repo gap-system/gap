@@ -267,7 +267,7 @@ InstallMethod( Comm,
     "generic method for n bits pc word rep",
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
-        and IsNBitsPcWordRep, 
+        and IsNBitsPcWordRep,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep ],
     0,
@@ -284,7 +284,7 @@ InstallMethod( LeftQuotient,
     "generic method for n bits pc word rep",
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
-        and IsNBitsPcWordRep, 
+        and IsNBitsPcWordRep,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep ],
     0,
@@ -301,7 +301,7 @@ InstallMethod( \/,
     "generic method for n bits pc word rep",
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
-        and IsNBitsPcWordRep, 
+        and IsNBitsPcWordRep,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep ],
     0,
@@ -318,7 +318,7 @@ InstallMethod( \*,
     "generic method for n bits pc word rep",
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
-        and IsNBitsPcWordRep, 
+        and IsNBitsPcWordRep,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep ],
     0,
@@ -335,7 +335,7 @@ InstallMethod( \^,
     "generic method for n bits pc word rep",
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
-        and IsNBitsPcWordRep, 
+        and IsNBitsPcWordRep,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep ],
     0,
@@ -355,7 +355,7 @@ InstallMethod( \^,
     "generic method for n bits pc word rep and small int",
     true,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
-        and IsNBitsPcWordRep, 
+        and IsNBitsPcWordRep,
       IsInt and IsSmallIntRep ],
     0,
 function( left, right )
@@ -379,7 +379,7 @@ DeclareRepresentation(
 ##
 InstallMethod( MultiplicativeElementsWithInversesFamilyByRws,
     "8 bits family",
-    true, 
+    true,
     [ IsPolycyclicCollector and IsFinite and Is8BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector ],
@@ -512,7 +512,7 @@ InstallMethod( \=,
     "for 8 bits pc word rep",
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
-        and Is8BitsPcWordRep, 
+        and Is8BitsPcWordRep,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is8BitsPcWordRep ],
     0,
@@ -527,7 +527,7 @@ InstallMethod( \<,
     "method for 8 bits pc word rep",
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
-        and Is8BitsPcWordRep, 
+        and Is8BitsPcWordRep,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is8BitsPcWordRep ],
     0,
@@ -549,7 +549,7 @@ DeclareRepresentation(
 ##
 InstallMethod( MultiplicativeElementsWithInversesFamilyByRws,
     "16 bits family",
-    true, 
+    true,
     [ IsPolycyclicCollector and IsFinite and Is16BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector ],
@@ -599,7 +599,7 @@ function( sc )
     sc![SCP_DEFAULT_TYPE] := fam!.16BitsType;
     MakeReadOnlyObj(sc);
     StrictBindOnce( fam!.16BitsType, PCWP_COLLECTOR, sc );
-    
+
     # store the identity
     SetOne( fam, ElementByRws( fam, ReducedOne(fam!.rewritingSystem) ) );
 
@@ -682,7 +682,7 @@ InstallMethod( \=,
     "for 16 bits pc word rep",
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
-        and Is16BitsPcWordRep, 
+        and Is16BitsPcWordRep,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is16BitsPcWordRep ],
     0,
@@ -697,7 +697,7 @@ InstallMethod( \<,
     "for 16 bits pc word rep",
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
-        and Is16BitsPcWordRep, 
+        and Is16BitsPcWordRep,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is16BitsPcWordRep ],
     0,
@@ -719,7 +719,7 @@ DeclareRepresentation(
 ##
 InstallMethod( MultiplicativeElementsWithInversesFamilyByRws,
     "32 bits family",
-    true, 
+    true,
     [ IsPolycyclicCollector and IsFinite and Is32BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector ],
@@ -852,7 +852,7 @@ InstallMethod( \=,
     "for 32 bits pc word rep",
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
-        and Is32BitsPcWordRep, 
+        and Is32BitsPcWordRep,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is32BitsPcWordRep ],
     0,
@@ -867,7 +867,7 @@ InstallMethod( \<,
     "for 32 bits pc word rep",
     IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
-        and Is32BitsPcWordRep, 
+        and Is32BitsPcWordRep,
       IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is32BitsPcWordRep ],
     0,
@@ -879,12 +879,12 @@ InstallMethod( \<,
 #F  SingleCollector_GroupRelators( ... )
 ##
 SingleCollector_GroupRelators := function(
-    efam, gens, rods, powersp, powersn, 
+    efam, gens, rods, powersp, powersn,
     commpp, commpn, commnp, commnn, conjpp,
     conjpn, conjnp, conjnn, conflicts )
 
     local   col,  i,  j,  rhs;
-    
+
     # be verbose
     # Print( "#I  SingleCollector_GroupRelators: ", Length(Flat(powersp)),
     #        "/", Length(Flat(powersn)), " ", Length(Flat(commpp)), "/",
@@ -1146,7 +1146,7 @@ function( efam, gens, rels, conflicts )
     if ForAny( rods, x -> x = 0 )  then
         Error( "not ready yet, only finite polycyclic groups are allowed" );
     else
-        col := SingleCollector_GroupRelators( efam, gens, 
+        col := SingleCollector_GroupRelators( efam, gens,
                    rods, powersp, powersn,
                    commpp, commpn, commnp, commnn, conjpp, conjpn,
                    conjnp, conjnn, conflicts );

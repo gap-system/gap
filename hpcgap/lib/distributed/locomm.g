@@ -86,19 +86,19 @@ GetMessagePickle := function ()
                  content := raw{[3..Length(raw)]});
     return msg;
   fi;
-  
+
 end;
 
 GetMessageSerialize := function ()
   local raw, msg, strBuffer, tmp, sz;
-  #Print (processId, " Polka\n"); 
+  #Print (processId, " Polka\n");
   #sz := MPI_Get_count();
   #strBuffer := UNIX_MakeString(sz);
   #MPI_Recv(strBuffer);
   strBuffer := MPI_Recv2();
   #Print (processId, " Urukalo\n");
   raw := DeserializeNativeString(strBuffer);
-  
+
   msg := rec ( source := raw[1],
                type := raw[2],
                content := raw{[3..Length(raw)]});

@@ -256,7 +256,7 @@ static Obj SumVecFFEVecFFE(Obj vecL, Obj vecR)
 **  'DiffFFEVecFFE' returns  the difference  of  the finite field element
 **  <elmL> and  the vector <vecR>.   The difference  is  a list,  where  each
 **  element is the difference of <elmL> and the corresponding element of
-**  <vecR>. 
+**  <vecR>.
 **
 **  'DiffFFEVecFFE'  is an improved  version of 'DiffSclList', which does not
 **  call 'DIFF'.
@@ -315,7 +315,7 @@ static Obj DiffFFEVecFFE(Obj elmL, Obj vecR)
 **  'DiffVecFFEFFE' returns   the  difference of the  vector  <vecL>  and the
 **  finite field element <elmR>.  The difference   is a list,   where each
 **  element  is the difference of <elmR> and the corresponding element of
-**  <vecL>. 
+**  <vecL>.
 **
 **  'DiffVecFFEFFE' is an improved  version of 'DiffListScl', which  does not
 **  call 'DIFF'.

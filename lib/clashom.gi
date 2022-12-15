@@ -206,7 +206,7 @@ local clT,	# classes T
   for i in [1..lcl] do
     sci:=Size(clT[i][2]);
     # we have taken a permutation representation that  prolongates to autT!
-    oci:=CycleStructurePerm(clT[i][1]); 
+    oci:=CycleStructurePerm(clT[i][1]);
 
     # we have tested already the smaller-# classes
     pfus:=Filtered([i+1..lcl],j->CycleStructurePerm(clT[j][1])=oci and
@@ -290,18 +290,18 @@ local clT,	# classes T
       selectcen:=Filtered([1..Length(centimgindex)],k->centimgindex[k]=j);
       Info(InfoHomClass,2,"Number ",j,": ",Length(selectcen),
             " previous centralizers to consider");
-      
+
       # 7'
       select:=Filtered([1..Length(centindex)],k->centindex[k] in selectcen);
       # Determine the addable colours
-      if i=1 then 
+      if i=1 then
 	possiblecolours:=[1..Length(fus)];
       else
 	possiblecolours:=[];
 	#for k in select do
 	#  bar:=colourbar[k];
 	k:=1;
-	while k<=Length(select) 
+	while k<=Length(select)
 	  and Length(possiblecolours)<lallcolors do
 	  bar:=colourbar[select[k]];
 	  potentialbars:=Filtered(bars,j->j[1]{[1..i-1]}=bar);
@@ -324,11 +324,11 @@ local clT,	# classes T
 	  dc:=List(DoubleCosetRepsAndSizes(T,clT[k][2],C),i->i[1]);
 	fi;
 	for t in selectcen do
-	  # continue partial rep. 
+	  # continue partial rep.
 
 #	  #force 'centralizers[j]' to have its base appropriate to the component
 #	  # (this will speed up preimages)
-#	  if not (HasStabChainMutable(cen) 
+#	  if not (HasStabChainMutable(cen)
 #	     and i<=Length(centralizers)
 #	     and BaseStabChain(StabChainMutable(cen))[1] in centralizers[i])
 #	    then
@@ -372,7 +372,7 @@ local clT,	# classes T
 		  # store the new element
 		  Add(newreps,elm);
 		  Add(newcolourbar,bar);
-		  if i<n then # we only need the centralizer for further 
+		  if i<n then # we only need the centralizer for further
 		              # components
 		    newcen:=ClosureGroup(Lloc,
 		              List(GeneratorsOfGroup(clT[k][2]),g->g^d));
@@ -566,7 +566,7 @@ local clT,	# classes T
 
 	  repres:=PreImagesRepresentative(projections[i],clTR[p]);
 	  if i=1 or isdirprod
-	     or reps[j]*RestrictedPermNC(repres,components[i]) 
+	     or reps[j]*RestrictedPermNC(repres,components[i])
 	            in Mproj[i] then
 	    stab:=Centralizer(localcent_r,clTR[p]);
 	    if Index(localcent_r,stab)<Length(clTR)/10 then
@@ -690,7 +690,7 @@ local clT,	# classes T
 		  if ppos=fail then
 		    p:=First(select,
 			   i->Size(clTR[i][3])<=maxdiff and img in clTR[i][3]);
-		    if p=fail then 
+		    if p=fail then
 		      return fail;
 		    fi;
                   else
@@ -763,7 +763,7 @@ local clT,	# classes T
 			if diff=0 then
 			  possible:=fail;
 			fi;
-			while gcd*combl<=diff 
+			while gcd*combl<=diff
 			      and combl<=Length(remainlen) and possible=false do
 			  if NrCombinations(remainlen,combl)<100 then
 			    possible:=ForAny(Combinations(remainlen,combl),
@@ -851,10 +851,10 @@ local clT,	# classes T
 			if Length(combl)>1 then
 			  Info(InfoHomClass,3,"Addendum not unique (",
 			  Length(combl)," possibilities)");
-			  if (maxdiff<10 or again>0) 
+			  if (maxdiff<10 or again>0)
 			    and ForAll(combl,i->Length(i)<=5) then
 			    # we have tried often enough, now try to pick the
-			    # right ones 
+			    # right ones
 			    possible:=false;
 			    combl:=Union(combl);
 			    combl:=smacla{combl};
@@ -967,7 +967,7 @@ local clT,	# classes T
 		fi;
 
 	      fi;
-	     
+
 
 	      orpo:=1;
 	      again:=again+1;
@@ -1043,7 +1043,7 @@ local clT,	# classes T
 		     i!.elmcyc=bar);
       if not ForAny(newcentlocal,j->reps[i] in j) then
         C:=Centralizer(cen,reps[i]);
-	# AH can we use centralizers[i] here ? 
+	# AH can we use centralizers[i] here ?
 	Add(clF,[reps[i],C]);
 	Add(clout,[reps[i],C]);
 	bar:=ConjugacyClass(cen,reps[i],C);
@@ -1053,7 +1053,7 @@ local clT,	# classes T
     od;
     Info(InfoHomClass,1,"fused to ",Length(newreps)," classes");
   od;
-  
+
   if Sum(clout,i->Index(F,i[2]))<>Size(F)-Size(M) then return fail;fi;
 
   Info(InfoHomClass,2,Length(clin)," inner classes, total size =",
@@ -1186,7 +1186,7 @@ local cs,	# chief series of G
       else
 	subN:=csM[2];
       fi;
-      
+
       if IsNormal(G,subN) then
 
 	# only one -> Call standard process
@@ -1250,11 +1250,11 @@ local cs,	# chief series of G
 
 	T:=Orbit(G,T); # get all the t's
 	# now T[1] is a complement to csM[1] in G/N.
-	
+
 	# now compute the operation of G on M/N
 	Qhom:=ActionHomomorphism(G,T,"surjective");
 	Q:=Image(Qhom,G);
-	S:=PreImage(Qhom,Stabilizer(Q,1)); 
+	S:=PreImage(Qhom,Stabilizer(Q,1));
 
 	# find a permutation rep. for S-action on T[1]
 	Thom:=NaturalHomomorphismByNormalSubgroupNC(T[1],N);
@@ -1306,7 +1306,7 @@ local cs,	# chief series of G
 	    # we get this by looking at the action of
 	    #   reps[k] *   j    *   reps[k^img]^-1
 	    # 1   ->    k  ->  k^img    ->           1
-	    # on the first component. 
+	    # on the first component.
 	    act:=reps[k]*j*(reps[k^img]^-1);
 	    # this must be multiplied *before* permuting
 	    gimg:=ImageElm(emb[k],ImageElm(Thom,act))*gimg;
@@ -1332,7 +1332,7 @@ local cs,	# chief series of G
           #if IsPermGroup(F) and NrMovedPoints(F)<18 then
 	  #  # the old Butler/Theissen approach is still OK
 	  #  clF:=[];
-	  #  for j in 
+	  #  for j in
 	  #   Concatenation(List(RationalClasses(F),DecomposedRationalClass)) do
 	  #    Add(clF,[Representative(j),StabilizerOfExternalSet(j)]);
 	  #  od;
@@ -1374,7 +1374,7 @@ local cs,	# chief series of G
       Assert(2,Sum(clF,i->Index(F,i[2]))=Size(F));
       Assert(2,ForAll(clF,i->Centralizer(F,i[1])=i[2]));
 
-      # 3) combine to form classes of sdp 
+      # 3) combine to form classes of sdp
 
       # the length(cl)=1 gets rid of solvable stuff on the top we got ``too
       # early''.
@@ -1442,7 +1442,7 @@ local cs,	# chief series of G
 	      if not ForAll(lj,i->RepresentativeAction(Q,i,elm)=fail) then
 
 		#l:=Image(Fhom,j[1]);
-		      
+
 		if Index(F,j[1])=1 then
 		  dc:=[()];
 		else
@@ -1508,11 +1508,11 @@ end);
 # field, dimension, subgenerators (as vectors),howmuch
 BindGlobal("FFClassesVectorSpaceComplement",function(field,r, Q,howmuch )
 local   zero,  one,  ran,  n,  nan,  cg,  pos,  i,  j,  v;
-    
+
     one:=One( field);  zero:=Zero(field);
     ran:=[ 1 .. r ];
     n:=Length( Q );    nan:=[ 1 .. n ];
-    
+
     cg:=rec( matrix        :=[  ],
 	       one           :=one,
                baseComplement:=ShallowCopy( ran ),
@@ -1527,7 +1527,7 @@ local   zero,  one,  ran,  n,  nan,  cg,  pos,  i,  j,  v;
 	cg.needed    :=[];
         return cg;
     fi;
-    
+
     for i  in nan  do
         cg.matrix[ i ]:=Concatenation( Q[ i ], zero * nan );
         cg.matrix[ i ][ r + i ]:=one;
@@ -1570,9 +1570,9 @@ local   zero,  one,  ran,  n,  nan,  cg,  pos,  i,  j,  v;
             i:=r;
 
         fi;
-        i:=i + 1; 
+        i:=i + 1;
     od;
-    
+
     if IsEmpty( cg.needed )  then
         cg.inverse:=NullMapMatrix;
     else
@@ -1600,7 +1600,7 @@ local   zero,  one,  ran,  n,  nan,  cg,  pos,  i,  j,  v;
         cg.projection:=cg.projection ^ Q;
         cg.projection:=cg.projection{ ran }{ cg.baseComplement };
 	cg.projection:=ImmutableMatrix(field,cg.projection,true);
-        
+
     fi;
 
     return cg;
@@ -1700,7 +1700,7 @@ BindGlobal("LiftClassesEANonsolvGeneral",
   PPcgs:=ParentPcgs(NumeratorOfModuloPcgs(Npcgs));
   denomdepths:=ShallowCopy(DenominatorOfModuloPcgs(Npcgs)!.depthsInParent);
   Add(denomdepths,Length(PPcgs)+1); # one
-  
+
   # Determine the subspace $[h,N]$ and calculate the centralizer of <h>.
   #cNh := ExtendedPcgs( DenominatorOfModuloPcgs( N!.capH ),
   #               VSDecompCentAction( N, h, N!.capH ) );
@@ -1716,7 +1716,7 @@ BindGlobal("LiftClassesEANonsolvGeneral",
 
   r := Length( cg.baseComplement );
   ran := [ 1 .. r ];
-  
+
   # Construct matrices for the affine operation on $N/[h,N]$.
   Info(InfoHomClass,4,"space=",Size(field),"^",r);
 
@@ -2189,7 +2189,7 @@ BindGlobal("LiftClassesEATrivRep",
       vec:=vec*bas*npcgsact(result.elm)*basinv; # map vector to so far canonical
       # not all classes are feasible
       Assert(1,ForAny(cands,x->x.rep{range}=vec{range}));
-      cands:=Filtered(cands,x->x.rep{range}=vec{range}); 
+      cands:=Filtered(cands,x->x.rep{range}=vec{range});
       stabradgens:=a.stabradgens;
       stabfacgens:=a.stabfacgens;
       stabfacimgs:=a.stabfacimgs;
@@ -2205,7 +2205,7 @@ BindGlobal("LiftClassesEATrivRep",
 
   OrbitMinimizer:=function(vec,allcands)
   local a;
-    
+
   if false and allcands[1].len>1 then
     Error();
   fi;
@@ -2223,7 +2223,7 @@ BindGlobal("LiftClassesEATrivRep",
   od;
 
   # now do an orbit algorithm on orb. As the orbit is short no need for
-  # two-step. 
+  # two-step.
 
   newo:=[];
   while Length(orb)>0 do
@@ -2315,7 +2315,7 @@ BindGlobal("LiftClassesEATrivRep",
       od;
       i:=i+1;
     od;
-if miss<>1 then 
+if miss<>1 then
   # something is dodgy -- fallback to the default algorithm
   return fail;Error("HEH?");fi;
     Info(InfoHomClass,3,"Fused ",Length(norb),"*",norb[1].len," ",
@@ -2468,7 +2468,7 @@ local r,	#radical
     central:= ForAll(GeneratorsOfGroup(G),
 		i->ForAll(mpcgs,
 		  j->DepthOfPcElement(pcgs,Comm(i,j))>=ser.depths[d]));
-    
+
     # abelian factor, use affine methods
     Info(InfoHomClass,1,"abelian factor ",d,": ",
       Product(RelativeOrders(ser.pcgs){mran}), "->",
@@ -2626,7 +2626,7 @@ BindGlobal("LiftConCandCenNonsolvGeneral",
   PPcgs:=ParentPcgs(NumeratorOfModuloPcgs(Npcgs));
   denomdepths:=ShallowCopy(DenominatorOfModuloPcgs(Npcgs)!.depthsInParent);
   Add(denomdepths,Length(PPcgs)+1); # one
-  
+
   # Determine the subspace $[h,N]$ and calculate the centralizer of <h>.
   #cNh := ExtendedPcgs( DenominatorOfModuloPcgs( N!.capH ),
   #               VSDecompCentAction( N, h, N!.capH ) );
@@ -2642,7 +2642,7 @@ BindGlobal("LiftConCandCenNonsolvGeneral",
 
   r := Length( cg.baseComplement );
   ran := [ 1 .. r ];
-  
+
   # Construct matrices for the affine operation on $N/[h,N]$.
   Info(InfoHomClass,4,"space=",Size(field),"^",r);
   if Size(field)^r>3*10^8 then Error("too large");fi;
@@ -2693,7 +2693,7 @@ BindGlobal("LiftConCandCenNonsolvGeneral",
     Add(p.vector,One(field));
     Add(nreps,p);
   od;
-  reps:=nreps; 
+  reps:=nreps;
 
   nreps:=[];
   sel:=[1..Length(reps)];
@@ -2724,7 +2724,7 @@ BindGlobal("LiftConCandCenNonsolvGeneral",
     cano:=h*PcElementByExponents(Npcgs,corr);
 
     # this will not be a pcgs, but we induce later anyhow
-    stabrad:=List(orb.stabradgens,x->x^minimal[1]); 
+    stabrad:=List(orb.stabradgens,x->x^minimal[1]);
     stabfacgens:=List(orb.stabfacgens,x->x^minimal[1]);
     stabfacimgs:=List(orb.stabfacimgs,x->x^minimal[2]);
 
@@ -2753,7 +2753,7 @@ BindGlobal("LiftConCandCenNonsolvGeneral",
     # 1:Element, 2: Conjugate element, 3: Element that will be canonical
     # in factor, 4:conjugator, 5:cenpcgs,
     # 6:cenfac, 7:cenfacimgs, 8:censize, 9:cenfacsize
- 
+
     Add(nreps,[reps[p].list[1],
                reps[p].list[2]^minimal[1],
 	       cano,
@@ -2972,7 +2972,7 @@ local r,	#radical
     central:= ForAll(GeneratorsOfGroup(G),
 		i->ForAll(mpcgs,
 		  j->DepthOfPcElement(pcgs,Comm(i,j))>=ser.depths[d]));
-    
+
     # abelian factor, use affine methods
     Info(InfoHomClass,1,"abelian factor ",d,": ",
       Product(RelativeOrders(ser.pcgs){mran}), "->",
@@ -2992,7 +2992,7 @@ local r,	#radical
       select:=Difference(select,sel);
       new:=LiftConCandCenNonsolvGeneral(G,mpcgs,reps{sel},hom,pcisom,
              solvtriv,fran);
-      # conj test 
+      # conj test
       if new=fail then
 	return new;
       fi;
@@ -3019,9 +3019,9 @@ InstallMethod( CentralizerOp, "TF method:elm",IsCollsElms,
   IsMultiplicativeElementWithInverse ], OVERRIDENICE,
 function( G, e )
 local ffs,c,ind;
-  if IsPcGroup(G) 
+  if IsPcGroup(G)
     or (IsPermGroup(G) and AttemptPermRadicalMethod(G,"CENT")<>true)
-    or not e in G then 
+    or not e in G then
       TryNextMethod();
   fi;
   ffs:=FittingFreeLiftSetup(G);
@@ -3043,7 +3043,7 @@ end );
 ##
 InstallMethod( CentralizerOp, "TF method:subgroup",IsIdenticalObj,
   [ IsGroup and IsFinite and HasFittingFreeLiftSetup,
-  IsGroup and IsFinite and HasGeneratorsOfGroup], 
+  IsGroup and IsFinite and HasGeneratorsOfGroup],
   2*OVERRIDENICE,
 function( G, S )
 local c,e;
@@ -3060,16 +3060,16 @@ end );
 #M  RepresentativeAction( <G>, <d>, <e>, <act> ) . . . . . using TF method
 ##
 InstallOtherMethod( RepresentativeActionOp, "TF Method on elements",
-  IsCollsElmsElmsX, 
+  IsCollsElmsElmsX,
   [ IsGroup and IsFinite and HasFittingFreeLiftSetup,
         IsMultiplicativeElementWithInverse,
-	IsMultiplicativeElementWithInverse, IsFunction ], 
+	IsMultiplicativeElementWithInverse, IsFunction ],
   OVERRIDENICE,
 function ( G, d, e, act )
 local c;
-  if IsPcGroup(G) 
+  if IsPcGroup(G)
     or (IsPermGroup(G) and AttemptPermRadicalMethod(G,"CENT")<>true)
-    or not (d in G and e in G) then 
+    or not (d in G and e in G) then
       TryNextMethod();
   fi;
 
@@ -3096,7 +3096,7 @@ end);
 ##
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . of perm group
 ##
-InstallMethod( ConjugacyClasses, "perm group", true, 
+InstallMethod( ConjugacyClasses, "perm group", true,
   [ IsPermGroup and IsFinite],OVERRIDENICE,
 function( G )
 local cl;

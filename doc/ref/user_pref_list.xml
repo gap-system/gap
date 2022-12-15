@@ -1,0 +1,293 @@
+<List>
+<Mark>
+<Index Key='Autocompleter'><C>Autocompleter</C></Index>
+<C>Autocompleter</C>
+</Mark>
+<Item>
+Set how names are filtered during tab-autocomplete, this can be:
+<C>"default"</C>: case-sensitive matching. <C>"case-insensitive"</C>:
+case-insensitive matching, or a record with two components named <C>filter</C>
+and <C>completer</C>, which are both functions which take two arguments.
+<C>filter</C> takes a list of names and a partial identifier and returns all
+the members of <C>names</C> which are a valid extension of the partial
+identifier. <C>completer</C> takes a list of names and a partial identifier
+and returns the partial identifier as extended as possible (it may also change
+the identifier, for example to correct the case, or spelling mistakes), or
+returns <K>fail</K> to leave the existing partial identifier.
+<P/>
+This preference is ignored if &GAP; was not compiled with readline support.
+
+<P/>
+
+Default: <C>"default"</C>.
+</Item>
+<Mark>
+<Index Key='Editor'><C>Editor</C></Index>
+<Index Key='EditorOptions'><C>EditorOptions</C></Index>
+<C>Editor</C>,
+<C>EditorOptions</C>
+</Mark>
+<Item>
+Determines the editor and options (used by &GAP;'s <Ref Func="Edit"/>
+command). Under macOS, the value <C>"open"</C> for <C>Editor</C> will work.
+For further options, see the &GAP; help for <Ref Func="Edit"/>. If you want to
+use the editor defined in your (shell) environment then leave the
+<C>Editor</C> and <C>EditorOptions</C> preferences empty.
+
+<P/>
+
+The defaults are computed at runtime.
+</Item>
+<Mark>
+<Index Key='ExcludeFromAutoload'><C>ExcludeFromAutoload</C></Index>
+<C>ExcludeFromAutoload</C>
+</Mark>
+<Item>
+These packages are not loaded at &GAP; startup. This doesn't work for packages
+which are needed by the &GAP; library, or which are already loaded in a
+workspace.
+
+<P/>
+
+Default: <C>""</C>.
+</Item>
+<Mark>
+<Index Key='HelpViewers'><C>HelpViewers</C></Index>
+<Index Key='XpdfOptions'><C>XpdfOptions</C></Index>
+<Index Key='XdviOptions'><C>XdviOptions</C></Index>
+<C>HelpViewers</C>,
+<C>XpdfOptions</C>,
+<C>XdviOptions</C>
+</Mark>
+<Item>
+Here you can choose your preferred help viewers. See the help for <Ref
+Func="SetHelpViewer"/> for further options.
+<P/>
+Try <C>HelpViewers:= [ "screen", "firefox", "xpdf" ];</C>.
+<P/>
+(For <C>"screen"</C> we also suggest to set the <C>Pager</C> entry to
+<C>"less"</C>.)
+
+<P/>
+
+Defaults: <C>[ [ "screen" ], "", "" ]</C>.
+</Item>
+<Mark>
+<Index Key='HistoryMaxLines'><C>HistoryMaxLines</C></Index>
+<Index Key='SaveAndRestoreHistory'><C>SaveAndRestoreHistory</C></Index>
+<C>HistoryMaxLines</C>,
+<C>SaveAndRestoreHistory</C>
+</Mark>
+<Item>
+<C>HistoryMaxLines</C> is the maximal amount of input lines held in &GAP;'s
+command line history.
+<P/>
+If <C>SaveAndRestoreHistory</C> is <K>true</K> then &GAP; saves its command
+line history before terminating a &GAP; session, and prepends the stored
+history when &GAP; is started. If this is enabled it is suggested to set
+<C>HistoryMaxLines</C> to some finite value. It is also possible to set
+<C>HistoryMaxLines</C> to <Ref Var="infinity"/> to keep arbitrarily many
+lines.
+<P/>
+These preferences are ignored if &GAP; was not compiled with readline support.
+
+<P/>
+
+Defaults: <C>[ 10000, true ]</C>.
+</Item>
+<Mark>
+<Index Key='InfoPackageLoadingLevel'><C>InfoPackageLoadingLevel</C></Index>
+<C>InfoPackageLoadingLevel</C>
+</Mark>
+<Item>
+Info messages concerning package loading up to this level are printed. The
+level can be changed in a running session using <Ref Func="SetInfoLevel"/>.
+
+<P/>
+
+Admissible values:
+<C>1</C>,
+<C>2</C>,
+<C>3</C>,
+<C>4</C>.
+
+<P/>
+
+Default: <C>1</C>.
+</Item>
+<Mark>
+<Index Key='MaxBitsIntView'><C>MaxBitsIntView</C></Index>
+<C>MaxBitsIntView</C>
+</Mark>
+<Item>
+Maximal bit length of integers to <C>View</C> unabbreviated. Default is about
+<M>30</M> lines of a <M>80</M> character wide terminal. Set this to <C>0</C>
+to avoid abbreviated ints.
+
+<P/>
+
+Default: <C>8000</C>.
+</Item>
+<Mark>
+<Index Key='PartialPermDisplayLimit'><C>PartialPermDisplayLimit</C></Index>
+<Index Key='NotationForPartialPerms'><C>NotationForPartialPerms</C></Index>
+<C>PartialPermDisplayLimit</C>,
+<C>NotationForPartialPerms</C>
+</Mark>
+<Item>
+options for the display of partial perms
+
+<P/>
+
+Defaults: <C>[ 100, "component" ]</C>.
+</Item>
+<Mark>
+<Index Key='TransformationDisplayLimit'><C>TransformationDisplayLimit</C></Index>
+<Index Key='NotationForTransformations'><C>NotationForTransformations</C></Index>
+<C>TransformationDisplayLimit</C>,
+<C>NotationForTransformations</C>
+</Mark>
+<Item>
+options for the display of transformations
+
+<P/>
+
+Defaults: <C>[ 100, "input" ]</C>.
+</Item>
+<Mark>
+<Index Key='PackagesToIgnore'><C>PackagesToIgnore</C></Index>
+<C>PackagesToIgnore</C>
+</Mark>
+<Item>
+These packages are not regarded as available. This doesn't work for packages
+which are needed by the &GAP; library, or which are already loaded in a
+workspace.
+
+<P/>
+
+Default: <C>""</C>.
+</Item>
+<Mark>
+<Index Key='PackagesToLoad'><C>PackagesToLoad</C></Index>
+<C>PackagesToLoad</C>
+</Mark>
+<Item>
+A list of names of packages which should be loaded during startup. For
+backwards compatibility, the default lists most of packages that were
+autoloaded in &GAP; 4.4 (add or remove packages as you like).
+
+<P/>
+
+Default: <C>[ "autpgrp", "alnuth", "crisp", "ctbllib", "factint", "fga", "irredsol", "laguna", "polenta", "polycyclic", "resclasses", "sophus", "tomlib" ]</C>.
+</Item>
+<Mark>
+<Index Key='Pager'><C>Pager</C></Index>
+<Index Key='PagerOptions'><C>PagerOptions</C></Index>
+<C>Pager</C>,
+<C>PagerOptions</C>
+</Mark>
+<Item>
+For displaying help pages on screen and other things &GAP; has a rudimentary
+builtin pager. We recommend using a more sophisticated external program. For
+example, when you have the program <C>less</C> on your computer we recommend:
+<P/>
+<C>Pager := "less";</C>
+<P/>
+<C>PagerOptions := ["-f", "-r", "-a", "-i", "-M", "-j2"];</C>
+<P/>
+If you want to use <C>more</C>, we suggest to use the <C>-f</C> option. If you
+want to use the pager defined in your environment then leave the <C>Pager</C>
+and <C>PagerOptions</C> preferences empty.
+
+<P/>
+
+The defaults are computed at runtime.
+</Item>
+<Mark>
+<Index Key='ReadObsolete'><C>ReadObsolete</C></Index>
+<C>ReadObsolete</C>
+</Mark>
+<Item>
+May be useful to say <K>false</K> here to check if you are using commands
+which may vanish in a future version of &GAP;
+
+<P/>
+
+Admissible values:
+<K>true</K>,
+<K>false</K>.
+
+<P/>
+
+Default: <K>true</K>.
+</Item>
+<Mark>
+<Index Key='ReproducibleBehaviour'><C>ReproducibleBehaviour</C></Index>
+<C>ReproducibleBehaviour</C>
+</Mark>
+<Item>
+This preference disables code in &GAP; which changes behaviour based on time
+spent, and therefore can produce different results depending on how much time
+is taken by other programs running on the same computer. This option may lead
+to slower or lower-quality results. Note that many algorithms in &GAP; use the
+global random number generator, which is NOT affected by this option. This
+only tries to ensure the same version of &GAP;, with the same package versions
+loaded, on the same machine, running the same code, in a fresh &GAP; session,
+will produce the same results.
+
+<P/>
+
+Admissible values:
+<K>true</K>,
+<K>false</K>.
+
+<P/>
+
+Default: <K>false</K>.
+</Item>
+<Mark>
+<Index Key='UseColorPrompt'><C>UseColorPrompt</C></Index>
+<C>UseColorPrompt</C>
+</Mark>
+<Item>
+In a color capable terminal (almost any terminal application) you can run
+&GAP; such that the prompts, the input and output are distinguished by colors.
+Options are <K>true</K>, <K>false</K> or some record as explained in the help
+section for <Ref Func="ColorPrompt"/>.
+
+<P/>
+
+Default: <K>true</K>.
+</Item>
+<Mark>
+<Index Key='UseColorsInTerminal'><C>UseColorsInTerminal</C></Index>
+<C>UseColorsInTerminal</C>
+</Mark>
+<Item>
+Almost all current terminal emulations support color display, setting this to
+<K>true</K> implies a default display of most manuals with color markup. It
+may influence the display of other things in the future.
+
+<P/>
+
+Admissible values:
+<K>true</K>,
+<K>false</K>.
+
+<P/>
+
+Default: <K>true</K>.
+</Item>
+<Mark>
+<Index Key='ViewLength'><C>ViewLength</C></Index>
+<C>ViewLength</C>
+</Mark>
+<Item>
+A bound for the number of lines printed when <C>View</C>ing some large
+objects.
+
+<P/>
+
+Default: <C>3</C>.
+</Item>
+</List>

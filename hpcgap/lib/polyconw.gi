@@ -47,18 +47,18 @@ end );
 ##
 ##  This variable was used in GAP 4, version <= 4.4.4 for storing
 ##  coefficients of (pre)computed Conway polynomials. It is no longer used.
-##  
+##
 
 
 ############################################################################
 ##
 #V  CONWAYPOLYNOMIALSINFO
-##  
+##
 ##  strings describing the origin of precomputed Conway polynomials, can be
 ##  accessed by 'InfoText'
-## 
+##
 ##  also used to remember which data files were read
-##  
+##
 BindGlobal("CONWAYPOLYNOMIALSINFO",  AtomicRecord(rec(
  RP := MakeImmutable("original list by Richard Parker (from 1980's)\n"),
  GAP := MakeImmutable("computed with the GAP function by Thomas Breuer, just checks\n\
@@ -75,26 +75,26 @@ elements, respectively a similar algorithm as in GAP (~2005)\n"),
  conwdat1 := false,
  conwdat2 := false,
  conwdat3 := false,
- # cache for p > 110000 
+ # cache for p > 110000
  cache := MakeWriteOnceAtomic(rec())
-            
+
 ) ) );
 
 ############################################################################
 ##
 #V  CONWAYPOLDATA
-##  
+##
 ##  List of lists caching (pre-)computed Conway polynomials.
-##  
+##
 ##  Format: The ConwayPolynomial(p, n) is cached in CONWAYPOLDATA[p][n].
-##          The entry has the format [num, fld]. Here fld is one of the 
+##          The entry has the format [num, fld]. Here fld is one of the
 ##          component names of CONWAYPOLYNOMIALSINFO and describes the
-##          origin of the polynomial. num is an integer, encoding the 
+##          origin of the polynomial. num is an integer, encoding the
 ##          polynomial as follows:
 ##          Let (a0 + a1 X + a2 X^2 + ... + X^n)*One(GF(p)) be the polynomial
-##          where a0, a1, ... are integers in the range 0..p-1. Then 
+##          where a0, a1, ... are integers in the range 0..p-1. Then
 ##              num = a0 + a1 p + a2 p^2 + ... + a<n-1> p^(n-1).
-##  
+##
 BindGlobal("CONWAYPOLDATA", MakeWriteOnceAtomic([]));
 
 ##  a utility function, checks consistency of a polynomial with Conway
@@ -113,7 +113,7 @@ BindGlobal( "IsConsistentPolynomial", function( pol )
     kpol := ConwayPolynomial(p, k);
     return Value(kpol, PowerMod(x, (p^n-1)/(p^k-1), pol)) mod pol = null;
   end;
-  
+
   if IsPrimitivePolynomial(GF(p), pol) then
     return ForAll(ps, p-> f(n/p));
   else
@@ -150,30 +150,30 @@ end);
 ##      fi;
 ##      n := p;
 ##      p := Position(str, '\n', n);
-##    od; 
-##    for p in res[2] do 
+##    od;
+##    for p in res[2] do
 ##      AddSet(Primes2,p);
-##    od;  
+##    od;
 ##    SortParallel(res[1], res[2]);
 ##    BRENT_FACTORS_LIST := res;
 ##  end;
 
 ##  A consistency check for the data, loading AddBrentFactorList() is useful
 ##  for the primitivity tests.
-##  
+##
 ##  # for 41^41-1
 ##  AddSet(Primes2, 5926187589691497537793497756719);
 ##  # for 89^89-1
 ##  AddSet(Primes2, 4330075309599657322634371042967428373533799534566765522517);
 ##  # for 97^97-1
 ##  AddSet(Primes2, 549180361199324724418373466271912931710271534073773);
-##  AddSet(Primes2,  85411410016592864938535742262164288660754818699519364051241927961077872028620787589587608357877); 
+##  AddSet(Primes2,  85411410016592864938535742262164288660754818699519364051241927961077872028620787589587608357877);
 ##  for p in [2,113,1009] do IsCheapConwayPolynomial(p,1); od;
 ##  cp:=CONWAYPOLDATA;;
 ##  test := [];
-##  for i in [1..Length(cp)] do 
+##  for i in [1..Length(cp)] do
 ##    if IsBound(cp[i]) then
-##      for j in [1..Length(cp[i])] do 
+##      for j in [1..Length(cp[i])] do
 ##        if IsBound(cp[i][j]) then
 ##          a := IsConsistentPolynomial(ConwayPolynomial(i,j));
 ##          Print(i,"   ",j,"   ", a,"\n");
@@ -183,7 +183,7 @@ end);
 ##    fi;
 ##  od;
 
-##  number of polynomials for GF(p^n) compatible with Conway polynomials for 
+##  number of polynomials for GF(p^n) compatible with Conway polynomials for
 ##  all proper subfields.
 BindGlobal("NrCompatiblePolynomials", function(p, n)
   local ps, lcm;
@@ -202,7 +202,7 @@ ConwayCandidates := function()
   od;
   cand := [];;
   for p in Primes{[1..31]} do
-    for i in [1..200] do 
+    for i in [1..200] do
       if NrCompatiblePolynomials(p,i) < 100000000000 then
         Add(cand, [NrCompatiblePolynomials(p,i), p, i]);
       fi;
@@ -213,8 +213,8 @@ ConwayCandidates := function()
   return cand;
 end;
 
-##  
-##  
+##
+##
 ####################   end of list of new polynomials   ####################
 
 BIND_GLOBAL("SET_CONWAYPOLDATA", function(p, list)
@@ -347,9 +347,9 @@ InstallGlobalFunction( ConwayPol, function( p, n )
 
         found:= false;
         onelist:= [ one ];
-        # many random polynomials have linear factors, for small p we check 
+        # many random polynomials have linear factors, for small p we check
         # this before trying to check primitivity
-        if p < 256 then        
+        if p < 256 then
           linfac := List([0..p-2], i-> List([0..n], k-> Z(p)^(i*k)));
           List(linfac, a-> ConvertToVectorRep(a,p));
         else
@@ -363,12 +363,12 @@ InstallGlobalFunction( ConwayPol, function( p, n )
           #  1. $f$ divides $X^{p^n-1} -1$, and
           #  2. $f$ does not divide $X^{(p^n-1)/l} - 1$ for every
           #     prime divisor $l$ of $p^n - 1$.
-          found := ForAll(linfac, a-> a * cpol <> zero); 
+          found := ForAll(linfac, a-> a * cpol <> zero);
           if found then
             pow:= PowerModCoeffs( x, 2, pp, cpol, n+1 );
             ShrinkRowVector( pow );
             found:= ( pow = onelist );
-          fi; 
+          fi;
 
           i:= 1;
           while found and ( i <= Length( ppmin ) ) do

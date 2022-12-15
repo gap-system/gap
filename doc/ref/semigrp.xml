@@ -75,7 +75,7 @@ about semigroups.
 <Section Label="Ideals of semigroups">
 <Heading>Ideals of semigroups</Heading>
 
-Ideals of semigroups are the same as ideals of the semigroup when 
+Ideals of semigroups are the same as ideals of the semigroup when
 considered as a magma.
 For documentation on ideals for magmas, see <Ref Func="Magma"/>.
 

@@ -471,8 +471,8 @@ function ( set, k )
     elif IsEmpty( set )  then
         return Immutable( [  ] );
     fi;
-    enum 
-     := EnumeratorByFunctions( CollectionsFamily( FamilyObj( set ) ), 
+    enum
+     := EnumeratorByFunctions( CollectionsFamily( FamilyObj( set ) ),
        rec(
           ElementNumber := function ( enum, n )
                 local  nn, t, i;
@@ -483,7 +483,7 @@ function ( set, k )
                     nn := QuoInt( nn, Length( enum!.set ) );
                 od;
                 if nn <> 0  then
-                    Error( "<enum>[", n, 
+                    Error( "<enum>[", n,
                      "] must have an assigned value" );
                 fi;
                 nn := enum!.set{Reversed( t )};
@@ -511,7 +511,7 @@ function ( set, k )
                 return Length( enum!.set ) ^ enum!.k;
             end,
           PrintObj := function ( enum )
-                Print( "EnumeratorOfTuples( ", enum!.set, ", ", 
+                Print( "EnumeratorOfTuples( ", enum!.set, ", ",
                  enum!.k, " )" );
                 return;
             end,
@@ -581,7 +581,7 @@ function ( iter )
     fi;
     return;
 end
-gap> Print( iter!.ShallowCopy, "\n" );   
+gap> Print( iter!.ShallowCopy, "\n" );
 function ( iter )
     return rec(
         counter := iter!.counter );
@@ -649,7 +649,7 @@ Namely, there are the categories
 <Ref Filt="IsGeneralizedRowVector"/> and
 <Ref Filt="IsMultiplicativeGeneralizedRowVector"/>,
 which are concerned with the
-additive and the multiplicative behaviour, respectively, of lists. 
+additive and the multiplicative behaviour, respectively, of lists.
 For lists in these filters, the structure of the results of arithmetic
 operations is prescribed (see&nbsp;<Ref Sect="Additive Arithmetic for Lists"/> and
 <Ref Sect="Multiplicative Arithmetic for Lists"/>).
@@ -846,12 +846,12 @@ Sym( [ 1 .. 4 ] )
 gap> IsMutable(g);
 false
 gap> NamesOfComponents(g);
-[ "Size", "NrMovedPoints", "MovedPoints", 
+[ "Size", "NrMovedPoints", "MovedPoints",
   "GeneratorsOfMagmaWithInverses" ]
 gap> g!.silly := "rubbish";
 "rubbish"
 gap> NamesOfComponents(g);
-[ "Size", "NrMovedPoints", "MovedPoints", 
+[ "Size", "NrMovedPoints", "MovedPoints",
   "GeneratorsOfMagmaWithInverses", "silly" ]
 gap> g!.silly;
 "rubbish"
@@ -904,11 +904,10 @@ gap> e1 := StructuralCopy(e);
 gap> IsMutable(e1);
 false
 gap> e2 := ShallowCopy(e);
-[ (), (1,4), (1,2,4), (1,3,4), (2,4), (1,4,2), (1,2), (1,3,4,2), 
-  (2,3,4), (1,4,2,3), (1,2,3), (1,3)(2,4), (3,4), (1,4,3), (1,2,4,3), 
-  (1,3), (2,4,3), (1,4,3,2), (1,2)(3,4), (1,3,2), (2,3), (1,4)(2,3), 
+[ (), (1,4), (1,2,4), (1,3,4), (2,4), (1,4,2), (1,2), (1,3,4,2),
+  (2,3,4), (1,4,2,3), (1,2,3), (1,3)(2,4), (3,4), (1,4,3), (1,2,4,3),
+  (1,3), (2,4,3), (1,4,3,2), (1,2)(3,4), (1,3,2), (2,3), (1,4)(2,3),
   (1,2,3,4), (1,3,2,4) ]
-gap> 
 ]]></Example>
 <P/>
 There are two other related functions:

@@ -7,28 +7,28 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
-##  
-##  The files helpt2t.g{d,i}  contain  the function  to convert  TeX source 
+##
+##  The files helpt2t.g{d,i}  contain  the function  to convert  TeX source
 ##  code written in `gapmacro.tex' style  into text for the "screen" online
 ##  help viewer.
-##  
-  
+##
+
 #############################################################################
 ##
 #F  HELP_PRINT_SECTION( <book>, <chapter>, <section> [,<key>] ) . print entry
 ##
 ##  key is a function name
-##  
+##
 ##  main function to extract the help text for a topic from GAP main help
-##  
+##
 HELP_FLUSHRIGHT:=true;
 InstallGlobalFunction(HELP_PRINT_SECTION_TEXT, function(arg)
 local   book, chapter, section, key, subkey, MatchKey, ssectypes,
-	info, chap, filename, stream, p, q, lico, 
+	info, chap, filename, stream, p, q, lico,
         line, i, j, lines, IsIgnoredLine, macro, macroarg, tail,
         ttenv, text, verbatim, nontex, item, initem, displaymath, align,
         lastblank, singleline, rund, blanks, SetArg, FlushLeft, Gather,
-        width, buff, EmptyLine, ll, start, keynotfound, verb, URLends; 
+        width, buff, EmptyLine, ll, start, keynotfound, verb, URLends;
 
   # flush buffer ... then add empty line
   EmptyLine := function()
@@ -44,7 +44,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
     fi;
   end;
 
-  # get argument in {...} at front of tail (need to handle nested {}'s) 
+  # get argument in {...} at front of tail (need to handle nested {}'s)
   # ... macroarg is set with the argument matched and tail set to the rest
   SetArg := function()
     local  level, p;
@@ -66,7 +66,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
         elif tail[p] = '{' then
           level := level+1;
         elif tail[p] = '}' then
-          if level = 0 then 
+          if level = 0 then
             macroarg := tail{[2..p-1]};
             tail := tail{[p+1..Length(tail)]};
             break;
@@ -95,7 +95,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
     # or: "{\obeylines ... %" or: "{%" or "}%"
     if not displaymath and 1<Length(line) and line[Length(line)] = '%' then
       line := FlushLeft(line);
-      return 1=Length(line) or 
+      return 1=Length(line) or
              line{[1..Length(line)-1]} in ["{", "}"] or
              line{[1..2]}="{\\" and IsAlphaChar(line[3]) or
              line[1]='\\' and IsAlphaChar(line[2]);
@@ -118,7 +118,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
             displaymath := not displaymath;
             align := false;
             EmptyLine();
-        elif displaymath and 
+        elif displaymath and
              ((align and line="}") or (not align and line="\\matrix{")) then
             align := not align; # toggle align
         else
@@ -145,9 +145,9 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
     od;
   end;
 
-  # Returns true if <s> (a string = <lico>) matches 
+  # Returns true if <s> (a string = <lico>) matches
   # <type> (a ssectype of <key>), or else, false.
-  # ... <type> is a list of strings that must match <s> in sequence, 
+  # ... <type> is a list of strings that must match <s> in sequence,
   # the following strings in <type> have special meaning:
   #  " " means skip blanks until the next non-blank and the
   #            next string must match at position 1.
@@ -193,7 +193,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
     # define subsection matching types: ssectypes
     # (ignoring any @... component)
     if subkey="" then
-      ssectypes := 
+      ssectypes :=
         [ # \><key>(...)
           [ " ", key, " ", "(", ")", "^!"],
           # \>`<key>' V
@@ -201,7 +201,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
           # \>`...'{<key>}
           [ " ", "`", "'", " ", Concatenation("{",key,"}"), "^!" ] ];
     else
-      ssectypes := 
+      ssectypes :=
         [ # \><key>(...)!{<subkey>}
           [ " ", key, " ", "(", ")", " ", "!", " ",
             Concatenation("{", subkey, "}") ],
@@ -213,7 +213,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
   else
     key:=fail;
   fi;
-  
+
   # get the chapter info
   info := HELP_BOOK_INFO(book);
   chap := HELP_CHAPTER_INFO( book, chapter );
@@ -247,7 +247,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
         line:=ReadLine(stream);
       #until MATCH_BEGIN( line, HELP_SECTION_BEGIN ) and
       #      # A section starts ... ensure it is the right section:
-      #      MATCH_BEGIN( line{[10..Length(line)]}, 
+      #      MATCH_BEGIN( line{[10..Length(line)]},
       #                   info.sections[chapter][section] );
   fi;
 
@@ -269,10 +269,10 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                      #  % (if there is one), text is interpreted normally.
   # text-mode and verbatim-mode only differ in the way we treat "||"
   text:=false;       # Set inside %display{text}..%enddisplay
-  verbatim := false; # Set inside each of \begintt..\endtt and 
+  verbatim := false; # Set inside each of \begintt..\endtt and
                      #  \beginexample..\endexample
   ttenv:=false;      # Set inside \begintt..\endtt
-  item := 0;         # Set to 1 in \beginitems..\enditems and 
+  item := 0;         # Set to 1 in \beginitems..\enditems and
                      #  to 1 (in \item entry) or 2 (in \itemitem entry)
                      #  of \beginlist..\endlist. Otherwise, set to 0.
   displaymath:=false;# Set inside $$ .. $$ for maths displays delimited
@@ -284,12 +284,12 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
   while line <> fail and not MATCH_BEGIN( line, HELP_SECTION_BEGIN ) do
       line := Chomp(line);
 
-      if nontex and 0 < Length(line) and line[1] = '%' and 
+      if nontex and 0 < Length(line) and line[1] = '%' and
          not MATCH_BEGIN( line, "%enddisplay" ) then
           line := line{[2..Length(line)]};
       fi;
 
-      if key<>fail then 
+      if key<>fail then
           # we got the section only via a keyword. Ignore the first
           # part of the section and start only at the interesting
           # bits. When the key and subkey are found, key is set
@@ -312,8 +312,8 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
           fi;
       fi;
 
-      keynotfound := key<>fail; 
-                
+      keynotfound := key<>fail;
+
       # blanks lines are ok
       if 0 = Length(line)  then
           if not verbatim and not text then
@@ -362,7 +362,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
           repeat
               line := ReadLine(stream);
           until line = fail  or  line = "\n" or line = "\r\n";
-                    
+
       # displays for text and HTML that need are interpreted
       # normally (except any initial % is first removed)
       elif MATCH_BEGIN(line,"%display{nontex}")
@@ -388,12 +388,12 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
           elif MATCH_BEGIN(line,"%display{nontex}") then
               nontex := true;
           fi;
-                
-      elif MATCH_BEGIN(line,"\\index{") 
-        or MATCH_BEGIN(line,"\\indextt{") 
+
+      elif MATCH_BEGIN(line,"\\index{")
+        or MATCH_BEGIN(line,"\\indextt{")
         or MATCH_BEGIN(line,"\\atindex{")  then
           # A '%' at end-of-line indicates a continuation
-          while line <> fail and line <> "" and 
+          while line <> fail and line <> "" and
                 (line[1] = '%' or line[Length(line)] = '%') do
               line := Chomp( ReadLine(stream) );
           od;
@@ -405,9 +405,9 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
           ttenv := false;
           EmptyLine();
           buff := Concatenation (
-            Concatenation (ListWithIdenticalEntries (QuoInt (width-9, 2), "-")), 
+            Concatenation (ListWithIdenticalEntries (QuoInt (width-9, 2), "-")),
             " Example ",
-            Concatenation (ListWithIdenticalEntries (width - 9 - QuoInt (width-9, 2), "-")));  
+            Concatenation (ListWithIdenticalEntries (width - 9 - QuoInt (width-9, 2), "-")));
           EmptyLine();
        elif MATCH_BEGIN(line,"\\begintt")  then
           ttenv := true;
@@ -430,17 +430,17 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
           nontex := false;
           lastblank:=false;
           EmptyLine();
-  
-      elif MATCH_BEGIN(line,"\\beginitems") 
+
+      elif MATCH_BEGIN(line,"\\beginitems")
         or MATCH_BEGIN(line,"\\beginlist")  then
           item:=1;
           EmptyLine();
 
-      elif MATCH_BEGIN(line,"\\enditems") 
+      elif MATCH_BEGIN(line,"\\enditems")
         or MATCH_BEGIN(line,"\\endlist")  then
           item:=0;
           EmptyLine();
-    
+
       # ignore lines beginning with '%' except if in text
       # or verbatim modes (which we have already dealt with)
       # or if in nontex mode (which we deal with below);
@@ -498,7 +498,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                       od;
                       # remove @... label/index stuff from line
                       if 0<Length(line) and line[1]='`' then
-                          # types: \>`...'{...}       
+                          # types: \>`...'{...}
                           #        \>`...'{...}!{...} -> \>`...'{...!...}
                           #        \>`...'{...}@{...} -> \>`...'{...}
                           #        \>`...'{...}@`...' -> \>`...'{...}
@@ -550,7 +550,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
               #  fi;
               #  p:=Position(line,'~',p);
               #od;
-                      
+
               if item>0 then
                   line:=FlushLeft(line);
                   p := Position(line,'&');
@@ -585,9 +585,9 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                       tail := tail{[2..Length(tail)]};
                       # escaped chars \ { } $ & _ % and <space>
                       if macro[1] in "\\{}$#&_% " then
-                          ; 
-                      # non-alpha accents 
-                      elif macro[1] in "'`=^.\"~" then 
+                          ;
+                      # non-alpha accents
+                      elif macro[1] in "'`=^.\"~" then
                           # \. could be an accent or multiplication
                           # ... we treat them the same. We don't support \~.
                           if Length(line)>0 and line[Length(line)]='{' and
@@ -603,9 +603,9 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                               macro := ""; # just omit it
                           fi;
                       # fine spacing macros ... we just ignore
-                      elif macro[1] in "!," then 
+                      elif macro[1] in "!," then
                           macro := "";
-                      elif macro[1] in ";" then 
+                      elif macro[1] in ";" then
                           macro := " ";
                       # shouldn't get these here ...
                       elif macro[1] in ">)" then
@@ -687,9 +687,9 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                           macro:=Concatenation("\\",macro);
                       elif macro="H" then # treat like umlaut
                           macro:="\"";
-                          
+
                       # sharp s, ligatures, other specials
-                      elif macro in [ "ss", "oe", "OE", "ae", "AE", 
+                      elif macro in [ "ss", "oe", "OE", "ae", "AE",
                                       "o",  "O",  "l",  "L" , "i", "j"] then
                           ; # good enough without backslash
                       elif macro in [ "aa", "AA" ] then
@@ -761,7 +761,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                           macro:="";
                           tail:=FlushLeft(tail);
                           # we do this to prevent macroarg expanding
-                          macroarg := ReplacedString(macroarg," ","~"); 
+                          macroarg := ReplacedString(macroarg," ","~");
                           if Length(macroarg)>=3 then
                               macroarg:=Concatenation(macroarg,"~");
                           else
@@ -790,7 +790,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                       elif macro in [ "medskip",    "bigskip" ] then
                           macro:="";
                           EmptyLine();
-       
+
                       elif macro in [ "par", "begingroup", "endgroup" ] then
                           tail := "";  # assume the rest of the line
                           macro := ""; # is not intended for our eyes
@@ -923,7 +923,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                       Add(lines, line{[1..p]});
                   fi;
                   if keynotfound then start := start+1; fi;
-                  line := Concatenation("~~~~", 
+                  line := Concatenation("~~~~",
                                         FlushLeft(line{[p+1..Length(line)]}) );
               od;
               # treat trailing `category' letter(s)
@@ -942,7 +942,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
           elif singleline=0 then
               if Length(buff)>0 and buff[Length(buff)] <> '~' then
                   Add(buff,' '); # separating ' '
-              elif item>0 and initem and 0=Length(buff) and 
+              elif item>0 and initem and 0=Length(buff) and
                    0<Length(line) and line[1]<>'~' then
                   buff:="~~~~";
               fi;
@@ -989,7 +989,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                               #  spaces then give up
                               if p = fail then
                                   break;
-                              fi;    
+                              fi;
                               # add a blank
                               line:=Concatenation(line{[1..p]}, line{[p..ll]});
                               # avoid to add the next blank just there
@@ -1086,7 +1086,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
           URLends := URLends{[2..Length(URLends)]}; #pop URLends
         od;
         # Have found a ` ... is it the beginning of a `...' environment?
-        # It is if: it is not inside a URL, and 
+        # It is if: it is not inside a URL, and
         #           ` is not followed by ` unless its followed by ``.
         if IsEmpty(URLends) or p < URLends[1][1] then     # not inside a URL
           if p+1 < Length(lines[i]) and
@@ -1097,13 +1097,13 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                lines[i][p+1]<>'`'   or                      # ` (on its own)
                p+1 < Length(lines[i]) and lines[i][p+2]='`' # ```
                then
-            verb := true; 
+            verb := true;
             break;
-          else # `` (but not ```) ... not a `...' environment 
+          else # `` (but not ```) ... not a `...' environment
             p := p + 1; # continue searching after second `
           fi;
         fi;
-      od;  
+      od;
       if not verb then # ... or equivalently: if p = fail
         break;
       fi;
@@ -1121,7 +1121,7 @@ local   book, chapter, section, key, subkey, MatchKey, ssectypes,
                             ReplacedString(lines[i]{[p+1..q]},"~","\\tilde"));
       lines[i] := Concatenation(line,tail);
       q := Length(line);
-    od;  
+    od;
     # at this point any ~ that should not be changed to a blank has been
     # temporarily replaced by: \tilde
     lines[i] := ReplacedString( lines[i], "~", " " );

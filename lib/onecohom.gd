@@ -32,7 +32,7 @@ DeclareInfoClass("InfoCoh");
 
 #############################################################################
 ##
-#O  TriangulizedGeneratorsByMatrix( <gens>, <M>, <F> ) 
+#O  TriangulizedGeneratorsByMatrix( <gens>, <M>, <F> )
 ##                                                  triangulize and make base
 ##
 ##  <ManSection>
@@ -246,14 +246,14 @@ DeclareOperation( "OCCoprimeComplement",
 ##  gap> g:=Group((1,2,3,4),(1,2));;
 ##  gap> n:=Group((1,2)(3,4),(1,3)(2,4));;
 ##  gap> oc:=OneCocycles(g,n);
-##  rec( cocycleToComplement := function( c ) ... end, 
-##    cocycleToList := function( c ) ... end, 
-##    complement := Group([ (3,4), (2,4,3) ]), 
-##    complementGens := [ (3,4), (2,4,3) ], 
-##    complementToCocycle := function( K ) ... end, 
-##    factorGens := [ (3,4), (2,4,3) ], generators := [ (3,4), (2,4,3) ], 
-##    isSplitExtension := true, listToCocycle := function( L ) ... end, 
-##    oneCoboundaries := <vector space over GF(2), with 2 generators>, 
+##  rec( cocycleToComplement := function( c ) ... end,
+##    cocycleToList := function( c ) ... end,
+##    complement := Group([ (3,4), (2,4,3) ]),
+##    complementGens := [ (3,4), (2,4,3) ],
+##    complementToCocycle := function( K ) ... end,
+##    factorGens := [ (3,4), (2,4,3) ], generators := [ (3,4), (2,4,3) ],
+##    isSplitExtension := true, listToCocycle := function( L ) ... end,
+##    oneCoboundaries := <vector space over GF(2), with 2 generators>,
 ##    oneCocycles := <vector space over GF(2), with 2 generators> )
 ##  gap> oc.cocycleToList([ 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0 ]);
 ##  [ (1,2)(3,4), (1,2)(3,4) ]

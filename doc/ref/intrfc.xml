@@ -57,7 +57,7 @@ DeclareAttribute("Exponent",IsGroup);
 ]]></Log>
 <P/>
 Similarly we find that the filter
-<Ref Prop="IsNilpotentGroup"/> 
+<Ref Prop="IsNilpotentGroup"/>
 represents the concept of being nilpotent.
 <P/>
 We then write a function that implements the new algorithm which takes the
@@ -103,13 +103,13 @@ true
 ]]></Example>
 <P/>
 Let's now look at a slightly more complicated example:
-We want to implement a better method for computing 
+We want to implement a better method for computing
 normalizers in a nilpotent permutation group.
 (Such an algorithm can be found for example in
 <Cite Key="luksrakocziwright97"/>.)
 <P/>
 We already know <Ref Prop="IsNilpotentGroup"/>,
-the filter <Ref Filt="IsPermGroup"/> 
+the filter <Ref Filt="IsPermGroup"/>
 represents the concept of being a group of permutations.
 <P/>
 &GAP; uses <Ref Oper="Normalizer" Label="for two groups"/>
@@ -124,7 +124,7 @@ InParentFOA( "Normalizer", IsGroup, IsObject, NewAttribute );
 The full mechanism of <Ref Func="InParentFOA"/> is described in
 chapter&nbsp;<Ref Chap="Function-Operation-Attribute Triples"/>,
 however for our purposes it is sufficient to know that for such a function
-the actual work is done by an operation <C>NormalizerOp</C>, an underlying 
+the actual work is done by an operation <C>NormalizerOp</C>, an underlying
 operation for <Ref Oper="Normalizer" Label="for two groups"/> (and all the
 complications are just there to be able to remember certain results) and that
 the declaration of this operation is given by the first arguments, it would
@@ -170,7 +170,7 @@ objects that is too restrictive for our purposes (or we want to install a
 method that takes another number of arguments). If this is the case,
 the call to <Ref Func="InstallMethod"/> causes an error message.
 We can avoid this by using <Ref Func="InstallOtherMethod"/> instead.
-It is also possible to re-declare an operation with another number of 
+It is also possible to re-declare an operation with another number of
 arguments and/or different filters for its arguments.
 
 </Section>
@@ -255,12 +255,12 @@ second argument gets specified only as positive integer:
 <Log><![CDATA[
 SylowNormalizer:=NewOperation("SylowNormalizer",[IsGroup,IsPosInt]);
 ]]></Log>
-(Note that we are using <Ref Func="NewOperation"/> instead of 
+(Note that we are using <Ref Func="NewOperation"/> instead of
 <Ref Func="DeclareOperation"/> as used in the library.
 The only difference other than that <Ref Func="DeclareOperation"/> saves
 some typing,
-is that it also protects the variables against overwriting. 
-When testing code (when one probably wants to change things) 
+is that it also protects the variables against overwriting.
+When testing code (when one probably wants to change things)
 this might be restricting. If this does not bother you, you can use
 <P/>
 <Log><![CDATA[
@@ -270,7 +270,7 @@ as well.)
 <P/>
 The filters <Ref Filt="IsGroup"/> and
 <Ref Filt="IsPosInt"/> given are <E>only</E> used to test that
-<Ref Func="InstallMethod"/> installs methods with suitable 
+<Ref Func="InstallMethod"/> installs methods with suitable
 arguments and will be completely ignored when using
 <Ref Func="InstallOtherMethod"/>. Technically one could
 therefore simply use <Ref Filt="IsObject"/> for all arguments
@@ -313,7 +313,7 @@ HasPrimesDividingSize:=Tester(PrimesDividingSize);
 SetPrimesDividingSize:=Setter(PrimesDividingSize);
 ]]></Log>
 <P/>
-Alternatively, there is a declaration command 
+Alternatively, there is a declaration command
 <Ref Func="DeclareAttribute"/> that executes all three
 assignments simultaneously and protects the variables against overwriting:
 <P/>
@@ -473,9 +473,9 @@ could be computed later and probably even for a wider class of objects), a
 component is just part of the internal definition of an object.
 <P/>
 So if the data is <Q>of general interest</Q>, if we want the user to have
-access to it, attributes are preferable. Moreover, attributes can be used 
-by the method selection (by specifying the filter <C>HasAttr</C> for an 
-attribute <C>Attr</C>). They provide a clean 
+access to it, attributes are preferable. Moreover, attributes can be used
+by the method selection (by specifying the filter <C>HasAttr</C> for an
+attribute <C>Attr</C>). They provide a clean
 interface and their immutability makes it safe to hand the data to a user who potentially
 could corrupt a components entries.
 <P/>
@@ -604,8 +604,8 @@ function(G)
   [... code omitted. The function must return `true' or `false' ...]
 end);
 ]]></Log>
-Note that this example of declaring the <C>IsMGroup</C> property for 
-solvable groups is not a part of the &GAP; library, which uses a 
+Note that this example of declaring the <C>IsMGroup</C> property for
+solvable groups is not a part of the &GAP; library, which uses a
 similar but different filter <Ref Prop="IsMonomialGroup"/>.
 </Subsection>
 
@@ -632,7 +632,7 @@ DeclareCategory("IsGroupWithWordLength",IsGroup);
 <P/>
 We also define the operation which is <Q>enabled</Q> by this category, the word
 length of a group element, which is defined for a group and an element
-(remember that group elements are described by the category 
+(remember that group elements are described by the category
 <Ref Filt="IsMultiplicativeElementWithInverse"/>):
 <P/>
 <Log><![CDATA[
@@ -696,7 +696,7 @@ present a simple approach that may be useful to get started but does not
 permit you to exploit all potential features.
 <P/>
 The basic design is that the user designs some way to represent her objects
-in terms of &GAP;s built-in types, for example as a list or a record. 
+in terms of &GAP;s built-in types, for example as a list or a record.
 We call this the <Q>defining data</Q> of the new objects.
 Also provided are functions that perform arithmetic on this <Q>defining
 data</Q>, that is they take objects of this form and return objects that
@@ -745,9 +745,9 @@ Now we can create new elements, perform arithmetic on them and form domains:
 gap> a := mkposet([1,2,3]);
 [ 1, 2, 3 ]
 gap> CategoriesOfObject(a);
-[ "IsExtAElement", "IsNearAdditiveElement", 
-  "IsNearAdditiveElementWithZero", "IsAdditiveElement", 
-  "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement", 
+[ "IsExtAElement", "IsNearAdditiveElement",
+  "IsNearAdditiveElementWithZero", "IsAdditiveElement",
+  "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement",
   "IsMultiplicativeElementWithOne", "IsAssociativeElement",
   "IsAdditivelyCommutativeElement", "IsCommutativeElement",
   "IsPosetOn4" ]

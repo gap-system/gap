@@ -10,7 +10,7 @@
 **  This file contains the functions for the boolean package.
 **
 **  Note that boolean objects actually contain no data. The three of them
-**  are distinguished by their addresses, kept in the C globals False, 
+**  are distinguished by their addresses, kept in the C globals False,
 **  True and Fail.
 */
 
@@ -261,7 +261,7 @@ static Obj ReturnFail3(Obj self, Obj val1, Obj val2, Obj val3)
 
 /****************************************************************************
 **
-*F  SaveBool( <bool> ) . . . . . . . . . . . . . . . . . . . . save a Boolean 
+*F  SaveBool( <bool> ) . . . . . . . . . . . . . . . . . . . . save a Boolean
 **
 **  Actually, there is nothing to do
 */
@@ -274,7 +274,7 @@ static void SaveBool(Obj obj)
 
 /****************************************************************************
 **
-*F  LoadBool( <bool> ) . . . . . . . . . . . . . . . . . . . . save a Boolean 
+*F  LoadBool( <bool> ) . . . . . . . . . . . . . . . . . . . . save a Boolean
 **
 **  Actually, there is nothing to do
 */

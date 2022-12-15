@@ -408,7 +408,7 @@ InstallMethod( Order,
 # it relies on the (unguaranteed) ordering of free group elements, that
 # inverses of generators come before the generators, and generators of low
 # number come before those of higher number.
-    
+
 InstallMethod( GeneratorsSmallest,
         "for a free group",
         [ IsFreeGroup ],

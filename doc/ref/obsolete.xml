@@ -73,10 +73,10 @@ became obsolete and the names of some others were made more consistent.
 The following functions are no longer needed:
 <C>DeclarePackage</C>,
 <C>DeclareAutoPackage</C>,
-<C>DeclarePackageDocumentation</C> and 
+<C>DeclarePackageDocumentation</C> and
 <C>DeclarePackageAutoDocumentation</C>.
 They are substituted by entries in the packages' <F>PackageInfo.g</F> files,
-see <Ref Sect="The PackageInfo.g File"/>. 
+see <Ref Sect="The PackageInfo.g File"/>.
 <P/>
 Furthermore, the global variable <C>PACKAGES_VERSIONS</C> is no longer needed,
 since this information is now contained in the <C>GAPInfo.PackagesInfo</C> record
@@ -147,11 +147,6 @@ This type of information is now collected in the global record
 <P/>
 Here are some further name changes.
 <P/>
-<Index Key="MonomialTotalDegreeLess"><C>MonomialTotalDegreeLess</C></Index>
-<Index Key="NormedVectors"><C>NormedVectors</C></Index>
-<Index Key="MutableIdentityMat"><C>MutableIdentityMat</C></Index>
-<Index Key="MutableNullMat"><C>MutableNullMat</C></Index>
-<Index Key="RadicalGroup"><C>RadicalGroup</C></Index>
 <Table Align="l|l">
 <Row>
   <Item><E>OLD</E></Item>
@@ -159,32 +154,34 @@ Here are some further name changes.
 </Row>
 <HorLine/>
 <Row>
-  <Item><C>MonomialTotalDegreeLess</C></Item>
+  <Item><C>MonomialTotalDegreeLess</C><Index Key="MonomialTotalDegreeLess"><C>MonomialTotalDegreeLess</C></Index></Item>
   <Item><Ref Func="MonomialExtGrlexLess"/></Item>
 </Row>
 <Row>
-  <Item><C>NormedVectors</C></Item>
+  <Item><C>NormedVectors</C><Index Key="NormedVectors"><C>NormedVectors</C></Index></Item>
   <Item><Ref Attr="NormedRowVectors"/></Item>
 </Row>
 <Row>
-  <Item><C>MutableIdentityMat</C></Item>
+  <Item><C>MutableIdentityMat</C><Index Key="MutableIdentityMat"><C>MutableIdentityMat</C></Index></Item>
   <Item><Ref Func="IdentityMat"/></Item>
 </Row>
 <Row>
-  <Item><C>MutableNullMat</C></Item>
+  <Item><C>MutableNullMat</C><Index Key="MutableNullMat"><C>MutableNullMat</C></Index></Item>
   <Item><Ref Func="NullMat"/></Item>
 </Row>
 <Row>
-  <Item><C>MultRowVector</C></Item>
+  <Item><C>MultRowVector</C><Index Key="MultRowVector"><C>MultRowVector</C></Index></Item>
   <Item><Ref Oper="MultVectorLeft"/></Item>
 </Row>
 <Row>
-  <Item><C>RadicalGroup</C></Item>
+  <Item><C>RadicalGroup</C><Index Key="RadicalGroup"><C>RadicalGroup</C></Index></Item>
   <Item><Ref Attr="SolvableRadical"/></Item>
 </Row>
 </Table>
 
+<List>
 
+<Item>
 <Index Key="PositionFirstComponent"><C>PositionFirstComponent</C></Index>
 The operation <C>PositionFirstComponent</C> has been deprecated in GAP
 4.8 due to issues with its documentation and implementation, and was
@@ -193,18 +190,72 @@ Instead of <C>PositionFirstComponent(list,obj)</C>, you may use
 <C>PositionSorted(list,[obj])</C> or
 <C>PositionProperty(list,x->x[1]=obj)</C> as a replacement, depending on
 your specific use case.
+</Item>
 
+<Item>
 <Index Key="MultRowVector"><C>MultRowVector</C></Index>
 The five argument version of the operation <C>MultRowVector</C> has been
 deprecated in GAP 4.10 since it was unused and only available for coefficient
 lists.
 Note that <C>MultRowVector</C> was also renamed to <C>MultVectorLeft</C>.
+</Item>
 
+<Item>
 <Index Key="TemporaryGlobalVarName"><C>TemporaryGlobalVarName</C></Index>
 The function <C>TemporaryGlobalVarName</C> has been deprecated in GAP 4.11.
 Code using it typically can be restructured to not need it, e.g. by
 using <Ref Func="EvalString"/>.
+</Item>
 
+<Item>
+A bunch of synonyms have been deprecated in GAP 4.13.
+The alternative names have always existed and so are safe
+to use even in code which is meant to run in older GAP versions.
+<Table Align="l|l">
+<Row>
+  <Item><E>Deprecated</E></Item>
+  <Item><E>Recommended alternative</E></Item>
+</Row>
+<HorLine/>
+<Row>
+  <Item><C>OneSM</C><Index Key="OneSM"><C>OneSM</C></Index></Item>
+  <Item><Ref Func="OneSameMutability"/></Item>
+</Row>
+<Row>
+  <Item><C>InverseSM</C><Index Key="InverseSM"><C>InverseSM</C></Index></Item>
+  <Item><Ref Func="InverseSameMutability"/></Item>
+</Row>
+<Row>
+  <Item><C>ZeroSM</C><Index Key="ZeroSM"><C>ZeroSM</C></Index></Item>
+  <Item><Ref Func="ZeroSameMutability"/></Item>
+</Row>
+<Row>
+  <Item><C>AdditiveInverseSM</C><Index Key="AdditiveInverseSM"><C>AdditiveInverseSM</C></Index></Item>
+  <Item><Ref Func="AdditiveInverseSameMutability"/></Item>
+</Row>
+
+<Row>
+  <Item><C>OneAttr</C><Index Key="OneAttr"><C>OneAttr</C></Index></Item>
+  <Item><Ref Func="One"/>, <Ref Func="OneImmutable"/></Item>
+</Row>
+<Row>
+  <Item><C>InverseAttr</C><Index Key="InverseAttr"><C>InverseAttr</C></Index></Item>
+  <Item><Ref Func="Inverse"/>, <Ref Func="InverseImmutable"/></Item>
+</Row>
+<Row>
+  <Item><C>ZeroAttr</C><Index Key="ZeroAttr"><C>ZeroAttr</C></Index></Item>
+  <Item><Ref Func="Zero"/>, <Ref Func="ZeroImmutable"/></Item>
+</Row>
+<Row>
+  <Item><C>AdditiveInverseAttr</C><Index Key="AdditiveInverseAttr"><C>AdditiveInverseAttr</C></Index></Item>
+  <Item><Ref Func="AdditiveInverse"/>, <Ref Func="AdditiveInverseImmutable"/></Item>
+</Row>
+
+</Table>
+
+</Item>
+
+</List>
 
 <ManSection>
 <InfoClass Name="InfoObsolete"/>
@@ -232,19 +283,19 @@ see <Ref Sect="Command Line Options"/>.
 <Heading>The former .gaprc file</Heading>
 
 Up to &GAP;&nbsp;4.4, a file <F>.gaprc</F> in the user's home directory
-(if available, and &GAP; was started without <C>-r</C> option) was 
+(if available, and &GAP; was started without <C>-r</C> option) was
 read automatically during startup,
 early enough for influencing the autoloading of packages and
-late enough for being allowed to execute any &GAP; code.  On Windows 
+late enough for being allowed to execute any &GAP; code.  On Windows
 machines this file was called <F>gap.rc</F>.
 <P/>
-In &GAP;&nbsp;4.5 the startup mechanism has changed, see 
+In &GAP;&nbsp;4.5 the startup mechanism has changed, see
 <Ref Sect="sect:gap.ini"/> for details. These new configuration
 files are now contained in a directory <C>GAPInfo.UserGapRoot</C>.
 <P/>
 For the sake of partial backwards compatibility,
 also the former file <F>~/.gaprc</F> is still supported for such
-initializations, but this file is read only if the directory 
+initializations, but this file is read only if the directory
 <C>GAPInfo.UserGapRoot</C> does not exist.
 In that case the <F>~/.gaprc</F> is read at the same time as <F>gaprc</F>
 would be read, i.&nbsp;e., too late for influencing the startup of &GAP;.
@@ -256,7 +307,7 @@ To migrate from the old setup to the new one introduced with &GAP;&nbsp;4.5,
 first have a look at the function <Ref Func="WriteGapIniFile"/>. Many users
 will find that all or most of what was set in the old <F>~/.gaprc</F> file
 can now be done via the user preferences in a <F>gap.ini</F> file.
-If you had code for new functions or abbreviations in your old <F>~/.gaprc</F> 
+If you had code for new functions or abbreviations in your old <F>~/.gaprc</F>
 file or you were reading additional files, then move this into
 the file <F>gaprc</F> (without the leading dot, same name for all operating
 systems) in the directory <C>GAPInfo.UserGapRoot</C>.
@@ -268,13 +319,13 @@ systems) in the directory <C>GAPInfo.UserGapRoot</C>.
   <Heading>Semigroup properties</Heading>
 
   Until Version 4.8 of &GAP; there was inconsistent use of the following
-  properties of semigroups: <C>IsGroupAsSemigroup</C>, <C>IsMonoidAsSemigroup</C>, 
+  properties of semigroups: <C>IsGroupAsSemigroup</C>, <C>IsMonoidAsSemigroup</C>,
   and <C>IsSemilatticeAsSemigroup</C>. <C>IsGroupAsSemigroup</C> was true for
   semigroups that mathematically defined a group, and for semigroups in the
   category <Ref Filt = "IsGroup"/>; <C>IsMonoidAsSemigroup</C> was true for
   semigroups that mathematically defined monoids, but did not belong to the
   category <Ref Filt = "IsMonoid"/>; and <C>IsSemilatticeAsSemigroup</C> was
-  simply a property of semigroups, there is no category <C>IsSemilattice</C>. 
+  simply a property of semigroups, there is no category <C>IsSemilattice</C>.
   <P/>
 
   From Version 4.8 onwards, <C>IsMonoidAsSemigroup</C> returns

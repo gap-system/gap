@@ -11,11 +11,11 @@
 <Heading>Finitely Presented Semigroups and Monoids</Heading>
 
 A <E>finitely presented semigroup</E> (resp. <E>finitely presented monoid</E>)
-is a quotient of a free semigroup (resp. free monoid) on a finite 
+is a quotient of a free semigroup (resp. free monoid) on a finite
 number of generators over a finitely generated congruence on
 the free semigroup (resp. free monoid).
 <P/>
-Finitely presented semigroups are obtained by factoring a free semigroup 
+Finitely presented semigroups are obtained by factoring a free semigroup
 by a set of relations (a generating set for the congruence), i.e., a set of
 pairs of words in the free semigroup.
 <P/>
@@ -31,7 +31,7 @@ gap> RelationsOfFpSemigroup( s );
 ]]></Example>
 <P/>
 Finitely presented monoids are obtained by factoring a free monoid by
-a set of relations, i.e. a set of pairs of words in the free monoid. 
+a set of relations, i.e. a set of pairs of words in the free monoid.
 <P/>
 <Example><![CDATA[
 gap> f := FreeMonoid( "a", "b" );;
@@ -45,7 +45,7 @@ gap> RelationsOfFpMonoid( m );
 [ [ a*b, <identity ...> ] ]
 ]]></Example>
 <P/>
-Notice that for &GAP; a finitely presented monoid is not a finitely 
+Notice that for &GAP; a finitely presented monoid is not a finitely
 presented semigroup.
 <P/>
 <Example><![CDATA[
@@ -58,7 +58,7 @@ to that finitely presented monoid (see <Ref Attr="IsomorphismFpSemigroup"/>).
 <P/>
 Also note that is not possible to refer to the generators by their names.
 These names are not variables, but just display figures.
-So, if one wants to access the generators by their names, one first has to 
+So, if one wants to access the generators by their names, one first has to
 introduce the respective variables and to assign the generators to them.
 <P/>
 <Example><![CDATA[
@@ -75,37 +75,37 @@ gap> a in s;
 true
 ]]></Example>
 <P/>
-The generators of the free semigroup (resp. free monoid) are different 
+The generators of the free semigroup (resp. free monoid) are different
 from the generators of the finitely presented semigroup (resp. finitely
-presented monoid) (even though they are displayed by the same names). 
+presented monoid) (even though they are displayed by the same names).
 This means that words in the generators of the free semigroup (resp.
-free monoid) are not elements of the finitely presented semigroup (resp. 
-finitely presented monoid). Conversely elements of the finitely presented 
+free monoid) are not elements of the finitely presented semigroup (resp.
+finitely presented monoid). Conversely elements of the finitely presented
 semigroup (resp. finitely presented monoid) are not words of the free
 semigroup (resp. free monoid).
 <P/>
 Calculations comparing elements of a finitely presented semigroup
-may run into problems: there are finitely presented semigroups for 
-which no algorithm exists (it is known that no such algorithm can exist) 
-that will tell for two arbitrary words in the generators whether the 
-corresponding elements in the finitely presented semigroup are equal.  
-Therefore the methods used by &GAP; to compute in finitely presented 
-semigroups may run into warning errors, run out of memory or run forever. 
-If the finitely presented semigroup is (by theory) known to be 
-finite the algorithms are guaranteed to terminate (if there is sufficient 
-memory available), but the time needed for the calculation cannot be 
+may run into problems: there are finitely presented semigroups for
+which no algorithm exists (it is known that no such algorithm can exist)
+that will tell for two arbitrary words in the generators whether the
+corresponding elements in the finitely presented semigroup are equal.
+Therefore the methods used by &GAP; to compute in finitely presented
+semigroups may run into warning errors, run out of memory or run forever.
+If the finitely presented semigroup is (by theory) known to be
+finite the algorithms are guaranteed to terminate (if there is sufficient
+memory available), but the time needed for the calculation cannot be
 bounded a priori. The same can be said for monoids.
 (See <Ref Sect="Rewriting Systems and the Knuth-Bendix Procedure"/>.)
 <P/>
 <Example><![CDATA[
-gap> b := s.2;; 
+gap> b := s.2;;
 gap> a*b = a^5;
 false
 gap> a^5 * b^2 * a = a^6 * b^2;
 true
 ]]></Example>
 <P/>
-Note that elements of a finitely presented semigroup (or monoid) are not 
+Note that elements of a finitely presented semigroup (or monoid) are not
 printed in a unique way:
 <P/>
 <Example><![CDATA[
@@ -137,13 +137,13 @@ a^6*b^2
  Label="for a free semigroup or monoid and a list of pairs of elements"/>
 
 <Description>
-<Index Subkey="of free semigroup">quotient</Index> 
-<Index Subkey="of free monoid">quotient</Index> 
+<Index Subkey="of free semigroup">quotient</Index>
+<Index Subkey="of free monoid">quotient</Index>
 creates a finitely presented semigroup or monoid given by the presentation
-<M>\langle <A>gens</A> \mid <A>rels</A> \rangle</M> where 
-<A>gens</A> are the generators of the free semigroup or free monoid <A>F</A>, 
+<M>\langle <A>gens</A> \mid <A>rels</A> \rangle</M> where
+<A>gens</A> are the generators of the free semigroup or free monoid <A>F</A>,
 and the relations <A>rels</A> are entered as pairs of
-words in the generators of the free semigroup or free monoid. 
+words in the generators of the free semigroup or free monoid.
 <P/>
 The same result is obtained with the infix operator <C>/</C>,
 i.e. as <A>F</A> <C>/</C> <A>rels</A>.
@@ -173,10 +173,10 @@ gap> s := fs / [ [ x[1] * x[2] * x[1], x[1] ], [ x[2]^4, x[1] ] ];
 <Description>
 <Index Subkey="fp semigroup elements">comparison</Index>
 Two elements <A>a</A>, <A>b</A> of a finitely presented semigroup are equal
-if they are equal in the semigroup. 
-Nevertheless they may be represented as different words in the generators. 
+if they are equal in the semigroup.
+Nevertheless they may be represented as different words in the generators.
 Because of the fundamental problems mentioned in the
-introduction to this chapter such a test may take a very long time 
+introduction to this chapter such a test may take a very long time
 and cannot be guaranteed to finish
 (see <Ref Sect="Rewriting Systems and the Knuth-Bendix Procedure"/>).
 </Description>
@@ -189,17 +189,17 @@ and cannot be guaranteed to finish
 <Section Label="Preimages in the Free Semigroup or Monoid">
 <Heading>Preimages in the Free Semigroup or Monoid</Heading>
 
-Elements of a finitely presented semigroup or monoid are not words, 
-but are represented using a word from the free semigroup or free monoid 
-as representative. 
+Elements of a finitely presented semigroup or monoid are not words,
+but are represented using a word from the free semigroup or free monoid
+as representative.
 <P/>
 
 <ManSection>
-<Oper Name="UnderlyingElement" Arg='elm' 
+<Oper Name="UnderlyingElement" Arg='elm'
 Label="of an element in a fp semigroup or monoid"/>
 
 <Description>
-for an element <A>elm</A> of a finitely presented semigroup or monoid.  
+for an element <A>elm</A> of a finitely presented semigroup or monoid.
 Returns the word from the free semigroup or free monoid that is used as a
 representative for <A>elm</A>.
 <P/>
@@ -229,13 +229,13 @@ true
 <Section Label="Rewriting Systems and the Knuth-Bendix Procedure">
 <Heading>Rewriting Systems and the Knuth-Bendix Procedure</Heading>
 
-If a finitely presented semigroup (or monoid) has a confluent rewriting system 
-then it has a solvable word problem, that is, there is an algorithm to decide 
-when two words in the free underlying semigroup represent the same element 
-of the finitely presented semigroup. 
-Indeed, once we have a confluent rewriting system, it is possible to 
-successfully test that two words represent the same element in the 
-semigroup, by reducing both words using the rewriting system rules. 
+If a finitely presented semigroup (or monoid) has a confluent rewriting system
+then it has a solvable word problem, that is, there is an algorithm to decide
+when two words in the free underlying semigroup represent the same element
+of the finitely presented semigroup.
+Indeed, once we have a confluent rewriting system, it is possible to
+successfully test that two words represent the same element in the
+semigroup, by reducing both words using the rewriting system rules.
 This is, at the moment, the method that &GAP; uses to check equality
 in finitely presented semigroups and monoids.
 <P/>
@@ -252,12 +252,12 @@ in finitely presented semigroups and monoids.
 
 <Description>
 in the first form, for a semigroup <A>s</A> and a reduction ordering
-for the underlying free semigroup, it returns the Knuth-Bendix 
-rewriting system of the finitely presented semigroup <A>s</A> using the 
+for the underlying free semigroup, it returns the Knuth-Bendix
+rewriting system of the finitely presented semigroup <A>s</A> using the
 reduction ordering <A>wordord</A>.
 In the second form, for a monoid <A>m</A> and a reduction ordering
-for the underlying free monoid, it returns the Knuth-Bendix 
-rewriting system of the finitely presented monoid <A>m</A> using the 
+for the underlying free monoid, it returns the Knuth-Bendix
+rewriting system of the finitely presented monoid <A>m</A> using the
 reduction ordering <A>wordord</A>.
 </Description>
 </ManSection>

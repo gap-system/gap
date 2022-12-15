@@ -19,7 +19,7 @@ InstallGlobalFunction(ParityPol,function(ring,f)
 local d;
   d:=Discriminant(f);
   if ring=Rationals then
-    if d>0 
+    if d>0
       and d=(RootInt(NumeratorRat(d),2)/RootInt(DenominatorRat(d),2))^2 then
       return 1;
     else
@@ -46,7 +46,7 @@ BindGlobal("PowersumsElsyms",function(e,n)
 local p,i,s,j;
   e:=Concatenation(e,[1..n-Length(e)]*0);
   p:=[];
-  for i in [1..n] do  
+  for i in [1..n] do
     s:=0;
     for j in [1..i-1] do
       s:=s-(-1)^j*e[j]*p[i-j];
@@ -62,7 +62,7 @@ end);
 ##
 BindGlobal("ElsymsPowersums",function(p,n)
 local e,i,j,s;
-  e:=[1]; 
+  e:=[1];
   for i in [1..n] do
     s:=0;
     for j in [1..i] do
@@ -107,7 +107,7 @@ local ch,c,z,i,j,k,h,hi,his,zv,f;
       od;
       # ProductCoeffs cuts leading zeros
       his:=Concatenation(ProductCoeffs(his,h[i-j+1]),zv);
-      hi:=hi+his{[1..nn+1]}*(-1)^(j+1); 
+      hi:=hi+his{[1..nn+1]}*(-1)^(j+1);
     od;
     if ch=0 then
       h[i+1]:=hi/i;
@@ -123,9 +123,9 @@ local ch,c,z,i,j,k,h,hi,his,zv,f;
     if ch>0 then
       f:=f mod ch;
     fi;
-  od; 
+  od;
   p:=p{[2..nn+1]};
-  c:=ElsymsPowersums(p,nn); 
+  c:=ElsymsPowersums(p,nn);
   for i in [1..nn] do
     c[i]:=c[i]*(-1)^i;
   od;
@@ -179,7 +179,7 @@ local cc,den,ch,n,nn,p,fam,i,j,w,pl,b,c,k,mp,degs,newdeg,ndeg,mc,rest;
     b:=0;
     for i in [1..nn] do
       b:=Maximum(w^i*Binomial(nn,i),b);
-    od; 
+    od;
 
     p:=Maximum(nn+1,10000);
     mp:=1;
@@ -214,7 +214,7 @@ local cc,den,ch,n,nn,p,fam,i,j,w,pl,b,c,k,mp,degs,newdeg,ndeg,mc,rest;
 #            w:=Filtered(newdeg,i->i[1]=j[1]);
 #            if w<>[] then
 #              Add(ndeg,[j[1],Minimum(w[1][2],j[2])]);
-#            fi; 
+#            fi;
 #          od;
 #          if Sum(ndeg,i->i[2])<10 then
 #            # throw away uncomplementable pieces
@@ -230,9 +230,9 @@ local cc,den,ch,n,nn,p,fam,i,j,w,pl,b,c,k,mp,degs,newdeg,ndeg,mc,rest;
 #              fi;
 #              rest:=Concatenation(List(rest,i->List([1..i[2]],j->i[1])));
 #              if (nn=w[1]) or (nn-w[1] in List(Combinations(rest),Sum)) then
-#                Add(degs,w); 
-#              fi; 
-#            od; 
+#                Add(degs,w);
+#              fi;
+#            od;
 #          else
 #            degs:=ndeg;
 #          fi;
@@ -248,7 +248,7 @@ local cc,den,ch,n,nn,p,fam,i,j,w,pl,b,c,k,mp,degs,newdeg,ndeg,mc,rest;
         w:=w-b;
       fi;
       Add(c,w);
-    od;  
+    od;
   else
     c:=SumRootsPolComp(fam,c,m,n,nn);
   fi;
@@ -295,7 +295,7 @@ local c,ch,n,nn,p,fam,i,j,h,w,q,fc;
     od;
   od;
   p:=q[m+1];
-  c:=ElsymsPowersums(p,nn); 
+  c:=ElsymsPowersums(p,nn);
   for i in [1..nn] do
     c[i]:=c[i]*(-1)^i;
   od;
@@ -373,7 +373,7 @@ local f,c,ch,n,nn,p,fam,i,j,h,w,q;
       od;
       q[i]:=w;
     od;
-    c:=ElsymsPowersums(q,nn); 
+    c:=ElsymsPowersums(q,nn);
     for i in [1..nn] do
       c[i]:=c[i]*(-1)^i;
     od;
@@ -396,7 +396,7 @@ local i,p,r,x,d;
   x:=Indeterminate(CoefficientsFamily(FamilyObj(f)),
     IndeterminateNumberOfUnivariateRationalFunction(f));
   # remember, which resolvent types already failed (most likely for
-  # smaller sums), so we won't have to use them twice! 
+  # smaller sums), so we won't have to use them twice!
   # e.g.: if 2-Sum is double, then 3-Sum will vbe double most likely!
   if not IsBound(f!.failedResolvents) then
     f!.failedResolvents:=[];
@@ -443,7 +443,7 @@ local i,p,r,x,d;
     fi;
     i:=i+1;
   od;
-  return r; 
+  return r;
 end);
 
 
@@ -491,7 +491,7 @@ local s,i,p,r,x,m,pc;
     fi;
     i:=i+1;
   od;
-  return r; 
+  return r;
 end);
 
 #############################################################################
@@ -515,7 +515,7 @@ local list,g,fu,j,k,ps,pps,sh;
   if not IsBound(list[i]) then
     sh:=Partitions(n);
     g:=TransitiveGroup(n,i);
-    fu:=List([1..Length(sh)-1],i->0); 
+    fu:=List([1..Length(sh)-1],i->0);
     for j in ConjugacyClasses(g) do
       ps:=ShallowCopy(CycleStructurePerm(Representative(j)));
       pps:=[];
@@ -573,7 +573,7 @@ local f,n,i,sh,fu,ps,pps,ind,keineu,ba,bk,j,k,a,anz,pm,
   else
     weg:=[];
   fi;
-  d:=Discriminant(f); 
+  d:=Discriminant(f);
   alt:= d>0 and ParityPol(Rationals,f)=1;
   if alt then
     cand:=Filtered(cand,i->TRANSProperties(n,i)[4]=1);
@@ -645,7 +645,7 @@ local f,n,i,sh,fu,ps,pps,ind,keineu,ba,bk,j,k,a,anz,pm,
       bk:=[i];
     elif a=ba then
       Add(bk,i);
-    fi;  
+    fi;
   od;
   bk:=Difference(bk,weg);
   return bk;
@@ -826,7 +826,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
   else
     cand:=arg[2];
   fi;
-  d:=Discriminant(f); 
+  d:=Discriminant(f);
   alt:= d>0 and ParityPol(basring,f)=1;
   if alt then
     cand:=Filtered(cand,i->TRANSProperties(n,i)[4]=1);
@@ -854,7 +854,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
     pat:=Collected(List(resf,DegreeOfUnivariateLaurentPolynomial));
 
     cand:=Filtered(cand,i->dco[i]=pat);
-    if Length(Set(co{cand}))>1 then 
+    if Length(Set(co{cand}))>1 then
       pat:=List(Collected(List(resf,i->ParityPol(basring,i)*DegreeOfUnivariateLaurentPolynomial(i))),
                 i->SignInt(i[1])*(1000*(i[2]-1)+AbsInt(i[1])));
       Sort(pat);
@@ -880,7 +880,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
     pat:=Collected(List(resf,DegreeOfUnivariateLaurentPolynomial));
 
     cand:=Filtered(cand,i->dco[i]=pat);
-    if Length(Set(co{cand}))>1 then 
+    if Length(Set(co{cand}))>1 then
       pat:=List(Collected(List(resf,i->ParityPol(basring,i)*DegreeOfUnivariateLaurentPolynomial(i))),
                 i->SignInt(i[1])*(1000*(i[2]-1)+AbsInt(i[1])));
       Sort(pat);
@@ -905,7 +905,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
     pat:=Collected(List(resf,DegreeOfUnivariateLaurentPolynomial));
 
     cand:=Filtered(cand,i->dco[i]=pat);
-    if Length(Set(co{cand}))>1 then 
+    if Length(Set(co{cand}))>1 then
       pat:=List(Collected(List(resf,i->ParityPol(basring,i)*DegreeOfUnivariateLaurentPolynomial(i))),
                 i->SignInt(i[1])*(1000*(i[2]-1)+AbsInt(i[1])));
       Sort(pat);
@@ -924,7 +924,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
   # filter out the properties we cannot use
   repro:=Filtered(repro,i->i>0);
 
-  while Length(cand)>1 and Length(repro)>0 do 
+  while Length(cand)>1 and Length(repro)>0 do
     act:=repro[1];
     repro:=Difference(repro,[act]);
     noca:=Filtered(cand,i->Length(TRANSProperties(n,i))<=8 or
@@ -951,7 +951,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
         pat:=Collected(List(resf,DegreeOfUnivariateLaurentPolynomial));
 
         cand:=Filtered(cand,i->dco[i]=pat);
-        if Length(Set(co{cand}))>1 then 
+        if Length(Set(co{cand}))>1 then
           pat:=List(Collected(List(resf,i->ParityPol(basring,i)*DegreeOfUnivariateLaurentPolynomial(i))),
                     i->SignInt(i[1])*(1000*(i[2]-1)+AbsInt(i[1])));
           Sort(pat);
@@ -1009,8 +1009,8 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
           od;
 
           for i in res do
-            if (DegreeOfUnivariateLaurentPolynomial(i) in gudeg) 
-               and (Length(Set(dco{cand}))>1) then 
+            if (DegreeOfUnivariateLaurentPolynomial(i) in gudeg)
+               and (Length(Set(dco{cand}))>1) then
               if step=1 then
                 pat:=Collected(List(Factors(extring,i),DegreeOfUnivariateLaurentPolynomial));
               else
@@ -1053,7 +1053,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
           for j in cand do
             if pat in dco[j] then
               Add(ncand,j);
-              Unbind(dco[j][Position(dco[j],pat)]); 
+              Unbind(dco[j][Position(dco[j],pat)]);
             fi;
           od;
           cand:=ncand;
@@ -1098,7 +1098,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
 
           for i in res do
 
-            if (Length(Set(co{cand}))>1) then 
+            if (Length(Set(co{cand}))>1) then
               if step=1 then
                 pat:=Collected(List(Factors(polring,i),DegreeOfUnivariateLaurentPolynomial));
               else
@@ -1168,10 +1168,10 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
                 Add(gudeg,j);
               fi;
             od;
-   
+
             for i in res do
-              if (DegreeOfUnivariateLaurentPolynomial(i) in gudeg) 
-                 and (Length(Set(dco{cand}))>1) then 
+              if (DegreeOfUnivariateLaurentPolynomial(i) in gudeg)
+                 and (Length(Set(dco{cand}))>1) then
                 if step=1 then
                   pat:=Collected(List(Factors(extring,i),DegreeOfUnivariateLaurentPolynomial));
                 else
@@ -1251,7 +1251,7 @@ local f,n,sh,p,ind,cand,noca,alt,d,df,co,dco,res,resf,pat,pps,i,j,k,
   fi;
 
   return cand[1];
-end); 
+end);
 
 InstallMethod(GaloisType,"for polynomials",true,
   [IsUnivariateRationalFunction and IsPolynomial],0,

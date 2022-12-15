@@ -16,7 +16,7 @@
 ##
 #F  ArithmeticElementCreator(<spec>)
 ##
-InstallGlobalFunction(ArithmeticElementCreator, 
+InstallGlobalFunction(ArithmeticElementCreator,
 function(spec)
   local
     makeelt,        # the function returned
@@ -51,7 +51,7 @@ function(spec)
   if IsBound(spec.Addition) then
     mathfilters :=  mathfilters and IsNearAdditiveElement;
   fi;
-    
+
   if IsBound(spec.Zero) then
     mathfilters :=  mathfilters and IsNearAdditiveElementWithZero;
   fi;
@@ -77,7 +77,7 @@ function(spec)
   fi;
 
   # declare the representastion with the single "data" component
-  rep := NewRepresentation(Concatenation(spec.ElementName,"Rep"), 
+  rep := NewRepresentation(Concatenation(spec.ElementName,"Rep"),
     repfilters, ["data"]);
   BindGlobal(Concatenation(spec.ElementName,"Rep"), rep);
 
@@ -86,7 +86,7 @@ function(spec)
   # create the family
   eFam := NewFamily(Concatenation("Element family of ", spec.ElementName),
     cat);
-  
+
   # create the type
   eType := NewType(eFam, allfilters);
 
@@ -100,7 +100,7 @@ function(spec)
     " and ",spec.ElementName);
 
   if IsBound(spec.Multiplication) then
-    InstallOtherMethod(\*, inst_str_bin, IsIdenticalObj, 
+    InstallOtherMethod(\*, inst_str_bin, IsIdenticalObj,
     [allfilters, allfilters], 0,
     function(x, y) return makeelt(spec.Multiplication(x!.data, y!.data)); end);
   fi;
@@ -116,11 +116,11 @@ function(spec)
   fi;
 
   if IsBound(spec.Addition) then
-    InstallOtherMethod(\+, inst_str_bin, IsIdenticalObj, 
+    InstallOtherMethod(\+, inst_str_bin, IsIdenticalObj,
     [allfilters, allfilters], 0,
     function(x,y) return makeelt(spec.Addition(x!.data, y!.data)); end);
   fi;
-    
+
   if IsBound(spec.Zero) then
     InstallOtherMethod(ZeroOp, inst_str, true, [allfilters], 0,
     function(x) return makeelt(spec.Zero(x!.data)); end);
@@ -132,11 +132,11 @@ function(spec)
   fi;
 
   if IsBound(spec.Equality) then
-    InstallOtherMethod(\=, inst_str_bin, IsIdenticalObj, 
+    InstallOtherMethod(\=, inst_str_bin, IsIdenticalObj,
       [allfilters, allfilters], 0,
       function(x,y) return spec!.Equality(x!.data, y!.data); end);
   else
-  InstallOtherMethod(\=, inst_str_bin, IsIdenticalObj, 
+  InstallOtherMethod(\=, inst_str_bin, IsIdenticalObj,
     [allfilters, allfilters], 0,
     function(x,y) return x!.data = y!.data; end);
   fi;
@@ -146,7 +146,7 @@ function(spec)
       [allfilters, allfilters], 0,
       function(x,y) return spec!.LessThan(x!.data, y!.data); end);
   else
-    InstallOtherMethod(\<, inst_str_bin, IsIdenticalObj, 
+    InstallOtherMethod(\<, inst_str_bin, IsIdenticalObj,
       [allfilters, allfilters], 0,
       function(x,y) return x!.data < y!.data; end);
   fi;

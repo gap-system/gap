@@ -38,7 +38,7 @@
 ##  <Index>obsolete</Index>
 ##  <Index>deprecated</Index>
 ##  <Index>legacy</Index>
-##  
+##
 ##  In general we try to keep &GAP;&nbsp;4 compatible with former releases
 ##  as much as possible.
 ##  Nevertheless,
@@ -75,10 +75,10 @@
 ##  It may be useful to omit reading these files,
 ##  for example in order to make sure that one's own &GAP; code does not rely
 ##  on the obsolete variables.
-##  For that, one can use the <C>-O</C> command line option 
-##  (see <Ref Label="Command Line Options"/>) or set the component 
-##  <C>ReadObsolete</C> in the file <F>gap.ini</F> to <K>false</K> 
-##  (see <Ref Sect="sect:gap.ini"/>). Note that <C>-O</C> command 
+##  For that, one can use the <C>-O</C> command line option
+##  (see <Ref Label="Command Line Options"/>) or set the component
+##  <C>ReadObsolete</C> in the file <F>gap.ini</F> to <K>false</K>
+##  (see <Ref Sect="sect:gap.ini"/>). Note that <C>-O</C> command
 ##  line option overrides <C>ReadObsolete</C>.
 ##  <P/>
 ##  (Note that the condition whether the library files with the obsolete
@@ -216,7 +216,7 @@ BindGlobal( "TRANSDEGREES", 30 );
 ##
 #A  NormedVectors( <V> )
 ##
-##  Moved to obsoletes in May 2003. 
+##  Moved to obsoletes in May 2003.
 ##
 ##  Not used in any redistributed package (07/2022)
 DeclareObsoleteSynonymAttr( "NormedVectors", "NormedRowVectors" );
@@ -266,7 +266,7 @@ DeclareObsoleteSynonymAttr( "NormedVectors", "NormedRowVectors" );
 ##  This variable name was never documented and is obsolete.
 ##  (It had been introduced at a time when only unary methods were allowed
 ##  for attributes.)
-## 
+##
 ##  Moved to obsolete in Dec 2007.
 ##  Not used in any redistributed package (07/2022)
 DeclareObsoleteSynonym( "FormattedString", "String" );
@@ -295,7 +295,7 @@ DeclareObsoleteSynonym( "Tuple", "DirectProductElement" );
 ##  <Func Name="RestoreStateRandom" Arg='obj'/>
 ##
 ##  <Description>
-##  [This interface to the global random generator is kept for compatibility 
+##  [This interface to the global random generator is kept for compatibility
 ##  with older versions of &GAP;. Use now <C>State(GlobalRandomSource)</C>
 ##  and <C>Reset(GlobalRandomSource, <A>obj</A>)</C> instead.]
 ##  <P/>
@@ -329,18 +329,18 @@ DeclareObsoleteSynonym( "Tuple", "DirectProductElement" );
 ##
 ############################################################################
 ##  Compatibility functions, these are documented for a long time.
-##  (We also keep the global variables R_N and R_X within the 
+##  (We also keep the global variables R_N and R_X within the
 ##  'GlobalRandomSource' because they were documented.)
-##  
+##
 # BindGlobal( "StateRandom", function()
 #   return State(GlobalRandomSource);
 # end);
-# 
+#
 # BindGlobal( "RestoreStateRandom", function(seed)
 #   Reset(GlobalRandomSource, seed);
 # end);
 
-# older documentation referred to `StatusRandom'. 
+# older documentation referred to `StatusRandom'.
 #DeclareObsoleteSynonym( "StatusRandom", "StateRandom" );
 
 # synonym formerly declared in factgrp.gd.
@@ -425,7 +425,7 @@ DeclareOperation( "TeXObj", [ IS_OBJECT ] );
 ##
 ##  <ManSection>
 ##  <Oper Name="LaTeXObj" Arg='obj'/>
-##  
+##
 ##  <Description>
 ##  The function <Ref Func="LaTeX"/> actually calls the operation
 ##  <Ref Func="LaTeXObj"/> for each argument.
@@ -537,7 +537,7 @@ DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 ##
 #F  CreateCompletionFiles( [<path>] ) . . . . . . create "lib/readX.co" files
 ##
-##  NO LONGER SUPPORTED IN GAP >= 4.5 
+##  NO LONGER SUPPORTED IN GAP >= 4.5
 ##
 # BindGlobal( "CreateCompletionFiles", function()
 #   Print("CreateCompletionFiles: Completion files are no longer supported by GAP.\n");
@@ -574,7 +574,7 @@ DeclareObsoleteSynonym( "MultRowVector", "MultVector" );
 
 #############################################################################
 ##
-#O  ReadTest 
+#O  ReadTest
 ##
 ##  `ReadTest' is superseded by more robust and flexible `Test'. Since the
 ##  former is still used in some packages, for backwards compatibility we
@@ -625,7 +625,7 @@ DeclareObsoleteSynonym( "RecFields", "RecNames" );
 
 #############################################################################
 ##
-#V  InfoRead? 
+#V  InfoRead?
 ##
 ##  InfoRead used to be used to print when a file is read using `Read()`
 ##
@@ -765,3 +765,19 @@ DeclareSynonym( "FirstOp", First );
 ##
 ##  Still used in autpgrp, crisp, sophus (07/2022)
 DeclareObsoleteSynonym( "RadicalGroup", "SolvableRadical" );
+
+
+#############################################################################
+##
+##  Not used in any redistributed package
+DeclareObsoleteSynonym( "ZeroSM", "ZeroSameMutability" );
+DeclareObsoleteSynonym( "AdditiveInverseSM", "AdditiveInverseSameMutability" );
+DeclareObsoleteSynonym( "OneSM", "OneSameMutability" );
+DeclareObsoleteSynonym( "InverseSM", "InverseSameMutability" );
+
+DeclareObsoleteSynonymAttr( "ZeroAttr", "ZeroImmutable" );
+DeclareObsoleteSynonymAttr( "AdditiveInverseAttr", "AdditiveInverseImmutable" );
+DeclareObsoleteSynonymAttr( "OneAttr", "OneImmutable" );
+DeclareObsoleteSynonymAttr( "InverseAttr", "InverseImmutable" );
+
+DeclareObsoleteSynonymAttr( "TransposedMatAttr", "TransposedMatImmutable" );

@@ -9,7 +9,7 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##  This file should possibly be called vec8bit.g  (see also vecmat.gd)
-##  It provides some things that the kernel needs from the library 
+##  It provides some things that the kernel needs from the library
 ##
 
 #############################################################################
@@ -46,7 +46,7 @@ MakeImmutable(PRIMES_COMPACT_FIELDS);
 ##  <Ref Filt="Is8BitVectorRep"/> is a subrepresentation of
 ##  <Ref Filt="IsDataObjectRep"/>, the entries are packed into bytes.
 ##
-DeclareRepresentation( "Is8BitVectorRep", 
+DeclareRepresentation( "Is8BitVectorRep",
         IsDataObjectRep and IsVectorObj
     and IsCopyable
     and IsNoImmediateMethodsObject

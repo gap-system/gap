@@ -39,12 +39,12 @@ local reuse, idn, nbound, p, i,str;
   i:=1;
   while Length(idn)<cnt do
     nbound:=IsBound(nam[Length(idn)+1]);
-    if nbound then 
+    if nbound then
       str:=nam[Length(idn)+1];
     else
       str:=fail;
     fi;
-    if nbound and Length(str)>2 and str[1]='x' and str[2]='_' 
+    if nbound and Length(str)>2 and str[1]='x' and str[2]='_'
      and ForAll(str{[3..Length(str)]},IsDigitChar) then
       p:=Int(str{[3..Length(str)]});
       if IsPosInt(p) then
@@ -102,7 +102,7 @@ end);
 ##
 
 #############################################################################
-InstallMethod( PolynomialRing,"indetlist", true, [ IsRing, IsList ], 
+InstallMethod( PolynomialRing,"indetlist", true, [ IsRing, IsList ],
 # force higher ranking than following (string) method
   1,
 function( r, n )
@@ -130,11 +130,11 @@ function( r, n )
       fi;
     fi;
 
-    if Length(n)=1 
+    if Length(n)=1
       # some bozo might put in a ridiculous number
-      and n[1]<10000 
+      and n[1]<10000
       # only cache for the prime field
-      and IsField(r) 
+      and IsField(r)
       and IsBound(r!.univariateRings[n[1]]) then
       return r!.univariateRings[n[1]];
     fi;
@@ -217,7 +217,7 @@ function( r, n )
     fi;
 
 
-    if Length(n)=1 and n[1]<10000 
+    if Length(n)=1 and n[1]<10000
       # only cache for the prime field
       and IsField(r) then
       r!.univariateRings[n[1]]:=prng;
@@ -601,7 +601,7 @@ function(R)
   if IsFinite(inds) then
     n:=Length(inds);
   else
-    n:=1000; 
+    n:=1000;
   fi;
   nrterms:=20+Random(-19,100+n);
   degbound:=RootInt(nrterms,n)+3;
@@ -647,7 +647,7 @@ InstallMethod(FunctionField,"indetlist",true,[IsRing,IsList],
   1,
 function(r,n)
   local efam,rfun,zero,one,ind,type,fcfl,i;
-  if not IsIntegralRing(r) then 
+  if not IsIntegralRing(r) then
     Error("function fields can only be generated over integral rings");
   fi;
   if IsRationalFunctionCollection(n) and ForAll(n,IsLaurentPolynomial) then
@@ -672,7 +672,7 @@ function(r,n)
   od;
 
   # construct a polynomial ring
-  type := IsFunctionField and IsAttributeStoringRep and IsLeftModule 
+  type := IsFunctionField and IsAttributeStoringRep and IsLeftModule
           and IsAlgebraWithOne;
 
   fcfl := Objectify(NewType(CollectionsFamily(rfun),type),rec());;
@@ -857,7 +857,7 @@ InstallMethod( ImagesSet,
     [ IsGeneralMapping and IsPolynomialRingDefaultGeneratorMapping,
       IsRing ],
     function( map, sub )
-      if HasGeneratorsOfTwoSidedIdeal(sub) 
+      if HasGeneratorsOfTwoSidedIdeal(sub)
 	and (HasLeftActingRingOfIdeal(sub) and
 	    IsSubset(LeftActingRingOfIdeal(sub),Source(map)) )
 	and (HasRightActingRingOfIdeal(sub) and

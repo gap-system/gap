@@ -1790,7 +1790,7 @@ void IntrIntExpr(IntrState * intr, Obj string, Char * str)
     /* ignore or code                                                      */
     SKIP_IF_RETURNING();
     SKIP_IF_IGNORING();
-    
+
     Obj val = IntStringInternal(string, str);
     GAP_ASSERT(val != Fail);
 
@@ -1918,12 +1918,9 @@ void IntrFalseExpr(IntrState * intr)
 
 /****************************************************************************
 **
-*F  IntrTildeExpr()  . . . . . . . . . . . . interpret tilde expression
+*F  IntrTildeExpr() . . . . . . . . . . . . . . .  interpret tilde expression
 **
 **  'IntrTildeExpr' is the action to interpret a tilde expression.
-**
-**  'Tilde' is the identifier for the operator '~', used in
-**  expressions such as '[ [ 1, 2 ], ~[ 1 ] ]'.
 **
 */
 void IntrTildeExpr(IntrState * intr)
@@ -1936,7 +1933,7 @@ void IntrTildeExpr(IntrState * intr)
         return;
     }
 
-    if(! (STATE(Tilde)) ) {
+    if (!STATE(Tilde)) {
         // this code should be impossible to reach, the parser won't allow us
         // to get here; but we leave it here out of paranoia
         ErrorQuit("'~' does not have a value here", 0, 0);

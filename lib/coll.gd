@@ -231,8 +231,8 @@ fi;
 ##
 BIND_GLOBAL( "CategoryCollections", function ( elms_filter )
     local    pair, super, flags, name, coll_filter, len;
-    
-    # check once with read lock -- common case 
+
+    # check once with read lock -- common case
     atomic readonly CATEGORIES_COLLECTIONS do
     # Check whether the collections category is already defined.
     for pair in CATEGORIES_COLLECTIONS do
@@ -244,7 +244,7 @@ BIND_GLOBAL( "CategoryCollections", function ( elms_filter )
       len := LENGTH(CATEGORIES_COLLECTIONS);
     fi;
     od; # end atomic
-    
+
     # that failed, so get exclusive lock as we may need to modify
     atomic readwrite CATEGORIES_COLLECTIONS do
     if IsHPCGAP then
@@ -257,7 +257,7 @@ BIND_GLOBAL( "CategoryCollections", function ( elms_filter )
         od;
       fi;
     fi;
-    
+
     # Find the super category among the known collections categories.
     super := IsCollection;
     flags := WITH_IMPS_FLAGS( FLAGS_FILTER( elms_filter ) );
@@ -1132,7 +1132,7 @@ end );
 ##  The filter <Ref Filt="IsStandardIterator"/> means that the iterator is
 ##  implemented as a component object and has components <C>IsDoneIterator</C>
 ##  and <C>NextIterator</C> which are bound to the methods of the operations of
-##  the same name for this iterator. 
+##  the same name for this iterator.
 ##  <!-- (This is used to avoid overhead when looping over such iterators.) -->
 ##  <!--  We wanted to admit an iterator as first argument of <C>Filtered</C>,-->
 ##  <!--  <C>First</C>, <C>ForAll</C>, <C>ForAny</C>, <C>Number</C>.-->
@@ -1258,7 +1258,7 @@ DeclareOperation( "IsDoneIterator", [ IsIterator ] );
 ##  10
 ##  gap> ir:= Iterator( Rationals );;
 ##  gap> l:= [];; for i in [1..20] do Add( l, NextIterator( ir ) ); od; l;
-##  [ 0, 1, -1, 1/2, 2, -1/2, -2, 1/3, 2/3, 3/2, 3, -1/3, -2/3, -3/2, -3, 
+##  [ 0, 1, -1, 1/2, 2, -1/2, -2, 1/3, 2/3, 3/2, 3, -1/3, -2/3, -3/2, -3,
 ##    1/4, 3/4, 4/3, 4, -1/4 ]
 ##  gap> for i in ir do
 ##  >      if DenominatorRat( i ) > 10 then break; fi;
@@ -1624,8 +1624,8 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##
 ##  <Description>
 ##  <!-- to get this on top of results for ?Random -->
-##  <Index Key="Random"><Ref Oper="Random" 
-##                           Label="for a list or collection"/></Index> 
+##  <Index Key="Random"><Ref Oper="Random"
+##                           Label="for a list or collection"/></Index>
 ##  <Ref Oper="Random" Label="for a list or collection"/> returns a
 ##  (pseudo-)random element of the dense, nonempty list or nonempty
 ##  collection <A>listorcoll</A>.
@@ -1633,7 +1633,7 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##  (see <Ref Filt="IsDenseList"/>, <Ref Prop="IsEmpty"/>)
 ##  is undefined.
 ##  <P/>
-##  As lists or ranges are restricted in length (<M>2^{28}-1</M> or 
+##  As lists or ranges are restricted in length (<M>2^{28}-1</M> or
 ##  <M>2^{60}-1</M> depending on your system), the second form returns a
 ##  random integer in the range <A>from</A> to <A>to</A> (inclusive) for
 ##  arbitrary integers <A>from</A> and <A>to</A>.
@@ -1660,7 +1660,7 @@ DeclareAttribute( "RepresentativeSmallest", IsListOrCollection );
 ##  For some collections ensuring a reasonable distribution can be
 ##  difficult and require substantial runtime (for example for large
 ##  finite groups). If speed is more important than a guaranteed
-##  distribution, 
+##  distribution,
 ##  the operation <Ref Oper="PseudoRandom"/> should be used instead.
 ##  <P/>
 ##  Note that <Ref Oper="Random" Label="for a list or collection"/>
@@ -1694,7 +1694,7 @@ DeclareOperation( "Random", [ IS_INT, IS_INT ] );
 ##  type object.
 ##  <P/>
 ##  Most methods which produce random elements in &GAP; use a global random
-##  number generator (see <Ref Var="GlobalMersenneTwister"/>).  
+##  number generator (see <Ref Var="GlobalMersenneTwister"/>).
 ##  This random number generator is (deliberately) initialized to the same
 ##  values when &GAP; is started, so different runs of &GAP; with the same
 ##  input will always produce the same result, even if random calculations
@@ -2070,12 +2070,12 @@ DeclareAttribute( "UnderlyingCollection", IsListOrCollection );
 ##  <Func Name="List" Arg='list[, func]' Label="for a list (and a function)"/>
 ##
 ##  <Description>
-##  This function returns a new mutable list <C>new</C> of the same length 
-##  as the list <A>list</A> (which may have holes). The entry <C>new[i]</C> 
-##  is unbound if <C><A>list</A>[i]</C> is unbound. Otherwise 
+##  This function returns a new mutable list <C>new</C> of the same length
+##  as the list <A>list</A> (which may have holes). The entry <C>new[i]</C>
+##  is unbound if <C><A>list</A>[i]</C> is unbound. Otherwise
 ##  <C>new[i] = <A>func</A>(<A>list</A>[i])</C>. If the argument <A>func</A> is
 ##  omitted, its default is <Ref Func="IdFunc"/>, so this function does the
-##  same as <Ref Oper="ShallowCopy"/> (see also 
+##  same as <Ref Oper="ShallowCopy"/> (see also
 ##  <Ref Sect="Duplication of Lists"/>).
 ##  <P/>
 ##  Developers who wish to adapt this for custom list or collection types need to
@@ -2838,8 +2838,8 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##  gap> l:= [ 1, 2, 3, 4 ];;
 ##  gap> pair:= function( x, y ) return [ x, y ]; end;;
 ##  gap> ListX( l, l, pair );
-##  [ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 1 ], [ 2, 2 ], 
-##    [ 2, 3 ], [ 2, 4 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], [ 3, 4 ], 
+##  [ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 1 ], [ 2, 2 ],
+##    [ 2, 3 ], [ 2, 4 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], [ 3, 4 ],
 ##    [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ]
 ##  ]]></Example>
 ##  <P/>
@@ -2926,7 +2926,7 @@ DeclareGlobalFunction( "ProductX" );
 ##  It does not return a value.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> l := [1, 2, 3];; Perform(l, 
+##  gap> l := [1, 2, 3];; Perform(l,
 ##  > function(x) if IsPrimeInt(x) then Print(x,"\n"); fi; end);
 ##  2
 ##  3
@@ -3099,7 +3099,7 @@ DeclareOperation( "Intersection2",
 ##  gap> Union( [ ] );
 ##  [  ]
 ##  ]]></Example><P/>
-##  When computing the Union of lists or sets of small integers and ranges, 
+##  When computing the Union of lists or sets of small integers and ranges,
 ##  every attempt is made to return the result as a range and to avoid expanding
 ##  ranges provided as input.
 ##  </Description>

@@ -67,7 +67,7 @@ PrintCounters := function()
     Print( "c (b a) : ", PQStatistics.TailCountCBA, "\n" );
 end;
 
-ClearPQuotientStatistics := function() 
+ClearPQuotientStatistics := function()
 
     PQStatistics.TailCountBNA := 0;
     PQStatistics.TailCountBAN := 0;
@@ -83,7 +83,7 @@ end;
 ##
 ##  The  following  functions work  with a lower trianguar matrix (LTM).  A
 ##  LTM may have the following shape where . (*) denotes a (non-) zero entry:
-##  
+##
 ##                      . . . . . . . . . . . . . .
 ##                      . . . . . . . . . . . . . .
 ##                      . . . . . . . . . . . . . .
@@ -177,11 +177,11 @@ AddVectorLTM := function( LTM, v )
 
         LTM.matrix[ trailingEntry ] := v;
 
-        i := PositionSorted( LTM.bound, trailingEntry, 
+        i := PositionSorted( LTM.bound, trailingEntry,
                      function( a,b ) return a > b; end );
         Add( LTM.bound, trailingEntry, i );
     fi;
-    
+
 end;
 
 #############################################################################
@@ -195,7 +195,7 @@ RowEchelonFormLTM := function( LTM )
         for j in [i+1..LTM.dimension] do
             if IsBound(LTM.matrix[j]) then
                 LTM.matrix[j] := LTM.matrix[j]
-                                 - LTM.matrix[j][i] * LTM.matrix[i]; 
+                                 - LTM.matrix[j][i] * LTM.matrix[i];
             fi;
         od;
     od;
@@ -261,7 +261,7 @@ function( qs, def )
 end );
 
 #############################################################################
-##  
+##
 #M  GetDefinitionNC . . . . . . . . . . . . get the definition of a generator
 ##
 InstallMethod( GetDefinitionNC, true, [IsPQuotientSystem, IsPosInt], 0,
@@ -342,7 +342,7 @@ NumberOfNewGenerators := function( qs )
 
         ##  -- Note the number of p-cover generators --
         if cl = LengthOfDescendingSeries(qs) then
-            qs!.numberOfNucleusGenerators := 
+            qs!.numberOfNucleusGenerators :=
               nong - Length(qs!.images);
         fi;
     od;
@@ -351,7 +351,7 @@ NumberOfNewGenerators := function( qs )
     ##  definition,  we have to subtract the number of generators.
     nong := nong - qs!.numberOfGenerators;
 
-    qs!.numberOfPseudoGenerators := 
+    qs!.numberOfPseudoGenerators :=
       nong - qs!.numberOfEpimGenerators - qs!.numberOfNucleusGenerators;
 
     return nong;
@@ -366,7 +366,7 @@ InitialiseCentralRelations := function( qs )
     ##  We call the relations obtained by the consistency check and the
     ##  evaluation of relations `central relations'.  They are stored as a
     ##  (lower triangular) matrix over GF(p).
-    qs!.centralRelations := 
+    qs!.centralRelations :=
       LowerTriangularMatrix( NumberOfNewGenerators( qs ), GF(qs!.prime) );
 end;
 
@@ -401,7 +401,7 @@ InstallMethod( IncorporateCentralRelations,
         true,
         [ IsPQuotientSystem ], 0,
 function( qs )
-    local   M,  coll,  one,  type,  i,  pair,  g,  wt,  wth,  
+    local   M,  coll,  one,  type,  i,  pair,  g,  wt,  wth,
             h,  w;
 
     M := CentralRelations( qs );
@@ -409,13 +409,13 @@ function( qs )
     one := One( qs!.field );
     type := coll![SCP_DEFAULT_TYPE];
 
-    
+
     ##  At first we run through the images.
     for i in qs!.nonDefiningImages do
         pair := SplitWordTail( qs, qs!.images[i] );
-        pair[2] := ExtRepByTailVector( qs, 
+        pair[2] := ExtRepByTailVector( qs,
                            ReducedVectorLTM( M, pair[2] * one ));
-        qs!.images[i] := 
+        qs!.images[i] :=
           AssocWord( type, Concatenation( pair[1], pair[2] ) );
     od;
 
@@ -423,7 +423,7 @@ function( qs )
     for g in [1..GeneratorNumberOfQuotient(qs)] do
         w := qs!.collector![SCP_INVERSES][g];
         pair := SplitWordTail( qs, w );
-        pair[2] := ExtRepByTailVector( qs, 
+        pair[2] := ExtRepByTailVector( qs,
                            ReducedVectorLTM( M, pair[2] * one ) );
         qs!.collector![SCP_INVERSES][g] :=
                 AssocWord( type, Concatenation( pair[1], pair[2] ) );
@@ -432,7 +432,7 @@ function( qs )
     ##  Run through the power relations.
     for g in [1..GeneratorNumberOfQuotient(qs)] do
         pair := SplitWordTail( qs, GetPowerNC( qs!.collector, g ) );
-        pair[2] := ExtRepByTailVector( qs, 
+        pair[2] := ExtRepByTailVector( qs,
                            ReducedVectorLTM( M, pair[2] * one ) );
         SetPowerANC( qs!.collector, g,
                 AssocWord( type, Concatenation( pair[1], pair[2] ) ) );
@@ -445,13 +445,13 @@ function( qs )
             for h in GeneratorsOfLayer( qs, wth ) do
                 for g in GeneratorsOfLayer( qs, wt - wth ) do
                     if g >= h then break; fi;
-                    
+
                     pair := SplitWordTail( qs,
                                     GetConjugateNC( qs!.collector, h, g ) );
-                    pair[2] := ExtRepByTailVector( qs, 
+                    pair[2] := ExtRepByTailVector( qs,
                                        ReducedVectorLTM( M, pair[2] * one ) );
                     SetConjugateANC( qs!.collector, h, g,
-                            AssocWord( type, 
+                            AssocWord( type,
                                     Concatenation( pair[1], pair[2] ) ) );
 
                 od;
@@ -467,7 +467,7 @@ function( qs )
     od;
 
     ##  Keep the eliminated generators.
-    qs!.eliminatedGens := Union( qs!.eliminatedGens, 
+    qs!.eliminatedGens := Union( qs!.eliminatedGens,
              TrailingEntriesLTM( CentralRelations( qs ) ) );
 
     ##  Throw away the central relations.
@@ -480,7 +480,7 @@ end );
 #F  UpdateWeightInfo  . . . . . . . . . . . . . update the weight information
 ##
 UpdateWeightInfo := function( qs )
-    local   n,  nhwg,  ranks,  class,  last_in_cl,  avector,  cl,  wt,  
+    local   n,  nhwg,  ranks,  class,  last_in_cl,  avector,  cl,  wt,
             avc2,  g,  h;
 
     n     := GeneratorNumberOfQuotient(qs);
@@ -548,26 +548,26 @@ function( qs )
                 if g >= h then break; fi;
                 if not [h,g] in qs!.definitions then
                     n := n+1;
-                    SetConjugateANC( qs!.collector, h, g, 
-                            GetConjugateNC( qs!.collector, h, g ) 
+                    SetConjugateANC( qs!.collector, h, g,
+                            GetConjugateNC( qs!.collector, h, g )
                             * gens[n] );
                     SetDefinitionNC( qs, n, [h,g] );
-                    Info( InfoQuotientSystem, 4, "    Defining ", 
+                    Info( InfoQuotientSystem, 4, "    Defining ",
                           TraceDefinition( qs, n ), " = ", n );
                 fi;
             od;
         od;
 
         ##  A p-th power of a generator defines a new generator if the
-        ##  generator was itself defined by a p-th power. 
+        ##  generator was itself defined by a p-th power.
         for g in GeneratorsOfLayer( qs, cl ) do
             if not g in qs!.definitions then
                 if IsInt( GetDefinitionNC( qs , g ) ) then
                     n := n+1;
-                    SetPowerANC( qs!.collector, g, 
+                    SetPowerANC( qs!.collector, g,
                             GetPowerNC( qs!.collector, g ) * gens[n] );
                     SetDefinitionNC( qs, n, g );
-                    Info( InfoQuotientSystem, 4, "    Defining ", 
+                    Info( InfoQuotientSystem, 4, "    Defining ",
                           TraceDefinition( qs, n ), " = ", n );
                 else
                     qs!.isDefiningPower[ g ] := false;
@@ -575,7 +575,7 @@ function( qs )
             fi;
         od;
     od;
- 
+
     ##  Define a new generator for each non-defining image.
     for g in qs!.nonDefiningImages do
         n := n+1;
@@ -584,7 +584,7 @@ function( qs )
     od;
 
     qs!.numberOfHighestWeightGenerators := n - GeneratorNumberOfQuotient(qs);
-    Info( InfoQuotientSystem, 2, "  Defined ", 
+    Info( InfoQuotientSystem, 2, "  Defined ",
           qs!.numberOfHighestWeightGenerators, " new generators" );
 
     UpdateWeightInfo( qs );
@@ -638,7 +638,7 @@ InstallMethod( ExtRepByTailVector,
 function( qs, v )
     local   extrep,  i,  zero;
 
-    extrep := [];    
+    extrep := [];
     if IsInt( v[1] ) then
         for i in [1..Length(v)] do
             if v[i] <> 0 then
@@ -658,7 +658,7 @@ function( qs, v )
     return extrep;
 end );
 
-        
+
 #############################################################################
 ##
 #M  TailsInverses . . compute the tails of the inverses in a single collector
@@ -668,7 +668,7 @@ InstallMethod( TailsInverses,
         true,
         [ IsPQuotientSystem ], 0,
 function( qs )
-    local   n,  h,  M,  type,  inverses,  v,  zeroes,  g,  
+    local   n,  h,  M,  type,  inverses,  v,  zeroes,  g,
             t;
 
     n := GeneratorNumberOfQuotient(qs);
@@ -681,13 +681,13 @@ function( qs )
     v      := ListWithIdenticalEntries( h, 0 );
     zeroes := v{[n+1..h]};
     for g in [1..n] do
-        repeat 
+        repeat
             v[g] := 1;
         until CollectWordOrFail( qs!.collector, v, inverses[g] ) = true;
 
         t := ExtRepByTailVector( qs, ReducedVectorLTM( M, -v{[n+1..h]} ) );
-        
-        inverses[g] := 
+
+        inverses[g] :=
           AssocWord( type, Concatenation( ExtRepOfObj( inverses[g] ), t ) );
 
         v{[n+1..h]} := zeroes;
@@ -704,7 +704,7 @@ InstallMethod( ComputeTails,
         true,
         [ IsPQuotientSystem ], 0,
 function( qs )
-    local   S,  gens,  p,  type,  n,  m,  l,  r,  zeroes,  c,  g,  
+    local   S,  gens,  p,  type,  n,  m,  l,  r,  zeroes,  c,  g,
             def,  b,  a,  t,  u,  y,  z,  x;
 
     S := qs!.collector;
@@ -717,7 +717,7 @@ function( qs )
     l := ListWithIdenticalEntries( m, 0 );
     r := ListWithIdenticalEntries( m, 0 );
     zeroes := ListWithIdenticalEntries( m, 0 );
-                    
+
     for c in Reversed( [1..LengthOfDescendingSeries(qs)] ) do
 
         ##  Compute tails for the power relations.
@@ -733,15 +733,15 @@ function( qs )
                 EvaluateOverlapBNA( S, l, r, b, p, a );
 
                 IncreaseCounter( "TailCountBNA" );
-                    
+
                 t := ExtRepByTailVector( qs, l{[n+1..m]} - r{[n+1..m]} );
-                    
+
                 SetPowerANC( S, g, GetPowerNC( S,g ) * AssocWord( type,t ) );
 
                 l{[1..m]} := zeroes;  r{[1..m]} := zeroes;
             fi;
         od;
-        
+
         ##  The conjugate relations.
         ##  a is the weight of the first generator, b the weight of the
         ##  second generator in a commutator.  Their sum is c.
@@ -757,10 +757,10 @@ function( qs )
                         if z > u then
                             IncreaseCounter( "TailCountBAN" );
                             EvaluateOverlapBAN( S, l, r, z, y, p );
-                            t := ExtRepByTailVector( qs, 
+                            t := ExtRepByTailVector( qs,
                                          l{[n+1..m]} - r{[n+1..m]} );
-                    
-                            SetConjugateANC( S, z, u, 
+
+                            SetConjugateANC( S, z, u,
                                     GetConjugateNC( S,z,u )
                                     * AssocWord( type,t ) );
 
@@ -773,12 +773,12 @@ function( qs )
                         if z > u then
                             IncreaseCounter( "TailCountCBA" );
                             EvaluateOverlapCBA( S, l, r, z, y, x );
-                            
-                            t := ExtRepByTailVector( qs, 
+
+                            t := ExtRepByTailVector( qs,
                                          l{[n+1..m]} - r{[n+1..m]} );
-                    
-                            SetConjugateANC( S, z, u, 
-                                    GetConjugateNC( S, z, u ) 
+
+                            SetConjugateANC( S, z, u,
+                                    GetConjugateNC( S, z, u )
                                     * AssocWord( type,t ) );
 
                             l{[1..m]} := zeroes;  r{[1..m]} := zeroes;
@@ -836,7 +836,7 @@ function( qs )
         wt := wt + 1;
     od;
 
-    ## 
+    ##
     ##  Check all overlaps  b a^p  for  b > a and  wt(b)+wt(a) < class.
     ##
     which := "ConsCountBAN";
@@ -857,7 +857,7 @@ function( qs )
                     ##  Therefore, we only want to invoke EvaluateBAN() for
                     ##  those b with b <= c.
 
-                    if bs[ 1 ] > c then 
+                    if bs[ 1 ] > c then
                         bs := [];
                     elif c <= bs[ Length(bs) ] then
                         bs := [bs[1]..c];
@@ -865,16 +865,16 @@ function( qs )
                 fi;
 
                 for b in bs do
-                    if a < b then 
+                    if a < b then
                         EvaluateOverlapBAN( S, l, r, b, a, p );
                         IncreaseCounter( which );
 
-                        if CHECK and 
+                        if CHECK and
                            l{[1..n]} - r{[1..n]} <> zeroes{[1..n]} then
                             Error( "result not a tail" );
                         fi;
                         AddVectorLTM( M, l{[n+1..m]} - r{[n+1..m]} );
-                        
+
                         l{[1..m]} := zeroes; r{[1..m]} := zeroes;
                     fi;
                 od;
@@ -883,7 +883,7 @@ function( qs )
         od;
     od;
     ##
-    ##  Check all overlaps b^p a for b > a, wt(a) = 1 and 
+    ##  Check all overlaps b^p a for b > a, wt(a) = 1 and
     ##  wt(a) + wt(b) < class.  Hence wt(b) < class - 1.
     ##
     which := "ConsCountBNA";
@@ -892,7 +892,7 @@ function( qs )
         for b in GeneratorsOfLayer( qs, wtb ) do
             for a in GeneratorsOfLayer( qs, 1 ) do
                 if a >= b then break; fi;
-                
+
                 pos := Position( qs!.definitions, [b,a] );
                 if pos = fail or pos > qs!.numberOfGenerators then
 
@@ -903,7 +903,7 @@ function( qs )
                         Error( "result not a tail" );
                     fi;
                     AddVectorLTM( M, l{[n+1..m]} - r{[n+1..m]} );
-                    
+
                     l{[1..m]} := zeroes; r{[1..m]} := zeroes;
                 fi;
             od;
@@ -911,9 +911,9 @@ function( qs )
         wtb := wtb + 1;
     od;
 
-                
+
     ##
-    ##  Check overlaps c b a with c > b > a and wt(a) = 1 and 
+    ##  Check overlaps c b a with c > b > a and wt(a) = 1 and
     ##  wt(a) + wt(b) + wt(c) <= class.
     ##
     ##  Since wt(a) = 1 and wt(b) <= wt(c) we can reformulate the above
@@ -933,12 +933,12 @@ function( qs )
 
                     for a in GeneratorsOfLayer( qs, 1 ) do
                         if a >= b then break; fi;
-                        
+
                         pos := Position( qs!.definitions, [b,a] );
-                        if pos = fail or pos > qs!.numberOfGenerators 
+                        if pos = fail or pos > qs!.numberOfGenerators
                            or pos >= c then
                             EvaluateOverlapCBA( S, l, r, c, b, a );
-                            
+
             if CHECK and l{[1..n]} - r{[1..n]} <> zeroes{[1..n]} then
                 Error( "result not a tail" );
             fi;
@@ -965,7 +965,7 @@ InstallMethod( RenumberHighestWeightGenerators,
         true,
         [ IsPQuotientSystem ], 0,
 function( qs )
-    local   n,  c,  gens,  surgens,  oldgens,  newgens,  g,  
+    local   n,  c,  gens,  surgens,  oldgens,  newgens,  g,
             i,  w,  h,  wt,  wth,  renumber;
 
     ##  Those generators which have been eliminated from the quotient system
@@ -1006,7 +1006,7 @@ function( qs )
         w := RenumberedWord( w, renumber );
         SetPowerANC( qs!.collector, g, w );
     od;
- 
+
     ##  Run through all conjugate relations
     for wt in Reversed([2..LengthOfDescendingSeries(qs)+1]) do
         wth := wt-1;
@@ -1014,7 +1014,7 @@ function( qs )
             for h in GeneratorsOfLayer( qs, wth ) do
                 for g in GeneratorsOfLayer( qs, wt - wth ) do
                     if g >= h then break; fi;
-                    
+
                     w := GetConjugateNC( qs!.collector, h, g );
                     w := RenumberedWord( w, renumber );
                     SetConjugateANC( qs!.collector, h, g, w );
@@ -1027,8 +1027,8 @@ function( qs )
     Add( qs!.RanksOfDescendingSeries,
          qs!.numberOfHighestWeightGenerators - Length( qs!.eliminatedGens ) );
 
-    qs!.numberOfGenerators := qs!.numberOfGenerators + 
-                             qs!.numberOfHighestWeightGenerators - 
+    qs!.numberOfGenerators := qs!.numberOfGenerators +
+                             qs!.numberOfHighestWeightGenerators -
                              Length( qs!.eliminatedGens );
 
     qs!.numberOfHighestWeightGenerators := 0;
@@ -1069,7 +1069,7 @@ InstallMethod( EvaluateRelators,
         true,
         [ IsPQuotientSystem ], 0,
 function( qs )
-    local   G,  S,  n,  c,  F,  Fgens,  one,  LTM,  v,  
+    local   G,  S,  n,  c,  F,  Fgens,  one,  LTM,  v,
             zeroes,  r,  rr,  gens;
 
     G := qs!.preimage;
@@ -1095,12 +1095,12 @@ function( qs )
 #            v := EvaluateRelation( S, rr, gens );
 #        od;
         while CollectWordOrFail( S, v, rr ) = fail do
-            Info( InfoQuotientSystem, 3, 
+            Info( InfoQuotientSystem, 3,
                   "Warning: Collector failed in evaluating relator",
                   " and was restarted" );
         od;
         AddVectorLTM( LTM, v{[n+1..n+c]} );
-        
+
         v{[n+1..n+c]} := zeroes;
     od;
 end );
@@ -1140,7 +1140,7 @@ function( G, p, n, collector )
     fi;
 
     qs := rec();
-    
+
     ## The finitely presented group.
     qs.preimage := G;
 
@@ -1163,7 +1163,7 @@ function( G, p, n, collector )
     qs.nonDefiningImages := [];
 
 
-    ##  Create the collector.  
+    ##  Create the collector.
     if collector = "combinatorial" then
         qs.collector := CombinatorialCollector(
 	  FreeGroup(IsSyllableWordsFamily, n, "a" ), p );
@@ -1171,8 +1171,8 @@ function( G, p, n, collector )
         qs.collector := SingleCollector(
 	  FreeGroup(IsSyllableWordsFamily, n, "a" ), p );
     fi;
-    
-    qs.collector![SCP_INVERSES] := 
+
+    qs.collector![SCP_INVERSES] :=
       List( qs!.collector![SCP_RWS_GENERATORS], g->g^(p-1) );
     qs.collector![SCP_CLASS]   := 0;
     qs.collector![SCP_WEIGHTS] := [];
@@ -1180,7 +1180,7 @@ function( G, p, n, collector )
     ##  Number of used generators in the collector not counting the highest
     ##  weight generators.
     qs.numberOfGenerators := 0;
-    
+
     ##  Number of highest weight generators.
     qs.numberOfHighestWeightGenerators := 0;
 
@@ -1188,7 +1188,7 @@ function( G, p, n, collector )
     ##  eliminated by applying central relations to the quotient system.
     ##  These are used when generators are renumbered.
     qs.eliminatedGens := [];
-    
+
     ##  Now turn this into a new object.
     fam  := NewFamily( "QuotientSystem", IsQuotientSystem );
     type := NewType( fam, IsPQuotientSystem and IsMutable and IsComponentObjectRep );
@@ -1198,7 +1198,7 @@ function( G, p, n, collector )
 end );
 
 #############################################################################
-##  
+##
 #M  GeneratorNumberOfQuotient . . . . . . . .  generator number of p-quotient
 ##
 InstallMethod( GeneratorNumberOfQuotient,
@@ -1225,9 +1225,9 @@ function( qs, cl )
     return s + [1..ranks[cl]];
 end );
 
-    
+
 #############################################################################
-##  
+##
 #M  LengthOfDescendingSeries  . . . . . . . . length of the descending series
 ##
 InstallMethod( LengthOfDescendingSeries,
@@ -1238,9 +1238,9 @@ function( qs )
     return Length(RanksOfDescendingSeries(qs));
 end );
 
-    
+
 #############################################################################
-##  
+##
 #M  RanksOfDescendingSeries . . ranks of the factors in the descending series
 ##
 InstallMethod( RanksOfDescendingSeries,
@@ -1251,7 +1251,7 @@ function( qs )
     return qs!.RanksOfDescendingSeries;
 end );
 
-    
+
 #############################################################################
 ##
 #M  CheckConsistencyOfDefinitions . . . . .  check consistency of definitions
@@ -1275,11 +1275,11 @@ function( qs )
     od;
 
     ##  Is each pair of generators marked as defining conjugate contained in
-    ##  .definitions? 
+    ##  .definitions?
     for h in [1..GeneratorNumberOfQuotient(qs)
             -RanksOfDescendingSeries(qs)[LengthOfDescendingSeries(qs)]] do
         for g in [1..Minimum( RanksOfDescendingSeries(qs)[1], h-1 )] do
-            if qs!.isDefiningConjugate[ 
+            if qs!.isDefiningConjugate[
                        QuotSysIndexByDefinition( qs, [h,g] ) ] and
                not [h,g] in qs!.definitions then
                 Print( "#W  Generator pair ", [h,g] );
@@ -1289,7 +1289,7 @@ function( qs )
             fi;
         od;
     od;
-            
+
     ##  Is each definition marked in .definingPower or .definingConjugate?
     for def in qs!.definitions do
         if IsPosInt( def ) then
@@ -1302,7 +1302,7 @@ function( qs )
         elif IsInt( def ) then
             ## check defining images
         else
-            if not qs!.isDefiningConjugate[ 
+            if not qs!.isDefiningConjugate[
                        QuotSysIndexByDefinition( qs, def ) ] then
                 Print( "#W  The conjugate pair ", def );
                 Print( " defines a generator.\n" );
@@ -1315,12 +1315,12 @@ function( qs )
 end );
 
 #############################################################################
-##  
+##
 #F  AbelianPQuotient  . . . . . . . . . . .  initialize an abelian p-quotient
 ##
 InstallGlobalFunction( AbelianPQuotient,
 function( qs )
-    local   G,  one,  n,  gens,  LTM,  trailers,  d,  
+    local   G,  one,  n,  gens,  LTM,  trailers,  d,
             generators,  i,  r,  l;
 
     # Setup some variables.
@@ -1347,7 +1347,7 @@ function( qs )
 
     ##  The generator numbers of the p-quotient
     generators := DifferenceLists( [1..n], trailers );
-    
+
     ##  Their images are the first d generators.
     qs!.images{ generators } := gens{[1..d]};
 
@@ -1361,7 +1361,7 @@ function( qs )
             l := l+1;
             r := ShallowCopy(-LTM.matrix[i]);
             r[ trailers[l] ] := 0;
-            qs!.images[ trailers[l] ] := 
+            qs!.images[ trailers[l] ] :=
               ObjByExponents( qs!.collector, List( r{generators}, Int ) );
         fi;
     od;
@@ -1371,7 +1371,7 @@ function( qs )
 
     ##  Update the weight information
     qs!.collector![SCP_CLASS] := 1;
-    qs!.collector![SCP_WEIGHTS]{[1..qs!.numberOfGenerators]} := 
+    qs!.collector![SCP_WEIGHTS]{[1..qs!.numberOfGenerators]} :=
       [1..qs!.numberOfGenerators] * 0 + 1;
 
 end );
@@ -1396,7 +1396,7 @@ function( arg )
     if not IsFpGroup( G ) then
         Error( "The first argument must be a finitely presented group" );
     fi;
-    
+
     p := arg[2];
     if not (IsInt(p) and p > 0 and IsPrime( p )) then
         Error( "The second argument must be a positive prime" );
@@ -1421,7 +1421,7 @@ function( arg )
             if not ngens > 0 then
                 Error( "If the fourth argument is present and an integer,",
                        " then it is the initial number of generators in the",
-                       " collector and must be a positive integer" ); 
+                       " collector and must be a positive integer" );
             fi;
         elif IsString( arg[4] ) then
             collector := arg[4];
@@ -1433,7 +1433,7 @@ function( arg )
             fi;
         fi;
     fi;
-            
+
     if Length( arg ) >= 5 then
         collector := arg[5];
         if not (IsString( collector ) and
@@ -1456,13 +1456,13 @@ function( arg )
     ## First do the abelian p-quotient.  This might later on become a special
     ## case of the general step.
     ##
-    Info( InfoQuotientSystem, 1, "Class ", 
+    Info( InfoQuotientSystem, 1, "Class ",
           LengthOfDescendingSeries(qs)+1, " quotient" );
 
     t := Runtime();
     AbelianPQuotient( qs );
-    
-    Info( InfoQuotientSystem, 1, "  rank of this layer: ", 
+
+    Info( InfoQuotientSystem, 1, "  rank of this layer: ",
           RanksOfDescendingSeries(qs)[LengthOfDescendingSeries(qs)],
           " (runtime: ", Runtime()-t, " msec)" );
 
@@ -1499,7 +1499,7 @@ function( arg )
         Info( InfoQuotientSystem, 2, "  Incorporate relations." );
         IncorporateCentralRelations( qs );
 
-        if qs!.numberOfHighestWeightGenerators 
+        if qs!.numberOfHighestWeightGenerators
            > Length(qs!.eliminatedGens) then
             RenumberHighestWeightGenerators( qs );
 
@@ -1508,8 +1508,8 @@ function( arg )
             qs!.eliminatedGens := [];
             return qs;
         fi;
-        
-        Info( InfoQuotientSystem, 1, "  rank of this layer: ", 
+
+        Info( InfoQuotientSystem, 1, "  rank of this layer: ",
               RanksOfDescendingSeries(qs)[LengthOfDescendingSeries(qs)],
               " (runtime: ", Runtime()-t, " msec)" );
     od;
@@ -1527,7 +1527,7 @@ InstallMethod( EpimorphismPGroup,
         [IsSubgroupFpGroup and IsWholeFamily, IsPosInt],
         0,
         function( G, p )
-    
+
     return EpimorphismPGroup( G, p, 1000 );
 end );
 
@@ -1552,7 +1552,7 @@ InstallMethod( EpimorphismPGroup,
         0,
 function( U, p )
     return EpimorphismPGroup( U, p, 1000 );
-end );    
+end );
 
 InstallMethod( EpimorphismPGroup,
   "for subgroups of finitely presented groups, class bound",true,
@@ -1561,7 +1561,7 @@ function( U, p, c )
 local phi, ngens, qs, psi, images, eps;
 
     phi:=IsomorphismFpGroup( U );
-    
+
     ngens:=32;
     repeat
       ngens:=ngens*8;
@@ -1575,7 +1575,7 @@ local phi, ngens, qs, psi, images, eps;
 
     images:=MappingGeneratorsImages(phi)[2];
     images:=List( images , g->Image( psi, g ) );
-  
+
     eps:=CompositionMapping2(psi,phi);
 
     SetIsSurjective( eps, true );
@@ -1587,7 +1587,7 @@ InstallMethod( EpimorphismPGroup,"finite groups",true,
         [IsFinite and IsGroup, IsPosInt ],0,
 function( U, p )
   return EpimorphismPGroup( U, p, LogInt(Size(U),p) );
-end );    
+end );
 
 InstallMethod( EpimorphismPGroup,"finite group, class bound",true,
   [IsFinite and IsGroup, IsPosInt, IsPosInt ],0,
@@ -1619,9 +1619,9 @@ InstallMethod( GroupByQuotientSystem,
 
     coll![ SCP_NUMBER_RWS_GENERATORS ] := n;
 
-    for i in 
+    for i in
       [ SCP_RWS_GENERATORS,
-        SCP_POWERS, 
+        SCP_POWERS,
         SCP_INVERSES,
         SCP_CONJUGATES,
         SCP_AVECTOR,
@@ -1668,7 +1668,7 @@ PCover := function( qs )
 
     range := [1..qs!.numberOfHighestWeightGenerators];
 
-    ##  Construct the subgroup generated by generators which have not been 
+    ##  Construct the subgroup generated by generators which have not been
     ##  eliminated.
     range := DifferenceLists( range, qs!.eliminatedGens );
 
@@ -1689,7 +1689,7 @@ PCover := function( qs )
 
     return Group( GeneratorsOfGroup(G){range}, One(G) );
 end;
-    
+
 #############################################################################
 ##
 #F  PMultiplicator  . . . . . . . . . . . . . .  p-multiplicator of a p-cover
@@ -1717,11 +1717,11 @@ InstallMethod(Nucleus, "for a p-quotient system and a group",
 
     ##  The first highest weight generators generate the nucleus.  Find those
     ##  which have not been eliminated.
-    m := Length( DifferenceLists( [1..qs!.numberOfNucleusGenerators], 
+    m := Length( DifferenceLists( [1..qs!.numberOfNucleusGenerators],
                               qs!.eliminatedGens ) );
 
     return Subgroup( G, gens{[n+1..n+m]} );
-    
+
 end);
 
 #############################################################################
@@ -1744,9 +1744,9 @@ AllowableSubgroup := function( qs, G )
         ##  skip central relations that express generators defined by the
         ##  epimorphism in terms of earlier generators.  Those generators are
         ##  the last generators among the highest weight generators.
-        if i <= qs!.numberOfHighestWeightGenerators 
-           - qs!.numberOfEpimGenerators  then 
-            
+        if i <= qs!.numberOfHighestWeightGenerators
+           - qs!.numberOfEpimGenerators  then
+
             ##  convert the vector into an external representation
             extrep := [];
             for j in [1..LTM.dimension] do
@@ -1756,7 +1756,7 @@ AllowableSubgroup := function( qs, G )
                 fi;
             od;
             Add( gens, ObjByExtRep( fam, extrep ) );
-        
+
         fi;
     od;
 
@@ -1772,7 +1772,7 @@ InstallMethod( ViewObj,
         true,
         [ IsPQuotientSystem ], 0,
 function( qs )
-    
+
     Print( "<",
            qs!.prime,
            "-quotient system of ",
@@ -1784,18 +1784,18 @@ function( qs )
            " generators" );
 
     if qs!.numberOfHighestWeightGenerators > 0 then
-        Print( " and ", 
+        Print( " and ",
                qs!.numberOfHighestWeightGenerators,
                " highest weight generators" );
     fi;
     Print( ">" );
 end );
-    
+
 
 #############################################################################
 ##
 #M  EpimorphismQuotientSystem
-##  
+##
 InstallMethod(EpimorphismQuotientSystem,
     "for p-quotient systems",
     true,
@@ -1810,7 +1810,7 @@ InstallMethod(EpimorphismQuotientSystem,
 
     # now we write the images of the generators of G in H from qs:
     l := List(qs!.images,x->ObjByExtRep(FamilyObj(One(H)),ExtRepOfObj(x)));
-    
+
     hom:=GroupHomomorphismByImagesNC(qs!.preimage,H,
                  GeneratorsOfGroup(qs!.preimage),l);
 
@@ -1823,7 +1823,7 @@ end );
 #############################################################################
 ##
 #M  EpimorphismNilpotentQuotient
-##  
+##
 ##  This function does not belong here
 ##
 InstallGlobalFunction("EpimorphismNilpotentQuotient",function(arg)
@@ -1904,12 +1904,12 @@ local a,h,i,q,d,img,geni,gen,hom,lcs,c,sqa,cnqs,genum;
         od;
         Add( geni, img );
     od;
-    
+
     hom:=GroupHomomorphismByImagesNC(g,d,GeneratorsOfGroup(g),geni);
 
     # The homomorphism is surjective.
     SetIsSurjective(hom,true);
-  
+
     return hom;
 end);
 
@@ -1946,7 +1946,7 @@ end );
 #############################################################################
 ##
 #E  Emacs . . . . . . . . . . . . . . . . . . . . . . . . . . emacs variables
-##  
+##
 ##  Local Variables:
 ##  mode:               outline
 ##  tab-width:          4

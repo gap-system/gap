@@ -166,7 +166,7 @@ DeclareAttribute(
 ##
 ##  <Description>
 ##  returns the transpose of the matrix group <A>matgrp</A>. The transpose of
-##  the transpose of <A>matgrp</A> is identical to <A>matgrp</A>. 
+##  the transpose of <A>matgrp</A> is identical to <A>matgrp</A>.
 ##  <Example><![CDATA[
 ##  gap> G := Group( [[0,-1],[1,0]] );
 ##  Group([ [ [ 0, -1 ], [ 1, 0 ] ] ])
@@ -257,8 +257,8 @@ InstallTrueMethod(IsGeneralLinearGroup,IsNaturalGL);
 ##  <Description>
 ##  The Special Linear group is the group of all invertible matrices over a
 ##  ring, whose determinant is equal to 1. This property tests, whether a
-##  group is isomorphic to a Special Linear group. (Note that currently 
-##  only a few trivial methods are available for this operation. We hope 
+##  group is isomorphic to a Special Linear group. (Note that currently
+##  only a few trivial methods are available for this operation. We hope
 ##  to improve this in the future.)
 ##  </Description>
 ##  </ManSection>

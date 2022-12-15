@@ -8,46 +8,46 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This is outdated experimental code for command line editing and a history 
-##  and demo mechanism which is only used when GAP is not compiled with 
-##  libreadline. It is kept temporarily for people who have difficulties 
+##  This is outdated experimental code for command line editing and a history
+##  and demo mechanism which is only used when GAP is not compiled with
+##  libreadline. It is kept temporarily for people who have difficulties
 ##  compiling with libreadline.
-##  
+##
 
-############################################################################ 
-##  
+############################################################################
+##
 #F  LineEditKeyHandler( <l> )
-##  
+##
 ##  This function is called from the kernel in command line editing mode
 ##  if a key number <n> is pressed for which `LineEditKeyHandlers[ <n> + 1 ]
 ##  is bound to some key handler function. It does some checking of the result
 ##  of the key handler functions.
-##  
+##
 ##  The argument <l> for this and for the key handler functions is a list of
 ##  the form  `[linestr, ch, ppos, length, yankstr]' where `linestr' is a string
 ##  with the content of the current input line, `ch' is the key pressed (as
 ##  integer), `ppos' is the position of the cursor on the input line, `length'
-##  is the maximal length of the current input line and `yankstr' is a string 
+##  is the maximal length of the current input line and `yankstr' is a string
 ##  with the content of the current yank buffer.
-##  
-##  The handler functions usually must return a list `[linestr, ppos, yankstr]' 
-##  where `linestr' is a string containing the new content of the input line, 
+##
+##  The handler functions usually must return a list `[linestr, ppos, yankstr]'
+##  where `linestr' is a string containing the new content of the input line,
 ##  `ppos' is the new position of the cursor (in [1..Length(linestr)+1]) and
 ##  `yankstr' is the new value of the yank buffer.
-##  
+##
 ##  The exception is that a handler function can also return a positive small
 ##  integer <n>. In that case the next <n> input lines (including the current
 ##  line) are read by {\GAP} by calling <n> times the key handler for `<ESC>-N'.
-##  
+##
 ##  The default handler for `<ESC>-N' does the following: It assumes that
-##  `AutomaticInputLines' is a list of strings and that 
-##  `AutomaticInputLinesCounter' is a positive integer, it returns as current 
+##  `AutomaticInputLines' is a list of strings and that
+##  `AutomaticInputLinesCounter' is a positive integer, it returns as current
 ##  input line entry number `AutomaticInputLinesCounter' of
-##  `AutomaticInputLines' and increases the counter by one. 
+##  `AutomaticInputLines' and increases the counter by one.
 ##  The key `<ESC>-S' is bound to deliver all lines currently bound to
-##  `AutomaticInputLines' as input to {\GAP}. Typing `<ESC>-S' on the second 
+##  `AutomaticInputLines' as input to {\GAP}. Typing `<ESC>-S' on the second
 ##  input line below, leads to the following:
-##  
+##
 ##  \beginexample
 ##  gap> AutomaticInputLines := ["a:=1;", "b:=2;", "c:=a+b;"];;
 ##  gap> a:=1;
@@ -57,12 +57,12 @@
 ##  gap> c:=a+b;
 ##  3
 ##  \endexample
-##  
+##
 ##  The key numbers are computed as follows: For ascii characters <k> they
 ##  are given by `INT_CHAR(<k>)'. Combined with the `Ctrl' key has number
 ##  `INT_CHAR(<k>) mod 32' and combined with the `Esc' key (pressed before)
 ##  the number is `INT_CHAR(<k>) + 256'.
-##  
+##
 
 BindGlobal("CommandLineRegion", NewSpecialRegion("command line region"));
 
@@ -77,11 +77,11 @@ BindGlobal("LineEditKeyHandler", function(l)
       return [l[1], l[3], l[5]];
     fi;
     res := LineEditKeyHandlers[l[2]+1](l);
-##    if not IS_INT(res) and not (IS_STRING_REP(res[1]) and 
+##    if not IS_INT(res) and not (IS_STRING_REP(res[1]) and
 ##            LENGTH(res[1]) < l[4]-1 and
 ##            IS_STRING_REP(res[3]) and LENGTH(res[3]) < 32768 and
 ##            res[2] < l[4] and res[2] <= LENGTH(res[1])+1) then
-    if not (IsSmallIntRep(res) and res >= 0) and not (IsStringRep(res[1]) and 
+    if not (IsSmallIntRep(res) and res >= 0) and not (IsStringRep(res[1]) and
 	    Length(res[1]) < l[4]-1 and
 	    IsStringRep(res[3]) and Length(res[3]) < 32768 and
 	    res[2] < l[4] and res[2] <= Length(res[1])+1) then
@@ -92,20 +92,20 @@ BindGlobal("LineEditKeyHandler", function(l)
 end);
 
 ############################################################################
-##  
+##
 #V  CommandLineHistory
 #V  MaxCommandLineHistory
-##  
+##
 ##  The input lines from a {\GAP} session with command line editing switched on
-##  are stored in the list `CommandLineHistory'. This list is of form 
+##  are stored in the list `CommandLineHistory'. This list is of form
 ##  `[pos, line1, line2, ..., lastline]' where pos is an integer which defines
 ##  a current line number in the history, and the remaining entries are input
 ##  lines for {\GAP} (without a trailing '\n').
-##  
-##  If the integer `MaxCommandLineHistory' is equal to `0' all input lines of 
+##
+##  If the integer `MaxCommandLineHistory' is equal to `0' all input lines of
 ##  a session  are stored. If it has a positive value then it specifies the
-##  maximal number of input lines saved in the history. 
-##  
+##  maximal number of input lines saved in the history.
+##
 
 # init empty history
 BindGlobal("CommandLineHistory", [1]);
@@ -129,10 +129,10 @@ BindGlobal("CommandLineHistoryHandler", function(l)
       Unbind(l[1][Length(l[1])]);
     od;
     MaxCommandLineHistory := UserPreference("HistoryMaxLines");
-    if not IsInt(MaxCommandLineHistory) then 
+    if not IsInt(MaxCommandLineHistory) then
       MaxCommandLineHistory := 0;
     fi;
-    if MaxCommandLineHistory > 0 and 
+    if MaxCommandLineHistory > 0 and
        Length(hist) >= MaxCommandLineHistory+1 then
       # overrun, throw oldest line away
       for i in [2..Length(hist)-1] do
@@ -151,10 +151,10 @@ BindGlobal("CommandLineHistoryHandler", function(l)
     hist[1] := Length(hist)+1;
     return [l[1], l[3], l[5]];
   elif key = 16 then  # CTR('P')
-    # searching backward in history for line starting with input before 
+    # searching backward in history for line starting with input before
     # cursor
     n := hist[1];
-    if n < 2 then n := Length(hist)+1; fi; 
+    if n < 2 then n := Length(hist)+1; fi;
     m := l[3]-1;
     start := l[1]{[1..m]};
     for i in [n-1,n-2..2] do
@@ -170,11 +170,11 @@ BindGlobal("CommandLineHistoryHandler", function(l)
     hist[1] := Length(hist)+1;
     return [start, l[3], l[5]];
   elif key = 14 then  # CTR('N')
-    # searching forward in history for line starting with input before 
+    # searching forward in history for line starting with input before
     # cursor; first time for current line we start at last history pointer
     # from previous line   (so one can repeat a sequence of lines by
     # repeated ctrl-N.
-    if Length(hist) = 1 then return [l[1],l[3],l[5]]; fi; 
+    if Length(hist) = 1 then return [l[1],l[3],l[5]]; fi;
     if hist[1] = Length(hist)+1 then
       if  LastPosCLH < hist[1]-1 then
         hist[1] := LastPosCLH;
@@ -195,7 +195,7 @@ BindGlobal("CommandLineHistoryHandler", function(l)
     hist[1] := Length(hist)+1;
     return [start, l[3], l[5]];
   elif key = 12 then  # CTR('L')
-    if Length(hist) = 1 then return [l[1],l[3],l[5]]; fi; 
+    if Length(hist) = 1 then return [l[1],l[3],l[5]]; fi;
     res := l[1]{[1..l[3]-1]};
     Append(res, hist[Length(hist)]);
     Append(res, l[1]{[l[3]..Length(l[1])]});
@@ -227,19 +227,19 @@ od;
 Unbind(tmpclh);
 
 ############################################################################
-##  
+##
 #F  SaveCommandLineHistory( [<fname>] )
 #F  ReadCommandLineHistory( [<fname>] )
-##  
-##  Use the first command to write the currently saved command lines in the 
-##  history to file <fname>. If not given the default file name `~/.gap_hist' 
+##
+##  Use the first command to write the currently saved command lines in the
+##  history to file <fname>. If not given the default file name `~/.gap_hist'
 ##  is used. The second command prepends the lines from <fname> to the current
 ##  command line history.
-##  
+##
 BindGlobal("SaveCommandLineHistory", function(arg)
   local fnam, hist, max, start, i;
   atomic CommandLineRegion do
-  
+
   if Length(arg) > 0 then
     fnam := arg[1];
   else
@@ -257,7 +257,7 @@ BindGlobal("SaveCommandLineHistory", function(arg)
     AppendTo(fnam, hist[i], "\n");
   od;
   od;
-  
+
 end);
 
 BindGlobal("ReadCommandLineHistory", function(arg)
@@ -311,16 +311,16 @@ od;
 
 # ESC('S') calls Length(AutomaticInputLines) often ESC('N')
 atomic CommandLineRegion do
-  LineEditKeyHandlers[339+1] := function(arg) 
+  LineEditKeyHandlers[339+1] := function(arg)
     atomic CommandLineRegion do
       AutomaticInputLinesCounter := 1;
       return Length(AutomaticInputLines);
     od;
   end;
-od; 
+od;
 
 ##  Standard behaviour to insert a character for the key.
-##  We don't install this directly in LineEditKeyHandlers but this can be 
+##  We don't install this directly in LineEditKeyHandlers but this can be
 ##  useful for writing other key handlers)
 BindGlobal("LineEditInsert", function(l)
   local line;
@@ -333,7 +333,7 @@ BindGlobal("LineEditInsert", function(l)
 end);
 
 ##  This will be installed as handler for the space-key, it removes the prompts
-##  "gap> ", "> ", "brk> " in beginning of lines when the trailing space is 
+##  "gap> ", "> ", "brk> " in beginning of lines when the trailing space is
 ##  typed. This makes a special hack in the kernel unnecessary and it can
 ##  be switched off by setting 'GAPInfo.DeletePrompts := false;'.
 GAPInfo.DeletePrompts := true;

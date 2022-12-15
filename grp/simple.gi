@@ -182,7 +182,7 @@ local p,f,z,G,o;
   o:=One(f);
 
   # first generator differs for q=2,p=3
-  if q=2 then 
+  if q=2 then
     G:=Group(
         o*[[1,1,0,0,0,0,0],
         [0,1,0,0,0,0,0],
@@ -198,7 +198,7 @@ local p,f,z,G,o;
         [0,1,0,0,0,0,0],
         [0,0,0,0,0,0,1],
         [0,0,0,0,1,0,0]]);
-  elif p=3 then 
+  elif p=3 then
     G:=Group(
     o*[[z^2,0,0,0,0,0,0],
       [0,z,0,0,0,0,0],
@@ -234,13 +234,13 @@ local p,f,z,G,o;
   fi;
 
   SetSize(G,q^6*(q^6-1)*(q^2-1));
-  return G; 
+  return G;
 end);
 
-# generators from 
+# generators from
 # Howlett, R. B.(5-SYD-SM); Rylands, L. J.; Taylor, D. E.(5-SYD-SM)
-# Matrix generators for exceptional groups of Lie type. 
-# J. Symbolic Comput. 31 (2001), no. 4, 429–445. 
+# Matrix generators for exceptional groups of Lie type.
+# J. Symbolic Comput. 31 (2001), no. 4, 429–445.
 # Note that Magma uses slightly different generators
 BindGlobal("Chevalley3D4",function(q)
 local f,mu,m1,m2,x,n,o;
@@ -664,7 +664,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
       SetSize(a,Size(g));
       g:=a;
     fi;
-    
+
   fi;
   if s<>fail and not HasName(g) then
     SetName(g,s);
@@ -759,7 +759,7 @@ local a,l,pos,g,b;
 
   #Print("pos=",it!.pos," b=",it!.b,"\n");
 
-  it!.done:=SIMPLEGPSNONL2[it!.pos][1]>it!.ende 
+  it!.done:=SIMPLEGPSNONL2[it!.pos][1]>it!.ende
     and (SizeL2Q(it!.b)>it!.ende or it!.nopsl2);
 
   return g;
@@ -792,7 +792,7 @@ InstallGlobalFunction(SimpleGroupsIterator,function(arg)
     a:=a[2];
   until SizeL2Q(b)>=start;
   if start>=10^18 then LOADSIMPLE2(); fi;
-  pos:=First([1..Length(SIMPLEGPSNONL2)],x->SIMPLEGPSNONL2[x][1]>=start); 
+  pos:=First([1..Length(SIMPLEGPSNONL2)],x->SIMPLEGPSNONL2[x][1]>=start);
   return IteratorByFunctions(rec(
     IsDoneIterator:=IsDoneIterator_SimGp,
     NextIterator:=NextIterator_SimGp,
@@ -1004,7 +1004,7 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
       shortname:=Concatenation("S4(",String(id.parameter[2]),")"));
   fi;
 
-  # fix 
+  # fix
 
   if IsBound(id.parameter) then
     par:=id.parameter;
@@ -1170,10 +1170,10 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
              [ 4, "2^2" ], [ 6, "3.2_1" ], [ 6, "3.2_2" ], [ 6, "6" ],
              [ 12, "3.2^2" ] ];
       elif IdGroup(classaut)=[24,12] then
-        # subgroup classes S_4 
+        # subgroup classes S_4
         e:=[  [ 2, "2_1" ],[ 2, "2_2" ], [ 3, "3" ],
               [ 4, "4" ], [ 4, "(2^2)_{111}" ], [4,"(2^2)_{122}"],
-              [ 6, "3.2" ], [ 8, "D8" ], [ 12, "A4" ], 
+              [ 6, "3.2" ], [ 8, "D8" ], [ 12, "A4" ],
               [ 24, "S4" ] ];
       else
         e:=List(ConjugacyClassesSubgroups(classaut),Representative);
@@ -1230,7 +1230,7 @@ end);
 
 InstallGlobalFunction(SufficientlySmallDegreeSimpleGroupOrder,function(n)
 local a;
-  if n<168 then return 5;fi; 
+  if n<168 then return 5;fi;
   a:=Filtered(SIMPLEGPSNONL2,x->x[1]=n);
   # we have degree data up to order 2^55
   if n<=2^55 and Length(a)=0 then
@@ -1260,8 +1260,8 @@ local H,d,id,hom,field,C,dom,orbs;
     return fail;
   fi;
 
-  # TODO: Recognize subgroups of almost 
-  if G<>H then 
+  # TODO: Recognize subgroups of almost
+  if G<>H then
     return fail;
   fi;
 
@@ -1295,7 +1295,7 @@ local H,d,id,hom,field,C,dom,orbs;
     hom:=G!.actionHomomorphism;
     if IsMatrixGroup(Source(hom)) and Image(hom)=G and Size(Source(hom))/Size(G)<field then
       # test that the source is really the group we want
-      if GeneratorsOfGroup(C)=GeneratorsOfGroup(Source(hom)) 
+      if GeneratorsOfGroup(C)=GeneratorsOfGroup(Source(hom))
         or Source(hom)=C then
           return hom;
       #else
@@ -1323,7 +1323,7 @@ local H,d,id,hom,field,C,dom,orbs;
 
   if # catch if one group is with memory
      RepresentationsOfObject(One(Image(hom)))=
-     RepresentationsOfObject(One(G)) 
+     RepresentationsOfObject(One(G))
      and Image(hom)=G then
     d:=IdentityMapping(G);
   else

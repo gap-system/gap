@@ -79,7 +79,7 @@ static Obj TypeRangeNSort(Obj list)
                                 : TYPE_RANGE_NSORT_IMMUTABLE;
 }
 
-    
+
 /****************************************************************************
 **
 *F  TypeRangeSSort( <range> ) . . . . . . . . . . . . . . . . type of a range
@@ -166,7 +166,7 @@ static Obj CopyRange(Obj list, Int mut)
 */
 static void PrintRange(Obj list)
 {
-    Pr( "%2>[ %2>%d",   
+    Pr( "%2>[ %2>%d",
        GET_LOW_RANGE(list), 0 );
     if ( GET_INC_RANGE(list) != 1 ) {
         Pr( "%<,%< %2>%d",
@@ -548,7 +548,7 @@ Obj             PosRange (
        then there can't be anything to find */
     if (!IS_INTOBJ(start))
       return Fail;
-    
+
     istart = INT_INTOBJ(start);
     /* get the length, the first element, and the increment of <list>      */
     lenList = GET_LEN_RANGE(list);
@@ -869,7 +869,7 @@ static Obj FuncINTER_RANGE(Obj self, Obj r1, Obj r2)
 {
   Int low1, low2, inc1, inc2, lowi, inci, g, x, y;
   UInt len1, len2, leni;
-  
+
   if (!IS_RANGE(r1) || !IS_MUTABLE_OBJ(r1))
       RequireArgumentEx(SELF_NAME, r1, "<range1>", "must be a mutable range");
   if (!IS_RANGE(r2))
@@ -925,7 +925,7 @@ static Obj FuncINTER_RANGE(Obj self, Obj r1, Obj r2)
     leni = 1 + y / inci;
   else
     leni = 1 + x / inci;
-  
+
   SET_LOW_RANGE(r1,lowi);
   SET_LEN_RANGE(r1,leni);
   SET_INC_RANGE(r1,inci);
@@ -1155,7 +1155,7 @@ static Int InitKernel (
     /* Make immutable methods */
     MakeImmutableObjFuncs[ T_RANGE_NSORT ] = MakeImmutableRange;
     MakeImmutableObjFuncs[ T_RANGE_SSORT ] = MakeImmutableRange;
-    
+
     /* install the print method                                            */
     PrintObjFuncs[ T_RANGE_NSORT            ] = PrintRange;
     PrintObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = PrintRange;

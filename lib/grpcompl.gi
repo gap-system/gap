@@ -53,8 +53,8 @@ BindGlobal("COCohomologyAction",function(oc,actgrp,auts,orbs)
 end);
 
 ComplementClassesRepresentativesSolvableWBG:=function(arg)
-local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom, 
-      ncomgens, ncen, nlcom, nlcomgens, nlcen, ocr, generators, modulePcgs, 
+local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
+      ncomgens, ncen, nlcom, nlcomgens, nlcen, ocr, generators, modulePcgs,
       l, complement, k, v, afu, i, j, jj;
 
   G:=arg[1];

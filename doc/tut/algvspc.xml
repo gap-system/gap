@@ -41,9 +41,9 @@ The full row space <M>F^n</M> is created by commands like:
 <P/>
 <Example><![CDATA[
 gap> F:= GF( 7 );;
-gap> V:= F^3;   # The full row space over F of dimension 3. 
+gap> V:= F^3;   # The full row space over F of dimension 3.
 ( GF(7)^3 )
-gap> [ 1, 2, 3 ] * One( F ) in V;  
+gap> [ 1, 2, 3 ] * One( F ) in V;
 true
 ]]></Example>
 <P/>
@@ -62,7 +62,7 @@ gap> [ [ 1, 1 ], [ 2, 2 ], [ 3, 3 ] ] in W;
 true
 ]]></Example>
 <P/>
-A field is naturally a vector space over itself. 
+A field is naturally a vector space over itself.
 <P/>
 <Example><![CDATA[
 gap> IsVectorSpace( Rationals );
@@ -94,7 +94,7 @@ GF(2^2)
 A vector space has three important attributes:
 its <E>field</E> of definition,
 its <E>dimension</E> and a <E>basis</E>.
-We already encountered the function 
+We already encountered the function
 <Ref Func="LeftActingDomain" BookName="ref"/> in the example above.
 It extracts the field of definition of a vector space.
 The function <Ref Func="Dimension" BookName="ref"/> provides the dimension
@@ -119,30 +119,30 @@ GF(3)
 <P/>
 One of the most important attributes is a <E>basis</E>.
 For a given basis <M>B</M> of <M>V</M>,
-every vector <M>v</M> in <M>V</M> can be expressed uniquely as 
+every vector <M>v</M> in <M>V</M> can be expressed uniquely as
 <M>v = \sum_{b \in B} c_b b</M>, with coefficients <M>c_b \in F</M>.
 <P/>
 In &GAP;, bases are special lists of vectors.
 They are used mainly for the computation of coefficients and linear
-combinations. 
+combinations.
 <P/>
 Given a vector space <M>V</M>, a basis of <M>V</M> is obtained by
 simply applying the function <Ref Func="Basis" BookName="ref"/> to <M>V</M>.
 The vectors that form the basis are extracted from the basis by
-<Ref Func="BasisVectors" BookName="ref"/>. 
+<Ref Func="BasisVectors" BookName="ref"/>.
 <P/>
 <Example><![CDATA[
 gap> m1:= [ [ 1, 2 ], [ 3, 4 ] ];; m2:= [ [ 1, 1 ], [ 1, 0 ] ];;
 gap> V:= VectorSpace( Rationals, [ m1, m2 ] );
 <vector space over Rationals, with 2 generators>
 gap> B:= Basis( V );
-SemiEchelonBasis( <vector space over Rationals, with 
+SemiEchelonBasis( <vector space over Rationals, with
 2 generators>, ... )
 gap> BasisVectors( Basis( V ) );
 [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 0, 1 ], [ 2, 4 ] ] ]
 ]]></Example>
 <P/>
-The coefficients of 
+The coefficients of
 a vector relative to a given basis are found by the function
 <Ref Func="Coefficients" BookName="ref"/>.
 Furthermore, linear combinations of the basis vectors
@@ -152,7 +152,7 @@ are constructed using <Ref Func="LinearCombination" BookName="ref"/>.
 gap> V:= VectorSpace( Rationals, [ [ 1, 2 ], [ 3, 4 ] ] );
 <vector space over Rationals, with 2 generators>
 gap> B:= Basis( V );
-SemiEchelonBasis( <vector space over Rationals, with 
+SemiEchelonBasis( <vector space over Rationals, with
 2 generators>, ... )
 gap> BasisVectors( Basis( V ) );
 [ [ 1, 2 ], [ 0, 1 ] ]
@@ -164,13 +164,13 @@ gap> LinearCombination( B, [ 1, -2 ] );
 <P/>
 In the above examples we have seen that &GAP; often chooses the basis
 it wants to work with. It is also possible to construct bases with
-prescribed basis vectors by giving a list of these vectors as second argument 
+prescribed basis vectors by giving a list of these vectors as second argument
 to <Ref Func="Basis" BookName="ref"/>.
 <P/>
 <Example><![CDATA[
-gap> V:= VectorSpace( Rationals, [ [ 1, 2 ], [ 3, 4 ] ] );; 
+gap> V:= VectorSpace( Rationals, [ [ 1, 2 ], [ 3, 4 ] ] );;
 gap> B:= Basis( V, [ [ 1, 0 ], [ 0, 1 ] ] );
-SemiEchelonBasis( <vector space over Rationals, with 2 generators>, 
+SemiEchelonBasis( <vector space over Rationals, with 2 generators>,
 [ [ 1, 0 ], [ 0, 1 ] ] )
 gap> Coefficients( B, [ 1, 2 ] );
 [ 1, 2 ]
@@ -214,7 +214,7 @@ true
 ]]></Example>
 <P/>
 One of the most important classes of algebras are sub-algebras of matrix
-algebras. On the set of all <M>n \times n</M> matrices over a field <M>F</M> 
+algebras. On the set of all <M>n \times n</M> matrices over a field <M>F</M>
 it is possible to define a multiplication in many ways.
 The most frequent are the ordinary matrix multiplication and the Lie
 multiplication.
@@ -253,7 +253,7 @@ by the Lie bracket <M>[ A, B ] = A * B - B * A</M>,
 where <M>*</M> denotes the ordinary matrix product.
 <P/>
 Since the multiplication of objects in &GAP; is always assumed to be
-the operation <C>*</C> (resp. the infix operator <C>*</C>), 
+the operation <C>*</C> (resp. the infix operator <C>*</C>),
 and since there is already the <Q>ordinary</Q> matrix product defined for
 ordinary matrices, as mentioned above,
 we must use a different construction for matrices that occur as elements
@@ -263,7 +263,7 @@ Such Lie matrices can be constructed by
 the sum and product of Lie matrices are again Lie matrices.
 <P/>
 <Example><![CDATA[
-gap> m:= LieObject( [ [ 1, 1 ], [ 1, 1 ] ] ); 
+gap> m:= LieObject( [ [ 1, 1 ], [ 1, 1 ] ] );
 LieObject( [ [ 1, 1 ], [ 1, 1 ] ] )
 gap> m*m;
 LieObject( [ [ 0, 0 ], [ 0, 0 ] ] )
@@ -277,20 +277,20 @@ true
 <P/>
 Given a field <C>F</C> and a list <C>mats</C> of Lie objects over <C>F</C>,
 we can construct the Lie algebra generated by <C>mats</C> using the function
-<Ref Func="Algebra" BookName="ref"/>. 
+<Ref Func="Algebra" BookName="ref"/>.
 Alternatively, if we do not want to be bothered with the function
 <Ref Func="LieObject" BookName="ref"/>,
 we can use the function <Ref Func="LieAlgebra" BookName="ref"/>
 that takes a field
 and a list of ordinary matrices, and constructs the Lie algebra generated
 by the corresponding Lie matrices.
-Note that this means that the ordinary matrices used in the call of 
+Note that this means that the ordinary matrices used in the call of
 <Ref Func="LieAlgebra" BookName="ref"/> are not contained in the returned
 Lie algebra.
 <P/>
 <Example><![CDATA[
 gap> m1:= [ [ 0, 1 ], [ 0, 0 ] ];;
-gap> m2:= [ [ 0, 0 ], [ 1, 0 ] ];; 
+gap> m2:= [ [ 0, 0 ], [ 1, 0 ] ];;
 gap> L:= LieAlgebra( Rationals, [ m1, m2 ] );
 <Lie algebra over Rationals, with 2 generators>
 gap> m1 in L;
@@ -298,7 +298,7 @@ false
 ]]></Example>
 <P/>
 A second way of creating an algebra is by specifying a multiplication table.
-Let <M>A</M> be a finite dimensional algebra with basis 
+Let <M>A</M> be a finite dimensional algebra with basis
 <M>(x_1, x_2, \ldots, x_n)</M>,
 then for <M>1 \leq i, j \leq n</M> the product <M>x_i x_j</M> is
 a linear combination of basis elements, i.e., there are <M>c_{ij}^k</M> in the
@@ -309,24 +309,24 @@ determine the multiplication completely. Therefore, the <M>c_{ij}^k</M> are
 called <E>structure constants</E>. In &GAP; we can create a finite dimensional
 algebra by specifying an array of structure constants.
 <P/>
-In &GAP; such a table of structure constants is represented using 
+In &GAP; such a table of structure constants is represented using
 lists. The obvious way to do this
-would be to construct a <Q>three-dimensional</Q> list <C>T</C> such that  
+would be to construct a <Q>three-dimensional</Q> list <C>T</C> such that
 <C>T[i][j][k]</C> equals <M>c_{ij}^k</M>.
 But it often happens that many of these constants vanish.
-Therefore a more complicated structure is used in order to be able to 
+Therefore a more complicated structure is used in order to be able to
 omit the zeros.
-A multiplication table of an <M>n</M>-dimensional algebra is an 
+A multiplication table of an <M>n</M>-dimensional algebra is an
 <M>n \times n</M> array <C>T</C> such that <C>T[i][j]</C> describes the product
 of the <C>i</C>-th and the <C>j</C>-th basis element. This product is encoded
-in the following way. The entry <C>T[i][j]</C> is a list of two elements. 
+in the following way. The entry <C>T[i][j]</C> is a list of two elements.
 The first of these is a list of
 indices <M>k</M> such that <M>c_{ij}^k</M> is nonzero.
 The second list contains the corresponding constants <M>c_{ij}^k</M>.
-Suppose, for example,  that <C>S</C> is the table 
-of an algebra with basis <M>(x_1, x_2, \ldots, x_8)</M> and that <C>S[3][7]</C> 
+Suppose, for example,  that <C>S</C> is the table
+of an algebra with basis <M>(x_1, x_2, \ldots, x_8)</M> and that <C>S[3][7]</C>
 equals <C>[ [ 2, 4, 6 ], [ 1/2, 2, 2/3 ] ]</C>.
-Then in the algebra we have the relation 
+Then in the algebra we have the relation
 <M>x_3 x_7 = (1/2) x_2 + 2 x_4 + (2/3) x_6.</M>
 Furthermore, if <C>S[6][1] = [ [  ], [  ] ]</C> then the product of the
 sixth and first basis elements is zero.
@@ -336,9 +336,9 @@ Finally two numbers are added to the table. The first number can be
 i.e., <M>c_{ij}^k = c_{ji}^k</M>. If this number is -1, then the table is
 known to be antisymmetric (this happens for instance when the algebra
 is a Lie algebra).
-The remaining case, 0, occurs in all other cases. 
-The second number that is added is the zero element of the field over 
-which the algebra is defined.  
+The remaining case, 0, occurs in all other cases.
+The second number that is added is the zero element of the field over
+which the algebra is defined.
 <P/>
 Empty structure constants tables are created by the function
 <Ref Func="EmptySCTable" BookName="ref"/>, which takes a dimension <M>d</M>,
@@ -362,10 +362,10 @@ appropriately.
 <P/>
 <Example><![CDATA[
 gap> T:= EmptySCTable( 2, 0, "symmetric" );
-[ [ [ [  ], [  ] ], [ [  ], [  ] ] ], 
+[ [ [ [  ], [  ] ], [ [  ], [  ] ] ],
   [ [ [  ], [  ] ], [ [  ], [  ] ] ], 1, 0 ]
 gap> SetEntrySCTable( T, 1, 2, [1/2,1,1/3,2] );  T;
-[ [ [ [  ], [  ] ], [ [ 1, 2 ], [ 1/2, 1/3 ] ] ], 
+[ [ [ [  ], [  ] ], [ [ 1, 2 ], [ 1/2, 1/3 ] ] ],
   [ [ [ 1, 2 ], [ 1/2, 1/3 ] ], [ [  ], [  ] ] ], 1, 0 ]
 ]]></Example>
 <P/>
@@ -423,9 +423,9 @@ gap> subA:= Subalgebra( A, [ m-m^2 ] );
 gap> Dimension( subA );
 2
 gap> idA:= Ideal( A, [ m-m^3 ] );
-<two-sided ideal in <algebra of dimension 3 over Rationals>, 
+<two-sided ideal in <algebra of dimension 3 over Rationals>,
   (1 generator)>
-gap> Dimension( idA ); 
+gap> Dimension( idA );
 2
 gap> B:= A/idA;
 <algebra of dimension 1 over Rationals>
@@ -449,7 +449,7 @@ gap> Dimension( A );
 gap> R:= RadicalOfAlgebra( A );
 <algebra of dimension 3 over Rationals>
 gap> h:= NaturalHomomorphismByIdeal( A, R );
-<linear mapping by matrix, <algebra of dimension 
+<linear mapping by matrix, <algebra of dimension
 6 over Rationals> -> <algebra of dimension 3 over Rationals>>
 gap> AmodR:= ImagesSource( h );
 <algebra of dimension 3 over Rationals>
@@ -465,7 +465,7 @@ gap> PreImagesRepresentative( h, id[3] );
 <P/>
 Structure constants tables for the simple Lie algebras are present in &GAP;.
 They can be constructed using the function
-<Ref Func="SimpleLieAlgebra" BookName="ref"/>. The Lie 
+<Ref Func="SimpleLieAlgebra" BookName="ref"/>. The Lie
 algebras constructed by this function come with a root system attached.
 <P/>
 <Example><![CDATA[
@@ -532,8 +532,8 @@ gap> g2:= 1/2*( -c5*e + i + b5*k );
 gap> Order( g2 );
 10
 gap> g:=Group( g1, g2 );;
-#I  default `IsGeneratorsOfMagmaWithInverses' method returns `true' for 
-  [ (1/2*E(5)+1/2*E(5)^4)*e+(1/2)*i+(-1/2*E(5)^2-1/2*E(5)^3)*j, 
+#I  default `IsGeneratorsOfMagmaWithInverses' method returns `true' for
+  [ (1/2*E(5)+1/2*E(5)^4)*e+(1/2)*i+(-1/2*E(5)^2-1/2*E(5)^3)*j,
   (-1/2*E(5)^2-1/2*E(5)^3)*e+(1/2)*i+(1/2*E(5)+1/2*E(5)^4)*k ]
 gap> Size( g );
 120
@@ -552,7 +552,7 @@ gap> Length( cos );
 24
 gap> hom:= ActionHomomorphism( g, cos, OnRight );;
 gap> im:= Image( hom );
-Group([ (2,3,5,9,15)(4,7,12,8,14)(10,17,23,20,24)(11,19,22,16,13), 
+Group([ (2,3,5,9,15)(4,7,12,8,14)(10,17,23,20,24)(11,19,22,16,13),
   (1,2,4,8,3,6,11,20,17,19)(5,10,18,7,13,22,12,21,24,15)(9,16)(14,23) ])
 gap> Size( im );
 120
@@ -567,16 +567,16 @@ gap> bas:= CanonicalBasis( q );;
 gap> BasisVectors( bas );
 [ e, i, j, k ]
 gap> op:= OperationAlgebraHomomorphism( q, bas, OnRight );
-<op. hom. AlgebraWithOne( NF(5,[ 1, 4 ]), 
+<op. hom. AlgebraWithOne( NF(5,[ 1, 4 ]),
 [ e, i, j, k ] ) -> matrices of dim. 4>
 gap> ImagesRepresentative( op, e );
 [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ]
 gap> ImagesRepresentative( op, i );
 [ [ 0, 1, 0, 0 ], [ -1, 0, 0, 0 ], [ 0, 0, 0, -1 ], [ 0, 0, 1, 0 ] ]
 gap> ImagesRepresentative( op, g1 );
-[ [ 1/2*E(5)+1/2*E(5)^4, 1/2, -1/2*E(5)^2-1/2*E(5)^3, 0 ], 
-  [ -1/2, 1/2*E(5)+1/2*E(5)^4, 0, -1/2*E(5)^2-1/2*E(5)^3 ], 
-  [ 1/2*E(5)^2+1/2*E(5)^3, 0, 1/2*E(5)+1/2*E(5)^4, -1/2 ], 
+[ [ 1/2*E(5)+1/2*E(5)^4, 1/2, -1/2*E(5)^2-1/2*E(5)^3, 0 ],
+  [ -1/2, 1/2*E(5)+1/2*E(5)^4, 0, -1/2*E(5)^2-1/2*E(5)^3 ],
+  [ 1/2*E(5)^2+1/2*E(5)^3, 0, 1/2*E(5)+1/2*E(5)^4, -1/2 ],
   [ 0, 1/2*E(5)^2+1/2*E(5)^3, 1/2, 1/2*E(5)+1/2*E(5)^4 ] ]
 ]]></Example>
 

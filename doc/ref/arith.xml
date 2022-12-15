@@ -10,8 +10,8 @@
 
 In this chapter, we give a &ndash;hopefully typical&ndash;
 example of extending &GAP; by new objects with prescribed
-arithmetic operations (for a simple approach that may be useful 
-to get started though does not permit to exploit all potential 
+arithmetic operations (for a simple approach that may be useful
+to get started though does not permit to exploit all potential
 features, see also <Ref Func="ArithmeticElementCreator"/>).
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -63,13 +63,13 @@ Group rings (more general: magma rings,
 see Chapter&nbsp;<Ref Chap="Magma Rings"/>)
 can be constructed with <Ref Func="FreeMagmaRing"/>
 from a coefficient ring and a group.
-The elements of the group are not contained in such a group ring, 
+The elements of the group are not contained in such a group ring,
 one has to use an embedding map for creating a group ring element that
 corresponds to a given group element.
 <P/>
 It should be noted that the &GAP; approach to the construction of
 Lie algebras from associative algebras is generic in the sense
-that all objects in the filter <Ref Filt="IsLieObject"/> use the 
+that all objects in the filter <Ref Filt="IsLieObject"/> use the
 same methods for their addition, multiplication etc.,
 by delegating to the <Q>underlying</Q> objects of the associative algebra,
 no matter what these objects actually are.
@@ -129,7 +129,7 @@ Of course we can argue that this declaration is superfluous
 because <E>all</E> objects in the category <C>IsMyObject</C> will be represented
 this way;
 it is possible to proceed like that,
-but often (in more complicated situations) it turns out to be useful 
+but often (in more complicated situations) it turns out to be useful
 that several representations are available for <Q>the same element</Q>.
 <P/>
 For creating the type of our objects, we need to specify to which <E>family</E>
@@ -311,7 +311,7 @@ gap> elms:= AsList( m );
 [ <Z(7)>, <Z(7)^2>, <Z(7)^5> ]
 gap> ForAll( elms, x -> ForAny( elms, y -> x*y = e and y*x = e ) );
 true
-gap> List( elms, x -> First( elms, y -> x*y = e and y*x = e ) );   
+gap> List( elms, x -> First( elms, y -> x*y = e and y*x = e ) );
 [ <Z(7)^5>, <Z(7)^2>, <Z(7)> ]
 ]]></Log>
 <P/>
@@ -347,7 +347,7 @@ But if we decide that our initial assumption holds,
 we may define the identity and the inverse of the object <C>&lt;a></C> as
 <C>&lt;2*e></C> and <C>&lt;a/(a-e)></C>, respectively,
 where <C>e</C> is the identity element in <M>F</M> and <C>/</C> denotes the division
-in <M>F</M>; 
+in <M>F</M>;
 note that the element <C>&lt;e></C> is not invertible,
 and that the above definitions are determined by the multiplication
 defined for our objects.
@@ -389,7 +389,7 @@ Now we can form groups of our (nonzero) elements.
 <Log><![CDATA[
 gap> MyType:= NewType( NewFamily( "MyFamily" ),
 >                   IsMyObject and IsMyObjectListRep );;
-gap> 
+gap>
 gap> a:= MyObject( Z(7) );
 <Z(7)>
 gap> b:= MyObject( 0*Z(7) );  g:= Group( a, b );

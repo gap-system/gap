@@ -1,7 +1,7 @@
 <Chapter Label="Partial permutations">
 <Heading>Partial permutations</Heading>
 
-This chapter describes the functions in &GAP; for partial permutations. 
+This chapter describes the functions in &GAP; for partial permutations.
 <P/>
 
 A <E>partial permutation</E> in &GAP; is simply an injective function from any
@@ -23,9 +23,9 @@ function <Ref Func="OnPoints"/>.  The preimage of a point <C>i</C> under the
 partial permutation <C>f</C> can be computed using  <C>i/f</C> without
 constructing the inverse of <C>f</C>.  Partial permutations in &GAP; are
 created using the operations described in Section <Ref
-  Sect="sect:CreatingPartialPerms"/>. 
+  Sect="sect:CreatingPartialPerms"/>.
 Partial permutations are, by default, displayed
-in component notation, which is described in Section 
+in component notation, which is described in Section
 <Ref Sect="sect:DisplayingPartialPerms"/>. <P/>
 
 The fundamental attributes of a partial permutation are:
@@ -38,17 +38,17 @@ The fundamental attributes of a partial permutation are:
   <Mark>Degree</Mark>
   <Item> The <E>degree</E> of a partial permutation <C>f</C> is just the largest
     positive integer where <C>f</C> is defined. In other words, the degree of
-    <C>f</C> is the largest element in the domain of <C>f</C>; 
-    see <Ref Func="DegreeOfPartialPerm"/>. 
+    <C>f</C> is the largest element in the domain of <C>f</C>;
+    see <Ref Func="DegreeOfPartialPerm"/>.
   </Item>
   <Mark>Image list</Mark>
   <Item>
-    The <E>image list</E> of a partial permutation <C>f</C> is the list 
+    The <E>image list</E> of a partial permutation <C>f</C> is the list
     <C>[i_1^f, i_2^f, .. , i_n^f]</C>
-    where the domain of <C>f</C> is 
+    where the domain of <C>f</C> is
     <C>[i_1, i_2, .., i_n]</C>
-    see <Ref Attr="ImageListOfPartialPerm"/>. For example, the partial perm 
-    sending <C>1</C> to <C>5</C> and <C>2</C> to <C>4</C> has image list 
+    see <Ref Attr="ImageListOfPartialPerm"/>. For example, the partial perm
+    sending <C>1</C> to <C>5</C> and <C>2</C> to <C>4</C> has image list
     <C>[ 5, 4 ]</C>.
   </Item>
   <Mark>Image set</Mark>
@@ -57,39 +57,39 @@ The fundamental attributes of a partial permutation are:
     points in the image list (i.e. the image list after it has been sorted into
     increasing order);
     see <Ref Attr="ImageSetOfPartialPerm"/>. We will denote the image set of a
-    partial permutation <C>f</C> by im(<C>f</C>). 
+    partial permutation <C>f</C> by im(<C>f</C>).
   </Item>
   <Mark>Codegree</Mark>
   <Item> The <E>codegree</E> of a partial permutation <C>f</C> is just the
     largest positive integer of the form <C>i^f</C> for any <C>i</C>
     in the domain of <C>f</C>. In other words, the codegree of <C>f</C> is
-    the largest element in the image of <C>f</C>; see 
-    <Ref Func="CodegreeOfPartialPerm"/>. 
+    the largest element in the image of <C>f</C>; see
+    <Ref Func="CodegreeOfPartialPerm"/>.
   </Item>
  <Mark>Rank</Mark>
   <Item>The <E>rank</E> of a partial permutation <C>f</C> is the size of its
-    domain, or equivalently the size of its image set or image list; see 
+    domain, or equivalently the size of its image set or image list; see
     <Ref Func="RankOfPartialPerm"/>.
   </Item>
 </List>
 
   A <E>functional digraph</E> is a directed graph where every vertex has
   out-degree <C>1</C>.  A partial permutation <A>f</A> can be thought of as a
-  functional digraph with vertices <C>[1..DegreeOfPartialPerm(f)]</C> and 
+  functional digraph with vertices <C>[1..DegreeOfPartialPerm(f)]</C> and
   edges from <C>i</C> to <C>i^f</C> for every <C>i</C>. A <E>component</E>
   of a partial permutation is defined as a component of the corresponding
-  functional digraph. 
+  functional digraph.
   More specifically, <C>i</C> and <C>j</C> are in the same component if and
-  only if there are <M>i=v_0, v_1, \ldots, v_n=j</M> such that either 
+  only if there are <M>i=v_0, v_1, \ldots, v_n=j</M> such that either
   <M>v_{k+1}=v_{k}^f</M> or <M>v_{k}=v_{k+1}^f</M> for all <C>k</C>. <P/>
-  
+
   If <C>S</C> is a semigroup and <C>s</C> is an element of <C>S</C>, then an
-  element <C>t</C> in <C>S</C> is a <E>semigroup inverse</E> for <C>s</C> if 
+  element <C>t</C> in <C>S</C> is a <E>semigroup inverse</E> for <C>s</C> if
   <C>s*t*s=s</C> and <C>t*s*t=t</C>; see, for example,
   <Ref Func="InverseOfTransformation"/>. A semigroup in which every element has
-  a unique semigroup inverse is called an <E>inverse semigroup</E>.<P/> 
+  a unique semigroup inverse is called an <E>inverse semigroup</E>.<P/>
 
-  Every partial permutation belongs to a symmetric inverse monoid; see 
+  Every partial permutation belongs to a symmetric inverse monoid; see
   <Ref Oper="SymmetricInverseSemigroup"/>. Inverse semigroups of partial
   permutations are hence inverse subsemigroups of the symmetric inverse
   monoids. <P/>
@@ -118,17 +118,17 @@ The fundamental attributes of a partial permutation are:
   </Display>
   </Alt>
 
-  A partial permutation is an idempotent if and only if it is the identity 
+  A partial permutation is an idempotent if and only if it is the identity
   function on its domain.
   The products <C>f*f^-1</C> and <C>f^-1*f</C> are just the identity
   functions on the domain and image of <C>f</C>, respectively. It follows that
   <C>f*f^-1</C> is a left identity for <C>f</C> and <C>f^-1*f</C> is a right
-  identity. These products will be referred to here 
+  identity. These products will be referred to here
   as the <E>left one</E> and <E>right one</E> of the partial permutation
   <C>f</C>; see <Ref Attr="LeftOne" Label="for a partial perm"/>.  The
   <E>one</E> of a partial permutation is just the identity on the
   union of its domain and its image, and the <E>zero</E> of a partial
-  permutation is just the empty partial permutation; see 
+  permutation is just the empty partial permutation; see
   <Ref Meth="One" Label="for a partial perm"/> and
   <Ref Meth="MultiplicativeZero" Label="for a partial perm"/>.
   <P/>
@@ -136,16 +136,16 @@ The fundamental attributes of a partial permutation are:
   If <C>S</C> is an arbitrary inverse semigroup, the <E>natural partial
   order</E> on <C>S</C> is defined as follows: for elements <C>x</C> and
   <C>y</C> of <C>S</C> we say <C>x</C><M>\leq</M><C>y</C> if there exists an
-  idempotent element <C>e</C> in <C>S</C> such that <C>x=ey</C>. 
+  idempotent element <C>e</C> in <C>S</C> such that <C>x=ey</C>.
   In the context of the symmetric inverse monoid, a partial permutation
   <C>f</C> is less than or equal to a partial permutation <C>g</C> in the
   natural partial order if and only
   if <C>f</C> is a restriction of <C>g</C>. The natural partial order is a meet
   semilattice, in other words, every pair of elements has a greatest lower
-  bound; see <Ref Func="MeetOfPartialPerms"/>.<P/> 
+  bound; see <Ref Func="MeetOfPartialPerms"/>.<P/>
 
   Note that unlike permutations, partial permutations do not fix unspecified
-  points but are simply undefined on such points; see Chapter 
+  points but are simply undefined on such points; see Chapter
   <Ref Chap="Permutations"/>. Similar to permutations, and unlike
   transformations, it is possible to multiply any two partial permutations in
   &GAP;.<P/>
@@ -162,12 +162,12 @@ The fundamental attributes of a partial permutation are:
   65536, the codegree and images are stored as 32-bit integers; the domain and
   image set are stored in the same way as before. A partial permutation belongs
   to <C>IsPPerm2Rep</C> if it is stored using 16-bit integers  and to
-  <C>IsPPerm4Rep</C> otherwise. 
+  <C>IsPPerm4Rep</C> otherwise.
 <P/>
 
-In the names of the &GAP; functions that deal with partial permutations, the word <Q>Permutation</Q> is usually abbreviated to <Q>Perm</Q>, to save typing. 
-For example, the category test function for partial permutations is 
-<Ref Filt="IsPartialPerm"/>. 
+In the names of the &GAP; functions that deal with partial permutations, the word <Q>Permutation</Q> is usually abbreviated to <Q>Perm</Q>, to save typing.
+For example, the category test function for partial permutations is
+<Ref Filt="IsPartialPerm"/>.
 
   <Section>
     <Heading>The family and categories of partial permutations</Heading>
@@ -176,10 +176,10 @@ For example, the category test function for partial permutations is
     <Returns><K>true</K> or <K>false</K>.</Returns>
     <Description>
     Every partial permutation in &GAP; belongs to the category
-    <C>IsPartialPerm</C>. Basic operations for partial permutations are 
-    <Ref Attr="DomainOfPartialPerm"/>, <Ref Attr="ImageListOfPartialPerm"/>, 
+    <C>IsPartialPerm</C>. Basic operations for partial permutations are
+    <Ref Attr="DomainOfPartialPerm"/>, <Ref Attr="ImageListOfPartialPerm"/>,
     <Ref Attr="ImageSetOfPartialPerm"/>, <Ref Func="RankOfPartialPerm"/>,
-    <Ref Func="DegreeOfPartialPerm"/>, multiplication of two partial 
+    <Ref Func="DegreeOfPartialPerm"/>, multiplication of two partial
     permutations is via <K>*</K>, and exponentiation with the first argument
     a positive integer <C>i</C> and second argument a partial permutation
     <C>f</C> where the result is the image <C>i^f</C> of the point <C>i</C>
@@ -192,7 +192,7 @@ For example, the category test function for partial permutations is
     <Filt Name="IsPartialPermCollection" Arg='obj' Type='Category'/>
     <Description>
      Every collection of partial permutations belongs to the category
-     <C>IsPartialPermCollection</C>. 
+     <C>IsPartialPermCollection</C>.
       For example, a semigroup of partial permutations belongs
       in <C>IsPartialPermCollection</C>.
     </Description>
@@ -212,11 +212,11 @@ For example, the category test function for partial permutations is
 <Section Label="sect:CreatingPartialPerms">
   <Heading>Creating partial permutations</Heading>
 
-  There are several ways of creating partial permutations in &GAP;, which are 
-  described in this section.  
+  There are several ways of creating partial permutations in &GAP;, which are
+  described in this section.
 
 <!-- *************************************************************** -->
-  
+
   <ManSection>
     <Func Name="PartialPerm" Arg="dom, img" Label="for a domain and image"/>
     <Func Name="PartialPerm" Arg="list" Label="for a dense image"/>
@@ -233,10 +233,10 @@ For example, the category test function for partial permutations is
           <A>img</A> is a duplicate free list of positive integers, maps
           <A>dom</A><C>[i]</C> to <A>img</A><C>[i]</C>. For example,
           the partial permutation mapping <C>1</C> and <C>5</C> to <C>20</C> and
-          <C>2</C> can be created using: 
+          <C>2</C> can be created using:
           <Log>PartialPerm([1,5],[20,2]); </Log>
           In this setting, <C>PartialPerm</C> is the analogue in the context of
-          partial permutations of <Ref Func="MappingPermListList"/>. 
+          partial permutations of <Ref Func="MappingPermListList"/>.
         </Item>
         <Mark>Dense image list</Mark>
         <Item>
@@ -262,7 +262,7 @@ For example, the category test function for partial permutations is
       using:
       <Log>PartialPerm([10000], [1]);</Log>
       but using the dense image list would require a list with <C>9999</C>
-      entries equal to <C>0</C> and the final entry equal to <C>1</C>. 
+      entries equal to <C>0</C> and the final entry equal to <C>1</C>.
       On the other hand, the identity on <C>[1,2,3,4,6]</C> can be defined
       using:
       <Log>PartialPerm([1,2,3,4,0,6]);</Log>
@@ -271,7 +271,7 @@ For example, the category test function for partial permutations is
       Please note that a partial permutation in &GAP; is never a permutation
       nor is a permutation ever a partial permutation. For example, the
       permutation <C>(1,4,2)</C> fixes <C>3</C> but the partial permutation
-      <C>PartialPerm([4,1,0,2]);</C> is not defined on <C>3</C>. 
+      <C>PartialPerm([4,1,0,2]);</C> is not defined on <C>3</C>.
     </Description>
   </ManSection>
 
@@ -289,12 +289,12 @@ For example, the category test function for partial permutations is
       default.  Note that the returned partial permutation
       refers to the positions in <A>list</A> even if <A>list</A> itself
       consists of integers.  <P/>
-      
+
       This function is the analogue in the context of
       partial permutations of <Ref Func="Permutation"
-        Label="for a group, an action domain, etc."/> or 
+        Label="for a group, an action domain, etc."/> or
       <Ref Oper="TransformationOp"/>.<P/>
-      
+
       If <A>obj</A> does not map the elements of <A>list</A> injectively,
       then <K>fail</K> is returned.<P/>
 
@@ -310,7 +310,7 @@ gap> PartialPermOp(f, [ 6 .. 8 ], OnPoints);
 [1,4][2,5][3,6]</Example>
     </Description>
   </ManSection>
-  
+
 <!-- *************************************************************** -->
 
   <ManSection>
@@ -328,7 +328,7 @@ gap> RestrictedPartialPerm(f, [ 2, 3, 6, 10 ] );
 [3,4]</Example>
     </Description>
   </ManSection>
-  
+
 <!-- *************************************************************** -->
 
   <ManSection>
@@ -343,27 +343,27 @@ gap> RestrictedPartialPerm(f, [ 2, 3, 6, 10 ] );
       <C>JoinOfPartialPerms</C> returns the union of the partial permutations
       in its argument if this defines a partial permutation, and <K>fail</K>
       if it is not.  The argument <A>arg</A> can be a partial permutation
-      collection or a number of partial permutations. 
+      collection or a number of partial permutations.
       <P/>
 
       The function <C>JoinOfIdempotentPartialPermsNC</C> returns the join of
       its argument which is assumed to be a collection of idempotent partial
       permutations or a number of idempotent partial permutations. It is not
       checked that the arguments are idempotents. The performance of this
-      function is higher than <C>JoinOfPartialPerms</C> when it is known 
-      <E>a priori</E> that the argument consists of idempotents.<P/> 
+      function is higher than <C>JoinOfPartialPerms</C> when it is known
+      <E>a priori</E> that the argument consists of idempotents.<P/>
 
       The union of <A>f</A> and <A>g</A> is a partial
       permutation if and only if <A>f</A> and <A>g</A> agree on the
       intersection dom(<A>f</A>)<M>\cap</M> dom(<A>g</A>) of their domains and
-      the images of dom(<A>f</A>)<M>\setminus</M> dom(<A>g</A>) 
-      and dom(<A>g</A>)<M>\setminus</M> dom(<A>f</A>) under 
-      <A>f</A> and <A>g</A>, respectively, are disjoint. 
+      the images of dom(<A>f</A>)<M>\setminus</M> dom(<A>g</A>)
+      and dom(<A>g</A>)<M>\setminus</M> dom(<A>f</A>) under
+      <A>f</A> and <A>g</A>, respectively, are disjoint.
 
       <Example>
 gap> f:=PartialPerm( [ 1, 2, 3, 6, 8, 10 ], [ 2, 6, 7, 9, 1, 5 ] );
 [3,7][8,1,2,6,9][10,5]
-gap> g:=PartialPerm( [ 11, 12, 14, 16, 18, 19 ], 
+gap> g:=PartialPerm( [ 11, 12, 14, 16, 18, 19 ],
 > [ 17, 20, 11, 19, 14, 12 ] );
 [16,19,12,20][18,14,11,17]
 gap> JoinOfPartialPerms(f, g);
@@ -380,13 +380,13 @@ gap> g:=PartialPerm( [ 1, 2, 4 ], [ 2, 3, 4 ] );
 [1,2,3](4)
 gap> JoinOfPartialPerms(f, g);
 fail
-gap> f:=PartialPerm( [ 1 ], [ 2 ] ); 
+gap> f:=PartialPerm( [ 1 ], [ 2 ] );
 [1,2]
 gap> JoinOfPartialPerms(f, f^-1);
 (1,2)</Example>
     </Description>
   </ManSection>
-  
+
 <!-- *************************************************************** -->
 
   <ManSection>
@@ -398,13 +398,13 @@ gap> JoinOfPartialPerms(f, f^-1);
       ordering of partial permutations. In other words, the meet is the
       greatest partial permutation which is a restriction of both <A>f</A> and
       <A>g</A>. <P/>
-      
+
       Note that unlike the join of partial permutations, the meet always
       exists. <P/>
 
       <Ref Func="MeetOfPartialPerms"/> returns the meet of the partial permutations
       in its argument. The argument <A>arg</A> can be a partial permutation
-      collection or a number of partial permutations. 
+      collection or a number of partial permutations.
 
       <Example>
 gap> f:=PartialPerm( [ 1, 2, 3, 6, 100000 ], [ 2, 6, 7, 1, 5 ] );
@@ -413,7 +413,7 @@ gap> g:=PartialPerm( [ 1, 2, 3, 4, 6 ], [ 2, 4, 6, 1, 5 ] );
 [3,6,5](1,2,4)
 gap> MeetOfPartialPerms(f, g);
 [1,2]
-gap> g:=PartialPerm( [ 1, 2, 3, 5, 6, 7, 9, 10 ], 
+gap> g:=PartialPerm( [ 1, 2, 3, 5, 6, 7, 9, 10 ],
 > [ 4, 10, 5, 6, 7, 1, 3, 2 ] );
 [9,3,5,6,7,1,4](2,10)
 gap> MeetOfPartialPerms(f, g);
@@ -429,7 +429,7 @@ gap> MeetOfPartialPerms(f, g);
     <Description>
       The empty partial permutation is returned by this function when it is
       called with no arguments. This is just short hand for
-      <C>PartialPerm([]);</C>. 
+      <C>PartialPerm([]);</C>.
 
       <Example>
 gap> EmptyPartialPerm();
@@ -446,16 +446,16 @@ gap> EmptyPartialPerm();
     <Func Name="RandomPartialPerm" Arg="dom, img" Label="for domain and image"/>
     <Returns>A random partial permutation.</Returns>
     <Description>
-      In its first form, 
+      In its first form,
       <C>RandomPartialPerm</C> returns a randomly chosen partial permutation
       where points in the domain and image are bounded above by the
-      positive integer <A>n</A>. 
-<Log>gap> RandomPartialPerm(10);  
+      positive integer <A>n</A>.
+<Log>gap> RandomPartialPerm(10);
 [2,9][4,1,6,5][7,3](8)</Log>
 
       In its second form, <C>RandomPartialPerm</C> returns a randomly chosen
       partial permutation with points in the domain and image contained in the
-      set of positive integers <A>set</A>. 
+      set of positive integers <A>set</A>.
 <Log>gap> RandomPartialPerm([1,2,3,1000]);
 [2,3,1000](1)</Log>
 
@@ -466,7 +466,7 @@ gap> EmptyPartialPerm();
       equal length.<P/>
 
       Note that it is not guaranteed in either of these cases that partial
-      permutations are chosen with a uniform distribution. 
+      permutations are chosen with a uniform distribution.
  </Description>
   </ManSection>
 </Section>
@@ -487,8 +487,8 @@ gap> EmptyPartialPerm();
       positive integer where it is defined, i.e. the maximum element in the
       domain of <A>f</A>. <P/>
 
-      The degree a collection of partial permutations <A>coll</A> is the 
-      largest degree of any partial permutation in <A>coll</A>. 
+      The degree a collection of partial permutations <A>coll</A> is the
+      largest degree of any partial permutation in <A>coll</A>.
       <Example>
 gap> f:=PartialPerm( [ 1, 2, 3, 6, 8, 10 ], [ 2, 6, 7, 9, 1, 5 ] );
 [3,7][8,1,2,6,9][10,5]
@@ -496,7 +496,7 @@ gap> DegreeOfPartialPerm(f);
 10</Example>
     </Description>
   </ManSection>
-  
+
 <!-- *************************************************************** -->
 
   <ManSection>
@@ -507,8 +507,8 @@ gap> DegreeOfPartialPerm(f);
       The <E>codegree</E> of a partial permutation <A>f</A> is the largest
       positive integer in its image. <P/>
 
-      The codegree a collection of partial permutations <A>coll</A> is the 
-      largest codegree of any partial permutation in <A>coll</A>. 
+      The codegree a collection of partial permutations <A>coll</A> is the
+      largest codegree of any partial permutation in <A>coll</A>.
       <Example>
 gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 8, 10 ], [ 7, 1, 4, 3, 2, 6, 5 ] );
 [8,6][10,5,2,1,7](3,4)
@@ -552,7 +552,7 @@ gap> RankOfPartialPerm(f);
       positive integers where <A>f</A> is defined. <P/>
 
       The domain of a partial permutation collection <A>coll</A> is the union of
-      the domains of its elements. 
+      the domains of its elements.
 
       <Example>
 gap> f:=PartialPerm( [ 1, 2, 3, 6, 8, 10 ], [ 2, 6, 7, 9, 1, 5 ] );
@@ -561,7 +561,7 @@ gap> DomainOfPartialPerm(f);
 [ 1, 2, 3, 6, 8, 10 ]</Example>
     </Description>
   </ManSection>
- 
+
 <!-- *************************************************************** -->
 
   <ManSection>
@@ -569,10 +569,10 @@ gap> DomainOfPartialPerm(f);
     <Returns>A set of positive integers (maybe empty).</Returns>
     <Description>
       The <E>image</E> of a partial permutation collection <A>coll</A> is the
-      union of the images of its elements. 
+      union of the images of its elements.
 
       <Example><![CDATA[
-gap> S := SymmetricInverseSemigroup(5);                                
+gap> S := SymmetricInverseSemigroup(5);
 <symmetric inverse monoid of degree 5>
 gap> ImageOfPartialPermCollection(GeneratorsOfInverseSemigroup(S));
 [ 1 .. 5 ]]]></Example>
@@ -624,10 +624,10 @@ gap> ImageSetOfPartialPerm(f);
       <C>FixedPointsOfPartialPerm</C> returns the set of points <C>i</C> in the
       domain of the partial permutation <A>f</A> such that <C>i^<A>f</A>=i</C>.
       <P/>
-      
+
       When the argument is a collection of partial permutations <A>coll</A>,
       <C>FixedPointsOfPartialPerm</C> returns the set of points fixed by every
-      element of the collection of partial permutations <A>coll</A>. 
+      element of the collection of partial permutations <A>coll</A>.
       <Example>
 gap> f := PartialPerm( [ 1, 2, 3, 6, 7 ], [ 1, 3, 4, 7, 5 ] );
 [2,3,4][6,7,5](1)
@@ -638,7 +638,7 @@ gap> FixedPointsOfPartialPerm(f);
 [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]</Example>
     </Description>
   </ManSection>
-  
+
   <ManSection>
     <Attr Name="MovedPoints" Arg="f" Label="for a partial perm"/>
     <Meth Name="MovedPoints" Arg="coll" Label="for a partial perm coll"/>
@@ -646,11 +646,11 @@ gap> FixedPointsOfPartialPerm(f);
     <Description>
       <C>MovedPoints</C> returns the set of points <C>i</C> in the domain of
       the partial permutation <A>f</A> such that <C>i^<A>f</A>&lt;>i</C>. <P/>
-      
+
       When the argument is a collection of partial permutations
       <A>coll</A>, <C>MovedPoints</C> returns the set of points moved by some
-      element of the collection of partial permutations <A>coll</A>. 
-      
+      element of the collection of partial permutations <A>coll</A>.
+
       <Example>
 gap> f := PartialPerm( [ 1, 2, 3, 4 ], [ 5, 7, 1, 6 ] );
 [2,7][3,1,5][4,6]
@@ -672,10 +672,10 @@ gap> FixedPointsOfPartialPerm(PartialPerm([1 .. 4]));
     <Description>
       <C>NrFixedPoints</C> returns the number of points <C>i</C> in the domain
       of the partial permutation <A>f</A> such that <C>i^<A>f</A>=i</C>. <P/>
-      
+
       When the argument is a collection of partial permutations
       <A>coll</A>, <C>NrFixedPoints</C> returns the number of points fixed by
-      every element of the collection of partial permutations <A>coll</A>. 
+      every element of the collection of partial permutations <A>coll</A>.
       <Example>
 gap> f := PartialPerm( [ 1, 2, 3, 4, 5 ], [ 3, 2, 4, 6, 1 ] );
 [5,1,3,4,6](2)
@@ -685,7 +685,7 @@ gap> NrFixedPoints(PartialPerm([1 .. 10]));
 10</Example>
     </Description>
   </ManSection>
-  
+
   <ManSection>
     <Attr Name="NrMovedPoints" Arg="f" Label="for a partial perm"/>
     <Meth Name="NrMovedPoints" Arg="coll" Label="for a partial perm coll"/>
@@ -694,11 +694,11 @@ gap> NrFixedPoints(PartialPerm([1 .. 10]));
       <C>NrMovedPoints</C> returns the number of points <C>i</C> in the domain
       of the partial permutation <A>f</A> such that <C>i^<A>f</A>&lt;>i</C>.
       <P/>
-      
+
       When the argument is a collection of partial permutations
       <A>coll</A>, <C>NrMovedPoints</C> returns the number of points moved by
-      some element of the collection of partial permutations <A>coll</A>. 
-      
+      some element of the collection of partial permutations <A>coll</A>.
+
       <Example>
 gap> f := PartialPerm( [ 1, 2, 3, 4, 5, 7, 8 ], [ 4, 5, 6, 7, 1, 3, 2 ] );
 [8,2,5,1,4,7,3,6]
@@ -748,7 +748,7 @@ infinity</Example>
     If the argument is a collection of partial permutations <A>coll</A>, then
     the largest point which is moved by at least one element of <A>coll</A> is
     returned, if such a point exists.  If <A>coll</A> only contains identity
-    partial permutations, then <C>LargestMovedPoint</C> returns <C>0</C>. 
+    partial permutations, then <C>LargestMovedPoint</C> returns <C>0</C>.
     <Example>
 gap> f := PartialPerm( [ 1, 3, 4, 5 ], [ 5, 1, 6, 4 ] );
 [3,1,5,4,6]
@@ -826,39 +826,39 @@ gap> LargestImageOfMovedPoint(f);
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
-  <ManSection> 
-    <Attr Name="IndexPeriodOfPartialPerm" Arg="f"/> 
-    <Returns>A pair of positive integers.</Returns> 
-    <Description> 
-      Returns the least positive integers <C>m, r</C> such that 
-      <C><A>f</A>^(m+r)=<A>f</A>^m</C>, which are  
-      known as the <E>index</E> and <E>period</E> of the partial permutation 
-      <A>f</A>. 
+  <ManSection>
+    <Attr Name="IndexPeriodOfPartialPerm" Arg="f"/>
+    <Returns>A pair of positive integers.</Returns>
+    <Description>
+      Returns the least positive integers <C>m, r</C> such that
+      <C><A>f</A>^(m+r)=<A>f</A>^m</C>, which are
+      known as the <E>index</E> and <E>period</E> of the partial permutation
+      <A>f</A>.
       <Example>
-gap> f:=PartialPerm( [ 1, 2, 3, 5, 6, 7, 8, 11, 12, 16, 19 ], 
+gap> f:=PartialPerm( [ 1, 2, 3, 5, 6, 7, 8, 11, 12, 16, 19 ],
 > [ 9, 18, 20, 11, 5, 16, 8, 19, 14, 13, 1 ] );
 [2,18][3,20][6,5,11,19,1,9][7,16,13][12,14](8)
 gap> IndexPeriodOfPartialPerm(f);
 [ 6, 1 ]
 gap> f^6=f^7;
-true</Example>  
-    </Description> 
+true</Example>
+    </Description>
   </ManSection>
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
-<ManSection>  
-  <Attr Name="SmallestIdempotentPower" Arg="f" Label="for a partial perm"/> 
-  <Returns>A positive integer.</Returns> 
-  <Description> 
-      This function returns the least positive integer <C>n</C> such that the 
+<ManSection>
+  <Attr Name="SmallestIdempotentPower" Arg="f" Label="for a partial perm"/>
+  <Returns>A positive integer.</Returns>
+  <Description>
+      This function returns the least positive integer <C>n</C> such that the
       partial permutation <C><A>f</A>^n</C> is an idempotent.  The smallest
       idempotent power of <A>f</A> is the least multiple of the period of
-      <A>f</A> that is greater than or equal to the index of <A>f</A>; 
+      <A>f</A> that is greater than or equal to the index of <A>f</A>;
       see <Ref Attr="IndexPeriodOfPartialPerm"/>.
 
       <Example>
-gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 7, 8, 10, 11, 13, 18, 19, 20 ], 
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 7, 8, 10, 11, 13, 18, 19, 20 ],
 > [ 5, 1, 7, 3, 10, 2, 12, 14, 11, 16, 6, 9, 15 ] );
 [4,3,7,2,1,5,10,14][8,12][13,16][18,6][19,9][20,15](11)
 gap> SmallestIdempotentPower(f);
@@ -870,36 +870,36 @@ gap> f^8;
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
-<ManSection>  
-  <Attr Name="ComponentsOfPartialPerm" Arg="f" /> 
+<ManSection>
+  <Attr Name="ComponentsOfPartialPerm" Arg="f" />
   <Returns>A list of lists of positive integer.</Returns>
-  <Description> 
+  <Description>
     <C>ComponentsOfPartialPerm</C> returns a list of the components of the
     partial permutation <A>f</A>.  Each component is a subset of the domain of
     <A>f</A>, and the union of the components equals the domain.
 
-    <Example> 
-gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 13, 19 ], 
+    <Example>
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 13, 19 ],
 > [ 20, 4, 6, 19, 9, 14, 3, 12, 17, 5, 15, 13 ] );
 [1,20][2,4,19,13,15][7,14][8,3,6][10,12,5,9][11,17]
 gap> ComponentsOfPartialPerm(f);
-[ [ 1, 20 ], [ 2, 4, 19, 13, 15 ], [ 7, 14 ], [ 8, 3, 6 ], 
+[ [ 1, 20 ], [ 2, 4, 19, 13, 15 ], [ 7, 14 ], [ 8, 3, 6 ],
   [ 10, 12, 5, 9 ], [ 11, 17 ] ]</Example>
   </Description>
 </ManSection>
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
-<ManSection>  
-  <Attr Name="NrComponentsOfPartialPerm" Arg="f" /> 
+<ManSection>
+  <Attr Name="NrComponentsOfPartialPerm" Arg="f" />
   <Returns>A positive integer.</Returns>
-  <Description> 
+  <Description>
     <C>NrComponentsOfPartialPerm</C>
     returns the number of components of the partial permutation
-    <A>f</A> on its domain. 
+    <A>f</A> on its domain.
 
-    <Example> 
-gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 13, 19 ], 
+    <Example>
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 13, 19 ],
 > [ 20, 4, 6, 19, 9, 14, 3, 12, 17, 5, 15, 13 ] );
 [1,20][2,4,19,13,15][7,14][8,3,6][10,12,5,9][11,17]
 gap> NrComponentsOfPartialPerm(f);
@@ -909,10 +909,10 @@ gap> NrComponentsOfPartialPerm(f);
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
-<ManSection>  
-  <Attr Name="ComponentRepsOfPartialPerm" Arg="f" /> 
+<ManSection>
+  <Attr Name="ComponentRepsOfPartialPerm" Arg="f" />
   <Returns>A list of positive integers.</Returns>
-  <Description> 
+  <Description>
       <C>ComponentRepsOfPartialPerm</C> returns the representatives, in the
       following sense, of the components of the partial permutation <A>f</A>.
       Every component of <A>f</A> contains a unique element in the domain but
@@ -923,10 +923,10 @@ gap> NrComponentsOfPartialPerm(f);
       such that <C>i ^ (<A>f</A> ^ k) = j</C>. Unlike transformations, there is
       exactly one representative for every component of <A>f</A>.
       <C>ComponentRepsOfPartialPerm</C> returns the least number of
-      representatives. 
+      representatives.
 
-    <Example> 
-gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 13, 19 ], 
+    <Example>
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 7, 8, 10, 11, 12, 13, 19 ],
 > [ 20, 4, 6, 19, 9, 14, 3, 12, 17, 5, 15, 13 ] );
 [1,20][2,4,19,13,15][7,14][8,3,6][10,12,5,9][11,17]
 gap> ComponentRepsOfPartialPerm(f);
@@ -936,21 +936,21 @@ gap> ComponentRepsOfPartialPerm(f);
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
-<ManSection>  
-  <Attr Name="LeftOne" Arg="f" Label="for a partial perm"/> 
-  <Attr Name="RightOne" Arg="f" Label="for a partial perm"/> 
+<ManSection>
+  <Attr Name="LeftOne" Arg="f" Label="for a partial perm"/>
+  <Attr Name="RightOne" Arg="f" Label="for a partial perm"/>
   <Returns>A partial permutation.</Returns>
-  <Description> 
+  <Description>
     <C>LeftOne</C> returns the identity partial permutation
     <C>e</C> such that the domain and image of <C>e</C> equal the domain of
     the partial permutation <A>f</A> and such that <C>e*<A>f</A>=f</C>. <P/>
 
     <C>RightOne</C> returns the identity partial permutation
     <C>e</C> such that the domain and image of <C>e</C> equal the image of
-    <A>f</A> and such that <C><A>f</A>*e=f</C>. 
-    
+    <A>f</A> and such that <C><A>f</A>*e=f</C>.
+
     <Example>
-gap> f:=PartialPerm( [ 1, 2, 4, 5, 6, 7 ], [ 10, 1, 6, 5, 8, 7 ] ); 
+gap> f:=PartialPerm( [ 1, 2, 4, 5, 6, 7 ], [ 10, 1, 6, 5, 8, 7 ] );
 [2,1,10][4,6,8](5)(7)
 gap> RightOne(f);
 &lt;identity partial perm on [ 1, 5, 6, 7, 8, 10 ]>
@@ -985,7 +985,7 @@ gap> One(f);
   <Description>
     As described in <Ref Attr="MultiplicativeZero"/>,
     <C>Zero</C> returns the multiplicative zero element of the partial
-    permutation <A>f</A>, which is the empty partial permutation. 
+    permutation <A>f</A>, which is the empty partial permutation.
     <Example>
 gap> f := PartialPerm([ 1, 2, 3, 4, 5, 7, 10 ], [ 3, 7, 9, 6, 1, 10, 2 ]);;
 gap> MultiplicativeZero(f);
@@ -1008,10 +1008,10 @@ gap> MultiplicativeZero(f);
   the function <Ref Attr="AsPermutation"/>.  Similarly, a partial permutation
   can be converted into a transformation using <Ref Attr="AsTransformation"/>.
   <P/>
-  
+
   In this section we describe functions for converting other types of objects
-  in &GAP; into partial permutations. 
-  
+  in &GAP; into partial permutations.
+
   <ManSection>
   <Oper Name="AsPartialPerm" Arg="f, set" Label="for a permutation and a set of
     positive integers"/>
@@ -1022,30 +1022,30 @@ gap> MultiplicativeZero(f);
     A permutation <A>f</A> defines a partial permutation when it is restricted
     to any finite set of positive integers.  <C>AsPartialPerm</C> can be used to
     obtain this partial permutation.<P/>
-    
+
     There are several possible arguments for <C>AsPartialPerm</C>:
 
     <List>
       <Mark>for a permutation and set of positive integers</Mark>
-      <Item><C>AsPartialPerm</C> returns the 
+      <Item><C>AsPartialPerm</C> returns the
       partial permutation that equals <A>f</A> on the set of positive
       integers <A>set</A> and that is undefined on every other positive integer.
       <P/>
-      
-      Note that as explained in 
-      <Ref Func="PartialPerm" Label="for a domain and image"/> 
+
+      Note that as explained in
+      <Ref Func="PartialPerm" Label="for a domain and image"/>
       <E>a permutation is never a partial permutation</E> in &GAP;, please
       keep this in mind when using <C>AsPartialPerm</C>.
       </Item>
       <Mark>for a permutation</Mark>
       <Item><C>AsPartialPerm</C> returns the partial permutation that agrees
       with <A>f</A> on <C>[1..LargestMovedPoint(<A>f</A>)]</C> and that is
-      not defined on any other positive integer. 
+      not defined on any other positive integer.
       </Item>
       <Mark>for a permutation and a positive integer</Mark>
       <Item><C>AsPartialPerm</C> returns the partial permutation that agrees
         with <A>f</A> on <C>[1..<A>n</A>]</C>, when <A>n</A> is a positive
-        integer,  and that is not defined on any other positive integer. 
+        integer,  and that is not defined on any other positive integer.
       </Item>
     </List>
 
@@ -1060,14 +1060,14 @@ gap> AsPartialPerm(f, [ 1, 2, 3 ] );
 [2,8][3,5](1)</Example>
     </Description>
   </ManSection>
-  
+
 <!-- *************************************************************** -->
-  
+
   <ManSection>
-    <Oper Name="AsPartialPerm" Arg="f, set" 
-      Label="for a transformation and a set of positive integer"/> 
-    <Meth Name="AsPartialPerm" Arg="f, n" 
-      Label="for a transformation and a positive integer"/> 
+    <Oper Name="AsPartialPerm" Arg="f, set"
+      Label="for a transformation and a set of positive integer"/>
+    <Meth Name="AsPartialPerm" Arg="f, n"
+      Label="for a transformation and a positive integer"/>
   <Returns>A partial permutation or <K>fail</K>.</Returns>
   <Description>
     A transformation <A>f</A> defines a partial permutation when it is
@@ -1221,12 +1221,12 @@ gap> AsPartialPerm(f, [ 2 .. 4 ] );
     <Oper Name="PermLeftQuoPartialPermNC" Arg='f, g'/>
     <Returns>A permutation.</Returns>
     <Description>
-      Returns the permutation on the image set of <A>f</A> induced by 
-      <C><A>f</A>^-1*<A>g</A></C> when the partial permutations <A>f</A> and 
+      Returns the permutation on the image set of <A>f</A> induced by
+      <C><A>f</A>^-1*<A>g</A></C> when the partial permutations <A>f</A> and
       <A>g</A> have equal domain and image set. <P/>
-      
+
       <C>PermLeftQuoPartialPerm</C> verifies that <A>f</A> and <A>g</A> have
-      equal domains and image sets, and returns an error if they do not. 
+      equal domains and image sets, and returns an error if they do not.
       <C>PermLeftQuoPartialPermNC</C> does no checks.
       <Example>
 gap> f:=PartialPerm( [ 1, 2, 3, 4, 5, 7 ], [ 7, 9, 10, 4, 2, 5 ] );
@@ -1245,7 +1245,7 @@ gap> PermLeftQuoPartialPerm(f, g);
   <Returns>A positive integer or <K>fail</K>.</Returns>
   <Description>
     <C>PreImagePartialPerm</C> returns the preimage of the positive
-    integer <A>i</A> under the partial permutation <A>f</A> if 
+    integer <A>i</A> under the partial permutation <A>f</A> if
     <A>i</A> belongs to the image of <A>f</A>. If <A>i</A> does not belong to
     the image of <A>f</A>, then <K>fail</K> is returned. <P/>
 
@@ -1263,7 +1263,7 @@ gap> PreImagePartialPerm(f, 1);
 10
 gap> PreImagePartialPerm(f, 10);
 2
-gap> PreImagePartialPerm(f, 2); 
+gap> PreImagePartialPerm(f, 2);
 fail</Example>
   </Description>
 </ManSection>
@@ -1276,9 +1276,9 @@ fail</Example>
   <Description>
     <C>ComponentPartialPermInt</C> returns the elements of the component of
     <A>f</A> containing <A>i</A> that can be obtained by repeatedly applying
-    <A>f</A> to <A>i</A>.  
+    <A>f</A> to <A>i</A>.
     <Example>
-gap> f:=PartialPerm( [ 1, 2, 4, 5, 6, 7, 8, 10, 14, 15, 16, 17, 18 ], 
+gap> f:=PartialPerm( [ 1, 2, 4, 5, 6, 7, 8, 10, 14, 15, 16, 17, 18 ],
 > [ 11, 4, 14, 16, 15, 3, 20, 8, 17, 19, 1, 6, 12 ] );
 [2,4,14,17,6,15,19][5,16,1,11][7,3][10,8,20][18,12]
 gap> ComponentPartialPermInt(f, 4);
@@ -1303,18 +1303,18 @@ gap> ComponentPartialPermInt(f, 100);
       idempotent
       <C>e</C> in <C>S</C> such that <C>s=et</C>. Hence if <A>f</A> and
       <A>g</A> are partial permutations, then <A>f</A><M>\leq</M><A>g</A> if
-      and only if <A>f</A> is a restriction of <A>g</A>; 
+      and only if <A>f</A> is a restriction of <A>g</A>;
       see <Ref Oper="RestrictedPartialPerm"/>. <P/>
-     
+
       <C>NaturalLeqPartialPerm</C>
       returns <K>true</K> if <A>f</A> is a restriction of <A>g</A> and
       <K>false</K> if it is not. Note that since this is a partial order and
       not a total order, it is possible that <A>f</A> and <A>g</A> are
-      incomparable with respect to the natural partial order. 
+      incomparable with respect to the natural partial order.
 
       <Example>
-gap> f:=PartialPerm( 
-> [ 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19 ], 
+gap> f:=PartialPerm(
+> [ 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19 ],
 > [ 3, 12, 14, 4, 11, 18, 17, 2, 9, 5, 15, 8, 20, 10, 19 ] );;
 gap> g:=RestrictedPartialPerm(f, [ 1, 2, 3, 9, 13, 20 ] );
 [1,3,14][2,12]
@@ -1322,7 +1322,7 @@ gap> NaturalLeqPartialPerm(g,f);
 true
 gap> NaturalLeqPartialPerm(f,g);
 false
-gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 8, 10 ], 
+gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 8, 10 ],
 > [ 7, 1, 4, 3, 2, 6, 5 ] );;
 gap> NaturalLeqPartialPerm(f, g);
 false
@@ -1340,16 +1340,16 @@ false</Example>
       <C>ShortLexLeqPartialPerm</C> returns <K>true</K> if
       the concatenation of the domain and image list of <A>f</A> is short-lex
       less than the corresponding concatenation for <A>g</A> and <K>false</K>
-      otherwise.<P/>  
-      
+      otherwise.<P/>
+
       Note that this is not the natural partial order
       on partial permutation or the same as comparing <A>f</A> and <A>g</A>
       using <C>\&lt;</C>.
       <Example>
-gap> f:=PartialPerm( [ 1, 2, 3, 4, 6, 7, 8, 10 ], 
+gap> f:=PartialPerm( [ 1, 2, 3, 4, 6, 7, 8, 10 ],
 > [ 3, 8, 1, 9, 4, 10, 5, 6 ] );
 [2,8,5][7,10,6,4,9](1,3)
-gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 8, 10 ], 
+gap> g:=PartialPerm( [ 1, 2, 3, 4, 5, 8, 10 ],
 > [ 7, 1, 4, 3, 2, 6, 5 ] );
 [8,6][10,5,2,1,7](3,4)
 gap> f&lt;g;
@@ -1366,7 +1366,7 @@ gap> NaturalLeqPartialPerm(g, f);
 false</Example>
     </Description>
   </ManSection>
- 
+
   <ManSection>
     <Oper Name="TrimPartialPerm" Arg="f"/>
     <Returns>Nothing.</Returns>
@@ -1406,12 +1406,12 @@ false</Example>
   <Heading>Displaying partial permutations</Heading>
     It is possible to change the way that &GAP; displays partial permutations
     using the user preferences <C>PartialPermDisplayLimit</C>
-    and <C>NotationForPartialPerms</C>;  see Section 
+    and <C>NotationForPartialPerms</C>;  see Section
     <Ref Func="UserPreference"/> for more information about user preferences.
     <P/>
 
     If <C>f</C> is a partial permutation of rank <C>r</C> exceeding the value
-    of the user preference <C>PartialPermDisplayLimit</C>, then <C>f</C> is 
+    of the user preference <C>PartialPermDisplayLimit</C>, then <C>f</C> is
     displayed as:
     <Log>&lt;partial perm on r pts with degree m, codegree n&gt;</Log>
     where the degree and codegree are <C>m</C> and <C>n</C>, respectively.
@@ -1422,16 +1422,16 @@ false</Example>
     If the rank of <C>f</C> does not exceed the value of
     <C>PartialPermDisplayLimit</C>, then how <C>f</C> is displayed depends on
     the value of the user preference <C>NotationForPartialPerms</C> except in
-    the case that <C>f</C> is the empty partial permutation or an identity  
+    the case that <C>f</C> is the empty partial permutation or an identity
     partial permutation.  <P/>
-  
+
     There are three possible values for <C>NotationForPartialPerms</C> user
     preference, which are described below.
     <List>
       <Mark>component</Mark>
       <Item> Similar to permutations, and unlike transformations, partial
         permutations can be expressed as products of disjoint permutations and
-        chains. 
+        chains.
         A <E>chain</E> is a list <C>c</C> of some length <C>n</C> such
         that:
         <List>
@@ -1441,7 +1441,7 @@ false</Example>
          </Item>
          <Item><C>c[i]^<A>f</A>=c[i+1]</C> for all <C>i</C> in the range from
            <C>1</C> to <C>n-1</C>.
-        </Item> 
+        </Item>
         <Item><C>c[n]</C> is in the image of <A>f</A> but not the
           domain.</Item>
       </List>
@@ -1457,12 +1457,12 @@ gap> f := PartialPerm([ 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19 ],
       is the default value of the user preference
       <C>NotationForPartialPerms</C>.
       </Item>
-      
+
       <Mark>domainimage</Mark>
-      <Item> 
-        With this option a partial permutation <C>f</C> is displayed 
-        in the format: <C>DomainOfPartialPerm(<A>f</A>)-> 
-          ImageListOfPartialPerm(<A>f</A>)</C>. 
+      <Item>
+        With this option a partial permutation <C>f</C> is displayed
+        in the format: <C>DomainOfPartialPerm(<A>f</A>)->
+          ImageListOfPartialPerm(<A>f</A>)</C>.
 <Log>gap> f:=PartialPerm( [ 1, 2, 4, 5, 6, 7 ], [ 10, 1, 6, 5, 8, 7 ]);
 [ 1, 2, 4, 5, 6, 7 ] -> [ 10, 1, 6, 5, 8, 7 ]</Log>
       </Item>
@@ -1471,21 +1471,21 @@ gap> f := PartialPerm([ 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19 ],
         With this option a partial permutation <A>f</A> is displayed as:
         <C>PartialPerm(DomainOfPartialPerm(<A>f</A>),
           ImageListOfPartialPerm(<A>f</A>))</C>
-        which corresponds to the input (of the first type described in 
+        which corresponds to the input (of the first type described in
         <Ref Func="PartialPerm" Label="for a domain and image"/>).
-<Log>gap> f:=PartialPerm( [ 1, 2, 3, 5, 6, 9, 10 ], 
+<Log>gap> f:=PartialPerm( [ 1, 2, 3, 5, 6, 9, 10 ],
 > [ 4, 7, 3, 8, 2, 1, 6 ] );
 PartialPerm( [ 1, 2, 3, 5, 6, 9, 10 ], [ 4, 7, 3, 8, 2, 1, 6 ] )</Log>
       </Item>
     </List>
     <Log>
-gap> SetUserPreference("PartialPermDisplayLimit", 12);                
+gap> SetUserPreference("PartialPermDisplayLimit", 12);
 gap> UserPreference("PartialPermDisplayLimit");
 12
 gap> f:=PartialPerm([1,2,3,4,5,6], [6,7,1,4,3,2]);
 [5,3,1,6,2,7](4)
-gap> f:=PartialPerm( 
-> [ 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19 ], 
+gap> f:=PartialPerm(
+> [ 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19 ],
 > [ 3, 12, 14, 4, 11, 18, 17, 2, 9, 5, 15, 8, 20, 10, 19 ] );
 &lt;partial perm on 15 pts with degree 19, codegree 20>
 gap> SetUserPreference("PartialPermDisplayLimit", 100);
@@ -1495,12 +1495,12 @@ gap> UserPreference("NotationForPartialPerms");
 "component"
 gap> SetUserPreference("NotationForPartialPerms", "domainimage");
 gap> f;
-[ 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19 ] -> 
+[ 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19 ] ->
 [ 3, 12, 14, 4, 11, 18, 17, 2, 9, 5, 15, 8, 20, 10, 19 ]
 gap> SetUserPreference("NotationForPartialPerms", "input");
 gap> f;
-PartialPerm( 
-[ 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19 ], 
+PartialPerm(
+[ 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 16, 17, 18, 19 ],
 [ 3, 12, 14, 4, 11, 18, 17, 2, 9, 5, 15, 8, 20, 10, 19 ] )</Log>
 </Section>
 
@@ -1514,36 +1514,36 @@ about semigroups and inverse semigroups see Chapter <Ref Chap="Semigroups"/>. <P
 
 The <Package>Semigroups</Package> package contains
 many additional functions and methods for computing with semigroups of
-partial permutations. In particular, <Package>Semigroups</Package> 
+partial permutations. In particular, <Package>Semigroups</Package>
 contains more efficient methods than those available in the &GAP; library (and
 in many cases more efficient than any other software) for creating semigroups of transformations, calculating their Green's classes, size, elements,
 group of units, minimal ideal, small generating sets, testing membership,
 finding the inverses of a regular element, factorizing elements over the
 generators, and more. <P/>
 
-Since a partial permutation semigroup is also a partial permutation collection, there are special methods for <Ref Attr="DomainOfPartialPermCollection"/>, 
-<Ref Attr="ImageOfPartialPermCollection"/>, 
-<Ref Meth="FixedPointsOfPartialPerm" Label="for a partial perm coll"/>, 
-<Ref Meth="MovedPoints" Label="for a partial perm coll"/>, 
-<Ref Meth="NrFixedPoints" Label="for a partial perm coll"/>, 
+Since a partial permutation semigroup is also a partial permutation collection, there are special methods for <Ref Attr="DomainOfPartialPermCollection"/>,
+<Ref Attr="ImageOfPartialPermCollection"/>,
+<Ref Meth="FixedPointsOfPartialPerm" Label="for a partial perm coll"/>,
+<Ref Meth="MovedPoints" Label="for a partial perm coll"/>,
+<Ref Meth="NrFixedPoints" Label="for a partial perm coll"/>,
 <Ref Meth="NrMovedPoints" Label="for a partial perm coll"/>,
-<Ref Meth="LargestMovedPoint" Label="for a partial perm coll"/>, and 
-<Ref Meth="SmallestMovedPoint" Label="for a partial perm coll"/> 
-when applied to a partial permutation semigroup. 
+<Ref Meth="LargestMovedPoint" Label="for a partial perm coll"/>, and
+<Ref Meth="SmallestMovedPoint" Label="for a partial perm coll"/>
+when applied to a partial permutation semigroup.
 
 <ManSection>
   <Filt Name="IsPartialPermSemigroup" Arg="obj"/>
   <Filt Name="IsPartialPermMonoid" Arg="obj"/>
   <Returns><K>true</K> or <K>false</K>.</Returns>
-  <Description> 
+  <Description>
     A <E>partial perm semigroup</E> is simply a semigroup consisting of partial
     permutations, which may or may not be an inverse semigroup. An object
     <A>obj</A> in &GAP; is a partial perm semigroup if and only if it satisfies
     <Ref Filt="IsSemigroup"/> and <Ref Filt="IsPartialPermCollection"/>.<P/>
 
     A <E>partial perm monoid</E> is a monoid consisting of partial
-    permutations. An object in &GAP; is a partial perm monoid if it satisfies 
-    <Ref Filt="IsMonoid"/> and <Ref Filt="IsPartialPermCollection"/>.<P/> 
+    permutations. An object in &GAP; is a partial perm monoid if it satisfies
+    <Ref Filt="IsMonoid"/> and <Ref Filt="IsPartialPermCollection"/>.<P/>
 
 Note that it is possible for a partial perm semigroup to have a
 multiplicative neutral element (i.e. an identity element) but not to satisfy
@@ -1569,14 +1569,14 @@ For more details see <Ref Filt="IsMagmaWithOne"/>.
   <Attr Name="RankOfPartialPermSemigroup" Arg="S"/>
   <Returns>A non-negative integer.</Returns>
   <Description>
-    The <E>degree</E> of a partial permutation semigroup <A>S</A> is the 
+    The <E>degree</E> of a partial permutation semigroup <A>S</A> is the
     largest degree of any partial permutation in <A>S</A>. <P/>
 
     The <E>codegree</E> of a partial permutation semigroup <A>S</A> is the
     largest positive integer in its image.<P/>
 
     The <E>rank</E> of a partial permutation semigroup <A>S</A> is the number
-    of points on which it acts. 
+    of points on which it acts.
     <Example><![CDATA[
 gap> S := Semigroup( PartialPerm( [ 1, 5 ], [ 10000, 3 ] ) );
 <commutative partial perm semigroup of rank 2 with 1 generator>
@@ -1596,11 +1596,11 @@ gap> RankOfPartialPermSemigroup(S);
   <Description>
     If <A>n</A> is a non-negative integer, then
     <C>SymmetricInverseSemigroup</C> returns the inverse semigroup consisting
-    of all partial permutations with degree and codegree at most <A>n</A>. 
+    of all partial permutations with degree and codegree at most <A>n</A>.
     Note that <A>n</A> must be non-negative, but in particular, can equal
     <C>0</C>.  <P/>
-    
-    The symmetric inverse semigroup 
+
+    The symmetric inverse semigroup
     <Alt Not="Text">
       has <M>\sum_{r=0}^n{n\choose r}^2\cdot r!</M>
       elements and </Alt>
@@ -1626,7 +1626,7 @@ gap> GeneratorsOfInverseMonoid(S);
 <Prop Name="IsSymmetricInverseMonoid" Arg='S'/>
 <Returns><K>true</K> or <K>false</K>.</Returns>
 <Description>
-  If the partial perm semigroup <A>S</A> of degree and codegree <A>n</A> 
+  If the partial perm semigroup <A>S</A> of degree and codegree <A>n</A>
   equals the symmetric inverse semigroup on <A>n</A> points, then
   <C>IsSymmetricInverseSemigroup</C> return <K>true</K> and otherwise it
   returns <K>false</K>.<P/>
@@ -1634,7 +1634,7 @@ gap> GeneratorsOfInverseMonoid(S);
   <C>IsSymmetricInverseMonoid</C> is a synonym of
   <C>IsSymmetricInverseSemigroup</C>. It is common in the literature
   for the symmetric inverse monoid to be referred to as the symmetric inverse
-  semigroup.  
+  semigroup.
 
   <Example><![CDATA[
 gap> S := Semigroup(AsPartialPerm((1, 3, 4, 2), 5), AsPartialPerm((1, 3, 5), 5),
@@ -1658,13 +1658,13 @@ gap> S;
     <C>e</C> in <A>S</A> such that <C>s=et</C>. Hence if <C>f</C> and
     <C>g</C> are partial permutations, then <C>f</C><M>\leq</M><C>g</C> if
     and only if <C>f</C> is a restriction of <C>g</C>;
-    see <Ref Oper="RestrictedPartialPerm"/>.<P/> 
+    see <Ref Oper="RestrictedPartialPerm"/>.<P/>
 
     <C>NaturalPartialOrder</C> returns the natural partial order on the inverse
     semigroup of partial permutations <A>S</A> as a list of sets of positive
     integers where entry <C>i</C> in <C>NaturalPartialOrder(<A>S</A>)</C> is
     the set of positions in <C>Elements(<A>S</A>)</C> of elements which are
-    less than <C>Elements(<A>S</A>)[i]</C>. See also 
+    less than <C>Elements(<A>S</A>)[i]</C>. See also
     <Ref Func="NaturalLeqPartialPerm"/>.<P/>
 
     <C>ReverseNaturalPartialOrder</C> returns the reverse of the natural
@@ -1673,9 +1673,9 @@ gap> S;
     positive integers where entry <C>i</C> in
     <C>ReverseNaturalPartialOrder(<A>S</A>)</C> is the set of positions in
     <C>Elements(<A>S</A>)</C> of elements which are greater than
-    <C>Elements(<A>S</A>)[i]</C>. See also 
+    <C>Elements(<A>S</A>)[i]</C>. See also
     <Ref Func="NaturalLeqPartialPerm"/>.
-  
+
     <Example><![CDATA[
 gap> S := InverseSemigroup([ PartialPerm( [ 1, 3 ], [ 1, 3 ] ),
 > PartialPerm( [ 1, 2 ], [ 3, 2 ] ) ] );
@@ -1683,11 +1683,11 @@ gap> S := InverseSemigroup([ PartialPerm( [ 1, 3 ], [ 1, 3 ] ),
 gap> Size(S);
 11
 gap> NaturalPartialOrder(S);
-[ [  ], [ 1 ], [ 1 ], [ 1 ], [ 1, 2, 4 ], [ 1, 3, 4 ], [ 1 ], [ 1 ], 
+[ [  ], [ 1 ], [ 1 ], [ 1 ], [ 1, 2, 4 ], [ 1, 3, 4 ], [ 1 ], [ 1 ],
   [ 1, 4, 7 ], [ 1, 4, 8 ], [ 1, 2, 8 ] ]
 gap> NaturalLeqPartialPerm(Elements(S)[4], Elements(S)[10]);
 true
-gap> NaturalLeqPartialPerm(Elements(S)[4], Elements(S)[1]); 
+gap> NaturalLeqPartialPerm(Elements(S)[4], Elements(S)[1]);
 false]]></Example>
   </Description>
 </ManSection>
@@ -1703,8 +1703,8 @@ false]]></Example>
 
      <C>IsomorphismPartialPermMonoid(<A>S</A>)</C> returns an isomorphism from
      the inverse semigroup <A>S</A> to an inverse monoid of partial
-     permutations, if possible.<P/> 
-     
+     permutations, if possible.<P/>
+
      We only describe <C>IsomorphismPartialPermMonoid</C>,
      the corresponding statements for <C>IsomorphismPartialPermSemigroup</C>
      also hold.
@@ -1718,15 +1718,15 @@ false]]></Example>
          <C>IsomorphismPartialPermMonoid(<A>S</A>)</C> returns an isomorphism
          from <A>S</A> to an inverse monoid of partial permutations.
        </Item>
-       
+
       <Mark>Permutation groups</Mark>
       <Item>
         If <A>S</A> is a permutation group, then
         <C>IsomorphismPartialPermMonoid</C> returns an isomorphism from
         <A>S</A> to an inverse monoid of partial permutations on the set
-        <C>MovedPoints(<A>S</A>)</C> obtained using 
+        <C>MovedPoints(<A>S</A>)</C> obtained using
         <Ref Meth="AsPartialPerm" Label="for a permutation"/>.
-        The inverse of this isomorphism is obtained using 
+        The inverse of this isomorphism is obtained using
         <Ref Attr="AsPermutation"/>.
       </Item>
 
@@ -1740,16 +1740,16 @@ false]]></Example>
       </Item>
     </List>
     <Example><![CDATA[
-gap> S := InverseSemigroup( 
+gap> S := InverseSemigroup(
 > PartialPerm( [ 1, 2, 3, 4, 5 ], [ 4, 2, 3, 1, 5 ] ),
 > PartialPerm( [ 1, 2, 4, 5 ], [ 3, 1, 4, 2 ] ) );;
-gap> IsMonoid(S); 
+gap> IsMonoid(S);
 false
 gap> Size(S);
 508
 gap> iso := IsomorphismPartialPermMonoid(S);
-MappingByFunction( <inverse partial perm semigroup of size 508, 
- rank 5 with 2 generators>, <inverse partial perm monoid of size 508, 
+MappingByFunction( <inverse partial perm semigroup of size 508,
+ rank 5 with 2 generators>, <inverse partial perm monoid of size 508,
  rank 5 with 2 generators>
  , function( object ) ... end, function( object ) ... end )
 gap> Size(S);
@@ -1762,7 +1762,7 @@ MappingByFunction( Group([ (1,2)(3,8)(4,6)(5,7), (1,3,4,7)
 (2,5,6,8), (1,4)(2,6)(3,7)
 (5,8) ]), <partial perm group of rank 8 with 3 generators>
 , function( p ) ... end, <Attribute "AsPermutation"> )
-gap> S := Semigroup(Transformation( [ 2, 5, 1, 7, 3, 7, 7 ] ), 
+gap> S := Semigroup(Transformation( [ 2, 5, 1, 7, 3, 7, 7 ] ),
 > Transformation( [ 3, 6, 5, 7, 2, 1, 7 ] ) );;
 gap> iso := IsomorphismPartialPermMonoid(S);;
 gap> MultiplicativeNeutralElement(S) ^ iso;

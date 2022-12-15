@@ -216,7 +216,7 @@ local r,i,j,u,f,q,n,lim,sel,nat,ok,mi;
 
         if not ok then
           q:=GQuotients(f,g/n[i]:findall:=false);
-          if Length(q)=0 then 
+          if Length(q)=0 then
             # fail in quotient
             i:=Length(n)+10;
             Info(InfoGroup,2,"Rank ",r," fails in quotient\n");
@@ -408,10 +408,10 @@ InstallMethod( IsPowerfulPGroup,
     fi;
 
 
-      
+
     end);
-     
-  
+
+
 InstallMethod( IsPowerfulPGroup,
     "generic method checks inclusion of commutator subgroup in agemo subgroup",
     [ IsGroup ],
@@ -421,17 +421,17 @@ InstallMethod( IsPowerfulPGroup,
       return false;
     elif IsTrivial(G) then
       return true;
-	
+
     else
-    
+
       p:=PrimePGroup(G);
-      if p = 2 then 
+      if p = 2 then
         return IsSubgroup(Agemo(G,2,2),DerivedSubgroup( G ));
-      else 
+      else
         return IsSubgroup(Agemo(G,p), DerivedSubgroup( G ));
-      fi; 
+      fi;
     fi;
-    end);                                              
+    end);
 
 
 #############################################################################
@@ -849,7 +849,7 @@ end);
 
 #############################################################################
 ##
-#M  IsInfiniteAbelianizationGroup( <G> ) 
+#M  IsInfiniteAbelianizationGroup( <G> )
 ##
 InstallMethod( IsInfiniteAbelianizationGroup,"generic method for groups",
 [ IsGroup ], G->0 in AbelianInvariants(G));
@@ -922,7 +922,7 @@ InstallMethod( ChiefSeries,
 
 #############################################################################
 ##
-#M  RefinedSubnormalSeries( <ser>,<n> ) 
+#M  RefinedSubnormalSeries( <ser>,<n> )
 ##
 InstallGlobalFunction("RefinedSubnormalSeries",function(ser,sub)
 local new,i,c;
@@ -1062,7 +1062,7 @@ local cs,i,j,pre,post,c,new,rev;
   for j in normals do
     # first in cs that does not contain j
     pre:=PositionProperty(cs,x->not IsSubset(x,j));
-    # first contained in j. 
+    # first contained in j.
     post:=PositionProperty(cs,x->Size(j)>=Size(x) and IsSubset(j,x));
 
     # if j is in the series, then pre>post. pre=post impossible
@@ -1082,7 +1082,7 @@ local cs,i,j,pre,post,c,new,rev;
         fi;
         i:=i-1;
         # at some point this must reach j, then no further step needed
-      until Size(c)=Size(cs[pre-1]) or i<pre; 
+      until Size(c)=Size(cs[pre-1]) or i<pre;
       Append(new,Filtered(Reversed(rev),x->Size(x)<Size(cs[pre-1])));
 
       i:=pre;
@@ -1146,7 +1146,7 @@ InstallMethod( DerivedSeriesOfGroup,
             D;          # derived subgroups
 
     # print out a warning for infinite groups
-    if (HasIsFinite(G) and not IsFinite( G )) 
+    if (HasIsFinite(G) and not IsFinite( G ))
       and not (HasIsPolycyclicGroup(G) and IsPolycyclicGroup( G )) then
       Info( InfoWarning, 1,
             "DerivedSeriesOfGroup: may not stop for infinite group <G>" );
@@ -1156,7 +1156,7 @@ InstallMethod( DerivedSeriesOfGroup,
     S := [ G ];
     Info( InfoGroup, 2, "DerivedSeriesOfGroup: step ", Length(S) );
     D := DerivedSubgroup( G );
-   
+
     while
       (not HasIsTrivial(S[Length(S)]) or
 	    not IsTrivial(S[Length(S)])) and
@@ -1428,7 +1428,7 @@ InstallMethod( FrattiniSubgroup, "for abelian groups",
             [ IsGroup and IsAbelian ],
 function(G)
     local i, abinv, indgen, p, q, gen;
-    
+
     gen := [ ];
     abinv := AbelianInvariants(G);
     indgen := IndependentGeneratorsOfAbelianGroup(G);
@@ -1530,7 +1530,7 @@ InstallMethod( LowerCentralSeriesOfGroup,
             C;          # commutator subgroups
 
     # print out a warning for infinite groups
-    if (HasIsFinite(G) and not IsFinite( G )) 
+    if (HasIsFinite(G) and not IsFinite( G ))
       and not (HasIsNilpotentGroup(G) and IsNilpotentGroup( G )) then
       Info( InfoWarning, 1,
             "LowerCentralSeriesOfGroup: may not stop for infinite group <G>");
@@ -1580,7 +1580,7 @@ local H,a,m,i,l;
     Add(l,a);
   od;
 
-  # now we know list is untained, store 
+  # now we know list is untained, store
   return l;
 
 end);
@@ -1610,7 +1610,7 @@ local cheap,nolattice,intersize,attr,kill,i,flags,sup,sub,l;
     sup:=flags[3]=false or (IsInt(intersize) and intersize<=flags[3]);
     # would supersede the stored result
     sub:=intersize=false or (IsInt(flags[3]) and intersize>=flags[3]);
-    sup:=sup and (cheap or not flags[1]); 
+    sup:=sup and (cheap or not flags[1]);
     sub:=sub and (not cheap or flags[1]);
     sup:=sup and (nolattice or not flags[2]);
     sub:=sub and (not nolattice or flags[2]);
@@ -1650,7 +1650,7 @@ InstallMethod( NrConjugacyClasses,
 #A  IndependentGeneratorsOfAbelianGroup( <A> )
 ##
 # to catch some trivial cases.
-InstallMethod(IndependentGeneratorsOfAbelianGroup,"finite abelian group", 
+InstallMethod(IndependentGeneratorsOfAbelianGroup,"finite abelian group",
   true,[IsGroup and IsAbelian],0,
 function(G)
 local hom,gens;
@@ -2244,7 +2244,7 @@ InstallMethod( UpperCentralSeriesOfGroup,
             hom;        # homomorphisms of <G> to `<G>/<C>'
 
     # print out a warning for infinite groups
-    if (HasIsFinite(G) and not IsFinite( G )) 
+    if (HasIsFinite(G) and not IsFinite( G ))
       and not (HasIsNilpotentGroup(G) and IsNilpotentGroup( G )) then
       Info( InfoWarning, 1,
             "UpperCentralSeriesOfGroup: may not stop for infinite group <G>");
@@ -2943,13 +2943,13 @@ RedispatchOnCondition (IsPNilpotentOp, ReturnTrue, [IsGroup, IsPosInt], [IsFinit
 ##
 #M  IsPSolvable( <G>, <p> )
 ##
-InstallMethod( IsPSolvableOp, 
+InstallMethod( IsPSolvableOp,
     "generic method: build descending series with abelian or p'-factors",
     [ IsGroup and IsFinite, IsPosInt ],
     function( G, p )
 
     local N;
-    
+
     while Size( G ) mod p = 0 do
         N := PerfectResiduum( G );
         N := NormalClosure (N, SylowSubgroup (N, p));
@@ -2966,7 +2966,7 @@ InstallMethod( IsPSolvableOp,
     [ IsGroup and IsSolvableGroup and IsFinite, IsPosInt ],
     SUM_FLAGS,
     ReturnTrue);
- 
+
 RedispatchOnCondition (IsPSolvableOp, ReturnTrue, [IsGroup, IsPosInt], [IsFinite], 0);
 
 
@@ -3025,7 +3025,7 @@ InstallMethod( Position, "right transversal: Use PositionCanonical",
 function(t,e,p)
 local a;
   a:=PositionCanonical(t,e);
-  if a<p or t[a]<>e then 
+  if a<p or t[a]<>e then
     return fail;
   else
     return a;
@@ -3434,7 +3434,7 @@ InstallMethod( SylowSubgroupOp,
 InstallMethod (HallSubgroupOp, "test trivial cases", true,
     [IsGroup and IsFinite and HasSize, IsList], SUM_FLAGS,
     function (grp, pi)
-    
+
         local size, p;
 
         size := Size (grp);
@@ -4472,7 +4472,7 @@ InstallGlobalFunction( SmallSimpleGroup,
 
     if order < 60 then return fail; fi;
 
-    if   order > SIMPLE_GROUPS_ITERATOR_RANGE then 
+    if   order > SIMPLE_GROUPS_ITERATOR_RANGE then
       Error("simple groups of order > ",SIMPLE_GROUPS_ITERATOR_RANGE,
                 " are currently\n",
                "not available via this function.");
@@ -4500,7 +4500,7 @@ InstallGlobalFunction( AllSmallNonabelianSimpleGroups,
 
     min:=Minimum(orders);
     max:=Maximum(orders);
-    if max> SIMPLE_GROUPS_ITERATOR_RANGE then 
+    if max> SIMPLE_GROUPS_ITERATOR_RANGE then
       Error("simple groups of order > ",SIMPLE_GROUPS_ITERATOR_RANGE,
         " are currently\n",
         "not available via this function.");
@@ -4527,7 +4527,7 @@ InstallMethod( PrintObj,
     function( G )
     Print( "Group( ... )" );
     end );
-    
+
 InstallMethod( String,
     "for a group",
     [ IsGroup ],
@@ -4578,7 +4578,7 @@ InstallMethod( ViewString,
     function( G )
     return "<group>";
 end );
-    
+
 InstallMethod( ViewString,
     "for a group with generators",
     [ IsGroup and HasGeneratorsOfMagmaWithInverses ],
@@ -4608,7 +4608,7 @@ InstallMethod( ViewObj, "for a group",
     [ IsGroup ],
         function(G)
     Print(ViewString(G));
-end);   
+end);
 
 #############################################################################
 ##
@@ -4894,7 +4894,7 @@ InstallGlobalFunction( SubgroupByProperty, function( G, prop )
 local K, S;
 
   K:= NewType( FamilyObj(G), IsMagmaWithInverses
-                  and IsAttributeStoringRep 
+                  and IsAttributeStoringRep
                   and HasElementTestFunction);
   S:=rec();
   ObjectifyWithAttributes(S, K, ElementTestFunction, prop );
@@ -5169,11 +5169,11 @@ InstallMethod( MinimalNormalSubgroups,
       return [];
     fi;
     SortParallel (sizes, grps);
-    
+
     # if a group is not minimal, we set the corresponding size to 1,
-        
+
     min := [];
-  
+
     for i in [1..n] do
       if sizes[i] > 1 then
         G := grps[i];
@@ -5201,7 +5201,7 @@ RedispatchOnCondition(MinimalNormalSubgroups, true,
 
 #############################################################################
 ##
-#M  MinimalNormalSubgroups (<G>) 
+#M  MinimalNormalSubgroups (<G>)
 ##
 InstallMethod (MinimalNormalSubgroups,
    "handled by nice monomorphism",
@@ -5211,11 +5211,11 @@ InstallMethod (MinimalNormalSubgroups,
    function( grp )
       local hom;
       hom := NiceMonomorphism (grp);
-      return List (MinimalNormalSubgroups (NiceObject (grp)), 
+      return List (MinimalNormalSubgroups (NiceObject (grp)),
         N -> PreImagesSet (hom, N));
    end);
-   
-   
+
+
 #############################################################################
 ##
 #M  MinimalNormalSubgroups( <G> )
@@ -5618,17 +5618,17 @@ function( grp )
     i := Random( 1, Length(seed[1]) );
     j := Random( 1, Length(seed[1]) );
     k := Random( 1, Length(seed[1]) );
-    
+
     seed[3] := seed[3]*seed[1][i];
     seed[1][j] := seed[1][j]*seed[3];
     seed[2] := seed[2]*seed[1][k];
-    
+
     return seed[2];
 
 end );
 
 InstallMethod( PseudoRandom, "product replacement",
-    [ IsGroup and HasGeneratorsOfGroup ], Group_PseudoRandom); 
+    [ IsGroup and HasGeneratorsOfGroup ], Group_PseudoRandom);
 
 #############################################################################
 ##

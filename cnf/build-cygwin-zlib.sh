@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# zlib on Cygwin requires a special build procedure 
+# zlib on Cygwin requires a special build procedure
 # The following is taken from the zlib package in Cygwin
 
 cd extern/zlib &&

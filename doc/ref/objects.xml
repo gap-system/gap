@@ -39,7 +39,7 @@ is an object.
 <P/>
 Objects can be assigned to variables,
 and everything that can be assigned to a variable is an object.
-Analogously, objects can be used as arguments of functions, and can be 
+Analogously, objects can be used as arguments of functions, and can be
 returned by functions.
 
 <#Include Label="IsObject">
@@ -69,7 +69,7 @@ As an example of all three reasons, consider the possibility of storing
 an integer in several places of the memory,
 of representing it as a fraction with denominator 1,
 or of representing it as a fraction with any denominator, and numerator
-a suitable multiple of the denominator. 
+a suitable multiple of the denominator.
 
 </Section>
 
@@ -79,14 +79,14 @@ a suitable multiple of the denominator.
 <Heading>Sets</Heading>
 
 In &GAP; there is no category whose definition corresponds to the
-mathematical property of being a set, however 
-in the manual we will often refer to an object as a <E>set</E> 
+mathematical property of being a set, however
+in the manual we will often refer to an object as a <E>set</E>
 in order to convey the fact that mathematically, we are thinking of
 it as a set. In particular, two sets <M>A</M> and <M>B</M> are equal if and only if,
-<M>x \in A \iff x \in B</M>.  
+<M>x \in A \iff x \in B</M>.
 <P/>
 There are two types of object in &GAP; which exhibit this kind of behaviour
-with respect to equality, namely domains (see Section&nbsp;<Ref Sect="Domains"/>) and lists 
+with respect to equality, namely domains (see Section&nbsp;<Ref Sect="Domains"/>) and lists
 whose elements are strictly sorted see <Ref Prop="IsSSortedList"/>.
 In general, <E>set</E> in this manual
 will mean an object of one of these types.
@@ -111,7 +111,7 @@ in Section <Ref Sect="Sorted Lists and Sets"/>.
 An especially important class of objects in &GAP; are those whose
 underlying mathematical abstraction is that of a  structured set, for
 example a group, a conjugacy class, or a vector space.  Such objects
-are called <E>domains</E>.  The equality relation between domains is always 
+are called <E>domains</E>.  The equality relation between domains is always
 equality <E>as sets</E>, so that two domains are equal if and only if they
 contain the same elements.
 <P/>
@@ -148,7 +148,7 @@ An object in &GAP; is said to be <E>immutable</E> if its mathematical value
 More explicitly,
 suppose <M>a</M> is immutable and <M>O</M> is some operation on <M>a</M>,
 then if <M>a = b</M> evaluates to <K>true</K> before executing <M>O(a)</M>,
-<M>a = b</M> also evaluates to <K>true</K> afterwards. 
+<M>a = b</M> also evaluates to <K>true</K> afterwards.
 (Examples for operations <M>O</M> that change mutable objects are
 <Ref Oper="Add"/> and <Ref Oper="Unbind" Label="unbind a list entry"/>
 which are used to change list objects, see Chapter&nbsp;<Ref Chap="Lists"/>.)
@@ -156,23 +156,23 @@ An immutable object <E>may</E> change, for example to store
 new information, or to adopt a more efficient representation,
 but this does not affect its behaviour under <M>=</M>.
 <P/>
-There are two points here to note. Firstly, <Q>operation</Q> above 
+There are two points here to note. Firstly, <Q>operation</Q> above
 refers to the functions and methods which can legitimately be
-applied to the object, and not the <C>!.</C> operation whereby 
+applied to the object, and not the <C>!.</C> operation whereby
 virtually any aspect of any &GAP; level object may be changed.
-The second point which follows from this, is that when 
+The second point which follows from this, is that when
 implementing new types of objects, it is the programmer's
 responsibility to ensure that the functions and methods they write
 never change immutable objects mathematically.
 <P/>
-In fact, most objects with which one deals in &GAP; are immutable. 
+In fact, most objects with which one deals in &GAP; are immutable.
 For instance, the permutation <C>(1,2)</C> will never become a
 different permutation or a non-permutation (although a variable which
 previously had <C>(1,2)</C> stored in it may subsequently have some other
-value). 
+value).
 <P/>
 For many purposes, however, <E>mutable</E> objects are useful.  These
-objects may be changed to represent different mathematical objects during 
+objects may be changed to represent different mathematical objects during
 their life. For example, mutable lists can be changed by assigning values to
 positions or by unbinding values at certain positions.  Similarly, one
 can assign values to components of a mutable record, or unbind them.
@@ -208,10 +208,10 @@ that lists of immutable objects may remember whether they are sorted
 mutable objects.
 <P/>
 Since the operation <Ref Func="Immutable"/> must work for any object
-in &GAP;, it 
+in &GAP;, it
 follows that an immutable form of every object must be possible, even
 if it is not sensible, and user-defined objects must allow for the
-possibility of becoming immutable without notice. 
+possibility of becoming immutable without notice.
 </Description>
 </ManSection>
 
@@ -252,16 +252,16 @@ is one exception to this rule, which arises where the result is less
 deeply nested than at least one of the argument, where mutable
 arguments may sometimes lead to an immutable result. For instance, a
 mutable matrix with immutable rows, multiplied by an immutable vector
-gives an immutable vector result. The exact rules are given 
+gives an immutable vector result. The exact rules are given
 in&nbsp;<Ref Sect="Arithmetic for Lists"/>.
 <P/>
 
 It should be noted that
-<C>0 * <A>obj</A></C> is equivalent to <C>ZeroSM( <A>obj</A> )</C>,
-<C>-<A>obj</A></C> is equivalent to <C>AdditiveInverseSM( <A>obj</A> )</C>,
-<C><A>obj</A>^0</C> is equivalent to <C>OneSM( <A>obj</A>)</C>,
-and <C><A>obj</A>^-1</C> is equivalent to <C>InverseSM( <A>obj</A> )</C>.
-The <Q>SM</Q> stands for <Q>same mutability</Q>, and indicates that the result is
+<C>0 * <A>obj</A></C> is equivalent to <C>ZeroSameMutability( <A>obj</A> )</C>,
+<C>-<A>obj</A></C> is equivalent to <C>AdditiveInverseSameMutability( <A>obj</A> )</C>,
+<C><A>obj</A>^0</C> is equivalent to <C>OneSameMutability( <A>obj</A>)</C>,
+and <C><A>obj</A>^-1</C> is equivalent to <C>InverseSameMutability( <A>obj</A> )</C>.
+The suffix <Q>SameMutability</Q> indicates that the result is
 mutable if and only if the argument is mutable.
 <P/>
 The operations <Ref Oper="ZeroOp"/>, <Ref Oper="AdditiveInverseOp"/>, <Ref Oper="OneOp"/>, and <Ref Oper="InverseOp"/>
@@ -271,7 +271,7 @@ contrary to the attributes <Ref Attr="Zero"/>, <Ref Attr="AdditiveInverse"/>, <R
 If one introduces new arithmetic objects then one need not install
 methods for the attributes <Ref Attr="One"/>, <Ref Attr="Zero"/>, etc.
 The methods for the associated operations <Ref Oper="OneOp"/> and <Ref Oper="ZeroOp"/>
-will be called, and then the results made immutable. 
+will be called, and then the results made immutable.
 <P/>
 All methods installed for the arithmetic operations must obey the rule
 about the mutability of the result.  This means that one may try to

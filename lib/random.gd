@@ -13,8 +13,8 @@
 
 
 #############################################################################
-##  
-#C  IsRandomSource( <rs> ) 
+##
+#C  IsRandomSource( <rs> )
 ##
 ##  <#GAPDoc Label="IsRandomSource">
 ##  <ManSection>
@@ -41,7 +41,7 @@
 ##  <P/>
 ##  One idea behind providing several independent (pseudo) random sources is
 ##  to make algorithms which use some sort of random choices deterministic.
-##  They can use their own new random source created with a fixed seed and 
+##  They can use their own new random source created with a fixed seed and
 ##  so do exactly the same in different calls.
 ##  <P/>
 ##  Random source objects lie in the family <C>RandomSourcesFamily</C>.
@@ -54,7 +54,7 @@ DeclareCategory( "IsRandomSource", IsComponentObjectRep );
 
 
 #############################################################################
-##  
+##
 #O  Random( <rs>, <list> ) . . . for random source and a dense, nonempty list
 #O  Random( <rs>, <low>, <high> )  . . . . for random source and two integers
 ##
@@ -63,7 +63,7 @@ DeclareCategory( "IsRandomSource", IsComponentObjectRep );
 ##  <Oper Name="Random" Arg='rs, list' Label="for random source and list"/>
 ##  <Oper Name="Random" Arg='rs, coll'
 ##   Label="for random source and collection"/>
-##  <Oper Name="Random" Arg='rs, low, high' 
+##  <Oper Name="Random" Arg='rs, low, high'
 ##                      Label="for random source and two integers"/>
 ##
 ##  <Description>
@@ -72,7 +72,7 @@ DeclareCategory( "IsRandomSource", IsComponentObjectRep );
 ##  or an integer in the range from the given (possibly large) integers
 ##  <A>low</A> to <A>high</A>, respectively.
 ##  <P/>
-##  The choice should only depend on the random source <A>rs</A> and have no 
+##  The choice should only depend on the random source <A>rs</A> and have no
 ##  effect on other random sources.
 ##  <P/>
 ##  It is not defined what happens if <A>list</A> or <A>coll</A> is empty,
@@ -93,7 +93,7 @@ DeclareOperation( "Random", [IsRandomSource, IsInt, IsInt] );
 
 
 #############################################################################
-##  
+##
 #O  State( <rs> )  . . . . . . . . . . . . . . . . . . state of random source
 #O  Reset( <rs>[, <seed>] )  . . . . . . . . . . . . .  reset a random source
 ##
@@ -151,7 +151,7 @@ DeclareOperation( "Reset", [IsRandomSource, IsObject] );
 DeclareOperation( "Init", [IsRandomSource, IsObject] );
 
 #############################################################################
-##  
+##
 #C  IsMersenneTwister( <rs> )
 #C  IsGlobalRandomSource( <rs> )
 #C  IsGAPRandomSource( <rs> )
@@ -178,26 +178,26 @@ DeclareOperation( "Init", [IsRandomSource, IsObject] );
 ##  and the origin of the code used in the &GAP; kernel, see:
 ##  <URL>http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html</URL>.
 ##  <P/>
-##  Use the Mersenne twister if possible, in particular for generating many 
-##  large random integers. 
+##  Use the Mersenne twister if possible, in particular for generating many
+##  large random integers.
 ##  <P/>
-##  There is also a predefined global random source 
+##  There is also a predefined global random source
 ##  <Ref Var="GlobalMersenneTwister"/> which is used as the default
 ##  random source by those library
 ##  methods for <Ref Oper="Random" Label="for a list or collection"/>
 ##  that do not take a random source as an argument.
 ##  <P/>
-##  <Ref Filt="IsGAPRandomSource"/> uses the same number generator as 
-##  <Ref Filt="IsGlobalRandomSource"/>, but you can create several of these 
-##  random sources which generate their random numbers independently of 
-##  all other random sources. 
+##  <Ref Filt="IsGAPRandomSource"/> uses the same number generator as
+##  <Ref Filt="IsGlobalRandomSource"/>, but you can create several of these
+##  random sources which generate their random numbers independently of
+##  all other random sources.
 ##  <P/>
-##  <Ref Filt="IsGlobalRandomSource"/> gives access to the <E>classical</E> 
-##  global random generator which was used by &GAP; in former releases. 
+##  <Ref Filt="IsGlobalRandomSource"/> gives access to the <E>classical</E>
+##  global random generator which was used by &GAP; in former releases.
 ##  You do not need to construct new random sources of this kind which would
 ##  all use the same global data structure. Just use the existing random
-##  source <Ref Var="GlobalRandomSource"/>. This uses the additive random number 
-##  generator described in  <Cite Key="TACP2"/> (Algorithm A in&nbsp;3.2.2 
+##  source <Ref Var="GlobalRandomSource"/>. This uses the additive random number
+##  generator described in  <Cite Key="TACP2"/> (Algorithm A in&nbsp;3.2.2
 ##  with lag <M>30</M>).
 ##  <P/>
 ##  Other kinds of random sources are implemented by &GAP; packages.
@@ -218,7 +218,7 @@ else
 fi;
 
 #############################################################################
-##  
+##
 #O  RandomSource( <cat>[, <seed>] )
 ##
 ##  <#GAPDoc Label="RandomSource">

@@ -21,16 +21,16 @@
 ##  gap> w;
 ##  WeakPointerObj([ [ ] ]);
 ##
-##  for this reason the common idiom  
+##  for this reason the common idiom
 ##
 ##  if IsBound(w[i]) then
 ##     DoSomethigWith(w[i]);
 ##  fi;
 ##
-##  is not really safe. 
+##  is not really safe.
 ##
-##  A solution is provided by the kernel function ElmWPObj (weakptr.c), which 
-##  returns fail if the entry is (1) unbound or (2) bound to the value fail. 
+##  A solution is provided by the kernel function ElmWPObj (weakptr.c), which
+##  returns fail if the entry is (1) unbound or (2) bound to the value fail.
 ##  Since fail will never be collected as garbage, a subsequent call to IsBound
 ##  can safely be used to distinguish these two cases, as in:
 ##
@@ -49,7 +49,7 @@
 ##
 #C  IsWeakPointerObject( <obj> ) . . .  . . . . . . . category of  WP objects
 ##
-##  All WP objects have to be mutable (a stronger term like volatile would 
+##  All WP objects have to be mutable (a stronger term like volatile would
 ##  be appropriate),
 ##  but this cannot be expressed via an explicit implication;
 ##  note that `Immutable' is handled by the kernel.

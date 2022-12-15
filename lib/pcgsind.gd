@@ -275,9 +275,9 @@ InstallTrueMethod(IsInducedPcgs, IsCanonicalPcgs);
 ##  This property indicates that the pcgs <A>pcgs</A> is induced with respect
 ##  to a family pcgs.
 ##  <P/>
-##  This property is needed to distinguish between different independent 
+##  This property is needed to distinguish between different independent
 ##  polycyclic generating sequences which a pc group may have, since
-##  the elementary operations for a non-family pcgs may not be as efficient 
+##  the elementary operations for a non-family pcgs may not be as efficient
 ##  as the elementary operations for the family pcgs.
 ##  <P/>
 ##  This can have a significant influence on the performance of algorithms
@@ -295,7 +295,7 @@ InstallTrueMethod(IsInducedPcgs, IsCanonicalPcgs);
 ##  Therefore, if the family pcgs chosen for arithmetic is not of importance
 ##  it might be worth to <E>change</E> to another, nicer, pcgs to speed up
 ##  calculations.
-##  This can be achieved, for example, by using the 
+##  This can be achieved, for example, by using the
 ##  <Ref Attr="Range" Label="of a general mapping"/> value
 ##  of the isomorphism obtained by <Ref Attr="IsomorphismSpecialPcGroup"/>.
 ##  </Description>
@@ -360,8 +360,8 @@ DeclareOperation( "CanonicalPcElement", [ IsInducedPcgs, IsObject ] );
 ##  same as the depth of one of the generators in <A>pcgs</A>.
 ##  Thus the identity is returned if <A>elm</A> lies in the group generated
 ##  by <A>pcgs</A>.
-##  <A>pcgs</A> must be an induced pcgs (see section 
-##  <Ref Sect="Subgroups of Polycyclic Groups - Induced Pcgs"/>) 
+##  <A>pcgs</A> must be an induced pcgs (see section
+##  <Ref Sect="Subgroups of Polycyclic Groups - Induced Pcgs"/>)
 ##  and <A>elm</A> must lie in the span of the parent of <A>pcgs</A>.
 ##  </Description>
 ##  </ManSection>

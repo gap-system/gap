@@ -482,7 +482,7 @@ static Int printVersion(Char ** argv, void * dummy)
 }
 
 
-/* These are just the options that need kernel processing. Additional options will be 
+/* These are just the options that need kernel processing. Additional options will be
    recognised and handled in the library */
 
 /* These options must be kept in sync with those in system.g, so the help output
@@ -535,7 +535,7 @@ static const struct optInfo options[] = {
 Char ** SyOriginalArgv;
 UInt SyOriginalArgc;
 
- 
+
 
 void InitSystem (
     Int                 argc,
@@ -546,7 +546,7 @@ void InitSystem (
     Int res;                       /* return from option processing function */
 
     /* Initialize global and static variables */
-    SyCTRD = 1;             
+    SyCTRD = 1;
     SyCompilePlease = 0;
     SyDebugLoading = 0;
     SyLineEdit = 1;
@@ -624,7 +624,7 @@ void InitSystem (
                        (options[i].shortkey != 0 || options[i].longkey[0] != 0); i++)
             ;
 
-        
+
 
 
           if (argc < 2 + options[i].minargs)
@@ -641,7 +641,7 @@ void InitSystem (
             }
           if (options[i].handler) {
             res = (*options[i].handler)(argv+2, options[i].otherArg);
-            
+
             switch (res)
               {
               case -1: goto usage;
@@ -654,13 +654,13 @@ void InitSystem (
           /*    recordOption(argv[1][1], res,  argv+2); */
           argv += 1 + res;
           argc -= 1 + res;
-          
+
         }
         else {
           argv++;
           argc--;
         }
-          
+
       }
 #if !defined(HAVE_LIBREADLINE)
     // don't use readline of readline is not available (obviously)

@@ -526,7 +526,7 @@ Obj LookupObjMap(Obj map, Obj obj) {
  *  ----------------
  *
  *  Add an entry `(key, value)` to `map`.
- *  
+ *
  *  Precondition: No other entry with key `key` exists within `map`.
  */
 

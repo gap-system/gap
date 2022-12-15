@@ -7,12 +7,12 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
-##  
+##
 ##  The  files  pager.g{d,i}  contain  the `Pager'  utility.  A  rudimentary
 ##  version of this  was integrated in first versions of  GAP's help system.
 ##  But this utility is certainly useful for other purposes as well.
-##  
-##  
+##
+##
 ##  There is a builtin pager `PAGER_BUILTIN', but  at least under UNIX one
 ##  should use an external one.  This can be  set via the variable
 ##  `SetUserPreference("Pager", ...);'
@@ -21,40 +21,40 @@
 ##  PATH of the user and we assume that it supports an argument `+num' for
 ##  starting display in   line number `num'.   Additional options  can  be
 ##  given by  `SetUserPreference("PagerOptions", ...);' as list of strings.
-##  
+##
 ##  The user function is `Pager'.
-##  
+##
 ##  The input of `Pager( lines )' can have one the following forms:
-##  
+##
 ##   (1) a string (i.e., lines are separated by '\n')
-##   (2) a list of strings (without '\n') interpreted as lines of output 
+##   (2) a list of strings (without '\n') interpreted as lines of output
 ##   (3) a record with component .lines as in (1) or (2) and optional further
 ##       components
-##  
+##
 ##  In (3) currently the following components are used:
-##  
+##
 ##   .formatted (true/false) If true, the builtin pager tries to avoid
 ##                           line breaks by GAP's Print.
-##   .start (number)         The display is started with line .start, but 
+##   .start (number)         The display is started with line .start, but
 ##                           beginning is available via back scrolling.
 ##   .exitAtEnd (true/false) If true (default), the pager is terminated
 ##                           as soon as the end of the list is reached;
 ##                           if false, entering 'q' is necessary in order to
 ##                           return from the pager.
-##  
+##
 
 # The preferred pager can be specified via a user preference.
 DeclareUserPreference( rec(
   name:= [ "Pager", "PagerOptions" ],
   description:= [
-  "For displaying help pages on screen and other things GAP has a rudimentary \
+  "For displaying help pages on screen and other things &GAP; has a rudimentary \
 builtin pager. We recommend using a more sophisticated external program.  \
-For example, when you have the program 'less' on your computer we recommend:",
-    " Pager := \"less\";",
-    " PagerOptions := [\"-f\", \"-r\", \"-a\", \"-i\", \"-M\", \"-j2\"];",
-    "If you want to use 'more', we suggest to use the '-f' option.  \
+For example, when you have the program <C>less</C> on your computer we recommend:",
+    " <C>Pager := \"less\";</C>",
+    " <C>PagerOptions := [\"-f\", \"-r\", \"-a\", \"-i\", \"-M\", \"-j2\"];</C>",
+    "If you want to use <C>more</C>, we suggest to use the <C>-f</C> option.  \
 If you want to use the pager defined in your environment then \
-leave the 'Pager' and 'PagerOptions' preferences empty."
+leave the <C>Pager</C> and <C>PagerOptions</C> preferences empty."
     ],
   default:= function()    # copied from GAPInfo.READENVPAGEREDITOR
     local str, sp, pager, options;
@@ -72,8 +72,8 @@ leave the 'Pager' and 'PagerOptions' preferences empty."
             Append( options, sp );
           fi;
           # make sure -r is used
-          Add( options, "-r" ); 
-        elif "more" in SplitStringInternal(sp[1], "", "/\\") then 
+          Add( options, "-r" );
+        elif "more" in SplitStringInternal(sp[1], "", "/\\") then
           if IsBound(GAPInfo.KernelInfo.ENVIRONMENT.MORE) then
             # similarly for 'more'
             str := GAPInfo.KernelInfo.ENVIRONMENT.MORE;
@@ -81,7 +81,7 @@ leave the 'Pager' and 'PagerOptions' preferences empty."
             Append( options, sp );
           fi;
           # make sure -f is used
-          Add( options, "-f" ); 
+          Add( options, "-f" );
         fi;
         return [ pager, options ];
       fi;
@@ -101,18 +101,18 @@ GAPInfo.UserPreferences.Pager := UserPreference("Pager");
 ##
 #F  PAGER_BUILTIN( <lines> )	. . . . . . . . . . . . . . . .  format lines
 ##
-# If  the text contains ANSI color sequences we reset  the terminal before 
+# If  the text contains ANSI color sequences we reset  the terminal before
 # we print the last line.
 BindGlobal("PAGER_BUILTIN", function( lines )
   local formatted, linepos, exitAtEnd, size, wd, pl, count, i, stream, halt,
         lenhalt, delhaltline, from, len, emptyline, char, out;
-  
+
   formatted := false;
   linepos := 1;
   exitAtEnd:= true;
   # don't print this to LOG files
   out := OutputTextUser();
-  
+
   if IsRecord(lines) then
     if IsBound(lines.formatted) then
       formatted := lines.formatted;
@@ -125,7 +125,7 @@ BindGlobal("PAGER_BUILTIN", function( lines )
     fi;
     lines := lines.lines;
   fi;
-  
+
   if IsString(lines) then
     lines := SplitString(lines, "\n", "");
   elif not formatted then
@@ -135,7 +135,7 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   if Length( lines ) = 0 then
     return;
   fi;
-  
+
   size   := SizeScreen();
   wd := QuoInt(size[1]+2, 2);
   # really print line without breaking it
@@ -151,13 +151,13 @@ BindGlobal("PAGER_BUILTIN", function( lines )
     fi;
     PrintTo(out, final);
   end;
-  
+
   if not formatted then
     # cope with overfull lines
     count:=1;
     while count<=Length(lines) do
       if Length(lines[count])>size[1]-2 then
-        # find the last blank before this position 
+        # find the last blank before this position
         i:=size[1]-2;
         while i>0 and lines[count][i]<>' ' do
           i:=i-1;
@@ -177,7 +177,7 @@ BindGlobal("PAGER_BUILTIN", function( lines )
 
   stream := InputTextFile("*errin*");
   count  := 0;
-  halt   := 
+  halt   :=
     "  -- <space> page, <n> next line, <b> back, <p> back line, <q> quit --\c";
   # remember number of visible characters
   lenhalt := Length(halt)-1;
@@ -186,11 +186,11 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   fi;
   delhaltline := function()
     local i;
-    for i  in [1..lenhalt] do 
+    for i  in [1..lenhalt] do
       PrintTo(out,  "\b\c \c\b\c" );
     od;
   end;
-  from := linepos; 
+  from := linepos;
   len := Length(lines);
   emptyline:= String( "", size[1]-2 );
   repeat
@@ -223,9 +223,9 @@ BindGlobal("PAGER_BUILTIN", function( lines )
     elif char = 'b' then
       from := Maximum(1, from-size[2]+1);
     fi;
-    delhaltline();  
+    delhaltline();
   until char = 'q';
-  
+
   CloseStream(stream);
 end);
 
@@ -253,7 +253,7 @@ BindGlobal("PAGER_EXTERNAL",  function( lines )
     fi;
     lines := lines.lines;
   fi;
-  
+
   if not IsString(lines) then
     str:="";
     for i in lines do

@@ -79,7 +79,7 @@ end);
 InstallGlobalFunction(InducedAutomorphism,function(epi,aut)
 local f;
   f:=Range(epi);
-  if HasIsConjugatorAutomorphism( aut ) and IsConjugatorAutomorphism( aut ) 
+  if HasIsConjugatorAutomorphism( aut ) and IsConjugatorAutomorphism( aut )
      and ConjugatorOfConjugatorIsomorphism( aut ) in Source( epi ) then
     aut:= ConjugatorAutomorphismNC( f,
               Image( epi, ConjugatorOfConjugatorIsomorphism( aut ) ) );
@@ -195,7 +195,7 @@ local g,op,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,dims,nm;
       od;
       ma:=Concatenation(ma,new);
     od;
-    
+
     ma:=Concatenation(ma,compl);
 
     # take only those of right dim
@@ -253,7 +253,7 @@ end);
 ##  compute the permutation action of <P> on the subspaces of the
 ##  elementary abelian subgroup <G> of <P>. Returns
 ##  a list [<subspaces>,<action>], where <subspaces> is a list of all the
-##  subspaces (as groups) and <action> a homomorphism from <P> in a 
+##  subspaces (as groups) and <action> a homomorphism from <P> in a
 ##  permutation group, which is equal to the action homomrophism for the
 ##  action of <P> on <subspaces>. If <dims> is given, only subspaces of
 ##  dimension <dims> are considered.  Instead of <G> also a (modulo) pcgs
@@ -409,7 +409,7 @@ local P,g,op,act,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,
 
     ma:=Concatenation(ma,new);
   od;
-  
+
   ma:=Concatenation(ma,compl);
 
   # take only those of right dim
@@ -434,7 +434,7 @@ local P,g,op,act,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,
   ma:=new;
 
   # convert to grps
-  pccache:=[]; # avoid recerating different copies of same element 
+  pccache:=[]; # avoid recerating different copies of same element
   pcelm:=function(vec)
   local e,p;
     e:=Immutable([vec]);
@@ -485,11 +485,11 @@ end;
 ##
 #F  SubgroupsSolvableGroup(<G>[,<opt>]) . classreps of subgrps of <G>,
 ##   				             <homs>-inv. with options.
-##    Options are:  
+##    Options are:
 ##                  actions:  list of automorphisms: search for invariants
 ##		    funcnorm: N_G(actions) (speeds up calculation)
 ##                  normal:   just search for normal subgroups
-##                  consider: function(A,N,B,M) indicator function, whether 
+##                  consider: function(A,N,B,M) indicator function, whether
 ##			      complements of this type would be needed
 ##                  retnorm:  return normalizers
 ##
@@ -519,7 +519,7 @@ local g,	# group
       n,	# e[i-1]^epi
       fa,	# f/n = g/e[i-1]
       hom,	# f -> fa
-      B,	# subgroups of n	
+      B,	# subgroups of n
       ophom,	# perm action of f on B (or false if not computed)
       a,	# preimg. of group over n
       no,	# N_f(a)
@@ -551,11 +551,11 @@ local g,	# group
       idmat,	# 1-matrix
       mat,	# matrix action
       mats,	# list of mats
-      conj,	# matrix action	
+      conj,	# matrix action
       chom,	# homom onto <conj>
       shom,	# by s induced autom
       shoms,	# list of these
-      smats,	# dito, matrices 
+      smats,	# dito, matrices
       conjnr,	# assoc. index
       glsyl,
       glsyr,	# left and right side of eqn system
@@ -589,7 +589,7 @@ local g,	# group
   fi;
 
   normal:=IsBound(opt.normal) and opt.normal=true;
-  if IsBound(opt.consider) then 
+  if IsBound(opt.consider) then
     consider:=opt.consider;
   else
     consider:=false;
@@ -669,7 +669,7 @@ local g,	# group
 #    e:=List(e,i->Image(isom,i));
 #    funcnorm:=Image(isom,funcnorm);
 #
-#    #func:=List(func,i->isom^-1*i*isom); 
+#    #func:=List(func,i->isom^-1*i*isom);
 #    hom:=[];
 #    for i in func do
 #      hom2:=GroupHomomorphismByImagesNC(g,g,g.generators,List(g.generators,
@@ -727,7 +727,7 @@ local g,	# group
 
   for i in [start+1..len] do
     Info(InfoPcSubgroup,1," step ",i,": ",Index(e[i-1],e[i]),", ",
-                    Length(grps)," groups"); 
+                    Length(grps)," groups");
     # compute modulo e[i]
     if i<len then
       # form only factor groups if necessary
@@ -752,7 +752,7 @@ local g,	# group
     if Length(efunc)=0 then
       ophom:=ActionSubspacesElementaryAbelianGroup(f,n);
       B:=ophom[1];
-      Info(InfoPcSubgroup,2,"  ",Length(B)," normal subgroups"); 
+      Info(InfoPcSubgroup,2,"  ",Length(B)," normal subgroups");
       ophom:=ophom[2];
 
       ngrps:=[];
@@ -773,7 +773,7 @@ local g,	# group
     else
       B:=InvariantSubgroupsElementaryAbelianGroup(n,efunc);
       ophom:=false;
-      Info(InfoPcSubgroup,2,"  ",Length(B)," normal subgroups"); 
+      Info(InfoPcSubgroup,2,"  ",Length(B)," normal subgroups");
 
       # note the groups in B
       ngrps:=SubgroupsOrbitsAndNormalizers(f,B,false);
@@ -923,7 +923,7 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 	        generators:=InducedPcgs(home,a) mod NumeratorOfModuloPcgs(nag),
 	        modulePcgs:=nag);
 	    OCOneCocycles(z,true);
-	    if IsBound(z.complement) and 
+	    if IsBound(z.complement) and
 	      # normal complements exist, iff the coboundaries are trivial
 	      (normal=false or Dimension(z.oneCoboundaries)=0)
 	      then
@@ -1055,13 +1055,13 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 			  kconh[l]:=fail;
 			od;
 		      fi;
-                        
+
 		    else
 		      # generic case
 
 		      comproj:= GroupHomomorphismByImagesNC(a,a,fghom,
 				Concatenation(GeneratorsOfGroup(l),bgids));
-		      
+
 		      # now run through the conjugating elements
 		      conjnr:=1;
 		      found:=false;
@@ -1108,7 +1108,7 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 
 			    # the matrix action
 			    mat:=idmat+(mats[l]-idmat)*kgim-mats[l];
-			    
+
 			    # store action and vector
 			    for m in [1..Length(glsyl)] do
 			      glsyl[m]:=Concatenation(glsyl[m],mat[m]);
@@ -1175,7 +1175,7 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
 		  fi;
 		  Add(ncom,m);
 		od;
-	      fi; 
+	      fi;
 	      com:=ncom;
 
 	      # take the preimages
@@ -1210,7 +1210,7 @@ Assert(1,ForAll(bs,i->ForAll(efunc,j->Image(j,i)=i)));
       grpsnorms:=List(grpsnorms,j->PreImage(isom,j));
     fi;
   fi;
-  
+
   if retnorm then
     return [grps,grpsnorms];
   else
@@ -1268,7 +1268,7 @@ local s,i,c,classes, lattice,map,GI;
     fi;
     Add(classes,c);
   od;
-  Sort(classes,function(a,b) 
+  Sort(classes,function(a,b)
                  return Size(Representative(a))<Size(Representative(b));
 	       end);
 
@@ -1294,10 +1294,10 @@ end);
 #   n:=SubgroupsSolvableGroup(G,rec(
 #        actions:=List(GeneratorsOfGroup(G),i->InnerAutomorphism(G,i)),
 #        normal:=true));
-# 
+#
 #   # sort the normal subgroups according to their size
 #   Sort(n,function(a,b) return Size(a) < Size(b); end);
-# 
+#
 #   return n;
 # end);
 

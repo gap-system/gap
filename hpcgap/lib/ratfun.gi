@@ -173,7 +173,7 @@ end);
 InstallMethod(IsLaurentPolynomial,true,[ IsUnivariateRationalFunction ], 0,
 function( obj )
     local   den;
-   
+
 #T: GGT
     den := ExtRepDenominatorRatFun( obj );
 
@@ -341,12 +341,12 @@ local l;
     fi;
 
     # note Coefficients information
-    if l[3]=true and Length(l[4])=2 
+    if l[3]=true and Length(l[4])=2
      and not HasCoefficientsOfLaurentPolynomial(f) then
       SetCoefficientsOfLaurentPolynomial(f,l[4]);
     fi;
 
-    if l[3]=false and Length(l[4])=3 
+    if l[3]=false and Length(l[4])=3
      and not HasCoefficientsOfUnivariateRationalFunction(f) then
       SetCoefficientsOfUnivariateRationalFunction(f,l[4]);
     fi;
@@ -414,8 +414,8 @@ function(f)
 local l;
   l:=DoUnivTestRatfun(f); # will set the attribute or laurentness. In both
                           # cases we can redispatch safely.
-  if l[1]=false or not (HasCoefficientsOfUnivariateRationalFunction(f) 
-    or (HasIsLaurentPolynomial(f) and IsLaurentPolynomial(f))) 
+  if l[1]=false or not (HasCoefficientsOfUnivariateRationalFunction(f)
+    or (HasIsLaurentPolynomial(f) and IsLaurentPolynomial(f)))
   then
     Error("inconsistency!");
   fi;
@@ -574,7 +574,7 @@ local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c, mbra,le;
 	  Append(str,IndeterminateName(fam,ind));
 	else
 	  Append(str,"x_");
-	  Append(str,String(ind)); 
+	  Append(str,String(ind));
 	fi;
 	if 1 <> ext[i][j+1]  then
 	  Add(str,'^');
@@ -656,9 +656,9 @@ function(obj)
 end);
 
 #############################################################################
-# 
-# Functions for dealing with monomials 
-# The monomials are represented as Zipped Lists. 
+#
+# Functions for dealing with monomials
+# The monomials are represented as Zipped Lists.
 # i.e. sorted lists [i1,e1,i2, e2,...] where i1<i2<...are the indeterminates
 # from smallest to largest
 #
@@ -686,13 +686,13 @@ InstallMethod( ZippedSum,
       IsList,
       IsObject,
       IsList ],
-    0, 
+    0,
     ZIPPED_SUM_LISTS);
 #function(a,b,c,d)
 #local x,y;
 #  x:=ZIPPED_SUM_LISTS_LIB(a,b,c,d);
 #  y:=ZIPPED_SUM_LISTS(a,b,c,d);
-#  if x<>y then 
+#  if x<>y then
 #    Error("ZS");
 #  fi;
 #  return y;
@@ -712,11 +712,11 @@ InstallMethod( ZippedSum,
 ##
 #M  ZippedProduct( <z1>, <z2>, <czero>, <funcs> )
 ##
-##  Finds the product of the two polynomials in extrep form. 
+##  Finds the product of the two polynomials in extrep form.
 ##  Eg.  ZippedProduct([[1,2,2,3],2,[2,4],3],[[1,3,2,1],5],0,f);
 ##  gives [ [ 1, 3, 2, 5 ], 15, [ 1, 5, 2, 4 ], 10 ]
 ##  where
-##  f :=[ MONOM_PROD,  MONOM_GRLEX, \+, \* ]; 
+##  f :=[ MONOM_PROD,  MONOM_GRLEX, \+, \* ];
 ##
 InstallMethod( ZippedProduct,
     true,
@@ -726,7 +726,7 @@ InstallMethod( ZippedProduct,
       IsList ],
     0, ZIPPED_PRODUCT_LISTS);
 
-# Function to create the rational functions family and store the 
+# Function to create the rational functions family and store the
 # default types
 
 
@@ -766,7 +766,7 @@ function( efam )
 	  IsLaurentPolynomial
 	  and IsLaurentPolynomialDefaultRep and
 	  HasIndeterminateNumberOfLaurentPolynomial and
-	  HasCoefficientsOfLaurentPolynomial), 
+	  HasCoefficientsOfLaurentPolynomial),
 
 	  NewType( fam,
 	    IsLaurentPolynomial
@@ -780,13 +780,13 @@ function( efam )
 	    HasIndeterminateNumberOfLaurentPolynomial and
 	    HasCoefficientsOfLaurentPolynomial and
 	    IsUnivariatePolynomial)] );
-	      
+
   # default type for univariate rational functions
   fam!.univariateRatfunType := NewType( fam,
 	  IsUnivariateRationalFunctionDefaultRep  and
 	  HasIndeterminateNumberOfLaurentPolynomial and
 	  HasCoefficientsOfUnivariateRationalFunction);
-	      
+
   if IsUFDFamily(efam) then
     # default type for rational functions
     fam!.defaultRatFunType := NewType( fam,
@@ -865,7 +865,7 @@ InstallMethod( AdditiveInverseOp,"polynomial", true,
 ##
 ##  This exhibits the use of RationalFunctionByPolynomials to do cancellation
 ##  and special cases which give rise to more specific types of rational fns.
-##  RationalFunctionByExtRep does no checking whatever. 
+##  RationalFunctionByExtRep does no checking whatever.
 ##
 InstallMethod( InverseOp, "rational function", true,
     [ IsRationalFunctionsFamilyElement ], 0,
@@ -902,7 +902,7 @@ local   fam,el,er;
 
   fam   := FamilyObj(left);
 
-  return PolynomialByExtRepNC(fam, 
+  return PolynomialByExtRepNC(fam,
 	  ZippedSum(el,er,fam!.zeroCoefficient, fam!.zippedSum));
 end );
 
@@ -911,7 +911,7 @@ end );
 #M  <polynomial> * <polynomial>
 ##
 ##  We assume that if we have a polynomial
-##  then ExtRepPolynomialRatFun will work. 
+##  then ExtRepPolynomialRatFun will work.
 ##
 InstallMethod( \*, "polynomial * polynomial", IsIdenticalObj,
     [ IsPolynomial, IsPolynomial ], 0,
@@ -1018,7 +1018,7 @@ local   fam,  i, extnum,pol;
   if pol then
     return PolynomialByExtRepNC( fam, extnum);
   else
-    return RationalFunctionByExtRepNC( fam, extnum, 
+    return RationalFunctionByExtRepNC( fam, extnum,
 	  ExtRepDenominatorRatFun(ratfun));
   fi;
 
@@ -1036,7 +1036,7 @@ InstallMethod( \*, "coeff * rat-fun", IsCoeffsElms,
 function(c, r)
   return ProdCoefRatfun(c,r);
 end);
-		
+
 #############################################################################
 ##
 #M  <rat-fun>     * <coeff>
@@ -1119,7 +1119,7 @@ function( left, right )
 local fam,t,num,ii,tt,den;
 
   fam:=FamilyObj(left);
-  if (HasIsZero(left) and IsZero(left)) or 
+  if (HasIsZero(left) and IsZero(left)) or
      (HasIsZero(right) and IsZero(right)) then
       return Zero(fam);
   elif HasIsOne(left) and IsOne(left) then
@@ -1131,7 +1131,7 @@ local fam,t,num,ii,tt,den;
 		  ExtRepPolynomialRatFun(left),
 		  ExtRepDenominatorRatFun(right));
       num:=ZippedProduct(t[1],ExtRepNumeratorRatFun(right),
-	    fam!.zeroCoefficient,fam!.zippedProduct);  
+	    fam!.zeroCoefficient,fam!.zippedProduct);
       if Length(t[2])=2 and t[2][1]=[] and t[2][2]=fam!.oneCoefficient then
 	  return PolynomialByExtRepNC(fam,num);
       else
@@ -1142,7 +1142,7 @@ local fam,t,num,ii,tt,den;
 		  ExtRepPolynomialRatFun(right),
 		  ExtRepDenominatorRatFun(left));
       num:=ZippedProduct(t[1],ExtRepNumeratorRatFun(left),
-	    fam!.zeroCoefficient,fam!.zippedProduct);  
+	    fam!.zeroCoefficient,fam!.zippedProduct);
       if Length(t[2])=2 and t[2][1]=[] and t[2][2]=fam!.oneCoefficient then
 	  return PolynomialByExtRepNC(fam,num);
       else
@@ -1224,7 +1224,7 @@ local fam,num,den,lnum,rnum,lden,rden,q,t,tmp,tmpp,i;
 	  return Zero(fam);
       fi;
       t:=TryGcdCancelExtRepPolynomials(fam,num,lden);
-      if Length(t[2])=2 and Length(t[2][1])=0 and t[2][2]=fam!.oneCoefficient 
+      if Length(t[2])=2 and Length(t[2][1])=0 and t[2][2]=fam!.oneCoefficient
 	then
 	  return PolynomialByExtRepNC(fam,t[1]);
       else
@@ -1335,20 +1335,20 @@ end);
 
 #############################################################################
 ##
-#M  GcdOp( <pring>, <upol>, <upol> )  
+#M  GcdOp( <pring>, <upol>, <upol> )
 ##  for general rational functions in the hope that we can find them to be
-##  polynomials or even univariate polynomials. We install further calls as 
+##  polynomials or even univariate polynomials. We install further calls as
 ##  the methods are implemented.
-##  
+##
 ##
 InstallRingAgnosticGcdMethod("test polynomials for univar. and same variable",
   IsCollsElmsElms,IsIdenticalObj,
   [IsEuclideanRing,IsRationalFunction,IsRationalFunction],0,
 function(f,g)
 
-  if not (HasIsUnivariatePolynomial(f) and HasIsUnivariatePolynomial(g)) 
-    and IsUnivariatePolynomial(f) and IsUnivariatePolynomial(g) 
-    and IndeterminateNumberOfUnivariateRationalFunction(f) = 
+  if not (HasIsUnivariatePolynomial(f) and HasIsUnivariatePolynomial(g))
+    and IsUnivariatePolynomial(f) and IsUnivariatePolynomial(g)
+    and IndeterminateNumberOfUnivariateRationalFunction(f) =
     IndeterminateNumberOfUnivariateRationalFunction(g) then
     return GcdOp(f,g);
   fi;
@@ -1360,20 +1360,20 @@ end);
 ##
 #M  <upol>(<val>)
 ##
-##  Method to allow univariate polynomials to be used like functions when 
+##  Method to allow univariate polynomials to be used like functions when
 ##  appropriate
-InstallMethod(CallFuncList, [IsUnivariatePolynomial, IsList], 
-  function(poly, lst) 
-    if Length(lst) <> 1 then 
-        TryNextMethod(); 
-    fi; 
-    return Value(poly, lst[1]); 
+InstallMethod(CallFuncList, [IsUnivariatePolynomial, IsList],
+  function(poly, lst)
+    if Length(lst) <> 1 then
+        TryNextMethod();
+    fi;
+    return Value(poly, lst[1]);
 end);
 
 #############################################################################
 ##
 #M  Value
-##                               
+##
 InstallOtherMethod(Value,"rat.fun., with one",
   true,[IsPolynomialFunction,IsList,IsList,IsRingElement],0,
 function(rf,inds,vals,one)
@@ -1532,7 +1532,7 @@ local e;
     # constant polynomial represented as univariate: take coefficient
     e:=ExtRepPolynomialRatFun(pol);
     if Length(e)=0 then
-      return ZeroCoefficientRatFun(pol); 
+      return ZeroCoefficientRatFun(pol);
     else
       return e[2];
     fi;
@@ -1799,7 +1799,7 @@ end);
 
 
 BindGlobal("MVFactorKroneckerMap",function(f,vars,var,p)
-# maps polys in x1,...,xn to polys in x 
+# maps polys in x1,...,xn to polys in x
 # induced by xi -> x^(p^(i-1))
 local g;
   g:=Value(f,vars, List([1..Length(vars)],i->var[1]^(p^(i-1))));
@@ -1825,8 +1825,8 @@ local coeffs,d,f,i;
 end);
 
 InstallGlobalFunction(MultivariateFactorsPolynomial,function(R,f)
-local cp, mons, L, T, perm, vars, nvars, F, R1, var, degrees, d, p, 
-      forig, cnt, vals, bv, bd, g, varpow, fam, fex, N, cand, ti, 
+local cp, mons, L, T, perm, vars, nvars, F, R1, var, degrees, d, p,
+      forig, cnt, vals, bv, bd, g, varpow, fam, fex, N, cand, ti,
       terms, div, ediv, r, ffactors, i, j, k;
 
 # input: f is a poly in R=F[x1,...,xn]

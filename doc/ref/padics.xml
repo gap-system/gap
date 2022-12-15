@@ -72,7 +72,7 @@ gap> a/2;
 gap> a*10;
 0.001(2)
 ]]></Example>
-See 
+See
 <Ref Oper="PadicNumber" Label="for a p-adic extension family and a rational"/>
 for other methods for <Ref Oper="PadicNumber" Label="for pure padics"/>.
 </Description>
@@ -91,7 +91,7 @@ for other methods for <Ref Oper="PadicNumber" Label="for pure padics"/>.
 <Heading>Extensions of the p-adic Numbers</Heading>
 
 The usual Kronecker construction with an irreducible polynomial can be used
-to construct extensions of the <M>p</M>-adic numbers. 
+to construct extensions of the <M>p</M>-adic numbers.
 Let <M>L</M> be such an extension.
 Then there is a subfield <M>K &lt; L</M> such that <M>K</M> is an unramified
 extension of the <M>p</M>-adic numbers and <M>L/K</M> is purely ramified.

@@ -13,7 +13,7 @@
 ##
 ##  So far it is very rudimentary
 
-# Maximal subgroups of classical groups 
+# Maximal subgroups of classical groups
 # this should become, in the fulness of time, proper code, based on what has
 # been written by Colva Roney-Dougal and Derek Holt. At the moment it is a
 # simple lookup of data, precomputed with this code, for small degrees/prime
@@ -25846,7 +25846,7 @@ end);
 BindGlobal("ClassicalMaximalsLookup",function(type,d,q)
 local a,start,f,l,i,j,b,mats,p;
   a:=First(CLASMAXDATA,x->x[1]=type and x[2]=d and x[3]=q);
-  if a=fail then 
+  if a=fail then
     # not yet listed
     return fail;
   fi;

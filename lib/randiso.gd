@@ -25,7 +25,7 @@ DeclareAttribute( "OmegaAndLowerPCentralSeries", IsGroup );
 ##  <Example><![CDATA[
 ##  gap> G := CyclicGroup(512);;
 ##  gap> p := Pcgs( G );;
-##  gap> CodePcgs( p );  
+##  gap> CodePcgs( p );
 ##  162895587718739690298008513020159
 ##  ]]></Example>
 ##  </Description>
@@ -46,7 +46,7 @@ DeclareGlobalFunction( "CodePcgs" );
 ##  returns the code for a pcgs of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> G := DihedralGroup(512);;
-##  gap> CodePcGroup( G );       
+##  gap> CodePcGroup( G );
 ##  2940208627577393070560341803949986912431725641726
 ##  ]]></Example>
 ##  </Description>
@@ -139,18 +139,18 @@ DeclareGlobalFunction( "RandomSpecialPcgsCoded" );
 ##  <Func Name="RandomIsomorphismTest" Arg='coderecs, n'/>
 ##
 ##  <Description>
-##  The first argument is a list <A>coderecs</A> containing records describing 
+##  The first argument is a list <A>coderecs</A> containing records describing
 ##  groups, and the second argument is a non-negative integer <A>n</A>.
 ##  <P/>
-##  The test returns a sublist of <A>coderecs</A> where isomorphic copies 
+##  The test returns a sublist of <A>coderecs</A> where isomorphic copies
 ##  detected by the probabilistic test have been removed.
 ##  <P/>
 ##  The list <A>coderecs</A> should contain records with two components,
-##  <C>code</C> and <C>order</C>, describing a group via 
+##  <C>code</C> and <C>order</C>, describing a group via
 ##  <C>PcGroupCode( code, order )</C> (see <Ref Func="PcGroupCode"/>).
 ##  <P/>
-##  The integer <A>n</A> gives a certain amount of control over the 
-##  probability to detect all isomorphisms. If it is <M>0</M>, then nothing 
+##  The integer <A>n</A> gives a certain amount of control over the
+##  probability to detect all isomorphisms. If it is <M>0</M>, then nothing
 ##  will be done at all. The larger <A>n</A> is, the larger is the probability
 ##  of finding all isomorphisms. However, due to the underlying method we
 ##  cannot guarantee that the algorithm finds all isomorphisms, no matter how

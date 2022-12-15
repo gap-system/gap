@@ -27,7 +27,7 @@ function( fam, elm )
     return Objectify( fam!.defaultType, elm );
 end );
 
-##  
+##
 ##  Some collectors,  for example a Deep Thought  collector, store the
 ##  rhs of conjugate and power relations as generators exponent lists.
 ##  If ElementByRws() is called for those rhs, we need to convert them
@@ -289,7 +289,7 @@ function( rws )
     # create a new family in the category <IsElementsFamilyByRws>
     fam := NewFamily(
         "MultiplicativeElementsWithInversesFamilyByRws(...)",
-        IsMultiplicativeElementWithInverseByRws 
+        IsMultiplicativeElementWithInverseByRws
           and IsAssociativeElement,
         IsElementsFamilyByRws );
 

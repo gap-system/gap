@@ -179,11 +179,11 @@ these. Rather than rewrite it, I copy here the  explanation from
 **   T_PLIST                    nothing is known
 **   T_PLIST_NDENSE             known to have a hole
 **   T_PLIST_DENSE              known only not to have a hole
-**   T_PLIST_DENSE_NHOM         known to be dense but not homogenous *  **
+**   T_PLIST_DENSE_NHOM         known to be dense but not homogeneous *  **
 **   T_PLIST_DENSE_NHOM_SSORT   dense, non-hom but strictly sorted
 **   T_PLIST_DENSE_NHOM_NSORT   dense, non-hom, known not be be sorted
 **   T_PLIST_EMPTY              the empty list
-**   T_PLIST_HOM                known to be homogenous *
+**   T_PLIST_HOM                known to be homogeneous *
 **   T_PLIST_HOM_NSORT           etc
 **   T_PLIST_HOM_SSORT           etc
 **   T_PLIST_TAB                known to be a table  *
@@ -232,7 +232,7 @@ these. Rather than rewrite it, I copy here the  explanation from
 **     8 is the simpler. It calls KTnumHomPlist, which checks whether we
 **     should really be in T_PLIST_CYC, T_PLIST_FFE or T_PLIST_TAB and if so,
 **     changes the TNUM appropriately and returns the new tnum.  The only
-**     time this is slow is a homogenous list of lists which looks like a
+**     time this is slow is a homogeneous list of lists which looks like a
 **     table until the very last entry which has the wrong length. This
 **     should be rare.
 **     
@@ -244,7 +244,7 @@ these. Rather than rewrite it, I copy here the  explanation from
 **     the type and the ktnum of the list. This must be done in one function
 **     to avoid an exponential slowdown for deeply nested lists. This
 **     function is mutually recursive with KTnumPlist, which also returns two
-**     pieces of information: the ktnum of the list and, if it is homogenous,
+**     pieces of information: the ktnum of the list and, if it is homogeneous,
 **     the family of the elements.
 **
 **     recursive lists (ie lists which are there own subobjects are detected
@@ -262,7 +262,7 @@ of it, as far as necessary to determine its ``transient'' TNUM (ie
 the TNUM that it really deserves, but which might not be storable
 thanks to the presence of mutable subobjects) storing as much
 information along the way as it can. After that, the type is just
-looked up in global variables for non-homogenous lists. For
+looked up in global variables for non-homogeneous lists. For
 homogeneous lists, the lookup is done in data stored in the lists
 family. 
 

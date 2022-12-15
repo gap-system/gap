@@ -162,7 +162,7 @@ BIND_GLOBAL( "ConvertToStringRep", CONV_STRING );
 ##  <Description>
 ##  If <A>obj</A> is a dense internally represented list of characters then
 ##  <Ref Func="CopyToStringRep"/> copies <A>obj</A> to a new object with
-##  representation 
+##  representation
 ##  <Ref Filt="IsStringRep"/>.
 ##  If <A>obj</A> is not a string then <Ref Func="CopyToStringRep"/>
 ##  signals an error.
@@ -219,17 +219,17 @@ BIND_GLOBAL( "TYPE_CHAR", NewType( CharsFamily, IsChar and IsInternalRep ) );
 ##
 BIND_GLOBAL( "StringFamily", NewFamily( "StringsFamily", IsCharCollection ) );
 
-BIND_GLOBAL( "TYPES_STRING", 
+BIND_GLOBAL( "TYPES_STRING",
         [ NewType( StringFamily, IsString and IsStringRep and
                 IsMutable ), # T_STRING
-          
-          NewType( StringFamily, IsString and IsStringRep ), 
+
+          NewType( StringFamily, IsString and IsStringRep ),
           # T_STRING + IMMUTABLE
-          
+
           NewType (StringFamily, IsString and IsStringRep and
                   HasIsSSortedList and IsMutable ),
           # T_STRING_NSORT
-          
+
           NewType (StringFamily, IsString and IsStringRep and
                   HasIsSSortedList ),
           # T_STRING_NSORT +IMMUTABLE
@@ -237,7 +237,7 @@ BIND_GLOBAL( "TYPES_STRING",
           NewType (StringFamily, IsString and IsStringRep and
                   IsSSortedList and IsMutable ),
           # T_STRING_SSORT
-          
+
           NewType (StringFamily, IsString and IsStringRep and
                   IsSSortedList )
           # T_STRING_SSORT +IMMUTABLE
@@ -320,11 +320,11 @@ InstallMethod( String,
 InstallMethod( String,
     "for a character",
     [ IsChar ],
-    function(ch) 
-      local res; res := "\'"; Add(res, ch); Add(res, '\''); return res; 
+    function(ch)
+      local res; res := "\'"; Add(res, ch); Add(res, '\''); return res;
     end);
 
-    
+
 #############################################################################
 ##
 #F  UserHomeExpand( <str> ) . . . . . . . . . . . . expand leading ~ in str
@@ -342,7 +342,7 @@ InstallMethod( String,
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("UserHomeExpand", function(str)
-  if IsString(str) and Length(str) > 0 and str[1] = '~' 
+  if IsString(str) and Length(str) > 0 and str[1] = '~'
         and IsString(GAPInfo.UserHome) and Length( GAPInfo.UserHome ) > 0 then
     return Concatenation( GAPInfo.UserHome, str{[2..Length(str)]});
   else

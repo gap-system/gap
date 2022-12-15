@@ -1419,7 +1419,7 @@ end);
 #M  ReadByte( <iostream-by-pty> )
 ##
 
-InstallMethod(ReadByte, "iostream", 
+InstallMethod(ReadByte, "iostream",
 [IsInputOutputStreamByPtyRep and IsInputOutputStream],
         function(stream)
     local buf, ret;

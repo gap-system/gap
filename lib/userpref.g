@@ -29,30 +29,37 @@
 ##  <Func Name="UserPreference" Arg="[package, ]name"/>
 ##  <Func Name="ShowUserPreferences" Arg="package1, package2, ..."/>
 ##  <Func Name="WriteGapIniFile" Arg="[dir][,][ignorecurrent]"/>
-##  
+##
 ##  <Description>
-##  
+##
 ##  Some aspects of the behaviour of &GAP; can be customized by the user via
 ##  <Emph>user preferences</Emph>.  Examples include  the way  help sections
 ##  are displayed or the use of colors in the terminal. <P/>
-##  
+##
 ##  User preferences are  specified via a pair of strings,  the first is the
 ##  (case insensitive) name of a package (or <C>"GAP"</C> for the core &GAP;
 ##  library) and the second is some arbitrary case sensitive string. <P/>
-##  
+##
 ##  User   preferences  can   be  set   to  some   <A>value</A>  with   <Ref
 ##  Func="SetUserPreference"/>. The  current value of a  user preference can
 ##  be found with <Ref Func="UserPreference"/>. In both cases, if no package
 ##  name is  given the default  <C>"GAP"</C> is  used. If a  user preference
 ##  is  not  known or  not  set  then <Ref  Func="UserPreference"/>  returns
 ##  <K>fail</K>. <P/>
-##  
+##
+##  The stored values of user preferences are always immutable,
+##  see Section <Ref Sect="Mutability and Copyability"/>. <P/>
+##
 ##  The function <Ref Func="ShowUserPreferences"/> with no argument shows in
 ##  a  pager  an  overview  of  all known  user  preferences  together  with
 ##  some  explanation  and  the  current  value.  If  one  or  more  strings
 ##  <A>package1</A>, ... are given then  only the user preferences for these
-##  packages are shown. <P/>
-##  
+##  packages are shown.
+##  The <Package>Browse</Package> package provides the function
+##  <Ref Func="BrowseUserPreferences" BookName="browse"/> which gives an
+##  overview of the known user preferenes and also admits editing the
+##  values of the preferences. <P/>
+##
 ##  The easiest way to  make use of user preferences is  probably to use the
 ##  function <Ref  Func="WriteGapIniFile"/>, usually without  argument. This
 ##  function creates a file <F>gap.ini</F>  in your user specific &GAP; root
@@ -63,18 +70,18 @@
 ##  currently do not  have their default value. You can  then edit that file
 ##  to customize (further)  the user preferences for  future &GAP; sessions.
 ##  <P/>
-##  
+##
 ##  Should a  later version  of &GAP;  or some  packages introduce  new user
 ##  preferences then you can  call <Ref Func="WriteGapIniFile"/> again since
 ##  it  will set  the previously  known  user preferences  to their  current
 ##  values. <P/>
-##  
+##
 ##  Optionally,  a  different  directory for  the  resulting  <F>gap.ini</F>
 ##  file    can   be    specified   as    argument   <A>dir</A>    to   <Ref
 ##  Func="WriteGapIniFile"/>. Another optional argument is the boolean value
 ##  <K>true</K>, if this  is given, the settings of all  user preferences in
 ##  the current session are ignored. <P/>
-##  
+##
 ##  Note that  your <F>gap.ini</F> file is  read by &GAP; very  early during
 ##  its startup process. A consequence  is that the <A>value</A> argument in
 ##  a call of <Ref Func="SetUserPreference"/>  must be some very basic &GAP;
@@ -87,7 +94,7 @@
 ##  <Ref Func="SetUserPreference"/> from your  <F>gap.ini</F> file into your
 ##  <F>gaprc</F>  file (also  in the  directory <C>GAPInfo.UserGapRoot</C>).
 ##  This file is read much later. <P/>
-##  
+##
 ##  <Example>
 ##  gap> SetUserPreference( "Pager", "less" );
 ##  gap> SetUserPreference("PagerOptions",
@@ -95,32 +102,32 @@
 ##  gap> UserPreference("Pager");
 ##  "less"
 ##  </Example>
-##  
+##
 ##  The first two lines of this example will cause &GAP; to use the programm
 ##  <C>less</C> as  a pager.  This is highly  recommended if  <C>less</C> is
 ##  available on  your system. The  last line displays the  current setting.
 ##  <P/>
-##  
-##  </Description> 
+##
+##  </Description>
 ##  </ManSection>
-##  
+##
 ##  <ManSection>
 ##  <Func Name="DeclareUserPreference" Arg="record"/>
-##  
+##
 ##  <Description>
-##  
+##
 ##  This  function can  be used  (also in  packages) to  introduce new  user
 ##  preferences. It declares  a user preference, determines  a default value
 ##  and contains documentation  of the user preference.  After declaration a
 ##  user preference will be shown with <Ref Func="ShowUserPreferences"/> and
 ##  <Ref Func="WriteGapIniFile"/>. <P/>
-##  
+##
 ##  When  this  declaration  is  evaluated  it  is  checked,  if  this  user
 ##  preference is  already set in the  current session. If not  the value of
 ##  the user  preference is set to  its default. (Do not  use <K>fail</K> as
 ##  default  value  since this  indicated  that  a  user preference  is  not
 ##  set.)<P/>
-##  
+##
 ##  The argument <A>record</A> of <Ref Func="DeclareUserPreference"/> must be
 ##  a record with the following components.
 ##  <P/>
@@ -202,7 +209,7 @@
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##  
+##
 #T Concerning the `values' lists in the declaration:
 #T - What shall happen if several preferences are declared together?
 #T   It may be that the admissible choices for the second preference depend
@@ -210,9 +217,9 @@
 #T - Support also an ``extendible menu'', i. e. a list of choices plus the
 #T   possibility to enter a value not in the list.
 ##
-GAPInfo.DeclarationsOfUserPreferences:= [];
+GAPInfo.DeclarationsOfUserPreferences:= AtomicList([]);
 
-GAPInfo.UserPreferences:= rec();
+GAPInfo.UserPreferences:= AtomicRecord(rec());
 
 BindGlobal( "DeclareUserPreference", function( record )
     local name, package, default, i, up;
@@ -270,6 +277,7 @@ BindGlobal( "DeclareUserPreference", function( record )
     record.package:= package;
     record.omitFromGapIniFile:= IsBound( record.omitFromGapIniFile )
                                 and record.omitFromGapIniFile = true;
+    MakeImmutable( record );
     Add( GAPInfo.DeclarationsOfUserPreferences, record );
 
     # Set the default value, if not yet set.
@@ -282,11 +290,13 @@ BindGlobal( "DeclareUserPreference", function( record )
                String( record.name ) );
       fi;
     else
-      default:= StructuralCopy( record.default );
+      # We need not apply 'StructuralCopy' to the default values
+      # because 'record' is immutable.
+      default:= record.default;
     fi;
     up := GAPInfo.UserPreferences;
     if not IsBound( up.( package ) ) then
-      up.( package ):= rec();
+      up.( package ):= AtomicRecord(rec());
     fi;
     if IsString( record.name ) then
       if not IsBound(up.( package ).( record.name )) then
@@ -324,11 +334,11 @@ BindGlobal( "SetUserPreference", function( arg )
     pref:= GAPInfo.UserPreferences;
     if not IsBound( pref.( package ) ) then
       # We may set a preference now that will become declared later.
-      pref.( package ):= rec();;
+      pref.( package ):= AtomicRecord( rec() );
     fi;
     pref:= pref.( package );
 #T First check whether the desired value is admissible?
-    pref.( name ):= value;
+    pref.( name ):= MakeImmutable(value);
     end );
 
 
@@ -486,6 +496,34 @@ BindGlobal( "StringUserPreference", function( data, ignorecurrent )
 
 #############################################################################
 ##
+#F  StripMarkupFromUserPreferenceDescription( <str> )
+##
+BindGlobal( "StripMarkupFromUserPreferenceDescription", function( str )
+    local pos, pos2, pos3, pos4;
+
+    str:= ReplacedString( str, "&GAP;", "GAP" );
+    str:= ReplacedString( str, "<C>", "'" );
+    str:= ReplacedString( str, "</C>", "'" );
+    str:= ReplacedString( str, "<K>", "'" );
+    str:= ReplacedString( str, "</K>", "'" );
+    str:= ReplacedString( str, "<M>", "" );
+    str:= ReplacedString( str, "</M>", "" );
+    pos:= PositionSublist( str, "<Ref " );
+    while pos <> fail do
+      pos2:= Position( str, '\"', pos );
+      pos3:= Position( str, '\"', pos2 );
+      pos4:= PositionSublist( str, "/>", pos3 );
+      str:= Concatenation( str{ [ 1 .. pos-1 ] },
+                           "'", str{ [ pos2+1 .. pos3-1 ] }, "'",
+                           str{ [ pos4+2 .. Length( str ) ] } );
+      pos:= PositionSublist( str, "<Ref ", pos );
+    od;
+    return str;
+    end );
+
+
+#############################################################################
+##
 #F  ShowStringUserPreference( <data> )
 ##
 BindGlobal( "ShowStringUserPreference", function( data )
@@ -508,7 +546,8 @@ BindGlobal( "ShowStringUserPreference", function( data )
 
     # Show the formatted description, with indent 4.
     format:= ValueGlobal( "FormatParagraph" );
-    for paragraph in data.description do
+    for paragraph in List( data.description,
+                           StripMarkupFromUserPreferenceDescription ) do
       Append( string, format( paragraph, width, "left", [ "    ", "" ] ) );
     od;
 
@@ -568,7 +607,7 @@ BindGlobal( "ShowStringUserPreference", function( data )
 ##
 BindGlobal( "StringUserPreferences", function( arg )
     local ignorecurrent, pref, str, pkglist, pkgname, done, name, data;
-    
+
     if Length(arg) > 0 and arg[1] = true then
       ignorecurrent := true;
     else
@@ -620,7 +659,7 @@ BindGlobal( "ShowUserPreferences", function(arg)
       pkglist := List(arg, LowercaseString);
     else
       # if no list given use all  packages with preferences, "gap" first
-      pkglist := Concatenation(  [ "gap" ], 
+      pkglist := Concatenation(  [ "gap" ],
                        Difference( RecNames( pref ), [ "gap" ] ) );
     fi;
 
@@ -635,7 +674,7 @@ BindGlobal( "ShowUserPreferences", function(arg)
         nam := GAPInfo.PackagesInfo.(pkgname)[1].PackageName;
       elif pkgname = "gap" then
         nam := "GAP";
-      else 
+      else
         nam := pkgname;
       fi;
       Append( str, nam );
@@ -675,14 +714,124 @@ BindGlobal( "ShowUserPreferences", function(arg)
 
 #############################################################################
 ##
+#F  XMLForUserPreferences( <pkgname> )
+##
+##  Create a string that describes the current list of user preferences
+##  that are declared for the package with name <pkgname>
+##  (or for GAP itself if <pkgname> is the string '"GAP"').
+##
+##  The value for the argument '"GAP"' shall be copied to the file
+##  'doc/ref/user_pref_list.xml', in order to appear in the
+##  GAP Reference Manual.
+##
+BindGlobal( "XMLForUserPreferences", function( pkgname )
+    local stringOfValue, pref, str, done, format, width, name, data, names,
+          default;
+
+    stringOfValue:= function( val )
+      if IsBool( val ) then
+        return Concatenation( "<K>", String( val ), "</K>" );
+      elif IsString( val ) then
+        return Concatenation( "<C>\"", val, "\"</C>" );
+      else
+        return Concatenation( "<C>", String( val ), "</C>" );
+      fi;
+    end;
+
+    pkgname:= LowercaseString( pkgname );
+    pref:= GAPInfo.UserPreferences;
+    str:= "";
+    done:= [];
+    if IsRecord( pref.( pkgname ) ) then
+      format:= ValueGlobal( "FormatParagraph" );
+      width:= ValueGlobal( "WidthUTF8String" );
+      for name in Set( RecNames( pref.( pkgname ) ) ) do
+        if not name in done then
+          data:= First( GAPInfo.DeclarationsOfUserPreferences,
+                        r -> r.package = pkgname and
+                             ( name = r.name or name in r.name ) );
+          if data <> fail then
+            if data.name = name then
+              names:= [ name ];
+            else
+              names:= data.name;
+            fi;
+            UniteSet( done, names );
+
+            Append( str, "<Mark>\n" );
+
+            # Create an index entry for each preference.
+            Append( str, JoinStringsWithSeparator(
+                           List( names, nam -> Concatenation(
+                                                 "<Index Key='", nam, "'>",
+                                                 "<C>", nam, "</C>",
+                                                 "</Index>" ) ), "\n" ) );
+            Append( str, "\n" );
+
+            Append( str, JoinStringsWithSeparator(
+                           List( names, nam -> Concatenation(
+                                                 "<C>", nam, "</C>" ) ),
+                           ",\n" ) );
+            Append( str, "\n</Mark>\n<Item>\n" );
+
+            # Show the description, which may contain GAPDoc markup.
+            Append( str, JoinStringsWithSeparator(
+                           List( data.description,
+                                 para -> format( para, "left", width ) ),
+                           "<P/>\n" ) );
+
+            # Show admissible values if applicable.
+            if IsBound( data.values ) and IsList( data.values ) then
+              Append( str, "\n<P/>\n" );
+              Append( str, "\nAdmissible values:\n" );
+              Append( str, JoinStringsWithSeparator(
+                           List( data.values, stringOfValue ), ",\n" ) );
+              Append( str, ".\n" );
+            fi;
+
+            # Show the default value.
+            Append( str, "\n<P/>\n" );
+            default:= data.default;
+            if IsFunction( default ) then
+              if Length( names ) = 1 then
+                Append( str, "\nThe default is computed at runtime." );
+              else
+                Append( str, "\nThe defaults are computed at runtime." );
+              fi;
+            else
+              if Length( names ) = 1 then
+                Append( str, "\nDefault: " );
+              else
+                Append( str, "\nDefaults: " );
+              fi;
+              Append( str, stringOfValue( default ) );
+              Append( str, "." );
+            fi;
+
+            Append( str, "\n</Item>\n" );
+          fi;
+        fi;
+      od;
+    fi;
+
+    if str <> "" then
+      str:= Concatenation( "<List>\n", str, "</List>\n" );
+    fi;
+
+    return str;
+    end );
+
+
+#############################################################################
+##
 #F  WriteGapIniFile( [<dir>, ][true] )
 ##
 BindGlobal( "WriteGapIniFile", function( arg )
   local ignorecurrent, f, df, ret, target, str, res;
   # check if current settings should be used
-  if true in arg then 
+  if true in arg then
     ignorecurrent := true;
-  else 
+  else
     ignorecurrent := false;
   fi;
   # check if target directory is given as string or directory object

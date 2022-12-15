@@ -40,7 +40,7 @@ end;
 
 ProcessMessage := function (message)
   local task, taskdata, outMessage, i, tmp, source, handle, data, l1, toUnblock, msg, res;
-  
+
   source := message.source;
   if message.type = MESSAGE_TYPES.EVAL_MSG then
     ReadEvalFromString(message.content);
@@ -115,7 +115,7 @@ MessageManagerFunc := function()
     #  finished := ProcessMessage(msg);
     #fi;
   od;
-  
+
 end;
 
 StopManagers := function()
@@ -124,7 +124,7 @@ StopManagers := function()
   else
     SendMessage (processId, MESSAGE_TYPES.STOP_MANAGERS);
   fi;
-  
+
 end;
 
 FinishProcesses := function ()

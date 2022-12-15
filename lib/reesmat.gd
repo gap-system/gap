@@ -32,12 +32,12 @@ DeclareProperty("IsOne", IsReesZeroMatrixSemigroupElement);
 
 DeclareOperation("RowOfReesMatrixSemigroupElement",
   [IsReesMatrixSemigroupElement]);
-DeclareOperation("RowOfReesZeroMatrixSemigroupElement", 
+DeclareOperation("RowOfReesZeroMatrixSemigroupElement",
   [IsReesZeroMatrixSemigroupElement]);
 
 DeclareOperation("ColumnOfReesMatrixSemigroupElement",
   [IsReesMatrixSemigroupElement]);
-DeclareOperation("ColumnOfReesZeroMatrixSemigroupElement", 
+DeclareOperation("ColumnOfReesZeroMatrixSemigroupElement",
   [IsReesZeroMatrixSemigroupElement]);
 
 DeclareOperation("UnderlyingElementOfReesMatrixSemigroupElement",
@@ -52,14 +52,14 @@ DeclareSynonymAttr("IsReesMatrixSubsemigroup",
 DeclareSynonymAttr("IsReesZeroMatrixSubsemigroup",
   IsSemigroup and IsReesZeroMatrixSemigroupElementCollection);
 
-DeclareProperty("IsReesMatrixSemigroup", IsSemigroup); 
+DeclareProperty("IsReesMatrixSemigroup", IsSemigroup);
 InstallTrueMethod( IsSemigroup, IsReesMatrixSemigroup );
 DeclareProperty("IsReesZeroMatrixSemigroup", IsSemigroup);
 InstallTrueMethod( IsSemigroup, IsReesZeroMatrixSemigroup );
 
-InstallTrueMethod(IsReesMatrixSemigroup, 
+InstallTrueMethod(IsReesMatrixSemigroup,
   IsReesMatrixSubsemigroup and IsWholeFamily);
-InstallTrueMethod(IsReesZeroMatrixSemigroup, 
+InstallTrueMethod(IsReesZeroMatrixSemigroup,
   IsReesZeroMatrixSubsemigroup and IsWholeFamily);
 
 DeclareOperation("ReesMatrixSemigroup", [IsSemigroup, IsRectangularTable]);
@@ -69,15 +69,15 @@ DeclareOperation( "GeneratorsOfReesMatrixSemigroup",
   [IsReesMatrixSubsemigroup, IsList, IsSemigroup, IsList]);
 DeclareGlobalFunction( "GeneratorsOfReesMatrixSemigroupNC");
 
-DeclareOperation( "ReesMatrixSubsemigroup", 
+DeclareOperation( "ReesMatrixSubsemigroup",
   [IsReesMatrixSubsemigroup, IsList, IsSemigroup, IsList]);
 DeclareGlobalFunction("ReesMatrixSubsemigroupNC");
 
-DeclareOperation( "GeneratorsOfReesZeroMatrixSemigroup", 
+DeclareOperation( "GeneratorsOfReesZeroMatrixSemigroup",
   [IsReesZeroMatrixSubsemigroup, IsList, IsSemigroup, IsList]);
 DeclareGlobalFunction( "GeneratorsOfReesZeroMatrixSemigroupNC");
 
-DeclareOperation( "ReesZeroMatrixSubsemigroup", 
+DeclareOperation( "ReesZeroMatrixSubsemigroup",
   [IsReesZeroMatrixSubsemigroup, IsList, IsSemigroup, IsList]);
 DeclareGlobalFunction("ReesZeroMatrixSubsemigroupNC");
 
@@ -111,7 +111,7 @@ DeclareAttribute("IsomorphismReesZeroMatrixSemigroup", IsSemigroup);
 # undocumented
 
 DeclareAttribute("ReesMatrixSemigroupOfFamily", IsFamily);
-DeclareAttribute("TypeReesMatrixSemigroupElements", 
+DeclareAttribute("TypeReesMatrixSemigroupElements",
   IsReesMatrixSubsemigroup);
 DeclareAttribute("TypeReesMatrixSemigroupElements",
   IsReesZeroMatrixSubsemigroup);

@@ -3,7 +3,7 @@
 
 <Section Label="section:Synchronization variables">
   <Heading>Synchronization variables</Heading>
-  
+
 Synchronization variables (also often called dataflow variables in the literature) are variables that can be written
 only once; attempts to read the variable block until it has been written to.
 <P/>

@@ -16,7 +16,7 @@
 ############################################################################
 ##
 #I  InfoKnuthBendix
-## 
+##
 ##
 DeclareInfoClass("InfoKnuthBendix");
 
@@ -29,7 +29,7 @@ DeclareInfoClass("InfoKnuthBendix");
 ##  <Filt Name="IsKnuthBendixRewritingSystem" Arg='obj' Type='Category'/>
 ##
 ##  <Description>
-##  This is the category of Knuth-Bendix rewriting systems. 
+##  This is the category of Knuth-Bendix rewriting systems.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -44,7 +44,7 @@ DeclareCategory("IsKnuthBendixRewritingSystem", IsRewritingSystem);
 ##
 ##  <Description>
 ##  returns the Knuth-Bendix rewriting system of the family <A>fam</A>
-##  with respect to the reduction ordering on words given by <A>wordord</A>. 
+##  with respect to the reduction ordering on words given by <A>wordord</A>.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -139,14 +139,14 @@ DeclareAttribute( "TzRules", IsKnuthBendixRewritingSystem );
 ##
 ## takes a list of generator id's (signed integers, used to check how far
 ## indices have to be shifted) and returns a record that represents such
-## a DAG. 
+## a DAG.
 DeclareGlobalFunction("EmptyKBDAG");
 
 ############################################################################
 ##
 #F  AddRuleKBDAG(<dag>,<left>,<index>)
 ##
-##  Adds rule with given left side to the DAG at given index position 
+##  Adds rule with given left side to the DAG at given index position
 DeclareGlobalFunction("AddRuleKBDAG");
 
 ############################################################################

@@ -213,14 +213,14 @@ to be  solvable or  not),  and it would  include a  mandatory solvability
 test.
 <P/>
 If no applicable method  (or no next applicable  method) is found, &GAP;
-stops with an error message of the form 
+stops with an error message of the form
 <Log><![CDATA[
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Size' on 1 arguments called from
 ... lines deleted here ...
 ]]></Log>
 <P/>
-You would get an error message as above if you asked for <C>Size( 1 )</C>. 
+You would get an error message as above if you asked for <C>Size( 1 )</C>.
 The message simply says that there is no method installed for calculating
 the size of <C>1</C>.
 Section <Ref Sect="Recovery from NoMethodFound-Errors" BookName="ref"/>
@@ -271,7 +271,7 @@ implications  can be installed  in &GAP;  as  <E>true methods</E>. To execute
 true methods, &GAP; only needs to do  some bookkeeping with its filters,
 therefore true methods are much faster than immediate methods.
 <P/>
-How immediate and true methods are installed is described in 
+How immediate and true methods are installed is described in
 <Ref Sect="Immediate Methods" BookName="ref"/> and
 <Ref Sect="Logical Implications" BookName="ref"/>.
 
@@ -347,7 +347,7 @@ For  details,  see
 <P/>
 <Index Key="TraceMethods"><C>TraceMethods</C></Index>
 If you want to see which methods  are chosen for certain operations while
-&GAP;  code is being executed, you can call the function 
+&GAP;  code is being executed, you can call the function
 <Ref Func="TraceMethods" BookName="ref" Label="for a list of operations"/>
 with a list of these operations as arguments.
 <P/>
@@ -393,7 +393,7 @@ gap> UntraceMethods( [ Size ] );
 <P/>
 The last two lines switch off tracing  again.
 We now  see that the system getter was called by the immediate method for
-<Ref Func="IsPerfectGroup" BookName="ref"/>. 
+<Ref Func="IsPerfectGroup" BookName="ref"/>.
 Also the above-mentioned immediate method for
 <Ref Func="IsSolvableGroup" BookName="ref"/>
 was not used because the solvability of <C>g</C> was already found out during

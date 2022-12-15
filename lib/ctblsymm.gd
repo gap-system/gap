@@ -14,11 +14,11 @@
 ##  symmetric group $S_n$ itself  and the Weyl group  of type  $B_n$ which is
 ##  a wreath product of a  cyclic group $C_2$ of order 2  with  the symmetric
 ##  group $S_n$.
-##  
+##
 ##  Moreover the character values of   alternating groups $A_n$ are  obtained
 ##  by  restriction from $S_n$ and  the  character  values of Weyl  groups of
 ##  type $D_n$ are obtained from those of type $B_n$.
-##  
+##
 ##  The values are computed by a generalized Murnaghan-Nakayama formula.
 ##
 ##  For a good reference of used formulae see:
@@ -26,7 +26,7 @@
 ##  Addison-Wesley, 1981.
 ##  A. Kerber, Representations of Permutation Groups I, Springer 1971.
 ##  A. Kerber, Representations of Permutation Groups II, Springer 1975.
-## 
+##
 ##  Now  the classes (as  well  as the  characters)  of $S_n$ are indexed  by
 ##  partitions (i.e.  the  cycle structure of  the elements in  that  class).
 ##  In  general the   classes  (and  again  the  characters)  of  the  wreath
@@ -34,7 +34,7 @@
 ##  is  the number of   classes   of  the  group  $G$  and  these  partitions
 ##  together form a  partition of $n$.  That is  after distributing  $n$ over
 ##  $r$ places each place is partitioned.
-## 
+##
 ##  There are different  ways  to  represent a  partition and we  make use of
 ##  two of them.
 ##
@@ -55,9 +55,9 @@
 ##  $k$ strings.
 ##
 ##  xxxx         _________      _________      _________        xxxx
-##  xx            0  1  2        |  o  |        o  o  |          
-##  x             3  4  5        o  |  |   ->   |  |  |          
-##                6  |  |        o  |  |        o  |  |          
+##  xx            0  1  2        |  o  |        o  o  |
+##  x             3  4  5        o  |  |   ->   |  |  |
+##                6  |  |        o  |  |        o  |  |
 ##
 ##  To  find a removable  $k$-hook now  simply  means  to find a  free  place
 ##  for  a bead  one step  up  on its string,  the  hook is  then  removed by
@@ -319,14 +319,14 @@ DeclareGlobalFunction( "CharacterValueWreathSymmetric" );
 ##  gap> wr:= CharacterTableWreathSymmetric( c3, 2 );;
 ##  gap> Display( wr );
 ##  C3wrS2
-##  
+##
 ##       2  1   .   .   1  .   1  1   1   1
 ##       3  2   2   2   2  2   2  1   1   1
-##  
+##
 ##         1a  3a  3b  3c 3d  3e 2a  6a  6b
 ##      2P 1a  3b  3a  3e 3d  3c 1a  3c  3e
 ##      3P 1a  1a  1a  1a 1a  1a 2a  2a  2a
-##  
+##
 ##  X.1     1   1   1   1  1   1 -1  -1  -1
 ##  X.2     2   A  /A   B -1  /B  .   .   .
 ##  X.3     2  /A   A  /B -1   B  .   .   .
@@ -336,7 +336,7 @@ DeclareGlobalFunction( "CharacterValueWreathSymmetric" );
 ##  X.7     1   1   1   1  1   1  1   1   1
 ##  X.8     1 -/A  -A  -A  1 -/A  1 -/A  -A
 ##  X.9     1  -A -/A -/A  1  -A  1  -A -/A
-##  
+##
 ##  A = -E(3)^2
 ##    = (1+Sqrt(-3))/2 = 1+b3
 ##  B = 2*E(3)

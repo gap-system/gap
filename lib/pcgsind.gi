@@ -48,7 +48,7 @@ InstallMethod( InducedPcgsByPcSequenceNC, "pcgs, empty list",
     true, [ IsPcgs, IsList and IsEmpty ], 0,
 function( pcgs, pcs )
     local  efam, filter,  igs;
-    
+
     # check which filter to use
     filter := IsEmpty;
 
@@ -84,7 +84,7 @@ function( pcgs, pcs )
 
     # and return
     return igs;
-    
+
 end );
 
 InstallOtherMethod( InducedPcgsByPcSequenceNC, "pcgs, empty list,depths",
@@ -224,7 +224,7 @@ local   pcgs,pcs,depths,efam,  filter,  j,  l,  i,  m,  d,  igs,  tmp,
 
     # and return
     return igs;
-    
+
 end );
 
 InstallMethod( InducedPcgsByPcSequenceNC, "pcgs, homogeneous list",
@@ -298,7 +298,7 @@ InstallMethod( InducedPcgsByPcSequenceAndGenerators,
     0,
 
 function( pcgs, sub, gens )
-    local   max,  id,  wseen,  igs,  chain,  new,  seen,  old,  
+    local   max,  id,  wseen,  igs,  chain,  new,  seen,  old,
             u,  uw,  up,  x,  c,  cw,  i,  j,  ro;
 
     # do family checks here to avoid problems with the empty list
@@ -378,7 +378,7 @@ function( pcgs, sub, gens )
                 # add the commutators with the powers of <u>
                 for u  in up  do
                     for x  in igs  do
-                        if     x <> id 
+                        if     x <> id
                            and ( DepthOfPcElement(pcgs,x) + 1 < chain
                               or DepthOfPcElement(pcgs,u) + 1 < chain )
                         then
@@ -446,7 +446,7 @@ InstallMethod( InducedPcgsByGeneratorsWithImages,
     0,
 
 function( pcgs, gens, imgs )
-    local  ro, max, id, igs, chain, new, seen, old, u, uw, up, e, x, c, 
+    local  ro, max, id, igs, chain, new, seen, old, u, uw, up, e, x, c,
            cw, d, i, j, f,nonab;
 
     # do family check here to avoid problems with the empty list
@@ -524,7 +524,7 @@ function( pcgs, gens, imgs )
                 # add the commutators with the powers of <u>
                 for u in up do
                     for x in igs do
-                        if nonab and x[1] <> id[1] 
+                        if nonab and x[1] <> id[1]
                            and ( DepthOfPcElement(pcgs,x[1]) + 1 < chain
                               or DepthOfPcElement(pcgs,u[1]) + 1 < chain )
                         then
@@ -957,7 +957,7 @@ InstallMethod( HomomorphicInducedPcgs,
 
 function( pcgs, imgs )
     return InducedPcgsByPcSequenceNC(
-        pcgs, 
+        pcgs,
         HOMOMORPHIC_IGS( pcgs, imgs ) );
 end );
 
@@ -987,7 +987,7 @@ InstallOtherMethod( HomomorphicInducedPcgs,
 
 function( pcgs, imgs, func )
     return InducedPcgsByPcSequenceNC(
-        pcgs, 
+        pcgs,
         HOMOMORPHIC_IGS( pcgs, imgs, func ) );
 end );
 
@@ -1017,7 +1017,7 @@ InstallOtherMethod( HomomorphicInducedPcgs,
 
 function( pcgs, imgs, obj )
     return InducedPcgsByPcSequenceNC(
-        pcgs, 
+        pcgs,
         HOMOMORPHIC_IGS( pcgs, imgs, obj ) );
 end );
 
@@ -1033,7 +1033,7 @@ InstallMethod( ElementaryAbelianSubseries,
     0,
 
 function( pcgs )
-    local   id,  coms,  lStp,  eStp,  minSublist,  ros,  k,  l,  i,  
+    local   id,  coms,  lStp,  eStp,  minSublist,  ros,  k,  l,  i,
             z,  j;
 
     # try to construct an elementary abelian series through the agseries
@@ -1138,7 +1138,7 @@ function( pcgs, n, u )
         pos := pos+1;
     od;
     Append( sum, n );
-   
+
     sum := InducedPcgsByPcSequenceNC( pcgs, sum );
     int := InducedPcgsByPcSequenceNC( pcgs, int );
     return rec( sum := sum, intersection := int );
@@ -1203,7 +1203,7 @@ function( pcgs, n, u )
     local   len,  first,  pos,  dep;
 
     # the parent must match
-    if pcgs <> ParentPcgs(n) or pcgs <> ParentPcgs(u)  
+    if pcgs <> ParentPcgs(n) or pcgs <> ParentPcgs(u)
       # and the depthsInParent given
       or not IsBound(u!.depthsInParent) then
         TryNextMethod();
@@ -1454,7 +1454,7 @@ local   pa, l, map,  d,lc,ro,tail;
       return OneOfPcgs(pcgs);
     fi;
     elm := LeftQuotientPowerPcgsElement(pcgs,map[d],
-		  (LeadingExponentOfPcElement(pa,elm)/lc[d] mod ro[d]) 
+		  (LeadingExponentOfPcElement(pa,elm)/lc[d] mod ro[d])
 	    ,elm);
     d := DepthOfPcElement( pa, elm );
   od;
@@ -1641,7 +1641,7 @@ local e,s,d,o,j,bj,bjo,ro,max,id,seen,wseen,igs,chain,new,old,u,up,uw,cw,x,c;
 
 #T we may not replace by elements of pcgs because that might change the
 #T group.
-# 
+#
 # if <chain> has reached one, we have the whole group
 #  for i  in [ chain .. max ]  do
 #      igs[i] := pcgs[i]; # on the lowermost levels we can even get the

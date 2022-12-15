@@ -39,7 +39,7 @@ describes the various ways how operations for group actions can be called.
 Functions for several commonly used action are already built into &GAP;.
 These are listed in section&nbsp;<Ref Sect="Basic Actions"/>.
 <P/>
-The sections <Ref Sect="The Permutation Image of an Action"/> and 
+The sections <Ref Sect="The Permutation Image of an Action"/> and
 <Ref Sect="Action of a group on itself"/> describe homomorphisms and mappings
 associated to group actions
 as well as the permutation group image of an action.
@@ -174,7 +174,7 @@ to implement a permutation action on a domain:
 gap> g:=Group((1,2,3),(1,2));;
 gap> dom:=[ "a", "b", "c" ];;
 gap> Orbit(g,dom,Permuted);
-[ [ "a", "b", "c" ], [ "c", "a", "b" ], [ "b", "a", "c" ], 
+[ [ "a", "b", "c" ], [ "c", "a", "b" ], [ "b", "a", "c" ],
   [ "b", "c", "a" ], [ "a", "c", "b" ], [ "c", "b", "a" ] ]
 ]]></Example>
 </Description>

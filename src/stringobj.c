@@ -25,19 +25,19 @@
 **  Each entry is a  single character (of C type 'unsigned char').   The last
 **  entry  in  the  bag is the  null  character  ('\0'),  which terminates  C
 **  strings.  We add this null character although the length is stored in the
-**  object. This allows to use C routines with  strings  directly  with  null 
-**  character free strings (e.g., filenames). 
+**  object. This allows to use C routines with  strings  directly  with  null
+**  character free strings (e.g., filenames).
 **
 **  Note that a list represented by a bag of type 'T_PLIST' might still be a
 **  string. It is just that the kernel does not know this.
 **
 **  This package consists of three parts.
-**  
+**
 **  The first part consists of the functions 'NEW_STRING', 'CHARS_STRING' (or
 **  'CSTR_STRING'),  'GET_LEN_STRING', 'SET_LEN_STRING', and more. These and
 **  the functions below use the detailed knowledge about the representation
 **  of strings.
-**  
+**
 **  The second part  consists  of  the  functions  'LenString',  'ElmString',
 **  'ElmsStrings', 'AssString',  'AsssString', PlainString',
 **  and 'IsPossString'.  They are the functions required by the generic lists
@@ -965,7 +965,7 @@ static Obj ElmsString(Obj list, Obj poss)
 **  'AssString' is the function in 'AssListFuncs' for strings.
 **
 **  'AssString' keeps <list> in string representation if possible.
-**  
+**
 */
 static void AssString(Obj list, Int pos, Obj val)
 {
@@ -997,9 +997,9 @@ static void AssString(Obj list, Int pos, Obj val)
     }
 
     /* now perform the assignment and return the assigned value            */
-    SET_ELM_STRING( list, pos, val ); 
+    SET_ELM_STRING( list, pos, val );
   }
-}    
+}
 
 
 /****************************************************************************
@@ -1014,9 +1014,9 @@ static void AssString(Obj list, Int pos, Obj val)
 **
 **  'AsssString' is the function in 'AsssListFuncs' for strings.
 **
-**  'AsssString' simply delegates to AssString. Note that the ordering of 
+**  'AsssString' simply delegates to AssString. Note that the ordering of
 **  <poss> can be important if <list> should stay in string representation.
-**   
+**
 */
 static void AsssString(Obj list, Obj poss, Obj vals)
 {
@@ -1092,13 +1092,13 @@ static Obj PosString(Obj list, Obj val, Obj start)
       return Fail;
 
     istart = INT_INTOBJ(start);
-    
+
     /* get the length of <list>                                            */
     lenList = GET_LEN_STRING( list );
 
     /* a string contains only characters */
     if (TNUM_OBJ(val) != T_CHAR) return Fail;
-    
+
     /* val as C character   */
     valc = CHAR_VALUE(val);
 
@@ -1160,7 +1160,7 @@ static BOOL IsStringList(Obj list)
     Int                 lenList;
     Obj                 elm;
     Int                 i;
-    
+
     lenList = LEN_LIST( list );
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
@@ -1215,7 +1215,7 @@ Obj CopyToStringRep(
         for ( i = 1; i <= lenString; i++ ) {
             elm = ELMW_LIST( string, i );
             CHARS_STRING(copy)[i-1] = CHAR_VALUE(elm);
-        } 
+        }
         CHARS_STRING(copy)[lenString] = '\0';
     }
     return copy;
@@ -1420,7 +1420,7 @@ static Obj FuncCOPY_TO_STRING_REP(Obj self, Obj string)
 **
 *F  FuncPOSITION_SUBSTRING( <self>,  <string>, <substr>, <off> ) .  position of
 **  substring
-**  
+**
 **  <str> and <substr> must be strings  and <off> an integer. The position
 **  of  first  character of substring   in string,  search  starting  from
 **  <off>+1, is  returned if such  a substring exists. Otherwise `fail' is
@@ -1447,7 +1447,7 @@ static Obj FuncPOSITION_SUBSTRING(Obj self, Obj string, Obj substr, Obj off)
   max = lens - lenss + 1;
   s = CONST_CHARS_STRING(string);
   ss = CONST_CHARS_STRING(substr);
-  
+
   const UInt1 c = ss[0];
   for (i = ipos; i < max; i++) {
     if (c == s[i]) {
@@ -1455,7 +1455,7 @@ static Obj FuncPOSITION_SUBSTRING(Obj self, Obj string, Obj substr, Obj off)
         if (! (s[i+j] == ss[j]))
           break;
       }
-      if (j == lenss) 
+      if (j == lenss)
         return INTOBJ_INT(i+1);
     }
   }
@@ -1466,11 +1466,11 @@ static Obj FuncPOSITION_SUBSTRING(Obj self, Obj string, Obj substr, Obj off)
 **
 *F  FuncNormalizeWhitespace( <self>, <string> ) . . . . . normalize white
 **  space in place
-**    
+**
 **  Whitespace  characters are  " \r\t\n".  Leading and  trailing whitespace  in
 **  string  is  removed. Intermediate  sequences  of  whitespace characters  are
 **  substituted by a single space.
-**  
+**
 */
 static Obj FuncNormalizeWhitespace(Obj self, Obj string)
 {
@@ -1498,11 +1498,11 @@ static Obj FuncNormalizeWhitespace(Obj self, Obj string)
       white = 0;
     }
   }
-  if (white && i > -1) 
+  if (white && i > -1)
     i--;
   s[i+1] = '\0';
   SET_LEN_STRING(string, i+1);
- 
+
   /* to make it useful as C-string */
   CHARS_STRING(string)[i+1] = (UInt1)0;
 
@@ -1513,8 +1513,8 @@ static Obj FuncNormalizeWhitespace(Obj self, Obj string)
 /****************************************************************************
 **
 *F  FuncREMOVE_CHARACTERS( <self>, <string>, <rem> ) . . . . . delete characters
-**  from <rem> in <string> in place 
-**    
+**  from <rem> in <string> in place
+**
 */
 
 static Obj FuncREMOVE_CHARACTERS(Obj self, Obj string, Obj rem)
@@ -1530,7 +1530,7 @@ static Obj FuncREMOVE_CHARACTERS(Obj self, Obj string, Obj rem)
   len = GET_LEN_STRING(rem);
   s = CHARS_STRING(rem);
   for(i=0; i<len; i++) REMCHARLIST[s[i]] = 1;
-  
+
   /* now change string in place */
   len = GET_LEN_STRING(string);
   s = CHARS_STRING(string);
@@ -1553,8 +1553,8 @@ static Obj FuncREMOVE_CHARACTERS(Obj self, Obj string, Obj rem)
 /****************************************************************************
 **
 *F  FuncTranslateString( <self>, <string>, <trans> ) . . . translate characters
-**  in <string> in place, <string>[i] = <trans>[<string>[i]] 
-**    
+**  in <string> in place, <string>[i] = <trans>[<string>[i]]
+**
 */
 static Obj FuncTranslateString(Obj self, Obj string, Obj trans)
 {
@@ -1574,7 +1574,7 @@ static Obj FuncTranslateString(Obj self, Obj string, Obj trans)
   for (j = 0; j < len; j++) {
     s[j] = t[s[j]];
   }
-  
+
   return (Obj)0;
 }
 
@@ -1583,7 +1583,7 @@ static Obj FuncTranslateString(Obj self, Obj string, Obj trans)
 **
 *F  FuncSplitStringInternal( <self>, <string>, <seps>, <wspace> ) . . . . split string
 **  at characters in <seps> and <wspace>
-**    
+**
 **  The difference of <seps> and <wspace> is that characters in <wspace> don't
 **  separate empty strings.
 */
@@ -1603,12 +1603,12 @@ static Obj FuncSplitStringInternal(Obj self, Obj string, Obj seps, Obj wspace)
   len = GET_LEN_STRING(seps);
   s = CONST_CHARS_STRING(seps);
   for(i=0; i<len; i++) SPLITSTRINGSEPS[s[i]] = 1;
-  
+
   /* set SPLITSTRINGWSPACE by setting positions of characters in rem to 1 */
   len = GET_LEN_STRING(wspace);
   s = CONST_CHARS_STRING(wspace);
   for(i=0; i<len; i++) SPLITSTRINGWSPACE[s[i]] = 1;
- 
+
   /* create the result (list of strings) */
   res = NEW_PLIST(T_PLIST, 2);
   pos = 0;
@@ -1653,7 +1653,7 @@ static Obj FuncSplitStringInternal(Obj self, Obj string, Obj seps, Obj wspace)
       }
     }
   }
-  
+
   // Pick up a substring at the end of the string.  Note that a trailing
   // separator does not produce an empty string.
   if (a<z) {
@@ -2193,7 +2193,7 @@ static Int InitLibrary (
     StructInitInfo *    module )
 {
     Int                 i;
-    
+
 
     /* make all the character constants once and for all                   */
     for ( i = 0; i < 256; i++ ) {

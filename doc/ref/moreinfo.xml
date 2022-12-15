@@ -41,16 +41,16 @@ In particular we will announce new releases in this mailing list.
 <Item>
 The email address <Email>support@gap-system.org</Email> to which you
 are asked to send any questions or bug reports which do not seem likely
-to be of interest to the whole &GAP; Forum. Please give a 
+to be of interest to the whole &GAP; Forum. Please give a
 (short, if possible) self-contained excerpt of a &GAP;
-session containing both input and output that illustrates your problem 
+session containing both input and output that illustrates your problem
 (including comments of why you think it is a bug) and state the type of
-the machine, operating system, (compiler used, if UNIX/Linux) and the 
-version of &GAP; you are using (the first line after the &GAP;&nbsp;4 
+the machine, operating system, (compiler used, if UNIX/Linux) and the
+version of &GAP; you are using (the first line after the &GAP;&nbsp;4
 banner starting <C>GAP, Version 4...</C>).
 </Item>
 <Item>
-We also ask you to send a brief message to 
+We also ask you to send a brief message to
 <Email>support@gap-system.org</Email> when you install &GAP;.
 </Item>
 <Item>

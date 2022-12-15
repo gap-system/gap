@@ -23,11 +23,24 @@
 **
 *T  StatHeader
 **
+**  Header for any statement or expression encoded in a function body.
 */
 typedef struct {
+    // `visited` starts out as 0 and is set to 1 if the statement or
+    // expression has ever been executed while profiling is turned on
     unsigned int visited : 1;
+
+    // `line` records the line number in the source file in which the
+    // statement or expression started
     unsigned int line : 31;
+
+    // `size` is the length in bytes of the statement or expression in
+    // bytes; the actual encoding rounds this up to a multiple of
+    // `sizeof(Stat)`
     unsigned int size : 24;
+
+    // the type of the expression or statement, see `enum STAT_TNUM`
+    // and `enum EXPR_TNUM`.
     unsigned int type : 8;
 } StatHeader;
 

@@ -318,21 +318,21 @@ subcategories of the non indented category listed above it.
 ]]></Log>
 Every object lies in the category <Ref Filt="IsObject"/>.
 <P/>
-The categories <Ref Filt="IsExtLElement"/> and <Ref Filt="IsExtRElement"/> 
-contain objects that can be multiplied with other objects via <C>*</C> from 
-the left and from the right, respectively. These categories are required 
+The categories <Ref Filt="IsExtLElement"/> and <Ref Filt="IsExtRElement"/>
+contain objects that can be multiplied with other objects via <C>*</C> from
+the left and from the right, respectively. These categories are required
 for the operands of the operation <C>*</C>.
 <P/>
-The category <Ref Filt="IsMultiplicativeElement"/> contains objects that 
-can be multiplied from the left and from the right with objects from the 
-same family. <Ref Filt="IsMultiplicativeElementWithOne"/> contains objects 
-<C>obj</C> for which a multiplicatively neutral element can be obtained by 
+The category <Ref Filt="IsMultiplicativeElement"/> contains objects that
+can be multiplied from the left and from the right with objects from the
+same family. <Ref Filt="IsMultiplicativeElementWithOne"/> contains objects
+<C>obj</C> for which a multiplicatively neutral element can be obtained by
 taking the <M>0</M>-th power <C>obj^0</C>.
-<Ref Filt="IsMultiplicativeElementWithInverse"/> contains objects 
+<Ref Filt="IsMultiplicativeElementWithInverse"/> contains objects
 <C>obj</C> for which a multiplicative inverse can be obtained by
 forming <C>obj^-1</C>.
 <P/>
-Likewise, the categories <Ref Filt="IsExtAElement"/>, 
+Likewise, the categories <Ref Filt="IsExtAElement"/>,
 <Ref Filt="IsAdditiveElement"/>, <Ref Filt="IsAdditiveElementWithZero"/>
 and <Ref Filt="IsAdditiveElementWithInverse"/>
 contain objects that can be added via <C>+</C> to other objects, objects
@@ -342,15 +342,15 @@ zero, and objects for which an additive inverse can be obtained by
 multiplication with <C>-1</C>.
 <P/>
 So a vector lies in <Ref Filt="IsExtLElement"/>, <Ref Filt="IsExtRElement"/>
-and <Ref Filt="IsAdditiveElementWithInverse"/>. A ring element must 
+and <Ref Filt="IsAdditiveElementWithInverse"/>. A ring element must
 additionally lie in <Ref Filt="IsMultiplicativeElement"/>.
 <P/>
 As stated above it is not guaranteed by the categories of objects
 whether the result of an operation with these objects as arguments is
-defined.  For example, the category <Ref Filt="IsMatrix"/> is a subcategory 
-of <Ref Filt="IsMultiplicativeElementWithInverse"/>. Clearly not every 
-matrix has a multiplicative inverse. But the category <Ref Filt="IsMatrix"/> 
-makes each matrix an admissible argument of the operation 
+defined.  For example, the category <Ref Filt="IsMatrix"/> is a subcategory
+of <Ref Filt="IsMultiplicativeElementWithInverse"/>. Clearly not every
+matrix has a multiplicative inverse. But the category <Ref Filt="IsMatrix"/>
+makes each matrix an admissible argument of the operation
 <Ref Attr="Inverse"/>, which may sometimes return <K>fail</K>.
 Likewise, two matrices can be multiplied only if they are of appropriate
 shapes.
@@ -375,9 +375,9 @@ A domain that is
 closed under multiplication <C>*</C> is called a magma and it lies in the
 category <Ref Filt="IsMagma"/>.
 If a magma is closed under taking the identity,
-it lies in <Ref Filt="IsMagmaWithOne"/>, and if it is also closed under 
+it lies in <Ref Filt="IsMagmaWithOne"/>, and if it is also closed under
 taking inverses, it lies in <Ref Filt="IsMagmaWithInverses"/>. The category
-<Ref Filt="IsMagmaWithInversesIfNonzero"/> denotes closure under taking 
+<Ref Filt="IsMagmaWithInversesIfNonzero"/> denotes closure under taking
 inverses only for nonzero elements, every division ring lies in this category.
 <P/>
 Note that every set of categories constitutes its own notion of
@@ -426,7 +426,7 @@ specified meanings.
 <Section Label="Attributes">
 <Heading>Attributes</Heading>
 
-The attributes of an object describe knowledge about it. 
+The attributes of an object describe knowledge about it.
 <P/>
 An attribute is a unary operation without side-effects.
 <P/>
@@ -503,8 +503,8 @@ the setter of the attribute is used, see <Ref Func="Setter"/>.
 <Func Name="Tester" Arg='attr'/>
 
 <Description>
-For an attribute <A>attr</A>, <C>Tester(<A>attr</A>)</C> 
-is a filter (see&nbsp;<Ref Sect="Filters"/>) 
+For an attribute <A>attr</A>, <C>Tester(<A>attr</A>)</C>
+is a filter (see&nbsp;<Ref Sect="Filters"/>)
 that returns <K>true</K> or <K>false</K>,
 depending on whether or not the value of <A>attr</A> for the object is known.
 For example, <C>Tester( Size )( <A>obj</A> )</C> is <K>true</K> if the size
@@ -516,12 +516,12 @@ of the object <A>obj</A> is known.
 <Func Name="Setter" Arg='attr'/>
 
 <Description>
-For an attribute <A>attr</A>, <C>Setter(<A>attr</A>)</C> 
+For an attribute <A>attr</A>, <C>Setter(<A>attr</A>)</C>
 is called automatically when the attribute value has been
 computed for an immutable object which does not already have a
 value stored for <A>attr</A>.
 One can also call the setter explicitly,
-for example, <C>Setter( Size )( <A>obj</A>, <A>val</A> )</C> 
+for example, <C>Setter( Size )( <A>obj</A>, <A>val</A> )</C>
 sets <A>val</A> as size of the
 object <A>obj</A> if the size was not yet known.
 <P/>
@@ -571,7 +571,7 @@ Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can type 'return true;' to set all components true
 (but you might really want to reset just one component) to continue
-brk> 
+brk>
 ]]></Log>
 </Description>
 </ManSection>
@@ -677,14 +677,14 @@ either explicitly (for the given object) or via a logical implication
 (see&nbsp;<Ref Sect="Logical Implications"/>)
 from other filters.
 <P/>
-For example, a <K>true</K> value of <Ref Filt="CanEasilyComputePcgs"/> 
+For example, a <K>true</K> value of <Ref Filt="CanEasilyComputePcgs"/>
 for a group means that certain methods are applicable that use a pcgs
 (see&nbsp;<Ref Sect="Polycyclic Generating Systems"/>) for the group.
 There are logical implications to set the filter value to <K>true</K>
 for permutation groups that are known to be solvable,
 and for groups that have already a (sufficiently nice) pcgs stored.
 In the case one has a solvable matrix group and wants to enable methods
-that use a pcgs, one can set the <Ref Filt="CanEasilyComputePcgs"/> 
+that use a pcgs, one can set the <Ref Filt="CanEasilyComputePcgs"/>
 value to <K>true</K> for this particular group.
 <P/>
 A filter <A>filt</A> of the kind described here is different from

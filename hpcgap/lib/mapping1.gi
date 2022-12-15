@@ -47,7 +47,7 @@ InstallGlobalFunction( GeneralMappingsFamily, function( FS, FR )
     od;
 
     # Construct the family.
-    if CanEasilyCompareElementsFamily(FR) 
+    if CanEasilyCompareElementsFamily(FR)
        and CanEasilyCompareElementsFamily(FS) then
       Fam:= NewFamily( "GeneralMappingsFamily", IsGeneralMapping ,
                        CanEasilyCompareElements,

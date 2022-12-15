@@ -749,7 +749,7 @@ In order to make <Ref Attr="Length"/>, and other functions that need to know
 the logical length, more efficient,
 the length of a list is stored along with the list.
 <P/>
-For fine tuning code dealing with plain lists we provide the following 
+For fine tuning code dealing with plain lists we provide the following
 two functions.
 <P/>
 <ManSection>
@@ -760,7 +760,7 @@ two functions.
 <Description>
 The function <Ref Func="EmptyPlist"/> returns an empty plain list which
 has enough memory allocated for <A>len</A> entries. This can be useful
-for creating and filling a plain list with a known number of entries. 
+for creating and filling a plain list with a known number of entries.
 <P/>
 The function <Ref Func="ShrinkAllocationPlist"/> gives back to &GAP;'s
 memory manager the physical memory which is allocated for the plain list
@@ -769,7 +769,7 @@ memory manager the physical memory which is allocated for the plain list
 Note that there are similar functions <Ref Func="EmptyString"/> and
 <Ref Func="ShrinkAllocationString"/> for strings instead of plain lists.
 <Example>
-gap> l:=[]; for i in [1..160] do Add(l, i^2); od; 
+gap> l:=[]; for i in [1..160] do Add(l, i^2); od;
 [  ]
 gap> m:=EmptyPlist(160); for i in [1..160] do Add(m, i^2); od;
 [  ]
@@ -1368,8 +1368,8 @@ an operation that returns a result that is mutable
 (<Ref Oper="ZeroOp"/>, <Ref Oper="AdditiveInverseOp"/>,
 <Ref Oper="OneOp"/>, <Ref Oper="InverseOp"/>),
 and an operation whose result has the same immutability level as the argument
-(<Ref Oper="ZeroSM"/>, <Ref Oper="AdditiveInverseSM"/>,
-<Ref Oper="OneSM"/>, <Ref Oper="InverseSM"/>).
+(<Ref Oper="ZeroSameMutability"/>, <Ref Oper="AdditiveInverseSameMutability"/>,
+<Ref Oper="OneSameMutability"/>, <Ref Oper="InverseSameMutability"/>).
 The last kind of operations is equivalent to the corresponding infix
 operations <C>0 * <A>list</A></C>, <C>- <A>list</A></C>,
 <C><A>list</A>^0</C>, and <C><A>list</A>^-1</C>.
@@ -1532,7 +1532,7 @@ This section lists only those functions that are defined exclusively for
 proper sets.
 Set theoretic functions for general collections,
 such as <Ref Func="Intersection" Label="for a list"/>
-and <Ref Func="Union" Label="for a list"/>, 
+and <Ref Func="Union" Label="for a list"/>,
 are described in Chapter&nbsp;<Ref Chap="Collections"/>.
 In particular, for the construction of proper sets,
 see&nbsp;<Ref Oper="SSortedList"/> and <Ref Attr="AsSSortedList"/>.

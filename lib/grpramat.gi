@@ -29,7 +29,7 @@ InstallMethod( IsIntegerMatrixGroup, [ IsCyclotomicMatrixGroup ],
     local gen;
     gen := GeneratorsOfGroup( G );
     return ForAll( Flat( gen ), IsInt ) and
-           ForAll( gen, g -> AbsInt( DeterminantMat( g ) ) = 1 ); 
+           ForAll( gen, g -> AbsInt( DeterminantMat( g ) ) = 1 );
     end
 );
 
@@ -64,7 +64,8 @@ local gens,mat,G;
   else
     SetIsFinite(G,true);
     SetSize(G,2);
-  fi;    
+    SetNiceMonomorphism(G,DoSparseLinearActionOnFaithfulSubset(G, OnRight, false));
+  fi;
   return G;
 end);
 
@@ -97,6 +98,7 @@ local gens,mat,G;
   else
     SetIsFinite(G,true);
     SetSize(G,1);
+    SetNiceMonomorphism(G,DoSparseLinearActionOnFaithfulSubset(G, OnRight, false));
   fi;
   return G;
 end);
@@ -142,7 +144,7 @@ end );
 #M  Centralizer( GLnZ, G ) . . . . . . . . . . . . . . . .Centralizer in GLnZ
 ##
 InstallMethod( CentralizerOp, IsIdenticalObj,
-    [ IsNaturalGLnZ, IsCyclotomicMatrixGroup ], 
+    [ IsNaturalGLnZ, IsCyclotomicMatrixGroup ],
 function( GLnZ, G )
     return CentralizerInGLnZ( G );
 end );
@@ -175,7 +177,7 @@ end );
 ##
 #M  IsBravaisGroup( <G> ) . . . . . . . . . . . . . . . . . . .IsBravaisGroup
 ##
-InstallMethod( IsBravaisGroup, 
+InstallMethod( IsBravaisGroup,
     [ IsCyclotomicMatrixGroup ],
 function( G )
     return G = BravaisGroup( G );
@@ -185,7 +187,7 @@ end );
 ##
 #M  InvariantLattice( G ) . . . . .invariant lattice of rational matrix group
 ##
-InstallMethod( InvariantLattice, "for rational matrix groups", 
+InstallMethod( InvariantLattice, "for rational matrix groups",
     [ IsCyclotomicMatrixGroup ],
 function( G )
 
@@ -211,7 +213,7 @@ function( G )
     # refine lattice until it contains its image
     repeat
 
-        # if there are elements with non-integer trace, 
+        # if there are elements with non-integer trace,
         # we will find one, sooner or later (with probability 1)
         rnd := rnd * Random( gen );
         if not IsInt( TraceMat( rnd ) ) then
@@ -219,7 +221,7 @@ function( G )
         fi;
 
         tab := List( gen, g -> trn * g * trn^-1 );
-        tab := Concatenation( tab ); 
+        tab := Concatenation( tab );
         tab := Filtered( tab, vec -> ForAny( vec, x -> not IsInt( x ) ) );
 
         if Length( tab ) > 0 then
@@ -230,7 +232,7 @@ function( G )
             trn := tab{[1..dim]} * trn;
         else
             den := 1;
-        fi;         
+        fi;
 
     until den = 1;
 
@@ -293,7 +295,7 @@ InstallMethod( IsFinite,
     [ IsIntegerMatrixGroup ],
 function( G )
 
-    local grp, size, dim, basis, gens, gensp, orb, rep, stb, img, sch, i, 
+    local grp, size, dim, basis, gens, gensp, orb, rep, stb, img, sch, i,
           pnt, gen, tmp;
 
     grp   := G;
@@ -405,9 +407,9 @@ InstallMethod( NiceMonomorphism,
 ##  (Note that nice monomorphisms may be used also for infinite groups,
 ##  for example for non-rational matrix groups over the cyclotomics.)
 ##
-InstallMethod( IsHandledByNiceMonomorphism, 
+InstallMethod( IsHandledByNiceMonomorphism,
     "for a cyclotomic matrix group",
-    [ IsCyclotomicMatrixGroup ], 
+    [ IsCyclotomicMatrixGroup ],
     IsFinite );
 
 

@@ -66,7 +66,7 @@ InstallOtherMethod( Directory, "directory", [ IsDirectory ], IdFunc );
 #############################################################################
 ##
 #M  EQ( <dir1>, <dir2> ) . . . . . . . . . . . equality for directory objects
-##  
+##
 InstallMethod( EQ,
    "for two directories",
    [ IsDirectory, IsDirectory ],
@@ -170,7 +170,7 @@ InstallMethod( ExternalFilename, "for a directory list and a string",
 #############################################################################
 ##
 #F  DirectoryContents(<name>)
-## 
+##
 InstallGlobalFunction(DirectoryContents, function(dirname)
   local str;
   if IsDirectory(dirname) then
@@ -224,7 +224,7 @@ end );
 InstallMethod( ReadAsFunction,
     "string",
     [ IsString ],
-    name -> READ_AS_FUNC( UserHomeExpand( name ) ) );  
+    name -> READ_AS_FUNC( UserHomeExpand( name ) ) );
 
 
 #############################################################################
@@ -236,11 +236,13 @@ InstallMethod( ReadAsFunction,
 DeclareUserPreference( rec(
   name:= [ "Editor", "EditorOptions" ],
   description:= [
-    "Determines the editor and options (used by GAP's 'Edit' command).  \
-Under macOS, the value \"open\" for Editor will work. For further options, \
-see the GAP help for 'Edit'.  \
+    "Determines the editor and options (used by &GAP;'s <Ref Func=\"Edit\"/> \
+command).  \
+Under macOS, the value <C>\"open\"</C> for <C>Editor</C> will work. \
+For further options, \
+see the &GAP; help for <Ref Func=\"Edit\"/>.  \
 If you want to use the editor defined in your (shell) environment then \
-leave the 'Editor' and 'EditorOptions' preferences empty."
+leave the <C>Editor</C> and <C>EditorOptions</C> preferences empty."
     ],
   default:= function()    # copied from GAPInfo.READENVPAGEREDITOR
     local str, sp;
@@ -268,7 +270,7 @@ InstallGlobalFunction( Edit, function( name )
         Error( "cannot locate editor `", UserPreference("Editor"),
                           "' (reset via SetUserPreference(\"Editor\", ...))" );
     fi;
-    ret := Process( DirectoryCurrent(), editor, InputTextUser(), 
+    ret := Process( DirectoryCurrent(), editor, InputTextUser(),
                     OutputTextUser(), Concatenation(
                     UserPreference("EditorOptions"), [ name ]) );
     if ret <> 0  then

@@ -19,7 +19,7 @@ although they do not prescribe a compulsory programming style
 Filenames have traditionally &GAP; adhered to the 8+3 convention (to make it
 possible to use the same filenames even on a MS-DOS file system) and been in
 lower case (systems that do not recognize lower case in file names will
-convert them automatically to upper case). It is no longer so important to 
+convert them automatically to upper case). It is no longer so important to
 adhere to these conventions, but at the very least filenames should adhere
 to a 16+5 convention, and be distinct even after identifying upper and lower
 case. Directory names of packages, however, <E>must</E> be in lower case
@@ -61,7 +61,7 @@ files are read.
 Therefore a <C>.gi</C> file usually may use any operation or global function
 (it has been declared before),
 and no care has to be taken towards the order in which the <C>.gi</C> files
-are read. 
+are read.
 
 </Section>
 
@@ -124,7 +124,7 @@ can be used for accessing the code of functions.
 <Heading>Undocumented Variables</Heading>
 
 For several global variables in &GAP;,
-no information is available via the help system 
+no information is available via the help system
 (see Section&nbsp;<Ref Sect="Help" BookName="tut"/>,
 for a quick overview of the help system,
 or Chapter&nbsp;<Ref Chap="The Help System"/>,

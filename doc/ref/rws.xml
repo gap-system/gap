@@ -9,40 +9,40 @@
 <Chapter Label="Rewriting Systems">
 <Heading>Rewriting Systems</Heading>
 
-Rewriting systems in &GAP; are a framework for dealing with 
+Rewriting systems in &GAP; are a framework for dealing with
 the very general task of rewriting elements of a free (or <E>term</E>) algebra
 in some normal form.  Although most rewriting systems currently in use
-are <E>string rewriting systems</E> (where the algebra has only one 
+are <E>string rewriting systems</E> (where the algebra has only one
 binary operation which is associative) the framework in &GAP;
 is general enough to encompass the task of rewriting algebras of
 any signature from groups to semirings.
 <P/>
-Rewriting systems are already implemented in  &GAP; 
-for finitely presented semigroups and for pc groups. The use of these 
+Rewriting systems are already implemented in  &GAP;
+for finitely presented semigroups and for pc groups. The use of these
 particular rewriting systems is described in the corresponding chapters.
-We describe here only the general framework of rewriting systems with 
-a particular emphasis on material which would be 
-helpful for a  developer implementing a rewriting system. 
+We describe here only the general framework of rewriting systems with
+a particular emphasis on material which would be
+helpful for a  developer implementing a rewriting system.
 <P/>
 We fix some definitions and terminology for the rest of this chapter.
-Let <M>T</M> be a term algebra in some signature. 
-A <E>term rewriting system</E> for <M>T</M> is a set of ordered pairs of 
+Let <M>T</M> be a term algebra in some signature.
+A <E>term rewriting system</E> for <M>T</M> is a set of ordered pairs of
 elements of <M>T</M> of the form <M>(l, r)</M>.
-Viewed as a set of relations, the 
+Viewed as a set of relations, the
 rewriting system determines a presentation for a quotient algebra <M>A</M>
-of <M>T</M>. 
+of <M>T</M>.
 <P/>
 When we take into account the fact that
-the relations are expressed as <E>ordered</E> pairs, we have a way of 
+the relations are expressed as <E>ordered</E> pairs, we have a way of
 <E>reducing</E> the elements of <M>T</M>.
-Suppose an element <M>u</M> of <M>T</M> has a 
+Suppose an element <M>u</M> of <M>T</M> has a
 subword <M>l</M> and <M>(l, r)</M> is a rule of the rewriting system, then
 we can replace the subterm <M>l</M> of <M>u</M> by the term <M>r</M>
 and obtain a new word <M>v</M>.
-We say that we have <E>rewritten</E> <M>u</M> as <M>v</M>. 
+We say that we have <E>rewritten</E> <M>u</M> as <M>v</M>.
 Note that <M>u</M> and <M>v</M> represent the same element of <M>A</M>.
 If <M>u</M> cannot be rewritten using any rule of the rewriting system
-we sat that <M>u</M> is <E>reduced</E>. 
+we sat that <M>u</M> is <E>reduced</E>.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
@@ -88,8 +88,8 @@ In this section let <M>u</M> denote an element of the term algebra
 <Oper Name="ReducedZero" Arg='rws'/>
 
 <Description>
-The result of <Ref Oper="ReducedProduct"/> is <M>w</M> where 
-<M>[w]</M> equals [<A>u</A>][<A>v</A>] in <M>A</M> and <M>w</M> 
+The result of <Ref Oper="ReducedProduct"/> is <M>w</M> where
+<M>[w]</M> equals [<A>u</A>][<A>v</A>] in <M>A</M> and <M>w</M>
 is in reduced form.
 <P/>
 The remaining operations are defined similarly when they
@@ -113,7 +113,7 @@ are defined (as determined by the signature of the term algebra).
 <Prop Name="IsBuiltFromGroup" Arg='obj'/>
 
 <Description>
-These properties may be used to identify the type of term algebra 
+These properties may be used to identify the type of term algebra
 over which the rewriting system is defined.
 </Description>
 </ManSection>
@@ -137,18 +137,18 @@ gap> rels:=[f.1*f.2^2/f.3,f.2*f.3^2/f.1,f.3*f.1^2/f.2];;
 gap> g:=f/rels;
 <fp group on the generators [ f1, f2, f3 ]>
 gap> mhom:=IsomorphismFpMonoid(g);
-MappingByFunction( <fp group on the generators 
-[ f1, f2, f3 ]>, <fp monoid on the generators 
-[ f1, f1^-1, f2, f2^-1, f3, f3^-1 
+MappingByFunction( <fp group on the generators
+[ f1, f2, f3 ]>, <fp monoid on the generators
+[ f1, f1^-1, f2, f2^-1, f3, f3^-1
  ]>, function( x ) ... end, function( x ) ... end )
 gap> mon:=Image(mhom);
 <fp monoid on the generators [ f1, f1^-1, f2, f2^-1, f3, f3^-1 ]>
 gap> k:=KnuthBendixRewritingSystem(mon);
-Knuth Bendix Rewriting System for Monoid( 
-[ f1, f1^-1, f2, f2^-1, f3, f3^-1 ] ) with rules 
-[ [ f1*f1^-1, <identity ...> ], [ f1^-1*f1, <identity ...> ], 
-  [ f2*f2^-1, <identity ...> ], [ f2^-1*f2, <identity ...> ], 
-  [ f3*f3^-1, <identity ...> ], [ f3^-1*f3, <identity ...> ], 
+Knuth Bendix Rewriting System for Monoid(
+[ f1, f1^-1, f2, f2^-1, f3, f3^-1 ] ) with rules
+[ [ f1*f1^-1, <identity ...> ], [ f1^-1*f1, <identity ...> ],
+  [ f2*f2^-1, <identity ...> ], [ f2^-1*f2, <identity ...> ],
+  [ f3*f3^-1, <identity ...> ], [ f3^-1*f3, <identity ...> ],
   [ f1*f2^2*f3^-1, <identity ...> ], [ f2*f3^2*f1^-1, <identity ...> ]
     , [ f3*f1^2*f2^-1, <identity ...> ] ]
 gap> MakeConfluent(k);
@@ -179,15 +179,15 @@ f1^-3*f2^-1*f1^2
 gap> r=gpelm;
 true
 gap> CategoriesOfObject(red);
-[ "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement", 
+[ "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement",
   "IsMultiplicativeElementWithOne", "IsAssociativeElement", "IsWord" ]
 gap> CategoriesOfObject(melm);
-[ "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement", 
-  "IsMultiplicativeElementWithOne", "IsAssociativeElement", 
+[ "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement",
+  "IsMultiplicativeElementWithOne", "IsAssociativeElement",
   "IsElementOfFpMonoid" ]
 gap> CategoriesOfObject(gpelm);
-[ "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement", 
-  "IsMultiplicativeElementWithOne", "IsMultiplicativeElementWithInverse", 
+[ "IsExtLElement", "IsExtRElement", "IsMultiplicativeElement",
+  "IsMultiplicativeElementWithOne", "IsMultiplicativeElementWithInverse",
   "IsAssociativeElement", "IsElementOfFpGroup" ]
 ]]></Log>
 <P/>

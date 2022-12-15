@@ -18,25 +18,25 @@
 ##  less than 10^18, and for most primes up to 10^50 or more). A proof
 ##  verifier is included to demonstrate the simplicity of the proofs.
 ##
-##  This file is split into five parts. 
-## 
+##  This file is split into five parts.
+##
 ##  (1) Prerequisites, including efficient IsSquareInt
 ##  routine. Some short tables are also included.
-## 
+##
 ##  (2) The optimized Baillie-Pomerance-Selfridge-Wagstaff
 ##  pseudoprimality test with subtests properly labelled and explained,
 ##  and bounds given at a more precise level.
-## 
+##
 ##  (3) The primality proof production code, which finds a machine
 ##  verifiable proof for the primality of a (probable) prime. It is
 ##  based on the paper Brillhart, Lehmer, Selfridge's "New Primality
 ##  Criteria and Factorizations of 2^m +-1", 1975, hereafter referred
 ##  to as BLS1975. This paper is available on JSTOR and is very clearly
 ##  written.
-## 
+##
 ##  (4) The primality proof verifier, which detects if the proposed
 ##  proof in fact satisfies the conditions of one of the results in BLS1975.
-## 
+##
 ##  (5) A pretty interface to GAP, with result caching and warnings in
 ##  the rare event IsPrimeInt is unable to prove primality.
 ##
@@ -58,17 +58,17 @@
 #T  is a difficult task. Another test, the APRCL, might also be suitable.
 #T  However, verification of its certificates is extremely complex and
 #T  some experts warn "the probability of an implementation error in the
-#T  verification routine is much higher than the probability that a 
+#T  verification routine is much higher than the probability that a
 #T  composite BPSW is found". GAP does have rudimentary support for the
 #T  needed algebraic structures, but initial testing shows the overhead
 #T  of arithmetic in these rings is an insurmountable obstacle for N in
 #T  in the appropriate range.
 #T
 #T  (4) Direct interface to PARI-lib. For a number of reasons, it might
-#T  be advantageous to allow use of PARI from within GAP. 
+#T  be advantageous to allow use of PARI from within GAP.
 ##
 ##  Testing: All primes < 10^7 tested. All 236021 "Brent factors" tested,
-##  but two such primes could not be proven prime (1.8*10^104 and 3.2*10^86). 
+##  but two such primes could not be proven prime (1.8*10^104 and 3.2*10^86).
 ##
 ##############################################################################
 
@@ -86,7 +86,7 @@
 ##
 ##  Tables - We define a table
 ##  CompositeSPP2 which contains a list of
-##  the composite numbers < 10^7 that are strong pseudoprimes for 
+##  the composite numbers < 10^7 that are strong pseudoprimes for
 ##  base 2, and that have no prime factors < 1000.
 ##
 ##############################################################################
@@ -113,7 +113,7 @@ if IsHPCGAP then
 fi;
 
 ##############################################################################
-## 
+##
 #F  IsSquareInt - Check if an integer is a square
 ##
 ##  Simple implementation based on the ideas in Cohen's CCANT, Algorithm 1.7.3.
@@ -160,7 +160,7 @@ InstallGlobalFunction(IsSquareInt,CCANT_1_7_3);
 
 ##############################################################################
 ##
-#F  LucasMod(P,Q,N,k) - return the reduction modulo N of the k'th terms of 
+#F  LucasMod(P,Q,N,k) - return the reduction modulo N of the k'th terms of
 ##  the Lucas Sequences U,V associated to x^2+Px+Q.
 ##
 ##  Iterative version allows larger k (better=constant in N) memory use and
@@ -168,7 +168,7 @@ InstallGlobalFunction(IsSquareInt,CCANT_1_7_3);
 ##  should be callable for k around 2^100000 or so (runtime is log(k)), but
 ##  the size of N is the biggest concern.
 ##
-InstallMethod(LucasMod, 
+InstallMethod(LucasMod,
 "iterative method",
 [IsInt,IsInt,IsInt,IsInt],
 1,
@@ -277,8 +277,8 @@ end);
 
 ##############################################################################
 ##
-#F  IsBPSWLucasPseudoPrime(N) - Check if N is a Lucas pseudoprime for 
-##  x^2+P*x+1 where P is the smallest positive integer such that P^2 - 4 is 
+#F  IsBPSWLucasPseudoPrime(N) - Check if N is a Lucas pseudoprime for
+##  x^2+P*x+1 where P is the smallest positive integer such that P^2 - 4 is
 ##  not a square mod N. N should be odd. N should be prime or greater
 ##  than 100.
 ##
@@ -304,7 +304,7 @@ end);
 
 #BPSWLucasParameters_PSW1980_A := function(N)
 #  local D,o;
-#  D:=5; o:=1; 
+#  D:=5; o:=1;
 #  while Jacobi(D,N) <> -1 do D:=(-D-2*o) mod N; o:=-o; od;
 #  return [D,1,(1-D)/4 mod N];
 #end;
@@ -319,7 +319,7 @@ end);
 #end;
 #BPSWLucasParameters_BW1980_Astar := function(N)
 #  local D,o;
-#  D:=5; o:=1; 
+#  D:=5; o:=1;
 #  while Jacobi(D,N) <> -1 do D:=(-D-2*o) mod N; o:=-o; od;
 #  if (1-D)/4 mod N in [1,N-1] then return [5,5,5]; fi;
 #  return [D,1,(1-D)/4 mod N];
@@ -352,12 +352,12 @@ end);
 #  local params, func, lucas;
 #  if N = 2 then return true; fi;
 #  if IsSquareInt(N) or IsEvenInt(N) then return false; fi;
-#  if ValueOption("BPSWLucasParameters") = fail 
+#  if ValueOption("BPSWLucasParameters") = fail
 #  then func:=BPSWLucasParameters_GAP;
 #  else func:=ValueOption("BPSWLucasParameters");
 #  fi;
-#  if ValueOption("BPSWLucasTest") = fail then 
-#    if func = BPSWLucasParameters_GAP 
+#  if ValueOption("BPSWLucasTest") = fail then
+#    if func = BPSWLucasParameters_GAP
 #    then lucas:=function(N,D,P) return TraceModQF(P,N+1,N) = [2,P]; end;
 #    else lucas:=IsLucasPseudoPrimeDP;
 #    fi;
@@ -370,7 +370,7 @@ end);
 
 ##############################################################################
 ##
-#F  IsLucasPseudoPrimeDP(N,D,P) - Check if N is a Lucas pseudoprime for 
+#F  IsLucasPseudoPrimeDP(N,D,P) - Check if N is a Lucas pseudoprime for
 ##  x^2+P*x+(P^2-D)/4. D must be a nonsquare mod N, and N must be odd or prime.
 ##
 ##############################################################################
@@ -385,7 +385,7 @@ end);
 
 ##############################################################################
 ##
-#F  IsStrongLucasPseudoPrimeDP(N,D,P) - Check if N is a strong Lucas 
+#F  IsStrongLucasPseudoPrimeDP(N,D,P) - Check if N is a strong Lucas
 ##  pseudoprime for x^2+P*x+(P^2-D)/4. N must be odd or prime.
 ##
 ##############################################################################
@@ -431,13 +431,13 @@ function(n)
   # 1h: A composite number with no factors < 103 must itself be >= 103^2
   n := AbsInt(n);
   if n < 1000 then return n in Primes;
-  elif 0 = n mod 2 then return false; 
+  elif 0 = n mod 2 then return false;
   elif 1<>GcdInt(n,257041785) then return false; # 3*5*7*11*13*17*19*53
   elif 1<>GcdInt(n, 11559991) then return false; # 83*79*43*41
   elif 1<>GcdInt(n,259860509) then return false; # 89*73*47*37*23
   elif 1<>GcdInt(n, 12596323) then return false; # 97*71*59*31
   elif 1<>GcdInt(n, 11970823) then return false; # 101*67*61*29
-  elif n < 10609 then return true; 
+  elif n < 10609 then return true;
   fi;
 
   # Step 2 handle n with prime factors < 1000
@@ -452,15 +452,15 @@ function(n)
 119620471154579797706399078932717575475133487349361392344929340\
 84356041841547537781640044258066541550710400764797315999285813)
   then return false;
-  elif n < 1018081 then return true; 
+  elif n < 1018081 then return true;
   fi;
 
   # Step 3 check if strong pseudo-prime base 2
   # 3a: check for strong pseudo-prime base
-  # 3b: the composite pseudo-primes base 2 less than 10^7 with no 
+  # 3b: the composite pseudo-primes base 2 less than 10^7 with no
   # factors < 1000 are listed in CompositeSPP2
-  if not IsStrongPseudoPrimeBaseA(n,2) then return false; 
-  elif n < 10^7 then return not n in CompositeSPP2; 
+  if not IsStrongPseudoPrimeBaseA(n,2) then return false;
+  elif n < 10^7 then return not n in CompositeSPP2;
   fi;
 
   # Step 4 Check for Lucas pseudo prime
@@ -494,7 +494,7 @@ BindGlobal("BPSW_ProvedBound", 2^64);
 ##  Theorem 21 has the widest theoretical use. In short, if one factors
 ##  the odd parts of N+-1 into E,F (possibly composite) factors each of
 ##  which has no prime divisors less than B and into various smaller prime
-##  factors, and if N < B^(E+F+Max(E,F)), then Fermat and Lucas witnesses 
+##  factors, and if N < B^(E+F+Max(E,F)), then Fermat and Lucas witnesses
 ##  for those factors suffice to prove primality. In particular, if N < B^3,
 ##  then we will succeed in our proof production. Currently GAP's FactorsInt
 ##  gives us a value of B=10^6, and applicability for N < 10^18.
@@ -517,7 +517,7 @@ function(N,p)
   while true do
     b:=PowerModInt(a,Np,N);
     if(1<>b) then break; fi;
-    a:=a+1; 
+    a:=a+1;
     if(a=N) then return [fail]; fi;
   od;
   c:=PowerModInt(b,p,N);
@@ -547,7 +547,7 @@ function(N,D,K)
   while true do
     if 0 <> LucasMod(P,Q,N,N+1)[1] then return [false,P,Q]; fi;
     g:=GcdInt(N, LucasMod(P,Q,N,(N+1)/K)[1]);
-    if 1<g and g<N then return [false,g]; 
+    if 1<g and g<N then return [false,g];
     elif 1=g then return [true,P];
     fi;
     Q:=(Q+P+1) mod N;
@@ -559,7 +559,7 @@ end);
 
 ##############################################################################
 ##
-#F  PrimalityProof_FindStructure(N) - Find divisors of N+-1 which can be 
+#F  PrimalityProof_FindStructure(N) - Find divisors of N+-1 which can be
 ##  used to prove primality of N based on the ideas in BLS1975.
 ##
 ##  The return value is a list of pairs [T,div] where T is the name of a test
@@ -602,7 +602,7 @@ function(N)
   R1:=Product(factorsm[2]);
 
   # BLS1975 Cor1
-  if F1 > sqrtN then 
+  if F1 > sqrtN then
     F1:=1;
     to_check:=[];
     for p in Reversed(F1s) do
@@ -612,7 +612,7 @@ function(N)
     od;
     return List(to_check,p->["F",p]);
   # BLS1975 Cor3
-  elif B*F1 > sqrtN then 
+  elif B*F1 > sqrtN then
     to_check:=F1s;
     AddSet(to_check,R1);
     return List(to_check,p->["F",p]);
@@ -620,12 +620,12 @@ function(N)
   s:=QuoInt(R1,2*F1);
   r:=2*F1*s-R1;
   # BLS1975 Th7
-  if N < (B*F1+1)*(2*F1^2+(r-B)*F1+1) and (s=0 or not IsSquareInt(r^2-8*s)) then 
+  if N < (B*F1+1)*(2*F1^2+(r-B)*F1+1) and (s=0 or not IsSquareInt(r^2-8*s)) then
     to_check:=F1s;
     AddSet(to_check,R1);
     return List(to_check,p->["F",p]);
   fi;
-  
+
   factorsp:=Factors(N+1 : cheap:=cheap, FactIntPartial:=FactIntPartial);
   if not IsList(factorsp[1]) then
     factorsp:=[factorsp,[1]];
@@ -635,7 +635,7 @@ function(N)
   R2:=Product(factorsp[2]);
 
   # BLS1975 Cor8
-  if F2 > sqrtN + 1 then 
+  if F2 > sqrtN + 1 then
     F2:=1;
     to_check:=[];
     for p in Reversed(F2s) do
@@ -645,7 +645,7 @@ function(N)
     od;
     return List(to_check,p->["L",p]);
   # BLS1975 Cor3
-  elif B*F2 > sqrtN then 
+  elif B*F2 > sqrtN then
     to_check:=F2s;
     AddSet(to_check,R2);
     return List(to_check,p->["L",p]);
@@ -672,8 +672,8 @@ end);
 ##############################################################################
 ##
 #F  PrimalityProof(N) - Construct a machine verifiable proof of the primality
-##  of (the probable prime) N, following the ideas of the paper Brillhart, 
-##  Lehmer, Selfridge's "New Primality Criteria and Factorizations of 2^m +-1", 
+##  of (the probable prime) N, following the ideas of the paper Brillhart,
+##  Lehmer, Selfridge's "New Primality Criteria and Factorizations of 2^m +-1",
 ##  1975.
 ##
 ##############################################################################
@@ -690,18 +690,18 @@ function(N)
 
   if(ForAny(factors,p->p[1]="L")) then
     D:=1;
-    repeat 
-      D:=(D+1) mod N; 
+    repeat
+      D:=(D+1) mod N;
       if(D=0) then Error(); return fail; fi;
-      J:=Jacobi(D,N); 
-      if(J=0) then Error(); return false; fi; 
+      J:=Jacobi(D,N);
+      if(J=0) then Error(); return false; fi;
     until J=-1;
   fi;
   certs:=[];
   for p in factors do
-    if p[1]="F" then 
+    if p[1]="F" then
       ret:=PrimalityProof_FindFermat(N,p[2]);
-      if(ret[1]=fail) then 
+      if(ret[1]=fail) then
         Print("\n\n");
         Print("# !!! Please email support@gap-system.org the following:\n");
         Print("# !!! PrimalityProof(",HexStringInt(N),") failed at F",p[2],"\n\n\n");
@@ -720,7 +720,7 @@ function(N)
       fi;
     elif p[1]="L" then
       ret:=PrimalityProof_FindLucas(N,D,p[2]);
-      if(ret[1]=fail) then 
+      if(ret[1]=fail) then
         Print("\n\n");
         Print("# !!! Please email support@gap-system.org the following:\n");
         Print("# !!! PrimalityProof(",HexStringInt(N),") failed at L",p[2],"\n\n\n");
@@ -729,7 +729,7 @@ function(N)
       elif(ret[1]=false) then
         if 0 = N mod ret[2] and 1<ret[2] and ret[2]<N
         then Error("# PrimalityProof: ",N," is composite (divisible by ",ret[2],").");
-        elif 0 <> LucasMod(ret[2],ret[3],N,N-1)[1] mod N 
+        elif 0 <> LucasMod(ret[2],ret[3],N,N-1)[1] mod N
         then Error("# PrimalityProof: ",N," is composite (Lucas(",ret[2],",",ret[3],",N-1) mod N is not 0).");
         else Error("# PrimalityProof: unknown error. N is supposedly composite.");
         fi;
@@ -770,7 +770,7 @@ function(N,witness)
   if( type = "F" ) then
     divisor := witness[2];
     base := witness[3];
-    return IsStrongPseudoPrimeBaseA(N,base) and 
+    return IsStrongPseudoPrimeBaseA(N,base) and
       GcdInt( PowerModInt(base,(N-1)/divisor,N)-1, N) = 1;
   elif( type = "L" ) then
     divisor := witness[2];
@@ -838,20 +838,20 @@ function(N,witnesses)
     while B1 < MaxB and N >= (B1*F1)^2 do B1:=B1+1; od;
 
     if B1 < MaxB and N < (B1*F1)^2
-    then GotOne([ true, "BLS1975-Co3", [], B1, R1s]); 
+    then GotOne([ true, "BLS1975-Co3", [], B1, R1s]);
     fi;
 
     # Check Th7, solving for B1
     s:=QuoInt(R1,2*F1);
     r:=R1-2*F1*s;
-    # Want B1 large so that N>= (B1*F1+1)*(2*F1^2+(r-B1)*F1+1) 
+    # Want B1 large so that N>= (B1*F1+1)*(2*F1^2+(r-B1)*F1+1)
     B1 := QuadraticEstimate( -F1^2, 2*F1^3 + r*F1^2, 2*F1^2+r*F1+1-N);
     #B1 := Int(N/(F1+1)/(2*F1^2+r*F1+1));
-    while B1 < MaxB and 2*F1^2+(r-B1)*F1+1 > 0 and 
-      N >= (B1*F1+1)*(2*F1^2+(r-B1)*F1+1) 
+    while B1 < MaxB and 2*F1^2+(r-B1)*F1+1 > 0 and
+      N >= (B1*F1+1)*(2*F1^2+(r-B1)*F1+1)
     do B1:=B1+1; od;
 
-    if B1 < MaxB and N < (B1*F1+1)*(2*F1^2+(r-B1)*F1+1) 
+    if B1 < MaxB and N < (B1*F1+1)*(2*F1^2+(r-B1)*F1+1)
     then GotOne([ 0=s or not IsSquareInt(r^2-8*s), "BLS1975-Th7", [], B1, R1s ]);
     fi;
   fi;
@@ -868,7 +868,7 @@ function(N,witnesses)
     while B2 < MaxB and (B2*F2-1)^2 <= N do B2:=B2+1; od;
 
     if B2 < MaxB and N < (B2*F2-1)^2
-    then GotOne([ true, "BLS1975-Co10", [], B2, R2s ]); 
+    then GotOne([ true, "BLS1975-Co10", [], B2, R2s ]);
     fi;
 
     # Check Th19
@@ -876,9 +876,9 @@ function(N,witnesses)
     r:=R2-2*F2;
     # Want large B2 such that (B2*F2-1)*(2*F2^2 + (B2-|r|)*F2 +1) <= N
     B2:=QuadraticEstimate(F2^2,
-      2*F2^3-F2^2*AbsInt(r), 
+      2*F2^3-F2^2*AbsInt(r),
       F2*AbsInt(r) - 2*F2^2 - 1 - N);
-    while B2 < MaxB and (B2*F2-1)*(2*F2^2 + (B2-AbsInt(r))*F2 +1) <= N 
+    while B2 < MaxB and (B2*F2-1)*(2*F2^2 + (B2-AbsInt(r))*F2 +1) <= N
     do B2:=B2+1; od;
 
     if B2 < MaxB and N < (B2*F2-1)*(2*F2^2 + (B2-AbsInt(r))*F2 +1)
@@ -905,14 +905,14 @@ function(N,witnesses)
 
     BF := Sum(Fs,p->Valuation(N-1,p));
     BL := Sum(Ls,p->Valuation(N+1,p));
-    B1 := RootInt(N,BF+BL+Maximum(BF,BL)); 
-    while B1 < MaxB and N >= Maximum(B1^BF+1, B1^BL-1)*(B1^BF*B1^BL/2+1) 
+    B1 := RootInt(N,BF+BL+Maximum(BF,BL));
+    while B1 < MaxB and N >= Maximum(B1^BF+1, B1^BL-1)*(B1^BF*B1^BL/2+1)
     do B1:=B1+1; od;
 
     if B1 < MaxB and N < Maximum(B1^BF+1,B1^BL-1)*(B1^BF*B1^BL/2 + 1)
       and ForAll(Combinations(Fs,2),x->GcdInt(x[1],x[2])=1)
       and ForAll(Combinations(Ls,2),x->GcdInt(x[1],x[2])=1)
-    then GotOne( [true, "BLS1975-Th21", [], B1, 
+    then GotOne( [true, "BLS1975-Th21", [], B1,
       Set(Concatenation( R1s,R2s))]);
     fi;
   fi;
@@ -1000,7 +1000,7 @@ end);
 ##  calling the optimized BPSW test instead of the current GAP default.
 ##
 ##  The option "RabinMillerTrials" may be passed to force additional
-##  probabilistic tests to be run for larger N. The cost can be quite 
+##  probabilistic tests to be run for larger N. The cost can be quite
 ##  significant for large N.
 ##
 ##############################################################################
@@ -1018,14 +1018,14 @@ function(N)
   # Otherwise give a dose of Rabin-Miller
   else
     RabinMillerTrials := ValueOption("RabinMillerTrials");
-    if RabinMillerTrials = fail then 
+    if RabinMillerTrials = fail then
       RabinMillerTrials:=0;
       # RabinMillerTrials:= RootInt(Maximum(0,LogInt(N,10)-13));
-    elif IsFunction(RabinMillerTrials) then 
+    elif IsFunction(RabinMillerTrials) then
       RabinMillerTrials:=RabinMillerTrials(N);
     fi;
     if ForAll([1..RabinMillerTrials],i->
-      IsStrongPseudoPrimeBaseA(N,Random(3,N-1))) 
+      IsStrongPseudoPrimeBaseA(N,Random(3,N-1)))
     then
       AddSet(ProbablePrimes2,N);
       return true;

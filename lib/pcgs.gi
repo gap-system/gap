@@ -17,7 +17,7 @@
 ##
 InstallGlobalFunction( PcgsByIndependentGeneratorsOfAbelianGroup, function( A )
     local   pcgs,  pcs,  rel,  gen,  f;
-    
+
     pcs := [  ];
     rel := [  ];
     for gen  in IndependentGeneratorsOfAbelianGroup( A )  do
@@ -238,7 +238,7 @@ end );
 ##
 #M RefinedPcGroup( <G> )
 ##
-InstallMethod( RefinedPcGroup, 
+InstallMethod( RefinedPcGroup,
                "group with refined pcgs", true, [IsPcGroup], 0,
 function( G )
   return Range(IsomorphismRefinedPcGroup(G));
@@ -248,7 +248,7 @@ end);
 ##
 #M IsomorphismRefinedPcGroup( <G> )
 ##
-InstallMethod( IsomorphismRefinedPcGroup, 
+InstallMethod( IsomorphismRefinedPcGroup,
                "group with refined pcgs", true, [IsPcGroup], 0,
 function( G )
     local word, expo, pcgs, rels, new, ord, i, facs, g, f, n, F, gens,
@@ -301,20 +301,20 @@ function( G )
     rela := [];
 
     for i in [1..n] do
- 
-        # the power 
+
+        # the power
         w := gens[i]^ord[i];
         t := expo( pcgs, new[i]^ord[i], map );
         t := word( t, gens, One(F) );
-        Add( rela, w/t );    
- 
+        Add( rela, w/t );
+
         for j in [i+1..n] do
-            
+
             # the commutator
             w := Comm( gens[i], gens[j] );
             t := expo( pcgs, Comm( new[i], new[j] ), map );
             t := word( t, gens, One(F) );
-            Add( rela, w/t );    
+            Add( rela, w/t );
         od;
     od;
 
@@ -549,7 +549,7 @@ local i,ro;
     fi;
     ro:=RelativeOrders(arg[1]);
     for i in [1..Length(ro)] do
-      if ro[i]<>0 and IsRat(arg[2][i]) 
+      if ro[i]<>0 and IsRat(arg[2][i])
 	 and (arg[2][i]<0 or arg[2][i]>=ro[i]) then
         Error("Exponent out of range!");
       fi;
@@ -631,7 +631,7 @@ local elm,i,a;
     fi;
   od;
 
-  if elm=fail then 
+  if elm=fail then
     if IsPcgs(pcgs) then
       return OneOfPcgs(pcgs);
     else
@@ -662,7 +662,7 @@ end);
 InstallOtherMethod( PcElementByExponentsNC,
     "generic method: call LinearCombinationPcgs",
     true,
-    [ IsList, IsRowVector and IsCyclotomicCollection ], 0, 
+    [ IsList, IsRowVector and IsCyclotomicCollection ], 0,
 function(pcgs,list)
   return DoPcElementByExponentsGeneric(pcgs,pcgs,list);
 end);
@@ -709,14 +709,14 @@ InstallOtherMethod( PcElementByExponentsNC,"multiply base elts., FFE",
 #M  PcElementByExponentsNC( <pcgs>, <basisindex>, <list> )
 ##
 InstallOtherMethod( PcElementByExponentsNC,"index: defer to basis", true,
-  [ IsModuloPcgs, IsRowVector and IsCyclotomicCollection, 
+  [ IsModuloPcgs, IsRowVector and IsCyclotomicCollection,
     IsRowVector and IsFFECollection ], 0,
 function( pcgs, ind, list )
   return DoPcElementByExponentsGeneric(pcgs,pcgs{ind},list);
 end);
 
 InstallOtherMethod( PcElementByExponentsNC,"index: defer to basis,FFE",true,
-  [ IsModuloPcgs, IsRowVector and IsCyclotomicCollection, 
+  [ IsModuloPcgs, IsRowVector and IsCyclotomicCollection,
     IsRowVector and IsCyclotomicCollection ], 0,
 function( pcgs, ind, list )
   return DoPcElementByExponentsGeneric(pcgs,pcgs{ind},list);
@@ -887,7 +887,7 @@ InstallMethod( ExtendedIntersectionSumPcgs,
     #function(a,b,c) return IsIdenticalObj(a,b) and IsIdenticalObj(a,c); end,
     [ IsPcgs and IsPrimeOrdersPcgs, IsList, IsList, IsObject ], 0,
 function( pcgs, n, u, pcgsM )
-    local   id,  G,  ls,  rs,  is,  g,  z,  I,  ros,  al,  ar,  tmp,  
+    local   id,  G,  ls,  rs,  is,  g,  z,  I,  ros,  al,  ar,  tmp,
             sum,  int;
 
     # set up
@@ -927,7 +927,7 @@ function( pcgs, n, u, pcgsM )
 	  if DepthOfPcElement(pcgs,al)>=pcgsM then
 	    al:=id;
 	  fi;
-        elif not IsBool( pcgsM ) then 
+        elif not IsBool( pcgsM ) then
             al := SiftedPcElement( pcgsM, al );
         fi;
         z  := DepthOfPcElement( pcgs, al );
@@ -942,7 +942,7 @@ function( pcgs, n, u, pcgsM )
 	      if DepthOfPcElement(pcgs,al)>=pcgsM then
 		al:=id;
 	      fi;
-	    elif not IsBool( pcgsM ) then 
+	    elif not IsBool( pcgsM ) then
                 al := SiftedPcElement( pcgsM, al );
             fi;
             ar := LeftQuotient( rs[z]^tmp, ar );
@@ -961,7 +961,7 @@ function( pcgs, n, u, pcgsM )
 		  if DepthOfPcElement(pcgs,ar)>=pcgsM then
 		    ar:=id;
 		  fi;
-		elif not IsBool( pcgsM ) then 
+		elif not IsBool( pcgsM ) then
                     ar := SiftedPcElement( pcgsM, ar );
                 fi;
                 z  := DepthOfPcElement( pcgs, ar );
@@ -980,7 +980,7 @@ function( pcgs, n, u, pcgsM )
     #                    Filtered( is, x -> x <> id ) );
     sum := Filtered( ls, x -> x <> id );
     int := Filtered( is, x -> x <> id );
-   
+
     return rec(
         leftSide     := ls,
         rightSide    := rs,
@@ -997,7 +997,7 @@ InstallMethod( IntersectionSumPcgs,
     "using 'ExtendedIntersectionSumPcgs'",
     function(a,b,c) return IsIdenticalObj(a,b) and IsIdenticalObj(a,c); end,
     [ IsPcgs and IsPrimeOrdersPcgs, IsList, IsList ], 0,
-function( pcgs, n, u ) 
+function( pcgs, n, u )
 local e;
   e:=ExtendedIntersectionSumPcgs(pcgs, n, u, true);
   e.sum:=InducedPcgsByPcSequenceNC(pcgs,e.sum);
@@ -1304,7 +1304,7 @@ InstallMethod( \[\],"enum-by-pcgs",
 
 function( enum, pos )
     local   pcgs,  elm,  i,  p;
-    
+
     pcgs := enum!.pcgs;
     elm  := OneOfPcgs( pcgs );
     pos  := pos - 1;
@@ -1361,7 +1361,7 @@ InstallMethod( PositionCanonical,"enum-by-pcgs",
 function( enum, elm )
     local   pcgs,  exp,  pos,  i;
 
-    
+
     pcgs := enum!.pcgs;
     if not elm in GroupOfPcgs (pcgs) then
        return fail;
@@ -1447,7 +1447,7 @@ InstallPcgsSeriesFromIndices:=function(series,indices)
     return PcSeries(pcgs){indices(pcgs)};
   end);
 
-  # workaround for old code 
+  # workaround for old code
   InstallMethod(series,"compatibility only",true,
     [IsPcgs and HasIndicesNormalSteps],
      {} -> -RankFilter(HasIndicesNormalSteps),
@@ -1539,7 +1539,7 @@ local pcgs,rel,gp,i,indp,inds,module,sub;
     if rel[ind[i-1]]^(ind[i]-ind[i-1])>bound then
       # too large, try to find submodule
       indp:=InducedPcgsByPcSequenceNC(pcgs,pcgs{[ind[i-1]..Length(pcgs)]});
-      inds:=indp 
+      inds:=indp
         mod InducedPcgsByPcSequenceNC(pcgs,pcgs{[ind[i]..Length(pcgs)]});
       module:=GModuleByMats(LinearActionLayer(gp,inds),GF(rel[ind[i-1]]));
       if not MTX.IsIrreducible(module) then
@@ -1597,7 +1597,7 @@ local u, n, o, j, i, d, ro, n2, ea, ran;
 	  i:=i+1;
 	od;
 	j:=j-1;
-      until j<o; 
+      until j<o;
       # we've found another normal step
       Add(n,o);
       o:=j;
@@ -1721,7 +1721,7 @@ end);
 ##
 #M  PcgsElementaryAbelianSeries( <G> )
 ##
-InstallMethod( PcgsElementaryAbelianSeries, "generic group", true, [ IsGroup ], 
+InstallMethod( PcgsElementaryAbelianSeries, "generic group", true, [ IsGroup ],
   1, # rank higher than package method to make behavior more predictable
   DoPcgsElementaryAbelianSeries);
 
@@ -1744,7 +1744,7 @@ InstallGlobalFunction(PcgsByPcgs,function(gens,use,family,images)
 local pcgs;
 
   pcgs:=PcgsByPcSequenceCons(IsPcgsDefaultRep,
-    IsPcgsByPcgsRep and IsPcgs and IsPrimeOrdersPcgs, 
+    IsPcgsByPcgsRep and IsPcgs and IsPrimeOrdersPcgs,
     FamilyObj(gens[1]),gens,[]);
   pcgs!.usePcgs:=use;
   pcgs!.shadowFamilyPcgs:=family;

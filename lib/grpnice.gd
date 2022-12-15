@@ -313,7 +313,7 @@ BindGlobal( "AttributeMethodByNiceMonomorphismCollElm", function( oper, par )
             local   nice,img;
 	    nice:=NiceMonomorphism(obj1);
             img := ImagesRepresentative( nice, obj2:actioncanfail:=true );
-            if img = fail or 
+            if img = fail or
 	      not (img in ImagesSource(nice) and
 		PreImagesRepresentative(nice,img)=obj2) then
                 TryNextMethod();
@@ -352,7 +352,7 @@ BindGlobal( "AttributeMethodByNiceMonomorphismElmColl", function( oper, par )
             local   nice,img;
 	    nice:=NiceMonomorphism(obj2);
             img := ImagesRepresentative( nice, obj1 );
-            if img = fail or 
+            if img = fail or
 	      not (img in ImagesSource(nice) and
 		PreImagesRepresentative(nice,img)=obj1) then
                 TryNextMethod();
@@ -494,7 +494,7 @@ BindGlobal( "GroupMethodByNiceMonomorphismCollElm", function( oper, par )
             local   nice,  img,  img1;
             nice := NiceMonomorphism(obj1);
             img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
-            if img = fail or 
+            if img = fail or
 	      not (img in ImagesSource(nice) and
 		PreImagesRepresentative(nice,img)=obj2) then
                 TryNextMethod();
@@ -653,7 +653,7 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollColl", function( oper, par )
             fi;
             nice := NiceMonomorphism(obj1);
 	    img:=ImagesSet(nice,obj2);
-            if img = fail or 
+            if img = fail or
 	      not (IsSubset(ImagesSource(nice),img) and
 		PreImagesSet(nice,img)=obj2) then
                 TryNextMethod();
@@ -696,7 +696,7 @@ BindGlobal( "SubgroupMethodByNiceMonomorphismCollElm", function( oper, par )
             local   nice,  img,  img1,  sub;
             nice := NiceMonomorphism(obj1);
             img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
-            if img = fail or 
+            if img = fail or
 	      not (img in ImagesSource(nice) and
 		PreImagesRepresentative(nice,img)=obj2) then
                 TryNextMethod();
@@ -921,7 +921,7 @@ BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollElm",
             local   nice,  img,  list,  i;
             nice := NiceMonomorphism(obj1);
             img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
-            if img = fail or 
+            if img = fail or
 	      not (img in ImagesSource(nice) and
 		PreImagesRepresentative(nice,img)=obj2) then
                 TryNextMethod();

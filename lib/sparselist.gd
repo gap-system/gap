@@ -25,9 +25,9 @@
 ##
 ##  The second entry is a dense duplicate-free list of integers
 ##  between  1 and Length(<list>) inclusive, representing the
-##  positions where non-default entries may appear. 
+##  positions where non-default entries may appear.
 ##
-##  The third entry is a list not longer than the second entry, giving 
+##  The third entry is a list not longer than the second entry, giving
 ##  the values that appear in the positions given in the second
 ##  entry. Holes in this list represent holes in the original list.
 ##
@@ -45,7 +45,7 @@ DeclareOperation( "SparseStructureOfList", [IsList]);
 ##  sparse methods should be used.
 ##
 ##  The filter is ranked up so that sparse list methods will beat
-##  competing methods for finite, homogenous, etc. lists, which is
+##  competing methods for finite, homogeneous, etc. lists, which is
 ##  usually right
 ##
 
@@ -70,11 +70,11 @@ DeclareGlobalFunction( "SparseListBySortedListNC");
 
 #############################################################################
 ##
-#P IsSparseRowVector( <sl> ) 
+#P IsSparseRowVector( <sl> )
 ##
-##  A sparse list is a sparse row vector if it is dense and its default value 
+##  A sparse list is a sparse row vector if it is dense and its default value
 ##  is a common Zero of all its non-default values
-##  
+##
 
 DeclareProperty( "IsSparseRowVector", IsSparseList);
 InstallTrueMethod( IsRowVector, IsSparseRowVector );

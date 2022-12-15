@@ -8,11 +8,11 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file deals with settings for the low-level macfloats 
+##  This file deals with settings for the low-level macfloats
 ##
 
 #############################################################################
-DeclareRepresentation("IsIEEE754FloatRep", IsRealFloat and IsInternalRep 
+DeclareRepresentation("IsIEEE754FloatRep", IsRealFloat and IsInternalRep
         #and IS_MACFLOAT
         ,[]);
 

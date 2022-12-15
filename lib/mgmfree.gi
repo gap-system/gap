@@ -79,7 +79,7 @@ InstallMethod( IsWholeFamily,
 ##      \leq \sum_{i=1}^l N^i \cdot C(i-1)$;
 ##  if we set $M' = M - \sum_{i=1}^{l-1} N^i \cdot C(i-1)$ then
 ##  $q = (M'-1) \bmod C(l-1)$ and $p = (M'-q-1 ) / C(l-1)$.
-##  
+##
 BindGlobal( "ShiftedCatalan", MemoizePosIntFunction(
 function( n )
     return Binomial( 2*n-2, n-1 ) / n;
@@ -186,7 +186,7 @@ InstallMethod( Enumerator,
                NumberElement := NumberElement_FreeMagma,
 
                family       := ElementsFamily( FamilyObj( M ) ),
-               nrgenerators := Length( ElementsFamily( 
+               nrgenerators := Length( ElementsFamily(
                                            FamilyObj( M ) )!.names ) ) );
     end );
 
@@ -578,10 +578,10 @@ end );
 
 
 #############################################################################
-##                                               
+##
 #M  \.( <F>, <n> )  . . . . . . . . . .  access to generators of a free magma
 #M  \.( <F>, <n> )  . . . . . . access to generators of a free magma-with-one
-##                                            
+##
 InstallAccessToGenerators( IsMagma and IsWordCollection and IsWholeFamily,
                            "free magma containing the whole family",
                            GeneratorsOfMagma );

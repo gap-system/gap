@@ -181,13 +181,13 @@ static Obj EvalAnd(Expr expr)
         opR = EVAL_EXPR( tmp );
         return NewAndFilter(opL, opR);
     }
-    
+
     /* signal an error                                                     */
     else {
         RequireArgumentEx(0, opL, "<expr>",
                           "must be 'true' or 'false' or a filter");
     }
-    
+
     /* please 'lint'                                                       */
     return 0;
 }
@@ -1019,13 +1019,13 @@ static Obj EvalFloatExprLazy(Expr expr)
     UInt                 ix;
     Obj cache= 0;
     Obj fl;
-    
+
     /* This code is safe for threads trying to create or update the
      * cache concurrently in that it won't crash, but may occasionally
      * result in evaluating a floating point literal twice.
      */
     ix = READ_EXPR(expr, 0);
-    if (ix && (!MAX_FLOAT_LITERAL_CACHE_SIZE || 
+    if (ix && (!MAX_FLOAT_LITERAL_CACHE_SIZE ||
                MAX_FLOAT_LITERAL_CACHE_SIZE == INTOBJ_INT(0) ||
                ix <= INT_INTOBJ(MAX_FLOAT_LITERAL_CACHE_SIZE))) {
       cache = FLOAT_LITERAL_CACHE;
@@ -1275,19 +1275,19 @@ static void PrintNot(Expr expr)
 
     oldPrec = PrintPrecedence;
     PrintPrecedence = 6;
-    
+
     /* if necessary print the opening parenthesis                          */
     if ( oldPrec >= PrintPrecedence ) Pr("%>(%>", 0, 0);
     else Pr("%2>", 0, 0);
-    
+
     Pr("not%> ", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
     Pr("%<", 0, 0);
-    
+
     /* if necessary print the closing parenthesis                          */
     if ( oldPrec >= PrintPrecedence ) Pr("%2<)", 0, 0);
     else Pr("%2<", 0, 0);
-    
+
     PrintPrecedence = oldPrec;
 }
 
@@ -1305,19 +1305,19 @@ static void PrintAInv(Expr expr)
 
     oldPrec = PrintPrecedence;
     PrintPrecedence = 11;
-    
+
     /* if necessary print the opening parenthesis                          */
     if ( oldPrec >= PrintPrecedence ) Pr("%>(%>", 0, 0);
     else Pr("%2>", 0, 0);
-    
+
     Pr("-%> ", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
     Pr("%<", 0, 0);
-    
+
     /* if necessary print the closing parenthesis                          */
     if ( oldPrec >= PrintPrecedence ) Pr("%2<)", 0, 0);
     else Pr("%2<", 0, 0);
-    
+
     PrintPrecedence = oldPrec;
 }
 
@@ -1474,7 +1474,7 @@ static void PrintPermExpr(Expr expr)
     if ( SIZE_EXPR(expr) == 0 ) {
         Pr("()", 0, 0);
     }
-    
+
     /* print all cycles                                                    */
     for ( i = 1; i <= SIZE_EXPR(expr)/sizeof(Expr); i++ ) {
         cycle = READ_EXPR(expr, i - 1);
@@ -1600,7 +1600,7 @@ void            PrintRecExpr1 (
 {
   Expr                tmp;            /* temporary variable              */
   UInt                i;              /* loop variable                   */
-  
+
   for ( i = 1; i <= SIZE_EXPR(expr)/(2*sizeof(Expr)); i++ ) {
         /* print an ordinary record name                                   */
         tmp = READ_EXPR(expr, 2 * i - 2);
@@ -1675,7 +1675,7 @@ static Int InitKernel (
     InitGlobalBag( &FLOAT_LITERAL_CACHE, "FLOAT_LITERAL_CACHE" );
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    
+
     /* clear the evaluation dispatch table                                 */
     for ( type = 0; type < 256; type++ ) {
         InstallEvalExprFunc( type , EvalUnknownExpr);
@@ -1683,9 +1683,9 @@ static Int InitKernel (
     }
 
     /* install the evaluators for logical operations                       */
-    InstallEvalExprFunc( EXPR_OR             , EvalOr);   
-    InstallEvalExprFunc( EXPR_AND            , EvalAnd);  
-    InstallEvalExprFunc( EXPR_NOT            , EvalNot);  
+    InstallEvalExprFunc( EXPR_OR             , EvalOr);
+    InstallEvalExprFunc( EXPR_AND            , EvalAnd);
+    InstallEvalExprFunc( EXPR_NOT            , EvalNot);
 
     /* the logical operations are guaranteed to return booleans            */
     InstallEvalBoolFunc( EXPR_OR             , EvalOr);
@@ -1693,13 +1693,13 @@ static Int InitKernel (
     InstallEvalBoolFunc( EXPR_NOT            , EvalNot);
 
     /* install the evaluators for comparison operations                    */
-    InstallEvalExprFunc( EXPR_EQ             , EvalEq);   
-    InstallEvalExprFunc( EXPR_NE             , EvalNe);   
-    InstallEvalExprFunc( EXPR_LT             , EvalLt);   
-    InstallEvalExprFunc( EXPR_GE             , EvalGe);   
-    InstallEvalExprFunc( EXPR_GT             , EvalGt);   
-    InstallEvalExprFunc( EXPR_LE             , EvalLe);   
-    InstallEvalExprFunc( EXPR_IN             , EvalIn);     
+    InstallEvalExprFunc( EXPR_EQ             , EvalEq);
+    InstallEvalExprFunc( EXPR_NE             , EvalNe);
+    InstallEvalExprFunc( EXPR_LT             , EvalLt);
+    InstallEvalExprFunc( EXPR_GE             , EvalGe);
+    InstallEvalExprFunc( EXPR_GT             , EvalGt);
+    InstallEvalExprFunc( EXPR_LE             , EvalLe);
+    InstallEvalExprFunc( EXPR_IN             , EvalIn);
 
     /* the comparison operations are guaranteed to return booleans         */
     InstallEvalBoolFunc( EXPR_EQ             , EvalEq);

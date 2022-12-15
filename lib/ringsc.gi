@@ -38,7 +38,7 @@ InstallMethod( ObjByExtRep,
     if Length( coeffs ) <> Length( Fam!.names ) then
       Error( "<coeffs> must be a list of length ", Length( Fam!.names ) );
     elif not ForAll( [1..Length(coeffs)], IsInt ) and
-      ForAll([1..Length(coeffs)],p->Fam!.moduli[p]=0 or 
+      ForAll([1..Length(coeffs)],p->Fam!.moduli[p]=0 or
 	(0<=coeffs[p] and coeffs[p]<Fam!.moduli[p])) then
       Error( "all in <coeffs> must be integers bounded by `moduli'" );
     fi;
@@ -211,7 +211,7 @@ InstallMethod( \+,
 function( x, y )
   local fam;
   fam:=FamilyObj(x);
-  return Objectify( fam!.defaultTypeDenseCoeffVectorRep, 
+  return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
 	    [ Immutable( SCRingReducedModuli(fam!.moduli,x![1]+y![1])) ] );
 end );
 
@@ -223,7 +223,7 @@ InstallMethod( \-,
 function( x, y )
 local fam;
   fam:=FamilyObj(x);
-  return Objectify( fam!.defaultTypeDenseCoeffVectorRep, 
+  return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
 	    [ Immutable( SCRingReducedModuli(fam!.moduli,x![1]-y![1])) ] );
 end );
 
@@ -235,7 +235,7 @@ InstallMethod( \*,
     function( x, y )
 local fam;
   fam:= FamilyObj( x );
-  return Objectify( fam!.defaultTypeDenseCoeffVectorRep, 
+  return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
 	    [ Immutable( SCRingReducedModuli(fam!.moduli,
 	                SCTableProduct( fam!.sctable, x![1], y![1] ) )) ] );
   end );
@@ -247,7 +247,7 @@ InstallMethod( \*,
 function( x, y )
 local fam;
   fam:=FamilyObj(y);
-  return Objectify( fam!.defaultTypeDenseCoeffVectorRep, 
+  return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
 	    [ Immutable( SCRingReducedModuli(fam!.moduli,x*y![1])) ] );
 end );
 
@@ -258,7 +258,7 @@ InstallMethod( \*,
 function( x, y )
 local fam;
   fam:=FamilyObj(x);
-  return Objectify( fam!.defaultTypeDenseCoeffVectorRep, 
+  return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
 	    [ Immutable( SCRingReducedModuli(fam!.moduli,x![1]*y)) ] );
 end );
 
@@ -266,7 +266,7 @@ InstallMethod( ZeroOp, "for s. c. ring element", [ IsSCRingObj ],
 function( x )
 local fam;
   fam:=FamilyObj(x);
-  return Objectify( fam!.defaultTypeDenseCoeffVectorRep, 
+  return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
 	    [ Immutable( SCRingReducedModuli(fam!.moduli,0*x![1])) ] );
 end );
 
@@ -274,7 +274,7 @@ InstallMethod( AdditiveInverseOp, "for s. c. ring element", [ IsSCRingObj ],
 function( x )
 local fam;
   fam:=FamilyObj(x);
-  return Objectify( fam!.defaultTypeDenseCoeffVectorRep, 
+  return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
 	    [ Immutable( SCRingReducedModuli(fam!.moduli,-x![1])) ] );
 end );
 
@@ -350,7 +350,7 @@ InstallGlobalFunction( RingByStructureConstants, function( arg )
           gens;   # ring generators of `A'
 
     # Check the argument list.
-    if not 1 < Length( arg ) and IsList( arg[1] ) 
+    if not 1 < Length( arg ) and IsList( arg[1] )
 				 and Length(arg[1])>0
                                  and IsList( arg[2] ) then
       Error( "usage: RingByStructureConstants([<moduli>,<sctable>]) or \n",
@@ -458,7 +458,7 @@ InstallAccessToGenerators( IsSubringSCRing and IsWholeFamily,
 BindGlobal("SCRingElmSift",function(moduli,l,pivots,e,test)
 local i, j, q;
   #e:=SCRingReducedModuli(moduli,e);
-  if Length(l)=0 then 
+  if Length(l)=0 then
     if test=true then
       return IsZero(e);
     else
@@ -490,7 +490,7 @@ local i, j, q;
 	fi;
 #      else
 #	# no pivot -- not in
-#	if test=true then 
+#	if test=true then
 #          Error("GNU");
 #	  return false;
 #	elif test=0 then
@@ -507,7 +507,7 @@ end);
 
 BindGlobal("SCRingElmSiftImages",function(moduli,l,imgs,pivots,e,ei)
 local i, j, q;
-  if Length(l)=0 then 
+  if Length(l)=0 then
     return [e,ei];
   fi;
 
@@ -922,7 +922,7 @@ function(R,e)
   if not IsFinite(R) then
     TryNextMethod();
   fi;
-  return One(R)<>fail 
+  return One(R)<>fail
          and ForAny(Enumerator(R),x->x*e=One(R) and e*x=One(R));
 end);
 
@@ -1059,7 +1059,7 @@ local d,t,i;
       fi;
     od;
   fi;
- 
+
   d:=DirectSumOp( arg, arg[1] );
   if ForAll(arg,HasSize) then
     if   ForAll(arg,IsFinite)
@@ -1112,7 +1112,7 @@ local ids, tup, first, i, G, gens, g, new, D, prop;
 				projections := [] ) );
 
   return D;
-end );        
+end );
 
 InstallMethod( DirectSumOp, "for SC Rings", true,
     [ IsList, IsSubringSCRing ], 0,
@@ -1144,7 +1144,7 @@ local ones,s, moduli, orders, offsets, o, p, newmod, t, nams, gens, e, f, D, i, 
     od;
     Add(orders,o);
     offsets[i+1]:=Sum(List(orders,Length));
-    if (HasOne(list[i]) or (HasIsFinite(list[i]) and Size(list[i])<10^5 )) 
+    if (HasOne(list[i]) or (HasIsFinite(list[i]) and Size(list[i])<10^5 ))
       and One(list[i])<>fail then
       o:=One(list[i]);
       o:=SCRingDecompositionStandardGens(s[i],o);
@@ -1193,7 +1193,7 @@ local ones,s, moduli, orders, offsets, o, p, newmod, t, nams, gens, e, f, D, i, 
 				projections := [] ) );
 
   return D;
-end );        
+end );
 
 #############################################################################
 ##

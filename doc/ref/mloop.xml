@@ -67,7 +67,7 @@ When you see this, you know that &GAP; is waiting for the rest
 of the statement. This happens also when you forget
 the semicolon <C>;</C> that terminates every &GAP; statement.
 Note that when <B>Return</B> has been entered and the current statement is not
-yet complete, &GAP; will already evaluate those parts of the input that 
+yet complete, &GAP; will already evaluate those parts of the input that
 are complete, for example function calls that appear as arguments in
 another function call which needs several input lines.
 So it may happen that one has to wait some time for the partial prompt.
@@ -170,7 +170,7 @@ Var="time"/> and <Ref Var="memory_allocated"/> are all write-protected.
 <Section Label="Special Rules for Input Lines">
 <Heading>Special Rules for Input Lines</Heading>
 
-The input for some &GAP; objects may not fit on one line, in particular 
+The input for some &GAP; objects may not fit on one line, in particular
 big integers, long strings or long identifiers. In these cases you can still
 type or paste them in long single lines.
 <!-- if most people use readline this becomes irrelevant:
@@ -179,8 +179,8 @@ see the last part (with a <C>$</C> character in front). -->
 For nicer display you
 can also specify  the input on several lines. This is achieved by ending a
 line  by a backslash or by a backslash and a carriage return character, then
-continue the input on the beginning of the next line. When reading this 
-&GAP; will ignore such continuation backslashes, carriage return characters 
+continue the input on the beginning of the next line. When reading this
+&GAP; will ignore such continuation backslashes, carriage return characters
 and newline characters. &GAP; also prints long strings and integers this way.
 <P/>
 <Example><![CDATA[
@@ -196,9 +196,9 @@ gap> bla\
 5
 ]]></Example>
 <P/>
-There is a special rule about &GAP; prompts in input lines: In line editing 
-mode (usual user input and &GAP; started without <C>-n</C>)  in lines starting 
-with whitespace following <C>gap> </C>, <C>> </C> or <C>brk> </C> this 
+There is a special rule about &GAP; prompts in input lines: In line editing
+mode (usual user input and &GAP; started without <C>-n</C>)  in lines starting
+with whitespace following <C>gap> </C>, <C>> </C> or <C>brk> </C> this
 beginning part is removed.
 This rule is very convenient because it allows to cut and paste input
 from other &GAP; sessions or manual examples easily into your current session.
@@ -210,8 +210,8 @@ from other &GAP; sessions or manual examples easily into your current session.
 <Section Label="View and Print">
 <Heading>View and Print</Heading>
 
-&GAP; has three different operations to display or print objects: 
-<Ref Oper="Display"/>, <Ref Oper="ViewObj"/> and <Ref Oper="PrintObj"/>, 
+&GAP; has three different operations to display or print objects:
+<Ref Oper="Display"/>, <Ref Oper="ViewObj"/> and <Ref Oper="PrintObj"/>,
 and these three have different purposes as follows. The first, <Ref
     Oper="Display"/>, should print the object to the standard output
 in a human-readable
@@ -220,7 +220,7 @@ relatively complete and verbose form. The second, <Ref
 in a short and concise
 form, it is used in the main read-eval-print loop to display the
 resulting object of a computation. The third, <Ref Oper="PrintObj"/>,
-should print the object to the standard output 
+should print the object to the standard output
 in a complete form which is &GAP;-readable if at all
 possible, such that reading the output into &GAP; produces an object
 which is equal to the original one.
@@ -264,7 +264,7 @@ following table:
 This is to avoid circular delegations.
 
 <P/>
-Note in particular that none of the methods of the string producing operations 
+Note in particular that none of the methods of the string producing operations
 may delegate to the corresponding printing operations. Note also that
 the above mentioned purposes of the different operations suggest that
 delegations between different operations will be sub-optimal in most
@@ -277,13 +277,13 @@ The library contains the following low ranked default methods:
 
 <List>
 <Item>
-    A method for 
+    A method for
 <Ref Oper="DisplayString"/> which returns the constant value
 of the global variable <Ref Var="DEFAULTDISPLAYSTRING"/>.
 </Item>
 
 <Item>
-A method for 
+A method for
 <Ref Oper="ViewString"/> which returns the constant value
 of the global variable <Ref Var="DEFAULTVIEWSTRING"/>.
 </Item>
@@ -347,12 +347,12 @@ matter here, so it is usually unnecessary to install a separate <Ref
 Oper="ViewObj"/> method.
 
 <P/>
-If the type of object calls for it one should install a 
+If the type of object calls for it one should install a
 <Ref Oper="DisplayString"/> method. This is the case if a human
 readable verbose form is required.
 
 <P/>
-If the performance and memory usage for <Ref Oper="Display"/> matters, 
+If the performance and memory usage for <Ref Oper="Display"/> matters,
 one should install a separate <Ref Oper="Display"/> method.
 
 <P/>
@@ -505,7 +505,7 @@ see <Ref Subsect="quit"/> and <Ref Subsect="subsect:return"/>.
 The first way to leave a break loop is to <E>quit</E> the break loop.
 To do this you enter <C>quit;</C> or type the <E>eof</E>
 (<E>e</E>nd <E>o</E>f <E>f</E>ile) character,
-which is usually <B>Ctrl-D</B> except when using the <C>-e</C> option (see 
+which is usually <B>Ctrl-D</B> except when using the <C>-e</C> option (see
 Section&nbsp;<Ref Sect="Command Line Options"/>).
 Note that &GAP; code between <C>quit;</C> and the end of the input line
 is ignored.
@@ -527,7 +527,7 @@ it is possible (though not very likely) that data structures
 will be corrupted or incomplete data have been stored in objects.
 Therefore no guarantee can be given that calculations afterwards
 will return correct results! If you have been using options <K>quit</K>ting
-a break loop generally leaves the options stack with options you no 
+a break loop generally leaves the options stack with options you no
 longer want. The function <Ref Func="ResetOptionsStack"/>
 removes all options on the options stack, and this is the sole intended
 purpose of this function.
@@ -549,10 +549,10 @@ you may have to modify the value of a variable before typing <C>return;</C>
 (see the example for&nbsp;<Ref Filt="IsDenseList"/>) or you may have to
 return an object <A>obj</A>
 (by typing: <C>return <A>obj</A>;</C>) to continue the computation;
-in any case, the message printed on entering the break loop will 
+in any case, the message printed on entering the break loop will
 tell you which of these alternatives is possible.
 For example, if the break loop was entered because a variable had no
-assigned value, the value to be returned is often a value that this 
+assigned value, the value to be returned is often a value that this
 variable should have to continue the computation.
 <P/>
 <Log><![CDATA[
@@ -568,7 +568,7 @@ gap>
 <Func Name="OnBreak" Arg=''/>
 
 <Description>
-By default, when a break loop is entered, &GAP; prints a trace of the 
+By default, when a break loop is entered, &GAP; prints a trace of the
 innermost 5 commands currently being executed. This behaviour can be
 configured by changing the value of the global variable
 <Ref Func="OnBreak"/>. When a break loop is entered,
@@ -704,11 +704,11 @@ you can 'return;' to continue
 <P/>
 Perhaps you are familiar with what's possible in a break loop, and so
 don't need to be reminded. In this case, you might wish to do the
-following (the first line just makes it easy to restore the default 
+following (the first line just makes it easy to restore the default
 value later).
 <P/>
 <Example><![CDATA[
-gap> NormalOnBreakMessage := OnBreakMessage;; # save the default value 
+gap> NormalOnBreakMessage := OnBreakMessage;; # save the default value
 gap> OnBreakMessage := function() end;        # do-nothing function
 function(  ) ... end
 gap> OnBreakMessage();
@@ -729,8 +729,8 @@ brk> quit; # to get back to outer loop
 However, suppose you are writing a function which detects an error
 condition and <C>OnBreakMessage</C> needs to be changed only <E>locally</E>,
 i.e., the instructions on how to recover from the break loop need
-to be specific to that function. The same idea used to define 
-<C>ErrorNoTraceBack</C> (see <Ref Func="OnBreak"/>) can be adapted to achieve 
+to be specific to that function. The same idea used to define
+<C>ErrorNoTraceBack</C> (see <Ref Func="OnBreak"/>) can be adapted to achieve
 this. The function <Ref Func="CosetTableFromGensAndRels"/>
 is an example in the &GAP; code where the idea is actually used.
 </Description>
@@ -750,7 +750,7 @@ same as <Ref Func="Where"/> while also showing the arguments and local
 variables of each function.
 <P/>
 <Log><![CDATA[
-gap> StabChain(SymmetricGroup(100)); # After this we typed ^C  
+gap> StabChain(SymmetricGroup(100)); # After this we typed ^C
 user interrupt at
 bpt := S.orbit[1];
  called from
@@ -773,7 +773,7 @@ StabChainStrong( S.stabilizer, [ sch ], options ); called from
 <P/>
 Note that the variables displayed even in the first line of the
 <Ref Func="Where"/> list
-(after the <C>called from</C> line) may be already one environment level higher 
+(after the <C>called from</C> line) may be already one environment level higher
 and <Ref Func="DownEnv"/> may be necessary to access them.
 <P/>
 At the moment this backtrace does not work from within compiled code (this
@@ -808,7 +808,7 @@ objects or if a function calls itself recursively, of course only the
 variable at the lowest level can be accessed.
 
 <ManSection>
-<Heading>DownEnv and UpEnv</Heading>	
+<Heading>DownEnv and UpEnv</Heading>
 <Func Name="DownEnv" Arg='nr'/>
 <Func Name="UpEnv" Arg='nr'/>
 
@@ -819,7 +819,7 @@ if <A>nr</A> is negative it steps up in the environment again;
 <A>nr</A> defaults to 1 if not given.
 <Ref Func="UpEnv"/> acts similarly to <Ref Func="DownEnv"/>
 but in the reverse direction
-(the mnemonic rule to remember the difference between 
+(the mnemonic rule to remember the difference between
 <Ref Func="DownEnv"/> and <Ref Func="UpEnv"/> is the order in which commands
 on the execution stack are displayed by <Ref Func="Where"/>).
 <P/>
@@ -871,7 +871,7 @@ again.
 Note also that search for variables looks first in the chain of outer
 functions which enclosed the definition of a currently executing
 function, before it looks at the chain of calling functions which led
-to the current invocation of the function. 
+to the current invocation of the function.
 <P/>
 <Log><![CDATA[
 gap> foo := function()
@@ -970,17 +970,17 @@ started with the <C>-T</C> option to disable the break loop.
 <Index>saving on exit</Index>
 The normal way to terminate a &GAP; session is to enter either
 <C>quit;</C> (note the semicolon) or an end-of-file character (usually
-<B>Ctrl-D</B>) at the <C>gap> </C> prompt in the main read eval print loop. 
+<B>Ctrl-D</B>) at the <C>gap> </C> prompt in the main read eval print loop.
 
 <ManSection>
 <Var Name="QUIT"/>
 
 <Description>
-An emergency way to leave &GAP; is to enter 
+An emergency way to leave &GAP; is to enter
 <Index Key="QUIT" Subkey="emergency quit"><K>QUIT</K></Index>
 <K>QUIT</K>
 at any <C>gap></C>
-or <C>brk></C> or <C>brk_<A>nn</A>></C> prompt. 
+or <C>brk></C> or <C>brk_<A>nn</A>></C> prompt.
 </Description>
 </ManSection>
 
@@ -1037,7 +1037,7 @@ of the functions that have been installed using <Ref Func="InstallAtExit"/>. The
 typically perform tasks such as cleaning up temporary files created
 during the session, and closing open files. If an error occurs during
 the execution of one of these functions, that function is simply
-abandoned, no break loop is entered. 
+abandoned, no break loop is entered.
 <P/>
 <!-- Cannot test this as manual example -->
 <Log><![CDATA[
@@ -1077,7 +1077,7 @@ In most installations &GAP; will be compiled to use the
 Gnu readline library (see the line <C>Libs used:</C> on &GAP; startup).
 In that case skip to the next section <Ref Sect="sec:readline"/>.
 (The line editing commands described in the rest of this section were
-available in previous versions of &GAP;, they will work almost the same 
+available in previous versions of &GAP;, they will work almost the same
 in the standard configuration of the Gnu readline library.)
 <P/>
 &GAP; allows one you to edit the current input line with a number of editing
@@ -1120,11 +1120,11 @@ The first few commands allow you to move the cursor on the current line.
 </Item>
 <Mark><B>Ctrl-F</B></Mark>
 <Item>
-  move the cursor forward one character. 
+  move the cursor forward one character.
 </Item>
 <Mark><B>Esc-F</B></Mark>
 <Item>
-  move the cursor to the end of the next word. 
+  move the cursor to the end of the next word.
 </Item>
 <Mark><B>Ctrl-E</B></Mark>
 <Item>
@@ -1138,27 +1138,27 @@ with the <Q>yank</Q> command <B>Ctrl-Y</B>.
 <List>
 <Mark><B>Ctrl-H</B> or <A>del</A></Mark>
 <Item>
-  delete the character left of the cursor. 
+  delete the character left of the cursor.
 </Item>
 <Mark><B>Ctrl-D</B></Mark>
 <Item>
-  delete the character under the cursor. 
+  delete the character under the cursor.
 </Item>
 <Mark><B>Ctrl-K</B></Mark>
 <Item>
-  kill up to the end of the line. 
+  kill up to the end of the line.
 </Item>
 <Mark><B>Esc-D</B></Mark>
 <Item>
-  kill forward to the end of the next word. 
+  kill forward to the end of the next word.
 </Item>
 <Mark><B>Esc-del</B></Mark>
 <Item>
-  kill backward to the beginning of the last word. 
+  kill backward to the beginning of the last word.
 </Item>
 <Mark><B>Ctrl-X</B></Mark>
 <Item>
-  kill entire input line, and discard all pending input. 
+  kill entire input line, and discard all pending input.
 </Item>
 <Mark><B>Ctrl-Y</B></Mark>
 <Item>
@@ -1171,15 +1171,15 @@ The next commands allow you to change the input.
 <List>
 <Mark><B>Ctrl-T</B></Mark>
 <Item>
-  exchange (twiddle) current and previous character. 
+  exchange (twiddle) current and previous character.
 </Item>
 <Mark><B>Esc-U</B></Mark>
 <Item>
-  uppercase next word. 
+  uppercase next word.
 </Item>
 <Mark><B>Esc-L</B></Mark>
 <Item>
-  lowercase next word. 
+  lowercase next word.
 </Item>
 <Mark><B>Esc-C</B></Mark>
 <Item>
@@ -1204,7 +1204,7 @@ second time will display all possible completions.
 </List>
 <P/>
 The next commands allow you to fetch previous lines, e.g., to correct
-typos, etc. 
+typos, etc.
 <P/>
 <List>
 <Mark><B>Ctrl-L</B></Mark>
@@ -1307,7 +1307,7 @@ directory <F>.vim</F> with  subdirectories  <F>.vim/syntax</F> and
 <F>.vim/indent</F>
 (If you are not using Unix, refer to the <C>vim</C> documentation
 on where to place syntax files).
-Then copy the file <F>etc/vim/gap.vim</F> to <F>.vim/syntax/gap.vim</F> 
+Then copy the file <F>etc/vim/gap.vim</F> to <F>.vim/syntax/gap.vim</F>
 and  the file <F>etc/vim/gap_indent.vim</F> to <F>.vim/indent/gap.vim</F>.
 <P/>
 Then edit the <F>.vimrc</F> file in your home directory.
@@ -1315,7 +1315,7 @@ Add lines as in the following example:
 <P/>
 <Log><![CDATA[
 if has("syntax")
-  syntax on             " Default to no syntax highlighting 
+  syntax on             " Default to no syntax highlighting
 endif
 
 " For GAP files
@@ -1365,7 +1365,7 @@ Note that those parameters can also be set with the command line options
 <C>-x</C> for the line length and <C>-y</C> for the number of lines
 (see Section&nbsp;<Ref Sect="Command Line Options"/>).
 <P/>
-To check/change whether line breaking occurs for files and streams 
+To check/change whether line breaking occurs for files and streams
 see&nbsp;<Ref Oper="PrintFormattingStatus"/>
 and&nbsp;<Ref Oper="SetPrintFormattingStatus"/>.
 <P/>

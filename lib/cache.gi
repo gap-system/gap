@@ -40,7 +40,7 @@ function(func, extra...)
     fi;
 
     original := AtomicList(options.defaults);
-    
+
     boundvals := MakeWriteOnceAtomic(AtomicList(original));
 
     if options.flush then

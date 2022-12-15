@@ -151,7 +151,7 @@ DeclareOperation(
 #O  CollectWord( <col>, <v>, <w> )
 ##
 DeclareOperation(
-    "CollectWord", 
+    "CollectWord",
     [ IsPolycyclicCollector, IsList, IsObject ] );
 
 
@@ -250,7 +250,7 @@ DeclareOperation(
     "SetConjugateANC",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject, IsObject ] );
 
-        
+
 #############################################################################
 ##
 #O  SetPower( <col>, <i>, <rhs> )
@@ -309,7 +309,7 @@ DeclareOperation(
 DeclareOperation(
         "GetCommutatorNC",
         [ IsPolycyclicCollector, IsObject, IsObject ] );
-        
+
 #############################################################################
 ##
 #O  GetConjugateNC( <col>, <h>, <g> )
@@ -324,7 +324,7 @@ DeclareOperation(
 DeclareOperation(
         "GetConjugateNC",
         [ IsPolycyclicCollector, IsObject, IsObject ] );
-        
+
 #############################################################################
 ##
 #O  GetPowerNC( <col>, <g> )
@@ -336,7 +336,7 @@ DeclareOperation(
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareOperation( 
+DeclareOperation(
         "GetPowerNC",
         [ IsPolycyclicCollector, IsObject ] );
 

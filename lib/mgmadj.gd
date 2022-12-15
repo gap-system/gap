@@ -19,9 +19,9 @@
 ##  <Oper Name="MultiplicativeZeroOp" Arg='elt'/>
 ##  <Returns>A multiplicative zero element.</Returns>
 ##  <Description>
-##  for an element <A>elt</A> in the category 
+##  for an element <A>elt</A> in the category
 ##  <Ref Filt="IsMultiplicativeElementWithZero"/>,
-##  <C>MultiplicativeZeroOp</C> 
+##  <C>MultiplicativeZeroOp</C>
 ##  returns the element <M>z</M> in the family <M>F</M> of <A>elt</A>
 ##  with the property that <M>z * m = z = m * z</M> holds for all
 ##  <M>m \in F</M>, if such an element can be determined.
@@ -29,8 +29,8 @@
 ##
 ##  Families of elements in the category
 ##  <Ref Filt="IsMultiplicativeElementWithZero"/>
-##  often arise from adjoining a new zero to an existing magma. 
-##  See&nbsp;<Ref Attr="InjectionZeroMagma"/> or 
+##  often arise from adjoining a new zero to an existing magma.
+##  See&nbsp;<Ref Attr="InjectionZeroMagma"/> or
 ##  <Ref Attr="MagmaWithZeroAdjoined"/> for details.
 ##  <Example><![CDATA[
 ##  gap> G:=AlternatingGroup(5);;
@@ -56,14 +56,14 @@ DeclareOperation( "MultiplicativeZeroOp", [IsMultiplicativeElementWithZero] );
 ##  <A>z</A> = <A>z</A></C> for all <A>m</A> in <A>M</A>.<P/>
 ##
 ##  <C>IsMultiplicativeZero</C> returns <K>true</K> if the element <A>z</A> of
-##  the magma <A>M</A> equals the multiplicative zero of <A>M</A>. 
+##  the magma <A>M</A> equals the multiplicative zero of <A>M</A>.
 ##  <Example><![CDATA[
-##  gap> S:=Semigroup( Transformation( [ 1, 1, 1 ] ), 
+##  gap> S:=Semigroup( Transformation( [ 1, 1, 1 ] ),
 ##  > Transformation( [ 2, 3, 1 ] ) );
 ##  <transformation semigroup of degree 3 with 2 generators>
 ##  gap> MultiplicativeZero(S);
 ##  fail
-##  gap> S:=Semigroup( Transformation( [ 1, 1, 1 ] ), 
+##  gap> S:=Semigroup( Transformation( [ 1, 1, 1 ] ),
 ##  > Transformation( [ 1, 3, 2 ] ) );
 ##  <transformation semigroup of degree 3 with 2 generators>
 ##  gap> MultiplicativeZero(S);

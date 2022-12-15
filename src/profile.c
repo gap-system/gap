@@ -614,7 +614,7 @@ enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
     if (profileState.status == Profile_Active) {
         Panic("-P or -C can only be passed once\n");
     }
-    
+
     profileState.OutputRepeats = repeats;
 
     fopenMaybeCompressed(filename, &profileState);

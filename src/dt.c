@@ -10,22 +10,22 @@
 **  This file implements the part of the deep thought package which deals
 **  with computing the deep thought polynomials.
 **
-**  Deep Thought deals with trees.  A tree <tree> is a concatenation of 
+**  Deep Thought deals with trees.  A tree <tree> is a concatenation of
 **  several nodes where each node is a 5-tuple of immediate integers.  If
 **  <tree> is an atom it contains only one node,  thus it is itself a
 **  5-tuple. If <tree> is not an atom we obtain its list representation by
 **
 **  <tree>  :=  topnode(<tree>) concat left(<tree>) concat right(<tree>) .
 **
-**  Let us denote the i-th node of <tree> by (<tree>, i)  and the tree rooted 
+**  Let us denote the i-th node of <tree> by (<tree>, i)  and the tree rooted
 **  at (<tree>, i) by tree(<tree>, i).  Let <a> be tree(<tree>, i)
 **  The first entry of (<tree>, i) is pos(a),
-**  and the second entry is num(a). The third entry of (<tree>, i) gives a 
-**  mark.(<tree>, i)[3] = 1  means that (<tree>, i) is marked,  
+**  and the second entry is num(a). The third entry of (<tree>, i) gives a
+**  mark.(<tree>, i)[3] = 1  means that (<tree>, i) is marked,
 **  (<tree>, i)[3] = 0 means that (<tree>, i) is not marked. The fourth entry
 **  of (<tree>, i) contains the number of knodes of tree(<tree>, i).  The
-**  fifth entry of (<tree>, i) finally contains a boundary for 
-**  pos( tree(<tree>, i) ).  (<tree>, i)[5] <= 0 means that 
+**  fifth entry of (<tree>, i) finally contains a boundary for
+**  pos( tree(<tree>, i) ).  (<tree>, i)[5] <= 0 means that
 **  pos( tree(<tree>, i) ) is unbounded.  If tree(<tree>, i) is an atom we
 **  already know that pos( tree(<tree>, i) ) is unbound.  Thus we then can
 **  use the fifth component of (<tree>, i) to store the side.  In this case
@@ -103,7 +103,7 @@ static Obj  Part(Obj list, Int pos1, Int pos2);
 **  the number of nodes of <tree>.
 */
 #define  DT_POS(tree, index) \
-              (ELM_PLIST(tree, (index-1)*5 + 1 ) ) 
+              (ELM_PLIST(tree, (index-1)*5 + 1 ) )
 
 
 /***************************************************************************
@@ -115,7 +115,7 @@ static Obj  Part(Obj list, Int pos1, Int pos2);
 **  integer less or equal to the number of nodes of <tree>
 */
 #define  SET_DT_POS(tree, index, obj) \
-              SET_ELM_PLIST(tree, (index-1)*5 + 1, obj) 
+              SET_ELM_PLIST(tree, (index-1)*5 + 1, obj)
 
 
 /***************************************************************************
@@ -150,19 +150,19 @@ static Obj  Part(Obj list, Int pos1, Int pos2);
 **  integer less or equal to the number of nodes of <tree>.
 */
 #define  DT_MARK(tree, index) \
-              SET_ELM_PLIST(tree, (index-1)*5 + 3, INTOBJ_INT(1) ) 
+              SET_ELM_PLIST(tree, (index-1)*5 + 3, INTOBJ_INT(1) )
 
 
 /**************************************************************************
 **
 *F  DT_UNMARK(tree, index) . . . . . . . . . . . remove the mark from a node
 **
-**  'DT_UNMARK' removes the mark from the node (<tree>, index). <index> has 
+**  'DT_UNMARK' removes the mark from the node (<tree>, index). <index> has
 **  has to be a positive integer less or equal to the number of nodes of
 **  <tree>.
 */
 #define  DT_UNMARK(tree, index) \
-              SET_ELM_PLIST(tree, (index-1)*5 + 3, INTOBJ_INT(0) ) 
+              SET_ELM_PLIST(tree, (index-1)*5 + 3, INTOBJ_INT(0) )
 
 
 /****************************************************************************
@@ -178,7 +178,7 @@ static Obj  Part(Obj list, Int pos1, Int pos2);
 **  DT_LEFT(tree, index) = index2,  then (<tree>, index2) is the left
 **  subnode of (<tree>, index).
 **
-**  Before calling 'DT_RIGHT' or 'DT_LEFT' it should be ensured,  that 
+**  Before calling 'DT_RIGHT' or 'DT_LEFT' it should be ensured,  that
 **  (<tree>, index) is not an atom.  <index> has to be a positive integer
 **  less or equal to the number of nodes of <tree>.
 */
@@ -285,7 +285,7 @@ static Obj FuncUnmarkTree(Obj self, Obj tree)
 
 /*****************************************************************************
 **
-*F  Mark(<tree>, <reftree>, <index>) . . . . . . . . find all nodes of <tree> 
+*F  Mark(<tree>, <reftree>, <index>) . . . . . . . . find all nodes of <tree>
 **                                                   which are almost equal
 **                                                   to (<reftree>, index)
 **
@@ -309,9 +309,9 @@ static UInt Mark(Obj tree, Obj reftree, Int indexx)
     refgen = DT_GEN(reftree, indexx);
     while ( i <= len )
     {
-        /*  skip all nodes (<tree>, i) with 
+        /*  skip all nodes (<tree>, i) with
         **  num(<tree>, i) > num(<reftree>, indexx)     */
-        while( i < len && 
+        while( i < len &&
                DT_GEN(tree, i)  >  refgen )
             i++;
         if ( AlmostEqual(tree, i, reftree, indexx) )
@@ -323,7 +323,7 @@ static UInt Mark(Obj tree, Obj reftree, Int indexx)
         /*  Since num(a) < num(b) holds for all subtrees <a> of an arbitrary
         **  tree <b> we can now skip the whole tree rooted at (<tree>, i).
         **  If (<tree>, i) is the left subnode of another node we can even
-        **  skip the tree rooted at that node,  because of 
+        **  skip the tree rooted at that node,  because of
         **  num( right(a) )  <  num( left(a) ) for all trees <a>.
         **  Note that (<tree>, i) is the left subnode of another node,  if and
         **  only if the previous node (<tree>, i-1) is not an atom. in this
@@ -354,7 +354,7 @@ static Int AlmostEqual(Obj tree1, Int index1, Obj tree2, Int index2)
 {
     UInt   k, schranke; /*   loop variable                                             */
     /*  First the two top nodes of tree(<tree1>, index1) and
-    **  tree(<tree2>, index2) (that are (<tree1>, index1) and 
+    **  tree(<tree2>, index2) (that are (<tree1>, index1) and
     **  (<tree2, index2) ) are compared by testing the equality of the 2-nd,
     **  5-th and 6-th entries the nodes.                                    */
     if ( DT_GEN(tree1, index1) != DT_GEN(tree2, index2) )
@@ -365,7 +365,7 @@ static Int AlmostEqual(Obj tree1, Int index1, Obj tree2, Int index2)
         return  0;
     /*  For the comparison of the remaining nodes of tree(<tree1>, index1)
     **  and tree(<tree2>, index2) it is also necessary to compare the first
-    **  entries of the nodes.  Note that we know at this point,  that 
+    **  entries of the nodes.  Note that we know at this point,  that
     **  tree(<tree1>, index1) and tree(<tree2>, index2) have the same number
     **  of nodes                                                             */
     schranke = index1 + DT_LENGTH(tree1, index1);
@@ -445,7 +445,7 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
 {
     UInt    i, /*  loop variable                                          */
             len;
-    Obj     new, 
+    Obj     new,
             list, /*  list to return                                      */
             refgen;
 
@@ -456,7 +456,7 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
     refgen = DT_GEN(reftree, index2);
     while( i <= len )
     {
-        /*  skip all nodes (<tree>, i) with 
+        /*  skip all nodes (<tree>, i) with
         **  num(<tree>, i) > num(<reftree>, index)     */
         while( i < len     &&
                DT_GEN(tree, i) > refgen   )
@@ -480,7 +480,7 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
                 /*  tell gasman that list has changed                      */
                 CHANGED_BAG(list);
             }
-            /*  add i to <list>[ pos(tree(<tree>, i)) ]                    */ 
+            /*  add i to <list>[ pos(tree(<tree>, i)) ]                    */
             else
             {
                 new = ELM_PLIST(list, INT_INTOBJ( DT_POS(tree, i) )  );
@@ -490,7 +490,7 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
         /*  Since num(a) < num(b) holds for all subtrees <a> of an arbitrary
         **  tree <b> we can now skip the whole tree rooted at (<tree>, i).
         **  If (<tree>, i) is the left subnode of another node we can even
-        **  skip the tree rooted at that node,  because of 
+        **  skip the tree rooted at that node,  because of
         **  num( right(a) )  <  num( left(a) ) for all trees <a>.
         **  Note that (<tree>, i) is the left subnode of another node,  if and
         **  only if the previous node (<tree>, i-1) is not an atom. In this
@@ -510,14 +510,14 @@ static Obj Mark2(Obj tree, Int index1, Obj reftree, Int index2)
 **
 *F  FindTree(<tree>, <index>)
 **
-**  'FindTree' looks for a subtree <a> of tree(<tree>, index) such that 
+**  'FindTree' looks for a subtree <a> of tree(<tree>, index) such that
 **  the top node of
 **  <a> is not marked but all the other nodes of <a> are marked.  It is
-**  assumed that if the top node of a subtree <b> of tree(<tree>, index) 
+**  assumed that if the top node of a subtree <b> of tree(<tree>, index)
 **  is marked,  all
 **  nodes of <b> are marked.  Hence it suffices to look for a subtree <a>
 **  of <tree> such that the top node of <a> is unmarked and the left and the
-**  right node of <a> are marked.  'FindTree' returns an integer <i> such 
+**  right node of <a> are marked.  'FindTree' returns an integer <i> such
 **  that tree(<tree> ,i) has the properties mentioned above.  If such a tree
 **  does not exist 'Findtree' returns 0 (as C integer).  Note that this holds
 **  if and only if tree(<tree>, index) is marked.
@@ -556,7 +556,7 @@ static UInt FindTree(Obj tree, Int indexx)
 
 /****************************************************************************
 **
-*F  MakeFormulaVector(<tree>, <pr>) . . . . . . . . . compute the polynomial 
+*F  MakeFormulaVector(<tree>, <pr>) . . . . . . . . . compute the polynomial
 **                                                    g_<tree> for <tree>
 **
 **  'MakeFormulaVector' returns the polynomial g_<tree> for a tree <tree>
@@ -616,13 +616,13 @@ static Obj MakeFormulaVector(Obj tree, Obj pr)
             SET_ELM_PLIST(vec, LEN_PLIST(vec)-1, DT_GEN(tree, u) );
             SET_ELM_PLIST(vec, LEN_PLIST(vec), INTOBJ_INT(i) );
         }
-        /*  if tree(<tree>, u) is not an atom multiply 
+        /*  if tree(<tree>, u) is not an atom multiply
         **  <vec>[2] with binomial(d, i) where
         **  d = c_(num(left(<tree>,u)), num(right(<tree>,u)); num(<tree>,u)) */
         else
         {
             j = 3;
-            rel = ELM_PLIST( ELM_PLIST(pr, INT_INTOBJ( DT_GEN(tree, 
+            rel = ELM_PLIST( ELM_PLIST(pr, INT_INTOBJ( DT_GEN(tree,
                                                         DT_LEFT(tree, u) ) ) ),
                              INT_INTOBJ( DT_GEN(tree, DT_RIGHT(tree, u) ) )  );
             gen = DT_GEN(tree, u);
@@ -631,7 +631,7 @@ static Obj MakeFormulaVector(Obj tree, Obj pr)
                 if ( ELM_PLIST(rel, j) == gen  )
                 {
                     prod = ProdInt(ELM_PLIST(vec, 2),
-                                   BinomialInt(ELM_PLIST(rel, j+1), 
+                                   BinomialInt(ELM_PLIST(rel, j+1),
                                             INTOBJ_INT(i)        )        );
                     SET_ELM_PLIST(vec,  2, prod);
                     /*  tell gasman that vec has changed                     */
@@ -649,7 +649,7 @@ static Obj MakeFormulaVector(Obj tree, Obj pr)
 
 /**************************************************************************
 **
-*F  FuncMakeFormulaVector(<self>,<tree>,<pr>) . . . . . compute the formula 
+*F  FuncMakeFormulaVector(<self>,<tree>,<pr>) . . . . . compute the formula
 **                                                      vector for <tree>
 **
 **  'FuncMakeFormulaVector' implements the internal function
@@ -674,9 +674,9 @@ static Obj FuncMakeFormulaVector(Obj self, Obj tree, Obj pr)
 **                                                    of another tree
 **
 **  'Leftof' returns 1 if tree(<tree1>, index1) is left of tree(<tree2>,index2)
-**  in the word being collected at the first instance,  that 
+**  in the word being collected at the first instance,  that
 **  tree(<tree1>, index1) and tree(<tree2>, index2) both occur. It is assumed
-**  that tree(<tree1>, index1) is not equal to tree(<tree2>, index2). 
+**  that tree(<tree1>, index1) is not equal to tree(<tree2>, index2).
 */
 static Int Leftof(Obj tree1, Int index1, Obj tree2, Int index2)
 {
@@ -691,9 +691,9 @@ static Int Leftof(Obj tree1, Int index1, Obj tree2, Int index2)
         else
             return ( DT_GEN(tree1, index1) < DT_GEN(tree2, index2) );
     }
-    if  ( DT_LENGTH(tree1, index1) > 1                         &&  
+    if  ( DT_LENGTH(tree1, index1) > 1                         &&
           DT_LENGTH(tree2, index2) > 1                         &&
-          Equal( tree1, DT_RIGHT(tree1, index1) , 
+          Equal( tree1, DT_RIGHT(tree1, index1) ,
                  tree2, DT_RIGHT(tree2, index2)    )                    )
     {
         if  ( Equal( tree1, DT_LEFT(tree1, index1),
@@ -709,20 +709,20 @@ static Int Leftof(Obj tree1, Int index1, Obj tree2, Int index2)
     else
         return  Leftof2( tree1, index1, tree2, index2);
 }
-     
-  
+
+
 /*****************************************************************************
 **
 *F  Leftof2(<tree1>,<index1>,<tree2>,<index2>) . . . . . test if one tree is
 **                                                       left of another tree
 **
-**  'Leftof2' returns 1 if tree(<tree1>, index1) is left of 
-**  tree(<tree2>,index2)in the word being collected at the first instance,  
+**  'Leftof2' returns 1 if tree(<tree1>, index1) is left of
+**  tree(<tree2>,index2)in the word being collected at the first instance,
 **  that tree(<tree1>, index1) and tree(<tree2>, index2) both occur.  It is
-**  assumed that tree(<tree2>, index2) occurs earlier than 
+**  assumed that tree(<tree2>, index2) occurs earlier than
 **  tree(<tree1>,index1).  Furthermore it is assumed that if both
 **  tree(<tree1>, index1) and tree(<tree2>, index2) are non-atoms,  then their
-**  right trees and their left trees are not equal. 
+**  right trees and their left trees are not equal.
 */
 static Int Leftof2(Obj tree1, Int index1, Obj tree2, Int index2)
 {
@@ -749,7 +749,7 @@ static Int Leftof2(Obj tree1, Int index1, Obj tree2, Int index2)
 **  is a non-atom. Furthermore it is assumed that if both of these trees are
 **  non-atoms,  right(tree(<tree1>, index1) ) does not equal
 **  right(tree(<tree2>, index2) ) or left(tree(<tree1>, index1) ) does not
-**  equal left(tree(<tree2>, index2) ). 
+**  equal left(tree(<tree2>, index2) ).
 */
 static Int Earlier(Obj tree1, Int index1, Obj tree2, Int index2)
 {
@@ -757,7 +757,7 @@ static Int Earlier(Obj tree1, Int index1, Obj tree2, Int index2)
         return  1;
     if  ( DT_LENGTH(tree2, index2) == 1 )
         return  0;
-    if ( Equal(tree1, DT_RIGHT(tree1, index1), 
+    if ( Equal(tree1, DT_RIGHT(tree1, index1),
                tree2, DT_RIGHT(tree2, index2)  ) )
         return Leftof(tree1, DT_LEFT(tree2, index2),
                       tree2, DT_LEFT(tree1, index1)  );
@@ -930,7 +930,7 @@ static void GetReps(Obj list, Obj reps)
 **  FindNewReps2 computes for each found tree the corresponding deep thought
 **  monomial adds these deep thought monomials to <reps>.  This version
 **  is called from GetPols.
-**  The third version FindNewReps finally assumes that <reps> is the list of 
+**  The third version FindNewReps finally assumes that <reps> is the list of
 **  pseudorepresentatives. This Version adds all found trees to <reps> and
 **  additionally all trees, that fulfill 1), 2) and 3) except for
 **  num(<tree'>) = num(<tree>).  This version is called from the library
@@ -971,7 +971,7 @@ static void FindNewReps1(Obj tree, Obj reps)
           m,           /*  Length of rsubs                               */
           i;           /*  loop variable                                 */
 
-    /*  get a subtree of right(<tree>) which is unmarked but whose 
+    /*  get a subtree of right(<tree>) which is unmarked but whose
     **  subtrees are all marked                                          */
     a = FindTree(tree, DT_RIGHT(tree, 1) );
     /*  If we do not find such a tree we at the bottom of the recursion.
@@ -1070,7 +1070,7 @@ FindNewReps2(Obj tree, Obj reps, Obj pr /*  pc-presentation for a
           m,           /*  Length of rsubs                               */
           i;           /*  loop variable                                 */
 
-    /*  get a subtree of right(<tree>) which is unmarked but whose 
+    /*  get a subtree of right(<tree>) which is unmarked but whose
     **  subtrees are all marked                                          */
     a = FindTree(tree, DT_RIGHT(tree, 1) );
     /*  If we do not find such a tree we at the bottom of the recursion.
@@ -1082,7 +1082,7 @@ FindNewReps2(Obj tree, Obj reps, Obj pr /*  pc-presentation for a
         if ( Leftof(tree, DT_LEFT(tree, 1), tree, DT_RIGHT(tree, 1) )  )
         {
                 /*  get the formula vector of tree and add it to
-                **  reps[ rel[1] ].                                */  
+                **  reps[ rel[1] ].                                */
             UnmarkTree(tree);
             tree = MakeFormulaVector( tree, pr);
             CALL_3ARGS(Dt_add, tree, reps, pr);
@@ -1167,12 +1167,12 @@ static void FindNewReps(Obj tree,
           m,           /*  Length of rsubs                               */
           i, lenrel;   /*  loop variable                                 */
 
-    /*  get a subtree of right(<tree>) which is unmarked but whose 
+    /*  get a subtree of right(<tree>) which is unmarked but whose
     **  subtrees are all marked                                          */
     a = FindTree(tree, DT_RIGHT(tree, 1) );
     /*  If we do not find such a tree we at the bottom of the recursion.
     **  If leftof(left(<tree>),  right(<tree>) ) holds we add all trees
-    **  <tree'> with left(<tree'>) = left(<tree>), 
+    **  <tree'> with left(<tree'>) = left(<tree>),
     **  right(<tree'>) = right(<tree>) to <reps>,  and <tree'> is the
     **  least element in its equivalence class.  Note that for such a
     **  tree we have pos(<tree'>) = 1 and num(<tree'>) = j where j is a
@@ -1185,7 +1185,7 @@ static void FindNewReps(Obj tree,
         if ( Leftof(tree, DT_LEFT(tree, 1), tree, DT_RIGHT(tree, 1) )  )
         {
             /*  get  pr[ num(left(<tree>)) ][ num(right(<tree>)) ]      */
-            rel = ELM_PLIST( ELM_PLIST(pr, INT_INTOBJ( DT_GEN(tree, 
+            rel = ELM_PLIST( ELM_PLIST(pr, INT_INTOBJ( DT_GEN(tree,
                                                          DT_LEFT(tree, 1)))) ,
                              INT_INTOBJ( DT_GEN(tree, DT_RIGHT(tree, 1) ) )  );
             if  ( ELM_PLIST(rel, 3) > max )
@@ -1199,9 +1199,9 @@ static void FindNewReps(Obj tree,
             {
                 y = ShallowCopyPlist(tree);
                 lenrel = LEN_PLIST(rel);
-                for  (  i=3;  
+                for  (  i=3;
                         i < lenrel  &&
-                        ELM_PLIST(rel, i) <= max;  
+                        ELM_PLIST(rel, i) <= max;
                         i+=2                                        )
                 {
                     list1 = ELM_PLIST(reps, CELM(rel, i)  );
@@ -1277,7 +1277,7 @@ static Obj FuncFindNewReps(Obj self, Obj tree, Obj reps, Obj pr, Obj max)
 #endif
     if (LEN_PLIST(tree) < 15)
         ErrorMayQuit("<tree> must be a tree not a plain list", 0, 0);
-    FindNewReps(tree, reps, pr, max);   
+    FindNewReps(tree, reps, pr, max);
     return  0;
 }
 
@@ -1310,13 +1310,13 @@ static void  TestTree(
     if ( DT_SIDE(tree, 1) <= 1 )
         ErrorMayQuit("<tree> must be a tree, not a plain list", 0, 0);
     if (DT_LENGTH(tree, 1) !=
-          DT_LENGTH(tree, DT_LEFT(tree, 1)) + 
-          DT_LENGTH(tree, DT_RIGHT(tree, 1)) +  
+          DT_LENGTH(tree, DT_LEFT(tree, 1)) +
+          DT_LENGTH(tree, DT_RIGHT(tree, 1)) +
           1                                           )
         ErrorMayQuit("<tree> must be a tree, not a plain list", 0, 0);
     if ( DT_SIDE(tree, 1) != DT_LENGTH(tree, DT_LEFT(tree, 1) ) + 1 )
         ErrorMayQuit("<tree> must be a tree, not a plain list", 0, 0);
-    TestTree( Part(tree, (DT_LEFT(tree, 1) - 1)*7, 
+    TestTree( Part(tree, (DT_LEFT(tree, 1) - 1)*7,
                          (DT_RIGHT(tree, 1) - 1)*7                    )    );
     TestTree( Part(tree, (DT_RIGHT(tree, 1) - 1)*7,  LEN_PLIST(tree) ) );
 }
@@ -1353,7 +1353,7 @@ static Obj    Part(
 /***************************************************************************
 **
 *F  FindSubs(<tree>,<x>,<list1>,<list2>,<a>,<b>,<al>,<ar>,<bl>,<br>,<reps>,
-**           <pr>,<max>  ) . . . . . . . . . find possible pos-arguments for 
+**           <pr>,<max>  ) . . . . . . . . . find possible pos-arguments for
 **                                           the trees in <list1> and <list2>
 **
 **  'FindSubs' finds all possibilities for a and b such that
@@ -1367,11 +1367,11 @@ static Obj    Part(
 v**  argument.
 **
 **  It is assumed that the conditions 1) and 2) hold for a{ [1..al-1] } and
-**  b{ [1..bl-1] }.  
+**  b{ [1..bl-1] }.
 **
 **  There are three versions of FindSubs according to the three versions of
 **  FindNewReps.  FindSubs1 is called from FindNewReps1 and calls
-**  FindNewReps1.  FindSubs2 is called from FindNewReps2 and calls 
+**  FindNewReps1.  FindSubs2 is called from FindNewReps2 and calls
 **  FindNewReps2.  FindSubs is called from FindNewReps and calls FindNewReps.
 */
 
@@ -1416,10 +1416,10 @@ static void FindSubs1(Obj tree,
    **  pos(tree<tree>, x).  But since the trees in <list1> are almost
    **  equal to tree(<tree>, x) they have all the same boundary for their
    **  pos-argument as tree(<tree>, x).  So these statements are only
-   **  executed when <a>[ar] is less than the boundary of 
+   **  executed when <a>[ar] is less than the boundary of
    **  pos(tree(<tree>, x).
    */
-   if ( INT_INTOBJ( DT_MAX(tree, x) ) <= 0  ||  
+   if ( INT_INTOBJ( DT_MAX(tree, x) ) <= 0  ||
         ELM_PLIST(a, ar) < DT_MAX(tree, x)   )
    {
        for (i=al; i<=ar; i++)
@@ -1436,7 +1436,7 @@ static void FindSubs1(Obj tree,
    **  pos(tree<tree>, x).  But since the trees in <list2> are almost
    **  equal to tree(<tree>, x) they have all the same boundary for their
    **  pos-argument as tree(<tree>, x).  So these statements are only
-   **  executed when <b>[br] is less than the boundary of 
+   **  executed when <b>[br] is less than the boundary of
    **  pos(tree(<tree>, x).
    */
    if ( INT_INTOBJ( DT_MAX(tree, x) ) <= 0  ||
@@ -1493,10 +1493,10 @@ static void FindSubs2(Obj tree,
    **  pos(tree<tree>, x).  But since the trees in <list1> are almost
    **  equal to tree(<tree>, x) they have all the same boundary for their
    **  pos-argument as tree(<tree>, x).  So these statements are only
-   **  executed when <a>[ar] is less than the boundary of 
+   **  executed when <a>[ar] is less than the boundary of
    **  pos(tree(<tree>, x).
    */
-   if ( INT_INTOBJ( DT_MAX(tree, x) ) <= 0  ||  
+   if ( INT_INTOBJ( DT_MAX(tree, x) ) <= 0  ||
         ELM_PLIST(a, ar) < DT_MAX(tree, x)   )
    {
        for (i=al; i<=ar; i++)
@@ -1513,7 +1513,7 @@ static void FindSubs2(Obj tree,
    **  pos(tree<tree>, x).  But since the trees in <list2> are almost
    **  equal to tree(<tree>, x) they have all the same boundary for their
    **  pos-argument as tree(<tree>, x).  So these statements are only
-   **  executed when <b>[br] is less than the boundary of 
+   **  executed when <b>[br] is less than the boundary of
    **  pos(tree(<tree>, x).
    */
    if ( INT_INTOBJ( DT_MAX(tree, x) ) <= 0  ||
@@ -1571,10 +1571,10 @@ static void FindSubs(Obj tree,
    **  pos(tree<tree>, x).  But since the trees in <list1> are almost
    **  equal to tree(<tree>, x) they have all the same boundary for their
    **  pos-argument as tree(<tree>, x).  So these statements are only
-   **  executed when <a>[ar] is less than the boundary of 
+   **  executed when <a>[ar] is less than the boundary of
    **  pos(tree(<tree>, x).
    */
-   if ( INT_INTOBJ( DT_MAX(tree, x) ) <= 0  ||  
+   if ( INT_INTOBJ( DT_MAX(tree, x) ) <= 0  ||
         ELM_PLIST(a, ar) < DT_MAX(tree, x)   )
    {
        for (i=al; i<=ar; i++)
@@ -1591,7 +1591,7 @@ static void FindSubs(Obj tree,
    **  pos(tree<tree>, x).  But since the trees in <list2> are almost
    **  equal to tree(<tree>, x) they have all the same boundary for their
    **  pos-argument as tree(<tree>, x).  So these statements are only
-   **  executed when <b>[br] is less than the boundary of 
+   **  executed when <b>[br] is less than the boundary of
    **  pos(tree(<tree>, x).
    */
    if ( INT_INTOBJ( DT_MAX(tree, x) ) <= 0  ||
@@ -1609,7 +1609,7 @@ static void FindSubs(Obj tree,
 /****************************************************************************
 **
 *F  SetSubs(<list>, <a>, <tree>) . . . . . . . . . . .. .  set pos-arguments
-** 
+**
 **  'SetSubs' sets the pos-arguments of the subtrees of <tree>,  contained
 **  in <list> according to the entries in the list <a>.
 */
@@ -1617,7 +1617,7 @@ static void SetSubs(Obj list, Obj a, Obj tree)
 {
     UInt   i,j;  /*  loop variables                                         */
     UInt   len, len2;
-    
+
     len = LEN_PLIST(list);
     for  (i=1; i <= len; i++)
     {

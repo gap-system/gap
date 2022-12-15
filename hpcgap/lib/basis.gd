@@ -349,12 +349,12 @@ DeclareAttribute( "BasisVectors", IsBasis );
 ##  gap> V:= GF(2)^3;;
 ##  gap> enum:= EnumeratorByBasis( CanonicalBasis( V ) );;
 ##  gap> Print( enum{ [ 1 .. 4 ] }, "\n" );
-##  [ [ 0*Z(2), 0*Z(2), 0*Z(2) ], [ 0*Z(2), 0*Z(2), Z(2)^0 ], 
+##  [ [ 0*Z(2), 0*Z(2), 0*Z(2) ], [ 0*Z(2), 0*Z(2), Z(2)^0 ],
 ##    [ 0*Z(2), Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0, Z(2)^0 ] ]
 ##  gap> B:= Basis( V, [ [ 1, 1, 1 ], [ 1, 1, 0 ], [ 1, 0, 0 ] ] * Z(2) );;
 ##  gap> enum:= EnumeratorByBasis( B );;
 ##  gap> Print( enum{ [ 1 .. 4 ] }, "\n" );
-##  [ [ 0*Z(2), 0*Z(2), 0*Z(2) ], [ Z(2)^0, 0*Z(2), 0*Z(2) ], 
+##  [ [ 0*Z(2), 0*Z(2), 0*Z(2) ], [ Z(2)^0, 0*Z(2), 0*Z(2) ],
 ##    [ Z(2)^0, Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0, 0*Z(2) ] ]
 ##  ]]></Example>
 ##  </Description>
@@ -413,13 +413,13 @@ DeclareAttribute( "EnumeratorByBasis", IsBasis );
 ##  <Example><![CDATA[
 ##  gap> A:= QuaternionAlgebra( Rationals );;
 ##  gap> StructureConstantsTable( Basis( A ) );
-##  [ [ [ [ 1 ], [ 1 ] ], [ [ 2 ], [ 1 ] ], [ [ 3 ], [ 1 ] ], 
-##        [ [ 4 ], [ 1 ] ] ], 
-##    [ [ [ 2 ], [ 1 ] ], [ [ 1 ], [ -1 ] ], [ [ 4 ], [ 1 ] ], 
-##        [ [ 3 ], [ -1 ] ] ], 
-##    [ [ [ 3 ], [ 1 ] ], [ [ 4 ], [ -1 ] ], [ [ 1 ], [ -1 ] ], 
-##        [ [ 2 ], [ 1 ] ] ], 
-##    [ [ [ 4 ], [ 1 ] ], [ [ 3 ], [ 1 ] ], [ [ 2 ], [ -1 ] ], 
+##  [ [ [ [ 1 ], [ 1 ] ], [ [ 2 ], [ 1 ] ], [ [ 3 ], [ 1 ] ],
+##        [ [ 4 ], [ 1 ] ] ],
+##    [ [ [ 2 ], [ 1 ] ], [ [ 1 ], [ -1 ] ], [ [ 4 ], [ 1 ] ],
+##        [ [ 3 ], [ -1 ] ] ],
+##    [ [ [ 3 ], [ 1 ] ], [ [ 4 ], [ -1 ] ], [ [ 1 ], [ -1 ] ],
+##        [ [ 2 ], [ 1 ] ] ],
+##    [ [ [ 4 ], [ 1 ] ], [ [ 3 ], [ 1 ] ], [ [ 2 ], [ -1 ] ],
 ##        [ [ 1 ], [ -1 ] ] ], 0, 0 ]
 ##  ]]></Example>
 ##  </Description>
@@ -503,7 +503,7 @@ DeclareOperation( "Coefficients", [ IsBasis, IsVector ] );
 ##  <Ref Oper="LinearCombination"/> returns the vector
 ##  <M>\sum_{{i = 1}}^n <A>coeff</A>[i] * <A>B</A>[i]</M>.
 ##  <P/>
-##  Perhaps the most important usage is the case where <A>B</A> forms a 
+##  Perhaps the most important usage is the case where <A>B</A> forms a
 ##  basis.
 ##  <Example><![CDATA[
 ##  gap> V:= VectorSpace( Rationals, [ [ 1, 2, 7 ], [ 1/2, 1/3, 5 ] ] );;
@@ -621,12 +621,12 @@ DeclareOperation( "IteratorByBasis", [ IsBasis ] );
 ##  <Example><![CDATA[
 ##  gap> V:= VectorSpace( Rationals, [ [ 1, 2, 7 ], [ 1/2, 1/3, 5 ] ] );;
 ##  gap> B:= Basis( V );
-##  SemiEchelonBasis( <vector space over Rationals, with 
+##  SemiEchelonBasis( <vector space over Rationals, with
 ##  2 generators>, ... )
 ##  gap> BasisVectors( B );
 ##  [ [ 1, 2, 7 ], [ 0, 1, -9/4 ] ]
 ##  gap> B:= Basis( V, [ [ 1, 2, 7 ], [ 3, 2, 30 ] ] );
-##  Basis( <vector space over Rationals, with 2 generators>, 
+##  Basis( <vector space over Rationals, with 2 generators>,
 ##  [ [ 1, 2, 7 ], [ 3, 2, 30 ] ] )
 ##  gap> Basis( V, [ [ 1, 2, 3 ] ] );
 ##  fail

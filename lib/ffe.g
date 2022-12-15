@@ -54,7 +54,7 @@ BIND_GLOBAL( "TYPE_FFE0", MemoizePosIntFunction(
         local fam;
 
         fam:= FamilyType(TYPE_FFE(p));
-        return NewType( fam, IS_FFE and IsInternalRep and IsZero and HasIsZero 
+        return NewType( fam, IS_FFE and IsInternalRep and IsZero and HasIsZero
                             and HasDegreeFFE );
     end, rec(flush := false) ));
 
@@ -122,7 +122,7 @@ InstallOtherMethod( \*,
       return PROD_INT_OBJ( int, ffe );
     fi;
 end );
-        
+
 
 #############################################################################
 ##
@@ -143,7 +143,7 @@ end );
 #T  then either <z> can be represented in the field of <r> or the logarithm
 #T  does not exist.
 ##
-    
+
 DeclareOperation("SUM_FFE_LARGE", [IsFFE and IsInternalRep,
         IsFFE and IsInternalRep]);
 

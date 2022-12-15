@@ -21,20 +21,20 @@
 ##
 ##  <Description>
 ##  returns a reduced confluent rewriting system of
-##  the finitely presented semigroup or monoid <A>S</A> with respect to the 
-##  reduction ordering <A>ordering</A> (see <Ref Chap="Orderings"/>). 
+##  the finitely presented semigroup or monoid <A>S</A> with respect to the
+##  reduction ordering <A>ordering</A> (see <Ref Chap="Orderings"/>).
 ##  <P/>
 ##  The default for <A>ordering</A> is the length plus lexicographic ordering
 ##  on words, also called the shortlex ordering; for the definition see for
 ##  example <Cite Key="Sims94"/>.
 ##  <P/>
-##  Notice that this might not terminate. In particular, if the semigroup or 
+##  Notice that this might not terminate. In particular, if the semigroup or
 ##  monoid <A>S</A> does not have a solvable word problem then it this will
 ##  certainly never end.
-##  Also, in this case, the object returned is an immutable 
+##  Also, in this case, the object returned is an immutable
 ##  rewriting system, because once we have a confluent
-##  rewriting system for a finitely presented semigroup or monoid we do 
-##  not want to allow it to change (as it was most probably very time 
+##  rewriting system for a finitely presented semigroup or monoid we do
+##  not want to allow it to change (as it was most probably very time
 ##  consuming to get it in the first place). Furthermore, this is also
 ##  an attribute storing object (see <Ref Sect="Representation"/>).
 ##  <P/>
@@ -43,13 +43,13 @@
 ##  gap> a := f.1;;  b := f.2;;
 ##  gap> s := f / [ [ a*b*a, b ], [ b*a*b, a ] ];;
 ##  gap> rws := ReducedConfluentRewritingSystem( s );
-##  Rewriting System for Semigroup( [ a, b ] ) with rules 
-##  [ [ a*b*a, b ], [ b*a*b, a ], [ b*a^2, a^2*b ], [ b^2, a^2 ], [ a^3*b, b*a ], 
+##  Rewriting System for Semigroup( [ a, b ] ) with rules
+##  [ [ a*b*a, b ], [ b*a*b, a ], [ b*a^2, a^2*b ], [ b^2, a^2 ], [ a^3*b, b*a ],
 ##    [ a^5, a ] ]
 ##  gap> c := s.1;;  d := s.2;;
 ##  gap> e := (c*d^2)^3;
 ##  (a*b^2)^3
-##  gap> ## ReducedForm( rws, e );  gives an error! 
+##  gap> ## ReducedForm( rws, e );  gives an error!
 ##  gap> w := UnderlyingElement( e );
 ##  (a*b^2)^3
 ##  gap> ReducedForm( rws, w );
@@ -58,9 +58,9 @@
 ##  <P/>
 ##  The creation of a reduced confluent rewriting system for a semigroup
 ##  or for a monoid, in &GAP;, uses the Knuth-Bendix procedure for strings,
-##  which manipulates a rewriting system of the semigroup or monoid and 
-##  attempts to make it confluent, 
-##  (see Chapter <Ref Chap="Rewriting Systems"/> 
+##  which manipulates a rewriting system of the semigroup or monoid and
+##  attempts to make it confluent,
+##  (see Chapter <Ref Chap="Rewriting Systems"/>
 ##  and also Sims <Cite Key="Sims94"/>).
 ##  (Since the word problem for semigroups/monoids is not solvable in general,
 ##  the Knuth-Bendix procedure cannot always terminate).
@@ -103,7 +103,7 @@ DeclareAttribute("ReducedConfluentRewritingSystem",IsSemigroup);
 ##
 ##  <Description>
 ##  returns the free semigroup or monoid over which <A>rws</A> is
-##  a rewriting system. 
+##  a rewriting system.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> f1 := FreeSemigroupOfRewritingSystem( rws );
@@ -160,11 +160,11 @@ DeclareAttribute("FamilyForRewritingSystem", IsRewritingSystem);
 ##
 ##  <Description>
 ##  Here <A>w</A> is a word of a free monoid or a free semigroup in tz
-##  representation, and <A>tzrules</A> are rules in tz representation. 
+##  representation, and <A>tzrules</A> are rules in tz representation.
 ##  This function returns the reduced word in tz representation.
 ##  <P/>
-##  All lists in <A>tzrules</A> as well as <A>w</A> must be plain lists, 
-##  the entries must be small integers. 
+##  All lists in <A>tzrules</A> as well as <A>w</A> must be plain lists,
+##  the entries must be small integers.
 ##  (The behaviour otherwise is unpredictable.)
 ##  </Description>
 ##  </ManSection>

@@ -45,12 +45,12 @@ end );
 
 ITER_POLY_WARN:=true;
 
-InstallMethod( LaurentPolynomialByCoefficients, 
+InstallMethod( LaurentPolynomialByCoefficients,
   "warn about iterated polynomials", true,
     [ IsFamily and HasCoefficientsFamily, IsList, IsInt, IsInt ], 0,
 function( fam, cofs, val, ind )
   # catch algebraic extensions
-  if ITER_POLY_WARN=true and not IsBound(fam!.primitiveElm) 
+  if ITER_POLY_WARN=true and not IsBound(fam!.primitiveElm)
     # also sc rings are fine.
     and not IsBound(fam!.moduli) then
     Info(InfoWarning,1,
@@ -143,7 +143,7 @@ function(f);
   return ShiftedCoeffs(f[1],f[2]);
 end );
 
-RedispatchOnCondition( CoefficientsOfUnivariatePolynomial, true, 
+RedispatchOnCondition( CoefficientsOfUnivariatePolynomial, true,
     [ IsPolynomialFunction ], [ IsUnivariatePolynomial ], 0);
 
 #############################################################################
@@ -218,7 +218,7 @@ local d,x;
     fi;
     x:=IndeterminateNumberOfLaurentPolynomial(f);
     d:=DegreeOfLaurentPolynomial(g);
-    if d<>0 and d<>DEGREE_ZERO_LAURPOL and 
+    if d<>0 and d<>DEGREE_ZERO_LAURPOL and
        x<>IndeterminateNumberOfLaurentPolynomial(g) then
       return fail;
     fi;
@@ -233,7 +233,7 @@ end );
 #M  ExtRepNumeratorRatFun(<ulaurent>)
 ##
 InstallMethod(ExtRepNumeratorRatFun,"laurent polynomial rep.",true,
-  [IsLaurentPolynomialDefaultRep],0, 
+  [IsLaurentPolynomialDefaultRep],0,
 function(f)
 local c;
   c:=CoefficientsOfLaurentPolynomial(f);
@@ -248,7 +248,7 @@ end);
 #M  ExtRepDenominatorRatFun(<ulaurent>)
 ##
 InstallMethod(ExtRepDenominatorRatFun,"laurent polynomial rep.",true,
-  [IsLaurentPolynomialDefaultRep and IsRationalFunction],0, 
+  [IsLaurentPolynomialDefaultRep and IsRationalFunction],0,
 function(obj)
 local   cofs,  val,  ind,  quo;
 
@@ -259,17 +259,17 @@ local   cofs,  val,  ind,  quo;
     val  := cofs[2];
     cofs := cofs[1];
     ind  := IndeterminateNumberOfUnivariateRationalFunction(obj);
-		
+
     # This is to compute the denominator
-			
+
     if val < 0  then
         quo := [ [ ind, -val ], FamilyObj(obj)!.oneCoefficient ];
 		else
 		  quo := [ [],  FamilyObj(obj)!.oneCoefficient ];
-    fi; 
-    
+    fi;
+
     return quo;
-    
+
 end);
 
 #############################################################################
@@ -790,7 +790,7 @@ function(a,b)
 local ac,bc;
   ac:=CoefficientsOfLaurentPolynomial(a);
   bc:=CoefficientsOfLaurentPolynomial(b);
-  if ac<>bc then 
+  if ac<>bc then
     return false;
   fi;
   # is the indeterminate important?
@@ -815,7 +815,7 @@ local ac,bc,l,m,z,da,db;
 
   # we have problems if they have (truly) different indeterminate numbers
   # (i.e.: both are not constant and the indnums differ
-  if (ac[2]<>0 or Length(ac[1])>1) and (bc[2]<>0 or Length(bc[1])>1) and 
+  if (ac[2]<>0 or Length(ac[1])>1) and (bc[2]<>0 or Length(bc[1])>1) and
     IndeterminateNumberOfLaurentPolynomial(a)<>
      IndeterminateNumberOfLaurentPolynomial(b) then
     TryNextMethod();
@@ -929,7 +929,7 @@ InstallOtherMethod(EuclideanDegree,"univariate",true,
 
 InstallOtherMethod(EuclideanDegree,"laurent,ring",IsCollsElms,
   [IsPolynomialRing,IsLaurentPolynomial],0,
-function(R,a) 
+function(R,a)
   return DegreeOfLaurentPolynomial(a);
 end);
 
@@ -1117,7 +1117,7 @@ local t,i,x;
   x:=IndeterminateOfUnivariateRationalFunction(f);
   t:=Zero(f);
   for i in [0..deg] do
-    if i>0 then 
+    if i>0 then
       f:=Derivative(f);
     fi;
     t:=t+Value(f,at)*(x-at)^i/Factorial(i);
@@ -1223,9 +1223,9 @@ BindGlobal("StringUnivariateLaurent",function(fam,cofs,val,name)
   lc:=Length(cofs);
   if cofs[lc] = zero then
     # assume that there is at least one non-zero coefficient
-    repeat 
+    repeat
       lc:=lc-1;
-    until cofs[lc]<>zero;  
+    until cofs[lc]<>zero;
   fi;
   for i  in [ lc,lc-1..1 ]  do
     if cofs[i] <> zero  then
@@ -1439,7 +1439,7 @@ RedispatchOnCondition( CoefficientsOfLaurentPolynomial, true,
 #M  ExtRepNumeratorRatFun(<univariate>)
 ##
 InstallMethod(ExtRepNumeratorRatFun,"univariate",true,
-  [IsUnivariateRationalFunction],0, 
+  [IsUnivariateRationalFunction],0,
 function(f)
 local c;
   c:=CoefficientsOfUnivariateRationalFunction(f);
@@ -1454,7 +1454,7 @@ end);
 #M  ExtRepDenominatorRatFun(<univariate>)
 ##
 InstallMethod(ExtRepDenominatorRatFun,"univariate",true,
-  [IsUnivariateRationalFunction],0, 
+  [IsUnivariateRationalFunction],0,
 function(f)
 local c;
   c:=CoefficientsOfUnivariateRationalFunction(f);
@@ -1499,7 +1499,7 @@ local   cofs,  indn;
 
   indn := IndeterminateNumberOfUnivariateRationalFunction(obj);
   cofs := CoefficientsOfUnivariateRationalFunction(obj);
-  
+
   if Length(cofs[1])=0 then
     return fail;
   elif Length(cofs[1])=1 then
@@ -1510,8 +1510,8 @@ local   cofs,  indn;
     # swap numerator and denominator and invert the valuation
     return UnivariateRationalFunctionByExtRepNC(FamilyObj(obj),
       cofs[2],cofs[1],-cofs[3],indn );
-  fi;   
-  
+  fi;
+
 end );
 
 #############################################################################
@@ -1593,7 +1593,7 @@ local   fam, tmp;
     return UnivariateRationalFunctionByExtRepNC(fam,[], tmp[2],tmp[3],
 	    IndeterminateNumberOfUnivariateRationalFunction(univ));
   else
-    # Here we use ShallowCopy to avoid access errors later when CLONE_OBJ 
+    # Here we use ShallowCopy to avoid access errors later when CLONE_OBJ
     # will be called from coef*tmp[1] and will try to modify tmp
     return UnivariateRationalFunctionByExtRepNC(fam,coef*ShallowCopy(tmp[1]), tmp[2],tmp[3],
 	    IndeterminateNumberOfUnivariateRationalFunction(univ));

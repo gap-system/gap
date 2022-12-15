@@ -576,7 +576,7 @@ void AssListObject(Obj list, Int pos, Obj obj);
 **  A  package implementing a list  type <type> must  provide such a function
 **  and install it in  'IsTableListFuncs[<type>]'.   This function must  loop
 **  over the list and test whether  all elements lie  in the same family, are
-**  homogenous lists, and have  the same length, unless the  type of the list
+**  homogeneous lists, and have  the same length, unless the type of the list
 **  guarantees already that the list has this property.
 */
 

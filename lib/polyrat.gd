@@ -88,7 +88,7 @@ DeclareGlobalFunction("BombieriNorm");
 ##  <Attr Name="MinimizedBombieriNorm" Arg='f'/>
 ##
 ##  <Description>
-##  This function applies linear Tschirnhaus transformations 
+##  This function applies linear Tschirnhaus transformations
 ##  (<M>x \mapsto x + i</M>) to the
 ##  polynomial <A>f</A>, trying to get the Bombieri norm of <A>f</A> small. It returns a
 ##  list <C>[<A>new_polynomial</A>, <A>i_of_transformation</A>]</C>.
@@ -107,7 +107,7 @@ DeclareAttribute("MinimizedBombieriNorm",
 ##  <Func Name="RootBound" Arg='f'/>
 ##
 ##  <Description>
-##  returns the bound for the norm of (complex) roots of the rational 
+##  returns the bound for the norm of (complex) roots of the rational
 ##  univariate polynomial <A>f</A>.
 ##  </Description>
 ##  </ManSection>
@@ -123,7 +123,7 @@ DeclareGlobalFunction("RootBound");
 ##  <Func Name="OneFactorBound" Arg='pol'/>
 ##
 ##  <Description>
-##  returns the coefficient bound for a single factor of the rational 
+##  returns the coefficient bound for a single factor of the rational
 ##  polynomial <A>pol</A>.
 ##  </Description>
 ##  </ManSection>

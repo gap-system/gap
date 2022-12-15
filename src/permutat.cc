@@ -523,7 +523,7 @@ static Obj PowPermInt(Obj opL, Obj opR)
 
 
     /* handle zeroth and first powers and stored inverses separately */
-    if ( opR == INTOBJ_INT(0)) 
+    if ( opR == INTOBJ_INT(0))
       return IdentityPerm;
     if ( opR == INTOBJ_INT(1))
       return opL;
@@ -1195,7 +1195,7 @@ static Obj FuncSMALLEST_MOVED_POINT_PERM(Obj self, Obj perm)
 
 /****************************************************************************
 **
-*F  FuncCYCLE_LENGTH_PERM_INT( <self>, <perm>, <point> ) . . . . . . . . . . 
+*F  FuncCYCLE_LENGTH_PERM_INT( <self>, <perm>, <point> ) . . . . . . . . . .
 *F  . . . . . . . . . . . . . . . . . . length of a cycle under a permutation
 **
 **  'FuncCycleLengthInt' implements the internal function
@@ -2338,7 +2338,7 @@ static inline Int myquo(Obj pt, Obj perm)
   else
     return INT_INTOBJ(QUO(pt, perm));
 }
-  
+
 
 /* Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop */
 static Obj FuncAGESTC(Obj self, Obj args)
@@ -2364,7 +2364,7 @@ static Obj FuncAGESTC(Obj self, Obj args)
       oj = ELM_PLIST(newlabs,j);
       lj = ELM_PLIST(labels, INT_INTOBJ(oj));
       img = myquo(pt, lj);
-      if (img <= LEN_PLIST(translabels) && (Obj)0 != ELM_PLIST(translabels,img)) 
+      if (img <= LEN_PLIST(translabels) && (Obj)0 != ELM_PLIST(translabels,img))
         ASS_LIST(cycles, i, True);
       else {
         ASS_LIST(translabels, img, oj);
@@ -2380,7 +2380,7 @@ static Obj FuncAGESTC(Obj self, Obj args)
       oj = ELM_PLIST(genlabels, j);
       lj = ELM_PLIST(labels, INT_INTOBJ(oj));
       img = myquo(pt, lj);
-      if (img <= LEN_PLIST(translabels) && (Obj)0 != ELM_PLIST(translabels,img)) 
+      if (img <= LEN_PLIST(translabels) && (Obj)0 != ELM_PLIST(translabels,img))
         ASS_LIST(cycles, i, True);
       else {
         ASS_LIST(translabels, img, oj);

@@ -8,7 +8,7 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 
-# represent vectors/matrices over Z/nZ by nonnegative integer lists 
+# represent vectors/matrices over Z/nZ by nonnegative integer lists
 # in the range [0..n-1], but reduce after
 # arithmetic. This way avoid always wrapping all entries separately
 

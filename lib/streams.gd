@@ -21,13 +21,13 @@
 ##  the stream, and delivers them to some destination.
 ##  <P/>
 ##  A major use of streams is to provide efficient and flexible access to
-##  files.  Files can be read and written using 
+##  files.  Files can be read and written using
 ##  <Ref Oper="Read"/> and <Ref Func="AppendTo"/>,
 ##  however the former only allows a complete file to be read as &GAP;
 ##  input and the latter imposes a high time penalty if many small pieces of
 ##  output are written to a large file. Streams allow input files in other
 ##  formats to be read and processed, and files to be built up efficiently
-##  from small pieces of output. Streams may also be used for other purposes, 
+##  from small pieces of output. Streams may also be used for other purposes,
 ##  for example to read from and print to &GAP; strings, or to read input
 ##  directly from the user.
 ##  <P/>
@@ -44,9 +44,9 @@
 ##  it is   necessary   to close   a  stream  as   soon as   possible  using
 ##  <Ref Oper="CloseStream"/>.   If creating  a stream
 ##  failed then <Ref Func="LastSystemError"/> can be used to get
-##  information about the failure. 
+##  information about the failure.
 ##  <#/GAPDoc>
-## 
+##
 
 
 #############################################################################
@@ -278,7 +278,7 @@ DeclareOperation( "IsEndOfStream", [ IsInputStream ] );
 ##  Some input streams, such as string streams and file streams attached to
 ##  disk files, support a form of random access by way of the operations
 ##  <Ref Oper="PositionStream"/>, <Ref Oper="SeekPositionStream"/> and
-##  <Ref Oper="RewindStream"/>. <Ref Oper="PositionStream"/> 
+##  <Ref Oper="RewindStream"/>. <Ref Oper="PositionStream"/>
 ##  returns a non-negative integer denoting
 ##  the current position in the stream (usually the number of characters
 ##  <E>before</E> the next one to be read.
@@ -318,9 +318,9 @@ DeclareOperation( "PositionStream", [ IsInputStream ] );
 ##  <P/>
 ##  With a second argument, at most <A>limit</A> bytes will be
 ##  returned. Depending on the stream a bounded number of additional bytes
-##  may have been read into an internal buffer.  
+##  may have been read into an internal buffer.
 ##  <P/>
-##  A default method is supplied for <Ref Oper="ReadAll"/> which simply calls 
+##  A default method is supplied for <Ref Oper="ReadAll"/> which simply calls
 ##  <Ref Oper="ReadLine"/> repeatedly.
 ##  This is only really safe for streams which cannot block.
 ##  Other streams should install a method for <Ref Oper="ReadAll"/>
@@ -382,7 +382,7 @@ DeclareOperation( "ReadAll", [ IsInputStream, IsInt ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "ReadByte", [ IsInputStream ] );
-                    
+
 
 #############################################################################
 ##
@@ -404,7 +404,7 @@ DeclareOperation( "ReadByte", [ IsInputStream ] );
 ##  as is available, up to a limit of one  line
 ##  <P/>
 ##  A default method is supplied for <Ref Oper="ReadLine"/> which simply calls <Ref Oper="ReadByte"/>
-##  repeatedly. This is only safe for streams that cannot block. The kernel 
+##  repeatedly. This is only safe for streams that cannot block. The kernel
 ##  uses calls to <Ref Oper="ReadLine"/> to supply input to the
 ##  parser when reading from a stream.
 ##  </Description>
@@ -537,7 +537,7 @@ DeclareOperation( "SeekPositionStream", [ IsInputStream, IsInt ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "WriteAll", [ IsOutputStream, IsString ] );
-                    
+
 
 #############################################################################
 ##
@@ -561,7 +561,7 @@ DeclareOperation( "WriteAll", [ IsOutputStream, IsString ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "WriteByte", [ IsOutputStream, IsInt ] );
-                    
+
 
 #############################################################################
 ##
@@ -582,7 +582,7 @@ DeclareOperation( "WriteByte", [ IsOutputStream, IsInt ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "WriteLine", [ IsOutputStream, IsString ] );
-                    
+
 
 #############################################################################
 ##
@@ -713,7 +713,7 @@ DeclareGlobalFunction( "InputTextUser" );
 ##  returns an output stream that puts all received characters into the list
 ##  <A>list</A>.
 ##  If <A>append</A> is <K>false</K>, then the list is emptied first,
-##  otherwise received characters are added at the end of the list. 
+##  otherwise received characters are added at the end of the list.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> # read input from a string
@@ -802,14 +802,14 @@ DeclareOperation( "OutputGzipFile", [ IsString, IsBool ] );
 ##  <Func Name="OutputTextNone" Arg=''/>
 ##
 ##  <Description>
-##  returns a dummy output stream, which discards all received characters. 
+##  returns a dummy output stream, which discards all received characters.
 ##  Its main use is for calls to <Ref Oper="Process"/> when the started
 ##  program does not write anything.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-  
+
 UNBIND_GLOBAL( "OutputTextNone" );
 DeclareGlobalFunction( "OutputTextNone" );
 
@@ -836,15 +836,15 @@ DeclareGlobalFunction( "OutputTextUser" );
 
 
 ##  <#GAPDoc Label="[2]{streams}">
-##  Input-output streams capture bidirectional 
+##  Input-output streams capture bidirectional
 ##  communications between &GAP; and another process, either locally
 ##  or (@as yet unimplemented@) remotely.
 ##  <P/>
-##  Such streams support the basic operations of both input and output 
+##  Such streams support the basic operations of both input and output
 ##  streams. They should provide some buffering, allowing output data to be
 ##  written to the stream, even when input data is waiting to be read,
 ##  but the amount of this buffering is operating system dependent,
-##  and the user should take care not to get too far ahead in writing, or 
+##  and the user should take care not to get too far ahead in writing, or
 ##  behind in reading, or deadlock may occur.
 ##  <P/>
 ##  At present the only type of Input-Output streams that are
@@ -852,19 +852,19 @@ DeclareGlobalFunction( "OutputTextUser" );
 ##  using a pseudo-tty.
 ##  <P/>
 ##  Like other streams, write operations are blocking, read operations
-##  will block to get the first character, but not thereafter. 
+##  will block to get the first character, but not thereafter.
 ##  <P/>
 ##  As far as possible, no translation is done on characters written
 ##  to, or read from the stream, and no control characters have special
-##  effects, but the details of particular pseudo-tty implementations 
-##  may effect this. 
+##  effects, but the details of particular pseudo-tty implementations
+##  may effect this.
 ##  <#/GAPDoc>
 ##
 
 
 #############################################################################
 ##
-#C  IsInputOutputStream( <obj> )  . . . . . . . . category of two-way streams 
+#C  IsInputOutputStream( <obj> )  . . . . . . . . category of two-way streams
 ##
 ##  <#GAPDoc Label="IsInputOutputStream">
 ##  <ManSection>
@@ -893,15 +893,15 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 ##
 ##  <Description>
 ##  starts up a child process, whose executable file is <A>executable</A>, with
-##  <Q>command line</Q> arguments <A>args</A> in the directory <A>dir</A>. (Suitable 
+##  <Q>command line</Q> arguments <A>args</A> in the directory <A>dir</A>. (Suitable
 ##  choices for <A>dir</A> are <C>DirectoryCurrent()</C> or <C>DirectoryTemporary()</C>
 ##  (see Section&nbsp;<Ref Sect="Directories"/>); <C>DirectoryTemporary()</C> may be a good choice
 ##  when <A>executable</A> generates output files that it doesn't itself remove
-##  afterwards.) 
+##  afterwards.)
 ##  <Ref Func="InputOutputLocalProcess"/> returns an InputOutputStream object. Bytes
 ##  written to this stream are received by the child process as if typed
 ##  at a terminal on standard input. Bytes written to standard output
-##  by the child process can be read from the stream. 
+##  by the child process can be read from the stream.
 ##  <P/>
 ##  When the stream is closed, the signal SIGTERM is delivered to the child
 ##  process, which is expected to exit.
@@ -965,15 +965,15 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  <P/>
 ##  <Ref Oper="SetPrintFormattingStatus"/> sets whether output sent to the
 ##  output stream <A>stream</A> via <Ref Func="PrintTo"/>,
-##  <Ref Func="AppendTo"/>, etc. 
-##  will be formatted with line breaks and 
-##  indentation.  If  the  second  argument <A>newstatus</A> is <K>true</K> 
-##  then output will be so formatted, and if <K>false</K> then it will not. 
+##  <Ref Func="AppendTo"/>, etc.
+##  will be formatted with line breaks and
+##  indentation.  If  the  second  argument <A>newstatus</A> is <K>true</K>
+##  then output will be so formatted, and if <K>false</K> then it will not.
 ##  If the stream is not a text stream, only <K>false</K> is allowed.
 ##  <P/>
 ##  <Ref Oper="PrintFormattingStatus"/> returns <K>true</K> if output sent to
 ##  the output text stream <A>stream</A>  via <Ref Func="PrintTo"/>,
-##  <Ref Func="AppendTo"/>, etc.  
+##  <Ref Func="AppendTo"/>, etc.
 ##  will be formatted with line breaks and
 ##  indentation, and <K>false</K> otherwise.
 ##  For non-text streams, it returns <K>false</K>.
@@ -983,8 +983,8 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  Similarly, the string <C>"*errout*"</C> refers to the formatting status
 ##  of the standard error output, which influences how error messages are
 ##  printed.<P/>
-##  These functions do not influence the behaviour of the low level functions 
-##  <Ref Oper="WriteByte"/>, 
+##  These functions do not influence the behaviour of the low level functions
+##  <Ref Oper="WriteByte"/>,
 ##  <Ref Oper="WriteLine"/> or  <Ref Oper="WriteAll"/> which always write
 ##  without formatting.
 ##  <P/>
@@ -995,7 +995,7 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  "[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,\
 ##   \n  67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]"
 ##  gap> Print(s,"\n");
-##  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 
+##  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
 ##    67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]
 ##  gap> SetPrintFormattingStatus(str, false);
 ##  gap> PrintTo(str,Primes{[1..30]});
@@ -1005,7 +1005,7 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  , 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, \
 ##  79, 83, 89, 97, 101, 103, 107, 109, 113 ]"
 ##  gap> Print(s,"\n");
-##  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 
+##  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
 ##    67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ][ 2, 3, 5, 7, 1\
 ##  1, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79,\
 ##   83, 89, 97, 101, 103, 107, 109, 113 ]
@@ -1071,7 +1071,7 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "PrintTo", function( arg )    
+BIND_GLOBAL( "PrintTo", function( arg )
     if IsString(arg[1])  then
         arg := ShallowCopy(arg);
         arg[1] := UserHomeExpand(arg[1]);
@@ -1187,7 +1187,7 @@ DeclareOperation("FileDescriptorOfStream", [IsStream] );
 ##  stream this function is installed. <A>mode</A> must be a string, in which
 ##  a letter <C>r</C> means <Q>read</Q>, <C>w</C> means <Q>write</Q> and <C>x</C> means
 ##  <Q>exception</Q>, according to the <C>select</C> function call in the UNIX
-##  C-library (see <C>man select</C> and <Ref Func="UNIXSelect"/>). More than one letter 
+##  C-library (see <C>man select</C> and <Ref Func="UNIXSelect"/>). More than one letter
 ##  is allowed in <A>mode</A>. As described above the function is called
 ##  in a situation when &GAP; is reading a character from the keyboard.
 ##  Handler functions should not use much time to complete.

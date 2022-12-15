@@ -66,7 +66,7 @@ InstallGlobalFunction(DaysInMonth , function ( month, year )
         return 31;
     elif month in [ 4, 6, 9, 11 ]  then
         return 30;
-    elif month = 2 and 
+    elif month = 2 and
             (year mod 4 in [1,2,3]  or year mod 400 in [100,200,300])  then
         return 28;
     elif month = 2 then
@@ -110,7 +110,7 @@ InstallGlobalFunction(DayDMY , function ( dmy )
     day   := dmy[1]-1;
     month := dmy[2];
     year  := dmy[3];
-    if DaysInMonth(month, year) = fail or day < 0 or 
+    if DaysInMonth(month, year) = fail or day < 0 or
             day > DaysInMonth(month, year) - 1 then
         return fail;
     fi;
@@ -140,9 +140,9 @@ InstallGlobalFunction(WeekDay , function ( date )
 end);
 
 #############################################################################
-##  
+##
 #F  SecondsDMYhms( <DMYhms> ) . . . . . . . . . seconds since 1/1/1970/0/0/0
-##  
+##
 InstallGlobalFunction(SecondsDMYhms, function(DMYhms)
   local d, res, s;
   d := DayDMY(DMYhms{[1..3]});
@@ -159,16 +159,16 @@ InstallGlobalFunction(SecondsDMYhms, function(DMYhms)
 end);
 
 #############################################################################
-##  
+##
 #F  DMYhmsSeconds( <DMYhms> ) . . . . . . . . . inverse of SecondsDMYhms
-##  
+##
 InstallGlobalFunction(DMYhmsSeconds, function(sec)
   local d, DMY;
   d := sec mod (24 * 60^2);
   DMY := DMYDay((sec - d) / (24 * 60^2));
   return Concatenation(DMY, HMSMSec(d * 1000){[1..3]});
 end);
-  
+
 #############################################################################
 ##
 #F  StringDate( <date> )  . . . . . . . . convert date into a readable string
@@ -418,11 +418,11 @@ end );
 ##
 #M  ViewObj(<string>)
 #M  ViewObj(<char>)
-##  
+##
 ##  The difference  to PrintObj is  that printable non-ASCII  characters are
 ##  output directly. Use PrintObj to get a result which can be safely reread
 ##  by GAP or used for cut and paste.
-##  
+##
 
 # The first list is sorted and contains special characters. The second list
 # contains characters that should instead be printed after a `\'.
@@ -491,7 +491,7 @@ end);
 #############################################################################
 ##
 #M  ViewString(<char>)
-## 
+##
 InstallMethod(ViewString, "IsChar", true, [IsChar], 0,
 function(s)
   local r;
@@ -591,10 +591,10 @@ function( string, sub )
   return POSITION_SUBSTRING(string, sub, 0);
 end );
 
-InstallOtherMethod(PositionSublist, "for two args in IsStringRep and offset", 
+InstallOtherMethod(PositionSublist, "for two args in IsStringRep and offset",
              true, [IS_STRING_REP, IS_STRING_REP, IsInt], 0,
 function( string, sub, off )
-  if off<0 then 
+  if off<0 then
     off := 0;
   fi;
   return POSITION_SUBSTRING(string, sub, off);
@@ -604,9 +604,9 @@ end );
 ##
 #F  NormalizedWhitespace( <str> ) . . . . . . . copy of string with normalized
 #F  white space
-##  
+##
 ##  doesn't work in place like the kernel function `NormalizeWhitespace'
-##   
+##
 InstallGlobalFunction("NormalizedWhitespace", function ( str )
     local  res;
     res := ShallowCopy( str );
@@ -621,7 +621,7 @@ end);
 # moved into kernels string.c
 ##  InstallGlobalFunction( "RemoveCharacters", function( string, todelete )
 ##      local len, posto, posfrom, i;
-##  
+##
 ##      len:= Length( string );
 ##      posto:= 0;
 ##      posfrom:= 1;
@@ -712,7 +712,7 @@ end);
 #############################################################################
 ##
 #F  StringFile( <name> ) . . . . . . return content of file <name> as string
-#F  FileString( <name>, <string>[, <append> ] ) . . write <string> to <name> 
+#F  FileString( <name>, <string>[, <append> ] ) . . write <string> to <name>
 ##
 ##  <#GAPDoc Label="StringFile">
 ##  <ManSection >
@@ -721,23 +721,23 @@ end);
 ##  <Description>
 ##  The  function <Ref  Func="StringFile" />  returns the  content of
 ##  file  <A>filename</A> as  a string.  This works  efficiently with
-##  arbitrary (binary or text) files. If something went wrong,   this 
+##  arbitrary (binary or text) files. If something went wrong,   this
 ##  function returns <K>fail</K>.
 ##  <P/>
-##  
+##
 ##  Conversely  the function  <Ref  Func="FileString"  /> writes  the
 ##  content of a string <A>str</A>  into the file <A>filename</A>. If
 ##  the  optional third  argument <A>append</A>  is given  and equals
 ##  <K>true</K> then  the content  of <A>str</A>  is appended  to the
-##  file. Otherwise  previous  content  of  the file is deleted. This 
-##  function returns the number of  bytes  written  or <K>fail</K> if 
+##  file. Otherwise  previous  content  of  the file is deleted. This
+##  function returns the number of  bytes  written  or <K>fail</K> if
 ##  something went wrong.<P/>
-##  
-##  Both functions are quite efficient, even with large files. 
+##
+##  Both functions are quite efficient, even with large files.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##  
+##
 InstallGlobalFunction(StringFile, function(name)
   local   f,  str;
   f := InputTextFile(name);
@@ -755,7 +755,7 @@ InstallGlobalFunction(StringFile, function(name)
   return str;
 end);
 
-# arg: filename, string[, append]   (default for append is false) 
+# arg: filename, string[, append]   (default for append is false)
 InstallGlobalFunction(FileString, function(arg)
   local   name,  str,  append,  out;
   name := arg[1];
@@ -834,7 +834,7 @@ local l, b;
   while not IsEndOfStream(f) do
     b:=ReadByte(f);
     if b<>fail then
-      if b<0 then 
+      if b<0 then
 	b:=b+256;
       fi;
       if b=10 or b=13 then
@@ -920,12 +920,12 @@ local nohead,file,sep,f, line, fields, l, r, i,s,t,add,dir;
       for i in [1..Length(fields)] do
 	if IsBound(line[i]) and Length(line[i])>0 then
 	  s:=line[i];
-	  # openoffice and Excel translate booleans differently. 
+	  # openoffice and Excel translate booleans differently.
 	  if s="TRUE" then s:="1";
 	  elif s="FALSE" then s:="0";
 	  else
 	    t:=Rat(s);
-	    if not IsBool(t) and not '.' in s then 
+	    if not IsBool(t) and not '.' in s then
 	      s:=t;
 	    fi;
 	  fi;
@@ -1082,7 +1082,7 @@ local f,i,j,format,cold,a,e,z,str,new,box,lc,mini,color,alt,renum;
       Add(renum,Int(a));
     fi;
 
-    if cold.(i)="B" then 
+    if cold.(i)="B" then
       # color indicator
       color:=i;
       Unbind(cold.(i));
@@ -1245,7 +1245,7 @@ end);
 
 #############################################################################
 ##
-#F StringOfMemoryAmount( <m> )    returns an appropriate human-readable string 
+#F StringOfMemoryAmount( <m> )    returns an appropriate human-readable string
 ##                        representation of <m> bytes
 ##
 
@@ -1270,7 +1270,7 @@ InstallGlobalFunction(StringOfMemoryAmount, function(m)
             Append(s, String(Int(frac*100/1024) mod 10));
         fi;
     fi;
-    units := ["B","KB","MB","GB","TB","PB","EB","YB","ZB"];    
+    units := ["B","KB","MB","GB","TB","PB","EB","YB","ZB"];
     Append(s, units[shift+1]);
     return s;
 end);
@@ -1297,7 +1297,7 @@ InstallGlobalFunction(PrintToFormatted, function(stream, s, data...)
       fi;
       return rec(id := s{[startpos..posbang-1]}, format := format);
     end;
-      
+
     argcounter := 1;
     len := Length(s);
     pos := 0;
@@ -1406,7 +1406,7 @@ InstallGlobalFunction(PrintFormatted, function(args...)
     if not (Length(args) > 1 and IsString(args[1])) then
         ErrorNoReturn("Usage: PrintFormatted(<string>, <data>...)");
     fi;
-    
+
     # We can't use PrintTo, as we do not know where Print is currently
     # directed
     Print(CallFuncList(StringFormatted, args));

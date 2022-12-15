@@ -934,7 +934,7 @@ InstallMethod( Order,
 ##  <#GAPDoc Label="Int:cyclotomics">
 ##  <ManSection>
 ##  <Meth Name="Int" Arg='cyc' Label="for a cyclotomic"/>
-##  
+##
 ##  <Description>
 ##  The operation <Ref Meth="Int" Label="for a cyclotomic"/>
 ##  can be used to find a cyclotomic integer near to an arbitrary cyclotomic,
@@ -975,7 +975,7 @@ InstallMethod( Int,
 ##  <#GAPDoc Label="String:cyclotomics">
 ##  <ManSection>
 ##  <Meth Name="String" Arg='cyc' Label="for a cyclotomic"/>
-##  
+##
 ##  <Description>
 ##  The operation <Ref Meth="String" Label="for a cyclotomic"/>
 ##  returns for a cyclotomic <A>cyc</A> a string corresponding to the way

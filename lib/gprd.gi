@@ -37,7 +37,7 @@ local d, prop;
       Setter(prop)(d, true);
     fi;
   od;
-    
+
   if ForAll(arg,HasSize) then
     if   ForAll(arg,IsFinite)
     then SetSize(d,Product(List(arg,Size)));
@@ -86,13 +86,13 @@ InstallMethod( DirectProductOp,
                                   first  := first,
                                   embeddings := [],
                                   projections := [] ) );
-    
+
     if ForAll( list, CanEasilyComputeWithIndependentGensAbelianGroup ) then
       SetFilterObj( D, CanEasilyComputeWithIndependentGensAbelianGroup );
     fi;
 
     return D;
-    end );        
+    end );
 
 
 #############################################################################
@@ -114,13 +114,13 @@ end );
 #A Embedding
 ##
 InstallMethod( Embedding, "group direct product and integer",
-    [ IsGroup and HasDirectProductInfo, IsPosInt ], 
+    [ IsGroup and HasDirectProductInfo, IsPosInt ],
     function( D, i )
     local info, G, imgs, hom, gens;
 
     # check
     info := DirectProductInfo( D );
-    if IsBound( info.embeddings[i] ) then 
+    if IsBound( info.embeddings[i] ) then
         return info.embeddings[i];
     fi;
 
@@ -154,20 +154,20 @@ end );
 #A  Projection
 ##
 InstallMethod( Projection, "group direct product and integer",
-    [ IsGroup and HasDirectProductInfo, IsPosInt ], 
+    [ IsGroup and HasDirectProductInfo, IsPosInt ],
     function( D, i )
     local info, G, imgs, hom, N, gens;
 
     # check
     info := DirectProductInfo( D );
-    if IsBound( info.projections[i] ) then 
+    if IsBound( info.projections[i] ) then
         return info.projections[i];
     fi;
 
     # compute projection
     G    := info.groups[i];
     gens := GeneratorsOfGroup( D );
-    imgs := Concatenation( 
+    imgs := Concatenation(
                List( [1..info.first[i]-1], x -> One( G ) ),
                GeneratorsOfGroup( G ),
                List( [info.first[i+1]..Length(gens)], x -> One(G)));
@@ -178,7 +178,7 @@ InstallMethod( Projection, "group direct product and integer",
     else
       hom := GroupHomomorphismByImagesNC( D, G, gens, imgs );
     fi;
-    N := SubgroupNC( D, gens{Concatenation( [1..info.first[i]-1], 
+    N := SubgroupNC( D, gens{Concatenation( [1..info.first[i]-1],
                            [info.first[i+1]..Length(gens)])});
     SetIsSurjective( hom, true );
     SetKernelOfMultiplicativeGeneralMapping( hom, N );
@@ -236,9 +236,9 @@ InstallMethod( IsPGroup, "for direct products",
                [IsGroup and HasDirectProductInfo],
 function( D )
     local list, G, p;
-    
+
     list := DirectProductInfo( D ).groups;
-    
+
     if ForAll (list, G -> IsPGroup(G)) then
         p := fail;
         for G in list do
@@ -284,7 +284,7 @@ end );
 ##
 #F AbelianInvariants( <D > )
 ##
-InstallMethod( AbelianInvariants, "for direct products", 
+InstallMethod( AbelianInvariants, "for direct products",
                [IsGroup and HasDirectProductInfo],
 function( D )
     local info, ai;
@@ -298,7 +298,7 @@ end );
 ##
 #A  IndependentGeneratorsOfAbelianGroup( <D> )
 ##
-InstallMethod( IndependentGeneratorsOfAbelianGroup, "for direct products", 
+InstallMethod( IndependentGeneratorsOfAbelianGroup, "for direct products",
                [IsGroup and HasDirectProductInfo and IsAbelian],
 function(D)
     local info, ai, gens, i, phi;
@@ -378,52 +378,52 @@ InstallGlobalFunction (PcgsDirectProduct,
             Add (indices, offset + 1);
             Append (attl, [indsop, indices, filter, true]);
         fi;
-        pcs := PcgsByPcSequenceCons( 
+        pcs := PcgsByPcSequenceCons(
             IsPcgsDefaultRep,
             IsPcgs and IsPcgsDirectProductRep,
-            ElementsFamily(FamilyObj( D ) ), 
+            ElementsFamily(FamilyObj( D ) ),
             pcs,
             attl );
         pcs!.pcgs := pcgs;
         return pcs;
-    end 
+    end
 );
 
 
-InstallMethod( Pcgs, "for direct products", true, 
-               [IsGroup and HasDirectProductInfo], 
+InstallMethod( Pcgs, "for direct products", true,
+               [IsGroup and HasDirectProductInfo],
 	       {} -> Maximum(
 		RankFilter(IsPcGroup),
 		RankFilter(IsPermGroup and IsSolvableGroup)
 	        ),# this is better than these two common alternatives
         D -> PcgsDirectProduct (D, Pcgs, fail, fail));
 
-InstallMethod( PcgsElementaryAbelianSeries, "for direct products", true, 
-               [IsGroup and HasDirectProductInfo], 
+InstallMethod( PcgsElementaryAbelianSeries, "for direct products", true,
+               [IsGroup and HasDirectProductInfo],
 	       {} -> Maximum(
 		RankFilter(IsPcGroup),
 		RankFilter(IsPermGroup and IsSolvableGroup)
 	        ),# this is better than these two common alternatives
-        D -> PcgsDirectProduct (D, 
-                PcgsElementaryAbelianSeries, 
-                IndicesEANormalSteps, 
+        D -> PcgsDirectProduct (D,
+                PcgsElementaryAbelianSeries,
+                IndicesEANormalSteps,
                 IsPcgsElementaryAbelianSeries)
 );
 
-InstallMethod( PcgsCentralSeries, "for direct products", true, 
-               [IsGroup and HasDirectProductInfo], 
+InstallMethod( PcgsCentralSeries, "for direct products", true,
+               [IsGroup and HasDirectProductInfo],
 	       {} -> Maximum(
 		RankFilter(IsPcGroup),
 		RankFilter(IsPermGroup and IsSolvableGroup)
 	        ),# this is better than these two common alternatives
-        D -> PcgsDirectProduct (D, 
-                PcgsCentralSeries, 
-                IndicesCentralNormalSteps, 
+        D -> PcgsDirectProduct (D,
+                PcgsCentralSeries,
+                IndicesCentralNormalSteps,
                 IsPcgsCentralSeries)
 );
 
-InstallMethod( PcgsChiefSeries, "for direct products", true, 
-               [IsGroup and HasDirectProductInfo], 
+InstallMethod( PcgsChiefSeries, "for direct products", true,
+               [IsGroup and HasDirectProductInfo],
 	       {} -> Maximum(
 		RankFilter(IsPcGroup),
 		RankFilter(IsPermGroup and IsSolvableGroup)
@@ -431,15 +431,15 @@ InstallMethod( PcgsChiefSeries, "for direct products", true,
         D -> PcgsDirectProduct (D, PcgsChiefSeries, IndicesChiefNormalSteps, IsPcgsChiefSeries)
 );
 
-InstallMethod( PcgsPCentralSeriesPGroup, "for direct products", true, 
-               [IsGroup and HasDirectProductInfo], 
+InstallMethod( PcgsPCentralSeriesPGroup, "for direct products", true,
+               [IsGroup and HasDirectProductInfo],
 	       {} -> Maximum(
 		RankFilter(IsPcGroup),
 		RankFilter(IsPermGroup and IsSolvableGroup)
 	        ),# this is better than these two common alternatives
-        D -> PcgsDirectProduct (D, 
-                PcgsCentralSeries, 
-                IndicesPCentralNormalStepsPGroup, 
+        D -> PcgsDirectProduct (D,
+                PcgsCentralSeries,
+                IndicesPCentralNormalStepsPGroup,
                 IsPcgsPCentralSeriesPGroup)
 );
 
@@ -449,10 +449,10 @@ InstallMethod( PcgsPCentralSeriesPGroup, "for direct products", true,
 ##
 InstallMethod (ExponentsOfPcElement, "for pcgs of direct product", IsCollsElms,
     [IsPcgs and IsPcgsDirectProductRep, IsDirectProductElement], 0,
-    
+
     function (pcgs, g)
         local exp, i;
-        
+
         if Length (pcgs!.pcgs) <> Length (g) then
             TryNextMethod ();
         fi;
@@ -471,17 +471,17 @@ InstallMethod (ExponentsOfPcElement, "for pcgs of direct product", IsCollsElms,
 ##
 InstallMethod (DepthOfPcElement, "for pcgs of direct product", IsCollsElms,
     [IsPcgs and IsPcgsDirectProductRep, IsDirectProductElement], 0,
-    
+
     function (pcgs, g)
         local i, d, prevdepth;
-        
+
         if Length (pcgs!.pcgs) <> Length (g) then
             TryNextMethod ();
         fi;
         prevdepth := 0;
         for i in [1..Length (g)] do
             d := DepthOfPcElement (pcgs!.pcgs[i], g[i]);
-            if d <= Length (pcgs!.pcgs[i]) then 
+            if d <= Length (pcgs!.pcgs[i]) then
                 return d + prevdepth;
             fi;
             prevdepth := prevdepth + Length (pcgs!.pcgs[i]);
@@ -523,11 +523,11 @@ end);
 #M  SubdirectProduct( <G1>, <G2>, <phi1>, <phi2> )
 ##
 
-RedispatchOnCondition(SubdirectProductOp, "check mappings", true, 
+RedispatchOnCondition(SubdirectProductOp, "check mappings", true,
         [IsGroup, IsGroup, IsGeneralMapping, IsGeneralMapping],
         [IsObject, IsObject, IsGroupHomomorphism, IsGroupHomomorphism],
         10);
-   
+
 InstallMethod( SubdirectProductOp,"groups", true,
   [ IsGroup, IsGroup, IsGroupHomomorphism, IsGroupHomomorphism ], 0,
 function( G, H, gh, hh )
@@ -611,7 +611,7 @@ InstallGlobalFunction(InnerSubdirectProducts2,function( D, U, V )
           homU, homV, iso, subdir, gensU, gensV, N, UN, M, VM, Aut, gamma,
           P, NormUN, autU, n, alpha, NormVM, autV, reps, rep, gens, r, g, h,
           S, pair, imgs;
-    
+
     # compute necessary normal subgroups in U and V
     if IsAbelian( U ) and IsAbelian( V ) then
         normsU := List( ConjugacyClassesSubgroups( U ), Representative );
@@ -632,7 +632,7 @@ InstallGlobalFunction(InnerSubdirectProducts2,function( D, U, V )
         Syl  := Concatenation( Syl );
         Syl  := NormalClosure( U, Subgroup( U, Syl ) );
         normsU := NormalSubgroupsAbove( U, Syl, [] );
-            
+
         # in V
         fac  := PrimeDivisors( Size( V ) );
         fac  := Filtered( fac, x -> not x in div );
@@ -673,9 +673,9 @@ InstallGlobalFunction(InnerSubdirectProducts2,function( D, U, V )
     gensV  := GeneratorsOfGroup( V );
     for pair in pairs do
 
-        N := KernelOfMultiplicativeGeneralMapping( pair[1] ); 
+        N := KernelOfMultiplicativeGeneralMapping( pair[1] );
         UN := Image( pair[1] );
-        M := KernelOfMultiplicativeGeneralMapping( pair[2] ); 
+        M := KernelOfMultiplicativeGeneralMapping( pair[2] );
         VM := Image( pair[2] );
         iso := pair[3];
 
@@ -721,7 +721,7 @@ InstallGlobalFunction(InnerSubdirectProducts2,function( D, U, V )
         for rep in reps do
 
             # compute corresponding group
-            gens := Concatenation( GeneratorsOfGroup( N ), 
+            gens := Concatenation( GeneratorsOfGroup( N ),
                                    GeneratorsOfGroup( M ) );
             for r in GeneratorsOfGroup( UN ) do
                 g := PreImagesRepresentative( pair[1], r );
@@ -783,11 +783,11 @@ InstallGlobalFunction(SubdirectProducts,function( S, T )
     # create info
     info := rec( groups := [S, T],
                  projections := [Projection( D, 1 ), Projection( D, 2 )] );
-        
+
     for i in [1..Length( subdir )] do
         SetSubdirectProductInfo( subdir[i], info );
     od;
-         
+
     return subdir;
 end);
 
@@ -1104,7 +1104,7 @@ local info,map,U,mapfun,P;
     return info.embeddings[n];
   fi;
 end);
-   
+
 #############################################################################
 ##
 #M  Projection( <W> )
@@ -1133,7 +1133,7 @@ local info,map,np;
   fi;
   return info.projection;
 end);
-  
+
 #############################################################################
 ##
 #M  \in(<G>,<elm>
@@ -1159,12 +1159,17 @@ function( G, N )
   return SemidirectProduct(G,IdentityMapping(G),N);
 end);
 
-InstallMethod( SemidirectProduct,"different representations",true, 
-    [ IsGroup and IsFinite, IsGroupHomomorphism, IsGroup and IsFinite], 
+InstallMethod( SemidirectProduct,"different representations",true,
+    [ IsGroup, IsGroupHomomorphism, IsGroup and IsFinite],
     # don't be higher than specific perm/pc methods
-    {} -> 2*(RankFilter(IsGroup) - RankFilter(IsGroup and IsFinite)),
+    {} -> RankFilter(IsGroup) - RankFilter(IsGroup and IsFinite),
 function( G, aut, N )
 local giso,niso,P,gens,a,Go,No,i;
+  # We will compute a faithful perm. or pc representation,
+  # but we cannot assume that the finiteness of 'G' is known in advance.
+  if not IsFinite( G ) then
+    TryNextMethod();
+  fi;
   Go:=G;
   No:=N;
   if IsSolvableGroup(N) and IsSolvableGroup(G) then
@@ -1254,10 +1259,10 @@ local Go,No,giso,niso,FG,GP,FN,NP,F,GI,NI,rels,i,j,P;
   return P;
 end;
 
-InstallMethod( SemidirectProduct,"fp with group",true, 
+InstallMethod( SemidirectProduct,"fp with group",true,
     [ IsSubgroupFpGroup, IsGroupHomomorphism, IsGroup ], 0, SemidirectFp);
 
-InstallMethod( SemidirectProduct,"group with fp",true, 
+InstallMethod( SemidirectProduct,"group with fp",true,
     [ IsGroup, IsGroupHomomorphism, IsSubgroupFpGroup ], 0, SemidirectFp);
 
 
@@ -1265,20 +1270,20 @@ InstallMethod( SemidirectProduct,"group with fp",true,
 ##
 #A Embedding/Projection
 ##
-InstallMethod( Embedding,"of semidirect product and integer",true, 
+InstallMethod( Embedding,"of semidirect product and integer",true,
     [ IsGroup and HasSemidirectProductInfo, IsPosInt ], 0,
 function( P, i )
 local info, G, imgs, hom;
 
   info := SemidirectProductInfo( P );
-  if IsBound( info.embeddings[i] ) then 
+  if IsBound( info.embeddings[i] ) then
     return info.embeddings[i];
   else
     TryNextMethod();
   fi;
 end);
 
-InstallOtherMethod( Projection,"of semidirect product", true, 
+InstallOtherMethod( Projection,"of semidirect product", true,
     [ IsGroup and HasSemidirectProductInfo ], 0,
 function( P )
 local info;
@@ -1369,7 +1374,7 @@ local pm,F,d,b,s,t,pos,i,j,img,m,P,info,Go,bnt,N,pcgs,auts,mapi,ag,phi,imgs;
     od;
     t:=s;
   fi;
-  
+
   m:=[];
   # build affine matrices from group generators
   for i in GeneratorsOfGroup(G) do
@@ -1398,7 +1403,7 @@ local pm,F,d,b,s,t,pos,i,j,img,m,P,info,Go,bnt,N,pcgs,auts,mapi,ag,phi,imgs;
 	    dimension:=d,
 	    projections:=true);
   SetSemidirectProductInfo( P, info );
-    
+
   return P;
 end);
 
@@ -1471,7 +1476,7 @@ end );
 #F  FreeProduct( arg )                                       Robert F, Morse
 ##
 ##
-InstallGlobalFunction( FreeProduct, 
+InstallGlobalFunction( FreeProduct,
 function( arg )
 
     ## Check to see that the proper argument number is given
@@ -1484,7 +1489,7 @@ function( arg )
         fi;
         arg:= arg[1];
     fi;
- 
+
     ## Delegate the construction to FreeProductOp
     ##
     return FreeProductOp(arg,arg[1]);
@@ -1500,7 +1505,7 @@ InstallMethod( FreeProductOp,
     "for a list (of groups), and a group",
     true,
     [ IsList, IsGroup ], 0,
-    function( list, gp ) 
+    function( list, gp )
 
     local fpisolist,    # list of isomorphism from each group to an fp group
           genindlist,   # Ranges into the free generators of the free
@@ -1521,15 +1526,15 @@ InstallMethod( FreeProductOp,
           rels, # free product relators
           nam   # names
     ;
-        
+
     ## Check the arguments.
-    ## 
+    ##
     if IsEmpty( list ) then
         Error( "<list> must be nonempty" );
     elif ForAny( list, G -> not IsGroup( G ) ) then
        TryNextMethod();
     fi;
-   
+
     ## Create isomorphisms from the given group list to an
     ## isomorphic finitely presented group.
     ##
@@ -1539,14 +1544,14 @@ InstallMethod( FreeProductOp,
     ##
     genindlist  := List(fpisolist, x->Length(GeneratorsOfGroup(Image(x))));
     gennum      := Sum(genindlist);
-    
-    ## Compute the accummalive sums which are the indices into 
+
+    ## Compute the accummalive sums which are the indices into
     ## the free group. Add a zero for convenience.
     ##
-    genindlist  := List([1..Length(genindlist)],i->genindlist{[1..i]}); 
+    genindlist  := List([1..Length(genindlist)],i->genindlist{[1..i]});
     genindlist  := List(genindlist, Sum);
     genindlist  := Concatenation([0], genindlist);
-    
+
 
     ## Create the free group of the free product
     ##
@@ -1566,7 +1571,7 @@ InstallMethod( FreeProductOp,
     ## create the relations of the for ith base group.
     ##
     for i in [1..Length(genindlist)-1] do
-    
+
          ## get the generator range for this group in the free group
          ## of the free product
          gens := List([genindlist[i]+1..genindlist[i+1]],x->F.(x));
@@ -1575,8 +1580,8 @@ InstallMethod( FreeProductOp,
          ## and its free generators
          g    := Image(fpisolist[i]);
          fpgens := GeneratorsOfGroup(FreeGroupOfFpGroup(g));
- 
-         ## Map the relations of the base group into words in the 
+
+         ## Map the relations of the base group into words in the
          ## free group of the free product
          for r in RelatorsOfFpGroup(g) do
              Add(rels, MappedWord(r, fpgens, gens));
@@ -1584,15 +1589,15 @@ InstallMethod( FreeProductOp,
     od;
 
     ## Create the free product.
-    FP := F/rels;    
-    
+    FP := F/rels;
+
     ## Create all the embeddings into the free product since we have
     ## all the needed information
     ##
     embeddings :=[];
-    
+
     for i in [1..Length(genindlist)-1] do
-    
+
          ## get the generator range for this group in the free product
          gens := List([genindlist[i]+1..genindlist[i+1]],x->FP.(x));
 
@@ -1600,7 +1605,7 @@ InstallMethod( FreeProductOp,
          ## g of the FP image -- which may not be the same as
          ## the generators of g
          g    := list[i];
-         ggens := List(GeneratorsOfGroup(Image(fpisolist[i])), 
+         ggens := List(GeneratorsOfGroup(Image(fpisolist[i])),
                       x->PreImage(fpisolist[i],x));
 
          hom := GroupHomomorphismByImagesNC(g,FP,ggens,gens);
@@ -1611,13 +1616,13 @@ InstallMethod( FreeProductOp,
     od;
 
     ## Save the embedding information for possible use later.
-    SetFreeProductInfo( FP, 
+    SetFreeProductInfo( FP,
         rec( groups := list,
              embeddings := embeddings ) );
-    
-    return FP;    
 
-    end 
+    return FP;
+
+    end
 );
 
 #############################################################################

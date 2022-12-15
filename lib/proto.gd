@@ -23,8 +23,8 @@
 ##  <Description>
 ##  offers a simple interface to create new arithmetic elements by providing
 ##  functions that perform addition, multiplication and so forth, conforming
-##  to the specification <A>spec</A>. <C>ArithmeticElementCreator</C> 
-##  creates a new category, representation and family for the new arithmetic 
+##  to the specification <A>spec</A>. <C>ArithmeticElementCreator</C>
+##  creates a new category, representation and family for the new arithmetic
 ##  elements being defined, and returns a function which takes the
 ##  <Q>defining data</Q> of an element and returns the corresponding new
 ##  arithmetic element.

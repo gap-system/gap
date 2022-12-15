@@ -578,8 +578,6 @@ Obj ExprGVar ( UInt gvar )
 
 #define NSCHAR '@'
 
-/* TL: Obj CurrNamespace = 0; */
-
 static Obj FuncSET_NAMESPACE(Obj self, Obj str)
 {
     STATE(CurrNamespace) = str;
@@ -685,7 +683,7 @@ void MakeConstantGVar(UInt gvar)
 void MakeThreadLocalVar (
     UInt                gvar,
     UInt                rnam )
-{       
+{
     Obj value = ValGVar(gvar);
     VAL_GVAR_INTERN(gvar) = (Obj) 0;
     if (IS_INTOBJ(ExprGVar(gvar)))
@@ -1071,8 +1069,8 @@ static Obj FuncUNB_GVAR(Obj self, Obj gvar)
 **
 **  This needs to be kept inside the kernel so that the copies can be updated
 **  after loading a workspace.
-*/  
-typedef struct  { 
+*/
+typedef struct  {
     Obj *               copy;
     UInt                isFopy;
     const Char *        name;
@@ -1514,8 +1512,8 @@ static Int InitKernel (
 
     /* Get a copy of REREADING                                             */
     ImportGVarFromLibrary("REREADING", &REREADING);
-    
-    
+
+
     return 0;
 }
 
@@ -1572,7 +1570,7 @@ static Int InitLibrary (
     /* make the error functions for 'AssGVar'                              */
     ErrorMustEvalToFuncFunc = NewFunctionC(
         "ErrorMustEvalToFunc", -1, "args", ErrorMustEvalToFuncHandler);
-    
+
     ErrorMustHaveAssObjFunc = NewFunctionC(
         "ErrorMustHaveAssObj", -1, "args", ErrorMustHaveAssObjHandler);
 

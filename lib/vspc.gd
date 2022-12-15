@@ -403,7 +403,7 @@ DeclareHandlingByNiceBasis( "IsNonGaussianMatrixSpace",
 ##  (see also&nbsp;<Ref Attr="Subspaces"/>).
 ##  <Example><![CDATA[
 ##  gap> vecs:= NormedRowVectors( GF(3)^2 );
-##  [ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], 
+##  [ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ],
 ##    [ Z(3)^0, Z(3) ] ]
 ##  gap> Action( GL(2,3), vecs, OnLines );
 ##  Group([ (3,4), (1,2,4) ])

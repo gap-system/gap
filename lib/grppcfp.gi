@@ -72,14 +72,14 @@ InstallGlobalFunction( IsomorphismFpGroupByPcgs, function( pcgs, str )
     od;
     H := F / rels;
     SetSize(H,Product(RelativeOrders(pcgs)));
-    phi := 
+    phi :=
       GroupHomomorphismByImagesNC( GroupOfPcgs(pcgs), H, AsList( pcgs ),
                                         GeneratorsOfGroup( H ) );
 
     SetIsBijective( phi, true );
     ProcessEpimorphismToNewFpGroup(phi);
     return phi;
-    
+
 end );
 
 #############################################################################
@@ -148,9 +148,9 @@ gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n,genu;
 
     # compute normal form
     norm := NormalFormIntMat( M,15 );
-    D := norm.normal; 
-    P := norm.rowtrans; 
-    Q := norm.coltrans; 
+    D := norm.normal;
+    P := norm.rowtrans;
+    Q := norm.coltrans;
     I := Q^-1;
     min := Minimum( Length(D), Length(D[1]) );
     diag := List( [1..min], x -> D[x][x] );
@@ -166,8 +166,8 @@ gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n,genu;
 	gensA := GeneratorsOfGroup( A );
 
 	index := [];
-    relsA := []; 
-	g := 1;	
+    relsA := [];
+	g := 1;
     pf := [];
 	for i in [ 1..ng ] do
 	    if D[i][i] <> 1 then
@@ -179,7 +179,7 @@ gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n,genu;
 		        pn := pf[i].factors[j];
           	    pp := pf[i].powers [j];
 		        for k in [ 1..pp ] do
-		            relsA[g] := []; 
+		            relsA[g] := [];
                     relsA[g][g] := gensA[g]^pn;
 		            for l in [ 1..g-1 ] do
 		                relsA[g][l] := gensA[g]^gensA[l]/gensA[g];
@@ -199,7 +199,7 @@ gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n,genu;
     # compute corresponding pc group
 	G := PcGroupFpGroup( A );
     gensG := Pcgs( G );
-  
+
     # set up epimorphism F -> A -> G
 	imgs  := [];
 	for i in [ 1..ng ] do
@@ -226,8 +226,8 @@ gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n,genu;
 		    	pn := pf[i].factors[j];
 		    	pp := pf[i].powers [j];
 		    	for k in [ 1..pp ] do
-		    	    prei[g] := r; 
-                    g := g + 1; 
+		    	    prei[g] := r;
+                    g := g + 1;
                     r := r ^ pn;
 		    	od;
 		    od;
@@ -310,7 +310,7 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
     A := List( [1..r*d], x -> [] );
     V := [];
 
-    # for each relator of G add 
+    # for each relator of G add
 
     rels:=RelatorsOfFpGroup(F);
 
@@ -339,7 +339,7 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
 
       v := ExponentsOfPcElement( pcgsN, v ) * One( M.field );
       Append( V, v );
-  
+
       # left hand side
       mats := ListWithIdenticalEntries( r,
 		  Immutable( NullMat( d, d, M.field ) ) );
@@ -382,7 +382,7 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
 	      k := d * (i-1) + j;
 	      Append( A[k], mats[i][j] );
 	  od;
-      od; 
+      od;
 
       # do these tests several times earlier to speed up
       if reln in stopi then
@@ -401,21 +401,21 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
     # create lift
     elms := [];
     for i in [1..r] do
-        sub := - sol{[d*(i-1)+1..d*i]}; 
+        sub := - sol{[d*(i-1)+1..d*i]};
         elm := PcElementByExponentsNC( pcgsN, sub );
         Add( elms, elm );
     od;
     imgs := List( [1..r], x -> gtil[x] * elms[x] ) ;
     lift := rec( source := F,
-                 image  := H, 
-                 imgs   := imgs ); 
+                 image  := H,
+                 imgs   := imgs );
 
     # in non-split case this is it
     if IsRowVector( c ) then return lift; fi;
-  
+
     # otherwise check
     U    := Subgroup( H, imgs );
-    if Size( U ) = Size( H ) 
+    if Size( U ) = Size( H )
      and c=0 then # c=0 is the ordinary case
       return lift;
     else
@@ -429,7 +429,7 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
         new  := vec + sol;
         elms := [];
         for i in [1..r] do
-            sub := new{[d*(i-1)+1..d*i]}; 
+            sub := new{[d*(i-1)+1..d*i]};
             elm := PcElementByExponentsNC( pcgsN, sub );
             Add( elms, elm );
         od;
@@ -444,7 +444,7 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
 	    imgs:=lift[2];
 	  fi;
 	  lift := rec( source := F,
-		      image  := H, 
+		      image  := H,
 		      imgs   := imgs );
 	  if c=0 then
 	    return lift;
@@ -452,7 +452,7 @@ InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
         fi;
     od;
 
-    # give up 
+    # give up
     return lift; # if c=0 this is automatically false
 end );
 
@@ -527,7 +527,7 @@ InstallGlobalFunction( TryModuleSQ, function( epi, M )
                     od;
 
                     # blow cocycle up
-                    c := BlowUpCocycleSQ( v, M.field, 
+                    c := BlowUpCocycleSQ( v, M.field,
                          M.absolutelyIrreducible.field );
 
                     # try to lift epimorphism
@@ -562,7 +562,7 @@ local  C, lift, co, cb, cc, r, q, ccpos, ccnum, l, v, qi,
       # first try a split extension
       # the -1 indicates we want *all* sdps
       lift := LiftEpimorphismSQ( epi, M, -1 );
-      if not IsBool( lift ) then 
+      if not IsBool( lift ) then
 	all:=lift;
 	Info(InfoSQ,2,"semidirect ",Size(all.image)/Size(epi.image)," found");
       fi;
@@ -639,7 +639,7 @@ local  C, lift, co, cb, cc, r, q, ccpos, ccnum, l, v, qi,
 		  od;
 
 		  # blow cocycle up
-		  c := BlowUpCocycleSQ( v, M.field, 
+		  c := BlowUpCocycleSQ( v, M.field,
 			M.absolutelyIrreducible.field );
 
 		  # try to lift epimorphism
@@ -647,7 +647,7 @@ local  C, lift, co, cb, cc, r, q, ccpos, ccnum, l, v, qi,
 		  lift := LiftEpimorphismSQ( epi, M, c);
 
 		  # return if we have found a lift
-		  if not IsBool( lift ) then 
+		  if not IsBool( lift ) then
 		    lift:=SubdirProdPcGroups(all.image,all.imgs,
 					      lift.image,lift.imgs);
 		    all:=rec(source:=epi.source,
@@ -679,17 +679,17 @@ InstallGlobalFunction( TryLayerSQ, function( epi, layer )
     dim   := layer[2];
     reps  := IrreducibleModules( epi.image, field, dim );
     reps:=reps[2]; # the actual modules
-        
+
     # loop over the representations
     for rep in reps do
         lift := TryModuleSQ( epi, rep );
         if not IsBool( lift ) then
            if not layer[3] or rep.dimension = dim then
                return lift;
-           fi; 
+           fi;
         fi;
     od;
-    
+
     # give up
     return false;
 end );
@@ -757,7 +757,7 @@ local field, dim, rep, lift,all,dims,allmo,mo,start,found,genum,genepi;
 	  Info(InfoSQ,1,"globally ",Size(all.image)/Size(start.image)," found");
         fi;
       od;
-      
+
     od;
     epi:=all;
   until not found;
@@ -792,13 +792,13 @@ local G, epi, tup, lift, i, found, fac, j, p, iso;
 
     # if <primes> is a list of tuples, it denotes a chief series
     if IsList( primes ) and IsList( primes[1] ) then
-	
+
         Info(InfoSQ,2,"have chief series given");
         for tup in primes{[2..Length(primes)]} do
             Info(InfoSQ,1,"trying ", tup);
             tup[3] := true;
             lift := TryLayerSQ( epi, tup );
-            if IsBool( lift ) then 
+            if IsBool( lift ) then
                 return epi;
             else
                 epi := ShallowCopy( lift );
@@ -827,14 +827,14 @@ local G, epi, tup, lift, i, found, fac, j, p, iso;
                 epi.imgs := List( epi.imgs, x -> Image( iso, x ) );
                 G := epi.image;
                 found := true;
-                i := 1; 
+                i := 1;
             else
                 i := i + 1;
             fi;
             Info(InfoSQ,1,"found quotient of size ", Size(G));
         od;
     fi;
-                
+
     # if <primes> is an integer it is size we want
     if IsInt(primes)  then
 	if not IsInt(primes/Size(G)) then

@@ -781,9 +781,9 @@ DeclareGlobalFunction( "StarCyc" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> Quadratic( EB(5) ); Quadratic( EB(27) );
-##  rec( ATLAS := "b5", a := -1, b := 1, d := 2, 
+##  rec( ATLAS := "b5", a := -1, b := 1, d := 2,
 ##    display := "(-1+Sqrt(5))/2", root := 5 )
-##  rec( ATLAS := "1+3b3", a := -1, b := 3, d := 2, 
+##  rec( ATLAS := "1+3b3", a := -1, b := 3, d := 2,
 ##    display := "(-1+3*Sqrt(-3))/2", root := -3 )
 ##  gap> Quadratic(0); Quadratic( E(5) );
 ##  rec( ATLAS := "0", a := 0, b := 0, d := 1, display := "0", root := 1 )
@@ -875,13 +875,13 @@ DeclareGlobalFunction( "Quadratic" );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> GaloisMat( [ [ E(3), E(4) ] ] );
-##  rec( galoisfams := [ [ [ 1, 2, 3, 4 ], [ 1, 7, 5, 11 ] ], 0, 0, 0 ], 
-##    generators := [ (1,2)(3,4), (1,3)(2,4) ], 
-##    mat := [ [ E(3), E(4) ], [ E(3), -E(4) ], [ E(3)^2, E(4) ], 
+##  rec( galoisfams := [ [ [ 1, 2, 3, 4 ], [ 1, 7, 5, 11 ] ], 0, 0, 0 ],
+##    generators := [ (1,2)(3,4), (1,3)(2,4) ],
+##    mat := [ [ E(3), E(4) ], [ E(3), -E(4) ], [ E(3)^2, E(4) ],
 ##        [ E(3)^2, -E(4) ] ] )
 ##  gap> GaloisMat( [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ] ] );
-##  rec( galoisfams := [ 1, [ [ 2, 3 ], [ 1, 2 ] ], 0 ], 
-##    generators := [ (2,3) ], 
+##  rec( galoisfams := [ 1, [ [ 2, 3 ], [ 1, 2 ] ], 0 ],
+##    generators := [ (2,3) ],
 ##    mat := [ [ 1, 1, 1 ], [ 1, E(3), E(3)^2 ], [ 1, E(3)^2, E(3) ] ] )
 ##  ]]></Example>
 ##  </Description>

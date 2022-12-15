@@ -863,9 +863,9 @@
   [1,1],[5,30]],
   # 450000.3
   [[1,"abcdxyzw",
-  function(a,b,c,d,x,y,z,w) 
-  return 
-  [[ a^4, b^3, c^3, (a*b)^5, (b*c^-1)^5, 
+  function(a,b,c,d,x,y,z,w)
+  return
+  [[ a^4, b^3, c^3, (a*b)^5, (b*c^-1)^5,
      a^2/d, (b*c)^4/d, Comm(d,b), Comm(d,c),
      c*(b*c*b)^2/(b*a*c),
      x^5, y^5, z^5, w^5,

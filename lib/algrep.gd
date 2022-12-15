@@ -361,7 +361,7 @@ DeclareOperation( "BiAlgebraModuleByGenerators", [ IsAlgebra, IsAlgebra,
 ##  Constructs the left algebra module over <A>A</A> with underlying space <A>V</A>.
 ##  The action of <A>A</A> is described by the function <A>op</A>. This must
 ##  be a function of two arguments; the first argument is the algebra element,
-##  and the second argument is a vector from <A>V</A>; it outputs the result of 
+##  and the second argument is a vector from <A>V</A>; it outputs the result of
 ##  applying the algebra element to the vector.
 ##  </Description>
 ##  </ManSection>
@@ -402,14 +402,14 @@ DeclareOperation( "RightAlgebraModule", [ IsAlgebra, IS_FUNCTION,
 ##  <Oper Name="BiAlgebraModule" Arg='A, B, opl, opr, V'/>
 ##
 ##  <Description>
-##  Constructs the algebra bi-module over <A>A</A> and <A>B</A> with underlying space 
+##  Constructs the algebra bi-module over <A>A</A> and <A>B</A> with underlying space
 ##  <A>V</A>. The left action of <A>A</A> is described by the function <A>opl</A>,
 ##  and the right action of <A>B</A> by the function <A>opr</A>. <A>opl</A> must be a
 ##  function of two arguments; the first argument is the algebra element,
-##  and the second argument is a vector from <A>V</A>; it outputs the result of 
+##  and the second argument is a vector from <A>V</A>; it outputs the result of
 ##  applying
 ##  the algebra element on the left to the vector. <A>opr</A> must
-##  be a function of two arguments; the first argument is a vector from <A>V</A>, 
+##  be a function of two arguments; the first argument is a vector from <A>V</A>,
 ##  and the
 ##  second argument is the algebra element; it outputs the result of applying
 ##  the algebra element on the right to the vector.
@@ -454,12 +454,12 @@ DeclareOperation( "BiAlgebraModule", [ IsAlgebra, IsAlgebra,
 ##  gap> M:= BiAlgebraModuleByGenerators( A, A, \*, \*, [ [ 1, 0, 0 ] ] );;
 ##  gap> B:= Basis( M );
 ##  Basis( <3-dimensional bi-module over ( Rationals^
-##  [ 3, 3 ] ) (left) and ( Rationals^[ 3, 3 ] ) (right)>, 
+##  [ 3, 3 ] ) (left) and ( Rationals^[ 3, 3 ] ) (right)>,
 ##  [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] )
 ##  gap> IsBasisOfAlgebraModuleElementSpace( B );
 ##  true
 ##  gap> B!.delegateBasis;
-##  SemiEchelonBasis( <vector space of dimension 3 over Rationals>, 
+##  SemiEchelonBasis( <vector space of dimension 3 over Rationals>,
 ##  [ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] )
 ##  ]]></Example>
 ##  </Description>
@@ -588,7 +588,7 @@ DeclareOperation( "RightModuleByHomomorphismToMatAlg", [ IsAlgebra,
 ##  gap> A:= Algebra( Rationals, [ m1, m2, m3 ] );
 ##  <algebra over Rationals, with 3 generators>
 ##  gap> V:= AdjointModule( A );
-##  <3-dimensional left-module over <algebra of dimension 
+##  <3-dimensional left-module over <algebra of dimension
 ##  3 over Rationals>>
 ##  gap> v:= Basis( V )[3];
 ##  [ [ 0, 1 ], [ 0, 0 ] ]
@@ -717,12 +717,12 @@ DeclareOperation( "ModuleByRestriction", [ IsAlgebraModule, IsAlgebra ] );
 ##  <left-module over <algebra of dimension 18 over Rationals>>
 ##  gap> f:= NaturalHomomorphismBySubAlgebraModule( V, W );
 ##  <linear mapping by matrix, <
-##  18-dimensional left-module over <algebra of dimension 
+##  18-dimensional left-module over <algebra of dimension
 ##  18 over Rationals>> -> <
-##  9-dimensional left-module over <algebra of dimension 
+##  9-dimensional left-module over <algebra of dimension
 ##  18 over Rationals>>>
 ##  gap> quo:= ImagesSource( f );  # i.e., the quotient module
-##  <9-dimensional left-module over <algebra of dimension 
+##  <9-dimensional left-module over <algebra of dimension
 ##  18 over Rationals>>
 ##  gap> v:= Basis( quo )[1];
 ##  [ 1, 0, 0, 0, 0, 0, 0, 0, 0 ]
@@ -868,8 +868,8 @@ DeclareCategoryCollections( "IsTensorElement" );
 ##  <vector space over Rationals, with 6 generators>
 ##  gap> Basis(V);
 ##  Basis( <vector space over Rationals, with 6 generators>,
-##  [ 1*([ 0, 1 ]<x>[ 0, 0, 1 ]), 1*([ 0, 1 ]<x>[ 0, 1, 0 ]), 
-##    1*([ 0, 1 ]<x>[ 1, 0, 0 ]), 1*([ 1, 0 ]<x>[ 0, 0, 1 ]), 
+##  [ 1*([ 0, 1 ]<x>[ 0, 0, 1 ]), 1*([ 0, 1 ]<x>[ 0, 1, 0 ]),
+##    1*([ 0, 1 ]<x>[ 1, 0, 0 ]), 1*([ 1, 0 ]<x>[ 0, 0, 1 ]),
 ##    1*([ 1, 0 ]<x>[ 0, 1, 0 ]), 1*([ 1, 0 ]<x>[ 1, 0, 0 ]) ] )
 ##  ]]></Example>
 ##  See also <Ref Oper="KroneckerProduct"/>.
@@ -893,15 +893,15 @@ DeclareGlobalFunction( "TensorProduct" );
 ##   Label="for two algebra modules"/>
 ##
 ##  <Description>
-##  Here the elements of <A>list</A> must be algebra modules. 
-##  The tensor product is returned as an algebra module. 
-##  The two-argument version works in the same way and 
+##  Here the elements of <A>list</A> must be algebra modules.
+##  The tensor product is returned as an algebra module.
+##  The two-argument version works in the same way and
 ##  returns the tensor product of its arguments.
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra("G",2,Rationals);;
 ##  gap> V:= HighestWeightModule( L, [ 1, 0 ] );;
 ##  gap> W:= TensorProductOfAlgebraModules( [ V, V, V ] );
-##  <343-dimensional left-module over <Lie algebra of dimension 
+##  <343-dimensional left-module over <Lie algebra of dimension
 ##  14 over Rationals>>
 ##  gap> w:= Basis(W)[1];
 ##  1*(1*v0<x>1*v0<x>1*v0)
@@ -965,8 +965,8 @@ DeclareCategoryCollections( "IsWedgeElement" );
 ##  gap> V:=ExteriorPower(Rationals^3, 2);
 ##  <vector space of dimension 3 over Rationals>
 ##  gap> Basis(V);
-##  Basis( <vector space of dimension 3 over Rationals>, [ 
-##    1*([ 0, 1, 0 ]/\[ 0, 0, 1 ]), 1*([ 1, 0, 0 ]/\[ 0, 0, 1 ]), 
+##  Basis( <vector space of dimension 3 over Rationals>, [
+##    1*([ 0, 1, 0 ]/\[ 0, 0, 1 ]), 1*([ 1, 0, 0 ]/\[ 0, 0, 1 ]),
 ##    1*([ 1, 0, 0 ]/\[ 0, 1, 0 ]) ] )
 ##  ]]></Example>
 ##  </Description>
@@ -984,14 +984,14 @@ DeclareOperation( "ExteriorPower", [ IsLeftModule, IsInt ] );
 ##  <Oper Name="ExteriorPowerOfAlgebraModule" Arg='V, k'/>
 ##
 ##  <Description>
-##  Here <A>V</A> must be an algebra module, defined over a Lie algebra. 
-##  This function returns the <A>k</A>-th exterior power of <A>V</A> as an 
+##  Here <A>V</A> must be an algebra module, defined over a Lie algebra.
+##  This function returns the <A>k</A>-th exterior power of <A>V</A> as an
 ##  algebra module.
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra("G",2,Rationals);;
 ##  gap> V:= HighestWeightModule( L, [ 1, 0 ] );;
 ##  gap> W:= ExteriorPowerOfAlgebraModule( V, 3 );
-##  <35-dimensional left-module over <Lie algebra of dimension 
+##  <35-dimensional left-module over <Lie algebra of dimension
 ##  14 over Rationals>>
 ##  gap> w:= Basis(W)[1];
 ##  1*(1*v0/\y1*v0/\y3*v0)
@@ -1038,8 +1038,8 @@ DeclareCategoryCollections( "IsSymmetricPowerElement" );
 ##  <vector space over Rationals, with 6 generators>
 ##  gap> Basis(V);
 ##  Basis( <vector space over Rationals, with 6 generators>,
-##  [ 1*([ 0, 0, 1 ].[ 0, 0, 1 ]), 1*([ 0, 1, 0 ].[ 0, 0, 1 ]), 
-##    1*([ 0, 1, 0 ].[ 0, 1, 0 ]), 1*([ 1, 0, 0 ].[ 0, 0, 1 ]), 
+##  [ 1*([ 0, 0, 1 ].[ 0, 0, 1 ]), 1*([ 0, 1, 0 ].[ 0, 0, 1 ]),
+##    1*([ 0, 1, 0 ].[ 0, 1, 0 ]), 1*([ 1, 0, 0 ].[ 0, 0, 1 ]),
 ##    1*([ 1, 0, 0 ].[ 0, 1, 0 ]), 1*([ 1, 0, 0 ].[ 1, 0, 0 ])
 ##   ] )
 ##  ]]></Example>
@@ -1058,13 +1058,13 @@ DeclareOperation( "SymmetricPower", [ IsLeftModule, IsInt ] );
 ##  <Oper Name="SymmetricPowerOfAlgebraModule" Arg='V, k'/>
 ##
 ##  <Description>
-##  Here <A>V</A> must be an algebra module. This function returns the 
+##  Here <A>V</A> must be an algebra module. This function returns the
 ##  <A>k</A>-th symmetric power of <A>V</A> (as an algebra module).
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra("G",2,Rationals);;
 ##  gap> V:= HighestWeightModule( L, [ 1, 0 ] );;
 ##  gap> W:= SymmetricPowerOfAlgebraModule( V, 3 );
-##  <84-dimensional left-module over <Lie algebra of dimension 
+##  <84-dimensional left-module over <Lie algebra of dimension
 ##  14 over Rationals>>
 ##  gap> w:= Basis(W)[1];
 ##  1*(1*v0.1*v0.1*v0)
@@ -1122,20 +1122,20 @@ DeclareCategoryFamily( "IsDirectSumElement" );
 ##  <6-dimensional left-module over ( Rationals^[ 3, 3 ] )>
 ##  gap> BasisVectors( Basis( W ) );
 ##  [ ( [ 1, 0, 0 ] )(+)( [ 0, 0, 0 ] ), ( [ 0, 1, 0 ] )(+)( [ 0, 0, 0 ] )
-##      , ( [ 0, 0, 1 ] )(+)( [ 0, 0, 0 ] ), 
+##      , ( [ 0, 0, 1 ] )(+)( [ 0, 0, 0 ] ),
 ##    ( [ 0, 0, 0 ] )(+)( [ 1, 0, 0 ] ), ( [ 0, 0, 0 ] )(+)( [ 0, 1, 0 ] )
 ##      , ( [ 0, 0, 0 ] )(+)( [ 0, 0, 1 ] ) ]
 ##  ]]></Example>
 ##  <Example><![CDATA[
 ##  gap> L:= SimpleLieAlgebra( "C", 3, Rationals );;
 ##  gap> V:= HighestWeightModule( L, [ 1, 1, 0 ] );
-##  <64-dimensional left-module over <Lie algebra of dimension 
+##  <64-dimensional left-module over <Lie algebra of dimension
 ##  21 over Rationals>>
 ##  gap> W:= HighestWeightModule( L, [ 0, 0, 2 ] );
-##  <84-dimensional left-module over <Lie algebra of dimension 
+##  <84-dimensional left-module over <Lie algebra of dimension
 ##  21 over Rationals>>
 ##  gap> U:= DirectSumOfAlgebraModules( V, W );
-##  <148-dimensional left-module over <Lie algebra of dimension 
+##  <148-dimensional left-module over <Lie algebra of dimension
 ##  21 over Rationals>>
 ##  ]]></Example>
 ##  </Description>
@@ -1221,11 +1221,11 @@ DeclareHandlingByNiceBasis( "IsDirectSumElementsSpace",
 ##  <Oper Name="TranslatorSubalgebra" Arg='M, U, W'/>
 ##
 ##  <Description>
-##   Here <A>M</A> is an algebra module, and <A>U</A> and <A>W</A> are two subspaces of <A>M</A>. 
+##   Here <A>M</A> is an algebra module, and <A>U</A> and <A>W</A> are two subspaces of <A>M</A>.
 ##   Let <A>A</A> be the algebra acting on <A>M</A>. This function returns the subspace
 ##   of elements of <A>A</A> that map <A>U</A> into <A>W</A>. If <A>W</A> is a sub-algebra-module
 ##   (i.e., closed under the action of <A>A</A>), then this space is a subalgebra
-##   of <A>A</A>. 
+##   of <A>A</A>.
 ##  <P/>
 ##   This function works for left, or right modules over a
 ##   finite-dimensional algebra. We
@@ -1240,7 +1240,7 @@ DeclareHandlingByNiceBasis( "IsDirectSumElementsSpace",
 ##  gap> M:= LeftAlgebraModule( A, \*, V );
 ##  <left-module over ( Rationals^[ 3, 3 ] )>
 ##  gap> bm:= Basis(M);;
-##  gap> U:= SubAlgebraModule( M, [ bm[1] ] );   
+##  gap> U:= SubAlgebraModule( M, [ bm[1] ] );
 ##  <left-module over ( Rationals^[ 3, 3 ] )>
 ##  gap> TranslatorSubalgebra( M, U, M );
 ##  <algebra of dimension 9 over Rationals>
@@ -1253,5 +1253,5 @@ DeclareHandlingByNiceBasis( "IsDirectSumElementsSpace",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "TranslatorSubalgebra", 
+DeclareOperation( "TranslatorSubalgebra",
 [ IsAlgebraModule, IsFreeLeftModule, IsFreeLeftModule ] );

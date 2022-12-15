@@ -23,7 +23,7 @@
 ##  if it fixes&nbsp;<M>d</M>.
 ##  The images are stored all as <M>16</M>-bit integers or all as
 ##  <M>32</M>-bit integers, depending on whether <M>d \leq 65536</M> or not.
-##  For example, if <M>m\geq 65536</M>, the permutation 
+##  For example, if <M>m\geq 65536</M>, the permutation
 ##  <M>(1, 2, \ldots, m)</M> has internal degree <M>d=m</M> and takes
 ##  <M>4m</M> bytes of memory for storage. But --- since the internal degree
 ##  is not reduced  --- this
@@ -32,11 +32,11 @@
 ##  takes <M>4m</M> bytes of storage.
 ##  It can take even more because the internal list has sometimes room for
 ##  more than <M>d</M> images.
-##  <P/> On 32-bit systems, the limit on the degree of permutations is, for 
+##  <P/> On 32-bit systems, the limit on the degree of permutations is, for
 ##  technical reasons, <M>2^{28}-1</M>.
-##  On 64-bit systems, it is <M>2^{32}-1</M> because only a 32-bit integer 
+##  On 64-bit systems, it is <M>2^{32}-1</M> because only a 32-bit integer
 ##  is used to represent each image internally. Error messages should be given
-##  if any command would require creating a permutation exceeding this limit. 
+##  if any command would require creating a permutation exceeding this limit.
 ##  <P/>
 ##  The operation <Ref Oper="RestrictedPerm"/> reduces the storage degree of
 ##  its result and therefore can be used to save memory if intermediate
@@ -429,7 +429,7 @@ SetOne( PermutationsFamily, () );
 ##  <M>i</M> lies between <M>1</M> and the length of <A>list</A>,
 ##  and <M>i^{\pi} = i</M> if <M>i</M> is
 ##  larger than the length of the list <A>list</A>.
-##  <Ref Func="PermList"/> will return <K>fail</K> 
+##  <Ref Func="PermList"/> will return <K>fail</K>
 ##  if <A>list</A> does not define a permutation,
 ##  i.e., if <A>list</A> is not dense,
 ##  or if <A>list</A> contains a positive integer twice,
@@ -481,7 +481,7 @@ end );
 
 #############################################################################
 ##
-#F  CycleFromList( <list> )  . . . . . . . . . . . cycle defined from a list 
+#F  CycleFromList( <list> )  . . . . . . . . . . . cycle defined from a list
 ##
 ##  <#GAPDoc Label="CycleFromList">
 ##  <ManSection>
@@ -699,8 +699,8 @@ function ( perm )
     local   cys,    # collected cycle lengths, result
             degree, # degree of perm
             mark,   # boolean list to mark elements already processed
-            i,j,    # loop variables 
-            len,    # length of a cycle 
+            i,j,    # loop variables
+            len,    # length of a cycle
             cyc;    # a cycle of perm
 
     if IsOne(perm) then
@@ -710,7 +710,7 @@ function ( perm )
         mark := BlistList([1..degree], []);
         cys := [];
         for i in [1..degree] do
-            if not mark[i] then 
+            if not mark[i] then
                cyc := CYCLE_PERM_INT( perm, i );
                len := Length(cyc) - 1;
                if 0 < len  then
@@ -776,7 +776,7 @@ InstallMethod( ViewString, "for a permutation", [ IsPerm ],function(perm)
   return DoStringPerm(perm,true);
 end);
 
- 
+
 
 
 #############################################################################
@@ -799,7 +799,7 @@ InstallMethod( Order,
 ##  <Oper Name="DistancePerms" Arg="perm1, perm2"/>
 ##
 ##  <Description>
-##  returns the number of points for which <A>perm1</A> and <A>perm2</A> 
+##  returns the number of points for which <A>perm1</A> and <A>perm2</A>
 ##  have different images. This should always produce the same result as
 ##  <C>NrMovedPoints(<A>perm1</A>/<A>perm2</A>)</C> but some methods may be
 ##  much faster than this form, since no new permutation needs to be created.

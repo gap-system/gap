@@ -884,7 +884,7 @@ InstallOtherMethod( RepresentativesMinimalBlocksOp,
         [ IsGroup, IsList,
           IsList,
           IsList,
-          IsFunction ], 
+          IsFunction ],
 	  # lower ranked than perm method
 	  -1,
 function( G, D, gens, acts, act )
@@ -1280,8 +1280,8 @@ InstallTrueMethod(IsRegular,IsPermGroup and IsSemiRegular and IsTransitive);
 #M  RepresentativeAction( <G>, <d>, <e>, <act> ) . . . . . for perm groups
 ##
 InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
-        IsObject, IsObject, IsFunction ], 
-  # the objects might be group elements: rank up	
+        IsObject, IsObject, IsFunction ],
+  # the objects might be group elements: rank up
   {} -> 2*RankFilter(IsMultiplicativeElementWithInverse),
     function ( G, d, e, act )
     local   rep,                # representative, result
@@ -1409,9 +1409,9 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
 
     # action on tuples of sets
     elif act = OnTuplesSets
-      and IsList(d) and ForAll(d,i->ForAll(i,IsInt)) 
+      and IsList(d) and ForAll(d,i->ForAll(i,IsInt))
       and IsList(e) and ForAll(e,i->ForAll(i,IsInt)) then
-      
+
       if List(d,Length)<>List(e,Length) then return fail;fi;
 
       # conjugate one by one
@@ -1539,7 +1539,7 @@ InstallOtherMethod( StabilizerOp, "permutation group with generators list",
           IsList,
           IsList,
           IsFunction ],
-  # the objects might be a group element: rank up	
+  # the objects might be a group element: rank up
   {} -> RankFilter(IsMultiplicativeElementWithInverse)
   # and we are better even if the group is solvable
   +RankFilter(IsSolvableGroup),
@@ -1551,7 +1551,7 @@ InstallOtherMethod( StabilizerOp, "permutation group with domain",true,
           IsList,
           IsList,
           IsFunction ],
-  # the objects might be a group element: rank up	
+  # the objects might be a group element: rank up
   {} -> RankFilter(IsMultiplicativeElementWithInverse)
   # and we are better even if the group is solvable
   +RankFilter(IsSolvableGroup),

@@ -116,7 +116,7 @@ end);
 #F  PerfectCentralProduct( <grpdata> ) . . . . . . . . . . . . . . local
 ##
 ##  `PerfectCentralProduct'  returns, generators, relators and subgroup
-##  information for 
+##  information for
 ##  the direct product of two perfect groups  or their central product modulo
 ##  some given central element.
 ##
@@ -284,7 +284,7 @@ end;
 InstallMethod(PerfGrpConst,"fp grp",true,[IsSubgroupFpGroup,IsList],0,
 function(filter,l)
 local G,n;
-  if Length(l)=0 then 
+  if Length(l)=0 then
     G:=FreeGroup(1);
     return G/GeneratorsOfGroup(G);
   fi;
@@ -444,7 +444,7 @@ end);
 InstallGlobalFunction( PerfectGroup, function(arg)
 local func,sz,p;
   PerfGrpLoad(0); # force loading
-  if not IsFunction(arg[1]) then 
+  if not IsFunction(arg[1]) then
     func:=IsPermGroup;
     sz:=arg;
   else

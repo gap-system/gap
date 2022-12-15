@@ -347,7 +347,7 @@ Usually an operation stands for a mathematical concept,
 and the name of the operation describes this uniquely.
 Examples are the property <Ref Prop="IsFinite"/>
 and the attribute <Ref Attr="Size"/>.
-But there are cases where the same mathematical term is used 
+But there are cases where the same mathematical term is used
 to denote different concepts,
 for example <C>Degree</C> is defined for polynomials, group characters,
 and permutation actions,

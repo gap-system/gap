@@ -77,7 +77,7 @@ function( efam, pcs )
     #T  96/09/26 fceller  do some checks
     return PcgsByPcSequenceNC( efam, pcs );
 end );
-    
+
 
 #############################################################################
 InstallMethod( PcgsByPcSequence,

@@ -147,7 +147,7 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
       # Extend available implications by the new one if applicable.
       found:= false;
       for imp2 in IMPLICATIONS_SIMPLE do
-        if IS_SUBSET_FLAGS( imp2[2], imp[2] ) 
+        if IS_SUBSET_FLAGS( imp2[2], imp[2] )
            or IS_SUBSET_FLAGS( imp2[1], imp[2] ) then
           imp2[1]:= AND_FLAGS( imp2[1], imp[1] );
           if IS_EQUAL_FLAGS( imp2[2], imp[2] ) then
@@ -156,7 +156,7 @@ BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( tofilt, from )
         fi;
       od;
       for imp2 in IMPLICATIONS_COMPOSED do
-        if IS_SUBSET_FLAGS( imp2[2], imp[2] ) 
+        if IS_SUBSET_FLAGS( imp2[2], imp[2] )
            or IS_SUBSET_FLAGS( imp2[1], imp[2] ) then
           imp2[1]:= AND_FLAGS( imp2[1], imp[1] );
           if IS_EQUAL_FLAGS( imp2[2], imp[2] ) then

@@ -608,14 +608,14 @@ install-gaproot: CITATION
 	# create subdirectories
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/pkg
-	
+
 	# install GAP library files
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/hpcgap
 	for dir in grp lib lib/hpc hpcgap/lib hpcgap/lib/hpc hpcgap/lib/distributed ; do \
 	  $(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/$$dir ; \
 	  $(INSTALL) -m 0644 $(srcdir)/$$dir/*.g* $(DESTDIR)$(datarootdir)/gap/$$dir ; \
 	done
-	
+
 	# install various files in the root dir
 	$(INSTALL) -m 0644 CITATION $(DESTDIR)$(datarootdir)/gap/
 	$(INSTALL) -m 0644 $(srcdir)/CONTRIBUTING.md $(DESTDIR)$(datarootdir)/gap/
@@ -623,7 +623,7 @@ install-gaproot: CITATION
 	$(INSTALL) -m 0644 $(srcdir)/INSTALL.md $(DESTDIR)$(datarootdir)/gap/
 	$(INSTALL) -m 0644 $(srcdir)/LICENSE $(DESTDIR)$(datarootdir)/gap/
 	$(INSTALL) -m 0644 $(srcdir)/README.md $(DESTDIR)$(datarootdir)/gap/
-	
+
 	# install helpers for developers
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/etc
 	$(INSTALL) -m 0755 $(srcdir)/etc/convert.pl $(DESTDIR)$(datarootdir)/gap/etc/

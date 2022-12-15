@@ -60,7 +60,7 @@
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("ProfileLineByLine",function(arg)
-    local optRec, r;   
+    local optRec, r;
     if Length(arg) = 0 or Length(arg) > 2 or not(IsString(arg[1])) then
       Error("usage: ProfileLineByLine(filename,[options]");
     fi;
@@ -73,7 +73,7 @@ BIND_GLOBAL("ProfileLineByLine",function(arg)
       if not(IsRecord(arg[2])) then
         Error("usage: ProfileLineByLine(filename,[options]");
       fi;
-      
+
       for r in RecNames(arg[2]) do
         if not(IsBound(optRec.(r))) then
           Error(Concatenation("Bad option: ", r));
@@ -81,8 +81,8 @@ BIND_GLOBAL("ProfileLineByLine",function(arg)
         optRec.(r) := arg[2].(r);
       od;
     fi;
-    
-    if Length(arg[1]) < 3 or 
+
+    if Length(arg[1]) < 3 or
        arg[1]{[Length(arg[1])-2..Length(arg[1])]} <> ".gz" then
       Info(InfoWarning, 1, "Profile filenames must end in .gz to enable compression");
     fi;

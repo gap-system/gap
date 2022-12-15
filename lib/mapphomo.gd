@@ -104,7 +104,7 @@ DeclareProperty( "RespectsOne", IsGeneralMapping );
 ##  respectively.
 ##  Then <Ref Prop="RespectsInverses"/> returns <K>true</K> if
 ##  <A>S</A> and <A>R</A> are magmas-with-inverses such that,
-##  for <M>s \in <A>S</A></M> and <M>r \in <A>R</A></M>, 
+##  for <M>s \in <A>S</A></M> and <M>r \in <A>R</A></M>,
 ##  <M>(s,r) \in F</M> implies <M>(s^{{-1}},r^{{-1}}) \in F</M>,
 ##  and <K>false</K> otherwise.
 ##  <P/>
@@ -431,7 +431,7 @@ InstallTrueMethod( RespectsAdditiveInverses, RespectsScalarMultiplication );
 ##  <Description>
 ##  <Ref Filt="IsLeftModuleGeneralMapping"/>
 ##  specifies whether a general mapping <A>mapp</A> satisfies the property
-##  <Ref Filt="IsAdditiveGroupGeneralMapping"/> and respects scalar 
+##  <Ref Filt="IsAdditiveGroupGeneralMapping"/> and respects scalar
 ##  multiplication (see <Ref Prop="RespectsScalarMultiplication"/>).
 ##  <P/>
 ##  <Ref Filt="IsLeftModuleHomomorphism"/> is a synonym for the meet of
@@ -491,8 +491,8 @@ DeclareOperation( "IsLinearMapping", [ IsDomain, IsGeneralMapping ] );
 ##
 ##  <Description>
 ##  <Ref Filt="IsRingGeneralMapping"/> specifies whether a general mapping
-##  <A>mapp</A> satisfies the property 
-##  <Ref Filt="IsAdditiveGroupGeneralMapping"/> and respects multiplication 
+##  <A>mapp</A> satisfies the property
+##  <Ref Filt="IsAdditiveGroupGeneralMapping"/> and respects multiplication
 ##  (see <Ref Prop="RespectsMultiplication"/>).
 ##  <P/>
 ##  <Ref Filt="IsRingHomomorphism"/> is a synonym for the meet of
@@ -542,9 +542,9 @@ DeclareSynonymAttr( "IsRingWithOneHomomorphism",
 ##  <Filt Name="IsAlgebraHomomorphism" Arg='mapp'/>
 ##
 ##  <Description>
-##  <Ref Filt="IsAlgebraGeneralMapping"/> specifies whether a general 
-##  mapping <A>mapp</A> satisfies both properties 
-##  <Ref Filt="IsRingGeneralMapping"/> and 
+##  <Ref Filt="IsAlgebraGeneralMapping"/> specifies whether a general
+##  mapping <A>mapp</A> satisfies both properties
+##  <Ref Filt="IsRingGeneralMapping"/> and
 ##  (see <Ref Filt="IsLeftModuleGeneralMapping"/>).
 ##  <P/>
 ##  <Ref Filt="IsAlgebraHomomorphism"/> is a synonym for the meet of
@@ -572,8 +572,8 @@ DeclareSynonymAttr( "IsAlgebraHomomorphism",
 ##
 ##  <Description>
 ##  <Ref Filt="IsAlgebraWithOneGeneralMapping"/>
-##  specifies whether a general mapping <A>mapp</A> satisfies both 
-##  properties <Ref Filt="IsAlgebraGeneralMapping"/> and 
+##  specifies whether a general mapping <A>mapp</A> satisfies both
+##  properties <Ref Filt="IsAlgebraGeneralMapping"/> and
 ##  <Ref Prop="RespectsOne"/>.
 ##  <P/>
 ##  <Ref Filt="IsAlgebraWithOneHomomorphism"/> is a synonym for the meet of

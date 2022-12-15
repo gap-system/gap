@@ -675,7 +675,7 @@ static void Emit(const char * fmt, ...)
             }
 
             // emit a GAP string
-            else if ( *p == 'g' || *p == 'G' || *p == 'C' ) { 
+            else if ( *p == 'g' || *p == 'G' || *p == 'C' ) {
                 const Char f[] = { '%', *p, 0 };
                 Obj str = va_arg( ap, Obj );
                 Pr(f, (Int)str, 0);
@@ -941,7 +941,7 @@ static CVar CompUnknownBool(Expr expr)
 
     return res;
 }
-    
+
 /****************************************************************************
 **
 *V  G_Length  . . . . . . . . . . . . . . . . . . . . . . . function 'Length'
@@ -1107,7 +1107,7 @@ static CVar CompFunccallOpts(Expr expr)
   Emit("CALL_0ARGS( GF_PopOptions );\n");
   return result;
 }
-     
+
 
 /****************************************************************************
 **
@@ -2238,7 +2238,7 @@ static CVar CompIntExpr(Expr expr)
 
         for ( i = 0; i < siz/sizeof(UInt); i++ ) {
             UInt limb = CONST_ADDR_INT(obj)[i];
-#ifdef SYS_IS_64_BIT 
+#ifdef SYS_IS_64_BIT
             Emit("C_SET_LIMB8( %c, %d, %dLL);\n", val, i, limb);
 #else
             Emit("C_SET_LIMB4( %c, %d, %dL);\n", val, i, limb);
@@ -3676,7 +3676,7 @@ static void CompProccallOpts(Stat stat)
   CompStat(READ_STAT(stat, 1));
   Emit("CALL_0ARGS( GF_PopOptions );\n");
 }
-     
+
 
 /****************************************************************************
 **
@@ -4926,7 +4926,7 @@ static void CompEmpty(Stat stat)
 {
     // do nothing
 }
-  
+
 /****************************************************************************
 **
 *F  CompInfo( <stat> )  . . . . . . . . . . . . . . . . . . . . . . .  STAT_INFO
@@ -5315,7 +5315,7 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
     for ( i = 1; i <= compFunctionsNr; i++ ) {
         Emit( "InitHandlerFunc( HdlrFunc%d, \"%g:HdlrFunc%d(\"FILE_CRC\")\" );\n",
               i, compilerMagic2, i );
-        Emit( "InitGlobalBag( &(NameFunc[%d]), \"%g:NameFunc[%d](\"FILE_CRC\")\" );\n", 
+        Emit( "InitGlobalBag( &(NameFunc[%d]), \"%g:NameFunc[%d](\"FILE_CRC\")\" );\n",
                i, magic2, i );
     }
     Emit( "\n" );
@@ -5388,7 +5388,7 @@ static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
     Int                 len;
 
     /* unravel the arguments                                               */
-    len = LEN_LIST(arg); 
+    len = LEN_LIST(arg);
     if ( len < 5 ) {
         ErrorQuit( "usage: COMPILE_FUNC( <output>, <func>, <name>, %s",
                    (Int)"<magic1>, <magic2>, ... )", 0 );
@@ -5427,7 +5427,7 @@ static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
     if ( 10 <= len ) {
         CompCheckListElements   = EQ( ELM_LIST( arg, 10 ), True );
     }
-    
+
     /* compile the function                                                */
     nr = CompileFunc(
         output, func, name,
@@ -5470,7 +5470,7 @@ static Int InitKernel (
     CompCheckTypes = 1;
     CompCheckListElements = 1;
     CompPass = 0;
-    
+
     /* init filters and functions                                          */
     InitHdlrFuncsFromTable( GVarFuncs );
 
@@ -5553,7 +5553,7 @@ static Int InitKernel (
     CompExprFuncs[ EXPR_ISB_COMOBJ_EXPR ] = CompIsbComObjExpr;
 
     CompExprFuncs[ EXPR_FUNCCALL_OPTS   ] = CompFunccallOpts;
-    
+
     /* enter the boolean expression compilers into the table               */
     for ( i = 0; i < 256; i++ ) {
         CompBoolExprFuncs[ i ] = CompUnknownBool;

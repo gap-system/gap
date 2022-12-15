@@ -94,7 +94,7 @@ local l,p,len,e;
     p:=p+2;
   od;
 
-  if l<0 then 
+  if l<0 then
     # first argument is gone
     return y{[p..len]};
   elif len<p then
@@ -141,9 +141,9 @@ local n,m;
   n:=Sum([2,4..Length(x)],i->AbsInt(x[i]));
   m:=Sum([2,4..Length(y)],i->AbsInt(y[i]));
   # first length
-  if n<m then 
+  if n<m then
     return true;
-  elif n>m then 
+  elif n>m then
     return false;
   fi;
   # then lex
@@ -286,7 +286,7 @@ BindGlobal( "AssocWord_Product", function( x, y )
 end );
 
 InstallMethod( \*, "for two assoc. words in syllable rep", IsIdenticalObj,
-    [ IsAssocWord and IsSyllableAssocWordRep, 
+    [ IsAssocWord and IsSyllableAssocWordRep,
       IsAssocWord and IsSyllableAssocWordRep], 0, AssocWord_Product );
 
 InstallMethod( \*, "for two assoc. words: force syllable rep", IsIdenticalObj,
@@ -569,7 +569,7 @@ function( w, from, to )
 local extw, pos, nextexp, firstexp, sub;
     if to<from then
       if IsMultiplicativeElementWithOne(w) then
-	  return One(FamilyObj(w)); 
+	  return One(FamilyObj(w));
       else
 	Error("<from> must be less than or equal to <to>");
       fi;
@@ -770,23 +770,23 @@ local lw;
   lw:=Length(w);
   # if from>to or from>|w| or to>|w| then this does not make sense
   if from>to or from>lw or to>lw then
-    Error("illegal values for <from> and <to>");	
+    Error("illegal values for <from> and <to>");
   fi;
-  
-  # otherwise there are four possibilities 
+
+  # otherwise there are four possibilities
 
   # first if from=1 and to=Length(w) then
   if from=1 and to=lw then
     return by;
   # second if from=1 (and to<Length(w))  then
-  elif from=1 then 	
+  elif from=1 then
       return by*Subword(w,to+1,lw);
   # third if to=1 (and from>1) then
   elif to=lw then
     return Subword(w,1,from-1)*by;
   fi;
 
-  # finally 
+  # finally
   return Subword(w,1,from-1)*by*Subword(w,to+1,lw);
 
 end );
@@ -802,7 +802,7 @@ end );
 ##
 InstallOtherMethod(SubstitutedWord,
  "for three associative words",true,
-	[IsAssocWord, IsAssocWord, IsPosInt, IsAssocWord], 0, 
+	[IsAssocWord, IsAssocWord, IsPosInt, IsAssocWord], 0,
 function(u,v,k,z)
 local i;
   i := PositionWord(u,v,k);
@@ -903,7 +903,7 @@ local i, mapped, exp,ex2,p,fameq,invimg,sel,elm;
     fi;
 
     # are the genimages simple generators themselves?
-    if IsAssocWordWithInverseCollection( gens2 ) 
+    if IsAssocWordWithInverseCollection( gens2 )
       and ForAll(gens2,i->Length(i)=1) then
       ex2:= List( gens2, ExtRepOfObj );
     else
@@ -1035,7 +1035,7 @@ function(a,b)
   for i in [1..Minimum(NrSyllables(a),NrSyllables(b))] do
     ea:=ExponentSyllable(a,i);
     eb:=ExponentSyllable(b,i);
-    if GeneratorSyllable(a,i)<>GeneratorSyllable(b,i) 
+    if GeneratorSyllable(a,i)<>GeneratorSyllable(b,i)
      or SignInt(ea)<>SignInt(eb) then
       return l;
     elif ea<>eb then
@@ -1248,7 +1248,7 @@ local invname, nams, rels, p, a, b, z, i,br;
         Add(rels,PPValWord(gens,nams,b[i])/z);
       od;
     fi;
-    
+
   od;
   return rels;
 end);
@@ -1343,7 +1343,7 @@ local wu, l, symbols, offset, occurrences, n, no, translate, findpatterns, nams,
 	Add(r,')');
       fi;
       Append(r,String(translate[k][2]+1));
-    elif k<1 then 
+    elif k<1 then
       Append(r,invnams[-k]);
     else
       Append(r,nams[k]);

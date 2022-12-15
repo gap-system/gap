@@ -11,12 +11,12 @@
 ##  This package sets up a GAP level prototype of the new Info messages
 ##  system, parts of which will eventually have to be moved into
 ##  the kernel
-##  
+##
 ##  Informational messages are controlled by the user setting desired
 ##  levels of verbosity for InfoClasses. A set of InfoClasses is an
 ##  InfoSelector, and classes and selectors may be built up with \+
 #N  I wanted to use \or, but this isn't at operation
-##  
+##
 ##  A message is associated with a selector and a level and is
 ##  printed when the desired level for any of the classes in the selector
 ##  equals or exceeds  the level of the message
@@ -32,7 +32,7 @@
 #############################################################################
 ##
 #R  IsInfoClassListRep(<obj>)                       length one positional rep
-##                              
+##
 ##  An InfoClass is represented as a positional object with the following
 ##  members:
 ##
@@ -90,7 +90,7 @@ end);
 
 #############################################################################
 ##
-#M  NewInfoClass( <name> )                              make a new Info Class  
+#M  NewInfoClass( <name> )                              make a new Info Class
 ##
 ##  This is how Info Classes should be obtained
 ##
@@ -98,9 +98,9 @@ end);
 InstallMethod(NewInfoClass, true, [IsString], 0,
         function(name)
     local pos, ic;
-    
+
     atomic readwrite INFO_CLASSES do
-        # if we are rereading and this class already exists then 
+        # if we are rereading and this class already exists then
         # do not make a new class
         if REREADING then
             pos := First(INFO_CLASSES, x -> x![INFODATA_CLASSNAME] = name);
@@ -108,7 +108,7 @@ InstallMethod(NewInfoClass, true, [IsString], 0,
                 return INFO_CLASSES[pos];
             fi;
         fi;
-        
+
         pos := Length(INFO_CLASSES) + 1;
         # make sure to always allocate a length big enough, even for the optional
         # members, because in HPC-GAP, positional objects cannot be resized
@@ -230,18 +230,18 @@ end);
 
 #############################################################################
 ##
-#M  SetInfoLevel( <class>, <level>)   set desired verbosity level for a class  
+#M  SetInfoLevel( <class>, <level>)   set desired verbosity level for a class
 ##
 
 INFODATA_DEFAULT_HANDLER := function(ic,lev)
     ic![INFODATA_CURRENTLEVEL] := lev;
 end;
 
-InstallMethod(SetInfoLevel, true, 
+InstallMethod(SetInfoLevel, true,
         [IsInfoClass and IsInfoClassListRep, IsPosInt], 0,
         INFODATA_DEFAULT_HANDLER);
 
-InstallMethod(SetInfoLevel, true, 
+InstallMethod(SetInfoLevel, true,
         [IsInfoClass and IsInfoClassListRep, IsZeroCyc], 0,
         INFODATA_DEFAULT_HANDLER);
 
@@ -264,10 +264,10 @@ end );
 
 #############################################################################
 ##
-#M  InfoLevel( <class> )              get desired verbosity level for a class  
+#M  InfoLevel( <class> )              get desired verbosity level for a class
 ##
 
-InstallMethod(InfoLevel, true, 
+InstallMethod(InfoLevel, true,
         [IsInfoClass and IsInfoClassListRep], 0,
         function(ic)
     return ic![INFODATA_CURRENTLEVEL];
@@ -293,7 +293,7 @@ BIND_GLOBAL( "InfoDecision", function(selectors, level)
     fi;
 
     ret := false;
-    
+
     if IsInfoClass(selectors) then
         ret := InfoLevel(selectors) >= level;
     elif IsInfoSelector(selectors)  then

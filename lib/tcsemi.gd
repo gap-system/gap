@@ -24,14 +24,14 @@
 ##
 ##  <Description>
 ##  <A>r</A> is a right congruence of an fp-semigroup <A>S</A>.
-##  This attribute is the coset table of FP semigroup 
+##  This attribute is the coset table of FP semigroup
 ##  <A>S</A> on a right congruence <A>r</A>.
-##  Given a right congruence <A>r</A> we represent <A>S</A> as a set of 
+##  Given a right congruence <A>r</A> we represent <A>S</A> as a set of
 ##  transformations of the congruence classes of <A>r</A>.
 ##  <P/>
 ##  The images   of the cosets under the   generators are compiled in  a list
 ##  <A>table</A> such that  <A>table[i][s]</A> contains  the image  of  coset <A>s</A> under
-##  generator <A>i</A>.   
+##  generator <A>i</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

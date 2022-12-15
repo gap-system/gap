@@ -92,7 +92,7 @@ local f,n,bytelen,data,qq,i;
       # long 8 bit
       data:=[3*GAPInfo.BytesPerVariable,bytelen];
       # must check type
-      #return x->HashKeyBag(x,101,data[1],data[2]); 
+      #return x->HashKeyBag(x,101,data[1],data[2]);
       return function(x)
              if not Is8BitVectorRep(x) or
 	       Q_VEC8BIT(x)<>n then
@@ -293,9 +293,9 @@ local o,e;
          end;
 end);
 
-InstallMethod(SparseIntKey, "for an object and transformation", 
+InstallMethod(SparseIntKey, "for an object and transformation",
 [IsObject, IsTransformation],
 function(d, t)
-  return x-> NumberTransformation(t, DegreeOfTransformation(t)); 
+  return x-> NumberTransformation(t, DegreeOfTransformation(t));
 end);
 

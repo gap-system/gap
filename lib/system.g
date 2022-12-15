@@ -31,7 +31,7 @@ BIND_GLOBAL( "GAPInfo", rec(
       ],
     )),
 # There is no SuggestedOtherPackages here because the default value of
-# the user preference PackagesToLoad does the job      
+# the user preference PackagesToLoad does the job
 
     HasReadGAPRC:= false,
 

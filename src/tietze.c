@@ -491,13 +491,13 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
 
     /* loop over all relators                                              */
     for ( i = 1;  i <= numrels;  i++ ) {
-        /* We assume that ptRels and ptLens are valid at the 
-           beginning of this loop (and not rendered invalid by a 
+        /* We assume that ptRels and ptLens are valid at the
+           beginning of this loop (and not rendered invalid by a
            garbage collection)! */
         rel = ptRels[i];
         ptRel = ADDR_OBJ(rel);
         leng = INT_INTOBJ(ptLens[i]);
-        if ( leng == 0 )  { 
+        if ( leng == 0 )  {
             continue;
         }
 
@@ -739,8 +739,8 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
                 }
                 if ( 0 < c ) {
                     if ( ptLens[k] == 0 || c < INT_INTOBJ(ptLens[k])
-                      || (c == INT_INTOBJ(ptLens[k]) 
-                       && LEN_PLIST(rel) 
+                      || (c == INT_INTOBJ(ptLens[k])
+                       && LEN_PLIST(rel)
                           < LEN_PLIST(ptRels[INT_INTOBJ(ptMins[k])])) )
                     {
                         ptLens[k] = INTOBJ_INT(c);
@@ -905,7 +905,7 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
                 if ( !( (numObj == invObj
                         && ptRel[(j2+1)%length] == INTOBJ_INT(ii))
                      || (i == ii
-                        && ptInvs[INT_INTOBJ(ptRel[(j1+length-1)%length])] 
+                        && ptInvs[INT_INTOBJ(ptRel[(j1+length-1)%length])]
                            == ptRel[j2]) ) )
                 {
                     if ( ii < 0 )
@@ -1392,7 +1392,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
           if ( altered )
               break;  /* loop over j */
 
-          v = ptr + ( 1 + j ); 
+          v = ptr + ( 1 + j );
           w = ptr + ( 1 + ( j + mlen ) % ylen );
           key = 109109 * key - inv * ( (UInt)*v >> 2 )
               + ( (UInt)*w >> 2 );
@@ -1414,63 +1414,63 @@ static Obj FuncREDUCE_LETREP_WORDS_REW_SYS(Obj self, Obj tzrules, Obj a_w)
  Obj w,nw,rul;
  Obj * wa;
  Obj * nwa;
- 
+
  w=a_w;
 
  /* n := Length( w ); */
  n=LEN_PLIST(w);
- 
+
  /* lt := Length( tzrules ); */
  lt=LEN_PLIST(tzrules);
- 
+
  /* i := 1; */
  i=1;
- 
+
  /* while i in [ 1 .. n ] od */
  while (i<=n) {
    TakeInterrupt();
-  
+
   /* k := 1; */
   k=1;
-  
+
   /* while k in [ 1 .. lt ] od */
   while (k<=lt) {
-    
+
     /* rul := tzrules[k][1]; */
     rul = ELM_PLIST(tzrules,k);
     rul = ELM_PLIST(rul,1);
     lrul = LEN_PLIST(rul);
-   
+
    /* if Length( tzrules[k][1] ) <= i then */
    if (lrul<=i) {
-    
+
     /* eq := true; */
     eq=1;
 
     /* p := i; */
     p=i;
-    
+
     /* j := Length( rul ); */
     j=lrul;
-    
+
     /* while eq and j > 0 od */
     while ((eq==1) && (j>0) ) {
-     
+
      /* eq := w[p] = rul[j]; */
      eq=((ELM_LIST(w,p)==ELM_LIST(rul,j))?1:0);
-     
+
      /* p := p - 1; */
      p--;
-     
+
      /* j := j - 1; */
      j--;
-     
+
     }
     /* od */
-    
+
     /* if eq then */
     if (eq==1) {
-     
+
      /* make the new plist */
 
      rlen=LEN_PLIST(ELM_PLIST(ELM_PLIST(tzrules,k),2));
@@ -1523,37 +1523,37 @@ static Obj FuncREDUCE_LETREP_WORDS_REW_SYS(Obj self, Obj tzrules, Obj a_w)
      /* w := nw; */
      SET_LEN_PLIST(nw,newlen);
      w = nw;
-     
+
      /* i := i - Length( tzrules[k][1] ); */
      i=i-lrul;
-     
+
      /* n := Length( w ); */
      n=newlen;
-     
+
      /* k := lt; */
      k = lt;
-     
+
     }
     /* fi */
-    
+
    }
    /* fi */
-   
+
    /* k := k + 1; */
    k++;
-   
+
   }
   /* od */
-  
+
   /* i := i + 1; */
   i++;
-  
+
  }
  /* od */
- 
+
  /* return w; */
  return w;
- 
+
 }
 
 

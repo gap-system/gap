@@ -433,11 +433,11 @@ gap> m2 := Inverse(m);
 gap> IsOne( m * m2 ); IsOne( m2 * m );
 true
 true
-gap> m3 := InverseSM(m); IsMutable(m3);
+gap> m3 := InverseSameMutability(m); IsMutable(m3);
 [ [ ZmodnZObj( 5, 6 ), ZmodnZObj( 5, 6 ) ], 
   [ ZmodnZObj( 5, 6 ), ZmodnZObj( 4, 6 ) ] ]
 true
-gap> m4 := InverseSM(Immutable(m)); IsMutable(m4);
+gap> m4 := InverseSameMutability(Immutable(m)); IsMutable(m4);
 [ [ ZmodnZObj( 5, 6 ), ZmodnZObj( 5, 6 ) ], 
   [ ZmodnZObj( 5, 6 ), ZmodnZObj( 4, 6 ) ] ]
 false

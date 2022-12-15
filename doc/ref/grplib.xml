@@ -42,7 +42,7 @@ initially knows the following groups:
 </Item>
 <Item>
   the  irreducible solvable subgroups of  <M>GL(n,p)</M> for
-    <M>n>1</M> and <M>p^n &lt; 256</M>, provided by the 
+    <M>n>1</M> and <M>p^n &lt; 256</M>, provided by the
     <Package>PrimGrp</Package> package
     (see <Ref BookName="primgrp" Sect="Irreducible Solvable Matrix Groups"/>),
 </Item>
@@ -164,7 +164,7 @@ gap> AsSSortedList(DihedralGroup(12:generatorNames:=["a","b","c"]));
 
 <Index Key="ConjugacyClasses" Subkey="for linear groups">
 <C>ConjugacyClasses</C></Index>
-For  general  and   special  linear  groups  
+For  general  and   special  linear  groups
 (see&nbsp;<Ref Func="GeneralLinearGroup" Label="for dimension and a ring"/>
 and&nbsp;<Ref Func="SpecialLinearGroup" Label="for dimension and a ring"/>)
 &GAP;  has an efficient method  to generate
@@ -329,7 +329,7 @@ It returns <K>fail</K> if no such group exists in the library.
 
 <Index>perfect groups</Index>
 The &GAP; library of finite  perfect groups provides, up to isomorphism, a
-list of all perfect groups whose sizes are less than  <M>2\cdot 10^6</M>. 
+list of all perfect groups whose sizes are less than  <M>2\cdot 10^6</M>.
 The groups of orders up to <M>10^6</M> have been enumerated by
 Derek&nbsp;F. Holt and Wilhelm Plesken and
 published in their  book    <Q>Perfect Groups</Q> <Cite Key="HP89"/>.
@@ -509,7 +509,7 @@ Here are some examples.
 </Item>
 <Mark>(iii)</Mark>
 <Item>
-   <M>L_3(2) ((2^1 E) \! \times \! ( N 2^3 E 2^{{3'}} A) C) 2^{{3'}}</M> 
+   <M>L_3(2) ((2^1 E) \! \times \! ( N 2^3 E 2^{{3'}} A) C) 2^{{3'}}</M>
       means that the <M>2^{{3'}}</M>
       factor at the bottom lies in the commutator subgroup
       of the pair <M>2^3 E 2^{{3'}}</M> in the middle, but the lower
@@ -731,7 +731,7 @@ i.m.f.&nbsp;integral matrix groups of dimension <A>dim</A>:
 <Item>
       the sizes  of the  orbits  of short vectors  (these  sizes  are the
       degrees of the  faithful permutation representations  which you may
-      construct using the functions 
+      construct using the functions
       <Ref Meth="IsomorphismPermGroup" Label="for Imf matrix groups"/> or
       <Ref Func="IsomorphismPermGroupImfGroup"/> below),
 </Item>
@@ -959,9 +959,9 @@ more information about the underlying lattices.
 <P/>
 <Example><![CDATA[
 gap> ImfInvariants( 8, 15, 1 );
-rec( elementaryDivisors := [ 1, 3, 3, 3, 9, 9, 9, 27 ], 
-  isSolvable := true, isomorphismType := "C2 x (S3 wr S3)", 
-  maximalQClass := 5, minimalNorm := 8, size := 2592, 
+rec( elementaryDivisors := [ 1, 3, 3, 3, 9, 9, 9, 27 ],
+  isSolvable := true, isomorphismType := "C2 x (S3 wr S3)",
+  maximalQClass := 5, minimalNorm := 8, size := 2592,
   sizesOrbitsShortVectors := [ 54 ] )
 gap> ImfInvariants( 24, 1 ).size;
 10409396852733332453861621760000

@@ -189,7 +189,7 @@ InstallMethod( Factors, "polynomial over a finite field",
     IsCollsElms, [ IsFiniteFieldPolynomialRing, IsUnivariatePolynomial ],0,
 
 function(R,f)
-local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,  
+local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,
 	facs,  h,  q,  char,  r,
 	gc, hc, fam, val;
 
@@ -216,7 +216,7 @@ local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,
   v   := CoefficientsOfLaurentPolynomial(f);
   #fam := FamilyObj(v[1][1]);
 
-  if DegreeOfLaurentPolynomial(f) < 2 
+  if DegreeOfLaurentPolynomial(f) < 2
     or DegreeOfLaurentPolynomial(f)=DEGREE_ZERO_LAURPOL  then
       Add( irf, [cr,[f]] );
       PopOptions();
@@ -662,7 +662,7 @@ local   fs,  F,  L,  phi,  B,  i,  d,  pp,  a,  deg,t,pb;
 	  good:=[];
 	  for i in [1,3..Length(a)-1] do
 	    if a[i] in primes # we assume that the factorization above really gave
-	      # prime factors. 
+	      # prime factors.
 	      or IsPrimeInt(a[i]) then
 	      Add(good,a[i]);
 	      Add(good,a[i+1]);

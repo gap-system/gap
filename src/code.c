@@ -617,7 +617,7 @@ void            CodeFuncCallOptionsEnd ( UInt nr )
 
     /* allocate the record expression                                      */
     record = NewExpr( EXPR_REC,      nr * 2 * sizeof(Expr) );
-    
+
 
     /* enter the entries                                                   */
     for ( i = nr; 1 <= i; i-- ) {
@@ -745,7 +745,7 @@ void CodeFuncCallEnd (
     /* get the options record if any */
     if (options)
       opts = PopExpr();
-    
+
     /* enter the argument expressions                                      */
     for ( i = nr; 1 <= i; i-- ) {
         arg = PopExpr();
@@ -759,7 +759,7 @@ void CodeFuncCallEnd (
     /* wrap up the call with the options */
     if (options)
       {
-        wrapper = NewExpr( funccall ? EXPR_FUNCCALL_OPTS : STAT_PROCCALL_OPTS, 
+        wrapper = NewExpr( funccall ? EXPR_FUNCCALL_OPTS : STAT_PROCCALL_OPTS,
                            2*sizeof(Expr));
         WRITE_EXPR(wrapper, 0, opts);
         WRITE_EXPR(wrapper, 1, call);
@@ -849,7 +849,7 @@ Expr CodeFuncExprEnd(UInt nr, BOOL pushExpr, Int endLine)
 
     /* get the function expression                                         */
     fexp = CURR_FUNC();
-    
+
     /* get the body of the function                                        */
     /* push an additional return-void-statement if necessary              */
     /* the function interpreters depend on each function ``returning''     */
@@ -1182,10 +1182,10 @@ void CodeAtomicEndBody (
     stat1 = PopSeqStat( nrstats );
 
     nrexprs = INT_INTEXPR(PopExpr());
-    
+
     /* allocate the atomic-statement                                       */
     stat = NewStat( STAT_ATOMIC, sizeof(Stat) + nrexprs*2*sizeof(Stat) );
-    
+
     /* enter the statement sequence */
     WRITE_STAT(stat, 0, stat1);
 
@@ -1222,12 +1222,12 @@ void CodeAtomicEnd ( void )
 **  These functions code the beginning and end of the readonly/readwrite
 **  qualified expressions of an atomic statement.
 */
-void CodeQualifiedExprBegin(UInt qual) 
+void CodeQualifiedExprBegin(UInt qual)
 {
     PushExpr(INTEXPR_INT(qual));
 }
 
-void CodeQualifiedExprEnd(void) 
+void CodeQualifiedExprEnd(void)
 {
 }
 
@@ -2478,7 +2478,7 @@ void CodeElmList ( Int narg )
       ref = NewExpr( EXPR_ELM_LIST, 2 * sizeof(Expr) );
     else /* if (narg == 2) */
       ref = NewExpr( EXPR_ELM_MAT, 3 * sizeof(Expr) );
-      
+
     /* let 'CodeElmListUniv' to the rest                                   */
     CodeElmListUniv( ref, narg );
 }

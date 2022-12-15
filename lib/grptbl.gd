@@ -14,7 +14,7 @@
 
 
 #############################################################################
-##  
+##
 #F  MagmaByMultiplicationTableCreator( <A>, <domconst> )
 ##
 ##  <ManSection>

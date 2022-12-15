@@ -330,7 +330,7 @@ end );
 ##
 InstallMethod( ReduceRules,
     true,
-    [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep 
+    [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
         and IsMutable ],
     0,
 
@@ -524,7 +524,7 @@ InstallMethod( SetPowerANC,
     "pow conj single collector",
     IsIdenticalObjFamiliesColXXXObj,
     [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
-        and IsMutable, 
+        and IsMutable,
       IsInt,
       IsMultiplicativeElementWithInverse ],
     0,
@@ -564,7 +564,7 @@ end;
 InstallMethod( SetPowerNC,
     IsIdenticalObjFamiliesColXXXObj,
     [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
-        and IsMutable, 
+        and IsMutable,
       IsInt,
       IsMultiplicativeElementWithInverse ],
     0,
@@ -572,7 +572,7 @@ InstallMethod( SetPowerNC,
 
 
 #############################################################################
-InstallMethod( SetPower, 
+InstallMethod( SetPower,
     IsIdenticalObjFamiliesColXXXObj,
     [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
         and IsMutable,
@@ -621,7 +621,7 @@ InstallMethod( GetConjugateNC,
         "finite pow-conj single collector",
         true,
         [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep,
-          IsInt, 
+          IsInt,
           IsInt ],
         0,
 function( coll, h, g )
@@ -674,7 +674,7 @@ end;
 InstallMethod( SetRelativeOrderNC,
     true,
     [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
-        and IsMutable, 
+        and IsMutable,
       IsInt,
       IsInt ],
     0,
@@ -682,7 +682,7 @@ InstallMethod( SetRelativeOrderNC,
 
 
 #############################################################################
-InstallMethod( SetRelativeOrder, 
+InstallMethod( SetRelativeOrder,
     true,
     [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
         and IsMutable,
@@ -775,7 +775,7 @@ SingleCollector_MakeInverses := function( sc )
 	if AssertionLevel()>0 then
 	  av:=ExponentSums(gn[i],1,sc![SCP_NUMBER_RWS_GENERATORS]);
 	  CollectWord(sc,av,ih);
-	  if ForAny(av,x->not IsZero(x)) then 
+	  if ForAny(av,x->not IsZero(x)) then
 	    Error("failed inverse hint");
 	    ih:=fail;
 	  fi;
@@ -878,7 +878,7 @@ end );
 
 #############################################################################
 InstallMethod( SingleCollector,
-    true, 
+    true,
     [ IsList,
       IsList ],
     0,
@@ -1517,7 +1517,7 @@ end );
 InstallMethod( ReducedForm,
     IsIdenticalObjFamiliesRwsObj,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
-          and IsDefaultRhsTypeSingleCollector 
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is8BitsAssocWord ],
     0,
@@ -1528,7 +1528,7 @@ InstallMethod( ReducedForm,
 InstallMethod( ReducedForm,
     IsIdenticalObjFamiliesRwsObj,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
-          and IsDefaultRhsTypeSingleCollector 
+          and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
       Is16BitsAssocWord ],
     0,

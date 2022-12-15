@@ -61,7 +61,7 @@ applicable (<K>fail</K> is allowed for the timeout arguments).
 <P/>
 The return value is the number of streams that are ready, this may be
 0 if a timeout was specified. All file descriptors in the three lists
-that are not yet ready are replaced by <K>fail</K> in this function. So 
+that are not yet ready are replaced by <K>fail</K> in this function. So
 the lists are changed!
 <P/>
 This function is only available if your operating system has <C>select</C>,
@@ -80,15 +80,15 @@ Two operations normally used to read files: <Ref Oper="Read"/> and
 <Ref Oper="ReadAsFunction"/> can also be used to read &GAP; input from a
 stream. The input is immediately parsed and executed. When reading
 from a stream <A>str</A>, the &GAP; kernel generates calls to
-<C>ReadLine(<A>str</A>)</C> to supply text to the parser. 
+<C>ReadLine(<A>str</A>)</C> to supply text to the parser.
 <P/>
-Three further operations: <Ref Oper="ReadByte"/>, <Ref Oper="ReadLine"/> 
+Three further operations: <Ref Oper="ReadByte"/>, <Ref Oper="ReadLine"/>
 and <Ref Oper="ReadAll"/>, support
 reading characters from an input stream without parsing them. This can be
 used to read data in any format and process it in &GAP;.
 <P/>
 Additional operations for input streams support detection of end of
-stream, and (for those streams for which it is appropriate) random access 
+stream, and (for those streams for which it is appropriate) random access
 to the data.
 <P/>
 

@@ -11,7 +11,7 @@
 ##  Free groups are treated as   special cases of finitely presented  groups.
 ##  In addition,   elements  of  a free   group are
 ##  (associative) words, that is they have a normal  form that allows an easy
-##  equalitity test.  
+##  equalitity test.
 ##
 
 

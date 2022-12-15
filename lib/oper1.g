@@ -582,8 +582,8 @@ BIND_GLOBAL( "INSTALL_METHOD",
               break;
             fi;
           od;
-          if match then 
-            break; 
+          if match then
+            break;
           fi;
         fi;
       od;
@@ -593,7 +593,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
         # If the requirements do not match any of the declarations
         # then something is wrong or `InstallOtherMethod' should be used.
         if notmatch=0 then
-          if not GAPInfo.CommandLineOptions.N then          
+          if not GAPInfo.CommandLineOptions.N then
             Error("the number of arguments does not match a declaration of ",
                   NAME_FUNC(opr) );
           else
@@ -632,7 +632,7 @@ BIND_GLOBAL( "INSTALL_METHOD",
             od;
             if match and reqs<>oreqs then
               INFO_DEBUG( 1,
-                    "method installed for ", NAME_FUNC(opr), 
+                    "method installed for ", NAME_FUNC(opr),
                     " matches more than one declaration in ",
                     INPUT_FILENAME(), ":", STRING_INT(INPUT_LINENUMBER()));
             fi;

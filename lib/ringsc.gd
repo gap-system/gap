@@ -73,15 +73,15 @@ DeclareAttribute("StandardGeneratorsSubringSCRing",IsSubringSCRing);
 ##  <Attr Name="Subrings" Arg='R'/>
 ##
 ##  <Description>
-##  for a finite ring <A>R</A> this function returns a list of all 
+##  for a finite ring <A>R</A> this function returns a list of all
 ##  subrings of <A>R</A>.
 ##  <Example><![CDATA[
-##  gap> Subrings(SmallRing(8,37));     
-##  [ <ring with 1 generator>, <ring with 1 generator>, 
-##    <ring with 1 generator>, <ring with 1 generator>, 
-##    <ring with 1 generator>, <ring with 1 generator>, 
-##    <ring with 2 generators>, <ring with 2 generators>, 
-##    <ring with 2 generators>, <ring with 2 generators>, 
+##  gap> Subrings(SmallRing(8,37));
+##  [ <ring with 1 generator>, <ring with 1 generator>,
+##    <ring with 1 generator>, <ring with 1 generator>,
+##    <ring with 1 generator>, <ring with 1 generator>,
+##    <ring with 2 generators>, <ring with 2 generators>,
+##    <ring with 2 generators>, <ring with 2 generators>,
 ##    <ring with 3 generators> ]
 ##  ]]></Example>
 ##  </Description>
@@ -103,8 +103,8 @@ DeclareAttribute("Subrings",IsRing);
 ##  ideals of <A>R</A>.
 ##  <Example><![CDATA[
 ##  gap> Ideals(SmallRing(8,37));
-##  [ <ring with 1 generator>, <ring with 1 generator>, 
-##    <ring with 1 generator>, <ring with 2 generators>, 
+##  [ <ring with 1 generator>, <ring with 1 generator>,
+##    <ring with 1 generator>, <ring with 2 generators>,
 ##    <ring with 3 generators> ]
 ##  ]]></Example>
 ##  </Description>
@@ -122,7 +122,7 @@ DeclareAttribute("Ideals",IsRing);
 ##  <Func Name="NumberSmallRings" Arg='s'/>
 ##
 ##  <Description>
-##  returns the number of (nonisomorphic) rings of order <M>s</M> 
+##  returns the number of (nonisomorphic) rings of order <M>s</M>
 ##  stored in the library of small rings.
 ##  <Example><![CDATA[
 ##  gap> List([1..15],NumberSmallRings);
@@ -143,20 +143,20 @@ DeclareGlobalFunction("NumberSmallRings");
 ##  <Func Name="SmallRing" Arg='s n'/>
 ##
 ##  <Description>
-##  returns the <M>n</M>-th ring of order <M>s</M> from a library of 
+##  returns the <M>n</M>-th ring of order <M>s</M> from a library of
 ##  rings of small order (up to isomorphism).
 ##  <Example><![CDATA[
 ##  gap> R:=SmallRing(8,37);
 ##  <ring with 3 generators>
-##  gap> ShowMultiplicationTable(R);                 
+##  gap> ShowMultiplicationTable(R);
 ##  *     | 0*a   c     b     b+c   a     a+c   a+b   a+b+c
 ##  ------+------------------------------------------------
-##  0*a   | 0*a   0*a   0*a   0*a   0*a   0*a   0*a   0*a  
-##  c     | 0*a   0*a   0*a   0*a   0*a   0*a   0*a   0*a  
-##  b     | 0*a   0*a   0*a   0*a   b     b     b     b    
-##  b+c   | 0*a   0*a   0*a   0*a   b     b     b     b    
-##  a     | 0*a   c     b     b+c   a+b   a+b+c a     a+c  
-##  a+c   | 0*a   c     b     b+c   a+b   a+b+c a     a+c  
+##  0*a   | 0*a   0*a   0*a   0*a   0*a   0*a   0*a   0*a
+##  c     | 0*a   0*a   0*a   0*a   0*a   0*a   0*a   0*a
+##  b     | 0*a   0*a   0*a   0*a   b     b     b     b
+##  b+c   | 0*a   0*a   0*a   0*a   b     b     b     b
+##  a     | 0*a   c     b     b+c   a+b   a+b+c a     a+c
+##  a+c   | 0*a   c     b     b+c   a+b   a+b+c a     a+c
 ##  a+b   | 0*a   c     b     b+c   a     a+c   a+b   a+b+c
 ##  a+b+c | 0*a   c     b     b+c   a     a+c   a+b   a+b+c
 ##  ]]></Example>

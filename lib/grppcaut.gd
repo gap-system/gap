@@ -26,9 +26,9 @@ DeclareGlobalFunction("AutomorphismGroupFrattFreeGroup");
 ##
 #I InfoAutGrp
 ##
-DeclareInfoClass( "InfoAutGrp" ); 
-DeclareInfoClass( "InfoMatOrb" ); 
-DeclareInfoClass( "InfoOverGr" ); 
+DeclareInfoClass( "InfoAutGrp" );
+DeclareInfoClass( "InfoMatOrb" );
+DeclareInfoClass( "InfoOverGr" );
 
 if not IsBound( CHOP ) then CHOP := false; fi;
 

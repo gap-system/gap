@@ -21,17 +21,17 @@ are not polycyclic.
 In &GAP; there exists a large number of methods for polycyclic groups
 which are based upon the polycyclic structure of these groups. These
 methods are usually very efficient, especially for groups which are
-given by a pc-presentation (see chapter <Ref Chap="Pc Groups"/>), and can 
-be applied to many types of groups. Hence &GAP; tries to use them 
-whenever possible, for example, for permutation groups and matrix 
-groups over finite fields that are known to be polycyclic 
-(the only exception is the representation as finitely presented group 
+given by a pc-presentation (see chapter <Ref Chap="Pc Groups"/>), and can
+be applied to many types of groups. Hence &GAP; tries to use them
+whenever possible, for example, for permutation groups and matrix
+groups over finite fields that are known to be polycyclic
+(the only exception is the representation as finitely presented group
 for which the polycyclic methods cannot be used in general).
 <P/>
-At the current state of implementations the &GAP; library contains 
-methods to compute with finite polycyclic groups, while the &GAP; 
-package <Package>Polycyclic</Package> by Bettina Eick and Werner Nickel 
-allows also computations with infinite polycyclic groups which are given 
+At the current state of implementations the &GAP; library contains
+methods to compute with finite polycyclic groups, while the &GAP;
+package <Package>Polycyclic</Package> by Bettina Eick and Werner Nickel
+allows also computations with infinite polycyclic groups which are given
 by a pc-presentation.
 <P/>
 <!-- %%  Most of the methods for polycyclic groups are due to Frank Celler, Bettina -->
@@ -544,7 +544,7 @@ pcgs installed:
 <Ref Prop="IsNilpotentGroup"/>,
 <Ref Prop="IsSupersolvableGroup"/>,
 <Ref Attr="Size"/>,
-<Ref Attr="CompositionSeries"/>, 
+<Ref Attr="CompositionSeries"/>,
 <Ref Attr="ConjugacyClasses" Label="attribute"/>,
 <Ref Oper="Centralizer" Label="for a magma and an element"/>,
 <Ref Attr="FrattiniSubgroup"/>,
@@ -554,7 +554,7 @@ pcgs installed:
 <Ref Attr="MinimalGeneratingSet"/>,
 <Ref Attr="Centre"/>,
 <Ref Func="Intersection" Label="for various collections"/>,
-<Ref Attr="AutomorphismGroup"/>, 
+<Ref Attr="AutomorphismGroup"/>,
 <Ref Oper="IrreducibleModules"/>.
 
 </Section>

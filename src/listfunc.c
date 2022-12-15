@@ -145,7 +145,7 @@ static Obj FuncADD_LIST(Obj self, Obj list, Obj obj)
 */
 static Obj RemList(Obj list)
 {
-    Int                 pos; 
+    Int                 pos;
     Obj result;
     pos = LEN_LIST( list ) ;
     if ( pos == 0 ) {
@@ -158,8 +158,8 @@ static Obj RemList(Obj list)
 
 static Obj RemPlist(Obj list)
 {
-    Int                 pos;           
-    Obj removed; 
+    Int                 pos;
+    Obj removed;
 
     if ( ! IS_PLIST_MUTABLE(list) ) {
         ErrorMayQuit("Remove: <list> must be a mutable list", 0, 0);
@@ -581,7 +581,7 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 **  The following suite of functions mirrors the sort functions above.  They
 **  sort the first list given and perform the same operations on the second
 **  list, the shadow list.  All functions assume that shadow list has (at
-**  least) the length of the first list. 
+**  least) the length of the first list.
 **
 **  The code here is a duplication of the code above with the operations on
 **  the second list added in.
@@ -669,7 +669,7 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
     RESET_FILT_LIST(shadow, FN_IS_SSORT);
 
 #include "sortbase.h"
-  
+
 #define SORT_FUNC_NAME SortParaDensePlistComp
 #define SORT_FUNC_ARGS Obj list, Obj shadow, Obj func
 #define SORT_ARGS list, shadow, func
@@ -1064,7 +1064,7 @@ static Obj FuncOnSets(Obj self, Obj set, Obj elm)
         return set;
       }
     }
-        
+
     /* special case for permutations                                       */
     if (IS_PERM(elm)) {
         return OnSetsPerm( set, elm );
@@ -1074,7 +1074,7 @@ static Obj FuncOnSets(Obj self, Obj set, Obj elm)
     if (IS_TRANS(elm)){
       return OnSetsTrans( set, elm);
     }
-    
+
     /* special case for partial perms */
     if (IS_PPERM(elm)){
       return OnSetsPPerm( set, elm);
@@ -1094,7 +1094,7 @@ static Obj FuncOnSets(Obj self, Obj set, Obj elm)
       {
       case 0:
         break;
-        
+
       case 1:
         RetypeBagSM( img, T_PLIST_DENSE_NHOM_SSORT );
 
@@ -1180,7 +1180,7 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
   val = NewBag(T_DATOBJ, (n+1)*sizeof(UInt));
   stack = NEW_PLIST(T_PLIST_CYC, n);
   comps = NEW_PLIST(T_PLIST_TAB, n);
-  frames = NewBag(T_DATOBJ, (4*n+1)*sizeof(UInt));  
+  frames = NewBag(T_DATOBJ, (4*n+1)*sizeof(UInt));
   for (k = 1; k <= n; k++)
     {
       if (((const UInt *)CONST_ADDR_OBJ(val))[k] == 0)
@@ -1256,7 +1256,7 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
               }
           }
         }
-      
+
     }
   SHRINK_PLIST(comps, LEN_PLIST(comps));
   return comps;
@@ -1271,7 +1271,7 @@ static Obj FuncSTRONGLY_CONNECTED_COMPONENTS_DIGRAPH(Obj self, Obj digraph)
 */
 
 static Obj FuncCOPY_LIST_ENTRIES(Obj self, Obj args)
-{  
+{
   Obj srclist;
   Int srcstart;
   Int srcinc;
@@ -1308,7 +1308,7 @@ static Obj FuncCOPY_LIST_ENTRIES(Obj self, Obj args)
 
   if (number == 0)
     return (Obj) 0;
-  
+
   if ( srcstart <= 0 || dststart <= 0 ||
        srcstart + (number-1)*srcinc <= 0 || dststart + (number-1)*dstinc <= 0)
     {
@@ -1318,7 +1318,7 @@ static Obj FuncCOPY_LIST_ENTRIES(Obj self, Obj args)
 
   srcmax = (srcinc > 0) ? srcstart + (number-1)*srcinc : srcstart;
   dstmax = (dstinc > 0) ? dststart + (number-1)*dstinc : dststart;
-  
+
   GROW_PLIST(dstlist, dstmax);
   GROW_PLIST(srclist, srcmax);
   if (srcinc == 1 && dstinc == 1)
@@ -1365,10 +1365,10 @@ static Obj FuncCOPY_LIST_ENTRIES(Obj self, Obj args)
                   dptr -= srcinc;
                   *dptr = *sptr;
                 }
-              
+
             }
         }
-              
+
     }
   else
     {
@@ -1539,7 +1539,7 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
 
 
-    
+
     return 0;
 }
 

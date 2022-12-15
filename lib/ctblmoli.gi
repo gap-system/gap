@@ -165,17 +165,17 @@ InstallGlobalFunction( SummandMolienSeries, function( tbl, psi, chi, i )
       ev := EigenvaluesChar( tbl, psi, i );
       n  := Length( ev );
       e  := E(n);
-  
+
       # numerator of summands corresponding to `i'-th class
       numer:= chi[i] * e ^ Sum( [ 1 .. n ], j -> j * ev[j] ) * One( x );
-  
+
       div:= ShallowCopy( DivisorsInt( n ) );
       RemoveSet( div, 1 );
       a:= List( [ 1 .. n ], x -> 0 );
       a[1]:= ev[n];
-  
+
       for d in div do
-  
+
         # compute $a_d$, that is, the maximal multiplicity of `ev[k]'
         # for all `k' with $\gcd(n,k) = n / d$.
         roots:= ( n / d ) * PrimeResidues( d );
@@ -185,7 +185,7 @@ InstallGlobalFunction( SummandMolienSeries, function( tbl, psi, chi, i )
             numer:= numer * ( x - e ^ r ) ^ ( a[d] - ev[r] );
           fi;
         od;
-  
+
       od;
 
     fi;

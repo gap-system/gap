@@ -106,7 +106,7 @@ Note that &GAP; always considers the domain of a permutation group to be the
 points moved by elements of the group as returned by
 <Ref Attr="MovedPoints" Label="for a list or collection of permutations"/>,
 i.e. it is not possible to have a domain to include fixed points, I.e.
-<M>P = \langle (1,2,3) \rangle</M> and 
+<M>P = \langle (1,2,3) \rangle</M> and
 <M>P = \langle (1,3,5) \rangle</M> result in isomorphic wreath products.
 (If fixed points are desired the wreath product <M>G \wr T</M>
 has to be formed with a transitive overgroup <M>T</M> of <M>P</M> and then
@@ -131,7 +131,7 @@ Let <M>G</M> and <M>H</M> be groups with presentations
 <M>\langle X \mid R \rangle</M> and <M>\langle Y \mid S \rangle</M>,
 respectively. Then the free product <M>G*H</M> is
 the group with presentation <M>\langle X \cup Y \mid R \cup S \rangle</M>.
-This construction can be generalized to an arbitrary number of groups. 
+This construction can be generalized to an arbitrary number of groups.
 
 <#Include Label="FreeProduct">
 

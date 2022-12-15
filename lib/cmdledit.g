@@ -11,10 +11,58 @@
 ##  This file contains function for handling some keys in line edit mode.
 ##  It is only used if the GAP kernel was compiled to use the GNU
 ##  readline library.
-##  
+##
 ##  To avoid using the readline library, pass '--without-readline' to
 ##  the configure script when compiling GAP.
 ##
+
+# Declare the user preferences related to readline
+# also if readline is not supported,
+# in order to get them documented also in this case.
+DeclareUserPreference( rec(
+  name:= ["HistoryMaxLines", "SaveAndRestoreHistory"],
+  description:= [
+    "<C>HistoryMaxLines</C> is the maximal amount of input lines held in \
+&GAP;'s command line history.",
+    "If <C>SaveAndRestoreHistory</C> is <K>true</K> then &GAP; saves its \
+command line history before terminating a &GAP; session, and prepends the \
+stored history when &GAP; is started. \
+If this is enabled it is suggested to set <C>HistoryMaxLines</C> to some \
+finite value. \
+It is also possible to set <C>HistoryMaxLines</C> to <Ref Var=\"infinity\"/> \
+to keep arbitrarily many lines.",
+    "These preferences are ignored if &GAP; was not compiled with \
+readline support.",
+    ],
+  default:= [10000, true],
+  check:= function(max, save)
+    return ((IsInt( max ) and 0 <= max) or max = infinity)
+           and save in [true, false];
+  end
+  )
+);
+
+DeclareUserPreference( rec(
+  name := "Autocompleter",
+  description := [
+                   "Set how names are filtered during tab-autocomplete, \
+this can be: \
+<C>\"default\"</C>: case-sensitive matching. \
+<C>\"case-insensitive\"</C>: case-insensitive matching, \
+or a record with two components named <C>filter</C> and \
+<C>completer</C>, which are both functions which take two arguments. \
+<C>filter</C> takes a list of names and a partial identifier and returns \
+all the members of <C>names</C> which are a valid extension of the partial \
+identifier. \
+<C>completer</C> takes a list of names and a partial identifier and \
+returns the partial identifier as extended as possible (it may also change \
+the identifier, for example to correct the case, or spelling mistakes), or \
+returns <K>fail</K> to leave the existing partial identifier.",
+"This preference is ignored if &GAP; was not compiled with \
+readline support.",
+  ],
+  default := "default",
+  ) );
 
 
 if GAPInfo.CommandLineOptions.E then
@@ -25,32 +73,32 @@ GAPInfo.UseReadline := true;
 ##  <#GAPDoc Label="readline">
 ##  <Section Label="sec:readline">
 ##  <Heading>Editing using the <C>readline</C> library</Heading>
-##  
+##
 ##  The  descriptions  in  this  section   are  valid  only  if  your  &GAP;
 ##  installation uses the <C>readline</C>  library for command line editing.
 ##  You  can check  by <C>IsBound(GAPInfo.UseReadline);</C>  if this  is the
 ##  case. <P/>
-##  
+##
 ##  You        can        use        all       the        features        of
 ##  <C>readline</C>,         as         for        example         explained
 ##  in  <URL>https://tiswww.case.edu/php/chet/readline/rluserman.html</URL>.
 ##  Therefore  the  command  line  editing   in  &GAP;  is  similar  to  the
 ##  <C>bash</C> shell  and many other  programs. On a Unix/Linux  system you
 ##  may also have a manpage, try <C>man readline</C>. <P/>
-##  
+##
 ##  Compared  to the  command line  editing which  was used  in &GAP;  up to
 ##  version&nbsp;4.4 (or compared to  not using the <C>readline</C> library)
 ##  using <C>readline</C> has several advantages:
 ##  <List>
-##  <Item>Most keys still do the  same as explained in 
+##  <Item>Most keys still do the  same as explained in
 ##  <Ref Sect="Line Editing"/> (in the default configuration).
 ##  </Item>
-##  <Item>There are many additional commands, e.g. undoing (<B>Ctrl-_</B>, 
-##  keyboard macros (<B>Ctrl-x(</B>, <B>Ctrl-x)</B> and <B>Ctrl-xe</B>), 
+##  <Item>There are many additional commands, e.g. undoing (<B>Ctrl-_</B>,
+##  keyboard macros (<B>Ctrl-x(</B>, <B>Ctrl-x)</B> and <B>Ctrl-xe</B>),
 ##  file name completion (hit <B>Esc</B> two or four times),
-##  showing matching parentheses, 
+##  showing matching parentheses,
 ##  <C>vi</C>-style key bindings, deleting and yanking text, ...</Item>
-##  <Item>Lines which are longer than a physical terminal row can be edited 
+##  <Item>Lines which are longer than a physical terminal row can be edited
 ##  more conveniently.</Item>
 ##  <Item>Arbitrary unicode characters can be typed into string literals.
 ##  </Item>
@@ -60,24 +108,24 @@ GAPInfo.UseReadline := true;
 ##  <Item>The command line history can be saved to and read from a file, see
 ##  <Ref Subsect="ssec:cmdlinehistory"/>.</Item>
 ##  <!-- <Item>demo mode <Ref Subsect="ssec:demoreadline"/>???</Item> -->
-##  <Item>Adventurous users can even implement completely new 
+##  <Item>Adventurous users can even implement completely new
 ##  command line editing functions on &GAP; level, see <Ref
 ##  Subsect="ssec:readlineUserFuncs"/>.</Item>
-##  
+##
 ##  </List>
 ##  <P/>
-##  
+##
 ##  <Subsection Label="ssec:readlineCustom">
 ##  <Index Key="ReadlineInitLine"><C>ReadlineInitLine</C></Index>
 ##  <Heading>Readline customization</Heading>
-##  
+##
 ##  You can use your readline  init file (by default <File>~/.inputrc</File>
 ##  on Unix/Linux) to  customize key bindings. If you want  settings be used
 ##  only within  &GAP; you  can write them  between lines  containing <C>$if
 ##  GAP</C> and <C>$endif</C>. For a detailed documentation of the available
 ##  settings and functions see <URL Text="here">
 ##  https://tiswww.case.edu/php/chet/readline/rluserman.html</URL>.
-##  
+##
 ##  <Listing Type="From readline init file">
 ##  $if GAP
 ##    set blink-matching-paren on
@@ -85,12 +133,12 @@ GAPInfo.UseReadline := true;
 ##    "\ep": kill-region
 ##  $endif
 ##  </Listing>
-##  
+##
 ##  Alternatively,       from      within       &GAP;      the       command
 ##  <C>ReadlineInitLine(<A>line</A>);</C> can be  used, where <A>line</A> is
 ##  a string containing a line as in the init file.
 ##  <P/>
-##  
+##
 ##  Caveat:  &GAP;   overwrites  the  following  keys   (after  reading  the
 ##  <File>~/.inputrc</File>  file):  <C>\C-g</C>, <C>\C-i</C>,  <C>\C-n</C>,
 ##  <C>\C-o</C>,   <C>\C-p</C>,  <C>\C-r</C>,   <C>\C-\</C>,  <C>\e&lt;</C>,
@@ -98,8 +146,8 @@ GAPInfo.UseReadline := true;
 ##  <C>PageUp</C>,  <C>PageDown</C>.  So,  do  not redefine  these  in  your
 ##  <File>~/.inputrc</File>.
 ##  <P/>
-##  
-##  Note that after pressing <B>Ctrl-v</B> the next special character is 
+##
+##  Note that after pressing <B>Ctrl-v</B> the next special character is
 ##  input verbatim. This is very useful to bind keys or key sequences.
 ##  For example, binding the function key <B>F3</B> to the command
 ##  <C>kill-whole-line</C> by using the sequence <B>Ctrl-v</B> <B>F3</B>
@@ -107,16 +155,16 @@ GAPInfo.UseReadline := true;
 ##  <C>ReadlineInitLine("\"^[OR\":kill-whole-line");</C>.
 ##  (You can get the line back later with <B>Ctrl-y</B>.)
 ##  <P/>
-##  
+##
 ##  The <B>Ctrl-g</B> key can be used to type any unicode character by its code
 ##  point. The number of the character can either be given as a count, or if the
 ##  count is one the input characters before the cursor are taken (as decimal
-##  number or as hex number which starts with <C>0x</C>. For example, the 
+##  number or as hex number which starts with <C>0x</C>. For example, the
 ##  double stroke character &#8484; can be input by any of the three key
 ##  sequences <B>Esc 8484 Ctrl-g</B>, <B>8484 Ctrl-g</B> or <B>0x2124
 ##  Ctrl-g</B>.
 ##  <P/>
-##  
+##
 ##  Some terminals bind the <B>Ctrl-s</B> and <B>Ctrl-q</B> keys to stop and
 ##  restart terminal  output. Furthermore,  sometimes <B>Ctrl-\</B>  quits a
 ##  program. To disable this behaviour (and maybe use these keys for command
@@ -125,30 +173,30 @@ GAPInfo.UseReadline := true;
 ##  (see <Ref Sect="sect:gap.ini"/>).
 ##  <P/>
 ##  </Subsection>
-##  
+##
 ##  <Subsection Label="ssec:cmdlinehistory">
 ##  <Heading>The command line history</Heading>
-##  
+##
 ##  &GAP; can save your input lines for later reuse. The keys <B>Ctrl-p</B>
-##  (or <B>Up</B>), <B>Ctrl-n</B> (or <B>Down</B>), 
+##  (or <B>Up</B>), <B>Ctrl-n</B> (or <B>Down</B>),
 ##  <B>ESC&lt;</B> and <B>ESC&gt;</B> work as documented in <Ref
 ##  Sect="Line Editing"/>, that is they scroll backward and
-##  forward in the history or go to its beginning or end. 
+##  forward in the history or go to its beginning or end.
 ##  Also, <B>Ctrl-o</B> works as documented, it is useful for repeating a
 ##  sequence of previous lines.
-##  (But <B>Ctrl-l</B> clears the screen as in other programs.) 
+##  (But <B>Ctrl-l</B> clears the screen as in other programs.)
 ##  <P/>
-##  
+##
 ##  The command line history can be used across several instances of &GAP;
 ##  via the following two commands.
 ##  </Subsection>
-##  
+##
 ##  <ManSection >
 ##  <Func Arg="[fname], [app]" Name="SaveCommandLineHistory" />
 ##  <Returns><K>fail</K> or number of saved lines</Returns>
 ##  <Func Arg="[fname], [app]" Name="ReadCommandLineHistory" />
 ##  <Returns><K>fail</K> or number of added lines</Returns>
-##  
+##
 ##  <Description>
 ##  The first  command saves the  lines in the  command line history  to the
 ##  file given by  the string <A>fname</A>. The default  for <A>fname</A> is
@@ -168,30 +216,30 @@ GAPInfo.UseReadline := true;
 ##  to a non negative number <C>num</C> to store up to <C>num</C> input
 ##  lines or to <K>infinity</K> to store arbitrarily many lines.
 ##  An automatic storing and restoring  of the command line history can
-##  be configured via 
+##  be configured via
 ##  <C>SetUserPreference("SaveAndRestoreHistory", true);</C>.
 ##  <P/>
 ##  Note that these functions are only available if your &GAP; is configured
 ##  to use the <C>readline</C> library.
 ##  </Description>
 ##  </ManSection>
-##  
+##
 ##  <Subsection Label="ssec:readlineUserFuncs">
 ##  <Index Key="InstallReadlineMacro"><C>InstallReadlineMacro</C></Index>
 ##  <Index Key="InvocationReadlineMacro"><C>InvocationReadlineMacro</C></Index>
-##  
+##
 ##  <Heading>Writing your own command line editing functions</Heading>
 ##  It is possible to write new command line editing functions in &GAP; as
 ##  follows.
 ##  <P/>
 ##  The functions have one argument <A>l</A> which is a list with five
 ##  entries of the form <C>[count, key, line, cursorpos, markpos]</C> where
-##  <C>count</C> and <C>key</C> are the last pressed key and its count 
+##  <C>count</C> and <C>key</C> are the last pressed key and its count
 ##  (these are not so useful here because users probably do not want to
 ##  overwrite the binding of a single key), then <C>line</C> is a string
-##  containing the line typed so far, <C>cursorpos</C> is the current 
+##  containing the line typed so far, <C>cursorpos</C> is the current
 ##  position of the cursor (point), and <C>markpos</C> the current position
-##  of the mark. 
+##  of the mark.
 ##  <P/>
 ##  The result of such a  function must  be a list which can have various
 ##  forms:
@@ -199,11 +247,11 @@ GAPInfo.UseReadline := true;
 ##  <Mark><C>[str]</C></Mark>
 ##  <Item>with a string <C>str</C>. In this case the text <C>str</C> is
 ##  inserted at the cursor position.</Item>
-##  <Mark><C>[kill, begin, end]</C></Mark> 
+##  <Mark><C>[kill, begin, end]</C></Mark>
 ##  <Item> where <C>kill</C> is <K>true</K> or <K>false</K> and <C>begin</C>
-##  and <C>end</C> are positions on the input line. This removes the text 
+##  and <C>end</C> are positions on the input line. This removes the text
 ##  from the lower position to before the higher position. If <C>kill</C>
-##  is <K>true</K> the text is killed, i.e. put in the kill ring for later 
+##  is <K>true</K> the text is killed, i.e. put in the kill ring for later
 ##  yanking.
 ##  </Item>
 ##  <Mark><C>[begin, end, str]</C></Mark>
@@ -224,13 +272,13 @@ GAPInfo.UseReadline := true;
 ##  <Mark><C>[100]</C></Mark>
 ##  <Item>This rings the bell as configured in the terminal.</Item>
 ##  </List>
-##  
+##
 ##  In the first three cases the result list can contain a position as a
 ##  further entry, this becomes the new cursor position. Or it
 ##  can contain two positions as further entries, these become the new
 ##  cursor position and the new position of the mark.
 ##  <P/>
-##  
+##
 ##  Such a function can be installed as a macro for <C>readline</C> via
 ##  <C>InstallReadlineMacro(name, fun);</C> where <C>name</C> is a string
 ##  used as name of the macro and <C>fun</C> is a function as above.
@@ -238,17 +286,17 @@ GAPInfo.UseReadline := true;
 ##  <C>InvocationReadlineMacro(name);</C>.
 ##  <P/>
 ##  As an example we define a function which puts double quotes around the
-##  word under or before the cursor position. The space character, the 
+##  word under or before the cursor position. The space character, the
 ##  characters in <C>"(,)"</C>, and the beginning and end of the line
-##  are considered as word boundaries. The function is then installed as a 
-##  macro and bound to the key sequence <B>Esc</B> <B>Q</B>. 
+##  are considered as word boundaries. The function is then installed as a
+##  macro and bound to the key sequence <B>Esc</B> <B>Q</B>.
 ##  <P/>
 ##  <Log>
 ##  gap> EditAddQuotes := function(l)
 ##  >   local str, pos, i, j, new;
 ##  >   str := l[3];
 ##  >   pos := l[4];
-##  >   i := pos; 
+##  >   i := pos;
 ##  >   while i > 1 and (not str[i-1] in ",( ") do
 ##  >     i := i-1;
 ##  >   od;
@@ -266,21 +314,21 @@ GAPInfo.UseReadline := true;
 ##  gap> ReadlineInitLine(Concatenation("\"\\eQ\":\"",invl,"\""));;
 ##  </Log>
 ##  </Subsection>
-##  
+##
 ##  </Section>
 ##  <#/GAPDoc>
-##  
+##
 
 
 if not IsBound(GAPInfo.CommandLineEditFunctions) then
   GAPInfo.CommandLineEditFunctions := rec(
   # This is the GAP function called by the readline handler function
   # handled-by-GAP (GAP_rl_func in src/sysfiles.c).
-  KeyHandler := function(l) 
+  KeyHandler := function(l)
     local macro, res, key;
     # remember this key
-    key := l[2]; 
-    res:=[];    
+    key := l[2];
+    res:=[];
     if l[2] >= 1000 then
       macro := QuoInt(l[2], 1000);
       if IsBound(GAPInfo.CommandLineEditFunctions.Macros.(macro)) then
@@ -407,7 +455,7 @@ GAPInfo.CommandLineEditFunctions.Functions.UnicodeChar := function(l)
       hex := true;
       i := i-1;
     else
-      hex := false; 
+      hex := false;
       i := i+1;
     fi;
     c := 0;
@@ -430,7 +478,7 @@ GAPInfo.CommandLineEditFunctions.Functions.UnicodeChar := function(l)
     return [helper(l[1])];
   fi;
 end;
-GAPInfo.CommandLineEditFunctions.Functions.7 := 
+GAPInfo.CommandLineEditFunctions.Functions.7 :=
                        GAPInfo.CommandLineEditFunctions.Functions.UnicodeChar;
 BindKeysToGAPHandler("\007");
 
@@ -442,43 +490,6 @@ BindKeysToGAPHandler("\007");
 if not IsBound(GAPInfo.History) then
   GAPInfo.History := rec(Lines := [], Pos := 0, Last := 0);
 fi;
-DeclareUserPreference( rec(
-  name:= ["HistoryMaxLines", "SaveAndRestoreHistory"],
-  description:= [
-    "HistoryMaxLines is the maximal amount of input lines held in GAP's \
-command line history.",
-    "If SaveAndRestoreHistory is true then GAP saves its command line history \
-before terminating a GAP session, and prepends the stored history when GAP is \
-started. If this is enabled it is suggested to set HistoryMaxLines to some \
-finite value. It is also possible to set HistoryMaxLines to infinity to keep \
-arbitrarily many lines.",
-    "These preferences are ignored if GAP was not compiled with \
-readline support.",
-    ],
-  default:= [10000, true],
-  check:= function(max, save) 
-    return ((IsInt( max ) and 0 <= max) or max = infinity) 
-           and save in [true, false];
-  end
-  ) 
-);
-
-DeclareUserPreference( rec(
-  name := "Autocompleter",
-  description := [
-                   "Set how names are filtered during tab-autocomplete, \
-this can be: \"default\": case-sensitive matching. \"case-insensitive\": \
-case-insensitive matching, or a record with two components named 'filter' and \
-'completer', which are both functions which take two arguments. \
-'filter' takes a list of names and a partial identifier and returns \
-all the members of 'names' which are a valid extension of the partial \
-identifier. 'completer' takes a list of names and a partial identifier and \
-returns the partial identifier as extended as possible (it may also change \
-the identifier, for example to correct the case, or spelling mistakes), or \
-returns 'fail' to leave the existing partial identifier."],
-  default := "default",
-  ) );
-
 
 
 ## We use key 0 (not bound) to add line to history.
@@ -512,7 +523,7 @@ GAPInfo.CommandLineEditFunctions.Functions.AddHistory := function(l)
     return [false, Length(l[3])+1, Length(l[3]) + i + 1];
   fi;
 end;
-GAPInfo.CommandLineEditFunctions.Functions.0 := 
+GAPInfo.CommandLineEditFunctions.Functions.0 :=
                        GAPInfo.CommandLineEditFunctions.Functions.AddHistory;
 
 ##  C-p: previous line starting like current before point
@@ -546,7 +557,7 @@ GAPInfo.CommandLineEditFunctions.Functions.BackwardHistory := function(l)
   fi;
 end;
 # bind to C-p and map Up-key
-GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('P') mod 32) := 
+GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('P') mod 32) :=
                 GAPInfo.CommandLineEditFunctions.Functions.BackwardHistory;
 BindKeysToGAPHandler("\020");
 ReadlineInitLine("\"\\eOA\": \"\\C-p\"");
@@ -562,7 +573,7 @@ GAPInfo.CommandLineEditFunctions.Functions.ForwardHistory := function(l)
   n := GAPInfo.History.Pos;
   if n > Length(hist) then
     # special case on empty line, we don't wrap to the beginning, but
-    # the position of the last history use 
+    # the position of the last history use
     if Length(l[3]) = 0 and GAPInfo.History.Last < Length(hist) then
       GAPInfo.History.Pos := GAPInfo.History.Last;
       n := GAPInfo.History.Pos;
@@ -593,7 +604,7 @@ GAPInfo.CommandLineEditFunctions.Functions.ForwardHistory := function(l)
   fi;
 end;
 # bind to C-n and map Down-key
-GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('N') mod 32) := 
+GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('N') mod 32) :=
                 GAPInfo.CommandLineEditFunctions.Functions.ForwardHistory;
 BindKeysToGAPHandler("\016");
 ReadlineInitLine("\"\\eOB\": \"\\C-n\"");
@@ -601,7 +612,7 @@ ReadlineInitLine("\"\\e[B\": \"\\C-n\"");
 
 ##  ESC <:  beginning of history
 GAPInfo.CommandLineEditFunctions.Functions.BeginHistory := function(l)
-  if UserPreference("HistoryMaxLines") <= 0 or 
+  if UserPreference("HistoryMaxLines") <= 0 or
                                   Length(GAPInfo.History.Lines) = 0 then
     return [];
   fi;
@@ -615,7 +626,7 @@ BindKeysToGAPHandler("\\e<");
 
 ##  ESC >:  end of history
 GAPInfo.CommandLineEditFunctions.Functions.EndHistory := function(l)
-  if UserPreference("HistoryMaxLines") <= 0 or 
+  if UserPreference("HistoryMaxLines") <= 0 or
                                   Length(GAPInfo.History.Lines) = 0 then
     return [];
   fi;
@@ -623,7 +634,7 @@ GAPInfo.CommandLineEditFunctions.Functions.EndHistory := function(l)
   GAPInfo.History.Last := GAPInfo.History.Pos;
   return [1, Length(l[3]), GAPInfo.History.Lines[GAPInfo.History.Pos], 1];
 end;
-GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('>')) := 
+GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('>')) :=
                          GAPInfo.CommandLineEditFunctions.Functions.EndHistory;
 BindKeysToGAPHandler("\\e>");
 
@@ -634,7 +645,7 @@ GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('O') mod 32) := function(l)
   cf := GAPInfo.CommandLineEditFunctions;
   if IsBound(cf.ctrlo) then
     n := GAPInfo.History.Last + 1;
-    if UserPreference("HistoryMaxLines") <= 0 or 
+    if UserPreference("HistoryMaxLines") <= 0 or
                                   Length(GAPInfo.History.Lines) < n then
       return [];
     fi;
@@ -649,7 +660,7 @@ end;
 BindKeysToGAPHandler("\017");
 
 ##  C-r: previous line containing text between mark and point (including
-##  the smaller, excluding the larger) 
+##  the smaller, excluding the larger)
 GAPInfo.CommandLineEditFunctions.Functions.HistorySubstring := function(l)
   local hist, n, txt, pos;
   if UserPreference("HistoryMaxLines") <= 0 then
@@ -681,22 +692,22 @@ GAPInfo.CommandLineEditFunctions.Functions.HistorySubstring := function(l)
   GAPInfo.History.Pos := Length(hist)+1;
   return [];
 end;
-GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('R') mod 32) := 
+GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('R') mod 32) :=
                    GAPInfo.CommandLineEditFunctions.Functions.HistorySubstring;
 BindKeysToGAPHandler("\022");
 
 ############################################################################
-##  
+##
 #F  SaveCommandLineHistory( [<fname>], [append] )
 #F  ReadCommandLineHistory( [<fname>] )
-##  
-##  Use the first command to write the currently saved command lines in the 
+##
+##  Use the first command to write the currently saved command lines in the
 ##  history to file <fname>. If not given the default file name 'history'
-##  in GAPInfo.UserGapRoot or '~/.gap_hist' is used. 
+##  in GAPInfo.UserGapRoot or '~/.gap_hist' is used.
 ##  The second command prepends the lines from <fname> to the current
 ##  command line history (as much as possible when the user preference
 ##  HistoryMaxLines is less than infinity).
-##  
+##
 BindGlobal("SaveCommandLineHistory", function(arg)
   local  fnam, append, hist, out;
 
@@ -790,7 +801,7 @@ GAPInfo.CommandLineEditFunctions.Functions.SpaceDeletePrompt :=  function(l)
   pr := CPROMPT();
   Remove(pr);
   i := 1;
-  while txt[i] in "\t " do 
+  while txt[i] in "\t " do
     i := i+1;
   od;
   if len - i+1 = Length(pr) and txt{[i..len]} = pr then
@@ -916,7 +927,7 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
   cf := GAPInfo.CommandLineEditFunctions;
   if Length(l)=6 and l[6] = true and cf.LastKey = 9 then
     cf.tabcount := cf.tabcount + 1;
-  else 
+  else
     cf.tabcount := 1;
     Unbind(cf.tabrec);
     Unbind(cf.tabbang);
@@ -928,7 +939,7 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
      return ["\t"];
   fi;
   # find word to complete
-  while pos > 0 and l[3][pos] in IdentifierLetters do 
+  while pos > 0 and l[3][pos] in IdentifierLetters do
     pos := pos-1;
   od;
   wordplace := [pos+1, l[4]-1];
@@ -969,9 +980,9 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
       if Length(cmps) > 0 and cmps[1] in idbnd then
         r := ValueGlobal(cmps[1]);
         for j in [2..Length(cmps)] do
-          if not hasbang[j-1] and IsBound(r.(cmps[j])) then
+          if not hasbang[j-1] and IsRecord(r) and IsBound(r.(cmps[j])) then
             r := r.(cmps[j]);
-          elif hasbang[j-1] and IsBound(r!.(cmps[j])) then
+          elif hasbang[j-1] and (IsRecord(r) or IsComponentObjectRep(r)) and IsBound(r!.(cmps[j])) then
             r := r!.(cmps[j]);
           else
             r := fail;
@@ -1010,7 +1021,7 @@ GAPInfo.CommandLineEditFunctions.Functions.Completion := function(l)
     cand := completeFilter(searchlist, word);
   fi;
 
-  if (not IsBound(cf.tabcompnam) and cf.tabcount = 2) or 
+  if (not IsBound(cf.tabcompnam) and cf.tabcount = 2) or
      (IsBound(cf.tabcompnam) and cf.tabcount in [2,4]) then
     if Length(cand) > 0 then
       # we prepend the partial word which was completed
@@ -1038,9 +1049,9 @@ GAPInfo.CommandLineEditFunctions.Functions.(INT_CHAR('I') mod 32) :=
 BindKeysToGAPHandler("\011");
 
 #############################################################################
-##  
+##
 ##  Simple utilities to create an arbitrary number of macros
-##  
+##
 # name a string, fun a function
 InstallReadlineMacro := function(name, fun)
   local cfm, pos;
@@ -1070,7 +1081,7 @@ InvocationReadlineMacro := function(name)
   fi;
   return Concatenation("\033", String(pos), "\030\007\t");
 end;
-##  # Example 
+##  # Example
 ##  gap> InstallReadlineMacro("My Macro", function(l) return ["my text"]; end);
 ##  gap> InvocationReadlineMacro("My Macro");
 ##  "\0331\030\007\t"

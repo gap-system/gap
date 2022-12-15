@@ -174,7 +174,7 @@ function(G)
     local P;
 
     P :=Parent(G);
-    if not (HasIsHandledByNiceMonomorphism(P) 
+    if not (HasIsHandledByNiceMonomorphism(P)
         and IsHandledByNiceMonomorphism(P) and HasNiceMonomorphism(P)) then
       TryNextMethod();
     fi;
@@ -232,7 +232,7 @@ InstallMethod( \in,
 
 function( elm, G )
     local   nice,  img;
- 
+
     nice := NiceMonomorphism( G );
     img  := ImagesRepresentative( nice, elm:actioncanfail:=true );
     return img<>fail and img in NiceObject( G )
@@ -309,7 +309,7 @@ function( obj1, obj2 )
     local   nice,no,  img,  img1,pos1,pos2;;
     nice := NiceMonomorphism(obj1);
     img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
-    if img = fail or 
+    if img = fail or
       not (img in ImagesSource(nice) and
 	PreImagesRepresentative(nice,img)=obj2) then
 	TryNextMethod();

@@ -198,7 +198,7 @@ DeclareGlobalFunction("BinaryRelationByElements");
 ##  <Example><![CDATA[
 ##  gap> EmptyBinaryRelation(3) = BinaryRelationOnPoints([ [], [], [] ]);
 ##  true
-##  ]]></Example> 
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

@@ -75,7 +75,7 @@
 ##  Each group is represented either by 'fail' if no information is
 ##  available or by a list l giving information about this group.
 ##  We list the entries of 'l':
-##  
+##
 ##   l[1] (source) information on how to construct the group. It is of one of
 ##   the following forms:
 ##      [1,namesgens,wordfunc,subgrpindices] where namesgens is a list of
@@ -88,23 +88,23 @@
 ##      subgrpindices is a list that gives the indices of the subgroups
 ##      defined in wordfunc.
 ##      A further component 'auxiliaryGens' might be added.
-##  
+##
 ##      [2,<size1>,<n1>,<size2>,<n2>], if G is given as a direct product,
-##  
+##
 ##      [3,<size1>,<n1>,<size2>,<n2>,<string1>,<string2>...], if G is given
 ##         as a central product,
-##  
+##
 ##      [4,<size1>,<n1>,<size2>,<n2>,<size0>]  or
-##  
+##
 ##      [4,<size1>,<n1>,<size2>,<n2>,<size0>,<n1'>,<n2'>], if G is given as
 ##         a subdirect product.
-##  
+##
 ##   The entries 2.. might be missing if the group is not actually a library
 ##   group but only used as part of some construction.
-##  
+##
 ##   l[2] (description)
 ##      is a descriptive name as given in the Holt-Plesken book.
-##  
+##
 ##   l[3] (hpNumber)
 ##      is either a class
 ##      number k or a list [k,i,j] or [k,i,j,k2,...,kn]. The triple [k,i,j]
@@ -112,23 +112,23 @@
 ##      Holt-Plesken book under the number (i,j).  If the group also occurs
 ##      in some  additional  classes,  then  their  numbers  are  given  as
 ##      k2, ..., kn.
-##  
+##
 ##   l[4] (centre)
 ##      gives the size of the groups centre, a negative index indicating the
 ##      group is simple or quasisimple
-##  
+##
 ##   l[5] (simpleFactors)
 ##      is the 'size number'
 ##      (if there is only one) or a list of the 'size numbers' (if there is
 ##      more than one) of its nonabelian composition factors.
-##  
+##
 ##   l[6] (orbitSize)
 ##      is a list of
 ##      the orbit sizes  of the  faithful  permutation representation  of G
 ##      which  is offered  by the  library  or,  if that  representation is
 ##      transitive,  i. e.,  if there is  only one orbit,  just the size of
 ##      that orbit.
-##  
+##
 
 PERFRec := MakeImmutable(rec(
 
@@ -235,19 +235,19 @@ PERFRec := MakeImmutable(rec(
 newlyAdded:=[61440,86016,122880,172032,245760,344064,368640,491520,
             688128,737280,983040],
 
-number:=[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 7, 1, 1, 1, 1, 3, 1, 1, 
-  1, 7, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 5, 1, 1, 3, 1, 1, 9, 4, 1, 1, 
-  1, 1, 1, 1, 3, 1, 7, 1, 1, 1, 1, 5, 22, 1, 3, 1, 1, 1, 1, 1, 4, 1, 1, 37, 
-  2, 1, 1, 4, 1, 1, 1, 4, 25, 3, 1, 1, 1, 3, 1, 1, 1, 2, 2, 2, 1, 2, 1, 3, 
-  98, 1, 4, 1, 1, 1, 4, 1, 4, 4, 3, 1, 1, 6, 1, 52, 1, 8, 2, 1, 3, 1, 1, 1, 
-  1, 1, 1, 15, 3, 1, 1, 1, 4, 5, 2, 258, 1, 6, 4, 3, 2, 2, 1, 1, 1, 1, 1, 1, 
-  18, 1, 3, 1, 12, 1, 154, 8, 1, 1, 1, 3, 1, 19, 1, 1, 2, 1, 1, 1, 1, 1, 3, 1, 
-  2, 1, 26, 3, 3, 1, 17, 5, 3, 1, 2, 582, 1, 1, 4, 3, 2, 7, 1, 1, 2, 1, 3, 2, 
-  3, 1, 3, 18, 1, 27, 1, 1, 291, 3, 1, 1, 1, 6, 1, 1, 3, 3, 46, 1, 1, 11, 1, 1, 
-  2, 2, 1, 1, 4, 3, 1, 1, 1, 1, 3, 1, 2, 1, 1, 3, 8, 1, 1, 25, 4, 3, 18, 1, 
-  4, 17, 6, 1, 1004, 1, 1, 1, 1, 1, 9, 1, 1, 1, 1, 19, 1, 1, 7, 1, 1, 2, 3, 1, 
-  4, 1, 12, 1, 2, 41, 1, 1, 1, 3, 2, 1, 508, 23, 3, 2, 1, 1, 1, 1, 2, 3, 3, 1, 
-  1, 3, 54, 1, 13, 2, 5, 3, 16, 2, 2, 1, 3, 2, 3, 3, 3, 1, 3, 1, 1, 3, 1, 7, 
+number:=[ 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 7, 1, 1, 1, 1, 3, 1, 1,
+  1, 7, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 5, 1, 1, 3, 1, 1, 9, 4, 1, 1,
+  1, 1, 1, 1, 3, 1, 7, 1, 1, 1, 1, 5, 22, 1, 3, 1, 1, 1, 1, 1, 4, 1, 1, 37,
+  2, 1, 1, 4, 1, 1, 1, 4, 25, 3, 1, 1, 1, 3, 1, 1, 1, 2, 2, 2, 1, 2, 1, 3,
+  98, 1, 4, 1, 1, 1, 4, 1, 4, 4, 3, 1, 1, 6, 1, 52, 1, 8, 2, 1, 3, 1, 1, 1,
+  1, 1, 1, 15, 3, 1, 1, 1, 4, 5, 2, 258, 1, 6, 4, 3, 2, 2, 1, 1, 1, 1, 1, 1,
+  18, 1, 3, 1, 12, 1, 154, 8, 1, 1, 1, 3, 1, 19, 1, 1, 2, 1, 1, 1, 1, 1, 3, 1,
+  2, 1, 26, 3, 3, 1, 17, 5, 3, 1, 2, 582, 1, 1, 4, 3, 2, 7, 1, 1, 2, 1, 3, 2,
+  3, 1, 3, 18, 1, 27, 1, 1, 291, 3, 1, 1, 1, 6, 1, 1, 3, 3, 46, 1, 1, 11, 1, 1,
+  2, 2, 1, 1, 4, 3, 1, 1, 1, 1, 3, 1, 2, 1, 1, 3, 8, 1, 1, 25, 4, 3, 18, 1,
+  4, 17, 6, 1, 1004, 1, 1, 1, 1, 1, 9, 1, 1, 1, 1, 19, 1, 1, 7, 1, 1, 2, 3, 1,
+  4, 1, 12, 1, 2, 41, 1, 1, 1, 3, 2, 1, 508, 23, 3, 2, 1, 1, 1, 1, 2, 3, 3, 1,
+  1, 3, 54, 1, 13, 2, 5, 3, 16, 2, 2, 1, 3, 2, 3, 3, 3, 1, 3, 1, 1, 3, 1, 7,
   6, 4, 1, 23, 8, 2, 21, 3, 8, 1, 2, 1, 12, 1, 20, 1, 1, 4, 1880, 1,
   1, 1, 1, 1, 1, 1, 3, 4, 2, 9, 1, 1, 1, 1, 1, 3, 49, 1, 1, 3, 4, 3, 4, 14,
   1, 17, 8, 9, 1, 1, 1, 1, 15, 4, 2, 15, 2, 2, 1, 88, 1, 1, 1, 2, 1, 1, 8, 3,

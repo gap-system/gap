@@ -7,7 +7,7 @@ facilitate the construction of higher level libraries and are not meant to be us
 
 <Section Label="section:Thread functions">
   <Heading>Thread functions</Heading>
-  
+
 <ManSection>
     <Func Name="CreateThread"
       Arg='func [, arg1, ..., argn]'/>

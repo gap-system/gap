@@ -69,7 +69,7 @@ local map,phi,o,lo,i,j,start,img,d,nat,ser,jord,first;
       i:=1;
       while i<=Length(map[1]) do
         # the first time, do only the generators from prior layer
-        if (not first) 
+        if (not first)
            or (map[1][i] in ser[j-1] and not map[1][i] in ser[j]) then
 
           lo:=1;
@@ -254,7 +254,7 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
   if Size(cen)>1 then
     w:=syno;
     syno:=ComplementClassesRepresentatives(syno,cen);
-    if Length(syno)=0 then 
+    if Length(syno)=0 then
       return fail; # not unique permauts
     fi;
     syno:=syno[1];
@@ -303,7 +303,7 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
           act[op]:=Group(List(GeneratorsOfGroup(no),x->RestrictedPerm(x,oo[op])));
           SetSize(act,Size(syno));
         fi;
-      
+
         sm:=RepresentativeAction(act[op],
           List(ogens,x->RestrictedPerm(x,oo[op])),
           List(genimgs,x->RestrictedPerm(x,oo[op])),OnTuples);
@@ -446,7 +446,7 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
           img:=ConjugatorOfConjugatorIsomorphism( auto );
           if not img in ran then
             # There is still something centralizing left.
-            if not img in r then 
+            if not img in r then
               # get the cenralizing bit
               r:=ClosureGroup(r,img);
               cen:=Centralizer(r,g);
@@ -573,7 +573,7 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
       cl:=[];
       for i in o do
 # test to avoid duplicates is more expensive than it is worth
-#        if not ForAny(cl,x->Order(Representative(i))=Order(Representative(x)) 
+#        if not ForAny(cl,x->Order(Representative(i))=Order(Representative(x))
 #          and (Size(x) mod Size(i)=0) and Representative(i) in x) then
           r:=ConjugacyClass(g,Representative(i));
           Add(cl,r);
@@ -598,13 +598,13 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
       x->[Order(Representative(cl[x])),Size(cl[x])]=r and not Representative(cl[x]) in ser[pos]);
     c:=cl{u};
     cl:=cl{Difference([1..Length(cl)],u)};
-    if Length(c)>0 
+    if Length(c)>0
       # no need to process classes that will not improve
       and Size(c[1])<bestdeg-offset then
       if Length(c)>1 then
         if Size(c[1])<250 and
           MemoryUsage(Representative(c[1]))*Size(c[1])*Length(c)
-          # at most 
+          # at most
           <10^7
           # bytes storage
           then
@@ -641,8 +641,8 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
           Concatenation(List(x,Representative),fix))) ));
       of:=[];
       for j in u do
-        if j.siz>1 and j.siz<bestdeg 
-            and ForAll(o,x->x.siz>j.siz or x.closure<>j.closure) 
+        if j.siz>1 and j.siz<bestdeg
+            and ForAll(o,x->x.siz>j.siz or x.closure<>j.closure)
             and ForAll(of,x->x.siz>j.siz or x.closure<>j.closure) then
           Add(of,j);
         fi;
@@ -658,7 +658,7 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
       u:=[];
       for j in o do
         for r in of do
-          if j.siz+r.siz<bestdeg 
+          if j.siz+r.siz<bestdeg
             and not ForAny(j.reps,x-> x in r.closure)
             and not ForAny(r.reps,x-> x in j.closure)
               then
@@ -666,8 +666,8 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
                   reps:=Concatenation(j.reps,r.reps),
                   closure:=ClosureGroup(j.closure,r.closure));
                 # don't add if known closure but no better price
-                if ForAll(o,x->x.siz>new.siz or x.closure<>new.closure) 
-                    and ForAll(of,x->x.siz>new.siz or x.closure<>new.closure) 
+                if ForAll(o,x->x.siz>new.siz or x.closure<>new.closure)
+                    and ForAll(of,x->x.siz>new.siz or x.closure<>new.closure)
                     and ForAll(u,x->x.siz>new.siz or x.closure<>new.closure)
                      then
                   Add(u,new);
@@ -745,7 +745,7 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
           return GroupHomomorphismByImagesNC(g,g,GeneratorsOfGroup(g),
                     List(store[2],i->PreImagesRepresentative(img[2],i^perm)));
         end);
-      if bestdeg<baddegree then 
+      if bestdeg<baddegree then
         finish(hom); return;
       fi;
       best:=hom;
@@ -783,7 +783,7 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
         return GroupHomomorphismByImagesNC(g,g,GeneratorsOfGroup(g),
                   List(store[4],i->PreImagesRepresentative(store[3],i^perm)));
       end);
-    if bestdeg<baddegree then 
+    if bestdeg<baddegree then
       finish(hom); return;
     fi;
     best:=hom;
@@ -798,7 +798,7 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
     # we act on lists of [orbits,group]. This way comparison becomes
     # cheap, as typically the orbits suffice to identify
     dom:=MovedPoints(g);
-    
+
     if IsPermGroup(g) then
       action:=function(obj,hom)
               local img;
@@ -886,7 +886,7 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, subs, orbs, cnt,
 #    br:=false;
 #    bv:=0;
 #
-#    # use classes from before -- 
+#    # use classes from before --
 #    #if HasConjugacyClasses(g) then
 #    for r in cl do
 #      if IsPrimePowerInt(Order(Representative(r))) and
@@ -1130,7 +1130,7 @@ end);
 InstallGlobalFunction(MorMaxFusClasses,function(r)
 local i,j,flag,cl;
   # cl is the maximal fusion among the rational classes.
-  cl:=[]; 
+  cl:=[];
   for i in r do
     j:=0;
     flag:=true;
@@ -1157,7 +1157,7 @@ end);
 #############################################################################
 ##
 #F  SomeVerbalSubgroups
-##  
+##
 ## correspond simultaneously some verbal subgroups in g and h
 BindGlobal("SomeVerbalSubgroups",function(g,h)
 local l,m,i,j,cg,ch,pg;
@@ -1192,7 +1192,7 @@ end);
 ##
 #F  MorClassLoop(<range>,<classes>,<params>,<action>)  loop over classes list
 ##     to find generating sets or Iso/Automorphisms up to inner automorphisms
-##  
+##
 ##  classes is a list of records like the ones returned from
 ##  MorMaxFusClasses.
 ##
@@ -1450,7 +1450,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
 	              i->IsInt(i[2]/Order(MappedWord(i[5],
 		                          free{[tlev..len]}, imgs))));
       fi;
-      
+
     end;
   else
     TestRels:=x->true; # to satisfy the code below.
@@ -1465,7 +1465,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     ind:=len;
     Info(InfoMorph,3,"step ",l);
     # test class combination indicated by l:
-    cla:=List([1..len],i->clali[i][l[i]]); 
+    cla:=List([1..len],i->clali[i][l[i]]);
     reps:=List(cla,Representative);
     skip:=false;
     if derhom<>fail then
@@ -1552,7 +1552,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
 	Info(InfoMorph,3,"allpop");
 	i:=len+2; # to avoid the following `while' loop
       else
-	i:=1; 
+	i:=1;
 	Info(InfoMorph,3,"loop");
       fi;
 
@@ -1597,7 +1597,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
 	  if ok and cond<>fail then
 	    ok:=cond(imgs);
 	  fi;
-	  
+
 	  if ok then
 	    Info(InfoMorph,2,"found");
 	    # do we want one or all?
@@ -1694,7 +1694,7 @@ end);
 
 #############################################################################
 ##
-#F  MorFindGeneratingSystem(<G>,<cl>) . .  find generating system with as few 
+#F  MorFindGeneratingSystem(<G>,<cl>) . .  find generating system with as few
 ##                      as possible generators from the first classes in <cl>
 ##
 InstallGlobalFunction(MorFindGeneratingSystem,function(arg)
@@ -1714,7 +1714,7 @@ local G,cl,lcl,len,comb,combc,com,a,cnt,s,alltwo;
     len:=len+1;
     Info(InfoMorph,2,"Trying length ",len);
     # now search for <len>-generating systems
-    comb:=UnorderedTuples([1..Length(lcl)],len); 
+    comb:=UnorderedTuples([1..Length(lcl)],len);
     combc:=List(comb,i->List(i,j->lcl[j]));
 
     # test all <comb>inations
@@ -1738,7 +1738,7 @@ end);
 #F  Morphium(<G>,<H>,<DoAuto>) . . . . . . . .Find isomorphisms between G and H
 ##       modulo inner automorphisms. DoAuto indicates whether all
 ## 	 automorphism are to be found
-##       This function thus does the main combinatoric work for creating 
+##       This function thus does the main combinatoric work for creating
 ##       Iso- and Automorphisms.
 ##       It needs, that both groups are not cyclic.
 ##
@@ -1762,7 +1762,7 @@ local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
        " of price:",price,"");
 
   if ((not HasMinimalGeneratingSet(G) and price/Size(G)>10000)
-     or Sum(Flat(combi),Size)>Size(G)/10 or IsSolvableGroup(G)) 
+     or Sum(Flat(combi),Size)>Size(G)/10 or IsSolvableGroup(G))
      and ValueOption("nogensyssearch")<>true then
     if IsSolvableGroup(G) then
       gens:=IsomorphismPcGroup(G);
@@ -1799,7 +1799,7 @@ local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
       od;
 
       gens:=bg;
-      
+
     else
       gens:=MorFindGeneratingSystem(G,Gcl);
     fi;
@@ -1830,14 +1830,14 @@ local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
     for i in Ggc do
       c:=Filtered(Hcl,
 	   j->Set(j,k->k.size)=Set(i,k->k.size)
-		and Length(j[1].classes)=Length(i[1].classes) 
+		and Length(j[1].classes)=Length(i[1].classes)
 		and Size(j[1].class)=Size(i[1].class)
 		and Size(j[1].representative)=Size(i[1].representative)
       # This test assumes maximal fusion among the rat.classes. If better
       # congruences are used, they MUST be checked here also!
 	);
       if Length(c)<>1 then
-	# Both groups cannot be isomorphic, since they lead to different 
+	# Both groups cannot be isomorphic, since they lead to different
 	# congruences!
 	Info(InfoMorph,2,"different congruences");
 	return fail;
@@ -1985,7 +1985,7 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
 	                          j[2]{[2..Length(j[2])]})));
         #od;
       fi;
-  
+
       # multiplications
 
       for k in List( Flat( GeneratorsPrimeResidues(i^j[1])!.generators ),
@@ -1997,7 +1997,7 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
       od;
 
     od;
-    
+
     # the mixing ones
     for j in [1..Length(e)] do
       for k in [1..Length(e)] do
@@ -2019,7 +2019,7 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
       od;
     od;
   od;
-  
+
   if IsFpGroup(G) and IsWholeFamily(G) then
     # rewrite to standard generators
     gens:=GeneratorsOfGroup(G);
@@ -2095,7 +2095,7 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
       return fail;
     else
       H:=AlternatingGroup(id.parameter);
-      if G=H then 
+      if G=H then
 	iso:=IdentityMapping(G);
       else
 	iso:=IsomorphismGroups(G,H);
@@ -2164,7 +2164,7 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
       auts:=Concatenation(auts,
 	List(mats,s->GroupGeneralMappingByImages(G,G,gens,List(gens,x->
 		  Image(hom,PreImagesRepresentative(hom,x)^s)))));
-      
+
     else
       gal:=Group(()); # to force trivial
     fi;
@@ -2242,14 +2242,14 @@ local a,b,c,p;
     Sort(c);
     c:=c{[1..Minimum(Length(c),Length(GeneratorsOfGroup(G)))]};
 
-    if p>100 and ((not IsPermGroup(G)) or (p>4*LargestMovedPoint(G) 
-      and (p>1000 or p>Sum(c) 
+    if p>100 and ((not IsPermGroup(G)) or (p>4*LargestMovedPoint(G)
+      and (p>1000 or p>Sum(c)
            or ForAll(GeneratorsOfGroup(a.aut),IsConjugatorAutomorphism)
 	   or Size(a.aut)/Size(G)<p/10*LargestMovedPoint(G)))) then
       # the degree looks rather big. Can we do better?
       Info(InfoMorph,2,"test automorphism domain ",p);
       c:=GroupByGenerators(GeneratorsOfGroup(a.aut),One(a.aut));
-      AssignNiceMonomorphismAutomorphismGroup(c,G:autactbase:=fail); 
+      AssignNiceMonomorphismAutomorphismGroup(c,G:autactbase:=fail);
       if IsPermGroup(Range(NiceMonomorphism(c))) and
 	LargestMovedPoint(Range(NiceMonomorphism(c)))<p then
         Info(InfoMorph,1,"improved domain ",
@@ -2496,7 +2496,7 @@ local A;
       A:=AutomorphismGroupSolvableGroup(G);
     fi;
   elif Size(SolvableRadical(G))=1 and IsPermGroup(G) then
-    # essentially a normalizer when suitably embedded 
+    # essentially a normalizer when suitably embedded
     A:=AutomorphismGroupFittingFree(G);
   elif Size(SolvableRadical(G))>1 and CanComputeFittingFree(G) then
     A:=AutomGrpSR(G);
@@ -2554,7 +2554,7 @@ RedispatchOnCondition(AutomorphismGroup,true,[IsGroup],
 
 #############################################################################
 ##
-#M NiceMonomorphism 
+#M NiceMonomorphism
 ##
 InstallMethod(NiceMonomorphism,"for automorphism groups",true,
               [IsGroupOfAutomorphismsFiniteGroup],0,
@@ -2568,7 +2568,7 @@ local G;
     G  := Source( Identity(A) );
 
     # this stores the niceo
-    AssignNiceMonomorphismAutomorphismGroup(A,G); 
+    AssignNiceMonomorphismAutomorphismGroup(A,G);
 
     # as `AssignNice...' will have stored an attribute value this cannot cause
     # an infinite recursion:
@@ -2578,7 +2578,7 @@ end);
 
 #############################################################################
 ##
-#M  InnerAutomorphismsAutomorphismGroup( <A> ) 
+#M  InnerAutomorphismsAutomorphismGroup( <A> )
 ##
 InstallMethod( InnerAutomorphismsAutomorphismGroup,
     "for automorphism groups",
@@ -2692,7 +2692,7 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
     fi;
   fi;
   gens:=fail;
-  if IsPackageMarkedForLoading("ctbllib","")=true then 
+  if IsPackageMarkedForLoading("ctbllib","")=true then
     c:=CharacterTable(d.tomName);
     if c<>fail then
       Info(InfoMorph,1,"Isomorphism simple: ctbl");
@@ -2707,7 +2707,7 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
         two:=Filtered(two,x->s[x] in a);
       fi;
       SortBy(two,x->s[x]);
-      two:=two[1]; 
+      two:=two[1];
       z:=Size(c)/s[two]; # centralizer order
       r:=rootClasses(c,two);
       rt:=Set(o{r});
@@ -2751,16 +2751,16 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
     gens:=[findElm(g,2,fail,rt)];
     z:=Size(Centralizer(g,gens[1]));
 
-    # try a larger, but not huge prime. Thus avoid Singer cycles 
+    # try a larger, but not huge prime. Thus avoid Singer cycles
     # which have small centralizers and thus long orbits
     m:=Maximum(Filtered(Factors(Size(g)),x->x<100));
     cnt:=0;
     repeat
       gens[2]:=findElm(g,m,fail,[m,2*m..Size(g)]);
-      if isFull(SubgroupNC(g,gens)) then 
+      if isFull(SubgroupNC(g,gens)) then
         b:=gens;
         y:=Size(Centralizer(g,gens[2]));
-      else 
+      else
         b:=fail;
       fi;
       cnt:=cnt+1;
@@ -2774,7 +2774,7 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
       else
         gens[2]:=PseudoRandom(g);
       fi;
-      if isFull(SubgroupNC(g,gens)) then 
+      if isFull(SubgroupNC(g,gens)) then
         b:=gens;
         y:=Size(Centralizer(g,gens[2]));
       fi;
@@ -2862,15 +2862,15 @@ local m;
     if m=false then return fail;fi;
     if m<>fail then return m;fi;
   fi;
-    
-  if Size(SolvableRadical(G))>1 and CanComputeFittingFree(G) 
+
+  if Size(SolvableRadical(G))>1 and CanComputeFittingFree(G)
     and not (IsSolvableGroup(G) and Size(G)<=2000)
-    and (AbelianRank(G)>2 or Length(SmallGeneratingSet(G))>2 
+    and (AbelianRank(G)>2 or Length(SmallGeneratingSet(G))>2
       # the solvable radical method got better, so force if the radical of
       # the group is a good part
       # sizeable radical
       or Size(SolvableRadical(G))^2>Size(G)
-      or ValueOption("forcetest")=true) and 
+      or ValueOption("forcetest")=true) and
       ValueOption("forcetest")<>"old" then
     # In place until a proper implementation of Cannon/Holt isomorphism is
     # done
@@ -2884,7 +2884,7 @@ local m;
     Info(InfoPerformance,2,"Using Small Groups Library");
     if IdGroup(G)<>IdGroup(H) then
       return fail;
-    elif ValueOption("hard")=fail 
+    elif ValueOption("hard")=fail
       and IsSolvableGroup(G) and Size(G) <= 2000 then
       return IsomorphismSolvableSmallGroups(G,H);
     fi;
@@ -2978,7 +2978,7 @@ local Fgens,	# generators of F
     fi;
   fi;
 
-  if IsFinite(F) and not IsPerfectGroup(G) and 
+  if IsFinite(F) and not IsPerfectGroup(G) and
     CanMapFiniteAbelianInvariants(AbelianInvariants(F),
                                   AbelianInvariants(G))=false then
     return [];
@@ -3197,7 +3197,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
     # only one
     emb:=MorClassLoop(G,bi,params,
       # one injective homs = 1+2
-      3); 
+      3);
       if IsList(emb) and Length(emb)=0 then
 	return emb;
       fi;
@@ -3205,7 +3205,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
   else
     emb:=MorClassLoop(G,bi,params,
       # all injective homs = 1+2+8
-      11); 
+      11);
   fi;
   Info(InfoMorph,2,Length(emb)," embeddings");
   cl:=[];

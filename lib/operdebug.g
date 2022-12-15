@@ -7,12 +7,12 @@
 ##  to list here. Please refer to the COPYRIGHT file for details.
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
-##  
+##
 ##  Undocumented  utilities to  write out  infos  about all  methods of  all
 ##  operations with  location and rank, and  to write out all  filters by name
 ##  and their rank. These can be useful to debug larger changes that influence
 ##  the ranking of filters and methods.
-##  
+##
 
 # prints lines of format
 #   name of operation;nr of args;filename:line (of method installation);rank

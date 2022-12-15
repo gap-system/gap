@@ -138,16 +138,16 @@ illustrate some of these possibilities:
 <P/>
 <Example><![CDATA[
 gap> mats:= [ [ [ 0*Z(2), Z(2)^0 ],
->               [ Z(2)^0, 0*Z(2) ] ], 
+>               [ Z(2)^0, 0*Z(2) ] ],
 >             [ [ Z(2)^0, 0*Z(2) ],
 >               [ 0*Z(2), Z(2)^0 ] ] ];;
 gap> Size( AdditiveMagma( mats ) );
 4
 gap> Size( VectorSpace( GF(8), mats ) );
 64
-gap> Size( Algebra( GF(2), mats ) );    
+gap> Size( Algebra( GF(2), mats ) );
 4
-gap> Size( Group( mats ) );         
+gap> Size( Group( mats ) );
 2
 ]]></Example>
 Each combination of operations under which a domain could be closed
@@ -172,7 +172,7 @@ gap> GeneratorsOfVectorSpace( GF(4)^2 );
 [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ]
 gap> v:= AsVectorSpace( GF(2), GF(4)^2 );;
 gap> GeneratorsOfVectorSpace( v );
-[ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ], [ Z(2^2), 0*Z(2) ], 
+[ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ], [ Z(2^2), 0*Z(2) ],
   [ 0*Z(2), Z(2^2) ] ]
 ]]></Example>
 

@@ -1121,7 +1121,7 @@ InstallGlobalFunction( FullMatrixAlgebraCentralizer, function( F, lst )
     if len = 0 then
       Error( "cannot compute the centralizer of an empty set" );
     elif not (IsSubset( F, DefaultScalarDomainOfMatrixList( lst ) ) or
-	      IsSubset( F, FieldOfMatrixList( lst ) ) ) then
+              IsSubset( F, FieldOfMatrixList( lst ) ) ) then
       Error( "not all entries of the matrices in <lst> lie in <F>" );
     fi;
 
@@ -1417,7 +1417,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
 
     p1:= DimensionOfVectors( A1 )[1];
     p2:= DimensionOfVectors( A2 )[1];
-    
+
     B:= [];
     for i in b1 do
       Q:= NullMat( p1+p2, p1+p2, LeftActingDomain( A1 ) );
@@ -1558,29 +1558,29 @@ InstallMethod( NullAlgebra,
 #T ##  This works for two-generator algebras acting only.
 #T ##
 #T Fingerprint := function( arg )
-#T 
+#T
 #T     # Check the arguments.
 #T     if Length( arg ) = 0 or Length( arg ) > 2 then
 #T       Error( "usage: Fingerprint( <matalg> [, <list> ] )" );
 #T     fi;
-#T 
+#T
 #T     if   Length( arg ) = 2 then
-#T 
+#T
 #T       return arg[1].operations.Fingerprint( arg[1], arg[2] );
-#T 
+#T
 #T     elif Length( arg ) = 1 then
-#T 
+#T
 #T       if not IsBound( arg[1].fingerprint ) then
 #T         arg[1].fingerprint:=
 #T                         arg[1].operations.Fingerprint( arg[1], "standard" );
 #T       fi;
 #T       return arg[1].fingerprint;
-#T 
+#T
 #T     else
 #T       Error( "number of generating matrices must be 2" );
 #T     fi;
 #T     end;
-#T 
+#T
 #T #############################################################################
 #T ##
 #T #F  Nullity( <mat> )
@@ -1588,25 +1588,25 @@ InstallMethod( NullAlgebra,
 #T Nullity := function( mat )
 #T     return Dimensions( BaseNullspace( mat ) )[1];
 #T     end;
-#T 
+#T
 #T #############################################################################
 #T ##
 #T #F  MatrixAssociativeAlgebraOps.Fingerprint( <A>, <list> )
 #T ##
 #T MatrixAssociativeAlgebraOps.Fingerprint := function( A, list )
-#T 
+#T
 #T     local fp,     # fingerprint, result
 #T           a,      # first generator
 #T           b,      # second generator
 #T           ab,     # product of `a' and `b'
 #T           word;   # actual word
-#T 
+#T
 #T     if list = "standard" then
-#T 
+#T
 #T       if Length( AlgebraGenerators( A ) ) <> 2 then
 #T         Error( "exactly two generators needed for standard finger print" );
 #T       fi;
-#T 
+#T
 #T       # Compute the nullities of the 6 standard elements.
 #T       fp:= [];
 #T       a:= AlgebraGenerators( A )[1];
@@ -1618,12 +1618,12 @@ InstallMethod( NullAlgebra,
 #T       word:= b + word;      fp[4]:= Nullity( word );
 #T       word:= ab + word;     fp[5]:= Nullity( word );
 #T       word:= a + word;      fp[6]:= Nullity( word );
-#T 
+#T
 #T     else
-#T 
+#T
 #T       # Compute the nullities of the words with numbers in the list.
 #T       fp:= List( list, x -> Nullity( ElementAlgebra( A, x ) ) );
-#T 
+#T
 #T     fi;
 #T     return fp;
 #T     end;
@@ -1738,10 +1738,10 @@ InstallMethod( IsomorphismMatrixFLMLOR,
 #T #F  MatrixAssociativeAlgebraOps.NaturalModule( <A> )
 #T ##
 #T MatrixAssociativeAlgebraOps.NaturalModule := function( A )
-#T 
+#T
 #T     local gens,   # module generators
 #T           N;      # natural module, result
-#T 
+#T
 #T     if Length( AlgebraGenerators( Parent( A ) ) ) = 0 then
 #T       gens:= IdentityMat( A.field, Length( Zero( Parent( A ) ) ) );
 #T     else

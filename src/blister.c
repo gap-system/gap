@@ -178,10 +178,10 @@ static void LoadBlist(Obj bl)
 {
     UInt                i;
     UInt *              ptr;
-  
+
     /* get the length back, then NUMBER_BLOCKS_BLIST is OK                 */
-    ADDR_OBJ(bl)[0] = LoadSubObj(); 
-  
+    ADDR_OBJ(bl)[0] = LoadSubObj();
+
     /* Now load the real data                                              */
     ptr = BLOCKS_BLIST(bl);
     for (i = 1; i <= NUMBER_BLOCKS_BLIST( bl ); i++ )
@@ -226,7 +226,7 @@ static Obj DoCopyBlist(Obj list, Int mut)
 
     /* return the copy                                                     */
     return copy;
-  
+
 }
 
 #if !defined(USE_THREADSAFE_COPYING)
@@ -635,7 +635,7 @@ static Obj PosBlist(Obj list, Obj val, Obj start)
 
     if (!IS_INTOBJ(start))
       return Fail;
-    
+
     istart = INT_INTOBJ(start);
 
     len = LEN_BLIST(list);
@@ -655,7 +655,7 @@ static Obj PosBlist(Obj list, Obj val, Obj start)
      if ( val == True ) {
 
        x = ptr[firstblock];
-       if (firstblock == lastblock) 
+       if (firstblock == lastblock)
          {
            if (x != 0)
              for (j = firstoffset; j <= lastoffset; j++)
@@ -686,7 +686,7 @@ static Obj PosBlist(Obj list, Obj val, Obj start)
     /* look for 'false'                                                    */
     else if ( val == False ) {
       x = ptr[firstblock];
-      if (firstblock == lastblock) 
+      if (firstblock == lastblock)
         {
           if (x != ALL_BITS_UINT)
             for (j = firstoffset; j <= lastoffset; j++)
@@ -766,7 +766,7 @@ static BOOL IsPossBlist(Obj list)
 
 /****************************************************************************
 **
-*F  IsHomogBlist( <list> )  . . . . . . . . . . check if <list> is homogenous
+*F  IsHomogBlist( <list> ) . . . . . . . . . . check if <list> is homogeneous
 */
 static BOOL IsHomogBlist(Obj list)
 {
@@ -1546,14 +1546,14 @@ static Obj FuncSUBTR_BLIST(Obj self, Obj blist1, Obj blist2)
     ptr1 = BLOCKS_BLIST(blist1);
     ptr2 = CONST_BLOCKS_BLIST(blist2);
     for ( i = NUMBER_BLOCKS_BLIST(blist1); 0 < i; i-- )
-        *ptr1++ &= ~ *ptr2++; 
+        *ptr1++ &= ~ *ptr2++;
 
     return 0;
 }
 
 /****************************************************************************
 **
-*F  FuncMEET_BLIST( <self>, <blist1>, <blist2> ) . . . 
+*F  FuncMEET_BLIST( <self>, <blist1>, <blist2> ) . . .
 **
 **  'FuncMEET_BLIST' implements the internal function 'MeetBlist'.
 **

@@ -40,7 +40,7 @@ fi;
 
 InstallGlobalFunction(SetFloats, function(arg)
     local i, r, prec, install;
-    
+
     r := fail;
     prec := fail;
     install := true;
@@ -59,7 +59,7 @@ InstallGlobalFunction(SetFloats, function(arg)
     while r=fail do
         Error("SetFloats requires a record, and optional precision(posint) and install(bool), not ",arg);
     od;
-        
+
     if install then
         if IsBound(r.filter) then
             FLOAT_DEFAULT_REP := r.filter;
@@ -74,11 +74,11 @@ InstallGlobalFunction(SetFloats, function(arg)
             FLOAT_PSEUDOFIELD := r.field;
         fi;
     fi;
-    
+
     if IsBound(r.creator) and IsBound(r.eager) then
         EAGER_FLOAT_LITERAL_CONVERTERS.([r.eager]) := r.creator;
     fi;
-    
+
     FLUSH_FLOAT_LITERAL_CACHE();
 
     if prec<>fail then
@@ -102,16 +102,16 @@ end);
 
 BindGlobal("INSTALLFLOATCONSTRUCTORS", function(arg)
     local filter, float, constants, i;
-    
+
     if IsRecord(arg[1]) then
         filter := arg[1].filter;
     else
         filter := arg[1];
     fi;
-    
+
     # we intentionally provide no default method for converting rationals, as
     # implementing this accurately depends a lot on the specific floatean type
-    
+
     InstallMethod(NewFloat, [filter,IsInfinity], -1, function(filter,obj)
         return Inverse(NewFloat(filter,0));
     end);
@@ -119,7 +119,7 @@ BindGlobal("INSTALLFLOATCONSTRUCTORS", function(arg)
     InstallMethod(NewFloat, [filter,IsNegInfinity], -1, function(filter,obj)
         return -Inverse(NewFloat(filter,0));
     end);
-    
+
     InstallMethod(NewFloat, [filter,IsList], -1, function(filter,mantexp)
         if mantexp[1]=0 then
             if mantexp[2]=0 then return NewFloat(filter,0);
@@ -131,11 +131,11 @@ BindGlobal("INSTALLFLOATCONSTRUCTORS", function(arg)
         fi;
         return NewFloat(filter,mantexp[1])*2^(mantexp[2]-LogInt(AbsoluteValue(mantexp[1]),2)-1);
     end);
-    
+
     InstallMethod(NewFloat, [filter,filter], -1, function(filter,obj)
         return obj; # floats are immutable, no harm to return the same one
     end);
-    
+
     InstallMethod(MakeFloat, [filter,IsInfinity], -1, function(filter,obj)
         return Inverse(MakeFloat(filter,0));
     end);
@@ -143,10 +143,10 @@ BindGlobal("INSTALLFLOATCONSTRUCTORS", function(arg)
     InstallMethod(MakeFloat, [filter,IsNegInfinity], -1, function(filter,obj)
         return -Inverse(MakeFloat(filter,0));
     end);
-    
+
     InstallMethod(MakeFloat, [filter,IsList], -1, function(filter,mantexp)
-        if mantexp[1]=0 then 
-            if mantexp[2]=0 then return MakeFloat(filter,0); 
+        if mantexp[1]=0 then
+            if mantexp[2]=0 then return MakeFloat(filter,0);
             elif mantexp[2]=1 then return Inverse(-Inverse(MakeFloat(filter,0)));
             elif mantexp[2]=2 then return Inverse(MakeFloat(filter,0));
             elif mantexp[2]=3 then return -Inverse(MakeFloat(filter,0));
@@ -155,11 +155,11 @@ BindGlobal("INSTALLFLOATCONSTRUCTORS", function(arg)
         fi;
         return MakeFloat(filter,mantexp[1])*2^(mantexp[2]-LogInt(AbsoluteValue(mantexp[1]),2)-1);
     end);
-    
+
     InstallMethod(MakeFloat, [filter,filter], -1, function(filter,obj)
         return obj; # floats are immutable, no harm to return the same one
     end);
-    
+
     if IsRecord(arg[1]) and IsBound(arg[1].constants) then
         float := arg[1].constants;
         constants := [["E","2.7182818284590452354"],
@@ -190,7 +190,7 @@ BindGlobal("CONVERT_FLOAT_LITERAL", function(s)
     local i,l,f,s1,s2;
     f:= FLOAT_STRING(s);
     if f<>fail then return f; fi;
-    
+
     l := LENGTH(s);
     s1 := "";
     for i in [1..LENGTH(s)] do
@@ -206,7 +206,7 @@ BindGlobal("CONVERT_FLOAT_LITERAL", function(s)
         f := FLOAT_STRING(s1);
         if f<>fail then return f; fi;
     fi;
-    
+
     return fail; # conversion failure; signal the kernel that something went wrong
 end);
 
@@ -274,7 +274,7 @@ InstallMethod( SignFloat, "for real floats", [ IsRealFloat ], -1,
         return 1;
     fi;
 end );
-    
+
 InstallMethod( Exp2, "for floats", [ IsFloat ], -1,
         function ( x )
     return Exp(Log(MakeFloat(x,2))*x);
@@ -405,7 +405,7 @@ InstallMethod( LdExp, "for floats", [ IsFloat, IsInt ], -1,
         function(m,e)
     return m*2^e;
 end);
-    
+
 InstallMethod( ExtRepOfObj, "for floats", [ IsFloat ], -1,
         function(obj)
     local p, v, sgn;
@@ -422,13 +422,13 @@ InstallMethod( ExtRepOfObj, "for floats", [ IsFloat ], -1,
     elif IsNaN(obj) then
         return [0,4];
     fi;
-            
+
     p := FrExp(obj);
     v := p[1];
     while v mod One(v) <> Zero(v) do v := 2*v; od;
     return [Int(v),p[2]];
 end);
-    
+
 InstallMethod( ObjByExtRep, "for floats", [ IsFloatFamily, IsCyclotomicCollection ], -1,
         function(fam,obj)
     if obj[1]=0 then
@@ -551,7 +551,7 @@ end);
 
 BindGlobal("CYC_FLOAT_DEGREE", function(x,n,prec)
     local i, m, b, phi;
-    
+
     phi := Phi(n);
     m := IdentityMat(phi+1);
     b := [];
@@ -567,10 +567,10 @@ BindGlobal("CYC_FLOAT_DEGREE", function(x,n,prec)
 
     return -b*m{[1..phi]}/m[phi+1];
 end);
-    
+
 BindGlobal("CYC_FLOAT", function(x,prec)
     local n, len, e, minlen, minn, mine;
-    
+
     n := 2;
     minlen := infinity;
     repeat
@@ -590,17 +590,17 @@ end);
 InstallMethod( Cyc, "for floats, degree", [ IsFloat, IsPosInt ], -1,
         function(x,n)
     local prec;
-    
+
     prec := ValueOption("bits");
     if not IsPosInt(prec) then prec := PrecisionFloat(x); fi;
-    
+
     return CYC_FLOAT_DEGREE(x,n,prec);
 end);
 
 InstallMethod( Cyc, "for intervals, degree", [ IsFloatInterval, IsPosInt ], -1,
         function(x,n)
     local diam;
-    
+
     diam := AbsoluteDiameter(x);
     if IsZero(diam) then
         return CYC_FLOAT_DEGREE(Mid(x),n,PrecisionFloat(x));
@@ -612,17 +612,17 @@ end);
 InstallMethod( Cyc, "for floats", [ IsFloat ], -1,
         function(x)
     local n, len, e, minlen, minn, mine, prec;
-    
+
     prec := ValueOption("bits");
     if not IsPosInt(prec) then prec := PrecisionFloat(x); fi;
-    
+
     return CYC_FLOAT(x,prec);
 end);
 
 InstallMethod( Cyc, "for intervals", [ IsFloatInterval ], -1,
         function(x)
     local diam;
-    
+
     diam := AbsoluteDiameter(x);
     if IsZero(diam) then
         return CYC_FLOAT(Mid(x),PrecisionFloat(x));
@@ -633,7 +633,7 @@ end);
 
 BindGlobal("FLOAT_MINIMALPOLYNOMIAL", function(x,n,ind,prec)
     local z, i, m;
-    
+
     m := IdentityMat(n);
     z := LdExp(One(x),prec);
     for i in [1..n] do
@@ -650,7 +650,7 @@ end);
 InstallMethod( MinimalPolynomial, "for floats", [ IsRationals, IsFloat, IsPosInt ],
         function(ring,x,ind)
     local n, len, p, lastlen, lastp, prec;
-    
+
     prec := ValueOption("bits");
     if not IsPosInt(prec) then
         prec := PrecisionFloat(x);
@@ -664,7 +664,7 @@ InstallMethod( MinimalPolynomial, "for floats", [ IsRationals, IsFloat, IsPosInt
     if IsFloatInterval(x) then
         x := Mid(x);
     fi;
-    
+
     n := ValueOption("degree");
     if IsPosInt(n) then
         return FLOAT_MINIMALPOLYNOMIAL(x,n+1,ind,prec);
@@ -691,7 +691,7 @@ InstallOtherMethod(RationalFunctionsFamily, "floats pseudofield",
         [IsFloatPseudoField],
         function(pf)
   local   fam;
-  
+
   # create a new family in the category <IsRationalFunctionsFamily>
   fam := NewFamily("RationalFunctionsFamily(...)",
                  IsPolynomialFunction and IsPolynomialFunctionsFamilyElement
@@ -706,12 +706,12 @@ InstallOtherMethod(RationalFunctionsFamily, "floats pseudofield",
 	  HasExtRepPolynomialRatFun);
 
   # default type for univariate laurent polynomials
-  fam!.threeLaurentPolynomialTypes := 
+  fam!.threeLaurentPolynomialTypes :=
     [ NewType( fam,
 	  IsLaurentPolynomial
 	  and IsLaurentPolynomialDefaultRep and
 	  HasIndeterminateNumberOfLaurentPolynomial and
-	  HasCoefficientsOfLaurentPolynomial), 
+	  HasCoefficientsOfLaurentPolynomial),
 
 	  NewType( fam,
 	    IsLaurentPolynomial
@@ -725,13 +725,13 @@ InstallOtherMethod(RationalFunctionsFamily, "floats pseudofield",
 	    HasIndeterminateNumberOfLaurentPolynomial and
 	    HasCoefficientsOfLaurentPolynomial and
 	    IsUnivariatePolynomial)];
-	      
+
   # default type for univariate rational functions
   fam!.univariateRatfunType := NewType( fam,
 	  IsUnivariateRationalFunctionDefaultRep  and
 	  HasIndeterminateNumberOfLaurentPolynomial and
 	  HasCoefficientsOfUnivariateRationalFunction);
-	      
+
   fam!.defaultRatFunType := NewType( fam,
           IsRationalFunctionDefaultRep and
 	  HasExtRepNumeratorRatFun and HasExtRepDenominatorRatFun);
@@ -814,7 +814,7 @@ InstallOtherMethod( UnivariateRationalFunctionByCoefficients, "ring",
     return UnivariateRationalFunctionByExtRepNC( fam, ncof, dcof, val, ind );
 end );
 
-InstallMethod( PolynomialRing,"indetlist", true, [ IsFloatPseudoField, IsList ], 
+InstallMethod( PolynomialRing,"indetlist", true, [ IsFloatPseudoField, IsList ],
   1,
 function( r, n )
     local   rfun,  zero,  one,  ind,  i,  type,  prng;
@@ -834,11 +834,11 @@ function( r, n )
       r!.univariateRings:=[];
     fi;
 
-    if Length(n)=1 
+    if Length(n)=1
       # some bozo might put in a ridiculous number
-      and n[1]<10000 
+      and n[1]<10000
       # only cache for the prime field
-      and IsField(r) 
+      and IsField(r)
       and IsBound(r!.univariateRings[n[1]]) then
       return r!.univariateRings[n[1]];
     fi;
@@ -858,7 +858,7 @@ function( r, n )
         type := type and IsUnivariatePolynomialRing and IsEuclideanRing;
                      #and IsAlgebraWithOne; # done above already
     fi;
-    
+
     prng := Objectify( NewType( CollectionsFamily(rfun), type ), rec() );
 
     # set the left acting domain
@@ -885,7 +885,7 @@ function( r, n )
     fi;
 
 
-    if Length(n)=1 and n[1]<10000 
+    if Length(n)=1 and n[1]<10000
       # only cache for the prime field
       and IsField(r) then
       r!.univariateRings[n[1]]:=prng;
@@ -989,7 +989,7 @@ InstallMethod( Derivative, "for float laurent polynomial",
     e := e-1 + RemoveOuterCoeffs(d, fam!.zeroCoefficient);
     return LaurentPolynomialByExtRepNC( fam, d, e, ind );
 end );
-      
+
 #############################################################################
 ##
 #M  \<, \+, ... for float and rat
@@ -1018,14 +1018,14 @@ InstallMethod( \+, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
         function ( x, y ) return x + MakeFloat(x,y); end );
 InstallMethod( \+, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
         function ( x, y ) return x + MakeFloat(x,y); end );
-        
+
 InstallMethod( \-, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
         function ( x, y ) return MakeFloat(y,x) - y; end );
 InstallMethod( \-, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
         function ( x, y ) return x - MakeFloat(x,y); end );
 InstallMethod( \-, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
         function ( x, y ) return x - MakeFloat(x,y); end );
-        
+
 InstallMethod( \*, "for rational and float", ReturnTrue, [ IsRat, IsFloat ], -1,
         function ( x, y ) return MakeFloat(y,x) * y; end );
 InstallMethod( \*, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -1,
@@ -1046,7 +1046,7 @@ InstallMethod( LQUO, "for float and rational", ReturnTrue, [ IsFloat, IsRat ], -
         function ( x, y ) return LQUO(x,MakeFloat(x,y)); end );
 InstallMethod( LQUO, "for floats", ReturnTrue, [ IsFloat, IsFloat ], -1,
         function ( x, y ) return LQUO(x,MakeFloat(x,y)); end );
-        
+
 InstallOtherMethod( \/, "for empty list", [ IsEmpty, IsFloat ],
         function ( x, y ) return x; end );
 
