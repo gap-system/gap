@@ -976,8 +976,8 @@ function( mat )
     new := [ Length(mat) ];
     if 0 < new[1]   then
         for i in [ 1 .. new[1] ]  do
-	        zero := ZeroOp(mat[1]);
-        	SetFilterObj(zero, IsLockedRepresentationVector);
+            zero := ZeroOp(mat[1]);
+            SetFilterObj(zero, IsLockedRepresentationVector);
             Add( new, zero );
         od;
     fi;
@@ -1913,7 +1913,7 @@ InstallMethod(NumberFFVector,"uncompressed vecffe",
         p := Position(qels, x);
         if p = fail then
             Info(InfoWarning,2,
-	      "NumberFFVector: Vector not over specified field");
+              "NumberFFVector: Vector not over specified field");
             return fail;
         fi;
         sy := n*sy + (p-1);
@@ -2151,12 +2151,12 @@ local l,f,vkey;
   l:=Size(l);
   return rec(hashfun:=function(b)
              local h,i;
-	       h:=0;
-	       for i in b do
-	         h:=h*l+NumberFFVector(i,f);
-	       od;
-	       return h;
-	      end);
+               h:=0;
+               for i in b do
+                 h:=h*l+NumberFFVector(i,f);
+               od;
+               return h;
+              end);
 end);
 
 InstallMethod(DomainForAction,"vector/permgrp",true,

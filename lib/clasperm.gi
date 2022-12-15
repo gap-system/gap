@@ -108,7 +108,7 @@ BindGlobal( "NumberElement_RationalClassPermGroup", function( enum, elm )
     gal := RightTransversalInParent( GaloisGroup( rcl ) );
     T := enum!.rightTransversal;
     for pow  in [ 1 .. Length( gal ) ]  do
-	# if gal[pow]=0 then the rep is the identity , no need to worry.
+        # if gal[pow]=0 then the rep is the identity , no need to worry.
         t := RepOpElmTuplesPermGroup( true, G,
                      [ elm ], [ rep ^ Int( gal[ pow ] ) ],
                      TrivialSubgroup( G ),

@@ -215,8 +215,8 @@ InstallGlobalFunction( StratMeetPartition, function( arg )
             cellsP, #\
             blist,  #  >see explanation below
             blist2, #/
-	    splits,
-	    lS,
+            splits,
+            lS,
             rap,  cell,  nrcells;
 
     if not IsPartition( arg[ 1 ] )  then  rbase := arg[ 1 ];  p := 2;
@@ -244,7 +244,7 @@ InstallGlobalFunction( StratMeetPartition, function( arg )
     # If <S> is just a set, it is interpreted as partition ( <S>|<S>^compl ).
     if IsPartition( S )  then
         nrcells := NumberCells( S ) - 1;
-	lS:=S;
+        lS:=S;
     else
         nrcells := 1;
         blist := BlistList( [ 1 .. NumberCells( P ) ], cellsP{ S } );
@@ -254,7 +254,7 @@ InstallGlobalFunction( StratMeetPartition, function( arg )
                 cellsP{ Difference( [ 1 .. Length( P.cellno ) ], S ) } ) );
             p := Position( blist, true );
         fi;
-	lS:=S;
+        lS:=S;
         S := false;
     fi;
 
@@ -269,11 +269,11 @@ InstallGlobalFunction( StratMeetPartition, function( arg )
       p:=Collected(p);
       splits:=[];
       for i in p do
-	# a cell will split iff it contains more points than are in the
-	# s-cell
+        # a cell will split iff it contains more points than are in the
+        # s-cell
         if P.lengths[i[1]]>i[2] then
-	  Add(splits,i[1]);
-	fi;
+          Add(splits,i[1]);
+        fi;
       od;
 
       # this code is new, the extensive construction of blists in the old
@@ -418,7 +418,7 @@ InstallGlobalFunction( Suborbits, function( arg )
     local   H,  tofix,  b,  Omega,  suborbits,  len,  bylen,
             G,  GG,  a,  conj,  ran,  subs,  all,  k,  pnt,  orb,  gen,
             perm,  omega,  P,  cell,  part,  p,  i, sublique,la,bl,
-	    rep,rep2,te,stabgens;
+            rep,rep2,te,stabgens;
 
     # Get the arguments.
     H := arg[ 1 ];
@@ -427,7 +427,7 @@ InstallGlobalFunction( Suborbits, function( arg )
     Omega := arg[ 4 ];
     IsRange(Omega);
     if b = 0  then  part := false;  b := Omega[ 1 ];
-	      else  part := true;   fi;
+              else  part := true;   fi;
 
     G := StabChainMutable( H );
     bl:=Length(BaseStabChain(G));
@@ -484,97 +484,97 @@ InstallGlobalFunction( Suborbits, function( arg )
       Info(InfoBckt,2,"Enter suborbits ",Size(H),":",a);
 
         # Construct the suborbits rooted at <a>.
-	# GG is a head of a stabilizer chain with base orbit containing
-	# b with min elm a
-	if not IsIdenticalObj(G,GG) then
-	  GG:=CopyStabChain( G );
-	  ChangeStabChain( GG, [ a ], false );
-	  te:=GG.transversal;
-	  stabgens:=GG.stabilizer.generators;
-	  Unbind(GG);
-	else
-	  stabgens:=G.stabilizer.generators;
-	  # now conjugate with rep, so that we get things based at 'a'
-	  # rep2 maps the basepoint to a
-	  te:=ShallowCopy(G.transversal);
-	  te[G.orbit[1]]:=rep2; # just one mapper further
-	  te[a]:=G.identity;
-	  stabgens:=List(stabgens,i->i^rep2);
-	fi;
+        # GG is a head of a stabilizer chain with base orbit containing
+        # b with min elm a
+        if not IsIdenticalObj(G,GG) then
+          GG:=CopyStabChain( G );
+          ChangeStabChain( GG, [ a ], false );
+          te:=GG.transversal;
+          stabgens:=GG.stabilizer.generators;
+          Unbind(GG);
+        else
+          stabgens:=G.stabilizer.generators;
+          # now conjugate with rep, so that we get things based at 'a'
+          # rep2 maps the basepoint to a
+          te:=ShallowCopy(G.transversal);
+          te[G.orbit[1]]:=rep2; # just one mapper further
+          te[a]:=G.identity;
+          stabgens:=List(stabgens,i->i^rep2);
+        fi;
 
         subs := rec( stabChainTop := rec(orbit:=[a],
-	                                 transversal:=te,
-					 identity:=G.identity),
+                                         transversal:=te,
+                                         identity:=G.identity),
                         domain := Omega,
                          which := ListWithIdenticalEntries( Length(ran), 0 ),
                           reps := [ G.identity ],
-		          blists:=[],
+                          blists:=[],
                        lengths := [ 1 ],
              orbitalPartitions := [  ] );
-	subs.blists[1]:=[a];
+        subs.blists[1]:=[a];
         subs.which[ a ] := 1;
-	if IsRange(Omega) and 1 in Omega then
-	  all:=BlistList(ran,[]);
-	else
-	  all := BlistList( ran, ran );
-	  SubtractBlist( all, BlistList( ran, Omega ) );
-	fi;
-	all[ a ] := true;
-	la:=Length(all)-1;
+        if IsRange(Omega) and 1 in Omega then
+          all:=BlistList(ran,[]);
+        else
+          all := BlistList( ran, ran );
+          SubtractBlist( all, BlistList( ran, Omega ) );
+        fi;
+        all[ a ] := true;
+        la:=Length(all)-1;
 
         k := 1;
         pnt := Position( all, false );
         while pnt <> fail  do
-	  k := k + 1;
-	  orb := [ pnt ];
-	  all[ pnt ] := true;
-	  for p  in orb  do
-	    for gen  in stabgens  do
-	      i := p ^ gen;
-	      if not all[ i ]  then
-		Add( orb, i );
-		all[ i ] := true;
-	      fi;
-	    od;
-	  od;
-	  la:=la-Length(orb);
-	  subs.which{ orb } := k + 0 * orb;
-	  #if IsInBasicOrbit( G, pnt )  then
-	  if IsBound(te[pnt]) then
-	    subs.reps[ k ] := true;
-	    subs.lengths[ k ] := Length( orb );
-	  else
-	    # Suborbits outside the root's orbit get negative length.
-	    subs.reps[ k ] := false;
-	    subs.lengths[ k ] := -Length( orb );
-	  fi;
-	  #UniteBlist( all, sublique );
-	  if QuoInt(Length(ran),Length(orb))>100 then
-	    if Length(orb)=1 then
-	      subs.blists[ k ] := orb[1];
-	    else
-	      subs.blists[ k ] := Immutable(Set(orb));
-	    fi;
-	  else
-	    subs.blists[ k ] := BlistList(ran,orb);
-	  fi;
-	  if la=0 then
-	    pnt:=fail;
-	  else
-	    pnt := Position( all, false, pnt );
-	  fi;
+          k := k + 1;
+          orb := [ pnt ];
+          all[ pnt ] := true;
+          for p  in orb  do
+            for gen  in stabgens  do
+              i := p ^ gen;
+              if not all[ i ]  then
+                Add( orb, i );
+                all[ i ] := true;
+              fi;
+            od;
+          od;
+          la:=la-Length(orb);
+          subs.which{ orb } := k + 0 * orb;
+          #if IsInBasicOrbit( G, pnt )  then
+          if IsBound(te[pnt]) then
+            subs.reps[ k ] := true;
+            subs.lengths[ k ] := Length( orb );
+          else
+            # Suborbits outside the root's orbit get negative length.
+            subs.reps[ k ] := false;
+            subs.lengths[ k ] := -Length( orb );
+          fi;
+          #UniteBlist( all, sublique );
+          if QuoInt(Length(ran),Length(orb))>100 then
+            if Length(orb)=1 then
+              subs.blists[ k ] := orb[1];
+            else
+              subs.blists[ k ] := Immutable(Set(orb));
+            fi;
+          else
+            subs.blists[ k ] := BlistList(ran,orb);
+          fi;
+          if la=0 then
+            pnt:=fail;
+          else
+            pnt := Position( all, false, pnt );
+          fi;
         od;
-	subs.sublilen:=Length(subs.blists);
+        subs.sublilen:=Length(subs.blists);
 
-	# store if not too many
-	if Length(suborbits)>bl then
-	  for i in [1..Length(suborbits)-1] do
-	    suborbits[i]:=suborbits[i+1];
-	  od;
-	  suborbits[Length(suborbits)]:=[a,Omega,subs];
-	else
-	  Add(suborbits,[a,Omega,subs]);
-	fi;
+        # store if not too many
+        if Length(suborbits)>bl then
+          for i in [1..Length(suborbits)-1] do
+            suborbits[i]:=suborbits[i+1];
+          od;
+          suborbits[Length(suborbits)]:=[a,Omega,subs];
+        else
+          Add(suborbits,[a,Omega,subs]);
+        fi;
 
     fi;
 
@@ -624,22 +624,22 @@ end );
 ## as a special case anyhow).
 InstallGlobalFunction( OrbitalPartition, function( subs, k )
 local  dom,  # operation domain for the group
-	ran,  # range including <dom>, for blist construction
-	d,    # number of suborbits, estimate for diameter
-	len,  # current path length
-	K,    # set of suborbits <k> to process
-	Key,  # discriminating information for each suborbit
-	key,  # discriminating information for suborbit number <k>
-	old,  # farthest distance zone constructed so far
-	new,  # new distance zone being constructed
-	img,  # new endpoint of path with known predecessor
-	o, i, # suborbit of predecessor resp. endpoint
-	P,    # points ordered by <key> information, as partition
-	typ,  # types of <key> information that occur
-	sub,  # suborbit as list of integers
-	csiz,
-	ls,
-	pos;  # position of cell with given <key> in <P>
+        ran,  # range including <dom>, for blist construction
+        d,    # number of suborbits, estimate for diameter
+        len,  # current path length
+        K,    # set of suborbits <k> to process
+        Key,  # discriminating information for each suborbit
+        key,  # discriminating information for suborbit number <k>
+        old,  # farthest distance zone constructed so far
+        new,  # new distance zone being constructed
+        img,  # new endpoint of path with known predecessor
+        o, i, # suborbit of predecessor resp. endpoint
+        P,    # points ordered by <key> information, as partition
+        typ,  # types of <key> information that occur
+        sub,  # suborbit as list of integers
+        csiz,
+        ls,
+        pos;  # position of cell with given <key> in <P>
 
   if IsInt( k ) and IsBound( subs.orbitalPartitions[ k ] ) then
     Info(InfoBckt,2,"Orbital partition ",k," cached");
@@ -649,57 +649,57 @@ local  dom,  # operation domain for the group
     IsSSortedList(ran);
     d   := subs.sublilen;
     if IsRecord( k )  then  K := k.several;
-		      else  K := [ k ];      fi;
+                      else  K := [ k ];      fi;
     Key := 0;
     for k  in K  do
       if IsList( k )  and  Length( k ) = 1  then
-	k := k[ 1 ];
+        k := k[ 1 ];
       fi;
       key := ListWithIdenticalEntries( d, 0 );
 
       # Initialize the flooding algorithm for the <k>th suborbit.
       if IsInt( k )  then
-	if subs.reps[ k ] = false  then
-	  sub := 0;
-	  key[ k ] := -1;
-	  new := [  ];
-	else
-	  sub := SuboLiBli( ran, subs.blists[ k ] );
-	  key[ k ] := 1;
-	  new := [ k ];
-	fi;
+        if subs.reps[ k ] = false  then
+          sub := 0;
+          key[ k ] := -1;
+          new := [  ];
+        else
+          sub := SuboLiBli( ran, subs.blists[ k ] );
+          key[ k ] := 1;
+          new := [ k ];
+        fi;
       else
-	#sub := ListBlist( ran, UnionBlist( subs.blists{ k } ) );
-	if IsEmpty(k) then
-	  sub:=[];
-	else
-	  sub:=subs.blists[k[1]];
-	  if IsInt(sub) then
-	    sub:=BlistList(ran,[sub]);
-	  elif not IsBool(sub[1]) then
-	    sub:=BlistList(ran,sub);
-	  else
-	    sub:=ShallowCopy(sub); # don't overwrite
-	  fi;
-	  for o in [2..Length(k)] do
-	    SuboUniteBlist(ran,sub,subs.blists[k[o]]);
-	  od;
-	  sub:=ListBlist(ran,sub);
-	fi;
+        #sub := ListBlist( ran, UnionBlist( subs.blists{ k } ) );
+        if IsEmpty(k) then
+          sub:=[];
+        else
+          sub:=subs.blists[k[1]];
+          if IsInt(sub) then
+            sub:=BlistList(ran,[sub]);
+          elif not IsBool(sub[1]) then
+            sub:=BlistList(ran,sub);
+          else
+            sub:=ShallowCopy(sub); # don't overwrite
+          fi;
+          for o in [2..Length(k)] do
+            SuboUniteBlist(ran,sub,subs.blists[k[o]]);
+          od;
+          sub:=ListBlist(ran,sub);
+        fi;
 
-	key{ k } := 1 + 0 * k;
-	new := Filtered( k, i -> subs.reps[ i ] <> false );
+        key{ k } := 1 + 0 * k;
+        new := Filtered( k, i -> subs.reps[ i ] <> false );
       fi;
       len := 1;
 
       # If no new points were found in the last round, stop.
       while Length( new ) <> 0  do
-	len := len + 1;
-	old := new;
-	new := [  ];
+        len := len + 1;
+        old := new;
+        new := [  ];
 
-	# Map the suborbit <sub> with each old representative.
-	for o  in old  do
+        # Map the suborbit <sub> with each old representative.
+        for o  in old  do
           if subs.reps[o]<>false then
             if subs.reps[ o ] = true  then
               subs.reps[ o ] := InverseRepresentative( subs.stabChainTop,
@@ -724,11 +724,11 @@ local  dom,  # operation domain for the group
           else
             Info(InfoWarning,1,"suborbits variant triggered, check!");
           fi;
-	od;
+        od;
       od;
 
       if sub <> 0  then
-	Key := Key * ( d + d * Length( sub ) ^ d ) + key;
+        Key := Key * ( d + d * Length( sub ) ^ d ) + key;
       fi;
     od;
 
@@ -737,7 +737,7 @@ local  dom,  # operation domain for the group
     if Key = 0  then
       P:=[];
       if IsInt( k )  then
-	subs.orbitalPartitions[ k ] := P;
+        subs.orbitalPartitions[ k ] := P;
       fi;
       return P;
     else
@@ -747,36 +747,36 @@ local  dom,  # operation domain for the group
       csiz:=ListWithIdenticalEntries(Length(typ),0);
       dom:=List(typ,i->[[],[],[]]);
       for i in [1..Length(Key)] do
-	pos := Position( typ, Key[ i ] );
-	csiz[pos]:=csiz[pos]+AbsInt(subs.lengths[i]);
-	if IsInt(subs.blists[i]) then
-	  AddSet(dom[pos][1],subs.blists[i]);
-	elif IsBlistRep(subs.blists[i]) then
-	  Add(dom[pos][3],subs.blists[i]);
-	else
-	  Add(dom[pos][2],subs.blists[i]);
-	fi;
+        pos := Position( typ, Key[ i ] );
+        csiz[pos]:=csiz[pos]+AbsInt(subs.lengths[i]);
+        if IsInt(subs.blists[i]) then
+          AddSet(dom[pos][1],subs.blists[i]);
+        elif IsBlistRep(subs.blists[i]) then
+          Add(dom[pos][3],subs.blists[i]);
+        else
+          Add(dom[pos][2],subs.blists[i]);
+        fi;
       od;
       if Sum(csiz)=Length(subs.domain) and Length(typ)=1 then
-	P:=[];
-	if IsInt( k )  then
-	  subs.orbitalPartitions[ k ] := P;
-	fi;
+        P:=[];
+        if IsInt( k )  then
+          subs.orbitalPartitions[ k ] := P;
+        fi;
         return P;
       elif Sum(csiz)=Length(subs.domain) and Length(typ)=2 then
         # only two cells
-	# we need to indicate the first cell, the trick to take the sorted
-	# one does not work
-	P:=ConcatSubos(ran,dom[1]);
-	if IsInt( k )  then
-	  subs.orbitalPartitions[ k ] := P;
-	fi;
+        # we need to indicate the first cell, the trick to take the sorted
+        # one does not work
+        P:=ConcatSubos(ran,dom[1]);
+        if IsInt( k )  then
+          subs.orbitalPartitions[ k ] := P;
+        fi;
         return P;
       fi;
 
       P:=[];
       for pos in [1..Length(typ)] do
-	sub := ConcatSubos( ran, dom[pos] );
+        sub := ConcatSubos( ran, dom[pos] );
         Add(P,sub);
       od;
 #fi;
@@ -784,8 +784,8 @@ local  dom,  # operation domain for the group
 
 
       if Sum(List(P,Length)) <> Length(subs.domain)  then
-	# there are fixpoints missing
-	Add( P, Difference(subs.domain,Union(P)));
+        # there are fixpoints missing
+        Add( P, Difference(subs.domain,Union(P)));
       fi;
 
     fi;
@@ -1031,7 +1031,7 @@ local  Rf,  t;
   if not uscore then
     for Rf  in rbase.rfm[ image.depth ]  do
       t := CallFuncList( Refinements.( Rf.func ), Concatenation
-		    ( [ rbase, image ], Rf.args ) );
+                    ( [ rbase, image ], Rf.args ) );
       if   t = false  then  return fail;
       elif t <> true  then  return t;     fi;
     od;
@@ -1039,10 +1039,10 @@ local  Rf,  t;
   else
     for Rf  in rbase.rfm[ image.depth ]  do
       if Rf.func[ 1 ] = '_'  then
-	t := CallFuncList( Refinements.( Rf.func ), Concatenation
-		      ( [ rbase, image ], Rf.args ) );
-	if   t = false  then  return fail;
-	elif t <> true  then  return t;     fi;
+        t := CallFuncList( Refinements.( Rf.func ), Concatenation
+                      ( [ rbase, image ], Rf.args ) );
+        if   t = false  then  return fail;
+        elif t <> true  then  return t;     fi;
       fi;
     od;
     return true;
@@ -1051,10 +1051,10 @@ local  Rf,  t;
   #old code
   for Rf  in rbase.rfm[ image.depth ]  do
       if not uscore  or  Rf.func[ 1 ] = '_'  then
-	  t := CallFuncList( Refinements.( Rf.func ), Concatenation
-			( [ rbase, image ], Rf.args ) );
-	  if   t = false  then  return fail;
-	  elif t <> true  then  return t;     fi;
+          t := CallFuncList( Refinements.( Rf.func ), Concatenation
+                        ( [ rbase, image ], Rf.args ) );
+          if   t = false  then  return fail;
+          elif t <> true  then  return t;     fi;
       fi;
   od;
   return true;
@@ -1127,8 +1127,8 @@ InstallGlobalFunction( PartitionBacktrack,
            range,        # range for construction of <orb>
            fix,  fixP,   # fixpoints of partitions at root of search tree
            obj,  prm,    # temporary variables for constructed permutation
-	   nrback,	 # backtrack counter
-	   bail,	 # do we want to bail out quickly?
+           nrback,       # backtrack counter
+           bail,         # do we want to bail out quickly?
            i,  dd,  p;   # loop variables
 
 #############################################################################
@@ -1159,7 +1159,7 @@ InstallGlobalFunction( PartitionBacktrack,
             oldcel := image.partition.cellno;
             if IsSlicedPerm( image.perm ) then  oldprm := image.perm!.length;
                                           else  oldprm := image.perm;
-					  fi;
+                                          fi;
         fi;
         if image.level2 <> false  then  oldprm2 := image.perm2;
                                   else  oldprm2 := false;        fi;
@@ -1263,10 +1263,10 @@ InstallGlobalFunction( PartitionBacktrack,
                 fi;
             od;
         fi;
-	if d=1 and ForAll(GeneratorsOfGroup(G),x->a^x=a) then
-	  orb[d][a]:=true; # ensure a is a possible image (can happen if
-			  # acting on permutations with more points)
-	fi;
+        if d=1 and ForAll(GeneratorsOfGroup(G),x->a^x=a) then
+          orb[d][a]:=true; # ensure a is a possible image (can happen if
+                           # acting on permutations with more points)
+        fi;
 
         orB[ d ] := StructuralCopy( orb[ d ] );
 
@@ -1397,11 +1397,11 @@ InstallGlobalFunction( PartitionBacktrack,
                 # Recursion.
                 if t = true  then
                     t := PBEnumerate( d + 1, false );
-		    nrback:=nrback+1;
-		    if bail and nrback>500 then
-		      return infinity; # bail out, this will bail out
-		                       # recursively
-		    fi;
+                    nrback:=nrback+1;
+                    if bail and nrback>500 then
+                      return infinity; # bail out, this will bail out
+                                       # recursively
+                    fi;
                     image.depth := d;
                 fi;
 
@@ -1470,16 +1470,16 @@ InstallGlobalFunction( PartitionBacktrack,
     if     IsList( Pr )
        and (    IsTrivial( G )
              #or IsSymmetricGroupQuick( G )
-	     ) then
+             ) then
         obj := rec( lftObj := Pr[ 1 ],
 #                    rgtObj := Pr[ 2 ],
                        opr := Pr[ 3 ],
                       prop := Pr[ 4 ] );
         Pr := gen -> obj.prop
               ( rec( lftObj := obj.lftObj
-#	      ,
+#             ,
 #                     rgtObj := obj.opr( obj.rgtObj, gen ^ -1 )
-	    ) );
+            ) );
     fi;
 
     # Trivial cases first.
@@ -1979,8 +1979,8 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
            doneroot,   # roots of orbital graphs already considered
            tra,        # degree of transitivity of <E>
            op,
-	   cp,
-	   len,  i,  range;
+           cp,
+           len,  i,  range;
 
     # If  <E>  is a multiply  transitive  subgroup  of  <G>, consider orbital
     # graphs of the first non 2-transitive stabilizer.
@@ -2065,7 +2065,7 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
               strat := StratMeetPartition( rbase, P, subs.partition,
                                subs.conj );
               AddRefinement( rbase, STBBCKT_STRING_SUBORBITS0,
-	             [ tra, f, subs.lengths,
+                     [ tra, f, subs.lengths,
                       List( subs.byLengths, Length ), strat ] );
 
               # For each such   length, `Suborbits1' computes  and  meets the
@@ -2078,8 +2078,8 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
                    < subs.sublilen
                  and subs.reps[ subs.byLengths[ k ][ 1 ] ] <> false  then
                       strat := StratMeetPartition( rbase, P,
-			OrbitalPartition( subs, subs.byLengths[ k ] ),
-			subs.conj );
+                        OrbitalPartition( subs, subs.byLengths[ k ] ),
+                        subs.conj );
                       AddRefinement( rbase, STBBCKT_STRING_SUBORBITS1,
                               [ tra, f, k, strat ] );
                       if IsTrivialRBase( rbase )  then
@@ -2116,7 +2116,7 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
                     AddSet( done, k );
                     strat := StratMeetPartition( rbase, P,
                                 OrbitalPartition( subs, k ),
-				subs.conj );
+                                subs.conj );
                     if Length( strat ) <> 0  then
 
                       # `Suborbits2' computes the types  in the image (stored
@@ -2131,7 +2131,7 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
                       # `Suborbits3' computes and meets the orbital partition
                       # for the image.
                       AddRefinement( rbase, STBBCKT_STRING_SUBORBITS3,
-		         [ tra, f, typ[ 1 ], Length( k ), strat ] );
+                         [ tra, f, typ[ 1 ], Length( k ), strat ] );
                       if IsTrivialRBase( rbase )  then
                         return;
                       fi;
@@ -2144,7 +2144,7 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
               # Orbital graphs rooted at a point from the same <E>-orbit seem
               # to yield no extra progress.
               for pnt  in Orbit( E, fpt )  do
-		  cp:=CellNoPoint(P,pnt);
+                  cp:=CellNoPoint(P,pnt);
                   if P.lengths[cp] = 1  then
                       AddSet( doneroot, cp);
                   fi;
@@ -2261,7 +2261,7 @@ InstallGlobalFunction( RepOpSetsPermGroup, function( arg )
         L := arg[ p + 1 ];
     else
         L:=SubgroupNC(G,
-	     Filtered(StrongGeneratorsStabChain(StabChainMutable(G)),
+             Filtered(StrongGeneratorsStabChain(StabChainMutable(G)),
                      gen -> OnSets( Phi, gen ) = Phi ) );
     fi;
     if repr  then
@@ -2269,7 +2269,7 @@ InstallGlobalFunction( RepOpSetsPermGroup, function( arg )
             R := arg[ p + 2 ];
         else
             R:=SubgroupNC(G,
-	         Filtered(StrongGeneratorsStabChain(StabChainMutable(G)),
+                 Filtered(StrongGeneratorsStabChain(StabChainMutable(G)),
                           gen->OnSets(Psi,gen)=Psi));
         fi;
     else
@@ -2285,15 +2285,15 @@ InstallGlobalFunction( RepOpSetsPermGroup, function( arg )
     phitail:=Phi{[2..Length(Phi)]};
     Pr:=function(gen)
         local i;
-	  if not Phi[1]^gen in Psi then
-	    return false;
-	  fi;
-	  for i in phitail do
-	    if not i^gen in Psi then
-	      return false;
-	    fi;
-	  od;
-	  return true;
+          if not Phi[1]^gen in Psi then
+            return false;
+          fi;
+          for i in phitail do
+            if not i^gen in Psi then
+              return false;
+            fi;
+          od;
+          return true;
         end;
 
     # Pr := [ Phi, Psi, OnTuples, gen ->
@@ -2308,38 +2308,38 @@ end );
 InstallGlobalFunction( RepOpElmTuplesPermGroup,
 function( repr, G, e, f, L, R )
 local  Omega,      # a common operation domain for <G>, <E> and <F>
-	order,      # orders of elements in <e>
-	cycles,     # cycles of <e> on <Omega>
-	P, Q,       # partition refined during construction of <rbase>
-	rbase,      # the R-base for the backtrack algorithm
-	Pr,	       # property
-	baspts,     # base for group
-	eran,       # range
-	oe,of,sets,
-	pre,l,map,
-	bailout,
-	i,j, size; # loop/auxiliary variables
+        order,      # orders of elements in <e>
+        cycles,     # cycles of <e> on <Omega>
+        P, Q,       # partition refined during construction of <rbase>
+        rbase,      # the R-base for the backtrack algorithm
+        Pr,         # property
+        baspts,     # base for group
+        eran,       # range
+        oe,of,sets,
+        pre,l,map,
+        bailout,
+        i,j, size; # loop/auxiliary variables
 
   # Central elements and trivial subgroups.
   if ForAll( GeneratorsOfGroup( G ), gen -> OnTuples( e, gen ) = e )  then
       if not repr  then  return G;
       elif e = f   then  return One( G );
-		    else  return fail;      fi;
+                    else  return fail;      fi;
   fi;
 
   if repr and
       ( Length( e ) <> Length( f )  or  ForAny( [ 1 .. Length( e ) ],
-	      i -> CycleStructurePerm( e[ i ] ) <>
-		  CycleStructurePerm( f[ i ] ) ) )  then
+              i -> CycleStructurePerm( e[ i ] ) <>
+                  CycleStructurePerm( f[ i ] ) ) )  then
       return fail;
   fi;
 
   bailout:=repr;
   if IsTrivial(L) then
     L:=SubgroupNC(G,Filtered( Concatenation(
-	    Filtered(e,gen->gen in G),
-	    StrongGeneratorsStabChain(StabChainMutable(G))),
-	  gen->OnTuples(e,gen)=e));
+            Filtered(e,gen->gen in G),
+            StrongGeneratorsStabChain(StabChainMutable(G))),
+          gen->OnTuples(e,gen)=e));
   else
     bailout:=false;
   fi;
@@ -2347,9 +2347,9 @@ local  Omega,      # a common operation domain for <G>, <E> and <F>
   if IsTrivial(R) then
     if repr then
       R:=SubgroupNC(G,Filtered( Concatenation(
-	    Filtered(f,gen->gen in G),
-	    StrongGeneratorsStabChain(StabChainMutable(G))),
-	  gen->OnTuples(f,gen)=f));
+            Filtered(f,gen->gen in G),
+            StrongGeneratorsStabChain(StabChainMutable(G))),
+          gen->OnTuples(f,gen)=f));
 
     else
       R:=L;
@@ -2360,7 +2360,7 @@ local  Omega,      # a common operation domain for <G>, <E> and <F>
 
   P := TrivialPartition( Omega );
   if repr  then  size := 1;
-	    else  size := Size( G );  fi;
+            else  size := Size( G );  fi;
   for i  in [ 1 .. Length( e ) ]  do
       cycles := Partition( Cycles( e[ i ], Omega ) );
       StratMeetPartition( P, CollectedPartition( cycles, size ) );
@@ -2441,19 +2441,19 @@ local  Omega,      # a common operation domain for <G>, <E> and <F>
     Pr:=function(gen)
         local i,j;
 
-	  for i in eran do
-	    for j in baspts do
-	      if not ((j/gen)^e[i])^gen=j^f[i] then
-	        return false;
-	      fi;
-	    od;
-	  od;
-	  return true;
+          for i in eran do
+            for j in baspts do
+              if not ((j/gen)^e[i])^gen=j^f[i] then
+                return false;
+              fi;
+            od;
+          od;
+          return true;
         end;
 
     map:=PartitionBacktrack( G, [ e, f, OnTuples,Pr],
                    repr, rbase, Concatenation( [ Q ], f ),
-		   L, R:bailout:=bailout );
+                   L, R:bailout:=bailout );
     if not (bailout and map=infinity) then
       return map;
     fi;
@@ -2495,16 +2495,16 @@ dom, et, ft, Pr, rbase, BF, Q, data,lc;
       # special case of cyclic groups
       if not IsCyclic(F) then return fail;fi;
       if Length( arg ) > 3  then
-	  L := arg[ 4 ];  R := arg[ 5 ];
+          L := arg[ 4 ];  R := arg[ 5 ];
       else
-	  L := TrivialSubgroup( G );  R := L;
+          L := TrivialSubgroup( G );  R := L;
       fi;
       E:=MinimalGeneratingSet(E)[1];
       F:=MinimalGeneratingSet(F)[1];
       Q:=Order(E);
       for pos in Filtered([1..Q],x->Gcd(x,Q)=1) do
         found:=RepOpElmTuplesPermGroup( true, G, [ E ], [ F^pos ], L, R );
-	if found<>fail then return found;fi;
+        if found<>fail then return found;fi;
       od;
       return fail;
     fi;
@@ -2519,18 +2519,18 @@ dom, et, ft, Pr, rbase, BF, Q, data,lc;
     if IsSubset(mpG,mpE) and IsSubset(mpG,mpF) and not IsTransitive(G,mpG) then
       # is there a chance to use only some orbits?
       if not (IsSubset(G,E) and IsSubset(G,F)) then
-	P:=Group(Concatenation(GeneratorsOfGroup(G),
+        P:=Group(Concatenation(GeneratorsOfGroup(G),
                                GeneratorsOfGroup(E),GeneratorsOfGroup(F)));
       else
-	P:=G;
+        P:=G;
       fi;
       orb:=Orbits(P,mpG);
       if Length(orb)>7 then
-	# join orbits to make only a few
-	orb:=ShallowCopy(orb);
-	Sort(orb,function(a,b) return Length(a)<Length(b);end);
-	comb:=Union(orb{[7..Length(orb)]});
-	orb:=Concatenation(orb{[1..6]},[comb]);
+        # join orbits to make only a few
+        orb:=ShallowCopy(orb);
+        Sort(orb,function(a,b) return Length(a)<Length(b);end);
+        comb:=Union(orb{[7..Length(orb)]});
+        orb:=Concatenation(orb{[1..6]},[comb]);
       fi;
       comb:=Combinations(orb);
       Sort(comb,function(a,b) return Sum(a,Length)<Sum(b,Length);end);
@@ -2539,21 +2539,21 @@ dom, et, ft, Pr, rbase, BF, Q, data,lc;
       lc:=Length(mpG)*2/3;
       while pos<Length(comb) and not found and pos<=Length(comb) do
         pos:=pos+1;
-	if Sum(comb[pos],Length)<lc then
-	  dom:=Union(comb[pos]);
-	  if Size(Stabilizer(P,dom,OnTuples))=1 then
-	    # found faithful
-	    found:=true;
-	  fi;
+        if Sum(comb[pos],Length)<lc then
+          dom:=Union(comb[pos]);
+          if Size(Stabilizer(P,dom,OnTuples))=1 then
+            # found faithful
+            found:=true;
+          fi;
         fi;
       od;
       if found then
-	map:=ActionHomomorphism(P,dom,"surjective");
-	SetIsInjective(map,true);
-	G:=Image(map,G);
-	E:=Image(map,E);
-	F:=Image(map,F);
-	Omega:=[1..Length(dom)];
+        map:=ActionHomomorphism(P,dom,"surjective");
+        SetIsInjective(map,true);
+        G:=Image(map,G);
+        E:=Image(map,E);
+        F:=Image(map,F);
+        Omega:=[1..Length(dom)];
       fi;
     fi;
 
@@ -2570,9 +2570,9 @@ dom, et, ft, Pr, rbase, BF, Q, data,lc;
       et:=IsTransitive(E,Omega);
       ft:=IsTransitive(F,Omega);
       if et<>ft then
-	return fail;
+        return fail;
       elif et and IsPrimitive(E,Omega)<>IsPrimitive(F,Omega) then
-	return fail;
+        return fail;
       fi;
     fi;
 
@@ -2581,8 +2581,8 @@ dom, et, ft, Pr, rbase, BF, Q, data,lc;
       L := arg[ Length( arg ) - 1 ];
       R := arg[ Length( arg ) ];
       if map<>false then
-	L:=Image(map,L);
-	R:=Image(map,R);
+        L:=Image(map,L);
+        R:=Image(map,R);
       fi;
     elif IsSubset( G, E )  then
         L := E;
@@ -2601,7 +2601,7 @@ dom, et, ft, Pr, rbase, BF, Q, data,lc;
     if IsBound( rbase.reggrp )  then
       P:=rbase.reggrp( F, Omega );
       if P=fail then
-	# the first group has an EARNS, the second not.
+        # the first group has an EARNS, the second not.
         return fail;
       fi;
       Add( data, P );
@@ -2632,7 +2632,7 @@ local Pr, div, B, rbase, data, N;
     fi;
     if Length(MovedPoints(G))>Size(G) and Length(MovedPoints(G))>500 then
       return SubgroupProperty(G,
-	i->ForAll(GeneratorsOfGroup(E),j->j^i in E));
+        i->ForAll(GeneratorsOfGroup(E),j->j^i in E));
     fi;
     B := OrbitsPartition( E, Omega );
     rbase := RBaseGroupsBloxPermGroup( false, G, Omega, E, div, B );
@@ -2668,9 +2668,9 @@ Eh, Lh, Nh,G0;
       return G;
   elif Size( E ) = 2  then
     if Length( arg ) > 2  then  L := arg[ 3 ];
-			  else  L := TrivialSubgroup( G );  fi;
+                          else  L := TrivialSubgroup( G );  fi;
     E := [ First( GeneratorsOfGroup( E ),
-		  gen -> Order( gen ) <> 1 ) ];
+                  gen -> Order( gen ) <> 1 ) ];
     return RepOpElmTuplesPermGroup( false, G, E, E, L, L );
   fi;
 
@@ -2709,40 +2709,40 @@ Eh, Lh, Nh,G0;
       SortBy(orb,Length);
       i:=1;
       while i<=Length(orb) and Length(orb[i])=1 do
-	Omega:=Difference(Omega,orb[i]);
-	i:=i+1;
+        Omega:=Difference(Omega,orb[i]);
+        i:=i+1;
       od;
       if i<=Length(orb) then
-	start:=i;
-	cnt:=Length(orb[i]);
-	i:=i+1;
-	# don't bother with very short orbits -- they will give little
-	# improvement.
-	while i<=Length(orb) and cnt+Length(orb[i])<10 do
-	  cnt:=cnt+Length(orb[i]);
-	  i:=i+1;
-	od;
-	if cnt=Length(mpG) then
-	  # no orbits...
-	  Omega := [1..Maximum(Maximum(mpG),Maximum(mpE))];
-	  return DoNormalizerPermGroup(G,E,L,Omega);
-	fi;
-	so:=Union(orb{[start..i-1]});
+        start:=i;
+        cnt:=Length(orb[i]);
+        i:=i+1;
+        # don't bother with very short orbits -- they will give little
+        # improvement.
+        while i<=Length(orb) and cnt+Length(orb[i])<10 do
+          cnt:=cnt+Length(orb[i]);
+          i:=i+1;
+        od;
+        if cnt=Length(mpG) then
+          # no orbits...
+          Omega := [1..Maximum(Maximum(mpG),Maximum(mpE))];
+          return DoNormalizerPermGroup(G,E,L,Omega);
+        fi;
+        so:=Union(orb{[start..i-1]});
 
-	hom:=ActionHomomorphism(P,so,"surjective");
-	Gh:=Image(hom,G);
-	Eh:=Image(hom,E);
-	Lh:=Image(hom,L);
-	Nh:=DoNormalizerPermGroup(Gh,Eh,Lh,[1..Length(so)]);
-	if Size(Nh)<Size(Gh) then
-	  # improvement!
-	  if not IsIdenticalObj(P,G) then
-	    P:=PreImage(hom,ClosureGroup(Nh,Eh));
-	  fi;
-	  G:=PreImage(hom,Nh);
-	  Info(InfoGroup,1,"Orbit ",Length(so)," reduces by ",Size(Gh)/Size(Nh));
-	fi;
-	Omega:=Difference(Omega,so);
+        hom:=ActionHomomorphism(P,so,"surjective");
+        Gh:=Image(hom,G);
+        Eh:=Image(hom,E);
+        Lh:=Image(hom,L);
+        Nh:=DoNormalizerPermGroup(Gh,Eh,Lh,[1..Length(so)]);
+        if Size(Nh)<Size(Gh) then
+          # improvement!
+          if not IsIdenticalObj(P,G) then
+            P:=PreImage(hom,ClosureGroup(Nh,Eh));
+          fi;
+          G:=PreImage(hom,Nh);
+          Info(InfoGroup,1,"Orbit ",Length(so)," reduces by ",Size(Gh)/Size(Nh));
+        fi;
+        Omega:=Difference(Omega,so);
       fi;
     od;
 
@@ -2869,48 +2869,48 @@ local pl,single,i,p,W,op,S;
       # as a subgroup of the stabilizer compute the stabilizer on set tuples
       S:=G;
       for i in p do
-	if ForAny(GeneratorsOfGroup(S),j->OnSets(i,j)<>j) then
-	  S:=Stabilizer(S,i,OnSets);
-	  #Info(InfoPermGroup,1,i," ",Size(S),"\n");
+        if ForAny(GeneratorsOfGroup(S),j->OnSets(i,j)<>j) then
+          S:=Stabilizer(S,i,OnSets);
+          #Info(InfoPermGroup,1,i," ",Size(S),"\n");
         fi;
       od;
       G:=Normalizer(G,S);
 
       # If S is trivial (or acts too small) things could still go wrong:
       if not ForAll(GeneratorsOfGroup(G),i->ForAll(p,j->OnSets(j,i) in p)) then
-	# the stabilizer of p in S_n is a wreath product of symmetric groups
-	# (It seems that computing the intersection is better than the
-	# `SubgroupProperty' call commented out below, as `Intersection' uses
-	# better refinements internally.
-	op:=ActionHomomorphism(G,Concatenation(p),"surjective"); #makes the blocks standard
-	W:=WreathProduct(SymmetricGroup(Length(p[1])),
-	     SymmetricGroup(Length(p)));
-	if Size(W)<10^50 then
-	  W:=Intersection(W,Image(op,G)); # the stabilizer
-	  G:=PreImage(op,W);
-	else
+        # the stabilizer of p in S_n is a wreath product of symmetric groups
+        # (It seems that computing the intersection is better than the
+        # `SubgroupProperty' call commented out below, as `Intersection' uses
+        # better refinements internally.
+        op:=ActionHomomorphism(G,Concatenation(p),"surjective"); #makes the blocks standard
+        W:=WreathProduct(SymmetricGroup(Length(p[1])),
+             SymmetricGroup(Length(p)));
+        if Size(W)<10^50 then
+          W:=Intersection(W,Image(op,G)); # the stabilizer
+          G:=PreImage(op,W);
+        else
 
-	  # because we want to keep the set property, we make p immutable
-	  p:=Immutable(Set(p));
-	  # the stabilizer is the set of all elements that map every set from
-	  # p into another set from p.  as a subgroup of the stabilizer
-	  # compute the stabilizer on set tuples
-	  S:=G;
-	  for i in p do
-	    S:=Stabilizer(S,i,OnSets);
-	  od;
+          # because we want to keep the set property, we make p immutable
+          p:=Immutable(Set(p));
+          # the stabilizer is the set of all elements that map every set from
+          # p into another set from p.  as a subgroup of the stabilizer
+          # compute the stabilizer on set tuples
+          S:=G;
+          for i in p do
+            S:=Stabilizer(S,i,OnSets);
+          od;
 
-	  G:=SubgroupProperty(G,function(gen)
-				local i;
-				  for i in p do
-				    if not OnSets(i,gen) in p then
-				      return false;
-				    fi;
-				  od;
-				  return true;
-				end,
-				S);
-	fi;
+          G:=SubgroupProperty(G,function(gen)
+                                local i;
+                                  for i in p do
+                                    if not OnSets(i,gen) in p then
+                                      return false;
+                                    fi;
+                                  od;
+                                  return true;
+                                end,
+                                S);
+        fi;
       fi;
     fi;
   od;
@@ -3000,7 +3000,7 @@ local   omega, P, rbase, L, mg, mh, mg_minus_mh, mh_minus_mg;
 #    Sort(mg,function(a,b) return Length(a)<Length(b);end);
 #    for i in mg do
 #      if Length(i)<5 then
-#	G:=Stabilizer(G,Set(i),OnSets);
+#       G:=Stabilizer(G,Set(i),OnSets);
 #      fi;
 #    od;
 #    mh:=MovedPoints(H);
@@ -3008,7 +3008,7 @@ local   omega, P, rbase, L, mg, mh, mg_minus_mh, mh_minus_mg;
 #    Sort(mh,function(a,b) return Length(a)<Length(b);end);
 #    for i in mh do
 #      if Length(i)<5 then
-#	H:=Stabilizer(H,Set(i),OnSets);
+#       H:=Stabilizer(H,Set(i),OnSets);
 #      fi;
 #    od;
 
@@ -3030,8 +3030,8 @@ end );
 ##
 TwoClosurePermGroup := function( arg )
 local   G,  merge,  n,  ran,  Omega,  Agemo,  opr,  S,
-	adj,  tot,  k,  kk,  pnt,  orb,  o,  new,  gen,  p,  i,
-	tra,  Q,  rbase,  doneroot,  P,  Pr;
+        adj,  tot,  k,  kk,  pnt,  orb,  o,  new,  gen,  p,  i,
+        tra,  Q,  rbase,  doneroot,  P,  Pr;
 
     G := arg[ 1 ];
     if IsTrivial( G )  then
@@ -3076,7 +3076,7 @@ local   G,  merge,  n,  ran,  Omega,  Agemo,  opr,  S,
             rep := InverseRepresentative( rbase.suborbits.stabChainTop, fpt );
             strat := StratMeetPartition( rbase, P, Q, rep );
             AddRefinement( rbase, STBBCKT_STRING_TWOCLOSURE,
-	      [ G, f, Q, strat ] );
+              [ G, f, Q, strat ] );
             if IsTrivialRBase( rbase )  then  f := false;
                                         else  f := FixcellPoint( P, doneroot );
             fi;

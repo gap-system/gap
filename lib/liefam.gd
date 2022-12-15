@@ -118,7 +118,7 @@ DeclareCategory( "IsLieObject",
 DeclareCategoryCollections( "IsLieObject" );
 
 DeclareSynonym( "IsRestrictedLieObject",
-	IsLieObject and IsRestrictedJacobianElement);
+        IsLieObject and IsRestrictedJacobianElement);
 
 DeclareCategoryCollections( "IsRestrictedLieObject" );
 

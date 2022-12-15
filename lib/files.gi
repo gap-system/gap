@@ -303,21 +303,21 @@ local a,h,d;
     d:=List(DirectoryContents(h),LowercaseString);
     a:=First(["My Documents", #en
           "Documents", #en-win8
-	      "Eigene Dateien", #de
-	      "Documenti", #it
-	      "Mes documents", #fr
-	      "Mijn documenten", #nl
-	      "Meus documentos", #pt
-	      "Mis documentos", #es
-	      "Mina dokument", #sv
-	      "Mine dokumenter", #no
-	      "Dokumentumok", #hu
-	      "Dokumenty", #cz
-	      "Moje dokumenty", #po
-	      "Omat tiedostot", #fi
-	      "Î¤Î± Î­Î³Î³ÏÎ±Ï†Î¬ Î¼Î¿Ï…", #gr
-	      "ÐœÐ¾Ð¸ Ð”Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ñ‹", #ru
-	      ],x->LowercaseString(x) in d);
+              "Eigene Dateien", #de
+              "Documenti", #it
+              "Mes documents", #fr
+              "Mijn documenten", #nl
+              "Meus documentos", #pt
+              "Mis documentos", #es
+              "Mina dokument", #sv
+              "Mine dokumenter", #no
+              "Dokumentumok", #hu
+              "Dokumenty", #cz
+              "Moje dokumenty", #po
+              "Omat tiedostot", #fi
+              "Î¤Î± Î­Î³Î³ÏÎ±Ï†Î¬ Î¼Î¿Ï…", #gr
+              "ÐœÐ¾Ð¸ Ð”Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ñ‹", #ru
+              ],x->LowercaseString(x) in d);
     if a<>fail then
       if h[Length(h)]<>'/' then
         h := Concatenation(h,"/");
@@ -337,11 +337,11 @@ local a,h,d;
   if ARCH_IS_WINDOWS() then
     d:=List(DirectoryContents(h),LowercaseString);
     a:=First(["Desktop",
-	      "Bureau", #fr
-	      "Bureaublad", #nl
-	      "Escritorio", #es
-	      "Î•Ï€Î¹Ï†Î¬Î½ÎµÎ¹Î± ÎµÏÎ³Î±ÏƒÎ¯Î±Ï‚", #gr
-	     ],x->LowercaseString(x) in d);
+              "Bureau", #fr
+              "Bureaublad", #nl
+              "Escritorio", #es
+              "Î•Ï€Î¹Ï†Î¬Î½ÎµÎ¹Î± ÎµÏÎ³Î±ÏƒÎ¯Î±Ï‚", #gr
+             ],x->LowercaseString(x) in d);
     if a<>fail then
       if h[Length(h)]<>'/' then
         h := Concatenation(h,"/");
@@ -353,10 +353,10 @@ local a,h,d;
   else
     d:=List(DirectoryContents(h),LowercaseString);
     a:=First(["Desktop",
-	      "Bureau", #fr
-	      "Bureaublad", #nl
-	      "Escritorio", #es
-	     ],x->LowercaseString(x) in d);
+              "Bureau", #fr
+              "Bureaublad", #nl
+              "Escritorio", #es
+             ],x->LowercaseString(x) in d);
     if a<>fail then
       if h[Length(h)]<>'/' then
         h := Concatenation(h,"/");

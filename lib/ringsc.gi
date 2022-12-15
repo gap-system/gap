@@ -39,7 +39,7 @@ InstallMethod( ObjByExtRep,
       Error( "<coeffs> must be a list of length ", Length( Fam!.names ) );
     elif not ForAll( [1..Length(coeffs)], IsInt ) and
       ForAll([1..Length(coeffs)],p->Fam!.moduli[p]=0 or
-	(0<=coeffs[p] and coeffs[p]<Fam!.moduli[p])) then
+        (0<=coeffs[p] and coeffs[p]<Fam!.moduli[p])) then
       Error( "all in <coeffs> must be integers bounded by `moduli'" );
     fi;
     return Objectify( Fam!.defaultTypeDenseCoeffVectorRep,
@@ -65,7 +65,7 @@ InstallMethod( PrintObj,
 
     local F,      # family of `elm'
           names,  # generators names
-	  moduli,
+          moduli,
           len,    # dimension of the ring
           zero,   # zero element of the ring
           depth,  # first nonzero position in coefficients list
@@ -94,7 +94,7 @@ InstallMethod( PrintObj,
     else
 
       if elm[depth]<>1 and elm[depth]-moduli[depth] =-1 then
-	  Print("-");
+          Print("-");
       elif elm[ depth ] <> 1 then
         Print( elm[ depth ], "*" );
       fi;
@@ -102,10 +102,10 @@ InstallMethod( PrintObj,
 
       for i in [ depth+1 .. len ] do
         if elm[i] <> 0 then
-	  if elm[i]=1 then
-	    Print( "+" );
+          if elm[i]=1 then
+            Print( "+" );
           elif elm[i]-moduli[i] =-1 then
-	    Print("-");
+            Print("-");
           elif elm[i] <> 1 then
             Print("+", elm[i], "*" );
           fi;
@@ -124,7 +124,7 @@ function( elm )
 
     local s,      # string
           names,  # generators names
-	  moduli,
+          moduli,
           len,    # dimension of the ring
           zero,   # zero element of the ring
           depth,  # first nonzero position in coefficients list
@@ -152,7 +152,7 @@ function( elm )
 
       s:="";
       if elm[depth]<>1 and elm[depth]-moduli[depth] =-1 then
-	Add(s,'-');
+        Add(s,'-');
       elif elm[ depth ] <> 1 then
         Append(s,String(elm[ depth ]));
         Add(s,'*');
@@ -161,14 +161,14 @@ function( elm )
 
       for i in [ depth+1 .. len ] do
         if elm[i] <> 0 then
-	  if elm[i]=1 then
-	    Add(s,'+');
+          if elm[i]=1 then
+            Add(s,'+');
           elif elm[i]-moduli[i] =-1 then
-	    Add(s,'-');
+            Add(s,'-');
           elif elm[i] <> 1 then
-	    Add(s,'+');
+            Add(s,'+');
             Append(s,String( elm[i]));
-	    Add(s,'*');
+            Add(s,'*');
           fi;
           Append(s, names[i] );
         fi;
@@ -212,7 +212,7 @@ function( x, y )
   local fam;
   fam:=FamilyObj(x);
   return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
-	    [ Immutable( SCRingReducedModuli(fam!.moduli,x![1]+y![1])) ] );
+            [ Immutable( SCRingReducedModuli(fam!.moduli,x![1]+y![1])) ] );
 end );
 
 InstallMethod( \-,
@@ -224,7 +224,7 @@ function( x, y )
 local fam;
   fam:=FamilyObj(x);
   return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
-	    [ Immutable( SCRingReducedModuli(fam!.moduli,x![1]-y![1])) ] );
+            [ Immutable( SCRingReducedModuli(fam!.moduli,x![1]-y![1])) ] );
 end );
 
 InstallMethod( \*,
@@ -236,8 +236,8 @@ InstallMethod( \*,
 local fam;
   fam:= FamilyObj( x );
   return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
-	    [ Immutable( SCRingReducedModuli(fam!.moduli,
-	                SCTableProduct( fam!.sctable, x![1], y![1] ) )) ] );
+            [ Immutable( SCRingReducedModuli(fam!.moduli,
+                        SCTableProduct( fam!.sctable, x![1], y![1] ) )) ] );
   end );
 
 InstallMethod( \*,
@@ -248,7 +248,7 @@ function( x, y )
 local fam;
   fam:=FamilyObj(y);
   return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
-	    [ Immutable( SCRingReducedModuli(fam!.moduli,x*y![1])) ] );
+            [ Immutable( SCRingReducedModuli(fam!.moduli,x*y![1])) ] );
 end );
 
 InstallMethod( \*,
@@ -259,7 +259,7 @@ function( x, y )
 local fam;
   fam:=FamilyObj(x);
   return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
-	    [ Immutable( SCRingReducedModuli(fam!.moduli,x![1]*y)) ] );
+            [ Immutable( SCRingReducedModuli(fam!.moduli,x![1]*y)) ] );
 end );
 
 InstallMethod( ZeroOp, "for s. c. ring element", [ IsSCRingObj ],
@@ -267,7 +267,7 @@ function( x )
 local fam;
   fam:=FamilyObj(x);
   return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
-	    [ Immutable( SCRingReducedModuli(fam!.moduli,0*x![1])) ] );
+            [ Immutable( SCRingReducedModuli(fam!.moduli,0*x![1])) ] );
 end );
 
 InstallMethod( AdditiveInverseOp, "for s. c. ring element", [ IsSCRingObj ],
@@ -275,7 +275,7 @@ function( x )
 local fam;
   fam:=FamilyObj(x);
   return Objectify( fam!.defaultTypeDenseCoeffVectorRep,
-	    [ Immutable( SCRingReducedModuli(fam!.moduli,-x![1])) ] );
+            [ Immutable( SCRingReducedModuli(fam!.moduli,-x![1])) ] );
 end );
 
 InstallMethod( OneOp, "for s. c. ring element", [ IsSCRingObj ],
@@ -308,12 +308,12 @@ local fam,r,w,l,o;
     repeat
       w:=w*x;
       if w=o then
-	# last entry was inverse
-	return l[Length(l)];
+        # last entry was inverse
+        return l[Length(l)];
       fi;
       if w in l then
-	# loop without inverse -- not invertible
-	return fail;
+        # loop without inverse -- not invertible
+        return fail;
       fi;
       Add(l,w);
     until Length(l)>10^6;
@@ -346,12 +346,12 @@ InstallGlobalFunction( RingByStructureConstants, function( arg )
           names,  # names of the ring generators
           Fam,    # the family of ring elements
           A,      # the ring, result
-	  filter,
+          filter,
           gens;   # ring generators of `A'
 
     # Check the argument list.
     if not 1 < Length( arg ) and IsList( arg[1] )
-				 and Length(arg[1])>0
+                                 and Length(arg[1])>0
                                  and IsList( arg[2] ) then
       Error( "usage: RingByStructureConstants([<moduli>,<sctable>]) or \n",
              "RingByStructureConstants([<moduli>,<sctable>,<name1>,...])" );
@@ -410,7 +410,7 @@ InstallGlobalFunction( RingByStructureConstants, function( arg )
     # Make the generators and the ring.
     SetZero( Fam, ObjByExtRep( Fam, List( [ 1 .. n ], x -> 0 ) ) );
     gens:= Immutable( List( IdentityMat( n, Integers ),
-			    x -> ObjByExtRep( Fam, x ) ) );
+                            x -> ObjByExtRep( Fam, x ) ) );
     A:= RingByGenerators( gens );
     SetIsWholeFamily(A,true);
 
@@ -433,18 +433,18 @@ InstallGlobalFunction( RingByStructureConstants, function( arg )
     if Length(moduli)=1 then
       n:=ExtRepOfObj(gens[1]^2)[1];
       if moduli[1]=0 and n=1 then
-	n:=ObjByExtRep(Fam,[1]);
-	SetOne(Fam,n);
-	SetOne(A,n);
+        n:=ObjByExtRep(Fam,[1]);
+        SetOne(Fam,n);
+        SetOne(A,n);
       elif moduli[1]=0 and n=-1 then
-	n:=ObjByExtRep(Fam,[-1]);
-	SetOne(Fam,n);
-	SetOne(A,n);
+        n:=ObjByExtRep(Fam,[-1]);
+        SetOne(Fam,n);
+        SetOne(A,n);
       elif moduli[1]>1 and Gcd(n,moduli[1])=1 then
-	n:=1/n mod moduli[1];
-	n:=ObjByExtRep(Fam,[n]);
-	SetOne(Fam,n);
-	SetOne(A,n);
+        n:=1/n mod moduli[1];
+        n:=ObjByExtRep(Fam,[n]);
+        SetOne(Fam,n);
+        SetOne(A,n);
       fi;
     fi;
 
@@ -471,32 +471,32 @@ local i, j, q;
     if e[i]<>0 then
       # find corresponding pivot
       if IsBound(pivots[i]) then
-	j:=pivots[i];
-	# reduce
-	q:=e[i]/l[j][i];
-	if IsInt(q) then
-	  # can reduce completely
-	  e:=e-q*l[j];
-	  e:=SCRingReducedModuli(moduli,e);
-	else
-	  ## cannot eliminate
-	  #if test=true then return false;fi;
-	  e:=e-Int(q)*l[j];
-	  e:=SCRingReducedModuli(moduli,e);
-	  if test=0 and e[i]<>0 then
-	    # stop after first nonzero reduction
-	    return e;
-	  fi;
-	fi;
+        j:=pivots[i];
+        # reduce
+        q:=e[i]/l[j][i];
+        if IsInt(q) then
+          # can reduce completely
+          e:=e-q*l[j];
+          e:=SCRingReducedModuli(moduli,e);
+        else
+          ## cannot eliminate
+          #if test=true then return false;fi;
+          e:=e-Int(q)*l[j];
+          e:=SCRingReducedModuli(moduli,e);
+          if test=0 and e[i]<>0 then
+            # stop after first nonzero reduction
+            return e;
+          fi;
+        fi;
 #      else
-#	# no pivot -- not in
-#	if test=true then
+#       # no pivot -- not in
+#       if test=true then
 #          Error("GNU");
-#	  return false;
-#	elif test=0 then
-#	  # element will give new pivot
-#	  return e;
-#	fi;
+#         return false;
+#       elif test=0 then
+#         # element will give new pivot
+#         return e;
+#       fi;
       fi;
     fi;
     i:=i+1;
@@ -516,28 +516,28 @@ local i, j, q;
     if e[i]<>0 then
       # find corresponding pivot
       if IsBound(pivots[i]) then
-	j:=pivots[i];
-	# reduce
-	q:=e[i]/l[j][i];
-	if IsInt(q) then
-	  # can reduce completely
-	  e:=e-q*l[j];
-	  e:=SCRingReducedModuli(moduli,e);
-	  ei:=ei-q*imgs[j];
-	else
-	  # cannot eliminate
-	  e:=e-Int(q)*l[j];
-	  e:=SCRingReducedModuli(moduli,e);
-	  ei:=ei-Int(q)*imgs[j];
-	  # stop after first reduction
-	  if e[i]<>0 then
-	    return [e,ei];
-	  fi;
-	fi;
+        j:=pivots[i];
+        # reduce
+        q:=e[i]/l[j][i];
+        if IsInt(q) then
+          # can reduce completely
+          e:=e-q*l[j];
+          e:=SCRingReducedModuli(moduli,e);
+          ei:=ei-q*imgs[j];
+        else
+          # cannot eliminate
+          e:=e-Int(q)*l[j];
+          e:=SCRingReducedModuli(moduli,e);
+          ei:=ei-Int(q)*imgs[j];
+          # stop after first reduction
+          if e[i]<>0 then
+            return [e,ei];
+          fi;
+        fi;
 #      else
-#	# no pivot -- not in
-#	# element will give new pivot
-#	return [e,ei];
+#       # no pivot -- not in
+#       # element will give new pivot
+#       return [e,ei];
       fi;
     fi;
     i:=i+1;
@@ -578,52 +578,52 @@ local p, j, f, fj, g, q, gj, m, k, i;
       j:=pivots[p];
       f:=l[j];
       if imgs<>false then
-	fj:=imgs[j];
+        fj:=imgs[j];
       else
-	fj:=0;
+        fj:=0;
       fi;
       repeat
-	g:=f;
+        g:=f;
         f:=e;
-	q:=QuoInt(g[p],f[p]);
-	e:=g-q*f;
-	if imgs<>false then
-	  gj:=fj;
-	  fj:=ei;
-	  ei:=gj-q*fj;
-	fi;
-	e:=SCRingReducedModuli(moduli,e);
+        q:=QuoInt(g[p],f[p]);
+        e:=g-q*f;
+        if imgs<>false then
+          gj:=fj;
+          fj:=ei;
+          ei:=gj-q*fj;
+        fi;
+        e:=SCRingReducedModuli(moduli,e);
       until e[p]=0;
 
       #modify l
       if f[p]<0 then f:=-f;fj:=-fj;fi;
       # clean out f
       for k in [p+1..Length(moduli)] do
-	if IsBound(pivots[k]) then
-	  q:=QuoInt(f[k],l[pivots[k]][k]);
-	  f:=SCRingReducedModuli(moduli,f-q*l[pivots[k]]);
-	  if imgs<>false then
-	    fj:=fj-q*imgs[pivots[k]];
-	  fi;
-	fi;
+        if IsBound(pivots[k]) then
+          q:=QuoInt(f[k],l[pivots[k]][k]);
+          f:=SCRingReducedModuli(moduli,f-q*l[pivots[k]]);
+          if imgs<>false then
+            fj:=fj-q*imgs[pivots[k]];
+          fi;
+        fi;
       od;
 
       #Print("Set l[",j,"]:=",f," at ",p,"\n");
       l[j]:=f;
       if imgs<>false then
-	imgs[j]:=f;
+        imgs[j]:=f;
       fi;
       # clean out above
       for i in [1..j-1] do
-	for k in [p..Length(moduli)] do
-	  if IsBound(pivots[k]) then
-	    q:=QuoInt(l[i][k],l[pivots[k]][k]);
-	    l[i]:=SCRingReducedModuli(moduli,l[i]-q*l[pivots[k]]);
-	    if imgs<>false then
-	      imgs[i]:=imgs[i]-q*imgs[pivots[k]];
-	    fi;
-	  fi;
-	od;
+        for k in [p..Length(moduli)] do
+          if IsBound(pivots[k]) then
+            q:=QuoInt(l[i][k],l[pivots[k]][k]);
+            l[i]:=SCRingReducedModuli(moduli,l[i]-q*l[pivots[k]]);
+            if imgs<>false then
+              imgs[i]:=imgs[i]-q*imgs[pivots[k]];
+            fi;
+          fi;
+        od;
       od;
     fi;
   until IsZero(e) or not IsBound(pivots[p]);
@@ -635,7 +635,7 @@ local p, j, f, fj, g, q, gj, m, k, i;
       e:=e*m.coeff1;
       e:=SCRingReducedModuli(moduli,e);
       if imgs<>false then
-	ei:=ei*m.coeff1;
+        ei:=ei*m.coeff1;
       fi;
     fi;
 
@@ -651,7 +651,7 @@ local p, j, f, fj, g, q, gj, m, k, i;
     # adjust pivots for insertion
     for i in [1..Length(pivots)] do
       if IsBound(pivots[i]) and pivots[i]>=j+1 then
-	pivots[i]:=pivots[i]+1;
+        pivots[i]:=pivots[i]+1;
       fi;
     od;
     pivots[p]:=j+1;
@@ -662,7 +662,7 @@ local p, j, f, fj, g, q, gj, m, k, i;
       q:=QuoInt(l[i][p],e[p]);
       Add(m,SCRingReducedModuli(moduli,l[i]-q*e));
       if imgs<>false then
-	Add(gj,imgs[i]-q*ei);
+        Add(gj,imgs[i]-q*ei);
       fi;
     od;
     l:=Concatenation(m,[e],l{[j+1..Length(l)]});
@@ -691,12 +691,12 @@ local fam, l, piv, m, new, i, j, p;
     while new=false and i<=Length(l) do
       j:=1;
       while new=false and j<=Length(l) do
-	p:=ExtRepOfObj(ObjByExtRep(fam,l[i])*ObjByExtRep(fam,l[j]));
-	m:=SCRHNFExtend(fam!.moduli,l,piv,p,false,false);
-	new:=Length(m[1])>Length(l) or m[1]<>l;
-	l:=m[1];piv:=m[2];
+        p:=ExtRepOfObj(ObjByExtRep(fam,l[i])*ObjByExtRep(fam,l[j]));
+        m:=SCRHNFExtend(fam!.moduli,l,piv,p,false,false);
+        new:=Length(m[1])>Length(l) or m[1]<>l;
+        l:=m[1];piv:=m[2];
 
-	j:=j+1;
+        j:=j+1;
       od;
       i:=i+1;
     od;
@@ -707,11 +707,11 @@ local fam, l, piv, m, new, i, j, p;
     for i in [1..Length(piv)] do
       if IsBound(piv[i]) then
         for j in Difference([1..Length(l)],[piv[i]]) do
-	  p:=QuoInt(l[j][i],l[piv[i]][i]);
-	  if p>0 then
-	    l[j]:=l[j]-p*l[piv[i]];
-	  fi;
-	od;
+          p:=QuoInt(l[j][i],l[piv[i]][i]);
+          if p>0 then
+            l[j]:=l[j]-p*l[piv[i]];
+          fi;
+        od;
       fi;
     od;
   fi;
@@ -733,12 +733,12 @@ local l, piv, li, m, new, i, j, p, q;
     while new=false and i<=Length(l) do
       j:=1;
       while new=false and j<=Length(l) do
-	p:=ExtRepOfObj(ObjByExtRep(fam,l[i])*ObjByExtRep(fam,l[j]));
-	q:=li[i]*li[j];
-	m:=SCRHNFExtend(fam!.moduli,l,piv,p,li,q);
-	new:=Length(m[1])>Length(l);
-	l:=m[1];piv:=m[2];li:=m[3];
-	j:=j+1;
+        p:=ExtRepOfObj(ObjByExtRep(fam,l[i])*ObjByExtRep(fam,l[j]));
+        q:=li[i]*li[j];
+        m:=SCRHNFExtend(fam!.moduli,l,piv,p,li,q);
+        new:=Length(m[1])>Length(l);
+        l:=m[1];piv:=m[2];li:=m[3];
+        j:=j+1;
       od;
       i:=i+1;
     od;
@@ -755,13 +755,13 @@ BindGlobal("SCRingDecompositionStandardGens",function(s,e)
   for i in [1..Length(moduli)] do
     if e[i]<>0 then
       if not IsBound(s[2][i]) then
-	Error("element does not lie in ring");
+        Error("element does not lie in ring");
       fi;
       p:=s[2][i];
       if moduli[i]<>0 then
-	x:=e[i]/s[1][p][i] mod moduli[i];
+        x:=e[i]/s[1][p][i] mod moduli[i];
       else
-	x:=e[i]/s[1][p][i];
+        x:=e[i]/s[1][p][i];
       fi;
       c[p]:=x;
       e:=e-x*s[1][p];
@@ -853,13 +853,13 @@ BindGlobal("SCRingGroupInFamily",function(fam)
       x:=GeneratorsOfGroup(a)[i];
       c:=1;
       while not IsOne(x) do
-	p:=Position(pcgs,x);
-	e:=ListWithIdenticalEntries(Length(m),0);
-	e[i]:=c;
-	rcgs[p]:=ObjByExtRep(fam,e);
-	o:=RelativeOrders(pcgs)[p];
-	x:=x^o;
-	c:=c*o;
+        p:=Position(pcgs,x);
+        e:=ListWithIdenticalEntries(Length(m),0);
+        e[i]:=c;
+        rcgs[p]:=ObjByExtRep(fam,e);
+        o:=RelativeOrders(pcgs)[p];
+        x:=x^o;
+        c:=c*o;
       od;
     od;
     fam!.group:=a;
@@ -949,9 +949,9 @@ function(R)
     while test and x<=Length(g) do
       y:=1;
       while test and y<=Length(g) do
-	e:=ExtRepOfObj(g[x]*g[y]);
-	test:=SCRingElmSift(fam!.moduli,l,piv,e,true);
-	y:=y+1;
+        e:=ExtRepOfObj(g[x]*g[y]);
+        test:=SCRingElmSift(fam!.moduli,l,piv,e,true);
+        y:=y+1;
       od;
       x:=x+1;
     od;
@@ -985,7 +985,7 @@ local gens, a, i;
   for a in GeneratorsOfRing( A ) do
     for i in gens do
       if not a * i in S then
-	return false;
+        return false;
       fi;
     od;
   od;
@@ -1008,7 +1008,7 @@ local gens, a, i;
   for a in GeneratorsOfRing( A ) do
     for i in gens do
       if not i*a in S then
-	return false;
+        return false;
       fi;
     od;
   od;
@@ -1055,7 +1055,7 @@ local d,t,i;
     arg:=ShallowCopy(arg);
     for i in [1..Length(arg)] do
       if IsIdenticalObj(arg[i],Integers) then
-	arg[i]:=t;
+        arg[i]:=t;
       fi;
     od;
   fi;
@@ -1107,9 +1107,9 @@ local ids, tup, first, i, G, gens, g, new, D, prop;
   D := RingByGenerators( tup );
 
   SetDirectSumInfo( D, rec( rings := list,
-				first  := first,
-				embeddings := [],
-				projections := [] ) );
+                            first  := first,
+                            embeddings := [],
+                            projections := [] ) );
 
   return D;
 end );
@@ -1137,9 +1137,9 @@ local ones,s, moduli, orders, offsets, o, p, newmod, t, nams, gens, e, f, D, i, 
     for j in [1..Length(s[i][1])] do
       p:=PositionNonZero(s[i][1][j]);
       if moduli[i][p]=0 then
-	Add(o,0);
+        Add(o,0);
       else
-	Add(o,moduli[i][p]/s[i][1][j][p]);
+        Add(o,moduli[i][p]/s[i][1][j][p]);
       fi;
     od;
     Add(orders,o);
@@ -1162,18 +1162,18 @@ local ones,s, moduli, orders, offsets, o, p, newmod, t, nams, gens, e, f, D, i, 
     Append(nams,List([1..Length(gens)],j->[CHARS_UALPHA[i],CHARS_LALPHA[j]]));
     for j in [1..Length(gens)] do
       for k in [1..Length(gens)] do
-	e:=gens[j]*gens[k];
-	if not IsZero(e) then
-	  e:=SCRingDecompositionStandardGens(s[i],e);
-	  f:=[];
-	  for ii in [1..Length(e)] do
-	    if e[ii]<>0 then
-	      Add(f,e[ii]);
-	      Add(f,ii+offsets[i]);
-	    fi;
-	  od;
-	  SetEntrySCTable(t,j+offsets[i],k+offsets[i],f);
-	fi;
+        e:=gens[j]*gens[k];
+        if not IsZero(e) then
+          e:=SCRingDecompositionStandardGens(s[i],e);
+          f:=[];
+          for ii in [1..Length(e)] do
+            if e[ii]<>0 then
+              Add(f,e[ii]);
+              Add(f,ii+offsets[i]);
+            fi;
+          od;
+          SetEntrySCTable(t,j+offsets[i],k+offsets[i],f);
+        fi;
       od;
     od;
   od;
@@ -1188,9 +1188,9 @@ local ones,s, moduli, orders, offsets, o, p, newmod, t, nams, gens, e, f, D, i, 
   fi;
 
   SetDirectSumInfo( D, rec( rings := list,
-				first  := offsets,
-				embeddings := [],
-				projections := [] ) );
+                            first  := offsets,
+                            embeddings := [],
+                            projections := [] ) );
 
   return D;
 end );
@@ -1354,7 +1354,7 @@ EnumeratorOfIdeal := function( I )
             Igens,      # ideal generators of <I>
             R,          # the acting ring
             Rgens,      # ring generators of `R'
-	    elmsgens,   # additive generators
+            elmsgens,   # additive generators
             elm,        # one element of <elms>
             gen,        # one generator of <I>
             new;        # product or sum of <elm> and <gen>

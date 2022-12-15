@@ -229,11 +229,11 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
     for i in [1..D.klanz] do
       f:=Filtered([1..D.klanz],x->fs[x]=fs[i]);
       if Length(f)=1 then
-	Add(D.nocanonize,fs[i]);
+        Add(D.nocanonize,fs[i]);
       else
-	Add(D.faclaimg,[fs[i],f]); # store which classes images could be
-	f:=TFCanonicalClassRepresentative(D.group,[D.classreps[i]]);
-	Add(D.ids[i],f[1][2]);
+        Add(D.faclaimg,[fs[i],f]); # store which classes images could be
+        f:=TFCanonicalClassRepresentative(D.group,[D.classreps[i]]);
+        Add(D.ids[i],f[1][2]);
       fi;
     od;
   fi;

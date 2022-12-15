@@ -165,18 +165,18 @@ local F, gens, evals, espaces, is, ise, gen, i, j,module,list,ind,vecs,mins;
     if not MTX.IsIrreducible(module) then
       mins:=Filtered(MTX.BasesCompositionSeries(module),x->Length(x)>0);
       if Length(mins)<=5 then
-	mins:=MTX.BasesMinimalSubmodules(module);
+        mins:=MTX.BasesMinimalSubmodules(module);
       else
-	if Length(mins)>7 then
-	  mins:=mins{Set([1..7],x->Random(1,Length(mins)))};
-	fi;
+        if Length(mins)>7 then
+          mins:=mins{Set([1..7],x->Random(1,Length(mins)))};
+        fi;
       fi;
 
       # now get potential basis vectors from submodules
       for i in mins do
-	ind:=MTX.InducedActionSubmodule(module,i);
-	vecs:=BasisVectorsForMatrixAction(Group(ind.generators):nosubmodules);
-	Append(list,vecs*i);
+        ind:=MTX.InducedActionSubmodule(module,i);
+        vecs:=BasisVectorsForMatrixAction(Group(ind.generators):nosubmodules);
+        Append(list,vecs*i);
       od;
 
     fi;
@@ -201,7 +201,7 @@ local F, gens, evals, espaces, is, ise, gen, i, j,module,list,ind,vecs,mins;
     for j in [i+1..Length(espaces)] do
       ise:=Intersection(espaces[i],espaces[j]);
       if Dimension(ise)>0 and not ise in is then
-	Add(is,ise);
+        Add(is,ise);
       fi;
     od;
   od;
@@ -236,7 +236,7 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
   elif act=OnLines then
     j:=One(G);
     start:=Concatenation(List(BasisVectorsForMatrixAction(G),
-	    x->OnLines(x,j)),j);
+            x->OnLines(x,j)),j);
   else
     Error("illegal action");
   fi;
@@ -265,14 +265,14 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
       img:=OnLines(Sum(base),One(G));
     else
       if starti>Length(start) then
-	Sort(delay);
-	for i in delay do
-	  Add(start,i[2]);
-	od;
-	maxlim:=maxlim*100;
-	Info(InfoGroup,2,
-	    "original pool exhausted, use delayed.  maxlim=",maxlim);
-	delay:=[];
+        Sort(delay);
+        for i in delay do
+          Add(start,i[2]);
+        od;
+        maxlim:=maxlim*100;
+        Info(InfoGroup,2,
+            "original pool exhausted, use delayed.  maxlim=",maxlim);
+        delay:=[];
       fi;
 
       ll:=Length(orb);
@@ -280,10 +280,10 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
       img:=start[starti];
       v:=ShallowCopy(img);
       for j in [ 1 .. Length( heads ) ] do
-	en:=v[heads[j]];
-	if en <> zero then
-	  AddRowVector( v, partbas[j], - en );
-	fi;
+        en:=v[heads[j]];
+        if en <> zero then
+          AddRowVector( v, partbas[j], - en );
+        fi;
       od;
     fi;
 
@@ -297,10 +297,10 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
       fi;
       # force `img' over field
       if (Size(field)=2 and not IsGF2VectorRep(img)) or
-	 (Size(field)>2 and Size(field)<=256 and not (Is8BitVectorRep(img)
-	 and Q_VEC8BIT(img)=Size(field))) then
-	img:=ShallowCopy(img);
-	ConvertToVectorRep(img,Size(field));
+         (Size(field)>2 and Size(field)<=256 and not (Is8BitVectorRep(img)
+         and Q_VEC8BIT(img)=Size(field))) then
+        img:=ShallowCopy(img);
+        ConvertToVectorRep(img,Size(field));
       fi;
       Add(orb,img);
       p:=Length(orb);
@@ -309,34 +309,34 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
 
       # orbit algorithm with image keeper
       while p<=Length(orb) do
-	i:=1;
-	while i<=Length(acts) do
-	  img := act(orb[p],acts[i]);
-	  v:=LookupDictionary(dict,img);
-	  if v=fail then
-	    if Length(orb)>ltwa then
-	      Info(InfoGroup,2,"Very long orbit, delay");
-	      Add(delay,[Length(orb)-ll,orb[ll+1]]);
-	      kill:=true;
-	      for p in [ll+1..Length(orb)] do
-	        Unbind(orb[p]);
-		for i in [1..Length(acts)] do
-		  Unbind(permimg[i][p]);
-		od;
-	      od;
-	      i:=Length(acts)+1;
-	      p:=Length(orb)+1;
-	    else
-	      Add(orb,img);
-	      AddDictionary(dict,img,Length(orb));
-	      permimg[i][p]:=Length(orb);
-	    fi;
-	  else
-	    permimg[i][p]:=v;
-	  fi;
-	  i:=i+1;
-	od;
-	p:=p+1;
+        i:=1;
+        while i<=Length(acts) do
+          img := act(orb[p],acts[i]);
+          v:=LookupDictionary(dict,img);
+          if v=fail then
+            if Length(orb)>ltwa then
+              Info(InfoGroup,2,"Very long orbit, delay");
+              Add(delay,[Length(orb)-ll,orb[ll+1]]);
+              kill:=true;
+              for p in [ll+1..Length(orb)] do
+                Unbind(orb[p]);
+                for i in [1..Length(acts)] do
+                  Unbind(permimg[i][p]);
+                od;
+              od;
+              i:=Length(acts)+1;
+              p:=Length(orb)+1;
+            else
+              Add(orb,img);
+              AddDictionary(dict,img,Length(orb));
+              permimg[i][p]:=Length(orb);
+            fi;
+          else
+            permimg[i][p]:=v;
+          fi;
+          i:=i+1;
+        od;
+        p:=p+1;
       od;
     fi;
     starti:=starti+1;
@@ -346,31 +346,31 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
       i:=ll+1;
       lo:=Length(orb);
       while i<=lo do
-	v:=ShallowCopy(orb[i]);
-	for j in [ 1 .. Length( heads ) ] do
-	  en:=v[heads[j]];
-	  if en <> zero then
-	    AddRowVector( v, partbas[j], - en );
-	  fi;
-	od;
-	if v<>zerov then
-	  Add(base,orb[i]);
-	  Add(partbas,ShallowCopy(orb[i]));
+        v:=ShallowCopy(orb[i]);
+        for j in [ 1 .. Length( heads ) ] do
+          en:=v[heads[j]];
+          if en <> zero then
+            AddRowVector( v, partbas[j], - en );
+          fi;
+        od;
+        if v<>zerov then
+          Add(base,orb[i]);
+          Add(partbas,ShallowCopy(orb[i]));
           # filter for vector objects, not compressed FF vectors
           if ForAny(partbas,x->IsVectorObj(x) and not IsDataObjectRep(x)) then
             partbas:=Matrix(BaseDomain(partbas[1]),partbas);
           fi;
-	  TriangulizeMat(partbas);
+          TriangulizeMat(partbas);
           if IsMatrixObj(partbas) then
             partbas:=ShallowCopy(RowsOfMatrix(partbas));
           fi;
-	  heads:=List(partbas,PositionNonZero);
-	  if Length(partbas)>=dim then
-	    # full dimension reached
-	    i:=lo;
-	  fi;
-	fi;
-	i:=i+1;
+          heads:=List(partbas,PositionNonZero);
+          if Length(partbas)>=dim then
+            # full dimension reached
+            i:=lo;
+          fi;
+        fi;
+        i:=i+1;
       od;
     fi;
 
@@ -515,7 +515,7 @@ local   nice,img,module,b;
     if module<>fail and not (NrMovedPoints(img)>=
       Size( DefaultFieldOfMatrixGroup( grp ) )^( NumberRows( One( grp ) )-2 )
       and MTX.IsAbsolutelyIrreducible(module)) then
-	nice:=nice*SmallerDegreePermutationRepresentation(img:cheap);
+        nice:=nice*SmallerDegreePermutationRepresentation(img:cheap);
     else
       nice:=nice*SmallerDegreePermutationRepresentation(img:cheap);
     fi;
@@ -625,7 +625,7 @@ local gens,s,dom,mon,no;
   no:=Image(mon,G);
   dom:=UnderlyingExternalSet(mon);
   s:=StabChainOp(no,rec(base:=List(BaseOfGroup(dom),
-				      i->Position(HomeEnumerator(dom),i))));
+                                      i->Position(HomeEnumerator(dom),i))));
   # call the recursive function to do the work
   gens:= SCMinSmaGens( no, s, [], One( no ), true ).gens;
   SetMinimalStabChain(G,s);
@@ -645,7 +645,7 @@ local s,dom,mon,no;
   no:=Image(mon,G);
   dom:=UnderlyingExternalSet(mon);
   s:=StabChainOp(no,rec(base:=List(BaseOfGroup(dom),
-				      i->Position(HomeEnumerator(dom),i))));
+                                      i->Position(HomeEnumerator(dom),i))));
   # call the recursive function to do the work
   SCMinSmaGens( no, s, [], One( no ), false );
   return s;
@@ -663,7 +663,7 @@ local s,dom,mon, img;
   dom:=UnderlyingExternalSet(mon);
   img:= Image( mon, G );
   s:=StabChainOp( img, rec(base:=List(BaseOfGroup(dom),
-				      i->Position(HomeEnumerator(dom),i))));
+                                      i->Position(HomeEnumerator(dom),i))));
   # call the recursive function to do the work
   s:= LargestElementStabChain( s, One( img ) );
   return PreImagesRepresentative(mon,s);
@@ -680,7 +680,7 @@ local mon,dom,S,o,oimgs,p,i,g;
   mon:=CanonicalNiceMonomorphism(U);
   dom:=UnderlyingExternalSet(mon);
   S:=StabChainOp(Image(mon,U),rec(base:=List(BaseOfGroup(dom),
-				      i->Position(HomeEnumerator(dom),i))));
+                                      i->Position(HomeEnumerator(dom),i))));
   dom:=HomeEnumerator(dom);
 
   while not IsEmpty(S.generators) do
@@ -1100,8 +1100,8 @@ local   gens,V,  G, A;
 
   if HasName( M )  then
       SetName( A, Concatenation( String( Size( DefaultFieldOfMatrixGroup( M ) ) ),
-	      "^", String( DimensionOfMatrixGroup( M ) ), ":",
-	      Name( M ) ) );
+              "^", String( DimensionOfMatrixGroup( M ) ), ":",
+              Name( M ) ) );
   fi;
   # the !.matrixGroup component is not documented!
   A!.matrixGroup := M;

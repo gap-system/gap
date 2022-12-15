@@ -93,7 +93,7 @@ BIND_GLOBAL( "TYPE_PREC_IMMUTABLE",
 
 #############################################################################
 ##
-#o  \.( <rec>, <name> )	. . . . . . . . . . . . . . . . get a component value
+#o  \.( <rec>, <name> ) . . . . . . . . . . . . . . . . get a component value
 ##
 DeclareOperationKernel( ".", [ IsObject, IsObject ], ELM_REC );
 

@@ -274,15 +274,15 @@ InstallAttributeMethodByGroupGeneralMappingByImages :=
             hom -> attr( AsGroupGeneralMappingByImages( hom ) ) );
     InstallMethod( attr, "get delayed set attribute values", true,
             [ IsGroupGeneralMapping and HasMappingOfWhichItIsAsGGMBI ],
-	    SUM_FLAGS-1, # we want to do this before doing any calculations
-	    function(hom)
+            SUM_FLAGS-1, # we want to do this before doing any calculations
+            function(hom)
               hom:=MappingOfWhichItIsAsGGMBI( hom );
-	      if Tester(attr)(hom) then
-	        return attr(hom);
-	      else
-	        TryNextMethod();
-	      fi;
-	    end);
+              if Tester(attr)(hom) then
+                return attr(hom);
+              else
+                TryNextMethod();
+              fi;
+            end);
 end;
 
 

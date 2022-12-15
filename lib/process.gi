@@ -163,15 +163,15 @@ function( dir, prg, input, output, args )
 
     # convert input into a file
     if not IsInputTextFileRep(input)  then
-	if (IsString(PROCESS_INPUT_TEMPORARY) and
-	  (IsReadableFile(PROCESS_INPUT_TEMPORARY) or
-	  IsWritableFile(PROCESS_INPUT_TEMPORARY))) then
-	  PROCESS_INPUT_TEMPORARY:=fail;
-	fi;
+        if (IsString(PROCESS_INPUT_TEMPORARY) and
+          (IsReadableFile(PROCESS_INPUT_TEMPORARY) or
+          IsWritableFile(PROCESS_INPUT_TEMPORARY))) then
+          PROCESS_INPUT_TEMPORARY:=fail;
+        fi;
         while PROCESS_INPUT_TEMPORARY = fail do
             PROCESS_INPUT_TEMPORARY := TmpName();
         od;
-	name_input := PROCESS_INPUT_TEMPORARY;
+        name_input := PROCESS_INPUT_TEMPORARY;
         new := OutputTextFile( name_input, true );
         allinput := ReadAll(input);
         if allinput= fail then
@@ -184,11 +184,11 @@ function( dir, prg, input, output, args )
 
     # convert output into a file
     if not IsOutputTextFileRep(output)  then
-	if (IsString(PROCESS_OUTPUT_TEMPORARY) and
-	  (IsReadableFile(PROCESS_OUTPUT_TEMPORARY) or
-	  IsWritableFile(PROCESS_OUTPUT_TEMPORARY))) then
-	  PROCESS_OUTPUT_TEMPORARY:=fail;
-	fi;
+        if (IsString(PROCESS_OUTPUT_TEMPORARY) and
+          (IsReadableFile(PROCESS_OUTPUT_TEMPORARY) or
+          IsWritableFile(PROCESS_OUTPUT_TEMPORARY))) then
+          PROCESS_OUTPUT_TEMPORARY:=fail;
+        fi;
         while PROCESS_OUTPUT_TEMPORARY = fail do
             PROCESS_OUTPUT_TEMPORARY := TmpName();
         od;
@@ -246,7 +246,7 @@ InstallGlobalFunction( Exec, function( arg )
     if ARCH_IS_WINDOWS() then
         # on Windows, we use the native shell such that behaviour does
         # not depend on whether cygwin is installed or not.
-	# cmd.exe is preferable to old-style `command.com'
+        # cmd.exe is preferable to old-style `command.com'
         shell := Filename( DirectoriesSystemPrograms(), "cmd.exe" );
         cs := "/C";
     else

@@ -53,18 +53,18 @@ local   c,  ind,  br,  g,  h,  k,  i,dou;
       k := ShiftedCoeffs(c[1],c[2]);
       g := g[1];
       for i  in [1..DegreeOverPrimeField(br)*d-1]  do
-	  g := ProductCoeffs(g,g);
-	  ReduceCoeffs(g,k);
-	  ShrinkRowVector(g);
-	  AddCoeffs(h,g);
+          g := ProductCoeffs(g,g);
+          ReduceCoeffs(g,k);
+          ShrinkRowVector(g);
+          AddCoeffs(h,g);
       od;
       h := LaurentPolynomialByCoefficients(
-		FamilyObj(h[1]), h, 0, ind );
+                FamilyObj(h[1]), h, 0, ind );
 
   # if p > 2 take <g> ^ ((p ^ (k*<d>) - 1) / 2) - 1
   else
       h:=PowerMod(g,(Characteristic(br)^(DegreeOverPrimeField(br)*d)-1)/2,f)
-	    - One(br);
+            - One(br);
   fi;
 
   # gcd of <f> and <h> is with probability > 1/2 a proper factor
@@ -102,7 +102,7 @@ local   br,  ind,  c,  facs,  deg,  px,  pow,  cyc,  gcd,d,powc,fc,fam;
   # in the following <pow> = x ^ (q ^ (<deg>+1))
   deg := 0;
   #px  := LaurentPolynomialByExtRepNC(
-  #	      FamilyObj(f), [One(br)],1, ind );
+  #           FamilyObj(f), [One(br)],1, ind );
   #  pow := px;
   if IsFinite(br) and IsField(br) and Size(br)>MAXSIZE_GF_INTERNAL then
     px:=Immutable([Zero(br),-One(br)]);
@@ -121,20 +121,20 @@ local   br,  ind,  c,  facs,  deg,  px,  pow,  cyc,  gcd,d,powc,fc,fam;
       # next degree and next cyclotomic polynomial x^(q^(<deg>+1))-x
       deg := deg + 1;
       if not IsBound(opt.onlydegs) or deg in opt.onlydegs  then
-	#cyc := pow - px;
-	cyc:=ShallowCopy(powc);
-	AddCoeffs(cyc,px);
-	cyc:=LaurentPolynomialByCoefficients(fam,cyc,0,ind);
-	# compute the gcd of <f> and <cyc>
-	gcd := GcdOp( f, cyc );
+        #cyc := pow - px;
+        cyc:=ShallowCopy(powc);
+        AddCoeffs(cyc,px);
+        cyc:=LaurentPolynomialByCoefficients(fam,cyc,0,ind);
+        # compute the gcd of <f> and <cyc>
+        gcd := GcdOp( f, cyc );
 
-	# split the gcd with 'FactorsCommonDegree'
-	d:=DegreeOfLaurentPolynomial(gcd);
-	if 0<d and d>=deg then
-	    Info(InfoPoly,3,"Factor Common Deg.",deg );
-	    Append(facs,FactorsCommonDegreePol(R,gcd,deg));
-	    f := Quotient(f,gcd);
-	fi;
+        # split the gcd with 'FactorsCommonDegree'
+        d:=DegreeOfLaurentPolynomial(gcd);
+        if 0<d and d>=deg then
+            Info(InfoPoly,3,"Factor Common Deg.",deg );
+            Append(facs,FactorsCommonDegreePol(R,gcd,deg));
+            f := Quotient(f,gcd);
+        fi;
       fi;
   od;
 
@@ -170,13 +170,13 @@ local   r,  br,  nu,  ind,  p,  d,  z,  v,  o,  i,  e;
   for i  in [0..(Length(f)-1)/n] do
       e := f[i*n+1];
       if e = nu then
-	  r[i+1] := nu;
+          r[i+1] := nu;
       else
-	  r[i+1] := z ^ ((LogFFE(e,z) / n) mod o);
+          r[i+1] := z ^ ((LogFFE(e,z) / n) mod o);
       fi;
   od;
   return LaurentPolynomialByCoefficients(
-	      FamilyObj(nu), r, v/n, ind );
+              FamilyObj(nu), r, v/n, ind );
 
 end);
 
@@ -190,8 +190,8 @@ InstallMethod( Factors, "polynomial over a finite field",
 
 function(R,f)
 local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,
-	facs,  h,  q,  char,  r,
-	gc, hc, fam, val;
+        facs,  h,  q,  char,  r,
+        gc, hc, fam, val;
 
   # parse the arguments
   cr := CoefficientsRing(R);
@@ -224,7 +224,7 @@ local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,
 
   elif Length(v[1]) = 1  then
       l:= ListWithIdenticalEntries( v[2],
-	      IndeterminateOfUnivariateRationalFunction( f ) );
+              IndeterminateOfUnivariateRationalFunction( f ) );
       l[1] := l[1]*v[1][1];
       Add( irf, [cr,l] );
       PopOptions();
@@ -263,7 +263,7 @@ local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,
     if not (IsBound(opt.onlydegs) or IsBound(opt.stopdegs)) then
       # tell the factors they are factors
       for h in facs  do
-	StoreFactorsPol(cr,h,[h]);
+        StoreFactorsPol(cr,h,[h]);
       od;
     fi;
 
@@ -329,7 +329,7 @@ local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,
     fi;
     if 0=DegreeOfLaurentPolynomial(g) then
       if not IsOne(g) then
-	facs[1]:=facs[1]*g;
+        facs[1]:=facs[1]*g;
       fi;
     else
 #T how shall this ever happen?
@@ -382,24 +382,24 @@ BindGlobal("ProductPP",function( l, r )
     local   res, p1, p2, ps, p, i, n;
 
     if IsEmpty(l)  then
-	return r;
+        return r;
     elif IsEmpty(r)  then
-	return l;
+        return l;
     fi;
     res := [];
     p1  := l{ 2 * [ 1 .. Length( l ) / 2 ] - 1 };
     p2  := r{ 2 * [ 1 .. Length( r ) / 2 ] - 1 };
     ps  := Set( Union( p1, p2 ) );
     for p  in ps  do
-    	n := 0;
-	Add( res, p );
+        n := 0;
+        Add( res, p );
         i := Position( p1, p );
         if i <> fail   then
-	    n := l[ 2*i ];
+            n := l[ 2*i ];
         fi;
         i := Position( p2, p );
         if i <> fail  then
-	    n := n + r[ 2*i ];
+            n := n + r[ 2*i ];
         fi;
         Add( res, n );
     od;
@@ -416,24 +416,24 @@ BindGlobal("LcmPP",function( l, r )
     local   res, p1, p2, ps, p, i, n;
 
     if l = []  then
-	return r;
+        return r;
     elif r = []  then
-	return l;
+        return l;
     fi;
     res := [];
     p1  := l{ 2 * [ 1 .. Length( l ) / 2 ] - 1 };
     p2  := r{ 2 * [ 1 .. Length( r ) / 2 ] - 1 };
     ps  := Set( Union( p1, p2 ) );
     for p  in ps  do
-    	n := 0;
-	Add( res, p );
+        n := 0;
+        Add( res, p );
         i := Position( p1, p );
         if i <> false   then
-	    n := l[ 2*i ];
+            n := l[ 2*i ];
         fi;
         i := Position( p2, p );
         if i <> false and n < r[ 2*i ]  then
-	    n := r[ 2*i ];
+            n := r[ 2*i ];
         fi;
         Add( res, n );
     od;
@@ -455,7 +455,7 @@ local   qq,  i;
       Add( qq, pp[2*i] );
       g := PowerMod( g, pp[2*i-1] ^ pp[2*i], f );
       if DegreeOfLaurentPolynomial(g) = 0  then
-	  return [ g, qq ];
+          return [ g, qq ];
       fi;
   od;
   return [ g, qq ];
@@ -465,19 +465,19 @@ end);
 
 #############################################################################
 ##
-#F  OrderKnownDividendList( <l>, <pp> )	. . . . . . . . . . . . . . . . local
+#F  OrderKnownDividendList( <l>, <pp> ) . . . . . . . . . . . . . . . . local
 ##
 ##  Computes  an  integer  n  such  that  OnSets( <l>, n ) contains  only one
 ##  element e.  <pp> must be a list of prime powers of an integer d such that
 ##  n divides d. The functions returns the integer n and the element e.
 ##
 InstallGlobalFunction(OrderKnownDividendList,function( l, pp )
-local   pp1,	# first half of <pp>
-	pp2,        # second half of <pp>
-	a,          # half exponent of first prime power
-	k,          # power of <l>
-	o,  o1,     # computed order of <k>
-	i;          # loop
+local   pp1,        # first half of <pp>
+        pp2,        # second half of <pp>
+        a,          # half exponent of first prime power
+        k,          # power of <l>
+        o,  o1,     # computed order of <k>
+        i;          # loop
 
   # if <pp> contains no element return order 1
   if Length(pp) = 0  then
@@ -499,14 +499,14 @@ local   pp1,	# first half of <pp>
 
       # if <k> is trivial try smaller dividend
       if Length(k) = 1  then
-	  pp[2] := a;
-	  return OrderKnownDividendList( l, pp );
+          pp[2] := a;
+          return OrderKnownDividendList( l, pp );
 
       # otherwise try to find order of <h>
       else
-	  pp[2] := pp[2] - a;
-	  o := OrderKnownDividendList( k, pp );
-	  return [ pp[1]^a*o[1], o[2] ];
+          pp[2] := pp[2] - a;
+          o := OrderKnownDividendList( k, pp );
+          return [ pp[1]^a*o[1], o[2] ];
       fi;
 
   # split different primes into two parts
@@ -518,7 +518,7 @@ local   pp1,	# first half of <pp>
       # compute the order of <l>^<pp1>
       k := l;
       for i  in [ 1 .. Length(pp2)/2 ]  do
-	  k := OnSets( k, pp2[2*i-1]^pp2[2*i] );
+          k := OnSets( k, pp2[2*i-1]^pp2[2*i] );
       od;
       o1 := OrderKnownDividendList( k, pp1 );
 
@@ -573,12 +573,12 @@ local   l,  a,  h,  n1,  pp1,  pp2,  k,  o,  q;
 
       # if <h> is constant try again with smaller dividend
       if 0 = DegreeOfLaurentPolynomial(h)  then
-	  pp[2] := a;
-	  o := FFPOrderKnownDividend( R, g, f, pp );
+          pp[2] := a;
+          o := FFPOrderKnownDividend( R, g, f, pp );
       else
-	  pp[2] := pp[2] - a;
-	  l := FFPOrderKnownDividend( R, h, f, pp );
-	  o := [ q*l[1], l[2] ];
+          pp[2] := pp[2] - a;
+          l := FFPOrderKnownDividend( R, h, f, pp );
+          o := [ q*l[1], l[2] ];
       fi;
       #Info( InfoPoly, 3, "FFPOrderKnownDividend returns ", o );
       return o;
@@ -642,43 +642,43 @@ local   fs,  F,  L,  phi,  B,  i,  d,  pp,  a,  deg,t,pb;
   phi := function( m )
       local x, pp, a, good,bad, d, i,primes;
       if not IsBound( L[m] )  then
-	  bad:=[];
-	  x := Characteristic(F)^m-1;
-	  primes:=PrimeDivisors(x); # use the Cunningham tables, and then store the prime
-	  # factors such that they end up cached below. In fact, since we
-	  # only divide off some known primes, this factorization really
-	  # shouldn't be harder than the one below.
-	  for d  in Difference( DivisorsInt( m ), [m] )  do
-	      pp := phi( d );
-	      if Length(pp[2])>0 then
-		bad:=ProductPP(pp[2],bad);
-	      fi;
-	      pp:=pp[1]; # nothing bad can happen here as d is small
-	      for i  in [ 1 .. Length(pp)/2 ]  do
-		  x := x / pp[2*i-1]^pp[2*i];
-	      od;
-	  od;
-	  a := PrimePowersInt( x:quiet );
-	  good:=[];
-	  for i in [1,3..Length(a)-1] do
-	    if a[i] in primes # we assume that the factorization above really gave
-	      # prime factors.
-	      or IsPrimeInt(a[i]) then
-	      Add(good,a[i]);
-	      Add(good,a[i+1]);
-	    else
-	      Add(bad,a[i]);
-	      Add(bad,a[i+1]);
-	    fi;
-	  od;
-	  good:=[good,bad];
-	  if Length(good[1])<Length(a) then
-	    Info(InfoWarning,1,"disregarded nonfactorable",bad);
-	  else
-	    L[m]:=good;
-	  fi;
+          bad:=[];
+          x := Characteristic(F)^m-1;
+          primes:=PrimeDivisors(x); # use the Cunningham tables, and then store the prime
+          # factors such that they end up cached below. In fact, since we
+          # only divide off some known primes, this factorization really
+          # shouldn't be harder than the one below.
+          for d  in Difference( DivisorsInt( m ), [m] )  do
+              pp := phi( d );
+              if Length(pp[2])>0 then
+                bad:=ProductPP(pp[2],bad);
+              fi;
+              pp:=pp[1]; # nothing bad can happen here as d is small
+              for i  in [ 1 .. Length(pp)/2 ]  do
+                  x := x / pp[2*i-1]^pp[2*i];
+              od;
+          od;
+          a := PrimePowersInt( x:quiet );
+          good:=[];
+          for i in [1,3..Length(a)-1] do
+            if a[i] in primes # we assume that the factorization above really gave
+              # prime factors.
+              or IsPrimeInt(a[i]) then
+              Add(good,a[i]);
+              Add(good,a[i+1]);
+            else
+              Add(bad,a[i]);
+              Add(bad,a[i+1]);
+            fi;
+          od;
+          good:=[good,bad];
+          if Length(good[1])<Length(a) then
+            Info(InfoWarning,1,"disregarded nonfactorable",bad);
+          else
+            L[m]:=good;
+          fi;
       else
-	good:=L[m];
+        good:=L[m];
       fi;
       return good;
   end;
@@ -690,7 +690,7 @@ local   fs,  F,  L,  phi,  B,  i,  d,  pp,  a,  deg,t,pb;
       # p-part is p^Roof(Log_p(e_i)) where e_i is the multiplicity of f_i
       a := 0;
       if fs[i][2] > 1  then
-	  a := 1+LogInt(fs[i][2]-1,Characteristic(F));
+          a := 1+LogInt(fs[i][2]-1,Characteristic(F));
       fi;
 
       # p'-part: (p^n)^d_i-1/(p^n-1) where d_i is the degree of f_i
@@ -699,11 +699,11 @@ local   fs,  F,  L,  phi,  B,  i,  d,  pp,  a,  deg,t,pb;
       pb:=[];
       deg := DegreeOverPrimeField(F);
       for f  in DivisorsInt( d*deg )  do
-	  if deg mod f <> 0  then
-	      t:=phi(f);
-	      pp := ProductPP( t[1], pp );
-	      pb := ProductPP( t[2], pb );
-	  fi;
+          if deg mod f <> 0  then
+              t:=phi(f);
+              pp := ProductPP( t[1], pp );
+              pb := ProductPP( t[2], pb );
+          fi;
       od;
 
       # add <a> and <pp> to <B>
@@ -753,20 +753,20 @@ local   v,  R,  U,  x,  O,  n,  g,  q,  o,rem,bas;
   n := 1;
   for g  in U  do
       if Length(g[3])=0 and Length(g[4])>0 then
-	# in this case `FFPOrderKnownDividend' might run in an infinite
-	# recursion.
+        # in this case `FFPOrderKnownDividend' might run in an infinite
+        # recursion.
   Error("cannot compute order due to limits in the integer factorization!");
       fi;
       #o := FFPOrderKnownDividend(R,EuclideanRemainder(R,x,g[1]),g[1],g[3]);
       bas:=QuotRemLaurpols(x,g[1],2);
       o := FFPOrderKnownDividend(R,bas,g[1],g[3]);
       if Length(g[4])>0 then
-	q:=DegreeOfLaurentPolynomial(PowerMod(bas,o[1],g[1]));
-	if not(q=0 or q=DEGREE_ZERO_LAURPOL) then
+        q:=DegreeOfLaurentPolynomial(PowerMod(bas,o[1],g[1]));
+        if not(q=0 or q=DEGREE_ZERO_LAURPOL) then
   # in fact x^o[1] is not congruent to a constant -- we really need the
   # primes.
   Error("cannot compute order due to limits in the integer factorization!");
-	fi;
+        fi;
       fi;
       q := Characteristic(CoefficientsRing(R))^g[2];
       n := LcmInt( n, o[1]*q );

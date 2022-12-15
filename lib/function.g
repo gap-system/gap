@@ -14,7 +14,7 @@
 
 #############################################################################
 ##
-#C  IsFunction( <obj> )	. . . . . . . . . . . . . . . . category of functions
+#C  IsFunction( <obj> ) . . . . . . . . . . . . . . . . category of functions
 ##
 ##  <#GAPDoc Label="IsFunction">
 ##  <ManSection>

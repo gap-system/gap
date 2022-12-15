@@ -66,7 +66,7 @@ local D,C,cl,pl;
   D:=rec(
           group:=G,# workgroup
           deg:=Size(G),
-	  size:=Size(G),
+          size:=Size(G),
           yetmats:=[],
           modulars:=[]
         );
@@ -153,25 +153,25 @@ local p,primes,i,cl,spr,j,allpowermaps,pm,ex;
       fi;
 
       if not IsInt(pm[i]) then
-	cl:=i;
-	ex:=p mod D.orders[i];
+        cl:=i;
+        ex:=p mod D.orders[i];
 if ex=0 then
   pm[i]:=1;
 else
-	if ex>D.orders[i]/2 then
-	  # can we get it cheaper via the inverse
-	  ex:=AbsInt(D.orders[i]-ex);
-	  cl:=D.inversemap[i];
-	fi;
-	if ex<p or (ex=p and IsInt(pm[cl])) then
-	  # compose the ex-th power
-	  j:=Factors(ex);
-	  while Length(j)>0 do
-	    cl:=allpowermaps[j[1]][cl];
-	    j:=j{[2..Length(j)]};
-	  od;
-	  pm[i]:=cl;
-	fi;
+        if ex>D.orders[i]/2 then
+          # can we get it cheaper via the inverse
+          ex:=AbsInt(D.orders[i]-ex);
+          cl:=D.inversemap[i];
+        fi;
+        if ex<p or (ex=p and IsInt(pm[cl])) then
+          # compose the ex-th power
+          j:=Factors(ex);
+          while Length(j)>0 do
+            cl:=allpowermaps[j[1]][cl];
+            j:=j{[2..Length(j)]};
+          od;
+          pm[i]:=cl;
+        fi;
 fi;
       fi;
     od;
@@ -179,15 +179,15 @@ fi;
     # Do the hard computations.
     for i in Reversed(D.classrange) do
       if not IsInt(pm[i]) then
-	  pm[i]:=D.ClassElement(D,D.classreps[i]^(p mod D.orders[i]));
+          pm[i]:=D.ClassElement(D,D.classreps[i]^(p mod D.orders[i]));
 #T TestConsistencyMaps (local improvement!) after each calculation?
-	# note following powers: (x^a)^b=(x^b)^a
-	for j in spr do
-	  cl:=allpowermaps[j][i];
-	  if not IsInt(pm[cl]) then
-	    pm[cl]:=allpowermaps[j][pm[i]];
-	  fi;
-	od;
+        # note following powers: (x^a)^b=(x^b)^a
+        for j in spr do
+          cl:=allpowermaps[j][i];
+          if not IsInt(pm[cl]) then
+            pm[cl]:=allpowermaps[j][pm[i]];
+          fi;
+        od;
       fi;
     od;
 
@@ -223,15 +223,15 @@ local primeClasses,
       class:=i;
       j:=1;
       while 1<class do
-	if class<>i then
-	  Unbind(classes[class]);
-	fi;
-	primeClasses[i][j]:=class;
-	j:=j+1;
-	class:=i;
-	for p in Factors(j) do
-	  class:=D.powermap[p][class];
-	od;
+        if class<>i then
+          Unbind(classes[class]);
+        fi;
+        primeClasses[i][j]:=class;
+        j:=j+1;
+        class:=i;
+        for p in Factors(j) do
+          class:=D.powermap[p][class];
+        od;
       od;
     fi;
   od;
@@ -318,21 +318,21 @@ local d,p;
     p:=1;
     while p<=Length(D.degreePool) do
       if D.degreePool[p][1]=d then
-	D.degreePool[p][2]:=D.degreePool[p][2]-1;
-	# filter still possible character degrees:
-	p:=1;
-	d:=1;
-	# determinate smallest possible degree (nonlinear)
-	while p<=Length(D.degreePool) and d=1 do
-	  if D.degreePool[p][2]>1 then
-	    d:=D.degreePool[p][1];
-	  fi;
-	  p:=p+1;
-	od;
-	# degreeBound
-	d:=RootInt(D.deg-(D.num-1)*d);
-	D.degreePool:=Filtered(D.degreePool,i->i[2]>0 and i[1]<=d);
-	p:=Length(D.degreePool)+1;
+        D.degreePool[p][2]:=D.degreePool[p][2]-1;
+        # filter still possible character degrees:
+        p:=1;
+        d:=1;
+        # determinate smallest possible degree (nonlinear)
+        while p<=Length(D.degreePool) and d=1 do
+          if D.degreePool[p][2]>1 then
+            d:=D.degreePool[p][1];
+          fi;
+          p:=p+1;
+        od;
+        # degreeBound
+        d:=RootInt(D.deg-(D.num-1)*d);
+        D.degreePool:=Filtered(D.degreePool,i->i[2]>0 and i[1]<=d);
+        p:=Length(D.degreePool)+1;
       fi;
       p:=p+1;
     od;
@@ -435,8 +435,8 @@ local H,T,c,a,e,f,i,j,k,l,m,p,ch,el,ur,s,hom,gens,onc,G;
   s:=Length(e); # Size(H)
   if s=1 then # perfekter Fall
     D.tensorMorphisms:=rec(a:=[],
-			   c:=[],
-			   els:=[[[],onc]]);
+                           c:=[],
+                           els:=[[[],onc]]);
     return [onc];
   else
     a:=Reversed(AbelianInvariants(H));
@@ -445,7 +445,7 @@ local H,T,c,a,e,f,i,j,k,l,m,p,ch,el,ur,s,hom,gens,onc,G;
     for i in a do
       # was: m:=First(e,el->Order(el)=i);
       m:=First(e,
-	  el->Order(el)=i and ForAll([2..Order(el)-1],i->el^i in e));
+          el->Order(el)=i and ForAll([2..Order(el)-1],i->el^i in e));
       T:=ClosureGroup(T,m);
       e:=Difference(e,AsList(T));
       Add(gens,m);
@@ -506,8 +506,8 @@ local H,T,c,a,e,f,i,j,k,l,m,p,ch,el,ur,s,hom,gens,onc,G;
       fi;
     od;
     D.tensorMorphisms:=rec(a:=a,
-			   c:=c,
-			   els:=ch);
+                           c:=c,
+                           els:=ch);
 
     ch:=List(ch,i->i[2]);
     return ch;
@@ -583,16 +583,16 @@ local ml,nu,ret,r,p,v,alo,ofs,orb,i,j,inv,b;
       function(raum,el)
       local img;
         img:=D.asCharacterMorphism(raum.base[1],el);
-	img:=First(D.raeume,
-	  function(i)
-	  local c;
-	    c:=Concatenation(List(i.base,ShallowCopy),[ShallowCopy(img)]);
-	    return RankMat(c)=Length(i.base);
-	  end);
-	if img=fail then
-	  img:=rec(base:=List(raum.base,i->D.asCharacterMorphism(i,el)),
-	           dim:=raum.dim);
-	fi;
+        img:=First(D.raeume,
+          function(i)
+          local c;
+            c:=Concatenation(List(i.base,ShallowCopy),[ShallowCopy(img)]);
+            return RankMat(c)=Length(i.base);
+          end);
+        if img=fail then
+          img:=rec(base:=List(raum.base,i->D.asCharacterMorphism(i,el)),
+                   dim:=raum.dim);
+        fi;
         return img;
       end);
     for i in orb do
@@ -733,43 +733,43 @@ InstallGlobalFunction(SplitStep,function(D,bestMat)
 
       # throw away Galois-images
       for i in [1..Length(ra)] do
-	if IsBound(ra[i]) then
-	  vo:=Orbit(raum.stabilizer,ra[i].base[1],
-		   D.asCharacterMorphism);
-	  for v in vo do
-	    for j in [i+1..Length(ra)] do
-	      if IsBound(ra[j])
+        if IsBound(ra[i]) then
+          vo:=Orbit(raum.stabilizer,ra[i].base[1],
+                   D.asCharacterMorphism);
+          for v in vo do
+            for j in [i+1..Length(ra)] do
+              if IsBound(ra[j])
 
-		# ahulpke, 11-jan-00: If we map into a larger space, the
-		# extra dimension of the larger space might somehow get
-		# lost. Therefore we can't be that tricky as the following
-		# argument supposes.
-		  # In characteristic p the split may be
-		  # not as well,as in characteristic 0. In this
-		  # case,we may find a smaller image in another space.
-		  # As character morphisms are a group we will also
-		  # have the inverse image of the complement, we can
-		  # throw away the space without doing harm!
-		  # the only ugly disadvantage is,that we will have to
-		  # do some more inclusion tests.
+                # ahulpke, 11-jan-00: If we map into a larger space, the
+                # extra dimension of the larger space might somehow get
+                # lost. Therefore we can't be that tricky as the following
+                # argument supposes.
+                  # In characteristic p the split may be
+                  # not as well,as in characteristic 0. In this
+                  # case,we may find a smaller image in another space.
+                  # As character morphisms are a group we will also
+                  # have the inverse image of the complement, we can
+                  # throw away the space without doing harm!
+                  # the only ugly disadvantage is,that we will have to
+                  # do some more inclusion tests.
 
-		and ra[i].dim=ra[j].dim
-		and DxIsInSpace(v,ra[j]) then
-		  Unbind(ra[j]);
-	      fi;
-	    od;
-	  od;
-	fi;
+                and ra[i].dim=ra[j].dim
+                and DxIsInSpace(v,ra[j]) then
+                  Unbind(ra[j]);
+              fi;
+            od;
+          od;
+        fi;
       od;
 
       for i in ra do
-	# force computation of base
-	i.dim:=Length(i.base);
-	DxNiceBasis(D,i);
-	if IsBound(raum.stabilizer) then
-	  i.approxStab:=raum.stabilizer;
-	fi;
-	Add(newRaeume,i);
+        # force computation of base
+        i.dim:=Length(i.base);
+        DxNiceBasis(D,i);
+        if IsBound(raum.stabilizer) then
+          i.approxStab:=raum.stabilizer;
+        fi;
+        Add(newRaeume,i);
       od;
 
     od;
@@ -817,13 +817,13 @@ CharacterMorphismOrbits := function(D,space)
     # calculate invariant space as intersection of E.S to E.V. 1
     for gen in GeneratorsOfGroup(s) do
       if Length(b)>0 then
-	b1:=NullspaceMat(List(b,i->D.asCharacterMorphism(i,gen){a})
+        b1:=NullspaceMat(List(b,i->D.asCharacterMorphism(i,gen){a})
                 -IdentityMat(Length(b),o));
-	if Length(b1)=0 then
-	  b:=[];
-	else
-	  b:=b1*b;
-	fi;
+        if Length(b1)=0 then
+          b:=[];
+        else
+          b:=b1*b;
+        fi;
       fi;
 #T cheaper!
       b:=rec(base:=b,dim:=Length(b));
@@ -848,7 +848,7 @@ DxModProduct := function(D,v1,v2)
   prod:=0*D.one;
   for i in [1..D.klanz] do
     prod:=prod+ (D.classiz[i] mod D.prime)*v1[i]
-		*v2[D.inversemap[i]];
+                *v2[D.inversemap[i]];
   od;
   prod:=prod/(D.size mod D.prime);
   return prod;
@@ -870,10 +870,10 @@ DxFrobSchurInd := function(D,char)
         ll:=2*l mod L;
         if ll=0 then
           FSInd:=FSInd+(D.classiz[family[l]] mod D.prime)
-		       *char[1];
+                       *char[1];
         else
           FSInd:=FSInd+(D.classiz[family[l]] mod D.prime)
-		       *char[family[ll]];
+                       *char[family[ll]];
        fi;
         SubtractSet(classes,[family[l]]);
       fi;
@@ -976,8 +976,8 @@ SplitTwoSpace := function(D,raum)
                   if not DxFrobSchurInd(D,char1[l]) in o*[-n..n]
                     then test:=false;
                   fi;
-		  m:=DxLiftCharacter(D,char1[l]);
-		  char2[l]:=m;
+                  m:=DxLiftCharacter(D,char1[l]);
+                  char2[l]:=m;
                   if test and lift then
                     for k in [2..Length(m)] do
                       if IsInt(m[k]) and AbsInt(m[k])>m[1] then
@@ -996,10 +996,10 @@ SplitTwoSpace := function(D,raum)
                     NotFailed:=false;
                   else
                     char:=[rec(base:=[char1[1]],
-			       char:=[char2[1]],
+                               char:=[char2[1]],
                                d:=d),
                            rec(base:=[char1[2]],
-			       char:=[char2[2]],
+                               char:=[char2[2]],
                                d:=raum.dim-d)];
                   fi;
                 fi;
@@ -1044,8 +1044,8 @@ local i,newRaeume,raum,neuer,j,ch,irrs,mods,incirrs,incmods,nb,rt,neuc;
     else
       neuer:=[];
       if raum.dim=2 then
-	# next attempt might work due to fewer degrees
-	Unbind(raum.twofail);
+        # next attempt might work due to fewer degrees
+        Unbind(raum.twofail);
       fi;
     fi;
     if Length(neuer)=2 then
@@ -1062,12 +1062,12 @@ local i,newRaeume,raum,neuer,j,ch,irrs,mods,incirrs,incmods,nb,rt,neuc;
         else
           ch:=DxLiftCharacter(D,neuer[j].base[1]);
         fi;
-	if not ch in D.irreducibles then
-	  Add(mods,neuer[j].base[1]);
-	  Add(incmods,neuer[j].base[1]);
-	  Add(irrs,ch);
-	  Add(incirrs,ch);
-	fi;
+        if not ch in D.irreducibles then
+          Add(mods,neuer[j].base[1]);
+          Add(incmods,neuer[j].base[1]);
+          Add(irrs,ch);
+          Add(incirrs,ch);
+        fi;
       od;
       for j in rt do
         Info(InfoCharacterTable,1,"TwoDimSpace image");
@@ -1179,7 +1179,7 @@ InstallGlobalFunction( DxDegreeCandidates, function(arg)
     i:=1;
     while i<=Length(D.degreePool) and D.degreePool[i][1]<=r do
       if D.degreePool[i][2]>anz then
-	Add(degrees,D.degreePool[i][1]);
+        Add(degrees,D.degreePool[i][1]);
       fi;
       i:=i+1;
     od;
@@ -1347,71 +1347,71 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
       if D.classiz[n]<=lim and
       # dont start with central classes in small groups!
       (D.classiz[n]>ksl or IsBound(D.maycent)) then
-	for i in [1..Length(D.raeume)] do
-	  r:=D.raeume[i];
-	  if IsBound(r.splits) then
-	    rs:=r.splits;
-	  else
-	    rs:=[];
-	    r.splits:=rs;
-	  fi;
+        for i in [1..Length(D.raeume)] do
+          r:=D.raeume[i];
+          if IsBound(r.splits) then
+            rs:=r.splits;
+          else
+            rs:=[];
+            r.splits:=rs;
+          fi;
 
-	  if r.dim>1 then
+          if r.dim>1 then
 
-	    if IsBound(rs[n]) then
-	      split:=rs[n].split;
-	      val:=rs[n].val;
-	    else
-	      b:=DxNiceBasis(D,r);
-	      split:=ForAny(b{[2..r.dim]},i->i[n]<>nu);
+            if IsBound(rs[n]) then
+              split:=rs[n].split;
+              val:=rs[n].val;
+            else
+              b:=DxNiceBasis(D,r);
+              split:=ForAny(b{[2..r.dim]},i->i[n]<>nu);
               imp:=imp or split;
-	      if split then
-		if r.dim<4 then
-		  # very small spaces will split nearly perfect
-		  val:=8;
-		else
-		  bn:=DxSplitDegree(D,r,n);
-		  if os then
-		    if IsPerfectGroup(D.group) then
-		      # G is perfect,no linear characters
-		      # we can't predict much about the splitting
-		      val:=Maximum(1,9-r.dim/bn);
-		    else
-		      val:=bn*Maximum(1,9-r.dim/bn);
-		    fi;
-		  else
-		    val:=bn;
-		  fi;
-		fi;
-		# note the images,which split as well
-		val:=val*Index(D.characterMorphisms,
-			      CharacterMorphismOrbits(D,r).stabilizer);
-	      else
-		val:=0;
-	      fi;
-	      rs[n]:=rec(split:=split,val:=val);
-	    fi;
-	    if split then
-	      wert[n]:=wert[n]+val;
-	      Add(splitBases[n],i);
-	      requiredCols[n]:=Union(requiredCols[n],
-				      D.raeume[i].activeCols);
-	    fi;
-	  fi;
-	od;
-	if Length(splitBases[n])>0 then
-	  # can we use Galois-Conjugation
-	  orb:=DxGaloisOrbits(D,n);
-	  rc:=[];
-	  for i in requiredCols[n] do
-	    rc:=Union(rc,[orb.orbits[i][1]]);
-	  od;
+              if split then
+                if r.dim<4 then
+                  # very small spaces will split nearly perfect
+                  val:=8;
+                else
+                  bn:=DxSplitDegree(D,r,n);
+                  if os then
+                    if IsPerfectGroup(D.group) then
+                      # G is perfect,no linear characters
+                      # we can't predict much about the splitting
+                      val:=Maximum(1,9-r.dim/bn);
+                    else
+                      val:=bn*Maximum(1,9-r.dim/bn);
+                    fi;
+                  else
+                    val:=bn;
+                  fi;
+                fi;
+                # note the images,which split as well
+                val:=val*Index(D.characterMorphisms,
+                              CharacterMorphismOrbits(D,r).stabilizer);
+              else
+                val:=0;
+              fi;
+              rs[n]:=rec(split:=split,val:=val);
+            fi;
+            if split then
+              wert[n]:=wert[n]+val;
+              Add(splitBases[n],i);
+              requiredCols[n]:=Union(requiredCols[n],
+                                      D.raeume[i].activeCols);
+            fi;
+          fi;
+        od;
+        if Length(splitBases[n])>0 then
+          # can we use Galois-Conjugation
+          orb:=DxGaloisOrbits(D,n);
+          rc:=[];
+          for i in requiredCols[n] do
+            rc:=Union(rc,[orb.orbits[i][1]]);
+          od;
 
-	  wert[n]:=wert[n]*D.centralizers[n] # *G/|K|
-		  /(Length(rc)); # We count -mistakening - also the first
-	    # column,that is available for free. Its "costs" are meant to
-	    # compensate for the splitting process.
-	fi;
+          wert[n]:=wert[n]*D.centralizers[n] # *G/|K|
+                  /(Length(rc)); # We count -mistakening - also the first
+            # column,that is available for free. Its "costs" are meant to
+            # compensate for the splitting process.
+        fi;
       fi;
       # is there one that does all already? If so don't bother testing the
       # rest, as we go by cost
@@ -1438,12 +1438,12 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
 
     for r in D.raeume do
       if IsBound(r.splits) and Number(r.splits,x->x.split=true)=1 then
-	# is room split by only ONE matrix?(then we need this sooner or later)
-	n:=1;
-	while not IsBound(r.splits[n]) or r.splits[n].split=false do
-	  n:=n+1;
-	od;
-	wert[n]:=wert[n]*10; #arbitrary increase of value
+        # is room split by only ONE matrix?(then we need this sooner or later)
+        n:=1;
+        while not IsBound(r.splits[n]) or r.splits[n].split=false do
+          n:=n+1;
+        od;
+        wert[n]:=wert[n]*10; #arbitrary increase of value
       fi;
     od;
 
@@ -1453,8 +1453,8 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
     for n in Filtered(D.permlist,i->i in D.matrices) do
       Info(InfoCharacterTable,3,n,":",Int(wert[n]));
       if IsBound(wert[n]) and wert[n]>bw then
-	bn:=n;
-	bw:=wert[n];
+        bn:=n;
+        bw:=wert[n];
       fi;
     od;
 
@@ -1620,7 +1620,7 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
       #od;
       comm:=[];
       for k in [1..Length(comm)] do
-	comm[k]:=gen[k]^-1*gen[k/gals[j]];
+        comm[k]:=gen[k]^-1*gen[k/gals[j]];
       od;
 
       # find decomposition
@@ -1637,7 +1637,7 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
 
   D.characterMorphisms:=tm;
   D.asCharacterMorphism:=AsCharacterMorphismFunction(HomePcgs(tm),
-			   gals,tme);
+                           gals,tme);
   D.tensorMorphisms:=tme;
   return tm;
 end;
@@ -1763,15 +1763,15 @@ StandardClassMatrixColumn := function(D,M,r,t)
     if c<>t then
       p:=RepresentativeAction(Stabilizer(orb.group,r),c,t);
       if p<>fail then
-	# was the first column of the galois class active?
-	if ForAny([1..NrRows(M)],i->M[i,c]>0) then
-	  for i in D.classrange do
-	    M[i^p,t]:=M[i,c];
-	  od;
+        # was the first column of the galois class active?
+        if ForAny([1..NrRows(M)],i->M[i,c]>0) then
+          for i in D.classrange do
+            M[i^p,t]:=M[i,c];
+          od;
           Info(InfoCharacterTable,2,"Computing column ",t,
             " : by GaloisImage");
-	  return;
-	fi;
+          return;
+        fi;
       fi;
     fi;
 
@@ -1784,8 +1784,8 @@ StandardClassMatrixColumn := function(D,M,r,t)
       # galois automorphisms)
       w:=Length(orb.orbits[t])=1 and Length(orb.orbits[r])=1;
       for i in [1..Length(T[1])] do
-	e:=T[1][i]*z;
-	Unbind(T[1][i]);
+        e:=T[1][i]*z;
+        Unbind(T[1][i]);
         if w then
           c:=D.rationalidentification(D,e);
           if c in orb.uniqueIdentifications then
@@ -1817,7 +1817,7 @@ StandardClassMatrixColumn := function(D,M,r,t)
     else # Small Group
       for i in [1..Length(T[1])] do
         s:=D.ClassElement(D,T[1][i] * z);
-	Unbind(T[1][i]);
+        Unbind(T[1][i]);
         M[s,t]:=M[s,t]+T[2][i];
       od;
     fi;
@@ -2012,7 +2012,7 @@ local G,     # group
 
   # Galois group operating on the columns
   ga:= GroupByGenerators( Set( Flat( GeneratorsPrimeResidues(
-		      Exponent(G)).generators),
+                      Exponent(G)).generators),
     i->PermList(List([1..k],j->PowerMap(D.characterTable,i,j)))),());
 
   D.galMorphisms:=ga;
@@ -2073,13 +2073,13 @@ local i,j,r,ch,kill,gens,ra;
       if IsBound(r.char) then
         ch:=r.char[1];
       else
-	gens:=r.base[1];
-	gens:=gens/gens[1];
-	gens:=gens * ModularCharacterDegree(D,gens);
-	for j in Orbit(D.characterMorphisms,
-			  gens,D.asCharacterMorphism) do
-	  DxRegisterModularChar(D,j);
-	od;
+        gens:=r.base[1];
+        gens:=gens/gens[1];
+        gens:=gens * ModularCharacterDegree(D,gens);
+        for j in Orbit(D.characterMorphisms,
+                          gens,D.asCharacterMorphism) do
+          DxRegisterModularChar(D,j);
+        od;
         ch:=DxLiftCharacter(D,gens);
       fi;
       for j in Orbit(D.characterMorphisms,ch,D.asCharacterMorphism) do
@@ -2351,12 +2351,12 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
     s:=0;
     for hi in [1..Length(ch)] do
       for z in ch[hi] do
-	elm:=LeftQuotient(z,ti);
-	pos:=1;
-	while pos<=Length(cg) and not elm in cg[pos] do
-	  pos:=pos+1;
-	od;
-	s:=s+theta[hi]*chi[pos];
+        elm:=LeftQuotient(z,ti);
+        pos:=1;
+        while pos<=Length(cg) and not elm in cg[pos] do
+          pos:=pos+1;
+        od;
+        s:=s+theta[hi]*chi[pos];
       od;
     od;
     return s;
@@ -2369,7 +2369,7 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
     for i in [1..d] do
       mat[i]:=[];
       for j in [1..d] do
-	mat[i][j]:=alpha(x[j]*elmi/x[i]);
+        mat[i][j]:=alpha(x[j]*elmi/x[i]);
       od;
     od;
     return mat;
@@ -2391,7 +2391,7 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
         Error("could not find suitable elements?");
       fi;
       repeat
-	rti:=Random(1, Length(rt));
+        rti:=Random(1, Length(rt));
       until rtl[rti]=false;
       rtl[rti]:=true;
       r:=rt[rti];
@@ -2399,18 +2399,18 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
       r:=i*r;
       rti:=rti+1;
       for i in [1..l] do
-	A[i][l+1]:=alpha(r/x[i]);
+        A[i][l+1]:=alpha(r/x[i]);
       od;
       l:=l+1;
       x[l]:=r;
       A[l]:=[];
       for i in [1..l] do
-	A[l][i]:=alpha(x[i]/r);
+        A[l][i]:=alpha(x[i]/r);
       od;
       if RankMat(A)>ra then
-	ra:=ra+1;
+        ra:=ra+1;
       else
-	Unbind(A[l]);Unbind(x[l]);
+        Unbind(A[l]);Unbind(x[l]);
         l:=l-1; #overwrite last
       fi;
     od;
@@ -2428,7 +2428,7 @@ local tblG, cg, d, tblH, res, pos, theta, hl, sp, ch, alpha, AF, bw, cnt,
       balonin:=alonin;
     fi;
   until bw<Size(G) or cnt>30
-	# bw*1000<average
+        # bw*1000<average
         or bw*1000*cnt<sum;
   x:=bx;
 
@@ -2506,14 +2506,14 @@ local G,chi,reps,r,i,gensp;
       # linear
       if gensp=fail then
         gensp:=List(GeneratorsOfGroup(G),
-	  i->PositionProperty(ConjugacyClasses(G),j->i in j));
+          i->PositionProperty(ConjugacyClasses(G),j->i in j));
       fi;
       r:=List(i{gensp},i->[[i]]);
       r:=GroupHomomorphismByImagesNC(G,Group(r),GeneratorsOfGroup(G),r);
     else
       r:=DixonRepChi(G,i);
       if r=fail then
-	Info(InfoWarning,1,"Dixon's method does not work for ",chi);
+        Info(InfoWarning,1,"Dixon's method does not work for ",chi);
       fi;
     fi;
     Add(reps,r);
@@ -2549,9 +2549,9 @@ local n, imgs, cl, d, cands, j, t, i;
     j:=2;
     while Length(cands)>1 do
       if Length(Set(chars{cands}[j]))>1 then
-	# characters differ on this class
-	t:=TraceMat(Image(i,Representative(cl[j])));
-	cands:=Filtered(cands,i->chars[i][j]=t);
+        # characters differ on this class
+        t:=TraceMat(Image(i,Representative(cl[j])));
+        cands:=Filtered(cands,i->chars[i][j]=t);
       fi;
       j:=j+1;
     od;

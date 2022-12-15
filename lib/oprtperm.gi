@@ -141,8 +141,8 @@ InstallMethod( BlocksOp, "permgroup on integers",
             block,      # the block, result
             changed,    # number of random Schreier generators
             nrorbs,     # number of orbits of subgroup $H$ of $G_1$
-	    d1g,	# D[1]^gen
-	    tr,		# transversal element
+            d1g,        # D[1]^gen
+            tr,         # transversal element
             i;          # loop variable
 
     if act <> OnPoints  then
@@ -210,14 +210,14 @@ InstallMethod( BlocksOp, "permgroup on integers",
                 i   := QuoInt( i, 2 );
             od;
             gen := rnd;
-	    d1g:=D[1]^gen;
+            d1g:=D[1]^gen;
             while d1g <> D[1]  do
                 tr:=trans[ d1g ];
                 gen := gen * tr;
-		d1g:=d1g^tr;
+                d1g:=d1g^tr;
             od;
             changed := changed + 1;
-	    Info( InfoAction, 3, "Changed: ",changed );
+            Info( InfoAction, 3, "Changed: ",changed );
 
             # compute the image of every point under <gen>
             for pnt  in orbit  do
@@ -885,8 +885,8 @@ InstallOtherMethod( RepresentativesMinimalBlocksOp,
           IsList,
           IsList,
           IsFunction ],
-	  # lower ranked than perm method
-	  -1,
+          # lower ranked than perm method
+          -1,
 function( G, D, gens, acts, act )
 local hom,r;
   hom:=ActionHomomorphism(G,D,gens,acts,act);
@@ -1287,8 +1287,8 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
     local   rep,                # representative, result
             S,                  # stabilizer of <G>
             rep2,               # representative in <S>
-	    sel,
-	    dp,ep,		# point copies
+            sel,
+            dp,ep,              # point copies
             i,  f;              # loop variables
 
     # standard action on points, make a basechange and trace the rep
@@ -1305,59 +1305,59 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
         elif Length( d ) <> Length( e ) then
             rep:= fail;
         else
-	    # can we use the current stab chain? (try to avoid rebuilding
-	    # one if called frequently)
-	    S:=StabChainMutable(G);
-	    # move the points already in the base in front
-	    sel:=List(BaseStabChain(S),i->Position(d,i));
-	    sel:=Filtered(sel,i->i<>fail);
-	    if Length(sel)>0 then
-	      # rearrange
-	      sel:=Concatenation(sel,Difference([1..Length(d)],sel));
-	      dp:=d{sel};
-	      ep:=e{sel};
-	      rep := S.identity;
-	      for i  in [ 1 .. Length( dp ) ]  do
-		  if BasePoint( S ) = dp[ i ]  then
-		      f := ep[ i ] / rep;
-		      if not IsInBasicOrbit( S, f )  then
-			  rep := fail;
-			  break;
-		      else
-			  rep := LeftQuotient( InverseRepresentative( S, f ),
-					rep );
-		      fi;
-		      S := S.stabilizer;
-		  elif ep[ i ] <> dp[ i ] ^ rep  then
-		      rep := fail;
-		      break;
-		  fi;
-	      od;
-	    else
-	      rep:=fail; # we did not yet get anything
-	    fi;
+            # can we use the current stab chain? (try to avoid rebuilding
+            # one if called frequently)
+            S:=StabChainMutable(G);
+            # move the points already in the base in front
+            sel:=List(BaseStabChain(S),i->Position(d,i));
+            sel:=Filtered(sel,i->i<>fail);
+            if Length(sel)>0 then
+              # rearrange
+              sel:=Concatenation(sel,Difference([1..Length(d)],sel));
+              dp:=d{sel};
+              ep:=e{sel};
+              rep := S.identity;
+              for i  in [ 1 .. Length( dp ) ]  do
+                  if BasePoint( S ) = dp[ i ]  then
+                      f := ep[ i ] / rep;
+                      if not IsInBasicOrbit( S, f )  then
+                          rep := fail;
+                          break;
+                      else
+                          rep := LeftQuotient( InverseRepresentative( S, f ),
+                                        rep );
+                      fi;
+                      S := S.stabilizer;
+                  elif ep[ i ] <> dp[ i ] ^ rep  then
+                      rep := fail;
+                      break;
+                  fi;
+              od;
+            else
+              rep:=fail; # we did not yet get anything
+            fi;
 
-	    if rep=fail then
-	      # did not work with the existing stabchain - do again
-	      S := StabChainOp( G, d );
-	      rep := S.identity;
-	      for i  in [ 1 .. Length( d ) ]  do
-		  if BasePoint( S ) = d[ i ]  then
-		      f := e[ i ] / rep;
-		      if not IsInBasicOrbit( S, f )  then
-			  rep := fail;
-			  break;
-		      else
-			  rep := LeftQuotient( InverseRepresentative( S, f ),
-					rep );
-		      fi;
-		      S := S.stabilizer;
-		  elif e[ i ] <> d[ i ] ^ rep  then
-		      rep := fail;
-		      break;
-		  fi;
-	      od;
-	    fi;
+            if rep=fail then
+              # did not work with the existing stabchain - do again
+              S := StabChainOp( G, d );
+              rep := S.identity;
+              for i  in [ 1 .. Length( d ) ]  do
+                  if BasePoint( S ) = d[ i ]  then
+                      f := e[ i ] / rep;
+                      if not IsInBasicOrbit( S, f )  then
+                          rep := fail;
+                          break;
+                      else
+                          rep := LeftQuotient( InverseRepresentative( S, f ),
+                                        rep );
+                      fi;
+                      S := S.stabilizer;
+                  elif e[ i ] <> d[ i ] ^ rep  then
+                      rep := fail;
+                      break;
+                  fi;
+              od;
+            fi;
 
         fi;
 
@@ -1399,10 +1399,10 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
     # action on sets of points, use backtrack
     elif act = OnSets and IsPositionsList( d ) and IsPositionsList( e )  then
       if Length(d)<>Length(e) then
-	return fail;
+        return fail;
       fi;
       if Length(d)=1 then
-	rep:=RepresentativeActionOp(G,d[1],e[1],OnPoints);
+        rep:=RepresentativeActionOp(G,d[1],e[1],OnPoints);
       else
         rep := RepOpSetsPermGroup( G, d, e );
       fi;
@@ -1443,7 +1443,7 @@ end );
 PermGroupStabilizerOp:=function(arg)
     local   K,          # stabilizer <K>, result
             S,  base,
-	    G,d,gens,acts,act,dom;
+            G,d,gens,acts,act,dom;
 
  # get arguments, ignoring a given domain
  G:=arg[1];
@@ -1454,8 +1454,8 @@ PermGroupStabilizerOp:=function(arg)
  d:=arg[K-3];
 
     if gens <> acts  then
-	#TODO: Check whether  acts is permutations and one could work in the
-	#permutation image (even if G is not permgroups)
+        #TODO: Check whether  acts is permutations and one could work in the
+        #permutation image (even if G is not permgroups)
         TryNextMethod();
     fi;
 
@@ -1490,7 +1490,7 @@ PermGroupStabilizerOp:=function(arg)
     # action on sets of points, use a backtrack
     elif act = OnSets  and ForAll( d, IsInt )  then
       if Length(d)=1 then
-	K:=Stabilizer(G,d[1]);
+        K:=Stabilizer(G,d[1]);
       else
         K := RepOpSetsPermGroup( G, d );
       fi;
@@ -1505,18 +1505,18 @@ PermGroupStabilizerOp:=function(arg)
     # action on tuples of sets
     elif act = OnTuplesSets
       and IsList(d) and ForAll(d,i->ForAll(i,IsInt)) then
-	K:=G;
-	for S in d do
-	  K:=Stabilizer(K,S,OnSets);
-	od;
+        K:=G;
+        for S in d do
+          K:=Stabilizer(K,S,OnSets);
+        od;
 
     # action on tuples of tuples
     elif act = OnTuplesTuples
       and IsList(d) and ForAll(d,i->ForAll(i,IsInt)) then
-	K:=G;
-	for S in d do
-	  K:=Stabilizer(K,S,OnTuples);
-	od;
+        K:=G;
+        for S in d do
+          K:=Stabilizer(K,S,OnTuples);
+        od;
 
     # other action
     else
@@ -1547,7 +1547,7 @@ InstallOtherMethod( StabilizerOp, "permutation group with generators list",
 
 InstallOtherMethod( StabilizerOp, "permutation group with domain",true,
         [ IsPermGroup, IsObject,
-	  IsObject,
+          IsObject,
           IsList,
           IsList,
           IsFunction ],
@@ -1570,11 +1570,11 @@ local S,j;
   InsertTrivialStabilizer(S.stabilizer,B[1]);
   j := 1;
   while                                j < Length( B )
-	and Length( S.stabilizer.orbit ) < Length( B )  do
+        and Length( S.stabilizer.orbit ) < Length( B )  do
       j := j + 1;
       if IsBound( S.translabels[ B[ j ] ] )  then
-	  AddGeneratorsExtendSchreierTree( S.stabilizer,
-		  [ InverseRepresentative( S, B[ j ] ) ] );
+          AddGeneratorsExtendSchreierTree( S.stabilizer,
+                  [ InverseRepresentative( S, B[ j ] ) ] );
       fi;
   od;
   return GroupStabChain(G,S.stabilizer,true);

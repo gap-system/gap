@@ -14,13 +14,13 @@
 InstallGlobalFunction(Pcs_OrbitStabilizer,function(arg)
 local   pcgs,D,pnt,acts,act,
         orb,             # orbit
-	len,             # lengths of orbit before each extension
-	d,		 # dictionary
-	S, rel,   # stabilizer and induced pcgs
-	img,  pos,       # image of <pnt> and its position in <orb>
-	stb,             # stabilizing element, a word in <pcgs>
-	depths,          # depths of stabilizer generators
-	i, ii, j, k;     # loop variables
+        len,             # lengths of orbit before each extension
+        d,               # dictionary
+        S, rel,          # stabilizer and induced pcgs
+        img,  pos,       # image of <pnt> and its position in <orb>
+        stb,             # stabilizing element, a word in <pcgs>
+        depths,          # depths of stabilizer generators
+        i, ii, j, k;     # loop variables
 
   pcgs:=arg[1];D:=arg[2];pnt:=arg[3];acts:=arg[4];act:=arg[5];
 
@@ -49,18 +49,18 @@ local   pcgs,D,pnt,acts,act,
       AddDictionary(d,img,Length(orb));
 
       for j  in [ 2 .. len[ i + 1 ] ]  do
-	img := act( orb[ j ], acts[ i ] );
-	MakeImmutable(img);
-	Add( orb, img );
-	AddDictionary(d,img,Length(orb));
+        img := act( orb[ j ], acts[ i ] );
+        MakeImmutable(img);
+        Add( orb, img );
+        AddDictionary(d,img,Length(orb));
       od;
       for k  in [ 3 .. RelativeOrders( pcgs )[ i ] ]  do
-	for j  in Length( orb ) + [ 1 - len[ i + 1 ] .. 0 ]  do
-	  img := act( orb[ j ], acts[ i ] );
-	  MakeImmutable(img);
-	  Add( orb, img );
-	  AddDictionary(d,img,Length(orb));
-	od;
+        for j  in Length( orb ) + [ 1 - len[ i + 1 ] .. 0 ]  do
+          img := act( orb[ j ], acts[ i ] );
+          MakeImmutable(img);
+          Add( orb, img );
+          AddDictionary(d,img,Length(orb));
+        od;
       od;
 
     else
@@ -70,11 +70,11 @@ local   pcgs,D,pnt,acts,act,
       stb[ i ] := 1;
       ii := i + 2;
       while pos <> 1  do
-	while len[ ii ] >= pos  do
-	  ii := ii + 1;
-	od;
-	stb[ ii - 1 ] := -QuoInt( pos - 1, len[ ii ] );
-	pos := ( pos - 1 ) mod len[ ii ] + 1;
+        while len[ ii ] >= pos  do
+          ii := ii + 1;
+        od;
+        stb[ ii - 1 ] := -QuoInt( pos - 1, len[ ii ] );
+        pos := ( pos - 1 ) mod len[ ii ] + 1;
       od;
       Add( S, LinearCombinationPcgs( pcgs, stb ) );
       Add(depths,i);
@@ -84,8 +84,8 @@ local   pcgs,D,pnt,acts,act,
 
   od;
   return rec( orbit := orb, length := len, stabpcs := Reversed( S ),
-	      depths:=Reversed(depths),
-	      relords := Reversed( rel ),dictionary:=d );
+              depths:=Reversed(depths),
+              relords := Reversed( rel ),dictionary:=d );
 end);
 
 InstallGlobalFunction(Pcgs_OrbitStabilizer,function(pcgs,D,pnt,acts,act)
@@ -193,7 +193,7 @@ local S,stab,i,pnt,act;
       UniteBlist(blist,S.dictionary!.blist);
     else
       for i in S.orbit do
-	blist[PositionCanonical(D,i)]:=true;
+        blist[PositionCanonical(D,i)]:=true;
       od;
     fi;
   fi;
@@ -309,7 +309,7 @@ InstallGlobalFunction( SetCanonicalRepresentativeOfExternalOrbitByPcgs,
         S    := InducedPcgsByPcSequenceNC( ParentPcgs(pcgs), Reversed( S ) );
         stab := SubgroupByPcgs( G, S );
 #        SetRelativeOrders( S, Reversed( rel ) );
-#	SetInducedPcgs(ParentPcgs(pcgs),stab,S);
+#       SetInducedPcgs(ParentPcgs(pcgs),stab,S);
 #        if ParentPcgs( pcgs ) = HomePcgs( stab )  then
 #            SetInducedPcgsWrtHomePcgs( stab, S );
 #        else
@@ -399,18 +399,18 @@ local   orb,  v,  img,  len,  i,  j,  k,d,nimg;
       Add( orb, img );
       AddDictionary(d,img);
       for j  in [ 2 .. len ]  do
-	nimg:=act( orb[ j ], v );
-	MakeImmutable(nimg);
-	Add( orb, nimg );
-	AddDictionary(d,nimg);
+        nimg:=act( orb[ j ], v );
+        MakeImmutable(nimg);
+        Add( orb, nimg );
+        AddDictionary(d,nimg);
       od;
       for k  in [ 3 .. RelativeOrders( U )[ i ] ]  do
-	for j  in [ Length( orb ) - len + 1 .. Length( orb ) ]  do
-	  nimg:=act( orb[ j ], v );
-	  MakeImmutable(nimg);
-	  Add( orb, nimg );
-	  AddDictionary(d,nimg);
-	od;
+        for j  in [ Length( orb ) - len + 1 .. Length( orb ) ]  do
+          nimg:=act( orb[ j ], v );
+          MakeImmutable(nimg);
+          Add( orb, nimg );
+          AddDictionary(d,nimg);
+        od;
       od;
     fi;
   od;
@@ -483,7 +483,7 @@ end );
 InstallMethod( StabilizerOp,
         "G (solv.), D,pnt, gens, gens, act", true,
         [ IsGroup and CanEasilyComputePcgs, IsListOrCollection,
-	  IsObject,
+          IsObject,
           IsList,
           IsList,
           IsFunction ], 0,
@@ -508,7 +508,7 @@ end );
 InstallOtherMethod( StabilizerOp,
         "G (solv.), D,pnt, gens, gens, act", true,
         [ IsGroup and CanEasilyComputePcgs, IsObject,
-	  IsObject,
+          IsObject,
           IsPrimeOrdersPcgs,
           IsList,
           IsFunction ], 0,

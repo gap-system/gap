@@ -38,7 +38,7 @@ InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
     # Loop over the stabilizer chain.
     while z <> S.identity  do
 
-	# If necessary, extend the stabilizer chain.
+        # If necessary, extend the stabilizer chain.
         if IsBound( G.base )  then
             ChooseNextBasePoint( S, G.base, [ z ] );
         elif not IsBound( S.stabilizer )  then
@@ -104,8 +104,8 @@ InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
             edg := S.translabels[ pnt ^ z ];
         od;
 
-	# Go down one step in the stabilizer chain.
-	S := S.stabilizer;
+        # Go down one step in the stabilizer chain.
+        S := S.stabilizer;
 
     od;
 
@@ -133,9 +133,9 @@ InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
         S.transversal := [  ];
         S.transversal{ S.orbit } := S.labels{ S.translabels{ S.orbit } };
         S.generators := S.labels{ S.genlabels };
-	for z in S.generators do
-	  StretchImportantSLPElement(z);
-	od;
+        for z in S.generators do
+          StretchImportantSLPElement(z);
+        od;
         S := S.stabilizer;
     od;
 
@@ -297,8 +297,8 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
     # If the last member <U> of the series <G> already has a pcgs, start with
     # its stabilizer chain.
     if IsList( A )  then
-	G:=A;
-	A:=A[1];
+        G:=A;
+        A:=A[1];
         U := G[ Length( G ) ];
         if HasPcgs( U )  and  IsPcgsPermGroupRep( Pcgs( U ) )  then
             U := CopyStabChain( Pcgs( U )!.stabChain );
@@ -312,7 +312,7 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
       G:=A;
       U := TrivialSubgroup( G );
       if IsTrivial( G )  then  G := [ G ];
-			  else  G := [ G, U ];  fi;
+                          else  G := [ G, U ];  fi;
     fi;
 
     # Otherwise start  with stabilizer chain  of  <U> with identical `labels'
@@ -321,30 +321,30 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
         if IsTrivial( U )  and  not HasStabChainMutable( U )  then
             U := EmptyStabChain( [  ], One( U ) );
         else
-	    S:=U;
+            S:=U;
             U := StabChainMutable( U );
             if IsBound( U.base )  and Length(U.base)>0  then  i := U.base;
                                   else  i := fail;   fi;
 
-	    # ensure compatible bases
-	    if HasBaseOfGroup(G[1])
-	       and not IsSubset(BaseOfGroup(G[1]),BaseStabChain(U)) then
+            # ensure compatible bases
+            if HasBaseOfGroup(G[1])
+               and not IsSubset(BaseOfGroup(G[1]),BaseStabChain(U)) then
 
-	      # ensure compatible bases
+              # ensure compatible bases
 
-	      # compute a new stab chain without touching the stab chain
-	      # stored in S
-	      #T this is less than satisficial but I don't see how otherwise
-	      #T to avoid those %$#@ side effects. AH
-	      U:= StabChainOp( GroupByGenerators(GeneratorsOfGroup(S),One(S) ),
-	                     rec(base:=BaseOfGroup(G[1]),size:=Size(S)));
-	    else
-	      U := StabChainBaseStrongGenerators( BaseStabChain( U ),
-			   StrongGeneratorsStabChain( U ),U.identity );
-	      if i <> fail  then
-		  U.base := i;
-	      fi;
-	   fi;
+              # compute a new stab chain without touching the stab chain
+              # stored in S
+              #T this is less than satisficial but I don't see how otherwise
+              #T to avoid those %$#@ side effects. AH
+              U:= StabChainOp( GroupByGenerators(GeneratorsOfGroup(S),One(S) ),
+                             rec(base:=BaseOfGroup(G[1]),size:=Size(S)));
+            else
+              U := StabChainBaseStrongGenerators( BaseStabChain( U ),
+                           StrongGeneratorsStabChain( U ),U.identity );
+              if i <> fail  then
+                  U.base := i;
+              fi;
+           fi;
         fi;
     fi;
 
@@ -449,7 +449,7 @@ BindGlobal("ExtendSeriesPGParticular", function(
             adds)     # the elements to be added to `series[ <lev> ]'
 
   local   M0,  M1,  C,  X,  oldX,  T,  t,  u,  w,  r,  done,
-	  ord,  p,ap,s;
+          ord,  p,ap,s;
 
   # As series  need not be   fastest-descending, prepare to add  a new
   # group to the list.
@@ -484,19 +484,19 @@ BindGlobal("ExtendSeriesPGParticular", function(
       T := SSortedList( X );
       done := false;
       while not done  and  not IsEmpty( T ) do
-	if not IsEmpty( T )  then
-	  u := T[ 1 ];        RemoveSet( T, u );
-	  w := Comm( t, u );
-	else
-	  done := true;
-	  w := t ^ p;
-	fi;
+        if not IsEmpty( T )  then
+          u := T[ 1 ];        RemoveSet( T, u );
+          w := Comm( t, u );
+        else
+          done := true;
+          w := t ^ p;
+        fi;
 
-	# If   the commutator or  power  is not  in <M1>,
-	# it was not a proper pcgs
-	if not MembershipTestKnownBase( M1, G, w )  then
-	  return w;
-	fi;
+        # If   the commutator or  power  is not  in <M1>,
+        # it was not a proper pcgs
+        if not MembershipTestKnownBase( M1, G, w )  then
+          return w;
+        fi;
 
       od;
 
@@ -505,7 +505,7 @@ BindGlobal("ExtendSeriesPGParticular", function(
 
       # Add <t> to <M0> and register its conjugates.
       if AddNormalizingElementPcgs( M0, t )  then
-	Add( X, t );
+        Add( X, t );
       fi;
       Append( C, List( GeneratorsOfGroup( G ), g -> t ^ g ) );
 
@@ -524,7 +524,7 @@ end );
 
 InstallGlobalFunction(PermgroupSuggestPcgs,function(G,pcseq)
 local   grp,  pcgs,  U,  oldlen,  series,  y,  w,
-	bound,  deg,  step,  i,  S,  filter,gens;
+        bound,  deg,  step,  i,  S,  filter,gens;
 
   U := TrivialSubgroup( G );
   G := [ G, U ];
@@ -616,34 +616,34 @@ function( efam, pcs )
       ord := [];
       id  := One(pcs[1]);
       for i  in [ Length(pcs), Length(pcs)-1 .. 1 ]  do
-	g  := pcs[i];
-	dg := DepthOfPcElement( pfa, g );
-	while g <> id and IsBound(pag[dg])  do
-	  g  := ReducedPcElement( pfa, g, pag[dg] );
-	  dg := DepthOfPcElement( pfa, g );
-	od;
-	if g <> id  then
-	  pag[dg] := g;
-	  new[dg] := i;
-	  ord[i]  := RelativeOrderOfPcElement( pfa, g );
-	fi;
+        g  := pcs[i];
+        dg := DepthOfPcElement( pfa, g );
+        while g <> id and IsBound(pag[dg])  do
+          g  := ReducedPcElement( pfa, g, pag[dg] );
+          dg := DepthOfPcElement( pfa, g );
+        od;
+        if g <> id  then
+          pag[dg] := g;
+          new[dg] := i;
+          ord[i]  := RelativeOrderOfPcElement( pfa, g );
+        fi;
       od;
       if not IsHomogeneousList(ord) then
-	Error("not all relative orders given");
+        Error("not all relative orders given");
       fi;
 
       filter:=IsPcgs;
 
       if IsSSortedList(new) and Length(new)=Length(pfa) then
-	filter:=filter and IsSortedPcgsRep;
+        filter:=filter and IsSortedPcgsRep;
       else
-	filter:=filter and IsUnsortedPcgsRep;
+        filter:=filter and IsUnsortedPcgsRep;
       fi;
 
       # we have the same sequence, same depths, just changed by
       # multiplying elements of a lower level
       pcgs := PcgsByPcSequenceCons( IsPcgsDefaultRep, filter,
-		  efam, pcs,[] );
+                  efam, pcs,[] );
 
       pcgs!.sortedPcSequence := pag;
       pcgs!.newDepths        := new;
@@ -654,11 +654,11 @@ function( efam, pcs )
       pagpow:=[];
       sorco:=[];
       for i in [1..Length(pag)] do
-	if IsBound(pag[i]) then
-	  pagpow[i]:=
-	    List([1..RelativeOrderOfPcElement(pfa,pag[i])-1],j->pag[i]^j);
-	  sorco[i]:=LeadingExponentOfPcElement(pfa,pag[i]);
-	fi;
+        if IsBound(pag[i]) then
+          pagpow[i]:=
+            List([1..RelativeOrderOfPcElement(pfa,pag[i])-1],j->pag[i]^j);
+          sorco[i]:=LeadingExponentOfPcElement(pfa,pag[i]);
+        fi;
       od;
       pcgs!.sortedPcSeqPowers:=pagpow;
       pcgs!.sortedPcSequenceLeadCoeff:=sorco;
@@ -666,19 +666,19 @@ function( efam, pcs )
       # codepths[i]: the minimum pcgs-depth that can be implied by pag-depth i
       codepths:=[];
       for dg in [1..Length(new)] do
-	g:=Length(new)+1;
-	for i in [dg..Length(new)] do
-	  if IsBound(new[i]) and new[i]<g then
-	    g:=new[i];
-	  fi;
-	od;
-	codepths[dg]:=g;
+        g:=Length(new)+1;
+        for i in [dg..Length(new)] do
+          if IsBound(new[i]) and new[i]<g then
+            g:=new[i];
+          fi;
+        od;
+        codepths[dg]:=g;
       od;
       pcgs!.minimumCodepths:=codepths;
       SetRelativeOrders( pcgs, ord );
       if IsSortedPcgsRep(pcgs) then
-	pcgs!.inversePowers:=
-		      List([1..Length(pfa)],i->(1/sorco[i]) mod ord[i]);
+        pcgs!.inversePowers:=
+                      List([1..Length(pfa)],i->(1/sorco[i]) mod ord[i]);
       fi;
   fi;
 
@@ -708,9 +708,9 @@ function(filter,G,series,oldlen,iselab)
       attr:=[IndicesEANormalSteps, first];
     fi;
     pcgs := PcgsByPcSequenceCons( IsPcgsDefaultRep,filter,
-		ElementsFamily( FamilyObj( G ) ),
-		series[ 1 ].labels
-		{ 1 + [ 1 .. Length(series[ 1 ].labels) - oldlen ] },
+                ElementsFamily( FamilyObj( G ) ),
+                series[ 1 ].labels
+                { 1 + [ 1 .. Length(series[ 1 ].labels) - oldlen ] },
                 attr );
 
     SetRelativeOrders(pcgs, series[ 1 ].relativeOrders);
@@ -736,11 +736,11 @@ local ppcgs,series,stbc,G,i;
     Unbind( stbc.relativeOrders );
     Unbind( stbc.base           );
     series[ i ] := GroupStabChain( G, stbc, true );
-	if (not HasHomePcgs(series[i]) ) or HomePcgs(series[i]) = ppcgs then
-	  SetHomePcgs ( series[ i ], ppcgs );
-	  SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
-	  series[ i ]!.noInSeries := i;
-	fi;
+    if (not HasHomePcgs(series[i]) ) or HomePcgs(series[i]) = ppcgs then
+      SetHomePcgs ( series[ i ], ppcgs );
+      SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
+      series[ i ]!.noInSeries := i;
+    fi;
   od;
   return series;
 end);
@@ -768,7 +768,7 @@ InstallGlobalFunction( PcgsMemberPcSeriesPermGroup, function( U )
       pcgs:=InducedPcgsByGenerators(home,GeneratorsOfGroup(U));
     else
       pcgs := TailOfPcgsPermGroup( home,
-		      npf[ U!.noInSeries ] );
+                      npf[ U!.noInSeries ] );
     fi;
     SetGroupOfPcgs( pcgs, U );
     return pcgs;
@@ -833,7 +833,7 @@ InstallGlobalFunction( ExponentsOfPcElementPermGroup,
             if mode = 'l'  then
                 return e;
             elif mode='s' then
-	      return [depth-1,e];
+              return [depth-1,e];
             fi;
 
             # Remove the appropriate  power  of the <depth>th  generator  and
@@ -885,7 +885,7 @@ InstallGlobalFunction( PermpcgsPcGroupPcgs, function( pcgs, index, isPcgsCentral
                     for n2  in [ index[ i2 ] .. index[ i2 + 1 ] - 1 ]  do
                         SetConjugateNC( sc, n, n2,
                             GeneratorsOfRws( sc )[ n ]*
-			LinearCombinationPcgs( gens,
+                        LinearCombinationPcgs( gens,
                             ExponentsOfPcElement( pcgs, Comm
                             ( pcgs[ n ], pcgs[ n2 ] ) ) ) );
                     od;
@@ -902,7 +902,7 @@ InstallGlobalFunction( PermpcgsPcGroupPcgs, function( pcgs, index, isPcgsCentral
             start := index[ i + 1 ];
             for n2  in [ index[ i ] .. n - 1 ]  do
                 SetConjugateNC( sc, n, n2,
-		    GeneratorsOfRws( sc )[ n ]*LinearCombinationPcgs( gens,
+                    GeneratorsOfRws( sc )[ n ]*LinearCombinationPcgs( gens,
                       ExponentsOfPcElement( pcgs, Comm
                       ( pcgs[ n ], pcgs[ n2 ] ) ) ) );
             od;
@@ -1095,11 +1095,11 @@ local   tail,  i,ins,pins,ran,filt,attr;
   ins:=pins{[i..Length(pins)]}-from+1;
 
   filt:=IsPcgs
-	#NOT PcgsPermGroupRep -- otherwise we get wrong exponents!
-	#and IsPcgsPermGroupRep
-	and IsPrimeOrdersPcgs
-	and IsInducedPcgs and IsInducedPcgsRep and IsTailInducedPcgsRep
-	and HasParentPcgs;
+        #NOT PcgsPermGroupRep -- otherwise we get wrong exponents!
+        #and IsPcgsPermGroupRep
+        and IsPrimeOrdersPcgs
+        and IsInducedPcgs and IsInducedPcgsRep and IsTailInducedPcgsRep
+        and HasParentPcgs;
   attr:=[ParentPcgs,pcgs];
 
   if HasIndicesEANormalSteps(pcgs) then
@@ -1113,11 +1113,11 @@ local   tail,  i,ins,pins,ran,filt,attr;
   fi;
 
   tail := PcgsByPcSequenceCons(
-	  IsPcgsDefaultRep,
-	  filt,
-	  FamilyObj( OneOfPcgs( pcgs ) ),
-	  pcgs{[pins[i]..Length(pcgs)]},
-	  attr);
+          IsPcgsDefaultRep,
+          filt,
+          FamilyObj( OneOfPcgs( pcgs ) ),
+          pcgs{[pins[i]..Length(pcgs)]},
+          attr);
 
   tail!.permpcgsNormalSteps:=ins;
 
@@ -1125,7 +1125,7 @@ local   tail,  i,ins,pins,ran,filt,attr;
   tail!.stabChain := StabChainMutable( EANormalSeriesByPcgs( pcgs )[ i ] );
   if from < pins[ i ]  then
     tail := ExtendedPcgs( tail,
-		    pcgs{ [ from .. pins[ i ] - 1 ] } );
+                    pcgs{ [ from .. pins[ i ] - 1 ] } );
   fi;
   tail!.tailStart := from;
   # information many InducedPcgs methods use

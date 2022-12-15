@@ -166,7 +166,7 @@ DeclareOperation( "OCCoprimeComplement",
 
 #############################################################################
 ##
-#O  OneCoboundaries( <G>, <M> )	. . . . . . . . . . one cobounds of <G> / <M>
+#O  OneCoboundaries( <G>, <M> ) . . . . . . . . . . one cobounds of <G> / <M>
 ##
 ##  <#GAPDoc Label="OneCoboundaries">
 ##  <ManSection>
@@ -325,7 +325,7 @@ DeclareGlobalFunction( "OneCocycles" );
 
 #############################################################################
 ##
-#O  OCOneCoboundaries( <ocr> )	. . . . . . . . . . one cobounds main routine
+#O  OCOneCoboundaries( <ocr> )  . . . . . . . . . . one cobounds main routine
 ##
 ##  <ManSection>
 ##  <Oper Name="OCOneCoboundaries" Arg='ocr'/>
@@ -396,7 +396,7 @@ DeclareGlobalFunction("OCEquationVector");
 
 #############################################################################
 ##
-#O  OCSmallEquationVector( <ocr>, <r> )	. . . . . . . . . . . . . . . . local
+#O  OCSmallEquationVector( <ocr>, <r> ) . . . . . . . . . . . . . . . . local
 ##
 ##  <ManSection>
 ##  <Oper Name="OCSmallEquationVector" Arg='ocr, r'/>

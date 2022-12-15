@@ -88,12 +88,12 @@ local l,iso,fp,stbc,gens;
                   i->PerfectGroup(IsPermGroup,Size(G),i)) do
       iso:=IsomorphismGroups(G,l);
       if iso<>fail then
-	fp:=IsomorphismFpGroup(l);
+        fp:=IsomorphismFpGroup(l);
         iso:=GroupHomomorphismByImagesNC(G,Range(fp),
-	       List(MappingGeneratorsImages(fp)[1],
-	            i->PreImagesRepresentative(iso,i)),
-	       MappingGeneratorsImages(fp)[2]);
-	SetIsBijective(iso,true);
+               List(MappingGeneratorsImages(fp)[1],
+                    i->PreImagesRepresentative(iso,i)),
+               MappingGeneratorsImages(fp)[2]);
+        SetIsBijective(iso,true);
         return iso;
       fi;
     od;
@@ -155,7 +155,7 @@ function( G, str )
         # get composition factor
         N := series[k];
         M := series[k+1];
-	# do not call `InParent'-- rather safe than sorry.
+        # do not call `InParent'-- rather safe than sorry.
         hom := NaturalHomomorphismByNormalSubgroupNC(N, M );
         H := Image( hom );
         # if IsPrime( Size( H ) ) then
@@ -166,12 +166,12 @@ function( G, str )
         #     gensH := Filtered( gensH, x -> x <> One(H) );
         # fi;
 
-	# compute presentation of H
-	IsNonabelianSimpleGroup(H);
-	IsNaturalAlternatingGroup(H);
-	new:=IsomorphismFpGroup(H,"@");
-	gensH:=List(GeneratorsOfGroup(Image(new)),
-	              i->PreImagesRepresentative(new,i));
+        # compute presentation of H
+        IsNonabelianSimpleGroup(H);
+        IsNaturalAlternatingGroup(H);
+        new:=IsomorphismFpGroup(H,"@");
+        gensH:=List(GeneratorsOfGroup(Image(new)),
+                      i->PreImagesRepresentative(new,i));
         preiH := List( gensH, x -> PreImagesRepresentative( hom, x ) );
 
         c     := Length( gensH );
@@ -381,12 +381,12 @@ function(g,str,N)
           # force natural alternating
           hom:=hom*IsomorphismGroups(f,
             AlternatingGroup(DataAboutSimpleGroup(f).idSimple.parameter));
-	elif IsPermGroup(f) and
-	  NrMovedPoints(f)>SufficientlySmallDegreeSimpleGroupOrder(Size(f)) then
-	  hom:=hom*SmallerDegreePermutationRepresentation(f:cheap);
-	fi;
+        elif IsPermGroup(f) and
+          NrMovedPoints(f)>SufficientlySmallDegreeSimpleGroupOrder(Size(f)) then
+          hom:=hom*SmallerDegreePermutationRepresentation(f:cheap);
+        fi;
       elif IsPermGroup(f) then
-	hom:=hom*SmallerDegreePermutationRepresentation(f:cheap);
+        hom:=hom*SmallerDegreePermutationRepresentation(f:cheap);
       fi;
 
       # the range is elementary. Use this for the fp group isomorphism
@@ -394,10 +394,10 @@ function(g,str,N)
       # calculate automorphisms of f induced by G
       fgens:=GeneratorsOfGroup(f);
       auts:=List(GeneratorsOfGroup(g),i->
-	     GroupHomomorphismByImagesNC(f,f,fgens,
-	       List(fgens,j->Image(hom,PreImagesRepresentative(hom,j)^i)):noassert));
+             GroupHomomorphismByImagesNC(f,f,fgens,
+               List(fgens,j->Image(hom,PreImagesRepresentative(hom,j)^i)):noassert));
       for j in auts do
-	SetIsBijective(j,true);
+        SetIsBijective(j,true);
       od;
       # get the minimal normal subgroups, together with isomorphisms
       sf:=CompositionSeries(f);
@@ -406,14 +406,14 @@ function(g,str,N)
       tra:=[IdentityMapping(f)];
       j:=1;
       while j<=Length(orb) do
-	for k in auts do
-	  a:=Image(k,orb[j]);
-	  if not a in orb then
-	    Add(orb,a);
-	    Add(tra,tra[j]*k);
-	  fi;
-	od;
-	j:=j+1;
+        for k in auts do
+          a:=Image(k,orb[j]);
+          if not a in orb then
+            Add(orb,a);
+            Add(tra,tra[j]*k);
+          fi;
+        od;
+        j:=j+1;
       od;
 
       # we know sf is simple
@@ -464,9 +464,9 @@ function(g,str,N)
       # here we really want a composed homomorphism, to avoid extra work for
       # a new stabilizer chain
       if not IsOne(hom) then
-	hom:=CompositionMapping2General(a,hom);
+        hom:=CompositionMapping2General(a,hom);
       else
-	hom:=a;
+        hom:=a;
       fi;
       homs[i-1]:=hom;
     fi;
@@ -507,19 +507,19 @@ function(g,str,N)
 
                     return LinearCombinationPcgs(ngens,e);
                   end;
-		end;
+                end;
       decomp:=dodecomp(ngens,pcgs,abpow[i-1]);
       for j in [1..Length(pcgs)] do
-	Add(nrels,ngens[j]^p);
-	if still then
-	  Add(nvals,pcgs[j]^p);
-	fi;
+        Add(nrels,ngens[j]^p);
+        if still then
+          Add(nvals,pcgs[j]^p);
+        fi;
         for k in [1..j-1] do
-	  Add(nrels,Comm(ngens[j],ngens[k]));
-	  if still then
-	    Add(nvals,Comm(pcgs[j],pcgs[k]));
-	  fi;
-	od;
+          Add(nrels,Comm(ngens[j],ngens[k]));
+          if still then
+            Add(nvals,Comm(pcgs[j],pcgs[k]));
+          fi;
+        od;
       od;
 
       # generator power relations
@@ -542,17 +542,17 @@ function(g,str,N)
       hogens:=FreeGeneratorsOfFpGroup(Range(hom));
       needgens:=Length(hogens);
       dodecomp:=function(ngens,hogens,hom)
-		  return elm->
-		          MappedWord(UnderlyingElement(Image(hom,elm)),
-		             hogens,ngens);
-		end;
+                  return elm->
+                          MappedWord(UnderlyingElement(Image(hom,elm)),
+                             hogens,ngens);
+                end;
       decomp:=dodecomp(ngens,hogens,hom);
       for j in RelatorsOfFpGroup(Range(hom)) do
         a:=MappedWord(j,hogens,ngens);
         Add(nrels,a);
-	if still then
-	  Add(nvals,MappedWord(j,hogens,lgens));
-	fi;
+        if still then
+          Add(nvals,MappedWord(j,hogens,lgens));
+        fi;
       od;
     fi;
     Add(dec,decomp);
@@ -561,18 +561,18 @@ function(g,str,N)
       a:=decomp(vals[j]);
       rels[j]:=rels[j]/a;
       if still then
-	vals[j]:=vals[j]/MappedWord(a,ngens,lgens);
+        vals[j]:=vals[j]/MappedWord(a,ngens,lgens);
       fi;
     od;
     # action relators
     for j in [1..idx[i-1][1]-1] do
       for k in [1..needgens] do
         a:=lgens[k]^gens[j];
-	ad:=decomp(a);
-	Add(rels,ngens[k]^free[j]/ad);
-	if still then
-	  Add(vals,a/MappedWord(ad,ngens,lgens));
-	fi;
+        ad:=decomp(a);
+        Add(rels,ngens[k]^free[j]/ad);
+        if still then
+          Add(vals,a/MappedWord(ad,ngens,lgens));
+        fi;
       od;
     od;
     # new level relators
@@ -589,9 +589,9 @@ function(g,str,N)
     SetIsBijective(hom,true);
   else
     hom:=GroupHomomorphismByImagesNC(g,fp,
-	  Concatenation(gens,GeneratorsOfGroup(N)),
-	  Concatenation(GeneratorsOfGroup(fp),
-	    List(GeneratorsOfGroup(N),i->One(fp))):noassert);
+          Concatenation(gens,GeneratorsOfGroup(N)),
+          Concatenation(GeneratorsOfGroup(fp),
+            List(GeneratorsOfGroup(N),i->One(fp))):noassert);
     SetIsSurjective(hom,true);
     SetKernelOfMultiplicativeGeneralMapping(hom,N);
   fi;
@@ -654,7 +654,7 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
     for i in [1..Length(pcgs)] do
       Add(rels,nimg[i]^p);
       for j in [1..i-1] do
-	Add(rels,Comm(nimg[i],nimg[j]));
+        Add(rels,Comm(nimg[i],nimg[j]));
       od;
     od;
 
@@ -673,7 +673,7 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
      local coeff;
       coeff:=mnsf.decomp(elm);
       if LinearCombinationPcgs(pcgs,coeff)<>elm then
-	Error("decomperror");
+        Error("decomperror");
       fi;
       return LinearCombinationPcgs(nimg,mnsf.decomp(elm));
     end;
@@ -681,7 +681,7 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
     for i in [1..Length(pcgs)] do
       Add(rels,nimg[i]^p);
       for j in [1..i-1] do
-	Add(rels,Comm(nimg[i],nimg[j]));
+        Add(rels,Comm(nimg[i],nimg[j]));
       od;
     od;
 
@@ -711,7 +711,7 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
   for i in [1..Length(pcgs)] do
     for j in [1..Length(qgens)] do
       Add(rels,nimg[i]^qimg[j]/
-	  decomp(pcgs[i]^qreps[j]));
+          decomp(pcgs[i]^qreps[j]));
     od;
   od;
 
@@ -726,9 +726,9 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
     di:=[];
   fi;
   hom2:=GroupHomomorphismByImagesNC(G,fp,
-	 Concatenation(Concatenation(qreps,pcgs),di),
-	 Concatenation(GeneratorsOfGroup(fp),
-	 List(di,x->One(fp))):noassert);
+         Concatenation(Concatenation(qreps,pcgs),di),
+         Concatenation(GeneratorsOfGroup(fp),
+         List(di,x->One(fp))):noassert);
 
   # build decompositioninfo
   di:=rec(gens:=Concatenation(qreps,pcgs),fp:=fp,source:=G);
@@ -738,7 +738,7 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
       di.idx:=Concatenation(dih.idx,[idx]);
       dec:=[];
       for i in dih.dec do
-	Add(dec,elm->MappedWord(i(elm),fpqg,qimg));
+        Add(dec,elm->MappedWord(i(elm),fpqg,qimg));
       od;
       Add(dec,decomp);
       di.dec:=dec;
@@ -774,10 +774,10 @@ local di, hom;
       hom:=GroupHomomorphismByImagesNC(k,di.fp,cgens,GeneratorsOfGroup(di.fp):noassert);
       hom!.decompinfo:=MakeImmutable(di);
       if HasIsSurjective(h) and IsSurjective(h)
-	and HasKernelOfMultiplicativeGeneralMapping(h)
-	and m=KernelOfMultiplicativeGeneralMapping(h) then
-	SetIsSurjective(hom,true);
-	SetKernelOfMultiplicativeGeneralMapping(hom,n);
+        and HasKernelOfMultiplicativeGeneralMapping(h)
+        and m=KernelOfMultiplicativeGeneralMapping(h) then
+        SetIsSurjective(hom,true);
+        SetKernelOfMultiplicativeGeneralMapping(hom,n);
       fi;
 
       SetIsWordDecompHomomorphism(hom,true);
@@ -788,18 +788,18 @@ local di, hom;
   if ggens=MappingGeneratorsImages(h)[1] then
     # can we simply translate a map on generators?
     hom:=GroupHomomorphismByImagesNC(k,Range(h),
-	  Concatenation(GeneratorsOfGroup(n),cgens),
-	  Concatenation(List(GeneratorsOfGroup(n),i->One(Range(h))),
-	  MappingGeneratorsImages(h)[2]));
+          Concatenation(GeneratorsOfGroup(n),cgens),
+          Concatenation(List(GeneratorsOfGroup(n),i->One(Range(h))),
+          MappingGeneratorsImages(h)[2]));
     return hom;
   fi;
   if IsBound(h!.decompinfo) then
     Error("do not know yet how to lift to complement");
   fi;
   hom:=GroupHomomorphismByImagesNC(k,Range(h),
-	  Concatenation(GeneratorsOfGroup(n),cgens),
-	  Concatenation(List(GeneratorsOfGroup(n),i->One(Range(h))),
-	    List(ggens,i->Image(h,i))));
+          Concatenation(GeneratorsOfGroup(n),cgens),
+          Concatenation(List(GeneratorsOfGroup(n),i->One(Range(h))),
+            List(ggens,i->Image(h,i))));
   return hom;
 end);
 

@@ -101,7 +101,7 @@ function( grp )
   return MTX.IsAbsolutelyIrreducible(
     GModuleByMats(NonemptyGeneratorsOfGroup(grp),DefaultFieldOfMatrixGroup(grp))) and
    Size( grp ) = Size( GL( DimensionOfMatrixGroup( grp ),
-		  Size( FieldOfMatrixGroup( grp ) ) ) );
+                  Size( FieldOfMatrixGroup( grp ) ) ) );
 end );
 
 InstallMethod( IsNaturalSL,
@@ -118,7 +118,7 @@ local gen, d, f;
   return MTX.IsAbsolutelyIrreducible(
     GModuleByMats(NonemptyGeneratorsOfGroup(grp),DefaultFieldOfMatrixGroup(grp))) and
     ForAll(gen, x-> DeterminantMat(x) = One(f))
-	    and Size(grp) = Size(SL(d, Size(f)));
+            and Size(grp) = Size(SL(d, Size(f)));
 end );
 
 
@@ -191,7 +191,7 @@ local tt;
     TryNextMethod();
   fi;
   return NicomorphismFFMatGroupOnFullSpace( GL( DimensionOfMatrixGroup( grp ),
-		  Size( FieldOfMatrixGroup( Parent(grp) ) ) ) );
+                  Size( FieldOfMatrixGroup( Parent(grp) ) ) ) );
 end );
 
 #############################################################################
@@ -263,7 +263,7 @@ InstallMethod( \in, "special linear group", IsElmsColls,
            and Length( mat ) = DimensionOfMatrixGroup( G )
            and ForAll( mat, row -> IsSubset( FieldOfMatrixGroup( G ), row ) )
            and Length( mat ) = RankMat( mat )
-	   and DeterminantMat(mat)=One(FieldOfMatrixGroup( G ));
+           and DeterminantMat(mat)=One(FieldOfMatrixGroup( G ));
 end );
 
 
@@ -753,7 +753,7 @@ local G,PG,cl,c,i,r,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
   # elementary divisors for GL-class identification
   x:=X(DefaultFieldOfMatrixGroup(G),1);
   prop:=y->Set(Filtered(ElementaryDivisorsMat(y-x*y^0),
-	       y->DegreeOfUnivariateLaurentPolynomial(y)>0));
+               y->DegreeOfUnivariateLaurentPolynomial(y)>0));
 
   # compute real fusion
   real:=function(set)
@@ -761,12 +761,12 @@ local G,PG,cl,c,i,r,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
     new:=[];
     for i in set do
       if i in set then # might have been removed by now
-	b:=ConjugacyClass(PG,repi[i]);
-	a:=Filtered(set,x->x<>i and repi[x] in b);
+        b:=ConjugacyClass(PG,repi[i]);
+        a:=Filtered(set,x->x<>i and repi[x] in b);
         a:=Union(a,[i]);
-	fcl[a[1]]:=b;
-	Add(new,a);
-	set:=Difference(set,a);
+        fcl[a[1]]:=b;
+        Add(new,a);
+        set:=Difference(set,a);
       fi;
     od;
     return new;
@@ -782,10 +782,10 @@ local G,PG,cl,c,i,r,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
   cl:=ConjugacyClasses(G);
   if IsNaturalGL(G) then
     goal:=NrConjugacyClassesPGL(Length(One(G)),
-	   Size(DefaultFieldOfMatrixGroup(G)));
+           Size(DefaultFieldOfMatrixGroup(G)));
   elif IsNaturalSL(G) then
     goal:=NrConjugacyClassesPSL(Length(One(G)),
-	   Size(DefaultFieldOfMatrixGroup(G)));
+           Size(DefaultFieldOfMatrixGroup(G)));
   else
     goal:=Length(cl); # this is too loose, but upper limit
   fi;
@@ -826,9 +826,9 @@ local G,PG,cl,c,i,r,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
     # proper class number
     for i in fus do
       if not i in good and Length(fus)<goal then
-	# fusion could split up -- test
-	a:=real(i);
-	fus:=Union(Filtered(fus,x->x<>i),a);
+        # fusion could split up -- test
+        a:=real(i);
+        fus:=Union(Filtered(fus,x->x<>i),a);
       fi;
     od;
   fi;

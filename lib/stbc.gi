@@ -87,45 +87,45 @@ InstallMethod( StabChainOp,"group and option",
         pcgs := [  ];
         if     options.tryPcgs and (not IsBound(options.base))
            and (# the group is know to be solvable
-	     (HasIsSolvableGroup(G) and IsSolvableGroup(G))
-		# or the degree is small and the group is not known to be
-		# insolvable
-	        or (Length(MovedPoints(G))<=100 and not
-		    (HasIsSolvableGroup(G) and not IsSolvableGroup(G))
-		    )) then
+             (HasIsSolvableGroup(G) and IsSolvableGroup(G))
+                # or the degree is small and the group is not known to be
+                # insolvable
+                or (Length(MovedPoints(G))<=100 and not
+                    (HasIsSolvableGroup(G) and not IsSolvableGroup(G))
+                    )) then
             S := EmptyStabChain( [  ], One( G ) );
             if IsBound( options.base )  then  S.base := options.base;
                                         else  S.base := [  ];          fi;
-	    if HasPcgs(G) and IsBound(Pcgs(G)!.stabChain) then
-	      # is there already a pcgs with a stabchain?
-	      # the translation to a record is  necessary to be able to copy
-	      # the stab chain.
-	      pcgs:=rec(stabChain:=CopyStabChain(Pcgs(G)!.stabChain));
-	    else
-	      pcgs := TryPcgsPermGroup( [ G, GroupStabChain( G, S, true ) ],
-			      # get the series elementary abelian -- its much
-			      # better
+            if HasPcgs(G) and IsBound(Pcgs(G)!.stabChain) then
+              # is there already a pcgs with a stabchain?
+              # the translation to a record is  necessary to be able to copy
+              # the stab chain.
+              pcgs:=rec(stabChain:=CopyStabChain(Pcgs(G)!.stabChain));
+            else
+              pcgs := TryPcgsPermGroup( [ G, GroupStabChain( G, S, true ) ],
+                              # get the series elementary abelian -- its much
+                              # better
                             false, false, true );
-	    fi;
+            fi;
         fi;
         if IsPcgs( pcgs )  then
-	  options.random := 1000;
-	  S := pcgs!.stabChain;
+          options.random := 1000;
+          S := pcgs!.stabChain;
 
-	  if not HasPcgs(G) then
-	    # remember the pcgs
-	    SetPcgs(G,pcgs);
-	    SetPcgsElementaryAbelianSeries(G,pcgs);
-	    S := CopyStabChain(S); # keep the pcgs' pristine stabchain
-	    if IsBound(options.base) then
-	      ChangeStabChain( S, options.base, options.reduced );
-	    fi;
-	  fi;
-	elif IsRecord(pcgs) then
-	  S:=pcgs.stabChain;
-	  if IsBound(options.base) then
-	    ChangeStabChain( S, options.base, options.reduced );
-	  fi;
+          if not HasPcgs(G) then
+            # remember the pcgs
+            SetPcgs(G,pcgs);
+            SetPcgsElementaryAbelianSeries(G,pcgs);
+            S := CopyStabChain(S); # keep the pcgs' pristine stabchain
+            if IsBound(options.base) then
+              ChangeStabChain( S, options.base, options.reduced );
+            fi;
+          fi;
+        elif IsRecord(pcgs) then
+          S:=pcgs.stabChain;
+          if IsBound(options.base) then
+            ChangeStabChain( S, options.base, options.reduced );
+          fi;
         else
             degree := LargestMovedPoint( G );
             if degree > 100  then
@@ -154,8 +154,8 @@ InstallMethod( StabChainOp,"group and option",
                     od;
                     T.generators := T.labels{ T.genlabels };
                     Unbind( T.cycles );
-		else
-		  S.generators:=[];
+                else
+                  S.generators:=[];
                 fi;
 
             fi; # random / deterministic
@@ -329,21 +329,21 @@ InstallGlobalFunction(CopyOptionsDefaults,function( G, options )
 
     # See whether we know a base for <G>.
     if not IsBound( options.knownBase )  then
-	if HasStabChainMutable(G) then
-	  options.knownBase := BaseStabChain(StabChainMutable(G));
+        if HasStabChainMutable(G) then
+          options.knownBase := BaseStabChain(StabChainMutable(G));
         elif   HasBaseOfGroup( G )  then
-	  options.knownBase := BaseOfGroup( G );
+          options.knownBase := BaseOfGroup( G );
         else
-	  P := Parent( G );
-	  while     not HasBaseOfGroup( P )
-		and not IsIdenticalObj( P, Parent( P ) )  do
-	    P := Parent( P );
-	  od;
-	  if HasStabChainMutable(P) then
-	    options.knownBase := BaseStabChain(StabChainMutable(P));
-	  elif HasBaseOfGroup( P )  then
-	    options.knownBase := BaseOfGroup( P );
-	  fi;
+          P := Parent( G );
+          while     not HasBaseOfGroup( P )
+                and not IsIdenticalObj( P, Parent( P ) )  do
+            P := Parent( P );
+          od;
+          if HasStabChainMutable(P) then
+            options.knownBase := BaseStabChain(StabChainMutable(P));
+          elif HasBaseOfGroup( P )  then
+            options.knownBase := BaseOfGroup( P );
+          fi;
         fi;
     fi;
 
@@ -370,23 +370,23 @@ InstallGlobalFunction(CopyOptionsDefaults,function( G, options )
     # In the case of random construction, see whether  we know an upper limit
     # for the size.
     if IsBound( options.size ) then
-	options.limit := options.size;
+        options.limit := options.size;
     elif not IsBound( options.limit )  then
-	if IsBound( StabChainOptions( G ).limit )  then
-	    options.limit := StabChainOptions( G ).limit;
-	else
-	    P := Parent( G );
-	    while     not HasSize( P )
-		  and not IsBound( StabChainOptions( P ).limit )
-		  and not IsIdenticalObj( P, Parent( P ) )  do
-		P := Parent( P );
-	    od;
-	    if HasSize( P )  then
-		options.limit := Size( P );
-	    elif IsBound( StabChainOptions( P ).limit )  then
-		options.limit := StabChainOptions( P ).limit;
-	    fi;
-	fi;
+        if IsBound( StabChainOptions( G ).limit )  then
+            options.limit := StabChainOptions( G ).limit;
+        else
+            P := Parent( G );
+            while     not HasSize( P )
+                  and not IsBound( StabChainOptions( P ).limit )
+                  and not IsIdenticalObj( P, Parent( P ) )  do
+                P := Parent( P );
+            od;
+            if HasSize( P )  then
+                options.limit := Size( P );
+            elif IsBound( StabChainOptions( P ).limit )  then
+                options.limit := StabChainOptions( P ).limit;
+            fi;
+        fi;
     fi;
 
 end);
@@ -439,19 +439,19 @@ local   S,  G,  P,L;
 
     if Length( arg ) = 1  then
         S := arg[ 1 ];
-	if not IsBound(S.generators) then
-	  G := GroupByGenerators( [], S.identity );
-	else
-	  G := GroupByGenerators( S.generators, S.identity );
-	fi;
+        if not IsBound(S.generators) then
+          G := GroupByGenerators( [], S.identity );
+        else
+          G := GroupByGenerators( S.generators, S.identity );
+        fi;
     else
         P := arg[ 1 ];
         S := arg[ 2 ];
-	if not IsBound(S.generators) then
-	  L := [];
-	else
-	  L := S.generators;
-	fi;
+        if not IsBound(S.generators) then
+          L := [];
+        else
+          L := S.generators;
+        fi;
         if Length( arg ) = 3  and  arg[ 3 ] = true  then
             G := SubgroupNC( P, L );
         else
@@ -878,9 +878,9 @@ InstallGlobalFunction( StabChainSwap, function( S )
     else
         S.stabilizer.labels      := Tstab.labels;
         S.stabilizer.genlabels   := Tstab.genlabels;
-	if not IsBound(Tstab.generators) then
-	  Tstab.generators:=Tstab.labels{Tstab.genlabels};
-	fi;
+        if not IsBound(Tstab.generators) then
+          Tstab.generators:=Tstab.labels{Tstab.genlabels};
+        fi;
         S.stabilizer.generators  := Tstab.generators;
         S.stabilizer.orbit       := Tstab.orbit;
         S.stabilizer.translabels := Tstab.translabels;
@@ -1071,7 +1071,7 @@ end );
 ##
 InstallGlobalFunction(ChangeStabChain,function( arg )
 local   G,  base,  reduced,
-	cnj,  S,  newBase,  old,  new,  i;
+        cnj,  S,  newBase,  old,  new,  i;
 
     # Get the arguments.
     G := arg[ 1 ];
@@ -1289,8 +1289,8 @@ local   bpt,  rep,te;
     bpt := S.orbit[ 1 ];
     rep := S.identity;
     while pnt <> bpt  do
-	te:=S.transversal[pnt];
-	pnt:=pnt^te;
+        te:=S.transversal[pnt];
+        pnt:=pnt^te;
         rep := rep * te;
     od;
     return rep;
@@ -1376,24 +1376,24 @@ local   p,i,a,bp,pp;
 
     while not IsEmpty( S.genlabels )  do
 
-	if IsPlistRep(S.orbit) and IsPosInt(S.orbit[1])
-	  and IsInternalRep(g) then
-	  p:=SMALLEST_IMG_TUP_PERM(S.orbit,g);
-	else
-	  p:=infinity;
-	  for i in S.orbit do
-	    a:=i^g;
-	    if a<p then
-	      p:=a;
-	    fi;
-	  od;
-	fi;
+        if IsPlistRep(S.orbit) and IsPosInt(S.orbit[1])
+          and IsInternalRep(g) then
+          p:=SMALLEST_IMG_TUP_PERM(S.orbit,g);
+        else
+          p:=infinity;
+          for i in S.orbit do
+            a:=i^g;
+            if a<p then
+              p:=a;
+            fi;
+          od;
+        fi;
 
-	bp:=S.orbit[1];
-	pp:=p/g;
+        bp:=S.orbit[1];
+        pp:=p/g;
         while bp<>pp  do
             g:=LeftQuotient(S.transversal[pp],g);
-	    pp:=p/g;
+            pp:=p/g;
         od;
 #        while S.orbit[ 1 ] ^ g <> p  do
 #            g := LeftQuotient( S.transversal[ p / g ], g );
@@ -1582,15 +1582,15 @@ end );
 InstallGlobalFunction(SCMinSmaGens,function (G,S,bas,pre,flag)
 local   Sgens,      # smallest generating system of <S>, result
         gens,       # smallest generating system of <S>, result
-	span,	    # <gens>
-	stb,	    # Stab_span(bas{1..n-1})
-	min,        # minimum in orbit
-	nbas,	    # bas+[min]
-	rep,        # representative mapping minimal
-	gen,        # one generator in <gens>
-	orb,        # basic orbit of <S>
-	pnt,        # one point in <orb>
-	T;          # stabilizer in <S>
+        span,       # <gens>
+        stb,        # Stab_span(bas{1..n-1})
+        min,        # minimum in orbit
+        nbas,       # bas+[min]
+        rep,        # representative mapping minimal
+        gen,        # one generator in <gens>
+        orb,        # basic orbit of <S>
+        pnt,        # one point in <orb>
+        T;          # stabilizer in <S>
 
   Sgens:=S.generators;
   # handle the anchor case
@@ -1650,7 +1650,7 @@ local   Sgens,      # smallest generating system of <S>, result
     pnt := orb[1];
     gen := S.identity;
     while S.orbit[1] ^ gen <> pnt  do
-	gen := LeftQuotient( S.transversal[ pnt / gen ], gen );
+        gen := LeftQuotient( S.transversal[ pnt / gen ], gen );
     od;
 
     # now change gen by elements in the lower stabilizers  to
@@ -1659,7 +1659,7 @@ local   Sgens,      # smallest generating system of <S>, result
     while Length(T.generators) <> 0  do
       pnt := Minimum( OnTuples( T.orbit, gen ) );
       while T.orbit[1] ^ gen <> pnt  do
-	gen := LeftQuotient( T.transversal[ pnt / gen ], gen );
+        gen := LeftQuotient( T.transversal[ pnt / gen ], gen );
       od;
       T := T.stabilizer;
     od;
@@ -1689,10 +1689,10 @@ end);
 ##
 InstallGlobalFunction(LargestElementStabChain,function(S,rep)
 local   min,    # minimum in orbit
-	pnt,    # one point in <orb>
-	i,	# loop
-	val,	# point image
-	gen;    # gen. in transversal
+        pnt,    # one point in <orb>
+        i,      # loop
+        val,    # point image
+        gen;    # gen. in transversal
 
   # handle the anchor case
   if Length(S.generators) = 0  then
@@ -1833,11 +1833,11 @@ function(S)
         , NextIterator := NextIterator_StabChain
         , IsDoneIterator := iter -> (iter!.state = 2)
         , ShallowCopy := iter -> rec( stack := iter!.stack
-	                            , pos := ShallowCopy(iter!.pos)
+                                    , pos := ShallowCopy(iter!.pos)
                                     , epos := iter!.epos
                                     , rep := ShallowCopy(iter!.rep)
                                     , state := iter!.state
-				    )
+                                    )
     );
     return IteratorByFunctions(r);
 end);

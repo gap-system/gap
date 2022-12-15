@@ -1439,7 +1439,7 @@ InstallMethod( PermutationCharacter,
     local tbl;
     tbl:= OrdinaryCharacterTable( G );
     return Character( tbl, List( ConjugacyClasses( tbl ),
-	       i -> Number( dom, j -> j = opr( j, Representative(i) ) ) ) );
+               i -> Number( dom, j -> j = opr( j, Representative(i) ) ) ) );
     end);
 
 
@@ -3146,7 +3146,7 @@ InstallMethod( InducedCyclic,
         for j in [ 2 .. orders[i] ] do
           fusion[j]:= PowerMap( tbl, j, i );    # j-th powermap at class i
         od;
-	single:= ListWithIdenticalEntries(Length(orders),0);
+        single:= ListWithIdenticalEntries(Length(orders),0);
         for j in fusion do
           if orders[j] = orders[i] then
             # position is Galois conjugate to 'i'
@@ -3195,7 +3195,7 @@ InstallMethod( InducedCyclic,
         od;
 
         for k in [ 0 .. orders[i] - 1 ] do      # induce k-th character
-	  single:= ListWithIdenticalEntries(Length(orders),0);
+          single:= ListWithIdenticalEntries(Length(orders),0);
           single[i]:= E( orders[i] ) ^ ( k );
           for j in [ 2 .. orders[i] ] do
             if orders[ fusion[j] ] = orders[i] then
@@ -4920,7 +4920,7 @@ InstallOtherMethod( GroupWithGenerators,
     # Construct the group.
     G:= Objectify( NewType( CollectionsFamily( FamilyObj( id ) ),
                             IsGroup and IsAttributeStoringRep and
-			    IsFinitelyGeneratedGroup and IsTrivial ),
+                            IsFinitelyGeneratedGroup and IsTrivial ),
 
                    rec() );
     SetGeneratorsOfMagmaWithInverses( G, empty );

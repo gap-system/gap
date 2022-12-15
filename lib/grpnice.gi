@@ -151,8 +151,8 @@ function( G )
         if not IsBound( UnderlyingExternalSet( nice )!.basePermImage )  then
             D := HomeEnumerator( UnderlyingExternalSet( nice ) );
             UnderlyingExternalSet( nice )!.basePermImage :=
-	      List(BaseOfGroup(UnderlyingExternalSet(nice)),
-		   b->PositionCanonical(D,b));
+              List(BaseOfGroup(UnderlyingExternalSet(nice)),
+                   b->PositionCanonical(D,b));
         fi;
         SetBaseOfGroup( img, UnderlyingExternalSet( nice )!.basePermImage );
     fi;
@@ -162,7 +162,7 @@ end );
 
 #############################################################################
 ##
-#M  NiceMonomorphism( <group> )	. . construct a nice monomorphism from parent
+#M  NiceMonomorphism( <group> ) . . construct a nice monomorphism from parent
 ##
 InstallMethod(NiceMonomorphism,
     "for subgroups that get the nice monomorphism by their parent", true,
@@ -311,8 +311,8 @@ function( obj1, obj2 )
     img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
     if img = fail or
       not (img in ImagesSource(nice) and
-	PreImagesRepresentative(nice,img)=obj2) then
-	TryNextMethod();
+        PreImagesRepresentative(nice,img)=obj2) then
+        TryNextMethod();
     fi;
     no:=NiceObject(obj1);
     img1 := ClosureGroup( NiceObject(obj1), img );
@@ -384,7 +384,7 @@ end);
 
 #############################################################################
 ##
-#M  ConjugateGroup( <G>, <g> )	. . . . . . . . . . . . . .  conjugate of <G>
+#M  ConjugateGroup( <G>, <g> )  . . . . . . . . . . . . . .  conjugate of <G>
 ##
 GroupMethodByNiceMonomorphismCollElm( ConjugateGroup,
     [ IsGroup and HasParent, IsMultiplicativeElementWithInverse ] );
@@ -789,9 +789,9 @@ local nice;
         return i!.niceClass;
       else
         c:=ConjugacyClass(NiceObject(G),ImageElm(nice,Representative(i)));
-	if HasStabilizerOfExternalSet(i) then
-	  SetStabilizerOfExternalSet(c,Image(nice,StabilizerOfExternalSet(i)));
-	fi;
+        if HasStabilizerOfExternalSet(i) then
+          SetStabilizerOfExternalSet(c,Image(nice,StabilizerOfExternalSet(i)));
+        fi;
         return c;
       fi;
     end));
@@ -1017,7 +1017,7 @@ end );
 
 #############################################################################
 ##
-#M  NiceMonomorphism( <group> )	. .
+#M  NiceMonomorphism( <group> ) . .
 ##
 InstallMethod(NiceMonomorphism,
     "if a canonical nice monomorphism is already known",
@@ -1026,7 +1026,7 @@ InstallMethod(NiceMonomorphism,
 
 #############################################################################
 ##
-#M  CanonicalNiceMonomorphism( <group> )	. .
+#M  CanonicalNiceMonomorphism( <group> )] . .
 ##
 InstallMethod(CanonicalNiceMonomorphism,"test canonicity of existing niceo",
     true,[ IsGroup and HasNiceMonomorphism],0,
@@ -1040,7 +1040,7 @@ end);
 
 #############################################################################
 ##
-#M  SeedFaithfulAction( <group> )	. .
+#M  SeedFaithfulAction( <group> ) . .
 ##
 InstallMethod(SeedFaithfulAction,
     "default: fail",
@@ -1053,7 +1053,7 @@ InstallMethod(SeedFaithfulAction,
 ##
 InstallMethod( NiceMonomorphism, "SeedFaithfulAction supersedes", true,
         [ IsGroup and IsHandledByNiceMonomorphism and
-	  HasSeedFaithfulAction], 1000,
+          HasSeedFaithfulAction], 1000,
 function(G)
   local b, hom;
   b:=SeedFaithfulAction(G);
@@ -1083,8 +1083,8 @@ function( G )
     return Objectify(
         NewType( FamilyObj(G), IsList and IsEnumeratorByNiceomorphismRep ),
         rec( group:=G,
-	     morphism:=NiceMonomorphism(G),
-	     niceEnumerator:=Enumerator(NiceObject(G))));
+             morphism:=NiceMonomorphism(G),
+             niceEnumerator:=Enumerator(NiceObject(G))));
 end );
 
 #############################################################################

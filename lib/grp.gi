@@ -390,25 +390,22 @@ InstallMethod( IsPowerfulPGroup,
      function( G )
     local p;
     if (IsTrivial(G)) then
-	return true;
+      return true;
     else
-	p:=PrimePGroup(G);
-	#We use the less known characterisation of powerful p groups
-	# for p>3 by Jon Gonzalez-Sanchez, Amaia Zugadi-Reizabal
-	# can be found in 'A characterization of powerful p-groups'
-	if (p>3) then
-		if (RankPGroup(G)=Log(Order(Omega(G,p)),p)) then
-			return true;
-		else
-			return false;
-		fi;
-	else
-	TryNextMethod();
-	fi;
+      p:=PrimePGroup(G);
+      # We use the less known characterisation of powerful p groups
+      # for p>3 by Jon Gonzalez-Sanchez, Amaia Zugadi-Reizabal
+      # can be found in 'A characterization of powerful p-groups'
+      if (p>3) then
+        if (RankPGroup(G)=Log(Order(Omega(G,p)),p)) then
+          return true;
+        else
+          return false;
+        fi;
+      else
+        TryNextMethod();
+      fi;
     fi;
-
-
-
     end);
 
 
@@ -1159,7 +1156,7 @@ InstallMethod( DerivedSeriesOfGroup,
 
     while
       (not HasIsTrivial(S[Length(S)]) or
-	    not IsTrivial(S[Length(S)])) and
+            not IsTrivial(S[Length(S)])) and
       (
         (not HasIsPerfectGroup(S[Length(S)]) and
          not HasAbelianInvariants(S[Length(S)]) and D <> S[ Length(S) ]) or
@@ -1449,8 +1446,8 @@ function(G)
 #If the group is powerful and has computed agemos, then no work needs
 #to be done, since FrattiniSubgroup(G)=Agemo(G,p) in this case
 #by properties of powerful p-groups.
-	p:=PrimePGroup(G);
-	return Agemo(G,p);
+        p:=PrimePGroup(G);
+        return Agemo(G,p);
 end);
 
 InstallMethod( FrattiniSubgroup, "for nilpotent groups",
@@ -5976,18 +5973,18 @@ function(G,elm)
         dist[diam]:=total;
         Info(InfoGroup,1,"process diameter ",diam,", extend ",total,
           " elements, ",count," elements left");
-	if IsMutable(spheres) then
-	  Add(spheres,total);
-	fi;
+        if IsMutable(spheres) then
+          Add(spheres,total);
+        fi;
         if count=0 and elm=fail then
-	  info.from:=from;
-	  info.to:=to;
-	  info.write:=write;
-	  info.count:=count;
-	  info.diam:=diam;
-	  MakeImmutable(spheres);
-	  return spheres;
-	fi;
+          info.from:=from;
+          info.to:=to;
+          info.write:=write;
+          info.count:=count;
+          info.diam:=diam;
+          MakeImmutable(spheres);
+          return spheres;
+        fi;
       fi;
       i:=ll[from];
       from:=from+1;
@@ -6111,14 +6108,14 @@ local s,prev,old,sort,geni,new,a,i,j,g;
     for j in prev do
       for g in geni do
         a:=j*g;
-	if not a in old then
-	  Add(new,a);
-	  if sort then
-	    AddSet(old,a);
-	  else
-	    Add(old,a);
-	  fi;
-	fi;
+        if not a in old then
+          Add(new,a);
+          if sort then
+            AddSet(old,a);
+          else
+            Add(old,a);
+          fi;
+        fi;
       od;
     od;
     if Length(new)>0 then

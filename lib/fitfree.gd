@@ -12,7 +12,7 @@
 ##
 
 BindGlobal("OVERRIDENICE",Maximum(NICE_FLAGS,
-	       RankFilter(IsMatrixGroup and IsFinite)));
+               RankFilter(IsMatrixGroup and IsFinite)));
 
 #############################################################################
 ##

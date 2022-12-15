@@ -354,7 +354,7 @@ DeclareOperation( "ReadAll", [ IsInputStream, IsInt ] );
 
 #############################################################################
 ##
-#O  ReadByte( <input-stream> )	. . . . . . . . . . . . . .  read single byte
+#O  ReadByte( <input-stream> )  . . . . . . . . . . . . . .  read single byte
 ##
 ##  <#GAPDoc Label="ReadByte">
 ##  <ManSection>
@@ -478,7 +478,7 @@ DeclareOperation( "RewindStream", [ IsInputStream ] );
 
 #############################################################################
 ##
-#O  SeekPositionStream( <input-stream>, <pos> )	. . . .  return to a position
+#O  SeekPositionStream( <input-stream>, <pos> ) . . . .  return to a position
 ##
 ##  <#GAPDoc Label="SeekPositionStream">
 ##  <ManSection>
@@ -611,7 +611,7 @@ DeclareOperation( "CloseStream", [ IsStream ] );
 
 #############################################################################
 ##
-#O  InputTextString( <string> )	. . . .  create input text stream from string
+#O  InputTextString( <string> ) . . . .  create input text stream from string
 ##
 ##  <#GAPDoc Label="InputTextString">
 ##  <ManSection>

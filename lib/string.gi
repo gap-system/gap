@@ -797,29 +797,29 @@ local l, i, start,nodob,str;
       str:="";
       start:=i+1;
       repeat
-	while (i+1<=Length(s) and s[i+1]<>'"') or
-	      (i+2=Length(s) and s[i+2]<>sep) do
-	  i:=i+1;
-	od;
-	if Length(s)>=i+2 and s[i+2]='"' then
-	  str:=Concatenation(str,s{[start..i+1]});
-	  i:=i+2;
-	  start:=i+1;
-	  nodob:=false;
-	else
-	  nodob:=true;
-	fi;
+        while (i+1<=Length(s) and s[i+1]<>'"') or
+              (i+2=Length(s) and s[i+2]<>sep) do
+          i:=i+1;
+        od;
+        if Length(s)>=i+2 and s[i+2]='"' then
+          str:=Concatenation(str,s{[start..i+1]});
+          i:=i+2;
+          start:=i+1;
+          nodob:=false;
+        else
+          nodob:=true;
+        fi;
       until nodob;
       if Length(str)>0 then
-	Add(l,Concatenation(str,s{[start..i]}));
+        Add(l,Concatenation(str,s{[start..i]}));
       else
-	Add(l,s{[start..i]});
+        Add(l,s{[start..i]});
       fi;
       i:=i+3; # skip ",
     else
       start:=i;
       while i<Length(s) and s[i+1]<>sep do
-	i:=i+1;
+        i:=i+1;
       od;
       Add(l,s{[start..i]});
       i:=i+2; # skip comma
@@ -835,10 +835,10 @@ local l, b;
     b:=ReadByte(f);
     if b<>fail then
       if b<0 then
-	b:=b+256;
+        b:=b+256;
       fi;
       if b=10 or b=13 then
-	return l;
+        return l;
       fi;
       Add(l,CHAR_INT(b));
     fi;
@@ -897,9 +897,9 @@ local nohead,file,sep,f, line, fields, l, r, i,s,t,add,dir;
     # field names with blank or empty are awkward
     for i in [1..Length(fields)] do
       if ' ' in fields[i] then
-	fields[i]:=ReplacedString(fields[i]," ","_");
+        fields[i]:=ReplacedString(fields[i]," ","_");
       elif Length(fields[i])=0 then
-	fields[i]:=Concatenation("field",String(i));
+        fields[i]:=Concatenation("field",String(i));
       fi;
     od;
   else
@@ -911,31 +911,31 @@ local nohead,file,sep,f, line, fields, l, r, i,s,t,add,dir;
     if line<>fail then
       line:=Chomp(line);
       if '"' in line and sep=',' then
-	line:=RCSVSplitString(line,sep);
+        line:=RCSVSplitString(line,sep);
       else
-	line:=SplitString(line,sep);
+        line:=SplitString(line,sep);
       fi;
       r:=rec();
       add:=false;
       for i in [1..Length(fields)] do
-	if IsBound(line[i]) and Length(line[i])>0 then
-	  s:=line[i];
-	  # openoffice and Excel translate booleans differently.
-	  if s="TRUE" then s:="1";
-	  elif s="FALSE" then s:="0";
-	  else
-	    t:=Rat(s);
-	    if not IsBool(t) and not '.' in s then
-	      s:=t;
-	    fi;
-	  fi;
+        if IsBound(line[i]) and Length(line[i])>0 then
+          s:=line[i];
+          # openoffice and Excel translate booleans differently.
+          if s="TRUE" then s:="1";
+          elif s="FALSE" then s:="0";
+          else
+            t:=Rat(s);
+            if not IsBool(t) and not '.' in s then
+              s:=t;
+            fi;
+          fi;
 
-	  r.(fields[i]):=s;
-	  add:=true;
-	fi;
+          r.(fields[i]):=s;
+          add:=true;
+        fi;
       od;
       if add then
-	Add(l,r);
+        Add(l,r);
       fi;
     fi;
   od;
@@ -982,11 +982,11 @@ InstallGlobalFunction(PrintCSV,function(arg)
     if '"' in s then
       p:=1;
       while p<=Length(s) do
-	if s[p]='"' then
-	  s:=Concatenation(s{[1..p]},s{[p..Length(s)]});
-	  p:=p+1;
-	fi;
-	p:=p+1;
+        if s[p]='"' then
+          s:=Concatenation(s{[1..p]},s{[p..Length(s)]});
+          p:=p+1;
+        fi;
+        p:=p+1;
       od;
     fi;
 
@@ -1008,9 +1008,9 @@ InstallGlobalFunction(PrintCSV,function(arg)
     for i in l do
       r:=RecNames(i);
       for j in r do
-	if not j in rf then
-	  Add(rf,j);
-	fi;
+        if not j in rf then
+          Add(rf,j);
+        fi;
       od;
     od;
     # sort record fields
@@ -1019,10 +1019,10 @@ InstallGlobalFunction(PrintCSV,function(arg)
       # check trailing numbers
       ap:=Length(a);
       while ap>0 and a[ap] in CHARS_DIGITS do
-	ap:=ap-1;
+        ap:=ap-1;
       od;
       if Length(b)>=ap and ForAll([ap+1..Length(b)],j->b[j] in CHARS_DIGITS) then
-	return Int(a{[ap+1..Length(a)]})<Int(b{[ap+1..Length(b)]});
+        return Int(a{[ap+1..Length(a)]})<Int(b{[ap+1..Length(b)]});
       fi;
       return a<b;
     end);
@@ -1134,20 +1134,20 @@ local f,i,j,format,cold,a,e,z,str,new,box,lc,mini,color,alt,renum;
     for i in [1..Length(f)] do
       if i>1 then AppendTo(file,"&");fi;
       if IsBound(l[j].(f[i])) then
-	str:=l[j].(f[i]);
-	# fix _integer to keep long integers from Excel
-	if IsList(str) and Length(str)>0 and str[1]='_' and
-	  Int(str{[2..Length(str)]})<>fail then
-	  str:=str{[2..Length(str)]};
-	fi;
+        str:=l[j].(f[i]);
+        # fix _integer to keep long integers from Excel
+        if IsList(str) and Length(str)>0 and str[1]='_' and
+          Int(str{[2..Length(str)]})<>fail then
+          str:=str{[2..Length(str)]};
+        fi;
 
-	if 'P' in cold.(f[i]) then
-	  mini:=true;
-	  AppendTo(file,"\\begin{minipage}{25mm}%\n");
-	else
-	  mini:=false;
-	fi;
-	if 'F' in cold.(f[i]) then
+        if 'P' in cold.(f[i]) then
+          mini:=true;
+          AppendTo(file,"\\begin{minipage}{25mm}%\n");
+        else
+          mini:=false;
+        fi;
+        if 'F' in cold.(f[i]) then
           if IsInt(str) then
             a:=str;
           else
@@ -1168,57 +1168,57 @@ local f,i,j,format,cold,a,e,z,str,new,box,lc,mini,color,alt,renum;
             a:=Int(str)*10^z;
           fi;
 
-	  a:=Collected(Factors(a));
-	  AppendTo(file,"$");
-	  for z in [1..Length(a)] do
-	    if z>1 and e=false then
-	      AppendTo(file,"\n{\\cdot}");
-	    fi;
-	    AppendTo(file,a[z][1]);
-	    if a[z][2]>1 then
-	      AppendTo(file,"^{",a[z][2],"}");
-	      e:=true;
-	    else
-	      e:=false;
-	    fi;
-	  od;
-	  AppendTo(file,"$\n");
-	elif 'M' in cold.(f[i]) and 'N' in cold.(f[i]) then
-	  # make strings ``names'' in mbox
-	  new:="";
-	  box:=false;
-	  lc:=false;
-	  for a in str do
-	    z:=a in CHARS_UALPHA or a in CHARS_LALPHA;
-	    if z and box=false then
-	      if lc='\\' then # actual command
-		box:=fail;
-	      else
-		Append(new,"\\mbox{");
-		box:=true;
-	      fi;
-	    elif box=true and not z then
-	      Append(new,"}");
-	      box:=false;
-	    elif box=fail and not z then
-	      box:=false; # command over
-	    fi;
-	    Add(new,a);
-	    lc:=a; # last character
-	  od;
-	  if box=true then
-	    Append(new,"}");
-	  fi;
-	  AppendTo(file,"$",new,"$\n");
+          a:=Collected(Factors(a));
+          AppendTo(file,"$");
+          for z in [1..Length(a)] do
+            if z>1 and e=false then
+              AppendTo(file,"\n{\\cdot}");
+            fi;
+            AppendTo(file,a[z][1]);
+            if a[z][2]>1 then
+              AppendTo(file,"^{",a[z][2],"}");
+              e:=true;
+            else
+              e:=false;
+            fi;
+          od;
+          AppendTo(file,"$\n");
+        elif 'M' in cold.(f[i]) and 'N' in cold.(f[i]) then
+          # make strings ``names'' in mbox
+          new:="";
+          box:=false;
+          lc:=false;
+          for a in str do
+            z:=a in CHARS_UALPHA or a in CHARS_LALPHA;
+            if z and box=false then
+              if lc='\\' then # actual command
+                box:=fail;
+              else
+                Append(new,"\\mbox{");
+                box:=true;
+              fi;
+            elif box=true and not z then
+              Append(new,"}");
+              box:=false;
+            elif box=fail and not z then
+              box:=false; # command over
+            fi;
+            Add(new,a);
+            lc:=a; # last character
+          od;
+          if box=true then
+            Append(new,"}");
+          fi;
+          AppendTo(file,"$",new,"$\n");
 
-	elif 'M' in cold.(f[i]) then
-	  AppendTo(file,"$",str,"$\n");
-	else
-	  AppendTo(file,str,"\n");
-	fi;
-	if mini then
-	  AppendTo(file,"\\end{minipage}%\n");
-	fi;
+        elif 'M' in cold.(f[i]) then
+          AppendTo(file,"$",str,"$\n");
+        else
+          AppendTo(file,str,"\n");
+        fi;
+        if mini then
+          AppendTo(file,"\\end{minipage}%\n");
+        fi;
       fi;
     od;
     AppendTo(file,"\\\\\n");

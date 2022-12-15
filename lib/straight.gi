@@ -1096,28 +1096,28 @@ function(aob,bob)
 # this multiplication routine tries to find duplicate patterns. It
 # implicitly assumes, however that the input is in some way ``reduced'' as
 # an SLP.
-local a,b,	# lines of slp
+local a,b,      # lines of slp
       aep,bep,  # up to this generator index, entries are known.
       ta,tb,    # new indices for old
       tal,tbl,  # up to this index, old and new indices are the same
-      la,lb,	# lengths
-      laa,lba,	# last entries absolute
-      ap,bp,	# processing indices old
-      anp,bnp,	# ditto new
-      asn,bsn,	# lengths of original seeds
-      as,bs,	# subset
-      l,	# result list
-      ale,ble,	# indices in l of a/b entries
-      i,j,k,	# index
-      seed,	# seed
-      seen,	# nr of seeds in toto
-      e,	# entry
-      ei,	# inverse
-      bpre,	# bs-entries that have been taken earlier
-      bleu,	# corresponding ble
-      found,	# substring found?
-      laro,	# flag when dealing with the last elements.
-      p;	# position
+      la,lb,    # lengths
+      laa,lba,  # last entries absolute
+      ap,bp,    # processing indices old
+      anp,bnp,  # ditto new
+      asn,bsn,  # lengths of original seeds
+      as,bs,    # subset
+      l,        # result list
+      ale,ble,  # indices in l of a/b entries
+      i,j,k,    # index
+      seed,     # seed
+      seen,     # nr of seeds in toto
+      e,        # entry
+      ei,       # inverse
+      bpre,     # bs-entries that have been taken earlier
+      bleu,     # corresponding ble
+      found,    # substring found?
+      laro,     # flag when dealing with the last elements.
+      p;        # position
 
   seed:=aob![1];
   asn:=Length(seed.seeds);
@@ -1180,7 +1180,7 @@ local a,b,	# lines of slp
     for i in [1..Length(l)] do
       e:=ShallowCopy(l[i]);
       for j in [1,3..Length(e)-1] do
-	e[j]:=tb[e[j]];
+        e[j]:=tb[e[j]];
       od;
       l[i]:=e;
     od;
@@ -1188,7 +1188,7 @@ local a,b,	# lines of slp
     if e[1]=ta[a[1]] then
       e[2]:=e[2]+a[2];
       if e[2]=0 then
-	e:=e{[3..Length(e)]};
+        e:=e{[3..Length(e)]};
       fi;
     else
       e:=Concatenation([ta[a[1]],a[2]],e);
@@ -1202,7 +1202,7 @@ local a,b,	# lines of slp
     for i in [1..Length(l)] do
       e:=ShallowCopy(l[i]);
       for j in [1,3..Length(e)-1] do
-	e[j]:=ta[e[j]];
+        e[j]:=ta[e[j]];
       od;
       l[i]:=e;
     od;
@@ -1210,7 +1210,7 @@ local a,b,	# lines of slp
     if e[Length(e)-1]=tb[b[1]] then
       e[Length(e)]:=e[Length(e)]+b[2];
       if e[Length(e)]=0 then
-	e:=e{[1..Length(e)-2]};
+        e:=e{[1..Length(e)-2]};
       fi;
     else
       e:=Concatenation(e,[tb[b[1]],b[2]]);
@@ -1228,227 +1228,227 @@ local a,b,	# lines of slp
 #Print("<\n");
       while ap<=la or bp<=lb do
 #Print(">",ap,",",bp,"\n");
-	# how many ap's do use up to generator aep;
-	anp:=ap;
-	while anp<=la and ForAll(a[anp]{[1,3..Length(a[anp])-1]},i->i<=aep) do
-	  anp:=anp+1;
-	od;
-	as:=a{[ap..anp-1]};
+        # how many ap's do use up to generator aep;
+        anp:=ap;
+        while anp<=la and ForAll(a[anp]{[1,3..Length(a[anp])-1]},i->i<=aep) do
+          anp:=anp+1;
+        od;
+        as:=a{[ap..anp-1]};
 
-	# translate the generator numbers
-	if aep>tal then # otherwise no translation needs to take place
-	  for i in [1..Length(as)] do
-	    e:=ShallowCopy(as[i]);
-	    for j in [1,3..Length(e)-1] do
-	      e[j]:=ta[e[j]];
-	      if e[j]<0 then
-		# inverse
-	        e[j]:=-e[j];
-	        e[j+1]:=-e[j+1];
-	      fi;
-	    od;
-	    as[i]:=e;
-	  od;
-	fi;
+        # translate the generator numbers
+        if aep>tal then # otherwise no translation needs to take place
+          for i in [1..Length(as)] do
+            e:=ShallowCopy(as[i]);
+            for j in [1,3..Length(e)-1] do
+              e[j]:=ta[e[j]];
+              if e[j]<0 then
+                # inverse
+                e[j]:=-e[j];
+                e[j+1]:=-e[j+1];
+              fi;
+            od;
+            as[i]:=e;
+          od;
+        fi;
 
-	# how many bp's do use up to generator bep;
-	bnp:=bp;
-	while bnp<=lb and ForAll(b[bnp]{[1,3..Length(b[bnp])-1]},i->i<=bep) do
-	  bnp:=bnp+1;
-	od;
-	bs:=b{[bp..bnp-1]};
+        # how many bp's do use up to generator bep;
+        bnp:=bp;
+        while bnp<=lb and ForAll(b[bnp]{[1,3..Length(b[bnp])-1]},i->i<=bep) do
+          bnp:=bnp+1;
+        od;
+        bs:=b{[bp..bnp-1]};
 
-	# translate the generator numbers
-	if bep>tbl then # otherwise no translation needs to take place
-	  for i in [1..Length(bs)] do
-	    e:=ShallowCopy(bs[i]);
-	    for j in [1,3..Length(e)-1] do
-	      e[j]:=tb[e[j]];
-	      if e[j]<0 then
-		# inverse
-	        e[j]:=-e[j];
-	        e[j+1]:=-e[j+1];
-	      fi;
-	    od;
-	    bs[i]:=e;
-	  od;
-	fi;
+        # translate the generator numbers
+        if bep>tbl then # otherwise no translation needs to take place
+          for i in [1..Length(bs)] do
+            e:=ShallowCopy(bs[i]);
+            for j in [1,3..Length(e)-1] do
+              e[j]:=tb[e[j]];
+              if e[j]<0 then
+                # inverse
+                e[j]:=-e[j];
+                e[j+1]:=-e[j+1];
+              fi;
+            od;
+            bs[i]:=e;
+          od;
+        fi;
 
-	bpre:=[];
-	bleu:=[];
-	# add the as
-	for i in [1..Length(as)] do
-	  e:=as[i];
-	  repeat
-	    # search substring in recorded b-parts
-	    found:=false;
-	    j:=1;
-	    while found=false and j<=Length(ble) do
-	      p:=PosSublOdd(e,l[ble[j]]);
-	      found:=p<>fail;
-	      j:=j+1;
-	    od;
-	    if found=true then
-	      j:=ble[j-1]+1; # the other case will always add 1.
-	    else
-	      # search substring in bs
-	      j:=1;
-	      while found=false and j<=Length(bs) do
-		p:=PosSublOdd(e,bs[j]);
-		if p<>fail then
-		  found:=true;
-		  if not j in bpre then
-		    # record this bs in l
-		    Add(l,bs[j]);
-		    AddSet(bleu,Length(l));
-		    AddSet(bpre,j); #  this one is taken already
-		    tb[bsn+bp+j-1]:=Length(l)+seen; # store the index
-		    j:=Length(l); # position of the l-entry that is sub
-		  else
-		    # we stored it already
-		    j:=Position(l,bs[j]);
-		  fi;
-		fi;
-		j:=j+1;
-	      od;
-	    fi;
-	    if found<>false then
-	      # the subentry starts at index p
-	      # j is the l-index of the entry which is sub+1
-	      e:=Concatenation(e{[1..p-1]},[j+seen-1,1],
-			      e{[p+Length(l[j-1])..Length(e)]});
-	    else
-	      # search substring in recorded b-parts (inverse)
-	      ei:=ERepAssWorInv(e);
-	      j:=1;
-	      while found=false and j<=Length(ble) do
-		p:=PosSublOdd(ei,l[ble[j]]);
-		found:=p<>fail;
-		j:=j+1;
-	      od;
-	      if found=true then
-		j:=ble[j-1]+1; # the other case will always add 1.
-	      else
-		# search substring in bs
-		j:=1;
-		while found=false and j<=Length(bs) do
-		  p:=PosSublOdd(ei,bs[j]);
-		  if p<>fail then
-		    found:=true;
-		    if not j in bpre then
-		      AddSet(bpre,j); #  this one is taken now
-		      # record this bs in l
-		      if bs[j] in l then
-			# happens to be coincidence.
-			k:=Position(l,bs[j]);
-			tb[bsn+bp+j-1]:=k+seen; # store the index
-			j:=k; # position of the l-entry that is sub
-		      else
-			Add(l,bs[j]);
-			AddSet(bleu,Length(l));
-			tb[bsn+bp+j-1]:=Length(l)+seen; # store the index
-			j:=Length(l); # position of the l-entry that is sub
-		      fi;
-		    else
-		      # we stored it already
-		      j:=Position(l,bs[j]);
-		    fi;
-		  fi;
-		  j:=j+1;
-		od;
-	      fi;
-	      if found<>false then
-		# the subentry starts at index p in the inverse
-		e:=Concatenation(e{[1..Length(e)+1-p-Length(l[j-1])]},
-		                 [j+seen-1,-1],
-				 e{[Length(e)-p+2..Length(e)]});
+        bpre:=[];
+        bleu:=[];
+        # add the as
+        for i in [1..Length(as)] do
+          e:=as[i];
+          repeat
+            # search substring in recorded b-parts
+            found:=false;
+            j:=1;
+            while found=false and j<=Length(ble) do
+              p:=PosSublOdd(e,l[ble[j]]);
+              found:=p<>fail;
+              j:=j+1;
+            od;
+            if found=true then
+              j:=ble[j-1]+1; # the other case will always add 1.
+            else
+              # search substring in bs
+              j:=1;
+              while found=false and j<=Length(bs) do
+                p:=PosSublOdd(e,bs[j]);
+                if p<>fail then
+                  found:=true;
+                  if not j in bpre then
+                    # record this bs in l
+                    Add(l,bs[j]);
+                    AddSet(bleu,Length(l));
+                    AddSet(bpre,j); #  this one is taken already
+                    tb[bsn+bp+j-1]:=Length(l)+seen; # store the index
+                    j:=Length(l); # position of the l-entry that is sub
+                  else
+                    # we stored it already
+                    j:=Position(l,bs[j]);
+                  fi;
+                fi;
+                j:=j+1;
+              od;
+            fi;
+            if found<>false then
+              # the subentry starts at index p
+              # j is the l-index of the entry which is sub+1
+              e:=Concatenation(e{[1..p-1]},[j+seen-1,1],
+                              e{[p+Length(l[j-1])..Length(e)]});
+            else
+              # search substring in recorded b-parts (inverse)
+              ei:=ERepAssWorInv(e);
+              j:=1;
+              while found=false and j<=Length(ble) do
+                p:=PosSublOdd(ei,l[ble[j]]);
+                found:=p<>fail;
+                j:=j+1;
+              od;
+              if found=true then
+                j:=ble[j-1]+1; # the other case will always add 1.
+              else
+                # search substring in bs
+                j:=1;
+                while found=false and j<=Length(bs) do
+                  p:=PosSublOdd(ei,bs[j]);
+                  if p<>fail then
+                    found:=true;
+                    if not j in bpre then
+                      AddSet(bpre,j); #  this one is taken now
+                      # record this bs in l
+                      if bs[j] in l then
+                        # happens to be coincidence.
+                        k:=Position(l,bs[j]);
+                        tb[bsn+bp+j-1]:=k+seen; # store the index
+                        j:=k; # position of the l-entry that is sub
+                      else
+                        Add(l,bs[j]);
+                        AddSet(bleu,Length(l));
+                        tb[bsn+bp+j-1]:=Length(l)+seen; # store the index
+                        j:=Length(l); # position of the l-entry that is sub
+                      fi;
+                    else
+                      # we stored it already
+                      j:=Position(l,bs[j]);
+                    fi;
+                  fi;
+                  j:=j+1;
+                od;
+              fi;
+              if found<>false then
+                # the subentry starts at index p in the inverse
+                e:=Concatenation(e{[1..Length(e)+1-p-Length(l[j-1])]},
+                                 [j+seen-1,-1],
+                                 e{[Length(e)-p+2..Length(e)]});
 
-		ei:=ERepAssWorInv(e);
-	      fi;
-	    fi;
+                ei:=ERepAssWorInv(e);
+              fi;
+            fi;
 
-	  until found=false; # several substrings might occur
+          until found=false; # several substrings might occur
 
-	  # finally store, unless trivial and not the last one
-	  if Length(e)>2 or AbsInt(e[2])>1 or laro then
-	    if e in l then
-	      # the replacement could rarely produce duplicates
-	      ta[asn+ap+i-1]:=Position(l,e)+seen;
-	    else
-	      Add(l,e);
-	      if not laro then
-		# do not add in the last step -- this might confuse b
-		AddSet(ale,Length(l));
-	      fi;
-	      ta[asn+ap+i-1]:=Length(l)+seen;
-	    fi;
-	  else
-	    # complete replacement
-	    ta[asn+ap+i-1]:=SignInt(e[2])*e[1];
-	  fi;
-	od;
-	ble:=Union(ble,bleu); # the b-indices that were added
-	# add the bs
-	for i in [1..Length(bs)] do
-	  if not i in bpre then
-	    e:=bs[i];
-	    repeat
-	      # search substring in recorded a-parts
-	      found:=false;
-	      j:=1;
-	      while found=false and j<=Length(ale) do
-		p:=PosSublOdd(e,l[ale[j]]);
-		found:=p<>fail;
-		j:=j+1;
-	      od;
-	      if found<>false then
-		# the subentry starts at index p
-		# j is the l-index of the entry which is sub+1
-		j:=ale[j-1];
-		e:=Concatenation(e{[1..p-1]},[j+seen,1],
-				e{[p+Length(l[j])..Length(e)]});
-	      else
-		# search substring in recorded a-parts
-		found:=false;
-		j:=1;
-		ei:=ERepAssWorInv(e);
-		while found=false and j<=Length(ale) do
-		  p:=PosSublOdd(e,l[ale[j]]);
-		  found:=p<>fail;
-		  j:=j+1;
-		od;
-		if found<>false then
-		  # the subentry starts at index p in the inverse
-		  # j is the l-index of the entry which is sub+1
-		  j:=ale[j-1];
-		  e:=Concatenation(e{[1..Length(e)+1-p-Length(l[j-1])]},
-				  [j+seen-1,-1],
-				  e{[Length(e)-p+2..Length(e)]});
-		  ei:=ERepAssWorInv(e);
-		fi;
-	      fi;
-	    until found=false; # several substrings might occur
-	    # finally store
-	    if Length(e)>2 or AbsInt(e[2])>1 then
-	      if e in l then
-		# the replacement could rarely produce duplicates
-		tb[bsn+bp+i-1]:=Position(l,e)+seen;
-	      else
-		Add(l,e);
-		AddSet(ble,Length(l));
-		tb[bsn+bp+i-1]:=Length(l)+seen;
-	      fi;
-	    else
-	      # complete replacement
-	      tb[bsn+bp+i-1]:=SignInt(e[2])*e[1];
-	    fi;
-	  fi;
-	od;
+          # finally store, unless trivial and not the last one
+          if Length(e)>2 or AbsInt(e[2])>1 or laro then
+            if e in l then
+              # the replacement could rarely produce duplicates
+              ta[asn+ap+i-1]:=Position(l,e)+seen;
+            else
+              Add(l,e);
+              if not laro then
+                # do not add in the last step -- this might confuse b
+                AddSet(ale,Length(l));
+              fi;
+              ta[asn+ap+i-1]:=Length(l)+seen;
+            fi;
+          else
+            # complete replacement
+            ta[asn+ap+i-1]:=SignInt(e[2])*e[1];
+          fi;
+        od;
+        ble:=Union(ble,bleu); # the b-indices that were added
+        # add the bs
+        for i in [1..Length(bs)] do
+          if not i in bpre then
+            e:=bs[i];
+            repeat
+              # search substring in recorded a-parts
+              found:=false;
+              j:=1;
+              while found=false and j<=Length(ale) do
+                p:=PosSublOdd(e,l[ale[j]]);
+                found:=p<>fail;
+                j:=j+1;
+              od;
+              if found<>false then
+                # the subentry starts at index p
+                # j is the l-index of the entry which is sub+1
+                j:=ale[j-1];
+                e:=Concatenation(e{[1..p-1]},[j+seen,1],
+                                e{[p+Length(l[j])..Length(e)]});
+              else
+                # search substring in recorded a-parts
+                found:=false;
+                j:=1;
+                ei:=ERepAssWorInv(e);
+                while found=false and j<=Length(ale) do
+                  p:=PosSublOdd(e,l[ale[j]]);
+                  found:=p<>fail;
+                  j:=j+1;
+                od;
+                if found<>false then
+                  # the subentry starts at index p in the inverse
+                  # j is the l-index of the entry which is sub+1
+                  j:=ale[j-1];
+                  e:=Concatenation(e{[1..Length(e)+1-p-Length(l[j-1])]},
+                                  [j+seen-1,-1],
+                                  e{[Length(e)-p+2..Length(e)]});
+                  ei:=ERepAssWorInv(e);
+                fi;
+              fi;
+            until found=false; # several substrings might occur
+            # finally store
+            if Length(e)>2 or AbsInt(e[2])>1 then
+              if e in l then
+                # the replacement could rarely produce duplicates
+                tb[bsn+bp+i-1]:=Position(l,e)+seen;
+              else
+                Add(l,e);
+                AddSet(ble,Length(l));
+                tb[bsn+bp+i-1]:=Length(l)+seen;
+              fi;
+            else
+              # complete replacement
+              tb[bsn+bp+i-1]:=SignInt(e[2])*e[1];
+            fi;
+          fi;
+        od;
 
-	ap:=anp;
-	bp:=bnp;
-	aep:=aep+1;
-	bep:=bep+1;
+        ap:=anp;
+        bp:=bnp;
+        aep:=aep+1;
+        bep:=bep+1;
 
       od;
       # this ensures the last two entries are processed last
@@ -1471,37 +1471,37 @@ local a,b,	# lines of slp
       # last a is in the but last position
       if lb=Length(l)+seen then
 #  Print("case1\n");
-	# last b is in the last position: combine last two
-	e:=l[Length(l)-1];
-	j:=l[Length(l)];
+        # last b is in the last position: combine last two
+        e:=l[Length(l)-1];
+        j:=l[Length(l)];
 
-	# does b refer to a?
-	if ForAny([1,3..Length(j)-1],k->j[k]=la) then
-	  Add(l,[la,1,lb,1]);
-	else
-	  l[Length(l)-1]:=ERepAssWorProd(e,j);
-	  Unbind(l[Length(l)]);
+        # does b refer to a?
+        if ForAny([1,3..Length(j)-1],k->j[k]=la) then
+          Add(l,[la,1,lb,1]);
+        else
+          l[Length(l)-1]:=ERepAssWorProd(e,j);
+          Unbind(l[Length(l)]);
         fi;
       else
-	Error("spurious last entry");
+        Error("spurious last entry");
       fi;
     else
       # last a is not in the but last position
       if lb=Length(l)+seen then
 #  Print("case2\n");
-	# last b is in the last position: Change it
-	l[Length(l)]:=ERepAssWorProd([la,1],l[Length(l)]);
+        # last b is in the last position: Change it
+        l[Length(l)]:=ERepAssWorProd([la,1],l[Length(l)]);
       else
-	# last b is not in the last position:
-	if la=Length(l)+seen then
+        # last b is not in the last position:
+        if la=Length(l)+seen then
 #  Print("case3\n");
-	  # but a is: change a in last position
-	  l[Length(l)]:=ERepAssWorProd(l[Length(l)],[lb,1]);
-	else
+          # but a is: change a in last position
+          l[Length(l)]:=ERepAssWorProd(l[Length(l)],[lb,1]);
+        else
 #  Print("case4\n");
-	  # last b is not in the last position or inverses used: Add another
-	  Add(l,[laa,SignInt(la),lba,SignInt(lb)]);
-	fi;
+          # last b is not in the last position or inverses used: Add another
+          Add(l,[laa,SignInt(la),lba,SignInt(lb)]);
+        fi;
       fi;
     fi;
 
@@ -1618,20 +1618,20 @@ local s,m,l,trace;
      if n<0 then
       n:=-n;
       if n<=m then
-	return y/s[n];
+        return y/s[n];
       else
-	e:=l[n-m];
-	for i in [Length(e)-1,Length(e)-3..1] do
-	  if e[i+1]<0 then
-	    for j in [e[i+1]..-1] do
-	      y:=trace(y,e[i]);
-	    od;
-	  else
-	    for j in [1..e[i+1]] do
-	      y:=trace(y,-e[i]);
-	    od;
-	  fi;
-	od;
+        e:=l[n-m];
+        for i in [Length(e)-1,Length(e)-3..1] do
+          if e[i+1]<0 then
+            for j in [e[i+1]..-1] do
+              y:=trace(y,e[i]);
+            od;
+          else
+            for j in [1..e[i+1]] do
+              y:=trace(y,-e[i]);
+            od;
+          fi;
+        od;
       fi;
 
      elif n<=m then
@@ -1640,14 +1640,14 @@ local s,m,l,trace;
        e:=l[n-m];
        for i in [1,3..Length(e)-1] do
          if e[i+1]<0 then
-	   for j in [e[i+1]..-1] do
-	     y:=trace(y,-e[i]);
-	   od;
-	 else
-	   for j in [1..e[i+1]] do
-	     y:=trace(y,e[i]);
-	   od;
-	 fi;
+           for j in [e[i+1]..-1] do
+             y:=trace(y,-e[i]);
+           od;
+         else
+           for j in [1..e[i+1]] do
+             y:=trace(y,e[i]);
+           od;
+         fi;
        od;
      fi;
 
@@ -1698,17 +1698,17 @@ local s,m,l,stack,pos,row,ind,step,cnt,v,e,i,sp,ae;
     if v<=m then
       # do the most simple cases themselves
       if e=-1 then
-	x:=x/s[v];
+        x:=x/s[v];
       elif e=1 then
-	x:=x^s[v];
+        x:=x^s[v];
       elif e>0 then
-	for i in [1..e] do
-	  x:=x^s[v];
-	od;
+        for i in [1..e] do
+          x:=x^s[v];
+        od;
       else
-	for i in [1..-e] do
-	  x:=x/s[v];
-	od;
+        for i in [1..-e] do
+          x:=x/s[v];
+        od;
       fi;
       cnt:=ae; # did all
     else
@@ -1719,11 +1719,11 @@ local s,m,l,stack,pos,row,ind,step,cnt,v,e,i,sp,ae;
       row:=l[pos];
       npre:=e>0;
       if npre then
-	ind:=1;
-	step:=2;
+        ind:=1;
+        step:=2;
       else
-	ind:=Length(row)-1;
-	step:=-2;
+        ind:=Length(row)-1;
+        step:=-2;
       fi;
       cnt:=0; # we just started
 
@@ -1733,20 +1733,20 @@ local s,m,l,stack,pos,row,ind,step,cnt,v,e,i,sp,ae;
       ind:=ind+step;
       cnt:=0;
       if ind>Length(row) or ind<1 then
-	# pop
-	if sp=0 then
-	  # through!
-	  return x;
-	fi;
-	row:=stack[sp];
-	sp:=sp-1;
-	pos:=row[1];
-	ind:=row[2];
-	step:=row[3];
-	npre:=step>0;
-	cnt:=row[4]+1; # +1 since we did one
-	row:=l[pos];
-	ae:=AbsInt(row[ind+1]);
+        # pop
+        if sp=0 then
+          # through!
+          return x;
+        fi;
+        row:=stack[sp];
+        sp:=sp-1;
+        pos:=row[1];
+        ind:=row[2];
+        step:=row[3];
+        npre:=step>0;
+        cnt:=row[4]+1; # +1 since we did one
+        row:=l[pos];
+        ae:=AbsInt(row[ind+1]);
       fi;
     od;
   until false; # we will stop by returning the result
@@ -2081,8 +2081,8 @@ local z,d,l,count,b;
   count:=function(i)
     if i>b then
       if d[i]=0 then
-	count(AbsInt(t[1][i]));
-	count(AbsInt(t[2][i]));
+        count(AbsInt(t[1][i]));
+        count(AbsInt(t[2][i]));
       fi;
       d[i]:=d[i]-1;
     fi;
@@ -2108,53 +2108,53 @@ local z,d,l,count,b;
     # put together
     if IsInt(e) and IsInt(f) then
       if e=f then
-	if x+y=0 then
-	  Error("strange tree element");
-	else
-	  e:=[e,x+y];
-	fi;
+        if x+y=0 then
+          Error("strange tree element");
+        else
+          e:=[e,x+y];
+        fi;
       else
         e:=[e,x,f,y];
       fi;
     else
       # take care of inverses
       if IsList(e) and x<1 then
-	x:=[]; #revert
-	for j in [Length(e)-1,Length(e)-3..1] do
-	  Add(x,j);
-	  Add(x,j+1);
-	od;
+        x:=[]; #revert
+        for j in [Length(e)-1,Length(e)-3..1] do
+          Add(x,j);
+          Add(x,j+1);
+        od;
         e:=e{x};
-	x:=[2,4..Length(e)]; # exponent indices
-	e{x}:=-e{x};
+        x:=[2,4..Length(e)]; # exponent indices
+        e{x}:=-e{x};
       fi;
       if IsList(f) and y<1 then
-	y:=[]; #revert
-	for j in [Length(f)-1,Length(f)-3..1] do
-	  Add(y,j);
-	  Add(y,j+1);
-	od;
+        y:=[]; #revert
+        for j in [Length(f)-1,Length(f)-3..1] do
+          Add(y,j);
+          Add(y,j+1);
+        od;
         f:=f{y};
-	y:=[2,4..Length(f)]; # exponent indices
-	f{y}:=-f{y};
+        y:=[2,4..Length(f)]; # exponent indices
+        f{y}:=-f{y};
       fi;
 
       if IsInt(e) then
-	e:=Concatenation([e,x],f);
+        e:=Concatenation([e,x],f);
       elif IsInt(f) then
-	e:=Concatenation(e,[f,y]);
+        e:=Concatenation(e,[f,y]);
       else
-	# multiply
-	f:=ShallowCopy(f);
-	while Length(e)>1 and Length(f)>0 and e[Length(e)-1]=f[1] do
-	  # same variables: reduce
-	  f[2]:=f[2]+e[Length(e)];
-	  if f[2]=0 then
-	    f:=f{[3..Length(f)]};
-	  fi;
-	  e:=e{[1..Length(e)-2]};
-	od;
-	e:=Concatenation(e,f);
+        # multiply
+        f:=ShallowCopy(f);
+        while Length(e)>1 and Length(f)>0 and e[Length(e)-1]=f[1] do
+          # same variables: reduce
+          f[2]:=f[2]+e[Length(e)];
+          if f[2]=0 then
+            f:=f{[3..Length(f)]};
+          fi;
+          e:=e{[1..Length(e)-2]};
+        od;
+        e:=Concatenation(e,f);
       fi;
 
     fi;

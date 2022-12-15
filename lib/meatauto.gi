@@ -37,21 +37,21 @@ local f, d1, d2, e, z, g1, g2, r, b, n, a, gp, i, j, k;
     g2:=m2.generators[gp];
     for i in [1..d1] do
       for j in [1..d2] do
-	# calculate equation for i-th row, j-th column
+        # calculate equation for i-th row, j-th column
         r:=ShallowCopy(z);
-	# the entry in g*hom is the i-th row of g with the variables in the
-	# j-th column
-	for k in [1..d1] do
-	  b:=(k-1)*d2+j;
-	  r[b]:=r[b]+g1[i][k];
+        # the entry in g*hom is the i-th row of g with the variables in the
+        # j-th column
+        for k in [1..d1] do
+          b:=(k-1)*d2+j;
+          r[b]:=r[b]+g1[i][k];
         od;
-	# the entry in hom*g is the variables in the i-th row of hom with the
-	# j-th column of g
-	for k in [1..d2] do
-	  b:=(i-1)*d2+k;
-	  r[b]:=r[b]-g2[k][j];
-	od;
-	Add(e,r);
+        # the entry in hom*g is the variables in the i-th row of hom with the
+        # j-th column of g
+        for k in [1..d2] do
+          b:=(i-1)*d2+k;
+          r[b]:=r[b]-g2[k][j];
+        od;
+        Add(e,r);
       od;
     od;
   od;
@@ -135,14 +135,14 @@ local n, zero, weights, mat, vec, ReduceRow, t,
     fi;
     for i in [1..Length(weights)] do
       if weights[i] = lead then
-	z := lhs[lead];
-	lhs := lhs - z * mat[i]; rhs := rhs - z * vec[i];
-	lead := PositionNonZero(lhs, lead);
-	if lead > n then
-	  return rhs;
-	fi;
+        z := lhs[lead];
+        lhs := lhs - z * mat[i]; rhs := rhs - z * vec[i];
+        lead := PositionNonZero(lhs, lead);
+        if lead > n then
+          return rhs;
+        fi;
       elif weights[i] > lead then
-	return [lead, lhs, rhs, i];
+        return [lead, lhs, rhs, i];
       fi;
     od;
     return [lead, lhs, rhs, Length(weights)+1];
@@ -163,20 +163,20 @@ local n, zero, weights, mat, vec, ReduceRow, t,
       newrow := newrow / newrow[newweight]; # NB: in this order
 
       if i = Length(mat)+1 then
-	# add new equation to end of list
-	Add(mat, newrow);
-	Add(vec, newrhs);
-	Add(weights, newweight);
+        # add new equation to end of list
+        Add(mat, newrow);
+        Add(vec, newrhs);
+        Add(weights, newweight);
       else
-	l := Length(mat);
-	# move down other rows to make space for this new one...
-	mat{[i+1..l+1]} := mat{[i..l]};
-	vec{[i+1..l+1]} := vec{[i..l]};
-	# and then slot it in
-	mat[i] := newrow;
-	vec[i] := newrhs;
-	weights{[i+1..l+1]} := weights{[i..l]};
-	weights[i] := newweight;
+        l := Length(mat);
+        # move down other rows to make space for this new one...
+        mat{[i+1..l+1]} := mat{[i..l]};
+        vec{[i+1..l+1]} := vec{[i..l]};
+        # and then slot it in
+        mat[i] := newrow;
+        vec[i] := newrhs;
+        weights{[i+1..l+1]} := weights{[i..l]};
+        weights[i] := newweight;
       fi;
 
     else
@@ -184,9 +184,9 @@ local n, zero, weights, mat, vec, ReduceRow, t,
       # nonzero rhs reduction
 
       if not IsZero(t) then
-	Info(InfoMtxHom,6,"addEqns: FAIL!" );
-	eqns.failed := true;
-	return eqns; # return immediately
+        Info(InfoMtxHom,6,"addEqns: FAIL!" );
+        eqns.failed := true;
+        return eqns; # return immediately
       fi;
     fi;
   od;
@@ -240,12 +240,12 @@ local m, n, zero, i, c, j, factor;
     for i in [1..m] do
       c := eqns.weights[i];
       for j in [1..i-1] do
-	if eqns.mat[j][c] <> zero then
-	  Info(InfoMtxHom,6,"solveEqns: kill mat[",j,",",c,"]");
-	  factor := eqns.mat[j][c];
-	  eqns.mat[j] := eqns.mat[j] - factor*eqns.mat[i];
-	  eqns.vec[j] := eqns.vec[j] - factor*eqns.vec[i];
-	fi;
+        if eqns.mat[j][c] <> zero then
+          Info(InfoMtxHom,6,"solveEqns: kill mat[",j,",",c,"]");
+          factor := eqns.mat[j][c];
+          eqns.mat[j] := eqns.mat[j] - factor*eqns.mat[i];
+          eqns.vec[j] := eqns.vec[j] - factor*eqns.vec[i];
+        fi;
       od;
     od;
   fi;
@@ -335,8 +335,8 @@ local n, coeffs, x, zero, z, i;
     for i in [1..n] do
       z:=x[ech[i]];
       if z <> zero then
-	x:=x - z * base[i];
-	coeffs[i]:=z;
+        x:=x - z * base[i];
+        coeffs[i]:=z;
       fi;
     od;
   fi;
@@ -347,9 +347,9 @@ local n, coeffs, x, zero, z, i;
     return x;
   else
     return rec(coeffs:=coeffs,
-	      residue:=x,
-	      projection:=v - x
-	      );
+              residue:=x,
+              projection:=v - x
+              );
   fi;
 end);
 
@@ -376,11 +376,11 @@ local gens, pos, settled, oldlen, i, j;
     oldlen:=Length(U);
     for i in [settled+1..Length(U)] do
       for j in [1..Length(gens)] do
-	v:=EchResidueCoeffs(U, ech, (U[i] * gens[j]),2);
-	pos:=PositionNonZero(v);
-	if pos <= Length(v) then
-	  Add(U, v/v[pos]); Add(ech, pos);
-	fi;
+        v:=EchResidueCoeffs(U, ech, (U[i] * gens[j]),2);
+        pos:=PositionNonZero(v);
+        if pos <= Length(v) then
+          Add(U, v/v[pos]); Add(ech, pos);
+        fi;
       od;
     od;
     settled:=oldlen;
@@ -420,15 +420,15 @@ local V, nv, W, nw, U, echu, F, matsV, matsW, k, g1, g2, max_stack_len, _t,
       g1:=Random(1, k);
       g2:=g1;
       while g2 = g1 and Length(r.mats)>1 do
-	g2:=Random(1, k);
+        g2:=Random(1, k);
       od;
       Add(r.mats,[r.mats[g1][1]*r.mats[g2][1],
-		  r.mats[g1][2]*r.mats[g2][2]]);
+                  r.mats[g1][2]*r.mats[g2][2]]);
       k:=k + 1;
     od;
 
     r.zero:=[ ImmutableMatrix(F,NullMat(nv,nv,F)),
-	      ImmutableMatrix(F,NullMat(nw,nw,F)) ];
+              ImmutableMatrix(F,NullMat(nw,nw,F)) ];
 
     # we build a stack of good grpalg elements to use for choosing
     # elements <v0> --- an element <A> in <stack> is of the form:
@@ -451,14 +451,14 @@ local V, nv, W, nw, U, echu, F, matsV, matsW, k, g1, g2, max_stack_len, _t,
   for A in r.stack do
     v0:=A[1];
     extradim:=Length(SpinSpaceVector(V, U, echu, v0,zero))
-		- Length(U);
+                - Length(U);
     if extradim > 0 then
       Add(newstack, [v0, A[2], extradim]);
     fi;
   od;
   r.stack:=newstack;
   Info(InfoMtxHom,2,"stack reduced to length ", Length(r.stack), " (",
-	  Runtime()-_t, ")");
+          Runtime()-_t, ")");
 
   # <N> contains the nullspace in <V> of a group algebra element ---
   # initialise it to the empty list for the following repeat loop
@@ -492,10 +492,10 @@ local V, nv, W, nw, U, echu, F, matsV, matsW, k, g1, g2, max_stack_len, _t,
       # together
       g1:=Random(1, k);
       repeat
-	g2:=Random(1, k);
+        g2:=Random(1, k);
       until g2 <> g1 or Length(r.mats)=1;
       Add(r.mats,[r.mats[g1][1]*r.mats[g2][1],
-		  r.mats[g1][2]*r.mats[g2][2]]);
+                  r.mats[g1][2]*r.mats[g2][2]]);
       k:=k + 1;
 
       # Now take a random linear sum of the existing generators as new
@@ -504,11 +504,11 @@ local V, nv, W, nw, U, echu, F, matsV, matsW, k, g1, g2, max_stack_len, _t,
       grpalg:=ShallowCopy(r.zero);
 
       for g1 in [1..k] do
-	g2:=Random(F);
-	if not IsZero(g2) then
-	  grpalg[1]:=grpalg[1] + g2*r.mats[g1][1];
-	  grpalg[2]:=grpalg[2] + g2*r.mats[g1][2];
-	fi;
+        g2:=Random(F);
+        if not IsZero(g2) then
+          grpalg[1]:=grpalg[1] + g2*r.mats[g1][1];
+          grpalg[2]:=grpalg[2] + g2*r.mats[g1][2];
+        fi;
       od;
       N:=TriangulizedNullspaceMat(grpalg[1]);
       count:=count + 1;
@@ -518,29 +518,29 @@ local V, nv, W, nw, U, echu, F, matsV, matsW, k, g1, g2, max_stack_len, _t,
 
       # now find best element of <N> for adding to <stack>
       extradim:=List(N, y ->
-			Length(SpinSpaceVector(V, U, echu, y,zero))
-			- Length(U));
+                        Length(SpinSpaceVector(V, U, echu, y,zero))
+                        - Length(U));
       i:=1;
       for j in [2..Length(extradim)] do
-	if extradim[j] > extradim[i] then
-	  i:=j;
-	fi;
+        if extradim[j] > extradim[i] then
+          i:=j;
+        fi;
       od;
       if extradim[i] > 0 then
-	# exit early if we have found an element that gets use all
-	# of <V> after spinning
-	done:=extradim[i] = nv - Length(U);
-	if done then
-	  r.stack:=[[N[i], grpalg, extradim[i]]];
-	else
-	  Add(r.stack, [N[i], grpalg, extradim[i]]);
-	fi;
+        # exit early if we have found an element that gets use all
+        # of <V> after spinning
+        done:=extradim[i] = nv - Length(U);
+        if done then
+          r.stack:=[[N[i], grpalg, extradim[i]]];
+        else
+          Add(r.stack, [N[i], grpalg, extradim[i]]);
+        fi;
       fi;
     fi;
 
   od;
   Info(InfoMtxHom,2,"stack loop done, stack now length ", Length(r.stack), " (",
-	  Runtime()-_t, ")");
+          Runtime()-_t, ")");
 
   if Length(r.stack) > 0 then
     #
@@ -548,7 +548,7 @@ local V, nv, W, nw, U, echu, F, matsV, matsW, k, g1, g2, max_stack_len, _t,
     i:=1;
     for j in [2..Length(r.stack)] do
       if r.stack[j][3] > r.stack[i][3] then
-	i:=j;
+        i:=j;
       fi;
     od;
     v0:=r.stack[i][1];
@@ -594,12 +594,12 @@ local n, m, zero, ech, k, i, j, found, l;
     found:=false;
     while not found and i <= n do
       if (gens[k][i][j] <> zero) then
-	found:=true;
+        found:=true;
       else
-	j:=j + 1;
-	if (j > m) then
-	  j:=1; i:=i + 1;
-	fi;
+        j:=j + 1;
+        if (j > m) then
+          j:=1; i:=i + 1;
+        fi;
       fi;
     od;
 
@@ -613,9 +613,9 @@ local n, m, zero, ech, k, i, j, found, l;
 
       # Now zero position [i,j] in all further generators
       for l in [k+1..Length(gens)] do
-	if (gens[l][i][j] <> zero) then
-	  gens[l]:=gens[l] - gens[k] * gens[l][i][j];
-	fi;
+        if (gens[l][i][j] <> zero) then
+          gens[l]:=gens[l] - gens[k] * gens[l][i][j];
+        fi;
       od;
       k:=k + 1;
     else
@@ -766,89 +766,89 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
       oldlen:=Length(v);
 
       for i in [start..oldlen] do     ### loop on vectors in <v>
-	for j in [1..k] do          ### loop on generators of G
+        for j in [1..k] do          ### loop on generators of G
 
-	  if Length(a[i])=0 then
-	    #T: special treatment 0-dimensional
-	    ag:=[];
-	  else
-	    ag:=a[i] * gW[j];
-	  fi;
+          if Length(a[i])=0 then
+            #T: special treatment 0-dimensional
+            ag:=[];
+          else
+            ag:=a[i] * gW[j];
+          fi;
 
-	  # create new element <x>, with its definition as the
-	  # difference between <v0^m> and <uu> in <U>.
-	  x:=v[i] * gV[j];
-	  m:=ag;
-	  uu:=u[i] * gV[j];
+          # create new element <x>, with its definition as the
+          # difference between <v0^m> and <uu> in <U>.
+          x:=v[i] * gV[j];
+          m:=ag;
+          uu:=u[i] * gV[j];
 
-	  ret:=EchResidueCoeffs(U, echu, x,3);
-	  x:=ret.residue;
-	  uu:=uu - ret.projection;
+          ret:=EchResidueCoeffs(U, echu, x,3);
+          x:=ret.residue;
+          uu:=uu - ret.projection;
 
-	  # reduce modulo the new semi-ech basis elements in <v>,
-	  # storing the coefficients in <c>
-	  #
-	  c:=ListWithIdenticalEntries(Length(v),zero);
-	  for l in [1..Length(v)] do
-	    z:=x[echv[l]];
-	    if z <> zero then
-	      x:=x - z * v[l];
-	      if Length(m) > 0 then
-		  m:=m - z * a[l];
-	      fi;
-	      c[l]:=c[l] + z;
-	      uu:=uu - z * u[l];
-	    fi;
-	  od;
+          # reduce modulo the new semi-ech basis elements in <v>,
+          # storing the coefficients in <c>
+          #
+          c:=ListWithIdenticalEntries(Length(v),zero);
+          for l in [1..Length(v)] do
+            z:=x[echv[l]];
+            if z <> zero then
+              x:=x - z * v[l];
+              if Length(m) > 0 then
+                  m:=m - z * a[l];
+              fi;
+              c[l]:=c[l] + z;
+              uu:=uu - z * u[l];
+            fi;
+          od;
       c:=ImmutableVector(F,c);
 
-	  # Note: at this point, <x> has been reduced modulo the
-	  # semi-ech basis <U> union <v>, and that
-	  #
-	  #     x = v0 * a[i] + uu
+          # Note: at this point, <x> has been reduced modulo the
+          # semi-ech basis <U> union <v>, and that
+          #
+          #     x = v0 * a[i] + uu
 
-	  pos:=PositionNonZero(x);
-	  if pos <= Length(x) then
+          pos:=PositionNonZero(x);
+          if pos <= Length(x) then
 
-	    # new semi-ech basis element <x>
+            # new semi-ech basis element <x>
 
-	    z:=x[pos];
-	    Add(v, x/z);
-	    Add(echv, pos);
-	    Add(a, m/z);
-	    Add(u, uu/z);
+            z:=x[pos];
+            Add(v, x/z);
+            Add(echv, pos);
+            Add(a, m/z);
+            Add(u, uu/z);
 
-	  else
+          else
 
-	    # we get some equations !
+            # we get some equations !
 
-	    s1:=Sum([1..Length(v)], y -> c[y] * v[y]);
-	    uu:=v[i] * gV[j] - s1;
+            s1:=Sum([1..Length(v)], y -> c[y] * v[y]);
+            uu:=v[i] * gV[j] - s1;
 
-	    X:=NullMat(t, nw, F);
-	    for l in [1..Length(v)] do
-	      if c[l] <> zero then
-		if Length(X) > 0 then
-		  X:=X + c[l] * a[l];
-		fi;
-		uu:=uu + c[l] * u[l];
-	      fi;
-	    od;
+            X:=NullMat(t, nw, F);
+            for l in [1..Length(v)] do
+              if c[l] <> zero then
+                if Length(X) > 0 then
+                  X:=X + c[l] * a[l];
+                fi;
+                uu:=uu + c[l] * u[l];
+              fi;
+            od;
 
-	    if Length(X) > 0 then
-	      X:=X - ag;
-	    fi;
+            if Length(X) > 0 then
+              X:=X - ag;
+            fi;
 
-	    mat:=[];
-	    uuc:=EchResidueCoeffs(U, echu, uu,1);
-	    uic:=EchResidueCoeffs(U, echu, u[i],1);
-	    for l in [1..s] do
-	      Add(mat, uuc * homs[l] - uic * homs[l] * gW[j]);
-	    od;
-	    Append(mat, X);
-	    SMTX_AddEqns(e, TransposedMat(mat), zeroW);
-	  fi;
-	od;
+            mat:=[];
+            uuc:=EchResidueCoeffs(U, echu, uu,1);
+            uic:=EchResidueCoeffs(U, echu, u[i],1);
+            for l in [1..s] do
+              Add(mat, uuc * homs[l] - uic * homs[l] * gW[j]);
+            od;
+            Append(mat, X);
+            SMTX_AddEqns(e, TransposedMat(mat), zeroW);
+          fi;
+        od;
       od;
 
       start:=oldlen+1;
@@ -876,31 +876,31 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
 
       hom:=[];
       if r > 0 then
-	Uhom:=NullMat(r, nw, F);
-	for l in [1..s] do
-	  if ans[i][l] <> zero then
-	    Uhom:=Uhom + ans[i][l] * homs[l];
-	  fi;
-	od;
-	for l in [1..r] do
-	  Add(hom, Uhom[l]);
-	od;
+        Uhom:=NullMat(r, nw, F);
+        for l in [1..s] do
+          if ans[i][l] <> zero then
+            Uhom:=Uhom + ans[i][l] * homs[l];
+          fi;
+        od;
+        for l in [1..r] do
+          Add(hom, Uhom[l]);
+        od;
       fi;
 
       imv0:=zeroW * zero;
       for l in [1..t] do
-	if ans[i][s+l] <> zero then
-	  imv0:=imv0 + ans[i][s+l] * M[l];
-	fi;
+        if ans[i][s+l] <> zero then
+          imv0:=imv0 + ans[i][s+l] * M[l];
+        fi;
       od;
       imv0c:=EchResidueCoeffs(M, echm, imv0,1);
       for l in [1..Length(v)] do
         if Length(imv0c)=0 then image:=[];
         else image:=imv0c * a[l];fi;
-	if r > 0 then
-	  image:=image + EchResidueCoeffs(U, echu, u[l],1) * Uhom;
-	fi;
-	Add(hom, image);
+        if r > 0 then
+          image:=image + EchResidueCoeffs(U, echu, u[l],1) * Uhom;
+        fi;
+        Add(hom, image);
       od;
       hom:=ImmutableMatrix(F,hom);
       Assert(1,hom<>0*hom);
@@ -997,8 +997,8 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
       # Yes, found the residue field root and proved indecomposability!
       maxaord:=Order(maxa);
       while maxaord > maxorder do
-	maxa:=maxa^p;
-	maxaord:=maxaord / p;
+        maxa:=maxa^p;
+        maxaord:=maxaord / p;
       od;
       SMTX.SetEndAlgResidue(M, [maxa, maxaord]);
       Info(InfoMtxHom,3,"proved ",Length(nilbase));
@@ -1018,7 +1018,7 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
     for i in [1..nildim] do
       r:=echelon[nilech[i]][1]; c:=echelon[nilech[i]][2];
       if a[r][c] <> zero then
-	a:=a - a[r][c] * nilbase[i] / nilbase[i][r][c];
+        a:=a - a[r][c] * nilbase[i] / nilbase[i][r][c];
       fi;
     od;
 
@@ -1028,9 +1028,9 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
       l:=remain[k];
       r:=echelon[l][1]; c:=echelon[l][2];
       if a[r][c] <> zero then
-	done:=true;
+        done:=true;
       else
-	k:=k + 1;
+        k:=k + 1;
       fi;
     od;
 
@@ -1084,7 +1084,7 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
   nildim:=0;                        # dim of current approx to radical
   p:=Size(F);
   maxorder:=1;                      # order of largest order regular elmt
-				      #   found so far
+                                    #   found so far
   maxa:=IdentityMat(n,F);           # the regular elmt with order maxorder
   nilbase:=[];                      # basis for approx to radical
   nilech:=[];
@@ -1104,71 +1104,71 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
     repeat
       # randomly sample endomorphism algebra
       repeat
-	coeffs:=List([1..enddim], x -> Random(F));
+        coeffs:=List([1..enddim], x -> Random(F));
       until ForAny(remain,x->not IsZero(coeffs[x]));
 
       a:=LinearCombination(basis,coeffs);
 
       rk:=RankMat(a);
       if rk=n then
-	# a regular element, check to see whether its order is
-	# larger than previously known, and if so whether it
-	# generates the residue field modulo current nilpotent ideal
-	order:=Order(a);
+        # a regular element, check to see whether its order is
+        # larger than previously known, and if so whether it
+        # generates the residue field modulo current nilpotent ideal
+        order:=Order(a);
 
-	while (order mod p = 0) do
-	    order:=order / p;
-	od;
-	if order > maxorder then
-	  maxorder:=order;
-	  maxa:=a;
-	  if proveIndecomposability() then
-	    return fail;
-	  fi;
-	  cnt:=1;
-	else
-	  cnt:=cnt + 1;
-	fi;
+        while (order mod p = 0) do
+            order:=order / p;
+        od;
+        if order > maxorder then
+          maxorder:=order;
+          maxa:=a;
+          if proveIndecomposability() then
+            return fail;
+          fi;
+          cnt:=1;
+        else
+          cnt:=cnt + 1;
+        fi;
       else
-	fit:=FittingSplitModule(a,rk,F);
-	if fit<>fail then
-	  return fit;
-	elif addnilpotent(a) then
-	  # new nilpotent element, added to nilbasis. Now close nilbasis to
-	  # basis for an ideal.
+        fit:=FittingSplitModule(a,rk,F);
+        if fit<>fail then
+          return fit;
+        elif addnilpotent(a) then
+          # new nilpotent element, added to nilbasis. Now close nilbasis to
+          # basis for an ideal.
 
-	  # keep a pointer to the first new element added to nilbase
-	  pos:=nildim; # a was just added
+          # keep a pointer to the first new element added to nilbase
+          pos:=nildim; # a was just added
 
-	  # first add powers of a
-	  newa:=a^2;
-	  repeat
-	    lastdim:=nildim;
-	    addnilpotent(newa);
-	    newa:=newa * a;
-	  until lastdim = nildim or IsZero(newa);
+          # first add powers of a
+          newa:=a^2;
+          repeat
+            lastdim:=nildim;
+            addnilpotent(newa);
+            newa:=newa * a;
+          until lastdim = nildim or IsZero(newa);
 
-	  # now close nilbase to make ideal basis
-	  repeat
-	    for i in [1..enddim] do
-	      a:=nilbase[pos] * basis[i];
-	      fit:=FittingSplitModule(a,RankMat(a),F);
-	      if fit <> fail then
-		return fit;
-	      fi;
-	      addnilpotent(a);
-	    od;
-	    pos:=pos + 1;
-	  until pos = nildim + 1;
-	fi;
+          # now close nilbase to make ideal basis
+          repeat
+            for i in [1..enddim] do
+              a:=nilbase[pos] * basis[i];
+              fit:=FittingSplitModule(a,RankMat(a),F);
+              if fit <> fail then
+                return fit;
+              fi;
+              addnilpotent(a);
+            od;
+            pos:=pos + 1;
+          until pos = nildim + 1;
+        fi;
       fi;
 
       if proveIndecomposability() then
-	return fail;
+        return fail;
       fi;
     until (cnt >= 20000);
     Error("Unable to ascertain module decomposition within time limits.\n",
-	  "Call `return;' to try again.");
+          "Call `return;' to try again.");
     cnt:=0;
   until false;
 end);
@@ -1184,33 +1184,33 @@ local n, F, stack, i, d, d2, md, b, endo, sel, e1, e2;
     while i<=Length(stack) do
       d:=ProperModuleDecomp(stack[i][2]);
       if d<>fail then
-	if Length(stack[i][1])<n then
-	  d2:=List(d,j->j*stack[i][1]);
-	else
-	  d2:=d;
-	fi;
-	md:=List(d2,i->SMTX.InducedActionSubmodule(m,i));
-	Assert(1,ForAll(md,i->i<>fail));
-	# Translate endomorphism rings
-	b:=Concatenation(d[1],d[2]); # local new basis
-	# basechange
-	endo:=List(stack[i][2].basisModuleEndomorphisms,
-	           i->b*i/b);
-	sel:=[1..Length(d[1])];
-	e1:=List(endo,i->i{sel}{sel});
-	e1:=SMTX_EcheloniseMats(e1,F)[1];
-	Assert(1,ForAll(md[1].generators,i->ForAll(e1,j->i*j=j*i)));
-	md[1].basisModuleEndomorphisms:=e1;
-	sel:=[Length(d[1])+1..stack[i][2].dimension];
-	e2:=List(endo,i->i{sel}{sel});
-	e2:=SMTX_EcheloniseMats(e2,F)[1];
-	Assert(1,ForAll(md[2].generators,i->ForAll(e2,j->i*j=j*i)));
-	md[2].basisModuleEndomorphisms:=e2;
-	stack[i]:=[d2[1],md[1]];
-	Add(stack,[d2[2],md[2]]);
+        if Length(stack[i][1])<n then
+          d2:=List(d,j->j*stack[i][1]);
+        else
+          d2:=d;
+        fi;
+        md:=List(d2,i->SMTX.InducedActionSubmodule(m,i));
+        Assert(1,ForAll(md,i->i<>fail));
+        # Translate endomorphism rings
+        b:=Concatenation(d[1],d[2]); # local new basis
+        # basechange
+        endo:=List(stack[i][2].basisModuleEndomorphisms,
+                   i->b*i/b);
+        sel:=[1..Length(d[1])];
+        e1:=List(endo,i->i{sel}{sel});
+        e1:=SMTX_EcheloniseMats(e1,F)[1];
+        Assert(1,ForAll(md[1].generators,i->ForAll(e1,j->i*j=j*i)));
+        md[1].basisModuleEndomorphisms:=e1;
+        sel:=[Length(d[1])+1..stack[i][2].dimension];
+        e2:=List(endo,i->i{sel}{sel});
+        e2:=SMTX_EcheloniseMats(e2,F)[1];
+        Assert(1,ForAll(md[2].generators,i->ForAll(e2,j->i*j=j*i)));
+        md[2].basisModuleEndomorphisms:=e2;
+        stack[i]:=[d2[1],md[1]];
+        Add(stack,[d2[2],md[2]]);
       else
-	SMTX.SetIsIndecomposable(stack[i][2],true);
-	i:=i+1;
+        SMTX.SetIsIndecomposable(stack[i][2],true);
+        i:=i+1;
       fi;
     od;
     m.indecomposition:=stack;
@@ -1280,14 +1280,14 @@ local d, h, found, i, m1, idx, imgs, hom, j;
       AddSet(found,i);
       imgs:=[];
       for j in [i+1..Length(d)] do
-	if not j in found and m1.dimension=d[j][2].dimension then
-	  hom:=IsomIndecModules(d[j][2],m1);
-	  if hom<>fail then
-	    Add(idx,j);
-	    AddSet(found,j);
-	    Add(imgs,rec(component:=d[j],isomorphism:=hom^-1));
-	  fi;
-	fi;
+        if not j in found and m1.dimension=d[j][2].dimension then
+          hom:=IsomIndecModules(d[j][2],m1);
+          if hom<>fail then
+            Add(idx,j);
+            AddSet(found,j);
+            Add(imgs,rec(component:=d[j],isomorphism:=hom^-1));
+          fi;
+        fi;
       od;
       Add(h,rec(component:=d[i],images:=imgs,indices:=idx));
     fi;
@@ -1350,20 +1350,20 @@ local F, n, hc1, hc2, nc, b1, b2, map, remain, j, found, hom, i, k;
     while j<=nc and not found do
       if j in remain and Length(hc1[i].indices)=Length(hc2[j].indices) then
         # test: i isomorphic j?
-	hom:=IsomIndecModules(hc1[i].component[2],hc2[j].component[2]);
-	if hom<>fail then
-	  # the homogeneous components are isomorphic
-	  found:=true;
-	  Append(b1,hc1[i].component[1]);
-	  Append(b2,hc2[j].component[1]);
-	  Add(map,hom);
-	  for k in [1..Length(hc1[i].images)] do
-	    Append(b1,hc1[i].images[k].component[1]);
-	    Append(b2,hc2[j].images[k].component[1]);
-	    Add(map,hc1[i].images[k].isomorphism^-1*hom*
-		    hc2[j].images[k].isomorphism);
-	  od;
-	fi;
+        hom:=IsomIndecModules(hc1[i].component[2],hc2[j].component[2]);
+        if hom<>fail then
+          # the homogeneous components are isomorphic
+          found:=true;
+          Append(b1,hc1[i].component[1]);
+          Append(b2,hc2[j].component[1]);
+          Add(map,hom);
+          for k in [1..Length(hc1[i].images)] do
+            Append(b1,hc1[i].images[k].component[1]);
+            Append(b2,hc2[j].images[k].component[1]);
+            Add(map,hc1[i].images[k].isomorphism^-1*hom*
+                    hc2[j].images[k].isomorphism);
+          od;
+        fi;
       fi;
       j:=j+1;
     od;
@@ -1403,16 +1403,16 @@ local zero, n, flags, base, ech, k, diff, i, j, found, l;
     found := false;
     while not found and diff < n do
       if (base[k][i][j] <> zero) and
-	(flags[i][j] = 0) then
-	found := true;
+        (flags[i][j] = 0) then
+        found := true;
       else
-	i := i + 1;
-	j := i - diff;
-	if (i > n) then
-	  diff := diff + 1;
-	  i := diff + 1;
-	  j := i - diff;
-	fi;
+        i := i + 1;
+        j := i - diff;
+        if (i > n) then
+          diff := diff + 1;
+          i := diff + 1;
+          j := i - diff;
+        fi;
       fi;
     od;
 
@@ -1426,9 +1426,9 @@ local zero, n, flags, base, ech, k, diff, i, j, found, l;
 
       # Now zero position [i,j] in all other basis elements
       for l in [1..Length(base)] do
-	if (l <> k) and (base[l][i][j] <> zero) then
-	  base[l] := base[l] - base[k] * base[l][i][j];
-	fi;
+        if (l <> k) and (base[l][i][j] <> zero) then
+          base[l] := base[l] - base[k] * base[l][i][j];
+        fi;
       od;
       k := k + 1;
 
@@ -1459,7 +1459,7 @@ local decompose, field, Y, mats, newbase;
       # find the intersection of the nullspaces
       subs:=NullspaceMat(m[1]);
       for j in [2..Length(m)] do
-	subs:=SumIntersectionMat(subs,NullspaceMat(m[j]))[2];
+        subs:=SumIntersectionMat(subs,NullspaceMat(m[j]))[2];
       od;
 
 
@@ -1553,14 +1553,14 @@ BindGlobal("SMTX_ModuleAutomorphisms",function(m)
     for g in GeneratorsOfGroup(gl) do
       a:=IdentityMat(m.dimension,f);
       for j in [1..r] do
-	for k in [1..r] do
-	  if IsZero(g[j][k]) then
-	    subm:=w*0;
-	  else
-	    subm:=w^LogFFE(g[j][k],Fqr);
-	  fi;
-	  a{[(j-1)*dim+1..j*dim]}{[(k-1)*dim+1..k*dim]}:=subm;
-	od;
+        for k in [1..r] do
+          if IsZero(g[j][k]) then
+            subm:=w*0;
+          else
+            subm:=w^LogFFE(g[j][k],Fqr);
+          fi;
+          a{[(j-1)*dim+1..j*dim]}{[(k-1)*dim+1..k*dim]}:=subm;
+        od;
       od;
       a:=nbi*a*nb;
       Assert(1,ForAll(m.generators,i->i*a=a*i));
@@ -1592,29 +1592,29 @@ BindGlobal("SMTX_ModuleAutomorphisms",function(m)
     # homogeneous components via elements of Hom(M_i, M_j)
     for j in [1..Length(h)] do
       if i <> j then
-	homs:=SMTX.BasisModuleHomomorphisms(h[i].component[2],
-	                                    h[j].component[2]);
-	if Length(homs) > 0 then
-	  hbi:=0;
-	  for k in [1..j-1] do
-	    hbi:=hbi+Length(hb[k]);
-	  od;
-	  if i>j then
-	    hbi:=hbi+Length(hb[i]);
-	  fi;
-	  hbi:=hbi+[1..h[j].component[2].dimension];
+        homs:=SMTX.BasisModuleHomomorphisms(h[i].component[2],
+                                            h[j].component[2]);
+        if Length(homs) > 0 then
+          hbi:=0;
+          for k in [1..j-1] do
+            hbi:=hbi+Length(hb[k]);
+          od;
+          if i>j then
+            hbi:=hbi+Length(hb[i]);
+          fi;
+          hbi:=hbi+[1..h[j].component[2].dimension];
 
-	  a:=(Size(f)^Length(homs))^(r*Length(h[j].indices));
-	  autorder:=autorder*a;
-	  Info(InfoMtxHom,3,"increase by mixing ",j,":",a," ",autorder);
-	  for k in homs do
-	    a:=IdentityMat(m.dimension,f);
-	    a{[1..dim]}{hbi}:=k;
-	    a:=nbi*a*nb;
-	    Assert(1,ForAll(m.generators,i->i*a=a*i));
-	    Add(auts,a);
-	  od;
-	fi;
+          a:=(Size(f)^Length(homs))^(r*Length(h[j].indices));
+          autorder:=autorder*a;
+          Info(InfoMtxHom,3,"increase by mixing ",j,":",a," ",autorder);
+          for k in homs do
+            a:=IdentityMat(m.dimension,f);
+            a{[1..dim]}{hbi}:=k;
+            a:=nbi*a*nb;
+            Assert(1,ForAll(m.generators,i->i*a=a*i));
+            Add(auts,a);
+          od;
+        fi;
       fi;
     od;
   od;

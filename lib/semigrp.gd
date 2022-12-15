@@ -566,16 +566,16 @@ InstallTrueMethod( IsSemigroup, IsReesCongruenceSemigroup );
 ##  </ManSection>
 ##
 DeclareOperation( "HomomorphismFactorSemigroup",
-	[ IsSemigroup, IsSemigroupCongruence ] );
+    [ IsSemigroup, IsSemigroupCongruence ] );
 
 DeclareOperation( "HomomorphismFactorSemigroupByClosure",
-	[ IsSemigroup, IsList ] );
+    [ IsSemigroup, IsList ] );
 
 DeclareOperation( "FactorSemigroup",
-	[ IsSemigroup, IsSemigroupCongruence ] );
+    [ IsSemigroup, IsSemigroupCongruence ] );
 
 DeclareOperation( "FactorSemigroupByClosure",
-	[ IsSemigroup, IsList ] );
+    [ IsSemigroup, IsList ] );
 
 
 #############################################################################

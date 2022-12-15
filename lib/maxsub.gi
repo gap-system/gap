@@ -35,11 +35,11 @@ BindGlobal("MaxSubmodsByPcgs",function( G, pcgs, field )
         base := List( max[i], x -> PcElementByExponents( pcgs, x ) );
         Append( base, pcgD );
         sub := InducedPcgsByPcSequenceNC( pcgN, base );
-	if Length(pcgD)=0 then
-	  max[i]:=sub;
-	else
-	  max[i] := sub mod pcgD;
-	fi;
+        if Length(pcgD)=0 then
+          max[i]:=sub;
+        else
+          max[i] := sub mod pcgD;
+        fi;
     od;
     return max;
 end);
@@ -67,9 +67,9 @@ function( G, fampcgs,pcgs,fphom,words,wordgens,wordimgs)
     # the mysterious one-cocycle record
     ocr := rec( modulePcgs := pcgs,
                 group := G,
-		factorfphom:=fphom
-			 );
-		# giving generators enforces a bad presentation
+                factorfphom:=fphom
+                         );
+                # giving generators enforces a bad presentation
                 #generators := GeneratorsOfGroup( G ) );
 
 #for gen in
@@ -97,7 +97,7 @@ function( G, fampcgs,pcgs,fphom,words,wordgens,wordimgs)
       reps:=List([1..Length(reps)],x->ocr.complementGens[x]*reps[x]);
       # translate factor gens to original generators
       ggens:=List(words,
-	      x->MappedWord(x,FreeGeneratorsOfFpGroup(Range(fphom)),reps));
+              x->MappedWord(x,FreeGeneratorsOfFpGroup(Range(fphom)),reps));
       # and keep the extra pc generators
       reps:=reps{[Length(wordgens)+1..Length(reps)]};
       reps:=Concatenation(reps,den);
@@ -172,8 +172,8 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
     local pcgs, spec, first, weights, m, max, i, gensG, f, n, p, w, field,
           pcgsN, pcgsM, pcgsF, modus, modu, oper, L, cl, K, R, I, hom,
           V, W, new, index, pcgsT, gensK, pcgsL, pcgsML, M, H,ff,S,
-	  fphom,mgi,sel,words,wordgens,pcgp,homliftlevel,pcgrppcgs,
-	  fam,wordfpgens,wordpre;
+          fphom,mgi,sel,words,wordgens,pcgp,homliftlevel,pcgrppcgs,
+          fam,wordfpgens,wordpre;
 
     # set up
     ff:=FittingFreeLiftSetup(G);
@@ -200,12 +200,12 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
     # just in case the stored group generators differ...
     wordfpgens:=List(wordgens,x->ElementOfFpGroup(fam,x));
     wordpre:=List(wordfpgens,x->PreImagesRepresentative(ff.factorhom,
-	      PreImagesRepresentative(fphom,x)));
+              PreImagesRepresentative(fphom,x)));
     fphom:=ff.factorhom*fphom;
     # no assertion as this is not a proper homomorphism, but an inverse
     # multiplicative map
     f:=GroupGeneralMappingByImagesNC(Range(fphom),Source(fphom),
-	wordfpgens,wordpre:noassert);
+        wordfpgens,wordpre:noassert);
     SetInverseGeneralMapping(fphom,f);
 
     homliftlevel:=0;
@@ -218,106 +218,106 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
         p := w[3];
         field := GF(p);
         if w[2] = 1 then
-	  Info(InfoLattice,2,"start layer with weight ", w," ^ ",n-f);
+          Info(InfoLattice,2,"start layer with weight ", w," ^ ",n-f);
 
-	  # if necessary extent the fphom
-	  if homliftlevel+1<f then
+          # if necessary extent the fphom
+          if homliftlevel+1<f then
             pcgsM := InducedPcgsByPcSequenceNC( spec, spec{[homliftlevel+1..f-1]} );
-	    RUN_IN_GGMBI:=true;
-	    fphom:=LiftFactorFpHom(fphom,G,Group(spec),
-	      Group(spec{[f..Length(spec)]}),pcgsM);
-	    RUN_IN_GGMBI:=false;
-	    homliftlevel:=f-1;
-	    # translate words
-	    L:=FreeGeneratorsOfFpGroup(Range(fphom)){[1..Length(wordgens)]};
-	    words:=List(words,x->MappedWord(x,wordgens,L));
-	    wordgens:=L;
-	  fi;
+            RUN_IN_GGMBI:=true;
+            fphom:=LiftFactorFpHom(fphom,G,Group(spec),
+              Group(spec{[f..Length(spec)]}),pcgsM);
+            RUN_IN_GGMBI:=false;
+            homliftlevel:=f-1;
+            # translate words
+            L:=FreeGeneratorsOfFpGroup(Range(fphom)){[1..Length(wordgens)]};
+            words:=List(words,x->MappedWord(x,wordgens,L));
+            wordgens:=L;
+          fi;
 
-	  # compute modulo pcgs
-	  pcgsM := InducedPcgsByPcSequenceNC( spec, spec{[f..m]} );
-	  pcgsN := InducedPcgsByPcSequenceNC( spec, spec{[n..m]} );
+          # compute modulo pcgs
+          pcgsM := InducedPcgsByPcSequenceNC( spec, spec{[f..m]} );
+          pcgsN := InducedPcgsByPcSequenceNC( spec, spec{[n..m]} );
 
-	  pcgsF := pcgsM mod pcgsN;
+          pcgsF := pcgsM mod pcgsN;
 
-	  # compute maximal submodules
-	  Info(InfoLattice,3,"  compute maximal submodules");
-	  oper  := Concatenation( gensG, spec{[1..f-1]} );
-	  modus := MaxSubmodsByPcgs( oper, pcgsF, field );
+          # compute maximal submodules
+          Info(InfoLattice,3,"  compute maximal submodules");
+          oper  := Concatenation( gensG, spec{[1..f-1]} );
+          modus := MaxSubmodsByPcgs( oper, pcgsF, field );
 
-	  # lift to maximal subgroups
-	  if w[1] = 1 and Length(gensG) = 0 then
+          # lift to maximal subgroups
+          if w[1] = 1 and Length(gensG) = 0 then
 
-	    # this is the trivial case
-	    for modu in modus do
-	      L:=Concatenation(spec{[1..f-1]},NumeratorOfModuloPcgs( modu ) );
-	      L := SubgroupNC(G,L);
-	      #cl := ConjugacyClassSubgroups( G, L );
-	      #SetSize( cl, 1 );
-	      #Add( max, cl );
-	      L!.classsize:=1;
-	      Add(max,L);
-	    od;
-	  elif w[1] = 1 then
+            # this is the trivial case
+            for modu in modus do
+              L:=Concatenation(spec{[1..f-1]},NumeratorOfModuloPcgs( modu ) );
+              L := SubgroupNC(G,L);
+              #cl := ConjugacyClassSubgroups( G, L );
+              #SetSize( cl, 1 );
+              #Add( max, cl );
+              L!.classsize:=1;
+              Add(max,L);
+            od;
+          elif w[1] = 1 then
 
-	    # here we need general complements
-	    for modu in modus do
-	      pcgsL  := NumeratorOfModuloPcgs( modu );
-	      pcgsML := pcgsM mod pcgsL;
-	      if true or not IsCentralModule( G, pcgsML ) then
-		Info(InfoLattice,3,"  compute complement classes ",
-		  Length(pcgsML));
-		cl := ComplementClassesByPcgsModulo( G, ff.pcgs,
-			pcgsML, fphom,words,wordgens, mgi[2]{sel});
-		Append( max, cl );
-	      else
-		Info(InfoLattice,4,"  central case");
-	    Error("PRUMP");
-		R := PRump( G, p );
-		M := SubgroupNC( G, pcgsM );
-		L := SubgroupNC( G, pcgsL );
-		I := Intersection( R, M );
-		if IsSubgroup( L, I ) then
-		    H:=ClosureGroup( L, R );
-		    hom:=NaturalHomomorphismByNormalSubgroup(G,H);
-		    V := Image( hom );
-		    W := Image( hom, M );
-		    cl := ComplementClassesRepresentatives( V, W );
-		    cl := List( cl, x -> PreImage( hom, x ) );
-		    for K in cl do
-			#new := ConjugacyClassSubgroups( G, K );
-			#SetSize( new, 1 );
-			#Add( max, new );
-			K!.classsize:=1;
-			Add(max,K);
-		    od;
-		fi;
-	    fi;
-	od;
+            # here we need general complements
+            for modu in modus do
+              pcgsL  := NumeratorOfModuloPcgs( modu );
+              pcgsML := pcgsM mod pcgsL;
+              if true or not IsCentralModule( G, pcgsML ) then
+                Info(InfoLattice,3,"  compute complement classes ",
+                  Length(pcgsML));
+                cl := ComplementClassesByPcgsModulo( G, ff.pcgs,
+                        pcgsML, fphom,words,wordgens, mgi[2]{sel});
+                Append( max, cl );
+              else
+                Info(InfoLattice,4,"  central case");
+            Error("PRUMP");
+                R := PRump( G, p );
+                M := SubgroupNC( G, pcgsM );
+                L := SubgroupNC( G, pcgsL );
+                I := Intersection( R, M );
+                if IsSubgroup( L, I ) then
+                    H:=ClosureGroup( L, R );
+                    hom:=NaturalHomomorphismByNormalSubgroup(G,H);
+                    V := Image( hom );
+                    W := Image( hom, M );
+                    cl := ComplementClassesRepresentatives( V, W );
+                    cl := List( cl, x -> PreImage( hom, x ) );
+                    for K in cl do
+                        #new := ConjugacyClassSubgroups( G, K );
+                        #SetSize( new, 1 );
+                        #Add( max, new );
+                        K!.classsize:=1;
+                        Add(max,K);
+                    od;
+                fi;
+            fi;
+        od;
     else
 
-	# here we use head complements
-	Info(InfoLattice,2,"  compute head complement");
-	index := Filtered( [1..m], x -> weights[x][1] = w[1]-1
-				    and weights[x][2] = 1
-				    and weights[x][3] <> p );
-	pcgsT := Concatenation( spec{index}, pcgsM );
-	pcgsT := InducedPcgsByPcSequenceNC( spec, pcgsT );
-	pcgsT := pcgsT mod pcgsM;
-	gensK := HeadComplementGens( gensG, pcgsT, pcgsF, field );
-	index := Filtered( [1..m], x -> weights[x] <> w );
-	#Append( gensK, spec{index} );
-	for modu in modus do
-	  K:=Concatenation(spec{index},modu);
-	  K:=InducedPcgsByGenerators(ff.pcgs,K);
-	  K:=SubgroupByFittingFreeData(G,gensK,mgi[2]{sel},K);
+        # here we use head complements
+        Info(InfoLattice,2,"  compute head complement");
+        index := Filtered( [1..m], x -> weights[x][1] = w[1]-1
+                                    and weights[x][2] = 1
+                                    and weights[x][3] <> p );
+        pcgsT := Concatenation( spec{index}, pcgsM );
+        pcgsT := InducedPcgsByPcSequenceNC( spec, pcgsT );
+        pcgsT := pcgsT mod pcgsM;
+        gensK := HeadComplementGens( gensG, pcgsT, pcgsF, field );
+        index := Filtered( [1..m], x -> weights[x] <> w );
+        #Append( gensK, spec{index} );
+        for modu in modus do
+          K:=Concatenation(spec{index},modu);
+          K:=InducedPcgsByGenerators(ff.pcgs,K);
+          K:=SubgroupByFittingFreeData(G,gensK,mgi[2]{sel},K);
   #if IsSubset(K,SolvableRadical(G)) then Error("radicalB");fi;
-	  #cl := ConjugacyClassSubgroups( G, K );
-	  #SetSize( cl, p^(Length(pcgsF)-Length(modu)) );
-	  #Add( max, cl );
-	  K!.classsize:=p^(Length(pcgsF)-Length(modu));
-	  Add(max,K);
-	od;
+          #cl := ConjugacyClassSubgroups( G, K );
+          #SetSize( cl, p^(Length(pcgsF)-Length(modu)) );
+          #Add( max, cl );
+          K!.classsize:=p^(Length(pcgsF)-Length(modu));
+          Add(max,K);
+        od;
       fi;
     fi;
 
@@ -367,9 +367,9 @@ local  c, maxs,lat,sel,reps;
   c:=Filtered(c,x->Size(Representative(x))<Size(G));
   reps:=List(c,Representative);
   sel:=Filtered([1..Length(c)],x->ForAll(reps,y->Size(y)<=Size(reps[x]) or
-	not IsSubset(y,reps[x])));
+        not IsSubset(y,reps[x])));
   sel:=Filtered(sel,x->IsPrime(Size(G)/Size(reps[x]))
-	or Size(reps[x])=Size(StabilizerOfExternalSet(c[x])));
+        or Size(reps[x])=Size(StabilizerOfExternalSet(c[x])));
 
   reps:=reps{sel};
   Sort(reps,function(a,b) return Size(a)<Size(b);end);
@@ -385,7 +385,7 @@ local  c, maxs,lat,sel,reps;
     # maximal
     Add(maxs,c);
     sel:=Filtered([1..Length(reps)],x->Size(reps[x])<Size(c)
-	  and (Size(c) mod Size(reps[x]))=0);
+          and (Size(c) mod Size(reps[x]))=0);
     if Length(sel)>0 then
       # some remaining groups could be subgroups
       c:=Orbit(G,c);
@@ -421,16 +421,16 @@ local map, s, b, bl, bb, sp;
       bl:=Collected(List(b,Length));
       bl:=Filtered(bl,i->i[2]=1);
       if Length(bl)>0 then
-	b:=First(b,i->Length(i)=bl[1][1]);
-	bb:=Stabilizer(U,Set(b),OnSets);
-	bb:=Core(U,bb);
-	sp:=NormalizerParentSA(SymmetricGroup(MovedPoints(P)),bb);
+        b:=First(b,i->Length(i)=bl[1][1]);
+        bb:=Stabilizer(U,Set(b),OnSets);
+        bb:=Core(U,bb);
+        sp:=NormalizerParentSA(SymmetricGroup(MovedPoints(P)),bb);
       else
-	sp:=Normalizer(P,U);
-	if map<>fail then
-	  sp:=PreImage(map,sp);
-	fi;
-	return sp;
+        sp:=Normalizer(P,U);
+        if map<>fail then
+          sp:=PreImage(map,sp);
+        fi;
+        return sp;
       fi;
     else
       sp:=NormalizerParentSA(SymmetricGroup(MovedPoints(P)),U);
@@ -440,7 +440,7 @@ local map, s, b, bl, bb, sp;
     if (Size(sp)/Size(U))^2<Size(P)/s then
       sp:=Intersection(P,Normalizer(sp,U));
       if map<>fail then
-	sp:=PreImage(map,sp);
+        sp:=PreImage(map,sp);
       fi;
       return sp;
     fi;
@@ -575,14 +575,14 @@ local m,id,epi,H,ids,ft;
       m:=ClassicalMaximals(ids.series,
         ids.parameter[1],ids.parameter[2]);
       if m<>fail then
-	epi:=EpimorphismFromClassical(G:classicepiuseiso:=true,
+        epi:=EpimorphismFromClassical(G:classicepiuseiso:=true,
           forcetype:=ft,
           usemaximals:=false);
-	if epi<>fail then
-	  m:=List(m,x->SubgroupNC(Range(epi),
-	      List(GeneratorsOfGroup(x),y->ImageElm(epi,y))));
-	  return m;
-	fi;
+        if epi<>fail then
+          m:=List(m,x->SubgroupNC(Range(epi),
+              List(GeneratorsOfGroup(x),y->ImageElm(epi,y))));
+          return m;
+        fi;
       fi;
     fi;
 
@@ -680,13 +680,13 @@ local dom, o, t1, a1, t1d, proj, reps, ts, ta, tb, s1, i, fix, wnew, max, iso, t
       i:=PreImage(emb,i);
       img:=i;
       for j in [2..n] do
-	img:=ClosureGroup(img,i^reps[j]);
+        img:=ClosureGroup(img,i^reps[j]);
       od;
       if Size(img)=Size(t)^n then
-	j:=MaxesCalcNormalizer(G,img);
-	if Index(G,j)=Size(t)^n then;
-	  Add(max,j);
-	fi;
+        j:=MaxesCalcNormalizer(G,img);
+        if Index(G,j)=Size(t)^n then;
+          Add(max,j);
+        fi;
       fi;
     od;
   od;
@@ -706,7 +706,7 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
 
   # type 4c
   reps:=List([1..n],
-	     i->PreImagesRepresentative(fact,RepresentativeAction(fg,1,i)));
+             i->PreImagesRepresentative(fact,RepresentativeAction(fg,1,i)));
 
 
   # get the maximal subgroups of A, intersect with t to get the socle part
@@ -719,7 +719,7 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
       idx:=Index(t,i)^n;
       nm:=i;
       for j in [2..n] do
-	nm:=ClosureGroup(nm,i^reps[j]);
+        nm:=ClosureGroup(nm,i^reps[j]);
       od;
       nm:=MaxesCalcNormalizer(g,nm);
       Assert(1,Index(g,nm)=idx);
@@ -746,9 +746,9 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
     ug:=List([1..n],i->List(ag,j->Image(embs[i],j)));
     for i in [1..n] do
       kproj[i]:=GroupHomomorphismByImages(k,a,Concatenation(ug),
-	      Concatenation(ListWithIdenticalEntries((i-1)*agl,One(a)),
-			    ag,
-			    ListWithIdenticalEntries((n-i)*agl,One(a))));
+              Concatenation(ListWithIdenticalEntries((i-1)*agl,One(a)),
+                            ag,
+                            ListWithIdenticalEntries((n-i)*agl,One(a))));
     od;
 
     for b in bl do
@@ -771,7 +771,7 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
       uphi:=ActionHomomorphism(Image(fact,u),b);
 
       uphi:=RestrictedMapping(fact,
-	      PreImage(fact,Stabilizer(Image(fact),b,OnSets)) )*uphi;
+              PreImage(fact,Stabilizer(Image(fact),b,OnSets)) )*uphi;
       # build smaller wreath
       ws:=WreathProduct(a,Image(uphi,u));
       ew:=List([1..lb+1],i->Embedding(ws,i));
@@ -779,11 +779,11 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
       ug:=GeneratorsOfGroup(u);
       ueg:=[];
       for i in ug do
-	r:=Image(embs[n+1],Image(proj,i));
-	i:=i/r;
-	i:=Product([1..lb],j->Image(ew[j],Image(kproj[b[j]],i)));
-	i:=i*Image(ew[lb+1],Image(uphi,r));
-	Add(ueg,i);
+        r:=Image(embs[n+1],Image(proj,i));
+        i:=i/r;
+        i:=Product([1..lb],j->Image(ew[j],Image(kproj[b[j]],i)));
+        i:=i*Image(ew[lb+1],Image(uphi,r));
+        Add(ueg,i);
       od;
       emb:=GroupHomomorphismByImages(u,ws,ug,ueg);
       ue:=Image(emb,u);
@@ -792,7 +792,7 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
       # the socle part
       s:=Image(embs[b[1]],t);
       for i in [2..lb] do
-	s:=ClosureGroup(s,Image(embs[b[i]],t));
+        s:=ClosureGroup(s,Image(embs[b[i]],t));
       od;
       scp:=List(GeneratorsOfGroup(s),i->Image(emb,i));
       scp:=GroupHomomorphismByImages(s,ue,GeneratorsOfGroup(s),scp);
@@ -801,17 +801,17 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
       ma:=MaxesType3(ws,ue,a,t,lb,true);
       Info(InfoLattice,1,Length(ma)," type 3b maxes in projection");
       for i in ma do
-	idx:=Index(ue,i)^nlb;
-	# get the socle part
-	i:=Intersection(Socle(ws),i);
-	i:=PreImage(scp,i);
-	nm:=i;
-	for j in [2..nlb] do
-	  nm:=ClosureGroup(nm,i^reps[j]);
-	od;
-	nm:=MaxesCalcNormalizer(g,nm);
-	Assert(1,Index(g,nm)=idx);
-	Add(m,nm);
+        idx:=Index(ue,i)^nlb;
+        # get the socle part
+        i:=Intersection(Socle(ws),i);
+        i:=PreImage(scp,i);
+        nm:=i;
+        for j in [2..nlb] do
+          nm:=ClosureGroup(nm,i^reps[j]);
+        od;
+        nm:=MaxesCalcNormalizer(g,nm);
+        Assert(1,Index(g,nm)=idx);
+        Add(m,nm);
       od;
 
     od;
@@ -898,46 +898,46 @@ local G,types,ff,maxes,lmax,q,d,dorb,dorbt,i,dorbc,dorba,dn,act,comb,smax,soc,
       act:=WreathActionChiefFactor(q,dorbc[dn],TrivialSubgroup(q));
       dorba[dn]:=act;
       if Length(dorb[dn])=1 and "2" in types then
-	# type 2: almost simple
-	a1:=ImagesSource(act[2]);
-	lmax:=MaxesAlmostSimple(a1);
-	lmax:=List(lmax,x->PreImage(act[2],x));
-	# eliminate those containing the socle
-	lmax:=Filtered(lmax,x->not IsSubset(x,soc));
-	Info(InfoLattice,1,Length(lmax)," type 2 maxes");
+        # type 2: almost simple
+        a1:=ImagesSource(act[2]);
+        lmax:=MaxesAlmostSimple(a1);
+        lmax:=List(lmax,x->PreImage(act[2],x));
+        # eliminate those containing the socle
+        lmax:=Filtered(lmax,x->not IsSubset(x,soc));
+        Info(InfoLattice,1,Length(lmax)," type 2 maxes");
 for mm in lmax do mm!.type:="2";od;
-	Append(maxes,lmax);
+        Append(maxes,lmax);
       fi;
 
       if Length(dorb[dn])>1 then
-	if "3" in types or "3b" in types then
-	  # Diagonal, Socle is minimal normal. (SD)
-	  lmax:=MaxesType3(act[1],Image(act[2],q),act[3],act[4],act[5],true);
-	  Info(InfoLattice,1,Length(lmax)," type 3b maxes");
-	  lmax:=List(lmax,x->PreImage(act[2],x));
+        if "3" in types or "3b" in types then
+          # Diagonal, Socle is minimal normal. (SD)
+          lmax:=MaxesType3(act[1],Image(act[2],q),act[3],act[4],act[5],true);
+          Info(InfoLattice,1,Length(lmax)," type 3b maxes");
+          lmax:=List(lmax,x->PreImage(act[2],x));
 for mm in lmax do mm!.type:="3b";od;
-	  Append(maxes,lmax);
-	fi;
+          Append(maxes,lmax);
+        fi;
 
-	if "4" in types or "4b" in types or "4c" in types then
-	  # Product action with the first factor primitive of type 3b. (CD)
-	  # Product action with the first factor primitive of type 2. (PA)
-	  lmax:=MaxesType4bc(act[1],Image(act[2],q),act[3], act[4],act[5]);
-	  Info(InfoLattice,1,Length(lmax)," type 4bc maxes");
-	  lmax:=List(lmax,x->PreImage(act[2],x));
-	  for mm in lmax do mm!.type:="4bc";od;
-	  Append(maxes,lmax);
-	fi;
+        if "4" in types or "4b" in types or "4c" in types then
+          # Product action with the first factor primitive of type 3b. (CD)
+          # Product action with the first factor primitive of type 2. (PA)
+          lmax:=MaxesType4bc(act[1],Image(act[2],q),act[3], act[4],act[5]);
+          Info(InfoLattice,1,Length(lmax)," type 4bc maxes");
+          lmax:=List(lmax,x->PreImage(act[2],x));
+          for mm in lmax do mm!.type:="4bc";od;
+          Append(maxes,lmax);
+        fi;
 
 
-	if Length(dorb[dn])>5
-	   and not IsSolvableGroup(Action(q,d{dorb[dn]}))
-	   and "5" in types then
-	  # Twisted wreath product (TW)
-	  if not ValueOption("cheap")=true then
-	    Error("Type 5 not yet implemented");
-	  fi;
-	fi;
+        if Length(dorb[dn])>5
+           and not IsSolvableGroup(Action(q,d{dorb[dn]}))
+           and "5" in types then
+          # Twisted wreath product (TW)
+          if not ValueOption("cheap")=true then
+            Error("Type 5 not yet implemented");
+          fi;
+        fi;
 
       fi;
 
@@ -946,19 +946,19 @@ for mm in lmax do mm!.type:="3b";od;
     # run through actions on pairs of isomorphic socles
     comb:=Combinations([1..Length(dorb)],2);
     comb:=Filtered(comb,x->dorbt[x[1]]=dorbt[x[2]]
-	           and Length(dorb[x[1]])=Length(dorb[x[2]]));
+                   and Length(dorb[x[1]])=Length(dorb[x[2]]));
     for dn in comb do
       a1:=dorba[dn[1]];
       a2:=dorba[dn[2]];
 
       if Size(a1[3])>Size(a2[3]) then
-	anew:=EmbedAutomorphisms(a1[3],a2[3],a1[4],a2[4]);
-	a1emb:=anew[2];
-	a2emb:=anew[3];
+        anew:=EmbedAutomorphisms(a1[3],a2[3],a1[4],a2[4]);
+        a1emb:=anew[2];
+        a2emb:=anew[3];
       else
-	anew:=EmbedAutomorphisms(a2[3],a1[3],a2[4],a1[4]);
-	a2emb:=anew[2];
-	a1emb:=anew[3];
+        anew:=EmbedAutomorphisms(a2[3],a1[3],a2[4],a1[4]);
+        a2emb:=anew[2];
+        a1emb:=anew[3];
       fi;
       anew:=anew[1];
 
@@ -966,26 +966,26 @@ for mm in lmax do mm!.type:="3b";od;
       e1:=EmbeddingWreathInWreath(wnew,a1[1],a1emb,1);
       e2:=EmbeddingWreathInWreath(wnew,a2[1],a2emb,a1[5]+1);
       emb:=GroupHomomorphismByImages(q,wnew,GeneratorsOfGroup(q),
-	      List(GeneratorsOfGroup(q),i->
-	      Image(e1,ImageElm(a1[2],i))*Image(e2,ImageElm(a2[2],i))));
+              List(GeneratorsOfGroup(q),i->
+              Image(e1,ImageElm(a1[2],i))*Image(e2,ImageElm(a2[2],i))));
 
       if Length(dorb[dn[1]])=1 then
-	if "3a" in types then
-	  lmax:=MaxesType3(wnew,Image(emb,q),anew,Image(a1emb,a1[4]),2,true);
-	  Info(InfoLattice,1,Length(lmax)," type 3a maxes");
-	  lmax:=List(lmax,i->PreImage(emb,i));
+        if "3a" in types then
+          lmax:=MaxesType3(wnew,Image(emb,q),anew,Image(a1emb,a1[4]),2,true);
+          Info(InfoLattice,1,Length(lmax)," type 3a maxes");
+          lmax:=List(lmax,i->PreImage(emb,i));
 for mm in lmax do mm!.type:="3a";od;
-	  Append(maxes,lmax);
-	fi;
+          Append(maxes,lmax);
+        fi;
       else
-	if "4a" in types then
-	  lmax:=MaxesType4a(wnew,Image(emb,q),anew,Image(a1emb,a1[4]),
-	                  Length(dorb[dn[1]]));
-	  Info(InfoLattice,1,Length(lmax)," type 4a maxes");
-	  lmax:=List(lmax,i->PreImage(emb,i));
+        if "4a" in types then
+          lmax:=MaxesType4a(wnew,Image(emb,q),anew,Image(a1emb,a1[4]),
+                          Length(dorb[dn[1]]));
+          Info(InfoLattice,1,Length(lmax)," type 4a maxes");
+          lmax:=List(lmax,i->PreImage(emb,i));
 for mm in lmax do mm!.type:="4a";od;
-	  Append(maxes,lmax);
-	fi;
+          Append(maxes,lmax);
+        fi;
       fi;
 
     od;
@@ -1049,7 +1049,7 @@ local all,m,sel,i,new,containedconj;
     dc:=DoubleCosetRepsAndSizes(g,n,m);
     for i in dc do
       if ForAll(GeneratorsOfGroup(v),x->x^i[1] in u) then
-	return true;
+        return true;
       fi;
     od;
     return false;
@@ -1063,10 +1063,10 @@ local all,m,sel,i,new,containedconj;
     # eliminate those that are contained in a conjugate of a subgroup of all
     new:=m{sel};
     SortBy(new,x->Size(g)/Size(x)); # small indices first to deal with
-				    # conjugate inclusion here
+                                    # conjugate inclusion here
     for i in new do
       if not ForAny(all,x->containedconj(g,x,i)) then
-	Add(all,i);
+        Add(all,i);
       fi;
     od;
 

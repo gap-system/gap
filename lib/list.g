@@ -106,7 +106,7 @@ BIND_GLOBAL( "TYPE_LIST_NDENSE_MUTABLE", NewType( ListsFamily,
 
 #############################################################################
 ##
-#V  TYPE_LIST_NDENSE_IMMUTABLE	. . . . . . type of non-dense, immutable list
+#V  TYPE_LIST_NDENSE_IMMUTABLE  . . . . . . type of non-dense, immutable list
 ##
 ##  <ManSection>
 ##  <Var Name="TYPE_LIST_NDENSE_IMMUTABLE"/>

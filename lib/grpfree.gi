@@ -538,7 +538,7 @@ function(G)
     Print("Group(");
     if HasGeneratorsOfGroup(G) then
       if not IsBound(G!.gensWordLengthSum) then
-	G!.gensWordLengthSum:=Sum(List(GeneratorsOfGroup(G),Length));
+        G!.gensWordLengthSum:=Sum(List(GeneratorsOfGroup(G),Length));
       fi;
       if G!.gensWordLengthSum <= GAPInfo.ViewLength * 30 then
         Print(GeneratorsOfGroup(G));

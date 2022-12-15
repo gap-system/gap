@@ -12,7 +12,7 @@
 ##
 
 DeclareSynonym("IsTransformationSemigroup", IsSemigroup and
-	IsTransformationCollection);
+        IsTransformationCollection);
 DeclareSynonym("IsTransformationMonoid", IsMonoid and
 IsTransformationCollection);
 

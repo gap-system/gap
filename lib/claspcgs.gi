@@ -36,7 +36,7 @@ local   zero,  one,  r,  ran,  n,  nan,  cg,  pos,  Q,  i,  j,  v;
     fi;
 
     cg:=rec( matrix        :=[  ],
-	       one           :=one,
+               one           :=one,
                baseComplement:=ShallowCopy( ran ),
                commutator    :=0,
                centralizer   :=0,
@@ -45,8 +45,8 @@ local   zero,  one,  r,  ran,  n,  nan,  cg,  pos,  Q,  i,  j,  v;
 
     if n = 0  or  r = 0  then
         cg.inverse:=NullMapMatrix;
-	cg.projection    :=IdentityMat( r, one );
-	cg.needed    :=[];
+        cg.projection    :=IdentityMat( r, one );
+        cg.needed    :=[];
         return cg;
     fi;
 
@@ -100,7 +100,7 @@ local   zero,  one,  r,  ran,  n,  nan,  cg,  pos,  Q,  i,  j,  v;
     else
         cg.inverse:=Q{ Length( gens ) + ran }
                        { [ 1 .. Length( cg.needed ) ] };
-	cg.inverse:=ImmutableMatrix(p,cg.inverse,true);
+        cg.inverse:=ImmutableMatrix(p,cg.inverse,true);
     fi;
     if IsEmpty( cg.baseComplement )  then
         cg.projection:=NullMapMatrix;
@@ -121,7 +121,7 @@ local   zero,  one,  r,  ran,  n,  nan,  cg,  pos,  Q,  i,  j,  v;
         od;
         cg.projection:=cg.projection ^ Q;
         cg.projection:=cg.projection{ ran }{ cg.baseComplement };
-	cg.projection:=ImmutableMatrix(p,cg.projection,true);
+        cg.projection:=ImmutableMatrix(p,cg.projection,true);
 
     fi;
 
@@ -162,28 +162,28 @@ end );
 # we cannot call `ExtendedPcgs' but must form a new pcgs.
 InstallGlobalFunction( CentralStepClEANS, function( home,H, U, N, cl,off )
 local   classes,    # classes to be constructed, the result
-	field,      # field over which <N> is a vector space
-	h,          # preimage `cl.representative' under <hom>
-	gens,   # preimage `Centralizer( cl )' under <hom>
-	cemodk,
-	cengen,
-	exp,  w,    # coefficient vectors for projection along $[h,N]$
-	kern,img,
-	c,nc;          # loop variable
+        field,      # field over which <N> is a vector space
+        h,          # preimage `cl.representative' under <hom>
+        gens,   # preimage `Centralizer( cl )' under <hom>
+        cemodk,
+        cengen,
+        exp,  w,    # coefficient vectors for projection along $[h,N]$
+        kern,img,
+        c,nc;          # loop variable
 
     field:=GF( RelativeOrders( N )[ 1 ] );
     h:=cl.representative;
     if IsBound(cl.centralizerpcgs) then
       if IsSubset(cl.centralizerpcgs,DenominatorOfModuloPcgs(N!.capH)) then
-	cemodk:=Filtered(cl.centralizerpcgs,i->not i in
-	DenominatorOfModuloPcgs(N!.capH));
+        cemodk:=Filtered(cl.centralizerpcgs,i->not i in
+        DenominatorOfModuloPcgs(N!.capH));
       else
-	cemodk:=cl.centralizerpcgs mod
-		    DenominatorOfModuloPcgs( N!.capH );
+        cemodk:=cl.centralizerpcgs mod
+                    DenominatorOfModuloPcgs( N!.capH );
       fi;
     else
       cemodk:=InducedPcgs(home, cl.centralizer ) mod
-		  DenominatorOfModuloPcgs( N!.capH );
+                  DenominatorOfModuloPcgs( N!.capH );
     fi;
 
     kern:=DenominatorOfModuloPcgs( N!.capH );
@@ -220,11 +220,11 @@ local   classes,    # classes to be constructed, the result
                           cengen:=cengen,
                           operator:=LinearCombinationPcgs( gens,
                                   exp * N!.subspace.inverse,
-				  One( cl.candidates[1] ))^(-1));
+                                  One( cl.candidates[1] ))^(-1));
 
-		# check that action is really OK
-		Assert(1,c^nc.operator/nc.representative in
-		  Group(DenominatorOfModuloPcgs(N),One(U)));
+                # check that action is really OK
+                Assert(1,c^nc.operator/nc.representative in
+                  Group(DenominatorOfModuloPcgs(N),One(U)));
 
                 Add( classes, nc );
             od;
@@ -269,7 +269,7 @@ local   cl,  comm,  s, ostab;
     comm:=[];
     for s  in [ 1 .. Length( stab ) ]  do
         comm[ s ]:=ExponentsOfPcElement( N,
-	              Comm( n, stab[ s ] )*Comm( h, stab[ s ] ));
+                      Comm( n, stab[ s ] )*Comm( h, stab[ s ] ));
     od;
     comm:=comm * N!.subspace.inverse;
     for s  in [ 1 .. Length( comm ) ]  do
@@ -280,7 +280,7 @@ local   cl,  comm,  s, ostab;
 
   if off then
     stab:=InducedPcgsByPcSequenceAndGenerators(ParentPcgs( cNh ),
-		  cNh, stab );
+                  cNh, stab );
   elif IsList(cNh) and IsList(cNh[1]) then
     #stab:=ExtendedPcgs(cNh[1],Concatenation(stab,cNh[2]));
     stab:=Concatenation(stab,cNh[2],cNh[1]);
@@ -290,7 +290,7 @@ local   cl,  comm,  s, ostab;
   fi;
 
   cl:=rec( representative:=h * n,
-		cengen:=stab );
+                cengen:=stab );
   return cl;
 
 end );
@@ -303,31 +303,31 @@ end );
 # we cannot call `ExtendedPcgs' but must form a new pcgs.
 InstallGlobalFunction(GeneralStepClEANS,function(home, H, U, N,nexpo, cl, off)
 local  classes,    # classes to be constructed, the result
-	field,      # field over which <N> is a vector space
-	h,          # preimage `cl.representative' under <hom>
-	cNh,        # centralizer of <h> in <N>
-	gens,   # preimage `Centralizer( cl )' under <hom>
-	r,          # dimension of <N>
-	ran,        # constant range `[ 1 .. r ]'
-	aff,        # <N> as affine space
-	xset,       # affine operation of <C> on <aff>
-	imgs,  M,   # generating matrices for affine operation
-	orb,        # orbit of affine operation
-	Rep,        # representative function to use for <orb>
-	n,  k,      # cf. Mecky--Neub\"user paper
-	cls,rep,pos,# set of classes with canonical representatives
-	j,
-	c,  ca,  i, # loop variables
-	S,		# orbit-stabilizer
-	ceve,#xponent vector
-	p,	# positions
-	Cgens,	# generators of C in N
-	next,blist, # orbit stabilizer algo
-	depthlev,   # depth at which N starts
-	one,zero,
-	vec,
+        field,      # field over which <N> is a vector space
+        h,          # preimage `cl.representative' under <hom>
+        cNh,        # centralizer of <h> in <N>
+        gens,       # preimage `Centralizer( cl )' under <hom>
+        r,          # dimension of <N>
+        ran,        # constant range `[ 1 .. r ]'
+        aff,        # <N> as affine space
+        xset,       # affine operation of <C> on <aff>
+        imgs,  M,   # generating matrices for affine operation
+        orb,        # orbit of affine operation
+        Rep,        # representative function to use for <orb>
+        n,  k,      # cf. Mecky--Neub\"user paper
+        cls,rep,pos,# set of classes with canonical representatives
+        j,
+        c,  ca,  i, # loop variables
+        S,          # orbit-stabilizer
+        ceve,       # exponent vector
+        p,          # positions
+        Cgens,      # generators of C in N
+        next,blist, # orbit stabilizer algo
+        depthlev,   # depth at which N starts
+        one,zero,
+        vec,
     dict,
-	kern,img;
+        kern,img;
 
     depthlev:=DepthOfPcElement(home,N[1]);
     Cgens:=cl.centralizerpcgs;
@@ -346,7 +346,7 @@ local  classes,    # classes to be constructed, the result
       # special treatment: The commutators span the whole space
       # this is noncentral_case4 in GAP3
       c:=CorrectConjugacyClass( home, h, One(gens[1]),
-		    gens, N, depthlev,[kern,img],off );
+                    gens, N, depthlev,[kern,img],off );
 
       return [c];
 
@@ -369,45 +369,45 @@ local  classes,    # classes to be constructed, the result
     zero:=Zero(field);
     imgs:=[  ];
     for c  in gens  do
-	ceve:=ExponentsOfPcElement(home,c,[1..depthlev-1]);
+        ceve:=ExponentsOfPcElement(home,c,[1..depthlev-1]);
 
-	M:=[  ];
-	for i  in [ 1 .. r ]  do
-	  p:=N!.subspace.baseComplement[i];
+        M:=[  ];
+        for i  in [ 1 .. r ]  do
+          p:=N!.subspace.baseComplement[i];
 
-	    # construct the vector image
+            # construct the vector image
 
-	    vec:=p;
-	    for j in [1..Length(ceve)] do
-	      for k in [1..ceve[j]] do
-		if IsInt(vec) then
-		  vec:=nexpo[j][vec];
-		else
-		  vec:=vec*nexpo[j];
-		fi;
-	      od;
-	    od;
+            vec:=p;
+            for j in [1..Length(ceve)] do
+              for k in [1..ceve[j]] do
+                if IsInt(vec) then
+                  vec:=nexpo[j][vec];
+                else
+                  vec:=vec*nexpo[j];
+                fi;
+              od;
+            od;
 
-	    M[ i ]:=Concatenation( vec
-		  * N!.subspace.projection, [ zero ] );
-	  od;
-	  i:=Comm( h, c );
-	  M[ r + 1 ]:=Concatenation( ExponentsOfPcElement
-				( N, i ) * N!.subspace.projection,
-				[ one ] );
+            M[ i ]:=Concatenation( vec
+                  * N!.subspace.projection, [ zero ] );
+          od;
+          i:=Comm( h, c );
+          M[ r + 1 ]:=Concatenation( ExponentsOfPcElement
+                                ( N, i ) * N!.subspace.projection,
+                                [ one ] );
 
-	M:=ImmutableMatrix(field,M,true);
+        M:=ImmutableMatrix(field,M,true);
         Add( imgs, M );
     od;
 
     classes:=[  ];
     if IsBound( cl.candidates )  then
-	# not yet improved: we use an external set and thus have to give a
-	# full list of generators of C:
-	imgs:=Concatenation(imgs,List([1..Length(Cgens)-Length(gens)],i->IdentityMat( r + 1, field )));
-	gens:=Cgens;
+        # not yet improved: we use an external set and thus have to give a
+        # full list of generators of C:
+        imgs:=Concatenation(imgs,List([1..Length(Cgens)-Length(gens)],i->IdentityMat( r + 1, field )));
+        gens:=Cgens;
 
-	xset:=ExternalSet(SubgroupByPcgs(H,Cgens),aff,gens,imgs,OnPoints);
+        xset:=ExternalSet(SubgroupByPcgs(H,Cgens),aff,gens,imgs,OnPoints);
 
         if IsIdenticalObj( FamilyObj( U ), FamilyObj( cl.candidates ) )  then
             Rep:=CanonicalRepresentativeOfExternalSet;
@@ -435,7 +435,7 @@ local  classes,    # classes to be constructed, the result
                     c:=ConjugateSubgroup( c, ActorOfExternalSet( orb ) );
                 fi;
                 c:=CorrectConjugacyClass( home, h, rep, InducedPcgs(home,c), N,
-		depthlev,cNh,off );
+                depthlev,cNh,off );
             else
                 c:=rec( representative:=h * rep,
                              #centralizer:=classes[ pos ].centralizer )
@@ -479,30 +479,30 @@ local  classes,    # classes to be constructed, the result
       next:=1;
       k:=[];
       while next<>fail do
-	if IsPositionDictionary(dict) then
+        if IsPositionDictionary(dict) then
           S:=Pcs_OrbitStabilizer(gens,aff,aff[next],imgs,OnRight,dict);
           #S.dictionary!.vals:=[]; #Not really that expensive to keep
         else
           S:=Pcs_OrbitStabilizer(gens,aff,aff[next],imgs,OnRight);
-	  for i in S.orbit do
-	    blist[PositionCanonical(aff,i)]:=true;
-	  od;
-	fi;
-	Unbind(S.dictionary);
+          for i in S.orbit do
+            blist[PositionCanonical(aff,i)]:=true;
+          od;
+        fi;
+        Unbind(S.dictionary);
         S.orbit:=S.orbit{[1]}; # save memory
 
-	Add(k,S);
+        Add(k,S);
 
         next:=Position(blist,false,next);
       od;
 
       for orb  in k  do
-	  rep:=PcElementByExponentsNC( N, N!.subspace.baseComplement,
-			  orb.orbit[1]{ ran } );
-	  c:=CorrectConjugacyClass( home, h, rep,
-			#orb.stabilizer, N, depthlev,cNh,off )
-			orb.stabpcs, N, depthlev,cNh,off );
-	  Add( classes, c );
+          rep:=PcElementByExponentsNC( N, N!.subspace.baseComplement,
+                          orb.orbit[1]{ ran } );
+          c:=CorrectConjugacyClass( home, h, rep,
+                        #orb.stabilizer, N, depthlev,cNh,off )
+                        orb.stabpcs, N, depthlev,cNh,off );
+          Add( classes, c );
       od;
 
     fi;
@@ -514,15 +514,15 @@ end );
 # class/centralizer computation
 InstallGlobalFunction(PcClassFactorCentralityTest,
     function(pcgs,grpg,Npcgs,dep)
-	  local i,j;
-	    for i in grpg do
-	      for j in Npcgs do
-	        if DepthOfPcElement(pcgs,Comm(j,i))<dep then
-		  return false;
-		fi;
-	      od;
-	    od;
-	    return true;
+          local i,j;
+            for i in grpg do
+              for j in Npcgs do
+                if DepthOfPcElement(pcgs,Comm(j,i))<dep then
+                  return false;
+                fi;
+              od;
+            od;
+            return true;
           end);
 
 #############################################################################
@@ -536,7 +536,7 @@ InstallGlobalFunction(PcClassFactorCentralityTest,
 ##
 InstallGlobalFunction(ClassesSolvableGroup, function(arg)
 local  G,  home,  # the group and the home pcgs
-       H,Hp,	# acting group
+       H,Hp,    # acting group
        mustlift,
        liftkerns,
        QH,QG,
@@ -547,13 +547,13 @@ local  G,  home,  # the group and the home pcgs
        eas,     # elementary abelian series in <G>
        step,    # counter looping over <eas>
        K,  L,   # members of <eas>
-       indstep,	# indice normal steps
-       Ldep,	# depth of L in pcgs
+       indstep, # indice normal steps
+       Ldep,    # depth of L in pcgs
        Kp,mK,Lp,mL, # induced and modulo pcgs's
        LcapH,KcapH, # intersections
        N,   cent,   # elementary abelian factor, for affine action
        cls, newcls, # classes in range/source of homomorphism
-       cli,	# index
+       cli,     # index
        news,    # new classes obtained in step
        cl,      # class looping over <cls>
        opr, exp,  # (candidates[i]^opr[i])^exp[i]=cls[i].representative
@@ -561,12 +561,12 @@ local  G,  home,  # the group and the home pcgs
        blist,pos,q, # these control grouping of <cls> into <team>s
        p,       # prime dividing $|G|$
        i,c,   # loop variables
-       opt,	# options
+       opt,      # options
        consider, # consider function
        divi,
        inflev,  # InfoLevel flag
-       nexpo,	# N-Exponents of the elements of N conjugated
-       allcent;	# DivisorsInt(Size(G)) (used for Info)
+       nexpo,   # N-Exponents of the elements of N conjugated
+       allcent; # DivisorsInt(Size(G)) (used for Info)
 
 
   inflev:=InfoLevel(InfoClasses)>1;
@@ -696,14 +696,14 @@ local  G,  home,  # the group and the home pcgs
     step:=2; # the first step we'd have
     for i in [2..Length(eas)-1] do
       if Index(G,eas[i])>1000 or Index(G,eas[i+1])>10000 then
-	# only form a factor if the factor is large enough or the next step
-	# would be large
+        # only form a factor if the factor is large enough or the next step
+        # would be large
 
-	# form a factor by i and go to this factor at the first time (index
-	# step) no factor representation was given
-	mustlift[step]:=true;
-	liftkerns[step]:=eas[i];
-	step:=i+1;
+        # form a factor by i and go to this factor at the first time (index
+        # step) no factor representation was given
+        mustlift[step]:=true;
+        liftkerns[step]:=eas[i];
+        step:=i+1;
       fi;
     od;
     if step>2 then
@@ -737,9 +737,9 @@ local  G,  home,  # the group and the home pcgs
   fi;
 
   cl:=rec(representative:=One(G),
-	  centralizer:=H,
-	  centralizerpcgs:=InducedPcgs(home,H),
-	  cengen:=InducedPcgs(home,H));
+          centralizer:=H,
+          centralizerpcgs:=InducedPcgs(home,H),
+          cengen:=InducedPcgs(home,H));
 
   if candidates<>false then
     cls:=List(candidates, c -> cl);
@@ -764,16 +764,16 @@ local  G,  home,  # the group and the home pcgs
       ofhome:=fhome;
       # get the new quotient and Q's
       if Size(eas[step])=1 then
-	QH:=H;
-	fhome:=home;
-	QG:=G;
+        QH:=H;
+        fhome:=home;
+        QG:=G;
       else
-	# the new factor group in which we calculate
-	QH:=home mod InducedPcgs(home,liftkerns[step]);
-	QH:=GROUP_BY_PCGS_FINITE_ORDERS(QH);
-	fhome:=FamilyPcgs(QH);
-	QG:=SubgroupByPcgs(QG,
-	      ProjectedInducedPcgs(home,fhome,InducedPcgs(home,G)));
+        # the new factor group in which we calculate
+        QH:=home mod InducedPcgs(home,liftkerns[step]);
+        QH:=GROUP_BY_PCGS_FINITE_ORDERS(QH);
+        fhome:=FamilyPcgs(QH);
+        QG:=SubgroupByPcgs(QG,
+              ProjectedInducedPcgs(home,fhome,InducedPcgs(home,G)));
       fi;
     fi;
 
@@ -803,27 +803,27 @@ local  G,  home,  # the group and the home pcgs
 
     if mustlift[step] then
       for i in cls do
-	if not IsBound(i.yet) then
-	  if first then
-	    # if it is the first time, we must actually map in the factor
-	    i.representative:=ProjectedPcElement(home,fhome,i.representative);
-	    i.centralizerpcgs:=ProjectedInducedPcgs(home,fhome,i.cengen);
-	    i.cengen:=i.centralizerpcgs!.pcSequence;
-	  else
-	    i.representative:=LiftedPcElement(fhome,ofhome,i.representative);
-	    i.centralizerpcgs:=LiftedInducedPcgs(fhome,ofhome,i.cengen,N);
-	    i.cengen:=i.centralizerpcgs!.pcSequence;
-	  fi;
-	  i.yet:=true; # several cl records may be equal. We must map only
-	               # once
+        if not IsBound(i.yet) then
+          if first then
+            # if it is the first time, we must actually map in the factor
+            i.representative:=ProjectedPcElement(home,fhome,i.representative);
+            i.centralizerpcgs:=ProjectedInducedPcgs(home,fhome,i.cengen);
+            i.cengen:=i.centralizerpcgs!.pcSequence;
+          else
+            i.representative:=LiftedPcElement(fhome,ofhome,i.representative);
+            i.centralizerpcgs:=LiftedInducedPcgs(fhome,ofhome,i.cengen,N);
+            i.cengen:=i.centralizerpcgs!.pcSequence;
+          fi;
+          i.yet:=true; # several cl records may be equal. We must map only
+                       # once
         fi;
       od;
     else
       for i in cls do
         if IsBound(i.cengen) and not IsBound(i.centralizerpcgs) then
-	  i.centralizerpcgs:=InducedPcgsByPcSequence(fhome,i.cengen);
-	  i.cengen:=i.centralizerpcgs!.pcSequence;
-	fi;
+          i.centralizerpcgs:=InducedPcgsByPcSequence(fhome,i.cengen);
+          i.cengen:=i.centralizerpcgs!.pcSequence;
+        fi;
       od;
     fi;
     first:=false;
@@ -895,15 +895,15 @@ Error("This case disabled -- code not yet corrected");
         # <K>,  together  with   `operator's and   `exponent's  as in
         # (c^o^e=r)).
         if allcent then
-	  # generic central
-	  Info(InfoClasses,5,"central case 1");
+          # generic central
+          Info(InfoClasses,5,"central case 1");
           newcls:=CentralStepClEANS(fhome,QH, QG, N, cl,false);
         elif cent(fhome,cl.centralizerpcgs, N, Ldep) then
-	  # central in this case
-	  Info(InfoClasses,5,"central case 2");
+          # central in this case
+          Info(InfoClasses,5,"central case 2");
           newcls:=CentralStepClEANS(fhome,QH, QG, N, cl,false);
         else
-	  Info(InfoClasses,5,"general case");
+          Info(InfoClasses,5,"general case");
           newcls:=GeneralStepClEANS(fhome, QH, QG, N, nexpo, cl,false);
         fi;
 
@@ -922,21 +922,21 @@ Error("This case disabled -- code not yet corrected");
       newcls:=[];
       for cli in [1..Length(cls)]  do
 
-	cl:=cls[cli];
-	if consider=true
-	 or consider(fhome,cl.representative,cl.centralizerpcgs,K,L)
-	  then
-	  if allcent or cent(fhome,cl.centralizerpcgs, N, Ldep) then
-	    news:=CentralStepClEANS(fhome,QG, QG, N, cl,false);
-	  else
-	    news:=GeneralStepClEANS(fhome, QG, QG, N,nexpo,  cl,false);
-	  fi;
-	  Assert(1,# only do the test if no factors were formed
-	   FamilyObj(news[1].cengen)<>FamilyObj(eas[step]) or
-	   ForAll(news,
-		  i->ForAll(i.cengen,
-		  j->Comm(i.representative,j) in eas[step])));
-	  Append(newcls,news);
+        cl:=cls[cli];
+        if consider=true
+         or consider(fhome,cl.representative,cl.centralizerpcgs,K,L)
+          then
+          if allcent or cent(fhome,cl.centralizerpcgs, N, Ldep) then
+            news:=CentralStepClEANS(fhome,QG, QG, N, cl,false);
+          else
+            news:=GeneralStepClEANS(fhome, QG, QG, N,nexpo,  cl,false);
+          fi;
+          Assert(1,# only do the test if no factors were formed
+           FamilyObj(news[1].cengen)<>FamilyObj(eas[step]) or
+           ForAll(news,
+                  i->ForAll(i.cengen,
+                  j->Comm(i.representative,j) in eas[step])));
+          Append(newcls,news);
         fi;
 
         Unbind(cls[cli]);
@@ -967,8 +967,8 @@ Error("This case disabled -- code not yet corrected");
   for i in cls do
     if not IsBound(i.centralizer) then
       if not IsBound(i.centralizerpcgs) then
-	i.centralizerpcgs:=InducedPcgsByPcSequence(home,i.cengen);
-	i.cengen:=i.centralizerpcgs;
+        i.centralizerpcgs:=InducedPcgsByPcSequence(home,i.cengen);
+        i.cengen:=i.centralizerpcgs;
       fi;
       i.centralizer:=SubgroupByPcgs(G,i.centralizerpcgs);
     fi;
@@ -988,7 +988,7 @@ end);
 ##
 InstallGlobalFunction(MultiClassIdsPc, function(dat,candidates)
 local  G,home,  # the group and the home pcgs
-       H,Hp,	# acting group
+       H,Hp,    # acting group
        liftkerns,
        first,
        levdat,leda,
@@ -997,13 +997,13 @@ local  G,home,  # the group and the home pcgs
        eas,     # elementary abelian series in <G>
        step,    # counter looping over <eas>
        K,  L,   # members of <eas>
-       indstep,	# indice normal steps
-       Ldep,	# depth of L in pcgs
+       indstep, # indice normal steps
+       Ldep,    # depth of L in pcgs
        Kp,mK,Lp,mL, # induced and modulo pcgs's
        LcapH,KcapH, # intersections
        N,   cent,   # elementary abelian factor, for affine action
        cls, newcls, # classes in range/source of homomorphism
-       cli,	# index
+       cli,     # index
        news,    # new classes obtained in step
        cl,      # class looping over <cls>
        opr, exp,  # (candidates[i]^opr[i])^exp[i]=cls[i].representative
@@ -1011,8 +1011,8 @@ local  G,home,  # the group and the home pcgs
        blist,pos,q, # these control grouping of <cls> into <team>s
        p,       # prime dividing $|G|$
        i,c,   # loop variables
-       nexpo,	# N-Exponents of the elements of N conjugated
-       allcent;	# DivisorsInt(Size(G)) (used for Info)
+       nexpo,   # N-Exponents of the elements of N conjugated
+       allcent; # DivisorsInt(Size(G)) (used for Info)
 
   G:=dat.group;
   mode:=0;
@@ -1113,9 +1113,9 @@ local  G,home,  # the group and the home pcgs
   fi;
 
   cl:=rec(representative:=One(G),
-	  centralizer:=H,
-	  centralizerpcgs:=InducedPcgs(home,H),
-	  cengen:=InducedPcgs(home,H));
+          centralizer:=H,
+          centralizerpcgs:=InducedPcgs(home,H),
+          cengen:=InducedPcgs(home,H));
 
   if candidates<>false then
     cls:=List(candidates, c -> cl);
@@ -1265,7 +1265,7 @@ end);
 InstallGlobalFunction(CentralizerSizeLimitConsiderFunction,function(sz)
   return function(fhome,rep,cenp,K,L)
            return Product(RelativeOrders(cenp))/Size(K)<=sz;
-	  end;
+          end;
 end);
 
 #############################################################################
@@ -1324,7 +1324,7 @@ end );
 ##
 InstallGlobalFunction(RationalClassesSolvableGroup, function(arg)
 local  G,  home,  # the group and the home pcgs
-       H,Hp,	# acting group
+       H,Hp,    # acting group
        mode,    # LSB: ratCl | power | test :MSB
        candidates,  # candidates to be replaced by their canonical reps.
        eas,     # elementary abelian series in <G>
@@ -1343,8 +1343,8 @@ local  G,  home,  # the group and the home pcgs
        ord,     # order of a rational class modulo <L>
        new, power,  # auxiliary variables for determination of power tree
        c,  i,     # loop variables
-       opt,	# options
-       divi;	# DivisorsInt(Size(G)) (used for Info)
+       opt,     # options
+       divi;    # DivisorsInt(Size(G)) (used for Info)
 
 
   G:=arg[1];
@@ -1651,17 +1651,17 @@ local  G,  home,  # the group and the home pcgs
       newcls:=[];
       for cl  in cls  do
 
-	#if consider=true or consider(fhome,cl.representative,cl.centralizerpcgs,K,L)
-	  #then
-	  if cent(cl, N, L) then
-	    news:=CentralStepClEANS(home,G, G, N, cl);
-	  else
-	    news:=GeneralStepClEANS(home, G, G, N, cl);
-	  fi;
-	  Assert(1,ForAll(news,
-		  i->ForAll(GeneratorsOfGroup(i.centralizer),
-		  j->Comm(i.representative,j) in eas[step])));
-	  Append(newcls,news);
+        #if consider=true or consider(fhome,cl.representative,cl.centralizerpcgs,K,L)
+          #then
+          if cent(cl, N, L) then
+            news:=CentralStepClEANS(home,G, G, N, cl);
+          else
+            news:=GeneralStepClEANS(home, G, G, N, cl);
+          fi;
+          Assert(1,ForAll(news,
+                  i->ForAll(GeneratorsOfGroup(i.centralizer),
+                  j->Comm(i.representative,j) in eas[step])));
+          Append(newcls,news);
         #fi;
 
       od;
@@ -1736,8 +1736,8 @@ BindGlobal("OldSubspaceVectorSpaceGroup", function( N, p, gens )
     fi;
 
     cg:=rec( matrix        :=[  ],
-	       needed        := [],
-	       one           :=one,
+               needed        := [],
+               one           :=one,
                baseComplement:=ShallowCopy( ran ),
                projection    := IdentityMat( r, one ),
                commutator    :=0,
@@ -1796,7 +1796,7 @@ BindGlobal("OldSubspaceVectorSpaceGroup", function( N, p, gens )
     else
         cg.inverse:=Q{ Length( gens ) + ran }
                        { [ 1 .. Length( cg.needed ) ] };
-	cg.inverse:=ImmutableMatrix(p,cg.inverse,true);
+        cg.inverse:=ImmutableMatrix(p,cg.inverse,true);
     fi;
     if IsEmpty( cg.baseComplement )  then
         cg.projection:=NullMapMatrix;
@@ -1817,7 +1817,7 @@ BindGlobal("OldSubspaceVectorSpaceGroup", function( N, p, gens )
         od;
         cg.projection:=cg.projection ^ Q;
         cg.projection:=cg.projection{ ran }{ cg.baseComplement };
-	cg.projection:=ImmutableMatrix(p,cg.projection,true);
+        cg.projection:=ImmutableMatrix(p,cg.projection,true);
 
     fi;
 
@@ -1944,10 +1944,10 @@ InstallGlobalFunction( CentralStepRatClPGroup,
         else
             N!.CmodK:=InducedPcgs(home, cl.centralizer ) mod
                         DenominatorOfModuloPcgs( N );
-	    kern:=DenominatorOfModuloPcgs( N );
-	    img:=OldKernelHcommaC( N, h, N!.CmodK ) ;
-	    #N!.CmodL:=ExtendedPcgs(kern,img);
-	    N!.CmodL:=InducedPcgsByPcSequenceAndGenerators(ParentPcgs( kern ),
+            kern:=DenominatorOfModuloPcgs( N );
+            img:=OldKernelHcommaC( N, h, N!.CmodK ) ;
+            #N!.CmodL:=ExtendedPcgs(kern,img);
+            N!.CmodL:=InducedPcgsByPcSequenceAndGenerators(ParentPcgs( kern ),
                     kern, img );
 
         fi;
@@ -1992,7 +1992,7 @@ InstallGlobalFunction( CentralStepRatClPGroup,
 
 #Assert(2,LeftQuotient(h^Int(GeneratorsOfGroup(preimage)[i]),
 #                      h^preimage!.operators[i]) in
-#		      Group(NumeratorOfModuloPcgs(N)));
+#                      Group(NumeratorOfModuloPcgs(N)));
 
                 Add( Q, ExponentsOfPcElement( N, LeftQuotient( h ^
                         Int( GeneratorsOfGroup( preimage )[ i ] ),
@@ -2019,11 +2019,11 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                     reps[ i ]:=PcElementByExponentsNC
                         ( K, K!.subspace.baseComplement, r[ i ] );
                     exps[ i ]:=LinearCombinationPcgs(
-		      GeneratorsOfGroup(preimage){K!.subspace.needed},
-		      v[ i ],One(preimage));
+                      GeneratorsOfGroup(preimage){K!.subspace.needed},
+                      v[ i ],One(preimage));
                     conj[ i ]:=LinearCombinationPcgs(
-		      preimage!.operators { K!.subspace.needed }, v[ i ],
-		      One(G));
+                      preimage!.operators { K!.subspace.needed }, v[ i ],
+                      One(G));
                 od;
 
             # In the  construction case,  the complement  to <Q>  is a set of
@@ -2096,13 +2096,13 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                          h ^ operator ) ) * N!.subspace.projection );
             opr:=function( k, l )
                 return
-		#AH, jun3 2001: without the pcgs filtereing we might get
-		# extra kernel elements. I have no idea how this was
-		# originally avoided. This is rather a workaround than a fix
-		# -- the whole code should be rewritten cleanly.
-		PcElementByExponentsNC(N,ExponentsOfPcElement(N,
-		( v * k ) ^ ( 1 / Int( l ) mod p )
-		));
+                #AH, jun3 2001: without the pcgs filtereing we might get
+                # extra kernel elements. I have no idea how this was
+                # originally avoided. This is rather a workaround than a fix
+                # -- the whole code should be rewritten cleanly.
+                PcElementByExponentsNC(N,ExponentsOfPcElement(N,
+                ( v * k ) ^ ( 1 / Int( l ) mod p )
+                ));
             end;
             xset:=ExternalSet( cyc, K, opr );
 

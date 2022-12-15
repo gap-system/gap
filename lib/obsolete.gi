@@ -262,7 +262,7 @@
 #             row := mat[d];
 #             for k  in [ d+1 .. nrrows ]  do
 #                 quo := BestQuoInt( mat[k][d], mat[d][d] );
-# 	        if quo = 1  then
+#                 if quo = 1  then
 #                     AddRowVector(mat[k],row,-1);
 #                 elif quo = -1  then
 #                     AddRowVector(mat[k],row);
@@ -557,7 +557,7 @@ local fam, ext, str, zero, one, mone, le, c, s, b, ind, i, j;
 
     if ext[i+1]=one then
       if i<le-1 then
-	Add(str,'+');
+        Add(str,'+');
       fi;
       c:=false;
     elif ext[i+1]=mone then
@@ -565,18 +565,18 @@ local fam, ext, str, zero, one, mone, le, c, s, b, ind, i, j;
       c:=false;
     else
       if IsRat(ext[i+1]) and ext[i+1]<0 then
-	s:=Concatenation("-",LaTeXObj(-ext[i+1]));
+        s:=Concatenation("-",LaTeXObj(-ext[i+1]));
       else
-	s:=LaTeXObj(ext[i+1]);
+        s:=LaTeXObj(ext[i+1]);
       fi;
 
       b:=false;
       if '+' in s and s[1]<>'(' then
-	s:=Concatenation("(",s,")");
+        s:=Concatenation("(",s,")");
       fi;
 
       if i<le-1 and s[1]<>'-' then
-	Add(str,'+');
+        Add(str,'+');
       fi;
       Append(str,s);
       c:=true;
@@ -589,25 +589,25 @@ local fam, ext, str, zero, one, mone, le, c, s, b, ind, i, j;
       fi;
     else
       #if c then
-#	Add(str,'*');
+#       Add(str,'*');
 #      fi;
       for j  in [ 1, 3 .. Length(ext[i])-1 ]  do
-#	if 1 < j  then
-#	  Add(str,'*');
-#	fi;
-	ind:=ext[i][j];
-	if HasIndeterminateName(fam,ind) then
-	  Append(str,IndeterminateName(fam,ind));
-	else
-	  Append(str,"x_{");
-	  Append(str,String(ind));
-	  Add(str,'}');
-	fi;
-	if 1 <> ext[i][j+1]  then
-	  Append(str,"^{");
-	  Append(str,String(ext[i][j+1]));
-	  Add(str,'}');
-	fi;
+#       if 1 < j  then
+#         Add(str,'*');
+#       fi;
+        ind:=ext[i][j];
+        if HasIndeterminateName(fam,ind) then
+          Append(str,IndeterminateName(fam,ind));
+        else
+          Append(str,"x_{");
+          Append(str,String(ind));
+          Add(str,'}');
+        fi;
+        if 1 <> ext[i][j+1]  then
+          Append(str,"^{");
+          Append(str,String(ext[i][j+1]));
+          Add(str,'}');
+        fi;
       od;
     fi;
   od;
@@ -651,9 +651,9 @@ local names,len,i,g,h,e,a,s;
     od;
     if e<Length(s) then
       if e=Length(s)-1 then
-	s:=Concatenation(s{[1..e]},"_",s{[e+1..Length(s)]});
+        s:=Concatenation(s{[1..e]},"_",s{[e+1..Length(s)]});
       else
-	s:=Concatenation(s{[1..e]},"_{",s{[e+1..Length(s)]},"}");
+        s:=Concatenation(s{[1..e]},"_{",s{[e+1..Length(s)]},"}");
       fi;
       names[i]:=s;
     fi;
@@ -673,14 +673,14 @@ local names,len,i,g,h,e,a,s;
       if h=g then
         e:=e+SignInt(elm[i]);
       else
-	Append(s, names[g] );
-	if e<>1 then
-	  Append(s,"^{");
-	  Append(s,String(e));
-	  Append(s,"}");
-	fi;
+        Append(s, names[g] );
+        if e<>1 then
+          Append(s,"^{");
+          Append(s,String(e));
+          Append(s,"}");
+        fi;
         g:=h;
-	e:=SignInt(elm[i]);
+        e:=SignInt(elm[i]);
       fi;
       i:=i+1;
     od;

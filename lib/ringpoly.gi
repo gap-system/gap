@@ -179,15 +179,15 @@ function( r, n )
     if HasIsField(r) and IsField(r) then
         if IsFinite(r) then
             type := type and IsFiniteFieldPolynomialRing;
-	  if IsAlgebraicExtension(r) then
-	    type:= type and IsAlgebraicExtensionPolynomialRing;
-	  fi;
+          if IsAlgebraicExtension(r) then
+            type:= type and IsAlgebraicExtensionPolynomialRing;
+          fi;
         elif IsRationals(r) then
             type := type and IsRationalsPolynomialRing;
         elif # catch algebraic extensions
-	  IsIdenticalObj(One(r),1) and IsAbelianNumberField( r ) then
+          IsIdenticalObj(One(r),1) and IsAbelianNumberField( r ) then
           type:= type and IsAbelianNumberFieldPolynomialRing;
-	elif IsAlgebraicExtension(r) then
+        elif IsAlgebraicExtension(r) then
           type:= type and IsAlgebraicExtensionPolynomialRing;
         fi;
     fi;
@@ -240,7 +240,7 @@ function( r, nam )
   fi;
   return PolynomialRing( r, GiveNumbersNIndeterminates(
             RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),
-	                             Length(nam),nam,[]));
+                                     Length(nam),nam,[]));
 end );
 
 
@@ -260,7 +260,7 @@ InstallOtherMethod(PolynomialRing,"names,avoid",true,[IsRing,IsList,IsList],0,
 function( r, nam,a )
   return PolynomialRing( r, GiveNumbersNIndeterminates(
             RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),
-	                             Length(nam),nam,a));
+                                     Length(nam),nam,a));
 end );
 
 
@@ -317,7 +317,7 @@ function( r,n,a )
     TryNextMethod();
   fi;
   return PolynomialRing( r, GiveNumbersNIndeterminates(
-	    RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),1,[n],a));
+            RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),1,[n],a));
 end);
 
 #############################################################################
@@ -452,7 +452,7 @@ local v, fam, a, i;
     for i in v do
       a:=IndeterminateNumberOfLaurentPolynomial(i);
       if HasIndeterminateName(fam,a) and IndeterminateName(fam,a)=n then
-	return i;
+        return i;
       fi;
     od;
   fi;
@@ -550,8 +550,8 @@ function( ogens )
          HasCoefficientsOfLaurentPolynomial(ogens[i]));
 
     univ:=Filtered(ogens{g},
-	     i->DegreeOfUnivariateLaurentPolynomial(i)>=0 and
-		DegreeOfUnivariateLaurentPolynomial(i)<>DEGREE_ZERO_LAURPOL);
+             i->DegreeOfUnivariateLaurentPolynomial(i)>=0 and
+                DegreeOfUnivariateLaurentPolynomial(i)<>DEGREE_ZERO_LAURPOL);
 
     gens:=ogens{Difference([1..Length(ogens)],g)};
 
@@ -718,7 +718,7 @@ function(r,nam)
   fi;
   return FunctionField(r,GiveNumbersNIndeterminates(
             RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),
-	                             Length(nam),nam,[]));
+                                     Length(nam),nam,[]));
 end);
 
 
@@ -738,7 +738,7 @@ InstallOtherMethod(FunctionField,"names,avoid",true,[IsRing,IsList,IsList],0,
 function(r,nam,a)
   return FunctionField(r,GiveNumbersNIndeterminates(
             RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),
-	                             Length(nam),nam,a));
+                                     Length(nam),nam,a));
 end);
 
 
@@ -796,22 +796,22 @@ function(f,R)
   # and the indeterminates and coefficients ring of <R>
   crng := CoefficientsRing(R);
   inds := Set(IndeterminatesOfFunctionField(R),
-		      x -> ExtRepPolynomialRatFun(x)[1][1]);
+                      x -> ExtRepPolynomialRatFun(x)[1][1]);
 
   for ext in [ExtRepNumeratorRatFun(f),ExtRepDenominatorRatFun(f)] do
     # first check the indeterminates
     for exp  in ext{[1,3 .. Length(ext)-1]}  do
       for i  in exp{[1,3 .. Length(exp)-1]}  do
-	if not i in inds  then
-	  return false;
-	fi;
+        if not i in inds  then
+          return false;
+        fi;
       od;
     od;
 
     # then the coefficients
     for i  in ext{[2,4 .. Length(ext)]}  do
       if not i in crng  then
-	return false;
+        return false;
       fi;
     od;
   od;
@@ -826,7 +826,7 @@ local gi,p;
   if not IsBound(map!.polgens) then
     gi:=MappingGeneratorsImages(map);
     p:=Filtered([1..Length(gi[1])],x->gi[1][x] in
-	IndeterminatesOfPolynomialRing(Source(map)));
+        IndeterminatesOfPolynomialRing(Source(map)));
     map!.polgens:=[gi[1]{p},gi[2]{p}];
   fi;
 end);
@@ -858,18 +858,18 @@ InstallMethod( ImagesSet,
       IsRing ],
     function( map, sub )
       if HasGeneratorsOfTwoSidedIdeal(sub)
-	and (HasLeftActingRingOfIdeal(sub) and
-	    IsSubset(LeftActingRingOfIdeal(sub),Source(map)) )
-	and (HasRightActingRingOfIdeal(sub) and
-	    IsSubset(RightActingRingOfIdeal(sub),Source(map)) ) then
-	return Ideal(Image(map),
-			 List(GeneratorsOfTwoSidedIdeal(sub),
-			      x->ImagesRepresentative(map,x)));
+        and (HasLeftActingRingOfIdeal(sub) and
+            IsSubset(LeftActingRingOfIdeal(sub),Source(map)) )
+        and (HasRightActingRingOfIdeal(sub) and
+            IsSubset(RightActingRingOfIdeal(sub),Source(map)) ) then
+        return Ideal(Image(map),
+                         List(GeneratorsOfTwoSidedIdeal(sub),
+                              x->ImagesRepresentative(map,x)));
 
       elif HasGeneratorsOfRing(sub) then
-	return SubringNC(Range(map),
-			 List(GeneratorsOfRing(sub),
-			      x->ImagesRepresentative(map,x)));
+        return SubringNC(Range(map),
+                         List(GeneratorsOfRing(sub),
+                              x->ImagesRepresentative(map,x)));
       fi;
 
       TryNextMethod();

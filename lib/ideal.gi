@@ -449,7 +449,7 @@ EnumeratorOfIdeal := function( I )
             Igens,      # ideal generators of <I>
             R,          # the acting ring
             Rgens,      # ring generators of `R'
-	    elmsgens,   # additive generators
+            elmsgens,   # additive generators
             elm,        # one element of <elms>
             gen,        # one generator of <I>
             new;        # product or sum of <elm> and <gen>

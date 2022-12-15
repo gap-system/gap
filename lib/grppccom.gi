@@ -151,21 +151,21 @@ local tau, phi, mats;
     local   l,  i,  j,  z,  v;
       l:=[];
       for i  in ocr.smallGeneratingSet  do
-	Add( l, Comm( ocr.generators[i], c ) );
+        Add( l, Comm( ocr.generators[i], c ) );
       od;
       l:=ocr.listToCocycle( l );
       v:=ShallowCopy( B.factorzero );
       for i  in [1..Length(l)]  do
-	if l[i] <> ocr.zero  then
-	  z:=l[i];
-	  j:=B.heads[i];
-	  if j > 0  then
-	    l:=l - z * B.factorspace[j];
-	    v[j]:=z;
-	  else
-	    l:=l - z * B.subspace[-j];
-	  fi;
-	fi;
+        if l[i] <> ocr.zero  then
+          z:=l[i];
+          j:=B.heads[i];
+          if j > 0  then
+            l:=l - z * B.factorspace[j];
+            v[j]:=z;
+          else
+            l:=l - z * B.subspace[-j];
+          fi;
+        fi;
       od;
       IsRowVector( v );
       return v;
@@ -177,22 +177,22 @@ local tau, phi, mats;
     local   l,  i,  j,  z,  v;
       l:=[];
       for i  in relativeGens  do
-	#Add( l, LeftQuotient(i,i^c));
-	Add( l, Comm(i,c));
+        #Add( l, LeftQuotient(i,i^c));
+        Add( l, Comm(i,c));
       od;
       l:=ocr.listToCocycle( l );
       v:=ListWithIdenticalEntries(Length(B.factorspace),ocr.zero);
       for i  in [1..Length(l)]  do
-	if l[i] <> ocr.zero  then
-	  z:=l[i];
-	  j:=B.heads[i];
-	  if j > 0  then
-	    l:=l - z * B.factorspace[j];
-	    v[j]:=z;
-	  else
-	    l:=l - z * B.subspace[-j];
-	  fi;
-	fi;
+        if l[i] <> ocr.zero  then
+          z:=l[i];
+          j:=B.heads[i];
+          if j > 0  then
+            l:=l - z * B.factorspace[j];
+            v[j]:=z;
+          else
+            l:=l - z * B.subspace[-j];
+          fi;
+        fi;
       od;
       IsRowVector( v );
       return v;
@@ -281,7 +281,7 @@ local K, N, Z, SN, B, L, LL, SNpcgs, mats, i;
       fi;
       S:=CONextCentralizer( ocr,
           InducedPcgs(cor.pcgs,SN),
-	  ocr.complement);
+          ocr.complement);
     return [rec( complement:=K, centralizer:=S )];
   fi;
 
@@ -290,7 +290,7 @@ local K, N, Z, SN, B, L, LL, SNpcgs, mats, i;
   # want normal complements,  there also are no  blocks under the operation
   # of <S>.
   B:=BaseSteinitzVectors(BasisVectors(Basis(ocr.oneCocycles)),
-			 BasisVectors(Basis(ocr.oneCoboundaries)));
+                         BasisVectors(Basis(ocr.oneCoboundaries)));
   if Size(SN) = 1 or IsBound(ocr.normalIn)  then
     L:=VectorSpace(ocr.field,B.factorspace, B.factorzero);
     Info(InfoComplement,3,"CONextCocycles: ",Size(L)," complements found");
@@ -298,36 +298,36 @@ local K, N, Z, SN, B, L, LL, SNpcgs, mats, i;
       Info(InfoComplement,3,"CONextCocycles: normal complements, using H^1");
       LL:=[];
       if IsBound(cor.condition)  then
-	for i  in L  do
-	  K:=ocr.cocycleToComplement(i);
-	  if cor.condition(cor, K)  then
-	    Add(LL, rec(complement:=K, centralizer:=S));
-	  fi;
-	od;
+        for i  in L  do
+          K:=ocr.cocycleToComplement(i);
+          if cor.condition(cor, K)  then
+            Add(LL, rec(complement:=K, centralizer:=S));
+          fi;
+        od;
       else
-	for i  in L  do
-	  K:=ocr.cocycleToComplement(i);
-	  Add(LL, rec(complement:=K, centralizer:=S));
-	od;
+        for i  in L  do
+          K:=ocr.cocycleToComplement(i);
+          Add(LL, rec(complement:=K, centralizer:=S));
+        od;
       fi;
       return LL;
     else
       Info(InfoComplement,3,"CONextCocycles: S meets N, using H^1");
       LL:=[];
       if IsBound(cor.condition)  then
-	for i  in L  do
-	  K:=ocr.cocycleToComplement(i);
-	  if cor.condition(cor, K)  then
-	    S:=ocr.centralizer;
-	    Add(LL, rec(complement:=K, centralizer:=S));
-	  fi;
-	od;
+        for i  in L  do
+          K:=ocr.cocycleToComplement(i);
+          if cor.condition(cor, K)  then
+            S:=ocr.centralizer;
+            Add(LL, rec(complement:=K, centralizer:=S));
+          fi;
+        od;
       else
-	for i  in L  do
-	  K:=ocr.cocycleToComplement(i);
-	  S:=ocr.centralizer;
-	  Add(LL, rec(complement:=K, centralizer:=S));
-	od;
+        for i  in L  do
+          K:=ocr.cocycleToComplement(i);
+          S:=ocr.centralizer;
+          Add(LL, rec(complement:=K, centralizer:=S));
+        od;
       fi;
       return LL;
     fi;
@@ -357,8 +357,8 @@ local K, N, Z, SN, B, L, LL, SNpcgs, mats, i;
         S:=ClosureGroup( ocr.centralizer, i.stabilizer );
       else
         S:=CONextCentralizer(ocr,
-	     InducedPcgs(cor.pcgs,
-	                 i.stabilizer), K);
+             InducedPcgs(cor.pcgs,
+                         i.stabilizer), K);
       fi;
       Add(LL, rec(complement:=K, centralizer:=S));
       fi;
@@ -419,7 +419,7 @@ local   z,K,N,zett,SN,B,L,tau,gens,imgs,A,T,heads,dim,s,v,j,i,root;
         return [];
       else
         S:=CONextCentralizer( ocr,
-	 InducedPcgs(cor.pcgs,SN),ocr.complement);
+         InducedPcgs(cor.pcgs,SN),ocr.complement);
       return [rec(complement:=K, centralizer:=S)];
       fi;
   fi;
@@ -429,7 +429,7 @@ local   z,K,N,zett,SN,B,L,tau,gens,imgs,A,T,heads,dim,s,v,j,i,root;
   # normal  complements,  there  also  are no blocks under the operation of
   # <S>.
   B:=BaseSteinitzVectors(BasisVectors(Basis(ocr.oneCocycles)),
-			 BasisVectors(Basis(ocr.oneCoboundaries)));
+                         BasisVectors(Basis(ocr.oneCoboundaries)));
   if Size(SN)=1 or IsBound( ocr.normalIn )  then
       if IsBound( ocr.normalIn )  then
         Info(InfoComplement,3,"CONextCocycles: normal complements, using H^1");
@@ -499,12 +499,12 @@ local   z,K,N,zett,SN,B,L,tau,gens,imgs,A,T,heads,dim,s,v,j,i,root;
     while j <= dim and heads[j] <> 0  do
       z:=v[j] / B[heads[j]][j];
       if z <> 0*z  then
-	s:=s / A[heads[j]] ^ ocr.logTable[LogFFE(z,root)+1];
+        s:=s / A[heads[j]] ^ ocr.logTable[LogFFE(z,root)+1];
       fi;
       v:=v - v[j] / B[heads[j]][j] * B[heads[j]];
       # was: while j <= dim and IntFFE(v[j]) = 0  do
       while j <= dim and v[j] = ocr.zero  do
-	j:=j + 1;
+        j:=j + 1;
       od;
     od;
     if j > dim  then
@@ -560,7 +560,7 @@ local   p, ocr;
     # If <K> and <M> are coprime, <K> splits.
     Info(InfoComplement,3,"CONextComplements: coprime case, <K> splits" );
     ocr:=rec( group:=K, module:=M,
-	modulePcgs:=InducedPcgs(cor.pcgs,M),
+        modulePcgs:=InducedPcgs(cor.pcgs,M),
                 pcgs:=cor.pcgs, inPcComplement:=true);
 
     if IsBound( cor.generators )  then
@@ -593,11 +593,11 @@ local   p, ocr;
     else
       K:=ocr.complement;
       if IsBound(cor.condition) and not cor.condition(cor, K)  then
-	return [];
+        return [];
       fi;
       S:=SubgroupNC( S, Filtered(GeneratorsOfGroup(S),i->not i in M));
       S:=CONextCentralizer( ocr,
-	InducedPcgs(cor.pcgs,S), K );
+        InducedPcgs(cor.pcgs,S), K );
       return [rec( complement:=K, centralizer:=S )];
     fi;
   else
@@ -619,19 +619,19 @@ local   p, ocr;
 #    if IsBound( cor.normalSubgroup )  then
 #      L:=cor.normalSubgroup( S, K, M );
 #      if IsTrivial(L) = []  then
-#	return CONextCocycles(cor, ocr, S);
+#        return CONextCocycles(cor, ocr, S);
 #      else
-#	return CONextNormal(cor, ocr, S, L);
+#        return CONextNormal(cor, ocr, S, L);
 #      fi;
 #    else
 
     if IsBound( cor.smallGeneratingSet )  then
-	   ocr.smallGeneratingSet:=cor.smallGeneratingSet;
+           ocr.smallGeneratingSet:=cor.smallGeneratingSet;
       ocr.generatorsInSmall :=cor.generatorsInSmall;
     elif IsBound( cor.primes )  then
       p:=Factors(Size( M.generators))[1];
       if p in cor.primes  then
-	ocr.pPrimeSet:=cor.pPrimeSets[Position(cor.primes,p)];
+        ocr.pPrimeSet:=cor.pPrimeSets[Position(cor.primes,p)];
       fi;
     fi;
     if IsBound( cor.relators )  then
@@ -690,8 +690,8 @@ local r,a,a0,FG,nextStep,C,found,i,time,hpcgs,ipcgs;
 
   hpcgs:=List([1..Length(E)-1],
            i->PcgsByPcSequenceNC(FamilyObj(One(Image(a0[i]))),
-	      List(cor.home mod InducedPcgs(cor.home,E[i]),
-	           j->Image(a0[i],j))));
+              List(cor.home mod InducedPcgs(cor.home,E[i]),
+                   j->Image(a0[i],j))));
   Add(hpcgs,cor.home);
   cor.hpcgs:=hpcgs;
   a :=HomomorphismsSeries( G, a0 );
@@ -780,13 +780,13 @@ Assert(1,cor.pcgs=cor.hpcgs[nr+1]);
 
       # try to step down as fast as possible
       for X  in NC  do
-	Assert(2,OCTestRelators(rec(
-	   generators:=CanonicalPcgs(InducedPcgs(cor.hpcgs[nr+1],X.complement)),
-	   relators:=cor.relators)));
-	nextStep( X.centralizer, X.complement, nr+1 );
-	if found and not all  then
-	  return;
-	fi;
+        Assert(2,OCTestRelators(rec(
+           generators:=CanonicalPcgs(InducedPcgs(cor.hpcgs[nr+1],X.complement)),
+           relators:=cor.relators)));
+        nextStep( X.centralizer, X.complement, nr+1 );
+        if found and not all  then
+          return;
+        fi;
       od;
     fi;
   end;
@@ -808,7 +808,7 @@ Assert(1,cor.pcgs=cor.hpcgs[nr+1]);
   Info(InfoComplement,3,"Complements: adding normalizers" );
   for i  in [1..Length(C)]  do
     C[i].normalizer:=ClosureGroup( C[i].centralizer,
-			C[i].complement );
+                        C[i].complement );
   od;
   return C;
 
@@ -852,24 +852,24 @@ local   H, E,  cor,  a,  i,  fun2,pcgs,home;
       # for non-pc groups arbitrary pcgs may become unfeasibly slow, so
       # convert to a pc group in this case
       pcgs:=PcgsByPcSequenceCons(IsPcgsDefaultRep,
-	IsPcgs and IsPrimeOrdersPcgs,FamilyObj(One(G)),pcgs,[]);
+        IsPcgs and IsPrimeOrdersPcgs,FamilyObj(One(G)),pcgs,[]);
 
       H:=PcGroupWithPcgs(pcgs);
       home:=pcgs; # this is our new home pcgs
       a:=GroupHomomorphismByImagesNC(G,H,pcgs,GeneratorsOfGroup(H));
       E:=List(E,i->Image(a,i));
       if IsFunction(fun) then
-	fun2:=function(x)
-		return fun(PreImage(a,x));
-	      end;
+        fun2:=function(x)
+                return fun(PreImage(a,x));
+              end;
       else
-	pcgs:=home;
-	fun2:=fun;
+        pcgs:=home;
+        fun2:=fun;
       fi;
       Info(InfoComplement,3,"transfer back" );
       return List( COComplementsMain( H, Image(a,N), all, fun2 ), x -> rec(
-	    complement :=PreImage( a, x.complement ),
-	      centralizer:=PreImage( a, x.centralizer ) ) );
+            complement :=PreImage( a, x.complement ),
+              centralizer:=PreImage( a, x.centralizer ) ) );
     else
       pcgs:=PcgsByPcSequenceNC(FamilyObj(home[1]),pcgs);
       IsPrimeOrdersPcgs(pcgs); # enforce setting
@@ -951,14 +951,14 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
   #Print(Index(A,K)," in ",Index(H,K),"\n");
       A:=Core(H,A);
       if Size(A)>Size(K) then
-	# found one. Doesn't need to be elementary abelian
-	if not IsPrimePowerInt(Size(A)/Size(K)) then
-	  Error("multiple primes");
-	else
-	  primes:=[];
-	fi;
+        # found one. Doesn't need to be elementary abelian
+        if not IsPrimePowerInt(Size(A)/Size(K)) then
+          Error("multiple primes");
+        else
+          primes:=[];
+        fi;
       else
-	primes:=primes{[2..Length(primes)]}; # next one
+        primes:=primes{[2..Length(primes)]}; # next one
       fi;
     od;
   fi;
@@ -1006,123 +1006,123 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
       ocr:=OneCocycles(c[j],pcgs);
       shomgens:=List(ocr.generators,x->Image(shom,x));
       if ocr.isSplitExtension then
-	subbas:=Basis(ocr.oneCoboundaries);
+        subbas:=Basis(ocr.oneCoboundaries);
 
-	bas:=BaseSteinitzVectors(BasisVectors(Basis(ocr.oneCocycles)),
-	                         BasisVectors(subbas));
+        bas:=BaseSteinitzVectors(BasisVectors(Basis(ocr.oneCocycles)),
+                                 BasisVectors(subbas));
         lnc:=[];
-	lncn:=[];
-	Info(InfoComplement,2,"Step ",i,",",j,": ",
-	  p^Length(bas.factorspace)," Complements");
-	elm:=VectorSpace(GF(p),bas.factorspace,Zero(ocr.oneCocycles));
-	if Length(bas.factorspace)=0 then
-	  elm:=AsSSortedList(elm);
-	else
-	  elm:=Enumerator(elm);
-	fi;
-	mark:=BlistList([1..Length(elm)],[]);
+        lncn:=[];
+        Info(InfoComplement,2,"Step ",i,",",j,": ",
+          p^Length(bas.factorspace)," Complements");
+        elm:=VectorSpace(GF(p),bas.factorspace,Zero(ocr.oneCocycles));
+        if Length(bas.factorspace)=0 then
+          elm:=AsSSortedList(elm);
+        else
+          elm:=Enumerator(elm);
+        fi;
+        mark:=BlistList([1..Length(elm)],[]);
 
-	# we act on cocycles, not cocycles modulo coboundaries. This is
-	# because orbits are short, and we otherwise would have to do a
-	# double stabilizer calculation to obtain the normalizer.
-	acterlist:=[];
-	free:=FreeGroup(Length(ocr.generators));
-	#cn[j]:=Group(SmallGeneratingSet(cn[j]));
-	for z in GeneratorsOfGroup(cn[j]) do
-	  nz:=[z];
-	  gp:=List(ocr.generators,x->Image(shom,x^z));
-	  if gp=shomgens then
-	    # no action on qs/qk -- action on cohomology is affine
+        # we act on cocycles, not cocycles modulo coboundaries. This is
+        # because orbits are short, and we otherwise would have to do a
+        # double stabilizer calculation to obtain the normalizer.
+        acterlist:=[];
+        free:=FreeGroup(Length(ocr.generators));
+        #cn[j]:=Group(SmallGeneratingSet(cn[j]));
+        for z in GeneratorsOfGroup(cn[j]) do
+          nz:=[z];
+          gp:=List(ocr.generators,x->Image(shom,x^z));
+          if gp=shomgens then
+            # no action on qs/qk -- action on cohomology is affine
 
-	    # linear part
-	    mat:=[];
-	    for k in BasisVectors(Basis(GF(p)^Length(Zero(ocr.oneCocycles)))) do
-	      k:=ocr.listToCocycle(List(ocr.cocycleToList(k),x->x^z));
-	      Add(mat,k);
-	    od;
-	    mat:=ImmutableMatrix(GF(p),mat);
-	    Add(nz,mat);
+            # linear part
+            mat:=[];
+            for k in BasisVectors(Basis(GF(p)^Length(Zero(ocr.oneCocycles)))) do
+              k:=ocr.listToCocycle(List(ocr.cocycleToList(k),x->x^z));
+              Add(mat,k);
+            od;
+            mat:=ImmutableMatrix(GF(p),mat);
+            Add(nz,mat);
 
-	    # affine part
-	    mat:=ocr.listToCocycle(List(ocr.complementGens,x->Comm(x,z)));
-	    ConvertToVectorRep(mat,GF(p));
-	    MakeImmutable(mat);
-	    Add(nz,mat);
+            # affine part
+            mat:=ocr.listToCocycle(List(ocr.complementGens,x->Comm(x,z)));
+            ConvertToVectorRep(mat,GF(p));
+            MakeImmutable(mat);
+            Add(nz,mat);
 
-	    if IsOne(nz[2]) and IsZero(nz[3]) then
-	      nz[4]:=fail; # indicate that element does not act
-	    fi;
+            if IsOne(nz[2]) and IsZero(nz[3]) then
+              nz[4]:=fail; # indicate that element does not act
+            fi;
 
-	  else
-	    gp:=GroupWithGenerators(gp);
-	    SetEpimorphismFromFreeGroup(gp,GroupHomomorphismByImages(free,
-	      gp,GeneratorsOfGroup(free),GeneratorsOfGroup(gp)));
-	    Add(nz,List(shomgens,x->Factorization(gp,x)));
-	  fi;
+          else
+            gp:=GroupWithGenerators(gp);
+            SetEpimorphismFromFreeGroup(gp,GroupHomomorphismByImages(free,
+              gp,GeneratorsOfGroup(free),GeneratorsOfGroup(gp)));
+            Add(nz,List(shomgens,x->Factorization(gp,x)));
+          fi;
 
-	  Add(acterlist,nz);
-	od;
-	actfun:=function(cy,a)
-	local genpos,l;
-	  genpos:=PositionProperty(acterlist,x->a=x[1]);
-	  if genpos=fail then
-	    if IsOne(a) then
-	      # the action test always does the identity, so its worth
-	      # catching this as we have many short orbits
-	      return cy;
-	    else
-	      return ocr.complementToCocycle(ocr.cocycleToComplement(cy)^a);
-	    fi;
-	  elif Length(acterlist[genpos])=4 then
-	    # no action
-	    return cy;
-	  elif Length(acterlist[genpos])=3 then
-	    # affine case
-	    l:=cy*acterlist[genpos][2]+acterlist[genpos][3];
-	  else
-	    l:=ocr.cocycleToList(cy);
-	    l:=List([1..Length(l)],x->(ocr.complementGens[x]*l[x])^a);
-	    if acterlist[genpos][2]<>fail then
-	      l:=List(acterlist[genpos][2],
-			x->MappedWord(x,GeneratorsOfGroup(free),l));
-	    fi;
-	    l:=List([1..Length(l)],x->LeftQuotient(ocr.complementGens[x],l[x]));
-	    l:=ocr.listToCocycle(l);
-	  fi;
+          Add(acterlist,nz);
+        od;
+        actfun:=function(cy,a)
+        local genpos,l;
+          genpos:=PositionProperty(acterlist,x->a=x[1]);
+          if genpos=fail then
+            if IsOne(a) then
+              # the action test always does the identity, so its worth
+              # catching this as we have many short orbits
+              return cy;
+            else
+              return ocr.complementToCocycle(ocr.cocycleToComplement(cy)^a);
+            fi;
+          elif Length(acterlist[genpos])=4 then
+            # no action
+            return cy;
+          elif Length(acterlist[genpos])=3 then
+            # affine case
+            l:=cy*acterlist[genpos][2]+acterlist[genpos][3];
+          else
+            l:=ocr.cocycleToList(cy);
+            l:=List([1..Length(l)],x->(ocr.complementGens[x]*l[x])^a);
+            if acterlist[genpos][2]<>fail then
+              l:=List(acterlist[genpos][2],
+                        x->MappedWord(x,GeneratorsOfGroup(free),l));
+            fi;
+            l:=List([1..Length(l)],x->LeftQuotient(ocr.complementGens[x],l[x]));
+            l:=ocr.listToCocycle(l);
+          fi;
 
   #if l<>ocr.complementToCocycle(ocr.cocycleToComplement(cy)^a) then Error("ACT");fi;
-	  return l;
-	end;
+          return l;
+        end;
         pos:=1;
-	repeat
-	  #z:=ClosureGroup(ser[i],ocr.cocycleToComplement(elm[pos]));
+        repeat
+          #z:=ClosureGroup(ser[i],ocr.cocycleToComplement(elm[pos]));
 
-	  orb:=OrbitStabilizer(cn[j],elm[pos],actfun);
-	  mark[pos]:=true;
-	  #cnt:=1;
-	  for k in [2..Length(orb.orbit)] do
-	    pos2:=Position(elm,SiftedVector(subbas,orb.orbit[k]));
-	    #if mark[pos2]=false then cnt:=cnt+1;fi;
-	    mark[pos2]:=true; # mark orbit off
-	  od;
-	  #Print(cnt,"/",Length(orb.orbit),"\n");
-	  if IsSubset(orb.stabilizer,qn) then
-	    cond:=Size(orb.stabilizer)=Size(q);
-	  else
-	    cond:=Size(ClosureGroup(qn,orb.stabilizer))=Size(q);
-	  fi;
-	  if cond then
-	    # normalizer is still large enough to keep the complement
-	    Add(lnc,ClosureGroup(ser[i],ocr.cocycleToComplement(elm[pos])));
-	    Add(lncn,orb.stabilizer);
-	  fi;
+          orb:=OrbitStabilizer(cn[j],elm[pos],actfun);
+          mark[pos]:=true;
+          #cnt:=1;
+          for k in [2..Length(orb.orbit)] do
+            pos2:=Position(elm,SiftedVector(subbas,orb.orbit[k]));
+            #if mark[pos2]=false then cnt:=cnt+1;fi;
+            mark[pos2]:=true; # mark orbit off
+          od;
+          #Print(cnt,"/",Length(orb.orbit),"\n");
+          if IsSubset(orb.stabilizer,qn) then
+            cond:=Size(orb.stabilizer)=Size(q);
+          else
+            cond:=Size(ClosureGroup(qn,orb.stabilizer))=Size(q);
+          fi;
+          if cond then
+            # normalizer is still large enough to keep the complement
+            Add(lnc,ClosureGroup(ser[i],ocr.cocycleToComplement(elm[pos])));
+            Add(lncn,orb.stabilizer);
+          fi;
 
-	  pos:=Position(mark,false);
-	until pos=fail;
-	Info(InfoComplement,2,Length(lnc)," good normalizer orbits");
+          pos:=Position(mark,false);
+        until pos=fail;
+        Info(InfoComplement,2,Length(lnc)," good normalizer orbits");
 
-	Append(nc,lnc);
-	Append(ncn,lncn);
+        Append(nc,lnc);
+        Append(ncn,lncn);
       fi;
     od;
     c:=nc;
@@ -1241,9 +1241,9 @@ function( G, N )
     for Hc in ConjugacyClassesSubgroups(G) do
       H := Representative(Hc);
       if (( CanComputeSize(G) and CanComputeSize(N) and CanComputeSize(H) and
-	  Size(G) = Size(N)*Size(H) ) or G = ClosureGroup(N, H) )
-	  and IsTrivial(Intersection(N, H)) then
-	Add(C, H);
+          Size(G) = Size(N)*Size(H) ) or G = ClosureGroup(N, H) )
+          and IsTrivial(Intersection(N, H)) then
+        Add(C, H);
       fi;
     od;
   fi;

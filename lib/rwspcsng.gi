@@ -762,36 +762,36 @@ SingleCollector_MakeInverses := function( sc )
     invhint:=ValueOption("inversehints");
     for i  in [ n, n-1 .. 1 ]  do
       if invhint<>fail then
-	ih:=[];
-	for j in [1..Length(invhint[i])] do
-	  if invhint[i][j]<>0 then
-	    Add(ih,j);
-	    Add(ih,invhint[i][j]);
-	  fi;
-	od;
-	ih:=AssocWord(sc![SCP_DEFAULT_TYPE],ih); # claimed inverse
-	# test that the inverses work. This can be abysmally slow for larger
-	# primes.
-	if AssertionLevel()>0 then
-	  av:=ExponentSums(gn[i],1,sc![SCP_NUMBER_RWS_GENERATORS]);
-	  CollectWord(sc,av,ih);
-	  if ForAny(av,x->not IsZero(x)) then
-	    Error("failed inverse hint");
-	    ih:=fail;
-	  fi;
-	fi;
+        ih:=[];
+        for j in [1..Length(invhint[i])] do
+          if invhint[i][j]<>0 then
+            Add(ih,j);
+            Add(ih,invhint[i][j]);
+          fi;
+        od;
+        ih:=AssocWord(sc![SCP_DEFAULT_TYPE],ih); # claimed inverse
+        # test that the inverses work. This can be abysmally slow for larger
+        # primes.
+        if AssertionLevel()>0 then
+          av:=ExponentSums(gn[i],1,sc![SCP_NUMBER_RWS_GENERATORS]);
+          CollectWord(sc,av,ih);
+          if ForAny(av,x->not IsZero(x)) then
+            Error("failed inverse hint");
+            ih:=fail;
+          fi;
+        fi;
       else
-	ih:=fail;
+        ih:=fail;
       fi;
       if ih<>fail then
-	#if ih<>SingleCollector_Solution( sc, gn[i], id ) then
-	#  Error("ugh!");
-	#else
-	#  Print("inversehint worked\n");
-	#fi;
-	sc![SCP_INVERSES][i] := ih;
+        #if ih<>SingleCollector_Solution( sc, gn[i], id ) then
+        #  Error("ugh!");
+        #else
+        #  Print("inversehint worked\n");
+        #fi;
+        sc![SCP_INVERSES][i] := ih;
       else
-	sc![SCP_INVERSES][i] := SingleCollector_Solution( sc, gn[i], id );
+        sc![SCP_INVERSES][i] := SingleCollector_Solution( sc, gn[i], id );
       fi;
     od;
 end;
@@ -995,7 +995,7 @@ function( efam, gens, orders )
     gens := ShallowCopy(gens);
     for i  in [ 1 .. Length(gens) ]  do
         if not sc[SCP_IS_DEFAULT_TYPE](gens[i])  then
-	    # this generates words in syllable rep!
+            # this generates words in syllable rep!
             gens[i] := AssocWord( sc[SCP_DEFAULT_TYPE],
                                   ExtRepOfObj(gens[i]) );
         fi;

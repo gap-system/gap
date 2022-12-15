@@ -29,11 +29,11 @@ local l,f,dim,gens,off,g,d,m,a,range,rans,G,compgens,cg;
     d:=DefaultFieldOfMatrixGroup(l[a]);
     if not IsSubset(f,d) then
       if IsSubset(d,f) then
-	f:=d;
+        f:=d;
       elif PrimeField(d)<>PrimeField(f) then
-	TryNextMethod();
+        TryNextMethod();
       else
-	f:=DefaultField(Concatenation(GeneratorsOfField(d),GeneratorsOfField(f)));
+        f:=DefaultField(Concatenation(GeneratorsOfField(d),GeneratorsOfField(f)));
       fi;
     fi;
   od;
@@ -105,9 +105,9 @@ local   emb,info;
   if IsBound(info.embeddings[i]) then return info.embeddings[i]; fi;
 
   emb := Objectify(NewType(GeneralMappingsFamily(FamilyObj(One(D)),
-						 FamilyObj(One(D))),
-		  IsEmbeddingDirectProductMatrixGroup),
-		  rec(component := i,info:=info,range:=info.rans[i]));
+                                                 FamilyObj(One(D))),
+                  IsEmbeddingDirectProductMatrixGroup),
+                  rec(component := i,info:=info,range:=info.rans[i]));
   SetRange(emb,D);
   SetSource(emb,info.groups[i]);
 
@@ -132,7 +132,7 @@ end);
 ##
 InstallMethod(ImagesRepresentative,"matrix direct product embedding",
   FamSourceEqFamElm,[ IsEmbeddingDirectProductMatrixGroup,
-		       IsMultiplicativeElementWithInverse ],0,
+                       IsMultiplicativeElementWithInverse ],0,
 function(emb,m)
 local info,a;
   info:=emb!.info;
@@ -183,9 +183,9 @@ local   prj,info;
   if IsBound(info.projections[i]) then return info.projections[i]; fi;
 
   prj := Objectify(NewType(GeneralMappingsFamily(FamilyObj(One(D)),
-						FamilyObj(One(D))),
-		  IsProjectionDirectProductMatrixGroup),
-		  rec(component := i,info:=info,range:=info.rans[i]));
+                                                FamilyObj(One(D))),
+                  IsProjectionDirectProductMatrixGroup),
+                  rec(component := i,info:=info,range:=info.rans[i]));
   SetSource(prj,D);
   SetRange(prj,info.groups[i]);
   info.projections[i] := prj;
@@ -232,7 +232,7 @@ InstallMethod(KernelOfMultiplicativeGeneralMapping,
 
     D := Source(prj);
     gens :=Concatenation(prj!.info.compgens{
-	      Difference([1..Length(prj!.info.compgens)],[prj!.component])});
+              Difference([1..Length(prj!.info.compgens)],[prj!.component])});
     K := SubgroupNC(D,gens);
     SetIsNormalInParent(K,true);
     return K;
@@ -275,7 +275,7 @@ local f,n,m,Agens,Bgens,emb,i,j,a,g,dim,rans,range,orbs;
   Agens := Concatenation(List(orbs, orb -> emb[orb[1]]));
 
   Bgens:=List(GeneratorsOfGroup(B),
-	  x->KroneckerProduct(PermutationMat(x,m,f),One(A)));
+          x->KroneckerProduct(PermutationMat(x,m,f),One(A)));
   g:=Group(Concatenation(Agens,Bgens));
   if HasSize(A) then
     SetSize(g,Size(A)^m*Size(B));
@@ -329,14 +329,14 @@ local   emb, info;
 
     if i<=info.degI then
       emb := Objectify( NewType(
-		GeneralMappingsFamily(FamilyObj(One(W)),FamilyObj(One(W))),
-		IsEmbeddingImprimitiveWreathProductMatrixGroup),
-	     rec( component := i,range:=info.rans[i],info:=info ) );
+                GeneralMappingsFamily(FamilyObj(One(W)),FamilyObj(One(W))),
+                IsEmbeddingImprimitiveWreathProductMatrixGroup),
+             rec( component := i,range:=info.rans[i],info:=info ) );
       SetSource(emb,info.groups[1]);
     elif i=info.degI+1 then
       emb:=GroupHomomorphismByFunction(info.groups[2],W,
-	    x->KroneckerProduct(PermutationMat(x,info.degI,info.field),
-	         One(info.groups[1]))  );
+            x->KroneckerProduct(PermutationMat(x,info.degI,info.field),
+                 One(info.groups[1]))  );
       SetIsInjective(emb,true);
     else
       Error("no embedding <i> defined");

@@ -66,7 +66,7 @@ DeclareCategory( "IsOutputCustomStream", IsOutputStream );
 
 #############################################################################
 ##
-#O  InputTextCustom( <state>, <read>, <close> )	. . . . . . create input text
+#O  InputTextCustom( <state>, <read>, <close> ) . . . . . . create input text
 #O                              stream from state, read, and close functions.
 ##
 ##  <#GAPDoc Label="InputTextCustom">

@@ -586,7 +586,7 @@ local p;
   p:=RESTRICTED_PERM(g,D,false);
   if p=fail then
     Error("<g> must be a permutation and <D> a plain list or range,\n",
-	  "   consisting of a union of cycles of <g>");
+          "   consisting of a union of cycles of <g>");
   fi;
   return p;
 end);
@@ -598,7 +598,7 @@ function(g,D)
   p:=RESTRICTED_PERM(g,D,true);
   if p=fail then
     Error("<g> must be a permutation and <D> a plain list or range,\n",
-	  "   consisting of a union of cycles of <g>");
+          "   consisting of a union of cycles of <g>");
   fi;
   return p;
 end);
@@ -871,16 +871,16 @@ local dom,l,i,n,p,c;
     if p^perm<>p and not p in dom then
       c:=false;
       while not p in dom do
-	AddSet(dom,p);
-	n:=n+1;
-	# deliberately *no ugly blanks* printed!
-	if c then
-	  Print(",",p);
-	else
-	  Print(Concatenation("(",String(p)));
-	fi;
-	p:=p^perm;
-	c:=true;
+        AddSet(dom,p);
+        n:=n+1;
+        # deliberately *no ugly blanks* printed!
+        if c then
+          Print(",",p);
+        else
+          Print(Concatenation("(",String(p)));
+        fi;
+        p:=p^perm;
+        c:=true;
       od;
       Print(")");
     fi;

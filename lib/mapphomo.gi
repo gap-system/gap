@@ -275,15 +275,15 @@ function( map, elms )
   # Try to map a generating set of elms; this works if and only if map
   # is defined on all of elms.
   genimages:= List( GeneratorsOfMagmaWithInverses( elms ),
-		    gen -> ImagesRepresentative( map, gen ) );
+                    gen -> ImagesRepresentative( map, gen ) );
   if fail in genimages then
     TryNextMethod();
   fi;
 
   img := SubgroupNC( Range( map ), Concatenation(
-	      GeneratorsOfMagmaWithInverses(
-		  CoKernelOfMultiplicativeGeneralMapping( map ) ),
-	      genimages ) );
+              GeneratorsOfMagmaWithInverses(
+                  CoKernelOfMultiplicativeGeneralMapping( map ) ),
+              genimages ) );
   if IsSingleValued(map) then
     # At this point we know that the restriction of map to elms is a
     # group homomorphism. Hence we can transfer some knowledge about
@@ -316,9 +316,9 @@ InstallMethod( ImagesSet,
        and not HasStabChainMutable( img )  then
         if not IsBound( UnderlyingExternalSet( map )!.basePermImage )  then
             UnderlyingExternalSet( map )!.basePermImage :=
-	     List(BaseOfGroup(UnderlyingExternalSet(map)),
-	          b->PositionCanonical(HomeEnumerator(
-		         UnderlyingExternalSet( map ) ), b ) );
+             List(BaseOfGroup(UnderlyingExternalSet(map)),
+                  b->PositionCanonical(HomeEnumerator(
+                         UnderlyingExternalSet( map ) ), b ) );
         fi;
         SetBaseOfGroup( img, UnderlyingExternalSet( map )!.basePermImage );
 #T is this the right place?

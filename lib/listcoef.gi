@@ -162,7 +162,7 @@ InstallOtherMethod( AddRowVector,"error if immutable",true,
 InstallOtherMethod( AddRowVector, "do nothing if mult is zero",
         IsCollsCollsElms,
         [ IsList, IsObject, IsObject and IsZero],
-	SUM_FLAGS, #can't do better
+        SUM_FLAGS, #can't do better
         ReturnTrue);
 
 #############################################################################
@@ -495,7 +495,7 @@ local   len,  zero;
       len  := Length(l1);
       zero := Zero(l1[1]);
       while 0 < len and l1[len] = zero  do
-	  len := len - 1;
+          len := len - 1;
       od;
       return len;
   fi;
@@ -1311,7 +1311,7 @@ AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
             b:=A_CLOS_VEC(veclis,vec,cnt-1,stop);
             ConvertToVectorRepNC(b,2);
         fi;
-	return b;
+        return b;
     elif q <= 256 then
         #
         # 8 bit case, have to get everything over one field!

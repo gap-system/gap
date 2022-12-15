@@ -104,9 +104,9 @@ local l,p,len,e;
     if x[l]=y[p] then
       e:=x[l+1]+y[p+1];
       if e=0 then
-	return Concatenation(x{[1..l-1]},y{[p+2..len]});
+        return Concatenation(x{[1..l-1]},y{[p+2..len]});
       else
-	return Concatenation(x{[1..l-1]},[x[l],e],y{[p+2..len]});
+        return Concatenation(x{[1..l-1]},[x[l],e],y{[p+2..len]});
       fi;
     else
       return Concatenation(x{[1..l+1]},y{[p..len]});
@@ -569,9 +569,9 @@ function( w, from, to )
 local extw, pos, nextexp, firstexp, sub;
     if to<from then
       if IsMultiplicativeElementWithOne(w) then
-	  return One(FamilyObj(w));
+          return One(FamilyObj(w));
       else
-	Error("<from> must be less than or equal to <to>");
+        Error("<from> must be less than or equal to <to>");
       fi;
     fi;
 
@@ -683,20 +683,20 @@ local i,j,m,n,l,s,e,f,li,nomatch;
       if GeneratorSyllable(w,i)=GeneratorSyllable(sub,1)
        and AbsInt(e)-from>=AbsInt(f)
        and SignInt(e)=SignInt(f) then
-	# special treatment for len(sub)=1
-	if m=1 then
-	  return l;
-	fi;
+        # special treatment for len(sub)=1
+        if m=1 then
+          return l;
+        fi;
 
-	s:=AbsInt(f);
-	# offset to make the syllables end fit
-	l:=l+AbsInt(e)-from-s;
-	li:=i;
+        s:=AbsInt(f);
+        # offset to make the syllables end fit
+        l:=l+AbsInt(e)-from-s;
+        li:=i;
         j:=2;
       else
         # sub cannot start here, just skip the full syllable
-	l:=l+AbsInt(e)-from;
-	j:=1;
+        l:=l+AbsInt(e)-from;
+        j:=1;
       fi;
 
       i:=i+1;
@@ -710,27 +710,27 @@ local i,j,m,n,l,s,e,f,li,nomatch;
     if GeneratorSyllable(w,i)=GeneratorSyllable(sub,j) then
       f:=ExponentSyllable(sub,j);
       if SignInt(e)=SignInt(f) and AbsInt(e)>=AbsInt(f) then
-	if j=m then
-	  # we are at the end and it fits nicely
-	  return l;
-	elif AbsInt(e)=AbsInt(f) then
-	  # we are in the word, so the exponents must match perfectly
-	  if j=1 then
-	    # just start, set up a new possible match
-	    li:=i;
-	    s:=AbsInt(e);
-	  fi;
-	  j:=j+1;
-	  nomatch:=false;
-	elif j=1 then
-	  # now AbsInt(e)>AbsInt(f) but we are just at the start and may
-	  # offset:
-	  s:=AbsInt(f);
-	  l:=l+AbsInt(e)-s;
-	  li:=i;
-	  j:=j+1;
-	  nomatch:=false;
-	fi;
+        if j=m then
+          # we are at the end and it fits nicely
+          return l;
+        elif AbsInt(e)=AbsInt(f) then
+          # we are in the word, so the exponents must match perfectly
+          if j=1 then
+            # just start, set up a new possible match
+            li:=i;
+            s:=AbsInt(e);
+          fi;
+          j:=j+1;
+          nomatch:=false;
+        elif j=1 then
+          # now AbsInt(e)>AbsInt(f) but we are just at the start and may
+          # offset:
+          s:=AbsInt(f);
+          l:=l+AbsInt(e)-s;
+          li:=i;
+          j:=j+1;
+          nomatch:=false;
+        fi;
       fi;
     fi;
 
@@ -739,10 +739,10 @@ local i,j,m,n,l,s,e,f,li,nomatch;
       if s=0 then
         l:=l+AbsInt(e);
       else
-	# there was a partial match, go one on
-	l:=l+s;
-	s:=0;
-	i:=li;
+        # there was a partial match, go one on
+        l:=l+s;
+        s:=0;
+        i:=li;
       fi;
     fi;
     i:=i+1;
@@ -802,7 +802,7 @@ end );
 ##
 InstallOtherMethod(SubstitutedWord,
  "for three associative words",true,
-	[IsAssocWord, IsAssocWord, IsPosInt, IsAssocWord], 0,
+        [IsAssocWord, IsAssocWord, IsPosInt, IsAssocWord], 0,
 function(u,v,k,z)
 local i;
   i := PositionWord(u,v,k);
@@ -936,24 +936,24 @@ local i, mapped, exp,ex2,p,fameq,invimg,sel,elm;
       mapped:= [];
       # to be quick, we need there are no duplications among the images:
       if Length(ex2)=Length(Set(ex2)) and not fameq then
-	for i in [ 2, 4 .. Length( x ) ] do
-	  p:= Position( gens1, x[ i-1 ] );
-	  Add( mapped, ex2[p] );
-	  Add( mapped, exp[p] * x[i] );
-	od;
+        for i in [ 2, 4 .. Length( x ) ] do
+          p:= Position( gens1, x[ i-1 ] );
+          Add( mapped, ex2[p] );
+          Add( mapped, exp[p] * x[i] );
+        od;
       else
-	for i in [ 2, 4 .. Length( x ) ] do
-	  p:= Position( gens1, x[ i-1 ] );
-	  if p = fail then
-	    if fameq then
-	      mapped:=ERepAssWorProd(mapped,[x[i-1],x[i]]);
-	    else
-	      Error("generator image not defined");
-	    fi;
-	  else
-	    mapped:=ERepAssWorProd(mapped,[ex2[p],exp[p]*x[i]]);
-	  fi;
-	od;
+        for i in [ 2, 4 .. Length( x ) ] do
+          p:= Position( gens1, x[ i-1 ] );
+          if p = fail then
+            if fameq then
+              mapped:=ERepAssWorProd(mapped,[x[i-1],x[i]]);
+            else
+              Error("generator image not defined");
+            fi;
+          else
+            mapped:=ERepAssWorProd(mapped,[ex2[p],exp[p]*x[i]]);
+          fi;
+        od;
 
       fi;
 
@@ -984,7 +984,7 @@ local i, mapped, exp,ex2,p,fameq,invimg,sel,elm;
     for i in [ 4,6 .. Length( x ) ] do
       exp:= x[ i ];
       if exp <> 0 then
-	p:= Position( gens1, x[ i-1 ] );
+        p:= Position( gens1, x[ i-1 ] );
         elm:=gens2[p];
       fi;
       if exp<0 and p<>fail and invimg[p]<>fail then
@@ -992,12 +992,12 @@ local i, mapped, exp,ex2,p,fameq,invimg,sel,elm;
         elm:=invimg[p];
       fi;
       if exp <> 0 then
-	if p = fail then
-	  mapped:= mapped * ObjByExtRep( FamilyObj( gens2[1] ),
-					  [ x[ i-1 ], x[i] ] );
-	else
-	  mapped:= mapped * elm ^ exp;
-	fi;
+        if p = fail then
+          mapped:= mapped * ObjByExtRep( FamilyObj( gens2[1] ),
+                                          [ x[ i-1 ], x[i] ] );
+        else
+          mapped:= mapped * elm ^ exp;
+        fi;
       fi;
     od;
 
@@ -1081,79 +1081,79 @@ local ValNum, DoValWord, w;
       #Print("Loop ",p,"\n");
       c:=s[p];
       if c in ",)]^*/" then
-	# separator -- stop local parsing
-	return [p,w];
+        # separator -- stop local parsing
+        return [p,w];
       elif c='(' then
         # open parenthesis
-	g:=DoValWord(p+1);
+        g:=DoValWord(p+1);
         p:=g[1];
-	if s[p]<>')' then
-	  Error("missing )");
-	fi;
-	p:=p+1;
-	g:=g[2];
+        if s[p]<>')' then
+          Error("missing )");
+        fi;
+        p:=p+1;
+        g:=g[2];
       elif c='[' then
         # commutator
-	g:=DoValWord(p+1);
+        g:=DoValWord(p+1);
         p:=g[1];
-	if s[p]<>',' then
-	  Error("missing ,");
-	fi;
-	h:=DoValWord(p+1);
+        if s[p]<>',' then
+          Error("missing ,");
+        fi;
+        h:=DoValWord(p+1);
         p:=h[1];
-	if s[p]<>']' then
-	  Error("missing ]");
-	fi;
-	p:=p+1;
-	g:=Comm(g[2],h[2]);
+        if s[p]<>']' then
+          Error("missing ]");
+        fi;
+        p:=p+1;
+        g:=Comm(g[2],h[2]);
       else
-	g:=PositionProperty(nams,i->i[1]=c);
-	if g=fail then
-	  Error("missing generator ",[c]);
-	fi;
-	g:=gens[g];
-	p:=p+1;
+        g:=PositionProperty(nams,i->i[1]=c);
+        if g=fail then
+          Error("missing generator ",[c]);
+        fi;
+        g:=gens[g];
+        p:=p+1;
       fi;
 
       if p<=Length(s) and s[p]='^' then
         # exponentiation
-	p:=p+1;
-	if s[p] in "(" then
-	  h:=DoValWord(p+1);
-	  p:=h[1];
-	  if s[p]<>')' then
-	    Error("missing )");
-	  fi;
-	  p:=p+1;
-	  g:=g^h[2];
-	elif s[p] in CHARS_LALPHA or s[p] in CHARS_UALPHA then
-	  h:=PositionProperty(nams,i->i[1]=s[p]);
-	  if h=fail then
-	    if IsBoundGlobal(s{[p]}) and IsInt(ValueGlobal(s{[p]})) then;
-	      h:=ValueGlobal(s{[p]});
-	      Info(InfoWarning,1,"parsing non-generator`",s{[p]},
-	           "' as global variable value ",h);
-	      p:=p+1;
-	      g:=g^h;
-	    else
-	      Error("missing generator `",s{[p]},"'");
-	    fi;
-	  else
-	    h:=gens[h];
-	    p:=p+1;
-	    g:=g^h;
-	  fi;
-	else
-	  # should be number
-	  h:=ValNum(p);
-	  p:=h[1];
-	  g:=g^h[2];
-	fi;
+        p:=p+1;
+        if s[p] in "(" then
+          h:=DoValWord(p+1);
+          p:=h[1];
+          if s[p]<>')' then
+            Error("missing )");
+          fi;
+          p:=p+1;
+          g:=g^h[2];
+        elif s[p] in CHARS_LALPHA or s[p] in CHARS_UALPHA then
+          h:=PositionProperty(nams,i->i[1]=s[p]);
+          if h=fail then
+            if IsBoundGlobal(s{[p]}) and IsInt(ValueGlobal(s{[p]})) then;
+              h:=ValueGlobal(s{[p]});
+              Info(InfoWarning,1,"parsing non-generator`",s{[p]},
+                   "' as global variable value ",h);
+              p:=p+1;
+              g:=g^h;
+            else
+              Error("missing generator `",s{[p]},"'");
+            fi;
+          else
+            h:=gens[h];
+            p:=p+1;
+            g:=g^h;
+          fi;
+        else
+          # should be number
+          h:=ValNum(p);
+          p:=h[1];
+          g:=g^h[2];
+        fi;
       elif p<=Length(s) and s[p] in PPVWCD then
-	# should be number
-	h:=ValNum(p);
-	p:=h[1];
-	g:=g^h[2];
+        # should be number
+        h:=ValNum(p);
+        p:=h[1];
+        g:=g^h[2];
       fi;
       w:=w*g^eps;
       eps:=1;
@@ -1167,7 +1167,7 @@ local ValNum, DoValWord, w;
       od;
       while p<=Length(s) and s[p]='/' do
         p:=p+1;
-	eps:=-eps;
+        eps:=-eps;
       od;
     od;
     return [p,w];
@@ -1192,7 +1192,7 @@ local invname, nams, rels, p, a, b, z, i,br;
       elif i in CHARS_LALPHA then
         Add(w,CHARS_UALPHA[Position(CHARS_LALPHA,i)]);
       else
-	Add(w,i);
+        Add(w,i);
       fi;
     od;
     return w;
@@ -1217,13 +1217,13 @@ local invname, nams, rels, p, a, b, z, i,br;
     a:=false;
     while p<=Length(r) do
       if r[p]='[' then
-	br:=br+1;
+        br:=br+1;
       elif r[p]=']' then
-	br:=br-1;
+        br:=br-1;
       elif r[p]=',' and br=0 then
-	a:=r{[1..p-1]};
-	r:=r{[p+1..Length(r)]};
-	p:=Length(r)+1;
+        a:=r{[1..p-1]};
+        r:=r{[p+1..Length(r)]};
+        p:=Length(r)+1;
       fi;
       p:=p+1;
     od;
@@ -1277,33 +1277,33 @@ local wu, l, symbols, offset, occurrences, n, no, translate, findpatterns, nams,
       jm:=p+QuoInt((Length(l)-p+1),2);
       j:=p+1;
       while j<=jm and notfound do
-	if l[j]=c and l{[p..j-1]}=l{[j..2*j-p-1]} then
-	  notfound:=false;
-	else
-	  j:=j+1;
-	fi;
+        if l[j]=c and l{[p..j-1]}=l{[j..2*j-p-1]} then
+          notfound:=false;
+        else
+          j:=j+1;
+        fi;
       od;
       if not notfound then
-	# repetition found, define it as macro
-	r:=l{[p..j-1]};
-	lr:=j-p;
-	z:=1; # number of extras
-	while p+(z+1)*lr-1<=Length(l) and r=l{[p+z*lr..p+(z+1)*lr-1]} do
-	  z:=z+1;
-	od;
-	z:=z-1;
+        # repetition found, define it as macro
+        r:=l{[p..j-1]};
+        lr:=j-p;
+        z:=1; # number of extras
+        while p+(z+1)*lr-1<=Length(l) and r=l{[p+z*lr..p+(z+1)*lr-1]} do
+          z:=z+1;
+        od;
+        z:=z-1;
 
-	# does `r' have any internal repetition?
-	r:=findpatterns(r);
+        # does `r' have any internal repetition?
+        r:=findpatterns(r);
 
-	a:=Position(translate,[r,z]);
-	if a=fail then
-	  a:=n;
-	  translate[n]:=[r,z];
-	  n:=n+1;
-	fi;
-	# replace the word
-	l:=Concatenation(l{[1..p-1]},[a],l{[j+(z)*lr..Length(l)]});
+        a:=Position(translate,[r,z]);
+        if a=fail then
+          a:=n;
+          translate[n]:=[r,z];
+          n:=n+1;
+        fi;
+        # replace the word
+        l:=Concatenation(l{[1..p-1]},[a],l{[j+(z)*lr..Length(l)]});
       fi;
       p:=p+1;
     od;
@@ -1331,16 +1331,16 @@ local wu, l, symbols, offset, occurrences, n, no, translate, findpatterns, nams,
   local i;
     if k>=no then
       if Length(translate[k][1])=1 and
-	translate[k][1][1]<no then
-	  # original generator
-	  wordout(translate[k][1][1]);
+        translate[k][1][1]<no then
+          # original generator
+          wordout(translate[k][1][1]);
       else
-	# translated
-	Add(r,'(');
-	for i in translate[k][1] do
-	  wordout(i);
-	od;
-	Add(r,')');
+        # translated
+        Add(r,'(');
+        for i in translate[k][1] do
+          wordout(i);
+        od;
+        Add(r,')');
       fi;
       Append(r,String(translate[k][2]+1));
     elif k<1 then

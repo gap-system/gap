@@ -44,7 +44,7 @@ function(fam,nr,str)
   atomic fam!.namesIndets do
     if IsBound(fam!.namesIndets[nr]) and fam!.namesIndets[nr]<>str then
       Error("indeterminate number ",nr,
-	    " has been baptized already differently");
+            " has been baptized already differently");
     else
       fam!.namesIndets[nr]:=Immutable(str);
     fi;
@@ -98,11 +98,11 @@ local d, e, cfam, mo, d1, e1, i, j;
       SortParallel(d1,e1);
       mo:=[];
       for j in [1..Length(e1)] do
-	Add(mo,d1[j]);
-	Add(mo,e1[j]);
+        Add(mo,d1[j]);
+        Add(mo,e1[j]);
       od;
       if ForAny([3,5..Length(mo)-1],i->mo[i]=mo[i-2]) then
-	Error("duplicate variable in monomial ",mo);
+        Error("duplicate variable in monomial ",mo);
       fi;
     fi;
     Add(d,ext[i]);
@@ -218,7 +218,7 @@ InstallMethod(IsPolynomial,"rational function rep.",true,
 function(f)
 local q;
   q:=QuotientPolynomialsExtRep(FamilyObj(f),
-	  ExtRepNumeratorRatFun(f),ExtRepDenominatorRatFun(f));
+          ExtRepNumeratorRatFun(f),ExtRepDenominatorRatFun(f));
   if q=fail then
     return false;
   else
@@ -283,7 +283,7 @@ InstallMethod(ExtRepPolynomialRatFun,"rational function rep.",true,
   [IsRationalFunctionDefaultRep and IsPolynomial],0,
 function(f)
   return QuotientPolynomialsExtRep(FamilyObj(f),
-	  ExtRepNumeratorRatFun(f),ExtRepDenominatorRatFun(f));
+          ExtRepNumeratorRatFun(f),ExtRepDenominatorRatFun(f));
 end);
 
 #############################################################################
@@ -520,7 +520,7 @@ local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c, mbra,le;
 
     if ext[i+1]=one then
       if i<le-1 then
-	Add(str,'+');
+        Add(str,'+');
       fi;
       c:=false;
     elif ext[i+1]=mone then
@@ -531,24 +531,24 @@ local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c, mbra,le;
 
       b:=false;
       if not (IsRat(ext[i+1]) or IsFFE(ext[i+1])) then
-	# do 1-st level arithmetics occur in s?
-	# we could do better by checking bracketing as well, but this would be
-	# harder.
-	j:=2;
-	while j<=Length(s) do
-	  if s[j]='+' or s[j]='-' then
-	    b:=true;
-	    j:=Length(s)+1; # break
-	  fi;
-	  j:=j+1;
-	od;
-	if b then
-	  s:=Concatenation("(",s,")");
-	fi;
+        # do 1-st level arithmetics occur in s?
+        # we could do better by checking bracketing as well, but this would be
+        # harder.
+        j:=2;
+        while j<=Length(s) do
+          if s[j]='+' or s[j]='-' then
+            b:=true;
+            j:=Length(s)+1; # break
+          fi;
+          j:=j+1;
+        od;
+        if b then
+          s:=Concatenation("(",s,")");
+        fi;
       fi;
 
       if i<le-1 and s[1]<>'-' then
-	Add(str,'+');
+        Add(str,'+');
       fi;
       Append(str,s);
       c:=true;
@@ -561,25 +561,25 @@ local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c, mbra,le;
       fi;
     else
       if c then
-	Add(str,'*');
+        Add(str,'*');
         mbra:= true;
       fi;
       for j  in [ 1, 3 .. Length(ext[i])-1 ]  do
-	if 1 < j  then
-	  Add(str,'*');
+        if 1 < j  then
+          Add(str,'*');
           mbra:= true;
-	fi;
-	ind:=ext[i][j];
-	if HasIndeterminateName(fam,ind) then
-	  Append(str,IndeterminateName(fam,ind));
-	else
-	  Append(str,"x_");
-	  Append(str,String(ind));
-	fi;
-	if 1 <> ext[i][j+1]  then
-	  Add(str,'^');
-	  Append(str,String(ext[i][j+1]));
-	fi;
+        fi;
+        ind:=ext[i][j];
+        if HasIndeterminateName(fam,ind) then
+          Append(str,IndeterminateName(fam,ind));
+        else
+          Append(str,"x_");
+          Append(str,String(ind));
+        fi;
+        if 1 <> ext[i][j+1]  then
+          Add(str,'^');
+          Append(str,String(ext[i][j+1]));
+        fi;
       od;
     fi;
   od;
@@ -757,41 +757,41 @@ function( efam )
 
   # default type for polynomials
   fam!.defaultPolynomialType := NewType( fam,
-	  IsPolynomial and IsPolynomialDefaultRep and
-	  HasExtRepPolynomialRatFun);
+          IsPolynomial and IsPolynomialDefaultRep and
+          HasExtRepPolynomialRatFun);
 
   # default type for univariate laurent polynomials
   fam!.threeLaurentPolynomialTypes := MakeImmutable(
     [ NewType( fam,
-	  IsLaurentPolynomial
-	  and IsLaurentPolynomialDefaultRep and
-	  HasIndeterminateNumberOfLaurentPolynomial and
-	  HasCoefficientsOfLaurentPolynomial),
+          IsLaurentPolynomial
+          and IsLaurentPolynomialDefaultRep and
+          HasIndeterminateNumberOfLaurentPolynomial and
+          HasCoefficientsOfLaurentPolynomial),
 
-	  NewType( fam,
-	    IsLaurentPolynomial
-	    and IsLaurentPolynomialDefaultRep and
-	    HasIndeterminateNumberOfLaurentPolynomial and
-	    HasCoefficientsOfLaurentPolynomial and
-	    IsConstantRationalFunction and IsUnivariatePolynomial),
+          NewType( fam,
+            IsLaurentPolynomial
+            and IsLaurentPolynomialDefaultRep and
+            HasIndeterminateNumberOfLaurentPolynomial and
+            HasCoefficientsOfLaurentPolynomial and
+            IsConstantRationalFunction and IsUnivariatePolynomial),
 
-	  NewType( fam,
-	    IsLaurentPolynomial and IsLaurentPolynomialDefaultRep and
-	    HasIndeterminateNumberOfLaurentPolynomial and
-	    HasCoefficientsOfLaurentPolynomial and
-	    IsUnivariatePolynomial)] );
+          NewType( fam,
+            IsLaurentPolynomial and IsLaurentPolynomialDefaultRep and
+            HasIndeterminateNumberOfLaurentPolynomial and
+            HasCoefficientsOfLaurentPolynomial and
+            IsUnivariatePolynomial)] );
 
   # default type for univariate rational functions
   fam!.univariateRatfunType := NewType( fam,
-	  IsUnivariateRationalFunctionDefaultRep  and
-	  HasIndeterminateNumberOfLaurentPolynomial and
-	  HasCoefficientsOfUnivariateRationalFunction);
+          IsUnivariateRationalFunctionDefaultRep  and
+          HasIndeterminateNumberOfLaurentPolynomial and
+          HasCoefficientsOfUnivariateRationalFunction);
 
   if IsUFDFamily(efam) then
     # default type for rational functions
     fam!.defaultRatFunType := NewType( fam,
-	    IsRationalFunctionDefaultRep and
-	    HasExtRepNumeratorRatFun and HasExtRepDenominatorRatFun);
+            IsRationalFunctionDefaultRep and
+            HasExtRepNumeratorRatFun and HasExtRepDenominatorRatFun);
   fi;
 
   # functions to add zipped lists
@@ -799,7 +799,7 @@ function( efam )
 
   # functions to multiply zipped lists
   fam!.zippedProduct := MakeImmutable([ MONOM_PROD,
-			  MONOM_GRLEX, \+, \* ]);
+                          MONOM_GRLEX, \+, \* ]);
 
   # set the one and zero coefficient
   fam!.zeroCoefficient := Zero(efam);
@@ -903,7 +903,7 @@ local   fam,el,er;
   fam   := FamilyObj(left);
 
   return PolynomialByExtRepNC(fam,
-	  ZippedSum(el,er,fam!.zeroCoefficient, fam!.zippedSum));
+          ZippedSum(el,er,fam!.zeroCoefficient, fam!.zippedSum));
 end );
 
 #############################################################################
@@ -932,9 +932,9 @@ local   fam;
   fam   := FamilyObj(left);
 
   return PolynomialByExtRepNC(fam, ZippedProduct(
-	    ExtRepPolynomialRatFun(left),
-	    ExtRepPolynomialRatFun(right),
-	    fam!.zeroCoefficient, fam!.zippedProduct));
+            ExtRepPolynomialRatFun(left),
+            ExtRepPolynomialRatFun(right),
+            fam!.zeroCoefficient, fam!.zippedProduct));
 
 end);
 
@@ -958,12 +958,12 @@ local   fam, leftden, rightnum, p1, p2;
   rightnum := ExtRepNumeratorRatFun(right);
 
   p1 := ZippedProduct(ExtRepNumeratorRatFun(left),
-		      ExtRepDenominatorRatFun(right),
-		      fam!.zeroCoefficient,fam!.zippedProduct);
+                      ExtRepDenominatorRatFun(right),
+                      fam!.zeroCoefficient,fam!.zippedProduct);
 
   p2 := ZippedProduct(ExtRepNumeratorRatFun(right),
-		      ExtRepDenominatorRatFun(left),
-		      fam!.zeroCoefficient,fam!.zippedProduct);
+                      ExtRepDenominatorRatFun(left),
+                      fam!.zeroCoefficient,fam!.zippedProduct);
 
   return p1 = p2;
 end);
@@ -1019,7 +1019,7 @@ local   fam,  i, extnum,pol;
     return PolynomialByExtRepNC( fam, extnum);
   else
     return RationalFunctionByExtRepNC( fam, extnum,
-	  ExtRepDenominatorRatFun(ratfun));
+          ExtRepDenominatorRatFun(ratfun));
   fi;
 
 end);
@@ -1128,39 +1128,39 @@ local fam,t,num,ii,tt,den;
       return left;
   elif HasIsPolynomial(left) and IsPolynomial(left) then
       t:=TryGcdCancelExtRepPolynomials(fam,
-		  ExtRepPolynomialRatFun(left),
-		  ExtRepDenominatorRatFun(right));
+                  ExtRepPolynomialRatFun(left),
+                  ExtRepDenominatorRatFun(right));
       num:=ZippedProduct(t[1],ExtRepNumeratorRatFun(right),
-	    fam!.zeroCoefficient,fam!.zippedProduct);
+            fam!.zeroCoefficient,fam!.zippedProduct);
       if Length(t[2])=2 and t[2][1]=[] and t[2][2]=fam!.oneCoefficient then
-	  return PolynomialByExtRepNC(fam,num);
+          return PolynomialByExtRepNC(fam,num);
       else
-	  return RationalFunctionByExtRepNC(fam,num,t[2]);
+          return RationalFunctionByExtRepNC(fam,num,t[2]);
       fi;
   elif HasIsPolynomial(right) and IsPolynomial(right) then
       t:=TryGcdCancelExtRepPolynomials(fam,
-		  ExtRepPolynomialRatFun(right),
-		  ExtRepDenominatorRatFun(left));
+                  ExtRepPolynomialRatFun(right),
+                  ExtRepDenominatorRatFun(left));
       num:=ZippedProduct(t[1],ExtRepNumeratorRatFun(left),
-	    fam!.zeroCoefficient,fam!.zippedProduct);
+            fam!.zeroCoefficient,fam!.zippedProduct);
       if Length(t[2])=2 and t[2][1]=[] and t[2][2]=fam!.oneCoefficient then
-	  return PolynomialByExtRepNC(fam,num);
+          return PolynomialByExtRepNC(fam,num);
       else
-	  return RationalFunctionByExtRepNC(fam,num,t[2]);
+          return RationalFunctionByExtRepNC(fam,num,t[2]);
       fi;
   else
       t:=TryGcdCancelExtRepPolynomials(fam,
-	  ExtRepNumeratorRatFun(left),ExtRepDenominatorRatFun(right));
+          ExtRepNumeratorRatFun(left),ExtRepDenominatorRatFun(right));
       tt:=TryGcdCancelExtRepPolynomials(fam,
-	  ExtRepNumeratorRatFun(right),ExtRepDenominatorRatFun(left));
+          ExtRepNumeratorRatFun(right),ExtRepDenominatorRatFun(left));
       num:=ZippedProduct(t[1],tt[1],fam!.zeroCoefficient,
-		    fam!.zippedProduct);
+                    fam!.zippedProduct);
       den:=ZippedProduct(t[2],tt[2],fam!.zeroCoefficient,
-		    fam!.zippedProduct);
+                    fam!.zippedProduct);
       if Length(den)=2 and den[1]=[] and den[2]=fam!.oneCoefficient then
-	  return PolynomialByExtRepNC(fam,num);
+          return PolynomialByExtRepNC(fam,num);
       else
-	  return RationalFunctionByExtRepNC(fam,num,den);
+          return RationalFunctionByExtRepNC(fam,num,den);
       fi;
   fi;
 
@@ -1200,16 +1200,16 @@ local fam,num,den,lnum,rnum,lden,rden,q,t,tmp,tmpp,i;
   if HasIsPolynomial(left) and IsPolynomial(left) then
     den:=ExtRepDenominatorRatFun(right);
     num:=ZippedProduct(ExtRepPolynomialRatFun(left),den,
-		      fam!.zeroCoefficient,fam!.zippedProduct);
+                      fam!.zeroCoefficient,fam!.zippedProduct);
     num:=ZippedSum(num,ExtRepNumeratorRatFun(right),
-		      fam!.zeroCoefficient,fam!.zippedSum);
+                      fam!.zeroCoefficient,fam!.zippedSum);
     return RationalFunctionByExtRepNC(fam,num,den);
   elif HasIsPolynomial(right) and IsPolynomial(right) then
     den:=ExtRepDenominatorRatFun(left);
     num:=ZippedProduct(ExtRepPolynomialRatFun(right),den,
-		      fam!.zeroCoefficient,fam!.zippedProduct);
+                      fam!.zeroCoefficient,fam!.zippedProduct);
     num:=ZippedSum(num,ExtRepNumeratorRatFun(left),
-		      fam!.zeroCoefficient,fam!.zippedSum);
+                      fam!.zeroCoefficient,fam!.zippedSum);
     return RationalFunctionByExtRepNC(fam,num,den);
   else
     lnum:=ExtRepNumeratorRatFun(left);
@@ -1221,41 +1221,41 @@ local fam,num,den,lnum,rnum,lden,rden,q,t,tmp,tmpp,i;
       # same denominator: add numerators
       num:=ZippedSum(lnum,rnum,fam!.zeroCoefficient,fam!.zippedSum);
       if Length(num)=0 then
-	  return Zero(fam);
+          return Zero(fam);
       fi;
       t:=TryGcdCancelExtRepPolynomials(fam,num,lden);
       if Length(t[2])=2 and Length(t[2][1])=0 and t[2][2]=fam!.oneCoefficient
-	then
-	  return PolynomialByExtRepNC(fam,t[1]);
+        then
+          return PolynomialByExtRepNC(fam,t[1]);
       else
-	  return RationalFunctionByExtRepNC(fam,t[1],t[2]);
+          return RationalFunctionByExtRepNC(fam,t[1],t[2]);
       fi;
     else
       t:=TryGcdCancelExtRepPolynomials(fam,lden,rden);
       tmpp:=ZippedProduct(rnum,t[1],fam!.zeroCoefficient,
-		    fam!.zippedProduct);
+                    fam!.zippedProduct);
       tmp:=ZippedProduct(lnum,t[2],fam!.zeroCoefficient,
-		    fam!.zippedProduct);
+                    fam!.zippedProduct);
       num:=ZippedSum(tmp,tmpp,fam!.zeroCoefficient,fam!.zippedSum);
       if Length(t)=3 then
-	  tmp:=t[3];
+          tmp:=t[3];
       else
-	  tmp:=QuotientPolynomialsExtRep(fam,rden,t[2]);
+          tmp:=QuotientPolynomialsExtRep(fam,rden,t[2]);
       fi;
       tmpp:=TryGcdCancelExtRepPolynomials(fam,num,tmp);
       den:=ZippedProduct(tmpp[2],t[1],fam!.zeroCoefficient,
-		    fam!.zippedProduct);
+                    fam!.zippedProduct);
       den:=ZippedProduct(den,t[2],fam!.zeroCoefficient,
-		    fam!.zippedProduct);
+                    fam!.zippedProduct);
       if Length(den)=2 and Length(den[1])=0 then
-	if den[2]<>fam!.oneCoefficient then
-	  for i in [2,4..Length(tmpp[1])] do
-	    tmpp[1][i]:=tmpp[1][i]/den[2];
-	  od;
-	fi;
-	return PolynomialByExtRepNC(fam,tmpp[1]);
+        if den[2]<>fam!.oneCoefficient then
+          for i in [2,4..Length(tmpp[1])] do
+            tmpp[1][i]:=tmpp[1][i]/den[2];
+          od;
+        fi;
+        return PolynomialByExtRepNC(fam,tmpp[1]);
       else
-	return RationalFunctionByExtRepNC(fam,tmpp[1],den);
+        return RationalFunctionByExtRepNC(fam,tmpp[1],den);
       fi;
     fi;
   fi;
@@ -1405,17 +1405,17 @@ local i,fam,ivals,valextrep,d;
       m:=one;
       j:=1;
       while j<=Length(c) do
-	if not IsBound(ivals[c[j]]) then
-	  p:=Position(inds,c[j]);
-	  if p<>fail then
-	    ivals[c[j]]:=vals[p];
-	  else
-	    ivals[c[j]]:=UnivariatePolynomialByCoefficients(
-		      fam,[Zero(fam),One(fam)],c[j]);
-	  fi;
-	fi;
-	m:=m*(ivals[c[j]]*one)^c[j+1];
-	j:=j+2;
+        if not IsBound(ivals[c[j]]) then
+          p:=Position(inds,c[j]);
+          if p<>fail then
+            ivals[c[j]]:=vals[p];
+          else
+            ivals[c[j]]:=UnivariatePolynomialByCoefficients(
+                      fam,[Zero(fam),One(fam)],c[j]);
+          fi;
+        fi;
+        m:=m*(ivals[c[j]]*one)^c[j+1];
+        j:=j+2;
       od;
       v:=v+f[i+1]*m;
       i:=i+2;
@@ -1575,7 +1575,7 @@ function(ratfun,ind)
 local fam;
   fam:=CoefficientsFamily(FamilyObj(ratfun));
   return Derivative(ratfun,UnivariatePolynomialByCoefficients(fam,
-		          [Zero(fam),One(fam)],ind));
+                          [Zero(fam),One(fam)],ind));
 end);
 
 InstallOtherMethod(Derivative,"poly,ind",true,
@@ -1684,13 +1684,13 @@ local fam,tw,res,m,n,mn,r,e,s,d,dr,px,x,y,onepol,stop;
     repeat
       dr:=DegreeIndeterminate(r,ind);
       if dr<n then
-	r:=d^e*r;
+        r:=d^e*r;
         stop:=true;
       fi;
       if stop=false then
-	s:=LeadingCoefficient(r,ind)*px^(dr-n);
-	r:=d*r-s*g;
-	e:=e-1;
+        s:=LeadingCoefficient(r,ind)*px^(dr-n);
+        r:=d*r-s*g;
+        e:=e-1;
       fi;
     until stop;
 
@@ -1899,7 +1899,7 @@ local cp, mons, L, T, perm, vars, nvars, F, R1, var, degrees, d, p,
   # prepare padic representations of powers
   L:=ListWithIdenticalEntries(nvars,0);
   varpow:=List([0..DegreeOfUnivariateLaurentPolynomial(g)],
-		i->Concatenation(CoefficientsQadic(i,p),L){[1..nvars]});
+                i->Concatenation(CoefficientsQadic(i,p),L){[1..nvars]});
   varpow:=List(varpow,i->Product(List([1..nvars],j->vars[j]^i[j])));
 
   L:=Factors(R1,g);
@@ -1926,25 +1926,25 @@ local cp, mons, L, T, perm, vars, nvars, F, R1, var, degrees, d, p,
       ediv:=ExtRepPolynomialRatFun(div);
       #if not IsOne(ediv[Length(ediv)]) then
       #  div:=div/ediv[Length(ediv)];
-      #	 ediv:=ExtRepPolynomialRatFun(div);
+      #  ediv:=ExtRepPolynomialRatFun(div);
       #fi;
       # call the library routine used to test quotient of polynomials
       r:=QuotientPolynomialsExtRep(fam,fex,ediv);
       if r<>fail then
-	fex:=r;
-	f:=PolynomialByExtRepNC(fam,fex);
-	Info(InfoPoly,1,"found factor ",terms," ",div," remainder ",f);
-	ffactors:=MultivariateFactorsPolynomial(R,f);
-	Add(ffactors,div);
-	if ForAny(vals,i->not IsZero(i)) then
-	  ffactors:=List(ffactors,
-	                 i->Value(i,vars,List([1..nvars],j->vars[j]+vals[j])));
-	fi;
+        fex:=r;
+        f:=PolynomialByExtRepNC(fam,fex);
+        Info(InfoPoly,1,"found factor ",terms," ",div," remainder ",f);
+        ffactors:=MultivariateFactorsPolynomial(R,f);
+        Add(ffactors,div);
+        if ForAny(vals,i->not IsZero(i)) then
+          ffactors:=List(ffactors,
+                         i->Value(i,vars,List([1..nvars],j->vars[j]+vals[j])));
+        fi;
 
-	if not IsOne(perm) then
-	  ffactors:=List(ffactors,i->OnIndeterminates(i,perm^-1));
-	fi;
-	return ffactors;
+        if not IsOne(perm) then
+          ffactors:=List(ffactors,i->OnIndeterminates(i,perm^-1));
+        fi;
+        return ffactors;
       fi;
       ti:=ti+1;
     od;

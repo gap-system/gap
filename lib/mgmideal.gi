@@ -76,7 +76,7 @@ InstallMethod( PrintObj,
 #############################################################################
 ##
 #M  ViewObj( <S> )
-##	view a [left,right,two-sided] magma ideal
+##  view a [left,right,two-sided] magma ideal
 ##
 
 ##  left
@@ -158,13 +158,13 @@ InstallMethod( LeftMagmaIdealByGenerators,
     function( M, gens )
     local S;
 
-		S:= Objectify( NewType( FamilyObj( gens ),
+    S:= Objectify( NewType( FamilyObj( gens ),
                             IsLeftMagmaIdeal and IsAttributeStoringRep ),
                    rec() );
 
     SetGeneratorsOfLeftMagmaIdeal( S, AsList( gens ) );
-		SetParent(S, M);
-		SetLeftActingDomain(S, M);
+    SetParent(S, M);
+    SetLeftActingDomain(S, M);
 
     if HasGeneratorsOfGroup(M) then
         # Because any ideal of a group the whole group, we should set the
@@ -187,8 +187,8 @@ InstallMethod( RightMagmaIdealByGenerators,
                    rec() );
 
     SetGeneratorsOfRightMagmaIdeal( S, AsList( gens ) );
-		SetParent(S, M);
-		SetRightActingDomain(S, M);
+    SetParent(S, M);
+    SetRightActingDomain(S, M);
 
     if HasGeneratorsOfGroup(M) then
         # Because any ideal of a group is the whole group, we should set the
@@ -213,8 +213,8 @@ InstallMethod( MagmaIdealByGenerators,
                    rec() );
 
     SetGeneratorsOfMagmaIdeal( S, AsList( gens ) );
-		SetParent(S, M);
-		SetActingDomain(S, M);
+    SetParent(S, M);
+    SetActingDomain(S, M);
 
     if HasGeneratorsOfGroup(M) then
         # Because any ideal of a group is the whole group, we should set the
@@ -242,7 +242,7 @@ end );
 ##
 #M  AsLeftMagmaIdeal( <D>, <C> )
 ##
-##	Regard the list <C> of elements as a left ideal of <D>.
+##  Regard the list <C> of elements as a left ideal of <D>.
 ##  It is not checked, but assumed, that <C> are all the elements
 ##  of the ideal and that <C> is a subset of <D>.
 ##
@@ -254,7 +254,7 @@ InstallMethod( AsLeftMagmaIdeal,
 function( D, C )
     local S;
 
-		S:= LeftMagmaIdealByGenerators( D, AsList(C));
+    S:= LeftMagmaIdealByGenerators( D, AsList(C));
     UseIsomorphismRelation( C, S );
     UseSubsetRelation( C, S );
     return S;
@@ -269,8 +269,8 @@ BindGlobal( "EnumeratorOfMagmaIdeal", function( I )
     local   gens,       # magma generators of <I>
             H,          # submagma
             gen,        # generator of <I>
-						x,y,				# elements of parent
-						M;					# parent
+            x,y,        # elements of parent
+            M;          # parent
 
     # handle the case of an empty magma
     gens:= GeneratorsOfMagmaIdeal( I );
@@ -278,7 +278,7 @@ BindGlobal( "EnumeratorOfMagmaIdeal", function( I )
       return [];
     fi;
 
-		M := Parent(I); # the magma whose ideal it is
+    M := Parent(I); # the magma whose ideal it is
 
     # start with the empty magma and its element generators list
     H:= Submagma( M, [] );
@@ -287,11 +287,11 @@ BindGlobal( "EnumeratorOfMagmaIdeal", function( I )
     # Add the generators one after the other.
     # We use a function that maintains the elements list for the closure.
     for gen in gens do
-			for x in AsSSortedList(M) do
-				for y in AsSSortedList(M) do
-					H:= ClosureMagmaDefault( H, x*gen*y );
-				od;
-			od;
+        for x in AsSSortedList(M) do
+            for y in AsSSortedList(M) do
+                H:= ClosureMagmaDefault( H, x*gen*y );
+            od;
+        od;
     od;
 
     # return the list of elements
@@ -338,7 +338,7 @@ function(I)
     od;
   od;
 
-	return idealelts;
+  return idealelts;
 end);
 
 
@@ -364,5 +364,5 @@ function(I)
     od;
   od;
 
-	return idealelts;
+  return idealelts;
 end);

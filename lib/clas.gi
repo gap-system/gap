@@ -110,20 +110,20 @@ local fam,  filter,  cl;
     fam:=FamilyObj(G);
     if not IsBound(fam!.defaultClassType) then
       if IsPermGroup( G )  then  filter := IsConjugacyClassPermGroupRep;
-			  else  filter := IsConjugacyClassGroupRep;      fi;
+                          else  filter := IsConjugacyClassGroupRep;      fi;
       if CanEasilyComputePcgs( G )  then
-	  filter := filter and IsExternalSetByPcgs;
+          filter := filter and IsExternalSetByPcgs;
       fi;
       filter:=filter and HasActingDomain and HasRepresentative and
-	      HasFunctionAction;
+              HasFunctionAction;
       fam!.defaultClassType:=NewType( FamilyObj( G ), filter );
     fi;
 
     cl:=rec( start := [ g ] );
     ObjectifyWithAttributes(cl, fam!.defaultClassType,
-	    ActingDomain, G,
-	    Representative, g,
-	    FunctionAction, OnPoints );
+            ActingDomain, G,
+            Representative, g,
+            FunctionAction, OnPoints );
     return cl;
 end );
 
@@ -135,21 +135,21 @@ local fam,  filter,  cl;
     fam:=FamilyObj(G);
     if not IsBound(fam!.defaultClassCentType) then
       if IsPermGroup( G )  then  filter := IsConjugacyClassPermGroupRep;
-			  else  filter := IsConjugacyClassGroupRep;      fi;
+                          else  filter := IsConjugacyClassGroupRep;      fi;
       if CanEasilyComputePcgs( G )  then
-	  filter := filter and IsExternalSetByPcgs;
+          filter := filter and IsExternalSetByPcgs;
       fi;
       filter:=filter and HasActingDomain and HasRepresentative and
-	      HasFunctionAction and HasStabilizerOfExternalSet;
+              HasFunctionAction and HasStabilizerOfExternalSet;
       fam!.defaultClassCentType:=NewType( FamilyObj( G ), filter );
     fi;
 
     cl:=rec( start := [ g ]);
     ObjectifyWithAttributes(cl, fam!.defaultClassCentType,
-	    ActingDomain, G,
-	    Representative, g,
-	    FunctionAction, OnPoints,
-	    StabilizerOfExternalSet,cent);
+            ActingDomain, G,
+            Representative, g,
+            FunctionAction, OnPoints,
+            StabilizerOfExternalSet,cent);
     return cl;
 end );
 
@@ -234,11 +234,11 @@ local i,D,o,divs,pows,norms,next,nnorms,oq,lelm,from,n,k,m,nu,zen,pr,orb,lo,
     i:=1;
     while i<=Length(classes) do
       if length mod Size(classes[i])=0 and elm in classes[i] then
-	# return (modified) centralizer of element for iteration
+        # return (modified) centralizer of element for iteration
         D:=Centralizer(classes[i]);
-	if Size(D)=Order(elm) then
-	  D:=G;
-	fi;
+        if Size(D)=Order(elm) then
+          D:=G;
+        fi;
         return D;
       fi;
       i:=i+1;
@@ -260,48 +260,48 @@ local i,D,o,divs,pows,norms,next,nnorms,oq,lelm,from,n,k,m,nu,zen,pr,orb,lo,
       divs:=Difference(divs,next);
       nnorms:=[];
       for i in next do
-	oq:=o/i; # power needed to get order i
-	lelm:=elm^oq;
-	from:=First(Reversed(pows),y->IsInt(i/y) and IsPrimeInt(i/y));
-	# step of normalizer calculation via powers
-	n:=Normalizer(norms[from],Subgroup(G,[lelm]));
-	nnorms[i]:=n;
+        oq:=o/i; # power needed to get order i
+        lelm:=elm^oq;
+        from:=First(Reversed(pows),y->IsInt(i/y) and IsPrimeInt(i/y));
+        # step of normalizer calculation via powers
+        n:=Normalizer(norms[from],Subgroup(G,[lelm]));
+        nnorms[i]:=n;
 
-	if i=o or not ForAny(classes,x->lelm in x) then
-	  # this power gives a new class
-	  zen:=Centralizer(n,lelm); # all powers have the same centralizer
+        if i=o or not ForAny(classes,x->lelm in x) then
+          # this power gives a new class
+          zen:=Centralizer(n,lelm); # all powers have the same centralizer
 
-	  # what coprime powers are normalizer induced?
-	  pr:=Difference(PrimeResidues(i),[1]);
-	  u:=GroupByGenerators([ZmodnZObj(1,i)]);
-	  orb:=Orbit(n,lelm);
-	  lo:=Length(orb);
-	  orb:=Set(Filtered(orb,x->x<>lelm));
-	  while Size(u)<lo do
-	    m:=First(pr,x->lelm^x=orb[1]);
-	    nu:=ClosureGroup(u,ZmodnZObj(m,i));
-	    if Size(nu)<lo then
-	      for k in Difference(nu,u) do
-		RemoveSet(orb,lelm^Int(k));
-	      od;
-	    fi;
-	    u:=nu;
-	  od;
-	  # now u is the group of normalizer induced powers
-	  prg:=GroupByGenerators(
-	    List(Flat(GeneratorsPrimeResidues(i).generators),
-	            x->ZmodnZObj(x,i)));
-	  orb:=List(RightTransversal(prg,u),Int);
-	  for k in orb do
-	    D:=ConjugacyClass(G,lelm^k);
-	    SetStabilizerOfExternalSet(D,zen);
-	    Add(classes,D);
-	    Info(InfoClasses,3,"found new power of order ",i,
-	         " class size ",Size(D));
-	    if k=1 and i=o then C:=D;fi; #remember for return value
-	  od;
+          # what coprime powers are normalizer induced?
+          pr:=Difference(PrimeResidues(i),[1]);
+          u:=GroupByGenerators([ZmodnZObj(1,i)]);
+          orb:=Orbit(n,lelm);
+          lo:=Length(orb);
+          orb:=Set(Filtered(orb,x->x<>lelm));
+          while Size(u)<lo do
+            m:=First(pr,x->lelm^x=orb[1]);
+            nu:=ClosureGroup(u,ZmodnZObj(m,i));
+            if Size(nu)<lo then
+              for k in Difference(nu,u) do
+                RemoveSet(orb,lelm^Int(k));
+              od;
+            fi;
+            u:=nu;
+          od;
+          # now u is the group of normalizer induced powers
+          prg:=GroupByGenerators(
+            List(Flat(GeneratorsPrimeResidues(i).generators),
+                    x->ZmodnZObj(x,i)));
+          orb:=List(RightTransversal(prg,u),Int);
+          for k in orb do
+            D:=ConjugacyClass(G,lelm^k);
+            SetStabilizerOfExternalSet(D,zen);
+            Add(classes,D);
+            Info(InfoClasses,3,"found new power of order ",i,
+                 " class size ",Size(D));
+            if k=1 and i=o then C:=D;fi; #remember for return value
+          od;
 
-	fi;
+        fi;
       od;
 
       pows:=next;
@@ -319,10 +319,10 @@ end );
 InstallGlobalFunction( ConjugacyClassesByRandomSearch, function ( G )
 # uses random Search with Jerrum's strategy
 local   classes,    # conjugacy classes of <G>, result
-	class,      # one class of <G>
-	cent,	# centralizer from which to take random elements
-	seed,   # possible seed
-	elms;       # elements of <G>
+        class,      # one class of <G>
+        cent,       # centralizer from which to take random elements
+        seed,       # possible seed
+        elms;       # elements of <G>
 
     # initialize the conjugacy class list
 
@@ -332,22 +332,22 @@ local   classes,    # conjugacy classes of <G>, result
       return ConjugacyClassesByOrbits(G);
     # otherwise use probabilistic algorithm
     else
-	seed:=ValueOption("seed");
-	if not IsList(seed) then seed:=[];fi;
-	classes := [ ConjugacyClass( G, One( G ) ) ];
+        seed:=ValueOption("seed");
+        if not IsList(seed) then seed:=[];fi;
+        classes := [ ConjugacyClass( G, One( G ) ) ];
 
-	cent:=G;
+        cent:=G;
         # while we have not found all conjugacy classes
         while Sum( List( classes, Size ) ) <> Size( G )  do
 
-	    if Length(seed)>0 then
-	      # try random elements
-	      cent:=ConjugacyClassesTry( G, classes, seed[1], 0, 1 );
-	      seed:=seed{[2..Length(seed)]};
-	    else
-	      # try random elements
-	      cent:=ConjugacyClassesTry( G, classes, Random(cent), 0, 1 );
-	    fi;
+            if Length(seed)>0 then
+              # try random elements
+              cent:=ConjugacyClassesTry( G, classes, seed[1], 0, 1 );
+              seed:=seed{[2..Length(seed)]};
+            else
+              # try random elements
+              cent:=ConjugacyClassesTry( G, classes, Random(cent), 0, 1 );
+            fi;
 
         od;
 
@@ -410,8 +410,8 @@ end);
 ##
 InstallMethod( ConjugacyClasses, "test options", [ IsGroup ],
   GETTER_FLAGS-1, # this method tests options which would override the method
-	       # selection. Therefore we get the highest possible value
-	       # below the getter.
+               # selection. Therefore we get the highest possible value
+               # below the getter.
 function(G)
   if ValueOption("random")<>fail then
     return ConjugacyClassesByRandomSearch(G);
@@ -476,9 +476,9 @@ InstallMethod( RationalClass, IsCollsElms, [ IsGroup, IsObject ],
     fi;
     cl := rec(  );
     ObjectifyWithAttributes( cl, NewType( FamilyObj( G ), filter ),
-	    ActingDomain, G,
-	    Representative, g,
-	    FunctionAction, OnPoints );
+            ActingDomain, G,
+            Representative, g,
+            FunctionAction, OnPoints );
     return cl;
 end );
 
@@ -615,7 +615,7 @@ BindGlobal( "NumberElement_RationalClassGroup", function( enum, elm )
     gal := RightTransversalInParent( GaloisGroup( rcl ) );
     T := enum!.rightTransversal;
     for pow  in [ 1 .. Length( gal ) ]  do
-	# if gal[pow]=0 then the rep is the identity , no need to worry.
+        # if gal[pow]=0 then the rep is the identity , no need to worry.
         t := RepresentativeAction( G, rep ^ Int( gal[ pow ] ), elm );
         if t <> fail  then
             break;
@@ -652,7 +652,7 @@ InstallMethod( AsList, [ IsRationalClassGroupRep ],
     aslist := [  ];
     orb := Orbit( ActingDomain( rcl ), Representative( rcl ) );
     for e  in RightTransversalInParent( GaloisGroup( rcl ) )  do
-	# if e=0 then the element is the identity anyhow, no need to worry.
+        # if e=0 then the element is the identity anyhow, no need to worry.
         Append( aslist, List( orb, g -> g ^ Int( e ) ) );
     od;
     return aslist;
@@ -739,13 +739,13 @@ local rcls, cl, mark, rep, c, o, cop, same, sub, pow, p, i, j,closure,
     while Length(test)>0 do
       t:=test[1];
       for i in gens do
-	if i<>1 then
-	  AddSet(ggg,i);
-	fi;
-	if not (sub[t]*i mod m) in sub then
-	  AddSet(test,Length(sub)+1); # next element to test
-	  Append(sub,Filtered(List(sub,x->x*i mod m),x-> not x in sub));
-	fi;
+        if i<>1 then
+          AddSet(ggg,i);
+        fi;
+        if not (sub[t]*i mod m) in sub then
+          AddSet(test,Length(sub)+1); # next element to test
+          Append(sub,Filtered(List(sub,x->x*i mod m),x-> not x in sub));
+        fi;
       od;
       RemoveSet(test,t);
     od;
@@ -776,52 +776,52 @@ local rcls, cl, mark, rep, c, o, cop, same, sub, pow, p, i, j,closure,
       if o>2 then
         cop:=Set(Flat(GeneratorsPrimeResidues(o).generators));
 
-	# get orders that give the same class
-	#same:=Filtered(cop,i->RepresentativeAction(G,rep,rep^i)<>fail);
-	same:=Filtered(cop,x->rep^x in cl[i]);
-	if Length(same)<Length(cop) then
-	  # there are other classes:
-	  sub:=[1];
-	  ggg:=[];
-	  closure(sub,same,o);
-	  cop:=Difference(cop,same);
-	  for j in cop do
-	    # we know these are different
-	    pow:=rep^j;
-	    p:=First([i+1..Length(cl)],x->pow in cl[x]);
-	    if p=fail then
-	      Error("not found");
-	    else
-	      if mark[p]=false then
-		Add(dec,cl[p]);
-	      fi;
-	      mark[p]:=true;
-	    fi;
-	  od;
+        # get orders that give the same class
+        #same:=Filtered(cop,i->RepresentativeAction(G,rep,rep^i)<>fail);
+        same:=Filtered(cop,x->rep^x in cl[i]);
+        if Length(same)<Length(cop) then
+          # there are other classes:
+          sub:=[1];
+          ggg:=[];
+          closure(sub,same,o);
+          cop:=Difference(cop,same);
+          for j in cop do
+            # we know these are different
+            pow:=rep^j;
+            p:=First([i+1..Length(cl)],x->pow in cl[x]);
+            if p=fail then
+              Error("not found");
+            else
+              if mark[p]=false then
+                Add(dec,cl[p]);
+              fi;
+              mark[p]:=true;
+            fi;
+          od;
 
-	  cop:=Difference(PrimeResidues(o),cop); # we've tested these
-	  for j in cop do
-	    if not j in sub then
-	      pow:=rep^j;
-	      p:=First([i..Length(cl)],x->pow in cl[x]);
-	      if p=fail then
-		Error("not found");
-	      elif p=i then
-	        closure(sub,[j],o);
-	      else
-		if mark[p]=false then
-		  Add(dec,cl[p]);
-		fi;
-		mark[p]:=true;
-	      fi;
-	    fi;
-	  od;
-	fi;
+          cop:=Difference(PrimeResidues(o),cop); # we've tested these
+          for j in cop do
+            if not j in sub then
+              pow:=rep^j;
+              p:=First([i..Length(cl)],x->pow in cl[x]);
+              if p=fail then
+                Error("not found");
+              elif p=i then
+                closure(sub,[j],o);
+              else
+                if mark[p]=false then
+                  Add(dec,cl[p]);
+                fi;
+                mark[p]:=true;
+              fi;
+            fi;
+          od;
+        fi;
       fi;
       SetDecomposedRationalClass(c,dec);
       SetSize(c,Length(dec)*Size(dec[1]));
       if sub<>fail then
-	SetGaloisGroup(c,GroupByPrimeResidues(ggg,o));
+        SetGaloisGroup(c,GroupByPrimeResidues(ggg,o));
       fi;
     fi;
   od;

@@ -563,16 +563,16 @@ InstallGlobalFunction( RandomIsomorphismTest, function( list, n )
             fi;
         od;
 
-		# just for information
+        # just for information
         c := c+1;
         if c mod 10 = 0 then
             Info( InfoRandIso, 3, "     ", c, " loops, ",
                   rem, " groups ",
                   conds{ Filtered( [ 1 .. Length( list ) ],
-		  x -> Length( codes[ x ] ) > 0 ) }," doubles ",
-	 	  List( codes{ Filtered( [ 1 .. Length( list ) ],
-		  x -> Length( codes[ x ] ) > 0 ) }, Length ),
-		  " presentations");
+                  x -> Length( codes[ x ] ) > 0 ) }," doubles ",
+                  List( codes{ Filtered( [ 1 .. Length( list ) ],
+                  x -> Length( codes[ x ] ) > 0 ) }, Length ),
+                  " presentations");
         fi;
     od;
 

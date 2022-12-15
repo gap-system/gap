@@ -146,7 +146,7 @@ InstallGlobalFunction(HELP_CHAPTER_INFO, function( book, chapter )
                     secnum := secnum + 1;
                     poss[secnum] := pos;
                 elif MATCH_BEGIN( line, HELP_CHAPTER_BEGIN ) or
-		     MATCH_BEGIN( line, HELP_PRELCHAPTER_BEGIN )  then
+                     MATCH_BEGIN( line, HELP_PRELCHAPTER_BEGIN )  then
                     info.chappos[chapter] := pos;
                 elif MATCH_BEGIN( line, HELP_FAKECHAP_BEGIN )  then
                     info.chappos[chapter] := pos;
@@ -227,7 +227,7 @@ InstallGlobalFunction(HELP_PRINT_SECTION_URL, function(arg)
       # we must have found a file-per-chapter .htm file above
       section:=String(section);
       while Length(section)<3 do
-	section:=Concatenation("0",section);
+        section:=Concatenation("0",section);
       od;
       path:=Concatenation(path,"#SECT",section);
     fi;

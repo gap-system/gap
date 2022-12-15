@@ -74,11 +74,11 @@ InstallGlobalFunction(PrintArray,function( array )
         Print( " ]\n" );
     else
         arr := List( array, x -> List( x, String ) );
-	if compact then
-	  max:=List([1..Length(arr[1])],
-	    x->Maximum(List([1..Length(arr)],y->Length(arr[y][x]))));
-	else
-	  max := Maximum( List( arr,
+        if compact then
+          max:=List([1..Length(arr[1])],
+            x->Maximum(List([1..Length(arr)],y->Length(arr[y][x]))));
+        else
+          max := Maximum( List( arr,
                     function(x)
                          if Length(x) = 0 then
                              return 1;
@@ -86,7 +86,7 @@ InstallGlobalFunction(PrintArray,function( array )
                              return Maximum( List(x,Length) );
                          fi;
                          end) );
-	fi;
+        fi;
 
         Print( "[",bl );
         for l in [ 1 .. Length( arr ) ] do
@@ -98,16 +98,16 @@ InstallGlobalFunction(PrintArray,function( array )
                 Print(bl,bl,"]" );
             else
                 for k  in [ 1 .. Length( arr[ l ] ) ]  do
-		  if compact then
-		    Print( String( arr[ l ][ k ], max[k] + maxp ) );
-		  else
-		    Print( String( arr[ l ][ k ], max + maxp ) );
-		  fi;
-		  if k = Length( arr[ l ] )  then
-		      Print( bl,"]" );
-		  else
-		      Print( ", " );
-		  fi;
+                  if compact then
+                    Print( String( arr[ l ][ k ], max[k] + maxp ) );
+                  else
+                    Print( String( arr[ l ][ k ], max + maxp ) );
+                  fi;
+                  if k = Length( arr[ l ] )  then
+                      Print( bl,"]" );
+                  else
+                      Print( ", " );
+                  fi;
                 od;
             fi;
             if l = Length( arr )  then
@@ -1733,9 +1733,9 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
       left[a]:=left[b];
       left[b]:=r;
       if basmat<>fail then
-	r:=basmat[a];
-	basmat[a]:=basmat[b];
-	basmat[b]:=r;
+        r:=basmat[a];
+        basmat[a]:=basmat[b];
+        basmat[b]:=r;
       fi;
     fi;
   end;
@@ -1791,7 +1791,7 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
     if transform then
       MultVector(left[a],m);
       if basmat<>fail then
-	MultVector(basmat[a],1/m);
+        MultVector(basmat[a],1/m);
       fi;
     fi;
   end;
@@ -3376,9 +3376,9 @@ local z,l,b,i,j,k,stop,v,dim,h,zv;
       if v<>fail then
         # clean j-th component from bas with v
         for k in [1..Length(bas)] do
-	  if not IsZero(bas[k][j]) then
-	    bas[k]:=bas[k]-bas[k][j]/v[j]*v;
-	  fi;
+          if not IsZero(bas[k][j]) then
+            bas[k]:=bas[k]-bas[k][j]/v[j]*v;
+          fi;
         od;
         v:=Zero(v);
         bas:=Filtered(bas,k->k<>v);
@@ -4541,7 +4541,7 @@ local cr,R,x,com,nf,matt,p,i,j,di,d,v;
       Add(p,v);
       for j in [1..d-1] do
         v:=v*matt;
-	Add(p,v);
+        Add(p,v);
       od;
     fi;
   od;

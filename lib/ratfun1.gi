@@ -80,9 +80,9 @@ local coefs, ind, extrep, i, shift,fam;
   for i in [1 .. Length(coefs[1])] do
     if coefs[1][i]<>fam!.zeroCoefficient then
       if 1-i<>shift then
-	Append(extrep,[[ind, i + shift -1], coefs[1][i]]);
+        Append(extrep,[[ind, i + shift -1], coefs[1][i]]);
       else
-	Append(extrep,[[], coefs[1][i]]);
+        Append(extrep,[[], coefs[1][i]]);
       fi;
     fi;
   od;
@@ -182,15 +182,15 @@ local fam,notuniv,cannot,num,den,hasden,indn,col,dcol,val,i,j,nud,pos;
 
     if Length(num[i-1])>0 then
       if indn=false then
-	#set the indeterminate
-	indn:=num[i-1][1];
+        #set the indeterminate
+        indn:=num[i-1][1];
       elif indn<>num[i-1][1] then
-	# inconsistency:
-	if hasden then
-	  return cannot;
-	else
-	  return notuniv;
-	fi;
+        # inconsistency:
+        if hasden then
+          return cannot;
+        else
+          return notuniv;
+        fi;
       fi;
     fi;
 
@@ -232,32 +232,32 @@ local fam,notuniv,cannot,num,den,hasden,indn,col,dcol,val,i,j,nud,pos;
     for i in [2,4..Length(den)] do
 
       if Length(den[i-1])>0 then
-	if indn=false then
-	  #set the indeterminate
-	  indn:=den[i-1][1];
-	elif indn<>den[i-1][1] then
-	  # inconsistency:
-	  return cannot;
-	fi;
+        if indn=false then
+          #set the indeterminate
+          indn:=den[i-1][1];
+        elif indn<>den[i-1][1] then
+          # inconsistency:
+          return cannot;
+        fi;
       fi;
 
       if Length(den[i-1])>2 then
-	return cannot;
+        return cannot;
       fi;
 
       # now we know the monomial to be [indn,exp]
 
       # set the coefficient
       if Length(den[i-1])=0 then
-	# exp=0
-	pos:=1;
+        # exp=0
+        pos:=1;
       else
-	pos:=den[i-1][2]+1;
+        pos:=den[i-1][2]+1;
       fi;
 
       # fill zeroes in the coefficient list
       for j in [nud..pos-1] do
-	dcol[j]:=fam!.zeroCoefficient;
+        dcol[j]:=fam!.zeroCoefficient;
       od;
 
       dcol[pos]:=den[i];
@@ -296,11 +296,11 @@ local   ext,  i,  j;
     if cofs[i+1] <> zero  then
       j := val + i;
       if j <> 0  then
-	Add( ext, [ ind, j ] );
-	Add( ext, cofs[i+1] );
+        Add( ext, [ ind, j ] );
+        Add( ext, cofs[i+1] );
       else
-	Add( ext, [] );
-	Add( ext, cofs[i+1] );
+        Add( ext, [] );
+        Add( ext, cofs[i+1] );
       fi;
     fi;
   od;
@@ -334,7 +334,7 @@ local f;
 
   # note that `IndNum.LaurentPol. is IndnumUnivRatFun !
   f := rec(IndeterminateNumberOfUnivariateRationalFunction:=inum,
-	  CoefficientsOfUnivariateRationalFunction:=Immutable([ncof,dcof,val]));
+          CoefficientsOfUnivariateRationalFunction:=Immutable([ncof,dcof,val]));
   Objectify(rfam!.univariateRatfunType,f);
 
 #  ObjectifyWithAttributes(f,typ,...
@@ -469,14 +469,14 @@ local   mons,  cofs,  i,  j,  c,  prd;
   cofs := [];
   for i  in [ 1, 3 .. Length(z1)-1 ]  do
       for j  in [ 1, 3 .. Length(z2)-1 ]  do
-	  ## product of the coefficients.
-	  c := f[4]( z1[i+1], z2[j+1] );
-	  if c <> zero  then
-	      ##  add the product of the monomials
-	      Add( mons, f[1]( z1[i], z2[j] ) );
-	      ##  and the coefficient
-	      Add( cofs, c );
-	  fi;
+          ## product of the coefficients.
+          c := f[4]( z1[i+1], z2[j+1] );
+          if c <> zero  then
+              ##  add the product of the monomials
+              Add( mons, f[1]( z1[i], z2[j] ) );
+              ##  and the coefficient
+              Add( cofs, c );
+          fi;
       od;
   od;
 
@@ -489,13 +489,13 @@ local   mons,  cofs,  i,  j,  c,  prd;
   while i <= Length(mons)  do
       c := cofs[i];
       while i < Length(mons) and mons[i] = mons[i+1]  do
-	  i := i+1;
-	  c := f[3]( c, cofs[i] );    ##  add coefficients
+          i := i+1;
+          c := f[3]( c, cofs[i] );    ##  add coefficients
       od;
       if c <> zero  then
-	  ## add the term to the product
-	  Add( prd, mons[i] );
-	  Add( prd, c );
+          ## add the term to the product
+          Add( prd, mons[i] );
+          Add( prd, c );
       fi;
       i := i+1;
   od;
@@ -520,8 +520,8 @@ local l, m, i, j, c, e;
     if a[i]=b[j] then
       e:=a[i+1]-b[j+1];
       if e<>0 then
-	Add(c,a[i]);
-	Add(c,e);
+        Add(c,a[i]);
+        Add(c,e);
       fi;
       i:=i+2;
       j:=j+2;
@@ -587,11 +587,11 @@ local a,b,fam,i, j,ln,ld,rn,rd;
     if ld[i]<0*ld[i] then
       ld:=ShallowCopy(ld);
       for i in [2,4..Length(ld)] do
-	ld[i]:=-ld[i];
+        ld[i]:=-ld[i];
       od;
       ln:=ShallowCopy(ln);
       for i in [2,4..Length(ln)] do
-	ln[i]:=-ln[i];
+        ln[i]:=-ln[i];
       od;
     fi;
 
@@ -602,11 +602,11 @@ local a,b,fam,i, j,ln,ld,rn,rd;
     if rd[i]<0*rd[i] then
       rd:=ShallowCopy(rd);
       for i in [2,4..Length(rd)] do
-	rd[i]:=-rd[i];
+        rd[i]:=-rd[i];
       od;
       rn:=ShallowCopy(rn);
       for i in [2,4..Length(rn)] do
-	rn[i]:=-rn[i];
+        rn[i]:=-rn[i];
       od;
     fi;
 
@@ -694,7 +694,7 @@ local   quot, lcq,  lmq,  mon,  i, coeff;
 
       ##  check if mon has negative exponents
       for i in [2,4..Length(mon)] do
-	  if mon[i] < 0 then return fail; fi;
+          if mon[i] < 0 then return fail; fi;
       od;
 
       ##  now add the quotient of the coefficients
@@ -943,7 +943,7 @@ local   a1,a2, zero,  n1;
       zero := Zero(l1[1]);
       n1   := Length(l1);
       while 0 < n1 and l1[n1] = zero  do
-	  n1 := n1 - 1;
+          n1 := n1 - 1;
       od;
   else
       n1 := 0;
@@ -1264,66 +1264,66 @@ local q,p,e,i,j,cnt,sel,si;
       IsSSortedList(q);
       i:=1;
       while i<Length(num) and ForAny(e,j->j>0) do
-	cnt:=0; # how many indeterminates did we find
-	for j in [1,3..Length(num[i])-1] do
-	  p:=Position(q,num[i][j]); # uses PositionSorted
-	  if p<>fail then
-	    cnt:=cnt+1; # found one
-	    e[p]:=Minimum(e[p],num[i][j+1]); # gcd via exponents
-	  fi;
-	od;
-	if cnt<Length(e) then
-	  e:=[0,0]; # not all indets found: cannot cancel!
-	fi;
+        cnt:=0; # how many indeterminates did we find
+        for j in [1,3..Length(num[i])-1] do
+          p:=Position(q,num[i][j]); # uses PositionSorted
+          if p<>fail then
+            cnt:=cnt+1; # found one
+            e[p]:=Minimum(e[p],num[i][j+1]); # gcd via exponents
+          fi;
+        od;
+        if cnt<Length(e) then
+          e:=[0,0]; # not all indets found: cannot cancel!
+        fi;
         i:=i+2;
       od;
       if ForAny(e,j->j>0) then
         # found a common monomial
-	num:=ShallowCopy(num);
-	for i in [1,3..Length(num)-1] do
-	  num[i]:=ShallowCopy(num[i]);
-	  for j in [1,3..Length(num[i])-1] do
-	    p:=Position(q,num[i][j]); # uses PositionSorted
-	    # is this an indeterminate, which gets reduced?
-	    if p<>fail then
-	      num[i][j+1]:=num[i][j+1]-e[p]; #reduce
-	    fi;
-	  od;
+        num:=ShallowCopy(num);
+        for i in [1,3..Length(num)-1] do
+          num[i]:=ShallowCopy(num[i]);
+          for j in [1,3..Length(num[i])-1] do
+            p:=Position(q,num[i][j]); # uses PositionSorted
+            # is this an indeterminate, which gets reduced?
+            if p<>fail then
+              num[i][j+1]:=num[i][j+1]-e[p]; #reduce
+            fi;
+          od;
 
-	  # remove indeterminates with exponent zero
-	  sel:=[];
-	  for si in [2,4..Length(num[i])] do
-	    if num[i][si]>0 then
-	      Add(sel,si-1);
-	      Add(sel,si);
-	    fi;
-	  od;
-	  num[i]:=num[i]{sel};
+          # remove indeterminates with exponent zero
+          sel:=[];
+          for si in [2,4..Length(num[i])] do
+            if num[i][si]>0 then
+              Add(sel,si-1);
+              Add(sel,si);
+            fi;
+          od;
+          num[i]:=num[i]{sel};
 
-	od;
+        od;
 
-	p:=ShallowCopy(den[1]);
-	i:=[2,4..Length(p)];
-	p{i}:=p{i}-e; # reduce exponents
+        p:=ShallowCopy(den[1]);
+        i:=[2,4..Length(p)];
+        p{i}:=p{i}-e; # reduce exponents
 
-	# remove indeterminates with exponent zero
-	sel:=[];
-	for si in i do
-	  if p[si]>0 then
-	    Add(sel,si-1);
-	    Add(sel,si);
-	  fi;
-	od;
-	p:=p{sel};
+        # remove indeterminates with exponent zero
+        sel:=[];
+        for si in i do
+          if p[si]>0 then
+            Add(sel,si-1);
+            Add(sel,si);
+          fi;
+        od;
+        p:=p{sel};
 
-	den:=[p,den[2]]; #new denominator
+        den:=[p,den[2]]; #new denominator
       fi;
     fi;
     # remove the denominator coefficient
     if not IsOne(den[2]) then
       num:=ShallowCopy(num);
       for i in [2,4..Length(num)] do
-	num[i]:=num[i]/den[2];
+        num[i]:=num[i]/den[2];
       od;
       den:=[den[1],fam!.oneCoefficient];
     fi;
@@ -1362,12 +1362,12 @@ local c,d,i,p;
     if p<>fail then
       p:=p*2-1; # from indext in [1,3..] to number
       if e[i][p+1]>d then
-	d:=e[i][p+1]; # new, higher degree
-	c:=[]; # start anew
+        d:=e[i][p+1]; # new, higher degree
+        c:=[]; # start anew
       fi;
       if e[i][p+1]=d then
-	# remaining monomial with coefficient
-	Append(c,[e[i]{Difference([1..Length(e[i])],[p,p+1])},e[i+1]]);
+        # remaining monomial with coefficient
+        Append(c,[e[i]{Difference([1..Length(e[i])],[p,p+1])},e[i+1]]);
       fi;
     fi;
   od;

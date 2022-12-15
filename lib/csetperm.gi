@@ -55,43 +55,43 @@ BindGlobal( "RightTransversalPermGroupConstructor", function( filter, G, U )
         Sort( orbs, function( o1, o2 )
             return Length( o1 ) < Length( o2 ); end );
         domain := Concatenation( orbs );
-	GCC:=GC;
-	UCC:=UC;
+        GCC:=GC;
+        UCC:=UC;
         while    Length( GCC.genlabels ) <> 0
               or Length( UCC.genlabels ) <> 0  do
 #Print(SizeStabChain(GCC),"/",SizeStabChain(UCC),":",
 #  SizeStabChain(GCC)/SizeStabChain(UCC),"\n");
           if noyet and (
-	  (SizeStabChain(GCC)/SizeStabChain(UCC)*10 >MAX_SIZE_TRANSVERSAL) or
-	  (Length(UCC.genlabels)=0 and
-	    SizeStabChain(GCC)>MAX_SIZE_TRANSVERSAL)
-	    ) then
-	    # we potentially go through many steps, making it expensive
-	    ac:=AscendingChain(G,U:cheap);
-	    # go in biggish steps through the chain
-	    nc:=[ac[1]];
-	    for i in [3..Length(ac)] do
-	      if Size(ac[i])/Size(nc[Length(nc)])>MAX_SIZE_TRANSVERSAL then
-		Add(nc,ac[i-1]);
-	      fi;
-	    od;
-	    Add(nc,ac[Length(ac)]);
-	    if Length(nc)>2 then
-	      ac:=[];
-	      for i in [Length(nc),Length(nc)-1..2] do
-		Info(InfoCoset,4,"Recursive [",Size(nc[i]),",",Size(nc[i-1]));
-		Add(ac,RightTransversal(nc[i],nc[i-1]
-		      # do not try to factor again
-		      :noascendingchain));
-	      od;
-	      return FactoredTransversal(G,U,ac);
-	    fi;
-	    noyet:=false;
+          (SizeStabChain(GCC)/SizeStabChain(UCC)*10 >MAX_SIZE_TRANSVERSAL) or
+          (Length(UCC.genlabels)=0 and
+            SizeStabChain(GCC)>MAX_SIZE_TRANSVERSAL)
+            ) then
+            # we potentially go through many steps, making it expensive
+            ac:=AscendingChain(G,U:cheap);
+            # go in biggish steps through the chain
+            nc:=[ac[1]];
+            for i in [3..Length(ac)] do
+              if Size(ac[i])/Size(nc[Length(nc)])>MAX_SIZE_TRANSVERSAL then
+                Add(nc,ac[i-1]);
+              fi;
+            od;
+            Add(nc,ac[Length(ac)]);
+            if Length(nc)>2 then
+              ac:=[];
+              for i in [Length(nc),Length(nc)-1..2] do
+                Info(InfoCoset,4,"Recursive [",Size(nc[i]),",",Size(nc[i-1]));
+                Add(ac,RightTransversal(nc[i],nc[i-1]
+                      # do not try to factor again
+                      :noascendingchain));
+              od;
+              return FactoredTransversal(G,U,ac);
+            fi;
+            noyet:=false;
 
-	  fi;
-	  bpt := First( domain, p -> not IsFixedStabilizer( GCC, p ) );
-	  ChangeStabChain( GCC, [ bpt ], true  );  GCC := GCC.stabilizer;
-	  ChangeStabChain( UCC, [ bpt ], false );  UCC := UCC.stabilizer;
+          fi;
+          bpt := First( domain, p -> not IsFixedStabilizer( GCC, p ) );
+          ChangeStabChain( GCC, [ bpt ], true  );  GCC := GCC.stabilizer;
+          ChangeStabChain( UCC, [ bpt ], false );  UCC := UCC.stabilizer;
         od;
     fi;
 
@@ -181,7 +181,7 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
 
         # U.index := [G_1:U_1];
         U.index := U.stabilizer.index * Length( G.orbit ) / Length( U.orbit );
-	Info(InfoCoset,5,"U.index=",U.index);
+        Info(InfoCoset,5,"U.index=",U.index);
 
         # block := 1 ^ <U,G_1>; is a block for G.
         block := OrbitPerms( Concatenation( U.generators,
@@ -245,11 +245,11 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
             # transversal, this must contain minimal coset representatives.
             MinimizeExplicitTransversal( U.stabilizer, maxmoved );
 
-	    # if there are over 200 points, do a cheap test first.
-	    t1lim:=Length(G.orbit);
-	    if t1lim>200 then
-	      t1lim:=50;
-	    fi;
+            # if there are over 200 points, do a cheap test first.
+            t1lim:=Length(G.orbit);
+            if t1lim>200 then
+              t1lim:=50;
+            fi;
 
             orb := G.orbit{ [ 1 .. U.lenblock ] };
             pimg := [  ];
@@ -259,11 +259,11 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
                 t := 2;
                 while t <= U.lenblock  and  index < U.index  do
 
-		    # do not test all points first if not necessary
-		    # (test only at most t1lim points, if the test succeeds,
-		    # test the rest)
-		    # this gives a major speedup.
-		    t1:=Minimum(t-1,t1lim);
+                    # do not test all points first if not necessary
+                    # (test only at most t1lim points, if the test succeeds,
+                    # test the rest)
+                    # this gives a major speedup.
+                    t1:=Minimum(t-1,t1lim);
                     # For this point  in the  block,  find the images  of the
                     # earlier points under the representative.
                     vert := G.orbit{ [ 1 .. t1 ] };
@@ -280,8 +280,8 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
                     if ForAll( [ 1 .. t1 ], i -> not IsBound
                        ( U.translabels[ pimg[ vert[ i ] ] ] ) )  then
 
-		      # do all points
-		      if t1<t-1 then
+                      # do all points
+                      if t1<t-1 then
                         img := G.orbit[ t ];
                         if t<=10*t1lim then
                           vert := G.orbit{ [ 1 .. t - 1 ] };
@@ -306,14 +306,14 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
                         fi;
 
                         if found then
-			    U.repsStab[ t ][ s ] := true;
-			    index := index + lenflock;
-			fi;
+                            U.repsStab[ t ][ s ] := true;
+                            index := index + lenflock;
+                        fi;
 
-		      else
+                      else
                         U.repsStab[ t ][ s ] := true;
                         index := index + lenflock;
-		      fi;
+                      fi;
                     fi;
 
                     t := t + 1;
@@ -500,24 +500,24 @@ local s,c,mp,o,i,step,a;
     step:=false;
     while i<=Length(o) and step=false do
       if not IsTransitive(U,o[i]) then
-	Info(InfoCoset,2,"AC: orbit");
-	o:=ShallowCopy(OrbitsDomain(U,o[i]));
-	Sort(o,function(a,b) return Length(a)<Length(b);end);
-	# union of same length -- smaller index
-	a:=Union(Filtered(o,x->Length(x)=Length(o[1])));
-	if Length(a)=Sum(o,Length) then
-	  a:=Set(o[1]);
-	fi;
-	s:=Stabilizer(s,a,OnSets);
-	step:=true;
+        Info(InfoCoset,2,"AC: orbit");
+        o:=ShallowCopy(OrbitsDomain(U,o[i]));
+        Sort(o,function(a,b) return Length(a)<Length(b);end);
+        # union of same length -- smaller index
+        a:=Union(Filtered(o,x->Length(x)=Length(o[1])));
+        if Length(a)=Sum(o,Length) then
+          a:=Set(o[1]);
+        fi;
+        s:=Stabilizer(s,a,OnSets);
+        step:=true;
       elif Index(G,U)>NrMovedPoints(U)
-	  and IsPrimitive(s,o[i]) and not IsPrimitive(U,o[i]) then
-	Info(InfoCoset,2,"AC: blocks");
-	s:=Stabilizer(s,Set(MaximalBlocks(U,o[i]),Set),
+          and IsPrimitive(s,o[i]) and not IsPrimitive(U,o[i]) then
+        Info(InfoCoset,2,"AC: blocks");
+        s:=Stabilizer(s,Set(MaximalBlocks(U,o[i]),Set),
                       OnSetsDisjointSets);
-	step:=true;
+        step:=true;
       else
-	i:=i+1;
+        i:=i+1;
       fi;
     od;
     if step then

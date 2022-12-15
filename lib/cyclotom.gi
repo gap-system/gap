@@ -2005,24 +2005,24 @@ InstallGlobalFunction( DenominatorCyc, function( cyc )
 # To simplify the code using these lists, the final entry of each list is
 # fail, resp. the trivial filter IsObject.
 BindGlobal("CompareCyclotomicCollectionHelper_Semirings", MakeImmutable( [
-	PositiveIntegers, NonnegativeIntegers,
-	Integers, GaussianIntegers,
-	Rationals, GaussianRationals,
-	Cyclotomics, fail
+        PositiveIntegers, NonnegativeIntegers,
+        Integers, GaussianIntegers,
+        Rationals, GaussianRationals,
+        Cyclotomics, fail
 ] ) );
 
 BindGlobal("CompareCyclotomicCollectionHelper_Filters", MakeImmutable( [
-	IsPositiveIntegers, IsNonnegativeIntegers,
-	IsIntegers, IsGaussianIntegers,
-	IsRationals, IsGaussianRationals,
-	IsWholeFamily, IsObject
+        IsPositiveIntegers, IsNonnegativeIntegers,
+        IsIntegers, IsGaussianIntegers,
+        IsRationals, IsGaussianRationals,
+        IsWholeFamily, IsObject
 ] ) );
 
 BindGlobal("CompareCyclotomicCollectionHelper_Proxies", MakeImmutable( [
-	[ 1 ], [ 0, 1 ],
-	[ -1, 0, 1 ], [ -1, 0, 1, E(4) ],
-	[ -1, 0, 1/2, 1 ], [ -1, 0, 1/2, 1, E(4), 1/2+E(4) ],
-	[ -1, 0, 1/2, 1, E(4), 1/2+E(4), E(9) ], fail
+        [ 1 ], [ 0, 1 ],
+        [ -1, 0, 1 ], [ -1, 0, 1, E(4) ],
+        [ -1, 0, 1/2, 1 ], [ -1, 0, 1/2, 1, E(4), 1/2+E(4) ],
+        [ -1, 0, 1/2, 1, E(4), 1/2+E(4), E(9) ], fail
 ] ) );
 
 ForAll(CompareCyclotomicCollectionHelper_Proxies, IsSet);

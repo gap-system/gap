@@ -1090,7 +1090,7 @@ InstallGlobalFunction( "IteratorOfTuples",
     fi;
 
     if not ( IsCollection( s ) and IsFinite( s ) or IsEmpty( s ) and n=0 ) then
-    	if s = [] then
+        if s = [] then
             return IteratorByFunctions(
               rec( IsDoneIterator := ReturnTrue,
                    NextIterator   := NextIterator_Tuples,

@@ -134,10 +134,10 @@ InstallMethod( Embedding, "group direct product and integer",
       # The easiest way to compute the embedding is to construct
       # direct product elements.
       hom:=GroupHomomorphismByFunction(G,D,function(elm)
-	       local l;
-	       l:=ShallowCopy(info.onelist);
-	       l[i]:=elm;
-	       return DirectProductElement(l);
+               local l;
+               l:=ShallowCopy(info.onelist);
+               l[i]:=elm;
+               return DirectProductElement(l);
              end);
     else
       hom  := GroupHomomorphismByImagesNC( G, D, gens, imgs );
@@ -392,18 +392,18 @@ InstallGlobalFunction (PcgsDirectProduct,
 
 InstallMethod( Pcgs, "for direct products", true,
                [IsGroup and HasDirectProductInfo],
-	       {} -> Maximum(
-		RankFilter(IsPcGroup),
-		RankFilter(IsPermGroup and IsSolvableGroup)
-	        ),# this is better than these two common alternatives
+               {} -> Maximum(
+                RankFilter(IsPcGroup),
+                RankFilter(IsPermGroup and IsSolvableGroup)
+                ),# this is better than these two common alternatives
         D -> PcgsDirectProduct (D, Pcgs, fail, fail));
 
 InstallMethod( PcgsElementaryAbelianSeries, "for direct products", true,
                [IsGroup and HasDirectProductInfo],
-	       {} -> Maximum(
-		RankFilter(IsPcGroup),
-		RankFilter(IsPermGroup and IsSolvableGroup)
-	        ),# this is better than these two common alternatives
+               {} -> Maximum(
+                RankFilter(IsPcGroup),
+                RankFilter(IsPermGroup and IsSolvableGroup)
+                ),# this is better than these two common alternatives
         D -> PcgsDirectProduct (D,
                 PcgsElementaryAbelianSeries,
                 IndicesEANormalSteps,
@@ -412,10 +412,10 @@ InstallMethod( PcgsElementaryAbelianSeries, "for direct products", true,
 
 InstallMethod( PcgsCentralSeries, "for direct products", true,
                [IsGroup and HasDirectProductInfo],
-	       {} -> Maximum(
-		RankFilter(IsPcGroup),
-		RankFilter(IsPermGroup and IsSolvableGroup)
-	        ),# this is better than these two common alternatives
+               {} -> Maximum(
+                RankFilter(IsPcGroup),
+                RankFilter(IsPermGroup and IsSolvableGroup)
+                ),# this is better than these two common alternatives
         D -> PcgsDirectProduct (D,
                 PcgsCentralSeries,
                 IndicesCentralNormalSteps,
@@ -424,19 +424,19 @@ InstallMethod( PcgsCentralSeries, "for direct products", true,
 
 InstallMethod( PcgsChiefSeries, "for direct products", true,
                [IsGroup and HasDirectProductInfo],
-	       {} -> Maximum(
-		RankFilter(IsPcGroup),
-		RankFilter(IsPermGroup and IsSolvableGroup)
-	        ),# this is better than these two common alternatives
+               {} -> Maximum(
+                RankFilter(IsPcGroup),
+                RankFilter(IsPermGroup and IsSolvableGroup)
+                ),# this is better than these two common alternatives
         D -> PcgsDirectProduct (D, PcgsChiefSeries, IndicesChiefNormalSteps, IsPcgsChiefSeries)
 );
 
 InstallMethod( PcgsPCentralSeriesPGroup, "for direct products", true,
                [IsGroup and HasDirectProductInfo],
-	       {} -> Maximum(
-		RankFilter(IsPcGroup),
-		RankFilter(IsPermGroup and IsSolvableGroup)
-	        ),# this is better than these two common alternatives
+               {} -> Maximum(
+                RankFilter(IsPcGroup),
+                RankFilter(IsPermGroup and IsSolvableGroup)
+                ),# this is better than these two common alternatives
         D -> PcgsDirectProduct (D,
                 PcgsCentralSeries,
                 IndicesPCentralNormalStepsPGroup,
@@ -557,9 +557,9 @@ local gc,hc,S,info;
   fi;
   S:=SubdirectProductOp(Image(gc,G),Image(hc,H),gh,hh);
   info:=rec(groups:=[G,H],
-	    homomorphisms:=[gh,hh],
-	    projections:=[Projection(S,1)*InverseGeneralMapping(gc),
-			  Projection(S,2)*InverseGeneralMapping(hc)]);
+            homomorphisms:=[gh,hh],
+            projections:=[Projection(S,1)*InverseGeneralMapping(gc),
+                          Projection(S,2)*InverseGeneralMapping(hc)]);
   S:=Group(GeneratorsOfGroup(S),One(S));
   SetSubdirectProductInfo(S,info);
   return S;
@@ -843,11 +843,11 @@ local I,n,fam,typ,gens,hgens,id,i,e,info,W,p,dom;
   typ:=NewType(fam,IsWreathProductElementDefaultRep);
   fam!.defaultType:=typ;
   info:=rec(groups:=[G,H],
-	    family:=fam,
+            family:=fam,
             I:=I,
-	    degI:=n,
-	    alpha:=alpha,
-	    embeddings:=[]);
+            degI:=n,
+            alpha:=alpha,
+            embeddings:=[]);
   fam!.info:=info;
   if CanEasilyCompareElements(One(G)) then
     SetCanEasilyCompareElements(fam,true);
@@ -1076,29 +1076,29 @@ local info,map,U,mapfun,P;
   else
     if not IsBound(info.embeddings[n]) then
       mapfun:=function(elm)
-	      local a;
-		a:=ShallowCopy(info.identvec);
-		if n>info.degI then
-		  elm:=Image(info.alpha,elm);
-		fi;
-		a[n]:=elm;
-		return Objectify(info.family!.defaultType,a);
-	      end;
+              local a;
+                a:=ShallowCopy(info.identvec);
+                if n>info.degI then
+                  elm:=Image(info.alpha,elm);
+                fi;
+                a[n]:=elm;
+                return Objectify(info.family!.defaultType,a);
+              end;
       if n<=info.degI then
-	P:=info.groups[1];
+        P:=info.groups[1];
         U:=SubgroupNC(G,List(GeneratorsOfGroup(P),mapfun));
       else
-	P:=info.groups[2];
+        P:=info.groups[2];
         U:=SubgroupNC(G,info.hgens);
       fi;
       map:=GroupHomomorphismByFunction(P,U,mapfun,
-	function(elm)
-	  elm:=elm![n];
-	  if n>info.degI then
-	    elm:=PreImagesRepresentative(info.alpha,elm);
-	  fi;
-	  return elm;
-	end);
+        function(elm)
+          elm:=elm![n];
+          if n>info.degI then
+            elm:=PreImagesRepresentative(info.alpha,elm);
+          fi;
+          return elm;
+        end);
       info.embeddings[n]:=map;
     fi;
     return info.embeddings[n];
@@ -1119,16 +1119,16 @@ local info,map,np;
 
     map:=GroupHomomorphismByFunction(G,info.groups[2],
       function(elm)
-	return PreImagesRepresentative(info.alpha,elm![np]);
+        return PreImagesRepresentative(info.alpha,elm![np]);
       end,
       false, # not bijective
       function(elm)
-	    local a;
-	      a:=ShallowCopy(info.identvec);
-	      elm:=Image(info.alpha,elm);
-	      a[np]:=elm;
-	      return Objectify(info.family!.defaultType,a);
-	    end);
+            local a;
+              a:=ShallowCopy(info.identvec);
+              elm:=Image(info.alpha,elm);
+              a[np]:=elm;
+              return Objectify(info.family!.defaultType,a);
+            end);
     info.projection:=map;
   fi;
   return info.projection;
@@ -1198,7 +1198,7 @@ local giso,niso,P,gens,a,Go,No,i;
   # trick the embeddings and projections (dirty tricks)
   i:=rec(groups:=[Go,No],
          embeddings:=[giso*Embedding(P,1),niso*Embedding(P,2)],
-	 projections:=Projection(P)*InverseGeneralMapping(giso));
+         projections:=Projection(P)*InverseGeneralMapping(giso));
   P:=Group(GeneratorsOfGroup(P),One(P));
   SetSemidirectProductInfo(P,i);
   return P;
@@ -1250,11 +1250,11 @@ local Go,No,giso,niso,FG,GP,FN,NP,F,GI,NI,rels,i,j,P;
   NI:=GeneratorsOfGroup(P){[Length(FG)+1..Length(GeneratorsOfGroup(P))]};
   # set the embeddings and projections
   i:=rec(groups:=[Go,No],
-	 embeddings:=[GroupHomomorphismByImagesNC(Go,P,GP,GI),
-	              GroupHomomorphismByImagesNC(No,P,NP,NI)],
+         embeddings:=[GroupHomomorphismByImagesNC(Go,P,GP,GI),
+                      GroupHomomorphismByImagesNC(No,P,NP,NI)],
          projections:=GroupHomomorphismByImagesNC(P,Go,
-		        Concatenation(GI,NI),
-			Concatenation(GP,List(NI,x->One(Go))))  );
+                        Concatenation(GI,NI),
+                        Concatenation(GP,List(NI,x->One(Go))))  );
   SetSemidirectProductInfo(P,i);
   return P;
 end;
@@ -1354,10 +1354,10 @@ local pm,F,d,b,s,t,pos,i,j,img,m,P,info,Go,bnt,N,pcgs,auts,mapi,ag,phi,imgs;
     while i<=Length(s) and Length(s)<Length(b) do
       for j in GeneratorsOfGroup(G) do
         img:=s[i]*j;
-	if RankMat(s)<RankMat(Concatenation(s,[img])) then
-	  # new dimension
-	  Add(s,img);
-	fi;
+        if RankMat(s)<RankMat(Concatenation(s,[img])) then
+          # new dimension
+          Add(s,img);
+        fi;
       od;
       i:=i+1;
     od;
@@ -1395,13 +1395,13 @@ local pm,F,d,b,s,t,pos,i,j,img,m,P,info,Go,bnt,N,pcgs,auts,mapi,ag,phi,imgs;
   P:=Group(m,One(m[1]));
   SetSize(P,Size(G)*Size(V));
   info:=rec(group:=Go,
-	    vectorspace:=V,
-	    normalsub:=bnt,
-	    lenlist:=[0,Length(GeneratorsOfGroup(G))],
+            vectorspace:=V,
+            normalsub:=bnt,
+            lenlist:=[0,Length(GeneratorsOfGroup(G))],
             embeddings:=[],
-	    field:=F,
-	    dimension:=d,
-	    projections:=true);
+            field:=F,
+            dimension:=d,
+            projections:=true);
   SetSemidirectProductInfo( P, info );
 
   return P;
@@ -1438,28 +1438,28 @@ function( S, i )
       v:=BasisVectors(Basis(info.vectorspace));
       w:=[];
       for j in BasisVectors(Basis(info.field)) do
-	for k in v do
-	  Add(w,j*k);
-	od;
+        for k in v do
+          Add(w,j*k);
+        od;
       od;
 
       for j in w do
-	m:=IdentityMat(d+1,info.field);
-	m[d+1]{[1..d]}:=j;
-	Add(n,ImmutableMatrix(info.field,m));
+        m:=IdentityMat(d+1,info.field);
+        m[d+1]{[1..d]}:=j;
+        Add(n,ImmutableMatrix(info.field,m));
       od;
       n:=SubgroupNC(S,n);
       hom:=MappingByFunction(info.vectorspace,n,function(v)
         local m;
-	m:=IdentityMat(d+1,info.field);
-	m[d+1]{[1..d]}:=v;
+        m:=IdentityMat(d+1,info.field);
+        m[d+1]{[1..d]}:=v;
         return ImmutableMatrix(info.field,m);
       end,
       function(a)
         if not a in n then
-	  Error("not in image");
-	fi;
-	return a[d+1]{[1..d]};
+          Error("not in image");
+        fi;
+        return a[d+1]{[1..d]};
       end);
       SetImagesSource(hom,n);
     else

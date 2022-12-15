@@ -53,11 +53,11 @@ function( S, R, gens, imgs )
 
   # Make the general mapping.
   map:= Objectify( TypeOfDefaultGeneralMapping( S, R,
-			    IsSPGeneralMapping
-			and IsRingGeneralMapping
-			and IsSCRingGeneralMappingByImagesDefaultRep ),
-		    rec(
-			) );
+                            IsSPGeneralMapping
+                        and IsRingGeneralMapping
+                        and IsSCRingGeneralMappingByImagesDefaultRep ),
+                    rec(
+                        ) );
 
     SetMappingGeneratorsImages(map,[Immutable(gens),Immutable(imgs)]);
     # return the general mapping
@@ -121,8 +121,8 @@ function( map )
 local mapi;
   mapi:=MappingGeneratorsImages(map);
   Print( "RingHomomorphismByImages( ",
-	  Source( map ), ", ", Range( map ), ", ",
-	  mapi[1], ", ", mapi[2], " )" );
+          Source( map ), ", ", Range( map ), ", ",
+          mapi[1], ", ", mapi[2], " )" );
 end );
 
 InstallMethod( PrintObj, "for a ring g.m.b.i", true,
@@ -132,8 +132,8 @@ function( map )
 local mapi;
   mapi:=MappingGeneratorsImages(map);
   Print( "RingGeneralMappingByImages( ",
-	  Source( map ), ", ", Range( map ), ", ",
-	  mapi[1], ", ", mapi[2], " )" );
+          Source( map ), ", ", Range( map ), ", ",
+          mapi[1], ", ", mapi[2], " )" );
 end );
 
 #############################################################################
@@ -165,7 +165,7 @@ local mapi;
     mapi:=MappingGeneratorsImages(map);
     map!.stdgens:=
       StandardGeneratorsImagesSubringSCRing(FamilyObj(Zero(Source(map))),
-	mapi[1],mapi[2]);
+        mapi[1],mapi[2]);
   fi;
 end);
 
@@ -193,10 +193,10 @@ function(map)
         o:=Lcm(o,moduli[j]/Gcd(stdi[j],moduli[j]));
       od;
       if not IsZero(o*std[4][i]) then
-	Info(InfoRingHom,2,"Additive order ",o," of generator ",i," failed");
-	return false;
+        Info(InfoRingHom,2,"Additive order ",o," of generator ",i," failed");
+        return false;
       else
-	Info(InfoRingHom,3,"Additive order ",o," of generator ",i," OK");
+        Info(InfoRingHom,3,"Additive order ",o," of generator ",i," OK");
       fi;
     else
       Info(InfoRingHom,3,"Generator ",i,": ",std[1][i]," has order infinity");
@@ -213,8 +213,8 @@ function(map)
         elmi:=elmi+elm[k]*std[4][k];
       od;
       if elmi<>std[4][i]*std[4][j] then
-	Info(InfoRingHom,2,"Product ",i," x ",j," failed: ",elm,elmi);
-	return false;
+        Info(InfoRingHom,2,"Product ",i," x ",j," failed: ",elm,elmi);
+        return false;
       fi;
     od;
   od;
@@ -285,7 +285,7 @@ local mapi,map;
   mapi:=MappingGeneratorsImages(map1);
   map:=RingGeneralMappingByImages(Source(map1),Range(map1),mapi[1],
     List([1..Length(mapi[1])],
-	  x->mapi[2][x]+ImagesRepresentative(map2,mapi[1][x])));
+          x->mapi[2][x]+ImagesRepresentative(map2,mapi[1][x])));
   return map;
 end );
 
@@ -304,7 +304,7 @@ local mapi,map;
   mapi:=MappingGeneratorsImages(map1);
   map:=RingGeneralMappingByImages(Source(map1),Range(map1),mapi[1],
     List([1..Length(mapi[1])],
-	  x->mapi[2][x]+ImagesRepresentative(map2,mapi[1][x])));
+          x->mapi[2][x]+ImagesRepresentative(map2,mapi[1][x])));
   return map;
 end );
 
@@ -322,7 +322,7 @@ function( map1, map2 )
 local mapi;
   mapi:=MappingGeneratorsImages(map1);
   return ForAll([1..Length(mapi[1])],
-	  x->mapi[2][x]=ImagesRepresentative(map2,mapi[1][x]));
+          x->mapi[2][x]=ImagesRepresentative(map2,mapi[1][x]));
 end );
 
 #############################################################################
@@ -339,7 +339,7 @@ function( map2, map1 )
 local mapi;
   mapi:=MappingGeneratorsImages(map1);
   return ForAll([1..Length(mapi[1])],
-	  x->mapi[2][x]=ImagesRepresentative(map2,mapi[1][x]));
+          x->mapi[2][x]=ImagesRepresentative(map2,mapi[1][x]));
 end );
 
 #############################################################################
@@ -492,20 +492,20 @@ local e, z, one, o, sel, g, go, elms, dec, p, cands, m, a, b, nr, hom, i, j;
     # all combinations
     for i in [1..Length(elms)] do
       for j in [1..m-1] do
-	b:=elms[i]+j*a;
-	p:=Position(e,b);
-	if p in sel then
-	  RemoveSet(sel,p);
-	  Add(elms,b);
-	  Add(dec,Concatenation(dec[i],[j]));
-	fi;
+        b:=elms[i]+j*a;
+        p:=Position(e,b);
+        if p in sel then
+          RemoveSet(sel,p);
+          Add(elms,b);
+          Add(dec,Concatenation(dec[i],[j]));
+        fi;
       od;
     od;
 
     # the remaining candidates must be complements
     for i in ShallowCopy(cands) do
       if ForAny([1..o[i]-1],j->j*e[i] in elms) then
-	RemoveSet(cands,i);
+        RemoveSet(cands,i);
       fi;
     od;
 
@@ -513,7 +513,7 @@ local e, z, one, o, sel, g, go, elms, dec, p, cands, m, a, b, nr, hom, i, j;
     m:=Length(g);
     for i in dec do
       while Length(i)<m do
-	Add(i,0);
+        Add(i,0);
       od;
     od;
   od;
@@ -522,16 +522,16 @@ local e, z, one, o, sel, g, go, elms, dec, p, cands, m, a, b, nr, hom, i, j;
     for j in [1..Length(g)] do
       p:=g[i]*g[j];
       if p<>z then
-	p:=Position(elms,p);
-	p:=dec[p];
-	nr:=[];
-	for b in [1..Length(p)] do
-	  if p[b]<>0 then
-	    Add(nr,p[b]);
-	    Add(nr,b);
-	  fi;
-	od;
-	SetEntrySCTable(m,i,j,nr);
+        p:=Position(elms,p);
+        p:=dec[p];
+        nr:=[];
+        for b in [1..Length(p)] do
+          if p[b]<>0 then
+            Add(nr,p[b]);
+            Add(nr,b);
+          fi;
+        od;
+        SetEntrySCTable(m,i,j,nr);
       fi;
     od;
   od;

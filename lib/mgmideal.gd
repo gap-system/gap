@@ -26,7 +26,7 @@
 #P  IsLeftMagmaIdeal( <D> )
 ##
 ##  A *left magma ideal* is a submagma (see~"Magmas") which is closed under
-##	left multiplication by elements of its parent magma.
+##  left multiplication by elements of its parent magma.
 ##
 DeclareSynonym("IsLeftMagmaIdeal", IsMagma and IsLeftActedOnBySuperset);
 
@@ -105,7 +105,7 @@ DeclareOperation( "LeftMagmaIdealByGenerators", [IsMagma, IsCollection ] );
 #P  IsRightMagmaIdeal( <D> )
 ##
 ##  A *right magma ideal* is a submagma (see~"Magmas") which is closed under
-##	right multiplication by elements of its parent magma.
+##  right multiplication by elements of its parent magma.
 ##
 DeclareSynonym("IsRightMagmaIdeal", IsMagma and IsRightActedOnBySuperset);
 
@@ -178,7 +178,7 @@ DeclareOperation( "RightMagmaIdealByGenerators", [IsMagma, IsCollection ] );
 #P  IsMagmaIdeal( <D> )
 ##
 ##  A *magma ideal* is a submagma (see~"Magmas") which is closed under
-##	left and right multiplication by elements of its parent magma.
+##  left and right multiplication by elements of its parent magma.
 ##
 DeclareSynonym("IsMagmaIdeal", IsLeftMagmaIdeal and IsRightMagmaIdeal);
 

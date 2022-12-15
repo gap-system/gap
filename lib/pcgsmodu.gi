@@ -157,7 +157,7 @@ local   wd,  filter,  new,  i,nupa;
 
   # check which filter to use
   filter := IsModuloPcgs and IsModuloTailPcgsRep
-	    and IsModuloTailPcgsByListRep;
+            and IsModuloTailPcgsByListRep;
 
   if IsSubset(home,factor) then
     filter:=filter and IsSubsetInducedNumeratorModuloTailPcgsRep;
@@ -185,10 +185,10 @@ local   wd,  filter,  new,  i,nupa;
 
   # construct a pcgs from <pcs>
   new := PcgsByPcSequenceCons(
-	      IsPcgsDefaultRep,
-	      filter,
-	      FamilyObj(OneOfPcgs(home)),
-	      factor,[]);
+              IsPcgsDefaultRep,
+              filter,
+              FamilyObj(OneOfPcgs(home)),
+              factor,[]);
 
   SetRelativeOrders(new,RelativeOrders(home){wd});
   # store other useful information
@@ -251,65 +251,65 @@ function( home, list, modulo )
 
     # check which filter to use
     filter := IsModuloPcgs and
-	      HasDenominatorOfModuloPcgs and HasNumeratorOfModuloPcgs;
+              HasDenominatorOfModuloPcgs and HasNumeratorOfModuloPcgs;
 
     depthsInParent:=fail; # do not set by default
     dd:=fail; # do not set by default
     if IsEmpty(wd) or wd[Length(wd)] = Length(wd)  then
         filter := filter and IsModuloTailPcgsRep;
-	# are we even: tail mod further tail?
+        # are we even: tail mod further tail?
         if IsSubsetInducedPcgsRep(pcgs) and IsModuloTailPcgsRep(pcgs)
-	  and IsBound(pcgs!.depthsInParent) then
-	  filter:=filter and IsSubsetInducedNumeratorModuloTailPcgsRep;
-	  depthsInParent:=pcgs!.depthsInParent{wd};
-	  # is everything even family induced?
-	  if HasIsParentPcgsFamilyPcgs(pcgs)
-	     and IsParentPcgsFamilyPcgs(pcgs) then
-	    filter:=filter and IsNumeratorParentPcgsFamilyPcgs;
-	  fi;
-	elif HasIsFamilyPcgs(pcgs) and IsFamilyPcgs(pcgs) then
-	  # the same if the enumerator is not induced but actually the
-	  # familypcgs
-	  filter:=filter and IsSubsetInducedNumeratorModuloTailPcgsRep
-		  and IsNumeratorParentPcgsFamilyPcgs;
-	  depthsInParent:=[1..Length(pcgs)]; # not stored in FamilyPcgs
-	  depthsInParent:=depthsInParent{wd};
-	fi;
+          and IsBound(pcgs!.depthsInParent) then
+          filter:=filter and IsSubsetInducedNumeratorModuloTailPcgsRep;
+          depthsInParent:=pcgs!.depthsInParent{wd};
+          # is everything even family induced?
+          if HasIsParentPcgsFamilyPcgs(pcgs)
+             and IsParentPcgsFamilyPcgs(pcgs) then
+            filter:=filter and IsNumeratorParentPcgsFamilyPcgs;
+          fi;
+        elif HasIsFamilyPcgs(pcgs) and IsFamilyPcgs(pcgs) then
+          # the same if the enumerator is not induced but actually the
+          # familypcgs
+          filter:=filter and IsSubsetInducedNumeratorModuloTailPcgsRep
+                  and IsNumeratorParentPcgsFamilyPcgs;
+          depthsInParent:=[1..Length(pcgs)]; # not stored in FamilyPcgs
+          depthsInParent:=depthsInParent{wd};
+        fi;
     else
       if Length(wd)=Length(Set(wd)) and IsSubset(list,modulo) then
-	# the depths are all different and the modulus is just a tail. We
-	# can get the exponents from the parent pcgs.
-	filter:=filter and IsNumeratorParentForExponentsRep;
-	if not IsBound(pcgs!.depthsInParent) then
-	  pcgs!.depthsInParent:=List(pcgs,i->DepthOfPcElement(Parent(pcgs),i));
-	fi;
-	depthsInParent:=pcgs!.depthsInParent{wd};
+        # the depths are all different and the modulus is just a tail. We
+        # can get the exponents from the parent pcgs.
+        filter:=filter and IsNumeratorParentForExponentsRep;
+        if not IsBound(pcgs!.depthsInParent) then
+          pcgs!.depthsInParent:=List(pcgs,i->DepthOfPcElement(Parent(pcgs),i));
+        fi;
+        depthsInParent:=pcgs!.depthsInParent{wd};
       else
-	if HasParentPcgs(pcgs) and
-	  IsPcgsElementaryAbelianSeries(ParentPcgs(pcgs)) then
-	  par:=ParentPcgs(pcgs);
-	  depthsInParent:=List(pcs,x->DepthOfPcElement(par,x));
-	  dd:=List(modulo,x->DepthOfPcElement(par,x));
-	  if
-	    Length(Union(depthsInParent,dd))=Length(depthsInParent)+Length(dd)
-	    then
+        if HasParentPcgs(pcgs) and
+          IsPcgsElementaryAbelianSeries(ParentPcgs(pcgs)) then
+          par:=ParentPcgs(pcgs);
+          depthsInParent:=List(pcs,x->DepthOfPcElement(par,x));
+          dd:=List(modulo,x->DepthOfPcElement(par,x));
+          if
+            Length(Union(depthsInParent,dd))=Length(depthsInParent)+Length(dd)
+            then
 
-	    # we can use the parent layers to calculate exponents
-	    filter:=filter and IsNumeratorParentLayersForExponentsRep;
-	  else
-	    depthsInParent:=fail;
-	  fi;
+            # we can use the parent layers to calculate exponents
+            filter:=filter and IsNumeratorParentLayersForExponentsRep;
+          else
+            depthsInParent:=fail;
+          fi;
 
-	fi;
+        fi;
 
-	filter := filter and IsModuloPcgsRep;
+        filter := filter and IsModuloPcgsRep;
       fi;
     fi;
     if IsPrimeOrdersPcgs(home)  then
-	filter := filter and HasIsPrimeOrdersPcgs and IsPrimeOrdersPcgs
-			and HasIsFiniteOrdersPcgs and IsFiniteOrdersPcgs;
+        filter := filter and HasIsPrimeOrdersPcgs and IsPrimeOrdersPcgs
+                        and HasIsFiniteOrdersPcgs and IsFiniteOrdersPcgs;
     elif IsFiniteOrdersPcgs(home)  then
-	filter := filter and HasIsFiniteOrdersPcgs and IsFiniteOrdersPcgs;
+        filter := filter and HasIsFiniteOrdersPcgs and IsFiniteOrdersPcgs;
     fi;
 
     # store the one and other information
@@ -320,8 +320,8 @@ function( home, list, modulo )
                filter,
                FamilyObj(OneOfPcgs(pcgs)),
                pcs,
-	       [DenominatorOfModuloPcgs, modulo,
-		NumeratorOfModuloPcgs, pcgs ]);
+               [DenominatorOfModuloPcgs, modulo,
+                NumeratorOfModuloPcgs, pcgs ]);
 
     SetRelativeOrders(new,RelativeOrders(pcgs){wd});
     # store other useful information
@@ -347,20 +347,20 @@ function( home, list, modulo )
       new!.denpardepths:=dd;
       wm:=[];
       for i in [1..Length(dd)] do
-	wm[dd[i]]:=i;
+        wm[dd[i]]:=i;
       od;
       new!.parentDenomMap:=wm;
 
       wm:=[];
       for i in [1..Length(depthsInParent)] do
-	wm[depthsInParent[i]]:=i;
+        wm[depthsInParent[i]]:=i;
       od;
       new!.parentDepthMap:=wm;
 
       if HasIndicesEANormalSteps(par) then
-	i:=IndicesEANormalSteps(par);
+        i:=IndicesEANormalSteps(par);
       else
-	i:=IndicesNormalSteps(par);
+        i:=IndicesNormalSteps(par);
       fi;
       new!.layranges:=List([1..Length(i)-1],x->[i[x]..i[x+1]-1]);
 
@@ -371,27 +371,27 @@ function( home, list, modulo )
       idx:=[];
       new!.indices:=idx;
       for i in [1..Length(new!.layranges)] do
-	if new!.layranges[i][1]<=Length(wm) then
-	  dd:=GF(RelativeOrders(par)[new!.layranges[i][1]]);
-	  sep:=Filtered([1..Length(pcs)],
-	    x->PositionNonZero(pcsexp[x]) in new!.layranges[i]);
-	  sed:=Filtered([1..Length(modulo)],
-	    x->PositionNonZero(denexp[x]) in new!.layranges[i]);
-	  if Length(sep)>0 or Length(sed)>0 then
-	    mat:=Concatenation(pcsexp{sep}{new!.layranges[i]},
-		  denexp{sed}{new!.layranges[i]})*One(dd);
-	    mat:=ImmutableMatrix(dd,mat);
-	    if Length(mat)<Length(mat[1]) then
+        if new!.layranges[i][1]<=Length(wm) then
+          dd:=GF(RelativeOrders(par)[new!.layranges[i][1]]);
+          sep:=Filtered([1..Length(pcs)],
+            x->PositionNonZero(pcsexp[x]) in new!.layranges[i]);
+          sed:=Filtered([1..Length(modulo)],
+            x->PositionNonZero(denexp[x]) in new!.layranges[i]);
+          if Length(sep)>0 or Length(sed)>0 then
+            mat:=Concatenation(pcsexp{sep}{new!.layranges[i]},
+                  denexp{sed}{new!.layranges[i]})*One(dd);
+            mat:=ImmutableMatrix(dd,mat);
+            if Length(mat)<Length(mat[1]) then
               # add identity mat vectors at non-pivot positions
               sel:=List(TriangulizedMat(mat),PositionNonZero);
               sel:=Difference([1..Length(mat[1])],sel);
               mat:=Concatenation(mat,IdentityMat(Length(mat[1]),dd){sel});
-	      mat:=ImmutableMatrix(dd,mat);
-	    fi;;
-	    bascha[i]:=mat^-1;
-	    idx[i]:=[sep,sed];
-	  fi;
-	fi;
+              mat:=ImmutableMatrix(dd,mat);
+            fi;;
+            bascha[i]:=mat^-1;
+            idx[i]:=[sep,sed];
+          fi;
+        fi;
       od;
 
     fi;
@@ -767,23 +767,23 @@ function( pcgs, elm )
 
     while elm <> id  do
         d := DepthOfPcElement( num, elm );
-	if d>Length(pm) then
-	  # all lower will only be in denominator
-	  return exp;
-	fi;
+        if d>Length(pm) then
+          # all lower will only be in denominator
+          return exp;
+        fi;
 
-	ll  := LeadingExponentOfPcElement( num, elm );
+        ll  := LeadingExponentOfPcElement( num, elm );
         if IsBound(mm[d])  then
-	    if not IsBound(lede[d]) then
-	      lede[d]:=LeadingExponentOfPcElement( num, den[mm[d]] );
-	    fi;
+            if not IsBound(lede[d]) then
+              lede[d]:=LeadingExponentOfPcElement( num, den[mm[d]] );
+            fi;
             lr  := lede[d];
             elm := LeftQuotient( den[mm[d]]^(ll / lr mod ros[d]), elm );
         else
             #ll := LeadingExponentOfPcElement( num, elm );
-	    if not IsBound(lede[d]) then
+            if not IsBound(lede[d]) then
               lede[d]:=LeadingExponentOfPcElement( num, pcgs[pm[d]] );
-	    fi;
+            fi;
             lr := lede[d];
             exp[pm[d]] := ll / lr mod ros[d];
             elm := LeftQuotient( pcgs[pm[d]]^exp[pm[d]], elm );
@@ -817,43 +817,43 @@ local   id,exp,den,par,ll,lr,idx,bascha,e,ee,prd,i,la,lap,pm;
 
     for lap in [1..Length(pcgs!.layranges)] do
       if bascha[lap]<>fail then
-	la:=pcgs!.layranges[lap];
-	ee:=ExponentsOfPcElement(par,elm,la);
-	ee:=ee*bascha[lap]; # coefficients as needed
+        la:=pcgs!.layranges[lap];
+        ee:=ExponentsOfPcElement(par,elm,la);
+        ee:=ee*bascha[lap]; # coefficients as needed
 
-	if lap<Length(pcgs!.layranges) and pcgs!.layranges[lap+1][1]<=pm then
-	  prd:=id;
-	else
-	  prd:=fail;
-	fi;
-	ll:=idx[lap][1];
-	for i in [1..Length(ll)] do
-	  e:=Int(ee[i]);
-	  exp[ll[i]]:=e;
-	  if prd<>fail and not IsZero(e) then
-	    prd:=prd*pcgs[ll[i]]^e;
-	  fi;
-	od;
+        if lap<Length(pcgs!.layranges) and pcgs!.layranges[lap+1][1]<=pm then
+          prd:=id;
+        else
+          prd:=fail;
+        fi;
+        ll:=idx[lap][1];
+        for i in [1..Length(ll)] do
+          e:=Int(ee[i]);
+          exp[ll[i]]:=e;
+          if prd<>fail and not IsZero(e) then
+            prd:=prd*pcgs[ll[i]]^e;
+          fi;
+        od;
 
-	if prd<>fail then
-	  ll:=Length(ll);
-	  lr:=idx[lap][2];
-	  for i in [1..Length(lr)] do
-	    e:=Int(ee[i+ll]);
-	    if not IsZero(e) then;
-	      prd:=prd*den[lr[i]]^e;
-	    fi;
-	  od;
-	fi;
+        if prd<>fail then
+          ll:=Length(ll);
+          lr:=idx[lap][2];
+          for i in [1..Length(lr)] do
+            e:=Int(ee[i+ll]);
+            if not IsZero(e) then;
+              prd:=prd*den[lr[i]]^e;
+            fi;
+          od;
+        fi;
 
-	if prd<>fail and not IsIdenticalObj(prd,id) then
-	  # divide off
-	  elm:=LeftQuotient(prd,elm);
-	fi;
-	if prd=fail then
+        if prd<>fail and not IsIdenticalObj(prd,id) then
+          # divide off
+          elm:=LeftQuotient(prd,elm);
+        fi;
+        if prd=fail then
   #if exp<>basiccmp(pcgs,elm0) then Error("err1");fi;
-	  return exp;
-	fi;
+          return exp;
+        fi;
       fi;
 
     od;
@@ -899,11 +899,11 @@ function( pcgs, elm,range )
     while elm <> id  do
       d := DepthOfPcElement( num, elm );
       if IsBound(pm[d]) and pm[d]>max then
-	# we have reached the maximum of the range we asked for. Thus we
-	# can stop calculating exponents now, all further exponents would
-	# be discarded anyhow.
-	# Note that the depthMap is sorted!
-	elm:=id;
+        # we have reached the maximum of the range we asked for. Thus we
+        # can stop calculating exponents now, all further exponents would
+        # be discarded anyhow.
+        # Note that the depthMap is sorted!
+        elm:=id;
       else
         if IsBound(mm[d])  then
             ll  := LeadingExponentOfPcElement( num, elm );

@@ -23,7 +23,7 @@ BindGlobal("COCohomologyAction",function(oc,actgrp,auts,orbs)
                          BasisVectors(Basis(oc.oneCoboundaries)));
   if Length(b.factorspace)=0 then
     u:=rec(com:=[rec(cocycle:=Zero(oc.oneCocycles),stabilizer:=actgrp)],
-	   bas:=b);
+           bas:=b);
     if orbs then
       u.com[1].orbit:=[Zero(oc.oneCocycles)];
     fi;
@@ -43,8 +43,8 @@ BindGlobal("COCohomologyAction",function(oc,actgrp,auts,orbs)
     coc:=i.vector*b.factorspace;
     #u:=oc.cocycleToComplement(coc);
     u:=rec(cocycle:=coc,
-		#complement:=u,
-		stabilizer:=i.stabilizer);
+                #complement:=u,
+                stabilizer:=i.stabilizer);
     if orbs then u.orbit:=i.orbit;fi;
     Add(com,u);
   od;
@@ -99,8 +99,8 @@ local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
        Length(MappingGeneratorsImages(fpi)[2])," generators");
   factorpres:=[FreeGeneratorsOfFpGroup(Range(fpi)),
                RelatorsOfFpGroup(Range(fpi)),
-	       List(GeneratorsOfGroup(Range(fpi)),
-	            i->PreImagesRepresentative(fpi,i))];
+               List(GeneratorsOfGroup(Range(fpi)),
+                    i->PreImagesRepresentative(fpi,i))];
   Assert(1,ForAll(factorpres[3],i->Image(h,PreImagesRepresentative(h,i))=i));
   # initialize
   com:=[G];
@@ -127,92 +127,92 @@ local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
       # compute complements
       ocr:=rec(group:=ClosureGroup(com[j],s[i-1]),
                generators:=comgens[j],
-	       modulePcgs:=fpcgs,
-	       factorpres:=factorpres
-	       );
+               modulePcgs:=fpcgs,
+               factorpres:=factorpres
+               );
       if ocrels<>false then
         ocr.relators:=ocrels;
-	Assert(2,ForAll(ocr.relators,
-	                k->Product(List([1..Length(k.generators)],
-			      l->ocr.generators[k.generators[l]]^k.powers[l]))
-			      in s[i-1]));
+        Assert(2,ForAll(ocr.relators,
+                        k->Product(List([1..Length(k.generators)],
+                              l->ocr.generators[k.generators[l]]^k.powers[l]))
+                              in s[i-1]));
       fi;
 
       OCOneCocycles(ocr,true);
       ocrels:=ocr.relators;
 
       if IsBound(ocr.complement) then
-	# special treatment for trivial case:
-	if Dimension(ocr.oneCocycles)=Dimension(ocr.oneCoboundaries) then
-	  l:=[rec(stabilizer:=cen[j],
+        # special treatment for trivial case:
+        if Dimension(ocr.oneCocycles)=Dimension(ocr.oneCoboundaries) then
+          l:=[rec(stabilizer:=cen[j],
                   cocycle:=Zero(ocr.oneCocycles),
-		  complement:=ocr.complement)];
+                  complement:=ocr.complement)];
         else
-	  #l:=BaseSteinitzVectors(BasisVectors(Basis(ocr.oneCocycles)),
-	#			 BasisVectors(Basis(ocr.oneCoboundaries)));
+          #l:=BaseSteinitzVectors(BasisVectors(Basis(ocr.oneCocycles)),
+        #                         BasisVectors(Basis(ocr.oneCoboundaries)));
 #
-#	  v:=Enumerator(VectorSpace(LeftActingDomain(ocr.oneCocycles),
-#				    l.factorspace,Zero(ocr.oneCocycles)));
+#          v:=Enumerator(VectorSpace(LeftActingDomain(ocr.oneCocycles),
+#                                    l.factorspace,Zero(ocr.oneCocycles)));
 #
-#	  dimran:=[1..Length(v[1])];
+#          dimran:=[1..Length(v[1])];
 #
-#	  # fuse
-#	  Info(InfoComplement,2,"fuse ",Length(v)," classes; working in dim ",
-#	   Dimension(ocr.oneCocycles),"/",Dimension(ocr.oneCoboundaries));
+#          # fuse
+#          Info(InfoComplement,2,"fuse ",Length(v)," classes; working in dim ",
+#           Dimension(ocr.oneCocycles),"/",Dimension(ocr.oneCoboundaries));
 #
-#	  opfun:=function(z,g)
-#	    Assert(3,z in AsList(v));
-#	    z:=ocr.cocycleToList(z);
-#	    for k in [1..Length(z)] do
-#	      z[k]:=Inverse(ocr.complementGens[k])*(ocr.complementGens[k]*z[k])^g;
-#	    od;
-#	    Assert(2,ForAll(z,k->k in s[i-1]));
-#	    z:=ocr.listToCocycle(z);
-#	    Assert(2,z in ocr.oneCocycles);
-#	    # sift z
-#	    for k in dimran do
-#	      if IsBound(l.heads[k]) and l.heads[k]<0 then
-#		z:=z-z[k]*l.subspace[-l.heads[k]];
-#	      fi;
-#	    od;
-#	    Assert(1,z in AsList(v));
-#	    return z;
-#	  end;
+#          opfun:=function(z,g)
+#            Assert(3,z in AsList(v));
+#            z:=ocr.cocycleToList(z);
+#            for k in [1..Length(z)] do
+#              z[k]:=Inverse(ocr.complementGens[k])*(ocr.complementGens[k]*z[k])^g;
+#            od;
+#            Assert(2,ForAll(z,k->k in s[i-1]));
+#            z:=ocr.listToCocycle(z);
+#            Assert(2,z in ocr.oneCocycles);
+#            # sift z
+#            for k in dimran do
+#              if IsBound(l.heads[k]) and l.heads[k]<0 then
+#                z:=z-z[k]*l.subspace[-l.heads[k]];
+#              fi;
+#            od;
+#            Assert(1,z in AsList(v));
+#            return z;
+#          end;
 #
-#	  k:=ExternalOrbitsStabilizers(cen[j],v,opfun);
+#          k:=ExternalOrbitsStabilizers(cen[j],v,opfun);
 
-	  l:=COCohomologyAction(ocr,cen[j],GeneratorsOfGroup(cen[j]),false).com;
-#	  if Length(l)<>Length(k) then Error("differ!");fi;
-	fi;
+          l:=COCohomologyAction(ocr,cen[j],GeneratorsOfGroup(cen[j]),false).com;
+#          if Length(l)<>Length(k) then Error("differ!");fi;
+        fi;
 
-	Info(InfoComplement,2,"splits in ",Length(l)," complements");
+        Info(InfoComplement,2,"splits in ",Length(l)," complements");
       else
         l:=[];
-	Info(InfoComplement,2,"no complements");
+        Info(InfoComplement,2,"no complements");
       fi;
 
       for k in l do
-	q:=k.stabilizer;
-	k:=ocr.cocycleToComplement(k.cocycle);
-	Assert(3,Length(GeneratorsOfGroup(k))
-	          =Length(MappingGeneratorsImages(fpi)[2]));
-	# correct stabilizer to obtain centralizer
+        q:=k.stabilizer;
+        k:=ocr.cocycleToComplement(k.cocycle);
+        Assert(3,Length(GeneratorsOfGroup(k))
+                  =Length(MappingGeneratorsImages(fpi)[2]));
+        # correct stabilizer to obtain centralizer
 
-	v:=Normalizer(q,ClosureGroup(s[i],k));
-	afu:=function(x,g) return CanonicalRightCosetElement(s[i],x^g);end;
-	for jj in GeneratorsOfGroup(k) do
-	  if ForAny(GeneratorsOfGroup(v),x->not Comm(x,jj) in s[i]) then
-	    # we are likely very close as we centralized in the higher level
-	    # and stabilize the cohomology. Thus a plain stabilizer
-	    # calculation ought to work.
-	    v:=Stabilizer(v,CanonicalRightCosetElement(s[i],jj),afu);
-	  fi;
-	od;
+        v:=Normalizer(q,ClosureGroup(s[i],k));
+        afu:=function(x,g) return CanonicalRightCosetElement(s[i],x^g);end;
+        for jj in GeneratorsOfGroup(k) do
+          if ForAny(GeneratorsOfGroup(v),x->not Comm(x,jj) in s[i]) then
+            # we are likely very close as we centralized in the higher level
+            # and stabilize the cohomology. Thus a plain stabilizer
+            # calculation ought to work.
+            v:=Stabilizer(v,CanonicalRightCosetElement(s[i],jj),afu);
+          fi;
+        od;
 
 
-	Add(ncen,v);
+        Add(ncen,v);
         Add(nlcom,k);
-	Add(nlcomgens,GeneratorsOfGroup(k));
+        Add(nlcomgens,GeneratorsOfGroup(k));
       od;
 
       ncom:=Concatenation(ncom,nlcom);

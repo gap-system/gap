@@ -132,7 +132,7 @@ InstallOtherMethod( UnivariatePolynomial, "ring,cof,indpol",true,
 function( ring, cofs,ind )
     return LaurentPolynomialByCoefficients( ElementsFamily(FamilyObj(ring)),
                                             cofs, 0,
-		    IndeterminateNumberOfUnivariateRationalFunction(ind) );
+                    IndeterminateNumberOfUnivariateRationalFunction(ind) );
 end );
 
 #############################################################################
@@ -253,9 +253,9 @@ function(obj)
 local   cofs,  val,  ind,  quo;
 
     cofs := CoefficientsOfLaurentPolynomial(obj);
-		if Length(cofs) = 0 then
-			return [[], FamilyObj(obj)!.oneCoefficient];
-		fi;
+    if Length(cofs) = 0 then
+        return [[], FamilyObj(obj)!.oneCoefficient];
+    fi;
     val  := cofs[2];
     cofs := cofs[1];
     ind  := IndeterminateNumberOfUnivariateRationalFunction(obj);
@@ -264,8 +264,8 @@ local   cofs,  val,  ind,  quo;
 
     if val < 0  then
         quo := [ [ ind, -val ], FamilyObj(obj)!.oneCoefficient ];
-		else
-		  quo := [ [],  FamilyObj(obj)!.oneCoefficient ];
+    else
+        quo := [ [],  FamilyObj(obj)!.oneCoefficient ];
     fi;
 
     return quo;
@@ -468,12 +468,12 @@ local   fam,zero,  tmp,  indn,  val,  sum,  i;
       sum := ShallowCopy(tmp[1]);
       i:=1-val;
       if (i=1 or i=Length(sum)) and sum[i]+coef=fam!.zeroCoefficient then
-	# be careful if cancellation happens at an end
+        # be careful if cancellation happens at an end
         sum[i]:=fam!.zeroCoefficient;
-	val:=val+RemoveOuterCoeffs(sum,fam!.zeroCoefficient);
+        val:=val+RemoveOuterCoeffs(sum,fam!.zeroCoefficient);
       else
-	# no cancellation in first place
-	sum[i] := coef + sum[i];
+        # no cancellation in first place
+        sum[i] := coef + sum[i];
       fi;
       return LaurentPolynomialByExtRepNC(fam, sum, val, indn );
 
@@ -481,7 +481,7 @@ local   fam,zero,  tmp,  indn,  val,  sum,  i;
   elif val + Length(tmp[1]) <= 0  then
       sum := ShallowCopy(tmp[1]);
       for i  in [ Length(sum)+1 .. -val ]  do
-	  sum[i] := zero;
+          sum[i] := zero;
       od;
       sum[1-val] := coef;
       # we add at the end, no problem occurs
@@ -491,7 +491,7 @@ local   fam,zero,  tmp,  indn,  val,  sum,  i;
   else
       sum := [coef];
       for i  in [ 2 .. val ]  do
-	  sum[i] := zero;
+          sum[i] := zero;
       od;
       Append( sum, tmp[1] );
       # we add in the first position, no problem occurs
@@ -715,7 +715,7 @@ RedispatchOnCondition(QuotientMod,IsFamFamFam,
 
 #############################################################################
 ##
-#M  PowerMod( <pring>, <upol>, <exp>, <upol> )	. . . . power modulo
+#M  PowerMod( <pring>, <upol>, <exp>, <upol> )  . . . . power modulo
 ##
 BindGlobal("POWMOD_UPOLY",function(g,e,m)
 local val,brci,fam;
@@ -919,13 +919,13 @@ InstallMethod( LeadingMonomial,"for a univariate laurent polynomial", true,
 #M  EuclideanDegree( <pring>, <upol> )
 ##
 InstallOtherMethod(EuclideanDegree,"univariate,ring",IsCollsElms,
-	      [IsPolynomialRing,IsUnivariatePolynomial],0,
+              [IsPolynomialRing,IsUnivariatePolynomial],0,
 function(R,a)
   return DegreeOfLaurentPolynomial(a);
 end);
 
 InstallOtherMethod(EuclideanDegree,"univariate",true,
-	      [IsUnivariatePolynomial],0,DegreeOfLaurentPolynomial);
+              [IsUnivariatePolynomial],0,DegreeOfLaurentPolynomial);
 
 InstallOtherMethod(EuclideanDegree,"laurent,ring",IsCollsElms,
   [IsPolynomialRing,IsLaurentPolynomial],0,
@@ -950,7 +950,7 @@ local q;
 end);
 
 InstallOtherMethod(EuclideanRemainder,"laurent,ring",IsCollsElmsElms,
-	  [IsPolynomialRing,IsUnivariatePolynomial,IsUnivariatePolynomial],0,
+          [IsPolynomialRing,IsUnivariatePolynomial,IsUnivariatePolynomial],0,
 function(R,a,b)
   return MOD_UPOLY(a,b);
 end);
@@ -960,7 +960,7 @@ RedispatchOnCondition(EuclideanRemainder,IsCollsElmsElms,
   [,IsUnivariatePolynomial,IsUnivariatePolynomial],0);
 
 InstallOtherMethod(EuclideanRemainder,"laurent",IsIdenticalObj,
-	    [IsUnivariatePolynomial,IsUnivariatePolynomial],0,MOD_UPOLY);
+            [IsUnivariatePolynomial,IsUnivariatePolynomial],0,MOD_UPOLY);
 
 RedispatchOnCondition(EuclideanRemainder,IsIdenticalObj,
   [IsLaurentPolynomial,IsLaurentPolynomial],
@@ -971,11 +971,11 @@ RedispatchOnCondition(EuclideanRemainder,IsIdenticalObj,
 #M  \mod( <upol>, <upol> )
 ##
 InstallMethod(\mod,"laurent",IsIdenticalObj,
-	      [IsUnivariatePolynomial,IsUnivariatePolynomial],0,MOD_UPOLY);
+              [IsUnivariatePolynomial,IsUnivariatePolynomial],0,MOD_UPOLY);
 
 RedispatchOnCondition(\mod,IsIdenticalObj,
-	[IsLaurentPolynomial,IsLaurentPolynomial],
-	[IsUnivariatePolynomial,IsUnivariatePolynomial],0);
+        [IsLaurentPolynomial,IsLaurentPolynomial],
+        [IsUnivariatePolynomial,IsUnivariatePolynomial],0);
 
 #T use different coeffs gcd methods depending on base ring
 InstallGlobalFunction(GcdCoeffs,GCD_COEFFS);
@@ -1233,56 +1233,56 @@ BindGlobal("StringUnivariateLaurent",function(fam,cofs,val,name)
       # print a '+' if necessary
       c := "*";
       if i <lc  then
-	    if IsRat(cofs[i])  then
-	      if cofs[i] = one  then
-	        Append(str,"+" );
-	        c:="";
-	      elif cofs[i]>0  then
-	        Append(str,"+");
-	        Append(str,String(cofs[i]));
-	      elif cofs[i]=mone  then
-	        Append(str,"-");
-	        c:="";
-	      else
-	        Append(str,String(cofs[i]));
-	      fi;
-	    elif cofs[i]=one  then
-	      Append(str,"+");
-	      c:="";
-	    elif cofs[i]=mone  then
-	      Append(str,"-");
-	      c:="";
-	    else
-	      Append(str,"+");
-	      s:=String(cofs[i]);
-	      if '+' in s or '-' in s then
-	        s:=Concatenation("(",s,")");
-	      fi;
-	      Append(str,s);
-	    fi;
+        if IsRat(cofs[i])  then
+          if cofs[i] = one  then
+            Append(str,"+" );
+            c:="";
+          elif cofs[i]>0  then
+            Append(str,"+");
+            Append(str,String(cofs[i]));
+          elif cofs[i]=mone  then
+            Append(str,"-");
+            c:="";
+          else
+            Append(str,String(cofs[i]));
+          fi;
+        elif cofs[i]=one  then
+          Append(str,"+");
+          c:="";
+        elif cofs[i]=mone  then
+          Append(str,"-");
+          c:="";
+        else
+          Append(str,"+");
+          s:=String(cofs[i]);
+          if '+' in s or '-' in s then
+            s:=Concatenation("(",s,")");
+          fi;
+          Append(str,s);
+        fi;
       elif cofs[i]=one  then
-	    c:="";
-      elif cofs[i]=mone  then
-	    Append(str,"-");
-	    c:="";
+        c:="";
+    elif cofs[i]=mone  then
+        Append(str,"-");
+        c:="";
       else
-	    s:=String(cofs[i]);
-	    if not IsRat(cofs[i]) and ('+' in s or '-' in s) then
-	      s:=Concatenation("(",s,")");
-	    fi;
-	    Append(str,s);
+        s:=String(cofs[i]);
+        if not IsRat(cofs[i]) and ('+' in s or '-' in s) then
+          s:=Concatenation("(",s,")");
+        fi;
+        Append(str,s);
       fi;
       if i+val <> 1  then
-	    Append(str,c);
-	    Append(str,name);
-	    if i+val <> 2  then
-	      Append(str,"^");
-	      Append(str,String( i+val-1 ));
-	    fi;
+        Append(str,c);
+        Append(str,name);
+        if i+val <> 2  then
+          Append(str,"^");
+          Append(str,String( i+val-1 ));
+        fi;
       elif cofs[i] = one  then
-	    Append(str,String(one));
+        Append(str,String(one));
       elif cofs[i] = mone  then
-	    Append(str,String(one));
+        Append(str,String(one));
       fi;
     fi;
   od;
@@ -1505,7 +1505,7 @@ local   cofs,  indn;
   elif Length(cofs[1])=1 then
     # if the numerator is a power of x, we can return a laurent polynomial
     return LaurentPolynomialByExtRepNC(FamilyObj(obj),
-	  cofs[2]*Inverse(cofs[1][1]), -cofs[3], indn );
+          cofs[2]*Inverse(cofs[1][1]), -cofs[3], indn );
   else
     # swap numerator and denominator and invert the valuation
     return UnivariateRationalFunctionByExtRepNC(FamilyObj(obj),
@@ -1591,12 +1591,12 @@ local   fam, tmp;
   tmp := CoefficientsOfUnivariateRationalFunction(univ);
   if Length(tmp[1])=0 then
     return UnivariateRationalFunctionByExtRepNC(fam,[], tmp[2],tmp[3],
-	    IndeterminateNumberOfUnivariateRationalFunction(univ));
+            IndeterminateNumberOfUnivariateRationalFunction(univ));
   else
     # Here we use ShallowCopy to avoid access errors later when CLONE_OBJ
     # will be called from coef*tmp[1] and will try to modify tmp
     return UnivariateRationalFunctionByExtRepNC(fam,coef*ShallowCopy(tmp[1]), tmp[2],tmp[3],
-	    IndeterminateNumberOfUnivariateRationalFunction(univ));
+            IndeterminateNumberOfUnivariateRationalFunction(univ));
   fi;
 end );
 
