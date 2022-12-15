@@ -143,24 +143,42 @@ EXPORT_INLINE UInt MASK_POS_BLIST(UInt pos)
 /****************************************************************************
 **
 *F  TEST_BIT_BLIST( <list>, <pos> ) . . . . . .  test a bit of a boolean list
+*F  TEST_BIT_BLIST_NO_ASSERTS( <list>, <pos> )   test a bit of a boolean list
 **
 **  'TEST_BIT_BLIST' return a non-zero value if the <pos>-th element of the
 **  boolean list <list> is 1, and otherwise 0. <pos> must be a positive
 **  integer less than or equal to the length of <list>.
+**  'TEST_BIT_BLIST_NO_ASSERTS' behaves the same but does not perform
+**  any debugging checks.
 */
-EXPORT_INLINE Int TEST_BIT_BLIST(Obj list, UInt pos)
+EXPORT_INLINE Int TEST_BIT_BLIST_NO_ASSERTS(Obj list, UInt pos)
 {
     return *CONST_BLOCK_ELM_BLIST_PTR(list, pos) & MASK_POS_BLIST(pos);
+}
+
+EXPORT_INLINE Int TEST_BIT_BLIST(Obj list, UInt pos)
+{
+    GAP_ASSERT(IS_BLIST_REP(list));
+    GAP_ASSERT(pos <= LEN_BLIST(list));
+    return TEST_BIT_BLIST_NO_ASSERTS(list, pos);
 }
 
 /****************************************************************************
 **
 *F  ELM_BLIST( <list>, <pos> ) . . . . . . . . . .  element of a boolean list
+*F  ELM_BLIST_NO_ASSERTS( <list>, <pos> )  . . . .  element of a boolean list
 **
 **  'ELM_BLIST' return the <pos>-th bit of the boolean list <list>, which is
 **  either 'true' or 'false'.  <pos> must  be a positive integer less than or
 **  equal to the length of <list>.
+**  'ELM_BLIST_NO_ASSERTS' behaves the same but does not perform any debugging
+**  checks.
 */
+EXPORT_INLINE Obj ELM_BLIST_NO_ASSERTS(Obj list, UInt pos)
+{
+    return TEST_BIT_BLIST_NO_ASSERTS(list, pos) ? True : False;
+}
+
 EXPORT_INLINE Obj ELM_BLIST(Obj list, UInt pos)
 {
     return TEST_BIT_BLIST(list, pos) ? True : False;
@@ -177,11 +195,15 @@ EXPORT_INLINE Obj ELM_BLIST(Obj list, UInt pos)
 */
 EXPORT_INLINE void SET_BIT_BLIST(Obj list, UInt pos)
 {
+    GAP_ASSERT(IS_BLIST_REP(list));
+    GAP_ASSERT(pos <= LEN_BLIST(list));
     *BLOCK_ELM_BLIST_PTR(list, pos) |= MASK_POS_BLIST(pos);
 }
 
 EXPORT_INLINE void CLEAR_BIT_BLIST(Obj list, UInt pos)
 {
+    GAP_ASSERT(IS_BLIST_REP(list));
+    GAP_ASSERT(pos <= LEN_BLIST(list));
     *BLOCK_ELM_BLIST_PTR(list, pos) &= ~MASK_POS_BLIST(pos);
 }
 
