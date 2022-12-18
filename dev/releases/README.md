@@ -11,14 +11,22 @@
 
 This is the way the process should happen in practice, with the help of GitHub Actions. Instructions for achieving the same without GitHub Actions are given later (in case GitHub Actions breaks or disappears).
 
-1. Access your local clone of the GAP repository.
-2. Make sure that your clone is up to date with `gap-system/gap`.
-3. Create an annotated tag `vX.Y.Z` in your clone at the appropriate commit in the `stable-X.Y` branch, and push the tag to `gap-system/gap`. For example:
+1. In the `gap-system/PackageDistro` GitHub repository, create an annotated tag `vX.Y.Z` based on its latest `main` branch (this determines which packages get into the release) and push the tag. For example:
     ```
+    git checkout main
+    git pull
+    git tag -m "Version X.Y.Z" vX.Y.Z main
+    git push origin vX.Y.Z
+    ```
+2. Wait. Pushing the tag triggers the “[Assemble the package distribution](https://github.com/gap-system/PackageDistro/actions/workflows/assemble-distro.yml)” GitHub Actions workflow; on `gap-system/PackageDistro`. This takes a few minutes.
+2. In the `gap-system/gap` GitHub repository, create an annotated tag `vX.Y.Z` at the appropriate commit in the `stable-X.Y` branch, and push the tag. For example:
+    ```
+    git checkout stable-X.Y
+    git pull
     git tag -m "Version X.Y.Z" vX.Y.Z stable-X.Y
     git push origin vX.Y.Z
-    ```  
-4. Wait. Pushing the tag will trigger the “[Wrap releases](https://github.com/gap-system/gap/actions/workflows/release.yml)” GitHub Actions workflow on `gap-system/gap`, which wraps the release archives and Windows installers, and creates a release on GitHub with the archives and installers attached. This takes around 90 minutes.
+    ```
+4. Wait. Pushing the tag triggers the “[Wrap releases](https://github.com/gap-system/gap/actions/workflows/release.yml)” GitHub Actions workflow on `gap-system/gap`, which wraps the release archives and Windows installers, and creates a release on GitHub with the archives and installers attached. This takes around 90 minutes.
 5. Once the “Wrap releases” workflow is finished, either manually dispatch the “[Sync](https://github.com/gap-system/GapWWW/actions/workflows/sync.yml)” GitHub Actions workflow on `gap-system/GapWWW`, or wait overnight for it to happen on schedule.
 	- This Workflow creates a pull request to `gap-system/GapWWW`, which updates the GAP website according to the release data hosted on `gap-system/gap`.  Check that the result is sensible.
 6. When it is time to publicise the new GAP release, merge the pull request to GapWWW.
@@ -77,10 +85,20 @@ Before starting the release process, the scripts have the following dependencies
    - Fetches the GitHub releases data from `gap-system/gap`.
    - Deletes, modifies, and adds various JSON and HTML files according to this data.
 9. Inspect the changes, and commit and push them to the master branch to `gap-system/GapWWW`.
-10. Run `GapWWW`'s `etc/extract_manuals.py` script as internally documented, and move its resulting `Manuals` directory to the `~/test.gap-system.org` directory of the GAP web server, overwriting the existing one.
-11. Deploy <https://test.gap-system.org>, as described in the `README` of `GapWWW`.
-12. Check that <https://test.gap-system.org> is functioning as expected.
-13. Repeat the final three steps, but with `www` instead of `test`.
+10. Log into `docs.gap-system.org` via SSH, then download and extract the new release tarball into the home directory. Then run the `extract_manuals.py` script, and move the result to the appropriate location.
+    ```
+    ssh gap-docs   # assumes gap-docs is set up in ~/.ssh/config
+    VER=X.Y.Z      # to avoid typing
+    wget https://github.com/gap-system/gap/releases/download/v${VER}/package-infos.json.gz
+    gunzip package-infos.json.gz
+    wget https://github.com/gap-system/gap/releases/download/v${VER}/gap-${VER}.tar.gz
+    tar xf gap-${VER}.tar.gz
+    GapWWW/etc/extract_manuals.py gap-${VER} package-infos.json
+    mv Manuals http/v${VER}
+    rm http/latest
+    ln -s v${VER} http/latest
+    ```
+11. Check that <https://docs.gap-system.org> is functioning as expected.
 
 
 ## Post-release hints
