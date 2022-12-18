@@ -27,7 +27,6 @@ concurrency:
 
 env:
   NO_COVERAGE: 1
-  BOOTSTRAP_MINIMAL: yes
 
 jobs:
   unix:
@@ -82,8 +81,6 @@ jobs:
           BUILD=`head -1 cnf/GAP-VERSION-FILE | cut -d ' ' -f3`
           echo "steps.get-build.outputs.name = ${BUILD}"
           echo "name=${BUILD}" >> $GITHUB_OUTPUT
-      - name: "Download packages"
-        run: dev/ci-download-pkgs.sh
       - name: "Make archives"
         run: python -u ./dev/releases/make_archives.py
 
