@@ -1,5 +1,81 @@
 # GAP - history of changes
 
+## GAP 4.12.2 (December 2022)
+
+The following gives an overview of the changes compared to the previous
+release.
+
+- [#5250](https://github.com/gap-system/gap/pull/5250) Fix an unexpected error during tab completion for input like `a.b.` when `a` is not a record
+- [#5235](https://github.com/gap-system/gap/pull/5235) Fix a problem with kernel extensions on macOS
+- [#5187](https://github.com/gap-system/gap/pull/5187) Allow kernel extensions to use GAP header files via `#include <gap/HEADER.h>` instead of `#include "src/HEADER.h"` or `#include "HEADER.h"` (improves compatibility with "install" GAP versions shipped by Linux distributions)
+
+- [#5112](https://github.com/gap-system/gap/pull/5112)
+  [#5171](https://github.com/gap-system/gap/pull/5171)
+  [#5193](https://github.com/gap-system/gap/pull/5193)
+  [#5201](https://github.com/gap-system/gap/pull/5201)
+  [#5206](https://github.com/gap-system/gap/pull/5206) Build system changes
+
+- [#5170](https://github.com/gap-system/gap/pull/5170)
+  [#5213](https://github.com/gap-system/gap/pull/5213)
+  [#5215](https://github.com/gap-system/gap/pull/5215) Fix compiler warnings
+
+### Package distribution
+
+#### New packages redistributed with GAP
+
+- [**SL2Reps**](https://snw-0.github.io/sl2-reps) 1.1: Constructing symmetric representations of SL(2,Z)., by Siu-Hung Ng, Yilong Wang, Samuel Wilson
+
+#### Updated packages redistributed with GAP
+
+The GAP 4.12.2 distribution contains 155 packages, of which 44 have been
+updated since GAP 4.12.1. The full list of updated packages is given below:
+
+- [**AGT**](https://gap-packages.github.io/agt): 0.2 -> 0.3
+- [**Browse**](https://www.math.rwth-aachen.de/~Browse): 1.8.18 -> 1.8.19
+- [**CAP**](https://homalg-project.github.io/pkg/CAP): 2022.10-06 -> 2022.12-11
+- [**CddInterface**](https://homalg-project.github.io/CddInterface): 2022.08.11 -> 2022.11.01
+- [**CRISP**](http://www.icm.tu-bs.de/~bhoeflin/crisp/index.html): 1.4.5 -> 1.4.6
+- [**crypting**](https://gap-packages.github.io/crypting/): 0.10.3 -> 0.10.4
+- [**datastructures**](https://gap-packages.github.io/datastructures): 0.2.7 -> 0.3.0
+- [**Digraphs**](https://digraphs.github.io/Digraphs): 1.6.0 -> 1.6.1
+- [**ExamplesForHomalg**](https://homalg-project.github.io/pkg/ExamplesForHomalg): 2022.10-01 -> 2022.11-01
+- [**FinInG**](https://gap-packages.github.io/FinInG): 1.5.1 -> 1.5.4
+- [**FR**](https://gap-packages.github.io/fr): 2.4.10 -> 2.4.12
+- [**Gauss**](https://homalg-project.github.io/pkg/Gauss): 2022.10-01 -> 2022.11-01
+- [**GeneralizedMorphismsForCAP**](https://homalg-project.github.io/pkg/GeneralizedMorphismsForCAP): 2022.09-01 -> 2022.12-01
+- [**GradedRingForHomalg**](https://homalg-project.github.io/pkg/GradedRingForHomalg): 2022.10-01 -> 2022.11-01
+- [**GRAPE**](https://gap-packages.github.io/grape): 4.8.5 -> 4.9.0
+- [**GrpConst**](https://gap-packages.github.io/grpconst/): 2.6.2 -> 2.6.3
+- [**homalg**](https://homalg-project.github.io/pkg/homalg): 2022.08-04 -> 2022.11-01
+- [**HomalgToCAS**](https://homalg-project.github.io/pkg/HomalgToCAS): 2022.10-01 -> 2022.11-02
+- [**IO_ForHomalg**](https://homalg-project.github.io/pkg/IO_ForHomalg): 2022.09-01 -> 2022.11-01
+- [**IRREDSOL**](http://www.icm.tu-bs.de/~bhoeflin/irredsol/index.html): 1.4.3 -> 1.4.4
+- [**LiePRing**](https://gap-packages.github.io/liepring/): 2.7 -> 2.8
+- [**LinearAlgebraForCAP**](https://homalg-project.github.io/pkg/LinearAlgebraForCAP): 2022.10-03 -> 2022.12-04
+- [**LocalizeRingForHomalg**](https://homalg-project.github.io/pkg/LocalizeRingForHomalg): 2022.09-01 -> 2022.11-01
+- [**loops**](https://gap-packages.github.io/loops/): 3.4.2 -> 3.4.3
+- [**MajoranaAlgebras**](https://gap-packages.github.io/MajoranaAlgebras/): 1.5 -> 1.5.1
+- [**MatricesForHomalg**](https://homalg-project.github.io/pkg/MatricesForHomalg): 2022.10-05 -> 2022.12-01
+- [**ModulePresentationsForCAP**](https://homalg-project.github.io/pkg/ModulePresentationsForCAP): 2022.10-04 -> 2022.12-01
+- [**Modules**](https://homalg-project.github.io/pkg/Modules): 2022.09-01 -> 2022.11-01
+- [**MonoidalCategories**](https://homalg-project.github.io/pkg/MonoidalCategories): 2022.10-01 -> 2022.12-01
+- [**NormalizInterface**](https://gap-packages.github.io/NormalizInterface): 1.3.4 -> 1.3.5
+- [**nq**](https://gap-packages.github.io/nq/): 2.5.8 -> 2.5.9
+- [**OpenMath**](https://gap-packages.github.io/openmath): 11.5.1 -> 11.5.2
+- [**PrimGrp**](https://gap-packages.github.io/primgrp/): 3.4.2 -> 3.4.3
+- [**RCWA**](https://gap-packages.github.io/rcwa/): 4.7.0 -> 4.7.1
+- [**RingsForHomalg**](https://homalg-project.github.io/pkg/RingsForHomalg): 2022.10-02 -> 2022.11-01
+- [**SCSCP**](https://gap-packages.github.io/scscp): 2.3.1 -> 2.4.0
+- [**Semigroups**](https://semigroups.github.io/Semigroups): 5.0.2 -> 5.2.0
+- [**SglPPow**](https://gap-packages.github.io/sglppow/): 2.2 -> 2.3
+- [**SmallGrp**](https://gap-packages.github.io/smallgrp/): 1.5 -> 1.5.1
+- [**SONATA**](https://gap-packages.github.io/sonata/): 2.9.5 -> 2.9.6
+- [**ToolsForHomalg**](https://homalg-project.github.io/pkg/ToolsForHomalg): 2022.09-08 -> 2022.12-01
+- [**utils**](https://gap-packages.github.io/utils): 0.77 -> 0.81
+- [**XModAlg**](https://gap-packages.github.io/xmodalg/): 1.22 -> 1.23
+- [**YangBaxter**](https://gap-packages.github.io/YangBaxter): 0.10.1 -> 0.10.2
+
+
 ## GAP 4.12.1 (October 2022)
 
 The following gives an overview of the changes compared to the previous
