@@ -14,3 +14,9 @@ ce30db3d220c563d6debdba2d63ba31cebd959dc
 # Remove more trailing whitespace
 f3e803853f9095d6d642c78e80d8178a69960616
 
+# Remove tabs
+2e0d1a146ca032cd2608e898e8c4e64a71aa6556
+86bc34d95252567d3381d59fb67edf1c5c3b02c1
+
+# PR #5271: convert many C comments to C++ comments
+035f52e69462195abe83900ecd7a409404fcbc23
