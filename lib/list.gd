@@ -55,7 +55,7 @@ BIND_GLOBAL( "ListsFamily", NewFamily( "ListsFamily", IsList ) );
 ##
 ##  <#GAPDoc Label="IsPlistRep">
 ##  <ManSection>
-##  <Filt Name="IsPlistRep" Arg='obj' Type='representation'/>
+##  <Filt Name="IsPlistRep" Arg='obj' Type='Representation'/>
 ##
 ##  <Description>
 ##  &GAP; lists created by entering comma separated values in square brackets

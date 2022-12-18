@@ -273,10 +273,10 @@ end );
 ##  <#GAPDoc Label="BasicRepresentations">
 ##  <ManSection>
 ##  <Heading>Basic Representations of Objects</Heading>
-##  <Filt Name="IsInternalRep" Arg='obj' Type='representation'/>
-##  <Filt Name="IsDataObjectRep" Arg='obj' Type='representation'/>
-##  <Filt Name="IsPositionalObjectRep" Arg='obj' Type='representation'/>
-##  <Filt Name="IsComponentObjectRep" Arg='obj' Type='representation'/>
+##  <Filt Name="IsInternalRep" Arg='obj' Type='Representation'/>
+##  <Filt Name="IsDataObjectRep" Arg='obj' Type='Representation'/>
+##  <Filt Name="IsPositionalObjectRep" Arg='obj' Type='Representation'/>
+##  <Filt Name="IsComponentObjectRep" Arg='obj' Type='Representation'/>
 ##
 ##  <Description>
 ##  &GAP; distinguishes four essentially different ways to represent

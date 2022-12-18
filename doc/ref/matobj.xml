@@ -167,9 +167,11 @@ that can on the one hand benefit from &GAP;'s method selection,
 as is explained in
 Section <Ref Sect="Concepts and Rules for Vector and Matrix Objects"/>,
 and do on the other hands support access to &GAP; objects that represent
-their rows (which are suitable vector objects),
-such that the operations described in this section are supported
-for these matrix objects.
+their rows (which are suitable vector objects).
+Matrix objects whose
+<Ref Filt="ConstructingFilter" Label="for a matrix object"/> value implies
+<Ref Filt="IsRowListMatrix"/> support the operations described in this
+section.
 
 <P/>
 
@@ -190,8 +192,6 @@ in the last position,
 that is, the vector and matrix objects insist on being dense.
 All rows of a matrix must have the same length and the same base domain.
 
-<#Include Label="IsPlistVectorRep">
-<#Include Label="IsPlistMatrixRep">
 <#Include Label="RowListMatObj_[]">
 <#Include Label="RowListMatObj_[]_ASS">
 <#Include Label="RowListMatObj_{}">
@@ -208,8 +208,36 @@ All rows of a matrix must have the same length and the same base domain.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Basic operations for row/column reductions">
+<Heading>Basic operations for row/column reductions</Heading>
+
+<#Include Label="MultMatrixRow">
+<#Include Label="MultMatrixRowRight">
+<#Include Label="MultMatrixColumn">
+<#Include Label="MultMatrixColumnLeft">
+<#Include Label="AddMatrixRows">
+<#Include Label="AddMatrixRowsRight">
+<#Include Label="AddMatrixColumns">
+<#Include Label="AddMatrixColumnsLeft">
+<#Include Label="SwapMatrixRows">
+<#Include Label="SwapMatrixColumns">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Implementing New Vector and Matrix Objects Types">
 <Heading>Implementing New Vector and Matrix Objects Types</Heading>
+
+The first step in the design of a new type of vector or matrix objects
+is to create a new filter that serves as the
+<Ref Attr="ConstructingFilter" Label="for a vector object"/>
+of the new objects,
+see the sections <Ref Sect="Available Representations of Vector Objects"/>
+and <Ref Sect="Available Representations of Matrix Objects"/>
+for an overview of such filters that are already available.
+
+<P/>
 
 Here we list those operations for vector and matrix objects
 for which no default methods can be installed.
@@ -222,6 +250,7 @@ The installations of default methods can be found in the file
 <F>lib/matobj.gi</F> of the &GAP; distribution.
 There one can check for which operations it makes sense to overload them
 for the new type of vector or matrix objects.
+
 <P/>
 
 <E>Vector objects</E>
@@ -316,19 +345,30 @@ that do not delegate to <Ref Constr="NewVector"/> and
 </Section>
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Basic operations for row/column reductions">
-<Heading>Basic operations for row/column reductions</Heading>
+<Section Label="Available Representations of Vector Objects">
+<Heading>Available Representations of Vector Objects</Heading>
 
-<#Include Label="MultMatrixRow">
-<#Include Label="MultMatrixRowRight">
-<#Include Label="MultMatrixColumn">
-<#Include Label="MultMatrixColumnLeft">
-<#Include Label="AddMatrixRows">
-<#Include Label="AddMatrixRowsRight">
-<#Include Label="AddMatrixColumns">
-<#Include Label="AddMatrixColumnsLeft">
-<#Include Label="SwapMatrixRows">
-<#Include Label="SwapMatrixColumns">
+The following filters define vector objects for which the the functionality
+described in this chapter is supported.
+
+<#Include Label="IsGF2VectorRep">
+<#Include Label="Is8BitVectorRep">
+<#Include Label="IsPlistVectorRep">
+<#Include Label="IsZmodnZVectorRep">
+
+</Section>
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Available Representations of Matrix Objects">
+<Heading>Available Representations of Matrix Objects</Heading>
+
+The following filters define matrix objects for which the the functionality
+described in this chapter is supported.
+
+<#Include Label="IsGF2MatrixRep">
+<#Include Label="Is8BitMatrixRep">
+<#Include Label="IsPlistMatrixRep">
+<#Include Label="IsZmodnZMatrixRep">
 
 </Section>
 

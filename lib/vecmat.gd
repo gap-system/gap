@@ -31,15 +31,27 @@ BIND_GLOBAL( "GF2Zero", 0*Z(2) );
 ##
 #R  IsGF2VectorRep( <obj> ) . . . . . . . . . . . . . . . . . vector over GF2
 ##
+##  <#GAPDoc Label="IsGF2VectorRep">
 ##  <ManSection>
 ##  <Filt Name="IsGF2VectorRep" Arg='obj' Type='Representation'/>
 ##
 ##  <Description>
+##  An object <A>obj</A> in <Ref Filt="IsGF2VectorRep"/> describes
+##  a vector object (see <Ref Filt="IsVectorObj"/>) with entries in the
+##  finite field with <M>2</M> elements.
+##  <P/>
+##  <Ref Filt="IsGF2VectorRep"/> implies <Ref Filt="IsCopyable"/>,
+##  thus vector objects in this representation can be mutable.
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
+##
+##  <Ref Filt="IsGF2VectorRep"/> is a subrepresentation of
+##  <Ref Filt="IsDataObjectRep"/>, the entries are packed into bits.
 ##
 DeclareRepresentation( "IsGF2VectorRep",
         IsDataObjectRep and IsVectorObj
+    and IsCopyable
     and IsNoImmediateMethodsObject
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);
 
@@ -217,8 +229,33 @@ DeclareGlobalFunction( "ConvertToMatrixRep" );
 ##
 #R  IsGF2MatrixRep( <obj> ) . . . . . . . . . . . . . . . . . matrix over GF2
 ##
+##  <#GAPDoc Label="IsGF2MatrixRep">
+##  <ManSection>
+##  <Filt Name="IsGF2MatrixRep" Arg='obj' Type='Representation'/>
+##
+##  <Description>
+##  An object <A>obj</A> in <Ref Filt="IsGF2MatrixRep"/> describes
+##  a matrix object (see <Ref Filt="IsMatrixObj"/>) with entries in the
+##  finite field with <M>2</M> elements, which behaves like the
+##  list of its rows (see <Ref Filt="IsRowListMatrix"/>).
+##  The base domain of <A>obj</A> is the field with <M>2</M> elements.
+##  <P/>
+##  <Ref Filt="IsGF2MatrixRep"/> implies <Ref Filt="IsCopyable"/>,
+##  thus vector objects in this representation can be mutable.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+##  <A>obj</A> is internally represented as a positional object
+##  (see <Ref Filt="IsPositionalObjectRep"/>).
+##  If the number of rows is <M>n</M> then this object stores <M>n+1</M>
+##  entries,
+##  <M>n</M> at position <M>1</M> and the <M>i</M>-th row at position
+##  <M>i+1</M>.
+##
 DeclareRepresentation( "IsGF2MatrixRep",
         IsPositionalObjectRep and IsRowListMatrix
+    and IsCopyable
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);
