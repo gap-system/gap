@@ -58,8 +58,10 @@ notice(f"Detected GAP version {gapversion}")
 
 if re.fullmatch( r"[1-9]+\.[0-9]+\.[0-9]+", gapversion) != None:
     notice(f"--- THIS LOOKS LIKE A RELEASE ---")
+    pkg_tag = f"v{gapversion}"
 else:
     notice(f"--- THIS LOOKS LIKE A NIGHTLY BUILD ---")
+    pkg_tag = "latest"
 
 
 # extract commit_date with format YYYY-MM-DD
@@ -78,6 +80,10 @@ all_packages_tarball = f"{all_packages}.tar.gz"
 req_packages = f"packages-required-v{gapversion}" # a subset of the above
 req_packages_tarball = f"{req_packages}.tar.gz"
 
+PKG_BOOTSTRAP_URL = f"https://github.com/gap-system/PackageDistro/releases/download/{pkg_tag}/"
+PKG_MINIMAL = "packages-required.tar.gz"
+PKG_FULL = "packages.tar.gz"
+
 # Exporting repository content into tmp
 notice("Exporting repository content via `git archive`")
 rawbasename = "gap-raw"
@@ -95,6 +101,15 @@ os.remove(rawgap_tarfile)
 
 notice("Processing exported content")
 manifest_list = [] # collect names of assets to be uploaded to GitHub release
+
+# download package distribution
+notice("Downloading package distribution")   # ... outside of the directory we just created
+download_with_sha256(PKG_BOOTSTRAP_URL+"package-infos.json.gz", tmpdir+"/"+"package-infos.json.gz")
+manifest_list.append("package-infos.json.gz")
+download_with_sha256(PKG_BOOTSTRAP_URL+PKG_MINIMAL, tmpdir+"/"+req_packages_tarball)
+manifest_list.append(req_packages_tarball)
+download_with_sha256(PKG_BOOTSTRAP_URL+PKG_FULL, tmpdir+"/"+all_packages_tarball)
+manifest_list.append(all_packages_tarball)
 
 with working_directory(tmpdir + "/" + basename):
     # This sets the version, release day and year of the release we are
@@ -137,22 +152,6 @@ with working_directory(tmpdir + "/" + basename):
     notice("Removing HPC-GAP build directory")
     shutil.rmtree("hpcgap-build")
 
-    # extract some values from the build system
-    branchname = get_makefile_var("PKG_BRANCH")
-    PKG_BOOTSTRAP_URL = get_makefile_var("PKG_BOOTSTRAP_URL")
-    PKG_MINIMAL = get_makefile_var("PKG_MINIMAL")
-    PKG_FULL = get_makefile_var("PKG_FULL")
-    notice(f"branchname = {branchname}")
-    notice(f"PKG_BOOTSTRAP_URL = {PKG_BOOTSTRAP_URL}")
-    notice(f"PKG_MINIMAL = {PKG_MINIMAL}")
-    notice(f"PKG_FULL = {PKG_FULL}")
-
-    notice("Downloading package tarballs")   # ... outside of the directory we just created
-    download_with_sha256(PKG_BOOTSTRAP_URL+PKG_MINIMAL, tmpdir+"/"+req_packages_tarball)
-    download_with_sha256(PKG_BOOTSTRAP_URL+PKG_FULL, tmpdir+"/"+all_packages_tarball)
-    manifest_list.append(req_packages_tarball)
-    manifest_list.append(all_packages_tarball)
-
     notice("Extracting package tarballs")
     with tarfile.open(tmpdir+"/"+all_packages_tarball) as tar:
         tar.extractall(path="pkg")
@@ -168,7 +167,7 @@ with working_directory(tmpdir + "/" + basename):
     notice("Building GAP's manuals")
     run_with_log(["make", "doc"], "gapdoc", "building the manuals")
 
-    # Now we create the files package-infos.json and help-links.json. We build
+    # Now we create the help-links.json file. We build
     # the json package, create the files, then clean up the package again.
     notice("Compiling json package")
     path_to_json_package = glob.glob(f'{tmpdir}/{basename}/pkg/json*')[0]
@@ -176,16 +175,15 @@ with working_directory(tmpdir + "/" + basename):
         subprocess.run(["./configure"], check=True)
         subprocess.run(["make"], check=True)
 
-    for x in [ ["package-infos", "PackageInfos-to-JSON"], ["help-links", "HelpLinks-to-JSON"] ]:
-        notice(f"Constructing {x[0]} JSON file")
-        json_output = subprocess.run(
-                ["./bin/gap.sh", "-r", "--quiet", "--quitonbreak", f"dev/releases/{x[1]}.g"],
-                check=True, capture_output=True, text=True)
-        formatted_json = json.dumps(json.loads(json_output.stdout), indent=2)
-        with working_directory(tmpdir):
-            with gzip.open(f"{x[0]}.json.gz", 'wb') as file:
-                file.write(formatted_json.encode('utf-8'))
-            manifest_list.append(f"{x[0]}.json.gz")
+    notice(f"Constructing help-links JSON file")
+    json_output = subprocess.run(
+            ["./gap", "-r", "--quiet", "--quitonbreak", f"dev/releases/HelpLinks-to-JSON.g"],
+            check=True, capture_output=True, text=True)
+    formatted_json = json.dumps(json.loads(json_output.stdout), indent=2)
+    with working_directory(tmpdir):
+        with gzip.open("help-links.json.gz", 'wb') as file:
+            file.write(formatted_json.encode('utf-8'))
+        manifest_list.append("help-links.json.gz")
 
     notice("Cleaning up the json package")
     with working_directory(path_to_json_package):
@@ -211,7 +209,6 @@ with working_directory(tmpdir + "/" + basename):
             os.remove(f)
         except:
             pass
-
 
     notice("Removing generated files we don't want to distribute")
     run_with_log(["make", "distclean"], "make-distclean", "make distclean")

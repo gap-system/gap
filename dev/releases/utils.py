@@ -102,6 +102,7 @@ def patchfile(path, pattern, repl):
 
 # download file at the given URL to path `dst`
 def download(url, dst):
+    notice(f"Downlading {url} to {dst}")
     res = subprocess.run(["curl", "-L", "-C", "-", "-o", dst, url])
     if res.returncode != 0:
         error('failed downloading ' + url)
@@ -112,7 +113,10 @@ def file_matches_checksumfile(filename):
     return expected_checksum == sha256file(filename)
 
 def verify_via_checksumfile(filename):
-    if not file_matches_checksumfile(filename):
+    actual_checksum = sha256file(filename)
+    with open(filename + ".sha256", "r") as f:
+        expected_checksum = f.read().strip()
+    if expected_checksum != actual_checksum:
         error(f"checksum for '{filename}' expected to be {expected_checksum} but got {actual_checksum}")
 
 # Download file at the given URL to path `dst`, unless we detect that a file
