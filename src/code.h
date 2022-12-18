@@ -653,17 +653,6 @@ EXPORT_INLINE Stat READ_EXPR(Expr expr, Int idx)
 #define NARG_SIZE_INFO(size)    ((size) / sizeof(Expr))
 #define SIZE_NARG_INFO(narg)    ((narg) * sizeof(Expr))
 
-
-/****************************************************************************
-**
-*V  CodeResult  . . . . . . . . . . . . . . . . . . . . . .  result of coding
-**
-**  'CodeResult'  is the result  of the coding, i.e.,   the function that was
-**  coded.
-*/
-// TL: extern  Obj             CodeResult;
-
-
 /****************************************************************************
 **
 *F * * * * * * * * * * * * *  coder functions * * * * * * * * * * * * * * * *

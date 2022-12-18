@@ -87,13 +87,12 @@ static void INTERPRETER_PROFILE_HOOK(IntrState * intr, int ignoreLevel)
 
 /****************************************************************************
 **
-*F  StackObj  . . . . . . . . . . . . . . . . . . . . . . . . .  values stack
 *F  PushObj(<val>)  . . . . . . . . . . . . . . . . push value onto the stack
 *F  PushVoidObj() . . . . . . . . . . . . . .  push void value onto the stack
 *F  PopObj()  . . . . . . . . . . . . . . . . . . .  pop value from the stack
 *F  PopVoidObj()  . . . . . . . . . . . . . . . . .  pop value from the stack
 **
-**  'StackObj' is the stack of values.
+**  'intr->StackObj' is the stack of values.
 **
 **  'PushObj' pushes the value <val>  onto the values stack.   It is an error
 **  to push the void value.  The stack is automatically resized if necessary.
@@ -107,7 +106,6 @@ static void INTERPRETER_PROFILE_HOOK(IntrState * intr, int ignoreLevel)
 **  'PopVoidObj' returns the  top element from the values  stack and pops it.
 **  It is an error if the stack is empty but not if the top element is void.
 */
-// TL: Obj             StackObj;
 
 static void PushObj(IntrState * intr, Obj val)
 {

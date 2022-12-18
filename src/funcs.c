@@ -369,7 +369,6 @@ static Obj EvalFunccallXargs(Expr call)
 **
 */
 
-// TL: Int RecursionDepth;
 UInt RecursionTrapInterval;
 
 void RecursionDepthTrap( void )
