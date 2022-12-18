@@ -82,7 +82,7 @@
 #include "config.h"
 
 
-/* TODO: Remove after Ward2 */
+// TODO: Remove after Ward2
 #ifndef WARD_ENABLED
 
 #include <gmp.h>
@@ -104,7 +104,7 @@ GAP_STATIC_ASSERT(sizeof(mp_limb_t) == sizeof(UInt),
 static Obj ObjInt_UIntInv( UInt i );
 
 
-/* debugging */
+// debugging
 #ifdef GAP_KERNEL_DEBUG
 #define DEBUG_GMP 1
 #else
@@ -119,7 +119,7 @@ static Obj ObjInt_UIntInv( UInt i );
 #endif
 
 
-/* macros to save typing later :)  */
+// macros to save typing later :)
 #define VAL_LIMB0(obj)          (*CONST_ADDR_INT(obj))
 #define SET_VAL_LIMB0(obj,val)  do { *ADDR_INT(obj) = val; } while(0)
 #define IS_INTPOS(obj)          (TNUM_OBJ(obj) == T_INTPOS)
@@ -167,7 +167,7 @@ static inline void ENSURE_BAG(Bag bag)
 }
 
 
-/* for fallbacks to library */
+// for fallbacks to library
 static Obj String;
 static Obj IsIntFilt;
 
@@ -392,13 +392,13 @@ static Obj GMPorINTOBJ_MPZ( mpz_t v )
 */
 #define MPZ_FAKEMPZ(fake)   (UPDATE_FAKEMPZ(fake), fake->v)
 
-/* UPDATE_FAKEMPZ is a helper function for the MPZ_FAKEMPZ macro */
+// UPDATE_FAKEMPZ is a helper function for the MPZ_FAKEMPZ macro
 static inline void UPDATE_FAKEMPZ( fake_mpz_t fake )
 {
   fake->v->_mp_d = fake->obj ? (mp_ptr)ADDR_INT(fake->obj) : &fake->tmp;
 }
 
-/* some extra debugging tools for FAKMPZ objects */
+// some extra debugging tools for FAKMPZ objects
 #if DEBUG_GMP
 #define CHECK_FAKEMPZ(fake) \
     assert( ((fake)->v->_mp_d == ((fake)->obj ? (mp_ptr)ADDR_INT((fake)->obj) : &(fake)->tmp )) \
@@ -466,7 +466,7 @@ static BOOL IS_NORMALIZED_AND_REDUCED(Obj op, const char * func, int line)
     return TRUE;
   }
   if ( !IS_LARGEINT( op ) ) {
-    /* ignore non-integers */
+    // ignore non-integers
     return FALSE;
   }
   for ( size = SIZE_INT(op); size != (mp_size_t)1; size-- ) {
@@ -561,7 +561,7 @@ Obj ObjInt_Int8( Int8 i )
     return ObjInt_Int((Int4)i);
   }
 
-  /* we need two limbs to store this integer */
+  // we need two limbs to store this integer
   assert( sizeof(mp_limb_t) == 4 );
   Obj gmp;
   if (i >= 0) {
@@ -587,7 +587,7 @@ Obj ObjInt_UInt8( UInt8 i )
     return ObjInt_UInt((UInt4)i);
   }
 
-  /* we need two limbs to store this integer */
+  // we need two limbs to store this integer
   assert( sizeof(mp_limb_t) == 4 );
   Obj gmp = NewBag( T_INTPOS, 2 * sizeof(mp_limb_t) );
   UInt *ptr = ADDR_INT(gmp);
@@ -748,12 +748,12 @@ static inline UInt AbsOfSmallInt(Obj x)
 */
 void PrintInt ( Obj op )
 {
-  /* print a small integer                                                 */
+  // print a small integer
   if ( IS_INTOBJ(op) ) {
     Pr("%>%d%<", INT_INTOBJ(op), 0);
   }
 
-  /* print a large integer                                                 */
+  // print a large integer
   else if ( SIZE_INT(op) < 1000 ) {
     CHECK_INT(op);
 
@@ -770,7 +770,7 @@ void PrintInt ( Obj op )
     v->_mp_d = (mp_ptr)ADDR_INT(op);
     mpz_get_str(buf, 10, v);
 
-    /* print the buffer, %> means insert '\' before a linebreak            */
+    // print the buffer, %> means insert '\' before a linebreak
     Pr("%>%s%<",(Int)buf, 0);
   }
   else {
@@ -802,24 +802,24 @@ static Obj StringIntBase(Obj op, int base)
   CHECK_INT(op);
   GAP_ASSERT(2 <= base && base <= 36);
 
-  /* 0 is special */
+  // 0 is special
   if (op == INTOBJ_INT(0)) {
     res = NEW_STRING(1);
     CHARS_STRING(res)[0] = '0';
     return res;
   }
 
-  /* convert integer to fake_mpz_t */
+  // convert integer to fake_mpz_t
   FAKEMPZ_GMPorINTOBJ(v, op);
 
-  /* allocate the result string */
+  // allocate the result string
   len = mpz_sizeinbase( MPZ_FAKEMPZ(v), base ) + 2;
   res = NEW_STRING( len );
 
-  /* ask GMP to perform the actual conversion */
+  // ask GMP to perform the actual conversion
   mpz_get_str( CSTR_STRING( res ), -base, MPZ_FAKEMPZ(v) );
 
-  /* we may have to shrink the string */
+  // we may have to shrink the string
   int real_len = strlen( CONST_CSTR_STRING(res) );
   if ( real_len != GET_LEN_STRING(res) ) {
     SET_LEN_STRING(res, real_len);
@@ -922,11 +922,11 @@ Obj IntHexString(Obj str)
     nd = (len - 1) / (2*sizeof(UInt));
     res = NewBag( (sign == 1) ? T_INTPOS : T_INTNEG, (nd + 1) * sizeof(mp_limb_t) );
 
-    /* update pointer, in case a garbage collection happened */
+    // update pointer, in case a garbage collection happened
     p = CONST_CHARS_STRING(str) + i;
     limbs = ADDR_INT(res);
 
-    /* if len is not divisible by 2*sizeof(UInt), then take care of the extra bytes */
+    // if len is not divisible by 2*sizeof(UInt), then take care of the extra bytes
     UInt diff = len - nd * (2*sizeof(UInt));
     if ( diff ) {
         n = hexstr2int( p, diff );
@@ -935,7 +935,6 @@ Obj IntHexString(Obj str)
         limbs[nd--] = n;
     }
 
-    /*  */
     while ( len ) {
         n = hexstr2int( p, 2*sizeof(UInt) );
         p += 2*sizeof(UInt);
@@ -1176,7 +1175,7 @@ Int LtInt(Obj opL, Obj opR)
     CHECK_INT(opL);
     CHECK_INT(opR);
 
-    /* compare two small integers */
+    // compare two small integers
     if (ARE_INTOBJS(opL, opR))
         return (Int)opL < (Int)opR;
 
@@ -1192,7 +1191,7 @@ Int LtInt(Obj opL, Obj opR)
     if (TNUM_OBJ(opL) != TNUM_OBJ(opR))
         return IS_INTNEG(opL);
 
-    /* signs are equal; compare sizes and absolute values */
+    // signs are equal; compare sizes and absolute values
     if (SIZE_INT(opL) < SIZE_INT(opR))
         res = -1;
     else if (SIZE_INT(opL) > SIZE_INT(opR))
@@ -1201,7 +1200,7 @@ Int LtInt(Obj opL, Obj opR)
         res = mpn_cmp((mp_srcptr)CONST_ADDR_INT(opL),
                       (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opL));
 
-    /* if both arguments are negative, flip the result */
+    // if both arguments are negative, flip the result
     if (IS_INTNEG(opL))
         res = -res;
 
@@ -1229,7 +1228,7 @@ static Obj SumOrDiffInt(Obj opL, Obj opR, Int sign)
   CHECK_INT(opL);
   CHECK_INT(opR);
 
-  /* handle trivial cases first */
+  // handle trivial cases first
   if (opR == INTOBJ_INT(0))
     return opL;
   if (opL == INTOBJ_INT(0)) {
@@ -1246,13 +1245,13 @@ static Obj SumOrDiffInt(Obj opL, Obj opR, Int sign)
   FAKEMPZ_GMPorINTOBJ(mpzL, opL);
   FAKEMPZ_GMPorINTOBJ(mpzR, opR);
 
-  /* add or subtract */
+  // add or subtract
   if (sign == 1)
     mpz_add( MPZ_FAKEMPZ(mpzResult), MPZ_FAKEMPZ(mpzL), MPZ_FAKEMPZ(mpzR) );
   else
     mpz_sub( MPZ_FAKEMPZ(mpzResult), MPZ_FAKEMPZ(mpzL), MPZ_FAKEMPZ(mpzR) );
 
-  /* convert result to GAP object and return it */
+  // convert result to GAP object and return it
   CHECK_FAKEMPZ(mpzResult);
   CHECK_FAKEMPZ(mpzL);
   CHECK_FAKEMPZ(mpzR);
@@ -1363,7 +1362,7 @@ Obj AbsInt( Obj op )
 {
   Obj a;
   if ( IS_INTOBJ(op) ) {
-    if ( ((Int)op) > 0 ) /* non-negative? */
+    if ( ((Int)op) > 0 ) // non-negative?
       return op;
     else if ( op == INTOBJ_MIN ) {
       a = NewBag( T_INTPOS, sizeof(mp_limb_t) );
@@ -1432,24 +1431,24 @@ static Obj FuncSIGN_INT(Obj self, Obj n)
 */
 Obj ProdInt(Obj opL, Obj opR)
 {
-  Obj                 prd;            /* handle of the result bag          */
+  Obj                 prd;            // handle of the result bag
   UInt sizeL, sizeR;
   fake_mpz_t mpzL, mpzR, mpzResult;
 
   CHECK_INT(opL);
   CHECK_INT(opR);
 
-  /* multiplying two small integers                                        */
+  // multiplying two small integers
   if ( ARE_INTOBJS( opL, opR ) ) {
 
-    /* multiply two small integers with a small product                    */
+    // multiply two small integers with a small product
     if ( PROD_INTOBJS( prd, opL, opR ) ) {
       CHECK_INT(prd);
       return prd;
     }
   }
 
-  /* handle trivial cases first */
+  // handle trivial cases first
   if ( opL == INTOBJ_INT(0) || opR == INTOBJ_INT(1) )
     return opL;
   if ( opR == INTOBJ_INT(0) || opL == INTOBJ_INT(1) )
@@ -1466,10 +1465,10 @@ Obj ProdInt(Obj opL, Obj opR)
   FAKEMPZ_GMPorINTOBJ( mpzL, opL );
   FAKEMPZ_GMPorINTOBJ( mpzR, opR );
 
-  /* multiply */
+  // multiply
   mpz_mul( MPZ_FAKEMPZ(mpzResult), MPZ_FAKEMPZ(mpzL), MPZ_FAKEMPZ(mpzR) );
 
-  /* convert result to GAP object and return it */
+  // convert result to GAP object and return it
   CHECK_FAKEMPZ(mpzResult);
   CHECK_FAKEMPZ(mpzL);
   CHECK_FAKEMPZ(mpzR);
@@ -1485,13 +1484,13 @@ Obj ProdInt(Obj opL, Obj opR)
 */
 static Obj ProdIntObj ( Obj n, Obj op )
 {
-  Obj                 res = 0;        /* result                            */
-  UInt                i, k;           /* loop variables                    */
-  mp_limb_t             l;              /* loop variable                     */
+  Obj                 res = 0;        // result
+  UInt                i, k;           // loop variables
+  mp_limb_t             l;              // loop variable
 
   CHECK_INT(n);
 
-  /* if the integer is zero, return the neutral element of the operand     */
+  // if the integer is zero, return the neutral element of the operand
   if ( n == INTOBJ_INT(0) ) {
     res = ZERO_SAMEMUT( op );
   }
@@ -1506,12 +1505,12 @@ static Obj ProdIntObj ( Obj n, Obj op )
       res = op;
   }
 
-  /* if the integer is minus one, return the inverse of the operand        */
+  // if the integer is minus one, return the inverse of the operand
   else if ( n == INTOBJ_INT(-1) ) {
     res = AINV_SAMEMUT( op );
   }
 
-  /* if the integer is negative, invert the operand and the integer        */
+  // if the integer is negative, invert the operand and the integer
   else if ( IS_NEG_INT(n) ) {
     res = AINV_SAMEMUT( op );
     if ( res == Fail ) {
@@ -1520,9 +1519,9 @@ static Obj ProdIntObj ( Obj n, Obj op )
     res = PROD(AINV_SAMEMUT(n), res);
   }
 
-  /* if the integer is small, compute the product by repeated doubling     */
-  /* the loop invariant is <result> = <k>*<res> + <l>*<op>, <l> < <k>      */
-  /* <res> = 0 means that <res> is the neutral element                     */
+  // if the integer is small, compute the product by repeated doubling
+  // the loop invariant is <result> = <k>*<res> + <l>*<op>, <l> < <k>
+  // <res> = 0 means that <res> is the neutral element
   else if ( IS_INTOBJ(n) && INT_INTOBJ(n) >   1 ) {
     res = 0;
     k = (Int)1 << NR_SMALL_INT_BITS;
@@ -1537,7 +1536,7 @@ static Obj ProdIntObj ( Obj n, Obj op )
     }
   }
 
-  /* if the integer is large, compute the product by repeated doubling     */
+  // if the integer is large, compute the product by repeated doubling
   else if ( IS_INTPOS(n) ) {
     res = 0;
     for ( i = SIZE_INT(n); 0 < i; i-- ) {
@@ -1602,20 +1601,20 @@ Obj PowInt ( Obj opL, Obj opR )
     pow = IS_EVEN_INT(opR) ? INTOBJ_INT(1) : INTOBJ_INT(-1);
   }
 
-  /* power with a large exponent */
+  // power with a large exponent
   else if ( ! IS_INTOBJ(opR) ) {
     ErrorMayQuit("Integer operands: <exponent> is too large", 0, 0);
   }
 
-  /* power with a negative exponent */
+  // power with a negative exponent
   else if ( INT_INTOBJ(opR) < 0 ) {
     pow = QUO( INTOBJ_INT(1),
                PowInt( opL, INTOBJ_INT( -INT_INTOBJ(opR)) ) );
   }
 
-  /* findme - can we use the gmp function mpz_n_pow_ui? */
+  // findme - can we use the gmp function mpz_n_pow_ui?
 
-  /* power with a small positive exponent, do it by a repeated squaring  */
+  // power with a small positive exponent, do it by a repeated squaring
   else {
     pow = INTOBJ_INT(1);
     i = INT_INTOBJ(opR);
@@ -1627,7 +1626,7 @@ Obj PowInt ( Obj opL, Obj opR )
     }
   }
 
-  /* return the power */
+  // return the power
   CHECK_INT(pow);
   return pow;
 }
@@ -1639,28 +1638,28 @@ Obj PowInt ( Obj opL, Obj opR )
 */
 static Obj PowObjInt(Obj op, Obj n)
 {
-  Obj                 res = 0;        /* result                          */
-  UInt                i, k;           /* loop variables                  */
-  mp_limb_t             l;              /* loop variable                   */
+  Obj                 res = 0;        // result
+  UInt                i, k;           // loop variables
+  mp_limb_t             l;              // loop variable
 
   CHECK_INT(n);
 
-  /* if the integer is zero, return the neutral element of the operand   */
+  // if the integer is zero, return the neutral element of the operand
   if ( n == INTOBJ_INT(0) ) {
     return ONE_SAMEMUT( op );
   }
 
-  /* if the integer is one, return a copy of the operand                 */
+  // if the integer is one, return a copy of the operand
   else if ( n == INTOBJ_INT(1) ) {
     res = CopyObj( op, 1 );
   }
 
-  /* if the integer is minus one, return the inverse of the operand      */
+  // if the integer is minus one, return the inverse of the operand
   else if ( n == INTOBJ_INT(-1) ) {
     res = INV_SAMEMUT( op );
   }
 
-  /* if the integer is negative, invert the operand and the integer      */
+  // if the integer is negative, invert the operand and the integer
   else if ( IS_NEG_INT(n) ) {
     res = INV_SAMEMUT( op );
     if ( res == Fail ) {
@@ -1669,9 +1668,9 @@ static Obj PowObjInt(Obj op, Obj n)
     res = POW(res, AINV_SAMEMUT(n));
   }
 
-  /* if the integer is small, compute the power by repeated squaring     */
-  /* the loop invariant is <result> = <res>^<k> * <op>^<l>, <l> < <k>    */
-  /* <res> = 0 means that <res> is the neutral element                   */
+  // if the integer is small, compute the power by repeated squaring
+  // the loop invariant is <result> = <res>^<k> * <op>^<l>, <l> < <k>
+  // <res> = 0 means that <res> is the neutral element
   else if ( IS_INTOBJ(n) && INT_INTOBJ(n) >   0 ) {
     res = 0;
     k = (Int)1 << NR_SMALL_INT_BITS;
@@ -1686,7 +1685,7 @@ static Obj PowObjInt(Obj op, Obj n)
     }
   }
 
-  /* if the integer is large, compute the power by repeated squaring     */
+  // if the integer is large, compute the power by repeated squaring
   else if ( IS_INTPOS(n) ) {
     res = 0;
     for ( i = SIZE_INT(n); 0 < i; i-- ) {
@@ -1720,43 +1719,43 @@ static Obj FuncPOW_OBJ_INT(Obj self, Obj opL, Obj opR)
 */
 Obj ModInt(Obj opL, Obj opR)
 {
-  Int                    i;             /* loop count, value for small int */
-  Int                    k;             /* loop count, value for small int */
-  UInt                   c;             /* product of two digits           */
-  Obj                  mod;             /* handle of the remainder bag     */
-  Obj                  quo;             /* handle of the quotient bag      */
+  Int                    i;             // loop count, value for small int
+  Int                    k;             // loop count, value for small int
+  UInt                   c;             // product of two digits
+  Obj                  mod;             // handle of the remainder bag
+  Obj                  quo;             // handle of the quotient bag
 
   CHECK_INT(opL);
   CHECK_INT(opR);
 
-  /* pathological case first                                             */
+  // pathological case first
   RequireNonzero("Integer operations", opR, "divisor");
 
-  /* compute the remainder of two small integers                           */
+  // compute the remainder of two small integers
   if ( ARE_INTOBJS( opL, opR ) ) {
 
-    /* get the integer values                                              */
+    // get the integer values
     i = INT_INTOBJ(opL);
     k = INT_INTOBJ(opR);
 
-    /* compute the remainder, make sure we divide only positive numbers    */
+    // compute the remainder, make sure we divide only positive numbers
     i %= k;
     if (i < 0)
         i += k > 0 ? k : -k;
     mod = INTOBJ_INT(i);
   }
 
-  /* compute the remainder of a small integer by a large integer           */
+  // compute the remainder of a small integer by a large integer
   else if ( IS_INTOBJ(opL) ) {
 
-    /* the small int -(1<<28) mod the large int (1<<28) is 0               */
+    // the small int -(1<<28) mod the large int (1<<28) is 0
     if ( opL == INTOBJ_MIN
          && ( IS_INTPOS(opR) )
          && ( SIZE_INT(opR) == 1 )
          && ( VAL_LIMB0(opR) == -INT_INTOBJ_MIN ) )
       mod = INTOBJ_INT(0);
 
-    /* in all other cases the remainder is equal the left operand          */
+    // in all other cases the remainder is equal the left operand
     else if ( 0 <= INT_INTOBJ(opL) )
       mod = opL;
     else if ( IS_INTPOS(opR) )
@@ -1765,18 +1764,18 @@ Obj ModInt(Obj opL, Obj opR)
       mod = SumOrDiffInt( opL, opR, -1 );
   }
 
-  /* compute the remainder of a large integer by a small integer           */
+  // compute the remainder of a large integer by a small integer
   else if ( IS_INTOBJ(opR) ) {
 
-    /* get the integer value, make positive                                */
+    // get the integer value, make positive
     i = INT_INTOBJ(opR);  if ( i < 0 )  i = -i;
 
-    /* check whether right operand is a small power of 2                   */
+    // check whether right operand is a small power of 2
     if ( !(i & (i-1)) ) {
       c = VAL_LIMB0(opL) & (i-1);
     }
 
-    /* otherwise use the gmp function to divide                            */
+    // otherwise use the gmp function to divide
     else {
       c = mpn_mod_1( (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL), i );
     }
@@ -1792,10 +1791,10 @@ Obj ModInt(Obj opL, Obj opR)
 
   }
 
-  /* compute the remainder of a large integer modulo a large integer       */
+  // compute the remainder of a large integer modulo a large integer
   else {
 
-    /* trivial case first                                                  */
+    // trivial case first
     if ( SIZE_INT(opL) < SIZE_INT(opR) ) {
       if ( IS_INTPOS(opL) )
         return opL;
@@ -1817,16 +1816,16 @@ Obj ModInt(Obj opL, Obj opR)
                    (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
     ENSURE_BAG(quo);
 
-    /* and let gmp do the work                                             */
+    // and let gmp do the work
     mpn_tdiv_qr( (mp_ptr)ADDR_INT(quo), (mp_ptr)ADDR_INT(mod), 0,
                  (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL),
                  (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opR)    );
 
-    /* reduce to small integer if possible, otherwise shrink bag           */
+    // reduce to small integer if possible, otherwise shrink bag
     mod = GMP_NORMALIZE( mod );
     mod = GMP_REDUCE( mod );
 
-    /* make the representative positive                                    */
+    // make the representative positive
     if ( IS_NEG_INT(mod) ) {
       if ( IS_INTPOS(opR) )
         mod = SumOrDiffInt( mod, opR,  1 );
@@ -1856,28 +1855,28 @@ Obj ModInt(Obj opL, Obj opR)
 */
 Obj QuoInt(Obj opL, Obj opR)
 {
-  Int                 i;              /* loop count, value for small int   */
-  Int                 k;              /* loop count, value for small int   */
-  Obj                 quo;            /* handle of the result bag          */
-  Obj                 rem;            /* handle of the remainder bag       */
+  Int                 i;              // loop count, value for small int
+  Int                 k;              // loop count, value for small int
+  Obj                 quo;            // handle of the result bag
+  Obj                 rem;            // handle of the remainder bag
 
   CHECK_INT(opL);
   CHECK_INT(opR);
 
-  /* pathological case first                                             */
+  // pathological case first
   RequireNonzero("Integer operations", opR, "divisor");
 
-  /* divide two small integers                                             */
+  // divide two small integers
   if ( ARE_INTOBJS( opL, opR ) ) {
 
-    /* the small int -(1<<28) divided by -1 is the large int (1<<28)       */
+    // the small int -(1<<28) divided by -1 is the large int (1<<28)
     if ( opL == INTOBJ_MIN && opR == INTOBJ_INT(-1) ) {
       quo = NewBag( T_INTPOS, sizeof(mp_limb_t) );
       SET_VAL_LIMB0( quo, -INT_INTOBJ_MIN );
       return quo;
     }
 
-    /* get the integer values                                              */
+    // get the integer values
     i = INT_INTOBJ(opL);
     k = INT_INTOBJ(opR);
 
@@ -1886,27 +1885,27 @@ Obj QuoInt(Obj opL, Obj opR)
     quo = INTOBJ_INT(i / k);
   }
 
-  /* divide a small integer by a large one                                 */
+  // divide a small integer by a large one
   else if ( IS_INTOBJ(opL) ) {
 
-    /* the small int -(1<<28) divided by the large int (1<<28) is -1       */
+    // the small int -(1<<28) divided by the large int (1<<28) is -1
     if ( opL == INTOBJ_MIN
          && IS_INTPOS(opR) && SIZE_INT(opR) == 1
          && VAL_LIMB0(opR) == -INT_INTOBJ_MIN )
       quo = INTOBJ_INT(-1);
 
-    /* in all other cases the quotient is of course zero                   */
+    // in all other cases the quotient is of course zero
     else
       quo = INTOBJ_INT(0);
 
   }
 
-  /* divide a large integer by a small integer                             */
+  // divide a large integer by a small integer
   else if ( IS_INTOBJ(opR) ) {
 
     k = INT_INTOBJ(opR);
 
-    /* allocate a bag for the result and set up the pointers               */
+    // allocate a bag for the result and set up the pointers
     if ( IS_INTNEG(opL) == ( k < 0 ) )
       quo = NewBag( T_INTPOS, SIZE_OBJ(opL) );
     else
@@ -1916,24 +1915,24 @@ Obj QuoInt(Obj opL, Obj opR)
 
     if ( k < 0 ) k = -k;
 
-    /* use gmp function for dividing by a 1-limb number                    */
+    // use gmp function for dividing by a 1-limb number
     mpn_divrem_1( (mp_ptr)ADDR_INT(quo), 0,
                   (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL),
                   k );
   }
 
-  /* divide a large integer by a large integer                             */
+  // divide a large integer by a large integer
   else {
 
-    /* trivial case first                                                  */
+    // trivial case first
     if ( SIZE_INT(opL) < SIZE_INT(opR) )
       return INTOBJ_INT(0);
 
-    /* create a new bag for the remainder                                  */
+    // create a new bag for the remainder
     rem = NewBag( TNUM_OBJ(opL), (SIZE_INT(opL)+1)*sizeof(mp_limb_t) );
     ENSURE_BAG(rem);
 
-    /* allocate a bag for the quotient                                     */
+    // allocate a bag for the quotient
     if ( TNUM_OBJ(opL) == TNUM_OBJ(opR) )
       quo = NewBag( T_INTPOS,
                     (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
@@ -1989,22 +1988,22 @@ static Obj FuncQUO_INT(Obj self, Obj a, Obj b)
 */
 Obj RemInt(Obj opL, Obj opR)
 {
-  Int                 i;              /* loop count, value for small int   */
-  Int                 k;              /* loop count, value for small int   */
+  Int                 i;              // loop count, value for small int
+  Int                 k;              // loop count, value for small int
   UInt                c;
-  Obj                 rem;            /* handle of the remainder bag       */
-  Obj                 quo;            /* handle of the quotient bag        */
+  Obj                 rem;            // handle of the remainder bag
+  Obj                 quo;            // handle of the quotient bag
 
   CHECK_INT(opL);
   CHECK_INT(opR);
 
-  /* pathological case first                                             */
+  // pathological case first
   RequireNonzero("Integer operations", opR, "divisor");
 
-  /* compute the remainder of two small integers                           */
+  // compute the remainder of two small integers
   if ( ARE_INTOBJS( opL, opR ) ) {
 
-    /* get the integer values                                              */
+    // get the integer values
     i = INT_INTOBJ(opL);
     k = INT_INTOBJ(opR);
 
@@ -2015,32 +2014,32 @@ Obj RemInt(Obj opL, Obj opR)
     rem = INTOBJ_INT(i % k);
   }
 
-  /* compute the remainder of a small integer by a large integer           */
+  // compute the remainder of a small integer by a large integer
   else if ( IS_INTOBJ(opL) ) {
 
-    /* the small int -(1<<28) rem the large int (1<<28) is 0               */
+    // the small int -(1<<28) rem the large int (1<<28) is 0
     if ( opL == INTOBJ_MIN
          && IS_INTPOS(opR) && SIZE_INT(opR) == 1
          && VAL_LIMB0(opR) == -INT_INTOBJ_MIN )
       rem = INTOBJ_INT(0);
 
-    /* in all other cases the remainder is equal the left operand          */
+    // in all other cases the remainder is equal the left operand
     else
       rem = opL;
   }
 
-  /* compute the remainder of a large integer by a small integer           */
+  // compute the remainder of a large integer by a small integer
   else if ( IS_INTOBJ(opR) ) {
 
-    /* get the integer value, make positive                                */
+    // get the integer value, make positive
     i = INT_INTOBJ(opR);  if ( i < 0 )  i = -i;
 
-    /* check whether right operand is a small power of 2                   */
+    // check whether right operand is a small power of 2
     if ( !(i & (i-1)) ) {
       c = VAL_LIMB0(opL) & (i-1);
     }
 
-    /* otherwise use the gmp function to divide                            */
+    // otherwise use the gmp function to divide
     else {
       c = mpn_mod_1( (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL), i );
     }
@@ -2053,10 +2052,10 @@ Obj RemInt(Obj opL, Obj opR)
 
   }
 
-  /* compute the remainder of a large integer modulo a large integer       */
+  // compute the remainder of a large integer modulo a large integer
   else {
 
-    /* trivial case first                                                  */
+    // trivial case first
     if ( SIZE_INT(opL) < SIZE_INT(opR) )
       return opL;
 
@@ -2067,12 +2066,12 @@ Obj RemInt(Obj opL, Obj opR)
                   (SIZE_INT(opL)-SIZE_INT(opR)+1)*sizeof(mp_limb_t) );
     ENSURE_BAG(quo);
 
-    /* and let gmp do the work                                             */
+    // and let gmp do the work
     mpn_tdiv_qr( (mp_ptr)ADDR_INT(quo),  (mp_ptr)ADDR_INT(rem), 0,
                  (mp_srcptr)CONST_ADDR_INT(opL), SIZE_INT(opL),
                  (mp_srcptr)CONST_ADDR_INT(opR), SIZE_INT(opR)    );
 
-    /* reduce to small integer if possible, otherwise shrink bag           */
+    // reduce to small integer if possible, otherwise shrink bag
     rem = GMP_NORMALIZE( rem );
     rem = GMP_REDUCE( rem );
 
@@ -2144,10 +2143,10 @@ Obj GcdInt ( Obj opL, Obj opR )
   FAKEMPZ_GMPorINTOBJ( mpzL, opL );
   FAKEMPZ_GMPorINTOBJ( mpzR, opR );
 
-  /* compute the gcd */
+  // compute the gcd
   mpz_gcd( MPZ_FAKEMPZ(mpzResult), MPZ_FAKEMPZ(mpzL), MPZ_FAKEMPZ(mpzR) );
 
-  /* convert result to GAP object and return it */
+  // convert result to GAP object and return it
   CHECK_FAKEMPZ(mpzResult);
   CHECK_FAKEMPZ(mpzL);
   CHECK_FAKEMPZ(mpzR);
@@ -2211,10 +2210,10 @@ Obj LcmInt(Obj opL, Obj opR)
     FAKEMPZ_GMPorINTOBJ(mpzL, opL);
     FAKEMPZ_GMPorINTOBJ(mpzR, opR);
 
-    /* compute the gcd */
+    // compute the gcd
     mpz_lcm(MPZ_FAKEMPZ(mpzResult), MPZ_FAKEMPZ(mpzL), MPZ_FAKEMPZ(mpzR));
 
-    /* convert result to GAP object and return it */
+    // convert result to GAP object and return it
     CHECK_FAKEMPZ(mpzResult);
     CHECK_FAKEMPZ(mpzL);
     CHECK_FAKEMPZ(mpzR);
@@ -2409,7 +2408,7 @@ static Obj FuncPVALUATION_INT(Obj self, Obj n, Obj p)
   CHECK_FAKEMPZ(mpzN);
   CHECK_FAKEMPZ(mpzP);
 
-  /* throw away mpzResult -- it equals m / p^k */
+  // throw away mpzResult -- it equals m / p^k
   mpz_clear( mpzResult );
 
   return INTOBJ_INT( k );
@@ -2602,9 +2601,9 @@ static Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
 
   res = mpz_probab_prime_p(MPZ_FAKEMPZ(n_mpz), r);
 
-  if (res == 2) return True; /* definitely prime */
-  if (res == 0) return False; /* definitely not prime */
-  return Fail; /* probably prime */
+  if (res == 2) return True; // definitely prime
+  if (res == 0) return False; // definitely not prime
+  return Fail; // probably prime
 }
 
 
@@ -2647,7 +2646,7 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
   RequireNonnegativeSmallInt(SELF_NAME, nrbits);
   n = INT_INTOBJ(nrbits);
 
-  /* small int case */
+  // small int case
   if (n <= NR_SMALL_INT_BITS) {
      mt = (UInt4 *)(ADDR_OBJ(mtstr) + 1);
 #ifdef SYS_IS_64_BIT
@@ -2666,12 +2665,12 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
 #endif
   }
   else {
-     /* large int case */
+     // large int case
      q = n / 32;
      r = n - q * 32;
-     /* qoff = number of 32 bit words we need */
+     // qoff = number of 32 bit words we need
      qoff = q + (r==0 ? 0:1);
-     /* len = number of limbs we need (limbs currently are either 32 or 64 bit wide) */
+     // len = number of limbs we need (limbs currently are either 32 or 64 bit wide)
      len = (qoff*4 +  sizeof(mp_limb_t) - 1) / sizeof(mp_limb_t);
      res = NewBag( T_INTPOS, len*sizeof(mp_limb_t) );
      pt = (UInt4*) ADDR_INT(res);
@@ -2680,7 +2679,7 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
        *pt = nextrandMT_int32(mt);
      }
      if (r != 0) {
-       /* we generated too many random bits -- chop of the extra bits */
+       // we generated too many random bits -- chop of the extra bits
        pt = (UInt4*) ADDR_INT(res);
        pt[qoff-1] = pt[qoff-1] & ((UInt4)(-1) >> (32-r));
      }
@@ -2692,9 +2691,9 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
        SWAP(UInt4, pt[0], pt[1]);
      }
 #endif
-     /* shrink bag if necessary */
+     // shrink bag if necessary
      res = GMP_NORMALIZE(res);
-     /* convert result if small int */
+     // convert result if small int
      res = GMP_REDUCE(res);
   }
 
@@ -2825,31 +2824,31 @@ static Int InitKernel ( StructInitInfo * module )
     Panic("INTOBJ_MAX mismatch");
   }
 
-  /* init filters and functions                                            */
+  // init filters and functions
   InitHdlrFiltsFromTable( GVarFilts );
   InitHdlrFuncsFromTable( GVarFuncs );
 
   // set the bag type names (for error messages and debugging)
   InitBagNamesFromTable( BagNames );
 
-  /* install the marking functions                                         */
+  // install the marking functions
   InitMarkFuncBags( T_INTPOS, MarkNoSubBags );
   InitMarkFuncBags( T_INTNEG, MarkNoSubBags );
 
 #ifdef GAP_ENABLE_SAVELOAD
-  /* Install the saving methods */
+  // Install the saving methods
   SaveObjFuncs [ T_INTPOS ] = SaveInt;
   SaveObjFuncs [ T_INTNEG ] = SaveInt;
   LoadObjFuncs [ T_INTPOS ] = LoadInt;
   LoadObjFuncs [ T_INTNEG ] = LoadInt;
 #endif
 
-  /* install the printing functions                                        */
+  // install the printing functions
   PrintObjFuncs[ T_INT    ] = PrintInt;
   PrintObjFuncs[ T_INTPOS ] = PrintInt;
   PrintObjFuncs[ T_INTNEG ] = PrintInt;
 
-  /* install the comparison methods                                        */
+  // install the comparison methods
   for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
     for ( t2 = T_INT; t2 <= T_INTNEG; t2++ ) {
       EqFuncs  [ t1 ][ t2 ] = EqInt;
@@ -2857,7 +2856,7 @@ static Int InitKernel ( StructInitInfo * module )
     }
   }
 
-  /* install the unary arithmetic methods                                  */
+  // install the unary arithmetic methods
   for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
     ZeroSameMutFuncs[ t1 ] = ZeroInt;
     ZeroMutFuncs[ t1 ] = ZeroInt;
@@ -2867,7 +2866,7 @@ static Int InitKernel ( StructInitInfo * module )
     OneSameMut[t1] = OneInt;
   }
 
-    /* install the default power methods                                   */
+    // install the default power methods
   for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
     for ( t2 = FIRST_MULT_TNUM; t2 <= LAST_MULT_TNUM; t2++ ) {
       PowFuncs [ t2 ][ t1 ] = PowObjInt;
@@ -2879,7 +2878,7 @@ static Int InitKernel ( StructInitInfo * module )
     PowFuncs [ T_RANGE_SSORT ][ t1 ] = PowObjInt;
   }
 
-  /* install the binary arithmetic methods                                 */
+  // install the binary arithmetic methods
   for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
     for ( t2 = T_INT; t2 <= T_INTNEG; t2++ ) {
       EqFuncs  [ t1 ][ t2 ] = EqInt;
@@ -2892,7 +2891,7 @@ static Int InitKernel ( StructInitInfo * module )
     }
   }
 
-  /* gvars to import from the library                                      */
+  // gvars to import from the library
   ImportGVarFromLibrary( "TYPE_INT_SMALL_ZERO", &TYPE_INT_SMALL_ZERO );
   ImportGVarFromLibrary( "TYPE_INT_SMALL_POS",  &TYPE_INT_SMALL_POS );
   ImportGVarFromLibrary( "TYPE_INT_SMALL_NEG",  &TYPE_INT_SMALL_NEG );
@@ -2901,7 +2900,7 @@ static Int InitKernel ( StructInitInfo * module )
 
   ImportFuncFromLibrary( "String", &String );
 
-  /* install the type functions                                          */
+  // install the type functions
   TypeObjFuncs[ T_INT    ] = TypeIntSmall;
   TypeObjFuncs[ T_INTPOS ] = TypeIntLargePos;
   TypeObjFuncs[ T_INTNEG ] = TypeIntLargeNeg;
@@ -2921,7 +2920,7 @@ static Int InitKernel ( StructInitInfo * module )
 */
 static Int InitLibrary ( StructInitInfo *    module )
 {
-  /* init filters and functions                                            */
+  // init filters and functions
   InitGVarFiltsFromTable( GVarFilts );
   InitGVarFuncsFromTable( GVarFuncs );
 
@@ -2947,4 +2946,4 @@ StructInitInfo * InitInfoInt ( void )
   return &module;
 }
 
-#endif /* ! WARD_ENABLED */
+#endif // ! WARD_ENABLED

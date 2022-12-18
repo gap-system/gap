@@ -188,7 +188,7 @@ pthread_key_t GetTLSKey(void)
     }
     return TLSKey;
 }
-#endif /* USE_PTHREAD_TLS */
+#endif // USE_PTHREAD_TLS
 
 void * AllocateTLS(void)
 {
@@ -204,7 +204,7 @@ void * AllocateTLS(void)
     munmap(addr, (char *)result - (char *)addr);
     munmap((char *)result + TLS_SIZE,
            (char *)addr - (char *)result + TLS_SIZE);
-/* generate a stack overflow protection area */
+// generate a stack overflow protection area
 #ifdef STACK_GROWS_UP
     mprotect((char *)result + TLS_SIZE - tlssize - pagesize, pagesize,
              PROT_NONE);
@@ -219,7 +219,7 @@ void * AllocateTLS(void)
         pthread_setspecific(GetTLSKey(), result);
     }
     return result;
-#endif /* USE_PTHREAD_TLS */
+#endif // USE_PTHREAD_TLS
 }
 
 void FreeTLS(void * address)
@@ -231,7 +231,7 @@ void FreeTLS(void * address)
 #endif
 }
 
-#endif /* USE_NATIVE_TLS */
+#endif // USE_NATIVE_TLS
 
 #ifndef DISABLE_GC
 void AddGCRoots(void)
@@ -249,7 +249,7 @@ static void RemoveGCRoots(void)
     GC_remove_roots(p, (char *)p + sizeof(GAPState));
 #endif
 }
-#endif /* DISABLE_GC */
+#endif // DISABLE_GC
 
 #if !defined(USE_NATIVE_TLS) && !defined(USE_PTHREAD_TLS)
 
@@ -277,7 +277,7 @@ static NOINLINE void GrowStack(void)
      * removed by the optimizer */
     volatile char * p = alloca(pagesize);
     while (p > tls) {
-        /* touch memory */
+        // touch memory
         *p = '\0';
         p = alloca(pagesize);
     }
@@ -327,7 +327,7 @@ void RunThreadedMain(int (*mainFunction)(int, char **),
     volatile char * p = alloca(((uintptr_t)dummy) & ~TLS_MASK);
     volatile char * q;
     for (q = p + amount - 1; (void *)q >= (void *)p; q -= 1024) {
-        /* touch memory */
+        // touch memory
         *q = '\0';
     }
 #endif
@@ -456,7 +456,7 @@ Obj RunThread(void (*start)(void *), void * arg)
     pthread_attr_t thread_attr;
     LockThreadControl(1);
     PreThreadCreation = 0;
-    /* allocate a new thread id */
+    // allocate a new thread id
     if (thread_free_list == NULL) {
         UnlockThreadControl();
         errno = ENOMEM;
@@ -479,7 +479,7 @@ Obj RunThread(void (*start)(void *), void * arg)
     result->start = start;
     result->joined = 0;
     if (GlobalPauseInProgress) {
-        /* New threads will be automatically paused */
+        // New threads will be automatically paused
         result->state = TSTATE_PAUSED;
         HandleInterrupts(0, 0);
     }
@@ -487,7 +487,7 @@ Obj RunThread(void (*start)(void *), void * arg)
         result->state = TSTATE_RUNNING;
     }
     result->thread_object = NewThreadObject(result - thread_data);
-    /* set up the thread attribute to support a custom stack in our TLS */
+    // set up the thread attribute to support a custom stack in our TLS
     pthread_attr_init(&thread_attr);
 #if !defined(USE_NATIVE_TLS) && !defined(USE_PTHREAD_TLS)
     size_t         pagesize = getpagesize();
@@ -495,11 +495,11 @@ Obj RunThread(void (*start)(void *), void * arg)
                           TLS_SIZE - pagesize * 2);
 #endif
     UnlockThreadControl();
-    /* fork the thread */
+    // fork the thread
     IncThreadCounter();
     if (pthread_create(&result->pthread_id, &thread_attr, DispatchThread,
                        result) < 0) {
-        /* No more threads available */
+        // No more threads available
         DecThreadCounter();
         LockThreadControl(1);
         result->next = thread_free_list;
@@ -729,7 +729,7 @@ void RegionUnlock(Region * region)
 LockStatus IsLocked(Region * region)
 {
     if (!region)
-        return LOCK_STATUS_UNLOCKED; /* public region */
+        return LOCK_STATUS_UNLOCKED; // public region
     if (region->owner == GetTLS())
         return LOCK_STATUS_READWRITE_LOCKED;
     if (region->readers[TLS(threadID)])
@@ -817,7 +817,7 @@ static int LessThanLockRequest(const void * a, const void * b)
     Region * region_a = ((LockRequest *)a)->region;
     Region * region_b = ((LockRequest *)b)->region;
     Int      prec_diff;
-    if (region_a == region_b) /* prioritize writes */
+    if (region_a == region_b) // prioritize writes
         return ((LockRequest *)a)->mode > ((LockRequest *)b)->mode;
     prec_diff = region_a->prec - region_b->prec;
     return prec_diff > 0 ||
@@ -1071,7 +1071,7 @@ void InterruptThread(int threadID, int handler)
         case TSTATE_TERMINATED:
         case TSTATE_KILLED:
         case TSTATE_INTERRUPTED:
-            /* We do not interrupt threads that are interrupted */
+            // We do not interrupt threads that are interrupted
             return;
         }
     }
@@ -1185,7 +1185,7 @@ int LockObjects(int count, Obj * objects, const LockMode * mode)
     int           i, p;
     Int           curr_prec;
     LockRequest * order;
-    if (count == 1) /* fast path */
+    if (count == 1) // fast path
         return LockObject(objects[0], mode[0]);
     if (count > MAX_LOCKS)
         return -1;
@@ -1211,14 +1211,14 @@ int LockObjects(int count, Obj * objects, const LockMode * mode)
          * cannot occur from doing readlocks before writelocks.
          */
         if (i > 0 && region == order[i - 1].region)
-            continue; /* skip duplicates */
+            continue; // skip duplicates
         if (!region)
             continue;
 
         LockStatus locked = IsLocked(region);
         if (locked == LOCK_STATUS_READONLY_LOCKED &&
             order[i].mode == LOCK_MODE_READWRITE) {
-            /* trying to upgrade read lock to write lock */
+            // trying to upgrade read lock to write lock
             PopRegionLocks(result);
             return -1;
         }
@@ -1239,7 +1239,7 @@ int LockObjects(int count, Obj * objects, const LockMode * mode)
             PushRegionLock(region);
         }
         if (GetRegionOf(order[i].obj) != region) {
-            /* Race condition, revert locks and fail */
+            // Race condition, revert locks and fail
             PopRegionLocks(result);
             return -1;
         }
@@ -1269,16 +1269,16 @@ int TryLockObjects(int count, Obj * objects, const LockMode * mode)
          * cannot occur from doing readlocks before writelocks.
          */
         if (i > 0 && region == order[i - 1].region)
-            continue; /* skip duplicates */
+            continue; // skip duplicates
         if (!region ||
-            region->fixed_owner) { /* public or thread-local region */
+            region->fixed_owner) { // public or thread-local region
             PopRegionLocks(result);
             return -1;
         }
         LockStatus locked = IsLocked(region);
         if (locked == LOCK_STATUS_READONLY_LOCKED &&
             order[i].mode == LOCK_MODE_READWRITE) {
-            /* trying to upgrade read lock to write lock */
+            // trying to upgrade read lock to write lock
             PopRegionLocks(result);
             return -1;
         }
@@ -1298,7 +1298,7 @@ int TryLockObjects(int count, Obj * objects, const LockMode * mode)
             PushRegionLock(region);
         }
         if (GetRegionOf(order[i].obj) != region) {
-            /* Race condition, revert locks and fail */
+            // Race condition, revert locks and fail
             PopRegionLocks(result);
             return -1;
         }

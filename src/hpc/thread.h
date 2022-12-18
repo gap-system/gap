@@ -29,7 +29,7 @@
 #include "hpc/tlsconfig.h"
 #include "hpc/region.h"
 
-/* Maximum number of threads excluding the main thread */
+// Maximum number of threads excluding the main thread
 #define MAX_THREADS 1023
 
 extern int PreThreadCreation;
@@ -111,7 +111,7 @@ void HashLockShared(void *obj);
 void HashUnlock(void *obj);
 void HashUnlockShared(void *obj);
 
-/* Thread state constants and functions */
+// Thread state constants and functions
 
 #define TSTATE_SHIFT 3
 #define TSTATE_MASK ((1 << TSTATE_SHIFT) - 1)

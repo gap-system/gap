@@ -142,7 +142,7 @@ static BOOL IsSmallListObject(Obj obj)
 
 static Obj AttrLENGTH(Obj self, Obj list)
 {
-    /* internal list types                                                 */
+    // internal list types
 #ifdef HPCGAP
     ReadGuard(list);
     ImpliedWriteGuard(list);
@@ -156,7 +156,7 @@ static Obj AttrLENGTH(Obj self, Obj list)
     }
 #endif
 
-    /* external types                                                      */
+    // external types
     else {
         return DoAttribute( LengthAttr, list );
     }
@@ -182,12 +182,12 @@ Int (*LenListFuncs[LAST_REAL_TNUM+1]) ( Obj list );
 
 static Obj FuncLEN_LIST(Obj self, Obj list)
 {
-    /* special case for plain lists (avoid conversion back and forth)      */
+    // special case for plain lists (avoid conversion back and forth)
     if ( IS_PLIST(list) ) {
         return INTOBJ_INT( LEN_PLIST( list ) );
     }
 
-    /* generic case (will signal an error if <list> is not a list)         */
+    // generic case (will signal an error if <list> is not a list)
     else {
         return AttrLENGTH( LengthAttr, list );
     }
@@ -593,33 +593,33 @@ Obj ElmsListDefault (
     Obj                 list,
     Obj                 poss )
 {
-    Obj                 elms;           /* selected sublist, result        */
-    Obj                 elm;            /* one element from <list>         */
-    Int                 lenPoss;        /* length of <positions>           */
-    Int                 pos;            /* <position> as integer           */
-    Int                 inc;            /* increment in a range            */
-    Int                 i;              /* loop variable                   */
+    Obj                 elms;           // selected sublist, result
+    Obj                 elm;            // one element from <list>
+    Int                 lenPoss;        // length of <positions>
+    Int                 pos;            // <position> as integer
+    Int                 inc;            // increment in a range
+    Int                 i;              // loop variable
 
-    /* select no element                                                   */
+    // select no element
     if ( LEN_LIST(poss) == 0 ) {
         elms = NewEmptyPlist();
     }
 
-    /* general code                                                        */
+    // general code
     else if ( ! IS_RANGE(poss) ) {
 
-        /* get the length of <positions>                                   */
-        /* OK because all positions lists are small                        */
+        // get the length of <positions>
+        // OK because all positions lists are small
         lenPoss = LEN_LIST( poss );
 
-        /* make the result list                                            */
+        // make the result list
         elms = NEW_PLIST( T_PLIST, lenPoss );
         SET_LEN_PLIST( elms, lenPoss );
 
-        /* loop over the entries of <positions> and select                 */
+        // loop over the entries of <positions> and select
         for ( i = 1; i <= lenPoss; i++ ) {
 
-            /* get <position>                                              */
+            // get <position>
             Obj p = ELMW_LIST(poss, i);
             if (!IS_INTOBJ(p)) {
                 ErrorMayQuit("List Elements: position is too large for "
@@ -628,7 +628,7 @@ Obj ElmsListDefault (
             }
             pos = INT_INTOBJ(p);
 
-            /* select the element                                          */
+            // select the element
             elm = ELM0_LIST( list, pos );
             if ( elm == 0 ) {
                 ErrorMayQuit(
@@ -636,28 +636,28 @@ Obj ElmsListDefault (
                     (Int)pos, 0);
             }
 
-            /* assign the element into <elms>                              */
+            // assign the element into <elms>
             SET_ELM_PLIST( elms, i, elm );
 
-            /* notify Gasman                                               */
+            // notify Gasman
             CHANGED_BAG( elms );
 
         }
 
     }
 
-    /* special code for ranges                                             */
+    // special code for ranges
     else {
 
-        /* get the length of <list>                                        */
+        // get the length of <list>
         Int lenList = LEN_LIST( list );
 
-        /* get the length of <positions>, the first elements, and the inc. */
+        // get the length of <positions>, the first elements, and the inc.
         lenPoss = GET_LEN_RANGE( poss );
         pos = GET_LOW_RANGE( poss );
         inc = GET_INC_RANGE( poss );
 
-        /* check that no <position> is larger than 'LEN_LIST(<list>)'      */
+        // check that no <position> is larger than 'LEN_LIST(<list>)'
         if ( lenList < pos ) {
             ErrorMayQuit(
                 "List Elements: <list>[%d] must have an assigned value",
@@ -669,14 +669,14 @@ Obj ElmsListDefault (
                 (Int)pos + (lenPoss - 1) * inc, 0);
         }
 
-        /* make the result list                                            */
+        // make the result list
         elms = NEW_PLIST( T_PLIST, lenPoss );
         SET_LEN_PLIST( elms, lenPoss );
 
-        /* loop over the entries of <positions> and select                 */
+        // loop over the entries of <positions> and select
         for ( i = 1; i <= lenPoss; i++, pos += inc ) {
 
-            /* select the element                                          */
+            // select the element
             elm = ELMV0_LIST( list, pos );
             if ( elm == 0 ) {
                 ErrorMayQuit(
@@ -684,10 +684,10 @@ Obj ElmsListDefault (
                     (Int)pos, 0);
             }
 
-            /* assign the element to <elms>                                */
+            // assign the element to <elms>
             SET_ELM_PLIST( elms, i, elm );
 
-            /* notify Gasman                                               */
+            // notify Gasman
             CHANGED_BAG( elms );
 
         }
@@ -896,34 +896,34 @@ void            AsssListDefault (
     Obj                 poss,
     Obj                 objs )
 {
-    Int                 lenPoss;        /* length of <positions>           */
-    Obj                 p;              /* <position> */
-    Int                 pos;            /* <position> as integer           */
-    Int                 inc;            /* increment in a range            */
-    Obj                 obj;            /* one element from <objs>         */
-    Int                 i;              /* loop variable                   */
+    Int                 lenPoss;        // length of <positions>
+    Obj                 p;              // <position>
+    Int                 pos;            // <position> as integer
+    Int                 inc;            // increment in a range
+    Obj                 obj;            // one element from <objs>
+    Int                 i;              // loop variable
 
     CheckIsPossList("List Assignments", poss);
     CheckIsDenseList("List Assignments", "rhss", objs);
     CheckSameLength("List Assignments", "rhss", "poss", objs, poss);
 
-    /* general code                                                        */
+    // general code
     if ( ! IS_RANGE(poss) ) {
 
-        /* get the length of <positions>                                   */
+        // get the length of <positions>
         lenPoss = LEN_LIST( poss );
 
-        /* loop over the entries of <positions> and select                 */
+        // loop over the entries of <positions> and select
         for ( i = 1; i <= lenPoss; i++ ) {
 
-            /* get <position>                                              */
+            // get <position>
           p  = ELMW_LIST( poss, i );
 
-          /* select the element                                          */
+          // select the element
           obj = ELMW_LIST( objs, i );
           if (IS_INTOBJ(p) )
             {
-              /* assign the element into <elms>                              */
+              // assign the element into <elms>
               ASS_LIST( list, INT_INTOBJ(p), obj );
             }
           else
@@ -933,21 +933,21 @@ void            AsssListDefault (
 
     }
 
-    /* special code for ranges                                             */
+    // special code for ranges
     else {
 
-        /* get the length of <positions>                                   */
+        // get the length of <positions>
         lenPoss = GET_LEN_RANGE( poss );
         pos = GET_LOW_RANGE( poss );
         inc = GET_INC_RANGE( poss );
 
-        /* loop over the entries of <positions> and select                 */
+        // loop over the entries of <positions> and select
         for ( i = 1; i <= lenPoss; i++, pos += inc ) {
 
-            /* select the element                                          */
+            // select the element
             obj = ELMW_LIST( objs, i );
 
-            /* assign the element to <elms>                                */
+            // assign the element to <elms>
             ASS_LIST( list, pos, obj );
 
         }
@@ -1081,22 +1081,22 @@ static BOOL IsSSortListDefault(Obj list)
     Obj                 elm2;
     Int                 i;
 
-    /* get the length of the list                                          */
+    // get the length of the list
     lenList = LEN_LIST( list );
 
-    /* special case for the empty list                                     */
+    // special case for the empty list
     if ( lenList == 0 ) {
         return TRUE;
     }
 
-    /* get the first element                                               */
+    // get the first element
     elm1 = ELM0_LIST(list, 1);
 
     if (!elm1) {
         return FALSE;
     }
 
-    /* compare each element with its precursor                             */
+    // compare each element with its precursor
     for ( i = 2; i <= lenList; i++ ) {
         elm2 = ELM0_LIST(list, i);
         if (!elm2) {
@@ -1108,7 +1108,7 @@ static BOOL IsSSortListDefault(Obj list)
         elm1 = elm2;
     }
 
-    /* the list is strictly sorted                                         */
+    // the list is strictly sorted
     return TRUE;
 }
 
@@ -1146,18 +1146,18 @@ static Obj PropIS_POSS_LIST(Obj self, Obj obj)
 
 static BOOL IsPossListDefault(Obj list)
 {
-    Int                 lenList;        /* length of <list>                */
-    Obj                 elm;            /* one element of <list>           */
-    Int                 i;              /* loop variable                   */
+    Int                 lenList;        // length of <list>
+    Obj                 elm;            // one element of <list>
+    Int                 i;              // loop variable
 
-    /* get the length of the variable                                      */
+    // get the length of the variable
     lenList = LEN_LIST( list );
 
-    /* loop over the entries of the list                                   */
+    // loop over the entries of the list
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
 
-        /* if it has a hole then it isn't a poss list */
+        // if it has a hole then it isn't a poss list
         if ( elm == 0)
           return FALSE;
 
@@ -1173,7 +1173,7 @@ static BOOL IsPossListDefault(Obj list)
           return FALSE;
     }
 
-    /* the list is a positions list                                        */
+    // the list is a positions list
     return TRUE;
 }
 
@@ -1235,10 +1235,10 @@ static Obj PosListDefault (
     if (!IS_INTOBJ(start))
       return Fail;
 
-    /* get the length of the list                                          */
+    // get the length of the list
     lenList = LEN_LIST( list );
 
-    /* loop over all bound entries of the list, and compare against <obj>  */
+    // loop over all bound entries of the list, and compare against <obj>
     for ( i = INT_INTOBJ(start)+1; i <= lenList; i++ ) {
         elm = ELMV0_LIST( list, i );
         if ( elm != 0 && EQ( elm, obj ) ) {
@@ -1246,7 +1246,7 @@ static Obj PosListDefault (
         }
     }
 
-    /* return the position if found, and 0 otherwise                       */
+    // return the position if found, and 0 otherwise
     if ( i <= lenList ) {
       return INTOBJ_INT(i);
     }
@@ -1279,27 +1279,27 @@ void            ElmListLevel (
     Obj                 ixs,
     Int                 level )
 {
-    Int                 len;            /* length of <lists>               */
-    Obj                 list;           /* one list from <lists>           */
-    Obj                 elm;            /* selected element from <list>    */
-    Int                 i;              /* loop variable                   */
+    Int                 len;            // length of <lists>
+    Obj                 list;           // one list from <lists>
+    Obj                 elm;            // selected element from <list>
+    Int                 i;              // loop variable
     Obj                 pos;
     Obj                 row;
     Obj                 col;
 
     RequirePlainList("List Elements", lists);
 
-    /* if <level> is one, perform the replacements                         */
+    // if <level> is one, perform the replacements
     if ( level == 1 ) {
 
-        /* loop over the elements of <lists> (which must be a plain list)  */
+        // loop over the elements of <lists> (which must be a plain list)
         len = LEN_PLIST( lists );
         for ( i = 1; i <= len; i++ ) {
 
-            /* get the list                                                */
+            // get the list
             list = ELM_PLIST( lists, i );
 
-            /* select the element                                          */
+            // select the element
             switch(LEN_PLIST(ixs)) {
             case 1:
               pos = ELM_PLIST(ixs,1);
@@ -1320,10 +1320,10 @@ void            ElmListLevel (
 
             }
 
-            /* replace the list with the element                           */
+            // replace the list with the element
             SET_ELM_PLIST( lists, i, elm );
 
-            /* notify Gasman                                               */
+            // notify Gasman
             CHANGED_BAG( lists );
 
         }
@@ -1331,17 +1331,17 @@ void            ElmListLevel (
 
     }
 
-    /* otherwise recurse                                                   */
+    // otherwise recurse
     else {
 
-        /* loop over the elements of <lists> (which must be a plain list)  */
+        // loop over the elements of <lists> (which must be a plain list)
         len = LEN_PLIST( lists );
         for ( i = 1; i <= len; i++ ) {
 
-            /* get the list                                                */
+            // get the list
             list = ELM_PLIST( lists, i );
 
-            /* recurse                                                     */
+            // recurse
             ElmListLevel( list, ixs, level-1 );
 
         }
@@ -1364,30 +1364,30 @@ void            ElmsListLevel (
     Obj                 poss,
     Int                 level )
 {
-    Int                 len;            /* length of <lists>               */
-    Obj                 list;           /* one list from <lists>           */
-    Obj                 elm;            /* selected elements from <list>   */
-    Int                 i;              /* loop variable                   */
+    Int                 len;            // length of <lists>
+    Obj                 list;           // one list from <lists>
+    Obj                 elm;            // selected elements from <list>
+    Int                 i;              // loop variable
 
     RequirePlainList("List Elements", lists);
 
-    /* if <level> is one, perform the replacements                         */
+    // if <level> is one, perform the replacements
     if ( level == 1 ) {
 
-        /* loop over the elements of <lists> (which must be a plain list)  */
+        // loop over the elements of <lists> (which must be a plain list)
         len = LEN_PLIST( lists );
         for ( i = 1; i <= len; i++ ) {
 
-            /* get the list                                                */
+            // get the list
             list = ELM_PLIST( lists, i );
 
-            /* select the elements                                         */
+            // select the elements
             elm = ELMS_LIST( list, poss );
 
-            /* replace the list with the elements                          */
+            // replace the list with the elements
             SET_ELM_PLIST( lists, i, elm );
 
-            /* notify Gasman                                               */
+            // notify Gasman
             CHANGED_BAG( lists );
 
         }
@@ -1399,17 +1399,17 @@ void            ElmsListLevel (
 
     }
 
-    /* otherwise recurse                                                   */
+    // otherwise recurse
     else {
 
-        /* loop over the elements of <lists> (which must be a plain list)  */
+        // loop over the elements of <lists> (which must be a plain list)
         len = LEN_PLIST( lists );
         for ( i = 1; i <= len; i++ ) {
 
-            /* get the list                                                */
+            // get the list
             list = ELM_PLIST( lists, i );
 
-            /* recurse                                                     */
+            // recurse
             ElmsListLevel( list, poss, level-1 );
 
         }
@@ -1434,10 +1434,10 @@ void            AssListLevel (
     Obj                 objs,
     Int                 level )
 {
-    Int                 len;            /* length of <lists> and <objs>    */
-    Obj                 list;           /* one list of <lists>             */
-    Obj                 obj;            /* one value from <objs>           */
-    Int                 i;              /* loop variable                   */
+    Int                 len;            // length of <lists> and <objs>
+    Obj                 list;           // one list of <lists>
+    Obj                 obj;            // one value from <objs>
+    Int                 i;              // loop variable
     Obj                 pos;
     Obj                 row;
     Obj                 col;
@@ -1446,22 +1446,22 @@ void            AssListLevel (
     RequireDenseList("List Assignments", objs);
     RequireSameLength("List Assignments", objs, lists);
 
-    /* if <level> is one, perform the assignments                          */
+    // if <level> is one, perform the assignments
     if ( level == 1 ) {
 
-        /* loop over the elements of <lists> (which must be a plain list)  */
+        // loop over the elements of <lists> (which must be a plain list)
         len = LEN_PLIST( lists );
         for ( i = 1; i <= len; i++ ) {
 
-            /* get the list                                                */
+            // get the list
             list = ELM_PLIST( lists, i );
 
-            /* select the element to assign                                */
+            // select the element to assign
             obj = ELMW_LIST( objs, i );
 
             switch(LEN_PLIST(ixs)) {
             case 1:
-              /* assign the element                                          */
+              // assign the element
               pos = ELM_PLIST(ixs,1);
               if (IS_INTOBJ(pos))
                 ASS_LIST( list, INT_INTOBJ(pos), obj );
@@ -1483,20 +1483,20 @@ void            AssListLevel (
 
     }
 
-    /* otherwise recurse                                                   */
+    // otherwise recurse
     else {
 
-        /* loop over the elements of <lists> (which must be a plain list)  */
+        // loop over the elements of <lists> (which must be a plain list)
         len = LEN_PLIST( lists );
         for ( i = 1; i <= len; i++ ) {
 
-            /* get the list                                                */
+            // get the list
             list = ELM_PLIST( lists, i );
 
-            /* get the values                                              */
+            // get the values
             obj = ELMW_LIST( objs, i );
 
-            /* recurse                                                     */
+            // recurse
             AssListLevel( list, ixs, obj, level-1 );
 
         }
@@ -1520,51 +1520,51 @@ void            AsssListLevel (
     Obj                 objs,
     Int                 lev )
 {
-    Int                 len;            /* length of <lists> and <objs>    */
-    Obj                 list;           /* one list of <lists>             */
-    Obj                 obj;            /* one value from <objs>           */
-    Int                 i;              /* loop variable                   */
+    Int                 len;            // length of <lists> and <objs>
+    Obj                 list;           // one list of <lists>
+    Obj                 obj;            // one value from <objs>
+    Int                 i;              // loop variable
 
     RequirePlainList("List Assignments", lists);
     RequireDenseList("List Assignments", objs);
     RequireSameLength("List Assignments", objs, lists);
 
-    /* if <lev> is one, loop over all the lists and assign the value       */
+    // if <lev> is one, loop over all the lists and assign the value
     if ( lev == 1 ) {
 
-        /* loop over the list entries (which must be lists too)            */
+        // loop over the list entries (which must be lists too)
         len = LEN_PLIST( lists );
         for ( i = 1; i <= len; i++ ) {
 
-            /* get the list                                                */
+            // get the list
             list = ELM_PLIST( lists, i );
 
-            /* select the elements to assign                               */
+            // select the elements to assign
             obj = ELMW_LIST( objs, i );
             CheckIsDenseList("List Assignments", "objs", obj);
             CheckSameLength("List Assignments", "objs", "poss", obj, poss);
 
-            /* assign the elements                                         */
+            // assign the elements
             ASSS_LIST( list, poss, obj );
 
         }
 
     }
 
-    /* otherwise recurse                                                   */
+    // otherwise recurse
     else {
 
-        /* loop over the list entries (which must be lists too)            */
+        // loop over the list entries (which must be lists too)
         len = LEN_PLIST( lists );
         for ( i = 1; i <= len; i++ ) {
 
-            /* get the list                                                */
+            // get the list
             list = ELM_PLIST( lists, i );
 
-            /* get the values                                              */
+            // get the values
             obj = ELMW_LIST( objs, i );
 
-            /* recurse                                                     */
+            // recurse
             AsssListLevel( list, poss, obj, lev-1 );
 
         }
@@ -1753,7 +1753,7 @@ Obj SET_FILTER_LIST(Obj list, Obj filter)
     }
     return 0;
 
-    /* setting of filter failed                                            */
+    // setting of filter failed
 error:
     ErrorMayQuit("filter not possible for %s", (Int)TNAM_OBJ(list), 0);
     return 0;
@@ -1895,26 +1895,26 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    UInt                type;           /* loop variable                   */
-    Int                 i;              /* loop variable                   */
+    UInt                type;           // loop variable
+    Int                 i;              // loop variable
 
-    /* make and install the 'POS_LIST' operation                           */
+    // make and install the 'POS_LIST' operation
     InitHandlerFunc( PosListHandler2, "src/lists.c:PosListHandler2" );
     InitHandlerFunc( PosListHandler3, "src/lists.c:PosListHandler3" );
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrAttrsFromTable( GVarAttrs );
     InitHdlrPropsFromTable( GVarProps );
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* import small list machinery from the library */
+    // import small list machinery from the library
     ImportFuncFromLibrary("IsSmallList", &IsSmallListFilt);
     ImportFuncFromLibrary("HasIsSmallList", &HasIsSmallListFilt);
     ImportFuncFromLibrary("SetIsSmallList", &SetIsSmallList);
 
-    /* make and install the 'IS_LIST' filter                               */
+    // make and install the 'IS_LIST' filter
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(IsListFuncs[ type ] == 0);
         IsListFuncs[ type ] = AlwaysNo;
@@ -1926,23 +1926,23 @@ static Int InitKernel (
         IsListFuncs[ type ] = IsListObject;
     }
 
-    /* make and install the 'IS_SMALL_LIST' filter                   */
-    /* non-lists are not small lists */
+    // make and install the 'IS_SMALL_LIST' filter
+    // non-lists are not small lists
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(IsSmallListFuncs[ type ] == 0);
         IsSmallListFuncs[ type ] = AlwaysNo;
     }
-    /* internal lists ARE small lists */
+    // internal lists ARE small lists
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         IsSmallListFuncs[ type ] = AlwaysYes;
     }
-    /* external lists need to be asked */
+    // external lists need to be asked
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         IsSmallListFuncs[ type ] = IsSmallListObject;
     }
 
 
-    /* make and install the 'LEN_LIST' function                            */
+    // make and install the 'LEN_LIST' function
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(LenListFuncs[ type ] == 0);
         LenListFuncs[ type ] = LenListError;
@@ -1951,7 +1951,7 @@ static Int InitKernel (
         LenListFuncs[ type ] = LenListObject;
     }
 
-    /* make and install the 'LENGTH' function                            */
+    // make and install the 'LENGTH' function
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(LengthFuncs[ type ] == 0);
         LengthFuncs[ type ] = LengthError;
@@ -1964,7 +1964,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'ISB_LIST' operation                           */
+    // make and install the 'ISB_LIST' operation
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         IsbListFuncs[  type ] = IsbListError;
     }
@@ -1972,7 +1972,7 @@ static Int InitKernel (
         IsbListFuncs[  type ] = IsbListObject;
     }
 
-    /* make and install the 'ELM0_LIST' operation                          */
+    // make and install the 'ELM0_LIST' operation
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(Elm0ListFuncs[  type ] == 0);
         Elm0ListFuncs[  type ] = Elm0ListError;
@@ -1995,7 +1995,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'ELM_LIST' operation                           */
+    // make and install the 'ELM_LIST' operation
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(ElmListFuncs[  type ] == 0);
         ElmListFuncs[  type ] = ElmListError;
@@ -2011,7 +2011,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'ELMS_LIST' operation                          */
+    // make and install the 'ELMS_LIST' operation
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(ElmsListFuncs[ type ] == 0);
         ElmsListFuncs[ type ] = ElmsListError;
@@ -2024,7 +2024,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'UNB_LIST' operation                           */
+    // make and install the 'UNB_LIST' operation
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(UnbListFuncs[ type ] == 0);
         UnbListFuncs[ type ] = UnbListError;
@@ -2037,7 +2037,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'ASS_LIST' operation                           */
+    // make and install the 'ASS_LIST' operation
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(AssListFuncs[ type ] == 0);
         AssListFuncs[ type ] = AssListError;
@@ -2050,7 +2050,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'ASSS_LIST' operation                          */
+    // make and install the 'ASSS_LIST' operation
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(AsssListFuncs[ type ] == 0);
         AsssListFuncs[ type ] = AsssListError;
@@ -2063,7 +2063,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'IS_DENSE_LIST' filter                         */
+    // make and install the 'IS_DENSE_LIST' filter
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(IsDenseListFuncs[ type ] == 0);
         IsDenseListFuncs[ type ] = AlwaysNo;
@@ -2076,7 +2076,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'IS_HOMOG_LIST' filter                         */
+    // make and install the 'IS_HOMOG_LIST' filter
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(IsHomogListFuncs[ type ] == 0);
         IsHomogListFuncs[ type ] = AlwaysNo;
@@ -2089,7 +2089,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'IS_TABLE_LIST' filter                         */
+    // make and install the 'IS_TABLE_LIST' filter
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(IsTableListFuncs[ type ] == 0);
         IsTableListFuncs[ type ] = AlwaysNo;
@@ -2102,7 +2102,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'IS_SSORT_LIST' property                       */
+    // make and install the 'IS_SSORT_LIST' property
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(IsSSortListFuncs[ type ] == 0);
         IsSSortListFuncs[ type ] = AlwaysNo;
@@ -2115,7 +2115,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'IS_POSS_LIST' property                        */
+    // make and install the 'IS_POSS_LIST' property
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(IsPossListFuncs[ type ] == 0);
         IsPossListFuncs[ type ] = AlwaysNo;
@@ -2128,7 +2128,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'POS_LIST' operation                           */
+    // make and install the 'POS_LIST' operation
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(PosListFuncs[ type ] == 0);
         PosListFuncs[ type ] = PosListError;
@@ -2141,27 +2141,27 @@ static Int InitKernel (
     }
 
 
-    /* install the error functions into the other tables                   */
+    // install the error functions into the other tables
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(PlainListFuncs [ type ] == 0);
         PlainListFuncs [ type ] = PlainListError;
     }
 
 
-    /* install tests for being copyable                                    */
+    // install tests for being copyable
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type += 2 ) {
         IsCopyableObjFuncs[ type           ] = AlwaysYes;
         IsCopyableObjFuncs[ type+IMMUTABLE ] = AlwaysYes;
     }
 
-    /* install the default printers                                        */
+    // install the default printers
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         PrintObjFuncs [ type ] = PrintListDefault;
         PrintPathFuncs[ type ] = PrintPathList;
     }
 
 
-    /* initialise filter table                                             */
+    // initialise filter table
     for ( type = FIRST_LIST_TNUM;  type <= LAST_LIST_TNUM;  type +=2 ) {
         ClearFiltsTNums   [ type            ] = 0;
         ClearFiltsTNums   [ type +IMMUTABLE ] = 0;
@@ -2200,14 +2200,14 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarAttrsFromTable( GVarAttrs );
     InitGVarPropsFromTable( GVarProps );
     InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* make and install the 'POS_LIST' operation                           */
+    // make and install the 'POS_LIST' operation
     SET_HDLR_FUNC( PosListOper, 2, PosListHandler2 );
     SET_HDLR_FUNC( PosListOper, 3, PosListHandler3 );
 
@@ -2222,8 +2222,8 @@ static Int InitLibrary (
 static Int CheckInit (
     StructInitInfo *    module )
 {
-    Int         i;              /* loop variable                           */
-    Int         j;              /* loop variable                           */
+    Int         i;              // loop variable
+    Int         j;              // loop variable
     Int         success = 1;
 
     Int         fnums[] = { FN_IS_DENSE, FN_IS_NDENSE,
@@ -2236,7 +2236,7 @@ static Int CheckInit (
                             "ssort", "nsort" };
 
 
-    /* fix unknown list types                                              */
+    // fix unknown list types
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i +=2 ) {
         GAP_ASSERT( TNAM_TNUM(i) );
         GAP_ASSERT( TNAM_TNUM(i + IMMUTABLE) );
@@ -2257,7 +2257,7 @@ static Int CheckInit (
         GAP_ASSERT(IsSSortListFuncs[i]);
     }
 
-    /* check that all relevant `ClearFiltListTNums' are installed          */
+    // check that all relevant `ClearFiltListTNums' are installed
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
         if ( ClearFiltsTNums[i] == 0 ) {
             Pr( "#W  ClearFiltsListTNums [%s] missing\n",
@@ -2267,7 +2267,7 @@ static Int CheckInit (
     }
 
 
-    /* check that all relevant `HasFiltListTNums' are installed            */
+    // check that all relevant `HasFiltListTNums' are installed
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
         for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( HasFiltListTNums[i][fnums[j]] == -1 ) {
@@ -2280,7 +2280,7 @@ static Int CheckInit (
     }
 
 
-    /* check that all relevant `SetFiltListTNums' are installed            */
+    // check that all relevant `SetFiltListTNums' are installed
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
         for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( SetFiltListTNums[i][fnums[j]] == 0 ) {
@@ -2292,7 +2292,7 @@ static Int CheckInit (
     }
 
 
-    /* check that all relevant `ResetFiltListTNums' are installed          */
+    // check that all relevant `ResetFiltListTNums' are installed
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
         for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( ResetFiltListTNums[i][fnums[j]] == 0 ) {
@@ -2303,14 +2303,14 @@ static Int CheckInit (
         }
     }
 
-    /* if a tnum has a filter, reset must change the tnum                  */
+    // if a tnum has a filter, reset must change the tnum
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
         for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( HasFiltListTNums[i][fnums[j]] ) {
                 Int     new;
                 new = ResetFiltListTNums[i][fnums[j]];
                 if ( new == i ) {
-                    continue;   /* filter coded into the representation    */
+                    continue;   // filter coded into the representation
 
                 }
                 else if ( new != -1 && HasFiltListTNums[new][fnums[j]] ) {
@@ -2323,7 +2323,7 @@ static Int CheckInit (
         }
     }
 
-    /* if a tnum has a filter, set must not change the tnum                */
+    // if a tnum has a filter, set must not change the tnum
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
         for ( j = 0;  j < ARRAY_SIZE(fnums);  j++ ) {
             if ( HasFiltListTNums[i][fnums[j]] ) {
@@ -2339,7 +2339,7 @@ static Int CheckInit (
         }
     }
 
-    /* check implications                                                  */
+    // check implications
     for ( i = FIRST_LIST_TNUM;  i <= LAST_LIST_TNUM;  i++ ) {
 
         if ( (i & IMMUTABLE) == 0 ) {

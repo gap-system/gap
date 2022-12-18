@@ -219,7 +219,7 @@ void Match(ScannerState * s,
         s->Symbol = NextSymbol(s);
     }
 
-    /* else generate an error message and skip to a symbol in <skipto>     */
+    // else generate an error message and skip to a symbol in <skipto>
     else {
         gap_strlcpy( errmsg, msg, sizeof(errmsg) );
         gap_strlcat( errmsg, " expected", sizeof(errmsg) );
@@ -604,8 +604,7 @@ static Char GetEscapedChar(ScannerState * s)
   else if ( c == '\\' )  result = '\\';
   else if ( c == '\'' )  result = '\'';
   else if ( c == '0'  ) {
-    /* from here we can either read a hex-escape or three digit
-       octal numbers */
+    // from here we can either read a hex-escape or three digit octal numbers
     c = GET_NEXT_CHAR();
     if (c == 'x') {
         result = 16 * CharHexDigit(s);
@@ -616,18 +615,18 @@ static Char GetEscapedChar(ScannerState * s)
         SyntaxError(s, "Expecting hexadecimal escape, or two more octal digits");
     }
   } else if ( c >= '1' && c <= '7' ) {
-    /* escaped three digit octal numbers are allowed in input */
+    // escaped three digit octal numbers are allowed in input
     result = 64 * (c - '0');
     c = GET_NEXT_CHAR();
     result += GetOctalDigits(s, c);
   } else {
-      /* Following discussions on pull-request #612, this warning is currently
-         disabled for backwards compatibility; some code relies on this behaviour
-         and tests break with the warning enabled */
-      /*
+      // Following discussions on pull-request #612, this warning is currently
+      // disabled for backwards compatibility; some code relies on this behaviour
+      // and tests break with the warning enabled
+#if 0
       if (IsAlpha(c))
           SyntaxWarning(s, "Alphabet letter after \\");
-      */
+#endif
       result = c;
   }
   return result;
@@ -805,24 +804,24 @@ static void GetString(ScannerState * s)
 */
 static void GetChar(ScannerState * s)
 {
-  /* skip '\''                                                           */
+  // skip '\''
   Char c = GET_NEXT_CHAR();
 
-  /* handle escape equences                                              */
+  // handle escape equences
   if ( c == '\n' ) {
     SyntaxError(s, "Character literal must not include <newline>");
   } else {
     if ( c == '\\' ) {
       s->Value[0] = GetEscapedChar(s);
     } else {
-      /* put normal chars into 's->Value' */
+      // put normal chars into 's->Value'
       s->Value[0] = c;
     }
 
-    /* read the next character */
+    // read the next character
     c = GET_NEXT_CHAR();
 
-    /* check for terminating single quote, and skip */
+    // check for terminating single quote, and skip
     if ( c == '\'' ) {
       c = GET_NEXT_CHAR();
     } else {

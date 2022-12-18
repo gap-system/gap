@@ -3192,8 +3192,8 @@ static Obj FuncAPPEND_VEC8BIT(Obj self, Obj vecl, Obj vecr)
 **  right characteristic. We aim to be fast in the case where it is
 **  actually a plain list of vec8bits over the same field as <vec>. We also
 **  know that <vec> and <mat> are non-empty
-** */
-
+**
+*/
 static Obj FuncPROD_VEC8BIT_MATRIX(Obj self, Obj vec, Obj mat)
 {
     Obj           res;
@@ -4123,7 +4123,7 @@ static Obj FuncDIFF_MAT8BIT_MAT8BIT(Obj self, Obj ml, Obj mr)
 
 /****************************************************************************
 **
-*f * * * * * * polynomial support functions * * * * * * * * * * * * * * * * *
+** * * * * * * polynomial support functions * * * * * * * * * * * * * * * * *
 **
 ** The first batch are utilities for the others
 */

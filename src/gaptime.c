@@ -281,8 +281,8 @@ static Obj FuncNanosecondsSinceEpochInfo(Obj self)
 #endif
 
     res = NEW_PREC(4);
-    /* Note this has to be "DYN" since we're not passing a
-       literal but a const char * */
+    // Note this has to be "DYN" since we're not passing a
+    // literal but a const char *
     tmp = MakeImmString(method);
     AssPRec(res, RNamName("Method"), tmp);
     AssPRec(res, RNamName("Monotonic"), monotonic ? True : False);
@@ -311,9 +311,9 @@ static Obj FuncSleep(Obj self, Obj secs)
     if (s > 0)
         sleep((UInt)s);
 
-    /* either we used up the time, or we were interrupted. */
+    // either we used up the time, or we were interrupted.
     if (HaveInterrupt()) {
-        ClearError(); /* The interrupt may still be pending */
+        ClearError(); // The interrupt may still be pending
         ErrorReturnVoid("user interrupt in sleep", 0, 0,
                         "you can 'return;' as if the sleep was finished");
     }
@@ -334,9 +334,9 @@ static Obj FuncMicroSleep(Obj self, Obj msecs)
     if (s > 0)
         usleep((UInt)s);
 
-    /* either we used up the time, or we were interrupted. */
+    // either we used up the time, or we were interrupted.
     if (HaveInterrupt()) {
-        ClearError(); /* The interrupt may still be pending */
+        ClearError(); // The interrupt may still be pending
         ErrorReturnVoid(
             "user interrupt in microsleep", 0, 0,
             "you can 'return;' as if the microsleep was finished");

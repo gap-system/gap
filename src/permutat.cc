@@ -170,14 +170,14 @@ static Obj InvPerm(Obj perm);
 template <typename T>
 static void PrintPerm(Obj perm)
 {
-    UInt                degPerm;        /* degree of the permutation       */
-    const T *           ptPerm;         /* pointer to the permutation      */
-    UInt                p,  q;          /* loop variables                  */
-    BOOL                isId;           /* permutation is the identity?    */
-    const char *        fmt1;           /* common formats to print points  */
-    const char *        fmt2;           /* common formats to print points  */
+    UInt                degPerm;        // degree of the permutation
+    const T *           ptPerm;         // pointer to the permutation
+    UInt                p,  q;          // loop variables
+    BOOL                isId;           // permutation is the identity?
+    const char *        fmt1;           // common formats to print points
+    const char *        fmt2;           // common formats to print points
 
-    /* set up the formats used, so all points are printed with equal width */
+    // set up the formats used, so all points are printed with equal width
     // Use LargestMovedPoint so printing is consistent
     degPerm = LargestMovedPointPerm_<T>(perm);
     if      ( degPerm <    10 ) { fmt1 = "%>(%>%1d%<"; fmt2 = ",%>%1d%<"; }
@@ -192,16 +192,16 @@ static void PrintPerm(Obj perm)
     // clear the buffer bag
     memset(ptSeen, 0, DEG_PERM<T>(perm) * sizeof(T));
 
-    /* run through all points                                              */
+    // run through all points
     isId = TRUE;
     ptPerm = CONST_ADDR_PERM<T>(perm);
     for ( p = 0; p < degPerm; p++ ) {
-        /* if the smallest is the one we started with lets print the cycle */
+        // if the smallest is the one we started with lets print the cycle
         if (!ptSeen[p] && ptPerm[p] != p) {
             ptSeen[p] = 1;
             isId = FALSE;
             Pr(fmt1,(Int)(p+1), 0);
-            /* restore pointer, in case Pr caused a garbage collection */
+            // restore pointer, in case Pr caused a garbage collection
             ptPerm = CONST_ADDR_PERM<T>(perm);
             ptSeen = ADDR_TMP_PERM<T>();
             for ( q = ptPerm[p]; q != p; q = ptPerm[q] ) {
@@ -211,13 +211,13 @@ static void PrintPerm(Obj perm)
                 ptSeen = ADDR_TMP_PERM<T>();
             }
             Pr("%<)", 0, 0);
-            /* restore pointer, in case Pr caused a garbage collection */
+            // restore pointer, in case Pr caused a garbage collection
             ptPerm = CONST_ADDR_PERM<T>(perm);
             ptSeen = ADDR_TMP_PERM<T>();
         }
     }
 
-    /* special case for the identity                                       */
+    // special case for the identity
     if ( isId )  Pr("()", 0, 0);
 }
 
@@ -236,21 +236,21 @@ static void PrintPerm(Obj perm)
 template <typename TL, typename TR>
 static Int EqPerm(Obj opL, Obj opR)
 {
-    UInt                degL;           /* degree of the left operand      */
-    const TL *          ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const TR *          ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
+    UInt                degL;           // degree of the left operand
+    const TL *          ptL;            // pointer to the left operand
+    UInt                degR;           // degree of the right operand
+    const TR *          ptR;            // pointer to the right operand
+    UInt                p;              // loop variable
 
-    /* get the degrees                                                     */
+    // get the degrees
     degL = DEG_PERM<TL>(opL);
     degR = DEG_PERM<TR>(opR);
 
-    /* set up the pointers                                                 */
+    // set up the pointers
     ptL = CONST_ADDR_PERM<TL>(opL);
     ptR = CONST_ADDR_PERM<TR>(opR);
 
-    /* search for a difference and return False if you find one          */
+    // search for a difference and return False if you find one
     if ( degL <= degR ) {
         for ( p = 0; p < degL; p++ )
             if ( *(ptL++) != *(ptR++) )
@@ -268,7 +268,7 @@ static Int EqPerm(Obj opL, Obj opR)
                 return 0;
     }
 
-    /* otherwise they must be equal                                        */
+    // otherwise they must be equal
     return 1;
 }
 
@@ -284,21 +284,21 @@ static Int EqPerm(Obj opL, Obj opR)
 template <typename TL, typename TR>
 static Int LtPerm(Obj opL, Obj opR)
 {
-    UInt                degL;           /* degree of the left operand      */
-    const TL *          ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const TR *          ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
+    UInt                degL;           // degree of the left operand
+    const TL *          ptL;            // pointer to the left operand
+    UInt                degR;           // degree of the right operand
+    const TR *          ptR;            // pointer to the right operand
+    UInt                p;              // loop variable
 
-    /* get the degrees of the permutations                                 */
+    // get the degrees of the permutations
     degL = DEG_PERM<TL>(opL);
     degR = DEG_PERM<TR>(opR);
 
-    /* set up the pointers                                                 */
+    // set up the pointers
     ptL = CONST_ADDR_PERM<TL>(opL);
     ptR = CONST_ADDR_PERM<TR>(opR);
 
-    /* search for a difference and return if you find one                  */
+    // search for a difference and return if you find one
     if ( degL <= degR ) {
 
         for (p = 0; p < degL; p++, ptL++, ptR++)
@@ -321,7 +321,7 @@ static Int LtPerm(Obj opL, Obj opR)
             }
     }
 
-    /* otherwise they must be equal                                        */
+    // otherwise they must be equal
     return 0;
 }
 
@@ -339,14 +339,14 @@ static Obj ProdPerm(Obj opL, Obj opR)
 {
     typedef typename ResultType<TL,TR>::type Res;
 
-    Obj                 prd;            /* handle of the product (result)  */
-    UInt                degP;           /* degree of the product           */
-    Res *               ptP;            /* pointer to the product          */
-    UInt                degL;           /* degree of the left operand      */
-    const TL *          ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const TR *          ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
+    Obj                 prd;            // handle of the product (result)
+    UInt                degP;           // degree of the product
+    Res *               ptP;            // pointer to the product
+    UInt                degL;           // degree of the left operand
+    const TL *          ptL;            // pointer to the left operand
+    UInt                degR;           // degree of the right operand
+    const TR *          ptR;            // pointer to the right operand
+    UInt                p;              // loop variable
 
     degL = DEG_PERM<TL>(opL);
     degR = DEG_PERM<TR>(opR);
@@ -363,12 +363,12 @@ static Obj ProdPerm(Obj opL, Obj opR)
     degP = degL < degR ? degR : degL;
     prd  = NEW_PERM<Res>( degP );
 
-    /* set up the pointers                                                 */
+    // set up the pointers
     ptL = CONST_ADDR_PERM<TL>(opL);
     ptR = CONST_ADDR_PERM<TR>(opR);
     ptP = ADDR_PERM<Res>(prd);
 
-    /* if the left (inner) permutation has smaller degree, it is very easy */
+    // if the left (inner) permutation has smaller degree, it is very easy
     if ( degL <= degR ) {
         for ( p = 0; p < degL; p++ )
             *(ptP++) = ptR[ *(ptL++) ];
@@ -376,7 +376,7 @@ static Obj ProdPerm(Obj opL, Obj opR)
             *(ptP++) = ptR[ p ];
     }
 
-    /* otherwise we have to use the macro 'IMAGE'                          */
+    // otherwise we have to use the macro 'IMAGE'
     else {
         for ( p = 0; p < degL; p++ )
             *(ptP++) = IMAGE( ptL[ p ], ptR, degR );
@@ -416,14 +416,14 @@ static Obj LQuoPerm(Obj opL, Obj opR)
 {
     typedef typename ResultType<TL,TR>::type Res;
 
-    Obj                 mod;            /* handle of the quotient (result) */
-    UInt                degM;           /* degree of the quotient          */
-    Res *               ptM;            /* pointer to the quotient         */
-    UInt                degL;           /* degree of the left operand      */
-    const TL *          ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const TR *          ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
+    Obj                 mod;            // handle of the quotient (result)
+    UInt                degM;           // degree of the quotient
+    Res *               ptM;            // pointer to the quotient
+    UInt                degL;           // degree of the left operand
+    const TL *          ptL;            // pointer to the left operand
+    UInt                degR;           // degree of the right operand
+    const TR *          ptR;            // pointer to the right operand
+    UInt                p;              // loop variable
 
     degL = DEG_PERM<TL>(opL);
     degR = DEG_PERM<TR>(opR);
@@ -440,12 +440,12 @@ static Obj LQuoPerm(Obj opL, Obj opR)
     degM = degL < degR ? degR : degL;
     mod = NEW_PERM<Res>( degM );
 
-    /* set up the pointers                                                 */
+    // set up the pointers
     ptL = CONST_ADDR_PERM<TL>(opL);
     ptR = CONST_ADDR_PERM<TR>(opR);
     ptM = ADDR_PERM<Res>(mod);
 
-    /* it is one thing if the left (inner) permutation is smaller          */
+    // it is one thing if the left (inner) permutation is smaller
     if ( degL <= degR ) {
         for ( p = 0; p < degL; p++ )
             ptM[ *(ptL++) ] = *(ptR++);
@@ -453,7 +453,7 @@ static Obj LQuoPerm(Obj opL, Obj opR)
             ptM[ p ] = *(ptR++);
     }
 
-    /* and another if the right (outer) permutation is smaller             */
+    // and another if the right (outer) permutation is smaller
     else {
         for ( p = 0; p < degR; p++ )
             ptM[ *(ptL++) ] = *(ptR++);
@@ -472,11 +472,11 @@ static Obj LQuoPerm(Obj opL, Obj opR)
 template <typename T>
 static Obj InvPerm(Obj perm)
 {
-    Obj                 inv;            /* handle of the inverse (result)  */
-    T *                 ptInv;          /* pointer to the inverse          */
-    const T *           ptPerm;         /* pointer to the permutation      */
-    UInt                deg;            /* degree of the permutation       */
-    UInt                p;              /* loop variables                  */
+    Obj                 inv;            // handle of the inverse (result)
+    T *                 ptInv;          // pointer to the inverse
+    const T *           ptPerm;         // pointer to the permutation
+    UInt                deg;            // degree of the permutation
+    UInt                p;              // loop variables
 
     inv = STOREDINV_PERM(perm);
     if (inv != 0)
@@ -512,17 +512,17 @@ static Obj InvPerm(Obj perm)
 template <typename T>
 static Obj PowPermInt(Obj opL, Obj opR)
 {
-    Obj                 pow;            /* handle of the power (result)    */
-    T *                 ptP;            /* pointer to the power            */
-    const T *           ptL;            /* pointer to the permutation      */
-    UInt1 *             ptKnown;        /* pointer to temporary bag        */
-    UInt                deg;            /* degree of the permutation       */
-    Int                 exp,  e;        /* exponent (right operand)        */
-    UInt                len;            /* length of cycle (result)        */
-    UInt                p,  q,  r;      /* loop variables                  */
+    Obj                 pow;            // handle of the power (result)
+    T *                 ptP;            // pointer to the power
+    const T *           ptL;            // pointer to the permutation
+    UInt1 *             ptKnown;        // pointer to temporary bag
+    UInt                deg;            // degree of the permutation
+    Int                 exp,  e;        // exponent (right operand)
+    UInt                len;            // length of cycle (result)
+    UInt                p,  q,  r;      // loop variables
 
 
-    /* handle zeroth and first powers and stored inverses separately */
+    // handle zeroth and first powers and stored inverses separately
     if ( opR == INTOBJ_INT(0))
       return IdentityPerm;
     if ( opR == INTOBJ_INT(1))
@@ -540,16 +540,16 @@ static Obj PowPermInt(Obj opL, Obj opR)
     // allocate a result bag
     pow = NEW_PERM<T>(deg);
 
-    /* compute the power by repeated mapping for small positive exponents  */
+    // compute the power by repeated mapping for small positive exponents
     if ( IS_INTOBJ(opR)
       && 2 <= INT_INTOBJ(opR) && INT_INTOBJ(opR) < 8 ) {
 
-        /* get pointer to the permutation and the power                    */
+        // get pointer to the permutation and the power
         exp = INT_INTOBJ(opR);
         ptL = CONST_ADDR_PERM<T>(opL);
         ptP = ADDR_PERM<T>(pow);
 
-        /* loop over the points of the permutation                         */
+        // loop over the points of the permutation
         for ( p = 0; p < deg; p++ ) {
             q = p;
             for ( e = 0; e < exp; e++ )
@@ -559,34 +559,34 @@ static Obj PowPermInt(Obj opL, Obj opR)
 
     }
 
-    /* compute the power by raising the cycles individually for large exps */
+    // compute the power by raising the cycles individually for large exps
     else if ( IS_INTOBJ(opR) && 8 <= INT_INTOBJ(opR) ) {
 
-        /* make sure that the buffer bag is large enough                   */
+        // make sure that the buffer bag is large enough
         UseTmpPerm(SIZE_OBJ(opL));
         ptKnown = ADDR_TMP_PERM<UInt1>();
 
-        /* clear the buffer bag                                            */
+        // clear the buffer bag
         memset(ptKnown, 0, DEG_PERM<T>(opL));
 
-        /* get pointer to the permutation and the power                    */
+        // get pointer to the permutation and the power
         exp = INT_INTOBJ(opR);
         ptL = CONST_ADDR_PERM<T>(opL);
         ptP = ADDR_PERM<T>(pow);
 
-        /* loop over all cycles                                            */
+        // loop over all cycles
         for ( p = 0; p < deg; p++ ) {
 
-            /* if we haven't looked at this cycle so far                   */
+            // if we haven't looked at this cycle so far
             if ( ptKnown[p] == 0 ) {
 
-                /* find the length of this cycle                           */
+                // find the length of this cycle
                 len = 1;
                 for ( q = ptL[p]; q != p; q = ptL[q] ) {
                     len++;  ptKnown[q] = 1;
                 }
 
-                /* raise this cycle to the power <exp> mod <len>           */
+                // raise this cycle to the power <exp> mod <len>
                 r = p;
                 for ( e = 0; e < exp % len; e++ )
                     r = ptL[r];
@@ -604,33 +604,33 @@ static Obj PowPermInt(Obj opL, Obj opR)
 
     }
 
-    /* compute the power by raising the cycles individually for large exps */
+    // compute the power by raising the cycles individually for large exps
     else if ( TNUM_OBJ(opR) == T_INTPOS ) {
 
-        /* make sure that the buffer bag is large enough                   */
+        // make sure that the buffer bag is large enough
         UseTmpPerm(SIZE_OBJ(opL));
         ptKnown = ADDR_TMP_PERM<UInt1>();
 
-        /* clear the buffer bag                                            */
+        // clear the buffer bag
         memset(ptKnown, 0, DEG_PERM<T>(opL));
 
-        /* get pointer to the permutation and the power                    */
+        // get pointer to the permutation and the power
         ptL = CONST_ADDR_PERM<T>(opL);
         ptP = ADDR_PERM<T>(pow);
 
-        /* loop over all cycles                                            */
+        // loop over all cycles
         for ( p = 0; p < deg; p++ ) {
 
-            /* if we haven't looked at this cycle so far                   */
+            // if we haven't looked at this cycle so far
             if ( ptKnown[p] == 0 ) {
 
-                /* find the length of this cycle                           */
+                // find the length of this cycle
                 len = 1;
                 for ( q = ptL[p]; q != p; q = ptL[q] ) {
                     len++;  ptKnown[q] = 1;
                 }
 
-                /* raise this cycle to the power <exp> mod <len>           */
+                // raise this cycle to the power <exp> mod <len>
                 r = p;
                 exp = INT_INTOBJ( ModInt( opR, INTOBJ_INT(len) ) );
                 for ( e = 0; e < exp; e++ )
@@ -648,16 +648,16 @@ static Obj PowPermInt(Obj opL, Obj opR)
 
     }
 
-    /* compute the power by repeated mapping for small negative exponents  */
+    // compute the power by repeated mapping for small negative exponents
     else if ( IS_INTOBJ(opR)
           && -8 < INT_INTOBJ(opR) && INT_INTOBJ(opR) < 0 ) {
 
-        /* get pointer to the permutation and the power                    */
+        // get pointer to the permutation and the power
         exp = -INT_INTOBJ(opR);
         ptL = CONST_ADDR_PERM<T>(opL);
         ptP = ADDR_PERM<T>(pow);
 
-        /* loop over the points                                            */
+        // loop over the points
         for ( p = 0; p < deg; p++ ) {
             q = p;
             for ( e = 0; e < exp; e++ )
@@ -667,34 +667,34 @@ static Obj PowPermInt(Obj opL, Obj opR)
 
     }
 
-    /* compute the power by raising the cycles individually for large exps */
+    // compute the power by raising the cycles individually for large exps
     else if ( IS_INTOBJ(opR) && INT_INTOBJ(opR) <= -8 ) {
 
-        /* make sure that the buffer bag is large enough                   */
+        // make sure that the buffer bag is large enough
         UseTmpPerm(SIZE_OBJ(opL));
         ptKnown = ADDR_TMP_PERM<UInt1>();
 
-        /* clear the buffer bag                                            */
+        // clear the buffer bag
         memset(ptKnown, 0, DEG_PERM<T>(opL));
 
-        /* get pointer to the permutation and the power                    */
+        // get pointer to the permutation and the power
         exp = -INT_INTOBJ(opR);
         ptL = CONST_ADDR_PERM<T>(opL);
         ptP = ADDR_PERM<T>(pow);
 
-        /* loop over all cycles                                            */
+        // loop over all cycles
         for ( p = 0; p < deg; p++ ) {
 
-            /* if we haven't looked at this cycle so far                   */
+            // if we haven't looked at this cycle so far
             if ( ptKnown[p] == 0 ) {
 
-                /* find the length of this cycle                           */
+                // find the length of this cycle
                 len = 1;
                 for ( q = ptL[p]; q != p; q = ptL[q] ) {
                     len++;  ptKnown[q] = 1;
                 }
 
-                /* raise this cycle to the power <exp> mod <len>           */
+                // raise this cycle to the power <exp> mod <len>
                 r = p;
                 for ( e = 0; e < exp % len; e++ )
                     r = ptL[r];
@@ -711,35 +711,35 @@ static Obj PowPermInt(Obj opL, Obj opR)
 
     }
 
-    /* compute the power by raising the cycles individually for large exps */
+    // compute the power by raising the cycles individually for large exps
     else if ( TNUM_OBJ(opR) == T_INTNEG ) {
-        /* do negation first as it can cause a garbage collection          */
+        // do negation first as it can cause a garbage collection
         opR = AInvInt(opR);
 
-        /* make sure that the buffer bag is large enough                   */
+        // make sure that the buffer bag is large enough
         UseTmpPerm(SIZE_OBJ(opL));
         ptKnown = ADDR_TMP_PERM<UInt1>();
 
-        /* clear the buffer bag                                            */
+        // clear the buffer bag
         memset(ptKnown, 0, DEG_PERM<T>(opL));
 
-        /* get pointer to the permutation and the power                    */
+        // get pointer to the permutation and the power
         ptL = CONST_ADDR_PERM<T>(opL);
         ptP = ADDR_PERM<T>(pow);
 
-        /* loop over all cycles                                            */
+        // loop over all cycles
         for ( p = 0; p < deg; p++ ) {
 
-            /* if we haven't looked at this cycle so far                   */
+            // if we haven't looked at this cycle so far
             if ( ptKnown[p] == 0 ) {
 
-                /* find the length of this cycle                           */
+                // find the length of this cycle
                 len = 1;
                 for ( q = ptL[p]; q != p; q = ptL[q] ) {
                     len++;  ptKnown[q] = 1;
                 }
 
-                /* raise this cycle to the power <exp> mod <len>           */
+                // raise this cycle to the power <exp> mod <len>
                 r = p;
                 exp = INT_INTOBJ( ModInt( opR, INTOBJ_INT(len) ) );
                 for ( e = 0; e < exp % len; e++ )
@@ -772,11 +772,11 @@ static Obj PowPermInt(Obj opL, Obj opR)
 template <typename T>
 static Obj PowIntPerm(Obj opL, Obj opR)
 {
-    Int                 img;            /* image (result)                  */
+    Int                 img;            // image (result)
 
     GAP_ASSERT(TNUM_OBJ(opL) == T_INTPOS || TNUM_OBJ(opL) == T_INT);
 
-    /* large positive integers (> 2^28-1) are fixed by any permutation     */
+    // large positive integers (> 2^28-1) are fixed by any permutation
     if ( TNUM_OBJ(opL) == T_INTPOS )
         return opL;
 
@@ -784,12 +784,12 @@ static Obj PowIntPerm(Obj opL, Obj opR)
     RequireArgumentConditionEx("PowIntPerm", opL, "<point>", img > 0,
                                "must be a positive integer");
 
-    /* compute the image                                                   */
+    // compute the image
     if ( img <= DEG_PERM<T>(opR) ) {
         img = (CONST_ADDR_PERM<T>(opR))[img-1] + 1;
     }
 
-    /* return it                                                           */
+    // return it
     return INTOBJ_INT(img);
 }
 
@@ -813,13 +813,13 @@ static Obj PERM_INVERSE_THRESHOLD;
 template <typename T>
 static Obj QuoIntPerm(Obj opL, Obj opR)
 {
-    T                   pre;            /* preimage (result)               */
-    Int                 img;            /* image (left operand)            */
-    const T *           ptR;            /* pointer to the permutation      */
+    T                   pre;            // preimage (result)
+    Int                 img;            // image (left operand)
+    const T *           ptR;            // pointer to the permutation
 
     GAP_ASSERT(TNUM_OBJ(opL) == T_INTPOS || TNUM_OBJ(opL) == T_INT);
 
-    /* large positive integers (> 2^28-1) are fixed by any permutation     */
+    // large positive integers (> 2^28-1) are fixed by any permutation
     if ( TNUM_OBJ(opL) == T_INTPOS )
         return opL;
 
@@ -838,13 +838,13 @@ static Obj QuoIntPerm(Obj opL, Obj opR)
         return INTOBJ_INT(
             IMAGE(img - 1, CONST_ADDR_PERM<T>(inv), DEG_PERM<T>(inv)) + 1);
 
-    /* compute the preimage                                                */
+    // compute the preimage
     if ( img <= DEG_PERM<T>(opR) ) {
         pre = T(img - 1);
         ptR = CONST_ADDR_PERM<T>(opR);
         while (ptR[pre] != T(img - 1))
             pre = ptR[pre];
-        /* return it */
+        // return it
         return INTOBJ_INT(pre + 1);
     }
     else
@@ -865,14 +865,14 @@ static Obj PowPerm(Obj opL, Obj opR)
 {
     typedef typename ResultType<TL,TR>::type Res;
 
-    Obj                 cnj;            /* handle of the conjugation (res) */
-    UInt                degC;           /* degree of the conjugation       */
-    Res *               ptC;            /* pointer to the conjugation      */
-    UInt                degL;           /* degree of the left operand      */
-    const TL *          ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const TR *          ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
+    Obj                 cnj;            // handle of the conjugation (res)
+    UInt                degC;           // degree of the conjugation
+    Res *               ptC;            // pointer to the conjugation
+    UInt                degL;           // degree of the left operand
+    const TL *          ptL;            // pointer to the left operand
+    UInt                degR;           // degree of the right operand
+    const TR *          ptR;            // pointer to the right operand
+    UInt                p;              // loop variable
 
     degL = DEG_PERM<TL>(opL);
     degR = DEG_PERM<TR>(opR);
@@ -890,18 +890,18 @@ static Obj PowPerm(Obj opL, Obj opR)
     degC = degL < degR ? degR : degL;
     cnj = NEW_PERM<Res>( degC );
 
-    /* set up the pointers                                                 */
+    // set up the pointers
     ptL = CONST_ADDR_PERM<TL>(opL);
     ptR = CONST_ADDR_PERM<TR>(opR);
     ptC = ADDR_PERM<Res>(cnj);
 
-    /* it is faster if the both permutations have the same size            */
+    // it is faster if the both permutations have the same size
     if ( degL == degR ) {
         for ( p = 0; p < degC; p++ )
             ptC[ ptR[p] ] = ptR[ ptL[p] ];
     }
 
-    /* otherwise we have to use the macro 'IMAGE' three times              */
+    // otherwise we have to use the macro 'IMAGE' three times
     else {
         for ( p = 0; p < degC; p++ )
             ptC[ IMAGE(p,ptR,degR) ] = IMAGE( IMAGE(p,ptL,degL), ptR, degR );
@@ -923,14 +923,14 @@ static Obj CommPerm(Obj opL, Obj opR)
 {
     typedef typename ResultType<TL,TR>::type Res;
 
-    Obj                 com;            /* handle of the commutator  (res) */
-    UInt                degC;           /* degree of the commutator        */
-    Res *               ptC;            /* pointer to the commutator       */
-    UInt                degL;           /* degree of the left operand      */
-    const TL *          ptL;            /* pointer to the left operand     */
-    UInt                degR;           /* degree of the right operand     */
-    const TR *          ptR;            /* pointer to the right operand    */
-    UInt                p;              /* loop variable                   */
+    Obj                 com;            // handle of the commutator  (res)
+    UInt                degC;           // degree of the commutator
+    Res *               ptC;            // pointer to the commutator
+    UInt                degL;           // degree of the left operand
+    const TL *          ptL;            // pointer to the left operand
+    UInt                degR;           // degree of the right operand
+    const TR *          ptR;            // pointer to the right operand
+    UInt                p;              // loop variable
 
     degL = DEG_PERM<TL>(opL);
     degR = DEG_PERM<TR>(opR);
@@ -944,18 +944,18 @@ static Obj CommPerm(Obj opL, Obj opR)
     degC = degL < degR ? degR : degL;
     com = NEW_PERM<Res>( degC );
 
-    /* set up the pointers                                                 */
+    // set up the pointers
     ptL = CONST_ADDR_PERM<TL>(opL);
     ptR = CONST_ADDR_PERM<TR>(opR);
     ptC = ADDR_PERM<Res>(com);
 
-    /* it is faster if the both permutations have the same size            */
+    // it is faster if the both permutations have the same size
     if ( degL == degR ) {
         for ( p = 0; p < degC; p++ )
             ptC[ ptL[ ptR[ p ] ] ] = ptR[ ptL[ p ] ];
     }
 
-    /* otherwise we have to use the macro 'IMAGE' four times               */
+    // otherwise we have to use the macro 'IMAGE' four times
     else {
         for ( p = 0; p < degC; p++ )
             ptC[ IMAGE( IMAGE(p,ptR,degR), ptL, degL ) ]
@@ -992,7 +992,7 @@ static Obj IsPermFilt;
 
 static Obj FiltIS_PERM(Obj self, Obj val)
 {
-    /* return 'true' if <val> is a permutation and 'false' otherwise       */
+    // return 'true' if <val> is a permutation and 'false' otherwise
     if ( TNUM_OBJ(val) == T_PERM2 || TNUM_OBJ(val) == T_PERM4 ) {
         return True;
     }
@@ -1021,12 +1021,12 @@ static Obj FiltIS_PERM(Obj self, Obj val)
 template <typename T>
 static inline Obj PermList(Obj list)
 {
-    Obj                 perm;           /* handle of the permutation       */
-    T *                 ptPerm;         /* pointer to the permutation      */
-    UInt                degPerm;        /* degree of the permutation       */
-    const Obj *         ptList;         /* pointer to the list             */
-    T *                 ptTmp;          /* pointer to the buffer bag       */
-    Int                 i,  k;          /* loop variables                  */
+    Obj                 perm;           // handle of the permutation
+    T *                 ptPerm;         // pointer to the permutation
+    UInt                degPerm;        // degree of the permutation
+    const Obj *         ptList;         // pointer to the list
+    T *                 ptTmp;          // pointer to the buffer bag
+    Int                 i,  k;          // loop variables
 
     GAP_ASSERT(IS_PLIST(list));
     degPerm = LEN_PLIST( list );
@@ -1034,19 +1034,19 @@ static inline Obj PermList(Obj list)
     /* make sure that the global buffer bag is large enough for checkin*/
     UseTmpPerm(SIZEBAG_PERM<T>(degPerm));
 
-    /* allocate the bag for the permutation and get pointer            */
+    // allocate the bag for the permutation and get pointer
     perm    = NEW_PERM<T>(degPerm);
     ptPerm  = ADDR_PERM<T>(perm);
     ptList  = CONST_ADDR_OBJ(list);
     ptTmp   = ADDR_TMP_PERM<T>();
 
-    /* make the buffer bag clean                                       */
+    // make the buffer bag clean
     memset(ptTmp, 0, degPerm * sizeof(T));
 
-    /* run through all entries of the list                             */
+    // run through all entries of the list
     for ( i = 1; i <= degPerm; i++ ) {
 
-        /* get the <i>th entry of the list                             */
+        // get the <i>th entry of the list
         if ( !IS_INTOBJ(ptList[i]) ) {
             return Fail;
         }
@@ -1055,17 +1055,17 @@ static inline Obj PermList(Obj list)
             return Fail;
         }
 
-        /* make sure we haven't seen this entry yet                     */
+        // make sure we haven't seen this entry yet
         if ( ptTmp[k-1] != 0 ) {
             return Fail;
         }
         ptTmp[k-1] = 1;
 
-        /* and finally copy it into the permutation                    */
+        // and finally copy it into the permutation
         ptPerm[i-1] = k-1;
     }
 
-    /* return the permutation                                              */
+    // return the permutation
     return perm;
 }
 
@@ -1211,16 +1211,16 @@ static Obj FuncSMALLEST_MOVED_POINT_PERM(Obj self, Obj perm)
 template <typename T>
 static inline Obj CYCLE_LENGTH_PERM_INT(Obj perm, UInt pnt)
 {
-    const T *           ptPerm;         /* pointer to the permutation      */
-    UInt                deg;            /* degree of the permutation       */
-    UInt                len;            /* length of cycle (result)        */
-    UInt                p;              /* loop variable                   */
+    const T *           ptPerm;         // pointer to the permutation
+    UInt                deg;            // degree of the permutation
+    UInt                len;            // length of cycle (result)
+    UInt                p;              // loop variable
 
-    /* get pointer to the permutation, the degree, and the point       */
+    // get pointer to the permutation, the degree, and the point
     ptPerm = CONST_ADDR_PERM<T>(perm);
     deg = DEG_PERM<T>(perm);
 
-    /* now compute the length by looping over the cycle                */
+    // now compute the length by looping over the cycle
     len = 1;
     if ( pnt < deg ) {
         for ( p = ptPerm[pnt]; p != pnt; p = ptPerm[p] )
@@ -1232,7 +1232,7 @@ static inline Obj CYCLE_LENGTH_PERM_INT(Obj perm, UInt pnt)
 
 static Obj FuncCYCLE_LENGTH_PERM_INT(Obj self, Obj perm, Obj point)
 {
-    UInt                pnt;            /* value of the point              */
+    UInt                pnt;            // value of the point
 
     RequirePermutation(SELF_NAME, perm);
     pnt = GetPositiveSmallInt("CycleLengthPermInt", point) - 1;
@@ -1260,31 +1260,31 @@ static Obj FuncCYCLE_LENGTH_PERM_INT(Obj self, Obj perm, Obj point)
 template <typename T>
 static inline Obj CYCLE_PERM_INT(Obj perm, UInt pnt)
 {
-    Obj                 list;           /* handle of the list (result)     */
-    Obj *               ptList;         /* pointer to the list             */
-    const T *           ptPerm;         /* pointer to the permutation      */
-    UInt                deg;            /* degree of the permutation       */
-    UInt                len;            /* length of the cycle             */
-    UInt                p;              /* loop variable                   */
+    Obj                 list;           // handle of the list (result)
+    Obj *               ptList;         // pointer to the list
+    const T *           ptPerm;         // pointer to the permutation
+    UInt                deg;            // degree of the permutation
+    UInt                len;            // length of the cycle
+    UInt                p;              // loop variable
 
-    /* get pointer to the permutation, the degree, and the point       */
+    // get pointer to the permutation, the degree, and the point
     ptPerm = CONST_ADDR_PERM<T>(perm);
     deg = DEG_PERM<T>(perm);
 
-    /* now compute the length by looping over the cycle                */
+    // now compute the length by looping over the cycle
     len = 1;
     if ( pnt < deg ) {
         for ( p = ptPerm[pnt]; p != pnt; p = ptPerm[p] )
             len++;
     }
 
-    /* allocate the list                                               */
+    // allocate the list
     list = NEW_PLIST( T_PLIST, len );
     SET_LEN_PLIST( list, len );
     ptList = ADDR_OBJ(list);
     ptPerm = CONST_ADDR_PERM<T>(perm);
 
-    /* copy the points into the list                                   */
+    // copy the points into the list
     len = 1;
     ptList[len++] = INTOBJ_INT( pnt+1 );
     if ( pnt < deg ) {
@@ -1297,7 +1297,7 @@ static inline Obj CYCLE_PERM_INT(Obj perm, UInt pnt)
 
 static Obj FuncCYCLE_PERM_INT(Obj self, Obj perm, Obj point)
 {
-    UInt                pnt;            /* value of the point              */
+    UInt                pnt;            // value of the point
 
     RequirePermutation(SELF_NAME, perm);
     pnt = GetPositiveSmallInt("CyclePermInt", point) - 1;
@@ -1325,41 +1325,41 @@ static Obj FuncCYCLE_PERM_INT(Obj self, Obj perm, Obj point)
 template <typename T>
 static inline Obj CYCLE_STRUCT_PERM(Obj perm)
 {
-    Obj                 list;           /* handle of the list (result)     */
-    Obj *               ptList;         /* pointer to the list             */
-    const T *           ptPerm;         /* pointer to the permutation      */
+    Obj                 list;           // handle of the list (result)
+    Obj *               ptList;         // pointer to the list
+    const T *           ptPerm;         // pointer to the permutation
     T *                 scratch;
     T *                 offset;
-    UInt                deg;            /* degree of the permutation       */
-    UInt                pnt;            /* value of the point              */
-    UInt                len;            /* length of the cycle             */
-    UInt                p;              /* loop variable                   */
-    UInt                max;            /* maximal cycle length            */
+    UInt                deg;            // degree of the permutation
+    UInt                pnt;            // value of the point
+    UInt                len;            // length of the cycle
+    UInt                p;              // loop variable
+    UInt                max;            // maximal cycle length
     UInt                cnt;
     UInt                ende;
     UInt                bytes;
     UInt1 *             clr;
 
-    /* make sure that the buffer bag is large enough                       */
+    // make sure that the buffer bag is large enough
     UseTmpPerm(SIZE_OBJ(perm) + 8);
 
-    /* find the largest moved point                                    */
+    // find the largest moved point
     deg = LargestMovedPointPerm_<T>(perm);
     if (deg == 0) {
-        /* special treatment of identity */
+        // special treatment of identity
         return NewEmptyPlist();
     }
 
     scratch = ADDR_TMP_PERM<T>();
 
-    /* the first deg bytes of TmpPerm hold a bit list of points done
-     * so far. The remaining bytes will form the lengths of nontrivial
-     * cycles (as numbers of type T). As every nontrivial cycle requires
-     * at least 2 points, this is guaranteed to fit. */
+    // the first deg bytes of TmpPerm hold a bit list of points done
+    // so far. The remaining bytes will form the lengths of nontrivial
+    // cycles (as numbers of type T). As every nontrivial cycle requires
+    // at least 2 points, this is guaranteed to fit.
     bytes = ((deg / sizeof(T)) + 1) * sizeof(T); // ensure alignment
     offset = (T *)((UInt)scratch + (bytes));
 
-    /* clear out the bits */
+    // clear out the bits
     memset(scratch, 0, bytes);
 
     cnt = 0;
@@ -1387,12 +1387,12 @@ static inline Obj CYCLE_STRUCT_PERM(Obj perm)
 
     ende = cnt;
 
-    /* create the list */
+    // create the list
     list = NEW_PLIST(T_PLIST, max);
     SET_LEN_PLIST(list, max);
     ptList = ADDR_OBJ(list);
 
-    /* Recalculate after possible GC */
+    // Recalculate after possible GC
     scratch = ADDR_TMP_PERM<T>();
     offset = (T *)((UInt)scratch + (bytes));
 
@@ -1438,33 +1438,33 @@ static Obj FuncCYCLE_STRUCT_PERM(Obj self, Obj perm)
 template <typename T>
 static inline Obj ORDER_PERM(Obj perm)
 {
-    const T *           ptPerm;         /* pointer to the permutation      */
-    Obj                 ord;            /* order (result), may be huge     */
-    T *                 ptKnown;        /* pointer to temporary bag        */
-    UInt                len;            /* length of one cycle             */
-    UInt                p, q;           /* loop variables                  */
+    const T *           ptPerm;         // pointer to the permutation
+    Obj                 ord;            // order (result), may be huge
+    T *                 ptKnown;        // pointer to temporary bag
+    UInt                len;            // length of one cycle
+    UInt                p, q;           // loop variables
 
-    /* make sure that the buffer bag is large enough                       */
+    // make sure that the buffer bag is large enough
     UseTmpPerm(SIZE_OBJ(perm));
 
-    /* get the pointer to the bags                                     */
+    // get the pointer to the bags
     ptPerm  = CONST_ADDR_PERM<T>(perm);
     ptKnown = ADDR_TMP_PERM<T>();
 
-    /* clear the buffer bag                                            */
+    // clear the buffer bag
     for ( p = 0; p < DEG_PERM<T>(perm); p++ )
         ptKnown[p] = 0;
 
-    /* start with order 1                                              */
+    // start with order 1
     ord = INTOBJ_INT(1);
 
-    /* loop over all cycles                                            */
+    // loop over all cycles
     for ( p = 0; p < DEG_PERM<T>(perm); p++ ) {
 
-        /* if we haven't looked at this cycle so far                   */
+        // if we haven't looked at this cycle so far
         if ( ptKnown[p] == 0 && ptPerm[p] != p ) {
 
-            /* find the length of this cycle                           */
+            // find the length of this cycle
             len = 1;
             for ( q = ptPerm[p]; q != p; q = ptPerm[q] ) {
                 len++;  ptKnown[q] = 1;
@@ -1480,7 +1480,7 @@ static inline Obj ORDER_PERM(Obj perm)
 
     }
 
-    /* return the order                                                    */
+    // return the order
     return ord;
 }
 
@@ -1514,39 +1514,39 @@ static Obj FuncORDER_PERM(Obj self, Obj perm)
 template <typename T>
 static inline Obj SIGN_PERM(Obj perm)
 {
-    const T *           ptPerm;         /* pointer to the permutation      */
-    Int                 sign;           /* sign (result)                   */
-    T *                 ptKnown;        /* pointer to temporary bag        */
-    UInt                len;            /* length of one cycle             */
-    UInt                p,  q;          /* loop variables                  */
+    const T *           ptPerm;         // pointer to the permutation
+    Int                 sign;           // sign (result)
+    T *                 ptKnown;        // pointer to temporary bag
+    UInt                len;            // length of one cycle
+    UInt                p,  q;          // loop variables
 
-    /* make sure that the buffer bag is large enough                       */
+    // make sure that the buffer bag is large enough
     UseTmpPerm(SIZE_OBJ(perm));
 
-    /* get the pointer to the bags                                     */
+    // get the pointer to the bags
     ptPerm  = CONST_ADDR_PERM<T>(perm);
     ptKnown = ADDR_TMP_PERM<T>();
 
-    /* clear the buffer bag                                            */
+    // clear the buffer bag
     for ( p = 0; p < DEG_PERM<T>(perm); p++ )
         ptKnown[p] = 0;
 
-    /* start with sign  1                                              */
+    // start with sign  1
     sign = 1;
 
-    /* loop over all cycles                                            */
+    // loop over all cycles
     for ( p = 0; p < DEG_PERM<T>(perm); p++ ) {
 
-        /* if we haven't looked at this cycle so far                   */
+        // if we haven't looked at this cycle so far
         if ( ptKnown[p] == 0 && ptPerm[p] != p ) {
 
-            /* find the length of this cycle                           */
+            // find the length of this cycle
             len = 1;
             for ( q = ptPerm[p]; q != p; q = ptPerm[q] ) {
                 len++;  ptKnown[q] = 1;
             }
 
-            /* if the length is even invert the sign                   */
+            // if the length is even invert the sign
             if ( len % 2 == 0 )
                 sign = -sign;
 
@@ -1554,7 +1554,7 @@ static inline Obj SIGN_PERM(Obj perm)
 
     }
 
-    /* return the sign                                                     */
+    // return the sign
     return INTOBJ_INT( sign );
 }
 
@@ -1590,56 +1590,56 @@ static Obj FuncSIGN_PERM(Obj self, Obj perm)
 template <typename T>
 static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
 {
-    Obj                 small;          /* handle of the smallest gen      */
-    T *                 ptSmall;        /* pointer to the smallest gen     */
-    const T *           ptPerm;         /* pointer to the permutation      */
-    T *                 ptKnown;        /* pointer to temporary bag        */
-    Obj                 ord;            /* order, may be huge              */
-    Obj                 pow;            /* power, may also be huge         */
-    UInt                len;            /* length of one cycle             */
-    UInt                gcd,  s,  t;    /* gcd( len, ord ), temporaries    */
-    UInt                min;            /* minimal element in a cycle      */
-    UInt                p,  q;          /* loop variables                  */
-    UInt                l, n, x, gcd2;  /* loop variable                   */
+    Obj                 small;          // handle of the smallest gen
+    T *                 ptSmall;        // pointer to the smallest gen
+    const T *           ptPerm;         // pointer to the permutation
+    T *                 ptKnown;        // pointer to temporary bag
+    Obj                 ord;            // order, may be huge
+    Obj                 pow;            // power, may also be huge
+    UInt                len;            // length of one cycle
+    UInt                gcd,  s,  t;    // gcd( len, ord ), temporaries
+    UInt                min;            // minimal element in a cycle
+    UInt                p,  q;          // loop variables
+    UInt                l, n, x, gcd2;  // loop variable
 
-    /* make sure that the buffer bag is large enough                       */
+    // make sure that the buffer bag is large enough
     UseTmpPerm(SIZE_OBJ(perm));
 
-    /* allocate the result bag                                         */
+    // allocate the result bag
     small = NEW_PERM<T>( DEG_PERM<T>(perm) );
 
-    /* get the pointer to the bags                                     */
+    // get the pointer to the bags
     ptPerm   = CONST_ADDR_PERM<T>(perm);
     ptKnown  = ADDR_TMP_PERM<T>();
     ptSmall  = ADDR_PERM<T>(small);
 
-    /* clear the buffer bag                                            */
+    // clear the buffer bag
     for ( p = 0; p < DEG_PERM<T>(perm); p++ )
         ptKnown[p] = 0;
 
-    /* we only know that we must raise <perm> to a power = 0 mod 1     */
+    // we only know that we must raise <perm> to a power = 0 mod 1
     ord = INTOBJ_INT(1);  pow = INTOBJ_INT(0);
 
-    /* loop over all cycles                                            */
+    // loop over all cycles
     for ( p = 0; p < DEG_PERM<T>(perm); p++ ) {
 
-        /* if we haven't looked at this cycle so far                   */
+        // if we haven't looked at this cycle so far
         if ( ptKnown[p] == 0 ) {
 
-            /* find the length of this cycle                           */
+            // find the length of this cycle
             len = 1;
             for ( q = ptPerm[p]; q != p; q = ptPerm[q] ) {
                 len++;  ptKnown[q] = 1;
             }
 
-            /* compute the gcd with the previously order ord           */
+            // compute the gcd with the previously order ord
             /* Note that since len is single precision, ord % len is to*/
             gcd = len;  s = INT_INTOBJ( ModInt( ord, INTOBJ_INT(len) ) );
             while ( s != 0 ) {
                 t = s;  s = gcd % s;  gcd = t;
             }
 
-            /* we must raise the cycle into a power = pow mod gcd      */
+            // we must raise the cycle into a power = pow mod gcd
             x = INT_INTOBJ( ModInt( pow, INTOBJ_INT( gcd ) ) );
 
             /* find the smallest element in the cycle at such a positio*/
@@ -1655,13 +1655,13 @@ static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
                 q = ptPerm[q];
             }
 
-            /* raise the cycle to that power and put it in the result  */
+            // raise the cycle to that power and put it in the result
             ptSmall[p] = min;
             for ( q = ptPerm[p]; q != p; q = ptPerm[q] ) {
                 min = ptPerm[min];  ptSmall[q] = min;
             }
 
-            /* compute the new order and the new power                 */
+            // compute the new order and the new power
             while ( INT_INTOBJ( ModInt( pow, INTOBJ_INT(len) ) ) != n )
                 pow = SumInt( pow, ord );
             ord = ProdInt( ord, INTOBJ_INT( len / gcd ) );
@@ -1670,7 +1670,7 @@ static inline Obj SMALLEST_GENERATOR_PERM(Obj perm)
 
     }
 
-    /* return the smallest generator                                       */
+    // return the smallest generator
     return small;
 }
 
@@ -1708,18 +1708,18 @@ static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
     const Obj *        ptDom;
     Int i,inc,len,p,deg;
 
-    /* make sure that the buffer bag is large enough */
+    // make sure that the buffer bag is large enough
     UseTmpPerm(SIZE_OBJ(perm));
 
-    /* allocate the result bag                                         */
+    // allocate the result bag
     deg = DEG_PERM<T>(perm);
     rest = NEW_PERM<T>(deg);
 
-    /* get the pointer to the bags                                     */
+    // get the pointer to the bags
     ptPerm  = CONST_ADDR_PERM<T>(perm);
     ptRest  = ADDR_PERM<T>(rest);
 
-    /* create identity everywhere */
+    // create identity everywhere
     for ( p = 0; p < deg; p++ ) {
         ptRest[p]=(T)p;
     }
@@ -1728,7 +1728,7 @@ static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
       if ( ! IS_PLIST( dom ) ) {
         return Fail;
       }
-      /* domain is list */
+      // domain is list
       ptPerm  = CONST_ADDR_PERM<T>(perm);
       ptRest  = ADDR_PERM<T>(rest);
       ptDom  = CONST_ADDR_OBJ(dom);
@@ -1764,21 +1764,21 @@ static inline Obj RESTRICTED_PERM(Obj perm, Obj dom, Obj test)
 
       T * ptTmp  = ADDR_TMP_PERM<T>();
 
-      /* cleanout */
+      // cleanout
       for ( p = 0; p < deg; p++ ) {
         ptTmp[p]=0;
       }
 
-      /* check whether the result is a permutation */
+      // check whether the result is a permutation
       for (p=0;p<deg;p++) {
         inc=ptRest[p];
-        if (ptTmp[inc]==1) return Fail; /* point was known */
-        else ptTmp[inc]=1; /* now point is known */
+        if (ptTmp[inc]==1) return Fail; // point was known
+        else ptTmp[inc]=1; // now point is known
       }
 
     }
 
-    /* return the restriction */
+    // return the restriction
     return rest;
 }
 
@@ -1851,7 +1851,7 @@ SPLIT_PARTITION(Obj Ppoints, Obj Qnum, Obj jval, Obj g, Obj lst)
       do {
         b--;
         if (b<blim) {
-          /* too many points got moved out */
+          // too many points got moved out
           return INTOBJ_INT(-1);
         }
       } while (ELM_PLIST(Qnum,
@@ -1861,7 +1861,7 @@ SPLIT_PARTITION(Obj Ppoints, Obj Qnum, Obj jval, Obj g, Obj lst)
       } while ((a<b)
               &&(!(ELM_PLIST(Qnum,
                    IMAGE(INT_INTOBJ(ELM_PLIST(Ppoints,a))-1,ptPerm,deg)+1)==jval)));
-      /* swap */
+      // swap
       if (a<b) {
         tmp=ELM_PLIST(Ppoints,a);
         SET_ELM_PLIST(Ppoints,a,ELM_PLIST(Ppoints,b));
@@ -1869,7 +1869,7 @@ SPLIT_PARTITION(Obj Ppoints, Obj Qnum, Obj jval, Obj g, Obj lst)
       }
     }
 
-  /* list is not necc. sorted wrt. \< (any longer) */
+  // list is not necc. sorted wrt. \< (any longer)
   RESET_FILT_LIST(Ppoints, FN_IS_SSORT);
   RESET_FILT_LIST(Ppoints, FN_IS_NSORT);
 
@@ -1949,21 +1949,21 @@ static Obj FuncDISTANCE_PERMS(Obj self, Obj opL, Obj opR)
 template <typename T>
 static inline Obj SMALLEST_IMG_TUP_PERM(Obj tup, Obj perm)
 {
-    UInt                res;            /* handle of the image, result     */
-    const Obj *         ptTup;          /* pointer to the tuple            */
-    const T *           ptPrm;         /* pointer to the permutation      */
-    UInt                tmp;            /* temporary handle                */
-    UInt                lmp;            /* largest moved point             */
-    UInt                i, k;           /* loop variables                  */
+    UInt                res;            // handle of the image, result
+    const Obj *         ptTup;          // pointer to the tuple
+    const T *           ptPrm;         // pointer to the permutation
+    UInt                tmp;            // temporary handle
+    UInt                lmp;            // largest moved point
+    UInt                i, k;           // loop variables
 
-    res = MAX_DEG_PERM4; /* ``infty''. */
+    res = MAX_DEG_PERM4; // ``infty''.
 
-    /* get the pointer                                                 */
+    // get the pointer
     ptTup = CONST_ADDR_OBJ(tup) + LEN_LIST(tup);
     ptPrm = CONST_ADDR_PERM<T>(perm);
     lmp = DEG_PERM<T>(perm);
 
-    /* loop over the entries of the tuple                              */
+    // loop over the entries of the tuple
     for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup-- ) {
       k = INT_INTOBJ( *ptTup );
       if ( k <= lmp )
@@ -2000,12 +2000,12 @@ static Obj FuncSMALLEST_IMG_TUP_PERM(Obj self, Obj tup, Obj perm)
 template <typename T>
 static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
 {
-    Obj                 res;            /* handle of the image, result     */
-    Obj *               ptRes;          /* pointer to the result           */
-    const T *           ptPrm;          /* pointer to the permutation      */
-    Obj                 tmp;            /* temporary handle                */
-    UInt                lmp;            /* largest moved point             */
-    UInt                i, k;           /* loop variables                  */
+    Obj                 res;            // handle of the image, result
+    Obj *               ptRes;          // pointer to the result
+    const T *           ptPrm;          // pointer to the permutation
+    Obj                 tmp;            // temporary handle
+    UInt                lmp;            // largest moved point
+    UInt                i, k;           // loop variables
 
     // copy the list into a mutable plist, which we will then modify in place
     res = PLAIN_LIST_COPY(tup);
@@ -2013,12 +2013,12 @@ static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
     RESET_FILT_LIST(res, FN_IS_NSORT);
     const UInt len = LEN_PLIST(res);
 
-    /* get the pointer                                                 */
+    // get the pointer
     ptRes = ADDR_OBJ(res) + 1;
     ptPrm = CONST_ADDR_PERM<T>(perm);
     lmp = DEG_PERM<T>(perm);
 
-    /* loop over the entries of the tuple                              */
+    // loop over the entries of the tuple
     for (i = 1; i <= len; i++, ptRes++) {
         tmp = *ptRes;
         if (IS_POS_INTOBJ(tmp)) {
@@ -2069,23 +2069,23 @@ Obj             OnTuplesPerm (
 template <typename T>
 static inline Obj OnSetsPerm_(Obj set, Obj perm)
 {
-    Obj                 res;            /* handle of the image, result     */
-    Obj *               ptRes;          /* pointer to the result           */
-    const T *           ptPrm;          /* pointer to the permutation      */
-    Obj                 tmp;            /* temporary handle                */
-    UInt                lmp;            /* largest moved point             */
-    UInt                i, k;           /* loop variables                  */
+    Obj                 res;            // handle of the image, result
+    Obj *               ptRes;          // pointer to the result
+    const T *           ptPrm;          // pointer to the permutation
+    Obj                 tmp;            // temporary handle
+    UInt                lmp;            // largest moved point
+    UInt                i, k;           // loop variables
 
     // copy the list into a mutable plist, which we will then modify in place
     res = PLAIN_LIST_COPY(set);
     const UInt len = LEN_PLIST(res);
 
-    /* get the pointer                                                 */
+    // get the pointer
     ptRes = ADDR_OBJ(res) + 1;
     ptPrm = CONST_ADDR_PERM<T>(perm);
     lmp = DEG_PERM<T>(perm);
 
-    /* loop over the entries of the tuple                              */
+    // loop over the entries of the tuple
     BOOL isSmallIntList = TRUE;
     for (i = 1; i <= len; i++, ptRes++) {
         tmp = *ptRes;
@@ -2209,21 +2209,21 @@ static void LoadPerm4(Obj perm)
 Obj Array2Perm (
     Obj                 array )
 {
-    Obj                 perm;           /* permutation, result             */
-    UInt                m;              /* maximal entry in permutation    */
-    Obj                 cycle;          /* one cycle of permutation        */
-    UInt                i;              /* loop variable                   */
+    Obj                 perm;           // permutation, result
+    UInt                m;              // maximal entry in permutation
+    Obj                 cycle;          // one cycle of permutation
+    UInt                i;              // loop variable
 
-    /* special case for identity permutation                               */
+    // special case for identity permutation
     if ( LEN_LIST(array) == 0 ) {
         return IdentityPerm;
     }
 
-    /* allocate the new permutation                                        */
+    // allocate the new permutation
     m = 0;
     perm = NEW_PERM4( 0 );
 
-    /* loop over the cycles                                                */
+    // loop over the cycles
     for ( i = 1; i <= LEN_LIST(array); i++ ) {
         cycle = ELM_LIST( array, i );
         RequireSmallList("Array2Perm", cycle);
@@ -2231,10 +2231,10 @@ Obj Array2Perm (
         m = ScanPermCycle(perm, m, cycle, LEN_LIST(cycle), ELM_LIST);
     }
 
-    /* if possible represent the permutation with short entries            */
+    // if possible represent the permutation with short entries
     TrimPerm(perm, m);
 
-    /* return the permutation                                              */
+    // return the permutation
     return perm;
 }
 
@@ -2264,18 +2264,18 @@ void TrimPerm(Obj perm, UInt m)
 UInt ScanPermCycle(
     Obj perm, UInt m, Obj cycle, UInt len, Obj (*readElm)(Obj, Int))
 {
-    UInt4 * ptr4;    /* pointer into perm               */
-    Obj     val;     /* one entry as value              */
-    UInt    c, p, l; /* entries in permutation          */
-    UInt    j;       /* loop variable                   */
+    UInt4 * ptr4;    // pointer into perm
+    Obj     val;     // one entry as value
+    UInt    c, p, l; // entries in permutation
+    UInt    j;       // loop variable
 
     GAP_ASSERT(len >= 1);
 
-    /* loop over the entries of the cycle                              */
+    // loop over the entries of the cycle
     p = l = 0;
     for (j = len; 1 <= j; j--) {
 
-        /* get and check current entry for the cycle                   */
+        // get and check current entry for the cycle
         val = readElm(cycle, j);
         c = GetPositiveSmallIntEx("Permutation", val, "<expr>");
         if (c > MAX_DEG_PERM4)
@@ -2283,7 +2283,7 @@ UInt ScanPermCycle(
                 "Permutation literal exceeds maximum permutation degree", 0,
                 0);
 
-        /* if necessary resize the permutation                         */
+        // if necessary resize the permutation
         if (DEG_PERM4(perm) < c) {
             ResizeBag(perm, SIZEBAG_PERM4((c + 1023) / 1024 * 1024));
             ptr4 = ADDR_PERM4(perm);
@@ -2298,14 +2298,14 @@ UInt ScanPermCycle(
             m = c;
         }
 
-        /* check that the cycles are disjoint                          */
+        // check that the cycles are disjoint
         if ((p != 0 && p == c) || (ptr4[c - 1] != c - 1)) {
             ErrorMayQuit(
                 "Permutation: cycles must be disjoint and duplicate-free", 0,
                 0);
         }
 
-        /* enter the previous entry at current location                */
+        // enter the previous entry at current location
         if (p != 0) {
             ptr4[c - 1] = p - 1;
         }
@@ -2313,11 +2313,11 @@ UInt ScanPermCycle(
             l = c;
         }
 
-        /* remember current entry for next round                       */
+        // remember current entry for next round
         p = c;
     }
 
-    /* enter first (last popped) entry at last (first popped) location */
+    // enter first (last popped) entry at last (first popped) location
     ptr4 = ADDR_PERM4(perm);
     if (ptr4[l - 1] != l - 1) {
         ErrorMayQuit(
@@ -2340,7 +2340,7 @@ static inline Int myquo(Obj pt, Obj perm)
 }
 
 
-/* Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop */
+// Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop
 static Obj FuncAGESTC(Obj self, Obj args)
 {
   Int i,j;
@@ -2394,7 +2394,7 @@ static Obj FuncAGESTC(Obj self, Obj args)
   return (Obj) 0;
 }
 
-/* Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop */
+// Stabilizer chain helper implements AddGeneratorsExtendSchreierTree Inner loop
 static Obj FuncAGEST(Obj self,
                      Obj orbit,
                      Obj newlabs,
@@ -2487,7 +2487,7 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
         if (x > d) d = x;
     }
     if (d <= DEGREELIMITONSTACK) {
-        /* Small case where we work on the stack: */
+        // Small case where we work on the stack:
         memset(&mytabs,0,sizeof(mytabs));
         memset(&mytabd,0,sizeof(mytabd));
         for (i = 1;i <= l;i++) {
@@ -2514,10 +2514,10 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
 
         out = NEW_PLIST(T_PLIST_CYC,d);
         SET_LEN_PLIST(out,d);
-        /* No garbage collection from here ... */
+        // No garbage collection from here ...
         next = 1;
         for (i = 1;i <= d;i++) {
-            if (mytabs[i]) {   /* if i is in src */
+            if (mytabs[i]) {   // if i is in src
                 SET_ELM_PLIST(out,i, ELM_LIST(dst,mytabs[i]));
             } else {
                 if (mytabd[i]) {
@@ -2533,11 +2533,11 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
                 }
             }
         }
-        /* ... to here! No CHANGED_BAG needed since this is a new object! */
+        // ... to here! No CHANGED_BAG needed since this is a new object!
     } else {
-        /* Version with intermediate objects: */
+        // Version with intermediate objects:
         tabsrc = NEW_PLIST(T_PLIST,d);
-        /* No garbage collection from here ... */
+        // No garbage collection from here ...
         for (i = 1;i <= l;i++) {
             Int val = INT_INTOBJ(ELM_LIST(src, i));
             if (ELM_PLIST(tabsrc, val)) {
@@ -2550,9 +2550,9 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
                 SET_ELM_PLIST(tabsrc, val, INTOBJ_INT(i));
             }
         }
-        /* ... to here! No CHANGED_BAG needed since this is a new object! */
+        // ... to here! No CHANGED_BAG needed since this is a new object!
         tabdst = NEW_PLIST(T_PLIST,d);
-        /* No garbage collection from here ... */
+        // No garbage collection from here ...
         for (i = 1;i <= l;i++) {
             int val = INT_INTOBJ(ELM_LIST(dst, i));
             if (ELM_PLIST(tabdst, val)) {
@@ -2565,13 +2565,13 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
                 SET_ELM_PLIST(tabdst, val, INTOBJ_INT(i));
             }
         }
-        /* ... to here! No CHANGED_BAG needed since this is a new object! */
+        // ... to here! No CHANGED_BAG needed since this is a new object!
         out = NEW_PLIST(T_PLIST_CYC,d);
         SET_LEN_PLIST(out,d);
-        /* No garbage collection from here ... */
+        // No garbage collection from here ...
         next = 1;
         for (i = 1;i <= d;i++) {
-            if (ELM_PLIST(tabsrc,i)) {   /* if i is in src */
+            if (ELM_PLIST(tabsrc,i)) {   // if i is in src
                 SET_ELM_PLIST(out,i,
                     ELM_LIST(dst,INT_INTOBJ(ELM_PLIST(tabsrc,i))));
             } else {
@@ -2590,31 +2590,31 @@ static Obj FuncMappingPermListList(Obj self, Obj src, Obj dst)
                 }
             }
         }
-        /* ... to here! No CHANGED_BAG needed since this is a new object! */
+        // ... to here! No CHANGED_BAG needed since this is a new object!
     }
     return FuncPermList(self,out);
 }
 
-/* InstallGlobalFunction( SCRSift, function ( S, g ) */
-/*     local stb,   # the stabilizer of S we currently work with */
-/*           bpt;   # first point of stb.orbit */
+// InstallGlobalFunction( SCRSift, function ( S, g )
+// local stb,   # the stabilizer of S we currently work with
+// bpt;   # first point of stb.orbit
 
-/*     stb := S; */
-/*     while IsBound( stb.stabilizer ) do */
-/*         bpt := stb.orbit[1]; */
-/*         if IsBound( stb.transversal[bpt^g] ) then */
-/*             while bpt <> bpt^g do */
-/*                 g := g*stb.transversal[bpt^g]; */
-/*             od; */
-/*             stb := stb.stabilizer; */
-/*         else */
-/*             #current g witnesses that input was not in S */
-/*             return g; */
-/*         fi; */
-/*     od; */
+// stb := S;
+// while IsBound( stb.stabilizer ) do
+// bpt := stb.orbit[1];
+// if IsBound( stb.transversal[bpt^g] ) then
+// while bpt <> bpt^g do
+// g := g*stb.transversal[bpt^g];
+// od;
+// stb := stb.stabilizer;
+// else
+// #current g witnesses that input was not in S
+// return g;
+// fi;
+// od;
 
-/*     return g; */
-/* end ); */
+// return g;
+// end );
 
 
 static UInt RN_stabilizer = 0;
@@ -2633,7 +2633,7 @@ static Obj SCR_SIFT_HELPER(Obj stb, Obj g, UInt nn)
                     ignore */
         dg = nn;
 
-    /* Copy g into the buffer */
+    // Copy g into the buffer
     Res *      ptR = ADDR_PERM<Res>(result);
     const TG * ptG = CONST_ADDR_PERM<TG>(g);
     if (sizeof(TG) == sizeof(Res)) {
@@ -2688,7 +2688,7 @@ static Obj SCR_SIFT_HELPER(Obj stb, Obj g, UInt nn)
         }
         stb = ElmPRec(stb, RN_stabilizer);
     }
-    /* so we're done sifting, and now we just have to clean up result */
+    // so we're done sifting, and now we just have to clean up result
     return result;
 }
 
@@ -2699,7 +2699,7 @@ static Obj FuncSCR_SIFT_HELPER(Obj self, Obj stb, Obj g, Obj n)
     RequirePermutation(SELF_NAME, g);
     UInt nn = GetSmallInt(SELF_NAME, n);
 
-    /* Setup the result, sort out which rep we are going to work in  */
+    // Setup the result, sort out which rep we are going to work in
     if (nn > 65535) {
         if (IS_PERM2(g))
             return SCR_SIFT_HELPER<UInt2, UInt4>(stb, g, nn);
@@ -2793,7 +2793,7 @@ static Int InitKernel (
     // set the bag type names (for error messages and debugging)
     InitBagNamesFromTable( BagNames );
 
-    /* install the marking function                                        */
+    // install the marking function
     InitMarkFuncBags(T_PERM2, MarkOneSubBags);
     InitMarkFuncBags(T_PERM4, MarkOneSubBags);
 
@@ -2804,10 +2804,10 @@ static Int InitKernel (
 
     ImportGVarFromLibrary("PERM_INVERSE_THRESHOLD", &PERM_INVERSE_THRESHOLD);
 
-    /* needed for SmallestMovedPoint                                       */
+    // needed for SmallestMovedPoint
     ImportGVarFromLibrary("infinity", &Infinity);
 
-    /* install the type functions                                           */
+    // install the type functions
     ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
     ImportGVarFromLibrary( "TYPE_PERM4", &TYPE_PERM4 );
 
@@ -2815,31 +2815,31 @@ static Int InitKernel (
     TypeObjFuncs[ T_PERM2 ] = TypePerm2;
     TypeObjFuncs[ T_PERM4 ] = TypePerm4;
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* make the buffer bag                                                 */
+    // make the buffer bag
 #ifndef HPCGAP
     InitGlobalBag( &TmpPerm, "src/permutat.cc:TmpPerm" );
 #endif
 
-    /* make the identity permutation                                       */
+    // make the identity permutation
     InitGlobalBag( &IdentityPerm, "src/permutat.cc:IdentityPerm" );
 
 #ifdef GAP_ENABLE_SAVELOAD
-    /* install the saving functions */
+    // install the saving functions
     SaveObjFuncs[ T_PERM2 ] = SavePerm2;
     SaveObjFuncs[ T_PERM4 ] = SavePerm4;
     LoadObjFuncs[ T_PERM2 ] = LoadPerm2;
     LoadObjFuncs[ T_PERM4 ] = LoadPerm4;
 #endif
 
-    /* install the printing functions                                      */
+    // install the printing functions
     PrintObjFuncs[ T_PERM2   ] = PrintPerm<UInt2>;
     PrintObjFuncs[ T_PERM4   ] = PrintPerm<UInt4>;
 
-    /* install the comparison methods                                      */
+    // install the comparison methods
     EqFuncs  [ T_PERM2  ][ T_PERM2  ] = EqPerm<UInt2, UInt2>;
     EqFuncs  [ T_PERM2  ][ T_PERM4  ] = EqPerm<UInt2, UInt4>;
     EqFuncs  [ T_PERM4  ][ T_PERM2  ] = EqPerm<UInt4, UInt2>;
@@ -2849,7 +2849,7 @@ static Int InitKernel (
     LtFuncs  [ T_PERM4  ][ T_PERM2  ] = LtPerm<UInt4, UInt2>;
     LtFuncs  [ T_PERM4  ][ T_PERM4  ] = LtPerm<UInt4, UInt4>;
 
-    /* install the binary operations                                       */
+    // install the binary operations
     ProdFuncs[ T_PERM2  ][ T_PERM2  ] = ProdPerm<UInt2, UInt2>;
     ProdFuncs[ T_PERM2  ][ T_PERM4  ] = ProdPerm<UInt2, UInt4>;
     ProdFuncs[ T_PERM4  ][ T_PERM2  ] = ProdPerm<UInt4, UInt2>;
@@ -2885,13 +2885,13 @@ static Int InitKernel (
     CommFuncs[ T_PERM4  ][ T_PERM2  ] = CommPerm<UInt4, UInt2>;
     CommFuncs[ T_PERM4  ][ T_PERM4  ] = CommPerm<UInt4, UInt4>;
 
-    /* install the 'ONE' function for permutations                         */
+    // install the 'ONE' function for permutations
     OneFuncs[ T_PERM2 ] = OnePerm;
     OneFuncs[ T_PERM4 ] = OnePerm;
     OneSameMut[T_PERM2] = OnePerm;
     OneSameMut[T_PERM4] = OnePerm;
 
-    /* install the 'INV' function for permutations                         */
+    // install the 'INV' function for permutations
     InvFuncs[ T_PERM2 ] = InvPerm<UInt2>;
     InvFuncs[ T_PERM4 ] = InvPerm<UInt4>;
     InvSameMutFuncs[T_PERM2] = InvPerm<UInt2>;
@@ -2922,11 +2922,11 @@ static Int PostRestore(StructInitInfo * module)
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* make the identity permutation                                       */
+    // make the identity permutation
     IdentityPerm = NEW_PERM2(0);
 
     return PostRestore(module);
@@ -2935,7 +2935,7 @@ static Int InitLibrary (
 
 static Int InitModuleState(void)
 {
-    /* make the buffer bag                                                 */
+    // make the buffer bag
     TmpPerm = 0;
 
     return 0;

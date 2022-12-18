@@ -136,7 +136,7 @@ void ViewObjHandler ( Obj obj )
   // save some values in case view runs into error
   volatile Bag  currLVars   = STATE(CurrLVars);
 
-  /* if non-zero use this function, otherwise use `PrintObj'             */
+  // if non-zero use this function, otherwise use `PrintObj'
   GAP_TRY {
     Obj func = ValAutoGVar(ViewObjGVar);
     if ( func != 0 && TNUM_OBJ(func) == T_FUNCTION ) {
@@ -241,19 +241,19 @@ static Obj FuncSHELL(Obj self,
         UInt  time = 0;
         UInt8 mem = 0;
 
-        /* start the stopwatch                                             */
+        // start the stopwatch
         if (breakLoop == False) {
             time = SyTime();
             mem = SizeAllBags;
         }
 
-        /* read and evaluate one command                                   */
+        // read and evaluate one command
         SetPrompt(CONST_CSTR_STRING(prompt));
         SetPrintObjState(0);
         ResetOutputIndent();
         SetRecursionDepth(0);
 
-        /* here is a hook: */
+        // here is a hook:
         if (preCommandHook) {
             Call0ArgsInNewReader(preCommandHook);
             // Recover from a potential break loop:
@@ -293,7 +293,7 @@ static Obj FuncSHELL(Obj self,
             break;
         }
 
-        /* handle ordinary command                                         */
+        // handle ordinary command
         if (status == STATUS_END && evalResult != 0) {
             UpdateLast(evalResult);
             if (!dualSemicolon) {
@@ -301,7 +301,7 @@ static Obj FuncSHELL(Obj self,
             }
         }
 
-        /* handle return-value or return-void command                      */
+        // handle return-value or return-void command
         else if (status == STATUS_RETURN && evalResult != 0) {
             if (canReturnObj == True)
                 break;
@@ -315,12 +315,12 @@ static Obj FuncSHELL(Obj self,
             Pr("'return' cannot be used in this read-eval-print loop\n", 0,
                0);
         }
-        /* handle quit command or <end-of-file>                            */
+        // handle quit command or <end-of-file>
         else if (status == STATUS_EOF || status == STATUS_QUIT) {
             break;
         }
 
-        /* stop the stopwatch                                          */
+        // stop the stopwatch
         if (breakLoop == False) {
             UpdateTime(time);
             AssGVarWithoutReadOnlyCheck(MemoryAllocated,
@@ -389,15 +389,15 @@ static Obj FuncSHELL(Obj self,
 
 int realmain( int argc, char * argv[] )
 {
-  UInt                type;                   /* result of compile       */
-  Obj                 func;                   /* function (compiler)     */
-  Int4                crc;                    /* crc of file to compile  */
+  UInt                type;                   // result of compile
+  Obj                 func;                   // function (compiler)
+  Int4                crc;                    // crc of file to compile
 
-  /* initialize everything and read init.g which runs the GAP session */
+  // initialize everything and read init.g which runs the GAP session
   InitializeGap( &argc, argv, 1 );
   if (!STATE(UserHasQUIT)) {         /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
-    /* maybe compile in which case init.g got skipped */
+    // maybe compile in which case init.g got skipped
     if ( SyCompilePlease ) {
       TypInputFile input;
       if ( ! OpenInput(&input, SyCompileInput) ) {
@@ -474,10 +474,10 @@ static Obj FuncRETURN_NOTHING(Obj self, Obj arg)
 */
 static Obj FuncSizeScreen(Obj self, Obj args)
 {
-  Obj                 size;           /* argument and result list        */
-  Obj                 elm;            /* one entry from size             */
-  UInt                len;            /* length of lines on the screen   */
-  UInt                nr;             /* number of lines on the screen   */
+  Obj                 size;           // argument and result list
+  Obj                 elm;            // one entry from size
+  UInt                len;            // length of lines on the screen
+  UInt                nr;             // number of lines on the screen
 
   RequireSmallList(SELF_NAME, args);
   if (1 < LEN_LIST(args)) {
@@ -485,12 +485,12 @@ static Obj FuncSizeScreen(Obj self, Obj args)
                    LEN_LIST(args), 0);
   }
 
-  /* get the arguments                                                   */
+  // get the arguments
   if ( LEN_LIST(args) == 0 ) {
     size = NEW_PLIST( T_PLIST, 0 );
   }
 
-  /* otherwise check the argument                                        */
+  // otherwise check the argument
   else {
     size = ELM_LIST( args, 1 );
     if (!IS_SMALL_LIST(size) || 2 < LEN_LIST(size)) {
@@ -499,7 +499,7 @@ static Obj FuncSizeScreen(Obj self, Obj args)
     }
   }
 
-  /* extract the length                                                  */
+  // extract the length
   if ( LEN_LIST(size) < 1 || ELM0_LIST(size,1) == 0 ) {
     len = 0;
   }
@@ -510,7 +510,7 @@ static Obj FuncSizeScreen(Obj self, Obj args)
     if ( MAXLENOUTPUTLINE < len )  len = MAXLENOUTPUTLINE;
   }
 
-  /* extract the number                                                  */
+  // extract the number
   elm = ELM0_LIST(size, 2);
   if ( elm == 0 ) {
     nr = 0;
@@ -520,7 +520,7 @@ static Obj FuncSizeScreen(Obj self, Obj args)
     if ( nr < 10 )  nr = 10;
   }
 
-  /* set length and number                                               */
+  // set length and number
   if (len != 0)
     {
       SyNrCols = len;
@@ -532,7 +532,7 @@ static Obj FuncSizeScreen(Obj self, Obj args)
       SyNrRowsLocked = 1;
     }
 
-  /* make and return the size of the screen                              */
+  // make and return the size of the screen
   size = NEW_PLIST( T_PLIST, 2 );
   PushPlist(size, ObjInt_UInt(SyNrCols));
   PushPlist(size, ObjInt_UInt(SyNrRows));
@@ -567,7 +567,7 @@ static Obj FuncWindowCmd(Obj self, Obj args)
         ErrorMayQuit("WindowCmd: <cmd> must be a string of length 3", 0, 0);
     }
 
-  /* compute size needed to store argument string                        */
+  // compute size needed to store argument string
   len = 13;
   for ( i = 2;  i <= LEN_LIST(args);  i++ )
     {
@@ -587,14 +587,14 @@ static Obj FuncWindowCmd(Obj self, Obj args)
     ResizeBag( WindowCmdString, 2*len+1 );
   }
 
-  /* convert <args> into an argument string                              */
+  // convert <args> into an argument string
   ptr  = (Char*) CSTR_STRING(WindowCmdString);
 
-  /* first the command name                                              */
+  // first the command name
   memcpy( ptr, CONST_CSTR_STRING( ELM_LIST(args,1) ), 3 + 1 );
   ptr += 3;
 
-  /* and now the arguments                                               */
+  // and now the arguments
   for ( i = 2;  i <= LEN_LIST(args);  i++ )
     {
       tmp = ELM_LIST(args,i);
@@ -622,12 +622,12 @@ static Obj FuncWindowCmd(Obj self, Obj args)
     }
   *ptr = 0;
 
-  /* now call the window front end with the argument string              */
+  // now call the window front end with the argument string
   qtr = CONST_CSTR_STRING(WindowCmdString);
   inptr = SyWinCmd( qtr, strlen(qtr) );
   len = strlen(inptr);
 
-  /* now convert result back into a list                                 */
+  // now convert result back into a list
   list = NEW_PLIST( T_PLIST, 11 );
   i = 1;
   while ( 0 < len ) {
@@ -644,7 +644,7 @@ static Obj FuncWindowCmd(Obj self, Obj args)
       inptr++;
       for ( n=0,m=1;  '0' <= *inptr && *inptr <= '9';  inptr++,m *= 10,len-- )
         n += (*inptr-'0') * m;
-      inptr++; /* ignore the '+' */
+      inptr++; // ignore the '+'
       tmp = MakeImmStringWithLen(inptr, n);
       inptr += n;
       len -= n+2;
@@ -656,7 +656,7 @@ static Obj FuncWindowCmd(Obj self, Obj args)
     i++;
   }
 
-  /* if the first entry is one signal an error */
+  // if the first entry is one signal an error
   if ( ELM_LIST(list,1) == INTOBJ_INT(1) ) {
       tmp = MakeString("window system: ");
       SET_ELM_PLIST(list, 1, tmp);
@@ -693,10 +693,10 @@ static Obj FuncGASMAN(Obj self, Obj args)
             0, 0);
     }
 
-    /* loop over the arguments                                             */
+    // loop over the arguments
     for ( UInt i = 1; i <= LEN_LIST(args); i++ ) {
 
-        /* evaluate and check the command                                  */
+        // evaluate and check the command
         Obj cmd = ELM_PLIST( args, i );
         RequireStringRep(SELF_NAME, cmd);
 
@@ -718,7 +718,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
 
 #else
 
-        /* if request display the statistics                               */
+        // if request display the statistics
         else if (streq(CONST_CSTR_STRING(cmd), "display")) {
 #ifdef COUNT_BAGS
             Pr("%40s ", (Int)"type", 0);
@@ -739,7 +739,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
 #endif
         }
 
-        /* if request give a short display of the statistics                */
+        // if request give a short display of the statistics
         else if (streq(CONST_CSTR_STRING(cmd), "displayshort")) {
 #ifdef COUNT_BAGS
             Pr("%40s ", (Int)"type", 0);
@@ -764,7 +764,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
 #endif
         }
 
-        /* if request display the statistics                               */
+        // if request display the statistics
         else if (streq(CONST_CSTR_STRING(cmd), "clear")) {
 #ifdef COUNT_BAGS
             for ( UInt k = 0; k < NUM_TYPES; k++ ) {
@@ -779,7 +779,7 @@ static Obj FuncGASMAN(Obj self, Obj args)
 #endif
         }
 
-        /* or display information about global bags                        */
+        // or display information about global bags
         else if (streq(CONST_CSTR_STRING(cmd), "global")) {
             for ( i = 0;  i < GlobalBags.nr;  i++ ) {
                 Bag bag = *(GlobalBags.addr[i]);
@@ -793,12 +793,12 @@ static Obj FuncGASMAN(Obj self, Obj args)
             }
         }
 
-        /* or finally toggle Gasman messages                               */
+        // or finally toggle Gasman messages
         else if (streq(CONST_CSTR_STRING(cmd), "message")) {
             SyMsgsFlagBags = (SyMsgsFlagBags + 1) % 3;
         }
 
-        /* otherwise complain                                              */
+        // otherwise complain
         else {
             ErrorMayQuit("GASMAN: <cmd> must be "
                          "\"display\" or \"clear\" or \"global\" or "
@@ -1090,7 +1090,7 @@ static Obj FuncKERNEL_INFO(Obj self)
         }
         Obj name = MakeStringWithLen(environ[i], p - environ[i]);
         r = RNamName(CONST_CSTR_STRING(name));
-        p++; /* Move pointer behind = character */
+        p++; // Move pointer behind = character
         AssPRec(tmp, r, MakeImmString(p));
     }
     AssPRec(res, RNamName("ENVIRONMENT"), tmp);
@@ -1315,13 +1315,13 @@ static StructGVarFunc GVarFuncs[] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* list of exit functions                                              */
+    // list of exit functions
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* establish Fopy of ViewObj                                           */
+    // establish Fopy of ViewObj
     ImportFuncFromLibrary(  "ViewObj", 0 );
     ImportFuncFromLibrary(  "Error", &Error );
     return 0;
@@ -1335,10 +1335,10 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-    /* construct the `ViewObj' variable                                    */
+    // construct the `ViewObj' variable
     ViewObjGVar = GVarName( "ViewObj" );
 
-    /* construct the last and time variables                               */
+    // construct the last and time variables
     Last              = GVarName( "last"  );
     Last2             = GVarName( "last2" );
     Last3             = GVarName( "last3" );
@@ -1358,10 +1358,10 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* create windows command buffer                                       */
+    // create windows command buffer
     WindowCmdString = NEW_STRING( 1000 );
 
 #ifdef HPCGAP
@@ -1436,10 +1436,10 @@ void InitializeGap (
     char *              argv [],
     UInt                handleSignals )
 {
-    /* initialize the basic system and gasman                              */
+    // initialize the basic system and gasman
     InitSystem( *pargc, argv, handleSignals );
 
-    /* Initialise memory  -- have to do this here to make sure we are at top of C stack */
+    // Initialise memory  -- have to do this here to make sure we are at top of C stack
     InitBags(
 #if defined(USE_GASMAN)
         SyStorMin,
@@ -1505,7 +1505,7 @@ void InitializeGap (
     }
 #endif // GAP_ENABLE_SAVELOAD
 
-    /* otherwise call library initialisation                               */
+    // otherwise call library initialisation
 #ifdef USE_GASMAN
     CheckAllHandlers();
 #endif
@@ -1514,7 +1514,7 @@ void InitializeGap (
     ModulesInitLibrary();
     ModulesInitModuleState();
 
-    /* check initialisation                                                */
+    // check initialisation
     ModulesCheckInit();
 
     /* read the init files

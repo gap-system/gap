@@ -51,11 +51,11 @@
 
 #ifdef HAVE_OPENPTY
   #if defined(HAVE_UTIL_H)
-    #include <util.h>     /* for openpty() on macOS, OpenBSD and NetBSD */
+    #include <util.h>     // for openpty() on macOS, OpenBSD and NetBSD
   #elif defined(HAVE_LIBUTIL_H)
-    #include <libutil.h>  /* for openpty() on FreeBSD */
+    #include <libutil.h>  // for openpty() on FreeBSD
   #elif defined(HAVE_PTY_H)
-    #include <pty.h>      /* for openpty() on Cygwin, Interix, OSF/1 4 and 5 */
+    #include <pty.h>      // for openpty() on Cygwin, Interix, OSF/1 4 and 5
   #endif
 #endif
 
@@ -70,24 +70,24 @@
 // the IOStream related variables, including FreeptyIOStreams
 
 typedef struct {
-  pid_t childPID;   /* Also used as a link to make a linked free list */
-  int ptyFD;      /* GAP reading from external prog */
+  pid_t childPID;   // Also used as a link to make a linked free list
+  int ptyFD;      // GAP reading from external prog
   int inuse;      /* we need to scan all the "live" structures when we have
                      had SIGCHLD so, for now, we just walk the array for
                      the ones marked in use */
   int changed;    /* set non-zero by the signal handler if our child has
                      done something -- stopped or exited */
-  int status;     /* status from wait3 -- meaningful only if changed is 1 */
-  int blocked;    /* we have already reported a problem, which is still there */
+  int status;     // status from wait3 -- meaningful only if changed is 1
+  int blocked;    // we have already reported a problem, which is still there
   int alive;      /* gets set after waiting for a child actually fails
                      implying that the child has vanished under our noses */
 } PtyIOStream;
 
 enum {
-    /* maximal number of pseudo ttys we will allocate */
+    // maximal number of pseudo ttys we will allocate
     MAX_PTYS = 64,
 
-    /* maximal length of argument string for CREATE_PTY_IOSTREAM */
+    // maximal length of argument string for CREATE_PTY_IOSTREAM
     MAX_ARGS = 1000
 };
 
@@ -408,21 +408,21 @@ static int posix_spawn_with_dir(pid_t *                      pid,
 static Int
 StartChildProcess(const Char * dir, const Char * prg, Char * args[])
 {
-    int child; /* pipe to child                   */
+    int child; // pipe to child
     Int stream;
 
-    struct termios tst; /* old and new terminal state      */
+    struct termios tst; // old and new terminal state
 
     HashLock(PtyIOStreams);
 
-    /* Get a stream record */
+    // Get a stream record
     stream = NewStream();
     if (stream == -1) {
         HashUnlock(PtyIOStreams);
         return -1;
     }
 
-    /* open pseudo terminal for communication with gap */
+    // open pseudo terminal for communication with gap
     if (OpenPty(&PtyIOStreams[stream].ptyFD, &child)) {
         PErr("StartChildProcess: open pseudo tty failed");
         FreeStream(stream);
@@ -430,7 +430,7 @@ StartChildProcess(const Char * dir, const Char * prg, Char * args[])
         return -1;
     }
 
-    /* Now fiddle with the terminal sessions on the pty */
+    // Now fiddle with the terminal sessions on the pty
     if (tcgetattr(child, &tst) == -1) {
         PErr("StartChildProcess: tcgetattr on child pty failed");
         goto cleanup;
@@ -447,14 +447,14 @@ StartChildProcess(const Char * dir, const Char * prg, Char * args[])
         goto cleanup;
     }
 
-    /* set input to non blocking operation */
-    /* Not any more */
+    // set input to non blocking operation
+    // Not any more
 
     PtyIOStreams[stream].inuse = 1;
     PtyIOStreams[stream].alive = 1;
     PtyIOStreams[stream].blocked = 0;
     PtyIOStreams[stream].changed = 0;
-    /* fork */
+    // fork
 #ifdef HAVE_POSIX_SPAWN
     posix_spawn_file_actions_t file_actions;
 
@@ -498,7 +498,7 @@ StartChildProcess(const Char * dir, const Char * prg, Char * args[])
 #else
     PtyIOStreams[stream].childPID = fork();
     if (PtyIOStreams[stream].childPID == 0) {
-        /* Set up the child */
+        // Set up the child
         close(PtyIOStreams[stream].ptyFD);
         if (dup2(child, 0) == -1)
             _exit(-1);
@@ -518,14 +518,14 @@ StartChildProcess(const Char * dir, const Char * prg, Char * args[])
 
         execv(prg, args);
 
-        /* This should never happen */
+        // This should never happen
         close(child);
         _exit(1);
     }
 #endif
 
-    /* Now we're back in the parent */
-    /* check if the fork was successful */
+    // Now we're back in the parent
+    // check if the fork was successful
     if (PtyIOStreams[stream].childPID == -1) {
         PErr("StartChildProcess: cannot fork to subprocess");
         goto cleanup;
@@ -588,7 +588,7 @@ static Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
         allargs[i] = ELM_LIST(args, i);
         ConvString(allargs[i]);
     }
-    /* From here we cannot afford to have a garbage collection */
+    // From here we cannot afford to have a garbage collection
     argv[0] = CSTR_STRING(prog);
     for (i = 1; i <= len; i++) {
         argv[i] = CSTR_STRING(allargs[i]);
@@ -736,7 +736,7 @@ static Obj FuncKILL_CHILD_IOSTREAM(Obj self, Obj stream)
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
-    /* Don't check for child having changes status */
+    // Don't check for child having changes status
     KillChild(pty);
 
     HashUnlock(PtyIOStreams);
@@ -747,7 +747,7 @@ static Obj FuncSIGNAL_CHILD_IOSTREAM(Obj self, Obj stream, Obj sig)
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
-    /* Don't check for child having changes status */
+    // Don't check for child having changes status
     SignalChild(pty, INT_INTOBJ(sig));
 
     HashUnlock(PtyIOStreams);
@@ -758,7 +758,7 @@ static Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
 {
     UInt pty = HashLockStreamIfAvailable(stream);
 
-    /* Close down the child */
+    // Close down the child
     int status;
     int retcode = close(PtyIOStreams[pty].ptyFD);
     if (retcode)
@@ -905,13 +905,13 @@ static Int InitKernel(StructInitInfo * module)
     FreePtyIOStreams = MAX_PTYS - 1;
 
 #if !defined(HPCGAP)
-    /* Set up the trap to detect future dying children */
+    // Set up the trap to detect future dying children
     signal(SIGCHLD, ChildStatusChanged);
 #endif
 
 #endif
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable(GVarFuncs);
 
     return 0;
@@ -923,7 +923,7 @@ static Int InitKernel(StructInitInfo * module)
 */
 static Int InitLibrary(StructInitInfo * module)
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);
 
     return 0;

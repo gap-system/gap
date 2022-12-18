@@ -139,7 +139,7 @@ enum { FALSE = 0, TRUE = 1 };
 
 /****************************************************************************
 **
-*t  Bag . . . . . . . . . . . . . . . . . . . type of the identifier of a bag
+*T  Bag . . . . . . . . . . . . . . . . . . . type of the identifier of a bag
 **
 **  (The documentation of 'Bag' is contained in 'gasman.h'.)
 */

@@ -159,7 +159,7 @@ static Obj FuncAtomicList(Obj self, Obj args)
     default:
       ArgumentError("AtomicList: Too many arguments");
   }
-  return (Obj)0; /* flow control hint */
+  return (Obj)0; // flow control hint
 }
 
 static Obj FuncFixedAtomicList(Obj self, Obj args)
@@ -193,7 +193,7 @@ static Obj FuncFixedAtomicList(Obj self, Obj args)
     default:
       ArgumentError("FixedAtomicList: Too many arguments");
   }
-  return (Obj)0; /* flow control hint */
+  return (Obj)0; // flow control hint
 }
 
 static Obj FuncMakeFixedAtomicList(Obj self, Obj list) {
@@ -210,14 +210,14 @@ static Obj FuncMakeFixedAtomicList(Obj self, Obj list) {
         default:
           HashUnlock(list);
           RequireArgument(SELF_NAME, list, "must be an atomic list");
-          return (Obj) 0; /* flow control hint */
+          return (Obj) 0; // flow control hint
       }
       HashUnlock(list);
       break;
     default:
       RequireArgument(SELF_NAME, list, "must be an atomic list");
   }
-  return (Obj) 0; /* flow control hint */
+  return (Obj) 0; // flow control hint
 }
 
 static Obj FuncIS_ATOMIC_RECORD (Obj self, Obj obj)
@@ -246,7 +246,7 @@ static Obj FuncGET_ATOMIC_LIST(Obj self, Obj list, Obj index)
   addr = CONST_ADDR_ATOM(list);
   len = ALIST_LEN((UInt) addr[0].atom);
   n = GetBoundedInt(SELF_NAME, index, 1, len);
-  MEMBAR_READ(); /* read barrier */
+  MEMBAR_READ(); // read barrier
   return addr[n+1].obj;
 }
 
@@ -293,7 +293,7 @@ static Obj FuncSET_ATOMIC_LIST(Obj self, Obj list, Obj index, Obj value)
   n = GetBoundedInt(SELF_NAME, index, 1, len);
   addr[n+1].obj = value;
   CHANGED_BAG(list);
-  MEMBAR_WRITE(); /* write barrier */
+  MEMBAR_WRITE(); // write barrier
   return (Obj) 0;
 }
 
@@ -445,7 +445,7 @@ enum {
 static Obj GetTLInner(Obj obj)
 {
   Obj contents = CONST_ADDR_ATOM(obj)->obj;
-  MEMBAR_READ(); /* read barrier */
+  MEMBAR_READ(); // read barrier
   return contents;
 }
 
@@ -591,7 +591,7 @@ Obj GetARecordField(Obj record, UInt field)
     if (key == field)
     {
       Obj result;
-      MEMBAR_READ(); /* memory barrier */
+      MEMBAR_READ(); // memory barrier
       result = data[hash*2+1].obj;
       if (result != Undefined)
         return result;
@@ -617,7 +617,7 @@ static UInt ARecordFastInsert(AtomicObj *table, AtomicUInt field)
     key = data[hash*2].atom;
     if (!key)
     {
-      table[AR_SIZE].atom++; /* increase size */
+      table[AR_SIZE].atom++; // increase size
       data[hash*2].atom = field;
       return hash;
     }
@@ -645,7 +645,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
   policy = table[AR_POL].atom;
   hash = FibHash(field, bits);
   n = cap;
-  /* case 1: key exists, we can replace it */
+  // case 1: key exists, we can replace it
   while (n-- > 0)
   {
     UInt key = data[hash*2].atom;
@@ -653,7 +653,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
       break;
     if (key == field)
     {
-      MEMBAR_FULL(); /* memory barrier */
+      MEMBAR_FULL(); // memory barrier
       if (policy == AREC_WX) {
         HashUnlockShared(record);
         return 0;
@@ -687,30 +687,30 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
     have_room = (size <= UsageCap[bits]);
   } while (have_room && !COMPARE_AND_SWAP(&table[AR_SIZE].atom,
                          size-1, size));
-  /* we're guaranteed to have a non-full table for the insertion step */
-  /* if have_room is true */
-  if (have_room) for (;;) { /* hash iteration loop */
+  // we're guaranteed to have a non-full table for the insertion step
+  // if have_room is true
+  if (have_room) for (;;) { // hash iteration loop
     AtomicObj old = data[hash*2];
     if (old.atom == field) {
-      /* we don't actually need a new entry, so revert the size update */
+      // we don't actually need a new entry, so revert the size update
       do {
         size = table[AR_SIZE].atom;
       } while (!COMPARE_AND_SWAP(&table[AR_SIZE].atom, size, size-1));
-      /* continue below */
+      // continue below
     } else if (!old.atom) {
       AtomicObj new;
       new.atom = field;
       if (!COMPARE_AND_SWAP(&data[hash*2].atom, old.atom, new.atom))
         continue;
-      /* else continue below */
+      // else continue below
     } else {
       hash++;
       if (hash == cap)
         hash = 0;
       continue;
     }
-    MEMBAR_FULL(); /* memory barrier */
-    for (;;) { /* CAS loop */
+    MEMBAR_FULL(); // memory barrier
+    for (;;) { // CAS loop
       old = data[hash*2+1];
       if (old.obj) {
         if (policy == AREC_WX) {
@@ -738,12 +738,12 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
           break;
         }
       }
-    } /* end CAS loop */
+    } // end CAS loop
     CHANGED_BAG(inner);
     HashUnlockShared(record);
     return result;
-  } /* end hash iteration loop */
-  /* have_room is false at this point */
+  } // end hash iteration loop
+  // have_room is false at this point
   HashUnlockShared(record);
   HashLock(record);
   inner = NewBag(T_AREC_INNER, sizeof(AtomicObj) * (AR_DATA + cap * 2 * 2));
@@ -751,8 +751,8 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
   newdata = newtable + AR_DATA;
   newtable[AR_CAP].atom = cap * 2;
   newtable[AR_BITS].atom = bits+1;
-  newtable[AR_SIZE].atom = 0; /* size */
-  newtable[AR_POL] = table[AR_POL]; /* policy */
+  newtable[AR_SIZE].atom = 0; // size
+  newtable[AR_POL] = table[AR_POL]; // policy
   for (i=0; i<cap; i++) {
     UInt key = data[2*i].atom;
     Obj value = data[2*i+1].obj;
@@ -775,7 +775,7 @@ Obj SetARecordField(Obj record, UInt field, Obj obj)
   }
   else
     newdata[2*n+1].obj = result = obj;
-  MEMBAR_WRITE(); /* memory barrier */
+  MEMBAR_WRITE(); // memory barrier
   ADDR_OBJ(record)[1] = inner;
   CHANGED_BAG(inner);
   CHANGED_BAG(record);
@@ -790,7 +790,7 @@ Obj FromAtomicRecord(Obj record)
   UInt cap, i;
   table = ARecordTable(record);
   data = table + AR_DATA;
-  MEMBAR_READ(); /* memory barrier */
+  MEMBAR_READ(); // memory barrier
   cap = table[AR_CAP].atom;
   result = NEW_PREC(0);
   for (i=0; i<cap; i++)
@@ -924,7 +924,7 @@ static void UpdateThreadRecord(Obj record, Obj tlrecord)
   do {
     inner = GetTLInner(record);
     ADDR_OBJ(inner)[TLR_DATA+TLS(threadID)] = tlrecord;
-    MEMBAR_FULL(); /* memory barrier */
+    MEMBAR_FULL(); // memory barrier
   } while (inner != GetTLInner(record));
   if (tlrecord) {
     if (TLS(tlRecords))
@@ -1307,7 +1307,7 @@ static void EnlargeAList(Obj list, Int pos)
             ErrorQuit(
                 "Atomic List Assignment: extending fixed size atomic list",
                 0, 0);
-            return; /* flow control hint */
+            return; // flow control hint
         }
         addr = ADDR_ATOM(list);
         if (pos > SIZE_BAG(list) / sizeof(AtomicObj) - 2) {
@@ -1322,7 +1322,7 @@ static void EnlargeAList(Obj list, Int pos)
             addr = ADDR_ATOM(newlist);
             addr[0].atom = CHANGE_ALIST_LEN(pol, pos);
             MEMBAR_WRITE();
-            /* TODO: Won't work with GASMAN */
+            // TODO: Won't work with GASMAN
             SET_PTR_BAG(list, PTR_BAG(newlist));
             MEMBAR_WRITE();
         }
@@ -1479,7 +1479,7 @@ static Int DestroyAObjectsState(void)
     return 0;
 }
 
-#endif /* WARD_ENABLED */
+#endif // WARD_ENABLED
 
 static Obj MakeAtomic(Obj obj) {
   if (IS_LIST(obj))
@@ -1573,10 +1573,10 @@ static Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval, const char *cu
   MEMBAR_READ();
   if (SIZE_BAG_CONTENTS(contents) / sizeof(Bag) <= n) {
     HashLock(obj);
-    /* resize bag */
+    // resize bag
     if (SIZE_BAG(obj) / sizeof(Bag) <= n) {
-      /* can't use ResizeBag() directly because of guards. */
-      /* therefore we create a faux master pointer in the public region. */
+      // can't use ResizeBag() directly because of guards.
+      // therefore we create a faux master pointer in the public region.
       UInt *mptr[2];
       mptr[0] = (UInt *)contents;
       mptr[1] = 0;
@@ -1584,12 +1584,12 @@ static Obj BindOncePosObj(Obj obj, Obj index, Obj *new, int eval, const char *cu
       MEMBAR_WRITE();
       SET_PTR_BAG(obj, (void *)(mptr[0]));
     }
-    /* reread contents pointer */
+    // reread contents pointer
     HashUnlock(obj);
     contents = PTR_BAG(obj);
     MEMBAR_READ();
   }
-  /* already bound? */
+  // already bound?
   result = (Bag)(contents[n]);
   if (result && result != Fail)
     return result;
@@ -1618,7 +1618,7 @@ static Obj BindOnceAPosObj(Obj obj, Obj index, Obj *new, int eval, const char *c
   AtomicObj anew;
   AtomicObj *addr;
   Obj result;
-  /* atomic positional objects aren't resizable. */
+  // atomic positional objects aren't resizable.
   addr = ADDR_ATOM(obj);
   MEMBAR_READ();
   len = ALIST_LEN(addr[0].atom);
@@ -1668,7 +1668,7 @@ static Obj BindOnce(Obj obj, Obj index, Obj *new, int eval, const char *currFunc
       return BindOnceAComObj(obj, index, new, eval, currFuncName);
     default:
       FuncError("first argument must be a positional or component object");
-      return (Obj) 0; /* flow control hint */
+      return (Obj) 0; // flow control hint
   }
 }
 
@@ -1809,7 +1809,7 @@ static Int InitKernel (
     StructInitInfo *    module )
 {
   UInt i;
-  /* compute UsageCap */
+  // compute UsageCap
   for (i=0; i<=3; i++)
     UsageCap[i] = (1<<i)-1;
   UsageCap[4] = 13;
@@ -1822,18 +1822,18 @@ static Int InitKernel (
   // set the bag type names (for error messages and debugging)
   InitBagNamesFromTable(BagNames);
 
-  /* install the kind methods */
+  // install the kind methods
   TypeObjFuncs[ T_ALIST ] = TypeAList;
   TypeObjFuncs[ T_FIXALIST ] = TypeAList;
   TypeObjFuncs[ T_APOSOBJ ] = TypeAList;
   TypeObjFuncs[ T_AREC ] = TypeARecord;
   TypeObjFuncs[ T_ACOMOBJ ] = TypeARecord;
   TypeObjFuncs[ T_TLREC ] = TypeTLRecord;
-  /* install global variables */
+  // install global variables
   InitCopyGVar("TYPE_ALIST", &TYPE_ALIST);
   InitCopyGVar("TYPE_AREC", &TYPE_AREC);
   InitCopyGVar("TYPE_TLREC", &TYPE_TLREC);
-  /* install mark functions */
+  // install mark functions
   InitMarkFuncBags(T_ALIST, MarkAtomicList);
   InitMarkFuncBags(T_FIXALIST, MarkAtomicList);
   InitMarkFuncBags(T_APOSOBJ, MarkAtomicList);
@@ -1841,16 +1841,16 @@ static Int InitKernel (
   InitMarkFuncBags(T_ACOMOBJ, MarkAtomicRecord);
   InitMarkFuncBags(T_AREC_INNER, MarkAtomicRecord2);
   InitMarkFuncBags(T_TLREC, MarkTLRecord);
-  /* install print functions */
+  // install print functions
   PrintObjFuncs[ T_ALIST ] = PrintAtomicList;
   PrintObjFuncs[ T_FIXALIST ] = PrintAtomicList;
   PrintObjFuncs[ T_AREC ] = PrintAtomicRecord;
   PrintObjFuncs[ T_TLREC ] = PrintTLRecord;
-  /* install mutability functions */
+  // install mutability functions
   IsMutableObjFuncs [ T_ALIST ] = AlwaysYes;
   IsMutableObjFuncs [ T_FIXALIST ] = AlwaysYes;
   IsMutableObjFuncs [ T_AREC ] = AlwaysYes;
-  /* mutability for T_ACOMOBJ and T_APOSOBJ is set in objects.c */
+  // mutability for T_ACOMOBJ and T_APOSOBJ is set in objects.c
   MakeBagTypePublic(T_ALIST);
   MakeBagTypePublic(T_FIXALIST);
   MakeBagTypePublic(T_APOSOBJ);
@@ -1859,7 +1859,7 @@ static Int InitKernel (
   MakeBagTypePublic(T_AREC_INNER);
   MakeBagTypePublic(T_TLREC);
   MakeBagTypePublic(T_TLREC_INNER);
-  /* install list functions */
+  // install list functions
 
   for (UInt type = T_FIXALIST; type <= T_ALIST; type++) {
       IsListFuncs[type] = AlwaysYes;
@@ -1880,8 +1880,8 @@ static Int InitKernel (
   AssListFuncs[T_ALIST] = AssAList;
 
 
-  /* AsssListFuncs[T_ALIST] = AsssAList; */
-  /* install record functions */
+  // AsssListFuncs[T_ALIST] = AsssAList;
+  // install record functions
   ElmRecFuncs[ T_AREC ] = ElmARecord;
   IsbRecFuncs[ T_AREC ] = IsbARecord;
   AssRecFuncs[ T_AREC ] = AssARecord;
@@ -1955,7 +1955,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

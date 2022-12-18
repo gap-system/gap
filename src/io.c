@@ -355,12 +355,12 @@ UInt OpenInput(TypInputFile * input, const Char * filename)
         return OpenDefaultInput(input);
 #endif
 
-    /* try to open the input file                                          */
+    // try to open the input file
     file = SyFopen(filename, "r", TRUE);
     if ( file == -1 )
         return 0;
 
-    /* enter the file identifier and the file name                         */
+    // enter the file identifier and the file name
 #ifdef GAP_KERNEL_DEBUG
     // paranoia: fill with garbage, to verify we initialize everything
     memset(input, 0x47, sizeof(TypInputFile));
@@ -386,7 +386,7 @@ UInt OpenInput(TypInputFile * input, const Char * filename)
 
     IO()->Input = input;
 
-    /* indicate success                                                    */
+    // indicate success
     return 1;
 }
 
@@ -401,7 +401,7 @@ UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
 {
     GAP_ASSERT(input);
 
-    /* enter the file identifier and the file name                         */
+    // enter the file identifier and the file name
 #ifdef GAP_KERNEL_DEBUG
     // paranoia: fill with garbage, to verify we initialize everything
     memset(input, 0x47, sizeof(TypInputFile));
@@ -429,7 +429,7 @@ UInt OpenInputStream(TypInputFile * input, Obj stream, BOOL echo)
 
     IO()->Input = input;
 
-    /* indicate success                                                    */
+    // indicate success
     return 1;
 }
 
@@ -512,11 +512,11 @@ UInt OpenLog (
     const Char *        filename )
 {
 
-    /* refuse to open a logfile if we already log to one                   */
+    // refuse to open a logfile if we already log to one
     if (IO()->InputLog != 0 || IO()->OutputLog != 0)
         return 0;
 
-    /* try to open the file                                                */
+    // try to open the file
     IO()->OutputLogFileOrStream.file = SyFopen(filename, "w", FALSE);
     IO()->OutputLogFileOrStream.stream = 0;
     if (IO()->OutputLogFileOrStream.file == -1)
@@ -525,7 +525,7 @@ UInt OpenLog (
     IO()->InputLog = &IO()->OutputLogFileOrStream;
     IO()->OutputLog = &IO()->OutputLogFileOrStream;
 
-    /* otherwise indicate success                                          */
+    // otherwise indicate success
     return 1;
 }
 
@@ -540,18 +540,18 @@ UInt OpenLogStream (
     Obj             stream )
 {
 
-    /* refuse to open a logfile if we already log to one                   */
+    // refuse to open a logfile if we already log to one
     if (IO()->InputLog != 0 || IO()->OutputLog != 0)
         return 0;
 
-    /* try to open the file                                                */
+    // try to open the file
     IO()->OutputLogFileOrStream.stream = stream;
     IO()->OutputLogFileOrStream.file = -1;
 
     IO()->InputLog = &IO()->OutputLogFileOrStream;
     IO()->OutputLog = &IO()->OutputLogFileOrStream;
 
-    /* otherwise indicate success                                          */
+    // otherwise indicate success
     return 1;
 }
 
@@ -569,19 +569,19 @@ UInt OpenLogStream (
 */
 UInt CloseLog ( void )
 {
-    /* refuse to close a non existent logfile                              */
+    // refuse to close a non existent logfile
     if (IO()->InputLog == 0 || IO()->OutputLog == 0 ||
         IO()->InputLog != IO()->OutputLog)
         return 0;
 
-    /* close the logfile                                                   */
+    // close the logfile
     if (!IO()->InputLog->stream) {
         SyFclose(IO()->InputLog->file);
     }
     IO()->InputLog = 0;
     IO()->OutputLog = 0;
 
-    /* indicate success                                                    */
+    // indicate success
     return 1;
 }
 
@@ -605,11 +605,11 @@ UInt OpenInputLog (
     const Char *        filename )
 {
 
-    /* refuse to open a logfile if we already log to one                   */
+    // refuse to open a logfile if we already log to one
     if (IO()->InputLog != 0)
         return 0;
 
-    /* try to open the file                                                */
+    // try to open the file
     IO()->InputLogFileOrStream.file = SyFopen(filename, "w", FALSE);
     IO()->InputLogFileOrStream.stream = 0;
     if (IO()->InputLogFileOrStream.file == -1)
@@ -617,7 +617,7 @@ UInt OpenInputLog (
 
     IO()->InputLog = &IO()->InputLogFileOrStream;
 
-    /* otherwise indicate success                                          */
+    // otherwise indicate success
     return 1;
 }
 
@@ -632,17 +632,17 @@ UInt OpenInputLogStream (
     Obj                 stream )
 {
 
-    /* refuse to open a logfile if we already log to one                   */
+    // refuse to open a logfile if we already log to one
     if (IO()->InputLog != 0)
         return 0;
 
-    /* try to open the file                                                */
+    // try to open the file
     IO()->InputLogFileOrStream.stream = stream;
     IO()->InputLogFileOrStream.file = -1;
 
     IO()->InputLog = &IO()->InputLogFileOrStream;
 
-    /* otherwise indicate success                                          */
+    // otherwise indicate success
     return 1;
 }
 
@@ -660,22 +660,22 @@ UInt OpenInputLogStream (
 */
 UInt CloseInputLog ( void )
 {
-    /* refuse to close a non existent logfile                              */
+    // refuse to close a non existent logfile
     if (IO()->InputLog == 0)
         return 0;
 
-    /* refuse to close a log opened with LogTo */
+    // refuse to close a log opened with LogTo
     if (IO()->InputLog == IO()->OutputLog)
         return 0;
 
-    /* close the logfile                                                   */
+    // close the logfile
     if (!IO()->InputLog->stream) {
         SyFclose(IO()->InputLog->file);
     }
 
     IO()->InputLog = 0;
 
-    /* indicate success                                                    */
+    // indicate success
     return 1;
 }
 
@@ -699,11 +699,11 @@ UInt OpenOutputLog (
     const Char *        filename )
 {
 
-    /* refuse to open a logfile if we already log to one                   */
+    // refuse to open a logfile if we already log to one
     if (IO()->OutputLog != 0)
         return 0;
 
-    /* try to open the file                                                */
+    // try to open the file
     memset(&IO()->OutputLogFileOrStream, 0, sizeof(TypOutputFile));
     IO()->OutputLogFileOrStream.stream = 0;
     IO()->OutputLogFileOrStream.file = SyFopen(filename, "w", FALSE);
@@ -712,7 +712,7 @@ UInt OpenOutputLog (
 
     IO()->OutputLog = &IO()->OutputLogFileOrStream;
 
-    /* otherwise indicate success                                          */
+    // otherwise indicate success
     return 1;
 }
 
@@ -727,18 +727,18 @@ UInt OpenOutputLogStream (
     Obj                 stream )
 {
 
-    /* refuse to open a logfile if we already log to one                   */
+    // refuse to open a logfile if we already log to one
     if (IO()->OutputLog != 0)
         return 0;
 
-    /* try to open the file                                                */
+    // try to open the file
     memset(&IO()->OutputLogFileOrStream, 0, sizeof(TypOutputFile));
     IO()->OutputLogFileOrStream.stream = stream;
     IO()->OutputLogFileOrStream.file = -1;
 
     IO()->OutputLog = &IO()->OutputLogFileOrStream;
 
-    /* otherwise indicate success                                          */
+    // otherwise indicate success
     return 1;
 }
 
@@ -756,22 +756,22 @@ UInt OpenOutputLogStream (
 */
 UInt CloseOutputLog ( void )
 {
-    /* refuse to close a non existent logfile                              */
+    // refuse to close a non existent logfile
     if (IO()->OutputLog == 0)
         return 0;
 
-    /* refuse to close a log opened with LogTo */
+    // refuse to close a log opened with LogTo
     if (IO()->OutputLog == IO()->InputLog)
         return 0;
 
-    /* close the logfile                                                   */
+    // close the logfile
     if (!IO()->OutputLog->stream) {
         SyFclose(IO()->OutputLog->file);
     }
 
     IO()->OutputLog = 0;
 
-    /* indicate success                                                    */
+    // indicate success
     return 1;
 }
 
@@ -827,12 +827,12 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
         return OpenDefaultOutput(output);
 #endif
 
-    /* try to open the file                                                */
+    // try to open the file
     Int file = SyFopen(filename, append ? "a" : "w", FALSE);
     if ( file == -1 )
         return 0;
 
-    /* put the file on the stack, start at position 0 on an empty line     */
+    // put the file on the stack, start at position 0 on an empty line
 #ifdef GAP_KERNEL_DEBUG
     // paranoia: fill with garbage, to verify we initialize everything
     memset(output, 0x47, sizeof(TypOutputFile));
@@ -852,10 +852,10 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
         output->format = TRUE;
     output->indent = 0;
 
-    /* variables related to line splitting, very bad place to split        */
+    // variables related to line splitting, very bad place to split
     output->hints[0] = -1;
 
-    /* indicate success                                                    */
+    // indicate success
     return 1;
 }
 
@@ -872,7 +872,7 @@ UInt OpenOutputStream(TypOutputFile * output, Obj stream)
 {
     GAP_ASSERT(output);
 
-    /* put the file on the stack, start at position 0 on an empty line     */
+    // put the file on the stack, start at position 0 on an empty line
 #ifdef GAP_KERNEL_DEBUG
     // paranoia: fill with garbage, to verify we initialize everything
     memset(output, 0x47, sizeof(TypOutputFile));
@@ -887,10 +887,10 @@ UInt OpenOutputStream(TypOutputFile * output, Obj stream)
     output->format = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
     output->indent = 0;
 
-    /* variables related to line splitting, very bad place to split        */
+    // variables related to line splitting, very bad place to split
     output->hints[0] = -1;
 
-    /* indicate success                                                    */
+    // indicate success
     return 1;
 }
 
@@ -924,7 +924,7 @@ UInt CloseOutput(TypOutputFile * output)
 
     GAP_ASSERT(output == IO()->Output);
 
-    /* refuse to close the initial output file '*stdout*'                  */
+    // refuse to close the initial output file '*stdout*'
 #ifdef HPCGAP
     if (output->prev == 0 && output->stream &&
         IO()->DefaultOutputStream == output->stream)
@@ -934,13 +934,13 @@ UInt CloseOutput(TypOutputFile * output)
         return 0;
 #endif
 
-    /* flush output and close the file                                     */
+    // flush output and close the file
     Pr("%c", (Int)'\03', 0);
     if (!output->stream) {
         SyFclose(output->file);
     }
 
-    /* revert to previous output file and indicate success                 */
+    // revert to previous output file and indicate success
     IO()->Output = output->prev;
 
     // don't keep GAP objects alive unnecessarily
@@ -999,12 +999,12 @@ static Int GetLine2(TypInputFile * input)
         /* we now allow that input->sline actually contains several lines,
            e.g., it can be a  string from a string stream  */
 
-        /* start position in buffer */
+        // start position in buffer
         Char *bptr = buffer;
         while (*bptr)
             bptr++;
 
-        /* copy piece of input->sline into buffer and adjust counters */
+        // copy piece of input->sline into buffer and adjust counters
         const Char *ptr = CONST_CSTR_STRING(input->sline) + input->spos;
         const Char * const end = CONST_CSTR_STRING(input->sline) + GET_LEN_STRING(input->sline);
         const Char * const bend = buffer + length - 2;
@@ -1058,9 +1058,9 @@ static Char GetLine(TypInputFile * input)
 {
     GAP_ASSERT(input);
 
-    /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
-    /* if the GAP function `PrintPromptHook' is defined then it is called  */
-    /* for printing the prompt, see also `EndLineHook'                     */
+    // if file is '*stdin*' or '*errin*' print the prompt and flush it
+    // if the GAP function `PrintPromptHook' is defined then it is called
+    // for printing the prompt, see also `EndLineHook'
     if (!input->stream) {
         if (input->file == 0 && SyQuiet) {
             Pr("%c", (Int)'\03', 0);
@@ -1075,7 +1075,7 @@ static Char GetLine(TypInputFile * input)
         }
     }
 
-    /* bump the line number                                                */
+    // bump the line number
     if (input->ptr > input->line && input->ptr[-1] == '\n') {
         input->number++;
     }
@@ -1086,18 +1086,18 @@ static Char GetLine(TypInputFile * input)
     input->ptr = input->line + 1;
     input->lastErrorLine = 0;
 
-    /* try to read a line                                              */
+    // try to read a line
     if (!GetLine2(input)) {
         input->ptr[0] = '\377';
         input->ptr[1] = '\0';
     }
 
-    /* if necessary echo the line to the logfile                      */
+    // if necessary echo the line to the logfile
     if (IO()->InputLog != 0 && input->echo == 1)
         if (!(input->ptr[0] == '\377' && input->ptr[1] == '\0'))
             PutLine2(IO()->InputLog, input->ptr, strlen(input->ptr));
 
-    /* return the current character                                        */
+    // return the current character
     return *input->ptr;
 }
 
@@ -1153,7 +1153,7 @@ static void PutLineTo(TypOutputFile * stream, UInt len)
 {
   PutLine2( stream, stream->line, len );
 
-  /* if necessary echo it to the logfile                                */
+  // if necessary echo it to the logfile
   if (IO()->OutputLog != 0 && !stream->stream) {
       if (stream->file == 1 || stream->file == 3) {
           PutLine2(IO()->OutputLog, stream->line, len);
@@ -1182,10 +1182,10 @@ static void
 addLineBreakHint(TypOutputFile * stream, Int pos, Int val, Int indentdiff)
 {
   Int nr, i;
-  /* find next free slot */
+  // find next free slot
   for (nr = 0; nr < MAXHINTS && stream->hints[3*nr] != -1; nr++);
   if (nr == MAXHINTS) {
-    /* forget the first stored hint */
+    // forget the first stored hint
     for (i = 0; i < 3*MAXHINTS - 3; i++)
        stream->hints[i] =  stream->hints[i+3];
     nr--;
@@ -1231,67 +1231,67 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
   Char                str [MAXLENOUTPUTLINE];
 
 
-  /* '\01', increment indentation level                                  */
+  // '\01', increment indentation level
   if ( ch == '\01' ) {
 
     if (!stream->format)
       return;
 
-    /* add hint to break line  */
+    // add hint to break line
     addLineBreakHint(stream, stream->pos, 16*stream->indent, 1);
   }
 
-  /* '\02', decrement indentation level                                  */
+  // '\02', decrement indentation level
   else if ( ch == '\02' ) {
 
     if (!stream->format)
       return;
 
-    /* if this is a better place to split the line remember it         */
+    // if this is a better place to split the line remember it
     addLineBreakHint(stream, stream->pos, 16*stream->indent, -1);
   }
 
-  /* '\03', print line                                                   */
+  // '\03', print line
   else if ( ch == '\03' ) {
 
-    /* print the line                                                  */
+    // print the line
     if (stream->pos != 0)
       {
         stream->line[ stream->pos ] = '\0';
         PutLineTo(stream, stream->pos );
 
-        /* start the next line                                         */
+        // start the next line
         stream->pos      = 0;
       }
-    /* reset line break hints                                          */
+    // reset line break hints
     stream->hints[0] = -1;
 
   }
 
-  /* <newline> or <return>, print line, indent next                      */
+  // <newline> or <return>, print line, indent next
   else if ( ch == '\n' || ch == '\r' ) {
 
-    /* put the character on the line and terminate it                  */
+    // put the character on the line and terminate it
     stream->line[ stream->pos++ ] = ch;
     stream->line[ stream->pos   ] = '\0';
 
-    /* print the line                                                  */
+    // print the line
     PutLineTo( stream, stream->pos );
 
-    /* and dump it from the buffer */
+    // and dump it from the buffer
     stream->pos = 0;
     if (stream->format)
       {
-        /* indent for next line                                         */
+        // indent for next line
         for ( i = 0;  i < stream->indent; i++ )
           stream->line[ stream->pos++ ] = ' ';
       }
-    /* reset line break hints                                       */
+    // reset line break hints
     stream->hints[0] = -1;
 
   }
 
-  /* normal character, room on the current line                          */
+  // normal character, room on the current line
 #ifdef HPCGAP
   /* TODO: For threads other than the main thread, reserve some extra
      space for the thread id indicator. See issue #136. */
@@ -1301,14 +1301,14 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
   else if (stream->pos < SyNrCols - 2 - IO()->NoSplitLine) {
 #endif
 
-    /* put the character on this line                                  */
+    // put the character on this line
     stream->line[ stream->pos++ ] = ch;
 
   }
 
   else
     {
-      /* position to split                                              */
+      // position to split
       if ( (hint = nrLineBreak(stream)) != -1 )
         spos = stream->hints[3*hint];
       else
@@ -1320,34 +1320,34 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
         ;
       }
 
-      /* full line, acceptable split position                              */
+      // full line, acceptable split position
       else if ( stream->format && spos != 0 ) {
 
-        /* add character to the line, terminate it                         */
+        // add character to the line, terminate it
         stream->line[ stream->pos++ ] = ch;
         stream->line[ stream->pos++ ] = '\0';
 
-        /* copy the rest after the best split position to a safe place     */
+        // copy the rest after the best split position to a safe place
         for ( i = spos; i < stream->pos; i++ )
           str[ i-spos ] = stream->line[ i ];
         str[ i-spos] = '\0';
 
-        /* print line up to the best split position                        */
+        // print line up to the best split position
         stream->line[ spos++ ] = '\n';
         stream->line[ spos   ] = '\0';
         PutLineTo( stream, spos );
         spos--;
 
-        /* indent for the rest                                             */
+        // indent for the rest
         stream->pos = 0;
         for ( i = 0; i < stream->hints[3*hint+2]; i++ )
           stream->line[ stream->pos++ ] = ' ';
         spos -= stream->hints[3*hint+2];
 
-        /* copy the rest onto the next line                                */
+        // copy the rest onto the next line
         for ( i = 0; str[ i ] != '\0'; i++ )
           stream->line[ stream->pos++ ] = str[ i ];
-        /* recover line break hints for copied rest                      */
+        // recover line break hints for copied rest
         for ( i = hint+1; stream->hints[3*i] != -1; i++ )
         {
           stream->hints[3*(i-hint-1)] = stream->hints[3*i]-spos;
@@ -1357,7 +1357,7 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
         stream->hints[3*(i-hint-1)] = -1;
       }
 
-      /* full line, no split position                                       */
+      // full line, no split position
       else {
 
         if (stream->format)
@@ -1366,11 +1366,11 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
             stream->line[ stream->pos++ ] = '\\';
             stream->line[ stream->pos++ ] = '\n';
           }
-        /* and print the line                                */
+        // and print the line
         stream->line[ stream->pos   ] = '\0';
         PutLineTo( stream, stream->pos );
 
-        /* add the character to the next line                              */
+        // add the character to the next line
         stream->pos = 0;
         stream->line[ stream->pos++ ] = ch;
 
@@ -1532,18 +1532,18 @@ static inline void FormatOutput(
   Int                 prec,  n;
   Char                fill;
 
-  /* loop over the characters of the <format> string                     */
+  // loop over the characters of the <format> string
   for ( p = format; *p != '\0'; p++ ) {
 
-    /* not a '%' character, simply print it                            */
+    // not a '%' character, simply print it
     if ( *p != '%' ) {
       put_a_char(state, *p);
       continue;
     }
 
-    /* if the character is '%' do something special                    */
+    // if the character is '%' do something special
 
-    /* first look for a precision field                            */
+    // first look for a precision field
     p++;
     prec = 0;
     fill = (*p == '0' ? '0' : ' ');
@@ -1552,7 +1552,7 @@ static inline void FormatOutput(
       p++;
     }
 
-    /* handle the case of a missing argument                     */
+    // handle the case of a missing argument
     if (arg1 == 0 && (*p == 's' || *p == 'S' || *p == 'C' || *p == 'I')) {
       put_a_char(state, '<');
       put_a_char(state, 'n');
@@ -1561,11 +1561,11 @@ static inline void FormatOutput(
       put_a_char(state, 'l');
       put_a_char(state, '>');
 
-      /* on to the next argument                                 */
+      // on to the next argument
       arg1 = arg2;
     }
 
-    /* '%d' print an integer                                       */
+    // '%d' print an integer
     else if ( *p == 'd'|| *p == 'i' ) {
       int is_neg = (arg1 < 0);
       if ( is_neg ) {
@@ -1573,7 +1573,7 @@ static inline void FormatOutput(
         prec--; // we loose one digit of output precision for the minus sign
       }
 
-      /* compute how many characters this number requires    */
+      // compute how many characters this number requires
       for ( n = 1; n <= arg1/10; n*=10 ) {
         prec--;
       }
@@ -1586,11 +1586,11 @@ static inline void FormatOutput(
       for ( ; n > 0; n /= 10 )
         put_a_char(state, (Char)(((arg1/n)%10) + '0') );
 
-      /* on to the next argument                                 */
+      // on to the next argument
       arg1 = arg2;
     }
 
-    /* '%s' or '%g' print a string                               */
+    // '%s' or '%g' print a string
     else if ( *p == 's' || *p == 'g') {
 
       // If arg is a GAP obj, get out the contained string, and
@@ -1604,19 +1604,19 @@ static inline void FormatOutput(
         arg1obj = 0;
       }
 
-      /* compute how many characters this identifier requires    */
+      // compute how many characters this identifier requires
       for ( const Char * q = (const Char *)arg1; *q != '\0' && prec > 0; q++ ) {
         prec--;
       }
 
-      /* if wanted push an appropriate number of <space>-s       */
+      // if wanted push an appropriate number of <space>-s
       while ( prec-- > 0 )  put_a_char(state, ' ');
 
       if (arg1obj) {
           arg1 = (Int)CONST_CSTR_STRING(arg1obj);
       }
 
-      /* print the string                                        */
+      // print the string
       /* must be careful that line breaks don't go inside
          escaped sequences \n or \123 or similar */
       for ( Int i = 0; ((const Char *)arg1)[i] != '\0'; i++ ) {
@@ -1636,11 +1636,11 @@ static inline void FormatOutput(
         }
       }
 
-      /* on to the next argument                                 */
+      // on to the next argument
       arg1 = arg2;
     }
 
-    /* '%S' or '%G' print a string with the necessary escapes    */
+    // '%S' or '%G' print a string with the necessary escapes
     else if ( *p == 'S' || *p == 'G' ) {
 
       // If arg is a GAP obj, get out the contained string, and
@@ -1655,7 +1655,7 @@ static inline void FormatOutput(
       }
 
 
-      /* compute how many characters this identifier requires    */
+      // compute how many characters this identifier requires
       for ( const Char * q = (const Char *)arg1; *q != '\0' && prec > 0; q++ ) {
         if      ( *q == '\n'  ) { prec -= 2; }
         else if ( *q == '\t'  ) { prec -= 2; }
@@ -1669,14 +1669,14 @@ static inline void FormatOutput(
         else                    { prec -= 1; }
       }
 
-      /* if wanted push an appropriate number of <space>-s       */
+      // if wanted push an appropriate number of <space>-s
       while ( prec-- > 0 )  put_a_char(state, ' ');
 
       if (arg1obj) {
           arg1 = (Int)CONST_CSTR_STRING(arg1obj);
       }
 
-      /* print the string                                        */
+      // print the string
       for ( Int i = 0; ((const Char *)arg1)[i] != '\0'; i++ ) {
         const Char* q = ((const Char *)arg1) + i;
         if      ( *q == '\n'  ) { put_a_char(state, '\\'); put_a_char(state, 'n');  }
@@ -1695,17 +1695,17 @@ static inline void FormatOutput(
         }
       }
 
-      /* on to the next argument                                 */
+      // on to the next argument
       arg1 = arg2;
     }
 
-    /* '%C' print a string with the necessary C escapes            */
+    // '%C' print a string with the necessary C escapes
     else if ( *p == 'C' ) {
 
       arg1obj = (Obj)arg1;
       arg1 = (Int)CONST_CSTR_STRING(arg1obj);
 
-      /* compute how many characters this identifier requires    */
+      // compute how many characters this identifier requires
       for ( const Char * q = (const Char *)arg1; *q != '\0' && prec > 0; q++ ) {
         if      ( *q == '\n'  ) { prec -= 2; }
         else if ( *q == '\t'  ) { prec -= 2; }
@@ -1719,10 +1719,10 @@ static inline void FormatOutput(
         else                    { prec -= 1; }
       }
 
-      /* if wanted push an appropriate number of <space>-s       */
+      // if wanted push an appropriate number of <space>-s
       while ( prec-- > 0 )  put_a_char(state, ' ');
 
-      /* print the string                                        */
+      // print the string
       Int i = 0;
       while (1) {
         const Char* q = CONST_CSTR_STRING(arg1obj) + i++;
@@ -1744,11 +1744,11 @@ static inline void FormatOutput(
         else                    { put_a_char(state, *q);               }
       }
 
-      /* on to the next argument                                 */
+      // on to the next argument
       arg1 = arg2;
     }
 
-    /* '%I' print an identifier                                    */
+    // '%I' print an identifier
     else if ( *p == 'I' || *p =='H' ) {
       int found_keyword = 0;
 
@@ -1763,10 +1763,10 @@ static inline void FormatOutput(
         arg1obj = 0;
       }
 
-      /* check if q matches a keyword    */
+      // check if q matches a keyword
       found_keyword = IsKeyword((const Char *)arg1);
 
-      /* compute how many characters this identifier requires    */
+      // compute how many characters this identifier requires
       if (found_keyword) {
         prec--;
       }
@@ -1777,10 +1777,10 @@ static inline void FormatOutput(
         prec--;
       }
 
-      /* if wanted push an appropriate number of <space>-s       */
+      // if wanted push an appropriate number of <space>-s
       while ( prec-- > 0 ) { put_a_char(state, ' '); }
 
-      /* print the identifier                                    */
+      // print the identifier
       if ( found_keyword ) {
         put_a_char(state, '\\');
       }
@@ -1797,36 +1797,36 @@ static inline void FormatOutput(
         }
       }
 
-      /* on to the next argument                                 */
+      // on to the next argument
       arg1 = arg2;
     }
 
-    /* '%c' print a character                                      */
+    // '%c' print a character
     else if ( *p == 'c' ) {
       put_a_char(state, (Char)arg1);
       arg1 = arg2;
     }
 
-    /* '%%' print a '%' character                                  */
+    // '%%' print a '%' character
     else if ( *p == '%' ) {
       put_a_char(state, '%');
     }
 
-    /* '%>' increment the indentation level                        */
+    // '%>' increment the indentation level
     else if ( *p == '>' ) {
       put_a_char(state, '\01');
       while ( --prec > 0 )
         put_a_char(state, '\01');
     }
 
-    /* '%<' decrement the indentation level                        */
+    // '%<' decrement the indentation level
     else if ( *p == '<' ) {
       put_a_char(state, '\02');
       while ( --prec > 0 )
         put_a_char(state, '\02');
     }
 
-    /* else raise an error                                         */
+    // else raise an error
     else {
       for ( p = "%format error"; *p != '\0'; p++ )
         put_a_char(state, *p);
@@ -2016,7 +2016,7 @@ static Int InitLibrary (
     InitSymbolTableLibrary(&FilenameSymbolTable, 7079);
     FilenameCache = NEW_PLIST(T_PLIST, 0);
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;
@@ -2041,19 +2041,19 @@ static Int InitKernel (
     InitGlobalBag( &FilenameCache, "FilenameCache" );
 
 #ifdef HPCGAP
-    /* Initialize default stream functions */
+    // Initialize default stream functions
     DeclareGVar(&DEFAULT_INPUT_STREAM, "DEFAULT_INPUT_STREAM");
     DeclareGVar(&DEFAULT_OUTPUT_STREAM, "DEFAULT_OUTPUT_STREAM");
 
 #else
-    /* tell GASMAN about the global bags                                   */
+    // tell GASMAN about the global bags
     InitGlobalBag(&(IO()->InputLogFileOrStream.stream),
                   "src/io.c:InputLogFileOrStream");
     InitGlobalBag(&(IO()->OutputLogFileOrStream.stream),
                   "src/io.c:OutputLogFileOrStream");
 #endif
 
-    /* import functions from the library                                   */
+    // import functions from the library
     ImportFuncFromLibrary( "ReadLine", &ReadLineFunc );
     ImportFuncFromLibrary( "WriteAll", &WriteAllFunc );
     ImportFuncFromLibrary( "IsInputTextStringRep", &IsInputStringStream );

@@ -69,7 +69,7 @@ static void AddPlist3(Obj list, Obj obj, Int pos)
     if ( ! IS_PLIST_MUTABLE(list) ) {
         ErrorMayQuit("List Assignment: <list> must be a mutable list", 0, 0);
     }
-    /* in order to be optimistic when building list call assignment        */
+    // in order to be optimistic when building list call assignment
     len = LEN_PLIST( list );
     if (pos == (Int)-1)
       pos = len + 1;
@@ -98,7 +98,7 @@ static Obj AddListOper;
 
 static Obj FuncADD_LIST3(Obj self, Obj list, Obj obj, Obj pos)
 {
-    /* dispatch                */
+    // dispatch
   Int ipos;
   if (pos == (Obj)0)
     ipos = -1;
@@ -186,7 +186,7 @@ static Obj RemListOper;
 static Obj FuncREM_LIST(Obj self, Obj list)
 
 {
-    /* dispatch                                                            */
+    // dispatch
     if ( IS_PLIST( list ) ) {
         return RemPlist( list);
     }
@@ -215,16 +215,16 @@ static Obj FuncREM_LIST(Obj self, Obj list)
 */
 static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
 {
-    UInt                len1;           /* length of the first list        */
-    UInt                len2;           /* length of the second list       */
-    Obj                 elm;            /* one element of the second list  */
-    Int                 i;              /* loop variable                   */
+    UInt                len1;           // length of the first list
+    UInt                len2;           // length of the second list
+    Obj                 elm;            // one element of the second list
+    Int                 i;              // loop variable
 
     RequireMutable(SELF_NAME, list1, "list");
     RequireSmallList(SELF_NAME, list1);
     RequireSmallList(SELF_NAME, list2);
 
-    /* handle the case of strings now */
+    // handle the case of strings now
     if (IS_STRING_REP(list1) && IS_STRING(list2)) {
         if (!IS_STRING_REP(list2)) {
             list2 = ImmutableString(list2);
@@ -233,7 +233,7 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
         return 0;
     }
 
-    /* check the type of the first argument                                */
+    // check the type of the first argument
     if ( TNUM_OBJ( list1 ) != T_PLIST ) {
         if ( ! IS_PLIST( list1 ) ) {
             PLAIN_LIST( list1 );
@@ -242,7 +242,7 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
     }
     len1 = LEN_PLIST( list1 );
 
-    /* check the type of the second argument                               */
+    // check the type of the second argument
     if ( ! IS_PLIST( list2 ) ) {
         len2 = LEN_LIST( list2 );
     }
@@ -250,13 +250,13 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
         len2 = LEN_PLIST( list2 );
     }
 
-    /* if the list has no room at the end, enlarge it                      */
+    // if the list has no room at the end, enlarge it
     if ( 0 < len2 ) {
         GROW_PLIST( list1, len1+len2 );
         SET_LEN_PLIST( list1, len1+len2 );
     }
 
-    /* add the elements                                                    */
+    // add the elements
     if ( IS_PLIST(list2) ) {
         // note that the two memory regions can never overlap, even
         // if list1 and list2 are identical
@@ -279,7 +279,7 @@ static Obj AppendListOper;
 
 static Obj FuncAPPEND_LIST(Obj self, Obj list, Obj obj)
 {
-    /* dispatch                                                            */
+    // dispatch
     if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
         FuncAPPEND_LIST_INTR( 0, list, obj );
     }
@@ -308,21 +308,21 @@ static Obj FuncAPPEND_LIST(Obj self, Obj list, Obj obj)
 */
 static UInt POSITION_SORTED_LIST(Obj list, Obj obj)
 {
-    UInt                l;              /* low                             */
-    UInt                h;              /* high                            */
-    UInt                m;              /* mid                             */
-    Obj                 v;              /* one element of the list         */
+    UInt                l;              // low
+    UInt                h;              // high
+    UInt                m;              // mid
+    Obj                 v;              // one element of the list
 
-    /* perform the binary search to find the position                      */
+    // perform the binary search to find the position
     l = 0;  h = LEN_LIST( list ) + 1;
-    while ( l+1 < h ) {                 /* list[l] < obj && obj <= list[h] */
-        m = (l + h) / 2;                /* l < m < h                       */
+    while ( l+1 < h ) {                 // list[l] < obj && obj <= list[h]
+        m = (l + h) / 2;                // l < m < h
         v = ELMV_LIST( list, m );
         if ( LT( v, obj ) ) { l = m; }
         else                { h = m; }
     }
 
-    /* return the position                                                 */
+    // return the position
     return h;
 }
 
@@ -330,21 +330,21 @@ UInt            PositionSortedDensePlist (
     Obj                 list,
     Obj                 obj )
 {
-    UInt                l;              /* low                             */
-    UInt                h;              /* high                            */
-    UInt                m;              /* mid                             */
-    Obj                 v;              /* one element of the list         */
+    UInt                l;              // low
+    UInt                h;              // high
+    UInt                m;              // mid
+    Obj                 v;              // one element of the list
 
-    /* perform the binary search to find the position                      */
+    // perform the binary search to find the position
     l = 0;  h = LEN_PLIST( list ) + 1;
-    while ( l+1 < h ) {                 /* list[l] < obj && obj <= list[h] */
-        m = (l + h) / 2;                /* l < m < h                       */
+    while ( l+1 < h ) {                 // list[l] < obj && obj <= list[h]
+        m = (l + h) / 2;                // l < m < h
         v = ELM_PLIST( list, m );
         if ( LT( v, obj ) ) { l = m; }
         else                { h = m; }
     }
 
-    /* return the position                                                 */
+    // return the position
     return h;
 }
 
@@ -382,41 +382,41 @@ static Obj FuncPOSITION_SORTED_LIST(Obj self, Obj list, Obj obj)
 */
 static UInt POSITION_SORTED_LISTComp(Obj list, Obj obj, Obj func)
 {
-    UInt                l;              /* low                             */
-    UInt                h;              /* high                            */
-    UInt                m;              /* mid                             */
-    Obj                 v;              /* one element of the list         */
+    UInt                l;              // low
+    UInt                h;              // high
+    UInt                m;              // mid
+    Obj                 v;              // one element of the list
 
-    /* perform the binary search to find the position                      */
+    // perform the binary search to find the position
     l = 0;  h = LEN_LIST( list ) + 1;
-    while ( l+1 < h ) {                 /* list[l] < obj && obj <= list[h] */
-        m = (l + h) / 2;                /* l < m < h                       */
+    while ( l+1 < h ) {                 // list[l] < obj && obj <= list[h]
+        m = (l + h) / 2;                // l < m < h
         v = ELMV_LIST( list, m );
         if ( CALL_2ARGS( func, v, obj ) == True ) { l = m; }
         else                                      { h = m; }
     }
 
-    /* return the position                                                 */
+    // return the position
     return h;
 }
 
 static UInt PositionSortedDensePlistComp(Obj list, Obj obj, Obj func)
 {
-    UInt                l;              /* low                             */
-    UInt                h;              /* high                            */
-    UInt                m;              /* mid                             */
-    Obj                 v;              /* one element of the list         */
+    UInt                l;              // low
+    UInt                h;              // high
+    UInt                m;              // mid
+    Obj                 v;              // one element of the list
 
-    /* perform the binary search to find the position                      */
+    // perform the binary search to find the position
     l = 0;  h = LEN_PLIST( list ) + 1;
-    while ( l+1 < h ) {                 /* list[l] < obj && obj <= list[h] */
-        m = (l + h) / 2;                /* l < m < h                       */
+    while ( l+1 < h ) {                 // list[l] < obj && obj <= list[h]
+        m = (l + h) / 2;                // l < m < h
         v = ELM_PLIST( list, m );
         if ( CALL_2ARGS( func, v, obj ) == True ) { l = m; }
         else                                      { h = m; }
     }
 
-    /* return the position                                                 */
+    // return the position
     return h;
 }
 
@@ -547,7 +547,7 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 #define SORT_ASS_LIST_TO_LOCAL(t, i) t = ELMV_LIST(list, i)
 #define SORT_ASS_LOCAL_TO_LIST(i, j) ASS_LIST(list, i, j)
 #define SORT_COMP(v, w) CALL_2ARGS(func, v, w) == True
-/* list is not necc. sorted wrt. \< (any longer) */
+// list is not necc. sorted wrt. \< (any longer)
 #define SORT_FILTER_CHECKS() \
   RESET_FILT_LIST(list, FN_IS_SSORT); \
   RESET_FILT_LIST(list, FN_IS_NSORT);
@@ -564,7 +564,7 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
   SET_ELM_PLIST(list, i, j); \
   CHANGED_BAG(list);
 #define SORT_COMP(v, w) CALL_2ARGS(func, v, w) == True
-/* list is not necc. sorted wrt. \< (any longer) */
+// list is not necc. sorted wrt. \< (any longer)
 #define SORT_FILTER_CHECKS() \
   RESET_FILT_LIST(list, FN_IS_SSORT); \
   RESET_FILT_LIST(list, FN_IS_NSORT);
@@ -661,7 +661,7 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
   ASS_LIST(list, i, t); \
   ASS_LIST(shadow, i, t##s);
 #define SORT_COMP(v, w) CALL_2ARGS( func, v, w ) == True
-/* list is not necc. sorted wrt. \< (any longer) */
+// list is not necc. sorted wrt. \< (any longer)
 #define SORT_FILTER_CHECKS() \
     RESET_FILT_LIST(list, FN_IS_SSORT); \
     RESET_FILT_LIST(list, FN_IS_NSORT); \
@@ -684,7 +684,7 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
   CHANGED_BAG(list); \
   CHANGED_BAG(shadow);
 #define SORT_COMP(v, w) CALL_2ARGS( func, v, w ) == True
-/* list is not necc. sorted wrt. \< (any longer) */
+// list is not necc. sorted wrt. \< (any longer)
 #define SORT_FILTER_CHECKS() \
     RESET_FILT_LIST(list, FN_IS_SSORT); \
     RESET_FILT_LIST(list, FN_IS_NSORT); \
@@ -707,25 +707,25 @@ static Obj FuncPOSITION_SORTED_BY(Obj self, Obj list, Obj val, Obj func)
 UInt            RemoveDupsDensePlist (
     Obj                 list )
 {
-    UInt                mutable;        /* the elements are mutable        */
-    UInt                homog;          /* the elements all lie in the same family */
-    Int                 len;            /* length of the list              */
-    Obj                 v, w;           /* two elements of the list        */
-    UInt                l, i;           /* loop variables                  */
+    UInt                mutable;        // the elements are mutable
+    UInt                homog;          // the elements all lie in the same family
+    Int                 len;            // length of the list
+    Obj                 v, w;           // two elements of the list
+    UInt                l, i;           // loop variables
     Obj                 fam;
 
-    /* get the length, nothing to be done for empty lists                  */
+    // get the length, nothing to be done for empty lists
     len = LEN_PLIST( list );
     if ( len == 0 ) { return 0; }
 
-    /* select the first element as the first representative                */
+    // select the first element as the first representative
     l = 1;
     v = ELM_PLIST( list, l );
     mutable = IS_MUTABLE_OBJ(v);
     homog = 1;
     fam = FAMILY_OBJ(v);
 
-    /* loop over the other elements, compare them with the current rep.    */
+    // loop over the other elements, compare them with the current rep.
     for ( i = 2; i <= len; i++ ) {
         w = ELM_PLIST( list, i );
         mutable = (mutable || IS_MUTABLE_OBJ(w));
@@ -740,11 +740,11 @@ UInt            RemoveDupsDensePlist (
         }
     }
 
-    /* the list may be shorter now                                         */
+    // the list may be shorter now
     SET_LEN_PLIST( list, l );
     SHRINK_PLIST(  list, l );
 
-    /* Set appropriate filters */
+    // Set appropriate filters
     if (!mutable)
       {
         if (!homog)
@@ -754,7 +754,7 @@ UInt            RemoveDupsDensePlist (
         SET_FILT_LIST(list, FN_IS_SSORT);
       }
 
-    /* return whether the list contains mutable elements                   */
+    // return whether the list contains mutable elements
     if (mutable)
       return 0;
     if (!homog)
@@ -950,8 +950,8 @@ static Obj FuncOnPoints(Obj self, Obj point, Obj elm)
 */
 static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
 {
-    Obj                 img;            /* image, result                   */
-    Obj                 tmp;            /* temporary                       */
+    Obj                 img;            // image, result
+    Obj                 tmp;            // temporary
 
     RequireSmallList(SELF_NAME, pair);
     if (LEN_LIST(pair) != 2) {
@@ -959,11 +959,11 @@ static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
                      LEN_LIST(pair), 0);
     }
 
-    /* create a new bag for the result                                     */
+    // create a new bag for the result
     img = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(pair), T_PLIST, 2 );
     SET_LEN_PLIST( img, 2 );
 
-    /* and enter the images of the points into the result bag              */
+    // and enter the images of the points into the result bag
     tmp = POW( ELMV_LIST( pair, 1 ), elm );
     SET_ELM_PLIST( img, 1, tmp );
     CHANGED_BAG( img );
@@ -989,13 +989,13 @@ static Obj FuncOnPairs(Obj self, Obj pair, Obj elm)
 */
 static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
 {
-    Obj                 img;            /* image, result                   */
-    Obj                 tmp;            /* temporary                       */
-    UInt                i;              /* loop variable                   */
+    Obj                 img;            // image, result
+    Obj                 tmp;            // temporary
+    UInt                i;              // loop variable
 
     RequireSmallList(SELF_NAME, tuple);
 
-    /* special case for the empty list */
+    // special case for the empty list
     if (LEN_LIST(tuple) == 0) {
       if (IS_MUTABLE_OBJ(tuple)) {
         img = NewEmptyPlist();
@@ -1004,26 +1004,26 @@ static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
         return tuple;
       }
     }
-    /* special case for permutations                                       */
+    // special case for permutations
     if (IS_PERM(elm)) {
         return OnTuplesPerm( tuple, elm );
     }
 
-    /* special case for transformations                                       */
+    // special case for transformations
     if (IS_TRANS(elm)) {
         return OnTuplesTrans( tuple, elm );
     }
 
-    /* special case for partial perms */
+    // special case for partial perms
     if (IS_PPERM(elm)) {
         return OnTuplesPPerm( tuple, elm );
     }
 
-    /* create a new bag for the result                                     */
+    // create a new bag for the result
     img = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(tuple), T_PLIST, LEN_LIST(tuple) );
     SET_LEN_PLIST( img, LEN_LIST(tuple) );
 
-    /* and enter the images of the points into the result bag              */
+    // and enter the images of the points into the result bag
     for ( i = LEN_LIST(tuple); 1 <= i; i-- ) {
         tmp = POW( ELMV_LIST( tuple, i ), elm );
         SET_ELM_PLIST( img, i, tmp );
@@ -1048,14 +1048,14 @@ static Obj FuncOnTuples(Obj self, Obj tuple, Obj elm)
 
 static Obj FuncOnSets(Obj self, Obj set, Obj elm)
 {
-    Obj                 img;            /* handle of the image, result     */
-    UInt                status;        /* the elements are mutable        */
+    Obj                 img;            // handle of the image, result
+    UInt                status;        // the elements are mutable
 
     if (!HAS_FILT_LIST(set, FN_IS_SSORT) && !IS_SSORT_LIST(set)) {
         RequireArgument(SELF_NAME, set, "must be a set");
     }
 
-    /* special case for the empty list */
+    // special case for the empty list
     if (LEN_LIST(set) == 0) {
       if (IS_MUTABLE_OBJ(set)) {
         img = NewEmptyPlist();
@@ -1065,31 +1065,31 @@ static Obj FuncOnSets(Obj self, Obj set, Obj elm)
       }
     }
 
-    /* special case for permutations                                       */
+    // special case for permutations
     if (IS_PERM(elm)) {
         return OnSetsPerm( set, elm );
     }
 
-    /* special case for transformations */
+    // special case for transformations
     if (IS_TRANS(elm)){
       return OnSetsTrans( set, elm);
     }
 
-    /* special case for partial perms */
+    // special case for partial perms
     if (IS_PPERM(elm)){
       return OnSetsPPerm( set, elm);
     }
 
-    /* compute the list of images                                          */
+    // compute the list of images
     img = FuncOnTuples( self, set, elm );
 
-    /* sort the images list (which is a dense plain list)                  */
+    // sort the images list (which is a dense plain list)
     SortDensePlist( img );
 
-    /* remove duplicates, check for mutable elements                       */
+    // remove duplicates, check for mutable elements
     status = RemoveDupsDensePlist( img );
 
-    /* if possible, turn this into a set                                   */
+    // if possible, turn this into a set
     switch (status)
       {
       case 0:
@@ -1104,7 +1104,7 @@ static Obj FuncOnSets(Obj self, Obj set, Obj elm)
       }
 
 
-    /* return set                                                          */
+    // return set
     return img;
 }
 
@@ -1529,7 +1529,7 @@ static StructGVarFunc GVarFuncs[] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     /* ADD_LIST needs special consideration because we want distinct kernel
        handlers for 2 and 3 arguments */
     InitHandlerFunc( FuncADD_LIST, "src/listfunc.c:FuncADD_LIST" );
@@ -1551,11 +1551,11 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* make and install the 'ADD_LIST' operation                           */
+    // make and install the 'ADD_LIST' operation
     SET_HDLR_FUNC( AddListOper, 2, FuncADD_LIST);
     SET_HDLR_FUNC( AddListOper, 3, FuncADD_LIST3);
 

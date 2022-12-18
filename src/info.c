@@ -115,10 +115,10 @@ static StructGVarFunc GVarFuncs[] = {
 */
 static Int InitKernel(StructInitInfo * module)
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable(GVarFuncs);
 
-    /* The work of handling Info messages is delegated to the GAP level */
+    // The work of handling Info messages is delegated to the GAP level
     ImportFuncFromLibrary("InfoDecision", &InfoDecision);
     ImportFuncFromLibrary("DefaultInfoHandler", &DefaultInfoHandler);
     ImportFuncFromLibrary("IsInfoClassListRep", &IsInfoClassListRep);

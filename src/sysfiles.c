@@ -57,17 +57,17 @@
 #endif
 
 #ifdef HAVE_SELECT
-/* Only for the Hook handler calls: */
+// Only for the Hook handler calls:
 #include <sys/time.h>
 #endif
 
-#ifdef HAVE_SIGNAL_H                       /* signal handling functions       */
+#ifdef HAVE_SIGNAL_H                       // signal handling functions
 #include <signal.h>
 typedef void sig_handler_t ( int );
 #endif
 
 #ifdef HAVE_SYS_IOCTL_H
-#include <sys/ioctl.h>                  /* for TIOCGWINSZ */
+#include <sys/ioctl.h>                  // for TIOCGWINSZ
 #endif
 
 #ifdef SYS_IS_CYGWIN32
@@ -154,7 +154,7 @@ static SYS_SY_BUF syBuf[256];
 static SYS_SY_BUFFER syBuffers[32];
 
 
-/* utility to check return value of 'write'  */
+// utility to check return value of 'write'
 static ssize_t echoandcheck(int fid, const char *buf, size_t count)
 {
   int ret;
@@ -253,13 +253,13 @@ Int4 SyGAPCRC( const Char * name )
     Int         fid;
     Int         seen_nl;
 
-    /* the CRC of a non existing file is 0                                 */
+    // the CRC of a non existing file is 0
     fid = SyFopen(name, "r", TRUE);
     if ( fid == -1 ) {
         return 0;
     }
 
-    /* read in the file byte by byte and compute the CRC                   */
+    // read in the file byte by byte and compute the CRC
     crc = 0x12345678L;
     seen_nl = 0;
 
@@ -282,9 +282,9 @@ Int4 SyGAPCRC( const Char * name )
         crc = 1;
     }
 
-    /* and close it again                                                  */
+    // and close it again
     SyFclose( fid );
-    /* Emulate a signed shift: */
+    // Emulate a signed shift:
     if (crc & 0x80000000L)
         return (Int4) ((crc >> 4) | 0xF0000000L);
     else
@@ -313,7 +313,7 @@ gap> CrcString("GAP example string");
 <#/GAPDoc>
 */
 
-/* And here we include a variant working on a GAP string */
+// And here we include a variant working on a GAP string
 static Obj FuncCrcString(Obj self, Obj str)
 {
     UInt4       crc;
@@ -386,21 +386,21 @@ Obj SyGetOsRelease(void)
 **
 *F  CTR( <V> )  . . . . . . . . . . . . . . . .  convert <V> into control-<V>
 */
-#define CTR(C)          ((C) & 0x1F)    /* <ctr> character                 */
+#define CTR(C)          ((C) & 0x1F)    // <ctr> character
 
 
 /****************************************************************************
 **
 *F  Esc( <V> )  . . . . . . . . . . . . . . . . . convert <V> into escape-<V>
 */
-#define Esc(C)          ((C) | 0x100)   /* <esc> character                 */
+#define Esc(C)          ((C) | 0x100)   // <esc> character
 
 
 /****************************************************************************
 **
 *F  CTV( <V> )  . . . . . . . . . . . . . . . . .  convert <V> into quote <V>
 */
-#define CTV(C)          ((C) | 0x200)   /* <ctr>V quotes characters        */
+#define CTV(C)          ((C) | 0x200)   // <ctr>V quotes characters
 
 
 /****************************************************************************
@@ -417,18 +417,18 @@ void syWinPut (
     const Char *        cmd,
     const Char *        str )
 {
-    Char                tmp [130];      /* temporary buffer                */
-    const Char *        s;              /* pointer into the string         */
-    Char *              t;              /* pointer into the temporary      */
+    Char                tmp [130];      // temporary buffer
+    const Char *        s;              // pointer into the string
+    Char *              t;              // pointer into the temporary
 
-    /* if not running under a window handler, don't do anything            */
+    // if not running under a window handler, don't do anything
     if (!SyWindow || 4 <= fid || syBuf[fid].type == gzip_socket)
         return;
 
-    /* print the cmd                                                       */
+    // print the cmd
     echoandcheck( fid, cmd, strlen(cmd) );
 
-    /* print the output line, duplicate '@' and handle <ctr>-<chr>         */
+    // print the output line, duplicate '@' and handle <ctr>-<chr>
     s = str;  t = tmp;
     while ( *s != '\0' ) {
         if ( *s == '@' ) {
@@ -467,25 +467,25 @@ const Char * SyWinCmd (
     const Char *        str,
     UInt                len )
 {
-    Char                buf [130];      /* temporary buffer                */
-    const Char *        s;              /* pointer into the string         */
-    const Char *        bb;             /* pointer into the temporary      */
-    Char *              b;              /* pointer into the temporary      */
-    UInt                i;              /* loop variable                   */
+    Char                buf [130];      // temporary buffer
+    const Char *        s;              // pointer into the string
+    const Char *        bb;             // pointer into the temporary
+    Char *              b;              // pointer into the temporary
+    UInt                i;              // loop variable
 #ifdef SYS_IS_CYGWIN32
-    UInt                len1;           /* temporary storage for len       */
+    UInt                len1;           // temporary storage for len
 #endif
 
-    /* if not running under a window handler, don't do nothing             */
+    // if not running under a window handler, don't do nothing
     if ( ! SyWindow )
         return "I1+S52+No Window Handler Present";
 
-    /* compute the length of the (expanded) string (and ignore argument)   */
+    // compute the length of the (expanded) string (and ignore argument)
     len = 0;
     for ( s = str; *s != '\0'; s++ )
         len += 1 + (*s == '@' || (CTR('A') <= *s && *s <= CTR('Z')));
 
-    /* send the length to the window handler                               */
+    // send the length to the window handler
     b = buf;
     for ( ; 0 < len;  len /= 10 ) {
         *b++ = (len % 10) + '0';
@@ -494,10 +494,10 @@ const Char * SyWinCmd (
     *b++ = '\0';
     syWinPut( 1, "@w", buf );
 
-    /* send the string to the window handler                               */
+    // send the string to the window handler
     syWinPut( 1, "", str );
 
-    /* read the length of the answer                                       */
+    // read the length of the answer
     b = WinCmdBuffer;
     i = 3;
     while ( 0 < i ) {
@@ -513,7 +513,7 @@ const Char * SyWinCmd (
         while ( read( 0, b, 1 ) != 1 )  ;
     }
 
-    /* read the arguments of the answer                                    */
+    // read the arguments of the answer
     b = WinCmdBuffer;
     i = len;
 #ifdef SYS_IS_CYGWIN32
@@ -533,7 +533,7 @@ const Char * SyWinCmd (
     }
 #endif
 
-    /* shrink '@@' into '@'                                                */
+    // shrink '@@' into '@'
     for ( bb = b = WinCmdBuffer;  0 < len;  len-- ) {
         if ( *bb == '@' ) {
             bb++;
@@ -549,7 +549,7 @@ const Char * SyWinCmd (
     }
     *b = 0;
 
-    /* return the string                                                   */
+    // return the string
     return WinCmdBuffer;
 }
 
@@ -656,7 +656,7 @@ Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
     Char * terminator = strrchr(name, '.');
     BOOL   endsgz = terminator && (streq(terminator, ".gz"));
 
-    /* handle standard files                                               */
+    // handle standard files
     if (streq(name, "*stdin*")) {
         return streq(mode, "r") ? 0 : -1;
     }
@@ -671,7 +671,7 @@ Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
     }
 
     HashLock(&syBuf);
-    /* try to find an unused file identifier                               */
+    // try to find an unused file identifier
     for ( fid = 4; fid < ARRAY_SIZE(syBuf); ++fid )
         if ( !SyBufInUse(fid) )
           break;
@@ -703,7 +703,7 @@ Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
         flags |= O_BINARY;
 #endif
 
-    /* try to open the file                                                */
+    // try to open the file
     if (endsgz && transparent_compress &&
         (syBuf[fid].gzfp = gzopen(name, mode))) {
         syBuf[fid].type = gzip_socket;
@@ -732,7 +732,7 @@ Int SyFopen(const Char * name, const Char * mode, BOOL transparent_compress)
     if (*mode == 'r')
         SySetBuffering(fid);
 
-    /* return file identifier                                              */
+    // return file identifier
     return fid;
 }
 
@@ -773,7 +773,7 @@ UInt SySetBuffering( UInt fid )
 Int SyFclose (
     Int                 fid )
 {
-    /* check file identifier                                               */
+    // check file identifier
     if ( ARRAY_SIZE(syBuf) <= fid || fid < 0 ) {
         fputs("gap: panic 'SyFclose' asked to close illegal fid!\n",stderr);
         return -1;
@@ -783,12 +783,12 @@ Int SyFclose (
         return -1;
     }
 
-    /* refuse to close the standard files                                  */
+    // refuse to close the standard files
     if ( fid == 0 || fid == 1 || fid == 2 || fid == 3 ) {
         return -1;
     }
     HashLock(&syBuf);
-    /* try to close the file                                               */
+    // try to close the file
     if (syBuf[fid].type == raw_socket && close(syBuf[fid].fp) == EOF) {
         fputs("gap: 'SyFclose' cannot close file, ",stderr);
         fputs("maybe your file system is full?\n",stderr);
@@ -803,7 +803,7 @@ Int SyFclose (
         }
     }
 
-    /* mark the buffer as unused                                           */
+    // mark the buffer as unused
     if (syBuf[fid].bufno >= 0)
       syBuffers[syBuf[fid].bufno].inuse = FALSE;
     SyBufMarkUnused(fid);
@@ -819,16 +819,16 @@ Int SyFclose (
 Int SyIsEndOfFile (
     Int                 fid )
 {
-    /* check file identifier                                               */
+    // check file identifier
     if ( !SyBufInUse(fid) ) {
         return -1;
     }
 
-    /* *stdin* and *errin* are never at end of file                        */
+    // *stdin* and *errin* are never at end of file
     if ( fid < 4 )
         return 0;
 
-    /* How to detect end of file ?? */
+    // How to detect end of file ??
 
     return syBuf[fid].ateof;
     /* return feof(syBuf[fid].fp);*/
@@ -869,7 +869,7 @@ Int SyIsEndOfFile (
 **  continue signals if this particular version  of UNIX supports them, so we
 **  can turn the terminal line back to cooked mode before stopping GAP.
 */
-static struct termios   syOld, syNew;           /* old and new terminal state      */
+static struct termios   syOld, syNew;           // old and new terminal state
 
 #ifdef SIGTSTP
 
@@ -893,20 +893,20 @@ static void syAnswerTstp(int signr)
 
 UInt syStartraw ( Int fid )
 {
-    /* if running under a window handler, tell it that we want to read     */
+    // if running under a window handler, tell it that we want to read
     if ( SyWindow ) {
         if      ( fid == 0 ) { syWinPut( fid, "@i", "" );  return 1; }
         else if ( fid == 2 ) { syWinPut( fid, "@e", "" );  return 1; }
         else {                                             return 0; }
     }
 
-    /* try to get the terminal attributes, will fail if not terminal       */
+    // try to get the terminal attributes, will fail if not terminal
     const int fd = SyBufFileno(fid);
     GAP_ASSERT(fd >= 0);
     if ( tcgetattr( fd, &syOld) == -1 )
         return 0;
 
-    /* disable interrupt, quit, start and stop output characters           */
+    // disable interrupt, quit, start and stop output characters
     syNew = syOld;
     syNew.c_cc[VINTR] = 0377;
     syNew.c_cc[VQUIT] = 0377;
@@ -914,7 +914,7 @@ UInt syStartraw ( Int fid )
     /*C syNew.c_iflag    &= ~(IXON|INLCR|ICRNL);                           */
     syNew.c_iflag    &= ~(INLCR|ICRNL);
 
-    /* disable input buffering, line editing and echo                      */
+    // disable input buffering, line editing and echo
     syNew.c_cc[VMIN]  = 1;
     syNew.c_cc[VTIME] = 0;
     syNew.c_lflag    &= ~(ECHO|ICANON);
@@ -923,12 +923,12 @@ UInt syStartraw ( Int fid )
         return 0;
 
 #ifdef SIGTSTP
-    /* install signal handler for stop                                     */
+    // install signal handler for stop
     syFid = fid;
     signal( SIGTSTP, syAnswerTstp );
 #endif
 
-    /* indicate success                                                    */
+    // indicate success
     return 1;
 }
 
@@ -941,16 +941,16 @@ UInt syStartraw ( Int fid )
 void syStopraw (
     Int                 fid )
 {
-    /* if running under a window handler, don't do nothing                 */
+    // if running under a window handler, don't do nothing
     if ( SyWindow )
         return;
 
 #ifdef SIGTSTP
-    /* remove signal handler for stop                                      */
+    // remove signal handler for stop
     signal( SIGTSTP, SIG_DFL );
 #endif
 
-    /* enable input buffering, line editing and echo again                 */
+    // enable input buffering, line editing and echo again
     const int fd = SyBufFileno(fid);
     GAP_ASSERT(fd >= 0);
     if (tcsetattr(fd, TCSANOW, &syOld) == -1)
@@ -979,7 +979,7 @@ void syStopraw (
 #ifdef HAVE_SIGNAL
 
 
-static UInt syLastIntr; /* time of the last interrupt      */
+static UInt syLastIntr; // time of the last interrupt
 
 
 #ifdef HAVE_LIBREADLINE
@@ -991,24 +991,24 @@ static void syAnswerIntr(int signr)
     UInt                nowIntr;
 
 #ifdef HAVE_LIBREADLINE
-    /* ignore during readline */
+    // ignore during readline
     if (doingReadline) return;
 #endif
 
-    /* get the current wall clock time                                     */
+    // get the current wall clock time
     nowIntr = time(0);
 
-    /* if the last '<ctr>-C' was less than a second ago, exit GAP          */
+    // if the last '<ctr>-C' was less than a second ago, exit GAP
     if ( syLastIntr && nowIntr-syLastIntr < 1 ) {
         fputs("gap: you hit '<ctr>-C' twice in a second, goodbye.\n",stderr);
         SyExit( 1 );
     }
 
-    /* remember time of this interrupt                                     */
+    // remember time of this interrupt
     syLastIntr = nowIntr;
 
 #ifdef HAVE_SIGNAL
-    /* interrupt the executor                                              */
+    // interrupt the executor
     InterruptExecStat();
 #endif
 }
@@ -1048,14 +1048,14 @@ UInt SyIsIntr ( void )
 
 
 /****************************************************************************
- **
- *F  getwindowsize() . . . . . . . get screen size from termcap or TIOCGWINSZ
- **
- **  For UNIX  we  install 'syWindowChangeIntr' to answer 'SIGWINCH'.
- */
+**
+*F  getwindowsize() . . . . . . . get screen size from termcap or TIOCGWINSZ
+**
+**  For UNIX  we  install 'syWindowChangeIntr' to answer 'SIGWINCH'.
+*/
 
 #ifdef TIOCGWINSZ
-/* signal routine: window size changed */
+// signal routine: window size changed
 void syWindowChangeIntr ( int signr )
 {
     struct winsize win;
@@ -1063,20 +1063,20 @@ void syWindowChangeIntr ( int signr )
         if(!SyNrRowsLocked && win.ws_row > 0)
             SyNrRows = win.ws_row;
         if(!SyNrColsLocked && win.ws_col > 0)
-          SyNrCols = win.ws_col - 1;        /* never trust last column */
+          SyNrCols = win.ws_col - 1;        // never trust last column
         if (SyNrCols < 20) SyNrCols = 20;
         if (SyNrCols > MAXLENOUTPUTLINE) SyNrCols = MAXLENOUTPUTLINE;
     }
 }
 
-#endif /* TIOCGWINSZ */
+#endif // TIOCGWINSZ
 
 void getwindowsize( void )
 {
-/* it might be that SyNrRows, SyNrCols have been set by the user with -x, -y */
-/* otherwise they are zero */
+// it might be that SyNrRows, SyNrCols have been set by the user with -x, -y
+// otherwise they are zero
 
-/* first strategy: try to ask the operating system */
+// first strategy: try to ask the operating system
 #ifdef TIOCGWINSZ
     if (SyNrRows <= 0 || SyNrCols <= 0) {
         struct winsize win;
@@ -1089,13 +1089,13 @@ void getwindowsize( void )
         }
         (void) signal(SIGWINCH, syWindowChangeIntr);
     }
-#endif /* TIOCGWINSZ */
+#endif // TIOCGWINSZ
 
 #ifdef USE_TERMCAP
-/* note that if we define TERMCAP, this has to be linked with -ltermcap */
-/* maybe that is -ltermlib on some SYSV machines */
+// note that if we define TERMCAP, this has to be linked with -ltermcap
+// maybe that is -ltermlib on some SYSV machines
     if (SyNrRows <= 0 || SyNrCols <= 0) {
-              /* this failed - next attempt: try to find info in TERMCAP */
+              // this failed - next attempt: try to find info in TERMCAP
         char *sp;
         char bp[1024];
 
@@ -1108,13 +1108,13 @@ void getwindowsize( void )
     }
 #endif
 
-    /* if nothing worked, use 80x24 */
+    // if nothing worked, use 80x24
     if (SyNrCols <= 0)
         SyNrCols = 80;
     if (SyNrRows <= 0)
         SyNrRows = 24;
 
-    /* reset SyNrCols if value is strange */
+    // reset SyNrCols if value is strange
     if (SyNrCols < 20) SyNrCols = 20;
     if (SyNrCols > MAXLENOUTPUTLINE) SyNrCols = MAXLENOUTPUTLINE;
 }
@@ -1140,11 +1140,11 @@ static void syEchoch(Int ch, Int fid)
 {
     Char                ch2;
 
-    /* write the character to the associate echo output device             */
+    // write the character to the associate echo output device
     ch2 = ch;
     echoandcheck( fid, (char*)&ch2, 1 );
 
-    /* if running under a window handler, duplicate '@'                    */
+    // if running under a window handler, duplicate '@'
     if ( SyWindow && ch == '@' ) {
         ch2 = ch;
         echoandcheck( fid, (char*)&ch2, 1 );
@@ -1159,7 +1159,7 @@ Int SyEchoch (
     Int                 ch,
     Int                 fid )
 {
-    /* check file identifier                                               */
+    // check file identifier
     if ( !SyBufInUse(fid) ) {
         return -1;
     }
@@ -1181,11 +1181,11 @@ Int SyEchoch (
 */
 static void syEchos(const Char * str, Int fid)
 {
-    /* if running under a window handler, send the line to it              */
+    // if running under a window handler, send the line to it
     if ( SyWindow && fid < 4 )
         syWinPut( fid, (fid == 1 ? "@n" : "@f"), str );
 
-    /* otherwise, write it to the associate echo output device             */
+    // otherwise, write it to the associate echo output device
     else
         echoandcheck(fid, str, strlen(str) );
 }
@@ -1197,8 +1197,8 @@ static void syEchos(const Char * str, Int fid)
 **
 **  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
 */
-static UInt syNrchar;                   /* nr of chars already on the line */
-static Char syPrompt[MAXLENOUTPUTLINE]; /* characters already on the line  */
+static UInt syNrchar;                   // nr of chars already on the line
+static Char syPrompt[MAXLENOUTPUTLINE]; // characters already on the line
 
 
 /****************************************************************************
@@ -1211,7 +1211,7 @@ void SyFputs (
 {
     UInt                i;
 
-    /* if outputting to the terminal compute the cursor position and length */
+    // if outputting to the terminal compute the cursor position and length
     if ( fid == 1 || fid == 3 ) {
         syNrchar = 0;
         for ( i = 0; line[i] != '\0'; i++ ) {
@@ -1221,16 +1221,16 @@ void SyFputs (
         syPrompt[syNrchar] = '\0';
     }
 
-    /* otherwise compute only the length                                   */
+    // otherwise compute only the length
     else {
         i = strlen(line);
     }
 
-    /* if running under a window handler, send the line to it              */
+    // if running under a window handler, send the line to it
     if ( SyWindow && fid < 4 )
         syWinPut( fid, (fid == 1 ? "@n" : "@f"), line );
 
-    /* otherwise, write it to the output file                              */
+    // otherwise, write it to the output file
     else
         echoandcheck(fid, line, i);
 }
@@ -1249,7 +1249,7 @@ void SyFputs (
 Int SyFtell (
     Int                 fid )
 {
-    /* check file identifier                                               */
+    // check file identifier
     if ( !SyBufInUse(fid) ) {
         return -1;
     }
@@ -1285,7 +1285,7 @@ Int SyFseek (
     Int                 fid,
     Int                 pos )
 {
-    /* check file identifier                                               */
+    // check file identifier
     if ( !SyBufInUse(fid) ) {
         return -1;
     }
@@ -1344,7 +1344,7 @@ Int SyFseek (
 
 Int SyRead(Int fid, void * ptr, size_t len)
 {
-    /* check file identifier                                               */
+    // check file identifier
     if ( !SyBufInUse(fid) ) {
         return -1;
     }
@@ -1359,7 +1359,7 @@ Int SyRead(Int fid, void * ptr, size_t len)
 
 Int SyReadWithBuffer(Int fid, void * ptr, size_t len)
 {
-    /* check file identifier                                               */
+    // check file identifier
     if ( !SyBufInUse(fid) ) {
         return -1;
     }
@@ -1384,7 +1384,7 @@ Int SyReadWithBuffer(Int fid, void * ptr, size_t len)
 
 Int SyWrite(Int fid, const void * ptr, size_t len)
 {
-    /* check file identifier                                               */
+    // check file identifier
     if ( !SyBufInUse(fid) ) {
         return -1;
     }
@@ -1403,7 +1403,7 @@ static Int syGetchTerm(Int fid)
     Char                str[2];
     Int ret;
 
-    /* retry on errors or end-of-file. Ignore 0 bytes */
+    // retry on errors or end-of-file. Ignore 0 bytes
 
 #ifdef LINE_END_HACK
  tryagain:
@@ -1412,7 +1412,7 @@ static Int syGetchTerm(Int fid)
         ;
     if (ret <= 0) return EOF;
 
-    /* if running under a window handler, handle special characters        */
+    // if running under a window handler, handle special characters
     if ( SyWindow && ch == '@' ) {
         do {
             while ( (ret = SyRead(fid, &ch, 1)) == -1 &&
@@ -1451,9 +1451,9 @@ static Int syGetchTerm(Int fid)
     }
     // We saw a '\r' without a '\n'
     syBuf[fid].crlast = FALSE;
-#endif  /* line end hack */
+#endif  // line end hack
 
-    /* return the character                                                */
+    // return the character
     return (Int)ch;
 }
 
@@ -1513,9 +1513,9 @@ static Int syGetchNonTerm(Int fid)
     }
     // We saw a '\r' without a '\n'
     syBuf[fid].crlast = FALSE;
-#endif  /* line end hack */
+#endif  // line end hack
 
-    /* return the character                                                */
+    // return the character
     return (Int)ch;
 }
 
@@ -1547,12 +1547,12 @@ Int SyGetch (
 {
     Int                 ch;
 
-    /* check file identifier                                               */
+    // check file identifier
     if ( !SyBufInUse(fid) ) {
         return -1;
     }
 
-    /* if we are reading stdin or errin use raw mode                       */
+    // if we are reading stdin or errin use raw mode
     if ( fid == 0 || fid == 2 ) {
         syStartraw(fid);
     }
@@ -1622,8 +1622,8 @@ Int SyGetch (
 **      <esc>-T exchange two words.
 */
 
-static UInt syCTRO; /* number of '<ctr>-O' pending     */
-static UInt syESCN; /* number of '<Esc>-N' pending     */
+static UInt syCTRO; // number of '<ctr>-O' pending
+static UInt syESCN; // number of '<Esc>-N' pending
 
 static UInt FreezeStdin;    // When true, ignore if any new input from stdin
                             // This is used to stop HPC-GAP from reading stdin
@@ -1632,13 +1632,13 @@ static UInt FreezeStdin;    // When true, ignore if any new input from stdin
 
 #ifdef HAVE_SELECT
 
-static Obj OnCharReadHookActive = 0;  /* if bound the hook is active */
-static Obj OnCharReadHookInFds = 0;   /* a list of UNIX file descriptors for reading */
-static Obj OnCharReadHookInFuncs = 0; /* a list of GAP functions with 0 args */
-static Obj OnCharReadHookOutFds = 0;  /* a list of UNIX file descriptors for writing */
-static Obj OnCharReadHookOutFuncs = 0;/* a list of GAP functions with 0 args */
-static Obj OnCharReadHookExcFds = 0;  /* a list of UNIX file descriptors */
-static Obj OnCharReadHookExcFuncs = 0;/* a list of GAP functions with 0 args */
+static Obj OnCharReadHookActive = 0;  // if bound the hook is active
+static Obj OnCharReadHookInFds = 0;   // a list of UNIX file descriptors for reading
+static Obj OnCharReadHookInFuncs = 0; // a list of GAP functions with 0 args
+static Obj OnCharReadHookOutFds = 0;  // a list of UNIX file descriptors for writing
+static Obj OnCharReadHookOutFuncs = 0;// a list of GAP functions with 0 args
+static Obj OnCharReadHookExcFds = 0;  // a list of UNIX file descriptors
+static Obj OnCharReadHookExcFuncs = 0;// a list of GAP functions with 0 args
 
 static Int OnCharReadHookActiveCheck(void)
 {
@@ -1658,17 +1658,17 @@ static void HandleCharReadHook(int stdinfd)
   Obj o;
   static int WeAreAlreadyInHere = 0;
 
-  /* Just to make sure: */
+  // Just to make sure:
   if (WeAreAlreadyInHere) return;
   WeAreAlreadyInHere = 1;
 
-  while (1) {  /* breaks when fd becomes ready */
+  while (1) {  // breaks when fd becomes ready
     FD_ZERO(&infds);
     FD_ZERO(&outfds);
     FD_ZERO(&excfds);
     FD_SET(stdinfd,&infds);
     maxfd = stdinfd;
-    /* Handle input file descriptors: */
+    // Handle input file descriptors:
     if (OnCharReadHookInFds != (Obj) 0 &&
         IS_PLIST(OnCharReadHookInFds) &&
         OnCharReadHookInFuncs != (Obj) 0 &&
@@ -1676,13 +1676,13 @@ static void HandleCharReadHook(int stdinfd)
       for (i = 1;i <= LEN_PLIST(OnCharReadHookInFds);i++) {
         o = ELM_PLIST(OnCharReadHookInFds,i);
         if (o != (Obj) 0 && IS_INTOBJ(o)) {
-          j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+          j = INT_INTOBJ(o);  // a UNIX file descriptor
           FD_SET(j,&infds);
           if (j > maxfd) maxfd = j;
         }
       }
     }
-    /* Handle output file descriptors: */
+    // Handle output file descriptors:
     if (OnCharReadHookOutFds != (Obj) 0 &&
         IS_PLIST(OnCharReadHookOutFds) &&
         OnCharReadHookOutFuncs != (Obj) 0 &&
@@ -1690,13 +1690,13 @@ static void HandleCharReadHook(int stdinfd)
       for (i = 1;i <= LEN_PLIST(OnCharReadHookOutFds);i++) {
         o = ELM_PLIST(OnCharReadHookOutFds,i);
         if (o != (Obj) 0 && IS_INTOBJ(o)) {
-          j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+          j = INT_INTOBJ(o);  // a UNIX file descriptor
           FD_SET(j,&outfds);
           if (j > maxfd) maxfd = j;
         }
       }
     }
-    /* Handle exception file descriptors: */
+    // Handle exception file descriptors:
     if (OnCharReadHookExcFds != (Obj) 0 &&
         IS_PLIST(OnCharReadHookExcFds) &&
         OnCharReadHookExcFuncs != (Obj) 0 &&
@@ -1704,7 +1704,7 @@ static void HandleCharReadHook(int stdinfd)
       for (i = 1;i <= LEN_PLIST(OnCharReadHookExcFds);i++) {
         o = ELM_PLIST(OnCharReadHookExcFds,i);
         if (o != (Obj) 0 && IS_INTOBJ(o)) {
-          j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+          j = INT_INTOBJ(o);  // a UNIX file descriptor
           FD_SET(j,&excfds);
           if (j > maxfd) maxfd = j;
         }
@@ -1713,7 +1713,7 @@ static void HandleCharReadHook(int stdinfd)
 
     n = select(maxfd+1,&infds,&outfds,&excfds,NULL);
     if (n >= 0) {
-      /* Now run through the lists and call functions if ready: */
+      // Now run through the lists and call functions if ready:
 
       if (OnCharReadHookInFds != (Obj) 0 &&
           IS_PLIST(OnCharReadHookInFds) &&
@@ -1722,7 +1722,7 @@ static void HandleCharReadHook(int stdinfd)
         for (i = 1;i <= LEN_PLIST(OnCharReadHookInFds);i++) {
           o = ELM_PLIST(OnCharReadHookInFds,i);
           if (o != (Obj) 0 && IS_INTOBJ(o)) {
-            j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+            j = INT_INTOBJ(o);  // a UNIX file descriptor
             if (FD_ISSET(j,&infds)) {
               o = ELM_PLIST(OnCharReadHookInFuncs,i);
               if (o != (Obj) 0 && IS_FUNC(o))
@@ -1731,7 +1731,7 @@ static void HandleCharReadHook(int stdinfd)
           }
         }
       }
-      /* Handle output file descriptors: */
+      // Handle output file descriptors:
       if (OnCharReadHookOutFds != (Obj) 0 &&
           IS_PLIST(OnCharReadHookOutFds) &&
           OnCharReadHookOutFuncs != (Obj) 0 &&
@@ -1739,7 +1739,7 @@ static void HandleCharReadHook(int stdinfd)
         for (i = 1;i <= LEN_PLIST(OnCharReadHookOutFds);i++) {
           o = ELM_PLIST(OnCharReadHookOutFds,i);
           if (o != (Obj) 0 && IS_INTOBJ(o)) {
-            j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+            j = INT_INTOBJ(o);  // a UNIX file descriptor
             if (FD_ISSET(j,&outfds)) {
               o = ELM_PLIST(OnCharReadHookOutFuncs,i);
               if (o != (Obj) 0 && IS_FUNC(o))
@@ -1748,7 +1748,7 @@ static void HandleCharReadHook(int stdinfd)
           }
         }
       }
-      /* Handle exception file descriptors: */
+      // Handle exception file descriptors:
       if (OnCharReadHookExcFds != (Obj) 0 &&
           IS_PLIST(OnCharReadHookExcFds) &&
           OnCharReadHookExcFuncs != (Obj) 0 &&
@@ -1756,7 +1756,7 @@ static void HandleCharReadHook(int stdinfd)
         for (i = 1;i <= LEN_PLIST(OnCharReadHookExcFds);i++) {
           o = ELM_PLIST(OnCharReadHookExcFds,i);
           if (o != (Obj) 0 && IS_INTOBJ(o)) {
-            j = INT_INTOBJ(o);  /* a UNIX file descriptor */
+            j = INT_INTOBJ(o);  // a UNIX file descriptor
             if (FD_ISSET(j,&excfds)) {
               o = ELM_PLIST(OnCharReadHookExcFuncs,i);
               if (o != (Obj) 0 && IS_FUNC(o))
@@ -1774,9 +1774,9 @@ static void HandleCharReadHook(int stdinfd)
       }
     } else
       break;
-  } /* while (1) */
+  } // while (1)
 }
-#endif   /* HAVE_SELECT */
+#endif   // HAVE_SELECT
 
 
 
@@ -1812,7 +1812,7 @@ Int HasAvailableBytes( UInt fid )
     return select( syBuf[fid].fp + 1, &set, NULL, NULL, &tv);
   }
 #endif
-  /* best guess */
+  // best guess
   Int ret = SyIsEndOfFile(fid);
   return (ret != -1 && ret != 1);
 }
@@ -1876,7 +1876,7 @@ static Obj GAPInfo;
 
 #ifdef HAVE_LIBREADLINE
 
-/* we import GAP level functions from GAPInfo components */
+// we import GAP level functions from GAPInfo components
 static Obj CLEFuncs;
 static Obj KeyHandler;
 
@@ -1887,13 +1887,13 @@ static int GAP_set_macro(int count, int key)
  GAPMacroNumber = count;
  return 0;
 }
-/* a generic rl_command_func_t that delegates to GAP level */
+// a generic rl_command_func_t that delegates to GAP level
 static int GAP_rl_func(int count, int key)
 {
    Obj   rldata, linestr, okey, res, obj, data, beginchange, endchange, m;
    Int   len, n, hook, dlen, max, i;
 
-   /* we shift indices 0-based on C-level and 1-based on GAP level */
+   // we shift indices 0-based on C-level and 1-based on GAP level
    linestr = MakeString(rl_line_buffer);
    okey = INTOBJ_INT(key + 1000*GAPMacroNumber);
    GAPMacroNumber = 0;
@@ -1916,11 +1916,11 @@ static int GAP_rl_func(int count, int key)
    if (len == 0) return 0;
    obj = ELM_LIST(res, 1);
    if (IsStringConv(obj)) {
-      /* insert txt */
+      // insert txt
       rl_insert_text(CONST_CSTR_STRING(obj));
       n = 1;
    } else if ((obj == True || obj == False) && len > 2) {
-      /* kill or delete text */
+      // kill or delete text
       beginchange = ELM_LIST(res, 2);
       if (!IS_INTOBJ(beginchange)) return 0;
       endchange = ELM_LIST(res, 3);
@@ -1931,7 +1931,7 @@ static int GAP_rl_func(int count, int key)
          rl_delete_text(INT_INTOBJ(beginchange)-1, INT_INTOBJ(endchange)-1);
       n = 3;
    }  else if (IS_INTOBJ(obj) && len > 2) {
-      /* delete some text and insert */
+      // delete some text and insert
       beginchange = obj;
       endchange = ELM_LIST(res, 2);
       if (!IS_INTOBJ(endchange)) return 0;
@@ -1944,15 +1944,15 @@ static int GAP_rl_func(int count, int key)
       rl_end_undo_group();
       n = 3;
    } else if (IS_INTOBJ(obj) && len == 2) {
-      /* several hooks to particular rl_ functions with data */
+      // several hooks to particular rl_ functions with data
       hook = INT_INTOBJ(obj);
       data = ELM_LIST(res, 2);
       if (hook == 1) {
-         /* display matches */
+         // display matches
          if (!IS_LIST(data)) return 0;
-         /* -1, because first is word to be completed */
+         // -1, because first is word to be completed
          dlen = LEN_LIST(data)-1;
-         /* +2, must be in 'argv' format, terminated by 0 */
+         // +2, must be in 'argv' format, terminated by 0
          char **strs = (char**)calloc(dlen+2, sizeof(char*));
          max = 0;
          for (i=0; i <= dlen; i++) {
@@ -1968,7 +1968,7 @@ static int GAP_rl_func(int count, int key)
          rl_on_new_line();
       }
       else if (hook == 2) {
-         /* put these characters into sequence of input keys */
+         // put these characters into sequence of input keys
          if (!IsStringConv(data)) return 0;
          dlen = strlen(CSTR_STRING(data));
          for (i=0; i < dlen; i++)
@@ -1976,17 +1976,17 @@ static int GAP_rl_func(int count, int key)
       }
       n = 2;
    } else if (IS_INTOBJ(obj) && len == 1) {
-      /* several hooks to particular rl_ functions with no data */
+      // several hooks to particular rl_ functions with no data
       hook = INT_INTOBJ(obj);
-      /* ring bell */
+      // ring bell
       if (hook == 100) rl_ding();
-      /* return line (execute Ctrl-m) */
+      // return line (execute Ctrl-m)
       else if (hook == 101) rl_execute_next(13);
       n = 1;
    } else
       n = 0;
 
-   /* optionally we can return the new point, or new point and mark */
+   // optionally we can return the new point, or new point and mark
    if (len > n) {
       n++;
       m = ELM_LIST(res, n);
@@ -2035,9 +2035,9 @@ static Obj FuncREADLINEINITLINE(Obj self, Obj line)
   return True;
 }
 
-/* init is needed once */
+// init is needed once
 static Int ISINITREADLINE = 0;
-/* a hook function called regularly while waiting on input */
+// a hook function called regularly while waiting on input
 static Int current_rl_fid;
 static int charreadhook_rl(void)
 {
@@ -2056,14 +2056,14 @@ static void initreadline(void)
           ....
        $endif                                                             */
   rl_readline_name = "GAP";
-  /* this should pipe signals through to GAP  */
+  // this should pipe signals through to GAP
   rl_already_prompted = 1 ;
 
   rl_catch_signals = 0;
   rl_catch_sigwinch = 1;
-  /* hook to read from other channels */
+  // hook to read from other channels
   rl_event_hook = 0;
-  /* give GAP_rl_func a name that can be used in .inputrc */
+  // give GAP_rl_func a name that can be used in .inputrc
   rl_add_defun( "handled-by-GAP", GAP_rl_func, -1 );
 
   rl_bind_keyseq("\\C-x\\C-g", GAP_set_macro);
@@ -2084,17 +2084,17 @@ static Char * readlineFgets(Char * line, UInt length, Int fid, UInt block)
   current_rl_fid = fid;
   if (!ISINITREADLINE) initreadline();
 
-  /* read at most as much as we can buffer */
+  // read at most as much as we can buffer
   rl_num_chars_to_read = length-2;
 #ifdef HAVE_SELECT
-  /* hook to read from other channels */
+  // hook to read from other channels
   rl_event_hook = (OnCharReadHookActiveCheck()) ? charreadhook_rl : 0;
 #endif
-  /* now do the real work */
+  // now do the real work
   doingReadline = 1;
   rlres = readline(STATE(Prompt));
   doingReadline = 0;
-  /* we get a NULL pointer on EOF, say by pressing Ctr-d  */
+  // we get a NULL pointer on EOF, say by pressing Ctr-d
   if (!rlres) {
     if (!SyCTRD) {
       while (!rlres)
@@ -2106,7 +2106,7 @@ static Char * readlineFgets(Char * line, UInt length, Int fid, UInt block)
       return (Char*)0;
     }
   }
-  /* maybe add to history, we use key 0 for this function */
+  // maybe add to history, we use key 0 for this function
   GAP_rl_func(0, 0);
   gap_strlcpy(line, rlres, length);
   // FIXME: handle the case where rlres contains more than length
@@ -2114,7 +2114,7 @@ static Char * readlineFgets(Char * line, UInt length, Int fid, UInt block)
   free(rlres);
   gap_strlcat(line, "\n", length);
 
-  /* send the whole line (unclipped) to the window handler               */
+  // send the whole line (unclipped) to the window handler
   syWinPut( fid, (*line != '\0' ? "@r" : "@x"), line );
 
   return line;
@@ -2168,12 +2168,12 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
     Int                 rubdel;
     Obj                 linestr, yankstr, args, res;
 
-    /* check file identifier                                               */
+    // check file identifier
     if ( !SyBufInUse(fid) ) {
         return (Char*)0;
     }
 
-    /* no line editing if the file is not '*stdin*' or '*errin*'           */
+    // no line editing if the file is not '*stdin*' or '*errin*'
     if ( fid != 0 && fid != 2 ) {
       p = syFgetsNoEdit(line, length, fid, block);
 
@@ -2189,7 +2189,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
 
 #ifdef HAVE_LIBREADLINE
     if (SyUseReadline) {
-      /* switch back to cooked mode                                          */
+      // switch back to cooked mode
       if ( SyLineEdit )
           syEndEdit(fid);
 
@@ -2208,17 +2208,17 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
     if (length > 32768)
        ErrorQuit("Cannot handle lines with more than 32768 characters in line edit mode.",0,0);
 
-    /* the line starts out blank                                           */
+    // the line starts out blank
     line[0] = '\0';  p = line;
     for ( q = old; q < old+sizeof(old); ++q )  *q = ' ';
     oldc = 0;
     last = 0;
     ch = 0;
-    rubdel=0; /* do we want to east a `del' character? */
+    rubdel=0; // do we want to east a `del' character?
 
     while ( 1 ) {
 
-        /* get a character, handle <ctr>V<chr>, <esc><num> and <ctr>U<num> */
+        // get a character, handle <ctr>V<chr>, <esc><num> and <ctr>U<num>
         rep = 1; ch2 = 0;
         do {
             if ( syESCN > 0 ) { if (ch == Esc('N')) {ch = '\n'; syESCN--; }
@@ -2246,7 +2246,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
             if ( IsDigit(ch2)  && ch==CTR('[') ) {             ch2=ch; ch=0;}
             if ( IsDigit(ch2)  && ch==CTR('U') ) {             ch2=ch; ch=0;}
             if ( IsDigit(ch2)  && IsDigit(ch)  ) { rep=10*rep+ch-'0';  ch=0;}
-            /* get rid of tilde in windows commands */
+            // get rid of tilde in windows commands
             if (rubdel==1) {
               if ( ch==126 ) {ch2=0;ch=0;};
               rubdel=0;
@@ -2256,20 +2256,20 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
         if ( ch2==Esc(CTR('V')) )  ch  = CTV(ch | 0x80);
         if ( ch2==CTR('[') )       ch  = Esc(ch);
         if ( ch2==CTR('U') )       rep = 4*rep;
-        /* windows keys */
+        // windows keys
         if ( ch2=='[' && ch=='A')  ch  = CTR('P');
         if ( ch2=='[' && ch=='B')  ch  = CTR('N');
         if ( ch2=='[' && ch=='C')  ch  = CTR('F');
         if ( ch2=='[' && ch=='D')  ch  = CTR('B');
-        if ( ch2=='[' && ch=='1') { ch  = CTR('A');rubdel=1;} /* home */
-        if ( ch2=='[' && ch=='3') { ch  = CTR('D');rubdel=1;} /* del */
-        if ( ch2=='[' && ch=='4') { ch  = CTR('E');rubdel=1;} /* end */
-        if ( ch2=='[' && ch=='5') { ch  = CTR('P');rubdel=1;} /* pgup */
-        if ( ch2=='[' && ch=='6') { ch  = CTR('N');rubdel=1;} /* pgdwn */
+        if ( ch2=='[' && ch=='1') { ch  = CTR('A');rubdel=1;} // home
+        if ( ch2=='[' && ch=='3') { ch  = CTR('D');rubdel=1;} // del
+        if ( ch2=='[' && ch=='4') { ch  = CTR('E');rubdel=1;} // end
+        if ( ch2=='[' && ch=='5') { ch  = CTR('P');rubdel=1;} // pgup
+        if ( ch2=='[' && ch=='6') { ch  = CTR('N');rubdel=1;} // pgdwn
 
-        /* now perform the requested action <rep> times in the input line  */
+        // now perform the requested action <rep> times in the input line
         while ( rep-- > 0 ) {
-          /* check for key handler on GAP level */
+          // check for key handler on GAP level
           Int runLineEditKeyHandler = 0;
           if (ch >= 0) {
 #ifdef HPCGAP
@@ -2320,44 +2320,44 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
           else {
             switch ( ch ) {
 
-            case CTR('A'): /* move cursor to the start of the line         */
+            case CTR('A'): // move cursor to the start of the line
                 while ( p > line )  --p;
                 break;
 
-            case Esc('B'): /* move cursor one word to the left             */
+            case Esc('B'): // move cursor one word to the left
             case Esc('b'):
                 if ( p > line ) do {
                     --p;
                 } while ( p>line && (!IS_SEP(*(p-1)) || IS_SEP(*p)));
                 break;
 
-            case CTR('B'): /* move cursor one character to the left        */
+            case CTR('B'): // move cursor one character to the left
                 if ( p > line )  --p;
                 break;
 
-            case CTR('F'): /* move cursor one character to the right       */
+            case CTR('F'): // move cursor one character to the right
                 if ( *p != '\0' )  ++p;
                 break;
 
-            case Esc('F'): /* move cursor one word to the right            */
+            case Esc('F'): // move cursor one word to the right
             case Esc('f'):
                 if ( *p != '\0' ) do {
                     ++p;
                 } while ( *p!='\0' && (IS_SEP(*(p-1)) || !IS_SEP(*p)));
                 break;
 
-            case CTR('E'): /* move cursor to the end of the line           */
+            case CTR('E'): // move cursor to the end of the line
                 while ( *p != '\0' )  ++p;
                 break;
 
-            case CTR('H'): /* delete the character left of the cursor      */
+            case CTR('H'): // delete the character left of the cursor
             case 127:
                 if ( p == line ) break;
                 --p;
-                /* let '<ctr>-D' do the work                               */
+                // let '<ctr>-D' do the work
 
-            case CTR('D'): /* delete the character at the cursor           */
-                           /* on an empty line '<ctr>-D' is <eof>          */
+            case CTR('D'): // delete the character at the cursor
+                           // on an empty line '<ctr>-D' is <eof>
                 if ( p == line && *p == '\0' && SyCTRD && !rubdel ) {
                     ch = EOF; rep = 0; break;
                 }
@@ -2368,11 +2368,11 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 }
                 break;
 
-            case CTR('X'): /* delete the line                              */
+            case CTR('X'): // delete the line
                 p = line;
-                /* let '<ctr>-K' do the work                               */
+                // let '<ctr>-K' do the work
 
-            case CTR('K'): /* delete to end of line                        */
+            case CTR('K'): // delete to end of line
                 if ( last!=CTR('X') && last!=CTR('K') && last!=Esc(127)
                   && last!=Esc('D') && last!=Esc('d') )  yank[0] = '\0';
                 for ( r = yank; *r != '\0'; ++r ) ;
@@ -2381,7 +2381,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 *p = '\0';
                 break;
 
-            case Esc(127): /* delete the word left of the cursor           */
+            case Esc(127): // delete the word left of the cursor
                 q = p;
                 if ( p > line ) do {
                     --p;
@@ -2396,7 +2396,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 *r = '\0';
                 break;
 
-            case Esc('D'): /* delete the word right of the cursor          */
+            case Esc('D'): // delete the word right of the cursor
             case Esc('d'):
                 q = p;
                 if ( *q != '\0' ) do {
@@ -2412,7 +2412,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 *r = '\0';
                 break;
 
-            case CTR('T'): /* twiddle characters                           */
+            case CTR('T'): // twiddle characters
                 if ( p == line )  break;
                 if ( *p == '\0' )  --p;
                 if ( p == line )  break;
@@ -2420,7 +2420,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 ++p;
                 break;
 
-            case CTR('Y'): /* insert (yank) deleted text                   */
+            case CTR('Y'): // insert (yank) deleted text
                 if (strlen(yank) + strlen(line) - 2 > length) {
                     syEchoch(CTR('G'), fid);
                     break;
@@ -2434,7 +2434,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 }
                 break;
 
-            case Esc('U'): /* uppercase word                               */
+            case Esc('U'): // uppercase word
             case Esc('u'):
                 if ( *p != '\0' ) do {
                     if ('a' <= *p && *p <= 'z')  *p = *p + 'A' - 'a';
@@ -2442,14 +2442,14 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 } while ( *p!='\0' && (IS_SEP(*(p-1)) || !IS_SEP(*p)));
                 break;
 
-            case Esc('C'): /* capitalize word                              */
+            case Esc('C'): // capitalize word
             case Esc('c'):
                 while ( *p!='\0' && IS_SEP(*p) )  ++p;
                 if ( 'a' <= *p && *p <= 'z' )  *p = *p + 'A'-'a';
                 if ( *p != '\0' ) ++p;
-                /* lowercase rest of the word                              */
+                // lowercase rest of the word
 
-            case Esc('L'): /* lowercase word                               */
+            case Esc('L'): // lowercase word
             case Esc('l'):
                 if ( *p != '\0' ) do {
                     if ('A' <= *p && *p <= 'Z')  *p = *p + 'a' - 'A';
@@ -2457,7 +2457,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 } while ( *p!='\0' && (IS_SEP(*(p-1)) || !IS_SEP(*p)));
                 break;
 
-            case Esc(CTR('L')): /* repaint input line                      */
+            case Esc(CTR('L')): // repaint input line
                 syEchoch('\n',fid);
                 for ( q = syPrompt; q < syPrompt+syNrchar; ++q )
                     syEchoch( *q, fid );
@@ -2465,26 +2465,26 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 oldc = 0;
                 break;
 
-            case EOF:     /* end of file on input                          */
+            case EOF:     // end of file on input
                 break;
 
-            case CTR('M'): /* (same as '\r', '\n') append \n and exit      */
+            case CTR('M'): // (same as '\r', '\n') append \n and exit
             case CTR('J'):
                 while ( *p != '\0' )  ++p;
                 *p++ = '\n'; *p = '\0';
                 rep = 0;
                 break;
 
-            case CTR('O'): /* accept line, perform '<ctr>-N' next time     */
+            case CTR('O'): // accept line, perform '<ctr>-N' next time
                 while ( *p != '\0' )  ++p;
                 *p++ = '\n'; *p = '\0';
                 syCTRO = 2 * rep + 1;
                 rep = 0;
                 break;
 
-            case CTR('I'): /* try to complete the identifier before dot    */
+            case CTR('I'): // try to complete the identifier before dot
                 if ( p == line || IS_SEP(p[-1]) ) {
-                  /* If we don't have an identifier to complete, insert a tab */
+                  // If we don't have an identifier to complete, insert a tab
                     ch2 = ch & 0xff;
                     for ( q = p; ch2; ++q ) {
                         ch3 = *q; *q = ch2; ch2 = ch3;
@@ -2497,7 +2497,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
      assuming that interactive input lines are much shorter than
      32768 characters.                                                       */
 
-                  /* Locate in q the current identifier */
+                  // Locate in q the current identifier
                     if ( (q = p) > line ) do {
                         --q;
                     } while ( q>line && (!IS_SEP(*(q-1)) || IS_SEP(*q)));
@@ -2507,14 +2507,14 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                     rn = (line < q && *(q-1) == '.'
                                    && (line == q-1 || *(q-2) != '.'));
 
-                    /* Copy the current identifier into buffer */
+                    // Copy the current identifier into buffer
                     r = buffer;  s = q;
                     while ( s < p )  *r++ = *s++;
                     *r = '\0';
 
                     if ( (rn ? iscomplete_rnam( buffer, p-q )
                           : iscomplete_gvar( buffer, p-q )) ) {
-                      /* Complete already, just beep for single tab */
+                      // Complete already, just beep for single tab
                       if ( last != CTR('I') )
                         syEchoch( CTR('G'), fid );
                       else {
@@ -2531,7 +2531,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                         }
                         syEchos( "\n", fid );
 
-                        /* Reprint the prompt and input line so far */
+                        // Reprint the prompt and input line so far
                         for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
                           syEchoch( *q, fid );
                         for ( q = old; q < old+sizeof(old); ++q )
@@ -2543,14 +2543,14 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                     else if ( (rn ? ! completion_rnam( buffer, p-q )
                                   : ! completion_gvar( buffer, p-q )) ) {
 
-                      /* Not complete, and there are no completions */
+                      // Not complete, and there are no completions
                         if ( last != CTR('I') )
 
-                          /* beep after 1 tab */
+                          // beep after 1 tab
                             syEchoch( CTR('G'), fid );
                         else {
 
-                          /* print a message otherwise */
+                          // print a message otherwise
                           syWinPut( fid, "@c", "" );
                           syEchos("\n    identifier has no completions\n",
                                   fid);
@@ -2569,10 +2569,10 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
 
                         t = p;
 
-                      /* Insert the necessary part of the current completion */
+                      // Insert the necessary part of the current completion
                         for ( s = buffer+(p-q); *s != '\0'; s++ ) {
 
-                      /* Insert character from buffer into the line, I think */
+                      // Insert character from buffer into the line, I think
                             ch2 = *s;
                             for ( r = p; ch2; r++ ) {
                                 ch3 = *r; *r = ch2; ch2 = ch3;
@@ -2592,7 +2592,7 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                              && (rn ? completion_rnam( buffer, t-q )
                                     : completion_gvar( buffer, t-q )) ) {
 
-                          /* check the length of common prefix */
+                          // check the length of common prefix
                             r = t;  s = buffer+(t-q);
                             while ( r < p && *r == *s ) {
                                 r++; s++;
@@ -2630,12 +2630,12 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                             }
                         }
 
-                      /* If we managed to do some completion then we're happy */
+                      // If we managed to do some completion then we're happy
                     }
                 }
                 break;
 
-            default:      /* default, insert normal character              */
+            default:      // default, insert normal character
                 ch2 = ch & 0xff;
                 for ( q = p; ch2; ++q ) {
                     ch3 = *q; *q = ch2; ch2 = ch3;
@@ -2643,18 +2643,18 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
                 *q = '\0'; ++p;
                 break;
 
-            } /* switch ( ch ) */
-          } /* key handler hook */
+            } // switch ( ch )
+          } // key handler hook
           last = ch;
         }
 
         if ( ch==EOF || ch=='\n' || ch=='\r' || ch==CTR('O') ) {
-            /* if there is a hook for line ends, call it before echoing */
+            // if there is a hook for line ends, call it before echoing
             if ( EndLineHook ) Call0ArgsInNewReader( EndLineHook );
             syEchoch('\r',fid);  syEchoch('\n',fid);  break;
         }
 
-        /* now update the screen line according to the differences         */
+        // now update the screen line according to the differences
         for ( q = line, r = new, newc = 0; *q != '\0'; ++q ) {
             if ( q == p )  newc = r-new;
             if ( *q==CTR('I') )  { do *r++=' '; while ((r-new+syNrchar)%8); }
@@ -2706,14 +2706,14 @@ static Char * syFgets(Char * line, UInt length, Int fid, UInt block)
       Call1ArgsInNewReader(LineEditKeyHandler, args);
     }
 
-    /* send the whole line (unclipped) to the window handler               */
+    // send the whole line (unclipped) to the window handler
     syWinPut( fid, (*line != '\0' ? "@r" : "@x"), line );
 
-    /* switch back to cooked mode                                          */
+    // switch back to cooked mode
     if ( SyLineEdit == 1 )
         syEndEdit(fid);
 
-    /* return the line (or '0' at end-of-file)                             */
+    // return the line (or '0' at end-of-file)
     if ( *line == '\0' )
         return (Char*)0;
     return line;
@@ -2845,10 +2845,10 @@ UInt SyExecuteProcess (
     Int tin, tout;
     int res;
 
-    /* change the working directory                                    */
+    // change the working directory
     if ( chdir(dir) == -1 ) return -1;
 
-    /* if <in> is -1 open "/dev/null"                                  */
+    // if <in> is -1 open "/dev/null"
     if ( in == -1 )
         tin = open( "/dev/null", O_RDONLY );
     else
@@ -2856,7 +2856,7 @@ UInt SyExecuteProcess (
     if ( tin == -1 )
         return -1;
 
-    /* if <out> is -1 open "/dev/null"                                 */
+    // if <out> is -1 open "/dev/null"
     if ( out == -1 )
         tout = open( "/dev/null", O_WRONLY );
     else
@@ -2866,8 +2866,8 @@ UInt SyExecuteProcess (
         return -1;
     }
 
-    /* set standard input to <in>, standard output to <out>            */
-    savestdin = -1;   /* Just to please the compiler */
+    // set standard input to <in>, standard output to <out>
+    savestdin = -1;   // Just to please the compiler
     if ( tin != 0 ) {
         savestdin = dup(0);
         if (savestdin == -1 || dup2(tin,0) == -1) {
@@ -2894,11 +2894,11 @@ UInt SyExecuteProcess (
     }
 
     FreezeStdin = 1;
-    /* now try to execute the program                                  */
+    // now try to execute the program
     res = spawnve( _P_WAIT, prg, (const char * const *) args,
                                  (const char * const *) environ );
 
-    /* Now repair the open file descriptors: */
+    // Now repair the open file descriptors:
     if (tout != 1) {
         close(1);
         dup2(savestdout,1);
@@ -2914,7 +2914,7 @@ UInt SyExecuteProcess (
 
     FreezeStdin = 0;
 
-    /* Report result: */
+    // Report result:
     if (res < 0) return -1;
     return WEXITSTATUS(res);
 }
@@ -2932,11 +2932,11 @@ UInt SyExecuteProcess (
     Int                     out,
     Char *                  args[] )
 {
-    pid_t                   pid;                    /* process id          */
+    pid_t                   pid;                    // process id
     pid_t                   wait_pid;
-    int                     status;                 /* do not use `Int'    */
-    Int                     tin;                    /* temp in             */
-    Int                     tout;                   /* temp out            */
+    int                     status;                 // do not use `Int'
+    Int                     tin;                    // temp in
+    Int                     tout;                   // temp out
     sig_handler_t           * volatile func2;
 
 
@@ -2953,18 +2953,18 @@ UInt SyExecuteProcess (
     if (func2 == SIG_ERR || func2 == SIG_DFL || func2 == SIG_IGN)
       func2 = &NullSignalHandler;
 
-    /* clone the process                                                   */
+    // clone the process
     pid = fork();
     if ( pid == -1 ) {
         return -1;
     }
 
-    /* we are the parent                                                   */
+    // we are the parent
     if ( pid != 0 ) {
         // Stop trying to read input
         FreezeStdin = 1;
 
-        /* ignore a CTRL-C                                                 */
+        // ignore a CTRL-C
         struct sigaction sa;
         struct sigaction oldsa;
 
@@ -2973,7 +2973,7 @@ UInt SyExecuteProcess (
         sa.sa_flags = 0;
         sigaction(SIGINT, &sa, &oldsa);
 
-        /* wait for some action                                            */
+        // wait for some action
         wait_pid = waitpid( pid, &status, 0 );
         FreezeStdin = 0;
         sigaction(SIGINT, &oldsa, NULL);
@@ -2987,15 +2987,15 @@ UInt SyExecuteProcess (
         return WEXITSTATUS(status);
     }
 
-    /* we are the child                                                    */
+    // we are the child
     else {
 
-        /* change the working directory                                    */
+        // change the working directory
         if ( chdir(dir) == -1 ) {
             _exit(-1);
         }
 
-        /* if <in> is -1 open "/dev/null"                                  */
+        // if <in> is -1 open "/dev/null"
         if ( in == -1 ) {
             tin = open( "/dev/null", O_RDONLY );
         }
@@ -3006,7 +3006,7 @@ UInt SyExecuteProcess (
             _exit(-1);
         }
 
-        /* if <out> is -1 open "/dev/null"                                 */
+        // if <out> is -1 open "/dev/null"
         if ( out == -1 ) {
             tout = open( "/dev/null", O_WRONLY );
         }
@@ -3017,7 +3017,7 @@ UInt SyExecuteProcess (
             _exit(-1);
         }
 
-        /* set standard input to <in>, standard output to <out>            */
+        // set standard input to <in>, standard output to <out>
         if ( tin != 0 ) {
             if ( dup2( tin, 0 ) == -1 ) {
                 _exit(-1);
@@ -3032,12 +3032,12 @@ UInt SyExecuteProcess (
         }
         fcntl( 1, F_SETFD, 0 );
 
-        /* now try to execute the program                                  */
+        // now try to execute the program
         execve( prg, args, environ );
         _exit(-1);
     }
 
-    /* this should not happen                                              */
+    // this should not happen
     return -1;
 }
 #endif
@@ -3081,9 +3081,9 @@ Int SyIsReadableFile ( const Char * name )
     SyClearErrorNo();
     res = access( name, R_OK );
     if ( res == -1 ) {
-      /* we might be able to read the file via zlib */
+      // we might be able to read the file via zlib
 
-      /* beware of buffer overflows */
+      // beware of buffer overflows
       if ( gap_strlcpy(xname, name, sizeof(xname)) < sizeof(xname) &&
             gap_strlcat(xname, ".gz", sizeof(xname))  < sizeof(xname) ) {
         res = access(xname, R_OK);
@@ -3145,7 +3145,7 @@ Int SyIsExecutableFile ( const Char * name )
 */
 Int SyIsDirectoryPath ( const Char * name )
 {
-    struct stat     buf;                /* buffer for `stat'               */
+    struct stat     buf;                // buffer for `stat'
 
     SyClearErrorNo();
     if ( stat( name, &buf ) == -1 ) {
@@ -3253,7 +3253,7 @@ static Obj SyReadStringFile(Int fid)
     UInt            lstr;
     Obj             str;
 
-    /* read <fid> until we see  eof   (in 32kB pieces)                     */
+    // read <fid> until we see  eof   (in 32kB pieces)
     str = NEW_STRING(0);
     len = 0;
     do {
@@ -3270,7 +3270,7 @@ static Obj SyReadStringFile(Int fid)
         SET_LEN_STRING(str, lstr+ret);
     } while(ret > 0);
 
-    /* fix the length of <str>                                             */
+    // fix the length of <str>
     len = GET_LEN_STRING(str);
     ResizeBag( str, SIZEBAG_STRINGLEN(len) );
 
@@ -3279,7 +3279,7 @@ static Obj SyReadStringFile(Int fid)
 }
 
 #if !defined(SYS_IS_CYGWIN32)
-/* fstat seems completely broken under CYGWIN */
+// fstat seems completely broken under CYGWIN
 /* first try to get the whole file as one chunk, this avoids garbage
    collections because of the GROW_STRING calls below    */
 static Obj SyReadStringFileStat(Int fid)
@@ -3493,16 +3493,16 @@ void InitSysFiles(void)
 static Int InitKernel(
       StructInitInfo * module )
 {
-  /* init filters and functions                                          */
+  // init filters and functions
   InitHdlrFuncsFromTable( GVarFuncs );
 
-  /* line edit key handler from library                                  */
+  // line edit key handler from library
   ImportGVarFromLibrary("GAPInfo", &GAPInfo);
   ImportFuncFromLibrary("LineEditKeyHandler", &LineEditKeyHandler);
   ImportGVarFromLibrary("LineEditKeyHandlers", &LineEditKeyHandlers);
 
 #ifdef HPCGAP
-  /* GAP hooks to allow library to override how we start/stop raw mode   */
+  // GAP hooks to allow library to override how we start/stop raw mode
   DeclareGVar(&GVarBeginEdit, "TERMINAL_BEGIN_EDIT");
   DeclareGVar(&GVarEndEdit, "TERMINAL_END_EDIT");
 #endif
@@ -3530,7 +3530,7 @@ static Int InitKernel(
 static Int InitLibrary(
       StructInitInfo * module )
 {
-  /* init filters and functions                                          */
+  // init filters and functions
   InitGVarFuncsFromTable( GVarFuncs );
 
   return 0;

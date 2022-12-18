@@ -45,20 +45,20 @@ Int             EqListList (
     Obj                 listL,
     Obj                 listR )
 {
-    Int                 lenL;           /* length of the left operand      */
-    Int                 lenR;           /* length of the right operand     */
-    Obj                 elmL;           /* element of the left operand     */
-    Obj                 elmR;           /* element of the right operand    */
-    Int                 i;              /* loop variable                   */
+    Int                 lenL;           // length of the left operand
+    Int                 lenR;           // length of the right operand
+    Obj                 elmL;           // element of the left operand
+    Obj                 elmR;           // element of the right operand
+    Int                 i;              // loop variable
 
-    /* get the lengths of the lists and compare them                       */
+    // get the lengths of the lists and compare them
     lenL = LEN_LIST( listL );
     lenR = LEN_LIST( listR );
     if ( lenL != lenR ) {
         return 0;
     }
 
-    /* loop over the elements and compare them                             */
+    // loop over the elements and compare them
     for ( i = 1; i <= lenL; i++ ) {
         elmL = ELMV0_LIST( listL, i );
         elmR = ELMV0_LIST( listR, i );
@@ -73,7 +73,7 @@ Int             EqListList (
         }
     }
 
-    /* no differences found, the lists are equal                           */
+    // no differences found, the lists are equal
     return 1;
 }
 
@@ -95,17 +95,17 @@ Int             LtListList (
     Obj                 listL,
     Obj                 listR )
 {
-    Int                 lenL;           /* length of the left operand      */
-    Int                 lenR;           /* length of the right operand     */
-    Obj                 elmL;           /* element of the left operand     */
-    Obj                 elmR;           /* element of the right operand    */
-    Int                 i;              /* loop variable                   */
+    Int                 lenL;           // length of the left operand
+    Int                 lenR;           // length of the right operand
+    Obj                 elmL;           // element of the left operand
+    Obj                 elmR;           // element of the right operand
+    Int                 i;              // loop variable
 
-    /* get the lengths of the lists and compare them                       */
+    // get the lengths of the lists and compare them
     lenL = LEN_LIST( listL );
     lenR = LEN_LIST( listR );
 
-    /* loop over the elements and compare them                             */
+    // loop over the elements and compare them
     for ( i = 1; i <= lenL && i <= lenR; i++ ) {
         elmL = ELMV0_LIST( listL, i );
         elmR = ELMV0_LIST( listR, i );
@@ -120,7 +120,7 @@ Int             LtListList (
         }
     }
 
-    /* reached the end of at least one list                                */
+    // reached the end of at least one list
     return (lenL < lenR);
 }
 
@@ -169,19 +169,19 @@ Obj             SumSclList (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listS;          /* sum, result                     */
-    Obj                 elmS;           /* one element of sum list         */
-    Obj                 elmR;           /* one element of right operand    */
-    Int                 len;            /* length                          */
-    Int                 i;              /* loop variable                   */
+    Obj                 listS;          // sum, result
+    Obj                 elmS;           // one element of sum list
+    Obj                 elmR;           // one element of right operand
+    Int                 len;            // length
+    Int                 i;              // loop variable
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_LIST( listR );
     listS = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listL) ||  IS_MUTABLE_OBJ(listR),
                            T_PLIST, len );
     SET_LEN_PLIST( listS, len );
 
-    /* loop over the entries and add                                       */
+    // loop over the entries and add
     for ( i = 1; i <= len; i++ ) {
         elmR = ELMV0_LIST( listR, i );
         if (elmR)
@@ -199,19 +199,19 @@ Obj             SumListScl (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listS;          /* sum, result                     */
-    Obj                 elmS;           /* one element of sum list         */
-    Obj                 elmL;           /* one element of left operand     */
-    Int                 len;            /* length                          */
-    Int                 i;              /* loop variable                   */
+    Obj                 listS;          // sum, result
+    Obj                 elmS;           // one element of sum list
+    Obj                 elmL;           // one element of left operand
+    Int                 len;            // length
+    Int                 i;              // loop variable
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_LIST( listL );
     listS = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(listR) || IS_MUTABLE_OBJ(listL),
                            T_PLIST, len );
     SET_LEN_PLIST( listS, len );
 
-    /* loop over the entries and add                                       */
+    // loop over the entries and add
     for ( i = 1; i <= len; i++ ) {
         elmL = ELMV0_LIST( listL, i );
         if (elmL)
@@ -229,15 +229,15 @@ Obj             SumListList (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listS;          /* sum, result                     */
-    Obj                 elmS;           /* one element of the sum          */
-    Obj                 elmL;           /* one element of the left list    */
-    Obj                 elmR;           /* one element of the right list   */
-    Int                 lenL,lenR, lenS;/* lengths                         */
-    Int                 i;              /* loop variable                   */
+    Obj                 listS;          // sum, result
+    Obj                 elmS;           // one element of the sum
+    Obj                 elmL;           // one element of the left list
+    Obj                 elmR;           // one element of the right list
+    Int                 lenL,lenR, lenS;// lengths
+    Int                 i;              // loop variable
     UInt                mutS;
 
-    /* get and check the length                                            */
+    // get and check the length
     lenL = LEN_LIST( listL );
     lenR = LEN_LIST( listR );
     lenS = (lenR > lenL) ? lenR : lenL;
@@ -245,7 +245,7 @@ Obj             SumListList (
                            T_PLIST, lenS );
     SET_LEN_PLIST( listS, lenS );
 
-    /* Sort out mutability */
+    // Sort out mutability
     mutS = 0;
     for (i = 1; i <= lenL; i++)
       if ((elmL = ELM0_LIST( listL, i)))
@@ -260,7 +260,7 @@ Obj             SumListList (
           break;
         }
 
-    /* loop over the entries and add                                       */
+    // loop over the entries and add
     for ( i = 1; i <= lenS; i++ ) {
       elmL = ELM0_LIST( listL, i ) ;
       elmR = ELM0_LIST( listR, i ) ;
@@ -308,11 +308,11 @@ static Obj FuncSUM_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR)
 static Obj ZeroListDefault(Obj list)
 {
     Obj                 res;
-/*  Obj                 elm; */
+// Obj                 elm;
     Int                 len;
     Int                 i;
 
-    /* make the result list -- same mutability as argument */
+    // make the result list -- same mutability as argument
     len = LEN_LIST( list );
     if (len == 0) {
         return NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(list), T_PLIST_EMPTY, 0);
@@ -320,8 +320,8 @@ static Obj ZeroListDefault(Obj list)
     res = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(list), T_PLIST, len );
     SET_LEN_PLIST( res, len );
 
-    /* enter zeroes everywhere                                             */
-    /* For now, lets just do the simplest and safest thing */
+    // enter zeroes everywhere
+    // For now, lets just do the simplest and safest thing
     for (i = 1; i <= len; i++ )
       {
         Obj tmp = ELM0_LIST( list, i);
@@ -331,7 +331,7 @@ static Obj ZeroListDefault(Obj list)
           CHANGED_BAG( res);
         }
       }
-    /* Now adjust the result TNUM info */
+    // Now adjust the result TNUM info
 
     if (IS_PLIST( list ))
       {
@@ -371,11 +371,11 @@ static Obj FuncZERO_LIST_DEFAULT(Obj self, Obj list)
 static Obj ZeroListMutDefault(Obj list)
 {
     Obj                 res;
-/*  Obj                 elm; */
+// Obj                 elm;
     Int                 len;
     Int                 i;
 
-    /* make the result list -- always mutable */
+    // make the result list -- always mutable
     len = LEN_LIST( list );
     if (len == 0) {
         return NewEmptyPlist();
@@ -383,8 +383,8 @@ static Obj ZeroListMutDefault(Obj list)
     res = NEW_PLIST(  T_PLIST ,len );
     SET_LEN_PLIST( res, len );
 
-    /* enter zeroes everywhere                                             */
-    /* For now, lets just do the simplest and safest thing */
+    // enter zeroes everywhere
+    // For now, lets just do the simplest and safest thing
     for (i = 1; i <= len; i++ )
       {
         Obj tmp = ELM0_LIST( list, i);
@@ -394,7 +394,7 @@ static Obj ZeroListMutDefault(Obj list)
           CHANGED_BAG( res);
         }
       }
-    /* Now adjust the result TNUM info */
+    // Now adjust the result TNUM info
 
     if (IS_PLIST( list ))
       {
@@ -481,7 +481,7 @@ static Obj AInvMutListDefault(Obj list)
     res = NEW_PLIST( T_PLIST , len );
     SET_LEN_PLIST( res, len );
 
-    /* enter the additive inverses everywhere                              */
+    // enter the additive inverses everywhere
     for ( i = 1; i <= len; i++ ) {
         elm = ELM0_LIST( list, i );
         if (elm) {
@@ -491,7 +491,7 @@ static Obj AInvMutListDefault(Obj list)
         }
     }
 
-    /* Now adjust the result TNUM info */
+    // Now adjust the result TNUM info
 
     if (IS_PLIST(list)) {
         if (TNUM_OBJ(list) == T_PLIST_FFE ||
@@ -528,7 +528,7 @@ static Obj AInvListDefault(Obj list)
     Int                 len;
     Int                 i;
 
-    /* make the result list -- same mutability as input */
+    // make the result list -- same mutability as input
     len = LEN_LIST( list );
     if (len == 0) {
         return NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(list), T_PLIST_EMPTY, 0);
@@ -536,7 +536,7 @@ static Obj AInvListDefault(Obj list)
     res = NEW_PLIST_WITH_MUTABILITY( IS_MUTABLE_OBJ(list), T_PLIST, len );
     SET_LEN_PLIST( res, len );
 
-    /* enter the additive inverses everywhere                              */
+    // enter the additive inverses everywhere
     for ( i = 1; i <= len; i++ ) {
         elm = ELM0_LIST( list, i );
         if (elm) {
@@ -546,7 +546,7 @@ static Obj AInvListDefault(Obj list)
         }
     }
 
-    /* Now adjust the result TNUM info */
+    // Now adjust the result TNUM info
 
     if (IS_PLIST(list)) {
         if (TNUM_OBJ(list) == T_PLIST_FFE ||
@@ -602,14 +602,14 @@ Obj             DiffSclList (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listD;          /* difference, result              */
-    Obj                 elmD;           /* one element of difference list  */
-    Obj                 elmR;           /* one element of right operand    */
-    Int                 len;            /* length                          */
-    Int                 i;              /* loop variable                   */
+    Obj                 listD;          // difference, result
+    Obj                 elmD;           // one element of difference list
+    Obj                 elmR;           // one element of right operand
+    Int                 len;            // length
+    Int                 i;              // loop variable
     Int                 mut;
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_LIST( listR );
     mut = IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR);
     if (len == 0) {
@@ -618,7 +618,7 @@ Obj             DiffSclList (
     listD = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, len);
     SET_LEN_PLIST( listD, len );
 
-    /* loop over the entries and subtract                                  */
+    // loop over the entries and subtract
     for ( i = 1; i <= len; i++ ) {
         elmR = ELMV0_LIST( listR, i );
         if (elmR)
@@ -629,7 +629,7 @@ Obj             DiffSclList (
           }
     }
 
-    /* Now adjust the result TNUM info */
+    // Now adjust the result TNUM info
 
     if (IS_PLIST( listR ))
       {
@@ -645,14 +645,14 @@ Obj             DiffListScl (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listD;          /* difference, result              */
-    Obj                 elmD;           /* one element of difference list  */
-    Obj                 elmL;           /* one element of left operand     */
-    Int                 len;            /* length                          */
-    Int                 i;              /* loop variable                   */
+    Obj                 listD;          // difference, result
+    Obj                 elmD;           // one element of difference list
+    Obj                 elmL;           // one element of left operand
+    Int                 len;            // length
+    Int                 i;              // loop variable
     Int                 mut;
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_LIST( listL );
     mut = IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR);
     if (len == 0) {
@@ -661,7 +661,7 @@ Obj             DiffListScl (
     listD = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, len);
     SET_LEN_PLIST( listD, len );
 
-    /* loop over the entries and subtract                                  */
+    // loop over the entries and subtract
     for ( i = 1; i <= len; i++ ) {
         elmL = ELMV0_LIST( listL, i );
         if (elmL)
@@ -673,7 +673,7 @@ Obj             DiffListScl (
 
     }
 
-    /* Now adjust the result TNUM info */
+    // Now adjust the result TNUM info
 
     if (IS_PLIST( listL ))
       {
@@ -689,15 +689,15 @@ Obj             DiffListList (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listD;          /* difference, result              */
-    Obj                 elmD;           /* one element of the difference   */
-    Obj                 elmL;           /* one element of the left list    */
-    Obj                 elmR;           /* one element of the right list   */
-    Int                 i;              /* loop variable                   */
+    Obj                 listD;          // difference, result
+    Obj                 elmD;           // one element of the difference
+    Obj                 elmL;           // one element of the left list
+    Obj                 elmR;           // one element of the right list
+    Int                 i;              // loop variable
     UInt                mutD;
     Int                 mut;
 
-    /* get and check the length                                            */
+    // get and check the length
     const UInt lenL = LEN_LIST(listL);
     const UInt lenR = LEN_LIST(listR);
     const UInt lenD = (lenR > lenL) ? lenR : lenL;
@@ -708,7 +708,7 @@ Obj             DiffListList (
     listD = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, lenD);
     SET_LEN_PLIST( listD, lenD );
 
-    /* Sort out mutability */
+    // Sort out mutability
     mutD = 0;
     for (i = 1; i <= lenL; i++)
       if ((elmL = ELM0_LIST( listL, i)))
@@ -724,13 +724,13 @@ Obj             DiffListList (
         }
 
 
-    /* loop over the entries and subtract                                  */
+    // loop over the entries and subtract
     for ( i = 1; i <= lenD; i++ ) {
         elmL = ELM0_LIST( listL, i );
         elmR = ELM0_LIST( listR, i );
 
 
-        /* Now compute the result 6 different cases! */
+        // Now compute the result 6 different cases!
         if (elmL)
           {
             if (elmR)
@@ -756,8 +756,8 @@ Obj             DiffListList (
             CHANGED_BAG( listD );
           }
     }
-    /* Now adjust the result TNUM info. There's not so much we
-       can say here with total reliability */
+    // Now adjust the result TNUM info. There's not so much we can say
+    // here with total reliability
 
     if (IS_PLIST( listR ) && IS_PLIST(listL) &&
              HAS_FILT_LIST(listR, FN_IS_DENSE) &&
@@ -808,14 +808,14 @@ Obj             ProdSclList (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listP;          /* product, result                 */
-    Obj                 elmP;           /* one element of product list     */
-    Obj                 elmR;           /* one element of right operand    */
-    Int                 len;            /* length                          */
-    Int                 i;              /* loop variable                   */
+    Obj                 listP;          // product, result
+    Obj                 elmP;           // one element of product list
+    Obj                 elmR;           // one element of right operand
+    Int                 len;            // length
+    Int                 i;              // loop variable
     Int                 mut;
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_LIST( listR );
     mut = IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR);
     if (len == 0) {
@@ -824,7 +824,7 @@ Obj             ProdSclList (
     listP = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, len);
     SET_LEN_PLIST( listP, len );
 
-    /* loop over the entries and multiply                                  */
+    // loop over the entries and multiply
     for ( i = 1; i <= len; i++ ) {
         elmR = ELMV0_LIST( listR, i );
         if (elmR)
@@ -849,14 +849,14 @@ Obj             ProdListScl (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listP;          /* product, result                 */
-    Obj                 elmP;           /* one element of product list     */
-    Obj                 elmL;           /* one element of left operand     */
-    Int                 len;            /* length                          */
-    Int                 i;              /* loop variable                   */
+    Obj                 listP;          // product, result
+    Obj                 elmP;           // one element of product list
+    Obj                 elmL;           // one element of left operand
+    Int                 len;            // length
+    Int                 i;              // loop variable
     Int                 mut;
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_LIST( listL );
     mut = IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR);
     if (len == 0) {
@@ -865,7 +865,7 @@ Obj             ProdListScl (
     listP = NEW_PLIST_WITH_MUTABILITY(mut, T_PLIST, len);
     SET_LEN_PLIST( listP, len );
 
-    /* loop over the entries and multiply                                  */
+    // loop over the entries and multiply
     for ( i = 1; i <= len; i++ ) {
         elmL = ELMV0_LIST( listL, i );
         if (elmL) {
@@ -889,19 +889,19 @@ Obj             ProdListList (
     Obj                 listL,
     Obj                 listR )
 {
-    Obj                 listP;          /* product, result                 */
-    Obj                 elmP;           /* one summand of the product      */
-    Obj                 elmL;           /* one element of the left list    */
-    Obj                 elmR;           /* one element of the right list   */
-    Int                 lenL,lenR,len; /* length                          */
-    Int                 i;              /* loop variable                   */
+    Obj                 listP;          // product, result
+    Obj                 elmP;           // one summand of the product
+    Obj                 elmL;           // one element of the left list
+    Obj                 elmR;           // one element of the right list
+    Int                 lenL,lenR,len; // length
+    Int                 i;              // loop variable
     Int                 imm;
 
-    /* get and check the length                                            */
+    // get and check the length
     lenL = LEN_LIST( listL );
     lenR = LEN_LIST( listR );
     len =  (lenL < lenR) ? lenL : lenR;
-    /* loop over the entries and multiply and accumulate                   */
+    // loop over the entries and multiply and accumulate
     listP = 0;
     imm = 0;
     for (i = 1; i <= len; i++)
@@ -921,9 +921,8 @@ Obj             ProdListList (
           }
     }
 
-    /* TODO: This is possible expensive, we may be able to settle for
-     * a cheaper check and call MakeImmutable() instead.
-     */
+    // TODO: This is possible expensive, we may be able to settle for
+    // a cheaper check and call MakeImmutable() instead.
     if (imm && IS_MUTABLE_OBJ(listP))
       CheckedMakeImmutable(listP);
 
@@ -949,7 +948,7 @@ FuncPROD_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR, Obj depthdiff)
   Obj prod;
   prod = ProdListList( listL, listR );
 
-  /* possibly adjust mutability */
+  // possibly adjust mutability
   if (!IS_MUTABLE_OBJ(prod))
     switch (INT_INTOBJ(depthdiff)) {
     case -1:
@@ -984,23 +983,23 @@ FuncPROD_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR, Obj depthdiff)
 
 static Obj OneMatrix(Obj mat, UInt mut)
 {
-    Obj                 res = 0;        /* one, result                     */
-    Obj                 row;            /* one row of the result           */
-    Obj                 zero = 0;       /* zero element                    */
-    Obj                 one = 0;        /* one element                     */
-    UInt                len;            /* length (and width) of matrix    */
-    UInt                i, k;           /* loop variables                  */
-    UInt                rtype= 0;       /* tnum for rows of result        */
-    UInt                ctype = 0;      /* tnum for  result        */
+    Obj                 res = 0;        // one, result
+    Obj                 row;            // one row of the result
+    Obj                 zero = 0;       // zero element
+    Obj                 one = 0;        // one element
+    UInt                len;            // length (and width) of matrix
+    UInt                i, k;           // loop variables
+    UInt                rtype= 0;       // tnum for rows of result
+    UInt                ctype = 0;      // tnum for  result
 
-    /* check that the operand is a *square* matrix                         */
+    // check that the operand is a *square* matrix
     len = LEN_LIST( mat );
     if ( len != LEN_LIST( ELM_LIST( mat, 1 ) ) ) {
         ErrorMayQuit("Matrix ONE: <mat> must be square (not %d by %d)",
                      (Int)len, (Int)LEN_LIST(ELM_LIST(mat, 1)));
     }
 
-    /* get the zero and the one                                            */
+    // get the zero and the one
     switch (mut) {
     case 0:
       zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
@@ -1031,7 +1030,7 @@ static Obj OneMatrix(Obj mat, UInt mut)
 
 
 
-    /* make the identity matrix                                            */
+    // make the identity matrix
     res = NEW_PLIST(  ctype, len );
     SET_LEN_PLIST( res, len );
     for ( i = 1; i <= len; i++ ) {
@@ -1044,7 +1043,7 @@ static Obj OneMatrix(Obj mat, UInt mut)
         CHANGED_BAG( res );
     }
 
-    /* return the identity matrix                                          */
+    // return the identity matrix
     return res;
 }
 
@@ -1084,25 +1083,25 @@ static Obj FuncONE_MATRIX_MUTABLE(Obj self, Obj list)
 
 static Obj InvMatrix(Obj mat, UInt mut)
 {
-    Obj                 res = 0;        /* power, result                   */
-    Obj                 row;            /* one row of the matrix           */
-    Obj                 row2;           /* another row of the matrix       */
-    Obj                 elm;            /* one element of the matrix       */
-    Obj                 elm2;           /* another element of the matrix   */
-    Obj                 zero = 0;       /* zero element                    */
-    Obj                 one = 0;        /* one element                     */
-    UInt                len;            /* length (and width) of matrix    */
-    UInt                i, k, l;        /* loop variables                  */
-    UInt                rtype = 0, ctype = 0;   /* types for lists to be created   */
+    Obj                 res = 0;        // power, result
+    Obj                 row;            // one row of the matrix
+    Obj                 row2;           // another row of the matrix
+    Obj                 elm;            // one element of the matrix
+    Obj                 elm2;           // another element of the matrix
+    Obj                 zero = 0;       // zero element
+    Obj                 one = 0;        // one element
+    UInt                len;            // length (and width) of matrix
+    UInt                i, k, l;        // loop variables
+    UInt                rtype = 0, ctype = 0;   // types for lists to be created
 
-    /* check that the operand is a *square* matrix                         */
+    // check that the operand is a *square* matrix
     len = LEN_LIST( mat );
     if ( len != LEN_LIST( ELM_LIST( mat, 1 ) ) ) {
         ErrorMayQuit("Matrix INV: <mat> must be square (not %d by %d)",
                      (Int)len, (Int)LEN_LIST(ELM_LIST(mat, 1)));
     }
 
-    /* get the zero and the one                                            */
+    // get the zero and the one
     switch(mut)
       {
       case 0:
@@ -1132,7 +1131,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
         break;
       }
 
-    /* make a matrix of the form $ ( Id_<len> | <mat> ) $                  */
+    // make a matrix of the form $ ( Id_<len> | <mat> ) $
     res = NEW_PLIST( ctype, len );
     SET_LEN_PLIST( res, len );
     for ( i = 1; i <= len; i++ ) {
@@ -1156,11 +1155,11 @@ static Obj InvMatrix(Obj mat, UInt mut)
         }
     }
 
-    /* make row operations to reach form $ ( <inv> | Id_<len> ) $          */
-    /* loop over the columns of <mat>                                      */
+    // make row operations to reach form $ ( <inv> | Id_<len> ) $
+    // loop over the columns of <mat>
     for ( k = len+1; k <= 2*len; k++ ) {
 
-        /* find a nonzero entry in this column                             */
+        // find a nonzero entry in this column
         for ( i = k-len; i <= len; i++ ) {
             if ( ! EQ( ELM_PLIST( ELM_PLIST(res,i), k ), zero ) )
                break;
@@ -1169,7 +1168,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
             return Fail;
         }
 
-        /* make the row the <k>-th row and normalize it                    */
+        // make the row the <k>-th row and normalize it
         row = ELM_PLIST( res, i );
         SET_ELM_PLIST( res, i, ELM_PLIST( res, k-len ) );
         SET_ELM_PLIST( res, k-len, row );
@@ -1183,7 +1182,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
             CHANGED_BAG( row );
         }
 
-        /* clear all entries in this column                                */
+        // clear all entries in this column
         for ( i = 1; i <= len; i++ ) {
             row2 = ELM_PLIST( res, i );
             if (mut < 2)
@@ -1202,7 +1201,7 @@ static Obj InvMatrix(Obj mat, UInt mut)
 
     }
 
-    /* throw away the right halves of each row                             */
+    // throw away the right halves of each row
     for ( i = 1; i <= len; i++ ) {
         SET_LEN_PLIST( ELM_PLIST( res, i ), len );
         SHRINK_PLIST(  ELM_PLIST( res, i ), len );
@@ -1235,7 +1234,7 @@ static Obj FuncINV_MATRIX_IMMUTABLE(Obj self, Obj mat)
 **
 */
 
-/* We need these to redispatch when the user has supplied a replacement value. */
+// We need these to redispatch when the user has supplied a replacement value.
 
 static Obj AddRowVectorOp;
 static Obj MultVectorLeftOp;
@@ -1546,34 +1545,34 @@ static Obj ConvertToMatrixRep;
 
 static Obj InvMatWithRowVecs(Obj mat, UInt mut)
 {
-  Obj                 res;            /* result                          */
-  Obj                 matcopy;        /* copy of mat                     */
-  Obj                 row = 0;            /* one row of matcopy              */
-  Obj                 row2;           /* corresponding row of res        */
-  Obj                 row3;           /* another row of matcopy          */
-  Obj                 x = 0;              /* one element of the matrix       */
-  Obj                 xi;             /* 1/x                             */
-  Obj                 y;              /* another element of the matrix   */
-  Obj                 yi;             /* -y                              */
-  Obj                 zero;           /* zero element                    */
-  Obj                 zerov;          /* zero vector                     */
-  Obj                 one;            /* one element                     */
-  UInt                len;            /* length (and width) of matrix    */
-  UInt                i, k, j;        /* loop variables                  */
+  Obj                 res;            // result
+  Obj                 matcopy;        // copy of mat
+  Obj                 row = 0;            // one row of matcopy
+  Obj                 row2;           // corresponding row of res
+  Obj                 row3;           // another row of matcopy
+  Obj                 x = 0;              // one element of the matrix
+  Obj                 xi;             // 1/x
+  Obj                 y;              // another element of the matrix
+  Obj                 yi;             // -y
+  Obj                 zero;           // zero element
+  Obj                 zerov;          // zero vector
+  Obj                 one;            // one element
+  UInt                len;            // length (and width) of matrix
+  UInt                i, k, j;        // loop variables
 
-  /* check that the operand is a *square* matrix                         */
+  // check that the operand is a *square* matrix
   len = LEN_LIST( mat );
   if ( len != LEN_LIST( ELM_LIST( mat, 1 ) ) ) {
       ErrorMayQuit("Matrix INV: <mat> must be square (not %d by %d)",
                    (Int)len, (Int)LEN_LIST(ELM_LIST(mat, 1)));
   }
 
-  /* get the zero and the one                                            */
+  // get the zero and the one
   zerov = ZERO_SAMEMUT(ELMW_LIST(mat, 1));
   zero = ZERO_SAMEMUT(ELMW_LIST(ELMW_LIST(mat, 1), 1));
   one  = ONE( zero );
 
-  /* set up res (initially the identity) and matcopy */
+  // set up res (initially the identity) and matcopy
   res = NEW_PLIST(T_PLIST,len);
   matcopy = NEW_PLIST(T_PLIST,len);
   SET_LEN_PLIST(res,len);
@@ -1593,10 +1592,10 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
   /* Now to work, make matcopy an identity by row operations and
      do the same row operations to res */
 
-  /* outer loop over columns of matcopy */
+  // outer loop over columns of matcopy
   for (i = 1; i <= len; i++)
     {
-      /* Find a non-zero leading entry that is in that column */
+      // Find a non-zero leading entry that is in that column
       for (j = i; j <= len; j++)
         {
           row = ELM_PLIST(matcopy,j);
@@ -1605,12 +1604,12 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
             break;
         }
 
-      /* if there isn't one then the matrix is not invertible */
+      // if there isn't one then the matrix is not invertible
       if (j > len)
         return Fail;
 
-      /* Maybe swap two rows */
-      /* But I will want this value anyway */
+      // Maybe swap two rows
+      // But I will want this value anyway
       row2 = ELM_PLIST(res,j);
       if (j != i)
         {
@@ -1628,7 +1627,7 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
           CALL_2ARGS(MultVectorLeftOp, row2, xi);
         }
 
-      /* Clear the entries. We know that we can ignore the entries in rows i..j */
+      // Clear the entries. We know that we can ignore the entries in rows i..j
       for (k = 1; k < i; k++)
         {
           row3 = ELM_PLIST(matcopy,k);
@@ -1654,8 +1653,8 @@ static Obj InvMatWithRowVecs(Obj mat, UInt mut)
 
     }
 
-  /* Now we adjust mutability. Couldn't do it earlier, because AddRowVector, etc.
-     needs mutable target vectors */
+  // Now we adjust mutability. Couldn't do it earlier, because AddRowVector,
+  // etc. needs mutable target vectors
   switch (mut)
     {
     case 0:
@@ -1766,31 +1765,31 @@ static Obj  FuncMONOM_TOT_DEG_LEX ( Obj self, Obj u, Obj  v ) {
   lu = LEN_PLIST( u );
   lv = LEN_PLIST( v );
 
-  /* strip off common prefixes                                             */
+  // strip off common prefixes
   i = 1;
   while ( i <= lu && i <= lv && EQ(ELM_PLIST( u,i ), ELM_PLIST( v,i )) )
       i++;
 
-  /* Is u a prefix of v ? Return true if u is a proper prefix.             */
+  // Is u a prefix of v ? Return true if u is a proper prefix.
   if ( i > lu ) return (lu < lv) ? True : False;
 
-  /* Is v a  prefix of u ?                                                 */
+  // Is v a  prefix of u ?
   if ( i > lv ) return False;
 
-  /* Now determine the lexicographic order.  The monomial is interpreted   */
-  /* as a string of indeterminates.                                        */
+  // Now determine the lexicographic order.  The monomial is interpreted
+  // as a string of indeterminates.
   if ( i % 2 == 1 ) {
-    /* The first difference between u and v is an indeterminate.           */
+    // The first difference between u and v is an indeterminate.
     lexico = LT(ELM_PLIST( u, i ), ELM_PLIST( v, i )) ? True : False;
     i++;
   }
   else {
-    /* The first difference between u and v is an exponent.                */
+    // The first difference between u and v is an exponent.
     lexico = LT(ELM_PLIST( v, i ), ELM_PLIST( u, i )) ? True : False;
   }
 
-  /* Now add up the remaining exponents in order to compare the total      */
-  /* degrees.                                                              */
+  // Now add up the remaining exponents in order to compare the total
+  // degrees.
   total = INTOBJ_INT(0);
   while ( i <= lu && i <= lv )  {
     C_SUM_FIA(  total, total, ELM_PLIST( u, i ) );
@@ -1798,7 +1797,7 @@ static Obj  FuncMONOM_TOT_DEG_LEX ( Obj self, Obj u, Obj  v ) {
     i += 2;
   }
 
-  /* Only one of the following while loops is executed                     */
+  // Only one of the following while loops is executed
   while ( i <= lu ) {
     C_SUM_FIA(  total, total, ELM_PLIST( u, i ) );
     i += 2;
@@ -1842,7 +1841,7 @@ static Obj  FuncMONOM_GRLEX( Obj self, Obj u, Obj  v ) {
   lu = LEN_PLIST( u );
   lv = LEN_PLIST( v );
 
-  /* compare the total degrees */
+  // compare the total degrees
   total = INTOBJ_INT(0);
   for (i=2;i<=lu;i+=2) {
     C_SUM_FIA(  total, total, ELM_PLIST( u, i ) );
@@ -1853,11 +1852,11 @@ static Obj  FuncMONOM_GRLEX( Obj self, Obj u, Obj  v ) {
   }
 
   if ( ! (EQ( total, INTOBJ_INT(0))) ) {
-    /* degrees differ, use these */
+    // degrees differ, use these
     return LT( total, INTOBJ_INT(0)) ? True : False;
   }
 
-  /* now use lexicographic ordering */
+  // now use lexicographic ordering
   i=1;
   while (i<=lu && i<=lv) {
     ai=ELM_PLIST(u,i);
@@ -1908,18 +1907,18 @@ static Obj  FuncZIPPED_SUM_LISTS( Obj self, Obj z1, Obj  z2, Obj zero, Obj f ) {
   i1=1;
   i2=1;
   while ((i1<=l1) && (i2<=l2)) {
-/* Pr("A= %d %d\n",i1,i2); */
-    /* if z1[i1] = z2[i2] then */
+// Pr("A= %d %d\n",i1,i2);
+    // if z1[i1] = z2[i2] then
     a=ELM_PLIST(z1,i1);
     b=ELM_PLIST(z2,i2);
     if (EQ(a,b)) {
-      /* the entries are equal */
+      // the entries are equal
       x=ELM_PLIST(z1,i1+1);
       y=ELM_PLIST(z2,i2+1);
-/* Pr("EQ, %d %d\n",INT_INTOBJ(x),INT_INTOBJ(y)); */
+// Pr("EQ, %d %d\n",INT_INTOBJ(x),INT_INTOBJ(y));
       c=CALL_2ARGS(sumfun,x,y);
       if (!(EQ(c,zero))) {
-/* Pr("Added %d\n",INT_INTOBJ(c), 0); */
+// Pr("Added %d\n",INT_INTOBJ(c), 0);
         AddList(sum,a);
         AddList(sum,c);
       }
@@ -1927,14 +1926,14 @@ static Obj  FuncZIPPED_SUM_LISTS( Obj self, Obj z1, Obj  z2, Obj zero, Obj f ) {
       i2=i2+2;
     }
     else {
-      /* compare */
-      a=ELM_PLIST(z1,i1); /* in case the EQ triggered a GC */
+      // compare
+      a=ELM_PLIST(z1,i1); // in case the EQ triggered a GC
       b=ELM_PLIST(z2,i2);
-/* Pr("B= %d %d\n",ELM_LIST(a,1),ELM_LIST(b,1)); */
+// Pr("B= %d %d\n",ELM_LIST(a,1),ELM_LIST(b,1));
       c=CALL_2ARGS(cmpfun,a,b);
-/* Pr("C= %d %d\n",c, 0); */
+// Pr("C= %d %d\n",c, 0);
 
-      if ( /* this construct is taken from the compiler */
+      if ( // this construct is taken from the compiler
           (Obj)(UInt)(c != False) ) {
         a=ELM_PLIST(z1,i1);
         AddList(sum,a);
@@ -1948,9 +1947,9 @@ static Obj  FuncZIPPED_SUM_LISTS( Obj self, Obj z1, Obj  z2, Obj zero, Obj f ) {
         c=ELM_PLIST(z2,i2+1);
         AddList(sum,c);
         i2=i2+2;
-      } /* else */
+      } // else
     } /*else (elif)*/
-  } /* while */
+  } // while
 
   for (i=i1;i<l1;i+=2) {
     AddList(sum,ELM_PLIST(z1,i));
@@ -1983,13 +1982,13 @@ static Obj  FuncMONOM_PROD( Obj self, Obj m1, Obj m2 ) {
    i1=1;
    i2=1;
    while ((i1<l1) && (i2<l2)) {
-     /* assume <2^28 variables) */
+     // assume <2^28 variables)
      a=INT_INTOBJ(ELM_PLIST(m1,i1));
      e=ELM_PLIST(m1,i1+1);
      b=INT_INTOBJ(ELM_PLIST(m2,i2));
      f=ELM_PLIST(m2,i2+1);
      if (a==b) {
-       C_SUM_FIA(c,e,f); /* c=e+f, fast */
+       C_SUM_FIA(c,e,f); // c=e+f, fast
        AddList(prod,INTOBJ_INT(a));
        AddList(prod,c);
        i1+=2;
@@ -2028,7 +2027,8 @@ static Obj  FuncMONOM_PROD( Obj self, Obj m1, Obj m2 ) {
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * * */
+*F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
+*/
 
 
 /****************************************************************************
@@ -2092,10 +2092,10 @@ static StructGVarFunc GVarFuncs[] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    UInt                t1;             /* type of left  operand           */
-    UInt                t2;             /* type of right operand           */
+    UInt                t1;             // type of left  operand
+    UInt                t2;             // type of right operand
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
     InitFopyGVar( "AddRowVector", &AddRowVectorOp );
@@ -2103,7 +2103,7 @@ static Int InitKernel (
     InitFopyGVar( "ConvertToMatrixRep", &ConvertToMatrixRep );
 
 
-    /* install the generic comparisons                                     */
+    // install the generic comparisons
     for ( t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
         for ( t2 = FIRST_LIST_TNUM; t2 <= LAST_LIST_TNUM; t2++ ) {
             EqFuncs[ t1 ][ t2 ] = EqListList;
@@ -2130,7 +2130,7 @@ static Int InitKernel (
         AInvMutFuncs[t1] = AInvMutListDefault;
     }
 
-    /* No kernel installations for One or Inverse any more */
+    // No kernel installations for One or Inverse any more
 
     /* Sum. Here we can do list + non-list and non-list + list,
        we have to careful about list+list, though, as it might
@@ -2162,7 +2162,7 @@ static Int InitKernel (
       }
     }
 
-    /* Diff is just like Sum */
+    // Diff is just like Sum
 
     for (t1 = FIRST_LIST_TNUM; t1 <= LAST_LIST_TNUM; t1++ ) {
       for (t2 = FIRST_REAL_TNUM; t2 < FIRST_LIST_TNUM; t2++ ) {
@@ -2214,7 +2214,7 @@ static Int InitLibrary (
     StructInitInfo *    module )
 {
 
-  /* init filters and functions                                          */
+  // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

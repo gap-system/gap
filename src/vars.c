@@ -45,6 +45,21 @@
 
 #include <stdio.h>
 
+
+/****************************************************************************
+**
+*V  CurrLVars   . . . . . . . . . . . . . . . . . . . . . local variables bag
+**
+**  'CurrLVars'  is the bag containing the  values  of the local variables of
+**  the currently executing interpreted function.
+**
+**  Assignments  to  the local variables change   this bag.  We  do  not call
+**  'CHANGED_BAG' for  each of such change.  Instead we wait until  a garbage
+**  collection begins  and then  call  'CHANGED_BAG'  in  'BeginCollectBags'.
+*/
+// TL: Bag CurrLVars;
+
+
 /****************************************************************************
 **
 *V  BottomLVars . . . . . . . . . . . . . . . . .  bottom local variables bag
@@ -59,6 +74,19 @@ static Bag BottomLVars;
 
 /****************************************************************************
 **
+*V  PtrLVars  . . . . . . . . . . . . . . . .  pointer to local variables bag
+**
+**  'PtrLVars' is a pointer to the 'STATE(CurrLVars)' bag.  This  makes it faster to
+**  access local variables.
+**
+**  Since   a   garbage collection may  move   this  bag  around, the pointer
+**  'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
+*/
+// TL: Obj * PtrLVars;
+
+
+/****************************************************************************
+**
 *F  ObjLVar(<lvar>) . . . . . . . . . . . . . . . . value of a local variable
 **
 **  'ObjLVar' returns the value of the local variable <lvar>.
@@ -66,7 +94,7 @@ static Bag BottomLVars;
 Obj             ObjLVar (
     UInt                lvar )
 {
-    Obj                 val;            /* value result                    */
+    Obj                 val;            // value result
     val = OBJ_LVAR(lvar);
     if (val == 0) {
         ErrorMayQuit("Variable: '%g' must have an assigned value",
@@ -133,9 +161,9 @@ void FreeLVarsBag(Bag bag)
 */
 static ExecStatus ExecAssLVar(Stat stat)
 {
-    Obj                 rhs;            /* value of right hand side        */
+    Obj                 rhs;            // value of right hand side
 
-    /* assign the right hand side to the local variable                    */
+    // assign the right hand side to the local variable
     rhs = EVAL_EXPR(READ_STAT(stat, 1));
     ASS_LVAR(READ_STAT(stat, 0), rhs);
 
@@ -144,7 +172,7 @@ static ExecStatus ExecAssLVar(Stat stat)
 
 static ExecStatus ExecUnbLVar(Stat stat)
 {
-    /* unbind the local variable                                           */
+    // unbind the local variable
     ASS_LVAR(READ_STAT(stat, 0), (Obj)0);
 
     return STATUS_END;
@@ -153,12 +181,12 @@ static ExecStatus ExecUnbLVar(Stat stat)
 
 static Obj EvalIsbLVar(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
+    Obj                 val;            // value, result
 
-    /* get the value of the local variable                                 */
+    // get the value of the local variable
     val = OBJ_LVAR(READ_EXPR(expr, 0));
 
-    /* return the value                                                    */
+    // return the value
     return (val != (Obj)0 ? True : False);
 }
 
@@ -279,9 +307,9 @@ Obj NAME_HVAR_WITH_CONTEXT(Obj context, UInt hvar)
 */
 static ExecStatus ExecAssHVar(Stat stat)
 {
-    Obj                 rhs;            /* value of right hand side        */
+    Obj                 rhs;            // value of right hand side
 
-    /* assign the right hand side to the higher variable                   */
+    // assign the right hand side to the higher variable
     rhs = EVAL_EXPR(READ_STAT(stat, 1));
     ASS_HVAR(READ_STAT(stat, 0), rhs);
 
@@ -290,7 +318,7 @@ static ExecStatus ExecAssHVar(Stat stat)
 
 static ExecStatus ExecUnbHVar(Stat stat)
 {
-    /* unbind the higher variable                                          */
+    // unbind the higher variable
     ASS_HVAR(READ_STAT(stat, 0), 0);
 
     return STATUS_END;
@@ -306,28 +334,28 @@ static ExecStatus ExecUnbHVar(Stat stat)
 */
 static Obj EvalRefHVar(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
+    Obj                 val;            // value, result
     UInt                hvar = READ_EXPR(expr, 0);
 
-    /* get and check the value of the higher variable                      */
+    // get and check the value of the higher variable
     val = OBJ_HVAR(hvar);
     if (val == 0) {
         ErrorMayQuit("Variable: '%g' must have an assigned value",
                      (Int)NAME_HVAR(hvar), 0);
     }
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
 static Obj EvalIsbHVar(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
+    Obj                 val;            // value, result
 
-    /* get the value of the higher variable                                */
+    // get the value of the higher variable
     val = OBJ_HVAR(READ_EXPR(expr, 0));
 
-    /* return the value                                                    */
+    // return the value
     return (val != (Obj)0 ? True : False);
 }
 
@@ -383,9 +411,9 @@ static void PrintIsbHVar(Expr expr)
 */
 static ExecStatus ExecAssGVar(Stat stat)
 {
-    Obj                 rhs;            /* value of right hand side        */
+    Obj                 rhs;            // value of right hand side
 
-    /* assign the right hand side to the global variable                   */
+    // assign the right hand side to the global variable
     rhs = EVAL_EXPR(READ_STAT(stat, 1));
     AssGVar(READ_STAT(stat, 0), rhs);
 
@@ -394,7 +422,7 @@ static ExecStatus ExecAssGVar(Stat stat)
 
 static ExecStatus ExecUnbGVar(Stat stat)
 {
-    /* unbind the global variable                                          */
+    // unbind the global variable
     AssGVar(READ_STAT(stat, 0), (Obj)0);
 
     return STATUS_END;
@@ -410,27 +438,27 @@ static ExecStatus ExecUnbGVar(Stat stat)
 */
 static Obj EvalRefGVar(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
+    Obj                 val;            // value, result
 
-    /* get and check the value of the global variable                      */
+    // get and check the value of the global variable
     val = ValAutoGVar(READ_EXPR(expr, 0));
     if (val == 0) {
         ErrorMayQuit("Variable: '%g' must have an assigned value",
                      (Int)NameGVar(READ_EXPR(expr, 0)), 0);
     }
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
 static Obj EvalIsbGVar(Expr expr)
 {
-    Obj                 val;            /* value, result                   */
+    Obj                 val;            // value, result
 
-    /* get the value of the global variable                                */
+    // get the value of the global variable
     val = ValAutoGVar(READ_EXPR(expr, 0));
 
-    /* return the value                                                    */
+    // return the value
     return (val != (Obj)0 ? True : False);
 }
 
@@ -486,24 +514,24 @@ static void PrintIsbGVar(Expr expr)
 */
 static ExecStatus ExecAssList(Expr stat)
 {
-    Obj                 list;           /* list, left operand              */
-    Obj                 pos;            /* position, left operand          */
-    Int                 p;              /* position, as C integer          */
-    Obj                 rhs;            /* right hand side, right operand  */
+    Obj                 list;           // list, left operand
+    Obj                 pos;            // position, left operand
+    Int                 p;              // position, as C integer
+    Obj                 rhs;            // right hand side, right operand
 
-    /* evaluate the list (checking is done by 'ASS_LIST')                  */
+    // evaluate the list (checking is done by 'ASS_LIST')
     list = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* evaluate the position                                               */
+    // evaluate the position
     pos = EVAL_EXPR(READ_STAT(stat, 1));
 
-    /* evaluate the right hand side                                        */
+    // evaluate the right hand side
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
     if (IS_POS_INTOBJ(pos)) {
         p = INT_INTOBJ(pos);
 
-        /* special case for plain list                                     */
+        // special case for plain list
         if ( TNUM_OBJ(list) == T_PLIST ) {
             if ( LEN_PLIST(list) < p ) {
                 GROW_PLIST( list, p );
@@ -513,7 +541,7 @@ static ExecStatus ExecAssList(Expr stat)
             CHANGED_BAG( list );
         }
 
-        /* generic case                                                    */
+        // generic case
         else {
             ASS_LIST( list, p, rhs );
         }
@@ -557,23 +585,23 @@ static ExecStatus ExecAssMat(Expr stat)
 */
 static ExecStatus ExecAsssList(Expr stat)
 {
-    Obj                 list;           /* list, left operand              */
-    Obj                 poss;           /* positions, left operand         */
-    Obj                 rhss;           /* right hand sides, right operand */
+    Obj                 list;           // list, left operand
+    Obj                 poss;           // positions, left operand
+    Obj                 rhss;           // right hand sides, right operand
 
-    /* evaluate the list (checking is done by 'ASSS_LIST')                 */
+    // evaluate the list (checking is done by 'ASSS_LIST')
     list = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* evaluate and check the positions                                    */
+    // evaluate and check the positions
     poss = EVAL_EXPR(READ_STAT(stat, 1));
     CheckIsPossList("List Assignments", poss);
 
-    /* evaluate and check right hand sides                                 */
+    // evaluate and check right hand sides
     rhss = EVAL_EXPR(READ_STAT(stat, 2));
     RequireDenseList("List Assignments", rhss);
     RequireSameLength("List Assignments", rhss, poss);
 
-    /* assign the right hand sides to several elements of the list         */
+    // assign the right hand sides to several elements of the list
     ASSS_LIST( list, poss, rhss );
 
     return STATUS_END;
@@ -596,15 +624,15 @@ static ExecStatus ExecAsssList(Expr stat)
 */
 static ExecStatus ExecAssListLevel(Expr stat)
 {
-    Obj                 lists;          /* lists, left operand             */
-    Obj                 pos;            /* position, left operand          */
-    Obj                 rhss;           /* right hand sides, right operand */
-    UInt                level;          /* level                           */
+    Obj                 lists;          // lists, left operand
+    Obj                 pos;            // position, left operand
+    Obj                 rhss;           // right hand sides, right operand
+    UInt                level;          // level
     Int narg,i;
     Obj ixs;
 
-    /* evaluate lists (if this works, then <lists> is nested <level> deep, */
-    /* checking it is nested <level>+1 deep is done by 'AssListLevel')     */
+    // evaluate lists (if this works, then <lists> is nested <level> deep,
+    // checking it is nested <level>+1 deep is done by 'AssListLevel')
     lists = EVAL_EXPR(READ_STAT(stat, 0));
     narg = SIZE_STAT(stat)/sizeof(Stat) -3;
     ixs = NEW_PLIST(T_PLIST, narg);
@@ -615,13 +643,13 @@ static ExecStatus ExecAssListLevel(Expr stat)
     }
     SET_LEN_PLIST(ixs, narg);
 
-    /* evaluate right hand sides (checking is done by 'AssListLevel')      */
+    // evaluate right hand sides (checking is done by 'AssListLevel')
     rhss = EVAL_EXPR(READ_STAT(stat, narg + 1));
 
-    /* get the level                                                       */
+    // get the level
     level = READ_STAT(stat, narg + 2);
 
-    /* assign the right hand sides to the elements of several lists        */
+    // assign the right hand sides to the elements of several lists
     AssListLevel( lists, ixs, rhss, level );
 
     return STATUS_END;
@@ -644,26 +672,26 @@ static ExecStatus ExecAssListLevel(Expr stat)
 */
 static ExecStatus ExecAsssListLevel(Expr stat)
 {
-    Obj                 lists;          /* lists, left operand             */
-    Obj                 poss;           /* position, left operand          */
-    Obj                 rhss;           /* right hand sides, right operand */
-    UInt                level;          /* level                           */
+    Obj                 lists;          // lists, left operand
+    Obj                 poss;           // position, left operand
+    Obj                 rhss;           // right hand sides, right operand
+    UInt                level;          // level
 
-    /* evaluate lists (if this works, then <lists> is nested <level> deep, */
-    /* checking it is nested <level>+1 deep is done by 'AsssListLevel')    */
+    // evaluate lists (if this works, then <lists> is nested <level> deep,
+    // checking it is nested <level>+1 deep is done by 'AsssListLevel')
     lists = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* evaluate and check the positions                                    */
+    // evaluate and check the positions
     poss = EVAL_EXPR(READ_EXPR(stat, 1));
     CheckIsPossList("List Assignments", poss);
 
-    /* evaluate right hand sides (checking is done by 'AsssListLevel')     */
+    // evaluate right hand sides (checking is done by 'AsssListLevel')
     rhss = EVAL_EXPR(READ_STAT(stat, 2));
 
-    /* get the level                                                       */
+    // get the level
     level = READ_STAT(stat, 3);
 
-    /* assign the right hand sides to several elements of several lists    */
+    // assign the right hand sides to several elements of several lists
     AsssListLevel( lists, poss, rhss, level );
 
     return STATUS_END;
@@ -679,18 +707,18 @@ static ExecStatus ExecAsssListLevel(Expr stat)
 */
 static ExecStatus ExecUnbList(Expr stat)
 {
-    Obj                 list;           /* list, left operand              */
-    Obj                 pos;            /* position, left operand          */
+    Obj                 list;           // list, left operand
+    Obj                 pos;            // position, left operand
     Obj ixs;
     Int narg;
     Int i;
 
-    /* evaluate the list (checking is done by 'UNB_LIST')                  */
+    // evaluate the list (checking is done by 'UNB_LIST')
     list = EVAL_EXPR(READ_STAT(stat, 0));
     narg = SIZE_STAT(stat)/sizeof(Stat) - 1;
     if (narg == 1) {
       pos = EVAL_EXPR( READ_STAT(stat, 1) );
-      /* unbind the element                                                */
+      // unbind the element
       if (IS_POS_INTOBJ(pos)) {
         UNB_LIST( list, INT_INTOBJ(pos) );
       } else {
@@ -699,7 +727,7 @@ static ExecStatus ExecUnbList(Expr stat)
     } else {
       ixs = NEW_PLIST(T_PLIST, narg);
       for (i = 1; i <= narg; i++) {
-        /* evaluate the position                                               */
+        // evaluate the position
         pos = EVAL_EXPR(READ_STAT(stat, i));
         SET_ELM_PLIST(ixs,i,pos);
         CHANGED_BAG(ixs);
@@ -721,21 +749,21 @@ static ExecStatus ExecUnbList(Expr stat)
 */
 static Obj EvalElmList(Expr expr)
 {
-    Obj                 elm;            /* element, result                 */
-    Obj                 list;           /* list, left operand              */
-    Obj                 pos;            /* position, right operand         */
-    Int                 p;              /* position, as C integer          */
+    Obj                 elm;            // element, result
+    Obj                 list;           // list, left operand
+    Obj                 pos;            // position, right operand
+    Int                 p;              // position, as C integer
 
-    /* evaluate the list (checking is done by 'ELM_LIST')                  */
+    // evaluate the list (checking is done by 'ELM_LIST')
     list = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* evaluate and check the position                                     */
+    // evaluate and check the position
     pos = EVAL_EXPR(READ_EXPR(expr, 1));
 
     if (IS_POS_INTOBJ(pos)) {
         p = INT_INTOBJ( pos );
 
-        /* special case for plain lists (use generic code to signal errors) */
+        // special case for plain lists (use generic code to signal errors)
         if ( IS_PLIST( list ) ) {
             if ( LEN_PLIST(list) < p ) {
                 return ELM_LIST( list, p );
@@ -745,7 +773,7 @@ static Obj EvalElmList(Expr expr)
                 return ELM_LIST( list, p );
             }
         }
-        /* generic case                                                    */
+        // generic case
         else {
             elm = ELM_LIST( list, p );
         }
@@ -753,7 +781,7 @@ static Obj EvalElmList(Expr expr)
         elm = ELMB_LIST(list, pos);
     }
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
@@ -787,21 +815,21 @@ static Obj EvalElmMat(Expr expr)
 */
 static Obj EvalElmsList(Expr expr)
 {
-    Obj                 elms;           /* elements, result                */
-    Obj                 list;           /* list, left operand              */
-    Obj                 poss;           /* positions, right operand        */
+    Obj                 elms;           // elements, result
+    Obj                 list;           // list, left operand
+    Obj                 poss;           // positions, right operand
 
-    /* evaluate the list (checking is done by 'ELMS_LIST')                 */
+    // evaluate the list (checking is done by 'ELMS_LIST')
     list = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* evaluate and check the positions                                    */
+    // evaluate and check the positions
     poss = EVAL_EXPR(READ_EXPR(expr, 1));
     CheckIsPossList("List Elements", poss);
 
-    /* select several elements from the list                               */
+    // select several elements from the list
     elms = ELMS_LIST( list, poss );
 
-    /* return the elements                                                 */
+    // return the elements
     return elms;
 }
 
@@ -821,15 +849,15 @@ static Obj EvalElmsList(Expr expr)
 */
 static Obj EvalElmListLevel(Expr expr)
 {
-    Obj                 lists;          /* lists, left operand             */
-    Obj                 pos;            /* position, right operand         */
+    Obj                 lists;          // lists, left operand
+    Obj                 pos;            // position, right operand
     Obj                 ixs;
-    UInt                level;          /* level                           */
+    UInt                level;          // level
     Int narg;
     Int i;
 
-    /* evaluate lists (if this works, then <lists> is nested <level> deep, */
-    /* checking it is nested <level>+1 deep is done by 'ElmListLevel')     */
+    // evaluate lists (if this works, then <lists> is nested <level> deep,
+    // checking it is nested <level>+1 deep is done by 'ElmListLevel')
     lists = EVAL_EXPR(READ_EXPR(expr, 0));
     narg = SIZE_EXPR(expr)/sizeof(Expr) -2;
     ixs = NEW_PLIST(T_PLIST, narg);
@@ -839,13 +867,13 @@ static Obj EvalElmListLevel(Expr expr)
       CHANGED_BAG(ixs);
     }
     SET_LEN_PLIST(ixs, narg);
-    /* get the level                                                       */
+    // get the level
     level = READ_EXPR(expr, narg + 1);
 
-    /* select the elements from several lists (store them in <lists>)      */
+    // select the elements from several lists (store them in <lists>)
     ElmListLevel( lists, ixs, level );
 
-    /* return the elements                                                 */
+    // return the elements
     return lists;
 }
 
@@ -866,25 +894,25 @@ static Obj EvalElmListLevel(Expr expr)
 */
 static Obj EvalElmsListLevel(Expr expr)
 {
-    Obj                 lists;          /* lists, left operand             */
-    Obj                 poss;           /* positions, right operand        */
-    UInt                level;          /* level                           */
+    Obj                 lists;          // lists, left operand
+    Obj                 poss;           // positions, right operand
+    UInt                level;          // level
 
-    /* evaluate lists (if this works, then <lists> is nested <level> deep, */
-    /* checking it is nested <level>+1 deep is done by 'ElmsListLevel')    */
+    // evaluate lists (if this works, then <lists> is nested <level> deep,
+    // checking it is nested <level>+1 deep is done by 'ElmsListLevel')
     lists = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* evaluate and check the positions                                    */
+    // evaluate and check the positions
     poss = EVAL_EXPR(READ_EXPR(expr, 1));
     CheckIsPossList("List Elements", poss);
 
-    /* get the level                                                       */
+    // get the level
     level = READ_EXPR(expr, 2);
 
-    /* select several elements from several lists (store them in <lists>)  */
+    // select several elements from several lists (store them in <lists>)
     ElmsListLevel( lists, poss, level );
 
-    /* return the elements                                                 */
+    // return the elements
     return lists;
 }
 
@@ -898,16 +926,16 @@ static Obj EvalElmsListLevel(Expr expr)
 */
 static Obj EvalIsbList(Expr expr)
 {
-    Obj                 list;           /* list, left operand              */
-    Obj                 pos;            /* position, right operand         */
+    Obj                 list;           // list, left operand
+    Obj                 pos;            // position, right operand
     Obj ixs;
     Int narg, i;
 
-    /* evaluate the list (checking is done by 'ISB_LIST')                  */
+    // evaluate the list (checking is done by 'ISB_LIST')
     list = EVAL_EXPR(READ_EXPR(expr, 0));
     narg = SIZE_EXPR(expr)/sizeof(Expr) -1;
     if (narg == 1) {
-      /* evaluate and check the position                                   */
+      // evaluate and check the position
       pos = EVAL_EXPR(READ_EXPR(expr, 1));
 
       if (IS_POS_INTOBJ(pos))
@@ -1120,20 +1148,20 @@ static void PrintElmsListLevel(Expr expr)
 */
 static ExecStatus ExecAssRecName(Stat stat)
 {
-    Obj                 record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
-    Obj                 rhs;            /* rhs, right operand              */
+    Obj                 record;         // record, left operand
+    UInt                rnam;           // name, left operand
+    Obj                 rhs;            // rhs, right operand
 
-    /* evaluate the record (checking is done by 'ASS_REC')                 */
+    // evaluate the record (checking is done by 'ASS_REC')
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* get the name (stored immediately in the statement)                  */
+    // get the name (stored immediately in the statement)
     rnam = READ_STAT(stat, 1);
 
-    /* evaluate the right hand side                                        */
+    // evaluate the right hand side
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
-    /* assign the right hand side to the element of the record             */
+    // assign the right hand side to the element of the record
     ASS_REC( record, rnam, rhs );
 
     return STATUS_END;
@@ -1149,20 +1177,20 @@ static ExecStatus ExecAssRecName(Stat stat)
 */
 static ExecStatus ExecAssRecExpr(Stat stat)
 {
-    Obj                 record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
-    Obj                 rhs;            /* rhs, right operand              */
+    Obj                 record;         // record, left operand
+    UInt                rnam;           // name, left operand
+    Obj                 rhs;            // rhs, right operand
 
-    /* evaluate the record (checking is done by 'ASS_REC')                 */
+    // evaluate the record (checking is done by 'ASS_REC')
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* evaluate the name and convert it to a record name                   */
+    // evaluate the name and convert it to a record name
     rnam = RNamObj(EVAL_EXPR(READ_STAT(stat, 1)));
 
-    /* evaluate the right hand side                                        */
+    // evaluate the right hand side
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
-    /* assign the right hand side to the element of the record             */
+    // assign the right hand side to the element of the record
     ASS_REC( record, rnam, rhs );
 
     return STATUS_END;
@@ -1178,16 +1206,16 @@ static ExecStatus ExecAssRecExpr(Stat stat)
 */
 static ExecStatus ExecUnbRecName(Stat stat)
 {
-    Obj                 record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
+    Obj                 record;         // record, left operand
+    UInt                rnam;           // name, left operand
 
-    /* evaluate the record (checking is done by 'UNB_REC')                 */
+    // evaluate the record (checking is done by 'UNB_REC')
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* get the name (stored immediately in the statement)                  */
+    // get the name (stored immediately in the statement)
     rnam = READ_STAT(stat, 1);
 
-    /* unbind the element of the record                                    */
+    // unbind the element of the record
     UNB_REC( record, rnam );
 
     return STATUS_END;
@@ -1203,16 +1231,16 @@ static ExecStatus ExecUnbRecName(Stat stat)
 */
 static ExecStatus ExecUnbRecExpr(Stat stat)
 {
-    Obj                 record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
+    Obj                 record;         // record, left operand
+    UInt                rnam;           // name, left operand
 
-    /* evaluate the record (checking is done by 'UNB_REC')                 */
+    // evaluate the record (checking is done by 'UNB_REC')
     record = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* evaluate the name and convert it to a record name                   */
+    // evaluate the name and convert it to a record name
     rnam = RNamObj(EVAL_EXPR(READ_STAT(stat, 1)));
 
-    /* unbind the element of the record                                    */
+    // unbind the element of the record
     UNB_REC( record, rnam );
 
     return STATUS_END;
@@ -1228,20 +1256,20 @@ static ExecStatus ExecUnbRecExpr(Stat stat)
 */
 static Obj EvalElmRecName(Expr expr)
 {
-    Obj                 elm;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
-    UInt                rnam;           /* the name, right operand         */
+    Obj                 elm;            // element, result
+    Obj                 record;         // the record, left operand
+    UInt                rnam;           // the name, right operand
 
-    /* evaluate the record (checking is done by 'ELM_REC')                 */
+    // evaluate the record (checking is done by 'ELM_REC')
     record = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* get the name (stored immediately in the expression)                 */
+    // get the name (stored immediately in the expression)
     rnam = READ_EXPR(expr, 1);
 
-    /* select the element of the record                                    */
+    // select the element of the record
     elm = ELM_REC( record, rnam );
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
@@ -1255,20 +1283,20 @@ static Obj EvalElmRecName(Expr expr)
 */
 static Obj EvalElmRecExpr(Expr expr)
 {
-    Obj                 elm;            /* element, result                 */
-    Obj                 record;         /* the record, left operand        */
-    UInt                rnam;           /* the name, right operand         */
+    Obj                 elm;            // element, result
+    Obj                 record;         // the record, left operand
+    UInt                rnam;           // the name, right operand
 
-    /* evaluate the record (checking is done by 'ELM_REC')                 */
+    // evaluate the record (checking is done by 'ELM_REC')
     record = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* evaluate the name and convert it to a record name                   */
+    // evaluate the name and convert it to a record name
     rnam = RNamObj(EVAL_EXPR(READ_EXPR(expr, 1)));
 
-    /* select the element of the record                                    */
+    // select the element of the record
     elm = ELM_REC( record, rnam );
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
@@ -1282,13 +1310,13 @@ static Obj EvalElmRecExpr(Expr expr)
 */
 static Obj EvalIsbRecName(Expr expr)
 {
-    Obj                 record;         /* the record, left operand        */
-    UInt                rnam;           /* the name, right operand         */
+    Obj                 record;         // the record, left operand
+    UInt                rnam;           // the name, right operand
 
-    /* evaluate the record (checking is done by 'ISB_REC')                 */
+    // evaluate the record (checking is done by 'ISB_REC')
     record = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* get the name (stored immediately in the expression)                 */
+    // get the name (stored immediately in the expression)
     rnam = READ_EXPR(expr, 1);
 
     return (ISB_REC( record, rnam ) ? True : False);
@@ -1304,13 +1332,13 @@ static Obj EvalIsbRecName(Expr expr)
 */
 static Obj EvalIsbRecExpr(Expr expr)
 {
-    Obj                 record;         /* the record, left operand        */
-    UInt                rnam;           /* the name, right operand         */
+    Obj                 record;         // the record, left operand
+    UInt                rnam;           // the name, right operand
 
-    /* evaluate the record (checking is done by 'ISB_REC')                 */
+    // evaluate the record (checking is done by 'ISB_REC')
     record = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* evaluate the name and convert it to a record name                   */
+    // evaluate the name and convert it to a record name
     rnam = RNamObj(EVAL_EXPR(READ_EXPR(expr, 1)));
 
     return (ISB_REC( record, rnam ) ? True : False);
@@ -1445,18 +1473,18 @@ static void PrintIsbRecExpr(Expr expr)
 static ExecStatus ExecAssPosObj(Expr stat)
 {
     Obj                 posobj;         // posobj, left operand
-    Obj                 pos;            /* position, left operand          */
-    Int                 p;              /* position, as a C integer        */
-    Obj                 rhs;            /* right hand side, right operand  */
+    Obj                 pos;            // position, left operand
+    Int                 p;              // position, as a C integer
+    Obj                 rhs;            // right hand side, right operand
 
     // evaluate the posobj (checking is done by 'AssPosObj')
     posobj = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* evaluate and check the position                                     */
+    // evaluate and check the position
     pos = EVAL_EXPR(READ_STAT(stat, 1));
     p = GetPositiveSmallIntEx("PosObj Assignment", pos, "<position>");
 
-    /* evaluate the right hand side                                        */
+    // evaluate the right hand side
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
     // special case for plain posobj
@@ -1476,17 +1504,17 @@ static ExecStatus ExecAssPosObj(Expr stat)
 static ExecStatus ExecUnbPosObj(Expr stat)
 {
     Obj                 posobj;         // posobj, left operand
-    Obj                 pos;            /* position, left operand          */
-    Int                 p;              /* position, as a C integer        */
+    Obj                 pos;            // position, left operand
+    Int                 p;              // position, as a C integer
 
     // evaluate the posobj (checking is done by 'UnbPosObj')
     posobj = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* evaluate and check the position                                     */
+    // evaluate and check the position
     pos = EVAL_EXPR(READ_STAT(stat, 1));
     p = GetPositiveSmallIntEx("PosObj Assignment", pos, "<position>");
 
-    /* unbind the element                                                  */
+    // unbind the element
     UnbPosObj(posobj, p);
 
     return STATUS_END;
@@ -1502,22 +1530,22 @@ static ExecStatus ExecUnbPosObj(Expr stat)
 */
 static Obj EvalElmPosObj(Expr expr)
 {
-    Obj                 elm;            /* element, result                 */
+    Obj                 elm;            // element, result
     Obj                 posobj;         // posobj, left operand
-    Obj                 pos;            /* position, right operand         */
-    Int                 p;              /* position, as C integer          */
+    Obj                 pos;            // position, right operand
+    Int                 p;              // position, as C integer
 
     // evaluate the posobj (checking is done by 'ElmPosObj')
     posobj = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* evaluate and check the position                                     */
+    // evaluate and check the position
     pos = EVAL_EXPR(READ_EXPR(expr, 1));
     p = GetPositiveSmallIntEx("PosObj Element", pos, "<position>");
 
     // special case for plain posobjs (use generic code to signal errors)
     elm = ElmPosObj(posobj, p);
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
@@ -1531,19 +1559,19 @@ static Obj EvalElmPosObj(Expr expr)
 */
 static Obj EvalIsbPosObj(Expr expr)
 {
-    Obj                 isb;            /* isbound, result                 */
+    Obj                 isb;            // isbound, result
     Obj                 posobj;         // posobj, left operand
-    Obj                 pos;            /* position, right operand         */
-    Int                 p;              /* position, as C integer          */
+    Obj                 pos;            // position, right operand
+    Int                 p;              // position, as C integer
 
     // evaluate the posobj (checking is done by 'IsbPosObj')
     posobj = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* evaluate and check the position                                     */
+    // evaluate and check the position
     pos = EVAL_EXPR(READ_EXPR(expr, 1));
     p = GetPositiveSmallIntEx("PosObj Element", pos, "<position>");
 
-    /* get the result                                                      */
+    // get the result
     isb = IsbPosObj(posobj, p) ? True : False;
 
     return isb;
@@ -1623,16 +1651,16 @@ static void PrintIsbPosObj(Expr expr)
 static ExecStatus ExecAssComObjName(Stat stat)
 {
     Obj                 comobj;         // comobj, left operand
-    UInt                rnam;           /* name, left operand              */
-    Obj                 rhs;            /* rhs, right operand              */
+    UInt                rnam;           // name, left operand
+    Obj                 rhs;            // rhs, right operand
 
     // evaluate the comobj (checking is done by 'AssComObj')
     comobj = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* get the name (stored immediately in the statement)                  */
+    // get the name (stored immediately in the statement)
     rnam = READ_STAT(stat, 1);
 
-    /* evaluate the right hand side                                        */
+    // evaluate the right hand side
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
     // assign the right hand side to the element of the comobj
@@ -1652,8 +1680,8 @@ static ExecStatus ExecAssComObjName(Stat stat)
 static ExecStatus ExecAssComObjExpr(Stat stat)
 {
     Obj                 comobj;         // comobj, left operand
-    UInt                rnam;           /* name, left operand              */
-    Obj                 rhs;            /* rhs, right operand              */
+    UInt                rnam;           // name, left operand
+    Obj                 rhs;            // rhs, right operand
 
     // evaluate the comobj (checking is done by 'AssComObj')
     comobj = EVAL_EXPR(READ_STAT(stat, 0));
@@ -1661,7 +1689,7 @@ static ExecStatus ExecAssComObjExpr(Stat stat)
     // evaluate the name and convert it to a comobj name
     rnam = RNamObj(EVAL_EXPR(READ_STAT(stat, 1)));
 
-    /* evaluate the right hand side                                        */
+    // evaluate the right hand side
     rhs = EVAL_EXPR(READ_STAT(stat, 2));
 
     // assign the right hand side to the element of the comobj
@@ -1681,12 +1709,12 @@ static ExecStatus ExecAssComObjExpr(Stat stat)
 static ExecStatus ExecUnbComObjName(Stat stat)
 {
     Obj                 comobj;         // comobj, left operand
-    UInt                rnam;           /* name, left operand              */
+    UInt                rnam;           // name, left operand
 
     // evaluate the comobj (checking is done by 'UnbComObj')
     comobj = EVAL_EXPR(READ_STAT(stat, 0));
 
-    /* get the name (stored immediately in the statement)                  */
+    // get the name (stored immediately in the statement)
     rnam = READ_STAT(stat, 1);
 
     // unbind the element of the comobj
@@ -1706,7 +1734,7 @@ static ExecStatus ExecUnbComObjName(Stat stat)
 static ExecStatus ExecUnbComObjExpr(Stat stat)
 {
     Obj                 comobj;         // comobj, left operand
-    UInt                rnam;           /* name, left operand              */
+    UInt                rnam;           // name, left operand
 
     // evaluate the comobj (checking is done by 'UnbComObj')
     comobj = EVAL_EXPR(READ_STAT(stat, 0));
@@ -1730,20 +1758,20 @@ static ExecStatus ExecUnbComObjExpr(Stat stat)
 */
 static Obj EvalElmComObjName(Expr expr)
 {
-    Obj                 elm;            /* element, result                 */
+    Obj                 elm;            // element, result
     Obj                 comobj;         // the comobj, left operand
-    UInt                rnam;           /* the name, right operand         */
+    UInt                rnam;           // the name, right operand
 
     // evaluate the comobj (checking is done by 'ElmComObj')
     comobj = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* get the name (stored immediately in the expression)                 */
+    // get the name (stored immediately in the expression)
     rnam = READ_EXPR(expr, 1);
 
     // select the element of the comobj
     elm = ElmComObj(comobj, rnam);
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
@@ -1757,9 +1785,9 @@ static Obj EvalElmComObjName(Expr expr)
 */
 static Obj EvalElmComObjExpr(Expr expr)
 {
-    Obj                 elm;            /* element, result                 */
+    Obj                 elm;            // element, result
     Obj                 comobj;         // the comobj, left operand
-    UInt                rnam;           /* the name, right operand         */
+    UInt                rnam;           // the name, right operand
 
     // evaluate the comobj (checking is done by 'ElmComObj')
     comobj = EVAL_EXPR(READ_EXPR(expr, 0));
@@ -1770,7 +1798,7 @@ static Obj EvalElmComObjExpr(Expr expr)
     // select the element of the comobj
     elm = ElmComObj(comobj, rnam);
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
@@ -1784,14 +1812,14 @@ static Obj EvalElmComObjExpr(Expr expr)
 */
 static Obj EvalIsbComObjName(Expr expr)
 {
-    Obj                 isb;            /* element, result                 */
+    Obj                 isb;            // element, result
     Obj                 comobj;         // the comobj, left operand
-    UInt                rnam;           /* the name, right operand         */
+    UInt                rnam;           // the name, right operand
 
     // evaluate the comobj (checking is done by 'IsbComObj')
     comobj = EVAL_EXPR(READ_EXPR(expr, 0));
 
-    /* get the name (stored immediately in the expression)                 */
+    // get the name (stored immediately in the expression)
     rnam = READ_EXPR(expr, 1);
 
     // select the element of the comobj
@@ -1810,9 +1838,9 @@ static Obj EvalIsbComObjName(Expr expr)
 */
 static Obj EvalIsbComObjExpr(Expr expr)
 {
-    Obj                 isb;            /* element, result                 */
+    Obj                 isb;            // element, result
     Obj                 comobj;         // the comobj, left operand
-    UInt                rnam;           /* the name, right operand         */
+    UInt                rnam;           // the name, right operand
 
     // evaluate the comobj (checking is done by 'IsbComObj')
     comobj = EVAL_EXPR(READ_EXPR(expr, 0));
@@ -2151,7 +2179,7 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* make 'CurrLVars' known to Gasman                                    */
+    // make 'CurrLVars' known to Gasman
     InitGlobalBag( &STATE(CurrLVars),   "src/vars.c:CurrLVars"   );
     InitGlobalBag( &BottomLVars, "src/vars.c:BottomLVars" );
 
@@ -2165,31 +2193,31 @@ static Int InitKernel (
     // set the bag type names (for error messages and debugging)
     InitBagNamesFromTable( BagNames );
 
-    /* install the marking functions for local variables bag               */
+    // install the marking functions for local variables bag
     InitMarkFuncBags( T_LVARS, MarkAllButFirstSubBags );
     InitMarkFuncBags( T_HVARS, MarkAllButFirstSubBags );
 
 #ifdef HPCGAP
-    /* Make T_LVARS bags public */
+    // Make T_LVARS bags public
     MakeBagTypePublic(T_LVARS);
     MakeBagTypePublic(T_HVARS);
 #endif
 
 #ifdef GAP_ENABLE_SAVELOAD
-    /* and the save restore functions */
+    // and the save restore functions
     SaveObjFuncs[ T_LVARS ] = SaveLVars;
     LoadObjFuncs[ T_LVARS ] = LoadLVars;
     SaveObjFuncs[ T_HVARS ] = SaveLVars;
     LoadObjFuncs[ T_HVARS ] = LoadLVars;
 #endif
 
-    /* and a type */
+    // and a type
     TypeObjFuncs[ T_LVARS ] = TypeLVars;
     TypeObjFuncs[ T_HVARS ] = TypeLVars;
     PrintObjFuncs[ T_LVARS ] = PrintLVars;
     PrintObjFuncs[ T_HVARS ] = PrintLVars;
 
-    /* install executors, evaluators, and printers for local variables     */
+    // install executors, evaluators, and printers for local variables
     InstallExecStatFunc( STAT_ASS_LVAR       , ExecAssLVar);
     InstallExecStatFunc( STAT_UNB_LVAR       , ExecUnbLVar);
     // no EvalExprFunc for EXPR_REF_LVAR, it is handled immediately by EVAL_EXPR
@@ -2200,7 +2228,7 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_REF_LVAR        , PrintRefLVar);
     InstallPrintExprFunc( EXPR_ISB_LVAR       , PrintIsbLVar);
 
-    /* install executors, evaluators, and printers for higher variables    */
+    // install executors, evaluators, and printers for higher variables
     InstallExecStatFunc( STAT_ASS_HVAR       , ExecAssHVar);
     InstallExecStatFunc( STAT_UNB_HVAR       , ExecUnbHVar);
     InstallEvalExprFunc( EXPR_REF_HVAR       , EvalRefHVar);
@@ -2210,7 +2238,7 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_REF_HVAR       , PrintRefHVar);
     InstallPrintExprFunc( EXPR_ISB_HVAR       , PrintIsbHVar);
 
-    /* install executors, evaluators, and printers for global variables    */
+    // install executors, evaluators, and printers for global variables
     InstallExecStatFunc( STAT_ASS_GVAR       , ExecAssGVar);
     InstallExecStatFunc( STAT_UNB_GVAR       , ExecUnbGVar);
     InstallEvalExprFunc( EXPR_REF_GVAR       , EvalRefGVar);
@@ -2296,12 +2324,12 @@ static Int InitKernel (
     InstallPrintExprFunc( EXPR_ISB_COMOBJ_EXPR  , PrintIsbComObjExpr);
 
 #ifdef USE_GASMAN
-    /* install before and after actions for garbage collections            */
+    // install before and after actions for garbage collections
     RegisterBeforeCollectFuncBags(VarsBeforeCollectBags);
     RegisterAfterCollectFuncBags(VarsAfterCollectBags);
 #endif
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
     InitCopyGVar("TYPE_LVARS",&TYPE_LVARS);
@@ -2342,7 +2370,7 @@ static Int InitLibrary (
     tmpBody = NewFunctionBody();
     SET_BODY_FUNC( tmpFunc, tmpBody );
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return PostRestore(module);

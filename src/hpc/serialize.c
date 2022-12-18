@@ -49,7 +49,7 @@ static SerializationFunction   SerializationFuncByTNum[256];
 static DeserializationFunction DeserializationFuncByTNum[256];
 
 
-/* Native string serialization */
+// Native string serialization
 
 static void
 WriteBytesNativeString(SerializerState * state, void * addr, UInt count)
@@ -98,7 +98,7 @@ static SerializerInterface NativeStringSerializer = {
     WriteImmediateObjNativeString,
 };
 
-/* Native string deserialization */
+// Native string deserialization
 
 static void
 ReadBytesNativeString(DeserializerState * state, void * addr, UInt size)
@@ -160,7 +160,7 @@ static DeserializerInterface NativeStringDeserializer = {
     ReadImmediateObjNativeString,
 };
 
-/* Dispatch functions */
+// Dispatch functions
 
 static inline void WriteTNum(SerializerState * state, UInt tnum)
 {
@@ -209,7 +209,7 @@ static inline Obj ReadImmediateObj(DeserializerState * state)
     return state->dispatcher->ReadImmediateObj(state);
 }
 
-/* Auxiliary serialization/deserialization functions */
+// Auxiliary serialization/deserialization functions
 
 static void SerializeBinary(SerializerState * state, Obj obj)
 {
@@ -250,7 +250,7 @@ static int SerializedAlready(SerializerState * state, Obj obj)
     }
 }
 
-/* TNum-specific serialization/deserialization functions */
+// TNum-specific serialization/deserialization functions
 
 static void RegisterSerializerFunctions(UInt                    tnum,
                                         SerializationFunction   sfun,
@@ -263,7 +263,7 @@ static void RegisterSerializerFunctions(UInt                    tnum,
 static void SerializeObj(SerializerState * state, Obj obj)
 {
     if (!obj) {
-        /* Handle unbound list elements correctly */
+        // Handle unbound list elements correctly
         WriteTNum(state, T_BACKREF);
         WriteImmediateObj(state, INTOBJ_INT(0));
         return;
@@ -370,7 +370,7 @@ static Obj DeserializeChar(DeserializerState * state, UInt tnum)
     return ObjsChar[ch];
 }
 
-/* Defines from cyclotom.c: */
+// Defines from cyclotom.c:
 #define SIZE_CYC(cyc) (SIZE_OBJ(cyc) / (sizeof(Obj) + sizeof(UInt4)))
 #define COEFS_CYC(cyc) (ADDR_OBJ(cyc))
 #define EXPOS_CYC(cyc, len) ((UInt4 *)(ADDR_OBJ(cyc) + (len)))
@@ -430,7 +430,7 @@ static Obj DeserializeBool(DeserializerState * state, UInt tnum)
         return Fail;
     default:
         ErrorQuit("DeserializeBool: Bad deserialization input %d", (Int)byte, 0);
-        return (Obj)0; /* flow control hint */
+        return (Obj)0; // flow control hint
     }
 }
 
@@ -724,10 +724,10 @@ retry:
             return (Obj)0;
         CALL_0ARGS(func);
         map = GVarObj(&DESERIALIZATION_TAG_INT_GVar);
-        goto retry; /* more readable than a loop around the switch */
+        goto retry; // more readable than a loop around the switch
     default:
         ErrorQuit("Deserialization tag map for int tags is corrupted", 0, 0);
-        return (Obj)0; /* flow control hint */
+        return (Obj)0; // flow control hint
     }
 }
 
@@ -771,16 +771,16 @@ static Obj DeserializeTypedObj(DeserializerState * state, UInt tnum)
             break;
         default:
             ErrorQuit("DeserializeTypedObj: unexpected tnum %d (%s)", tnum, (Int)TNAM_TNUM(tnum));
-            return (Obj)0; /* flow control hint */
+            return (Obj)0; // flow control hint
         }
         SET_TYPE_OBJ(result, type);
         return result;
     case T_PLIST:
-        /* continue on to the more general deserialization method */
+        // continue on to the more general deserialization method
         break;
     default:
         ErrorQuit("DeserializeTypedObj: unexpected tagtnum ", tagtnum, (Int)TNAM_TNUM(tagtnum));
-        return (Obj)0; /* flow control hint */
+        return (Obj)0; // flow control hint
     }
     namelen = ReadByteBlockLength(state);
     name = NEW_STRING(namelen);
@@ -961,7 +961,7 @@ static void SerializeTypedObj(SerializerState * state, Obj obj)
 static Obj DeserializeBackRef(DeserializerState * state, UInt tnum)
 {
     UInt ref = BACKREF_OBJ(ReadImmediateObj(state));
-    if (!ref) /* special case for unbound entries */
+    if (!ref) // special case for unbound entries
         return (Obj)0;
     UInt len = LEN_PLIST(state->stack);
     if (ref > len)
@@ -1079,7 +1079,7 @@ static Int InitKernel(StructInitInfo * module)
 
     RegisterSerializerFunctions(T_BACKREF, SerializeError, DeserializeBackRef);
 
-    /* gvars */
+    // gvars
     DeclareGVar(&SerializableRepresentationGVar,
                 "SerializableRepresentation");
     DeclareGVar(&TYPE_UNKNOWN_GVar, "TYPE_UNKNOWN");
@@ -1102,7 +1102,7 @@ static Int InitKernel(StructInitInfo * module)
 */
 static Int InitLibrary(StructInitInfo * module)
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);
 
     return 0;

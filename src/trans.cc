@@ -199,7 +199,7 @@ static inline UInt4 * AddrTmpTrans(void)
 **
 **  'IdentityTrans' is an identity transformation.
 */
-/* mp this will become a ReadOnly object? */
+// mp this will become a ReadOnly object?
 static Obj IdentityTrans;
 
 /*******************************************************************************
@@ -4191,7 +4191,7 @@ static Int InitKernel(StructInitInfo * module)
     // set the bag type names (for error messages and debugging)
     InitBagNamesFromTable( BagNames );
 
-    /* install the marking functions                                       */
+    // install the marking functions
     InitMarkFuncBags(T_TRANS2, MarkThreeSubBags);
     InitMarkFuncBags(T_TRANS4, MarkThreeSubBags);
 
@@ -4200,18 +4200,18 @@ static Int InitKernel(StructInitInfo * module)
     MakeBagTypePublic(T_TRANS4);
 #endif
 
-    /* install the type functions                                          */
+    // install the type functions
     ImportGVarFromLibrary("TYPE_TRANS2", &TYPE_TRANS2);
     ImportGVarFromLibrary("TYPE_TRANS4", &TYPE_TRANS4);
 
     TypeObjFuncs[T_TRANS2] = TypeTrans2;
     TypeObjFuncs[T_TRANS4] = TypeTrans4;
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFiltsFromTable(GVarFilts);
     InitHdlrFuncsFromTable(GVarFuncs);
 
-/* make the buffer bag                                                 */
+// make the buffer bag
 #ifndef HPCGAP
     InitGlobalBag(&MODULE_STATE(Trans).TmpTrans, "src/trans.c:TmpTrans");
 #endif
@@ -4220,14 +4220,14 @@ static Int InitKernel(StructInitInfo * module)
     InitGlobalBag(&IdentityTrans, "src/trans.c:IdentityTrans");
 
 #ifdef GAP_ENABLE_SAVELOAD
-    /* install the saving functions */
+    // install the saving functions
     SaveObjFuncs[T_TRANS2] = SaveTrans2;
     LoadObjFuncs[T_TRANS2] = LoadTrans2;
     SaveObjFuncs[T_TRANS4] = SaveTrans4;
     LoadObjFuncs[T_TRANS4] = LoadTrans4;
 #endif
 
-    /* install the comparison methods                                      */
+    // install the comparison methods
     EqFuncs[T_TRANS2][T_TRANS2] = EqTrans22;
     EqFuncs[T_TRANS2][T_TRANS4] = EqTrans24;
     EqFuncs[T_TRANS4][T_TRANS2] = EqTrans42;
@@ -4237,7 +4237,7 @@ static Int InitKernel(StructInitInfo * module)
     LtFuncs[T_TRANS4][T_TRANS2] = LtTrans<UInt4, UInt2>;
     LtFuncs[T_TRANS4][T_TRANS4] = LtTrans<UInt4, UInt4>;
 
-    /* install the binary operations */
+    // install the binary operations
     ProdFuncs[T_TRANS2][T_TRANS2] = ProdTrans<UInt2, UInt2>;
     ProdFuncs[T_TRANS2][T_TRANS4] = ProdTrans<UInt2, UInt4>;
     ProdFuncs[T_TRANS4][T_TRANS2] = ProdTrans<UInt4, UInt2>;
@@ -4266,7 +4266,7 @@ static Int InitKernel(StructInitInfo * module)
     PowFuncs[T_INTPOS][T_TRANS2] = PowIntTrans2;
     PowFuncs[T_INTPOS][T_TRANS4] = PowIntTrans4;
 
-    /* install the 'ONE' function for transformations */
+    // install the 'ONE' function for transformations
     OneFuncs[T_TRANS2] = OneTrans;
     OneSameMut[T_TRANS2] = OneTrans;
     OneFuncs[T_TRANS4] = OneTrans;
@@ -4280,7 +4280,7 @@ static Int InitKernel(StructInitInfo * module)
 */
 static Int InitLibrary(StructInitInfo * module)
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);
     InitGVarFiltsFromTable(GVarFilts);
     IdentityTrans = NEW_TRANS2(0);

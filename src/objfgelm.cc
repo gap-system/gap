@@ -133,19 +133,19 @@ Obj NewWord(Obj type, UInt npairs)
 template <typename UIntN>
 static Obj NBits_Equal(Obj l, Obj r)
 {
-    Int         nl;             /* number of pairs to consider in <l>      */
-    Int         nr;             /* number of pairs in <r>                  */
-    const UIntN * pl;           /* data area in <l>                        */
-    const UIntN * pr;           /* data area in <r>                        */
+    Int         nl;             // number of pairs to consider in <l>
+    Int         nr;             // number of pairs in <r>
+    const UIntN * pl;           // data area in <l>
+    const UIntN * pr;           // data area in <r>
 
-    /* if <l> or <r> is the identity it is easy                            */
+    // if <l> or <r> is the identity it is easy
     nl = NPAIRS_WORD(l);
     nr = NPAIRS_WORD(r);
     if ( nl != nr ) {
         return False;
     }
 
-    /* compare the generator/exponent pairs                                */
+    // compare the generator/exponent pairs
     pl = CONST_DATA_WORD(l);
     pr = CONST_DATA_WORD(r);
     for ( ;  0 < nl;  nl--, pl++, pr++ ) {
@@ -179,47 +179,47 @@ static Obj Func32Bits_Equal(Obj self, Obj l, Obj r)
 template <typename UIntN>
 static Obj NBits_ExponentSums3(Obj obj, Obj vstart, Obj vend)
 {
-    Int         start;          /* the lowest generator number             */
-    Int         end;            /* the highest generator number            */
-    Obj         sums;           /* result, the exponent sums               */
-    Int         ebits;          /* number of bits in the exponent          */
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    Int         num;            /* number of gen/exp pairs in <data>       */
-    Int         i;              /* loop variable for gen/exp pairs         */
-    Int         pos;            /* current generator number                */
-    Int         exp;            /* current exponent                        */
-    const UIntN * ptr;          /* pointer into the data area of <obj>     */
+    Int         start;          // the lowest generator number
+    Int         end;            // the highest generator number
+    Obj         sums;           // result, the exponent sums
+    Int         ebits;          // number of bits in the exponent
+    UInt        expm;           // signed exponent mask
+    UInt        exps;           // sign exponent mask
+    Int         num;            // number of gen/exp pairs in <data>
+    Int         i;              // loop variable for gen/exp pairs
+    Int         pos;            // current generator number
+    Int         exp;            // current exponent
+    const UIntN * ptr;          // pointer into the data area of <obj>
 
-    /* <start> must be positive                                            */
+    // <start> must be positive
     start = GetPositiveSmallIntEx("NBits_ExponentSums3", vstart, "<start>");
 
-    /* <end> must be positive                                              */
+    // <end> must be positive
     end = GetPositiveSmallIntEx("NBits_ExponentSums3", vend, "<end>");
 
-    /* <end> must be at least <start>                                      */
+    // <end> must be at least <start>
     if ( end < start ) {
         sums = NewEmptyPlist();
         return sums;
     }
 
-    /* get the number of bits for exponents                                */
+    // get the number of bits for exponents
     ebits = EBITS_WORD(obj);
 
-    /* get the exponent masks                                              */
+    // get the exponent masks
     exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
 
-    /* get the number of gen/exp pairs                                     */
+    // get the number of gen/exp pairs
     num = NPAIRS_WORD(obj);
 
-    /* create the zero vector                                              */
+    // create the zero vector
     sums = NEW_PLIST( T_PLIST_CYC, end-start+1 );
     SET_LEN_PLIST( sums, end-start+1 );
     for ( i = start;  i <= end;  i++ )
         SET_ELM_PLIST( sums, i-start+1, 0 );
 
-    /* and unpack <obj> into <sums>                                        */
+    // and unpack <obj> into <sums>
     ptr = CONST_DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
         pos = ((*ptr) >> ebits)+1;
@@ -229,20 +229,20 @@ static Obj NBits_ExponentSums3(Obj obj, Obj vstart, Obj vend)
             else
                 exp = (*ptr)&expm;
 
-            /* this will not cause a garbage collection                    */
+            // this will not cause a garbage collection
             exp = exp + (Int) ELM_PLIST( sums, pos-start+1 );
             SET_ELM_PLIST( sums, pos-start+1, (Obj) exp );
             assert( ptr == CONST_DATA_WORD(obj) + (i-1) );
         }
     }
 
-    /* convert integers into values                                        */
+    // convert integers into values
     for ( i = start;  i <= end;  i++ ) {
         exp = (Int) ELM_PLIST( sums, i-start+1 );
         SET_ELM_PLIST( sums, i-start+1, INTOBJ_INT(exp) );
     }
 
-    /* return the exponent sums                                            */
+    // return the exponent sums
     return sums;
 }
 
@@ -289,25 +289,25 @@ static Obj Func32Bits_ExponentSums1(Obj self, Obj obj)
 template <typename UIntN>
 static Obj NBits_ExponentSyllable(Obj w, Obj pos)
 {
-    Int         ebits;          /* number of bits in the exponent          */
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    Int         num;            /* number of gen/exp pairs in <data>       */
-    Int         i;              /* integer corresponding to <vi>           */
-    UIntN       p;              /* <i>th syllable                          */
+    Int         ebits;          // number of bits in the exponent
+    UInt        expm;           // signed exponent mask
+    UInt        exps;           // sign exponent mask
+    Int         num;            // number of gen/exp pairs in <data>
+    Int         i;              // integer corresponding to <vi>
+    UIntN       p;              // <i>th syllable
 
-    /* check <i>                                                           */
+    // check <i>
     num = NPAIRS_WORD(w);
     i = GetBoundedInt("NBits_ExponentSyllable", pos, 1, num);
 
-    /* get the number of bits for exponents                                */
+    // get the number of bits for exponents
     ebits = EBITS_WORD(w);
 
-    /* get the exponent masks                                              */
+    // get the exponent masks
     exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
 
-    /* return the <i> th exponent                                          */
+    // return the <i> th exponent
     p = CONST_DATA_WORD(w)[i-1];
     if ( p & exps )
         return INTOBJ_INT((p&expm)-exps);
@@ -338,36 +338,36 @@ static Obj Func32Bits_ExponentSyllable(Obj self, Obj w, Obj pos)
 template <typename UIntN>
 static Obj NBits_ExtRepOfObj(Obj obj)
 {
-    Int         ebits;          /* number of bits in the exponent          */
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    Int         num;            /* number of gen/exp pairs in <data>       */
-    Int         i;              /* loop variable for gen/exp pairs         */
-    Obj         type;           /* type of <obj>                           */
-    const UIntN * ptr;          /* pointer into the data area of <obj>     */
-    Obj         lst;            /* result                                  */
+    Int         ebits;          // number of bits in the exponent
+    UInt        expm;           // signed exponent mask
+    UInt        exps;           // sign exponent mask
+    Int         num;            // number of gen/exp pairs in <data>
+    Int         i;              // loop variable for gen/exp pairs
+    Obj         type;           // type of <obj>
+    const UIntN * ptr;          // pointer into the data area of <obj>
+    Obj         lst;            // result
 
-    /* get the type of <obj>                                               */
+    // get the type of <obj>
     type = TYPE_DATOBJ(obj);
 
-    /* get the number of bits for exponents                                */
+    // get the number of bits for exponents
     ebits = EBITS_WORDTYPE(type);
 
-    /* get the exponent masks                                              */
+    // get the exponent masks
     exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
 
-    /* get the number of gen/exp pairs                                     */
+    // get the number of gen/exp pairs
     num = NPAIRS_WORD(obj);
 
-    /* construct a list with 2*<num> entries                               */
+    // construct a list with 2*<num> entries
     lst = NEW_PLIST( T_PLIST, 2*num );
     SET_LEN_PLIST( lst, 2*num );
 
-    /* and unpack <obj> into <lst>                                         */
+    // and unpack <obj> into <lst>
     ptr = CONST_DATA_WORD(obj);
 
-    /* this will not cause a garbage collection                            */
+    // this will not cause a garbage collection
     for ( i = 1;  i <= num;  i++, ptr++ ) {
         SET_ELM_PLIST( lst, 2*i-1, INTOBJ_INT(((*ptr) >> ebits)+1) );
         if ( (*ptr) & exps )
@@ -378,7 +378,7 @@ static Obj NBits_ExtRepOfObj(Obj obj)
     }
     CHANGED_BAG(lst);
 
-    /* return the gen/exp list                                             */
+    // return the gen/exp list
     return lst;
 }
 
@@ -405,19 +405,19 @@ static Obj Func32Bits_ExtRepOfObj(Obj self, Obj obj)
 template <typename UIntN>
 static Obj NBits_GeneratorSyllable(Obj w, Obj pos)
 {
-    Int         ebits;          /* number of bits in the exponent          */
-    Int         num;            /* number of gen/exp pairs in <data>       */
-    Int         i;              /* integer corresponding to <vi>           */
-    UIntN       p;              /* <i>th syllable                          */
+    Int         ebits;          // number of bits in the exponent
+    Int         num;            // number of gen/exp pairs in <data>
+    Int         i;              // integer corresponding to <vi>
+    UIntN       p;              // <i>th syllable
 
-    /* check <i>                                                           */
+    // check <i>
     num = NPAIRS_WORD(w);
     i = GetBoundedInt("NBits_GeneratorSyllable", pos, 1, num);
 
-    /* get the number of bits for exponents                                */
+    // get the number of bits for exponents
     ebits = EBITS_WORD(w);
 
-    /* return the <i> th generator                                         */
+    // return the <i> th generator
     p = CONST_DATA_WORD(w)[i-1];
     return INTOBJ_INT((p >> ebits)+1);
 }
@@ -445,29 +445,29 @@ static Obj Func32Bits_GeneratorSyllable(Obj self, Obj w, Obj pos)
 template <typename UIntN>
 static Obj NBits_HeadByNumber(Obj l, Obj r)
 {
-    Int         ebits;          /* number of bits in the exponent          */
-    UInt        genm;           /* generator mask                          */
-    Int         sl;             /* start position in <obj>                 */
-    Int         nl;             /* number of pairs to consider in <l>      */
-    Int         gr;             /* value of <r>                            */
-    const UIntN * pl;           /* data area in <l>                        */
-    Obj         obj;            /* the result                              */
-    UIntN *     po;             /* data area in <obj>                      */
+    Int         ebits;          // number of bits in the exponent
+    UInt        genm;           // generator mask
+    Int         sl;             // start position in <obj>
+    Int         nl;             // number of pairs to consider in <l>
+    Int         gr;             // value of <r>
+    const UIntN * pl;           // data area in <l>
+    Obj         obj;            // the result
+    UIntN *     po;             // data area in <obj>
 
-    /* get the generator number to stop                                    */
+    // get the generator number to stop
     gr = INT_INTOBJ(r) - 1;
 
-    /* get the number of bits for exponents                                */
+    // get the number of bits for exponents
     ebits = EBITS_WORD(l);
 
-    /* get the generator mask                                              */
+    // get the generator mask
     genm = (((UInt)1 << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
-    /* if <l> is the identity return                                       */
+    // if <l> is the identity return
     nl = NPAIRS_WORD(l);
     if ( 0 == nl )  return l;
 
-    /* look closely at the generators                                      */
+    // look closely at the generators
     sl = 0;
     pl = CONST_DATA_WORD(l);
     while ( sl < nl && ((*pl & genm) >> ebits) < gr ) {
@@ -476,10 +476,10 @@ static Obj NBits_HeadByNumber(Obj l, Obj r)
     if ( sl == nl )
         return l;
 
-    /* create a new word                                                   */
+    // create a new word
     obj = NewWord(PURETYPE_WORD(l), sl);
 
-    /* copy the <l> part into the word                                     */
+    // copy the <l> part into the word
     po = DATA_WORD(obj);
     pl = CONST_DATA_WORD(l);
     while ( 0 < sl-- )
@@ -535,81 +535,81 @@ static Obj Func32Bits_HeadByNumber(Obj self, Obj l, Obj r)
 template <typename UIntN>
 static Obj NBits_Less(Obj l, Obj r)
 {
-    Int         ebits;          /* number of bits in the exponent          */
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        genm;           /* generator mask                          */
-    Int         exl;            /* left exponent                           */
-    Int         exr;            /* right exponent                          */
-    Int         nl;             /* number of pairs to consider in <l>      */
-    Int         nr;             /* number of pairs in <r>                  */
-    const UIntN * pl;           /* data area in <l>                        */
-    const UIntN * pr;           /* data area in <r>                        */
-    Obj         lexico;         /* lexicographic order of <l> and <r>      */
-    Obj         ll;             /* length of <l>                           */
-    Obj         lr;             /* length of <r>                           */
+    Int         ebits;          // number of bits in the exponent
+    UInt        expm;           // signed exponent mask
+    UInt        exps;           // sign exponent mask
+    UInt        genm;           // generator mask
+    Int         exl;            // left exponent
+    Int         exr;            // right exponent
+    Int         nl;             // number of pairs to consider in <l>
+    Int         nr;             // number of pairs in <r>
+    const UIntN * pl;           // data area in <l>
+    const UIntN * pr;           // data area in <r>
+    Obj         lexico;         // lexicographic order of <l> and <r>
+    Obj         ll;             // length of <l>
+    Obj         lr;             // length of <r>
 
-    /* if <l> or <r> is the identity it is easy                            */
+    // if <l> or <r> is the identity it is easy
     nl = NPAIRS_WORD(l);
     nr = NPAIRS_WORD(r);
     if ( nl == 0 || nr == 0 ) {
         return ( nr != 0 ) ? True : False;
     }
 
-    /* get the number of bits for exponents                                */
+    // get the number of bits for exponents
     ebits = EBITS_WORD(l);
 
-    /* get the exponent masks                                              */
+    // get the exponent masks
     exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
 
-    /* Skip the common prefix and determine if the first word is smaller   */
-    /* with respect to the lexicographic ordering.                         */
+    // Skip the common prefix and determine if the first word is smaller
+    // with respect to the lexicographic ordering.
     pl = CONST_DATA_WORD(l);
     pr = CONST_DATA_WORD(r);
     for ( lexico = False;  0 < nl && 0 < nr;  nl--, nr--, pl++, pr++ )
         if ( *pl != *pr ) {
-            /* got a difference                                            */
+            // got a difference
 
-            /* get the generator mask                                      */
+            // get the generator mask
             genm = (((UInt)1 << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
-            /* compare the generators                                      */
+            // compare the generators
             if ( (*pl & genm) != (*pr & genm) ) {
                 lexico = ( (*pl & genm) < (*pr & genm) ) ? True : False;
                 break;
             }
 
-            /* get the unsigned exponents                                  */
+            // get the unsigned exponents
             exl = (*pl & exps) ? (exps - (*pl & expm)) : (*pl & expm);
             exr = (*pr & exps) ? (exps - (*pr & expm)) : (*pr & expm);
 
-            /* compare the sign of the exponents                           */
+            // compare the sign of the exponents
             if( exl == exr && (*pl & exps) != (*pr & exps) ) {
                 lexico = (*pl & exps) ? True : False;
                 break;
             }
 
-            /* compare the exponents, and check the next generator.  This  */
-            /* amounts to stripping off the common prefix  x^|expl-expr|.  */
+            // compare the exponents, and check the next generator.  This
+            // amounts to stripping off the common prefix  x^|expl-expr|.
             if( exl > exr ) {
                 if( nr > 1 ) {
                   lexico = (*pl & genm) < (*(pr+1) & genm) ? True : False;
                   break;
                 }
                 else
-                    /* <r> is now essentially the empty word.             */
+                    // <r> is now essentially the empty word.
                     return False;
             }
-            if( nl > 1 ) {  /* exl < exr                                  */
+            if( nl > 1 ) {  // exl < exr
                 lexico = (*(pl+1) & genm) < (*pr & genm) ? True : False;
                 break;
             }
-            /* <l> is now essentially the empty word.                     */
+            // <l> is now essentially the empty word.
             return True;
         }
 
-    /* compute the lengths of the rest                                    */
+    // compute the lengths of the rest
     for ( ll = INTOBJ_INT(0);  0 < nl;  nl--,  pl++ ) {
         exl = (*pl & exps) ? (exps - (*pl & expm)) : (*pl & expm);
         C_SUM_FIA(ll,ll,INTOBJ_INT(exl));
@@ -647,31 +647,31 @@ static Obj Func32Bits_Less(Obj self, Obj l, Obj r)
 template <typename UIntN>
 static Obj NBits_AssocWord(Obj type, Obj data)
 {
-    Int         ebits;          /* number of bits in the exponent          */
-    UInt        expm;           /* unsigned exponent mask                  */
-    Int         num;            /* number of gen/exp pairs in <data>       */
-    Int         i;              /* loop variable for gen/exp pairs         */
-    Obj         vexp;           /* value of current exponent               */
-    Int         nexp;           /* current exponent                        */
-    Obj         vgen;           /* value of current generator              */
-    Int         ngen;           /* current generator                       */
-    Obj         obj;            /* result                                  */
-    UIntN *     ptr;            /* pointer into the data area of <obj>     */
+    Int         ebits;          // number of bits in the exponent
+    UInt        expm;           // unsigned exponent mask
+    Int         num;            // number of gen/exp pairs in <data>
+    Int         i;              // loop variable for gen/exp pairs
+    Obj         vexp;           // value of current exponent
+    Int         nexp;           // current exponent
+    Obj         vgen;           // value of current generator
+    Int         ngen;           // current generator
+    Obj         obj;            // result
+    UIntN *     ptr;            // pointer into the data area of <obj>
 
-    /* get the number of bits for exponents                                */
+    // get the number of bits for exponents
     ebits = EBITS_WORDTYPE(type);
 
-    /* get the exponent mask                                               */
+    // get the exponent mask
     expm = ((UInt)1 << ebits) - 1;
 
-    /* construct a new object                                              */
+    // construct a new object
     num = LEN_LIST(data)/2;
     obj = NewWord(type, num);
 
     ptr = DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++ ) {
 
-        /* this will not cause a garbage collection                        */
+        // this will not cause a garbage collection
         vgen = ELMW_LIST( data, 2*i-1 );
         ngen = INT_INTOBJ(vgen);
         vexp = ELMW_LIST( data, 2*i );
@@ -710,23 +710,23 @@ static Obj Func32Bits_AssocWord(Obj self, Obj type, Obj data)
 template <typename UIntN>
 static Obj NBits_ObjByVector(Obj type, Obj data)
 {
-    Int         ebits;          /* number of bits in the exponent          */
-    UInt        expm;           /* unsigned exponent mask                  */
-    Int         num;            /* number of gen/exp pairs in <data>       */
-    Int         i;              /* loop variable for gen/exp pairs         */
-    Int         j;              /* loop variable for exponent vector       */
-    Int         nexp;           /* current exponent                        */
-    Obj         vexp;           /* value of current exponent               */
-    Obj         obj;            /* result                                  */
-    UIntN *     ptr;            /* pointer into the data area of <obj>     */
+    Int         ebits;          // number of bits in the exponent
+    UInt        expm;           // unsigned exponent mask
+    Int         num;            // number of gen/exp pairs in <data>
+    Int         i;              // loop variable for gen/exp pairs
+    Int         j;              // loop variable for exponent vector
+    Int         nexp;           // current exponent
+    Obj         vexp;           // value of current exponent
+    Obj         obj;            // result
+    UIntN *     ptr;            // pointer into the data area of <obj>
 
-    /* get the number of bits for exponents                                */
+    // get the number of bits for exponents
     ebits = EBITS_WORDTYPE(type);
 
-    /* get the exponent mask                                               */
+    // get the exponent mask
     expm = ((UInt)1 << ebits) - 1;
 
-    /* count the number of non-zero entries                                */
+    // count the number of non-zero entries
     for ( i = LEN_LIST(data), num = 0, j = 1;  0 < i;  i-- ) {
         vexp = ELMW_LIST(data,i);
         RequireSmallInt("NBits_ObjByVector", vexp);
@@ -736,13 +736,13 @@ static Obj NBits_ObjByVector(Obj type, Obj data)
         }
     }
 
-    /* construct a new object                                              */
+    // construct a new object
     obj = NewWord(type, num);
 
     ptr = DATA_WORD(obj);
     for ( i = 1;  i <= num;  i++, ptr++, j++ ) {
 
-        /* this will not cause a garbage collection                        */
+        // this will not cause a garbage collection
         while ( ELMW_LIST(data,j) == INTOBJ_INT(0) )
             j++;
         vexp = ELMW_LIST( data, j );
@@ -780,64 +780,64 @@ static Obj NBits_Power(Obj l, Obj r)
 {
     typedef typename OverflowType<UIntN>::type OInt;
 
-    Int         ebits;          /* number of bits in the exponent          */
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        genm;           /* generator mask                          */
-    Int         invm;           /* mask used to invert exponent            */
-    Obj         obj;            /* the result                              */
-    Int         nl;             /* number of pairs to consider in <l>      */
-    Int         sr;             /* start position in <r>                   */
-    Int         sl;             /* start position in <obj>                 */
-    const UIntN * pl;           /* data area in <l>                        */
-    UIntN *     pr;             /* data area in <obj>                      */
-    const UIntN * pe;           /* end marker                              */
-    OInt        ex = 0;         /* meeting exponent                        */
-    Int         pow;            /* power to take                           */
-    Int         apw;            /* absolute value of <pow>                 */
+    Int         ebits;          // number of bits in the exponent
+    UInt        expm;           // signed exponent mask
+    UInt        exps;           // sign exponent mask
+    UInt        genm;           // generator mask
+    Int         invm;           // mask used to invert exponent
+    Obj         obj;            // the result
+    Int         nl;             // number of pairs to consider in <l>
+    Int         sr;             // start position in <r>
+    Int         sl;             // start position in <obj>
+    const UIntN * pl;           // data area in <l>
+    UIntN *     pr;             // data area in <obj>
+    const UIntN * pe;           // end marker
+    OInt        ex = 0;         // meeting exponent
+    Int         pow;            // power to take
+    Int         apw;            // absolute value of <pow>
 
-    /* get the number of bits for exponents                                */
+    // get the number of bits for exponents
     ebits = EBITS_WORD(l);
 
-    /* get the exponent masks                                              */
+    // get the exponent masks
     exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
     invm = ((UInt)1<<ebits)-1;
 
-    /* get the generator mask                                              */
+    // get the generator mask
     genm = (((UInt)1 << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
-    /* if <l> is the identity return <l>                                   */
+    // if <l> is the identity return <l>
     nl = NPAIRS_WORD(l);
     if ( 0 == nl )
         return l;
 
-    /* if <pow> is zero return the identity                                */
+    // if <pow> is zero return the identity
     pow = INT_INTOBJ(r);
     if ( pow == 0 ) {
         obj = NewWord(PURETYPE_WORD(l), 0);
         return obj;
     }
 
-    /* if <pow> is one return <l>                                          */
+    // if <pow> is one return <l>
     if ( pow == 1 )
         return l;
 
-    /* if <pow> is minus one invert <l>                                    */
+    // if <pow> is minus one invert <l>
     if ( pow == -1 ) {
         obj = NewWord(PURETYPE_WORD(l), nl);
         pl = CONST_DATA_WORD(l);
         pr = DATA_WORD(obj) + (nl-1);
         sl = nl;
 
-        /* exponents are symmetric, so we cannot get an overflow            */
+        // exponents are symmetric, so we cannot get an overflow
         while ( 0 < sl-- ) {
             *pr-- = ( *pl++ ^ invm ) + 1;
         }
         return obj;
     }
 
-    /* split word into w * h * w^-1                                        */
+    // split word into w * h * w^-1
     pl = CONST_DATA_WORD(l);
     pe = pl + (nl-1);
     sl = 0;
@@ -851,18 +851,18 @@ static Obj NBits_Power(Obj l, Obj r)
         pe--;  sr--;
     }
 
-    /* special case: w * gi^n * w^-1                                       */
+    // special case: w * gi^n * w^-1
     if ( sl == sr ) {
         ex = (*pl&expm);
         if ( *pl & exps )  ex -= exps;
         ex = ex * pow;
 
-        /* check that n*pow fits into the exponent                         */
+        // check that n*pow fits into the exponent
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
             return TRY_NEXT_METHOD;
         }
 
-        /* copy <l> into <obj>                                             */
+        // copy <l> into <obj>
         obj = NewWord(PURETYPE_WORD(l), nl);
         pl = CONST_DATA_WORD(l);
         pr = DATA_WORD(obj);
@@ -871,19 +871,19 @@ static Obj NBits_Power(Obj l, Obj r)
             *pr++ = *pl++;
         }
 
-        /* and fix the exponent at position <sr>                           */
+        // and fix the exponent at position <sr>
         pr = DATA_WORD(obj);
         pr[sr] = (pr[sr] & genm) | (ex & (((UInt)1<<ebits)-1));
         return obj;
     }
 
-    /* special case: w * gj^x * t * gj^y * w^-1, x != -y                   */
+    // special case: w * gj^x * t * gj^y * w^-1, x != -y
     if ( (*pl & genm) == (*pe & genm) ) {
         ex = (*pl&expm) + (*pe&expm);
         if ( *pl & exps )  ex -= exps;
         if ( *pe & exps )  ex -= exps;
 
-        /* check that <ex> fits into the exponent                          */
+        // check that <ex> fits into the exponent
         if ( ( 0 < ex && expm < ex ) || ( ex < 0 && expm < -ex ) ) {
             return TRY_NEXT_METHOD;
         }
@@ -892,12 +892,12 @@ static Obj NBits_Power(Obj l, Obj r)
         else
             ex = (-ex) & (((UInt)1<<ebits)-1);
 
-        /* create a new word                                               */
+        // create a new word
         apw = ( pow < 0 ) ? -pow : pow;
         obj = NewWord(PURETYPE_WORD(l),
                       2 * (sl + 1) + apw * (sr - sl - 1) + (apw - 1));
 
-        /* copy the beginning w * gj^x into <obj>                          */
+        // copy the beginning w * gj^x into <obj>
         pl = CONST_DATA_WORD(l);
         pr = DATA_WORD(obj);
         pe = pl+sl;
@@ -905,7 +905,7 @@ static Obj NBits_Power(Obj l, Obj r)
             *pr++ = *pl++;
         }
 
-        /* copy t * gj^<ex> <pow> times into <obj>                         */
+        // copy t * gj^<ex> <pow> times into <obj>
         if ( 0 < pow ) {
             for ( ; 0 < apw;  apw-- ) {
                 pl = CONST_DATA_WORD(l) + (sl+1);
@@ -916,7 +916,7 @@ static Obj NBits_Power(Obj l, Obj r)
                 pr[-1] = (pr[-1] & genm) | ex;
             }
 
-            /* copy tail gj^y * w^-1 into <obj>                            */
+            // copy tail gj^y * w^-1 into <obj>
             pr[-1] = pl[-1];
             pe = CONST_DATA_WORD(l) + nl;
             while ( pl < pe ) {
@@ -924,7 +924,7 @@ static Obj NBits_Power(Obj l, Obj r)
             }
         }
 
-        /* copy and invert t * gj^<ex> <pow> times into <obj>              */
+        // copy and invert t * gj^<ex> <pow> times into <obj>
         else {
             pr[-1] = ( pl[sr-sl-1] ^ invm ) + 1;
             for ( ; 0 < apw;  apw-- ) {
@@ -936,7 +936,7 @@ static Obj NBits_Power(Obj l, Obj r)
                 pr[-1] = (pr[-1] & genm) | ex;
             }
 
-            /* copy tail gj^x * w^-1 into <obj>                            */
+            // copy tail gj^x * w^-1 into <obj>
             pr[-1] = ( pl[1] ^ invm ) + 1;
             pl = CONST_DATA_WORD(l) + (sr+1);
             pe = CONST_DATA_WORD(l) + nl;
@@ -947,14 +947,14 @@ static Obj NBits_Power(Obj l, Obj r)
         return obj;
     }
 
-    /* general case: w * t * w^-1                                          */
+    // general case: w * t * w^-1
     else {
 
-        /* create a new word                                               */
+        // create a new word
         apw = ( pow < 0 ) ? -pow : pow;
         obj = NewWord(PURETYPE_WORD(l), 2 * sl + apw * (sr - sl + 1));
 
-        /* copy the beginning w * gj^x into <obj>                          */
+        // copy the beginning w * gj^x into <obj>
         pl = CONST_DATA_WORD(l);
         pr = DATA_WORD(obj);
         pe = pl+sl;
@@ -962,7 +962,7 @@ static Obj NBits_Power(Obj l, Obj r)
             *pr++ = *pl++;
         }
 
-        /* copy t <pow> times into <obj>                                   */
+        // copy t <pow> times into <obj>
         if ( 0 < pow ) {
             for ( ; 0 < apw;  apw-- ) {
                 pl = CONST_DATA_WORD(l) + sl;
@@ -972,14 +972,14 @@ static Obj NBits_Power(Obj l, Obj r)
                 }
             }
 
-            /* copy tail w^-1 into <obj>                                   */
+            // copy tail w^-1 into <obj>
             pe = CONST_DATA_WORD(l) + nl;
             while ( pl < pe ) {
                 *pr++ = *pl++;
             }
         }
 
-        /* copy and invert t <pow> times into <obj>                        */
+        // copy and invert t <pow> times into <obj>
         else {
             for ( ; 0 < apw;  apw-- ) {
                 pl = CONST_DATA_WORD(l) + sr;
@@ -989,7 +989,7 @@ static Obj NBits_Power(Obj l, Obj r)
                 }
             }
 
-            /* copy tail w^-1 into <obj>                                   */
+            // copy tail w^-1 into <obj>
             pl = CONST_DATA_WORD(l) + (sr+1);
             pe = CONST_DATA_WORD(l) + nl;
             while ( pl < pe ) {
@@ -1023,37 +1023,37 @@ static Obj Func32Bits_Power(Obj self, Obj l, Obj r)
 template <typename UIntN>
 static Obj NBits_Product(Obj l, Obj r)
 {
-    Int         ebits;          /* number of bits in the exponent          */
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        genm;           /* generator mask                          */
-    Int         nl;             /* number of pairs to consider in <l>      */
-    Int         nr;             /* number of pairs in <r>                  */
-    Int         sr;             /* start position in <r>                   */
-    const UIntN * pl;           /* data area in <l>                        */
-    const UIntN * pr;           /* data area in <r>                        */
-    Obj         obj;            /* the result                              */
-    UIntN *     po;             /* data area in <obj>                      */
-    Int         ex = 0;         /* meeting exponent                        */
-    Int         over;           /* overlap                                 */
+    Int         ebits;          // number of bits in the exponent
+    UInt        expm;           // signed exponent mask
+    UInt        exps;           // sign exponent mask
+    UInt        genm;           // generator mask
+    Int         nl;             // number of pairs to consider in <l>
+    Int         nr;             // number of pairs in <r>
+    Int         sr;             // start position in <r>
+    const UIntN * pl;           // data area in <l>
+    const UIntN * pr;           // data area in <r>
+    Obj         obj;            // the result
+    UIntN *     po;             // data area in <obj>
+    Int         ex = 0;         // meeting exponent
+    Int         over;           // overlap
 
-    /* get the number of bits for exponents                                */
+    // get the number of bits for exponents
     ebits = EBITS_WORD(l);
 
-    /* get the exponent masks                                              */
+    // get the exponent masks
     exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
 
-    /* get the generator mask                                              */
+    // get the generator mask
     genm = (((UInt)1 << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
-    /* if <l> or <r> is the identity return the other                      */
+    // if <l> or <r> is the identity return the other
     nl = NPAIRS_WORD(l);
     if ( 0 == nl )  return r;
     nr = NPAIRS_WORD(r);
     if ( 0 == nr )  return l;
 
-    /* look closely at the meeting point                                   */
+    // look closely at the meeting point
     sr = 0;
     pl = CONST_DATA_WORD(l)+(nl-1);
     pr = CONST_DATA_WORD(r);
@@ -1066,7 +1066,7 @@ static Obj NBits_Product(Obj l, Obj r)
         pl--;  nl--;
     }
 
-    /* create a new word                                                   */
+    // create a new word
     over = ( 0 < nl && sr < nr && (*pl & genm) == (*pr & genm) ) ? 1 : 0;
     if ( over ) {
         ex = ( *pl & expm ) + ( *pr & expm );
@@ -1078,19 +1078,19 @@ static Obj NBits_Product(Obj l, Obj r)
     }
     obj = NewWord(PURETYPE_WORD(l), nl + (nr - sr) - over);
 
-    /* copy the <l> part into the word                                     */
+    // copy the <l> part into the word
     po = DATA_WORD(obj);
     pl = CONST_DATA_WORD(l);
     while ( 0 < nl-- )
         *po++ = *pl++;
 
-    /* handle the overlap                                                  */
+    // handle the overlap
     if ( over ) {
         po[-1] = (po[-1] & genm) | (ex & (((UInt)1<<ebits)-1));
         sr++;
     }
 
-    /* copy the <r> part into the word                                     */
+    // copy the <r> part into the word
     pr = CONST_DATA_WORD(r) + sr;
     while ( sr++ < nr )
         *po++ = *pr++;
@@ -1120,37 +1120,37 @@ static Obj Func32Bits_Product(Obj self, Obj l, Obj r)
 template <typename UIntN>
 static Obj NBits_Quotient(Obj l, Obj r)
 {
-    Int         ebits;          /* number of bits in the exponent          */
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        sepm;           /* unsigned exponent mask                  */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        genm;           /* generator mask                          */
-    Int         nl;             /* number of pairs to consider in <l>      */
-    Int         nr;             /* number of pairs in <r>                  */
-    const UIntN * pl;           /* data area in <l>                        */
-    const UIntN * pr;           /* data area in <r>                        */
-    Obj         obj;            /* the result                              */
-    UIntN *     po;             /* data area in <obj>                      */
-    Int         ex = 0;         /* meeting exponent                        */
-    Int         over;           /* overlap                                 */
+    Int         ebits;          // number of bits in the exponent
+    UInt        expm;           // signed exponent mask
+    UInt        sepm;           // unsigned exponent mask
+    UInt        exps;           // sign exponent mask
+    UInt        genm;           // generator mask
+    Int         nl;             // number of pairs to consider in <l>
+    Int         nr;             // number of pairs in <r>
+    const UIntN * pl;           // data area in <l>
+    const UIntN * pr;           // data area in <r>
+    Obj         obj;            // the result
+    UIntN *     po;             // data area in <obj>
+    Int         ex = 0;         // meeting exponent
+    Int         over;           // overlap
 
-    /* get the number of bits for exponents                                */
+    // get the number of bits for exponents
     ebits = EBITS_WORD(l);
 
-    /* get the exponent masks                                              */
+    // get the exponent masks
     exps = (UInt)1 << (ebits-1);
     expm = exps - 1;
     sepm = ((UInt)1 << ebits) - 1;
 
-    /* get the generator mask                                              */
+    // get the generator mask
     genm = (((UInt)1 << (8*sizeof(UIntN)-ebits)) - 1) << ebits;
 
-    /* if <r> is the identity return <l>                                   */
+    // if <r> is the identity return <l>
     nl = NPAIRS_WORD(l);
     nr = NPAIRS_WORD(r);
     if ( 0 == nr )  return l;
 
-    /* look closely at the meeting point                                   */
+    // look closely at the meeting point
     pl = CONST_DATA_WORD(l)+(nl-1);
     pr = CONST_DATA_WORD(r)+(nr-1);
     while ( 0 < nl && 0 < nr && (*pl & genm) == (*pr & genm) ) {
@@ -1162,7 +1162,7 @@ static Obj NBits_Quotient(Obj l, Obj r)
         pl--;  nl--;
     }
 
-    /* create a new word                                                   */
+    // create a new word
     over = ( 0 < nl && 0 < nr && (*pl & genm) == (*pr & genm) ) ? 1 : 0;
     if ( over ) {
         ex = ( *pl & expm ) - ( *pr & expm );
@@ -1174,19 +1174,19 @@ static Obj NBits_Quotient(Obj l, Obj r)
     }
     obj = NewWord(PURETYPE_WORD(l), nl + nr - over);
 
-    /* copy the <l> part into the word                                     */
+    // copy the <l> part into the word
     po = DATA_WORD(obj);
     pl = CONST_DATA_WORD(l);
     while ( 0 < nl-- )
         *po++ = *pl++;
 
-    /* handle the overlap                                                  */
+    // handle the overlap
     if ( over ) {
         po[-1] = (po[-1] & genm) | (ex & sepm);
         nr--;
     }
 
-    /* copy the <r> part into the word                                     */
+    // copy the <r> part into the word
     pr = CONST_DATA_WORD(r) + (nr-1);
     while ( 0 < nr-- ) {
         *po++ = (*pr&genm) | (exps-(*pr&expm)) | (~*pr & exps);
@@ -1227,7 +1227,7 @@ static Obj NBits_LengthWord(Obj w)
   ebits = EBITS_WORD(w);
   data = CONST_DATA_WORD(w);
 
-  /* get the exponent masks                                              */
+  // get the exponent masks
   exps = (UInt)1 << (ebits-1);
   expm = exps - 1;
 
@@ -1271,7 +1271,7 @@ static Obj Func32Bits_LengthWord(Obj self, Obj w)
 */
 static Obj FuncNBits_NumberSyllables(Obj self, Obj w)
 {
-    /* return the number of syllables                                      */
+    // return the number of syllables
     return INTOBJ_INT( NPAIRS_WORD(w) );
 }
 
@@ -1287,56 +1287,56 @@ static Obj FuncMULT_WOR_LETTREP(Obj self, Obj a, Obj b)
   const Obj *p;
   Obj *q;
 
-  /* short check */
+  // short check
   RequirePlainList(SELF_NAME, a);
   RequirePlainList(SELF_NAME, b);
 
-  /* Find overlap */
-  /* l:=Length(a); */
+  // Find overlap
+  // l:=Length(a);
   l=LEN_PLIST(a);
   if (l==0) {
     return b;
   }
-  /* m:=Length(b); */
+  // m:=Length(b);
   m=LEN_PLIST(b);
   if (m==0) {
     return a;
   }
-  /* now we know both lists are length >0 */
+  // now we know both lists are length >0
 
-  /* i:=l; */
+  // i:=l;
   i=l;
-  /* j:=1; */
+  // j:=1;
   j=1;
-  /* while i>=1 and j<=m and a[i]=-b[j] do */
+  // while i>=1 and j<=m and a[i]=-b[j] do
   while ((i>=1)&&(j<=m)&&
     (INT_INTOBJ(ELM_PLIST(a,i))==-INT_INTOBJ(ELM_PLIST(b,j)))) {
-    /* i:=i-1; */
+    // i:=i-1;
     i--;
-    /* j:=j+1; */
+    // j:=j+1;
     j++;
-  /* od; */
+  // od;
   }
-  /* if i=0 then */
+  // if i=0 then
   if (i==0) {
-    /* if j>m then */
+    // if j>m then
     if (j>m) {
-      /* full cancellation */
-      /* return false; */
+      // full cancellation
+      // return false;
       return False;
     }
-    /* fi; */
-    /* a:=b{[j..m]}; */
+    // fi;
+    // a:=b{[j..m]};
     as=1;
     ae=0;
     bs=j;
     be=m;
     newlen=m-j+1;
   }
-  /* elif j>m then */
+  // elif j>m then
   else {
     if (j>m) {
-    /* a:=a{[1..i]}; */
+    // a:=a{[1..i]};
       as=1;
       ae=i;
       bs=1;
@@ -1344,29 +1344,29 @@ static Obj FuncMULT_WOR_LETTREP(Obj self, Obj a, Obj b)
       newlen=i;
     }
     else {
-  /* else */
-    /* a:=Concatenation(a{[1..i]},b{[j..m]}); */
+  // else
+    // a:=Concatenation(a{[1..i]},b{[j..m]});
       as=1;
       ae=i;
       bs=j;
       be=m;
       newlen=m-j+1+i;
     }
-  /* fi; */
+  // fi;
   }
-  /* make the new list */
+  // make the new list
   n=NEW_PLIST(T_PLIST_CYC,newlen);
   q=ADDR_OBJ(n);
   q++;
   j=as;
-  /* a[as] position */
+  // a[as] position
   p=CONST_ADDR_OBJ(a) + as;
   while (j<=ae) {
     *q++=*p++;
     j++;
   }
   j=bs;
-  /* b[bs] position */
+  // b[bs] position
   p=CONST_ADDR_OBJ(b) + bs;
   while (j<=be) {
     *q++=*p++;
@@ -1374,7 +1374,7 @@ static Obj FuncMULT_WOR_LETTREP(Obj self, Obj a, Obj b)
   }
   SET_LEN_PLIST(n,newlen);
   CHANGED_BAG(n);
-  /* return a; */
+  // return a;
   return n;
 }
 
@@ -1385,58 +1385,58 @@ static Obj FuncMULT_BYT_LETTREP(Obj self, Obj a, Obj b)
   Obj n;
   const Char *p,*q;
 
-  /* short check, if necessary strings are compacted */
+  // short check, if necessary strings are compacted
   RequireStringRep(SELF_NAME, a);
   RequireStringRep(SELF_NAME, b);
 
-  /* Find overlap */
-  /* l:=Length(a); */
+  // Find overlap
+  // l:=Length(a);
   l=GET_LEN_STRING(a);
   if (l==0) {
     return b;
   }
-  /* m:=Length(b); */
+  // m:=Length(b);
   m=GET_LEN_STRING(b);
   if (m==0) {
     return a;
   }
-  /* now we know both lists are length >0 */
+  // now we know both lists are length >0
 
-  /* i:=l; */
+  // i:=l;
   i=l;
-  /* j:=1; */
+  // j:=1;
   j=1;
-  /* while i>=1 and j<=m and a[i]=-b[j] do */
+  // while i>=1 and j<=m and a[i]=-b[j] do
   p=CONST_CSTR_STRING(a);
   q=CONST_CSTR_STRING(b);
   while ((i>=1)&&(j<=m)&&
     (SINT_CHAR(p[i-1])==-SINT_CHAR(q[j-1]))) {
-    /* i:=i-1; */
+    // i:=i-1;
     i--;
-    /* j:=j+1; */
+    // j:=j+1;
     j++;
-  /* od; */
+  // od;
   }
-  /* if i=0 then */
+  // if i=0 then
   if (i==0) {
-    /* if j>m then */
+    // if j>m then
     if (j>m) {
-      /* full cancellation */
-      /* return false; */
+      // full cancellation
+      // return false;
       return False;
     }
-    /* fi; */
-    /* a:=b{[j..m]}; */
+    // fi;
+    // a:=b{[j..m]};
     as=1;
     ae=0;
     bs=j;
     be=m;
     newlen=m-j+1;
   }
-  /* elif j>m then */
+  // elif j>m then
   else {
     if (j>m) {
-    /* a:=a{[1..i]}; */
+    // a:=a{[1..i]};
       as=1;
       ae=i;
       bs=1;
@@ -1444,34 +1444,34 @@ static Obj FuncMULT_BYT_LETTREP(Obj self, Obj a, Obj b)
       newlen=i;
     }
     else {
-  /* else */
-    /* a:=Concatenation(a{[1..i]},b{[j..m]}); */
+  // else
+    // a:=Concatenation(a{[1..i]},b{[j..m]});
       as=1;
       ae=i;
       bs=j;
       be=m;
       newlen=m-j+1+i;
     }
-  /* fi; */
+  // fi;
   }
-  /* make the new list */
+  // make the new list
   n=NEW_STRING(newlen);
   Char *dst = CSTR_STRING(n);
   p=CONST_CSTR_STRING(a);
   j=as;
-  /* a[as] position */
+  // a[as] position
   while (j<=ae) {
     *dst++=p[j-1];
     j++;
   }
   j=bs;
   p=CONST_CSTR_STRING(b);
-  /* b[bs] position */
+  // b[bs] position
   while (j<=be) {
     *dst++=p[j-1];
     j++;
   }
-  /* return a; */
+  // return a;
   return n;
 }
 
@@ -1548,7 +1548,7 @@ static StructGVarFunc GVarFuncs[] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
     return 0;
@@ -1562,7 +1562,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* export position numbers 'AWP_SOMETHING'                             */
+    // export position numbers 'AWP_SOMETHING'
     ExportAsConstantGVar(AWP_FIRST_ENTRY);
     ExportAsConstantGVar(AWP_PURE_TYPE);
     ExportAsConstantGVar(AWP_NR_BITS_EXP);
@@ -1572,7 +1572,7 @@ static Int InitLibrary (
     ExportAsConstantGVar(AWP_FUN_ASSOC_WORD);
     ExportAsConstantGVar(AWP_LAST_ENTRY);
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

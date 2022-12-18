@@ -22,16 +22,16 @@
 typedef struct Region Region;
 
 struct Region {
-    void *lock;       /* void * so that we don't have to include pthread.h always */
-    Bag obj;          /* references a unique T_REGION object per region */
-    Bag name;         /* name of the region, or a null pointer */
-    Int prec;         /* locking precedence */
+    void *lock;       // void * so that we don't have to include pthread.h always
+    Bag obj;          // references a unique T_REGION object per region
+    Bag name;         // name of the region, or a null pointer
+    Int prec;         // locking precedence
     int fixed_owner;
-    void *owner;      /* opaque thread descriptor */
-    void *alt_owner;  /* for paused threads */
-    int count_active; /* whether we counts number of (contended) locks */
-    AtomicUInt locks_acquired;    /* number of times the lock was acquired successfully */
-    AtomicUInt locks_contended;   /* number of failed attempts at acuiring the lock */
+    void *owner;      // opaque thread descriptor
+    void *alt_owner;  // for paused threads
+    int count_active; // whether we counts number of (contended) locks
+    AtomicUInt locks_acquired;    // number of times the lock was acquired successfully
+    AtomicUInt locks_contended;   // number of failed attempts at acuiring the lock
     unsigned char readers[];     /* this field extends with number of threads
                                      don't add any fields after it */
 };

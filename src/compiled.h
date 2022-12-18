@@ -27,14 +27,14 @@ extern "C" {
 extern Obj InfoDecision;
 
 
-/* types, should go into 'gvars.c' and 'records.c' * * * * * * * * * * * * */
+// types, should go into 'gvars.c' and 'records.c'
 
 typedef UInt    GVar;
 
 typedef UInt    RNam;
 
 
-/* checks, should go into 'gap.c'  * * * * * * * * * * * * * * * * * * * * */
+// checks, should go into 'gap.c'
 
 #define CHECK_BOUND(obj, name)                                               \
     if (obj == 0)                                                            \
@@ -78,14 +78,14 @@ static inline void CHECK_FUNC(Obj obj)
     if (narg - 1 > LEN_PLIST(args))                                          \
         ErrorMayQuitNrAtLeastArgs(narg - 1, LEN_PLIST(args));
 
-/* higher variables, should go into 'vars.c' * * * * * * * * * * * * * * * */
+// higher variables, should go into 'vars.c'
 
 #define SWITCH_TO_NEW_FRAME(func, narg, nloc, old)                           \
     (old) = SWITCH_TO_NEW_LVARS((func), (narg), (nloc))
 #define SWITCH_TO_OLD_FRAME     SWITCH_TO_OLD_LVARS_AND_FREE
 
 
-/* lists, should go into 'lists.c' * * * * * * * * * * * * * * * * * * * * */
+// lists, should go into 'lists.c'
 #define C_LEN_LIST(len,list) \
  len = LENGTH(list);
 
@@ -170,7 +170,7 @@ static inline void CHECK_FUNC(Obj obj)
 #define GF_NEXT_ITER    NEXT_ITER
 
 
-/* More or less all of this will get inlined away */
+// More or less all of this will get inlined away
 void C_SET_LIMB4(Obj bag, UInt limbnumber, UInt4 value);
 void C_SET_LIMB8(Obj bag, UInt limbnumber, UInt8 value);
 

@@ -311,7 +311,7 @@ static sizeMultiplier memoryUnits[]= {
 #ifdef SYS_IS_64_BIT
   {'t', 1024UL*1024*1024*1024},
   {'T', 1024UL*1024*1024*1024},
-  {'p', 1024UL*1024*1024*1024*1024}, /* you never know */
+  {'p', 1024UL*1024*1024*1024*1024}, // you never know
   {'P', 1024UL*1024*1024*1024*1024},
 #endif
 };
@@ -482,51 +482,51 @@ static Int printVersion(Char ** argv, void * dummy)
 }
 
 
-/* These are just the options that need kernel processing. Additional options will be
-   recognised and handled in the library */
-
-/* These options must be kept in sync with those in system.g, so the help output
-   is correct */
+// These are just the options that need kernel processing. Additional options
+// will be recognised and handled in the library
+//
+// These options must be kept in sync with those in system.g, so the help
+// output is correct
 static const struct optInfo options[] = {
-  { 'C',  "", processCompilerArgs, 0, 4}, /* must handle in kernel */
-  { 'D',  "debug-loading", toggle, &SyDebugLoading, 0}, /* must handle in kernel */
+  { 'C',  "", processCompilerArgs, 0, 4}, // must handle in kernel
+  { 'D',  "debug-loading", toggle, &SyDebugLoading, 0}, // must handle in kernel
 #if defined(USE_GASMAN) || defined(USE_BOEHM_GC)
-  { 'K',  "maximal-workspace", storeMemory2, &SyStorKill, 1}, /* could handle from library with new interface */
+  { 'K',  "maximal-workspace", storeMemory2, &SyStorKill, 1}, // could handle from library with new interface
 #endif
 #ifdef GAP_ENABLE_SAVELOAD
-  { 'L', "", storeString, &SyRestoring, 1}, /* must be handled in kernel  */
-  { 'R', "", unsetString, &SyRestoring, 0}, /* kernel */
+  { 'L', "", storeString, &SyRestoring, 1}, // must be handled in kernel
+  { 'R', "", unsetString, &SyRestoring, 0}, // kernel
 #endif
-  { 'M', "", toggle, &SyUseModule, 0}, /* must be handled in kernel */
-  { 'e', "", toggle, &SyCTRD, 0 }, /* kernel */
-  { 'f', "", forceLineEditing, (void *)2, 0 }, /* probably library now */
-  { 'E', "", toggle, &SyUseReadline, 0 }, /* kernel */
-  { 'l', "roots", setGapRootPath, 0, 1}, /* kernel */
+  { 'M', "", toggle, &SyUseModule, 0}, // must be handled in kernel
+  { 'e', "", toggle, &SyCTRD, 0 }, // kernel
+  { 'f', "", forceLineEditing, (void *)2, 0 }, // probably library now
+  { 'E', "", toggle, &SyUseReadline, 0 }, // kernel
+  { 'l', "roots", setGapRootPath, 0, 1}, // kernel
 #ifdef USE_GASMAN
-  { 'm', "", storeMemory2, &SyStorMin, 1 }, /* kernel */
+  { 'm', "", storeMemory2, &SyStorMin, 1 }, // kernel
 #endif
-  { 'r', "", toggle, &IgnoreGapRC, 0 }, /* kernel */
+  { 'r', "", toggle, &IgnoreGapRC, 0 }, // kernel
 #ifdef USE_GASMAN
-  { 's', "", storeMemory, &SyAllocPool, 1 }, /* kernel */
+  { 's', "", storeMemory, &SyAllocPool, 1 }, // kernel
 #endif
-  { 'n', "", forceLineEditing, 0, 0}, /* prob library */
+  { 'n', "", forceLineEditing, 0, 0}, // prob library
 #ifdef USE_GASMAN
-  { 'o', "", storeMemory2, &SyStorMax, 1 }, /* library with new interface */
+  { 'o', "", storeMemory2, &SyStorMax, 1 }, // library with new interface
 #endif
-  { 'p', "", toggle, &SyWindow, 0 }, /* ?? */
-  { 'q', "", toggle, &SyQuiet, 0 }, /* ?? */
+  { 'p', "", toggle, &SyWindow, 0 }, // ??
+  { 'q', "", toggle, &SyQuiet, 0 }, // ??
 #ifdef HPCGAP
-  { 'S', "", toggle, &ThreadUI, 0 }, /* Thread UI */
-  { 'Z', "", toggle, &DeadlockCheck, 0 }, /* Deadlock prevention */
-  { 'P', "", storePosInteger, &SyNumProcessors, 1 }, /* number of CPUs */
-  { 'G', "", storePosInteger, &SyNumGCThreads, 1 }, /* number of GC threads */
-  { 0  , "single-thread", toggle, &SingleThreadStartup, 0 }, /* startup with one thread only */
+  { 'S', "", toggle, &ThreadUI, 0 }, // Thread UI
+  { 'Z', "", toggle, &DeadlockCheck, 0 }, // Deadlock prevention
+  { 'P', "", storePosInteger, &SyNumProcessors, 1 }, // number of CPUs
+  { 'G', "", storePosInteger, &SyNumGCThreads, 1 }, // number of GC threads
+  { 0  , "single-thread", toggle, &SingleThreadStartup, 0 }, // startup with one thread only
 #endif
-  /* The following options must be handled in the kernel so they are set up before loading the library */
-  { 0  , "prof", enableProfilingAtStartup, 0, 1},    /* enable profiling at startup */
-  { 0  , "memprof", enableMemoryProfilingAtStartup, 0, 1 }, /* enable memory profiling at startup */
-  { 0  , "cover", enableCodeCoverageAtStartup, 0, 1}, /* enable code coverage at startup */
-  { 0  , "quitonbreak", toggle, &SyQuitOnBreak, 0}, /* Quit GAP if we enter the break loop */
+  // The following options must be handled in the kernel so they are set up before loading the library
+  { 0  , "prof", enableProfilingAtStartup, 0, 1},    // enable profiling at startup
+  { 0  , "memprof", enableMemoryProfilingAtStartup, 0, 1 }, // enable memory profiling at startup
+  { 0  , "cover", enableCodeCoverageAtStartup, 0, 1}, // enable code coverage at startup
+  { 0  , "quitonbreak", toggle, &SyQuitOnBreak, 0}, // Quit GAP if we enter the break loop
   { 0  , "enableMemCheck", enableMemCheck, 0, 0 },
   { 0  , "version", printVersion, 0, 0 },
   { 0, "", 0, 0, 0}};
@@ -542,10 +542,10 @@ void InitSystem (
     Char *              argv [],
     UInt                handleSignals )
 {
-    UInt                i;             /* loop variable                   */
-    Int res;                       /* return from option processing function */
+    UInt                i;             // loop variable
+    Int res;                       // return from option processing function
 
-    /* Initialize global and static variables */
+    // Initialize global and static variables
     SyCTRD = 1;
     SyCompilePlease = 0;
     SyDebugLoading = 0;
@@ -577,9 +577,9 @@ void InitSystem (
 #endif // defined(SYS_IS_64_BIT)
 
 #ifdef SYS_IS_64_BIT
-    SyAllocPool = 4096L*1024*1024;   /* Note this is in bytes! */
+    SyAllocPool = 4096L*1024*1024;   // Note this is in bytes!
 #else
-    SyAllocPool = 1536L*1024*1024;   /* Note this is in bytes! */
+    SyAllocPool = 1536L*1024*1024;   // Note this is in bytes!
 #endif // defined(SYS_IS_64_BIT)
     SyStorOverrun = SY_STOR_OVERRUN_CLEAR;
     SyStorKill = 0;
@@ -600,13 +600,13 @@ void InitSystem (
         SyInstallAnswerIntr();
     }
 
-    /* save the original command line for export to GAP */
+    // save the original command line for export to GAP
     SyOriginalArgc = argc;
     SyOriginalArgv = argv;
 
-    /* scan the command line for options that we have to process in the kernel */
-    /* we just scan the whole command line looking for the keys for the options we recognise */
-    /* anything else will presumably be dealt with in the library */
+    // scan the command line for options that we have to process in the kernel
+    // we just scan the whole command line looking for the keys for the options we recognise
+    // anything else will presumably be dealt with in the library
     while ( argc > 1 )
       {
         if (argv[1][0] == '-' ) {
@@ -645,13 +645,13 @@ void InitSystem (
             switch (res)
               {
               case -1: goto usage;
-                /*            case -2: goto fullusage; */
-              default: ;     /* fall through and continue */
+                // case -2: goto fullusage;
+              default: ;     // fall through and continue
               }
           }
           else
             res = options[i].minargs;
-          /*    recordOption(argv[1][1], res,  argv+2); */
+          // recordOption(argv[1][1], res,  argv+2);
           argv += 1 + res;
           argc -= 1 + res;
 
@@ -677,30 +677,30 @@ void InitSystem (
 
     InitSysFiles();
 
-    /* now that the user has had a chance to give -x and -y,
-       we determine the size of the screen ourselves */
+    // now that the user has had a chance to give -x and -y,
+    // we determine the size of the screen ourselves
     getwindowsize();
 
 #ifdef USE_GASMAN
-    /* fix max if it is lower than min                                     */
+    // fix max if it is lower than min
     if ( SyStorMax != 0 && SyStorMax < SyStorMin ) {
         SyStorMax = SyStorMin;
     }
 
-    /* fix pool size if larger than SyStorKill */
+    // fix pool size if larger than SyStorKill
     if ( SyStorKill != 0 && SyAllocPool != 0 &&
                             SyAllocPool > 1024 * SyStorKill ) {
         SyAllocPool = SyStorKill * 1024;
     }
 #endif
 
-    /* when running in package mode set ctrl-d and line editing            */
+    // when running in package mode set ctrl-d and line editing
     if ( SyWindow ) {
         SyRedirectStderrToStdOut();
         syWinPut( 0, "@p", "1." );
     }
 
-    /* should GAP load 'init/lib.g' on initialization */
+    // should GAP load 'init/lib.g' on initialization
     if ( SyCompilePlease ) {
         SyLoadSystemInitFile = 0;
     }
@@ -710,12 +710,12 @@ void InitSystem (
     }
 #endif
 
-    /* the users home directory                                            */
+    // the users home directory
     if ( getenv("HOME") != 0 ) {
         strxcpy(DotGapPath, getenv("HOME"), sizeof(DotGapPath));
 # if defined(__APPLE__)
-        /* On Mac OS, add .gap to the sys roots, but leave */
-        /* DotGapPath at $HOME/Library/Preferences/GAP     */
+        // On Mac OS, add .gap to the sys roots, but leave
+        // DotGapPath at $HOME/Library/Preferences/GAP
         strxcat(DotGapPath, "/.gap;", sizeof(DotGapPath));
         if (!IgnoreGapRC) {
           SySetGapRootPath(DotGapPath);
@@ -736,10 +736,10 @@ void InitSystem (
     }
 
 
-    /* now we start                                                        */
+    // now we start
     return;
 
-    /* print a usage message                                               */
+    // print a usage message
 usage:
  fputs("usage: gap [OPTIONS] [FILES]\n", stderr);
  fputs("       run the Groups, Algorithms and Programming system, Version ", stderr);

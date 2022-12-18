@@ -68,22 +68,22 @@ void             GrowPlist (
     Obj                 list,
     UInt                need )
 {
-    UInt                plen;           /* new physical length             */
-    UInt                good;           /* good new physical length        */
+    UInt                plen;           // new physical length
+    UInt                good;           // good new physical length
 
     if (need > INT_INTOBJ_MAX)
         ErrorMayQuit("GrowPlist: List size too large", 0, 0);
 
-    /* find out how large the plain list should become                     */
+    // find out how large the plain list should become
     good = 5 * (SIZE_OBJ(list)/sizeof(Obj)-1) / 4 + 4;
     if (good > INT_INTOBJ_MAX)
         good = INT_INTOBJ_MAX;
 
-    /* but maybe we need more                                              */
+    // but maybe we need more
     if ( need < good ) { plen = good; }
     else               { plen = need; }
 
-    /* resize the plain list                                               */
+    // resize the plain list
     ResizeBag( list, ((plen)+1)*sizeof(Obj) );
 }
 
@@ -240,10 +240,10 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
     knownDense = HAS_FILT_LIST( list, FN_IS_DENSE );
     knownNDense = HAS_FILT_LIST( list, FN_IS_NDENSE );
 
-    /* get the length of the list                                          */
+    // get the length of the list
     lenList = LEN_PLIST(list);
 
-    /* special case for empty list                                         */
+    // special case for empty list
     if ( lenList == 0 ) {
         res = IS_MUTABLE_OBJ(list) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE;
         RetypeBagIfWritable(list, res);
@@ -252,7 +252,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
         return res;
     }
 
-    /* look at the first element                                           */
+    // look at the first element
     elm = ELM_PLIST( list, 1 );
     if ( elm == 0 ) {
         isDense = 0;
@@ -290,10 +290,10 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
         if ( ktnumFirst >= T_PLIST_HOM ||
              ( ktnumFirst == 0 && IS_HOMOG_LIST( elm) )) {
 
-          /* entry is a homogeneous list, so this might be a table */
+          // entry is a homogeneous list, so this might be a table
           isTable = 1;
 
-          /* also check for rectangularity, unless this would be expensive */
+          // also check for rectangularity, unless this would be expensive
           if (IS_PLIST(elm))
             {
               isRect = 1;
@@ -305,15 +305,15 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
     }
 
     i = 2;
-    /* scan quickly through any initial INTOBJs                            */
+    // scan quickly through any initial INTOBJs
     if ( IS_INTOBJ(ELM_PLIST(list, 1)) ) {
-        /* We have already marked list as not table, not rect */
+        // We have already marked list as not table, not rect
         while(i <= lenList && IS_INTOBJ(ELM_PLIST( list, i ))) {
             i++;
         }
     }
 
-    /* loop over the list                                                  */
+    // loop over the list
     for ( ; isDense && (isHom || ! areMut) && i <= lenList; i++ ) {
         elm = ELM_PLIST( list, i );
         if ( elm == 0 ) {
@@ -342,7 +342,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
                     isRect = 0;
                 }
                 if ( isTable ) {
-                    /* IS_PLIST first, as it is much cheaper */
+                    // IS_PLIST first, as it is much cheaper
                     if (!(IS_PLIST(elm) || IS_LIST(elm))) {
                         isTable = 0;
                         isRect = 0;
@@ -358,10 +358,10 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
         }
     }
 
-    /* if we know it is not dense */
+    // if we know it is not dense
     if (knownNDense)
       isDense = 0;
-    /* otherwise if we don't know that it IS dense */
+    // otherwise if we don't know that it IS dense
     else if (!knownDense)
       for ( ;  isDense && i <= lenList;  i++ ) {
         elm = ELM_PLIST( list, i );
@@ -370,7 +370,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
         }
       }
 
-    /* set the appropriate flags (not the hom. flag if elms are mutable)   */
+    // set the appropriate flags (not the hom. flag if elms are mutable)
     if      ( ! isDense ) {
         SET_FILT_LIST( list, FN_IS_NDENSE );
         res = T_PLIST_NDENSE;
@@ -390,7 +390,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
         if (IS_CYC(ELM_PLIST(list,1)))
           {
             res = (lenList == 1) ? T_PLIST_CYC_SSORT : T_PLIST_CYC;
-            /* This is a hack */
+            // This is a hack
             RetypeBagSM(list, res);
           }
         else if (IS_FFE(ELM_PLIST(list,1)))
@@ -456,13 +456,13 @@ static Int KTNumHomPlist(Obj list)
     }
 #endif
 
-    /* get the length of the list                                          */
+    // get the length of the list
     lenList = LEN_PLIST(list);
 
-    /* special case for empty list                                         */
+    // special case for empty list
     assert(lenList);
 
-    /* look at the first element                                           */
+    // look at the first element
     elm = ELM_PLIST( list, 1 );
     assert(elm);
     assert(!TEST_OBJ_FLAG(elm, OBJ_FLAG_TESTING));
@@ -470,7 +470,7 @@ static Int KTNumHomPlist(Obj list)
     isSSort = HAS_FILT_LIST(list, FN_IS_SSORT );
     isNSort = HAS_FILT_LIST(list, FN_IS_NSORT );
 
-    /* if it's a kernel cyclotomic then we know where we are*/
+    // if it's a kernel cyclotomic then we know where we are
     if (IS_CYC(elm))
       {
         if (lenList == 1 || isSSort)
@@ -480,7 +480,7 @@ static Int KTNumHomPlist(Obj list)
         else
           res = T_PLIST_CYC;
 
-        /* This is a hack */
+        // This is a hack
         RetypeBagSM(list, res);
         goto finish;
       }
@@ -506,7 +506,7 @@ static Int KTNumHomPlist(Obj list)
       }
 
 
-    /* Unless we already know it is, then check if the list is a table */
+    // Unless we already know it is, then check if the list is a table
     if (!HAS_FILT_LIST(list, FN_IS_TABLE ))
       {
         if ( IS_HOMOG_LIST(elm) ) {
@@ -518,7 +518,7 @@ static Int KTNumHomPlist(Obj list)
               }
         }
 
-        /* loop over the list */
+        // loop over the list
         for ( i = 2; isTable && i <= lenList; i++ ) {
           elm = ELM_PLIST( list, i );
           assert(elm);
@@ -605,12 +605,12 @@ static Obj TypePlistWithKTNum (
     Obj                 list,
     UInt                *ktnum )
 {
-    Int                 tnum;           /* TNUM of <list>                  */
-    Obj                 family;         /* family of elements              */
+    Int                 tnum;           // TNUM of <list>
+    Obj                 family;         // family of elements
 
 #ifdef HPCGAP
     if (CheckWriteAccess(list)) {
-      /* recursion is possible for this type of list                       */
+      // recursion is possible for this type of list
       SET_OBJ_FLAG( list, OBJ_FLAG_TESTING|OBJ_FLAG_TESTED );
       tnum = KTNumPlist( list, &family);
       CLEAR_OBJ_FLAG( list, OBJ_FLAG_TESTING );
@@ -619,7 +619,7 @@ static Obj TypePlistWithKTNum (
       family = 0;
     }
 #else
-    /* recursion is possible for this type of list                         */
+    // recursion is possible for this type of list
     SET_OBJ_FLAG( list, OBJ_FLAG_TESTING );
     tnum = KTNumPlist( list, &family);
     CLEAR_OBJ_FLAG( list, OBJ_FLAG_TESTING );
@@ -627,7 +627,7 @@ static Obj TypePlistWithKTNum (
     if (ktnum != (UInt *) 0)
       *ktnum = tnum;
 
-    /* handle special cases                                                */
+    // handle special cases
     switch (tnum)
       {
       case T_PLIST_NDENSE:
@@ -650,10 +650,10 @@ static Obj TypePlistWithKTNum (
         return TYPE_LIST_EMPTY_MUTABLE;
       case T_PLIST_EMPTY+IMMUTABLE:
         return TYPE_LIST_EMPTY_IMMUTABLE;
-      default: ; /* fall through into the rest of the function */
+      default: ; // fall through into the rest of the function
     }
 
-    /* handle homogeneous list                                             */
+    // handle homogeneous list
     if ( family && HasFiltListTNums[tnum][FN_IS_HOMOG] ) {
         return TypePlistHomHelper(family, tnum, T_PLIST_HOM, list);
     }
@@ -726,10 +726,10 @@ static Obj TypePlistEmpty(Obj list)
 
 static Obj TypePlistHom(Obj list)
 {
-    Int                 tnum;           /* TNUM of <list>                  */
-    Obj                 family;         /* family of elements              */
+    Int                 tnum;           // TNUM of <list>
+    Obj                 family;         // family of elements
 
-    /* get the tnum and the family of the elements                         */
+    // get the tnum and the family of the elements
     tnum   = KTNumHomPlist( list );
     family = FAMILY_OBJ( ELM_PLIST( list, 1 ) );
 
@@ -738,13 +738,13 @@ static Obj TypePlistHom(Obj list)
 
 static Obj TypePlistCyc(Obj list)
 {
-    Int                 tnum;           /* TNUM of <list>                  */
-    Obj                 family;         /* family of elements              */
+    Int                 tnum;           // TNUM of <list>
+    Obj                 family;         // family of elements
 
-    /* get the tnum and the family of the elements                         */
+    // get the tnum and the family of the elements
     tnum   = TNUM_OBJ( list );
 
-    /* This had better return the cyclotomics family, could be speeded up */
+    // This had better return the cyclotomics family, could be speeded up
     family = FAMILY_OBJ( ELM_PLIST( list, 1 ) );
 
     return TypePlistHomHelper(family, tnum, T_PLIST_CYC, list);
@@ -752,10 +752,10 @@ static Obj TypePlistCyc(Obj list)
 
 static Obj TypePlistFfe(Obj list)
 {
-    Int                 tnum;           /* TNUM of <list>                  */
-    Obj                 family;         /* family of elements              */
+    Int                 tnum;           // TNUM of <list>
+    Obj                 family;         // family of elements
 
-    /* get the tnum and the family of the elements                         */
+    // get the tnum and the family of the elements
     tnum   = TNUM_OBJ( list );
     family = FAMILY_OBJ( ELM_PLIST( list, 1 ) );
 
@@ -777,7 +777,7 @@ Obj             ShallowCopyPlist (
     Obj                 new;
     UInt                len;
 
-    /* make the new object and copy the contents                           */
+    // make the new object and copy the contents
     len = LEN_PLIST(list);
     if ( ! IS_PLIST_MUTABLE(list) ) {
         new = NEW_PLIST( TNUM_OBJ(list) - IMMUTABLE, len );
@@ -786,7 +786,7 @@ Obj             ShallowCopyPlist (
         new = NEW_PLIST( TNUM_OBJ(list), len );
     }
     memcpy(ADDR_OBJ(new), CONST_ADDR_OBJ(list), (len + 1) * sizeof(Obj));
-    /* 'CHANGED_BAG(new);' not needed, <new> is newest object              */
+    // 'CHANGED_BAG(new);' not needed, <new> is newest object
     return new;
 }
 
@@ -878,23 +878,23 @@ static void CopyPlist(TraversalState * traversal, Obj copy, Obj original)
 */
 static Obj CopyPlist(Obj list, Int mut)
 {
-    Obj                 copy;           /* copy, result                    */
-    Obj                 tmp;            /* temporary variable              */
-    UInt                i;              /* loop variable                   */
+    Obj                 copy;           // copy, result
+    Obj                 tmp;            // temporary variable
+    UInt                i;              // loop variable
 
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(list));
 
-    /* make a copy                                                         */
+    // make a copy
     copy = NewBag(TNUM_OBJ(list), SIZE_OBJ(list));
     if (!mut)
         MakeImmutableNoRecurse(copy);
     ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(list)[0];
 
-    /* leave a forwarding pointer                                          */
+    // leave a forwarding pointer
     PrepareCopy(list, copy);
 
-    /* copy the subvalues                                                  */
+    // copy the subvalues
     for ( i = 1; i <= LEN_PLIST(copy); i++ ) {
         Obj obj = CONST_ADDR_OBJ(list)[i];
         if (obj != 0) {
@@ -904,7 +904,7 @@ static Obj CopyPlist(Obj list, Int mut)
         }
     }
 
-    /* return the copy                                                     */
+    // return the copy
     return copy;
 }
 
@@ -914,9 +914,9 @@ static Obj CopyPlist(Obj list, Int mut)
 */
 static void CleanPlist(Obj list)
 {
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
-    /* clean the subvalues                                                 */
+    // clean the subvalues
     for ( i = 1; i <= LEN_PLIST(list); i++ ) {
         Obj obj = CONST_ADDR_OBJ(list)[i];
         if (obj != 0)
@@ -940,13 +940,13 @@ static void CleanPlist(Obj list)
 */
 static Int EqPlist(Obj left, Obj right)
 {
-    Int                 lenL;           /* length of the left operand      */
-    Int                 lenR;           /* length of the right operand     */
-    Obj                 elmL;           /* element of the left operand     */
-    Obj                 elmR;           /* element of the right operand    */
-    Int                 i;              /* loop variable                   */
+    Int                 lenL;           // length of the left operand
+    Int                 lenR;           // length of the right operand
+    Obj                 elmL;           // element of the left operand
+    Obj                 elmR;           // element of the right operand
+    Int                 i;              // loop variable
 
-    /* get the lengths of the lists and compare them                       */
+    // get the lengths of the lists and compare them
     lenL = LEN_PLIST( left );
     lenR = LEN_PLIST( right );
     if ( lenL != lenR ) {
@@ -955,7 +955,7 @@ static Int EqPlist(Obj left, Obj right)
 
     CheckRecursionBefore();
 
-    /* loop over the elements and compare them                             */
+    // loop over the elements and compare them
     for ( i = 1; i <= lenL; i++ ) {
         elmL = ELM_PLIST( left, i );
         elmR = ELM_PLIST( right, i );
@@ -965,7 +965,7 @@ static Int EqPlist(Obj left, Obj right)
         }
     }
 
-    /* no differences found, the lists are equal                           */
+    // no differences found, the lists are equal
     DecRecursionDepth();
     return 1;
 }
@@ -982,21 +982,21 @@ static Int EqPlist(Obj left, Obj right)
 */
 static Int LtPlist(Obj left, Obj right)
 {
-    Int                 lenL;           /* length of the left operand      */
-    Int                 lenR;           /* length of the right operand     */
-    Obj                 elmL;           /* element of the left operand     */
-    Obj                 elmR;           /* element of the right operand    */
-    Int                 i;              /* loop variable                   */
-    Int                 res;            /* result of comparison            */
+    Int                 lenL;           // length of the left operand
+    Int                 lenR;           // length of the right operand
+    Obj                 elmL;           // element of the left operand
+    Obj                 elmR;           // element of the right operand
+    Int                 i;              // loop variable
+    Int                 res;            // result of comparison
 
-    /* get the lengths of the lists and compare them                       */
+    // get the lengths of the lists and compare them
     lenL = LEN_PLIST( left );
     lenR = LEN_PLIST( right );
     res = (lenL < lenR);
 
     CheckRecursionBefore();
 
-    /* loop over the elements and compare them                             */
+    // loop over the elements and compare them
     for ( i = 1; i <= lenL && i <= lenR; i++ ) {
         elmL = ELM_PLIST( left, i );
         elmR = ELM_PLIST( right, i );
@@ -1014,7 +1014,7 @@ static Int LtPlist(Obj left, Obj right)
         }
     }
 
-    /* reached the end of at least one list                                */
+    // reached the end of at least one list
     DecRecursionDepth();
     return res;
 }
@@ -1109,69 +1109,69 @@ static Obj Elm0vPlist(Obj list, Int pos)
 */
 static Obj ElmPlist(Obj list, Int pos)
 {
-    Obj                 elm;            /* the selected element, result    */
+    Obj                 elm;            // the selected element, result
 
-    /* check the position                                                  */
+    // check the position
     if ( LEN_PLIST( list ) < pos ) {
         ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
                      (Int)pos, 0);
     }
 
-    /* select the element                                                  */
+    // select the element
     elm = ELM_PLIST( list, pos );
 
-    /* check the element                                                   */
+    // check the element
     if ( elm == 0 ) {
         ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
                      (Int)pos, 0);
     }
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
 static Obj ElmPlistDense(Obj list, Int pos)
 {
-    Obj                 elm;            /* the selected element, result    */
+    Obj                 elm;            // the selected element, result
 
-    /* check the position                                                  */
+    // check the position
     if ( LEN_PLIST( list ) < pos ) {
         ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
                      (Int)pos, 0);
     }
 
-    /* select the element                                                  */
+    // select the element
     elm = ELM_PLIST( list, pos );
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
 static Obj ElmvPlist(Obj list, Int pos)
 {
-    Obj                 elm;            /* the selected element, result    */
+    Obj                 elm;            // the selected element, result
 
-    /* select the element                                                  */
+    // select the element
     elm = ELM_PLIST( list, pos );
 
-    /* check the element                                                   */
+    // check the element
     if ( elm == 0 ) {
         ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
                      (Int)pos, 0);
     }
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
 static Obj ElmvPlistDense(Obj list, Int pos)
 {
-    Obj                 elm;            /* the selected element, result    */
+    Obj                 elm;            // the selected element, result
 
-    /* select the element                                                  */
+    // select the element
     elm = ELM_PLIST( list, pos );
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
@@ -1192,36 +1192,36 @@ static Obj ElmvPlistDense(Obj list, Int pos)
 */
 static Obj ElmsPlist(Obj list, Obj poss)
 {
-    Obj                 elms;           /* selected sublist, result        */
-    Int                 lenList;        /* length of <list>                */
-    Obj                 elm;            /* one element from <list>         */
-    Int                 lenPoss;        /* length of <positions>           */
-    Int                 pos;            /* <position> as integer           */
-    Int                 inc;            /* increment in a range            */
-    Int                 i;              /* loop variable                   */
+    Obj                 elms;           // selected sublist, result
+    Int                 lenList;        // length of <list>
+    Obj                 elm;            // one element from <list>
+    Int                 lenPoss;        // length of <positions>
+    Int                 pos;            // <position> as integer
+    Int                 inc;            // increment in a range
+    Int                 i;              // loop variable
 
-    /* select no element                                                   */
+    // select no element
     if ( LEN_LIST(poss) == 0 ) {
         elms = NewEmptyPlist();
     }
 
-    /* general code                                                        */
+    // general code
     else if ( ! IS_RANGE(poss) ) {
 
-        /* get the length of <list>                                        */
+        // get the length of <list>
         lenList = LEN_PLIST( list );
 
-        /* get the length of <positions>                                   */
+        // get the length of <positions>
         lenPoss = LEN_LIST( poss );
 
-        /* make the result list                                            */
+        // make the result list
         elms = NEW_PLIST( T_PLIST_DENSE, lenPoss );
         SET_LEN_PLIST( elms, lenPoss );
 
-        /* loop over the entries of <positions> and select                 */
+        // loop over the entries of <positions> and select
         for ( i = 1; i <= lenPoss; i++ ) {
 
-            /* get <position>                                              */
+            // get <position>
             pos = INT_INTOBJ( ELMW_LIST( poss, i ) );
             if ( lenList < pos ) {
                 ErrorMayQuit(
@@ -1229,7 +1229,7 @@ static Obj ElmsPlist(Obj list, Obj poss)
                     (Int)pos, 0);
             }
 
-            /* select the element                                          */
+            // select the element
             elm = ELM_PLIST( list, pos );
             if ( elm == 0 ) {
                 ErrorMayQuit(
@@ -1237,28 +1237,28 @@ static Obj ElmsPlist(Obj list, Obj poss)
                     (Int)pos, 0);
             }
 
-            /* assign the element into <elms>                              */
+            // assign the element into <elms>
             SET_ELM_PLIST( elms, i, elm );
 
         }
 
-        /* notify Gasman                                                   */
+        // notify Gasman
         CHANGED_BAG( elms );
 
     }
 
-    /* special code for ranges                                             */
+    // special code for ranges
     else {
 
-        /* get the length of <list>                                        */
+        // get the length of <list>
         lenList = LEN_PLIST( list );
 
-        /* get the length of <positions>, the first elements, and the inc. */
+        // get the length of <positions>, the first elements, and the inc.
         lenPoss = GET_LEN_RANGE( poss );
         pos = GET_LOW_RANGE( poss );
         inc = GET_INC_RANGE( poss );
 
-        /* check that no <position> is larger than 'LEN_LIST(<list>)'      */
+        // check that no <position> is larger than 'LEN_LIST(<list>)'
         if ( lenList < pos ) {
             ErrorMayQuit(
                 "List Elements: <list>[%d] must have an assigned value",
@@ -1270,14 +1270,14 @@ static Obj ElmsPlist(Obj list, Obj poss)
                 (Int)pos + (lenPoss - 1) * inc, 0);
         }
 
-        /* make the result list                                            */
+        // make the result list
         elms = NEW_PLIST( T_PLIST_DENSE, lenPoss );
         SET_LEN_PLIST( elms, lenPoss );
 
-        /* loop over the entries of <positions> and select                 */
+        // loop over the entries of <positions> and select
         for ( i = 1; i <= lenPoss; i++, pos += inc ) {
 
-            /* select the element                                          */
+            // select the element
             elm = ELM_PLIST( list, pos );
             if ( elm == 0 ) {
                 ErrorMayQuit(
@@ -1285,12 +1285,12 @@ static Obj ElmsPlist(Obj list, Obj poss)
                     (Int)pos, 0);
             }
 
-            /* assign the element to <elms>                                */
+            // assign the element to <elms>
             SET_ELM_PLIST( elms, i, elm );
 
         }
 
-        /* notify Gasman                                                   */
+        // notify Gasman
         CHANGED_BAG( elms );
 
     }
@@ -1298,39 +1298,38 @@ static Obj ElmsPlist(Obj list, Obj poss)
     return elms;
 }
 
-/* This version for lists which are known to be at least dense
-   and might be better */
-
+// This version for lists which are known to be at least dense
+// and might be better
 static Obj ElmsPlistDense(Obj list, Obj poss)
 {
-    Obj                 elms;           /* selected sublist, result        */
-    Int                 lenList;        /* length of <list>                */
-    Obj                 elm;            /* one element from <list>         */
-    Int                 lenPoss;        /* length of <positions>           */
-    Int                 pos;            /* <position> as integer           */
-    Int                 inc;            /* increment in a range            */
-    Int                 i;              /* loop variable                   */
+    Obj                 elms;           // selected sublist, result
+    Int                 lenList;        // length of <list>
+    Obj                 elm;            // one element from <list>
+    Int                 lenPoss;        // length of <positions>
+    Int                 pos;            // <position> as integer
+    Int                 inc;            // increment in a range
+    Int                 i;              // loop variable
 
-    /* select no element                                                   */
+    // select no element
     if ( LEN_LIST(poss) == 0 ) {
         elms = NewEmptyPlist();
     }
 
-    /* general code                                                        */
+    // general code
     else if ( ! IS_RANGE(poss) ) {
 
-        /* get the length of <list>                                        */
+        // get the length of <list>
         lenList = LEN_PLIST( list );
 
-        /* get the length of <positions>                                   */
+        // get the length of <positions>
         lenPoss = LEN_LIST( poss );
 
-        /* make the result list                                            */
-        /* try to assert as many properties as possible                    */
+        // make the result list
+        // try to assert as many properties as possible
         if (HAS_FILT_LIST(list, FN_IS_SSORT) && HAS_FILT_LIST(poss, FN_IS_SSORT))
           {
             elms = NEW_PLIST( MUTABLE_TNUM(TNUM_OBJ(list)), lenPoss);
-            RESET_FILT_LIST( elms, FN_IS_NHOMOG); /* can't deduce this one */
+            RESET_FILT_LIST( elms, FN_IS_NHOMOG); // can't deduce this one
           }
         else if (HAS_FILT_LIST(list, FN_IS_RECT))
           elms = NEW_PLIST( T_PLIST_TAB_RECT, lenPoss );
@@ -1349,10 +1348,10 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
 
         SET_LEN_PLIST( elms, lenPoss );
 
-        /* loop over the entries of <positions> and select                 */
+        // loop over the entries of <positions> and select
         for ( i = 1; i <= lenPoss; i++ ) {
 
-            /* get <position>                                              */
+            // get <position>
             Obj p = ELMW_LIST(poss, i);
             if (!IS_INTOBJ(p)) {
                 ErrorMayQuit("List Elements: position is too large for "
@@ -1361,38 +1360,38 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
             }
             pos = INT_INTOBJ(p);
 
-            /* select the element                                          */
+            // select the element
             if ( lenList < pos ) {
                 ErrorMayQuit(
                     "List Elements: <list>[%d] must have an assigned value",
                     (Int)pos, 0);
             }
 
-            /* select the element                                          */
+            // select the element
             elm = ELM_PLIST( list, pos );
 
-            /* assign the element into <elms>                              */
+            // assign the element into <elms>
             SET_ELM_PLIST( elms, i, elm );
 
         }
 
-        /* notify Gasman                                                   */
+        // notify Gasman
         CHANGED_BAG( elms );
 
     }
 
-    /* special code for ranges                                             */
+    // special code for ranges
     else {
 
-        /* get the length of <list>                                        */
+        // get the length of <list>
         lenList = LEN_PLIST( list );
 
-        /* get the length of <positions>, the first elements, and the inc. */
+        // get the length of <positions>, the first elements, and the inc.
         lenPoss = GET_LEN_RANGE( poss );
         pos = GET_LOW_RANGE( poss );
         inc = GET_INC_RANGE( poss );
 
-        /* check that no <position> is larger than 'LEN_LIST(<list>)'      */
+        // check that no <position> is larger than 'LEN_LIST(<list>)'
         if ( pos < 1 || lenList < pos ) {
             ErrorMayQuit(
                 "List Elements: <list>[%d] must have an assigned value",
@@ -1404,8 +1403,8 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
                 (Int)pos + (lenPoss - 1) * inc, 0);
         }
 
-        /* make the result list                                            */
-        /* try to assert as many properties as possible                    */
+        // make the result list
+        // try to assert as many properties as possible
         if      ( HAS_FILT_LIST(list, FN_IS_SSORT) && inc > 0 )
           elms = NEW_PLIST( MUTABLE_TNUM(TNUM_OBJ(list)), lenPoss );
         else if (HAS_FILT_LIST(list, FN_IS_RECT))
@@ -1425,18 +1424,18 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
 
         SET_LEN_PLIST( elms, lenPoss );
 
-        /* loop over the entries of <positions> and select                 */
+        // loop over the entries of <positions> and select
         for ( i = 1; i <= lenPoss; i++, pos += inc ) {
 
-            /* select the element                                          */
+            // select the element
             elm = ELM_PLIST( list, pos );
 
-            /* assign the element to <elms>                                */
+            // assign the element to <elms>
             SET_ELM_PLIST( elms, i, elm );
 
         }
 
-        /* notify Gasman                                                   */
+        // notify Gasman
         CHANGED_BAG( elms );
 
     }
@@ -1457,13 +1456,13 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
 */
 static void UnbPlist(Obj list, Int pos)
 {
-    /* if <pos> is less than the length, convert to plain list and unbind  */
+    // if <pos> is less than the length, convert to plain list and unbind
     if ( pos < LEN_PLIST( list ) ) {
         RESET_FILT_LIST( list, FN_IS_DENSE );
         SET_ELM_PLIST( list, pos, 0 );
     }
 
-    /* if <pos> is equal to the length, unbind and compute new length      */
+    // if <pos> is equal to the length, unbind and compute new length
     else if ( pos == LEN_PLIST( list ) ) {
         CLEAR_FILTS_LIST(list);
         SET_ELM_PLIST( list, pos, 0 );
@@ -1498,13 +1497,13 @@ void            AssPlist (
     Int                 pos,
     Obj                 val )
 {
-    /* resize the list if necessary                                        */
+    // resize the list if necessary
     if ( LEN_PLIST( list ) < pos ) {
         GROW_PLIST( list, pos );
         SET_LEN_PLIST( list, pos );
     }
 
-    /* now perform the assignment                                          */
+    // now perform the assignment
     SET_ELM_PLIST( list, pos, val );
     if ( IS_BAG_REF( val ) )
         CHANGED_BAG( list );
@@ -1514,22 +1513,22 @@ static void AssPlistXXX(Obj list, Int pos, Obj val)
 {
   Int len;
 
-    /* the list will probably loose its flags/properties                   */
+    // the list will probably loose its flags/properties
     CLEAR_FILTS_LIST(list);
 
-    /* resize the list if necessary                                        */
+    // resize the list if necessary
     len = LEN_PLIST( list );
     if ( len < pos ) {
         GROW_PLIST( list, pos );
         SET_LEN_PLIST( list, pos );
     }
 
-    /* now perform the assignment                                          */
+    // now perform the assignment
     SET_ELM_PLIST( list, pos, val );
     if ( IS_BAG_REF( val ) )
         CHANGED_BAG( list );
 
-    /* We may be able cheaply to tell that the list is non-dense          */
+    // We may be able cheaply to tell that the list is non-dense
     if (len +1 < pos)
       SET_FILT_LIST(list, FN_IS_NDENSE);
 }
@@ -1538,19 +1537,19 @@ static void AssPlistCyc(Obj list, Int pos, Obj val)
 {
   Int len;
 
-  /* resize the list if necessary                                        */
+  // resize the list if necessary
   len = LEN_PLIST( list );
   if ( len < pos ) {
     GROW_PLIST( list, pos );
     SET_LEN_PLIST( list, pos );
   }
 
-    /* now perform the assignment                                          */
+    // now perform the assignment
     SET_ELM_PLIST( list, pos, val );
     if ( IS_BAG_REF( val ) )
         CHANGED_BAG( list );
 
-    /* try and maintain maximum information about the list                */
+    // try and maintain maximum information about the list
     if (pos > len + 1) {
         CLEAR_FILTS_LIST(list);
         SET_FILT_LIST( list, FN_IS_NDENSE );
@@ -1578,19 +1577,19 @@ void AssPlistFfe   (
 {
     Int len;
 
-    /* resize the list if necessary                                        */
+    // resize the list if necessary
     len = LEN_PLIST( list );
     if ( len < pos ) {
         GROW_PLIST( list, pos );
         SET_LEN_PLIST( list, pos );
     }
 
-    /* now perform the assignment                                          */
+    // now perform the assignment
     SET_ELM_PLIST( list, pos, val );
     if ( IS_BAG_REF( val ) )
         CHANGED_BAG( list );
 
-    /* try and maintain maximum information about the list                 */
+    // try and maintain maximum information about the list
     if( pos > len + 1 ) {
         CLEAR_FILTS_LIST(list);
         SET_FILT_LIST( list, FN_IS_NDENSE );
@@ -1606,12 +1605,12 @@ void AssPlistFfe   (
         FF ffelm1;
         UInt otherpos;
 
-        /* Here we select an other element to compare the field and
-           possibly characteristic of the assigned value to. This
-           code will never select pos, where the assignment has
-           already been done, unless we are replacing the only entry
-           of a length 1 list, in which case the result will always
-           still be a vecffe, so we are happy */
+        // Here we select an other element to compare the field and
+        // possibly characteristic of the assigned value to. This
+        // code will never select pos, where the assignment has
+        // already been done, unless we are replacing the only entry
+        // of a length 1 list, in which case the result will always
+        // still be a vecffe, so we are happy
 
         if (pos == 1)
           otherpos = len;
@@ -1638,21 +1637,21 @@ static void AssPlistDense(Obj list, Int pos, Obj val)
 {
   Int len;
 
-  /* the list will probably loose its flags/properties                   */
+  // the list will probably loose its flags/properties
   CLEAR_FILTS_LIST(list);
 
-  /* resize the list if necessary                                        */
+  // resize the list if necessary
   len = LEN_PLIST( list );
   if ( len < pos ) {
     GROW_PLIST( list, pos );
     SET_LEN_PLIST( list, pos );
   }
 
-    /* now perform the assignment                                          */
+    // now perform the assignment
     SET_ELM_PLIST( list, pos, val );
     CHANGED_BAG( list );
 
-    /* restore denseness if we can */
+    // restore denseness if we can
     if (pos <= len+1)
       SET_FILT_LIST( list, FN_IS_DENSE );
     else
@@ -1664,30 +1663,30 @@ static void AssPlistHomog(Obj list, Int pos, Obj val)
   Int len;
   Obj fam;
 
-  /* the list may loose its flags/properties                   */
+  // the list may loose its flags/properties
   CLEAR_FILTS_LIST(list);
 
-  /* resize the list if necessary                                        */
+  // resize the list if necessary
   len = LEN_PLIST( list );
   if ( len < pos ) {
     GROW_PLIST( list, pos );
     SET_LEN_PLIST( list, pos );
   }
 
-    /* now perform the assignment                                          */
+    // now perform the assignment
     SET_ELM_PLIST( list, pos, val );
     CHANGED_BAG( list );
 
-    /* restore denseness if we can */
+    // restore denseness if we can
     if (pos <= len+1)
       {
         SET_FILT_LIST( list, FN_IS_DENSE );
 
-        /* In this case, we may be able to restore homogeneity */
+        // In this case, we may be able to restore homogeneity
         if (len == 1 && pos == 1)
           {
 
-            /* case of replacing the only list element */
+            // case of replacing the only list element
             if (IS_CYC( val ))
               {
                 RetypeBag( list, T_PLIST_CYC_SSORT );
@@ -1705,13 +1704,13 @@ static void AssPlistHomog(Obj list, Int pos, Obj val)
 #endif
         else if (!SyInitializing && !IS_MUTABLE_OBJ(val))
           {
-            /* find the family of an original list element */
+            // find the family of an original list element
             if (pos != 1)
               fam = FAMILY_OBJ(ELM_PLIST(list, 1));
             else
               fam = FAMILY_OBJ(ELM_PLIST(list, 2));
 
-            /* restore homogeneity if we can */
+            // restore homogeneity if we can
             if (fam == FAMILY_OBJ( val ))
               SET_FILT_LIST(list, FN_IS_HOMOG);
             else
@@ -1733,12 +1732,12 @@ void AssPlistEmpty (
     Int                 pos,
     Obj                 val )
 {
-    /* if <pos> is large than one use `AssPlistDense'                      */
+    // if <pos> is large than one use `AssPlistDense'
     if ( 1 != pos ) {
         AssPlistDense( list, pos, val );
     }
 
-    /* catch booleans                                                      */
+    // catch booleans
     else if ( val == True || val == False ) {
         ConvBlist(list);
         AssBlist( list, pos, val );
@@ -1750,7 +1749,7 @@ void AssPlistEmpty (
         AssPlistXXX( list, pos, val );
     }
 #endif
-    /* catch constants                                                     */
+    // catch constants
     else if ( TNUM_OBJ(val) < FIRST_EXTERNAL_TNUM ) {
         AssPlistXXX( list, pos, val );
 
@@ -1768,10 +1767,10 @@ void AssPlistEmpty (
     }
 
 
-    /* use method selection                                                */
+    // use method selection
     else {
-      /* early in initialization, the type of the empty list may not be
-         available, in which case we must NOT call method selection */
+      // early in initialization, the type of the empty list may not be
+      // available, in which case we must NOT call method selection
       if (TYPE_LIST_EMPTY_MUTABLE != 0)
         AssListObject( list, pos, val );
       else
@@ -1795,84 +1794,84 @@ void AssPlistEmpty (
 */
 static void AsssPlist(Obj list, Obj poss, Obj vals)
 {
-    Int                 lenPoss;        /* length of <positions>           */
-    Int                 pos;            /* <position> as integer           */
-    Int                 max;            /* larger position                 */
-    Int                 inc;            /* increment in a range            */
-    Obj                 val;            /* one element from <vals>         */
-    Int                 i;              /* loop variable                   */
+    Int                 lenPoss;        // length of <positions>
+    Int                 pos;            // <position> as integer
+    Int                 max;            // larger position
+    Int                 inc;            // increment in a range
+    Obj                 val;            // one element from <vals>
+    Int                 i;              // loop variable
 
-    /* general code                                                        */
+    // general code
     if ( ! IS_RANGE(poss) ) {
 
-        /* get the length of <positions>                                   */
+        // get the length of <positions>
         lenPoss = LEN_LIST( poss );
 
-        /* find the largest entry in <positions>                           */
+        // find the largest entry in <positions>
         max = LEN_PLIST( list );
         for ( i = 1; i <= lenPoss; i++ ) {
             if ( max < INT_INTOBJ( ELMW_LIST( poss, i ) ) )
                 max = INT_INTOBJ( ELMW_LIST( poss, i ) );
         }
 
-        /* resize the list if necessary                                    */
+        // resize the list if necessary
         if ( LEN_PLIST(list) < max ) {
             GROW_PLIST( list, max );
             SET_LEN_PLIST( list, max );
         }
 
-        /* loop over the entries of <positions> and select                 */
+        // loop over the entries of <positions> and select
         for ( i = 1; i <= lenPoss; i++ ) {
 
-            /* get <position>                                              */
+            // get <position>
             pos = INT_INTOBJ( ELMW_LIST( poss, i ) );
 
-            /* select the element                                          */
+            // select the element
             val = ELMW_LIST( vals, i );
 
-            /* assign the element into <elms>                              */
+            // assign the element into <elms>
             SET_ELM_PLIST( list, pos, val );
 
         }
 
-        /* notify Gasman                                                   */
+        // notify Gasman
         CHANGED_BAG( list );
 
     }
 
-    /* special code for ranges                                             */
+    // special code for ranges
     else {
 
-        /* get the length of <positions>                                   */
+        // get the length of <positions>
         lenPoss = GET_LEN_RANGE( poss );
         pos = GET_LOW_RANGE( poss );
         inc = GET_INC_RANGE( poss );
 
-        /* find the largest entry in <positions>                           */
+        // find the largest entry in <positions>
         max = LEN_PLIST( list );
         if ( max < pos )
             max = pos;
         if ( max < pos + (lenPoss-1) * inc )
             max = pos + (lenPoss-1) * inc;
 
-        /* resize the list if necessary                                    */
+        // resize the list if necessary
         if ( LEN_PLIST(list) < max ) {
             GROW_PLIST( list, max );
             SET_LEN_PLIST( list, max );
         }
 
-        /* loop over the entries of <positions> and select                 */
+        // loop over the entries of <positions> and select
         for ( i = 1; i <= lenPoss; i++, pos += inc ) {
 
-            /* select the element                                          */
+            // select the element
             val = ELMW_LIST( vals, i );
 
-            /* assign the element to <elms>                                */
+            // assign the element to <elms>
             SET_ELM_PLIST( list, pos, val );
 
         }
 
-        /* notify Gasman                                                   */
+        // notify Gasman
         CHANGED_BAG( list );
 
     }
@@ -1880,10 +1879,10 @@ static void AsssPlist(Obj list, Obj poss, Obj vals)
 
 static void AsssPlistXXX(Obj list, Obj poss, Obj vals)
 {
-    /* the list will probably loose its flags/properties                   */
+    // the list will probably loose its flags/properties
     CLEAR_FILTS_LIST(list);
 
-    /* and delegate                                                        */
+    // and delegate
     AsssPlist( list, poss, vals );
 }
 
@@ -1899,28 +1898,28 @@ static void AsssPlistXXX(Obj list, Obj poss, Obj vals)
 */
 static BOOL IsDensePlist(Obj list)
 {
-    Int                 lenList;        /* length of <list>                */
-    Int                 i;              /* loop variable                   */
+    Int                 lenList;        // length of <list>
+    Int                 i;              // loop variable
 
-    /* get the length of the list                                          */
+    // get the length of the list
     lenList = LEN_PLIST( list );
 
-    /* special case for empty list                                         */
+    // special case for empty list
     if ( lenList == 0 ) {
         RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
         return TRUE;
     }
 
-    /* loop over the entries of the list                                   */
+    // loop over the entries of the list
     for ( i = 1; i <= lenList; i++ ) {
         if ( ELM_PLIST( list, i ) == 0 )
             return FALSE;
     }
 
-    /* set the dense flag (even if the elements are mutable)               */
+    // set the dense flag (even if the elements are mutable)
     SET_FILT_LIST( list, FN_IS_DENSE );
 
-    /* no hole found                                                       */
+    // no hole found
     return TRUE;
 }
 
@@ -1976,19 +1975,19 @@ static BOOL IsSSortPlist(Obj list)
     Obj elm2;
     Int                 areMut;
     Int                 i;
-    Obj                 fam=0;    /* initialize to help compiler */
+    Obj                 fam=0;    // initialize to help compiler
     Int                 isHom;
 
-    /* get the length                                                      */
+    // get the length
     lenList = LEN_PLIST( list );
 
-    /* special case for the empty list                                     */
+    // special case for the empty list
     if ( lenList == 0 ) {
         RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
         return TRUE;
     }
 
-    /* get the first element                                               */
+    // get the first element
     elm1    = ELM_PLIST( list, 1 );
     if (elm1 == 0)
       goto notDense;
@@ -2005,7 +2004,7 @@ static BOOL IsSSortPlist(Obj list)
     else
       isHom = 0;
 
-    /* loop over the other elements                                        */
+    // loop over the other elements
     for ( i = 2; i <= lenList; i++ ) {
       elm2 = ELM_PLIST( list, i );
       if (elm2 == 0)
@@ -2020,19 +2019,19 @@ static BOOL IsSSortPlist(Obj list)
       isHom = (isHom && fam == FAMILY_OBJ(elm2 ));
       elm1 = elm2;
       }
-    /* set flags (unless the elements are mutable)                      */
+    // set flags (unless the elements are mutable)
 
-    /* If we found inhomogeneity then it is real  */
+    // If we found inhomogeneity then it is real
     if (!areMut && !isHom)
       {
         SET_FILT_LIST(list,FN_IS_NHOMOG);
       }
 
     if ( lenList < i ) {
-      /* we got to the end, so there were no holes */
+      // we got to the end, so there were no holes
       SET_FILT_LIST( list, FN_IS_DENSE);
 
-      /* and we know about homogeneity */
+      // and we know about homogeneity
       if ( ! areMut ) {
         if (isHom)
           SET_FILT_LIST( list, FN_IS_HOMOG);
@@ -2062,19 +2061,19 @@ static BOOL IsSSortPlistDense(Obj list)
     Obj elm2;
     Int                 areMut;
     Int                 i;
-    Obj                 fam=0;     /* initialize to help compiler */
+    Obj                 fam=0;     // initialize to help compiler
     Int                 isHom;
 
-    /* get the length                                                      */
+    // get the length
     lenList = LEN_PLIST( list );
 
-    /* special case for the empty list                                     */
+    // special case for the empty list
     if ( lenList == 0 ) {
         RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
         return TRUE;
     }
 
-    /* get the first element                                               */
+    // get the first element
     elm1    = ELM_PLIST( list, 1 );
 #ifdef HPCGAP
     if (!CheckReadAccess(elm1))
@@ -2089,7 +2088,7 @@ static BOOL IsSSortPlistDense(Obj list)
     else
       isHom = 0;
 
-    /* loop over the other elements                                        */
+    // loop over the other elements
     for ( i = 2; i <= lenList; i++ ) {
       elm2 = ELM_PLIST( list, i );
 #ifdef HPCGAP
@@ -2102,7 +2101,7 @@ static BOOL IsSSortPlistDense(Obj list)
       isHom = (isHom && fam == FAMILY_OBJ(elm2 ));
       elm1 = elm2;
       }
-    /* set flags (unless the elements are mutable)                      */
+    // set flags (unless the elements are mutable)
 
     if (!areMut && !isHom)
       SET_FILT_LIST( list, FN_IS_NHOMOG);
@@ -2132,23 +2131,23 @@ static BOOL IsSSortPlistHom(Obj list)
     Obj elm2;
     Int                 i;
 
-    /* get the length                                                      */
+    // get the length
     lenList = LEN_PLIST( list );
 
-    /* special case for the empty list                                     */
+    // special case for the empty list
     if ( lenList == 0 ) {
         RetypeBagSMIfWritable(list, T_PLIST_EMPTY);
         return TRUE;
     }
 
-    /* get the first element                                               */
+    // get the first element
     elm1    = ELM_PLIST( list, 1 );
 #ifdef HPCGAP
     if (!CheckReadAccess(elm1))
       return FALSE;
 #endif
 
-    /* loop over the other elements                                        */
+    // loop over the other elements
     for ( i = 2; i <= lenList; i++ ) {
       elm2 = ELM_PLIST( list, i );
 #ifdef HPCGAP
@@ -2159,7 +2158,7 @@ static BOOL IsSSortPlistHom(Obj list)
         break;
       elm1 = elm2;
       }
-    /* set flags      */
+    // set flags
 
     if ( lenList < i ) {
       SET_FILT_LIST( list, FN_IS_SSORT );
@@ -2191,14 +2190,14 @@ static Obj FuncSET_IS_SSORTED_PLIST(Obj self, Obj list)
 */
 static BOOL IsPossPlist(Obj list)
 {
-    Int                 lenList;        /* length of <list>                */
-    Obj                 elm;            /* one element of <list>           */
-    Int                 i;              /* loop variable                   */
+    Int                 lenList;        // length of <list>
+    Obj                 elm;            // one element of <list>
+    Int                 i;              // loop variable
 
-    /* get the length of the variable                                      */
+    // get the length of the variable
     lenList = LEN_PLIST( list );
 
-    /* loop over the entries of the list                                   */
+    // loop over the entries of the list
     for ( i = 1; i <= lenList; i++ ) {
         elm = ELM_PLIST( list, i );
         if (elm == 0)
@@ -2217,7 +2216,7 @@ static BOOL IsPossPlist(Obj list)
             return FALSE;
     }
 
-    /* no problems found                                                   */
+    // no problems found
     return TRUE;
 }
 
@@ -2234,107 +2233,107 @@ static BOOL IsPossPlist(Obj list)
 */
 static Obj PosPlist(Obj list, Obj val, Obj start)
 {
-    Int                 lenList;        /* length of <list>                */
-    Obj                 elm;            /* one element of <list>           */
-    Int                 i;              /* loop variable                   */
+    Int                 lenList;        // length of <list>
+    Obj                 elm;            // one element of <list>
+    Int                 i;              // loop variable
     UInt istart;
 
-    /* if the starting position is too big to be a small int
-       then there can't be anything to find */
+    // if the starting position is too big to be a small int
+    // then there can't be anything to find
     if (!IS_INTOBJ(start))
       return Fail;
 
     istart = INT_INTOBJ(start);
 
-    /* get the length of <list>                                            */
+    // get the length of <list>
     lenList = LEN_PLIST( list );
 
-    /* loop over all entries in <list>                                     */
+    // loop over all entries in <list>
     for ( i = istart+1; i <= lenList; i++ ) {
 
-        /* select one element from <list>                                  */
+        // select one element from <list>
         elm = ELM_PLIST( list, i );
 
-        /* compare with <val>                                              */
+        // compare with <val>
         if ( elm != 0 && EQ( elm, val ) )
             break;
 
     }
 
-    /* return the position (0 if <val> was not found)                      */
+    // return the position (0 if <val> was not found)
     return (lenList < i ? Fail : INTOBJ_INT(i));
 }
 
 static Obj PosPlistDense(Obj list, Obj val, Obj start)
 {
-    Int                 lenList;        /* length of <list>                */
-    Obj                 elm;            /* one element of <list>           */
-    Int                 i;              /* loop variable                   */
+    Int                 lenList;        // length of <list>
+    Obj                 elm;            // one element of <list>
+    Int                 i;              // loop variable
     UInt istart;
 
-    /* if the starting position is too big to be a small int
-       then there can't be anything to find */
+    // if the starting position is too big to be a small int
+    // then there can't be anything to find
     if (!IS_INTOBJ(start))
       return Fail;
 
     istart = INT_INTOBJ(start);
 
-    /* get the length of <list>                                            */
+    // get the length of <list>
     lenList = LEN_PLIST( list );
 
-    /* loop over all entries in <list>                                     */
+    // loop over all entries in <list>
     for ( i = istart+1; i <= lenList; i++ ) {
 
-        /* select one element from <list>                                  */
+        // select one element from <list>
         elm = ELM_PLIST( list, i );
         assert(elm);
 
-        /* compare with <val>                                              */
+        // compare with <val>
         if ( EQ( elm, val ) )
             break;
 
     }
 
-    /* return the position (0 if <val> was not found)                      */
+    // return the position (0 if <val> was not found)
     return (lenList < i ? Fail : INTOBJ_INT(i));
 }
 
 static Obj PosPlistSort(Obj list, Obj val, Obj start)
 {
-    UInt                lenList;        /* logical length of the set       */
-    UInt                i, j, k;        /* loop variables                  */
+    UInt                lenList;        // logical length of the set
+    UInt                i, j, k;        // loop variables
     UInt                istart;
 
-    /* if the starting position is too big to be a small int
-       then there can't be anything to find */
+    // if the starting position is too big to be a small int
+    // then there can't be anything to find
     if (!IS_INTOBJ(start))
       return Fail;
 
     istart = INT_INTOBJ(start);
 
-    /* get a pointer to the set and the logical length of the set          */
+    // get a pointer to the set and the logical length of the set
     lenList = LEN_PLIST(list);
 
-    /* perform the binary search to find the position                      */
+    // perform the binary search to find the position
     i = istart;  k = lenList + 1;
-    while ( i+1 < k ) {                 /* set[i] < elm && elm <= set[k]   */
-        j = (i + k) / 2;                /* i < j < k                       */
+    while ( i+1 < k ) {                 // set[i] < elm && elm <= set[k]
+        j = (i + k) / 2;                // i < j < k
         if ( LT( ELM_PLIST(list,j), val ) )  i = j;
         else                                 k = j;
     }
 
-    /* test if the element was found at position k                         */
+    // test if the element was found at position k
     if ( lenList < k || ! EQ( ELM_PLIST(list,k), val ) )
         k = 0;
 
-    /* return the position                                                 */
+    // return the position
     return k == 0 ? Fail : INTOBJ_INT(k);
 }
 
 
 static Obj PosPlistHomSort(Obj list, Obj val, Obj start)
 {
-    /* deal with the case which can be decided by the family relationship  */
+    // deal with the case which can be decided by the family relationship
     if (FAMILY_OBJ(val) != FAMILY_OBJ(ELM_PLIST(list,1)))
       return Fail;
 
@@ -2400,7 +2399,7 @@ static Obj FuncASS_PLIST_DEFAULT(Obj self, Obj plist, Obj pos, Obj val)
         RequireArgumentEx(0, plist, "<list>", "must be a mutable plain list");
     }
 
-    /* call `AssPlistXXX'                                                  */
+    // call `AssPlistXXX'
     AssPlistXXX( plist, p, val );
     return 0;
 }
@@ -3265,9 +3264,9 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    UInt                t1, t2;         /* loop variables                  */
+    UInt                t1, t2;         // loop variables
 
-    /* GASMAN marking functions and GASMAN names                           */
+    // GASMAN marking functions and GASMAN names
     InitBagNamesFromTable( BagNames );
 
     for ( t1 = T_PLIST;  t1 < T_PLIST_FFE ;  t1 += 2 ) {
@@ -3278,8 +3277,8 @@ static Int InitKernel (
     InitMarkFuncBags( T_PLIST_FFE                     , MarkNoSubBags );
     InitMarkFuncBags( T_PLIST_FFE +IMMUTABLE          , MarkNoSubBags );
 
-    /* If T_PLIST_FFE is not the last PLIST type then some more
-       work needs to be done here */
+    // If T_PLIST_FFE is not the last PLIST type then some more
+    // work needs to be done here
 
 #ifdef GAP_ENABLE_SAVELOAD
     for ( t1 = T_PLIST;  t1 <= LAST_PLIST_TNUM;  t1 += 2 ) {
@@ -3290,7 +3289,7 @@ static Int InitKernel (
     }
 #endif
 
-    /* get the types (resp. type functions)                                */
+    // get the types (resp. type functions)
     ImportGVarFromLibrary( "TYPE_LIST_NDENSE_MUTABLE",
                            &TYPE_LIST_NDENSE_MUTABLE );
 
@@ -3324,7 +3323,7 @@ static Int InitKernel (
     ImportFuncFromLibrary( "TYPE_LIST_HOM",
                            &TYPE_LIST_HOM );
 
-    /* install the type methods                                            */
+    // install the type methods
     TypeObjFuncs[ T_PLIST                       ] = TypePlist;
     TypeObjFuncs[ T_PLIST            +IMMUTABLE ] = TypePlist;
     TypeObjFuncs[ T_PLIST_NDENSE                ] = TypePlistNDense;
@@ -3353,18 +3352,18 @@ static Int InitKernel (
     TypeObjFuncs[ T_PLIST_FFE            ] = TypePlistFfe;
     TypeObjFuncs[ T_PLIST_FFE +IMMUTABLE ] = TypePlistFfe;
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* initialise list tables                                              */
+    // initialise list tables
     InitClearFiltsTNumsFromTable   ( ClearFiltsTab );
     InitHasFiltListTNumsFromTable  ( HasFiltTab    );
     InitSetFiltListTNumsFromTable  ( SetFiltTab    );
     InitResetFiltListTNumsFromTable( ResetFiltTab  );
 
 
-    /* install the shallow copy methods                                    */
+    // install the shallow copy methods
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         ShallowCopyObjFuncs[ t1            ] = ShallowCopyPlist;
         ShallowCopyObjFuncs[ t1 +IMMUTABLE ] = ShallowCopyPlist;
@@ -3378,7 +3377,7 @@ static Int InitKernel (
         SetTraversalMethod(t1, TRAVERSE_NONE, 0, 0);
     }
 #else
-    /* install the copy list methods                                       */
+    // install the copy list methods
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         CopyObjFuncs [ t1                     ] = CopyPlist;
         CopyObjFuncs [ t1 +IMMUTABLE          ] = CopyPlist;
@@ -3387,7 +3386,7 @@ static Int InitKernel (
     }
 #endif
 
-    /* install the comparison methods                                      */
+    // install the comparison methods
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1++ ) {
         for ( t2 = T_PLIST; t2 <= LAST_PLIST_TNUM; t2++ ) {
             EqFuncs[ t1 ][ t2 ] = EqPlist;
@@ -3396,7 +3395,7 @@ static Int InitKernel (
     }
 
 
-    /* install the list length methods                                     */
+    // install the list length methods
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         LenListFuncs[ t1            ] = LenPlist;
         LenListFuncs[ t1 +IMMUTABLE ] = LenPlist;
@@ -3405,7 +3404,7 @@ static Int InitKernel (
     LenListFuncs[ T_PLIST_EMPTY+IMMUTABLE ] = LenPlistEmpty;
 
 
-    /* install the list element test methods                               */
+    // install the list element test methods
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         IsbListFuncs  [ t1            ] = IsbPlist;
         IsbListFuncs  [ t1 +IMMUTABLE ] = IsbPlist;
@@ -3416,7 +3415,7 @@ static Int InitKernel (
     }
 
 
-    /* install the list element methods                                    */
+    // install the list element methods
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         Elm0ListFuncs [ t1            ] = Elm0Plist;
         Elm0ListFuncs [ t1 +IMMUTABLE ] = Elm0Plist;
@@ -3447,7 +3446,7 @@ static Int InitKernel (
     }
 
 
-    /* install the list elements methods                                   */
+    // install the list elements methods
     for ( t1 = T_PLIST; t1 <= T_PLIST_NDENSE; t1 += 2 ) {
         ElmsListFuncs   [ t1            ] = ElmsPlist;
         ElmsListFuncs   [ t1 +IMMUTABLE ] = ElmsPlist;
@@ -3458,13 +3457,13 @@ static Int InitKernel (
     }
 
 
-    /* install the list unbind methods                                     */
+    // install the list unbind methods
     for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         UnbListFuncs    [ t1            ] = UnbPlist;
     }
 
 
-    /* install the list assignment methods                                 */
+    // install the list assignment methods
     AssListFuncs    [ T_PLIST           ] = AssPlist;
     AssListFuncs    [ T_PLIST_NDENSE           ] = AssPlistXXX;
     AssListFuncs    [ T_PLIST_DENSE           ] = AssPlistDense;
@@ -3484,14 +3483,14 @@ static Int InitKernel (
 
     AssListFuncs[ T_PLIST_FFE           ] = AssPlistFfe;
 
-    /* install the list assignments methods                                */
+    // install the list assignments methods
     AsssListFuncs   [ T_PLIST            ] = AsssPlist;
     for ( t1 = T_PLIST_NDENSE; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
         AsssListFuncs   [ t1             ] = AsssPlistXXX;
     }
 
 
-    /* install the dense list test methods                                 */
+    // install the dense list test methods
     IsDenseListFuncs[ T_PLIST                   ] = IsDensePlist;
     IsDenseListFuncs[ T_PLIST        +IMMUTABLE ] = IsDensePlist;
     IsDenseListFuncs[ T_PLIST_NDENSE            ] = AlwaysNo;
@@ -3502,7 +3501,7 @@ static Int InitKernel (
     }
 
 
-    /* install the homogeneous list test methods                           */
+    // install the homogeneous list test methods
     IsHomogListFuncs[ T_PLIST                       ] = IsHomogPlist;
     IsHomogListFuncs[ T_PLIST            +IMMUTABLE ] = IsHomogPlist;
     IsHomogListFuncs[ T_PLIST_NDENSE                ] = AlwaysNo;
@@ -3523,7 +3522,7 @@ static Int InitKernel (
     }
 
 
-    /* install the equal length list test methods                          */
+    // install the equal length list test methods
     IsTableListFuncs[ T_PLIST                       ] = IsTablePlist;
     IsTableListFuncs[ T_PLIST            +IMMUTABLE ] = IsTablePlist;
     IsTableListFuncs[ T_PLIST_NDENSE                ] = AlwaysNo;
@@ -3566,7 +3565,7 @@ static Int InitKernel (
     IsTableListFuncs[ T_PLIST_FFE        +IMMUTABLE ] = AlwaysNo;
 
 
-    /* install the strictly sorted list test methods                       */
+    // install the strictly sorted list test methods
     IsSSortListFuncs[ T_PLIST                      ] = IsSSortPlist;
     IsSSortListFuncs[ T_PLIST           +IMMUTABLE ] = IsSSortPlist;
     IsSSortListFuncs[ T_PLIST_NDENSE               ] = AlwaysNo;
@@ -3609,14 +3608,14 @@ static Int InitKernel (
     IsSSortListFuncs[ T_PLIST_FFE       +IMMUTABLE ] = IsSSortPlistHom;
 
 
-    /* install the position list test methods                              */
+    // install the position list test methods
     for ( t1 = T_PLIST; t1 <= T_PLIST_FFE; t1 += 2 ) {
         IsPossListFuncs[ t1            ] = IsPossPlist;
         IsPossListFuncs[ t1 +IMMUTABLE ] = IsPossPlist;
     }
 
 
-    /* install the position list methods                                   */
+    // install the position list methods
     for ( t1 = T_PLIST; t1 <= T_PLIST_NDENSE; t1 += 2 ) {
         PosListFuncs[ t1            ] = PosPlist;
         PosListFuncs[ t1 +IMMUTABLE ] = PosPlist;
@@ -3638,7 +3637,7 @@ static Int InitKernel (
     PosListFuncs[ T_PLIST_CYC_SSORT +IMMUTABLE ] = PosPlistHomSort;
 
 
-    /* install the plain list methods                                      */
+    // install the plain list methods
     for ( t1 = T_PLIST; t1 <= T_PLIST_FFE; t1 += 2 ) {
         PlainListFuncs[ t1            ] = PlainPlist;
         PlainListFuncs[ t1 +IMMUTABLE ] = PlainPlist;
@@ -3650,7 +3649,7 @@ static Int InitKernel (
     for (t1 = T_PLIST_DENSE_NHOM; t1 <= T_PLIST_FFE; t1 += 2 )
       MakeImmutableObjFuncs[ t1 ] = MakeImmutablePlistNoMutElms;
 
-    /* mutable tables may have mutable rows */
+    // mutable tables may have mutable rows
     MakeImmutableObjFuncs[T_PLIST_TAB] = MakeImmutablePlistInHom;
 
 #ifdef HPCGAP
@@ -3670,7 +3669,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
 

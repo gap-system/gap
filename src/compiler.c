@@ -212,8 +212,8 @@ typedef UInt4           LVar;
 
 #define SIZE_INFO(nlvar,ntemp)  (sizeof(Int) * (1 + 7 + (nlvar) + (ntemp)))
 
-#define W_UNUSED                0       /* TEMP is currently unused        */
-#define W_HIGHER                (1<<0) /* LVAR is used as higher variable */
+#define W_UNUSED                0       // TEMP is currently unused
+#define W_HIGHER                (1<<0) // LVAR is used as higher variable
 #define W_UNKNOWN               ((1<<1) | W_HIGHER)
 #define W_UNBOUND               ((1<<2) | W_UNKNOWN)
 #define W_BOUND                 ((1<<3) | W_UNKNOWN)
@@ -228,17 +228,17 @@ typedef UInt4           LVar;
 
 static void SetInfoCVar(CVar cvar, UInt type)
 {
-    Bag                 info;           /* its info bag                    */
+    Bag                 info;           // its info bag
 
-    /* get the information bag                                             */
+    // get the information bag
     info = INFO_FEXP( CURR_FUNC() );
 
-    /* set the type of a temporary                                         */
+    // set the type of a temporary
     if ( IS_TEMP_CVAR(cvar) ) {
         TNUM_TEMP_INFO( info, TEMP_CVAR(cvar) ) = type;
     }
 
-    /* set the type of a lvar (but do not change if it is a higher variable) */
+    // set the type of a lvar (but do not change if it is a higher variable)
     else if ( IS_LVAR_CVAR(cvar)
            && TNUM_LVAR_INFO( info, LVAR_CVAR(cvar) ) != W_HIGHER ) {
         TNUM_LVAR_INFO( info, LVAR_CVAR(cvar) ) = type;
@@ -247,27 +247,27 @@ static void SetInfoCVar(CVar cvar, UInt type)
 
 static Int GetInfoCVar(CVar cvar)
 {
-    Bag                 info;           /* its info bag                    */
+    Bag                 info;           // its info bag
 
-    /* get the information bag                                             */
+    // get the information bag
     info = INFO_FEXP( CURR_FUNC() );
 
-    /* get the type of an integer                                          */
+    // get the type of an integer
     if ( IS_INTG_CVAR(cvar) ) {
         return ((0 < INTG_CVAR(cvar)) ? W_INT_SMALL_POS : W_INT_SMALL);
     }
 
-    /* get the type of a temporary                                         */
+    // get the type of a temporary
     else if ( IS_TEMP_CVAR(cvar) ) {
         return TNUM_TEMP_INFO( info, TEMP_CVAR(cvar) );
     }
 
-    /* get the type of a lvar                                              */
+    // get the type of a lvar
     else if ( IS_LVAR_CVAR(cvar) ) {
         return TNUM_LVAR_INFO( info, LVAR_CVAR(cvar) );
     }
 
-    /* hmm, avoid warning by compiler                                      */
+    // hmm, avoid warning by compiler
     else {
         return 0;
     }
@@ -357,17 +357,17 @@ typedef UInt4           Temp;
 
 static Temp NewTemp(const Char * name)
 {
-    Temp                temp;           /* new temporary, result           */
-    Bag                 info;           /* information bag                 */
+    Temp                temp;           // new temporary, result
+    Bag                 info;           // information bag
 
-    /* get the information bag                                             */
+    // get the information bag
     info = INFO_FEXP( CURR_FUNC() );
 
-    /* take the next available temporary                                   */
+    // take the next available temporary
     CTEMP_INFO( info )++;
     temp = CTEMP_INFO( info );
 
-    /* maybe make room for more temporaries                                */
+    // maybe make room for more temporaries
     if ( NTEMP_INFO( info ) < temp ) {
         if ( SIZE_BAG(info) < SIZE_INFO( NLVAR_INFO(info), temp ) ) {
             ResizeBag( info, SIZE_INFO( NLVAR_INFO(info), temp+7 ) );
@@ -376,23 +376,23 @@ static Temp NewTemp(const Char * name)
     }
     TNUM_TEMP_INFO( info, temp ) = W_UNKNOWN;
 
-    /* return the temporary                                                */
+    // return the temporary
     return temp;
 }
 
 static void FreeTemp(Temp temp)
 {
-    Bag                 info;           /* information bag                 */
+    Bag                 info;           // information bag
 
-    /* get the information bag                                             */
+    // get the information bag
     info = INFO_FEXP( CURR_FUNC() );
 
-    /* check that deallocations happens in the correct order               */
+    // check that deallocations happens in the correct order
     if ( temp != CTEMP_INFO( info ) && CompPass == 2 ) {
         Pr("PROBLEM: freeing t_%d, should be t_%d\n",(Int)temp,CTEMP_INFO(info));
     }
 
-    /* free the temporary                                                  */
+    // free the temporary
     TNUM_TEMP_INFO( info, temp ) = W_UNUSED;
     CTEMP_INFO( info )--;
 }
@@ -428,19 +428,19 @@ typedef UInt4           HVar;
 
 static void CompSetUseHVar(HVar hvar)
 {
-    Bag                 info;           /* its info bag                    */
-    Int                 i;              /* loop variable                   */
+    Bag                 info;           // its info bag
+    Int                 i;              // loop variable
 
-    /* only mark in pass 1                                                 */
+    // only mark in pass 1
     if ( CompPass != 1 )  return;
 
-    /* walk up                                                             */
+    // walk up
     info = INFO_FEXP( CURR_FUNC() );
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         info = NEXT_INFO( info );
     }
 
-    /* set mark                                                            */
+    // set mark
     if ( TNUM_LVAR_INFO( info, (hvar & 0xFFFF) ) != W_HIGHER ) {
         TNUM_LVAR_INFO( info, (hvar & 0xFFFF) ) = W_HIGHER;
         NHVAR_INFO(info) = NHVAR_INFO(info) + 1;
@@ -450,26 +450,26 @@ static void CompSetUseHVar(HVar hvar)
 
 static Int CompGetUseHVar(HVar hvar)
 {
-    Bag                 info;           /* its info bag                    */
-    Int                 i;              /* loop variable                   */
+    Bag                 info;           // its info bag
+    Int                 i;              // loop variable
 
-    /* walk up                                                             */
+    // walk up
     info = INFO_FEXP( CURR_FUNC() );
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         info = NEXT_INFO( info );
     }
 
-    /* get mark                                                            */
+    // get mark
     return (TNUM_LVAR_INFO( info, (hvar & 0xFFFF) ) == W_HIGHER);
 }
 
 static UInt GetLevlHVar(HVar hvar)
 {
-    UInt                levl;           /* level of higher variable        */
-    Bag                 info;           /* its info bag                    */
-    Int                 i;              /* loop variable                   */
+    UInt                levl;           // level of higher variable
+    Bag                 info;           // its info bag
+    Int                 i;              // loop variable
 
-    /* walk up                                                             */
+    // walk up
     levl = 0;
     info = INFO_FEXP( CURR_FUNC() );
     levl++;
@@ -478,29 +478,29 @@ static UInt GetLevlHVar(HVar hvar)
           levl++;
     }
 
-    /* return level (the number steps to go up)                            */
+    // return level (the number steps to go up)
     return levl - 1;
 }
 
 static UInt GetIndxHVar(HVar hvar)
 {
-    UInt                indx;           /* index of higher variable        */
-    Bag                 info;           /* its info bag                    */
-    Int                 i;              /* loop variable                   */
+    UInt                indx;           // index of higher variable
+    Bag                 info;           // its info bag
+    Int                 i;              // loop variable
 
-    /* walk up                                                             */
+    // walk up
     info = INFO_FEXP( CURR_FUNC() );
     for ( i = 1; i <= (hvar >> 16); i++ ) {
         info = NEXT_INFO( info );
     }
 
-    /* walk right                                                          */
+    // walk right
     indx = 0;
     for ( i = 1; i <= (hvar & 0xFFFF); i++ ) {
         if ( TNUM_LVAR_INFO( info, i ) == W_HIGHER )  indx++;
     }
 
-    /* return the index                                                    */
+    // return the index
     return indx;
 }
 
@@ -541,15 +541,15 @@ static Bag CompInfoGVar;
 
 static void CompSetUseGVar(GVar gvar, UInt mode)
 {
-    /* only mark in pass 1                                                 */
+    // only mark in pass 1
     if ( CompPass != 1 )  return;
 
-    /* resize if necessary                                                */
+    // resize if necessary
     if ( SIZE_OBJ(CompInfoGVar)/sizeof(UInt) <= gvar ) {
         ResizeBag( CompInfoGVar, sizeof(UInt)*(gvar+1) );
     }
 
-    /* or with <mode>                                                      */
+    // or with <mode>
     ((UInt*)PTR_BAG(CompInfoGVar))[gvar] |= mode;
 }
 
@@ -583,15 +583,15 @@ static Bag CompInfoRNam;
 
 static void CompSetUseRNam(RNam rnam, UInt mode)
 {
-    /* only mark in pass 1                                                 */
+    // only mark in pass 1
     if ( CompPass != 1 )  return;
 
-    /* resize if necessary                                                */
+    // resize if necessary
     if ( SIZE_OBJ(CompInfoRNam)/sizeof(UInt) <= rnam ) {
         ResizeBag( CompInfoRNam, sizeof(UInt)*(rnam+1) );
     }
 
-    /* or with <mode>                                                      */
+    // or with <mode>
     ((UInt*)PTR_BAG(CompInfoRNam))[rnam] |= mode;
 }
 
@@ -630,38 +630,38 @@ static Int EmitIndent2;
 
 static void Emit(const char * fmt, ...)
 {
-    Int                 narg;           /* number of arguments             */
-    va_list             ap;             /* argument list pointer           */
-    Int                 dint;           /* integer argument                */
-    CVar                cvar;           /* C variable argument             */
-    Char *              string;         /* string argument                 */
-    const Char *        p;              /* loop variable                   */
+    Int                 narg;           // number of arguments
+    va_list             ap;             // argument list pointer
+    Int                 dint;           // integer argument
+    CVar                cvar;           // C variable argument
+    Char *              string;         // string argument
+    const Char *        p;              // loop variable
     const Char *        hex = "0123456789ABCDEF";
 
-    /* are we in pass 2?                                                   */
+    // are we in pass 2?
     if ( CompPass != 2 )  return;
 
-    /* get the information bag                                             */
+    // get the information bag
     narg = NARG_FUNC( CURR_FUNC() );
     if (narg < 0) {
         narg = -narg;
     }
 
-    /* loop over the format string                                         */
+    // loop over the format string
     va_start( ap, fmt );
     for ( p = fmt; *p != '\0'; p++ ) {
 
-        /* print an indent, except for preprocessor commands               */
+        // print an indent, except for preprocessor commands
         if ( *fmt != '#' ) {
             if ( 0 < EmitIndent2 && *p == '}' ) EmitIndent2--;
             while ( 0 < EmitIndent2-- )  Pr(" ", 0, 0);
         }
 
-        /* format an argument                                              */
+        // format an argument
         if ( *p == '%' ) {
             p++;
 
-            /* emit an integer                                             */
+            // emit an integer
             if ( *p == 'd' ) {
                 dint = va_arg( ap, Int );
                 Pr("%d", dint, 0);
@@ -681,7 +681,7 @@ static void Emit(const char * fmt, ...)
                 Pr(f, (Int)str, 0);
             }
 
-            /* emit a name                                                 */
+            // emit a name
             else if ( *p == 'n' ) {
                 Obj str = va_arg( ap, Obj );
                 UInt i = 0;
@@ -699,7 +699,7 @@ static void Emit(const char * fmt, ...)
                 }
             }
 
-            /* emit a C variable                                           */
+            // emit a C variable
             else if ( *p == 'c' ) {
                 cvar = va_arg( ap, CVar );
                 if ( IS_INTG_CVAR(cvar) ) {
@@ -720,7 +720,7 @@ static void Emit(const char * fmt, ...)
                 }
             }
 
-            /* emit a C variable                                           */
+            // emit a C variable
             else if ( *p == 'i' ) {
                 cvar = va_arg( ap, CVar );
                 if ( IS_INTG_CVAR(cvar) ) {
@@ -737,12 +737,12 @@ static void Emit(const char * fmt, ...)
                 }
             }
 
-            /* emit a '%'                                                  */
+            // emit a '%'
             else if ( *p == '%' ) {
                 Pr("%%", 0, 0);
             }
 
-            /* what                                                        */
+            // what
             else {
                 Pr("%%illegal format statement", 0, 0);
             }
@@ -920,23 +920,23 @@ static CVar CompBoolExpr(Expr expr)
 */
 static CVar CompUnknownBool(Expr expr)
 {
-    CVar                res;            /* result                          */
-    CVar                val;            /* value of expression             */
+    CVar                res;            // result
+    CVar                val;            // value of expression
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     res = CVAR_TEMP( NewTemp( "res" ) );
 
-    /* compile the expression and check that the value is boolean          */
+    // compile the expression and check that the value is boolean
     val = CompExpr( expr );
     CompCheckBool( val );
 
-    /* emit code to store the C boolean value in the result                */
+    // emit code to store the C boolean value in the result
     Emit( "%c = (Obj)(UInt)(%c != False);\n", res, val );
 
-    /* we know that the result is boolean (should be 'W_CBOOL')            */
+    // we know that the result is boolean (should be 'W_CBOOL')
     SetInfoCVar( res, W_BOOL );
 
-    /* free the temporary                                                  */
+    // free the temporary
     if ( IS_TEMP_CVAR( val ) )  FreeTemp( TEMP_CVAR( val ) );
 
     return res;
@@ -958,13 +958,13 @@ static CVar CompRefGVarFopy(Expr expr);
 
 static CVar CompFunccall0to6Args(Expr expr)
 {
-    CVar                result;         /* result, result                  */
-    CVar                func;           /* function                        */
-    CVar                args [8];       /* arguments                       */
-    Int                 narg;           /* number of arguments             */
-    Int                 i;              /* loop variable                   */
+    CVar                result;         // result, result
+    CVar                func;           // function
+    CVar                args [8];       // arguments
+    Int                 narg;           // number of arguments
+    Int                 i;              // loop variable
 
-    /* special case to inline 'Length'                                     */
+    // special case to inline 'Length'
     if ( CompFastListFuncs
       && TNUM_EXPR( FUNC_CALL(expr) ) == EXPR_REF_GVAR
       && READ_EXPR( FUNC_CALL(expr), 0 ) == G_Length
@@ -982,10 +982,10 @@ static CVar CompFunccall0to6Args(Expr expr)
         return result;
     }
 
-    /* allocate a temporary for the result                                 */
+    // allocate a temporary for the result
     result = CVAR_TEMP( NewTemp( "result" ) );
 
-    /* compile the reference to the function                               */
+    // compile the reference to the function
     if ( TNUM_EXPR( FUNC_CALL(expr) ) == EXPR_REF_GVAR ) {
         func = CompRefGVarFopy( FUNC_CALL(expr) );
     }
@@ -993,13 +993,13 @@ static CVar CompFunccall0to6Args(Expr expr)
         func = CompExpr( FUNC_CALL(expr) );
     }
 
-    /* compile the argument expressions                                    */
+    // compile the argument expressions
     narg = NARG_SIZE_CALL(SIZE_EXPR(expr));
     for ( i = 1; i <= narg; i++ ) {
         args[i] = CompExpr( ARGI_CALL(expr,i) );
     }
 
-    /* emit the code for the function call                                 */
+    // emit the code for the function call
     Emit( "if ( TNUM_OBJ( %c ) == T_FUNCTION ) {\n", func );
     Emit( "%c = CALL_%dARGS( %c", result, narg, func );
     for ( i = 1; i <= narg; i++ ) {
@@ -1018,10 +1018,10 @@ static CVar CompFunccall0to6Args(Expr expr)
     Emit( " ) );\n" );
     Emit( "}\n" );
 
-    /* emit code for the check (sets the information for the result)       */
+    // emit code for the check (sets the information for the result)
     CompCheckFuncResult( result );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     for ( i = narg; 1 <= i; i-- ) {
         if ( IS_TEMP_CVAR( args[i] ) )  FreeTemp( TEMP_CVAR( args[i] ) );
     }
@@ -1037,17 +1037,17 @@ static CVar CompFunccall0to6Args(Expr expr)
 */
 static CVar CompFunccallXArgs(Expr expr)
 {
-    CVar                result;         /* result, result                  */
-    CVar                func;           /* function                        */
-    CVar                argl;           /* argument list                   */
-    CVar                argi;           /* <i>-th argument                 */
-    UInt                narg;           /* number of arguments             */
-    UInt                i;              /* loop variable                   */
+    CVar                result;         // result, result
+    CVar                func;           // function
+    CVar                argl;           // argument list
+    CVar                argi;           // <i>-th argument
+    UInt                narg;           // number of arguments
+    UInt                i;              // loop variable
 
-    /* allocate a temporary for the result                                 */
+    // allocate a temporary for the result
     result = CVAR_TEMP( NewTemp( "result" ) );
 
-    /* compile the reference to the function                               */
+    // compile the reference to the function
     if ( TNUM_EXPR( FUNC_CALL(expr) ) == EXPR_REF_GVAR ) {
         func = CompRefGVarFopy( FUNC_CALL(expr) );
     }
@@ -1055,7 +1055,7 @@ static CVar CompFunccallXArgs(Expr expr)
         func = CompExpr( FUNC_CALL(expr) );
     }
 
-    /* compile the argument expressions                                    */
+    // compile the argument expressions
     narg = NARG_SIZE_CALL(SIZE_EXPR(expr));
     argl = CVAR_TEMP( NewTemp( "argl" ) );
     Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", argl, narg );
@@ -1069,7 +1069,7 @@ static CVar CompFunccallXArgs(Expr expr)
         if ( IS_TEMP_CVAR( argi ) )  FreeTemp( TEMP_CVAR( argi ) );
     }
 
-    /* emit the code for the function call                                 */
+    // emit the code for the function call
     Emit( "if ( TNUM_OBJ( %c ) == T_FUNCTION ) {\n", func );
     Emit( "%c = CALL_XARGS( %c, %c );\n", result, func, argl );
     Emit( "}\n" );
@@ -1077,10 +1077,10 @@ static CVar CompFunccallXArgs(Expr expr)
     Emit( "%c = DoOperation2Args( CallFuncListOper, %c, %c );\n", result, func, argl );
     Emit( "}\n" );
 
-    /* emit code for the check (sets the information for the result)       */
+    // emit code for the check (sets the information for the result)
     CompCheckFuncResult( result );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( argl ) )  FreeTemp( TEMP_CVAR( argl ) );
     if ( IS_TEMP_CVAR( func ) )  FreeTemp( TEMP_CVAR( func ) );
 
@@ -1115,20 +1115,20 @@ static CVar CompFunccallOpts(Expr expr)
 */
 static CVar CompFuncExpr(Expr expr)
 {
-    CVar                func;           /* function, result                */
-    CVar                tmp;            /* dummy body                      */
+    CVar                func;           // function, result
+    CVar                tmp;            // dummy body
 
-    Obj                 fexp;           /* function expression             */
-    Int                 nr;             /* number of the function          */
+    Obj                 fexp;           // function expression
+    Int                 nr;             // number of the function
 
-    /* get the number of the function                                      */
+    // get the number of the function
     fexp = GET_VALUE_FROM_CURRENT_BODY(READ_EXPR(expr, 0));
     nr   = NR_INFO( INFO_FEXP( fexp ) );
 
-    /* allocate a new temporary for the function                           */
+    // allocate a new temporary for the function
     func = CVAR_TEMP( NewTemp( "func" ) );
 
-    /* make the function (all the pieces are in global variables)          */
+    // make the function (all the pieces are in global variables)
     Int narg = NARG_FUNC(fexp);
     Emit( "%c = NewFunction( NameFunc[%d], %d", func, nr, narg );
     if (narg != 0) {
@@ -1147,7 +1147,7 @@ static CVar CompFuncExpr(Expr expr)
     }
     Emit( ", HdlrFunc%d );\n", nr );
 
-    /* this should probably be done by 'NewFunction'                       */
+    // this should probably be done by 'NewFunction'
     Emit( "SET_ENVI_FUNC( %c, STATE(CurrLVars) );\n", func );
     tmp = CVAR_TEMP( NewTemp( "body" ) );
     Emit( "%c = NewFunctionBody();\n", tmp );
@@ -1157,10 +1157,10 @@ static CVar CompFuncExpr(Expr expr)
     Emit( "SET_BODY_FUNC(%c, %c);\n", func, tmp );
     FreeTemp( TEMP_CVAR( tmp ) );
 
-    /* we know that the result is a function                               */
+    // we know that the result is a function
     SetInfoCVar( func, W_FUNC );
 
-    /* return the number of the C variable that will hold the function     */
+    // return the number of the C variable that will hold the function
     return func;
 }
 
@@ -1171,31 +1171,31 @@ static CVar CompFuncExpr(Expr expr)
 */
 static CVar CompOr(Expr expr)
 {
-    CVar                val;            /* or, result                      */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
-    Bag                 only_left;      /* info after evaluating only left */
+    CVar                val;            // or, result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
+    Bag                 only_left;      // info after evaluating only left
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the left expression                                         */
+    // compile the left expression
     left = CompBoolExpr(READ_EXPR(expr, 0));
     Emit( "%c = (%c ? True : False);\n", val, left );
     Emit( "if ( %c == False ) {\n", val );
     only_left = NewInfoCVars();
     CopyInfoCVars( only_left, INFO_FEXP(CURR_FUNC()) );
 
-    /* compile the right expression                                        */
+    // compile the right expression
     right = CompBoolExpr(READ_EXPR(expr, 1));
     Emit( "%c = (%c ? True : False);\n", val, right );
     Emit( "}\n" );
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     MergeInfoCVars( INFO_FEXP(CURR_FUNC()), only_left );
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1209,31 +1209,31 @@ static CVar CompOr(Expr expr)
 */
 static CVar CompOrBool(Expr expr)
 {
-    CVar                val;            /* or, result                      */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
-    Bag                 only_left;      /* info after evaluating only left */
+    CVar                val;            // or, result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
+    Bag                 only_left;      // info after evaluating only left
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the left expression                                         */
+    // compile the left expression
     left = CompBoolExpr(READ_EXPR(expr, 0));
     Emit( "%c = %c;\n", val, left );
     Emit( "if ( ! %c ) {\n", val );
     only_left = NewInfoCVars();
     CopyInfoCVars( only_left, INFO_FEXP(CURR_FUNC()) );
 
-    /* compile the right expression                                        */
+    // compile the right expression
     right = CompBoolExpr(READ_EXPR(expr, 1));
     Emit( "%c = %c;\n", val, right );
     Emit( "}\n" );
 
-    /* we know that the result is boolean (should be 'W_CBOOL')            */
+    // we know that the result is boolean (should be 'W_CBOOL')
     MergeInfoCVars( INFO_FEXP(CURR_FUNC()), only_left );
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1247,49 +1247,49 @@ static CVar CompOrBool(Expr expr)
 */
 static CVar CompAnd(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right1;         /* right operand 1                 */
-    CVar                right2;         /* right operand 2                 */
-    Bag                 only_left;      /* info after evaluating only left */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right1;         // right operand 1
+    CVar                right2;         // right operand 2
+    Bag                 only_left;      // info after evaluating only left
 
-    /* allocate a temporary for the result                                 */
+    // allocate a temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the left expression                                         */
+    // compile the left expression
     left = CompExpr(READ_EXPR(expr, 0));
     only_left = NewInfoCVars();
     CopyInfoCVars( only_left, INFO_FEXP(CURR_FUNC()) );
 
-    /* emit the code for the case that the left value is 'false'           */
+    // emit the code for the case that the left value is 'false'
     Emit( "if ( %c == False ) {\n", left );
     Emit( "%c = %c;\n", val, left );
     Emit( "}\n" );
 
-    /* emit the code for the case that the left value is 'true'            */
+    // emit the code for the case that the left value is 'true'
     Emit( "else if ( %c == True ) {\n", left );
     right1 = CompExpr(READ_EXPR(expr, 1));
     CompCheckBool( right1 );
     Emit( "%c = %c;\n", val, right1 );
     Emit( "}\n" );
 
-    /* emit the code for the case that the left value is a filter          */
+    // emit the code for the case that the left value is a filter
     Emit( "else if (IS_FILTER( %c ) ) {\n", left );
     right2 = CompExpr(READ_EXPR(expr, 1));
     Emit( "%c = NewAndFilter( %c, %c );\n", val, left, right2 );
     Emit( "}\n" );
 
-    /* signal an error                                                     */
+    // signal an error
     Emit( "else {\n" );
     Emit( "RequireArgumentEx(0, %c, \"<expr>\",\n"
             "\"must be 'true' or 'false' or a filter\" );\n", left );
     Emit( "}\n" );
 
-    /* we know precious little about the result                            */
+    // we know precious little about the result
     MergeInfoCVars( INFO_FEXP(CURR_FUNC()), only_left );
     SetInfoCVar( val, W_BOUND );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right2 ) )  FreeTemp( TEMP_CVAR( right2 ) );
     if ( IS_TEMP_CVAR( right1 ) )  FreeTemp( TEMP_CVAR( right1 ) );
     if ( IS_TEMP_CVAR( left   ) )  FreeTemp( TEMP_CVAR( left   ) );
@@ -1304,31 +1304,31 @@ static CVar CompAnd(Expr expr)
 */
 static CVar CompAndBool(Expr expr)
 {
-    CVar                val;            /* or, result                      */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
-    Bag                 only_left;      /* info after evaluating only left */
+    CVar                val;            // or, result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
+    Bag                 only_left;      // info after evaluating only left
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the left expression                                         */
+    // compile the left expression
     left = CompBoolExpr(READ_EXPR(expr, 0));
     Emit( "%c = %c;\n", val, left );
     Emit( "if ( %c ) {\n", val );
     only_left = NewInfoCVars();
     CopyInfoCVars( only_left, INFO_FEXP(CURR_FUNC()) );
 
-    /* compile the right expression                                        */
+    // compile the right expression
     right = CompBoolExpr(READ_EXPR(expr, 1));
     Emit( "%c = %c;\n", val, right );
     Emit( "}\n" );
 
-    /* we know that the result is boolean (should be 'W_CBOOL')            */
+    // we know that the result is boolean (should be 'W_CBOOL')
     MergeInfoCVars( INFO_FEXP(CURR_FUNC()), only_left );
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1342,22 +1342,22 @@ static CVar CompAndBool(Expr expr)
 */
 static CVar CompNot(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* operand                         */
+    CVar                val;            // result
+    CVar                left;           // operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the operand                                                 */
+    // compile the operand
     left = CompBoolExpr(READ_EXPR(expr, 0));
 
-    /* invert the operand                                                  */
+    // invert the operand
     Emit( "%c = (%c ? False : True);\n", val, left );
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( left ) )  FreeTemp( TEMP_CVAR( left ) );
 
     return val;
@@ -1370,22 +1370,22 @@ static CVar CompNot(Expr expr)
 */
 static CVar CompNotBool(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* operand                         */
+    CVar                val;            // result
+    CVar                left;           // operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the operand                                                 */
+    // compile the operand
     left = CompBoolExpr(READ_EXPR(expr, 0));
 
-    /* invert the operand                                                  */
+    // invert the operand
     Emit( "%c = (Obj)(UInt)( ! ((Int)%c) );\n", val, left );
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( left ) )  FreeTemp( TEMP_CVAR( left ) );
 
     return val;
@@ -1398,18 +1398,18 @@ static CVar CompNotBool(Expr expr)
 */
 static CVar CompEq(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit("%c = ((((Int)%c) == ((Int)%c)) ? True : False);\n", val, left, right);
     }
@@ -1417,10 +1417,10 @@ static CVar CompEq(Expr expr)
         Emit( "%c = (EQ( %c, %c ) ? True : False);\n", val, left, right );
     }
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1434,18 +1434,18 @@ static CVar CompEq(Expr expr)
 */
 static CVar CompEqBool(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit( "%c = (Obj)(UInt)(((Int)%c) == ((Int)%c));\n", val, left, right);
     }
@@ -1453,10 +1453,10 @@ static CVar CompEqBool(Expr expr)
         Emit( "%c = (Obj)(UInt)(EQ( %c, %c ));\n", val, left, right );
     }
 
-    /* we know that the result is boolean (should be 'W_CBOOL')            */
+    // we know that the result is boolean (should be 'W_CBOOL')
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1470,18 +1470,18 @@ static CVar CompEqBool(Expr expr)
 */
 static CVar CompNe(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit("%c = ((((Int)%c) == ((Int)%c)) ? False : True);\n", val, left, right);
     }
@@ -1489,10 +1489,10 @@ static CVar CompNe(Expr expr)
         Emit( "%c = (EQ( %c, %c ) ? False : True);\n", val, left, right );
     }
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1506,18 +1506,18 @@ static CVar CompNe(Expr expr)
 */
 static CVar CompNeBool(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit( "%c = (Obj)(UInt)(((Int)%c) != ((Int)%c));\n", val, left, right );
     }
@@ -1525,10 +1525,10 @@ static CVar CompNeBool(Expr expr)
         Emit( "%c = (Obj)(UInt)( ! EQ( %c, %c ));\n", val, left, right );
     }
 
-    /* we know that the result is boolean (should be 'W_CBOOL')            */
+    // we know that the result is boolean (should be 'W_CBOOL')
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1542,18 +1542,18 @@ static CVar CompNeBool(Expr expr)
 */
 static CVar CompLt(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit( "%c = ((((Int)%c) < ((Int)%c)) ? True : False);\n", val, left, right );
     }
@@ -1561,10 +1561,10 @@ static CVar CompLt(Expr expr)
         Emit( "%c = (LT( %c, %c ) ? True : False);\n", val, left, right );
     }
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1578,18 +1578,18 @@ static CVar CompLt(Expr expr)
 */
 static CVar CompLtBool(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit( "%c = (Obj)(UInt)(((Int)%c) < ((Int)%c));\n", val, left, right );
     }
@@ -1597,10 +1597,10 @@ static CVar CompLtBool(Expr expr)
         Emit( "%c = (Obj)(UInt)(LT( %c, %c ));\n", val, left, right );
     }
 
-    /* we know that the result is boolean (should be 'W_CBOOL')            */
+    // we know that the result is boolean (should be 'W_CBOOL')
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1614,18 +1614,18 @@ static CVar CompLtBool(Expr expr)
 */
 static CVar CompGe(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
          Emit("%c = ((((Int)%c) < ((Int)%c)) ? False : True);\n", val, left, right);
     }
@@ -1633,10 +1633,10 @@ static CVar CompGe(Expr expr)
         Emit( "%c = (LT( %c, %c ) ? False : True);\n", val, left, right );
     }
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1650,18 +1650,18 @@ static CVar CompGe(Expr expr)
 */
 static CVar CompGeBool(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit( "%c = (Obj)(UInt)(((Int)%c) >= ((Int)%c));\n", val, left, right );
     }
@@ -1669,10 +1669,10 @@ static CVar CompGeBool(Expr expr)
         Emit( "%c = (Obj)(UInt)(! LT( %c, %c ));\n", val, left, right );
     }
 
-    /* we know that the result is boolean (should be 'W_CBOOL')            */
+    // we know that the result is boolean (should be 'W_CBOOL')
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1686,18 +1686,18 @@ static CVar CompGeBool(Expr expr)
 */
 static CVar CompGt(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit("%c = ((((Int)%c) < ((Int)%c)) ? True : False);\n", val, right, left);
     }
@@ -1705,10 +1705,10 @@ static CVar CompGt(Expr expr)
         Emit( "%c = (LT( %c, %c ) ? True : False);\n", val, right, left );
     }
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1722,18 +1722,18 @@ static CVar CompGt(Expr expr)
 */
 static CVar CompGtBool(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit( "%c = (Obj)(UInt)(((Int)%c) < ((Int)%c));\n", val, right, left );
     }
@@ -1741,10 +1741,10 @@ static CVar CompGtBool(Expr expr)
         Emit( "%c = (Obj)(UInt)(LT( %c, %c ));\n", val, right, left );
     }
 
-    /* we know that the result is boolean (should be 'W_CBOOL')            */
+    // we know that the result is boolean (should be 'W_CBOOL')
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1758,18 +1758,18 @@ static CVar CompGtBool(Expr expr)
 */
 static CVar CompLe(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit("%c = ((((Int)%c) < ((Int)%c)) ?  False : True);\n", val, right, left);
     }
@@ -1777,10 +1777,10 @@ static CVar CompLe(Expr expr)
         Emit( "%c = (LT( %c, %c ) ?  False : True);\n", val, right, left );
     }
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1794,18 +1794,18 @@ static CVar CompLe(Expr expr)
 */
 static CVar CompLeBool(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit( "%c = (Obj)(UInt)(((Int)%c) >= ((Int)%c));\n", val, right, left );
     }
@@ -1813,10 +1813,10 @@ static CVar CompLeBool(Expr expr)
         Emit( "%c = (Obj)(UInt)(! LT( %c, %c ));\n", val, right, left );
     }
 
-    /* we know that the result is boolean (should be 'W_CBOOL')            */
+    // we know that the result is boolean (should be 'W_CBOOL')
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1830,24 +1830,24 @@ static CVar CompLeBool(Expr expr)
 */
 static CVar CompIn(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "%c = (IN( %c, %c ) ?  True : False);\n", val, left, right );
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1861,24 +1861,24 @@ static CVar CompIn(Expr expr)
 */
 static CVar CompInBool(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "%c = (Obj)(UInt)(IN( %c, %c ));\n", val, left, right );
 
-    /* we know that the result is boolean (should be 'W_CBOOL')            */
+    // we know that the result is boolean (should be 'W_CBOOL')
     SetInfoCVar( val, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1892,18 +1892,18 @@ static CVar CompInBool(Expr expr)
 */
 static CVar CompSum(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit( "C_SUM_INTOBJS( %c, %c, %c )\n", val, left, right );
     }
@@ -1914,7 +1914,7 @@ static CVar CompSum(Expr expr)
         Emit( "C_SUM( %c, %c, %c )\n", val, left, right );
     }
 
-    /* set the information for the result                                  */
+    // set the information for the result
     if ( HasInfoCVar(left,W_INT) && HasInfoCVar(right,W_INT) ) {
         SetInfoCVar( val, W_INT );
     }
@@ -1922,7 +1922,7 @@ static CVar CompSum(Expr expr)
         SetInfoCVar( val, W_BOUND );
     }
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -1936,16 +1936,16 @@ static CVar CompSum(Expr expr)
 */
 static CVar CompAInv(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
+    CVar                val;            // result
+    CVar                left;           // left operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the operands                                                */
+    // compile the operands
     left = CompExpr(READ_EXPR(expr, 0));
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) ) {
         Emit( "C_AINV_INTOBJS( %c, %c )\n", val, left );
     }
@@ -1956,7 +1956,7 @@ static CVar CompAInv(Expr expr)
         Emit( "C_AINV( %c, %c )\n", val, left );
     }
 
-    /* set the information for the result                                  */
+    // set the information for the result
     if ( HasInfoCVar(left,W_INT) ) {
         SetInfoCVar( val, W_INT );
     }
@@ -1964,7 +1964,7 @@ static CVar CompAInv(Expr expr)
         SetInfoCVar( val, W_BOUND );
     }
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
     return val;
@@ -1977,18 +1977,18 @@ static CVar CompAInv(Expr expr)
 */
 static CVar CompDiff(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit( "C_DIFF_INTOBJS( %c, %c, %c )\n", val, left, right );
     }
@@ -1999,7 +1999,7 @@ static CVar CompDiff(Expr expr)
         Emit( "C_DIFF( %c, %c, %c )\n", val, left, right );
     }
 
-    /* set the information for the result                                  */
+    // set the information for the result
     if ( HasInfoCVar(left,W_INT) && HasInfoCVar(right,W_INT) ) {
         SetInfoCVar( val, W_INT );
     }
@@ -2007,7 +2007,7 @@ static CVar CompDiff(Expr expr)
         SetInfoCVar( val, W_BOUND );
     }
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -2021,18 +2021,18 @@ static CVar CompDiff(Expr expr)
 */
 static CVar CompProd(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     if ( HasInfoCVar(left,W_INT_SMALL) && HasInfoCVar(right,W_INT_SMALL) ) {
         Emit( "C_PROD_INTOBJS( %c, %c, %c )\n", val, left, right );
     }
@@ -2043,7 +2043,7 @@ static CVar CompProd(Expr expr)
         Emit( "C_PROD( %c, %c, %c )\n", val, left, right );
     }
 
-    /* set the information for the result                                  */
+    // set the information for the result
     if ( HasInfoCVar(left,W_INT) && HasInfoCVar(right,W_INT) ) {
         SetInfoCVar( val, W_INT );
     }
@@ -2051,7 +2051,7 @@ static CVar CompProd(Expr expr)
         SetInfoCVar( val, W_BOUND );
     }
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -2065,24 +2065,24 @@ static CVar CompProd(Expr expr)
 */
 static CVar CompQuo(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "%c = QUO( %c, %c );\n", val, left, right );
 
-    /* set the information for the result                                  */
+    // set the information for the result
     SetInfoCVar( val, W_BOUND );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -2096,21 +2096,21 @@ static CVar CompQuo(Expr expr)
 */
 static CVar CompMod(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "%c = MOD( %c, %c );\n", val, left, right );
 
-    /* set the information for the result                                  */
+    // set the information for the result
     if ( HasInfoCVar(left,W_INT) && HasInfoCVar(right,W_INT) ) {
         SetInfoCVar( val, W_INT );
     }
@@ -2118,7 +2118,7 @@ static CVar CompMod(Expr expr)
         SetInfoCVar( val, W_BOUND );
     }
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -2132,21 +2132,21 @@ static CVar CompMod(Expr expr)
 */
 static CVar CompPow(Expr expr)
 {
-    CVar                val;            /* result                          */
-    CVar                left;           /* left operand                    */
-    CVar                right;          /* right operand                   */
+    CVar                val;            // result
+    CVar                left;           // left operand
+    CVar                right;          // right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* compile the two operands                                            */
+    // compile the two operands
     left  = CompExpr( READ_EXPR(expr, 0) );
     right = CompExpr( READ_EXPR(expr, 1) );
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "%c = POW( %c, %c );\n", val, left, right );
 
-    /* set the information for the result                                  */
+    // set the information for the result
     if ( HasInfoCVar(left,W_INT) && HasInfoCVar(right,W_INT) ) {
         SetInfoCVar( val, W_INT );
     }
@@ -2154,7 +2154,7 @@ static CVar CompPow(Expr expr)
         SetInfoCVar( val, W_BOUND );
     }
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( right ) )  FreeTemp( TEMP_CVAR( right ) );
     if ( IS_TEMP_CVAR( left  ) )  FreeTemp( TEMP_CVAR( left  ) );
 
@@ -2262,15 +2262,15 @@ static CVar CompTildeExpr(Expr expr)
     Emit( "if ( ! STATE(Tilde) ) {\n");
     Emit( "    ErrorMayQuit(\"'~' does not have a value here\", 0, 0);\n" );
     Emit( "}\n" );
-    CVar                val;            /* value, result                   */
+    CVar                val;            // value, result
 
-    /* allocate a new temporary for the 'true' value                       */
+    // allocate a new temporary for the 'true' value
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "%c = STATE(Tilde);\n", val );
 
-    /* return '~'                                                       */
+    // return '~'
     return val;
 }
 
@@ -2280,18 +2280,18 @@ static CVar CompTildeExpr(Expr expr)
 */
 static CVar CompTrueExpr(Expr expr)
 {
-    CVar                val;            /* value, result                   */
+    CVar                val;            // value, result
 
-    /* allocate a new temporary for the 'true' value                       */
+    // allocate a new temporary for the 'true' value
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "%c = True;\n", val );
 
-    /* we know that the result is boolean ;-)                              */
+    // we know that the result is boolean ;-)
     SetInfoCVar( val, W_BOOL );
 
-    /* return 'true'                                                       */
+    // return 'true'
     return val;
 }
 
@@ -2302,18 +2302,18 @@ static CVar CompTrueExpr(Expr expr)
 */
 static CVar CompFalseExpr(Expr expr)
 {
-    CVar                val;            /* value, result                   */
+    CVar                val;            // value, result
 
-    /* allocate a new temporary for the 'false' value                      */
+    // allocate a new temporary for the 'false' value
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "%c = False;\n", val );
 
-    /* we know that the result is boolean ;-)                              */
+    // we know that the result is boolean ;-)
     SetInfoCVar( val, W_BOOL );
 
-    /* return 'false'                                                      */
+    // return 'false'
     return val;
 }
 
@@ -2324,18 +2324,18 @@ static CVar CompFalseExpr(Expr expr)
 */
 static CVar CompCharExpr(Expr expr)
 {
-    CVar                val;            /* result                          */
+    CVar                val;            // result
 
-    /* allocate a new temporary for the char value                         */
+    // allocate a new temporary for the char value
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "%c = ObjsChar[%d];\n", val, READ_EXPR(expr, 0));
 
-    /* we know that we have a value                                        */
+    // we know that we have a value
     SetInfoCVar( val, W_BOUND );
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -2346,17 +2346,17 @@ static CVar CompCharExpr(Expr expr)
 */
 static CVar CompPermExpr(Expr expr)
 {
-    CVar                perm;           /* result                          */
-    CVar                lcyc;           /* one cycle as list               */
-    CVar                lprm;           /* perm as list of list cycles     */
-    CVar                val;            /* one point                       */
+    CVar                perm;           // result
+    CVar                lcyc;           // one cycle as list
+    CVar                lprm;           // perm as list of list cycles
+    CVar                val;            // one point
     Int                 i;
     Int                 j;
     Int                 n;
     Int                 csize;
     Expr                cycle;
 
-    /* check for the identity                                              */
+    // check for the identity
     if ( SIZE_EXPR(expr) == 0 ) {
         perm = CVAR_TEMP( NewTemp( "idperm" ) );
         Emit( "%c = IdentityPerm;\n", perm );
@@ -2364,15 +2364,15 @@ static CVar CompPermExpr(Expr expr)
         return perm;
     }
 
-    /* for each cycle create a list                                        */
+    // for each cycle create a list
     perm = CVAR_TEMP( NewTemp( "perm" ) );
     lcyc = CVAR_TEMP( NewTemp( "lcyc" ) );
     lprm = CVAR_TEMP( NewTemp( "lprm" ) );
 
-    /* start with the identity permutation                                 */
+    // start with the identity permutation
     Emit( "%c = IdentityPerm;\n", perm );
 
-    /* loop over the cycles                                                */
+    // loop over the cycles
     n = SIZE_EXPR(expr)/sizeof(Expr);
     Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", lprm, n );
     Emit( "SET_LEN_PLIST( %c, %d );\n", lprm, n );
@@ -2385,7 +2385,7 @@ static CVar CompPermExpr(Expr expr)
         Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lprm, i, lcyc );
         Emit( "CHANGED_BAG( %c );\n", lprm );
 
-        /* loop over the entries of the cycle                              */
+        // loop over the entries of the cycle
         for ( j = 1;  j <= csize;  j++ ) {
             val = CompExpr(READ_EXPR(cycle, j - 1));
             Emit( "SET_ELM_PLIST( %c, %d, %c );\n", lcyc, j, val );
@@ -2395,7 +2395,7 @@ static CVar CompPermExpr(Expr expr)
     }
     Emit( "%c = Array2Perm( %c );\n", perm, lprm );
 
-    /* free the temporaries                                               */
+    // free the temporaries
     FreeTemp( TEMP_CVAR(lprm) );
     FreeTemp( TEMP_CVAR(lcyc) );
 
@@ -2414,9 +2414,9 @@ static void CompRecExpr2(CVar rec, Expr expr);
 
 static CVar CompListExpr(Expr expr)
 {
-    CVar                list;           /* list, result                    */
+    CVar                list;           // list, result
 
-    /* compile the list expression                                         */
+    // compile the list expression
     list = CompListExpr1( expr );
     CompListExpr2( list, expr );
 
@@ -2430,27 +2430,27 @@ static CVar CompListExpr(Expr expr)
 */
 static CVar CompListTildeExpr(Expr expr)
 {
-    CVar                list;           /* list value, result              */
-    CVar                tilde;          /* old value of tilde              */
+    CVar                list;           // list value, result
+    CVar                tilde;          // old value of tilde
 
-    /* remember the old value of '~'                                       */
+    // remember the old value of '~'
     tilde = CVAR_TEMP( NewTemp( "tilde" ) );
     Emit( "%c = STATE(Tilde);\n", tilde );
 
-    /* create the list value                                               */
+    // create the list value
     list = CompListExpr1( expr );
 
-    /* assign the list to '~'                                              */
+    // assign the list to '~'
     Emit( "STATE(Tilde) = %c;\n", list );
 
-    /* evaluate the subexpressions into the list value                     */
+    // evaluate the subexpressions into the list value
     CompListExpr2( list, expr );
 
-    /* restore old value of '~'                                            */
+    // restore old value of '~'
     Emit( "STATE(Tilde) = %c;\n", tilde );
     if ( IS_TEMP_CVAR( tilde ) )  FreeTemp( TEMP_CVAR( tilde ) );
 
-    /* return the list value                                               */
+    // return the list value
     return list;
 }
 
@@ -2461,23 +2461,23 @@ static CVar CompListTildeExpr(Expr expr)
 */
 static CVar CompListExpr1(Expr expr)
 {
-    CVar                list;           /* list, result                    */
-    Int                 len;            /* logical length of the list      */
+    CVar                list;           // list, result
+    Int                 len;            // logical length of the list
 
-    /* get the length of the list                                          */
+    // get the length of the list
     len = SIZE_EXPR( expr ) / sizeof(Expr);
 
-    /* allocate a temporary for the list                                   */
+    // allocate a temporary for the list
     list = CVAR_TEMP( NewTemp( "list" ) );
 
-    /* emit the code to make the list                                      */
+    // emit the code to make the list
     Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", list, len );
     Emit( "SET_LEN_PLIST( %c, %d );\n", list, len );
 
-    /* we know that <list> is a list                                       */
+    // we know that <list> is a list
     SetInfoCVar( list, W_LIST );
 
-    /* return the list                                                     */
+    // return the list
     return list;
 }
 
@@ -2488,22 +2488,22 @@ static CVar CompListExpr1(Expr expr)
 */
 static void CompListExpr2(CVar list, Expr expr)
 {
-    CVar                sub;            /* subexpression                   */
-    Int                 len;            /* logical length of the list      */
-    Int                 i;              /* loop variable                   */
+    CVar                sub;            // subexpression
+    Int                 len;            // logical length of the list
+    Int                 i;              // loop variable
 
-    /* get the length of the list                                          */
+    // get the length of the list
     len = SIZE_EXPR( expr ) / sizeof(Expr);
 
-    /* emit the code to fill the list                                      */
+    // emit the code to fill the list
     for ( i = 1; i <= len; i++ ) {
 
-        /* if the subexpression is empty                                   */
+        // if the subexpression is empty
         if (READ_EXPR(expr, i - 1) == 0) {
             continue;
         }
 
-        /* special case if subexpression is a list expression              */
+        // special case if subexpression is a list expression
         else if (TNUM_EXPR(READ_EXPR(expr, i - 1)) == EXPR_LIST) {
             sub = CompListExpr1(READ_EXPR(expr, i - 1));
             Emit( "SET_ELM_PLIST( %c, %d, %c );\n", list, i, sub );
@@ -2512,7 +2512,7 @@ static void CompListExpr2(CVar list, Expr expr)
             if ( IS_TEMP_CVAR( sub ) )  FreeTemp( TEMP_CVAR( sub ) );
         }
 
-        /* special case if subexpression is a record expression            */
+        // special case if subexpression is a record expression
         else if (TNUM_EXPR(READ_EXPR(expr, i - 1)) == EXPR_REC) {
             sub = CompRecExpr1(READ_EXPR(expr, i - 1));
             Emit( "SET_ELM_PLIST( %c, %d, %c );\n", list, i, sub );
@@ -2521,7 +2521,7 @@ static void CompListExpr2(CVar list, Expr expr)
             if ( IS_TEMP_CVAR( sub ) )  FreeTemp( TEMP_CVAR( sub ) );
         }
 
-        /* general case                                                    */
+        // general case
         else {
             sub = CompExpr(READ_EXPR(expr, i - 1));
             Emit( "SET_ELM_PLIST( %c, %d, %c );\n", list, i, sub );
@@ -2542,15 +2542,15 @@ static void CompListExpr2(CVar list, Expr expr)
 */
 static CVar CompRangeExpr(Expr expr)
 {
-    CVar                range;          /* range, result                   */
-    CVar                first;          /* first  element                  */
-    CVar                second;         /* second element                  */
-    CVar                last;           /* last   element                  */
+    CVar                range;          // range, result
+    CVar                first;          // first  element
+    CVar                second;         // second element
+    CVar                last;           // last   element
 
-    /* allocate a new temporary for the range                              */
+    // allocate a new temporary for the range
     range = CVAR_TEMP( NewTemp( "range" ) );
 
-    /* evaluate the expressions                                            */
+    // evaluate the expressions
     if ( SIZE_EXPR(expr) == 2 * sizeof(Expr) ) {
         first  = CompExpr( READ_EXPR(expr, 0) );
         second = 0;
@@ -2562,7 +2562,7 @@ static CVar CompRangeExpr(Expr expr)
         last   = CompExpr( READ_EXPR(expr, 2) );
     }
 
-    /* emit the code                                                       */
+    // emit the code
     if ( SIZE_EXPR(expr) == 2 * sizeof(Expr) ) {
         Emit( "%c = Range2Check( %c, %c );\n",
               range, first, last );
@@ -2572,10 +2572,10 @@ static CVar CompRangeExpr(Expr expr)
               range, first, second, last );
     }
 
-    /* we know that the result is a list                                   */
+    // we know that the result is a list
     SetInfoCVar( range, W_LIST );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( SIZE_EXPR(expr) == 2 * sizeof(Expr) ) {
         if ( IS_TEMP_CVAR( last   ) )  FreeTemp( TEMP_CVAR( last   ) );
         if ( IS_TEMP_CVAR( first  ) )  FreeTemp( TEMP_CVAR( first  ) );
@@ -2586,7 +2586,7 @@ static CVar CompRangeExpr(Expr expr)
         if ( IS_TEMP_CVAR( first  ) )  FreeTemp( TEMP_CVAR( first  ) );
     }
 
-    /* return the range                                                    */
+    // return the range
     return range;
 }
 
@@ -2597,22 +2597,22 @@ static CVar CompRangeExpr(Expr expr)
 */
 static CVar CompStringExpr(Expr expr)
 {
-    CVar                string;         /* string value, result            */
+    CVar                string;         // string value, result
     Obj                 str;            // the actual string object
 
-    /* allocate a new temporary for the string                             */
+    // allocate a new temporary for the string
     string = CVAR_TEMP( NewTemp( "string" ) );
 
     // get the string of this expression
     str = EVAL_EXPR(expr);
 
-    /* create the string and copy the stuff                                */
+    // create the string and copy the stuff
     Emit( "%c = MakeString( \"%C\" );\n", string, str);
 
-    /* we know that the result is a list                                   */
+    // we know that the result is a list
     SetInfoCVar( string, W_LIST );
 
-    /* return the string                                                   */
+    // return the string
     return string;
 }
 
@@ -2623,9 +2623,9 @@ static CVar CompStringExpr(Expr expr)
 */
 static CVar CompRecExpr(Expr expr)
 {
-    CVar                rec;            /* record value, result            */
+    CVar                rec;            // record value, result
 
-    /* compile the record expression                                       */
+    // compile the record expression
     rec = CompRecExpr1( expr );
     CompRecExpr2( rec, expr );
 
@@ -2639,27 +2639,27 @@ static CVar CompRecExpr(Expr expr)
 */
 static CVar CompRecTildeExpr(Expr expr)
 {
-    CVar                rec;            /* record value, result            */
-    CVar                tilde;          /* old value of tilde              */
+    CVar                rec;            // record value, result
+    CVar                tilde;          // old value of tilde
 
-    /* remember the old value of '~'                                       */
+    // remember the old value of '~'
     tilde = CVAR_TEMP( NewTemp( "tilde" ) );
     Emit( "%c = STATE(Tilde);\n", tilde );
 
-    /* create the record value                                             */
+    // create the record value
     rec = CompRecExpr1( expr );
 
-    /* assign the record value to the variable '~'                         */
+    // assign the record value to the variable '~'
     Emit( "STATE(Tilde) = %c;\n", rec );
 
-    /* evaluate the subexpressions into the record value                   */
+    // evaluate the subexpressions into the record value
     CompRecExpr2( rec, expr );
 
-    /* restore the old value of '~'                                        */
+    // restore the old value of '~'
     Emit( "STATE(Tilde) = %c;\n", tilde );
     if ( IS_TEMP_CVAR( tilde ) )  FreeTemp( TEMP_CVAR( tilde ) );
 
-    /* return the record value                                             */
+    // return the record value
     return rec;
 }
 
@@ -2670,22 +2670,22 @@ static CVar CompRecTildeExpr(Expr expr)
 */
 static CVar CompRecExpr1(Expr expr)
 {
-    CVar                rec;            /* record value, result            */
-    Int                 len;            /* number of components            */
+    CVar                rec;            // record value, result
+    Int                 len;            // number of components
 
-    /* get the number of components                                        */
+    // get the number of components
     len = SIZE_EXPR( expr ) / (2*sizeof(Expr));
 
-    /* allocate a new temporary for the record                             */
+    // allocate a new temporary for the record
     rec = CVAR_TEMP( NewTemp( "rec" ) );
 
-    /* emit the code to allocate the new record object                     */
+    // emit the code to allocate the new record object
     Emit( "%c = NEW_PREC( %d );\n", rec, len );
 
-    /* we know that we have a value                                        */
+    // we know that we have a value
     SetInfoCVar( rec, W_BOUND );
 
-    /* return the record                                                   */
+    // return the record
     return rec;
 }
 
@@ -2696,19 +2696,19 @@ static CVar CompRecExpr1(Expr expr)
 */
 static void CompRecExpr2(CVar rec, Expr expr)
 {
-    CVar                rnam;           /* name of component               */
-    CVar                sub;            /* value of subexpression          */
-    Int                 len;            /* number of components            */
-    Expr                tmp;            /* temporary variable              */
-    Int                 i;              /* loop variable                   */
+    CVar                rnam;           // name of component
+    CVar                sub;            // value of subexpression
+    Int                 len;            // number of components
+    Expr                tmp;            // temporary variable
+    Int                 i;              // loop variable
 
-    /* get the number of components                                        */
+    // get the number of components
     len = SIZE_EXPR( expr ) / (2*sizeof(Expr));
 
-    /* handle the subexpressions                                           */
+    // handle the subexpressions
     for ( i = 1; i <= len; i++ ) {
 
-        /* handle the name                                                 */
+        // handle the name
         tmp = READ_EXPR(expr, 2 * i - 2);
         rnam = CVAR_TEMP( NewTemp( "rnam" ) );
         if ( IS_INTEXPR(tmp) ) {
@@ -2721,14 +2721,14 @@ static void CompRecExpr2(CVar rec, Expr expr)
             Emit( "%c = (Obj)RNamObj( %c );\n", rnam, sub );
         }
 
-        /* if the subexpression is empty (cannot happen for records)       */
+        // if the subexpression is empty (cannot happen for records)
         tmp = READ_EXPR(expr, 2 * i - 1);
         if ( tmp == 0 ) {
             if ( IS_TEMP_CVAR( rnam ) )  FreeTemp( TEMP_CVAR( rnam ) );
             continue;
         }
 
-        /* special case if subexpression is a list expression             */
+        // special case if subexpression is a list expression
         else if ( TNUM_EXPR( tmp ) == EXPR_LIST ) {
             sub = CompListExpr1( tmp );
             Emit( "AssPRec( %c, (UInt)%c, %c );\n", rec, rnam, sub );
@@ -2736,7 +2736,7 @@ static void CompRecExpr2(CVar rec, Expr expr)
             if ( IS_TEMP_CVAR( sub ) )  FreeTemp( TEMP_CVAR( sub ) );
         }
 
-        /* special case if subexpression is a record expression            */
+        // special case if subexpression is a record expression
         else if ( TNUM_EXPR( tmp ) == EXPR_REC ) {
             sub = CompRecExpr1( tmp );
             Emit( "AssPRec( %c, (UInt)%c, %c );\n", rec, rnam, sub );
@@ -2744,7 +2744,7 @@ static void CompRecExpr2(CVar rec, Expr expr)
             if ( IS_TEMP_CVAR( sub ) )  FreeTemp( TEMP_CVAR( sub ) );
         }
 
-        /* general case                                                    */
+        // general case
         else {
             sub = CompExpr( tmp );
             Emit( "AssPRec( %c, (UInt)%c, %c );\n", rec, rnam, sub );
@@ -2764,12 +2764,12 @@ static void CompRecExpr2(CVar rec, Expr expr)
 */
 static CVar CompRefLVar(Expr expr)
 {
-    CVar                val;            /* value, result                   */
-    LVar                lvar;           /* local variable                  */
+    CVar                val;            // value, result
+    LVar                lvar;           // local variable
 
     lvar = LVAR_REF_LVAR(expr);
 
-    /* emit the code to get the value                                      */
+    // emit the code to get the value
     if ( CompGetUseHVar( lvar ) ) {
         val = CVAR_TEMP( NewTemp( "val" ) );
         Emit( "%c = OBJ_LVAR( %d );\n", val, GetIndxHVar(lvar) );
@@ -2778,10 +2778,10 @@ static CVar CompRefLVar(Expr expr)
         val = CVAR_LVAR(lvar);
     }
 
-    /* emit code to check that the variable has a value                    */
+    // emit code to check that the variable has a value
     CompCheckBound( val, NAME_LVAR(lvar) );
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -2792,17 +2792,17 @@ static CVar CompRefLVar(Expr expr)
 */
 static CVar CompIsbLVar(Expr expr)
 {
-    CVar                isb;            /* isbound, result                 */
-    CVar                val;            /* value                           */
-    LVar                lvar;           /* local variable                  */
+    CVar                isb;            // isbound, result
+    CVar                val;            // value
+    LVar                lvar;           // local variable
 
-    /* get the local variable                                              */
+    // get the local variable
     lvar = (LVar)(READ_EXPR(expr, 0));
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     isb = CVAR_TEMP( NewTemp( "isb" ) );
 
-    /* emit the code to get the value                                      */
+    // emit the code to get the value
     if ( CompGetUseHVar( lvar ) ) {
         val = CVAR_TEMP( NewTemp( "val" ) );
         Emit( "%c = OBJ_LVAR( %d );\n", val, GetIndxHVar(lvar) );
@@ -2811,13 +2811,13 @@ static CVar CompIsbLVar(Expr expr)
         val = CVAR_LVAR(lvar);
     }
 
-    /* emit the code to check that the variable has a value                */
+    // emit the code to check that the variable has a value
     Emit( "%c = ((%c != 0) ? True : False);\n", isb, val );
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( isb, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( val ) )  FreeTemp( TEMP_CVAR( val ) );
 
     return isb;
@@ -2830,24 +2830,24 @@ static CVar CompIsbLVar(Expr expr)
 */
 static CVar CompRefHVar(Expr expr)
 {
-    CVar                val;            /* value, result                   */
-    HVar                hvar;           /* higher variable                 */
+    CVar                val;            // value, result
+    HVar                hvar;           // higher variable
 
-    /* get the higher variable                                             */
+    // get the higher variable
     hvar = (HVar)(READ_EXPR(expr, 0));
     CompSetUseHVar( hvar );
 
-    /* allocate a new temporary for the value                              */
+    // allocate a new temporary for the value
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* emit the code to get the value                                      */
+    // emit the code to get the value
     Emit( "%c = OBJ_HVAR( (%d << 16) | %d );\n",
           val, GetLevlHVar(hvar), GetIndxHVar(hvar) );
 
-    /* emit the code to check that the variable has a value                */
+    // emit the code to check that the variable has a value
     CompCheckBound( val, NAME_HVAR(hvar) );
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -2858,29 +2858,29 @@ static CVar CompRefHVar(Expr expr)
 */
 static CVar CompIsbHVar(Expr expr)
 {
-    CVar                isb;            /* isbound, result                 */
-    CVar                val;            /* value                           */
-    HVar                hvar;           /* higher variable                 */
+    CVar                isb;            // isbound, result
+    CVar                val;            // value
+    HVar                hvar;           // higher variable
 
-    /* get the higher variable                                             */
+    // get the higher variable
     hvar = (HVar)(READ_EXPR(expr, 0));
     CompSetUseHVar( hvar );
 
-    /* allocate new temporaries for the value and the result               */
+    // allocate new temporaries for the value and the result
     val = CVAR_TEMP( NewTemp( "val" ) );
     isb = CVAR_TEMP( NewTemp( "isb" ) );
 
-    /* emit the code to get the value                                      */
+    // emit the code to get the value
     Emit( "%c = OBJ_HVAR( (%d << 16) | %d );\n",
           val, GetLevlHVar(hvar), GetIndxHVar(hvar) );
 
-    /* emit the code to check that the variable has a value                */
+    // emit the code to check that the variable has a value
     Emit( "%c = ((%c != 0) ? True : False);\n", isb, val );
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( isb, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( val ) )  FreeTemp( TEMP_CVAR( val ) );
 
     return isb;
@@ -2893,23 +2893,23 @@ static CVar CompIsbHVar(Expr expr)
 */
 static CVar CompRefGVar(Expr expr)
 {
-    CVar                val;            /* value, result                   */
-    GVar                gvar;           /* higher variable                 */
+    CVar                val;            // value, result
+    GVar                gvar;           // higher variable
 
-    /* get the global variable                                             */
+    // get the global variable
     gvar = (GVar)(READ_EXPR(expr, 0));
     CompSetUseGVar( gvar, COMP_USE_GVAR_COPY );
 
-    /* allocate a new global variable for the value                        */
+    // allocate a new global variable for the value
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* emit the code to get the value                                      */
+    // emit the code to get the value
     Emit( "%c = GC_%n;\n", val, NameGVar(gvar) );
 
-    /* emit the code to check that the variable has a value                */
+    // emit the code to check that the variable has a value
     CompCheckBound( val, NameGVar(gvar) );
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -2920,23 +2920,23 @@ static CVar CompRefGVar(Expr expr)
 */
 static CVar CompRefGVarFopy(Expr expr)
 {
-    CVar                val;            /* value, result                   */
-    GVar                gvar;           /* higher variable                 */
+    CVar                val;            // value, result
+    GVar                gvar;           // higher variable
 
-    /* get the global variable                                             */
+    // get the global variable
     gvar = (GVar)(READ_EXPR(expr, 0));
     CompSetUseGVar( gvar, COMP_USE_GVAR_FOPY );
 
-    /* allocate a new temporary for the value                              */
+    // allocate a new temporary for the value
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* emit the code to get the value                                      */
+    // emit the code to get the value
     Emit( "%c = GF_%n;\n", val, NameGVar(gvar) );
 
-    /* we know that the object in a function copy is a function            */
+    // we know that the object in a function copy is a function
     SetInfoCVar( val, W_FUNC );
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -2947,28 +2947,28 @@ static CVar CompRefGVarFopy(Expr expr)
 */
 static CVar CompIsbGVar(Expr expr)
 {
-    CVar                isb;            /* isbound, result                 */
-    CVar                val;            /* value, result                   */
-    GVar                gvar;           /* higher variable                 */
+    CVar                isb;            // isbound, result
+    CVar                val;            // value, result
+    GVar                gvar;           // higher variable
 
-    /* get the global variable                                             */
+    // get the global variable
     gvar = (GVar)(READ_EXPR(expr, 0));
     CompSetUseGVar( gvar, COMP_USE_GVAR_COPY );
 
-    /* allocate new temporaries for the value and the result               */
+    // allocate new temporaries for the value and the result
     isb = CVAR_TEMP( NewTemp( "isb" ) );
     val = CVAR_TEMP( NewTemp( "val" ) );
 
-    /* emit the code to get the value                                      */
+    // emit the code to get the value
     Emit( "%c = GC_%n;\n", val, NameGVar(gvar) );
 
-    /* emit the code to check that the variable has a value                */
+    // emit the code to check that the variable has a value
     Emit( "%c = ((%c != 0) ? True : False);\n", isb, val );
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( isb, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( val ) )  FreeTemp( TEMP_CVAR( val ) );
 
     return isb;
@@ -2981,21 +2981,21 @@ static CVar CompIsbGVar(Expr expr)
 */
 static CVar CompElmList(Expr expr)
 {
-    CVar                elm;            /* element, result                 */
-    CVar                list;           /* list                            */
-    CVar                pos;            /* position                        */
+    CVar                elm;            // element, result
+    CVar                list;           // list
+    CVar                pos;            // position
 
-    /* allocate a new temporary for the element                            */
+    // allocate a new temporary for the element
     elm = CVAR_TEMP( NewTemp( "elm" ) );
 
-    /* compile the list expression (checking is done by 'ELM_LIST')        */
+    // compile the list expression (checking is done by 'ELM_LIST')
     list = CompExpr(READ_EXPR(expr, 0));
 
-    /* compile and check the position expression                           */
+    // compile and check the position expression
     pos = CompExpr(READ_EXPR(expr, 1));
     CompCheckIntPos( pos );
 
-    /* emit the code to get the element                                    */
+    // emit the code to get the element
     if (        CompCheckListElements &&   CompFastPlainLists ) {
         Emit( "C_ELM_LIST_FPL( %c, %c, %c )\n", elm, list, pos );
     }
@@ -3009,14 +3009,14 @@ static CVar CompElmList(Expr expr)
         Emit( "C_ELM_LIST_NLE( %c, %c, %c );\n", elm, list, pos );
     }
 
-    /* we know that we have a value                                        */
+    // we know that we have a value
     SetInfoCVar( elm, W_BOUND );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( pos  ) )  FreeTemp( TEMP_CVAR( pos  ) );
     if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
@@ -3027,30 +3027,30 @@ static CVar CompElmList(Expr expr)
 */
 static CVar CompElmsList(Expr expr)
 {
-    CVar                elms;           /* elements, result                */
-    CVar                list;           /* list                            */
-    CVar                poss;           /* positions                       */
+    CVar                elms;           // elements, result
+    CVar                list;           // list
+    CVar                poss;           // positions
 
-    /* allocate a new temporary for the elements                           */
+    // allocate a new temporary for the elements
     elms = CVAR_TEMP( NewTemp( "elms" ) );
 
-    /* compile the list expression (checking is done by 'ElmsListCheck')   */
+    // compile the list expression (checking is done by 'ElmsListCheck')
     list = CompExpr(READ_EXPR(expr, 0));
 
-    /* compile the position expression (checking done by 'ElmsListCheck')  */
+    // compile the position expression (checking done by 'ElmsListCheck')
     poss = CompExpr(READ_EXPR(expr, 1));
 
-    /* emit the code to get the element                                    */
+    // emit the code to get the element
     Emit( "%c = ElmsListCheck( %c, %c );\n", elms, list, poss );
 
-    /* we know that the elements are a list                                */
+    // we know that the elements are a list
     SetInfoCVar( elms, W_LIST );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( poss ) )  FreeTemp( TEMP_CVAR( poss ) );
     if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
 
-    /* return the elements                                                 */
+    // return the elements
     return elms;
 }
 
@@ -3061,27 +3061,27 @@ static CVar CompElmsList(Expr expr)
 */
 static CVar CompElmListLev(Expr expr)
 {
-    CVar                lists;          /* lists                           */
-    CVar                pos;            /* position                        */
-    UInt                level;          /* level                           */
+    CVar                lists;          // lists
+    CVar                pos;            // position
+    UInt                level;          // level
 
-    /* compile the lists expression                                        */
+    // compile the lists expression
     lists = CompExpr(READ_EXPR(expr, 0));
 
-    /* compile and check the position expression                           */
+    // compile and check the position expression
     pos = CompExpr(READ_EXPR(expr, 1));
     CompCheckIntSmallPos( pos );
 
-    /* get the level                                                       */
+    // get the level
     level = READ_EXPR(expr, 2);
 
     /* emit the code to select the elements from several lists (to <lists>)*/
     Emit( "ElmListLevel( %c, %c, %d );\n", lists, pos, level );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( pos   ) )  FreeTemp( TEMP_CVAR( pos   ) );
 
-    /* return the lists                                                    */
+    // return the lists
     return lists;
 }
 
@@ -3092,26 +3092,26 @@ static CVar CompElmListLev(Expr expr)
 */
 static CVar CompElmsListLev(Expr expr)
 {
-    CVar                lists;          /* lists                           */
-    CVar                poss;           /* positions                       */
-    UInt                level;          /* level                           */
+    CVar                lists;          // lists
+    CVar                poss;           // positions
+    UInt                level;          // level
 
-    /* compile the lists expression                                        */
+    // compile the lists expression
     lists = CompExpr(READ_EXPR(expr, 0));
 
-    /* compile the position expression (checking done by 'ElmsListLevel')  */
+    // compile the position expression (checking done by 'ElmsListLevel')
     poss = CompExpr(READ_EXPR(expr, 1));
 
-    /* get the level                                                       */
+    // get the level
     level = READ_EXPR(expr, 2);
 
     /* emit the code to select the elements from several lists (to <lists>)*/
     Emit( "ElmsListLevelCheck( %c, %c, %d );\n", lists, poss, level );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( poss  ) )  FreeTemp( TEMP_CVAR( poss  ) );
 
-    /* return the lists                                                    */
+    // return the lists
     return lists;
 }
 
@@ -3122,31 +3122,31 @@ static CVar CompElmsListLev(Expr expr)
 */
 static CVar CompIsbList(Expr expr)
 {
-    CVar                isb;            /* isbound, result                 */
-    CVar                list;           /* list                            */
-    CVar                pos;            /* position                        */
+    CVar                isb;            // isbound, result
+    CVar                list;           // list
+    CVar                pos;            // position
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     isb = CVAR_TEMP( NewTemp( "isb" ) );
 
-    /* compile the list expression (checking is done by 'ISB_LIST')        */
+    // compile the list expression (checking is done by 'ISB_LIST')
     list = CompExpr(READ_EXPR(expr, 0));
 
-    /* compile and check the position expression                           */
+    // compile and check the position expression
     pos = CompExpr(READ_EXPR(expr, 1));
     CompCheckIntPos( pos );
 
-    /* emit the code to test the element                                   */
+    // emit the code to test the element
     Emit( "%c = C_ISB_LIST( %c, %c );\n", isb, list, pos );
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( isb, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( pos  ) )  FreeTemp( TEMP_CVAR( pos  ) );
     if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
 
-    /* return the element                                                  */
+    // return the element
     return isb;
 }
 
@@ -3157,30 +3157,30 @@ static CVar CompIsbList(Expr expr)
 */
 static CVar CompElmRecName(Expr expr)
 {
-    CVar                elm;            /* element, result                 */
-    CVar                record;         /* the record, left operand        */
-    UInt                rnam;           /* the name, right operand         */
+    CVar                elm;            // element, result
+    CVar                record;         // the record, left operand
+    UInt                rnam;           // the name, right operand
 
-    /* allocate a new temporary for the element                            */
+    // allocate a new temporary for the element
     elm = CVAR_TEMP( NewTemp( "elm" ) );
 
-    /* compile the record expression (checking is done by 'ELM_REC')       */
+    // compile the record expression (checking is done by 'ELM_REC')
     record = CompExpr(READ_EXPR(expr, 0));
 
-    /* get the name (stored immediately in the expression)                 */
+    // get the name (stored immediately in the expression)
     rnam = READ_EXPR(expr, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
-    /* emit the code to select the element of the record                   */
+    // emit the code to select the element of the record
     Emit( "%c = ELM_REC( %c, R_%n );\n", elm, record, NAME_RNAM(rnam) );
 
-    /* we know that we have a value                                        */
+    // we know that we have a value
     SetInfoCVar( elm, W_BOUND );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
@@ -3191,30 +3191,30 @@ static CVar CompElmRecName(Expr expr)
 */
 static CVar CompElmRecExpr(Expr expr)
 {
-    CVar                elm;            /* element, result                 */
-    CVar                record;         /* the record, left operand        */
-    CVar                rnam;           /* the name, right operand         */
+    CVar                elm;            // element, result
+    CVar                record;         // the record, left operand
+    CVar                rnam;           // the name, right operand
 
-    /* allocate a new temporary for the element                            */
+    // allocate a new temporary for the element
     elm = CVAR_TEMP( NewTemp( "elm" ) );
 
-    /* compile the record expression (checking is done by 'ELM_REC')       */
+    // compile the record expression (checking is done by 'ELM_REC')
     record = CompExpr(READ_EXPR(expr, 0));
 
-    /* compile the record name expression                                  */
+    // compile the record name expression
     rnam = CompExpr(READ_EXPR(expr, 1));
 
-    /* emit the code to select the element of the record                   */
+    // emit the code to select the element of the record
     Emit( "%c = ELM_REC( %c, RNamObj(%c) );\n", elm, record, rnam );
 
-    /* we know that we have a value                                        */
+    // we know that we have a value
     SetInfoCVar( elm, W_BOUND );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
@@ -3225,28 +3225,28 @@ static CVar CompElmRecExpr(Expr expr)
 */
 static CVar CompIsbRecName(Expr expr)
 {
-    CVar                isb;            /* isbound, result                 */
-    CVar                record;         /* the record, left operand        */
-    UInt                rnam;           /* the name, right operand         */
+    CVar                isb;            // isbound, result
+    CVar                record;         // the record, left operand
+    UInt                rnam;           // the name, right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     isb = CVAR_TEMP( NewTemp( "isb" ) );
 
-    /* compile the record expression (checking is done by 'ISB_REC')       */
+    // compile the record expression (checking is done by 'ISB_REC')
     record = CompExpr(READ_EXPR(expr, 0));
 
-    /* get the name (stored immediately in the expression)                 */
+    // get the name (stored immediately in the expression)
     rnam = READ_EXPR(expr, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
-    /* emit the code to test the element                                   */
+    // emit the code to test the element
     Emit( "%c = (ISB_REC( %c, R_%n ) ? True : False);\n",
           isb, record, NAME_RNAM(rnam) );
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( isb, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
     return isb;
@@ -3259,27 +3259,27 @@ static CVar CompIsbRecName(Expr expr)
 */
 static CVar CompIsbRecExpr(Expr expr)
 {
-    CVar                isb;            /* isbound, result                 */
-    CVar                record;         /* the record, left operand        */
-    CVar                rnam;           /* the name, right operand         */
+    CVar                isb;            // isbound, result
+    CVar                record;         // the record, left operand
+    CVar                rnam;           // the name, right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     isb = CVAR_TEMP( NewTemp( "isb" ) );
 
-    /* compile the record expression (checking is done by 'ISB_REC')       */
+    // compile the record expression (checking is done by 'ISB_REC')
     record = CompExpr(READ_EXPR(expr, 0));
 
-    /* compile the record name expression                                  */
+    // compile the record name expression
     rnam = CompExpr(READ_EXPR(expr, 1));
 
-    /* emit the code to test the element                                   */
+    // emit the code to test the element
     Emit( "%c = (ISB_REC( %c, RNamObj(%c) ) ? True : False);\n",
           isb, record, rnam );
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( isb, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
@@ -3293,31 +3293,31 @@ static CVar CompIsbRecExpr(Expr expr)
 */
 static CVar CompElmPosObj(Expr expr)
 {
-    CVar                elm;            /* element, result                 */
-    CVar                list;           /* list                            */
-    CVar                pos;            /* position                        */
+    CVar                elm;            // element, result
+    CVar                list;           // list
+    CVar                pos;            // position
 
-    /* allocate a new temporary for the element                            */
+    // allocate a new temporary for the element
     elm = CVAR_TEMP( NewTemp( "elm" ) );
 
-    /* compile the list expression (checking is done by 'ELM_LIST')        */
+    // compile the list expression (checking is done by 'ELM_LIST')
     list = CompExpr(READ_EXPR(expr, 0));
 
-    /* compile and check the position expression                           */
+    // compile and check the position expression
     pos = CompExpr(READ_EXPR(expr, 1));
     CompCheckIntSmallPos( pos );
 
-    /* emit the code to get the element                                    */
+    // emit the code to get the element
     Emit( "%c = ElmPosObj( %c, %i );\n", elm, list, pos );
 
-    /* we know that we have a value                                        */
+    // we know that we have a value
     SetInfoCVar( elm, W_BOUND );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( pos  ) )  FreeTemp( TEMP_CVAR( pos  ) );
     if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
@@ -3328,31 +3328,31 @@ static CVar CompElmPosObj(Expr expr)
 */
 static CVar CompIsbPosObj(Expr expr)
 {
-    CVar                isb;            /* isbound, result                 */
-    CVar                list;           /* list                            */
-    CVar                pos;            /* position                        */
+    CVar                isb;            // isbound, result
+    CVar                list;           // list
+    CVar                pos;            // position
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     isb = CVAR_TEMP( NewTemp( "isb" ) );
 
-    /* compile the list expression (checking is done by 'ISB_LIST')        */
+    // compile the list expression (checking is done by 'ISB_LIST')
     list = CompExpr(READ_EXPR(expr, 0));
 
-    /* compile and check the position expression                           */
+    // compile and check the position expression
     pos = CompExpr(READ_EXPR(expr, 1));
     CompCheckIntSmallPos( pos );
 
-    /* emit the code to test the element                                   */
+    // emit the code to test the element
     Emit( "%c = IsbPosObj( %c, %i ) ? True : False;\n", isb, list, pos );
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( isb, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( pos  ) )  FreeTemp( TEMP_CVAR( pos  ) );
     if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
 
-    /* return the element                                                  */
+    // return the element
     return isb;
 }
 
@@ -3363,30 +3363,30 @@ static CVar CompIsbPosObj(Expr expr)
 */
 static CVar CompElmComObjName(Expr expr)
 {
-    CVar                elm;            /* element, result                 */
-    CVar                record;         /* the record, left operand        */
-    UInt                rnam;           /* the name, right operand         */
+    CVar                elm;            // element, result
+    CVar                record;         // the record, left operand
+    UInt                rnam;           // the name, right operand
 
-    /* allocate a new temporary for the element                            */
+    // allocate a new temporary for the element
     elm = CVAR_TEMP( NewTemp( "elm" ) );
 
-    /* compile the record expression (checking is done by 'ELM_REC')       */
+    // compile the record expression (checking is done by 'ELM_REC')
     record = CompExpr(READ_EXPR(expr, 0));
 
-    /* get the name (stored immediately in the expression)                 */
+    // get the name (stored immediately in the expression)
     rnam = READ_EXPR(expr, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
-    /* emit the code to select the element of the record                   */
+    // emit the code to select the element of the record
     Emit( "%c = ElmComObj( %c, R_%n );\n", elm, record, NAME_RNAM(rnam) );
 
-    /* we know that we have a value                                        */
+    // we know that we have a value
     SetInfoCVar( elm, W_BOUND );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
@@ -3398,30 +3398,30 @@ static CVar CompElmComObjName(Expr expr)
 */
 static CVar CompElmComObjExpr(Expr expr)
 {
-    CVar                elm;            /* element, result                 */
-    CVar                record;         /* the record, left operand        */
-    CVar                rnam;           /* the name, right operand         */
+    CVar                elm;            // element, result
+    CVar                record;         // the record, left operand
+    CVar                rnam;           // the name, right operand
 
-    /* allocate a new temporary for the element                            */
+    // allocate a new temporary for the element
     elm = CVAR_TEMP( NewTemp( "elm" ) );
 
-    /* compile the record expression (checking is done by 'ELM_REC')       */
+    // compile the record expression (checking is done by 'ELM_REC')
     record = CompExpr(READ_EXPR(expr, 0));
 
-    /* get the name (stored immediately in the expression)                 */
+    // get the name (stored immediately in the expression)
     rnam = CompExpr(READ_EXPR(expr, 1));
 
-    /* emit the code to select the element of the record                   */
+    // emit the code to select the element of the record
     Emit( "%c = ElmComObj( %c, RNamObj(%c) );\n", elm, record, rnam );
 
-    /* we know that we have a value                                        */
+    // we know that we have a value
     SetInfoCVar( elm, W_BOUND );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
-    /* return the element                                                  */
+    // return the element
     return elm;
 }
 
@@ -3432,28 +3432,28 @@ static CVar CompElmComObjExpr(Expr expr)
 */
 static CVar CompIsbComObjName(Expr expr)
 {
-    CVar                isb;            /* isbound, result                 */
-    CVar                record;         /* the record, left operand        */
-    UInt                rnam;           /* the name, right operand         */
+    CVar                isb;            // isbound, result
+    CVar                record;         // the record, left operand
+    UInt                rnam;           // the name, right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     isb = CVAR_TEMP( NewTemp( "isb" ) );
 
-    /* compile the record expression (checking is done by 'ISB_REC')       */
+    // compile the record expression (checking is done by 'ISB_REC')
     record = CompExpr(READ_EXPR(expr, 0));
 
-    /* get the name (stored immediately in the expression)                 */
+    // get the name (stored immediately in the expression)
     rnam = READ_EXPR(expr, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
-    /* emit the code to test the element                                   */
+    // emit the code to test the element
     Emit( "%c = IsbComObj( %c, R_%n ) ? True : False;\n",
           isb, record, NAME_RNAM(rnam) );
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( isb, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
     return isb;
@@ -3466,27 +3466,27 @@ static CVar CompIsbComObjName(Expr expr)
 */
 static CVar CompIsbComObjExpr(Expr expr)
 {
-    CVar                isb;            /* isbound, result                 */
-    CVar                record;         /* the record, left operand        */
-    UInt                rnam;           /* the name, right operand         */
+    CVar                isb;            // isbound, result
+    CVar                record;         // the record, left operand
+    UInt                rnam;           // the name, right operand
 
-    /* allocate a new temporary for the result                             */
+    // allocate a new temporary for the result
     isb = CVAR_TEMP( NewTemp( "isb" ) );
 
-    /* compile the record expression (checking is done by 'ISB_REC')       */
+    // compile the record expression (checking is done by 'ISB_REC')
     record = CompExpr(READ_EXPR(expr, 0));
 
-    /* get the name (stored immediately in the expression)                 */
+    // get the name (stored immediately in the expression)
     rnam = CompExpr(READ_EXPR(expr, 1));
 
-    /* emit the code to test the element                                   */
+    // emit the code to test the element
     Emit( "%c = IsbComObj( %c, RNamObj(%c) ) ? True : False;\n",
           isb, record, rnam );
 
-    /* we know that the result is boolean                                  */
+    // we know that the result is boolean
     SetInfoCVar( isb, W_BOOL );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 
@@ -3537,17 +3537,17 @@ static GVar G_Add;
 */
 static void CompProccall0to6Args(Stat stat)
 {
-    CVar                func;           /* function                        */
-    CVar                args[8];        /* arguments                       */
-    UInt                narg;           /* number of arguments             */
-    UInt                i;              /* loop variable                   */
+    CVar                func;           // function
+    CVar                args[8];        // arguments
+    UInt                narg;           // number of arguments
+    UInt                i;              // loop variable
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* special case to inline 'Add'                                        */
+    // special case to inline 'Add'
     if ( CompFastListFuncs
       && TNUM_EXPR( FUNC_CALL(stat) ) == EXPR_REF_GVAR
       && READ_EXPR( FUNC_CALL(stat), 0 ) == G_Add
@@ -3565,7 +3565,7 @@ static void CompProccall0to6Args(Stat stat)
         return;
     }
 
-    /* compile the reference to the function                               */
+    // compile the reference to the function
     if ( TNUM_EXPR( FUNC_CALL(stat) ) == EXPR_REF_GVAR ) {
         func = CompRefGVarFopy( FUNC_CALL(stat) );
     }
@@ -3573,13 +3573,13 @@ static void CompProccall0to6Args(Stat stat)
         func = CompExpr( FUNC_CALL(stat) );
     }
 
-    /* compile the argument expressions                                    */
+    // compile the argument expressions
     narg = NARG_SIZE_CALL(SIZE_STAT(stat));
     for ( i = 1; i <= narg; i++ ) {
         args[i] = CompExpr( ARGI_CALL(stat,i) );
     }
 
-    /* emit the code for the procedure call                                */
+    // emit the code for the procedure call
     Emit( "if ( TNUM_OBJ( %c ) == T_FUNCTION ) {\n", func );
     Emit( "CALL_%dARGS( %c", narg, func );
     for ( i = 1; i <= narg; i++ ) {
@@ -3598,7 +3598,7 @@ static void CompProccall0to6Args(Stat stat)
     Emit( " ) );\n" );
     Emit( "}\n" );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     for ( i = narg; 1 <= i; i-- ) {
         if ( IS_TEMP_CVAR( args[i] ) )  FreeTemp( TEMP_CVAR( args[i] ) );
     }
@@ -3612,18 +3612,18 @@ static void CompProccall0to6Args(Stat stat)
 */
 static void CompProccallXArgs(Stat stat)
 {
-    CVar                func;           /* function                        */
-    CVar                argl;           /* argument list                   */
-    CVar                argi;           /* <i>-th argument                 */
-    UInt                narg;           /* number of arguments             */
-    UInt                i;              /* loop variable                   */
+    CVar                func;           // function
+    CVar                argl;           // argument list
+    CVar                argi;           // <i>-th argument
+    UInt                narg;           // number of arguments
+    UInt                i;              // loop variable
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the reference to the function                               */
+    // compile the reference to the function
     if ( TNUM_EXPR( FUNC_CALL(stat) ) == EXPR_REF_GVAR ) {
         func = CompRefGVarFopy( FUNC_CALL(stat) );
     }
@@ -3631,7 +3631,7 @@ static void CompProccallXArgs(Stat stat)
         func = CompExpr( FUNC_CALL(stat) );
     }
 
-    /* compile the argument expressions                                    */
+    // compile the argument expressions
     narg = NARG_SIZE_CALL(SIZE_STAT(stat));
     argl = CVAR_TEMP( NewTemp( "argl" ) );
     Emit( "%c = NEW_PLIST( T_PLIST, %d );\n", argl, narg );
@@ -3645,7 +3645,7 @@ static void CompProccallXArgs(Stat stat)
         if ( IS_TEMP_CVAR( argi ) )  FreeTemp( TEMP_CVAR( argi ) );
     }
 
-    /* emit the code for the procedure call                                */
+    // emit the code for the procedure call
     Emit( "if ( TNUM_OBJ( %c ) == T_FUNCTION ) {\n", func );
     Emit( "CALL_XARGS( %c, %c );\n", func, argl );
     Emit( "}\n" );
@@ -3653,7 +3653,7 @@ static void CompProccallXArgs(Stat stat)
     Emit( "DoOperation2Args( CallFuncListOper, %c, %c );\n", func, argl );
     Emit( "}\n" );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( argl ) )  FreeTemp( TEMP_CVAR( argl ) );
     if ( IS_TEMP_CVAR( func ) )  FreeTemp( TEMP_CVAR( func ) );
 }
@@ -3684,13 +3684,13 @@ static void CompProccallOpts(Stat stat)
 */
 static void CompSeqStat(Stat stat)
 {
-    UInt                nr;             /* number of statements            */
-    UInt                i;              /* loop variable                   */
+    UInt                nr;             // number of statements
+    UInt                i;              // loop variable
 
-    /* get the number of statements                                        */
+    // get the number of statements
     nr = SIZE_STAT( stat ) / sizeof(Stat);
 
-    /* compile the statements                                              */
+    // compile the statements
     for ( i = 1; i <= nr; i++ ) {
         CompStat(READ_STAT(stat, i - 1));
     }
@@ -3703,113 +3703,113 @@ static void CompSeqStat(Stat stat)
 */
 static void CompIf(Stat stat)
 {
-    CVar                cond;           /* condition                       */
-    UInt                nr;             /* number of branches              */
-    Bag                 info_in;        /* information at branch begin     */
-    Bag                 info_out;       /* information at branch end       */
-    UInt                i;              /* loop variable                   */
+    CVar                cond;           // condition
+    UInt                nr;             // number of branches
+    Bag                 info_in;        // information at branch begin
+    Bag                 info_out;       // information at branch end
+    UInt                i;              // loop variable
 
-    /* get the number of branches                                          */
+    // get the number of branches
     nr = SIZE_STAT( stat ) / (2*sizeof(Stat));
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* if " );
         PrintExpr(READ_EXPR(stat, 0));
         Emit( " then */\n" );
     }
 
-    /* compile the expression                                              */
+    // compile the expression
     cond = CompBoolExpr(READ_STAT(stat, 0));
 
-    /* emit the code to test the condition                                 */
+    // emit the code to test the condition
     Emit( "if ( %c ) {\n", cond );
     if ( IS_TEMP_CVAR( cond ) )  FreeTemp( TEMP_CVAR( cond ) );
 
-    /* remember what we know after evaluating the first condition          */
+    // remember what we know after evaluating the first condition
     info_in = NewInfoCVars();
     CopyInfoCVars( info_in, INFO_FEXP(CURR_FUNC()) );
 
-    /* compile the body                                                    */
+    // compile the body
     CompStat(READ_STAT(stat, 1));
 
-    /* remember what we know after executing the first body                */
+    // remember what we know after executing the first body
     info_out = NewInfoCVars();
     CopyInfoCVars( info_out, INFO_FEXP(CURR_FUNC()) );
 
-    /* emit the rest code                                                  */
+    // emit the rest code
     Emit( "\n}\n" );
 
-    /* loop over the 'elif' branches                                       */
+    // loop over the 'elif' branches
     for ( i = 2; i <= nr; i++ ) {
 
-        /* do not handle 'else' branch here                                */
+        // do not handle 'else' branch here
         if (i == nr && TNUM_EXPR(READ_STAT(stat, 2 * (i - 1))) == EXPR_TRUE)
             break;
 
-        /* print a comment                                                 */
+        // print a comment
         if ( CompPass == 2 ) {
             Emit( "\n/* elif " );
             PrintExpr(READ_EXPR(stat, 2 * (i - 1)));
             Emit( " then */\n" );
         }
 
-        /* emit the 'else' to connect this branch to the 'if' branch       */
+        // emit the 'else' to connect this branch to the 'if' branch
         Emit( "else {\n" );
 
-        /* this is what we know if we enter this branch                    */
+        // this is what we know if we enter this branch
         CopyInfoCVars( INFO_FEXP(CURR_FUNC()), info_in );
 
-        /* compile the expression                                          */
+        // compile the expression
         cond = CompBoolExpr(READ_STAT(stat, 2 * (i - 1)));
 
-        /* emit the code to test the condition                             */
+        // emit the code to test the condition
         Emit( "if ( %c ) {\n", cond );
         if ( IS_TEMP_CVAR( cond ) )  FreeTemp( TEMP_CVAR( cond ) );
 
-        /* remember what we know after evaluating all previous conditions  */
+        // remember what we know after evaluating all previous conditions
         CopyInfoCVars( info_in, INFO_FEXP(CURR_FUNC()) );
 
-        /* compile the body                                                */
+        // compile the body
         CompStat(READ_STAT(stat, 2 * (i - 1) + 1));
 
         /* remember what we know after executing one of the previous bodies*/
         MergeInfoCVars( info_out, INFO_FEXP(CURR_FUNC()) );
 
-        /* emit the rest code                                              */
+        // emit the rest code
         Emit( "\n}\n" );
 
     }
 
-    /* handle 'else' branch                                                */
+    // handle 'else' branch
     if ( i == nr ) {
 
-        /* print a comment                                                 */
+        // print a comment
         if ( CompPass == 2 ) {
             Emit( "\n/* else */\n" );
         }
 
-        /* emit the 'else' to connect this branch to the 'if' branch       */
+        // emit the 'else' to connect this branch to the 'if' branch
         Emit( "else {\n" );
 
-        /* this is what we know if we enter this branch                    */
+        // this is what we know if we enter this branch
         CopyInfoCVars( INFO_FEXP(CURR_FUNC()), info_in );
 
-        /* compile the body                                                */
+        // compile the body
         CompStat(READ_STAT(stat, 2 * (i - 1) + 1));
 
         /* remember what we know after executing one of the previous bodies*/
         MergeInfoCVars( info_out, INFO_FEXP(CURR_FUNC()) );
 
-        /* emit the rest code                                              */
+        // emit the rest code
         Emit( "\n}\n" );
 
     }
 
-    /* fake empty 'else' branch                                            */
+    // fake empty 'else' branch
     else {
 
-        /* this is what we know if we enter this branch                    */
+        // this is what we know if we enter this branch
         CopyInfoCVars( INFO_FEXP(CURR_FUNC()), info_in );
 
         /* remember what we know after executing one of the previous bodies*/
@@ -3817,7 +3817,7 @@ static void CompIf(Stat stat)
 
     }
 
-    /* close all unbalanced parenthesis                                    */
+    // close all unbalanced parenthesis
     for ( i = 2; i <= nr; i++ ) {
         if (i == nr && TNUM_EXPR(READ_STAT(stat, 2 * (i - 1))) == EXPR_TRUE)
             break;
@@ -3825,7 +3825,7 @@ static void CompIf(Stat stat)
     }
     Emit( "/* fi */\n" );
 
-    /* put what we know into the current info                              */
+    // put what we know into the current info
     CopyInfoCVars( INFO_FEXP(CURR_FUNC()), info_out );
 
 }
@@ -3837,25 +3837,25 @@ static void CompIf(Stat stat)
 */
 static void CompFor(Stat stat)
 {
-    UInt                var;            /* loop variable                   */
-    Char                vart;           /* variable type                   */
-    CVar                list;           /* list to loop over               */
-    CVar                islist;         /* is the list a proper list       */
-    CVar                first;          /* first loop index                */
-    CVar                last;           /* last  loop index                */
-    CVar                lidx;           /* loop index variable             */
-    CVar                elm;            /* element of list                 */
-    Int                 pass;           /* current pass                    */
-    Bag                 prev;           /* previous temp-info              */
-    Int                 i;              /* loop variable                   */
+    UInt                var;            // loop variable
+    Char                vart;           // variable type
+    CVar                list;           // list to loop over
+    CVar                islist;         // is the list a proper list
+    CVar                first;          // first loop index
+    CVar                last;           // last  loop index
+    CVar                lidx;           // loop index variable
+    CVar                elm;            // element of list
+    Int                 pass;           // current pass
+    Bag                 prev;           // previous temp-info
+    Int                 i;              // loop variable
 
-    /* handle 'for <lvar> in [<first>..<last>] do'                         */
+    // handle 'for <lvar> in [<first>..<last>] do'
     if ( IS_REF_LVAR( READ_STAT(stat, 0) )
       && ! CompGetUseHVar( LVAR_REF_LVAR( READ_STAT(stat, 0) ) )
       && TNUM_EXPR( READ_STAT(stat, 1) ) == EXPR_RANGE
       && SIZE_EXPR( READ_STAT(stat, 1) ) == 2*sizeof(Expr) ) {
 
-        /* print a comment                                                 */
+        // print a comment
         if ( CompPass == 2 ) {
             Emit( "\n/* for " );
             PrintExpr(READ_EXPR(stat, 0));
@@ -3864,20 +3864,20 @@ static void CompFor(Stat stat)
             Emit( " do */\n" );
         }
 
-        /* get the local variable                                          */
+        // get the local variable
         var = LVAR_REF_LVAR(READ_STAT(stat, 0));
 
-        /* allocate a new temporary for the loop variable                  */
+        // allocate a new temporary for the loop variable
         lidx = CVAR_TEMP( NewTemp( "lidx" ) );
 
-        /* compile and check the first and last value                      */
+        // compile and check the first and last value
         first = CompExpr(READ_EXPR(READ_STAT(stat, 1), 0));
         CompCheckIntSmall( first );
 
-        /* compile and check the last value                                */
-        /* if the last value is in a local variable,                       */
-        /* we must copy it into a temporary,                               */
-        /* because the local variable may change its value in the body     */
+        // compile and check the last value
+        // if the last value is in a local variable,
+        // we must copy it into a temporary,
+        // because the local variable may change its value in the body
         last = CompExpr(READ_EXPR(READ_STAT(stat, 1), 1));
         CompCheckIntSmall( last  );
         if ( IS_LVAR_CVAR(last) ) {
@@ -3886,7 +3886,7 @@ static void CompFor(Stat stat)
             last = elm;
         }
 
-        /* find the invariant temp-info                                    */
+        // find the invariant temp-info
         pass = CompPass;
         CompPass = 99;
         prev = NewInfoCVars();
@@ -3905,16 +3905,16 @@ static void CompFor(Stat stat)
         } while ( ! IsEqInfoCVars( INFO_FEXP(CURR_FUNC()), prev ) );
         CompPass = pass;
 
-        /* emit the code for the loop                                      */
+        // emit the code for the loop
         Emit( "for ( %c = %c;\n",                lidx, first );
         Emit( "      ((Int)%c) <= ((Int)%c);\n", lidx, last  );
         Emit( "      %c = (Obj)(((UInt)%c)+4) ", lidx, lidx  );
         Emit( ") {\n" );
 
-        /* emit the code to copy the loop index into the loop variable     */
+        // emit the code to copy the loop index into the loop variable
         Emit( "%c = %c;\n", CVAR_LVAR(var), lidx );
 
-        /* set what we know about the loop variable                        */
+        // set what we know about the loop variable
         if ( HasInfoCVar( first, W_INT_SMALL_POS ) ) {
             SetInfoCVar( CVAR_LVAR(var), W_INT_SMALL_POS );
         }
@@ -3922,26 +3922,26 @@ static void CompFor(Stat stat)
             SetInfoCVar( CVAR_LVAR(var), W_INT_SMALL );
         }
 
-        /* compile the body                                                */
+        // compile the body
         for ( i = 2; i < SIZE_STAT(stat)/sizeof(Stat); i++ ) {
             CompStat(READ_STAT(stat, i));
         }
 
-        /* emit the end code                                               */
+        // emit the end code
         Emit( "\n}\n" );
         Emit( "/* od */\n" );
 
-        /* free the temporaries                                            */
+        // free the temporaries
         if ( IS_TEMP_CVAR( last  ) )  FreeTemp( TEMP_CVAR( last  ) );
         if ( IS_TEMP_CVAR( first ) )  FreeTemp( TEMP_CVAR( first ) );
         if ( IS_TEMP_CVAR( lidx  ) )  FreeTemp( TEMP_CVAR( lidx  ) );
 
     }
 
-    /* handle other loops                                                  */
+    // handle other loops
     else {
 
-        /* print a comment                                                 */
+        // print a comment
         if ( CompPass == 2 ) {
             Emit( "\n/* for " );
             PrintExpr(READ_EXPR(stat, 0));
@@ -3950,7 +3950,7 @@ static void CompFor(Stat stat)
             Emit( " do */\n" );
         }
 
-        /* get the variable (initialize them first to please 'lint')       */
+        // get the variable (initialize them first to please 'lint')
         if ( IS_REF_LVAR( READ_STAT(stat, 0) )
           && ! CompGetUseHVar( LVAR_REF_LVAR( READ_STAT(stat, 0) ) ) ) {
             var = LVAR_REF_LVAR( READ_STAT(stat, 0) );
@@ -3970,15 +3970,15 @@ static void CompFor(Stat stat)
             vart = 'g';
         }
 
-        /* allocate a new temporary for the loop variable                  */
+        // allocate a new temporary for the loop variable
         lidx   = CVAR_TEMP( NewTemp( "lidx"   ) );
         elm    = CVAR_TEMP( NewTemp( "elm"    ) );
         islist = CVAR_TEMP( NewTemp( "islist" ) );
 
-        /* compile and check the first and last value                      */
+        // compile and check the first and last value
         list = CompExpr(READ_STAT(stat, 1));
 
-        /* SL Patch added to try and avoid a bug */
+        // SL Patch added to try and avoid a bug
         if (IS_LVAR_CVAR(list))
           {
             CVar copylist;
@@ -3986,9 +3986,9 @@ static void CompFor(Stat stat)
             Emit("%c = %c;\n",copylist, list);
             list = copylist;
           }
-        /* end of SL patch */
+        // end of SL patch
 
-        /* find the invariant temp-info                                    */
+        // find the invariant temp-info
         pass = CompPass;
         CompPass = 99;
         prev = NewInfoCVars();
@@ -4004,8 +4004,8 @@ static void CompFor(Stat stat)
         } while ( ! IsEqInfoCVars( INFO_FEXP(CURR_FUNC()), prev ) );
         CompPass = pass;
 
-        /* emit the code for the loop                                      */
-        /* (plenty ugly because of iterator handling)                      */
+        // emit the code for the loop
+        // (plenty ugly because of iterator handling)
         Emit( "if ( IS_SMALL_LIST(%c) ) {\n", list );
         Emit( "%c = (Obj)(UInt)1;\n", islist );
         Emit( "%c = INTOBJ_INT(1);\n", lidx );
@@ -4027,7 +4027,7 @@ static void CompFor(Stat stat)
         Emit( "%c = CALL_1ARGS( GF_NEXT_ITER, %c );\n", elm, lidx );
         Emit( "}\n" );
 
-        /* emit the code to copy the loop index into the loop variable     */
+        // emit the code to copy the loop index into the loop variable
         if ( vart == 'l' ) {
             Emit( "%c = %c;\n",
                   CVAR_LVAR(var), elm );
@@ -4045,21 +4045,21 @@ static void CompFor(Stat stat)
                   NameGVar(var), elm );
         }
 
-        /* set what we know about the loop variable                        */
+        // set what we know about the loop variable
         if ( vart == 'l' ) {
             SetInfoCVar( CVAR_LVAR(var), W_BOUND );
         }
 
-        /* compile the body                                                */
+        // compile the body
         for ( i = 2; i < SIZE_STAT(stat)/sizeof(Stat); i++ ) {
             CompStat(READ_STAT(stat, i));
         }
 
-        /* emit the end code                                               */
+        // emit the end code
         Emit( "\n}\n" );
         Emit( "/* od */\n" );
 
-        /* free the temporaries                                            */
+        // free the temporaries
         if ( IS_TEMP_CVAR( list   ) )  FreeTemp( TEMP_CVAR( list   ) );
         if ( IS_TEMP_CVAR( islist ) )  FreeTemp( TEMP_CVAR( islist ) );
         if ( IS_TEMP_CVAR( elm    ) )  FreeTemp( TEMP_CVAR( elm    ) );
@@ -4076,13 +4076,13 @@ static void CompFor(Stat stat)
 */
 static void CompWhile(Stat stat)
 {
-    CVar                cond;           /* condition                       */
-    Int                 pass;           /* current pass                    */
-    Bag                 prev;           /* previous temp-info              */
-    UInt                i;              /* loop variable                   */
+    CVar                cond;           // condition
+    Int                 pass;           // current pass
+    Bag                 prev;           // previous temp-info
+    UInt                i;              // loop variable
 
-    /* find an invariant temp-info                                         */
-    /* the emits are probably not needed                                   */
+    // find an invariant temp-info
+    // the emits are probably not needed
     pass = CompPass;
     CompPass = 99;
     Emit( "while ( 1 ) {\n" );
@@ -4100,27 +4100,27 @@ static void CompWhile(Stat stat)
     Emit( "}\n" );
     CompPass = pass;
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* while " );
         PrintExpr(READ_EXPR(stat, 0));
         Emit( " do */\n" );
     }
 
-    /* emit the code for the loop                                          */
+    // emit the code for the loop
     Emit( "while ( 1 ) {\n" );
 
-    /* compile the condition                                               */
+    // compile the condition
     cond = CompBoolExpr(READ_STAT(stat, 0));
     Emit( "if ( ! %c ) break;\n", cond );
     if ( IS_TEMP_CVAR( cond ) )  FreeTemp( TEMP_CVAR( cond ) );
 
-    /* compile the body                                                    */
+    // compile the body
     for ( i = 1; i < SIZE_STAT(stat)/sizeof(Stat); i++ ) {
         CompStat(READ_STAT(stat, i));
     }
 
-    /* that's it                                                            */
+    // that's it
     Emit( "\n}\n" );
     Emit( "/* od */\n" );
 
@@ -4133,13 +4133,13 @@ static void CompWhile(Stat stat)
 */
 static void CompRepeat(Stat stat)
 {
-    CVar                cond;           /* condition                       */
-    Int                 pass;           /* current pass                    */
-    Bag                 prev;           /* previous temp-info              */
-    UInt                i;              /* loop variable                   */
+    CVar                cond;           // condition
+    Int                 pass;           // current pass
+    Bag                 prev;           // previous temp-info
+    UInt                i;              // loop variable
 
-    /* find an invariant temp-info                                         */
-    /* the emits are probably not needed                                   */
+    // find an invariant temp-info
+    // the emits are probably not needed
     pass = CompPass;
     CompPass = 99;
     Emit( "do {\n" );
@@ -4157,32 +4157,32 @@ static void CompRepeat(Stat stat)
     Emit( "} while ( 1 );\n" );
     CompPass = pass;
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* repeat */\n" );
     }
 
-    /* emit the code for the loop                                          */
+    // emit the code for the loop
     Emit( "do {\n" );
 
-    /* compile the body                                                    */
+    // compile the body
     for ( i = 1; i < SIZE_STAT(stat)/sizeof(Stat); i++ ) {
         CompStat(READ_STAT(stat, i));
     }
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* until " );
         PrintExpr(READ_EXPR(stat, 0));
         Emit( " */\n" );
     }
 
-    /* compile the condition                                               */
+    // compile the condition
     cond = CompBoolExpr(READ_STAT(stat, 0));
     Emit( "if ( %c ) break;\n", cond );
     if ( IS_TEMP_CVAR( cond ) )  FreeTemp( TEMP_CVAR( cond ) );
 
-    /* that's it                                                            */
+    // that's it
     Emit( "} while ( 1 );\n" );
 }
 
@@ -4193,7 +4193,7 @@ static void CompRepeat(Stat stat)
 */
 static void CompBreak(Stat stat)
 {
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
@@ -4207,7 +4207,7 @@ static void CompBreak(Stat stat)
 */
 static void CompContinue(Stat stat)
 {
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
@@ -4222,23 +4222,23 @@ static void CompContinue(Stat stat)
 */
 static void CompReturnObj(Stat stat)
 {
-    CVar                obj;            /* returned object                 */
+    CVar                obj;            // returned object
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the expression                                              */
+    // compile the expression
     obj = CompExpr(READ_STAT(stat, 0));
 
-    /* emit code to remove stack frame                                     */
+    // emit code to remove stack frame
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
 
-    /* emit code to return from function                                   */
+    // emit code to return from function
     Emit( "return %c;\n", obj );
 
-    /* free the temporary                                                  */
+    // free the temporary
     if ( IS_TEMP_CVAR( obj ) )  FreeTemp( TEMP_CVAR( obj ) );
 }
 
@@ -4249,15 +4249,15 @@ static void CompReturnObj(Stat stat)
 */
 static void CompReturnVoid(Stat stat)
 {
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* emit code to remove stack frame                                     */
+    // emit code to remove stack frame
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
 
-    /* emit code to return from function                                   */
+    // emit code to return from function
     Emit( "return 0;\n" );
 }
 
@@ -4268,18 +4268,18 @@ static void CompReturnVoid(Stat stat)
 */
 static void CompAssLVar(Stat stat)
 {
-    LVar                lvar;           /* local variable                  */
-    CVar                rhs;            /* right hand side                 */
+    LVar                lvar;           // local variable
+    CVar                rhs;            // right hand side
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the right hand side expression                              */
+    // compile the right hand side expression
     rhs = CompExpr(READ_STAT(stat, 1));
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     lvar = (LVar)(READ_STAT(stat, 0));
     if ( CompGetUseHVar( lvar ) ) {
         Emit( "ASS_LVAR( %d, %c );\n", GetIndxHVar(lvar), rhs );
@@ -4289,7 +4289,7 @@ static void CompAssLVar(Stat stat)
         SetInfoCVar( CVAR_LVAR(lvar), GetInfoCVar( rhs ) );
     }
 
-    /* free the temporary                                                  */
+    // free the temporary
     if ( IS_TEMP_CVAR( rhs ) )  FreeTemp( TEMP_CVAR( rhs ) );
 }
 
@@ -4300,14 +4300,14 @@ static void CompAssLVar(Stat stat)
 */
 static void CompUnbLVar(Stat stat)
 {
-    LVar                lvar;           /* local variable                  */
+    LVar                lvar;           // local variable
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     lvar = (LVar)(READ_STAT(stat, 0));
     if ( CompGetUseHVar( lvar ) ) {
         Emit( "ASS_LVAR( %d, 0 );\n", GetIndxHVar(lvar) );
@@ -4325,24 +4325,24 @@ static void CompUnbLVar(Stat stat)
 */
 static void CompAssHVar(Stat stat)
 {
-    HVar                hvar;           /* higher variable                 */
-    CVar                rhs;            /* right hand side                 */
+    HVar                hvar;           // higher variable
+    CVar                rhs;            // right hand side
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the right hand side expression                              */
+    // compile the right hand side expression
     rhs = CompExpr(READ_STAT(stat, 1));
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     hvar = (HVar)(READ_STAT(stat, 0));
     CompSetUseHVar( hvar );
     Emit( "ASS_HVAR( (%d << 16) | %d, %c );\n",
           GetLevlHVar(hvar), GetIndxHVar(hvar), rhs );
 
-    /* free the temporary                                                  */
+    // free the temporary
     if ( IS_TEMP_CVAR( rhs ) )  FreeTemp( TEMP_CVAR( rhs ) );
 }
 
@@ -4353,14 +4353,14 @@ static void CompAssHVar(Stat stat)
 */
 static void CompUnbHVar(Stat stat)
 {
-    HVar                hvar;           /* higher variable                 */
+    HVar                hvar;           // higher variable
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     hvar = (HVar)(READ_STAT(stat, 0));
     CompSetUseHVar( hvar );
     Emit( "ASS_HVAR( (%d << 16) | %d, 0 );\n",
@@ -4374,23 +4374,23 @@ static void CompUnbHVar(Stat stat)
 */
 static void CompAssGVar(Stat stat)
 {
-    GVar                gvar;           /* global variable                 */
-    CVar                rhs;            /* right hand side                 */
+    GVar                gvar;           // global variable
+    CVar                rhs;            // right hand side
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the right hand side expression                              */
+    // compile the right hand side expression
     rhs = CompExpr(READ_STAT(stat, 1));
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     gvar = (GVar)(READ_STAT(stat, 0));
     CompSetUseGVar( gvar, COMP_USE_GVAR_ID );
     Emit( "AssGVar( G_%n, %c );\n", NameGVar(gvar), rhs );
 
-    /* free the temporary                                                  */
+    // free the temporary
     if ( IS_TEMP_CVAR( rhs ) )  FreeTemp( TEMP_CVAR( rhs ) );
 }
 
@@ -4401,14 +4401,14 @@ static void CompAssGVar(Stat stat)
 */
 static void CompUnbGVar(Stat stat)
 {
-    GVar                gvar;           /* global variable                 */
+    GVar                gvar;           // global variable
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     gvar = (GVar)(READ_STAT(stat, 0));
     CompSetUseGVar( gvar, COMP_USE_GVAR_ID );
     Emit( "AssGVar( G_%n, 0 );\n", NameGVar(gvar) );
@@ -4421,26 +4421,26 @@ static void CompUnbGVar(Stat stat)
 */
 static void CompAssList(Stat stat)
 {
-    CVar                list;           /* list                            */
-    CVar                pos;            /* position                        */
-    CVar                rhs;            /* right hand side                 */
+    CVar                list;           // list
+    CVar                pos;            // position
+    CVar                rhs;            // right hand side
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the list expression                                         */
+    // compile the list expression
     list = CompExpr(READ_STAT(stat, 0));
 
-    /* compile and check the position expression                           */
+    // compile and check the position expression
     pos = CompExpr(READ_STAT(stat, 1));
     CompCheckIntPos( pos );
 
-    /* compile the right hand side                                         */
+    // compile the right hand side
     rhs = CompExpr(READ_STAT(stat, 2));
 
-    /* emit the code                                                       */
+    // emit the code
     if ( CompFastPlainLists ) {
         if ( HasInfoCVar( rhs, W_INT_SMALL ) ) {
             Emit( "C_ASS_LIST_FPL_INTOBJ( %c, %c, %c )\n", list, pos, rhs );
@@ -4453,7 +4453,7 @@ static void CompAssList(Stat stat)
         Emit( "C_ASS_LIST( %c, %c, %c );\n", list, pos, rhs );
     }
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rhs  ) )  FreeTemp( TEMP_CVAR( rhs  ) );
     if ( IS_TEMP_CVAR( pos  ) )  FreeTemp( TEMP_CVAR( pos  ) );
     if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
@@ -4466,28 +4466,28 @@ static void CompAssList(Stat stat)
 */
 static void CompAsssList(Stat stat)
 {
-    CVar                list;           /* list                            */
-    CVar                poss;           /* positions                       */
-    CVar                rhss;           /* right hand sides                */
+    CVar                list;           // list
+    CVar                poss;           // positions
+    CVar                rhss;           // right hand sides
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the list expression                                         */
+    // compile the list expression
     list = CompExpr(READ_STAT(stat, 0));
 
-    /* compile and check the position expression                           */
+    // compile and check the position expression
     poss = CompExpr(READ_STAT(stat, 1));
 
-    /* compile the right hand side                                         */
+    // compile the right hand side
     rhss = CompExpr(READ_STAT(stat, 2));
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "AsssListCheck( %c, %c, %c );\n", list, poss, rhss );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rhss ) )  FreeTemp( TEMP_CVAR( rhss ) );
     if ( IS_TEMP_CVAR( poss ) )  FreeTemp( TEMP_CVAR( poss ) );
     if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
@@ -4500,33 +4500,33 @@ static void CompAsssList(Stat stat)
 */
 static void CompAssListLev(Stat stat)
 {
-    CVar                lists;          /* lists                           */
-    CVar                pos;            /* position                        */
-    CVar                rhss;           /* right hand sides                */
-    UInt                level;          /* level                           */
+    CVar                lists;          // lists
+    CVar                pos;            // position
+    CVar                rhss;           // right hand sides
+    UInt                level;          // level
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the list expressions                                        */
+    // compile the list expressions
     lists = CompExpr(READ_STAT(stat, 0));
 
-    /* compile and check the position expression                           */
+    // compile and check the position expression
     pos = CompExpr(READ_STAT(stat, 1));
     CompCheckIntSmallPos( pos );
 
-    /* compile the right hand sides                                        */
+    // compile the right hand sides
     rhss = CompExpr(READ_STAT(stat, 2));
 
-    /* get the level                                                       */
+    // get the level
     level = READ_STAT(stat, 3);
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "AssListLevel( %c, %c, %c, %d );\n", lists, pos, rhss, level );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rhss  ) )  FreeTemp( TEMP_CVAR( rhss  ) );
     if ( IS_TEMP_CVAR( pos   ) )  FreeTemp( TEMP_CVAR( pos   ) );
     if ( IS_TEMP_CVAR( lists ) )  FreeTemp( TEMP_CVAR( lists ) );
@@ -4539,33 +4539,33 @@ static void CompAssListLev(Stat stat)
 */
 static void CompAsssListLev(Stat stat)
 {
-    CVar                lists;          /* list                            */
-    CVar                poss;           /* positions                       */
-    CVar                rhss;           /* right hand sides                */
-    UInt                level;          /* level                           */
+    CVar                lists;          // list
+    CVar                poss;           // positions
+    CVar                rhss;           // right hand sides
+    UInt                level;          // level
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the list expressions                                        */
+    // compile the list expressions
     lists = CompExpr(READ_STAT(stat, 0));
 
-    /* compile and check the position expression                           */
+    // compile and check the position expression
     poss = CompExpr(READ_STAT(stat, 1));
 
-    /* compile the right hand side                                         */
+    // compile the right hand side
     rhss = CompExpr(READ_STAT(stat, 2));
 
-    /* get the level                                                       */
+    // get the level
     level = READ_STAT(stat, 3);
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "AsssListLevelCheck( %c, %c, %c, %d );\n",
           lists, poss, rhss, level );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rhss  ) )  FreeTemp( TEMP_CVAR( rhss ) );
     if ( IS_TEMP_CVAR( poss  ) )  FreeTemp( TEMP_CVAR( poss ) );
     if ( IS_TEMP_CVAR( lists ) )  FreeTemp( TEMP_CVAR( lists ) );
@@ -4578,25 +4578,25 @@ static void CompAsssListLev(Stat stat)
 */
 static void CompUnbList(Stat stat)
 {
-    CVar                list;           /* list, left operand              */
-    CVar                pos;            /* position, left operand          */
+    CVar                list;           // list, left operand
+    CVar                pos;            // position, left operand
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the list expression                                         */
+    // compile the list expression
     list = CompExpr(READ_STAT(stat, 0));
 
-    /* compile and check the position expression                           */
+    // compile and check the position expression
     pos = CompExpr(READ_STAT(stat, 1));
     CompCheckIntPos( pos );
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "C_UNB_LIST( %c, %c );\n", list, pos );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( pos  ) )  FreeTemp( TEMP_CVAR( pos  ) );
     if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
 }
@@ -4608,29 +4608,29 @@ static void CompUnbList(Stat stat)
 */
 static void CompAssRecName(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
-    CVar                rhs;            /* rhs, right operand              */
+    CVar                record;         // record, left operand
+    UInt                rnam;           // name, left operand
+    CVar                rhs;            // rhs, right operand
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the record expression                                       */
+    // compile the record expression
     record = CompExpr(READ_STAT(stat, 0));
 
-    /* get the name (stored immediately in the statement)                  */
+    // get the name (stored immediately in the statement)
     rnam = READ_STAT(stat, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
-    /* compile the right hand side                                         */
+    // compile the right hand side
     rhs = CompExpr(READ_STAT(stat, 2));
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     Emit( "ASS_REC( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rhs    ) )  FreeTemp( TEMP_CVAR( rhs    ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 }
@@ -4642,28 +4642,28 @@ static void CompAssRecName(Stat stat)
 */
 static void CompAssRecExpr(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    CVar                rnam;           /* name, left operand              */
-    CVar                rhs;            /* rhs, right operand              */
+    CVar                record;         // record, left operand
+    CVar                rnam;           // name, left operand
+    CVar                rhs;            // rhs, right operand
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the record expression                                       */
+    // compile the record expression
     record = CompExpr(READ_STAT(stat, 0));
 
-    /* get the name (stored immediately in the statement)                  */
+    // get the name (stored immediately in the statement)
     rnam = CompExpr(READ_STAT(stat, 1));
 
-    /* compile the right hand side                                         */
+    // compile the right hand side
     rhs = CompExpr(READ_STAT(stat, 2));
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     Emit( "ASS_REC( %c, RNamObj(%c), %c );\n", record, rnam, rhs );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rhs    ) )  FreeTemp( TEMP_CVAR( rhs    ) );
     if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
@@ -4676,25 +4676,25 @@ static void CompAssRecExpr(Stat stat)
 */
 static void CompUnbRecName(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
+    CVar                record;         // record, left operand
+    UInt                rnam;           // name, left operand
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the record expression                                       */
+    // compile the record expression
     record = CompExpr(READ_STAT(stat, 0));
 
-    /* get the name (stored immediately in the statement)                  */
+    // get the name (stored immediately in the statement)
     rnam = READ_STAT(stat, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     Emit( "UNB_REC( %c, R_%n );\n", record, NAME_RNAM(rnam) );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 }
 
@@ -4705,24 +4705,24 @@ static void CompUnbRecName(Stat stat)
 */
 static void CompUnbRecExpr(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    CVar                rnam;           /* name, left operand              */
+    CVar                record;         // record, left operand
+    CVar                rnam;           // name, left operand
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the record expression                                       */
+    // compile the record expression
     record = CompExpr(READ_STAT(stat, 0));
 
-    /* get the name expression                                             */
+    // get the name expression
     rnam = CompExpr(READ_STAT(stat, 1));
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     Emit( "UNB_REC( %c, RNamObj(%c) );\n", record, rnam );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 }
@@ -4734,29 +4734,29 @@ static void CompUnbRecExpr(Stat stat)
 */
 static void CompAssPosObj(Stat stat)
 {
-    CVar                list;           /* list                            */
-    CVar                pos;            /* position                        */
-    CVar                rhs;            /* right hand side                 */
+    CVar                list;           // list
+    CVar                pos;            // position
+    CVar                rhs;            // right hand side
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the list expression                                         */
+    // compile the list expression
     list = CompExpr(READ_STAT(stat, 0));
 
-    /* compile and check the position expression                           */
+    // compile and check the position expression
     pos = CompExpr(READ_STAT(stat, 1));
     CompCheckIntSmallPos( pos );
 
-    /* compile the right hand side                                         */
+    // compile the right hand side
     rhs = CompExpr(READ_STAT(stat, 2));
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "AssPosObj( %c, %i, %c );\n", list, pos, rhs );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rhs  ) )  FreeTemp( TEMP_CVAR( rhs  ) );
     if ( IS_TEMP_CVAR( pos  ) )  FreeTemp( TEMP_CVAR( pos  ) );
     if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
@@ -4769,25 +4769,25 @@ static void CompAssPosObj(Stat stat)
 */
 static void CompUnbPosObj(Stat stat)
 {
-    CVar                list;           /* list, left operand              */
-    CVar                pos;            /* position, left operand          */
+    CVar                list;           // list, left operand
+    CVar                pos;            // position, left operand
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the list expression                                         */
+    // compile the list expression
     list = CompExpr(READ_STAT(stat, 0));
 
-    /* compile and check the position expression                           */
+    // compile and check the position expression
     pos = CompExpr(READ_STAT(stat, 1));
     CompCheckIntSmallPos( pos );
 
-    /* emit the code                                                       */
+    // emit the code
     Emit( "UnbPosObj( %c, %i );\n", list, pos );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( pos  ) )  FreeTemp( TEMP_CVAR( pos  ) );
     if ( IS_TEMP_CVAR( list ) )  FreeTemp( TEMP_CVAR( list ) );
 }
@@ -4799,29 +4799,29 @@ static void CompUnbPosObj(Stat stat)
 */
 static void CompAssComObjName(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
-    CVar                rhs;            /* rhs, right operand              */
+    CVar                record;         // record, left operand
+    UInt                rnam;           // name, left operand
+    CVar                rhs;            // rhs, right operand
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the record expression                                       */
+    // compile the record expression
     record = CompExpr(READ_STAT(stat, 0));
 
-    /* get the name (stored immediately in the statement)                  */
+    // get the name (stored immediately in the statement)
     rnam = READ_STAT(stat, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
-    /* compile the right hand side                                         */
+    // compile the right hand side
     rhs = CompExpr(READ_STAT(stat, 2));
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     Emit( "AssComObj( %c, R_%n, %c );\n", record, NAME_RNAM(rnam), rhs );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rhs    ) )  FreeTemp( TEMP_CVAR( rhs    ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 }
@@ -4833,28 +4833,28 @@ static void CompAssComObjName(Stat stat)
 */
 static void CompAssComObjExpr(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    CVar                rnam;           /* name, left operand              */
-    CVar                rhs;            /* rhs, right operand              */
+    CVar                record;         // record, left operand
+    CVar                rnam;           // name, left operand
+    CVar                rhs;            // rhs, right operand
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the record expression                                       */
+    // compile the record expression
     record = CompExpr(READ_STAT(stat, 0));
 
-    /* get the name (stored immediately in the statement)                  */
+    // get the name (stored immediately in the statement)
     rnam = CompExpr(READ_STAT(stat, 1));
 
-    /* compile the right hand side                                         */
+    // compile the right hand side
     rhs = CompExpr(READ_STAT(stat, 2));
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     Emit( "AssComObj( %c, RNamObj(%c), %c );\n", record, rnam, rhs );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rhs    ) )  FreeTemp( TEMP_CVAR( rhs    ) );
     if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
@@ -4867,25 +4867,25 @@ static void CompAssComObjExpr(Stat stat)
 */
 static void CompUnbComObjName(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
+    CVar                record;         // record, left operand
+    UInt                rnam;           // name, left operand
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the record expression                                       */
+    // compile the record expression
     record = CompExpr(READ_STAT(stat, 0));
 
-    /* get the name (stored immediately in the statement)                  */
+    // get the name (stored immediately in the statement)
     rnam = READ_STAT(stat, 1);
     CompSetUseRNam( rnam, COMP_USE_RNAM_ID );
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     Emit( "UnbComObj( %c, R_%n );\n", record, NAME_RNAM(rnam) );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 }
 
@@ -4896,24 +4896,24 @@ static void CompUnbComObjName(Stat stat)
 */
 static void CompUnbComObjExpr(Stat stat)
 {
-    CVar                record;         /* record, left operand            */
-    UInt                rnam;           /* name, left operand              */
+    CVar                record;         // record, left operand
+    UInt                rnam;           // name, left operand
 
-    /* print a comment                                                     */
+    // print a comment
     if ( CompPass == 2 ) {
         Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
     }
 
-    /* compile the record expression                                       */
+    // compile the record expression
     record = CompExpr(READ_STAT(stat, 0));
 
-    /* get the name expression                                             */
+    // get the name expression
     rnam = CompExpr(READ_STAT(stat, 1));
 
-    /* emit the code for the assignment                                    */
+    // emit the code for the assignment
     Emit( "UnbComObj( %c, RNamObj(%c) );\n", record, rnam );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( rnam   ) )  FreeTemp( TEMP_CVAR( rnam   ) );
     if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
 }
@@ -4960,7 +4960,7 @@ static void CompInfo(Stat stat)
     Emit( "InfoDoPrint( %c, %c, %c );\n", sel, lev, lst );
     Emit( "}\n" );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( lst ) )  FreeTemp( TEMP_CVAR( lst ) );
     if ( IS_TEMP_CVAR( lev ) )  FreeTemp( TEMP_CVAR( lev ) );
     if ( IS_TEMP_CVAR( sel ) )  FreeTemp( TEMP_CVAR( sel ) );
@@ -4973,8 +4973,8 @@ static void CompInfo(Stat stat)
 */
 static void CompAssert2(Stat stat)
 {
-    CVar                lev;            /* the level                       */
-    CVar                cnd;            /* the condition                   */
+    CVar                lev;            // the level
+    CVar                cnd;            // the condition
 
     Emit( "\n/* Assert( ... ); */\n" );
     lev = CompExpr(READ_STAT(stat, 0));
@@ -4985,7 +4985,7 @@ static void CompAssert2(Stat stat)
     Emit( "}\n" );
     Emit( "}\n" );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( cnd ) )  FreeTemp( TEMP_CVAR( cnd ) );
     if ( IS_TEMP_CVAR( lev ) )  FreeTemp( TEMP_CVAR( lev ) );
 }
@@ -4997,9 +4997,9 @@ static void CompAssert2(Stat stat)
 */
 static void CompAssert3(Stat stat)
 {
-    CVar                lev;            /* the level                       */
-    CVar                cnd;            /* the condition                   */
-    CVar                msg;            /* the message                     */
+    CVar                lev;            // the level
+    CVar                cnd;            // the condition
+    CVar                msg;            // the message
 
     Emit( "\n/* Assert( ... ); */\n" );
     lev = CompExpr(READ_STAT(stat, 0));
@@ -5013,7 +5013,7 @@ static void CompAssert3(Stat stat)
     Emit( "}\n" );
     Emit( "}\n" );
 
-    /* free the temporaries                                                */
+    // free the temporaries
     if ( IS_TEMP_CVAR( msg ) )  FreeTemp( TEMP_CVAR( msg ) );
     if ( IS_TEMP_CVAR( cnd ) )  FreeTemp( TEMP_CVAR( cnd ) );
     if ( IS_TEMP_CVAR( lev ) )  FreeTemp( TEMP_CVAR( lev ) );
@@ -5038,14 +5038,14 @@ static Obj CompFunctions;
 
 static void CompFunc(Obj func)
 {
-    Bag                 info;           /* info bag for this function      */
-    Int                 narg;           /* number of arguments             */
-    Int                 nloc;           /* number of locals                */
-    Bag                 oldFrame;       /* old frame                       */
-    Int                 i;              /* loop variable                   */
-    Int                 prevarargs;     /* we have varargs with a prefix   */
+    Bag                 info;           // info bag for this function
+    Int                 narg;           // number of arguments
+    Int                 nloc;           // number of locals
+    Bag                 oldFrame;       // old frame
+    Int                 i;              // loop variable
+    Int                 prevarargs;     // we have varargs with a prefix
 
-    /* get the number of arguments and locals                              */
+    // get the number of arguments and locals
     narg = NARG_FUNC(func);
     prevarargs = 0;
     if(narg < -1) prevarargs = 1;
@@ -5055,7 +5055,7 @@ static void CompFunc(Obj func)
 
     nloc = NLOC_FUNC(func);
 
-    /* in the first pass allocate the info bag                             */
+    // in the first pass allocate the info bag
     if ( CompPass == 1 ) {
 
         UInt nr = PushPlist( CompFunctions, func );
@@ -5072,13 +5072,13 @@ static void CompFunc(Obj func)
 
     }
 
-    /* switch to this function (so that 'CONST_ADDR_STAT' and 'CONST_ADDR_EXPR' work)  */
+    // switch to this function (so that 'CONST_ADDR_STAT' and 'CONST_ADDR_EXPR' work)
     oldFrame = SWITCH_TO_NEW_LVARS(func, narg, nloc);
 
-    /* get the info bag                                                    */
+    // get the info bag
     info = INFO_FEXP( CURR_FUNC() );
 
-    /* compile the inner functions                                         */
+    // compile the inner functions
     Obj values = VALUES_BODY(BODY_FUNC(func));
     if (values) {
         UInt len = LEN_PLIST(values);
@@ -5089,7 +5089,7 @@ static void CompFunc(Obj func)
         }
     }
 
-    /* emit the code for the function header and the arguments             */
+    // emit the code for the function header and the arguments
     Emit( "\n/* handler for function %d */\n", NR_INFO(info));
     if ( narg == 0 ) {
         Emit( "static Obj  HdlrFunc%d (\n", NR_INFO(info) );
@@ -5115,14 +5115,14 @@ static void CompFunc(Obj func)
         }
     }
 
-    /* emit the code for the local variables                               */
+    // emit the code for the local variables
     for ( i = 1; i <= nloc; i++ ) {
         if ( ! CompGetUseHVar( i+narg ) ) {
             Emit( "Obj %c = 0;\n", CVAR_LVAR(i+narg) );
         }
     }
 
-    /* emit the code for the temporaries                                   */
+    // emit the code for the temporaries
     for ( i = 1; i <= NTEMP_INFO(info); i++ ) {
         Emit( "Obj %c = 0;\n", CVAR_TEMP(i) );
     }
@@ -5133,10 +5133,10 @@ static void CompFunc(Obj func)
         }
     }
 
-    /* emit the code for the higher variables                              */
+    // emit the code for the higher variables
     Emit( "Bag oldFrame;\n" );
 
-    /* emit the code to get the arguments for xarg functions               */
+    // emit the code to get the arguments for xarg functions
     if ( 6 < narg ) {
         Emit( "CHECK_NR_ARGS( %d, args )\n", narg );
         for ( i = 1; i <= narg; i++ ) {
@@ -5153,7 +5153,7 @@ static void CompFunc(Obj func)
         Emit( "%c = ELMS_LIST(args , x_temp_range);\n", CVAR_LVAR(narg));
     }
 
-    /* emit the code to switch to a new frame for outer functions          */
+    // emit the code to switch to a new frame for outer functions
     Emit( "\n/* allocate new stack frame */\n" );
     Emit( "SWITCH_TO_NEW_FRAME(self,%d,0,oldFrame);\n",NHVAR_INFO(info));
     if (NHVAR_INFO(info) > 0) {
@@ -5165,7 +5165,7 @@ static void CompFunc(Obj func)
         }
     }
 
-    /* we know all the arguments have values                               */
+    // we know all the arguments have values
     for ( i = 1; i <= narg; i++ ) {
         SetInfoCVar( CVAR_LVAR(i), W_BOUND );
     }
@@ -5173,17 +5173,17 @@ static void CompFunc(Obj func)
         SetInfoCVar( CVAR_LVAR(i), W_UNBOUND );
     }
 
-    /* compile the body                                                    */
+    // compile the body
     CompStat( OFFSET_FIRST_STAT );
 
-    /* emit the code to switch back to the old frame and return            */
+    // emit the code to switch back to the old frame and return
     Emit( "\n/* return; */\n" );
 
     Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
     Emit( "return 0;\n" );
     Emit( "}\n" );
 
-    /* switch back to old frame                                            */
+    // switch back to old frame
     SWITCH_TO_OLD_LVARS( oldFrame );
 }
 
@@ -5194,11 +5194,11 @@ static void CompFunc(Obj func)
 */
 Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
 {
-    Int                 i;              /* loop variable                   */
+    Int                 i;              // loop variable
     UInt                col;
     UInt                compFunctionsNr;
 
-    /* open the output file                                                */
+    // open the output file
     TypOutputFile output = { 0 };
     if (!OpenOutput(&output, CONST_CSTR_STRING(filename), FALSE)) {
         return 0;
@@ -5206,31 +5206,31 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
     col = SyNrCols;
     SyNrCols = 255;
 
-    /* store the magic values                                              */
+    // store the magic values
     compilerMagic1 = magic1;
     compilerMagic2 = magic2;
 
-    /* create 'CompInfoGVar' and 'CompInfoRNam'                            */
+    // create 'CompInfoGVar' and 'CompInfoRNam'
     CompInfoGVar = NewKernelBuffer(sizeof(UInt) * 1024);
     CompInfoRNam = NewKernelBuffer(sizeof(UInt) * 1024);
 
-    /* create the list to collection the function expressions              */
+    // create the list to collection the function expressions
     CompFunctions = NEW_PLIST( T_PLIST, 8 );
 
-    /* first collect information about variables                           */
+    // first collect information about variables
     CompPass = 1;
     CompFunc( func );
 
-    /* ok, lets emit some code now                                         */
+    // ok, lets emit some code now
     CompPass = 2;
     compFunctionsNr = LEN_PLIST( CompFunctions );
 
-    /* emit code to include the interface files                            */
+    // emit code to include the interface files
     Emit( "/* C file produced by GAC */\n" );
     Emit( "#include \"compiled.h\"\n" );
     Emit( "#define FILE_CRC  \"%d\"\n", magic1 );
 
-    /* emit code for global variables                                      */
+    // emit code for global variables
     Emit( "\n/* global variables used in handlers */\n" );
     for ( i = 1; i < SIZE_OBJ(CompInfoGVar)/sizeof(UInt); i++ ) {
         if ( CompGetUseGVar( i ) ) {
@@ -5244,7 +5244,7 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
         }
     }
 
-    /* emit code for record names                                          */
+    // emit code for record names
     Emit( "\n/* record names used in handlers */\n" );
     for ( i = 1; i < SIZE_OBJ(CompInfoRNam)/sizeof(UInt); i++ ) {
         if ( CompGetUseRNam( i ) ) {
@@ -5252,13 +5252,13 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
         }
     }
 
-    /* emit code for the functions                                         */
+    // emit code for the functions
     Emit( "\n/* information for the functions */\n" );
     Emit( "static Obj  NameFunc[%d];\n", compFunctionsNr+1 );
     Emit( "static Obj FileName;\n" );
 
 
-    /* now compile the handlers                                            */
+    // now compile the handlers
     CompFunc( func );
 
     // emit the code for PostRestore
@@ -5343,7 +5343,7 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
     Emit( "return 0;\n" );
     Emit( "\n}\n" );
 
-    /* emit the initialization code                                        */
+    // emit the initialization code
     Emit( "\n/* <name> returns the description of this module */\n" );
     Emit( "static StructInitInfo module = {\n" );
     if (streq("Init_Dynamic", CONST_CSTR_STRING(name))) {
@@ -5365,7 +5365,7 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
     Emit( "}\n" );
     Emit( "\n/* compiled code ends here */\n" );
 
-    /* close the output file                                               */
+    // close the output file
     SyNrCols = col;
     CloseOutput(&output);
 
@@ -5387,7 +5387,7 @@ static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
     Int                 nr;
     Int                 len;
 
-    /* unravel the arguments                                               */
+    // unravel the arguments
     len = LEN_LIST(arg);
     if ( len < 5 ) {
         ErrorQuit( "usage: COMPILE_FUNC( <output>, <func>, <name>, %s",
@@ -5405,7 +5405,7 @@ static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
     RequireSmallInt(SELF_NAME, magic1);
     RequireStringRep(SELF_NAME, magic2);
 
-    /* possible optimiser flags                                            */
+    // possible optimiser flags
     CompFastIntArith        = 1;
     CompFastPlainLists      = 1;
     CompFastListFuncs       = 1;
@@ -5428,7 +5428,7 @@ static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
         CompCheckListElements   = EQ( ELM_LIST( arg, 10 ), True );
     }
 
-    /* compile the function                                                */
+    // compile the function
     nr = CompileFunc(
         output, func, name,
         INT_INTOBJ(magic1), magic2 );
@@ -5462,7 +5462,7 @@ static StructGVarFunc GVarFuncs[] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    Int                 i;              /* loop variable                   */
+    Int                 i;              // loop variable
 
     CompFastIntArith = 1;
     CompFastListFuncs = 1;
@@ -5471,15 +5471,15 @@ static Int InitKernel (
     CompCheckListElements = 1;
     CompPass = 0;
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* announce the global variables                                       */
+    // announce the global variables
     InitGlobalBag( &CompInfoGVar,  "src/compiler.c:CompInfoGVar"  );
     InitGlobalBag( &CompInfoRNam,  "src/compiler.c:CompInfoRNam"  );
     InitGlobalBag( &CompFunctions, "src/compiler.c:CompFunctions" );
 
-    /* enter the expression compilers into the table                       */
+    // enter the expression compilers into the table
     for ( i = 0; i < 256; i++ ) {
         CompExprFuncs[ i ] = CompUnknownExpr;
     }
@@ -5554,7 +5554,7 @@ static Int InitKernel (
 
     CompExprFuncs[ EXPR_FUNCCALL_OPTS   ] = CompFunccallOpts;
 
-    /* enter the boolean expression compilers into the table               */
+    // enter the boolean expression compilers into the table
     for ( i = 0; i < 256; i++ ) {
         CompBoolExprFuncs[ i ] = CompUnknownBool;
     }
@@ -5570,7 +5570,7 @@ static Int InitKernel (
     CompBoolExprFuncs[ EXPR_LE              ] = CompLeBool;
     CompBoolExprFuncs[ EXPR_IN              ] = CompInBool;
 
-    /* enter the statement compilers into the table                        */
+    // enter the statement compilers into the table
     for ( i = 0; i < 256; i++ ) {
         CompStatFuncs[ i ] = CompUnknownStat;
     }
@@ -5653,7 +5653,7 @@ static Int InitKernel (
 static Int PostRestore (
     StructInitInfo *    module )
 {
-    /* get the identifiers of 'Length' and 'Add' (for inlining)            */
+    // get the identifiers of 'Length' and 'Add' (for inlining)
     G_Length = GVarName( "Length" );
     G_Add    = GVarName( "Add"    );
 
@@ -5668,7 +5668,7 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return PostRestore( module );

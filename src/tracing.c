@@ -172,7 +172,7 @@ static StructGVarFunc GVarFuncs[] = {
 */
 static Int InitLibrary(StructInitInfo * module)
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);
 
     RecordedStats = NEW_PREC(0);

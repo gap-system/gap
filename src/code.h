@@ -661,7 +661,7 @@ EXPORT_INLINE Stat READ_EXPR(Expr expr, Int idx)
 **  'CodeResult'  is the result  of the coding, i.e.,   the function that was
 **  coded.
 */
-/* TL: extern  Obj             CodeResult; */
+// TL: extern  Obj             CodeResult;
 
 
 /****************************************************************************

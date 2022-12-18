@@ -96,19 +96,19 @@ static Int GrowPRec(Obj rec, UInt need)
 {
     UInt                newsize, want, good;
 
-    /* check if big enough */
+    // check if big enough
     want = (2*need+2)*sizeof(Obj);
     if (SIZE_OBJ(rec) >= want)
         return 0;
 
 
-    /* find out how large the bag should become at least                   */
+    // find out how large the bag should become at least
     good = ((5 * LEN_PREC(rec) + 3)/4 + 1) * 2 * sizeof(Obj) + 2;
 
-    /* but maybe we need more                                              */
+    // but maybe we need more
     newsize = (want < good) ? good : want;
 
-    /* resize the plain list                                               */
+    // resize the plain list
     ResizeBag( rec, newsize );
 
     return 1;
@@ -157,13 +157,13 @@ void CopyPRecord(TraversalState * traversal, Obj copy, Obj original)
 */
 static Obj CopyPRec(Obj rec, Int mut)
 {
-    Obj                 copy;           /* copy, result                    */
-    Obj                 tmp;            /* temporary variable              */
+    Obj                 copy;           // copy, result
+    Obj                 tmp;            // temporary variable
 
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(rec));
 
-    /* make a copy                                                     */
+    // make a copy
     copy = NewBag(T_PREC, SIZE_OBJ(rec));
     if (!mut)
         MakeImmutableNoRecurse(copy);
@@ -183,15 +183,15 @@ static Obj CopyPRec(Obj rec, Int mut)
         CHANGED_BAG(copy);
     }
 
-    /* return the copy                                                     */
+    // return the copy
     return copy;
 }
 
 static void CleanPRec(Obj rec)
 {
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
-    /* clean the subvalues                                             */
+    // clean the subvalues
     for ( i = 1; i <= LEN_PREC(rec); i++ ) {
         CLEAN_OBJ( GET_ELM_PREC( rec, i ) );
     }
@@ -237,11 +237,11 @@ static void MakeImmutablePRec(Obj rec)
  */
 UInt PositionPRec(Obj rec, UInt rnam, int cleanup)
 {
-    /* This only assumes that the rnam values in the record are sorted! */
+    // This only assumes that the rnam values in the record are sorted!
     UInt low = 1;
     UInt high = LEN_PREC(rec);
     if (high > 0 && GET_RNAM_PREC(rec, high) > 0) {
-        /* DIRTY! Not everything sorted! */
+        // DIRTY! Not everything sorted!
 #ifdef HPCGAP
         // FIXME: Need to sort records before making them
         // readonly or sharing them. This can be done in
@@ -252,9 +252,9 @@ UInt PositionPRec(Obj rec, UInt rnam, int cleanup)
 #endif
             SortPRecRNam(rec,0);
         } else {
-            /* We are not allowed to cleanup, so we live with it, we
-             * first try to find rnam in the mess at the end, then
-             * fall back to binary search: */
+            // We are not allowed to cleanup, so we live with it, we
+            // first try to find rnam in the mess at the end, then
+            // fall back to binary search:
             UInt i = high;
             while (i >= 1) {
                 Int rnam2 = GET_RNAM_PREC(rec, i);
@@ -262,14 +262,14 @@ UInt PositionPRec(Obj rec, UInt rnam, int cleanup)
                     GAP_ASSERT(i != 0);
                     return i;
                 }
-                if (rnam2 < 0) { /* reached the sorted area! */
-                    high = i;  /* will be incremented by 1 */
+                if (rnam2 < 0) { // reached the sorted area!
+                    high = i;  // will be incremented by 1
                     break;
                 }
                 i--;
             }
             if (i == 0) return 0;
-            /* Here, high is the number of the sorted entries. */
+            // Here, high is the number of the sorted entries.
         }
     }
     high++;
@@ -277,7 +277,7 @@ UInt PositionPRec(Obj rec, UInt rnam, int cleanup)
     // Negate rnam, as the sorted part of the record is stored negated
     rnam = -rnam;
     while (low < high) {
-        UInt i = (low + high) / 2; /* we always have low <= i < high */
+        UInt i = (low + high) / 2; // we always have low <= i < high
         rnam2 = GET_RNAM_PREC(rec, i);
         if (rnam2 > rnam) {
             low = i + 1;
@@ -338,7 +338,7 @@ void UnbPRec (
     Obj                 rec,
     UInt                rnam )
 {
-    UInt                len;            /* length of <rec>                 */
+    UInt                len;            // length of <rec>
 
     // Accept T_PREC and T_COMOBJ, reject T_PREC+IMMUTABLE
     if (TNUM_OBJ(rec) == T_PREC+IMMUTABLE) {
@@ -348,7 +348,7 @@ void UnbPRec (
     UInt i = PositionPRec(rec, rnam, 1);
 
     if (i) {
-        /* otherwise move everything forward                               */
+        // otherwise move everything forward
         len = LEN_PREC( rec );
         for ( ; i < len; i++ ) {
             SET_RNAM_PREC( rec, i, GET_RNAM_PREC( rec, i+1 ) );
@@ -358,11 +358,11 @@ void UnbPRec (
         SET_ELM_PREC( rec, len, 0 );
 
 
-        /* resize the record                                               */
+        // resize the record
         SET_LEN_PREC(rec,LEN_PREC(rec)-1);
     }
     else
-        /* do nothing if no such component exists                          */
+        // do nothing if no such component exists
         return;
 }
 
@@ -379,7 +379,7 @@ void AssPRec (
     UInt                rnam,
     Obj                 val )
 {
-    UInt                len;            /* length of <rec>                 */
+    UInt                len;            // length of <rec>
 
     // Accept T_PREC and T_COMOBJ, reject T_PREC+IMMUTABLE
     if (TNUM_OBJ(rec) == T_PREC+IMMUTABLE) {
@@ -387,25 +387,25 @@ void AssPRec (
                      0);
     }
 
-    /* get the length of the record                                        */
+    // get the length of the record
     len = LEN_PREC( rec );
 
-    if (len % 1000 == 0) {   /* A hack to occasionally do some cleanup! */
+    if (len % 1000 == 0) {   // A hack to occasionally do some cleanup!
         SortPRecRNam(rec,0);
     }
 
     UInt i = PositionPRec(rec, rnam, 0);
 
     if (!i) {
-        /* No cleanup allowed here to allow for multiple assignments! */
-        /* extend the record if no such component exists                   */
+        // No cleanup allowed here to allow for multiple assignments!
+        // extend the record if no such component exists
         len++;
         GrowPRec(rec, len);
         i = len;
         SET_RNAM_PREC( rec, i, rnam );
         SET_LEN_PREC(rec,len);
     }
-    /* assign the value to the component                                   */
+    // assign the value to the component
     SET_ELM_PREC( rec, i, val );
     CHANGED_BAG( rec );
 }
@@ -453,35 +453,35 @@ void SortPRecRNam (
     int issorted = 1;
     Obj space;
 
-    /* Nothing has to be done if it is already sorted: */
+    // Nothing has to be done if it is already sorted:
     if (len == 0 || GET_RNAM_PREC(rec, len) < 0)
         return;
 
-    /* First find the "unsorted part" and check whether it is sorted! */
+    // First find the "unsorted part" and check whether it is sorted!
     for (i = len - 1; i >= 1 && GET_RNAM_PREC(rec, i) > 0; i--) {
         if (issorted && GET_RNAM_PREC(rec,i) > GET_RNAM_PREC(rec,i+1)) {
             issorted = 0;
         }
     }
     i++;
-    /* Now i points to the last positive (and thus still unsorted)
-     * component and issorted is 1 iff positions i to len are sorted! */
+    // Now i points to the last positive (and thus still unsorted)
+    // component and issorted is 1 iff positions i to len are sorted!
     if (!issorted && len - i + 1 > 1) {
         qsort( ADDR_OBJ(rec)+2*i, len-i+1, 2*sizeof(Obj), &PrecComparer );
     }
-    /* Now i points to the first positive component and the rest is
-     * sorted. */
+    // Now i points to the first positive component and the rest is
+    // sorted.
     save = i;
     if (save == 1 ||
         -GET_RNAM_PREC(rec, save - 1) < GET_RNAM_PREC(rec, save)) {
-        /* Otherwise, nothing has to be done since it is already
-         * sorted, we only have to negate the RNams! */
+        // Otherwise, nothing has to be done since it is already
+        // sorted, we only have to negate the RNams!
         for (j = save;j <= len;j++)
             SET_RNAM_PREC(rec, j, -GET_RNAM_PREC(rec, j));
         return;
     }
-    /* Next we perform a merge sort on the two presorted areas. */
-    /* For optimal performance, we need some space to mess around: */
+    // Next we perform a merge sort on the two presorted areas.
+    // For optimal performance, we need some space to mess around:
     space = NEW_PREC(len);
     j = 1;
     k = 1;
@@ -497,7 +497,7 @@ void SortPRecRNam (
             i++; k++;
         }
     }
-    /* Copy the rest of the part still missing: */
+    // Copy the rest of the part still missing:
     while (j < save) {
         SET_RNAM_PREC(space, k, GET_RNAM_PREC(rec, j));
         SET_ELM_PREC(space, k, GET_ELM_PREC(rec, j));
@@ -510,7 +510,7 @@ void SortPRecRNam (
         i++;
         k++;
     }
-    /* Finally, copy everything back to where it came from: */
+    // Finally, copy everything back to where it came from:
     memcpy(ADDR_OBJ(rec) + 2, CONST_ADDR_OBJ(space) + 2,
            sizeof(Obj) * 2 * len);
 }
@@ -539,28 +539,28 @@ static void PrintPathPRec(Obj rec, Int indx)
 */
 static Obj InnerRecNames(Obj rec)
 {
-    Obj                 list;           /* list of record names, result    */
-    UInt                rnam;           /* one name of record              */
-    Obj                 string;         /* one name as string              */
+    Obj                 list;           // list of record names, result
+    UInt                rnam;           // one name of record
+    Obj                 string;         // one name as string
     UInt                i;
     Obj                 name;
-    SortPRecRNam(rec,0);   /* Make sure rnams are sorted and thus negative */
+    SortPRecRNam(rec,0);   // Make sure rnams are sorted and thus negative
 
-    /* allocate the list                                                   */
+    // allocate the list
     list = NEW_PLIST( T_PLIST, LEN_PREC(rec) );
     SET_LEN_PLIST( list, LEN_PREC(rec) );
 
-    /* loop over the components                                            */
+    // loop over the components
     for ( i = 1; i <= LEN_PREC(rec); i++ ) {
         rnam = -GET_RNAM_PREC(rec, i);
-        /* could have been moved by garbage collection */
+        // could have been moved by garbage collection
         name = NAME_RNAM( rnam );
         string = CopyToStringRep( name );
         SET_ELM_PLIST( list, i, string );
         CHANGED_BAG( list );
     }
 
-    /* return the list                                                     */
+    // return the list
     return list;
 }
 
@@ -583,7 +583,7 @@ static Obj FuncREC_NAMES(Obj self, Obj rec)
 **
 *F  FuncREC_NAMES_COMOBJ( <self>, <rec> ) . . . record names of a record object
 */
-/* same as FuncREC_NAMES except for different argument check  */
+// same as FuncREC_NAMES except for different argument check
 static Obj FuncREC_NAMES_COMOBJ(Obj self, Obj rec)
 {
     switch (TNUM_OBJ(rec)) {
@@ -608,37 +608,37 @@ static Obj FuncREC_NAMES_COMOBJ(Obj self, Obj rec)
 */
 static Int EqPRec(Obj left, Obj right)
 {
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
-    /* quick first checks                                                  */
+    // quick first checks
     GAP_ASSERT(IS_PREC(left));
     GAP_ASSERT(IS_PREC(right));
     if ( LEN_PREC(left) != LEN_PREC(right) )
         return 0;
 
-    /* ensure records are sorted by their RNam */
+    // ensure records are sorted by their RNam
     SortPRecRNam(left,0);
     SortPRecRNam(right,0);
 
     CheckRecursionBefore();
 
-    /* compare componentwise                                               */
+    // compare componentwise
     for ( i = 1; i <= LEN_PREC(right); i++ ) {
 
-        /* compare the names                                               */
+        // compare the names
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
             DecRecursionDepth();
             return 0;
         }
 
-        /* compare the values                                              */
+        // compare the values
         if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
             DecRecursionDepth();
             return 0;
         }
     }
 
-    /* the records are equal                                               */
+    // the records are equal
     DecRecursionDepth();
     return 1;
 }
@@ -654,39 +654,40 @@ static Int EqPRec(Obj left, Obj right)
 */
 static Int LtPRec(Obj left, Obj right)
 {
-    UInt                i;              /* loop variable                   */
-    Int                 res;            /* result of comparison            */
+    UInt                i;              // loop variable
+    Int                 res;            // result of comparison
 
-    /* quick first checks                                                  */
+    // quick first checks
     GAP_ASSERT(IS_PREC(left));
     GAP_ASSERT(IS_PREC(right));
 
-    /* ensure records are sorted by their RNam */
+    // ensure records are sorted by their RNam
     SortPRecRNam(left,0);
     SortPRecRNam(right,0);
 
     CheckRecursionBefore();
     res = 0;
 
-    /* compare componentwise                                               */
+    // compare componentwise
     for ( i = 1; i <= LEN_PREC(right); i++ ) {
 
-        /* if the left is a proper prefix of the right one                 */
+        // if the left is a proper prefix of the right one
         if ( LEN_PREC(left) < i ) {
             res = 1;
             break;
         }
 
-        /* compare the names                                               */
-        /* The sense of this comparison is determined by the rule that
-           unbound entries compare less than bound ones                    */
+        // compare the names
+        //
+        // The sense of this comparison is determined by the rule that
+        // unbound entries compare less than bound ones
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
             res = !LT(NAME_RNAM(labs(GET_RNAM_PREC(left, i))),
                       NAME_RNAM(labs(GET_RNAM_PREC(right, i))));
             break;
         }
 
-        /* compare the values                                              */
+        // compare the values
         if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
             res = LT( GET_ELM_PREC(left,i), GET_ELM_PREC(right,i) );
             break;
@@ -694,7 +695,7 @@ static Int LtPRec(Obj left, Obj right)
 
     }
 
-    /* the records are equal or the right is a prefix of the left          */
+    // the records are equal or the right is a prefix of the left
     DecRecursionDepth();
     return res;
 }
@@ -799,29 +800,29 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* GASMAN marking functions and GASMAN names                           */
+    // GASMAN marking functions and GASMAN names
     InitBagNamesFromTable( BagNames );
 
     InitMarkFuncBags( T_PREC                     , MarkPRecSubBags );
     InitMarkFuncBags( T_PREC +IMMUTABLE          , MarkPRecSubBags );
 
 #ifdef HPCGAP
-    /* Immutable records are public                                        */
+    // Immutable records are public
     MakeBagTypePublic( T_PREC +IMMUTABLE );
 #endif
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
 #ifdef GAP_ENABLE_SAVELOAD
-    /* Install saving functions                                            */
+    // Install saving functions
     SaveObjFuncs[ T_PREC            ] = SavePRec;
     SaveObjFuncs[ T_PREC +IMMUTABLE ] = SavePRec;
     LoadObjFuncs[ T_PREC            ] = LoadPRec;
     LoadObjFuncs[ T_PREC +IMMUTABLE ] = LoadPRec;
 #endif
 
-    /* install into record function tables                                 */
+    // install into record function tables
     ElmRecFuncs[ T_PREC            ] = ElmPRec;
     ElmRecFuncs[ T_PREC +IMMUTABLE ] = ElmPRec;
     IsbRecFuncs[ T_PREC            ] = IsbPRec;
@@ -831,7 +832,7 @@ static Int InitKernel (
     UnbRecFuncs[ T_PREC            ] = UnbPRec;
     UnbRecFuncs[ T_PREC +IMMUTABLE ] = UnbPRec;
 
-    /* install tests for being copyable                                    */
+    // install tests for being copyable
     IsCopyableObjFuncs[ T_PREC            ] = AlwaysYes;
     IsCopyableObjFuncs[ T_PREC +IMMUTABLE ] = AlwaysYes;
 
@@ -839,14 +840,14 @@ static Int InitKernel (
     SetTraversalMethod(T_PREC           , TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
     SetTraversalMethod(T_PREC +IMMUTABLE, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
 #else
-    /* install into copy function tables                                  */
+    // install into copy function tables
     CopyObjFuncs [ T_PREC                     ] = CopyPRec;
     CopyObjFuncs [ T_PREC +IMMUTABLE          ] = CopyPRec;
     CleanObjFuncs[ T_PREC                     ] = CleanPRec;
     CleanObjFuncs[ T_PREC +IMMUTABLE          ] = CleanPRec;
 #endif
 
-    /* install printer                                                     */
+    // install printer
     PrintObjFuncs[  T_PREC            ] = PrintPRec;
     PrintObjFuncs[  T_PREC +IMMUTABLE ] = PrintPRec;
     PrintPathFuncs[ T_PREC            ] = PrintPathPRec;
@@ -860,7 +861,7 @@ static Int InitKernel (
         }
     }
 
-    /* install the type functions                                          */
+    // install the type functions
     ImportGVarFromLibrary( "TYPE_PREC_MUTABLE",   &TYPE_PREC_MUTABLE   );
     ImportGVarFromLibrary( "TYPE_PREC_IMMUTABLE", &TYPE_PREC_IMMUTABLE );
 
@@ -880,7 +881,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

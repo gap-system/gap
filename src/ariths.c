@@ -72,8 +72,8 @@ static Obj VerboseZeroSameMutObject(Obj obj)
 */
 static void InstallZeroSameMutObject(Int verb)
 {
-    UInt                t1;             /* type of left  operand           */
-    ArithMethod1        func;           /* zero function                   */
+    UInt                t1;             // type of left  operand
+    ArithMethod1        func;           // zero function
 
     func = (verb ? VerboseZeroSameMutObject : ZeroSameMutObject);
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
@@ -134,8 +134,8 @@ static Obj VerboseZeroMutObject(Obj obj)
 */
 static void InstallZeroMutObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    ArithMethod1        func;           /* zero function                   */
+    UInt                t1;             // type of left  operand
+    ArithMethod1        func;           // zero function
 
     func = ( verb ? VerboseZeroMutObject : ZeroMutObject );
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
@@ -199,8 +199,8 @@ static Obj VerboseAInvSameMutObject(Obj obj)
 */
 static void InstallAInvSameMutObject(Int verb)
 {
-    UInt                t1;             /* type of left  operand           */
-    ArithMethod1        func;           /* ainv function                   */
+    UInt                t1;             // type of left  operand
+    ArithMethod1        func;           // ainv function
 
     func = (verb ? VerboseAInvSameMutObject : AInvSameMutObject);
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
@@ -252,8 +252,8 @@ static Obj VerboseAInvMutObject(Obj obj)
 */
 static void InstallAInvMutObject(Int verb)
 {
-    UInt                t1;             /* type of left  operand           */
-    ArithMethod1        func;           /* ainv function                   */
+    UInt                t1;             // type of left  operand
+    ArithMethod1        func;           // ainv function
 
     func = ( verb ? VerboseAInvMutObject : AInvMutObject );
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
@@ -313,8 +313,8 @@ static Obj VerboseOneObject(Obj obj)
 */
 static void InstallOneObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    ArithMethod1        func;           /* one function                    */
+    UInt                t1;             // type of left  operand
+    ArithMethod1        func;           // one function
 
     func = ( verb ? VerboseOneObject : OneObject );
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
@@ -373,8 +373,8 @@ static Obj VerboseOneSameMutObject(Obj obj)
 */
 static void InstallOneSameMutObject(Int verb)
 {
-    UInt                t1;             /* type of left  operand           */
-    ArithMethod1        func;           /* one function                    */
+    UInt                t1;             // type of left  operand
+    ArithMethod1        func;           // one function
 
     func = (verb ? VerboseOneSameMutObject : OneSameMutObject);
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
@@ -434,8 +434,8 @@ static Obj VerboseInvObject(Obj obj)
 */
 static void InstallInvObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    ArithMethod1        func;           /* inv function                    */
+    UInt                t1;             // type of left  operand
+    ArithMethod1        func;           // inv function
 
     func = ( verb ? VerboseInvObject : InvObject );
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
@@ -495,8 +495,8 @@ static Obj VerboseInvSameMutObject(Obj obj)
 */
 static void InstallInvSameMutObject(Int verb)
 {
-    UInt                t1;             /* type of left  operand           */
-    ArithMethod1        func;           /* inv function                    */
+    UInt                t1;             // type of left  operand
+    ArithMethod1        func;           // inv function
 
     func = (verb ? VerboseInvSameMutObject : InvSameMutObject);
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
@@ -567,9 +567,9 @@ static Int VerboseEqObject(Obj opL, Obj opR)
 */
 static void InstallEqObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    UInt                t2;             /* type of right operand           */
-    CompaMethod         func;           /* equal function                  */
+    UInt                t1;             // type of left  operand
+    UInt                t2;             // type of right operand
+    CompaMethod         func;           // equal function
 
     func = ( verb ? VerboseEqObject : EqObject );
     for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
@@ -587,13 +587,6 @@ static void InstallEqObject ( Int verb )
 */
 static Obj FuncEQ(Obj self, Obj opL, Obj opR)
 {
-  /* if both operands are T_MACFLOAT, we use the comparison method in all cases,
-     even if the objects are identical. In this manner, we can have 0./0. != 0./0. as
-     the IEEE754 standard requires.
-    if (TNUM_OBJ(opL) == T_MACFLOAT && TNUM_OBJ(opR) == T_MACFLOAT)
-      return (*EqFuncs[T_MACFLOAT][T_MACFLOAT])(opL,opR) ? True : False;
-  */
-
     return (EQ( opL, opR ) ? True : False);
 }
 
@@ -633,9 +626,9 @@ static Int VerboseLtObject(Obj opL, Obj opR)
 */
 static void InstallLtObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    UInt                t2;             /* type of right operand           */
-    CompaMethod         func;           /* less than function              */
+    UInt                t1;             // type of left  operand
+    UInt                t2;             // type of right operand
+    CompaMethod         func;           // less than function
 
     func = ( verb ? VerboseLtObject : LtObject );
     for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
@@ -703,9 +696,9 @@ static Int VerboseInObject(Obj opL, Obj opR)
 */
 static void InstallInObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    UInt                t2;             /* type of right operand           */
-    CompaMethod         func;           /* in function                     */
+    UInt                t1;             // type of left  operand
+    UInt                t2;             // type of right operand
+    CompaMethod         func;           // in function
 
     func = ( verb ? VerboseInObject : InObject );
     for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
@@ -773,9 +766,9 @@ static Obj VerboseSumObject(Obj opL, Obj opR)
 */
 static void InstallSumObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    UInt                t2;             /* type of right operand           */
-    ArithMethod2        func;           /* sum function                    */
+    UInt                t1;             // type of left  operand
+    UInt                t2;             // type of right operand
+    ArithMethod2        func;           // sum function
 
     func = ( verb ? VerboseSumObject : SumObject );
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
@@ -851,9 +844,9 @@ static Obj VerboseDiffObject(Obj opL, Obj opR)
 */
 static void InstallDiffObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    UInt                t2;             /* type of right operand           */
-    ArithMethod2        func;           /* difference function             */
+    UInt                t1;             // type of left  operand
+    UInt                t2;             // type of right operand
+    ArithMethod2        func;           // difference function
 
     func = ( verb ? VerboseDiffObject : DiffObject );
     for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
@@ -926,9 +919,9 @@ static Obj VerboseProdObject(Obj opL, Obj opR)
 */
 static void InstallProdObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    UInt                t2;             /* type of right operand           */
-    ArithMethod2        func;           /* product function                */
+    UInt                t1;             // type of left  operand
+    UInt                t2;             // type of right operand
+    ArithMethod2        func;           // product function
 
     func = ( verb ? VerboseProdObject : ProdObject );
     for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
@@ -1003,9 +996,9 @@ static Obj VerboseQuoObject(Obj opL, Obj opR)
 */
 static void InstallQuoObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    UInt                t2;             /* type of right operand           */
-    ArithMethod2        func;           /* quotient function               */
+    UInt                t1;             // type of left  operand
+    UInt                t2;             // type of right operand
+    ArithMethod2        func;           // quotient function
 
     func = ( verb ? VerboseQuoObject : QuoObject );
     for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
@@ -1090,9 +1083,9 @@ static Obj VerboseLQuoObject(Obj opL, Obj opR)
 */
 static void InstallLQuoObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    UInt                t2;             /* type of right operand           */
-    ArithMethod2        func;           /* left quotient function          */
+    UInt                t1;             // type of left  operand
+    UInt                t2;             // type of right operand
+    ArithMethod2        func;           // left quotient function
 
     func = ( verb ? VerboseLQuoObject : LQuoObject );
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
@@ -1178,9 +1171,9 @@ static Obj VerbosePowObject(Obj opL, Obj opR)
 */
 static void InstallPowObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    UInt                t2;             /* type of right operand           */
-    ArithMethod2        func;           /* power function                  */
+    UInt                t1;             // type of left  operand
+    UInt                t2;             // type of right operand
+    ArithMethod2        func;           // power function
 
     func = ( verb ? VerbosePowObject : PowObject );
     for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
@@ -1267,9 +1260,9 @@ static Obj VerboseCommObject(Obj opL, Obj opR)
 */
 static void InstallCommObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    UInt                t2;             /* type of right operand           */
-    ArithMethod2        func;           /* commutator function             */
+    UInt                t1;             // type of left  operand
+    UInt                t2;             // type of right operand
+    ArithMethod2        func;           // commutator function
 
     func = ( verb ? VerboseCommObject : CommObject );
     for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
@@ -1343,9 +1336,9 @@ static Obj VerboseModObject(Obj opL, Obj opR)
 */
 static void InstallModObject ( Int verb )
 {
-    UInt                t1;             /* type of left  operand           */
-    UInt                t2;             /* type of right operand           */
-    ArithMethod2        func;           /* mod function                    */
+    UInt                t1;             // type of left  operand
+    UInt                t2;             // type of right operand
+    ArithMethod2        func;           // mod function
 
     func = ( verb ? VerboseModObject : ModObject );
     for ( t1 = FIRST_EXTERNAL_TNUM;  t1 <= LAST_EXTERNAL_TNUM;  t1++ ) {
@@ -1411,7 +1404,7 @@ static Obj FuncMOD(Obj self, Obj opL, Obj opR)
 */
 void ChangeArithDoOperations(Obj oper, Int verb)
 {
-    /* catch infix operations                                          */
+    // catch infix operations
     if ( oper == EqOper   )  { InstallEqObject(verb);   }
     if ( oper == LtOper   )  { InstallLtObject(verb);   }
     if ( oper == InOper   )  { InstallInObject(verb);   }
@@ -1501,72 +1494,72 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    UInt                t1;             /* type of left  operand           */
-    UInt                t2;             /* type of right operand           */
+    UInt                t1;             // type of left  operand
+    UInt                t2;             // type of right operand
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
 
     InstallArithWrappers();
 
-    /* make and install the 'ZERO_SAMEMUT' arithmetic operation            */
+    // make and install the 'ZERO_SAMEMUT' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         assert(ZeroSameMutFuncs[t1] == 0);
         ZeroSameMutFuncs[t1] = ZeroSameMutObject;
     }
     InstallZeroSameMutObject(0);
 
-    /* make and install the 'ZERO_MUT' arithmetic operation                */
+    // make and install the 'ZERO_MUT' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         assert(ZeroMutFuncs[t1] == 0);
         ZeroMutFuncs[t1] = ZeroMutObject;
     }
     InstallZeroMutObject(0);
 
-    /* make and install the 'AINV_SAMEMUT' arithmetic operation            */
+    // make and install the 'AINV_SAMEMUT' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         assert(AInvSameMutFuncs[t1] == 0);
         AInvSameMutFuncs[t1] = AInvSameMutObject;
     }
     InstallAInvSameMutObject(0);
 
-    /* make and install the 'AINV_MUT' arithmetic operation                */
+    // make and install the 'AINV_MUT' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         assert(AInvMutFuncs[t1] == 0);
         AInvMutFuncs[t1] = AInvMutObject;
     }
     InstallAInvMutObject(0);
 
-    /* make and install the 'ONE' arithmetic operation                     */
+    // make and install the 'ONE' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         assert(OneFuncs[t1] == 0);
         OneFuncs[t1] = OneObject;
     }
     InstallOneObject(0);
 
-    /* make and install the 'ONE' arithmetic operation                     */
+    // make and install the 'ONE' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         assert(OneSameMut[t1] == 0);
         OneSameMut[t1] = OneSameMutObject;
     }
     InstallOneSameMutObject(0);
 
-    /* make and install the 'INV' arithmetic operation                     */
+    // make and install the 'INV' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         assert(InvFuncs[t1] == 0);
         InvFuncs[t1] = InvObject;
     }
     InstallInvObject(0);
 
-    /* make and install the 'INV' arithmetic operation                     */
+    // make and install the 'INV' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         assert(InvSameMutFuncs[t1] == 0);
         InvSameMutFuncs[t1] = InvSameMutObject;
     }
     InstallInvSameMutObject(0);
 
-    /* make and install the 'EQ' comparison operation                      */
+    // make and install the 'EQ' comparison operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
             assert(EqFuncs[t1][t2] == 0);
@@ -1575,7 +1568,7 @@ static Int InitKernel (
     }
     InstallEqObject(0);
 
-    /* make and install the 'LT' comparison operation                      */
+    // make and install the 'LT' comparison operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
             assert(LtFuncs[t1][t2] == 0);
@@ -1584,7 +1577,7 @@ static Int InitKernel (
     }
     InstallLtObject(0);
 
-    /* make and install the 'IN' comparison operation                      */
+    // make and install the 'IN' comparison operation
     for ( t1 = FIRST_REAL_TNUM; t1 <= LAST_REAL_TNUM; t1++ ) {
         for ( t2 = FIRST_REAL_TNUM; t2 <= LAST_REAL_TNUM; t2++ ) {
             assert(InFuncs[t1][t2] == 0);
@@ -1593,7 +1586,7 @@ static Int InitKernel (
     }
     InstallInObject(0);
 
-    /* make and install the 'SUM' arithmetic operation                     */
+    // make and install the 'SUM' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
             assert(SumFuncs[t1][t2] == 0);
@@ -1602,7 +1595,7 @@ static Int InitKernel (
     }
     InstallSumObject(0);
 
-    /* make and install the 'DIFF' arithmetic operation                    */
+    // make and install the 'DIFF' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
             assert(DiffFuncs[t1][t2] == 0);
@@ -1611,7 +1604,7 @@ static Int InitKernel (
     }
     InstallDiffObject(0);
 
-    /* make and install the 'PROD' arithmetic operation                    */
+    // make and install the 'PROD' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
             assert(ProdFuncs[t1][t2] == 0);
@@ -1620,7 +1613,7 @@ static Int InitKernel (
     }
     InstallProdObject(0);
 
-    /* make and install the 'QUO' arithmetic operation                     */
+    // make and install the 'QUO' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
             assert(QuoFuncs[t1][t2] == 0);
@@ -1629,7 +1622,7 @@ static Int InitKernel (
     }
     InstallQuoObject(0);
 
-    /* make and install the 'LQUO' arithmetic operation                    */
+    // make and install the 'LQUO' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
             assert(LQuoFuncs[t1][t2] == 0);
@@ -1638,7 +1631,7 @@ static Int InitKernel (
     }
     InstallLQuoObject(0);
 
-    /* make and install the 'POW' arithmetic operation                     */
+    // make and install the 'POW' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
             assert(PowFuncs[t1][t2] == 0);
@@ -1647,7 +1640,7 @@ static Int InitKernel (
     }
     InstallPowObject(0);
 
-    /* make and install the 'COMM' arithmetic operation                    */
+    // make and install the 'COMM' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
             assert(CommFuncs[t1][t2] == 0);
@@ -1656,7 +1649,7 @@ static Int InitKernel (
     }
     InstallCommObject(0);
 
-    /* make and install the 'MOD' arithmetic operation                     */
+    // make and install the 'MOD' arithmetic operation
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_REAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_REAL_TNUM;  t2++ ) {
             assert(ModFuncs[t1][t2] == 0);
@@ -1677,7 +1670,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
 

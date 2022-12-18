@@ -111,10 +111,10 @@ static void AddIn(Obj list, Obj w, Obj e)
       g = INT_INTOBJ( ELM_PLIST( w, i ) );
 
       s = ELM_PLIST( w, i+1 );
-      C_PROD_FIA( t, s, e );      /*   t = s * e   */
+      C_PROD_FIA( t, s, e );      // t = s * e
 
       r = ELM_PLIST( list, g );
-      C_SUM_FIA( s, t, r );       /*   s = r + s * e   */
+      C_SUM_FIA( s, t, r );       // s = r + s * e
 
       SET_ELM_PLIST( list, g, s );  CHANGED_BAG( list );
   }
@@ -167,14 +167,14 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
       g   = INT_INTOBJ( ELM_PLIST( w, syl )  );
 
       if( st > 1 && syl==1 && g == GET_COMMUTE(g) ) {
-        /* Collect word^exponent in one go. */
+        // Collect word^exponent in one go.
 
         e = ELM_PLIST( west, st );
 
-        /* Add in. */
+        // Add in.
         AddIn( list, w, e );
 
-        /* Reduce. */
+        // Reduce.
         for( h = g; h <= ngens; h++ ) {
           s = ELM_PLIST( list, h );
           if( IS_INT_ZERO( s ) ) continue;
@@ -212,7 +212,7 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
           SET_ELM_PLIST( est, st, INTOBJ_INT(0) );
         }
         else {
-          /* Assume that the top of the exponent stack is non-zero. */
+          // Assume that the top of the exponent stack is non-zero.
           e = ELM_PLIST( est, st );
 
           if( IS_POS_INT( e ) ) {
@@ -261,7 +261,7 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
 
         hh = h = GET_COMMUTE( g );
 
-        /* Find the place where we start to collect. */
+        // Find the place where we start to collect.
         for( ; h > g; h-- ) {
             e = ELM_PLIST( list, h );
             if( !IS_INT_ZERO(e) ) {
@@ -275,7 +275,7 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
             }
         }
 
-        /* Put those onto the stack, if necessary. */
+        // Put those onto the stack, if necessary.
         if( h > g || y != (Obj)0 )
           for( ; hh > h; hh-- ) {
             e = ELM_PLIST( list, hh );
@@ -370,10 +370,10 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* Keep track of variables containing library functions called in this */
-    /* module.                                                             */
+    // Keep track of variables containing library functions called in this
+    // module.
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
     return 0;
@@ -413,7 +413,7 @@ static Int InitLibrary (
     // require stacks inside the collector objects
     AssConstantGVar(GVarName("NO_STACKS_INSIDE_COLLECTORS"), True);
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

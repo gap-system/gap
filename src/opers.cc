@@ -202,13 +202,13 @@ static Obj FuncHASH_FLAGS(Obj self, Obj flags)
     UInt4 *              ptr;
     Int                  i;
 
-    /* do some trivial checks                                              */
+    // do some trivial checks
     RequireFlags(SELF_NAME, flags);
     if ( HASH_FLAGS(flags) != 0 ) {
         return HASH_FLAGS(flags);
     }
 
-    /* do the real work*/
+    // do the real work */
 #if !defined(SYS_IS_64_BIT) || !defined(WORDS_BIGENDIAN)
 
     // 32 bit case  -- this is the "defining" case, others are adjusted to
@@ -227,17 +227,17 @@ static Obj FuncHASH_FLAGS(Obj self, Obj flags)
 
 #else
 
-    /* This is the hardest case: 64 bit big endian */
+    // This is the hardest case: 64 bit big endian
     len = NRB_FLAGS(flags);
     ptr = (UInt4 *)BLOCKS_FLAGS(flags);
     hash = 0;
     x    = 1;
     for ( i = len; i >= 1; i-- ) {
 
-        /* least significant 32 bits first */
+        // least significant 32 bits first
         hash = (hash + (ptr[1] % HASH_FLAGS_SIZE) * x) % HASH_FLAGS_SIZE;
         x    = (31 * x) % HASH_FLAGS_SIZE;
-        /* now the more significant */
+        // now the more significant
         hash = (hash + (*ptr % HASH_FLAGS_SIZE) * x) % HASH_FLAGS_SIZE;
         x    = (31 * x) % HASH_FLAGS_SIZE;
 
@@ -257,29 +257,29 @@ static Obj FuncHASH_FLAGS(Obj self, Obj flags)
 */
 static Obj FuncTRUES_FLAGS(Obj self, Obj flags)
 {
-    Obj                 sub;            /* handle of the result            */
-    Int                 len;            /* logical length of the list      */
-    UInt *              ptr;            /* pointer to flags                */
-    UInt                nrb;            /* number of blocks in flags       */
-    UInt                n;              /* number of bits in flags         */
+    Obj                 sub;            // handle of the result
+    Int                 len;            // logical length of the list
+    UInt *              ptr;            // pointer to flags
+    UInt                nrb;            // number of blocks in flags
+    UInt                n;              // number of bits in flags
     UInt                nn;
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
     RequireFlags(SELF_NAME, flags);
     if ( TRUES_FLAGS(flags) != 0 ) {
         return TRUES_FLAGS(flags);
     }
 
-    /* compute the number of 'true'-s just as in 'FuncSizeBlist'            */
+    // compute the number of 'true'-s just as in 'FuncSizeBlist'
     nrb = NRB_FLAGS(flags);
     ptr = (UInt*)BLOCKS_FLAGS(flags);
     n = COUNT_TRUES_BLOCKS(ptr, nrb);
 
-    /* make the sublist (we now know its size exactly)                    */
+    // make the sublist (we now know its size exactly)
     sub = NEW_PLIST_IMM( T_PLIST, n );
     SET_LEN_PLIST( sub, n );
 
-    /* loop over the boolean list and stuff elements into <sub>            */
+    // loop over the boolean list and stuff elements into <sub>
     len = LEN_FLAGS( flags );
     nn  = 1;
     for ( i = 1; nn <= n && i <= len;  i++ ) {
@@ -290,7 +290,7 @@ static Obj FuncTRUES_FLAGS(Obj self, Obj flags)
     }
     CHANGED_BAG(sub);
 
-    /* return the sublist                                                  */
+    // return the sublist
     SET_TRUES_FLAGS( flags, sub );
     CHANGED_BAG(flags);
     return sub;
@@ -305,22 +305,22 @@ static Obj FuncTRUES_FLAGS(Obj self, Obj flags)
 */
 static Obj FuncSIZE_FLAGS(Obj self, Obj flags)
 {
-    UInt *              ptr;            /* pointer to flags                */
-    UInt                nrb;            /* number of blocks in flags       */
-    UInt                n;              /* number of bits in flags         */
+    UInt *              ptr;            // pointer to flags
+    UInt                nrb;            // number of blocks in flags
+    UInt                n;              // number of bits in flags
 
     RequireFlags(SELF_NAME, flags);
     if ( TRUES_FLAGS(flags) != 0 ) {
         return INTOBJ_INT( LEN_PLIST( TRUES_FLAGS(flags) ) );
     }
 
-    /* get the number of blocks and a pointer                              */
+    // get the number of blocks and a pointer
     nrb = NRB_FLAGS(flags);
     ptr = BLOCKS_FLAGS(flags);
 
     n = COUNT_TRUES_BLOCKS(ptr, nrb);
 
-    /* return the number of bits                                           */
+    // return the number of bits
     return INTOBJ_INT( n );
 }
 
@@ -380,7 +380,7 @@ static Int EqFlags(Obj flags1, Obj flags2)
 */
 static Obj FuncIS_EQUAL_FLAGS(Obj self, Obj flags1, Obj flags2)
 {
-    /* do some trivial checks                                              */
+    // do some trivial checks
     RequireFlags(SELF_NAME, flags1);
     RequireFlags(SELF_NAME, flags2);
 
@@ -408,7 +408,7 @@ BOOL IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
     IsSubsetFlagsCalls++;
 #endif
 
-    /* compare the bit lists                                               */
+    // compare the bit lists
     len1 = NRB_FLAGS(flags1);
     len2 = NRB_FLAGS(flags2);
     ptr1 = BLOCKS_FLAGS(flags1);
@@ -440,7 +440,7 @@ BOOL IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
 */
 static Obj FuncIS_SUBSET_FLAGS(Obj self, Obj flags1, Obj flags2)
 {
-    /* do some correctness checks                                            */
+    // do some correctness checks
     RequireFlags(SELF_NAME, flags1);
     RequireFlags(SELF_NAME, flags2);
 
@@ -463,11 +463,11 @@ static Obj FuncSUB_FLAGS(Obj self, Obj flags1, Obj flags2)
     UInt *              ptr2;
     Int                 i;
 
-    /* do some trivial checks                                              */
+    // do some trivial checks
     RequireFlags(SELF_NAME, flags1);
     RequireFlags(SELF_NAME, flags2);
 
-    /* do the real work                                                    */
+    // do the real work
     len1   = LEN_FLAGS(flags1);
     size1  = NRB_FLAGS(flags1);
     len2   = LEN_FLAGS(flags2);
@@ -530,7 +530,7 @@ static Obj FuncAND_FLAGS(Obj self, Obj flags1, Obj flags2)
     static UInt         next = 0;   // FIXME HPC-GAP: is usage of this static thread-safe?
 #endif
 
-    /* do some trivial checks                                              */
+    // do some trivial checks
     RequireFlags(SELF_NAME, flags1);
     RequireFlags(SELF_NAME, flags2);
 
@@ -597,7 +597,7 @@ static Obj FuncAND_FLAGS(Obj self, Obj flags1, Obj flags2)
 #   endif
 
 
-    /* do the real work                                                    */
+    // do the real work
     len1   = LEN_FLAGS(flags1);
     size1  = NRB_FLAGS(flags1);
     len2   = LEN_FLAGS(flags2);
@@ -624,7 +624,7 @@ static Obj FuncAND_FLAGS(Obj self, Obj flags1, Obj flags2)
             *ptr++ = *ptr1++;
     }
 
-    /* store result in the cache                                           */
+    // store result in the cache
 #   ifdef AND_FLAGS_HASH_SIZE
 #       ifdef COUNT_OPERS
             if ( ELM_PLIST(cache,2*hash+1) != 0 ) {
@@ -689,7 +689,7 @@ static Obj HIDDEN_IMPS;
 static Obj WITH_HIDDEN_IMPS_FLAGS_CACHE;
 enum { HIDDEN_IMPS_CACHE_LENGTH = 20003 };
 
-/* Forward declaration of FuncFLAGS_FILTER */
+// Forward declaration of FuncFLAGS_FILTER
 static Obj FuncFLAGS_FILTER(Obj self, Obj oper);
 
 /****************************************************************************
@@ -871,7 +871,7 @@ static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 #ifdef COUNT_OPERS
     WITH_IMPS_FLAGS_MISS++;
 #endif
-    /* first implications from simple filters (need only be checked once) */
+    // first implications from simple filters (need only be checked once)
     trues = FuncTRUES_FLAGS(0, flags);
     for (i=1; i<=LEN_PLIST(trues); i++) {
         j = INT_INTOBJ(ELM_PLIST(trues, i));
@@ -886,7 +886,7 @@ static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
         }
     }
 
-    /* the other implications have to be considered in a loop */
+    // the other implications have to be considered in a loop
     imps_length = LEN_PLIST(IMPLICATIONS_COMPOSED);
     changed = 1;
     lastand = imps_length+1;
@@ -971,15 +971,15 @@ static Obj DoSetAndFilter(Obj self, Obj obj, Obj val)
     if (val != True)
         ErrorMayQuit("You cannot set an \"and-filter\" except to true", 0, 0);
 
-    /* call the first 'and'-ed function                                    */
+    // call the first 'and'-ed function
     op = FLAG1_FILT( self );
     CALL_2ARGS( op, obj, val );
 
-    /* call the second 'and'-ed function                                   */
+    // call the second 'and'-ed function
     op = FLAG2_FILT( self );
     CALL_2ARGS( op, obj, val );
 
-    /* return 'void'                                                       */
+    // return 'void'
     return 0;
 }
 
@@ -992,7 +992,7 @@ static Obj SetterAndFilter(Obj getter)
         setter = NewFunctionT( T_FUNCTION, sizeof(OperBag),
                                 MakeImmString("<<setter-and-filter>>"), 2, ArglistObjVal,
                                 (ObjFunc)DoSetAndFilter );
-        /* assign via 'obj' to avoid GC issues */
+        // assign via 'obj' to avoid GC issues
         obj =  SetterFilter( FLAG1_FILT(getter) );
         SET_FLAG1_FILT(setter, obj);
         obj = SetterFilter( FLAG2_FILT(getter) );
@@ -1049,19 +1049,19 @@ static Obj DoSetFilter(Obj self, Obj obj, Obj val)
     Obj                 type;
     Obj                 flags;
 
-    /* get the flag for the getter                                         */
+    // get the flag for the getter
     flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
 
-    /* get the type of the object and its flags                            */
+    // get the type of the object and its flags
     type  = TYPE_OBJ( obj );
     flags = FLAGS_TYPE( type );
 
-    /* return the value of the feature                                     */
+    // return the value of the feature
     if ( val != SAFE_ELM_FLAGS( flags, flag1 ) ) {
         ErrorMayQuit("filter is already set the other way", 0, 0);
     }
 
-    /* return 'void'                                                       */
+    // return 'void'
     return 0;
 }
 
@@ -1088,17 +1088,17 @@ Obj DoFilter (
     Obj                 type;
     Obj                 flags;
 
-    /* get the flag for the getter                                         */
+    // get the flag for the getter
     flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
 
-    /* get the type of the object and its flags                            */
+    // get the type of the object and its flags
     type  = TYPE_OBJ( obj );
     flags = FLAGS_TYPE( type );
 
-    /* return the value of the feature                                     */
+    // return the value of the feature
     val = SAFE_ELM_FLAGS( flags, flag1 );
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -1148,17 +1148,17 @@ static Obj DoAndFilter(Obj self, Obj obj)
     Obj                 val;
     Obj                 op;
 
-    /* call the first 'and'-ed function                                    */
+    // call the first 'and'-ed function
     op = FLAG1_FILT( self );
     val = CALL_1ARGS( op, obj );
     if ( val != True )  return False;
 
-    /* call the second 'and'-ed function                                   */
+    // call the second 'and'-ed function
     op = FLAG2_FILT( self );
     val = CALL_1ARGS( op, obj );
     if ( val != True )  return False;
 
-    /* return 'true'                                                       */
+    // return 'true'
     return True;
 }
 
@@ -1410,8 +1410,8 @@ static void HandleMethodNotFound(
   r = NEW_PREC(5);
   if (RNamOperation == 0)
     {
-      /* we can't do this in initialization because opers
-         is initialized BEFORE records */
+      // we can't do this in initialization because opers
+      // is initialized BEFORE records
       RNamIsConstructor = RNamName("isConstructor");
       RNamIsVerbose = RNamName("isVerbose");
       RNamOperation = RNamName("Operation");
@@ -1494,7 +1494,7 @@ static Obj FuncCOMPACT_TYPE_IDS(Obj self)
 static inline Obj TYPE_OBJ_FEO(Obj obj)
 {
 #ifdef HPCGAP
-    /* TODO: We need to be able to automatically derive this. */
+    // TODO: We need to be able to automatically derive this.
     ImpliedWriteGuard(obj);
 #endif
     switch ( TNUM_OBJ( obj ) ) {
@@ -1509,12 +1509,13 @@ static inline Obj TYPE_OBJ_FEO(Obj obj)
     }
 }
 
-/* Method Cache -- we remember recently selected methods in a cache.
-   The effectiveness of this cache is vital for GAP's performance */
+// Method Cache -- we remember recently selected methods in a cache.
+// The effectiveness of this cache is vital for GAP's performance
 
 
-/* The next few functions deal with finding and allocating if necessary the cache
-   for a given operation and number of arguments, and some locking in HPC-GAP */
+// The next few functions deal with finding and allocating if necessary the
+// cache for a given operation and number of arguments, and some locking in
+// HPC-GAP
 
 
 #ifdef HPCGAP
@@ -1619,12 +1620,10 @@ static Obj GetMethodCached(Obj cacheBag, Int prec, Obj ids[])
     cache++; // skip over the pointer to the methods list
 #endif
 
-    /* Up to CACHE_SIZE methods might be in the cache */
+    // Up to CACHE_SIZE methods might be in the cache
     if (prec < CACHE_SIZE) {
-        /* This loop runs through those */
-        UInt target =
-            cacheEntrySize * prec; /* first place to look and also the place
-                                      we'll put the result */
+        // first place to look and also the place we'll put the result:
+        UInt target = cacheEntrySize * prec;
         for (i = target; i < cacheEntrySize * CACHE_SIZE;
              i += cacheEntrySize) {
             if (cache[i + 1] == INTOBJ_INT(prec)) {
@@ -1643,8 +1642,8 @@ static Obj GetMethodCached(Obj cacheBag, Int prec, Obj ids[])
 #endif
                     if (i > target) {
 
-                        /* We found the method, but it was further down the
-                           cache than we would like it to be, so move it up */
+                        // We found the method, but it was further down the
+                        // cache than we would like it to be, so move it up
                         Obj buf[cacheEntrySize];
                         memcpy(buf, cache + i,
                                sizeof(Obj) * cacheEntrySize);
@@ -1662,15 +1661,15 @@ static Obj GetMethodCached(Obj cacheBag, Int prec, Obj ids[])
     return method;
 }
 
-/* Add a method to the cache -- called when a method is selected that is not
-   in the cache */
+// Add a method to the cache -- called when a method is selected that is not
+// in the cache
 static inline void
 CacheMethod(Obj cacheBag, UInt n, Int prec, Obj * ids, Obj method)
 {
     if (prec >= CACHE_SIZE)
         return;
-    /* We insert this method at position <prec> and move
-       the older methods down */
+    // We insert this method at position <prec> and move
+    // the older methods down
     UInt  cacheEntrySize = n + 2;
     Obj * cache = BASE_PTR_PLIST(cacheBag) + prec * cacheEntrySize;
 #ifdef HPCGAP
@@ -1918,11 +1917,11 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
     }
 #endif
 
-    /* outer loop deals with TryNextMethod */
+    // outer loop deals with TryNextMethod
     prec = -1;
     do {
         prec++;
-        /* Is there a method in the cache */
+        // Is there a method in the cache
         method = verbose ? 0 : GetMethodCached<n>(cacheBag, prec, ids);
 
 #ifdef COUNT_OPERS
@@ -1937,17 +1936,17 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
             OperationNext++;
 #endif
 
-        /* otherwise try to find one in the list of methods */
+        // otherwise try to find one in the list of methods
         if (!method) {
             method = GetMethodUncached<n>(verbose, constructor, methods, prec,
                                           types);
-            /* update the cache */
+            // update the cache
             if (!verbose && method)
                 CacheMethod(cacheBag, n, prec, ids, method);
         }
 
-        /* If there was no method found, then pass the information needed
-           for the error reporting. This function rarely returns */
+        // If there was no method found, then pass the information needed
+        // for the error reporting. This function rarely returns
         if (method == Fail) {
             Obj arglist;
             switch (n) {
@@ -1982,7 +1981,7 @@ DoOperationNArgs(Obj oper, Obj a1, Obj a2, Obj a3, Obj a4, Obj a5, Obj a6)
             ErrorQuit("no method returned", 0, 0);
         }
 
-        /* call this method */
+        // call this method
         res = CallNArgs<n>(method, a1, a2, a3, a4, a5, a6);
     } while (res == TRY_NEXT_METHOD);
 
@@ -2098,10 +2097,10 @@ Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr)
 {
     Obj oper;
 
-    /* create the function                                                 */
+    // create the function
     oper = NewFunctionT(T_FUNCTION, sizeof(OperBag), name, narg, nams, hdlr);
 
-    /* enter the handlers                                                  */
+    // enter the handlers
     SET_HDLR_FUNC(oper, 0, (ObjFunc)DoOperation0Args);
     SET_HDLR_FUNC(oper, 1, (ObjFunc)DoOperation1Args);
     SET_HDLR_FUNC(oper, 2, (ObjFunc)DoOperation2Args);
@@ -2111,7 +2110,7 @@ Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr)
     SET_HDLR_FUNC(oper, 6, (ObjFunc)DoOperation6Args);
     SET_HDLR_FUNC(oper, 7, (ObjFunc)DoOperationXArgs);
 
-    /* reenter the given handler */
+    // reenter the given handler
     if (narg != -1)
         SET_HDLR_FUNC(oper, narg, hdlr);
 
@@ -2122,10 +2121,10 @@ Obj NewOperation(Obj name, Int narg, Obj nams, ObjFunc hdlr)
     SET_SETTR_FILT(oper, False);
     SET_TESTR_FILT(oper, False);
 
-    /* This isn't an attribute (yet) */
+    // This isn't an attribute (yet)
     SET_ENABLED_ATTR(oper, 0);
 
-    /* return operation                                                    */
+    // return operation
     return oper;
 }
 
@@ -2252,10 +2251,10 @@ static Obj NewConstructor(Obj name)
 {
     Obj                 oper;
 
-    /* create the function                                                 */
+    // create the function
     oper = NewFunctionT( T_FUNCTION, sizeof(OperBag), name, -1, 0, 0 );
 
-    /* enter the handlers                                                  */
+    // enter the handlers
     SET_HDLR_FUNC(oper, 0, (ObjFunc)DoConstructor0Args);
     SET_HDLR_FUNC(oper, 1, (ObjFunc)DoConstructor1Args);
     SET_HDLR_FUNC(oper, 2, (ObjFunc)DoConstructor2Args);
@@ -2272,7 +2271,7 @@ static Obj NewConstructor(Obj name)
     SET_SETTR_FILT(oper, False);
     SET_TESTR_FILT(oper, False);
 
-    /* return constructor                                                  */
+    // return constructor
     return oper;
 }
 
@@ -2289,14 +2288,14 @@ Obj DoTestAttribute (
     Obj                 type;
     Obj                 flags;
 
-    /* get the flag for the tester                                         */
+    // get the flag for the tester
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    /* get type of the object and its flags                                */
+    // get type of the object and its flags
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* return whether the value of the attribute is already known          */
+    // return whether the value of the attribute is already known
     return SAFE_ELM_FLAGS( flags, flag2 );
 }
 
@@ -2316,26 +2315,26 @@ Obj DoAttribute (
     Obj                 type;
     Obj                 flags;
 
-    /* get the flag for the tester                                         */
+    // get the flag for the tester
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    /* get type of the object and its flags                                */
+    // get type of the object and its flags
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the attribute is already known, simply return it     */
+    // if the value of the attribute is already known, simply return it
     if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return DoOperation1Args( self, obj );
     }
 
-    /* call the operation to compute the value                             */
+    // call the operation to compute the value
     val = DoOperation1Args( self, obj );
     if (val == 0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
     }
     val = CopyObj( val, 0 );
 
-    /* set the value (but not for internal objects)                        */
+    // set the value (but not for internal objects)
     if ( ENABLED_ATTR( self ) == 1 && !IS_MUTABLE_OBJ( obj ) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
@@ -2349,7 +2348,7 @@ Obj DoAttribute (
         }
     }
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -2367,26 +2366,26 @@ static Obj DoVerboseAttribute(Obj self, Obj obj)
     Obj                 type;
     Obj                 flags;
 
-    /* get the flag for the tester                                         */
+    // get the flag for the tester
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    /* get type of the object and its flags                                */
+    // get type of the object and its flags
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the attribute is already known, simply return it     */
+    // if the value of the attribute is already known, simply return it
     if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return DoVerboseOperation1Args( self, obj );
     }
 
-    /* call the operation to compute the value                             */
+    // call the operation to compute the value
     val = DoVerboseOperation1Args( self, obj );
     if (val == (Obj)0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
     }
     val = CopyObj( val, 0 );
 
-    /* set the value (but not for internal objects)                        */
+    // set the value (but not for internal objects)
     if ( ENABLED_ATTR( self ) == 1  && !IS_MUTABLE_OBJ( obj ) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
@@ -2400,7 +2399,7 @@ static Obj DoVerboseAttribute(Obj self, Obj obj)
         }
     }
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -2416,24 +2415,24 @@ static Obj DoMutableAttribute(Obj self, Obj obj)
     Obj                 type;
     Obj                 flags;
 
-    /* get the flag for the tester                                         */
+    // get the flag for the tester
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    /* get type of the object and its flags                                */
+    // get type of the object and its flags
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the attribute is already known, simply return it     */
+    // if the value of the attribute is already known, simply return it
     if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return DoOperation1Args( self, obj );
     }
 
-    /* call the operation to compute the value                             */
+    // call the operation to compute the value
     val = DoOperation1Args( self, obj );
     if (val == 0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
     }
-    /* set the value (but not for internal objects)                        */
+    // set the value (but not for internal objects)
     if ( ENABLED_ATTR( self ) == 1  && !IS_MUTABLE_OBJ( obj ) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
@@ -2447,7 +2446,7 @@ static Obj DoMutableAttribute(Obj self, Obj obj)
         }
     }
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -2463,24 +2462,24 @@ static Obj DoVerboseMutableAttribute(Obj self, Obj obj)
     Obj                 type;
     Obj                 flags;
 
-    /* get the flag for the tester                                         */
+    // get the flag for the tester
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    /* get type of the object and its flags                                */
+    // get type of the object and its flags
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the attribute is already known, simply return it     */
+    // if the value of the attribute is already known, simply return it
     if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return DoVerboseOperation1Args( self, obj );
     }
 
-    /* call the operation to compute the value                             */
+    // call the operation to compute the value
     val = DoVerboseOperation1Args( self, obj );
     if (val == 0) {
         ErrorMayQuit("Method for an attribute must return a value", 0, 0);
     }
-    /* set the value (but not for internal objects)                        */
+    // set the value (but not for internal objects)
     if ( ENABLED_ATTR( self ) == 1  && !IS_MUTABLE_OBJ( obj ) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
@@ -2494,7 +2493,7 @@ static Obj DoVerboseMutableAttribute(Obj self, Obj obj)
         }
     }
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -2621,7 +2620,7 @@ static void ConvertOperationIntoAttribute(Obj oper, ObjFunc_1ARGS hdlr)
     Int                 flag2;
     Obj                 name;
 
-    /* Need to get the name from oper */
+    // Need to get the name from oper
     name = NAME_FUNC(oper);
 
     flag2 = ++CountFlags;
@@ -2629,7 +2628,7 @@ static void ConvertOperationIntoAttribute(Obj oper, ObjFunc_1ARGS hdlr)
     setter = MakeSetter(name, 0, flag2, DoSetAttribute);
     tester = MakeTester(name, 0, flag2);
 
-    /* Change the handlers */
+    // Change the handlers
     GAP_ASSERT(hdlr);
     SET_HDLR_FUNC(oper, 1, (ObjFunc)hdlr);
 
@@ -2657,15 +2656,15 @@ Obj DoSetProperty(Obj self, Obj obj, Obj val)
     Obj                 type;
     Obj                 flags;
 
-    /* get the flags for the getter and the tester                         */
+    // get the flags for the getter and the tester
     flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    /* get type of the object and its flags                                */
+    // get type of the object and its flags
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the property is already known, compare it           */
+    // if the value of the property is already known, compare it
     if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         if ( val == ELM_FLAGS( flags, flag1 ) ) {
             return 0;
@@ -2675,7 +2674,7 @@ Obj DoSetProperty(Obj self, Obj obj, Obj val)
         }
     }
 
-    /* set the value                                                       */
+    // set the value
     /*N 1996/06/28 mschoene <self> is the <setter> here, not the <getter>! */
     /*N 1996/06/28 mschoene see hack below                                 */
     switch ( TNUM_OBJ( obj ) ) {
@@ -2719,27 +2718,27 @@ Obj DoProperty (
     Obj                 type;
     Obj                 flags;
 
-    /* get the flags for the getter and the tester                         */
+    // get the flags for the getter and the tester
     flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    /* get type of the object and its flags                                */
+    // get type of the object and its flags
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the property is already known, simply return it     */
+    // if the value of the property is already known, simply return it
     if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return ELM_FLAGS( flags, flag1 );
     }
 
-    /* call the operation to compute the value                             */
+    // call the operation to compute the value
     val = DoOperation1Args( self, obj );
     if (val != True && val != False) {
         ErrorMayQuit("Method for a property did not return true or false", 0,
                      0);
     }
 
-    /* set the value (but not for internal objects)                        */
+    // set the value (but not for internal objects)
     if ( ENABLED_ATTR(self) == 1 && ! IS_MUTABLE_OBJ(obj) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
@@ -2754,7 +2753,7 @@ Obj DoProperty (
         }
     }
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -2771,27 +2770,27 @@ static Obj DoVerboseProperty(Obj self, Obj obj)
     Obj                 type;
     Obj                 flags;
 
-    /* get the flags for the getter and the tester                         */
+    // get the flags for the getter and the tester
     flag1 = INT_INTOBJ( FLAG1_FILT( self ) );
     flag2 = INT_INTOBJ( FLAG2_FILT( self ) );
 
-    /* get type of the object and its flags                                */
+    // get type of the object and its flags
     type  = TYPE_OBJ_FEO( obj );
     flags = FLAGS_TYPE( type );
 
-    /* if the value of the property is already known, simply return it     */
+    // if the value of the property is already known, simply return it
     if ( SAFE_C_ELM_FLAGS( flags, flag2 ) ) {
         return ELM_FLAGS( flags, flag1 );
     }
 
-    /* call the operation to compute the value                             */
+    // call the operation to compute the value
     val = DoVerboseOperation1Args( self, obj );
     if (val != True && val != False) {
         ErrorMayQuit("Method for a property did not return true or false", 0,
                      0);
     }
 
-    /* set the value (but not for internal objects)                        */
+    // set the value (but not for internal objects)
     if ( ENABLED_ATTR(self) == 1 && ! IS_MUTABLE_OBJ(obj) ) {
         switch ( TNUM_OBJ( obj ) ) {
         case T_COMOBJ:
@@ -2806,7 +2805,7 @@ static Obj DoVerboseProperty(Obj self, Obj obj)
         }
     }
 
-    /* return the value                                                    */
+    // return the value
     return val;
 }
 
@@ -2855,7 +2854,7 @@ Obj NewProperty (
     SET_SETTR_FILT(setter, setter);
     SET_TESTR_FILT(setter, tester);
 
-    /* return the getter                                                   */
+    // return the getter
     return getter;
 }
 
@@ -2886,7 +2885,7 @@ static Obj NewGlobalFunction(Obj name, Obj nams)
     Obj                 func;
     Obj                 namobj;
 
-    /* create the function                                                 */
+    // create the function
     func = NewFunction( name, -1, nams, (ObjFunc)DoUninstalledGlobalFunction );
     SET_HDLR_FUNC(func, 0, (ObjFunc)DoUninstalledGlobalFunction);
     SET_HDLR_FUNC(func, 1, (ObjFunc)DoUninstalledGlobalFunction);
@@ -2897,7 +2896,7 @@ static Obj NewGlobalFunction(Obj name, Obj nams)
     SET_HDLR_FUNC(func, 6, (ObjFunc)DoUninstalledGlobalFunction);
     SET_HDLR_FUNC(func, 7, (ObjFunc)DoUninstalledGlobalFunction);
 
-    /* added the name                                                      */
+    // added the name
     namobj = ImmutableString(name);
     SET_NAME_FUNC(func, namobj);
     CHANGED_BAG(func);
@@ -2916,7 +2915,7 @@ static Obj NewGlobalFunction(Obj name, Obj nams)
     CHANGED_BAG(body_bag);
     CHANGED_BAG(func);
 
-    /* and return                                                          */
+    // and return
     return func;
 }
 
@@ -3120,7 +3119,7 @@ static Obj FuncINSTALL_GLOBAL_FUNCTION(Obj self, Obj oper, Obj func)
         ErrorQuit("<func> must not be an operation", 0, 0);
     }
 
-    /* install the new method                                              */
+    // install the new method
     InstallGlobalFunction( oper, func );
     return 0;
 }
@@ -3308,7 +3307,7 @@ static Obj DoSetterFunction(Obj self, Obj obj, Obj value)
         return 0;
     }
 
-    /* set the value                                                       */
+    // set the value
 #ifdef HPCGAP
     if (atomic)
       SetARecordField( obj, rnam, CopyObj(value,0) );
@@ -3392,9 +3391,9 @@ static Obj FuncOPERS_CACHE_INFO(Obj self)
     SET_ELM_PLIST(list, 10, INTOBJ_INT(WITH_IMPS_FLAGS_HIT));
     SET_ELM_PLIST(list, 11, INTOBJ_INT(WITH_IMPS_FLAGS_MISS));
 
-    /* Now we need to convert the 3d matrix of cache hit counts (by
-       precedence, location found and number of arguments) into a three
-       dimensional GAP matrix (tensor) */
+    // Now we need to convert the 3d matrix of cache hit counts (by
+    // precedence, location found and number of arguments) into a three
+    // dimensional GAP matrix (tensor)
     Obj tensor = NEW_PLIST_IMM(T_PLIST, CACHE_SIZE);
     SET_LEN_PLIST(tensor, CACHE_SIZE);
     for (i = 1; i <= CACHE_SIZE; i++) {
@@ -3416,8 +3415,8 @@ static Obj FuncOPERS_CACHE_INFO(Obj self)
     SET_ELM_PLIST(list, 12, tensor);
     CHANGED_BAG(list);
 
-    /* and similarly the 2D matrix of cache miss information (by
-       precedence and number of arguments) */
+    // and similarly the 2D matrix of cache miss information (by
+    // precedence and number of arguments)
     Obj mat = NEW_PLIST_IMM(T_PLIST, CACHE_SIZE + 1);
     SET_LEN_PLIST(mat, CACHE_SIZE + 1);
     for (Int j = 1; j <= CACHE_SIZE + 1; j++) {
@@ -3502,10 +3501,10 @@ void ChangeDoOperations (
 
     ChangeArithDoOperations(oper, verb);
 
-    /* be verbose                                                          */
+    // be verbose
     if ( verb ) {
 
-        /* switch do with do verbose                                       */
+        // switch do with do verbose
         for ( j = 0;  TabSilentVerboseOperations[j];  j += 2 ) {
             for ( i = 0;  i <= 7;  i++ ) {
                 if ( HDLR_FUNC(oper,i) == TabSilentVerboseOperations[j] ) {
@@ -3515,10 +3514,10 @@ void ChangeDoOperations (
         }
     }
 
-    /* be silent                                                           */
+    // be silent
     else {
 
-        /* switch do verbose with do                                       */
+        // switch do verbose with do
         for ( j = 1;  TabSilentVerboseOperations[j-1];  j += 2 ) {
             for ( i = 0;  i <= 7;  i++ ) {
                 if ( HDLR_FUNC(oper,i) == TabSilentVerboseOperations[j] ) {
@@ -3672,7 +3671,7 @@ static Int InitKernel (
     InitGlobalBag( &ArglistObj,         "src/opers.c:ArglistObj"         );
     InitGlobalBag( &ArglistObjVal,      "src/opers.c:ArglistObjVal"      );
 
-    /* share between uncompleted functions                                 */
+    // share between uncompleted functions
     StringFilterSetter = MakeImmString("<<filter-setter>>");
 
     ArglistObj = NewPlistFromArgs(MakeImmString("obj"));
@@ -3743,24 +3742,24 @@ static Int InitKernel (
 
     InitHandlerFunc( (ObjFunc)DoUninstalledGlobalFunction, "src/opers.c:DoUninstalledGlobalFunction" );
 
-    /* install the type function                                           */
+    // install the type function
     ImportGVarFromLibrary( "TYPE_FLAGS", &TYPE_FLAGS );
     TypeObjFuncs[ T_FLAGS ] = TypeFlags;
 
 
-    /* set up hidden implications                                          */
+    // set up hidden implications
     InitGlobalBag( &WITH_HIDDEN_IMPS_FLAGS_CACHE, "src/opers.c:WITH_HIDDEN_IMPS_FLAGS_CACHE");
     InitGlobalBag( &HIDDEN_IMPS, "src/opers.c:HIDDEN_IMPS");
 
-    /* set up implications                                                 */
+    // set up implications
     InitGlobalBag( &WITH_IMPS_FLAGS_CACHE, "src/opers.c:WITH_IMPS_FLAGS_CACHE");
     InitGlobalBag( &IMPLICATIONS_SIMPLE, "src/opers.c:IMPLICATIONS_SIMPLE");
     InitGlobalBag( &IMPLICATIONS_COMPOSED, "src/opers.c:IMPLICATIONS_COMPOSED");
 
-    /* make the 'true' operation                                           */
+    // make the 'true' operation
     InitGlobalBag( &ReturnTrueFilter, "src/opers.c:ReturnTrueFilter" );
 
-    /* install the (function) copies of global variables                   */
+    // install the (function) copies of global variables
     /*for the inside-out (kernel to library) interface                    */
     InitGlobalBag( &TRY_NEXT_METHOD, "src/opers.c:TRY_NEXT_METHOD" );
 
@@ -3782,36 +3781,36 @@ static Int InitKernel (
     ImportFuncFromLibrary( "FLUSH_ALL_METHOD_CACHES", &FLUSH_ALL_METHOD_CACHES );
 #endif
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
 
     // set the bag type names (for error messages and debugging)
     InitBagNamesFromTable( BagNames );
 
-    /* install the marking function                                        */
+    // install the marking function
     InitMarkFuncBags( T_FLAGS, MarkThreeSubBags );
 
-    /* install the printing function                                       */
+    // install the printing function
     PrintObjFuncs[ T_FLAGS ] = PrintFlags;
 
 #ifdef GAP_ENABLE_SAVELOAD
-    /* and the saving function */
+    // and the saving function
     SaveObjFuncs[ T_FLAGS ] = SaveFlags;
     LoadObjFuncs[ T_FLAGS ] = LoadFlags;
 #endif
 
 #ifdef HPCGAP
-    /* flags are public objects by default */
+    // flags are public objects by default
     MakeBagTypePublic(T_FLAGS);
 #endif
 
-    /* import copy of REREADING */
+    // import copy of REREADING
     ImportGVarFromLibrary( "REREADING", &REREADING );
 
 
 #ifdef HPCGAP
-    /* initialize cache mutex */
+    // initialize cache mutex
     pthread_mutex_init(&CacheLock, NULL);
 #endif
 
@@ -3865,16 +3864,16 @@ static Int InitLibrary (
     SET_REGION(WITH_IMPS_FLAGS_CACHE, REGION(IMPLICATIONS_SIMPLE));
 #endif
 
-    /* make the 'true' operation                                           */
+    // make the 'true' operation
     ReturnTrueFilter = NewReturnTrueFilter();
     AssReadOnlyGVar( GVarName( "IS_OBJECT" ), ReturnTrueFilter );
 
-    /* install the (function) copies of global variables                   */
-    /* for the inside-out (kernel to library) interface                    */
+    // install the (function) copies of global variables
+    // for the inside-out (kernel to library) interface
     TRY_NEXT_METHOD = MakeImmString("TRY_NEXT_METHOD");
     AssReadOnlyGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
 

@@ -213,14 +213,14 @@ static ExecStatus ExecSeqStat7(Stat stat)
 */
 static ExecStatus ExecIf(Stat stat)
 {
-    Expr                cond;           /* condition                       */
-    Stat                body;           /* body                            */
+    Expr                cond;           // condition
+    Stat                body;           // body
 
-    /* if the condition evaluates to 'true', execute the if-branch body    */
+    // if the condition evaluates to 'true', execute the if-branch body
     cond = READ_STAT(stat, 0);
     if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
-        /* execute the if-branch body and leave                            */
+        // execute the if-branch body and leave
         body = READ_STAT(stat, 1);
         return EXEC_STAT( body );
 
@@ -231,14 +231,14 @@ static ExecStatus ExecIf(Stat stat)
 
 static ExecStatus ExecIfElse(Stat stat)
 {
-    Expr                cond;           /* condition                       */
-    Stat                body;           /* body                            */
+    Expr                cond;           // condition
+    Stat                body;           // body
 
-    /* if the condition evaluates to 'true', execute the if-branch body    */
+    // if the condition evaluates to 'true', execute the if-branch body
     cond = READ_STAT(stat, 0);
     if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
-        /* execute the if-branch body and leave                            */
+        // execute the if-branch body and leave
         body = READ_STAT(stat, 1);
         return EXEC_STAT( body );
 
@@ -246,29 +246,29 @@ static ExecStatus ExecIfElse(Stat stat)
 
     SET_BRK_CALL_TO(stat);
 
-    /* otherwise execute the else-branch body and leave                    */
+    // otherwise execute the else-branch body and leave
     body = READ_STAT(stat, 3);
     return EXEC_STAT( body );
 }
 
 static ExecStatus ExecIfElif(Stat stat)
 {
-    Expr                cond;           /* condition                       */
-    Stat                body;           /* body                            */
-    UInt                nr;             /* number of branches              */
-    UInt                i;              /* loop variable                   */
+    Expr                cond;           // condition
+    Stat                body;           // body
+    UInt                nr;             // number of branches
+    UInt                i;              // loop variable
 
-    /* get the number of branches                                          */
+    // get the number of branches
     nr = SIZE_STAT( stat ) / (2*sizeof(Stat));
 
-    /* loop over all branches                                              */
+    // loop over all branches
     for ( i = 1; i <= nr; i++ ) {
 
-        /* if the condition evaluates to 'true', execute the branch body   */
+        // if the condition evaluates to 'true', execute the branch body
         cond = READ_STAT(stat, 2 * (i - 1));
         if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
-            /* execute the branch body and leave                           */
+            // execute the branch body and leave
             body = READ_STAT(stat, 2 * (i - 1) + 1);
             return EXEC_STAT( body );
 
@@ -282,22 +282,22 @@ static ExecStatus ExecIfElif(Stat stat)
 
 static ExecStatus ExecIfElifElse(Stat stat)
 {
-    Expr                cond;           /* condition                       */
-    Stat                body;           /* body                            */
-    UInt                nr;             /* number of branches              */
-    UInt                i;              /* loop variable                   */
+    Expr                cond;           // condition
+    Stat                body;           // body
+    UInt                nr;             // number of branches
+    UInt                i;              // loop variable
 
-    /* get the number of branches                                          */
+    // get the number of branches
     nr = SIZE_STAT( stat ) / (2*sizeof(Stat)) - 1;
 
-    /* loop over all branches                                              */
+    // loop over all branches
     for ( i = 1; i <= nr; i++ ) {
 
-        /* if the condition evaluates to 'true', execute the branch body   */
+        // if the condition evaluates to 'true', execute the branch body
         cond = READ_STAT(stat, 2 * (i - 1));
         if ( EVAL_BOOL_EXPR( cond ) != False ) {
 
-            /* execute the branch body and leave                           */
+            // execute the branch body and leave
             body = READ_STAT(stat, 2 * (i - 1) + 1);
             return EXEC_STAT( body );
 
@@ -306,7 +306,7 @@ static ExecStatus ExecIfElifElse(Stat stat)
         SET_BRK_CALL_TO(stat);
     }
 
-    /* otherwise execute the else-branch body and leave                    */
+    // otherwise execute the else-branch body and leave
     body = READ_STAT(stat, 2 * (i - 1) + 1);
     return EXEC_STAT( body );
 }
@@ -340,20 +340,20 @@ static Obj STD_ITER;
 
 static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
 {
-    UInt                var;            /* variable                        */
-    UInt                vart;           /* variable type                   */
-    Obj                 list;           /* list to loop over               */
-    Obj                 elm;            /* one element of the list         */
-    Stat                body1;          /* first  stat. of body of loop    */
-    Stat                body2;          /* second stat. of body of loop    */
-    Stat                body3;          /* third  stat. of body of loop    */
-    UInt                i;              /* loop variable                   */
+    UInt                var;            // variable
+    UInt                vart;           // variable type
+    Obj                 list;           // list to loop over
+    Obj                 elm;            // one element of the list
+    Stat                body1;          // first  stat. of body of loop
+    Stat                body2;          // second stat. of body of loop
+    Stat                body3;          // third  stat. of body of loop
+    UInt                i;              // loop variable
     Obj                 nfun, dfun;     /* functions for NextIterator and
                                            IsDoneIterator                  */
 
     GAP_ASSERT(1 <= nr && nr <= 3);
 
-    /* get the variable (initialize them first to please 'lint')           */
+    // get the variable (initialize them first to please 'lint')
     const Stat varstat = READ_STAT(stat, 0);
     if (IS_REF_LVAR(varstat)) {
         var = LVAR_REF_LVAR(varstat);
@@ -368,22 +368,22 @@ static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
         vart = 'g';
     }
 
-    /* evaluate the list                                                   */
+    // evaluate the list
     list = EVAL_EXPR(READ_STAT(stat, 1));
 
-    /* get the body                                                        */
+    // get the body
     body1 = READ_STAT(stat, 2);
     body2 = (nr >= 2) ? READ_STAT(stat, 3) : 0;
     body3 = (nr >= 3) ? READ_STAT(stat, 4) : 0;
 
-    /* special case for lists                                              */
+    // special case for lists
     if ( IS_SMALL_LIST( list ) ) {
 
-        /* loop over the list, skipping unbound entries                    */
+        // loop over the list, skipping unbound entries
         i = 1;
         while ( i <= LEN_LIST(list) ) {
 
-            /* get the element and assign it to the variable               */
+            // get the element and assign it to the variable
             elm = ELMV0_LIST( list, i );
             i++;
             if ( elm == 0 )  continue;
@@ -392,13 +392,13 @@ static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
 #if !defined(HAVE_SIGNAL)
-            /* test for an interrupt                                       */
+            // test for an interrupt
             if ( HaveInterrupt() ) {
                 ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
             }
 #endif
 
-            /* execute the statements in the body                          */
+            // execute the statements in the body
             EXEC_STAT_IN_LOOP(body1);
             if (nr >= 2)
                 EXEC_STAT_IN_LOOP(body2);
@@ -408,14 +408,14 @@ static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
 
     }
 
-    /* general case                                                        */
+    // general case
     else {
 
-        /* get the iterator                                                */
+        // get the iterator
         list = CALL_1ARGS( ITERATOR, list );
 
         if (IS_PREC_OR_COMOBJ(list) && CALL_1ARGS(STD_ITER, list) == True) {
-            /* this can avoid method selection overhead on iterator        */
+            // this can avoid method selection overhead on iterator
             dfun = ElmPRec( list, RNamName("IsDoneIterator") );
             nfun = ElmPRec( list, RNamName("NextIterator") );
         } else {
@@ -423,23 +423,23 @@ static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
             nfun = NEXT_ITER;
         }
 
-        /* loop over the iterator                                          */
+        // loop over the iterator
         while ( CALL_1ARGS( dfun, list ) == False ) {
 
-            /* get the element and assign it to the variable               */
+            // get the element and assign it to the variable
             elm = CALL_1ARGS( nfun, list );
             if      ( vart == 'l' )  ASS_LVAR( var, elm );
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
 #if !defined(HAVE_SIGNAL)
-            /* test for an interrupt                                       */
+            // test for an interrupt
             if ( HaveInterrupt() ) {
                 ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
             }
 #endif
 
-            /* execute the statements in the body                          */
+            // execute the statements in the body
             EXEC_STAT_IN_LOOP(body1);
             if (nr >= 2)
                 EXEC_STAT_IN_LOOP(body2);
@@ -494,47 +494,47 @@ static ExecStatus ExecFor3(Stat stat)
 */
 static ALWAYS_INLINE ExecStatus ExecForRangeHelper(Stat stat, UInt nr)
 {
-    UInt                lvar;           /* local variable                  */
-    Int                 first;          /* first value of range            */
-    Int                 last;           /* last value of range             */
-    Obj                 elm;            /* one element of the list         */
-    Stat                body1;          /* first  stat. of body of loop    */
-    Stat                body2;          /* second stat. of body of loop    */
-    Stat                body3;          /* third  stat. of body of loop    */
-    Int                 i;              /* loop variable                   */
+    UInt                lvar;           // local variable
+    Int                 first;          // first value of range
+    Int                 last;           // last value of range
+    Obj                 elm;            // one element of the list
+    Stat                body1;          // first  stat. of body of loop
+    Stat                body2;          // second stat. of body of loop
+    Stat                body3;          // third  stat. of body of loop
+    Int                 i;              // loop variable
 
     GAP_ASSERT(1 <= nr && nr <= 3);
 
-    /* get the variable (initialize them first to please 'lint')           */
+    // get the variable (initialize them first to please 'lint')
     lvar = LVAR_REF_LVAR(READ_STAT(stat, 0));
 
-    /* evaluate the range                                                  */
+    // evaluate the range
     VisitStatIfHooked(READ_STAT(stat, 1));
     elm = EVAL_EXPR(READ_EXPR(READ_STAT(stat, 1), 0));
     first = GetSmallIntEx("Range", elm, "<first>");
     elm = EVAL_EXPR(READ_EXPR(READ_STAT(stat, 1), 1));
     last = GetSmallIntEx("Range", elm, "<last>");
 
-    /* get the body                                                        */
+    // get the body
     body1 = READ_STAT(stat, 2);
     body2 = (nr >= 2) ? READ_STAT(stat, 3) : 0;
     body3 = (nr >= 3) ? READ_STAT(stat, 4) : 0;
 
-    /* loop over the range                                                 */
+    // loop over the range
     for ( i = first; i <= last; i++ ) {
 
-        /* get the element and assign it to the variable                   */
+        // get the element and assign it to the variable
         elm = INTOBJ_INT( i );
         ASS_LVAR( lvar, elm );
 
 #if !defined(HAVE_SIGNAL)
-        /* test for an interrupt                                           */
+        // test for an interrupt
         if ( HaveInterrupt() ) {
             ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
         }
 #endif
 
-        /* execute the statements in the body                              */
+        // execute the statements in the body
         EXEC_STAT_IN_LOOP(body1);
         if (nr >= 2)
             EXEC_STAT_IN_LOOP(body2);
@@ -587,7 +587,7 @@ static ExecStatus ExecAtomic(Stat stat)
         lockmode[j] = LOCK_MODE_READWRITE;
       else if (qual == LOCK_QUAL_READONLY)
         lockmode[j] = LOCK_MODE_READONLY;
-      else /* if (qual == LOCK_QUAL_NONE) */
+      else // if (qual == LOCK_QUAL_NONE)
         lockmode[j] = LOCK_MODE_DEFAULT;
       j++;
     }
@@ -647,30 +647,30 @@ static ExecStatus ExecAtomic(Stat stat)
 */
 static ALWAYS_INLINE ExecStatus ExecWhileHelper(Stat stat, UInt nr)
 {
-    Expr                cond;           /* condition                       */
-    Stat                body1;          /* first  stat. of body of loop    */
-    Stat                body2;          /* second stat. of body of loop    */
-    Stat                body3;          /* third  stat. of body of loop    */
+    Expr                cond;           // condition
+    Stat                body1;          // first  stat. of body of loop
+    Stat                body2;          // second stat. of body of loop
+    Stat                body3;          // third  stat. of body of loop
 
     GAP_ASSERT(1 <= nr && nr <= 3);
 
-    /* get the condition and the body                                      */
+    // get the condition and the body
     cond = READ_STAT(stat, 0);
     body1 = READ_STAT(stat, 1);
     body2 = (nr >= 2) ? READ_STAT(stat, 2) : 0;
     body3 = (nr >= 3) ? READ_STAT(stat, 3) : 0;
 
-    /* while the condition evaluates to 'true', execute the body           */
+    // while the condition evaluates to 'true', execute the body
     while ( EVAL_BOOL_EXPR( cond ) != False ) {
 
 #if !defined(HAVE_SIGNAL)
-        /* test for an interrupt                                           */
+        // test for an interrupt
         if ( HaveInterrupt() ) {
             ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
         }
 #endif
 
-        /* execute the body                                                */
+        // execute the body
         EXEC_STAT_IN_LOOP(body1);
         if (nr >= 2)
             EXEC_STAT_IN_LOOP(body2);
@@ -720,28 +720,28 @@ static ExecStatus ExecWhile3(Stat stat)
 */
 static ALWAYS_INLINE ExecStatus ExecRepeatHelper(Stat stat, UInt nr)
 {
-    Expr                cond;           /* condition                       */
-    Stat                body1;          /* first  stat. of body of loop    */
-    Stat                body2;          /* second stat. of body of loop    */
-    Stat                body3;          /* third  stat. of body of loop    */
+    Expr                cond;           // condition
+    Stat                body1;          // first  stat. of body of loop
+    Stat                body2;          // second stat. of body of loop
+    Stat                body3;          // third  stat. of body of loop
 
-    /* get the condition and the body                                      */
+    // get the condition and the body
     cond = READ_STAT(stat, 0);
     body1 = READ_STAT(stat, 1);
     body2 = (nr >= 2) ? READ_STAT(stat, 2) : 0;
     body3 = (nr >= 3) ? READ_STAT(stat, 3) : 0;
 
-    /* execute the body until the condition evaluates to 'true'            */
+    // execute the body until the condition evaluates to 'true'
     do {
 
 #if !defined(HAVE_SIGNAL)
-        /* test for an interrupt                                           */
+        // test for an interrupt
         if ( HaveInterrupt() ) {
             ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
         }
 #endif
 
-        /* execute the body                                                */
+        // execute the body
         EXEC_STAT_IN_LOOP(body1);
         if (nr >= 2)
             EXEC_STAT_IN_LOOP(body2);
@@ -784,7 +784,7 @@ static ExecStatus ExecRepeat3(Stat stat)
 */
 static ExecStatus ExecBreak(Stat stat)
 {
-    /* return to the next loop                                             */
+    // return to the next loop
     return STATUS_BREAK;
 }
 
@@ -802,7 +802,7 @@ static ExecStatus ExecBreak(Stat stat)
 */
 static ExecStatus ExecContinue(Stat stat)
 {
-    /* return to the next loop                                             */
+    // return to the next loop
     return STATUS_CONTINUE;
 }
 
@@ -847,27 +847,26 @@ static ExecStatus ExecInfo(Stat stat)
     selected = InfoCheckLevel(selectors, level);
     if (selected == True) {
 
-        /* Get the number of arguments to be printed                       */
+        // Get the number of arguments to be printed
         narg = NARG_SIZE_INFO(SIZE_STAT(stat)) - 2;
 
-        /* set up a list                                                   */
+        // set up a list
         args = NEW_PLIST( T_PLIST, narg );
         SET_LEN_PLIST( args, narg );
 
-        /* evaluate the objects to be printed into the list                */
+        // evaluate the objects to be printed into the list
         for (i = 1; i <= narg; i++) {
 
-            /* These two statements must not be combined into one because of
-               the risk of a garbage collection during the evaluation
-               of arg, which may happen after the pointer to args has been
-               extracted
-            */
+            // These two statements must not be combined into one because of
+            // the risk of a garbage collection during the evaluation
+            // of arg, which may happen after the pointer to args has been
+            // extracted
             arg = EVAL_EXPR(ARGI_INFO(stat, i+2));
             SET_ELM_PLIST(args, i, arg);
             CHANGED_BAG(args);
         }
 
-        /* and print them                                                  */
+        // and print them
         InfoDoPrint(selectors, level, args);
     }
     return STATUS_END;
@@ -956,7 +955,7 @@ static ExecStatus ExecAssert3Args(Stat stat)
 static ExecStatus ExecReturnObj(Stat stat)
 {
 #if !defined(HAVE_SIGNAL)
-    /* test for an interrupt                                               */
+    // test for an interrupt
     if ( HaveInterrupt() ) {
         ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
     }
@@ -984,7 +983,7 @@ static ExecStatus ExecReturnObj(Stat stat)
 static ExecStatus ExecReturnVoid(Stat stat)
 {
 #if !defined(HAVE_SIGNAL)
-    /* test for an interrupt                                               */
+    // test for an interrupt
     if ( HaveInterrupt() ) {
         ErrorReturnVoid("user interrupt", 0, 0, "you can 'return;'");
     }
@@ -1053,23 +1052,23 @@ UInt TakeInterrupt( void )
 static ExecStatus ExecIntrStat(Stat stat)
 {
 
-    /* change the entries in 'ExecStatFuncs' back to the original          */
+    // change the entries in 'ExecStatFuncs' back to the original
     if ( BreakLoopPending() ) {
         UnInterruptExecStat();
     }
 
 #ifdef HPCGAP
-    /* and now for something completely different                          */
+    // and now for something completely different
     HandleInterrupts(1, stat);
 #else
     // ensure global interrupt flag syLastIntr is cleared
     HaveInterrupt();
 
-    /* and now for something completely different                          */
+    // and now for something completely different
 #ifdef USE_GASMAN
     if (SyStorOverrun != SY_STOR_OVERRUN_CLEAR) {
         Int printError = (SyStorOverrun == SY_STOR_OVERRUN_TO_REPORT);
-        SyStorOverrun = SY_STOR_OVERRUN_CLEAR; /* reset */
+        SyStorOverrun = SY_STOR_OVERRUN_CLEAR; // reset
         if (printError) {
             ErrorReturnVoid("reached the pre-set memory limit\n"
                             "(change it with the -o command line option)",
@@ -1081,7 +1080,7 @@ static ExecStatus ExecIntrStat(Stat stat)
       ErrorReturnVoid( "user interrupt", 0, 0, "you can 'return;'" );
 #endif
 
-    /* continue at the interrupted statement                               */
+    // continue at the interrupted statement
     return EXEC_STAT( stat );
 }
 
@@ -1101,7 +1100,7 @@ static ExecStatus ExecIntrStat(Stat stat)
 */
 void InterruptExecStat ( void )
 {
-    /* remember the original entries from the table 'ExecStatFuncs'        */
+    // remember the original entries from the table 'ExecStatFuncs'
     STATE(CurrExecStatFuncs) = IntrExecStatFuncs;
 }
 
@@ -1114,17 +1113,17 @@ void InterruptExecStat ( void )
 void ClearError ( void )
 {
 
-    /* change the entries in 'ExecStatFuncs' back to the original          */
+    // change the entries in 'ExecStatFuncs' back to the original
     if ( BreakLoopPending() ) {
         UnInterruptExecStat();
 
-        /* check for user interrupt */
+        // check for user interrupt
         if ( HaveInterrupt() ) {
           Pr("Noticed user interrupt, but you are back in main loop anyway.\n",
               0, 0);
         }
 #ifdef USE_GASMAN
-        /* and check if maximal memory was overrun */
+        // and check if maximal memory was overrun
         if (SyStorOverrun != SY_STOR_OVERRUN_CLEAR) {
             if (SyStorOverrun == SY_STOR_OVERRUN_TO_REPORT) {
                 Pr("GAP has exceeded the permitted memory (-o option),\n", 0,
@@ -1132,7 +1131,7 @@ void ClearError ( void )
                 Pr("the maximum is now enlarged to %d kB.\n", (Int)SyStorMax,
                    0);
             }
-            SyStorOverrun = SY_STOR_OVERRUN_CLEAR; /* reset */
+            SyStorOverrun = SY_STOR_OVERRUN_CLEAR; // reset
         }
 #endif
     }
@@ -1189,19 +1188,19 @@ static void PrintUnknownStat(Stat stat)
 */
 static void PrintSeqStat(Stat stat)
 {
-    UInt                nr;             /* number of statements            */
-    UInt                i;              /* loop variable                   */
+    UInt                nr;             // number of statements
+    UInt                i;              // loop variable
 
-    /* get the number of statements                                        */
+    // get the number of statements
     nr = SIZE_STAT( stat ) / sizeof(Stat);
 
-    /* loop over the statements                                            */
+    // loop over the statements
     for ( i = 1; i <= nr; i++ ) {
 
-        /* print the <i>-th statement                                      */
+        // print the <i>-th statement
         PrintStat(READ_STAT(stat, i - 1));
 
-        /* print a line break after all but the last statement             */
+        // print a line break after all but the last statement
         if ( i < nr )  Pr("\n", 0, 0);
 
     }
@@ -1220,10 +1219,10 @@ static void PrintSeqStat(Stat stat)
 */
 static void PrintIf(Stat stat)
 {
-    UInt                i;              /* loop variable                   */
-    UInt                len;            /* length of loop                  */
+    UInt                i;              // loop variable
+    UInt                len;            // length of loop
 
-    /* print the 'if' branch                                               */
+    // print the 'if' branch
     Pr("if%4> ", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
     Pr("%2< then%2>\n", 0, 0);
@@ -1231,7 +1230,7 @@ static void PrintIf(Stat stat)
     Pr("%4<\n", 0, 0);
 
     len = SIZE_STAT(stat) / (2 * sizeof(Stat));
-    /* print the 'elif' branch                                             */
+    // print the 'elif' branch
     for (i = 2; i <= len; i++) {
         if (i == len &&
             TNUM_EXPR(READ_STAT(stat, 2 * (i - 1))) == EXPR_TRUE) {
@@ -1246,7 +1245,7 @@ static void PrintIf(Stat stat)
         Pr("%4<\n", 0, 0);
     }
 
-    /* print the 'fi'                                                      */
+    // print the 'fi'
     Pr("fi;", 0, 0);
 }
 
@@ -1262,7 +1261,7 @@ static void PrintIf(Stat stat)
 */
 static void PrintFor(Stat stat)
 {
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
     Pr("for%4> ", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
@@ -1288,7 +1287,7 @@ static void PrintFor(Stat stat)
 */
 static void PrintWhile(Stat stat)
 {
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
     Pr("while%4> ", 0, 0);
     PrintExpr(READ_EXPR(stat, 0));
@@ -1313,7 +1312,7 @@ static void PrintWhile(Stat stat)
 static void PrintAtomic(Stat stat)
 {
   UInt nrexprs;
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
     Pr("atomic%4> ", 0, 0);
     nrexprs = ((SIZE_STAT(stat)/sizeof(Stat))-1)/2;
@@ -1350,7 +1349,7 @@ static void PrintAtomic(Stat stat)
 */
 static void PrintRepeat(Stat stat)
 {
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
     Pr("repeat%4>\n", 0, 0);
     for ( i = 1; i <= SIZE_STAT(stat)/sizeof(Stat)-1; i++ ) {
@@ -1406,15 +1405,15 @@ static void PrintEmpty(Stat stat)
 */
 static void PrintInfo(Stat stat)
 {
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
-    /* print the keyword                                                   */
+    // print the keyword
     Pr("%2>Info", 0, 0);
 
-    /* print the opening parenthesis                                       */
+    // print the opening parenthesis
     Pr("%<( %>", 0, 0);
 
-    /* print the expressions that evaluate to the actual arguments         */
+    // print the expressions that evaluate to the actual arguments
     for ( i = 1; i <= NARG_SIZE_INFO( SIZE_STAT(stat) ); i++ ) {
         PrintExpr( ARGI_INFO(stat,i) );
         if ( i != NARG_SIZE_INFO( SIZE_STAT(stat) ) ) {
@@ -1422,7 +1421,7 @@ static void PrintInfo(Stat stat)
         }
     }
 
-    /* print the closing parenthesis                                       */
+    // print the closing parenthesis
     Pr(" %2<);", 0, 0);
 }
 
@@ -1435,18 +1434,18 @@ static void PrintInfo(Stat stat)
 */
 static void PrintAssert2Args(Stat stat)
 {
-    /* print the keyword                                                   */
+    // print the keyword
     Pr("%2>Assert", 0, 0);
 
-    /* print the opening parenthesis                                       */
+    // print the opening parenthesis
     Pr("%<( %>", 0, 0);
 
-    /* Print the arguments, separated by a comma                           */
+    // Print the arguments, separated by a comma
     PrintExpr(READ_EXPR(stat, 0));
     Pr("%<, %>", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
 
-    /* print the closing parenthesis                                       */
+    // print the closing parenthesis
     Pr(" %2<);", 0, 0);
 }
 
@@ -1459,20 +1458,20 @@ static void PrintAssert2Args(Stat stat)
 */
 static void PrintAssert3Args(Stat stat)
 {
-    /* print the keyword                                                   */
+    // print the keyword
     Pr("%2>Assert", 0, 0);
 
-    /* print the opening parenthesis                                       */
+    // print the opening parenthesis
     Pr("%<( %>", 0, 0);
 
-    /* Print the arguments, separated by commas                            */
+    // Print the arguments, separated by commas
     PrintExpr(READ_EXPR(stat, 0));
     Pr("%<, %>", 0, 0);
     PrintExpr(READ_EXPR(stat, 1));
     Pr("%<, %>", 0, 0);
     PrintExpr(READ_EXPR(stat, 2));
 
-    /* print the closing parenthesis                                       */
+    // print the closing parenthesis
     Pr(" %2<);", 0, 0);
 }
 
@@ -1536,23 +1535,23 @@ static void PrintPragma(Stat stat)
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
-    /* make the global bags known to Gasman                                */
+    // make the global bags known to Gasman
     InitGlobalBag( &STATE(ReturnObjStat), "src/stats.c:ReturnObjStat" );
 
-    /* connect to external functions                                       */
+    // connect to external functions
     ImportFuncFromLibrary( "Iterator",       &ITERATOR );
     ImportFuncFromLibrary( "IsDoneIterator", &IS_DONE_ITER );
     ImportFuncFromLibrary( "NextIterator",   &NEXT_ITER );
     ImportFuncFromLibrary( "IsStandardIterator",   &STD_ITER );
 
-    /* install executors for non-statements                                */
+    // install executors for non-statements
     for ( i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++ ) {
         InstallExecStatFunc(i, ExecUnknownStat);
     }
 
-    /* install executors for compound statements                           */
+    // install executors for compound statements
     InstallExecStatFunc( STAT_SEQ_STAT       , ExecSeqStat);
     InstallExecStatFunc( STAT_SEQ_STAT2      , ExecSeqStat2);
     InstallExecStatFunc( STAT_SEQ_STAT3      , ExecSeqStat3);
@@ -1589,11 +1588,11 @@ static Int InitKernel (
     InstallExecStatFunc( STAT_ATOMIC         , ExecAtomic);
 #endif
 
-    /* install printers for non-statements                                */
+    // install printers for non-statements
     for ( i = 0; i < ARRAY_SIZE(PrintStatFuncs); i++ ) {
         InstallPrintStatFunc(i, PrintUnknownStat);
     }
-    /* install printing functions for compound statements                  */
+    // install printing functions for compound statements
     InstallPrintStatFunc( STAT_SEQ_STAT       , PrintSeqStat);
     InstallPrintStatFunc( STAT_SEQ_STAT2      , PrintSeqStat);
     InstallPrintStatFunc( STAT_SEQ_STAT3      , PrintSeqStat);

@@ -44,9 +44,9 @@
 **  Returns a string that can be used as data structure of a new MT random
 **  number generator. <initstr> can be an arbitrary string as seed.
 */
-#define MATRIX_A 0x9908b0dfUL   /* constant vector a */
-#define UPPER_MASK 0x80000000UL /* most significant w-r bits */
-#define LOWER_MASK 0x7fffffffUL /* least significant r bits */
+#define MATRIX_A 0x9908b0dfUL   // constant vector a
+#define UPPER_MASK 0x80000000UL // most significant w-r bits
+#define LOWER_MASK 0x7fffffffUL // least significant r bits
 
 static void initGRMT(UInt4 * mt, UInt4 s)
 {
@@ -57,7 +57,7 @@ static void initGRMT(UInt4 * mt, UInt4 s)
             (1812433253UL * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti);
         mt[mti] &= 0xffffffffUL;
     }
-    /* store mti as last entry of mt[] */
+    // store mti as last entry of mt[]
     mt[624] = mti;
 }
 
@@ -70,7 +70,7 @@ static inline UChar checkedReadChar(const UChar * s, UInt4 pos, UInt4 len)
         return 0;
 }
 
-/* to read a seed string independently of endianness */
+// to read a seed string independently of endianness
 static inline UInt4 uint4frombytes(const UChar * s, UInt4 pos, UInt4 len)
 {
   UInt4 res;
@@ -90,7 +90,7 @@ static Obj FuncInitRandomMT(Obj self, Obj initstr)
   const UChar *init_key;
   UInt4 *mt, key_length, byte_key_length, i, j, k, N = 624;
 
-  /* check the seed, given as string */
+  // check the seed, given as string
   RequireStringRep(SELF_NAME, initstr);
 
   /* store array of 624 UInt4 and one UInt4 as counter "mti" and an
@@ -98,10 +98,10 @@ static Obj FuncInitRandomMT(Obj self, Obj initstr)
   str = NEW_STRING(4*626);
   SET_LEN_STRING(str, 4*626);
   mt = (UInt4 *)(ADDR_OBJ(str) + 1);
-  /* here the counter mti is set to 624 */
+  // here the counter mti is set to 624
   initGRMT(mt, 19650218UL);
   i=1; j=0;
-  /* Do not set these up until all garbage collection is done   */
+  // Do not set these up until all garbage collection is done
   init_key = CONST_CHARS_STRING(initstr);
   byte_key_length = GET_LEN_STRING(initstr);
   key_length = byte_key_length / 4;
@@ -121,7 +121,7 @@ static Obj FuncInitRandomMT(Obj self, Obj initstr)
       if (i>=N) { mt[0] = mt[N-1]; i=1; }
   }
   mt[0] = 0x80000000UL;
-  /* gives string "1234" in little endian as marker */
+  // gives string "1234" in little endian as marker
   mt[625] = 875770417UL;
   return str;
 }
@@ -158,7 +158,7 @@ UInt4 nextrandMT_int32(UInt4* mt)
     y = mt[mti++];
     mt[624] = mti;
 
-    /* Tempering */
+    // Tempering
     y ^= (y >> 11);
     y ^= (y << 7) & 0x9d2c5680UL;
     y ^= (y << 15) & 0xefc60000UL;
@@ -444,7 +444,7 @@ FuncHASHKEY_BAG(Obj self, Obj obj, Obj seed, Obj offset, Obj maxlen)
     ErrorMayQuit("HASHKEY_BAG: <obj> must not be an FFE", 0, 0);
   }
 
-  /* check the arguments                                                 */
+  // check the arguments
   Int s = GetSmallInt(SELF_NAME, seed);
 
   Int offs = GetSmallInt(SELF_NAME, offset);
@@ -454,7 +454,7 @@ FuncHASHKEY_BAG(Obj self, Obj obj, Obj seed, Obj offset, Obj maxlen)
                    0, 0);
   }
 
-  /* maximal number of bytes to read */
+  // maximal number of bytes to read
   Int imaxlen = GetSmallInt(SELF_NAME, maxlen);
 
   n=SIZE_OBJ(obj)-offs;
@@ -740,7 +740,7 @@ static Int InitKernel (
     InitHandlerFunc(DoBooleanFieldSetter, "boolean-field-setter");
     InitHandlerFunc(DoBooleanFieldGetter, "boolean-field-getter");
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
     return 0;
@@ -754,7 +754,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

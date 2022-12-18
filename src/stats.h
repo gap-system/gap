@@ -121,10 +121,9 @@ extern PrintStatFunc PrintStatFuncs[256];
 
 
 /****************************************************************************
- **
- *F  ClearError()  . . . . . . . . . . . . . .  reset execution and error flag
- *
- */
+**
+*F  ClearError()  . . . . . . . . . . . . . .  reset execution and error flag
+*/
 void ClearError(void);
 
 

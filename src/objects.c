@@ -422,13 +422,13 @@ static Obj ShallowCopyObjDefault(Obj obj)
     const Obj *         o;
     Obj *               n;
 
-    /* make the new object and copy the contents                           */
+    // make the new object and copy the contents
     new = NewBag( MUTABLE_TNUM(TNUM_OBJ(obj)), SIZE_OBJ(obj) );
     o = CONST_ADDR_OBJ(obj);
     n = ADDR_OBJ( new );
     memcpy(n, o, SIZE_OBJ(obj) );
 
-    /* 'CHANGED_BAG(new);' not needed, <new> is newest object              */
+    // 'CHANGED_BAG(new);' not needed, <new> is newest object
     return new;
 }
 
@@ -456,15 +456,15 @@ Obj CopyObj (
 #ifdef USE_THREADSAFE_COPYING
     return CopyReachableObjectsFrom(obj, 0, 0, !mut);
 #else
-    Obj                 new;            /* copy of <obj>                   */
+    Obj                 new;            // copy of <obj>
 
-    /* make a copy                                                         */
+    // make a copy
     new = COPY_OBJ( obj, mut );
 
-    /* clean up the marks                                                  */
+    // clean up the marks
     CLEAN_OBJ( obj );
 
-    /* return the copy                                                     */
+    // return the copy
     return new;
 #endif
 }
@@ -633,29 +633,29 @@ static Obj CopyObjConstant(Obj obj, Int mut)
 */
 static Obj CopyObjPosObj(Obj obj, Int mut)
 {
-    Obj                 copy;           /* copy, result                    */
-    Obj                 tmp;            /* temporary variable              */
-    UInt                i;              /* loop variable                   */
+    Obj                 copy;           // copy, result
+    Obj                 tmp;            // temporary variable
+    UInt                i;              // loop variable
 
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(obj));
 
-    /* if the object is not copyable return                                */
+    // if the object is not copyable return
     if ( ! IS_COPYABLE_OBJ(obj) ) {
         ErrorQuit("Panic: encountered mutable, non-copyable object", 0, 0);
     }
 
-    /* make a copy                                                         */
+    // make a copy
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
     ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(obj)[0];
     if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
 
-    /* leave a forwarding pointer                                          */
+    // leave a forwarding pointer
     PrepareCopy(obj, copy);
 
-    /* copy the subvalues                                                  */
+    // copy the subvalues
     for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i++ ) {
         if (CONST_ADDR_OBJ(obj)[i] != 0) {
             tmp = COPY_OBJ(CONST_ADDR_OBJ(obj)[i], mut);
@@ -664,7 +664,7 @@ static Obj CopyObjPosObj(Obj obj, Int mut)
         }
     }
 
-    /* return the copy                                                     */
+    // return the copy
     return copy;
 }
 
@@ -675,9 +675,9 @@ static Obj CopyObjPosObj(Obj obj, Int mut)
 */
 static void CleanObjPosObj(Obj obj)
 {
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
-    /* clean the subvalues                                                 */
+    // clean the subvalues
     for ( i = 1; i < SIZE_OBJ(obj)/sizeof(Obj); i++ ) {
         if (CONST_ADDR_OBJ(obj)[i] != 0)
             CLEAN_OBJ(CONST_ADDR_OBJ(obj)[i]);
@@ -692,25 +692,25 @@ static void CleanObjPosObj(Obj obj)
 */
 static Obj CopyObjComObj(Obj obj, Int mut)
 {
-    Obj                 copy;           /* copy, result                    */
-    Obj                 tmp;            /* temporary variable              */
+    Obj                 copy;           // copy, result
+    Obj                 tmp;            // temporary variable
 
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(obj));
 
-    /* if the object is not copyable return                                */
+    // if the object is not copyable return
     if ( ! IS_COPYABLE_OBJ(obj) ) {
         ErrorQuit("Panic: encountered mutable, non-copyable object", 0, 0);
     }
 
-    /* make a copy                                                         */
+    // make a copy
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
     memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(obj), SIZE_OBJ(obj));
     if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
 
-    /* leave a forwarding pointer                                          */
+    // leave a forwarding pointer
     PrepareCopy(obj, copy);
 
     // copy the subvalues; since we used memcpy above, we don't need to worry
@@ -724,7 +724,7 @@ static Obj CopyObjComObj(Obj obj, Int mut)
         CHANGED_BAG(copy);
     }
 
-    /* return the copy                                                     */
+    // return the copy
     return copy;
 }
 
@@ -735,9 +735,9 @@ static Obj CopyObjComObj(Obj obj, Int mut)
 */
 static void CleanObjComObj(Obj obj)
 {
-    UInt                i;              /* loop variable                   */
+    UInt                i;              // loop variable
 
-    /* clean the subvalues                                                 */
+    // clean the subvalues
     for ( i = 1; i <= LEN_PREC(obj); i++ ) {
         CLEAN_OBJ( GET_ELM_PREC(obj,i) );
     }
@@ -751,27 +751,27 @@ static void CleanObjComObj(Obj obj)
 */
 static Obj CopyObjDatObj(Obj obj, Int mut)
 {
-    Obj                 copy;           /* copy, result                    */
+    Obj                 copy;           // copy, result
 
     // immutable input is handled by COPY_OBJ
     GAP_ASSERT(IS_MUTABLE_OBJ(obj));
 
-    /* if the object is not copyable return                                */
+    // if the object is not copyable return
     if ( ! IS_COPYABLE_OBJ(obj) ) {
         ErrorQuit("Panic: encountered mutable, non-copyable object", 0, 0);
     }
 
-    /* make a copy                                                         */
+    // make a copy
     copy = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
     memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(obj), SIZE_OBJ(obj));
     if ( !mut ) {
         CALL_2ARGS( RESET_FILTER_OBJ, copy, IsMutableObjFilt );
     }
 
-    /* leave a forwarding pointer                                          */
+    // leave a forwarding pointer
     PrepareCopy(obj, copy);
 
-    /* return the copy                                                     */
+    // return the copy
     return copy;
 }
 
@@ -925,7 +925,7 @@ static void PrintInaccessibleObject(Obj obj)
 
   region = REGION(obj);
   if (!region)
-    nameobj = PublicRegionName; /* this should not happen, but let's be safe */
+    nameobj = PublicRegionName; // this should not happen, but let's be safe
   else
     nameobj = GetRegionName(region);
   if (nameobj) {
@@ -941,7 +941,7 @@ static void PrintInaccessibleObject(Obj obj)
 #endif
 
 #ifdef HPCGAP
-/* On-demand creation of the PrintObj stack */
+// On-demand creation of the PrintObj stack
 static void InitPrintObjStack(ObjectsModuleState * os)
 {
     if (!os->PrintObjThiss) {
@@ -1436,7 +1436,7 @@ Obj ElmPosObj(Obj obj, Int idx)
         // only have read-only access, we have to be careful when accessing
         // positional objects.
         const Bag * contents = CONST_PTR_BAG(obj);
-        MEMBAR_READ(); /* essential memory barrier */
+        MEMBAR_READ(); // essential memory barrier
         if (SIZE_BAG_CONTENTS(contents) / sizeof(Obj) - 1 < idx) {
             ErrorMayQuit(
                 "PosObj Element: <PosObj>![%d] must have an assigned value",
@@ -1776,7 +1776,7 @@ static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
     const Obj *     psrc;
     Obj *           pdst;
 
-    /* check <src>                                                         */
+    // check <src>
     if ( IS_INTOBJ(src) ) {
         ErrorMayQuit("small integers cannot be cloned", 0, 0);
     }
@@ -1804,12 +1804,12 @@ static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
     }
 #endif
 
-    /* if object is mutable, produce a structural copy                     */
+    // if object is mutable, produce a structural copy
     if ( IS_MUTABLE_OBJ(src) ) {
         src = CopyObj( src, 1 );
     }
 
-    /* now shallow clone the object                                        */
+    // now shallow clone the object
 #ifdef HPCGAP
     Obj tmp = NewBag(TNUM_OBJ(src), SIZE_OBJ(src));
     pdst = ADDR_OBJ(tmp);
@@ -1824,7 +1824,7 @@ static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
 #ifdef HPCGAP
     SET_REGION(dst, REGION(src));
     MEMBAR_WRITE();
-    /* The following is a no-op unless the region is public */
+    // The following is a no-op unless the region is public
     SET_PTR_BAG(dst, PTR_BAG(tmp));
 #endif
 
@@ -2076,12 +2076,12 @@ static StructGVarFunc GVarFuncs[] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    Int                 t;              /* loop variable                   */
+    Int                 t;              // loop variable
 
     // set the bag type names (for error messages and debugging)
     InitBagNamesFromTable( BagNames );
 
-    /* install the marking methods                                         */
+    // install the marking methods
     InitMarkFuncBags( T_COMOBJ          , MarkPRecSubBags );
     InitMarkFuncBags( T_POSOBJ          , MarkAllSubBags  );
     InitMarkFuncBags( T_DATOBJ          , MarkOneSubBags  );
@@ -2098,18 +2098,18 @@ static Int InitKernel (
     TypeObjFuncs[ T_POSOBJ ] = TypePosObj;
     TypeObjFuncs[ T_DATOBJ ] = TypeDatObj;
 
-    /* functions for 'to-be-defined' objects                               */
+    // functions for 'to-be-defined' objects
     ImportFuncFromLibrary( "IsToBeDefinedObj", &IsToBeDefinedObj );
     ImportFuncFromLibrary( "PostMakeImmutable", &PostMakeImmutableOp );
     ImportGVarFromLibrary( "REREADING", &REREADING );
     ImportGVarFromLibrary( "TYPE_KERNEL_OBJECT", &TYPE_KERNEL_OBJECT );
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* make and install the 'IS_MUTABLE_OBJ' filter                        */
+    // make and install the 'IS_MUTABLE_OBJ' filter
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         assert(IsMutableObjFuncs[ t ] == 0);
         IsMutableObjFuncs[ t ] = IsMutableObjError;
@@ -2119,7 +2119,7 @@ static Int InitKernel (
     for ( t = FIRST_EXTERNAL_TNUM; t <= LAST_EXTERNAL_TNUM; t++ )
         IsMutableObjFuncs[ t ] = IsMutableObjObject;
 
-    /* make and install the 'IS_COPYABLE_OBJ' filter                       */
+    // make and install the 'IS_COPYABLE_OBJ' filter
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         assert(IsCopyableObjFuncs[ t ] == 0);
         IsCopyableObjFuncs[ t ] = IsCopyableObjError;
@@ -2129,7 +2129,7 @@ static Int InitKernel (
     for ( t = FIRST_EXTERNAL_TNUM; t <= LAST_EXTERNAL_TNUM; t++ )
         IsCopyableObjFuncs[ t ] = IsCopyableObjObject;
 
-    /* make and install the 'SHALLOW_COPY_OBJ' operation                   */
+    // make and install the 'SHALLOW_COPY_OBJ' operation
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         assert(ShallowCopyObjFuncs[ t ] == 0);
         ShallowCopyObjFuncs[ t ] = ShallowCopyObjError;
@@ -2148,7 +2148,7 @@ static Int InitKernel (
     SetTraversalMethod(T_COMOBJ, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
     SetTraversalMethod(T_DATOBJ, TRAVERSE_NONE, 0, 0);
 #else
-    /* make and install the 'COPY_OBJ' function                            */
+    // make and install the 'COPY_OBJ' function
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         assert(CopyObjFuncs [ t ] == 0);
         CopyObjFuncs [ t ] = CopyObjError;
@@ -2167,20 +2167,20 @@ static Int InitKernel (
     CleanObjFuncs[ T_DATOBJ           ] = CleanObjDatObj;
 #endif
 
-    /* make and install the 'PRINT_OBJ' operation                          */
+    // make and install the 'PRINT_OBJ' operation
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         assert(PrintObjFuncs[ t ] == 0);
         PrintObjFuncs[ t ] = PrintObjObject;
     }
 
-    /* enter 'PrintUnknownObj' in the dispatching tables                   */
+    // enter 'PrintUnknownObj' in the dispatching tables
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         assert(PrintPathFuncs[ t ] == 0);
         PrintPathFuncs[ t ] = PrintPathError;
     }
 
 #ifdef GAP_ENABLE_SAVELOAD
-    /* enter 'SaveObjError' and 'LoadObjError' for all types initially     */
+    // enter 'SaveObjError' and 'LoadObjError' for all types initially
     for ( t = FIRST_REAL_TNUM;  t <= LAST_REAL_TNUM;  t++ ) {
         assert(SaveObjFuncs[ t ] == 0);
         SaveObjFuncs[ t ] = SaveObjError;
@@ -2188,12 +2188,12 @@ static Int InitKernel (
         LoadObjFuncs[ t ] = LoadObjError;
     }
 
-    /* install the saving functions */
+    // install the saving functions
     SaveObjFuncs[ T_COMOBJ ] = SaveComObj;
     SaveObjFuncs[ T_POSOBJ ] = SavePosObj;
     SaveObjFuncs[ T_DATOBJ ] = SaveDatObj;
 
-    /* install the loading functions */
+    // install the loading functions
     LoadObjFuncs[ T_COMOBJ ] = LoadComObj;
     LoadObjFuncs[ T_POSOBJ ] = LoadPosObj;
     LoadObjFuncs[ T_DATOBJ ] = LoadDatObj;
@@ -2204,7 +2204,7 @@ static Int InitKernel (
         MakeImmutableObjFuncs[t] = MakeImmutableError;
     }
 
-    /* install the makeimmutableing functions */
+    // install the makeimmutableing functions
     MakeImmutableObjFuncs[ T_COMOBJ ] = MakeImmutableComObj;
     MakeImmutableObjFuncs[ T_POSOBJ ] = MakeImmutablePosObj;
     MakeImmutableObjFuncs[ T_DATOBJ ] = MakeImmutableDatObj;
@@ -2224,12 +2224,12 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
 
-    /* export certain TNUM values as global variable */
+    // export certain TNUM values as global variable
     ExportAsConstantGVar(FIRST_REAL_TNUM);
     ExportAsConstantGVar(LAST_REAL_TNUM);
 

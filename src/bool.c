@@ -146,7 +146,7 @@ static Obj IsBoolFilt;
 
 static Obj FiltIS_BOOL(Obj self, Obj obj)
 {
-    /* return 'true' if <obj> is a boolean and 'false' otherwise           */
+    // return 'true' if <obj> is a boolean and 'false' otherwise
     if ( TNUM_OBJ(obj) == T_BOOL ) {
         return True;
     }
@@ -322,49 +322,49 @@ static Int InitKernel (
     // set the bag type names (for error messages and debugging)
     InitBagNamesFromTable( BagNames );
 
-    /* install the marking functions for boolean values                    */
+    // install the marking functions for boolean values
     InitMarkFuncBags( T_BOOL, MarkNoSubBags );
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
 
-    /* make and install the 'RETURN_TRUE' function                         */
+    // make and install the 'RETURN_TRUE' function
     InitHandlerFunc( ReturnTrue1, "src/bool.c:ReturnTrue1" );
     InitHandlerFunc( ReturnTrue2, "src/bool.c:ReturnTrue2" );
     InitHandlerFunc( ReturnTrue3, "src/bool.c:ReturnTrue3" );
 
-    /* make and install the 'RETURN_FALSE' function                        */
+    // make and install the 'RETURN_FALSE' function
     InitHandlerFunc( ReturnFalse1, "src/bool.c:ReturnFalse1" );
     InitHandlerFunc( ReturnFalse2, "src/bool.c:ReturnFalse2" );
     InitHandlerFunc( ReturnFalse3, "src/bool.c:ReturnFalse3" );
 
-    /* make and install the 'RETURN_FAIL' function                        */
+    // make and install the 'RETURN_FAIL' function
     InitHandlerFunc( ReturnFail1, "src/bool.c:ReturnFail1" );
     InitHandlerFunc( ReturnFail2, "src/bool.c:ReturnFail2" );
     InitHandlerFunc( ReturnFail3, "src/bool.c:ReturnFail3" );
 
-    /* install the type function                                           */
+    // install the type function
     ImportGVarFromLibrary( "TYPE_BOOL", &TYPE_BOOL );
     TypeObjFuncs[ T_BOOL ] = TypeBool;
 
-    /* make the boolean bags                                         */
+    // make the boolean bags
     InitGlobalBag( &True,  "src/bool.c:TRUE"  );
     InitGlobalBag( &False, "src/bool.c:FALSE" );
     InitGlobalBag( &Fail,  "src/bool.c:FAIL"  );
     InitGlobalBag( &Undefined,  "src/bool.c:UNDEFINED"  );
 
 #ifdef GAP_ENABLE_SAVELOAD
-    /* install the saving functions                                       */
+    // install the saving functions
     SaveObjFuncs[ T_BOOL ] = SaveBool;
 
-    /* install the loading functions                                       */
+    // install the loading functions
     LoadObjFuncs[ T_BOOL ] = LoadBool;
 #endif
 
-    /* install the printer for boolean values                              */
+    // install the printer for boolean values
     PrintObjFuncs[ T_BOOL ] = PrintBool;
 
-    /* install the comparison functions                                    */
+    // install the comparison functions
     EqFuncs[ T_BOOL ][ T_BOOL ] = EqBool;
     LtFuncs[ T_BOOL ][ T_BOOL ] = LtBool;
 
@@ -384,35 +384,35 @@ static Int InitLibrary (
 {
     Obj             tmp;
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
 
-    /* bags are registered in 'InitKernel'                                 */
+    // bags are registered in 'InitKernel'
     True  = NewBag(T_BOOL, 0);
     False = NewBag(T_BOOL, 0);
     Fail  = NewBag(T_BOOL, 0);
 
-    /* `fail' is a variable not a language construct                       */
+    // `fail' is a variable not a language construct
     AssReadOnlyGVar( GVarName( "fail" ), Fail );
 
-    /* Undefined is an internal value */
+    // Undefined is an internal value
     Undefined = NewBag(T_BOOL, 0);
 
-    /* make and install the 'RETURN_TRUE' function                         */
+    // make and install the 'RETURN_TRUE' function
     tmp = NewFunctionC("RETURN_TRUE", -1, "arg", ReturnTrue1);
     SET_HDLR_FUNC( tmp, 1, ReturnTrue1);
     SET_HDLR_FUNC( tmp, 2, ReturnTrue2);
     SET_HDLR_FUNC( tmp, 3, ReturnTrue3);
     AssReadOnlyGVar( GVarName("RETURN_TRUE"), tmp );
 
-    /* make and install the 'RETURN_FALSE' function                        */
+    // make and install the 'RETURN_FALSE' function
     tmp = NewFunctionC("RETURN_FALSE", -1, "arg", ReturnFalse1);
     SET_HDLR_FUNC( tmp, 1, ReturnFalse1);
     SET_HDLR_FUNC( tmp, 2, ReturnFalse2);
     SET_HDLR_FUNC( tmp, 3, ReturnFalse3);
     AssReadOnlyGVar( GVarName( "RETURN_FALSE" ), tmp );
 
-    /* make and install the 'RETURN_FAIL' function                        */
+    // make and install the 'RETURN_FAIL' function
     tmp = NewFunctionC("RETURN_FAIL", -1, "arg", ReturnFail1);
     SET_HDLR_FUNC( tmp, 1, ReturnFail1);
     SET_HDLR_FUNC( tmp, 2, ReturnFail2);

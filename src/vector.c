@@ -37,20 +37,20 @@
 */
 static Obj SumIntVector(Obj elmL, Obj vecR)
 {
-    Obj                 vecS;           /* handle of the sum               */
-    Obj *               ptrS;           /* pointer into the sum            */
-    Obj                 elmS;           /* one element of sum list         */
-    const Obj *         ptrR;           /* pointer into the right operand  */
-    Obj                 elmR;           /* one element of right operand    */
-    UInt                len;            /* length                          */
-    UInt                i;              /* loop variable                   */
+    Obj                 vecS;           // handle of the sum
+    Obj *               ptrS;           // pointer into the sum
+    Obj                 elmS;           // one element of sum list
+    const Obj *         ptrR;           // pointer into the right operand
+    Obj                 elmR;           // one element of right operand
+    UInt                len;            // length
+    UInt                i;              // loop variable
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_PLIST(vecR);
     vecS = NEW_PLIST(TNUM_OBJ(vecR), len);
     SET_LEN_PLIST(vecS, len);
 
-    /* loop over the elements and add                                      */
+    // loop over the elements and add
     ptrR = CONST_ADDR_OBJ(vecR);
     ptrS = ADDR_OBJ(vecS);
     for (i = 1; i <= len; i++) {
@@ -83,20 +83,20 @@ static Obj SumIntVector(Obj elmL, Obj vecR)
 */
 static Obj SumVectorInt(Obj vecL, Obj elmR)
 {
-    Obj                 vecS;           /* handle of the sum               */
-    Obj *               ptrS;           /* pointer into the sum            */
-    Obj                 elmS;           /* one element of sum list         */
-    const Obj *         ptrL;           /* pointer into the left operand   */
-    Obj                 elmL;           /* one element of left operand     */
-    UInt                len;            /* length                          */
-    UInt                i;              /* loop variable                   */
+    Obj                 vecS;           // handle of the sum
+    Obj *               ptrS;           // pointer into the sum
+    Obj                 elmS;           // one element of sum list
+    const Obj *         ptrL;           // pointer into the left operand
+    Obj                 elmL;           // one element of left operand
+    UInt                len;            // length
+    UInt                i;              // loop variable
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_PLIST(vecL);
     vecS = NEW_PLIST(TNUM_OBJ(vecL), len);
     SET_LEN_PLIST(vecS, len);
 
-    /* loop over the elements and add                                      */
+    // loop over the elements and add
     ptrL = CONST_ADDR_OBJ(vecL);
     ptrS = ADDR_OBJ(vecS);
     for (i = 1; i <= len; i++) {
@@ -129,17 +129,17 @@ static Obj SumVectorInt(Obj vecL, Obj elmR)
 */
 static Obj SumVectorVector(Obj vecL, Obj vecR)
 {
-    Obj                 vecS;           /* handle of the sum               */
-    Obj *               ptrS;           /* pointer into the sum            */
-    Obj                 elmS;           /* one element of sum list         */
-    const Obj *         ptrL;           /* pointer into the left operand   */
-    Obj                 elmL;           /* one element of left operand     */
-    const Obj *         ptrR;           /* pointer into the right operand  */
-    Obj                 elmR;           /* one element of right operand    */
-    UInt                lenL, lenR, len, lenmin; /* lengths                          */
-    UInt                i;              /* loop variable                   */
+    Obj                 vecS;           // handle of the sum
+    Obj *               ptrS;           // pointer into the sum
+    Obj                 elmS;           // one element of sum list
+    const Obj *         ptrL;           // pointer into the left operand
+    Obj                 elmL;           // one element of left operand
+    const Obj *         ptrR;           // pointer into the right operand
+    Obj                 elmR;           // one element of right operand
+    UInt                lenL, lenR, len, lenmin; // lengths
+    UInt                i;              // loop variable
 
-    /* make the result list                                                */
+    // make the result list
     lenL = LEN_PLIST(vecL);
     lenR = LEN_PLIST(vecR);
     if (lenL < lenR) {
@@ -153,7 +153,7 @@ static Obj SumVectorVector(Obj vecL, Obj vecR)
         IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecS, len);
 
-    /* loop over the elements and add                                      */
+    // loop over the elements and add
     ptrL = CONST_ADDR_OBJ(vecL);
     ptrR = CONST_ADDR_OBJ(vecR);
     ptrS = ADDR_OBJ(vecS);
@@ -197,20 +197,20 @@ static Obj SumVectorVector(Obj vecL, Obj vecR)
 */
 static Obj DiffIntVector(Obj elmL, Obj vecR)
 {
-    Obj                 vecD;           /* handle of the difference        */
-    Obj *               ptrD;           /* pointer into the difference     */
-    Obj                 elmD;           /* one element of difference list  */
-    const Obj *         ptrR;           /* pointer into the right operand  */
-    Obj                 elmR;           /* one element of right operand    */
-    UInt                len;            /* length                          */
-    UInt                i;              /* loop variable                   */
+    Obj                 vecD;           // handle of the difference
+    Obj *               ptrD;           // pointer into the difference
+    Obj                 elmD;           // one element of difference list
+    const Obj *         ptrR;           // pointer into the right operand
+    Obj                 elmR;           // one element of right operand
+    UInt                len;            // length
+    UInt                i;              // loop variable
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_PLIST(vecR);
     vecD = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecD, len);
 
-    /* loop over the elements and subtract                                 */
+    // loop over the elements and subtract
     ptrR = CONST_ADDR_OBJ(vecR);
     ptrD = ADDR_OBJ(vecD);
     for (i = 1; i <= len; i++) {
@@ -243,20 +243,20 @@ static Obj DiffIntVector(Obj elmL, Obj vecR)
 */
 static Obj DiffVectorInt(Obj vecL, Obj elmR)
 {
-    Obj                 vecD;           /* handle of the difference        */
-    Obj *               ptrD;           /* pointer into the difference     */
-    Obj                 elmD;           /* one element of difference list  */
-    const Obj *         ptrL;           /* pointer into the left operand   */
-    Obj                 elmL;           /* one element of left operand     */
-    UInt                len;            /* length                          */
-    UInt                i;              /* loop variable                   */
+    Obj                 vecD;           // handle of the difference
+    Obj *               ptrD;           // pointer into the difference
+    Obj                 elmD;           // one element of difference list
+    const Obj *         ptrL;           // pointer into the left operand
+    Obj                 elmL;           // one element of left operand
+    UInt                len;            // length
+    UInt                i;              // loop variable
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_PLIST(vecL);
     vecD = NEW_PLIST(TNUM_OBJ(vecL), len);
     SET_LEN_PLIST(vecD, len);
 
-    /* loop over the elements and subtract                                 */
+    // loop over the elements and subtract
     ptrL = CONST_ADDR_OBJ(vecL);
     ptrD = ADDR_OBJ(vecD);
     for (i = 1; i <= len; i++) {
@@ -289,17 +289,17 @@ static Obj DiffVectorInt(Obj vecL, Obj elmR)
 */
 static Obj DiffVectorVector(Obj vecL, Obj vecR)
 {
-    Obj                 vecD;           /* handle of the sum               */
-    Obj *               ptrD;           /* pointer into the sum            */
-    Obj                 elmD;           /* one element of sum list         */
-    const Obj *         ptrL;           /* pointer into the left operand   */
-    Obj                 elmL;           /* one element of left operand     */
-    const Obj *         ptrR;           /* pointer into the right operand  */
-    Obj                 elmR;           /* one element of right operand    */
-    UInt                lenL, lenR, len, lenmin; /* lengths                          */
-    UInt                i;              /* loop variable                   */
+    Obj                 vecD;           // handle of the sum
+    Obj *               ptrD;           // pointer into the sum
+    Obj                 elmD;           // one element of sum list
+    const Obj *         ptrL;           // pointer into the left operand
+    Obj                 elmL;           // one element of left operand
+    const Obj *         ptrR;           // pointer into the right operand
+    Obj                 elmR;           // one element of right operand
+    UInt                lenL, lenR, len, lenmin; // lengths
+    UInt                i;              // loop variable
 
-    /* make the result list                                                */
+    // make the result list
     lenL = LEN_PLIST(vecL);
     lenR = LEN_PLIST(vecR);
     if (lenL < lenR) {
@@ -313,7 +313,7 @@ static Obj DiffVectorVector(Obj vecL, Obj vecR)
         IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(vecR), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecD, len);
 
-    /* loop over the elements and subtract                                   */
+    // loop over the elements and subtract
     ptrL = CONST_ADDR_OBJ(vecL);
     ptrR = CONST_ADDR_OBJ(vecR);
     ptrD = ADDR_OBJ(vecD);
@@ -366,20 +366,20 @@ static Obj DiffVectorVector(Obj vecL, Obj vecR)
 */
 static Obj ProdIntVector(Obj elmL, Obj vecR)
 {
-    Obj                 vecP;           /* handle of the product           */
-    Obj *               ptrP;           /* pointer into the product        */
-    Obj                 elmP;           /* one element of product list     */
-    const Obj *         ptrR;           /* pointer into the right operand  */
-    Obj                 elmR;           /* one element of right operand    */
-    UInt                len;            /* length                          */
-    UInt                i;              /* loop variable                   */
+    Obj                 vecP;           // handle of the product
+    Obj *               ptrP;           // pointer into the product
+    Obj                 elmP;           // one element of product list
+    const Obj *         ptrR;           // pointer into the right operand
+    Obj                 elmR;           // one element of right operand
+    UInt                len;            // length
+    UInt                i;              // loop variable
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_PLIST(vecR);
     vecP = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecR), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecP, len);
 
-    /* loop over the entries and multiply                                  */
+    // loop over the entries and multiply
     ptrR = CONST_ADDR_OBJ(vecR);
     ptrP = ADDR_OBJ(vecP);
     for (i = 1; i <= len; i++) {
@@ -412,20 +412,20 @@ static Obj ProdIntVector(Obj elmL, Obj vecR)
 */
 static Obj ProdVectorInt(Obj vecL, Obj elmR)
 {
-    Obj                 vecP;           /* handle of the product           */
-    Obj *               ptrP;           /* pointer into the product        */
-    Obj                 elmP;           /* one element of product list     */
-    const Obj *         ptrL;           /* pointer into the left operand   */
-    Obj                 elmL;           /* one element of left operand     */
-    UInt                len;            /* length                          */
-    UInt                i;              /* loop variable                   */
+    Obj                 vecP;           // handle of the product
+    Obj *               ptrP;           // pointer into the product
+    Obj                 elmP;           // one element of product list
+    const Obj *         ptrL;           // pointer into the left operand
+    Obj                 elmL;           // one element of left operand
+    UInt                len;            // length
+    UInt                i;              // loop variable
 
-    /* make the result list                                                */
+    // make the result list
     len = LEN_PLIST(vecL);
     vecP = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL), T_PLIST_CYC, len);
     SET_LEN_PLIST(vecP, len);
 
-    /* loop over the entries and multiply                                  */
+    // loop over the entries and multiply
     ptrL = CONST_ADDR_OBJ(vecL);
     ptrP = ADDR_OBJ(vecP);
     for (i = 1; i <= len; i++) {
@@ -458,22 +458,22 @@ static Obj ProdVectorInt(Obj vecL, Obj elmR)
 */
 static Obj ProdVectorVector(Obj vecL, Obj vecR)
 {
-    Obj                 elmP;           /* product, result                 */
-    Obj                 elmS;           /* partial sum of result           */
-    Obj                 elmT;           /* one summand of result           */
-    const Obj *         ptrL;           /* pointer into the left operand   */
-    Obj                 elmL;           /* one element of left operand     */
-    const Obj *         ptrR;           /* pointer into the right operand  */
-    Obj                 elmR;           /* one element of right operand    */
-    UInt                lenL, lenR, len; /* length                          */
-    UInt                i;              /* loop variable                   */
+    Obj                 elmP;           // product, result
+    Obj                 elmS;           // partial sum of result
+    Obj                 elmT;           // one summand of result
+    const Obj *         ptrL;           // pointer into the left operand
+    Obj                 elmL;           // one element of left operand
+    const Obj *         ptrR;           // pointer into the right operand
+    Obj                 elmR;           // one element of right operand
+    UInt                lenL, lenR, len; // length
+    UInt                i;              // loop variable
 
-    /* check that the lengths agree                                        */
+    // check that the lengths agree
     lenL = LEN_PLIST(vecL);
     lenR = LEN_PLIST(vecR);
     len = (lenL < lenR) ? lenL : lenR;
 
-    /* loop over the entries and multiply                                  */
+    // loop over the entries and multiply
     ptrL = CONST_ADDR_OBJ(vecL);
     ptrR = CONST_ADDR_OBJ(vecR);
     elmL = ptrL[1];
@@ -521,26 +521,26 @@ static Obj ProdVectorVector(Obj vecL, Obj vecR)
 */
 static Obj ProdVectorMatrix(Obj vecL, Obj matR)
 {
-    Obj                 vecP;           /* handle of the product           */
-    Obj *               ptrP;           /* pointer into the product        */
-    Obj                 elmP;           /* one summand of product          */
-    Obj                 elmS;           /* temporary for sum               */
-    Obj                 elmT;           /* another temporary               */
-    Obj                 elmL;           /* one element of left operand     */
-    Obj                 vecR;           /* one vector of right operand     */
-    const Obj *         ptrR;           /* pointer into the right vector   */
-    Obj                 elmR;           /* one element from right vector   */
-    UInt                len;            /* length                          */
-    UInt                col;            /* length of the rows              */
-    UInt                i, k;           /* loop variables                  */
+    Obj                 vecP;           // handle of the product
+    Obj *               ptrP;           // pointer into the product
+    Obj                 elmP;           // one summand of product
+    Obj                 elmS;           // temporary for sum
+    Obj                 elmT;           // another temporary
+    Obj                 elmL;           // one element of left operand
+    Obj                 vecR;           // one vector of right operand
+    const Obj *         ptrR;           // pointer into the right vector
+    Obj                 elmR;           // one element from right vector
+    UInt                len;            // length
+    UInt                col;            // length of the rows
+    UInt                i, k;           // loop variables
 
-    /* check the lengths                                                   */
+    // check the lengths
     len = LEN_PLIST(vecL);
     if (len > LEN_PLIST(matR))
         len = LEN_PLIST(matR);
     col = LEN_PLIST(ELM_PLIST(matR, 1));
 
-    /* make the result list */
+    // make the result list
 
     vecP = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vecL) || IS_MUTABLE_OBJ(ELM_PLIST(matR, 1)),
                          T_PLIST_CYC, col);
@@ -549,7 +549,7 @@ static Obj ProdVectorMatrix(Obj vecL, Obj matR)
         SET_ELM_PLIST(vecP, i, INTOBJ_INT(0));
 
 
-    /* loop over the entries and multiply                            */
+    // loop over the entries and multiply
     for (i = 1; i <= len; i++) {
         elmL = ELM_PLIST(vecL, i);
         vecR = ELM_PLIST(matR, i);
@@ -691,10 +691,10 @@ static Int InitKernel (
     Int                 t1;
     Int                 t2;
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable(GVarFuncs);
 
-    /* install the arithmetic operation methods                            */
+    // install the arithmetic operation methods
     for (t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT + IMMUTABLE; t1++) {
         ZeroSameMutFuncs[t1] = ZeroVector;
         ZeroMutFuncs[ t1 ] = ZeroMutVector;
@@ -723,7 +723,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable(GVarFuncs);
 
     return 0;

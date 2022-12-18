@@ -57,7 +57,7 @@ static Obj IsOutputStream;
 */
 UInt OpenErrorOutput(TypOutputFile * output)
 {
-    /* Try to print the output to stream. Use *errout* as a fallback. */
+    // Try to print the output to stream. Use *errout* as a fallback.
     UInt ret = 0;
 
     if (ERROR_OUTPUT != NULL) {
@@ -171,8 +171,8 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
     if (IsBottomLVars(context))
         return 0;
 
-    /* HACK: we want to redirect output */
-    /* Try to print the output to stream. Use *errout* as a fallback. */
+    // HACK: we want to redirect output
+    // Try to print the output to stream. Use *errout* as a fallback.
     TypOutputFile output = { 0 };
     if ((IsStringConv(stream) &&
          !OpenOutput(&output, CONST_CSTR_STRING(stream), FALSE)) ||
@@ -224,7 +224,7 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
         rethrow = TRUE;
     }
 
-    /* HACK: close the output again */
+    // HACK: close the output again
     CloseOutput(&output);
 
     if (rethrow)
@@ -458,7 +458,7 @@ void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
     Obj LateMsg;
     LateMsg = MakeString(msg2);
     CallErrorInner(msg, arg1, arg2, 0, 1, 0, LateMsg, 1);
-    /*    ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' ); */
+    // ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' );
 }
 
 /****************************************************************************

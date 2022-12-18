@@ -44,7 +44,7 @@
 */
 static void CheckTietzeStack(Obj tietze)
 {
-    /*  check the Tietze stack                                             */
+    // check the Tietze stack
     RequirePlainList(0, tietze);
     if ( LEN_PLIST(tietze) != TZ_LENGTHTIETZE ) {
         ErrorQuit( "<tietze> must have length %d (not %d)",
@@ -75,7 +75,7 @@ static Obj CheckTietzeRelators(Obj tietze)
 static void
 CheckTietzeInverses(Obj tietze, Obj * invs, Obj ** ptInvs, Int * numgens)
 {
-    /* get and check the Tietze inverses list                              */
+    // get and check the Tietze inverses list
     *invs    = ELM_PLIST(tietze, TZ_INVERSES);
     *numgens = INT_INTOBJ(ELM_PLIST(tietze, TZ_NUMGENS));
     if ( *invs==0 || !IS_PLIST(*invs) || LEN_PLIST(*invs)!=2*(*numgens)+1 ) {
@@ -92,7 +92,7 @@ CheckTietzeInverses(Obj tietze, Obj * invs, Obj ** ptInvs, Int * numgens)
 static void
 CheckTietzeLengths(Obj tietze, Int numrels, Obj * lens, Obj ** ptLens)
 {
-    /*  Get and check the Tietze lengths list                              */
+    // Get and check the Tietze lengths list
     *lens = ELM_PLIST(tietze, TZ_LENGTHS);
     if ( *lens == 0 || ! IS_PLIST(*lens) || LEN_PLIST(*lens) != numrels ) {
         ErrorQuit("invalid Tietze lengths list", 0, 0);
@@ -107,7 +107,7 @@ CheckTietzeLengths(Obj tietze, Int numrels, Obj * lens, Obj ** ptLens)
 */
 static Obj CheckTietzeFlags(Obj tietze, Int numrels)
 {
-    /* get and check the Tietze flags list                                 */
+    // get and check the Tietze flags list
     Obj flags = ELM_PLIST(tietze, TZ_FLAGS);
     if (flags==0 || ! IS_PLIST(flags) || LEN_PLIST(flags)!=numrels ) {
         ErrorQuit("invalid Tietze flags list", 0, 0);
@@ -128,7 +128,7 @@ static Int CheckTietzeRelLengths(Obj tietze)
     const Obj * ptRels = CONST_ADDR_OBJ(rels);
     const Obj * ptLens = CONST_ADDR_OBJ(lens);
 
-    /* Check list <lens> to contain the relator lengths                 */
+    // Check list <lens> to contain the relator lengths
     Int total = 0;
     for (Int i = 1;  i <= numrels; i++) {
         if ( ptRels[i] == 0
@@ -152,34 +152,34 @@ static Int CheckTietzeRelLengths(Obj tietze)
 */
 static Obj FuncTzSortC(Obj self, Obj tietze)
 {
-    Obj                 rels;           /* relators list                   */
-    Obj *               ptRels;         /* pointer to this list            */
-    Obj                 lens;           /* lengths list                    */
-    Obj *               ptLens;         /* pointer to this list            */
-    Obj                 flags;          /* handle of the flags list        */
-    Obj *               ptFlags;        /* pointer to this list            */
-    Int                 numrels;        /* number of Tietze relators       */
-    Int                 i, h, k;        /* loop variables                  */
-    Obj                 rel, len, flag; /* list entries                    */
+    Obj                 rels;           // relators list
+    Obj *               ptRels;         // pointer to this list
+    Obj                 lens;           // lengths list
+    Obj *               ptLens;         // pointer to this list
+    Obj                 flags;          // handle of the flags list
+    Obj *               ptFlags;        // pointer to this list
+    Int                 numrels;        // number of Tietze relators
+    Int                 i, h, k;        // loop variables
+    Obj                 rel, len, flag; // list entries
 
-    /* check the Tietze stack                                              */
+    // check the Tietze stack
     CheckTietzeStack(tietze);
 
-    /* get and check the Tietze relators list                              */
+    // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
     ptRels = ADDR_OBJ(rels);
     numrels = LEN_PLIST(rels);
 
-    /* get and check the Tietze lengths list                               */
+    // get and check the Tietze lengths list
     CheckTietzeLengths( tietze, numrels, &lens, &ptLens );
 
-    /* get and check the Tietze flags list                                 */
+    // get and check the Tietze flags list
     flags = CheckTietzeFlags(tietze, numrels);
 
-    /* check list <lens> to contain the relator lengths                    */
+    // check list <lens> to contain the relator lengths
     CheckTietzeRelLengths(tietze);
 
-    /* sort the list                                                       */
+    // sort the list
     ptFlags = ADDR_OBJ(flags);
     h = 1;
     while ( 9 * h + 4 < numrels )
@@ -226,34 +226,34 @@ static Obj FuncTzSortC(Obj self, Obj tietze)
 */
 static Obj FuncTzRenumberGens(Obj self, Obj tietze)
 {
-    Obj                 rels;           /* handle of the relators list     */
-    const Obj *         ptRels;         /* pointer to this list            */
-    Obj                 invs;           /* handle of the inverses list     */
-    Obj *               ptInvs;         /* pointer to this list            */
-    Obj *               ptRel;          /* pointer to the ith relator      */
-    Int                 numgens;        /* number of Tietze generators     */
-    Int                 numrels;        /* number of Tietze relators       */
-    Int                 old;            /* generator or inverse            */
-    Int                 leng;           /* relator length                  */
-    Int                 i, j;           /* loop variables                  */
+    Obj                 rels;           // handle of the relators list
+    const Obj *         ptRels;         // pointer to this list
+    Obj                 invs;           // handle of the inverses list
+    Obj *               ptInvs;         // pointer to this list
+    Obj *               ptRel;          // pointer to the ith relator
+    Int                 numgens;        // number of Tietze generators
+    Int                 numrels;        // number of Tietze relators
+    Int                 old;            // generator or inverse
+    Int                 leng;           // relator length
+    Int                 i, j;           // loop variables
 
-    /* check the Tietze stack                                              */
+    // check the Tietze stack
     CheckTietzeStack(tietze);
 
-    /* get and check the Tietze relators list                              */
+    // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
     ptRels = CONST_ADDR_OBJ(rels);
     numrels = LEN_PLIST(rels);
 
-    /* get and check the Tietze inverses list                              */
+    // get and check the Tietze inverses list
     CheckTietzeInverses( tietze, &invs, &ptInvs, &numgens );
 
-    /*  Loop over all relators and replace the occurring generators        */
+    // Loop over all relators and replace the occurring generators
     for ( i = 1;  i <= numrels;  i++ ) {
         ptRel = ADDR_OBJ( ptRels[i] );
         leng  = LEN_PLIST( ptRels[i] );
 
-        /* run through the relator and replace the occurring generators    */
+        // run through the relator and replace the occurring generators
         for ( j = 1;  j <= leng;  j++ ) {
             old = INT_INTOBJ( ptRel[j] );
             if ( old < -numgens || numgens < old || old == 0 ) {
@@ -273,59 +273,59 @@ static Obj FuncTzRenumberGens(Obj self, Obj tietze)
 */
 static Obj FuncTzReplaceGens(Obj self, Obj tietze)
 {
-    Obj                 rels;           /* handle of the relators list     */
-    const Obj *         ptRels;         /* pointer to this list            */
-    Obj                 lens;           /* handle of the lengths list      */
-    Obj *               ptLens;         /* pointer to this list            */
-    Obj                 flags;          /* handle of the flags list        */
-    Obj                 invs;           /* handle of the inverses list     */
-    Obj *               ptInvs;         /* pointer to this list            */
-    Obj                 rel;            /* handle of a relator             */
-    Obj *               ptRel;          /* pointer to this relator         */
-    Obj *               pt1;            /* pointer to a relator            */
-    Obj *               pt2;            /* pointer to a relator            */
-    Int                 numgens;        /* number of Tietze generators     */
-    Int                 numrels;        /* number of Tietze relators       */
-    Int                 total;          /* total length of relators        */
-    Int                 old, new;       /* generators or inverses          */
-    Int                 leng, reduced;  /* relator lengths                 */
-    Int                 altered;        /* flag                            */
-    Int                 i, j;           /* loop variables                  */
+    Obj                 rels;           // handle of the relators list
+    const Obj *         ptRels;         // pointer to this list
+    Obj                 lens;           // handle of the lengths list
+    Obj *               ptLens;         // pointer to this list
+    Obj                 flags;          // handle of the flags list
+    Obj                 invs;           // handle of the inverses list
+    Obj *               ptInvs;         // pointer to this list
+    Obj                 rel;            // handle of a relator
+    Obj *               ptRel;          // pointer to this relator
+    Obj *               pt1;            // pointer to a relator
+    Obj *               pt2;            // pointer to a relator
+    Int                 numgens;        // number of Tietze generators
+    Int                 numrels;        // number of Tietze relators
+    Int                 total;          // total length of relators
+    Int                 old, new;       // generators or inverses
+    Int                 leng, reduced;  // relator lengths
+    Int                 altered;        // flag
+    Int                 i, j;           // loop variables
 
-    /* check the Tietze stack                                              */
+    // check the Tietze stack
     CheckTietzeStack(tietze);
 
-    /* get and check the Tietze relators list                              */
+    // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
     ptRels = CONST_ADDR_OBJ(rels);
     numrels = LEN_PLIST(rels);
 
-    /* get and check the Tietze lengths list                               */
+    // get and check the Tietze lengths list
     CheckTietzeLengths( tietze, numrels, &lens, &ptLens );
 
-    /* check list <lens> to contain the relator lengths                    */
+    // check list <lens> to contain the relator lengths
     total = CheckTietzeRelLengths(tietze);
 
-    /* get and check the Tietze flags list                                 */
+    // get and check the Tietze flags list
     flags = CheckTietzeFlags(tietze, numrels);
 
-    /* get and check the Tietze inverses list                              */
+    // get and check the Tietze inverses list
     CheckTietzeInverses( tietze, &invs, &ptInvs, &numgens );
 
-    /* loop over all relators                                              */
+    // loop over all relators
     for ( i = 1; i <= numrels; i++ ) {
         rel = ptRels[i];
         pt2 = ptRel = ADDR_OBJ( rel );
         leng = INT_INTOBJ( ptLens[i] );
         altered = 0;
 
-        /* don't change a square relator defining a valid involution       */
+        // don't change a square relator defining a valid involution
         if (ELM_PLIST(flags, i) == INTOBJ_INT(3) && leng == 2 &&
             ptRel[1] == ptInvs[-INT_INTOBJ(ptRel[1])] ) {
-            continue;  /*  loop over i  */
+            continue;  // loop over i
         }
 
-        /* run through the relator and replace the occurring generators    */
+        // run through the relator and replace the occurring generators
         for ( j = 1; j <= leng; j++ ) {
 
             old = INT_INTOBJ( ptRel[j] );
@@ -337,7 +337,7 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
             new = INT_INTOBJ( ptInvs[-old] );
             if ( ! new ) {
                 altered = 1;
-                continue;  /*  loop over j  */
+                continue;  // loop over j
             }
 
             if ( pt2 > ptRel && *pt2 == ptInvs[new] ) {
@@ -351,10 +351,10 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
         }
 
         if ( ! altered )  {
-            continue; /*  loop over i  */
+            continue; // loop over i
         }
 
-        /* now cyclically reduce the relator                               */
+        // now cyclically reduce the relator
         pt1 = ++ptRel;
         while ( pt1 < pt2 && *pt1 == ptInvs[INT_INTOBJ(*pt2)] ) {
             ++pt1;  --pt2;
@@ -364,7 +364,7 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
             pt2 = --ptRel;
         }
 
-        /* resize the resulting relator, if necessary                      */
+        // resize the resulting relator, if necessary
         ptRel = ADDR_OBJ( rel );
         reduced = pt2 - ptRel;
         if ( reduced < leng ) {
@@ -378,7 +378,7 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
             ptInvs  = ADDR_OBJ( invs ) + (numgens + 1);
         }
 
-        /*  Redefine the corresponding search flag                         */
+        // Redefine the corresponding search flag
         ADDR_OBJ( flags )[i] = INTOBJ_INT( 1 );
     }
     SET_ELM_PLIST(tietze, TZ_TOTAL, INTOBJ_INT(total));
@@ -393,53 +393,53 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
 */
 static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
 {
-    Obj                 rels;           /* handle of the relators list     */
-    Obj *               ptRels;         /* pointer to this list            */
-    Obj                 lens;           /* handle of the lengths list      */
-    Obj *               ptLens;         /* pointer to this list            */
-    Obj                 flags;          /* handle of the flags list        */
-    Obj                 invs;           /* handle of the inverses list     */
-    Obj *               ptInvs;         /* pointer to this list            */
-    Obj *               ptWrd;          /* pointer to this word            */
-    Obj                 iwrd;           /* handle of the inverse word      */
-    Obj *               ptIwrd;         /* pointer to this word            */
-    Obj                 new;            /* handle of a modified relator    */
-    Obj *               ptNew;          /* pointer to this relator         */
-    Obj                 rel;            /* handle of a relator             */
-    Obj *               ptRel;          /* pointer to this relator         */
-    Obj *               pt1;            /* pointer to a relator            */
-    Obj *               pt2;            /* pointer to a relator            */
-    Obj *               pt3;            /* pointer to a relator            */
-    Int                 numgens;        /* number of Tietze generators     */
-    Int                 numrels;        /* number of Tietze relators       */
-    Int                 total;          /* total length of relators        */
-    Int                 given;          /* given generator and inverse     */
-    Int                 gen, ginv;      /* given generator and inverse     */
-    Int                 next;           /* generator or inverse            */
-    Int                 leng, newleng;  /* relator lengths                 */
-    Int                 wleng;          /* length of the replacing word    */
-    Int                 occ;            /* number of occurrences           */
-    Int                 i, j;           /* loop variables                  */
-    Obj                 Idx;            /* list of changed relators */
+    Obj                 rels;           // handle of the relators list
+    Obj *               ptRels;         // pointer to this list
+    Obj                 lens;           // handle of the lengths list
+    Obj *               ptLens;         // pointer to this list
+    Obj                 flags;          // handle of the flags list
+    Obj                 invs;           // handle of the inverses list
+    Obj *               ptInvs;         // pointer to this list
+    Obj *               ptWrd;          // pointer to this word
+    Obj                 iwrd;           // handle of the inverse word
+    Obj *               ptIwrd;         // pointer to this word
+    Obj                 new;            // handle of a modified relator
+    Obj *               ptNew;          // pointer to this relator
+    Obj                 rel;            // handle of a relator
+    Obj *               ptRel;          // pointer to this relator
+    Obj *               pt1;            // pointer to a relator
+    Obj *               pt2;            // pointer to a relator
+    Obj *               pt3;            // pointer to a relator
+    Int                 numgens;        // number of Tietze generators
+    Int                 numrels;        // number of Tietze relators
+    Int                 total;          // total length of relators
+    Int                 given;          // given generator and inverse
+    Int                 gen, ginv;      // given generator and inverse
+    Int                 next;           // generator or inverse
+    Int                 leng, newleng;  // relator lengths
+    Int                 wleng;          // length of the replacing word
+    Int                 occ;            // number of occurrences
+    Int                 i, j;           // loop variables
+    Obj                 Idx;            // list of changed relators
 
-    /* check the Tietze stack                                              */
+    // check the Tietze stack
     CheckTietzeStack(tietze);
 
-    /* get and check the Tietze relators list                              */
+    // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
     ptRels = ADDR_OBJ(rels);
     numrels = LEN_PLIST(rels);
 
-    /* get and check the Tietze lengths list                               */
+    // get and check the Tietze lengths list
     CheckTietzeLengths( tietze, numrels, &lens, &ptLens );
 
-    /* get and check the Tietze flags list                                 */
+    // get and check the Tietze flags list
     flags = CheckTietzeFlags(tietze, numrels);
 
-    /* get and check the Tietze inverses list                              */
+    // get and check the Tietze inverses list
     CheckTietzeInverses( tietze, &invs, &ptInvs, &numgens );
 
-    /* check the second argument (generator number)                        */
+    // check the second argument (generator number)
     if ( ! IS_INTOBJ(gennum) ) {
         ErrorQuit("<gennum> must be an integer", 0, 0);
     }
@@ -450,7 +450,7 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
     }
     ginv = INT_INTOBJ(ptInvs[gen]);
 
-    /* check the third argument (replacing word)                           */
+    // check the third argument (replacing word)
     if ( ! IS_PLIST(word) ) {
         ErrorQuit("invalid replacing word", 0, 0);
     }
@@ -463,13 +463,13 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
         }
     }
 
-    /* check list <lens> to contain the relator lengths                    */
+    // check list <lens> to contain the relator lengths
     total = CheckTietzeRelLengths(tietze);
 
-    /* list of changed relator indices */
+    // list of changed relator indices
     Idx = NEW_PLIST(T_PLIST, 20);
 
-    /* allocate a bag for the inverse of the replacing word                */
+    // allocate a bag for the inverse of the replacing word
     iwrd   = NEW_PLIST( T_PLIST, wleng );
     ptRels = ADDR_OBJ( rels );
     ptLens = ADDR_OBJ( lens );
@@ -477,7 +477,7 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
     ptWrd  = ADDR_OBJ( word );
     ptIwrd = ADDR_OBJ( iwrd );
 
-    /* invert the replacing word                                           */
+    // invert the replacing word
     SET_LEN_PLIST( iwrd, wleng );
     pt1 = ptWrd;
     pt2 = ptIwrd + wleng;
@@ -489,11 +489,11 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
         ptWrd = ADDR_OBJ(word);  ptIwrd = ADDR_OBJ(iwrd);
     }
 
-    /* loop over all relators                                              */
+    // loop over all relators
     for ( i = 1;  i <= numrels;  i++ ) {
-        /* We assume that ptRels and ptLens are valid at the
-           beginning of this loop (and not rendered invalid by a
-           garbage collection)! */
+        // We assume that ptRels and ptLens are valid at the
+        // beginning of this loop (and not rendered invalid by a
+        // garbage collection)!
         rel = ptRels[i];
         ptRel = ADDR_OBJ(rel);
         leng = INT_INTOBJ(ptLens[i]);
@@ -501,7 +501,7 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
             continue;
         }
 
-        /* run through the relator and count the occurrences of gen        */
+        // run through the relator and count the occurrences of gen
         occ = 0;
         for ( j = 1;  j <= leng;  j++ ) {
             next = INT_INTOBJ( ptRel[j] );
@@ -519,9 +519,9 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
         // remember that the relator changed
         PushPlist(Idx, INTOBJ_INT(i));
 
-        /* allocate a bag for the modified Tietze relator                  */
+        // allocate a bag for the modified Tietze relator
         new = NEW_PLIST( T_PLIST, leng + occ * (wleng - 1) );
-        /* Now renew saved pointers into bags: */
+        // Now renew saved pointers into bags:
         pt2 = ptNew = ADDR_OBJ( new );
         ptLens = ADDR_OBJ( lens );
         ptInvs = ADDR_OBJ( invs ) + (numgens + 1);
@@ -529,7 +529,7 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
         ptIwrd = ADDR_OBJ( iwrd );
         ptRel  = ADDR_OBJ( rel );
 
-        /* now run again through the relator and modify it                 */
+        // now run again through the relator and modify it
         for ( j = 1;  j <= leng;  j++ ) {
             next = INT_INTOBJ( ptRel[j] );
             if ( next == gen || next == -gen ) {
@@ -551,7 +551,7 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
             }
         }
 
-        /*  now cyclically reduce the relator                              */
+        // now cyclically reduce the relator
         pt1 = ++ptNew;
         while ( pt1 < pt2 && *pt1 == ptInvs[INT_INTOBJ(*pt2)] ) {
             ++pt1;  --pt2;
@@ -561,7 +561,7 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
             pt2 = --ptNew;
         }
 
-        /*  resize and save the resulting relator                          */
+        // resize and save the resulting relator
         ptNew = ADDR_OBJ( new );
         newleng = pt2 - ptNew;
         SET_LEN_PLIST( new, newleng );
@@ -587,41 +587,41 @@ static Obj FuncTzSubstituteGen(Obj self, Obj tietze, Obj gennum, Obj word)
 */
 static Obj FuncTzOccurrences(Obj self, Obj args)
 {
-    Obj                 tietze;         /* handle of the Tietze stack      */
-    Obj                 rels;           /* handle of the relators list     */
-    const Obj *         ptRels;         /* pointer to this list            */
-    Obj                 cnts;           /* list of the counts              */
-    Obj                 mins;           /* list of minimal occurrence list  */
-    Obj                 lens;           /* list of lengths of those        */
-    Obj                 rel;            /* handle of a relator             */
-    Obj *               ptRel;          /* pointer to this relator         */
-    Int                 numgens;        /* number of Tietze generators     */
-    Int                 numrels;        /* number of Tietze relators       */
-    Int                 leng;           /* length of a relator             */
-    Int                 num, next;      /* generators or inverses          */
-    Int                 i, k;           /* loop variables                  */
-    Int                 c;              /* count of one generator          */
-    Int                 nr;             /* number of occurrences           */
-    Int                 nr1;            /* nr of occurrences in one word   */
-    Int                 nrm;            /* minimal value of 'nr1'          */
-    Int                 min;            /* word that has this minimum      */
+    Obj                 tietze;         // handle of the Tietze stack
+    Obj                 rels;           // handle of the relators list
+    const Obj *         ptRels;         // pointer to this list
+    Obj                 cnts;           // list of the counts
+    Obj                 mins;           // list of minimal occurrence list
+    Obj                 lens;           // list of lengths of those
+    Obj                 rel;            // handle of a relator
+    Obj *               ptRel;          // pointer to this relator
+    Int                 numgens;        // number of Tietze generators
+    Int                 numrels;        // number of Tietze relators
+    Int                 leng;           // length of a relator
+    Int                 num, next;      // generators or inverses
+    Int                 i, k;           // loop variables
+    Int                 c;              // count of one generator
+    Int                 nr;             // number of occurrences
+    Int                 nr1;            // nr of occurrences in one word
+    Int                 nrm;            // minimal value of 'nr1'
+    Int                 min;            // word that has this minimum
 
-    /* get and check arguments                                             */
+    // get and check arguments
     if ( ! IS_SMALL_LIST(args) || 2 < LEN_LIST(args) || LEN_LIST(args) < 1 ) {
         ErrorQuit( "usage: TzOccurrences( <Tietze stack>[, <gen no.> ] )",
                    0, 0);
     }
 
-    /* check the first argument (Tietze stack)                             */
+    // check the first argument (Tietze stack)
     tietze = ELM_LIST( args, 1 );
     CheckTietzeStack(tietze);
 
-    /* get and check the Tietze relators list                              */
+    // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
     numrels = LEN_PLIST(rels);
     numgens = INT_INTOBJ(ELM_PLIST(tietze, TZ_NUMGENS));
 
-    /* get and check the given generator number                            */
+    // get and check the given generator number
     if ( LEN_LIST(args) == 2 ) {
         num = INT_INTOBJ( ELM_LIST(args,2) );
         if ( num <= 0 || numgens < num ) {
@@ -633,13 +633,13 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
         num = numgens;
     }
 
-    /* handle special case of single generator in generator list           */
+    // handle special case of single generator in generator list
     if ( numgens == 1 ) {
 
-        /* initialize the counters                                         */
+        // initialize the counters
         nr = 0;  nrm = 0;  min = 0;
 
-        /* loop over all relators                                          */
+        // loop over all relators
         ptRels = CONST_ADDR_OBJ(rels);
         for ( i = 1;  i <= numrels;  i++ ) {
             rel = ptRels[i];
@@ -650,7 +650,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
             ptRel = ADDR_OBJ(rel);
             leng  = LEN_PLIST(rel);
 
-            /* loop over the letters of the relator                        */
+            // loop over the letters of the relator
             nr1 = 0;
             for ( k = 1;  k <= leng;  k++ ) {
                 next = INT_INTOBJ( ptRel[k] );
@@ -659,8 +659,8 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
                 }
             }
 
-            /* check whether the number of occurrences of num is less than */
-            /* in the preceding relators                                   */
+            // check whether the number of occurrences of num is less than
+            // in the preceding relators
             nr += nr1;
             if ( nrm == 0
               || (0 < nr1 && nr1 < nrm)
@@ -670,7 +670,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
             }
         }
 
-        /* put the information into the result bags                        */
+        // put the information into the result bags
         cnts = NewPlistFromArgs(INTOBJ_INT(nr));
         if (nr != 0) {
             lens = NewPlistFromArgs(INTOBJ_INT(nrm));
@@ -682,7 +682,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
         }
     }
 
-    /* handle general case of all Tietze generators                        */
+    // handle general case of all Tietze generators
     else {
 
         // allocate the result lists
@@ -706,7 +706,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
         Obj * ptLens = ADDR_OBJ(lens);
         Obj * ptMins = ADDR_OBJ(mins);
 
-        /* loop over all relators                                          */
+        // loop over all relators
         ptRels = CONST_ADDR_OBJ(rels);
         for ( i = 1;  i <= numrels;  i++ ) {
             rel = ptRels[i];
@@ -717,7 +717,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
             ptRel = ADDR_OBJ(rel);
             leng  = LEN_PLIST(rel);
 
-            /* loop over the letters of the relator                        */
+            // loop over the letters of the relator
             for ( k = 1;  k <= leng;  k++ ) {
                 next = INT_INTOBJ( ptRel[k] );
                 if ( next < 0 ) next = -next;
@@ -728,7 +728,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
                 (ptAux[next])++;
             }
 
-            /* loop over the generators, collecting the counts             */
+            // loop over the generators, collecting the counts
             for ( k = 1;  k <= numgens;  k++ ) {
                 c = ptAux[k];
                 if ( !c )
@@ -750,7 +750,7 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
             }
         }
 
-        /* find the correct length of the minimals and lengths lists       */
+        // find the correct length of the minimals and lengths lists
         k = numgens;
         while ( ptMins[k] == 0 )
             k--;
@@ -768,43 +768,43 @@ static Obj FuncTzOccurrences(Obj self, Obj args)
 */
 static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
 {
-    Obj                 tietze;         /* handle of the Tietze stack      */
-    Obj                 rels;           /* handle of the relators list     */
-    Obj *               ptRels;         /* pointer to this list            */
-    Obj                 invs;           /* handle of the inverses list     */
-    Obj *               ptInvs;         /* pointer to this list            */
-    Obj                 res;            /* handle of the resulting list    */
-    Obj *               ptRes;          /* pointer to this list            */
-    Obj                 rel;            /* handle of a relator             */
-    Obj *               ptRel;          /* pointer to this relator         */
-    Obj                 numObj;         /* handle of generator number      */
-    Obj                 invObj;         /* handle of inverse gen number    */
-    Int                 num, i, ii;     /* generator numbers               */
-    Int                 numgens;        /* number of Tietze generators     */
-    Int                 numrels;        /* number of Tietze relators       */
-    Int                 length;         /* length of the current relator   */
-    Int                 j1, j2, r;      /* loop variables                  */
+    Obj                 tietze;         // handle of the Tietze stack
+    Obj                 rels;           // handle of the relators list
+    Obj *               ptRels;         // pointer to this list
+    Obj                 invs;           // handle of the inverses list
+    Obj *               ptInvs;         // pointer to this list
+    Obj                 res;            // handle of the resulting list
+    Obj *               ptRes;          // pointer to this list
+    Obj                 rel;            // handle of a relator
+    Obj *               ptRel;          // pointer to this relator
+    Obj                 numObj;         // handle of generator number
+    Obj                 invObj;         // handle of inverse gen number
+    Int                 num, i, ii;     // generator numbers
+    Int                 numgens;        // number of Tietze generators
+    Int                 numrels;        // number of Tietze relators
+    Int                 length;         // length of the current relator
+    Int                 j1, j2, r;      // loop variables
 
-    /* get and check arguments                                             */
+    // get and check arguments
     if ( ! IS_SMALL_LIST(args) || 3 < LEN_LIST(args) || LEN_LIST(args) < 2 ) {
         ErrorQuit(
           "usage: TzOccurrencesPairs( <Tietze stack>, <gen>[, <list>] )",
           0, 0);
     }
 
-    /* check the first argument (Tietze stack)                             */
+    // check the first argument (Tietze stack)
     tietze = ELM_LIST( args, 1 );
     CheckTietzeStack(tietze);
 
-    /* get and check the Tietze relators list                              */
+    // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
     ptRels = ADDR_OBJ(rels);
     numrels = LEN_PLIST(rels);
 
-    /* get and check the Tietze inverses list                              */
+    // get and check the Tietze inverses list
     CheckTietzeInverses( tietze, &invs, &ptInvs, &numgens );
 
-    /* get and check the Tietze generator number                           */
+    // get and check the Tietze generator number
     numObj = ELM_LIST( args, 2 );
     if ( ! IS_INTOBJ(numObj) ) {
         ErrorQuit("<gen> must be a Tietze generator number", 0, 0);
@@ -814,7 +814,7 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
         ErrorQuit("given generator number is out of range", 0, 0);
     }
 
-    /*  Get and check the list for the results, if specified               */
+    // Get and check the list for the results, if specified
     if ( LEN_PLIST(args) == 2 ) {
         res = NEW_PLIST( T_PLIST, 4*numgens );
         SET_LEN_PLIST( res, 4*numgens );
@@ -827,30 +827,30 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
         }
     }
 
-    /*  return, if num = numgens                                           */
+    // return, if num = numgens
     if ( num == numgens )  {
         return res;
     }
 
-    /*  get pointers to the involved lists                                 */
+    // get pointers to the involved lists
     ptRels = ADDR_OBJ( rels );
     ptInvs = ADDR_OBJ( invs ) + (numgens + 1);
     ptRes  = ADDR_OBJ( res );
 
-    /* get the handle of the inverse of the given generator                */
+    // get the handle of the inverse of the given generator
     invObj = ptInvs[num];
 
-    /* ptRes[i]           counts the occurrences of gen * gen[i]           */
-    /* ptRes[numgens+i]   counts the occurrences of gen * gen[i]^-1        */
-    /* ptRes[2*numgens+i] counts the occurrences of gen^-1 * gen[i]        */
-    /* ptRes[3*numgens+i] counts the occurrences of gen^-1 * gen[i]^-1     */
+    // ptRes[i]           counts the occurrences of gen * gen[i]
+    // ptRes[numgens+i]   counts the occurrences of gen * gen[i]^-1
+    // ptRes[2*numgens+i] counts the occurrences of gen^-1 * gen[i]
+    // ptRes[3*numgens+i] counts the occurrences of gen^-1 * gen[i]^-1
 
-    /* initialize the counters                                             */
+    // initialize the counters
     for ( i = 1; i <= 4 * numgens; i++ ) {
         ptRes[i] = INTOBJ_INT(0);
     }
 
-    /* loop over the relators                                       */
+    // loop over the relators
     for ( r = 1; r <= numrels; r++ ) {
         rel = ptRels[r];
         if ( rel == 0 || ! IS_PLIST(rel) ) {
@@ -858,19 +858,19 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
         }
         ptRel = ADDR_OBJ(rel) + 1;
 
-        /* skip the current relator if its length is less than 2           */
+        // skip the current relator if its length is less than 2
         length = LEN_PLIST( rel );
         if ( length < 2 )  {
             continue;
         }
 
-        /* loop over the current relator and investigate the pairs         */
-        /* ( ptRel[j1], ptRel[j2] )                                        */
+        // loop over the current relator and investigate the pairs
+        // ( ptRel[j1], ptRel[j2] )
         j1 = length - 1;
         for ( j2 = 0;  j2 < length;  j1 = j2, j2++ ) {
 
-            /* count any "forward" pair  gen * gen[i],  gen * gen[i]^-1,   */
-            /* gen^-1 * gen[i],  or  gen^-1 * gen[i]^-1  ( with num < i )  */
+            // count any "forward" pair  gen * gen[i],  gen * gen[i]^-1,
+            // gen^-1 * gen[i],  or  gen^-1 * gen[i]^-1  ( with num < i )
             if ( ptRel[j1] == numObj || ptRel[j1] == invObj ) {
                 i = INT_INTOBJ( ptRel[j2] );
                 if ( -num <= i && i <= num )  {
@@ -889,9 +889,9 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
                 }
             }
 
-            /* count any "backward" pair  gen[i]^-1 * gen^-1,              */
-            /* gen[i] * gen^-1,  gen[i]^-1 * gen,  or  gen[i] * gen        */
-            /* ( with num < i )  which is not covered by a forward pair    */
+            // count any "backward" pair  gen[i]^-1 * gen^-1,
+            // gen[i] * gen^-1,  gen[i]^-1 * gen,  or  gen[i] * gen
+            // ( with num < i )  which is not covered by a forward pair
             else if ( ptRel[j2] == numObj || ptRel[j2] == invObj ) {
                 i = INT_INTOBJ( ptRel[j1] );
                 if ( -num <= i && i <= num )  {
@@ -930,83 +930,83 @@ static Obj FuncTzOccurrencesPairs(Obj self, Obj args)
 */
 static Obj FuncTzSearchC(Obj self, Obj args)
 {
-    Obj                 tietze;         /* handle of the Tietze stack      */
-    Obj                 rels;           /* handle of the relators list     */
-    Obj *               ptRels;         /* pointer to this list            */
-    Obj                 lens;           /* handle of the lengths list      */
-    Obj *               ptLens;         /* pointer to this list            */
-    Obj                 invs;           /* handle of the inverses list     */
-    Obj *               ptInvs;         /* pointer to this list            */
-    Obj                 flags;          /* handle of the flags list        */
-    Obj *               ptFlags;        /* pointer to this list            */
-    Obj                 word;           /* handle of the given relator     */
-    Obj                 lo;             /* handle of current list relator  */
-    Obj                 wo;             /* handle of a relator             */
-    Obj                 tmp;            /* handle of the second argument   */
-    Obj                 equ;            /* handle of the fifth argument    */
-    UInt1               keys1[8192];    /* hash table of key values        */
-    UInt1               keys2[8192];    /* hash table of key values        */
-    UInt1               keys3[8192];    /* hash table of key values        */
-    UInt                inv;            /* inverse for key computation     */
-    UInt                key;            /* key value of subword            */
-    Int                 numgens;        /* number of Tietze generators     */
-    Int                 numrels;        /* number of Tietze relators       */
-    Int                 total;          /* total length of relators        */
-    Obj *               ptr;            /* pointer to a relator            */
-    Obj *               v;              /* pointers into relators          */
-    Obj *               w;              /* pointers into relators          */
-    Obj *               ptx;            /* pointers into relators          */
-    Obj *               pty;            /* pointers into relators          */
-    Int                 i1, j1;         /* loop variables                  */
-    Int                 i2, j2;         /* loop variables                  */
-    Int                 i3, j3;         /* loop variables                  */
-    Int                 len1;           /* relator length                  */
-    Int                 lmin, lmax;     /* bound for relator lengths       */
-    Int                 pos1, pos2;     /* position of the given relator   */
-    Int                 xmax;           /* position of the given relator   */
-    Int                 newflag, flag1; /* Tietze relator flags            */
-    Int                 xflag, yflag;   /* Tietze relator flags            */
-    Int                 xlen, xlen1;    /* length of the given relator     */
-    Int                 mlen;           /* length of the wanted match      */
-    Int                 ylen, ylen1;    /* length of the current relator   */
-    Int                 newlen;         /* length of a new relator         */
-    Int                 n, m;           /* subword lengths                 */
-    Int                 count;          /* number of altered relators      */
-    Int                 i, j, jj, x, y; /* loop variables                  */
-    Int                 lasty;          /* flag                            */
-    Int                 altered;        /* flag                            */
-    Int                 equal;          /* flag                            */
+    Obj                 tietze;         // handle of the Tietze stack
+    Obj                 rels;           // handle of the relators list
+    Obj *               ptRels;         // pointer to this list
+    Obj                 lens;           // handle of the lengths list
+    Obj *               ptLens;         // pointer to this list
+    Obj                 invs;           // handle of the inverses list
+    Obj *               ptInvs;         // pointer to this list
+    Obj                 flags;          // handle of the flags list
+    Obj *               ptFlags;        // pointer to this list
+    Obj                 word;           // handle of the given relator
+    Obj                 lo;             // handle of current list relator
+    Obj                 wo;             // handle of a relator
+    Obj                 tmp;            // handle of the second argument
+    Obj                 equ;            // handle of the fifth argument
+    UInt1               keys1[8192];    // hash table of key values
+    UInt1               keys2[8192];    // hash table of key values
+    UInt1               keys3[8192];    // hash table of key values
+    UInt                inv;            // inverse for key computation
+    UInt                key;            // key value of subword
+    Int                 numgens;        // number of Tietze generators
+    Int                 numrels;        // number of Tietze relators
+    Int                 total;          // total length of relators
+    Obj *               ptr;            // pointer to a relator
+    Obj *               v;              // pointers into relators
+    Obj *               w;              // pointers into relators
+    Obj *               ptx;            // pointers into relators
+    Obj *               pty;            // pointers into relators
+    Int                 i1, j1;         // loop variables
+    Int                 i2, j2;         // loop variables
+    Int                 i3, j3;         // loop variables
+    Int                 len1;           // relator length
+    Int                 lmin, lmax;     // bound for relator lengths
+    Int                 pos1, pos2;     // position of the given relator
+    Int                 xmax;           // position of the given relator
+    Int                 newflag, flag1; // Tietze relator flags
+    Int                 xflag, yflag;   // Tietze relator flags
+    Int                 xlen, xlen1;    // length of the given relator
+    Int                 mlen;           // length of the wanted match
+    Int                 ylen, ylen1;    // length of the current relator
+    Int                 newlen;         // length of a new relator
+    Int                 n, m;           // subword lengths
+    Int                 count;          // number of altered relators
+    Int                 i, j, jj, x, y; // loop variables
+    Int                 lasty;          // flag
+    Int                 altered;        // flag
+    Int                 equal;          // flag
 
-    /* get and check arguments                                             */
+    // get and check arguments
     if ( ! IS_SMALL_LIST(args) || 4 < LEN_LIST(args) || LEN_LIST(args) < 3 ) {
         ErrorQuit(
             "usage: TzSearchC( <Tietze stack>, <pos1>, <pos2>[, <equal>] )",
             0, 0);
     }
 
-    /* check the first argument (Tietze stack)                             */
+    // check the first argument (Tietze stack)
     tietze = ELM_LIST( args, 1 );
     CheckTietzeStack(tietze);
 
-    /* get and check the Tietze relators list                              */
+    // get and check the Tietze relators list
     rels = CheckTietzeRelators(tietze);
     ptRels = ADDR_OBJ(rels);
     numrels = LEN_PLIST(rels);
 
-    /* get and check the Tietze lengths list                               */
+    // get and check the Tietze lengths list
     CheckTietzeLengths( tietze, numrels, &lens, &ptLens );
 
-    /* get and check the Tietze flags list                                 */
+    // get and check the Tietze flags list
     flags = CheckTietzeFlags(tietze, numrels);
     ptFlags = ADDR_OBJ(flags);
 
-    /* check list <lens> to contain the relator lengths                    */
+    // check list <lens> to contain the relator lengths
     total = CheckTietzeRelLengths(tietze);
 
-    /* get and check the Tietze inverses list                              */
+    // get and check the Tietze inverses list
     CheckTietzeInverses( tietze, &invs, &ptInvs, &numgens );
 
-    /* check the second argument                                           */
+    // check the second argument
     tmp = ELM_LIST( args, 2 );
     if ( ! IS_INTOBJ(tmp) ) {
         ErrorQuit("<pos1> must be a positive int", 0, 0);
@@ -1016,7 +1016,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
         ErrorQuit("<pos1> out of range: %d", (Int)pos1, 0);
     }
 
-    /* check the third argument                                            */
+    // check the third argument
     tmp = ELM_LIST( args, 3 );
     if ( ! IS_INTOBJ(tmp) ) {
         ErrorQuit("<pos2> must be a positive int", 0, 0);
@@ -1026,7 +1026,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
         ErrorQuit("<pos2> out of range: %d", (Int)pos2, 0);
     }
 
-    /* check the fourth argument                                           */
+    // check the fourth argument
     if ( LEN_LIST(args) == 3 ) {
         equ = False;
     }
@@ -1038,8 +1038,8 @@ static Obj FuncTzSearchC(Obj self, Obj args)
     }
     equal = ( equ == True );
 
-    /* Skip relators of inconvenient lengths or with inconvenient flags,   */
-    /*  and return if the remaining range is empty                         */
+    // Skip relators of inconvenient lengths or with inconvenient flags,
+    // and return if the remaining range is empty
     while ( pos1 <= pos2
         && (INT_INTOBJ( ptLens[pos1] ) < 2
          || INT_INTOBJ( ptFlags[pos1] ) > 1
@@ -1052,37 +1052,37 @@ static Obj FuncTzSearchC(Obj self, Obj args)
         return INTOBJ_INT(0);
     }
 
-    /* get the range of compatible relator lengths                         */
+    // get the range of compatible relator lengths
     len1 = INT_INTOBJ( ptLens[pos1] );
     lmin = len1 - ( len1 % 2 );
     lmax = ( equal ) ? lmin : lmin + 1;
 
-    /* initialize some variables                                           */
+    // initialize some variables
     newflag = ( equal ) ? 1 : 2;
     count = 0;
     lasty = 0;
     xmax = pos1 - 1;
     flag1 = INT_INTOBJ( ptFlags[pos1] );
 
-    /* Compute the length of the wanted match and the corresponding        */
-    /*  inverse factor                                                     */
+    // Compute the length of the wanted match and the corresponding
+    // inverse factor
     mlen = equal ? ( lmin + 1 ) / 2 : lmin / 2 + 1;
     inv = 1;
     for ( i = 1; i <= mlen; i++ )
        inv = 109109 * inv;
 
-    /* initialize the hash table                                           */
+    // initialize the hash table
     for ( i = 0; i < 2048; i++ )
        ((UInt4 *)keys1)[i] = ((UInt4 *)keys2)[i] = ((UInt4 *)keys3)[i] = 0;
 
-    /* loop over the Tietze relators, starting at position pos1            */
+    // loop over the Tietze relators, starting at position pos1
     for ( y = pos1;  y < numrels;  ) {
        word  = ptRels[y];
        ylen  = INT_INTOBJ( ptLens[y] );
        yflag = INT_INTOBJ( ptFlags[y] );
        if ( y <= pos2 && lmin <= ylen && ylen <= lmax && yflag <= 1 ) {
 
-          /* add the key values of the current relator to the hash table   */
+          // add the key values of the current relator to the hash table
           ptr = ADDR_OBJ(word);
 
           key = 0;
@@ -1122,25 +1122,25 @@ static Obj FuncTzSearchC(Obj self, Obj args)
           xmax = y;
        }
 
-       /* move to next relator                                             */
+       // move to next relator
        y++;
 
-       /* initialize some variables                                        */
+       // initialize some variables
        lo      = ptRels[y];
        ylen    = INT_INTOBJ( ptLens[y] );
        yflag   = INT_INTOBJ( ptFlags[y] );
        ylen1   = ylen - 1;
        altered = 0;
 
-       /* Loop to the next relator, if the current relator is too short    */
+       // Loop to the next relator, if the current relator is too short
        if ( y > lasty
          && (ylen < len1 || yflag > 1 || (!equal && !(yflag + flag1)) ) )
        {
-          continue;  /*  loop over y */
+          continue;  // loop over y
        }
        lasty = y;
 
-       /* Compute the key values of the current relator                    */
+       // Compute the key values of the current relator
        ptr = ADDR_OBJ(lo);
 
        key = 0;
@@ -1150,12 +1150,12 @@ static Obj FuncTzSearchC(Obj self, Obj args)
 
        for ( j = 0; j < ylen; j++ ) {
 
-          /* check for key match in the tables                             */
+          // check for key match in the tables
           if ( keys1[ key & 8191 ]
              && (keys2[ (key >> 11) & 8191 ] & (1 << ((key >> 8) & 7)))
              && (keys3[ (key >> 19) & 8191 ] & (1 << ((key >> 16) & 7))) ){
 
-             /* loop over the (relevant) given relators                    */
+             // loop over the (relevant) given relators
              for ( x = pos1; x <= xmax; x++ ) {
 
                 wo    = ptRels[x];
@@ -1164,27 +1164,27 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                 if ( xlen < len1 || xlen > lmax || xlen > ylen
                   || xflag > 1 || (!equal && !( xflag + yflag )) )
                 {
-                   continue;  /*  loop over x */
+                   continue;  // loop over x
                 }
 
                 xlen1 = xlen - 1;
                 ptx = ADDR_OBJ(wo) + 1;
                 pty = ADDR_OBJ(lo) + 1;
 
-                /* loop over all possible positions in the given relator   */
+                // loop over all possible positions in the given relator
                 for ( i = 0; i < xlen; i++ ) {
 
-                   /* search forward for a match of length at least mlen   */
+                   // search forward for a match of length at least mlen
                    i2 = i;  j2 = j;
                    for ( n = 0; n < xlen; n++,
                       i2 = (i2 == xlen1) ? 0 : i2 + 1,
                       j2 = (j2 == ylen1) ? 0 : j2 + 1 ) {
                       if ( ptx[i2] != pty[j2] )
-                          break;  /* loop over n */
+                          break;  // loop over n
                    }
-                   if ( n < mlen )  continue;  /*  loop over i             */
+                   if ( n < mlen )  continue;  // loop over i
 
-                   /* search backward to find the whole match              */
+                   // search backward to find the whole match
                    i1 = (i == 0) ? xlen1 : i - 1;
                    j1 = (j == 0) ? ylen1 : j - 1;
                    for ( ; n < xlen; n++,
@@ -1192,10 +1192,10 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                       j1 = (j1 == 0) ? ylen1 : j1 - 1 )
                    {
                       if ( ptx[i1] != pty[j1] )
-                          break;  /* loop over n */
+                          break;  // loop over n
                    }
 
-                   /* replace a matching substring of equal length         */
+                   // replace a matching substring of equal length
                    if ( n == xlen - n ) {
                       j2 = j;
                       for ( m = 0; m < n; m++,
@@ -1205,8 +1205,8 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                          pty[j2] = ptInvs[INT_INTOBJ(ptx[i1])];
                       }
 
-                      /* Now replace all exact occurrences of this string  */
-                      /*  in the current word (not relator)                */
+                      // Now replace all exact occurrences of this string
+                      // in the current word (not relator)
                       i3 = (i + n) % xlen;
 
                       for ( jj = 0; jj <= ylen - n; jj++ ) {
@@ -1215,16 +1215,16 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                             i2 = (i2 == xlen1) ? 0 : i2 + 1,
                             j2 = (j2 == ylen1) ? 0 : j2 + 1 ) {
                             if ( ptx[i2] != pty[j2] )
-                                break;  /* loop over m */
+                                break;  // loop over m
                          }
                          if ( m < n )
-                             continue;  /* loop over jj */
+                             continue;  // loop over jj
 
                          i1 = (i == 0) ? xlen1 : i - 1;
                          if ( ptx[i1] == pty[(jj + ylen1) % ylen] ||
                             ptx[i3] == pty[(jj + n) % ylen] )
                          {
-                            continue;  /* loop over jj */
+                            continue;  // loop over jj
                          }
 
                          j2 = jj;
@@ -1240,23 +1240,23 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                       ptFlags[y] = INTOBJ_INT( newflag );
                       altered = 1;
                       ++count;
-                      break;  /* loop over i */
+                      break;  // loop over i
                    }
 
                    m = ylen - n;  n = xlen - n;
 
-                   /* find all canceling factors                           */
+                   // find all canceling factors
                    if ( n == 0 ) {
                       for ( ; 1 < m; m -= 2,
                          j1 = (j1 == 0) ? ylen1 : j1 - 1,
                          j2 = (j2 == ylen1) ? 0 : j2 + 1 )
                       {
                          if ( pty[j1] != ptInvs[INT_INTOBJ(pty[j2])] )
-                            break;  /*  loop over m                        */
+                            break;  // loop over m
                       }
                    }
 
-                   /* create the modified relator and save it              */
+                   // create the modified relator and save it
                    newlen = m + n;
                    if ( j2 > 0 ) {
                       if ( j2 <= j1 )  {
@@ -1277,7 +1277,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                    total = total - ylen + newlen;
                    ptFlags[y] = INTOBJ_INT(newflag);
 
-                   /* reduce the bag size                                  */
+                   // reduce the bag size
                    SHRINK_PLIST( lo, newlen );
                    CHANGED_BAG(rels);
                    ptRels  = ADDR_OBJ( rels );
@@ -1288,28 +1288,28 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                    altered = 1;
                    ++count;
                    --y;
-                   break;  /* loop over i */
+                   break;  // loop over i
                 }
 
                 if ( altered )
-                    break;  /* loop over x */
+                    break;  // loop over x
 
-                /* now try the inverse of the given relator                */
+                // now try the inverse of the given relator
                 for ( i = 0;  i < xlen;  i++ ) {
 
-                   /* search forward for a match of length at least mlen   */
+                   // search forward for a match of length at least mlen
                    i2 = xlen1 - i;  j2 = j;
                    for ( n = 0; n < xlen; n++,
                       i2 = (i2 == 0) ? xlen1 : i2 - 1,
                       j2 = (j2 == ylen1) ? 0 : j2 + 1 )
                    {
                       if ( ptInvs[INT_INTOBJ(ptx[i2])] != pty[j2] )
-                         break;  /* loop over n */
+                         break;  // loop over n
                    }
                    if ( n < mlen )
-                       continue;  /* loop over i */
+                       continue;  // loop over i
 
-                   /* search backward to find the whole match              */
+                   // search backward to find the whole match
                    i1 = (i == 0) ? 0 : xlen - i;
                    j1 = (j == 0) ? ylen1 : j - 1;
                    for ( ; n < xlen; n++,
@@ -1317,10 +1317,10 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                       j1 = (j1 == 0) ? ylen1 : j1 - 1 )
                    {
                       if ( ptInvs[INT_INTOBJ(ptx[i1])] != pty[j1] )
-                         break;  /* loop over n */
+                         break;  // loop over n
                    }
 
-                   /* replace a matching substring of equal length         */
+                   // replace a matching substring of equal length
                    if ( n == xlen - n ) {
                       j2 = j;
                       for ( m = 0; m < n; m++,
@@ -1333,23 +1333,23 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                       ptFlags[y] = INTOBJ_INT( newflag );
                       altered = 1;
                       ++count;
-                      break;  /* loop over i */
+                      break;  // loop over i
                    }
 
                    m = ylen - n;  n = xlen - n;
 
-                   /* Find all canceling factors                           */
+                   // Find all canceling factors
                    if ( n == 0 ) {
                       for ( ; 1 < m; m -= 2,
                          j1 = (j1 == 0) ? ylen1 : j1 - 1,
                          j2 = (j2 == ylen1) ? 0 : j2 + 1 )
                       {
                          if ( pty[j1] != ptInvs[INT_INTOBJ(pty[j2])] )
-                            break;  /* loop over m */
+                            break;  // loop over m
                       }
                    }
 
-                   /* create the modified relator and save it              */
+                   // create the modified relator and save it
                    newlen = m + n;
                    if ( j2 > 0 )  {
                       if ( j2 <= j1 )  {
@@ -1370,7 +1370,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                    total = total - ylen + newlen;
                    ptFlags[y] = INTOBJ_INT(newflag);
 
-                   /* reduce the bag size                                  */
+                   // reduce the bag size
                    SHRINK_PLIST( lo, newlen );
                    CHANGED_BAG(rels);
                    ptRels  = ADDR_OBJ( rels );
@@ -1381,16 +1381,16 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                    altered = 1;
                    ++count;
                    --y;
-                   break;  /* loop over i */
+                   break;  // loop over i
                 }
 
                 if ( altered )
-                    break;  /* loop over x */
+                    break;  // loop over x
              }
           }
 
           if ( altered )
-              break;  /* loop over j */
+              break;  // loop over j
 
           v = ptr + ( 1 + j );
           w = ptr + ( 1 + ( j + mlen ) % ylen );
@@ -1401,12 +1401,12 @@ static Obj FuncTzSearchC(Obj self, Obj args)
 
     SET_ELM_PLIST(tietze, TZ_TOTAL, INTOBJ_INT(total));
 
-    /* return the number of altered relators                               */
+    // return the number of altered relators
     return INTOBJ_INT( count );
 }
 
 
-/* rewriting using tz form relators */
+// rewriting using tz form relators
 
 static Obj FuncREDUCE_LETREP_WORDS_REW_SYS(Obj self, Obj tzrules, Obj a_w)
 {
@@ -1417,61 +1417,61 @@ static Obj FuncREDUCE_LETREP_WORDS_REW_SYS(Obj self, Obj tzrules, Obj a_w)
 
  w=a_w;
 
- /* n := Length( w ); */
+ // n := Length( w );
  n=LEN_PLIST(w);
 
- /* lt := Length( tzrules ); */
+ // lt := Length( tzrules );
  lt=LEN_PLIST(tzrules);
 
- /* i := 1; */
+ // i := 1;
  i=1;
 
- /* while i in [ 1 .. n ] od */
+ // while i in [ 1 .. n ] od
  while (i<=n) {
    TakeInterrupt();
 
-  /* k := 1; */
+  // k := 1;
   k=1;
 
-  /* while k in [ 1 .. lt ] od */
+  // while k in [ 1 .. lt ] od
   while (k<=lt) {
 
-    /* rul := tzrules[k][1]; */
+    // rul := tzrules[k][1];
     rul = ELM_PLIST(tzrules,k);
     rul = ELM_PLIST(rul,1);
     lrul = LEN_PLIST(rul);
 
-   /* if Length( tzrules[k][1] ) <= i then */
+   // if Length( tzrules[k][1] ) <= i then
    if (lrul<=i) {
 
-    /* eq := true; */
+    // eq := true;
     eq=1;
 
-    /* p := i; */
+    // p := i;
     p=i;
 
-    /* j := Length( rul ); */
+    // j := Length( rul );
     j=lrul;
 
-    /* while eq and j > 0 od */
+    // while eq and j > 0 od
     while ((eq==1) && (j>0) ) {
 
-     /* eq := w[p] = rul[j]; */
+     // eq := w[p] = rul[j];
      eq=((ELM_LIST(w,p)==ELM_LIST(rul,j))?1:0);
 
-     /* p := p - 1; */
+     // p := p - 1;
      p--;
 
-     /* j := j - 1; */
+     // j := j - 1;
      j--;
 
     }
-    /* od */
+    // od
 
-    /* if eq then */
+    // if eq then
     if (eq==1) {
 
-     /* make the new plist */
+     // make the new plist
 
      rlen=LEN_PLIST(ELM_PLIST(ELM_PLIST(tzrules,k),2));
      newlen = n-lrul+rlen;
@@ -1480,78 +1480,78 @@ static Obj FuncREDUCE_LETREP_WORDS_REW_SYS(Obj self, Obj tzrules, Obj a_w)
        nw=NewEmptyPlist();
      }
      else {
-        /* make space for the new word */
+        // make space for the new word
         nw = NEW_PLIST(TNUM_OBJ(w),newlen);
 
-       /* addresses */
+       // addresses
        wa=ADDR_OBJ(w);
        nwa=ADDR_OBJ(nw);
        wa++;
        nwa++;
 
-       /* for a in [ 1 .. p ] do */
-       /* Add( nw, w[a] ); */
+       // for a in [ 1 .. p ] do
+       // Add( nw, w[a] );
        for (a=1; a<=p;a++) {
          *nwa++=*wa++;
        }
-       /* od */
+       // od
 
-       /* rul := tzrules[k][2]; */
+       // rul := tzrules[k][2];
        rul = ELM_PLIST(tzrules,k);
        rul = ELM_PLIST(rul,2);
        wa=ADDR_OBJ(rul);
        wa++;
 
-       /* for a in [ 1 .. Length( rul ) ] do */
-       /* Add( nw, rul[a] ); */
+       // for a in [ 1 .. Length( rul ) ] do
+       // Add( nw, rul[a] );
        for (a=1;a<=rlen;a++) {
          *nwa++=*wa++;
        }
-       /* od */
+       // od
 
-       /* for a in [ i + 1 .. n ] do */
-       /* there must be a better way for giving this address ... */
+       // for a in [ i + 1 .. n ] do
+       // there must be a better way for giving this address ...
        wa=(Obj*) &(ADDR_OBJ(w)[i+1]);
-       /* Add( nw, w[a] ); */
+       // Add( nw, w[a] );
        for (a=i+1;a<=n;a++) {
          *nwa++=*wa++;
        }
-       /* od */
+       // od
 
      }
 
-     /* w := nw; */
+     // w := nw;
      SET_LEN_PLIST(nw,newlen);
      w = nw;
 
-     /* i := i - Length( tzrules[k][1] ); */
+     // i := i - Length( tzrules[k][1] );
      i=i-lrul;
 
-     /* n := Length( w ); */
+     // n := Length( w );
      n=newlen;
 
-     /* k := lt; */
+     // k := lt;
      k = lt;
 
     }
-    /* fi */
+    // fi
 
    }
-   /* fi */
+   // fi
 
-   /* k := k + 1; */
+   // k := k + 1;
    k++;
 
   }
-  /* od */
+  // od
 
-  /* i := i + 1; */
+  // i := i + 1;
   i++;
 
  }
- /* od */
+ // od
 
- /* return w; */
+ // return w;
  return w;
 
 }
@@ -1589,7 +1589,7 @@ static StructGVarFunc GVarFuncs[] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
     return 0;
@@ -1603,7 +1603,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

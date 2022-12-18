@@ -83,11 +83,11 @@ UInt RNamName(const Char * name)
 UInt            RNamIntg (
     Int                 intg )
 {
-    Char                name [32];      /* integer converted to a string   */
-    Char *              p;              /* loop variable                   */
+    Char                name [32];      // integer converted to a string
+    Char *              p;              // loop variable
     UInt negative;
 
-    /* convert the integer to a string                                     */
+    // convert the integer to a string
     p = name + sizeof(name);  *--p = '\0';
     negative = (intg < 0);
     if ( negative ) {
@@ -101,7 +101,7 @@ UInt            RNamIntg (
         *--p = '-';
     }
 
-    /* return the name                                                     */
+    // return the name
     return RNamName( p );
 }
 
@@ -116,17 +116,17 @@ UInt            RNamIntg (
 UInt            RNamObj (
     Obj                 obj )
 {
-    /* convert integer object                                              */
+    // convert integer object
     if ( IS_INTOBJ(obj) ) {
         return RNamIntg( INT_INTOBJ(obj) );
     }
 
-    /* convert string object (empty string may have type T_PLIST)          */
+    // convert string object (empty string may have type T_PLIST)
     else if ( IsStringConv(obj) && IS_STRING_REP(obj) ) {
         return RNamName( CONST_CSTR_STRING(obj) );
     }
 
-    /* otherwise fail                                                      */
+    // otherwise fail
     else {
         RequireArgumentEx("Record", obj, 0, "'<rec>.(<obj>)' <obj> must be a string or a small integer");
     }
@@ -451,22 +451,22 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    UInt                type;           /* loop variable                   */
+    UInt                type;           // loop variable
 
-    /* make the list of names of record names                              */
+    // make the list of names of record names
     InitGlobalBag( &NamesRNam, "src/records.c:NamesRNam" );
 
-    /* make the hash list of record names                                  */
+    // make the hash list of record names
     InitSymbolTableKernel(&RNamSymbolTable, "src/records.c:RNamSymbolCount",
                           "src/records.c:RNamSymbolTable", NAME_RNAM,
                           NewRNamCallback);
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* make and install the 'IS_REC' filter                                */
+    // make and install the 'IS_REC' filter
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(IsRecFuncs[ type ] == 0);
         IsRecFuncs[ type ] = AlwaysNo;
@@ -479,7 +479,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'ELM_REC' operations                           */
+    // make and install the 'ELM_REC' operations
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(ElmRecFuncs[ type ] == 0);
         ElmRecFuncs[ type ] = ElmRecError;
@@ -489,7 +489,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'ISB_REC' operation                            */
+    // make and install the 'ISB_REC' operation
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(IsbRecFuncs[ type ] == 0);
         IsbRecFuncs[ type ] = IsbRecError;
@@ -499,7 +499,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'ASS_REC' operation                            */
+    // make and install the 'ASS_REC' operation
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(AssRecFuncs[ type ] == 0);
         AssRecFuncs[ type ] = AssRecError;
@@ -509,7 +509,7 @@ static Int InitKernel (
     }
 
 
-    /* make and install the 'UNB_REC' operation                            */
+    // make and install the 'UNB_REC' operation
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
         assert(UnbRecFuncs[ type ] == 0);
         UnbRecFuncs[ type ] = UnbRecError;
@@ -531,13 +531,13 @@ static Int InitLibrary (
 {
     InitSymbolTableLibrary(&RNamSymbolTable, 28069);
 
-    /* make the list of names of record names                              */
+    // make the list of names of record names
     NamesRNam = NEW_PLIST( T_PLIST, 0 );
 #ifdef HPCGAP
     MakeBagPublic(NamesRNam);
 #endif
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );

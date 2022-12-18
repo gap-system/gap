@@ -34,13 +34,13 @@ extern "C" {
 template <typename UIntN>
 static Obj DepthOfPcElement(Obj self, Obj pcgs, Obj w)
 {
-    Int         ebits;          /* number of bits in the exponent          */
+    Int         ebits;          // number of bits in the exponent
 
-    /* if the pc element is the identity we have to ask the pcgs           */
+    // if the pc element is the identity we have to ask the pcgs
     if ( NPAIRS_WORD(w) == 0 )
         return INTOBJ_INT( LEN_LIST(pcgs) + 1 );
 
-    /* otherwise it is the generators number of the first syllable         */
+    // otherwise it is the generators number of the first syllable
     else {
         ebits = EBITS_WORD(w);
         return INTOBJ_INT((CONST_DATA_WORD(w)[0] >> ebits)+1);
@@ -55,21 +55,21 @@ static Obj DepthOfPcElement(Obj self, Obj pcgs, Obj w)
 template <typename UIntN>
 static Obj ExponentOfPcElement(Obj self, Obj pcgs, Obj w, Obj pos)
 {
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        ebits;          /* number of exponent bits                 */
-    UInt        npos;           /* the wanted generator number             */
-    UInt        num;            /* number of syllables in <w>              */
-    const UIntN * ptr;          /* pointer to the syllables of <w>         */
-    UInt        i;              /* loop                                    */
-    UInt        gen;            /* current generator number                */
+    UInt        expm;           // signed exponent mask
+    UInt        exps;           // sign exponent mask
+    UInt        ebits;          // number of exponent bits
+    UInt        npos;           // the wanted generator number
+    UInt        num;            // number of syllables in <w>
+    const UIntN * ptr;          // pointer to the syllables of <w>
+    UInt        i;              // loop
+    UInt        gen;            // current generator number
 
-    /* all exponents are zero if the pc element if the identity            */
+    // all exponents are zero if the pc element if the identity
     num = NPAIRS_WORD(w);
     if ( num == 0 )
         return INTOBJ_INT(0);
 
-    /* otherwise find the syllable belonging to <exp>                      */
+    // otherwise find the syllable belonging to <exp>
     else {
         ebits = EBITS_WORD(w);
         exps  = (UInt)1 << (ebits-1);
@@ -99,15 +99,15 @@ static Obj ExponentOfPcElement(Obj self, Obj pcgs, Obj w, Obj pos)
 template <typename UIntN>
 static Obj LeadingExponentOfPcElement(Obj self, Obj pcgs, Obj w)
 {
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UIntN       p;              /* first syllable                          */
+    UInt        expm;           // signed exponent mask
+    UInt        exps;           // sign exponent mask
+    UIntN       p;              // first syllable
 
-    /* the leading exponent is zero iff the pc element if the identity     */
+    // the leading exponent is zero iff the pc element if the identity
     if ( NPAIRS_WORD(w) == 0 )
         return Fail;
 
-    /* otherwise it is the exponent of the first syllable                  */
+    // otherwise it is the exponent of the first syllable
     else {
         exps = (UInt)1 << (EBITS_WORD(w)-1);
         expm = exps - 1;
@@ -126,29 +126,29 @@ static Obj LeadingExponentOfPcElement(Obj self, Obj pcgs, Obj w)
 template <typename UIntN>
 static Obj ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
 {
-    UInt        len;            /* length of pcgs */
-    Obj         el;             /* exponents list */
+    UInt        len;            // length of pcgs
+    Obj         el;             // exponents list
     UInt        le;
     UInt        indx;
-    UInt        expm;           /* signed exponent mask                    */
-    UInt        exps;           /* sign exponent mask                      */
-    UInt        ebits;          /* number of exponent bits                 */
-    UInt        num;            /* number of syllables in <w>              */
-    const UIntN * ptr;          /* pointer to the syllables of <w>         */
-    UInt        i,j;            /* loop                                    */
-    UInt        gen;            /* current generator number                */
+    UInt        expm;           // signed exponent mask
+    UInt        exps;           // sign exponent mask
+    UInt        ebits;          // number of exponent bits
+    UInt        num;            // number of syllables in <w>
+    const UIntN * ptr;          // pointer to the syllables of <w>
+    UInt        i,j;            // loop
+    UInt        gen;            // current generator number
 
     len=LEN_LIST(pcgs);
     el=NEW_PLIST(T_PLIST_CYC,len);
     SET_LEN_PLIST(el,len);
 
-    /* Check if the exponent vector is the empty list. */
+    // Check if the exponent vector is the empty list.
     if( len == 0 ) { RetypeBag( el, T_PLIST_EMPTY ); return el; }
 
-    indx=1; /* current index in el we assign to */
+    indx=1; // current index in el we assign to
     num = NPAIRS_WORD(w);
 
-    le=1; /* last exponent which has been assigned+1 */
+    le=1; // last exponent which has been assigned+1
 
     ebits = EBITS_WORD(w);
     exps  = (UInt)1 << (ebits-1);
@@ -158,7 +158,7 @@ static Obj ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
     for ( i = 1;  i <= num;  i++, ptr++ ) {
       gen = ((*ptr) >> ebits) + 1;
       for (j=le; j< gen;j++) {
-        /* zero out intermediate entries */
+        // zero out intermediate entries
         SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
         indx++;
       }
@@ -171,9 +171,9 @@ static Obj ExponentsOfPcElement(Obj self, Obj pcgs, Obj w)
       le=gen+1;
     }
 
-    /* zeroes at the end */
+    // zeroes at the end
     for (j=le; j<=len;j++) {
-      /* zero out  */
+      // zero out
       SET_ELM_PLIST(el,indx,INTOBJ_INT(0));
       indx++;
     }
@@ -337,7 +337,7 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
     return 0;
@@ -351,13 +351,13 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* export position numbers 'PCWP_SOMETHING'                            */
+    // export position numbers 'PCWP_SOMETHING'
     ExportAsConstantGVar(PCWP_FIRST_ENTRY);
     ExportAsConstantGVar(PCWP_NAMES);
     ExportAsConstantGVar(PCWP_COLLECTOR);
     ExportAsConstantGVar(PCWP_LAST_ENTRY);
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
 
     return 0;

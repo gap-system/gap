@@ -82,12 +82,12 @@ static FF LookupPrimePower(UInt q)
     FF   ff;
     UInt e;
 
-    /* search through the finite field table                               */
+    // search through the finite field table
     l = 1;
     n = NUM_SHORT_FINITE_FIELDS;
     ff = 0;
     while (l <= n && SizeFF[l] <= q && q <= SizeFF[n]) {
-        /* interpolation search */
+        // interpolation search
         /* cuts iterations roughly in half compared to binary search at
          * the expense of additional divisions. */
         e = (q - SizeFF[l] + 1) * (n - l) / (SizeFF[n] - SizeFF[l] + 1);
@@ -118,15 +118,15 @@ static FF LookupPrimePower(UInt q)
 
 FF FiniteFieldBySize(UInt q)
 {
-    FF    ff;            /* finite field, result            */
-    Obj   tmp;           /* temporary bag                   */
-    Obj   succBag;       /* successor table bag             */
-    FFV * succ;          /* successor table                 */
-    FFV * indx;          /* index table                     */
-    UInt  p;             /* characteristic of the field     */
-    UInt  poly;          /* Conway polynomial of extension  */
-    UInt  i, l, f, n, e; /* loop variables                  */
-    Obj   root;          /* will be a primitive root mod p  */
+    FF    ff;            // finite field, result
+    Obj   tmp;           // temporary bag
+    Obj   succBag;       // successor table bag
+    FFV * succ;          // successor table
+    FFV * indx;          // index table
+    UInt  p;             // characteristic of the field
+    UInt  poly;          // Conway polynomial of extension
+    UInt  i, l, f, n, e; // loop variables
+    Obj   root;          // will be a primitive root mod p
 
     ff = LookupPrimePower(q);
     if (!ff)
@@ -159,14 +159,14 @@ FF FiniteFieldBySize(UInt q)
     // determine the characteristic of the field
     p = CHAR_FF(ff);
 
-    /* allocate a bag for the successor table and one for a temporary */
+    // allocate a bag for the successor table and one for a temporary
     tmp = NewKernelBuffer(sizeof(Obj) + q * sizeof(FFV));
     succBag = NewKernelBuffer(sizeof(Obj) + q * sizeof(FFV));
 
     indx = (FFV *)(1 + ADDR_OBJ(tmp));
     succ = (FFV *)(1 + ADDR_OBJ(succBag));
 
-    /* if q is a prime find the smallest primitive root $e$, use $x - e$   */
+    // if q is a prime find the smallest primitive root $e$, use $x - e$
 
     if (DEGR_FF(ff) == 1) {
         if (p < 65537) {
@@ -179,25 +179,25 @@ FF FiniteFieldBySize(UInt q)
             }
         }
         else {
-            /* Otherwise we ask the library */
+            // Otherwise we ask the library
             root = CALL_1ARGS(PrimitiveRootMod, INTOBJ_INT(p));
             e = INT_INTOBJ(root) + 1;
         }
         poly = p - (e - 1);
     }
 
-    /* otherwise look up the polynomial used to construct this field       */
+    // otherwise look up the polynomial used to construct this field
     else {
         for (i = 0; PolsFF[i] != q; i += 2)
             ;
         poly = PolsFF[i + 1];
     }
 
-    /* construct 'indx' such that 'e = x^(indx[e]-1) % poly' for every e   */
+    // construct 'indx' such that 'e = x^(indx[e]-1) % poly' for every e
     indx[0] = 0;
     for (e = 1, n = 0; n < q - 1; ++n) {
         indx[e] = n + 1;
-        /* e =p*e mod poly =x*e mod poly =x*x^n mod poly =x^{n+1} mod poly */
+        // e =p*e mod poly =x*e mod poly =x*x^n mod poly =x^{n+1} mod poly
         if (p != 2) {
             f = p * (e % (q / p));
             l = ((p - 1) * (e / (q / p))) % p;
@@ -213,7 +213,7 @@ FF FiniteFieldBySize(UInt q)
         }
     }
 
-    /* construct 'succ' such that 'x^(n-1)+1 = x^(succ[n]-1)' for every n  */
+    // construct 'succ' such that 'x^(n-1)+1 = x^(succ[n]-1)' for every n
     succ[0] = q - 1;
     for (e = 1, f = p - 1; e < q; e++) {
         if (e < f) {
@@ -225,7 +225,7 @@ FF FiniteFieldBySize(UInt q)
         }
     }
 
-    /* enter the finite field in the tables                                */
+    // enter the finite field in the tables
 #ifdef HPCGAP
     MakeBagReadOnly(succBag);
     ATOMIC_SET_ELM_PLIST_ONCE(SuccFF, ff, succBag);
@@ -247,7 +247,7 @@ FF FiniteFieldBySize(UInt q)
     CHANGED_BAG(TypeFF0);
 #endif
 
-    /* return the finite field                                             */
+    // return the finite field
     return ff;
 }
 
@@ -283,21 +283,21 @@ FF              CommonFF (
     FF                  f2,
     UInt                d2 )
 {
-    UInt                p;              /* characteristic                  */
-    UInt                d;              /* degree                          */
+    UInt                p;              // characteristic
+    UInt                d;              // degree
 
-    /* trivial case first                                                  */
+    // trivial case first
     if ( f1 == f2 ) {
         return f1;
     }
 
-    /* get and check the characteristics                                   */
+    // get and check the characteristics
     p = CHAR_FF( f1 );
     if ( p != CHAR_FF( f2 ) ) {
         return 0;
     }
 
-    /* check whether one of the fields will do                             */
+    // check whether one of the fields will do
     if ( DEGR_FF(f1) % d2 == 0 ) {
         return f1;
     }
@@ -305,13 +305,13 @@ FF              CommonFF (
         return f2;
     }
 
-    /* compute the necessary degree                                       */
+    // compute the necessary degree
     d = d1;
     while ( d % d2 != 0 ) {
         d += d1;
     }
 
-    /* try to build the field                                              */
+    // try to build the field
     return FiniteField( p, d );
 }
 
@@ -345,25 +345,25 @@ static Obj FuncCHAR_FFE_DEFAULT(Obj self, Obj ffe)
 UInt DegreeFFE (
     Obj                 ffe )
 {
-    UInt                d;              /* degree, result                  */
-    FFV                 val;            /* value of element                */
-    FF                  fld;            /* field of element                */
-    UInt                q;              /* size  of field                  */
-    UInt                p;              /* char. of field                  */
-    UInt                m;              /* size  of minimal field          */
+    UInt                d;              // degree, result
+    FFV                 val;            // value of element
+    FF                  fld;            // field of element
+    UInt                q;              // size  of field
+    UInt                p;              // char. of field
+    UInt                m;              // size  of minimal field
 
-    /* get the value, the field, the size, and the characteristic          */
+    // get the value, the field, the size, and the characteristic
     val = VAL_FFE( ffe );
     fld = FLD_FFE( ffe );
     q = SIZE_FF( fld );
     p = CHAR_FF( fld );
 
-    /* the zero element has a degree of one                                */
+    // the zero element has a degree of one
     if ( val == 0 ) {
         return 1;
     }
 
-    /* compute the degree                                                  */
+    // compute the degree
     m = p;
     d = 1;
     while ( (q-1) % (m-1) != 0 || (val-1) % ((q-1)/(m-1)) != 0 ) {
@@ -371,7 +371,7 @@ UInt DegreeFFE (
         d += 1;
     }
 
-    /* return the degree                                                   */
+    // return the degree
     return d;
 }
 
@@ -419,36 +419,36 @@ Obj TypeFFE(Obj ffe)
 */
 static Int EqFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR;         /* value of left and right         */
-    FF                  fL, fR;         /* field of left and right         */
-    UInt                pL, pR;         /* char. of left and right         */
-    UInt                qL, qR;         /* size  of left and right         */
-    UInt                mL, mR;         /* size  of minimal field          */
+    FFV                 vL, vR;         // value of left and right
+    FF                  fL, fR;         // field of left and right
+    UInt                pL, pR;         // char. of left and right
+    UInt                qL, qR;         // size  of left and right
+    UInt                mL, mR;         // size  of minimal field
 
-    /* get the values and the fields over which they are represented       */
+    // get the values and the fields over which they are represented
     vL = VAL_FFE( opL );
     vR = VAL_FFE( opR );
     fL = FLD_FFE( opL );
     fR = FLD_FFE( opR );
 
-    /* if the elements are represented over the same field, it is easy     */
+    // if the elements are represented over the same field, it is easy
     if ( fL == fR ) {
         return (vL == vR);
     }
 
-    /* elements in fields of different characteristic are different too    */
+    // elements in fields of different characteristic are different too
     pL = CHAR_FF( fL );
     pR = CHAR_FF( fR );
     if ( pL != pR ) {
         return 0;
     }
 
-    /* the zero element is not equal to any other element                  */
+    // the zero element is not equal to any other element
     if ( vL == 0 || vR == 0 ) {
         return (vL == 0 && vR == 0);
     }
 
-    /* compute the sizes of the minimal fields in which the elements lie   */
+    // compute the sizes of the minimal fields in which the elements lie
     qL = SIZE_FF( fL );
     mL = pL;
     while ( (qL-1) % (mL-1) != 0 || (vL-1) % ((qL-1)/(mL-1)) != 0 ) mL *= pL;
@@ -456,12 +456,12 @@ static Int EqFFE(Obj opL, Obj opR)
     mR = pR;
     while ( (qR-1) % (mR-1) != 0 || (vR-1) % ((qR-1)/(mR-1)) != 0 ) mR *= pR;
 
-    /* elements in different fields are different too                      */
+    // elements in different fields are different too
     if ( mL != mR ) {
         return 0;
     }
 
-    /* otherwise compare the elements in the common minimal field          */
+    // otherwise compare the elements in the common minimal field
     return ((vL-1)/((qL-1)/(mL-1)) == (vR-1)/((qR-1)/(mR-1)));
 }
 
@@ -475,50 +475,50 @@ static Int EqFFE(Obj opL, Obj opR)
 */
 static Int LtFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR;         /* value of left and right         */
-    FF                  fL, fR;         /* field of left and right         */
-    UInt                pL, pR;         /* char. of left and right         */
-    UInt                qL, qR;         /* size  of left and right         */
-    UInt                mL, mR;         /* size  of minimal field          */
+    FFV                 vL, vR;         // value of left and right
+    FF                  fL, fR;         // field of left and right
+    UInt                pL, pR;         // char. of left and right
+    UInt                qL, qR;         // size  of left and right
+    UInt                mL, mR;         // size  of minimal field
 
-    /* get the values and the fields over which they are represented       */
+    // get the values and the fields over which they are represented
     vL = VAL_FFE( opL );
     vR = VAL_FFE( opR );
     fL = FLD_FFE( opL );
     fR = FLD_FFE( opR );
 
-    /* elements in fields of different characteristic are not comparable   */
+    // elements in fields of different characteristic are not comparable
     pL = CHAR_FF( fL );
     pR = CHAR_FF( fR );
     if ( pL != pR ) {
         return (DoOperation2Args( LtOper, opL, opR ) == True);
     }
 
-    /* the zero element is smaller than any other element                  */
+    // the zero element is smaller than any other element
     if ( vL == 0 || vR == 0 ) {
         return (vL == 0 && vR != 0);
     }
 
-    /* get the sizes of the fields over which the elements are written */
+    // get the sizes of the fields over which the elements are written
     qL = SIZE_FF( fL );
     qR = SIZE_FF( fR );
 
-    /* Deal quickly with the case where both elements are written over the ground field */
+    // Deal quickly with the case where both elements are written over the ground field
     if (qL ==pL &&  qR == pR)
       return vL < vR;
 
-    /* compute the sizes of the minimal fields in which the elements lie   */
+    // compute the sizes of the minimal fields in which the elements lie
     mL = pL;
     while ( (qL-1) % (mL-1) != 0 || (vL-1) % ((qL-1)/(mL-1)) != 0 ) mL *= pL;
     mR = pR;
     while ( (qR-1) % (mR-1) != 0 || (vR-1) % ((qR-1)/(mR-1)) != 0 ) mR *= pR;
 
-    /* elements in smaller fields are smaller too                          */
+    // elements in smaller fields are smaller too
     if ( mL != mR ) {
         return (mL < mR);
     }
 
-    /* otherwise compare the elements in the common minimal field          */
+    // otherwise compare the elements in the common minimal field
     return ((vL-1)/((qL-1)/(mL-1)) < (vR-1)/((qR-1)/(mR-1)));
 }
 
@@ -532,31 +532,31 @@ static Int LtFFE(Obj opL, Obj opR)
 */
 static void PrFFV(FF fld, FFV val)
 {
-    UInt                q;              /* size   of finite field          */
-    UInt                p;              /* char.  of finite field          */
-    UInt                m;              /* size   of minimal field         */
-    UInt                d;              /* degree of minimal field         */
+    UInt                q;              // size   of finite field
+    UInt                p;              // char.  of finite field
+    UInt                m;              // size   of minimal field
+    UInt                d;              // degree of minimal field
 
-    /* get the characteristic, order of the minimal field and the degree   */
+    // get the characteristic, order of the minimal field and the degree
     q = SIZE_FF( fld );
     p = CHAR_FF( fld );
 
-    /* print the zero                                                      */
+    // print the zero
     if ( val == 0 ) {
         Pr("%>0*Z(%>%d%2<)", (Int)p, 0);
     }
 
-    /* print a nonzero element as power of the primitive root              */
+    // print a nonzero element as power of the primitive root
     else {
 
-        /* find the degree of the minimal field in that the element lies   */
+        // find the degree of the minimal field in that the element lies
         d = 1;  m = p;
         while ( (q-1) % (m-1) != 0 || (val-1) % ((q-1)/(m-1)) != 0 ) {
             d++;  m *= p;
         }
         val = (val-1) / ((q-1)/(m-1)) + 1;
 
-        /* print the element                                               */
+        // print the element
         Pr("%>Z(%>%d%<", (Int)p, 0);
         if ( d == 1 ) {
             Pr("%<)", 0, 0);
@@ -603,15 +603,15 @@ static Obj SUM_FFE_LARGE;
 
 static Obj SumFFEFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     /* value of left, right, result    */
-    FF                  fL, fR, fX;     /* field of left, right, result    */
-    UInt                qL, qR, qX;     /* size  of left, right, result    */
+    FFV                 vL, vR, vX;     // value of left, right, result
+    FF                  fL, fR, fX;     // field of left, right, result
+    UInt                qL, qR, qX;     // size  of left, right, result
 
-    /* get the values, handle trivial cases                                */
+    // get the values, handle trivial cases
     vL = VAL_FFE( opL );
     vR = VAL_FFE( opR );
 
-    /* bring the two operands into a common field <fX>                     */
+    // bring the two operands into a common field <fX>
     fL = FLD_FFE( opL );
     qL = SIZE_FF( fL );
     fR = FLD_FFE( opR );
@@ -632,9 +632,9 @@ static Obj SumFFEFFE(Obj opL, Obj opR)
         fX = CommonFF( fL, DegreeFFE(opL), fR, DegreeFFE(opR) );
         if ( fX == 0 )  return CALL_2ARGS( SUM_FFE_LARGE, opL, opR );
         qX = SIZE_FF( fX );
-        /* if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1; */
+        // if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1;
         if ( vL != 0 )  vL = ((qX-1) * (vL-1)) / (qL-1) + 1;
-        /* if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1; */
+        // if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1;
         if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
@@ -644,17 +644,17 @@ static Obj SumFFEFFE(Obj opL, Obj opR)
 
 static Obj SumFFEInt(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     /* value of left, right, result    */
-    FF                  fX;             /* field of result                 */
-    Int                 pX;             /* char. of result                 */
-    const FFV*          sX;             /* successor table of result field */
+    FFV                 vL, vR, vX;     // value of left, right, result
+    FF                  fX;             // field of result
+    Int                 pX;             // char. of result
+    const FFV*          sX;             // successor table of result field
 
-    /* get the field for the result                                        */
+    // get the field for the result
     fX = FLD_FFE( opL );
     pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
-    /* get the right operand                                               */
+    // get the right operand
     vX = ((INT_INTOBJ( opR ) % pX) + pX) % pX;
     if ( vX == 0 ) {
         vR = 0;
@@ -664,7 +664,7 @@ static Obj SumFFEInt(Obj opL, Obj opR)
         for ( ; 1 < vX; vX-- )  vR = sX[vR];
     }
 
-    /* get the left operand                                                */
+    // get the left operand
     vL = VAL_FFE( opL );
 
     vX = SUM_FFV( vL, vR, sX );
@@ -673,17 +673,17 @@ static Obj SumFFEInt(Obj opL, Obj opR)
 
 static Obj SumIntFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     /* value of left, right, result    */
-    FF                  fX;             /* field of result                 */
-    Int                 pX;             /* char. of result                 */
-    const FFV*          sX;             /* successor table of result field */
+    FFV                 vL, vR, vX;     // value of left, right, result
+    FF                  fX;             // field of result
+    Int                 pX;             // char. of result
+    const FFV*          sX;             // successor table of result field
 
-    /* get the field for the result                                        */
+    // get the field for the result
     fX = FLD_FFE( opR );
     pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
-    /* get the left operand                                                */
+    // get the left operand
     vX = ((INT_INTOBJ( opL ) % pX) + pX) % pX;
     if ( vX == 0 ) {
         vL = 0;
@@ -693,7 +693,7 @@ static Obj SumIntFFE(Obj opL, Obj opR)
         for ( ; 1 < vX; vX-- )  vL = sX[vL];
     }
 
-    /* get the right operand                                               */
+    // get the right operand
     vR = VAL_FFE( opR );
 
     vX = SUM_FFV( vL, vR, sX );
@@ -707,9 +707,9 @@ static Obj SumIntFFE(Obj opL, Obj opR)
 */
 static Obj ZeroFFE(Obj op)
 {
-    FF                  fX;             /* field of result                 */
+    FF                  fX;             // field of result
 
-    /* get the field for the result                                        */
+    // get the field for the result
     fX = FLD_FFE( op );
 
     return NEW_FFE( fX, 0 );
@@ -722,15 +722,15 @@ static Obj ZeroFFE(Obj op)
 */
 static Obj AInvFFE(Obj op)
 {
-    FFV                 v, vX;          /* value of operand, result        */
-    FF                  fX;             /* field of result                 */
-    const FFV*          sX;             /* successor table of result field */
+    FFV                 v, vX;          // value of operand, result
+    FF                  fX;             // field of result
+    const FFV*          sX;             // successor table of result field
 
-    /* get the field for the result                                        */
+    // get the field for the result
     fX = FLD_FFE( op );
     sX = SUCC_FF( fX );
 
-    /* get the operand                                                     */
+    // get the operand
     v = VAL_FFE( op );
 
     vX = NEG_FFV( v, sX );
@@ -757,15 +757,15 @@ static Obj DIFF_FFE_LARGE;
 
 static Obj DiffFFEFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     /* value of left, right, result    */
-    FF                  fL, fR, fX;     /* field of left, right, result    */
-    UInt                qL, qR, qX;     /* size  of left, right, result    */
+    FFV                 vL, vR, vX;     // value of left, right, result
+    FF                  fL, fR, fX;     // field of left, right, result
+    UInt                qL, qR, qX;     // size  of left, right, result
 
-    /* get the values, handle trivial cases                                */
+    // get the values, handle trivial cases
     vL = VAL_FFE( opL );
     vR = VAL_FFE( opR );
 
-    /* bring the two operands into a common field <fX>                     */
+    // bring the two operands into a common field <fX>
     fL = FLD_FFE( opL );
     qL = SIZE_FF( fL );
     fR = FLD_FFE( opR );
@@ -786,9 +786,9 @@ static Obj DiffFFEFFE(Obj opL, Obj opR)
         fX = CommonFF( fL, DegreeFFE(opL), fR, DegreeFFE(opR) );
         if ( fX == 0 )  return CALL_2ARGS( DIFF_FFE_LARGE, opL, opR );
         qX = SIZE_FF( fX );
-        /* if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1; */
+        // if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1;
         if ( vL != 0 )  vL = ((qX-1) * (vL-1)) / (qL-1) + 1;
-        /* if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1; */
+        // if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1;
         if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
@@ -799,17 +799,17 @@ static Obj DiffFFEFFE(Obj opL, Obj opR)
 
 static Obj DiffFFEInt(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     /* value of left, right, result    */
-    FF                  fX;             /* field of result                 */
-    Int                 pX;             /* char. of result                 */
-    const FFV*          sX;             /* successor table of result field */
+    FFV                 vL, vR, vX;     // value of left, right, result
+    FF                  fX;             // field of result
+    Int                 pX;             // char. of result
+    const FFV*          sX;             // successor table of result field
 
-    /* get the field for the result                                        */
+    // get the field for the result
     fX = FLD_FFE( opL );
     pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
-    /* get the right operand                                               */
+    // get the right operand
     vX = ((INT_INTOBJ( opR ) % pX) + pX) % pX;
     if ( vX == 0 ) {
         vR = 0;
@@ -819,7 +819,7 @@ static Obj DiffFFEInt(Obj opL, Obj opR)
         for ( ; 1 < vX; vX-- )  vR = sX[vR];
     }
 
-    /* get the left operand                                                */
+    // get the left operand
     vL = VAL_FFE( opL );
 
     vR = NEG_FFV( vR, sX );
@@ -829,17 +829,17 @@ static Obj DiffFFEInt(Obj opL, Obj opR)
 
 static Obj DiffIntFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     /* value of left, right, result    */
-    FF                  fX;             /* field of result                 */
-    Int                 pX;             /* char. of result                 */
-    const FFV*          sX;             /* successor table of result field */
+    FFV                 vL, vR, vX;     // value of left, right, result
+    FF                  fX;             // field of result
+    Int                 pX;             // char. of result
+    const FFV*          sX;             // successor table of result field
 
-    /* get the field for the result                                        */
+    // get the field for the result
     fX = FLD_FFE( opR );
     pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
-    /* get the left operand                                                */
+    // get the left operand
     vX = ((INT_INTOBJ( opL ) % pX) + pX) % pX;
     if ( vX == 0 ) {
         vL = 0;
@@ -849,7 +849,7 @@ static Obj DiffIntFFE(Obj opL, Obj opR)
         for ( ; 1 < vX; vX-- )  vL = sX[vL];
     }
 
-    /* get the right operand                                               */
+    // get the right operand
     vR = VAL_FFE( opR );
 
     vR = NEG_FFV( vR, sX );
@@ -877,15 +877,15 @@ static Obj PROD_FFE_LARGE;
 
 static Obj ProdFFEFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     /* value of left, right, result    */
-    FF                  fL, fR, fX;     /* field of left, right, result    */
-    UInt                qL, qR, qX;     /* size  of left, right, result    */
+    FFV                 vL, vR, vX;     // value of left, right, result
+    FF                  fL, fR, fX;     // field of left, right, result
+    UInt                qL, qR, qX;     // size  of left, right, result
 
-    /* get the values, handle trivial cases                                */
+    // get the values, handle trivial cases
     vL = VAL_FFE( opL );
     vR = VAL_FFE( opR );
 
-    /* bring the two operands into a common field <fX>                     */
+    // bring the two operands into a common field <fX>
     fL = FLD_FFE( opL );
     qL = SIZE_FF( fL );
     fR = FLD_FFE( opR );
@@ -906,9 +906,9 @@ static Obj ProdFFEFFE(Obj opL, Obj opR)
         fX = CommonFF( fL, DegreeFFE(opL), fR, DegreeFFE(opR) );
         if ( fX == 0 )  return CALL_2ARGS( PROD_FFE_LARGE, opL, opR );
         qX = SIZE_FF( fX );
-        /* if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1; */
+        // if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1;
         if ( vL != 0 )  vL = ((qX-1) * (vL-1)) / (qL-1) + 1;
-        /* if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1; */
+        // if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1;
         if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
@@ -918,17 +918,17 @@ static Obj ProdFFEFFE(Obj opL, Obj opR)
 
 static Obj ProdFFEInt(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     /* value of left, right, result    */
-    FF                  fX;             /* field of result                 */
-    Int                 pX;             /* char. of result                 */
-    const FFV*          sX;             /* successor table of result field */
+    FFV                 vL, vR, vX;     // value of left, right, result
+    FF                  fX;             // field of result
+    Int                 pX;             // char. of result
+    const FFV*          sX;             // successor table of result field
 
-    /* get the field for the result                                        */
+    // get the field for the result
     fX = FLD_FFE( opL );
     pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
-    /* get the right operand                                               */
+    // get the right operand
     vX = ((INT_INTOBJ( opR ) % pX) + pX) % pX;
     if ( vX == 0 ) {
         vR = 0;
@@ -938,7 +938,7 @@ static Obj ProdFFEInt(Obj opL, Obj opR)
         for ( ; 1 < vX; vX-- )  vR = sX[vR];
     }
 
-    /* get the left operand                                                */
+    // get the left operand
     vL = VAL_FFE( opL );
 
     vX = PROD_FFV( vL, vR, sX );
@@ -947,17 +947,17 @@ static Obj ProdFFEInt(Obj opL, Obj opR)
 
 static Obj ProdIntFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     /* value of left, right, result    */
-    FF                  fX;             /* field of result                 */
-    Int                 pX;             /* char. of result                 */
-    const FFV*          sX;             /* successor table of result field */
+    FFV                 vL, vR, vX;     // value of left, right, result
+    FF                  fX;             // field of result
+    Int                 pX;             // char. of result
+    const FFV*          sX;             // successor table of result field
 
-    /* get the field for the result                                        */
+    // get the field for the result
     fX = FLD_FFE( opR );
     pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
-    /* get the left operand                                                */
+    // get the left operand
     vX = ((INT_INTOBJ( opL ) % pX) + pX) % pX;
     if ( vX == 0 ) {
         vL = 0;
@@ -967,7 +967,7 @@ static Obj ProdIntFFE(Obj opL, Obj opR)
         for ( ; 1 < vX; vX-- )  vL = sX[vL];
     }
 
-    /* get the right operand                                               */
+    // get the right operand
     vR = VAL_FFE( opR );
 
     vX = PROD_FFV( vL, vR, sX );
@@ -981,9 +981,9 @@ static Obj ProdIntFFE(Obj opL, Obj opR)
 */
 static Obj OneFFE(Obj op)
 {
-    FF                  fX;             /* field of result                 */
+    FF                  fX;             // field of result
 
-    /* get the field for the result                                        */
+    // get the field for the result
     fX = FLD_FFE( op );
 
     return NEW_FFE( fX, 1 );
@@ -996,15 +996,15 @@ static Obj OneFFE(Obj op)
 */
 static Obj InvFFE(Obj op)
 {
-    FFV                 v, vX;          /* value of operand, result        */
-    FF                  fX;             /* field of result                 */
-    const FFV*          sX;             /* successor table of result field */
+    FFV                 v, vX;          // value of operand, result
+    FF                  fX;             // field of result
+    const FFV*          sX;             // successor table of result field
 
-    /* get the field for the result                                        */
+    // get the field for the result
     fX = FLD_FFE( op );
     sX = SUCC_FF( fX );
 
-    /* get the operand                                                     */
+    // get the operand
     v = VAL_FFE( op );
     if ( v == 0 ) return Fail;
 
@@ -1032,15 +1032,15 @@ static Obj QUO_FFE_LARGE;
 
 static Obj QuoFFEFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     /* value of left, right, result    */
-    FF                  fL, fR, fX;     /* field of left, right, result    */
-    UInt                qL, qR, qX;     /* size  of left, right, result    */
+    FFV                 vL, vR, vX;     // value of left, right, result
+    FF                  fL, fR, fX;     // field of left, right, result
+    UInt                qL, qR, qX;     // size  of left, right, result
 
-    /* get the values, handle trivial cases                                */
+    // get the values, handle trivial cases
     vL = VAL_FFE( opL );
     vR = VAL_FFE( opR );
 
-    /* bring the two operands into a common field <fX>                     */
+    // bring the two operands into a common field <fX>
     fL = FLD_FFE( opL );
     qL = SIZE_FF( fL );
     fR = FLD_FFE( opR );
@@ -1061,9 +1061,9 @@ static Obj QuoFFEFFE(Obj opL, Obj opR)
         fX = CommonFF( fL, DegreeFFE(opL), fR, DegreeFFE(opR) );
         if ( fX == 0 )  return CALL_2ARGS( QUO_FFE_LARGE, opL, opR );
         qX = SIZE_FF( fX );
-        /* if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1; */
+        // if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1;
         if ( vL != 0 )  vL = ((qX-1) * (vL-1)) / (qL-1) + 1;
-        /* if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1; */
+        // if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1;
         if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
@@ -1076,17 +1076,17 @@ static Obj QuoFFEFFE(Obj opL, Obj opR)
 
 static Obj QuoFFEInt(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     /* value of left, right, result    */
-    FF                  fX;             /* field of result                 */
-    Int                 pX;             /* char. of result                 */
-    const FFV*          sX;             /* successor table of result field */
+    FFV                 vL, vR, vX;     // value of left, right, result
+    FF                  fX;             // field of result
+    Int                 pX;             // char. of result
+    const FFV*          sX;             // successor table of result field
 
-    /* get the field for the result                                        */
+    // get the field for the result
     fX = FLD_FFE( opL );
     pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
-    /* get the right operand                                               */
+    // get the right operand
     vX = ((INT_INTOBJ( opR ) % pX) + pX) % pX;
     if ( vX == 0 ) {
         vR = 0;
@@ -1096,7 +1096,7 @@ static Obj QuoFFEInt(Obj opL, Obj opR)
         for ( ; 1 < vX; vX-- )  vR = sX[vR];
     }
 
-    /* get the left operand                                                */
+    // get the left operand
     vL = VAL_FFE( opL );
 
     if ( vR == 0 ) {
@@ -1108,17 +1108,17 @@ static Obj QuoFFEInt(Obj opL, Obj opR)
 
 static Obj QuoIntFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     /* value of left, right, result    */
-    FF                  fX;             /* field of result                 */
-    Int                 pX;             /* char. of result                 */
-    const FFV*          sX;             /* successor table of result field */
+    FFV                 vL, vR, vX;     // value of left, right, result
+    FF                  fX;             // field of result
+    Int                 pX;             // char. of result
+    const FFV*          sX;             // successor table of result field
 
-    /* get the field for the result                                        */
+    // get the field for the result
     fX = FLD_FFE( opR );
     pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
-    /* get the left operand                                                */
+    // get the left operand
     vX = ((INT_INTOBJ( opL ) % pX) + pX) % pX;
     if ( vX == 0 ) {
         vL = 0;
@@ -1128,7 +1128,7 @@ static Obj QuoIntFFE(Obj opL, Obj opR)
         for ( ; 1 < vX; vX-- )  vL = sX[vL];
     }
 
-    /* get the right operand                                               */
+    // get the right operand
     vR = VAL_FFE( opR );
 
     if ( vR == 0 ) {
@@ -1152,22 +1152,22 @@ static Obj QuoIntFFE(Obj opL, Obj opR)
 */
 static Obj PowFFEInt(Obj opL, Obj opR)
 {
-    FFV                 vL, vX;         /* value of left, result           */
-    Int                 vR;             /* value of right                  */
-    FF                  fX;             /* field of result                 */
-    const FFV*          sX;             /* successor table of result field */
+    FFV                 vL, vX;         // value of left, result
+    Int                 vR;             // value of right
+    FF                  fX;             // field of result
+    const FFV*          sX;             // successor table of result field
 
-    /* get the field for the result                                        */
+    // get the field for the result
     fX = FLD_FFE( opL );
     sX = SUCC_FF( fX );
 
-    /* get the right operand                                               */
+    // get the right operand
     vR = INT_INTOBJ( opR );
 
-    /* get the left operand                                                */
+    // get the left operand
     vL = VAL_FFE( opL );
 
-    /* if the exponent is negative, invert the left operand                */
+    // if the exponent is negative, invert the left operand
     if ( vR < 0 ) {
         if ( vL == 0 ) {
             ErrorMayQuit("FFE operations: <divisor> must not be zero", 0, 0);
@@ -1176,10 +1176,10 @@ static Obj PowFFEInt(Obj opL, Obj opR)
         vR = -vR;
     }
 
-    /* catch the case when vL is zero.                                     */
+    // catch the case when vL is zero.
     if( vL == 0 ) return NEW_FFE( fX, (vR == 0 ? 1 : 0 ) );
 
-    /* reduce vR modulo the order of the multiplicative group first.       */
+    // reduce vR modulo the order of the multiplicative group first.
     vR %= *sX;
 
     vX = POW_FFV( vL, vR, sX );
@@ -1193,7 +1193,7 @@ static Obj PowFFEInt(Obj opL, Obj opR)
 */
 static Obj PowFFEFFE(Obj opL, Obj opR)
 {
-    /* get the field for the result                                        */
+    // get the field for the result
     if ( CHAR_FF( FLD_FFE(opL) ) != CHAR_FF( FLD_FFE(opR) ) ) {
         ErrorMayQuit("<x> and <y> have different characteristic", 0, 0);
     }
@@ -1216,7 +1216,7 @@ static Obj IsFFEFilt;
 
 static Obj FiltIS_FFE(Obj self, Obj obj)
 {
-    /* return 'true' if <obj> is a finite field element                    */
+    // return 'true' if <obj> is a finite field element
     if ( IS_FFE(obj) ) {
         return True;
     }
@@ -1242,10 +1242,10 @@ static Obj LOG_FFE_LARGE;
 
 static Obj FuncLOG_FFE_DEFAULT(Obj self, Obj opZ, Obj opR)
 {
-    FFV                 vZ, vR;         /* value of left, right            */
-    FF                  fZ, fR, fX;     /* field of left, right, common    */
-    UInt                qZ, qR, qX;     /* size  of left, right, common    */
-    Int                 a, b, c, d, t;  /* temporaries                     */
+    FFV                 vZ, vR;         // value of left, right
+    FF                  fZ, fR, fX;     // field of left, right, common
+    UInt                qZ, qR, qX;     // size  of left, right, common
+    Int                 a, b, c, d, t;  // temporaries
 
     if (!IS_FFE(opZ) || VAL_FFE(opZ) == 0) {
         ErrorMayQuit("LogFFE: <z> must be a nonzero finite field element", 0,
@@ -1256,11 +1256,11 @@ static Obj FuncLOG_FFE_DEFAULT(Obj self, Obj opZ, Obj opR)
                      0);
     }
 
-    /* get the values, handle trivial cases                                */
+    // get the values, handle trivial cases
     vZ = VAL_FFE( opZ );
     vR = VAL_FFE( opR );
 
-    /* bring the two operands into a common field <fX>                     */
+    // bring the two operands into a common field <fX>
     fZ = FLD_FFE( opZ );
     qZ = SIZE_FF( fZ );
     fR = FLD_FFE( opR );
@@ -1281,13 +1281,13 @@ static Obj FuncLOG_FFE_DEFAULT(Obj self, Obj opZ, Obj opR)
         fX = CommonFF( fZ, DegreeFFE(opZ), fR, DegreeFFE(opR) );
         if ( fX == 0 )  return CALL_2ARGS( LOG_FFE_LARGE, opZ, opR );
         qX = SIZE_FF( fX );
-        /* if ( vZ != 0 )  vZ = (qX-1) / (qZ-1) * (vZ-1) + 1; */
+        // if ( vZ != 0 )  vZ = (qX-1) / (qZ-1) * (vZ-1) + 1;
         if ( vZ != 0 )  vZ = ((qX-1) * (vZ-1)) / (qZ-1) + 1;
-        /* if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1; */
+        // if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1;
         if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
-    /* now solve <l> * (<vR>-1) = (<vZ>-1) % (<qX>-1)                      */
+    // now solve <l> * (<vR>-1) = (<vZ>-1) % (<qX>-1)
     a = 1;             b = 0;
     c = (Int) (vR-1);  d = (Int) (qX-1);
     while ( d != 0 ) {
@@ -1324,14 +1324,14 @@ static Int NumFF;
 
 static Obj INT_FF(FF ff)
 {
-    Obj                 conv;           /* conversion table, result        */
-    Int                 q;              /* size of finite field            */
-    Int                 p;              /* char of finite field            */
-    const FFV *         succ;           /* successor table of finite field */
-    FFV                 z;              /* one element of finite field     */
-    UInt                i;              /* loop variable                   */
+    Obj                 conv;           // conversion table, result
+    Int                 q;              // size of finite field
+    Int                 p;              // char of finite field
+    const FFV *         succ;           // successor table of finite field
+    FFV                 z;              // one element of finite field
+    UInt                i;              // loop variable
 
-    /* if the conversion table is not already known, construct it          */
+    // if the conversion table is not already known, construct it
 #ifdef HPCGAP
     if ( NumFF < ff || (MEMBAR_READ(), ATOMIC_ELM_PLIST(IntFF, ff) == 0)) {
         HashLock(&IntFF);
@@ -1359,7 +1359,7 @@ static Obj INT_FF(FF ff)
 #endif
     }
 
-    /* return the conversion table                                           */
+    // return the conversion table
 #ifdef HPCGAP
     return ATOMIC_ELM_PLIST( IntFF, ff);
 #else
@@ -1370,35 +1370,35 @@ static Obj INT_FF(FF ff)
 
 static Obj FuncINT_FFE_DEFAULT(Obj self, Obj z)
 {
-    FFV                 v;              /* value of finite field element   */
-    FF                  ff;             /* finite field                    */
-    Int                 q;              /* size of finite field            */
-    Int                 p;              /* char of finite field            */
-    Obj                 conv;           /* conversion table                */
+    FFV                 v;              // value of finite field element
+    FF                  ff;             // finite field
+    Int                 q;              // size of finite field
+    Int                 p;              // char of finite field
+    Obj                 conv;           // conversion table
 
-    /* get the value                                                       */
+    // get the value
     v  = VAL_FFE( z );
 
-    /* special case for 0                                                  */
+    // special case for 0
     if ( v == 0 ) {
         return INTOBJ_INT( 0 );
     }
 
-    /* get the field, size, characteristic, and conversion table           */
+    // get the field, size, characteristic, and conversion table
     ff   = FLD_FFE( z );
     q    = SIZE_FF( ff );
     p    = CHAR_FF( ff );
     conv = INT_FF( ff );
 
-    /* check the argument                                                  */
+    // check the argument
     if ( (v-1) % ((q-1)/(p-1)) != 0 ) {
         ErrorMayQuit("IntFFE: <z> must lie in prime field", 0, 0);
     }
 
-    /* convert the value into the prime field                              */
+    // convert the value into the prime field
     v = (v-1) / ((q-1)/(p-1)) + 1;
 
-    /* return the integer value                                            */
+    // return the integer value
     return ELM_PLIST( conv, v );
 }
 
@@ -1416,9 +1416,9 @@ static Obj ZOp;
 
 static Obj FuncZ(Obj self, Obj q)
 {
-    FF                  ff;             /* the finite field                */
+    FF                  ff;             // the finite field
 
-    /* check the argument                                                  */
+    // check the argument
     if ((IS_INTOBJ(q) && (INT_INTOBJ(q) > MAXSIZE_GF_INTERNAL)) ||
         (TNUM_OBJ(q) == T_INTPOS))
         return CALL_1ARGS(ZOp, q);
@@ -1433,7 +1433,7 @@ static Obj FuncZ(Obj self, Obj q)
         RequireArgument(SELF_NAME, q, "must be a positive prime power");
     }
 
-    /* make the root                                                       */
+    // make the root
     return NEW_FFE(ff, (q == INTOBJ_INT(2)) ? 1 : 2);
 }
 
@@ -1452,13 +1452,13 @@ static Obj FuncZ2(Obj self, Obj p, Obj d)
             while (--id1 > 0 && q <= MAXSIZE_GF_INTERNAL)
                 q *= ip;
             if (q <= MAXSIZE_GF_INTERNAL) {
-                /* get the finite field */
+                // get the finite field
                 ff = FiniteFieldBySize(q);
 
                 if (ff == 0 || CHAR_FF(ff) != ip)
                     RequireArgument(SELF_NAME, p, "must be a prime");
 
-                /* make the root */
+                // make the root
                 return NEW_FFE(ff, (q == 2) ? 1 : 2);
             }
         }
@@ -1521,40 +1521,40 @@ static Int InitKernel (
     // set the bag type names (for error messages and debugging)
     InitBagNamesFromTable( BagNames );
 
-    /* install the type functions                                          */
+    // install the type functions
     ImportFuncFromLibrary( "TYPE_FFE", &TYPE_FFE );
     ImportFuncFromLibrary( "TYPE_FFE0", &TYPE_FFE0 );
     ImportFuncFromLibrary( "ZOp", &ZOp );
     InitFopyGVar( "PrimitiveRootMod", &PrimitiveRootMod );
     TypeObjFuncs[ T_FFE ] = TypeFFE;
 
-    /* create the fields and integer conversion bags                       */
+    // create the fields and integer conversion bags
     InitGlobalBag( &SuccFF, "src/finfield.c:SuccFF" );
     InitGlobalBag( &TypeFF, "src/finfield.c:TypeFF" );
     InitGlobalBag( &TypeFF0, "src/finfield.c:TypeFF0" );
     InitGlobalBag( &IntFF, "src/finfield.c:IntFF" );
 
-    /* install the functions that handle overflow                          */
+    // install the functions that handle overflow
     ImportFuncFromLibrary( "SUM_FFE_LARGE",  &SUM_FFE_LARGE  );
     ImportFuncFromLibrary( "DIFF_FFE_LARGE", &DIFF_FFE_LARGE );
     ImportFuncFromLibrary( "PROD_FFE_LARGE", &PROD_FFE_LARGE );
     ImportFuncFromLibrary( "QUO_FFE_LARGE",  &QUO_FFE_LARGE  );
     ImportFuncFromLibrary( "LOG_FFE_LARGE",  &LOG_FFE_LARGE  );
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
     InitHdlrFuncsFromTable( GVarFuncs );
     InitHandlerFunc( FuncZ2, "src/finfield.c: Z (2 args)");
 
 
-    /* install the printing method                                         */
+    // install the printing method
     PrintObjFuncs[ T_FFE ] = PrFFE;
 
-    /* install the comparison methods                                      */
+    // install the comparison methods
     EqFuncs[   T_FFE ][ T_FFE ] = EqFFE;
     LtFuncs[   T_FFE ][ T_FFE ] = LtFFE;
 
-    /* install the arithmetic methods                                      */
+    // install the arithmetic methods
     ZeroSameMutFuncs[T_FFE] = ZeroFFE;
     ZeroMutFuncs[ T_FFE ] = ZeroFFE;
     AInvSameMutFuncs[T_FFE] = AInvFFE;
@@ -1589,7 +1589,7 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    /* create the fields and integer conversion bags                       */
+    // create the fields and integer conversion bags
     SuccFF = NEW_PLIST( T_PLIST, NUM_SHORT_FINITE_FIELDS );
     SET_LEN_PLIST( SuccFF, NUM_SHORT_FINITE_FIELDS );
 
@@ -1609,7 +1609,7 @@ static Int InitLibrary (
     MakeBagPublic(IntFF);
 #endif
 
-    /* init filters and functions                                          */
+    // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
     InitGVarFuncsFromTable( GVarFuncs );
     SET_HDLR_FUNC(ValGVar(GVarName("Z")), 2, FuncZ2);

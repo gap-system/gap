@@ -43,4 +43,4 @@ typedef struct DeserializerInterface {
 
 StructInitInfo * InitInfoSerialize(void);
 
-#endif /* GAP_SERIALIZE_H */
+#endif // GAP_SERIALIZE_H
