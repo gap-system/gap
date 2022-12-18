@@ -18,20 +18,37 @@
 # TODO: integrate this script into generate_release_notes.py
 
 import sys
+import os
 import json
+import gzip
+
+from utils import *
 
 def usage():
-    print("Usage: `./generate_package_release_notes.py old-package-infos.json new-package-infos.json`")
+    print("Usage: `./generate_package_release_notes.py OLD_GAP_VERSION NEW_GAP_VERSION`")
     sys.exit(1)
 
-def main(old_json_file, new_json_file):
-    old_gap_version = "4.11.1" # TODO/FIXME: pass this as an argument?
-    new_gap_version = "4.12.0" # TODO/FIXME: pass this as an argument?
+def main(old_gap_version, new_gap_version):
 
-    with open(old_json_file, "r") as f:
+    # create tmp directory
+    tmpdir = os.getcwd() + "/tmp"
+    notice(f"Files will be put in {tmpdir}")
+    try:
+        os.mkdir(tmpdir)
+    except FileExistsError:
+        pass
+
+    # download package metadata
+    old_json_file = f"{tmpdir}/package-infos-{old_gap_version}.json.gz"
+    download_with_sha256(f"https://github.com/gap-system/PackageDistro/releases/download/v{old_gap_version}/package-infos.json.gz", old_json_file)
+    new_json_file = f"{tmpdir}/package-infos-{new_gap_version}.json.gz"
+    download_with_sha256(f"https://github.com/gap-system/PackageDistro/releases/download/v{new_gap_version}/package-infos.json.gz", new_json_file)
+
+    # parse package metadata
+    with gzip.open(old_json_file, "r") as f:
         old_json = json.load(f)
 
-    with open(new_json_file, "r") as f:
+    with gzip.open(new_json_file, "r") as f:
         new_json = json.load(f)
 
     print("### Package distribution")
@@ -47,7 +64,7 @@ def main(old_json_file, new_json_file):
         for p in sorted(added):
             pkg = new_json[p]
             name = pkg["PackageName"]
-            home = new["PackageWWWHome"]
+            home = pkg["PackageWWWHome"]
             desc = pkg["Subtitle"]
             vers = pkg["Version"]
             authors = [x["FirstNames"]+" "+x["LastName"] for x in pkg["Persons"] if x["IsAuthor"]]
