@@ -50,7 +50,20 @@ typedef struct GAPState {
     Obj CurrNamespace;
 
     // From vars.c
+
+    // 'CurrLVars' is the bag containing the values of the local variables of
+    // the currently executing interpreted function.
+    //
+    // Assignments to the local variables change this bag. We do not call
+    // 'CHANGED_BAG' for each of such change. Instead we wait until a garbage
+    // collection begins and then call 'CHANGED_BAG' in 'BeginCollectBags'.
     Bag   CurrLVars;
+
+    // 'PtrLVars' is a pointer to the 'STATE(CurrLVars)' bag. This makes it
+    // faster to access local variables.
+    //
+    // Since a garbage collection may move this bag around, the pointer
+    // 'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
     Obj * PtrLVars;
 
     Bag   LVarsPool[16];

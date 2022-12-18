@@ -72,7 +72,6 @@
 **  This is automatically ensured if one just calls interpreter functions,
 **  as the interpreter does not use TRY_IF_NO_ERROR.
 */
-// TL: extern jmp_buf ReadJmpError;
 
 
 #define TRY_IF_NO_ERROR                                                      \

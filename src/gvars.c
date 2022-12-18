@@ -578,8 +578,6 @@ Obj ExprGVar ( UInt gvar )
 
 #define NSCHAR '@'
 
-// TL: Obj CurrNamespace = 0;
-
 static Obj FuncSET_NAMESPACE(Obj self, Obj str)
 {
     STATE(CurrNamespace) = str;
