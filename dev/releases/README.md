@@ -13,24 +13,27 @@ This is the way the process should happen in practice, with the help of GitHub A
 
 1. In the `gap-system/PackageDistro` GitHub repository, create an annotated tag `vX.Y.Z` based on its latest `main` branch (this determines which packages get into the release) and push the tag. For example:
     ```
+    VER=X.Y.Z      # to avoid typing
     git checkout main
     git pull
-    git tag -m "Version X.Y.Z" vX.Y.Z main
-    git push origin vX.Y.Z
+    git tag -m "Version ${VER}" v${VER} main
+    git push origin v${VER}
     ```
 2. Wait. Pushing the tag triggers the “[Assemble the package distribution](https://github.com/gap-system/PackageDistro/actions/workflows/assemble-distro.yml)” GitHub Actions workflow; on `gap-system/PackageDistro`. This takes a few minutes.
 2. In the `gap-system/gap` GitHub repository, create an annotated tag `vX.Y.Z` at the appropriate commit in the `stable-X.Y` branch, and push the tag. For example:
     ```
-    git checkout stable-X.Y
+    VER=X.Y.Z      # to avoid typing
+    git checkout stable-${VER%.*}
     git pull
-    git tag -m "Version X.Y.Z" vX.Y.Z stable-X.Y
-    git push origin vX.Y.Z
+    git tag -m "Version ${VER}" v${VER} stable-${VER%.*}
+    git push origin v${VER}
     ```
 4. Wait. Pushing the tag triggers the “[Wrap releases](https://github.com/gap-system/gap/actions/workflows/release.yml)” GitHub Actions workflow on `gap-system/gap`, which wraps the release archives and Windows installers, and creates a release on GitHub with the archives and installers attached. This takes around 90 minutes.
-5. Once the “Wrap releases” workflow is finished, either manually dispatch the “[Sync](https://github.com/gap-system/GapWWW/actions/workflows/sync.yml)” GitHub Actions workflow on `gap-system/GapWWW`, or wait overnight for it to happen on schedule.
+5. Once the “Wrap releases” workflow has finished, check its log for obvious errors. Also visit the page of the release under <https://github.com/gap-system/gap/releases/> and check that everything looks right, and all files are present (including the Windows .exe installer), e.g. by comparing the asset list to the previous release. At this time this is written, a regular GAP release will have 24 assets (12 archives, and 12 matching sha256 files).
+6. Next either manually dispatch the “[Sync](https://github.com/gap-system/GapWWW/actions/workflows/sync.yml)” GitHub Actions workflow on `gap-system/GapWWW`, or wait overnight for it to happen on schedule.
 	- This Workflow creates a pull request to `gap-system/GapWWW`, which updates the GAP website according to the release data hosted on `gap-system/gap`.  Check that the result is sensible.
 6. When it is time to publicise the new GAP release, merge the pull request to GapWWW.
-7. There are currently additional steps required for the changes to appear on <https://www.gap-system.org>, which could be automated but are currently not; these are described in steps 10–13 below.
+7. There are currently additional steps required for the changes to appear on <https://www.gap-system.org>, which could be automated but are currently not; these are described in steps 10 and 11 below.
 
 
 ## The release process for GAP -- the more detailed guide
@@ -101,8 +104,13 @@ Before starting the release process, the scripts have the following dependencies
 11. Check that <https://docs.gap-system.org> is functioning as expected.
 
 
-## Post-release hints
+## Post-release instructions
 
+Once all the above has been completed, do the following:
+
+- Write a release announcement to the GAP Forum and GAP mailing list
+- Go to the new release under <https://github.com/gap-system/gap/releases/> and
+  change the release from "pre-release" to "latest release" (i.e., on <https://github.com/gap-system/gap/releases/edit/vX.Y.Z> disable "Set as a pre-release" and "Set as the latest release")
 - Update <https://www.wikidata.org/wiki/Q677161>
 - Update <https://en.wikipedia.org/wiki/GAP_(computer_algebra_system)>
   (and possibly also translations)
