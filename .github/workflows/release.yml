@@ -16,7 +16,7 @@ on:
       - stable-*
   schedule:
     # Every day at 3:33 AM UTC
-    - cron:  '33 3 * * *'
+    - cron: '33 3 * * *'
 
 concurrency:
   # group by workflow and ref; the last slightly strange component ensures that for pull
@@ -102,19 +102,13 @@ jobs:
           popd
 
       # Upload the main GAP .tar.gz file (which includes packages).
-      # We only upload this tarball in order to minimise our demand on GitHub's
-      # resources, and that is why we also only upload these for the daily cron
-      # jobs, and in the case of an error on making a release.
-      #
-      # The artifact lives for 1 day; i.e. typically until the next cron job runs.
       #
       # Warning: the result is a single .zip file (so things are compressed twice).
       - name: "Upload GAP tarball"
-        if: ${{ (!startsWith(github.ref, 'refs/tags/v') && failure()) || github.event_name == 'schedule' }}
         uses: actions/upload-artifact@v3
         with:
           if-no-files-found: error
-          name: gap-${{ steps.get-build.outputs.name }}.tar.gz
+          name: gap
           path: tmp/gap-${{ steps.get-build.outputs.name }}.tar.gz
           retention-days: 1
 
@@ -158,98 +152,33 @@ jobs:
     steps:
       # The GAP to be wrapped is put into gap-$GAP_BUILD_VERSION/
       # The sage-windows script requires the GAP directory to be named this way.
-      #
-      # If the event is a pushed release tag, then we are wrapping a version of
-      # GAP that already has its packages in place and all manuals compiled.
-      # Therefore sage-windows only needs to compile GAP and the packages.
-      #
-      # Otherwise, we wrap a cloned version of GAP.
-      # In none of these cases do we build GAP's manuals, because it's too slow.
-      # If the event is a PR, then we `make bootstrap-pkg-minimal` to save time
-      # (none of the required packages requires compilation).
-      # If the event is a pushed branch, then we `make bootstrap-pkg-full` and
-      # then run the BuildPackages.sh script.  This takes a long time.
 
       - name: "Set some environment variables according to the GitHub context"
         run: |
-          if [[ $GITHUB_REF == refs/tags/v* ]]; then
-            GAPDEV_DIR="gap-dev"
-            COMPILEGAP="make -j2"
-          elif [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
-            GAPDEV_DIR="gap-${GAP_BUILD_VERSION}"
-            COMPILEGAP="make -j2 && make bootstrap-pkg-minimal"
-          elif [[ $GITHUB_REF == refs/heads/* ]]; then
-            GAPDEV_DIR="gap-${GAP_BUILD_VERSION}"
-            COMPILEGAP="make -j2 && make bootstrap-pkg-full"
-          else
-            echo "Unrecognised GitHub situation!"
-            exit 1
-          fi
-
-          echo "Using: GAPDEV_DIR=${GAPDEV_DIR} and COMPILEGAP=${COMPILEGAP}"
-          echo "GAPDEV_DIR=${GAPDEV_DIR}" >> $GITHUB_ENV
-          echo "SAGE_RUN_CONFIGURE_CMD=\"cd \$(SAGE_ROOT) && ${COMPILEGAP}\"" >> $GITHUB_ENV
-
-      # In all cases, we currently need to clone GAP for its release scripts.
-      #
-      # If the GitHub event is a pushed release tag, then we compile/wrap a GAP
-      # tarball that we download from the GitHub release that was just created
-      # and uploaded by the preceding 'unix' job.
-      #
-      # Otherwise, we compile and wrap the appropriate GAP development clone
-      # into the installer.
-      #
-      # Alternatively, we could upload the desired GAP tarball via the
-      # 'actions/upload-artifact' action in the preceding 'unix' job, and then
-      # use this in all cases in this 'cygwin' job. This would save some
-      # repeated work and hence time, and unify the code here slightly.
-      #
-      # Furthermore, this would remove the need for the
-      # download_release_archive.py script, and if we would also remove the need
-      # for the upload_file_to_github_release.py script, as described below,
-      # then we would no longer need access to the GAP release scripts in this
-      # job at all. Therefore, in all cases, we would be able to remove:
-      # * Clone GAP
-      # * Copy GAP's release scripts
-      # * Set up Python and its modules
-      #   - Although we would still need a way to create the EXE checksum files
-      # * The existence of the GAPDEV_DIR environment variable
-      # * The different values of the COMPILEGAP variable above, because in all
-      #   cases it would be just "make -j2", since the downloaded release
-      #   artifact would/could already contain the appropriate packages.
-
-      - name: "Clone GAP"
-        uses: actions/checkout@v3
-        with:
-          path: ${{ env.GAPDEV_DIR }}
-
-      - name: "Copy GAP's release scripts to a safe place"
-        run: cp -rp ${GAPDEV_DIR}/dev/releases .
+          echo "SAGE_MAKE_CONFIGURE_CMD?='\"cd \$(SAGE_ROOT) && ./configure\"'"
+          echo "SAGE_RUN_CONFIGURE_CMD=\"cd \$(SAGE_ROOT) && make -j2\"" >> $GITHUB_ENV
 
       - uses: actions/setup-python@v4
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         with:
           python-version: 3.9
 
       - name: "Install required Python modules"
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: pip3 install PyGithub
 
-      # We could probably use either a GitHub Action from the GitHub Marketplace
-      # to download the appropriate GAP tarball from the GitHub release, rather
-      # than creating and using the Python file.  This would probably mean that
-      # we lose the ability to verify checksums, but that is probably fine.
-      - name: "Download the appropriate GAP release tarball"
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+      # Download the artifact -- for an actual release, this contains the
+      # exact same tarball as was uploaded to the release as an asset
+      - name: "Download GAP archive from previous job"
+        uses: actions/download-artifact@v3
+        with:
+          name: gap
+
+      - name: "Extract the GAP release tarball"
         run: |
-          python -u ./releases/download_release_archive.py \
-                    v${GAP_BUILD_VERSION} \
-                    gap-${GAP_BUILD_VERSION}.tar.gz .
           tar -zxf gap-${GAP_BUILD_VERSION}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # The following repository should eventually be owned by a GAP-related
+      # TODO: The following repository should eventually be owned by a GAP-related
       # organisation, and perhaps ultimately it could/should be re-integrated
       # with the original sagemath/sage-windows repository.
       - name: "Clone the Windows installer maker scripts"
