@@ -89,6 +89,11 @@ typedef void sig_handler_t ( int );
 #include <sys/utsname.h>
 
 
+// 'EndLineHook' is a GAP-level variable which can be set to a function to be
+// called at end of each command line (i.e. after the user presses enter).
+// If not bound, nothing is done.
+static Obj EndLineHook = 0;
+
 /****************************************************************************
 **
 *V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
@@ -3517,9 +3522,9 @@ static Int InitKernel(
     InitCopyGVar("OnCharReadHookExcFuncs",&OnCharReadHookExcFuncs);
 #endif
 
+    InitCopyGVar("EndLineHook", &EndLineHook);
 
-  return 0;
-
+    return 0;
 }
 
 /****************************************************************************

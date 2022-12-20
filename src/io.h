@@ -279,17 +279,6 @@ UInt CloseInputLog(void);
 */
 void SetPrompt(const char * prompt);
 
-/****************************************************************************
-**
-*V  PrintPromptHook . . . . . . . . . . . . . . function for printing prompt
-*V  EndLineHook . . . . . . . . . . . function called at end of command line
-**
-**  These functions can be set on GAP-level. If they are not bound  the
-**  default is: Instead of 'PrintPromptHook' the 'Prompt' is printed and
-**  instead of 'EndLineHook' nothing is done.
-*/
-// TL: extern Obj  PrintPromptHook;
-extern Obj  EndLineHook;
 
 /****************************************************************************
 **
