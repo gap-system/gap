@@ -2032,7 +2032,7 @@ static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
         }
         else {
             tmp = POW(tmp, perm);
-            //  POW may trigger a garbage collection, so update pointers
+            // POW may trigger a garbage collection, so update pointers
             ptRes = ADDR_OBJ(res) + i;
             ptPrm = CONST_ADDR_PERM<T>(perm);
             *ptRes = tmp;
@@ -2098,7 +2098,7 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
         else {
             isSmallIntList = FALSE;
             tmp = POW(tmp, perm);
-            //  POW may trigger a garbage collection, so update pointers
+            // POW may trigger a garbage collection, so update pointers
             ptRes = ADDR_OBJ(res) + i;
             ptPrm = CONST_ADDR_PERM<T>(perm);
             *ptRes = tmp;

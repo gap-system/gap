@@ -1549,7 +1549,7 @@ static void AddVec8BitVec8BitMultInner(
         return;
     }
 
-    //  so we have some work. get the tables
+    // so we have some work. get the tables
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(sum));
 
     p = P_FIELDINFO_8BIT(info);
