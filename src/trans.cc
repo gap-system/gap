@@ -2014,8 +2014,7 @@ static Obj FuncAS_TRANS_TRANS(Obj self, Obj f, Obj m)
             }
         }
         else {
-            //  f is T_TRANS4 but n <= 65536 < def and so g will be T_TRANS2 *
-            //  /
+            // f is T_TRANS4 but n <= 65536 < def and so g will be T_TRANS2
             g = NEW_TRANS2(n);
             ptf4 = CONST_ADDR_TRANS4(f);
             ptg2 = ADDR_TRANS2(g);
