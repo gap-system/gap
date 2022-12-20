@@ -284,29 +284,32 @@ end);
 ##  Adding logical implications can change the rank of filters (see
 ##  <Ref Func="RankFilter"/>) and consequently the rank, and so choice of
 ##  methods for operations (see <Ref Sect="Applicable Methods and Method Selection"/>).
-##  By default <C>InstallTrueMethod</C> adjusts the method selection data
-##  structures to take care of this, but this process can be time-consuming,
+##  By default <Ref Func="InstallTrueMethod"/> adjusts the method selection
+##  data structures to take care of this,
+##  but this process can be time-consuming,
 ##  so functions <Ref Func="SuspendMethodReordering"/> and
 ##  <Ref Func="ResumeMethodReordering"/> are provided to allow control of this process.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-
 BIND_GLOBAL( "InstallTrueMethod", function ( tofilt, from )
-    local i;
+    local fromflags, i, j;
 
     # Check whether 'tofilt' involves or implies representations.
+    fromflags:= TRUES_FLAGS( WITH_IMPS_FLAGS( FLAGS_FILTER( from ) ) );
     for i in TRUES_FLAGS( WITH_IMPS_FLAGS( FLAGS_FILTER( tofilt ) ) ) do
       if INFO_FILTERS[i] = FNUM_REP_KERN or INFO_FILTERS[i] = FNUM_REP then
-        # This is allowed only if 'from' consists of representations.
-        for i in TRUES_FLAGS( WITH_IMPS_FLAGS( FLAGS_FILTER( from ) ) ) do
-          if not ( INFO_FILTERS[i] = FNUM_REP_KERN or
-                   INFO_FILTERS[i] = FNUM_REP ) then
-            Error( "<tofilt> must not involve representation filters" );
-          fi;
-        od;
-        break;
+        # This is allowed only if either 'from' already implies filter 'i'
+        # or if 'from' consists of representations.
+        if not i in fromflags then
+          for j in fromflags do
+            if not ( INFO_FILTERS[j] = FNUM_REP_KERN or
+                     INFO_FILTERS[j] = FNUM_REP ) then
+              Error( "<tofilt> must not involve new representation filters" );
+            fi;
+          od;
+        fi;
       fi;
     od;
 
@@ -320,7 +323,6 @@ BIND_GLOBAL( "InstallTrueMethod", function ( tofilt, from )
     if REORDER_METHODS_SUSPENSION_LEVEL = 0 then
         RECALCULATE_ALL_METHOD_RANKS();
     fi;
-
 end );
 
 
