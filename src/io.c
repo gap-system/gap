@@ -58,8 +58,10 @@ static Obj IsOutputStringStream;
 static Obj PositionStream;
 static Obj SeekPositionStream;
 
+// 'PrintPromptHook' is a GAP-level variable which can be set to a function
+// for printing the GAP prompt. If not bound, 'STATE(Prompt)' is printed.
 static Obj PrintPromptHook = 0;
-Obj EndLineHook = 0;
+
 static Obj PrintFormattingStatus;
 static Obj SetPrintFormattingStatus;
 
@@ -1060,7 +1062,7 @@ static Char GetLine(TypInputFile * input)
 
     // if file is '*stdin*' or '*errin*' print the prompt and flush it
     // if the GAP function `PrintPromptHook' is defined then it is called
-    // for printing the prompt, see also `EndLineHook'
+    // for printing the prompt
     if (!input->stream) {
         if (input->file == 0 && SyQuiet) {
             Pr("%c", (Int)'\03', 0);
@@ -2061,7 +2063,6 @@ static Int InitKernel (
     ImportFuncFromLibrary( "PositionStream", &PositionStream );
     ImportFuncFromLibrary( "SeekPositionStream", &SeekPositionStream );
     InitCopyGVar( "PrintPromptHook", &PrintPromptHook );
-    InitCopyGVar( "EndLineHook", &EndLineHook );
     InitFopyGVar( "PrintFormattingStatus", &PrintFormattingStatus);
     InitFopyGVar( "SetPrintFormattingStatus", &SetPrintFormattingStatus);
 
