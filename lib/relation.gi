@@ -696,110 +696,7 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
         local r,        # representation of rel as a binary relation on points
               e,        # Equivalence relation representation of the
                         # predecessor subgraph
-              s,        # Sorted list of the source of rel
-              DFS,      # Depth first search functions
-              DFSVisit,    ## Recursive
-              DFSVisitNR,  ## Non Recursive
-                        # Global variables for DFS
-              time,     # time
-              color,    # 0=white, 1=gray, 2=black
-              adj,      # adjacency list i.e. successors of rel
-              pi,       # predecessor subgraph
-              dtime,    # discover time
-              ftime;    # finish time
-
-        ## Recursive version of a depth first visit
-        ##
-        DFSVisit := function(u)
-            local v;
-            color[u] := 1;
-            dtime[u] := time+1;
-            time     := time +1;
-            for v in adj[u] do
-                if  color[v]=0 then
-                    pi[v] := u;
-                    DFSVisit(v);
-                fi;
-            od;
-            color[u] := 2;
-            ftime[u] := time+1;
-            time := time +1;
-        end;
-
-        ## Non recursive implementation of a depth first visit
-        ##   from a vertex using a stack explicitly to remember
-        ##   its depth recursion.
-        ##
-        DFSVisitNR := function(s)
-
-            local v,u,         ## vertices
-                  stack, top;  ## stack variables
-
-            top:=1;
-            stack := [s];
-            pi[s] :=s;
-
-            ## Loop until we can discover no more vertices from s
-            ##
-            while not top=0 do
-
-                ## Initialization for the top of the stack
-                ##
-                u := stack[top];
-                color[u] := 1;
-                dtime[u] := time+1;
-                time     := time +1;
-
-                ## Find the first undiscovered vertex adjacent to u
-                ##
-                v := First(adj[u],x->color[x]=0);
-
-                ## If no undiscovered vertices exist pop the vertex u
-                ##   from the stack and record its finish time and color
-                ##   it fully discovered
-                ##
-                if v=fail then
-                    u := stack[top];
-                    top := top-1;
-                    color[u] := 2;
-                    ftime[u] := time+1;
-                    time := time +1;
-
-                ## Otherwise color the vertex, record its discover
-                ##   time and predesessor edge, and push on the stack.
-                ##
-                else
-                    color[v]:=1;
-                    dtime[v] := time+1;
-                    time     := time +1;
-                    pi[v] := u;
-                    top := top +1;
-                    stack[top] := v;
-                fi;
-
-            od;
-        end;
-
-
-        ## V is an ordering of the vertices which indicate
-        ##     how they are to be iterated through
-        ##     during the depth first search
-        ##
-        DFS := function(rel, V)
-            local u;
-            color := List([1..Length(V)], i->0);
-            dtime := List([1..Length(V)], i->0);
-            ftime := List([1..Length(V)], i->0);
-            pi    := [1..Length(V)];
-            adj   := Successors(rel);
-
-            time := 0;
-            for u in V do
-                if color[u] = 0 then
-                    DFSVisitNR(u);
-                fi;
-            od;
-        end;
+              s;        # Sorted list of the source of rel
 
         ## Convert rel to a relation on points
         ##
@@ -813,29 +710,6 @@ InstallMethod(StronglyConnectedComponents, "for general binary relations",
         ## Eliminate singletons
         e := Filtered(e, i->Length(i)>1);
 
-        ## Do a depth first search of rel
-        ##
-        #DFS(r,[1..DegreeOfBinaryRelation(r)]);
-
-        ## Transpose the relation (i.e. take its inverse) and
-        ##    complete a DFS searching the vertices in decreasing
-        ##    order of the finish time in the first DFS
-        ##
-        #DFS(r^-1, List(Reversed(AsSortedList(ftime)),i->
-        #    Position(ftime,i)));
-
-        ## Find the strongly connected components which are the
-        ##     partitions of pi
-        ##
-        #e := EquivalenceRelationPartition(
-        #         EquivalenceRelationByRelation(
-        #             BinaryRelationTransformation(
-        #                 Transformation(pi))));
-
-        ## Translate the partition of the equivalence relation on points
-        ##    representing the strongly connected components into the
-        ##    source set.
-        ##
         s := AsSSortedList(Source(rel));
         return EquivalenceRelationByPartitionNC(Source(rel),
                    List(e, i->s{i}));

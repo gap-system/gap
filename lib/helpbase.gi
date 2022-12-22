@@ -1045,10 +1045,9 @@ if not IsBound( WidthUTF8String ) then
 fi;
 
 BindGlobal( "InitialSubstringUTF8Text", function( str, cols )
-    local esc, parts, len, res, j, pos, word, w;
+    local esc, len, res, j, pos, word, w;
 
     esc:= CHAR_INT(27);
-    parts:= [];
     len:= Length( str );
     res:= "";
     j:= 0;

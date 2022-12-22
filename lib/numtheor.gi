@@ -1079,18 +1079,16 @@ end);
 # Implemented by Sean Gage and AH
 
 BindGlobal("LogModRhoIterate",function(n,g,p)
-local p3, zp3, q, i, x, xd, a, ad, b, bd, ans, m, r;
+local p3, zp3, q, x, xd, a, ad, b, bd, m, r;
   p3:=QuoInt(p,3);
   zp3:=QuoInt(2*p,3);
   q := p-1;
-  i := 1;
   x := 1;
   xd := 1;
   a := 0;
   ad := 0;
   b := 0;
   bd := 0;
-  ans := [];
   repeat
     if x < p3 then
       x := (x * n) mod p;

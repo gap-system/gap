@@ -121,7 +121,7 @@ end );
 #F  InitEpimorphismSQ( F )
 ##
 InstallGlobalFunction( InitEpimorphismSQ, function( F )
-local g, gens, r, rels, ng, nr, pf, pn, pp, D, P, M, Q, I, A, G, min,
+local g, gens, r, rels, ng, nr, pf, pn, pp, D, M, Q, I, A, G, min,
 gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n,genu;
 
   if IsFpGroup(F) then
@@ -149,7 +149,6 @@ gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n,genu;
     # compute normal form
     norm := NormalFormIntMat( M,15 );
     D := norm.normal;
-    P := norm.rowtrans;
     Q := norm.coltrans;
     I := Q^-1;
     min := Minimum( Length(D), Length(D[1]) );

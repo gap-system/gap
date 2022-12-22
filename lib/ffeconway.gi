@@ -1599,7 +1599,7 @@ InstallMethod( Display,
     "for matrix of FFEs (for larger fields)",
     [ IsFFECollColl and IsMatrix ], 10, # prefer this to existing method
         function(m)
-    local   deg,  chr,  zero,  d,  w,  r,  dr,  x,  s,  y,  j,  a;
+    local   deg,  chr,  d,  w,  r,  dr,  x,  s,  y,  j,  a;
     if Length(m) = 0 or Length(m[1])= 0 then
         TryNextMethod();
     fi;
@@ -1608,7 +1608,6 @@ InstallMethod( Display,
     if deg = 1 or chr^deg <= MAXSIZE_GF_INTERNAL then
         TryNextMethod();
     fi;
-    zero := Zero(m[1,1]);
     Print("z = Z( ",chr,", ",deg,"); z2 = z^2, etc.\n");
     d := [];
     w := 1;

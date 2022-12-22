@@ -387,9 +387,8 @@ GAPInfo.History.AddLine := function(l)
 end;
 
 GAPInfo.History.PrevLine := function(start)
-  local hist, len, pos, first;
+  local hist, pos, first;
   hist := GAPInfo.History;
-  len := Length(start);
   atomic hist.Lines do
     pos := hist.Pos - 1;
     if pos = 0 then

@@ -5955,7 +5955,7 @@ InstallMethod( CharacterTableFactorGroup,
     "for a Brauer table, and a list of class positions",
     [ IsBrauerTable, IsList and IsCyclotomicCollection ],
     function( modtbl, classes )
-    local p, ordtbl, sizes, fus, kernel, ordfact, modfact, factirr,
+    local p, ordtbl, fus, kernel, ordfact, modfact, factirr,
           proj;
 
     p:= UnderlyingCharacteristic( modtbl );
@@ -5963,7 +5963,7 @@ InstallMethod( CharacterTableFactorGroup,
 
     # Unite the positions corresponding to `classes' in `ordtbl'
     # with the largest normal subgroup of `p' power order.
-    sizes:= SizesConjugacyClasses( ordtbl );
+    SizesConjugacyClasses( ordtbl ); # TODO is this line required?
     fus:= GetFusionMap( modtbl, ordtbl );
     kernel:= ClassPositionsOfNormalClosure( ordtbl, fus{ classes } );
 

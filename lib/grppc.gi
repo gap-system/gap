@@ -1265,13 +1265,12 @@ local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
        inequal, # G<>H flag
        eas,     # elementary abelian series in <G> through <U>
        step,    # counter looping over <eas>
-       K,  L,   # members of <eas>
+       L,       # members of <eas>
        Kp,Lp, # induced and modulo pcgs's
        KcapH,LcapH, # pcgs's of intersections with <H>
        N,   cent,   # elementary abelian factor, for affine action
        cls,     # classes in range/source of homomorphism
        opr,     # (elm^opr)=cls.representative
-       p,       # prime dividing $|G|$
        nexpo,indstep,Ldep,allcent;
 
   # Treat the case of a trivial group.
@@ -1295,7 +1294,6 @@ local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
   # w.r.t. <home>.
 
   if IsPGroup( G )  then
-    p:=PrimePGroup(G);
     home:=PcgsCentralSeries(G);
     eas:=CentralNormalSeriesByPcgs(home);
     cent:=ReturnTrue;
@@ -1332,7 +1330,6 @@ local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
     # We apply the homomorphism principle to the homomorphism G/L -> G/K.
     # The  actual   computations  are all  done   in <G>,   factors are
     # represented by modulo pcgs.
-    K :=L;
     Kp:=Lp;
     L :=eas[ step ];
     Ldep:=indstep[step];
@@ -1449,12 +1446,11 @@ local G,           # common parent
       home,Hp,     # the home pcgs, induced pcgs
       eas, step,   # elementary abelian series in <G> through <U>
       ea2,         # used for factor series
-      K,    L,     # members of <eas>
+      L,           # members of <eas>
       Kp,Lp,       # induced and modulo pcgs's
       KcapH,LcapH, # pcgs's of intersections with <H>
       N,   cent,   # elementary abelian factor, for affine action
       tra,         # transversal for candidates
-      p,           # prime dividing $|G|$
       nexpo,indstep,Ldep,allcent,
       cl,  i;  # loop variables
 
@@ -1483,7 +1479,6 @@ local G,           # common parent
 
     eas:=fail;
     if IsPGroup( G ) then
-        p := PrimePGroup(G);
         home:=PcgsPCentralSeriesPGroup(G);
         eas:=PCentralNormalSeriesByPcgsPGroup(home);
         if NT in eas then
@@ -1550,7 +1545,6 @@ local G,           # common parent
     # Now go back through the factors by all groups in the elementary abelian
     # series.
     for step  in [ step + 1 .. Length( eas ) ]  do
-        K  := L;
         Kp := Lp;
         L  := eas[ step ];
         Ldep:=indstep[step];
@@ -1939,7 +1933,6 @@ local e,        # EAS
       iso,      # isomorphism to EAS group
       start,    # index of largest abelian quotient
       i,        # loop
-      n,        # e[i]
       m,        # e[i+1]
       pcgsm,    # pcgs(m)
       mpcgs,    # pcgs mod pcgsm
@@ -2015,7 +2008,6 @@ local e,        # EAS
 
   for i in [start..Length(e)-1] do
     # lift from G/e[i] to G/e[i+1]
-    n:=e[i];
     m:=e[i+1];
     pcgsm:=InducedPcgs(pcgs,m);
     mpcgs:=pcgs mod pcgsm;

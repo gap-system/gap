@@ -261,7 +261,7 @@ end);
 ##
 InstallGlobalFunction(ActionSubspacesElementaryAbelianGroup,function(arg)
 local P,g,op,act,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,
-      dims,Pgens,Pcgens,Pu,Pc,perms,one,par,ker,kersz,pcelm,pccache,asz;
+      dims,Pgens,Pcgens,Pu,perms,one,par,ker,kersz,pcelm,pccache,asz;
 
   P:=arg[1];
   if IsModuloPcgs(arg[2]) then
@@ -306,7 +306,6 @@ local P,g,op,act,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,
 
   # find representatives generating the acting factor
   Pgens:=[];
-  Pc:=Pu;
   Pcgens:=GeneratorsOfGroup(Pu);
   while Size(Pu)<Size(P) do
     repeat

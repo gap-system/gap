@@ -1081,7 +1081,7 @@ end);
 InstallMethod(ConfluentMonoidPresentationForGroup,"generic",
   [IsGroup and IsFinite],
 function(G)
-local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
+local iso,fp,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
       loff,off,monreps,left,right,fmgens,r,diff,monreal,nums,reduce,hom,dept,
       lode,lrules,rulet,addrule;
   IsSimpleGroup(G);
@@ -1101,7 +1101,6 @@ local iso,fp,n,dec,homs,mos,i,j,ffp,imo,m,k,gens,fm,mgens,rules,
 
     fp:=Range(iso);
     gens:=GeneratorsOfGroup(fp);
-    n:=Length(gens);
     dec:=iso!.decompinfo;
 
     fmgens:=[];
@@ -2141,7 +2140,7 @@ mytzf:=maketzf(rels);
   if newstyle then directerr:=true;fi;
 
   addrule:=function(rule)
-  local left,right,let,old,p,trule,j,stack;
+  local left,right,let,p,trule,j,stack;
     stack:=[];
     left:=reduce(rule[1],rels,rdag,mytzf);
     right:=reduce(rule[2],rels,rdag,mytzf);
@@ -2155,7 +2154,6 @@ mytzf:=maketzf(rels);
       rule:=[right,left];
     fi;
     # try to shift
-  old:=rule;
     let:=LetterRepAssocWord(rule[1])[1];
     left:=Subword(rule[1],2,Length(rule[1]));
     right:=reduce(invmap[let]*rule[2],rels,rdag,mytzf);
@@ -2669,7 +2667,7 @@ end);
 #end;
 
 BindGlobal("BuildRewritingFromData",function(dat)
-local bas,fm,fam,mfam,mgens,gens,mrels,rels,i,f,g,m,hom;
+local bas,fm,fam,mfam,mrels,rels,i,f,g,m,hom;
   bas:=dat[3]+1;
   fm:=FreeMonoid(dat[4]);
   mfam:=FamilyObj(One(fm));
@@ -2698,8 +2696,6 @@ local bas,fm,fam,mfam,mgens,gens,mrels,rels,i,f,g,m,hom;
   fi;
 
   g:=f/rels;
-  mgens:=GeneratorsOfMonoid(fm);
-  gens:=GeneratorsOfGroup(f);
 
   MakeFpGroupToMonoidHomType1(g,m);
 

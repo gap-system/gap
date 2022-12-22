@@ -632,7 +632,7 @@ end);
 
 InstallMethod(OCAddRelations,"perm group",true,[IsRecord,IsList],0,
 function(ocr,gens )
-local   r,fg,rel,i,j,w;
+local   r,rel,i,j,w;
 
   # If<ocr>has a  record component 'relators',nothing is done.
   if IsBound(ocr.relators)  then
@@ -643,7 +643,6 @@ local   r,fg,rel,i,j,w;
   # it is not the right place to get a presentation here,as we may have
   # chosen the wrong generators before. So we just fetch it.
 
-  fg:=ocr.factorpres[1];
   r:=ocr.factorpres[2];
 
   # now rewrite the relators into the OC form

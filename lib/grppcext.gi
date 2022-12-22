@@ -1043,14 +1043,13 @@ end;
 #F MatOrbs( mats, dim, field )
 ##
 MatOrbs := function( mats, dim, field )
-    local p, q, r, l, n, seen, reps, rest, i, v, orb, j, w, im, h, mat, rep;
+    local p, q, r, l, seen, reps, rest, i, v, orb, j, w, im, h, mat, rep;
 
     # set up
     p := Characteristic( field );
     q := p^dim;
     r := p^dim - 1;
     l := List( [1..dim], x -> p );
-    n := Length( mats );
 
     # set up large boolean list
     seen := [];

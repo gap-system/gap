@@ -1104,7 +1104,6 @@ local cs,       # chief series of G
       gimg,     # gFhom
       act,      # component permcation to 1
       j,k,      # loop
-      C,        # Ker(Fhom)
       clF,      # classes of F
       ncl,      # new classes
       FM,       # normal subgroup in F, Fhom(M)
@@ -1224,7 +1223,7 @@ local cs,       # chief series of G
         fi;
 
 
-        C:=KernelOfMultiplicativeGeneralMapping(Fhom);
+        KernelOfMultiplicativeGeneralMapping(Fhom); # TODO is this line required?
         F:=Image(Fhom,G);
 
         clF:=ClassesFromClassical(F);
@@ -1322,7 +1321,7 @@ local cs,       # chief series of G
         else
           Fhom:=GroupHomomorphismByImagesNC(G,F,GeneratorsOfGroup(G),genimages);
         fi;
-        C:=KernelOfMultiplicativeGeneralMapping(Fhom);
+        KernelOfMultiplicativeGeneralMapping(Fhom); # TODO is this line required?
 
         Info(InfoHomClass,1,"constructed Fhom");
 
@@ -1666,7 +1665,6 @@ BindGlobal("LiftClassesEANonsolvGeneral",
            b,
            fe,
            radidx,
-           deno,
            comm;# for class correction
 
   correctingelement:=function(h,rep,fe)
@@ -1745,7 +1743,7 @@ BindGlobal("LiftClassesEANonsolvGeneral",
         imgs{[radidx+1..Length(gens)]},cl[4],hom,gpsz,OnRight,aff);
 
   classes:=[];
-  deno:=DenominatorOfModuloPcgs(Npcgs);
+  DenominatorOfModuloPcgs(Npcgs); # TODO is this line required?
   for b in orb do
     rep := PcElementByExponentsNC( Npcgs, Npcgs{ cg.baseComplement },
                     b.rep{ ran } );
@@ -1991,9 +1989,9 @@ end);
 ##
 BindGlobal("LiftClassesEATrivRep",
   function( H, Npcgs, cl, fants,hom, pcisom,solvtriv)
-    local  h,field,one,solvsz,radidx,gens,imgs,M,bas,
-           gpsz,c,i,npcgsact,usent,dim,found,nsgens,nsimgs,mo,
-           pcgsimgs,pcgssel,
+    local  h,field,one,gens,imgs,M,bas,
+           c,i,npcgsact,usent,dim,found,nsgens,nsimgs,mo,
+           pcgsimgs,
            sel,pcgs,fasize,nsfgens,fgens,a,norb,fstab,rep,reps,frep,freps,
            orb,p,rsgens,el,img,j,basinv,newo,orbslev,ssd,result,o,subs,orbsub,
            sgens,sfgens,z,minvecs,orpo,norpo,maxorb,
@@ -2020,11 +2018,6 @@ BindGlobal("LiftClassesEATrivRep",
   gens:=Concatenation(cl[2],Npcgs,cl[3]); # all generators
   fgens:=Concatenation(ListWithIdenticalEntries(
             Length(Npcgs)+Length(cl[2]),One(Range(hom))),cl[4]);
-  gpsz:=cl[5];
-
-  solvsz:=cl[6];
-
-  radidx:=Length(Npcgs)+Length(cl[2]);
   imgs := [  ];
   for c  in gens  do
     Add( imgs, npcgsact(c));
@@ -2184,7 +2177,6 @@ BindGlobal("LiftClassesEATrivRep",
   end;
 
   pcgsimgs:=List(pcgs,x->bas*npcgsact(x)*basinv);
-  pcgssel:=Filtered([1..Length(pcgs)],x->not IsOne(pcgsimgs[x]));
   nsimgs:=List(nsgens,x->bas*npcgsact(x)*basinv);
 
 
@@ -2541,7 +2533,6 @@ BindGlobal("LiftConCandCenNonsolvGeneral",
            cNh,        # centralizer of <h> in <N>
            gens,       # preimage `Centralizer( cl )' under <hom>
            r,          # dimension of <N>
-           ran,        # constant range `[ 1 .. r ]'
            aff,        # <N> as affine space
            imgs,  M,   # generating matrices for affine operation
            orb,        # orbit of affine operation
@@ -2615,7 +2606,6 @@ BindGlobal("LiftConCandCenNonsolvGeneral",
   cNh:=cg.cNh;
 
   r := Length( cg.baseComplement );
-  ran := [ 1 .. r ];
 
   # Construct matrices for the affine operation on $N/[h,N]$.
   Info(InfoHomClass,4,"space=",Size(field),"^",r);
@@ -2781,7 +2771,7 @@ local r,        #radical
       pcgs,mpcgs, #(modulo) pcgs
       pcisom,
       ser,      # series
-      radsize,len,ntrihom,
+      radsize,len,
       mran,nran,fran,
       central,
       #fants,
@@ -2829,20 +2819,16 @@ local r,        #radical
     # nonsolvable
     if radsize>1 then
       hom:=ser.factorhom;
-      ntrihom:=true;
       # we need centralizers
       #fants:=Filtered(NormalSubgroups(f),x->Size(x)>1 and Size(x)<Size(f));
     else
       if IsPermGroup(G) then
         hom:=SmallerDegreePermutationRepresentation(G:cheap);
-        ntrihom:=not IsOne(hom);;
       elif IsPermGroup(Range(ser.factorhom))
         and not IsPermGroup(Source(ser.factorhom)) then
-        ntrihom:=false;
         hom:=ser.factorhom;
       else
         hom:=IdentityMapping(G);
-        ntrihom:=false;
       fi;
     fi;
     f:=Image(hom,G);

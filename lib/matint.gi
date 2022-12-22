@@ -291,7 +291,7 @@ BindGlobal("BITLISTS_NFIM", MakeImmutable(
 #
 BindGlobal("DoNFIM", function(mat, options)
 local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
-      t, tmp, i, q, R, signdet;
+      t, tmp, i, q, R;
 
   if not (IsMatrix(mat)
          or (IsList(mat) and Length(mat)=1
@@ -458,7 +458,7 @@ local opt, sig, n, m, A, C, Q, B, P, r, c2, rp, c1, j, k, N, L, b, a, g, c,
     Unbind(A[n-1]);
     Unbind(A[n]);
     R:=rec(normal:=SNFofREF(A,opt[5]),rank:=r-1);
-    if n=m then R. signdet:=sig;fi;
+    if n=m then R.signdet:=sig;fi;
     return R;
   fi;
 

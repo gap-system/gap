@@ -102,7 +102,7 @@ end);
 
 
 BindGlobal("SMTX_AddEqns",function ( eqns, newmat, newvec)
-local n, zero, weights, mat, vec, ReduceRow, t,
+local n, weights, mat, vec, ReduceRow, t,
       newweight, newrow, newrhs, i, l, k;
 
 # Add a bunch of equations to the system of equations in <eqns>.  Each
@@ -116,7 +116,6 @@ local n, zero, weights, mat, vec, ReduceRow, t,
   Info(InfoMtxHom,6,"addEqns: entering" );
 
   n := eqns.dim;
-  zero := Zero(eqns.field);
   weights := eqns.weights;
   mat := eqns.mat;
   vec := eqns.vec;
@@ -983,7 +982,7 @@ end);
 BindGlobal("ProperModuleDecomp",function (M)
 local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
       echelon, nildim, p, maxorder, maxa, nilbase, nilech, cnt, remain,
-      used, coeffs, a, rk, order, fit, pos, newa, lastdim, i;
+      coeffs, a, rk, order, fit, pos, newa, lastdim, i;
 
   # Check whether we have found the indecomposability proof. That is,
   # see whether our regular element generates a subalgebra which
@@ -1097,7 +1096,6 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
   # combination.
   #
   remain:=[1..enddim];
-  used:=[];
 
   repeat
     # we will loop until too many passes without an improvement in knowledge
@@ -1314,10 +1312,9 @@ SMTX.HomogeneousComponents:=SMTX_HomogeneousComponents;
 # indecomposable summand. The homogeneous components must match between
 # each module, with their multiplicities.
 BindGlobal("SMTX_IsomorphismModules",function (M1, M2)
-local F, n, hc1, hc2, nc, b1, b2, map, remain, j, found, hom, i, k;
+local n, hc1, hc2, nc, b1, b2, map, remain, j, found, hom, i, k;
 
   TestModulesFitTogether(M1,M2);
-  F:=M1.field;
   n:=M1.dimension;
 
   if n <> M2.dimension then

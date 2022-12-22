@@ -134,7 +134,7 @@ local ch,c,z,i,j,k,h,hi,his,zv,f;
 end);
 
 InstallGlobalFunction(SumRootsPol,function(f,m)
-local cc,den,ch,n,nn,p,fam,i,j,w,pl,b,c,k,mp,degs,mc;
+local den,ch,n,nn,p,fam,i,j,w,pl,b,c,k,mp,mc;
   if LeadingCoefficient(f)<>1 then
     Error("f must be monic");
   fi;
@@ -160,7 +160,6 @@ local cc,den,ch,n,nn,p,fam,i,j,w,pl,b,c,k,mp,degs,mc;
       c[Length(c)-i]:=c[Length(c)-i]*p;
     od;
   fi;
-  cc:=c;
 
   c:=c{[n,n-1..1]};
   for i in [1..n] do
@@ -191,7 +190,6 @@ local cc,den,ch,n,nn,p,fam,i,j,w,pl,b,c,k,mp,degs,mc;
     Info(InfoGalois,3,"using modular method with ",Length(pl)," primes");
     b:=mp;
 
-    degs:=[]; #partitions info
     mp:=[];
     for i in pl do
       Info(InfoGalois,3,"modulo ",i);
@@ -270,10 +268,9 @@ end);
 #F  ProductRootsPol( <f>, <m> ) . . . . . . . . . . . . . . .  compute f^{xm}
 ##
 InstallGlobalFunction(ProductRootsPol,function(f,m)
-local c,ch,n,nn,p,fam,i,j,h,w,q;
+local c,n,nn,p,fam,i,j,h,w,q;
   Info(InfoGalois,3,"ProductRootsPol ",m);
   fam:=CoefficientsFamily(FamilyObj(f));
-  ch:=Characteristic(fam);
   n:=DegreeOfUnivariateLaurentPolynomial(f);
   nn:=Binomial(n,m);
   c:=CoefficientsOfUnivariatePolynomial(f){[n,n-1..1]};
@@ -342,11 +339,10 @@ end);
 #F  TwoSeqPol( <f>, <m> ) . . . . . . . . . . . . . . . . . . compute f^{1+m}
 ##
 InstallGlobalFunction(TwoSeqPol,function(pol,m)
-local f,c,ch,n,nn,p,fam,i,j,w,q;
+local f,c,n,nn,p,fam,i,j,w,q;
   Info(InfoGalois,3,"TwoSeqPol ",m);
   f:=pol;
   fam:=CoefficientsFamily(FamilyObj(f));
-  ch:=Characteristic(fam);
   n:=DegreeOfUnivariateLaurentPolynomial(f);
   nn:=n*(n-1);
   p:=0;

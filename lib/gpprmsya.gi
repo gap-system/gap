@@ -61,7 +61,7 @@ InstallOtherMethod( RepresentativeActionOp, "natural alternating group",
   # the objects might be group elements: rank up
   {} -> 2*RankFilter(IsMultiplicativeElementWithInverse),
 function ( G, d, e, opr )
-local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
+local dom,dom2,sortfun,cd,ce,rep,dp,ep;
   # test for internal rep
   if HasGeneratorsOfGroup(G) and
     not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
@@ -87,7 +87,6 @@ local dom,dom2,sortfun,max,cd,ce,rep,dp,ep;
       if CycleStructurePerm(d)<>CycleStructurePerm(e) then
         return fail;
       fi;
-      max:=Maximum(LargestMovedPoint(d),LargestMovedPoint(e));
       dp:=d;
       ep:=e;
       cd:=ShallowCopy(Cycles(d,dom));
@@ -299,7 +298,6 @@ InstallOtherMethod( IsomorphismFpGroup, "alternating perm group,name",
     35, # override `IsSimpleGroup' method
 function ( G,str )
 local   F,      # free group
-        gens,   #generators of F
         imgs,
         premap, # map to apply first
         hom,    # bijection
@@ -338,7 +336,6 @@ local   F,      # free group
     else
       # create the finitely presented group with <G>.degree-1 generators
       F := FreeGroup( 2, str);
-      gens:=GeneratorsOfGroup(F);
 
       # add the relations according to the presentation by Coxeter
       # (see Coxeter/Moser)
@@ -1607,7 +1604,7 @@ InstallOtherMethod( RepresentativeActionOp, "for natural symmetric group",
   # the objects might be group elements: rank up
   {} -> 2*RankFilter(IsMultiplicativeElementWithInverse),
 function ( G, d, e, opr )
-local dom,n,sortfun,max,cd,ce,p1,p2;
+local dom,n,sortfun,cd,ce,p1,p2;
   # test for internal rep
   if HasGeneratorsOfGroup(G) and
     not ForAll(GeneratorsOfGroup(G),IsInternalRep) then
@@ -1635,7 +1632,6 @@ local dom,n,sortfun,max,cd,ce,p1,p2;
       if CycleStructurePerm(d)<>CycleStructurePerm(e) then
         return fail;
       fi;
-      max:=Maximum(LargestMovedPoint(d),LargestMovedPoint(e));
       cd:=ShallowCopy(Cycles(d,dom));
       ce:=ShallowCopy(Cycles(e,dom));
       Sort(cd,sortfun);

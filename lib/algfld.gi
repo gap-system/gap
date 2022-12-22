@@ -65,7 +65,7 @@ end;
 InstallMethod(AlgebraicElementsFamily,"generic",true,
   [IsField,IsUnivariatePolynomial,IsBool],0,
 function(f,p,check)
-  local fam, i, impattr, rchar, deg, neg, red, z, new, c;
+  local fam, i, impattr, deg, neg, red, z, new, c;
   if check and not IsIrreducibleRingElement(PolynomialRing(f,
              [IndeterminateNumberOfLaurentPolynomial(p)]),p) then
     Error("<p> must be irreducible over f");
@@ -89,11 +89,6 @@ function(f,p,check)
   fam!.baseField:=f;
   fam!.zeroCoefficient:=Zero(f);
   fam!.oneCoefficient:=One(f);
-  if Size(f)<=256 then
-    rchar:=Size(f);
-  else
-    rchar:=0;
-  fi;
 
   fam!.poly:=p;
   fam!.polCoeffs:=CoefficientsOfUnivariatePolynomial(p);
@@ -571,12 +566,11 @@ end);
 ##
 InstallMethod( InverseOp, "AlgElm",true,[IsKroneckerConstRep],0,
 function(a)
-local i,fam,f,g,t,h,rf,rg,rh,z;
+local i,fam,f,g,t,h,rf,rg,rh;
   fam:=FamilyObj(a);
   f:=a![1];
   g:=ShallowCopy(fam!.polCoeffs);
   rf:=[fam!.oneCoefficient];
-  z:=fam!.zeroCoefficient;
   rg:=[];
   while g<>[] do
     t:=QuotRemPolList(f,g);
@@ -1313,7 +1307,7 @@ end );
 InstallMethod(IsIrreducibleRingElement,"AlgPol",true,
   [IsAlgebraicExtensionPolynomialRing,IsUnivariatePolynomial],0,
 function(R,pol)
-local irrfacs, coeffring, i, ind, coeffs, der, g;
+local irrfacs, coeffring, i, coeffs, der, g;
 
   # Check whether the desired factorization is already stored.
   irrfacs:= IrrFacsPol( pol );
@@ -1328,7 +1322,7 @@ local irrfacs, coeffring, i, ind, coeffs, der, g;
     return true;
   fi;
 
-  ind:= IndeterminateNumberOfLaurentPolynomial( pol );
+  IndeterminateNumberOfLaurentPolynomial( pol ); # TODO is this line required?
   coeffs:= CoefficientsOfLaurentPolynomial( pol );
   if coeffs[2]>0 then
     return false;

@@ -17,7 +17,7 @@ BindGlobal("TwoLevelStabilizer",
   function(gens,imgs,acts,pcgs,pcgsacts,quot,pnt,domain,act)
 local d,orb,len,S,depths,rel,stb,img,pos,i,j,k,ii,po,rep,sg,sf,sfs,fr,first,
       fra,blp,bli,terminate,induce,ind,Sact,gpsz,stabsz,pcgstabsz,stopsz,divs,
-      brutelimit,permact,pacthom,good,goodi,lpos,actrange;
+      brutelimit,permact,pacthom,good,lpos,actrange;
 
   first:=true;
   gpsz:=Size(Group(imgs,()))*Product(RelativeOrders(pcgs));
@@ -166,7 +166,7 @@ local d,orb,len,S,depths,rel,stb,img,pos,i,j,k,ii,po,rep,sg,sf,sfs,fr,first,
 
           # we don't care about the actual subgroup, just the inducing elements
           good:=[];
-          goodi:=SubgroupProperty(induce.subact,
+          SubgroupProperty(induce.subact,
                   function(x)
                   local r;
                     r:=RepresentativeAction(permact,lpos,Permuted(lpos,x),OnTuples);
@@ -379,7 +379,7 @@ end);
 # main normalizer routine
 InstallGlobalFunction(NormalizerViaRadical,function(G,U)
 local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
-  central,f,ngm,npm,no2pcgs,part,stb,mods,famo,part0,nopcgs,uff,ufg,prev,
+  central,f,ngm,npm,no2pcgs,part,stb,mods,famo,nopcgs,uff,ufg,prev,
   ufr,dims,vecs,ovecs,vecsz,l,prop,properties,clusters,clusterspaces,
   fs,i,v1,o1,p1,
   orblens,stabilizespaceandupdate,dual,myact,bound,boundbas,ranges,j,module,sumos,
@@ -751,7 +751,6 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
           fi;
         od;
 
-        part0:=part;
         # calculate modulo pcgs for ``mpcgs mod part'' for following up steps
 
 

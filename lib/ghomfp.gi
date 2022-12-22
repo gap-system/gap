@@ -79,7 +79,7 @@ InstallMethod( IsSingleValued,
   [IsFromFpGroupStdGensGeneralMappingByImages and
    IsToPermGroupGeneralMappingByImages],0,
 function(hom)
-local s, bas, sg, o, gi, l, p, rel, start, i;
+local s, bas, gi, l, p, rel, start, i;
   s:=Source(hom);
   if not IsWholeFamily(s) then
     TryNextMethod();
@@ -88,8 +88,6 @@ local s, bas, sg, o, gi, l, p, rel, start, i;
     return true;
   fi;
   bas:=BaseStabChain(StabChainMutable(Range(hom)));
-  sg:=FreeGeneratorsOfFpGroup(s);
-  o:=One(Range(hom));
   # take the images corresponding to the free gens in case of reordering or
   # duplicates
   #gi:=MappingGeneratorsImages(hom)[2]{ListPerm(PermList(hom!.genpositions)^-1,
@@ -125,13 +123,12 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,
   true, [ IsFromFpGroupGeneralMapping
           and IsToPermGroupGeneralMappingByImages ],0,
 function(hom)
-local f,p,t,orbs,o,cor,u,frg;
+local f,p,t,orbs,o,cor,u;
 
   f:=Source(hom);
   if not (HasIsWholeFamily(f) and IsWholeFamily(f)) then
     TryNextMethod();
   fi;
-  frg:=FreeGeneratorsOfFpGroup(f);
   t:=List(GeneratorsOfGroup(f),i->Image(hom,i));
   p:=SubgroupNC(Range(hom),t);
   Assert(1,GeneratorsOfGroup(p)=t);
@@ -207,9 +204,8 @@ end);
 InstallMethod(CosetTableFpHom,"for fp homomorphisms",true,
   [ IsFromFpGroupGeneralMappingByImages and IsGroupGeneralMappingByImages],0,
 function(hom)
-local u,aug,hgu,mapi,w;
+local aug,hgu,mapi,w;
   # source group with suitable generators
-  u:=Source(hom);
   aug:=false;
   mapi:=MappingGeneratorsImages(hom);
   hgu:=List(mapi[1],UnderlyingElement);
@@ -244,7 +240,7 @@ InstallMethod( ImagesRepresentative, "map from (sub)fp group, rewrite",
   [ IsFromFpGroupGeneralMappingByImages and IsGroupGeneralMappingByImages,
     IsMultiplicativeElementWithInverse ], 0,
 function( hom, word )
-local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e,eval;
+local aug,si,r,i,j,ct,cft,c,f,g,ind,e,eval;
   # catch trivial group
   if HasMappingGeneratorsImages(hom)
     and Length(MappingGeneratorsImages(hom)[1])=0 then
@@ -302,7 +298,6 @@ local aug,si,r,i,j,tt,ct,cft,c,f,g,ind,e,eval;
     # should do better, also cope with inverses
     aug.transtab:=List(aug.groupGenerators,i->GeneratorSyllable(i,1));
   fi;
-  tt:=aug.transtab;
 
   c:=1; # current coset
 
@@ -1138,7 +1133,7 @@ InstallMethod(MaximalAbelianQuotient,
         "for subgroups of finitely presented groups, fallback",
         true, [IsSubgroupFpGroup], -1,
 function(U)
-local phi,m;
+local phi, m;
   # do cheaper Tietze (and thus do not store)
   phi:=AttributeValueNotSet(IsomorphismFpGroup,U:
     eliminationsLimit:=50,
@@ -1146,7 +1141,7 @@ local phi,m;
     cheap);
   m:=MaximalAbelianQuotient(Image(phi));
   SetAbelianInvariants(U,AbelianInvariants(Image(phi)));
-  return phi*MaximalAbelianQuotient(Image(phi));
+  return phi*m;
 end);
 
 InstallMethod(MaximalAbelianQuotient,

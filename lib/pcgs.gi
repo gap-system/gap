@@ -887,12 +887,11 @@ InstallMethod( ExtendedIntersectionSumPcgs,
     #function(a,b,c) return IsIdenticalObj(a,b) and IsIdenticalObj(a,c); end,
     [ IsPcgs and IsPrimeOrdersPcgs, IsList, IsList, IsObject ], 0,
 function( pcgs, n, u, pcgsM )
-    local   id,  G,  ls,  rs,  is,  g,  z,  I,  ros,  al,  ar,  tmp,
+    local   id,  ls,  rs,  is,  g,  z,  I,  ros,  al,  ar,  tmp,
             sum,  int;
 
     # set up
     id := OneOfPcgs( pcgs );
-    G  := GroupOfPcgs( pcgs );
 
     # What  follows  is a Zassenhausalgorithm: <ls> and <rs> are the left and
     # rights  sides. They are initialized with [ n, n ] and [ u, 1 ]. <is> is
@@ -1037,7 +1036,7 @@ InstallMethod( SumPcgs,
     0,
 
 function( pcgs, n, u )
-    local   id,  G,  ls,  g,  z,  I,  ros,  al,  tmp;
+    local   id,  ls,  g,  z,  I,  ros,  al,  tmp;
 
     if false and IsPcgs(u) and IsPcgs(n) and ParentPcgs(n)=pcgs
         and ParentPcgs(u)=pcgs then
@@ -1050,7 +1049,6 @@ function( pcgs, n, u )
 
     # set up
     id := OneOfPcgs( pcgs );
-    G  := GroupOfPcgs( pcgs );
 
     # what follows is a Zassenhausalgorithm
     ls := List( pcgs, x -> id );
@@ -1474,8 +1472,7 @@ InstallPcgsSeriesFromIndices:=function(series,indices)
     [IsPcgs and HasIndicesNormalSteps],
      {} -> -RankFilter(HasIndicesNormalSteps),
   function(pcgs)
-  local l,home;
-    home:=ParentPcgs(pcgs);
+  local l;
     l:=IndicesNormalSteps(pcgs);
     Info(InfoWarning,1,
       "using (obsolete) `IndicesNormalSteps'. Might lead to problems");
@@ -1577,8 +1574,7 @@ end);
 InstallMethod(IsPcgsElementaryAbelianSeries,"test if elm. abelian",true,
   [IsPcgs],0,
 function(p)
-local u, n, o, j, i, d, ro, n2, ea, ran;
-  u:=PcSeries(p);
+local n, o, j, i, d, ro, n2, ea, ran;
   if HasIndicesEANormalSteps(p) then
     n:=IndicesEANormalSteps(p); # get the indices stored already
   else

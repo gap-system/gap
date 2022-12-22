@@ -1146,14 +1146,12 @@ end );
 InstallMethod( SemidirectProduct, "Induced permutation automorphisms",
     [ IsPermGroup, IsGroupHomomorphism, IsPermGroup ],
 function( U, map, N )
-local Ugens,imgs,conj,cg,auc,cghom,d,embn,embs,l,u,P,info;
+local Ugens,imgs,conj,auc,d,embn,embs,l,u,P,info;
   Ugens:=GeneratorsOfGroup(U);
   imgs:=List(Ugens,x->Image(map,x));
   if ForAll(imgs,IsConjugatorIsomorphism) then
     conj:=List(imgs,ConjugatorOfConjugatorIsomorphism);
-    cg:=Group(conj,());
     auc:=ClosureGroup(N,conj);
-    cghom:=GroupHomomorphismByImagesNC(U,cg,Ugens,conj);
     d:=DirectProduct(U,auc);
     embn:=Embedding(d,2);
     embs:=Embedding(d,1);

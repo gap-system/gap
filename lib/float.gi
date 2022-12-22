@@ -187,11 +187,10 @@ end);
 # inner converter from string to float
 ################################################################
 BindGlobal("CONVERT_FLOAT_LITERAL", function(s)
-    local i,l,f,s1;
+    local i,f,s1;
     f:= FLOAT_STRING(s);
     if f<>fail then return f; fi;
 
-    l := LENGTH(s);
     s1 := "";
     for i in [1..LENGTH(s)] do
         if s[i] in ".0123456789eE+-" then
@@ -393,9 +392,9 @@ end );
 
 InstallMethod( FrExp, "for floats", [ IsFloat ], -1,
         function(obj)
-    local m, e, s;
+    local m, e;
     if IsZero(obj) then return [0,0]; fi;
-    if obj>Zero(obj) then s := 1; else s := -1; obj := -obj; fi;
+    if obj<=Zero(obj) then obj := -obj; fi;
     e := Int(Log2(obj))+1;
     m := obj/2^e;
     return [m,e];

@@ -1463,8 +1463,7 @@ end);
 InstallMethod( DeterminantMatDestructive,"non fraction free",
     [ IsOrdinaryMatrix and IsFFECollColl and IsMutable],
 function( mat )
-    local   m,  zero,  det,  sgn,  k,  j,  row,  l,  norm,
-            row2, x;
+    local   m,  zero,  det,  sgn,  k,  j,  row,  l, row2, x;
 
     Info( InfoMatrix, 1, "DeterminantMat called" );
 
@@ -1474,13 +1473,6 @@ function( mat )
         Error( "<mat> must be a square matrix at least 1x1" );
     fi;
     zero := ZeroOfBaseDomain(mat);
-
-    # normalize rows using the inverse
-    if IsFFECollColl(mat)  then
-        norm := true;
-    else
-        norm := false;
-    fi;
 
     det := One(zero);
     sgn := det;
@@ -2208,14 +2200,12 @@ InstallMethod( TriangulizedNullspaceMatNT,
     "generic method",
     [ IsOrdinaryMatrix ],
     function( mat )
-    local   nullspace, m, n, min, empty, i, k, row, zero, one;#
+    local   nullspace, n, empty, i, k, row, zero, one;#
 
     TriangulizeMat( mat );
-    m := NrRows(mat);
     n := NrCols(mat);
     zero := ZeroOfBaseDomain( mat );
     one  := OneOfBaseDomain( mat );
-    min := Minimum( m, n );
 
     # insert empty rows to bring the leading term of each row on the diagonal
     empty := 0*mat[1];
@@ -3071,7 +3061,6 @@ InstallOtherMethod( SumIntersectionMat,"MatrixObject", IsIdenticalObj,
 function( M1, M2 )
     local n,      # number of columns
           mat,    # matrix for Zassenhaus algorithm
-          zero,   # zero vector
           v,      # loop over 'M1' and 'M2'
           heads,  # list of leading positions
           sum,    # base of the sum
@@ -3090,7 +3079,6 @@ function( M1, M2 )
 
     n:= NrCols( M1 );
     mat:= [];
-    zero:= ZeroVector(n,M1);
 
     # Set up the matrix for Zassenhaus' algorithm.
     mat:= ZeroMatrix(BaseDomain(M1),NrRows(M1)+NrRows(M2),2*n);

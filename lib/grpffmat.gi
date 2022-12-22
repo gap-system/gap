@@ -744,7 +744,7 @@ end );
 
 
 InstallGlobalFunction(ClassesProjectiveImage,function(act)
-local G,PG,cl,c,i,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
+local G,PG,cl,c,i,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
       real,goal,good,e;
 
   G:=Source(act);
@@ -789,7 +789,6 @@ local G,PG,cl,c,i,s,sel,p,z,a,x,prop,fus,f,reps,repi,repo,zel,fcl,
     goal:=Length(cl); # this is too loose, but upper limit
   fi;
 
-  s:=[]; # count how much of pre-images we still need to account for
   sel:=[];
   reps:=List(cl,Representative);
   repi:=List(reps,x->ImagesRepresentative(act,x));

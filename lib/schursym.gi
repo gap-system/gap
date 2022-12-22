@@ -26,7 +26,7 @@
 Perform( [1], function(x)
   local S, S1, coeffS2, S2, coeffS3, S3, bmat, spinsteps, SpinDimSym,
     BasicSpinRepSymPos, BasicSpinRepSymNeg, BasicSpinRepSym,
-    SanityCheckPos, SanityCheckNeg, BasicSpinRepSymTest;
+    SanityCheckPos, SanityCheckNeg;
 
 
 ##  let 2S+(n) = < t_1, ..., t_(n-1) > subject to the relations
@@ -595,36 +595,7 @@ function( n, p )
   return grp;
 end );
 
-BasicSpinRepSymTest := function(n,p)
-  local mats, smtx, grp, sign;
-  for sign in [1,-1] do
-    mats := BasicSpinRepSym(n,p,sign).T;
-    if p > 0 then
-      smtx := GModuleByMats( mats, Field(Flat(mats)) );
-      Assert( 0, SMTX.IsAbsolutelyIrreducible( smtx ) );
-    fi;
-    grp := Group( mats.Sym );
-    if n > 4 or p <> 2 then
-    Assert( 0, Size( grp ) = 2*Factorial(n)/GcdInt(p,2) );
-    Assert( 0, Size( Center( grp ) ) = 2/GcdInt(p,2) );
-    Assert( 0, Size( DerivedSubgroup( grp ) ) = Factorial(n)/GcdInt(p,2) );
-    Assert( 0, IsSubgroup( DerivedSubgroup( grp ), Center( grp ) ) );
-    Assert( 0, AbelianInvariants( grp ) = [ 2 ] );
-    if n > 4 then Assert( 0, IsSimpleGroup( DerivedSubgroup( grp ) / Center( grp ) ) ); fi;
-    fi;
-    grp := Group( mats.Alt );
-    if n > 4 or p <> 2 then
-    Assert( 0, Size( grp ) = Factorial(n)/GcdInt(p,2) );
-    Assert( 0, Size( Center( grp ) ) = 2/GcdInt(p,2) );
-    Assert( 0, Size( DerivedSubgroup( grp ) ) = Factorial(n)/GcdInt(p,2) );
-    if n > 4 then Assert( 0, IsSimpleGroup( DerivedSubgroup( grp ) / Center( grp ) ) ); fi;
-    fi;
-  od;
-  return true;
-end;
-
 end );
-
 
 #############################################################################
 ##

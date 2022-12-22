@@ -1098,7 +1098,6 @@ InstallMethod( IsContainedInSpan,
     local m,              # number of rows
           n,              # number of columns
           heads,          # heads info of the basis
-          zero,           # zero coefficient
           basisvectors,   # list of basis vectors of `MB'
           i, j, k,        # loop variables
           scalar,         # one coefficient
@@ -1114,7 +1113,6 @@ InstallMethod( IsContainedInSpan,
       m:= Length( v    );
       n:= Length( v[1] );
       heads:= MB!.heads;
-      zero:= Zero( v[1][1] );
       basisvectors:= MB!.basisVectors;
 
       # Reduce `v' with the known basis vectors.

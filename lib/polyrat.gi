@@ -185,7 +185,7 @@ end);
 ##  may fail)
 ##
 BindGlobal("ApproxRootBound",function(f)
-local pl,x,p,tp,diff,app,d,scheit,v,nkon;
+local x,p,tp,diff,app,d,scheit,v,nkon;
 
   x:=IndeterminateNumberOfLaurentPolynomial(f);
   p:=CoefficientsOfLaurentPolynomial(f);
@@ -219,7 +219,6 @@ local pl,x,p,tp,diff,app,d,scheit,v,nkon;
       repeat
         d:=Length(p);
         # compute T[p]=\bar a_n p-a_0 p*, everything rational.
-        pl:=p;
         p:=p[1]*p-p[d]*Reversed(p);
         p:=List(p,i->ApproxRational(i,10));
         d:=Length(p);
@@ -963,7 +962,7 @@ end);
 ##    minpol and denominator must be given
 ##
 InstallGlobalFunction(HenselBound,function(arg)
-local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,lb,bea,polc,ro,rbpow;
+local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,bea,polc,ro,rbpow;
 
   pol:=arg[1];
   if Length(arg)>1 then
@@ -1012,7 +1011,6 @@ local pol,n,nalpha,d,dis,rb,bound,a,i,j,k,l,w,bin,lm,lb,bea,polc,ro,rbpow;
   # and add 1. As we nowhere selected a specific galois representative,
   # this bound (which is rational!) will bound all conjugactes as well.
   lm:=(RootInt(Int(w)-1,2)+1);
-  lb:=2^QuoInt(DegreeOfLaurentPolynomial(pol),2)*lm;
   for k in [1..DegreeOfLaurentPolynomial(pol)] do
 
     l:=2^k*lm;

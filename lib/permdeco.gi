@@ -373,7 +373,7 @@ end);
 
 InstallGlobalFunction(WreathActionChiefFactor,
 function(G,M,N)
-local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
+local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,Ehom,genimages,
       n,w,embs,reps,act,img,gimg,gens;
 
   # get the simple factor(s)
@@ -447,7 +447,6 @@ local cs,i,k,u,o,norm,T,Thom,autos,ng,a,Qhom,Q,E,Ehom,genimages,
     Add(genimages,gimg);
   od;
 
-  E:=Subgroup(w,genimages);
   # allow also mapping of `a' by enlarging
   gens:=GeneratorsOfGroup(G);
 

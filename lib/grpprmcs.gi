@@ -789,7 +789,7 @@ InstallGlobalFunction( RegularNinKernelCSPG,
             base,       # base of G
             chainG,     # stabilizer chain of `G'
             chainH,     # stabilizer chain of `H'
-            G1,H1,      # stabilizer chain of G,H
+            H1,         # stabilizer chain of G,H
             x,y,        # first two base points of G
             stabgroup,  # stabilizer of x in G
             chainstabgroup,
@@ -827,7 +827,6 @@ InstallGlobalFunction( RegularNinKernelCSPG,
 
     chainG:= StabChainMutable( G );
     base := BaseStabChain(chainG);
-    G1 := ListStabChain( chainG );
     H1 := ListStabChain( StabChainOp( H, rec( base := base,
                                            reduced := false ) ) );
     block := Set( H1[2].orbit );
@@ -934,7 +933,6 @@ InstallGlobalFunction( NormalizerStabCSPG, function(G)
             len,        # minimal length of stabgroup orbits
             where,      # index of minimal length orbit
             i,          # loop variable
-            base,       # base of G
             chainstab2, # chain of stabilizer of first two base points in G
             x,y,        # first two base points
             normalizer, # output group N_G(G_{xy})
@@ -951,7 +949,6 @@ InstallGlobalFunction( NormalizerStabCSPG, function(G)
     n := LargestMovedPoint(G);
     chainG:= StabChainMutable( G );
     chainstab := chainG.stabilizer;
-    base := BaseStabChain(chainG);
 
     # If necessary, make base change to achieve that second base point is
     # in smallest orbit of stabilizer.

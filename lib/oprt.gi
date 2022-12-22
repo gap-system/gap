@@ -203,9 +203,7 @@ InstallOtherMethod( ExternalSubsetOp,
           IsList,
           IsFunction ], 0,
     function( G, xset, start, gens, acts, act )
-    local   type,  xsset;
-
-    type := TypeObj( xset );
+    local   xsset;
 
     xsset := ExternalSetByFilterConstructor( IsExternalSubset,
                      G, HomeEnumerator( xset ), gens, acts, act );
@@ -331,9 +329,7 @@ InstallOtherMethod( ExternalOrbitOp,
           IsList,
           IsFunction ], 0,
     function( G, xset, pnt, gens, acts, act )
-    local   type,  xorb;
-
-    type := TypeObj( xset );
+    local  xorb;
 
     xorb := ExternalSetByFilterConstructor( IsExternalOrbit,
                     G, HomeEnumerator( xset ), gens, acts, act );

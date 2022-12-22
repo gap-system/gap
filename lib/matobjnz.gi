@@ -1577,7 +1577,7 @@ InstallOtherMethod( MinimalPolynomial, "ZModnZ, spinning over field",
     IsElmsCollsX,
     [ IsField and IsFinite, IsMatrixObj, IsPosInt ],
 function( fld, mat, ind )
-    local i, n, base, vec, one,zero, fam,
+    local i, n, base, vec, one, fam,
           mp, dim, span,op,w, piv,j;
 
     Info(InfoMatrix,1,"Minimal Polynomial called on ",
@@ -1586,7 +1586,6 @@ function( fld, mat, ind )
     base := [];
     dim := 0; # should be number of bound positions in base
     one := One(fld);
-    zero := Zero(fld);
     fam := ElementsFamily(FamilyObj(fld));
     mp:=[one];
     #keep coeffs

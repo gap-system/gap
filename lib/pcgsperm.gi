@@ -856,7 +856,7 @@ end );
 ##  different than `PcGroupWithPcgs' since extra parameters for shortcut.
 ##
 InstallGlobalFunction( PermpcgsPcGroupPcgs, function( pcgs, index, isPcgsCentral )
-    local   m,  sc,  gens,  p,  start,  i,  i2,  n,  n2;
+    local   m,  sc,  gens,  p,  i,  i2,  n,  n2;
 
     m := Length( pcgs );
     sc := SingleCollector( FreeGroup(IsSyllableWordsFamily, m ),
@@ -867,7 +867,6 @@ InstallGlobalFunction( PermpcgsPcGroupPcgs, function( pcgs, index, isPcgsCentral
     # of the elementary abelian factors.
     for i  in [ 1 .. Length( index ) - 1 ]  do
         p := RelativeOrders( pcgs )[ index[ i ] ];
-        start := index[ i + 1 ];
         for n  in [ index[ i ] .. index[ i + 1 ] - 1 ]  do
             SetPowerNC( sc, n, LinearCombinationPcgs
                     ( gens, ExponentsOfPcElement
@@ -880,7 +879,6 @@ InstallGlobalFunction( PermpcgsPcGroupPcgs, function( pcgs, index, isPcgsCentral
         for n  in [ index[ i ] .. index[ i + 1 ] - 1 ]  do
             for i2  in [ 1 .. i - 1 ]  do
                 if isPcgsCentral then
-                    start := index[ i + 1 ];
                     for n2  in [ index[ i2 ] .. index[ i2 + 1 ] - 1 ]  do
                         SetConjugateNC( sc, n, n2,
                             GeneratorsOfRws( sc )[ n ]*
@@ -889,7 +887,6 @@ InstallGlobalFunction( PermpcgsPcGroupPcgs, function( pcgs, index, isPcgsCentral
                             ( pcgs[ n ], pcgs[ n2 ] ) ) ) );
                     od;
                 else
-                    start := index[ i2 + 1 ];
                     for n2  in [ index[ i2 ] .. index[ i2 + 1 ] - 1 ]  do
                         SetConjugateNC( sc, n, n2, LinearCombinationPcgs( gens,
                             ExponentsOfPcElement
@@ -898,7 +895,6 @@ InstallGlobalFunction( PermpcgsPcGroupPcgs, function( pcgs, index, isPcgsCentral
                     od;
                 fi;
             od;
-            start := index[ i + 1 ];
             for n2  in [ index[ i ] .. n - 1 ]  do
                 SetConjugateNC( sc, n, n2,
                     GeneratorsOfRws( sc )[ n ]*LinearCombinationPcgs( gens,

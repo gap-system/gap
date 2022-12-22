@@ -981,7 +981,7 @@ end);
 ##  double coset is an union of right cosets
 ##
 BindGlobal("CalcDoubleCosets",function(G,a,b)
-local c, flip, maxidx, refineChainActionLimit, cano, tryfct, p, r, t,
+local c, flip, maxidx, cano, tryfct, p, r, t,
       stabs, dcs, homs, tra, a1, a2, indx, normal, hom, omi, omiz,c1,
       unten, compst, s, nr, nstab, lst, sifa, pinv, blist, bsz, cnt,
       ps, e, mop, mo, lstgens, lstgensop, rep, st, o, oi, i, img, ep,

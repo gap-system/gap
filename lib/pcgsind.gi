@@ -47,10 +47,7 @@ DeclareRepresentation(
 InstallMethod( InducedPcgsByPcSequenceNC, "pcgs, empty list",
     true, [ IsPcgs, IsList and IsEmpty ], 0,
 function( pcgs, pcs )
-    local  efam, filter,  igs;
-
-    # check which filter to use
-    filter := IsEmpty;
+    local  efam,  igs;
 
     # get family
     efam := FamilyObj( OneOfPcgs( pcgs ) );
@@ -447,7 +444,7 @@ InstallMethod( InducedPcgsByGeneratorsWithImages,
 
 function( pcgs, gens, imgs )
     local  ro, max, id, igs, chain, new, seen, old, u, uw, up, e, x, c,
-           cw, d, i, j, f,nonab;
+           d, i, j, f,nonab;
 
     # do family check here to avoid problems with the empty list
     if not IsIdenticalObj( FamilyObj(pcgs), FamilyObj(gens) )  then
@@ -530,7 +527,6 @@ function( pcgs, gens, imgs )
                         then
                             c := Comm( u[1], x[1] );
                             if not c in seen  then
-                                cw := DepthOfPcElement( pcgs, c );
                                 AddSet( new, [c, Comm( u[2], x[2] )] );
                                 AddSet( seen, c );
                             fi;
@@ -1234,14 +1230,13 @@ end );
 #M  CanonicalPcElement( <igs>, <elm> )
 ##
 CANONICAL_PC_ELEMENT := function( pcgs, elm )
-    local   pa,  map,  ros,  tal,  g,  d,  ll,  lr;
+    local   pa,  ros,  tal,  g,  d,  ll,  lr;
 
     # catch empty case
     if IsEmpty(pcgs) then
       return elm;
     fi;
     pa  := ParentPcgs(pcgs);
-    map := pcgs!.depthMapFromParent;
     ros := RelativeOrders(pa);
     tal := pcgs!.tailStart;
     for g  in pcgs  do

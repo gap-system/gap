@@ -972,7 +972,7 @@ end);
 
 # the ``all-halls'' function by brute force Sylow-combination search
 BindGlobal("Halleen",function(arg)
-local G,gp,p,r,s,c,i,a,pp,prime,sy,k,b,dc,H,e,j,forbid;
+local G,gp,p,r,s,c,i,a,prime,sy,k,b,dc,H,e,j,forbid;
   G:=arg[1];
   gp:=PrimeDivisors(Size(G));
   if Length(arg)>1 then
@@ -990,7 +990,6 @@ local G,gp,p,r,s,c,i,a,pp,prime,sy,k,b,dc,H,e,j,forbid;
   Sort(c,function(a,b) return Length(a)<Length(b);end);
   for i in c do
     a:=[];
-    pp:=Product(i);
     # now build all new groups by extending the groups that were obtained
     # for one prime less. We exclude the smallest prime, as it tends to have
     # the largest sylow
@@ -1054,7 +1053,7 @@ local G,gp,p,r,s,c,i,a,pp,prime,sy,k,b,dc,H,e,j,forbid;
 end);
 
 BindGlobal("HallsFittingFree",function(G,pi)
-local s,d,c,act,o,i,j,h,p,hf,img,n,prd,k,ns,all,hl,hcomp,
+local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
   shall,t,thom,b,ntb,hom,dser,pcgs,
   fphom,fp,gens,imgs,ocr,elabser,cgens,a,kim,r,z;
 
@@ -1079,7 +1078,6 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,prd,k,ns,all,hl,hcomp,
 
   # needs to go higher
   pi:=Set(pi);
-  prd:=Product(pi);
   if ForAny(pi,x->not IsPrimeInt(x)) then
     Error("pi must be a set of primes");
   fi;

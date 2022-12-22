@@ -257,9 +257,7 @@ end );
 ##
 InstallGlobalFunction( CorrectConjugacyClass,
 function( home, h, n, stab, N,depthlev, cNh,off )
-local   cl,  comm,  s, ostab;
-
-  ostab:=stab;
+local   cl,  comm,  s;
 
   #AH: take only those elements module N - the part in N is cNh
   stab:=Filtered(stab,i->DepthOfPcElement(home,i)<depthlev);
@@ -559,7 +557,6 @@ local  G,  home,  # the group and the home pcgs
        opr,     # (candidates[i]^opr[i])^exp[i]=cls[i].representative
        team,    # team of candidates with same image modulo <K>
        blist,pos,q, # these control grouping of <cls> into <team>s
-       p,       # prime dividing $|G|$
        i,c,   # loop variables
        opt,      # options
        consider, # consider function
@@ -634,7 +631,7 @@ local  G,  home,  # the group and the home pcgs
     cent:=false;
 
   elif IsPGroup(G) then
-    p:=PrimePGroup(G);
+    PrimePGroup(G); # TODO is this line required?
     home:=PcgsPCentralSeriesPGroup(G);
     eas:=PCentralNormalSeriesByPcgsPGroup(home);
 
@@ -989,30 +986,25 @@ end);
 InstallGlobalFunction(MultiClassIdsPc, function(dat,candidates)
 local  G,home,  # the group and the home pcgs
        H,       # acting group
-       liftkerns,
-       first,
        levdat,leda,
        allcl,
-       mode,    # LSB: ratCl | power | test :MSB
        eas,     # elementary abelian series in <G>
        step,    # counter looping over <eas>
        K,  L,   # members of <eas>
        indstep, # indice normal steps
        Ldep,    # depth of L in pcgs
-       Kp,mK,Lp,mL, # induced and modulo pcgs's
+       Kp,Lp,mL, # induced and modulo pcgs's
        N,   cent,   # elementary abelian factor, for affine action
        cls, newcls, # classes in range/source of homomorphism
        cl,      # class looping over <cls>
        opr,     # (candidates[i]^opr[i])^exp[i]=cls[i].representative
        team,    # team of candidates with same image modulo <K>
        blist,pos,q, # these control grouping of <cls> into <team>s
-       p,       # prime dividing $|G|$
        i,c,   # loop variables
        nexpo,   # N-Exponents of the elements of N conjugated
        allcent; # DivisorsInt(Size(G)) (used for Info)
 
   G:=dat.group;
-  mode:=0;
 
   # <candidates> is a list  of elements whose classes  will be output  (but
   # with canonical representatives), see comment  above. Or <candidates> is
@@ -1034,7 +1026,7 @@ local  G,home,  # the group and the home pcgs
     # w.r.t. <homepcgs>.
 
     if IsPGroup(G) then
-      p:=PrimePGroup(G);
+      PrimePGroup(G);  # TODO is this line required?
       home:=PcgsPCentralSeriesPGroup(G);
       eas:=PCentralNormalSeriesByPcgsPGroup(home);
 
@@ -1090,10 +1082,6 @@ local  G,home,  # the group and the home pcgs
 
   fi;
 
-  # check to which factors we want to lift
-
-  liftkerns:=[];
-
   # Initialize the algorithm for the trivial group.
   step:=1;
 
@@ -1125,7 +1113,6 @@ local  G,home,  # the group and the home pcgs
 
   # Now go back through the factors by all groups in the elementary abelian
   # series.
-  first:=true;
   for step  in [2 .. Length(eas)]  do
 
 
@@ -1140,7 +1127,6 @@ local  G,home,  # the group and the home pcgs
     K:=eas[step-1];
     L:=eas[step];
 
-    mK:=mL;
 
     leda:=levdat[step];
     if IsBound(leda.Lp) then
@@ -1184,8 +1170,6 @@ local  G,home,  # the group and the home pcgs
         fi;
       od;
     fi;
-
-    first:=false;
 
     N!.capH:=N;
 

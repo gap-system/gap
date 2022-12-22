@@ -2409,8 +2409,7 @@ InstallGlobalFunction( RestrictOutputsOfSLP,
 ##
 InstallGlobalFunction( IntermediateResultOfSLP,
   function(slp,k)
-    local biggest,changes,i,invtab,l,ll,lll,needed,nrinps,
-          slotsused;
+    local changes,i,invtab,l,ll,lll,needed,nrinps,slotsused;
 
     if IsStraightLineProgram(slp) then
         l := LinesOfStraightLineProgram( slp );
@@ -2422,7 +2421,6 @@ InstallGlobalFunction( IntermediateResultOfSLP,
     # The following has to be done, because the SLP might overwrite its
     # intermediate results:
     changes := SLPChangesSlots(l,nrinps);
-    biggest := changes[Length(changes)];
     slotsused := [1..nrinps];   # set of slots used at all
     needed := [];  # here we mark the needed entries for the rest of the prog.
     needed[k] := true;
@@ -2574,7 +2572,7 @@ InstallGlobalFunction( IntermediateResultOfSLPWithoutOverwrite,
 ##
 InstallGlobalFunction( ProductOfStraightLinePrograms,
   function(s1,s2)
-    local biggest,biggest2,biggest3,changes,changes2,i,j,l,l1,l2,l3,line,
+    local biggest,biggest2,biggest3,changes,changes2,i,j,l1,l2,l3,line,
           newline,nrinps;
 
     l1 := ShallowCopy(LinesOfStraightLineProgram(s1));
@@ -2583,7 +2581,6 @@ InstallGlobalFunction( ProductOfStraightLinePrograms,
     if nrinps <> NrInputsOfStraightLineProgram(s2) then
         Error("s1 and s2 do not have the same number of inputs!");
     fi;
-    l := Length(l1);
     # we have to run through s1 to see how many slots are produced:
     changes := SLPChangesSlots(l1,nrinps);
     biggest := changes[Length(changes)];
@@ -2978,7 +2975,7 @@ InstallMethod( ResultOfStraightLineProgram,
 InstallMethod( LargestNrSlots, "for a straight line program",
   [ IsStraightLineProgram ],
   function( slp )
-    local i,li,line,maxnrslots,nrslots,r,step,sup,w;
+    local i,line,maxnrslots,nrslots,r,step,sup,w;
 
     nrslots := NrInputsOfStraightLineProgram(slp);
     r := 0*[1..nrslots];
@@ -2989,12 +2986,8 @@ InstallMethod( LargestNrSlots, "for a straight line program",
     # Loop over the program.
     for line in LinesOfStraightLineProgram( slp ) do
       if not(sup.unnecessary[step]) then
-          if   not IsEmpty( line ) and IsInt( line[1] ) then
-            # Normal line without overwrite:
-            li := line;
-          elif 2 <= Length( line ) and IsInt( line[2] ) then
-            # Line with overwrite:
-            li := line[1];
+          if not IsEmpty( line ) and IsInt( line[1] ) then # TODO remove
+          elif 2 <= Length( line ) and IsInt( line[2] ) then # TODO remove
           else
             # The line describes a list of words to be returned.
             return maxnrslots;

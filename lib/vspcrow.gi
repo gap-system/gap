@@ -1104,12 +1104,10 @@ InstallMethod( CanonicalBasis,
           row,     # one vector in `ech'
           B,       # basis record, result
           n,       # number of columns in generators
-          zero,    # zero of the field
           i,       # loop over rows
           k;       # loop over columns
 
     base  := [];
-    zero  := Zero( LeftActingDomain( V ) );
 
     # We use the semi-echelonized basis.
     # All we have to do is to sort the basis vectors such that the
@@ -1729,7 +1727,6 @@ InstallMethod( IsContainedInSpan,
     function( MB, v )
     local
           ncols,          # dimension of the row vectors
-          zero,           # zero scalar
           heads,          # heads info of the basis
           basisvectors,   # list of basis vectors of `MB'
           j;              # loop over `heads'
@@ -1749,7 +1746,6 @@ InstallMethod( IsContainedInSpan,
         return false;
       fi;
 
-      zero:= Zero( v[1] );
       basisvectors:= MB!.basisVectors;
 
       for j in [ 1 .. ncols ] do

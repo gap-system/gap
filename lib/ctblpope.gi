@@ -620,7 +620,7 @@ InstallGlobalFunction( Permut, function( tbl, arec )
     local tbl_size, permel, sortedchars,
           a, amin, amax, c, ncha, i, j, permch,
           Conditor, cond, X, minR, maxR,
-          s, nccl,
+          s,
           total, free, const, lowerBound, upperBound,
           solveKnot, nextLevel, insertValue, suche;
 
@@ -795,7 +795,7 @@ InstallGlobalFunction( Permut, function( tbl, arec )
        fi;
     end;
 
-    nccl:= NrConjugacyClasses( tbl );
+    NrConjugacyClasses( tbl ); # TODO is this line required?
     total:= 0;
     X:= permel.obj;
     permch:= [];
