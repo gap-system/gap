@@ -579,7 +579,7 @@ install: install-bin install-doc install-gaproot install-sysinfo install-headers
 	@echo "| via support@gap-system.org or https://github.com/gap-system/gap/issues   |"
 	@echo "+--------------------------------------------------------------------------+"
 
-install-bin: build/gap-install install-libgap
+install-bin: build/gap-install
 	# install a special build of gap with SYS_DEFAULT_PATHS set suitably
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(bindir)
 	$(LTINSTALL) build/gap-install $(DESTDIR)$(bindir)/gap
