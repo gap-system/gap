@@ -625,7 +625,7 @@ local m,epi,cnt,h;
 end);
 
 BindGlobal("MaxesType4a",function(w,G,a,t,n)
-local dom, o, t1, a1, t1d, proj, reps, ts, ta, tb, s1, i, fix, wnew, max, iso, t2, s, p1, p2, en1, en2, emb, ma, img, f, j,projG;
+local dom, o, t1, a1, t1d, proj, reps, ts, ta, tb, s1, i, fix, wnew, max, s, p1, p2, en1, en2, emb, ma, img, f, j,projG;
   dom:=MovedPoints(w);
   o:=Orbits(G,dom);
   t:=Subgroup(Parent(t),SmallGeneratingSet(t));
@@ -663,8 +663,6 @@ local dom, o, t1, a1, t1d, proj, reps, ts, ta, tb, s1, i, fix, wnew, max, iso, t
   for f in Difference(fix,[1]) do
     Info(InfoLattice,3,"trying ",f);
     # now try 1 with f -- this is essentially a type 3a test
-    iso:=ConjugatorAutomorphism(w,reps[f]);
-    t2:=Image(iso,t1);
     s:=Stabilizer(s1,Difference(dom,Union(ts[1],ts[f])),OnTuples);
     # embed into wnew
     p1:=Embedding(w,1);

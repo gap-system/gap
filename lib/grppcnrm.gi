@@ -336,9 +336,8 @@ PCGS_NORMALIZER_OPE := function( data, lst, obj )
 end;
 
 PCGS_NORMALIZER_DATAE := function( home, modulo )
-    local   id,  ros,  sub,  i,  dg,  exp,  max;
+    local   ros,  sub,  i,  dg,  exp,  max;
 
-    id  := OneOfPcgs(home);
     ros := RelativeOrders(home);
     sub := [];
     for i  in modulo  do

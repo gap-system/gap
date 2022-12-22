@@ -42,7 +42,7 @@ BindGlobal( "IRR_POLS_OVER_GF_CACHE", NEW_SORTED_CACHE(false) );
 DeclareGlobalName("AllIrreducibleMonicPolynomialCoeffsOfDegree");
 BindGlobal("AllIrreducibleMonicPolynomialCoeffsOfDegree", function(n, q)
   return GET_FROM_SORTED_CACHE( IRR_POLS_OVER_GF_CACHE, [q,n], function( )
-  local   l,  zero,  i,  r,  p, new, neverdiv;
+  local   l,  i,  r,  p, new, neverdiv;
 
   # this auxiliary function is for going around converting coefficients
   # to polynomials and using the \mod operator for divisibility tests
@@ -63,7 +63,6 @@ BindGlobal("AllIrreducibleMonicPolynomialCoeffsOfDegree", function(n, q)
   end;
 
   l := AllMonicPolynomialCoeffsOfDegree(n, q);
-  zero := 0*Indeterminate(GF(q));
   for i in [1..Int(n/2)] do
     r := AllIrreducibleMonicPolynomialCoeffsOfDegree(i, q);
     new:= [];

@@ -434,7 +434,7 @@ end);
 
 InstallGlobalFunction(RandomPartialPerm,
 function(arg)
-  local source, min, max, n, out, seen, j, dom, img, out1, out2, i;
+  local source, min, max, out, seen, j, dom, img, out1, out2, i;
 
   if Length(arg) = 1 then
     if IsSmallIntRep(arg[1]) and IsPosInt(arg[1]) then
@@ -444,7 +444,6 @@ function(arg)
     elif IsCyclotomicCollection(arg[1]) and IsSSortedList(arg[1])
         and ForAll(arg[1], x -> IsSmallIntRep(x) and IsPosInt(x)) then
       source := arg[1];
-      n := Length(source);
       min := Minimum(source) - 1;
       max := Maximum(source);
     else

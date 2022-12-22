@@ -1993,7 +1993,7 @@ BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
 end );
 
 BIND_GLOBAL( "InstallGlobalFunction", function( arg )
-    local   oper,  info,  func;
+    local   oper,  func;
 
     if LEN_LIST(arg) > 2  then
         INFO_DEBUG(1, "InstallGlobalFunction: too many arguments in ",
@@ -2001,7 +2001,6 @@ BIND_GLOBAL( "InstallGlobalFunction", function( arg )
     fi;
     if LEN_LIST(arg) = 3  then
         oper := arg[1];
-        info := arg[2];
         func := arg[3];
     else
         oper := arg[1];

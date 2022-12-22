@@ -680,8 +680,7 @@ InstallMethod( AbelianInvariants,
     0,
 
 function( G )
-    local   Fam,        # elements family of <G>
-            mat,        # relator matrix of <G>
+    local   mat,        # relator matrix of <G>
             gens,       # generators of free group
             genind,     # their indices
             row,        # a row of <mat>
@@ -691,7 +690,6 @@ function( G )
             word,
             inv;
 
-    Fam := ElementsFamily( FamilyObj( G ) );
     gens := FreeGeneratorsOfFpGroup( G );
     genind:=List(gens,i->AbsInt(LetterRepAssocWord(i)[1]));
 
@@ -832,8 +830,7 @@ InstallMethod( IsInfiniteAbelianizationGroup,
     0,
 
 function( G )
-    local   Fam,        # elements family of <G>
-            mat,        # relator matrix of <G>
+    local   mat,        # relator matrix of <G>
             gens,       # generators of free group
             genind,     # their indices
             row,        # a row of <mat>
@@ -842,7 +839,6 @@ function( G )
             i,          # loop variable
             word;
 
-  Fam := ElementsFamily( FamilyObj( G ) );
   gens := FreeGeneratorsOfFpGroup( G );
   genind:=List(gens,i->AbsInt(LetterRepAssocWord(i)[1]));
 
@@ -1077,7 +1073,6 @@ BindGlobal("GTC_CosetTableFromGensAndRels",function(arg)
             rels,                   # representatives of the relators
             relsGen,                # relators sorted by start generator
             subgroup,               # rows for the subgroup gens
-            deductions,             # deduction queue
             i, gen, inv,            # loop variables for generator
             g,                      # loop variable for generator col
             rel,                    # loop variables for relation
@@ -1194,9 +1189,6 @@ BindGlobal("GTC_CosetTableFromGensAndRels",function(arg)
         Add( subgroup, [ nums, cols ] );
       fi;
     od;
-
-    # add an empty deduction list
-    deductions := [];
 
     # make the structure that is passed to 'MakeConsequences'
     app := [ table, next, prev, relsGen, subgroup ];
@@ -1390,7 +1382,6 @@ InstallMethod( CosetTableNormalClosureInWholeGroup,
 function( H )
     local   G,          # whole group of H
             F,          # associated free group
-            fgens,      # generators of F
             grels,      # relators of G
             sgens,      # subgroup generators of H
             fsgens,     # preimages of subgroup generators in F
@@ -1407,7 +1398,6 @@ function( H )
 
         # get some variables
         F     := FreeGroupOfFpGroup( G );
-        fgens := GeneratorsOfGroup( F );
         grels := RelatorsOfFpGroup( G );
         sgens := GeneratorsOfGroup( H );
         fsgens := List( sgens, gen -> UnderlyingElement( gen ) );
@@ -1882,14 +1872,12 @@ InstallMethod(Intersection2,"subgroups of fp group",IsIdenticalObj,
 function ( G, H )
     local
             Fam,        # group family
-            rels,       # representatives for the relators
             table,      # coset table for <I> in its parent
             nrcos,      # number of cosets of <I>
             tableG,     # coset table of <G>
             nrcosG,     # number of cosets of <G>
             tableH,     # coset table of <H>
             nrcosH,     # number of cosets of <H>
-            pargens,    # generators of Parent(G)
             freegens,   # free generators of Parent(G)
             nrgens,     # number of generators of the parent of <G> and <H>
             ren,        # if 'ren[<i>]' is 'nrcosH * <iG> + <iH>' then the
@@ -1930,10 +1918,8 @@ function ( G, H )
       fi;
     fi;
 
-    pargens:=GeneratorsOfGroup(Fam!.wholeGroup);
     freegens:=FreeGeneratorsOfFpGroup(Fam!.wholeGroup);
     # initialize the table for the intersection
-    rels := RelatorRepresentatives( RelatorsOfFpGroup( Fam!.wholeGroup ) );
     nrgens := Length(freegens);
     table := [];
     for gen  in [ 1 .. nrgens ]  do
@@ -3062,14 +3048,13 @@ j, ok, b,k,tr;
 end);
 
 BindGlobal("DoLowIndexSubgroupsFpGroupIterator",function(G,S,N)
-local m, mm, rels, rel,w, wo, ok, a, k, t, ts, data, i, j;
+local m, rels, rel,w, wo, ok, a, k, t, ts, data, i, j;
 
   if Length(GeneratorsOfGroup(S))>0 then
     TryNextMethod();
   fi;
 
   m:=Length(FreeGeneratorsOfFpGroup(G));
-  mm:=2*m-1;
   rels:=List([1..2*m],i->[]);
   for i in RelatorsOfFpGroup(G) do
     w:=LetterRepAssocWord(i);
@@ -3981,7 +3966,7 @@ end);
 ##
 InstallGlobalFunction(IsomorphismPermGroupOrFailFpGroup,
 function(arg)
-local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, silent, sz,
+local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, sz,
   t1, bad, trial, b, bs, r, nl, o, u, rp, eo, rpo, e, e2, sc, j, z,
   timerFunc,amax,iso,useind;
 

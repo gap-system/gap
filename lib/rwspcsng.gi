@@ -251,10 +251,9 @@ end;
 ##  Solve the equation <a> X = <b>.
 ##
 SingleCollector_Solution := function( sc, a, b )
-    local   gns,  rod,  av,  bv,  x,  i,  dif,  y;
+    local   rod,  av,  bv,  x,  i,  dif,  y;
 
     # get the free group generators and relative orders
-    gns := sc![SCP_RWS_GENERATORS];
     rod := sc![SCP_RELATIVE_ORDERS];
 
     # write <a> as exponent vector

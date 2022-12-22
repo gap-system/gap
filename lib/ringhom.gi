@@ -547,7 +547,7 @@ end);
 InstallMethod( NaturalHomomorphismByIdeal,"sc rings",IsIdenticalObj,
     [ IsSubringSCRing,IsSubringSCRing],
 function( R, I )
-  local hom, R2, nat, Rgens, std, moduli, newmod, posi, q, t, dec, x, i, j,
+  local hom, R2, nat, std, moduli, newmod, posi, q, t, dec, x, i, j,
   k,rels,genwords;
   if not IsIdeal(R,I) then
     Error("I is not an ideal!");
@@ -597,7 +597,6 @@ function( R, I )
   # the rows of C convert old->new
   # Thus the rows of C give coefficients for images of old generators
 
-  Rgens:=GeneratorsOfRing(R);
   genwords:=Inverse(rels.coltrans)*GeneratorsOfRing(R);
   # nontrivial generators
   newmod:=[];

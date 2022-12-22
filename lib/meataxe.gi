@@ -759,7 +759,7 @@ end;
 ## corresponding matrices of smodule and qmodule resepctively.
 ## If sub is not the basis of a submodule then fail is returned.
 SMTX.InducedAction:=function( arg )
-local module,sub,typ,ans,dim,subdim,F,one,erg;
+local module,sub,typ,ans,dim,subdim,F,erg;
 
    module:=arg[1];
    sub:=arg[2];
@@ -770,7 +770,7 @@ local module,sub,typ,ans,dim,subdim,F,one,erg;
    fi;
    subdim:=Length(sub);
    dim:=SMTX.Dimension(module);
-   F:=SMTX.Field(module); one:=One(F);
+   F:=SMTX.Field(module);
 
    erg:=SMTX.SubQuotActions(module.generators,
                                 sub,dim,subdim,F,typ);
@@ -1259,7 +1259,7 @@ end;
 ## Returns false if module is irreducible.
 SMTX_RandomIrreducibleSubGModule:=function( module )
    local  ranSub, subbasis, submodule, subbasis2, submodule2,
-   F, dim, el, M, fac, N, i, matrices, ngens, genpair;
+   F, el, M, fac, N, i, matrices, ngens, genpair;
 
    if not SMTX.IsMTXModule(module) then
       return Error("Argument of RandomIrreducibleSubGModule is not a module.");
@@ -1319,7 +1319,6 @@ SMTX_RandomIrreducibleSubGModule:=function( module )
 
       # Only the actual algebra element and its nullspace have to be recomputed
       # This code is essentially from IsomorphismGModule
-      dim:=SMTX.Dimension(submodule2);
       matrices:=ShallowCopy(submodule2.generators);
       ngens:=Length(matrices);
       for genpair in el[1] do
@@ -1347,8 +1346,8 @@ SMTX.RandomIrreducibleSubGModule:=SMTX_RandomIrreducibleSubGModule;
 ## irreducible, and the degree of the relevant field extension otherwise.
 ## This is needed for testing for equivalence of modules.
 SMTX_GoodElementGModule:=function( module )
-local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
-      fac, sfac, pol, oldpol,  q, deg, i, l,
+local matrices, ngens, M, mat,  N, newgenlist, coefflist,
+      fac, pol, oldpol,  q, deg, i, l,
       trying, dim, mindim, F, R, count, rt0, idmat;
 
    rt0:=Runtime();
@@ -1371,7 +1370,6 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
    dim:=SMTX.Dimension(module);
    matrices:=ShallowCopy(module.generators);
    ngens:=Length(matrices);
-   orig_ngens:=ngens;
    F:=SMTX.Field(module);
    R:=PolynomialRing(F);
 
@@ -1417,7 +1415,6 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist, orig_ngens,
                fac:=Filtered(fac,i->DegreeOfLaurentPolynomial(i)<=deg);
                Info(InfoMeatAxe,3,Length(fac)," factors of degree ",deg,
                     ", Time = ",Runtime()-rt0,".");
-               sfac:=Set(fac);
             fi;
          until fac <> [];
          l:=Length(fac);
@@ -2081,7 +2078,7 @@ end;
 ##
 SMTX_Distinguish:=function( cf, i )
    local el, genpair, ngens, orig_ngens, mat, matsi, mats, M, idmat,
-         dimi, dim, F, fac, sfac, p, q, oldp, found, extdeg, j, k,
+         dim, F, fac, p, q, oldp, found, extdeg, j, k,
          lcf, lf, x, y, wno, deg, trying, N, fact, R;
 
    lcf:=Length(cf);
@@ -2090,7 +2087,6 @@ SMTX_Distinguish:=function( cf, i )
    F:=SMTX.Field(cf[1][1]);
    R:=PolynomialRing(F);
    matsi:=ShallowCopy(cf[i][1].generators);
-   dimi:=SMTX.Dimension(cf[i][1]);
    idmat:=matsi[1]^0;
 
    # First check that the existing nullspace has dim. 1 over centralising field.
@@ -2162,7 +2158,6 @@ SMTX_Distinguish:=function( cf, i )
             else
                fac:=Factors(R, p: factoroptions:=rec(onlydegs:=[deg]));
                fac:=Filtered(fac,i->DegreeOfLaurentPolynomial(i)<=deg);
-               sfac:=Set(fac);
             fi;
          until fac <> [];
          lf:=Length(fac);
@@ -2235,7 +2230,7 @@ SMTX.Distinguish:=SMTX_Distinguish;
 ## cf[i][1] is calculated and returned - i.e. if cf[i][2] = 1.
 ##
 SMTX_MinimalSubGModule:=function( module, cf, i )
-   local el, genpair, ngens, orig_ngens, mat, mats, M, dim, F,
+   local el, genpair, ngens, orig_ngens, mat, mats, M, F,
          k, N, fact;
 
    if SMTX.IsMTXModule(module) = false then
@@ -2249,7 +2244,6 @@ SMTX_MinimalSubGModule:=function( module, cf, i )
    # Apply the alg. el. of factor i to module
    el:=SMTX.AlgEl(cf[i][1]);
    mats:=ShallowCopy(module.generators);
-   dim:=SMTX.Dimension(module);
    for genpair in el[1] do
       ngens:=ngens + 1;
       mats[ngens]:=mats[genpair[1]] * mats[genpair[2]];
@@ -2284,7 +2278,7 @@ SMTX.MinimalSubGModule:=SMTX_MinimalSubGModule;
 ## Otherwise who knows what will happen?
 ##
 SMTX_IsomorphismComp:=function(module1, module2, action)
-   local matrices, matrices1, matrices2, F, R, dim, swapmodule, genpair,
+   local matrices, matrices1, matrices2, F, dim, swapmodule, genpair,
          swapped, orig_ngens, i, j, el, p, fac, ngens, M, mat, v1, v2, v,
          N, basis, basis1, basis2;
 
@@ -2315,7 +2309,6 @@ SMTX_IsomorphismComp:=function(module1, module2, action)
       return fail;
    fi;
    F:=SMTX.Field(module1);
-   R:=PolynomialRing(F);
 
    # First we must check that our nullspace is 1-dimensional over the
    # centralizing field.
@@ -2687,7 +2680,7 @@ SMTX.Homomorphisms:=SMTX_Homomorphisms;
 ## to DistinctIms(m1, m2, homs).
 ##
 SMTX_SortHomGModule:=function(m1, m2, homs)
-local e, F, ngens, mats1, mats2, dim1, dim2, centmat, fullimbas, oldhoms,
+local e, F, dim1, dim2, centmat, fullimbas, oldhoms,
       homno, dimhoms, newdim, subdim, leadpos, vec, nexthom,
       i, j, k, zero;
 
@@ -2697,9 +2690,7 @@ local e, F, ngens, mats1, mats2, dim1, dim2, centmat, fullimbas, oldhoms,
    F:=SMTX.Field(m1);
    zero:=Zero(F);
 
-   mats1:=m1.generators;  mats2:=m2.generators;
    dim1:=SMTX.Dimension(m1);  dim2:=SMTX.Dimension(m2);
-   ngens:=Length(mats1);
    centmat:=SMTX.CentMat(m1);
 
    fullimbas:=[];
@@ -2925,11 +2916,9 @@ end;
 SMTX.MinimalSubGModules:=SMTX_MinimalSubGModules;
 
 SMTX_BasesCompositionSeries:=function(m)
-local q,b,s,ser,queue,F,one,mats,mo;
-mats:=m.generators;
+local q,b,s,ser,queue,F;
   SMTX.SetSmashRecord(m,0);
   F:=SMTX.Field(m);
-  one:=One(F);
   b:=IdentityMat(SMTX.Dimension(m),F);
   b:=ImmutableMatrix(F,b);
   # denombasis: basis of the kernel
@@ -2943,7 +2932,6 @@ mats:=m.generators;
   while Length(queue)>0 do
     m:=Remove(queue);
     if SMTX.IsIrreducible(m) then
-      mo:=m;
       Info(InfoMeatAxe,3,SMTX.Dimension(m)," ",
                          Length(m.smashMeataxe.denombasis));
       m:=Concatenation(

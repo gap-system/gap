@@ -726,12 +726,10 @@ end;
 #F AutomorphismGroupElAbGroup( G, B )
 ##
 AutomorphismGroupElAbGroup := function( G, B )
-    local pcgs, p, d, mats, autos, mat, imgs, auto, A;
+    local pcgs, mats, autos, mat, imgs, auto, A;
 
     # create matrices
     pcgs := Pcgs( G );
-    p := RelativeOrders( pcgs )[1];
-    d := Length( pcgs );
 
     if CanEasilyComputePcgs( B ) then
         mats := Pcgs( B );
@@ -792,7 +790,7 @@ local bas,n,one,new,a,b,g;
 end;
 
 InstallGlobalFunction(SpaceAndOrbitStabilizer,function(n,field,ospaces,osporb)
-local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
+local outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
       gens,one,spl,m,sz,a,sporb,notyet,canonicalform,spaces,
       sofars,b,act,pairs,direct,subs,allstab;
 
@@ -805,10 +803,6 @@ local spaceincl,outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
       space:=Filtered(space,x->not IsZero(x));
       return space;
     fi;
-  end;
-
-  spaceincl:=function(big,small)
-    return canonicalform(big)=canonicalform(Concatenation(big,small));
   end;
 
   outvecs:=function(space,new)

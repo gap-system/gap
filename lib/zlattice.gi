@@ -259,7 +259,6 @@ InstallGlobalFunction( DecompositionInt, function( A, B, depth )
           sol,        # solution of one step
           result,     # whole solution
           p,          # prime
-          ph,         # half of ( prime minus one )
           nullv,      # zero-vector
           origA,      # store full argument `A' in case of column choice
           n,          # dimension
@@ -284,7 +283,6 @@ InstallGlobalFunction( DecompositionInt, function( A, B, depth )
     depth  := depth + 1;
     result := [];
     p      := 83;
-    ph     := ( p -1 ) / 2;
     nullv  := List( [ 1 .. n ], x -> 0 );
 
     # if `A' is not square choose `n' linear independent columns
@@ -1373,7 +1371,7 @@ InstallGlobalFunction( OrthogonalEmbeddings, function( arg )
           f, invg, sol, solcount, out,
           l, g, i, j, k, n, a, IdMat, chpo,
     # booleans
-          checkpositiv, checkdim,
+          checkdim,
     # prozeduren fuer Embed
           comp1, comp2, scp2, multiples, solvevDMtr,
           Dextend, Mextend, inca, rnew,
@@ -1709,15 +1707,11 @@ l := deca( l-1 );
               " [, <\"positive\"> ] [, < integer > ] )" );
     fi;
     g := List( arg[1], ShallowCopy );
-    checkpositiv := false;
     checkdim := false;
     chpo := "xxx";
     if IsBound( arg[2] ) then
        if IsString( arg[2] ) then
           chpo := arg[2];
-          if arg[2] = "positive" then
-             checkpositiv := true;
-          fi;
        else
           if IsInt( arg[2] ) then
              maxdim := arg[2];
@@ -1732,9 +1726,6 @@ l := deca( l-1 );
     if IsBound( arg[3] ) then
        if IsString( arg[3] ) then
           chpo := arg[3];
-          if arg[3] = "positive" then
-             checkpositiv := true;
-          fi;
        else
           if IsInt( arg[3] ) then
              maxdim := arg[3];

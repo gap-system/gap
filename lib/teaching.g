@@ -845,7 +845,7 @@ InstallGlobalFunction(NumbersString,function(arg)
 end);
 
 InstallGlobalFunction(StringNumbers,function(arg)
-  local message,modulus,table,tenpow,bound,l,i;
+  local message,modulus,table,tenpow,l,i;
   l:=arg[1];
   modulus:=arg[2];
   if Length(arg)>2 then
@@ -859,7 +859,6 @@ InstallGlobalFunction(StringNumbers,function(arg)
   fi;
   message:="";
   tenpow:=10^(LogInt(Length(table),10)+1);
-  bound:=Int(modulus/tenpow);
   l:=Concatenation(List(l,x->Reversed(CoefficientsQadic(x,tenpow))));
   for i in l do
     if not IsBound(table[i]) then

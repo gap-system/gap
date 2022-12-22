@@ -838,7 +838,7 @@ local fam,s;
 end);
 
 BindGlobal("SCRingGroupInFamily",function(fam)
-  local m, a, pcgs, rel, rcgs, x, c, p, e, i,o;
+  local m, a, pcgs, rcgs, x, c, p, e, i,o;
   m:=fam!.moduli;
   if 0 in m then
     return fail;
@@ -846,7 +846,6 @@ BindGlobal("SCRingGroupInFamily",function(fam)
     a:=AbelianGroup(m);
     # translate pcgs generators to ring elements
     pcgs:=FamilyPcgs(a);
-    rel:=RelativeOrders(pcgs);
     rcgs:=[];
     for i in [1..Length(GeneratorsOfGroup(a))] do
       x:=GeneratorsOfGroup(a)[i];

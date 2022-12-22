@@ -2073,12 +2073,11 @@ InstallOtherMethod( Coefficients,
     IsCollsElms,
     [ IsBasis and IsPseudoCanonicalBasisFullHomModule, IsGeneralMapping ],
     function( B, map )
-    local V, R, info;
+    local V, info;
     V:= UnderlyingLeftModule( B );
     if not IsGeneralMappingCollection( V ) then
       TryNextMethod();
     fi;
-    R:= LeftActingDomain( V );
     info:= NiceFreeLeftModuleInfo( V );
     if     Source( map ) = UnderlyingLeftModule( info.basissource )
        and Range(  map ) = UnderlyingLeftModule( info.basisrange  )
@@ -2098,12 +2097,11 @@ InstallMethod( Coefficients,
     [ IsBasis and IsPseudoCanonicalBasisFullHomModule,
       IsMapping and IsLinearMappingByMatrixDefaultRep ],
     function( B, map )
-    local V, R, info;
+    local V, info;
     V:= UnderlyingLeftModule( B );
     if not IsGeneralMappingCollection( V ) then
       TryNextMethod();
     fi;
-    R:= LeftActingDomain( V );
     info:= NiceFreeLeftModuleInfo( V );
     if     map!.basissource = info.basissource
        and map!.basisrange  = info.basisrange then

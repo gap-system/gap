@@ -2352,14 +2352,13 @@ InstallMethod( NormalizersTom,
     "all normalizers of a table of marks",
     [ IsTableOfMarks ],
     function( tom )
-    local result, subs, order, nrsubs, length, ll, impr, d, der, bool,
+    local result, subs, order, nrsubs, ll, impr, d, der, bool,
           NormalizerTom, sub, nn, nn1,  sub1, norm;
 
     # Get the attributes.
     subs:= SubsTom( tom );
     order:= OrdersTom( tom );
     nrsubs:= NrSubsTom( tom );
-    length:= LengthsTom( tom );
     ll:= Length( order );
     result:= [];
 
@@ -2625,12 +2624,11 @@ InstallMethod( CyclicExtensionsTomOp,
 InstallMethod( DecomposedFixedPointVector,
     [ IsTableOfMarks, IsList ],
     function( tom, fixpointvector )
-    local fix, i, j, dec, marks, subs, working, oo;
+    local fix, i, j, dec, marks, subs, working;
 
     # get the attributes
     marks:= MarksTom(tom);
     subs:= SubsTom(tom);
-    oo:= marks[1][1];
     fix:=ShallowCopy(fixpointvector);
 
     dec:= ListWithIdenticalEntries(Length(subs),0);

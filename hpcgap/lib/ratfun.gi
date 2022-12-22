@@ -950,12 +950,10 @@ end);
 InstallMethod( \=,"rational functions", IsIdenticalObj,
     [ IsRationalFunction, IsRationalFunction ], 0,
 function( left, right )
-local   fam, leftden, rightnum, p1, p2;
+local   fam, p1, p2;
 
   # get the family and check the zeros
   fam   := FamilyObj(left);
-  leftden  := ExtRepDenominatorRatFun(left);
-  rightnum := ExtRepNumeratorRatFun(right);
 
   p1 := ZippedProduct(ExtRepNumeratorRatFun(left),
                       ExtRepDenominatorRatFun(right),
@@ -1807,14 +1805,13 @@ local g;
 end);
 
 BindGlobal("MVFactorInverseKroneckerMapUnivariate",function(g,varpow)
-local coeffs,d,f,i;
+local coeffs,f,i;
 
   if not IsUnivariatePolynomial(g) then
     Error("this function assumes polynomial is univariate");
   fi;
   coeffs:=CoefficientsOfUnivariateLaurentPolynomial(g);
   coeffs:=ShiftedCoeffs(coeffs[1],coeffs[2]);
-  d:=Length(coeffs)-1;
   f:=Zero(g);
   for i in [1..Length(coeffs)] do
     if not IsZero(coeffs[i]) then

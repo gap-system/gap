@@ -243,7 +243,7 @@ atomic HELP_REGION do # acquire lock for HELP_BOOK_HANDLER
 ##  looks pretty long winded)
 HELP_BOOK_HANDLER.default.ReadSix := function(stream)
   local   fname,  readNumber, pos,  n,  c,  s,  x,  f,  line,  subline,
-          entries,  c1,  c2,  i,  name,  num,  s1,  sec,  s2,  j,  x1,
+          c1,  c2,  i,  name,  num,  s1,  sec,  s2,  j,  x1,
           w,  f1,  res,  toc;
 
   # name of file
@@ -291,7 +291,6 @@ HELP_BOOK_HANDLER.default.ReadSix := function(stream)
   until IsEndOfStream(stream);
   CloseStream(stream);
 
-  entries := [];
   # parse the chapters information
   c1 := [];
   c2 := [];

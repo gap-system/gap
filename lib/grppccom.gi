@@ -46,7 +46,7 @@ end);
 ##  if <orbs> is true orbits are kept.
 ##
 InstallGlobalFunction( COAffineBlocks, function( S, Sgens,mats,orbs )
-local   dim, p, nul, one, C, L, blt, B, O, Q, i, j, v, w, n, z, root,r;
+local   dim, p, nul, one, L, blt, B, O, Q, i, j, v, w, n, z, root,r;
 
   # The affine operation of <S> is described via <mats> as
   #
@@ -63,7 +63,6 @@ local   dim, p, nul, one, C, L, blt, B, O, Q, i, j, v, w, n, z, root,r;
   nul:=0 * one;
   root:=Z(Characteristic(one));
   p:=Characteristic( mats[1][1][1] );
-  C:=List( [1..dim], x -> p );
   Q:=List( [0..dim-1], x -> p ^x );
   L:=[];
   for i  in [1..p-1]  do

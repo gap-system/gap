@@ -997,10 +997,9 @@ end );
 InstallMethod( ExponentOfPcElement, "sorted pcgs", IsCollsElmsX,
     [ IsPcgs and IsSortedPcgsRep, IsObject,IsPosInt ], 0,
 function( pcgs, elm,pos )
-local pfa,relords,pcs,invpow,step,e,p,pcspow;
+local pfa,relords,invpow,step,e,p,pcspow;
   pfa := pcgs!.sortingPcgs;
   relords:=RelativeOrders(pfa);
-  pcs := pcgs!.sortedPcSequence;
   invpow := pcgs!.inversePowers;
   pcspow := pcgs!.sortedPcSeqPowers;
 
@@ -1180,11 +1179,10 @@ end);
 #M  ExponentsOfPcElement( <sorted-pcgs>, <elm> )
 ##
 ExpPcElmSortedFun:=function( pcgs, elm,ran )
-local exp,pfa,relords,pcs,invpow,max,step,e,p,pcspow;
+local exp,pfa,relords,invpow,max,step,e,p,pcspow;
   exp := [];
   pfa := pcgs!.sortingPcgs;
   relords:=RelativeOrders(pfa);
-  pcs := pcgs!.sortedPcSequence;
   invpow := pcgs!.inversePowers;
   pcspow := pcgs!.sortedPcSeqPowers;
 

@@ -1745,8 +1745,8 @@ end );
 ##
 InstallGlobalFunction( ApproximateSuborbitsStabilizerPermGroup,
     function(G,punkt)
-    local one, orbit, trans, stab, gen, pnt, img, i, changed,
-          processStabGen, currPt,currGen, orblen, gens,Ggens;
+    local one, orbit, trans, gen, pnt, img, i, changed,
+          processStabGen, currPt,currGen, gens,Ggens;
 
     one:= One( G );
   if HasStabChainMutable( G ) and punkt in StabChainMutable(G).orbit then
@@ -1777,7 +1777,6 @@ InstallGlobalFunction( ApproximateSuborbitsStabilizerPermGroup,
     orbit := [ punkt ];
     trans := [];
     trans[ punkt ] := one;
-    stab:=[];
     for pnt  in orbit  do
       for gen  in Ggens do
         img:=pnt^gen;
@@ -1787,7 +1786,6 @@ InstallGlobalFunction( ApproximateSuborbitsStabilizerPermGroup,
         fi;
       od;
     od;
-    orblen:=Length(orbit);
 
   fi;
 
@@ -2334,9 +2332,8 @@ local ran,d,emb,u,act;
 end);
 
 InstallGlobalFunction(ReducedPermdegree,function(g)
-  local dom, deg, orb, gdeg, p, ndom, s,hom;
+  local dom, orb, gdeg, p, ndom, s,hom;
   dom:=MovedPoints(g);
-  deg:=Length(dom);
   orb:=ShallowCopy(Orbits(g,dom));
   if Length(orb)=1 then return fail;fi;
   gdeg:=20*LogInt(Size(g),2); # good degree

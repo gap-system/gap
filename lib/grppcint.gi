@@ -146,7 +146,7 @@ end;
 #F  GlasbyIntersection
 ##
 GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
-    local m, G, first, weights, avoid, A, B, i, start, next, HmN, KmN,
+    local m, G, first, avoid, A, B, i, start, next, HmN, KmN,
           sum, pcgsS, pcgsR, C, D,
           new, U, deptH, deptK,pcgsL,depthS,depthN;
 
@@ -156,7 +156,6 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
 
     # use the special pcgs
     first   := LGFirst( pcgs );
-    weights := LGWeights( pcgs );
     avoid   := AvoidedLayers( pcgs, pcgsH, pcgsK );
 
     deptH := List( pcgsH, x -> DepthOfPcElement( pcgs, x ) );

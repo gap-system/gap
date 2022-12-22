@@ -537,7 +537,7 @@ end);
 
 
 InstallMethod( LaTeXObj,"polynomial",true, [ IsPolynomial ],0,function(pol)
-local fam, ext, str, zero, one, mone, le, c, s, b, ind, i, j;
+local fam, ext, str, zero, one, mone, le, c, s, ind, i, j;
 
   fam:=FamilyObj(pol);
   ext:=ExtRepPolynomialRatFun(pol);
@@ -570,7 +570,6 @@ local fam, ext, str, zero, one, mone, le, c, s, b, ind, i, j;
         s:=LaTeXObj(ext[i+1]);
       fi;
 
-      b:=false;
       if '+' in s and s[1]<>'(' then
         s:=Concatenation("(",s,")");
       fi;

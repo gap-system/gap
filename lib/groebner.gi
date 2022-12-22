@@ -622,11 +622,10 @@ end);
 ##
 InstallGlobalFunction( PolynomialReduction, function(poly,plist,order)
 local fam,quot,elist,lmp,lmo,lmc,x,y,z,mon,mon2,qmon,noreduce,
-      ep,pos,di,opoly,rem,qmex;
+      ep,pos,di,rem,qmex;
   if IsMonomialOrdering(order) then
     order:=MonomialExtrepComparisonFun(order);
   fi;
-  opoly:=poly;
   fam:=FamilyObj(poly);
   quot:=List(plist,i->Zero(poly));
   elist:=List(plist,ExtRepPolynomialRatFun);
@@ -721,12 +720,11 @@ end);
 #F  PolynomialReducedRemainder(poly,plist,order)
 ##
 InstallGlobalFunction(PolynomialReducedRemainder,function(poly,plist,order)
-local opoly, fam, elist, lmp, lmo, lmc, ep, rem, noreduce, x, mon, y, mon2,
+local fam, elist, lmp, lmo, lmc, ep, rem, noreduce, x, mon, y, mon2,
   z, pos, qmon, di,qmex;
   if IsMonomialOrdering(order) then
     order:=MonomialExtrepComparisonFun(order);
   fi;
-  opoly:=poly;
   fam:=FamilyObj(poly);
   elist:=List(plist,ExtRepPolynomialRatFun);
   lmp:=List(elist,i->LeadingMonomialPosExtRep(fam,i,order));
@@ -812,11 +810,10 @@ end);
 ##
 InstallGlobalFunction(PolynomialDivisionAlgorithm,function(poly,plist,order)
 local fam,quot,elist,lmp,lmo,lmc,x,y,z,mon,mon2,qmon,noreduce,
-      ep,pos,di,opoly,rem;
+      ep,pos,di,rem;
   if IsMonomialOrdering(order) then
     order:=MonomialExtrepComparisonFun(order);
   fi;
-  opoly:=poly;
   fam:=FamilyObj(poly);
   quot:=List(plist,i->Zero(poly));
   elist:=List(plist,ExtRepPolynomialRatFun);

@@ -133,7 +133,7 @@ local C,M,p,all,gens,sub,q,hom,fp,rels,new,pre,i,free,cnt;
 end);
 
 BindGlobal("AGSRPrepareAutomLift",function(G,pcgs,nat)
-local ocr,fphom,fpg,free,len,dim,tmp,L0,S,R,rels,mat,r,RS,i,g,v,cnt;
+local ocr,fphom,fpg,free,len,dim,tmp,L0,R,rels,mat,r,RS,i,g,v,cnt;
 
   ocr:=rec(group:=G,modulePcgs:=pcgs);
   fphom:=IsomorphismFpGroup(G);
@@ -179,7 +179,6 @@ local ocr,fphom,fpg,free,len,dim,tmp,L0,S,R,rels,mat,r,RS,i,g,v,cnt;
   tmp := ocr.moduleMap( ocr.identity );
   L0  := Concatenation( List( [ 1 .. len ], x -> tmp ) );
   ConvertToVectorRep(L0,ocr.field);
-  S := List( [ 1 .. len * dim ], x -> L0 );
   R := ListWithIdenticalEntries( len * dim,Zero( ocr.field ) );
   ConvertToVectorRep(R,ocr.field);
 
@@ -1547,14 +1546,7 @@ end);
 BindGlobal("AGSRMatchedCharacteristics",function(g,h)
 local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
   props:=function(a,chars)
-  local p,b,der;
-    der:=function(u)
-      if u in chars then
-        Add(p,-Position(chars,u));
-      else
-        Add(p,Size(u));
-      fi;
-    end;
+  local p,b;
 
     if ID_AVAILABLE(Size(a))<>fail then
       p:=ShallowCopy(-IdGroup(a)); # negative avoids clash with others
@@ -1699,25 +1691,8 @@ end);
 # only of use as long as we don't yet have a Cannon/Holt version of
 # isomorphism available and there are many generators
 InstallGlobalFunction(PatheticIsomorphism,function(G,H)
-local d,a,map,possibly,cG,nG,nH,i,j,u,v,asAutomorphism,K,L,conj,e1,e2,
+local d,a,map,cG,nG,nH,i,j,u,v,asAutomorphism,K,L,conj,e1,e2,
       iso,api,gens,pre,aab,as;
-
-  possibly:=function(a,b)
-    if Size(a)<>Size(b) then
-      return false;
-    fi;
-    if AbelianInvariants(a)<>AbelianInvariants(b) then
-      return false;
-    fi;
-    if Size(a)<1000 and Size(a)<>512
-     and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
-      Info(InfoPerformance,2,"Using Small Groups Library");
-      if IdGroup(a)<>IdGroup(b) then
-        return false;
-      fi;
-    fi;
-    return true;
-  end;
 
   asAutomorphism:=function(sub,hom)
     return Image(hom,sub);

@@ -691,7 +691,7 @@ end);
 ##
 BADINDEX:=1000; # the index that is too big
 GenericFindActionKernel:=function(arg)
-local G, N, knowi, goodi, simple, uc, zen, cnt, pool, ise, v, bv, badi,
+local G, N, knowi, goodi, simple, uc, zen, cnt, pool, ise, v, badi,
 totalcnt, interrupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
 
   G:=arg[1];
@@ -763,7 +763,6 @@ totalcnt, interrupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
   # try a random extension step
   # (We might always first add a random element and get something bigger)
   v:=N;
-  bv:=v;
 
   #if Length(arg)=3 then
     ## in one example 512->90, ca. 40 tries
@@ -1093,7 +1092,7 @@ end);
 ##
 InstallGlobalFunction(ImproveActionDegreeByBlocks,function(G,N,oh)
 local gimg,img,dom,b,improve,bp,bb,i,k,bestdeg,subo,op,bc,bestblock,bdom,
-      bestop,sto,gimgbas,subomax;
+      bestop,sto,subomax;
   Info(InfoFactor,1,"try to find block systems");
 
   # remember that we computed the blocks
@@ -1123,11 +1122,6 @@ local gimg,img,dom,b,improve,bp,bb,i,k,bestdeg,subo,op,bc,bestblock,bdom,
   fi;
 
   gimg:=Image(oh,G);
-  gimgbas:=false;
-  if HasBaseOfGroup(gimg) then
-    gimgbas:=Filtered(BaseOfGroup(gimg),i->ForAny(GeneratorsOfGroup(gimg),
-                                           j->i^j<>i));
-  fi;
   img:=gimg;
   dom:=MovedPoints(img);
   bdom:=fail;

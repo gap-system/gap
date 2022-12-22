@@ -704,11 +704,10 @@ InstallMethod( ComputeTails,
         true,
         [ IsPQuotientSystem ], 0,
 function( qs )
-    local   S,  gens,  p,  type,  n,  m,  l,  r,  zeroes,  c,  g,
+    local   S,  p,  type,  n,  m,  l,  r,  zeroes,  c,  g,
             def,  b,  a,  t,  u,  y,  z,  x;
 
     S := qs!.collector;
-    gens := GeneratorsOfRws( S );
     p := qs!.prime;
     type := S![ SCP_DEFAULT_TYPE ];
     n := GeneratorNumberOfQuotient(qs);
@@ -800,11 +799,10 @@ InstallMethod( EvaluateConsistency,
         true,
         [ IsPQuotientSystem ], 0,
 function( qs )
-    local   S,  M,  gens,  n,  m,  p,  l,  r,  wt,  a,  wta,  wtb,  bs,
+    local   S,  M,  n,  m,  p,  l,  r,  wt,  a,  wta,  wtb,  bs,
             b,  c,  zeroes, which,  pos;
 
     S := qs!.collector;
-    gens := GeneratorsOfRws( S );
     n := GeneratorNumberOfQuotient(qs);
     m := n + qs!.numberOfHighestWeightGenerators;
     p := qs!.prime;
@@ -965,7 +963,7 @@ InstallMethod( RenumberHighestWeightGenerators,
         true,
         [ IsPQuotientSystem ], 0,
 function( qs )
-    local   n,  c,  gens,  surgens,  oldgens,  newgens,  g,
+    local   n,  c,  gens,  surgens,  newgens,  g,
             i,  w,  h,  wt,  wth,  renumber;
 
     ##  Those generators which have been eliminated from the quotient system
@@ -976,7 +974,6 @@ function( qs )
 
        gens := GeneratorsOfRws( qs!.collector );
     surgens := n + DifferenceLists( [1..c], qs!.eliminatedGens );
-    oldgens := Concatenation( gens{[1..n]}, gens{surgens} );
     newgens := gens{[1..n+Length(surgens)]};
 
     renumber := [];
@@ -1069,20 +1066,17 @@ InstallMethod( EvaluateRelators,
         true,
         [ IsPQuotientSystem ], 0,
 function( qs )
-    local   G,  S,  n,  c,  F,  Fgens,  one,  LTM,  v,
-            zeroes,  r,  rr,  gens;
+    local   G,  S,  n,  c,  F,  Fgens,  LTM,  v, zeroes,  r,  rr;
 
     G := qs!.preimage;
     S := qs!.collector;
 
     n := GeneratorNumberOfQuotient(qs);
     c := qs!.numberOfHighestWeightGenerators;
-    gens := GeneratorsOfRws( S ){[1..n+c]};
 
     F     := FreeGroupOfFpGroup( G );
     Fgens := GeneratorsOfGroup( F );
 
-    one := One( qs!.field );
     LTM := CentralRelations( qs );
 
     v := ListWithIdenticalEntries( n+c, 0 );
@@ -1320,12 +1314,11 @@ end );
 ##
 InstallGlobalFunction( AbelianPQuotient,
 function( qs )
-    local   G,  one,  n,  gens,  LTM,  trailers,  d,
+    local   G,  n,  gens,  LTM,  trailers,  d,
             generators,  i,  r,  l;
 
     # Setup some variables.
     G    := qs!.preimage;
-    one  := One( qs!.field );
     n    := Length( GeneratorsOfGroup( G ) );
     gens := GeneratorsOfRws( qs!.collector );
 

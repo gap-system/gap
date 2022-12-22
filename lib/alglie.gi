@@ -3992,7 +3992,7 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
 ##  (rather than the linearity of <h>).
 ##
 BindGlobal( "FptoSCAMorphismImageElm", function( h, x )
-       local EvalProduct,gens,imgs,im,e,k;
+       local EvalProduct,imgs,im,e,k;
 
        EvalProduct:= function( prod, ims )
 
@@ -4004,7 +4004,6 @@ BindGlobal( "FptoSCAMorphismImageElm", function( h, x )
        end;
 
        e:=MappingGeneratorsImages(h);
-       gens:= e[1];
        imgs:= e[2];
        e:= ExtRepOfObj(x)[2];
        im:= 0*imgs[1];

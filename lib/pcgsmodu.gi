@@ -147,7 +147,7 @@ end );
 ##
 InstallGlobalFunction( ModuloTailPcgsByList,
 function( home, factor, wm )
-local   wd,  filter,  new,  i,nupa;
+local   wd,  filter,  new,  i;
 
   if IsSubset(home,factor) then
     wd:=List(factor,i->Position(home,i));
@@ -167,7 +167,6 @@ local   wd,  filter,  new,  i,nupa;
     # the depths are all different. We can get the exponetnts from the
     # parent pcgs
     filter:=filter and IsNumeratorParentForExponentsRep;
-    nupa:=true;
   fi;
 
   # this can be more messy -- do not use
@@ -745,7 +744,7 @@ end );
 InstallOtherMethod( ExponentsOfPcElement, "pcgs modulo pcgs", IsCollsElms,
     [ IsModuloPcgs and IsModuloPcgsRep, IsObject ], 0,
 function( pcgs, elm )
-    local   id,  exp,  ros,  den,  num,  wm,  mm,  pm,  d,  ll,  lr,lede;
+    local   id,  exp,  ros,  den,  num,  mm,  pm,  d,  ll,  lr,lede;
 
     # Avoid infinite recursion
     if IsIdenticalObj(NumeratorOfModuloPcgs(pcgs),pcgs) then
@@ -760,7 +759,6 @@ function( pcgs, elm )
     num := NumeratorOfModuloPcgs(pcgs);
     if not IsPrimeOrdersPcgs(num)  then TryNextMethod();  fi;
 
-    wm  := pcgs!.moduloDepths;
     mm  := pcgs!.moduloMap;
     pm  := pcgs!.depthMap;
     ros := RelativeOrders(num);
@@ -871,7 +869,7 @@ end );
 InstallOtherMethod( ExponentsOfPcElement, "pcgs modulo pcgs, subrange",
     IsCollsElmsX, [ IsModuloPcgs and IsModuloPcgsRep, IsObject,IsList ], 0,
 function( pcgs, elm,range )
-    local   id,  exp,  ros,  den,  num,  wm,  mm,  pm,  d,  ll,  lr,max;
+    local   id,  exp,  ros,  den,  num,  mm,  pm,  d,  ll,  lr,max;
 
     # Avoid infinite recursion
     if IsIdenticalObj(NumeratorOfModuloPcgs(pcgs),pcgs) then
@@ -891,7 +889,6 @@ function( pcgs, elm,range )
     num := NumeratorOfModuloPcgs(pcgs);
     if not IsPrimeOrdersPcgs(num)  then TryNextMethod();  fi;
 
-    wm  := pcgs!.moduloDepths;
     mm  := pcgs!.moduloMap;
     pm  := pcgs!.depthMap;
     ros := RelativeOrders(num);

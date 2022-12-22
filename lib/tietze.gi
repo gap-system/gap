@@ -495,8 +495,7 @@ InstallGlobalFunction( PresentationRegularPermutationGroupNC, function ( G )
             cosRange,     # range from 1 to index (= number of cosets)
             genRange,     # range of the odd integers from 1 to 2*ngens-1
             geners,       # order in which the table cols are worked off
-            next,         # local coset number
-            n;            # number of subgroup element
+            next;         # local coset number;
 
     # initialize some local variables.
     perms := GeneratorsOfGroup( G );
@@ -655,7 +654,7 @@ InstallGlobalFunction( PresentationRegularPermutationGroupNC, function ( G )
                         if gen0[c] = 0 then
                             app[10] := g;
                             app[11] := c;
-                            n := MakeConsequences( app );
+                            MakeConsequences( app ); # TODO is this line required?
                         fi;
                     od;
                 od;
@@ -720,7 +719,6 @@ InstallGlobalFunction( PresentationViaCosetTable, function ( arg )
             thgens,     # tidied up list of generators of H
             ngens,      # number of generators of G
             one,        # identity element of G
-            size,       # size of G
             F1,         # free group with same number of generators as H
             FP2,        # fp group isomorphic to G
             i;          # loop variable
@@ -743,7 +741,7 @@ InstallGlobalFunction( PresentationViaCosetTable, function ( arg )
         # use a special method for regular permutation groups
         if IsPermGroup( G ) then
             # compute the size of G to speed up the regularity check
-            size := Size( G );
+            Size( G );
             if IsRegular( G ) then
                 return PresentationRegularPermutationGroupNC( G );
             fi;

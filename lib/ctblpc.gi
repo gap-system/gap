@@ -91,7 +91,7 @@ end;
 ##
 InstallMethod(DxPreparation,"pc group",true,[IsPcGroup,IsRecord],0,
 function(G,D)
-local i,cl,dat;
+local i,dat;
 
   if not IsDxLargeGroup(G) then
     TryNextMethod();
@@ -101,8 +101,6 @@ local i,cl,dat;
   D.identification:=IdentificationSolvableGroup;
   D.rationalidentification:=IdentificationGenericGroup;
   D.ClassMatrixColumn:=PcGroupClassMatrixColumn;
-
-  cl:=D.classes;
 
   dat:=rec(group:=G);
   D.classiddat:=dat;

@@ -319,7 +319,7 @@ BindGlobal("PrintContext@", function(lines, thread)
 end);
 
 BindGlobal("AddOutput@", function(threadid, text, is_prompt, deferred)
-  local incomplete_line, old_incomplete_line, history;
+  local incomplete_line, history;
   text := ShallowCopy(text);
   NORMALIZE_NEWLINES(text);
   if is_prompt then
@@ -327,7 +327,6 @@ BindGlobal("AddOutput@", function(threadid, text, is_prompt, deferred)
   fi;
   MakeImmutable(text);
   incomplete_line := not EndsWith(text, "\n");
-  old_incomplete_line := OutputHistoryIncompleteLine@[threadid];
   history := OutputHistory@[threadid];
   Append(history, text);
   OutputHistoryIncompleteLine@[threadid] := incomplete_line;
@@ -921,11 +920,9 @@ InstallGlobalFunction("RunCommandWithAliases@", function(string, aliases)
 end);
 
 InstallGlobalFunction("RunCommand@", function(string)
-  local originalThread;
   if StartsWith(string, "!") then
     string := string{[2..Length(string)]};
   fi;
-  originalThread := ActiveThread@;
   RunCommandWithAliases@(string, Set([]));
   WritePrompt@();
 end);
@@ -1075,11 +1072,10 @@ BindGlobal("OutputLoop@", function()
 end);
 
 BindGlobal("MULTI_SESSION", function()
-  local handshake;
   SetupDefaultStreams@();
   BindGlobal("InputThreadID@", CreateThread(InputLoop@));
   BindGlobal("OutputThreadID@", CreateThread(OutputLoop@));
-  handshake := StartHandShake();
+  StartHandShake();
   ThreadInfo@ := NewThreadInfo@();
   BindGlobal("ControlThreadID@", CreateThread(MainLoop@, ThreadInfo@));
   SESSION();

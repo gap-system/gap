@@ -840,7 +840,7 @@ end);
 ##
 InstallGlobalFunction(LatticeViaRadical,function(arg)
   local G,H,HN,HNI,ser,pcgs,u,hom,f,c,nu,nn,nf,a,e,kg,k,mpcgs,gf,
-  act,nts,orbs,n,ns,nim,fphom,as,p,isn,isns,lmpc,npcgs,ocr,v,
+  act,nts,orbs,n,ns,nim,fphom,as,p,isns,lmpc,npcgs,ocr,v,
   com,cg,i,j,w,ii,first,cgs,presmpcgs,select,fselect,
   makesubgroupclasses,cefastersize;
 
@@ -1093,12 +1093,10 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
           # there are subgroups that will complement with this kernel.
           # Construct the modulo pcgs and the action of the largest subgroup
           # (which must be the normalizer)
-          isn:=fail;
           isns:=1;
           for k in as do
             if Size(u[1][k])>isns then
               isns:=Size(u[1][k]);
-              isn:=k;
             fi;
           od;
 
@@ -2412,7 +2410,7 @@ InstallMethod(IntermediateSubgroups,"using maximal subgroups",
   IsIdenticalObj, [IsGroup,IsGroup],
   1, # better than previous if index larger
 function(G,U)
-local uind,subs,incl,i,j,k,m,gens,t,c,p,conj,bas,basl,r;
+local uind,subs,incl,i,j,k,m,t,c,p,conj,bas,basl,r;
 
   if (not IsFinite(G)) and Index(G,U)=infinity then
     TryNextMethod();
@@ -2425,7 +2423,6 @@ local uind,subs,incl,i,j,k,m,gens,t,c,p,conj,bas,basl,r;
   conj:=[fail];
   incl:=[];
   i:=1;
-  gens:=SmallGeneratingSet(U);
   while i<=Length(subs) do
     if conj[i]<>fail then
       m:=TryMaximalSubgroupClassReps(subs[conj[i][1]]:nolattice); # fetch
@@ -2590,7 +2587,7 @@ end);
 #F  DotFileLatticeSubgroups(<L>,<file>)
 ##
 InstallGlobalFunction(DotFileLatticeSubgroups,function(L,file)
-local cls, len, sz, max, rep, z, t, i, j, k;
+local cls, len, sz, max, z, t, i, j, k;
   cls:=ConjugacyClassesSubgroups(L);
   len:=[];
   sz:=[];
@@ -2629,7 +2626,6 @@ local cls, len, sz, max, rep, z, t, i, j, k;
   max:=MaximalSubgroupsLattice(L);
   for i in [1..Length(cls)] do
     for j in max[i] do
-      rep:=ClassElementLattice(cls[i],1);
       for k in [1..len[i]] do
         if k=1 then
           z:=j[2];
@@ -2738,7 +2734,7 @@ end);
 
 
 InstallGlobalFunction("SubdirectSubgroups",function(D)
-local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,proj,emb,u,pos,
+local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,emb,u,pos,
       subs,s,t,i,j,k,myid,myfgi,iso,dc,f,no,ind,g,hom,uselib;
 
   uselib:=ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true;
@@ -2782,7 +2778,6 @@ local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,proj,emb,u,pos,
   # previous embedding is all trivial
   l:=[[TrivialSubgroup(D),D]];
   for i in [1..n] do
-    proj:=Projection(D,i);
     emb:=Embedding(D,i);
 
     u:=info.groups[i];
@@ -3432,7 +3427,7 @@ end);
 
 BindGlobal("DoMinimalFaithfulPermutationDegree",
 function(G,dorep)
-local c,n,deg,ind,core,i,j,sum,ma,h,ig,dec,bm,m,sel,ds,ise,cnt,
+local c,n,deg,ind,core,i,j,sum,ma,h,ig,bm,m,sel,ds,ise,cnt,
   start,cind,nind,sl,idfun,spos,select,bla;
 
   if Size(G)=1 then
@@ -3483,7 +3478,7 @@ local c,n,deg,ind,core,i,j,sum,ma,h,ig,dec,bm,m,sel,ds,ise,cnt,
     h:=Image(ma);
     ig:=IndependentGeneratorsOfAbelianGroup(h);
     h:=Group(ig);
-    dec:=EpimorphismFromFreeGroup(h);
+    EpimorphismFromFreeGroup(h); # TODO is this line required?
     bm:=DiagonalMat(List(ig,Order));
 
     for i in [2..Length(c)-1] do
@@ -3727,7 +3722,7 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
   limit:=QuoInt(RootInt(Size(G)^2,5),bound);
   if limit<20 then limit:=1;fi;
   maxer:=function(sub)
-  local m,a,b,len,sz,i,j,k,r,tb;
+  local m,a,b,sz,i,j,k,r,tb;
     Info(InfoLattice,1,"call maxer for ",Size(sub)," |l|=",Length(l),
       " |process|=",Length(process));
     if bound>1 then
@@ -3788,7 +3783,6 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
       if not IsPerfectGroup(sub) then
         a:=BoundedIndexAbelianized(G,sub,bound);
         if Size(a)<Size(sub) then
-          len:=Length(m);
           m:=Filtered(m,x->not IsSubset(x,a));
 #         Print("Dropped ",len-Length(m)," by abelian\n");
           Add(m,a);
@@ -3800,7 +3794,6 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
 
       sz:=List(Filtered(Collected(List(m,Size)),x->x[2]>1),x->x[1]);
       for i in sz do
-        len:=Length(m);
         a:=Filtered(m,x->Size(x)=i);
         m:=Filtered(m,x->Size(x)<>i);
         # now try intersections

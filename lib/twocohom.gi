@@ -680,7 +680,7 @@ InstallMethod( TwoCohomology,
     0,
 
 function( G, M )
-    local C, d, z, co, cb, pr;
+    local C, d, z, co, cb;
     C := CollectorSQ( G, M, false );
     d := Length( C.orders );
     d := d * (d+1) / 2;
@@ -689,7 +689,6 @@ function( G, M )
     co := VectorSpace( M.field, co, z );
     cb := TwoCoboundariesSQ( C, G, M );
     cb := SubspaceNC( co, cb );
-    pr := FpGroupPcGroupSQ( G );
     return rec( group := G,
                 module := M,
                 collector := C,

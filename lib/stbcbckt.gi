@@ -1976,7 +1976,7 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
            doneroot,   # roots of orbital graphs already considered
            tra,        # degree of transitivity of <E>
            cp,
-           len,  i,  range;
+           len,  i;
 
     # If  <E>  is a multiply  transitive  subgroup  of  <G>, consider orbital
     # graphs of the first non 2-transitive stabilizer.
@@ -2007,7 +2007,6 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
     # cells of <B>. In the normalizer  case, only the factor group $N_G(E)/E$
     # acts on the cells.
     rbase := EmptyRBase( G, Omega, CollectedPartition( B, div ) );
-    range := [ 1 .. rbase.domain[ Length( rbase.domain ) ] ];
     rbase.suborbits := [  ];
 
     if NumberCells( B ) = 1  then  rbase.blox := false;
@@ -2039,13 +2038,12 @@ InstallGlobalFunction( RBaseGroupsBloxPermGroup, function( repr, G, Omega, E, di
     doneroot := [  ];
 
     rbase.nextLevel := function( P, rbase )
-        local   len,  a,  Q, strat,  orb,  f,  fpt,  subs,  k,  i,
+        local   len,   Q, strat,  orb,  f,  fpt,  subs,  k,  i,
                 start,  oldstart,  types,  typ,  coll,  pnt,  done;
 
         if reg <> fail  then  NextLevelRegularGroups( P, rbase );
                         else  NextRBasePoint( P, rbase, order );   fi;
         len := Length( rbase.base );
-        a := rbase.base[ len ];
         if len >= tra  then
 
             # For each  fixpoint  in   <P>,  consider  the orbits    of   its

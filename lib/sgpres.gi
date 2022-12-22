@@ -3673,7 +3673,7 @@ end);
 ##  the default string is `\"_x\"'.
 ##
 InstallGlobalFunction( PresentationSubgroupMtc,function ( arg )
-  local G,H,string,printlevel,DATA,i;
+  local G,H,string,DATA,i;
 
   # check the first two arguments to be a finitely presented group and a
   # subgroup of that group.
@@ -3688,13 +3688,11 @@ InstallGlobalFunction( PresentationSubgroupMtc,function ( arg )
 
   # initialize the generators name string and the print level.
   string := "_x";
-  printlevel := 1;
 
   # get the optional parameters.
   for i in [ 3 .. 4 ] do
       if Length( arg ) >= i then
-          if IsInt( arg[i] ) then printlevel := arg[i];
-          elif IsString( arg[i] ) then string := arg[i];
+          if IsString( arg[i] ) then string := arg[i];
           else
               Error( "optional parameter must be a string or an integer" );
           fi;

@@ -367,7 +367,7 @@ end);
 ##
 # try to find a small faithful action for an automorphism group
 InstallGlobalFunction(AssignNiceMonomorphismAutomorphismGroup,function(au,g)
-local hom, allinner, gens, c, ran, r, cen, img, dom, u, orbs,
+local hom, gens, c, ran, r, cen, img, u, orbs,
       ser,pos, o, i, j, best,actbase,action,finish,
       bestdeg,deg,baddegree,auo,of,cl,store, offset,claselms,fix,new,
       preproc,postproc;
@@ -390,7 +390,6 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, orbs,
   end;
 
   hom:=fail;
-  allinner:=HasIsAutomorphismGroup(au) and IsAutomorphismGroup(au);
 
   if not IsFinite(g) then
     Error("can't do!");
@@ -797,7 +796,6 @@ local hom, allinner, gens, c, ran, r, cen, img, dom, u, orbs,
 
     # we act on lists of [orbits,group]. This way comparison becomes
     # cheap, as typically the orbits suffice to identify
-    dom:=MovedPoints(g);
 
     if IsPermGroup(g) then
       action:=function(obj,hom)
@@ -1743,7 +1741,7 @@ end);
 ##       It needs, that both groups are not cyclic.
 ##
 InstallGlobalFunction(Morphium,function(G,H,DoAuto)
-local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
+local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
       gens,i,c,hom,elms,price,result,inns,bcl,vsu;
 
   if IsSolvableGroup(G) and CanEasilyComputePcgs(G) then
@@ -1751,7 +1749,6 @@ local len,combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
   else
     gens:=SmallGeneratingSet(G);
   fi;
-  len:=Length(gens);
   Gr:=MorRatClasses(G);
   Gcl:=MorMaxFusClasses(Gr);
 
@@ -2269,7 +2266,7 @@ local a,b,c,p;
 end);
 
 InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
-  local s, c, acts, ttypes, ttypnam, k, act, t, j, iso, w, wemb, a, au,
+  local s, c, acts, ttypes, ttypnam, act, t, j, iso, w, wemb, a, au,
   auph, aup, n, wl, genimgs, thom, ahom, emb, lemb, d, ge, stbs, orb, base,
   newbas, obas, p, r, orpo, imgperm, invmap, hom, i, gen,gens,tty,count;
   #write g in a nice form
@@ -2282,7 +2279,6 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
   acts:=[];
   ttypes:=[];
   ttypnam:=[];
-  k:=g;
   for i in [1..Length(c)-1] do
     if IsSubset(s,c[i]) and not HasAbelianFactorGroup(c[i],c[i+1]) then
       act:=WreathActionChiefFactor(g,c[i],c[i+1]);

@@ -626,8 +626,7 @@ end );
 #F  DxEigenbase(<mat>,<field>) . . . . . components of Eigenvects resp. base
 ##
 DxEigenbase := function(M,f)
-  local dim,i,k,eigenvalues,base,minpol,bases;
-  k:=Length(M);
+  local dim,i,eigenvalues,base,minpol,bases;
 
   minpol:=MinimalPolynomial(BaseDomain(M),M);
 
@@ -1195,7 +1194,7 @@ end );
 ##                space with matrix number r,according to charactermorphisms
 ##
 InstallGlobalFunction( DxSplitDegree, function(D,space,r)
-  local a,b,s,o,fix,k,l,i,j,gorb,v,w,
+  local a,s,o,fix,k,l,i,j,gorb,v,w,
         base;
   # is perfect split guaranteed ?
   if IsBound(space.split) then
@@ -1213,7 +1212,6 @@ InstallGlobalFunction( DxSplitDegree, function(D,space,r)
   fi;
   # both cases,but MultiOrbit is not as effective
   s:=a.stabilizer;
-  b:=a.invariantbase;
   gorb:=D.galoisOrbits[r];
   fix:=Length(gorb)=1;
   if not fix then
@@ -1529,7 +1527,7 @@ end;
 ##  .asCharacterMorphism.
 ##
 CharacterMorphismGroup := function(D)
-local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
+local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,pow,pos,i,j,k,gen,
       cof,comm;
   tm:=D.tensorMorphisms;
   tme:=tm.els;
@@ -1558,9 +1556,6 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
   f:=FreeGroup(IsSyllableWordsFamily,Length(ord));
   fgens:=GeneratorsOfGroup(f);
   rws:=SingleCollector(f,ord);
-
-  # pseudo-Homomorphism to map in free group
-  hom:= GroupGeneralMappingByImagesNC( k, f, gpcgs, fgens{[1..l]} );
 
   # translate the gal-Relations:
   for i in [1..l] do
@@ -1839,12 +1834,11 @@ end;
 ##
 InstallMethod(DxPreparation,"abelian",true,[IsGroup and IsAbelian,IsRecord],0,
 function(G,D)
-  local i,cl;
+  local i;
   D.identification:=function(a,b) return b; end;
   D.rationalidentification:=D.identification;
   D.ClassMatrixColumn:=StandardClassMatrixColumn;
 
-  cl:=D.classes;
   D.ids:=[];
   for i in D.classrange do
     D.ids[i]:=D.identification(D,D.classreps[i]);
@@ -2534,12 +2528,11 @@ InstallMethod( IrreducibleRepresentations, "Dixon's method",
 
 InstallGlobalFunction(RepresentationsPermutationIrreducibleCharacters,
 function(G,chars,reps)
-local n, imgs, cl, d, cands, j, t, i;
+local imgs, cl, d, cands, j, t, i;
   if Length(chars)<>Length(reps) or
     Length(chars)<>Length(ConjugacyClasses(G)) then
     Error("inconsistency");
   fi;
-  n:=Length(chars);
   imgs:=[];
   cl:=ConjugacyClasses(G);
   for i in reps do

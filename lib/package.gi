@@ -213,7 +213,7 @@ end );
 #F  AddPackageInfo( files )
 ##
 BindGlobal( "AddPackageInfos", function( files, pkgdir, ignore )
-    local file, record, pkgname, version, date, dd, mm;
+    local file, record, pkgname, date, dd, mm;
     for file in files do
       # Read the `PackageInfo.g' file.
       Unbind( GAPInfo.PackageInfoCurrent );
@@ -223,7 +223,6 @@ BindGlobal( "AddPackageInfos", function( files, pkgdir, ignore )
         Unbind( GAPInfo.PackageInfoCurrent );
         pkgname:= LowercaseString( record.PackageName );
         NormalizeWhitespace( pkgname );
-        version:= record.Version;
 
         # Check whether GAP wants to reset loadability.
         if     IsBound( GAPInfo.PackagesRestrictions.( pkgname ) )
@@ -287,7 +286,7 @@ end );
 ##  In earlier versions, this function had an argument; now we ignore it.
 ##
 InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
-    local dirs, pkgdirs, pkgdir, ignore, name, files, record, r;
+    local pkgdirs, pkgdir, ignore, name, files, record, r;
 
     if IsBound( GAPInfo.PackagesInfoInitialized ) and
        GAPInfo.PackagesInfoInitialized = true then
@@ -301,7 +300,6 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
 
     LogPackageLoadingMessage( PACKAGE_DEBUG,
         "entering InitializePackagesInfoRecords", "GAP" );
-    dirs:= [];
     pkgdirs:= DirectoriesLibrary( "pkg" );
     if pkgdirs = fail then
       LogPackageLoadingMessage( PACKAGE_DEBUG,
@@ -1741,7 +1739,7 @@ InstallGlobalFunction( LoadAllPackages, function()
 #F  SetPackagePath( <pkgname>, <pkgpath> )
 ##
 InstallGlobalFunction( SetPackagePath, function( pkgname, pkgpath )
-    local pkgdir, file, record, version;
+    local pkgdir, file, record;
 
     InitializePackagesInfoRecords();
     pkgname:= LowercaseString( pkgname );
@@ -1774,7 +1772,6 @@ InstallGlobalFunction( SetPackagePath, function( pkgname, pkgpath )
       Error( "found package ", record.PackageName, " not ", pkgname,
              " in ", pkgpath );
     fi;
-    version:= record.Version;
     if IsBound( GAPInfo.PackagesRestrictions.( pkgname ) )
        and GAPInfo.PackagesRestrictions.( pkgname ).OnInitialization(
                record ) = false  then

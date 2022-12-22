@@ -1141,7 +1141,7 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
     # booleans
       empty, change, used, addable, SFIbool,
     # dimensions
-      m, n,
+      n,
     # help fields
       found, foundpos,
       z, nullcount, nullgenerate,
@@ -1185,11 +1185,9 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
 
     # searches lines to add in order to produce zeroes
     Search := function( j )
-    local signum;
 
     nullgenerate := 0;
     if g[ j ][ maxentry ] > 0 then
-       signum := -1;
        for k in [ 1..n ] do
           if k <> maxentry and k <> j then
              if g[ maxentry ][ k ] <> 0 then
@@ -1203,7 +1201,6 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
        od;
     else
        if g[ j ][ maxentry ] < 0 then
-          signum := 1;
           for k in [ 1..n ] do
              if k <> maxentry and k <> j then
                 if g[ maxentry ][ k ] <> 0 then
@@ -1397,7 +1394,6 @@ InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
     used      := [  ];
     next      := [  ];
     nullcount := [  ];
-    m := Length( y[ 1 ] );
     for i in [1..n] do
        used[i] := false;
     od;

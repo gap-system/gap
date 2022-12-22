@@ -1010,7 +1010,7 @@ BindGlobal( "CharTableWeylD", rec(
         ( n -> IsInt(n) and n > 1 )
     ) );
 CharTableWeylD.matrix := function(n)
-  local matB, matA, paramA, paramB, clp, chp, res, ctb, cta, val;
+  local matB, matA, paramA, paramB, clp, chp, ctb, cta, val;
   matB := CharTableWeylB!.matrix(n);
   if n mod 2 = 0 then
     matA := CharTableSymmetric!.matrix(n/2);
@@ -1019,7 +1019,6 @@ CharTableWeylD.matrix := function(n)
   paramB := PartitionTuples(n, 2);
   clp := CharTableWeylD!.classparam[1](n);
   chp := CharTableWeylD!.charparam[1](n);
-  res := NullMat(Length(chp), Length(clp));
   ctb := function(alpha, pi)
     return matB[Position(paramB, alpha)][Position(paramB, pi)];
   end;
@@ -1310,11 +1309,10 @@ BindGlobal( "DescendingListWithElementRemoved", function( list, el )
 DeclareGlobalFunction( "MorrisRecursion" );
 
 InstallGlobalFunction( MorrisRecursion, function( lambda, pi )
-    local n, sigma, e, k, P, i, j, rho, val, GT, sign, m, gamma, l;
+    local n, sigma, k, P, i, j, rho, val, GT, sign, m, gamma, l;
 
     n:= Sum( lambda );
     sigma:= QuoInt( n - Length( lambda ), 2 );
-    e:= sigma mod 2;
 
     # base case
     if pi = [] then

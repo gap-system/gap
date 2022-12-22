@@ -13,6 +13,7 @@
 ##  functions are implemented in the kernel.
 ##
 
+# gaplint: disable=analyse-lvars
 
 ##  This is a dirty hack, because this function is defined only later:
 ApplicableMethod := fail;

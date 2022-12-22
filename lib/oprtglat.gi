@@ -126,7 +126,7 @@ InstallMethod(SubgroupsOrbitsAndNormalizers,"perm group on list",true,
   [IsPermGroup,IsList,IsBool],0,
 function(G,dom,all)
   local savemem, n, l, o, pts, pbas, ptbas, un, domo, p, b, allo, ll, gp, t,
-  sel, r, i, gens, rorbs, tl, selz, rem, sely, j, torb, iinv,
+  sel, r, i, rorbs, tl, selz, rem, sely, j, torb, iinv,
   cl,lsd,domoj,startn;
 
   if Length(dom)=0 then
@@ -236,7 +236,6 @@ function(G,dom,all)
         i:=i+1;
       od;
     else
-      gens:=GeneratorsOfGroup(r.representative);
       r.normalizer:=Normalizer(G,r.representative);
       rorbs:=List(Orbits(r.representative,pts),i->Immutable(Set(i)));
       tl:=Index(G,r.normalizer);
@@ -451,7 +450,7 @@ function( G, sub, U, V, op )
 end );
 
 InstallGlobalFunction(PermPreConjtestGroups,function(G,l)
-local pats,spats,lpats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,
+local pats,spats,lpats,result,pa,lp,lens,h,orbs,p,rep,cln,allorbs,
       allco,panu,gpcl,i,j,k,Gm,a,corbs,dict,norb,m,ornums,sornums,
       ssornums,sel,sela,statra,lrep,gpcl2,je,lrep1,partimg,nobail,cnt,hpos;
 
@@ -459,7 +458,6 @@ local pats,spats,lpats,result,pa,lp,dom,lens,h,orbs,p,rep,cln,allorbs,
     return [[G,l]];
   fi;
 
-  dom:=MovedPoints(G);
   pats:=List(l,x->Collected(List(Orbits(x,MovedPoints(x)),Length)));
   spats:=Set(pats);
   Info(InfoLattice,2,Length(spats)," patterns");

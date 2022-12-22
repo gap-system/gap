@@ -1254,15 +1254,12 @@ local invname, nams, rels, p, a, b, z, i,br;
 end);
 
 InstallGlobalFunction(StringFactorizationWord,function(word)
-local wu, l, symbols, offset, occurrences, n, no, translate, findpatterns, nams, invnams, r, wordout, j;
+local wu, l, n, no, translate, findpatterns, nams, invnams, r, wordout, j;
   wu:=UnderlyingElement(word);
   l:=LetterRepAssocWord(wu);
   if Length(l)=0 then
     return "<identity>";
   fi;
-  symbols:=Set(l);
-  offset:=-Minimum(l)+1;
-  occurrences:=List([1..Maximum(l)+offset],i->[]);
   n:=Maximum(1,Maximum(l)+1);
   no:=n;
   translate:=[];
