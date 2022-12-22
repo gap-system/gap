@@ -41,21 +41,11 @@ local R;
   fi;
 end);
 
-InstallGlobalFunction(FittingFreeSubgroupSetup,function(G,U)
-local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r,pool,i,xx,inv,pregens;
-  ffs:=FittingFreeLiftSetup(G);
+InstallMethod(DoFFSS,"generic",IsIdenticalObj,[IsGroup and IsFinite,IsGroup],0,
+function(G,U)
+local ffs,pcisom,rest,it,kpc,k,x,ker,r,pool,i,xx,inv,pregens,iso;
 
-  # result cached?
-  if not IsBound(U!.cachedFFS) then
-    cache:=[];
-    U!.cachedFFS:=cache;
-  else
-    cache:=U!.cachedFFS;
-  fi;
-  r:=First(cache,x->IsIdenticalObj(x[1],ffs));
-  if r<>fail then
-    return r[2];
-  fi;
+  ffs:=FittingFreeLiftSetup(G);
 
   pcisom:=ffs.pcisom;
 
@@ -90,25 +80,51 @@ local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r,pool,i,xx,inv,pregens;
     k:=ffs.pcgs;
   else
 
-    inv:=RestrictedInverseGeneralMapping(rest);
-    pregens:=List(SmallGeneratingSet(Image(rest)),
-      x->ImagesRepresentative(inv,x));
-    it:=CoKernelGensIterator(inv);
-    kpc:=TrivialSubgroup(Image(pcisom));
-    while not IsDoneIterator(it) do
-      x:=NextIterator(it);
-      pool:=[x];
-      for x in pool do
-        xx:=ImagesRepresentative(pcisom,x);
-        if not xx in kpc then
-          kpc:=ClosureGroup(kpc,xx);
-          for i in pregens do
-            Add(pool,x^i);
-          od;
+    iso:=IsomorphismFpGroup(Image(rest,U));
+    pregens:=List(GeneratorsOfGroup(Range(iso)),x->
+      PreImagesRepresentative(rest,PreImagesRepresentative(iso,x)));
+    # evaluate relators
+    pool:=List(RelatorsOfFpGroup(Range(iso)),
+      x->MappedWord(x,FreeGeneratorsOfFpGroup(Range(iso)),pregens));
+    # divide off original generators
+    Append(pool,List(GeneratorsOfGroup(U),x->x/
+      MappedWord(UnderlyingElement(ImagesRepresentative(iso,ImagesRepresentative(ffs.factorhom,x))),FreeGeneratorsOfFpGroup(Range(iso)),pregens)));
+
+
+    pool:=List(pool,x->ImagesRepresentative(pcisom,x));
+    kpc:=SubgroupNC(Image(pcisom),pool);
+    pool:=List(SmallGeneratingSet(kpc),x->PreImage(pcisom,x));
+    # normal closure
+    for x in pool do
+      for i in GeneratorsOfGroup(U) do
+        xx:=x^i;
+        k:=ImagesRepresentative(pcisom,xx);
+        if not k in kpc then
+          kpc:=ClosureSubgroupNC(kpc,k);
+          Add(pool,xx);
         fi;
       od;
-      #Print("|pool|=",Length(pool),"\n");
     od;
+
+#    inv:=RestrictedInverseGeneralMapping(rest);
+#    pregens:=List(SmallGeneratingSet(Image(rest)),
+#      x->ImagesRepresentative(inv,x));
+#    it:=CoKernelGensIterator(inv);
+#    kpc:=TrivialSubgroup(Image(pcisom));
+#    while not IsDoneIterator(it) do
+#      x:=NextIterator(it);
+#      pool:=[x];
+#      for x in pool do
+#       xx:=ImagesRepresentative(pcisom,x);
+#       if not xx in kpc then
+#         kpc:=ClosureGroup(kpc,xx);
+#         for i in pregens do
+#           Add(pool,x^i);
+#         od;
+#       fi;
+#      od;
+#      #Print("|pool|=",Length(pool),"\n");
+#    od;
     SetSize(U,Size(Image(rest))*Size(kpc));
     k:=InducedPcgs(FamilyPcgs(Image(pcisom)),kpc);
     k:=List(k,x->PreImagesRepresentative(pcisom,x));
@@ -131,6 +147,44 @@ local cache,ffs,pcisom,rest,it,kpc,k,x,ker,r,pool,i,xx,inv,pregens;
             pcgs:=k,
             serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
             );
+
+  return r;
+
+end);
+
+InstallGlobalFunction(FittingFreeSubgroupSetup,function(G,U)
+local ffs,cache,rest,ker,k,r;
+  ffs:=FittingFreeLiftSetup(G);
+
+  # result cached?
+  if not IsBound(U!.cachedFFS) then
+    cache:=[];
+    U!.cachedFFS:=cache;
+  else
+    cache:=U!.cachedFFS;
+  fi;
+  r:=First(cache,x->IsIdenticalObj(x[1],ffs));
+  if r<>fail then
+    return r[2];
+  fi;
+
+  if IsIdenticalObj(G,U) or GeneratorsOfGroup(G)=GeneratorsOfGroup(U) then
+    rest:=ffs.factorhom;
+    ker:=ffs.radical;
+    k:=ffs.pcgs;
+    r:=[1..Length(k)];
+    r:=rec(parentffs:=ffs,
+              rest:=rest,
+              ker:=ker,
+              pcgs:=k,
+              serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
+              );
+  else
+    r:=DoFFSS(G,U);
+  fi;
+
+  k:=r.pcgs;
+  rest:=r.rest;
   Add(cache,[ffs,r]); # keep
   if Length(k)=0 then
     SetSize(U,Size(Image(rest)));
