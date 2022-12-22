@@ -141,6 +141,7 @@ InstallTrueMethod(CanComputeFittingFree,HasFittingFreeLiftSetup);
 ##  </ManSection>
 ##  <#/GAPDoc>
 DeclareGlobalFunction("FittingFreeSubgroupSetup");
+DeclareOperation("DoFFSS",[IsGroup,IsGroup]);
 
 # This attribute is used for groups treated by constructive recognition and
 # a composition tree. It is declared in the library such that the function
