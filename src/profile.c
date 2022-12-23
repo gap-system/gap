@@ -232,6 +232,52 @@ static void CheckLeaveFunctionsAfterLongjmp(void)
     }
 }
 
+// Escape a string for serialization in a JSON file, following the
+// escaping rules laid out at json.org.
+static Obj JsonEscapeString(Obj param)
+{
+    Int lenString = LEN_LIST(param);
+
+    // Allocate an output string with twice the size of the input
+    // string, as in the worst case every single has to be escaped.
+    Obj     copy = NEW_STRING(lenString * 2);
+    UChar * in = CHARS_STRING(param);
+    UChar * base = CHARS_STRING(copy);
+    UChar * out = base;
+
+    for (Int i = 0; i < lenString; ++i) {
+        UChar u = in[i];
+        switch (u) {
+        case '\\':
+        case '"':
+        case '/':
+            out[0] = '\\';
+            out[1] = u;
+            out += 2;
+            break;
+#define ESCAPE_CASE(x, y)                                                    \
+    case x:                                                                  \
+        out[0] = '\\';                                                       \
+        out[1] = y;                                                          \
+        out += 2;                                                            \
+        break;
+            ESCAPE_CASE('\b', 'b');
+            ESCAPE_CASE('\t', 't');
+            ESCAPE_CASE('\n', 'n');
+            ESCAPE_CASE('\f', 'f');
+            ESCAPE_CASE('\r', 'r');
+#undef ESCAPE_CASE
+        default:
+            *(out++) = u;
+        }
+    }
+
+    SET_LEN_STRING(copy, out - base);
+    ResizeBag(copy, SIZEBAG_STRINGLEN(out - base));
+    return copy;
+}
+
+
 static inline void outputFilenameIdIfRequired(UInt id)
 {
     if (id == 0) {
@@ -242,7 +288,8 @@ static inline void outputFilenameIdIfRequired(UInt id)
         AssPlist(OutputtedFilenameList, id, True);
         fprintf(profileState.Stream,
                 "{\"Type\":\"S\",\"File\":\"%s\",\"FileId\":%d}\n",
-                CONST_CSTR_STRING(GetCachedFilename(id)), (int)id);
+                CONST_CSTR_STRING(JsonEscapeString(GetCachedFilename(id))),
+                (int)id);
     }
 }
 
@@ -265,14 +312,19 @@ static void HookedLineOutput(Obj func, char type)
     UInt endline = GET_ENDLINE_BODY(body);
 
     Obj name = NAME_FUNC(func);
-    const Char *name_c = name ? CONST_CSTR_STRING(name) : "nameless";
+    if (name) {
+        name = JsonEscapeString(name);
+    }
 
     Obj         filename = GET_FILENAME_BODY(body);
     UInt        fileid = GET_GAPNAMEID_BODY(body);
     outputFilenameIdIfRequired(fileid);
     const Char *filename_c = "<missing filename>";
     if(filename != Fail && filename != NULL)
-      filename_c = CONST_CSTR_STRING(filename);
+        filename_c = CONST_CSTR_STRING(JsonEscapeString(filename));
+
+    // Do this here to avoid GCs before string is used
+    const Char * name_c = name ? CONST_CSTR_STRING(name) : "nameless";
 
     if(type == 'I' && profileState.lastNotOutputted.line != -1)
     {
