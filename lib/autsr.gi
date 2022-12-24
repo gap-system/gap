@@ -1015,7 +1015,7 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
           for j in b do
             N:=ClosureSubgroup(N,b);
           od;
-          # insert
+          # insert in series
           for j in [Length(ser),Length(ser)-1..i+1] do
             ser[j+1]:=ser[j];
           od;
@@ -1034,13 +1034,13 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
             Info(InfoMorph,2,"insert2");
           fi;
           N:=ser[i+1]; # the added normal
-          if rada<>fail
-             and ForAny(GeneratorsOfGroup(rada),x->N<>Image(x,N)) then
-            Info(InfoMorph,3,"radical automorphism stabilizer");
-            SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
-            NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
-            rada:=Stabilizer(rada,N,asAutom);
-          fi;
+        fi;
+        if rada<>fail
+            and ForAny(GeneratorsOfGroup(rada),x->N<>Image(x,N)) then
+          Info(InfoMorph,3,"radical automorphism stabilizer");
+          SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
+          NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
+          rada:=Stabilizer(rada,N,asAutom);
         fi;
       fi;
     until split or fratsim;
@@ -1332,7 +1332,6 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
           # move back to bad degree
           rada:=Group(List(GeneratorsOfGroup(rada),
             x-> InducedAutomorphism(InverseGeneralMapping(ind),x)));
-
         fi;
       fi;
 
