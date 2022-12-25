@@ -10,3 +10,6 @@ gap> G:=Group([(1,2,3,4,5)(6,8,7),
 gap> SetAssertionLevel(0);
 gap> IsomorphismGroups(G,G)<>fail;
 true
+gap> g5:=DirectProduct(SmallGroup(1800,328),CyclicGroup(IsPermGroup,4));;
+gap> Size(AutomorphismGroup(g5));
+3840
