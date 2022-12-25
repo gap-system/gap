@@ -266,6 +266,10 @@ local pool,p,h,ise,emb,i,j;
         fi;
       od;
       ise:=List(ise,i->GetNaturalHomomorphismsPool(G,pool.ker[i]));
+      if not (ForAll(ise,IsPcGroup) or ForAll(ise,IsPermGroup)) then
+        ise:=List(ise,x->x*IsomorphismPermGroup(Image(x)));
+      fi;
+
       h:=CallFuncList(DirectProduct,List(ise,Image));
       emb:=List([1..Length(ise)],i->Embedding(h,i));
       emb:=List(GeneratorsOfGroup(G),
