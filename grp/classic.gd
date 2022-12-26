@@ -1283,7 +1283,7 @@ end );
 ##  PGO( <A>e</A>, <A>d</A>, <A>q</A> )
 ##  of GO( <A>e</A>, <A>d</A>, <A>q</A> ),
 ##  modulo the centre
-##  (see <Ref Oper="GeneralOrthogonalGroup"/>),
+##  (see <Ref Func="GeneralOrthogonalGroup"/>),
 ##  in the category given by the filter <A>filt</A>.
 ##  <P/>
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,
@@ -1319,7 +1319,7 @@ DECLARE_PROJECTIVE_ORTHOGONAL_GROUPS_OPERATION( "GeneralOrthogonalGroup", "GO",
 ##  PSO( <A>e</A>, <A>d</A>, <A>q</A> )
 ##  of SO( <A>e</A>, <A>d</A>, <A>q</A> ),
 ##  modulo the centre
-##  (see <Ref Oper="SpecialOrthogonalGroup"/>),
+##  (see <Ref Func="SpecialOrthogonalGroup"/>),
 ##  in the category given by the filter <A>filt</A>.
 ##  <P/>
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsPermGroup"/>,

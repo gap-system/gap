@@ -169,7 +169,7 @@ Section <Ref Sect="Concepts and Rules for Vector and Matrix Objects"/>,
 and do on the other hands support access to &GAP; objects that represent
 their rows (which are suitable vector objects).
 Matrix objects whose
-<Ref Filt="ConstructingFilter" Label="for a matrix object"/> value implies
+<Ref Attr="ConstructingFilter" Label="for a matrix object"/> value implies
 <Ref Filt="IsRowListMatrix"/> support the operations described in this
 section.
 

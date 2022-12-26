@@ -1884,7 +1884,7 @@ DeclareUserPreference( rec(
   description:= [
     "Info messages concerning package loading up to this level are printed.  \
 The level can be changed in a running session using \
-<Ref Func=\"SetInfoLevel\"/>."
+<Ref Oper=\"SetInfoLevel\"/>."
     ],
   default:= PACKAGE_ERROR,
   values:= [ PACKAGE_ERROR, PACKAGE_WARNING, PACKAGE_INFO, PACKAGE_DEBUG ],
