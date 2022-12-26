@@ -2876,3 +2876,134 @@ local   pcgs;
              factorhom:=NaturalHomomorphismByNormalSubgroupNC(G,G));
 
 end );
+
+#############################################################################
+##
+#M  IsomorphismPermGroup( <G> ) . . . . . . . . .  for solvable group
+##
+InstallMethod( IsomorphismPermGroup,
+    "solvable groups, e.g. Hall action",
+    [ IsGroup and IsFinite and IsSolvableGroup and CanEasilyComputePcgs ],
+function ( G )
+local d,i,j,a,iso,ims,gens,s,p,abovent;
+  if IsAbelian(G) then
+    # force redispatch on abelian group
+    return IsomorphismAbelianGroupViaIndependentGenerators(IsPermGroup,G);
+  elif Size(G)<=100 and Size(G)<>64 then
+    # for these orders the optimal degree is fast enough
+    iso:=MinimalFaithfulPermutationRepresentation(G);
+    Info(InfoPcGroup,1,"Use optimal degree ",
+      Size(G),":",NrMovedPoints(Range(iso)));
+    return iso;
+  fi;
+
+  # can be subdirect?
+  d:=MinimalNormalSubgroups(G);
+  if Length(d)>1 then
+    # it can -- find a nice decomposition in two
+
+    # take two largest
+    d:=ShallowCopy(d);
+    SortBy(d,x->-Size(x));
+    abovent:=function(a,b)
+    local hom,n;
+      hom:=NaturalHomomorphismByNormalSubgroupNC(G,a);
+      b:=Image(hom,b);
+      n:=NormalSubgroups(Image(hom,a));
+      n:=Filtered(n,x->not IsSubset(x,b));
+      SortBy(n,x->-Size(x)); # descending order
+      return List(n,x->PreImage(hom,x));
+    end;
+
+    d:=[abovent(d[1],d[2]),abovent(d[2],d[1])];
+    if Size(d[2][1])>Size(d[1][1]) then d:=Reversed(d);fi;
+    d:=[d[1][1],First(d[2],x->Size(Intersection(x,d[1][1]))=1)];
+    Info(InfoPcGroup,1,"Subdirect ",List(d,x->Size(G)/Size(x)));
+    iso:=List(d,x->NaturalHomomorphismByNormalSubgroupNC(G,x));
+    d:=List(iso,x->IsomorphismPermGroup(Image(x,G)));
+    ims:=List([1,2],x->List(GeneratorsOfGroup(G),
+      y->ImagesRepresentative(d[x],ImagesRepresentative(iso[x],y))));
+    ims:=SubdirectDiagonalPerms(ims[1],ims[2]);
+    d:=Group(ims);
+    UseIsomorphismRelation(G,d);
+    s:=SmallerDegreePermutationRepresentation(d:cheap);
+    if NrMovedPoints(Range(s))<NrMovedPoints(d) then
+      ims:=List(ims,x->ImagesRepresentative(s,x));
+      d:=Image(s);
+      UseIsomorphismRelation(G,d);
+    fi;
+    iso:=GroupHomomorphismByImagesNC(G,d,GeneratorsOfGroup(G),ims);
+    Assert(1,IsBijective(iso));
+    SetIsBijective(iso,true);
+    return iso;
+  fi;
+
+  p:=Collected(Factors(Size(G)));
+  if Length(p)>1 then
+    d:=Combinations(p);
+    SortBy(d,x->-Product(x,y->y[1]^y[2]));
+    for i in d do
+      s:=HallSubgroup(G,List(i,x->x[1]));
+      if Size(Core(G,s))=1 then
+        Info(InfoPcGroup,1,"Hall ",List(i,x->x[1]));
+
+        # try normalizer quotient
+        d:=Normalizer(G,s);
+        if Size(Core(G,d))=1 then
+          s:=d;
+        else
+          d:=ShallowCopy(IntermediateSubgroups(d,s).subgroups);
+          SortBy(d,x->-Size(x));
+          a:=First(d,x->Size(Core(G,x))=1);
+          if a<>fail then s:=a;fi;
+        fi;
+
+        iso:=FactorCosetAction(G,s);
+        Assert(1,IsBijective(iso));
+        SetIsBijective(iso,true);
+        d:=Image(iso);
+        UseIsomorphismRelation(G,d);
+        return iso;
+      fi;
+    od;
+
+  else
+    # p-group, one minimal: try to go from factor permrep
+    d:=MinimalNormalSubgroups(G)[1];
+    ims:=NaturalHomomorphismByNormalSubgroupNC(G,d);
+    iso:=IsomorphismPermGroup(Image(ims,G));
+    ims:=ims*iso;
+    a:=Image(ims,G);
+    Info(InfoPcGroup,1,"Factor ",List(Orbits(a,MovedPoints(a)),Length));
+    s:=List(Orbits(a,MovedPoints(a)),x->Stabilizer(a,x[1]));
+    s:=List(s,x->PreImage(ims,x));
+    SortBy(s,x->-Size(x));
+    for j in [1..Length(Factors(Size(s[1])))] do
+      for i in [1..Length(s)] do
+        p:=LowLayerSubgroups(s[i],j);
+        p:=Filtered(p,x->not IsSubset(x,d));
+        if Length(p)>0 then
+          d:=Maximum(List(p,Size));
+          iso:=FactorCosetAction(G,First(p,x->Size(x)=d));
+          ims:=[List(GeneratorsOfGroup(G),x->ImagesRepresentative(iso,x)),
+            List(GeneratorsOfGroup(G),x->ImagesRepresentative(ims,x))];
+          ims:=SubdirectDiagonalPerms(ims[1],ims[2]);
+          d:=Group(ims);
+          UseIsomorphismRelation(G,d);
+          s:=SmallerDegreePermutationRepresentation(d:cheap);
+          if NrMovedPoints(Range(s))<NrMovedPoints(d) then
+            ims:=List(ims,x->ImagesRepresentative(s,x));
+            d:=Image(s);
+            UseIsomorphismRelation(G,d);
+          fi;
+          iso:=GroupHomomorphismByImagesNC(G,d,GeneratorsOfGroup(G),ims);
+          Assert(1,IsBijective(iso));
+          SetIsBijective(iso,true);
+          return iso;
+        fi;
+      od;
+    od;
+
+    Error("should never happen");
+  fi;
+end);

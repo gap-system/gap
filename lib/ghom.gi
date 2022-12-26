@@ -1397,6 +1397,10 @@ function ( G )
   if not HasIsAbelian( G ) and IsAbelian( G ) then
     # Redispatch to give the special methods for abelian groups a chance.
     return IsomorphismPermGroup( G );
+  elif (not HasIsSolvableGroup(G)) and IsSolvableGroup(G) then
+    # Redispatch to give the special methods for solvable groups a chance.
+    return IsomorphismPermGroup( G );
+
     # MH: Disabled the following code for now, as computing IsNilpotentGroup
     # can be very expensive, depending on the group type. We could
     # re-enable it for e.g. pc groups, but I am not sure whether it is

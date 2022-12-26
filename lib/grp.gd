@@ -4279,10 +4279,9 @@ DeclareAttribute( "IsomorphismSpecialPcGroup", IsGroup );
 ##  gap> g:=SmallGroup(24,12);
 ##  <pc group of size 24 with 4 generators>
 ##  gap> iso:=IsomorphismPermGroup(g);
-##  <action isomorphism>
+##  [ f1, f2, f3, f4 ] -> [ (2,3), (2,3,4), (1,2)(3,4), (1,3)(2,4) ]
 ##  gap> Image(iso,g.3*g.4);
-##  (1,12)(2,16)(3,19)(4,5)(6,22)(7,8)(9,23)(10,11)(13,24)(14,15)(17,
-##  18)(20,21)
+##  (1,4)(2,3)
 ##  ]]></Example>
 ##  <P/>
 ##  In many cases the permutation representation constructed by
