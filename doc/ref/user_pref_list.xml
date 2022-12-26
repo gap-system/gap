@@ -101,7 +101,7 @@ Defaults: <C>[ 10000, true ]</C>.
 </Mark>
 <Item>
 Info messages concerning package loading up to this level are printed. The
-level can be changed in a running session using <Ref Func="SetInfoLevel"/>.
+level can be changed in a running session using <Ref Oper="SetInfoLevel"/>.
 
 <P/>
 

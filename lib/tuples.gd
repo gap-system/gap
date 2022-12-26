@@ -174,7 +174,7 @@ DeclareOperation( "DirectProductElementNC",
 ##  <Ref Func="DirectProductFamily"/> returns <C>fam</C>, a collections
 ##  family of <Ref Filt="IsDirectProductElement"/> objects.
 ##  <P/>
-##  <C>fam</C> is the <Ref Filt="CollectionsFamily"/> of
+##  <C>fam</C> is the <Ref Attr="CollectionsFamily"/> of
 ##  <Ref Filt="IsDirectProductElement"/> objects
 ##  whose <C>i</C>-th component is in <C>ElementsFamily(args[i])</C>.
 ##  <P/>

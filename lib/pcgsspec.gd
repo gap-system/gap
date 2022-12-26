@@ -213,7 +213,7 @@ DeclareAttribute( "LGLength", IsGroup );
 ##  <Ref Attr="InducedPcgsWrtSpecialPcgs"/> will return a pcgs induced by
 ##  <E>a</E> special pcgs (which might differ from the one you had in mind).
 ##  If you need an induced pcgs compatible with a <E>given</E> special pcgs
-##  use <Ref Oper="InducedPcgs"/> for this special pcgs.
+##  use <Ref Func="InducedPcgs"/> for this special pcgs.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

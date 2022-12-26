@@ -1789,7 +1789,7 @@ DeclareOperation( "Tensored", [ IsHomogeneousList, IsHomogeneousList ] );
 ##  that is afforded by the tensor product of <M>V</M> and <M>W</M>.
 ##  <P/>
 ##  The result can also be computed as <A>chi</A><C>*</C><A>psi</A>,
-##  see also <Ref Func="Tensored"/>.
+##  see also <Ref Oper="Tensored"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> t:= CharacterTable( "A5" );;
@@ -2475,7 +2475,7 @@ DeclareGlobalFunction( "AntiSymmetricParts" );
 ##  <P/>
 ##  This exterior power is the symmetrization of <A>chi</A> with the
 ##  sign character of the symmetric group of degree <A>n</A>,
-##  see also <Ref Func="Symmetrizations"/> and
+##  see also <Ref Oper="Symmetrizations"/> and
 ##  <Ref Func="AntiSymmetricParts"/>.
 ##  <P/>
 ##  <Example><![CDATA[
@@ -2510,7 +2510,7 @@ DeclareOperation( "ExteriorPower", [ IsClassFunction, IsPosInt ] );
 ##  <P/>
 ##  This symmetric power is the symmetrization of <A>chi</A> with the
 ##  trivial character of the symmetric group of degree <A>n</A>,
-##  see also <Ref Func="Symmetrizations"/> and
+##  see also <Ref Oper="Symmetrizations"/> and
 ##  <Ref Func="SymmetricParts"/>.
 ##  <P/>
 ##  <Example><![CDATA[

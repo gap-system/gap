@@ -50,7 +50,7 @@ Here are some examples of such name changes.
 </Row>
 <Row>
   <Item><C>IsLexicographicallyLess</C><Index Key="IsLexicographicallyLess"><C>IsLexicographicallyLess</C></Index></Item>
-  <Item><Ref Attr="\&lt;"/></Item>
+  <Item><Ref Oper="\&lt;"/></Item>
 </Row>
 </Table>
 
@@ -219,36 +219,36 @@ to use even in code which is meant to run in older GAP versions.
 <HorLine/>
 <Row>
   <Item><C>OneSM</C><Index Key="OneSM"><C>OneSM</C></Index></Item>
-  <Item><Ref Func="OneSameMutability"/></Item>
+  <Item><Ref Oper="OneSameMutability"/></Item>
 </Row>
 <Row>
   <Item><C>InverseSM</C><Index Key="InverseSM"><C>InverseSM</C></Index></Item>
-  <Item><Ref Func="InverseSameMutability"/></Item>
+  <Item><Ref Oper="InverseSameMutability"/></Item>
 </Row>
 <Row>
   <Item><C>ZeroSM</C><Index Key="ZeroSM"><C>ZeroSM</C></Index></Item>
-  <Item><Ref Func="ZeroSameMutability"/></Item>
+  <Item><Ref Oper="ZeroSameMutability"/></Item>
 </Row>
 <Row>
   <Item><C>AdditiveInverseSM</C><Index Key="AdditiveInverseSM"><C>AdditiveInverseSM</C></Index></Item>
-  <Item><Ref Func="AdditiveInverseSameMutability"/></Item>
+  <Item><Ref Oper="AdditiveInverseSameMutability"/></Item>
 </Row>
 
 <Row>
   <Item><C>OneAttr</C><Index Key="OneAttr"><C>OneAttr</C></Index></Item>
-  <Item><Ref Func="One"/>, <Ref Func="OneImmutable"/></Item>
+  <Item><Ref Attr="One"/>, <Ref Attr="OneImmutable"/></Item>
 </Row>
 <Row>
   <Item><C>InverseAttr</C><Index Key="InverseAttr"><C>InverseAttr</C></Index></Item>
-  <Item><Ref Func="Inverse"/>, <Ref Func="InverseImmutable"/></Item>
+  <Item><Ref Attr="Inverse"/>, <Ref Attr="InverseImmutable"/></Item>
 </Row>
 <Row>
   <Item><C>ZeroAttr</C><Index Key="ZeroAttr"><C>ZeroAttr</C></Index></Item>
-  <Item><Ref Func="Zero"/>, <Ref Func="ZeroImmutable"/></Item>
+  <Item><Ref Attr="Zero"/>, <Ref Attr="ZeroImmutable"/></Item>
 </Row>
 <Row>
   <Item><C>AdditiveInverseAttr</C><Index Key="AdditiveInverseAttr"><C>AdditiveInverseAttr</C></Index></Item>
-  <Item><Ref Func="AdditiveInverse"/>, <Ref Func="AdditiveInverseImmutable"/></Item>
+  <Item><Ref Attr="AdditiveInverse"/>, <Ref Attr="AdditiveInverseImmutable"/></Item>
 </Row>
 
 </Table>
