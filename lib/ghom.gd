@@ -673,3 +673,5 @@ DeclareAttribute( "ImagesSmallestGenerators",
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "RegularActionHomomorphism", IsGroup );
+
+DeclareGlobalName("IsomorphismAbelianGroupViaIndependentGenerators");

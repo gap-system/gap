@@ -1013,7 +1013,7 @@ DeclareAttribute( "TrivialCharacter", IsGroup );
 ##  gap> NaturalCharacter( Group( [ [ 0, -1 ], [ 1, -1 ] ] ) );
 ##  Character( CharacterTable( Group([ [ [ 0, -1 ], [ 1, -1 ] ] ]) ),
 ##  [ 2, -1, -1 ] )
-##  gap> d8:= DihedralGroup( 8 );;  hom:= IsomorphismPermGroup( d8 );;
+##  gap> d8:= DihedralGroup( 8 );;  hom:= RegularActionHomomorphism( d8 );;
 ##  gap> NaturalCharacter( hom );
 ##  Character( CharacterTable( <pc group of size 8 with 3 generators> ),
 ##  [ 8, 0, 0, 0, 0 ] )

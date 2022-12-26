@@ -232,11 +232,12 @@ DeclareSynonym( "ImproveOperationDegreeByBlocks",
 ##  called internally might try a degree reduction.)
 ##  <P/>
 ##  <Example><![CDATA[
+##  gap> iso:=RegularActionHomomorphism(SymmetricGroup(4));;
 ##  gap> image:= Image( iso );;  NrMovedPoints( image );
 ##  24
 ##  gap> small:= SmallerDegreePermutationRepresentation( image );;
 ##  gap> Image( small );
-##  Group([ (2,3), (1,2,3), (1,3)(2,4), (1,2)(3,4) ])
+##  Group([ (2,5,4,3), (1,4)(2,6)(3,5) ])
 ##  gap> g:=Image(IsomorphismPermGroup(GL(4,5)));;
 ##  gap> sm:=SmallerDegreePermutationRepresentation(g:cheap);;
 ##  gap> NrMovedPoints(Range(sm));
