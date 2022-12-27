@@ -115,7 +115,7 @@ static Obj OutputtedFilenameList;
 
 struct StatementLocation
 {
-    int fileID;
+    int fileid;
     int line;
 };
 
@@ -275,8 +275,8 @@ static void HookedLineOutput(Obj func, char type)
     const Char *name_c = name ? CONST_CSTR_STRING(name) : "nameless";
 
     Obj         filename = GET_FILENAME_BODY(body);
-    UInt        fileID = GET_GAPNAMEID_BODY(body);
-    outputFilenameIdIfRequired(fileID);
+    UInt        fileid = GET_GAPNAMEID_BODY(body);
+    outputFilenameIdIfRequired(fileid);
     const Char *filename_c = "<missing filename>";
     if(filename != Fail && filename != NULL)
       filename_c = CONST_CSTR_STRING(filename);
@@ -285,7 +285,7 @@ static void HookedLineOutput(Obj func, char type)
     {
       fprintf(profileState.Stream, "{\"Type\":\"X\",\"Line\":%d,\"FileId\":%d}\n",
               (int)profileState.lastNotOutputted.line,
-              (int)profileState.lastNotOutputted.fileID);
+              (int)profileState.lastNotOutputted.fileid);
     }
 
     // We output 'File' here for compatibility with
@@ -295,7 +295,7 @@ static void HookedLineOutput(Obj func, char type)
                                  "d,\"EndLine\":%d,\"File\":\"%s\","
                                  "\"FileId\":%d}\n",
             type, name_c, (int)startline, (int)endline, filename_c,
-            (int)fileID);
+            (int)fileid);
   }
   HashUnlock(&profileState);
 }
@@ -434,10 +434,10 @@ static inline Int8 getTicks(void)
 }
 
 
-static inline void printOutput(UInt line, int nameid, int exec, int visited)
+static inline void printOutput(int fileid, int line, BOOL exec, BOOL visited)
 {
     if (profileState.lastOutputted.line != line ||
-        profileState.lastOutputted.fileID != nameid ||
+        profileState.lastOutputted.fileid != fileid ||
         profileState.lastOutputtedExec != exec) {
 
         if (profileState.OutputRepeats) {
@@ -458,46 +458,45 @@ static inline void printOutput(UInt line, int nameid, int exec, int visited)
                     ticksDone = (ticks / profileState.minimumProfileTick) *
                                 profileState.minimumProfileTick;
                 }
-                outputFilenameIdIfRequired(nameid);
+                outputFilenameIdIfRequired(fileid);
                 fprintf(profileState.Stream,
                         "{\"Type\":\"%c\",\"Ticks\":%d,\"Line\":%d,"
                         "\"FileId\":%d}\n",
-                        exec ? 'E' : 'R', ticksDone, (int)line, (int)nameid);
+                        exec ? 'E' : 'R', ticksDone, (int)line, (int)fileid);
                 profileState.lastOutputtedTime = newticks;
                 profileState.lastNotOutputted.line = -1;
                 profileState.lastOutputted.line = line;
-                profileState.lastOutputted.fileID = nameid;
+                profileState.lastOutputted.fileid = fileid;
                 profileState.lastOutputtedExec = exec;
             }
             else {
                 profileState.lastNotOutputted.line = line;
-                profileState.lastNotOutputted.fileID = nameid;
+                profileState.lastNotOutputted.fileid = fileid;
             }
         }
         else {
-            outputFilenameIdIfRequired(nameid);
+            outputFilenameIdIfRequired(fileid);
             fprintf(profileState.Stream,
                     "{\"Type\":\"%c\",\"Line\":%d,\"FileId\":%d}\n",
-                    exec ? 'E' : 'R', (int)line, (int)nameid);
+                    exec ? 'E' : 'R', (int)line, (int)fileid);
             profileState.lastOutputted.line = line;
-            profileState.lastOutputted.fileID = nameid;
+            profileState.lastOutputted.fileid = fileid;
             profileState.lastOutputtedExec = exec;
             profileState.lastNotOutputted.line = -1;
         }
     }
 }
 
+// type : the type of the statement
 // exec : are we executing this statement
 // visit: Was this statement previously visited (that is, executed)
-static inline void outputStat(Stat stat, int exec, int visited)
+static inline void
+outputStat(Int fileid, int line, int type, BOOL exec, BOOL visited)
 {
-    UInt line;
-    int  nameid;
-
     // Explicitly skip these two cases, as they are often specially handled
     // and also aren't really interesting statements (something else will
     // be executed whenever they are).
-    if (TNUM_STAT(stat) == EXPR_TRUE || TNUM_STAT(stat) == EXPR_FALSE) {
+    if (type == EXPR_TRUE || type == EXPR_FALSE) {
         return;
     }
 
@@ -508,19 +507,17 @@ static inline void outputStat(Stat stat, int exec, int visited)
         return;
     }
 
-    nameid = getFilenameIdOfCurrentFunction();
-    outputFilenameIdIfRequired(nameid);
+    outputFilenameIdIfRequired(fileid);
 
     // Statement not attached to a file
-    if (nameid == 0) {
+    if (fileid == 0) {
         return;
     }
 
-    line = LINE_STAT(stat);
-    printOutput(line, nameid, exec, visited);
+    printOutput(fileid, line, exec, visited);
 }
 
-static inline void outputInterpretedStat(Int file, Int line, Int exec)
+static inline void outputInterpretedStat(int fileid, int line, BOOL exec)
 {
     CheckLeaveFunctionsAfterLongjmp();
 
@@ -529,14 +526,14 @@ static inline void outputInterpretedStat(Int file, Int line, Int exec)
         return;
     }
 
-    outputFilenameIdIfRequired(file);
+    outputFilenameIdIfRequired(fileid);
 
     // Statement not attached to a file
-    if (file == 0) {
+    if (fileid == 0) {
         return;
     }
 
-    printOutput(line, file, exec, 0);
+    printOutput(fileid, line, exec, 0);
 }
 
 static void visitStat(Stat stat)
@@ -546,7 +543,7 @@ static void visitStat(Stat stat)
     return;
 #endif
 
-  int visited = VISITED_STAT(stat);
+  BOOL visited = VISITED_STAT(stat);
 
   if (!visited) {
     SET_VISITED_STAT(stat);
@@ -554,12 +551,13 @@ static void visitStat(Stat stat)
 
   if (profileState.OutputRepeats || !visited) {
     HashLock(&profileState);
-    outputStat(stat, 1, visited);
+    outputStat(getFilenameIdOfCurrentFunction(), LINE_STAT(stat),
+               TNUM_STAT(stat), TRUE, visited);
     HashUnlock(&profileState);
   }
 }
 
-static void visitInterpretedStat(Int file, Int line)
+static void visitInterpretedStat(int fileid, int line)
 {
 #ifdef HPCGAP
     if (profileState.profiledThread != TLS(threadID))
@@ -567,7 +565,7 @@ static void visitInterpretedStat(Int file, Int line)
 #endif
 
     HashLock(&profileState);
-    outputInterpretedStat(file, line, 1);
+    outputInterpretedStat(fileid, line, TRUE);
     HashUnlock(&profileState);
 }
 
@@ -584,16 +582,17 @@ static void registerStat(Stat stat)
 {
     HashLock(&profileState);
     if (profileState.status == Profile_Active) {
-      outputStat(stat, 0, 0);
+        outputStat(getFilenameIdOfCurrentFunction(), LINE_STAT(stat),
+                   TNUM_STAT(stat), FALSE, FALSE);
     }
     HashUnlock(&profileState);
 }
 
-static void registerInterpretedStat(Int file, Int line)
+static void registerInterpretedStat(int fileid, int line)
 {
     HashLock(&profileState);
     if (profileState.status == Profile_Active) {
-        outputInterpretedStat(file, line, 0);
+        outputInterpretedStat(fileid, line, FALSE);
     }
     HashUnlock(&profileState);
 }
