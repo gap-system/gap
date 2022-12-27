@@ -70,21 +70,21 @@ extern EvalBoolFunc OriginalEvalBoolFuncsForHook[256];
 
 struct InterpreterHooks {
     void (*visitStat)(Stat stat);
-    void (*visitInterpretedStat)(Int line, Int pos);
+    void (*visitInterpretedStat)(int fileid, int line);
     void (*enterFunction)(Obj func);
     void (*leaveFunction)(Obj func);
     void (*registerStat)(Stat stat);
-    void (*registerInterpretedStat)(Int line, Int pos);
+    void (*registerInterpretedStat)(int fileid, int line);
     const char * hookName;
 };
 
 
-enum { HookCount = 6 };
+enum { MAX_HOOK_COUNT = 6 };
 
-extern struct InterpreterHooks * activeHooks[HookCount];
+extern struct InterpreterHooks * activeHooks[MAX_HOOK_COUNT];
 
-Int ActivateHooks(struct InterpreterHooks * hook);
-Int DeactivateHooks(struct InterpreterHooks * hook);
+void ActivateHooks(struct InterpreterHooks * hook);
+void DeactivateHooks(struct InterpreterHooks * hook);
 
 /****************************************************************************
 **
@@ -104,9 +104,8 @@ Int DeactivateHooks(struct InterpreterHooks * hook);
 
 #define GAP_HOOK_LOOP(member, ...)                                           \
     do {                                                                     \
-        Int                       i;                                         \
         struct InterpreterHooks * hook;                                      \
-        for (i = 0; i < HookCount; ++i) {                                    \
+        for (int i = 0; i < MAX_HOOK_COUNT; ++i) {                           \
             hook = activeHooks[i];                                           \
             if (hook && hook->member) {                                      \
                 (hook->member)(__VA_ARGS__);                                 \
@@ -135,11 +134,11 @@ EXPORT_INLINE void RegisterStatWithHook(Stat func)
     GAP_HOOK_LOOP(registerStat, func);
 }
 
-EXPORT_INLINE void InterpreterHook(Int file, Int line, Int skipped)
+EXPORT_INLINE void InterpreterHook(int fileid, int line, Int skipped)
 {
-    GAP_HOOK_LOOP(registerInterpretedStat, file, line);
+    GAP_HOOK_LOOP(registerInterpretedStat, fileid, line);
     if (!skipped) {
-        GAP_HOOK_LOOP(visitInterpretedStat, file, line);
+        GAP_HOOK_LOOP(visitInterpretedStat, fileid, line);
     }
 }
 

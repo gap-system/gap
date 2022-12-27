@@ -25,7 +25,7 @@
 
 
 // List of active hooks
-struct InterpreterHooks * activeHooks[HookCount];
+struct InterpreterHooks * activeHooks[MAX_HOOK_COUNT];
 
 // Number of active hooks
 static Int HookActiveCount;
@@ -109,19 +109,19 @@ static Obj ProfileEvalBoolPassthrough(Expr stat)
 **
 */
 
-Int ActivateHooks(struct InterpreterHooks * hook)
+void ActivateHooks(struct InterpreterHooks * hook)
 {
     Int i;
 
-    if (HookActiveCount == HookCount) {
-        return 0;
+    if (HookActiveCount == MAX_HOOK_COUNT) {
+        return;
     }
 
     HashLock(&activeHooks);
-    for (i = 0; i < HookCount; ++i) {
+    for (i = 0; i < MAX_HOOK_COUNT; ++i) {
         if (activeHooks[i] == hook) {
             HashUnlock(&activeHooks);
-            return 0;
+            return;
         }
     }
 
@@ -131,24 +131,20 @@ Int ActivateHooks(struct InterpreterHooks * hook)
         EvalBoolFuncs[i] = ProfileEvalBoolPassthrough;
     }
 
-    for (i = 0; i < HookCount; ++i) {
+    for (i = 0; i < MAX_HOOK_COUNT; ++i) {
         if (!activeHooks[i]) {
             activeHooks[i] = hook;
             HookActiveCount++;
-            HashUnlock(&activeHooks);
-            return 1;
+            break;
         }
     }
     HashUnlock(&activeHooks);
-    return 0;
 }
 
-Int DeactivateHooks(struct InterpreterHooks * hook)
+void DeactivateHooks(struct InterpreterHooks * hook)
 {
-    Int i;
-
     HashLock(&activeHooks);
-    for (i = 0; i < HookCount; ++i) {
+    for (int i = 0; i < MAX_HOOK_COUNT; ++i) {
         if (activeHooks[i] == hook) {
             activeHooks[i] = 0;
             HookActiveCount--;
@@ -162,7 +158,6 @@ Int DeactivateHooks(struct InterpreterHooks * hook)
     }
 
     HashUnlock(&activeHooks);
-    return 1;
 }
 
 /****************************************************************************
