@@ -1984,9 +1984,12 @@ InstallMethod(Remove, "one argument", [IsList and IsMutable],
     return x;
 end);
 
-InstallMethod(Remove, "two arguments, fast", [IsList and IsPlistRep and IsMutable, IsPosInt],
+InstallEarlyMethod(Remove,
         function(l,p)
     local ret,x,len;
+    if not (IsPlistRep(l) and IsMutable(l) and IsPosInt(p)) then
+        TryNextMethod();
+    fi;
     len := Length(l);
     ret := IsBound(l[p]);
     if ret then
