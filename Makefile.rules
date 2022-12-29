@@ -301,11 +301,9 @@ else
   ifneq (,$(findstring darwin,$(host_os)))
     GAC_CFLAGS = -fno-common
     GAC_LDFLAGS = -bundle -flat_namespace -bundle_loader $(SYSINFO_GAP)
-    GAC_LDFLAGS_FOR_INSTALL = -bundle -L$(libdir) -lgap
   else
     GAC_CFLAGS = -fPIC
     GAC_LDFLAGS = -shared -fPIC
-    GAC_LDFLAGS_FOR_INSTALL = -shared -fPIC -L$(libdir) -lgap
   endif
 endif
 
@@ -636,7 +634,6 @@ install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap -I${includedir} $(GAP_DE
 install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_GAP = $(bindir)/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
-install-sysinfo: GAC_LDFLAGS = $(GAC_LDFLAGS_FOR_INSTALL)
 install-sysinfo: GMP_PREFIX =
 install-sysinfo:
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
