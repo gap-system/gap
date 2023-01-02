@@ -19,8 +19,6 @@
 void InstallEvalBoolFunc(Int, EvalBoolFunc);
 void InstallEvalExprFunc(Int, EvalExprFunc);
 void InstallExecStatFunc(Int, ExecStatFunc);
-void InstallPrintStatFunc(Int, PrintStatFunc);
-void InstallPrintExprFunc(Int, PrintExprFunc);
 
 
 /****************************************************************************
@@ -35,9 +33,6 @@ extern ExecStatFunc OriginalExecStatFuncsForHook[256];
 
 extern EvalExprFunc OriginalEvalExprFuncsForHook[256];
 extern EvalBoolFunc OriginalEvalBoolFuncsForHook[256];
-
-extern PrintStatFunc OriginalPrintStatFuncsForHook[256];
-extern PrintExprFunc OriginalPrintExprFuncsForHook[256];
 
 
 /****************************************************************************
@@ -90,25 +85,6 @@ extern struct InterpreterHooks * activeHooks[HookCount];
 
 Int ActivateHooks(struct InterpreterHooks * hook);
 Int DeactivateHooks(struct InterpreterHooks * hook);
-
-/****************************************************************************
-**
-** A struct to represent the hooks allowed into printing functions
-**
-**
-** This struct represents a list of functions which will be called whenever
-** a statement or expression is printed. They can be used to provide
-** simple customisation of printing. At the moment they are used by
-** profiling.c, to mark statements which have been executed.
-** Look at that code to get an idea how to use them.
-*/
-struct PrintHooks {
-    void (*printStatPassthrough)(Stat stat);
-    void (*printExprPassthrough)(Expr stat);
-};
-
-void ActivatePrintHooks(struct PrintHooks * hook);
-void DeactivatePrintHooks(struct PrintHooks * hook);
 
 /****************************************************************************
 **

@@ -109,15 +109,7 @@ void InterruptExecStat(void);
 void PrintStat(Stat stat);
 
 
-/****************************************************************************
-**
-*V  PrintStatFuncs[<type>]  . .  print function for statements of type <type>
-**
-**  'PrintStatFuncs' is the dispatching table that contains for every type of
-**  statements a pointer to the  printer for statements  of this type,  i.e.,
-**  the function that should be called to print statements of this type.
-*/
-extern PrintStatFunc PrintStatFuncs[256];
+void InstallPrintStatFunc(unsigned int pos, PrintStatFunc f);
 
 
 /****************************************************************************
