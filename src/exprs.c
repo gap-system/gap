@@ -1194,6 +1194,28 @@ static void RecExpr2(Obj rec, Expr expr)
 
 /****************************************************************************
 **
+*V  PrintExprFuncs[<type>]  . .  printing function for objects of type <type>
+**
+**  'PrintExprFuncs' is the dispatching table that contains for every type of
+**  expressions a pointer to the printer for expressions  of this type, i.e.,
+**  the function that should be called to print expressions of this type.
+*/
+static PrintExprFunc PrintExprFuncs[256];
+
+
+/****************************************************************************
+**
+*F  InstallPrintExprFunc(<pos>,<f>)
+*/
+void InstallPrintExprFunc(unsigned int pos, PrintExprFunc f)
+{
+    GAP_ASSERT(pos < ARRAY_SIZE(PrintExprFuncs));
+    PrintExprFuncs[pos] = f;
+}
+
+
+/****************************************************************************
+**
 *F  PrintExpr(<expr>) . . . . . . . . . . . . . . . . . . print an expression
 **
 **  'PrintExpr' prints the expression <expr>.
@@ -1201,22 +1223,10 @@ static void RecExpr2(Obj rec, Expr expr)
 **  'PrintExpr' simply dispatches  through  the table 'PrintExprFuncs' to the
 **  appropriate printer.
 */
-void            PrintExpr (
-    Expr                expr )
+void PrintExpr(Expr expr)
 {
-    (*PrintExprFuncs[ TNUM_EXPR(expr) ])( expr );
+    (*PrintExprFuncs[TNUM_EXPR(expr)])(expr);
 }
-
-
-/****************************************************************************
-**
-*V  PrintExprFuncs[<type>]  . .  printing function for objects of type <type>
-**
-**  'PrintExprFuncs' is the dispatching table that contains for every type of
-**  expressions a pointer to the printer for expressions  of this type, i.e.,
-**  the function that should be called to print expressions of this type.
-*/
-PrintExprFunc PrintExprFuncs[256];
 
 
 /****************************************************************************

@@ -1137,21 +1137,6 @@ void ClearError ( void )
     }
 }
 
-/****************************************************************************
-**
-*F  PrintStat(<stat>) . . . . . . . . . . . . . . . . . . . print a statement
-**
-**  'PrintStat' prints the statements <stat>.
-**
-**  'PrintStat' simply dispatches  through the table  'PrintStatFuncs' to the
-**  appropriate printer.
-*/
-void            PrintStat (
-    Stat                stat )
-{
-    (*PrintStatFuncs[TNUM_STAT(stat)])( stat );
-}
-
 
 /****************************************************************************
 **
@@ -1161,7 +1146,33 @@ void            PrintStat (
 **  statements a pointer to the  printer for statements  of this type,  i.e.,
 **  the function that should be called to print statements of this type.
 */
-PrintStatFunc PrintStatFuncs[256];
+static PrintStatFunc PrintStatFuncs[256];
+
+
+/****************************************************************************
+**
+*F  InstallPrintStatFunc(<pos>,<f>)
+*/
+void InstallPrintStatFunc(unsigned int pos, PrintStatFunc f)
+{
+    GAP_ASSERT(pos < ARRAY_SIZE(PrintStatFuncs));
+    PrintStatFuncs[pos] = f;
+}
+
+
+/****************************************************************************
+**
+*F  PrintStat(<stat>) . . . . . . . . . . . . . . . . . . . print a statement
+**
+**  'PrintStat' prints the statements <stat>.
+**
+**  'PrintStat' simply dispatches  through the table  'PrintStatFuncs' to the
+**  appropriate printer.
+*/
+void PrintStat(Stat stat)
+{
+    (*PrintStatFuncs[TNUM_STAT(stat)])(stat);
+}
 
 
 /****************************************************************************

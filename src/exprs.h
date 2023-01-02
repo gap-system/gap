@@ -141,15 +141,7 @@ void PrintExpr(Expr expr);
 void PrintRecExpr1(Expr expr); /* needed for printing
                                        function calls with options */
 
-/****************************************************************************
-**
-*V  PrintExprFuncs[<type>]  . .  printing function for objects of type <type>
-**
-**  'PrintExprFuncs' is the dispatching table that contains for every type of
-**  expressions a pointer to the printer for expressions  of this type, i.e.,
-**  the function that should be called to print expressions of this type.
-*/
-extern PrintExprFunc PrintExprFuncs[256];
+void InstallPrintExprFunc(unsigned int pos, PrintExprFunc f);
 
 
 /****************************************************************************

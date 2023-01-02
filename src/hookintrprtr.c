@@ -30,9 +30,6 @@ struct InterpreterHooks * activeHooks[HookCount];
 // Number of active hooks
 static Int HookActiveCount;
 
-// If a print hook is current active
-static Int PrintHookActive;
-
 /****************************************************************************
 **
 ** Store the true values of each function we wrap for hooking. These always
@@ -43,9 +40,6 @@ ExecStatFunc OriginalExecStatFuncsForHook[256];
 
 EvalExprFunc OriginalEvalExprFuncsForHook[256];
 EvalBoolFunc OriginalEvalBoolFuncsForHook[256];
-
-PrintStatFunc OriginalPrintStatFuncsForHook[256];
-PrintExprFunc OriginalPrintExprFuncsForHook[256];
 
 /****************************************************************************
 **
@@ -79,26 +73,6 @@ void InstallExecStatFunc(Int pos, ExecStatFunc f)
     HashLock(&activeHooks);
     if (!HookActiveCount) {
         ExecStatFuncs[pos] = f;
-    }
-    HashUnlock(&activeHooks);
-}
-
-void InstallPrintStatFunc(Int pos, PrintStatFunc f)
-{
-    OriginalPrintStatFuncsForHook[pos] = f;
-    HashLock(&activeHooks);
-    if(!PrintHookActive) {
-        PrintStatFuncs[pos] = f;
-    }
-    HashUnlock(&activeHooks);
-}
-
-void InstallPrintExprFunc(Int pos, PrintExprFunc f)
-{
-    OriginalPrintExprFuncsForHook[pos] = f;
-    HashLock(&activeHooks);
-    if(!PrintHookActive) {
-        PrintExprFuncs[pos] = f;
     }
     HashUnlock(&activeHooks);
 }
@@ -189,34 +163,6 @@ Int DeactivateHooks(struct InterpreterHooks * hook)
 
     HashUnlock(&activeHooks);
     return 1;
-}
-
-void ActivatePrintHooks(struct PrintHooks * hook)
-{
-    Int i;
-
-    if (PrintHookActive) {
-        return;
-    }
-    PrintHookActive = 1;
-    for (i = 0; i < ARRAY_SIZE(ExecStatFuncs); i++) {
-        if (hook->printStatPassthrough) {
-            PrintStatFuncs[i] = hook->printStatPassthrough;
-        }
-        if (hook->printExprPassthrough) {
-            PrintExprFuncs[i] = hook->printExprPassthrough;
-        }
-    }
-}
-
-void DeactivatePrintHooks(struct PrintHooks * hook)
-{
-    if (!PrintHookActive) {
-        return;
-    }
-    PrintHookActive = 0;
-    memcpy(PrintStatFuncs, OriginalPrintStatFuncsForHook, sizeof(PrintStatFuncs));
-    memcpy(PrintExprFuncs, OriginalPrintExprFuncsForHook, sizeof(PrintExprFuncs));
 }
 
 /****************************************************************************
