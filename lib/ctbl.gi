@@ -3949,7 +3949,7 @@ InstallMethod( IndicatorOp,
         fi;
       od;
 
-      # We use a criterion described in [GowWillems95, Lemma 1.2].
+      # We use a criterion described in [GW95, Lemma 1.2].
       # The 2-modular restriction of an orthogonal (indicator '+')
       # ordinary character preserves a quadratic form.
       # If the trivial character is not a constituent of this restriction

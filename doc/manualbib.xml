@@ -2111,6 +2111,27 @@
   <other type="fjournal">Journal of Symbolic Computation</other>
 </article></entry>
 
+<entry id="GW95"><article>
+  <author>
+    <name><first>Roderick</first><last>Gow</last></name>
+    <name><first>Wolfgang</first><last>Willems</last></name>
+  </author>
+  <title>Methods to decide if simple self-dual modules over fields of
+              characteristic <C><M>2</M></C> are of quadratic type</title>
+  <journal><value key="jalge"/></journal>
+  <year>1995</year>
+  <volume>175</volume>
+  <number>3</number>
+  <pages>1067&ndash;1081</pages>
+  <issn>0021-8693</issn>
+  <mrnumber>1341759</mrnumber>
+  <mrclass>20C20</mrclass>
+  <mrreviewer>Cornelius Pillen</mrreviewer>
+  <url>https://doi.org/10.1006/jabr.1995.1227</url>
+  <other type="doi">10.1006/jabr.1995.1227</other>
+  <other type="fjournal">Journal of Algebra</other>
+</article></entry>
+
 <entry id="GKP90"><book>
   <author>
     <name><first>Ronald L.</first><last>Graham</last></name>
@@ -4863,6 +4884,27 @@
   <address>Aachen, Germany</address>
 </mastersthesis></entry>
 
+<entry id="Tho86"><incollection>
+  <author>
+    <name><first>John G.</first><last>Thompson</last></name>
+  </author>
+  <title>Some finite groups which appear as <C><M>{\rm Gal}\,L/K,</M></C>
+      where
+              <C><M>K\subseteq {\bf Q}(\mu_n)</M></C></title>
+  <booktitle>Group theory, <C>B</C>eijing 1984</booktitle>
+  <publisher>Springer, Berlin</publisher>
+  <year>1986</year>
+  <volume>1185</volume>
+  <series>Lecture Notes in Math.</series>
+  <pages>210&ndash;230</pages>
+  <crossref>Beijing84</crossref>
+  <mrnumber>842445</mrnumber>
+  <mrclass>11R32 (12F10 20C99)</mrclass>
+  <mrreviewer>Richard Massy</mrreviewer>
+  <url>https://doi.org/10.1007/BFb0076176</url>
+  <other type="doi">10.1007/BFb0076176</other>
+</incollection></entry>
+
 <entry id="VL84"><inproceedings>
   <author>
     <name><first>Michael R.</first><last>Vaughan-Lee</last></name>
@@ -5226,6 +5268,26 @@
               the Mathematical Institute, University of St Andrews, St.
               Andrews, July 25&ndash;August 8, 1981</other>
   <other type="pages">viii+360</other>
+</proceedings></entry>
+
+<entry id="Beijing84"><proceedings>
+  <editor>
+    <name><first>Hsio-Fu</first><last>Tuan</last></name>
+  </editor>
+  <title>Group theory, <C>B</C>eijing 1984</title>
+  <year>1986</year>
+  <volume>1185</volume>
+  <series>Lecture Notes in Mathematics</series>
+  <publisher>Springer-Verlag, Berlin</publisher>
+  <isbn>3-540-16456-1</isbn>
+  <mrnumber>842438</mrnumber>
+  <mrclass>20-06</mrclass>
+  <url>https://doi.org/10.1007/BFb0076169</url>
+  <other type="booktitle">Proceedings of an international symposium held at
+      Beijing
+  University, Beijing, August 27&ndash;September 8, 1984</other>
+  <other type="doi">10.1007/BFb0076169</other>
+  <other type="pages">vi+403</other>
 </proceedings></entry>
 
 <entry id="Singapore87"><proceedings>
