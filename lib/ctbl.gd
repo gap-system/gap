@@ -2758,6 +2758,39 @@ DeclareGlobalFunction( "IsClassFusionOfNormalSubgroup" );
 ##  gap> Indicator( tbl, 2 );
 ##  [ 1, 0, 0, 1, 1, 1 ]
 ##  ]]></Example>
+##  <P/>
+##  In nonzero characteristic <M>p</M>, the Frobenius-Schur indicator is
+##  defined only for irreducible characters.
+##  For odd <M>p</M>, the indicator is computed using the Thompson-Willems
+##  Theorem <Cite Key="Tho86" Where="theorem on p. 227"/>.
+##  For <M>p = 2</M>, in general the indicator cannot be computed from the
+##  given character tables, here the following necessary conditions are used.
+##  <P/>
+##  <List>
+##  <Item>
+##    The trivial character has indicator <M>1</M>.
+##  </Item>
+##  <Item>
+##    The indicator is <M>0</M> if and only if the character is not
+##    real-valued.
+##  </Item>
+##  <Item>
+##    Real characters outside the principal block (the <M>2</M>-block that
+##    contains the trivial character, see <Ref Oper="PrimeBlocks"/>)
+##    have indicator <M>1</M>.
+##  </Item>
+##  <Item>
+##    By <Cite Key="GW95" Where="Lemma 1.2"/>, any real constituent with odd
+##    multiplicity in the <M>2</M>-modular restriction of an ordinary
+##    irreducible character with indicator <M>1</M> has indicator <M>1</M>,
+##    provided that the trivial character is not a constituent of the
+##    restriction.
+##  </Item>
+##  </List>
+##  <P/>
+##  For each <M>2</M>-modular Brauer characters where these conditions are
+##  not sufficient to determine the indicator, an unknown value
+##  (see <Ref Func="Unknown"/>) is returned.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
