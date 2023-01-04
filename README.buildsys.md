@@ -240,36 +240,3 @@ them into `src/hpc` instead of `src`, like in this example:
 There are many things that still need to be done in the new build system. For
 an overview, see
 <https://github.com/gap-system/gap/issues?q=is%3Aopen+is%3Aissue+label%3A%22topic%3A+build+system%22>
-
-The main open task is to add support for `make install`. There are some
-pitfalls to that, esp. when it comes to handling packages with kernel
-extensions.
-
-
-## FAQ
-
-### Q: Why don't you just use `automake`? Then you get `make install` for free!
-
-A: This is simply wrong. Using `automake` does not give us `make install`
-support for free. While it does indeed provide various parts of the puzzle,
-from our perspective those are mostly the easy ones (they may be tedious, but
-are not conceptually difficult). The real obstacles for `make install` support
-are unfortunately not resolved by using `automake`. Among these are:
-- making `gac` installable; in particular installing a version of GNU
-  libtool needed by `gac`
-- The probably hardest problem of them all is coming up with a sane way for
-  dealing with the installation of GAP packages with kernel modules in such a
-  way that existing workflows are not unduly broken. This has the added
-  difficulty that it requires convincing the authors of ~20 GAP packages to
-  apply changes needed to support this, in a way that the packages can still
-  be used with the at that time latest stable release of GAP; then getting
-  them to make releases of their packages with those changes.
-- There are probably more bits and pieces that also need to be resolved, which
-  I just can't remember right now.
-
-Of course none of this is rocket science, but it is a lot of tedious and
-finicky work, and care must be taken not to break stuff. Help with this is
-welcome, but it is strongly suggested that you first talk to us, to avoid
-disappointments (e.g. due to rejected pull requests) later on.
-
-In any case: GNU `automake` does not help with this at all.
