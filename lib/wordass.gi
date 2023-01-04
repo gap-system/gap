@@ -21,6 +21,8 @@ local g,s;
   # test whether the variable name would be a proper identifier
   for g in gens do
      s := String(g);
+     # remove < > enclosures
+     s:=Filtered(s,x->x<>'<' and x<>'>');
      if not IsValidIdentifier(s) then
        Error("Variable `", s, "' would not be a proper identifier");
      fi;
@@ -30,6 +32,7 @@ local g,s;
   od;
   for g in gens do
     s := String(g);
+    s:=Filtered(s,x->x<>'<' and x<>'>');
     if ISBOUND_GLOBAL(s) then
       Info(InfoWarning + InfoGlobal, 1, "Global variable `", s,
            "' is already defined and will be overwritten");
