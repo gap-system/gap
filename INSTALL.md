@@ -148,7 +148,7 @@ slowing down the compilation process, or omit certain features):
 
 On Ubuntu or Debian, you can install these with the following command:
 
-    sudo apt-get install build-essential autoconf libtool libgmp-dev libreadline-dev zlib1g-dev
+    sudo apt-get install build-essential autoconf libgmp-dev libreadline-dev zlib1g-dev
 
 On macOS, please follow the instructions in section "GAP for macOS" below.
 

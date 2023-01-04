@@ -10,25 +10,21 @@ m4_define([gap_releaseyear], [this year])
 m4_define([gap_tarname], [gap-gap_version])
 
 dnl
-dnl libtool library version
+dnl library version
 dnl
-dnl The version of the libgap shared library as well as the kernel
-dnl version are derived from libtool_current and libtool_age.
+dnl The version of the libgap shared library as well as the kernel version are
+dnl tracked here, and follow more or less semver (semantic versioning).
 dnl When making a new GAP release, these values need to be adjusted, based on
 dnl the following rules:
 dnl
-dnl 1. If any interfaces have been added, removed, or changed since the last
-dnl    update, increment current.
-dnl 2. If any interfaces have been added since the last public release, then
-dnl    increment age.
-dnl 3. If any interfaces have been removed or changed since the last public
-dnl    release, then set age to 0.
+dnl 1. If any interfaces have been removed or changed since the last public
+dnl    release, then increment major and set minor to 0.
+dnl 2. Otherwise (i.e., if no interfaces have been removed or changed),
+dnl    if any interfaces have been added since the last public release, then
+dnl    increment minor.
 dnl
-dnl For further details, refer to the Libtool manual chapter on "Library
-dnl interface versions", available at
-dnl <https://www.gnu.org/software/libtool/manual/html_node/Versioning.html>
-m4_define([libtool_current], [9])
-m4_define([libtool_age], [0])
+m4_define([kernel_major_version], [9])
+m4_define([kernel_minor_version], [0])
 
 m4_define([GAP_DEFINE], [GAP_DEFINES="$GAP_DEFINES -D$1"])
 
@@ -146,13 +142,6 @@ dnl Miscellaneous tools
 dnl
 AC_PROG_INSTALL
 AC_PROG_MKDIR_P
-
-
-dnl
-dnl Setup libtool (for interfacing with GAP kernel extension)
-dnl
-LT_PREREQ([2.4.2])
-LT_INIT([disable-static dlopen win32-dll])
 
 
 dnl
@@ -601,8 +590,8 @@ AS_IF([test x$gmp_found = xno],[
   BUILD_GMP=yes
   GMP_PREFIX='${abs_builddir}/extern/install/gmp'
   GMP_CPPFLAGS='-I${abs_builddir}/extern/install/gmp/include'
-  GMP_LDFLAGS='${abs_builddir}/extern/install/gmp/lib/libgmp.la'
-  GMP_LIBS=
+  GMP_LDFLAGS='-L${abs_builddir}/extern/install/gmp/lib'
+  GMP_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/gmp/lib -lgmp'
 ])
 
 AC_SUBST([BUILD_GMP])
@@ -679,8 +668,8 @@ AS_IF([test x$zlib_found = xno],[
   AC_MSG_RESULT([build bundled copy])
   BUILD_ZLIB=yes
   ZLIB_CPPFLAGS='-I${abs_builddir}/extern/install/zlib/include'
-  ZLIB_LDFLAGS='-L${abs_builddir}/extern/install/zlib/lib/ -Wl,-rpath -Wl,${abs_builddir}/extern/install/zlib/lib/ -lz'
-  ZLIB_LIBS=
+  ZLIB_LDFLAGS='-L${abs_builddir}/extern/install/zlib/lib'
+  ZLIB_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/zlib/lib -lz'
 ])
 
 AC_SUBST([BUILD_ZLIB])
@@ -855,8 +844,8 @@ AS_IF([test "x$with_gc" = xboehm],
 
   BUILD_LIBATOMIC_OPS=yes
   LIBATOMIC_OPS_CPPFLAGS='-I${abs_builddir}/extern/install/libatomic_ops/include'
-  LIBATOMIC_OPS_LDFLAGS='${abs_builddir}/extern/install/libatomic_ops/lib/libatomic_ops.la'
-  LIBATOMIC_OPS_LIBS=
+  LIBATOMIC_OPS_LDFLAGS='-L${abs_builddir}/extern/install/libatomic_ops/lib'
+  LIBATOMIC_OPS_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/libatomic_ops/lib  -latomic_ops'
   AC_SUBST([BUILD_LIBATOMIC_OPS])
   AC_SUBST([LIBATOMIC_OPS_CPPFLAGS])
   AC_SUBST([LIBATOMIC_OPS_LDFLAGS])
@@ -868,8 +857,8 @@ AS_IF([test "x$with_gc" = xboehm],
 
   BUILD_BOEHM_GC=yes
   BOEHM_GC_CPPFLAGS='-I${abs_builddir}/extern/install/gc/include'
-  BOEHM_GC_LDFLAGS='${abs_builddir}/extern/install/gc/lib/libgc.la'
-  BOEHM_GC_LIBS=
+  BOEHM_GC_LDFLAGS='-L${abs_builddir}/extern/install/gc/lib'
+  BOEHM_GC_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/gc/lib -lgc'
   AC_SUBST([BUILD_BOEHM_GC])
   AC_SUBST([BOEHM_GC_CPPFLAGS])
   AC_SUBST([BOEHM_GC_LDFLAGS])
@@ -880,15 +869,9 @@ AS_IF([test "x$with_gc" = xboehm],
 dnl
 dnl Export library and kernel version
 dnl
-AC_SUBST([GAP_LIBTOOL_CURRENT], "libtool_current")
-AC_SUBST([GAP_LIBTOOL_AGE], "libtool_age")
 
-dnl kernel version is derived from the libtool library version
-gap_kernel_major_version=$(( libtool_current - libtool_age ))
-gap_kernel_minor_version=libtool_age
-
-AC_SUBST([gap_kernel_major_version])
-AC_SUBST([gap_kernel_minor_version])
+AC_SUBST([gap_kernel_major_version], kernel_major_version)
+AC_SUBST([gap_kernel_minor_version], kernel_minor_version)
 
 dnl
 dnl Determine the GAPARCH string, used by package build systems and more
@@ -942,7 +925,6 @@ dnl Detect host specific setting
 dnl
 
 GP_C_LONG_ALIGN
-
 
 case "$host_cpu" in
   sparc* )
@@ -1018,7 +1000,6 @@ AC_CHECK_FUNCS([signal sigaction setpgid])
 
 dnl
 dnl check for dynamic loading of modules
-dnl TODO: replace with libtool code?!
 dnl
 
 AC_SEARCH_LIBS([dlopen], [dl],
