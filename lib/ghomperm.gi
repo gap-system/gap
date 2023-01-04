@@ -644,10 +644,7 @@ end;
 ##
 #M  StabChainMutable( <hom> ) . . . . . . . . . . . . . . for perm group homs
 ##
-# new
-InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
-        [ IsPermGroupGeneralMappingByImages ], 0,
-    function( hom )
+BindGlobal("DoSCMPermGpHom",function(arg)
     local   S,
             rnd,        # list of random elements of '<hom>.source'
             rne,        # list of the images of the elements in <rnd>
@@ -671,7 +668,22 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
             AddToStbO,
             maxstor,
             gsize,
+            hom,
+            opt,
+            usebase,
             l;  # position
+
+    hom:=arg[1];
+    if Length(arg)>1 then
+      opt:=arg[2];
+    else
+      opt:=rec();
+    fi;
+    if IsBound(opt.base) then
+      usebase:=opt.base;
+    else
+      usebase:=fail;
+    fi;
 
     # Add to short word orbit fct.
     AddToStbO:=function(o,dict,e,w)
@@ -856,11 +868,15 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
 
     # initialize the top level
     bpt:=fail;
-    if short then
+    if short and usebase=fail then
       bpt:=DoShortwordBasepoint(S.orb);
     fi;
     if bpt=fail then;
-      bpt := SmallestMovedPoint( Source( hom ) );
+      if usebase<>fail then
+        bpt:=usebase[1];
+      else
+        bpt := SmallestMovedPoint( Source( hom ) );
+      fi;
       if bpt = infinity  then
           bpt := 1;
       fi;
@@ -925,7 +941,11 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
               l:=DoShortwordBasepoint(stb.orb);
             fi;
             if l=fail then
-              l:=SmallestMovedPoint(elm);
+              if usebase<>fail then
+                l:=First(usebase,x->x^elm<>x);
+              else
+                l:=SmallestMovedPoint(elm);
+              fi;
             fi;
             InsertTrivialStabilizer( stb, l );
             AddGeneratorsGenimagesExtendSchreierTree( stb,
@@ -956,6 +976,12 @@ InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
 
     return S;
 end );
+
+InstallOtherMethod( StabChainMutable, "perm mapping by images",  true,
+        [ IsPermGroupGeneralMappingByImages ], 0, DoSCMPermGpHom);
+
+InstallOtherMethod( StabChainMutable, "perm mapping by images,options",  true,
+        [ IsPermGroupGeneralMappingByImages,IsRecord ], 0, DoSCMPermGpHom);
 
 #############################################################################
 ##
