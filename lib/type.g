@@ -150,7 +150,9 @@ BIND_GLOBAL( "DeclareRepresentationKernel", function ( name, super, rep )
         od;
 
     od;
-    InstallTrueMethod( super, rep );
+
+    # Calling 'InstallTrueMethod' for two representations is not allowed.
+    InstallTrueMethodNewFilter( super, rep );
     BIND_GLOBAL( name, rep );
     SET_NAME_FUNC( rep, name );
 end );
