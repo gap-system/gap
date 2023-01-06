@@ -294,21 +294,15 @@ end);
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "InstallTrueMethod", function ( tofilt, from )
-    local fromflags, i, j;
+    local fromflags, i;
 
     # Check whether 'tofilt' involves or implies representations.
     fromflags:= TRUES_FLAGS( WITH_IMPS_FLAGS( FLAGS_FILTER( from ) ) );
     for i in TRUES_FLAGS( WITH_IMPS_FLAGS( FLAGS_FILTER( tofilt ) ) ) do
       if INFO_FILTERS[i] = FNUM_REP_KERN or INFO_FILTERS[i] = FNUM_REP then
-        # This is allowed only if either 'from' already implies filter 'i'
-        # or if 'from' consists of representations.
+        # This is allowed only if 'from' already implies filter 'i'.
         if not i in fromflags then
-          for j in fromflags do
-            if not ( INFO_FILTERS[j] = FNUM_REP_KERN or
-                     INFO_FILTERS[j] = FNUM_REP ) then
-              Error( "<tofilt> must not involve new representation filters" );
-            fi;
-          od;
+          Error( "<tofilt> must not involve new representation filters" );
         fi;
       fi;
     od;
