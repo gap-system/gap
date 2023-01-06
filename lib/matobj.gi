@@ -241,12 +241,17 @@ function(l)
   return NewVector(DefaultVectorRepForBaseDomain(dom), dom, l);
 end);
 
-# The following method is used for example
-# in code dealing with elements of 'AlgebraicExtension's.
+# The following methods are used for example
+# in code dealing with elements of 'AlgebraicExtension's,
+# and in 'ExtendedVectors'..
 # (Note that we want to return a vector with the same mutability status
 # as the given vector, and we need not copy it if it is mutable.)
 InstallOtherMethod( Vector,
     [ IsList and IsCyclotomicCollection, IsList and IsCyclotomicCollection ],
+    { v, example } -> v );
+
+InstallOtherMethod( Vector,
+    [ IsRowVector and IsPlistRep, IsRowVector and IsPlistRep ],
     { v, example } -> v );
 
 
