@@ -601,7 +601,7 @@ InstallGlobalFunction( LogPackageLoadingMessage, function( arg )
       currpkg:= arg[3];
     elif IsBound( GAPInfo.PackageCurrent ) then
       # This happens inside availability tests.
-      currpkg:= GAPInfo.PackageCurrent.PackageName;
+      currpkg:= Concatenation(GAPInfo.PackageCurrent.PackageName, " version ", GAPInfo.PackageCurrent.Version);
     else
       currpkg:= "(unknown package)";
     fi;
@@ -662,13 +662,13 @@ InstallGlobalFunction( DisplayPackageLoadingLog, function( arg )
 #############################################################################
 ##
 #F  PackageAvailabilityInfo( <name>, <version>, <record>, <suggested>,
-#F      <checkall> )
+#F      <checkall>, <infolevel> )
 ##
 InstallGlobalFunction( PackageAvailabilityInfo,
-    function( name, version, record, suggested, checkall )
+    function( name, version, record, suggested, checkall, infolevel )
     local InvalidStrongDependencies, Name, equal, comp, pair, currversion,
           inforec, skip, msg, dep, record_local, wght, pos, needed, test,
-          name2, testpair;
+          name2, testpair, fullname;
 
     InvalidStrongDependencies:= function( dependencies, weights,
                                           strong_dependencies )
@@ -682,7 +682,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
             if IsSubset( cycle, pair ) then
               # This condition was imposed by some
               # `OtherPackagesLoadedInAdvance' component.
-              LogPackageLoadingMessage( PACKAGE_INFO,
+              LogPackageLoadingMessage( infolevel,
                   [ Concatenation( "PackageAvailabilityInfo: package '",
                         pair[1], "'" ),
                     Concatenation( "shall be loaded before package '", name,
@@ -763,6 +763,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
     for inforec in PackageInfo( name ) do
 
       Name:= inforec.PackageName;
+      fullname := StringFormatted("{} version {}", inforec.PackageName, inforec.Version);
       skip:= false;
       currversion[2]:= inforec.Version;
 
@@ -792,20 +793,19 @@ InstallGlobalFunction( PackageAvailabilityInfo,
         else
           Add( msg, Concatenation( "(required: ", version, ")" ) );
           LogPackageLoadingMessage( PACKAGE_INFO, msg,
-              inforec.PackageName );
+              fullname );
         fi;
       else
         LogPackageLoadingMessage( PACKAGE_INFO, msg,
-            inforec.PackageName );
+            fullname );
       fi;
 
       # Test whether the required GAP version fits.
       if IsBound( dep.GAP )
          and not CompareVersionNumbers( GAPInfo.Version, dep.GAP ) then
-        LogPackageLoadingMessage( PACKAGE_INFO,
+        LogPackageLoadingMessage( infolevel,
             Concatenation( "PackageAvailabilityInfo: required GAP version (",
-                dep.GAP, ") does not fit",
-            inforec.PackageName ) );
+                dep.GAP, ") does not fit", fullname));
         if not checkall then
           continue;
         fi;
@@ -819,13 +819,11 @@ InstallGlobalFunction( PackageAvailabilityInfo,
       if test = true then
         LogPackageLoadingMessage( PACKAGE_DEBUG,
             Concatenation( "PackageAvailabilityInfo: the AvailabilityTest",
-                " function returned 'true'" ),
-            inforec.PackageName );
+                " function returned 'true'" ), fullname );
       else
-        LogPackageLoadingMessage( PACKAGE_INFO,
+        LogPackageLoadingMessage( infolevel,
             Concatenation( "PackageAvailabilityInfo: the AvailabilityTest",
-                " function returned ", String( test ) ),
-            inforec.PackageName );
+                " function returned ", String( test ) ), fullname );
         if not checkall then
           continue;
         fi;
@@ -838,8 +836,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
         LogPackageLoadingMessage( PACKAGE_WARNING,
             Concatenation( "PackageAvailabilityInfo: cannot locate `",
               inforec.InstallationPath,
-              "/init.g', please check the installation" ),
-            inforec.PackageName );
+              "/init.g', please check the installation" ), fullname );
         if not checkall then
           continue;
         fi;
@@ -886,23 +883,23 @@ InstallGlobalFunction( PackageAvailabilityInfo,
       if IsEmpty( needed ) then
         LogPackageLoadingMessage( PACKAGE_DEBUG,
             "PackageAvailabilityInfo: no needed packages",
-            inforec.PackageName );
+            fullname );
       else
         LogPackageLoadingMessage( PACKAGE_DEBUG, Concatenation(
             [ "PackageAvailabilityInfo: check needed packages" ],
             List( needed,
                   pair -> Concatenation( pair[1], " (", pair[2], ")" ) ) ),
-            inforec.PackageName );
+            fullname );
         for pair in needed do
           name2:= LowercaseString( pair[1] );
           testpair:= PackageAvailabilityInfo( name2, pair[2], record_local,
-                         suggested, checkall );
+                         suggested, checkall, infolevel );
           if testpair = false then
             # This dependency is not satisfied.
             test:= false;
-            LogPackageLoadingMessage( PACKAGE_INFO,
+            LogPackageLoadingMessage( infolevel,
                 Concatenation( "PackageAvailabilityInfo: dependency '",
-                    name2, "' is not satisfied" ), inforec.PackageName );
+                    name2, "' is not satisfied" ), fullname );
             if not checkall then
               # Skip the check of other dependencies.
               break;
@@ -914,7 +911,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
         od;
         LogPackageLoadingMessage( PACKAGE_DEBUG,
             "PackageAvailabilityInfo: check of needed packages done",
-            inforec.PackageName );
+            fullname );
       fi;
       if test = false then
         # At least one package needed by this version is not available,
@@ -958,14 +955,14 @@ InstallGlobalFunction( PackageAvailabilityInfo,
             [ "PackageAvailabilityInfo: check suggested packages" ],
             List( dep.SuggestedOtherPackages,
                   pair -> Concatenation( pair[1], " (", pair[2], ")" ) ) ),
-            inforec.PackageName );
+            fullname );
         for pair in dep.SuggestedOtherPackages do
           name2:= LowercaseString( pair[1] );
           # Do not change the information collected up to now
           # until we are sure that we will really use the suggested package.
           record_local:= StructuralCopy( record );
           test:= PackageAvailabilityInfo( name2, pair[2], record_local,
-                     suggested, checkall );
+                     suggested, checkall, PACKAGE_INFO );
           if test <> true then
             Add( record_local.Dependencies, [ name2, name ] );
             if IsString( test ) then
@@ -986,7 +983,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
         od;
         LogPackageLoadingMessage( PACKAGE_DEBUG,
             "PackageAvailabilityInfo: check of suggested packages done",
-            inforec.PackageName );
+            fullname );
       fi;
 
       # Print a warning if the package should better be upgraded.
@@ -1015,7 +1012,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
       fi;
     fi;
 
-    LogPackageLoadingMessage( PACKAGE_INFO,
+    LogPackageLoadingMessage( infolevel,
         Concatenation( "PackageAvailabilityInfo: ",
             "no installed version fits" ), Name );
 
@@ -1028,7 +1025,7 @@ end );
 #F  TestPackageAvailability( <name>[, <version>][, <checkall>] )
 ##
 InstallGlobalFunction( TestPackageAvailability, function( arg )
-    local name, version, checkall, result;
+    local name, version, checkall, result, level_info;
 
     # Get the arguments.
     name:= LowercaseString( arg[1] );
@@ -1051,7 +1048,7 @@ InstallGlobalFunction( TestPackageAvailability, function( arg )
 
     # Ignore suggested packages.
     result:= PackageAvailabilityInfo( name, version, rec(), false,
-                                      checkall );
+                                      checkall, PACKAGE_INFO );
 
     if result = false then
       return fail;
@@ -1511,7 +1508,7 @@ BindGlobal( "GetPackageNameForPrefix", function( prefix )
 InstallGlobalFunction( LoadPackage, function( arg )
     local name, Name, version, banner, loadsuggested, msg, depinfo, path,
           pair, i, order, paths, cycle, secondrun, pkgname, pos, info,
-          filename, read;
+          filename, read, infolevel;
 
     # Get the arguments.
     if Length( arg ) = 0 then
@@ -1553,6 +1550,13 @@ InstallGlobalFunction( LoadPackage, function( arg )
         banner:= banner and not ( arg[2] = false );
       fi;
     fi;
+    # If we would display a banner, then display helpful errors
+    if banner then
+      infolevel := PACKAGE_ERROR;
+    else
+      infolevel := PACKAGE_INFO;
+    fi;
+
     loadsuggested:= ( ValueOption( "OnlyNeeded" ) <> true );
 
     # Print a warning if `LoadPackage' is called inside a
@@ -1585,7 +1589,7 @@ InstallGlobalFunction( LoadPackage, function( arg )
     # and compute the dependency information.
     depinfo:= rec();
     path:= PackageAvailabilityInfo( name, version, depinfo, loadsuggested,
-                                    false );
+                                    false, infolevel );
     if not IsString( path ) then
       if path = false then
         path:= fail;
