@@ -631,7 +631,6 @@ local  G,  home,  # the group and the home pcgs
     cent:=false;
 
   elif IsPGroup(G) then
-    PrimePGroup(G); # TODO is this line required?
     home:=PcgsPCentralSeriesPGroup(G);
     eas:=PCentralNormalSeriesByPcgsPGroup(home);
 
@@ -1026,7 +1025,6 @@ local  G,home,  # the group and the home pcgs
     # w.r.t. <homepcgs>.
 
     if IsPGroup(G) then
-      PrimePGroup(G);  # TODO is this line required?
       home:=PcgsPCentralSeriesPGroup(G);
       eas:=PCentralNormalSeriesByPcgsPGroup(home);
 

@@ -5963,7 +5963,6 @@ InstallMethod( CharacterTableFactorGroup,
 
     # Unite the positions corresponding to `classes' in `ordtbl'
     # with the largest normal subgroup of `p' power order.
-    SizesConjugacyClasses( ordtbl ); # TODO is this line required?
     fus:= GetFusionMap( modtbl, ordtbl );
     kernel:= ClassPositionsOfNormalClosure( ordtbl, fus{ classes } );
 

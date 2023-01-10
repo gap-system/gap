@@ -1322,7 +1322,6 @@ local irrfacs, coeffring, i, coeffs, der, g;
     return true;
   fi;
 
-  IndeterminateNumberOfLaurentPolynomial( pol ); # TODO is this line required?
   coeffs:= CoefficientsOfLaurentPolynomial( pol );
   if coeffs[2]>0 then
     return false;

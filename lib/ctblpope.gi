@@ -795,7 +795,6 @@ InstallGlobalFunction( Permut, function( tbl, arec )
        fi;
     end;
 
-    NrConjugacyClasses( tbl ); # TODO is this line required?
     total:= 0;
     X:= permel.obj;
     permch:= [];

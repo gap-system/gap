@@ -654,7 +654,7 @@ InstallGlobalFunction( PresentationRegularPermutationGroupNC, function ( G )
                         if gen0[c] = 0 then
                             app[10] := g;
                             app[11] := c;
-                            MakeConsequences( app ); # TODO is this line required?
+                            MakeConsequences( app );
                         fi;
                     od;
                 od;
