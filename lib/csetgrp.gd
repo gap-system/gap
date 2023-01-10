@@ -233,6 +233,7 @@ DeclareOperation("DoubleCoset",[IsGroup,IsObject,IsGroup]);
 ##
 DeclareGlobalFunction("DoubleCosets");
 DeclareOperation("DoubleCosetsNC",[IsGroup,IsGroup,IsGroup]);
+DeclareGlobalFunction("CalcDoubleCosets");
 
 #############################################################################
 ##
