@@ -980,19 +980,24 @@ end);
 ##  ascending chain of subgroups from A to G, using the fact, that a
 ##  double coset is an union of right cosets
 ##
-BindGlobal("CalcDoubleCosets",function(G,a,b)
+InstallGlobalFunction(CalcDoubleCosets,function(G,a,b)
 local c, flip, maxidx, cano, tryfct, p, r, t,
       stabs, dcs, homs, tra, a1, a2, indx, normal, hom, omi, omiz,c1,
       unten, compst, s, nr, nstab, lst, sifa, pinv, blist, bsz, cnt,
       ps, e, mop, mo, lstgens, lstgensop, rep, st, o, oi, i, img, ep,
       siz, rt, j, canrep,step,nu,doneidx,orbcnt,posi,
-      sizes,cluster,sel,lr,lstabs,ssizes,num,
-      actlimit, uplimit, badlimit,avoidlimit;
+      sizes,cluster,sel,lr,lstabs,ssizes,num,actfun,mayflip,
+      actlimit, uplimit, badlimit,avoidlimit,start,includestab,quot;
 
   actlimit:=300000; # maximal degree on which we try blocks
   uplimit:=10000; # maximal index for up step
   avoidlimit:=200000; # beyond this index we want to get smaller
   badlimit:=1000000; # beyond this index things might break down
+
+  mayflip:=true; # are we allowed to flip?
+
+  # Do we *want* stabilizers
+  includestab:=ValueOption("includestab")=true;
 
   # if a is small and b large, compute cosets b\G/a and take inverses of the
   # representatives: Since we compute stabilizers in b and a chain down to
@@ -1021,6 +1026,37 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
   #c:=AscendingChain(G,a:refineChainActionLimit:=Index(G,a));
   c:=AscendingChain(G,a:refineChainActionLimit:=actlimit,indoublecoset);
 
+  # do we first go into a factor group?
+  quot:=ValueOption("usequotient");
+  PushOptions(rec(usequotient:=fail));# not to be used within itself
+  if not IsBool(quot) then
+    if IsMapping(quot) then
+      a1:=KernelOfMultiplicativeGeneralMapping(quot);
+    else
+      a1:=quot;
+      quot:=NaturalHomomorphismByNormalSubgroupNC(G,quot);
+    fi;
+    a2:=ClosureGroup(a1,a);
+    Size(a2);
+    start:=PositionProperty(c,
+      x->Size(x)=Size(a2) and ForAll(GeneratorsOfGroup(x),y->y in a2));
+    if start=fail then Error("closure not in chain");fi;
+    dcs:=CalcDoubleCosets(Image(quot,G),Image(quot,a),Image(quot,b):
+      includestab,usequotient:=fail);
+    mayflip:=false;
+    Info(InfoCoset,1,"Factor returns ",Length(dcs)," double cosets");
+    r:=RestrictedMapping(quot,b);
+    dcs:=List(dcs,x->[PreImagesRepresentative(quot,x[1]),Size(a1)*x[2],
+      PreImage(r,x[3])]);
+    r:=List(dcs,x->x[1]);
+    stabs:=List(dcs,x->x[3]);
+  else
+    start:=1;
+    r:=[One(G)];
+    stabs:=[b];
+    quot:=fail;
+  fi;
+
   # cano indicates whether there is a final up step (and thus we need to
   # form canonical representatives). ```Canonical'' means that on each
   # transversal level the orbit representative is chosen to be minimal (in
@@ -1028,7 +1064,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
   cano:=false;
 
   doneidx:=[]; # indices done already -- avoid duplicate
-  if maxidx(c)>avoidlimit then
+  if maxidx(c)>avoidlimit and mayflip then
     # try to do better
 
     # what about flipping (back)?
@@ -1133,8 +1169,6 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
     cano:=true;
   fi;
 
-  r:=[One(G)];
-  stabs:=[b];
   dcs:=[];
 
   # Do we want to keep result for a smaller group (as cheaper fuse is possible
@@ -1147,7 +1181,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
   # calculate setup for once
   homs:=[];
   tra:=[];
-  for step in [1..Length(c)-1] do
+  for step in [start..Length(c)-1] do
     a1:=c[Length(c)-step+1];
     a2:=c[Length(c)-step];
     indx:=Index(a1,a2);
@@ -1173,7 +1207,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
   omi:=[];
   omiz:=[];
 
-  for step in [1..Length(c)-1] do
+  for step in [start..Length(c)-1] do
     a1:=c[Length(c)-step+1];
     a2:=c[Length(c)-step];
     normal:=IsNormal(a1,a2);
@@ -1189,7 +1223,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
     unten:=step=Length(c)-1 and cano=false;
 
     # shall we compute stabilizers?
-    compst:=(not unten) or normal;
+    compst:=(not unten) or normal or includestab;
 
     t:=tra[step];
     hom:=homs[step];
@@ -1217,16 +1251,26 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
         cnt:=indx;
       fi;
 
-      lstgens:=GeneratorsOfGroup(lst);
-      if Length(lstgens)>2 then
-        lstgens:=SmallGeneratingSet(lst);
+      if cano=false and IsSolvableGroup(lst) then
+        lstgens:=Pcgs(lst);
+      else
+        lstgens:=GeneratorsOfGroup(lst);
+        if Length(lstgens)>2 then
+          lstgens:=SmallGeneratingSet(lst);
+        fi;
       fi;
+
       lstgensop:=List(lstgens,i->i^pinv); # conjugate generators: operation
       # is on cosets a.p; we keep original cosets: Ua.p.g/p, this
       # corresponds to conjugate operation
 
       if hom<>fail then
         lstgensop:=List(lstgensop,i->Image(hom,i));
+        actfun:=OnPoints;
+      else
+        actfun:=function(num,gen)
+              return PositionCanonical(t,t[num]*gen);
+            end;
       fi;
 
       posi:=0;
@@ -1246,7 +1290,6 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
         mo:=ps;
 
         rep := [ One(b) ];
-        st := TrivialSubgroup(lst);
 
         o:=[ps];
         if cano or compst then
@@ -1255,41 +1298,74 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
         fi;
         orbcnt:=orbcnt+1;
 
-        i:=1;
-        while i<=Length(o)
-          # will not grab if nonreg,. orbiut and stabilizer not computed,
-          # but comparatively low cost and huge help if hom=fail
-          and Size(st)*Length(o)<Size(lst) do
-          for j in [1..Length(lstgens)] do
-            if hom=fail then
-              img:=t[o[i]]*lstgensop[j];
-              ps:=PositionCanonical(t,img);
-            else
-              ps:=o[i]^lstgensop[j];
-            fi;
-            if blist[ps] then
-              if compst then
-                # known image
-                #NC is safe (initializing as TrivialSubgroup(G)
-                st := ClosureSubgroupNC(st,rep[i]*lstgens[j]/rep[oi[ps]]);
-              fi;
-            else
-              # new image
-              blist[ps]:=true;
-              bsz:=bsz-1;
-              Add(o,ps);
-              if cano or compst then
-                Add(rep,rep[i]*lstgens[j]);
-                if cano and ps<mo then
-                  mo:=ps;
-                  mop:=Length(rep);
-                fi;
-                oi[ps]:=Length(o);
-              fi;
-            fi;
+        if cano=false and IsPcgs(lstgens) then
+
+          if compst then
+            o:=OrbitStabilizer(lst,o[1],lstgens,lstgensop,actfun);
+            st:=o.stabilizer;
+            o:=o.orbit;
+          else
+            o:=Orbit(lst,o[1],lstgens,lstgensop,actfun);
+          fi;
+
+          for i in o do
+            blist[i]:=true;
           od;
-          i:=i+1;
-        od;
+          bsz:=bsz-Length(o)+1;
+
+        else
+
+          if compst then
+            # stabilizing generators
+            st:=Filtered(GeneratorsOfGroup(lst),
+              x->PositionCanonical(r,t[ps]*x)=ps);
+            if Length(st)=Length(GeneratorsOfGroup(lst)) then
+              st:=lst; # immediate end -- orbit 1
+            else
+              st := SubgroupNC(lst,st);
+            fi;
+          else
+            st:=TrivialSubgroup(lst);
+          fi;
+
+          i:=1;
+          while i<=Length(o)
+            # will not grab if nonreg,. orbit and stabilizer not computed,
+            # but comparatively low cost and huge help if hom=fail
+            and Size(st)*Length(o)<Size(lst) do
+
+            for j in [1..Length(lstgens)] do
+              if hom=fail then
+                img:=t[o[i]]*lstgensop[j];
+                ps:=PositionCanonical(t,img);
+              else
+                ps:=o[i]^lstgensop[j];
+              fi;
+              if blist[ps] then
+                if compst then
+                  # known image
+                  #NC is safe (initializing as TrivialSubgroup(G)
+                  st := ClosureSubgroupNC(st,rep[i]*lstgens[j]/rep[oi[ps]]);
+                fi;
+              else
+                # new image
+                blist[ps]:=true;
+                bsz:=bsz-1;
+                Add(o,ps);
+                if cano or compst then
+                  Add(rep,rep[i]*lstgens[j]);
+                  if cano and ps<mo then
+                    mo:=ps;
+                    mop:=Length(rep);
+                  fi;
+                  oi[ps]:=Length(o);
+                fi;
+              fi;
+            od;
+            i:=i+1;
+          od;
+        fi;
+
         Info(InfoCoset,5,"|o|=",Length(o));
 
         ep:=e*rep[mop]*p;
@@ -1308,10 +1384,18 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
         siz:=sifa*Length(o); #order
 
         if unten then
-          if flip then
-            Add(dcs,[ep^(-1),siz]);
+          if includestab then
+            if flip then
+              Add(dcs,[ep^(-1),siz]);
+            else
+              Add(dcs,[ep,siz,st]);
+            fi;
           else
-            Add(dcs,[ep,siz]);
+            if flip then
+              Add(dcs,[ep^(-1),siz]);
+            else
+              Add(dcs,[ep,siz]);
+            fi;
           fi;
         fi;
 
@@ -1586,6 +1670,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
     fi;
   fi;
 
+  PopOptions(); # the usequotient option
   return dcs;
 end);
 
