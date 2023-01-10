@@ -20,3 +20,6 @@ f3e803853f9095d6d642c78e80d8178a69960616
 
 # PR #5271: convert many C comments to C++ comments
 035f52e69462195abe83900ecd7a409404fcbc23
+
+# PR #5275: Remove tabs from files
+fd1d6dfc8ceb065b28f8b2765c46e70f81cd5a41
