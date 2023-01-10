@@ -3478,7 +3478,6 @@ local c,n,deg,ind,core,i,j,sum,ma,h,ig,bm,m,sel,ds,ise,cnt,
     h:=Image(ma);
     ig:=IndependentGeneratorsOfAbelianGroup(h);
     h:=Group(ig);
-    EpimorphismFromFreeGroup(h); # TODO is this line required?
     bm:=DiagonalMat(List(ig,Order));
 
     for i in [2..Length(c)-1] do

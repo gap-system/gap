@@ -1223,7 +1223,6 @@ local cs,       # chief series of G
         fi;
 
 
-        KernelOfMultiplicativeGeneralMapping(Fhom); # TODO is this line required?
         F:=Image(Fhom,G);
 
         clF:=ClassesFromClassical(F);
@@ -1321,7 +1320,6 @@ local cs,       # chief series of G
         else
           Fhom:=GroupHomomorphismByImagesNC(G,F,GeneratorsOfGroup(G),genimages);
         fi;
-        KernelOfMultiplicativeGeneralMapping(Fhom); # TODO is this line required?
 
         Info(InfoHomClass,1,"constructed Fhom");
 
@@ -1743,7 +1741,6 @@ BindGlobal("LiftClassesEANonsolvGeneral",
         imgs{[radidx+1..Length(gens)]},cl[4],hom,gpsz,OnRight,aff);
 
   classes:=[];
-  DenominatorOfModuloPcgs(Npcgs); # TODO is this line required?
   for b in orb do
     rep := PcElementByExponentsNC( Npcgs, Npcgs{ cg.baseComplement },
                     b.rep{ ran } );

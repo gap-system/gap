@@ -165,7 +165,6 @@ end );
 InstallMethod( \in, true, [ IsPerm, IsRationalClassPermGroupRep ], 0,
     function( g, cl )
 
-    ActingDomain( cl ); # TODO is this line required?
     # the Galois group of the identity is <0>, therefore we have to do this
     # extra test.
     return Order(Representative(cl))=Order(g) and
