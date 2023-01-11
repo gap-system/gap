@@ -2885,7 +2885,7 @@ InstallMethod( IsomorphismPermGroup,
     "solvable groups, e.g. Hall action",
     [ IsGroup and IsFinite and IsSolvableGroup and CanEasilyComputePcgs ],
 function ( G )
-local d,i,j,a,iso,ims,gens,s,p,abovent;
+local d,i,j,a,iso,ims,s,p,abovent;
   if IsAbelian(G) then
     # force redispatch on abelian group
     return IsomorphismAbelianGroupViaIndependentGenerators(IsPermGroup,G);

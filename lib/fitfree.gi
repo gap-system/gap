@@ -43,7 +43,7 @@ end);
 
 InstallMethod(DoFFSS,"generic",IsIdenticalObj,[IsGroup and IsFinite,IsGroup],0,
 function(G,U)
-local ffs,pcisom,rest,it,kpc,k,x,ker,r,pool,i,xx,inv,pregens,iso;
+local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
 
   ffs:=FittingFreeLiftSetup(G);
 
