@@ -692,7 +692,6 @@ EXTERN_CONFIGFLAGS := \
 ifeq ($(BUILD_GMP),yes)
 
 GMP_BUILDDIR := extern/build/gmp
-GMP_PREFIX := extern/install/gmp
 # GMP_PREREQ := $(GMP_BUILDDIR)/config.status
 GMP_FILES := $(GMP_PREFIX)/lib/libgmp.la
 
