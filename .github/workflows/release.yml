@@ -35,7 +35,6 @@ jobs:
     if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-latest
     outputs:
-      cygwin-matrix: ${{ steps.set-cygwin-matrix.outputs.matrix }}
       gap-build-version: ${{ steps.get-build.outputs.name }}
 
     steps:
@@ -127,15 +126,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: "Decide which Cygwin installers to build next"
-        id: set-cygwin-matrix
-        run: |
-          CYGWIN_MATRIX='{"arch":["x86_64"]}'
-          echo "Setting Cygwin matrix: $CYGWIN_MATRIX"
-          echo "matrix=$CYGWIN_MATRIX" >> $GITHUB_OUTPUT
-
   cygwin:
-    name: "Create Windows ${{ matrix.arch }} installer"
+    name: "Create Windows x86_64 installer"
     needs: unix
     runs-on: windows-2019
     env:
@@ -147,7 +139,6 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.unix.outputs.cygwin-matrix) }}
 
     steps:
       # The GAP to be wrapped is put into gap-$GAP_BUILD_VERSION/
@@ -205,7 +196,7 @@ jobs:
           cd ${GITHUB_WORKSPACE}/sage-windows
           bash release_gap.sh
         env:
-          ARCH: ${{ matrix.arch }}
+          ARCH: x86_64
           SAGE_BUILD_DOC_CMD: '"true"'
           SAGE_VERSION: ${{ env.GAP_BUILD_VERSION }}
 
@@ -215,8 +206,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           if-no-files-found: error
-          name: gap-${{ env.GAP_BUILD_VERSION }}-${{ matrix.arch }}.exe
-          path: sage-windows/Output/gap-${{ env.GAP_BUILD_VERSION }}-${{ matrix.arch }}.exe
+          name: gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe
+          path: sage-windows/Output/gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe
           retention-days: 1
 
       # To reduce code, we could use an Action from the GitHub Marketplace to
@@ -228,7 +219,7 @@ jobs:
           python -u \
             ./releases/upload_files_to_github_release.py \
             v${GAP_BUILD_VERSION} \
-            sage-windows/Output/gap-${GAP_BUILD_VERSION}-${{ matrix.arch }}.exe
+            sage-windows/Output/gap-${GAP_BUILD_VERSION}-x86_64.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
