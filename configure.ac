@@ -762,7 +762,7 @@ LIBS=${save_LIBS}
 
 AS_IF([test x$readline_found = xno],[
   AC_MSG_RESULT([no])
-  AS_IF([test x$with_readline != xcheck],[
+  AS_IF([test x$with_readline != xcheck && test x$with_readline != xno],[
     AC_MSG_FAILURE([--with-readline was given, but further tests for readline failed])
   ])
   READLINE_CPPFLAGS=
