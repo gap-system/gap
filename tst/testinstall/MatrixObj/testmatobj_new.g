@@ -102,15 +102,19 @@ end;
 #   state before examples are generated. This option is intended to make
 #   reproduction of examples easier.
 # dimensions: A list of tuples defining dimensions for matrices. By default this
-#   is set to [[1,1],[2,2],[3,3],[2,5],[5,5],[1,3],[4,1],[6,2]].
+#   is set to [[1,1],[2,2],[3,3],[2,5],[5,5],[1,3],[4,1],[6,2]]. 
 # domains: A list of domains in which matrices should be generated. By default
 #   this is set to [Integers, Rationals, GF(2), GF(5), GF(49)].
-# sourceOfTruth: When performing tests GAP needs some way of telling what
+# cases: A list of triples specifying the number of rows, number of columns and
+#   domain of a matrix. By default this is unbound. However, if bound the 
+#   options domains and dimensions are ignored and instead for each case in 
+#   cases an example is generated.
+# sourceOfTruthFilter: When performing tests GAP needs some way of telling what
 #   results are correct. That is it needs some kind of way to tell whats true 
 #   and whats not. A source of truth is therefore something telling GAP whats 
 #   true. Here this option can be set to a filter defining a matrix object. Then
 #   together with the matrix objetcs which are to be tested the matrix object
-#   specified as sourceOfTruth is generated as well so the test code can access 
+#   specified as sourceOfTruthFilter is generated as well so the test code can access 
 #   it and comapre results. If this option is unbound then classical GAP 
 #   matrices are used.
 # customGenerator: By default random examples are generated using RandomMat or 
@@ -152,16 +156,28 @@ MatObjTest_GenerateExample := function(filter, opt)
     
     examples := [];
 
-    if IsBound(opt.dimensions) then 
-        dims := opt.dimensions;
-    else 
-        dims := [[1,1],[2,2],[3,3],[2,5],[5,5],[1,3],[4,1],[6,2]];
-    fi;
+    if not IsBound(opt.cases) then 
+        if IsBound(opt.dimensions) then 
+            dims := opt.dimensions;
+        else 
+            dims := [[1,1],[2,2],[3,3],[2,5],[5,5],[1,3],[4,1],[6,2]];
+        fi;
 
-    if IsBound(opt.domains) then 
-        doms := opt.domains;
-    else
-        doms := [Integers, Rationals, GF(2), GF(5), GF(49)];
+        if IsBound(opt.domains) then 
+            doms := opt.domains;
+        else
+            doms := [Integers, Rationals, GF(2), GF(5), GF(49)];
+        fi;
+
+        cases := [];
+
+        for dim in dims do
+            for dom in doms do 
+                Add(cases, [dim[1],dim[2],dom]);
+            od;
+        od;
+    else 
+        cases := opt.cases;
     fi;
 
     # set generator to use provided customGenerators if applicable
@@ -184,23 +200,20 @@ MatObjTest_GenerateExample := function(filter, opt)
         fi;
     fi;
 
-    for dim in dims do
-        for dom in doms do 
-            Add(examples, [generator(filter, opt.randomSource, dim[1], dim[2], dom), dim[1], dim[2], dom]);
-        od;
+    for _case in cases do 
+        Add(examples, [generator(filter, opt.randomSource, _case[1], _case[2], _case[3]), _case[1], _case[2], _case[3]]);
     od;
 
-    if IsBound(opt.sourceOfTruth) then 
-        getSourceOfTruth := x -> NewMatrix(opt.sourceOfTruth, x[4], x[3], x[1]);
+    if IsBound(opt.sourceOfTruthFilter) then 
+        getSourceOfTruth := x -> NewMatrix(opt.sourceOfTruthFilter, x[4], x[3], x[1]);
     else 
         getSourceOfTruth := x -> x[1];
     fi;
  
     result := [];
 
-    for ex in examples do 
+    for ex in examples do
         Add(result, rec(matObj := NewMatrix(filter, ex[4], ex[3], ex[1]),
-            #filter := filter,
             mat := ex[1],
             sourceOfTruth := getSourceOfTruth(x)));
         if BaseDomain(Last(result).matObj) <> ex[4] or NumberRows(Last(result).matObj) <> ex[2] or NumberColumns(Last(result).matObj) <> ex[3] or ConstructingFilter(Last(result).matObj) <> filter then 
@@ -251,6 +264,59 @@ MatObjTest_TestSetMatElm := function(ex_in)
     return true;
 end;
 
+# This function requires a filter defining a MatrixObject and a record of 
+# options. 
+# This function runs tests to check whether the specified MatrixObject
+# implementation implements required methods and if these and other methods are 
+# correct (in the sense that they give correct results for the cases tested 
+# here).
+# The following options are supported:
+# randomSource:
+#   See TestMatrixObj_GenerateExample
+# state:
+#   See TestMatrixObj_GenerateExample
+# dimensions: 
+#   See TestMatrixObj_GenerateExample
+# dimensions_red: A list of tuples defining dimensions for matrices. If not set
+#   this is set to [[1,1],[2,2],[3,3],[5,5]]. These dimensions are used to
+#   generate examples for more expensive tests. 
+# domains:
+#   See TestMatrixObj_GenerateExample
+# domains_red:
+#   A list of domains in which matrices should be generated. By default
+#   this is set to [Integers, Rationals, GF(2), GF(5)]. These domains are used 
+#   to generate examples for more expensive tests.
+# reduced_cases: 
+#   A list of triples defining the number of rows, the number of columns and the
+#   domain over which examples are generated. By default this option is unbound.
+#   If bound the options dimensions_red and domains_red are ignored and instead
+#   the cases specified in reduced_cases are used to generate examples for
+#   expensive tests. The reason to use this is that otherwise when specifying
+#   domains and dimensions via domains_red and dimensions_red all combinations 
+#   of the specified dimensions and domains are used. If tests are very 
+#   expensive or just certain combinations should be tested one can use 
+#   reduced_cases instead.
+# customGenerator:
+#   See TestMatrixObj_GenerateExample
+# customInvertibleGenerator:
+#   Like customGenerator a function that generates invertible matrices
+#   compatible with the specified matrix object. It is used when invertible
+#   matrices are required. Default: unbound
+# sourceOfTruthFilter:
+#   See TestMatrixObj_GenerateExample
+# forbidInv:
+#   Boolean set to false by default. If set to true no tests which require
+#   invertible matrices are performed. Intended to either skip potentially
+#   expensive tests or for implementations not able to store invertible 
+#   matrices.
+# breakOnError:
+#   Boolean set to false by default. If set to true Errors or Wrong results
+#   cause a break loop. Otherwise problems are returned as a list of messages.
+# isImmutable:
+#    Boolean set to false by default. If set to true tests of functions which 
+#    change an object and therefore require it to be mutable are skipped. This
+#    option is intended for objects which are always immutable. 
+
 TestMatrixObj := function(filter, optIn)
     local errors, examples, ex;
 
@@ -261,7 +327,10 @@ TestMatrixObj := function(filter, optIn)
     if not IsBound(opt.randomSource) then
         opt.randomSource := GlobalMersenneTwister;
     fi;
+
     # usage of state makes no sense here. State should be set if bound!
+    # do we have to deal with it here? Only used in GenerateExample and that
+    # function deals with it anyway.
     if not IsBound(opt.state) then 
         opt.state := State(GlobalMersenneTwister);
     fi;
@@ -276,6 +345,14 @@ TestMatrixObj := function(filter, optIn)
 
     if not IsBound(opt.isImmutable) then 
         opt.isImmutable := false;
+    fi;
+
+    if not IsBound(opt.dimensions_red) then 
+        opt.dimensions_red := [[1,1],[2,2],[3,3],[5,5]];
+    fi;
+
+    if not IsBound(opt.domains_red) then 
+        opt.domains_red := [Integers, Rationals, GF(2), GF(5)];
     fi;
 
     examples := MatObjTest_GenerateExample(filter, opt);
