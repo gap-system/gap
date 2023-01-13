@@ -278,8 +278,14 @@ end);
 ##  switched off.
 ##  This means that after the above implication has been installed,
 ##  one can rely on the fact that every object in the filter
-##  <C>IsGroup and IsCyclic</C> will also be in the filter
+##  <C>IsGroup and IsCyclic</C> whose type gets created after the
+##  installation of the implication will also be in the filter
 ##  <Ref Prop="IsCommutative"/>.
+##  In particular, it may happen that an object which existed already before
+##  the installation of the implication lies in <C>IsGroup and IsCyclic</C>
+##  but not in <Ref Prop="IsCommutative"/>.
+##  Thus it is advisable to install all implications between filters
+##  before one starts creating (types of) objects lying in these filters.
 ##  <P/>
 ##  Adding logical implications can change the rank of filters (see
 ##  <Ref Func="RankFilter"/>) and consequently the rank, and so choice of
