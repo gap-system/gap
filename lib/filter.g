@@ -285,7 +285,7 @@ end);
 ##  the implication can lie in <C>IsGroup and IsCyclic</C> but not in
 ##  <Ref Prop="IsCommutative"/>.
 ##  Thus it is advisable to install all implications between filters
-##  before one starts to create objects that lie in these filters.
+##  before one starts creating (types of) objects lying in these filters.
 ##  <P/>
 ##  Adding logical implications can change the rank of filters (see
 ##  <Ref Func="RankFilter"/>) and consequently the rank, and so choice of
