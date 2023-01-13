@@ -281,9 +281,9 @@ end);
 ##  <C>IsGroup and IsCyclic</C> whose type gets created after the
 ##  installation of the implication will also be in the filter
 ##  <Ref Prop="IsCommutative"/>.
-##  In particular, objects which existed already before the installation of
-##  the implication can lie in <C>IsGroup and IsCyclic</C> but not in
-##  <Ref Prop="IsCommutative"/>.
+##  In particular, it may happen that an object which existed already before
+##  the installation of the implication lies in <C>IsGroup and IsCyclic</C>
+##  but not in <Ref Prop="IsCommutative"/>.
 ##  Thus it is advisable to install all implications between filters
 ##  before one starts creating (types of) objects lying in these filters.
 ##  <P/>
