@@ -162,7 +162,6 @@ Obj MakeObjInt(const UInt * limbs, int size);
 **  TODO: This is an internal implementation detail and ideally should not
 **  be exported; unfortunately, FuncNUMBER_GF2VEC currently needs this.
 */
-Obj GMP_REDUCE(Obj gmp);
 Obj GMP_NORMALIZE(Obj gmp);
 
 
