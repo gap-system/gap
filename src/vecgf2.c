@@ -2727,8 +2727,6 @@ static Obj FuncNUMBER_GF2VEC(Obj self, Obj vec)
         nd = ((len - 1) / GMP_LIMB_BITS) + 1;
 
         zahl = NewBag(T_INTPOS, nd * sizeof(UInt));
-        //    zahl = NewBag( T_INTPOS, (((nd+1)>>1)<<1)*sizeof(UInt) );
-        // +1)>>1)<<1: round up to next even number
 
         // garbage collection might lose pointer
         const UInt * num = CONST_BLOCKS_GF2VEC(vec) + (len - 1) / BIPEB;
@@ -2760,10 +2758,7 @@ static Obj FuncNUMBER_GF2VEC(Obj self, Obj vec)
             }
         }
 
-
         zahl = GMP_NORMALIZE(zahl);
-        zahl = GMP_REDUCE(zahl);
-
         return zahl;
     }
 }

@@ -62,7 +62,7 @@
 **  small integer). Internally, a large integer may temporarily not be
 **  normalized or not be reduced, but all kernel functions must make sure
 **  that they eventually return normalized and reduced values. The function
-**  GMP_NORMALIZE and GMP_REDUCE can be used to ensure this.
+**  GMP_NORMALIZE can be used to ensure this.
 */
 
 #include "integer.h"
@@ -359,7 +359,6 @@ static Obj GMPorINTOBJ_FAKEMPZ( fake_mpz_t fake )
       RetypeBag( obj, T_INTNEG );
     }
     obj = GMP_NORMALIZE( obj );
-    obj = GMP_REDUCE( obj );
   }
   else {
     if ( fake->v->_mp_size == 1 )
@@ -430,14 +429,7 @@ Obj GMP_NORMALIZE(Obj op)
     if (size < SIZE_INT(op)) {
         ResizeBag(op, size * sizeof(mp_limb_t));
     }
-    return op;
-}
 
-Obj GMP_REDUCE(Obj op)
-{
-    if (IS_INTOBJ(op)) {
-        return op;
-    }
     if (SIZE_INT(op) == 1) {
         if ((VAL_LIMB0(op) <= INT_INTOBJ_MAX) ||
             (IS_INTNEG(op) && VAL_LIMB0(op) == -INT_INTOBJ_MIN)) {
@@ -451,6 +443,7 @@ Obj GMP_REDUCE(Obj op)
     }
     return op;
 }
+
 
 /****************************************************************************
 **
@@ -720,7 +713,6 @@ Obj MakeObjInt(const UInt * limbs, int size)
         memcpy(ADDR_INT(obj), limbs, size * sizeof(mp_limb_t));
 
         obj = GMP_NORMALIZE(obj);
-        obj = GMP_REDUCE(obj);
     }
     return obj;
 }
@@ -943,7 +935,6 @@ Obj IntHexString(Obj str)
     }
 
     res = GMP_NORMALIZE(res);
-    res = GMP_REDUCE(res);
     return res;
   }
 }
@@ -1823,7 +1814,6 @@ Obj ModInt(Obj opL, Obj opR)
 
     // reduce to small integer if possible, otherwise shrink bag
     mod = GMP_NORMALIZE( mod );
-    mod = GMP_REDUCE( mod );
 
     // make the representative positive
     if ( IS_NEG_INT(mod) ) {
@@ -1947,7 +1937,6 @@ Obj QuoInt(Obj opL, Obj opR)
   }
 
   quo = GMP_NORMALIZE(quo);
-  quo = GMP_REDUCE( quo );
   return quo;
 }
 
@@ -2073,8 +2062,6 @@ Obj RemInt(Obj opL, Obj opR)
 
     // reduce to small integer if possible, otherwise shrink bag
     rem = GMP_NORMALIZE( rem );
-    rem = GMP_REDUCE( rem );
-
   }
 
   CHECK_INT(rem);
@@ -2691,10 +2678,7 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
        SWAP(UInt4, pt[0], pt[1]);
      }
 #endif
-     // shrink bag if necessary
      res = GMP_NORMALIZE(res);
-     // convert result if small int
-     res = GMP_REDUCE(res);
   }
 
   return res;
