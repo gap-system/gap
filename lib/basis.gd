@@ -787,8 +787,9 @@ DeclareOperation( "RelativeBasisNC", [ IsBasis, IsHomogeneousList ] );
 ##  <P/>
 ##  <A>name</A> must be a string,
 ##  a filter <M>f</M> with this name is created, and
-##  a logical implication from <M>f</M> to <Ref Filt="IsHandledByNiceBasis"/>
-##  is installed.
+##  a logical implication from the join of <M>f</M> with
+##  <Ref Filt="IsFreeLeftModule"/> and <Ref Filt="IsAttributeStoringRep"/> to
+##  <Ref Filt="IsHandledByNiceBasis"/> is installed.
 ##  <P/>
 ##  <A>record</A> must be a record with the following components.
 ##  <List>
@@ -805,28 +806,34 @@ DeclareOperation( "RelativeBasisNC", [ IsBasis, IsHomogeneousList ] );
 ##  </Item>
 ##  <Mark><C>NiceFreeLeftModuleInfo</C> </Mark>
 ##  <Item>
-##      the <C>NiceFreeLeftModuleInfo</C> method for left modules in <M>f</M>,
+##      the <Ref Attr="NiceFreeLeftModuleInfo"/> method for left modules in
+##      <M>f</M>,
 ##  </Item>
 ##  <Mark><C>NiceVector</C> </Mark>
 ##  <Item>
-##      the <C>NiceVector</C> method for left modules <M>V</M> in <M>f</M>;
+##      the <Ref Oper="NiceVector"/> method for left modules <M>V</M> in
+##      <M>f</M>;
 ##      called with <M>V</M> and a vector <M>v \in V</M>, this function returns the
 ##      nice vector <M>r</M> associated with <M>v</M>, and
 ##  </Item>
 ##  <Mark><C>UglyVector</C></Mark>
 ##  <Item>
-##      the <Ref Oper="UglyVector"/> method for left modules <M>V</M> in <M>f</M>;
-##      called with <M>V</M> and a vector <M>r</M> in the <C>NiceFreeLeftModule</C> value
-##      of <M>V</M>, this function returns the vector <M>v \in V</M> to which <M>r</M> is
+##      the <Ref Oper="UglyVector"/> method for left modules <M>V</M> in
+##      <M>f</M>;
+##      called with <M>V</M> and a vector <M>r</M> in the
+##      <Ref Attr="NiceFreeLeftModule"/> value of <M>V</M>,
+##      this function returns the vector <M>v \in V</M> to which <M>r</M> is
 ##      associated.
 ##  </Item>
 ##  </List>
 ##  <P/>
 ##  The idea is that all one has to do for implementing a new kind of free
 ##  left modules handled by the mechanism of nice bases is to call
-##  <C>DeclareHandlingByNiceBasis</C> and <C>InstallHandlingByNiceBasis</C>,
+##  <Ref Func="DeclareHandlingByNiceBasis"/> and
+##  <Ref Func="InstallHandlingByNiceBasis"/>,
 ##  which causes the installation of the necessary methods and adds the pair
-##  <M>[ f, </M><C><A>record</A>.detect</C><M> ]</M> to the global list <C>NiceBasisFiltersInfo</C>.
+##  <M>[ f, </M><A>record</A><C>.detect</C><M> ]</M> to the global list
+##  <Ref Var="NiceBasisFiltersInfo"/>.
 ##  The <Ref Oper="LeftModuleByGenerators"/> methods call
 ##  <Ref Func="CheckForHandlingByNiceBasis"/>, which sets the appropriate filter
 ##  for the desired left module if applicable.
