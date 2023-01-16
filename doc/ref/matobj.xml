@@ -277,7 +277,7 @@ for the new type of vector or matrix objects.
   <Ref Attr="ConstructingFilter" Label="for a vector object"/>,
 </Item>
 <Item>
-  <Ref Constr="NewVector"/>
+  <Ref Constr="NewVector"/> and <Ref Constr="NewZeroVector"/>
   (with consistency checks if the global option <C>check</C> is not set to
   <K>false</K>).
 </Item>
@@ -315,7 +315,8 @@ for the new type of vector or matrix objects.
   <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/>,
 </Item>
 <Item>
-  <Ref Constr="NewMatrix"/>
+  <Ref Constr="NewMatrix"/>, <Ref Constr="NewIdentityMatrix"/>,
+  and <Ref Constr="NewZeroMatrix"/>,
   (with consistency checks if the global option <C>check</C> is not set to
   <K>false</K>).
 </Item>
