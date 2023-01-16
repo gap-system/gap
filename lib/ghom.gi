@@ -1434,7 +1434,7 @@ RedispatchOnCondition(IsomorphismPermGroup,true,[IsGroup],[IsFinite],0);
 ## For the computed isomorphism to be effectively computable, the source
 ## group should be in either the filter KnowsHowToDecompose or the filter
 ## CanEasilyComputeWithIndependentGensAbelianGroup.
-BindGlobal( "IsomorphismAbelianGroupViaIndependentGenerators", function ( filter, G )
+InstallGlobalFunction(IsomorphismAbelianGroupViaIndependentGenerators, function ( filter, G )
   local gens, imgs, i, g, K, nice;
 
   if IsTrivial( G ) then
