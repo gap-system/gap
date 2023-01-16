@@ -445,7 +445,7 @@ InstallGlobalFunction(SIMPLE_STRING, function(str)
   # we simply list here in Position i how character i-1 should be translated
   trans :=Concatenation(
 "\000\>\<\c\004\005\006\007\b\t\n\013\014\r\016\017\020\021\022\023\024\025",
-"\026\027\030\031\032\033\034\035\036\037  \000   &\000  *+ -./",
+"\026\027\030\031\032\033\034\035\036\037 !\000   &\000  *+ -./",
 "0123456789: <=>? abcd",
 "efghijklmnopqrstuvwxyz[\000]^_\000abcdefghijklmnopqrstuvwxyz{ }~",
 "\177\200\201\202",

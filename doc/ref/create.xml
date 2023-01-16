@@ -79,6 +79,7 @@ Chapter&nbsp;<Ref Chap="An Example -- Residue Class Rings"/>.
 <Section Label="Component Objects">
 <Heading>Component Objects</Heading>
 
+<Index Key='!.'><C>!.</C></Index>
 A <E>component object</E> is an object in the representation
 <Ref Filt="IsComponentObjectRep"/> or a subrepresentation of it.
 Such an object <A>cobj</A> is built from subobjects that can be accessed via
@@ -187,6 +188,7 @@ InstallMethod( NextIterator,
 <Section Label="Positional Objects">
 <Heading>Positional Objects</Heading>
 
+<Index Key='![]'><C>![]</C></Index>
 A <E>positional object</E> is an object in the representation
 <Ref Filt="IsPositionalObjectRep"/> or a subrepresentation of it.
 Such an object <A>pobj</A> is built from subobjects that can be accessed via

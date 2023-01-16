@@ -173,8 +173,8 @@ Operator and delimiter symbols are
 <Listing><![CDATA[
 +    -    *    /    ^    ~   !.
 =    <>   <    <=   >    >=  ![
-:=   .    ..   ->   ,    ;   !{
-[    ]    {    }    (    )    :
+:=   .    ..   ->   ,    ;   [
+]    {    }    (    )    :
 ]]></Listing>
 <P/>
 Note also that during the process of scanning all whitespace is removed
