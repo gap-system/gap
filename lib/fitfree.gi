@@ -79,7 +79,6 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
     ker:=TrivialSubgroup(G);
     k:=ffs.pcgs;
   else
-
     iso:=IsomorphismFpGroup(Image(rest,U));
     pregens:=List(GeneratorsOfGroup(Range(iso)),x->
       PreImagesRepresentative(rest,PreImagesRepresentative(iso,x)));
@@ -90,6 +89,15 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
     Append(pool,List(GeneratorsOfGroup(U),x->x/
       MappedWord(UnderlyingElement(ImagesRepresentative(iso,ImagesRepresentative(ffs.factorhom,x))),FreeGeneratorsOfFpGroup(Range(iso)),pregens)));
 
+    iso:=IsomorphismFpGroup(Image(rest,U));
+    pregens:=List(GeneratorsOfGroup(Range(iso)),x->
+      PreImagesRepresentative(rest,PreImagesRepresentative(iso,x)));
+    # evaluate relators
+    pool:=List(RelatorsOfFpGroup(Range(iso)),
+      x->MappedWord(x,FreeGeneratorsOfFpGroup(Range(iso)),pregens));
+    # divide off original generators
+    Append(pool,List(GeneratorsOfGroup(U),x->x/
+      MappedWord(UnderlyingElement(ImagesRepresentative(iso,ImagesRepresentative(ffs.factorhom,x))),FreeGeneratorsOfFpGroup(Range(iso)),pregens)));
 
     pool:=List(pool,x->ImagesRepresentative(pcisom,x));
     kpc:=SubgroupNC(Image(pcisom),pool);
