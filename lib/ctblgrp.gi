@@ -1692,8 +1692,8 @@ end;
 ##  whenever they might become bigger using double cosets of the
 ##  centralizers.
 ##
-DoubleCentralizerOrbit := function(D,c1,c2)
-  local often,trans,e,neu,i,inv,cent,l,s,s1,x;
+BindGlobal("DoubleCentralizerOrbit",function(D,c1,c2)
+local often,trans,e,neu,i,inv,cent,l,s,s1,x,dom;
   inv:=D.inversemap[c1];
   s1:=D.classiz[c1];
   # criteria for using simple orbit part: only for small groups,note that
@@ -1729,33 +1729,57 @@ DoubleCentralizerOrbit := function(D,c1,c2)
     #Info(InfoCharacterTable,3,"using DoubleCosets;");
     cent:=Centralizer(D.classes[inv]);
     if IndexNC(D.group,cent)<=10^5 then
+      dom:=fail;
       if not IsBound(D.centfachom[inv]) then
-        e:=ActionHomomorphism(D.group,RightTransversal(D.group,cent),OnRight,
-          "surjective");
-        Image(e);
+        #e:=ActionHomomorphism(D.group,RightTransversal(D.group,cent),OnRight,
+        #  "surjective");
+        #TODO: both in one
+        e:=SubgroupNC(D.group,SmallGeneratingSet(D.group));
+        SetSize(e,Size(D.group));
+        dom:=Orbit(e,Representative(D.classes[inv]));
+        e:=ActionHomomorphism(e,dom,"surjective");
+        s:=Image(e);
+        StabChainOptions(s).limit:=Size(D.group);
         # do not use action later on
-        e:=AsGroupGeneralMappingByImages(e);
+
+        # rebuild from scratch to not carry through the orbit in
+        # centfachom
+        #e:=AsGroupGeneralMappingByImages(e);
+        s:=MappingGeneratorsImages(e);
+        e:=GroupHomomorphismByImagesNC(Source(e),Image(e),s[1],s[2]);
+        SetIsSurjective(e,true);
         D.centfachom[inv]:=e;
+        D.lastOrbit:=[e,dom];
       else
         e:=D.centfachom[inv];
+        if IsBound(D.lastOrbit) and IsIdenticalObj(D.lastOrbit[1],e) then
+          dom:=D.lastOrbit[2];
+        fi;
       fi;
       s:=Orbits(Image(e,Centralizer(D.classes[c2])),[1..IndexNC(D.group,cent)]);
-      l:=List(s,x->[PreImagesRepresentative(e,
-        RepresentativeAction(Image(e),1,x[1])),Size(cent)*Length(x)]);
+      if dom=fail then
+        x:=D.classreps[inv];
+
+        l:=List(s,i->[x^PreImagesRepresentative(e,
+          RepresentativeAction(Image(e),1,i[1])),Size(cent)*Length(i)]);
+      else
+        l:=List(s,i->[dom[i[1]],Size(cent)*Length(i)]);
+      fi;
     else
       l:=DoubleCosetRepsAndSizes(D.group,cent,Centralizer(D.classes[c2]));
+      x:=D.classreps[inv];
+      l:=List(l,i->[x^i[1],i[2]]);
     fi;
     s1:=Size(cent);
     e:=[];
     s:=[];
-    x:=D.classreps[inv];
     for i in l do
-      Add(e,x^i[1]);
+      Add(e,i[1]);
       Add(s,i[2]/s1);
     od;
     return [e,s];
   fi;
-end;
+end);
 
 
 #############################################################################
@@ -2163,7 +2187,8 @@ local C,u,irr;
     ["ClassElement","centmulCandidates","centmulMults","characterTable",
     "classMap","facs","fingerprintCandidates",
     "group","identification","ids","iscentral","klanz","name","operations",
-    "replist","shorttests","uniques"])
+    "replist","shorttests","uniques",
+    "lastOrbit","centfachom"])
     do
     Unbind(D.(u));
   od;
