@@ -674,4 +674,4 @@ DeclareAttribute( "ImagesSmallestGenerators",
 ##
 DeclareAttribute( "RegularActionHomomorphism", IsGroup );
 
-DeclareGlobalName("IsomorphismAbelianGroupViaIndependentGenerators");
+DeclareGlobalFunction("IsomorphismAbelianGroupViaIndependentGenerators");
