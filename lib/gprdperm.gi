@@ -1190,7 +1190,7 @@ function( D, i )
     G := info.groups[i];
     genG := GeneratorsOfGroup( G );
     imgs := GeneratorsOfGroup( D ){[info.lenlist[i]+1 .. info.lenlist[i+1]]};
-    hom := GroupHomomorphismByImages( G, D, genG, imgs );
+    hom := GroupHomomorphismByImagesNC( G, D, genG, imgs );
     SetIsInjective( hom, true );
     info.embeddings[i] := hom;
     return hom;

@@ -17,6 +17,7 @@ InstallMethod( FittingFreeLiftSetup, "permutation", true, [ IsPermGroup ],0,
 function( G )
 local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
 
+  Size(G);
   r:=SolvableRadical(G);
   if Size(r)=1 then
     hom:=IdentityMapping(G);
