@@ -1489,7 +1489,8 @@ InstallMethod( PCoreOp,
                     hom:=GroupHomomorphismByImagesNC(G,GG,Ggens,image);
                     Add(homlist,hom);
                     #force makemapping
-                    KernelOfMultiplicativeGeneralMapping( hom );
+                    SetSize(GG,Size(G)/Size(
+                      KernelOfMultiplicativeGeneralMapping( hom )));
                     # find new action of subgroups in composition series
                     for i in [1..index] do
                         for j in [1..Length(normals[i])] do
@@ -1685,6 +1686,7 @@ InstallMethod( SolvableRadical,
             else
                 K := ClosureGroup( N,normals[index],
                                      rec( size:=factorsize[index]*Size(N) ) );
+                Size(K);
                 C := CentralizerNormalCSPG(K,N);
 
                 # radical of K is cyclic or trivial; it has to show up in C
@@ -1711,8 +1713,9 @@ InstallMethod( SolvableRadical,
                     hom := GroupHomomorphismByImagesNC(G,GG,
                                                      Ggens,image);
                     Add(homlist,hom);
-                    #force makemapping
-                    KernelOfMultiplicativeGeneralMapping( hom );
+                    #force makemapping and deduce image order
+                    SetSize(GG,Size(G)/Size(
+                      KernelOfMultiplicativeGeneralMapping( hom )));
                     # find new action of subgroups in composition series
                     for i in [1..index] do
                         for j in [1..Length(normals[i])] do
@@ -2145,6 +2148,7 @@ InstallGlobalFunction( CentralizerNormalTransCSPG, function(G,N)
     if IsTrivial(GG)  then
         return TrivialSubgroup( Parent(G) );
     fi;
+    Size(GG);
 
     Ginverses := GInverses( chainG );
     Ninverses := GInverses( chainN );

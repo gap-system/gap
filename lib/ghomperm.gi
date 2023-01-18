@@ -1221,6 +1221,13 @@ InstallGlobalFunction( StabChainPermGroupToPermGroupGeneralMappingByImages,
             options.knownBase := BaseOfGroup( Parent( Source( hom ) ) );
         fi;
 
+    # if it is the inverse of a mapping, transfer the same size info from
+    # the range
+    elif  HasInverseGeneralMapping(hom) and
+      HasIsMapping(InverseGeneralMapping(hom)) and
+      IsMapping(InverseGeneralMapping(hom)) and HasSize(Range(hom)) then
+            options.size := Size( Range( hom ) );
+
     # if not IsMapping, settle for less
     else
         if   HasSize( Source( hom ) )  then
