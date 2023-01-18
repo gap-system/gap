@@ -254,7 +254,7 @@ Stat NewStatOrExpr(CodeState * cs, UInt type, UInt size, UInt line)
     header->line = line;
     header->size = size;
     header->type = type;
-    RegisterStatWithHook(stat);
+    RegisterStatWithHook(GET_GAPNAMEID_BODY(cs->currBody), line, type);
     // return the new statement
     return stat;
 }

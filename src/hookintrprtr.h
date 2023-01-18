@@ -73,7 +73,7 @@ struct InterpreterHooks {
     void (*visitInterpretedStat)(int fileid, int line);
     void (*enterFunction)(Obj func);
     void (*leaveFunction)(Obj func);
-    void (*registerStat)(Stat stat);
+    void (*registerStat)(int fileid, int line, int type);
     void (*registerInterpretedStat)(int fileid, int line);
     const char * hookName;
 };
@@ -129,9 +129,9 @@ EXPORT_INLINE void HookedLineOutFunction(Obj func)
     GAP_HOOK_LOOP(leaveFunction, func);
 }
 
-EXPORT_INLINE void RegisterStatWithHook(Stat func)
+EXPORT_INLINE void RegisterStatWithHook(int fileid, int line, int type)
 {
-    GAP_HOOK_LOOP(registerStat, func);
+    GAP_HOOK_LOOP(registerStat, fileid, line, type);
 }
 
 EXPORT_INLINE void InterpreterHook(int fileid, int line, Int skipped)
