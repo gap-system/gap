@@ -134,15 +134,15 @@ void SET_VISITED_STAT(Stat stat)
 
 static inline void PushOffsBody(CodeState * cs)
 {
-    cs->OffsBodyList =
-        NewPlistFromArgs(ObjInt_UInt(cs->OffsBody), cs->OffsBodyList);
+    if (!cs->OffsBodyStack)
+        cs->OffsBodyStack = NEW_PLIST(T_PLIST, 4);
+    PushPlist(cs->OffsBodyStack, ObjInt_UInt(cs->OffsBody));
 }
 
 static inline void PopOffsBody(CodeState * cs)
 {
-    GAP_ASSERT(cs->OffsBodyList != 0);
-    cs->OffsBody = UInt_ObjInt(ELM_PLIST(cs->OffsBodyList, 1));
-    cs->OffsBodyList = ELM_PLIST(cs->OffsBodyList, 2);
+    GAP_ASSERT(cs->OffsBodyStack != 0);
+    cs->OffsBody = UInt_ObjInt(PopPlist(cs->OffsBodyStack));
 }
 
 // filename
@@ -637,7 +637,7 @@ Obj CodeEnd(CodeState * cs, UInt error)
         // the stacks must be empty
         GAP_ASSERT(CS(CountStat) == 0);
         GAP_ASSERT(CS(CountExpr) == 0);
-        GAP_ASSERT(cs->OffsBodyList == 0);
+        GAP_ASSERT(cs->OffsBodyStack == 0 || LEN_PLIST(cs->OffsBodyStack) == 0);
 
         // we must be back to 'STATE(CurrLVars)'
         GAP_ASSERT(STATE(CurrLVars) == cs->CodeLVars);
@@ -652,7 +652,7 @@ Obj CodeEnd(CodeState * cs, UInt error)
         // empty the stacks
         CS(CountStat) = 0;
         CS(CountExpr) = 0;
-        cs->OffsBodyList = 0;
+        cs->OffsBodyStack = 0;
 
         // go back to the correct frame
         SWITCH_TO_OLD_LVARS(cs->CodeLVars);
