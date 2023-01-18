@@ -623,12 +623,11 @@ static void visitInterpretedStat(int fileid, int line)
 ** check we executed something on those lines!
 **/
 
-static void registerStat(Stat stat)
+static void registerStat(int fileid, int line, int type)
 {
     HashLock(&profileState);
     if (profileState.status == Profile_Active) {
-        outputStat(getFilenameIdOfCurrentFunction(), LINE_STAT(stat),
-                   TNUM_STAT(stat), FALSE, FALSE);
+        outputStat(fileid, line, type, FALSE, FALSE);
     }
     HashUnlock(&profileState);
 }
