@@ -216,6 +216,8 @@ gap> for i in [ 1 .. 300 ] do
 > od;;
 Error, Too many open files (internal file descriptor limit reached)
 gap> Perform( streams, CloseStream );
+gap> RemoveFile(fname);
+true
 
 #
 gap> STOP_TEST( "streams.tst", 1);
