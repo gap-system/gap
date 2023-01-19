@@ -26,7 +26,7 @@
 # IsMatrixObj, then the first definition incurs a "hidden implication"
 # which then later leads to "method matches more than one declaration" messages.
 # The proper fix is to remove hidden implication
-DeclareCategory( "IsVecOrMatObj", IsCopyable );
+DeclareCategory( "IsVecOrMatObj", IsObject );
 
 
 #############################################################################
