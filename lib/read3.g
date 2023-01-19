@@ -105,6 +105,7 @@ ReadLib( "word.gd"     );
 ReadLib( "wordass.gd"  );
 
 ReadLib( "matobj2.gd"  );
+ReadLib( "matobj/positional.gd" );
 ReadLib( "matobjplist.gd" );
 ReadLib( "matobjnz.gd" );
 
