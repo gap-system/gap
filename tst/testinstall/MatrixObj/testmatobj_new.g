@@ -151,10 +151,11 @@ end;
 #       opt.invertible is used to generate matrices and therefore must be bound 
 #       to a function accordingly
 
-MatObjTest_GenerateExample := function(filter, opt)
-    local inv, dims, dim, doms, dom, generator, examples, ex, getSourceOfTruth, result;
+MatObjTest_GenerateExample := function(filter, opt_in)
+    local inv, dims, dim, doms, dom, generator, examples, ex, getSourceOfTruth, result, _case, cases, opt;
     
     examples := [];
+    opt := ShallowCopy(opt_in);
 
     if not IsBound(opt.cases) then 
         if IsBound(opt.dimensions) then 
@@ -167,6 +168,10 @@ MatObjTest_GenerateExample := function(filter, opt)
             doms := opt.domains;
         else
             doms := [Integers, Rationals, GF(2), GF(5), GF(49)];
+        fi;
+
+        if IsBound(opt.invertible) then 
+            doms := Filtered(doms, IsField);
         fi;
 
         cases := [];
@@ -199,7 +204,7 @@ MatObjTest_GenerateExample := function(filter, opt)
             generator := function(filter, randomSource, nrRows, nrCols, dom) return RandomMat(randomSource, nrRows, nrCols, dom); end;
         fi;
     fi;
-
+    
     for _case in cases do 
         Add(examples, [generator(filter, opt.randomSource, _case[1], _case[2], _case[3]), _case[1], _case[2], _case[3]]);
     od;
@@ -215,7 +220,7 @@ MatObjTest_GenerateExample := function(filter, opt)
     for ex in examples do
         Add(result, rec(matObj := NewMatrix(filter, ex[4], ex[3], ex[1]),
             mat := ex[1],
-            sourceOfTruth := getSourceOfTruth(x)));
+            sourceOfTruth := getSourceOfTruth(ex)));
         if BaseDomain(Last(result).matObj) <> ex[4] or NumberRows(Last(result).matObj) <> ex[2] or NumberColumns(Last(result).matObj) <> ex[3] or ConstructingFilter(Last(result).matObj) <> filter then 
             ErrorNoReturn(Concatenation("Error while generating examples. In a case with NrRows = ", String(ex[2], " NrCols = ", String(ex[3]), " domain = ", String(ex[4]), "and filter := ", String(filter), " NumberRows, NumberColumns, BaseDomain or ConstructingFilter does not work.")));
         fi;
@@ -230,9 +235,9 @@ end;
 MatObjTest_TestMatElm := function(ex)
     local col, row, elm;
 
-    for row in [1..NrRows(ex.matobj)] do
-        for col in [1..NrCols(ex.matobj)] do
-            elm := ex.matobj[row, col];
+    for row in [1..NrRows(ex.matObj)] do
+        for col in [1..NrCols(ex.matObj)] do
+            elm := ex.matObj[row, col];
             if elm <> ex.sourceOfTruth[row,col] then
                 return false;
             fi; 
@@ -243,7 +248,7 @@ MatObjTest_TestMatElm := function(ex)
 end;
 
 MatObjTest_TestSetMatElm := function(ex_in)
-    local col, row, elm, mat;
+    local col, row, elm, mat, ex;
 
     ex := ShallowCopy(ex_in);
     mat := ex.matObj;
@@ -262,6 +267,23 @@ MatObjTest_TestSetMatElm := function(ex_in)
     od;
 
     return true;
+end;
+
+MatObjTest_TestIsIdentityMat := function(ex_in)
+    #todo
+end;
+
+MatObjTest_TestInverse := function(ex_in)
+    local ex, mat, inv;
+
+    ex := ShallowCopy(ex_in);
+    mat := ex.MatObj;
+    inv := mat^(-1);
+    if IsIdentityMat(mat*inv) and IsIdentityMat(inv*mat) then 
+        return true;
+    fi;
+
+    return false;
 end;
 
 # This function requires a filter defining a MatrixObject and a record of 
@@ -318,7 +340,7 @@ end;
 #    option is intended for objects which are always immutable. 
 
 TestMatrixObj := function(filter, optIn)
-    local errors, examples, ex;
+    local errors, examples, ex, opt;
 
     errors := [];
 
@@ -331,7 +353,7 @@ TestMatrixObj := function(filter, optIn)
     # usage of state makes no sense here. State should be set if bound!
     # do we have to deal with it here? Only used in GenerateExample and that
     # function deals with it anyway.
-    if not IsBound(opt.state) then 
+    if not IsBound(opt.state) then
         opt.state := State(GlobalMersenneTwister);
     fi;
 
@@ -343,7 +365,7 @@ TestMatrixObj := function(filter, optIn)
         opt.breakOnError := false;
     fi;
 
-    if not IsBound(opt.isImmutable) then 
+    if not IsBound(opt.isImmutable) then
         opt.isImmutable := false;
     fi;
 
@@ -384,10 +406,13 @@ TestMatrixObj := function(filter, optIn)
 
     if not opt.forbidInv then
         opt.invertible := true;
+        #opt.domains := Filtered(opt.domains, IsField);
         examples := MatObjTest_GenerateExample(filter, opt);
 
         for ex in examples do
-            #TestInverse(ex);
+            if MatObjTest_CallFunc(MatObjTest_TestInverse, [ex], opt.breakOnError, errors, ex) = false then 
+            MatObjTest_HandleErrorWrongResult("Inverse", [ex.matObj], opt.breakOnError, ex, errors);
+            fi; 
         od;
 
         #Other tests were you need invertible matrices
