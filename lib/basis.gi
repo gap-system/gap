@@ -693,7 +693,7 @@ InstallGlobalFunction( "InstallHandlingByNiceBasis",
     entry:= First( NiceBasisFiltersInfo,
                    x -> IsIdenticalObj( filter, x[1] ) );
     entry[3] := record.detect;
-    filter:= filter and IsFreeLeftModule and IsAttributeStoringRep;
+    filter:= filter and IsAttributeStoringRep;
     InstallTrueMethod( IsHandledByNiceBasis, filter );
 
     # Install the methods.
