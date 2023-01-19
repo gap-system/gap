@@ -598,15 +598,14 @@ local cs,nr,u,no,un,S,rad,res,ise,uno;
   # does not need to be found through search through complements)
   res:=PerfectResiduum(G);
 
-  nr:=Unique([Core(G,S),NormalClosure(G,S)]);
+  nr:=[Core(G,S),NormalClosure(G,S)];
+  if Size(nr[1])=Size(nr[2]) then nr:=nr{[1]};fi;
 
   # refine with perfect residuum
   no:=Intersection(nr[1],res);
-  if not no in nr then Add(nr,no);fi;
+  if not no in nr then nr:=Concatenation([no],nr);fi;
   if Length(nr)>1 then
-    no:=ClosureGroup(nr[2],res);
-    if not no in nr then Add(nr,no);fi;
-    no:=Intersection(nr[2],ClosureGroup(nr[1],res));
+    no:=ClosureGroup(nr[Length(nr)],res);
     if not no in nr then Add(nr,no);fi;
   fi;
 
