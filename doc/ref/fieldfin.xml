@@ -179,8 +179,8 @@ Finally note that elements of large prime fields are stored and
 displayed as residue class objects. So
 <P/>
 <Example><![CDATA[
-gap> Z(65537);
-ZmodpZObj( 3, 65537 )
+gap> Z(NextPrimeInt(2^30));
+ZmodpZObj( 2, 1073741827 )
 ]]></Example>
 </Description>
 </ManSection>
