@@ -18,48 +18,77 @@
 # Constructors:
 ############################################################################
 
-InstallGlobalFunction( MakePlistVectorType,
-  function( basedomain, filter )
-    local T, filter2;
-    filter2 := filter and IsMutable;
-    if HasCanEasilyCompareElements(Representative(basedomain)) and
-       CanEasilyCompareElements(Representative(basedomain)) then
-        filter2 := filter2 and CanEasilyCompareElements;
-    fi;
-    if IsIdenticalObj(basedomain,Integers) then
-        T := NewType(FamilyObj(basedomain),
-                       filter2 and IsIntVector);
-    elif IsFinite(basedomain) and IsField(basedomain) then
-        T := NewType(FamilyObj(basedomain),
-                       filter2 and IsFFEVector);
+BindGlobal( "MakeIsPlistVectorRep",
+  function( basedomain, list )
+    local fam, types, typ;
+    fam := FamilyObj(basedomain);
+    #types := _PlistVectorRepTypeCache(basedomain);
+
+    # special case: integers
+    if IsIntegers(basedomain) then
+        if not IsBound(basedomain!.PlistVectorRepTypes) then
+            # initialize type cache
+            # TODO: make this thread safe for HPC-GAP
+            basedomain!.PlistVectorRepTypes := [
+                NewType(fam, IsPlistVectorRep and IsIntVector and CanEasilyCompareElements),
+                NewType(fam, IsPlistVectorRep and IsIntVector and CanEasilyCompareElements and IsMutable),
+            ];
+        fi;
+        types := basedomain!.PlistVectorRepTypes;
+    elif IsFFECollection(basedomain) then
+        if not IsBound(basedomain!.PlistVectorRepTypes) then
+            # initialize type cache
+            # TODO: make this thread safe for HPC-GAP
+            basedomain!.PlistVectorRepTypes := [
+                NewType(fam, IsPlistVectorRep and IsFFEVector and CanEasilyCompareElements),
+                NewType(fam, IsPlistVectorRep and IsFFEVector and CanEasilyCompareElements and IsMutable),
+            ];
+        fi;
+        types := basedomain!.PlistVectorRepTypes;
     else
-        T := NewType(FamilyObj(basedomain),
-                       filter2);
+        if not IsBound(fam!.PlistVectorRepTypes) then
+            # initialize type cache
+            # TODO: make this thread safe for HPC-GAP
+            fam!.PlistVectorRepTypes := [
+                NewType(fam, IsPlistVectorRep),
+                NewType(fam, IsPlistVectorRep and IsMutable),
+            ];
+            fam!.PlistVectorRepTypesEasyCompare := [
+                NewType(fam, IsPlistVectorRep and CanEasilyCompareElements),
+                NewType(fam, IsPlistVectorRep and CanEasilyCompareElements and IsMutable),
+            ];
+        fi;
+        if HasCanEasilyCompareElements(Representative(basedomain)) and
+           CanEasilyCompareElements(Representative(basedomain)) then
+            types := fam!.PlistVectorRepTypesEasyCompare;
+        else
+            types := fam!.PlistVectorRepTypes;
+        fi;
     fi;
-    return T;
-  end);
+    if IsMutable(list) then
+        typ := types[2];
+    else
+        typ := types[1];
+    fi;
+
+    return Objectify(typ, [ basedomain, list ]);
+  end );
 
 InstallMethod( NewVector, "for IsPlistVectorRep, a ring, and a list",
   [ IsPlistVectorRep, IsRing, IsList ],
   function( filter, basedomain, l )
-    local typ, v;
     if ValueOption( "check" ) <> false and not IsSubset( basedomain, l ) then
       Error( "the elements in <l> must lie in <basedomain>" );
     fi;
-    typ := MakePlistVectorType(basedomain,IsPlistVectorRep);
-    v := [basedomain,ShallowCopy(l)];
-    Objectify(typ,v);
-    return v;
+    return MakeIsPlistVectorRep(basedomain, ShallowCopy(l));
   end );
 
 InstallMethod( NewZeroVector, "for IsPlistVectorRep, a ring, and an int",
   [ IsPlistVectorRep, IsRing, IsInt ],
-  function( filter, basedomain, l )
-    local typ, v;
-    typ := MakePlistVectorType(basedomain,IsPlistVectorRep);
-    v := [basedomain,Zero(basedomain)*[1..l]];
-    Objectify(typ,v);
-    return v;
+  function( filter, basedomain, len )
+    local list;
+    list := ListWithIdenticalEntries(len, Zero(basedomain));
+    return MakeIsPlistVectorRep(basedomain, list);
   end );
 
 InstallMethod( NewMatrix,
@@ -213,46 +242,34 @@ InstallMethod( Length, "for a plist vector", [ IsPlistVectorRep ],
 
 InstallMethod( ZeroVector, "for an integer and a plist vector",
   [ IsInt, IsPlistVectorRep ],
-  function( l, t )
-    local v;
-    v := Objectify(TypeObj(t),
-                   [t![BDPOS],ListWithIdenticalEntries(l,Zero(t![BDPOS]))]);
-    if not IsMutable(v) then SetFilterObj(v,IsMutable); fi;
-    return v;
+  function( l, v )
+    return NewZeroVector(IsPlistVectorRep, v![BDPOS], l);
   end );
 
 InstallMethod( ZeroVector, "for an integer and a plist matrix",
   [ IsInt, IsPlistMatrixRep ],
   function( l, m )
-    local v;
-    v := Objectify(TypeObj(m![EMPOS]),
-                   [m![BDPOS],ListWithIdenticalEntries(l,Zero(m![BDPOS]))]);
-    if not IsMutable(v) then SetFilterObj(v,IsMutable); fi;
-    return v;
+    return NewZeroVector(IsPlistVectorRep, m![BDPOS], l);
   end );
 
 InstallMethod( Vector, "for a plain list and a plist vector",
   [ IsList and IsPlistRep, IsPlistVectorRep ],
-  function( l, t )
-    local v;
-    v := Objectify(TypeObj(t),[t![BDPOS],l]);
-    if not IsMutable(v) then SetFilterObj(v,IsMutable); fi;
-    return v;
+  function( l, v )
+    # wrap the given list without copying it (this is documented behavior)
+    return MakeIsPlistVectorRep(v![BDPOS], l);
+    # TODO: optionally check that l is consistent with t
   end );
 
 InstallMethod( Vector, "for a list and a plist vector",
   [ IsList, IsPlistVectorRep ],
-  function( l, t )
-    local v;
-    v := ShallowCopy(l);
-    if IsGF2VectorRep(l) then
-        PLAIN_GF2VEC(v);
-    elif Is8BitVectorRep(l) then
-        PLAIN_VEC8BIT(v);
+  function( l, v )
+    local m;
+    m := IsMutable(l);
+    l := PlainListCopy(l);
+    if not m then
+        MakeImmutable(l);
     fi;
-    v := Objectify(TypeObj(t),[t![BDPOS],v]);
-    if not IsMutable(v) then SetFilterObj(v,IsMutable); fi;
-    return v;
+    return MakeIsPlistVectorRep(v![BDPOS], l);
   end );
 
 # compatibility method for older representations as list of elements
@@ -282,7 +299,7 @@ InstallMethod( \[\]\:\=, "for a plist vector, a positive integer, and an obj",
 InstallMethod( \{\}, "for a plist vector and a list",
   [ IsPlistVectorRep, IsList ],
   function( v, l )
-    return Objectify(TypeObj(v),[v![BDPOS],v![ELSPOS]{l}]);
+    return MakeIsPlistVectorRep(v![BDPOS], v![ELSPOS]{l});
   end );
 
 InstallMethod( PositionNonZero, "for a plist vector", [ IsPlistVectorRep ],
@@ -329,10 +346,7 @@ InstallMethod( Unpack, "for a plist vector",
 
 InstallMethod( ShallowCopy, "for a plist vector", [ IsPlistVectorRep ],
   function( v )
-    local res;
-    res := Objectify(TypeObj(v),[v![BDPOS],ShallowCopy(v![ELSPOS])]);
-    if not IsMutable(v) then SetFilterObj(res,IsMutable); fi;
-    return res;
+    return MakeIsPlistVectorRep(v![BDPOS], ShallowCopy(v![ELSPOS]));
   end );
 
 # StructuralCopy works automatically
@@ -350,27 +364,15 @@ InstallMethod( PostMakeImmutable, "for a plist vector", [ IsPlistVectorRep ],
 InstallMethod( \+, "for two plist vectors",
   [ IsPlistVectorRep, IsPlistVectorRep ],
   function( a, b )
-    local ty;
-    if not IsMutable(a) and IsMutable(b) then
-        ty := TypeObj(b);
-    else
-        ty := TypeObj(a);
-    fi;
-    return Objectify(ty,
-                     [a![BDPOS],SUM_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS])]);
+    # TODO: check that basedomains are equal or at least "match"?
+    return MakeIsPlistVectorRep(a![BDPOS], SUM_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS]));
   end );
 
 InstallMethod( \-, "for two plist vectors",
   [ IsPlistVectorRep, IsPlistVectorRep ],
   function( a, b )
-    local ty;
-    if not IsMutable(a) and IsMutable(b) then
-        ty := TypeObj(b);
-    else
-        ty := TypeObj(a);
-    fi;
-    return Objectify(ty,
-                     [a![BDPOS],DIFF_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS])]);
+    # TODO: check that basedomains are equal or at least "match"?
+    return MakeIsPlistVectorRep(a![BDPOS], DIFF_LIST_LIST_DEFAULT(a![ELSPOS],b![ELSPOS]));
   end );
 
 InstallMethod( \=, "for two plist vectors",
@@ -464,71 +466,52 @@ InstallOtherMethod( MultVectorLeft, "for an integer vector, and a small integer"
 InstallMethod( \*, "for a plist vector and a scalar",
   [ IsPlistVectorRep, IsScalar ],
   function( v, s )
-    return Objectify( TypeObj(v),
-             [v![BDPOS],PROD_LIST_SCL_DEFAULT(v![ELSPOS],s)] );
+    return MakeIsPlistVectorRep(v![BDPOS], PROD_LIST_SCL_DEFAULT(v![ELSPOS],s));
   end );
 
 InstallMethod( \*, "for a scalar and a plist vector",
   [ IsScalar, IsPlistVectorRep ],
   function( s, v )
-    return Objectify( TypeObj(v),
-             [v![BDPOS],PROD_SCL_LIST_DEFAULT(s,v![ELSPOS])] );
+    return MakeIsPlistVectorRep(v![BDPOS], PROD_SCL_LIST_DEFAULT(s,v![ELSPOS]));
   end );
 
 InstallMethod( \/, "for a plist vector and a scalar",
   [ IsPlistVectorRep, IsScalar ],
   function( v, s )
-    return Objectify( TypeObj(v),
-             [v![BDPOS],PROD_LIST_SCL_DEFAULT(v![ELSPOS],s^-1)] );
+    return MakeIsPlistVectorRep(v![BDPOS], PROD_LIST_SCL_DEFAULT(v![ELSPOS],s^-1));
   end );
 
 InstallMethod( AdditiveInverseSameMutability, "for a plist vector",
   [ IsPlistVectorRep ],
   function( v )
-    return Objectify( TypeObj(v),
-       [v![BDPOS],AdditiveInverseSameMutability(v![ELSPOS])] );
+    return MakeIsPlistVectorRep(v![BDPOS], AdditiveInverseSameMutability(v![ELSPOS]));
   end );
 
 InstallMethod( AdditiveInverseImmutable, "for a plist vector",
   [ IsPlistVectorRep ],
   function( v )
-    local res;
-    res := Objectify( TypeObj(v),
-       [v![BDPOS],AdditiveInverseSameMutability(v![ELSPOS])] );
-    MakeImmutable(res);
-    return res;
+    return MakeIsPlistVectorRep(v![BDPOS], AdditiveInverseImmutable(v![ELSPOS]));
   end );
 
 InstallMethod( AdditiveInverseMutable, "for a plist vector",
   [ IsPlistVectorRep ],
   function( v )
-    local res;
-    res := Objectify(TypeObj(v),
-                     [v![BDPOS],AdditiveInverseMutable(v![ELSPOS])]);
-    if not IsMutable(v) then SetFilterObj(res,IsMutable); fi;
-    return res;
+    return MakeIsPlistVectorRep(v![BDPOS], AdditiveInverseMutable(v![ELSPOS]));
   end );
 
 InstallMethod( ZeroSameMutability, "for a plist vector", [ IsPlistVectorRep ],
   function( v )
-    return Objectify(TypeObj(v),[v![BDPOS],ZeroSameMutability(v![ELSPOS])]);
+    return MakeIsPlistVectorRep(v![BDPOS], ZeroSameMutability(v![ELSPOS]));
   end );
 
 InstallMethod( ZeroImmutable, "for a plist vector", [ IsPlistVectorRep ],
   function( v )
-    local res;
-    res := Objectify(TypeObj(v),[v![BDPOS],ZeroImmutable(v![ELSPOS])]);
-    MakeImmutable(res);
-    return res;
+    return MakeIsPlistVectorRep(v![BDPOS], ZeroImmutable(v![ELSPOS]));
   end );
 
 InstallMethod( ZeroMutable, "for a plist vector", [ IsPlistVectorRep ],
   function( v )
-    local res;
-    res := Objectify(TypeObj(v),
-                     [v![BDPOS],ZeroMutable(v![ELSPOS])]);
-    if not IsMutable(v) then SetFilterObj(res,IsMutable); fi;
-    return res;
+    return MakeIsPlistVectorRep(v![BDPOS], ZeroMutable(v![ELSPOS]));
   end );
 
 InstallMethod( IsZero, "for a plist vector", [ IsPlistVectorRep ],
