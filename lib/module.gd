@@ -247,8 +247,10 @@ DeclareProperty( "IsFullMatrixModule", IsFreeLeftModule, 20 );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareCategory( "IsHandledByNiceBasis", IsFreeLeftModule );
-#T why not `DeclareFilter' ?
+DeclareCategory( "IsHandledByNiceBasis", IsFreeLeftModule, 3 );
+# We want that 'IsFreeLeftModule and IsHandledByNiceBasis' has a higher rank
+# than 'IsFreeLeftModule and IsFiniteDimensional'.
+# (There are concurrent '\in' methods for the two situations.)
 
 
 #############################################################################

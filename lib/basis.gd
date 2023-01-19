@@ -786,9 +786,10 @@ DeclareOperation( "RelativeBasisNC", [ IsBasis, IsHomogeneousList ] );
 ##  (see&nbsp;<Ref Sect="Vector Spaces Handled By Nice Bases"/>).
 ##  <P/>
 ##  <A>name</A> must be a string,
-##  a filter <M>f</M> with this name is created, and
+##  a filter <M>f</M> with this name is created which implies
+##  <Ref Filt="IsFreeLeftModule"/>, and
 ##  a logical implication from the join of <M>f</M> with
-##  <Ref Filt="IsFreeLeftModule"/> and <Ref Filt="IsAttributeStoringRep"/> to
+##  <Ref Filt="IsAttributeStoringRep"/> to
 ##  <Ref Filt="IsHandledByNiceBasis"/> is installed.
 ##  <P/>
 ##  <A>record</A> must be a record with the following components.
@@ -895,6 +896,7 @@ DeclareGlobalFunction( "CheckForHandlingByNiceBasis" );
 InstallGlobalFunction( "DeclareHandlingByNiceBasis", function( name, info )
     local entry;
     DeclareFilter( name );
+    InstallTrueMethod( IsFreeLeftModule, ValueGlobal( name ) );
     entry := [ ValueGlobal( name ), info ];
     Add( NiceBasisFiltersInfo, entry, 1 );
 end );
