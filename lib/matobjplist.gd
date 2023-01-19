@@ -116,11 +116,3 @@ BindGlobal( "ELSPOS", 2 );
 DeclareFilter( "IsIntVector" );
 DeclareFilter( "IsFFEVector" );
 
-############################################################################
-# Constructors:
-############################################################################
-
-#T Should this be documented?
-#T It seems to be just an auxiliary function for the documented constructors.
-DeclareGlobalFunction( "MakePlistVectorType" );
-
