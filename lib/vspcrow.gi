@@ -336,6 +336,7 @@ COEFFS_SEMI_ECH_BASIS:=function( B, v )
     local vectors,   # basis vectors of `B'
           heads,     # heads info of `B'
           len,       # length of `v'
+          F,         # allowed coefficients
           coeff,     # coefficients list, result
           i,         # loop over `v'
           pos;       # heads position
@@ -351,6 +352,7 @@ COEFFS_SEMI_ECH_BASIS:=function( B, v )
     if len <> Length( heads ) then
       return fail;
     fi;
+    F:= LeftActingDomain( UnderlyingLeftModule( B ) );
 
     # Preset the coefficients list with zeroes.
     coeff:= ListWithIdenticalEntries( Length( vectors ), Zero( v[1] ) );
@@ -360,11 +362,11 @@ COEFFS_SEMI_ECH_BASIS:=function( B, v )
     i:= PositionNonZero( v );
     while i <= len do
       pos:= heads[i];
-      if pos <> 0 then
+      if pos = 0 or not v[i] in F then
+        return fail;
+      else
         coeff[ pos ]:= v[i];
         AddRowVector( v, vectors[ pos ], - v[i] );
-      else
-        return fail;
       fi;
       i:= PositionNonZero( v );
     od;

@@ -91,6 +91,12 @@ gap> BaseDomain( b[1] );
 GF(2^2)
 gap> b[1] = vecs[1];
 true
+gap> v:= GF(2)^1;;
+gap> b:= Basis( v, [ [ Z(2) ] ] );;
+gap> Coefficients( b, [ Z(4) ] );
+fail
+gap> SiftedVector( b, [ Z(4) ] );
+fail
 
 #############################################################################
 ##
