@@ -1,4 +1,4 @@
-#@local entry,equ,pair,sml,oldTermEncoding,pkginfo,info,tmp_dir,mockpkgpath,old_warning_level,p,n
+#@local entry,equ,pair,sml,oldTermEncoding,pkginfo,info,tmp_dir,mockpkgpath,old_warning_level,p,n,filename
 gap> START_TEST("package.tst");
 
 # CompareVersionNumbers( <supplied>, <required>[, \"equal\"] )
