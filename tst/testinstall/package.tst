@@ -655,7 +655,11 @@ gap> IsPackageLoaded("mockpkg", ">=2.0");
 false
 
 # now add the temporary directory created above as a new root directory
-gap> ExtendRootDirectories( [ Filename( tmp_dir, "" ) ] );
+gap> filename:= ShallowCopy( Filename( tmp_dir, "" ) );;
+gap> while EndsWith( filename, "/" ) do Remove( filename ); od;
+gap> ExtendRootDirectories( [ filename ] );
+gap> ForAll( GAPInfo.RootPaths, x -> EndsWith( x, "/" ) );
+true
 
 # make sure that the newly discovered installation path matches
 # the path from which mockpkg was loaded above

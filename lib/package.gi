@@ -1793,8 +1793,16 @@ InstallGlobalFunction( SetPackagePath, function( pkgname, pkgpath )
 #F  ExtendRootDirectories( <paths> )
 ##
 InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
+    local i;
+
     rootpaths:= Filtered( rootpaths, path -> not path in GAPInfo.RootPaths );
     if not IsEmpty( rootpaths ) then
+      # 'DirectoriesLibrary' concatenates root paths with directory names.
+      for i in [ 1 .. Length( rootpaths ) ] do
+        if not EndsWith( rootpaths[i], "/" ) then
+          rootpaths[i]:= Concatenation( rootpaths[i], "/" );
+        fi;
+      od;
       # Append the new root paths.
       GAPInfo.RootPaths:= Immutable( Concatenation( GAPInfo.RootPaths,
           rootpaths ) );
