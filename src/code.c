@@ -127,6 +127,16 @@ void SET_VISITED_STAT(Stat stat)
 }
 
 
+static Int TNUM_STAT_OR_EXPR(CodeState * cs, Expr expr)
+{
+    if (IS_REF_LVAR(expr))
+        return EXPR_REF_LVAR;
+    if (IS_INTEXPR(expr))
+        return EXPR_INT;
+    return STAT_HEADER(cs, expr)->type;
+}
+
+
 #define SET_FUNC_CALL(call, x) WRITE_EXPR(cs, call, 0, x)
 #define SET_ARGI_CALL(call, i, x) WRITE_EXPR(cs, call, i, x)
 #define SET_ARGI_INFO(info, i, x) WRITE_STAT(cs, info, (i)-1, x)
@@ -243,11 +253,7 @@ Stat NewStatOrExpr(CodeState * cs, UInt type, UInt size, UInt line)
         bodySize = cs->OffsBody;
     while (bodySize < cs->OffsBody)
         bodySize *= 2;
-    GAP_ASSERT(STATE(PtrBody) == PTR_BAG(body));
     ResizeBag(body, bodySize);
-    // resize a bag can change its address, even without a GC taking place;
-    // so we must update PtrBody here
-    STATE(PtrBody) = PTR_BAG(body);
 
     // enter type and size
     StatHeader * header = STAT_HEADER(cs, stat);
@@ -653,10 +659,6 @@ Obj CodeEnd(CodeState * cs, UInt error)
         CS(CountStat) = 0;
         CS(CountExpr) = 0;
         cs->OffsBodyStack = 0;
-
-        // go back to the correct frame
-        SWITCH_TO_OLD_LVARS(cs->CodeLVars);
-
         return 0;
     }
 }
@@ -764,7 +766,8 @@ void CodeFuncExprBegin(CodeState * cs,
 {
     Obj                 fexp;           // function expression bag
     Bag                 body;           // function body
-    Stat                stat1;          // first statement in body
+    Obj                 lvars;
+    LVarsHeader         * hdr;
 
     // remember the current offset
     PushOffsBody(cs);
@@ -791,25 +794,33 @@ void CodeFuncExprBegin(CodeState * cs,
     cs->OffsBody = sizeof(BodyHeader);
 
     // give it an environment
-    SET_ENVI_FUNC( fexp, STATE(CurrLVars) );
-    CHANGED_BAG( fexp );
-    MakeHighVars(STATE(CurrLVars));
+    SET_ENVI_FUNC(fexp, cs->CodeLVars);
+    CHANGED_BAG(fexp);
+    MakeHighVars(cs->CodeLVars);
 
     // switch to this function
-    SWITCH_TO_NEW_LVARS(fexp, (narg > 0 ? narg : -narg), nloc);
+    if (narg < 0)
+        narg = -narg;
 
-    cs->currFunc = fexp;
+    // create new lvars, linking to the previous lvars
+    lvars = NewLVarsBag(narg + nloc);
+    hdr = (LVarsHeader *)ADDR_OBJ(lvars);
+    hdr->stat = 0;
+    hdr->func = fexp;
+    hdr->parent = cs->CodeLVars;
+
+    // ... and from now on put generated code into the new lvars / new body
+    cs->CodeLVars = lvars;
     cs->currBody = body;
 
     // allocate the top level statement sequence
-    stat1 = NewStat(cs, STAT_SEQ_STAT, 8 * sizeof(Stat));
-    assert( stat1 == OFFSET_FIRST_STAT );
+    NewStat(cs, STAT_SEQ_STAT, 8 * sizeof(Stat));
 }
 
 #ifdef HPCGAP
 void CodeFuncExprSetLocks(CodeState * cs, Obj locks)
 {
-    SET_LCKS_FUNC(cs->currFunc, locks);
+    SET_LCKS_FUNC(FUNC_LVARS(cs->CodeLVars), locks);
 }
 #endif
 
@@ -822,7 +833,7 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
     UInt                i;              // loop variable
 
     // get the function expression
-    fexp = cs->currFunc;
+    fexp = FUNC_LVARS(cs->CodeLVars);
 
     // get the body of the function
     // push an additional return-void-statement if necessary
@@ -838,13 +849,14 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
         //  sequence statements, e.g., from reading in a syntax tree, we need
         //  to find the last `real` statement of the last innermost sequence
         //  statement to determine if there is already a return or not.
-        while (STAT_SEQ_STAT <= TNUM_STAT(stat1) &&
-               TNUM_STAT(stat1) <= STAT_SEQ_STAT7) {
-            UInt size = SIZE_STAT(stat1) / sizeof(Stat);
-            stat1 = READ_STAT(stat1, size - 1);
+        while (STAT_SEQ_STAT <= TNUM_STAT_OR_EXPR(cs, stat1) &&
+               TNUM_STAT_OR_EXPR(cs, stat1) <= STAT_SEQ_STAT7) {
+            UInt size = STAT_HEADER(cs, stat1)->size / sizeof(Stat);
+            // stat1 = READ_STAT(stat1, size - 1);
+            stat1 = ADDR_STAT(cs, stat1)[size - 1];
         }
-        if (TNUM_STAT(stat1) != STAT_RETURN_VOID &&
-            TNUM_STAT(stat1) != STAT_RETURN_OBJ) {
+        if (TNUM_STAT_OR_EXPR(cs, stat1) != STAT_RETURN_VOID &&
+            TNUM_STAT_OR_EXPR(cs, stat1) != STAT_RETURN_OBJ) {
             CodeReturnVoidWhichIsNotProfiled(cs);
             nr++;
         }
@@ -860,7 +872,6 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
     // stuff the first statements into the first statement sequence
     // Making sure to preserve the line number and file name
     StatHeader * header = STAT_HEADER(cs, OFFSET_FIRST_STAT);
-    header->line = LINE_STAT(OFFSET_FIRST_STAT);
     header->size = nr*sizeof(Stat);
     header->type = STAT_SEQ_STAT+nr-1;
     for ( i = 1; i <= nr; i++ ) {
@@ -878,12 +889,11 @@ Expr CodeFuncExprEnd(CodeState * cs, UInt nr, BOOL pushExpr, Int endLine)
     SET_ENDLINE_BODY(BODY_FUNC(fexp), endLine);
 
     // switch back to the previous function
-    SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
+    cs->CodeLVars = ENVI_FUNC(fexp);
+    cs->currBody = BODY_FUNC(FUNC_LVARS(cs->CodeLVars));
 
     // restore the remembered offset
     PopOffsBody(cs);
-    cs->currFunc = FUNC_LVARS(ENVI_FUNC(fexp));
-    cs->currBody = BODY_FUNC(cs->currFunc);
 
     // if this was inside another function definition, make the expression
     // and store it in the function expression list of the outer function
@@ -955,7 +965,7 @@ Int CodeIfBeginBody(CodeState * cs)
     Expr cond = PopExpr();
 
     // if the condition is 'false', ignore the body
-    if (TNUM_EXPR(cond) == EXPR_FALSE) {
+    if (TNUM_STAT_OR_EXPR(cs, cond) == EXPR_FALSE) {
         return 1; // signal interpreter to set IntrIgnoring to 1
     }
     else {
@@ -976,7 +986,7 @@ Int CodeIfEndBody(CodeState * cs, UInt nr)
 
     // if the condition is 'true', signal interpreter to set IntrIgnoring to
     // 1, so that other branches of the if-statement are ignored
-    return TNUM_EXPR(cond) == EXPR_TRUE;
+    return TNUM_STAT_OR_EXPR(cs, cond) == EXPR_TRUE;
 }
 
 void CodeIfEnd(CodeState * cs, UInt nr)
@@ -994,7 +1004,7 @@ void CodeIfEnd(CodeState * cs, UInt nr)
 
     // peek at the last condition
     cond = PopExpr();
-    hase = (TNUM_EXPR(cond) == EXPR_TRUE);
+    hase = (TNUM_STAT_OR_EXPR(cs, cond) == EXPR_TRUE);
     PushExpr(cond);
 
     // optimize 'if true then BODY; fi;' to just 'BODY;'
@@ -1085,8 +1095,9 @@ void CodeForEndBody(CodeState * cs, UInt nr)
     var = PopExpr();
 
     // select the type of the for-statement
-    if ( TNUM_EXPR(list) == EXPR_RANGE && SIZE_EXPR(list) == 2*sizeof(Expr)
-      && IS_REF_LVAR(var) ) {
+    StatHeader * hdr = STAT_HEADER(cs, list);
+    if (hdr->type == EXPR_RANGE && hdr->size == 2 * sizeof(Expr) &&
+        IS_REF_LVAR(var)) {
         type = STAT_FOR_RANGE;
     }
     else {
@@ -1466,10 +1477,10 @@ void CodeNot(CodeState * cs)
 {
     // peek at expression
     Expr expr = PopExpr();
-    if ( TNUM_EXPR(expr) == EXPR_TRUE ) {
+    if (TNUM_STAT_OR_EXPR(cs, expr) == EXPR_TRUE) {
         CodeFalseExpr(cs);
     }
-    else if ( TNUM_EXPR(expr) == EXPR_FALSE ) {
+    else if (TNUM_STAT_OR_EXPR(cs, expr) == EXPR_FALSE) {
         CodeTrueExpr(cs);
     }
     else {
