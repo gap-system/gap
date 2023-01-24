@@ -556,10 +556,6 @@ function(G)
 local map;
   if HasNiceMonomorphism(G) and IsPermGroup(Range(NiceMonomorphism(G))) then
     map:=NiceMonomorphism(G);
-    if IsIdenticalObj(Source(map),G) then
-      return map;
-    fi;
-    return GeneralRestrictedMapping(map,G,NiceObject(G));
   else
     if not HasIsFinite(G) then
       Info(InfoWarning,1,
@@ -567,8 +563,11 @@ local map;
     fi;
     map:=NicomorphismOfGeneralMatrixGroup(G,false,false);
     SetNiceMonomorphism(G,map);
+  fi;
+  if IsIdenticalObj(Source(map),G) then
     return map;
   fi;
+  return GeneralRestrictedMapping(map,G,NiceObject(G));
 end);
 
 InstallMethod( IsomorphismPermGroup,
