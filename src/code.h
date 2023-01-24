@@ -70,9 +70,6 @@ struct CodeState {
     Bag CodeLVars;
 
     //
-    Obj currFunc;
-
-    //
     Obj currBody;
 };
 

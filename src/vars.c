@@ -96,6 +96,7 @@ Bag NewLVarsBag(UInt slots)
         result = STATE(LVarsPool)[slots];
         if (result) {
             STATE(LVarsPool)[slots] = PARENT_LVARS(result);
+            CHANGED_BAG(result);
             return result;
         }
     }
