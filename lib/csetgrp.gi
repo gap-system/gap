@@ -1036,16 +1036,32 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
       a1:=quot;
       quot:=NaturalHomomorphismByNormalSubgroupNC(G,quot);
     fi;
+    r:=RestrictedMapping(quot,b);
     a2:=ClosureGroup(a1,a);
     Size(a2);
     start:=PositionProperty(c,
       x->Size(x)=Size(a2) and ForAll(GeneratorsOfGroup(x),y->y in a2));
     if start=fail then Error("closure not in chain");fi;
-    dcs:=CalcDoubleCosets(Image(quot,G),Image(quot,a),Image(quot,b):
-      includestab,usequotient:=fail);
+    p:=Image(quot,G);
+    c1:=Image(quot,a);
+    tra:=Image(quot,b);
+
+    dcs:=CalcDoubleCosets(p,c1,tra:includestab,usequotient:=fail);
+    for i in dcs do
+      # add missing stabilizers (caused by flip)
+      if not IsBound(i[3]) then
+        i[3]:=Intersection(c1^i[1],tra);
+      fi;
+    od;
+
     mayflip:=false;
     Info(InfoCoset,1,"Factor returns ",Length(dcs)," double cosets");
-    r:=RestrictedMapping(quot,b);
+    # try kernel
+    a2:=Filtered(GeneratorsOfGroup(b),x->IsOne(ImagesRepresentative(quot,x)));
+    a2:=SubgroupNC(Parent(b),a2);
+    Assert(2,Size(a2)*Size(tra)=Size(b));
+    SetKernelOfMultiplicativeGeneralMapping(r,a2);
+
     dcs:=List(dcs,x->[PreImagesRepresentative(quot,x[1]),Size(a1)*x[2],
       PreImage(r,x[3])]);
     r:=List(dcs,x->x[1]);
@@ -1435,10 +1451,18 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
           Add(nstab,st);
 
           if unten then
-            if flip then
-              Add(dcs,[ep^(-1),siz]);
+            if includestab then
+              if flip then
+                Add(dcs,[ep^(-1),siz]);
+              else
+                Add(dcs,[ep,siz,st]);
+              fi;
             else
-              Add(dcs,[ep,siz]);
+              if flip then
+                Add(dcs,[ep^(-1),siz]);
+              else
+                Add(dcs,[ep,siz]);
+              fi;
             fi;
           fi;
 
