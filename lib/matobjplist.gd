@@ -44,9 +44,13 @@
 ##    and
 ##  </Item>
 ##  <Item>
-##    a plain list (see <Ref Filt="IsPlistRep"/> of its entries.
+##    a dense plain list (see <Ref Filt="IsPlistRep"/> of its entries.
 ##  </Item>
 ##  </Enum>
+##  <P/>
+##  Any <A>obj</A> in <Ref Filt="IsPlistVectorRep"/> satisfies that
+##  the entries in the stored plain list are elements of the stored base
+##  domain, in the sense of <C>\in</C>.
 ##
 DeclareRepresentation( "IsPlistVectorRep",
         IsVectorObj and IsPositionalObjectRep
@@ -88,10 +92,16 @@ DeclareRepresentation( "IsPlistVectorRep",
 ##    (see <Ref Attr="NumberColumns" Label="for a matrix object"/>), and
 ##  </Item>
 ##  <Item>
-##    a plain list (see <Ref Filt="IsPlistRep"/> of its rows,
+##    a dense plain list (see <Ref Filt="IsPlistRep"/> of its rows,
 ##    each of them being an object in <Ref Filt="IsPlistVectorRep"/>.
 ##  </Item>
 ##  </Enum>
+##  <P/>
+##  Any <A>obj</A> in <Ref Filt="IsPlistMatrixRep"/> satisfies that
+##  each entry in the stored plain list is a vector in
+##  <Ref Filt="IsPlistVectorRep"/>, whose base domain is identical with the
+##  stored base domain of <A>obj</A> and whose length is the stored number
+##  of columns.
 ##
 DeclareRepresentation( "IsPlistMatrixRep",
         IsRowListMatrix and IsPositionalObjectRep

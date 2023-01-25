@@ -287,6 +287,15 @@ InstallMethod( ZeroVector,
     { len, M } -> NewZeroVector( CompatibleVectorFilter( M ),
                                  BaseDomain( M ), len ) );
 
+# compatibility method for representations as list of elements
+# (covers the cases of the second argument in `IsRowVector` or `IsMatrix`)
+InstallOtherMethod( ZeroVector, "for an integer and a plain list",
+  [ IsInt, IsPlistRep ],
+  -1, # rank lower than default as only fallback
+  function( l, t )
+    return ListWithIdenticalEntries( l, ZeroOfBaseDomain( t ) );
+  end);
+
 
 #############################################################################
 ##
@@ -1160,6 +1169,15 @@ InstallMethod( CopySubMatrix,
       od;
     od;
     end );
+
+
+#############################################################################
+##
+#M  TransposedMatImmutable( <M> )
+##
+InstallMethod( TransposedMatImmutable,
+    [ IsMatrixOrMatrixObj ],
+    TransposedMatMutable );
 
 
 #############################################################################
