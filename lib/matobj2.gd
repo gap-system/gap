@@ -265,8 +265,8 @@ DeclareAttribute( "CompatibleVectorFilter", IsMatrixOrMatrixObj );
 ##  <P/>
 ##  If <A>list</A> is a list of positive integers that are not larger than
 ##  the length of <A>v</A> then
-##  <A>v</A><C>{</C><A>list</A><C>}</C> returns a vector object in the same
-##  representation as <A>v</A>
+##  <A>v</A><C>{</C><A>list</A><C>}</C> returns a new mutable vector object
+##  in the same representation as <A>v</A>
 ##  (see <Ref Attr="ConstructingFilter" Label="for a vector object"/>)
 ##  that contains the <A>list</A><M>[ k ]</M>-th entry of <A>v</A> at
 ##  position <M>k</M>.
@@ -715,7 +715,7 @@ DeclareOperation( "Vector", [ IsList ] );
 ##  The list <A>list</A> is guaranteed not to be changed by this operation.
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
-##  <Ref Oper="NewVector"/> need not perform consistency checks.
+##  <Ref Constr="NewVector"/> need not perform consistency checks.
 ##  <P/>
 ##  Similarly, <Ref Constr="NewZeroVector"/> returns a vector object
 ##  of length <A>n</A> which has <A>filt</A> and <A>R</A> as
@@ -952,10 +952,14 @@ DeclareOperation( "DistanceOfVectors", [ IsVectorObj, IsVectorObj ] );
 ##  <Oper Name="ExtractSubMatrix" Arg='M, rows, cols'/>
 ##
 ##  <Description>
-##  Creates a fully mutable copy of the submatrix described by the two
+##  Creates a copy of the submatrix described by the two
 ##  lists, which mean subsets of row and column positions, respectively.
 ##  This does <A>M</A>{<A>rows</A>}{<A>cols</A>} and returns the result.
 ##  It preserves the representation of the matrix.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
+##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  fully mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1343,8 +1347,8 @@ DeclareOperation( "Matrix", [ IsList ]);
 ##
 ##  <Description>
 ##  Called with a matrix object <A>M</A> with <M>m</M> rows,
-##  this operation returns a zero vector object <M>v</M> of length <M>m</M>
-##  and in the representation given by the
+##  this operation returns a mutable zero vector object <M>v</M> of length
+##  <M>m</M> and in the representation given by the
 ##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
 ##  of <A>M</A> (provided that such a representation exists).
 ##  <P/>
