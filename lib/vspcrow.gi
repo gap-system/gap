@@ -161,7 +161,7 @@ InstallOtherMethod( LeftModuleByGenerators,
     [ IsDivisionRing, IsList ],
     # ensure it ranks above the generic method
     function( F, mat )
-    local V,typ;
+    local V, typ, K, row;
 
     # filter for vector objects, not compressed FF vectors
     if not ForAll(mat,x->IsVectorObj(x) and not IsDataObjectRep(x)) then
@@ -169,8 +169,16 @@ InstallOtherMethod( LeftModuleByGenerators,
     fi;
     typ:=IsAttributeStoringRep and HasIsEmpty and IsFiniteDimensional;
     if ForAll( mat, row -> IsSubset( F, BaseDomain(row) ) ) then
+      # Replace 'mat' by vector objects with base domain 'F'.
+      mat:= List( mat, v -> ChangedBaseDomain( v, F ) );
       typ:=typ and IsGaussianRowSpace;
     else
+      # Replace 'mat' by vector objects with base domain containing 'F'.
+      K:= F;
+      for row in mat do
+        K:= ClosureDivisionRing( K, BaseDomain( row ) );
+      od;
+      mat:= List( mat, v -> ChangedBaseDomain( v, K ) );
       typ:=typ and IsVectorSpace and IsRowModule and IsNonGaussianRowSpace;
     fi;
 
