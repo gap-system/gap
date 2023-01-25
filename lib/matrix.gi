@@ -1358,6 +1358,26 @@ InstallOtherMethod( ConstructingFilter,
 
 #############################################################################
 ##
+##  The following "auxiliary methods" are needed when 'DiagonalMatrix' etc.
+##  is called with filter 'IsPlistRep'.
+##  (Strictly speaking, 'NewZeroMatrix' and 'NewIdentityMatrix' are not
+##  defined for this situation, since they promise to return matrix objects.)
+##
+InstallOtherMethod( NewZeroMatrix,
+  [ "IsPlistRep", "IsSemiring", "IsInt", "IsInt" ],
+  function( filter, basedomain, nrows, ncols )
+    return NullMat( nrows, ncols, basedomain );
+  end );
+
+InstallOtherMethod( NewIdentityMatrix,
+  [ "IsPlistRep", "IsSemiring", "IsInt" ],
+  function( filter, basedomain, dim )
+    return IdentityMat( dim, basedomain );
+  end );
+
+
+#############################################################################
+##
 #M  DepthOfUpperTriangularMatrix( <mat> )
 ##
 InstallMethod( DepthOfUpperTriangularMatrix,
@@ -3639,6 +3659,56 @@ InstallGlobalFunction( PermutationMat, function( arg )
 
     return mat;
 end );
+
+
+#############################################################################
+##
+#M  DiagonalMatrix( [<filt>, ]<R>, <vector> )
+#M  DiagonalMatrix( <vector>[, <M>] )
+##
+InstallMethod( DiagonalMatrix,
+    [ "IsOperation", "IsSemiring", "IsRowVectorOrVectorObj" ],
+    function( filt, R, vector )
+    local n, mat, i;
+
+    n:= Length( vector );
+    mat:= NewZeroMatrix( filt, R, n, n );
+    for i in [ 1 .. n ] do
+      mat[i, i]:= vector[i];
+    od;
+
+    return mat;
+    end );
+
+InstallMethod( DiagonalMatrix,
+    [ "IsSemiring", "IsRowVectorOrVectorObj" ],
+    function( R, vector )
+    return DiagonalMatrix( DefaultMatrixRepForBaseDomain( R ), R, vector );
+    end );
+
+InstallMethod( DiagonalMatrix,
+    [ "IsRowVectorOrVectorObj", "IsMatrixOrMatrixObj" ],
+    function( vector, M )
+    return DiagonalMatrix( ConstructingFilter( M ), BaseDomain( M ), vector );
+    end );
+
+InstallMethod( DiagonalMatrix,
+    [ "IsRowVectorOrVectorObj" ],
+    function( vector )
+    local R;
+
+    if Length( vector ) = 0 then
+      Error( "do not know over which ring the matrix shall be defined" );
+    fi;
+    R:= DefaultScalarDomainOfMatrixList( [ [ vector ] ] );
+    return DiagonalMatrix( DefaultMatrixRepForBaseDomain( R ), R, vector );
+    end );
+#T Alternatively, we could use the code of 'DiagonalMat' in this method,
+#T turn 'DiagonalMat' into an obsolescent synonym of 'DiagonalMatrix',
+#T and turn the documentation of 'DiagonalMat' into a link to the
+#T documentation of 'DiagonalMatrix'.
+#T The behaviour is slightly different for example if the argument is a list
+#T of integers or rationals.
 
 
 #############################################################################

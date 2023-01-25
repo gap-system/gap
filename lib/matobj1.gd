@@ -91,7 +91,7 @@ DeclareCategory( "IsVecOrMatObj", IsObject );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareCategory( "IsVectorObj", IsVector and IsVecOrMatObj );
+DeclareCategory( "IsVectorObj", IsVector and IsVecOrMatObj and IsRowVectorOrVectorObj );
 
 
 #############################################################################

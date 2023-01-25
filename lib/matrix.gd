@@ -1643,6 +1643,70 @@ DeclareGlobalFunction( "PermutationMat" );
 
 #############################################################################
 ##
+#O  DiagonalMatrix( [<filt>, ]<R>, <vector> )
+#O  DiagonalMatrix( <vector>[, <M>] )
+##
+##  <#GAPDoc Label="DiagonalMatrix">
+##  <ManSection>
+##  <Oper Name="DiagonalMatrix" Arg='[filt, ]R, vector'
+##   Label="with base domain"/>
+##  <Oper Name="DiagonalMatrix" Arg='vector[, M]'
+##   Label="with example matrix"/>
+##
+##  <Returns>
+##  a square matrix or matrix object with column number equal to the length
+##  of the dense list <A>vector</A>,
+##  whose diagonal entries are given by the entries of <A>vector</A>,
+##  and whose off-diagonal entries are zero.
+##  </Returns>
+##  <Description>
+##  If a semiring <A>R</A> is given then it will be the base domain
+##  (see <Ref Attr="BaseDomain" Label="for a matrix object"/>)
+##  of the returned matrix.
+##  In this case, a filter <A>filt</A> can be specified that defines the
+##  internal representation of the result
+##  (see <Ref Attr="ConstructingFilter" Label="for a matrix object"/>).
+##  The default value for <A>filt</A> is determined from <A>R</A>.
+##  <P/>
+##  If a matrix object <A>M</A> is given then the returned matrix will have
+##  the same internal representation and the same base domain as <A>M</A>.
+##  <P/>
+##  If only <A>vector</A> is given then it is used to compute a default for
+##  <A>R</A>.
+##  <P/>
+##  If the <Ref Filt="ConstructingFilter"/> value of the result implies
+##  <Ref Filt="IsCopyable"/> then the result is fully mutable.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> d1:= DiagonalMatrix( GF(9), [ 1, 2 ] * Z(3)^0 );
+##  [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3) ] ]
+##  gap> Is8BitMatrixRep( d1 );
+##  true
+##  gap> d2:= DiagonalMatrix( IsPlistMatrixRep, GF(9), [ 1, 2 ] * Z(3)^0 );
+##  <2x2-matrix over GF(3^2)>
+##  gap> IsPlistMatrixRep( d2 );
+##  true
+##  gap> DiagonalMatrix( [ 1, 2 ] );
+##  <2x2-matrix over Rationals>
+##  gap> DiagonalMatrix( [ 1, 2 ], Matrix( Integers, [ [ 1 ] ], 1 ) );
+##  <2x2-matrix over Integers>
+##  gap> DiagonalMatrix( [ 1, 2 ], [ [ 1 ] ] );
+##  [ [ 1, 0 ], [ 0, 2 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "DiagonalMatrix",
+    [ IsOperation, IsSemiring, IsRowVectorOrVectorObj ] );
+DeclareOperation( "DiagonalMatrix", [ IsSemiring, IsRowVectorOrVectorObj ] );
+DeclareOperation( "DiagonalMatrix",
+    [ IsRowVectorOrVectorObj, IsMatrixOrMatrixObj ] );
+DeclareOperation( "DiagonalMatrix", [ IsRowVectorOrVectorObj ] );
+
+
+#############################################################################
+##
 #F  DiagonalMat( <vector> ) . . . . . . . . . . . . . . . . . diagonal matrix
 ##
 ##  <#GAPDoc Label="DiagonalMat">
@@ -2125,58 +2189,6 @@ DeclareOperation("DefaultScalarDomainOfMatrixList",[IsListOrCollection]);
 ##
 DeclareOperation("BaseField",[IsObject]);
 
-
-#############################################################################
-##
-#O  ZeroVector( <len>, <vector> )
-##
-##  <ManSection>
-##  <Oper Name="ZeroVector" Arg='len, vector'/>
-##
-##  <Description>
-##  returns a new mutable zero vector in the same representation as
-##  <A>vector</A> of a possibly different length <A>len</A>. The idea behind this
-##  is to be able to write code that preserves for example compression
-##  over a finite field but returning a vector of different length.
-##  </Description>
-##  </ManSection>
-##
-#DeclareOperation("ZeroVector",[IsInt,IsObject]);
-
-
-#############################################################################
-##
-#O  ZeroMatrix( <rows>, <cols>, <matrix>  )
-##
-##  <ManSection>
-##  <Oper Name="ZeroMatrix" Arg='rows, cols, matrix'/>
-##
-##  <Description>
-##  returns a new mutable zero matrix in the same representation as
-##  <A>matrix</A> of possibly different dimensions. The number of rows of
-##  the new matrix is <A>rows</A> and the number of columns is <A>cols</A>.
-##  The idea behind this is to be able to write code that preserves
-##  for example compression over a finite field.
-##  </Description>
-##  </ManSection>
-##
-#DeclareOperation("ZeroMatrix",[IsInt,IsInt,IsObject]);
-
-
-#############################################################################
-##
-#O  IdentityMatrix( <rows>, <matrix> )
-##
-##  <ManSection>
-##  <Oper Name="IdentityMatrix" Arg='rows, matrix'/>
-##
-##  <Description>
-##  returns a new mutable identity matrix in the same representation as
-##  <A>matrix</A> with <A>rows</A> rows.
-##  </Description>
-##  </ManSection>
-##
-#DeclareOperation("IdentityMatrix",[IsInt,IsObject]);
 
 #############################################################################
 ##
