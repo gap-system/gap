@@ -322,6 +322,7 @@ see&nbsp;<Ref Sect="Mutability and Copyability"/>.
 <#Include Label="NullMat">
 <#Include Label="EmptyMatrix">
 <#Include Label="DiagonalMat">
+<#Include Label="DiagonalMatrix">
 <#Include Label="PermutationMat">
 <#Include Label="TransposedMatImmutable">
 <#Include Label="TransposedMatDestructive">

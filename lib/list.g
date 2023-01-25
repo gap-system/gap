@@ -62,6 +62,16 @@ DeclareCategory( "IsListDefault", IsMultiplicativeGeneralizedRowVector );
 InstallTrueMethod( IsListDefault, IsInternalRep and IsList );
 
 
+# This is an auxiliary filter intended to simplify method installations.
+# We must declare it here because the implication from 'IsList and IsEmpty'
+# must be installed before the types 'TYPE_LIST_EMPTY_MUTABLE' and
+# 'TYPE_LIST_EMPTY_IMMUTABLE' are created.
+DeclareCategory( "IsRowVectorOrVectorObj", IsObject );
+
+InstallTrueMethod( IsRowVectorOrVectorObj, IsRowVector );
+InstallTrueMethod( IsRowVectorOrVectorObj, IsEmpty );
+
+
 #############################################################################
 ##
 #P  IsRectangularTable( <list> )  . . . . table with all rows the same length

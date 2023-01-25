@@ -1395,6 +1395,17 @@ DeclareAttribute( "RowsOfMatrix", IsMatrixOrMatrixObj );
 
 #############################################################################
 ##
+#F  DefaultVectorRepForBaseDomain( <D> )
+#F  DefaultMatrixRepForBaseDomain( <D> )
+##
+##  currently undocumented
+##
+DeclareGlobalFunction( "DefaultVectorRepForBaseDomain" );
+DeclareGlobalFunction( "DefaultMatrixRepForBaseDomain" );
+
+
+#############################################################################
+##
 ##  Operations for Row List Matrix Objects
 ##
 

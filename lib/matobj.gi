@@ -147,7 +147,7 @@ InstallMethod( DistanceOfVectors,
 #
 # TODO: possibly rename the following
 #
-BindGlobal( "DefaultVectorRepForBaseDomain",
+InstallGlobalFunction( DefaultVectorRepForBaseDomain,
 function( basedomain )
     if IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) = 2 then
         return IsGF2VectorRep;
@@ -161,7 +161,7 @@ function( basedomain )
     fi;
     return IsPlistVectorRep;
 end);
-BindGlobal( "DefaultMatrixRepForBaseDomain",
+InstallGlobalFunction( DefaultMatrixRepForBaseDomain,
 function( basedomain )
     if IsFinite(basedomain) and IsField(basedomain) and Size(basedomain) = 2 then
         return IsGF2MatrixRep;
@@ -286,6 +286,11 @@ InstallMethod( ZeroVector,
     [ IsInt, IsMatrixOrMatrixObj ],
     { len, M } -> NewZeroVector( CompatibleVectorFilter( M ),
                                  BaseDomain( M ), len ) );
+
+InstallMethod( CompatibleVectorFilter,
+    "for IsMatrix",
+    [ IsMatrix ],
+    M -> IsPlistRep );
 
 # compatibility method for representations as list of elements
 # (covers the cases of the second argument in `IsRowVector` or `IsMatrix`)
