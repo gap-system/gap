@@ -1381,6 +1381,38 @@ InstallMethod( InverseSameMutability,
     end );
 
 InstallMethod( IsZero,
+    [ IsRowListMatrix and IsMatrixObj ],
+    function( mat )
+    local ncols, row;
+
+    ncols:= NrCols( mat );
+    for row in mat do
+      if PositionNonZero( row ) <= ncols then
+        return false;
+      fi;
+    od;
+    return true;
+    end );
+
+InstallMethod( IsOne,
+    [ IsRowListMatrix and IsMatrixObj ],
+    function( mat )
+    local ncols, i, row;
+
+    ncols:= NrCols( mat );
+    for i in [1 .. NrRows( mat )] do
+      row := mat[i];
+      if PositionNonZero( row ) <> i or not IsOne( row[i] ) then
+        return false;
+      fi;
+      if PositionNonZero( row, i ) <= ncols then
+        return false;
+      fi;
+    od;
+    return true;
+    end );
+
+InstallMethod( IsZero,
     [ IsMatrixObj ],
     M -> IsZero( Unpack( M ) ) );
 
