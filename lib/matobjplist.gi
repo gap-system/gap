@@ -1127,20 +1127,19 @@ InstallMethod( IsZero,
 InstallMethod( IsOne,
   [ "IsPlistMatrixRep" ],
   function( m )
-    local i,j,n;
+    local n, i, row;
     if Length(m![ROWSPOS]) <> m![RLPOS] then
         #Error("IsOne: Matrix must be square");
         return false;
     fi;
     n := m![RLPOS];
     for i in [1..n] do
-        if not IsOne(m![ROWSPOS][i]![ELSPOS][i]) then return false; fi;
-        for j in [1..i-1] do
-            if not IsZero(m![ROWSPOS][i]![ELSPOS][j]) then return false; fi;
-        od;
-        for j in [i+1..n] do
-            if not IsZero(m![ROWSPOS][i]![ELSPOS][j]) then return false; fi;
-        od;
+      row:= m![ROWSPOS][i];
+      if PositionNonZero( row ) <> i or
+         not IsOne( row![ELSPOS][i] ) or
+         PositionNonZero( row, i ) <= n then
+        return false;
+      fi;
     od;
     return true;
   end );
