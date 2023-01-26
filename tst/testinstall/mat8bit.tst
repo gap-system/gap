@@ -1,4 +1,4 @@
-#@local m, z, zm, mz;
+#@local m, z, zm, mz, mm;
 gap> START_TEST("mat8bit.tst");
 
 ##
@@ -220,6 +220,53 @@ false
 gap> IsMutable(m[1]);
 false
 gap> IsMutable(m[2]); # previously returned true!
+false
+
+# ZeroSameMutability for Is8BitMatrixRep
+gap> m := [[1, 0, 1, 1], [0, 1, 1, 1]] * Z(4);
+[ [ Z(2^2), 0*Z(2), Z(2^2), Z(2^2) ], [ 0*Z(2), Z(2^2), Z(2^2), Z(2^2) ] ]
+gap> ConvertToMatrixRepNC(m);;
+gap> Is8BitMatrixRep(m);
+true
+gap> mm := ZeroSameMutability(m);
+[ [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2) ], [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2) ] ]
+gap> IsMutable(mm);
+true
+gap> ForAll(mm, IsMutable);
+true
+gap> MakeImmutable(m[2]);
+[ 0*Z(2), Z(2^2), Z(2^2), Z(2^2) ]
+gap> mm := ZeroSameMutability(m);
+[ [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2) ], [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2) ] ]
+gap> IsMutable(mm);
+true
+gap> List(mm, IsMutable);
+[ true, false ]
+gap> m := [[1, 0, 1, 1], [0, 1, 1, 1]] * Z(4);
+[ [ Z(2^2), 0*Z(2), Z(2^2), Z(2^2) ], [ 0*Z(2), Z(2^2), Z(2^2), Z(2^2) ] ]
+gap> ConvertToMatrixRepNC(m);;
+gap> MakeImmutable(m[1]);
+[ Z(2^2), 0*Z(2), Z(2^2), Z(2^2) ]
+gap> Is8BitMatrixRep(m);
+true
+gap> mm := ZeroSameMutability(m);
+[ [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2) ], [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2) ] ]
+gap> IsMutable(mm);
+true
+gap> List(mm, IsMutable);
+[ false, true ]
+gap> m := [[1, 0, 1, 1], [0, 1, 1, 1]] * Z(4);
+[ [ Z(2^2), 0*Z(2), Z(2^2), Z(2^2) ], [ 0*Z(2), Z(2^2), Z(2^2), Z(2^2) ] ]
+gap> ConvertToMatrixRepNC(m);;
+gap> MakeImmutable(m);
+[ [ Z(2^2), 0*Z(2), Z(2^2), Z(2^2) ], [ 0*Z(2), Z(2^2), Z(2^2), Z(2^2) ] ]
+gap> Is8BitMatrixRep(m);
+true
+gap> mm := ZeroSameMutability(m);
+[ [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2) ], [ 0*Z(2), 0*Z(2), 0*Z(2), 0*Z(2) ] ]
+gap> IsMutable(mm);
+false
+gap> ForAny(mm, IsMutable);
 false
 
 #

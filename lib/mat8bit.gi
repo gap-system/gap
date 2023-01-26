@@ -646,33 +646,25 @@ InstallMethod( ZeroImmutable, "8 bit matrix", true,
     return z;
 end);
 
-InstallMethod( ZeroSameMutability, "8 bit matrix", true,
-        [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
-         and IsSmallList ],
-        0,
-        function(mat)
-    local z, i,zv;
-    z := [mat![1]];
-    if not IsMutable(mat![2]) then
-        zv := ZERO_VEC8BIT(mat![2]);
-        SetFilterObj(zv, IsLockedRepresentationVector);
-        MakeImmutable(zv);
-        for i in [2..mat![1]+1] do
-            z[i] := zv;
-        od;
+InstallMethod(ZeroSameMutability, "8 bit matrix",
+[Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
+and IsSmallList],
+function(mat)
+  local z, i, zv;
+  z := [mat![1]];
+  zv := ZERO_VEC8BIT(mat![2]);
+  SetFilterObj(zv, IsLockedRepresentationVector);
+  MakeImmutable(zv);
+  for i in [2 .. mat![1] + 1] do
+    if IsMutable(mat![i]) then
+      z[i] := ZERO_VEC8BIT(mat![i]);
+      SetFilterObj(z[i], IsLockedRepresentationVector);
     else
-        for i in [2..mat![1]+1] do
-            zv := ZERO_VEC8BIT(mat![i]);
-            SetFilterObj(zv,IsLockedRepresentationVector);
-            z[i] := zv;
-        od;
+      z[i] := zv;
     fi;
-    if IsMutable(mat) then
-       Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),true), z);
-    else
-        Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),false), z);
-    fi;
-    return z;
+  od;
+  Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]), IsMutable(mat)), z);
+  return z;
 end);
 
 #############################################################################
