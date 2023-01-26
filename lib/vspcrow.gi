@@ -180,6 +180,10 @@ InstallOtherMethod( LeftModuleByGenerators,
       od;
       mat:= List( mat, v -> ChangedBaseDomain( v, K ) );
       typ:=typ and IsVectorSpace and IsRowModule and IsNonGaussianRowSpace;
+#FIXME: Setting the filter 'IsNonGaussianRowSpace' enables the handling
+#       via nice bases, but there is currently no support for that
+#       in the case of vector spaces of 'IsVectorObj' objects.
+#       See issue #5347 and discussion #5346 for more information.
     fi;
 
     if Length(mat)>0 and ForAny(mat,x->not IsZero(x)) then
