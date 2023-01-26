@@ -1174,6 +1174,32 @@ InstallMethod( IsZero,
     return true;
     end );
 
+
+#############################################################################
+##
+#M  IsOne( <mat> )
+##
+InstallMethod( IsOne,
+    "method for a matrix",
+    [ IsMatrix ],
+    function( mat )
+    local ncols,  # number of columns
+          i,
+          row;    # loop over rows in 'obj'
+
+    ncols:= NrCols( mat );
+    for i in [1 .. NrRows( mat )] do
+      row := mat[i];
+      if PositionNonZero( row ) <> i or not IsOne( row[i] ) then
+        return false;
+      fi;
+      if PositionNonZero( row, i ) <= ncols then
+        return false;
+      fi;
+    od;
+    return true;
+    end );
+
 #############################################################################
 ##
 #M  BaseMat( <mat> )  . . . . . . . . . .  base for the row space of a matrix
