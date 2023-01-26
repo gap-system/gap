@@ -100,7 +100,7 @@ end;
 #   source. This options should only be used if no randomSource is set. Then one
 #   can provide a valid state of the GlobalMersenneTwister and it is set to this
 #   state before examples are generated. This option is intended to make
-#   reproduction of examples easier.
+#   reproduction of problems easier.
 # dimensions: A list of tuples defining dimensions for matrices. By default this
 #   is set to [[1,1],[2,2],[3,3],[2,5],[5,5],[1,3],[4,1],[6,2]]. 
 # domains: A list of domains in which matrices should be generated. By default
@@ -152,7 +152,7 @@ end;
 #       to a function accordingly
 
 MatObjTest_GenerateExample := function(filter, opt_in)
-    local inv, dims, dim, doms, dom, generator, examples, ex, getSourceOfTruth, result, _case, cases, opt;
+    local inv, dims, dim, doms, dom, generator, examples, ex, getSourceOfTruth, result, _case, cases, opt, matObj;
     
     examples := [];
     opt := ShallowCopy(opt_in);
@@ -218,11 +218,12 @@ MatObjTest_GenerateExample := function(filter, opt_in)
     result := [];
 
     for ex in examples do
-        Add(result, rec(matObj := NewMatrix(filter, ex[4], ex[3], ex[1]),
+        matObj := NewMatrix(filter, ex[4], ex[3], ex[1]);
+        Add(result, rec(matObj := matObj,
             mat := ex[1],
             sourceOfTruth := getSourceOfTruth(ex)));
-        if BaseDomain(Last(result).matObj) <> ex[4] or NumberRows(Last(result).matObj) <> ex[2] or NumberColumns(Last(result).matObj) <> ex[3] or ConstructingFilter(Last(result).matObj) <> filter then 
-            ErrorNoReturn(Concatenation("Error while generating examples. In a case with NrRows = ", String(ex[2], " NrCols = ", String(ex[3]), " domain = ", String(ex[4]), "and filter := ", String(filter), " NumberRows, NumberColumns, BaseDomain or ConstructingFilter does not work.")));
+        if BaseDomain(Last(result).matObj) <> ex[4] or NumberRows(Last(result).matObj) <> ex[2] or NumberColumns(Last(result).matObj) <> ex[3] or ConstructingFilter(Last(result).matObj) <> filter then
+            ErrorNoReturn("while generating examples. In a case with\nNrRows = ", ex[2], "\nNrCols = ", ex[3], "\ndomain = ", ex[4], "\nfilter := ", filter, "\nNumberRows, NumberColumns, BaseDomain or ConstructingFilter does not work.\n");
         fi;
     od;
 
@@ -277,7 +278,7 @@ MatObjTest_TestInverse := function(ex_in)
     local ex, mat, inv;
 
     ex := ShallowCopy(ex_in);
-    mat := ex.MatObj;
+    mat := ex.matObj;
     inv := mat^(-1);
     if IsIdentityMat(mat*inv) and IsIdentityMat(inv*mat) then 
         return true;
@@ -294,16 +295,16 @@ end;
 # here).
 # The following options are supported:
 # randomSource:
-#   See TestMatrixObj_GenerateExample
+#   See MatObjTest_GenerateExample
 # state:
-#   See TestMatrixObj_GenerateExample
+#   See MatObjTest_GenerateExample
 # dimensions: 
-#   See TestMatrixObj_GenerateExample
+#   See MatObjTest_GenerateExample
 # dimensions_red: A list of tuples defining dimensions for matrices. If not set
 #   this is set to [[1,1],[2,2],[3,3],[5,5]]. These dimensions are used to
 #   generate examples for more expensive tests. 
 # domains:
-#   See TestMatrixObj_GenerateExample
+#   See MatObjTest_GenerateExample
 # domains_red:
 #   A list of domains in which matrices should be generated. By default
 #   this is set to [Integers, Rationals, GF(2), GF(5)]. These domains are used 
@@ -319,13 +320,13 @@ end;
 #   expensive or just certain combinations should be tested one can use 
 #   reduced_cases instead.
 # customGenerator:
-#   See TestMatrixObj_GenerateExample
+#   See MatObjTest_GenerateExample
 # customInvertibleGenerator:
 #   Like customGenerator a function that generates invertible matrices
 #   compatible with the specified matrix object. It is used when invertible
 #   matrices are required. Default: unbound
 # sourceOfTruthFilter:
-#   See TestMatrixObj_GenerateExample
+#   See MatObjTest_GenerateExample
 # forbidInv:
 #   Boolean set to false by default. If set to true no tests which require
 #   invertible matrices are performed. Intended to either skip potentially
@@ -340,21 +341,21 @@ end;
 #    option is intended for objects which are always immutable. 
 
 TestMatrixObj := function(filter, optIn)
-    local errors, examples, ex, opt;
+    local errors, examples, ex, opt, nopt;
 
     errors := [];
 
     opt := ShallowCopy(optIn);
 
+    # set the randomSource. If the default is used and a state is provided the
+    # randomSource is reset to that state.
     if not IsBound(opt.randomSource) then
         opt.randomSource := GlobalMersenneTwister;
-    fi;
-
-    # usage of state makes no sense here. State should be set if bound!
-    # do we have to deal with it here? Only used in GenerateExample and that
-    # function deals with it anyway.
-    if not IsBound(opt.state) then
-        opt.state := State(GlobalMersenneTwister);
+        if IsBound(opt.state) then
+            Reset(opt.randomSource, opt.state);
+        else
+            opt.state := State(opt.randomSource);
+        fi;
     fi;
 
     if not IsBound(opt.forbidInv) then
@@ -390,7 +391,7 @@ TestMatrixObj := function(filter, optIn)
     # In order to provide a corresponding message the function
     # 'MatObjTest_HandleWrongResult' should be called.
     for ex in examples do
-        if MatObjTest_CallFunc(MatObjTest_TestMatElm, [ex], opt.breakOnError, errors, ex) = false then 
+        if MatObjTest_CallFunc(MatObjTest_TestMatElm, [ex], opt.breakOnError, errors, ex) = false then
             MatObjTest_HandleErrorWrongResult("MatElm", [ex.matObj], opt.breakOnError, ex, errors);
         fi;
     od; 
@@ -405,13 +406,16 @@ TestMatrixObj := function(filter, optIn)
     #TODO other tests
 
     if not opt.forbidInv then
-        opt.invertible := true;
+        nopt := ShallowCopy(opt);
+        nopt.invertible := true;
+        nopt.dimensions := opt.dimensions_red;
+        nopt.domains := opt.domains_red;
         #opt.domains := Filtered(opt.domains, IsField);
-        examples := MatObjTest_GenerateExample(filter, opt);
+        examples := MatObjTest_GenerateExample(filter, nopt);
 
         for ex in examples do
-            if MatObjTest_CallFunc(MatObjTest_TestInverse, [ex], opt.breakOnError, errors, ex) = false then 
-            MatObjTest_HandleErrorWrongResult("Inverse", [ex.matObj], opt.breakOnError, ex, errors);
+            if MatObjTest_CallFunc(MatObjTest_TestInverse, [ex], opt.breakOnError, errors, ex) = false then
+                MatObjTest_HandleErrorWrongResult("Inverse", [ex.matObj], opt.breakOnError, ex, errors);
             fi; 
         od;
 
