@@ -205,5 +205,22 @@ false
 gap> Zero( mz ) = m * Zero( z );
 true
 
+# PostMakeImmutable bug
+gap> m := [[1, 0, 1, 1], [0, 1, 1, 1]] * Z(4);
+[ [ Z(2^2), 0*Z(2), Z(2^2), Z(2^2) ], [ 0*Z(2), Z(2^2), Z(2^2), Z(2^2) ] ]
+gap> ConvertToMatrixRepNC(m);;
+gap> m;
+[ [ Z(2^2), 0*Z(2), Z(2^2), Z(2^2) ], [ 0*Z(2), Z(2^2), Z(2^2), Z(2^2) ] ]
+gap> IsMutable(m);
+true
+gap> MakeImmutable(m);
+[ [ Z(2^2), 0*Z(2), Z(2^2), Z(2^2) ], [ 0*Z(2), Z(2^2), Z(2^2), Z(2^2) ] ]
+gap> IsMutable(m);
+false
+gap> IsMutable(m[1]);
+false
+gap> IsMutable(m[2]); # previously returned true!
+false
+
 #
 gap> STOP_TEST("mat8bit.tst");

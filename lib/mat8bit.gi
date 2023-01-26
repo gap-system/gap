@@ -1068,7 +1068,7 @@ InstallMethod(NestingDepthA, [Is8BitVectorRep], m->1);
 InstallMethod(PostMakeImmutable, [Is8BitMatrixRep],
         function(m)
     local i;
-    for i in [2..m![1]] do
+    for i in [2..m![1]+1] do
         MakeImmutable(m![i]);
     od;
 end);
