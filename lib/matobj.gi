@@ -290,6 +290,7 @@ InstallMethod( ZeroVector,
 InstallMethod( CompatibleVectorFilter,
     "for IsMatrix",
     [ IsMatrix ],
+    {} -> -RankFilter(IsMatrix),
     M -> IsPlistRep );
 
 # compatibility method for representations as list of elements
