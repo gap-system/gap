@@ -363,7 +363,7 @@ end;
 ## If the optional third argument is present, then only the first ngens
 ## matrices in the list are used.
 SMTX_SpinnedBasis:=function( arg  )
-   local   v, matrices, ngens, zero,
+   local   v, matrices, ngens, zero,ldim,step,
            ans, dim, subdim, leadpos, w, i, j, k, l, m,F;
 
    if Length(arg) < 3 or Length(arg) > 4 then
@@ -403,6 +403,8 @@ SMTX_SpinnedBasis:=function( arg  )
    ans:=List(ans, v -> ImmutableVector(F,v));
    dim:=Length(ans[1]);
    subdim:=Length(ans);
+   ldim:=subdim;
+   step:=10;
    leadpos:=SubGModLeadPos(ans,dim,subdim,zero);
    for i in [1..Length(ans)] do
      w:=ans[i];
@@ -440,6 +442,11 @@ SMTX_SpinnedBasis:=function( arg  )
             if subdim = dim then
                ans:=ImmutableMatrix(F,ans);
                return ans;
+            fi;
+            if subdim-ldim>step then
+              Info(InfoMeatAxe,4,"subdimension ",subdim);
+              ldim:=subdim;
+              if ldim>10*step then step:=step*3;fi;
             fi;
          fi;
       od;
@@ -991,7 +998,7 @@ SMTX_IrreducibilityTest:=function( module )
          pfac1, pfac2, quotRem, pfr, idemp, M2, mat2, mat3;
 
    rt0:=Runtime();
-   Info(InfoMeatAxe,1,"Calling MeatAxe. All times will be in milliseconds");
+   #Info(InfoMeatAxe,1,"Calling MeatAxe. All times will be in milliseconds");
    if not SMTX.IsMTXModule(module) then
       Error("Argument of IsIrreducible is not a module.");
    fi;
@@ -1028,7 +1035,7 @@ SMTX_IrreducibilityTest:=function( module )
       matrices[ngens]:=matrices[g1] * matrices[g2];
       Add(newgenlist, [g1, g2]);
    od;
-   Info(InfoMeatAxe,1,"Done preprocessing. Time = ",Runtime()-rt0,".");
+   Info(InfoMeatAxe,4,"Done preprocessing. Time = ",Runtime()-rt0,".");
    count:=0;
 
    # Main loop starts - choose a random element of group algebra on each pass
@@ -1111,16 +1118,16 @@ SMTX_IrreducibilityTest:=function( module )
                facno:=1; l:=Length(sfac);
                while facno <= l and trying do
                   mat:=Value(sfac[facno], M,idmat);
-                  Info(InfoMeatAxe,2,"Evaluated matrix on factor. Time = ",
+                  Info(InfoMeatAxe,5,"Evaluated matrix on factor. Time = ",
                        Runtime()-rt0,".");
                   N:=NullspaceMat(mat);
                   v:=N[1];
                   ndim:=Length(N);
 
-                  Info(InfoMeatAxe,2,"Evaluated nullspace. Dimension = ",
+                  Info(InfoMeatAxe,5,"Evaluated nullspace. Dimension = ",
                        ndim,". Time = ",Runtime()-rt0,".");
                   subbasis:=SMTX.SpinnedBasis(v, matrices, F,orig_ngens);
-                  Info(InfoMeatAxe,2,"Spun up vector. Dimension = ",
+                  Info(InfoMeatAxe,5,"Spun up vector. Dimension = ",
                        Length(subbasis),". Time = ",Runtime()-rt0,".");
                   if Length(subbasis) < dim then
                      # Proper submodule found
@@ -1137,13 +1144,13 @@ SMTX_IrreducibilityTest:=function( module )
                            Add(tmatrices, TransposedMat(matrices[i]));
                         od;
                      fi;
-                     Info(InfoMeatAxe,2,"Transposed matrices. Time = ",
+                     Info(InfoMeatAxe,5,"Transposed matrices. Time = ",
                           Runtime()-rt0,".");
                      NT:=NullspaceMat(mat);
-                     Info(InfoMeatAxe,2,"Evaluated nullspace. Dimension = ",
+                     Info(InfoMeatAxe,5,"Evaluated nullspace. Dimension = ",
                           Length(NT),". Time = ",Runtime()-rt0, ".");
                      subbasis:=SMTX.SpinnedBasis(NT[1],tmatrices,F,orig_ngens);
-                     Info(InfoMeatAxe,2,"Spun up vector. Dimension = ",
+                     Info(InfoMeatAxe,5,"Spun up vector. Dimension = ",
                           Length(subbasis),". Time = ",Runtime()-rt0, ".");
                      if Length(subbasis) < dim then
                         # subbasis is a basis for a submodule of the transposed
@@ -1162,7 +1169,7 @@ SMTX_IrreducibilityTest:=function( module )
                      fi;
                   fi;
                   if trying and deg>1 and count>2 then
-                     Info(InfoMeatAxe,1,"Trying Ivanyos/Lux Method");
+                     Info(InfoMeatAxe,3,"Trying Ivanyos/Lux Method");
                      # first find the appropriate idempotent
                      pfac1:=sfac[facno];
                      pfac2:=orig_pol;
@@ -1192,7 +1199,7 @@ SMTX_IrreducibilityTest:=function( module )
                           M2:=M2 + g2 * matrices[g1];
                         fi;
                      od;
-                     Info(InfoMeatAxe,2,
+                     Info(InfoMeatAxe,5,
                          "Evaluated second random element in algebra.");
                      v:=Random(FullRowSpace(F,dim));
                      mat2:=Value(idemp, M,idmat);
@@ -1200,7 +1207,7 @@ SMTX_IrreducibilityTest:=function( module )
                      v:=v*(M*mat3 - mat3*M);
                      # This vector might lie in a proper subspace!
                      subbasis:=SMTX.SpinnedBasis(v, matrices, F,orig_ngens);
-                     Info(InfoMeatAxe,2,"Spun up vector. Dimension = ",
+                     Info(InfoMeatAxe,5,"Spun up vector. Dimension = ",
                        Length(subbasis),". Time = ",Runtime()-rt0,".");
                      if Length(subbasis) < dim and Length(subbasis) <> 0  then
                        # Proper submodule found
@@ -1236,7 +1243,7 @@ SMTX_IrreducibilityTest:=function( module )
 
    od;  # main loop
 
-   Info(InfoMeatAxe,1,"Total time = ",Runtime()-rt0," milliseconds.");
+   Info(InfoMeatAxe,4,"Total time = ",Runtime()-rt0," milliseconds.");
    return ans;
 
 end;
@@ -1387,7 +1394,7 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist,
                 " random elements and failed ",
                 "to find a good one. Type return to keep trying.");
       fi;
-      Info(InfoMeatAxe,3,"Choosing random element number ",count,".");
+      Info(InfoMeatAxe,5,"Choosing random element number ",count,".");
 
       M:=SMTX.SMCoRaEl(matrices,ngens,newgenlist,dim,F);
       ngens:=Length(matrices);
@@ -1397,7 +1404,7 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist,
       M:=M[1];
       idmat:=M^0;
 
-      Info(InfoMeatAxe,3,"Evaluated characteristic polynomial. Time = ",
+      Info(InfoMeatAxe,4,"Evaluated characteristic polynomial. Time = ",
            Runtime()-rt0,".");
       # That is necessary in case p is defined over a smaller field that F.
       oldpol:=pol;
@@ -1413,7 +1420,7 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist,
             else
                fac:=Factors(R, pol: factoroptions:=rec(onlydegs:=[deg]));
                fac:=Filtered(fac,i->DegreeOfLaurentPolynomial(i)<=deg);
-               Info(InfoMeatAxe,3,Length(fac)," factors of degree ",deg,
+               Info(InfoMeatAxe,4,Length(fac)," factors of degree ",deg,
                     ", Time = ",Runtime()-rt0,".");
             fi;
          until fac <> [];
@@ -1422,10 +1429,10 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist,
             i:=1;
             while i <= l and trying do
                mat:=Value(fac[i], M,idmat);
-               Info(InfoMeatAxe,2,"Evaluated matrix on factor. Time = ",
+               Info(InfoMeatAxe,5,"Evaluated matrix on factor. Time = ",
                     Runtime()-rt0,".");
                N:=NullspaceMat(mat);
-               Info(InfoMeatAxe,2,"Evaluated nullspace. Dimension = ",
+               Info(InfoMeatAxe,5,"Evaluated nullspace. Dimension = ",
                     Length(N),". Time = ",Runtime()-rt0,".");
                if Length(N) = mindim then
                   trying:=false;
@@ -1447,7 +1454,7 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist,
          fi;
       od;
    od;
-   Info(InfoMeatAxe,1,"Total time = ",Runtime()-rt0," milliseconds.");
+   Info(InfoMeatAxe,5,"Total time = ",Runtime()-rt0," milliseconds.");
 
 end;
 SMTX.GoodElementGModule:=SMTX_GoodElementGModule;
@@ -1705,7 +1712,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
 
    # e will have to divide both dim and ndim, and hence their gcd.
    gcd:=GcdInt(dim, ndim);
-   Info(InfoMeatAxe,2,"GCD of module and nullspace dimensions = ", gcd, ".");
+   Info(InfoMeatAxe,4,"GCD of module and nullspace dimensions = ", gcd, ".");
    if gcd = 1 then
       SMTX.SetDegreeFieldExt(module,1);
       return true;
@@ -1720,7 +1727,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
    # basis v, vM, vM^2, .. for N
 
    basisN:=[];
-   Info(InfoMeatAxe,2,
+   Info(InfoMeatAxe,4,
      "Calc. Frobenius action of element from group algebra on nullspace.");
    M0:=SMTX.FrobeniusAction(F,M,v,basisN);
 
@@ -1739,14 +1746,14 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
    # blocks size e on N.
    for ct in Reversed([2..Length(div)]) do
       e:=div[ct];
-      Info(InfoMeatAxe,2,"Trying dimension ",e," for centralising field.");
+      Info(InfoMeatAxe,4,"Trying dimension ",e," for centralising field.");
       # if ndim = e, M0 will do.
       if ndim > e then
          C:=M0;
          # Take the smallest power of C guaranteed to have order dividing
          # q^e - 1, and try that.
          pow:=(q^ndim - 1) / (q^e - 1);
-         Info(InfoMeatAxe,2,"Looking for a suitable centralising element.");
+         Info(InfoMeatAxe,4,"Looking for a suitable centralising element.");
          repeat
             # The first time through the loop C is M0, otherwise we choose C
             # at random from the centralizer of M0. Since M0 is in Frobenius
@@ -1774,7 +1781,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
             C0:=SMTX.FrobeniusAction(F,C^pow,v0,basisBN);
             C:=[];
          until Length(C0) = e;
-         Info(InfoMeatAxe,2,"Found one.");
+         Info(InfoMeatAxe,5,"Found one.");
          basisB:=List(
            ImmutableMatrix(F,basisBN) *
           ImmutableMatrix(F,basisN));
@@ -1785,12 +1792,12 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
       C0:=ImmutableMatrix(F,C0);
       # Now try to extend basisB to a basis for the whole module, by
       # translating it by the generating matrices.
-      Info(InfoMeatAxe,2,"Trying to extend basis to whole module.");
+      Info(InfoMeatAxe,4,"Trying to extend basis to whole module.");
       if SMTX.CompleteBasis(matrices,basisB) then
          # We succeeded in extending the basis (might not have done).
          # So now we have a full basis, which we think of now as a base
          # change matrix.
-         Info(InfoMeatAxe,2,"Succeeded. Calculating centralising matrix.");
+         Info(InfoMeatAxe,4,"Succeeded. Calculating centralising matrix.");
          newmatrices:=[];
          P:=ImmutableMatrix(F,basisB);
          Pinv:=P^-1;
@@ -2915,8 +2922,9 @@ SMTX_MinimalSubGModules:=function(arg)
 end;
 SMTX.MinimalSubGModules:=SMTX_MinimalSubGModules;
 
-SMTX_BasesCompositionSeries:=function(m)
-local q,b,s,ser,queue,F;
+SMTX_BasesCompositionSeries:=function(arg)
+local q,b,s,ser,queue,F,m;
+  m:=arg[1];
   SMTX.SetSmashRecord(m,0);
   F:=SMTX.Field(m);
   b:=IdentityMat(SMTX.Dimension(m),F);
@@ -2932,13 +2940,11 @@ local q,b,s,ser,queue,F;
   while Length(queue)>0 do
     m:=Remove(queue);
     if SMTX.IsIrreducible(m) then
-      Info(InfoMeatAxe,3,SMTX.Dimension(m)," ",
+      Info(InfoMeatAxe,2,SMTX.Dimension(m)," ",
                          Length(m.smashMeataxe.denombasis));
       m:=Concatenation(
         m.smashMeataxe.denombasis,
         m.smashMeataxe.fakbasis{[1..SMTX.Dimension(m)]});
-      m:=List(m,ShallowCopy);
-      TriangulizeMat(m);
       m:=ImmutableMatrix(F,m);
       Add(ser,m);
     else
@@ -2964,6 +2970,9 @@ local q,b,s,ser,queue,F;
     fi;
   od;
   SortBy(ser,Length);
+  if Length(arg)=1 or arg[2]<>false then
+    ser:=List(ser,x->ImmutableMatrix(F,TriangulizedMat(x)));
+  fi;
   return ser;
 end;
 SMTX.BasesCompositionSeries:=SMTX_BasesCompositionSeries;
