@@ -228,7 +228,7 @@ local oper,n,R,o,nrit,
 
     for j in [1..n] do
       if f[i][j]=p-1 then
-	f[i][j]:=-1;
+        f[i][j]:=-1;
       fi;
     od;
   od;
@@ -244,7 +244,7 @@ local oper,n,R,o,nrit,
       hom:=IsomorphismFpGroup(prev);
       fp:=Range(hom);
       ogens:=List(GeneratorsOfGroup(fp),
-	      x->List(PreImagesRepresentative(hom,x)));
+              x->List(PreImagesRepresentative(hom,x)));
     else
       fp:=fail;
       ogens:=GeneratorsOfGroup(prev);
@@ -254,9 +254,9 @@ local oper,n,R,o,nrit,
 
     for bp in [1..Length(ogens)+1] do
       if bp<=Length(ogens) then
-	b:=ogens[bp];
+        b:=ogens[bp];
       else
-	b:=One(ogens[1]);
+        b:=One(ogens[1]);
       fi;
       d:=(TransposedMat(b)*f*b-f)*1/pp;
       # solve  D+E^T*F*B+B^T*F*E=0
@@ -265,165 +265,165 @@ local oper,n,R,o,nrit,
       eq:=[];
       r:=[];
       for i in [1..n] do
-	for j in [1..n] do
-	  # eq for entry i,j
-	  e:=ListWithIdenticalEntries(n^2,zero);
-	  for k in [1..n] do
-	    e[(k-1)*n+i]:=e[(k-1)*n+i]+fb[k][j];
-	    e[(k-1)*n+j]:=e[(k-1)*n+j]+btf[i][k];
-	  od;
-	  Add(eq,e);
+        for j in [1..n] do
+          # eq for entry i,j
+          e:=ListWithIdenticalEntries(n^2,zero);
+          for k in [1..n] do
+            e[(k-1)*n+i]:=e[(k-1)*n+i]+fb[k][j];
+            e[(k-1)*n+j]:=e[(k-1)*n+j]+btf[i][k];
+          od;
+          Add(eq,e);
 
-	  #RHS is -d entry
-	  Add(r,-d[i][j]*one);
-	od;
+          #RHS is -d entry
+          Add(r,-d[i][j]*one);
+        od;
       od;
       eq:=TransposedMat(eq); # columns were corresponding to variables
 
       if bp<=Length(ogens) then
-	# lift generator
-	sol:=SolutionMat(eq,r);
+        # lift generator
+        sol:=SolutionMat(eq,r);
 
-	# matrix from it
-	sol:=List([1..n],x->sol{[(x-1)*n+1..x*n]});
-	sol:=List(sol,x->List(x,Int));
-	Add(gens,b+pp*sol);
+        # matrix from it
+        sol:=List([1..n],x->sol{[(x-1)*n+1..x*n]});
+        sol:=List(sol,x->List(x,Int));
+        Add(gens,b+pp*sol);
       else
-	# we know all gens
+        # we know all gens
 
-	oner:=One(Integers mod (pp*p));
-	gens:=List(gens,x->x*oner);
+        oner:=One(Integers mod (pp*p));
+        gens:=List(gens,x->x*oner);
 
-	g:=Group(gens);
+        g:=Group(gens);
 
-	# d will be zero, so homogeneous
+        # d will be zero, so homogeneous
 
-	sol:=NullspaceMat(eq);
-	#Info(InfoGroup,1,"extend by dim",Length(sol));
+        sol:=NullspaceMat(eq);
+        #Info(InfoGroup,1,"extend by dim",Length(sol));
 
-	proper:=p^Length(sol)*Size(prev); # proper order of group
+        proper:=p^Length(sol)*Size(prev); # proper order of group
 
-	if ValueOption("avoidkerneltest")<>true then
-	  # vector space in kernel that is generated
-	  bas:=[];
-	  basm:=[];
-	  sub:=VectorSpace(field,bas,Zero(e));
+        if ValueOption("avoidkerneltest")<>true then
+          # vector space in kernel that is generated
+          bas:=[];
+          basm:=[];
+          sub:=VectorSpace(field,bas,Zero(e));
 
-	  addmat:=function(em)
-	  local c;
-	    e:=List(em,r->List(r,Int))-b;
-	    e:=1/pp*e;
-	    e:=Concatenation(e)*one;
+          addmat:=function(em)
+          local c;
+            e:=List(em,r->List(r,Int))-b;
+            e:=1/pp*e;
+            e:=Concatenation(e)*one;
         e:=ImmutableVector(p,e);
-	    if not e in sub then
-	      Add(bas,e);
-	      Add(basm,em);
-	      sub:=VectorSpace(field,bas);
-	    fi;
-	  end;
+            if not e in sub then
+              Add(bas,e);
+              Add(basm,em);
+              sub:=VectorSpace(field,bas);
+            fi;
+          end;
 
-	  if fp<>fail then
-	    # evaluate relators
-	    evrels:=RelatorsOfFpGroup(fp);
+          if fp<>fail then
+            # evaluate relators
+            evrels:=RelatorsOfFpGroup(fp);
 
-	    i:=1;
-	    while i<=Length(evrels) and Length(bas)<Length(sol) do
-	      em:=MappedWord(evrels[i],FreeGeneratorsOfFpGroup(fp),gens);
-	      addmat(em);
-	      i:=i+1;
-	    od;
-	  else
-	    evrels:=Source(EpimorphismFromFreeGroup(prev));
-	    repeat
-	      j:=PseudoRandom(evrels:radius:=10);
-	      k:=MappedWord(j,GeneratorsOfGroup(evrels),GeneratorsOfGroup(prev));
-	      o:=OrderMatrixIntegerResidue(p,nrit,k);
-	      k:=MappedWord(j,GeneratorsOfGroup(evrels),gens)^o;
-	    until not IsOne(k);
-	    addmat(k);
+            i:=1;
+            while i<=Length(evrels) and Length(bas)<Length(sol) do
+              em:=MappedWord(evrels[i],FreeGeneratorsOfFpGroup(fp),gens);
+              addmat(em);
+              i:=i+1;
+            od;
+          else
+            evrels:=Source(EpimorphismFromFreeGroup(prev));
+            repeat
+              j:=PseudoRandom(evrels:radius:=10);
+              k:=MappedWord(j,GeneratorsOfGroup(evrels),GeneratorsOfGroup(prev));
+              o:=OrderMatrixIntegerResidue(p,nrit,k);
+              k:=MappedWord(j,GeneratorsOfGroup(evrels),gens)^o;
+            until not IsOne(k);
+            addmat(k);
 
-	  fi;
+          fi;
 
-	  # close under action
-	  gensi:=List(gens,Inverse);
-	  i:=1;
-	  while i<=Length(basm) and Length(bas)<Length(sol) do
-	    for j in [1..Length(gens)] do
-	      #em:=basm[i]^j;
-	      em:=gensi[j]*basm[i]*gens[j];
-	      addmat(em);
-	    od;
-	    i:=i+1;
-	  od;
+          # close under action
+          gensi:=List(gens,Inverse);
+          i:=1;
+          while i<=Length(basm) and Length(bas)<Length(sol) do
+            for j in [1..Length(gens)] do
+              #em:=basm[i]^j;
+              em:=gensi[j]*basm[i]*gens[j];
+              addmat(em);
+            od;
+            i:=i+1;
+          od;
 
-	  if Length(bas)=Length(sol) then
-	    Info(InfoGroup,1,"kernel generated ",Length(bas));
-	  else
-	    Info(InfoGroup,1,"kernel partially generated ",Length(bas));
-	    ngens:=ShallowCopy(gens);
-	    i:=Iterator(sol); # just run through basis as linear
-	    while Length(bas)<Length(sol) do
-	      e:=NextIterator(i);
-	      e:=List(e,Int);
-	      e:=b+pp*List([1..n],x->e{[(x-1)*n+1..x*n]});
-	      addmat(e);
-	      if e=basm[Length(basm)] then
-		# was added
-		Add(ngens,e);
-		g:=Group(ngens);
-		Info(InfoGroup,1,"added generator");
-	      fi;
-	    od;
-	  fi;
+          if Length(bas)=Length(sol) then
+            Info(InfoGroup,1,"kernel generated ",Length(bas));
+          else
+            Info(InfoGroup,1,"kernel partially generated ",Length(bas));
+            ngens:=ShallowCopy(gens);
+            i:=Iterator(sol); # just run through basis as linear
+            while Length(bas)<Length(sol) do
+              e:=NextIterator(i);
+              e:=List(e,Int);
+              e:=b+pp*List([1..n],x->e{[(x-1)*n+1..x*n]});
+              addmat(e);
+              if e=basm[Length(basm)] then
+                # was added
+                Add(ngens,e);
+                g:=Group(ngens);
+                Info(InfoGroup,1,"added generator");
+              fi;
+            od;
+          fi;
 
-	  if fp <>fail then
-	    # extend presentation
-	    bas:=Basis(sub,bas);
-	    RUN_IN_GGMBI:=true;
-	    hom:=GroupGeneralMappingByImagesNC(g,fp,gens,GeneratorsOfGroup(fp));
-	    hom:=LiftFactorFpHom(hom,g,"M",SubgroupNC(g,basm),rec(
-		  pcgs:=basm,
-		  prime:=p,
-		  decomp:=function(em)
-		  local e;
-		    e:=List(em,r->List(r,Int))-b;
-		    e:=1/pp*e;
-		    e:=Concatenation(e)*one;
-		    return List(Coefficients(bas,e),Int);
-		  end
-		  ));
-	    RUN_IN_GGMBI:=false;
-	    #simplify Image to avoid explosion of generator number
-	    fp:=Range(hom);
-	    if true then
-	      # remove redundant generators
-	      e:=PresentationFpGroup(fp);
-	      TzOptions(e).printLevel:=0;
-	      j:=Filtered(Reversed([1..Length(e!.generators)]),
-		x->not MappingGeneratorsImages(hom)[1][x] in ngens);
-	      j:=e!.generators{j};
+          if fp <>fail then
+            # extend presentation
+            bas:=Basis(sub,bas);
+            RUN_IN_GGMBI:=true;
+            hom:=GroupGeneralMappingByImagesNC(g,fp,gens,GeneratorsOfGroup(fp));
+            hom:=LiftFactorFpHom(hom,g,"M",SubgroupNC(g,basm),rec(
+                  pcgs:=basm,
+                  prime:=p,
+                  decomp:=function(em)
+                  local e;
+                    e:=List(em,r->List(r,Int))-b;
+                    e:=1/pp*e;
+                    e:=Concatenation(e)*one;
+                    return List(Coefficients(bas,e),Int);
+                  end
+                  ));
+            RUN_IN_GGMBI:=false;
+            #simplify Image to avoid explosion of generator number
+            fp:=Range(hom);
+            if true then
+              # remove redundant generators
+              e:=PresentationFpGroup(fp);
+              TzOptions(e).printLevel:=0;
+              j:=Filtered(Reversed([1..Length(e!.generators)]),
+                x->not MappingGeneratorsImages(hom)[1][x] in ngens);
+              j:=e!.generators{j};
 
-	      TzInitGeneratorImages(e);
-	      for i in j do
-		TzEliminate(e,i);
-	      od;
-	      fp:=FpGroupPresentation(e);
-	      j:=MappingGeneratorsImages(hom);
-	      k:=TzPreImagesNewGens(e);
-	      k:=List(k,x->j[1][Position(OldGeneratorsOfPresentation(e),x)]);
+              TzInitGeneratorImages(e);
+              for i in j do
+                TzEliminate(e,i);
+              od;
+              fp:=FpGroupPresentation(e);
+              j:=MappingGeneratorsImages(hom);
+              k:=TzPreImagesNewGens(e);
+              k:=List(k,x->j[1][Position(OldGeneratorsOfPresentation(e),x)]);
 
-	      RUN_IN_GGMBI:=true;
-	      hom:=GroupHomomorphismByImagesNC(g,fp,
-		    k,
-		    GeneratorsOfGroup(fp));
-	      RUN_IN_GGMBI:=false;
-	    fi;
+              RUN_IN_GGMBI:=true;
+              hom:=GroupHomomorphismByImagesNC(g,fp,
+                    k,
+                    GeneratorsOfGroup(fp));
+              RUN_IN_GGMBI:=false;
+            fi;
 
-	    SetIsomorphismFpGroup(g,hom);
-	  fi;
-	fi;
+            SetIsomorphismFpGroup(g,hom);
+          fi;
+        fi;
 
-	SetSize(g,Size(prev)*Size(field)^Length(sol));
+        SetSize(g,Size(prev)*Size(field)^Length(sol));
       fi;
 
     od;

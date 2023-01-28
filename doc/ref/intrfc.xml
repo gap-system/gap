@@ -410,7 +410,7 @@ However in most cases the function is straightforward:
 PermutationGroupByRelations:=function(degree,relations)
 local g
   g:=Objectify(NewType(CollectionsFamily(PermutationsFamily),
-		       IsPermutationGroupByRelations),
+               IsPermutationGroupByRelations),
                rec(degree:=degree,relations:=relations));
   return g;
 end;

@@ -26,9 +26,9 @@ local u,cs,ncs,n,rep,i,au,hom,cl,co;
       Print("subgroups\n");
       u:=ConjugacyClassesSubgroups(G);
       for i in u do
-	rep:=Subgroup(G,GeneratorsOfGroup(Representative(i)));
-	Assert(1,Index(G,Normalizer(G,rep))=Size(i));
-	Assert(1,IsNormal(Normalizer(G,rep),rep));
+        rep:=Subgroup(G,GeneratorsOfGroup(Representative(i)));
+        Assert(1,Index(G,Normalizer(G,rep))=Size(i));
+        Assert(1,IsNormal(Normalizer(G,rep),rep));
       od;
     fi;
     if Size(G)<10000 then
@@ -37,23 +37,23 @@ local u,cs,ncs,n,rep,i,au,hom,cl,co;
 
       # did we already get them as subgroups?
       if u<>fail then
-	Assert(1,Number(u,i->Size(i)=1)=Length(n));
+        Assert(1,Number(u,i->Size(i)=1)=Length(n));
       fi;
 
       for i in n do
-	Assert(1,IsNormal(G,i));
-	hom:=NaturalHomomorphismByNormalSubgroup(G,i);
-	Assert(1,Index(G,i)=Size(Image(hom,G)));
-	if IsSolvableGroup(i) then
-	  co:=ComplementClassesRepresentatives(G,i);
-	  Assert(1,ForAll(co,j->Size(j)=Index(G,i)
-	                        and Size(Intersection(i,j))=1));
-	  if u<>fail then
-	    Assert(1,Length(co)=Number(u,
-	       j->Size(Representative(j))=Index(G,i)
-		  and Size(Intersection(Representative(j),i))=1));
-	  fi;
-	fi;
+        Assert(1,IsNormal(G,i));
+        hom:=NaturalHomomorphismByNormalSubgroup(G,i);
+        Assert(1,Index(G,i)=Size(Image(hom,G)));
+        if IsSolvableGroup(i) then
+          co:=ComplementClassesRepresentatives(G,i);
+          Assert(1,ForAll(co,j->Size(j)=Index(G,i)
+                                and Size(Intersection(i,j))=1));
+          if u<>fail then
+            Assert(1,Length(co)=Number(u,
+               j->Size(Representative(j))=Index(G,i)
+                  and Size(Intersection(Representative(j),i))=1));
+          fi;
+        fi;
       od;
     fi;
   fi;

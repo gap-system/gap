@@ -1038,7 +1038,7 @@ local pnam,cons,opr;
       return cons( IsPermGroup, arg[1], arg[2] );
     elif IsOperation(arg[1]) then
       if Length(arg) = 3  then
-	return cons( arg[1], arg[2], arg[3] );
+        return cons( arg[1], arg[2], arg[3] );
       fi;
     fi;
     Error( "usage: ",pnam,"( [<filter>, ]<d>, <q> )" );

@@ -326,8 +326,8 @@ local G,i,j,g1,g2,gl,e1,e2,free,gens,rels,subs,pgens,deg,ind,ct,fp,extend,num;
       extend:=l[1][5];
       for i in [1..Length(extend)] do
         if extend[i]<>0 then
-	  Add(gl,Concatenation("aux",String(i)));
-	fi;
+          Add(gl,Concatenation("aux",String(i)));
+        fi;
       od;
     else
       extend:=false;
@@ -342,18 +342,18 @@ local G,i,j,g1,g2,gl,e1,e2,free,gens,rels,subs,pgens,deg,ind,ct,fp,extend,num;
       # add the further generators in the `auxiliary' component.
       for i in [1..Length(extend)] do
         if extend[i]<>0 then
-	  num:=num+1;
-	  if IsInt(extend[i]) then
-	    Add(rels,gens[i]^extend[i]/gens[num]);
-	  else
-	    g1:=One(gens[1]);
-	    for j in extend[i] do
-	      if j>0 then g1:=g1*gens[j];
-	      else g1:=g1/gens[-j];fi;
-	    od;
-	    Add(rels,g1/gens[num]);
-	  fi;
-	fi;
+          num:=num+1;
+          if IsInt(extend[i]) then
+            Add(rels,gens[i]^extend[i]/gens[num]);
+          else
+            g1:=One(gens[1]);
+            for j in extend[i] do
+              if j>0 then g1:=g1*gens[j];
+              else g1:=g1/gens[-j];fi;
+            od;
+            Add(rels,g1/gens[num]);
+          fi;
+        fi;
       od;
 
       # Tietze
@@ -526,21 +526,21 @@ local size,i,nr,n,leng,sizenum,hpnum,description,centre,orbsize;
     # print the group number.
     Print( "#I Perfect group ", size );
     if Length(nr) > 1 then
-	Print( ".", n );
+        Print( ".", n );
     fi;
     Print( ":  " );
 
     # print a message if the group is simple or quaqsisimple.
     if centre = -1 then
-	if size = 1 then
-	    Print( "trivial group\n" );
-	    return;
-	else
-	    Print( "simple group  " );
-	fi;
+        if size = 1 then
+            Print( "trivial group\n" );
+            return;
+        else
+            Print( "simple group  " );
+        fi;
     elif centre < -1 then
-	Print( "quasisimple group  " );
-	centre := -centre;
+        Print( "quasisimple group  " );
+        centre := -centre;
     fi;
 
     # print the Holt-Plesken description.
@@ -548,7 +548,7 @@ local size,i,nr,n,leng,sizenum,hpnum,description,centre,orbsize;
 
     # print the size of the centre.
     if centre > 1 then
-	Print( "  centre = ", centre );
+        Print( "  centre = ", centre );
     fi;
 
     # print the group size.
@@ -557,35 +557,35 @@ local size,i,nr,n,leng,sizenum,hpnum,description,centre,orbsize;
 
     # print the orbit sizes of the available permutation representations.
     if IsInt( orbsize ) then
-	Print( "  orbit size = ", orbsize, "\n" );
+        Print( "  orbit size = ", orbsize, "\n" );
     else
-	orbsize := ShallowCopy( orbsize );
-	Sort( orbsize );
-	Print( "  orbit sizes = ", orbsize[1] );
-	for i in [ 2 .. Length( orbsize ) ] do
-	    Print( " + ", orbsize[i] );
-	od;
-	Print( "\n" );
+        orbsize := ShallowCopy( orbsize );
+        Sort( orbsize );
+        Print( "  orbit sizes = ", orbsize[1] );
+        for i in [ 2 .. Length( orbsize ) ] do
+            Print( " + ", orbsize[i] );
+        od;
+        Print( "\n" );
     fi;
 
     # print the Holt-Plesken classes and numbers.
     if IsInt( hpnum ) then
-	Print( "#I   Holt-Plesken class ", hpnum );
+        Print( "#I   Holt-Plesken class ", hpnum );
     else
-	Print( "#I   Holt-Plesken class ", hpnum[1] );
-	Print( " (", hpnum[2], ",", hpnum[3], ")" );
-	leng := Length( hpnum );
-	if leng > 3 then
-	    if leng = 4 then
-		Print( " (occurs also in class ", hpnum[4] );
-	    else
-		Print( " (occurs also in classes ", hpnum[4] );
-		for i in [ 5 .. leng ] do
-		    Print( ", ", hpnum[i] );
-		od;
-	    fi;
-	    Print( ")" );
-	fi;
+        Print( "#I   Holt-Plesken class ", hpnum[1] );
+        Print( " (", hpnum[2], ",", hpnum[3], ")" );
+        leng := Length( hpnum );
+        if leng > 3 then
+            if leng = 4 then
+                Print( " (occurs also in class ", hpnum[4] );
+            else
+                Print( " (occurs also in classes ", hpnum[4] );
+                for i in [ 5 .. leng ] do
+                    Print( ", ", hpnum[i] );
+                od;
+            fi;
+            Print( ")" );
+        fi;
     fi;
     Print( "\n" );
   od;
@@ -658,10 +658,10 @@ local a6a6, a6a6a6, empty, factor, minsize, minsizenum, n, nn, num, pos,
 
             # loop over the library groups of size `size'.
             size := PERFRec.sizes[sizenum];
-	    PerfGrpLoad(size);
+            PerfGrpLoad(size);
             nn := PERFRec.number[sizenum];
             for n in [ 1 .. nn ] do
-	      if PERFGRP[sizenum][n]<>fail then
+              if PERFGRP[sizenum][n]<>fail then
                 simple2 := PERFGRP[sizenum][n][5];
                 if simple = simple2 or empty or
                     IsList( simple2 ) and ( simple in simple2 or
@@ -669,7 +669,7 @@ local a6a6, a6a6a6, empty, factor, minsize, minsizenum, n, nn, num, pos,
                     # add the pair [size,n] to the list of size numbers.
                     Add( sizenums, [ size, n ] );
                 fi;
-	      fi;
+              fi;
             od;
         fi;
     od;
