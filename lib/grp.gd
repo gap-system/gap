@@ -2027,7 +2027,7 @@ DeclareAttribute( "NrConjugacyClasses", IsGroup );
 ##  <Description>
 ##  For a <A>p</A>-group <A>G</A>, one defines
 ##  <M>\Omega_{<A>n</A>}(<A>G</A>) =
-##  \{ g \in <A>G</A> \mid g^{{<A>p</A>^{<A>n</A>}}} = 1 \}</M>.
+##  \langle g \in <A>G</A> \mid g^{{<A>p</A>^{<A>n</A>}}} = 1 \rangle</M>.
 ##  The default value for <A>n</A> is <C>1</C>.
 ##  <P/>
 ##  <Example><![CDATA[
