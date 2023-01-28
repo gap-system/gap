@@ -15,6 +15,10 @@ indent_style = space
 indent_size = 4
 charset = utf-8
 
+#
+[*.tst]
+trim_trailing_whitespace = false
+
 # In Makefile one must use tab indentation
 [Makefile*]
 indent_style = tab
