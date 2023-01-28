@@ -5,7 +5,7 @@
 #
 InstallGlobalFunction( mockpkg_GlobalFunction,
 function()
-	Print( "This is a placeholder function, replace it with your own code.\n" );
+    Print( "This is a placeholder function, replace it with your own code.\n" );
 end );
 
 InstallMethod( mockpkg_Operation, [ IsGroup, IsPosInt ], { G, n } -> n );

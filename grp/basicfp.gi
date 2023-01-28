@@ -69,17 +69,17 @@ local   f,g,i,j,rels,gfam,fam;
     for i in [1,3..Length(e)-1] do
       j:=e[i];
       if IsPosInt(gfam!.redorders[j]) then
-	n[j]:=n[j]+e[i+1] mod gfam!.redorders[j];
+        n[j]:=n[j]+e[i+1] mod gfam!.redorders[j];
       else
-	n[j]:=n[j]+e[i+1];
+        n[j]:=n[j]+e[i+1];
       fi;
     od;
 
     e:=[];
     for i in [1..Length(gfam!.redorders)] do
       if n[i]<>0 then
-	Add(e,i);
-	Add(e,n[i]);
+        Add(e,i);
+        Add(e,n[i]);
       fi;
     od;
 

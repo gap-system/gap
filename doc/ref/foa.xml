@@ -144,9 +144,9 @@ OrbitishFO( "Orbit", OrbitishReq, IsCollsElms, false, false );
 The variable <C>OrbitishReq</C> contains the standard requirements
 <Log><![CDATA[
 OrbitishReq  := [ IsGroup, IsList, IsObject,
-		  IsList,
-		  IsList,
-		  IsFunction ];
+                  IsList,
+                  IsList,
+                  IsFunction ];
 ]]></Log>
 which are usually entered in calls to <Ref Func="OrbitishFO"/>.
 <P/>

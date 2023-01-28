@@ -102,7 +102,7 @@ local props,pool,test,c,f,r,tablecache,tmp;
           fi;
           cands:=Filtered([1..Length(r.pool)],x->
             Length(r.pool[x])>=Length(a) and r.pool[x]{[1..Length(a)]}=a);
-          if IsSubset(badset,cands) then 
+          if IsSubset(badset,cands) then
             #Print("badcand ",cands,"\n");
             return "bad";
           fi;
@@ -117,36 +117,36 @@ local props,pool,test,c,f,r,tablecache,tmp;
         od;
         a:=Filtered([1..Length(r.pool)],x->r.pool[x]=a);
 
-	if Length(ConjugacyClasses(g))<200 then
-	  f:=Length(a);
-	  for i in ShallowCopy(a) do
-	    if Length(a)>1 then
-	      if not IsBound(tablecache[i]) then
-		tmp:=Group(r.groupinfo[i][2]);
-		SetSize(tmp,r.groupinfo[i][1]);
-		tablecache[i]:=CharacterTable(tmp);
-	      fi;
-	      if TransformingPermutationsCharacterTables(CharacterTable(g),
-		    tablecache[i])=fail then
-		RemoveSet(a,i);
-	      fi;
-	    fi;
-	  od;
-	  if Length(a)<f then
-	    #Print("Character table test reduces ",f,"->", Length(a),"\n");
-	  fi;
-	fi;
+        if Length(ConjugacyClasses(g))<200 then
+          f:=Length(a);
+          for i in ShallowCopy(a) do
+            if Length(a)>1 then
+              if not IsBound(tablecache[i]) then
+                tmp:=Group(r.groupinfo[i][2]);
+                SetSize(tmp,r.groupinfo[i][1]);
+                tablecache[i]:=CharacterTable(tmp);
+              fi;
+              if TransformingPermutationsCharacterTables(CharacterTable(g),
+                    tablecache[i])=fail then
+                RemoveSet(a,i);
+              fi;
+            fi;
+          od;
+          if Length(a)<f then
+            #Print("Character table test reduces ",f,"->", Length(a),"\n");
+          fi;
+        fi;
 
-	while Length(a)>1 do
-	  i:=a[1];
-	  a:=a{[2..Length(a)]};
+        while Length(a)>1 do
+          i:=a[1];
+          a:=a{[2..Length(a)]};
           tmp:=Group(r.groupinfo[i][2]);
           SetSize(tmp,r.groupinfo[i][1]);
-	  if IsomorphismGroups(g,tmp)<>fail then
-	    return i;
-	  fi;
-	od;
-	return a[1];
+          if IsomorphismGroups(g,tmp)<>fail then
+            return i;
+          fi;
+        od;
+        return a[1];
       end);
   l:=false; # clean memory
   return r;
@@ -179,11 +179,11 @@ local c,d,f;
   fi;
 
   c:=Size(g);
-  if Length(GeneratorsOfGroup(g))>5 then 
+  if Length(GeneratorsOfGroup(g))>5 then
     g:=Group(SmallGeneratingSet(g));
     SetSize(g,c);
   fi;
-  if Length(GeneratorsOfGroup(h))>5 then 
+  if Length(GeneratorsOfGroup(h))>5 then
     h:=Group(SmallGeneratingSet(h));
     SetSize(h,c);
   fi;
@@ -245,7 +245,7 @@ local respp,cf,m,mpos,coh,fgens,comp,reps,v,new,isok,pema,pf,gens,nt,quot,
               Concatenation(
               List(GeneratorsOfGroup(Range(coh.fphom)),
                 x->PreImagesRepresentative(coh.fphom,x)),
-                ListWithIdenticalEntries(coh.module.dimension, 
+                ListWithIdenticalEntries(coh.module.dimension,
                   One(coh.group))
                 ));
           qk:=KernelOfMultiplicativeGeneralMapping(quot);
@@ -339,7 +339,7 @@ local globalres,resp,d,i,j,nt,p,e,q,cf,m,coh,v,new,quot,nts,pf,pl,comp,reps,
         Append(globalres,DoPerfectConstructionFor(q,j,nts,ids));
         #Print("Total now: ",Length(globalres)," groups\n");
         # kill factor group and associated info, as not needed any longer
-        Unbind(pl[j]); 
+        Unbind(pl[j]);
 
       od; # for j in ran
     fi;

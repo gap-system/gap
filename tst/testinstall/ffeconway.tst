@@ -33,8 +33,8 @@ gap> Add( fieldsizes, [NextPrimeInt(2^64),2] );
 # leave the output here so we trip here if the Conway polynomial database changes
 #
 gap> fieldpairs := Concatenation(List(fieldsizes, pd -> List(Filtered([1..pd[2]-1], 
-> 	d2 -> IsCheapConwayPolynomial(pd[1],Lcm(pd[2],d2))), d2 ->
-> 	[pd[1],pd[2],d2])));
+>   d2 -> IsCheapConwayPolynomial(pd[1],Lcm(pd[2],d2))), d2 ->
+>   [pd[1],pd[2],d2])));
 [ [ 2, 17, 1 ], [ 2, 17, 2 ], [ 2, 17, 3 ], [ 2, 17, 4 ], [ 2, 17, 5 ], 
   [ 2, 17, 6 ], [ 2, 17, 7 ], [ 2, 32, 1 ], [ 2, 32, 2 ], [ 2, 32, 3 ], 
   [ 2, 32, 4 ], [ 2, 32, 6 ], [ 2, 32, 8 ], [ 2, 32, 12 ], [ 2, 32, 16 ], 
