@@ -119,12 +119,12 @@ InstallMethod(IsomorphismPermGroup,
 function( h )
   local enum, permgroup, i, perm, j, elts;
 
-  if not(IsFinite(h)) then
+  if not IsFinite(h) then
     # What is an example where this can happen?
     TryNextMethod();
   fi;
 
-  if not( IsGroupHClass(h) ) then
+  if not IsGroupHClass(h) then
     # What is an example where this can happen?
     ErrorNoReturn("can only create isomorphisms of group H-classes");
   fi;
@@ -145,7 +145,8 @@ function( h )
     i := i+1;
   od;
 
-  return MappingByFunction( h, permgroup, a -> elts[Position( enum, a )]);
+  return MappingByFunction( h, permgroup, a -> elts[Position( enum, a )],
+                a -> enum[Position( elts, a )]);
 end);
 
 # TODO can this be removed? It doesn't seem to work

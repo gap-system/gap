@@ -1,5 +1,5 @@
 #@local BruteForceAntiIsoCheck,BruteForceInverseCheck,BruteForceIsoCheck
-#@local G,H,I,S,T,enum,inv,map
+#@local G,H,I,S,T,enum,inv,map,x,y
 gap> START_TEST("semitran.tst");
 
 # Test that the inverse of an isomorphism from a partial perm monoid to a
@@ -145,10 +145,11 @@ gap> S := Semigroup(IdentityTransformation);
 # Test IsomorphismPermGroup for an H-class
 gap> S := FullTransformationMonoid(4);;
 gap> H := GreensHClassOfElement(S, One(S));;
-gap> IsomorphismPermGroup(H);;
-gap> H := GreensHClassOfElement(S, Transformation([1, 1, 2, 3]));;
+gap> map := IsomorphismPermGroup(H);;
+gap> for x in H do y:=Image(map, x); Assert(0, PreImagesRepresentative(map, y) = x); od;
 
 # The Semigroups package produces different output so this test is suppressed
+#gap> H := GreensHClassOfElement(S, Transformation([1, 1, 2, 3]));;
 #gap> IsomorphismPermGroup(H);
 #Error, can only create isomorphisms of group H-classes
 
