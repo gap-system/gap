@@ -222,21 +222,6 @@ InstallMethod( CompatibleVectorFilter, ["IsPlistMatrixRep"],
 
 
 ############################################################################
-# The basic attributes:
-############################################################################
-
-InstallMethod( BaseDomain, "for a plist vector", [ IsPlistVectorRep ],
-  function( v )
-    return v![BDPOS];
-  end );
-
-InstallMethod( Length, "for a plist vector", [ IsPlistVectorRep ],
-  function( v )
-    return Length(v![ELSPOS]);
-  end );
-
-
-############################################################################
 # Representation preserving constructors:
 ############################################################################
 
@@ -337,23 +322,6 @@ InstallMethod( Unpack, "for a plist vector",
   [ IsPlistVectorRep ],
   function( v )
     return ShallowCopy(v![ELSPOS]);
-  end );
-
-
-############################################################################
-# Standard operations for all objects:
-############################################################################
-
-InstallMethod( ShallowCopy, "for a plist vector", [ IsPlistVectorRep ],
-  function( v )
-    return MakeIsPlistVectorRep(v![BDPOS], ShallowCopy(v![ELSPOS]));
-  end );
-
-# StructuralCopy works automatically
-
-InstallMethod( PostMakeImmutable, "for a plist vector", [ IsPlistVectorRep ],
-  function( v )
-    MakeImmutable( v![ELSPOS] );
   end );
 
 
@@ -545,36 +513,6 @@ InstallMethod( CopySubVector, "for two plist vectors and two lists",
 ############################################################################
 ############################################################################
 
-
-############################################################################
-# The basic attributes:
-############################################################################
-
-InstallMethod( BaseDomain, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    return m![BDPOS];
-  end );
-
-InstallMethod( NumberRows, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    return Length(m![ROWSPOS]);
-  end );
-
-InstallMethod( NumberColumns, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    return m![RLPOS];
-  end );
-
-InstallMethod( DimensionsMat, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    return [Length(m![ROWSPOS]),m![RLPOS]];
-  end );
-
-
 ############################################################################
 # Representation preserving constructors:
 ############################################################################
@@ -719,26 +657,6 @@ InstallMethod( Append, "for two plist matrices",
   [ IsPlistMatrixRep and IsMutable, IsPlistMatrixRep ],
   function( m, n )
     Append(m![ROWSPOS],n![ROWSPOS]);
-  end );
-
-InstallMethod( ShallowCopy, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    local res;
-    res := Objectify(TypeObj(m),[m![BDPOS],m![EMPOS],m![RLPOS],
-                                 ShallowCopy(m![ROWSPOS])]);
-    if not IsMutable(m) then
-        SetFilterObj(res,IsMutable);
-    fi;
-#T 'ShallowCopy' MUST return a mutable object
-#T if such an object exists at all!
-    return res;
-  end );
-
-InstallMethod( PostMakeImmutable, "for a plist matrix",
-  [ IsPlistMatrixRep ],
-  function( m )
-    MakeImmutable( m![ROWSPOS] );
   end );
 
 InstallMethod( ListOp, "for a plist matrix",

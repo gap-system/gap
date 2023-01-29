@@ -112,6 +112,7 @@ ReadLib( "matrobjrowlist.gi"   );
 ReadLib( "vecmat.gi"   );
 ReadLib( "vec8bit.gi"  );
 ReadLib( "mat8bit.gi"  );
+ReadLib( "matobj/positional.gi" );
 ReadLib( "matobjplist.gi" );
 ReadLib( "matobjnz.gi" );
 ReadLib( "meataxe.gi"  );

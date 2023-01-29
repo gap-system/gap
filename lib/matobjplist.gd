@@ -49,10 +49,7 @@
 ##  </Enum>
 ##
 DeclareRepresentation( "IsPlistVectorRep",
-        IsVectorObj and IsPositionalObjectRep
-    and IsCopyable
-    and IsNoImmediateMethodsObject
-    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
+        IsPositionalVectorRep and IsCopyable,
     [] );
 
 
@@ -94,23 +91,19 @@ DeclareRepresentation( "IsPlistVectorRep",
 ##  </Enum>
 ##
 DeclareRepresentation( "IsPlistMatrixRep",
-        IsRowListMatrix and IsPositionalObjectRep
-    and IsCopyable
-    and IsNoImmediateMethodsObject
-    and HasNumberRows and HasNumberColumns
-    and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
+        IsRowListMatrix and IsPositionalMatrixRep and IsCopyable,
     [] );
 
 
 # Some constants for matrix access:
-BindGlobal( "BDPOS", 1 );
-BindGlobal( "EMPOS", 2 );
-BindGlobal( "RLPOS", 3 );
-BindGlobal( "ROWSPOS", 4 );
+BindGlobal( "BDPOS", 1 );    # base domain
+BindGlobal( "EMPOS", 2 );    # empty vector as template for new vectors
+BindGlobal( "RLPOS", 3 );    # row length = number of columns
+BindGlobal( "ROWSPOS", 4 );  # list of row vectors
 
 # For vector access:
 #BindGlobal( "BDPOS", 1 );   # see above
-BindGlobal( "ELSPOS", 2 );
+BindGlobal( "ELSPOS", 2 );   # list of elements
 
 # Two filters to speed up some methods:
 DeclareFilter( "IsIntVector" );
