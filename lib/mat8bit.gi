@@ -254,9 +254,8 @@ InstallGlobalFunction(ConvertToMatrixRep,
 
     LeastCommonPower := function(qs)
         local p, d, x, i;
-        if Length(qs) = 0 then
-            return fail;
-        fi;
+        Assert(1, Length(qs) > 0);
+
         x := Z(qs[1]);
         p := Characteristic(x);
         d := DegreeFFE(x);
@@ -269,7 +268,6 @@ InstallGlobalFunction(ConvertToMatrixRep,
         od;
         return p^d;
     end;
-
 
     qs := [];
 
