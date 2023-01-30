@@ -2289,30 +2289,6 @@ end );
 
 InstallMethod( ComputedAgemos, [ IsGroup ], 0, G -> [  ] );
 
-
-#############################################################################
-##
-#M  AgemoAbove( <G>, <C>, <p> ) . . . . . . . . . . . . . . . . . . . . local
-##
-InstallGlobalFunction( AgemoAbove, function( G, C, p )
-
-#T     # if we know the agemo,  return
-#T     if HasAgemo( G )  then
-#T         return Agemo( G );
-#T     fi;
-#T (is not an attribute...)
-
-    # if the derived subgroup of <G> is contained in <C> it is easy
-    if IsSubgroup( C, DerivedSubgroup(G) )  then
-        return SubgroupNC( G, List( GeneratorsOfGroup( G ), x -> x^p ) );
-
-    # otherwise use `Agemo'
-    else
-        Info( InfoGroup, 2, "computing conjugacy classes for agemo" );
-        return Agemo( G, p );
-    fi;
-end );
-
 #############################################################################
 ##
 #M  AsSubgroup( <G>, <U> )

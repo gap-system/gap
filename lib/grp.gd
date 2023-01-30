@@ -2470,20 +2470,6 @@ DeclareOperation( "EulerianFunction", [ IsGroup, IsPosInt ] );
 
 #############################################################################
 ##
-#F  AgemoAbove( <G>, <C>, <p> )
-##
-##  <ManSection>
-##  <Func Name="AgemoAbove" Arg='G, C, p'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-DeclareGlobalFunction( "AgemoAbove" );
-
-
-#############################################################################
-##
 #O  AsSubgroup( <G>, <U> )
 ##
 ##  <#GAPDoc Label="AsSubgroup">
