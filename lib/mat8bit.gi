@@ -587,27 +587,29 @@ InstallMethod(AdditiveInverseImmutable, "8 bit matrix", true,
     return neg;
 end);
 
-InstallMethod(AdditiveInverseSameMutability, "8 bit matrix", true,
+InstallMethod(AdditiveInverseSameMutability, "an 8-bit matrix",
         [Is8BitMatrixRep and IsMatrix and IsAdditiveElementWithZero
-         and IsSmallList ],
-        0,
-        function(mat)
-    local neg,i,negv;
-    neg := [mat![1]];
-    for i in [2..mat![1]+1] do
-        negv := AdditiveInverseSameMutability(mat![i]);
-        SetFilterObj(negv, IsLockedRepresentationVector);
-        neg[i] := negv;
-    od;
-    if IsMutable(mat) then
-        Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),true), neg);
-    else
-        Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),false), neg);
-    fi;
-    return neg;
+         and IsSmallList],
+function(mat)
+  local inv_func, neg, i;
+
+  if IsMutable(mat[1]) then
+    inv_func := AdditiveInverseMutable;
+  else
+    inv_func := AdditiveInverseImmutable;
+  fi;
+  neg := [mat![1]];
+  for i in [2..mat![1]+1] do
+    neg[i] := inv_func(mat![i]);
+    SetFilterObj(neg[i], IsLockedRepresentationVector);
+  od;
+  if IsMutable(mat) then
+    Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),true), neg);
+  else
+    Objectify(TYPE_MAT8BIT(Q_VEC8BIT(mat![2]),false), neg);
+  fi;
+  return neg;
 end);
-
-
 
 #############################################################################
 ##
