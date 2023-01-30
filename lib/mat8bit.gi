@@ -706,7 +706,7 @@ InstallMethod( InverseSameMutability, "8 bit matrix", true,
 
 #############################################################################
 ##
-#M <mat>^0
+#M One
 ##
 
 InstallMethod( OneSameMutability, "8 bit matrix", true,
@@ -761,15 +761,7 @@ InstallMethod( OneMutable, "8 bit matrix", true,
     return o;
 end);
 
-
-
-
-#############################################################################
-##
-#M One(<mat>) -- always immutable
-##
-
-InstallMethod( One, "8 bit matrix", true,
+InstallMethod(OneImmutable, "8 bit matrix", true,
         [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
         # the following are banalities, but they are required to get the
         # ranking right
@@ -778,11 +770,7 @@ InstallMethod( One, "8 bit matrix", true,
         ],
         0,
         function(m)
-    local   o;
-    o := OneOp(m);
-    MakeImmutable(o);
-    ConvertToMatrixRepNC(o, Q_VEC8BIT(m![2]));
-    return o;
+    return MakeImmutable(OneMutable(m));
     end );
 
 #############################################################################
