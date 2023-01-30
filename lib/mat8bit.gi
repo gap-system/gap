@@ -996,30 +996,26 @@ InstallMethod(TriangulizeMat,
         TRIANGULIZE_LIST_VEC8BITS);
 
 InstallMethod(TriangulizeMat,
-        "method for compressed matrices",
-        true,
-        [IsMutable and IsMatrix and Is8BitMatrixRep and IsFFECollColl],
-        0,
-        function(m)
-    local q,i,imms;
-    imms := [];
-    q := Q_VEC8BIT(m![2]);
-    PLAIN_MAT8BIT(m);
-    for i in [1..Length(m)] do
-        if not IsMutable(m[i]) then
-            m[i] := ShallowCopy(m[i]);
-            imms[i] := true;
-        else
-            imms[i] := false;
-        fi;
-    od;
-    TRIANGULIZE_LIST_VEC8BITS(m);
-    for i in [1..Length(m)] do
-        if imms[i] then
-            MakeImmutable(m[i]);
-        fi;
-    od;
-    CONV_MAT8BIT(m,q);
+"for a mutable 8-bit matrix",
+[IsMutable and IsMatrix and Is8BitMatrixRep and IsFFECollColl],
+function(m)
+  local q, mut, i;
+
+  q := Q_VEC8BIT(m![2]);
+  mut := IsMutable(m[1]);
+
+  PLAIN_MAT8BIT(m);
+  for i in [1 .. NrRows(m)] do
+    if not IsMutable(m[i]) then
+      m[i] := ShallowCopy(m[i]);
+    fi;
+  od;
+  TRIANGULIZE_LIST_VEC8BITS(m);
+
+  CONV_MAT8BIT(m,q);
+  if not mut then
+    PostMakeImmutable(m);
+  fi;
 end);
 
 #############################################################################
