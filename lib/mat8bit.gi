@@ -675,12 +675,13 @@ InstallMethod( ZeroSameMutability, "8 bit matrix", true,
     return z;
 end);
 
+
 #############################################################################
 ##
-#M InverseOp(<mat>)
+#M Inverse
 ##
 
-InstallMethod( InverseOp, "8 bit matrix", true,
+InstallMethod(InverseMutable, "8 bit matrix", true,
         [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
         # the following are banalities, but they are required to get the
         # ranking right
@@ -690,12 +691,8 @@ InstallMethod( InverseOp, "8 bit matrix", true,
         0,
         INV_MAT8BIT_MUTABLE);
 
-
-
-#############################################################################
-##
-#M <mat>^-1
-##
+InstallMethod(InverseImmutable, "for 8-bit matrix rep", [Is8BitMatrixRep],
+INV_MAT8BIT_IMMUTABLE);
 
 InstallMethod( InverseSameMutability, "8 bit matrix", true,
         [Is8BitMatrixRep and IsMatrix and IsMultiplicativeElementWithInverse
