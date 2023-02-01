@@ -430,6 +430,93 @@ InstallMethod( IsPowerfulPGroup,
 
 #############################################################################
 ##
+#M  IsRegularPGroup( <G> ) . . . . . . . . . . is a group a regular p-group ?
+##
+InstallMethod( IsRegularPGroup,
+    [ IsGroup ],
+function( G )
+local p, hom, reps, a, b, ap_bp, ab_p, H;
+
+  if not IsPGroup(G) then
+    return false;
+  fi;
+
+  p:=PrimePGroup(G);
+  if p = 2 then
+    # see [Hup67, Satz 10.3 a)]
+    return IsAbelian(G);
+  elif p = 3 and DerivedLength(G) > 2 then
+    # see [Hup67, Satz 10.3 b)]
+    return false;
+  elif Size(G) <= p^p then
+    # see [Hal34, Corollary 14.14], [Hall, p. 183], [Hup67, Satz 10.2 b)]
+    return true;
+  elif NilpotencyClassOfGroup(G) < p then
+    # see [Hal34, Corollary 14.13], [Hall, p. 183], [Hup67, Satz 10.2 a)]
+    return true;
+  elif IsCyclic(DerivedSubgroup(G)) then
+    # see [Hup67, Satz 10.2 c)]
+    return true;
+  elif Exponent(G) = p then
+    # see [Hup67, Satz 10.2 d)]
+    return true;
+  elif p = 3 and RankPGroup(G) = 2 then
+    # see [Hup67, Satz 10.3 b)]: at this point we know that the derived
+    # subgroup is not cyclic, hence G is not regular
+    return false;
+  elif Size(G) < p^p * Size(Agemo(G,p)) then
+    # see [Hal36, Theorem 2.3], [Hup67, Satz 10.13]
+    return true;
+  elif Index(DerivedSubgroup(G),Agemo(DerivedSubgroup(G),p)) < p^(p-1) then
+    # see [Hal36, Theorem 2.3], [Hup67, Satz 10.13]
+    return true;
+  fi;
+
+  # Fallback to actually check the defining criterion, i.e.:
+  # for all a,b in G, we must have that a^p*b^p/(a*b)^p in (<a,b>')^p
+
+  # It suffices to pick 'a' among conjugacy class representatives.
+  # Moreover, if 'a' is central then the criterion automatically holds.
+  # For z,z'\in Z(G), the criterion holds for (a,b) iff it holds for (az,bz').
+  # We thus choose 'a' among lifts of conjugacy class representatives in G/Z(G).
+  hom := NaturalHomomorphismByNormalSubgroup(G, Center(G));
+  reps := ConjugacyClasses(Image(hom));
+  reps := List(reps, Representative);
+  reps := Filtered(reps, g -> not IsOne(g));
+  reps := List(reps, g -> PreImagesRepresentative(hom, g));
+
+  for b in Image(hom) do
+    b := PreImagesRepresentative(hom, b);
+    for a in reps do
+      # if a and b commute the regularity condition automatically holds
+      if a*b = b*a then continue; fi;
+
+      # regularity is also automatic if a^p * b^p = (a*b)^p
+      ap_bp := a^p * b^p;
+      ab_p := (a*b)^p;
+      if ap_bp = ab_p then continue; fi;
+
+      # if the subgroup generated H by a and b is itself regular, we are also
+      # done. However we don't use recursion, here, as H may be equal to G;
+      # and also we have to be careful to not use too expensive code here.
+      # But a quick size check is certainly fine.
+      H := Subgroup(G, [a,b]);
+      if Size(H) <= p^p then continue; fi;
+
+      # finally the full check
+      H := DerivedSubgroup(H);
+      if not (ap_bp / ab_p) in Agemo(H, p) then
+        return false;
+      fi;
+    od;
+  od;
+  return true;
+
+end);
+
+
+#############################################################################
+##
 #M  PrimePGroup . . . . . . . . . . . . . . . . . . . . .  prime of a p-group
 ##
 InstallMethod( PrimePGroup,

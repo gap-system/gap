@@ -439,11 +439,8 @@ DeclareOperation( "KnowsHowToDecompose", [ IsGroup, IsList ] );
 DeclareProperty( "IsPGroup", IsGroup );
 InstallTrueMethod( IsGroup, IsPGroup );
 
-InstallSubsetMaintenance( IsPGroup,
-    IsGroup and IsPGroup, IsGroup );
-
-InstallFactorMaintenance( IsPGroup,
-    IsGroup and IsPGroup, IsObject, IsGroup );
+InstallSubsetMaintenance( IsPGroup, IsPGroup, IsGroup );
+InstallFactorMaintenance( IsPGroup, IsPGroup, IsObject, IsGroup );
 
 InstallTrueMethod( IsPGroup, IsGroup and IsTrivial );
 InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
@@ -458,7 +455,7 @@ InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
 ##
 ##  <Description>
 ##  <Index Key="PowerfulPGroup">Powerful <M>p</M>-group</Index>
-##  A finite p-group <A>G</A> is said to be a <E>powerful <M>p</M>-group</E>
+##  A finite <M>p</M>-group <A>G</A> is said to be a <E>powerful <M>p</M>-group</E>
 ##  if the commutator subgroup <M>[<A>G</A>,<A>G</A>]</M> is contained in
 ##  <M><A>G</A>^{p}</M> if the prime <M>p</M> is odd, or if
 ##  <M>[<A>G</A>,<A>G</A>]</M> is contained in <M><A>G</A>^{4}</M>
@@ -475,12 +472,42 @@ InstallTrueMethod( IsPGroup, IsGroup and IsElementaryAbelian );
 DeclareProperty( "IsPowerfulPGroup", IsGroup );
 InstallTrueMethod( IsPGroup, IsPowerfulPGroup );
 
-#Quotients of powerful of powerful p groups are powerful
+#Quotients of powerful p-groups are powerful
 InstallFactorMaintenance( IsPowerfulPGroup,
     IsPowerfulPGroup, IsGroup, IsGroup );
 #abelian p-groups are powerful
 InstallTrueMethod( IsPowerfulPGroup, IsFinite and IsPGroup and IsAbelian );
-InstallTrueMethod( IsPGroup, IsPowerfulPGroup );
+
+#############################################################################
+##
+#P  IsRegularPGroup( <G> ) . . . . . . . . . . is a group a regular p-group ?
+##
+##  <#GAPDoc Label="IsRegularPGroup">
+##  <ManSection>
+##  <Prop Name="IsRegularPGroup" Arg='G'/>
+##
+##  <Description>
+##  <Index Key="RegularPGroup">Regular <M>p</M>-group</Index>
+##  A finite <M>p</M>-group <A>G</A> is said to be a <E>regular <M>p</M>-group</E>
+##  if for all <M>a,b</M> in <A>G</A>, one has <M>a^p b^p = (a b)^p c^p</M>
+##  where <M>c</M> is an element of the derived subgroup of the group generated
+##  by <M>a</M> and <M>b</M> (see&nbsp;<Cite Key="Hal34"/>).
+##  <Ref Prop="IsRegularPGroup"/> returns <K>true</K> if <A>G</A> is a
+##  regular <M>p</M>-group, and <K>false</K> otherwise.
+##  <E>Note: </E>This function returns <K>true</K> if <A>G</A> is the trivial
+##  group.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsRegularPGroup", IsGroup );
+InstallTrueMethod( IsPGroup, IsRegularPGroup );
+
+InstallSubsetMaintenance( IsRegularPGroup, IsRegularPGroup, IsGroup );
+InstallFactorMaintenance( IsPGroup, IsRegularPGroup, IsObject, IsGroup );
+
+#abelian p-groups are regular
+InstallTrueMethod( IsRegularPGroup, IsFinite and IsPGroup and IsAbelian );
 
 #############################################################################
 ##
