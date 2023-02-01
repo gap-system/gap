@@ -183,6 +183,7 @@ InstallOtherMethod( LeftModuleByGenerators,
 #FIXME: Setting the filter 'IsNonGaussianRowSpace' enables the handling
 #       via nice bases, but there is currently no support for that
 #       in the case of vector spaces of 'IsVectorObj' objects.
+#       In particular, the 'else' branch does not work.
 #       See https://github.com/gap-system/gap/issues/5347
 #       and https://github.com/gap-system/gap/discussions/5346
 #       for more information.
