@@ -1177,7 +1177,7 @@ InstallMethod( CopySubMatrix,
 ##
 InstallMethod( TransposedMatImmutable,
     [ IsMatrixOrMatrixObj ],
-    TransposedMatMutable );
+    M -> MakeImmutable( TransposedMatMutable( M ) ) );
 
 
 #############################################################################
