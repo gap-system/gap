@@ -14,8 +14,13 @@
 
 InstallGlobalFunction(EmptyKBDAG,function(genids)
 local offset,deadend;
-  offset:=Minimum(genids);
-  deadend:=ListWithIdenticalEntries(Maximum(genids)-offset+1,fail);
+  if Length(genids)=0 then
+    offset:=0;
+    deadend:=[];
+  else
+    offset:=Minimum(genids);
+    deadend:=ListWithIdenticalEntries(Maximum(genids)-offset+1,fail);
+  fi;
   # index shifting so we always start at 1
   if offset>0 then offset:=offset-1;
   else offset:=1-offset;fi;
