@@ -168,18 +168,34 @@ true
 gap> JenningsSeries(CyclicGroup(4));
 [ <pc group of size 4 with 2 generators>, Group([ f2 ]), 
   Group([ <identity> of ... ]) ]
+
+#
 gap> G:=CyclicGroup(9);;
 gap> HasIsPowerfulPGroup(G);
 true
 gap> IsPowerfulPGroup(G);
 true
+gap> HasIsRegularPGroup(G);
+true
+gap> IsRegularPGroup(G);
+true
+
+#
 gap> G:=CyclicGroup(10);;
 gap> IsPowerfulPGroup(G);
 false
+gap> IsRegularPGroup(G);
+false
+
+#
 gap> G:=SmallGroup(243,11);;
 gap> HasIsPowerfulPGroup(G);
 false
 gap> IsPowerfulPGroup(G);
+true
+gap> HasIsRegularPGroup(G);
+false
+gap> IsRegularPGroup(G);
 true
 gap> N:=NormalSubgroups(G)[3];;
 gap> H:=FactorGroup(G,N);;
@@ -188,17 +204,23 @@ true
 gap> IsPowerfulPGroup(H);
 true
 gap> myList:=AllSmallGroups(5^4);;
-gap> Number(myList,g->IsPowerfulPGroup(g));
+gap> Number(myList,IsPowerfulPGroup);
 9
+gap> Number(myList,IsRegularPGroup);
+15
 gap> newList:=AllSmallGroups(5^4);;
 gap> for g in newList do
 > RankPGroup(g);
 > Agemo(g,5);
 > od;
-gap> Number(newList,g->IsPowerfulPGroup(g));
+gap> Number(newList,IsPowerfulPGroup);
 9
 gap> myList:=AllSmallGroups(2^4);;
-gap> Number(myList,g->IsPowerfulPGroup(g));
+gap> Number(myList,IsPowerfulPGroup);
 6
+gap> Number(myList,IsRegularPGroup);
+5
 gap> g:=AbelianGroup(ListWithIdenticalEntries(2000,2));;
+
+#
 gap> STOP_TEST("pgroups.tst", 1);
