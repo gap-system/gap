@@ -1151,13 +1151,22 @@ RedispatchOnCondition(Discriminant,true,
 InstallOtherMethod( Value,"Laurent, ring element, and mult. neutral element",
     true, [ IsLaurentPolynomial, IsRingElement, IsRingElement ], 0,
 function( f, x, one )
-local val, i;
+local val, i,e;
   val:= Zero( one );
   f:= CoefficientsOfLaurentPolynomial( f );
   i:= Length( f[1] );
   while 0 < i do
-    val:= val * x + one * f[1][i];
-    i:= i-1;
+    e:=1;
+    while 0<i and IsZero(f[1][i]) do
+      e:=e+1;
+      i:=i-1;
+    od;
+    if e>1 then
+      val:= val * x^e + one * f[1][i];
+    else
+      val:= val * x + one * f[1][i];
+    fi;
+    i:=i-1;
   od;
   if 0 <> f[2] then
     val:= val * x^f[2];
