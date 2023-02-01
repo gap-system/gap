@@ -443,8 +443,8 @@ except if the attribute had been specially constructed as
 Note that functions installed as methods for attributes may return mutable
 objects,
 the attribute returns the value of <Ref Func="Immutable"/> for the result.
-Thus it is recommended that these methods make their return values immutable
-by calling <Ref Func="MakeImmutable"/> if this is possible,
+Thus it is recommended that these methods ensure their return values are
+immutable, e.g., by calling <Ref Func="MakeImmutable"/> if this is possible,
 in order to avoid that <Ref Func="Immutable"/> creates an unnecessary copy
 of the object.
 <P/>
