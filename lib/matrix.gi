@@ -3666,8 +3666,7 @@ end );
 #M  DiagonalMatrix( [<filt>, ]<R>, <vector> )
 #M  DiagonalMatrix( <vector>[, <M>] )
 ##
-InstallMethod( DiagonalMatrix,
-    [ "IsOperation", "IsSemiring", "IsRowVectorOrVectorObj" ],
+InstallKeyBasedMethod( DiagonalMatrix,
     function( filt, R, vector )
     local n, mat, i;
 

@@ -1697,7 +1697,7 @@ DeclareGlobalFunction( "PermutationMat" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "DiagonalMatrix",
+DeclareKeyBasedOperation( "DiagonalMatrix",
     [ IsOperation, IsSemiring, IsRowVectorOrVectorObj ] );
 DeclareOperation( "DiagonalMatrix", [ IsSemiring, IsRowVectorOrVectorObj ] );
 DeclareOperation( "DiagonalMatrix",

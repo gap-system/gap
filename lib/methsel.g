@@ -70,3 +70,103 @@ BIND_GLOBAL( "NEXT_VMETHOD_PRINT_INFO", function ( methods, i, arity)
     Print("#I Trying next: ", methods[offset+4],
           " at ", methods[offset+5][1], ":", methods[offset+5][2], "\n");
 end );
+
+#############################################################################
+##
+#F  NewKeyBasedOperation( <name>, <requirements> )
+#F  DeclareKeyBasedOperation( <name>, <requirements> )
+##
+BIND_GLOBAL( "_METHODS_KEY_BASED", OBJ_MAP() );
+BIND_GLOBAL( "_METHODS_KEY_BASED_DEFAULTS", OBJ_MAP() );
+
+BIND_GLOBAL( "NewKeyBasedOperation",
+    function( name, requirements )
+    local oper, methods;
+
+    # get the operation
+    if ISBOUND_GLOBAL( name ) then
+      oper:= VALUE_GLOBAL( name );
+      DeclareOperation( name, requirements );
+    else
+      oper:= NewOperation( name, requirements );
+    fi;
+
+    # initialize the key handling for 'oper'
+    if FIND_OBJ_MAP( _METHODS_KEY_BASED, oper, fail ) <> fail then
+      Error( "operation <oper> has already been declared as key based" );
+    fi;
+    methods:= OBJ_MAP();
+    ADD_OBJ_MAP( _METHODS_KEY_BASED, oper, methods );
+    ADD_OBJ_MAP( _METHODS_KEY_BASED_DEFAULTS, oper, requirements );
+
+    # install the method for 'oper' that uses the key handling
+    InstallMethod( oper,
+      "key dependent method",
+      requirements,
+      function( requ... )
+      local method;
+
+      method:= FIND_OBJ_MAP( methods, requ[1], fail );
+      if method = fail then
+        # Take the default method if there is one.
+        method:= FIND_OBJ_MAP( methods, IS_OBJECT, fail );
+      fi;
+      if method = fail then
+        Error( "no default installed for key based operation <oper>" );
+#T or would it make sense to call 'TryNextMethod'?
+      fi;
+
+      return CallFuncList( method, requ );
+      end );
+
+    return oper;
+end );
+
+BIND_GLOBAL( "DeclareKeyBasedOperation",
+    function( name, requirements )
+    local oper;
+
+    oper:= NewKeyBasedOperation( name, requirements );
+    if not ISBOUND_GLOBAL( name ) then
+      BIND_GLOBAL( name, oper );
+    fi;
+end );
+
+#############################################################################
+##
+#F  InstallKeyBasedMethod( <oper>[, <key>], <meth> )
+##
+BIND_GLOBAL( "InstallKeyBasedMethod", function( oper, meth... )
+    local dict, defaultdata, key, n;
+
+    dict:= FIND_OBJ_MAP( _METHODS_KEY_BASED, oper, fail );
+    if dict = fail then
+      Error( "<oper> is not declared as key based operation" );
+    fi;
+    defaultdata:= FIND_OBJ_MAP( _METHODS_KEY_BASED_DEFAULTS, oper, fail );
+    if defaultdata = fail then
+      Error( "this should not happen" );
+    fi;
+
+    if LENGTH( meth ) = 1 then
+      key:= IS_OBJECT;
+      meth:= meth[1];
+    elif LENGTH( meth ) = 2 then
+      key:= meth[1];
+      meth:= meth[2];
+    else
+      Error( "usage: InstallKeyBasedMethod( oper[, key], meth )" );
+    fi;
+
+    if FIND_OBJ_MAP( dict, key, fail ) <> fail then
+      Error( "<key> has already been set in <dict>" );
+    elif not IS_FUNCTION( meth ) then
+      Error( "<meth> must be a function" );
+    fi;
+    n:= NARG_FUNC( meth );
+    if n > 0 and n <> LENGTH( defaultdata ) then
+      Error( "<meth> must take ", LENGTH( defaultdata ), " arguments" );
+    fi;
+
+    ADD_OBJ_MAP( dict, key, meth );
+end );
