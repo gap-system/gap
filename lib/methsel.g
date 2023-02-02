@@ -75,6 +75,72 @@ end );
 ##
 #F  NewKeyBasedOperation( <name>, <requirements> )
 #F  DeclareKeyBasedOperation( <name>, <requirements> )
+#F  InstallKeyBasedMethod( <oper>[, <key>], <meth> )
+##
+##  <#GAPDoc Label="DeclareKeyBasedOperation">
+##  <ManSection>
+##  <Heading>Key Based Operations</Heading>
+##  <Func Name="NewKeyBasedOperation" Arg='name, requirements'/>
+##  <Func Name="DeclareKeyBasedOperation" Arg='name, requirements'/>
+##  <Func Name="InstallKeyBasedMethod" Arg='oper[, key], meth'/>
+##
+##  <Description>
+##  <Ref Func="NewKeyBasedOperation"/> returns an operation with name
+##  <A>name</A> that is declared as <E>key based</E>
+##  w.r.t. the list <A>requirements</A> of filters for its arguments.
+##  If an operation with name <A>name</A> exists already before the call
+##  then this operation is returned, otherwise a new operation gets created.
+##  <P/>
+##  <Ref Func="DeclareKeyBasedOperation"/> does the same and additionally
+##  binds the returned operation to the global variable <A>name</A> if the
+##  operation is new.
+##  <P/>
+##  Declaring the operation <A>oper</A> as key based w.r.t.
+##  <A>requirements</A> means that <Ref Func="InstallKeyBasedMethod"/>
+##  can be used to install the method <A>meth</A> for <A>oper</A>,
+##  a function whose arguments satisfy <A>requirements</A>,
+##  with the following meaning.
+##  <P/>
+##  <List>
+##  <Item>
+##    The method <A>meth</A> is applicable if the first argument
+##    of the call to <A>oper</A> is identical (in the sense of
+##    <Ref Func="IsIdenticalObj"/>) with the key <A>key</A> that has been
+##    specified in the <Ref Func="InstallKeyBasedMethod"/> call.
+##  </Item>
+##  <Item>
+##    If none of the key based methods for <A>oper</A> has a <A>key</A>
+##    that is identical with the first argument of the call to <A>oper</A>
+##    and if there is a key based method for <A>oper</A> for which no
+##    <A>key</A> was specified then this method is applicable.
+##  </Item>
+##  </List>
+##  <P/>
+##  Thus at most <E>one</E> key based method for <A>oper</A> is applicable,
+##  and if a method without <A>key</A> has been installed then it serves as
+##  the default method.
+##  This is in contrast to the situation with constructors
+##  (see <Ref Sect="Constructors"/>) where the first argument is a filter
+##  that is used as a key, but several methods can be applicable in a call
+##  to a constructor and one cannot define a default method for it.
+##  <P/>
+##  Typical use cases for key based operations are operations that shall
+##  create objects in particular internal representations; the filters that
+##  define these representations are then used as the first argument,
+##  and one wants that either the unique method that belongs to this filter
+##  or a default method is called.
+##  <P/>
+##  Currently it is possible to declare an operation as key based
+##  only for <E>one</E> list of requirements.
+##  <P/>
+##  Installing methods with <Ref Func="InstallMethod"/> for a key based
+##  operation is possible.
+##  (Installing such methods with the same requirements as the ones for the
+##  key based methods is not recommended, because this may lead to unwanted
+##  effects.)
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "_METHODS_KEY_BASED", OBJ_MAP() );
 BIND_GLOBAL( "_METHODS_KEY_BASED_DEFAULTS", OBJ_MAP() );
@@ -132,10 +198,6 @@ BIND_GLOBAL( "DeclareKeyBasedOperation",
     fi;
 end );
 
-#############################################################################
-##
-#F  InstallKeyBasedMethod( <oper>[, <key>], <meth> )
-##
 BIND_GLOBAL( "InstallKeyBasedMethod", function( oper, meth... )
     local dict, defaultdata, key, n;
 
