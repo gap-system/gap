@@ -120,6 +120,7 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/matrix.gd",
     "../../lib/meataxe.gi",
     "../../lib/memusage.gd",
+    "../../lib/methsel.g",
     "../../lib/methsel2.g",
     "../../lib/methwhy.g",
     "../../lib/mgmadj.gd",
