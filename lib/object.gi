@@ -76,7 +76,10 @@ InstallMethod( \=,
 ##  for which the <Q>official</Q> &GAP; provides already an ordering via <C>&lt;</C>.
 ##  <#/GAPDoc>
 ##
-TO_COMPARE := [
+function()
+    local TO_COMPARE, i, j, func, infostr;
+
+    TO_COMPARE := [
     [ IsCyclotomic, "cyclotomic" ],
     [ IsFFE,        "finite field element" ],
     [ IsPerm,       "permutation" ],
@@ -84,9 +87,6 @@ TO_COMPARE := [
     [ IsChar,       "character" ],
     [ IsList,       "list" ],
                                               ];
-MAKE_COMP := function()
-    local i, j, func, infostr;
-
     for i in [ 1 .. Length( TO_COMPARE ) ] do
       for j in [ 1 .. Length( TO_COMPARE ) ] do
         if i <> j then
@@ -100,8 +100,7 @@ MAKE_COMP := function()
         fi;
       od;
     od;
-end;
-MAKE_COMP();
+end();
 
 InstallMethod( \<,
     "for two finite field elements in different characteristic",
