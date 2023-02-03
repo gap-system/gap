@@ -14,6 +14,11 @@
 ##
 #F MappedVector( <exp>, <list> ). . . . . . . . . . . . . . . . . . . . local
 ##
+# FIXME: the polycyclic package overwrites MappedVector with an identical
+# implementation. Also several packages use MappedVector. This means we can't
+# make `MappedVector` read-only, nor can we rename it (and then make it
+# read-only). To resolve this, various packages (at least polycyclic) need
+# updates.
 MappedVector := function( exp, list )
     local elm, i;
 
