@@ -458,7 +458,7 @@ end );
 ##  required:  <i> > <j>
 ##
 
-DeepThoughtCollector_SetConjugateNC := function(dtrws, i, j, rhs)
+BindGlobal( "DeepThoughtCollector_SetConjugateNC", function(dtrws, i, j, rhs)
 
     if IsBound(dtrws![PC_CONJUGATES][i])  then
         dtrws![PC_CONJUGATES][i][j] := ExtRepOfObj(rhs);
@@ -466,7 +466,7 @@ DeepThoughtCollector_SetConjugateNC := function(dtrws, i, j, rhs)
         dtrws![PC_CONJUGATES][i] := [];
         dtrws![PC_CONJUGATES][i][j] := ExtRepOfObj(rhs);
     fi;
-end;
+end );
 
 
 InstallMethod( SetConjugate,

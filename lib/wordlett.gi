@@ -375,7 +375,7 @@ local fam;
 end);
 
 # power: exponent must be not equal zero.
-AssocWWorLetRepPow:=function(w,e)
+BindGlobal( "AssocWWorLetRepPow", function(w,e)
 local fam,a,l,i,j,mp,pt,head,tail,mid;
   fam:=FamilyObj(w);
   a:=w![1];
@@ -433,7 +433,7 @@ local fam,a,l,i,j,mp,pt,head,tail,mid;
   fi;
   MakeImmutable(a);
   return Objectify(fam!.letterWordType,[a]);
-end;
+end );
 
 InstallMethod(\^,"assoc word in W letter rep and positive integer",true,
   [IsAssocWord and IsWLetterAssocWordRep,IsPosInt],0,AssocWWorLetRepPow);
@@ -443,7 +443,7 @@ InstallMethod(\^,"assoc word in W letter rep and negative integer",true,
   AssocWWorLetRepPow);
 
 # power: exponent must be not equal zero.
-AssocBWorLetRepPow:=function(w,e)
+BindGlobal( "AssocBWorLetRepPow", function(w,e)
 local fam,a,l,i,j,mp,pt,head,tail,mid;
   fam:=FamilyObj(w);
   a:=w![1];
@@ -501,7 +501,7 @@ local fam,a,l,i,j,mp,pt,head,tail,mid;
   fi;
   MakeImmutable(a);
   return Objectify(fam!.letterWordType,[a]);
-end;
+end );
 
 InstallMethod(\^,"assoc word in B letter rep and positive integer",true,
   [IsAssocWord and IsBLetterAssocWordRep,IsPosInt],0,AssocBWorLetRepPow);

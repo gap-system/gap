@@ -553,7 +553,8 @@ end);
 ##  R. Brent, An Improved Monte Carlo Method for Fact., BIT 20, 1980, 176-184
 ##  D. Knuth, Seminumerical Algorithms  (TACP II),  AddiWesl,  1973,  369-371
 ##
-FactorsRho := function ( n, inc, cluster, limit )
+DeclareGlobalName( "FactorsRho" );
+BindGlobal( "FactorsRho", function ( n, inc, cluster, limit )
 
     local   i,  sign,  factors,  composite,  x,  y,  k,  z,  g,  tmp,
             IsPrimeOrProbablyPrimeInt;
@@ -626,8 +627,7 @@ FactorsRho := function ( n, inc, cluster, limit )
     fi;
     return [ factors, composite ];
 
-end;
-MakeReadOnlyGlobal( "FactorsRho" );
+end );
 
 
 #############################################################################
@@ -1591,7 +1591,7 @@ InstallMethod( QuotientRemainder,
 ##  To generate uniformly distributed integers from a range, use the
 ##  construct `Random( [ <low> .. <high> ] )'.
 ##
-NrBitsInt := function ( n )
+BindGlobal( "NrBitsInt", function ( n )
     local   nr, nr64;
     nr64:=[0,1,1,2,1,2,2,3,1,2,2,3,2,3,3,4,1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,
            1,2,2,3,2,3,3,4,2,3,3,4,3,4,4,5,2,3,3,4,3,4,4,5,3,4,4,5,4,5,5,6];
@@ -1601,7 +1601,7 @@ NrBitsInt := function ( n )
         n := QuoInt( n, 64 );
     od;
     return nr;
-end;
+end );
 
 InstallMethodWithRandomSource(Random,
     "for a random source and `Integers'", true,

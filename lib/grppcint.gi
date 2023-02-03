@@ -27,7 +27,7 @@ GS_SIZE := 20;
 ##  and <A> < <H>, <B> < <K>. <A> ( and also <B> ) generate the  intersection
 ##  modulo <S>.
 ##
-GlasbyCover := function( S, A, B, pcgsK )
+BindGlobal( "GlasbyCover", function( S, A, B, pcgsK )
     local   Am, Bm, z, i;
 
     # Decompose the intersection <H> /\ <K> /\ <N>.
@@ -47,23 +47,23 @@ GlasbyCover := function( S, A, B, pcgsK )
     # Concatenate them and return. The are not normalized.
     Append( A, Am );
     Append( B, Bm );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  GlasbyShift( <C>, <B> )
 ##
-GlasbyShift := function( C, B )
+BindGlobal( "GlasbyShift", function( C, B )
     return List( C, x -> x / SiftedPcElement( B, x ) );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  GlasbyStabilizer( <pcgs>, <A>, <B>, <pcgsL>)
 ##
-GlasbyStabilizer := function( pcgs, A, B, pcgsL )
+BindGlobal( "GlasbyStabilizer", function( pcgs, A, B, pcgsL )
     local   f,  transl,  matA,  pt;
 
     f     := GF( Order( pcgsL[1] ) );
@@ -86,14 +86,14 @@ GlasbyStabilizer := function( pcgs, A, B, pcgsL )
     # are computing.
     #return InducedPcgs(pcgs, Stabilizer( U, pt, A, matA, OnRight ) );
     return StabilizerPcgs(A, pt, matA, OnRight );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  AvoidedLayers
 ##
-AvoidedLayers := function( pcgs, pcgsH, pcgsK )
+BindGlobal( "AvoidedLayers", function( pcgs, pcgsH, pcgsK )
 
     local occur, h, k, first, next, avoided, primes, p, sylow, res, i,
           firsts, weights;
@@ -138,14 +138,14 @@ AvoidedLayers := function( pcgs, pcgsH, pcgsK )
     od;
 
     return Set(res);
-end;
+end );
 
 
 #############################################################################
 ##
 #F  GlasbyIntersection
 ##
-GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
+BindGlobal( "GlasbyIntersection", function( pcgs, pcgsH, pcgsK )
     local m, G, first, avoid, A, B, i, start, next, HmN, KmN,
           sum, pcgsS, pcgsR, C, D,
           new, U, deptH, deptK,pcgsL,depthS,depthN;
@@ -232,14 +232,14 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
     new := InducedPcgsByPcSequenceNC( pcgs, A );
     U   := SubgroupByPcgs( G, new );
     return U;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ZassenhausIntersection( pcgs, pcgsN, pcgsU )
 ##
-ZassenhausIntersection := function( pcgs, pcgsN, pcgsU )
+BindGlobal( "ZassenhausIntersection", function( pcgs, pcgsN, pcgsU )
     local sw, m, ins, g, new;
 
     if Length(pcgsN)=0 then
@@ -265,7 +265,7 @@ ZassenhausIntersection := function( pcgs, pcgsN, pcgsU )
         ins := SubgroupByPcgs( GroupOfPcgs( pcgs ), new );
         return ins;
     fi;
-end;
+end );
 
 
 #############################################################################

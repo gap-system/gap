@@ -905,7 +905,7 @@ end );
 ##
 #F MatrixOperationOfCPGroup( cc, gens )
 ##
-MatrixOperationOfCPGroup := function( cc, gens  )
+BindGlobal( "MatrixOperationOfCPGroup", function( cc, gens  )
     local mats, base, pcgs, ords, imgs, n, d, fpgens, fprels, H, pcgsH,
     l, g, imgl, k, i, j, rel, tail, m, tails, prei, h,field;
 
@@ -988,7 +988,7 @@ MatrixOperationOfCPGroup := function( cc, gens  )
         od;
     od;
     return List(mats,i->ImmutableMatrix(field,i));
-end;
+end );
 
 #############################################################################
 ##
@@ -1028,7 +1028,7 @@ end);
 ##
 #F MyIntCoefficients( p, d, w )
 ##
-MyIntCoefficients := function( p, d, w )
+BindGlobal( "MyIntCoefficients", function( p, d, w )
     local v, int, i;
     v   := IntVecFFE( w );
     int := 0;
@@ -1036,13 +1036,13 @@ MyIntCoefficients := function( p, d, w )
         int := int * p + v[i];
     od;
     return int;
-end;
+end );
 
 #############################################################################
 ##
 #F MatOrbs( mats, dim, field )
 ##
-MatOrbs := function( mats, dim, field )
+BindGlobal( "MatOrbs", function( mats, dim, field )
     local p, q, r, l, seen, reps, rest, i, v, orb, j, w, im, h, mat, rep;
 
     # set up
@@ -1087,13 +1087,13 @@ MatOrbs := function( mats, dim, field )
         fi;
     od;
     return reps * One( field );
-end;
+end );
 
 #############################################################################
 ##
 #F NonSplitExtensions( G, M [, reduce] )
 ##
-NonSplitExtensions := function( arg )
+BindGlobal( "NonSplitExtensions", function( arg )
     local G, M, C, cc, cohom, mats, CP, all, red, c;
 
     # catch arguments
@@ -1163,7 +1163,7 @@ NonSplitExtensions := function( arg )
     fi;
 
     return rec( groups := all, reduced := red );
-end;
+end );
 
 #############################################################################
 ##

@@ -16,46 +16,46 @@
 ##
 #F  IsIdenticalObjFamiliesColObjObj( <rws>, <obj>, <obj> )
 ##
-IsIdenticalObjFamiliesColObjObj := function( a, b, c )
+BindGlobal( "IsIdenticalObjFamiliesColObjObj", function( a, b, c )
     return IsIdenticalObj( a!.underlyingFamily, b )
        and IsIdenticalObj( b, c );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  IsIdenticalObjFamiliesColObjObjObj( <rws>, <obj>, <obj>, <obj> )
 ##
-IsIdenticalObjFamiliesColObjObjObj := function( a, b, c, d )
+BindGlobal( "IsIdenticalObjFamiliesColObjObjObj", function( a, b, c, d )
     return IsIdenticalObj( a!.underlyingFamily, b )
        and IsIdenticalObj( b, c )
        and IsIdenticalObj( b, d );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  IsIdenticalObjFamiliesColXXXObj( <col>, <obj>, <obj> )
 ##
-IsIdenticalObjFamiliesColXXXObj := function( a, b, c )
+BindGlobal( "IsIdenticalObjFamiliesColXXXObj", function( a, b, c )
     return IsIdenticalObj( a!.underlyingFamily, c );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  IsIdenticalObjFamiliesColXXXXXXObj( <rws>, <obj>, <obj>, <obj> )
 ##
-IsIdenticalObjFamiliesColXXXXXXObj := function( a, b, c, d )
+BindGlobal( "IsIdenticalObjFamiliesColXXXXXXObj", function( a, b, c, d )
     return IsIdenticalObj( a!.underlyingFamily, d );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  FinitePolycyclicCollector_IsConfluent( <col> )
 ##
-FinitePolycyclicCollector_IsConfluent := function( col, failed )
+BindGlobal( "FinitePolycyclicCollector_IsConfluent", function( col, failed )
     local   gens,  rods,  k,  gk,  j,  gj,  i,  gi,  r1,  r2;
 
     gens := GeneratorsOfRws(col);
@@ -159,7 +159,7 @@ FinitePolycyclicCollector_IsConfluent := function( col, failed )
         return IsEmpty(failed);
    fi;
 
-end;
+end );
 
 
 #############################################################################

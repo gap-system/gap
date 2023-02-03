@@ -2276,18 +2276,18 @@ end);
 # Holt (referred # to as "Handbook" from here on). Function names after the
 # NEWTC_ agree with those of sections 5.2, 5.3 of the Handbook.
 
-NEWTC_AddDeduction:=function(list,ded)
+BindGlobal( "NEWTC_AddDeduction", function(list,ded)
   if not ded in list then
     Add(list,ded);
   fi;
-end;
+end );
 
 # the tables produced internally are indexed at rec.offset+k for generator
 # number k, that is in the form ...,-2,-1,empty,1,2,...
 # This avoids lots of even/od decisions and the cost of the empty list is
 # neglegible.
 
-NEWTC_Compress:=function(DATA,purge)
+BindGlobal( "NEWTC_Compress", function(DATA,purge)
 local ct,c,a,b,offset,x,to,p,dw,doa,aug;
   doa:=DATA.augmented;
   dw:=IsBound(DATA.with);
@@ -2374,9 +2374,9 @@ local ct,c,a,b,offset,x,to,p,dw,doa,aug;
     DATA.pp:=ListWithIdenticalEntries(DATA.n,DATA.one);
   fi;
   DATA.dead:=0;
-end;
+end );
 
-NEWTC_Define:=function(DATA,i,a)
+BindGlobal( "NEWTC_Define", function(DATA,i,a)
 # both augmented or not
 local c,o,n,j,au;
   n:=DATA.n;
@@ -2417,9 +2417,9 @@ local c,o,n,j,au;
   #  Error("hehe");
   #fi;
   return true; # indicating no quiet fail
-end;
+end );
 
-NEWTC_Coincidence:=function(DATA,a,b)
+BindGlobal( "NEWTC_Coincidence", function(DATA,a,b)
 local Rep,Merge,ct,offset,l,q,i,c,x,d,p,mu,nu;
 
   if a=b then return;fi;
@@ -2481,9 +2481,9 @@ local Rep,Merge,ct,offset,l,q,i,c,x,d,p,mu,nu;
       fi;
     od;
   od;
-end;
+end );
 
-NEWTC_ModifiedCoincidence:=function(DATA,a,b,w)
+BindGlobal( "NEWTC_ModifiedCoincidence", function(DATA,a,b,w)
 local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
 
   # decide whether secondary generators will be introduced
@@ -2620,10 +2620,10 @@ local MRep,MMerge,ct,offset,l,q,i,c,x,d,p,pp,mu,nu,aug,v,Sekundant;
   for i in q do
     Unbind(pp[i]);
   od;
-end;
+end );
 
 # superseded by kernel function TC_QUICK_SCAN, left here for debugging purposes.
-NEWTC_QuickScanLibraryVersion:=function(c,offset,alpha,w)
+BindGlobal( "NEWTC_QuickScanLibraryVersion", function(c,offset,alpha,w)
 local f,b,r,i,j;
   f:=alpha;i:=1;
   r:=Length(w);
@@ -2651,9 +2651,9 @@ local f,b,r,i,j;
     return true;
   fi;
   return false;
-end;
+end );
 
-NEWTC_Scan:=function(DATA,alpha,w)
+BindGlobal( "NEWTC_Scan", function(DATA,alpha,w)
 local c,offset,f,b,r,i,j,t;
   c:=DATA.ct;
   offset:=DATA.offset;
@@ -2716,9 +2716,9 @@ local c,offset,f,b,r,i,j,t;
 #    Add(DATA.deductions,[f,w[i]]);
 #  fi;
 
-end;
+end );
 
-NEWTC_ModifiedScan:=function(DATA,alpha,w,y)
+BindGlobal( "NEWTC_ModifiedScan", function(DATA,alpha,w,y)
 local c,offset,f,b,r,i,j,fp,bp,t;
   #Info(InfoFpGroup,3,"MS",alpha,w,y,"\n");
   c:=DATA.ct;
@@ -2783,9 +2783,9 @@ local c,offset,f,b,r,i,j,fp,bp,t;
     fi;
     NEWTC_AddDeduction(DATA.deductions,[f,w[i]]);
   fi;
-end;
+end );
 
-NEWTC_ScanAndFill:=function(DATA,alpha,w)
+BindGlobal( "NEWTC_ScanAndFill", function(DATA,alpha,w)
 local c,offset,f,b,r,i,j;
   c:=DATA.ct;
   offset:=DATA.offset;
@@ -2823,9 +2823,9 @@ local c,offset,f,b,r,i,j;
       NEWTC_Define(DATA,f,w[i]);
     fi;
   od;
-end;
+end );
 
-NEWTC_ModifiedScanAndFill:=function(DATA,alpha,w,y)
+BindGlobal( "NEWTC_ModifiedScanAndFill", function(DATA,alpha,w,y)
 local c,offset,f,b,r,i,j,fp,bp;
   c:=DATA.ct;
   offset:=DATA.offset;
@@ -2885,9 +2885,9 @@ local c,offset,f,b,r,i,j,fp,bp;
       NEWTC_Define(DATA,f,w[i]);
     fi;
   od;
-end;
+end );
 
-NEWTC_ProcessDeductions:=function(DATA)
+BindGlobal( "NEWTC_ProcessDeductions", function(DATA)
 # both augmented and not
 local ded,offset,pair,alpha,x,p,w;
   ded:=DATA.deductions;
@@ -2927,9 +2927,9 @@ local ded,offset,pair,alpha,x,p,w;
       fi;
     fi;
   od;
-end;
+end );
 
-NEWTC_DoCosetEnum:=function(freegens,freerels,subgens,aug,trace)
+BindGlobal( "NEWTC_DoCosetEnum", function(freegens,freerels,subgens,aug,trace)
 local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
   oldead,with,collapse,j,from,pp,PERCFACT,ap,ordertwo;
 
@@ -3209,7 +3209,7 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
 
   return rec(type:="t",limit:=DATA.limit,defcount:=DATA.defcount,data:=DATA);
 
-end;
+end );
 
 #freegens,fgreerels,subgens,doaugmented,trace
 # Options: limit, quiet (return fail if run out of space)
@@ -3328,7 +3328,7 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,tim
   return aug;
 end);
 
-NEWTC_Rewrite:=function(arg)
+BindGlobal( "NEWTC_Rewrite", function(arg)
 local DATA,start,w,offset,c,i,j;
   DATA:=arg[1];
   start:=arg[2];
@@ -3348,9 +3348,10 @@ local DATA,start,w,offset,c,i,j;
     Error("Trace did not end at expected coset");
   fi;
   return c;
-end;
+end );
 
-NEWTC_ReplacedStringCyclic:=function(s,r)
+DeclareGlobalName("NEWTC_ReplacedStringCyclic");
+BindGlobal( "NEWTC_ReplacedStringCyclic", function(s,r)
 local p,new,start,half;
   if Length(s)<Length(r) or Length(r)=0 then
     return s;
@@ -3412,7 +3413,7 @@ local p,new,start,half;
   fi;
 
   return new;
-end;
+end );
 
 
 InstallGlobalFunction(NEWTC_CyclicSubgroupOrder,function(DATA)
@@ -3432,7 +3433,7 @@ local rels,r,i,w;
   return rels;
 end);
 
-NEWTC_AbelianizedRelatorsSubgroup:=function(DATA)
+BindGlobal( "NEWTC_AbelianizedRelatorsSubgroup", function(DATA)
 local rels,r,i,w,subnum;
 
   subnum:=Length(DATA.subgens);
@@ -3458,7 +3459,7 @@ local rels,r,i,w,subnum;
   CompletionBar(InfoFpGroup,2,"Coset Loop: ",false);
 
   return rels;
-end;
+end );
 
 #############################################################################
 ##

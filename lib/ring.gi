@@ -611,7 +611,7 @@ InstallMethod( IsSubset,
 ##  known; if we have only ideal generators then a different `Enumerator'
 ##  method is used.
 ##
-EnumeratorOfRing := function( R )
+BindGlobal( "EnumeratorOfRing", function( R )
 
     local   elms,       # elements of <R>, result
             set,        # set corresponding to <elms>
@@ -650,7 +650,7 @@ EnumeratorOfRing := function( R )
         od;
     fi;
     return set;
-end;
+end );
 
 InstallMethod( Enumerator,
     "generic method for a ring with known generators",

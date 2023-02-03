@@ -15,8 +15,8 @@
 ##  SmallGroup(n,i).
 ##
 
-NAMES_OF_SMALL_GROUPS :=
-[ [ "1" ],
+BindGlobal( "NAMES_OF_SMALL_GROUPS", [
+ [ "1" ],
  [ "C2" ],
  [ "C3" ],
  [ "C4",
@@ -567,5 +567,5 @@ NAMES_OF_SMALL_GROUPS :=
  "D10 x D10",
  "C10 x D10",
  "C2 x ((C5 x C5) : C2)",
- "C10 x C10" ] ];
-MakeReadOnlyGlobal( "NAMES_OF_SMALL_GROUPS" );
+ "C10 x C10" ],
+]);

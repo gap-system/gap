@@ -14,7 +14,7 @@
 ##
 #F  PrimePowerPcSequence( <pcgs> )
 ##
-PrimePowerPcSequence := function( pcgs )
+BindGlobal( "PrimePowerPcSequence", function( pcgs )
     local   new,  i,  p;
 
     new := List( [1..Length(pcgs)], x -> false );
@@ -23,14 +23,15 @@ PrimePowerPcSequence := function( pcgs )
         new[i] := PrimePowerComponent( pcgs[i], p[i] );
     od;
     return new;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ModifyPcgs( ... )
 ##
-ModifyPcgs := function( pcgs, wf, list, weights, work, g, wt )
+DeclareGlobalName("ModifyPcgs");
+BindGlobal( "ModifyPcgs", function( pcgs, wf, list, weights, work, g, wt )
     local d, h, S, s, min, tmp, i;
 
     # the trivial case
@@ -74,14 +75,14 @@ ModifyPcgs := function( pcgs, wf, list, weights, work, g, wt )
         od;
         return min;
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  PcgsSystemWithWf( <pcgs> <wf> )
 ##
-PcgsSystemWithWf := function( pcgs, wf )
+BindGlobal( "PcgsSystemWithWf", function( pcgs, wf )
     local   ppcgs,  m,  list,  weights,  work,  nilp,  h,  i,  j,  g,  S,
             pos,  s,  wt,  newpcgs,  wset,  layers,  first;
 
@@ -175,14 +176,14 @@ PcgsSystemWithWf := function( pcgs, wf )
                 weights := weights,
                 layers  := layers,
                 first   := first );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  PcgsSystemLGSeries( <pcgs> )
 ##
-PcgsSystemLGSeries := function( pcgs )
+BindGlobal( "PcgsSystemLGSeries", function( pcgs )
     local wf;
 
     # set up weight function
@@ -266,14 +267,14 @@ PcgsSystemLGSeries := function( pcgs )
     );
 
     return PcgsSystemWithWf( pcgs, wf );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  LeastBadHallLayer( <pcgssys>, <i> )
 ##
-LeastBadHallLayer := function( pcgssys, i )
+BindGlobal( "LeastBadHallLayer", function( pcgssys, i )
     local m, pi, bad, j, w, pj, k, exponents;
 
     m  := Length( pcgssys.pcgs );
@@ -315,14 +316,14 @@ LeastBadHallLayer := function( pcgssys, i )
         fi;
     od;
     return bad;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  PcgsSystemWithHallSystem( <pcgssys> )
 ##
-PcgsSystemWithHallSystem := function( pcgssys )
+BindGlobal( "PcgsSystemWithHallSystem", function( pcgssys )
     local m, i, k, n, F,
           layer, start, next, size, base,
           V, M,
@@ -424,14 +425,14 @@ PcgsSystemWithHallSystem := function( pcgssys )
         od;
     od;
     return pcgssys;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  LeastBadComplementLayer( <pcgssys>, <i> )
 ##
-LeastBadComplementLayer := function( pcgssys, i )
+BindGlobal( "LeastBadComplementLayer", function( pcgssys, i )
     local m, p, bad, j, w, exponents, k;
 
     m := Length( pcgssys.pcgs );
@@ -470,14 +471,14 @@ LeastBadComplementLayer := function( pcgssys, i )
         fi;
     od;
     return bad;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  PcgsSystemWithComplementSystem( <pcgssys> )
 ##
-PcgsSystemWithComplementSystem := function( pcgssys )
+BindGlobal( "PcgsSystemWithComplementSystem", function( pcgssys )
     local m, F, n, i, k,
           layer, start, next, size, base,
           V, M, l,
@@ -555,7 +556,7 @@ PcgsSystemWithComplementSystem := function( pcgssys )
         od;
     od;
     return pcgssys;
-end;
+end );
 
 
 #############################################################################
@@ -786,7 +787,7 @@ local spec, ind;
   return ind;
 end );
 
-IndPcgsWrtSpecFromFamOrHome:=function( U )
+BindGlobal( "IndPcgsWrtSpecFromFamOrHome", function( U )
 local spec, ind;
   spec := SpecialPcgs( FamilyPcgs( U ) );
   if spec=HomePcgs(U) then
@@ -798,7 +799,7 @@ local spec, ind;
   fi;
   SetGroupOfPcgs (ind, U);
   return ind;
-end;
+end );
 
 InstallOtherMethod( InducedPcgsWrtSpecialPcgs,
   "for groups that have already an induced pcgs wrt home pcgs", true,
@@ -934,21 +935,21 @@ InstallMethod( RankPGroup,
 ##
 #F SpecialPcgsSubgroup( G, i )
 ##
-SpecialPcgsSubgroup := function( G, i )
+BindGlobal( "SpecialPcgsSubgroup", function( G, i )
     local spec, firs, sub;
     spec := SpecialPcgs( G );
     firs := LGFirst( spec );
     sub  := InducedPcgsByPcSequenceNC( spec, spec{[firs[i]..Length(spec)]} );
     return SubgroupByPcgs( G, sub );
-end;
+end );
 
 #############################################################################
 ##
 #F SpecialPcgsFactor( G, i )
 ##
-SpecialPcgsFactor := function( G, i )
+BindGlobal( "SpecialPcgsFactor", function( G, i )
     return G / SpecialPcgsSubgroup( G, i );
-end;
+end );
 
 #############################################################################
 ##
@@ -957,14 +958,14 @@ end;
 InstallMethod( IndicesEANormalSteps, "special pcgs: LGFirst", true,
         [ IsSpecialPcgs ], 0, LGFirst );
 
-DoCentralSeriesPcgsIfNilpot:=function(G)
+BindGlobal( "DoCentralSeriesPcgsIfNilpot", function(G)
 local w;
   w:=LGWeights(SpecialPcgs(G));
   if w[Length(w)][1]<>1 then
     Error("The group is not nilpotent");
   fi;
   return SpecialPcgs(G);
-end;
+end );
 
 InstallOtherMethod( PcgsCentralSeries, "if special pcgs is known",
   true,[HasSpecialPcgs],0,DoCentralSeriesPcgsIfNilpot);
@@ -982,7 +983,7 @@ InstallOtherMethod( PcgsPCentralSeriesPGroup,
   "for pcgs computable use SpecialPcgs",
   true,[CanEasilyComputePcgs],0,DoCentralSeriesPcgsIfNilpot);
 
-PcgsElAbSerFromSpecPcgs:=function(G)
+BindGlobal( "PcgsElAbSerFromSpecPcgs", function(G)
 local s;
   if HasHomePcgs(G)
      and IsPcgsElementaryAbelianSeries(InducedPcgsWrtHomePcgs(G)) then
@@ -992,7 +993,7 @@ local s;
   fi;
   s:=SpecialPcgs(G);
   return s;
-end;
+end );
 
 InstallOtherMethod(PcgsElementaryAbelianSeries, "if special pcgs is known",
   true,[HasSpecialPcgs],0,PcgsElAbSerFromSpecPcgs);

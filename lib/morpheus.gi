@@ -1213,7 +1213,7 @@ end);
 ##  4     surjective
 ##  8     find all (in contrast to one)
 ##
-MorClassOrbs:=function(G,C,R,D)
+BindGlobal( "MorClassOrbs", function(G,C,R,D)
 local i,cl,cls,rep,x,xp,p,b,g;
   i:=Index(G,C);
   if i>20000 or i<Size(D) then
@@ -1267,7 +1267,7 @@ local i,cl,cls,rep,x,xp,p,b,g;
 
     return C!.conjreps{rep};
   fi;
-end;
+end );
 
 InstallGlobalFunction(MorClassLoop,function(range,clali,params,action)
 local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,

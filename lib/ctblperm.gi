@@ -16,7 +16,7 @@
 #F  FingerprintPerm( <D>, <el>, <i>, <j>, <orbitJ>, <representatives>)
 #F       Entry i,j of the matrix of el in the permutation representation of G
 ##
-FingerprintPerm := function(D,el,i,j,orbitJ,representatives)
+BindGlobal( "FingerprintPerm", function(D,el,i,j,orbitJ,representatives)
   local x,a,cycle,cycles;
   a:=0;
   #cycles:=Cycles(el,D.group.orbit);
@@ -28,7 +28,7 @@ FingerprintPerm := function(D,el,i,j,orbitJ,representatives)
     fi;
   od;
   return a;
-end;
+end );
 
 
 #############################################################################
@@ -38,7 +38,7 @@ end;
 ##  The class invariant consists of the cycle structure and - if computation
 ##  might improve results - of the Fingerprint of the permutation
 ##
-IdentificationPermGroup := function(D,el)
+BindGlobal( "IdentificationPermGroup", function(D,el)
   local s,t,i,l; # guter Programmier s t i l !
   s:=CycleStructurePerm(el);
   s:=ShallowCopy(s);
@@ -64,7 +64,7 @@ IdentificationPermGroup := function(D,el)
     Add(s,l[1][2]);
   fi;
   return s;
-end;
+end );
 
 
 #############################################################################
@@ -75,9 +75,9 @@ end;
 ##  identification routines: For example galois conjugated elements must be
 ##  multiplied by the *galois conjugate* of the central element!
 ##
-RationalIdentificationPermGroup := function(D,el)
+BindGlobal( "RationalIdentificationPermGroup", function(D,el)
   return CycleStructurePerm(el);
-end;
+end );
 
 
 #############################################################################

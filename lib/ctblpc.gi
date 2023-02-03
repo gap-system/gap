@@ -17,7 +17,7 @@
 #F  PcGroupClassMatrixColumn(<D>,<mat>,<r>,<t>)  . calculate the t-th column
 #F       of the r-th class matrix and store it in the appropriate column of M
 ##
-PcGroupClassMatrixColumn := function(D,M,r,t)
+BindGlobal( "PcGroupClassMatrixColumn", function(D,M,r,t)
   local c,s,z,i,T,p,orb,chunk;
   if t=1 then
     M[D.inversemap[r]][t]:=D.classiz[r];
@@ -72,17 +72,17 @@ PcGroupClassMatrixColumn := function(D,M,r,t)
     od;
 
   fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  IdentificationSolvableGroup(<D>,<el>) . .  class invariants for el in G
 ##
-IdentificationSolvableGroup := function(D,el)
+BindGlobal( "IdentificationSolvableGroup", function(D,el)
   return MultiClassIdsPc(D.classiddat,[el])[1];
   #return ClassesSolvableGroup(D.group,0,rec(candidates:=[el]))[1].representative;
-end;
+end );
 
 
 #############################################################################

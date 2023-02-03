@@ -145,7 +145,8 @@ end);
 ##  'Combinations' only calls 'CombinationsA' or 'CombinationsK' with initial
 ##  arguments.
 ##
-CombinationsA := function ( mset, m, n, comb, i )
+DeclareGlobalName( "CombinationsA" );
+BindGlobal( "CombinationsA", function ( mset, m, n, comb, i )
     local   combs, l;
     if m = n+1  then
         comb  := ShallowCopy(comb);
@@ -161,10 +162,10 @@ CombinationsA := function ( mset, m, n, comb, i )
         od;
     fi;
     return combs;
-end;
-MakeReadOnlyGlobal( "CombinationsA" );
+end );
 
-CombinationsK := function ( mset, m, n, k, comb, i )
+DeclareGlobalName( "CombinationsK" );
+BindGlobal( "CombinationsK", function ( mset, m, n, k, comb, i )
     local   combs, l;
     if k = 0  then
         comb  := ShallowCopy(comb);
@@ -179,8 +180,7 @@ CombinationsK := function ( mset, m, n, k, comb, i )
         od;
     fi;
     return combs;
-end;
-MakeReadOnlyGlobal( "CombinationsK" );
+end );
 
 InstallGlobalFunction(Combinations,function ( mset, arg... )
     local   combs;
@@ -535,7 +535,8 @@ end);
 ##  'Arrangements' only calls 'ArrangementsA' or 'ArrangementsK' with initial
 ##  arguments.
 ##
-ArrangementsA := function ( mset, m, n, comb, i )
+DeclareGlobalName( "ArrangementsA" );
+BindGlobal( "ArrangementsA", function ( mset, m, n, comb, i )
     local   combs, l;
     if i = n+1  then
         comb  := ShallowCopy(comb);
@@ -553,10 +554,10 @@ ArrangementsA := function ( mset, m, n, comb, i )
         od;
     fi;
     return combs;
-end;
-MakeReadOnlyGlobal( "ArrangementsA" );
+end );
 
-ArrangementsK := function ( mset, m, n, k, comb, i )
+DeclareGlobalName( "ArrangementsK" );
+BindGlobal( "ArrangementsK", function ( mset, m, n, k, comb, i )
     local   combs, l;
     if k = 0  then
         comb := ShallowCopy(comb);
@@ -573,8 +574,7 @@ ArrangementsK := function ( mset, m, n, k, comb, i )
         od;
     fi;
     return combs;
-end;
-MakeReadOnlyGlobal( "ArrangementsK" );
+end );
 
 InstallGlobalFunction(Arrangements,function ( mset, arg... )
     local   combs, m;
@@ -724,7 +724,8 @@ end);
 ##
 ##  'UnorderedTuples' only calls 'UnorderedTuplesK' with initial arguments.
 ##
-UnorderedTuplesK := function ( set, n, m, k, tup, i )
+DeclareGlobalName( "UnorderedTuplesK" );
+BindGlobal( "UnorderedTuplesK", function ( set, n, m, k, tup, i )
     local   tups, l;
     if k = 0  then
         tup := ShallowCopy(tup);
@@ -737,8 +738,7 @@ UnorderedTuplesK := function ( set, n, m, k, tup, i )
         od;
     fi;
     return tups;
-end;
-MakeReadOnlyGlobal( "UnorderedTuplesK" );
+end );
 
 InstallGlobalFunction(UnorderedTuples,function ( set, k )
     set := Set(set);
@@ -951,7 +951,8 @@ end);
 ##
 ##  'Tuples' only calls 'TuplesK' with initial arguments.
 ##
-TuplesK := function ( set, k, tup, i )
+DeclareGlobalName( "TuplesK" );
+BindGlobal( "TuplesK", function ( set, k, tup, i )
     local   tups, l;
     if k = 0  then
         tup := ShallowCopy(tup);
@@ -964,8 +965,7 @@ TuplesK := function ( set, k, tup, i )
         od;
     fi;
     return tups;
-end;
-MakeReadOnlyGlobal( "TuplesK" );
+end );
 
 InstallGlobalFunction(Tuples,function ( set, k )
     set := Set(set);
@@ -1139,7 +1139,8 @@ end);
 ##
 ##  'Permutations' only calls 'PermutationsListK' with initial arguments.
 ##
-PermutationsListK := function ( mset, m, n, k, perm, i )
+DeclareGlobalName( "PermutationsListK" );
+BindGlobal( "PermutationsListK", function ( mset, m, n, k, perm, i )
     local   perms, l;
     if k = 0  then
         perm := ShallowCopy(perm);
@@ -1156,8 +1157,7 @@ PermutationsListK := function ( mset, m, n, k, perm, i )
         od;
     fi;
     return perms;
-end;
-MakeReadOnlyGlobal( "PermutationsListK" );
+end );
 
 InstallGlobalFunction(PermutationsList,function ( mset )
     local   m;
@@ -1198,7 +1198,8 @@ end);
 ##  taken  to  take a candidate   only once if  it  append more  than once in
 ##  <mset>.
 ##
-DerangementsK := function ( mset, m, n, list, k, perm, i )
+DeclareGlobalName( "DerangementsK" );
+BindGlobal( "DerangementsK", function ( mset, m, n, list, k, perm, i )
     local   perms, l;
     if k = 0  then
         perm := ShallowCopy(perm);
@@ -1216,8 +1217,7 @@ DerangementsK := function ( mset, m, n, list, k, perm, i )
         od;
     fi;
     return perms;
-end;
-MakeReadOnlyGlobal( "DerangementsK" );
+end );
 
 InstallGlobalFunction(Derangements,function ( list )
     local   mset, m;
@@ -1235,7 +1235,8 @@ end);
 ##  If <mset> is a multiset it  uses 'NrDerangementsK', which works just like
 ##  'DerangementsK'.
 ##
-NrDerangementsK := function ( mset, m, n, list, k, i )
+DeclareGlobalName( "NrDerangementsK" );
+BindGlobal( "NrDerangementsK", function ( mset, m, n, list, k, i )
     local   perms, l;
     if k = 0  then
         perms := 1;
@@ -1251,8 +1252,7 @@ NrDerangementsK := function ( mset, m, n, list, k, i )
         od;
     fi;
     return perms;
-end;
-MakeReadOnlyGlobal( "NrDerangementsK" );
+end );
 
 InstallGlobalFunction(NrDerangements,function ( list )
     local   nr, mset, m, i;
@@ -1282,7 +1282,8 @@ end);
 ##
 #F  Permanent( <mat> )  . . . . . . . . . . . . . . . . permanent of a matrix
 ##
-Permanent2 := function ( mat, m, n, r, v, i, sum )
+DeclareGlobalName( "Permanent2" );
+BindGlobal( "Permanent2", function ( mat, m, n, r, v, i, sum )
     local   p,  k;
     if i = n+1  then
         p := v;
@@ -1292,8 +1293,7 @@ Permanent2 := function ( mat, m, n, r, v, i, sum )
              + Permanent2( mat, m, n, r+1, v*(r-m)/(n-r), i+1, sum+mat[i] );
     fi;
     return p;
-end;
-MakeReadOnlyGlobal( "Permanent2" );
+end );
 
 InstallMethod(Permanent,
    "for matrices",
@@ -1347,7 +1347,8 @@ end);
 ##  'PartitionsSet' only  calls   'PartitionsSetA' or  'PartitionsSetK'  with
 ##  initial arguments.
 ##
-PartitionsSetA := function ( set, n, m, o, part, i, j )
+DeclareGlobalName( "PartitionsSetA" );
+BindGlobal( "PartitionsSetA", function ( set, n, m, o, part, i, j )
     local   parts, npart, l;
     l := Position(m,true);
     if l = fail  then
@@ -1371,10 +1372,10 @@ PartitionsSetA := function ( set, n, m, o, part, i, j )
         od;
     fi;
     return parts;
-end;
-MakeReadOnlyGlobal( "PartitionsSetA" );
+end );
 
-PartitionsSetK := function ( set, n, m, o, k, part, i, j )
+DeclareGlobalName( "PartitionsSetK" );
+BindGlobal( "PartitionsSetK", function ( set, n, m, o, k, part, i, j )
     local   parts, npart, l;
     l := Position(m,true);
     parts := [];
@@ -1404,8 +1405,7 @@ PartitionsSetK := function ( set, n, m, o, k, part, i, j )
         od;
     fi;
     return parts;
-end;
-MakeReadOnlyGlobal( "PartitionsSetK" );
+end );
 
 InstallGlobalFunction(PartitionsSet,function ( set, arg... )
     local   parts, m, k;
@@ -1502,7 +1502,8 @@ end);
 ##  'Partitions'  only  calls  'PartitionsA'  or  'PartitionsK'  with initial
 ##  arguments.
 ##
-PartitionsA := function ( n, m, part, i )
+DeclareGlobalName( "PartitionsA" );
+BindGlobal( "PartitionsA", function ( n, m, part, i )
     local   parts, l;
     if n = 0  then
         part := ShallowCopy(part);
@@ -1529,10 +1530,10 @@ PartitionsA := function ( n, m, part, i )
         od;
     fi;
     return parts;
-end;
-MakeReadOnlyGlobal( "PartitionsA" );
+end );
 
-PartitionsK := function ( n, m, k, part, i )
+DeclareGlobalName( "PartitionsK" );
+BindGlobal( "PartitionsK", function ( n, m, k, part, i )
     local   parts, l;
     if k = 1  then
         part := ShallowCopy(part);
@@ -1552,8 +1553,7 @@ PartitionsK := function ( n, m, k, part, i )
         od;
     fi;
     return parts;
-end;
-MakeReadOnlyGlobal( "PartitionsK" );
+end );
 
 # The following used to be `Partitions' but was renamed, because
 # the new `Partitions' is much faster and produces less garbage, see
@@ -2105,7 +2105,8 @@ end);
 ##  'OrderedPartitions'      only       calls     'OrderedPartitionsA'     or
 ##  'OrderedPartitionsK' with initial arguments.
 ##
-OrderedPartitionsA := function ( n, part, i )
+DeclareGlobalName( "OrderedPartitionsA" );
+BindGlobal( "OrderedPartitionsA", function ( n, part, i )
     local   parts, l;
     if n = 0  then
         part := ShallowCopy(part);
@@ -2121,10 +2122,10 @@ OrderedPartitionsA := function ( n, part, i )
         Add( parts, part );
     fi;
     return parts;
-end;
-MakeReadOnlyGlobal( "OrderedPartitionsA" );
+end );
 
-OrderedPartitionsK := function ( n, k, part, i )
+DeclareGlobalName( "OrderedPartitionsK" );
+BindGlobal( "OrderedPartitionsK", function ( n, k, part, i )
     local   parts, l;
     if k = 1  then
         part := ShallowCopy(part);
@@ -2138,8 +2139,7 @@ OrderedPartitionsK := function ( n, k, part, i )
         od;
     fi;
     return parts;
-end;
-MakeReadOnlyGlobal( "OrderedPartitionsK" );
+end );
 
 InstallGlobalFunction(OrderedPartitions,function ( n, arg... )
     local   parts, k;
@@ -2222,7 +2222,8 @@ end);
 ##  '<part>[<i>]' are the elements  of '<set>[[1..<m>]]'  that are less  than
 ##  <n>, since we require that partitions are nonincreasing.
 ##
-RestrictedPartitionsA := function ( n, set, m, part, i )
+DeclareGlobalName( "RestrictedPartitionsA" );
+BindGlobal( "RestrictedPartitionsA", function ( n, set, m, part, i )
     local   parts, l;
     if n = 0  then
         part := ShallowCopy(part);
@@ -2247,10 +2248,10 @@ RestrictedPartitionsA := function ( n, set, m, part, i )
         fi;
     fi;
     return parts;
-end;
-MakeReadOnlyGlobal( "RestrictedPartitionsA" );
+end );
 
-RestrictedPartitionsK := function ( n, set, m, k, part, i )
+DeclareGlobalName( "RestrictedPartitionsK" );
+BindGlobal( "RestrictedPartitionsK", function ( n, set, m, k, part, i )
     local   parts, l;
     if k = 1  then
         if n in set  then
@@ -2272,8 +2273,7 @@ RestrictedPartitionsK := function ( n, set, m, k, part, i )
         od;
     fi;
     return parts;
-end;
-MakeReadOnlyGlobal( "RestrictedPartitionsK" );
+end );
 
 InstallGlobalFunction(RestrictedPartitions,function ( n, set, arg... )
     local   parts, k;
@@ -2307,7 +2307,8 @@ end);
 ##
 #N  22-Jul-91 martin there should be a better way to do this for given <k>
 ##
-NrRestrictedPartitionsK := function ( n, set, m, k, part, i )
+DeclareGlobalName( "NrRestrictedPartitionsK" );
+BindGlobal( "NrRestrictedPartitionsK", function ( n, set, m, k, part, i )
     local   parts, l;
     if k = 1  then
         if n in set  then
@@ -2327,8 +2328,7 @@ NrRestrictedPartitionsK := function ( n, set, m, k, part, i )
         od;
     fi;
     return parts;
-end;
-MakeReadOnlyGlobal( "NrRestrictedPartitionsK" );
+end );
 
 InstallGlobalFunction(NrRestrictedPartitions,function ( n, set, arg... )
     local  s, m, p, l, k;

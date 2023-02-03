@@ -148,7 +148,7 @@ local c;
 
 end);
 
-SparseIntKeyVecListAndMatrix:=function(d,m)
+BindGlobal( "SparseIntKeyVecListAndMatrix", function(d,m)
 local f,n,pow,fct;
   if IsList(d) and Length(d)>0 and IsMatrix(d[1]) then
     f:=DefaultScalarDomainOfMatrixList(d);
@@ -169,7 +169,7 @@ local f,n,pow,fct;
             od;
             return gsy;
           end;
-end;
+end );
 
 InstallMethod(SparseIntKey,"for lists of vectors",true,
     [ IsFFECollColl,IsObject ], 0,

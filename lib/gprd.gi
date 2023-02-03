@@ -1205,7 +1205,7 @@ end );
 
 # semidirect product as finitely presented
 
-SemidirectFp:=function( G, aut, N )
+BindGlobal( "SemidirectFp", function( G, aut, N )
 local Go,No,giso,niso,FG,GP,FN,NP,F,GI,NI,rels,i,j,P;
   Go:=G;
   No:=N;
@@ -1256,7 +1256,7 @@ local Go,No,giso,niso,FG,GP,FN,NP,F,GI,NI,rels,i,j,P;
                         Concatenation(GP,List(NI,x->One(Go))))  );
   SetSemidirectProductInfo(P,i);
   return P;
-end;
+end );
 
 InstallMethod( SemidirectProduct,"fp with group",true,
     [ IsSubgroupFpGroup, IsGroupHomomorphism, IsGroup ], 0, SemidirectFp);

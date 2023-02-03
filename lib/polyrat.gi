@@ -1915,7 +1915,7 @@ end);
 #F  SymAdic( <x>, <b> ) . . . . . . . . . . symmetric <b>-adic expansion of <x>
 #F  (<b> and <x> integers)
 ##
-SymAdic:=function(x,b)
+BindGlobal( "SymAdic", function(x,b)
   local l, b2, r;
   b2:=QuoInt(b,2);
   l:=[];
@@ -1928,7 +1928,7 @@ SymAdic:=function(x,b)
     x:=(x-r)/b;
   od;
   return l;
-end;
+end );
 
 
 #############################################################################

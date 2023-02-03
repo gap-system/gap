@@ -1645,7 +1645,7 @@ SMTX.IsIndecomposable:=function(m)
 end;
 
 
-SMTX_BasisModuleHomomorphisms:=function(m1,m2)
+SMTX.BasisModuleHomomorphisms:=function(m1,m2)
 local b;
   TestModulesFitTogether(m1,m2);
   if m1.dimension>5 then
@@ -1659,16 +1659,12 @@ local b;
   return b;
 end;
 
-SMTX.BasisModuleHomomorphisms:=SMTX_BasisModuleHomomorphisms;
-
-SMTX_BasisModuleEndomorphisms:=function(m)
+SMTX.BasisModuleEndomorphisms:=function(m)
   if not IsBound(m.basisModuleEndomorphisms) then
     m.basisModuleEndomorphisms:=Immutable(SMTX.BasisModuleHomomorphisms(m,m));
   fi;
   return m.basisModuleEndomorphisms;
 end;
-
-SMTX.BasisModuleEndomorphisms:=SMTX_BasisModuleEndomorphisms;
 
 SMTX.SetBasisEndomorphismsRadical:=SMTX.Setter("basisEndoRad");
 SMTX.BasisEndomorphismsRadical:=SMTX.Getter("basisEndoRad");

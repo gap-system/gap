@@ -207,7 +207,8 @@ end);
 # threshold up to which to try.
 PRINTWORDPOWERS:=true;
 
-DoNSAW:=function(l,names,tseed)
+DeclareGlobalName("DoNSAW");
+BindGlobal( "DoNSAW", function(l,names,tseed)
 local a,n,t,
       word,
       exp,
@@ -278,8 +279,7 @@ local a,n,t,
   od;
   ConvertToStringRep( str );
   return str;
-end;
-MakeReadOnlyGlobal("DoNSAW");
+end );
 
 BindGlobal("NiceStringAssocWord",function(elm)
 local names,word;
@@ -741,21 +741,21 @@ InstallOtherMethod( Length,
 ##
 #M  Install methods for objects of the infinity type
 ##
-InfBits_ExtRepOfObj := elm->elm![1];
+BindGlobal( "InfBits_ExtRepOfObj", elm->elm![1] );
 InstallMethod( ExtRepOfObj,
     "for a inf. bits assoc. word",
     true,
     [ IsInfBitsAssocWord ], 0,
     InfBits_ExtRepOfObj );
 
-InfBits_Equal := function( x, y ) return x![1] = y![1]; end;
+BindGlobal( "InfBits_Equal", {x,y} ->  x![1] = y![1] );
 InstallMethod( \=,
     "for two inf. bits assoc. words",
     IsIdenticalObj,
     [ IsInfBitsAssocWord, IsInfBitsAssocWord ], 0,
     InfBits_Equal );
 
-InfBits_Less := function( u, v )
+BindGlobal( "InfBits_Less", function( u, v )
     local   lu, lv,      # length of u/v as a list
             len,         # difference in length of u/v as words
             i,           # loop variable
@@ -829,7 +829,7 @@ InfBits_Less := function( u, v )
     fi;
 
     return len < 0;
-end;
+end );
 
 InstallMethod( \<,
     "for two inf. bits assoc. words",
@@ -837,39 +837,39 @@ InstallMethod( \<,
     [ IsInfBitsAssocWord, IsInfBitsAssocWord ], 100,
     InfBits_Less );
 
-InfBits_One := x -> InfBits_AssocWord( FamilyObj(x)!.types[4],[] );
+BindGlobal( "InfBits_One", x -> InfBits_AssocWord( FamilyObj(x)!.types[4],[] ) );
 InstallMethod( OneOp,
     "for an inf. bits assoc. word-with-one",
     true,
     [ IsInfBitsAssocWord and IsAssocWordWithOne ], 0,
     InfBits_One );
 
-InfBits_ExponentSyllable := function( x, i )
+BindGlobal( "InfBits_ExponentSyllable", function( x, i )
     return x![1][ 2*i ];
-end;
+end );
 InstallMethod( ExponentSyllable,
     "for an inf. bits assoc. word, and a pos. integer",
     true,
     [ IsInfBitsAssocWord, IsPosInt ], 0,
     InfBits_ExponentSyllable );
 
-InfBits_GeneratorSyllable := function( x, i )
+BindGlobal( "InfBits_GeneratorSyllable", function( x, i )
     return x![1][2*i-1];
-end;
+end );
 InstallMethod( GeneratorSyllable,
     "for an inf. bits assoc. word, and an integer",
     true,
     [ IsInfBitsAssocWord, IsInt ], 0,
     InfBits_GeneratorSyllable );
 
-InfBits_NumberSyllables := x -> Length( x![1] ) / 2;
+BindGlobal( "InfBits_NumberSyllables", x -> Length( x![1] ) / 2 );
 InstallMethod( NumberSyllables,
     "for an inf. bits assoc. word",
     true,
     [ IsInfBitsAssocWord ], 0,
     InfBits_NumberSyllables );
 
-InfBits_ExponentSums1 := function( obj )
+BindGlobal( "InfBits_ExponentSums1", function( obj )
     local expvec, i;
     #expvec:= [];
     #for i in [ 1 .. TypeObj( obj )![ AWP_NR_GENS ] ] do
@@ -881,7 +881,7 @@ InfBits_ExponentSums1 := function( obj )
       expvec[ obj[i] ]:= expvec[ obj[i] ] + obj[ i+1 ];
     od;
     return expvec;
-end;
+end );
 InstallMethod( ExponentSums,
     "for an inf. bits assoc. word",
     true,
@@ -889,7 +889,7 @@ InstallMethod( ExponentSums,
     InfBits_ExponentSums1 );
 
 
-InfBits_ExponentSums3 := function( obj, from, to )
+BindGlobal( "InfBits_ExponentSums3", function( obj, from, to )
     local expvec, i;
 
     if from < 1 then Error("<from> must be a positive integer"); fi;
@@ -906,7 +906,7 @@ InfBits_ExponentSums3 := function( obj, from, to )
         fi;
     od;
     return expvec{[from..to]};
-end;
+end );
 InstallOtherMethod( ExponentSums,
     "for an inf. bits assoc. word, and two integers",
     true,

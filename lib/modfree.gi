@@ -175,7 +175,7 @@ InstallMethod( Size,
 ##  Either this basis has been entered when the space was constructed, or a
 ##  basis is computed together with the elements list.
 ##
-AsListOfFreeLeftModule := function( V )
+BindGlobal( "AsListOfFreeLeftModule", function( V )
     local elms,      # elements list, result
           B,         # $F$-basis of $V$
           new,       # intermediate elements list
@@ -200,7 +200,7 @@ AsListOfFreeLeftModule := function( V )
 
     # Return the elements list.
     return elms;
-end;
+end );
 
 InstallMethod( AsList,
     "for a free left module",

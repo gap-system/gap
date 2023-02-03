@@ -233,19 +233,17 @@ end);
 #M  SetInfoLevel( <class>, <level>)   set desired verbosity level for a class
 ##
 
-INFODATA_DEFAULT_HANDLER := function(ic,lev)
-    ic![INFODATA_CURRENTLEVEL] := lev;
-end;
-
 InstallMethod(SetInfoLevel, true,
         [IsInfoClass and IsInfoClassListRep, IsPosInt], 0,
-        INFODATA_DEFAULT_HANDLER);
+        function(ic,lev)
+    ic![INFODATA_CURRENTLEVEL] := lev;
+end);
 
 InstallMethod(SetInfoLevel, true,
         [IsInfoClass and IsInfoClassListRep, IsZeroCyc], 0,
-        INFODATA_DEFAULT_HANDLER);
-
-Unbind(INFODATA_DEFAULT_HANDLER);
+        function(ic,lev)
+    ic![INFODATA_CURRENTLEVEL] := lev;
+end);
 
 #############################################################################
 ##

@@ -377,7 +377,7 @@ InstallMethod( \*,
 #T  Should multiplication with zero be avoided (store the zero)?
 #T  Should the nonexistence of zero divisors be known/used?
 ##
-ElmTimesRingElm := function( x, y )
+BindGlobal( "ElmTimesRingElm", function( x, y )
     local F, i, prod, z;
     F:= FamilyObj( x );
     z:= ZeroCoefficient( x );
@@ -388,7 +388,7 @@ ElmTimesRingElm := function( x, y )
     prod:= NormalizedElementOfMagmaRingModuloRelations( F,
                [ z, FMRRemoveZero( x, z ) ] );
     return Objectify( F!.defaultType, prod );
-end;
+end );
 
 InstallMethod( \*,
     "for magma ring element, and ring element",
@@ -407,7 +407,7 @@ InstallMethod( \*,
 #M  \*( <r>, <x> )  . . . . . . . . .  for coefficient and magma ring element
 #M  \*( <r>, <x> )  . . . . . . . . . . .  for integer and magma ring element
 ##
-RingElmTimesElm := function( x, y )
+BindGlobal( "RingElmTimesElm", function( x, y )
     local F, i, prod, z;
     F:= FamilyObj( y );
     z:= ZeroCoefficient( y );
@@ -418,7 +418,7 @@ RingElmTimesElm := function( x, y )
     prod:= NormalizedElementOfMagmaRingModuloRelations( F,
                [ z, FMRRemoveZero( y, z ) ] );
     return Objectify( F!.defaultType, prod );
-end;
+end );
 
 InstallMethod( \*,
     "for ring element, and magma ring element",
@@ -603,7 +603,7 @@ InstallOtherMethod( \-,
 ##
 #M  \/( x, r )  . . . . . . . . . . .  for magma ring element and coefficient
 ##
-ElmDivRingElm := function( x, y )
+BindGlobal( "ElmDivRingElm", function( x, y )
     local F, i, z;
     F:= FamilyObj( x );
     z:= ZeroCoefficient( x );
@@ -612,7 +612,7 @@ ElmDivRingElm := function( x, y )
       x[i]:= x[i] / y;
     od;
     return Objectify( F!.defaultType, [ z, x ] );
-end;
+end );
 
 InstallOtherMethod( \/,
     "for magma ring element, and ring element",

@@ -330,7 +330,7 @@ SMTX_OrthogonalVector:=function( subbasis )
 end;
 SMTX.OrthogonalVector:=SMTX_OrthogonalVector;
 
-SubGModLeadPos:=function(sub,dim,subdim,zero)
+BindGlobal( "SubGModLeadPos", function(sub,dim,subdim,zero)
 local leadpos,i,j,k;
    ## As in SpinnedBasis, leadpos[i] gives the position of the first nonzero
    ## entry (which will always be 1) of sub[i].
@@ -347,7 +347,7 @@ local leadpos,i,j,k;
       od;
    od;
   return leadpos;
-end;
+end );
 
 #############################################################################
 ##

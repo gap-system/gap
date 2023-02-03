@@ -1052,7 +1052,7 @@ InstallOtherMethod( DefaultFieldByGenerators,
 ##  In all these cases, the result is either zero or in fact a field,
 ##  so we may delegate to `GF'.
 ##
-RingFromFFE := function( gens )
+BindGlobal( "RingFromFFE", function( gens )
     local F;
 
     F:= GF( Characteristic( gens ), DegreeFFE( gens ) );
@@ -1060,7 +1060,7 @@ RingFromFFE := function( gens )
       F:= TrivialSubalgebra( F );
     fi;
     return F;
-end;
+end );
 
 InstallMethod( RingByGenerators,
     "for a collection of FFE",
@@ -1078,14 +1078,14 @@ InstallMethod( DefaultRingByGenerators,
     RingFromFFE );
 
 
-FLMLORFromFFE := function( F, elms )
+BindGlobal( "FLMLORFromFFE", function( F, elms )
     if ForAll( elms, IsZero ) then
       return TrivialSubalgebra( F );
     else
       return GF( Characteristic( F ),
                  Lcm( DegreeFFE( elms ), DegreeOverPrimeField( F ) ) );
     fi;
-end;
+end );
 
 InstallMethod( FLMLORByGenerators,
     "for a field, and a collection of FFE",

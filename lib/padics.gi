@@ -27,7 +27,7 @@
 ##      153.0(17) is  1*17^(-2) + 5*17^(-1) + 3*17^0 and
 ##    '15'3.0(17) is 15*17^(-1) + 3*17^0
 ##
-PrintPadicExpansion := function( ppower, int, prime, precision )
+BindGlobal( "PrintPadicExpansion", function( ppower, int, prime, precision )
     local   pos,  flag,  z,  k,  r;
 
     if int = 0  then
@@ -78,7 +78,7 @@ PrintPadicExpansion := function( ppower, int, prime, precision )
         od;
     fi;
     Print( "(", prime, ")" );
-end;
+end );
 
 
 #############################################################################
@@ -93,7 +93,7 @@ end;
 ##    PadicExpansionByRat(5, 3, 4)   -> [0,  5] = 12.00(3)
 ##    PadicExpansionByRat(1/2, 3, 4) -> [0, 41] = 2.111(3)
 ##
-PadicExpansionByRat := function( a, prime, precision )
+BindGlobal( "PadicExpansionByRat", function( a, prime, precision )
     local   c,  flag,  ppart,  z,  step,  erg,  ppot,  l,  digit;
 
     if a = 0 then
@@ -136,7 +136,7 @@ PadicExpansionByRat := function( a, prime, precision )
         c := [ppart, erg];
     fi;
     return c;
-end;
+end );
 
 
 #############################################################################
@@ -162,7 +162,7 @@ end;
 ##  matrix and get the  coeff.-presentation of the result  in the right basis
 ##  of L.
 ##
-MultMatrixPadicNumbersByCoefficientsList := function ( list )
+BindGlobal( "MultMatrixPadicNumbersByCoefficientsList", function ( list )
     local   n,  F,  zero,  one,  mat,  i,  j;
 
     n := Length(list) - 1;
@@ -194,7 +194,7 @@ MultMatrixPadicNumbersByCoefficientsList := function ( list )
         mat[i] := ShiftedCoeffs(mat[i-1],1) + mat[i-1][n] * mat[n+1];
     od;
     return mat;
-end;
+end );
 
 
 #############################################################################
@@ -224,7 +224,7 @@ end;
 ##
 ##  M is the mult.-matrix and B is the matrix returned by this function.
 ##
-StructureConstantsPadicNumbers := function( e, f )
+BindGlobal( "StructureConstantsPadicNumbers", function( e, f )
     local   mat,  i,  j,  a1,  a2,  b1,  b2;
 
     # there are <e>*<f> basis-elements and according to the above ordering
@@ -241,7 +241,7 @@ StructureConstantsPadicNumbers := function( e, f )
         od;
     od;
     return mat;
-end;
+end );
 
 
 #############################################################################

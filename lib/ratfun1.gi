@@ -15,7 +15,7 @@
 
 # Functions to create objects
 
-LAUR_POL_BY_EXTREP:=function(rfam,coeff,val,inum)
+BindGlobal( "LAUR_POL_BY_EXTREP", function(rfam,coeff,val,inum)
 local f,typ,lc;
 
 # trap code for unreduced coeffs.
@@ -66,11 +66,11 @@ local f,typ,lc;
 
   # and return the polynomial
   return f;
-end;
+end );
 
 # conversion
 
-EXTREP_POLYNOMIAL_LAURENT:=function(f)
+BindGlobal( "EXTREP_POLYNOMIAL_LAURENT", function(f)
 local coefs, ind, extrep, i, shift,fam;
   fam:=FamilyObj(f);
   coefs := CoefficientsOfLaurentPolynomial(f);
@@ -88,9 +88,9 @@ local coefs, ind, extrep, i, shift,fam;
   od;
   return extrep;
 
-end;
+end );
 
-INDETS_POLY_EXTREP:=function(extrep)
+BindGlobal( "INDETS_POLY_EXTREP", function(extrep)
 local indets, i, j;
   indets:=[];
   for i in [1,3..Length(extrep)-1] do
@@ -99,9 +99,9 @@ local indets, i, j;
     od;
   od;
   return indets;
-end;
+end );
 
-UNIVARTEST_RATFUN:=function(f)
+BindGlobal( "UNIVARTEST_RATFUN", function(f)
 local fam,notuniv,cannot,num,den,hasden,indn,col,dcol,val,i,j,nud,pos;
   fam:=FamilyObj(f);
 
@@ -285,9 +285,9 @@ local fam,notuniv,cannot,num,den,hasden,indn,col,dcol,val,i,j,nud,pos;
     return [true,indn,true,Immutable([col,val])];
   fi;
 
-end;
+end );
 
-EXTREP_COEFFS_LAURENT:=function(cofs,val,ind,zero)
+BindGlobal( "EXTREP_COEFFS_LAURENT", function(cofs,val,ind,zero)
 local   ext,  i,  j;
 
   ext := [];
@@ -307,9 +307,9 @@ local   ext,  i,  j;
 
   return ext;
 
-end;
+end );
 
-UNIV_FUNC_BY_EXTREP:=function(rfam,ncof,dcof,val,inum)
+BindGlobal( "UNIV_FUNC_BY_EXTREP", function(rfam,ncof,dcof,val,inum)
 local f;
 
   # constant denominator -> ratfun
@@ -341,7 +341,7 @@ local f;
 
   # and return the polynomial
   return f;
-end;
+end );
 
 #############################################################################
 #
@@ -356,7 +356,7 @@ end;
 ##
 #F  MonomialRevLexicoLess(mon1,mon2) . . . .  reverse lexicographic ordering
 ##
-MONOM_REV_LEX:=function(m,n)
+BindGlobal( "MONOM_REV_LEX", function(m,n)
 local x,y;
   # assume m and n are lexicographically sorted (otherwise we have to do
   # further work)
@@ -383,11 +383,11 @@ local x,y;
   else
     return false;
   fi;
-end;
+end );
 
 ##  Low level workhorse for operations with monomials in Zipped form
 ##  ZippedSum( <z1>, <z2>, <czero>, <funcs> )
-ZIPPED_SUM_LISTS_LIB:= function( z1, z2, zero, f )
+BindGlobal( "ZIPPED_SUM_LISTS_LIB", function( z1, z2, zero, f )
     local   sum,  i1,  i2,  i;
 
     sum := [];
@@ -438,11 +438,11 @@ ZIPPED_SUM_LISTS_LIB:= function( z1, z2, zero, f )
         fi;
     od;
     return sum;
-end;
+end );
 
 
 ##  ZippedProduct( <z1>, <z2>, <czero>, <funcs> )
-ZIPPED_PRODUCT_LISTS:=function( z1, z2, zero, f )
+BindGlobal( "ZIPPED_PRODUCT_LISTS", function( z1, z2, zero, f )
 local   mons,  cofs,  i,  j,  c,  prd;
 
   # check for constant factors
@@ -503,7 +503,7 @@ local   mons,  cofs,  i,  j,  c,  prd;
   # and return the product
   return prd;
 
-end;
+end );
 
 #############################################################################
 ##
@@ -550,7 +550,7 @@ end);
 
 # Arithmetic
 
-ADDITIVE_INV_RATFUN:=function( obj )
+BindGlobal( "ADDITIVE_INV_RATFUN", function( obj )
     local   fam,  i, newnum;
 
     fam := FamilyObj(obj);
@@ -559,9 +559,9 @@ ADDITIVE_INV_RATFUN:=function( obj )
         newnum[i] := -newnum[i];
     od;
     return RationalFunctionByExtRepNC(fam,newnum,ExtRepDenominatorRatFun(obj));
-end;
+end );
 
-ADDITIVE_INV_POLYNOMIAL:=function( obj )
+BindGlobal( "ADDITIVE_INV_POLYNOMIAL", function( obj )
     local   fam,  i, newnum;
 
     fam := FamilyObj(obj);
@@ -570,9 +570,9 @@ ADDITIVE_INV_POLYNOMIAL:=function( obj )
         newnum[i] := -newnum[i];
     od;
     return PolynomialByExtRepNC(fam,newnum);
-end;
+end );
 
-SMALLER_RATFUN:=function(left,right)
+BindGlobal( "SMALLER_RATFUN", function(left,right)
 local a,b,fam,i, j,ln,ld,rn,rd;
   if HasIsPolynomial(left) and IsPolynomial(left)
      and HasIsPolynomial(right) and IsPolynomial(right) then
@@ -644,13 +644,13 @@ local a,b,fam,i, j,ln,ld,rn,rd;
   else
     return true;
   fi;
-end;
+end );
 
 #############################################################################
 ##
 #M  <polynomial>     + <coeff>
 ##
-SUM_COEF_POLYNOMIAL:=function( cf, rf )
+BindGlobal( "SUM_COEF_POLYNOMIAL", function( cf, rf )
 local   fam,  extrf;
 
   if IsZero(cf) then
@@ -673,9 +673,9 @@ local   fam,  extrf;
 
   return PolynomialByExtRepNC(fam,extrf);
 
-end;
+end );
 
-QUOTIENT_POLYNOMIALS_EXT:=function(fam, p, q )
+BindGlobal( "QUOTIENT_POLYNOMIALS_EXT", function(fam, p, q )
 local   quot, lcq,  lmq,  mon,  i, coeff;
 
   if Length(q)=0 then
@@ -715,9 +715,9 @@ local   quot, lcq,  lmq,  mon,  i, coeff;
 
   quot := Reversed(quot);
   return quot;
-end;
+end );
 
-SUM_LAURPOLS:=function( left, right )
+BindGlobal( "SUM_LAURPOLS", function( left, right )
 local   indn,  fam,  zero,  l,  r,  val,  sum;
 
   # this method only works for the same indeterminate
@@ -771,7 +771,7 @@ local   indn,  fam,  zero,  l,  r,  val,  sum;
   # and return the polynomial (we might get a new valuation!)
   return LaurentPolynomialByExtRepNC(fam, sum, val, indn );
 
-end;
+end );
 
 DIFF_LAURPOLS:=
 function( left, right )
@@ -831,7 +831,7 @@ local   indn,  fam,  zero,  l,  r,  val,  sum;
 
 end;
 
-PRODUCT_LAURPOLS:= function( left, right )
+BindGlobal( "PRODUCT_LAURPOLS", function( left, right )
 local   indn,  fam,  prd,  l,  r,  m,  n, val;
 
   # this method only works for the same indeterminate
@@ -871,9 +871,9 @@ local   indn,  fam,  prd,  l,  r,  m,  n, val;
 
   # return the polynomial
   return LaurentPolynomialByExtRepNC(fam,prd, val, indn );
-end;
+end );
 
-GCD_COEFFS:=function(u,v)
+BindGlobal( "GCD_COEFFS", function(u,v)
 local w;
 
   # perform a Euclidean algorithm
@@ -891,10 +891,10 @@ local w;
   else
     return u;
   fi;
-end;
+end );
 
 # This function is destructive on the first argument!
-QUOTREM_LAURPOLS_LISTS:=function(fc,gc)
+BindGlobal( "QUOTREM_LAURPOLS_LISTS", function(fc,gc)
 local q,m,n,i,c,k,f,z;
   # try to divide
   q:=[];
@@ -925,9 +925,9 @@ local q,m,n,i,c,k,f,z;
     ConvertToVectorRep(q,f);
   fi;
   return [q,fc];
-end;
+end );
 
-ADDCOEFFS_GENERIC_3:=function( l1, l2, m )
+BindGlobal( "ADDCOEFFS_GENERIC_3", function( l1, l2, m )
 local   a1,a2, zero,  n1;
   a1:=Length(l1);a2:=Length(l2);
   if a1>=a2 then
@@ -949,7 +949,7 @@ local   a1,a2, zero,  n1;
       n1 := 0;
   fi;
   return n1;
-end;
+end );
 
 PRODUCT_COEFFS_GENERIC_LISTS:=
 function( l1,m,l2,n )
@@ -989,7 +989,7 @@ end;
 
 ##  RemoveOuterCoeffs( <list>, <coef> )
 
-REMOVE_OUTER_COEFFS_GENERIC:=function( l, c )
+BindGlobal( "REMOVE_OUTER_COEFFS_GENERIC", function( l, c )
 local   n,  m,  i;
 
   n := Length(l);
@@ -1017,9 +1017,9 @@ local   n,  m,  i;
       Unbind(l[n-i+1]);
   od;
   return m;
-end;
+end );
 
-PRODUCT_UNIVFUNCS:=function(left,right)
+BindGlobal( "PRODUCT_UNIVFUNCS", function(left,right)
 local indn,l,r,ln,ld,rn,rd,g,m,n;
 
   # this method only works for the same indeterminate
@@ -1070,9 +1070,9 @@ local indn,l,r,ln,ld,rn,rd,g,m,n;
   ld:=ProductCoeffs(ld,rd);
   return UnivariateRationalFunctionByExtRepNC(FamilyObj(left),
            ln,ld,l[3]+r[3],indn);
-end;
+end );
 
-QUOT_UNIVFUNCS:=function(left,right)
+BindGlobal( "QUOT_UNIVFUNCS", function(left,right)
 local indn,l,r,ln,ld,rn,rd,g,m,n;
 
   # this method only works for the same indeterminate
@@ -1120,9 +1120,9 @@ local indn,l,r,ln,ld,rn,rd,g,m,n;
   ld:=ProductCoeffs(ld,rd);
   return UnivariateRationalFunctionByExtRepNC(FamilyObj(left),
            ln,ld,l[3]-r[3],indn);
-end;
+end );
 
-SUM_UNIVFUNCS:=function(left,right)
+BindGlobal( "SUM_UNIVFUNCS", function(left,right)
 local l,r,indn,ld,rd,ln,rn,g,fam,zero,val;
 
   # this method only works for the same indeterminate
@@ -1202,17 +1202,17 @@ local l,r,indn,ld,rd,ln,rn,g,fam,zero,val;
 
   return UnivariateRationalFunctionByExtRepNC(fam,ln,ld,val,indn);
 
-end;
+end );
 
-DIFF_UNIVFUNCS:=function(f,g)
+BindGlobal( "DIFF_UNIVFUNCS", function(f,g)
   TryNextMethod();
-end;
+end );
 
 #############################################################################
 ##
 #F  SpecializedExtRepPol(<fam>,<ext>,<ind>,<val>)
 ##
-SPECIALIZED_EXTREP_POL:= function(fam,ext,ind,val)
+BindGlobal( "SPECIALIZED_EXTREP_POL", function(fam,ext,ind,val)
 local e,i,p,m,c;
   e:=[];
   for i in [1,3..Length(ext)-1] do
@@ -1230,7 +1230,7 @@ local e,i,p,m,c;
     e:=ZippedSum(e,[m,c],fam!.zeroCoefficient,fam!.zippedSum);
   od;
   return e;
-end;
+end );
 
 TRY_GCD_CANCEL_EXTREP_POL:=
 function(fam,num,den)
@@ -1332,7 +1332,7 @@ local q,p,e,i,j,cnt,sel,si;
   return [num,den];
 end;
 
-DEGREE_INDET_EXTREP_POL:=function(e,ind)
+BindGlobal( "DEGREE_INDET_EXTREP_POL", function(e,ind)
 local d,i,j;
   e:=Filtered(e,IsList);
   d:=0; #the maximum degree so far
@@ -1349,10 +1349,10 @@ local d,i,j;
     od;
   od;
   return d;
-end;
+end );
 
 #  LeadingCoefficient( pol, ind )
-LEAD_COEF_POL_IND_EXTREP:=function(e,ind)
+BindGlobal( "LEAD_COEF_POL_IND_EXTREP", function(e,ind)
 local c,d,i,p;
   d:=0;
   c:=[];
@@ -1372,10 +1372,10 @@ local c,d,i,p;
     fi;
   od;
   return c;
-end;
+end );
 
 #  PolynomialCoefficientsOfPolynomial(<pol>,<ind>)
-POL_COEFFS_POL_EXTREP:=function(e,ind)
+BindGlobal( "POL_COEFFS_POL_EXTREP", function(e,ind)
 local c,i,j,m,ex;
   c:=[];
   for i in [1,3..Length(e)-1] do
@@ -1397,5 +1397,5 @@ local c,i,j,m,ex;
     Add(c[ex],e[i+1]);
   od;
   return c;
-end;
+end );
 

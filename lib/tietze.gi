@@ -19,13 +19,13 @@
 ##  This function calls TzHandleLength1Or2Relators on a presentation for
 ##  which is has not yet been called. (Needed because we cannot yet call it
 ##  while the presentation is created, as it may remove generators.)
-TzTestInitialSetup := function( T )
+BindGlobal( "TzTestInitialSetup", function( T )
   if not IsBound( T!.hasRun1Or2 ) then
     TzHandleLength1Or2Relators( T );
     T!.hasRun1Or2:=true;
     TzSort( T );
   fi;
-end;
+end );
 
 
 #############################################################################

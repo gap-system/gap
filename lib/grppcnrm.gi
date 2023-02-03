@@ -16,7 +16,7 @@
 ##
 #F  PCGS_STABILIZER( <pcgs>, <pnt>, <op> )  . . . . . . . . . . . . . . local
 ##
-PCGS_STABILIZER := function( arg )
+BindGlobal( "PCGS_STABILIZER", function( arg )
     local   pcgs,  pnt,  op,  data,  one,  orb,  prod,  n,  s,  i,
             mi,  np,  j,  o,  len,  l1,  k,  l2,  r,  e,  stab,  ros,dict;
 
@@ -157,14 +157,14 @@ PCGS_STABILIZER := function( arg )
     Info( InfoPcNormalizer, 3, "orbit length: ", Length(orb) );
     return Reversed(s);
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  PCGS_STABILIZER_HOMOMORPHIC( <pcgs>, <homs>, <pnt>, <op> )  . . . . local
 ##
-PCGS_STABILIZER_HOMOMORPHIC := function( arg )
+BindGlobal( "PCGS_STABILIZER_HOMOMORPHIC", function( arg )
     local   pcgs,  homs,  pnt,  op,  ros,  one,  hone,  orb,  prod,
             n,  s,  stab,  i,  mi,  np,  j,  o,  len,  l1,  k,  l2,
             r,  e,  dict;
@@ -255,45 +255,45 @@ PCGS_STABILIZER_HOMOMORPHIC := function( arg )
     Info( InfoPcNormalizer, 3, "orbit length: ", Length(orb) );
     return Reversed(s);
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  PCGS_NORMALIZER( <home>, <norm>, <point>, <pcgs>, <modulo> )
 ##
-PCGS_NORMALIZER_OPB := function( home, elm, obj )
+BindGlobal( "PCGS_NORMALIZER_OPB", function( home, elm, obj )
     local   ord;
 
     elm := elm^obj;
     ord := RelativeOrderOfPcElement( home, elm );
     return elm ^ ( 1 / LeadingExponentOfPcElement( home, elm ) mod ord );
-end;
+end );
 
-PCGS_NORMALIZER_OPC1 := function( data, elm, obj )
+BindGlobal( "PCGS_NORMALIZER_OPC1", function( data, elm, obj )
     local   ord;
 
     elm := elm^obj;
     ord := RelativeOrderOfPcElement( data[1], elm );
     elm := elm ^ ( 1 / LeadingExponentOfPcElement( data[1], elm ) mod ord );
     return HeadPcElementByNumber( data[1], elm, data[2] );
-end;
+end );
 
-PCGS_NORMALIZER_OPC2 := function( data, elm, obj )
+BindGlobal( "PCGS_NORMALIZER_OPC2", function( data, elm, obj )
 # was:  return CanonicalPcElement( data[2], elm^obj );
 local ord;
     elm := elm^obj;
     ord:=RelativeOrderOfPcElement(data[1],elm);
     elm := elm ^ ( 1 / LeadingExponentOfPcElement( data[1], elm ) mod ord );
     return CanonicalPcElement( data[2], elm );
-end;
+end );
 
-PCGS_NORMALIZER_OPD := function( data, lst, obj )
+BindGlobal( "PCGS_NORMALIZER_OPD", function( data, lst, obj )
   lst:=CorrespondingGeneratorsByModuloPcgs(data,List(lst,i->i^obj));
   return lst;
-end;
+end );
 
-PCGS_NORMALIZER_OPE := function( data, lst, obj )
+BindGlobal( "PCGS_NORMALIZER_OPE", function( data, lst, obj )
     local   home,  pag,  pos,  max,  i,  g,  dg,  exp,  j,  ros;
 
     home := data[1];
@@ -333,9 +333,9 @@ PCGS_NORMALIZER_OPE := function( data, lst, obj )
     lst := pag{pos};
     for i  in pos  do Unbind(pag[i]);  od;
     return lst;
-end;
+end );
 
-PCGS_NORMALIZER_DATAE := function( home, modulo )
+BindGlobal( "PCGS_NORMALIZER_DATAE", function( home, modulo )
     local   ros,  sub,  i,  dg,  exp,  max;
 
     ros := RelativeOrders(home);
@@ -353,10 +353,10 @@ PCGS_NORMALIZER_DATAE := function( home, modulo )
         max := max-1;
     od;
     return [ home, sub, max, ros ];
-end;
+end );
 
 
-PCGS_NORMALIZER := function( home, pcgs, pnt, modulo )
+BindGlobal( "PCGS_NORMALIZER", function( home, pcgs, pnt, modulo )
     local   op,  s,  data;
 
     Info( InfoPcNormalizer, 5, "home:       ", ShallowCopy(home) );
@@ -414,14 +414,14 @@ PCGS_NORMALIZER := function( home, pcgs, pnt, modulo )
     Info( InfoPcNormalizer, 4, "new norm:   ", ShallowCopy(pcgs) );
     return pcgs;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  PCGS_NORMALIZER_LINEAR( <home>, <norm>, <point>, <modulo-pcgs> )
 ##
-PCGS_NORMALIZER_LINEAR := function( home, pcgs, pnt, modulo )
+BindGlobal( "PCGS_NORMALIZER_LINEAR", function( home, pcgs, pnt, modulo )
 local   f,  o,  m,  sub,  s,p,op;
 
     Info( InfoPcNormalizer, 5, "home:       ", ShallowCopy(home) );
@@ -462,7 +462,7 @@ local   f,  o,  m,  sub,  s,p,op;
     Info( InfoPcNormalizer, 4, "new norm:   ", ShallowCopy(pcgs) );
     return pcgs;
 
-end;
+end );
 
 
 #############################################################################
@@ -475,7 +475,7 @@ end;
 ##
 ##  It is important, that the weights of <K> are less than those of <N>.
 ##
-PCGS_CONJUGATING_WORD_GS := function( home, n, u, v, k )
+BindGlobal( "PCGS_CONJUGATING_WORD_GS", function( home, n, u, v, k )
     local   id,  x,  q,  i,  p,  t,  m,  vv,  mm,  xx,  j;
 
     # if <n> or <u> / <k> is trivial, just return identity
@@ -520,14 +520,14 @@ PCGS_CONJUGATING_WORD_GS := function( home, n, u, v, k )
 
     return x;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  PCGS_NORMALIZER_GLASBY( <home>, <norm>, <nis>, <pcgs>, <modulo> )
 ##
-PCGS_NORMALIZER_GLASBY := function( home, pcgs, nis, u1, u2 )
+BindGlobal( "PCGS_NORMALIZER_GLASBY", function( home, pcgs, nis, u1, u2 )
     local   id,  stb,  data,  pnt,  i,  cnj,  ns,  one,  mats,  sys,
             sol,  v,  j;
 
@@ -590,14 +590,14 @@ PCGS_NORMALIZER_GLASBY := function( home, pcgs, nis, u1, u2 )
     return SumPcgs( home, u2, stb )
        mod DenominatorOfModuloPcgs(pcgs);
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  PCGS_NORMALIZER_COBOUNDS( <home>, <norm>, <nis>, <pcgs>, <modulo> )
 ##
-PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
+BindGlobal( "PCGS_NORMALIZER_COBOUNDS", function( home, pcgs, nis, u1, u2 )
     local   ns,  us,  gf,  one,  data,  u,  ui,  mats,  t,  l,  i,  b,
             nb,  c,  heads,  k,  ln1,  ln2,  op,  stab,  s,  j,  v;
 
@@ -723,7 +723,7 @@ PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
     return InducedPcgsByGeneratorsNC( home, Concatenation( stab, c, u1 ) )
        mod DenominatorOfModuloPcgs(pcgs);
 
-end;
+end );
 
 
 #############################################################################
@@ -749,7 +749,8 @@ end;
 ##          operations.  Otherwise a ordinary orbit  stabilizer  algorithm is
 ##          used.
 ##
-PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
+DeclareGlobalName("PcGroup_NormalizerWrtHomePcgs");
+BindGlobal( "PcGroup_NormalizerWrtHomePcgs", function( u, f1, f2, f3, f4 )
 
     local   g,              # home pcgs of <pcgs>
             e,  r,          # elementary abelian series of <G> and its length
@@ -999,7 +1000,7 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
         return tmp;
     fi;
 
-end;
+end );
 
 
 #############################################################################

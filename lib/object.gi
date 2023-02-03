@@ -116,7 +116,7 @@ InstallMethod( \<,
     [ IsList and IsSmallList, IsList and IsSmallList ], 0,
     LT_LIST_LIST_DEFAULT );
 
-LT_LIST_LIST_FINITE := function( list1, list2 )
+BIND_GLOBAL( "LT_LIST_LIST_FINITE", function( list1, list2 )
 
     local len, i;
 
@@ -139,7 +139,7 @@ LT_LIST_LIST_FINITE := function( list1, list2 )
       return len < Length( list2 );
 
     fi;
-end;
+end );
 
 InstallMethod( \<,
     "for two finite lists, possibly in different families",

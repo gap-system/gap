@@ -952,7 +952,7 @@ InstallMethod( DecompositionTypesOfGroup,
 #M  IsDihedralGroup( <G> ) . . . . . . . . . . . . . . . . . . generic method
 ##
 
-DoComputeDihedralGenerators := function(G)
+BindGlobal( "DoComputeDihedralGenerators", function(G)
     local  Zn, G1, T, n, t, s, i;
 
     if Size(G) mod 2 <> 0 then return fail; fi;
@@ -987,7 +987,7 @@ DoComputeDihedralGenerators := function(G)
     # choose generator s of Zn
     repeat s := Random(Zn); until Order(s) = n;
     return [t,s];
-end;
+end );
 
 InstallMethod( IsDihedralGroup,
                "for a group",
@@ -1023,7 +1023,7 @@ end);
 ##
 #M  IsQuaternionGroup( <G> ) . . . . . . . . . . . . . . . . . generic method
 ##
-DoComputeGeneralisedQuaternionGenerators := function(G)
+BindGlobal( "DoComputeGeneralisedQuaternionGenerators", function(G)
     local  N,    # size of G
            k,    # ld(N)
            n,    # N/2
@@ -1062,7 +1062,7 @@ DoComputeGeneralisedQuaternionGenerators := function(G)
     # choose generator s of Zn
     repeat s := Random(Zn); until Order(s) = n;
     return [t,s];
-end;
+end );
 
 InstallMethod( IsGeneralisedQuaternionGroup,
                "for a group",

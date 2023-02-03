@@ -1515,7 +1515,7 @@ end );
 ##  All of this is used to produce a basis of the space spaned by
 ##  `tt'.
 ##
-TriangulizeMonomialElementList:= function( tt, zero, LM, LC )
+BindGlobal( "TriangulizeMonomialElementList", function( tt, zero, LM, LC )
 
     local   basechange,  heads,  k,  cf,  i,  head,  b,  b1,  pos;
 
@@ -1596,7 +1596,7 @@ TriangulizeMonomialElementList:= function( tt, zero, LM, LC )
 
     return rec( echelonbas:= tt, heads:= heads, basechange:= basechange );
 
-end;
+end );
 
 #############################################################################
 ##

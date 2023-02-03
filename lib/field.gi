@@ -509,7 +509,7 @@ InstallMethod( Representative,
 ##  We install a special method only for (finite) prime fields,
 ##  since the other cases are handled by the vector space methods.
 ##
-EnumeratorOfPrimeField := function( F )
+BindGlobal( "EnumeratorOfPrimeField", function( F )
     local one;
     one:= One( F );
     if   Size( F ) <= MAXSIZE_GF_INTERNAL then
@@ -518,7 +518,7 @@ EnumeratorOfPrimeField := function( F )
       return EnumeratorOfZmodnZ( F );
     fi;
     TryNextMethod();
-end;
+end );
 
 InstallMethod( Enumerator,
     "for a finite prime field",

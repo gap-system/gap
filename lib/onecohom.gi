@@ -67,7 +67,7 @@ end);
 ##  allow dispatching after the group type
 
 
-OCAddGeneratorsPcgs:=function(ocr,group)
+BindGlobal( "OCAddGeneratorsPcgs", function(ocr,group)
 local   gens;
 
     if not IsBound(ocr.pcgs) then
@@ -103,9 +103,9 @@ local   gens;
         ocr.normalGenerators:=gens;
     fi;
 
-end;
+end );
 
-OCAddGeneratorsGeneral:=function(ocr)
+BindGlobal( "OCAddGeneratorsGeneral", function(ocr)
 local  hom,fg,fpi,fpg,nt,fam;
 
   if IsBound(ocr.normalIn)  then
@@ -200,7 +200,7 @@ local  hom,fg,fpi,fpg,nt,fam;
   Info(InfoCoh,1,Length(ocr.generators)," generators,",
                  Length(ocr.factorpres[2])," relators");
 
-end;
+end );
 
 #############################################################################
 ##
@@ -476,10 +476,10 @@ end);
 ##
 #F  OCAddCentralizer(<ocr>,<B>)  . . . . . . . add centralizer by base<B>
 ##
-OCAddCentralizer:=function(ocr,B)
+BindGlobal( "OCAddCentralizer", function(ocr,B)
     ocr.centralizer:=GroupByGenerators(List(B,ocr.vectorMap),
                                           One(ocr.group));
-end;
+end );
 
 
 #############################################################################

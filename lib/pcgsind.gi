@@ -754,7 +754,7 @@ end );
 ##
 #F  HOMOMORPHIC_IGS( <pcgs>, <list> )
 ##
-HOMOMORPHIC_IGS := function( arg )
+BindGlobal( "HOMOMORPHIC_IGS", function( arg )
     local   pcgs,  list,  id,  pag,  g,  dg,  obj;
 
     Info(InfoWarning,1,"HOMOMORPHIC_IGS is potentially wrong! Do not use!");
@@ -803,7 +803,7 @@ HOMOMORPHIC_IGS := function( arg )
     fi;
     return Compacted(pag);
 
-end;
+end );
 
 
 #############################################################################
@@ -1229,7 +1229,7 @@ end );
 ##
 #M  CanonicalPcElement( <igs>, <elm> )
 ##
-CANONICAL_PC_ELEMENT := function( pcgs, elm )
+BindGlobal( "CANONICAL_PC_ELEMENT", function( pcgs, elm )
     local   pa,  ros,  tal,  g,  d,  ll,  lr;
 
     # catch empty case
@@ -1256,7 +1256,7 @@ CANONICAL_PC_ELEMENT := function( pcgs, elm )
         d := DepthOfPcElement( pa, elm );
         return elm ^ (1/LeadingExponentOfPcElement(pa,elm) mod ros[d]);
     fi;
-end;
+end );
 
 
 InstallMethod( CanonicalPcElement,

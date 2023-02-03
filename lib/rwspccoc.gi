@@ -129,7 +129,7 @@ end );
 ##
 #M  UpdatePolycyclicCollector( <cc> ) . . . . . . combinatorial collector rep
 ##
-CombiCollector_MakeAvector2 := function( cc )
+BindGlobal( "CombiCollector_MakeAvector2", function( cc )
     local   n,  cl,  wt,  avc2,  h,  g;
 
     # number of generators
@@ -151,7 +151,7 @@ CombiCollector_MakeAvector2 := function( cc )
 
     # set the avector
     cc![SCP_AVECTOR2] := avc2;
-end;
+end );
 
 InstallMethod( UpdatePolycyclicCollector,
     "combinatorial collector rep",

@@ -1076,7 +1076,7 @@ InstallMethod( IsCanonicalBasis,
 ##
 #M  Basis( <V> )  . . . . . . . . . . . for free module handled by nice basis
 ##
-BasisForFreeModuleByNiceBasis:= function( V )
+BindGlobal( "BasisForFreeModuleByNiceBasis", function( V )
     local B;
     B:= Objectify( NewType( FamilyObj( V ),
                                 IsFiniteBasisDefault
@@ -1085,7 +1085,7 @@ BasisForFreeModuleByNiceBasis:= function( V )
                    rec() );
     SetUnderlyingLeftModule( B, V );
     return B;
-end;
+end );
 
 InstallMethod( Basis,
     "for free module that is handled by a nice basis",

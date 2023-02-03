@@ -72,13 +72,13 @@ InstallMethod( AddRowVector,
 end
   );
 
-L1_IMMUTABLE_ERROR:=function(arg)
+BindGlobal( "L1_IMMUTABLE_ERROR", function(arg)
   if IsMutable(arg[1]) then
     TryNextMethod();
   else
     Error("arg[1] must be mutable");
   fi;
-end;
+end );
 
 InstallOtherMethod( AddRowVector,"error if immutable",true,
     [ IsList,IsObject,IsObject,IsPosInt,IsPosInt],0,
@@ -995,7 +995,7 @@ end );
 ##  Quotient and  Remainder  of polynomials   given as  list,  is  needed for
 ##  algebraic extensions and fits best here.
 ##
-QuotRemPolList := function(f,g)
+BindGlobal( "QuotRemPolList", function(f,g)
 local q,m,n,i,c,k,z;
   q:=[];
   f:=ShallowCopy(f);
@@ -1016,7 +1016,7 @@ local q,m,n,i,c,k,z;
     od;
   od;
   return [q,f];
-end;
+end );
 
 #############################################################################
 ##
@@ -1079,8 +1079,8 @@ end);
 ##
 #M  DistancesDistributionMatFFEsVecFFE( <vecs>,<vec> )
 ##
-
-DistVecClosVecLib:=function(veclis,vec,d,sum,pos,l,m)
+DeclareGlobalName("DistVecClosVecLib");
+BindGlobal( "DistVecClosVecLib", function(veclis,vec,d,sum,pos,l,m)
 local i,di,vp;
   vp:=veclis[pos];
   for i in [0..m] do
@@ -1092,7 +1092,7 @@ local i,di,vp;
     fi;
     AddRowVector(sum,vp[i+1]);
   od;
-end;
+end );
 
 InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
         [IsMatrix,IsFFECollection and IsField, IsList],0,
@@ -1195,7 +1195,8 @@ end);
 #M  AClosestVectorCombinationsMatFFEVecFFE( <mat>,<f>,<vec>,<l>,<stop> )
 ##
 
-AClosVecLib:=function(veclis,vec,sum,pos,l,m,cnt,stop,bd,bv,coords,bcoords)
+DeclareGlobalName("AClosVecLib");
+BindGlobal( "AClosVecLib", function(veclis,vec,sum,pos,l,m,cnt,stop,bd,bv,coords,bcoords)
     local i,di,vp;
     if    # if this vector has coeff 0 there must be at least cnt+1 free positions
         # to come up with the right number of vectors
@@ -1240,9 +1241,9 @@ AClosVecLib:=function(veclis,vec,sum,pos,l,m,cnt,stop,bd,bv,coords,bcoords)
     AddRowVector(sum,vp[m+1]);
     coords[pos] := 0;
     return bd;
-end;
+end );
 
-AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
+BindGlobal( "AClosestVectorDriver", function(mat,f,vec,cnt,stop,coords)
     local b,fdi,i,j,veclis,mult,mults,fdip, q, ok8,c,bc;
 
     # special case: combination of 0 vectors
@@ -1369,7 +1370,7 @@ AClosestVectorDriver := function(mat,f,vec,cnt,stop,coords)
         ConvertToVectorRepNC(b);
         return b;
     fi;
-end;
+end );
 
 
 InstallMethod(AClosestVectorCombinationsMatFFEVecFFE,"generic",
@@ -1401,10 +1402,9 @@ end);
 ##  <f>. All rows of <mat> must have the same length, and all elements must
 ##  lie in <f>. The rows of <mat> must be linearly independent.
 ##
-## Can't use BindGlobal here because the function is recursive
-##
 
-CosetLeadersInner := function(vl, v, w, weight, pos, record, felts,q, tofind)
+DeclareGlobalName("CosetLeadersInner");
+BindGlobal( "CosetLeadersInner", function(vl, v, w, weight, pos, record, felts,q, tofind)
     local found, i, j;
 
     found := 0;
@@ -1450,9 +1450,7 @@ CosetLeadersInner := function(vl, v, w, weight, pos, record, felts,q, tofind)
         v[pos] := felts[1];
     fi;
     return found;
-end;
-
-MakeReadOnlyGlobal("CosetLeadersInner");
+end );
 
 InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
         [IsMatrix,IsFFECollection and IsField],0,

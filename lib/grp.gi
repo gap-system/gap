@@ -1407,7 +1407,7 @@ InstallMethod( ElementaryAbelianSeries,
 ##
 #M  ElementaryAbelianSeries( <G> )  . .  elementary abelian series of a group
 ##
-DoEASLS:=function( S )
+BindGlobal( "DoEASLS", function( S )
 local   N,I,i,L;
 
   N:=ElementaryAbelianSeries(S);
@@ -1426,7 +1426,7 @@ local   N,I,i,L;
 
   # return it.
   return L;
-end;
+end );
 
 InstallMethod( ElementaryAbelianSeriesLargeSteps,
     "remove spurious factors", [ IsGroup ],

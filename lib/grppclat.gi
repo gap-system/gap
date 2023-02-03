@@ -474,11 +474,11 @@ local P,g,op,act,a,pcgs,ma,mat,d,f,i,j,new,newmat,id,p,dodim,compldim,compl,
 end);
 
 # test whether the c-conjugate of g is h-invariant, internal
-HasInvariantConjugateSubgroup:=function(g,c,h)
+BindGlobal( "HasInvariantConjugateSubgroup", function(g,c,h)
   # This should be done better!
   g:=ConjugateSubgroup(g,c);
   return ForAll(h,i->Image(i,g)=g);
-end;
+end );
 
 #############################################################################
 ##

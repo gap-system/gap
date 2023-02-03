@@ -137,7 +137,7 @@ end);
 ##  expected to be 2 or 3 is neither checked nor used.  Moreover, the perfect
 ##  groups record PERFRec is expected to be already loaded.
 ##
-PerfectCentralProduct := function ( grpdata )
+BindGlobal( "PerfectCentralProduct", function ( grpdata )
 local source,orbsize,nargs,grp1,grp2,names1,names2,names,F,fgens,
       gens1,ngens1,gens2,words1,words2,rels,sub,i,j;
 
@@ -188,7 +188,7 @@ local source,orbsize,nargs,grp1,grp2,names1,names2,names,F,fgens,
 
   # return the result
   return [F,fgens,rels,sub];
-end;
+end );
 
 
 #############################################################################
@@ -215,7 +215,7 @@ end;
 ##  subdirect products. It is only guaranteed that it works correctly for the
 ##  given set of examples.
 ##
-PerfectSubdirectProduct := function (grpdata)
+BindGlobal( "PerfectSubdirectProduct", function (grpdata)
 local source,grp1,grp2,grp0,ngens0,ngens1,ngens2,gens0,gens1,gens2,nrels0,
       names0,names1,names2,names,F,fgens,ngens,rels,rels0,rels1,rels2,i,j;
 
@@ -275,7 +275,7 @@ local source,grp1,grp2,grp0,ngens0,ngens1,ngens2,gens0,gens1,gens2,nrels0,
   od;
 
   return [F,fgens,rels];
-end;
+end );
 
 #############################################################################
 ##

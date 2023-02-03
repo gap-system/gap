@@ -1178,7 +1178,7 @@ end);
 ##
 #M  ExponentsOfPcElement( <sorted-pcgs>, <elm> )
 ##
-ExpPcElmSortedFun:=function( pcgs, elm,ran )
+BindGlobal( "ExpPcElmSortedFun", function( pcgs, elm,ran )
 local exp,pfa,relords,invpow,max,step,e,p,pcspow;
   exp := [];
   pfa := pcgs!.sortingPcgs;
@@ -1207,7 +1207,7 @@ local exp,pfa,relords,invpow,max,step,e,p,pcspow;
   else
     return exp;
   fi;
-end;
+end );
 
 InstallMethod( ExponentsOfPcElement, "sorted pcgs", IsCollsElms,
     [ IsPcgs and IsSortedPcgsRep, IsObject ], 0,

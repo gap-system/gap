@@ -135,28 +135,28 @@ InstallMethod( ReduceRules,
 ##
 #F  IsIdenticalObjFamiliesRwsObj( <rws>, <obj> )
 ##
-IsIdenticalObjFamiliesRwsObj := function( a, b )
+BindGlobal( "IsIdenticalObjFamiliesRwsObj", function( a, b )
     return IsIdenticalObj( a!.underlyingFamily, b );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  IsIdenticalObjFamiliesRwsObjObj( <rws>, <obj>, <obj> )
 ##
-IsIdenticalObjFamiliesRwsObjObj := function( a, b, c )
+BindGlobal( "IsIdenticalObjFamiliesRwsObjObj", function( a, b, c )
     return IsIdenticalObj( a!.underlyingFamily, b )
        and IsIdenticalObj( b, c );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  IsIdenticalObjFamiliesRwsObjXXX( <rws>, <obj>, <obj> )
 ##
-IsIdenticalObjFamiliesRwsObjXXX := function( a, b, c )
+BindGlobal( "IsIdenticalObjFamiliesRwsObjXXX", function( a, b, c )
     return IsIdenticalObj( a!.underlyingFamily, b );
-end;
+end );
 
 
 #############################################################################

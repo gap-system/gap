@@ -875,7 +875,7 @@ InstallMethod( \<,
 ##
 #F  SingleCollector_GroupRelators( ... )
 ##
-SingleCollector_GroupRelators := function(
+BindGlobal( "SingleCollector_GroupRelators", function(
     efam, gens, rods, powersp, powersn,
     commpp, commpn, commnp, commnn, conjpp,
     conjpn, conjnp, conjnn, conflicts )
@@ -937,7 +937,7 @@ SingleCollector_GroupRelators := function(
     # return the rewriting system
     return col;
 
-end;
+end );
 
 #############################################################################
 ##
