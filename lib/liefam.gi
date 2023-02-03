@@ -543,7 +543,7 @@ InstallHandlingByNiceBasis( "IsLieObjectsModule", rec(
 ##
 ##  For Lie algebras <L>, we construct two-sided ideals in all three cases.
 ##
-IdealByGeneratorsForLieAlgebra := function( L, elms )
+BindGlobal( "IdealByGeneratorsForLieAlgebra", function( L, elms )
     local I, lad;
 
     I:= Objectify( NewType( FamilyObj( L ),
@@ -567,7 +567,7 @@ IdealByGeneratorsForLieAlgebra := function( L, elms )
 
     CheckForHandlingByNiceBasis( lad, elms, I, false );
     return I;
-end;
+end );
 
 InstallMethod( TwoSidedIdealByGenerators,
     "for Lie algebra and collection of Lie objects",

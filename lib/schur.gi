@@ -613,7 +613,7 @@ local hom,      #isomorphism fp
   return qhom;
 end);
 
-DoMulExt:=function(arg)
+BindGlobal( "DoMulExt", function(arg)
 local G,pl;
   G:=arg[1];
   if not IsFinite(G) then
@@ -630,7 +630,7 @@ local G,pl;
     pl:=PrimeDivisors(Size(G));
   fi;
   return MulExt(G,pl);
-end;
+end );
 
 InstallMethod(EpimorphismSchurCover,"Holt's algorithm",true,[IsGroup],0,
  DoMulExt);

@@ -239,7 +239,7 @@ DeclareRepresentation( "IsRightTransversalPcGroupRep", IsRightTransversalRep,
 ##
 #M  RightTransversal( <G>, <U> ) . . . . . . . . . for pc groups
 ##
-DoRightTransversalPc:=function( G, U )
+BindGlobal( "DoRightTransversalPc", function( G, U )
 local elements, g, u, e, i,t,depths,gens,p;
 
   t := Objectify( NewType( FamilyObj( G ),
@@ -265,7 +265,7 @@ local elements, g, u, e, i,t,depths,gens,p;
   Assert(1,Length(elements)=Index(G,U));
   t!.transversal:=elements;
   return t;
-end;
+end );
 
 InstallMethod(RightTransversalOp,"pc groups",IsIdenticalObj,
         [ IsPcGroup, IsGroup ],0,DoRightTransversalPc);

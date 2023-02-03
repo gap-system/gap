@@ -245,7 +245,7 @@ end);
 # Note that the total ordering used may depend on what is known about the
 # group at the time of the first comparison. (See manual) (See manual) (See
 # manual) (See manual)
-MakeFpGroupCompMethod:=function(CMP)
+BindGlobal( "MakeFpGroupCompMethod", function(CMP)
   return function(fam)
     local hom,f,com;
     # if a normal form method is known, and it is not known to be crummy
@@ -275,7 +275,7 @@ MakeFpGroupCompMethod:=function(CMP)
              return CMP(com(left),com(right));
            end;
   end;
-end;
+end );
 
 InstallMethod( FpElmEqualityMethod, "generic dispatcher",
 true,[IsElementOfFpGroupFamily],0,MakeFpGroupCompMethod(\=));
@@ -5341,7 +5341,7 @@ end);
 
 # this function might not terminate if there is an infinite index.
 # for infinite index we'd need a nilpotent quotient
-CoSuFp:=function(G,U)
+BindGlobal( "CoSuFp", function(G,U)
 local f,i,j,rels,H,iso,quo,hom;
   if not IsNormal(G,U) then
     TryNextMethod();
@@ -5376,7 +5376,7 @@ local f,i,j,rels,H,iso,quo,hom;
   hom:=GroupHomomorphismByImagesNC(G,Image(iso),GeneratorsOfGroup(G),
         List(GeneratorsOfGroup(H),i->Image(iso,i)));
   return KernelOfMultiplicativeGeneralMapping(hom);
-end;
+end );
 
 InstallMethod(CommutatorSubgroup,"whole fp group with normal subgroup",
   IsIdenticalObj,[IsSubgroupFpGroup and IsWholeFamily,IsSubgroupFpGroup],0,
@@ -5727,7 +5727,7 @@ InstallMethod( DirectProductOp,
 # the generators in the order corresponding to AbelianInvariants.
 # If the FpGroup is abelian, then it is suitable as a method for
 # IndependentGeneratorsOfAbelianGroup.
-IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup := function( G )
+BindGlobal( "IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup", function( G )
   local gens, matrix, snf, base, ord, cti, row, g, o, cf, j, i;
 
   gens := FreeGeneratorsOfFpGroup( G );
@@ -5762,7 +5762,7 @@ IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup := function( G )
   SortParallel( ord, base );
   base := List( base, gen -> MappedWord( gen, gens, GeneratorsOfGroup( G ) ) );
   return base;
-end;
+end );
 
 InstallMethod( IndependentGeneratorsOfAbelianGroup,
   "for abelian fpgroup, use Smith normal form",

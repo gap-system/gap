@@ -707,7 +707,7 @@ InstallOtherMethod( MagmaWithOneByGenerators,
 ##
 #M  MagmaWithInversesByGenerators( <gens> ) . . . . . . . .  for a collection
 ##
-MakeMagmaWithInversesByFiniteGenerators:=function(family,gens)
+BindGlobal( "MakeMagmaWithInversesByFiniteGenerators", function(family,gens)
 local M;
 
   M:=MakeGroupyObj(family, IsMagmaWithInverses, gens, fail);
@@ -716,7 +716,7 @@ local M;
     SetIsFinitelyGeneratedGroup( M, true );
   fi;
   return M;
-end;
+end );
 
 InstallMethod( MagmaWithInversesByGenerators, "for collection", true,
     [ IsCollection and IsFinite] , 0,

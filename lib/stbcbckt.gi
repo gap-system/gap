@@ -3021,7 +3021,7 @@ end );
 ##
 #F  TwoClosure( <G> [, <merge> ] ) . . . . . . . . . two-closure
 ##
-TwoClosurePermGroup := function( arg )
+BindGlobal( "TwoClosurePermGroup", function( arg )
 local   G,  merge,  n,  ran,  Omega,  Agemo,  opr,  S,
         adj,  tot,  k,  kk,  pnt,  orb,  o,  new,  gen,  p,  i,
         tra,  Q,  rbase,  doneroot,  P,  Pr;
@@ -3201,7 +3201,7 @@ local   G,  merge,  n,  ran,  Omega,  Agemo,  opr,  S,
         end;
     fi;
     return PartitionBacktrack( S, Pr, false, rbase, [ true ], G, G );
-end;
+end );
 
 InstallMethod(TwoClosure,"permutation group",true,[IsPermGroup],0,
   TwoClosurePermGroup);

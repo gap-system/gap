@@ -280,7 +280,7 @@ end );
 ##  with Jordan block sizes given by <la>, is the value of this polynomial
 ##  at q.
 ##
-SizePolynomialUnipotentClassGL := function(la)
+BindGlobal( "SizePolynomialUnipotentClassGL", function(la)
     local   lad,  n,  nla,  ri,  tmp,  phila,  i,  a;
 
     lad := AssociatedPartition(la);
@@ -304,7 +304,7 @@ SizePolynomialUnipotentClassGL := function(la)
         phila := ProductCoeffs(phila, a);
     od;
     return [Reversed(phila), n+2*nla-Length(phila)+1];
-end;
+end );
 
 #############################################################################
 ##

@@ -694,7 +694,7 @@ end);
 #F  GenericFindActionKernel  random search for subgroup with faithful core
 ##
 BADINDEX:=1000; # the index that is too big
-GenericFindActionKernel:=function(arg)
+BindGlobal( "GenericFindActionKernel", function(arg)
 local G, N, knowi, goodi, simple, uc, zen, cnt, pool, ise, v, badi,
 totalcnt, interrupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
 
@@ -907,7 +907,7 @@ totalcnt, interrupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
 
   return GetNaturalHomomorphismsPool(G,N);
 
-end;
+end );
 
 #############################################################################
 ##

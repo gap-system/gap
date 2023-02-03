@@ -280,7 +280,7 @@ end);
 ##
 #F  InversePcgs( <hom> )
 ##
-InversePcgs := function( hom )
+BindGlobal( "InversePcgs", function( hom )
     local pcgs, new,
           idR, idD, gensInv, imgsInv, gensKer, gens, imgs, i, u, v,
           uw, tmp, vw, j;
@@ -384,7 +384,7 @@ InversePcgs := function( hom )
                                                         new[1] );
       hom!.rangePcgs := new[1];
       hom!.rangePcgsPreimages := new[2];
-  end;
+end );
 
 #############################################################################
 ##

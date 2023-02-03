@@ -13,7 +13,7 @@
 ##
 #F  EvalFpCoc( coc, desc ). . . . . . . . . . . . . . . . . . . . . . . local
 ##
-EvalFpCoc := function( coc, desc )
+BindGlobal( "EvalFpCoc", function( coc, desc )
     local powers, exp, targets, result, i, j, g1, g2, fcd4, pos, map;
 
     if desc[ 1 ] = 1 then
@@ -71,13 +71,13 @@ EvalFpCoc := function( coc, desc )
         od;
         return result;
     fi;
-end;
+end );
 
 #############################################################################
 ##
 #F CocGroup( G ). . . . . . . . . . . . . . . . . . . . . . . . . . . . local
 ##
-CocGroup := function( g )
+BindGlobal( "CocGroup", function( g )
 
    local orbs, typs, styps, coc, i, j;
 
@@ -95,13 +95,13 @@ CocGroup := function( g )
       od;
    od;
    return coc;
-end;
+end );
 
 #############################################################################
 ##
 #F DiffCoc( coc, pos, finps ) . . . . . . . . . . . . . . . . . . . . . local
 ##
-DiffCoc := function( coc, pos, finps )
+BindGlobal( "DiffCoc", function( coc, pos, finps )
 
    local tmp, sfinps, i, j;
 
@@ -116,13 +116,13 @@ DiffCoc := function( coc, pos, finps )
       od;
    od;
    return Concatenation( coc{[1..pos-1]}, tmp, coc{[pos+1..Length(coc)]} );
-   end;
+end );
 
 #############################################################################
 ##
 #F SplitUpSublistsByFpFunc( list ). . . . . . . . . . . . . . . . . . . local
 ##
-SplitUpSublistsByFpFunc := function( list )
+BindGlobal( "SplitUpSublistsByFpFunc", function( list )
 
    local result, finp, finps, i, g, j;
 
@@ -159,13 +159,13 @@ SplitUpSublistsByFpFunc := function( list )
    Info( InfoRandIso, 2, "   Iso: found ", Length(result)," classes incl. ",
           Number( result, IsRecord )," unique groups");
    return result;
-end;
+end );
 
 #############################################################################
 ##
 #F CodeGenerators( gens, spcgs ). . . . . . . . . . . . . . . . . . . . local
 ##
-CodeGenerators := function( gens, spcgs )
+BindGlobal( "CodeGenerators", function( gens, spcgs )
 
    local  layers, first, one, pcgs, sgrps, dep, lay,
           numf, pos, e, tpos, found, et, p;
@@ -237,13 +237,13 @@ CodeGenerators := function( gens, spcgs )
    pcgs := PcgsByPcSequenceNC( ElementsFamily( FamilyObj( spcgs ) ), pcgs );
    SetRelativeOrders( pcgs, RelativeOrders( spcgs ) );
    return rec( pcgs := pcgs, code := CodePcgs( pcgs ) );
-end;
+end );
 
 #############################################################################
 ##
 #F IsomorphismSolvableSmallGroups( G, H  ). . . . . isomorphism from G onto H
 ##
-IsomorphismSolvableSmallGroups := function( g, h )
+BindGlobal( "IsomorphismSolvableSmallGroups", function( g, h )
    local size, coc1, coc2, lcoc, coclen, p, poses, nposes, i, qual, nqual,
          lmin, spcgs1, spcgs2, gens, code, gens1, gens2, codes1, codes2,
          G, H, iso, iso1, iso2;
@@ -365,4 +365,4 @@ IsomorphismSolvableSmallGroups := function( g, h )
       gens := List( gens, x -> PreImage( iso2, x ) );
    fi;
    return GroupHomomorphismByImagesNC( g, h, GeneratorsOfGroup( g ), gens );
-end;
+end );

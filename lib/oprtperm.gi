@@ -63,12 +63,12 @@ end );
 ##
 #M  Orbits( <G>, <D>, <gens>, <acts>, <OnPoints> )  . . . . . . . on integers
 ##
-ORBS_PERMGP_PTS:=function( G, D, gens, acts, act )
+BindGlobal( "ORBS_PERMGP_PTS", function( G, D, gens, acts, act )
   if act <> OnPoints  then
       TryNextMethod();
   fi;
   return Immutable( OrbitsPerms( acts, D ) );
-end;
+end );
 
 InstallMethod( Orbits, "permgroup on points", true,
     [ IsGroup, IsList and IsCyclotomicCollection, IsList,
@@ -1440,7 +1440,7 @@ end );
 #M  Stabilizer( <G>, <d>, <gens>, <gens>, <act> ) . . . . . . for perm groups
 ##
 
-PermGroupStabilizerOp:=function(arg)
+BindGlobal( "PermGroupStabilizerOp", function(arg)
     local   K,          # stabilizer <K>, result
             S,  base,
             G,d,gens,acts,act;
@@ -1531,7 +1531,7 @@ PermGroupStabilizerOp:=function(arg)
 
     # return the stabilizer
     return K;
-end;
+end );
 
 InstallOtherMethod( StabilizerOp, "permutation group with generators list",
        true,

@@ -1333,7 +1333,7 @@ InstallOtherMethod( ProductOp,
 ##
 #F  ProductMod(<l>,<m>) . . . . . . . . . . . . . . . . . .  Product(l) mod m
 ##
-ProductMod := function(l,m)
+BIND_GLOBAL( "ProductMod", function(l,m)
 local i,p;
   if l=[] then
     p:=1;
@@ -1344,7 +1344,7 @@ local i,p;
     p:=p*i mod m;
   od;
   return p;
-end;
+end );
 
 
 #############################################################################
@@ -1682,7 +1682,8 @@ InstallMethod( ForAnyOp,
 ##
 #M  ListX(<obj>,...)
 ##
-ListXHelp := function ( result, gens, i, vals, l )
+DeclareGlobalName("ListXHelp");
+BIND_GLOBAL( "ListXHelp", function ( result, gens, i, vals, l )
     local   gen, val;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1706,8 +1707,7 @@ ListXHelp := function ( result, gens, i, vals, l )
         fi;
     od;
     Add( result, CallFuncList( gens[i+1], vals ) );
-end;
-MAKE_READ_ONLY_GLOBAL( "ListXHelp" );
+end );
 
 BIND_GLOBAL( "ListXHelp2", function ( result, gens, i, val1, val2 )
     local   gen, vals, val3;
@@ -1796,7 +1796,8 @@ end );
 ##
 #M  SetX(<obj>,...)
 ##
-SetXHelp := function ( result, gens, i, vals, l )
+DeclareGlobalName("SetXHelp");
+BIND_GLOBAL( "SetXHelp", function ( result, gens, i, vals, l )
     local   gen, val;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1820,8 +1821,7 @@ SetXHelp := function ( result, gens, i, vals, l )
         fi;
     od;
     AddSet( result, CallFuncList( gens[i+1], vals ) );
-end;
-MAKE_READ_ONLY_GLOBAL( "SetXHelp" );
+end );
 
 BIND_GLOBAL( "SetXHelp2", function ( result, gens, i, val1, val2 )
     local   gen, vals, val3;
@@ -1910,7 +1910,8 @@ end );
 ##
 #M  SumX(<obj>,...)
 ##
-SumXHelp := function ( result, gens, i, vals, l )
+DeclareGlobalName("SumXHelp");
+BIND_GLOBAL( "SumXHelp", function ( result, gens, i, vals, l )
     local   gen, val;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -1939,8 +1940,7 @@ SumXHelp := function ( result, gens, i, vals, l )
         result := result + CallFuncList( gens[i+1], vals );
     fi;
     return result;
-end;
-MAKE_READ_ONLY_GLOBAL( "SumXHelp" );
+end );
 
 BIND_GLOBAL( "SumXHelp2", function ( result, gens, i, val1, val2 )
     local   gen, vals, val3;
@@ -2044,7 +2044,8 @@ end );
 ##
 #M  ProductX(<obj>,...)
 ##
-ProductXHelp := function ( result, gens, i, vals, l )
+DeclareGlobalName("ProductXHelp");
+BIND_GLOBAL( "ProductXHelp", function ( result, gens, i, vals, l )
     local   gen, val;
     while i+1 < Length(gens)  do
         gen := gens[i+1];
@@ -2073,8 +2074,7 @@ ProductXHelp := function ( result, gens, i, vals, l )
         result := result * CallFuncList( gens[i+1], vals );
     fi;
     return result;
-end;
-MAKE_READ_ONLY_GLOBAL( "ProductXHelp" );
+end );
 
 BIND_GLOBAL( "ProductXHelp2", function ( result, gens, i, val1, val2 )
     local   gen, vals, val3;

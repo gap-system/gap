@@ -754,7 +754,7 @@ InstallMethod( SurjectiveActionHomomorphismAttr,
   "call Ac.Hom.Constructor", true, [ IsExternalSet ], 0,
    xset -> ActionHomomorphismConstructor( xset, true ) );
 
-VPActionHom:=function( hom )
+BindGlobal( "VPActionHom", function( hom )
 local name;
   name:="homo";
   if HasIsInjective(hom) and IsInjective(hom) then
@@ -766,7 +766,7 @@ local name;
     name:="epi";
   fi;
   Print( "<action ",name,"morphism>" );
-end;
+end );
 
 
 #############################################################################
@@ -2245,7 +2245,7 @@ InstallMethod( CycleOp,"of object in list", true,
     return CycleOp( g, pnt, act );
 end );
 
-CycleByPosOp := function( g, D, blist, fst, pnt, act )
+BindGlobal( "CycleByPosOp", function( g, D, blist, fst, pnt, act )
     local   cyc,  new;
 
     cyc := [  ];
@@ -2257,7 +2257,7 @@ CycleByPosOp := function( g, D, blist, fst, pnt, act )
         blist[ new ] := true;
     until new = fst;
     return Immutable( cyc );
-end;
+end );
 
 InstallOtherMethod( CycleOp, true, [ IsObject, IsObject, IsFunction ], 0,
     function( g, pnt, act )

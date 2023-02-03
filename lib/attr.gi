@@ -38,7 +38,8 @@ InstallGlobalFunction(DisableAttributeValueStoring, function( attr )
     SET_ATTRIBUTE_STORING( attr, false);
 end);
 
-CHECK_REPEATED_ATTRIBUTE_SET := function(obj, name, val)
+Unbind(CHECK_REPEATED_ATTRIBUTE_SET);
+BindGlobal( "CHECK_REPEATED_ATTRIBUTE_SET", function(obj, name, val)
     if InfoLevel(InfoAttributes) >= 3 then
         if not IsBound(obj!.(name)) then
             Info(InfoAttributes, 3, "Attribute ", name, " of ", obj, " is marked as assigned, but it has no value");
@@ -46,4 +47,4 @@ CHECK_REPEATED_ATTRIBUTE_SET := function(obj, name, val)
             Info(InfoAttributes, 3, "Attribute ", name, " of ", obj, " already set to ", obj!.(name), ", cannot be changed to ", val);
         fi;
     fi;
-end;
+end );

@@ -13,7 +13,7 @@
 ##
 #F FingerprintFF( G )
 ##
-FingerprintFF := function( G )
+BindGlobal( "FingerprintFF", function( G )
     local orb, ord, res, po, i, typ;
 
     res := [ ];
@@ -38,7 +38,7 @@ FingerprintFF := function( G )
         Add( res, IdGroup( SylowSubgroup( G, 3 ) )[ 2 ] );
     fi;
     return Flat( res );
-end;
+end );
 
 #############################################################################
 ##
@@ -142,7 +142,7 @@ end);
 ##
 #F RelatorsCode( <code>, <size>, <gens> )
 ##
-RelatorsCode := function( code, size, gens )
+BindGlobal( "RelatorsCode", function( code, size, gens )
     local n1, f, l, mi, n, indices, rels, g, i, uc, ll, rr,
           t, j, z, z2;
 
@@ -211,7 +211,7 @@ RelatorsCode := function( code, size, gens )
     od;
 
     return rels;
-end;
+end );
 
 #############################################################################
 ##
@@ -336,17 +336,17 @@ end );
 ##
 #F RandomByPcs( pcs, p )
 ##
-RandomByPcs := function( pcs, p )
+BindGlobal( "RandomByPcs", function( pcs, p )
     local elm;
     elm := List( [1..Length(pcs)], i -> pcs[i]^Random( 0, p-1 ) );
     return Product( elm );
-end;
+end );
 
 #############################################################################
 ##
 #F IsLinearlyIndependent( g, p, pcgs, base )
 ##
-IsLinearlyIndependent := function( g, p, pcgs, base )
+BindGlobal( "IsLinearlyIndependent", function( g, p, pcgs, base )
     local vec, sol;
     vec := ExponentsOfPcElement( pcgs, g ) * One(GF(p));
     if Length( base ) = 0 then
@@ -360,22 +360,22 @@ IsLinearlyIndependent := function( g, p, pcgs, base )
     else
         return false;
     fi;
-end;
+end );
 
-FindLayer := function( g, pcgss )
+BindGlobal( "FindLayer", function( g, pcgss )
     local l;
     l := 1;
     while Sum( ExponentsOfPcElement( pcgss[l], g ) ) = 0 do
         l := l + 1;
     od;
     return l;
-end;
+end );
 
 #############################################################################
 ##
 #F RandomPcgsSylowSubgroup( S, p )
 ##
-RandomPcgsSylowSubgroup := function( S, p )
+BindGlobal( "RandomPcgsSylowSubgroup", function( S, p )
     local refin, n, subl, bases, pcgss, i, pcgsV, pcgsF, m, top, h, t, g,
           l, list;
 
@@ -435,7 +435,7 @@ RandomPcgsSylowSubgroup := function( S, p )
         od;
     od;
     return Concatenation( subl );
-end;
+end );
 
 #############################################################################
 ##

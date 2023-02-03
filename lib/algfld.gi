@@ -50,13 +50,13 @@ InstallMethod(AlgebraicElementsFamilies,true,[IsUnivariatePolynomial],0,
 #F  StoreAlgExtFam(<pol>,<field>,<fam>)  store fam as Alg.Ext.Fam. for p
 ##                                       over field
 ##
-StoreAlgExtFam := function(p,f,fam)
+BindGlobal( "StoreAlgExtFam", function(p,f,fam)
 local   aef;
   aef:=AlgebraicElementsFamilies(p);
   if not ForAny(aef,i->i[1]=f) then
     Add(aef,[f,fam]);
   fi;
-end;
+end );
 
 #############################################################################
 ##
@@ -147,7 +147,7 @@ end);
 ##
 #M  AlgebraicExtension      generic method
 ##
-DoAlgebraicExt:=function(f,p,extra...)
+BindGlobal( "DoAlgebraicExt", function(f,p,extra...)
 local nam,e,fam,colf,check;
 
 if Length(extra)>0 and IsString(extra[1]) then
@@ -206,7 +206,7 @@ if Length(extra)>0 and IsString(extra[1]) then
   fam!.wholeExtension:=e;
 
   return e;
-end;
+end );
 
 InstallMethod(AlgebraicExtension,"generic",true,
   [IsField,IsUnivariatePolynomial],0,

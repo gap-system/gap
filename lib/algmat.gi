@@ -1006,7 +1006,7 @@ InstallMethod( RadicalOfAlgebra,
 ##  $\sum_{b\in B} c_b b$ where the vector $c$ is a basis vector of
 ##  the solution space.
 ##
-CentralizerInAssociativeGaussianMatrixAlgebra := function( base, gens )
+BindGlobal( "CentralizerInAssociativeGaussianMatrixAlgebra", function( base, gens )
 #T better use structure constants ?
 
     local gen, mat, sol;
@@ -1022,7 +1022,7 @@ CentralizerInAssociativeGaussianMatrixAlgebra := function( base, gens )
     od;
 
     return base;
-end;
+end );
 
 
 #############################################################################

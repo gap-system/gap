@@ -109,7 +109,7 @@ end );
 ##
 #M  Process( <dir>, <prg>, <in-text>, <out-text>, <args> )  . . . . file/file
 ##
-EXECUTE_PROCESS_FILE_STREAM := function( dir, prg, input, output, args )
+BindGlobal( "EXECUTE_PROCESS_FILE_STREAM", function( dir, prg, input, output, args )
 
     # get the directory path
     dir := dir![1];
@@ -128,7 +128,7 @@ EXECUTE_PROCESS_FILE_STREAM := function( dir, prg, input, output, args )
     # execute the process
     return ExecuteProcess( dir, prg, input![1], output![1], args );
 
-end;
+end );
 
 
 InstallMethod( Process,

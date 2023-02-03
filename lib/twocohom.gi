@@ -1254,7 +1254,7 @@ local field,fp,fpg,gens,hom,mats,fm,mon,tzrules,dim,rules,eqs,i,j,k,l,o,l1,
   return r;
 end);
 
-MatricesStabilizerOneDim:=function(field,mats)
+BindGlobal( "MatricesStabilizerOneDim", function(field,mats)
 local e,one,m,r,a,c,is,i;
     e:=[];
     one:=One(mats[1]);
@@ -1274,7 +1274,7 @@ local e,one,m,r,a,c,is,i;
       fi;
     od;
   return false;
-end;
+end );
 
 BindGlobal("WreathElm",function(b,l,m)
 local n,ran,r,d,p,i,j;

@@ -194,7 +194,7 @@ end);
 
 ##  list of all cases with less than 100*10^9 compatible polynomials, sorted
 ##  w.r.t. this number
-ConwayCandidates := function()
+BindGlobal( "ConwayCandidates", function()
   local cand, p, i;
   # read data
   for p in [2,113,1009] do
@@ -211,7 +211,7 @@ ConwayCandidates := function()
   Sort(cand);
   cand := Filtered(cand, a-> not IsBound(CONWAYPOLDATA[a[2]][a[3]]));
   return cand;
-end;
+end );
 
 ##
 ##

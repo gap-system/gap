@@ -437,7 +437,7 @@ end);
 #output is a subset of the permutation domain, consisting
 #of tuples which agree in l1-1 coordinates and intersect in l2-1 points
 #in the last coordinate
-PermNatAnTestDetect:=function(h,n,l1,l2)
+BindGlobal( "PermNatAnTestDetect", function(h,n,l1,l2)
 local schreiertree, cosetrepresentative, flag, schtree, stab, k, p, j,
       cosetrep, orbits, neworb, int, set, count, flag2, neworb2, o, i,dom,pt1;
 
@@ -547,7 +547,7 @@ local schreiertree, cosetrepresentative, flag, schtree, stab, k, p, j,
   else
     return set;
   fi;
-end;
+end );
 
 # see Ákos Seress, Permutation group algorithms. Cambridge Tracts in
 # Mathematics, 152. Section 10.2 for the background of this function.
@@ -931,7 +931,7 @@ end);
 ##
 #M  StabilizerOp( <nat-sym-grp>, ...... )
 ##
-SYMGP_STABILIZER := function(sym, arg...)
+BindGlobal( "SYMGP_STABILIZER", function(sym, arg...)
     local  k, act, pt, mov, stab, nat, diff, int, bls, mov1, parts,
            part, bl, i, gens, size;
     k := Length(arg);
@@ -1006,7 +1006,7 @@ SYMGP_STABILIZER := function(sym, arg...)
         SetIsNaturalSymmetricGroup(stab,true);
     fi;
     return stab;
-end;
+end );
 
 
 
@@ -2501,13 +2501,13 @@ local m;
   fi;
 end);
 
-RadicalSymmAlt:=function(G)
+BindGlobal( "RadicalSymmAlt", function(G)
   if NrMovedPoints(G)<=4 then
     return G;
   else
     return TrivialSubgroup(G);
   fi;
-end;
+end );
 
 InstallMethod( SolvableRadical, "symmetric", true,
     [ IsNaturalSymmetricGroup and IsFinite], 0,RadicalSymmAlt);

@@ -28,7 +28,7 @@
 ##  If 'T[i][j]' contains already some constants, then 'k' and 'val' have
 ##  to be inserted at the right position.
 ##
-AddendumSCTable := function( T, i, j, k, val )
+BindGlobal( "AddendumSCTable", function( T, i, j, k, val )
 
     local pos,m,r,inds,cfs;
 
@@ -76,11 +76,11 @@ AddendumSCTable := function( T, i, j, k, val )
       T[j][i]:= [T[j][i][1], cfs];
 
     fi;
-end;
+end );
 
 
 
-SimpleLieAlgebraTypeA_G:= function( type, n, F )
+BindGlobal( "SimpleLieAlgebraTypeA_G", function( type, n, F )
 
     local T,               # The table of the Lie algebra constructed.
           i,j,k,l,         # Loop variables.
@@ -662,7 +662,7 @@ SimpleLieAlgebraTypeA_G:= function( type, n, F )
     return L;
 
 
-end;
+end );
 
 
 ##############################################################################
@@ -689,7 +689,7 @@ end;
 ##
 ##  (We refer to the above mentioned book for the notation.)
 ##
-SimpleLieAlgebraTypeW := function( n, F )
+BindGlobal( "SimpleLieAlgebraTypeW", function( n, F )
 
     local p,          # The characteristic of 'F'.
           pn,
@@ -796,7 +796,7 @@ SimpleLieAlgebraTypeW := function( n, F )
 
     return [ L, eltlist ];
 
-end;
+end );
 
 
 ##############################################################################
@@ -809,7 +809,7 @@ end;
 ##  We refer to the book cited in the comments to the function
 ##  'SimpleLieAlgebraTypeW' for the details.
 ##
-SimpleLieAlgebraTypeS:= function( n, F )
+BindGlobal( "SimpleLieAlgebraTypeS", function( n, F )
 
     local dim,       # The dimension of the Witt algebra.
           i,j,       # Loop variables.
@@ -864,7 +864,7 @@ SimpleLieAlgebraTypeS:= function( n, F )
     SetIsRestrictedLieAlgebra( L, ForAll( n, x -> x=1 ) );
     return L;
 
-end;
+end );
 
 
 ##############################################################################
@@ -877,7 +877,7 @@ end;
 ##  the Witt algebra. Again we refer to the book cited in the notes to
 ##  'SimpleLieAlgebraTypeW' for the details.
 ##
-SimpleLieAlgebraTypeH := function( n, F )
+BindGlobal( "SimpleLieAlgebraTypeH", function( n, F )
 
     local p,      # Chracteristic of 'F'.
           m,      # The length of 'n'.
@@ -965,7 +965,7 @@ SimpleLieAlgebraTypeH := function( n, F )
     SetIsRestrictedLieAlgebra( L, ForAll( n, x -> x=1 ) );
     return L;
 
-end;
+end );
 
 
 ##############################################################################
@@ -977,7 +977,7 @@ end;
 ##  is defined. We refer to the book cited in the comments to the function
 ##  'SimpleLieAlgebraTypeW' for the details.
 ##
-SimpleLieAlgebraTypeK := function( n, F )
+BindGlobal( "SimpleLieAlgebraTypeK", function( n, F )
 
     local p,              # The characteristic of 'F'.
           m,              # The length of 'n'.
@@ -1210,7 +1210,7 @@ SimpleLieAlgebraTypeK := function( n, F )
     SetIsRestrictedLieAlgebra( L, ForAll( n, x -> x=1 ) );
     return L;
 
-end;
+end );
 
 
 
@@ -1252,7 +1252,7 @@ end;
 ##  basis elements using either these symbolic descriptions, or the
 ##  positions in this basis.
 
-SimpleLieAlgebraTypeM := function (n, F)
+BindGlobal( "SimpleLieAlgebraTypeM", function (n, F)
     local   n1,  n2,     # The parameters.
             one, zero,   # Shortcuts to the field elements.
             dimO,  dimW, # Dimensions of the O and W spaces.
@@ -1593,7 +1593,7 @@ SimpleLieAlgebraTypeM := function (n, F)
 #                 hom_components := GradingFunction));
 
     return result;
-end;
+end );
 
 
 

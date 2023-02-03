@@ -614,7 +614,7 @@ InstallGlobalFunction(LeftQuotientPowerPcgsElement,function( pcgs, i,exp,elm )
 #  fi;
 end );
 
-DoPcElementByExponentsGeneric:=function(pcgs,basis,list)
+BindGlobal( "DoPcElementByExponentsGeneric", function(pcgs,basis,list)
 local elm,i,a;
 
   elm := fail;
@@ -641,7 +641,7 @@ local elm,i,a;
     return elm;
   fi;
 
-end;
+end );
 
 #############################################################################
 ##
@@ -1154,7 +1154,7 @@ end );
 ##
 #M  PcGroupWithPcgs( <pcgs> )
 ##
-GROUP_BY_PCGS_FINITE_ORDERS := function( pcgs )
+BindGlobal( "GROUP_BY_PCGS_FINITE_ORDERS", function( pcgs )
     local   f,  e,  m,  i,  type,  s,  id,  tmp,  j;
 
     # construct a new free group
@@ -1204,7 +1204,7 @@ GROUP_BY_PCGS_FINITE_ORDERS := function( pcgs )
     # and return the new group
     return GroupByRwsNC(s);
 
-end;
+end );
 
 
 InstallMethod( PcGroupWithPcgs,
@@ -1400,7 +1400,7 @@ function(pcgs)
 end);
 
 
-InstallPcgsSeriesFromIndices:=function(series,indices)
+BindGlobal( "InstallPcgsSeriesFromIndices", function(series,indices)
   InstallMethod(series,"from indices",true,[Tester(indices) and IsPcgs],0,
   function(pcgs)
   local p,l,g,h,i,ipcgs,home;
@@ -1479,7 +1479,7 @@ InstallPcgsSeriesFromIndices:=function(series,indices)
     return l;
   end);
 
-end;
+end );
 
 InstallPcgsSeriesFromIndices(EANormalSeriesByPcgs,IndicesEANormalSteps);
 InstallPcgsSeriesFromIndices(ChiefNormalSeriesByPcgs,IndicesChiefNormalSteps);

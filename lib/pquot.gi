@@ -10,7 +10,7 @@
 ##
 
 CHECK := false;
-NumberOfCommutators := function( ranks )
+BindGlobal( "NumberOfCommutators", function( ranks )
     local   class,  hclass,  coranks,  ngens,  cl,  nofc;
 
     class := Length(ranks);
@@ -31,7 +31,7 @@ NumberOfCommutators := function( ranks )
                      + (ranks[cl] * (ranks[cl]-1))/2;
     od;
     return nofc;
-end;
+end );
 
 #############################################################################
 ##
@@ -48,12 +48,12 @@ PQStatistics := rec(
 
 MakeThreadLocal( "PQStatistics" );
 
-IncreaseCounter := function( string )
+BindGlobal( "IncreaseCounter", function( string )
 
     PQStatistics.(string) := PQStatistics.(string) + 1;
-end;
+end );
 
-PrintCounters := function()
+BindGlobal( "PrintCounters", function()
 
     Print( "Number of consistency checks:\n" );
     Print( "a^p a   : ", PQStatistics.ConsCountANA, "\n" );
@@ -65,9 +65,9 @@ PrintCounters := function()
     Print( "b a^p   : ", PQStatistics.TailCountBAN, "\n" );
     Print( "b^p a   : ", PQStatistics.TailCountBNA, "\n" );
     Print( "c (b a) : ", PQStatistics.TailCountCBA, "\n" );
-end;
+end );
 
-ClearPQuotientStatistics := function()
+BindGlobal( "ClearPQuotientStatistics", function()
 
     PQStatistics.TailCountBNA := 0;
     PQStatistics.TailCountBAN := 0;
@@ -77,7 +77,7 @@ ClearPQuotientStatistics := function()
     PQStatistics.ConsCountBAN := 0;
     PQStatistics.ConsCountCBA := 0;
 
-end;
+end );
 
 #############################################################################
 ##
@@ -110,16 +110,16 @@ end;
 #F  TrailingEntriesLTM  . . . . . . . . . .  return list of trailing of a LTM
 ##
 ##
-TrailingEntriesLTM := function( LTM )
+BindGlobal( "TrailingEntriesLTM", function( LTM )
 
     return LTM.bound;
-end;
+end );
 
 #############################################################################
 ##
 #F  ReducedVectorLTM  . . . . . . . . . . . . . a vector reduced modulo a LTM
 ##
-ReducedVectorLTM := function( LTM, v )
+BindGlobal( "ReducedVectorLTM", function( LTM, v )
     local   zero,  M,  i;
 
     if Length(v) <> LTM.dimension then
@@ -136,13 +136,13 @@ ReducedVectorLTM := function( LTM, v )
     od;
 
     return v;
-end;
+end );
 
 #############################################################################
 ##
 #F  AddVectorLTM  . . . . . . . . . . . . . . . . . . . add a vector to a LTM
 ##
-AddVectorLTM := function( LTM, v )
+BindGlobal( "AddVectorLTM", function( LTM, v )
     local   M,  zero,  i,  trailingEntry;
 
     if Length(v) <> LTM.dimension then
@@ -182,13 +182,13 @@ AddVectorLTM := function( LTM, v )
         Add( LTM.bound, trailingEntry, i );
     fi;
 
-end;
+end );
 
 #############################################################################
 ##
 #F  RowEchelonFormLTM . . . .  row echelon form of a lower triangular matrix
 ##
-RowEchelonFormLTM := function( LTM )
+BindGlobal( "RowEchelonFormLTM", function( LTM )
     local   i,  j;
 
     for i in LTM.bound do
@@ -199,13 +199,13 @@ RowEchelonFormLTM := function( LTM )
             fi;
         od;
     od;
-end;
+end );
 
 #############################################################################
 ##
 #F  LowerTriangularMatrix . . . . . . .  initialize a lower triangular matrix
 ##
-LowerTriangularMatrix := function( dim, field )
+BindGlobal( "LowerTriangularMatrix", function( dim, field )
     local   LTM;
 
     LTM := rec( dimension  := dim,
@@ -217,7 +217,7 @@ LowerTriangularMatrix := function( dim, field )
                 );
 
     return LTM;
-end;
+end );
 
 #############################################################################
 ##
@@ -313,7 +313,7 @@ end );
 ##
 #M  NumberOfNewGenerators . . . . . . number of generators in the next layer
 ##
-NumberOfNewGenerators := function( qs )
+BindGlobal( "NumberOfNewGenerators", function( qs )
     local   nong,  d,  cl,  i;
 
     nong := 0;
@@ -355,42 +355,42 @@ NumberOfNewGenerators := function( qs )
       nong - qs!.numberOfEpimGenerators - qs!.numberOfNucleusGenerators;
 
     return nong;
-end;
+end );
 
 #############################################################################
 ##
 #M  InitaliseCentralRelations . . . . . . . . . initialise central relations
 ##
-InitialiseCentralRelations := function( qs )
+BindGlobal( "InitialiseCentralRelations", function( qs )
 
     ##  We call the relations obtained by the consistency check and the
     ##  evaluation of relations `central relations'.  They are stored as a
     ##  (lower triangular) matrix over GF(p).
     qs!.centralRelations :=
       LowerTriangularMatrix( NumberOfNewGenerators( qs ), GF(qs!.prime) );
-end;
+end );
 
 #############################################################################
 ##
 #M  ClearCentralRelations . . . . . . . . . . . . .  delete central relations
 ##
-ClearCentralRelations := function( qs )
+BindGlobal( "ClearCentralRelations", function( qs )
 
     Unbind( qs!.centralRelations );
-end;
+end );
 
 #############################################################################
 ##
 #M  CentralRelations . . . . . . . . . . . . . . . . return central relations
 ##
-CentralRelations := function( qs )
+BindGlobal( "CentralRelations", function( qs )
 
     if not IsBound( qs!.centralRelations ) then
         InitialiseCentralRelations( qs );
     fi;
 
     return qs!.centralRelations;
-end;
+end );
 
 #############################################################################
 ##
@@ -479,7 +479,7 @@ end );
 ##
 #F  UpdateWeightInfo  . . . . . . . . . . . . . update the weight information
 ##
-UpdateWeightInfo := function( qs )
+BindGlobal( "UpdateWeightInfo", function( qs )
     local   n,  nhwg,  ranks,  class,  last_in_cl,  avector,  cl,  wt,
             avc2,  g,  h;
 
@@ -517,7 +517,7 @@ UpdateWeightInfo := function( qs )
     qs!.collector![SCP_AVECTOR2] := avc2;
 
     SetFilterObj( qs!.collector, IsUpToDatePolycyclicCollector );
-end;
+end );
 
 #############################################################################
 ##
@@ -1036,7 +1036,7 @@ end );
 ##
 #M  EvaluateRelators  . . . . . . . evaluate relations of a p-quotient system
 ##
-EvaluateRelation := function( sc, w, gens )
+BindGlobal( "EvaluateRelation", function( sc, w, gens )
     local   v,  i,  g,  e,  j;
 
     v := ListWithIdenticalEntries( Length(gens), 0 );
@@ -1058,7 +1058,7 @@ EvaluateRelation := function( sc, w, gens )
         fi;
     od;
     return v;
-end;
+end );
 
 
 InstallMethod( EvaluateRelators,
@@ -1644,7 +1644,7 @@ end );
 ##
 #F  PCover  . . . . . . . . . . . . . . . . . .  p-cover of a quotient system
 ##
-PCover := function( qs )
+BindGlobal( "PCover", function( qs )
     local   G,  range,  defByEpim,  g;
 
     if DefineNewGenerators( qs ) = fail then
@@ -1681,20 +1681,20 @@ PCover := function( qs )
     range := Concatenation( [1..GeneratorNumberOfQuotient(qs)], range );
 
     return Group( GeneratorsOfGroup(G){range}, One(G) );
-end;
+end );
 
 #############################################################################
 ##
 #F  PMultiplicator  . . . . . . . . . . . . . .  p-multiplicator of a p-cover
 ##
-PMultiplicator := function( qs, G )
+BindGlobal( "PMultiplicator", function( qs, G )
     local   n,  gens;
 
     n    := GeneratorNumberOfQuotient( qs );
     gens := GeneratorsOfGroup( G );
 
     return Subgroup( G, gens{[n+1..Length(gens)]} );
-end;
+end );
 
 #############################################################################
 ##
@@ -1721,7 +1721,7 @@ end);
 ##
 #F  AllowableSubgroup . . . .  return the subgroup generated by the relations
 ##
-AllowableSubgroup := function( qs, G )
+BindGlobal( "AllowableSubgroup", function( qs, G )
     local   LTM,  gens,  fam,  n,  i,  extrep,  j;
 
     LiftEpimorphism( qs );
@@ -1754,7 +1754,7 @@ AllowableSubgroup := function( qs, G )
     od;
 
     return Subgroup( G, gens );
-end;
+end );
 
 #############################################################################
 ##

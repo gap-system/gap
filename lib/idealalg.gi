@@ -343,7 +343,7 @@ InstallMethod( RightIdealByGenerators,
 ##  Note that by the call to `UseBasis', afterwards left module generators
 ##  are known, also if `GeneratorsOfLeftOperatorRing' had been called.
 ##
-LeftModuleGeneratorsForIdealFromGenerators := function( I, Igens, R, side )
+BindGlobal( "LeftModuleGeneratorsForIdealFromGenerators", function( I, Igens, R, side )
 
     local F,        # left acting domain of `I'
           maxdim,   # upper bound for the dimension of `I'
@@ -393,7 +393,7 @@ LeftModuleGeneratorsForIdealFromGenerators := function( I, Igens, R, side )
     UseBasis( I, gens );
 
     return gens;
-end;
+end );
 
 
 InstallMethod( GeneratorsOfLeftModule,

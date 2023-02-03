@@ -25,7 +25,7 @@
 ##
 #F  AttributeValueNotSet( <attr>, <obj> )
 ##
-AttributeValueNotSet := function(attr,obj)
+BIND_GLOBAL( "AttributeValueNotSet", function(attr,obj)
 local type,fam,methods,i,j,flag,erg;
   type:=TypeObj(obj);
   fam:=FamilyObj(obj);
@@ -46,27 +46,27 @@ local type,fam,methods,i,j,flag,erg;
     fi;
   od;
   Error("No applicable method found for attribute");
-end;
+end );
 
 
 #############################################################################
 ##
 #F  # # # # # # # # # # #  verbose method selection # # # # # # # # # # # # #
 ##
-VMETHOD_PRINT_INFO := function ( methods, i, arity)
+BIND_GLOBAL( "VMETHOD_PRINT_INFO", function ( methods, i, arity)
     local offset;
     offset := (arity+BASE_SIZE_METHODS_OPER_ENTRY)*(i-1)+arity;
     Print("#I  ", methods[offset+4],
           " at ", methods[offset+5][1], ":", methods[offset+5][2], "\n");
-end;
+end );
 
 #############################################################################
 ##
 #F  # # # # # # # # # # #  verbose try next method  # # # # # # # # # # # # #
 ##
-NEXT_VMETHOD_PRINT_INFO := function ( methods, i, arity)
+BIND_GLOBAL( "NEXT_VMETHOD_PRINT_INFO", function ( methods, i, arity)
     local offset;
     offset := (arity+BASE_SIZE_METHODS_OPER_ENTRY)*(i-1)+arity;
     Print("#I Trying next: ", methods[offset+4],
           " at ", methods[offset+5][1], ":", methods[offset+5][2], "\n");
-end;
+end );

@@ -37,7 +37,7 @@ end;
 ##
 #F BlownUpMatrix( <B>, <mat> ) . . . . . . . . . . blow up by field extension
 ##
-BlownUpMatrix := function ( B, mat )
+BindGlobal( "BlownUpMatrix", function ( B, mat )
     local vec, d, tmp, big, i, j, k, new, l;
 
     # blow up each entry of mat
@@ -67,7 +67,7 @@ BlownUpMatrix := function ( B, mat )
         od;
     od;
     return new;
-end;
+end );
 
 #############################################################################
 ##

@@ -278,7 +278,8 @@ end );
 ##  CalcOrder computes the order of the word <word> in the group determined
 ##  by the rewriting system <dtrws>
 ##
-CalcOrder := function(word, dtrws)
+DeclareGlobalName( "CalcOrder" );
+BindGlobal( "CalcOrder", function(word, dtrws)
     local gcd, m;
 
     if  Length(word) = 0  then
@@ -291,8 +292,7 @@ CalcOrder := function(word, dtrws)
     m := QuoInt( dtrws![PC_EXPONENTS][ word[1] ], gcd);
     gcd := DTPower(word, m, dtrws);
     return  m*CalcOrder(gcd, dtrws);
-end;
-MakeReadOnlyGlobal( "CalcOrder" );
+end );
 
 
 #############################################################################

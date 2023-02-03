@@ -327,7 +327,7 @@ end );
 ##
 #F  MaximalSubgroupClassesRepsLayer( <pcgs>, <layer> )
 ##
-MaximalSubgroupClassesRepsLayer := function( pcgs, l )
+BindGlobal( "MaximalSubgroupClassesRepsLayer", function( pcgs, l )
     local first, weights, m, start, next, pcgsS, pcgsN, pcgsL, p, mats,
           modu, maxi, i, elms, sub, M, G;
 
@@ -362,10 +362,10 @@ MaximalSubgroupClassesRepsLayer := function( pcgs, l )
         maxi[i] := M;
     od;
     return maxi;
-end;
+end );
 
 
-MAXSUBS_BY_PCGS:=function( G )
+BindGlobal( "MAXSUBS_BY_PCGS", function( G )
     local spec, first, max, i, new;
 
     spec  := SpecialPcgs(G);
@@ -377,7 +377,7 @@ MAXSUBS_BY_PCGS:=function( G )
     od;
     return max;
 
-end;
+end );
 
 #############################################################################
 ##
@@ -545,7 +545,7 @@ RedispatchOnCondition( MaximalNormalSubgroups, true,
 ##
 #F  ModifyMinGens( <pcgsG>, <pcgsS>, <pcgsL>, <min> )
 ##
-ModifyMinGens := function( pcgs, pcgsS, pcgsL, min )
+BindGlobal( "ModifyMinGens", function( pcgs, pcgsS, pcgsL, min )
     local pcgsF, g, i, new, pcgsT;
 
     # set up
@@ -567,13 +567,13 @@ ModifyMinGens := function( pcgs, pcgsS, pcgsL, min )
 
     # mingens cannot be modified - add new generator
     Add( min, pcgsF[1] );
-end;
+end );
 
 #############################################################################
 ##
 #F  MinimalGensLayer( <pcgsG>, <pcgsS>, <pcgsN>, <min> )
 ##
-MinimalGensLayer := function( pcgs, pcgsS, pcgsN, min )
+BindGlobal( "MinimalGensLayer", function( pcgs, pcgsS, pcgsN, min )
     local series, pcgsL, pcgsU, pcgsV, pcgsM;
 
     series := [pcgsN];
@@ -603,7 +603,7 @@ MinimalGensLayer := function( pcgs, pcgsS, pcgsN, min )
         fi;
     od;
     return min;
-end;
+end );
 
 #############################################################################
 ##
@@ -716,7 +716,7 @@ end);
 ##
 #F  NextStepCentralizer( <gens>, <cent>, <pcgsF>, <field> )
 ##
-NextStepCentralizer := function( gens, cent, pcgsF, field )
+BindGlobal( "NextStepCentralizer", function( gens, cent, pcgsF, field )
     local g, matlist, null;
 
     for g in gens do
@@ -727,7 +727,7 @@ NextStepCentralizer := function( gens, cent, pcgsF, field )
     od;
 
     return cent;
-end;
+end );
 
 
 #############################################################################

@@ -16,7 +16,7 @@
 # call as big,perm,aut (the latter two can be groups or generator lists,
 # optional permiso.
 # returns two groups with corresponding generators
-AGSRReducedGens:=function(arg)
+BindGlobal( "AGSRReducedGens", function(arg)
 local big,bp,A,permgens,s,auts,sel,i,sub;
   big:=arg[1];
   bp:=arg[2];
@@ -78,7 +78,7 @@ local big,bp,A,permgens,s,auts,sel,i,sub;
     fi;
   fi;
   return [bp,auts];
-end;
+end );
 
 # If M<=Frat(C_G(M)), try to find relators for C/M that in G evaluate to
 # generators of M and for which exponent sums are multiples of p. In this

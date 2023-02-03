@@ -480,8 +480,8 @@ BindGlobal( "RootModPrime", function ( n, k, p )
     return r;
 end );
 
-
-RootModPrimePower := function ( n, k, p, l )
+DeclareGlobalName( "RootModPrimePower" );
+BindGlobal( "RootModPrimePower", function ( n, k, p, l )
     local   r,                  # <k>th root of <n> mod <p>^<l>, result
             s,                  # <k>th root of <n> mod smaller power
             t;                  # temporary variable
@@ -558,8 +558,7 @@ RootModPrimePower := function ( n, k, p, l )
     # return the root $r$
     Info( InfoNumtheor, 1, "RootModPrimePower returns ", r );
     return r;
-end;
-MakeReadOnlyGlobal( "RootModPrimePower" );
+end );
 
 InstallGlobalFunction( RootMod, function ( arg )
     local   n,                  # <n>, first argument
@@ -733,7 +732,8 @@ BindGlobal( "RootsModPrime", function ( n, k, p )
     return rr;
 end );
 
-RootsModPrimePower := function ( n, k, p, l )
+DeclareGlobalName( "RootsModPrimePower" );
+BindGlobal( "RootsModPrimePower", function ( n, k, p, l )
     local   rr,                 # <k>th roots of <n> mod <p>^<l>, result
             r,                  # one element of <rr>
             ss,                 # <k>th roots of <n> mod smaller power
@@ -814,8 +814,7 @@ RootsModPrimePower := function ( n, k, p, l )
     # return the roots $rr$
     Info( InfoNumtheor, 1, "RootsModPrimePower returns ", rr );
     return rr;
-end;
-MakeReadOnlyGlobal( "RootsModPrimePower" );
+end );
 
 InstallGlobalFunction( RootsMod, function ( arg )
     local   n,                  # <n>, first argument
@@ -930,7 +929,8 @@ BindGlobal( "RootsUnityModPrime", function ( k, p )
     return rr;
 end );
 
-RootsUnityModPrimePower := function ( k, p, l )
+DeclareGlobalName( "RootsUnityModPrimePower" );
+BindGlobal( "RootsUnityModPrimePower", function ( k, p, l )
     local   rr,                 # <k>th roots of <n> mod <p>^<l>, result
             r,                  # one element of <rr>
             ss,                 # <k>th roots of <n> mod smaller power
@@ -979,8 +979,7 @@ RootsUnityModPrimePower := function ( k, p, l )
     # return the roots $rr$
     Info( InfoNumtheor, 1, "RootsUnityModPrimePower returns ", rr );
     return rr;
-end;
-MakeReadOnlyGlobal( "RootsUnityModPrimePower" );
+end );
 
 InstallGlobalFunction( RootsUnityMod, function ( arg )
     local   k,                  # <k>, optional first argument

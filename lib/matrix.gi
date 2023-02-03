@@ -3156,7 +3156,7 @@ end );
 #M  TriangulizeMat( <mat> ) . . . . . bring a matrix in upper triangular form
 ##
 
-TRIANGULIZE_MAT_GENERIC:=function ( mat, m, n, zero )
+BindGlobal( "TRIANGULIZE_MAT_GENERIC", function ( mat, m, n, zero )
 local i, j, k, row, x, row2;
 
     Info( InfoMatrix, 1, "TriangulizeMat called" );
@@ -3218,7 +3218,7 @@ local i, j, k, row, x, row2;
     fi;
 
     Info( InfoMatrix, 1, "TriangulizeMat returns" );
-end;
+end );
 
 InstallMethod( TriangulizeMat,
     "generic method for mutable matrices",

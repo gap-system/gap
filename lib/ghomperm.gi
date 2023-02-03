@@ -581,7 +581,7 @@ InstallGlobalFunction( RelatorsPermGroupHom, function ( hom, gensG )
 
 end );
 
-DoShortwordBasepoint:=function(shorb)
+BindGlobal( "DoShortwordBasepoint", function(shorb)
 local dom, l, n, i, j,o,mp,lp,x;
   # do not take all elements but a sampler
   #if Length(shorb)>10000 then
@@ -638,7 +638,7 @@ local dom, l, n, i, j,o,mp,lp,x;
     return fail;
   fi;
   return l[Length(l)][2];
-end;
+end );
 
 #############################################################################
 ##
@@ -1494,7 +1494,7 @@ end );
 ##
 #M  Range( <hom>, <H> ) . . . . . . . . . . . . . . . . . . for const hom
 ##
-RanImgSrcSurjTraho:=function(hom)
+BindGlobal( "RanImgSrcSurjTraho", function(hom)
 local   D,H,I,G;
   H:=Source(hom);
   # only worth if the source has a stab chain to utilize
@@ -1515,7 +1515,7 @@ local   D,H,I,G;
     SetStabChainMutable(G,I);
     return G;
   fi;
-end;
+end );
 
 InstallMethod( Range,"surjective constituent homomorphism",true,
   [ IsConstituentHomomorphism and IsActionHomomorphism and IsSurjective ],0,
@@ -1738,7 +1738,7 @@ function(hom,U)
   return ImageKernelBlocksHomomorphism(hom,U,Range(hom));
 end);
 
-RanImgSrcSurjBloho:=function(hom)
+BindGlobal( "RanImgSrcSurjBloho", function(hom)
 local gens,imgs,ran;
 # using stabchain info will produce just too many generators
   if ValueOption("onlyimage")=fail and HasStabChainMutable(Source(hom))
@@ -1753,7 +1753,7 @@ local gens,imgs,ran;
     SetMappingGeneratorsImages(hom,[gens,imgs]);
   fi;
   return ran;
-end;
+end );
 
 InstallMethod( Range, "surjective blocks homomorphism",true,
   [ IsBlocksHomomorphism and IsSurjective ], 0,

@@ -9,7 +9,7 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 
-VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
+BindGlobal( "VectorStabilizerByFactors", function(group,gens,mats,shadows,vec)
   local PrunedBasis, f, lim, mo, dim, bas, newbas, dims, q, bp, ind, affine,
   acts, nv, stb, idx, idxh, incstb, incperm, notinc, free, freegens, stabp,
   stabm, dict, orb, tp, tm, p, img, sch, incpermstop, sz, sel, nbas, offset,
@@ -289,13 +289,13 @@ VectorStabilizerByFactors:=function(group,gens,mats,shadows,vec)
              gens:=gens,
              mats:=mats,
              shadows:=shadows);
-end;
+end );
 
 #############################################################################
 ##
 #F StabilizerByMatrixOperation( C, v, cohom )
 ##
-StabilizerByMatrixOperation := function( C, v, cohom )
+BindGlobal( "StabilizerByMatrixOperation", function( C, v, cohom )
 local translate, gens, oper, tmp;
 
     # the trivial case
@@ -341,20 +341,20 @@ local translate, gens, oper, tmp;
       C!.permrep:=translate;
     fi;
     return C;
-end;
+end );
 
 #############################################################################
 ##
 #F TransferPcgsInfo( A, pcsA, rels )
 ##
-TransferPcgsInfo := function( A, pcsA, rels )
+BindGlobal( "TransferPcgsInfo", function( A, pcsA, rels )
     local pcgsA;
     pcgsA := PcgsByPcSequenceNC( ElementsFamily( FamilyObj( A ) ), pcsA );
     SetRelativeOrders( pcgsA, rels );
     SetOneOfPcgs( pcgsA, One(A) );
     SetPcgs( A, pcgsA );
     SetFilterObj( A, CanEasilyComputePcgs );
-end;
+end );
 
 #############################################################################
 ##
@@ -362,12 +362,12 @@ end;
 ##
 if not IsBound( MyFingerprint ) then MyFingerprint := false; fi;
 
-FingerprintSmall := function( G, U )
+BindGlobal( "FingerprintSmall", function( G, U )
     Info(InfoPerformance,2,"Using Small Groups Library");
     return [IdGroup( U ), Size( CommutatorSubgroup(G,U) )];
-end;
+end );
 
-FingerprintMedium := function( G, U )
+BindGlobal( "FingerprintMedium", function( G, U )
     local w, cl, id;
 
     # some general stuff
@@ -381,14 +381,14 @@ FingerprintMedium := function( G, U )
     Add( id, cl );
 
     return id;
-end;
+end );
 
-FingerprintLarge := function( G, U )
+BindGlobal( "FingerprintLarge", function( G, U )
     return [Size(U), Size( DerivedSubgroup( U ) ),
             Size( CommutatorSubgroup( G, U ) )];
-end;
+end );
 
-Fingerprint := function ( G, U )
+BindGlobal( "Fingerprint", function ( G, U )
     if not IsBool( MyFingerprint ) then
         return MyFingerprint( G, U );
     fi;
@@ -400,13 +400,13 @@ Fingerprint := function ( G, U )
     else
         return FingerprintLarge( G, U );
     fi;
-end;
+end );
 
 #############################################################################
 ##
 #F NormalizingReducedGL( spec, s, n, M [,B] )
 ##
-NormalizingReducedGL := function(arg)
+BindGlobal( "NormalizingReducedGL", function(arg)
 local spec,s,n,M,
     G, p, d, field, B, U, hom, pcgs, pcs, rels, w,
           S, L,
@@ -523,13 +523,13 @@ local spec,s,n,M,
 
     SetSize( B, Size( L )*(p-1) );
     return B;
-end;
+end );
 
 #############################################################################
 ##
 #F CocycleSQ( epi, field )
 ##
-CocycleSQ := function( epi, field )
+BindGlobal( "CocycleSQ", function( epi, field )
     local H, F, N, pcsH, pcsN, pcgsH, o, n, d, z, c, i, j, h, exp, p, k;
 
     # set up
@@ -567,13 +567,13 @@ CocycleSQ := function( epi, field )
     # check
     if c = 0 * c then return 0; fi;
     return c;
-end;
+end );
 
 #############################################################################
 ##
 #F InduciblePairs( C, epi, M )
 ##
-InduciblePairs := function( C, epi, M )
+BindGlobal( "InduciblePairs", function( C, epi, M )
     local F, cc, c, stab, b;
 
     if HasSize( C ) and Size( C ) = 1 then return C; fi;
@@ -592,9 +592,9 @@ InduciblePairs := function( C, epi, M )
     # compute stabilizer of b
     stab := StabilizerByMatrixOperation( C, b, cc );
     return stab;
-end;
+end );
 
-MatricesOfRelator := function( rel, gens, inv, mats, field, d )
+BindGlobal( "MatricesOfRelator", function( rel, gens, inv, mats, field, d )
     local n, m, L, s, i, mat;
 
     # compute left hand side
@@ -618,9 +618,9 @@ MatricesOfRelator := function( rel, gens, inv, mats, field, d )
         m   := m - 1;
     od;
     return L;
-end;
+end );
 
-VectorOfRelator := function( rel, gens, imgsF, pcsH, pcsN, nu, field )
+BindGlobal( "VectorOfRelator", function( rel, gens, imgsF, pcsH, pcsN, nu, field )
     local w, s, r;
 
     # compute right hand side
@@ -628,13 +628,13 @@ VectorOfRelator := function( rel, gens, imgsF, pcsH, pcsN, nu, field )
     s := MappedWord( rel, gens, pcsH );
     r := ExponentsOfPcElement( pcsN, w * Image( nu, s ) ) * One(field);
     return r;
-end;
+end );
 
 #############################################################################
 ##
 #F LiftInduciblePair( epi, ind, M, weight )
 ##
-LiftInduciblePair := function( epi, ind, M, weight )
+BindGlobal( "LiftInduciblePair", function( epi, ind, M, weight )
     local H, F, N, pcgsF, pcsH, pcsN, pcgsH, n, d, imgsF, imgsN, nu, P,
           gensP, invP, relsP, l, E, v, k, rel, u, vec, L, r, i,
           elm, auto, imgsH, j, h, opmats;
@@ -719,13 +719,13 @@ LiftInduciblePair := function( epi, ind, M, weight )
     SetKernelOfMultiplicativeGeneralMapping( auto, TrivialSubgroup( H ) );
 
     return auto;
-end;
+end );
 
 #############################################################################
 ##
 #F AutomorphismGroupElAbGroup( G, B )
 ##
-AutomorphismGroupElAbGroup := function( G, B )
+BindGlobal( "AutomorphismGroupElAbGroup", function( G, B )
     local pcgs, mats, autos, mat, imgs, auto, A;
 
     # create matrices
@@ -755,7 +755,7 @@ AutomorphismGroupElAbGroup := function( G, B )
     fi;
 
     return A;
-end;
+end );
 
 #############################################################################
 ##
@@ -766,7 +766,7 @@ end;
 # listed spaceorbits.
 
 # auxiliary
-RedmatSpanningIndices:=function(gens)
+BindGlobal( "RedmatSpanningIndices", function(gens)
 local bas,n,one,new,a,b,g;
   n:=Length(gens[1]);
   one:=One(gens[1]);
@@ -787,7 +787,7 @@ local bas,n,one,new,a,b,g;
     od;
   od;
   return new;
-end;
+end );
 
 InstallGlobalFunction(SpaceAndOrbitStabilizer,function(n,field,ospaces,osporb)
 local outvecs,l,sub,yet,i,j,k,s,t,new,incl,min,rans,sofar,done,
@@ -1095,7 +1095,7 @@ if Length(rans[i])=0 then Error("EGAD");fi;
   return a;
 end);
 
-PcgsCharacteristicTails:=function(G,aut)
+BindGlobal( "PcgsCharacteristicTails", function(G,aut)
 local gens,ser,new,pcgs,f,mo,i,j,k,s;
   gens:=GeneratorsOfGroup(aut);
   ser:=InvariantElementaryAbelianSeries(G,gens);
@@ -1123,7 +1123,7 @@ local gens,ser,new,pcgs,f,mo,i,j,k,s;
   od;
   pcgs:=PcgsByPcSequence(FamilyObj(One(G)),ser);
   return pcgs;
-end;
+end );
 
 InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
     local spec, weights, first, m, pcgsU, F, pcgsF, A, i, s, n, p, H,

@@ -293,7 +293,7 @@ end );
 ##
 #M  SmallestMovedPoint( <C> ) . . . . . . .  for a collection of permutations
 ##
-SmallestMovedPointPerms := function( C )
+BindGlobal( "SmallestMovedPointPerms", function( C )
     local   min,  m,  gen;
 
     min := infinity;
@@ -306,7 +306,7 @@ SmallestMovedPointPerms := function( C )
         fi;
     od;
     return min;
-end;
+end );
 
 InstallMethod( SmallestMovedPoint,
     "for a collection of permutations",
@@ -325,7 +325,7 @@ InstallMethod( SmallestMovedPoint,
 ##
 #M  LargestMovedPoint( <C> )  . . . . . . .  for a collection of permutations
 ##
-LargestMovedPointPerms := function( C )
+BindGlobal( "LargestMovedPointPerms", function( C )
     local   max,  m,  gen;
 
     max := 0;
@@ -338,7 +338,7 @@ LargestMovedPointPerms := function( C )
         fi;
     od;
     return max;
-end;
+end );
 
 InstallMethod( LargestMovedPoint,
     "for a collection of permutations",
@@ -392,7 +392,7 @@ end);
 ##
 #M  NrMovedPoints( <C> )  . . . . . . . . .  for a collection of permutations
 ##
-NrMovedPointsPerms := function( C )
+BindGlobal( "NrMovedPointsPerms", function( C )
     local mov, sma, pnt, gen;
 
     mov := 0;
@@ -409,7 +409,7 @@ NrMovedPointsPerms := function( C )
       od;
     od;
     return mov;
-end;
+end );
 
 InstallMethod( NrMovedPoints,
     "for a collection of permutations",
@@ -1907,7 +1907,7 @@ InstallGlobalFunction( SignPermGroup, function(g)
   fi;
 end );
 
-CreateAllCycleStructures := function(n)
+BindGlobal( "CreateAllCycleStructures", function(n)
 local i,j,l,m;
   l:=[];
   for i in Partitions(n) do
@@ -1924,7 +1924,7 @@ local i,j,l,m;
     Add(l,m);
   od;
   return l;
-end;
+end );
 
 #############################################################################
 ##

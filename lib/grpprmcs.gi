@@ -18,7 +18,7 @@
 ##
 ##  `GInverses' changes `<S>.generators' !
 ##
-GInverses := function( S )
+BindGlobal( "GInverses", function( S )
     local   inverses,  set,  i;
 
     set := Set( S.translabels );
@@ -32,7 +32,7 @@ GInverses := function( S )
         Append( S.generators, S.stabilizer.generators );
     fi;
     return inverses;
-end;
+end );
 
 #############################################################################
 ##

@@ -73,7 +73,7 @@ DeclareFilter( "IsDefaultRhsTypeSingleCollector" );
 ##
 SingleCollector_CollectWordRunning := false;
 
-SingleCollector_CollectWord := function( sc, v, w )
+BindGlobal( "SingleCollector_CollectWord", function( sc, v, w )
 
     local   cnj,        # <cnj>[g][h] contains g^h for g > h
             pow,        # <pow>[g] contains g^p
@@ -241,7 +241,7 @@ SingleCollector_CollectWord := function( sc, v, w )
     SingleCollector_CollectWordRunning := false;
     return true;
 
-end;
+end );
 
 
 #############################################################################
@@ -250,7 +250,7 @@ end;
 ##
 ##  Solve the equation <a> X = <b>.
 ##
-SingleCollector_Solution := function( sc, a, b )
+BindGlobal( "SingleCollector_Solution", function( sc, a, b )
     local   rod,  av,  bv,  x,  i,  dif,  y;
 
     # get the free group generators and relative orders
@@ -279,7 +279,7 @@ SingleCollector_Solution := function( sc, a, b )
     # and return the solution <x>
     return AssocWord( sc![SCP_DEFAULT_TYPE], x );
 
-end;
+end );
 
 
 #############################################################################
@@ -435,7 +435,7 @@ function( sc, i, j, rhs )
 
 end );
 
-SingleCollector_SetConjugateNC := function( sc, i, j, rhs )
+BindGlobal( "SingleCollector_SetConjugateNC", function( sc, i, j, rhs )
 
     # if <i> and <j> commute unbind the entry
     if rhs = sc![SCP_RWS_GENERATORS][i]  then
@@ -452,7 +452,7 @@ SingleCollector_SetConjugateNC := function( sc, i, j, rhs )
     # collector info must be updated
     OutdatePolycyclicCollector(sc);
 
-end;
+end );
 
 
 #############################################################################
@@ -541,7 +541,7 @@ function( sc, i, rhs )
 
 end );
 
-SingleCollector_SetPowerNC := function( sc, i, rhs )
+BindGlobal( "SingleCollector_SetPowerNC", function( sc, i, rhs )
 
     # enter the rhs
     if 0 = NumberSyllables(rhs)  then
@@ -556,7 +556,7 @@ SingleCollector_SetPowerNC := function( sc, i, rhs )
     # collector info must be updated
     OutdatePolycyclicCollector(sc);
 
-end;
+end );
 
 
 #############################################################################
@@ -658,7 +658,7 @@ end );
 ##
 #M  SetRelativeOrder( <sc>, <i>, <ord> )
 ##
-SingleCollector_SetRelativeOrderNC := function( sc, i, ord )
+BindGlobal( "SingleCollector_SetRelativeOrderNC", function( sc, i, ord )
 
     # store the new order
     sc![SCP_RELATIVE_ORDERS][i] := ord;
@@ -666,7 +666,7 @@ SingleCollector_SetRelativeOrderNC := function( sc, i, ord )
     # collector info must be updated
     OutdatePolycyclicCollector(sc);
 
-end;
+end );
 
 
 #############################################################################
@@ -705,7 +705,7 @@ end );
 ##
 ##  The `Avector' routine was taken from the \package{NQ} package.
 ##
-SingleCollector_MakeAvector := function( sc )
+BindGlobal( "SingleCollector_MakeAvector", function( sc )
     local   com,  cnj,  n,  g,  again,  h;
 
     # number of generators
@@ -749,9 +749,9 @@ SingleCollector_MakeAvector := function( sc )
     # set the avector
     sc![SCP_AVECTOR] := com;
 
-end;
+end );
 
-SingleCollector_MakeInverses := function( sc )
+BindGlobal( "SingleCollector_MakeInverses", function( sc )
     local   n,  gn,  id,  i,invhint,j,ih,av;
 
     # start at the bottom
@@ -793,7 +793,7 @@ SingleCollector_MakeInverses := function( sc )
         sc![SCP_INVERSES][i] := SingleCollector_Solution( sc, gn[i], id );
       fi;
     od;
-end;
+end );
 
 InstallMethod( UpdatePolycyclicCollector,
     true,
@@ -1143,7 +1143,7 @@ InstallMethod( CollectWordOrFail,
 ##
 #M  ShallowCopy( <sc> )
 ##
-ShallowCopy_SingleCollector := function( sc )
+BindGlobal( "ShallowCopy_SingleCollector", function( sc )
     local   copy;
 
     # construct new single collector as list object
@@ -1185,7 +1185,7 @@ ShallowCopy_SingleCollector := function( sc )
     SetFilterObj( copy, IsMutable );
     return copy;
 
-end;
+end );
 
 InstallMethod( ShallowCopy,
     true,

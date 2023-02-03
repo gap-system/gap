@@ -440,7 +440,7 @@ InstallOtherMethod( Zero,
 ##
 #M  Enumerator( <I> ) . . . . . . . . . . . . . . . . . . . . .  for an ideal
 ##
-EnumeratorOfIdeal := function( I )
+BindGlobal( "EnumeratorOfIdeal", function( I )
 
     local   left,       # we must multiply with ring elements from the left
             right,      # we must multiply with ring elements from the right
@@ -532,7 +532,7 @@ EnumeratorOfIdeal := function( I )
     od;
 
     return set;
-end;
+end );
 
 InstallMethod( Enumerator,
     "generic method for a left ideal with known generators",
@@ -558,7 +558,7 @@ InstallMethod( Enumerator,
 ##
 #M  GeneratorsOfRing( <I> ) . . . . . . . . . . . . . . . . . .  for an ideal
 ##
-GeneratorsOfRingForIdeal := function( I )
+BindGlobal( "GeneratorsOfRingForIdeal", function( I )
 
     local   left,       # we must multiply with ring elements from the left
             right,      # we must multiply with ring elements from the right
@@ -626,7 +626,7 @@ GeneratorsOfRingForIdeal := function( I )
     od;
 
     return gens;
-end;
+end );
 
 
 InstallMethod( GeneratorsOfRing,

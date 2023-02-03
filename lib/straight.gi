@@ -1028,7 +1028,7 @@ end);
 ##
 #M  InverseOp(<slpel>)
 ##
-InverseSLPElm:=function(slp)
+BindGlobal( "InverseSLPElm", function(slp)
 local l,n;
   l:=LinesOfStraightLineProgram(slp![2]);
   l:=ShallowCopy(l);
@@ -1038,7 +1038,7 @@ local l,n;
 
   return StraightLineProgElm(slp![1],
            StraightLineProgramNC(l,Length(slp![1].seeds)));
-end;
+end );
 
 # words in fp elements have separate methods for `Inverse' and `InverseOp'
 # -- so we must duplicate the installation here as well

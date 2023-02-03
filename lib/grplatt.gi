@@ -1841,7 +1841,7 @@ end);
 ##
 #F  NormalSubgroupsCalc(<G>[,<onlysimple>]) normal subs for pc or perm groups
 ##
-NormalSubgroupsCalc := function (arg)
+BindGlobal( "NormalSubgroupsCalc", function (arg)
 local G,        # group
       onlysimple,  # determine only subgroups with simple composition factors
       nt,nnt,   # normal subgroups
@@ -2306,7 +2306,7 @@ local G,        # group
   od;
 
   return Reversed(nt); # to stay ascending
-end;
+end );
 
 #############################################################################
 ##
@@ -3241,7 +3241,7 @@ local act,offset,G,lim,cond,dosub,all,alln,m,i,j,jn,new,old,t,k,conjg;
   return all;
 end);
 
-DoContainedConjugates:=function(arg)
+BindGlobal( "DoContainedConjugates", function(arg)
 local G,A,B,onlyone,l,N,dc,gens,i;
   G:=arg[1];
   A:=arg[2];
@@ -3280,7 +3280,7 @@ local G,A,B,onlyone,l,N,dc,gens,i;
     l:=DoConjugateInto(G,A,B,false);
     return List(l,x->[B^x,x]);
   fi;
-end;
+end );
 
 #############################################################################
 ##

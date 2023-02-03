@@ -622,7 +622,7 @@ InstallTrueMethod( IsAlgebraHomomorphism, IsFieldHomomorphism );
 ##  </Description>
 ##  </ManSection>
 ##
-InstallEqMethodForMappingsFromGenerators := function( IsStruct,
+BindGlobal( "InstallEqMethodForMappingsFromGenerators", function( IsStruct,
     GeneratorsOfStruct, respects, infostring )
 
     InstallMethod( \=,
@@ -690,7 +690,7 @@ InstallEqMethodForMappingsFromGenerators := function( IsStruct,
         return true;
         end );
 
-end;
+end );
 
 
 #############################################################################

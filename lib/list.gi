@@ -2028,7 +2028,7 @@ end);
 ##
 #M  Append(<list1>,<list2>)
 ##
-APPEND_LIST_DEFAULT := function ( list1, list2 )
+BindGlobal( "APPEND_LIST_DEFAULT", function ( list1, list2 )
     local  len1, len2, i;
     len1 := Length(list1);
     len2 := Length(list2);
@@ -2043,7 +2043,7 @@ APPEND_LIST_DEFAULT := function ( list1, list2 )
             list1[len1+i] := list2[i];
         fi;
     od;
-end;
+end );
 
 InstallMethod( Append,
     "for mutable list and list",
@@ -2800,7 +2800,8 @@ InstallMethod( MinimumList,
 #F  Cartesian( <list1>, <list2> ... )
 #F  Cartesian( <list> )
 ##
-Cartesian2 := function ( list, n, tup, i )
+DeclareGlobalName( "Cartesian2" );
+BindGlobal( "Cartesian2", function ( list, n, tup, i )
     local  tups,  l;
     if i = n+1  then
         tup := ShallowCopy(tup);
@@ -2813,8 +2814,7 @@ Cartesian2 := function ( list, n, tup, i )
         od;
     fi;
     return tups;
-end;
-MakeReadOnlyGlobal( "Cartesian2" );
+end );
 
 InstallGlobalFunction( Cartesian, function ( arg )
     if Length(arg) = 1  then
@@ -4043,7 +4043,7 @@ BLISTNIBBLES:=MakeImmutable([
 BLISTZERO:=MakeImmutable(BlistList([1..8],[]));
 HEXNIBBLES:=MakeImmutable("0123456789ABCDEF");
 
-DECODE_BITS_TO_HEX:=function(b,i)
+BindGlobal( "DECODE_BITS_TO_HEX", function(b,i)
 local v;
   v:=0;
   if b[i+0] then v:=v+8; fi;
@@ -4051,7 +4051,7 @@ local v;
   if b[i+2] then v:=v+2; fi;
   if b[i+3] then v:=v+1; fi;
   return HEXNIBBLES[v+1];
-end;
+end );
 
 InstallGlobalFunction(HexStringBlist,function(b)
 local i,n,s;

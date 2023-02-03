@@ -657,10 +657,10 @@ end );
 #M  ViewObj( <molser> ) . . . . . . . . . . . . . . . . . for a Molien series
 #M  PrintObj( <molser> )  . . . . . . . . . . . . . . . . for a Molien series
 ##
-ViewMolienSeries := function( molser )
+BindGlobal( "ViewMolienSeries", function( molser )
     molser:= MolienSeriesInfo( molser );
     Print( "( ", molser.numerstring, " ) / ( ", molser.denomstring, " )" );
-end;
+end );
 
 InstallMethod( ViewObj,
     "for a Molien series",

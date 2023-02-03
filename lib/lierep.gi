@@ -2229,7 +2229,7 @@ DeclareRepresentation( "IsVectorSearchTableDefaultRep",
     [ "top" ]);            # the top node of the search data structure
 
 ## Create a new vector search tree node
-VSTNode := function(var, exp, nxt)
+BindGlobal( "VSTNode", function(var, exp, nxt)
     return rec( var := var,
                 exp := exp,
                 nxt := nxt,
@@ -2237,16 +2237,16 @@ VSTNode := function(var, exp, nxt)
                 header := 0,
                 right := 0,
                 left := 0 );
-end;
+end );
 
 ## Insert the node p to the left of node q in the doubly linked list
-VSTInsertToLeft := function(q, p)
+BindGlobal( "VSTInsertToLeft", function(q, p)
     p.header := q.header;
     p.left := q.left;
     p.right := q;
     q.left.right := p;
     q.left := p;
-end;
+end );
 
 #############################################################################
 ##
@@ -3056,7 +3056,7 @@ BindGlobal( "BasisOfWeightRepSpace",
 
 end );
 
-TriangulizeWeightRepElementList:= function( ww )
+BindGlobal( "TriangulizeWeightRepElementList", function( ww )
 
     # Here `ww' is a list weight rep elements. We triangulize this list
     # of vectors. `basechange' with be a list describing the elements
@@ -3124,7 +3124,7 @@ TriangulizeWeightRepElementList:= function( ww )
 
     od;
     return rec( echelonbas:= ww, heads:= heads, basechange:= basechange );
-end;
+end );
 
 ##############################################################################
 ##

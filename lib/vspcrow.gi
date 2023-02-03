@@ -347,7 +347,7 @@ InstallMethod( LinearCombination, IsCollsElms,
 #M  Coefficients( <B>, <v> )  .  method for semi-ech. basis of Gaussian space
 ##
 
-COEFFS_SEMI_ECH_BASIS:=function( B, v )
+BindGlobal( "COEFFS_SEMI_ECH_BASIS", function( B, v )
     local vectors,   # basis vectors of `B'
           heads,     # heads info of `B'
           len,       # length of `v'
@@ -388,7 +388,7 @@ COEFFS_SEMI_ECH_BASIS:=function( B, v )
 
     # Return the coefficients.
     return coeff;
-    end;
+end );
 
 InstallMethod( Coefficients,
     "for semi-ech. basis of a Gaussian row space, and a row vector",
@@ -461,7 +461,7 @@ InstallMethod( SiftedVector,
 ##  of a Gaussian row space, and `fail' otherwise.
 #T into `matrix.gi' ?
 ##
-HeadsInfoOfSemiEchelonizedMat := function( mat, dim )
+BindGlobal( "HeadsInfoOfSemiEchelonizedMat", function( mat, dim )
     local zero,     # zero of the field
           one,      # one of the field
           nrows,    # number of rows
@@ -497,7 +497,7 @@ HeadsInfoOfSemiEchelonizedMat := function( mat, dim )
     fi;
 
     return heads;
-end;
+end );
 
 
 #############################################################################

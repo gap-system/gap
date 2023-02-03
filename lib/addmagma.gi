@@ -625,7 +625,7 @@ InstallMethod( Characteristic,
 ##
 #M  Enumerator( <A> ) . . . .  enumerator of trivial additive magma with zero
 ##
-EnumeratorOfTrivialAdditiveMagmaWithZero := A -> Immutable( [ Zero( A ) ] );
+BindGlobal( "EnumeratorOfTrivialAdditiveMagmaWithZero", A -> Immutable( [ Zero( A ) ] ) );
 
 InstallMethod( Enumerator,
     "for trivial add. magma-with-zero",

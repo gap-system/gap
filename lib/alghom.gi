@@ -919,7 +919,7 @@ InstallMethod( ImagesRepresentative,
 ##
 #M  PreImagesRepresentative( <ophom>, <mat> )
 ##
-PreImagesRepresentativeOperationAlgebraHomomorphism := function( ophom, mat )
+BindGlobal( "PreImagesRepresentativeOperationAlgebraHomomorphism", function( ophom, mat )
     if not IsBound( ophom!.basisImage ) then
       MakePreImagesInfoOperationAlgebraHomomorphism( ophom );
     fi;
@@ -928,7 +928,7 @@ PreImagesRepresentativeOperationAlgebraHomomorphism := function( ophom, mat )
       mat:= LinearCombination( ophom!.preimagesBasisImage, mat );
     fi;
     return mat;
-end;
+end );
 
 InstallMethod( PreImagesRepresentative,
     "for an operation algebra homomorphism, and an element",

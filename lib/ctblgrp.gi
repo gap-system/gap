@@ -110,7 +110,7 @@ end);
 ##
 #F  DxCalcAllPowerMaps(<D>) . . . . . . . calculate power maps for char.table
 ##
-DxCalcAllPowerMaps := function(D)
+BindGlobal( "DxCalcAllPowerMaps", function(D)
 local p,primes,i,cl,spr,j,allpowermaps,pm,ex;
 
   # compute the inverse classes
@@ -194,7 +194,7 @@ fi;
 
     MakeImmutable( pm );
   od;
-end;
+end );
 
 #############################################################################
 ##
@@ -208,7 +208,7 @@ end;
 ##  It is assumed that the power maps for all primes up to the maximal
 ##  representative order of $G$ are known.
 ##
-DxCalcPrimeClasses := function(D)
+BindGlobal( "DxCalcPrimeClasses", function(D)
 local primeClasses,
       classes,
       i,
@@ -242,21 +242,21 @@ local primeClasses,
   od;
   D.primeClasses[1]:=[1];
 
-end;
+end );
 
 #############################################################################
 ##
 #F  DxIsInSpace(v,space)
 ##
-DxIsInSpace := function(v,r)
+BindGlobal( "DxIsInSpace", function(v,r)
   return SolutionMat(Matrix(BaseDomain(r.base[1]),r.base),v)<>fail;
-end;
+end );
 
 #############################################################################
 ##
 #F  DxNiceBasis(D,space) . . . . . . . . . . . . . nice basis of space record
 ##
-DxNiceBasis := function(d,r)
+BindGlobal( "DxNiceBasis", function(d,r)
 local b;
   if not IsBound(r.niceBasis) then
     b:=Matrix(BaseDomain(r.base[1]),List(r.base,i->i{d.permlist})); # copied and permuted according to order
@@ -266,13 +266,13 @@ local b;
   fi;
   Assert(1,Length(r.niceBasis)=Length(r.base));
   return r.niceBasis;
-end;
+end );
 
 #############################################################################
 ##
 #F  DxActiveCols(D,<space|base>)  . . . . . . active columns of space or base
 ##
-DxActiveCols := function(D,raum)
+BindGlobal( "DxActiveCols", function(D,raum)
 local base,activeCols,j,n,l;
   activeCols:=[];
   if IsRecord(raum) then
@@ -297,7 +297,7 @@ local base,activeCols,j,n,l;
     raum.activeCols:=activeCols;
   fi;
   return activeCols;
-end;
+end );
 
 
 #############################################################################
@@ -305,7 +305,7 @@ end;
 #F  DxRegisterModularChar(<D>,<c>)  . . . . .  note newly found irreducible
 #F                                                     character modulo prime
 ##
-DxRegisterModularChar := function(D,c)
+BindGlobal( "DxRegisterModularChar", function(D,c)
 local d,p;
   # it may happen,that an irreducible character will be registered twice:
   # 2-dim space,1 Orbit,combinatoric split. Avoid this!
@@ -337,7 +337,7 @@ local d,p;
       p:=p+1;
     od;
   fi;
-end;
+end );
 
 #############################################################################
 ##
@@ -423,7 +423,7 @@ end );
 ##  characters of cyclic groups,which can be easily computed. They are
 ##  lifted afterwards back to G.
 ##
-DxLinearCharacters := function(D)
+BindGlobal( "DxLinearCharacters", function(D)
 local H,T,c,a,e,f,i,j,k,l,m,p,ch,el,ur,s,hom,gens,onc,G;
   G:=D.group;
   onc:=List([1..D.klanz],i->1);
@@ -512,14 +512,14 @@ local H,T,c,a,e,f,i,j,k,l,m,p,ch,el,ur,s,hom,gens,onc,G;
     ch:=List(ch,i->i[2]);
     return ch;
   fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  DxLiftCharacter(<D>,<modChi>) . recalculate character in characteristic 0
 ##
-DxLiftCharacter := function(D,modular)
+BindGlobal( "DxLiftCharacter", function(D,modular)
 local modularchi,chi,zeta,degree,sum,M,l,s,n,j,polynom,chipolynom,
       family,prime;
   prime:=D.prime;
@@ -557,7 +557,7 @@ local modularchi,chi,zeta,degree,sum,M,l,s,n,j,polynom,chipolynom,
     od;
   od;
   return chi;
-end;
+end );
 
 
 #############################################################################
@@ -626,7 +626,7 @@ end );
 ##
 #F  DxEigenbase(<mat>,<field>) . . . . . components of Eigenvects resp. base
 ##
-DxEigenbase := function(M,f)
+BindGlobal( "DxEigenbase", function(M,f)
   local dim,i,eigenvalues,base,minpol,bases;
 
   minpol:=MinimalPolynomial(BaseDomain(M),M);
@@ -651,7 +651,7 @@ DxEigenbase := function(M,f)
   Assert(3, ForAll([1..Length(bases)],j->bases[j]*M = bases[j]*eigenvalues[j]));
   return rec(base:=bases,
              values:=eigenvalues);
-end;
+end );
 
 
 #############################################################################
@@ -797,7 +797,7 @@ end);
 ##
 #F  CharacterMorphismOrbits(<D>,<space>) . . stabilizer and invariantspace
 ##
-CharacterMorphismOrbits := function(D,space)
+BindGlobal( "CharacterMorphismOrbits", function(D,space)
   local a,b,s,o,gen,b1;
   if not IsBound(space.stabilizer) then
     if IsBound(space.approxStab) then
@@ -834,7 +834,7 @@ CharacterMorphismOrbits := function(D,space)
   return rec(invariantbase:=space.invariantbase,
              number:=Length(space.invariantbase),
              stabilizer:=space.stabilizer);
-end;
+end );
 
 
 
@@ -842,7 +842,7 @@ end;
 ##
 #F  DxModProduct(<D>,<vector1>,<vector2>) . . . product of two characters mod p
 ##
-DxModProduct := function(D,v1,v2)
+BindGlobal( "DxModProduct", function(D,v1,v2)
   local prod,i;
   prod:=0*D.one;
   for i in [1..D.klanz] do
@@ -851,14 +851,14 @@ DxModProduct := function(D,v1,v2)
   od;
   prod:=prod/(D.size mod D.prime);
   return prod;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  DxFrobSchurInd(<D>,<char>) . . . . . . modular Frobenius-Schur indicator
 ##
-DxFrobSchurInd := function(D,char)
+BindGlobal( "DxFrobSchurInd", function(D,char)
   local FSInd,classes,l,ll,L,family;
   FSInd:=char[1];
   classes:=[2..D.klanz];
@@ -879,7 +879,7 @@ DxFrobSchurInd := function(D,char)
     od;
   od;
   return FSInd/(D.size mod D.prime);
-end;
+end );
 
 
 #############################################################################
@@ -889,7 +889,7 @@ end;
 ##  If the room is 2-dimensional, this is meant to be the standard split.
 ##  Otherwise,the two-dim invariant space of raum is to be split
 ##
-SplitTwoSpace := function(D,raum)
+BindGlobal( "SplitTwoSpace", function(D,raum)
   local v1,v2,v1v1,v1v2,v2v1,v2v2,degrees,d1,d2,deg2,prime,o,f,d,degrees2,
         lift,root,p,q,n,char,char1,char2,a1,a2,i,NotFailed,k,l,m,test,ol,
         di,rp,mdeg2,mult,str;
@@ -1024,14 +1024,14 @@ SplitTwoSpace := function(D,raum)
     raum.twofail:=true;
     return [];
   fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  CombinatoricSplit(<D>)  . . . . . . . . .  split two-dimensional spaces
 ##
-CombinatoricSplit := function(D)
+BindGlobal( "CombinatoricSplit", function(D)
 local i,newRaeume,raum,neuer,j,ch,irrs,mods,incirrs,incmods,nb,rt,neuc;
   newRaeume:=[];
   incirrs:=[];
@@ -1089,7 +1089,7 @@ local i,newRaeume,raum,neuer,j,ch,irrs,mods,incirrs,incmods,nb,rt,neuc;
   if Length(incirrs)>0 then
     DxIncludeIrreducibles(D,incirrs,incmods:noproject);
   fi;
-end;
+end );
 
 #############################################################################
 ##
@@ -1143,7 +1143,7 @@ end );
 #F  ModularCharacterDegree(<D>,<chi>) . . . . . . . . .  degree of normalized
 #F                                                         character modulo p
 ##
-ModularCharacterDegree := function(D,chi)
+BindGlobal( "ModularCharacterDegree", function(D,chi)
   local j,j1,d,sum,prime;
   prime:=D.prime;
   sum:=0*D.one;
@@ -1157,7 +1157,7 @@ ModularCharacterDegree := function(D,chi)
     d:=prime-d;
   fi;
   return d;
-end;
+end );
 
 
 #############################################################################
@@ -1266,7 +1266,7 @@ end );
 ##
 #F  DxGaloisOrbits(<D>,<f>) .  orbits of Stab_Gal(f) when acting on the classes
 ##
-DxGaloisOrbits := function(D,f)
+BindGlobal( "DxGaloisOrbits", function(D,f)
 local i,k,l,u,ga,galOp,p;
   k:=D.klanz;
   if not IsBound(D.galOp[f]) then
@@ -1298,7 +1298,7 @@ local i,k,l,u,ga,galOp,p;
     fi;
   fi;
   return D.galOp[f];
-end;
+end );
 
 
 #############################################################################
@@ -1473,7 +1473,7 @@ end );
 #F  AsCharacterMorphismFunction(<pcgs>,<gals>,<tensormorphisms>)  operation
 #F                               function for operation of charactermorphisms
 ##
-AsCharacterMorphismFunction := function(pcgs,gals,tme)
+BindGlobal( "AsCharacterMorphismFunction", function(pcgs,gals,tme)
   local i,j,k,x,g,c,lg,gens;
   lg:=Length(gals);
   return function(p,e)
@@ -1516,7 +1516,7 @@ AsCharacterMorphismFunction := function(pcgs,gals,tme)
       Error("action not defined");
     fi;
   end;
-end;
+end );
 
 #############################################################################
 ##
@@ -1527,7 +1527,7 @@ end;
 ##  group acts as linear mappings that permute characters via the operation
 ##  .asCharacterMorphism.
 ##
-CharacterMorphismGroup := function(D)
+BindGlobal( "CharacterMorphismGroup", function(D)
 local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,pow,pos,i,j,k,gen,
       cof,comm;
   tm:=D.tensorMorphisms;
@@ -1635,7 +1635,7 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,pow,pos,i,j,k,gen,
                            gals,tme);
   D.tensorMorphisms:=tme;
   return tm;
-end;
+end );
 
 
 #############################################################################
@@ -1645,7 +1645,7 @@ end;
 ##  First,the (hopefully) cheap identification is used,to filter the
 ##  possible classes. If still not unique,a hard conjugacy test is applied
 ##
-ClassElementLargeGroup := function(arg)
+BindGlobal( "ClassElementLargeGroup", function(arg)
 local D,el,possible,i,id;
   D:=arg[1];
   el:=arg[2];
@@ -1663,7 +1663,7 @@ local D,el,possible,i,id;
     fi;
   od;
   return possible[i];
-end;
+end );
 
 
 #############################################################################
@@ -1673,11 +1673,11 @@ end;
 ##  Since we have stored the complete classmap,this is done by simply
 ##  looking the class number up in this list.
 ##
-ClassElementSmallGroup := function(arg)
+BindGlobal( "ClassElementSmallGroup", function(arg)
 local D;
   D:=arg[1];
   return D.classMap[Position(D.enum,arg[2])];
-end;
+end );
 
 
 #############################################################################
@@ -1787,7 +1787,7 @@ end);
 #F  StandardClassMatrixColumn(<D>,<mat>,<r>,<t>)  . calculate the t-th column
 #F       of the r-th class matrix and store it in the appropriate column of M
 ##
-StandardClassMatrixColumn := function(D,M,r,t)
+BindGlobal( "StandardClassMatrixColumn", function(D,M,r,t)
   local c,gt,s,z,i,T,w,e,j,p,orb;
   if t=1 then
     M[D.inversemap[r],t]:=D.classiz[r];
@@ -1857,16 +1857,16 @@ StandardClassMatrixColumn := function(D,M,r,t)
       od;
     fi;
   fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  IdentificationGenericGroup(<D>,<el>) . .  class invariants for el in G
 ##
-IdentificationGenericGroup := function(D,el)
+BindGlobal( "IdentificationGenericGroup", function(D,el)
   return Order(el);
-end;
+end );
 
 
 #############################################################################
@@ -1933,7 +1933,7 @@ end);
 ##
 ##  CharacterDegreePool(G)  . . possible character degrees,using thm. of Ito
 ##
-CharacterDegreePool := function(G)
+BindGlobal( "CharacterDegreePool", function(G)
   local k,r,s;
   r:=RootInt(Size(G));
   #if Size(G)>10^6 and not IsSolvableGroup(G) then
@@ -1944,17 +1944,17 @@ CharacterDegreePool := function(G)
   #fi;
   k:=Length(ConjugacyClasses(G));
   return List(Filtered(DivisorsInt(s),i->i<=r),i->[i,k]);
-end;
+end );
 
 #############################################################################
 ##
 ##  ClassNumbersElements(<G>,<l>) . .  class numbers in G for elements in l
 ##
-ClassNumbersElements := function(G,l)
+BindGlobal( "ClassNumbersElements", function(G,l)
 local D;
   D:=DixonRecord(G);
   return List(l,i->D.ClassElement(D,i));
-end;
+end );
 
 #############################################################################
 ##
@@ -1962,7 +1962,7 @@ end;
 ##
 ##  $\Q(\varepsilon_e)\to\F_p$. r is e-th root in F_p.
 ##
-DxGeneratePrimeCyclotomic := function(e,r) # exponent,Primitive Root
+BindGlobal( "DxGeneratePrimeCyclotomic", function(e,r) # exponent,Primitive Root
   return function(a)
   local l,n,w,s,i,o;
     l:=COEFFS_CYC(a);
@@ -1979,7 +1979,7 @@ DxGeneratePrimeCyclotomic := function(e,r) # exponent,Primitive Root
     od;
     return w;
   end;
-end;
+end );
 
 #############################################################################
 ##

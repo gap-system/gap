@@ -15,7 +15,7 @@
 ##  rather than try to make them as accurate as possible.
 ##
 
-RunTask := function(func, args...)
+BindGlobal( "RunTask", function(func, args...)
     local result;
     result := CallFuncListWrap(func, args);
     if result = [] then
@@ -23,16 +23,16 @@ RunTask := function(func, args...)
     else
         return rec(taskresult := result[1]);
     fi;
-end;
+end );
 
-TaskResult := function(task)
+BindGlobal( "TaskResult", function(task)
     return task.taskresult;
-end;
+end );
 
-ScheduleTask := function(cond, func, args...)
+BindGlobal( "ScheduleTask", function(cond, func, args...)
     return CallFuncListWrap(RunTask, Concatenation([func], args))[1];
-end;
+end );
 
-WaitTask := function(args...)
+BindGlobal( "WaitTask", function(args...)
     return;
-end;
+end );

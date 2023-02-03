@@ -1396,7 +1396,7 @@ InstallMethod( TransposedMatImmutable, "for a zmodnz matrix",
     return n;
   end );
 
-ZMZVECMAT:=function( v, m )
+BindGlobal( "ZMZVECMAT", function( v, m )
     local i,res,s,r;
     r:=BaseDomain(v);
     # do arithmetic over Z first so that we reduce only once
@@ -1417,7 +1417,7 @@ ZMZVECMAT:=function( v, m )
         MakeImmutable(res);
     fi;
     return res;
-  end;
+end );
 
 InstallMethod( \*, "for a zmodnz vector and a zmodnz matrix",
   IsElmsColls, [ IsZmodnZVectorRep, IsZmodnZMatrixRep ],
@@ -1427,7 +1427,7 @@ InstallOtherMethod( \^, "for a zmodnz vector and a zmodnz matrix",
   IsElmsColls, [ IsZmodnZVectorRep, IsZmodnZMatrixRep ],
   ZMZVECMAT);
 
-PLISTVECZMZMAT:=function( v, m )
+BindGlobal( "PLISTVECZMZMAT", function( v, m )
     local i,res,s,r;
     r:=BaseDomain(m);
     # do arithmetic over Z first so that we reduce only once
@@ -1448,7 +1448,7 @@ PLISTVECZMZMAT:=function( v, m )
         MakeImmutable(res);
     fi;
     return res;
-  end;
+end );
 
 InstallOtherMethod( \*, "for a plist vector and a zmodnz matrix",
   IsElmsColls, [ IsList, IsZmodnZMatrixRep ],
@@ -1458,7 +1458,7 @@ InstallOtherMethod( \^, "for a plist vector and a zmodnz matrix",
   IsElmsColls, [ IsList, IsZmodnZMatrixRep ],
   PLISTVECZMZMAT);
 
-ZMZVECTIMESPLISTMAT:=function( v, m )
+BindGlobal( "ZMZVECTIMESPLISTMAT", function( v, m )
     local i,res,s,r;
     r:=BaseDomain(v);
     # do arithmetic over Z first so that we reduce only once
@@ -1475,7 +1475,7 @@ ZMZVECTIMESPLISTMAT:=function( v, m )
         MakeImmutable(res);
     fi;
     return res;
-  end;
+end );
 
 InstallOtherMethod( \*, "for a zmodnz vector and plist matrix",
   IsElmsColls, [ IsZmodnZVectorRep, IsMatrix ],
