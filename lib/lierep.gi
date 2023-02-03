@@ -3830,198 +3830,198 @@ InstallGlobalFunction( ExtendRepresentation,
 
     EvalMat:=function( p, mats )
 
-# Here 'p' is an element of the universal enveloping algebra of the Lie
-# algebra. So 'p' is a non-commutative polynomial in the basis elements.
-# This function substitutes the i-th element of the list of matrices
-# 'mats' for the i-th basis element of the Lie algebra. This means
-# that 'p' is evaluated on the matrices 'mats'.
+    # Here 'p' is an element of the universal enveloping algebra of the Lie
+    # algebra. So 'p' is a non-commutative polynomial in the basis elements.
+    # This function substitutes the i-th element of the list of matrices
+    # 'mats' for the i-th basis element of the Lie algebra. This means
+    # that 'p' is evaluated on the matrices 'mats'.
 
-    local M,i,r,ind,exp;
+        local M,i,r,ind,exp;
 
-    M:= 0*mats[1];
-    r:= ExtRepOfObj( p )[2];
-    i:= 1;
-    while i <= Length( r ) do
-      ind:= r[i]{[0..Length(r[i])/2-1]*2+1};
-      exp:= r[i]{[1..Length(r[i])/2]*2};
-      M:=M + mats[1]^0*
-       r[i+1]*Product( List( [1..Length(ind)], x -> mats[ind[x]]^exp[x] ) );
-      i:= i+2;
-    od;
-    return M;
-end;
+        M:= 0*mats[1];
+        r:= ExtRepOfObj( p )[2];
+        i:= 1;
+        while i <= Length( r ) do
+          ind:= r[i]{[0..Length(r[i])/2-1]*2+1};
+          exp:= r[i]{[1..Length(r[i])/2]*2};
+          M:=M + mats[1]^0*
+           r[i+1]*Product( List( [1..Length(ind)], x -> mats[ind[x]]^exp[x] ) );
+          i:= i+2;
+        od;
+        return M;
+    end;
 
-HasZeroOrbit:=function(w,L,mats,elts)
+    HasZeroOrbit:=function(w,L,mats,elts)
 
-# Here 'w' is an element of the universal enveloping algebra of a subalgebra
-# of 'L'. The elements of 'elts' map this subalgebra into itself
-# (where the action is given by elts[i]\cdot x = elts[i]*x - x*elts[i],
-# where x is an element of the subalgebra). This function calculates
-# the orbit of 'w' under the action of the elements 'elts' and checks
-# whether \rho( orbit ) = 0 where \rho is the representation of the
-# subalgebra afforded by 'mats'. If this is the case then
-# the element 'w' need not be considered in the function 'ExtendRep'.
-# Here 'M' is a basis of the subspace of the universal enveloping algebra
-# consisting of all elements of degree <= Degree(w).
+    # Here 'w' is an element of the universal enveloping algebra of a subalgebra
+    # of 'L'. The elements of 'elts' map this subalgebra into itself
+    # (where the action is given by elts[i]\cdot x = elts[i]*x - x*elts[i],
+    # where x is an element of the subalgebra). This function calculates
+    # the orbit of 'w' under the action of the elements 'elts' and checks
+    # whether \rho( orbit ) = 0 where \rho is the representation of the
+    # subalgebra afforded by 'mats'. If this is the case then
+    # the element 'w' need not be considered in the function 'ExtendRep'.
+    # Here 'M' is a basis of the subspace of the universal enveloping algebra
+    # consisting of all elements of degree <= Degree(w).
 
-    local   F,  A,  mons,  orb,  vv,  V,  i,  orb1,  j,  c,  c1,  val,
-            r,  mons1,  k,  pos,  bb;
+        local   F,  A,  mons,  orb,  vv,  V,  i,  orb1,  j,  c,  c1,  val,
+                r,  mons1,  k,  pos,  bb;
 
-   F:= LeftActingDomain( L );
+       F:= LeftActingDomain( L );
 
-   A:=EvalMat( w, mats );
-   if A <> Zero(F)*A then return false; fi;
+       A:=EvalMat( w, mats );
+       if A <> Zero(F)*A then return false; fi;
 
-   mons:= [ ExtRepOfObj( w )[2][1] ];
-   orb:=[ w ];
+       mons:= [ ExtRepOfObj( w )[2][1] ];
+       orb:=[ w ];
 
-# Every element is a vector in the space spanned by 'M'. So 'V' will be the
-# space of vectors.
+    # Every element is a vector in the space spanned by 'M'. So 'V' will be the
+    # space of vectors.
 
-   vv:= [ One( F ) ];
-   V:= MutableBasis( F, [ vv ] );
-   i:= 1;
+       vv:= [ One( F ) ];
+       V:= MutableBasis( F, [ vv ] );
+       i:= 1;
 
-   while i <= Length( elts ) do
+       while i <= Length( elts ) do
 
-# We apply the element 'elts[i]' to all elements of 'orb' (the orbit
-# calculated so far).
+    # We apply the element 'elts[i]' to all elements of 'orb' (the orbit
+    # calculated so far).
 
-     orb1:= [ ];
-     j:= 1;
-     c:= orb[j];
+         orb1:= [ ];
+         j:= 1;
+         c:= orb[j];
 
-     while j <= Length( orb ) do
+         while j <= Length( orb ) do
 
-       c1:= elts[i]*c-c*elts[i];
-       val:= EvalMat( c1, mats );
+           c1:= elts[i]*c-c*elts[i];
+           val:= EvalMat( c1, mats );
 
-       if val <> Zero( F ) * val then return false; fi;
-       vv:= ListWithIdenticalEntries( Length(mons), Zero( F ) );
-       r:= ExtRepOfObj( c1 )[2];
-       mons1:= [ ];
-       for k in [1,3..Length(r)-1] do
-           pos:= Position( mons, r[k] );
-           if pos = fail then
-               Add( mons, r[k] );
-               Add( mons1, r[k] );
-               Add( vv, r[k+1] );
-           else
-               vv[pos]:= r[k+1];
-           fi;
-       od;
-
-       if mons1 <> [] then
-           bb:= List( BasisVectors( V ), ShallowCopy );
-           for k in bb do
-               Append( k, ListWithIdenticalEntries( Length(mons1), Zero(F) ) );
+           if val <> Zero( F ) * val then return false; fi;
+           vv:= ListWithIdenticalEntries( Length(mons), Zero( F ) );
+           r:= ExtRepOfObj( c1 )[2];
+           mons1:= [ ];
+           for k in [1,3..Length(r)-1] do
+               pos:= Position( mons, r[k] );
+               if pos = fail then
+                   Add( mons, r[k] );
+                   Add( mons1, r[k] );
+                   Add( vv, r[k+1] );
+               else
+                   vv[pos]:= r[k+1];
+               fi;
            od;
-           V:= MutableBasis( F, bb );
-       fi;
 
-       if IsContainedInSpan( V, vv ) then
+           if mons1 <> [] then
+               bb:= List( BasisVectors( V ), ShallowCopy );
+               for k in bb do
+                   Append( k, ListWithIdenticalEntries( Length(mons1), Zero(F) ) );
+               od;
+               V:= MutableBasis( F, bb );
+           fi;
 
-# We take the next element of 'orb'.
+           if IsContainedInSpan( V, vv ) then
 
-         j:= j+1;
-         if j <= Length( orb ) then c:= orb[j]; fi;
+    # We take the next element of 'orb'.
 
-       else
+             j:= j+1;
+             if j <= Length( orb ) then c:= orb[j]; fi;
 
-# We apply 'elt[i]' again.
+           else
 
-         c:= c1;
-         Add( orb1, c );
-         CloseMutableBasis( V, vv );
+    # We apply 'elt[i]' again.
 
-       fi;
+             c:= c1;
+             Add( orb1, c );
+             CloseMutableBasis( V, vv );
 
-     od;
-     Append( orb, orb1 );
-     i:= i+1;
+           fi;
 
-   od;
+         od;
+         Append( orb, orb1 );
+         i:= i+1;
 
-# We calculated the whole orbit and all elements were represented as 0.
-
-   return true;
-
-end;
-
-EvaluateFunction:=function(L,a,f,elts,mats)
-
-# 'f' is a functional on the universal enveloping algebra. This function
-# evaluates 'f' on the element 'a'. 'elts' is
-# a list of elements for which the representation is extended. The
-# function 'f' is "made" from an elementary function \theta(v_i,v_j^*)
-# by successive application of elements from 'elts'. 'f' has the
-# following representation: 'f= [ [i,j], [k_1,k_2,...,k_m] ]' which
-# means that
-#
-#    f=elts[m]^{k_m}*...*elts[1]^{k_1}*\theta(v_i,v_j^*).
-#
-# This implies that
-#
-#    f(a)=v_j^*(\rho( elts[1]^{k_1}*...*elts[m]^{k_m}*a )*v_i),
-#
-# where the representation \rho is given by the matrices 'mats'.
-
-    local m,p,i,j,k,s,t;
-
-    m:= Length( elts );
-    p:= a;
-
-    for i in [1..m] do
-      k:= m-i+1;
-      for j in [1..f[2][k]] do
-        p:= elts[k]*p-p*elts[k];
-      od;
-    od;
-
-    s:= EvalMat( p, mats )[f[1][2]][f[1][1]];
-    return s * ( (-1)^ Sum(f[2]) );
-end;
-
-IsLieAlgebraRepresentation:= function( L, mm )
-
-# Check whether the representation afforded by 'mm' is a Lie algebra
-# representation.
-
-   local T,i,j,s,cij,M;
-
-   T:= StructureConstantsTable( Basis( L ) );
-   for i in [1..Dimension(L)] do
-     for j in [i+1..Dimension(L)] do
-       cij:= T[i][j];
-       M:= mm[i]*mm[j]-mm[j]*mm[i];
-       for s in [1..Length(cij[1])] do
-         M:= M - cij[2][s]*mm[cij[1][s]];
        od;
-       if M <> 0*M then return false; fi;
-     od;
-   od;
-   return true;
-end;
 
-TupToMon:= function( t )
+    # We calculated the whole orbit and all elements were represented as 0.
 
-    local   ind,  mon,  len,  i;
+       return true;
 
-    ind:= 0;
-    mon:= [ ];
-    len:=0;
-    for i in [1..Length(t)] do
-        if t[i] = ind then
-            mon[len]:= mon[len]+1;
-        else
-            ind:= t[i];
-            Add( mon, ind );
-            Add( mon, 1 );
-            len:= len+2;
-        fi;
-    od;
-    return mon;
-end;
+    end;
+
+    EvaluateFunction:=function(L,a,f,elts,mats)
+
+    # 'f' is a functional on the universal enveloping algebra. This function
+    # evaluates 'f' on the element 'a'. 'elts' is
+    # a list of elements for which the representation is extended. The
+    # function 'f' is "made" from an elementary function \theta(v_i,v_j^*)
+    # by successive application of elements from 'elts'. 'f' has the
+    # following representation: 'f= [ [i,j], [k_1,k_2,...,k_m] ]' which
+    # means that
+    #
+    #    f=elts[m]^{k_m}*...*elts[1]^{k_1}*\theta(v_i,v_j^*).
+    #
+    # This implies that
+    #
+    #    f(a)=v_j^*(\rho( elts[1]^{k_1}*...*elts[m]^{k_m}*a )*v_i),
+    #
+    # where the representation \rho is given by the matrices 'mats'.
+
+        local m,p,i,j,k,s,t;
+
+        m:= Length( elts );
+        p:= a;
+
+        for i in [1..m] do
+          k:= m-i+1;
+          for j in [1..f[2][k]] do
+            p:= elts[k]*p-p*elts[k];
+          od;
+        od;
+
+        s:= EvalMat( p, mats )[f[1][2]][f[1][1]];
+        return s * ( (-1)^ Sum(f[2]) );
+    end;
+
+    IsLieAlgebraRepresentation:= function( L, mm )
+
+    # Check whether the representation afforded by 'mm' is a Lie algebra
+    # representation.
+
+       local T,i,j,s,cij,M;
+
+       T:= StructureConstantsTable( Basis( L ) );
+       for i in [1..Dimension(L)] do
+         for j in [i+1..Dimension(L)] do
+           cij:= T[i][j];
+           M:= mm[i]*mm[j]-mm[j]*mm[i];
+           for s in [1..Length(cij[1])] do
+             M:= M - cij[2][s]*mm[cij[1][s]];
+           od;
+           if M <> 0*M then return false; fi;
+         od;
+       od;
+       return true;
+    end;
+
+    TupToMon:= function( t )
+
+        local   ind,  mon,  len,  i;
+
+        ind:= 0;
+        mon:= [ ];
+        len:=0;
+        for i in [1..Length(t)] do
+            if t[i] = ind then
+                mon[len]:= mon[len]+1;
+            else
+                ind:= t[i];
+                Add( mon, ind );
+                Add( mon, 1 );
+                len:= len+2;
+            fi;
+        od;
+        return mon;
+    end;
 
 
 
@@ -4191,118 +4191,118 @@ end;
       Add( ff, f ); Add( vecs, ShallowCopy( vec ) );
     od;
 
-while true do
+    while true do
 
-# We determine the space generated by C_{\rho} (under the action of the
-# elements from 'newelts').
+      # We determine the space generated by C_{\rho} (under the action of the
+      # elements from 'newelts').
 
-    k:= 1;
-    m:= Length( newelts );
-    sp:= VectorSpace( F, vecs );
-    while k <= Length(ff) do
-      for l in [1..m] do
-        ii:= m-l+1;
-        f:=[ ShallowCopy( ff[k][1] ), ShallowCopy( ff[k][2] ) ];
-        finished:= false;
-        while not finished do
-          f[2][ii]:= f[2][ii]+1;
+      k:= 1;
+      m:= Length( newelts );
+      sp:= VectorSpace( F, vecs );
+      while k <= Length(ff) do
+        for l in [1..m] do
+          ii:= m-l+1;
+          f:=[ ShallowCopy( ff[k][1] ), ShallowCopy( ff[k][2] ) ];
+          finished:= false;
+          while not finished do
+            f[2][ii]:= f[2][ii]+1;
 
+            vec:= List( mons1, a -> EvaluateFunction(L,a,f,newelts1,mats) );
+            if vec in sp then
+              finished:= true;
+            else
+              Add( ff, [ ShallowCopy(f[1]), ShallowCopy(f[2]) ] );
+              Add( vecs, ShallowCopy( vec ) );
+              sp:= VectorSpace( F, vecs );
+            fi;
+          od;
+        od;
+        k:= k+1;
+      od;
+
+      TriangulizeMat( vecs );
+      mons1:= mons1{ List( vecs, x -> PositionProperty( x, y -> y <> 0 ) ) };
+      vecs:= [ ];
+      for f in ff do
           vec:= List( mons1, a -> EvaluateFunction(L,a,f,newelts1,mats) );
-          if vec in sp then
-            finished:= true;
-          else
-            Add( ff, [ ShallowCopy(f[1]), ShallowCopy(f[2]) ] );
-            Add( vecs, ShallowCopy( vec ) );
-            sp:= VectorSpace( F, vecs );
-          fi;
-        od;
+          Add( vecs, vec );
       od;
-      k:= k+1;
-  od;
+      sp:= VectorSpace( F, vecs );
+      Bsp:= Basis( sp, vecs );
 
-  TriangulizeMat( vecs );
-  mons1:= mons1{ List( vecs, x -> PositionProperty( x, y -> y <> 0 ) ) };
-  vecs:= [ ];
-  for f in ff do
-      vec:= List( mons1, a -> EvaluateFunction(L,a,f,newelts1,mats) );
-      Add( vecs, vec );
-  od;
-  sp:= VectorSpace( F, vecs );
-  Bsp:= Basis( sp, vecs );
+      infostring:= "The dimension of the representation space is ";
+      Append( infostring, String( Length(ff) ) );
+      Info( InfoAlgebra, 1, infostring );
 
-  infostring:= "The dimension of the representation space is ";
-  Append( infostring, String( Length(ff) ) );
-  Info( InfoAlgebra, 1, infostring );
+      # We calculate the action of 'I' on the new space.
 
-# We calculate the action of 'I' on the new space.
+      bI:= BasisVectors( Basis( I ) );
+      exrep:= [ ];
 
-    bI:= BasisVectors( Basis( I ) );
-    exrep:= [ ];
+      for i in [1..Length( bI )] do
+        ii:= Position( BasisVectors( Basis( L ) ) , bI[i] );
+        M:= [ ];
+        for j in [1..Length(ff)] do
+          vv:= [ ];
+          for m in mons1 do
+            pd1:= m*g[ii];
+            Add( vv, EvaluateFunction(L,pd1,ff[j],newelts1,mats) );
+          od;
 
-    for i in [1..Length( bI )] do
-      ii:= Position( BasisVectors( Basis( L ) ) , bI[i] );
-      M:= [ ];
-      for j in [1..Length(ff)] do
-        vv:= [ ];
-        for m in mons1 do
-          pd1:= m*g[ii];
-          Add( vv, EvaluateFunction(L,pd1,ff[j],newelts1,mats) );
+          Add( M, Coefficients( Bsp, vv ) );
         od;
 
-        Add( M, Coefficients( Bsp, vv ) );
+        Add( exrep, TransposedMat( M ) );
+
       od;
 
-      Add( exrep, TransposedMat( M ) );
+      # We calculate the action of the new elements...
 
-  od;
+      for i in [1..Length(newelts ) ] do
+        M:= [ ];
+        ii:= Position( BasisVectors( Basis( L ) ), newelts[ i ] );
+        for j in [1..Length(ff)] do
+          vv:= [ ];
+          for m in mons1 do
+            pd1:= m*g[ii]-g[ii]*m;
+            Add( vv, EvaluateFunction(L,pd1,ff[j],newelts1,mats) );
+          od;
 
-# We calculate the action of the new elements...
-
-    for i in [1..Length(newelts ) ] do
-      M:= [ ];
-      ii:= Position( BasisVectors( Basis( L ) ), newelts[ i ] );
-      for j in [1..Length(ff)] do
-        vv:= [ ];
-        for m in mons1 do
-          pd1:= m*g[ii]-g[ii]*m;
-          Add( vv, EvaluateFunction(L,pd1,ff[j],newelts1,mats) );
+          Add( M, Coefficients( Bsp, vv ) );
         od;
 
-        Add( M, Coefficients( Bsp, vv ) );
+        Add( exrep, TransposedMat( M ) );
       od;
 
-      Add( exrep, TransposedMat( M ) );
+      # If the representation we get is a Lie algebra representation, then we are
+      # happy, if not then we increase the degree.
+
+      if not IsLieAlgebraRepresentation( Alg, exrep ) then
+        newwds1:= [ ];
+        while Length( newwds1 ) = 0 do
+          deg:= deg+1;
+          tup:= UnorderedTuples( inds, deg );
+
+          newwds:= List( tup, t -> ObjByExtRep( ElementsFamily( FamilyObj(U) ),
+                           [ Zero(F), [ TupToMon(t), One(F) ] ] ) );
+          Append( mons, newwds );
+
+          newwds1:= Filtered( newwds, w ->
+                        not HasZeroOrbit(w,L,mats,newelts1));
+        od;
+
+        for i in [1..Length(vecs)] do
+          Append( vecs[i], List( newwds1, w
+                         -> EvaluateFunction(L,w,ff[i],newelts1,mats) ) );
+        od;
+
+        Append( mons1, newwds1 );
+
+      else
+        return exrep;
+      fi;
+
     od;
-
-# If the representation we get is a Lie algebra representation, then we are
-# happy, if not then we increase the degree.
-
-    if not IsLieAlgebraRepresentation( Alg, exrep ) then
-      newwds1:= [ ];
-      while Length( newwds1 ) = 0 do
-        deg:= deg+1;
-        tup:= UnorderedTuples( inds, deg );
-
-        newwds:= List( tup, t -> ObjByExtRep( ElementsFamily( FamilyObj(U) ),
-                         [ Zero(F), [ TupToMon(t), One(F) ] ] ) );
-        Append( mons, newwds );
-
-        newwds1:= Filtered( newwds, w ->
-                      not HasZeroOrbit(w,L,mats,newelts1));
-      od;
-
-      for i in [1..Length(vecs)] do
-        Append( vecs[i], List( newwds1, w
-                       -> EvaluateFunction(L,w,ff[i],newelts1,mats) ) );
-      od;
-
-      Append( mons1, newwds1 );
-
-    else
-      return exrep;
-    fi;
-
-od;
 
 end );
 
