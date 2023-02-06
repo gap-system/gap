@@ -73,6 +73,25 @@ Try <C>HelpViewers:= [ "screen", "firefox", "xpdf" ];</C>.
 Defaults: <C>[ [ "screen" ], "", "" ]</C>.
 </Item>
 <Mark>
+<Index Key='HistoryBackwardSearchSkipIdenticalEntries'><C>HistoryBackwardSearchSkipIdenticalEntries</C></Index>
+<C>HistoryBackwardSearchSkipIdenticalEntries</C>
+</Mark>
+<Item>
+When a command is executed multiple times, it is also stored in history
+multiple times. Setting this option to <K>true</K> skips identical entries
+when searching backwards in history.
+
+<P/>
+
+Admissible values:
+<K>true</K>,
+<K>false</K>.
+
+<P/>
+
+Default: <K>false</K>.
+</Item>
+<Mark>
 <Index Key='HistoryMaxLines'><C>HistoryMaxLines</C></Index>
 <Index Key='SaveAndRestoreHistory'><C>SaveAndRestoreHistory</C></Index>
 <C>HistoryMaxLines</C>,
