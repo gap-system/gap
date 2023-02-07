@@ -397,7 +397,9 @@ static void SaveObjSet(Obj set)
         if (!val || val == Undefined)
             continue;
         SaveSubObj(val);
+        GAP_ASSERT(used-- > 0);
     }
+    GAP_ASSERT(used == 0);
 }
 
 static void LoadObjSet(Obj set)
@@ -719,7 +721,9 @@ static void SaveObjMap(Obj map)
             continue;
         SaveSubObj(key);
         SaveSubObj(val);
+        GAP_ASSERT(used-- > 0);
     }
+    GAP_ASSERT(used == 0);
 }
 
 static void LoadObjMap(Obj map)
