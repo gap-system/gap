@@ -95,11 +95,27 @@ static inline const UInt * CONST_ADDR_WORD(Obj obj)
 
 static inline Obj READ_SLOT(Obj container, int slot)
 {
+#ifdef GAP_KERNEL_DEBUG
+    GAP_ASSERT(slot >= 0);
+    UInt size = CONST_ADDR_WORD(container)[OBJSET_SIZE];
+    if (IS_OBJMAP(container))
+        size *= 2;
+    GAP_ASSERT(slot < size);
+    GAP_ASSERT((OBJSET_HDRSIZE + size)*sizeof(Obj) == SIZE_BAG(container));
+#endif
     return CONST_ADDR_OBJ(container)[OBJSET_HDRSIZE + slot];
 }
 
 static inline void WRITE_SLOT(Obj container, int slot, Obj elm)
 {
+#ifdef GAP_KERNEL_DEBUG
+    GAP_ASSERT(slot >= 0);
+    UInt size = CONST_ADDR_WORD(container)[OBJSET_SIZE];
+    if (IS_OBJMAP(container))
+        size *= 2;
+    GAP_ASSERT(slot < size);
+    GAP_ASSERT((OBJSET_HDRSIZE + size)*sizeof(Obj) == SIZE_BAG(container));
+#endif
     ADDR_OBJ(container)[OBJSET_HDRSIZE + slot] = elm;
 }
 
