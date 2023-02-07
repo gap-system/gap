@@ -388,8 +388,14 @@ void CHANGED_BAG(Bag b);
 
 extern Bag * YoungBags;
 extern Bag   ChangedBags;
+
+#ifdef GAP_KERNEL_DEBUG
+BOOL         InWorkspaceRestore(void);
+#endif
+
 EXPORT_INLINE void CHANGED_BAG(Bag bag)
 {
+    GAP_ASSERT(!InWorkspaceRestore());
     if (CONST_PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
         LINK_BAG(bag) = ChangedBags;
         ChangedBags = bag;

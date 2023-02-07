@@ -958,6 +958,13 @@ Bag * GlobalByCookie(
 
 static Bag NextMptrRestoring;
 
+#ifdef GAP_KERNEL_DEBUG
+BOOL InWorkspaceRestore(void)
+{
+    return NextMptrRestoring != 0;
+}
+#endif
+
 void StartRestoringBags( UInt nBags, UInt maxSize)
 {
   UInt target;
@@ -1036,6 +1043,7 @@ void FinishedRestoringBags( void )
   SizeDeadBags = 0;
   NrHalfDeadBags = 0;
   ChangedBags = 0;
+  NextMptrRestoring = 0;
 }
 
 
@@ -1360,6 +1368,8 @@ Bag NewBag (
     CollectBags(0,0);
 #endif
 
+    GAP_ASSERT(!InWorkspaceRestore());
+
     CANARY_DISABLE_VALGRIND();
 
     // check that a masterpointer and enough storage are available
@@ -1537,6 +1547,8 @@ UInt ResizeBag (
 #ifdef TREMBLE_HEAP
     CollectBags(0,0);
 #endif
+
+    GAP_ASSERT(!InWorkspaceRestore());
 
     CANARY_DISABLE_VALGRIND();
 
