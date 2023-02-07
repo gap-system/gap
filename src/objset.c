@@ -206,8 +206,8 @@ static void CheckObjSetForCleanUp(Obj set, UInt expand)
   UInt dirty = CONST_ADDR_WORD(set)[OBJSET_DIRTY];
   if (used * 3 >= size * 2)
     ResizeObjSet(set, bits+1);
-  else if (dirty && dirty >= used)
-    ResizeObjSet(set, bits);
+  else if (dirty && (dirty >= used || (dirty + used) * 3 >= size * 2))
+      ResizeObjSet(set, bits);
 }
 
 /**
@@ -476,8 +476,8 @@ static void CheckObjMapForCleanUp(Obj map, UInt expand)
   UInt dirty = ADDR_WORD(map)[OBJSET_DIRTY];
   if (used * 3 >= size * 2)
     ResizeObjMap(map, bits+1);
-  else if (dirty && dirty >= used)
-    ResizeObjMap(map, bits);
+  else if (dirty && (dirty >= used || (dirty + used) * 3 >= size * 2))
+      ResizeObjMap(map, bits);
 }
 
 /**
