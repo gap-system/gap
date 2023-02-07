@@ -78,17 +78,20 @@ static inline BOOL IS_OBJMAP(Obj obj)
  *  `Undefined`. Values of deleted entries contain a null pointer.
  */
 
+enum {
+    DEFAULT_OBJSET_BITS = 2,
+    DEFAULT_OBJSET_SIZE = (1 << DEFAULT_OBJSET_BITS),
+};
 
-#define DEFAULT_OBJSET_BITS 2
-#define DEFAULT_OBJSET_SIZE (1 << DEFAULT_OBJSET_BITS)
+static inline UInt * ADDR_WORD(Obj obj)
+{
+    return ((UInt *)(ADDR_OBJ(obj)));
+}
 
-#define OBJSET_SIZE 0
-#define OBJSET_BITS 1
-#define OBJSET_USED 2
-#define OBJSET_DIRTY 3
-
-#define ADDR_WORD(obj) ((UInt *)(ADDR_OBJ(obj)))
-#define CONST_ADDR_WORD(obj) ((const UInt *)(CONST_ADDR_OBJ(obj)))
+static inline const UInt * CONST_ADDR_WORD(Obj obj)
+{
+    return ((const UInt *)(CONST_ADDR_OBJ(obj)));
+}
 
 /**
  *  Functions to print object maps and sets

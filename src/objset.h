@@ -13,12 +13,14 @@
 
 #include "common.h"
 
-#define OBJSET_HDRSIZE 4
+enum {
+    OBJSET_HDRSIZE = 4,
 
-#define OBJSET_SIZE 0
-#define OBJSET_BITS 1
-#define OBJSET_USED 2
-#define OBJSET_DIRTY 3
+    OBJSET_SIZE = 0,
+    OBJSET_BITS = 1,
+    OBJSET_USED = 2,
+    OBJSET_DIRTY = 3,
+};
 
 Obj  NewObjSet(void);
 Int  FindObjSet(Obj set, Obj obj);
