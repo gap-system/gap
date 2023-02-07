@@ -78,17 +78,20 @@ static inline BOOL IS_OBJMAP(Obj obj)
  *  `Undefined`. Values of deleted entries contain a null pointer.
  */
 
+enum {
+    DEFAULT_OBJSET_BITS = 2,
+    DEFAULT_OBJSET_SIZE = (1 << DEFAULT_OBJSET_BITS),
+};
 
-#define DEFAULT_OBJSET_BITS 2
-#define DEFAULT_OBJSET_SIZE (1 << DEFAULT_OBJSET_BITS)
+static inline UInt * ADDR_WORD(Obj obj)
+{
+    return ((UInt *)(ADDR_OBJ(obj)));
+}
 
-#define OBJSET_SIZE 0
-#define OBJSET_BITS 1
-#define OBJSET_USED 2
-#define OBJSET_DIRTY 3
-
-#define ADDR_WORD(obj) ((UInt *)(ADDR_OBJ(obj)))
-#define CONST_ADDR_WORD(obj) ((const UInt *)(CONST_ADDR_OBJ(obj)))
+static inline const UInt * CONST_ADDR_WORD(Obj obj)
+{
+    return ((const UInt *)(CONST_ADDR_OBJ(obj)));
+}
 
 /**
  *  Functions to print object maps and sets
@@ -363,7 +366,7 @@ static void ResizeObjSet(Obj set, UInt bits)
 {
   UInt i, new_size = (1 << bits);
   Int size = ADDR_WORD(set)[OBJSET_SIZE];
-  Obj new = NewBag(T_OBJSET, (OBJSET_HDRSIZE+new_size)*sizeof(Bag)*4);
+  Obj new = NewBag(T_OBJSET, (OBJSET_HDRSIZE+new_size)*sizeof(Bag));
   GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
   GAP_ASSERT(new_size >= size);
   ADDR_WORD(new)[OBJSET_SIZE] = new_size;
@@ -394,7 +397,9 @@ static void SaveObjSet(Obj set)
         if (!val || val == Undefined)
             continue;
         SaveSubObj(val);
+        GAP_ASSERT(used-- > 0);
     }
+    GAP_ASSERT(used == 0);
 }
 
 static void LoadObjSet(Obj set)
@@ -447,8 +452,9 @@ static void CopyObjSet(TraversalState * traversal, Obj copy, Obj original)
  *  Create a new object map.
  */
 
-Obj NewObjMap(void) {
-  Obj result = NewBag(T_OBJMAP, (4+2*DEFAULT_OBJSET_SIZE)*sizeof(Bag));
+Obj NewObjMap(void)
+{
+  Obj result = NewBag(T_OBJMAP, (OBJSET_HDRSIZE+2*DEFAULT_OBJSET_SIZE)*sizeof(Bag));
   ADDR_WORD(result)[OBJSET_SIZE] = DEFAULT_OBJSET_SIZE;
   ADDR_WORD(result)[OBJSET_BITS] = DEFAULT_OBJSET_BITS;
   ADDR_WORD(result)[OBJSET_USED] = 0;
@@ -682,8 +688,7 @@ static void ResizeObjMap(Obj map, UInt bits)
   UInt i, new_size = (1 << bits);
   UInt size = ADDR_WORD(map)[OBJSET_SIZE];
   GAP_ASSERT(new_size >= size);
-  Obj new = NewBag(T_OBJMAP,
-    (OBJSET_HDRSIZE+2*new_size)*sizeof(Bag));
+  Obj new = NewBag(T_OBJMAP, (OBJSET_HDRSIZE+2*new_size)*sizeof(Bag));
   ADDR_WORD(new)[OBJSET_SIZE] = new_size;
   ADDR_WORD(new)[OBJSET_BITS] = bits;
   ADDR_WORD(new)[OBJSET_USED] = 0;
@@ -716,7 +721,9 @@ static void SaveObjMap(Obj map)
             continue;
         SaveSubObj(key);
         SaveSubObj(val);
+        GAP_ASSERT(used-- > 0);
     }
+    GAP_ASSERT(used == 0);
 }
 
 static void LoadObjMap(Obj map)
