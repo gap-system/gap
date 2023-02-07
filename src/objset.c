@@ -93,6 +93,16 @@ static inline const UInt * CONST_ADDR_WORD(Obj obj)
     return ((const UInt *)(CONST_ADDR_OBJ(obj)));
 }
 
+static inline Obj READ_SLOT(Obj container, int slot)
+{
+    return CONST_ADDR_OBJ(container)[OBJSET_HDRSIZE + slot];
+}
+
+static inline void WRITE_SLOT(Obj container, int slot, Obj elm)
+{
+    ADDR_OBJ(container)[OBJSET_HDRSIZE + slot] = elm;
+}
+
 /**
  *  Functions to print object maps and sets
  *  ---------------------------------------
@@ -104,7 +114,7 @@ static void PrintObjSet(Obj set)
   Int comma = 0;
   Pr("OBJ_SET([ ", 0, 0);
   for (i=0; i < size; i++) {
-    Obj obj = CONST_ADDR_OBJ(set)[OBJSET_HDRSIZE + i ];
+    Obj obj = READ_SLOT(set, i);
     if (obj && obj != Undefined) {
       if (comma) {
         Pr(", ", 0, 0);
@@ -123,7 +133,7 @@ static void PrintObjMap(Obj map)
   Int comma = 0;
   Pr("OBJ_MAP([ ", 0, 0);
   for (i=0; i < size; i++) {
-    Obj obj = CONST_ADDR_OBJ(map)[OBJSET_HDRSIZE + i * 2 ];
+    Obj obj = READ_SLOT(map, i * 2);
     if (obj && obj != Undefined) {
       if (comma) {
         Pr(", ", 0, 0);
@@ -132,7 +142,7 @@ static void PrintObjMap(Obj map)
       }
       PrintObj(obj);
       Pr(", ", 0, 0);
-      PrintObj(CONST_ADDR_OBJ(map)[OBJSET_HDRSIZE + i * 2 + 1]);
+      PrintObj(READ_SLOT(map, i * 2 + 1));
     }
   }
   Pr(" ])", 0, 0);
@@ -229,7 +239,7 @@ Int FindObjSet(Obj set, Obj obj) {
   GAP_ASSERT(hash < size);
   for (;;) {
     Obj current;
-    current = CONST_ADDR_OBJ(set)[OBJSET_HDRSIZE+hash];
+    current = READ_SLOT(set, hash);
     if (!current)
       return -1;
     if (current == obj)
@@ -257,15 +267,15 @@ static void AddObjSetNew(Obj set, Obj obj)
   GAP_ASSERT(hash < size);
   for (;;) {
     Obj current;
-    current = CONST_ADDR_OBJ(set)[OBJSET_HDRSIZE+hash];
+    current = READ_SLOT(set, hash);
     if (!current) {
-      ADDR_OBJ(set)[OBJSET_HDRSIZE+hash] = obj;
+      WRITE_SLOT(set, hash, obj);
       ADDR_WORD(set)[OBJSET_USED]++;
       CHANGED_BAG(set);
       return;
     }
     if (current == Undefined) {
-      ADDR_OBJ(set)[OBJSET_HDRSIZE+hash] = obj;
+      WRITE_SLOT(set, hash, obj);
       ADDR_WORD(set)[OBJSET_USED]++;
       GAP_ASSERT(ADDR_WORD(set)[OBJSET_DIRTY] >= 1);
       ADDR_WORD(set)[OBJSET_DIRTY]--;
@@ -304,7 +314,7 @@ void RemoveObjSet(Obj set, Obj obj) {
   GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
   Int pos = FindObjSet(set, obj);
   if (pos >= 0) {
-    ADDR_OBJ(set)[OBJSET_HDRSIZE+pos] = Undefined;
+    WRITE_SLOT(set, pos, Undefined);
     ADDR_WORD(set)[OBJSET_USED]--;
     ADDR_WORD(set)[OBJSET_DIRTY]++;
     CHANGED_BAG(set);
@@ -341,7 +351,7 @@ Obj ObjSetValues(Obj set) {
   Obj result = NEW_PLIST(T_PLIST, len);
   SET_LEN_PLIST(result, len);
   for (i=0, p=1; i < size; i++) {
-    Obj el = CONST_ADDR_OBJ(set)[OBJSET_HDRSIZE + i];
+    Obj el = READ_SLOT(set, i);
     if (el && el != Undefined) {
       SET_ELM_PLIST(result, p, el);
       p++;
@@ -393,7 +403,7 @@ static void SaveObjSet(Obj set)
     SaveUInt(bits);
     SaveUInt(used);
     for (UInt i = 0; i < size; i++) {
-        Obj val = ADDR_OBJ(set)[OBJSET_HDRSIZE + i];
+        Obj val = READ_SLOT(set, i);
         if (!val || val == Undefined)
             continue;
         SaveSubObj(val);
@@ -427,7 +437,7 @@ static void TraverseObjSet(TraversalState * traversal, Obj obj)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
-        Obj item = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + i];
+        Obj item = READ_SLOT(obj, i);
         if (item && item != Undefined)
             QueueForTraversal(traversal, item);
     }
@@ -437,8 +447,8 @@ static void CopyObjSet(TraversalState * traversal, Obj copy, Obj original)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
-        Obj item = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + i];
-        ADDR_OBJ(copy)[OBJSET_HDRSIZE + i] = ReplaceByCopy(traversal, item);
+        Obj item = READ_SLOT(original, i);
+        WRITE_SLOT(copy, i, ReplaceByCopy(traversal, item));
     }
 }
 #endif // WARD_ENABLED
@@ -500,8 +510,7 @@ Int FindObjMap(Obj map, Obj obj) {
   UInt size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
   UInt hash = ObjHash(map, obj);
   for (;;) {
-    Obj current;
-    current = CONST_ADDR_OBJ(map)[OBJSET_HDRSIZE+hash*2];
+    Obj current = READ_SLOT(map, hash*2);
     if (!current)
       return -1;
     if (current == obj)
@@ -524,7 +533,7 @@ Obj LookupObjMap(Obj map, Obj obj) {
   Int index = FindObjMap(map, obj);
   if (index < 0)
     return (Obj) 0;
-  return CONST_ADDR_OBJ(map)[OBJSET_HDRSIZE+index*2+1];
+  return READ_SLOT(map, index*2+1);
 }
 
 /**
@@ -542,17 +551,17 @@ static void AddObjMapNew(Obj map, Obj key, Obj value)
   UInt hash = ObjHash(map, key);
   for (;;) {
     Obj current;
-    current = ADDR_OBJ(map)[OBJSET_HDRSIZE+hash * 2];
+    current = READ_SLOT(map, hash * 2);
     if (!current) {
-      ADDR_OBJ(map)[OBJSET_HDRSIZE+hash*2] = key;
-      ADDR_OBJ(map)[OBJSET_HDRSIZE+hash*2+1] = value;
+      WRITE_SLOT(map, hash*2, key);
+      WRITE_SLOT(map, hash*2+1, value);
       ADDR_WORD(map)[OBJSET_USED]++;
       CHANGED_BAG(map);
       return;
     }
     if (current == Undefined) {
-      ADDR_OBJ(map)[OBJSET_HDRSIZE+hash*2] = key;
-      ADDR_OBJ(map)[OBJSET_HDRSIZE+hash*2+1] = value;
+      WRITE_SLOT(map, hash*2, key);
+      WRITE_SLOT(map, hash*2+1, value);
       ADDR_WORD(map)[OBJSET_USED]++;
       ADDR_WORD(map)[OBJSET_DIRTY]--;
       CHANGED_BAG(map);
@@ -577,7 +586,7 @@ void AddObjMap(Obj map, Obj key, Obj value) {
   Int pos;
   pos = FindObjMap(map, key);
   if (pos >= 0) {
-    ADDR_OBJ(map)[OBJSET_HDRSIZE+pos*2+1] = value;
+    WRITE_SLOT(map, pos*2+1, value);
     CHANGED_BAG(map);
     return;
   }
@@ -596,8 +605,8 @@ void RemoveObjMap(Obj map, Obj key) {
   GAP_ASSERT(TNUM_OBJ(map) == T_OBJMAP);
   Int pos = FindObjMap(map, key);
   if (pos >= 0) {
-    ADDR_OBJ(map)[OBJSET_HDRSIZE+pos*2] = Undefined;
-    ADDR_OBJ(map)[OBJSET_HDRSIZE+pos*2+1] = (Obj) 0;
+    WRITE_SLOT(map, pos*2, Undefined);
+    WRITE_SLOT(map, pos*2+1, (Obj) 0);
     ADDR_WORD(map)[OBJSET_USED]--;
     ADDR_WORD(map)[OBJSET_DIRTY]++;
     CHANGED_BAG(map);
@@ -634,7 +643,7 @@ Obj ObjMapValues(Obj map)
   Obj result = NEW_PLIST(T_PLIST, len);
   SET_LEN_PLIST(result, len);
   for (i=0, p=1; i < size; i++) {
-    Obj el = CONST_ADDR_OBJ(map)[OBJSET_HDRSIZE + 2*i+1];
+    Obj el = READ_SLOT(map, 2*i+1);
     if (el && el != Undefined) {
       SET_ELM_PLIST(result, p, el);
       p++;
@@ -661,7 +670,7 @@ Obj ObjMapKeys(Obj map)
   Obj result = NEW_PLIST(T_PLIST, len);
   SET_LEN_PLIST(result, len);
   for (i=0, p=1; i < size; i++) {
-    Obj el = CONST_ADDR_OBJ(map)[OBJSET_HDRSIZE + 2*i];
+    Obj el = READ_SLOT(map, 2*i);
     if (el && el != Undefined) {
       SET_ELM_PLIST(result, p, el);
       p++;
@@ -694,10 +703,10 @@ static void ResizeObjMap(Obj map, UInt bits)
   ADDR_WORD(new)[OBJSET_USED] = 0;
   ADDR_WORD(new)[OBJSET_DIRTY] = 0;
   for (i = 0; i < size; i++) {
-    Obj obj = ADDR_OBJ(map)[OBJSET_HDRSIZE+i*2];
+    Obj obj = READ_SLOT(map, i*2);
     if (obj && obj != Undefined) {
       AddObjMapNew(new, obj,
-        ADDR_OBJ(map)[OBJSET_HDRSIZE+i*2+1]);
+        READ_SLOT(map, i*2+1));
     }
   }
   SwapMasterPoint(map, new);
@@ -715,8 +724,8 @@ static void SaveObjMap(Obj map)
     SaveUInt(bits);
     SaveUInt(used);
     for (UInt i = 0; i < size; i++) {
-        Obj key = ADDR_OBJ(map)[OBJSET_HDRSIZE + 2 * i];
-        Obj val = ADDR_OBJ(map)[OBJSET_HDRSIZE + 2 * i + 1];
+        Obj key = READ_SLOT(map, 2 * i);
+        Obj val = READ_SLOT(map, 2 * i + 1);
         if (!key || key == Undefined)
             continue;
         SaveSubObj(key);
@@ -751,8 +760,8 @@ static void TraverseObjMap(TraversalState * traversal, Obj obj)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
-        Obj key = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2 * i];
-        Obj val = CONST_ADDR_OBJ(obj)[OBJSET_HDRSIZE + 2 * i + 1];
+        Obj key = READ_SLOT(obj, 2 * i);
+        Obj val = READ_SLOT(obj, 2 * i + 1);
         if (key && key != Undefined) {
             QueueForTraversal(traversal, key);
             QueueForTraversal(traversal, val);
@@ -764,10 +773,10 @@ static void CopyObjMap(TraversalState * traversal, Obj copy, Obj original)
 {
     UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
     for (i = 0; i < len; i++) {
-        Obj key = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + 2 * i];
-        Obj val = CONST_ADDR_OBJ(original)[OBJSET_HDRSIZE + 2 * i + 1];
-        ADDR_OBJ(copy)[OBJSET_HDRSIZE + 2 * i] = ReplaceByCopy(traversal, key);
-        ADDR_OBJ(copy)[OBJSET_HDRSIZE + 2 * i + 1] = ReplaceByCopy(traversal, val);
+        Obj key = READ_SLOT(original, 2 * i);
+        Obj val = READ_SLOT(original, 2 * i + 1);
+        WRITE_SLOT(copy, 2 * i, ReplaceByCopy(traversal, key));
+        WRITE_SLOT(copy, 2 * i + 1, ReplaceByCopy(traversal, val));
     }
 }
 #endif
@@ -962,7 +971,7 @@ static Obj FuncFIND_OBJ_MAP(Obj self, Obj map, Obj key, Obj defvalue)
     Int pos = FindObjMap(map, key);
     if (pos < 0)
         return defvalue;
-    return ADDR_OBJ(map)[OBJSET_HDRSIZE + 2 * pos + 1];
+    return READ_SLOT(map, 2 * pos + 1);
 }
 
 /**
