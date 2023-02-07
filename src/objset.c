@@ -273,6 +273,9 @@ Int FindObjSet(Obj set, Obj obj) {
  *  Add `obj` to `set`.
  *
  *  Precondition: `set` must not already contain `obj`.
+ *
+ *  This function does not call CHANGED_BAG, so the caller
+ *  should do so, unless loading a workspace.
  */
 
 static void AddObjSetNew(Obj set, Obj obj)
@@ -287,7 +290,6 @@ static void AddObjSetNew(Obj set, Obj obj)
     if (!current) {
       WRITE_SLOT(set, hash, obj);
       ADDR_WORD(set)[OBJSET_USED]++;
-      CHANGED_BAG(set);
       return;
     }
     if (current == Undefined) {
@@ -295,7 +297,6 @@ static void AddObjSetNew(Obj set, Obj obj)
       ADDR_WORD(set)[OBJSET_USED]++;
       GAP_ASSERT(CONST_ADDR_WORD(set)[OBJSET_DIRTY] >= 1);
       ADDR_WORD(set)[OBJSET_DIRTY]--;
-      CHANGED_BAG(set);
       return;
     }
     hash++;
@@ -317,6 +318,7 @@ void AddObjSet(Obj set, Obj obj) {
     return;
   CheckObjSetForCleanUp(set, 1);
   AddObjSetNew(set, obj);
+  CHANGED_BAG(set);
 }
 
 /**
@@ -402,7 +404,7 @@ static void ResizeObjSet(Obj set, UInt bits)
   for (i = OBJSET_HDRSIZE + size - 1; i >= OBJSET_HDRSIZE; i--) {
     Obj obj = CONST_ADDR_OBJ(set)[i];
     if (obj && obj != Undefined) {
-      AddObjSetNew(new, obj);
+        AddObjSetNew(new, obj);
     }
   }
   SwapMasterPoint(set, new);
@@ -442,6 +444,7 @@ static void LoadObjSet(Obj set)
     for (UInt i = 1; i <= used; i++) {
         Obj val = LoadSubObj();
         AddObjSetNew(set, val);
+        // No CHANGED_BAG required while loading a workspace
     }
 }
 #endif
@@ -559,6 +562,9 @@ Obj LookupObjMap(Obj map, Obj obj) {
  *  Add an entry `(key, value)` to `map`.
  *
  *  Precondition: No other entry with key `key` exists within `map`.
+ *
+ *  This function does not call CHANGED_BAG, so the caller
+ *  should do so, unless loading a workspace.
  */
 
 static void AddObjMapNew(Obj map, Obj key, Obj value)
@@ -572,7 +578,6 @@ static void AddObjMapNew(Obj map, Obj key, Obj value)
       WRITE_SLOT(map, hash*2, key);
       WRITE_SLOT(map, hash*2+1, value);
       ADDR_WORD(map)[OBJSET_USED]++;
-      CHANGED_BAG(map);
       return;
     }
     if (current == Undefined) {
@@ -580,7 +585,6 @@ static void AddObjMapNew(Obj map, Obj key, Obj value)
       WRITE_SLOT(map, hash*2+1, value);
       ADDR_WORD(map)[OBJSET_USED]++;
       ADDR_WORD(map)[OBJSET_DIRTY]--;
-      CHANGED_BAG(map);
       return;
     }
     hash++;
@@ -608,6 +612,7 @@ void AddObjMap(Obj map, Obj key, Obj value) {
   }
   CheckObjMapForCleanUp(map, 1);
   AddObjMapNew(map, key, value);
+  CHANGED_BAG(map);
 }
 
 /**
@@ -721,8 +726,7 @@ static void ResizeObjMap(Obj map, UInt bits)
   for (i = 0; i < size; i++) {
     Obj obj = READ_SLOT(map, i*2);
     if (obj && obj != Undefined) {
-      AddObjMapNew(new, obj,
-        READ_SLOT(map, i*2+1));
+        AddObjMapNew(new, obj, READ_SLOT(map, i * 2 + 1));
     }
   }
   SwapMasterPoint(map, new);
@@ -766,6 +770,7 @@ static void LoadObjMap(Obj map)
         Obj key = LoadSubObj();
         Obj val = LoadSubObj();
         AddObjMapNew(map, key, val);
+        // No CHANGED_BAG required while loading a workspace
     }
 }
 #endif
