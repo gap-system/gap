@@ -366,7 +366,7 @@ static void ResizeObjSet(Obj set, UInt bits)
 {
   UInt i, new_size = (1 << bits);
   Int size = ADDR_WORD(set)[OBJSET_SIZE];
-  Obj new = NewBag(T_OBJSET, (OBJSET_HDRSIZE+new_size)*sizeof(Bag)*4);
+  Obj new = NewBag(T_OBJSET, (OBJSET_HDRSIZE+new_size)*sizeof(Bag));
   GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
   GAP_ASSERT(new_size >= size);
   ADDR_WORD(new)[OBJSET_SIZE] = new_size;
@@ -450,8 +450,9 @@ static void CopyObjSet(TraversalState * traversal, Obj copy, Obj original)
  *  Create a new object map.
  */
 
-Obj NewObjMap(void) {
-  Obj result = NewBag(T_OBJMAP, (4+2*DEFAULT_OBJSET_SIZE)*sizeof(Bag));
+Obj NewObjMap(void)
+{
+  Obj result = NewBag(T_OBJMAP, (OBJSET_HDRSIZE+2*DEFAULT_OBJSET_SIZE)*sizeof(Bag));
   ADDR_WORD(result)[OBJSET_SIZE] = DEFAULT_OBJSET_SIZE;
   ADDR_WORD(result)[OBJSET_BITS] = DEFAULT_OBJSET_BITS;
   ADDR_WORD(result)[OBJSET_USED] = 0;
@@ -685,8 +686,7 @@ static void ResizeObjMap(Obj map, UInt bits)
   UInt i, new_size = (1 << bits);
   UInt size = ADDR_WORD(map)[OBJSET_SIZE];
   GAP_ASSERT(new_size >= size);
-  Obj new = NewBag(T_OBJMAP,
-    (OBJSET_HDRSIZE+2*new_size)*sizeof(Bag));
+  Obj new = NewBag(T_OBJMAP, (OBJSET_HDRSIZE+2*new_size)*sizeof(Bag));
   ADDR_WORD(new)[OBJSET_SIZE] = new_size;
   ADDR_WORD(new)[OBJSET_BITS] = bits;
   ADDR_WORD(new)[OBJSET_USED] = 0;
