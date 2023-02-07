@@ -158,13 +158,13 @@ static void PrintObjMap(Obj map)
 static void MarkObjSet(Obj obj)
 {
   UInt size = CONST_ADDR_WORD(obj)[OBJSET_SIZE];
-  MarkArrayOfBags( ADDR_OBJ(obj) + OBJSET_HDRSIZE, size );
+  MarkArrayOfBags( CONST_ADDR_OBJ(obj) + OBJSET_HDRSIZE, size );
 }
 
 static void MarkObjMap(Obj obj)
 {
   UInt size = CONST_ADDR_WORD(obj)[OBJSET_SIZE];
-  MarkArrayOfBags( ADDR_OBJ(obj) + OBJSET_HDRSIZE, 2 * size );
+  MarkArrayOfBags( CONST_ADDR_OBJ(obj) + OBJSET_HDRSIZE, 2 * size );
 }
 
 /**
@@ -277,7 +277,7 @@ static void AddObjSetNew(Obj set, Obj obj)
     if (current == Undefined) {
       WRITE_SLOT(set, hash, obj);
       ADDR_WORD(set)[OBJSET_USED]++;
-      GAP_ASSERT(ADDR_WORD(set)[OBJSET_DIRTY] >= 1);
+      GAP_ASSERT(CONST_ADDR_WORD(set)[OBJSET_DIRTY] >= 1);
       ADDR_WORD(set)[OBJSET_DIRTY]--;
       CHANGED_BAG(set);
       return;
@@ -375,7 +375,7 @@ Obj ObjSetValues(Obj set) {
 static void ResizeObjSet(Obj set, UInt bits)
 {
   UInt i, new_size = (1 << bits);
-  Int size = ADDR_WORD(set)[OBJSET_SIZE];
+  Int size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
   Obj new = NewBag(T_OBJSET, (OBJSET_HDRSIZE+new_size)*sizeof(Bag));
   GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
   GAP_ASSERT(new_size >= size);
@@ -384,7 +384,7 @@ static void ResizeObjSet(Obj set, UInt bits)
   ADDR_WORD(new)[OBJSET_USED] = 0;
   ADDR_WORD(new)[OBJSET_DIRTY] = 0;
   for (i = OBJSET_HDRSIZE + size - 1; i >= OBJSET_HDRSIZE; i--) {
-    Obj obj = ADDR_OBJ(set)[i];
+    Obj obj = CONST_ADDR_OBJ(set)[i];
     if (obj && obj != Undefined) {
       AddObjSetNew(new, obj);
     }
@@ -396,9 +396,9 @@ static void ResizeObjSet(Obj set, UInt bits)
 #ifdef GAP_ENABLE_SAVELOAD
 static void SaveObjSet(Obj set)
 {
-    UInt size = ADDR_WORD(set)[OBJSET_SIZE];
-    UInt bits = ADDR_WORD(set)[OBJSET_BITS];
-    UInt used = ADDR_WORD(set)[OBJSET_USED];
+    UInt size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
+    UInt bits = CONST_ADDR_WORD(set)[OBJSET_BITS];
+    UInt used = CONST_ADDR_WORD(set)[OBJSET_USED];
     SaveUInt(size);
     SaveUInt(bits);
     SaveUInt(used);
@@ -435,7 +435,7 @@ static void LoadObjSet(Obj set)
 #ifndef WARD_ENABLED
 static void TraverseObjSet(TraversalState * traversal, Obj obj)
 {
-    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
+    UInt i, len = CONST_ADDR_WORD(obj)[OBJSET_SIZE];
     for (i = 0; i < len; i++) {
         Obj item = READ_SLOT(obj, i);
         if (item && item != Undefined)
@@ -445,7 +445,7 @@ static void TraverseObjSet(TraversalState * traversal, Obj obj)
 
 static void CopyObjSet(TraversalState * traversal, Obj copy, Obj original)
 {
-    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
+    UInt i, len = CONST_ADDR_WORD(original)[OBJSET_SIZE];
     for (i = 0; i < len; i++) {
         Obj item = READ_SLOT(original, i);
         WRITE_SLOT(copy, i, ReplaceByCopy(traversal, item));
@@ -486,10 +486,10 @@ static void ResizeObjMap(Obj map, UInt bits);
 
 static void CheckObjMapForCleanUp(Obj map, UInt expand)
 {
-  UInt size = ADDR_WORD(map)[OBJSET_SIZE];
-  UInt bits = ADDR_WORD(map)[OBJSET_BITS];
-  UInt used = ADDR_WORD(map)[OBJSET_USED] + expand;
-  UInt dirty = ADDR_WORD(map)[OBJSET_DIRTY];
+  UInt size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
+  UInt bits = CONST_ADDR_WORD(map)[OBJSET_BITS];
+  UInt used = CONST_ADDR_WORD(map)[OBJSET_USED] + expand;
+  UInt dirty = CONST_ADDR_WORD(map)[OBJSET_DIRTY];
   if (used * 3 >= size * 2)
     ResizeObjMap(map, bits+1);
   else if (dirty && (dirty >= used || (dirty + used) * 3 >= size * 2))
@@ -547,7 +547,7 @@ Obj LookupObjMap(Obj map, Obj obj) {
 
 static void AddObjMapNew(Obj map, Obj key, Obj value)
 {
-  UInt size = ADDR_WORD(map)[OBJSET_SIZE];
+  UInt size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
   UInt hash = ObjHash(map, key);
   for (;;) {
     Obj current;
@@ -695,7 +695,7 @@ Obj ObjMapKeys(Obj map)
 static void ResizeObjMap(Obj map, UInt bits)
 {
   UInt i, new_size = (1 << bits);
-  UInt size = ADDR_WORD(map)[OBJSET_SIZE];
+  UInt size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
   GAP_ASSERT(new_size >= size);
   Obj new = NewBag(T_OBJMAP, (OBJSET_HDRSIZE+2*new_size)*sizeof(Bag));
   ADDR_WORD(new)[OBJSET_SIZE] = new_size;
@@ -717,9 +717,9 @@ static void ResizeObjMap(Obj map, UInt bits)
 #ifdef GAP_ENABLE_SAVELOAD
 static void SaveObjMap(Obj map)
 {
-    UInt size = ADDR_WORD(map)[OBJSET_SIZE];
-    UInt bits = ADDR_WORD(map)[OBJSET_BITS];
-    UInt used = ADDR_WORD(map)[OBJSET_USED];
+    UInt size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
+    UInt bits = CONST_ADDR_WORD(map)[OBJSET_BITS];
+    UInt used = CONST_ADDR_WORD(map)[OBJSET_USED];
     SaveUInt(size);
     SaveUInt(bits);
     SaveUInt(used);
@@ -758,7 +758,7 @@ static void LoadObjMap(Obj map)
 #ifndef WARD_ENABLED
 static void TraverseObjMap(TraversalState * traversal, Obj obj)
 {
-    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(obj) + OBJSET_SIZE);
+    UInt i, len = CONST_ADDR_WORD(obj)[OBJSET_SIZE];
     for (i = 0; i < len; i++) {
         Obj key = READ_SLOT(obj, 2 * i);
         Obj val = READ_SLOT(obj, 2 * i + 1);
@@ -771,7 +771,7 @@ static void TraverseObjMap(TraversalState * traversal, Obj obj)
 
 static void CopyObjMap(TraversalState * traversal, Obj copy, Obj original)
 {
-    UInt i, len = *(UInt *)(CONST_ADDR_OBJ(original) + OBJSET_SIZE);
+    UInt i, len = CONST_ADDR_WORD(original)[OBJSET_SIZE];
     for (i = 0; i < len; i++) {
         Obj key = READ_SLOT(original, 2 * i);
         Obj val = READ_SLOT(original, 2 * i + 1);
