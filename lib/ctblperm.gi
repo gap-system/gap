@@ -38,7 +38,7 @@ end );
 ##  The class invariant consists of the cycle structure and - if computation
 ##  might improve results - of the Fingerprint of the permutation
 ##
-BindGlobal( "IdentificationPermGroup", function(D,el)
+BindGlobal("CheapIdentificationPermGroup",function(D,el)
   local s,t,i,l; # guter Programmier s t i l !
   s:=CycleStructurePerm(el);
   s:=ShallowCopy(s);
@@ -58,13 +58,19 @@ BindGlobal( "IdentificationPermGroup", function(D,el)
     Add(s,-FingerprintPerm(D,el,D.p1,D.p2,D.fingerprintOrbitStabilizer,
                                     D.fingerprintRepresentatives));
   fi;
+  return s;
+end);
+
+BindGlobal("IdentificationPermGroup",function(D,el)
+local s,l;
+  s:=CheapIdentificationPermGroup(D,el);
   if IsBound(D.usefitfree) and not s in D.nocanonize then
     l:=First(D.faclaimg,x->x[1]=s);
     l:=TFCanonicalClassRepresentative(D.group,[el]:candidatenums:=l[2]);
     Add(s,l[1][2]);
   fi;
   return s;
-end );
+end);
 
 
 #############################################################################
@@ -93,6 +99,7 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
       c,s,f,fc,fs,fos,fr,enum;
 
   D.identification:=IdentificationPermGroup;
+  D.cheapIdentification:=CheapIdentificationPermGroup;
   D.rationalidentification:=RationalIdentificationPermGroup;
   D.ClassMatrixColumn:=StandardClassMatrixColumn;
 
@@ -213,16 +220,22 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
   fi;
 
   D.ids:=[];
+  D.chids:=[];
   D.rids:=[];
+  D.canreps:=[];
   for i in [1..D.klanz] do
     D.ids[i]:=D.identification(D,D.classreps[i]);
+    D.chids[i]:=D.cheapIdentification(D,D.classreps[i]);
     D.rids[i]:=
-     D.rationalidentification(D,D.classreps[i]);
+      D.rationalidentification(D,D.classreps[i]);
+    D.canreps[i]:=
+      TFCanonicalClassRepresentative(D.group,[D.classreps[i]])[1][2];
   od;
 
   # use canonical reps?
   if Size(SolvableRadical(D.group))>1 then
     D.usefitfree:=true;
+    D.ClassMatrixColumn:=TFClassMatrixColumn;
     D.nocanonize:=[];
     D.faclaimg:=[];
     fs:=List(D.ids,ShallowCopy);
@@ -232,8 +245,7 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
         Add(D.nocanonize,fs[i]);
       else
         Add(D.faclaimg,[fs[i],f]); # store which classes images could be
-        f:=TFCanonicalClassRepresentative(D.group,[D.classreps[i]]);
-        Add(D.ids[i],f[1][2]);
+        Add(D.ids[i],D.canreps[i]);
       fi;
     od;
   fi;

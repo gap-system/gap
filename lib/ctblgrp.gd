@@ -103,6 +103,8 @@ DeclareGlobalFunction( "IsDxLargeGroup" );
 DeclareGlobalFunction("DxModularValuePol");
 DeclareGlobalFunction("DxDegreeCandidates");
 
+DeclareGlobalFunction("DxGaloisOrbits");
+DeclareGlobalFunction("DoubleCentralizerOrbit");
 
 #############################################################################
 ##
