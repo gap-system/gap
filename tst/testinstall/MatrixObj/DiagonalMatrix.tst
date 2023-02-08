@@ -34,7 +34,7 @@ gap> M:= Matrix( IsPlistMatrixRep, GF(3), [ Z(3) ], 1 );;
 gap> DiagonalMatrix( [ 1, 2 ] * Z(3), M );
 <2x2-matrix over GF(3)>
 gap> DiagonalMatrix( [ 1, 2 ], M );
-Error, <ob> must lie in the base domain of <m>
+Error, <ob> must lie in the base domain of <M>
 
 # with vector of diagonal entries only (choose a default representation)
 gap> Is8BitMatrixRep( DiagonalMatrix( [ 1, 2 ] * Z(3) ) );
