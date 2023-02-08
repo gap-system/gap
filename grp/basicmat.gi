@@ -419,7 +419,7 @@ SylowSubgroupOfTorusOfNaturalGL := function( gl, pi, p )
   gens := List( orbs, function( orb )
     local k, mat;
     k := Size(orb);
-    mat := MutableCopyMat( one );
+    mat := MutableCopyMatrix( one );
     mat{orb}{orb} := CompanionMat( MinimalPolynomial( gfq, Z(q^k) ) )^( (q^k-1)/p^PadicValuation(q^k-1,p));
     return ImmutableMatrix( gfq, mat, true );
   end );
@@ -474,7 +474,7 @@ SylowSubgroupOfNaturalGL := function( gl, p )
       then return List( GeneratorsOfGroup( syl1 ),
         function( x )
           local mat;
-          mat := MutableCopyMat( one );
+          mat := MutableCopyMatrix( one );
           mat{part}{part} := x ;
           return mat;
         end );
@@ -483,13 +483,13 @@ SylowSubgroupOfNaturalGL := function( gl, p )
       return Concatenation(
         List( GeneratorsOfGroup( prm ), function( x )
           local mat;
-          mat := MutableCopyMat( one );
+          mat := MutableCopyMatrix( one );
           mat{part}{part} := KroneckerProduct( PermutationMat( x, Size( part )/2, GF( q ) ), One( syl2 ) );
           return mat;
         end ),
         List( GeneratorsOfGroup( syl2 ), function( x )
           local mat;
-          mat := MutableCopyMat( one );
+          mat := MutableCopyMatrix( one );
           mat{part{[1..2]}}{part{[1..2]}} := x;
           return mat;
         end ) );

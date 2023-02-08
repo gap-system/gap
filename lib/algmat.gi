@@ -1241,7 +1241,7 @@ InstallGlobalFunction( FullMatrixFLMLOR, function( R, n )
           A;      # algebra, result
 
     gens:= NullMat( n, n, R );
-    gens:= [ gens, MutableCopyMat( gens ) ];
+    gens:= [ gens, MutableCopyMatrix( gens ) ];
     one:= One( R );
 
     # Construct the generators.
@@ -1284,17 +1284,17 @@ InstallGlobalFunction( FullMatrixLieFLMLOR, function( F, n )
     one:= One( F );
 
 
-    gen:= MutableCopyMat( null );
+    gen:= MutableCopyMatrix( null );
     gen[1,1]:= one;
     gens:= [ LieObject( gen ) ];
 
     for i in [ 2 .. n ] do
 
-      gen:= MutableCopyMat( null );
+      gen:= MutableCopyMatrix( null );
       gen[1,i]:= one;
       Add( gens, LieObject( gen ) );
 
-      gen:= MutableCopyMat( null );
+      gen:= MutableCopyMatrix( null );
       gen[i,1]:= one;
       Add( gens, LieObject( gen ) );
 

@@ -973,7 +973,7 @@ local fam;
   end );
 
 
-InstallMethod( MutableCopyMat, "for a zmodnz matrix",
+InstallMethod( MutableCopyMatrix, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
   function( m )
     local l,res;
@@ -1357,7 +1357,7 @@ InstallMethod( InverseSameMutability, "for a zmodnz matrix",
 
 InstallMethod( RankMat, "for a zmodnz matrix", [ IsZmodnZMatrixRep ],
 function( m )
-  m:=MutableCopyMat(m);
+  m:=MutableCopyMatrix(m);
   m:=SemiEchelonMatDestructive(m);
   if m<>fail then m:=Length(m.vectors);fi;
   return m;

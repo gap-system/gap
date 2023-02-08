@@ -2380,7 +2380,7 @@ InstallMethodWithRandomSource( Randomize,
     return v;
   end );
 
-InstallMethod( MutableCopyMat, "for a gf2 matrix",
+InstallMethod( MutableCopyMatrix, "for a gf2 matrix",
   [ IsGF2MatrixRep ],
   function( m )
     local mm;
