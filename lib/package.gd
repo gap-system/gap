@@ -24,6 +24,8 @@
 #V  GAPInfo.PackageLoadingMessages
 #V  GAPInfo.PackageInfoCurrent
 #V  GAPInfo.PackagesInfoInitialized
+#V  GAPInfo.PackageExtensionsLoaded
+#V  GAPInfo.PackageExtensionsPending
 ##
 ##  <ManSection>
 ##  <Var Name="GAPInfo.PackagesInfo"/>
@@ -31,6 +33,8 @@
 ##  <Var Name="GAPInfo.PackageLoadingMessages"/>
 ##  <Var Name="GAPInfo.PackageInfoCurrent"/>
 ##  <Var Name="GAPInfo.PackagesInfoInitialized"/>
+##  <Var Name="GAPInfo.PackageExtensionsLoaded"/>
+##  <Var Name="GAPInfo.PackageExtensionsPending"/>
 ##
 ##  <Description>
 ##  These global variables are used in the administration of &GAP; packages.
@@ -64,6 +68,14 @@
 ##  after <Ref Func="InitializePackagesInfoRecords"/> has evaluated the
 ##  <F>PackageInfo.g</F> files in all <F>pkg</F> subdirectories of &GAP;
 ##  root directories.
+##  <P/>
+##  <Ref Var="GAPInfo.PackageExtensionsLoaded"/> is the list that contains
+##  those entries from <C>Dependencies.Extensions</C> in <F>PackageInfo.g</F>
+##  files (together with the name of the package to which the extension
+##  belongs) such that the extensions in question have already been loaded,
+##  and <Ref Var="GAPInfo.PackageExtensionsPending"/> is the list of those
+##  such entries such that the extensions in question has not yet been
+##  loaded.
 ##  </Description>
 ##  </ManSection>
 ##
@@ -71,10 +83,14 @@ if IsHPCGAP then
     GAPInfo.PackagesInfo := AtomicRecord( rec() );
     GAPInfo.PackagesLoaded := AtomicRecord( rec() );
     GAPInfo.PackageLoadingMessages := AtomicList( [] );
+    GAPInfo.PackageExtensionsLoaded := AtomicList( [] );
+    GAPInfo.PackageExtensionsPending := AtomicList( [] );
 else
     GAPInfo.PackagesInfo := rec();
     GAPInfo.PackagesLoaded := rec();
     GAPInfo.PackageLoadingMessages := [];
+    GAPInfo.PackageExtensionsLoaded := [];
+    GAPInfo.PackageExtensionsPending := [];
 fi;
 
 
