@@ -351,7 +351,6 @@ void ClearObjSet(Obj set) {
   GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
   Obj new = NewObjSet();
   SwapMasterPoint(set, new);
-  CHANGED_BAG(set);
 }
 
 /**
@@ -408,7 +407,6 @@ static void ResizeObjSet(Obj set, UInt bits)
     }
   }
   SwapMasterPoint(set, new);
-  CHANGED_BAG(set);
 }
 
 #ifdef GAP_ENABLE_SAVELOAD
@@ -730,8 +728,6 @@ static void ResizeObjMap(Obj map, UInt bits)
     }
   }
   SwapMasterPoint(map, new);
-  CHANGED_BAG(map);
-  CHANGED_BAG(new);
 }
 
 #ifdef GAP_ENABLE_SAVELOAD
