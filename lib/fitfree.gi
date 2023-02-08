@@ -1558,4 +1558,3 @@ local ff,i,j,c,q,a,b,prev,sub,m,k;
   return c;
 end);
 
-

@@ -1266,7 +1266,7 @@ end );
 ##
 #F  DxGaloisOrbits(<D>,<f>) .  orbits of Stab_Gal(f) when acting on the classes
 ##
-BindGlobal( "DxGaloisOrbits", function(D,f)
+InstallGlobalFunction(DxGaloisOrbits,function(D,f)
 local i,k,l,u,ga,galOp,p;
   k:=D.klanz;
   if not IsBound(D.galOp[f]) then
@@ -1298,8 +1298,7 @@ local i,k,l,u,ga,galOp,p;
     fi;
   fi;
   return D.galOp[f];
-end );
-
+end);
 
 #############################################################################
 ##
@@ -1692,7 +1691,7 @@ end );
 ##  whenever they might become bigger using double cosets of the
 ##  centralizers.
 ##
-BindGlobal("DoubleCentralizerOrbit",function(D,c1,c2)
+InstallGlobalFunction(DoubleCentralizerOrbit,function(D,c1,c2)
 local often,trans,e,neu,i,inv,cent,l,s,s1,x,dom;
   inv:=D.inversemap[c1];
   s1:=D.classiz[c1];

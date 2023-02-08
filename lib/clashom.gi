@@ -2938,7 +2938,10 @@ local r,        #radical
     select:=[1..Length(reps)];
     while Length(select)>0 do
       pos:=select[1];
-      sel:=Filtered(select,x->reps[x][3]=reps[pos][3]);
+      # same reps, same gens
+      sel:=Filtered(select,x->reps[x][3]=reps[pos][3] and
+        reps[x][5]=reps[pos][5] and reps[x][6]=reps[pos][6]);
+
       if ValueOption("conjugacytest")=true and Length(sel)<>2 then
         return fail;
       fi;
@@ -3085,3 +3088,113 @@ function(G)
   if IsPermGroup(G) or IsPcGroup(G) then TryNextMethod();fi;
   return ConjugacyClassesViaRadical(G);
 end);
+
+
+#############################################################################
+##
+#F  TFClassMatrixColumn(<D>,<mat>,<r>,<t>)  . calculate the t-th column
+#F       of the r-th class matrix and store it in the appropriate column of M
+##
+BindGlobal("TFClassMatrixColumn",function(D,M,r,t)
+  local c,gt,s,z,i,T,w,e,j,p,orb,collect,found,id;
+  if t=1 then
+    M[D.inversemap[r],t]:=D.classiz[r];
+  else
+    orb:=DxGaloisOrbits(D,r);
+    z:=D.classreps[t];
+    c:=orb.orbits[t][1];
+    if c<>t then
+      p:=RepresentativeAction(Stabilizer(orb.group,r),c,t);
+      if p<>fail then
+        # was the first column of the galois class active?
+        if ForAny([1..NrRows(M)],i->M[i,c]>0) then
+          for i in D.classrange do
+            M[i^p,t]:=M[i,c];
+          od;
+          Info(InfoCharacterTable,2,"Computing column ",t,
+            " : by GaloisImage");
+          return;
+        fi;
+      fi;
+    fi;
+
+    T:=DoubleCentralizerOrbit(D,r,t);
+    Info(InfoCharacterTable,2,"Computing column ",t," :",
+      Length(T[1])," instead of ",D.classiz[r]);
+
+    if IsDxLargeGroup(D.group) then
+      # if r and t are unique,the conjugation test can be weak (i.e. up to
+      # galois automorphisms)
+      w:=Length(orb.orbits[t])=1 and Length(orb.orbits[r])=1;
+      collect:=[];
+      for i in [1..Length(T[1])] do
+        e:=T[1][i]*z;
+        Unbind(T[1][i]);
+        found:=false;
+        if w then
+          c:=D.rationalidentification(D,e);
+          if c in orb.uniqueIdentifications then
+            s:=orb.orbits[
+              First([1..D.klanz],j->D.rids[j]=c)][1];
+            M[s,t]:=M[s,t]+T[2][i];
+            found:=true;
+          fi;
+        fi;
+        if not found then
+          id:=D.cheapIdentification(D,e);
+          s:=Filtered([1..D.klanz],i->D.chids[i]=id);
+          if Length(s)=1 then
+            s:=s[1];
+            M[s,t]:=M[s,t]+T[2][i];
+          else
+            # only strong test possible
+            Add(collect,[e,First(D.faclaimg,y->y[1]=id)[2],T[2][i]]);
+            #s:=D.ClassElement(D,e);
+            #M[s,t]:=M[s,t]+T[2][i];
+          fi;
+        fi;
+      od;
+      #Print(Length(collect)," collected\n");
+      if Length(collect)=1 then
+        s:=D.ClassElement(D,collect[1][1]);
+        M[s,t]:=M[s,t]+collect[1][3];
+      else
+        for id in Set(List(collect,x->x[2])) do
+          found:=Filtered(collect,x->x[2]=id);
+          s:=TFCanonicalClassRepresentative(D.group,
+            List(found,x->x[1]):candidatenums:=id);
+          s:=List(s,x->x[2]);
+          s:=List(s,x->First(id,y->D.canreps[y]=x));
+          for i in [1..Length(s)] do
+            M[s[i],t]:=M[s[i],t]+found[i][3];
+          od;
+
+        od;
+      fi;
+
+      if w then # weak discrimination possible ?
+        gt:=Set(Filtered(orb.orbits,i->Length(i)>1));
+        for i in gt do
+          if i[1] in orb.identifees then
+            # were these classes detected weakly ?
+            e:=M[i[1],t];
+            if e>0 then
+              Info(InfoCharacterTable,3,"GaloisIdentification ",i,": ",e);
+            fi;
+            for j in i do
+              M[j,t]:=e/Length(i);
+            od;
+          fi;
+        od;
+      fi;
+    else # Small Group
+      for i in [1..Length(T[1])] do
+        s:=D.ClassElement(D,T[1][i] * z);
+        Unbind(T[1][i]);
+        M[s,t]:=M[s,t]+T[2][i];
+      od;
+    fi;
+  fi;
+end);
+
+
