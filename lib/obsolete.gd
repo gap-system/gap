@@ -769,6 +769,23 @@ DeclareObsoleteSynonym( "RadicalGroup", "SolvableRadical" );
 
 #############################################################################
 ##
+#O  MutableCopyMat( <mat> )
+##
+##  Moved to obsoletes in February 2023.
+##
+##  Still used in corelg, crisp, cryst, cubefree, cvec, fining, forms, genss,
+##  guava, hap, hapcryst, lpres, matricesforhomalg, modisom, polycyclic,
+##  recog, semigroups, smallsemi, sophus (02/2023)
+##
+##  (We cannot use 'DeclareObsoleteSynonym' because the cvec package wants to
+##  install a method for 'MutableCopyMat', thus 'MutableCopyMat' must be an
+##  operation.)
+##
+DeclareSynonym( "MutableCopyMat", MutableCopyMatrix );
+
+
+#############################################################################
+##
 ##  Not used in any redistributed package
 DeclareObsoleteSynonym( "ZeroSM", "ZeroSameMutability" );
 DeclareObsoleteSynonym( "AdditiveInverseSM", "AdditiveInverseSameMutability" );

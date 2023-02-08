@@ -1529,10 +1529,6 @@ DeclareGlobalFunction( "IdentityMat" );
 ##
 DeclareOperation( "MutableCopyMatrix", [ IsList ] );
 
-#T for backwards compatibility,
-#T but note that 'MutableCopyMat' was not documented
-DeclareSynonym( "MutableCopyMat", MutableCopyMatrix );
-
 
 #############################################################################
 ##
