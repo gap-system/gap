@@ -167,7 +167,7 @@ BIND_GLOBAL( "NewKeyBasedOperation",
 
     # install the method for 'oper' that uses the key handling
     InstallMethod( oper,
-      "key dependent method",
+      "key based method",
       requirements,
       function( requ... )
       local method;
@@ -178,8 +178,9 @@ BIND_GLOBAL( "NewKeyBasedOperation",
         method:= FIND_OBJ_MAP( methods, IS_OBJECT, fail );
       fi;
       if method = fail then
+        # Calling 'TryNextMethod' would lead to a less useful error message,
+        # and perhaps cause real trouble.
         Error( "no default installed for key based operation <oper>" );
-#T or would it make sense to call 'TryNextMethod'?
       fi;
 
       return CallFuncList( method, requ );
