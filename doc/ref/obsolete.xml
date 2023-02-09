@@ -158,8 +158,12 @@ Here are some further name changes.
   <Item><Ref Func="MonomialExtGrlexLess"/></Item>
 </Row>
 <Row>
-  <Item><C>NormedVectors</C><Index Key="NormedVectors"><C>NormedVectors</C></Index></Item>
-  <Item><Ref Attr="NormedRowVectors"/></Item>
+  <Item><C>MultRowVector</C><Index Key="MultRowVector"><C>MultRowVector</C></Index></Item>
+  <Item><Ref Oper="MultVectorLeft"/></Item>
+</Row>
+<Row>
+  <Item><C>MutableCopyMat</C><Index Key="MutableCopyMat"><C>MutableCopyMat</C></Index></Item>
+  <Item><Ref Oper="MutableCopyMatrix" Label="for a matrix object"/></Item>
 </Row>
 <Row>
   <Item><C>MutableIdentityMat</C><Index Key="MutableIdentityMat"><C>MutableIdentityMat</C></Index></Item>
@@ -170,8 +174,8 @@ Here are some further name changes.
   <Item><Ref Func="NullMat"/></Item>
 </Row>
 <Row>
-  <Item><C>MultRowVector</C><Index Key="MultRowVector"><C>MultRowVector</C></Index></Item>
-  <Item><Ref Oper="MultVectorLeft"/></Item>
+  <Item><C>NormedVectors</C><Index Key="NormedVectors"><C>NormedVectors</C></Index></Item>
+  <Item><Ref Attr="NormedRowVectors"/></Item>
 </Row>
 <Row>
   <Item><C>RadicalGroup</C><Index Key="RadicalGroup"><C>RadicalGroup</C></Index></Item>
