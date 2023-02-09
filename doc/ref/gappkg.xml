@@ -1184,6 +1184,57 @@ is now a needed package for &GAP; itself.
 </Section>
 
 
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Extensions Provided by a Package">
+<Heading>Extensions Provided by a Package</Heading>
+
+Sometimes a package <C>A</C> can provide additional functionality,
+such as better methods or additional data,
+if some other packages <C>B</C>, <C>C</C>, etc. are loaded.
+However, one wants that package <C>A</C> can be used also without these
+packages,
+and therefore <C>B</C>, <C>C</C>, etc. shall not be regarded as needed
+packages (see Section <Ref Sect="Package dependencies"/>) of <C>A</C>.
+
+<P/>
+
+One way to deal with this situation is to put those parts of code of <C>A</C>
+that depend on <C>B</C>, <C>C</C>, etc., into files that get read only
+in the situation that the packages in question have actually been loaded
+into the current &GAP; session,
+and to notify this conditional <E>extension</E> of <C>A</C> via a record in
+the <C>Extensions</C> component of the <F>PackageInfo.g</F> file of <C>A</C>;
+this record must have the components <C>needed</C> (a list of the form
+<C>[ [ pkgname1, version1 ], [ pkgname2, version2 ], </C><M>\ldots</M><C> ]</C>,
+meaning that the extension shall be loaded as soon as all packages
+<C>pkgname1</C>, <C>pkgname2</C>, <M>\ldots</M>, with versions (at least)
+<C>version1</C>, <C>version2</C>, <M>\ldots</M>, have been loaded)
+and <C>filename</C> (the path, relative to the package directory of <C>A</C>,
+of a file such that reading this file will load the code of the extension).
+Calls of <Ref Func="LoadPackage"/> trigger that package extensions will
+be loaded as soon as their conditions are satisfied.
+
+<P/>
+
+For example, the package <C>A</C> can be loaded early in a &GAP; session,
+and announce an extension that requires the package <C>B</C>.
+If <C>B</C> has not yet been loaded then this extension will not be loaded
+together with <C>A</C>.
+However, as soon as <C>B</C> gets (installed and) loaded later in the
+session, also the extension of <C>A</C> will automatically get loaded.
+
+<P/>
+
+The contents of <C>Extensions</C> in a <F>PackageInfo.g</F> file
+does not affect the lists of needed or suggested packages.
+If an extension of <C>A</C> is beneficial for the functions of <C>A</C>
+then it makes sense to list the packages needed for the extension among the
+suggested packages of <C>A</C>,
+but this may not be the case if the extension is beneficial only for the
+functions of its needed packages.
+
+</Section>
+
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Declaration and Implementation Part of a Package">
