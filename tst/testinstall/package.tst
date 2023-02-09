@@ -379,7 +379,7 @@ true
 # but for this mock package, it is OK because we control everything)
 gap> Unbind(GAPInfo.PackagesInfo.mockpkg);
 gap> Unbind(GAPInfo.PackagesLoaded.mockpkg);
-gap> for n in [ "mockpkg_GlobalFunction", "mockpkg_Operation", "mockpkg_Attribute", "mockpkg_Property" ] do
+gap> for n in [ "mockpkg_GlobalFunction", "mockpkg_Operation", "mockpkg_Attribute", "mockpkg_Property", "mockpkg_ExtensionData" ] do
 >   if IsBoundGlobal(n) then
 >     MakeReadWriteGlobal(n);
 >     UnbindGlobal(n);
@@ -493,6 +493,9 @@ gap> SetInfoLevel( InfoWarning, old_warning_level );
 gap> ShowPackageVariables("mockpkg");
 new global functions:
   mockpkg_GlobalFunction(  )*
+
+new global variables:
+  mockpkg_ExtensionData*
 
 new operations:
   mockpkg_Operation( arg )*
