@@ -70,7 +70,7 @@
 ##  root directories.
 ##  <P/>
 ##  <Ref Var="GAPInfo.PackageExtensionsLoaded"/> is the list that contains
-##  those entries from <C>Dependencies.Extensions</C> in <F>PackageInfo.g</F>
+##  those entries from <C>Extensions</C> in <F>PackageInfo.g</F>
 ##  files (together with the name of the package to which the extension
 ##  belongs) such that the extensions in question have already been loaded,
 ##  and <Ref Var="GAPInfo.PackageExtensionsPending"/> is the list of those

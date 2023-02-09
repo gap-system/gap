@@ -86,6 +86,13 @@ Dependencies := rec(
   ExternalConditions := [ ],
 ),
 
+Extensions := [
+  # This extension will always be loaded.
+  rec( needed:= [ [ "GAPDoc", ">= 1.6.1" ] ], filename:= "gap/extension1.g" ),
+  # This extension will never be loaded.
+  rec( needed:= [ [ "GAPDoc", "= 0.0.0" ] ], filename:= "gap/extension2.g" ),
+],
+
 AvailabilityTest := function()
   Print("oops, should not print here\n");
   #return IsKernelExtensionAvailable("mockpkg");

@@ -1508,7 +1508,7 @@ BindGlobal( "GetPackageNameForPrefix", function( prefix )
 InstallGlobalFunction( LoadPackage, function( arg )
     local name, Name, version, banner, loadsuggested, msg, depinfo, path,
           pair, i, order, paths, cycle, secondrun, pkgname, pos, info,
-          filename, entry;
+          filename, entry, r;
 
     # Get the arguments.
     if Length( arg ) = 0 then
@@ -1678,13 +1678,14 @@ InstallGlobalFunction( LoadPackage, function( arg )
         LoadPackageDocumentation( info );
 
         # Notify extensions provided by the package.
-        if IsBound( info.Dependencies ) and
-           IsBound( info.Dependencies.Extensions ) then
-          for entry in info.Dependencies.Extensions do
+        if IsBound( info.Extensions ) then
+          for entry in info.Extensions do
             LogPackageLoadingMessage( PACKAGE_DEBUG,
-                "notify extension ", entry[3], " of package ", pkgname );
-            Add( GAPInfo.PackageExtensionsPending,
-                 Immutable( Concatenation( entry, [ pkgname ] ) ) );
+                "notify extension ", entry.filename,
+                " of package ", pkgname );
+            r:= ShallowCopy( entry );
+            r.providedby:= pkgname;
+            Add( GAPInfo.PackageExtensionsPending, Immutable( r ) );
           od;
         fi;
 
@@ -1721,12 +1722,13 @@ InstallGlobalFunction( LoadPackage, function( arg )
       # Load those package extensions whose condition is satisfied.
       for i in [ 1 .. Length( GAPInfo.PackageExtensionsPending ) ] do
         entry:= GAPInfo.PackageExtensionsPending[i];
-        if IsPackageLoaded( entry[1], entry[2] ) then
-          ReadPackage( entry[4], entry[3] );
+        if ForAll( entry.needed, l -> IsPackageLoaded( l[1], l[2] ) ) then
+          ReadPackage( entry.providedby, entry.filename );
           Add( GAPInfo.PackageExtensionsLoaded, entry );
           Unbind( GAPInfo.PackageExtensionsPending[i] );
           LogPackageLoadingMessage( PACKAGE_DEBUG,
-              "load extension ", entry[3], " of package ", entry[4] );
+              "load extension ", entry.filename,
+              " of package ", entry.providedby );
         fi;
       od;
       GAPInfo.PackageExtensionsPending:= Compacted( GAPInfo.PackageExtensionsPending );
@@ -2390,11 +2392,6 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                       l -> IsString( l ) or ( IsList( l ) and Length( l ) = 2
                                       and ForAll( l, IsString ) ) ),
           "a list of strings or of pairs `[ <text>, <URL> ]' of strings" );
-      TestOption( record.Dependencies, "Extensions",
-          comp -> IsList( comp ) and ForAll( comp,
-                      l -> IsList( l ) and Length( l ) = 3
-                                       and ForAll( l, IsString ) ),
-          "a list of triples `[ <name>, <version>, <filename> ]' of strings" );
 
       # If the package is a needed package of GAP then all its needed
       # packages must also occur in the list of needed packages of GAP.
@@ -2417,6 +2414,15 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         fi;
       fi;
     fi;
+    TestOption( record, "Extensions",
+        comp -> IsList( comp ) and ForAll( comp,
+                    r -> IsRecord( r ) and
+                         IsBound( r.needed ) and IsList( r.needed ) and
+                         ForAll( r.needed,
+                             l -> IsList( l ) and Length( l ) = 2 and
+                                  ForAll( l, IsString ) ) and
+                         IsBound( r.filename ) and IsString( r.filename ) ),
+        "a list of records with components `needed' and `filename'" );
     TestMandat( record, "AvailabilityTest", IsFunction, "a function" );
     TestOption( record, "BannerFunction", IsFunction, "a function" );
     TestOption( record, "BannerString", IsString, "a string" );
