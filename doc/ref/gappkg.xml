@@ -165,7 +165,194 @@ Each package has the file <F>PackageInfo.g</F> which
 contains meta-information about  the package
 (package  name,  version,  author(s),  relations  to  other  packages,
 homepage, download archives, etc.). This file is used by the package
-loading mechanism and also for the redistribution of a package with &GAP;
+loading mechanism and also for the redistribution of a package with &GAP;.
+
+<P/>
+
+A <F>PackageInfo.g</F> file contains a call to the function
+<C>SetPackageInfo</C>, with argument a record.
+The following components of this record are <E>mandatory</E>.
+
+<List>
+<Mark><C>PackageName</C></Mark>
+<Item>
+  a nonempty string denoting the name of the package,
+</Item>
+<Mark><C>Subtitle</C></Mark>
+<Item>
+  a string that describes the package's contents,
+  may be used by a default banner or on a web page,
+  should fit on one line,
+</Item>
+<Mark><C>Version</C></Mark>
+<Item>
+  a nonempty string that does not start with <C>=</C>,
+  denoting the version number of the package
+  (see Section <Ref Sect="Version Numbers"/>),
+</Item>
+<Mark><C>Date</C></Mark>
+<Item>
+  a string of the form <C>yyyy-mm-dd</C>
+  <!-- the recommended format; a currently still supported format
+       that is expected to become deprecated is dd/mm/yyyy -->
+  denoting the release date of the current version of the package
+  (a date since 1999, when &GAP;&nbsp;4 appeared),
+</Item>
+<Mark><C>ArchiveURL</C></Mark>
+<Item>
+  a string started with <C>http://</C>, <C>https://</C>, or <C>ftp://</C>,
+  denoting an URL from where the current package archive can be downloaded,
+</Item>
+<Mark><C>ArchiveFormats</C></Mark>
+<Item>
+  a string that lists the supported formats (among <C>.tar.gz</C>,
+  <C>.tar.bz2</C>, <C>-win.zip</C>), separated by whitespace or commas,
+</Item>
+<Mark><C>Status</C></Mark>
+<Item>
+  one of <C>"accepted"</C>, <C>"submitted"</C>, <C>"deposited"</C>,
+  <C>"dev"</C>, <C>"other"</C>;
+  if the value is <C>"accepted"</C> then also
+  <C>CommunicatedBy</C> (a string of the form <C>name (place)</C>) and
+  <C>AcceptDate</C> (a string of the form <C>mm/yyyy</C>) are mandatory,
+</Item>
+<Mark><C>README_URL</C></Mark>
+<Item>
+  a string started with <C>http://</C>, <C>https://</C>, or <C>ftp://</C>,
+  denoting an URL from where the current <F>README.md</F> or <F>README</F>
+  file of the package can be downloaded,
+</Item>
+<Mark><C>PackageInfoURL</C></Mark>
+<Item>
+  a string started with <C>http://</C>, <C>https://</C>, or <C>ftp://</C>,
+  denoting an URL from where the current <F>PackageInfo.g</F> file of the
+  package can be downloaded,
+</Item>
+<Mark><C>AbstractHTML</C></Mark>
+<Item>
+  a string that describes the package's contents in a few lines,
+  in HTML format; this text will be displayed on the package overview
+  web page of &GAP;,
+</Item>
+<Mark><C>PackageWWWHome</C></Mark>
+<Item>
+  a string started with <C>http://</C>, <C>https://</C>, or <C>ftp://</C>,
+  denoting the address of the package's home page,
+</Item>
+<Mark><C>PackageDoc</C></Mark>
+<Item>
+  a record or a list of records; each record describes a book of the package
+  documentation, with the components
+  <C>BookName</C> (a string, the name of the book),
+  <C>LongTitle</C> (a string shown by <C>?books</C>),
+  <C>SixFile</C> (a string denoting a relative path to the <F>manual.six</F>
+  file of the book),
+  <C>HTMLStart</C> (a string denoting a relative path to the start file of
+  the HTML version of the book),
+  <C>PDFFile</C> (a string denoting a relative path to the <F>.pdf</F> file
+  of the book),
+  <C>ArchiveURLSubset</C> (a list of strings denoting relative paths to those
+  files and directories from the archive that are needed for the online
+  manual; typically, <C>[ "doc" ]</C> suffices),
+</Item>
+<Mark><C>AvailabilityTest</C></Mark>
+<Item>
+  a function with no arguments that returns <K>true</K> if the package is
+  available, and <K>false</K> otherwise
+  (can be <Ref Func="ReturnTrue"/> if the package consists only of &GAP;
+  code),
+</Item>
+</List>
+
+The following components of the record are <E>optional</E>.
+
+<List>
+<Mark><C>License</C></Mark>
+<Item>
+  a nonempty string containing an SPDX ID
+  (see <URL>https://spdx.org/licenses</URL> for a list of choices),
+</Item>
+<Mark><C>TextFiles</C> or <C>BinaryFiles</C> or <C>TextBinaryFilesPatterns</C></Mark>
+<Item>
+  a list of strings that specify which files in the archive are text files
+  or binary files (at most one of the three components can be available,
+  each string in <C>TextBinaryFilesPatterns</C> must start with <C>T</C>
+  for text files and by <C>B</C> for binary files),
+</Item>
+<Mark><C>Persons</C></Mark>
+<Item>
+  a list of records, each with mandatory components
+  <C>LastName</C> (a string), <C>FirstNames</C> (a string),
+  at least one of <C>IsAuthor</C> or <C>IsMaintainer</C>
+  (<K>true</K> or <K>false</K>),
+  and optional components
+  <C>PostalAddress</C>, <C>Place</C>, <C>Institution</C> (each a string);
+  if the <C>IsMaintainer</C> value is <K>true</K> then also one of the
+  components
+  <C>Email</C> (a string), <C>WWWHome</C> (a string denoting an URL),
+  or <C>PostalAddress</C> (a string) is mandatory,
+</Item>
+<Mark><C>SourceRepository</C></Mark>
+<Item>
+  a record with the components
+  <C>Type</C> (the version control system, e.g. <C>"git"</C> or <C>"hg"</C>)
+ and <C>URL</C> (the URL of the repository), both strings,
+</Item>
+<Mark><C>IssueTrackerURL</C></Mark>
+<Item>
+  a string started with <C>http://</C>, <C>https://</C>, or <C>ftp://</C>,
+</Item>
+<Mark><C>SupportEmail</C></Mark>
+<Item>
+  a string denoting an e-mail address,
+</Item>
+<Mark><C>Dependencies</C></Mark>
+<Item>
+  a record with the optional components
+  <C>GAP</C> (a string denoting the needed version of &GAP;),
+  <C>NeededOtherPackages</C>
+  (a list of pairs <C>[ pkgname, pkgversion ]</C> of strings,
+  denoting the other packages which must be available if the current package
+  shall be loadable),
+  <C>SuggestedOtherPackages</C>
+  (a list of pairs <C>[ pkgname, pkgversion ]</C> of strings,
+  denoting the other packages which shall be loaded together with the
+  current package if they are available),
+  <C>OtherPackagesLoadedInAdvance</C>
+  (a list of pairs <C>[ pkgname, pkgversion ]</C> of strings,
+  denoting the other packages that must be completely loaded before loading
+  of the current package is started),
+  <C>ExternalConditions</C>
+  (a list of strings or of pairs <C>[ text, URL ]</C> of strings,
+  denoting conditions on external programs),
+</Item>
+<Mark><C>BannerString</C></Mark>
+<Item>
+  a string that is used as the package banner
+  (useful if the default banner string is not suitable),
+</Item>
+<Mark><C>BannerFunction</C></Mark>
+<Item>
+  a function with no arguments that returns a string that is used
+  as the package banner
+  (useful if the banner shall show information that is available
+  only at runtime),
+</Item>
+<Mark><C>TestFile</C></Mark>
+<Item>
+  a string denoting a relative path to a readable file
+  which contains tests of the package's functionality,
+</Item>
+<Mark><C>Keywords</C></Mark>
+<Item>
+  a list of strings that are keywords related to the topic of the package.
+</Item>
+<!-- <Mark><C>Extensions</C></Mark>
+<Item>
+  a list of records.
+</Item> -->
+</List>
+
 </Subsection>
 
 <#Include Label="ValidatePackageInfo">
