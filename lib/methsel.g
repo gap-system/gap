@@ -73,30 +73,30 @@ end );
 
 #############################################################################
 ##
-#F  NewKeyBasedOperation( <name>, <requirements> )
-#F  DeclareKeyBasedOperation( <name>, <requirements> )
-#F  InstallKeyBasedMethod( <oper>[, <key>], <meth> )
+#F  NewTagBasedOperation( <name>, <requirements> )
+#F  DeclareTagBasedOperation( <name>, <requirements> )
+#F  InstallTagBasedMethod( <oper>[, <tag>], <meth> )
 ##
-##  <#GAPDoc Label="DeclareKeyBasedOperation">
+##  <#GAPDoc Label="DeclareTagBasedOperation">
 ##  <ManSection>
-##  <Heading>Key Based Operations</Heading>
-##  <Func Name="NewKeyBasedOperation" Arg='name, requirements'/>
-##  <Func Name="DeclareKeyBasedOperation" Arg='name, requirements'/>
-##  <Func Name="InstallKeyBasedMethod" Arg='oper[, key], meth'/>
+##  <Heading>Tag Based Operations</Heading>
+##  <Func Name="NewTagBasedOperation" Arg='name, requirements'/>
+##  <Func Name="DeclareTagBasedOperation" Arg='name, requirements'/>
+##  <Func Name="InstallTagBasedMethod" Arg='oper[, tag], meth'/>
 ##
 ##  <Description>
-##  <Ref Func="NewKeyBasedOperation"/> returns an operation with name
-##  <A>name</A> that is declared as <E>key based</E>
+##  <Ref Func="NewTagBasedOperation"/> returns an operation with name
+##  <A>name</A> that is declared as <E>tag based</E>
 ##  w.r.t. the list <A>requirements</A> of filters for its arguments.
 ##  If an operation with name <A>name</A> exists already before the call
 ##  then this operation is returned, otherwise a new operation gets created.
 ##  <P/>
-##  <Ref Func="DeclareKeyBasedOperation"/> does the same and additionally
+##  <Ref Func="DeclareTagBasedOperation"/> does the same and additionally
 ##  binds the returned operation to the global variable <A>name</A> if the
 ##  operation is new.
 ##  <P/>
-##  Declaring the operation <A>oper</A> as key based w.r.t.
-##  <A>requirements</A> means that <Ref Func="InstallKeyBasedMethod"/>
+##  Declaring the operation <A>oper</A> as tag based w.r.t.
+##  <A>requirements</A> means that <Ref Func="InstallTagBasedMethod"/>
 ##  can be used to install the method <A>meth</A> for <A>oper</A>,
 ##  a function whose arguments satisfy <A>requirements</A>,
 ##  with the following meaning.
@@ -105,47 +105,47 @@ end );
 ##  <Item>
 ##    The method <A>meth</A> is applicable if the first argument
 ##    of the call to <A>oper</A> is identical (in the sense of
-##    <Ref Func="IsIdenticalObj"/>) with the key <A>key</A> that has been
-##    specified in the <Ref Func="InstallKeyBasedMethod"/> call.
+##    <Ref Func="IsIdenticalObj"/>) with the tag <A>tag</A> that has been
+##    specified in the <Ref Func="InstallTagBasedMethod"/> call.
 ##  </Item>
 ##  <Item>
-##    If none of the key based methods for <A>oper</A> has a <A>key</A>
+##    If none of the tag based methods for <A>oper</A> has a <A>tag</A>
 ##    that is identical with the first argument of the call to <A>oper</A>
-##    and if there is a key based method for <A>oper</A> for which no
-##    <A>key</A> was specified then this method is applicable.
+##    and if there is a tag based method for <A>oper</A> for which no
+##    <A>tag</A> was specified then this method is applicable.
 ##  </Item>
 ##  </List>
 ##  <P/>
-##  Thus at most <E>one</E> key based method for <A>oper</A> is applicable,
-##  and if a method without <A>key</A> has been installed then it serves as
+##  Thus at most <E>one</E> tag based method for <A>oper</A> is applicable,
+##  and if a method without <A>tag</A> has been installed then it serves as
 ##  the default method.
 ##  This is in contrast to the situation with constructors
 ##  (see <Ref Sect="Constructors"/>) where the first argument is a filter
-##  that is used as a key, but several methods can be applicable in a call
+##  that is used as a tag, but several methods can be applicable in a call
 ##  to a constructor and one cannot define a default method for it.
 ##  <P/>
-##  Typical use cases for key based operations are operations that shall
+##  Typical use cases for tag based operations are operations that shall
 ##  create objects in particular internal representations; the filters that
 ##  define these representations are then used as the first argument,
 ##  and one wants that either the unique method that belongs to this filter
 ##  or a default method is called.
 ##  <P/>
-##  Currently it is possible to declare an operation as key based
+##  Currently it is possible to declare an operation as tag based
 ##  only for <E>one</E> list of requirements.
 ##  <P/>
-##  Installing methods with <Ref Func="InstallMethod"/> for a key based
+##  Installing methods with <Ref Func="InstallMethod"/> for a tag based
 ##  operation is possible.
 ##  (Installing such methods with the same requirements as the ones for the
-##  key based methods is not recommended, because this may lead to unwanted
+##  tag based methods is not recommended, because this may lead to unwanted
 ##  effects.)
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL( "_METHODS_KEY_BASED", OBJ_MAP() );
-BIND_GLOBAL( "_METHODS_KEY_BASED_DEFAULTS", OBJ_MAP() );
+BIND_GLOBAL( "_METHODS_TAG_BASED", OBJ_MAP() );
+BIND_GLOBAL( "_METHODS_TAG_BASED_DEFAULTS", OBJ_MAP() );
 
-BIND_GLOBAL( "NewKeyBasedOperation",
+BIND_GLOBAL( "NewTagBasedOperation",
     function( name, requirements )
     local oper, methods;
 
@@ -157,17 +157,17 @@ BIND_GLOBAL( "NewKeyBasedOperation",
       oper:= NewOperation( name, requirements );
     fi;
 
-    # initialize the key handling for 'oper'
-    if FIND_OBJ_MAP( _METHODS_KEY_BASED, oper, fail ) <> fail then
-      Error( "operation <oper> has already been declared as key based" );
+    # initialize the tag handling for 'oper'
+    if FIND_OBJ_MAP( _METHODS_TAG_BASED, oper, fail ) <> fail then
+      Error( "operation <oper> has already been declared as tag based" );
     fi;
     methods:= OBJ_MAP();
-    ADD_OBJ_MAP( _METHODS_KEY_BASED, oper, methods );
-    ADD_OBJ_MAP( _METHODS_KEY_BASED_DEFAULTS, oper, requirements );
+    ADD_OBJ_MAP( _METHODS_TAG_BASED, oper, methods );
+    ADD_OBJ_MAP( _METHODS_TAG_BASED_DEFAULTS, oper, requirements );
 
-    # install the method for 'oper' that uses the key handling
+    # install the method for 'oper' that uses the tag handling
     InstallMethod( oper,
-      "key based method",
+      "tag based method",
       requirements,
       function( requ... )
       local method;
@@ -180,7 +180,7 @@ BIND_GLOBAL( "NewKeyBasedOperation",
       if method = fail then
         # Calling 'TryNextMethod' would lead to a less useful error message,
         # and perhaps cause real trouble.
-        Error( "no default installed for key based operation <oper>" );
+        Error( "no default installed for tag based operation <oper>" );
       fi;
 
       return CallFuncList( method, requ );
@@ -189,40 +189,40 @@ BIND_GLOBAL( "NewKeyBasedOperation",
     return oper;
 end );
 
-BIND_GLOBAL( "DeclareKeyBasedOperation",
+BIND_GLOBAL( "DeclareTagBasedOperation",
     function( name, requirements )
     local oper;
 
-    oper:= NewKeyBasedOperation( name, requirements );
+    oper:= NewTagBasedOperation( name, requirements );
     if not ISBOUND_GLOBAL( name ) then
       BIND_GLOBAL( name, oper );
     fi;
 end );
 
-BIND_GLOBAL( "InstallKeyBasedMethod", function( oper, meth... )
-    local dict, defaultdata, key, n;
+BIND_GLOBAL( "InstallTagBasedMethod", function( oper, meth... )
+    local dict, defaultdata, tag, n;
 
-    dict:= FIND_OBJ_MAP( _METHODS_KEY_BASED, oper, fail );
+    dict:= FIND_OBJ_MAP( _METHODS_TAG_BASED, oper, fail );
     if dict = fail then
-      Error( "<oper> is not declared as key based operation" );
+      Error( "<oper> is not declared as tag based operation" );
     fi;
-    defaultdata:= FIND_OBJ_MAP( _METHODS_KEY_BASED_DEFAULTS, oper, fail );
+    defaultdata:= FIND_OBJ_MAP( _METHODS_TAG_BASED_DEFAULTS, oper, fail );
     if defaultdata = fail then
       Error( "this should not happen" );
     fi;
 
     if LENGTH( meth ) = 1 then
-      key:= IS_OBJECT;
+      tag:= IS_OBJECT;
       meth:= meth[1];
     elif LENGTH( meth ) = 2 then
-      key:= meth[1];
+      tag:= meth[1];
       meth:= meth[2];
     else
-      Error( "usage: InstallKeyBasedMethod( oper[, key], meth )" );
+      Error( "usage: InstallTagBasedMethod( oper[, tag], meth )" );
     fi;
 
-    if FIND_OBJ_MAP( dict, key, fail ) <> fail then
-      Error( "<key> has already been set in <dict>" );
+    if FIND_OBJ_MAP( dict, tag, fail ) <> fail then
+      Error( "<tag> has already been set in <dict>" );
     elif not IS_FUNCTION( meth ) then
       Error( "<meth> must be a function" );
     fi;
@@ -231,5 +231,5 @@ BIND_GLOBAL( "InstallKeyBasedMethod", function( oper, meth... )
       Error( "<meth> must take ", LENGTH( defaultdata ), " arguments" );
     fi;
 
-    ADD_OBJ_MAP( dict, key, meth );
+    ADD_OBJ_MAP( dict, tag, meth );
 end );

@@ -2,22 +2,22 @@
 gap> START_TEST( "oper.tst" );
 
 #
-gap> newop:= NewKeyBasedOperation( "newop", [ IsOperation, IsInt ] );;
+gap> newop:= NewTagBasedOperation( "newop", [ IsOperation, IsInt ] );;
 gap> newop( IsList, 1 );
-Error, no default installed for key based operation <oper>
-gap> InstallKeyBasedMethod( newop,
+Error, no default installed for tag based operation <oper>
+gap> InstallTagBasedMethod( newop,
 >        { oper, n } -> n );
-gap> InstallKeyBasedMethod( newop,
+gap> InstallTagBasedMethod( newop,
 >        { oper, n } -> n );
-Error, <key> has already been set in <dict>
-gap> InstallKeyBasedMethod( newop, IsGroup,
+Error, <tag> has already been set in <dict>
+gap> InstallTagBasedMethod( newop, IsGroup,
 >        { oper, n } -> 2*n );
-gap> InstallKeyBasedMethod( newop, IsGroup,
+gap> InstallTagBasedMethod( newop, IsGroup,
 >        { oper, n } -> 2*n );
-Error, <key> has already been set in <dict>
-gap> InstallKeyBasedMethod( newop, IsMagma,
+Error, <tag> has already been set in <dict>
+gap> InstallTagBasedMethod( newop, IsMagma,
 >        { oper, n } -> 3*n );
-gap> InstallKeyBasedMethod( newop, IsInt,
+gap> InstallTagBasedMethod( newop, IsInt,
 >        { oper, n } -> 4*n );
 gap> newop( IsList );
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
