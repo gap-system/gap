@@ -3666,7 +3666,7 @@ end );
 #M  DiagonalMatrix( [<filt>, ]<R>, <vector> )
 #M  DiagonalMatrix( <vector>[, <M>] )
 ##
-InstallKeyBasedMethod( DiagonalMatrix,
+InstallTagBasedMethod( DiagonalMatrix,
     function( filt, R, vector )
     local n, mat, i;
 
