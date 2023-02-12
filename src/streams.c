@@ -1643,60 +1643,6 @@ static Obj FuncUNIXSelect(Obj self,
 }
 #endif
 
-/****************************************************************************
-**
-*F * * * * * * * * * * * * * execution functions  * * * * * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-*F  FuncExecuteProcess( <self>, <dir>, <prg>, <in>, <out>, <args> )   process
-*/
-static Obj
-FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
-{
-    Obj    ExecArgs[1024];
-    Char * ExecCArgs[1024];
-
-    Obj                 tmp;
-    Int                 res;
-    Int                 i;
-
-    RequireStringRep(SELF_NAME, dir);
-    RequireStringRep(SELF_NAME, prg);
-    Int iin = GetSmallInt(SELF_NAME, in);
-    Int iout = GetSmallInt(SELF_NAME, out);
-    RequireSmallList(SELF_NAME, args);
-
-    // create an argument array
-    for ( i = 1;  i <= LEN_LIST(args);  i++ ) {
-        if ( i == 1023 )
-            break;
-        tmp = ELM_LIST( args, i );
-        RequireStringRep(SELF_NAME, tmp);
-        ExecArgs[i] = tmp;
-    }
-    ExecCArgs[0]   = CSTR_STRING(prg);
-    ExecCArgs[i] = 0;
-    for ( i--;  0 < i;  i-- ) {
-        ExecCArgs[i] = CSTR_STRING(ExecArgs[i]);
-    }
-    if (SyWindow && out == INTOBJ_INT(1)) // standard output
-      syWinPut( INT_INTOBJ(out), "@z","");
-
-    // execute the process
-    res = SyExecuteProcess( CSTR_STRING(dir),
-                            CSTR_STRING(prg),
-                            iin,
-                            iout,
-                            ExecCArgs );
-
-    if (SyWindow && out == INTOBJ_INT(1)) // standard output
-      syWinPut( INT_INTOBJ(out), "@mAgIc","");
-    return res == 255 ? Fail : INTOBJ_INT(res);
-}
-
 
 /****************************************************************************
 **
@@ -1764,7 +1710,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_5ARGS(
         UNIXSelect, inlist, outlist, exclist, timeoutsec, timeoutusec),
 #endif
-    GVAR_FUNC_5ARGS(ExecuteProcess, dir, prg, in, out, args),
     { 0, 0, 0, 0, 0 }
 
 };

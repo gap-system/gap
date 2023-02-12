@@ -32,6 +32,8 @@
 #include "modules.h"
 #include "stringobj.h"
 #include "sysenv.h"
+#include "sysfiles.h"
+#include "sysopt.h"
 
 #include "hpc/thread.h"
 
@@ -62,6 +64,10 @@
 #ifdef HAVE_SPAWN_H
 #define __USE_GNU    // ensures glibc exports posix_spawn_file_actions_addchdir_np
 #include <spawn.h>
+#endif
+
+#ifdef SYS_IS_CYGWIN32
+#include <process.h>
 #endif
 
 
@@ -546,12 +552,254 @@ cleanup:
 }
 
 
+#ifndef GAP_DISABLE_SUBPROCESS_CODE
+
+/****************************************************************************
+**
+*F  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> ) . . . . new process
+**
+**  Start  <prg> in  directory <dir>  with  standard input connected to <in>,
+**  standard  output  connected to <out>   and arguments.  No  path search is
+**  performed, the return  value of the process  is returned if the operation
+**  system supports such a concept.
+*/
+
+/****************************************************************************
+**
+*f  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> )
+*/
+#if defined(HAVE_FORK) || defined(HAVE_VFORK)
+
+#ifndef WEXITSTATUS
+#define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
+#endif
+#ifndef WIFEXITED
+#define WIFEXITED(stat_val) (((stat_val)&255) == 0)
+#endif
+
+#ifdef SYS_IS_CYGWIN32
+
+static UInt
+SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
+{
+    int savestdin, savestdout;
+    Int tin, tout;
+    int res;
+
+    // change the working directory
+    if (chdir(dir) == -1)
+        return -1;
+
+    // if <in> is -1 open "/dev/null"
+    if (in == -1)
+        tin = open("/dev/null", O_RDONLY);
+    else
+        tin = SyBufFileno(in);
+    if (tin == -1)
+        return -1;
+
+    // if <out> is -1 open "/dev/null"
+    if (out == -1)
+        tout = open("/dev/null", O_WRONLY);
+    else
+        tout = SyBufFileno(out);
+    if (tout == -1) {
+        if (in == -1)
+            close(tin);
+        return -1;
+    }
+
+    // set standard input to <in>, standard output to <out>
+    savestdin = -1;    // Just to please the compiler
+    if (tin != 0) {
+        savestdin = dup(0);
+        if (savestdin == -1 || dup2(tin, 0) == -1) {
+            if (out == -1)
+                close(tout);
+            if (in == -1)
+                close(tin);
+            return -1;
+        }
+        fcntl(0, F_SETFD, 0);
+    }
+
+    if (tout != 1) {
+        savestdout = dup(1);
+        if (savestdout == -1 || dup2(tout, 1) == -1) {
+            if (tin != 0) {
+                close(0);
+                dup2(savestdin, 0);
+                close(savestdin);
+            }
+            if (out == -1)
+                close(tout);
+            if (in == -1)
+                close(tin);
+            return -1;
+        }
+        fcntl(1, F_SETFD, 0);
+    }
+
+    FreezeStdin = 1;
+    // now try to execute the program
+    res = spawnve(_P_WAIT, prg, (const char * const *)args,
+                  (const char * const *)environ);
+
+    // Now repair the open file descriptors:
+    if (tout != 1) {
+        close(1);
+        dup2(savestdout, 1);
+        close(savestdout);
+    }
+    if (tin != 0) {
+        close(0);
+        dup2(savestdin, 0);
+        close(savestdin);
+    }
+    if (out == -1)
+        close(tout);
+    if (in == -1)
+        close(tin);
+
+    FreezeStdin = 0;
+
+    // Report result:
+    if (res < 0)
+        return -1;
+    return WEXITSTATUS(res);
+}
+
+#else
+
+typedef void sig_handler_t(int);
+
+static void NullSignalHandler(int scratch)
+{
+}
+
+static UInt
+SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[])
+{
+    pid_t pid;    // process id
+    pid_t wait_pid;
+    int   status;    // do not use `Int'
+    Int   tin;       // temp in
+    Int   tout;      // temp out
+    sig_handler_t * volatile func2;
+
+
+    // turn off the SIGCHLD handling, so that we can be sure to collect this
+    // child `After that, we call the old signal handler, in case any other
+    // children have died in the meantime. This resets the handler
+
+    func2 = signal(SIGCHLD, SIG_DFL);
+
+    // This may return SIG_DFL (0x0) or SIG_IGN (0x1) if the previous handler
+    // was set to the default or 'ignore'. In these cases (or if SIG_ERR is
+    // returned), just use a null signal handler - the default on most systems
+    // is to do nothing
+    if (func2 == SIG_ERR || func2 == SIG_DFL || func2 == SIG_IGN)
+        func2 = &NullSignalHandler;
+
+    // clone the process
+    pid = fork();
+    if (pid == -1) {
+        return -1;
+    }
+
+    // we are the parent
+    if (pid != 0) {
+        // Stop trying to read input
+        FreezeStdin = 1;
+
+        // ignore a CTRL-C
+        struct sigaction sa;
+        struct sigaction oldsa;
+
+        sa.sa_handler = SIG_IGN;
+        sigemptyset(&(sa.sa_mask));
+        sa.sa_flags = 0;
+        sigaction(SIGINT, &sa, &oldsa);
+
+        // wait for some action
+        wait_pid = waitpid(pid, &status, 0);
+        FreezeStdin = 0;
+        sigaction(SIGINT, &oldsa, NULL);
+        (*func2)(SIGCHLD);
+        if (wait_pid == -1) {
+            return -1;
+        }
+        if (WIFSIGNALED(status)) {
+            return -1;
+        }
+        return WEXITSTATUS(status);
+    }
+
+    // we are the child
+    else {
+
+        // change the working directory
+        if (chdir(dir) == -1) {
+            _exit(-1);
+        }
+
+        // if <in> is -1 open "/dev/null"
+        if (in == -1) {
+            tin = open("/dev/null", O_RDONLY);
+        }
+        else {
+            tin = SyBufFileno(in);
+        }
+        if (tin == -1) {
+            _exit(-1);
+        }
+
+        // if <out> is -1 open "/dev/null"
+        if (out == -1) {
+            tout = open("/dev/null", O_WRONLY);
+        }
+        else {
+            tout = SyBufFileno(out);
+        }
+        if (tout == -1) {
+            _exit(-1);
+        }
+
+        // set standard input to <in>, standard output to <out>
+        if (tin != 0) {
+            if (dup2(tin, 0) == -1) {
+                _exit(-1);
+            }
+        }
+        fcntl(0, F_SETFD, 0);
+
+        if (tout != 1) {
+            if (dup2(tout, 1) == -1) {
+                _exit(-1);
+            }
+        }
+        fcntl(1, F_SETFD, 0);
+
+        // now try to execute the program
+        execve(prg, args, environ);
+        _exit(-1);
+    }
+
+    // this should not happen
+    return -1;
+}
+#endif
+
+#endif
+
+#endif    // !GAP_DISABLE_SUBPROCESS_CODE
+
 // This function assumes that the caller invoked HashLock(PtyIOStreams).
 // It unlocks just before throwing any error.
 static void HandleChildStatusChanges(UInt pty)
 {
-    /* common error handling, when we are asked to read or write to a stopped
-       or dead child */
+    // common error handling, when we are asked to read or write to a stopped
+    // or dead child
     if (PtyIOStreams[pty].alive == 0) {
         PtyIOStreams[pty].changed = 0;
         PtyIOStreams[pty].blocked = 0;
@@ -605,11 +853,10 @@ static Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
 
 static Int ReadFromPty2(UInt stream, Char * buf, Int maxlen, UInt block)
 {
-    /* read at most maxlen bytes from stream, into buf.
-      If block is non-zero then wait for at least one byte
-      to be available. Otherwise don't. Return the number of
-      bytes read, or -1 for error. A blocking return having read zero bytes
-      definitely indicates an end of file */
+    // read at most maxlen bytes from stream, into buf. If block is non-zero
+    // then wait for at least one byte to be available. Otherwise don't.
+    // Return the number of bytes read, or -1 for error. A blocking return
+    // having read zero bytes definitely indicates an end of file
 
     Int nread = 0;
     int ret;
@@ -804,6 +1051,47 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
     return result;
 }
 
+static Obj
+FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
+{
+    Obj    ExecArgs[1024];
+    Char * ExecCArgs[1024];
+
+    Obj tmp;
+    Int res;
+    Int i;
+
+    RequireStringRep(SELF_NAME, dir);
+    RequireStringRep(SELF_NAME, prg);
+    Int iin = GetSmallInt(SELF_NAME, in);
+    Int iout = GetSmallInt(SELF_NAME, out);
+    RequireSmallList(SELF_NAME, args);
+
+    // create an argument array
+    for (i = 1; i <= LEN_LIST(args); i++) {
+        if (i == 1023)
+            break;
+        tmp = ELM_LIST(args, i);
+        RequireStringRep(SELF_NAME, tmp);
+        ExecArgs[i] = tmp;
+    }
+    ExecCArgs[0] = CSTR_STRING(prg);
+    ExecCArgs[i] = 0;
+    for (i--; 0 < i; i--) {
+        ExecCArgs[i] = CSTR_STRING(ExecArgs[i]);
+    }
+    if (SyWindow && out == INTOBJ_INT(1))    // standard output
+        syWinPut(INT_INTOBJ(out), "@z", "");
+
+    // execute the process
+    res = SyExecuteProcess(CSTR_STRING(dir), CSTR_STRING(prg), iin, iout,
+                           ExecCArgs);
+
+    if (SyWindow && out == INTOBJ_INT(1))    // standard output
+        syWinPut(INT_INTOBJ(out), "@mAgIc", "");
+    return res == 255 ? Fail : INTOBJ_INT(res);
+}
+
 #else // !defined(GAP_DISABLE_SUBPROCESS_CODE)
 
 int CheckChildStatusChanged(int childPID, int status)
@@ -856,6 +1144,12 @@ static Obj FuncFD_OF_IOSTREAM(Obj self, Obj stream)
     return Fail;
 }
 
+static Obj
+FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
+{
+    return Fail;
+}
+
 #endif
 
 
@@ -882,12 +1176,13 @@ static StructGVarFunc GVarFuncs[] = {
 #ifdef HPCGAP
     GVAR_FUNC_0ARGS(DEFAULT_SIGCHLD_HANDLER),
 #endif
+    GVAR_FUNC_5ARGS(ExecuteProcess, dir, prg, in, out, args),
 
     { 0, 0, 0, 0, 0 }
 };
 
-/* FIXME/TODO: should probably do some checks preSave for open files etc and
-   refuse to save if any are found */
+// FIXME/TODO: should probably do some checks preSave for open files etc and
+// refuse to save if any are found
 
 /****************************************************************************
 **

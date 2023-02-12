@@ -36,6 +36,10 @@ Int4 SyGAPCRC(const Char * name);
 */
 Obj SyGetOsRelease(void);
 
+// When true, ignore if any new input from stdin. This is used to stop HPC-GAP
+// from reading stdin while forked subprocesses are running.
+extern UInt FreezeStdin;
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * * * window handler * * * * * * * * * * * * * * *
@@ -332,19 +336,8 @@ void SySetErrorNo(void);
 
 /****************************************************************************
 **
-*F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * * * * * file * * * * * * * * * * * * * * * * * *
 */
-
-/****************************************************************************
-**
-*F  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> ) . . . . new process
-**
-**  Start  <prg> in  directory <dir>  with  standard input connected to <in>,
-**  standard  output  connected to <out>   and arguments.  No  path search is
-**  performed, the return  value of the process  is returned if the operation
-**  system supports such a concept.
-*/
-UInt SyExecuteProcess(Char * dir, Char * prg, Int in, Int out, Char * args[]);
 
 
 /****************************************************************************
