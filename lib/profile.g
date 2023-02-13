@@ -912,10 +912,10 @@ end);
 
 #############################################################################
 ##
-#F  ProfileFunctionsInGlobalVariables()
+#F  ProfileFunctionsInGlobalVariables( [<true/false>] )
 ##
 ##  <ManSection>
-##  <Func Name="ProfileFunctionsInGlobalVariables" Arg=''/>
+##  <Func Name="ProfileFunctionsInGlobalVariables" Arg='[bool]'/>
 ##
 ##  <Description>
 ##  </Description>
@@ -924,23 +924,33 @@ end);
 PROFILED_GLOBAL_VARIABLE_FUNCTIONS := [];
 
 BIND_GLOBAL( "ProfileFunctionsInGlobalVariables", function( arg )
-    local name, func;
+    local name, func, r, nam;
     if 0 = Length(arg) then
         DisplayProfile( PROFILED_GLOBAL_VARIABLE_FUNCTIONS );
-    elif arg[1] then
+    elif arg[1] = true then
         PROFILED_GLOBAL_VARIABLE_FUNCTIONS  := [];
         for name in NamesGVars() do
             if IsBoundGlobal(name) then
                 func := ValueGlobal(name);
                 if IsFunction(func) then
                     Add(PROFILED_GLOBAL_VARIABLE_FUNCTIONS, func);
+                elif IsRecord( func ) then
+                  r:= func;
+                  for nam in RecNames( r ) do
+                    func:= r.( nam );
+                    if IsFunction( func ) then
+                      Add( PROFILED_GLOBAL_VARIABLE_FUNCTIONS, func );
+                    fi;
+                  od;
                 fi;
             fi;
         od;
         ProfileFunctions(PROFILED_GLOBAL_VARIABLE_FUNCTIONS);
-    else
+    elif arg[1] = false then
         UnprofileFunctions(PROFILED_GLOBAL_VARIABLE_FUNCTIONS);
         PROFILED_GLOBAL_VARIABLE_FUNCTIONS := [];
+    else
+      Print( "usage: ProfileFunctionsInGlobalVariables( [<true/false>] )" );
     fi;
 end);
 
