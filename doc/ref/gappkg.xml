@@ -1,5 +1,5 @@
 <Chapter Label="Using and Developing GAP Packages">
-<Heading>Using and Developing GAP Packages</Heading>
+<Heading>Using and Developing &GAP; Packages</Heading>
 
 <Index>package</Index>
 The  functionality  of  &GAP;  can  be  extended  by  loading  &GAP;
@@ -35,7 +35,7 @@ and then provide guidelines for writing a &GAP; package.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Installing a GAP Package">
-<Heading>Installing a GAP Package</Heading>
+<Heading>Installing a &GAP; Package</Heading>
 
 Before a  package can be  used it must  be installed.
 A standard distribution of &GAP; already contains all the packages
@@ -79,7 +79,7 @@ external binaries.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Loading a GAP Package">
-<Heading>Loading a GAP Package</Heading>
+<Heading>Loading a &GAP; Package</Heading>
 
 If a package is not already loaded, it may be loaded using
 the function <Ref Func="LoadPackage"/>.
@@ -90,7 +90,7 @@ that is they will be loaded automatically when &GAP; starts
 
 <#Include Label="LoadPackage">
 
-<Index>automatic loading of GAP packages</Index>
+<Index Key="automatic loading of GAP packages">automatic loading of &GAP; packages</Index>
 <Index>disable automatic loading</Index>
 <#Include Label="LoadPackageAutomatic">
 
@@ -102,7 +102,7 @@ that is they will be loaded automatically when &GAP; starts
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Functions for GAP Packages">
-<Heading>Functions for GAP Packages</Heading>
+<Heading>Functions for &GAP; Packages</Heading>
 
 The following functions are mainly used in files contained in  a
 package and not by users of a package. They are needed to organise
@@ -148,7 +148,7 @@ for the package to work, then its <F>PackageInfo.g</F> should define
 a <C>AvailabilityTest</C> which calls <Ref Func="IsKernelExtensionAvailable"/>,
 see <Ref Subsect="Test for the Existence of GAP Package Binaries"/> for details.
 <P/>
-Note that before GAP 4.12, <Ref Func="LoadDynamicModule"/> was used for this.
+Note that before &GAP; 4.12, <Ref Func="LoadDynamicModule"/> was used for this.
 It is still available and in fact <Ref Func="LoadKernelExtension"/> call it;
 but the latter provides a higher level abstraction and is more convenient to use.
 
@@ -164,8 +164,10 @@ but the latter provides a higher level abstraction and is more convenient to use
 Each package has the file <F>PackageInfo.g</F> which
 contains meta-information about  the package
 (package  name,  version,  author(s),  relations  to  other  packages,
-homepage, download archives, etc.). This file is used by the package
-loading mechanism and also for the redistribution of a package with &GAP;.
+homepage, download archives, etc.).
+This file is used by the package loading mechanism,
+by the &GAP; webpages about packages,
+and also for the redistribution of a package with &GAP;.
 
 <P/>
 
@@ -202,6 +204,8 @@ The following components of this record are <E>mandatory</E>.
 <Item>
   a string started with <C>http://</C>, <C>https://</C>, or <C>ftp://</C>,
   denoting an URL from where the current package archive can be downloaded,
+  but without the suffix describing the format
+  (see the <C>ArchiveFormats</C> component),
 </Item>
 <Mark><C>ArchiveFormats</C></Mark>
 <Item>
@@ -242,25 +246,44 @@ The following components of this record are <E>mandatory</E>.
 <Mark><C>PackageDoc</C></Mark>
 <Item>
   a record or a list of records; each record describes a book of the package
-  documentation, with the components
-  <C>BookName</C> (a string, the name of the book),
-  <C>LongTitle</C> (a string shown by <C>?books</C>),
-  <C>SixFile</C> (a string denoting a relative path to the <F>manual.six</F>
-  file of the book),
-  <C>HTMLStart</C> (a string denoting a relative path to the start file of
-  the HTML version of the book),
-  <C>PDFFile</C> (a string denoting a relative path to the <F>.pdf</F> file
-  of the book),
-  <C>ArchiveURLSubset</C> (a list of strings denoting relative paths to those
-  files and directories from the archive that are needed for the online
-  manual; typically, <C>[ "doc" ]</C> suffices),
+  documentation, with the following components
+  <List>
+  <Mark><C>BookName</C></Mark>
+  <Item>
+    a string, the name of the book,
+  </Item>
+  <Mark><C>LongTitle</C></Mark>
+  <Item>
+    a string shown by <C>?books</C>,
+  </Item>
+  <Mark><C>SixFile</C></Mark>
+  <Item>
+    a string denoting a relative path to the <F>manual.six</F>
+    file of the book,
+  </Item>
+  <Mark><C>HTMLStart</C></Mark>
+  <Item>
+    a string denoting a relative path to the start file of
+    the HTML version of the book,
+  </Item>
+  <Mark><C>PDFFile</C></Mark>
+  <Item>
+    a string denoting a relative path to the <F>.pdf</F> file of the book,
+  </Item>
+  <Mark><C>ArchiveURLSubset</C></Mark>
+  <Item>
+    a list of strings denoting relative paths to those
+    files and directories from the archive that are needed for the online
+    manual; typically, <C>[ "doc" ]</C> suffices,
+  </Item>
+  </List>
 </Item>
 <Mark><C>AvailabilityTest</C></Mark>
 <Item>
   a function with no arguments that returns <K>true</K> if the package is
   available, and <K>false</K> otherwise
   (can be <Ref Func="ReturnTrue"/> if the package consists only of &GAP;
-  code),
+  code).
 </Item>
 </List>
 
@@ -270,7 +293,7 @@ The following components of the record are <E>optional</E>.
 <Mark><C>License</C></Mark>
 <Item>
   a nonempty string containing an SPDX ID
-  (see <URL>https://spdx.org/licenses</URL> for a list of choices),
+  (see Section <Ref Sect="Selecting a license for a GAP Package"/>),
 </Item>
 <Mark><C>TextFiles</C> or <C>BinaryFiles</C> or <C>TextBinaryFilesPatterns</C></Mark>
 <Item>
@@ -281,16 +304,52 @@ The following components of the record are <E>optional</E>.
 </Item>
 <Mark><C>Persons</C></Mark>
 <Item>
-  a list of records, each with mandatory components
-  <C>LastName</C> (a string), <C>FirstNames</C> (a string),
-  at least one of <C>IsAuthor</C> or <C>IsMaintainer</C>
-  (<K>true</K> or <K>false</K>),
+  a list of records, each with the mandatory components
+  <List>
+  <Mark><C>LastName</C></Mark>
+  <Item>
+    a string,
+  </Item>
+  <Mark><C>FirstNames</C></Mark>
+  <Item>
+    a string,
+  </Item>
+  <Mark>at least one of <C>IsAuthor</C> or <C>IsMaintainer</C></Mark>
+  <Item>
+    <K>true</K> or <K>false</K>,
+  </Item>
+  </List>
   and optional components
-  <C>PostalAddress</C>, <C>Place</C>, <C>Institution</C> (each a string);
-  if the <C>IsMaintainer</C> value is <K>true</K> then also one of the
-  components
-  <C>Email</C> (a string), <C>WWWHome</C> (a string denoting an URL),
-  or <C>PostalAddress</C> (a string) is mandatory,
+  <List>
+  <Mark><C>PostalAddress</C></Mark>
+  <Item>
+    a string,
+  </Item>
+  <Mark><C>Place</C></Mark>
+  <Item>
+    a string,
+  </Item>
+  <Mark><C>Institution</C></Mark>
+  <Item>
+    a string,
+  </Item>
+  </List>
+  If the <C>IsMaintainer</C> value is <K>true</K> then also one of the
+  following components is mandatory.
+  <List>
+  <Mark><C>Email</C></Mark>
+  <Item>
+    a string,
+  </Item>
+  <Mark><C>WWWHome</C></Mark>
+  <Item>
+    a string denoting an URL, or
+  </Item>
+  <Mark><C>PostalAddress</C></Mark>
+  <Item>
+    a string.
+  </Item>
+  </List>
 </Item>
 <Mark><C>SourceRepository</C></Mark>
 <Item>
@@ -308,50 +367,65 @@ The following components of the record are <E>optional</E>.
 </Item>
 <Mark><C>Dependencies</C></Mark>
 <Item>
-  a record with the optional components
-  <C>GAP</C> (a string denoting the needed version of &GAP;),
-  <C>NeededOtherPackages</C>
-  (a list of pairs <C>[ pkgname, pkgversion ]</C> of strings,
-  denoting the other packages which must be available if the current package
-  shall be loadable),
-  <C>SuggestedOtherPackages</C>
-  (a list of pairs <C>[ pkgname, pkgversion ]</C> of strings,
-  denoting the other packages which shall be loaded together with the
-  current package if they are available),
-  <C>OtherPackagesLoadedInAdvance</C>
-  (a list of pairs <C>[ pkgname, pkgversion ]</C> of strings,
-  denoting the other packages that must be completely loaded before loading
-  of the current package is started),
-  <C>ExternalConditions</C>
-  (a list of strings or of pairs <C>[ text, URL ]</C> of strings,
-  denoting conditions on external programs),
+  a record describing the dependencies of the package
+  (see Section <Ref Sect="Package dependencies"/>),
+  with the following optional components
+  <List>
+  <Mark><C>GAP</C></Mark>
+  <Item>
+    a string denoting the needed version of &GAP;,
+  </Item>
+  <Mark><C>NeededOtherPackages</C></Mark>
+  <Item>
+    a list of pairs <C>[ pkgname, pkgversion ]</C> of strings,
+    denoting the other packages which must be available if the current package
+    shall be loadable,
+  </Item>
+  <Mark><C>SuggestedOtherPackages</C></Mark>
+  <Item>
+    a list of pairs <C>[ pkgname, pkgversion ]</C> of strings,
+    denoting the other packages which shall be loaded together with the
+    current package if they are available,
+  </Item>
+  <Mark><C>OtherPackagesLoadedInAdvance</C></Mark>
+  <Item>
+    a list of pairs <C>[ pkgname, pkgversion ]</C> of strings,
+    denoting the other packages that must be completely loaded before loading
+    of the current package is started,
+  </Item>
+  <Mark><C>ExternalConditions</C></Mark>
+  <Item>
+    a list of strings or of pairs <C>[ text, URL ]</C> of strings,
+    denoting conditions on external programs,
+  </Item>
+  </List>
 </Item>
-<Mark><C>BannerString</C></Mark>
+<Mark><C>BannerString</C> or <C>BannerFunction</C></Mark>
 <Item>
-  a string that is used as the package banner
-  (useful if the default banner string is not suitable),
-</Item>
-<Mark><C>BannerFunction</C></Mark>
-<Item>
-  a function with no arguments that returns a string that is used
-  as the package banner
-  (useful if the banner shall show information that is available
-  only at runtime),
+  a string or a function, respectively,
+  that is used to create a package banner different from the default banner
+  (see Section <Ref Sect="The Banner"/>),
 </Item>
 <Mark><C>TestFile</C></Mark>
 <Item>
   a string denoting a relative path to a readable file
-  which contains tests of the package's functionality,
+  which contains tests of the package's functionality
+  (see Section <Ref Sect="Testing a GAP package"/>),
 </Item>
 <Mark><C>Keywords</C></Mark>
 <Item>
-  a list of strings that are keywords related to the topic of the package.
+  a list of strings that are keywords related to the topic of the package,
 </Item>
-<!-- <Mark><C>Extensions</C></Mark>
+<Mark><C>Extensions</C></Mark>
 <Item>
-  a list of records.
-</Item> -->
+  a list of records that describe conditional extensions of the package
+  (see Section <Ref Sect="Extensions Provided by a Package"/>).
+</Item>
 </List>
+
+Other components of the record can be supported;
+for example, <C>AutoDoc</C> is used by the <Package>AutoDoc</Package>
+package if applicable.
 
 </Subsection>
 
@@ -363,7 +437,7 @@ The following components of the record are <E>optional</E>.
 </Section>
 
 <Section Label="Guidelines for Writing a GAP Package">
-<Heading>Guidelines for Writing a GAP Package</Heading>
+<Heading>Guidelines for Writing a &GAP; Package</Heading>
 
 The remaining part of this chapter explains the basics
 of how to write a &GAP; package so that it integrates properly into &GAP;.
@@ -403,7 +477,7 @@ we provide guidelines for the release preparation and its distribution.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Structure of a GAP Package">
-<Heading>Structure of a GAP Package</Heading>
+<Heading>Structure of a &GAP; Package</Heading>
 
 <Index Subkey="for a GAP package">home directory</Index>
 A &GAP; package should have an alphanumeric name;
@@ -731,7 +805,7 @@ However, we do not recommend using it for new packages.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="An Example of a GAP Package">
-<Heading>An Example of a GAP Package</Heading>
+<Heading>An Example of a &GAP; Package</Heading>
 
 We illustrate the creation of a &GAP; package by an example of a very basic package.
 <P/>
@@ -1191,8 +1265,8 @@ is now a needed package for &GAP; itself.
 Sometimes a package <C>A</C> can provide additional functionality,
 such as better methods or additional data,
 if some other packages <C>B</C>, <C>C</C>, etc. are loaded.
-However, one wants that package <C>A</C> can be used also without these
-packages,
+However, one would like package <C>A</C> to still be usable without these
+additional packages,
 and therefore <C>B</C>, <C>C</C>, etc. shall not be regarded as needed
 packages (see Section <Ref Sect="Package dependencies"/>) of <C>A</C>.
 
@@ -1201,23 +1275,54 @@ packages (see Section <Ref Sect="Package dependencies"/>) of <C>A</C>.
 One way to deal with this situation is to put those parts of code of <C>A</C>
 that depend on <C>B</C>, <C>C</C>, etc., into files that get read only
 in the situation that the packages in question have actually been loaded
-into the current &GAP; session,
-and to notify this conditional <E>extension</E> of <C>A</C> via a record in
-the <C>Extensions</C> component of the <F>PackageInfo.g</F> file of <C>A</C>;
-this record must have the components <C>needed</C> (a list of the form
-<C>[ [ pkgname1, version1 ], [ pkgname2, version2 ], </C><M>\ldots</M><C> ]</C>,
-meaning that the extension shall be loaded as soon as all packages
-<C>pkgname1</C>, <C>pkgname2</C>, <M>\ldots</M>, with versions (at least)
-<C>version1</C>, <C>version2</C>, <M>\ldots</M>, have been loaded)
-and <C>filename</C> (the path, relative to the package directory of <C>A</C>,
-of a file such that reading this file will load the code of the extension).
-Calls of <Ref Func="LoadPackage"/> trigger that package extensions will
-be loaded as soon as their conditions are satisfied.
+into the current &GAP; session.
 
 <P/>
 
-For example, the package <C>A</C> can be loaded early in a &GAP; session,
-and announce an extension that requires the package <C>B</C>.
+However, this leaves the question when to load these files
+of a conditional <E>extension</E> of <C>A</C>.
+In the past, the only option for <C>A</C> was to check for the presence of
+<C>B</C>, <C>C</C>, etc., while it itself was being loaded.
+With this setup, it depends on the order in which packages get loaded
+whether some feature is available or not:
+If <C>B</C> is loaded before <C>A</C>, the extension might be loaded as well;
+if <C>B</C> is loaded only after <C>A</C>, then the extension is not loaded.
+
+<P/>
+
+To deal with this issue of conditional extensions of packages,
+&GAP; offers a dedicated mechanism:
+
+The <C>Extensions</C> component of the <F>PackageInfo.g</F> file of <C>A</C>
+is a list of declarations of conditional extension of <C>A</C>,
+each being a record with the following components.
+
+<List>
+<Mark><C>needed</C></Mark>
+<Item>
+  a list of the form
+  <C>[ [ pkgname1, version1 ], [ pkgname2, version2 ], </C><M>\ldots</M><C> ]</C>,
+  meaning that the extension shall be loaded as soon as all packages
+  <C>pkgname1</C>, <C>pkgname2</C>, <M>\ldots</M>, with versions (at least)
+  <C>version1</C>, <C>version2</C>, <M>\ldots</M>, have been loaded,
+  and
+</Item>
+<Mark><C>filename</C></Mark>
+<Item>
+  the path, relative to the package directory of <C>A</C>,
+  of a file such that reading this file will load the code of the extension.
+</Item>
+</List>
+
+Whenever <Ref Func="LoadPackage"/> is called,
+&GAP; checks for package extensions whose conditions now are satisfied,
+and loads them.
+
+<P/>
+
+For example, package <C>A</C> can be loaded early in a &GAP; session,
+and declare in its <F>PackageInfo.g</F> the availability of an extension
+that requires package <C>B</C>.
 If <C>B</C> has not yet been loaded then this extension will not be loaded
 together with <C>A</C>.
 However, as soon as <C>B</C> gets (installed and) loaded later in the
@@ -1612,16 +1717,19 @@ that the expression list is  only  printed  (or  even  executed)  if  the
 <Section Label="The Banner">
 <Heading>The Banner</Heading>
 
-<!-- TODO: say that the default banner is constructed from PackageInfo.g -->
-
 <Index Subkey="for a GAP package">banner</Index>
 
 When the package is loaded, &GAP; will display a default package banner,
 constructed from the package metadata provided in the <F>PackageInfo.g</F> file.
 <P/>
-Alternatively, the package may establish its own banner by assigning a string
+Alternatively,
+the package may establish its own banner by assigning either a string
 to the <C>BannerString</C> field of the record argument of <C>SetPackageInfo</C>
-in the <F>PackageInfo.g</F> file.
+in the <F>PackageInfo.g</F> file
+or a function to the <C>BannerFunction</C> field,
+which takes this record as its unique argument.
+The latter possibility can be useful if the banner shall show information
+that is available only at runtime.
 <P/>
 If you will be designing a banner for your package, it is a good idea to suggest
 there how to access package  documentation. For example, the banner of the
