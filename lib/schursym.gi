@@ -23,384 +23,383 @@
 ##  of (private) global variables.
 ##
 
-Perform( [1], function(x)
+BindGlobal("BasicSpinRepSym", CallFuncList(function()
   local S, S1, coeffS2, S2, coeffS3, S3, bmat, spinsteps, SpinDimSym,
-    BasicSpinRepSymPos, BasicSpinRepSymNeg, BasicSpinRepSym,
+    BasicSpinRepSymPos, BasicSpinRepSymNeg,
     SanityCheckPos, SanityCheckNeg;
 
+  ##  let 2S+(n) = < t_1, ..., t_(n-1) > subject to the relations
+  ##    (t_i)^2 = z for 1 <= i <= n-1,
+  ##    z^2 = 1,
+  ##    ( t_i*t_(i+1) )^3 = z for 1 <= i <= n-2,
+  ##    t_i*t_j = z*t_j*t_i for 1 <= i, j <= n-1 with | i - j | > 1.
+  ##
+  ##  The following functions allow the construction of basic spin
+  ##  representations of 2S+(n) over fields of any characteristic.
 
-##  let 2S+(n) = < t_1, ..., t_(n-1) > subject to the relations
-##    (t_i)^2 = z for 1 <= i <= n-1,
-##    z^2 = 1,
-##    ( t_i*t_(i+1) )^3 = z for 1 <= i <= n-2,
-##    t_i*t_j = z*t_j*t_i for 1 <= i, j <= n-1 with | i - j | > 1.
-##
-##  The following functions allow the construction of basic spin
-##  representations of 2S+(n) over fields of any characteristic.
+  ##  SpinDimSym
+  ##  IN   integers n >= 4, p >= 0
+  ##  OUT  the degree of a basic spin repr. of 2S(n) over a field of
+  ##       characteristic p
+  SpinDimSym:= function( n, p )
+      local r;
+      r:= n mod 2;
+      if r = 0 then
+          return 2^((n-2)/2);
+      elif p = 0 then
+          return 2^((n-1)/2);
+      elif r = 1 and n mod p = 0 then
+          return 2^((n-3)/2);
+      else
+          return 2^((n-1)/2);
+      fi;
+  end;
 
-##  SpinDimSym
-##  IN   integers n >= 4, p >= 0
-##  OUT  the degree of a basic spin repr. of 2S(n) over a field of
-##       characteristic p
-SpinDimSym:= function( n, p )
-    local r;
-    r:= n mod 2;
-    if r = 0 then
-        return 2^((n-2)/2);
-    elif p = 0 then
-        return 2^((n-1)/2);
-    elif r = 1 and n mod p = 0 then
-        return 2^((n-3)/2);
+  ##  SanityCheckPos
+  ##  IN  A record containing the matrices in T, the degree of the symmetric
+  ##      group n, and the characteristic f the field p
+  ##  OUT true if the matrices in T are the right size, over the right field, and
+  ##      satisfy the presentation for 2S(n) given above.  Also checks the
+  ##      components Sym and Alt if present.
+  SanityCheckPos := function( input )
+    local i, j;
+
+      if input.n <> Length( input.T ) + 1 then
+        Print("#I SanityCheckPos: Wrong degree: ",input.n," vs. ",Length(input.T)+1,"\n");
+        return false;
+      fi;
+
+      if input.p <> Characteristic( input.T[1] ) then
+        Print("#I SanityCheckPos: Wrong characteristic: ",input.p," vs. ",Characteristic(input.T[1]),"\n");
+        return false;
+      fi;
+
+      if SpinDimSym( input.n, input.p ) <> Length( input.T[1] ) then
+          Print( "#I SanityCheckPos: Wrong degree: ",SpinDimSym( input.n, input.p )," vs. ",Length( input.T[1] ),"\n" );
+          return false;
+      fi;
+
+      if not ForAll( input.T, mat -> Size(mat) = Size(mat[1]) and Size(mat)=Size(input.T[1])) then
+        Print("#I SanityCheckPos: Matrices not all same size\n");
+        return false;
+      fi;
+
+      for i in [ 1 .. input.n-1 ] do
+          if not IsOne(-input.T[i]^2) then
+              Print( "#I SanityCheckPos: Wrong order for T[",i,"]\n");
+              return false;
+          fi;
+      od;
+      for i in [ 1 .. input.n-2 ] do
+          if not IsOne( -( input.T[i]*input.T[i+1] )^3 ) then
+              Print( "#I SanityCheckPos: Braid relation failed at position ", i, "\n" );
+              return false;
+          fi;
+          for j in [ i+2 .. input.n-1 ] do
+              if not IsOne( - ( input.T[i]*input.T[j] )^2 ) then
+                  Print( "#I SanityCheckPos: Commutator relation failed for ( ", i, ", ", j ," )\n" );
+                  return false;
+              fi;
+          od;
+      od;
+
+      if IsBound( input.Sym ) then
+        if not input.Sym[1] = Product( Reversed( input.T ) ) then
+          Print( "SanityCheckPos: Wrong Sym[1]\n" );
+          return false;
+        fi;
+
+        if not input.Sym[2] = input.T[1] then
+          Print( "SanityCheckPos: Wrong Sym[2]\n" );
+          return false;
+        fi;
+      fi;
+
+      if IsBound( input.Alt ) then
+        if not input.Alt[1] = Product( Reversed( input.T{[1..2*Int((input.n-1)/2)]} ) ) then
+          Print( "SanityCheckPos: Wrong Alt[1]\n" );
+          return false;
+        fi;
+
+        if not input.Alt[2] = input.T[input.n-1]*input.T[input.n-2] then
+          Print( "SanityCheckPos: Wrong Alt[2]\n" );
+          return false;
+        fi;
+      fi;
+
+      return true;
+  end;
+
+  ##  SanityCheckNeg
+  ##  IN  A record containing the matrices in T, the degree of the symmetric
+  ##      group n, and the characteristic f the field p
+  ##  OUT true if the matrices in T are the right size, over the right field, and
+  ##      satisfy the presentation for 2S-(n) given above.  Also checks the
+  ##      components Sym and Alt if present.
+  SanityCheckNeg := function( S, p )
+      local d, deg, i, j;
+
+      d:= Length( S );
+      deg:= Length( S[1] );
+      if SpinDimSym( d+1, p ) <> deg then
+          Print( "#I SanityCheckNeg: wrong degree!\n" );
+          return false;
+      fi;
+      #Print( "#I SanityCheckNeg: degree: ", deg , "\n" );
+      for i in [ 1 .. d ] do
+          if not IsOne( S[i]^2 ) then
+              Print( "#I SanityCheckNeg: order failed at position ", i, "\n" );
+              return false;
+          fi;
+      od;
+      for i in [ 1 .. d-1 ] do
+          if not IsOne( ( S[i]*S[i+1] )^3 ) then
+              Print( "#I SanityCheckNeg: braid relation failed at position ", i, "\n" );
+              return false;
+          fi;
+          for j in [ i+2 .. d ] do
+              if S[i]*S[j] <> -S[j]*S[i] then
+                  Print( "#I SanityCheckNeg: commuting relation failed for ( ", i, ", ", j ," )\n" );
+                  return false;
+              fi;
+          od;
+      od;
+      #Print( "#I SanityCheckNeg: all relations satisfied\n" );
+      return true;
+  end;
+
+  ##  bmat -- blck matrix maker
+  ##  IN  the blocks a,b,c,d of the matrix [[a,b],[c,d]]
+  ##  OUT a normal matrix with the same entries as the corresponding block
+  ##      matrix.
+  bmat := function(a,b,c,d)
+    local mat;
+    mat := DirectSumMat( a, d );
+    if b <> 0 then mat{[1..Length(a)]}{[1+Length(a[1])..Length(mat[1])]} := b; fi;
+    if c <> 0 then mat{[1+Length(a)..Length(mat)]}{[1..Length(a[1])]} := c; fi;
+    return mat;
+  end;
+
+  ##  construction S of Definition 4 / Lemma 5
+  ##  IN  an input record with n,p,T and optionally Sym and/or Alt,
+  ##      where n,p satisfy the hypothesis of Def 4 / Lemma 5
+  ##  OUT the same, but for 2S(n+1)
+  S:= function( old )
+    local new, I, z, i;
+
+    #Print("S from ",old.n," to ",new.n,"\n");
+    new := rec( n := old.n+1, p:=old.p, T:=[] );
+
+    for i in [ 1 .. new.n-3 ] do
+      new.T[i] := DirectSumMat( old.T[i], -old.T[i] );
+    od;
+    I := old.T[1]^0;
+    z := 0*old.T[1];
+    new.T[new.n-2] := bmat( old.T[new.n-2], -I, 0, -old.T[new.n-2] );
+    new.T[new.n-1] := bmat( z, I, -I, z );
+
+    if IsBound( old.Sym ) then
+      new.Sym := [];
+      if new.n < 5
+      then new.Sym[1] := Product(Reversed(new.T));
+      else new.Sym[1] := bmat( 0*old.Sym[1], (-1)^new.n*old.Sym[1], -old.Sym[1], (-1)^new.n*old.T[new.n-2]*old.Sym[1] );
+      fi;
+      new.Sym[2] := new.T[1];
+    fi;
+
+    if IsBound( old.Alt ) then
+      new.Alt := [];
+      if IsOddInt(new.n)
+      then new.Alt[1] := new.Sym[1];
+      else new.Alt[1] := -new.T[new.n-1]*new.Sym[1];
+      fi;
+      new.Alt[2] := new.T[new.n-1]*new.T[new.n-2];
+    fi;
+
+    Assert( 1, SanityCheckPos( new ) );
+    return new;
+  end;
+
+  ##  construction S1 of Lemma 7
+  ##  IN  an input record with n,p,T and optionally Sym and/or Alt,
+  ##      where n,p satisfy the hypothesis of Lemma 7
+  ##  OUT the same, but for 2S(n+1)
+  S1:= function( old )
+    local new, J;
+
+    #Print("S1 from ",old.n," to ",new.n,"\n");
+    new := rec( n := old.n + 1, p := old.p, T := ShallowCopy( old.T ) );
+
+    J := Sum( [1..new.n-2], k -> k*old.T[k] );
+    if new.p = 2 and 2 = new.n mod 4 then
+      new.T[new.n-1] := J + J^0;
     else
-        return 2^((n-1)/2);
-    fi;
-end;
-
-##  SanityCheckPos
-##  IN  A record containing the matrices in T, the degree of the symmetric
-##      group n, and the characteristic f the field p
-##  OUT true if the matrices in T are the right size, over the right field, and
-##      satisfy the presentation for 2S(n) given above.  Also checks the
-##      components Sym and Alt if present.
-SanityCheckPos := function( input )
-  local i, j;
-
-    if input.n <> Length( input.T ) + 1 then
-      Print("#I SanityCheckPos: Wrong degree: ",input.n," vs. ",Length(input.T)+1,"\n");
-      return false;
+      new.T[new.n-1] := J;
     fi;
 
-    if input.p <> Characteristic( input.T[1] ) then
-      Print("#I SanityCheckPos: Wrong characteristic: ",input.p," vs. ",Characteristic(input.T[1]),"\n");
-      return false;
+    if IsBound( old.Sym ) then
+      new.Sym := [];
+      new.Sym[1] := new.T[new.n-1]*old.Sym[1];
+      new.Sym[2] := old.Sym[2];
     fi;
 
-    if SpinDimSym( input.n, input.p ) <> Length( input.T[1] ) then
-        Print( "#I SanityCheckPos: Wrong degree: ",SpinDimSym( input.n, input.p )," vs. ",Length( input.T[1] ),"\n" );
-        return false;
-    fi;
-
-    if not ForAll( input.T, mat -> Size(mat) = Size(mat[1]) and Size(mat)=Size(input.T[1])) then
-      Print("#I SanityCheckPos: Matrices not all same size\n");
-      return false;
-    fi;
-
-    for i in [ 1 .. input.n-1 ] do
-        if not IsOne(-input.T[i]^2) then
-            Print( "#I SanityCheckPos: Wrong order for T[",i,"]\n");
-            return false;
-        fi;
-    od;
-    for i in [ 1 .. input.n-2 ] do
-        if not IsOne( -( input.T[i]*input.T[i+1] )^3 ) then
-            Print( "#I SanityCheckPos: Braid relation failed at position ", i, "\n" );
-            return false;
-        fi;
-        for j in [ i+2 .. input.n-1 ] do
-            if not IsOne( - ( input.T[i]*input.T[j] )^2 ) then
-                Print( "#I SanityCheckPos: Commutator relation failed for ( ", i, ", ", j ," )\n" );
-                return false;
-            fi;
-        od;
-    od;
-
-    if IsBound( input.Sym ) then
-      if not input.Sym[1] = Product( Reversed( input.T ) ) then
-        Print( "SanityCheckPos: Wrong Sym[1]\n" );
-        return false;
+    if IsBound( old.Alt ) then
+      new.Alt := [];
+      if IsOddInt(new.n)
+      then new.Alt[1] := new.Sym[1];
+      else new.Alt[1] := old.Alt[1];
       fi;
-
-      if not input.Sym[2] = input.T[1] then
-        Print( "SanityCheckPos: Wrong Sym[2]\n" );
-        return false;
-      fi;
+      new.Alt[2] := new.T[new.n-1]*new.T[new.n-2];
     fi;
 
-    if IsBound( input.Alt ) then
-      if not input.Alt[1] = Product( Reversed( input.T{[1..2*Int((input.n-1)/2)]} ) ) then
-        Print( "SanityCheckPos: Wrong Alt[1]\n" );
-        return false;
-      fi;
+    Assert( 1, SanityCheckPos( new ) );
+    return new;
+  end;
 
-      if not input.Alt[2] = input.T[input.n-1]*input.T[input.n-2] then
-        Print( "SanityCheckPos: Wrong Alt[2]\n" );
-        return false;
+  ## return alpha ( = alpha^+ ) and beta as in Lemma 10
+  ## here n(n-1)(n-2) must not be divisible by p
+  coeffS2:= function( n, p )
+      local one, a, b, c, alpha;
+      if p = 0 then
+          c:= n-2;
+          alpha:= (n-1)^-1*( 1 + Sqrt( -n*c^-1 ) );
+      else
+          one:= Z( p )^0;
+          c:= (n-2) mod p;
+          a:= -n*c^-1 mod p;
+          a:= LogFFE( a*one, Z(p^2) ) / 2;
+          b:= (n-1)^-1 mod p;
+          alpha:= b*(one+Z(p^2)^a);
       fi;
+      return rec( alpha:= alpha, beta:= alpha*c );
+  end;
+
+  ##  construction S2 of Lemma 10
+  ##  IN  an input record with n,p,T and optionally Sym and/or Alt,
+  ##      where n,p satisfy the hypothesis of Lemma 10
+  ##  OUT the same, but for 2S(n+2)
+  S2:= function( old )
+    local mid, new, coeffs, a, b, J, I;
+
+    #Print("S2 from ",old.n," to ",old.n+2," via S\n");
+
+    mid := S( old );
+
+    new := rec( n := mid.n + 1, p := mid.p, T := ShallowCopy( mid.T ) );
+
+    coeffs:= coeffS2( new.n, new.p );
+    a := coeffs.alpha;
+    b := coeffs.beta;
+    J := Sum( [ 1 .. new.n-3 ], k-> k*old.T[k] );
+    I := old.T[1]^0;
+    new.T[new.n-1] := bmat( -a*J, (b-1)*I, b*I, a*J );
+
+    if IsBound( old.Sym ) then
+      new.Sym := [];
+      new.Sym[1] := new.T[new.n-1]*mid.Sym[1];
+      new.Sym[2] := mid.Sym[2];
     fi;
 
-    return true;
-end;
-
-##  SanityCheckNeg
-##  IN  A record containing the matrices in T, the degree of the symmetric
-##      group n, and the characteristic f the field p
-##  OUT true if the matrices in T are the right size, over the right field, and
-##      satisfy the presentation for 2S-(n) given above.  Also checks the
-##      components Sym and Alt if present.
-SanityCheckNeg := function( S, p )
-    local d, deg, i, j;
-
-    d:= Length( S );
-    deg:= Length( S[1] );
-    if SpinDimSym( d+1, p ) <> deg then
-        Print( "#I SanityCheckNeg: wrong degree!\n" );
-        return false;
+    if IsBound( old.Alt ) then
+      new.Alt := [];
+      if IsOddInt( new.n )
+      then new.Alt[1] := new.Sym[1];
+      else new.Alt[1] := mid.Sym[1];
+      fi;
+      new.Alt[2] := new.T[new.n-1]*new.T[new.n-2];
     fi;
-    #Print( "#I SanityCheckNeg: degree: ", deg , "\n" );
-    for i in [ 1 .. d ] do
-        if not IsOne( S[i]^2 ) then
-            Print( "#I SanityCheckNeg: order failed at position ", i, "\n" );
-            return false;
+
+    Assert( 1, SanityCheckPos( new ) );
+    return  new;
+  end;
+
+  ##  coeffS3 - a needed coefficient
+  ##  IN  A prime p, or p = 0
+  ##  OUT Sqrt(-1) in GF(p^2) or CF(4)
+  coeffS3:= function( p )
+    if 0 = p then return E(4);
+    elif 2 = p then return Z(2);
+    elif 1 = p mod 4 then return Z(p)^((p-1)/4);
+    else return Z(p^2)^((p^2-1)/4);
+    fi;
+  end;
+
+  ##  construction S3 of Lemma 11
+  ##  IN  an input record with n,p,T and optionally Sym and/or Alt,
+  ##      where n,p satisfy the hypothesis of Lemma 11
+  ##  OUT the same, but for 2S(n+4)
+  S3:= function( old )
+    local mid, new, a, J0, I, J;
+    #Print("S3 from ",old.n," to ",old.n+4," via S,S1,S\n");
+
+    mid := S( S1( S( old ) ) ); # now at n-1
+
+    new := rec( n := mid.n + 1, p := mid.p, T := ShallowCopy( mid.T ) );
+
+    a := coeffS3( old.p );
+    J0:= Sum( [1..new.n-5], k-> k*old.T[k] );
+    I := old.T[1]^0;
+    J := a*bmat(J0, 2*I, 2*I, -J0);
+    new.T[new.n-1] := bmat( J, -J^0, 0, -J );
+
+    if IsBound( old.Sym ) then
+      new.Sym := [];
+      new.Sym[1] := new.T[new.n-1]*mid.Sym[1];
+      new.Sym[2] := mid.Sym[2];
+    fi;
+
+    if IsBound( old.Alt ) then
+      new.Alt := [];
+      if IsOddInt( new.n )
+      then new.Alt[1] := new.Sym[1];
+      else new.Alt[1] := mid.Alt[1];
+      fi;
+      new.Alt[2] := new.T[new.n-1]*new.T[new.n-2];
+    fi;
+
+    Assert( 1, SanityCheckPos( new ) );
+    return new;
+  end;
+
+  ##  spinsteps
+  ##  IN  the degree n and characteristic p > 2
+  ##  OUT a list which describes the steps of construction
+  spinsteps:= function( n, p )
+    local d, k, kmodp, parity;
+    d:= [];
+    k:= n;
+    while k > 4 do
+      kmodp:= k mod p;
+      parity:= k mod 2;
+      if kmodp > 2 then
+        if parity = 1 then
+          Add( d, 0 );
+          k:= k-1;
+        else
+          Add( d, 2 );
+          k:= k-2;
         fi;
-    od;
-    for i in [ 1 .. d-1 ] do
-        if not IsOne( ( S[i]*S[i+1] )^3 ) then
-            Print( "#I SanityCheckNeg: braid relation failed at position ", i, "\n" );
-            return false;
-        fi;
-        for j in [ i+2 .. d ] do
-            if S[i]*S[j] <> -S[j]*S[i] then
-                Print( "#I SanityCheckNeg: commuting relation failed for ( ", i, ", ", j ," )\n" );
-                return false;
-            fi;
-        od;
-    od;
-    #Print( "#I SanityCheckNeg: all relations satisfied\n" );
-    return true;
-end;
-
-##  bmat -- blck matrix maker
-##  IN  the blocks a,b,c,d of the matrix [[a,b],[c,d]]
-##  OUT a normal matrix with the same entries as the corresponding block
-##      matrix.
-bmat := function(a,b,c,d)
-  local mat;
-  mat := DirectSumMat( a, d );
-  if b <> 0 then mat{[1..Length(a)]}{[1+Length(a[1])..Length(mat[1])]} := b; fi;
-  if c <> 0 then mat{[1+Length(a)..Length(mat)]}{[1..Length(a[1])]} := c; fi;
-  return mat;
-end;
-
-##  construction S of Definition 4 / Lemma 5
-##  IN  an input record with n,p,T and optionally Sym and/or Alt,
-##      where n,p satisfy the hypothesis of Def 4 / Lemma 5
-##  OUT the same, but for 2S(n+1)
-S:= function( old )
-  local new, I, z, i;
-
-  #Print("S from ",old.n," to ",new.n,"\n");
-  new := rec( n := old.n+1, p:=old.p, T:=[] );
-
-  for i in [ 1 .. new.n-3 ] do
-    new.T[i] := DirectSumMat( old.T[i], -old.T[i] );
-  od;
-  I := old.T[1]^0;
-  z := 0*old.T[1];
-  new.T[new.n-2] := bmat( old.T[new.n-2], -I, 0, -old.T[new.n-2] );
-  new.T[new.n-1] := bmat( z, I, -I, z );
-
-  if IsBound( old.Sym ) then
-    new.Sym := [];
-    if new.n < 5
-    then new.Sym[1] := Product(Reversed(new.T));
-    else new.Sym[1] := bmat( 0*old.Sym[1], (-1)^new.n*old.Sym[1], -old.Sym[1], (-1)^new.n*old.T[new.n-2]*old.Sym[1] );
-    fi;
-    new.Sym[2] := new.T[1];
-  fi;
-
-  if IsBound( old.Alt ) then
-    new.Alt := [];
-    if IsOddInt(new.n)
-    then new.Alt[1] := new.Sym[1];
-    else new.Alt[1] := -new.T[new.n-1]*new.Sym[1];
-    fi;
-    new.Alt[2] := new.T[new.n-1]*new.T[new.n-2];
-  fi;
-
-  Assert( 1, SanityCheckPos( new ) );
-  return new;
-end;
-
-##  construction S1 of Lemma 7
-##  IN  an input record with n,p,T and optionally Sym and/or Alt,
-##      where n,p satisfy the hypothesis of Lemma 7
-##  OUT the same, but for 2S(n+1)
-S1:= function( old )
-  local new, J;
-
-  #Print("S1 from ",old.n," to ",new.n,"\n");
-  new := rec( n := old.n + 1, p := old.p, T := ShallowCopy( old.T ) );
-
-  J := Sum( [1..new.n-2], k -> k*old.T[k] );
-  if new.p = 2 and 2 = new.n mod 4 then
-    new.T[new.n-1] := J + J^0;
-  else
-    new.T[new.n-1] := J;
-  fi;
-
-  if IsBound( old.Sym ) then
-    new.Sym := [];
-    new.Sym[1] := new.T[new.n-1]*old.Sym[1];
-    new.Sym[2] := old.Sym[2];
-  fi;
-
-  if IsBound( old.Alt ) then
-    new.Alt := [];
-    if IsOddInt(new.n)
-    then new.Alt[1] := new.Sym[1];
-    else new.Alt[1] := old.Alt[1];
-    fi;
-    new.Alt[2] := new.T[new.n-1]*new.T[new.n-2];
-  fi;
-
-  Assert( 1, SanityCheckPos( new ) );
-  return new;
-end;
-
-## return alpha ( = alpha^+ ) and beta as in Lemma 10
-## here n(n-1)(n-2) must not be divisible by p
-coeffS2:= function( n, p )
-    local one, a, b, c, alpha;
-    if p = 0 then
-        c:= n-2;
-        alpha:= (n-1)^-1*( 1 + Sqrt( -n*c^-1 ) );
-    else
-        one:= Z( p )^0;
-        c:= (n-2) mod p;
-        a:= -n*c^-1 mod p;
-        a:= LogFFE( a*one, Z(p^2) ) / 2;
-        b:= (n-1)^-1 mod p;
-        alpha:= b*(one+Z(p^2)^a);
-    fi;
-    return rec( alpha:= alpha, beta:= alpha*c );
-end;
-
-##  construction S2 of Lemma 10
-##  IN  an input record with n,p,T and optionally Sym and/or Alt,
-##      where n,p satisfy the hypothesis of Lemma 10
-##  OUT the same, but for 2S(n+2)
-S2:= function( old )
-  local mid, new, coeffs, a, b, J, I;
-
-  #Print("S2 from ",old.n," to ",old.n+2," via S\n");
-
-  mid := S( old );
-
-  new := rec( n := mid.n + 1, p := mid.p, T := ShallowCopy( mid.T ) );
-
-  coeffs:= coeffS2( new.n, new.p );
-  a := coeffs.alpha;
-  b := coeffs.beta;
-  J := Sum( [ 1 .. new.n-3 ], k-> k*old.T[k] );
-  I := old.T[1]^0;
-  new.T[new.n-1] := bmat( -a*J, (b-1)*I, b*I, a*J );
-
-  if IsBound( old.Sym ) then
-    new.Sym := [];
-    new.Sym[1] := new.T[new.n-1]*mid.Sym[1];
-    new.Sym[2] := mid.Sym[2];
-  fi;
-
-  if IsBound( old.Alt ) then
-    new.Alt := [];
-    if IsOddInt( new.n )
-    then new.Alt[1] := new.Sym[1];
-    else new.Alt[1] := mid.Sym[1];
-    fi;
-    new.Alt[2] := new.T[new.n-1]*new.T[new.n-2];
-  fi;
-
-  Assert( 1, SanityCheckPos( new ) );
-  return  new;
-end;
-
-##  coeffS3 - a needed coefficient
-##  IN  A prime p, or p = 0
-##  OUT Sqrt(-1) in GF(p^2) or CF(4)
-coeffS3:= function( p )
-  if 0 = p then return E(4);
-  elif 2 = p then return Z(2);
-  elif 1 = p mod 4 then return Z(p)^((p-1)/4);
-  else return Z(p^2)^((p^2-1)/4);
-  fi;
-end;
-
-##  construction S3 of Lemma 11
-##  IN  an input record with n,p,T and optionally Sym and/or Alt,
-##      where n,p satisfy the hypothesis of Lemma 11
-##  OUT the same, but for 2S(n+4)
-S3:= function( old )
-  local mid, new, a, J0, I, J;
-  #Print("S3 from ",old.n," to ",old.n+4," via S,S1,S\n");
-
-  mid := S( S1( S( old ) ) ); # now at n-1
-
-  new := rec( n := mid.n + 1, p := mid.p, T := ShallowCopy( mid.T ) );
-
-  a := coeffS3( old.p );
-  J0:= Sum( [1..new.n-5], k-> k*old.T[k] );
-  I := old.T[1]^0;
-  J := a*bmat(J0, 2*I, 2*I, -J0);
-  new.T[new.n-1] := bmat( J, -J^0, 0, -J );
-
-  if IsBound( old.Sym ) then
-    new.Sym := [];
-    new.Sym[1] := new.T[new.n-1]*mid.Sym[1];
-    new.Sym[2] := mid.Sym[2];
-  fi;
-
-  if IsBound( old.Alt ) then
-    new.Alt := [];
-    if IsOddInt( new.n )
-    then new.Alt[1] := new.Sym[1];
-    else new.Alt[1] := mid.Alt[1];
-    fi;
-    new.Alt[2] := new.T[new.n-1]*new.T[new.n-2];
-  fi;
-
-  Assert( 1, SanityCheckPos( new ) );
-  return new;
-end;
-
-##  spinsteps
-##  IN  the degree n and characteristic p > 2
-##  OUT a list which describes the steps of construction
-spinsteps:= function( n, p )
-  local d, k, kmodp, parity;
-  d:= [];
-  k:= n;
-  while k > 4 do
-    kmodp:= k mod p;
-    parity:= k mod 2;
-    if kmodp > 2 then
-      if parity = 1 then
+      elif kmodp = 0 then
+        Add( d, 1 );
+        k:= k-1;
+      elif kmodp = 1 then
         Add( d, 0 );
         k:= k-1;
       else
-        Add( d, 2 );
-        k:= k-2;
+        if parity = 1 then
+          Add( d, 0 );
+          k:= k-1;
+        else
+          Add( d, 3 );
+          k:= k-4;
+        fi;
       fi;
-    elif kmodp = 0 then
-      Add( d, 1 );
-      k:= k-1;
-    elif kmodp = 1 then
-      Add( d, 0 );
-      k:= k-1;
-    else
-      if parity = 1 then
-        Add( d, 0 );
-        k:= k-1;
-      else
-        Add( d, 3 );
-        k:= k-4;
-      fi;
-    fi;
-  od;
-  return Reversed( d );
-end;
+    od;
+    return Reversed( d );
+  end;
 
-##  construction of a basic spin rep. of 2S+(n) in characteristic p
-BasicSpinRepSymPos := function( n, p )
+  ##  construction of a basic spin rep. of 2S+(n) in characteristic p
+  BasicSpinRepSymPos := function( n, p )
     local z, M, k, i, steps;
     if not IsPosInt(n) or not IsInt(p) or n < 4 or not ( p = 0 or IsPrime( p ) ) then
         return fail;
@@ -487,24 +486,27 @@ BasicSpinRepSymPos := function( n, p )
     fi;
     Assert( 1, SanityCheckPos( M ) );
     return M;
-end;
+  end;
 
-BasicSpinRepSymNeg := function( n, p )
-  local T, S;
-  T := BasicSpinRepSymPos( n, p );
-  S := rec( n := T.n, p := T.p, T := coeffS3( p ) * T.T );
-  if IsBound( T.Sym ) then S.Sym := [ coeffS3( p )^(n-1) * T.Sym[1], S.T[1] ]; fi;
-  if IsBound( T.Alt ) then S.Alt := [ (-1)^Int((n-1)/2)*T.Alt[1], -T.Alt[2] ]; fi;
-  Assert( 1, SanityCheckNeg( S.T, p ) );
-  return S;
-end;
+  BasicSpinRepSymNeg := function( n, p )
+    local T, S;
+    T := BasicSpinRepSymPos( n, p );
+    S := rec( n := T.n, p := T.p, T := coeffS3( p ) * T.T );
+    if IsBound( T.Sym ) then S.Sym := [ coeffS3( p )^(n-1) * T.Sym[1], S.T[1] ]; fi;
+    if IsBound( T.Alt ) then S.Alt := [ (-1)^Int((n-1)/2)*T.Alt[1], -T.Alt[2] ]; fi;
+    Assert( 1, SanityCheckNeg( S.T, p ) );
+    return S;
+  end;
 
-BasicSpinRepSym := function( n, p, sign )
-  if sign in [ 1, '+', "+", 4 ] then return BasicSpinRepSymPos(n,p);
-  elif sign in [ -1, '-', "-", 2 ] then return BasicSpinRepSymNeg(n,p);
-  else Error("<sign> should be +1 or -1");
-  fi;
-end;
+  return function( n, p, sign )
+    if sign in [ 1, '+', "+", 4 ] then return BasicSpinRepSymPos(n,p);
+    elif sign in [ -1, '-', "-", 2 ] then return BasicSpinRepSymNeg(n,p);
+    else Error("<sign> should be +1 or -1");
+    fi;
+  end;
+
+end, [] ) );
+
 
 ##########################################################################
 ##
@@ -593,8 +595,6 @@ function( n, p )
   fi;
 
   return grp;
-end );
-
 end );
 
 #############################################################################
