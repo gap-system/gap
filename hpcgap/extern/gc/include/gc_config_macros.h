@@ -4,6 +4,7 @@
  * Copyright (c) 1998 by Fergus Henderson.  All rights reserved.
  * Copyright (c) 2000-2009 by Hewlett-Packard Development Company.
  * All rights reserved.
+ * Copyright (c) 2008-2020 Ivan Maidanski
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -90,8 +91,8 @@
 #   define GC_HPUX_THREADS
 # elif defined(__HAIKU__)
 #   define GC_HAIKU_THREADS
-# elif defined(__DragonFly__) || defined(__FreeBSD_kernel__) \
-       || (defined(__FreeBSD__) && !defined(SN_TARGET_ORBIS))
+# elif (defined(__DragonFly__) || defined(__FreeBSD_kernel__) \
+        || defined(__FreeBSD__)) && !defined(GC_NO_FREEBSD)
 #   define GC_FREEBSD_THREADS
 # elif defined(__NetBSD__)
 #   define GC_NETBSD_THREADS
@@ -285,6 +286,14 @@
 # endif
 #endif
 
+#ifndef GC_ATTR_CONST
+# if GC_GNUC_PREREQ(4, 0)
+#   define GC_ATTR_CONST __attribute__((__const__))
+# else
+#   define GC_ATTR_CONST /* empty */
+# endif
+#endif
+
 #ifndef GC_ATTR_DEPRECATED
 # ifdef GC_BUILD
 #   undef GC_ATTR_DEPRECATED
@@ -319,6 +328,7 @@
 #endif /* GLIBC */
 
 #if defined(_MSC_VER) && _MSC_VER >= 1200 /* version 12.0+ (MSVC 6.0+) */ \
+        && !defined(_M_ARM) && !defined(_M_ARM64) \
         && !defined(_AMD64_) && !defined(_M_X64) && !defined(_WIN32_WCE) \
         && !defined(GC_HAVE_NO_BUILTIN_BACKTRACE) \
         && !defined(GC_HAVE_BUILTIN_BACKTRACE)
@@ -351,10 +361,13 @@
     /* how to generate call stacks.                                     */
 #   define GC_RETURN_ADDR (GC_word)__builtin_return_address(0)
 #   if GC_GNUC_PREREQ(4, 0) && (defined(__i386__) || defined(__amd64__) \
-                        || defined(__x86_64__) /* and probably others... */)
+                        || defined(__x86_64__) /* and probably others... */) \
+       && !defined(GC_NO_RETURN_ADDR_PARENT)
 #     define GC_HAVE_RETURN_ADDR_PARENT
 #     define GC_RETURN_ADDR_PARENT \
         (GC_word)__builtin_extract_return_addr(__builtin_return_address(1))
+            /* Note: a compiler might complain that calling                 */
+            /* __builtin_return_address with a nonzero argument is unsafe.  */
 #   endif
 # else
     /* Just pass 0 for gcc compatibility.       */
@@ -412,5 +425,34 @@
 # endif
 
 #endif /* GC_PTHREADS */
+
+#ifdef __cplusplus
+
+#ifndef GC_ATTR_EXPLICIT
+# if __cplusplus >= 201103L && !defined(__clang__) || _MSVC_LANG >= 201103L \
+     || defined(CPPCHECK)
+#   define GC_ATTR_EXPLICIT explicit
+# else
+#   define GC_ATTR_EXPLICIT /* empty */
+# endif
+#endif
+
+#ifndef GC_NOEXCEPT
+# if defined(__DMC__) || (defined(__BORLANDC__) \
+        && (defined(_RWSTD_NO_EXCEPTIONS) || defined(_RWSTD_NO_EX_SPEC))) \
+     || (defined(_MSC_VER) && defined(_HAS_EXCEPTIONS) && !_HAS_EXCEPTIONS) \
+     || (defined(__WATCOMC__) && !defined(_CPPUNWIND))
+#   define GC_NOEXCEPT /* empty */
+#   ifndef GC_NEW_ABORTS_ON_OOM
+#     define GC_NEW_ABORTS_ON_OOM
+#   endif
+# elif __cplusplus >= 201103L || _MSVC_LANG >= 201103L
+#   define GC_NOEXCEPT noexcept
+# else
+#   define GC_NOEXCEPT throw()
+# endif
+#endif
+
+#endif /* __cplusplus */
 
 #endif

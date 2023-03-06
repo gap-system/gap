@@ -20,13 +20,17 @@
   THE SOFTWARE.
 */
 
-#if !defined(_M_AMD64) && defined(_MSC_VER)
+#if !defined(_M_ARM) && !defined(_M_ARM64) \
+    && !defined(_M_X64) && defined(_MSC_VER)
 
-/* X86_64 is currently missing some machine-dependent code below.  */
+/* TODO: arm[64], x86_64 currently miss some machine-dependent code below.  */
+/* See also GC_HAVE_BUILTIN_BACKTRACE in gc_config_macros.h.                */
 
 #define GC_BUILD
 #include "private/msvc_dbg.h"
 #include "gc.h"
+
+#include <stdio.h>
 
 #ifndef WIN32_LEAN_AND_MEAN
 # define WIN32_LEAN_AND_MEAN 1
@@ -40,6 +44,10 @@
 
 #pragma comment(lib, "dbghelp.lib")
 #pragma optimize("gy", off)
+
+/* Disable a warning that /GS can not protect parameters and local      */
+/* variables from local buffer overrun because optimizations are off.   */
+#pragma warning(disable:4748)
 
 typedef GC_word word;
 #define GC_ULONG_PTR word
@@ -75,7 +83,7 @@ static ULONG_ADDR CALLBACK GetModuleBase(HANDLE hProcess, ULONG_ADDR dwAddress)
 {
   MEMORY_BASIC_INFORMATION memoryInfo;
   ULONG_ADDR dwAddrBase = SymGetModuleBase(hProcess, dwAddress);
-  if (dwAddrBase) {
+  if (dwAddrBase != 0) {
     return dwAddrBase;
   }
   if (VirtualQueryEx(hProcess, (void*)(GC_ULONG_PTR)dwAddress, &memoryInfo,
@@ -90,12 +98,11 @@ static ULONG_ADDR CALLBACK GetModuleBase(HANDLE hProcess, ULONG_ADDR dwAddress)
     /* article Q189780.                                                 */
     GetCurrentDirectoryA(sizeof(curDir), curDir);
     GetModuleFileNameA(NULL, exePath, sizeof(exePath));
-#if defined(_MSC_VER) && _MSC_VER == 1200
-    /* use strcat for VC6 */
-    strcat(exePath, "\\..");
-#else
+#if _MSC_VER > 1200
     strcat_s(exePath, sizeof(exePath), "\\..");
-#endif /* _MSC_VER >= 1200 */
+#else /* VC6 or earlier */
+    strcat(exePath, "\\..");
+#endif
     SetCurrentDirectoryA(exePath);
 #ifdef _DEBUG
     GetCurrentDirectoryA(sizeof(exePath), exePath);
@@ -308,11 +315,13 @@ size_t GetFileLineFromStack(size_t skip, char* fileName, size_t size,
   return 0;
 }
 
+#define GC_SNPRINTF _snprintf
+
 size_t GetDescriptionFromAddress(void* address, const char* format,
                                  char* buffer, size_t size)
 {
-  char*const begin = buffer;
-  char*const end = buffer + size;
+  char* const begin = buffer;
+  char* const end = buffer + size;
   size_t line_number = 0;
 
   (void)format;
@@ -323,9 +332,10 @@ size_t GetDescriptionFromAddress(void* address, const char* format,
   size = (GC_ULONG_PTR)end < (GC_ULONG_PTR)buffer ? 0 : end - buffer;
 
   if (line_number) {
-    char str[128];
+    char str[20];
 
-    wsprintf(str, "(%d) : ", (int)line_number);
+    (void)GC_SNPRINTF(str, sizeof(str), "(%d) : ", (int)line_number);
+    str[sizeof(str) - 1] = '\0';
     if (size) {
       strncpy(buffer, str, size)[size - 1] = 0;
     }
@@ -393,4 +403,4 @@ char** backtrace_symbols(void*const* addresses, int count)
   extern int GC_quiet;
         /* ANSI C does not allow translation units to be empty. */
 
-#endif /* _M_AMD64 */
+#endif

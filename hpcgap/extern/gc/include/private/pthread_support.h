@@ -66,12 +66,7 @@ typedef struct GC_Thread_Rep {
     /* Extra bookkeeping information the stopping code uses */
     struct thread_stop_info stop_info;
 
-#   if defined(GC_ENABLE_SUSPEND_THREAD) && !defined(GC_DARWIN_THREADS) \
-        && !defined(GC_OPENBSD_UTHREADS) && !defined(NACL)
-      volatile AO_t suspended_ext;  /* Thread was suspended externally. */
-#   endif
-
-    unsigned char flags;
+    unsigned char flags;        /* Protected by GC lock.                */
 #       define FINISHED 1       /* Thread has exited.                   */
 #       define DETACHED 2       /* Thread is treated as detached.       */
                                 /* Thread may really be detached, or    */
@@ -93,12 +88,14 @@ typedef struct GC_Thread_Rep {
                                 /* not need to be sent a signal to stop */
                                 /* it.                                  */
 
-    unsigned short finalizer_skipped;
-    unsigned char finalizer_nested;
+#   ifndef GC_NO_FINALIZATION
+      unsigned short finalizer_skipped;
+      unsigned char finalizer_nested;
                                 /* Used by GC_check_finalizer_nested()  */
                                 /* to minimize the level of recursion   */
                                 /* when a client finalizer allocates    */
                                 /* memory (initially both are 0).       */
+#   endif
 
     ptr_t stack_end;            /* Cold end of the stack (except for    */
                                 /* main thread).                        */
@@ -113,8 +110,8 @@ typedef struct GC_Thread_Rep {
                                 /* valid only if the thread is blocked; */
                                 /* non-NULL value means already set.    */
 #   endif
-#   ifdef IA64
-        ptr_t backing_store_end;
+#   if defined(E2K) || defined(IA64)
+        ptr_t backing_store_end; /* Note: may reference data in GC heap */
         ptr_t backing_store_ptr;
 #   endif
 
@@ -166,6 +163,15 @@ GC_INNER GC_thread GC_lookup_thread(pthread_t id);
 
 #ifdef GC_EXPLICIT_SIGNALS_UNBLOCK
   GC_INNER void GC_unblock_gc_signals(void);
+#endif
+
+#if defined(GC_ENABLE_SUSPEND_THREAD) && !defined(GC_DARWIN_THREADS) \
+    && !defined(GC_OPENBSD_UTHREADS) && !defined(NACL) \
+    && !defined(PLATFORM_STOP_WORLD) && !defined(SN_TARGET_PSP2)
+  GC_INNER void GC_suspend_self_inner(GC_thread me, word suspend_cnt);
+
+  GC_INNER void GC_suspend_self_blocked(ptr_t thread_me, void *context);
+                                /* Wrapper over GC_suspend_self_inner.  */
 #endif
 
 #ifdef GC_PTHREAD_START_STANDALONE

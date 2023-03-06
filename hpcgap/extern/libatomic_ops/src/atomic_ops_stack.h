@@ -77,7 +77,6 @@
 /* The number of low order pointer bits we can use for a small  */
 /* version number.                                              */
 # if defined(__LP64__) || defined(_LP64) || defined(_WIN64)
-   /* WIN64 isn't really supported yet. */
 #  define AO_N_BITS 3
 # else
 #  define AO_N_BITS 2
@@ -97,6 +96,36 @@
 #  error AO_BL_SIZE too big
 #endif
 
+#ifndef AO_STACK_ATTR_ALLIGNED
+  /* Enforce proper alignment of AO_stack_t.AO_ptr to avoid the         */
+  /* structure value to cross the CPU cache line boundary.              */
+  /* A workaround for almost-lock-free push/pop test failures           */
+  /* on aarch64, at least.                                              */
+# if AO_GNUC_PREREQ(3, 1)
+#   define AO_STACK_LOG_BL_SZP1 \
+        (AO_BL_SIZE > 7 ? 4 : AO_BL_SIZE > 3 ? 3 : AO_BL_SIZE > 1 ? 2 : 1)
+#   define AO_STACK_ATTR_ALLIGNED \
+        __attribute__((__aligned__(sizeof(AO_t) << AO_STACK_LOG_BL_SZP1)))
+# elif defined(_MSC_VER) && _MSC_VER >= 1400 /* Visual Studio 2005+ */
+    /* MS compiler accepts only a literal number in align, not expression.  */
+    /* AO_STACK_ALLIGN_N is 1 << (AO_N_BITS + AO_STACK_LOG_BL_SZP1).        */
+#   if AO_N_BITS > 2 && AO_BL_SIZE > 7
+#     define AO_STACK_ALLIGN_N 128
+#   elif (AO_N_BITS > 2 && AO_BL_SIZE > 3) || AO_BL_SIZE > 7
+#     define AO_STACK_ALLIGN_N 64
+#   elif (AO_N_BITS > 2 && AO_BL_SIZE > 1) || AO_BL_SIZE > 3
+#     define AO_STACK_ALLIGN_N 32
+#   elif AO_N_BITS > 2 || AO_BL_SIZE > 1
+#     define AO_STACK_ALLIGN_N 16
+#   else
+#     define AO_STACK_ALLIGN_N 8
+#   endif
+#   define AO_STACK_ATTR_ALLIGNED __declspec(align(AO_STACK_ALLIGN_N))
+# else
+#   define AO_STACK_ATTR_ALLIGNED /* TODO: alignment is not enforced */
+# endif
+#endif /* !AO_STACK_ATTR_ALLIGNED */
+
 typedef struct AO__stack_aux {
   volatile AO_t AO_stack_bl[AO_BL_SIZE];
 } AO_stack_aux;
@@ -111,7 +140,7 @@ typedef struct AO__stack_aux {
 
 /* The following two routines should not normally be used directly.     */
 /* We make them visible here for the rare cases in which it makes sense */
-/* to share the an AO_stack_aux between stacks.                         */
+/* to share the AO_stack_aux between stacks.                            */
 void
 AO_stack_push_explicit_aux_release(volatile AO_t *list, AO_t *x,
                                   AO_stack_aux *);
@@ -122,7 +151,7 @@ AO_stack_pop_explicit_aux_acquire(volatile AO_t *list, AO_stack_aux *);
 /* And now AO_stack_t for the real interface:                           */
 
 typedef struct AO__stack {
-  volatile AO_t AO_ptr;
+  AO_STACK_ATTR_ALLIGNED volatile AO_t AO_ptr;
   AO_stack_aux AO_aux;
 } AO_stack_t;
 

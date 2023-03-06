@@ -16,10 +16,8 @@ pkginclude_HEADERS += \
         include/gc.h \
         include/gc_backptr.h \
         include/gc_config_macros.h \
-        include/gc_gcj.h \
         include/gc_inline.h \
         include/gc_mark.h \
-        include/gc_pthread_redirects.h \
         include/gc_tiny_fl.h \
         include/gc_typed.h \
         include/gc_version.h \
@@ -29,18 +27,16 @@ pkginclude_HEADERS += \
 # headers which are not installed
 #
 dist_noinst_HEADERS += \
-        include/gc_alloc_ptrs.h \
-        include/new_gc_alloc.h \
         include/private/darwin_semaphore.h \
         include/private/darwin_stop_world.h \
         include/private/dbg_mlc.h \
+        include/private/gc_alloc_ptrs.h \
         include/private/gc_atomic_ops.h \
         include/private/gc_hdrs.h \
         include/private/gc_locks.h \
         include/private/gc_pmark.h \
         include/private/gc_priv.h \
         include/private/gcconfig.h \
-        include/private/msvc_dbg.h \
         include/private/pthread_stop_world.h \
         include/private/pthread_support.h \
         include/private/specific.h \

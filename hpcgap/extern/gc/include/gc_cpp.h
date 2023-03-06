@@ -135,7 +135,7 @@ uses explicit invocation.
 5. GC name conflicts:
 
 Many other systems seem to use the identifier "GC" as an abbreviation
-for "Graphics Context".  Since version 5.0, GC placement has been replaced
+for "Graphics Context".  Thus, GC placement has been replaced
 by UseGC.  GC is an alias for UseGC, unless GC_NAME_CONFLICT is defined.
 
 ****************************************************************************/
@@ -172,22 +172,6 @@ by UseGC.  GC is an alias for UseGC, unless GC_NAME_CONFLICT is defined.
     && (!defined(_MSC_VER) || _MSC_VER > 1020)
 # define GC_PLACEMENT_DELETE
 #endif
-
-#ifndef GC_NOEXCEPT
-# if defined(__DMC__) || (defined(__BORLANDC__) \
-        && (defined(_RWSTD_NO_EXCEPTIONS) || defined(_RWSTD_NO_EX_SPEC))) \
-     || (defined(_MSC_VER) && defined(_HAS_EXCEPTIONS) && !_HAS_EXCEPTIONS) \
-     || (defined(__WATCOMC__) && !defined(_CPPUNWIND))
-#   define GC_NOEXCEPT /* empty */
-#   ifndef GC_NEW_ABORTS_ON_OOM
-#     define GC_NEW_ABORTS_ON_OOM
-#   endif
-# elif __cplusplus >= 201103L || _MSVC_LANG >= 201103L
-#   define GC_NOEXCEPT noexcept
-# else
-#   define GC_NOEXCEPT throw()
-# endif
-#endif // !GC_NOEXCEPT
 
 #if defined(GC_NEW_ABORTS_ON_OOM) || defined(_LIBCPP_NO_EXCEPTIONS)
 # define GC_OP_NEW_OOM_CHECK(obj) \
@@ -504,9 +488,11 @@ inline void gc::operator delete(void* obj) GC_NOEXCEPT
 
 inline gc_cleanup::~gc_cleanup()
 {
-  void* base = GC_base(this);
-  if (0 == base) return; // Non-heap object.
-  GC_register_finalizer_ignore_self(base, 0, 0, 0, 0);
+# ifndef GC_NO_FINALIZATION
+    void* base = GC_base(this);
+    if (0 == base) return; // Non-heap object.
+    GC_register_finalizer_ignore_self(base, 0, 0, 0, 0);
+# endif
 }
 
 inline void GC_CALLBACK gc_cleanup::cleanup(void* obj, void* displ)
@@ -516,19 +502,23 @@ inline void GC_CALLBACK gc_cleanup::cleanup(void* obj, void* displ)
 
 inline gc_cleanup::gc_cleanup()
 {
-  GC_finalization_proc oldProc;
-  void* oldData;
-  void* this_ptr = (void*)this;
-  void* base = GC_base(this_ptr);
-  if (base != 0) {
-    // Don't call the debug version, since this is a real base address.
-    GC_register_finalizer_ignore_self(base, (GC_finalization_proc) cleanup,
-                                      (void*)((char*)this_ptr - (char*)base),
-                                      &oldProc, &oldData);
-    if (oldProc != 0) {
-      GC_register_finalizer_ignore_self(base, oldProc, oldData, 0, 0);
+# ifndef GC_NO_FINALIZATION
+    GC_finalization_proc oldProc = 0;
+    void* oldData = NULL; // to avoid "might be uninitialized" compiler warning
+    void* this_ptr = (void*)this;
+    void* base = GC_base(this_ptr);
+    if (base != 0) {
+      // Don't call the debug version, since this is a real base address.
+      GC_register_finalizer_ignore_self(base, (GC_finalization_proc) cleanup,
+                                        (void*)((char*)this_ptr-(char*)base),
+                                        &oldProc, &oldData);
+      if (oldProc != 0) {
+        GC_register_finalizer_ignore_self(base, oldProc, oldData, 0, 0);
+      }
     }
-  }
+# elif defined(CPPCHECK)
+    (void)cleanup;
+# endif
 }
 
 #ifdef GC_NAMESPACE
@@ -543,9 +533,14 @@ inline void* operator new(size_t size, GC_NS_QUALIFY(GCPlacement) gcp,
   switch (gcp) {
   case GC_NS_QUALIFY(UseGC):
     obj = GC_MALLOC(size);
-    if (cleanup != 0 && obj != 0) {
-      GC_REGISTER_FINALIZER_IGNORE_SELF(obj, cleanup, clientData, 0, 0);
-    }
+#   ifndef GC_NO_FINALIZATION
+      if (cleanup != 0 && obj != 0) {
+        GC_REGISTER_FINALIZER_IGNORE_SELF(obj, cleanup, clientData, 0, 0);
+      }
+#   else
+      (void)cleanup;
+      (void)clientData;
+#   endif
     break;
   case GC_NS_QUALIFY(PointerFreeGC):
     obj = GC_MALLOC_ATOMIC(size);

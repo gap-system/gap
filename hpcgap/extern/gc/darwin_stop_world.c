@@ -73,12 +73,15 @@ GC_INNER ptr_t GC_FindTopOfStack(unsigned long stack_start)
         __asm__ __volatile__ ("mov %0, x29\n" : "=r" (sp_reg));
         frame = (StackFrame *)sp_reg;
 #   else
+#     if defined(CPPCHECK)
+        GC_noop1((word)&frame);
+#     endif
       ABORT("GC_FindTopOfStack(0) is not implemented");
 #   endif
   }
 
 # ifdef DEBUG_THREADS_EXTRA
-    GC_log_printf("FindTopOfStack start at sp = %p\n", (void *)frame);
+    GC_log_printf("FindTopOfStack start at sp= %p\n", (void *)frame);
 # endif
   while (frame->savedSP != 0) {
     /* if there are no more stack frames, stop */
@@ -92,7 +95,7 @@ GC_INNER ptr_t GC_FindTopOfStack(unsigned long stack_start)
       break; /* if the next LR is bogus, stop */
   }
 # ifdef DEBUG_THREADS_EXTRA
-    GC_log_printf("FindTopOfStack finish at sp = %p\n", (void *)frame);
+    GC_log_printf("FindTopOfStack finish at sp= %p\n", (void *)frame);
 # endif
   return (ptr_t)frame;
 }
@@ -204,7 +207,7 @@ STATIC ptr_t GC_stack_range_for(ptr_t *phi, thread_act_t thread, GC_thread p,
       } while (kern_result == KERN_ABORTED);
     }
 #   ifdef DEBUG_THREADS
-      GC_log_printf("thread_get_state returns value = %d\n", kern_result);
+      GC_log_printf("thread_get_state returns %d\n", kern_result);
 #   endif
     if (kern_result != KERN_SUCCESS)
       ABORT("thread_get_state failed");
@@ -234,7 +237,7 @@ STATIC ptr_t GC_stack_range_for(ptr_t *phi, thread_act_t thread, GC_thread p,
       GC_push_one(state.THREAD_FLD(rdi));
       GC_push_one(state.THREAD_FLD(rsi));
       GC_push_one(state.THREAD_FLD(rbp));
-      /* GC_push_one(state.THREAD_FLD(rsp)); */
+      /* rsp is skipped.        */
       GC_push_one(state.THREAD_FLD(r8));
       GC_push_one(state.THREAD_FLD(r9));
       GC_push_one(state.THREAD_FLD(r10));
@@ -250,6 +253,7 @@ STATIC ptr_t GC_stack_range_for(ptr_t *phi, thread_act_t thread, GC_thread p,
         *phi = GC_FindTopOfStack(state.THREAD_FLD(r1));
 #     endif
       GC_push_one(state.THREAD_FLD(r0));
+      /* r1 is skipped. */
       GC_push_one(state.THREAD_FLD(r2));
       GC_push_one(state.THREAD_FLD(r3));
       GC_push_one(state.THREAD_FLD(r4));
@@ -337,7 +341,7 @@ STATIC ptr_t GC_stack_range_for(ptr_t *phi, thread_act_t thread, GC_thread p,
     *paltstack_lo = NULL;
   }
 # ifdef DEBUG_THREADS
-    GC_log_printf("Darwin: Stack for thread %p = [%p,%p)\n",
+    GC_log_printf("Darwin: Stack for thread %p is [%p,%p)\n",
                   (void *)(word)thread, (void *)lo, (void *)(*phi));
 # endif
   return lo;
@@ -660,6 +664,9 @@ GC_INLINE void GC_thread_resume(thread_act_t thread)
     struct thread_basic_info info;
     mach_msg_type_number_t outCount = THREAD_BASIC_INFO_COUNT;
 
+#   ifdef CPPCHECK
+      info.run_state = 0;
+#   endif
     kern_result = thread_info(thread, THREAD_BASIC_INFO,
                               (thread_info_t)&info, &outCount);
     if (kern_result != KERN_SUCCESS)

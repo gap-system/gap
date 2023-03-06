@@ -11,6 +11,7 @@
 #include "leak_detector.h"
 
 #ifdef GC_PTHREADS
+# include <errno.h> /* for EAGAIN */
 # include <pthread.h>
 #else
 # ifndef WIN32_LEAN_AND_MEAN
@@ -50,7 +51,7 @@
 
 int main(void) {
 # if NTHREADS > 0
-    int i;
+    int i, n;
 #   ifdef GC_PTHREADS
       pthread_t t[NTHREADS];
 #   else
@@ -73,12 +74,15 @@ int main(void) {
           code = t[i] != NULL ? 0 : (int)GetLastError();
 #       endif
         if (code != 0) {
-            fprintf(stderr, "Thread creation failed %d\n", code);
+            fprintf(stderr, "Thread creation failed, errcode= %d\n", code);
+#           ifdef GC_PTHREADS
+              if (i > 1 && EAGAIN == code) break;
+#           endif
             exit(2);
         }
     }
-
-    for (i = 0; i < NTHREADS; ++i) {
+    n = i;
+    for (i = 0; i < n; ++i) {
 #       ifdef GC_PTHREADS
           code = pthread_join(t[i], 0);
 #       else
@@ -86,7 +90,7 @@ int main(void) {
                                                         (int)GetLastError();
 #       endif
         if (code != 0) {
-            fprintf(stderr, "Thread join failed %d\n", code);
+            fprintf(stderr, "Thread join failed, errcode= %d\n", code);
             exit(2);
         }
     }

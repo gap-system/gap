@@ -45,7 +45,8 @@
 # define AO_USE_NO_SIGNALS
 #endif
 
-#if (defined(__linux__) || defined(__GLIBC__) || defined(__GNU__)) \
+#if (defined(__CYGWIN__) || defined(__GLIBC__) || defined(__GNU__) \
+     || defined(__linux__)) \
     && !defined(AO_USE_NO_SIGNALS) && !defined(_GNU_SOURCE)
 # define _GNU_SOURCE 1
 #endif

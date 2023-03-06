@@ -2,6 +2,7 @@
  * Copyright 1988, 1989 Hans-J. Boehm, Alan J. Demers
  * Copyright (c) 1991-1994 by Xerox Corporation.  All rights reserved.
  * Copyright (c) 1999-2001 by Hewlett-Packard Company. All rights reserved.
+ * Copyright (c) 2008-2021 Ivan Maidanski
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -27,19 +28,15 @@
 # include <sys/syscall.h>
 #endif
 
-#if defined(MSWIN32) || defined(MSWINCE) \
-    || (defined(CYGWIN32) && defined(GC_READ_ENV_FILE))
-# ifndef WIN32_LEAN_AND_MEAN
-#   define WIN32_LEAN_AND_MEAN 1
-# endif
-# define NOSERVICE
-# include <windows.h>
-#endif
-
-#if defined(UNIX_LIKE) || defined(CYGWIN32) || defined(SYMBIAN)
+#if defined(UNIX_LIKE) || defined(CYGWIN32) || defined(SYMBIAN) \
+    || (defined(CONSOLE_LOG) && defined(MSWIN32))
 # include <fcntl.h>
 # include <sys/types.h>
 # include <sys/stat.h>
+#endif
+
+#if defined(CONSOLE_LOG) && defined(MSWIN32) && !defined(__GNUC__)
+# include <io.h>
 #endif
 
 #ifdef NONSTOP
@@ -52,7 +49,7 @@
     GC_INNER PCR_Th_ML GC_allocate_ml;
 # elif defined(SN_TARGET_PSP2)
     GC_INNER WapiMutex GC_allocate_ml_PSP2 = { 0, NULL };
-# elif defined(SN_TARGET_ORBIS) || defined(SN_TARGET_PS3)
+# elif defined(GC_DEFN_ALLOCATE_ML) || defined(SN_TARGET_PS3)
 #   include <pthread.h>
     GC_INNER pthread_mutex_t GC_allocate_ml;
 # endif
@@ -77,6 +74,10 @@
 #endif
 
 GC_FAR struct _GC_arrays GC_arrays /* = { 0 } */;
+
+GC_INNER unsigned GC_n_mark_procs = GC_RESERVED_MARK_PROCS;
+
+GC_INNER unsigned GC_n_kinds = GC_N_KINDS_INITIAL_VALUE;
 
 GC_INNER GC_bool GC_debugging_started = FALSE;
                 /* defined here so we don't have to load dbg_mlc.o */
@@ -189,8 +190,6 @@ GC_oom_func GC_oom_fn = GC_default_oom_fn;
 # endif
 
 #elif !defined(HAVE_NO_FORK)
-
-  /* Same as above but with GC_CALL calling conventions.  */
   GC_API void GC_CALL GC_atfork_prepare(void)
   {
 #   ifdef THREADS
@@ -314,7 +313,11 @@ STATIC void GC_init_size_map(void)
       }
       /* Make sure the recursive call is not a tail call, and the bzero */
       /* call is not recognized as dead code.                           */
-      GC_noop1(COVERT_DATAFLOW(dummy));
+#     if defined(CPPCHECK)
+        GC_noop1(dummy[0]);
+#     else
+        GC_noop1(COVERT_DATAFLOW(dummy));
+#     endif
       return(arg);
     }
 # endif /* !ASM_CLEAR_CODE */
@@ -479,6 +482,11 @@ GC_API size_t GC_CALL GC_get_heap_size(void)
     return (size_t)(GC_heapsize - GC_unmapped_bytes);
 }
 
+GC_API size_t GC_CALL GC_get_obtained_from_os_bytes(void)
+{
+    return (size_t)GC_our_mem_bytes;
+}
+
 GC_API size_t GC_CALL GC_get_free_bytes(void)
 {
     /* ignore the memory space returned to OS */
@@ -553,6 +561,7 @@ GC_API void GC_CALL GC_get_heap_usage_safe(GC_word *pheap_size,
                                         (word)GC_bytes_found : 0;
     pstats->reclaimed_bytes_before_gc = GC_reclaimed_bytes_before_gc;
     pstats->expl_freed_bytes_since_gc = GC_bytes_freed; /* since gc-7.7 */
+    pstats->obtained_from_os_bytes = GC_our_mem_bytes; /* since gc-8.2 */
   }
 
 # include <string.h> /* for memset() */
@@ -661,6 +670,8 @@ GC_API void GC_CALL GC_get_heap_usage_safe(GC_word *pheap_size,
       unsigned len;
       DWORD nBytesRead;
       TCHAR path[_MAX_PATH + 0x10]; /* buffer for path + ext */
+      size_t bytes_to_get;
+
       len = (unsigned)GetModuleFileName(NULL /* hModule */, path,
                                         _MAX_PATH + 1);
       /* If GetModuleFileName() has failed then len is 0. */
@@ -681,11 +692,14 @@ GC_API void GC_CALL GC_get_heap_usage_safe(GC_word *pheap_size,
       }
       /* At this execution point, GC_setpagesize() and GC_init_win32()  */
       /* must already be called (for GET_MEM() to work correctly).      */
-      content = (char *)GET_MEM(ROUNDUP_PAGESIZE_IF_MMAP((size_t)len + 1));
+      GC_ASSERT(GC_page_size != 0);
+      bytes_to_get = ROUNDUP_PAGESIZE_IF_MMAP((size_t)len + 1);
+      content = (char *)GET_MEM(bytes_to_get);
       if (content == NULL) {
         CloseHandle(hFile);
         return; /* allocation failure */
       }
+      GC_add_to_our_memory(content, bytes_to_get);
       ofs = 0;
       nBytesRead = (DWORD)-1L;
           /* Last ReadFile() call should clear nBytesRead on success. */
@@ -695,8 +709,10 @@ GC_API void GC_CALL GC_get_heap_usage_safe(GC_word *pheap_size,
           break;
       }
       CloseHandle(hFile);
-      if (ofs != len || nBytesRead != 0)
+      if (ofs != len || nBytesRead != 0) {
+        /* TODO: recycle content */
         return; /* read operation is failed - ignoring the file content */
+      }
       content[ofs] = '\0';
       while (ofs-- > 0) {
        if (content[ofs] == '\r' || content[ofs] == '\n')
@@ -714,7 +730,8 @@ GC_API void GC_CALL GC_get_heap_usage_safe(GC_word *pheap_size,
   {
     char *p;
     char *end_of_content;
-    unsigned namelen;
+    size_t namelen;
+
 #   ifndef NO_GETENV
       p = getenv(name); /* try the standard getenv() first */
       if (p != NULL)
@@ -745,8 +762,8 @@ GC_API int GC_CALL GC_is_init_called(void)
   return GC_is_initialized;
 }
 
-#if (defined(MSWIN32) || defined(MSWINCE) || defined(MSWIN_XBOX1)) \
-    && defined(THREADS)
+#if defined(GC_WIN32_THREADS) \
+    && ((defined(MSWIN32) && !defined(CONSOLE_LOG)) || defined(MSWINCE))
   GC_INNER CRITICAL_SECTION GC_write_cs;
 #endif
 
@@ -805,19 +822,20 @@ GC_API int GC_CALL GC_is_init_called(void)
 
 #if !defined(OS2) && !defined(MACOS) && !defined(GC_ANDROID_LOG) \
     && !defined(NN_PLATFORM_CTR) && !defined(NINTENDO_SWITCH) \
-    && !defined(MSWIN32) && !defined(MSWINCE)
+    && (!defined(MSWIN32) || defined(CONSOLE_LOG)) && !defined(MSWINCE)
   STATIC int GC_stdout = GC_DEFAULT_STDOUT_FD;
   STATIC int GC_stderr = GC_DEFAULT_STDERR_FD;
   STATIC int GC_log = GC_DEFAULT_STDERR_FD;
 
-  GC_API void GC_CALL GC_set_log_fd(int fd)
-  {
-    GC_log = fd;
-  }
+# ifndef MSWIN32
+    GC_API void GC_CALL GC_set_log_fd(int fd)
+    {
+      GC_log = fd;
+    }
+# endif
 #endif
 
-#if defined(MSWIN32) && !defined(MSWINRT_FLAVOR) && !defined(MSWIN_XBOX1) \
-    && !defined(SMALL_CONFIG)
+#ifdef MSGBOX_ON_ERROR
   STATIC void GC_win32_MessageBoxA(const char *msg, const char *caption,
                                    unsigned flags)
   {
@@ -836,7 +854,7 @@ GC_API int GC_CALL GC_is_init_called(void)
       }
 #   endif
   }
-#endif /* MSWIN32 */
+#endif /* MSGBOX_ON_ERROR */
 
 #if defined(THREADS) && defined(UNIX_LIKE) && !defined(NO_GETCONTEXT)
   static void callee_saves_pushed_dummy_fn(ptr_t data GC_ATTR_UNUSED,
@@ -970,8 +988,9 @@ GC_API void GC_CALL GC_init(void)
           /* else */ InitializeCriticalSection(&GC_allocate_ml);
         }
 #     endif
-#   endif /* GC_WIN32_THREADS */
-#   if (defined(MSWIN32) || defined(MSWINCE)) && defined(THREADS)
+#   endif /* GC_WIN32_THREADS && !GC_PTHREADS */
+#   if defined(GC_WIN32_THREADS) \
+       && ((defined(MSWIN32) && !defined(CONSOLE_LOG)) || defined(MSWINCE))
       InitializeCriticalSection(&GC_write_cs);
 #   endif
     GC_setpagesize();
@@ -995,6 +1014,7 @@ GC_API void GC_CALL GC_init(void)
 #     endif
 #   endif
 #   if ((defined(UNIX_LIKE) && !defined(GC_ANDROID_LOG)) \
+        || (defined(CONSOLE_LOG) && defined(MSWIN32)) \
         || defined(CYGWIN32) || defined(SYMBIAN)) && !defined(SMALL_CONFIG)
         {
           char * file_name = TRUSTED_STRING(GETENV("GC_LOG_FILE"));
@@ -1005,7 +1025,11 @@ GC_API void GC_CALL GC_init(void)
             if (0 != file_name)
 #         endif
           {
-            int log_d = open(file_name, O_CREAT | O_WRONLY | O_APPEND, 0644);
+#           if defined(_MSC_VER)
+              int log_d = _open(file_name, O_CREAT | O_WRONLY | O_APPEND);
+#           else
+              int log_d = open(file_name, O_CREAT | O_WRONLY | O_APPEND, 0644);
+#           endif
             if (log_d < 0) {
               GC_err_printf("Failed to open %s as log file\n", file_name);
             } else {
@@ -1056,7 +1080,11 @@ GC_API void GC_CALL GC_init(void)
       GC_all_interior_pointers = 1;
     }
     if (0 != GETENV("GC_DONT_GC")) {
-      GC_dont_gc = 1;
+#     ifdef LINT2
+        GC_disable();
+#     else
+        GC_dont_gc = 1;
+#     endif
     }
     if (0 != GETENV("GC_PRINT_BACK_HEIGHT")) {
       GC_print_back_height = TRUE;
@@ -1186,12 +1214,6 @@ GC_API void GC_CALL GC_init(void)
         /* entirety as part of the root set.  This will grow them to    */
         /* maximum size, and is generally not desirable.                */
 #   endif
-#   if defined(SEARCH_FOR_DATA_START)
-        GC_init_linux_data_start();
-#   endif
-#   if defined(NETBSD) && defined(__ELF__)
-        GC_init_netbsd_elf();
-#   endif
 #   if !defined(THREADS) || defined(GC_PTHREADS) \
         || defined(NN_PLATFORM_CTR) || defined(NINTENDO_SWITCH) \
         || defined(GC_WIN32_THREADS) || defined(GC_SOLARIS_THREADS)
@@ -1227,6 +1249,22 @@ GC_API void GC_CALL GC_init(void)
 #   ifndef THREADS
       GC_ASSERT(!((word)GC_stackbottom HOTTER_THAN (word)GC_approx_sp()));
 #   endif
+    GC_init_headers();
+#   if defined(GC_ASSERTIONS) && defined(GC_ALWAYS_MULTITHREADED) \
+       && (defined(SEARCH_FOR_DATA_START) || defined(NETBSD))
+      LOCK(); /* just to set GC_lock_holder */
+#   endif
+#   ifdef SEARCH_FOR_DATA_START
+      /* For MPROTECT_VDB, the temporary fault handler should be        */
+      /* installed first, before the write fault one in GC_dirty_init.  */
+      if (GC_REGISTER_MAIN_STATIC_DATA()) GC_init_linux_data_start();
+#   elif defined(NETBSD) && defined(__ELF__)
+      if (GC_REGISTER_MAIN_STATIC_DATA()) GC_init_netbsd_elf();
+#   endif
+#   if defined(GC_ASSERTIONS) && defined(GC_ALWAYS_MULTITHREADED) \
+       && (defined(SEARCH_FOR_DATA_START) || defined(NETBSD))
+      UNLOCK();
+#   endif
 #   ifndef GC_DISABLE_INCREMENTAL
       if (GC_incremental || 0 != GETENV("GC_ENABLE_INCREMENTAL")) {
 #       if defined(BASE_ATOMIC_OPS_EMULATED) || defined(CHECKSUMS) \
@@ -1251,7 +1289,7 @@ GC_API void GC_CALL GC_init(void)
     /* Add initial guess of root sets.  Do this first, since sbrk(0)    */
     /* might be used.                                                   */
       if (GC_REGISTER_MAIN_STATIC_DATA()) GC_register_data_segments();
-    GC_init_headers();
+
     GC_bl_init();
     GC_mark_init();
     {
@@ -1305,16 +1343,13 @@ GC_API void GC_CALL GC_init(void)
 #   endif
     GC_is_initialized = TRUE;
 #   if defined(GC_PTHREADS) || defined(GC_WIN32_THREADS)
-        GC_thr_init();
-#       ifdef PARALLEL_MARK
-          /* Actually start helper threads.     */
-#         if defined(GC_ASSERTIONS) && defined(GC_ALWAYS_MULTITHREADED)
-            UNLOCK();
-#         endif
-          GC_start_mark_threads_inner();
-#         if defined(GC_ASSERTIONS) && defined(GC_ALWAYS_MULTITHREADED)
-            LOCK();
-#         endif
+#       if defined(LINT2) \
+           && !(defined(GC_ASSERTIONS) && defined(GC_ALWAYS_MULTITHREADED))
+          LOCK();
+          GC_thr_init();
+          UNLOCK();
+#       else
+          GC_thr_init();
 #       endif
 #   endif
     COND_DUMP;
@@ -1343,9 +1378,8 @@ GC_API void GC_CALL GC_init(void)
 #   if defined(PARALLEL_MARK) || defined(THREAD_LOCAL_ALLOC) \
        || (defined(GC_ALWAYS_MULTITHREADED) && defined(GC_WIN32_THREADS) \
            && !defined(GC_NO_THREADS_DISCOVERY))
-        /* Make sure marker threads are started and thread local */
-        /* allocation is initialized, in case we didn't get      */
-        /* called from GC_init_parallel.                         */
+        /* Make sure thread local allocation is initialized, in */
+        /* case we did not get called from GC_init_parallel().  */
         GC_init_parallel();
 #   endif /* PARALLEL_MARK || THREAD_LOCAL_ALLOC */
 
@@ -1411,37 +1445,40 @@ GC_API void GC_CALL GC_enable_incremental(void)
   GC_init();
 }
 
-#if defined(THREADS)
-  GC_API void GC_CALL GC_start_mark_threads(void)
-  {
-#   if defined(PARALLEL_MARK) && defined(CAN_HANDLE_FORK) \
-       && !defined(THREAD_SANITIZER)
-      /* TSan does not support threads creation in the child process.   */
+GC_API void GC_CALL GC_start_mark_threads(void)
+{
+#   ifdef PARALLEL_MARK
       IF_CANCEL(int cancel_state;)
+      DCL_LOCK_STATE;
 
       DISABLE_CANCEL(cancel_state);
+      LOCK();
       GC_start_mark_threads_inner();
+      UNLOCK();
       RESTORE_CANCEL(cancel_state);
 #   else
       /* No action since parallel markers are disabled (or no POSIX fork). */
       GC_ASSERT(I_DONT_HOLD_LOCK());
 #   endif
-  }
-#endif
+}
 
   GC_API void GC_CALL GC_deinit(void)
   {
     if (GC_is_initialized) {
       /* Prevent duplicate resource close.  */
       GC_is_initialized = FALSE;
-#     if defined(THREADS) && (defined(MSWIN32) || defined(MSWINCE))
-        DeleteCriticalSection(&GC_write_cs);
-        DeleteCriticalSection(&GC_allocate_ml);
+#     if defined(GC_WIN32_THREADS) && (defined(MSWIN32) || defined(MSWINCE))
+#       if !defined(CONSOLE_LOG) || defined(MSWINCE)
+          DeleteCriticalSection(&GC_write_cs);
+#       endif
+#       ifndef GC_PTHREADS
+          DeleteCriticalSection(&GC_allocate_ml);
+#       endif
 #     endif
     }
   }
 
-#if defined(MSWIN32) || defined(MSWINCE)
+#if (defined(MSWIN32) && !defined(CONSOLE_LOG)) || defined(MSWINCE)
 
 # if defined(_MSC_VER) && defined(_DEBUG) && !defined(MSWINCE)
 #   include <crtdbg.h>
@@ -1551,7 +1588,11 @@ GC_API void GC_CALL GC_enable_incremental(void)
 
 # else
     TCHAR *logPath;
-    BOOL appendToFile = FALSE;
+#   if defined(NO_GETENV_WIN32) && defined(CPPCHECK)
+#     define appendToFile FALSE
+#   else
+      BOOL appendToFile = FALSE;
+#   endif
 #   if !defined(NO_GETENV_WIN32) || !defined(OLD_WIN32_LOG_FILE)
       TCHAR pathBuf[_MAX_PATH + 0x10]; /* buffer for path + ext */
 
@@ -1596,6 +1637,7 @@ GC_API void GC_CALL GC_enable_incremental(void)
                                   /* Seek to file end (ignoring any error) */
       }
 #   endif
+#   undef appendToFile
 # endif
     return hFile;
   }
@@ -1634,7 +1676,7 @@ GC_API void GC_CALL GC_enable_incremental(void)
 #       endif
       }
       res = WriteFile(GC_log, buf, (DWORD)len, &written, NULL);
-#     if defined(_MSC_VER) && defined(_DEBUG)
+#     if defined(_MSC_VER) && defined(_DEBUG) && !defined(NO_CRT)
 #         ifdef MSWINCE
               /* There is no CrtDbgReport() in WinCE */
               {
@@ -1699,28 +1741,29 @@ GC_API void GC_CALL GC_enable_incremental(void)
 # define WRITE(level, buf, unused_len) \
                 __android_log_write(level, GC_ANDROID_LOG_TAG, buf)
 
-# elif defined(NN_PLATFORM_CTR)
-    int n3ds_log_write(const char* text, int length);
-#   define WRITE(level, buf, len) n3ds_log_write(buf, len)
-# elif defined(NINTENDO_SWITCH)
-    int switch_log_write(const char* text, int length);
-#   define WRITE(level, buf, len) switch_log_write(buf, len)
+#elif defined(NN_PLATFORM_CTR)
+  int n3ds_log_write(const char* text, int length);
+# define WRITE(level, buf, len) n3ds_log_write(buf, len)
+
+#elif defined(NINTENDO_SWITCH)
+  int switch_log_write(const char* text, int length);
+# define WRITE(level, buf, len) switch_log_write(buf, len)
 
 #else
 
-# if !defined(SN_TARGET_ORBIS) && !defined(SN_TARGET_PSP2)
-#   if !defined(AMIGA) && !defined(MSWIN_XBOX1) \
+# if !defined(GC_NO_TYPES) && !defined(SN_TARGET_PSP2)
+#   if !defined(AMIGA) && !defined(MSWIN32) && !defined(MSWIN_XBOX1) \
        && !defined(__CC_ARM)
 #     include <unistd.h>
 #   endif
 #   if !defined(ECOS) && !defined(NOSYS)
 #     include <errno.h>
 #   endif
-# endif /* !SN_TARGET_ORBIS && !SN_TARGET_PSP2 */
+# endif /* !GC_NO_TYPES && !SN_TARGET_PSP2 */
 
   STATIC int GC_write(int fd, const char *buf, size_t len)
   {
-#   if defined(ECOS) || defined(SN_TARGET_ORBIS) || defined(SN_TARGET_PSP2) \
+#   if defined(ECOS) || defined(PLATFORM_WRITE) || defined(SN_TARGET_PSP2) \
        || defined(NOSYS)
 #     ifdef ECOS
         /* FIXME: This seems to be defined nowhere at present.  */
@@ -1738,6 +1781,9 @@ GC_API void GC_CALL GC_enable_incremental(void)
 #        ifdef GC_SOLARIS_THREADS
              int result = syscall(SYS_write, fd, buf + bytes_written,
                                              len - bytes_written);
+#        elif defined(_MSC_VER)
+             int result = _write(fd, buf + bytes_written,
+                                 (unsigned)(len - bytes_written));
 #        else
              int result = write(fd, buf + bytes_written, len - bytes_written);
 #        endif
@@ -1756,7 +1802,7 @@ GC_API void GC_CALL GC_enable_incremental(void)
   }
 
 # define WRITE(f, buf, len) GC_write(f, buf, len)
-#endif /* !MSWIN32 && !OS2 && !MACOS && !GC_ANDROID_LOG */
+#endif /* !MSWINCE && !OS2 && !MACOS && !GC_ANDROID_LOG */
 
 #define BUFSZ 1024
 
@@ -1801,7 +1847,7 @@ void GC_printf(const char *format, ...)
         /* Ignore errors silently.      */
 #     else
         if (WRITE(GC_stdout, buf, strlen(buf)) < 0
-#           if defined(CYGWIN32)
+#           if defined(CYGWIN32) || (defined(CONSOLE_LOG) && defined(MSWIN32))
               && GC_stdout != GC_DEFAULT_STDOUT_FD
 #           endif
            ) {
@@ -1828,7 +1874,7 @@ void GC_log_printf(const char *format, ...)
       (void)WRITE(GC_log, buf, strlen(buf));
 #   else
       if (WRITE(GC_log, buf, strlen(buf)) < 0
-#         if defined(CYGWIN32)
+#         if defined(CYGWIN32) || (defined(CONSOLE_LOG) && defined(MSWIN32))
             && GC_log != GC_DEFAULT_STDERR_FD
 #         endif
          ) {
@@ -1929,7 +1975,7 @@ GC_API GC_warn_proc GC_CALL GC_get_warn_proc(void)
 #   endif
 
     if (msg != NULL) {
-#     if defined(MSWIN32) && !defined(MSWINRT_FLAVOR) && !defined(MSWIN_XBOX1)
+#     ifdef MSGBOX_ON_ERROR
         GC_win32_MessageBoxA(msg, "Fatal error in GC", MB_ICONERROR | MB_OK);
         /* Also duplicate msg to GC log file.   */
 #     endif
@@ -1938,8 +1984,8 @@ GC_API GC_warn_proc GC_CALL GC_get_warn_proc(void)
       /* Avoid calling GC_err_printf() here, as GC_on_abort() could be  */
       /* called from it.  Note 1: this is not an atomic output.         */
       /* Note 2: possible write errors are ignored.                     */
-#     if defined(THREADS) && defined(GC_ASSERTIONS) \
-         && (defined(MSWIN32) || defined(MSWINCE))
+#     if defined(GC_WIN32_THREADS) && defined(GC_ASSERTIONS) \
+         && ((defined(MSWIN32) && !defined(CONSOLE_LOG)) || defined(MSWINCE))
         if (!GC_write_disabled)
 #     endif
       {
@@ -2036,6 +2082,7 @@ GC_API unsigned GC_CALL GC_new_kind_inner(void **fl, GC_word descr,
 {
     unsigned result = GC_n_kinds;
 
+    GC_ASSERT(NONNULL_ARG_NOT_NULL(fl));
     GC_ASSERT(adjust == FALSE || adjust == TRUE);
     /* If an object is not needed to be cleared (when moved to the      */
     /* free list) then its descriptor should be zero to denote          */
@@ -2044,6 +2091,7 @@ GC_API unsigned GC_CALL GC_new_kind_inner(void **fl, GC_word descr,
     GC_ASSERT(clear == TRUE
               || (descr == 0 && adjust == FALSE && clear == FALSE));
     if (result < MAXOBJKINDS) {
+      GC_ASSERT(result > 0);
       GC_n_kinds++;
       GC_obj_kinds[result].ok_freelist = fl;
       GC_obj_kinds[result].ok_reclaim_list = 0;
@@ -2119,6 +2167,8 @@ GC_API void * GC_CALL GC_call_with_stack_base(GC_stack_base_func fn, void *arg)
       base.reg_base = (void *)GC_save_regs_in_stack();
       /* Unnecessarily flushes register stack,          */
       /* but that probably doesn't hurt.                */
+#   elif defined(E2K)
+      base.reg_base = NULL; /* not used by GC currently */
 #   endif
     result = fn(&base, arg);
     /* Strongly discourage the compiler from treating the above */
@@ -2144,7 +2194,7 @@ GC_API void * GC_CALL GC_call_with_gc_active(GC_fn_type fn,
     struct GC_traced_stack_sect_s stacksect;
     GC_ASSERT(GC_is_initialized);
 
-    /* Adjust our stack base value (this could happen if        */
+    /* Adjust our stack bottom pointer (this could happen if    */
     /* GC_get_main_stack_base() is unimplemented or broken for  */
     /* the platform).                                           */
     if ((word)GC_stackbottom HOTTER_THAN (word)(&stacksect))
@@ -2198,9 +2248,11 @@ STATIC void GC_do_blocking_inner(ptr_t data, void * context GC_ATTR_UNUSED)
         GC_blocked_sp = GC_save_regs_in_stack();
 #   else
         GC_blocked_sp = (ptr_t) &d; /* save approx. sp */
-#   endif
-#   ifdef IA64
-        GC_blocked_register_sp = GC_save_regs_in_stack();
+#       ifdef IA64
+            GC_blocked_register_sp = GC_save_regs_in_stack();
+#       elif defined(E2K)
+            (void)GC_save_regs_in_stack();
+#       endif
 #   endif
 
     d -> client_data = (d -> fn)(d -> client_data);
@@ -2216,6 +2268,32 @@ STATIC void GC_do_blocking_inner(ptr_t data, void * context GC_ATTR_UNUSED)
     GC_blocked_sp = NULL;
 }
 
+  GC_API void GC_CALL GC_set_stackbottom(void *gc_thread_handle,
+                                         const struct GC_stack_base *sb)
+  {
+    GC_ASSERT(sb -> mem_base != NULL);
+    GC_ASSERT(NULL == gc_thread_handle || &GC_stackbottom == gc_thread_handle);
+    GC_ASSERT(NULL == GC_blocked_sp
+              && NULL == GC_traced_stack_sect); /* for now */
+    (void)gc_thread_handle;
+
+    GC_stackbottom = (char *)sb->mem_base;
+#   ifdef IA64
+      GC_register_stackbottom = (ptr_t)sb->reg_base;
+#   endif
+  }
+
+  GC_API void * GC_CALL GC_get_my_stackbottom(struct GC_stack_base *sb)
+  {
+    GC_ASSERT(GC_is_initialized);
+    sb -> mem_base = GC_stackbottom;
+#   ifdef IA64
+      sb -> reg_base = GC_register_stackbottom;
+#   elif defined(E2K)
+      sb -> reg_base = NULL;
+#   endif
+    return &GC_stackbottom; /* gc_thread_handle */
+  }
 #endif /* !THREADS */
 
 GC_API void * GC_CALL GC_do_blocking(GC_fn_type fn, void * client_data)
@@ -2252,7 +2330,7 @@ GC_API void * GC_CALL GC_do_blocking(GC_fn_type fn, void * client_data)
     }
 #   ifndef NO_CLOCK
       /* Note that the time is wrapped in ~49 days if sizeof(long)==4.  */
-      GC_printf("Time since GC init: %lu msecs\n",
+      GC_printf("Time since GC init: %lu ms\n",
                 MS_TIME_DIFF(current_time, GC_init_time));
 #   endif
 
@@ -2298,8 +2376,19 @@ GC_API GC_word GC_CALL GC_get_gc_no(void)
 #ifdef THREADS
   GC_API int GC_CALL GC_get_parallel(void)
   {
-    /* GC_parallel is initialized at start-up.  */
     return GC_parallel;
+  }
+
+  GC_API void GC_CALL GC_alloc_lock(void)
+  {
+    DCL_LOCK_STATE;
+    LOCK();
+  }
+
+  GC_API void GC_CALL GC_alloc_unlock(void)
+  {
+    /* no DCL_LOCK_STATE */
+    UNLOCK();
   }
 
   GC_INNER GC_on_thread_event_proc GC_on_thread_event = 0;

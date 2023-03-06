@@ -22,10 +22,18 @@ EXTERN_C_BEGIN
 
 struct thread_stop_info {
 #   if !defined(GC_OPENBSD_UTHREADS) && !defined(NACL) \
-       && !defined(SN_TARGET_ORBIS) && !defined(SN_TARGET_PSP2)
+       && !defined(PLATFORM_STOP_WORLD) && !defined(SN_TARGET_PSP2)
       volatile AO_t last_stop_count;
                         /* The value of GC_stop_count when the thread   */
                         /* last successfully handled a suspend signal.  */
+#     ifdef GC_ENABLE_SUSPEND_THREAD
+        volatile AO_t ext_suspend_cnt;
+                        /* An odd value means thread was suspended      */
+                        /* externally.  Incremented on every call of    */
+                        /* GC_suspend_thread() and GC_resume_thread().  */
+                        /* Updated with the GC lock held, but could be  */
+                        /* read from a signal handler.                  */
+#     endif
 #   endif
 
     ptr_t stack_ptr;            /* Valid only when stopped.             */
@@ -44,9 +52,8 @@ struct thread_stop_info {
 #       define NACL_GC_REG_STORAGE_SIZE 20
 #     endif
       ptr_t reg_storage[NACL_GC_REG_STORAGE_SIZE];
-#   elif defined(SN_TARGET_ORBIS)
-#     define ORBIS_GC_REG_STORAGE_SIZE 27
-      word registers[ORBIS_GC_REG_STORAGE_SIZE]; /* used externally */
+#   elif defined(PLATFORM_HAVE_GC_REG_STORAGE_SIZE)
+      word registers[PLATFORM_GC_REG_STORAGE_SIZE]; /* used externally */
 #   endif
 };
 

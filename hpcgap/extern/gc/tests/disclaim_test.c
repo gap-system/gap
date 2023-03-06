@@ -28,21 +28,26 @@
 #undef GC_NO_THREAD_REDIRECTS
 #include "gc_disclaim.h"
 
-#ifdef LINT2
-  /* Avoid include gc_priv.h. */
-# ifndef GC_API_PRIV
-#   define GC_API_PRIV GC_API
-# endif
-# ifdef __cplusplus
-    extern "C" {
-# endif
-  GC_API_PRIV long GC_random(void);
-# ifdef __cplusplus
-    } /* extern "C" */
-# endif
+#if defined(GC_PTHREADS) || defined(LINT2)
+# define NOT_GCBUILD
+# include "private/gc_priv.h"
+
+  GC_ATTR_NO_SANITIZE_THREAD
+  static int GC_rand(void) /* nearly identical to GC_random */
+  {
+    static unsigned seed; /* concurrent update does not hurt the test */
+
+    seed = (seed * 1103515245U + 12345) & (~0U >> 1);
+    return (int)seed;
+  }
+
+  /* Redefine the standard rand() with a trivial (yet sufficient for    */
+  /* the test purpose) implementation to avoid crashes inside rand()    */
+  /* on some targets (e.g. FreeBSD 13.0) when used concurrently.        */
+  /* The standard specifies rand() as not a thread-safe API function.   */
 # undef rand
-# define rand() (int)GC_random()
-#endif /* LINT2 */
+# define rand() GC_rand()
+#endif /* GC_PTHREADS || LINT2 */
 
 #define my_assert(e) \
     if (!(e)) { \
@@ -114,7 +119,7 @@ void GC_CALLBACK pair_dct(void *obj, void *cd)
     my_assert(cd == (void *)PTR_HASH(p));
     /* Check that obj and its car and cdr are not trashed. */
 #   ifdef DEBUG_DISCLAIM_DESTRUCT
-      printf("Destruct %p = (%p, %p)\n",
+      printf("Destruct %p: (car= %p, cdr= %p)\n",
              (void *)p, (void *)p->car, (void *)p->cdr);
 #   endif
     my_assert(GC_base(obj));
@@ -159,7 +164,7 @@ pair_new(pair_t car, pair_t cdr)
     GC_ptr_store_and_dirty(&p->cdr, cdr);
     GC_reachable_here(car);
 #   ifdef DEBUG_DISCLAIM_DESTRUCT
-      printf("Construct %p = (%p, %p)\n",
+      printf("Construct %p: (car= %p, cdr= %p)\n",
              (void *)p, (void *)p->car, (void *)p->cdr);
 #   endif
     return p;
@@ -184,6 +189,7 @@ pair_check_rec(pair_t p)
 # ifndef NTHREADS
 #   define NTHREADS 6
 # endif
+# include <errno.h> /* for EAGAIN */
 # include <pthread.h>
 #else
 # undef NTHREADS
@@ -229,7 +235,7 @@ int main(void)
 {
 # if NTHREADS > 1
     pthread_t th[NTHREADS];
-    int i;
+    int i, n;
 # endif
 
     GC_set_all_interior_pointers(0); /* for a stricter test */
@@ -251,15 +257,17 @@ int main(void)
     for (i = 0; i < NTHREADS; ++i) {
         int err = pthread_create(&th[i], NULL, test, NULL);
         if (err) {
-            fprintf(stderr, "Failed to create thread # %d: %s\n", i,
+            fprintf(stderr, "Failed to create thread #%d: %s\n", i,
                     strerror(err));
+            if (i > 1 && EAGAIN == err) break;
             exit(1);
         }
     }
-    for (i = 0; i < NTHREADS; ++i) {
+    n = i;
+    for (i = 0; i < n; ++i) {
         int err = pthread_join(th[i], NULL);
         if (err) {
-            fprintf(stderr, "Failed to join thread # %d: %s\n", i,
+            fprintf(stderr, "Failed to join thread #%d: %s\n", i,
                     strerror(err));
             exit(69);
         }

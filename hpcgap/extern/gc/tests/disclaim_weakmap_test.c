@@ -24,13 +24,31 @@
 #endif
 
 #include "gc_disclaim.h" /* includes gc.h */
-#include "gc_mark.h"
+
+#if defined(GC_PTHREADS) || defined(LINT2)
+# define NOT_GCBUILD
+# include "private/gc_priv.h"
+
+  GC_ATTR_NO_SANITIZE_THREAD
+  static int GC_rand(void) /* same as in disclaim_test.c */
+  {
+    static unsigned seed; /* concurrent update does not hurt the test */
+
+    seed = (seed * 1103515245U + 12345) & (~0U >> 1);
+    return (int)seed;
+  }
+
+# undef rand
+# define rand() GC_rand()
+#endif /* GC_PTHREADS || LINT2 */
+
+#include "gc_mark.h" /* should not precede include gc_priv.h */
 
 #ifdef GC_PTHREADS
 # ifndef NTHREADS
 #   define NTHREADS 8
 # endif
-# include <errno.h>
+# include <errno.h> /* for EAGAIN, EBUSY */
 # include <pthread.h>
 # include "private/gc_atomic_ops.h" /* for AO_t and AO_fetch_and_add1 */
 #else
@@ -38,22 +56,6 @@
 # define NTHREADS 1
 # define AO_t GC_word
 #endif
-
-#ifdef LINT2
-  /* Avoid include gc_priv.h. */
-# ifndef GC_API_PRIV
-#   define GC_API_PRIV GC_API
-# endif
-# ifdef __cplusplus
-    extern "C" {
-# endif
-  GC_API_PRIV long GC_random(void);
-# ifdef __cplusplus
-    } /* extern "C" */
-# endif
-# undef rand
-# define rand() (int)GC_random()
-#endif /* LINT2 */
 
 #define POP_SIZE 200
 #define MUTATE_CNT (5000000 / NTHREADS)
@@ -166,7 +168,7 @@ void *GC_CALLBACK set_mark_bit(void *obj)
   return NULL;
 }
 
-void *weakmap_add(struct weakmap *wm, void *obj)
+void *weakmap_add(struct weakmap *wm, void *obj, size_t obj_size)
 {
   struct weakmap_link *link, *new_link, **first;
   GC_word *new_base;
@@ -175,6 +177,7 @@ void *weakmap_add(struct weakmap *wm, void *obj)
   size_t key_size = wm->key_size;
 
   /* Lock and look for an existing entry.       */
+  my_assert(key_size <= obj_size);
   h = memhash(obj, key_size);
   first = &wm->links[h % wm->capacity];
   weakmap_lock(wm, h);
@@ -197,7 +200,7 @@ void *weakmap_add(struct weakmap *wm, void *obj)
       weakmap_unlock(wm, h);
       AO_fetch_and_add1(&stat_found);
 #     ifdef DEBUG_DISCLAIM_WEAKMAP
-        printf("Found %p, hash=%p\n", old_obj, (void *)(GC_word)h);
+        printf("Found %p, hash= %p\n", old_obj, (void *)(GC_word)h);
 #     endif
       return old_obj;
     }
@@ -223,7 +226,7 @@ void *weakmap_add(struct weakmap *wm, void *obj)
   weakmap_unlock(wm, h);
   AO_fetch_and_add1(&stat_added);
 # ifdef DEBUG_DISCLAIM_WEAKMAP
-    printf("Added %p, hash=%p\n", new_obj, (void *)(GC_word)h);
+    printf("Added %p, hash= %p\n", new_obj, (void *)(GC_word)h);
 # endif
   return new_obj;
 }
@@ -252,7 +255,7 @@ int GC_CALLBACK weakmap_disclaim(void *obj_base)
   if (weakmap_trylock(wm, h) != 0) {
     AO_fetch_and_add1(&stat_skip_locked);
 #   ifdef DEBUG_DISCLAIM_WEAKMAP
-      printf("Skipping locked %p, hash=%p\n", obj, (void *)(GC_word)h);
+      printf("Skipping locked %p, hash= %p\n", obj, (void *)(GC_word)h);
 #   endif
     return 1;
   }
@@ -260,7 +263,7 @@ int GC_CALLBACK weakmap_disclaim(void *obj_base)
     weakmap_unlock(wm, h);
     AO_fetch_and_add1(&stat_skip_marked);
 #   ifdef DEBUG_DISCLAIM_WEAKMAP
-      printf("Skipping marked %p, hash=%p\n", obj, (void *)(GC_word)h);
+      printf("Skipping marked %p, hash= %p\n", obj, (void *)(GC_word)h);
 #   endif
     return 1;
   }
@@ -268,7 +271,7 @@ int GC_CALLBACK weakmap_disclaim(void *obj_base)
   /* Remove obj from wm.        */
   AO_fetch_and_add1(&stat_removed);
 # ifdef DEBUG_DISCLAIM_WEAKMAP
-    printf("Removing %p, hash=%p\n", obj, (void *)(GC_word)h);
+    printf("Removing %p, hash= %p\n", obj, (void *)(GC_word)h);
 # endif
   *(GC_word *)obj_base |= INVALIDATE_FLAG;
   for (link = &wm->links[h % wm->capacity];; link = &(*link)->next) {
@@ -353,7 +356,7 @@ struct pair *pair_new(struct pair *car, struct pair *cdr)
   tmpl.cdr = cdr;
   memcpy(tmpl.magic, pair_magic, PAIR_MAGIC_SIZE);
   tmpl.checksum = 782 + (car? car->checksum : 0) + (cdr? cdr->checksum : 0);
-  return (struct pair *)weakmap_add(pair_hcset, &tmpl);
+  return (struct pair *)weakmap_add(pair_hcset, &tmpl, sizeof(tmpl));
 }
 
 void pair_check_rec(struct pair *p, int line)
@@ -370,7 +373,7 @@ void pair_check_rec(struct pair *p, int line)
     if (p->cdr != NULL)
       checksum += p->cdr->checksum;
     if (p->checksum != checksum) {
-      fprintf(stderr, "Checksum failure for %p = (%p, %p) at %d\n",
+      fprintf(stderr, "Checksum failure for %p: (car= %p, cdr= %p) at %d\n",
               (void *)p, (void *)p->car, (void *)p->cdr, line);
       exit(70);
     }
@@ -417,9 +420,8 @@ void *test(void *data)
 int main(void)
 {
   unsigned weakobj_kind;
-  void **weakobj_free_list;
 # ifdef GC_PTHREADS
-    int i;
+    int i, n;
     pthread_t th[NTHREADS];
 # endif
 
@@ -434,10 +436,7 @@ int main(void)
 # endif
   if (GC_get_find_leak())
     printf("This test program is not designed for leak detection mode\n");
-
-  weakobj_free_list = GC_new_free_list();
-  CHECK_OOM(weakobj_free_list);
-  weakobj_kind = GC_new_kind(weakobj_free_list, /* 0 | */ GC_DS_LENGTH,
+  weakobj_kind = GC_new_kind(GC_new_free_list(), /* 0 | */ GC_DS_LENGTH,
                              1 /* adjust */, 1 /* clear */);
   GC_register_disclaim_proc(weakobj_kind, weakmap_disclaim,
                             1 /* mark_unconditionally */);
@@ -450,10 +449,12 @@ int main(void)
       if (err != 0) {
         fprintf(stderr, "Failed to create thread #%d: %s\n",
                 i, strerror(err));
+        if (i > 1 && EAGAIN == err) break;
         exit(1);
       }
     }
-    for (i = 0; i < NTHREADS; ++i) {
+    n = i;
+    for (i = 0; i < n; ++i) {
       int err = pthread_join(th[i], NULL);
       if (err != 0) {
         fprintf(stderr, "Failed to join thread #%d: %s\n", i, strerror(err));

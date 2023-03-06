@@ -14,7 +14,7 @@
 
 #include "private/gc_priv.h"
 
-#if !defined(SN_TARGET_ORBIS) && !defined(SN_TARGET_PSP2)
+#if !defined(PLATFORM_MACH_DEP) && !defined(SN_TARGET_PSP2)
 
 #include <stdio.h>
 
@@ -25,6 +25,89 @@
 #   include <machine/reg.h>
 # endif
 #endif
+
+#ifdef E2K
+# include <errno.h>
+# include <asm/e2k_syswork.h>
+# include <sys/mman.h>
+# include <sys/syscall.h>
+
+  GC_INNER size_t GC_get_procedure_stack(ptr_t buf, size_t buf_sz) {
+    word new_sz;
+
+    GC_ASSERT(0 == buf_sz || buf != NULL);
+    for (;;) {
+      word stack_ofs;
+
+      new_sz = 0;
+      if (syscall(__NR_access_hw_stacks, E2K_GET_PROCEDURE_STACK_SIZE,
+                  NULL, NULL, 0, &new_sz) == -1) {
+        if (errno != EAGAIN)
+          ABORT_ARG1("Cannot get size of procedure stack",
+                     ": errno= %d", errno);
+        continue;
+      }
+      GC_ASSERT(new_sz > 0 && new_sz % sizeof(word) == 0);
+      if (new_sz > buf_sz)
+        break;
+      /* Immediately read the stack right after checking its size. */
+      stack_ofs = 0;
+      if (syscall(__NR_access_hw_stacks, E2K_READ_PROCEDURE_STACK_EX,
+                  &stack_ofs, buf, new_sz, NULL) != -1)
+        break;
+      if (errno != EAGAIN)
+        ABORT_ARG2("Cannot read procedure stack",
+                   ": new_sz= %lu, errno= %d", (unsigned long)new_sz, errno);
+    }
+    return (size_t)new_sz;
+  }
+
+  ptr_t GC_save_regs_in_stack(void) {
+    __asm__ __volatile__ ("flushr");
+    return NULL;
+  }
+
+  GC_INNER ptr_t GC_mmap_procedure_stack_buf(size_t aligned_sz)
+  {
+    void *buf = mmap(NULL, aligned_sz, PROT_READ | PROT_WRITE,
+                     MAP_PRIVATE | MAP_ANON, 0 /* fd */, 0 /* offset */);
+    if (MAP_FAILED == buf)
+      ABORT_ARG2("Could not map memory for procedure stack",
+                 ": requested %lu bytes, errno= %d",
+                 (unsigned long)aligned_sz, errno);
+    return (ptr_t)buf;
+  }
+
+  GC_INNER void GC_unmap_procedure_stack_buf(ptr_t buf, size_t sz)
+  {
+    if (munmap(buf, ROUNDUP_PAGESIZE(sz)) == -1)
+      ABORT_ARG1("munmap failed (for procedure stack space)",
+                 ": errno= %d", errno);
+  }
+
+# ifdef THREADS
+    GC_INNER size_t GC_alloc_and_get_procedure_stack(ptr_t *pbuf)
+    {
+      /* TODO: support saving from non-zero ofs in stack */
+      ptr_t buf = NULL;
+      size_t new_sz, buf_sz;
+
+      GC_ASSERT(I_HOLD_LOCK());
+      for (buf_sz = 0; ; buf_sz = new_sz) {
+        new_sz = GC_get_procedure_stack(buf, buf_sz);
+        if (new_sz <= buf_sz) break;
+
+        if (EXPECT(buf != NULL, FALSE))
+          GC_INTERNAL_FREE(buf);
+        buf = (ptr_t)GC_INTERNAL_MALLOC_IGNORE_OFF_PAGE(new_sz, PTRFREE);
+        if (NULL == buf)
+          ABORT("Could not allocate memory for procedure stack");
+      }
+      *pbuf = buf;
+      return new_sz;
+    }
+# endif /* THREADS */
+#endif /* E2K */
 
 #if defined(MACOS) && defined(__MWERKS__)
 
@@ -232,6 +315,8 @@ GC_INNER void GC_with_callee_saves_pushed(void (*fn)(ptr_t, void *),
 
 # if defined(HAVE_PUSH_REGS)
     GC_push_regs();
+# elif defined(EMSCRIPTEN)
+    /* No-op, "registers" are pushed in GC_push_other_roots().  */
 # else
 #   if defined(UNIX_LIKE) && !defined(NO_GETCONTEXT)
       /* Older versions of Darwin seem to lack getcontext().    */
@@ -284,11 +369,14 @@ GC_INNER void GC_with_callee_saves_pushed(void (*fn)(ptr_t, void *),
             ABORT("feenableexcept failed");
 #       endif
 #     endif /* GETCONTEXT_FPU_EXCMASK_BUG */
-#     if defined(SPARC) || defined(IA64)
+#     if defined(E2K) || defined(IA64) || defined(SPARC)
         /* On a register window machine, we need to save register       */
         /* contents on the stack for this to work.  This may already be */
         /* subsumed by the getcontext() call.                           */
-        GC_save_regs_ret_val = GC_save_regs_in_stack();
+#       if defined(IA64) || defined(SPARC)
+          GC_save_regs_ret_val =
+#       endif
+            GC_save_regs_in_stack();
 #     endif
       if (NULL == context) /* getcontext failed */
 #   endif /* !NO_GETCONTEXT */
@@ -298,6 +386,9 @@ GC_INNER void GC_with_callee_saves_pushed(void (*fn)(ptr_t, void *),
         /* force callee-save registers and register windows onto        */
         /* the stack.                                                   */
         __builtin_unwind_init();
+#     elif defined(NO_CRT) && defined(MSWIN32)
+        CONTEXT ctx;
+        RtlCaptureContext(&ctx);
 #     else
         /* Generic code                          */
         /* The idea is due to Parag Patel at HP. */
@@ -334,4 +425,4 @@ GC_INNER void GC_with_callee_saves_pushed(void (*fn)(ptr_t, void *),
   GC_noop1(COVERT_DATAFLOW(&dummy));
 }
 
-#endif /* !SN_TARGET_ORBIS && !SN_TARGET_PSP2 */
+#endif /* !PLATFORM_MACH_DEP && !SN_TARGET_PSP2 */

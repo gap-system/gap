@@ -43,23 +43,17 @@ AO_test_and_set_full(volatile AO_TS_t *addr) {
 /* Returns nonzero if the comparison succeeded. */
 AO_INLINE int
 AO_compare_and_swap_full(volatile AO_t *addr, AO_t old, AO_t new_val) {
-  AO_t ret;
   __asm__ __volatile__ ("membar #StoreLoad | #LoadLoad\n\t"
 #                       if defined(__arch64__)
-                          "casx [%2],%0,%1\n\t"
+                          "casx [%1],%2,%0\n\t"
 #                       else
-                          "cas [%2],%0,%1\n\t" /* 32-bit version */
+                          "cas [%1],%2,%0\n\t" /* 32-bit version */
 #                       endif
                         "membar #StoreLoad | #StoreStore\n\t"
-                        "cmp %0,%1\n\t"
-                        "be,a 0f\n\t"
-                        "mov 1,%0\n\t"/* one insn after branch always executed */
-                        "clr %0\n\t"
-                        "0:\n\t"
-                        : "=r" (ret), "+r" (new_val)
-                        : "r" (addr), "0" (old)
-                        : "memory", "cc");
-  return (int)ret;
+                        : "+r" (new_val)
+                        : "r" (addr), "r" (old)
+                        : "memory");
+  return new_val == old;
 }
 #   define AO_HAVE_compare_and_swap_full
 # endif /* !AO_GENERALIZE_ASM_BOOL_CAS */

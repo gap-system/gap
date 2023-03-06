@@ -319,6 +319,7 @@ static unsigned msb(size_t s)
   return result;
 }
 
+AO_ATTR_MALLOC AO_ATTR_ALLOC_SIZE(1)
 void *
 AO_malloc(size_t sz)
 {

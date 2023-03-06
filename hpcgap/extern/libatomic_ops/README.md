@@ -2,7 +2,7 @@
 
 IN NEW CODE, PLEASE USE C11 OR C++14 STANDARD ATOMICS INSTEAD OF THIS PACKAGE.
 
-This is version 7.6.12 of libatomic_ops.
+This is version 7.6.14 of libatomic_ops.
 
 
 ## Download
@@ -49,7 +49,7 @@ However, two small libraries are built and installed:
 * `libatomic_ops.a` is a support library, which is not needed on some
   platforms. This is intended to be usable, under some mild restrictions,
   in free or proprietary code, as are all the header files.
-  See doc/LICENSING.txt.
+  See doc/LICENSING.txt for more details about the licensing.
 
 * `libatomic_ops_gpl.a` contains some higher level facilities.  This code is
   currently covered by the GPL.  The contents currently correspond to
@@ -117,4 +117,5 @@ The file gcc/sh.h is
 
  * Copyright (c) 2009 by Takashi YOSHII. All rights reserved.
 
-See [LICENSING.txt](doc/LICENSING.txt) for the details.
+Please be aware of the dual nature of the license of libatomic_ops,
+see [LICENSING.txt](doc/LICENSING.txt) for the details.
