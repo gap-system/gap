@@ -115,30 +115,21 @@ BindGlobal("SystemMessage@", function(arg)
 end);
 
 BindGlobal("FindThread@", function(id)
-  local i;
   if IS_INT(id) then
     if IsBound(ThreadName@[id+1]) then
       return id+1;
     else
       return fail;
     fi;
-  else
-    if IsBound(ThreadNameToID@.(id)) then
-      return ThreadNameToID@.(id);
-    else
-      for i in [1..Length(id)] do
-        if id[i] < '0' or id[i] > '9' then
-          return fail;
-        fi;
-      od;
-      id := SMALLINT_STR(id);
-      if IsBound(ThreadName@[id+1]) then
-        return id+1;
-      else
-        return fail;
-      fi;
-    fi;
   fi;
+  if IsBound(ThreadNameToID@.(id)) then
+    return ThreadNameToID@.(id);
+  fi;
+  id := SMALLINT_STR(id);
+  if id <> fail and id >= 0 and IsBound(ThreadName@[id+1]) then
+    return id+1;
+  fi;
+  return fail;
 end);
 
 BindGlobal("SendControl@", function(type, data)
