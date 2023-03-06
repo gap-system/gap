@@ -35,6 +35,7 @@ GC_API void GC_CALL GC_register_displacement(size_t offset)
 
 GC_INNER void GC_register_displacement_inner(size_t offset)
 {
+    GC_ASSERT(I_HOLD_LOCK());
     if (offset >= VALID_OFFSET_SZ) {
         ABORT("Bad argument to GC_register_displacement");
     }
@@ -46,8 +47,7 @@ GC_INNER void GC_register_displacement_inner(size_t offset)
 
 #ifdef MARK_BIT_PER_GRANULE
   /* Add a heap block map for objects of size granules to obj_map.      */
-  /* Return FALSE on failure.                                           */
-  /* A size of 0 granules is used for large objects.                    */
+  /* A size of 0 is used for large objects.  Return FALSE on failure.   */
   GC_INNER GC_bool GC_add_map_entry(size_t granules)
   {
     unsigned displ;

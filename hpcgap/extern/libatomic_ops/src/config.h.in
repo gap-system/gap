@@ -9,7 +9,7 @@
 /* Assume target is not old AMD Opteron chip (only x86_64) */
 #undef AO_CMPXCHG16B_AVAILABLE
 
-/* Define to avoid C11 atomic intrinsics even if available. */
+/* Define to avoid GCC atomic intrinsics even if available. */
 #undef AO_DISABLE_GCC_ATOMICS
 
 /* Force test_and_set to use SWP instruction instead of LDREX/STREX (only arm
@@ -28,9 +28,9 @@
 /* Assume ancient MS VS Win32 headers (only VC/arm v6+, VC/x86) */
 #undef AO_OLD_STYLE_INTERLOCKED_COMPARE_EXCHANGE
 
-/* Prefer C11 atomic intrinsics over assembly-based implementation even in
+/* Prefer GCC atomic intrinsics over assembly-based implementation even in
    case of inefficient implementation (do not use assembly for any atomic_ops
-   primitive if C11/GCC atomic intrinsics available) */
+   primitive if the atomic intrinsics are available) */
 #undef AO_PREFER_BUILTIN_ATOMICS
 
 /* Prefer generalized definitions to direct assembly-based ones */
@@ -39,7 +39,7 @@
 /* Trace AO_malloc/free calls (for debug only) */
 #undef AO_TRACE_MALLOC
 
-/* Assume single-core target (only arm v6+) */
+/* Assume single-core target (only arm v6+ or GCC intrinsics) */
 #undef AO_UNIPROCESSOR
 
 /* Assume Win32 _Interlocked primitives available as intrinsics (only VC/arm)

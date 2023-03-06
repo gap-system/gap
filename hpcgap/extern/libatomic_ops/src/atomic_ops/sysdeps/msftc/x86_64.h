@@ -22,14 +22,15 @@
 
 #include "../all_aligned_atomic_load_store.h"
 
+#if !defined(_M_ARM64)
 /* Real X86 implementations appear                                      */
 /* to enforce ordering between memory operations, EXCEPT that a later   */
 /* read can pass earlier writes, presumably due to the visible          */
 /* presence of store buffers.                                           */
 /* We ignore the fact that the official specs                           */
 /* seem to be much weaker (and arguably too weak to be usable).         */
-
 #include "../ordered_except_wr.h"
+#endif
 
 #ifdef AO_ASM_X64_AVAILABLE
 # include "../test_and_set_t_is_char.h"

@@ -53,21 +53,17 @@
 #  endif
 
 #  if (!defined(AO_HAVE_test_and_set_acquire) || defined(GC_RTEMS_PTHREADS) \
-       || defined(SN_TARGET_ORBIS) || defined(SN_TARGET_PS3) \
+       || defined(SN_TARGET_PS3) \
        || defined(GC_WIN32_THREADS) || defined(BASE_ATOMIC_OPS_EMULATED) \
        || defined(LINT2)) && defined(GC_PTHREADS)
 #    define USE_PTHREAD_LOCKS
 #    undef USE_SPIN_LOCK
+#    if defined(LINT2) && !defined(NO_PTHREAD_TRYLOCK)
+#      define NO_PTHREAD_TRYLOCK
+#    endif
 #  endif
 
 #  if defined(GC_WIN32_THREADS) && !defined(USE_PTHREAD_LOCKS)
-#    ifndef WIN32_LEAN_AND_MEAN
-#      define WIN32_LEAN_AND_MEAN 1
-#    endif
-#    define NOSERVICE
-     EXTERN_C_END
-#    include <windows.h>
-     EXTERN_C_BEGIN
 #    define NO_THREAD (DWORD)(-1)
      GC_EXTERN CRITICAL_SECTION GC_allocate_ml;
 #    ifdef GC_ASSERTIONS

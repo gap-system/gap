@@ -33,6 +33,14 @@
   extern "C" {
 #endif
 
+#define GC_PROC_BYTES 100
+
+#if defined(GC_BUILD) || defined(NOT_GCBUILD)
+  struct GC_ms_entry;
+#else
+  struct GC_ms_entry { void *opaque; };
+#endif
+
 /* A client supplied mark procedure.  Returns new mark stack pointer.   */
 /* Primary effect should be to push new entries on the mark stack.      */
 /* Mark stack pointer values are passed and returned explicitly.        */
@@ -54,14 +62,10 @@
 /* residing on a free list.  Such objects are cleared, except for a     */
 /* free list link field in the first word.  Thus mark procedures may    */
 /* not count on the presence of a type descriptor, and must handle this */
-/* case correctly somehow.                                              */
-#define GC_PROC_BYTES 100
-
-#ifdef GC_BUILD
-  struct GC_ms_entry;
-#else
-  struct GC_ms_entry { void *opaque; };
-#endif
+/* case correctly somehow.  Also, a mark procedure should be prepared   */
+/* to be executed concurrently from the marker threads (the later ones  */
+/* are created only if the client has called GC_start_mark_threads()    */
+/* or started a user thread previously).                                */
 typedef struct GC_ms_entry * (*GC_mark_proc)(GC_word * /* addr */,
                                 struct GC_ms_entry * /* mark_stack_ptr */,
                                 struct GC_ms_entry * /* mark_stack_limit */,
@@ -152,12 +156,23 @@ GC_API struct GC_ms_entry * GC_CALL GC_mark_and_push(void * /* obj */,
            (GC_word)(obj) <= (GC_word)GC_greatest_plausible_heap_addr ? \
            GC_mark_and_push(obj, msp, lim, src) : (msp))
 
-GC_API size_t GC_debug_header_size;
-       /* The size of the header added to objects allocated through    */
-       /* the GC_debug routines.                                       */
-       /* Defined as a variable so that client mark procedures don't   */
-       /* need to be recompiled for collector version changes.         */
-#define GC_USR_PTR_FROM_BASE(p) ((void *)((char *)(p) + GC_debug_header_size))
+/* The size of the header added to objects allocated through the        */
+/* GC_debug routines.  Defined as a function so that client mark        */
+/* procedures do not need to be recompiled for the collector library    */
+/* version changes.                                                     */
+GC_API GC_ATTR_CONST size_t GC_CALL GC_get_debug_header_size(void);
+#define GC_USR_PTR_FROM_BASE(p) \
+                ((void *)((char *)(p) + GC_get_debug_header_size()))
+
+/* The same but defined as a variable.  Exists only for the backward    */
+/* compatibility.  Some compilers do not accept "const" together with   */
+/* deprecated or dllimport attributes, so the symbol is exported as     */
+/* a non-constant one.                                                  */
+GC_API GC_ATTR_DEPRECATED
+# ifdef GC_BUILD
+    const
+# endif
+  size_t GC_debug_header_size;
 
 /* And some routines to support creation of new "kinds", e.g. with      */
 /* custom mark procedures, by language runtimes.                        */

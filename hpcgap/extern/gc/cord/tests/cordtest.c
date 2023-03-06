@@ -221,8 +221,10 @@ void test_extras(void)
     *(CORD volatile *)&w = CORD_EMPTY;
     *(CORD volatile *)&z = CORD_EMPTY;
     GC_gcollect();
-    GC_invoke_finalizers();
+#   ifndef GC_NO_FINALIZATION
+      GC_invoke_finalizers();
             /* Of course, this does not guarantee the files are closed. */
+#   endif
     if (remove(FNAME1) != 0) {
         /* On some systems, e.g. OS2, this may fail if f1 is still open. */
         /* But we cannot call fclose as it might lead to double close.   */
@@ -270,6 +272,8 @@ int wrap_vfprintf(FILE * f, CORD format, ...)
 # endif
 #endif
 
+/* no static */ /* no const */ char *zu_format = (char*)"%zu";
+
 void test_printf(void)
 {
     CORD result;
@@ -277,14 +281,15 @@ void test_printf(void)
     long l = -1;
     short s = (short)-1;
     CORD x;
+    int res;
 
     if (CORD_sprintf(&result, "%7.2f%ln", 3.14159F, &l) != 7)
         ABORT("CORD_sprintf failed 1");
-    if (CORD_cmp(result, "   3.14") != 0)ABORT("CORD_sprintf goofed 1");
+    if (CORD_cmp(result, "   3.14") != 0) ABORT("CORD_sprintf goofed 1");
     if (l != 7) ABORT("CORD_sprintf goofed 2");
     if (CORD_sprintf(&result, "%-7.2s%hn%c%s", "abcd", &s, 'x', "yz") != 10)
         ABORT("CORD_sprintf failed 2");
-    if (CORD_cmp(result, "ab     xyz") != 0)ABORT("CORD_sprintf goofed 3");
+    if (CORD_cmp(result, "ab     xyz") != 0) ABORT("CORD_sprintf goofed 3");
     if (s != 7) ABORT("CORD_sprintf goofed 4");
     x = "abcdefghij";
     x = CORD_cat(x,x);
@@ -299,7 +304,26 @@ void test_printf(void)
         (void)sprintf(result2, "->%-120.78s!\n", CORD_to_char_star(x));
 #   endif
     result2[sizeof(result2) - 1] = '\0';
-    if (CORD_cmp(result, result2) != 0)ABORT("CORD_sprintf goofed 5");
+    if (CORD_cmp(result, result2) != 0) ABORT("CORD_sprintf goofed 5");
+
+#   ifdef GC_SNPRINTF
+        /* Check whether "%zu" specifier is supported; pass the format  */
+        /* string via a variable to avoid a compiler warning if not.    */
+        res = GC_SNPRINTF(result2, sizeof(result2), zu_format, (size_t)0);
+#   else
+        res = sprintf(result2, zu_format, (size_t)0);
+#   endif
+    result2[sizeof(result2) - 1] = '\0';
+    if (res == 1) /* is "%z" supported by printf? */ {
+        if (CORD_sprintf(&result, "%zu %zd 0x%0zx",
+                         (size_t)123, (size_t)4567, (size_t)0x4abc) != 15)
+            ABORT("CORD_sprintf failed 5");
+        if (CORD_cmp(result, "123 4567 0x4abc") != 0)
+            ABORT("CORD_sprintf goofed 5");
+    } else {
+        (void)CORD_printf("printf lacks support of 'z' modifier\n");
+    }
+
     /* TODO: Better test CORD_[v][f]printf.     */
     (void)CORD_printf(CORD_EMPTY);
     (void)wrap_vfprintf(stdout, CORD_EMPTY);

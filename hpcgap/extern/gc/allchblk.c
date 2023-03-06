@@ -130,7 +130,7 @@ void GC_print_hblkfreelist(void)
 
       if (0 != h) GC_printf("Free list %u (total size %lu):\n",
                             i, (unsigned long)GC_free_bytes[i]);
-      while (h != 0) {
+      while (h /* != NULL */) { /* CPPCHECK */
         hdr * hhdr = HDR(h);
 
         GC_printf("\t%p size %lu %s black listed\n",
@@ -389,7 +389,7 @@ STATIC void GC_add_to_fl(struct hblk *h, hdr *hhdr)
     GC_ASSERT(GC_free_bytes[index] <= GC_large_free_bytes);
     hhdr -> hb_next = second;
     hhdr -> hb_prev = 0;
-    if (0 != second) {
+    if (second /* != NULL */) { /* CPPCHECK */
       hdr * second_hdr;
 
       GET_HDR(second, second_hdr);
@@ -460,8 +460,8 @@ GC_INLINE void GC_adjust_num_unmapped(struct hblk *h GC_ATTR_UNUSED,
 # endif
 }
 
-/* Unmap blocks that haven't been recently touched.  This is the only way */
-/* way blocks are ever unmapped.                                          */
+/* Unmap blocks that haven't been recently touched.  This is the only   */
+/* way blocks are ever unmapped.                                        */
 GC_INNER void GC_unmap_old(void)
 {
     int i;
@@ -506,24 +506,6 @@ GC_INNER void GC_unmap_old(void)
       }
     }
 }
-
-# ifdef MPROTECT_VDB
-    GC_INNER GC_bool GC_has_unmapped_memory(void)
-    {
-      int i;
-
-      for (i = 0; i <= N_HBLK_FLS; ++i) {
-        struct hblk * h;
-        hdr * hhdr;
-
-        for (h = GC_hblkfreelist[i]; h != NULL; h = hhdr -> hb_next) {
-          hhdr = HDR(h);
-          if (!IS_MAPPED(hhdr)) return TRUE;
-        }
-      }
-      return FALSE;
-    }
-# endif /* MPROTECT_VDB */
 
 /* Merge all unmapped blocks that are adjacent to other free            */
 /* blocks.  This may involve remapping, since all blocks are either     */
@@ -587,7 +569,7 @@ GC_INNER void GC_merge_unmapped(void)
             GC_add_to_fl(h, hhdr);
             /* Start over at beginning of list */
             h = GC_hblkfreelist[i];
-          } else /* not mergable with successor */ {
+          } else /* not mergeable with successor */ {
             h = hhdr -> hb_next;
           }
       } /* while (h != 0) ... */
@@ -659,12 +641,12 @@ STATIC void GC_split_block(struct hblk *h, hdr *hhdr, struct hblk *n,
       nhdr -> hb_next = next;
       nhdr -> hb_sz = total_size - h_size;
       nhdr -> hb_flags = 0;
-      if (0 != prev) {
+      if (prev /* != NULL */) { /* CPPCHECK */
         HDR(prev) -> hb_next = n;
       } else {
         GC_hblkfreelist[index] = n;
       }
-      if (0 != next) {
+      if (next /* != NULL */) {
         HDR(next) -> hb_prev = n;
       }
       GC_ASSERT(GC_free_bytes[index] > h_size);
@@ -701,6 +683,7 @@ GC_allochblk(size_t sz, int kind, unsigned flags/* IGNORE_OFF_PAGE or 0 */)
     int split_limit; /* Highest index of free list whose blocks we      */
                      /* split.                                          */
 
+    GC_ASSERT(I_HOLD_LOCK());
     GC_ASSERT((sz & (GRANULE_BYTES - 1)) == 0);
     blocks = OBJ_SZ_TO_BLOCKS_CHECKED(sz);
     if ((signed_word)(blocks * HBLKSIZE) < 0) {
@@ -769,7 +752,11 @@ GC_allochblk_nth(size_t sz, int kind, unsigned flags, int n, int may_split)
         for (hbp = GC_hblkfreelist[n];; hbp = hhdr -> hb_next) {
             signed_word size_avail; /* bytes available in this block */
 
-            if (NULL == hbp) return NULL;
+            if (hbp /* != NULL */) {
+              /* CPPCHECK */
+            } else {
+              return NULL;
+            }
             GET_HDR(hbp, hhdr); /* set hhdr value */
             size_avail = (signed_word)hhdr->hb_sz;
             if (size_avail < size_needed) continue;
@@ -779,7 +766,7 @@ GC_allochblk_nth(size_t sz, int kind, unsigned flags, int n, int may_split)
               /* This prevents us from disassembling a single large     */
               /* block to get tiny blocks.                              */
               thishbp = hhdr -> hb_next;
-              if (thishbp != 0) {
+              if (thishbp /* != NULL */) { /* CPPCHECK */
                 signed_word next_size;
 
                 GET_HDR(thishbp, thishdr);
@@ -952,7 +939,7 @@ GC_INNER void GC_freehblk(struct hblk *hbp)
 
     GET_HDR(hbp, hhdr);
     size = HBLKSIZE * OBJ_SZ_TO_BLOCKS(hhdr->hb_sz);
-    if ((signed_word)size <= 0)
+    if ((size & SIGNB) != 0)
       ABORT("Deallocating excessively large block.  Too large an allocation?");
       /* Probably possible if we try to allocate more than half the address */
       /* space at once.  If we don't catch it here, strange things happen   */
@@ -983,7 +970,7 @@ GC_INNER void GC_freehblk(struct hblk *hbp)
         GC_remove_header(next);
       }
     /* Coalesce with predecessor, if possible. */
-      if (0 != prev) {
+      if (prev /* != NULL */) { /* CPPCHECK */
         prevhdr = HDR(prev);
         if (IS_MAPPED(prevhdr)
             && (signed_word)(hhdr -> hb_sz + prevhdr -> hb_sz) > 0) {

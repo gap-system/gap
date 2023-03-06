@@ -1,16 +1,17 @@
+/*
+ * Copyright (c) 1994 by Xerox Corporation.  All rights reserved.
+ *
+ * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
+ * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
+ *
+ * Permission is hereby granted to use or copy this program
+ * for any purpose,  provided the above notices are retained on all copies.
+ * Permission to modify the code and to distribute modified code is granted,
+ * provided the above notices are retained, and a notice that the code was
+ * modified is included with the above copyright notice.
+ */
+
 /****************************************************************************
-Copyright (c) 1994 by Xerox Corporation.  All rights reserved.
-
-THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
-OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
-
-Permission is hereby granted to use or copy this program for any
-purpose, provided the above notices are retained on all copies.
-Permission to modify the code and to distribute modified code is
-granted, provided the above notices are retained, and a notice that
-the code was modified is included with the above copyright notice.
-****************************************************************************
-
 usage: test_cpp number-of-iterations
 
 This program tries to test the specific C++ functionality provided by
@@ -35,12 +36,7 @@ few minutes to complete.
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef DONT_USE_STD_ALLOCATOR
-# include "gc_allocator.h"
-#else
-  /* Note: This works only for ancient STL versions.    */
-# include "new_gc_alloc.h"
-#endif
+#include "gc_allocator.h"
 
 # include "private/gcconfig.h"
 
@@ -75,23 +71,21 @@ extern "C" {
                     __LINE__ ); \
         exit( 1 ); }
 
-#ifndef GC_ATTR_EXPLICIT
-# if __cplusplus >= 201103L && !defined(__clang__) || _MSVC_LANG >= 201103L \
-     || defined(CPPCHECK)
-#   define GC_ATTR_EXPLICIT explicit
-# else
-#   define GC_ATTR_EXPLICIT /* empty */
-# endif
+#if defined(__powerpc64__) && !defined(__clang__) && GC_GNUC_PREREQ(10, 0)
+  /* Suppress "layout of aggregates ... has changed" GCC note. */
+# define A_I_TYPE short
+#else
+# define A_I_TYPE int
 #endif
 
 class A {public:
     /* An uncollectible class. */
 
-    GC_ATTR_EXPLICIT A( int iArg ): i( iArg ) {}
+    GC_ATTR_EXPLICIT A( int iArg ): i((A_I_TYPE)iArg) {}
     void Test( int iArg ) {
         my_assert( i == iArg );}
     virtual ~A() {}
-    int i;};
+    A_I_TYPE i; };
 
 
 class B: public GC_NS_QUALIFY(gc), public A { public:
@@ -165,7 +159,9 @@ class C: public GC_NS_QUALIFY(gc_cleanup), public A { public:
           GC_gcollect();
         }
         my_assert(nFreed <= nAllocated);
-        my_assert(nFreed >= (nAllocated / 5) * 4 || GC_get_find_leak());
+#       ifndef GC_NO_FINALIZATION
+            my_assert(nFreed >= (nAllocated / 5) * 4 || GC_get_find_leak());
+#       endif
     }
 
     static int nFreed;
@@ -189,7 +185,9 @@ class D: public GC_NS_QUALIFY(gc) { public:
         nFreed++;
         my_assert( (GC_word)self->i == (GC_word)data );}
     static void Test() {
-        my_assert(nFreed >= (nAllocated / 5) * 4 || GC_get_find_leak());
+#       ifndef GC_NO_FINALIZATION
+            my_assert(nFreed >= (nAllocated / 5) * 4 || GC_get_find_leak());
+#       endif
     }
 
     int i;
@@ -228,7 +226,9 @@ class F: public E {public:
     }
 
     static void Test() {
-        my_assert(nFreedF >= (nAllocatedF / 5) * 4 || GC_get_find_leak());
+#       ifndef GC_NO_FINALIZATION
+            my_assert(nFreedF >= (nAllocatedF / 5) * 4 || GC_get_find_leak());
+#       endif
         my_assert(2 * nFreedF == nFreed);
     }
 
@@ -318,24 +318,18 @@ void* Undisguise( GC_word i ) {
       GC_printf("This test program is not designed for leak detection mode\n");
 
     int i, iters, n;
-#   ifndef DONT_USE_STD_ALLOCATOR
-      int *x = gc_allocator<int>().allocate(1);
-      int *xio;
-      xio = gc_allocator_ignore_off_page<int>().allocate(1);
-      (void)xio;
-      int **xptr = traceable_allocator<int *>().allocate(1);
-#   else
-      int *x = (int *)gc_alloc::allocate(sizeof(int));
-#   endif
+    int *x = gc_allocator<int>().allocate(1);
+    int *xio;
+    xio = gc_allocator_ignore_off_page<int>().allocate(1);
+    GC_reachable_here(xio);
+    int **xptr = traceable_allocator<int *>().allocate(1);
     *x = 29;
-#   ifndef DONT_USE_STD_ALLOCATOR
-      if (!xptr) {
-        fprintf(stderr, "Out of memory!\n");
-        exit(3);
-      }
-      GC_PTR_STORE_AND_DIRTY(xptr, x);
-      x = 0;
-#   endif
+    if (!xptr) {
+      fprintf(stderr, "Out of memory!\n");
+      exit(3);
+    }
+    GC_PTR_STORE_AND_DIRTY(xptr, x);
+    x = 0;
     if (argc != 2
         || (n = (int)COVERT_DATAFLOW(atoi(argv[1]))) <= 0) {
       GC_printf("usage: test_cpp number-of-iterations\n"
@@ -363,7 +357,7 @@ void* Undisguise( GC_word i ) {
             D* d;
             F* f;
             d = ::new (USE_GC, D::CleanUp, (void*)(GC_word)i) D( i );
-            (void)d;
+            GC_reachable_here(d);
             f = new F;
             F** fa = new F*[1];
             fa[0] = f;
@@ -379,7 +373,7 @@ void* Undisguise( GC_word i ) {
         for (i = 0; i < 1000000; i++) {
             A* a;
             a = new (USE_GC) A( i );
-            (void)a;
+            GC_reachable_here(a);
             B* b;
             b = new B( i );
             (void)b;
@@ -388,7 +382,7 @@ void* Undisguise( GC_word i ) {
                 B::Deleting( 1 );
                 GC_CHECKED_DELETE(b);
                 B::Deleting( 0 );}
-#           ifdef FINALIZE_ON_DEMAND
+#           if defined(FINALIZE_ON_DEMAND) && !defined(GC_NO_FINALIZATION)
               GC_invoke_finalizers();
 #           endif
             }
@@ -410,7 +404,7 @@ void* Undisguise( GC_word i ) {
             B::Deleting( 1 );
             GC_CHECKED_DELETE(b);
             B::Deleting( 0 );
-#           ifdef FINALIZE_ON_DEMAND
+#           if defined(FINALIZE_ON_DEMAND) && !defined(GC_NO_FINALIZATION)
                  GC_invoke_finalizers();
 #           endif
             }
@@ -421,9 +415,7 @@ void* Undisguise( GC_word i ) {
         D::Test();
         F::Test();}
 
-#   ifndef DONT_USE_STD_ALLOCATOR
-      x = *xptr;
-#   endif
+    x = *xptr;
     my_assert (29 == x[0]);
     GC_printf( "The test appears to have succeeded.\n" );
     return( 0 );

@@ -1,12 +1,14 @@
 # Garbage collector scalability
 
-In its default configuration, the Boehm-Demers-Weiser garbage collector is not
-thread-safe. It can be made thread-safe for a number of environments
-by building the collector with `-DGC_THREADS` compilation flag. This has
-primarily two effects:
+If Makefile.direct is used, in its default configuration the
+Boehm-Demers-Weiser garbage collector is not thread-safe. Generally, it can be
+made thread-safe by building the collector with `-DGC_THREADS` compilation
+flag. This has primarily the following effects:
 
   1. It causes the garbage collector to stop all other threads when it needs
-  to see a consistent memory state.
+  to see a consistent memory state. It intercepts thread creation and
+  termination events to maintain a list of client threads to be stopped when
+  needed.
   2. It causes the collector to acquire a lock around essentially all
   allocation and garbage collection activity.  Since a single lock is used for
   all allocation-related activity, only one thread can be allocating
@@ -16,36 +18,35 @@ primarily two effects:
 On most platforms, the allocator/collector lock is implemented as a spin lock
 with exponential back-off. Longer wait times are implemented by yielding
 and/or sleeping. If a collection is in progress, the pure spinning stage
-is skipped. This has the advantage that uncontested and thus most uniprocessor
-lock acquisitions are very cheap. It has the disadvantage that the application
-may sleep for small periods of time even when there is work to be done. And
+is skipped. This has the uncontested advantage that most uniprocessor lock
+acquisitions are very cheap. It has the disadvantage that the application may
+sleep for small periods of time even when there is work to be done. And
 threads may be unnecessarily woken up for short periods. Nonetheless, this
 scheme empirically outperforms native queue-based mutual exclusion
 implementations in most cases, sometimes drastically so.
 
 ## Options for enhanced scalability
 
-Version 6.0 of the collector adds two facilities to enhance collector
-scalability on multiprocessors. As of 6.0alpha1, these are supported only
-under Linux on X86 and IA64 processors, though ports to other otherwise
-supported Pthreads platforms should be straightforward. They are intended
-to be used together.
+The collector uses two facilities to enhance collector scalability on
+multiprocessors. They are intended to be used together. (The following refers
+to Makefile.direct again.)
 
   * Building the collector with `-DPARALLEL_MARK` allows the collector to run
   the mark phase in parallel in multiple threads, and thus on multiple
-  processors. The mark phase typically consumes the large majority of the
-  collection time. Thus this largely parallelizes the garbage collector
-  itself, though not the allocation process. Currently the marking
+  processors (or processor cores). The mark phase typically consumes the large
+  majority of the collection time. Thus, this largely parallelizes the garbage
+  collector itself, though not the allocation process. Currently the marking
   is performed by the thread that triggered the collection, together with
-  _N_ - 1 dedicated threads, where _N_ is the number of processors detected
-  by the collector. The dedicated threads are created once at initialization
-  time (and optionally recreated in child processes after forking).
-  A second effect of this flag is to switch to a more concurrent
-  implementation of `GC_malloc_many`, so that free lists can be built, and
-  memory can be cleared, by more than one thread concurrently.
+  _N_ - 1 dedicated threads, where _N_ is the number of processors (cores)
+  detected by the collector. The dedicated marker threads are created when the
+  client calls `GC_start_mark_threads()` or when the client starts the first
+  non-main thread after the GC initialization (or after fork operation in
+  a child process). Another effect of this flag is to switch to a more
+  concurrent implementation of `GC_malloc_many`, so that free lists can be
+  built and memory can be cleared by more than one thread concurrently.
   * Building the collector with `-DTHREAD_LOCAL_ALLOC` adds support for
-  thread-local allocation. This causes `GC_malloc`, `GC_malloc_atomic`, and
-  `GC_gcj_malloc` to be redefined to perform thread-local allocation.
+  thread-local allocation. This causes `GC_malloc` (actually `GC_malloc_kind`)
+  and `GC_gcj_malloc` to be redefined to perform thread-local allocation.
 
 Memory returned from thread-local allocators is completely interchangeable
 with that returned by the standard allocators. It may be used by other
@@ -58,7 +59,7 @@ An important side effect of this flag is to replace the default
 spin-then-sleep lock to be replaced by a spin-then-queue based implementation.
 This _reduces performance_ for the standard allocation functions, though
 it usually improves performance when thread-local allocation is used heavily,
-and thus the number of short-duration lock acquisitions is greatly reduced.
+and, thus, the number of short-duration lock acquisitions is greatly reduced.
 
 ## The Parallel Marking Algorithm
 
@@ -86,18 +87,19 @@ It does require synchronization, but should be relatively rare.
 The sequential marking code is reused to process local mark stacks. Hence the
 amount of additional code required for parallel marking is minimal.
 
-It should be possible to use generational collection in the presence of the
-parallel collector, by calling `GC_enable_incremental`. This does not result
-in fully incremental collection, since parallel mark phases cannot currently
-be interrupted, and doing so may be too expensive.
+It should be possible to use incremental/generational collection in the
+presence of the parallel collector by calling `GC_enable_incremental`, but
+the current implementation does not allow interruption of the parallel marker,
+so the latter is mostly avoided if the client sets the collection time limit.
 
 Gcj-style mark descriptors do not currently mix with the combination of local
 allocation and incremental collection. They should work correctly with one or
 the other, but not both.
 
 The number of marker threads is set on startup to the number of available
-processors (or to the value of the `GC_NPROCS` environment variable). If only
-a single processor is detected, parallel marking is disabled.
+processor cores (or to the value of either `GC_MARKERS` or `GC_NPROCS`
+environment variable, if provided). If only a single processor is detected,
+parallel marking is disabled.
 
 Note that setting `GC_NPROCS` to 1 also causes some lock acquisitions inside
 the collector to immediately yield the processor instead of busy waiting
@@ -112,15 +114,15 @@ We conducted some simple experiments with a version of
 modified to run multiple concurrent client threads in the same address space.
 Each client thread does the same work as the original benchmark, but they
 share a heap. This benchmark involves very little work outside of memory
-allocation. This was run with GC 6.0alpha3 on a dual processor Pentium III/500
-machine under Linux 2.2.12.
+allocation. This was run with an ancient GC (released in 2000) on a dual
+processor Pentium III/500 machine under Linux 2.2.12.
 
 Running with a thread-unsafe collector, the benchmark ran in 9 seconds. With
 the simple thread-safe collector, built with `-DGC_THREADS`, the execution
 time increased to 10.3 seconds, or 23.5 elapsed seconds with two clients. (The
 times for the `malloc`/`free` version with glibc `malloc` are 10.51 (standard
 library, pthreads not linked), 20.90 (one thread, pthreads linked), and 24.55
-seconds respectively. The benchmark favors a garbage collector, since most
+seconds, respectively. The benchmark favors a garbage collector, since most
 objects are small.)
 
 The following table gives execution times for the collector built with
@@ -164,7 +166,7 @@ processor as 2 clients on 2 processors) is probably not achievable on this
 kind of hardware even with such a small number of processors, since the memory
 system is a major constraint for the garbage collector, the processors usually
 share a single memory bus, and thus the aggregate memory bandwidth does not
-increase in proportion to the number of processors.
+increase in proportion to the number of processors (cores).
 
 These results are likely to be very sensitive to both hardware and OS issues.
 Preliminary experiments with an older Pentium Pro machine running an older

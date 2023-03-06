@@ -54,9 +54,11 @@ EXTERN_C_BEGIN
 #   endif /* !GNU */
 # elif (defined(LINUX) && !defined(ARM32) && !defined(AVR32) \
          && GC_GNUC_PREREQ(3, 3) \
-         && !(defined(__clang__) && defined(HOST_ANDROID))) \
-       || (defined(FREEBSD) && defined(__GLIBC__) /* kFreeBSD */ \
-            && GC_GNUC_PREREQ(4, 4)) \
+         && !(defined(__clang__) && (defined(HOST_ANDROID) \
+                        || (defined(AARCH64) && !GC_CLANG_PREREQ(8, 0))))) \
+       || ((defined(NETBSD) && __NetBSD_Version__ >= 600000000 /* 6.0 */ \
+                || defined(FREEBSD)) \
+            && (GC_GNUC_PREREQ(4, 4) || GC_CLANG_PREREQ(3, 9))) \
        || (defined(HOST_ANDROID) && defined(ARM32) \
             && (GC_GNUC_PREREQ(4, 6) || GC_CLANG_PREREQ_FULL(3, 8, 256229)))
 #   define USE_COMPILER_TLS
@@ -133,13 +135,6 @@ typedef struct thread_local_freelists {
 # define GC_remove_specific_after_fork(key, t) (void)0
   typedef void * GC_key_t;
 #elif defined(USE_WIN32_SPECIFIC)
-# ifndef WIN32_LEAN_AND_MEAN
-#   define WIN32_LEAN_AND_MEAN 1
-# endif
-# define NOSERVICE
-  EXTERN_C_END
-# include <windows.h>
-  EXTERN_C_BEGIN
 # define GC_getspecific TlsGetValue
 # define GC_setspecific(key, v) !TlsSetValue(key, v)
         /* We assume 0 == success, msft does the opposite.      */

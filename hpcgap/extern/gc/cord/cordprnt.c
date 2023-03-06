@@ -10,6 +10,7 @@
  * provided the above notices are retained, and a notice that the code was
  * modified is included with the above copyright notice.
  */
+
 /* An sprintf implementation that understands cords.  This is probably  */
 /* not terribly portable.  It assumes an ANSI stdarg.h.  It further     */
 /* assumes that I can make copies of va_list variables, and read        */
@@ -43,19 +44,26 @@
 #define CONV_RESULT_LEN 50      /* Maximum length of any        */
                                 /* conversion with default      */
                                 /* width and prec.              */
+#if defined(CPPCHECK)
+# define MACRO_BLKSTMT_BEGIN {
+# define MACRO_BLKSTMT_END   }
+#else
+# define MACRO_BLKSTMT_BEGIN do {
+# define MACRO_BLKSTMT_END   } while (0)
+#endif
 
-#define OUT_OF_MEMORY do { \
+#define OUT_OF_MEMORY MACRO_BLKSTMT_BEGIN \
                         if (CORD_oom_fn != 0) (*CORD_oom_fn)(); \
                         fprintf(stderr, "Out of memory\n"); \
                         abort(); \
-                      } while (0)
+                      MACRO_BLKSTMT_END
 
 static int ec_len(CORD_ec x)
 {
     return (int)(CORD_len(x[0].ec_cord) + (x[0].ec_bufptr - x[0].ec_buf));
 }
 
-/* Possible nonumeric precision values. */
+/* Possible non-numeric precision values.   */
 # define NONE -1
 # define VARIABLE -2
 /* Copy the conversion specification from CORD_pos into the buffer buf  */
@@ -66,7 +74,7 @@ static int ec_len(CORD_ec x)
 /* If width or prec is *, VARIABLE is assigned.                         */
 /* Set *left to 1 if left adjustment flag is present.                   */
 /* Set *long_arg to 1 if long flag ('l' or 'L') is present, or to       */
-/* -1 if 'h' is present.                                                */
+/* -1 if 'h' is present, or to 2 if 'z' is present.                     */
 static int extract_conv_spec(CORD_pos source, char *buf,
                              int * width, int *prec, int *left, int * long_arg)
 {
@@ -119,6 +127,10 @@ static int extract_conv_spec(CORD_pos source, char *buf,
           case 'l':
           case 'L':
             *long_arg = 1;
+            current_number = 0;
+            break;
+          case 'z':
+            *long_arg = 2;
             current_number = 0;
             break;
           case 'h':
@@ -225,6 +237,9 @@ int CORD_vsprintf(CORD * out, CORD format, va_list args)
                             int * pos_ptr;
                             pos_ptr = va_arg(args, int *);
                             *pos_ptr = ec_len(result);
+                        } else if (long_arg == 2) {
+                            size_t * pos_ptr = va_arg(args, size_t *);
+                            *pos_ptr = (size_t)(unsigned)ec_len(result);
                         } else if (long_arg > 0) {
                             long * pos_ptr;
                             pos_ptr = va_arg(args, long *);
@@ -326,7 +341,9 @@ int CORD_vsprintf(CORD * out, CORD format, va_list args)
                         case 'c':
                             if (long_arg <= 0) {
                               (void) va_arg(args, int);
-                            } else /* long_arg > 0 */ {
+                            } else if (long_arg == 2) {
+                              (void) va_arg(args, size_t);
+                            } else /* long_arg == 1 */ {
                               (void) va_arg(args, long);
                             }
                             break;

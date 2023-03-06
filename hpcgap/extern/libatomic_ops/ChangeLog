@@ -1,4 +1,23 @@
 
+== [7.6.14] 2022-08-25 ==
+
+* Add note to README that AO malloc code has same license as AO stack
+* Adjust/reformat content of LICENSING.txt
+* Avoid AO_stack_t to cross CPU cache line boundary
+* Do not assume 'ordered except earlier write' for UWP/arm64
+* Do not name GCC intrinsics as C11 ones in ChangeLog and configure
+* Eliminate '-pedantic is not option that controls warnings' GCC-6.3 message
+* Ensure result of AO_test_and_set is always AO_TS_CLEAR or AO_TS_SET
+* Fix 'AO_malloc redefinition' MS VC warning caused by attributes mismatch
+* Fix 'use of undeclared SIG_BLOCK' Clang error if -std=c89 on Cygwin
+* Fix AO_compare_and_swap_full asm code for clang on sparc
+* Fix a typo in comment of AO_stack_push_explicit_aux_release
+* Fix code indentation in main() of test_stack.c
+* Refine AO_UNIPROCESSOR macro description in configure
+* Remove outdated comment about unsupported Win64 in atomic_ops_stack.h
+* Repeat black list check on CAS fail in stack_push_explicit_aux_release
+
+
 == [7.6.12] 2021-09-13 ==
 
 * Allow to generalize bool-CAS for sparc (gcc)
@@ -134,16 +153,16 @@ Also, includes 7.4.8 changes
 * Fix missing double_compare_and_swap_dd_acquire_read
 * Fix reporting about missing and/or/xor_dd_acquire_read (test_atomic)
 * Hide AO_locks symbol
-* Implement AO_CLEAR using C11 atomic intrinsic (GCC)
+* Implement AO_CLEAR using atomic intrinsic (GCC)
 * Implement CAS_acquire/release/full using __atomic_compare_exchange_n (gcc)
 * Implement char and/or/xor and short CAS for msftc ARM and X86[_64]
 * Implement char CAS and char/short add for msftc X86[_64] (VS 2013+)
-* Implement compiler_barrier using C11 __atomic_signal_fence (GCC)
+* Implement compiler_barrier using __atomic_signal_fence (GCC)
 * Implement int CAS/inc/dec for msftc/x86_64
 * Implement short inc/dec directly for msftc ARM and X86[_64]
 * Initial ibmc/powerpc (xlc) support
 * New configure option (--enable-werror) to treat warnings as compiler errors
-* New macro AO_PREFER_BUILTIN_ATOMICS to rely on C11 atomics fully (AArch64)
+* New macro AO_PREFER_BUILTIN_ATOMICS to rely on GCC atomics fully (AArch64)
 * Refine AO_nop_write comment for ARM big.LITTLE architecture
 * Refine configure messages when checking for compiler options
 * Refine documentation about _full memory ordering suffix
@@ -171,6 +190,18 @@ Also, includes 7.4.8 changes
 * Workaround a bug in double-wide intrinsics of Clang/x64 with ASan enabled
 * Workaround MSan warning about uninitialized data read by generalized store
 Also, includes 7.4.6 changes
+
+
+== [7.4.18] 2022-08-25 ==
+
+* Avoid AO_stack_t to cross CPU cache line boundary
+* Do not assume 'ordered except earlier write' for UWP/arm64
+* Ensure result of AO_test_and_set is always AO_TS_CLEAR or AO_TS_SET
+* Fix 'use of undeclared SIG_BLOCK' Clang error if -std=c89 on Cygwin
+* Fix a typo in comment of AO_stack_push_explicit_aux_release
+* Fix code indentation in main of test_stack.c
+* Remove outdated comment about unsupported Win64 in atomic_ops_stack.h
+* Repeat black list check on CAS fail in stack_push_explicit_aux_release
 
 
 == [7.4.16] 2021-09-13 ==
@@ -396,6 +427,15 @@ Also, includes 7.2e changes
 * Turn off AO primitives inlining if AO_NO_INLINE defined
 * Use __builtin_expect in CAS failure loop condition checks (GCC only)
 Also, includes 7.2 changes
+
+
+== [7.2k] 2022-08-24 ==
+
+* Avoid AO_stack_t to cross CPU cache line boundary
+* Fix a typo in comment of AO_stack_push_explicit_aux_release
+* Fix code indentation in main of test_stack.c
+* Remove outdated comment about unsupported Win64 in atomic_ops_stack.h
+* Repeat black list check on CAS fail in stack_push_explicit_aux_release
 
 
 == [7.2j] 2021-09-12 ==

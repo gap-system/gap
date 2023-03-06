@@ -4,13 +4,11 @@
 # A garbage collector for C and C++
 
   * Platforms
-  * Scalable multiprocessor versions
   * Some collector details
   * Further reading
-  * Current users
-  * Local Links for this collector
-  * Local Background Links
-  * Contacts and Mailing List
+  * Information provided on the BDWGC site
+  * More background information
+  * Contacts and new release announcements
 
 [ This is an updated version of the page formerly at
 `www.hpl.hp.com/personal/Hans_Boehm/gc/`, before that at
@@ -41,6 +39,8 @@ legacy. Usually you should use the one marked as the _latest stable_ release.
 Preview versions may contain additional features, platform support, but are
 likely to be less well tested. The list of changes for each version
 is specified on the [releases](https://github.com/ivmai/bdwgc/releases) page.
+The development version (snapshot) is available in the master branch of
+[bdwgc git](https://github.com/ivmai/bdwgc) repository on GitHub.
 
 The arguments for and against conservative garbage collection in C and C++ are
 briefly discussed [here](http://www.hboehm.info/gc/issues.html). The
@@ -50,51 +50,30 @@ beginnings of a frequently-asked-questions list are
 The garbage collector code is copyrighted by
 [Hans-J. Boehm](http://www.hboehm.info), Alan J. Demers,
 [Xerox Corporation](http://www.xerox.com/),
-[Silicon Graphics](http://www.sgi.com/), and
-[Hewlett-Packard Company](http://www.hp.com/). It may be used and copied
-without payment of a fee under minimal restrictions. See the README.md file
-in the distribution or the [license](http://www.hboehm.info/gc/license.txt)
-for more details. **IT IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY
-EXPRESSED OR IMPLIED. ANY USE IS AT YOUR OWN RISK**.
+[Silicon Graphics](http://www.sgi.com/),
+[Hewlett-Packard Company](http://www.hp.com/),
+[Ivan Maidanski](https://github.com/ivmai), and partially by some others.
+It may be used and copied without payment of a fee under minimal restrictions.
+See the README.md file in the distribution or the
+[license](http://www.hboehm.info/gc/license.txt) for more details.
+**IT IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED OR IMPLIED.
+ANY USE IS AT YOUR OWN RISK.**
 
 Empirically, this collector works with most unmodified C programs, simply
-by replacing `malloc` with `GC_malloc` calls, replacing `realloc` with
-`GC_realloc` calls, and removing free calls. Exceptions are discussed
+by replacing `malloc` and `calloc` with `GC_malloc` calls, replacing `realloc`
+with `GC_realloc` calls, and removing `free` calls. Exceptions are discussed
 [here](http://www.hboehm.info/gc/issues.html).
 
 ## Platforms
 
 The collector is not completely portable, but the distribution includes ports
 to most standard PC and UNIX/Linux platforms. The collector should work
-on Linux, *BSD, recent Windows versions, MacOS X, HP/UX, Solaris, Tru64, Irix
-and a few other operating systems. Some ports are more polished than others.
+on Linux, Android, BSD variants, OS/2, Windows (Win32 and Win64), MacOS X,
+iOS, HP/UX, Solaris, Tru64, Irix, Symbian and other operating systems. Some
+platforms are more polished (better supported) than others.
 
-Irix pthreads, Linux threads, Win32 threads, Solaris threads (pthreads only),
-HP/UX 11 pthreads, Tru64 pthreads, and MacOS X threads are supported in recent
-versions.
-
-### Separately distributed ports
-
-For MacOS 9/Classic use, Patrick Beard's latest port is available from
-`http://homepage.mac.com/pcbeard/gc/`. (Unfortunately, that's now quite dated.
-I'm not in a position to test under MacOS. Although I try to incorporate
-changes, it is impossible for me to update the project file.)
-
-Precompiled versions of the collector for NetBSD are available
-[here](ftp://ftp.netbsd.org/pub/pkgsrc/current/pkgsrc/devel/boehm-gc/README.html).
-
-
-[Debian Linux](http://www.debian.org/) includes prepackaged versions of the
-collector.
-
-## Scalable multiprocessor versions
-
-Kenjiro Taura, Toshio Endo, and Akinori Yonezawa have made available
-a [parallel collector](http://ieeexplore.ieee.org/abstract/document/1592629/)
-based on this one. Their collector takes advantage of multiple processors
-during a collection. Starting with GC v6.0alpha1 we also do this, though with
-more modest processor scalability goals. Our approach is discussed briefly
-in [this document](scale.md).
+Irix pthreads, Linux threads, Windows threads, Solaris threads (pthreads
+only), HP/UX 11 pthreads, Tru64 pthreads, and MacOS X threads are supported.
 
 ## Some Collector Details
 
@@ -102,7 +81,7 @@ The collector uses a [mark-sweep](http://www.hboehm.info/gc/complexity.html)
 algorithm. It provides incremental and generational collection under operating
 systems which provide the right kind of virtual memory support. (Currently
 this includes SunOS[45], IRIX, OSF/1, Linux, and Windows, with varying
-restrictions.) It allows [_finalization_](finalization.md) code to be invoked
+restrictions.) It allows [finalization](finalization.md) code to be invoked
 when an object is collected. It can take advantage of type information
 to locate pointers if such information is provided, but it is usually used
 without such information. See the README and `gc.h` files in the distribution
@@ -127,16 +106,18 @@ thread-local allocation, it may in some cases significantly outperform
 `malloc`/`free` allocation in time.
 
 We also expect that in many cases any additional overhead will be more than
-compensated for by decreased copying etc. if programs are written and tuned
+compensated for by e.g. decreased copying if programs are written and tuned
 for garbage collection.
 
 ## Further reading
 
 **The beginnings of a frequently asked questions list for this collector are
-[here](http://www.hboehm.info/gc/faq.html)**.
+[here](http://www.hboehm.info/gc/faq.html).**
 
-**The following provide information on garbage collection in general**: Paul
-Wilson's [garbage collection ftp archive](ftp://ftp.cs.utexas.edu/pub/garbage)
+**The following provide information on garbage collection in general:**
+
+Paul Wilson's
+[garbage collection ftp archive](ftp://ftp.cs.utexas.edu/pub/garbage)
 and [GC survey](ftp://ftp.cs.utexas.edu/pub/garbage/gcsurvey.ps).
 
 The Ravenbrook
@@ -149,7 +130,7 @@ Richard Jones'
 and his [book](http://www.cs.kent.ac.uk/people/staff/rej/gcbook/gcbook.html).
 
 **The following papers describe the collector algorithms we use and the
-underlying design decisions at a higher level.**
+underlying design decisions at a higher level:**
 
 (Some of the lower level details can be found [here](gcdescr.md).)
 
@@ -206,7 +187,7 @@ version. Includes a discussion of a collector facility to much more reliably
 test for the potential of unbounded heap growth.
 
 **The following papers discuss language and compiler restrictions necessary
-to guaranteed safety of conservative garbage collection.**
+to guaranteed safety of conservative garbage collection:**
 
 We thank John Levine and JCLT for allowing us to make the second paper
 available electronically, and providing PostScript for the final version.
@@ -239,68 +220,10 @@ Henry Baker's [paper collection](http://home.pipeline.com/%7Ehbaker1/).
 Slides for Hans Boehm's
 [Allocation and GC Myths](http://www.hboehm.info/gc/myths.ps) talk.
 
-## Current users
-
-Known current users of some variant of this collector include:
-
-The runtime system for [GCJ](https://gcc.gnu.org/onlinedocs/gcc-4.8.5/gcj/),
-the static GNU java compiler.
-
-[W3m](http://w3m.sourceforge.net/), a text-based web browser.
-
-Some versions of the Xerox DocuPrint printer software.
-
-The [Mozilla](http://www.mozilla.org/) project, as leak detector.
-
-The [Mono](http://www.mono-project.com) project, an open source implementation
-of the .NET development framework.
-
-The [DotGNU Portable.NET project](http://www.gnu.org/projects/dotgnu/),
-another open source .NET implementation.
-
-The [Irssi IRC client](http://irssi.org/).
-
-[The Berkeley Titanium project](http://titanium.cs.berkeley.edu/).
-
-[The NAGWare f90 Fortran 90 compiler](http://www.nag.co.uk/nagware/NP/NP_desc.asp).
-
-Elwood Corporation's Eclipse Common Lisp system, C library, and translator.
-
-The [Bigloo Scheme](http://www-sop.inria.fr/mimosa/fp/Bigloo/) and
-[Camloo ML compilers](https://github.com/samoht/camloo) written by Manuel
-Serrano and others.
-
-Brent Benson's
-[libscheme](http://www.cs.indiana.edu/scheme-repository/libscheme-vhll/final.html).
-
-The MzScheme scheme implementation.
-
-The
-[University of Washington Cecil Implementation](http://www.cs.washington.edu/research/projects/cecil/www/cecil-home.html).
-
-[The Berkeley Sather implementation](http://www1.icsi.berkeley.edu/~sather/).
-
-[The Berkeley Harmonia Project](http://www.cs.berkeley.edu/~harmonia/harmonia/index.html).
-
-The
-[Toba](http://www.cs.arizona.edu/projects/sumatra/toba/) Java Virtual Machine
-to C translator.
-
-The [Gwydion Dylan compiler](http://www.gwydiondylan.org/).
-
-The
-[GNU Objective C runtime](http://gcc.gnu.org/onlinedocs/gcc/Objective-C.html).
-
-[Macaulay 2](http://www.math.uiuc.edu/Macaulay2), a system to support research
-in algebraic geometry and commutative algebra.
-
-The [Vesta](http://www.vestasys.org/) configuration management system.
-
-[Visual Prolog 6](http://www.visual-prolog.com/).
-
-[Asymptote LaTeX-compatible vector graphics language](http://asymptote.sf.net/).
-
 ## Information provided on the BDWGC site
+
+[Current users](https://github.com/ivmai/bdwgc/wiki/Known-clients) (the list
+may be rather outdated).
 
 [A simple illustration of how to build and use the collector](simple_example.md).
 

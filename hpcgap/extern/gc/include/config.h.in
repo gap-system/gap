@@ -17,6 +17,9 @@
 /* Define to force debug headers on all objects. */
 #undef DBG_HDRS_ALL
 
+/* Do not use user32.dll import library (Win32). */
+#undef DONT_USE_USER32_DLL
+
 /* Define to enable eCos target support. */
 #undef ECOS
 
@@ -32,7 +35,7 @@
 /* Define to enable atomic uncollectible allocation. */
 #undef GC_ATOMIC_UNCOLLECTABLE
 
-/* Use C11 (GCC) atomic intrinsics instead of libatomic_ops primitives. */
+/* Use GCC atomic intrinsics instead of libatomic_ops primitives. */
 #undef GC_BUILTIN_ATOMIC
 
 /* Define to build dynamic libraries with only API symbols exposed. */
@@ -109,6 +112,16 @@
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
+
+/* Define to use 'pthread_setname_np(const char*)' function. */
+#undef HAVE_PTHREAD_SETNAME_NP_WITHOUT_TID
+
+/* Define to use 'pthread_setname_np(pthread_t, const char*)' function. */
+#undef HAVE_PTHREAD_SETNAME_NP_WITH_TID
+
+/* Define to use 'pthread_setname_np(pthread_t, const char*, void *)'
+   function. */
+#undef HAVE_PTHREAD_SETNAME_NP_WITH_TID_AND_ARG
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H

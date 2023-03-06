@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1991-1994 by Xerox Corporation.  All rights reserved.
  * Copyright (c) 1997 by Silicon Graphics.  All rights reserved.
+ * Copyright (c) 2009-2021 Ivan Maidanski
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -26,7 +27,7 @@
  * But then not much of anything is safe in the presence of dlclose.
  */
 
-#if !defined(MACOS) && !defined(SN_TARGET_ORBIS) && !defined(SN_TARGET_PSP2) \
+#if !defined(MACOS) && !defined(GC_NO_TYPES) && !defined(SN_TARGET_PSP2) \
     && !defined(_WIN32_WCE) && !defined(__CC_ARM)
 # include <sys/types.h>
 #endif
@@ -58,10 +59,10 @@ STATIC GC_has_static_roots_func GC_has_static_roots = 0;
     && !defined(CYGWIN32) && !defined(MSWIN32) && !defined(MSWINCE) \
     && !(defined(ALPHA) && defined(OSF1)) \
     && !(defined(FREEBSD) && defined(__ELF__)) \
-    && !((defined(LINUX) || defined(NACL)) && defined(__ELF__)) \
+    && !(defined(LINUX) && defined(__ELF__)) \
     && !(defined(NETBSD) && defined(__ELF__)) \
-    && !defined(HAIKU) && !defined(HURD) \
     && !(defined(OPENBSD) && (defined(__ELF__) || defined(M68K))) \
+    && !defined(HAIKU) && !defined(HURD) && !defined(NACL) \
     && !defined(CPPCHECK)
 # error We only know how to find data segments of dynamic libraries for above.
 # error Additional SVR4 variants might not be too hard to add.
@@ -88,10 +89,9 @@ STATIC GC_has_static_roots_func GC_has_static_roots = 0;
 # endif
 #endif /* OPENBSD */
 
-#if defined(SCO_ELF) || defined(DGUX) || defined(HURD) \
+#if defined(SCO_ELF) || defined(DGUX) || defined(HURD) || defined(NACL) \
     || (defined(__ELF__) && (defined(LINUX) || defined(FREEBSD) \
-                             || defined(NACL) || defined(NETBSD) \
-                             || defined(OPENBSD)))
+                             || defined(NETBSD) || defined(OPENBSD)))
 # include <stddef.h>
 # if !defined(OPENBSD) && !defined(HOST_ANDROID)
     /* OpenBSD does not have elf.h file; link.h below is sufficient.    */
@@ -150,8 +150,10 @@ STATIC GC_has_static_roots_func GC_has_static_roots = 0;
 #    elif defined(NETBSD) || defined(OPENBSD)
 #      if ELFSIZE == 32
 #        define ElfW(type) Elf32_##type
-#      else
+#      elif ELFSIZE == 64
 #        define ElfW(type) Elf64_##type
+#      else
+#        error Missing ELFSIZE define
 #      endif
 #    else
 #      if !defined(ELF_CLASS) || ELF_CLASS == ELFCLASS32
@@ -259,10 +261,9 @@ GC_INNER void GC_register_dynamic_libraries(void)
 # endif /* !USE_PROC ... */
 # endif /* SOLARISDL */
 
-#if defined(SCO_ELF) || defined(DGUX) || defined(HURD) \
+#if defined(SCO_ELF) || defined(DGUX) || defined(HURD) || defined(NACL) \
     || (defined(__ELF__) && (defined(LINUX) || defined(FREEBSD) \
-                             || defined(NACL) || defined(NETBSD) \
-                             || defined(OPENBSD)))
+                             || defined(NETBSD) || defined(OPENBSD)))
 
 #ifdef USE_PROC_FOR_LIBRARIES
 
@@ -305,10 +306,9 @@ static void sort_heap_sects(struct HeapSect *base, size_t number_of_elements)
     }
 }
 
-STATIC void GC_register_map_entries(char *maps)
+STATIC void GC_register_map_entries(const char *maps)
 {
-    char *prot;
-    char *buf_ptr = maps;
+    const char *prot;
     ptr_t start, end;
     unsigned int maj_dev;
     ptr_t least_ha, greatest_ha;
@@ -321,10 +321,9 @@ STATIC void GC_register_map_entries(char *maps)
                   + GC_our_memory[GC_n_memory-1].hs_bytes;
 
     for (;;) {
-        buf_ptr = GC_parse_map_entry(buf_ptr, &start, &end, &prot,
-                                     &maj_dev, 0);
-        if (NULL == buf_ptr)
-            break;
+        maps = GC_parse_map_entry(maps, &start, &end, &prot, &maj_dev, 0);
+        if (NULL == maps) break;
+
         if (prot[1] == 'w') {
             /* This is a writable mapping.  Add it to           */
             /* the root set unless it is already otherwise      */
@@ -399,11 +398,7 @@ STATIC void GC_register_map_entries(char *maps)
 
 GC_INNER void GC_register_dynamic_libraries(void)
 {
-    char *maps = GC_get_maps();
-
-    if (NULL == maps)
-        ABORT("Failed to read /proc for library registration");
-    GC_register_map_entries(maps);
+    GC_register_map_entries(GC_get_maps());
 }
 
 /* We now take care of the main data segment ourselves: */
@@ -841,7 +836,7 @@ GC_INNER void GC_register_dynamic_libraries(void)
     }
     if (ioctl(fd, PIOCNMAP, &needed_sz) < 0) {
         ABORT_ARG2("/proc PIOCNMAP ioctl failed",
-                   ": fd = %d, errno = %d", fd, errno);
+                   ": fd= %d, errno= %d", fd, errno);
     }
     if (needed_sz >= current_sz) {
         GC_scratch_recycle_no_gww(addr_map,
@@ -857,7 +852,7 @@ GC_INNER void GC_register_dynamic_libraries(void)
         ABORT_ARG3("/proc PIOCMAP ioctl failed",
                    ": errcode= %d, needed_sz= %d, addr_map= %p",
                    errno, needed_sz, (void *)addr_map);
-    };
+    }
     if (GC_n_heap_sects > 0) {
         heap_end = GC_heap_sects[GC_n_heap_sects-1].hs_start
                         + GC_heap_sects[GC_n_heap_sects-1].hs_bytes;
@@ -919,6 +914,8 @@ GC_INNER void GC_register_dynamic_libraries(void)
     }
     /* Don't keep cached descriptor, for now.  Some kernels don't like us */
     /* to keep a /proc file descriptor around during kill -9.             */
+    /* Otherwise, it should also require FD_CLOEXEC and proper handling   */
+    /* at fork (i.e. close because of the pid change).                    */
         if (close(fd) < 0) ABORT("Couldn't close /proc file");
         fd = -1;
 }
@@ -927,11 +924,6 @@ GC_INNER void GC_register_dynamic_libraries(void)
 
 # if defined(MSWIN32) || defined(MSWINCE) || defined(CYGWIN32)
 
-# ifndef WIN32_LEAN_AND_MEAN
-#   define WIN32_LEAN_AND_MEAN 1
-# endif
-# define NOSERVICE
-# include <windows.h>
 # include <stdlib.h>
 
   /* We traverse the entire address space and register all segments     */
@@ -985,11 +977,12 @@ GC_INNER void GC_register_dynamic_libraries(void)
 # ifdef DEBUG_VIRTUALQUERY
   void GC_dump_meminfo(MEMORY_BASIC_INFORMATION *buf)
   {
-    GC_printf("BaseAddress = 0x%lx, AllocationBase = 0x%lx,"
-              " RegionSize = 0x%lx(%lu)\n", buf -> BaseAddress,
-              buf -> AllocationBase, buf -> RegionSize, buf -> RegionSize);
-    GC_printf("\tAllocationProtect = 0x%lx, State = 0x%lx, Protect = 0x%lx, "
-              "Type = 0x%lx\n", buf -> AllocationProtect, buf -> State,
+    GC_printf("BaseAddress= 0x%lx, AllocationBase= 0x%lx,"
+              " RegionSize= 0x%lx(%lu)\n",
+              buf -> BaseAddress, buf -> AllocationBase,
+              buf -> RegionSize, buf -> RegionSize);
+    GC_printf("\tAllocationProtect= 0x%lx, State= 0x%lx, Protect= 0x%lx, "
+              "Type= 0x%lx\n", buf -> AllocationProtect, buf -> State,
               buf -> Protect, buf -> Type);
   }
 # endif /* DEBUG_VIRTUALQUERY */
@@ -1118,10 +1111,10 @@ GC_INNER void GC_register_dynamic_libraries(void)
 
 #     ifdef DL_VERBOSE
         GC_log_printf("---Module---\n");
-        GC_log_printf("Module ID\t = %16ld\n", moduleinfo.lmi_modid);
-        GC_log_printf("Count of regions = %16d\n", moduleinfo.lmi_nregion);
-        GC_log_printf("flags for module = %16lx\n", moduleinfo.lmi_flags);
-        GC_log_printf("module pathname\t = \"%s\"\n", moduleinfo.lmi_name);
+        GC_log_printf("Module ID: %ld\n", moduleinfo.lmi_modid);
+        GC_log_printf("Count of regions: %d\n", moduleinfo.lmi_nregion);
+        GC_log_printf("Flags for module: %016lx\n", moduleinfo.lmi_flags);
+        GC_log_printf("Module pathname: \"%s\"\n", moduleinfo.lmi_name);
 #     endif
 
       /* For each region in this module */
@@ -1138,14 +1131,12 @@ GC_INNER void GC_register_dynamic_libraries(void)
 
 #         ifdef DL_VERBOSE
             GC_log_printf("--- Region ---\n");
-            GC_log_printf("Region number\t = %16ld\n",
-                          regioninfo.lri_region_no);
-            GC_log_printf("Protection flags = %016x\n", regioninfo.lri_prot);
-            GC_log_printf("Virtual address\t = %16p\n", regioninfo.lri_vaddr);
-            GC_log_printf("Mapped address\t = %16p\n",
-                          regioninfo.lri_mapaddr);
-            GC_log_printf("Region size\t = %16ld\n", regioninfo.lri_size);
-            GC_log_printf("Region name\t = \"%s\"\n", regioninfo.lri_name);
+            GC_log_printf("Region number: %ld\n", regioninfo.lri_region_no);
+            GC_log_printf("Protection flags: %016x\n", regioninfo.lri_prot);
+            GC_log_printf("Virtual address: %p\n", regioninfo.lri_vaddr);
+            GC_log_printf("Mapped address: %p\n", regioninfo.lri_mapaddr);
+            GC_log_printf("Region size: %ld\n", regioninfo.lri_size);
+            GC_log_printf("Region name: \"%s\"\n", regioninfo.lri_name);
 #         endif
 
           /* register region as a garbage collection root */
@@ -1197,15 +1188,14 @@ GC_INNER void GC_register_dynamic_libraries(void)
 
 #     ifdef DL_VERBOSE
         GC_log_printf("---Shared library---\n");
-        GC_log_printf("\tfilename\t= \"%s\"\n", shl_desc->filename);
-        GC_log_printf("\tindex\t\t= %d\n", index);
-        GC_log_printf("\thandle\t\t= %08x\n",
-                      (unsigned long) shl_desc->handle);
-        GC_log_printf("\ttext seg.start\t= %08x\n", shl_desc->tstart);
-        GC_log_printf("\ttext seg.end\t= %08x\n", shl_desc->tend);
-        GC_log_printf("\tdata seg.start\t= %08x\n", shl_desc->dstart);
-        GC_log_printf("\tdata seg.end\t= %08x\n", shl_desc->dend);
-        GC_log_printf("\tref.count\t= %lu\n", shl_desc->ref_count);
+        GC_log_printf("filename= \"%s\"\n", shl_desc->filename);
+        GC_log_printf("index= %d\n", index);
+        GC_log_printf("handle= %08x\n", (unsigned long) shl_desc->handle);
+        GC_log_printf("text seg.start= %08x\n", shl_desc->tstart);
+        GC_log_printf("text seg.end= %08x\n", shl_desc->tend);
+        GC_log_printf("data seg.start= %08x\n", shl_desc->dstart);
+        GC_log_printf("data seg.end= %08x\n", shl_desc->dend);
+        GC_log_printf("ref.count= %lu\n", shl_desc->ref_count);
 #     endif
 
       /* register shared library's data segment as a garbage collection root */

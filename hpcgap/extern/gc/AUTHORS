@@ -55,6 +55,7 @@ Andrew McKinlay <mckinlay@axonsoft.com>
 Andrew Pinski <pinskia@physics.uc.edu>
 Andrew Stitcher <astitcher@redhat.com>
 Andrew Stone <andrew@stone.com>
+Andrew Whatson <whatson@gmail.com>
 Andy Li <andy@onthewings.net>
 Andy Wingo <wingo@pobox.com>
 Anselm Baird-Smith <Anselm.BairdSmith@inria.fr>
@@ -85,6 +86,7 @@ Brian Beuning <bbeuning@corecard.com>
 Brian Burton <bburton@users.sourceforge.net>
 Brian D. Carlstrom <bdc@clark.lcs.mit.edu>
 Brian F. Dennis <xjam@cork.cs.berkeley.edu>
+Brian J. Cardiff <bcardiff@gmail.com>
 Brian Lewis <btlewis@eng.sun.com>
 Bruce A Henderson <woollybah@gmail.com>
 Bruce Hoult <bruce@hoult.org>
@@ -128,17 +130,19 @@ David Daney <ddaney@avtrex.com>
 David Grove <groved@us.ibm.com>
 David Leonard <leonard@users.sourceforge.net>
 David Miller <davem@davemloft.net>
-David Mossberger
+David Mosberger <davidm@hpl.hp.com>
 David Peroutka <djp@volny.cz>
 David Pickens <dsp@rci.rutgers.edu>
 David Stes <stes@d5e02b1d.kabel.telenet.be>
 David Terei <d@davidterei.com>
 David Van Horn <dvanhorn@ccs.neu.edu>
 Davide Angelocola <davide.angelocola@tiscali.it>
+Davide Beatrici <git@davidebeatrici.dev>
 Demyan Kimitsa <demyan.kimitsa@gmail.com>
 Dick Porter <dick@acm.org>
 Dietmar Planitzer <dave.pl@ping.at>
 Dima Pasechnik <dimpase@gmail.com>
+Dimitris Apostolou <dimitris.apostolou@icloud.com>
 Dimitris Vyzovitis <vyzo@media.mit.edu>
 Dimitry Andric <dim@freebsd.org>
 Djamel Magri <djamel.magri@googlemail.com>
@@ -162,6 +166,7 @@ Friedrich Dominicus <friedrichdominicus@googlemail.com>
 Gabor Drescher <gabor.drescher@cs.fau.de>
 Gary Leavens <leavens@eecs.ucf.edu>
 Geoff Norton <grompf@sublimeintervention.com>
+George Koehler <kernigh@gmail.com>
 George Talbot <Gtalbot@ansarisbio.com>
 Gerard A Allan
 Glauco Masotti <glauco.masotti@libero.it>
@@ -184,6 +189,7 @@ Iain Sandoe <developer@sandoe-acoustics.co.uk>
 Ian Piumarta <piumarta@prof.inria.fr>
 Ian Searle <ians@eskimo.com>
 Igor Khavkine <i_khavki@alcor.concordia.ca>
+Ilya Kurdyukov <ilyakurdyukov@altlinux.org>
 Ivan Demakov <ivan@tgrad.nsk.su>
 Ivan Maidanski <ivmai@mail.ru>
 Ivan R <iarspider@gmail.com>
@@ -191,8 +197,10 @@ Jaap Boender <jaapb@netbsd.org>
 Jack Andrews <effbiae@gmail.com>
 Jacob Navia <jacob.navia@jacob.remcomp.fr>
 Jakub Jelinek <jakub@redhat.com>
+Jakub Wojciech <jakub-w@riseup.net>
 James Clark <jjc@jclark.com>
 James Dominy
+James Moran <jamesmo@unity3d.com>
 Jan Alexander Steffens <jan.steffens@gmail.com>
 Jan Wielemaker <J.Wielemaker@cs.vu.nl>
 Jani Kajala <jani@sumea.com>
@@ -207,7 +215,7 @@ Jeffrey Hsu <hsu@soda.berkeley.edu>
 Jeffrey Mark Siskind
 Jeremy Fitzhardinge <jeremy@goop.org>
 Jesper Peterson <jep@mtiame.mtia.oz.au>
-Jesse Hull
+Jesse Hull <jhull@parc.xerox.com>
 Jesse Jones <jesjones@mindspring.com>
 Jesse Rosenstock <jmr@ugcs.caltech.edu>
 Ji-Yong Chung
@@ -221,7 +229,8 @@ Johannes Totz <jtotz@ic.ac.uk>
 John Bowman <bowman@ualberta.ca>
 John Clements <clements@brinkerhoff.org>
 John David Anglin <dave.anglin@bell.net>
-John Ellis <ellis@xerox.parc.com>
+John Ellis <ellis@parc.xerox.com>
+John Ericson <git@JohnEricson.me>
 John Merryweather Cooper <jmerry@mono-cvs.ximian.com>
 Jon Moore <jonm@apache.org>
 Jonas Echterhoff <jonas@unity3d.com>
@@ -280,16 +289,21 @@ Martin Hirzel <hirzel@cs.colorado.edu>
 Martin Koeppe <mkoeppe@gmx.de>
 Martin Tauchmann <martintauchmann@bigfoot.com>
 Massimiliano Gubinelli <m.gubinelli@gmail.com>
+Matheus Rambo <mrambo@grupodimed.com.br>
 Matt Austern <austern@google.com>
 Matthew Flatt <mflatt@plt-scheme.org>
 Matthias Andree <matthias.andree@gmx.de>
 Matthias Drochner <M.Drochner@fz-juelich.de>
+Matthieu Herrb <matthieu@openbsd.org>
 Maurizio Vairani <maurizio.vairani@cloverinformatica.it>
 Max Mouratov <mmouratov@gmail.com>
+Maximilian Downey Twiss <creatorsmithmdt@gmail.com>
+Maya Rashish <coypu@sdf.org>
 Melissa O'Neill <oneill@cs.sfu.ca>
 Michael Arnoldus <chime@proinf.dk>
 Michael DeRoy <deroymichael@gmail.com>
 Michael Fox <mfox@cavium.com>
+Michael Herring <khakionion@gmail.com>
 Michael Smith <msmith@spinnakernet.com>
 Michael Spertus <mps@geodesic.com>
 Michel Schinz <schinz@alphanet.ch>
@@ -305,6 +319,7 @@ Naoyuki Sawa <sawa_naoyuki-1@yahoo.co.jp>
 Nathanael Nerode <neroden@twcny.rr.com>
 Neale Ferguson <neale@mono-cvs.ximian.com>
 Neil Sharman <neil@cs.mu.oz.au>
+Nguyen Thai Ngoc Duy <pclouds@gmail.com>
 Nicolas Cannasse <ncannasse@motion-twin.com>
 Niibe Yutaka <gniibe@fsij.org>
 Nikita Ermakov <coffe92@gmail.com>
@@ -371,16 +386,20 @@ Salvador Eduardo Tropea <salvador@inti.gov.ar>
 Samuel Martin <s.martin49@gmail.com>
 Samuel Thibault <samuel.thibault@gnu.org>
 Scott Ananian <cananian@lesser-magoo.lcs.mit.edu>
+Scott Ferguson <scott.ferguson@unity3d.com>
 Scott Schwartz <schwartz@groucho.cse.psu.edu>
 Shawn Wagner <shawnw@speakeasy.org>
 Shea Levy <shea@shealevy.com>
 Shiro Kawai <shiro@lava.net>
 Simon Gornall <simon@gornall.net>
+Simon Kainz <simon@familiekainz.at>
 Simon Posnjak <simon.posnjak@siol.net>
 Slava Sysoltsev <Viatcheslav.Sysoltsev@h-d-gmbh.de>
 Sorawee Porncharoenwase <sorawee.pwase@gmail.com>
+ssrlive <ssrlivebox@gmail.com>
 Stefan Ring <stefanrin@gmail.com>
 Stefano Rivera <stefano@rivera.za.net>
+Steve Youngs <steve@sxemacs.org>
 Sugioka Toshinobu <sugioka@itonet.co.jp>
 Suzuki Toshiya <mpsuzuki@hiroshima-u.ac.jp>
 Sven Hartrumpf <Sven.Hartrumpf@fernuni-hagen.de>
@@ -399,6 +418,7 @@ Thomas Thiriez <thomas@twistedwave.com>
 Thorsten Glaser <tg@debian.org>
 Tilman Vogel <Tilman.Vogel@web.de>
 Tim Bingham <tjb@zko.dec.com>
+Tim Cannell <timcannell@unity3d.com>
 Tim Gates <tim.gates@iress.com>
 Timothy N. Newsham <newsham@wiliki.eng.hawaii.edu>
 Tom Tromey <tromey@cygnus.com>
@@ -415,6 +435,7 @@ Uros Bizjak <ubizjak@gmail.com>
 Vernon Lee <scorpion@rice.edu>
 Victor Ivrii <ivrii@math.toronto.edu>
 Victor Romero <romerosanchezv@gmail.com>
+Vineet Gupta <vgupta@synopsys.com>
 Vitaly Magerya <vmagerya@gmail.com>
 Vladimir Tsichevski <wowa@jet.msk.su>
 Walter Bright <walter@walterbright.com>
@@ -426,10 +447,12 @@ Xi Wang <xi.wang@gmail.com>
 Xiaokun Zhu <xiaokun@aero.gla.ac.uk>
 Yann Dirson <dirson@debian.org>
 Yannis Bres <Yannis@bres.name>
+Yasuhiro Kimura <yasu@utahime.org>
 Yuki Okumura <mjt@cltn.org>
 Yusuke Suzuki <utatane.tea@gmail.com>
 Yvan Roux <yvan.roux@linaro.org>
 Zach Saw <zach.saw@gmail.com>
+Zhang Na <zhangna@loongson.cn>
 Zhiying Chen
 Zhong Shao <zhong.shao@yale.edu>
 Zoltan Varga <vargaz@gmail.com>

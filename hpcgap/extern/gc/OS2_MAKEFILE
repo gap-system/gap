@@ -3,7 +3,7 @@
 # Adding thread support may be nontrivial, since we haven't yet figured out how to
 # look at another thread's registers.
 
-# Significantly revised for GC version 4.4 by Mark Boulter (Jan 1994).
+# Significantly revised by Mark Boulter (Jan 1994).
 
 OBJS= alloc.obj reclaim.obj allchblk.obj misc.obj mach_dep.obj os_dep.obj mark_rts.obj headers.obj mark.obj obj_map.obj blacklst.obj finalize.obj new_hblk.obj dbg_mlc.obj fnlz_mlc.obj malloc.obj typd_mlc.obj ptr_chck.obj mallocx.obj gcj_mlc.obj
 
@@ -15,7 +15,11 @@ CFLAGS= /O /Q /DALL_INTERIOR_POINTERS /DENABLE_DISCLAIM /DGC_ATOMIC_UNCOLLECTABL
 # Setjmp_test may yield overly optimistic results when compiled
 # without optimization.
 
-all: $(OBJS) gctest.exe cord\cordtest.exe
+all: gc.lib cord.lib
+
+check: gctest.exe cordtest.exe
+        gctest.exe
+        cordtest.exe
 
 $(OBJS) test.obj: include\private\gc_priv.h include\private\gc_hdrs.h include\gc.h include\private\gcconfig.h
 
@@ -41,5 +45,15 @@ cord\cordxtra.obj: cord\cordxtra.c include\cord.h include\cord_pos.h include\ec.
 cord\cordprnt.obj: cord\cordprnt.c include\cord.h include\cord_pos.h include\ec.h
         $(CC) $(CFLAGS) /C /Focord\cordprnt cord\cordprnt.c
 
-cord\cordtest.exe: cord\tests\cordtest.c include\cord.h include\cord_pos.h include\ec.h $(CORDOBJS) gc.lib
-        $(CC) $(CFLAGS) /B"/STACK:65536" /Fecord\cordtest cord\tests\cordtest.c gc.lib $(CORDOBJS)
+cord.lib: $(CORDOBJS)
+        echo . > cord.lib
+        erase cord.lib
+        LIB cord.lib $(CORDOBJS), cord.lst
+
+cordtest.exe: cord\tests\cordtest.c include\cord.h include\cord_pos.h include\ec.h gc.lib cord.lib
+        $(CC) $(CFLAGS) /B"/STACK:65536" /Fecordtest cord\tests\cordtest.c gc.lib cord.lib
+
+clean:
+        erase gc.lib cord.lib
+        erase gctest.exe cordtest.exe
+        erase $(OBJS) $(CORDOBJS)

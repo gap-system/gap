@@ -45,13 +45,8 @@ int getpagesize(void)
     }
     return((int)(result[0]));
 }
-#elif defined(MSWIN32) || defined(MSWINCE) || defined(CYGWIN32)
-# ifndef WIN32_LEAN_AND_MEAN
-#   define WIN32_LEAN_AND_MEAN 1
-# endif
-# define NOSERVICE
-# include <windows.h>
 
+#elif defined(MSWIN32) || defined(MSWINCE) || defined(CYGWIN32)
   int getpagesize(void)
   {
     SYSTEM_INFO sysinfo;
@@ -81,12 +76,18 @@ word (*volatile nested_sp_fn)(void) = nested_sp;
 
 int g(int x);
 
+#if defined(CPPCHECK) || !defined(__cplusplus)
+  const char *a_str = "a";
+#else
+# define a_str "a"
+#endif
+
 int main(void)
 {
     volatile word sp;
     unsigned ps = GETPAGESIZE();
     JMP_BUF b;
-    register int x = (int)strlen("a");  /* 1, slightly disguised */
+    register int x = (int)strlen(a_str); /* 1, slightly disguised */
     static volatile int y = 0;
 
     sp = (word)(&sp);

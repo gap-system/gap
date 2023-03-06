@@ -3,7 +3,7 @@ both free and proprietary software.  Hence most code that we expect to be
 linked into a client application is covered by an MIT-style license.
 
 A few library routines are covered by the GNU General Public License.
-These are put into a separate library, libatomic_ops_gpl.a .
+These are put into a separate library, libatomic_ops_gpl.a file.
 
 The low-level part of the library is mostly covered by the following
 license:
@@ -32,8 +32,9 @@ SOFTWARE.
 
 --------------------------------
 
-A few files in the sysdeps directory were inherited in part from the
-Boehm-Demers-Weiser conservative garbage collector, and are covered by
+
+A few files in the atomic_ops/sysdeps directory were inherited in part from
+the Boehm-Demers-Weiser conservative garbage collector, and are covered by
 its license, which is similar in spirit:
 
 --------------------------------
@@ -51,11 +52,12 @@ modified is included with the above copyright notice.
 
 ----------------------------------
 
+
 A few files are covered by the GNU General Public License.  (See file
-"COPYING".) This applies only to test code, sample applications,
-and the libatomic_ops_gpl portion of the library.
-Thus libatomic_ops_gpl should generally not be linked into proprietary code.
-(This distinction was motivated by patent considerations.)
+"COPYING".)  This applies only to the test code and the libatomic_ops_gpl
+portion of the library.  Thus, libatomic_ops_gpl should generally not be
+linked into proprietary code.  (This distinction was motivated by patent
+considerations.)
 
 It is possible that the license of the GPL pieces may be changed for
 future versions to make them more consistent with the rest of the package.

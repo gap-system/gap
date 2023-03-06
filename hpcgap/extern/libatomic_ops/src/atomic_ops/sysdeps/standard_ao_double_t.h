@@ -28,7 +28,7 @@
 # if AO_GNUC_PREREQ(4, 7) || AO_CLANG_PREREQ(3, 6)
 #   pragma GCC diagnostic push
     /* Suppress warning about __int128 type.      */
-#   if defined(__clang__) || AO_GNUC_PREREQ(6, 4)
+#   if defined(__clang__) || AO_GNUC_PREREQ(6, 0)
 #     pragma GCC diagnostic ignored "-Wpedantic"
 #   else
       /* GCC before ~4.8 does not accept "-Wpedantic" quietly.  */

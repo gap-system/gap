@@ -45,7 +45,9 @@ void* GC_MacGetDataStart(void)
         }
         fprintf(stderr, "Couldn't load the jump table.");
         exit(-1);
-        return 0;
+# if !defined(CPPCHECK)
+        return 0; /* to avoid compiler complain about missing return */
+# endif
 }
 
 #ifdef USE_TEMPORARY_MEMORY
@@ -95,8 +97,6 @@ Ptr GC_MacTemporaryNewPtr(size_t size, Boolean clearMemory)
         return tempPtr;
 }
 
-extern word GC_fo_entries;
-
 static void perform_final_collection(void)
 {
   unsigned i;
@@ -126,7 +126,7 @@ void GC_MacFreeTemporaryMemory(void)
         long totalMemoryUsed = 0;
 #     endif
         TemporaryMemoryHandle tempMemBlock = theTemporaryMemory;
-        while (tempMemBlock != NULL) {
+        while (tempMemBlock /* != NULL */) {
                 TemporaryMemoryHandle nextBlock = (**tempMemBlock).nextBlock;
 #             if !defined(SHARED_LIBRARY_BUILD)
                 totalMemoryUsed += GetHandleSize((Handle)tempMemBlock);
@@ -161,7 +161,9 @@ void GC_MacFreeTemporaryMemory(void)
         }
         fprintf(stderr, "Couldn't load the jump table.");
         exit(-1);
+#   if !defined(CPPCHECK)
         return 0;
+#   endif
   }
 
 #endif /* __option(far_data) */

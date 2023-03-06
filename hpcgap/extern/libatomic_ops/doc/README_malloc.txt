@@ -1,5 +1,8 @@
 The libatomic_ops_gpl includes a simple almost-lock-free malloc implementation.
 
+Note that the AO malloc implementation is licensed under the GPL, unlike the
+lower level routines.
+
 This is intended as a safe way to allocate memory from a signal handler,
 or to allocate memory in the context of a library that does not know what
 thread library it will be used with.  In either case locking is impossible.

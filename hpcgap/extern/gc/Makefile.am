@@ -14,8 +14,8 @@
 # Info (current:revision:age) for the Libtool versioning system.
 # These numbers should be updated at most once just before the release,
 # and, optionally, at most once during the development (after the release).
-LIBGC_VER_INFO = 5:4:4
-LIBGCCPP_VER_INFO = 5:1:4
+LIBGC_VER_INFO = 6:1:5
+LIBGCCPP_VER_INFO = 6:0:5
 
 ## FIXME: `make distcheck' in this directory will not currently work.
 ##     This is most likely to the explicit flags passed to submakes.
@@ -70,7 +70,7 @@ else
 EXTRA_DIST += extra/gc.c
 libgc_la_SOURCES = \
     allchblk.c alloc.c blacklst.c dbg_mlc.c \
-    dyn_load.c finalize.c gc_dlopen.c gcj_mlc.c headers.c \
+    dyn_load.c finalize.c gc_dlopen.c headers.c \
     mach_dep.c malloc.c mallocx.c mark.c mark_rts.c misc.c new_hblk.c \
     obj_map.c os_dep.c ptr_chck.c reclaim.c specific.c typd_mlc.c
 
@@ -103,31 +103,45 @@ if CHECKSUMS
 libgc_la_SOURCES += checksums.c
 endif
 
+if ENABLE_GCJ_SUPPORT
+libgc_la_SOURCES += gcj_mlc.c
+endif
+
 if ENABLE_DISCLAIM
 libgc_la_SOURCES += fnlz_mlc.c
-pkginclude_HEADERS += include/gc_disclaim.h
 endif
 
 ## End of !SINGLE_GC_OBJ
 endif
 
-if USE_INTERNAL_LIBATOMIC_OPS
-nodist_libgc_la_SOURCES = libatomic_ops/src/atomic_ops.c
+if PTHREADS
+pkginclude_HEADERS += include/gc_pthread_redirects.h
 endif
 
+if ENABLE_GCJ_SUPPORT
+pkginclude_HEADERS += include/gc_gcj.h
+endif
+
+if ENABLE_DISCLAIM
+pkginclude_HEADERS += include/gc_disclaim.h
+endif
+
+if USE_INTERNAL_LIBATOMIC_OPS
+nodist_libgc_la_SOURCES = libatomic_ops/src/atomic_ops.c
 if NEED_ATOMIC_OPS_ASM
-nodist_libgc_la_SOURCES = libatomic_ops/src/atomic_ops_sysdeps.S
+nodist_libgc_la_SOURCES += libatomic_ops/src/atomic_ops_sysdeps.S
+endif
 endif
 
 # Include THREADDLLIBS here to ensure that the correct versions of
-# linuxthread semaphore functions get linked:
+# linuxthread semaphore (and clock_gettime) functions get linked:
 libgc_la_LIBADD = @addobjs@ $(THREADDLLIBS) $(UNWINDLIBS) $(ATOMIC_OPS_LIBS)
 libgc_la_DEPENDENCIES = @addobjs@
 libgc_la_LDFLAGS = $(extra_ldflags_libgc) -version-info $(LIBGC_VER_INFO) \
     -no-undefined
 
 EXTRA_libgc_la_SOURCES = ia64_save_regs_in_stack.s sparc_mach_dep.S \
-    sparc_netbsd_mach_dep.s sparc_sunos4_mach_dep.s
+    sparc_netbsd_mach_dep.s
 
 if CPLUSPLUS
 # C++ Interface
@@ -135,15 +149,23 @@ if CPLUSPLUS
 lib_LTLIBRARIES += libgccpp.la
 pkginclude_HEADERS += include/gc_allocator.h include/gc_cpp.h
 include_HEADERS += include/extra/gc_cpp.h
-libgccpp_la_SOURCES = gc_cpp.cc
-libgccpp_la_LIBADD = ./libgc.la
+libgccpp_la_SOURCES = gc_badalc.cc gc_cpp.cc
+libgccpp_la_LIBADD = libgc.la
 libgccpp_la_LDFLAGS = -version-info $(LIBGCCPP_VER_INFO) -no-undefined
+if GC_TBA_LIBRARY
+# The same as libgccpp but contains only gc_badalc.o.
+lib_LTLIBRARIES += libgctba.la
+libgctba_la_SOURCES = gc_badalc.cc
+libgctba_la_LIBADD = libgc.la
+# Set the same version as for libgccpp.
+libgctba_la_LDFLAGS = -version-info $(LIBGCCPP_VER_INFO) -no-undefined
+endif
 endif
 
 ## FIXME: If Visual C++ users use Makefile.am, this should go into
 ## pkginclude_HEADERS with proper AM_CONDITIONALization.  Otherwise
 ## delete this comment.
-EXTRA_DIST += gc_cpp.cpp
+EXTRA_DIST += gc_badalc.cpp gc_cpp.cpp
 
 
 # Misc
@@ -195,20 +217,17 @@ CCASFLAGS += $(DEFS)
 EXTRA_DIST += README.QUICK
 
 # other makefiles
-# :GOTCHA: deliberately we do not include 'Makefile'
-EXTRA_DIST += BCC_MAKEFILE NT_MAKEFILE \
-    OS2_MAKEFILE PCR-Makefile digimars.mak \
-    Makefile.direct SMakefile.amiga WCC_MAKEFILE autogen.sh \
-    CMakeLists.txt tests/CMakeLists.txt
+EXTRA_DIST += NT_MAKEFILE OS2_MAKEFILE PCR-Makefile digimars.mak \
+    Makefile.direct SMakefile.amiga WCC_MAKEFILE autogen.sh CMakeLists.txt \
+    Config.cmake.in build/s60v3/bld.inf build/s60v3/libgc.mmp
 
 # files used by makefiles other than Makefile.am
 #
 EXTRA_DIST += tools/if_mach.c tools/if_not_there.c tools/setjmp_t.c \
-    tools/threadlibs.c gc.mak extra/MacOS.c extra/AmigaOS.c \
+    tools/threadlibs.c extra/MacOS.c extra/AmigaOS.c \
     extra/symbian/global_end.cpp extra/symbian/global_start.cpp \
     extra/symbian/init_global_static_roots.cpp extra/symbian.cpp \
     extra/pcr_interface.c extra/real_malloc.c \
-    build/s60v3/bld.inf build/s60v3/libgc.mmp \
     extra/Mac_files/datastart.c extra/Mac_files/dataend.c \
     extra/Mac_files/MacOS_config.h \
     include/private/msvc_dbg.h extra/msvc_dbg.c tools/callprocs.sh
@@ -225,3 +244,6 @@ include tests/tests.am
 include doc/doc.am
 ## Putting these at the top causes cord to be built first, and not find
 ## libgc.a on HP/UX.  There may be a better fix.
+
+# A dummy target for mono build.
+test-bundle:

@@ -75,10 +75,18 @@
 #endif
 #include "de_cmds.h"
 
-#define OUT_OF_MEMORY do { \
+#if defined(CPPCHECK)
+# define MACRO_BLKSTMT_BEGIN {
+# define MACRO_BLKSTMT_END   }
+#else
+# define MACRO_BLKSTMT_BEGIN do {
+# define MACRO_BLKSTMT_END   } while (0)
+#endif
+
+#define OUT_OF_MEMORY MACRO_BLKSTMT_BEGIN \
                         fprintf(stderr, "Out of memory\n"); \
                         exit(3); \
-                      } while (0)
+                      MACRO_BLKSTMT_END
 
 /* List of line number to position mappings, in descending order. */
 /* There may be holes.                                            */
@@ -375,7 +383,7 @@ void fix_pos(void)
 }
 
 #if defined(WIN32)
-#  define beep() Beep(1000 /* Hz */, 300 /* msecs */)
+#  define beep() Beep(1000 /* Hz */, 300 /* ms */)
 #elif defined(MACINTOSH)
 #  define beep() SysBeep(1)
 #else
