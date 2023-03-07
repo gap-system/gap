@@ -135,9 +135,10 @@ end );
 ##  <P/>
 ##  Installing methods with <Ref Func="InstallMethod"/> for a tag based
 ##  operation is possible.
-##  (Installing such methods with the same requirements as the ones for the
-##  tag based methods is not recommended, because this may lead to unwanted
-##  effects.)
+##  However, installing such methods with the same requirements as the ones
+##  for the tag based methods will have no effect because the handling of
+##  tag based methods gets installed with <Ref Func="InstallEarlyMethod"/>
+##  and thus has higher priority.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -166,25 +167,96 @@ BIND_GLOBAL( "NewTagBasedOperation",
     ADD_OBJ_MAP( _METHODS_TAG_BASED_DEFAULTS, oper, requirements );
 
     # install the method for 'oper' that uses the tag handling
-    InstallMethod( oper,
-      "tag based method",
-      requirements,
-      function( requ... )
-      local method;
+    if LENGTH( requirements ) = 1 then
+      InstallEarlyMethod( oper,
+        function( req1 )
+        local method;
 
-      method:= FIND_OBJ_MAP( methods, requ[1], fail );
-      if method = fail then
-        # Take the default method if there is one.
-        method:= FIND_OBJ_MAP( methods, IS_OBJECT, fail );
-      fi;
-      if method = fail then
-        # Calling 'TryNextMethod' would lead to a less useful error message,
-        # and perhaps cause real trouble.
-        Error( "no default installed for tag based operation <oper>" );
-      fi;
+        if not requirements[1]( req1 ) then
+          TryNextMethod();
+        fi;
 
-      return CallFuncList( method, requ );
-      end );
+        method:= FIND_OBJ_MAP( methods, req1, fail );
+        if method = fail then
+          # Take the default method if there is one.
+          method:= FIND_OBJ_MAP( methods, IS_OBJECT, fail );
+        fi;
+        if method = fail then
+          Error( "no default installed for tag based operation <oper>" );
+        fi;
+
+        return method( req1 );
+        end );
+    elif LENGTH( requirements ) = 2 then
+      InstallEarlyMethod( oper,
+        function( req1, req2 )
+        local method;
+
+        if not ( requirements[1]( req1 ) and
+                 requirements[2]( req2 ) ) then
+          TryNextMethod();
+        fi;
+
+        method:= FIND_OBJ_MAP( methods, req1, fail );
+        if method = fail then
+          # Take the default method if there is one.
+          method:= FIND_OBJ_MAP( methods, IS_OBJECT, fail );
+        fi;
+        if method = fail then
+          Error( "no default installed for tag based operation <oper>" );
+        fi;
+
+        return method( req1, req2 );
+        end );
+    elif LENGTH( requirements ) = 3 then
+      InstallEarlyMethod( oper,
+        function( req1, req2, req3 )
+        local method;
+
+        if not ( requirements[1]( req1 ) and
+                 requirements[2]( req2 ) and
+                 requirements[3]( req3 ) ) then
+          TryNextMethod();
+        fi;
+
+        method:= FIND_OBJ_MAP( methods, req1, fail );
+        if method = fail then
+          # Take the default method if there is one.
+          method:= FIND_OBJ_MAP( methods, IS_OBJECT, fail );
+        fi;
+        if method = fail then
+          Error( "no default installed for tag based operation <oper>" );
+        fi;
+
+        return method( req1, req2, req3 );
+        end );
+    elif LENGTH( requirements ) = 4 then
+      InstallEarlyMethod( oper,
+        function( req1, req2, req3, req4 )
+        local method;
+
+        if not ( requirements[1]( req1 ) and
+                 requirements[2]( req2 ) and
+                 requirements[3]( req3 ) and
+                 requirements[4]( req4 ) ) then
+          TryNextMethod();
+        fi;
+
+        method:= FIND_OBJ_MAP( methods, req1, fail );
+        if method = fail then
+          # Take the default method if there is one.
+          method:= FIND_OBJ_MAP( methods, IS_OBJECT, fail );
+        fi;
+        if method = fail then
+          Error( "no default installed for tag based operation <oper>" );
+        fi;
+
+        return method( req1, req2, req3, req4 );
+        end );
+    else
+      Error( "tag based operations for ", LENGTH( requirements ),
+             " arguments are currently not supported" );
+    fi;
 
     return oper;
 end );
