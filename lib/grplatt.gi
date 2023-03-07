@@ -587,7 +587,7 @@ local   G,                 # group
                 Info(InfoLattice,2,"tested inclusions");
 
               else
-                Info(InfoLattice,1,"discarded!");
+                Info(InfoLattice,3,"discarded!");
               fi; # if condition fulfilled
 
             fi; # if Hexts[i] and Hzups[zupposPower[i]]  then ...
@@ -1023,6 +1023,10 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
     fi;
     nts:=act[1];
     act:=act[2];
+    if IsGroupGeneralMappingByImages(act) then
+      Size(Source(act));
+      Size(Range(act));
+    fi;
     nu:=[];
     nn:=[];
     nf:=[];
