@@ -2499,22 +2499,22 @@ InstallMethod( BaseField, "for a compressed gf2 matrix",
 InstallMethod( BaseField, "for a compressed gf2 vector",
   [IsGF2VectorRep], function(v) return GF(2); end );
 
-InstallMethod( NewVector, "for IsGF2VectorRep, GF(2), and a list",
-  [ IsGF2VectorRep, IsField and IsFinite, IsList ],
+InstallTagBasedMethod( NewVector,
+  IsGF2VectorRep,
   function( filter, f, l )
     if Size(f) <> 2 then Error("IsGF2VectorRep only supported over GF(2)"); fi;
     return CopyToVectorRep(l,2);
   end );
 
-InstallMethod( NewZeroVector, "for IsGF2VectorRep, GF(2), and an int",
-  [ IsGF2VectorRep, IsField and IsFinite, IsInt ],
+InstallTagBasedMethod( NewZeroVector,
+  IsGF2VectorRep,
   function( filter, f, i )
     if Size(f) <> 2 then Error("IsGF2VectorRep only supported over GF(2)"); fi;
     return ZERO_GF2VEC_2(i);
   end );
 
-InstallMethod( NewMatrix, "for IsGF2MatrixRep, GF(2), an int, and a list",
-  [ IsGF2MatrixRep, IsField and IsFinite, IsInt, IsList ],
+InstallTagBasedMethod( NewMatrix,
+  IsGF2MatrixRep,
   function( filter, f, rl, l )
     local m;
     if Size(f) <> 2 then Error("IsGF2MatrixRep only supported over GF(2)"); fi;
@@ -2523,8 +2523,8 @@ InstallMethod( NewMatrix, "for IsGF2MatrixRep, GF(2), an int, and a list",
     return m;
   end );
 
-InstallMethod( NewZeroMatrix, "for IsGF2MatrixRep, GF(2), and two ints",
-  [ IsGF2MatrixRep, IsField and IsFinite, IsInt, IsInt ],
+InstallTagBasedMethod( NewZeroMatrix,
+  IsGF2MatrixRep,
   function( filter, f, rows, cols )
     local m,i;
     if Size(f) <> 2 then Error("IsGF2MatrixRep only supported over GF(2)"); fi;
@@ -2539,8 +2539,8 @@ InstallMethod( NewZeroMatrix, "for IsGF2MatrixRep, GF(2), and two ints",
     return m;
   end );
 
-InstallMethod( NewIdentityMatrix, "for IsGF2MatrixRep, GF(2), and an int",
-  [ IsGF2MatrixRep, IsField and IsFinite, IsInt ],
+InstallTagBasedMethod( NewIdentityMatrix,
+  IsGF2MatrixRep,
   function( filter, basedomain, dim )
     local mat, one, i;
     mat := NewZeroMatrix(filter, basedomain, dim, dim);
@@ -2596,9 +2596,8 @@ InstallMethod( DistanceOfVectors, "for two gf2 vectors",
     return DistanceVecFFE(v,w);
   end );
 
-InstallMethod( NewCompanionMatrix,
-  "for IsGF2MatrixRep, a polynomial and a ring",
-  [ IsGF2MatrixRep, IsUnivariatePolynomial, IsRing ],
+InstallTagBasedMethod( NewCompanionMatrix,
+  IsGF2MatrixRep,
   function( ty, po, bd )
     local i,l,ll,n,one;
     one := One(bd);

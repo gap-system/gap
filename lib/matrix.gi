@@ -1363,14 +1363,14 @@ InstallOtherMethod( ConstructingFilter,
 ##  (Strictly speaking, 'NewZeroMatrix' and 'NewIdentityMatrix' are not
 ##  defined for this situation, since they promise to return matrix objects.)
 ##
-InstallOtherMethod( NewZeroMatrix,
-  [ "IsPlistRep", "IsSemiring", "IsInt", "IsInt" ],
+InstallTagBasedMethod( NewZeroMatrix,
+  IsPlistRep,
   function( filter, basedomain, nrows, ncols )
     return NullMat( nrows, ncols, basedomain );
   end );
 
-InstallOtherMethod( NewIdentityMatrix,
-  [ "IsPlistRep", "IsSemiring", "IsInt" ],
+InstallTagBasedMethod( NewIdentityMatrix,
+  IsPlistRep,
   function( filter, basedomain, dim )
     return IdentityMat( dim, basedomain );
   end );

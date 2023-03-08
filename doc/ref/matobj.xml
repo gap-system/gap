@@ -277,7 +277,7 @@ for the new type of vector or matrix objects.
   <Ref Attr="ConstructingFilter" Label="for a vector object"/>,
 </Item>
 <Item>
-  <Ref Constr="NewVector"/> and <Ref Constr="NewZeroVector"/>
+  <Ref Oper="NewVector"/> and <Ref Oper="NewZeroVector"/>
   (with consistency checks if the global option <C>check</C> is not set to
   <K>false</K>).
 </Item>
@@ -315,8 +315,8 @@ for the new type of vector or matrix objects.
   <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/>,
 </Item>
 <Item>
-  <Ref Constr="NewMatrix"/>, <Ref Constr="NewIdentityMatrix"/>,
-  and <Ref Constr="NewZeroMatrix"/>,
+  <Ref Oper="NewMatrix"/>, <Ref Oper="NewIdentityMatrix"/>,
+  and <Ref Oper="NewZeroMatrix"/>,
   (with consistency checks if the global option <C>check</C> is not set to
   <K>false</K>).
 </Item>
@@ -324,8 +324,8 @@ for the new type of vector or matrix objects.
 
 <P/>
 
-Methods for the constructors <Ref Constr="NewVector"/> and
-<Ref Constr="NewMatrix"/> must check their arguments for consistency
+Methods for <Ref Oper="NewVector"/> and
+<Ref Oper="NewMatrix"/> must check their arguments for consistency
 (do the given filter and base domain fit together,
 are the entries compatible with the given base domain,
 is the number of matrix entries a multiple of the given number of columns)
@@ -340,8 +340,8 @@ such as <Ref Oper="\[\]\:\=" Label="for a vector object and an integer"/>,
 and for those methods of
 <Ref Oper="Vector" Label="for filter, base domain, and list"/> and
 <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
-that do not delegate to <Ref Constr="NewVector"/> and
-<Ref Constr="NewMatrix"/>, respectively.
+that do not delegate to <Ref Oper="NewVector"/> and
+<Ref Oper="NewMatrix"/>, respectively.
 
 </Section>
 
