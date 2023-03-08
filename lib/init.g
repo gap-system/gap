@@ -316,27 +316,13 @@ end;
 # these functions will be overwritten if loaded
 IdGroup:=NONAVAILABLE_FUNC("Small Groups identification");
 SmallGroup:=NONAVAILABLE_FUNC("Small Groups library");
-NumberSmallGroups:=NONAVAILABLE_FUNC("Small Groups library");
-AllGroups:=NONAVAILABLE_FUNC("Small Groups library");
-OneGroup:=NONAVAILABLE_FUNC();
-IdsOfAllGroups:=NONAVAILABLE_FUNC();
-Gap3CatalogueIdGroup:=NONAVAILABLE_FUNC();
-IdStandardPresented512Group:=NONAVAILABLE_FUNC();
 PrimitiveGroup:=NONAVAILABLE_FUNC("Primitive Groups library");
 
 #############################################################################
 ##
 ##  Initialize functions for the source of small group lib and id library
 ##
-SMALL_AVAILABLE := x -> fail;
 ID_AVAILABLE := x -> fail;
-
-#############################################################################
-##
-#V  PRIM_AVAILABLE   variables for data libraries. Will be set during loading
-#V  TRANS_AVAILABLE
-PRIM_AVAILABLE:=false;
-TRANS_AVAILABLE:=false;
 
 #############################################################################
 ##
