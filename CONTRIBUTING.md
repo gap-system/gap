@@ -182,7 +182,7 @@ This section is based on <https://lornajane.net/posts/2015/code-reviews-before-y
   * If you have cloned the PR use `git log --stat`.
 * Eyeball the diff for
   * Large commented / unused sections of code
-  * Strange variable or function names 
+  * Strange variable or function names
   * Duplicate code
 
 ### Dive into the code
@@ -195,6 +195,16 @@ This section is based on <https://lornajane.net/posts/2015/code-reviews-before-y
 * Are new features documented if necessary?
 * Double check whether the changes should be included into the release notes.
   If not, label the issue / PR accordingly.
+
+
+## Contact
+
+GAP uses Slack, a multi user chat system, for discussions. Everyone can
+join via a web browser or a dedicated client (e.g for Android or iOS).
+Just follow the link <https://gap-system.org/slack>.
+
+There is also an open developer list with currently very low volume.
+You can subscribe to it at <https://lists.uni-kl.de/gap/info/gap>.
 
 
 ## Additional Resources
