@@ -39,8 +39,8 @@ InstallMethod( CompatibleVectorFilter, "zmodnz",
 # Vectors
 ############################################################################
 
-InstallMethod( NewVector, "for IsZmodnZVectorRep, a ring, and a list",
-  [ IsZmodnZVectorRep, IsRing, IsList ],
+InstallTagBasedMethod( NewVector,
+  IsZmodnZVectorRep,
   function( filter, basedomain, l )
     local check, typ, v;
     check:= ValueOption( "check" ) <> false;
@@ -63,8 +63,8 @@ InstallMethod( NewVector, "for IsZmodnZVectorRep, a ring, and a list",
     return v;
   end );
 
-InstallMethod( NewZeroVector, "for IsZmodnZVectorRep, a ring, and an int",
-  [ IsZmodnZVectorRep, IsRing, IsInt ],
+InstallTagBasedMethod( NewZeroVector,
+  IsZmodnZVectorRep,
   function( filter, basedomain, l )
     local check, typ, v;
     check:= ValueOption( "check" ) <> false;
@@ -611,9 +611,8 @@ end);
 # Matrices
 ############################################################################
 
-InstallMethod( NewMatrix,
-  "for IsZmodnZMatrixRep, a ring, an int, and a list",
-  [ IsZmodnZMatrixRep, IsRing, IsInt, IsList ],
+InstallTagBasedMethod( NewMatrix,
+  IsZmodnZMatrixRep,
   function( filter, basedomain, rl, l )
     local check, nd, filterVectors, m, e, filter2, i;
 
@@ -656,9 +655,8 @@ InstallMethod( NewMatrix,
     return m;
   end );
 
-InstallMethod( NewZeroMatrix,
-  "for IsZmodnZMatrixRep, a ring, and two ints",
-  [ IsZmodnZMatrixRep, IsRing, IsInt, IsInt ],
+InstallTagBasedMethod( NewZeroMatrix,
+  IsZmodnZMatrixRep,
   function( filter, basedomain, rows, cols )
     local check, m,i,e,filter2;
 
@@ -680,9 +678,8 @@ InstallMethod( NewZeroMatrix,
     return m;
   end );
 
-InstallMethod( NewIdentityMatrix,
-  "for IsZmodnZMatrixRep, a ring, and an int",
-  [ IsZmodnZMatrixRep, IsRing, IsInt ],
+InstallTagBasedMethod( NewIdentityMatrix,
+  IsZmodnZMatrixRep,
   function( filter, basedomain, dim )
     local mat, i;
     mat := NewZeroMatrix(filter, basedomain, dim, dim);

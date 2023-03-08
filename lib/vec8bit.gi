@@ -1091,8 +1091,8 @@ InstallMethod( BaseField, "for a compressed 8bit matrix",
 InstallMethod( BaseField, "for a compressed 8bit vector",
   [Is8BitVectorRep], function(v) return GF(Q_VEC8BIT(v)); end );
 
-InstallMethod( NewVector, "for Is8BitVectorRep, GF(q), and a list",
-  [ Is8BitVectorRep, IsField and IsFinite, IsList ],
+InstallTagBasedMethod( NewVector,
+  Is8BitVectorRep,
   function( filter, f, l )
     if ValueOption( "check" ) <> false and not Size(f) in [3..256] then
         Error("Is8BitVectorRep only supports base fields with 3 to 256 elements");
@@ -1100,8 +1100,8 @@ InstallMethod( NewVector, "for Is8BitVectorRep, GF(q), and a list",
     return CopyToVectorRep(l,Size(f));
   end );
 
-InstallMethod( NewZeroVector, "for Is8BitVectorRep, GF(q), and an int",
-  [ Is8BitVectorRep, IsField and IsFinite, IsInt ],
+InstallTagBasedMethod( NewZeroVector,
+  Is8BitVectorRep,
   function( filter, f, i )
     local v;
     if not Size(f) in [3..256] then
@@ -1112,8 +1112,8 @@ InstallMethod( NewZeroVector, "for Is8BitVectorRep, GF(q), and an int",
     return v;
   end );
 
-InstallMethod( NewMatrix, "for Is8BitMatrixRep, GF(q), an int, and a list",
-  [ Is8BitMatrixRep, IsField and IsFinite, IsInt, IsList ],
+InstallTagBasedMethod( NewMatrix,
+  Is8BitMatrixRep,
   function( filter, f, rl, l )
     local m;
     if ValueOption( "check" ) <> false and not Size(f) in [3..256] then
@@ -1124,8 +1124,8 @@ InstallMethod( NewMatrix, "for Is8BitMatrixRep, GF(q), an int, and a list",
     return m;
   end );
 
-InstallMethod( NewZeroMatrix, "for Is8BitMatrixRep, GF(q), and two ints",
-  [ Is8BitMatrixRep, IsField and IsFinite, IsInt, IsInt ],
+InstallTagBasedMethod( NewZeroMatrix,
+  Is8BitMatrixRep,
   function( filter, f, rows, cols )
     local m,i;
     if not Size(f) in [3..256] then
@@ -1143,8 +1143,8 @@ InstallMethod( NewZeroMatrix, "for Is8BitMatrixRep, GF(q), and two ints",
     return m;
   end );
 
-InstallMethod( NewIdentityMatrix, "for Is8BitMatrixRep, GF(q), and an int",
-  [ Is8BitMatrixRep, IsField and IsFinite, IsInt ],
+InstallTagBasedMethod( NewIdentityMatrix,
+  Is8BitMatrixRep,
   function( filter, basedomain, dim )
     local mat, one, i;
     mat := NewZeroMatrix(filter, basedomain, dim, dim);
@@ -1200,9 +1200,8 @@ InstallMethod( DistanceOfVectors, "for two 8bit vectors",
     return DistanceVecFFE(v,w);
   end );
 
-InstallMethod( NewCompanionMatrix,
-  "for Is8BitMatrixRep, a polynomial and a ring",
-  [ Is8BitMatrixRep, IsUnivariatePolynomial, IsRing ],
+InstallTagBasedMethod( NewCompanionMatrix,
+  Is8BitMatrixRep,
   function( ty, po, bd )
     local i,l,ll,n,one;
     one := One(bd);

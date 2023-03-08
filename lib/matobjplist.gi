@@ -174,22 +174,22 @@ BindGlobal( "MakeIsPlistMatrixRep",
 # Constructor methods:
 ############################################################################
 
-InstallMethod( NewVector,
-  [ "IsPlistVectorRep", "IsRing", "IsDenseList" ],
+InstallTagBasedMethod( NewVector,
+  IsPlistVectorRep,
   function( filter, basedomain, list )
     return MakeIsPlistVectorRep(basedomain, ShallowCopy(list), true);
   end );
 
-InstallMethod( NewZeroVector,
-  [ "IsPlistVectorRep", "IsRing", "IsInt" ],
+InstallTagBasedMethod( NewZeroVector,
+  IsPlistVectorRep,
   function( filter, basedomain, len )
     local list;
     list := ListWithIdenticalEntries(len, Zero(basedomain));
     return MakeIsPlistVectorRep(basedomain, list, false);
   end );
 
-InstallMethod( NewMatrix,
-  [ "IsPlistMatrixRep", "IsRing", "IsInt", "IsList" ],
+InstallTagBasedMethod( NewMatrix,
+  IsPlistMatrixRep,
   function( filter, basedomain, ncols, list )
     local nd, filterVectors, m, e, i;
 
@@ -219,8 +219,8 @@ InstallMethod( NewMatrix,
     return MakeIsPlistMatrixRep( basedomain, e, ncols, m, true );
   end );
 
-InstallMethod( NewZeroMatrix,
-  [ "IsPlistMatrixRep", "IsRing", "IsInt", "IsInt" ],
+InstallTagBasedMethod( NewZeroMatrix,
+  IsPlistMatrixRep,
   function( filter, basedomain, rows, cols )
     local m,i,e,filter2;
     filter2 := IsPlistVectorRep;
@@ -232,8 +232,8 @@ InstallMethod( NewZeroMatrix,
     return MakeIsPlistMatrixRep( basedomain, e, cols, m, false );
   end );
 
-InstallMethod( NewIdentityMatrix,
-  [ "IsPlistMatrixRep", "IsRing", "IsInt" ],
+InstallTagBasedMethod( NewIdentityMatrix,
+  IsPlistMatrixRep,
   function( filter, basedomain, dim )
     local mat, one, i;
     mat := NewZeroMatrix(filter, basedomain, dim, dim);
@@ -1331,8 +1331,8 @@ InstallMethod( CompatibleVector,
   [ "IsPlistMatrixRep" ],
   M -> NewZeroVector( IsPlistVectorRep, BaseDomain( M ), NumberRows( M ) ) );
 
-InstallMethod( NewCompanionMatrix,
-  [ "IsPlistMatrixRep", "IsUnivariatePolynomial", "IsRing" ],
+InstallTagBasedMethod( NewCompanionMatrix,
+  IsPlistMatrixRep,
   function( filter, po, bd )
     local i,l,ll,n,one;
     one := One(bd);

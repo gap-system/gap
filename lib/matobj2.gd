@@ -14,7 +14,7 @@
 ##  This file together with 'matobj1.gd' formally define the interface to
 ##  those vector and matrix objects in GAP that are not represented
 ##  by plain lists.
-##  In this file all the operations, attributes and constructors are defined.
+##  In this file all the operations and attributes are defined.
 ##  It is read later in the GAP library reading process.
 ##
 
@@ -190,7 +190,7 @@ DeclareAttribute( "Length", IsVectorObj );
 ##  respectively,
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> returns
 ##  a filter <C>f</C> such that when
-##  <Ref Constr="NewVector"/> or <Ref Constr="NewMatrix"/>, respectively,
+##  <Ref Oper="NewVector"/> or <Ref Oper="NewMatrix"/>, respectively,
 ##  is called with <C>f</C> then a vector object or a matrix object,
 ##  respectively, in the same representation as the argument is produced.
 ##  <P/>
@@ -203,8 +203,6 @@ DeclareAttribute( "Length", IsVectorObj );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "ConstructingFilter", IsVecOrMatObj );
-#DeclareAttribute( "ConstructingFilter", IsVectorObj );
-#DeclareAttribute( "ConstructingFilter", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -592,7 +590,7 @@ DeclareOperation( "ScalarProduct", [ IsVectorObj, IsVectorObj ] );
 ##  <P/>
 ##  Default methods for
 ##  <Ref Oper="ZeroVector" Label="for filter, base domain and length"/>
-##  delegate to <Ref Constr="NewZeroVector"/>.
+##  delegate to <Ref Oper="NewZeroVector"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -679,7 +677,7 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 ##  <P/>
 ##  Default methods for
 ##  <Ref Oper="Vector" Label="for filter, base domain, and list"/>
-##  delegate to <Ref Constr="NewVector"/>.
+##  delegate to <Ref Oper="NewVector"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -701,13 +699,13 @@ DeclareOperation( "Vector", [ IsList ] );
 ##  <#GAPDoc Label="NewVector">
 ##  <ManSection>
 ##  <Heading>NewVector and NewZeroVector</Heading>
-##  <Constr Name="NewVector" Arg='filt,R,list'/>
-##  <Constr Name="NewZeroVector" Arg='filt,R,n'/>
+##  <Oper Name="NewVector" Arg='filt,R,list'/>
+##  <Oper Name="NewZeroVector" Arg='filt,R,n'/>
 ##
 ##  <Description>
 ##  For a filter <A>filt</A>, a semiring <A>R</A>, and a list <A>list</A>
 ##  of elements that belong to <A>R</A>,
-##  <Ref Constr="NewVector"/> returns a vector object which has
+##  <Ref Oper="NewVector"/> returns a vector object which has
 ##  the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
 ##  <A>filt</A>,
 ##  the <Ref Attr="BaseDomain" Label="for a vector object"/> <A>R</A>,
@@ -715,9 +713,9 @@ DeclareOperation( "Vector", [ IsList ] );
 ##  The list <A>list</A> is guaranteed not to be changed by this operation.
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
-##  <Ref Constr="NewVector"/> need not perform consistency checks.
+##  <Ref Oper="NewVector"/> need not perform consistency checks.
 ##  <P/>
-##  Similarly, <Ref Constr="NewZeroVector"/> returns a vector object
+##  Similarly, <Ref Oper="NewZeroVector"/> returns a vector object
 ##  of length <A>n</A> which has <A>filt</A> and <A>R</A> as
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> values,
@@ -725,17 +723,14 @@ DeclareOperation( "Vector", [ IsList ] );
 ##  <P/>
 ##  The returned object is mutable if and only if <A>filt</A> implies
 ##  <Ref Filt="IsCopyable"/>.
-##  <P/>
-##  Since <Ref Constr="NewVector"/> and <Ref Constr="NewZeroVector"/>
-##  are constructors
-##  (see <Ref Sect="Constructors"/>), they cannot have default methods.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareConstructor( "NewVector", [ IsVectorObj, IsSemiring, IsList ] );
+DeclareTagBasedOperation( "NewVector", [ IsOperation, IsSemiring, IsList ] );
 
-DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
+DeclareTagBasedOperation( "NewZeroVector",
+    [ IsOperation, IsSemiring, IsInt ] );
 
 
 #############################################################################
@@ -747,14 +742,14 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 ##  <#GAPDoc Label="NewMatrix">
 ##  <ManSection>
 ##  <Heading>NewMatrix, NewZeroMatrix, NewIdentityMatrix</Heading>
-##  <Constr Name="NewMatrix" Arg='filt,R,ncols,list'/>
-##  <Constr Name="NewZeroMatrix" Arg='filt,R,m,n'/>
-##  <Constr Name="NewIdentityMatrix" Arg='filt,R,n'/>
+##  <Oper Name="NewMatrix" Arg='filt,R,ncols,list'/>
+##  <Oper Name="NewZeroMatrix" Arg='filt,R,m,n'/>
+##  <Oper Name="NewIdentityMatrix" Arg='filt,R,n'/>
 ##
 ##  <Description>
 ##  For a filter <A>filt</A>, a semiring <A>R</A>,
 ##  a positive integer <A>ncols</A>, and a list <A>list</A>,
-##  <Ref Constr="NewMatrix"/> returns a matrix object which has
+##  <Ref Oper="NewMatrix"/> returns a matrix object which has
 ##  the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
 ##  <A>filt</A>,
 ##  the <Ref Attr="BaseDomain" Label="for a matrix object"/> <A>R</A>,
@@ -771,15 +766,15 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 ##  If <A>list</A> already contains vector objects, they are copied.
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
-##  <Ref Constr="NewMatrix"/> need not perform consistency checks.
+##  <Ref Oper="NewMatrix"/> need not perform consistency checks.
 ##  <P/>
-##  Similarly, <Ref Constr="NewZeroMatrix"/> returns a zero matrix
+##  Similarly, <Ref Oper="NewZeroMatrix"/> returns a zero matrix
 ##  object with <A>m</A> rows and <A>n</A> columns
 ##  which has <A>filt</A> and <A>R</A> as
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> values.
 ##  <P/>
-##  Similarly, <Ref Constr="NewIdentityMatrix"/> returns an identity
+##  Similarly, <Ref Oper="NewIdentityMatrix"/> returns an identity
 ##  matrix object with <A>n</A> rows and columns
 ##  which has <A>filt</A> and <A>R</A> as
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and
@@ -789,21 +784,18 @@ DeclareConstructor( "NewZeroVector", [ IsVectorObj, IsSemiring, IsInt ] );
 ##  <P/>
 ##  The returned object is mutable if and only if <A>filt</A> implies
 ##  <Ref Filt="IsCopyable"/>.
-##  <P/>
-##  Since <Ref Constr="NewMatrix"/>, <Ref Constr="NewZeroMatrix"/>, and
-##  <Ref Constr="NewIdentityMatrix"/> are constructors
-##  (see <Ref Sect="Constructors"/>), they cannot have default methods.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareConstructor( "NewMatrix", [ IsMatrixOrMatrixObj, IsSemiring, IsInt, IsList] );
+DeclareTagBasedOperation( "NewMatrix",
+    [ IsOperation, IsSemiring, IsInt, IsList] );
 
-DeclareConstructor( "NewZeroMatrix",
-    [ IsMatrixOrMatrixObj, IsSemiring, IsInt, IsInt ] );
+DeclareTagBasedOperation( "NewZeroMatrix",
+    [ IsOperation, IsSemiring, IsInt, IsInt ] );
 
-DeclareConstructor( "NewIdentityMatrix",
-    [ IsMatrixOrMatrixObj, IsSemiring, IsInt ] );
+DeclareTagBasedOperation( "NewIdentityMatrix",
+    [ IsOperation, IsSemiring, IsInt ] );
 
 
 #############################################################################
@@ -1128,7 +1120,7 @@ DeclareSynonym( "SetMatElm", ASS_MAT );
 ##  <P/>
 ##  Default methods for
 ##  <Ref Oper="ZeroMatrix" Label="for dimensions and matrix object"/>
-##  delegate to <Ref Constr="NewZeroMatrix"/>.
+##  delegate to <Ref Oper="NewZeroMatrix"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1175,7 +1167,7 @@ DeclareOperation( "ZeroMatrix", [ IsOperation, IsSemiring, IsInt, IsInt ] );
 ##  <P/>
 ##  Default methods for
 ##  <Ref Oper="IdentityMatrix" Label="for dimension and matrix object"/>
-##  delegate to <Ref Constr="NewIdentityMatrix"/>.
+##  delegate to <Ref Oper="NewIdentityMatrix"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1220,13 +1212,11 @@ DeclareOperation( "IdentityMatrix", [ IsOperation, IsSemiring, IsInt ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-##  (The variant with filter and semiring is used as a simpler alternative
-##  to a possible constructor 'NewCompanionMatrix'.)
-##
 DeclareOperation( "CompanionMatrix",
     [ IsUnivariatePolynomial, IsMatrixOrMatrixObj ] );
 DeclareOperation( "CompanionMatrix",
     [ IsOperation, IsUnivariatePolynomial, IsSemiring ] );
+#T tag based?
 
 
 #############################################################################
@@ -1317,7 +1307,7 @@ DeclareOperation( "CompanionMatrix",
 ##  <P/>
 ##  Default methods for
 ##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
-##  delegate to <Ref Constr="NewMatrix"/>.
+##  delegate to <Ref Oper="NewMatrix"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1797,8 +1787,8 @@ DeclareSynonymAttr( "RowLength", NumberColumns );
 ##  'CompanionMatrix' which admits a filter as its first argument.
 ##  We should use 'CompanionMatrix' instead of 'NewCompanionMatrix'.
 ##
-DeclareConstructor( "NewCompanionMatrix",
-    [ IsMatrixOrMatrixObj, IsUnivariatePolynomial, IsSemiring ] );
+DeclareTagBasedOperation( "NewCompanionMatrix",
+    [ IsOperation, IsUnivariatePolynomial, IsSemiring ] );
 
 
 #############################################################################
