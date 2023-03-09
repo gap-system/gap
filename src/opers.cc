@@ -2962,6 +2962,8 @@ void SaveOperationExtras (
         SaveSubObj(header->methods[i]);
     for (UInt i = 0; i <= MAX_OPER_ARGS; i++)
         SaveSubObj(header->cache[i]);
+    for (UInt i = 0; i <= MAX_OPER_ARGS; i++)
+        SaveSubObj(header->earlyMethod[i]);
 }
 #endif
 
@@ -2990,6 +2992,8 @@ void LoadOperationExtras (
         header->methods[i] = LoadSubObj();
     for (UInt i = 0; i <= MAX_OPER_ARGS; i++)
         header->cache[i] = LoadSubObj();
+    for (UInt i = 0; i <= MAX_OPER_ARGS; i++)
+        header->earlyMethod[i] = LoadSubObj();
 }
 #endif
 
