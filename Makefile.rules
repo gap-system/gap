@@ -292,7 +292,7 @@ GAP_LIBS += $(LIBS)
 #
 ifneq (,$(findstring cygwin,$(host_os)))
   GAC_CFLAGS =
-  GAC_LDFLAGS = -shared -Wl,$(abs_builddir)/bin/$(GAPARCH)/gap.dll
+  GAC_LDFLAGS = -shared -Wl,$(abs_builddir)/bin/$(GAPARCH)/gap.dll -Wl,--enable-auto-image-base
   # Note: the above won't be correct after "make install"; but then I am not
   # sure we care about "make install" on Cygwin, so I am not going to work on
   # this until someone specifically asks for it (and even then I'll require
