@@ -142,12 +142,7 @@ jobs:
 
     steps:
       # The GAP to be wrapped is put into gap-$GAP_BUILD_VERSION/
-      # The sage-windows script requires the GAP directory to be named this way.
-
-      - name: "Set some environment variables according to the GitHub context"
-        run: |
-          echo "SAGE_MAKE_CONFIGURE_CMD?='\"cd \$(SAGE_ROOT) && ./configure\"'"
-          echo "SAGE_RUN_CONFIGURE_CMD=\"cd \$(SAGE_ROOT) && make -j2\"" >> $GITHUB_ENV
+      # The gap-windows script requires the GAP directory to be named this way.
 
       - uses: actions/setup-python@v4
         with:
@@ -169,21 +164,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # TODO: The following repository should eventually be owned by a GAP-related
-      # organisation, and perhaps ultimately it could/should be re-integrated
-      # with the original sagemath/sage-windows repository.
       - name: "Clone the Windows installer maker scripts"
         uses: actions/checkout@v3
         with:
-          repository: ChrisJefferson/sage-windows
-          ref: master
-          path: sage-windows
+          repository: gap-system/gap-windows
+          ref: main
+          path: gap-windows
 
       - uses: gap-actions/setup-cygwin@v1
 
-      # Currently, the sage-windows/release_gap.sh script wraps the GAP
+      # Currently, the gap-windows/release_gap.sh script wraps the GAP
       # contained in gap-${GAP_BUILD_VERSION}, and outputs its installer to
-      # sage-windows/Output/gap-${GAP_BUILD_VERSION}-$ARCH.exe
+      # gap-windows/Output/gap-${GAP_BUILD_VERSION}-$ARCH.exe
       #
       # TODO:
       # * Investigate how to speed this up. e.g. if we don't need to compile
@@ -193,7 +185,7 @@ jobs:
       - name: "Compile GAP and its packages, and create the installer"
         shell: C:\cygwin64\bin\bash.exe --login --norc -o igncr '{0}'
         run: |
-          cd ${GITHUB_WORKSPACE}/sage-windows
+          cd ${GITHUB_WORKSPACE}/gap-windows
           bash release_gap.sh
           # compute the sha256sum, taking care to avoid a trailing newline
           NAME=Output/gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe
@@ -211,7 +203,7 @@ jobs:
         with:
           if-no-files-found: error
           name: gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe
-          path: sage-windows/Output/gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe
+          path: gap-windows/Output/gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe
           retention-days: 1
 
       - name: "Upload the installer to tag"
@@ -219,8 +211,8 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         with:
           files: |
-            sage-windows/Output/gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe
-            sage-windows/Output/gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe.sha256
+            gap-windows/Output/gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe
+            gap-windows/Output/gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe.sha256
 
   # The following job is duplicated in CI.yml - keep the two in sync.
   # (except for their different 'needs' components).
