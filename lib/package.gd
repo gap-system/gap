@@ -532,12 +532,15 @@ DeclareGlobalFunction( "IsPackageMarkedForLoading" );
 #F  DefaultPackageBannerString( <inforec> )
 ##
 ##  <ManSection>
-##  <Func Name="DefaultPackageBannerString" Arg='inforec'/>
+##  <Func Name="DefaultPackageBannerString" Arg='inforec[, useShortBanner]'/>
 ##
 ##  <Description>
 ##  For a record <A>inforec</A> as stored in the <F>PackageInfo.g</F> file
 ##  of a &GAP; package,
 ##  this function returns a string denoting a banner for the package.
+##  If the optional argument <A>useShortBanner</A> is set to <K>true</K>,
+##  only the first line of the default banner (including the name, version and
+##  description of the package) is returned.
 ##  </Description>
 ##  </ManSection>
 ##

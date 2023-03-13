@@ -1099,8 +1099,29 @@ InstallGlobalFunction( IsPackageMarkedForLoading, function( name, version )
 ##
 #F  DefaultPackageBannerString( <inforec> )
 ##
-InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
+
+DeclareUserPreference( rec(
+  name:= "ShortBanners",
+  description:= [
+    "If this option is set to <K>true</K>, package banners printed during \
+loading will only show the name, version and description of a package."
+    ],
+  default:= false,
+  values:= [ true, false ],
+  multi:= false,
+  ) );
+
+InstallGlobalFunction( DefaultPackageBannerString,
+    function( inforec, useShortBanner... )
     local len, sep, i, str, authors, maintainers, contributors, printPersons;
+
+    if Length( useShortBanner ) = 0 then
+      useShortBanner := false;
+    elif Length( useShortBanner ) = 1 then
+      useShortBanner := useShortBanner[1];
+    else
+      Error( "DefaultPackageBannerString must be called with at most two arguments" );
+    fi;
 
     # Start with a row of `-' signs.
     len:= SizeScreen()[1] - 3;
@@ -1136,69 +1157,73 @@ InstallGlobalFunction( DefaultPackageBannerString, function( inforec )
     fi;
     Add( str, '\n' );
 
-    # Add info about the authors and/or maintainers
-    printPersons := function( role, persons )
-      local fill, person;
-      fill:= ListWithIdenticalEntries( Length(role), ' ' );
-      Append( str, role );
-      for i in [ 1 .. Length( persons ) ] do
-        person:= persons[i];
-        Append( str, person.FirstNames );
-        Append( str, " " );
-        Append( str, person.LastName );
-        if   IsBound( person.WWWHome ) then
-          Append( str, Concatenation( " (", person.WWWHome, ")" ) );
-        elif IsBound( person.Email ) then
-          Append( str, Concatenation( " (", person.Email, ")" ) );
-        fi;
-        if   i = Length( persons ) then
-          Append( str, ".\n" );
-        elif i = Length( persons )-1 then
-          if i = 1 then
-            Append( str, " and\n" );
-          else
-            Append( str, ", and\n" );
+    if not useShortBanner then
+        # Add info about the authors and/or maintainers
+        printPersons := function( role, persons )
+          local fill, person;
+          fill:= ListWithIdenticalEntries( Length(role), ' ' );
+          Append( str, role );
+          for i in [ 1 .. Length( persons ) ] do
+            person:= persons[i];
+            Append( str, person.FirstNames );
+            Append( str, " " );
+            Append( str, person.LastName );
+            if   IsBound( person.WWWHome ) then
+              Append( str, Concatenation( " (", person.WWWHome, ")" ) );
+            elif IsBound( person.Email ) then
+              Append( str, Concatenation( " (", person.Email, ")" ) );
+            fi;
+            if   i = Length( persons ) then
+              Append( str, ".\n" );
+            elif i = Length( persons )-1 then
+              if i = 1 then
+                Append( str, " and\n" );
+              else
+                Append( str, ", and\n" );
+              fi;
+              Append( str, fill );
+            else
+              Append( str, ",\n" );
+              Append( str, fill );
+            fi;
+          od;
+        end;
+        if IsBound( inforec.Persons ) then
+          authors:= Filtered( inforec.Persons, x -> x.IsAuthor );
+          if not IsEmpty( authors ) then
+            printPersons( "by ", authors );
           fi;
-          Append( str, fill );
-        else
-          Append( str, ",\n" );
-          Append( str, fill );
+          contributors:= Filtered( inforec.Persons, x -> not x.IsAuthor and not x.IsMaintainer );
+          if not IsEmpty( contributors ) then
+            Append( str, "with contributions by:\n");
+            printPersons( "   ", contributors );
+          fi;
+          maintainers:= Filtered( inforec.Persons, x -> x.IsMaintainer );
+          if not IsEmpty( maintainers ) and authors <> maintainers then
+            Append( str, "maintained by:\n");
+            printPersons( "   ", maintainers );
+          fi;
         fi;
-      od;
-    end;
-    if IsBound( inforec.Persons ) then
-      authors:= Filtered( inforec.Persons, x -> x.IsAuthor );
-      if not IsEmpty( authors ) then
-        printPersons( "by ", authors );
-      fi;
-      contributors:= Filtered( inforec.Persons, x -> not x.IsAuthor and not x.IsMaintainer );
-      if not IsEmpty( contributors ) then
-        Append( str, "with contributions by:\n");
-        printPersons( "   ", contributors );
-      fi;
-      maintainers:= Filtered( inforec.Persons, x -> x.IsMaintainer );
-      if not IsEmpty( maintainers ) and authors <> maintainers then
-        Append( str, "maintained by:\n");
-        printPersons( "   ", maintainers );
-      fi;
-    fi;
 
-    # Add info about the home page of the package.
-    if IsBound( inforec.PackageWWWHome ) then
-      Append( str, "Homepage: " );
-      Append( str, inforec.PackageWWWHome );
-      Append( str, "\n" );
-    fi;
+        # Add info about the home page of the package.
+        if IsBound( inforec.PackageWWWHome ) then
+          Append( str, "Homepage: " );
+          Append( str, inforec.PackageWWWHome );
+          Append( str, "\n" );
+        fi;
 
-    # Add info about the issue tracker of the package.
-    if IsBound( inforec.IssueTrackerURL ) then
-      Append( str, "Report issues at " );
-      Append( str, inforec.IssueTrackerURL );
-      Append( str, "\n" );
+        # Add info about the issue tracker of the package.
+        if IsBound( inforec.IssueTrackerURL ) then
+          Append( str, "Report issues at " );
+          Append( str, inforec.IssueTrackerURL );
+          Append( str, "\n" );
+        fi;
+
+        str := Concatenation(sep, str, sep);
     fi;
 
     # temporary hack, in some package names with umlauts are in HTML encoding
-    str := Concatenation(sep, RecodeForCurrentTerminal(str), sep);
+    str := RecodeForCurrentTerminal(str);
     str:= ReplacedString( str, "&auml;", RecodeForCurrentTerminal("ä") );
     str:= ReplacedString( str, "&ouml;", RecodeForCurrentTerminal("ö") );
     str:= ReplacedString( str, "&uuml;", RecodeForCurrentTerminal("ü") );
@@ -1424,7 +1449,9 @@ BindGlobal( "LoadPackage_ReadImplementationParts",
 
         # If the component `BannerString' is bound in `info' then we print
         # this string, otherwise we print the default banner string.
-        if IsBound( info.BannerFunction ) then
+        if UserPreference( "ShortBanners" ) then
+          bannerstring:= DefaultPackageBannerString( info, true );
+        elif IsBound( info.BannerFunction ) then
           bannerstring:= RecodeForCurrentTerminal(info.BannerFunction(info));
         elif IsBound( info.BannerString ) then
           bannerstring:= RecodeForCurrentTerminal(info.BannerString);
