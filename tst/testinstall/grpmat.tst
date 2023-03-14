@@ -49,5 +49,10 @@ false
 gap> IsTransitive( Image( IsomorphismPermGroup( SO( 1, 8, 2 ) ) ) );
 true
 
+# 'NiceMonomorphism' shall work for finite rational matrix groups,
+# also if they do not know yet that they are finite.
+gap> G:= Group( [ [ 0, 1 ], [ 1, 0 ] ] );;
+gap> NiceMonomorphism( G );;
+
 #
-gap> STOP_TEST( "grpmat.tst", 1);
+gap> STOP_TEST( "grpmat.tst" );

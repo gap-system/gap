@@ -496,3 +496,7 @@ RedispatchOnCondition( IsomorphismPcGroup, true,
 RedispatchOnCondition( CompositionSeries, true,
     [ IsCyclotomicMatrixGroup ],
     [ IsFinite ], 0 );
+
+RedispatchOnCondition( NiceMonomorphism, true,
+    [ IsCyclotomicMatrixGroup ],
+    [ IsFinite ], 0 );
