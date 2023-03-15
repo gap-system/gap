@@ -872,6 +872,9 @@ InstallMethod( AbelianInvariants,
     local   H,  p,  l,  r,  i,  j,  gns,  inv,  ranks, g,  cmm;
 
     if not IsFinite(G)  then
+        if HasIsCyclic(G) and IsCyclic(G) then
+          return [ 0 ];
+        fi;
         TryNextMethod();
     elif IsTrivial( G )  then
         return [];
