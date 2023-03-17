@@ -1249,12 +1249,6 @@ loading time (see above) then package B needs to be <E>deinstalled</E>
 or what are other ways to disable its loading -->
 <P/>
 
-Finally, if the package manual is in the &GAPDoc; format,
-then &GAPDoc; should still be listed as <E>needed</E> for
-this package (not as <E>suggested</E>), even though &GAPDoc;
-is now a needed package for &GAP; itself.
-<P/>
-
 </Section>
 
 
