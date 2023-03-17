@@ -132,7 +132,7 @@ jobs:
     runs-on: windows-2019
     env:
       CHERE_INVOKING: 1
-      GAP_BUILD_VERSION: ${{ needs.unix.outputs.gap-build-version }}
+      GAP_VERSION: ${{ needs.unix.outputs.gap-build-version }}
     defaults:
       run:
         shell: bash
@@ -141,7 +141,7 @@ jobs:
       fail-fast: false
 
     steps:
-      # The GAP to be wrapped is put into gap-$GAP_BUILD_VERSION/
+      # The GAP to be wrapped is put into gap-$GAP_VERSION/
       # The gap-windows script requires the GAP directory to be named this way.
 
       - uses: actions/setup-python@v4
@@ -160,7 +160,7 @@ jobs:
 
       - name: "Extract the GAP release tarball"
         run: |
-          tar -zxf gap-${GAP_BUILD_VERSION}.tar.gz
+          tar -zxf gap-${GAP_VERSION}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -174,8 +174,8 @@ jobs:
       - uses: gap-actions/setup-cygwin@v1
 
       # Currently, the gap-windows/release_gap.sh script wraps the GAP
-      # contained in gap-${GAP_BUILD_VERSION}, and outputs its installer to
-      # gap-windows/Output/gap-${GAP_BUILD_VERSION}-$ARCH.exe
+      # contained in gap-${GAP_VERSION}, and outputs its installer to
+      # gap-windows/Output/gap-${GAP_VERSION}-$ARCH.exe
       #
       # TODO:
       # * Investigate how to speed this up. e.g. if we don't need to compile
@@ -188,13 +188,12 @@ jobs:
           cd ${GITHUB_WORKSPACE}/gap-windows
           bash release_gap.sh
           # compute the sha256sum, taking care to avoid a trailing newline
-          NAME=Output/gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe
+          NAME=Output/gap-${{ env.GAP_VERSION }}-x86_64.exe
           printf "%s" "$(sha256sum $NAME | cut -c1-64)" >$NAME.sha256
 
         env:
           ARCH: x86_64
-          SAGE_BUILD_DOC_CMD: '"true"'
-          SAGE_VERSION: ${{ env.GAP_BUILD_VERSION }}
+          SAGE_VERSION: ${{ env.GAP_VERSION }}
 
       # Artifacts live for 1 day, i.e. until the next cron job runs.
       - name: "Upload the installer as an artifact"
@@ -202,8 +201,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           if-no-files-found: error
-          name: gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe
-          path: gap-windows/Output/gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe
+          name: gap-${{ env.GAP_VERSION }}-x86_64.exe
+          path: gap-windows/Output/gap-${{ env.GAP_VERSION }}-x86_64.exe
           retention-days: 1
 
       - name: "Upload the installer to tag"
@@ -211,8 +210,8 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         with:
           files: |
-            gap-windows/Output/gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe
-            gap-windows/Output/gap-${{ env.GAP_BUILD_VERSION }}-x86_64.exe.sha256
+            gap-windows/Output/gap-${{ env.GAP_VERSION }}-x86_64.exe
+            gap-windows/Output/gap-${{ env.GAP_VERSION }}-x86_64.exe.sha256
 
   # The following job is duplicated in CI.yml - keep the two in sync.
   # (except for their different 'needs' components).
