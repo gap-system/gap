@@ -105,8 +105,8 @@ that represent a faithful action on vectors.
 
 Most of the functions described in this and the following section have
 implementations which use functions from the &GAP; package
-<Package>Carat</Package>.
-If <Package>Carat</Package> is not installed or not compiled,
+<Package>CaratInterface</Package>.
+If <Package>CaratInterface</Package> is not installed or not compiled,
 no suitable methods are available.
 
 <#Include Label="IsCyclotomicMatrixGroup">
