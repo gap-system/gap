@@ -130,9 +130,9 @@ gap> DisplayString(x);
 gap> ViewString(x);
 "[  ]"
 gap> PrintString(x);
-"[ ]"
+"[  ]"
 gap> String(x);
-"[ ]"
+"[  ]"
 
 # Dense list
 gap> x:=[1,2,3];
