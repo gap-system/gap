@@ -33,4 +33,22 @@ Z(293)^145*a^7+Z(293)^274*a^3+Z(293)^120*a^2+Z(293)^134*a+Z(293)^179
 gap> c := Random(K);;
 
 #
-gap> STOP_TEST("algext.tst",1);
+gap> K:= AlgebraicExtension( Rationals, X(Rationals)^2 + 1 );;
+gap> a:= Zero( K );;
+gap> c:= ExtRepOfObj( a );
+[ 0, 0 ]
+gap> b:= ObjByExtRep( FamilyObj( a ), c );
+!0
+gap> b = a;
+true
+gap> a:= PrimitiveElement(K);
+a
+gap> c:= ExtRepOfObj( a );
+[ 0, 1 ]
+gap> b:= ObjByExtRep( FamilyObj( a ), c );
+a
+gap> b = a;
+true
+
+#
+gap> STOP_TEST("algext.tst");
