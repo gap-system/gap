@@ -311,10 +311,11 @@ end);
 InstallMethod(ObjByExtRep,"ExtElm",true,
   [IsAlgebraicElementFamily,IsList],0,
 function(fam,e)
+  if ForAll(e{[2..fam!.deg]}, i -> i = fam!.zeroCoefficient) then
+    return Objectify(fam!.baseType, [e[1]]);
+  fi;
   MakeImmutable(e);
-  e:=[e];
-  Objectify(fam!.extType,e);
-  return e;
+  return Objectify(fam!.extType, [e]);
 end);
 
 #############################################################################
