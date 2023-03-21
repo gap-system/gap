@@ -148,9 +148,6 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: "Install required Python modules"
-        run: pip3 install PyGithub
-
       # Download the artifact -- for an actual release, this contains the
       # exact same tarball as was uploaded to the release as an asset
       - name: "Download GAP archive from previous job"
@@ -193,7 +190,6 @@ jobs:
 
         env:
           ARCH: x86_64
-          SAGE_VERSION: ${{ env.GAP_VERSION }}
 
       # Artifacts live for 1 day, i.e. until the next cron job runs.
       - name: "Upload the installer as an artifact"
