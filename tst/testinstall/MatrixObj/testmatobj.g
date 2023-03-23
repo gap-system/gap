@@ -56,6 +56,31 @@ TestIdentityMatrix := function(filt, ring, degree)
   return mat;
 end;
 
+TestCompanionMatrix := function(filt, pol, ring)
+  local degree, mat, i, j, mat2;
+
+  degree:= Degree(pol);
+  mat:= CompanionMatrix(filt, pol, ring);
+  Assert(0, filt(mat) = true);
+  Assert(0, BaseDomain(mat) = ring);
+  Assert(0, NrRows(mat) = degree);
+  Assert(0, NrCols(mat) = degree);
+  for i in [1..degree-1] do
+    for j in [1..degree] do
+      if i+1<>j and not IsZero(mat[i,j]) then
+        Error("entry ", i,",",j," is not zero");
+      elif i+1=j and not IsOne(mat[i,j]) then
+        Error("entry ", i,",",j," is not one");
+      fi;
+    od;
+  od;
+  mat2 := CompanionMatrix(pol, mat);
+  if mat <> mat2 then Error("CompanionMatrix(pol, mat) differs"); fi;
+  mat2 := NewCompanionMatrix(filt, pol, ring);
+  if mat <> mat2 then Error("NewCompanionMatrix(filt, pol, ring) differs"); fi;
+  return mat;
+end;
+
 TestElementaryTransforms := function(mat, scalar)
     local i, j, copy, eq;
     Assert(0, NrRows(mat) >= 2);

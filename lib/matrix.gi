@@ -1360,19 +1360,49 @@ InstallOtherMethod( ConstructingFilter,
 ##
 ##  The following "auxiliary methods" are needed when 'DiagonalMatrix' etc.
 ##  is called with filter 'IsPlistRep'.
-##  (Strictly speaking, 'NewZeroMatrix' and 'NewIdentityMatrix' are not
+##  (Strictly speaking, 'NewMatrix' and 'NewZeroMatrix' are not
 ##  defined for this situation, since they promise to return matrix objects.)
 ##
+InstallTagBasedMethod( NewMatrix,
+  IsPlistRep,
+  function( filter, basedomain, ncols, list )
+    local copied, nd;
+
+    # If applicable then replace a flat list 'list' by a nested list
+    # of lists of length 'ncols'.
+    copied:= false;
+    if Length( list ) > 0 and not IsVectorObj( list[1] ) then
+      nd:= NestingDepthA( list );
+      if nd < 2 or nd mod 2 = 1 then
+        if Length( list ) mod ncols <> 0 then
+          Error( "NewMatrix: length of <list> is not a multiple of <ncols>" );
+        fi;
+        list:= List( [ 0, ncols .. Length( list )-ncols ],
+                     i -> list{ [ i+1 .. i+ncols ] } );
+        copied:= true;
+      fi;
+    fi;
+
+    if ValueOption( "check" ) <> false then
+      if ForAny( list, l -> Length( l ) <> ncols ) then
+        Error( "NewMatrix: all entries in <list> must have length <ncols>" );
+      elif ForAny( list, l -> not IsSubset( basedomain, l ) ) then
+        Error( "NewMatrix: entries of all in <list> must lie in <basedomain>" );
+      fi;
+    fi;
+
+    if not copied then
+      list:= List( list, ShallowCopy );
+    fi;
+
+    return list;
+  end );
+
+# This is faster than the default method.
 InstallTagBasedMethod( NewZeroMatrix,
   IsPlistRep,
   function( filter, basedomain, nrows, ncols )
     return NullMat( nrows, ncols, basedomain );
-  end );
-
-InstallTagBasedMethod( NewIdentityMatrix,
-  IsPlistRep,
-  function( filter, basedomain, dim )
-    return IdentityMat( dim, basedomain );
   end );
 
 

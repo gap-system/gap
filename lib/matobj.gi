@@ -272,6 +272,21 @@ InstallMethod( ZeroVector,
 
 #############################################################################
 ##
+#M  NewZeroVector( <filt>, <R>, <n> )
+##
+##  The default method is based on 'NewVector'.
+##  Note that 'NewVector' checks for consistency of <filt> and <R>.
+##  The drawback of the default method is that 'NewVector' will make a
+##  shallow copy of the list.
+##
+InstallTagBasedMethod( NewZeroVector,
+  function( filter, R, n )
+    return NewVector( filter, R, ListWithIdenticalEntries( n, Zero( R ) ) );
+  end );
+
+
+#############################################################################
+##
 #M  ZeroVector( <len>, <v> )
 #M  ZeroVector( <len>, <M> )
 ##
@@ -427,6 +442,25 @@ InstallMethod( Matrix,
   end );
 
 
+#############################################################################
+##
+#M  NewZeroMatrix( <filt>, <R>, <m>, <n> )
+##
+##  The default method is based on 'NewMatrix'.
+##  Note that 'NewMatrix' checks for consistency of <filt> and <R>.
+##  The drawback of the default method is that 'NewMatrix' will make a
+##  shallow copy of the lists.
+##
+InstallTagBasedMethod( NewZeroMatrix,
+  function( filter, basedomain, rows, cols )
+    local z, v, m;
+
+    z:= Zero( basedomain );
+    v:= ListWithIdenticalEntries( cols, z );
+    m:= List( [ 1 .. rows ], i -> ShallowCopy( v ) );
+    return NewMatrix( filter, basedomain, cols, m );
+  end );
+
 #
 #
 #
@@ -449,6 +483,26 @@ InstallMethod( ZeroMatrix,
   function( rep, basedomain, rows, cols )
     if rows < 0 or cols < 0 then Error("ZeroMatrix: the number of rows and cols must be non-negative"); fi;
     return NewZeroMatrix( rep, basedomain, rows, cols );
+  end );
+
+
+#############################################################################
+##
+#M  NewIdentityMatrix( <filt>, <R>, <n> )
+##
+##  The default method is based on 'NewZeroMatrix'.
+##  Note that 'NewZeroMatrix' checks for consistency of <filt> and <R>.
+##
+InstallTagBasedMethod( NewIdentityMatrix,
+  function( filter, basedomain, dim )
+    local mat, one, i;
+
+    mat:= NewZeroMatrix( filter, basedomain, dim, dim );
+    one:= One( basedomain );
+    for i in [ 1 .. dim ] do
+      mat[i,i]:= one;
+    od;
+    return mat;
   end );
 
 #
@@ -475,55 +529,66 @@ InstallMethod( IdentityMatrix,
     return NewIdentityMatrix( rep, basedomain, dim );
   end );
 
+
+#############################################################################
+##
+#M  NewCompanionMatrix( <filt>, <pol>, <R> )
+##
+##  The default method is based on 'NewZeroMatrix'.
+##  Note that 'NewZeroMatrix' checks for consistency of <filt> and <R>,
+##  and 'SetMatElm' checks for consistency of the matrix and the coefficients
+##  of <pol>.
+##
+InstallTagBasedMethod( NewCompanionMatrix,
+  function( filter, pol, basedomain )
+    local one, l, n, mat, i;
+
+    one:= One( basedomain );
+    l:= CoefficientsOfUnivariatePolynomial( pol );
+    n:= Length( l ) - 1;
+    if n <= 0 then
+      Error( "NewCompanionMatrix: degree of <pol> must be at least 1" );
+    elif not IsOne( l[n+1] ) then
+      Error( "NewCompanionMatrix: polynomial <pol> is not monic" );
+    fi;
+    mat:= NewZeroMatrix( filter, basedomain, n, n );
+    for i in [ 1 .. n-1 ] do
+      mat[i,i+1]:= one;
+    od;
+    for i in [ 1 .. n ] do
+      mat[n,i]:= - l[i];
+    od;
+
+    return mat;
+  end );
+
 #
 #
 #
 InstallMethod( CompanionMatrix,
     "for a polynomial and a matrix or matrix object",
-  [ IsUnivariatePolynomial, IsMatrixOrMatrixObj ],
-  function( po, m )
-    local l, n, ll, i, one;
-    one := OneOfBaseDomain( m );
-    l := CoefficientsOfUnivariatePolynomial(po);
-    n := Length(l)-1;
-    if not IsOne(l[n+1]) then
-        Error("CompanionMatrix: polynomial <po> is not monic");
-    fi;
-    l := Vector(-l{[1..n]},CompatibleVector(m));
-#T not good for a default: a compatible vector need not exist
-    ll := 0*[1..n];
-    ll[n] := l;
-    for i in [1..n-1] do
-        ll[i] := ZeroMutable(l);
-        ll[i,i+1] := one;
-    od;
-    return Matrix(ll,n,m);
-  end );
+    [ IsUnivariatePolynomial, IsMatrixOrMatrixObj ],
+    function( pol, M )
+    return NewCompanionMatrix( ConstructingFilter( M ), pol, BaseDomain( M ) );
+    end );
 
 InstallMethod( CompanionMatrix,
     "for a filter, a polynomial, and a semiring",
     [ IsOperation, IsUnivariatePolynomial, IsSemiring ],
     function( filt, pol, R )
-    local l, n, one, mat, i;
-
-    l:= CoefficientsOfUnivariatePolynomial( pol );
-    n:= Length( l )-1;
-    if not IsOne( l[ n+1 ] ) then
-      Error( "CompanionMatrix: polynomial <pol> is not monic" );
-    fi;
-    one:= One( R );
-    mat:= NewZeroMatrix( filt, R, n, n );
-    for i in [ 1 .. n-1 ] do
-      mat[ i, i+1 ]:= one;
-    od;
-    for i in [ 1 .. n ] do
-      mat[ n, i ]:= - l[i];
-    od;
-
-    return mat;
+    return NewCompanionMatrix( filt, pol, R );
     end );
 
+InstallMethod( CompanionMatrix,
+    "for a polynomial and a semiring",
+    [ IsUnivariatePolynomial, IsSemiring ],
+    function( pol, R )
+    return NewCompanionMatrix( DefaultMatrixRepForBaseDomain( R ), pol, R );
+    end );
 
+#
+#
+#
 InstallMethod( KroneckerProduct, "for two matrices",
   [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj ],
   function( A, B )

@@ -1180,7 +1180,7 @@ DeclareOperation( "IdentityMatrix", [ IsOperation, IsSemiring, IsInt ] );
 #############################################################################
 ##
 #O  CompanionMatrix( <pol>, <M> )
-#O  CompanionMatrix( <filt>, <pol>, <R> )
+#O  CompanionMatrix( [<filt>, ]<pol>, <R> )
 ##
 ##  <#GAPDoc Label="MatObj_CompanionMatrix">
 ##  <ManSection>
@@ -1189,6 +1189,8 @@ DeclareOperation( "IdentityMatrix", [ IsOperation, IsSemiring, IsInt ] );
 ##   Label="for polynomial and matrix object"/>
 ##  <Oper Name="CompanionMatrix" Arg='filt, pol, R'
 ##   Label="for filter, polynomial, and semiring"/>
+##  <Oper Name="CompanionMatrix" Arg='pol, R'
+##   Label="for polynomial and semiring"/>
 ##
 ##  <Returns>a matrix object</Returns>
 ##  <Description>
@@ -1208,6 +1210,13 @@ DeclareOperation( "IdentityMatrix", [ IsOperation, IsSemiring, IsInt ] );
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> value
 ##  <A>filt</A> and
 ##  <Ref Attr="BaseDomain" Label="for a matrix object"/> value <A>R</A>.
+##  <P/>
+##  If only <A>pol</A> and a semiring <A>R</A> are given,
+##  the representation of the result is guessed from <A>R</A>.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
+##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  fully mutable.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1216,7 +1225,8 @@ DeclareOperation( "CompanionMatrix",
     [ IsUnivariatePolynomial, IsMatrixOrMatrixObj ] );
 DeclareOperation( "CompanionMatrix",
     [ IsOperation, IsUnivariatePolynomial, IsSemiring ] );
-#T tag based?
+DeclareOperation( "CompanionMatrix",
+    [ IsUnivariatePolynomial, IsSemiring ] );
 
 
 #############################################################################

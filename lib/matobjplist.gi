@@ -219,6 +219,7 @@ InstallTagBasedMethod( NewMatrix,
     return MakeIsPlistMatrixRep( basedomain, e, ncols, m, true );
   end );
 
+# This is faster than the default method.
 InstallTagBasedMethod( NewZeroMatrix,
   IsPlistMatrixRep,
   function( filter, basedomain, rows, cols )
@@ -230,18 +231,6 @@ InstallTagBasedMethod( NewZeroMatrix,
         m[i] := ZeroVector( cols, e );
     od;
     return MakeIsPlistMatrixRep( basedomain, e, cols, m, false );
-  end );
-
-InstallTagBasedMethod( NewIdentityMatrix,
-  IsPlistMatrixRep,
-  function( filter, basedomain, dim )
-    local mat, one, i;
-    mat := NewZeroMatrix(filter, basedomain, dim, dim);
-    one := One(basedomain);
-    for i in [1..dim] do
-        mat[i,i] := one;
-    od;
-    return mat;
   end );
 
 
@@ -1331,24 +1320,3 @@ InstallMethod( CompatibleVector,
   [ "IsPlistMatrixRep" ],
   M -> NewZeroVector( IsPlistVectorRep, BaseDomain( M ), NumberRows( M ) ) );
 
-InstallTagBasedMethod( NewCompanionMatrix,
-  IsPlistMatrixRep,
-  function( filter, po, bd )
-    local i,l,ll,n,one;
-    one := One(bd);
-    l := CoefficientsOfUnivariatePolynomial(po);
-    n := Length(l)-1;
-    if not IsOne(l[n+1]) then
-        Error("CompanionMatrix: polynomial is not monic");
-        return fail;
-    fi;
-    ll := NewMatrix(IsPlistMatrixRep,bd,n,[]);
-    l := Vector(-l{[1..n]},CompatibleVector(ll));
-    for i in [1..n-1] do
-        Add(ll,ZeroMutable(l));
-        ll[i][i+1] := one;
-    od;
-    Add(ll,l);
-    return ll;
-  end );
-#T deprecated, see matobj2.gd -> remove this and other existing methods?
