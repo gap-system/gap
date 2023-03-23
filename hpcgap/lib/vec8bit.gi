@@ -1145,6 +1145,7 @@ InstallTagBasedMethod( NewVector,
     return CopyToVectorRep(l,Size(f));
   end );
 
+# This is faster than the default method.
 InstallTagBasedMethod( NewZeroVector,
   Is8BitVectorRep,
   function( filter, f, i )
@@ -1169,6 +1170,7 @@ InstallTagBasedMethod( NewMatrix,
     return m;
   end );
 
+# This is faster than the default method.
 InstallTagBasedMethod( NewZeroMatrix,
   Is8BitMatrixRep,
   function( filter, f, rows, cols )
@@ -1186,18 +1188,6 @@ InstallTagBasedMethod( NewZeroMatrix,
     od;
     ConvertToMatrixRepNC(m,Size(f));
     return m;
-  end );
-
-InstallTagBasedMethod( NewIdentityMatrix,
-  Is8BitMatrixRep,
-  function( filter, basedomain, dim )
-    local mat, one, i;
-    mat := NewZeroMatrix(filter, basedomain, dim, dim);
-    one := One(basedomain);
-    for i in [1..dim] do
-        mat[i,i] := one;
-    od;
-    return mat;
   end );
 
 InstallMethod( ChangedBaseDomain, "for an 8bit vector and a finite field",
@@ -1243,25 +1233,4 @@ InstallMethod( DistanceOfVectors, "for two 8bit vectors",
   [ Is8BitVectorRep, Is8BitVectorRep ],
   function( v, w )
     return DistanceVecFFE(v,w);
-  end );
-
-InstallTagBasedMethod( NewCompanionMatrix,
-  Is8BitMatrixRep,
-  function( ty, po, bd )
-    local i,l,ll,n,one;
-    one := One(bd);
-    l := CoefficientsOfUnivariatePolynomial(po);
-    n := Length(l)-1;
-    if not IsOne(l[n+1]) then
-        Error("CompanionMatrix: polynomial is not monic");
-        return fail;
-    fi;
-    l := -l{[1..n]};
-    ConvertToVectorRep(l,Size(bd));
-    ll := NewMatrix(ty,bd,n,[l]);
-    for i in [1..n-1] do
-        Add(ll,ZeroMutable(l),i);
-        ll[i][i+1] := one;
-    od;
-    return ll;
   end );

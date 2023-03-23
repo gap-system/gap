@@ -2523,6 +2523,7 @@ InstallTagBasedMethod( NewMatrix,
     return m;
   end );
 
+# This is faster than the default method.
 InstallTagBasedMethod( NewZeroMatrix,
   IsGF2MatrixRep,
   function( filter, f, rows, cols )
@@ -2537,18 +2538,6 @@ InstallTagBasedMethod( NewZeroMatrix,
     od;
     ConvertToMatrixRepNC(m,2);
     return m;
-  end );
-
-InstallTagBasedMethod( NewIdentityMatrix,
-  IsGF2MatrixRep,
-  function( filter, basedomain, dim )
-    local mat, one, i;
-    mat := NewZeroMatrix(filter, basedomain, dim, dim);
-    one := One(basedomain);
-    for i in [1..dim] do
-        mat[i,i] := one;
-    od;
-    return mat;
   end );
 
 InstallMethod( ChangedBaseDomain, "for a gf2 vector and a finite field",
@@ -2594,25 +2583,4 @@ InstallMethod( DistanceOfVectors, "for two gf2 vectors",
   [ IsGF2VectorRep, IsGF2VectorRep ],
   function( v, w )
     return DistanceVecFFE(v,w);
-  end );
-
-InstallTagBasedMethod( NewCompanionMatrix,
-  IsGF2MatrixRep,
-  function( ty, po, bd )
-    local i,l,ll,n,one;
-    one := One(bd);
-    l := CoefficientsOfUnivariatePolynomial(po);
-    n := Length(l)-1;
-    if not IsOne(l[n+1]) then
-        Error("CompanionMatrix: polynomial is not monic");
-        return fail;
-    fi;
-    l := -l{[1..n]};
-    ConvertToVectorRep(l,2);
-    ll := NewMatrix(ty,bd,n,[l]);
-    for i in [1..n-1] do
-        Add(ll,ZeroMutable(l),i);
-        ll[i,i+1] := one;
-    od;
-    return ll;
   end );
