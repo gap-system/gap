@@ -250,6 +250,9 @@ The installations of default methods can be found in the file
 <F>lib/matobj.gi</F> of the &GAP; distribution.
 There one can check for which operations it makes sense to overload them
 for the new type of vector or matrix objects.
+Note that the specific methods must be installed with
+<Ref Func="InstallTagBasedMethod"/> whenever the default method is installed
+with this function.
 
 <P/>
 
@@ -277,9 +280,9 @@ for the new type of vector or matrix objects.
   <Ref Attr="ConstructingFilter" Label="for a vector object"/>,
 </Item>
 <Item>
-  <Ref Oper="NewVector"/> and <Ref Oper="NewZeroVector"/>
+  <Ref Oper="NewVector"/>
   (with consistency checks if the global option <C>check</C> is not set to
-  <K>false</K>).
+  <K>false</K>, install the method with <Ref Func="InstallTagBasedMethod"/>).
 </Item>
 </List>
 
@@ -315,10 +318,9 @@ for the new type of vector or matrix objects.
   <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/>,
 </Item>
 <Item>
-  <Ref Oper="NewMatrix"/>, <Ref Oper="NewIdentityMatrix"/>,
-  and <Ref Oper="NewZeroMatrix"/>,
+  <Ref Oper="NewMatrix"/>
   (with consistency checks if the global option <C>check</C> is not set to
-  <K>false</K>).
+  <K>false</K>, install the method with <Ref Func="InstallTagBasedMethod"/>).
 </Item>
 </List>
 

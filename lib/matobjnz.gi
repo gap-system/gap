@@ -655,6 +655,7 @@ InstallTagBasedMethod( NewMatrix,
     return m;
   end );
 
+# This is faster than the default method.
 InstallTagBasedMethod( NewZeroMatrix,
   IsZmodnZMatrixRep,
   function( filter, basedomain, rows, cols )
@@ -678,12 +679,12 @@ InstallTagBasedMethod( NewZeroMatrix,
     return m;
   end );
 
+# This is faster than the default method.
 InstallTagBasedMethod( NewIdentityMatrix,
   IsZmodnZMatrixRep,
   function( filter, basedomain, dim )
     local mat, i;
     mat := NewZeroMatrix(filter, basedomain, dim, dim);
-#    one := One(basedomain);
     for i in [1..dim] do
         mat[i,i] := 1;
     od;
