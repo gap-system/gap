@@ -23,7 +23,7 @@ gap> F:= GF(3);;  x:= X(F);;
 gap> TestCompanionMatrix(Is8BitMatrixRep, x+1, F);
 [ [ Z(3) ] ]
 gap> TestCompanionMatrix(Is8BitMatrixRep, x^2+x+1, F);
-[ [ 0*Z(3), Z(3)^0 ], [ Z(3), Z(3) ] ]
+[ [ 0*Z(3), Z(3) ], [ Z(3)^0, Z(3) ] ]
 
 # test error handling
 gap> TestCompanionMatrix(Is8BitMatrixRep, Zero(x), F);
@@ -36,7 +36,7 @@ gap> F:= GF(251);;  x:= X(F);;
 gap> TestCompanionMatrix(Is8BitMatrixRep, x+1, F);
 [ [ Z(251)^125 ] ]
 gap> TestCompanionMatrix(Is8BitMatrixRep, x^2+x+1, F);
-[ [ 0*Z(251), Z(251)^0 ], [ Z(251)^125, Z(251)^125 ] ]
+[ [ 0*Z(251), Z(251)^125 ], [ Z(251)^0, Z(251)^125 ] ]
 
 # test error handling
 gap> TestCompanionMatrix(Is8BitMatrixRep, Zero(x), F);
@@ -74,7 +74,7 @@ gap> F:= GF(251);;  x:= X(F);;
 gap> TestCompanionMatrix(IsPlistRep, x+1, F);
 [ [ Z(251)^125 ] ]
 gap> TestCompanionMatrix(IsPlistRep, x^2+x+1, F);
-[ [ 0*Z(251), Z(251)^0 ], [ Z(251)^125, Z(251)^125 ] ]
+[ [ 0*Z(251), Z(251)^125 ], [ Z(251)^0, Z(251)^125 ] ]
 
 #
 gap> F:= Integers;;  x:= X(F);;
@@ -88,15 +88,15 @@ gap> F:= Rationals;;  x:= X(F);;
 gap> TestCompanionMatrix(IsPlistRep, x+1, F);
 [ [ -1 ] ]
 gap> TestCompanionMatrix(IsPlistRep, x^2+x+1, F);
-[ [ 0, 1 ], [ -1, -1 ] ]
+[ [ 0, -1 ], [ 1, -1 ] ]
 
 #
 gap> F:= Integers mod 4;;  x:= X(F);;
 gap> TestCompanionMatrix(IsPlistRep, x+1, F);
 [ [ ZmodnZObj( 3, 4 ) ] ]
 gap> TestCompanionMatrix(IsPlistRep, x^2+x+1, F);
-[ [ ZmodnZObj( 0, 4 ), ZmodnZObj( 1, 4 ) ], 
-  [ ZmodnZObj( 3, 4 ), ZmodnZObj( 3, 4 ) ] ]
+[ [ ZmodnZObj( 0, 4 ), ZmodnZObj( 3, 4 ) ], 
+  [ ZmodnZObj( 1, 4 ), ZmodnZObj( 3, 4 ) ] ]
 
 #
 # Test CompanionMatrix variant which "guesses" a suitable representation, i.e.:
@@ -115,7 +115,7 @@ gap> F:= GF(3);;  x:= X(F);;
 gap> CompanionMatrix(x+1, F);
 [ [ Z(3) ] ]
 gap> CompanionMatrix(x^2+x+1, F);
-[ [ 0*Z(3), Z(3)^0 ], [ Z(3), Z(3) ] ]
+[ [ 0*Z(3), Z(3) ], [ Z(3)^0, Z(3) ] ]
 
 #
 gap> F:= GF(4);;  x:= X(F);;
