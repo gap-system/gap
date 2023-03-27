@@ -1202,8 +1202,8 @@ DeclareOperation( "IdentityMatrix", [ IsOperation, IsSemiring, IsInt ] );
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
 ##  <Ref Attr="BaseDomain" Label="for a matrix object"/> values as <A>M</A>.
 ##  <P/>
-##  We use row convention, that is, the negatives of the coefficients of
-##  <A>pol</A> appear in the last row of the result.
+##  We use column convention, that is, the negatives of the coefficients of
+##  <A>pol</A> appear in the last column of the result.
 ##  <P/>
 ##  If a filter <A>filt</A> and a semiring <A>R</A> are given then the
 ##  companion matrix is returned as a matrix object with
@@ -1217,6 +1217,16 @@ DeclareOperation( "IdentityMatrix", [ IsOperation, IsSemiring, IsInt ] );
 ##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
 ##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
 ##  fully mutable.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> x:= X( GF(5) );;  pol:= x^3 + x^2 + 2*x + 3;;
+##  gap> M:= CompanionMatrix( IsPlistMatrixRep, pol, GF(25) );;
+##  gap> Display( M );
+##  <3x3-matrix over GF(5^2):
+##  [[ 0*Z(5), 0*Z(5), Z(5) ]
+##   [ Z(5)^0, 0*Z(5), Z(5)^3 ]
+##   [ 0*Z(5), Z(5)^0, Z(5)^2 ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1789,13 +1799,22 @@ DeclareSynonymAttr( "RowLength", NumberColumns );
 
 #############################################################################
 ##
-#O  NewCompanionMatrix( ... )
+#O  NewCompanionMatrix( <filt>, <pol>, <R> )
 ##
-##  Once there was the idea to introduce a constructor 'NewCompanionMatrix',
-##  and it is used in several library files, perhaps also in packages.
-##  As a simpler replacement, there is now a method for the operation
-##  'CompanionMatrix' which admits a filter as its first argument.
-##  We should use 'CompanionMatrix' instead of 'NewCompanionMatrix'.
+##  This operation is intended for the installation of tag based methods for
+##  'CompanionMatrix', such that 'CompanionMatrix' admits method dispatch
+##  based on <filt>.
+##
+##  (Currently 'NewCompanionMatrix' is undocumented.
+##  Perhaps we can simply declare 'CompanionMatrix' itself as a tag based
+##  operation for the given requirement.
+##  This would work also for `DiagonalMatrix`, `RandomMatrix`,
+##  `ReflectionMatrix`, etc.
+##  We could even get rid of `NewMatrix`, `NewZeroMatrix`,
+##  `NewIdentityMatrix`, by declaring `Matrix`, `ZeroMatrix`,
+##  `IdentityMatrix` as tag based operations for the requirements in
+##  question, except that the ordering of the arguments for the four
+##  argument versions of `NewMatrix` and `Matrix` does not fit.)
 ##
 DeclareTagBasedOperation( "NewCompanionMatrix",
     [ IsOperation, IsUnivariatePolynomial, IsSemiring ] );

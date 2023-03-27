@@ -196,8 +196,25 @@ DeclareOperation( "IsPrimitivePolynomial", [ IsField, IsRationalFunction ] );
 ##  <Oper Name="CompanionMat" Arg='poly'/>
 ##
 ##  <Description>
-##  compute a companion matrix of the polynomial <A>poly</A>. This matrix has
-##  <A>poly</A> as its minimal polynomial.
+##  Return a fully mutable matrix that is the companion matrix of the
+##  polynomial <A>poly</A>.
+##  The negatives of the coefficients of <A>poly</A> appear
+##  in the last column of the result.
+##  <P/>
+##  The companion matrix of <A>poly</A> has <A>poly</A> as its
+##  minimal polynomial (see <Ref Oper="MinimalPolynomial"/>) and as its
+##  characteristic polynomial (see <Ref Attr="CharacteristicPolynomial"/>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> x:= X( Rationals );;  pol:= x^3 + x^2 + 2*x + 3;;
+##  gap> M:= CompanionMatrix( pol );;
+##  gap> Display( M );
+##  [ [   0,   0,  -3 ],
+##    [   1,   0,  -2 ],
+##    [   0,   1,  -1 ] ]
+##  gap> MinimalPolynomial( M ) = pol;
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

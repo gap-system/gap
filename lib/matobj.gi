@@ -553,10 +553,10 @@ InstallTagBasedMethod( NewCompanionMatrix,
     fi;
     mat:= NewZeroMatrix( filter, basedomain, n, n );
     for i in [ 1 .. n-1 ] do
-      mat[i,i+1]:= one;
+      mat[i+1,i]:= one;
     od;
     for i in [ 1 .. n ] do
-      mat[n,i]:= - l[i];
+      mat[i,n]:= - l[i];
     od;
 
     return mat;

@@ -65,11 +65,11 @@ TestCompanionMatrix := function(filt, pol, ring)
   Assert(0, BaseDomain(mat) = ring);
   Assert(0, NrRows(mat) = degree);
   Assert(0, NrCols(mat) = degree);
-  for i in [1..degree-1] do
-    for j in [1..degree] do
-      if i+1<>j and not IsZero(mat[i,j]) then
+  for i in [1..degree] do
+    for j in [1..degree-1] do
+      if i <> j+1 and not IsZero(mat[i,j]) then
         Error("entry ", i,",",j," is not zero");
-      elif i+1=j and not IsOne(mat[i,j]) then
+      elif i = j+1 and not IsOne(mat[i,j]) then
         Error("entry ", i,",",j," is not one");
       fi;
     od;
