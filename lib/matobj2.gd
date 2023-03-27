@@ -1226,6 +1226,7 @@ DeclareOperation( "IdentityMatrix", [ IsOperation, IsSemiring, IsInt ] );
 ##  [[ 0*Z(5), 0*Z(5), Z(5) ]
 ##   [ Z(5)^0, 0*Z(5), Z(5)^3 ]
 ##   [ 0*Z(5), Z(5)^0, Z(5)^2 ]
+##  ]>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
