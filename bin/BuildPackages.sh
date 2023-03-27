@@ -194,11 +194,7 @@ run_configure_and_make() {
   then
     if grep Autoconf ./configure > /dev/null
     then
-      local PKG_NAME=$($GAP -q -T -A -r -M --bare <<GAPInput
-Read("PackageInfo.g");
-Print(GAPInfo.PackageInfoCurrent.PackageName);
-GAPInput
-)
+      local PKG_NAME=$(basename $PWD)
       local CONFIG_ARGS_FLAG_NAME="PACKAGE_CONFIG_ARGS_${PKG_NAME}"
       echo_run ./configure --with-gaproot="$GAPROOT" $CONFIGFLAGS ${!CONFIG_ARGS_FLAG_NAME}
       # hack: run `make clean` in case the package was built before with different settings
