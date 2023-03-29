@@ -552,7 +552,7 @@ DeclareGlobalFunction("NrUnorderedTuples");
 ##  <#GAPDoc Label="IteratorOfCartesianProduct">
 ##  <ManSection>
 ##  <Heading>IteratorOfCartesianProduct</Heading>
-##  <Func Name="IteratorOfCartesianProduct" Arg='list1, list2 ...'
+##  <Func Name="IteratorOfCartesianProduct" Arg='list1, list2, ...'
 ##   Label="for several lists"/>
 ##  <Func Name="IteratorOfCartesianProduct" Arg='list'
 ##   Label="for a list of lists"/>

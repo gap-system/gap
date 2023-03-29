@@ -2797,7 +2797,7 @@ InstallMethod( MinimumList,
 
 #############################################################################
 ##
-#F  Cartesian( <list1>, <list2> ... )
+#F  Cartesian( <list1>, <list2>, ... )
 #F  Cartesian( <list> )
 ##
 DeclareGlobalName( "Cartesian2" );

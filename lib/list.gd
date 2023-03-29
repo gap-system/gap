@@ -1824,13 +1824,13 @@ DeclareOperation( "StableSortParallel",
 
 #############################################################################
 ##
-#F  Maximum( <obj1>, <obj2> ... ) . . . . . . . . . . . .  maximum of objects
+#F  Maximum( <obj1>, <obj2>, ... )  . . . . . . . . . . .  maximum of objects
 #F  Maximum( <list> )
 ##
 ##  <#GAPDoc Label="Maximum">
 ##  <ManSection>
 ##  <Heading>Maximum</Heading>
-##  <Func Name="Maximum" Arg='obj1, obj2 ...' Label="for various objects"/>
+##  <Func Name="Maximum" Arg='obj1, obj2, ...' Label="for various objects"/>
 ##  <Func Name="Maximum" Arg='list' Label="for a list"/>
 ##
 ##  <Description>
@@ -1862,13 +1862,13 @@ DeclareGlobalFunction( "Maximum" );
 
 #############################################################################
 ##
-#F  Minimum( <obj1>, <obj2> ... ) . . . . . . . . . . . .  minimum of objects
+#F  Minimum( <obj1>, <obj2>, ... )  . . . . . . . . . . .  minimum of objects
 #F  Minimum( <list> )
 ##
 ##  <#GAPDoc Label="Minimum">
 ##  <ManSection>
 ##  <Heading>Minimum</Heading>
-##  <Func Name="Minimum" Arg='obj1, obj2 ...' Label="for various objects"/>
+##  <Func Name="Minimum" Arg='obj1, obj2, ...' Label="for various objects"/>
 ##  <Func Name="Minimum" Arg='list' Label="for a list"/>
 ##
 ##  <Description>
@@ -1940,13 +1940,13 @@ DeclareOperation( "MinimumList", [ IsList, IsObject ] );
 
 #############################################################################
 ##
-#F  Cartesian( <list1>, <list2> ... ) . . . . . .  cartesian product of lists
+#F  Cartesian( <list1>, <list2>, ... )  . . . . .  cartesian product of lists
 #F  Cartesian( <list> )
 ##
 ##  <#GAPDoc Label="Cartesian">
 ##  <ManSection>
 ##  <Heading>Cartesian</Heading>
-##  <Func Name="Cartesian" Arg='list1, list2 ...'
+##  <Func Name="Cartesian" Arg='list1, list2, ...'
 ##   Label="for various objects"/>
 ##  <Func Name="Cartesian" Arg='list' Label="for a list"/>
 ##
