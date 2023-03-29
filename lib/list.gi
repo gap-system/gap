@@ -2084,8 +2084,14 @@ InstallGlobalFunction( Concatenation, function ( arg )
     if Length( arg ) = 0  then
         return [  ];
     fi;
+    if not IsList( arg[1] ) then
+        Error( "Concatenation: arguments must be lists" );
+    fi;
     res := ShallowCopy( arg[1] );
     for i  in [ 2 .. Length( arg ) ]  do
+        if not IsList( arg[i] ) then
+            Error( "Concatenation: arguments must be lists" );
+        fi;
         Append( res, arg[i] );
     od;
     return res;
