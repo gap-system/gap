@@ -2979,14 +2979,14 @@ DeclareOperation( "IsSubset", [ IsListOrCollection, IsListOrCollection ] );
 
 #############################################################################
 ##
-#F  Intersection( <C1>, <C2> ... )  . . . . . . . intersection of collections
+#F  Intersection( <C1>, <C2>, ... ) . . . . . . . intersection of collections
 #F  Intersection( <list> )  . . . . . . . . . . . intersection of collections
 #O  Intersection2( <C1>, <C2> ) . . . . . . . . . intersection of collections
 ##
 ##  <#GAPDoc Label="Intersection">
 ##  <ManSection>
 ##  <Heading>Intersection</Heading>
-##  <Func Name="Intersection" Arg='C1, C2 ...'
+##  <Func Name="Intersection" Arg='C1, C2, ...'
 ##   Label="for various collections"/>
 ##  <Func Name="Intersection" Arg='list' Label="for a list"/>
 ##  <Oper Name="Intersection2" Arg='C1, C2'/>
@@ -3055,14 +3055,14 @@ DeclareOperation( "Intersection2",
 
 #############################################################################
 ##
-#F  Union( <C1>, <C2> ... ) . . . . . . . . . . . . . .  union of collections
+#F  Union( <C1>, <C2>, ... )  . . . . . . . . . . . . .  union of collections
 #F  Union( <list> ) . . . . . . . . . . . . . . . . . .  union of collections
 #O  Union2( <C1>, <C2> )  . . . . . . . . . . . . . . .  union of collections
 ##
 ##  <#GAPDoc Label="Union">
 ##  <ManSection>
 ##  <Heading>Union</Heading>
-##  <Func Name="Union" Arg='C1, C2 ...' Label="for various collections"/>
+##  <Func Name="Union" Arg='C1, C2, ...' Label="for various collections"/>
 ##  <Func Name="Union" Arg='list' Label="for a list"/>
 ##  <Oper Name="Union2" Arg='C1, C2'/>
 ##
