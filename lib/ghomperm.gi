@@ -1167,6 +1167,9 @@ InstallGlobalFunction( StabChainPermGroupToPermGroupGeneralMappingByImages,
        then k := 0;
        else k := LargestMovedPoint( Range( hom ) );  fi;
 
+    # force stab chain for source
+    Size(Source(hom));
+
     # collect info for options
     options := rec();
 
