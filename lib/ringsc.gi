@@ -917,8 +917,25 @@ end);
 InstallOtherMethod(IsUnit,"for finite Rings",
   IsCollsElms,[IsRing,IsScalar],0,
 function(R,e)
+local o,pow,a;
   if not IsFinite(R) then
     TryNextMethod();
+  fi;
+  if IsAssociative(R) and One(R) <> fail then
+    # compute powers of e until we reach one or repeat
+    o:=One(R);
+    pow:=[];
+    a:=e;
+    repeat
+      Add(pow,a);
+      a:=a*e;
+      if a=o then
+        # power is one. So previous power is inverse
+        return true;
+      fi;
+    until a in pow;
+    # repeats without hitting the one element, cannot be a unit
+    return false;
   fi;
   return One(R)<>fail
          and ForAny(Enumerator(R),x->x*e=One(R) and e*x=One(R));
