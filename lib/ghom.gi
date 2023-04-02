@@ -1339,11 +1339,12 @@ InstallMethod( IsInnerAutomorphism,
     [ IsGroupGeneralMapping ], 0,
     function( hom )
     local s, gens, rep;
+    s:= Source( hom );
+    Size(s); # force order to use for stabchain if needed
     if not ( IsEndoGeneralMapping( hom ) and IsBijective( hom )
              and IsGroupHomomorphism( hom ) ) then
       return false;
     fi;
-    s:= Source( hom );
     gens:= GeneratorsOfGroup( s );
     if HasConjugatorOfConjugatorIsomorphism(hom) then
       rep:=ConjugatorOfConjugatorIsomorphism(hom);
