@@ -45,6 +45,17 @@ gap> A.2^-1;
 f2^2
 
 #
+gap> inputs:= [ [], [ 1 ], [ 2, 3, 4 ], [ 1, 2, 1, 3, 1 ] ];;
+gap> for ints in inputs do
+>      for filt in [ IsPcGroup, IsPermGroup, IsFpGroup ] do
+>        G:= AbelianGroup( ints );
+>        if List( GeneratorsOfGroup( G ), Order ) <> ints then
+>          Error( "orders of the generators do not fit" );
+>        fi;
+>      od;
+>    od;
+
+#
 gap> AbelianGroup([2,0]);
 <fp group of size infinity on the generators [ f1, f2 ]>
 gap> AbelianGroup([2,infinity]);

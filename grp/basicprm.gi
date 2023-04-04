@@ -39,6 +39,10 @@ InstallMethod( AbelianGroupCons,
 function( filter, ints )
     local   grp,  grps;
 
+    if IsEmpty( ints ) then
+      # Create a group with empty list of generators
+      return GroupWithGenerators( [], () );
+    fi;
     if not ForAll( ints, IsInt )  then
         Error( "<ints> must be a list of integers" );
     fi;
@@ -48,7 +52,7 @@ function( filter, ints )
 
     grps := List( ints, x -> CyclicGroupCons( IsPermGroup, x ) );
     # the way a direct product is constructed guarantees the right
-    # generators
+    # generators (also generators of order 1)
     grp  := CallFuncList( DirectProduct, grps );
     SetSize( grp, Product(ints) );
     SetIsAbelian( grp, true );

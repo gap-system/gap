@@ -44,7 +44,12 @@ local   pis,  f,  g,  r,  k,  pi,  i,  geni,  j,  name,  ps;
     fi;
     if ForAll(ints,i->i=1) then
       # the stupid trivial group case
-      return CyclicGroup( IsPcGroup, 1 );
+      g:= CyclicGroup( IsPcGroup, 1 );
+      if Length( ints ) > 0 then
+        g:= GroupWithGenerators(
+                ListWithIdenticalEntries( Length( ints ), One( g ) ) );
+      fi;
+      return g;
     fi;
 
     pis := List( ints, Factors );

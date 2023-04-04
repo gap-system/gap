@@ -32,7 +32,7 @@ InstallMethod( AbelianGroupCons, "fp group", true,
 function( filter, ints )
 local   f,g,i,j,rels,gfam,fam;
 
-  if Length(ints)=0 or not ForAll( ints, x -> IsInfinity(x) or (IsInt(x) and x >= 0) )  then
+  if not ForAll( ints, x -> IsInfinity(x) or (IsInt(x) and x >= 0) )  then
       Error( "<ints> must be a list of integers" );
   fi;
 
