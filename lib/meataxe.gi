@@ -45,6 +45,18 @@ local l,f,dim,m;
   return m;
 end);
 
+# variant of Value: if we evaluate the polynomial `f` at a matrix `x`, then it
+# is usually beneficial to first factor `f` and evaluate at the factors
+BindGlobal("SMTX_Value",function(f,x,one)
+local fa;
+  fa:=Factors(f);
+  if Length(fa)>1 then
+    return Product(List(Collected(fa),y->Value(y[1],x,one)^y[2]),one);
+  else
+    return Value(f,x,one);
+  fi;
+end);
+
 #############################################################################
 ##
 #F  TrivialGModule( g, F ) . . . trivial G-module
@@ -1112,7 +1124,7 @@ SMTX.IrreducibilityTest:=function( module )
                # Now go through the factors and attempt to find a submodule
                facno:=1; l:=Length(sfac);
                while facno <= l and trying do
-                  mat:=Value(sfac[facno], M,idmat);
+                  mat:=SMTX_Value(sfac[facno], M,idmat);
                   Info(InfoMeatAxe,5,"Evaluated matrix on factor. Time = ",
                        Runtime()-rt0,".");
                   N:=NullspaceMat(mat);
@@ -1197,7 +1209,7 @@ SMTX.IrreducibilityTest:=function( module )
                      Info(InfoMeatAxe,5,
                          "Evaluated second random element in algebra.");
                      v:=Random(FullRowSpace(F,dim));
-                     mat2:=Value(idemp, M,idmat);
+                     mat2:=SMTX_Value(idemp, M,idmat);
                      mat3:=mat2*M2*mat2;
                      v:=v*(M*mat3 - mat3*M);
                      # This vector might lie in a proper subspace!
@@ -1328,7 +1340,7 @@ SMTX.RandomIrreducibleSubGModule:=function( module )
       od;
       M:=ImmutableMatrix(F,Sum([1..ngens], i-> el[2][i] * matrices[i]));
       SMTX.SetAlgElMat(submodule2,M);
-      N:=NullspaceMat(Value(fac,M,M^0));
+      N:=NullspaceMat(SMTX_Value(fac,M,M^0));
       SMTX.SetAlgElNullspaceVec(submodule2,N[1]);
       return [subbasis2, submodule2];
    fi;
@@ -1421,7 +1433,7 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist,
          if trying and deg <= mindim then
             i:=1;
             while i <= l and trying do
-               mat:=Value(fac[i], M,idmat);
+               mat:=SMTX_Value(fac[i], M,idmat);
                Info(InfoMeatAxe,5,"Evaluated matrix on factor. Time = ",
                     Runtime()-rt0,".");
                N:=NullspaceMat(mat);
@@ -1917,7 +1929,7 @@ SMTX.FieldGenCentMat:=function( module )
     od;
     # Finally recalculate centmat and its minimal polynomial.
     centmat:=SMTX.CentMat(module);
-    newcentmat:=Value(genpol, centmat,centmat^0);
+    newcentmat:=SMTX_Value(genpol, centmat,centmat^0);
     SMTX.SetFGCentMat(module, newcentmat);
     SMTX.SetFGCentMatMinPoly(module,MinimalPolynomialMatrixNC(F,newcentmat,1));
     # Ugh! That was very inefficient - should work out the min poly using
@@ -2103,7 +2115,7 @@ SMTX.Distinguish:=function( cf, i )
          od;
          M:=ImmutableMatrix(F,Sum([1..ngens], k -> el[2][k] * mats[k]));
          ngens:=orig_ngens;
-         mat:=Value(fact, M, M^0);
+         mat:=SMTX_Value(fact, M, M^0);
          if RankMat(mat) < dim then
             found:=false;
             Info(InfoMeatAxe,2,"Current element failed on factor ", j);
@@ -2159,7 +2171,7 @@ SMTX.Distinguish:=function( cf, i )
          if trying and deg <= extdeg then
             j:=1;
             while j <= lf and trying do
-               mat:=Value(fac[j], M,idmat);
+               mat:=SMTX_Value(fac[j], M,idmat);
                N:=NullspaceMat(mat);
                if Length(N) = extdeg then
                   trying:=false;
@@ -2197,7 +2209,7 @@ SMTX.Distinguish:=function( cf, i )
                   mats[ngens]:=mats[genpair[1]] * mats[genpair[2]];
                od;
                M:=ImmutableMatrix(F,Sum([1..ngens], k -> el[2][k] * mats[k]));
-               mat:=Value(fact, M, M^0);
+               mat:=SMTX_Value(fact, M, M^0);
                if RankMat(mat) < dim then
                   found:=false;
                   Info(InfoMeatAxe,2,"Failed on factor ", j);
@@ -2250,7 +2262,7 @@ SMTX.MinimalSubGModule:=function( module, cf, i )
    od;
    ngens:=orig_ngens;
    fact:=SMTX.AlgElCharPolFac(cf[i][1]);
-   mat:=Value(fact, M,M^0);
+   mat:=SMTX_Value(fact, M,M^0);
    N:=NullspaceMat(mat);
    return SMTX.SpinnedBasis(N[1], mats,F, ngens);
 
@@ -2344,7 +2356,7 @@ SMTX.IsomorphismComp:=function(module1, module2, action)
       return fail;
    fi;
    fac:=SMTX.AlgElCharPolFac(module1);
-   mat:=Value(fac, M,M^0);
+   mat:=SMTX_Value(fac, M,M^0);
    Info(InfoMeatAxe,2,"Calculating nullspace for second module.");
    N:=NullspaceMat(mat);
    if Length(N) <> SMTX.AlgElNullspaceDimension(module1) then
@@ -2487,7 +2499,7 @@ SMTX.Homomorphisms:= function(m1, m2)
    ngens:=orig_ngens;
 
    fac:=SMTX.AlgElCharPolFac(m1);
-   mat:=Value(fac, mat,mat^0);
+   mat:=SMTX_Value(fac, mat,mat^0);
    Info(InfoMeatAxe,2,"Calculating nullspace for second module.");
    N:=NullspaceMat(mat);
    imlen:=Length(N);
