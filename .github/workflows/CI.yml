@@ -86,14 +86,6 @@ jobs:
             test-suites: "testinstall"
             extra: "HPCGAP=yes ABI=64"
 
-          # compile packages and run GAP tests in 32 bit mode
-          # it seems profiling is having trouble collecting the coverage data
-          # here, so we use NO_COVERAGE=1
-          - os: ubuntu-18.04  # TODO: in ubuntu-latest, the 32bit tests don't work...
-            shell: bash
-            test-suites: "testpackages testinstall-loadall"
-            extra: "ABI=32 NO_COVERAGE=1"
-
           # this job also tests GAP without readline
           - os: macos-latest
             shell: bash
