@@ -234,7 +234,6 @@ GAPInput
     test -f $GAPPREFIX/bin/gac
     test -f $GAPPREFIX/include/gap/gap_all.h
     test -f $GAPPREFIX/include/gap/version.h
-    test -f $GAPPREFIX/include/gap/src/compiled.h # for backwards compatibility
     test -f $GAPPREFIX/lib/gap/sysinfo.gap
     test -f $GAPPREFIX/lib/pkgconfig/libgap.pc
     test -f $GAPPREFIX/share/gap/doc/ref/chap0_mj.html

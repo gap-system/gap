@@ -125,7 +125,6 @@ far off.
 Compatibility mode does the following things:
 
 * create a `bin/gap.sh` shell script invoking `gap`
-* for out-of-tree builds, it creates a `${builddir}/src/compiled.h` file
 * ...
 
 For now, using compatibility mode is required if one wants to build the
@@ -224,7 +223,6 @@ readline, or to specify an installation prefix, and so on.
 One final remark: some of the generated files differ for HPC-GAP. If you want
 to cross compile HPC-GAP, you need to generate them with HPC-GAP, and place
 them into `src/hpc` instead of `src`, like in this example:
-
 
     ./configure --enable-hpcgap
     make
