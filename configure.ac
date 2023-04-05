@@ -956,13 +956,6 @@ AS_IF([test "x$enable_compat_mode" = xyes],
         ],
         [
             AC_MSG_NOTICE([out-of-tree build])
-            # FIXME: the following config command works if invoked
-            # explicitly, but for some reason is not added to the list
-            # of automatic command
-            AC_CONFIG_COMMANDS([src/compiled.h],
-                [
-                echo "#include \"$ac_abs_top_srcdir/src/compiled.h\"" > src/compiled.h
-                ])
         ])
     ])
 
