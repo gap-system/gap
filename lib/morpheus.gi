@@ -2860,7 +2860,8 @@ local m;
   fi;
 
   if Size(SolvableRadical(G))>1 and CanComputeFittingFree(G)
-    and not (IsSolvableGroup(G) and Size(G)<=2000)
+    and not (IsSolvableGroup(G) and Size(G)<=2000
+       and ID_AVAILABLE(Size(G))<>fail)
     and (AbelianRank(G)>2 or Length(SmallGeneratingSet(G))>2
       # the solvable radical method got better, so force if the radical of
       # the group is a good part

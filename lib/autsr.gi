@@ -1690,7 +1690,7 @@ end);
 # isomorphism available and there are many generators
 InstallGlobalFunction(PatheticIsomorphism,function(G,H)
 local d,a,map,cG,nG,nH,i,j,u,v,asAutomorphism,K,L,conj,e1,e2,
-      iso,api,gens,pre,aab,as;
+      iso,api,gens,pre,aab,as,somechar;
 
   asAutomorphism:=function(sub,hom)
     return Image(hom,sub);
@@ -1784,11 +1784,16 @@ local d,a,map,cG,nG,nH,i,j,u,v,asAutomorphism,K,L,conj,e1,e2,
   aab:=[Image(e1,G),Image(e2,H)];
   # we also fix the *pairs* of the characteristic subgroups as orbits. Again
   # this must happen in Aut(G)\wr 2, and reduces the size of the group.
-  a:=AutomorphismGroup(d:autactbase:=aab,someCharacteristics:=
-    rec(subgroups:=cG,
-        orbits:=List([1..Length(nG)],x->[Image(e1,nG[x]),Image(e2,nH[x])])),
+  somechar:=rec(subgroups:=cG,
+        orbits:=List([1..Length(nG)],x->[Image(e1,nG[x]),Image(e2,nH[x])]));
+  a:=AutomorphismGroup(d:autactbase:=aab,someCharacteristics:=somechar,
     directs:=aab,
     delaypermrep:=true );
+  for i in cG do
+    if not ForAll(GeneratorsOfGroup(a),x->Image(x,i)=i) then
+      a:=Stabilizer(a,i,asAutomorphism);
+    fi;
+  od;
 
   iso:=fail;
   #if NrMovedPoints(api)>5000 then
@@ -1815,6 +1820,7 @@ local d,a,map,cG,nG,nH,i,j,u,v,asAutomorphism,K,L,conj,e1,e2,
     as:=a;
     Add(cG,TrivialSubgroup(d));
 
+    SortBy(cG,x->-Size(x));
     for i in cG do
       u:=ClosureGroup(i,K);
       v:=ClosureGroup(i,L);
@@ -1857,10 +1863,12 @@ local d,a,map,cG,nG,nH,i,j,u,v,asAutomorphism,K,L,conj,e1,e2,
           conj:=conj*map;
           K:=Image(map,K);
 
-          u:=Stabilizer(api,v,gens,pre,asAutomorphism);
-          Info(InfoMorph,1,"Factor ",Size(d)/Size(i),": ",
-              "reduce by ",Size(api)/Size(u));
-          api:=u;
+          if Size(i)>1 then
+            u:=Stabilizer(api,v,gens,pre,asAutomorphism);
+            Info(InfoMorph,1,"Factor ",Size(d)/Size(i),": ",
+                "reduce by ",Size(api)/Size(u));
+            api:=u;
+          fi;
         fi;
       fi;
     od;
