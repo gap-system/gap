@@ -1072,6 +1072,20 @@ function( left, right )
   return SumCoefPolynomial(left, right);
 end);
 
+# divide by constant polynomials
+
+InstallMethod(\/,"constant denominator poly",IsIdenticalObj,
+  [IsPolynomial,IsPolynomial],0,
+function(num,den)
+local e;
+  e:=ExtRepNumeratorRatFun(den);
+  if Length(e)=0 then Error("Division by zero");
+  elif Length(e)>2 or Length(e[1])>0 then TryNextMethod();fi;
+  e:=Inverse(e[2]);
+  if e=fail then TryNextMethod();fi;
+  return e*num;
+end);
+
 InstallGlobalFunction( QuotientPolynomialsExtRep,QUOTIENT_POLYNOMIALS_EXT);
 
 #############################################################################
