@@ -918,27 +918,27 @@ InstallOtherMethod(IsUnit,"for finite Rings",
   IsCollsElms,[IsRing,IsScalar],0,
 function(R,e)
 local o,pow,a;
-  if not IsFinite(R) then
+  if not IsFinite(R) or One(R)=fail then
     TryNextMethod();
   fi;
-  if IsAssociative(R) and One(R) <> fail then
-    # compute powers of e until we reach one or repeat
-    o:=One(R);
-    pow:=[];
-    a:=e;
-    repeat
-      Add(pow,a);
-      a:=a*e;
-      if a=o then
-        # power is one. So previous power is inverse
-        return true;
-      fi;
-    until a in pow;
-    # repeats without hitting the one element, cannot be a unit
-    return false;
+
+  if not IsAssociative(R) then
+    return One(R)<>fail
+          and ForAny(Enumerator(R),x->x*e=One(R) and e*x=One(R));
   fi;
-  return One(R)<>fail
-         and ForAny(Enumerator(R),x->x*e=One(R) and e*x=One(R));
+
+  # instead of running through the whole ring, considering powers is
+  # actually faster, if associative
+  o:=One(R);
+  pow:=[];
+  a:=e;
+  repeat
+   Add(pow,a);
+   a:=a*e;
+   if a=o then return true;fi; # power is one. So previous power is inverse
+  until a in pow;
+  return false; # repeats without hitting the One. Cannot be Unit.
+
 end);
 
 InstallMethod(Subrings,"for SC Rings",[IsSubringSCRing],
