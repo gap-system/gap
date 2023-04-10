@@ -373,7 +373,9 @@ CallAndInstallPostRestore( function()
         else
           opt := GAPInfo.CommandLineOptionCanonicalName.( opt );
           value:= CommandLineOptions.( opt );
-          if IS_BOOL( value ) then
+          if IS_BOOL( value ) and word[2] = '-' then
+            CommandLineOptions.( opt ):= true;
+          elif IS_BOOL( value ) then
             CommandLineOptions.( opt ):= not CommandLineOptions.( opt );
           elif IS_INT( value ) then
             CommandLineOptions.( opt ):= CommandLineOptions.( opt ) + 1;
@@ -496,7 +498,7 @@ CallAndInstallPostRestore( function()
 
       PRINT_TO("*stdout*",
        "\n",
-       "  Boolean options toggle the current value each time they are called.\n",
+       "  Short boolean options toggle the current value each time they are called.\n",
        "  Default actions are indicated first.\n",
        "\n" );
       QuitGap();
