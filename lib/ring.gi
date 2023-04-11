@@ -923,40 +923,55 @@ InstallMethod( Units,
     end;
 
     if IsAssociative(R) then
+      expo:=1;
+
+      # what power until you get idempotent (counting 1/0 as idempotent)
+      idempo:=function(elm)
+      local a,i;
+        i:=1;
+        a:=elm;
+        repeat
+          a:=a*elm;
+          i:=i+1;
+        until a=a*a;
+        return i;
+      end;
+
       units:= GroupByGenerators( [], one );
+      idemp:=[];
+      for elm in Enumerator( R ) do
+        # Hope that the existing units group gives a good part of the exponent
+        # thus hope power is one or an idempotent
+        # (In a finite ring every element is a unit, or has a
+        # idempotent power, considering zero as idempotent.)
+        pow:=elm^expo;
+        if pow=one then
+          case:=1;
+        elif pow in idemp then
+          case:=0;
+        elif IsUnit(R,pow) then
+          case:=1;
+          expo:=Lcm(expo,idempo(elm));
+        elif pow=pow*pow then
+          case:=0;
+          AddSet(idemp,pow);
+        else
+          case:=0;
+          expo:=Lcm(expo,idempo(elm));
+        fi;
+
+        if case=1 and not elm in units then
+          units:= ClosureGroupDefault( units, elm );
+        fi;
+      od;
     else
       units:=Magma(one);
-    fi;
-    idemp:=[];
-    for elm in Enumerator( R ) do
-      # Hope that the existing units group gives a good part of the exponent
-      # thus hope power is one or an idempotent
-      # (In a finite ring every element is a unit, or has a
-      # idempotent power, considering zero as idempotent.)
-      pow:=elm^expo;
-      if pow=one then
-        case:=1;
-      elif pow in idemp then
-        case:=0;
-      elif IsUnit(R,pow) then
-        case:=1;
-        expo:=Lcm(expo,idempo(elm));
-      elif pow=pow*pow then
-        case:=0;
-        AddSet(idemp,pow);
-      else
-        case:=0;
-        expo:=Lcm(expo,idempo(elm));
-      fi;
-
-      if case=1 and not elm in units then
-        if IsAssociative(R) then
-          units:= ClosureGroupDefault( units, elm );
-        else
+      for elm in Enumerator(R) do
+        if IsUnit( R, elm ) and not elm in units then
           units:= ClosureMagmaDefault( units, elm );
         fi;
-      fi;
-    od;
+      od;
+    fi;
 
     return units;
     end );
