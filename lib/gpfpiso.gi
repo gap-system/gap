@@ -1441,6 +1441,9 @@ local f,rels,i,j,gens,coxrel;
       od;
     od;
   elif ser="E" then
+    #    1-2-3-5-6-7-8
+    #        |
+    #        4
     coxrel(gens[1],gens[2],3);
     coxrel(gens[2],gens[3],3);
     coxrel(gens[3],gens[4],3);
@@ -1466,7 +1469,7 @@ local f,rels,i,j,gens,coxrel;
     if n=8 then
       coxrel(gens[7],gens[8],3);
       for i in [1..6] do
-        coxrel(gens[i],gens[7],2);
+        coxrel(gens[i],gens[8],2);
       od;
     elif n>8 then
       Error("E>8 does not exist");
