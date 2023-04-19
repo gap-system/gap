@@ -4145,8 +4145,8 @@ InstallGlobalFunction( DirectSumMat, function (arg)
     fi;
 
     # Distinguish:
-    # - If we are given a list of 'IsMatrix' or empty plain lists,
-    #   we want to return an 'IsMatrix',
+    # - If we are given a list of 'IsMatrix' that are *not* 'IsMatrixObj'
+    #   or of empty plain lists, we want to return an 'IsMatrix',
     #   and we do not care about base domains.
     # - If we are given a list of 'IsMatrixObj',
     #   we want to return an 'IsMatrixObj',
@@ -4160,7 +4160,7 @@ InstallGlobalFunction( DirectSumMat, function (arg)
     arg:= Filtered( arg, x -> x <> [] );
     if Length( arg ) = 0 then
       return [];
-    elif ForAll( arg, IsMatrix ) then
+    elif ForAll( arg, m -> IsMatrix( m ) and not IsMatrixObj( m ) ) then
       m:= arg[1];
       F:= DefaultField( m[1,1] );
       res:= NullMat( Sum( arg, NrRows ), Sum( arg, NrCols ), F );
