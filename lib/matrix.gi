@@ -4130,65 +4130,74 @@ InstallGlobalFunction( FlatBlockMat, function( block )
     return mat;
 end );
 
+
 #############################################################################
 ##
 #F  DirectSumMat( <matlist> ) . . . . . . . . . . . create block diagonal mat
-#F  DirectSumMat( mat1,..,matn )  . . . . . . . . . create block diagonal mat
+#F  DirectSumMat( <mat1>, ..., <matn> ) . . . . . . create block diagonal mat
 ##
 InstallGlobalFunction( DirectSumMat, function (arg)
-    local  c, r, res, m, f, F;
-    if Length(arg)=1 and not IsMatrix(arg[1]) then
-        arg:=arg[1];
+    local m, F, res, B, r, c;
+
+    if Length( arg ) = 1 and not IsMatrixOrMatrixObj( arg[1] ) then
+      # We expect that 'arg[1]' is a list of matrices or matrix objects.
+      arg:= arg[1];
     fi;
-    f:=function(m)
-        if Length(m)=0 then
-            return 0;
+
+    # Distinguish:
+    # - If we are given a list of 'IsMatrix' or empty plain lists,
+    #   we want to return an 'IsMatrix',
+    #   and we do not care about base domains.
+    # - If we are given a list of 'IsMatrixObj',
+    #   we want to return an 'IsMatrixObj',
+    #   and eventually we want to require that all given inputs have the
+    #   same base domain and the same internal representation.
+    #   For backwards compatibility reasons,
+    #   we are currently on the one hand less restrictive,
+    #   because we admit different base domains,
+    #   and on the other hand we require the base domains to be fields.
+    #   (This situation is not at all satisfactory.)
+    arg:= Filtered( arg, x -> x <> [] );
+    if Length( arg ) = 0 then
+      return [];
+    elif ForAll( arg, IsMatrix ) then
+      m:= arg[1];
+      F:= DefaultField( m[1,1] );
+      res:= NullMat( Sum( arg, NrRows ), Sum( arg, NrCols ), F );
+    elif ForAny( arg, IsMatrixObj ) then
+      # Find a common 'BaseDomain'.
+      F:= fail;
+      for m in arg do
+        if HasBaseDomain( m ) then
+          B:= BaseDomain( m );
         else
-            return NrCols(m);
+          B:= DefaultFieldOfMatrix( m );
         fi;
-    end;
-    r:=1; m:=[ ];
-    while m = [ ] and r <= Length( arg ) do
-      m:= arg[r]; r:=r+1;
-    od;
-    if m <> [ ] then
-      r:=[];
-      for c in arg do
-        if HasBaseDomain(c) then
-          Add(r,BaseDomain(c));
-        else
-          Add(r,DefaultFieldOfMatrix(c));
-        fi;
-      od;
-      F:=r[1];
-      for c in r{[2..Length(r)]} do
-        if not IsSubset(F,c) then
-          if IsSubset(c,F) then
-            F:=c;
+        if F = fail then
+          F:= B;
+        elif not IsSubset( F, B ) then
+          if IsSubset( B, F ) then
+            F:= B;
           else
-            F:=Field(Concatenation(GeneratorsOfField(F),GeneratorsOfField(c)));
+            F:= Field( Concatenation( GeneratorsOfField( F ),
+                                      GeneratorsOfField( B ) ) );
           fi;
         fi;
       od;
+      res:= ZeroMatrix( F, Sum( arg, NrRows ), Sum( arg, NrCols ) );
+    else
+      Error( "<arg> must be a list of IsMatrix or of IsMatrixObj" );
+    fi;
 
-    else
-      F:= Rationals;
-    fi;
-    res:=[Sum(arg,Length),Sum(arg,f)];
-    if ForAny(arg,IsMatrixObj) then
-      res:=ZeroMatrix(F,res[1],res[2]);
-    else
-      res:=List(NullMat(res[1],res[2],F),ShallowCopy);
-    fi;
-    r:=0;
-    c:=0;
+    r:= 0;
+    c:= 0;
     for m in arg do
-        #res{r+[1..Length(m)]}{c+[1..f(m)]}:=m;
-        CopySubMatrix(m,res,[1..NrRows(m)],r+[1..Length(m)],
-          [1..NrCols(m)], c+[1..f(m)]);
-        r:=r+Length(m);
-        c:=c+f(m);
+      CopySubMatrix( m, res, [ 1 .. NrRows( m ) ], r + [ 1 .. NrRows( m ) ],
+                     [ 1 .. NrCols( m ) ], c + [ 1 .. NrCols( m ) ] );
+      r:= r + NrRows( m );
+      c:= c + NrCols( m );
     od;
+
     return res;
 end );
 
