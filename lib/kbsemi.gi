@@ -173,7 +173,8 @@ DeclareRepresentation("IsKnuthBendixRewritingSystemRep",
 ##  (compatible with left and right multiplication).
 ##
 ##  A Knuth Bendix rewriting system consists of a list of relations,
-##  which we call rules, and a list of pairs of numbers (pairs2check).
+##  which we call rules, and a list of pairs of numbers
+##  or more generalized form for saving memory (pairs2check).
 ##  Each lhs of a rule has to be greater than its rhs
 ##  (so when we apply a rule to a word, we are effectively reducing it -
 ##  according to the ordering considered)
@@ -208,16 +209,15 @@ local r,kbrws,rwsfam,relations_with_correct_order,CantorList,relwco,
 
   # generates the list of all pairs (x,y)
   # where x,y are distinct elements of the set [1..n]
+  # encoded in compact form
   CantorList:=function(n)
-     local i,j,l;
-     l:=[];
-     for i in [1..n] do
-          Add(l,[i,i]);
-          for j in [1..i-1] do
-               Append(l,[[i,j],[j,i]]);
-          od;
-     od;
-     return(l);
+  local i,l;
+    l:=[];
+    for i in [2..n] do
+      Add(l,['A',i,[1..i-1]]);
+      Add(l,['B',[1..i-1],i]);
+    od;
+    return(l);
   end;
 
   if ValueOption("isconfluent")=true then
@@ -392,7 +392,8 @@ InstallOtherMethod(AddRuleReduced,
      and IsKnuthBendixRewritingSystemRep, IsList ], 0,
 function(kbrws,v)
 
-  local u,a,b,c,k,n,s,add_rule,remove_rule,fam,ptc,kbdag,abi;
+  local u,a,b,c,k,n,s,add_rule,remove_rule,fam,ptc,kbdag,abi,rem,
+    remove_rules;
 
     # the fr package assigns initial tzrules on its own, this messes up
     # the dag structure. Delete ...
@@ -426,7 +427,7 @@ function(kbrws,v)
     #modifies the list pairs2check in such a way that the previous indexes
     #are modified so they correspond to same pairs as before
     remove_rule:=function(i)
-      local j,q,a,k,l;
+      local j,q,a,k,l,kk;
 
       if kbdag<>fail then
         # update lookup structure
@@ -449,18 +450,140 @@ function(kbrws,v)
         #delete pairs of indexes that include i
         #and change occurrences of indexes k greater than i in the
         #list of pairs and change them to k-1
+
+        kk:=kbrws!.pairs2check;
+
         #So we'll construct a new list with the right pairs
         l:=[];
-        for j in [1..Length(kbrws!.pairs2check)] do
-          if kbrws!.pairs2check[j][1]<>i and kbrws!.pairs2check[j][2]<>i then
-            a:=kbrws!.pairs2check[j];
-            for k in [1..2] do
-              if kbrws!.pairs2check[j][k]>i then
-                a[k]:=kbrws!.pairs2check[j][k]-1;
+        for j in [1..Length(kk)] do
+          if Length(kk[j])=2 then
+            if kk[j][1]<i then
+              if kk[j][2]<i then
+                Add(l,kk[j]);
+              elif kk[j][2]>i then
+                # reindex
+                Add(l,[kk[j][1],kk[j][2]-1]);
               fi;
-            od;
-            Add(l,a);
+            elif kk[j][1]>i then
+              if kk[j][2]<i then
+                # reindex
+                Add(l,[kk[j][1]-1,kk[j][2]]);
+              elif kk[j][2]>i then
+                # reindex
+                Add(l,[kk[j][1]-1,kk[j][2]-1]);
+              fi;
+            # else rule gets deleted
+            fi;
+          elif kk[j][1]='A' then
+            if kk[j][2]<i then
+              Add(l,kk[j]); # all smaller, no delete
+            elif kk[j][2]>i then
+              Add(l,['A',kk[j][2]-1,Concatenation(
+                Filtered(kk[j][3],x->x<i),Filtered(kk[j][3],x->x>i)-1)]);
+            # else pairs deleted since rule deleted
+            fi;
+          else # 'B' case
+            if kk[j][3]<i then
+              Add(l,kk[j]); # all smaller, no delete
+            elif kk[j][3]>i then
+              Add(l,['B',Concatenation(Filtered(kk[j][2],x->x<i),
+                Filtered(kk[j][2],x->x>i)-1),kk[j][3]-1]);
+            # else pairs deleted since rule deleted
+            fi;
           fi;
+
+#          if kbrws!.pairs2check[j][1]<>i and kbrws!.pairs2check[j][2]<>i then
+#            a:=kbrws!.pairs2check[j];
+#            for k in [1..2] do
+#              if kbrws!.pairs2check[j][k]>i then
+#                a[k]:=kbrws!.pairs2check[j][k]-1;
+#              fi;
+#            od;
+#            Add(l,a);
+#          fi;
+
+        od;
+        kbrws!.pairs2check:=l;
+      fi;
+    end;
+
+    #given a Knuth Bendix Rewriting System, kbrws,
+    #removes the rules indexed by weg from the set of rules of kbrws and
+    #modifies the list pairs2check in such a way that the previous indexes
+    #are modified so they correspond to same pairs as before
+    remove_rules:=function(weg)
+      local j,q,a,k,l,kk,i,neu,x,y;
+
+      if kbdag<>fail then
+        for i in weg do
+          # update lookup structure
+          DeleteRuleKBDAG(kbdag,kbrws!.tzrules[i][1],i);
+        od;
+      fi;
+
+      #remove rule from the set of rules
+      q:=kbrws!.tzrules;
+
+      kk:=Minimum(weg);
+      neu:=[1..kk-1];
+      for i in [kk..Length(q)] do
+        if i in weg then
+          neu[i]:=fail;
+        else
+          q[kk]:=q[i];
+          neu[i]:=kk;
+          kk:=kk+1;
+        fi;
+      od;
+      for i in [Length(q),Length(q)-1..Length(q)-Length(weg)+1] do
+        Unbind(q[i]);
+      od;
+
+      if ptc then
+        #delete pairs of indexes that include i
+        #and change occurrences of indexes k greater than i in the
+        #list of pairs and change them to k-1
+
+        kk:=kbrws!.pairs2check;
+
+        #So we'll construct a new list with the right pairs
+        l:=[];
+        for j in [1..Length(kk)] do
+          if Length(kk[j])=2 then
+            if not(kk[j][1] in weg or kk[j][2] in weg) then
+              Add(l,neu{kk[j]});
+            # otherwise, one is killed
+            fi;
+          elif kk[j][1]='A' and not kk[j][2] in weg then
+            #a:=Difference(neu{kk[j][3]},[fail]);
+            a:=kk[j][3];
+            x:=neu[a[1]];y:=neu[a[Length(a)]];
+            if IsRange(a) and x<>fail and y<>fail then
+              a:=[x..y];
+            else
+              a:=Set(neu{kk[j][3]});
+              if a[Length(a)]=fail then Unbind(a[Length(a)]);fi;
+            fi;
+
+            if Length(a)>0 then
+              Add(l,['A',neu[kk[j][2]],a]);
+            fi;
+          elif kk[j][1]='B' and not kk[j][3] in weg then
+            #a:=Difference(neu{kk[j][2]},[fail]);
+            a:=kk[j][2];
+            x:=neu[a[1]];y:=neu[a[Length(a)]];
+            if IsRange(a) and x<>fail and y<>fail then
+              a:=[x..y];
+            else
+              a:=Set(neu{kk[j][2]});
+              if a[Length(a)]=fail then Unbind(a[Length(a)]);fi;
+            fi;
+
+            if Length(a)>0 then
+              Add(l,['B',a,neu[kk[j][3]]]);
+            fi;
+          fi;
+
         od;
         kbrws!.pairs2check:=l;
       fi;
@@ -473,7 +596,7 @@ function(kbrws,v)
     #new rule together with all the ones that were in the set of rules
     #previously)
     add_rule:=function(u,kbrws)
-      local l,i,n;
+      local l,i,j,n,p,any;
 
       #insert rule
       Add(kbrws!.tzrules,u);
@@ -488,11 +611,46 @@ function(kbrws,v)
         l:=kbrws!.pairs2check;
         n:=Length(kbrws!.tzrules);
         Add(l,[n,n]);
-        for i in [1..n-1] do
-          Append(l,[[i,n],[n,i]]);
-        od;
+        #for i in [1..n-1] do
+        #  Append(l,[[i,n],[n,i]]);
+        #od;
+        if n>1 then
+          Add(l,['A',n,[1..n-1]]);
+          Add(l,['B',[1..n-1],n]);
+        fi;
 
         kbrws!.pairs2check:=l;
+      fi;
+
+      if IsBound(kbrws!.invmap) then
+        # free cancel part
+        u:=List(u,ShallowCopy);
+        i:=1;
+        while i<=Length(u[1]) and i<=Length(u[2]) and u[1][i]=u[2][i] do
+          i:=i+1;
+        od;
+
+        any:=false;
+        for j in [i..Length(u[2])] do
+          p:=Concatenation(kbrws!.invmap{u[1]{[j,j-1..i]}},
+            u[2]{[i..j]});
+          l:=ReduceLetterRepWordsRewSysNew(kbrws!.tzrules,p,kbdag);
+  #Print("fellow ",List(u,Length),Length(p)," ",Length(l),"\n");
+          if not l in kbrws!.fellowTravel then
+            Add(kbrws!.fellowTravel,l);
+            any:=true;
+            if Length(kbrws!.fellowTravel) mod 200=0 then
+              kbrws!.fellowTravel:=List(kbrws!.fellowTravel,
+                x->ReduceLetterRepWordsRewSysNew(kbrws!.tzrules,x,kbdag));
+              kbrws!.fellowTravel:=Unique(kbrws!.fellowTravel);
+            fi;
+          fi;
+        od;
+        if any then
+          kbrws!.flaute:=0;
+        else
+          kbrws!.flaute:=kbrws!.flaute+1;
+        fi;
       fi;
     end;
 
@@ -534,6 +692,7 @@ function(kbrws,v)
 
         n:=Length(kbrws!.tzrules);
         # go descending to avoid having to reindex
+        rem:=[];
         for k in [n,n-1..1] do
 
           #if lhs of rule k contains lhs of new rule
@@ -542,10 +701,14 @@ function(kbrws,v)
 
           if  PositionSublist(kbrws!.tzrules[k][1],a,0)<>fail then
             Add(s,kbrws!.tzrules[k]);
-            remove_rule(k);
+            Add(rem,k);
             n:=Length(kbrws!.tzrules)-1;
           fi;
         od;
+        if Length(rem)>0 then
+          remove_rules(rem);
+        fi;
+
         #VerifyKBDAG(kbdag,kbrws!.tzrules);
 
         # and store new rule
@@ -652,7 +815,7 @@ local u,v,m,k,a,c,lsu,lsv,lu,eq,i,j;
       #we change rws, if necessary, so a=c is verified
       if a <> c then
         # `AddRuleReduced' might affect the pairs. So first throw away the
-        # `old' pairs
+        # already used pairs
         kbrws!.pairs2check:=
           kbrws!.pairs2check{[p+1..Length(kbrws!.pairs2check)]};
         p:=0; # no remaining pair was looked at
@@ -672,7 +835,12 @@ end);
 
 BindGlobal("GKB_MakeKnuthBendixRewritingSystemConfluent",
 function(kbrws)
-local   pn,lp,rl,p,i;              #loop variables
+local   pn,lp,rl,p,i,a;
+
+  if IsBound(kbrws!.invmap) then
+    kbrws!.fellowTravel:=[];
+  fi;
+  kbrws!.flaute:=0; # how often no new fellow traveler?
 
   # kbrws!.reduced is true than it means that the system know it is
   # reduced. If it is false it might be reduced or not.
@@ -685,18 +853,31 @@ local   pn,lp,rl,p,i;              #loop variables
   # this list, only if `AddRules' gets called. This avoids creating a lot of
   # garbage lists.
   p:=1;
-  rl:=50;
+  rl:=49;
   pn:=Length(kbrws!.pairs2check);
   lp:=Length(kbrws!.pairs2check);
   while lp>=p do
     i:=kbrws!.pairs2check[p];
+    if IsChar(i[1]) then
+      # We store compressed data -- expand, (and also delete old stuff)
+      if i[1]='A' then
+        a:=List(i[3],x->[i[2],x]);
+      elif i[1]='B' then
+        a:=List(i[2],x->[x,i[3]]);
+      else Error("kind"); fi;
+      kbrws!.pairs2check:=Concatenation(a,kbrws!.pairs2check{[p+1..Length(kbrws!.pairs2check)]});
+      p:=1;
+      i:=kbrws!.pairs2check[p];
+      lp:=Length(kbrws!.pairs2check);
+    fi;
+
     p:=KBOverlaps(i[1],i[2],kbrws,p)+1;
     lp:=Length(kbrws!.pairs2check);
     if Length(kbrws!.tzrules)>rl
       or AbsInt(lp-pn)>10000 then
       Info(InfoKnuthBendix,1,Length(kbrws!.tzrules)," rules, ",
-                            lp," pairs");
-      rl:=Length(kbrws!.tzrules)+50;
+                            lp," pairs, ",kbrws!.flaute," no new fellow");
+      rl:=Length(kbrws!.tzrules)+49;
       pn:=lp;
     fi;
   od;

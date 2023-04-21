@@ -8,7 +8,7 @@ Knuth Bendix Rewriting System for Semigroup( [ a, b ] ) with rules
 gap> MakeConfluent(rws);
 gap> rws;
 Knuth Bendix Rewriting System for Semigroup( [ a, b ] ) with rules 
-[ [ a*b, b ], [ b*a, a ], [ a^2, a ], [ b^2, b ] ]
+[ [ a*b, b ], [ b*a, a ], [ b^2, b ], [ a^2, a ] ]
 gap> HasReducedConfluentRewritingSystem(s);
 true
 gap> x:= Indeterminate( Rationals );;
