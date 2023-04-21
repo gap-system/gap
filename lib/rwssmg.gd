@@ -44,8 +44,8 @@
 ##  gap> s := f / [ [ a*b*a, b ], [ b*a*b, a ] ];;
 ##  gap> rws := ReducedConfluentRewritingSystem( s );
 ##  Rewriting System for Semigroup( [ a, b ] ) with rules
-##  [ [ a*b*a, b ], [ b*a*b, a ], [ b*a^2, a^2*b ], [ b^2, a^2 ], [ a^3*b, b*a ],
-##    [ a^5, a ] ]
+##  [ [ a*b*a, b ], [ b*a*b, a ], [ b*a^2, a^2*b ], [ b^2, a^2 ],
+##    [ a^5, a ], [ a^3*b, b*a ] ]
 ##  gap> c := s.1;;  d := s.2;;
 ##  gap> e := (c*d^2)^3;
 ##  (a*b^2)^3
