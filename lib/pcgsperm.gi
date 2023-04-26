@@ -374,6 +374,8 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
         else
             bound := Int( LogInt( deg ^ 5, 3 ) / 2 );
         fi;
+        # avoid recursion trap through Size
+        if bound>4900 then Size(grp); fi;
         if     HasSize( grp )
            and Length( Factors(Integers, Size( grp ) ) ) < bound  then
             bound := Length( Factors(Integers, Size( grp ) ) );
