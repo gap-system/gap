@@ -1,5 +1,7 @@
-#@local aut,auts,c,f,g,id,pol,x
+#@local aut,auts,c,f,g,id,pol,x,F,gens,A
 gap> START_TEST("fldabnum.tst");
+
+##
 gap> CF( 1 ); CF( 6 ); CF( 4 ); CF( 5 ); CF( 36 );
 Rationals
 CF(3)
@@ -12,12 +14,16 @@ gap> CF( CF(3), 12 );
 AsField( CF(3), CF(12) )
 gap> CF( CF(3), [ E(3), E(4) ] );
 AsField( CF(3), CF(12) )
+
+##
 gap> NF( 7, [ 1 ] ); NF( 7, [ 2 ] ); NF( 7, [ 1, 2, 4 ] );
 CF(7)
 NF(7,[ 1, 2, 4 ])
 NF(7,[ 1, 2, 4 ])
 gap> NF( 8, [ 5 ] );
 GaussianRationals
+
+##
 gap> CF(5) = CF(7);
 false
 gap> CF(5) = NF( 15, [ 1 ] );
@@ -72,16 +78,26 @@ gap> Intersection( NF( 12, [ 7 ] ), NF( 15, [ 7 ] ) );
 CF(3)
 gap> Intersection( NF( 35, [ 34 ] ), NF( 15, [ 11 ] ) );
 NF(5,[ 1, 4 ])
+
+##
 gap> GeneratorsOfField( CF(37) );
 [ E(37) ]
 gap> GeneratorsOfField( NF( 15, [ 2 ] ) );
 [ E(15)+E(15)^2+E(15)^4+E(15)^8 ]
+gap> GeneratorsOfAlgebraWithOne( CF(7) );
+[ E(7) ]
+gap> GeneratorsOfAlgebraWithOne( NF( 7, [ 1, 6 ] ) );
+[ E(7)+E(7)^6 ]
+
+##
 gap> Conductor( CF(7) );
 7
 gap> Conductor( NF( 17, [ 3 ] ) );
 1
 gap> Conductor( NF( 15, [ 3 ] ) );
 15
+
+##
 gap> Subfields( CF(15) );
 [ Rationals, CF(3), CF(5), NF(5,[ 1, 4 ]), CF(15), NF(15,[ 1, 2, 4, 8 ]), 
   NF(15,[ 1, 4 ]), NF(15,[ 1, 14 ]) ]
@@ -95,6 +111,8 @@ AsField( CF(5), CF(15) )
 gap> x:= Indeterminate( Rationals );; pol:= x^2 - x - 1;;
 gap> FieldExtension( Rationals, pol );
 NF(5,[ 1, 4 ])
+
+##
 gap> Conjugates( CF( CF(3), 15 ), E(15) );
 [ E(15), E(15)^4, E(15)^7, E(15)^13 ]
 gap> Conjugates( CF(15), E(15) );
@@ -119,6 +137,8 @@ gap> Trace( AsField( CF(3), NF( 15, [ 4 ] ) ), E(15) );
 E(15)+E(15)^7
 gap> Trace( CF(15), E(15) );
 1
+
+##
 gap> ZumbroichBase( 12, 1 );
 [ 4, 7, 8, 11 ]
 gap> ZumbroichBase( 12, 3 );
@@ -142,6 +162,8 @@ gap> LenstraBase(  8, [ 1, 3 ], [ 1 ], 1 );
 [ [ 0 ], [ 1, 3 ] ]
 gap> LenstraBase( 15, [ 1, 4 ], [ 2 ], 1 );
 [ [ 1, 4 ], [ 2, 8 ], [ 7, 13 ], [ 11, 14 ] ]
+
+##
 gap> c:= Basis( CF(12) );
 CanonicalBasis( CF(12) )
 gap> BasisVectors( c );
@@ -208,6 +230,8 @@ gap> Coefficients( c, E( 6) );
 [ -1, -1, 2, 2 ]
 gap> Coefficients( c, E( 8) );
 fail
+
+##
 gap> FieldByGenerators( [ 2, 3, 4, E(2), E(3), EY(5) ] );
 NF(15,[ 1, 4 ])
 gap> FieldByGenerators( Rationals, [ 2, 3, 4, E(2), E(3), EY(5) ] );
@@ -216,6 +240,17 @@ gap> FieldByGenerators( CF(3), [ 2, 3, 4, E(2), E(3), EY(5) ] );
 AsField( CF(3), NF(15,[ 1, 4 ]) )
 gap> DefaultFieldByGenerators( [ 2, 3, 4, E(2), E(3), EY(5) ] );
 CF(15)
+
+##
+gap> F:= Field( Rationals, [ EY(11) ] );;
+gap> gens:= GeneratorsOfAlgebraWithOne( F );;
+gap> A:= AlgebraWithOne( Rationals, gens );;
+gap> Dimension( A ) = Dimension( F );
+true
+gap> A = F;
+true
+
+##
 gap> f:= CF(45);
 CF(45)
 gap> aut:= ANFAutomorphism( f, 2 );
@@ -281,4 +316,6 @@ gap> Size( g );
 24
 gap> IsAbelian( g );
 true
-gap> STOP_TEST( "fldabnum.tst", 1);
+
+##
+gap> STOP_TEST("fldabnum.tst");

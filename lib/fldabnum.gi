@@ -21,6 +21,28 @@
 
 #############################################################################
 ##
+#M  IsFiniteDimensional( <A> )
+##
+##  A finitely generated algebra-with-one that consists of cyclotomics
+##  has a finite conductor and hence is finite dimensional.
+##  (Cyclotomic fields and their subfields get the 'IsFiniteDimensional'
+##  filter from 'AbelianNumberFieldByReducedGaloisStabilizerInfo',
+##  there is apparently no method for computing the value.)
+##
+InstallMethod( IsFiniteDimensional,
+    "for an algebra-with-one of cyclotomics",
+    [ IsAlgebraWithOne and IsCyclotomicCollection
+      and HasGeneratorsOfAlgebraWithOne ],
+    function( A )
+    if IsFinite( GeneratorsOfAlgebraWithOne( A ) ) then
+      return true;
+    fi;
+    TryNextMethod();
+    end );
+
+
+#############################################################################
+##
 #F  AbelianNumberFieldByReducedGaloisStabilizerInfo( <F>, <N>, <stab> )
 ##
 ##  The constructor `FieldByGenerators' calls this function.
@@ -517,8 +539,14 @@ InstallMethod( Intersection2,
 #############################################################################
 ##
 #M  GeneratorsOfDivisionRing( <F> ) .  field gens. of an abelian number field
+#M  GeneratorsOfAlgebraWithOne( <F> )
 ##
-InstallMethod( GeneratorsOfDivisionRing,
+##  We have a primitive element of the field extension over the Rationals,
+##  thus its powers form a basis.
+##
+Perform( [ GeneratorsOfDivisionRing, GeneratorsOfAlgebraWithOne ],
+  function( op )
+    InstallMethod( op,
     "for abelian number field of cyclotomics",
     [ IsAbelianNumberField and IsCyclotomicCollection ],
     function( F )
@@ -526,6 +554,7 @@ InstallMethod( GeneratorsOfDivisionRing,
     e:= E( Conductor( F ) );
     return [ Sum( GaloisStabilizer( F ), y -> GaloisCyc( e, y ) ) ];
     end );
+  end );
 
 
 #############################################################################
