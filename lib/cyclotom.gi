@@ -2015,7 +2015,7 @@ BindGlobal("CompareCyclotomicCollectionHelper_Filters", MakeImmutable( [
         IsPositiveIntegers, IsNonnegativeIntegers,
         IsIntegers, IsGaussianIntegers,
         IsRationals, IsGaussianRationals,
-        IsWholeFamily, IsObject
+        HasIsWholeFamily and IsWholeFamily, IsObject
 ] ) );
 
 BindGlobal("CompareCyclotomicCollectionHelper_Proxies", MakeImmutable( [
