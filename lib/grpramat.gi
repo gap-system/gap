@@ -493,6 +493,12 @@ RedispatchOnCondition( IsomorphismPcGroup, true,
     [ IsCyclotomicMatrixGroup ],
     [ IsFinite ], 0 );
 
+# Note that there is a unary method with requirement 'IsGroup'
+# that calls the two-argument variant.
+RedispatchOnCondition( IsomorphismFpGroup, true,
+    [ IsCyclotomicMatrixGroup, IsString ],
+    [ IsFinite, IsObject ], 0 );
+
 RedispatchOnCondition( CompositionSeries, true,
     [ IsCyclotomicMatrixGroup ],
     [ IsFinite ], 0 );

@@ -53,6 +53,8 @@ true
 # also if they do not know yet that they are finite.
 gap> G:= Group( [ [ 0, 1 ], [ 1, 0 ] ] );;
 gap> NiceMonomorphism( G );;
+gap> G:= Group( [ [ 0, 1 ], [ 1, 0 ] ] );;
+gap> IsomorphismFpGroup( G );;
 
 #
 gap> STOP_TEST( "grpmat.tst" );
