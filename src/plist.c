@@ -286,21 +286,23 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
             ktnumFirst = 0;
         }
         isHom   = 1;
-        areMut  = IS_MUTABLE_OBJ(elm);
-        if ( ktnumFirst >= T_PLIST_HOM ||
-             ( ktnumFirst == 0 && IS_HOMOG_LIST( elm) )) {
+        areMut = IS_MUTABLE_OBJ(elm);
 
-          // entry is a homogeneous list, so this might be a table
-          isTable = 1;
-
-          // also check for rectangularity, unless this would be expensive
-          if (IS_PLIST(elm))
-            {
-              isRect = 1;
-              len = LEN_PLIST(elm);
-            }
-
+        // if entry is a homogeneous list this might be a table or list
+        if (ktnumFirst >= T_PLIST_HOM) {
+            isTable = 1;
+            isRect = 1;
+            len = LEN_PLIST(elm);
         }
+        else if (ktnumFirst == 0 && IS_HOMOG_LIST(elm)) {
+            isTable = 1;
+            // only handle small lists as rectangular
+            if (IS_SMALL_LIST(elm)) {
+                isRect = 1;
+                len = LEN_LIST(elm);
+            }
+        }
+
         if (!testing) CLEAR_OBJ_FLAG(list, OBJ_FLAG_TESTING);
     }
 
@@ -342,15 +344,20 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
                     isRect = 0;
                 }
                 if ( isTable ) {
-                    // IS_PLIST first, as it is much cheaper
-                    if (!(IS_PLIST(elm) || IS_LIST(elm))) {
-                        isTable = 0;
-                        isRect = 0;
-                    }
-                    if ( isRect ) {
-                        if ( !(IS_PLIST(elm) && LEN_PLIST(elm) == len) ) {
+                    // check IS_PLIST first, as it is much cheaper
+                    if (IS_PLIST(elm)) {
+                        if (isRect && LEN_PLIST(elm) != len) {
                             isRect = 0;
                         }
+                    }
+                    else if (IS_SMALL_LIST(elm)) {
+                        if (isRect && LEN_LIST(elm) != len) {
+                            isRect = 0;
+                        }
+                    }
+                    else {
+                        isTable = 0;
+                        isRect = 0;
                     }
                 }
             }
