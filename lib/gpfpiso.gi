@@ -1357,11 +1357,11 @@ local pcgs,iso,fp,i,j,gens,numi,ord,fm,fam,mword,k,r,addrule,a,e,m;
       a:=ImagesRepresentative(iso,pcgs[i]^-r);
       addrule([mword(fp.(i)^(-(r+1)/2)),mword(fp.(i)^((r-1)/2))*mword(a)]);
     fi;
-  if IsBound(k!.pairs2check) then
-    e:=StructuralCopy(Rules(k));
-    MakeConfluent(k);
-    Assert(3,Set(Rules(k))=Set(e));
-  fi;
+    if IsBound(k!.pairs2check) then
+      e:=StructuralCopy(Rules(k));
+      MakeConfluent(k);
+      Assert(3,Set(Rules(k))=Set(e));
+    fi;
   od;
   SetIsConfluent(k,true);
   SetIsReduced(k,true);
