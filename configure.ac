@@ -27,7 +27,7 @@ dnl
 dnl For further details, refer to the Libtool manual chapter on "Library
 dnl interface versions", available at
 dnl <https://www.gnu.org/software/libtool/manual/html_node/Versioning.html>
-m4_define([libtool_current], [8])
+m4_define([libtool_current], [9])
 m4_define([libtool_age], [0])
 
 m4_define([GAP_DEFINE], [GAP_DEFINES="$GAP_DEFINES -D$1"])
