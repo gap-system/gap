@@ -2428,7 +2428,7 @@ void CodeElmList(CodeState * cs, Int narg)
     // allocate the reference
     if (narg == 1)
       ref = NewExpr(cs, EXPR_ELM_LIST, 2 * sizeof(Expr));
-    else // if (narg == 2)
+    else    // if (narg == 2)
       ref = NewExpr(cs, EXPR_ELM_MAT, 3 * sizeof(Expr));
 
     // let 'CodeElmListUniv' to the rest
@@ -2450,8 +2450,13 @@ void CodeElmListLevel(CodeState * cs, Int narg, UInt level)
 {
     Expr                ref;            // reference, result
 
+    GAP_ASSERT(narg == 1 || narg == 2);
+
     // allocate the reference and enter the level
-    ref = NewExpr(cs, EXPR_ELM_LIST_LEV, (narg + 2) * sizeof(Expr));
+    if (narg == 1)
+      ref = NewExpr(cs, EXPR_ELM_LIST_LEV, 3 * sizeof(Expr));
+    else    // if (narg == 2)
+      ref = NewExpr(cs, EXPR_ELM_MAT_LEV, 4 * sizeof(Expr));
     WRITE_EXPR(cs, ref, narg + 1, level);
 
     // let 'CodeElmListUniv' do the rest

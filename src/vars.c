@@ -825,30 +825,68 @@ static Obj EvalElmListLevel(Expr expr)
 {
     Obj                 lists;          // lists, left operand
     Obj                 pos;            // position, right operand
-    Obj                 ixs;
     UInt                level;          // level
-    Int narg;
-    Int i;
+    Obj                 ixs;
 
     // evaluate lists (if this works, then <lists> is nested <level> deep,
     // checking it is nested <level>+1 deep is done by 'ElmListLevel')
     lists = EVAL_EXPR(READ_EXPR(expr, 0));
-    narg = SIZE_EXPR(expr)/sizeof(Expr) -2;
-    ixs = NEW_PLIST(T_PLIST, narg);
-    for (i = 1; i <= narg; i++) {
-      pos = EVAL_EXPR( READ_EXPR(expr, i));
-      SET_ELM_PLIST(ixs, i, pos);
-      CHANGED_BAG(ixs);
-    }
-    SET_LEN_PLIST(ixs, narg);
-    // get the level
-    level = READ_EXPR(expr, narg + 1);
+    pos = EVAL_EXPR(READ_EXPR(expr, 1));
+    level = READ_EXPR(expr, 2);
+
+    ixs = NEW_PLIST(T_PLIST, 1);
+    SET_ELM_PLIST(ixs, 1, pos);
+    CHANGED_BAG(ixs);
+    SET_LEN_PLIST(ixs, 1);
 
     // select the elements from several lists (store them in <lists>)
-    ElmListLevel( lists, ixs, level );
+    ElmListLevel(lists, ixs, level);
 
     // return the elements
     return lists;
+}
+
+
+/****************************************************************************
+**
+*F  EvalElmMatLevel(<expr>)  . . . . . .  select elements of several matrices
+**
+**  'EvalElmMatLevel' evaluates the matrix element  expression <expr> of  the
+**  form '<list>...{<positions>}...[<row>,<col>]',  where there  may actually
+**  be several '{<positions>}' selections between <list> and  '[<position>]'.
+**  The  number of those is called   the level.  'EvalElmMatLevel'  goes that
+**  deep  into the left operand  and  selects the element at <row>,<col> from
+**  each of those matrices. For example,  if the level is 1, the left operand
+**  must be a list of matrices and 'EvalElmMatLevel'  selects the element  at
+**  <row>,<col>  from each  of  the matrices  and returns  the list of  those
+**  values.
+*/
+static Obj EvalElmMatLevel(Expr expr)
+{
+    Obj                 matrices;       // matrices
+    Obj                 row;            // row position
+    Obj                 col;            // column position
+    UInt                level;          // level
+    Obj                 ixs;
+
+    // evaluate matrices (if this works, then <matrices> is nested <level>
+    // deep, checking it is nested <level>+1 deep is done by 'ElmListLevel')
+    matrices = EVAL_EXPR(READ_EXPR(expr, 0));
+    row = EVAL_EXPR(READ_EXPR(expr, 1));
+    col = EVAL_EXPR(READ_EXPR(expr, 2));
+    level = READ_EXPR(expr, 3);
+
+    ixs = NEW_PLIST(T_PLIST, 2);
+    SET_ELM_PLIST(ixs, 1, row);
+    SET_ELM_PLIST(ixs, 2, col);
+    CHANGED_BAG(ixs);
+    SET_LEN_PLIST(ixs, 2);
+
+    // select the elements from several matrices (store them in <matrices>)
+    ElmListLevel(matrices, ixs, level);
+
+    // return the elements
+    return matrices;
 }
 
 
@@ -1010,7 +1048,7 @@ static void PrintAsssList(Stat stat)
 *F  ExprHasNonZeroListLevel(<expr>) . . . . . . . . . . . . . . . . . . . . .
 **
 **  Every 'EXPR_ELMS_LIST' or 'EXPR_ELMS_LIST_LEV' increments the list level.
-**  'EXPR_ELM_LIST_LEV' has a non-zero list level.
+**  'EXPR_ELM_LIST_LEV' and 'EXPR_ELM_MAT_LEV' have non-zero list levels.
 **  Every other expression should have level 0.
 **
 **  If a list access happens at level zero  ('EXPR_ELM_LIST',  'EXPR_ELM_MAT'
@@ -1021,6 +1059,7 @@ static BOOL ExprHasNonZeroListLevel(Expr list)
 {
     return TNUM_EXPR(list) == EXPR_ELMS_LIST ||
            TNUM_EXPR(list) == EXPR_ELM_LIST_LEV ||
+           TNUM_EXPR(list) == EXPR_ELM_MAT_LEV ||
            TNUM_EXPR(list) == EXPR_ELMS_LIST_LEV;
 }
 
@@ -1070,16 +1109,21 @@ static void PrintElmMat(Expr expr)
 
 static void PrintElmListLevel(Expr expr)
 {
-    Int i;
-    Int narg = SIZE_EXPR(expr)/sizeof(Expr) -2 ;
     Pr("%2>", 0, 0);
     PrintExpr(READ_EXPR(expr, 0));
     Pr("%<[", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
-    for (i = 2; i <= narg; i++) {
-        Pr("%<, %>", 0, 0);
-        PrintExpr(READ_EXPR(expr, i));
-    }
+    Pr("%<]", 0, 0);
+}
+
+static void PrintElmMatLevel(Expr expr)
+{
+    Pr("%2>", 0, 0);
+    PrintExpr(READ_EXPR(expr, 0));
+    Pr("%<[", 0, 0);
+    PrintExpr(READ_EXPR(expr, 1));
+    Pr("%<, %>", 0, 0);
+    PrintExpr(READ_EXPR(expr, 2));
     Pr("%<]", 0, 0);
 }
 
@@ -2282,8 +2326,10 @@ static Int InitKernel (
     // install executors, evaluators, and printers for matrix elements
     InstallExecStatFunc(STAT_ASS_MAT, ExecAssMat);
     InstallEvalExprFunc(EXPR_ELM_MAT, EvalElmMat);
+    InstallEvalExprFunc(EXPR_ELM_MAT_LEV, EvalElmMatLevel);
     InstallPrintStatFunc(STAT_ASS_MAT, PrintAssMat);
     InstallPrintExprFunc(EXPR_ELM_MAT, PrintElmMat);
+    InstallPrintExprFunc(EXPR_ELM_MAT_LEV, PrintElmMatLevel);
 
     // install executors, evaluators, and printers for record elements
     InstallExecStatFunc( STAT_ASS_REC_NAME   , ExecAssRecName);
