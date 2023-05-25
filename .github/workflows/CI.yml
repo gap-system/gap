@@ -72,7 +72,7 @@ jobs:
             test-suites: "makemanuals testmakeinstall"
             extra: "GAPPREFIX=/tmp/gapprefix CONFIGFLAGS=\"--prefix=/tmp/gapprefix\" NO_COVERAGE=1"
 
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             shell: bash
             test-suites: "teststandard"
             extra: "ABI=32 CONFIGFLAGS=\"\""
@@ -121,7 +121,7 @@ jobs:
 
           # same as above, but in 32 bit mode, also turn off debugging (see
           # elsewhere in this file for an explanation).
-          - os: ubuntu-latest
+          - os: ubuntu-20.04
             shell: bash
             test-suites: "testbuildsys testmockpkg testinstall"
             extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
