@@ -1007,6 +1007,26 @@ static void PrintAsssList(Stat stat)
 
 /****************************************************************************
 **
+*F  ExprHasNonZeroListLevel(<expr>) . . . . . . . . . . . . . . . . . . . . .
+**
+**  Every 'EXPR_ELMS_LIST' or 'EXPR_ELMS_LIST_LEV' increments the list level.
+**  'EXPR_ELM_LIST_LEV' has a non-zero list level.
+**  Every other expression should have level 0.
+**
+**  If a list access happens at level zero  ('EXPR_ELM_LIST',  'EXPR_ELM_MAT'
+**  and 'EXPR_ELMS_LIST')  but the level of  the list  is non-zero,  the list
+**  must be put into parentheses during printing to reset the level to 0.
+*/
+static BOOL ExprHasNonZeroListLevel(Expr list)
+{
+    return TNUM_EXPR(list) == EXPR_ELMS_LIST ||
+           TNUM_EXPR(list) == EXPR_ELM_LIST_LEV ||
+           TNUM_EXPR(list) == EXPR_ELMS_LIST_LEV;
+}
+
+
+/****************************************************************************
+**
 *F  PrintElmList(<expr>)  . . . . . print a selection of an element of a list
 **
 **  'PrintElmList'   prints the list element   expression  <expr> of the form
@@ -1016,8 +1036,15 @@ static void PrintAsssList(Stat stat)
 */
 static void PrintElmList(Expr expr)
 {
+    Expr list = READ_EXPR(expr, 0);
     Pr("%2>", 0, 0);
-    PrintExpr(READ_EXPR(expr, 0));
+    if (ExprHasNonZeroListLevel(list)) {
+        Pr("(", 0, 0);
+        PrintExpr(list);
+        Pr(")", 0, 0);
+    } else {
+        PrintExpr(list);
+    }
     Pr("%<[", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
     Pr("%<]", 0, 0);
@@ -1025,8 +1052,15 @@ static void PrintElmList(Expr expr)
 
 static void PrintElmMat(Expr expr)
 {
+    Expr matrix = READ_EXPR(expr, 0);
     Pr("%2>", 0, 0);
-    PrintExpr(READ_EXPR(expr, 0));
+    if (ExprHasNonZeroListLevel(matrix)) {
+        Pr("(", 0, 0);
+        PrintExpr(matrix);
+        Pr(")", 0, 0);
+    } else {
+        PrintExpr(matrix);
+    }
     Pr("%<[", 0, 0);
     PrintExpr(READ_EXPR(expr, 1));
     Pr("%<, %>", 0, 0);
@@ -1081,7 +1115,7 @@ static void PrintElmsList(Expr expr)
 {
     Expr list = READ_EXPR(expr, 0);
     Pr("%2>", 0, 0);
-    if (TNUM_EXPR(list) == EXPR_ELMS_LIST || TNUM_EXPR(list) == EXPR_ELMS_LIST_LEV) {
+    if (ExprHasNonZeroListLevel(list)) {
         Pr("(", 0, 0);
         PrintExpr(list);
         Pr(")", 0, 0);
