@@ -1,0 +1,14 @@
+gap> func := function ( )
+>     return CURRENT_STATEMENT_LOCATION(GetCurrentLVars());
+> end;
+function(  ) ... end
+gap> 
+gap> func( );
+[ "*stdin*", 3 ]
+gap> 
+gap> func := SYNTAX_TREE_CODE( SYNTAX_TREE( func ) );
+function(  ) ... end
+gap> 
+gap> func( );
+fail
+gap> QUIT;

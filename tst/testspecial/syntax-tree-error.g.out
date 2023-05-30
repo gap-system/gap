@@ -1,0 +1,15 @@
+gap> func := function ( )
+>     Error( );
+> end;
+function(  ) ... end
+gap> 
+gap> func := SYNTAX_TREE_CODE( SYNTAX_TREE( func ) );
+function(  ) ... end
+gap> 
+gap> func( );
+Error,  called from
+<function "func">( <arguments> )
+ called from read-eval loop at *stdin*:8
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> QUIT;
