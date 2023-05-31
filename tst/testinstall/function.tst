@@ -314,4 +314,30 @@ function ( x ) return ([ [ x ] ]{[ 1 ]}){[ 1 ]}{[ 1 ]}; end
 # four extractions
 gap> funcloop(x -> ([ [ x ] ]{[ 1 ]}{[ 1 ]}){[ 1 ]}{[ 1 ]});
 function ( x ) return ([ [ x ] ]{[ 1 ]}{[ 1 ]}){[ 1 ]}{[ 1 ]}; end
+
+# list access at level 0 after EXPR_ELMS_LIST
+gap> funcloop(x -> ([ x ]{[ 1 ]})[1]); # EXPR_ELM_LIST
+function ( x ) return ([ x ]{[ 1 ]})[1]; end
+gap> funcloop(x -> ([ [ x ] ]{[ 1 ]})[1, 1]); # EXPR_ELM_MAT
+function ( x ) return ([ [ x ] ]{[ 1 ]})[1, 1]; end
+gap> funcloop(x -> ([ x ]{[ 1 ]}){[ 1 ]}); # EXPR_ELMS_LIST
+function ( x ) return ([ x ]{[ 1 ]}){[ 1 ]}; end
+
+# list access at level 0 after EXPR_ELM_LEV
+gap> funcloop(x -> ([ [ x ] ]{[ 1 ]}[1])[1]); # EXPR_ELM_LIST
+function ( x ) return ([ [ x ] ]{[ 1 ]}[1])[1]; end
+gap> funcloop(x -> ([ [ [ x ] ] ]{[ 1 ]}[1])[1, 1]); # EXPR_ELM_MAT
+function ( x ) return ([ [ [ x ] ] ]{[ 1 ]}[1])[1, 1]; end
+gap> funcloop(x -> ([ [ x ] ]{[ 1 ]}[1]){[ 1 ]}); # EXPR_ELMS_LIST
+function ( x ) return ([ [ x ] ]{[ 1 ]}[1]){[ 1 ]}; end
+
+# list access at level 0 after EXPR_ELMS_LEV
+gap> funcloop(x -> ([ [ x ] ]{[ 1 ]}{[ 1 ]})[1]); # EXPR_ELM_LIST
+function ( x ) return ([ [ x ] ]{[ 1 ]}{[ 1 ]})[1]; end
+gap> funcloop(x -> ([ [ x ] ]{[ 1 ]}{[ 1 ]})[1, 1]); # EXPR_ELM_MAT
+function ( x ) return ([ [ x ] ]{[ 1 ]}{[ 1 ]})[1, 1]; end
+gap> funcloop(x -> ([ [ x ] ]{[ 1 ]}{[ 1 ]}){[ 1 ]}); # EXPR_ELMS_LIST
+function ( x ) return ([ [ x ] ]{[ 1 ]}{[ 1 ]}){[ 1 ]}; end
+
+#
 gap> STOP_TEST("function.tst", 1);
