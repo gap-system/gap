@@ -313,9 +313,9 @@ Obj GAP_CallFunc3Args(Obj func, Obj a1, Obj a2, Obj a3)
 //// floats
 ////
 
-Int GAP_IsMacFloat(Obj obj)
+int GAP_IsMacFloat(Obj obj)
 {
-    return IS_MACFLOAT(obj);
+    return obj && IS_MACFLOAT(obj);
 }
 
 double GAP_ValueMacFloat(Obj obj)
@@ -562,6 +562,16 @@ char * GAP_CSTR_STRING(Obj string)
     if (!IS_STRING_REP(string))
         return 0;
     return CSTR_STRING(string);
+}
+
+
+////
+//// chars
+////
+
+int GAP_IsChar(Obj obj)
+{
+    return obj && TNUM_OBJ(obj) == T_CHAR;
 }
 
 Int GAP_ValueOfChar(Obj obj)
