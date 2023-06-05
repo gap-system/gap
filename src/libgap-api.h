@@ -284,14 +284,24 @@ Obj GAP_MOD(Obj a, Obj b);
 //// booleans
 ////
 
+// Returns 1 if <obj> is a GAP boolean, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
+int GAP_IsBoolean(Obj obj);
+
 extern Obj GAP_True;
 extern Obj GAP_False;
 extern Obj GAP_Fail;
 
 
 ////
-//// calls
+//// functions and calls
 ////
+
+// Returns 1 if <obj> is a GAP function, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
+int GAP_IsFunction(Obj obj);
 
 // Call the GAP object <func> as a function with arguments given
 // as a GAP list <args>.

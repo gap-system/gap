@@ -189,14 +189,24 @@ Obj GAP_MOD(Obj a, Obj b)
 //// booleans
 ////
 
+int GAP_IsBoolean(Obj obj)
+{
+    return obj && TNUM_OBJ(obj) == T_BOOL;
+}
+
 Obj GAP_True;
 Obj GAP_False;
 Obj GAP_Fail;
 
 
 ////
-//// calls
+//// functions and calls
 ////
+
+int GAP_IsFunction(Obj obj)
+{
+    return obj && IS_FUNC(obj);
+}
 
 Obj GAP_CallFuncList(Obj func, Obj args)
 {
