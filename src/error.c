@@ -152,6 +152,11 @@ static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
         return Fail;
     }
 
+    Obj filename = GET_FILENAME_BODY(body);
+    if (!filename) {
+        return Fail;
+    }
+
     Obj currLVars = SWITCH_TO_OLD_LVARS(context);
 
     Obj retlist = Fail;
@@ -159,7 +164,6 @@ static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
     if ((FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) ||
         (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM)) {
         Int line = LINE_STAT(call);
-        Obj filename = GET_FILENAME_BODY(body);
         retlist = NewPlistFromArgs(filename, INTOBJ_INT(line));
     }
     SWITCH_TO_OLD_LVARS(currLVars);
@@ -192,6 +196,7 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
         GAP_ASSERT(func);
         Stat call = STAT_LVARS(context);
         Obj  body = BODY_FUNC(func);
+        Obj  filename = GET_FILENAME_BODY(body);
         if (IsKernelFunction(func)) {
             PrintKernelFunction(func);
             Obj funcname = NAME_FUNC(func);
@@ -203,11 +208,10 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
                  call > SIZE_BAG(body) - sizeof(StatHeader)) {
             Pr("<corrupted statement> ", 0, 0);
         }
-        else {
+        else if (filename) {
             Obj currLVars = SWITCH_TO_OLD_LVARS(context);
 
             Int type = TNUM_STAT(call);
-            Obj filename = GET_FILENAME_BODY(body);
             if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
                 PrintStat(call);
                 Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
