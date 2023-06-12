@@ -723,8 +723,9 @@ function(G)
 local gens, nrgens;
   gens:=GeneratorsOfGroup(G);
   nrgens:=Length(gens);
-  if nrgens>0 and
-     nrgens * DimensionOfMatrixGroup(G)^2 / GAPInfo.ViewLength > 8 then
+  if nrgens = 0 then
+    Print( "<matrix group of size 1>" );
+  elif nrgens * DimensionOfMatrixGroup(G)^2 / GAPInfo.ViewLength > 8 then
     Print("<matrix group");
     if HasSize(G) then
       Print(" of size ",Size(G));

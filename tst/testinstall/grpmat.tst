@@ -57,4 +57,8 @@ gap> G:= Group( [ [ 0, 1 ], [ 1, 0 ] ] );;
 gap> IsomorphismFpGroup( G );;
 
 #
+gap> TrivialSubgroup( GL(2, 2) );
+<matrix group of size 1>
+
+#
 gap> STOP_TEST( "grpmat.tst" );
