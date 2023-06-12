@@ -4819,6 +4819,27 @@ local fam;
 end );
 
 
+InstallMethod( GroupWithGenerators,
+    "generic method for cyclotomic collection",
+    [ IsCyclotomicCollection ],
+function( gens )
+  Error("no groups of cyclotomics allowed because of incompatible ^");
+end );
+
+InstallMethod( GroupWithGenerators,
+    "generic method for cyclotomic collection and identity element",
+    IsCollsElms, [ IsCollection, IsCyclotomic ],
+function( gens, id )
+  Error("no groups of cyclotomics allowed because of incompatible ^");
+end );
+
+InstallMethod( GroupWithGenerators,"method for empty list and cyclotomic element",
+  [ IsList and IsEmpty, IsCyclotomic ],
+function( empty, id )
+  Error("no groups of cyclotomics allowed because of incompatible ^");
+end );
+
+
 #############################################################################
 ##
 #M  GroupByGenerators( <gens> ) . . . . . . . . . . . . . group by generators
