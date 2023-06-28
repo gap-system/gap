@@ -840,10 +840,10 @@ local aug,w,pres,f,fam,opt;
   return f;
 end);
 
-InstallMethod(IsomorphismFpGroupByGeneratorsNC,"subgroups of fp group",
+InstallOtherMethod(IsomorphismFpGroupByGeneratorsNC,"subgroups of fp group",
   IsFamFamX,
   [IsSubgroupFpGroup,IsList and IsMultiplicativeElementWithInverseCollection,
-   IsString],0,
+   IsObject],0,
 function(u,gens,nam)
 local aug,w,pres,f,trace;
 
@@ -1066,45 +1066,28 @@ end);
 InstallMethod(MaximalAbelianQuotient,"whole fp group",
         true, [IsSubgroupFpGroup and IsWholeFamily], 0,
 function(f)
-local m,s,g,i,j,rel,gen,img,fin,hom;
+local m,s,g,i,j,rel,gen,img,fin,hom,d,pos;
 
   # since f is the full group, exponent sums are with respect to its
   # generators.
   m:=List(RelatorsOfFpGroup(f),w->ExponentSums(w));
 
-  gen:=GeneratorsOfGroup(f);
-  g:= FreeGroup( Length( gen ) );
-  gen:=GeneratorsOfGroup(g);
-
-  rel:=[];
-  for i in [1..Length(gen)-1] do
-    for j in [i+1..Length(gen)] do
-      Add(rel, Comm(gen[i],gen[j]));
-    od;
-  od;
-
   if Length(m)>0 then
     m:=ReducedRelationMat(m);
     s:=NormalFormIntMat(m,25); # 9+16: SNF with transforms, destructive
-    SetAbelianInvariants(f,AbelianInvariantsOfList(DiagonalOfMat(s.normal)));
+    d:=DiagonalOfMat(s.normal);
+    pos:=Filtered([1..Length(d)],x->d[x]<>1);
+    d:=d{pos};
+    SetAbelianInvariants(f,d);
 
-    if Length(m[1])>s.rank then
-      img:=[];
-      for i in [1..s.rank] do
-        Add(img,s.normal[i][i]);
-        Add(rel,g.(i)^s.normal[i][i]);
-      od;
-      Append(img,ListWithIdenticalEntries(Length(gen)-s.rank,0));
-      g:=g/rel;
-      fin:=false;
-    else
-      # Not `AbelianInvariantsOfList' as the structure of the group is as
-      # given by the normal form
-      g:=AbelianGroup(DiagonalOfMat(s.normal));
-      fin:=true;
-    fi;
+    # Make abelian group
+    g:=AbelianGroup(d);
+    SetAbelianInvariants(g,d);
+    if not IsFinite(g) then SetReducedMultiplication(g);fi;
 
-    gen:=GeneratorsOfGroup(g);
+    gen:=ListWithIdenticalEntries(Length(m[1]),One(g));
+    gen{pos}:=GeneratorsOfGroup(g);
+
     s:=s.coltrans;
     img:=[];
     for i in [1..Length(s)] do
@@ -1115,14 +1098,13 @@ local m,s,g,i,j,rel,gen,img,fin,hom;
       Add(img,m);
     od;
   else
-    g:=g/rel;
-    fin:=Length(gen)=0;
-    img:=GeneratorsOfGroup(g);
-    SetAbelianInvariants(f,ListWithIdenticalEntries(Length(gen),0));
-  fi;
 
-  SetIsFinite(g,fin);
-  SetIsAbelian(g,true);
+    g:=AbelianGroup(ListWithIdenticalEntries(Length(GeneratorsOfGroup(f)),0));
+    SetIsFinite(g,Length(GeneratorsOfGroup(f))=0);
+    img:=GeneratorsOfGroup(g);
+    SetAbelianInvariants(f,ListWithIdenticalEntries(Length(GeneratorsOfGroup(f)),0));
+    SetIsAbelian(g,true);
+  fi;
 
   hom:=GroupHomomorphismByImagesNC(f,g,GeneratorsOfGroup(f),img);
   SetIsSurjective(hom,true);
@@ -1147,7 +1129,7 @@ end);
 InstallMethod(MaximalAbelianQuotient,
         "subgroups of fp. abelian rewriting", true, [IsSubgroupFpGroup], 0,
 function(u)
-local aug,r,sec,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn;
+local aug,r,sec,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn,d,pos;
   if (HasIsWholeFamily(u) and IsWholeFamily(u))
   # catch trivial case of rank 0 group
    or Length(GeneratorsOfGroup(FamilyObj(u)!.wholeGroup))=0 then
@@ -1202,21 +1184,22 @@ local aug,r,sec,expwrd,rels,ab,s,m,img,gen,i,j,t1,t2,tn;
   rels:=RewriteSubgroupRelators( aug, aug.groupRelators);
   rels:=List(rels,expwrd);
 
+  rels:=ReducedRelationMat(rels);
   if Length(rels)=0 then
     Add(rels,ListWithIdenticalEntries(r,0));
   fi;
-  rels:=ReducedRelationMat(rels);
   s:=NormalFormIntMat(rels,25); # 9+16: SNF with transforms, destructive
-  SetAbelianInvariants(u,AbelianInvariantsOfList(DiagonalOfMat(s.normal)));
-  if r>s.rank then
-    # TODO: Reproduce creation of infinite abelian group
-    TryNextMethod();
-  else
-      # Not `AbelianInvariantsOfList' as the structure of the group is as
-      # given by the normal form
-    ab:=AbelianGroup(DiagonalOfMat(s.normal));
-  fi;
-  gen:=GeneratorsOfGroup(ab);
+  d:=DiagonalOfMat(s.normal);
+  pos:=Filtered([1..Length(d)],x->d[x]<>1);
+  d:=d{pos};
+  ab:=AbelianGroup(d);
+  SetAbelianInvariants(u,d);
+  SetAbelianInvariants(ab,d);
+  if not IsFinite(ab) then SetReducedMultiplication(ab);fi;
+
+  gen:=ListWithIdenticalEntries(Length(rels[1]),One(ab));
+  gen{pos}:=GeneratorsOfGroup(ab);
+
   s:=s.coltrans;
   img:=[];
   for i in [1..Length(s)] do
