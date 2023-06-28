@@ -218,7 +218,8 @@ local hom,gp,f;
     # nilpotent
     f:=Factors(Size(gp));
     hom:=EpimorphismPGroup(gp,f[1],Length(f));
-  elif HasIsSolvableGroup(gp) and IsSolvableGroup(gp) then
+  elif HasIsSolvableGroup(gp) and IsSolvableGroup(gp) and 
+    not (HasSize(gp) and Size(gp)=infinity) then
     # solvable
     hom:=EpimorphismSolvableQuotient(gp,Size(gp));
     if Size(Image(hom))<>Size(gp) then
