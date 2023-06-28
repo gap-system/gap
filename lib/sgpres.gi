@@ -3351,7 +3351,7 @@ local DATA,start,w,offset,c,i,j;
 end );
 
 DeclareGlobalName("NEWTC_ReplacedStringCyclic");
-BindGlobal( "NEWTC_ReplacedStringCyclic", function(s,r)
+BindGlobal( "NEWTC_ReplacedStringCyclic", function(s,r,cyc)
 local p,new,start,half;
   if Length(s)<Length(r) or Length(r)=0 then
     return s;
@@ -3379,7 +3379,7 @@ local p,new,start,half;
     new:=s;
   fi;
 
-  if Length(r)=1 then
+  if Length(r)=1 or cyc=false then
     return new; # no overlap or so possible
   fi;
 
@@ -3399,7 +3399,8 @@ local p,new,start,half;
     # second half arises later. Does also first half arise -- if so we need
     # to go through once more
     if new{[p-half+1..p-1]}=r{[1..half-1]} then
-      return NEWTC_ReplacedStringCyclic(new,r);
+      new:=NEWTC_ReplacedStringCyclic(new,r,cyc);
+      return new;
     fi;
   fi;
 
@@ -3540,8 +3541,8 @@ local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
         ri:=Length(r);
         # reduce with others
         for j in rels do
-          r:=NEWTC_ReplacedStringCyclic(r,j);
-          r:=NEWTC_ReplacedStringCyclic(r,-Reversed(j));
+          r:=NEWTC_ReplacedStringCyclic(r,j,true);
+          r:=NEWTC_ReplacedStringCyclic(r,-Reversed(j),true);
         od;
         Info(InfoFpGroup,3,"Relatorlen ",ri,"->",Length(r));
 
@@ -3557,7 +3558,7 @@ local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
             while j<=Length(rels) do
               s:=rels[j];
               for re in rset do;
-                s:=NEWTC_ReplacedStringCyclic(s,re);
+                s:=NEWTC_ReplacedStringCyclic(s,re,true);
               od;
               if not IsIdenticalObj(s,rels[j]) then
                 if Length(s)>0 then
@@ -3578,7 +3579,8 @@ local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
                 s:=DATA.aug[a+offset][j];
                 if Length(s)>=Length(r) then
                   for re in rset do
-                    s:=NEWTC_ReplacedStringCyclic(s,re);
+                    # NOT cyclic replace!
+                    s:=NEWTC_ReplacedStringCyclic(s,re,false);
                   od;
                   DATA.aug[a+offset][j]:=s;
                 fi;
