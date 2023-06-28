@@ -1006,6 +1006,11 @@ InstallOtherMethod( AbelianInvariantsOfList,
 InstallGlobalFunction(ReducedRelationMat,function(mat)
 local n,zero,nv,new,pip,piv,i,v,p,w,g,pin,now,rat,extra,clean,assign,try;
 
+  if ForAny(mat,IsZero) then
+    n:=mat[1];
+    mat:=Filtered(mat,x->not IsZero(x));
+    if Length(mat)=0 then mat:=[n];fi;
+  fi;
   nv:=v->v*SignInt(v[PositionNonZero(v)]);
   assign:=function(p,v)
   local a,i,w,wn;
