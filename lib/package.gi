@@ -1781,18 +1781,12 @@ InstallGlobalFunction( SetPackagePath, function( pkgname, pkgpath )
     pkgdir:= Directory( pkgpath );
     file:= Filename( [ pkgdir ], "PackageInfo.g" );
     if file = fail then
-      file:= Filename( [ pkgdir ], "PkgInfo.g" );
-    fi;
-    if file = fail then
       return;
     fi;
     Unbind( GAPInfo.PackageInfoCurrent );
     Read( file );
     record:= GAPInfo.PackageInfoCurrent;
     Unbind( GAPInfo.PackageInfoCurrent );
-    if IsBound( record.PkgName ) then
-      record.PackageName:= record.PkgName;
-    fi;
     if pkgname <> NormalizedWhitespace( LowercaseString(
                       record.PackageName ) ) then
       Error( "found package ", record.PackageName, " not ", pkgname,
