@@ -427,7 +427,7 @@ function(kbrws,v)
     #modifies the list pairs2check in such a way that the previous indexes
     #are modified so they correspond to same pairs as before
     remove_rule:=function(i)
-      local j,q,a,k,l,kk;
+      local j,q,l,kk;
 
       if kbdag<>fail then
         # update lookup structure
@@ -512,7 +512,7 @@ function(kbrws,v)
     #modifies the list pairs2check in such a way that the previous indexes
     #are modified so they correspond to same pairs as before
     remove_rules:=function(weg)
-      local j,q,a,k,l,kk,i,neu,x,y;
+      local j,q,a,l,kk,i,neu,x,y;
 
       if kbdag<>fail then
         for i in weg do

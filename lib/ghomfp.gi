@@ -1066,7 +1066,7 @@ end);
 InstallMethod(MaximalAbelianQuotient,"whole fp group",
         true, [IsSubgroupFpGroup and IsWholeFamily], 0,
 function(f)
-local m,s,g,i,j,rel,gen,img,fin,hom,d,pos;
+local m,s,g,i,j,gen,img,hom,d,pos;
 
   # since f is the full group, exponent sums are with respect to its
   # generators.
