@@ -284,14 +284,24 @@ Obj GAP_MOD(Obj a, Obj b);
 //// booleans
 ////
 
+// Returns 1 if <obj> is a GAP boolean, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
+int GAP_IsBoolean(Obj obj);
+
 extern Obj GAP_True;
 extern Obj GAP_False;
 extern Obj GAP_Fail;
 
 
 ////
-//// calls
+//// functions and calls
 ////
+
+// Returns 1 if <obj> is a GAP function, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
+int GAP_IsFunction(Obj obj);
 
 // Call the GAP object <func> as a function with arguments given
 // as a GAP list <args>.
@@ -319,7 +329,9 @@ Obj GAP_CallFunc3Args(Obj func, Obj a1, Obj a2, Obj a3);
 ////
 
 // Returns 1 if <obj> is a GAP machine float, 0 if not.
-Int GAP_IsMacFloat(Obj obj);
+//
+// Never raises an error. Safe to be called with a NULL pointer.
+int GAP_IsMacFloat(Obj obj);
 
 // Returns the value of the GAP machine float object <obj>.
 // If <obj> is not a machine float object, an error is raised.
@@ -334,12 +346,18 @@ Obj GAP_NewMacFloat(double x);
 ////
 
 // Returns 1 if <obj> is a GAP integer, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
 int GAP_IsInt(Obj obj);
 
 // Returns 1 if <obj> is a GAP small (aka immediate) integer, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
 int GAP_IsSmallInt(Obj obj);
 
 // Returns 1 if <obj> is a GAP large integer, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
 int GAP_IsLargeInt(Obj obj);
 
 
@@ -355,6 +373,8 @@ int GAP_IsLargeInt(Obj obj);
 Obj GAP_MakeObjInt(const UInt * limbs, Int size);
 
 // Return a GAP integer object with value equal to <val>.
+//
+// Never raises an error.
 Obj GAP_NewObjIntFromInt(Int val);
 
 // Return an integer equal to the given GAP integer object. If <obj> is not
@@ -387,6 +407,8 @@ const UInt * GAP_AddrInt(Obj obj);
 ////
 
 // Returns 1 if <obj> is a GAP list, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
 int GAP_IsList(Obj obj);
 
 // Returns the length of the given GAP list.
@@ -433,12 +455,18 @@ Obj GAP_NewRange(Int len, Int low, Int inc);
 // `GAP_IsMatrixObj` checks for special cases that are not plain lists.
 
 // Returns 1 if <obj> is a GAP matrix or matrix obj, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
 int GAP_IsMatrixOrMatrixObj(Obj obj);
 
 // Returns 1 if <obj> is a GAP matrix, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
 int GAP_IsMatrix(Obj obj);
 
 // Returns 1 if <obj> is a GAP matrix obj, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
 int GAP_IsMatrixObj(Obj obj);
 
 // Returns the number of rows of the given GAP matrix or matrix obj.
@@ -466,6 +494,8 @@ Obj GAP_ElmMat(Obj mat, UInt row, UInt col);
 ////
 
 // Returns 1 if <obj> is a GAP record, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
 int GAP_IsRecord(Obj obj);
 
 // Assign <val> to component given by <name> in the GAP record <rec>.
@@ -487,6 +517,8 @@ Obj GAP_NewPrecord(Int capacity);
 ////
 
 // Returns 1 if <obj> is a GAP string, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
 int GAP_IsString(Obj obj);
 
 // Returns the length of the given GAP string.
@@ -524,11 +556,25 @@ Obj GAP_MakeStringWithLen(const char * string, UInt len);
 // terminated C string.
 Obj GAP_MakeImmString(const char * string);
 
+
+////
+//// chars
+////
+
+// Returns 1 if <obj> is a GAP char, 0 if not.
+//
+// Never raises an error. Safe to be called with a NULL pointer.
+int GAP_IsChar(Obj obj);
+
 // Returns the value of the GAP character object <obj>.
 // If <obj> is not a GAP character object, it returns -1.
+//
+// Never raises an error.
 Int GAP_ValueOfChar(Obj obj);
 
 // Returns the GAP character object with value <obj>.
+//
+// Never raises an error.
 Obj GAP_CharWithValue(UChar obj);
 
 #ifdef __cplusplus
