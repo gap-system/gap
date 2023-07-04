@@ -3599,7 +3599,17 @@ local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
     Add(rels,r);
   od;
 
-  f:=FreeGroup(DATA.secount,str);
+  if ForAll(str,IsString) and DATA.secount >=Length(str) then
+    r:=ShallowCopy(str);
+    s:=0;
+    while Length(r)<DATA.secount do
+      s:=s+1;
+      Add(r,Concatenation("__xtra__",String(s)));
+    od;
+    f:=FreeGroup(r);
+  else
+    f:=FreeGroup(DATA.secount,str);
+  fi;
   fam:=FamilyObj(One(f));
   rels:=List(rels,x->AssocWordByLetterRep(fam,x));
   pres:=PresentationFpGroup(f/rels);
