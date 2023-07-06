@@ -1398,7 +1398,7 @@ DeclareGlobalFunction( "BaseSteinitzVectors" );
 ##  <P/>
 ##  More precisely,
 ##  regard <A>mat</A> as the matrix of a linear transformation on the row space
-##  <M>F^n</M> w.r.t.&nbsp;the <M>F</M>-basis with vectors <M>(v_1, ldots, v_n)</M>
+##  <M>F^n</M> w.r.t.&nbsp;the <M>F</M>-basis with vectors <M>(v_1, \ldots, v_n)</M>
 ##  and suppose that the basis <A>B</A> consists of the vectors
 ##  <M>(b_1,  \ldots, b_m)</M>;
 ##  then the returned matrix is the matrix of the linear transformation
