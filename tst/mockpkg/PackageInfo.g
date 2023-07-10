@@ -58,16 +58,6 @@ ArchiveURL     := Concatenation( ~.PackageWWWHome,
 
 ArchiveFormats := ".tar.gz",
 
-##  Status information. Currently the following cases are recognized:
-##    "accepted"      for successfully refereed packages
-##    "submitted"     for packages submitted for the refereeing
-##    "deposited"     for packages for which the GAP developers agreed
-##                    to distribute them with the core GAP system
-##    "dev"           for development versions of packages
-##    "other"         for all other packages
-##
-Status := "dev",
-
 AbstractHTML   :=  "",
 
 PackageDoc := rec(

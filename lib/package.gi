@@ -2318,19 +2318,6 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
       od;
     fi;
 
-    if TestMandat( record, "Status",
-           x -> x in [ "accepted", "submitted", "deposited", "dev", "other" ],
-           "one of \"accepted\", \"deposited\", \"dev\", \"other\"" )
-       and record.Status = "accepted" then
-      TestMandat( record, "CommunicatedBy",
-          x -> IsString(x) and PositionSublist( x, " (" ) <> fail
-                   and x[ Length(x) ] = ')',
-          "a string of the form `<name> (<place>)'" );
-      TestMandat( record, "AcceptDate",
-          x -> IsString( x ) and Length( x ) = 7 and x[3] = '/'
-                   and ForAll( x{ [1,2,4,5,6,7] }, IsDigitChar ),
-          "a string of the form `mm/yyyy'" );
-    fi;
     TestMandat( record, "README_URL", IsURL, "a string started with http://, https:// or ftp://" );
     TestMandat( record, "PackageInfoURL", IsURL, "a string started with http://, https:// or ftp://" );
 
@@ -2835,11 +2822,7 @@ InstallGlobalFunction( BibEntry, function( arg )
             "  <year>", pkginfo.Date{ [ 7 .. 10 ] }, "</year>\n" ) );
         fi;
       fi;
-      if IsBound( pkginfo.Status ) and pkginfo.Status = "accepted" then
-        Append( entry, "  <note>Refereed " );
-      else
-        Append( entry, "  <note>" );
-      fi;
+      Append( entry, "  <note>" );
 #     Append( entry, "<Package>GAP</Package> package</note>\n" );
       Append( entry, "GAP package</note>\n" );
       if IsBound( pkginfo.Keywords ) then
