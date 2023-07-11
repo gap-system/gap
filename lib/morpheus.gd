@@ -576,9 +576,12 @@ DeclareOperation("GQuotients",[IsGroup,IsGroup]);
 ##  gap> g:=Group((1,2,3,4),(1,2));
 ##  Group([ (1,2,3,4), (1,2) ])
 ##  gap> h:=Group((3,4),(1,2));;
+##  Group([ (3,4), (1,2) ])
 ##  gap> emb:=IsomorphicSubgroups(g,h);
 ##  [ [ (3,4), (1,2) ] -> [ (1,2), (3,4) ],
 ##    [ (3,4), (1,2) ] -> [ (1,3)(2,4), (1,2)(3,4) ] ]
+##  gap> emb:=IsomorphicSubgroups(g,h:findall:=false);
+##  [ [ (3,4), (1,2) ] -> [ (1,2), (3,4) ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
