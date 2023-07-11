@@ -578,7 +578,7 @@ DeclareOperation("GQuotients",[IsGroup,IsGroup]);
 ##  <Example><![CDATA[
 ##  gap> g:=Group((1,2,3,4),(1,2));
 ##  Group([ (1,2,3,4), (1,2) ])
-##  gap> h:=Group((3,4),(1,2));;
+##  gap> h:=Group((3,4),(1,2));
 ##  Group([ (3,4), (1,2) ])
 ##  gap> emb:=IsomorphicSubgroups(g,h); # findall:=true by default
 ##  [ [ (3,4), (1,2) ] -> [ (1,2), (3,4) ],
