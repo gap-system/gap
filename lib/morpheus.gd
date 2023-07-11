@@ -528,12 +528,15 @@ DeclareGlobalFunction("IsomorphismSimpleGroups");
 ##  <Index Subkey="find all">epimorphisms</Index>
 ##  <Index Subkey="find all">projections</Index>
 ##  <Example><![CDATA[
-##  gap> g:=Group((1,2,3,4),(1,2));
-##  Group([ (1,2,3,4), (1,2) ])
+##  gap> g:=Group((1,2,3),(1,2),(4,5,6),(4,5));
+##  Group([ (1,2,3), (1,2), (4,5,6), (4,5) ])
 ##  gap> h:=Group((1,2,3),(1,2));
 ##  Group([ (1,2,3), (1,2) ])
 ##  gap> quo:=GQuotients(g,h);
-##  [ [ (1,2,3,4), (1,4,3) ] -> [ (2,3), (1,2,3) ] ]
+##  [ [ (1,3,2)(4,6), (2,3)(4,5) ] -> [ (1,2), (2,3) ],
+##    [ (1,3,2)(4,6), (2,3)(4,5) ] -> [ (1,2,3), (2,3) ] ]
+##  gap> quo:=GQuotients(g,h:findall:=false);
+##  [ [ (1,3)(4,6,5), (1,2)(4,5) ] -> [ (1,2), (2,3) ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
