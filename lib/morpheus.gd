@@ -532,7 +532,7 @@ DeclareGlobalFunction("IsomorphismSimpleGroups");
 ##  Group([ (1,2,3), (1,2), (4,5,6), (4,5) ])
 ##  gap> h:=Group((1,2,3),(1,2));
 ##  Group([ (1,2,3), (1,2) ])
-##  gap> quo:=GQuotients(g,h);
+##  gap> quo:=GQuotients(g,h); # findall:=true by default
 ##  [ [ (1,3,2)(4,6), (2,3)(4,5) ] -> [ (1,2), (2,3) ],
 ##    [ (1,3,2)(4,6), (2,3)(4,5) ] -> [ (1,2,3), (2,3) ] ]
 ##  gap> quo:=GQuotients(g,h:findall:=false);
@@ -580,7 +580,7 @@ DeclareOperation("GQuotients",[IsGroup,IsGroup]);
 ##  Group([ (1,2,3,4), (1,2) ])
 ##  gap> h:=Group((3,4),(1,2));;
 ##  Group([ (3,4), (1,2) ])
-##  gap> emb:=IsomorphicSubgroups(g,h);
+##  gap> emb:=IsomorphicSubgroups(g,h); # findall:=true by default
 ##  [ [ (3,4), (1,2) ] -> [ (1,2), (3,4) ],
 ##    [ (3,4), (1,2) ] -> [ (1,3)(2,4), (1,2)(3,4) ] ]
 ##  gap> emb:=IsomorphicSubgroups(g,h:findall:=false);
