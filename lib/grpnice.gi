@@ -233,6 +233,9 @@ InstallMethod( \in,
 function( elm, G )
     local   nice,  img;
 
+    if HasGeneratorsOfGroup(G) and elm in GeneratorsOfGroup(G) then
+      return true;
+    fi;
     nice := NiceMonomorphism( G );
     img  := ImagesRepresentative( nice, elm:actioncanfail:=true );
     return img<>fail and img in NiceObject( G )
