@@ -509,16 +509,19 @@ local   nice,img,module,b;
     else
       module:=GModuleByMats(GeneratorsOfGroup(grp),DefaultFieldOfMatrixGroup(grp));
     fi;
-    #improve,
-    # try hard, unless absirr and orbit lengths at least 1/q^2 of domain --
-    #then we expect improvements to be of little help
-    if module<>fail and not (NrMovedPoints(img)>=
-      Size( DefaultFieldOfMatrixGroup( grp ) )^( NumberRows( One( grp ) )-2 )
-      and MTX.IsAbsolutelyIrreducible(module)) then
+    #improve, unless not wanted
+    if ValueOption("cheap")<>true then
+      # try hard, unless absirr and orbit lengths at least 1/q^2 of domain --
+      #then we expect improvements to be of little help
+      if module<>fail and not (NrMovedPoints(img)>=
+        Size( DefaultFieldOfMatrixGroup( grp ) )^( NumberRows( One( grp ) )-2 )
+        and MTX.IsAbsolutelyIrreducible(module)) then
+          nice:=nice*SmallerDegreePermutationRepresentation(img:cheap);
+      else
         nice:=nice*SmallerDegreePermutationRepresentation(img:cheap);
-    else
-      nice:=nice*SmallerDegreePermutationRepresentation(img:cheap);
+      fi;
     fi;
+
   fi;
   SetIsInjective( nice, true );
 
