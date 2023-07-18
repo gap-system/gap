@@ -207,8 +207,6 @@ gap> ValidatePackageInfo(rec());
 #E  component `ArchiveURL' must be bound to a string started with http://, htt\
 ps:// or ftp://
 #E  component `ArchiveFormats' must be bound to a string
-#E  component `Status' must be bound to one of "accepted", "deposited", "dev",\
- "other"
 #E  component `README_URL' must be bound to a string started with http://, htt\
 ps:// or ftp://
 #E  component `PackageInfoURL' must be bound to a string started with http://,\
@@ -226,7 +224,6 @@ gap> info := rec(
 >     Date := "01/20/2015",
 >     ArchiveURL := "https://",
 >     ArchiveFormats := "",
->     Status := "other",
 >     README_URL := "https://",
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
@@ -255,7 +252,6 @@ gap> info := rec(
 >     Date := "2013-05-22",
 >     ArchiveURL := "https://",
 >     ArchiveFormats := "",
->     Status := "other",
 >     README_URL := "https://",
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
@@ -282,7 +278,6 @@ gap> info := rec(
 >     Date := "2013-22-05",
 >     ArchiveURL := "https://",
 >     ArchiveFormats := "",
->     Status := "other",
 >     README_URL := "https://",
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
@@ -311,7 +306,6 @@ gap> info := rec(
 >     Date := "2013-05-22-",
 >     ArchiveURL := "https://",
 >     ArchiveFormats := "",
->     Status := "other",
 >     README_URL := "https://",
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
@@ -340,7 +334,6 @@ gap> info := rec(
 >     Date := "01/02/3000",
 >     ArchiveURL := "https://",
 >     ArchiveFormats := "",
->     Status := "other",
 >     README_URL := "https://",
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",

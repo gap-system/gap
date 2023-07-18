@@ -212,14 +212,6 @@ The following components of this record are <E>mandatory</E>.
   a string that lists the supported formats (among <C>.tar.gz</C>,
   <C>.tar.bz2</C>, <C>-win.zip</C>), separated by whitespace or commas,
 </Item>
-<Mark><C>Status</C></Mark>
-<Item>
-  one of <C>"accepted"</C>, <C>"submitted"</C>, <C>"deposited"</C>,
-  <C>"dev"</C>, <C>"other"</C>;
-  if the value is <C>"accepted"</C> then also
-  <C>CommunicatedBy</C> (a string of the form <C>name (place)</C>) and
-  <C>AcceptDate</C> (a string of the form <C>mm/yyyy</C>) are mandatory,
-</Item>
 <Mark><C>README_URL</C></Mark>
 <Item>
   a string started with <C>http://</C>, <C>https://</C>, or <C>ftp://</C>,
@@ -932,7 +924,6 @@ gap> ValidatePackageInfo("PackageInfo.g");
 #E  component `Date' must be bound to a string of the form `dd/mm/yyyy'
 #E  component `ArchiveURL' must be bound to a string started with http://, https:// or ftp://
 #E  component `ArchiveFormats' must be bound to a string
-#E  component `Status' must be bound to one of "accepted", "deposited", "dev", "other"
 #E  component `README_URL' must be bound to a string started with http://, https:// or ftp://
 #E  component `PackageInfoURL' must be bound to a string started with http://, https:// or ftp://
 #E  component `AbstractHTML' must be bound to a string
