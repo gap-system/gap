@@ -887,6 +887,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
     fi;
   fi;
 
+
   ser:=PermliftSeries(G:limit:=300); # do not form too large spaces as they
                                      # clog up memory
   pcgs:=ser[2];
@@ -930,6 +931,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
     elif select=IsPerfectGroup or select=IsNonabelianSimpleGroup then
       c:=ConjugacyClassesPerfectSubgroups(f);
       c:=Filtered(c,x->Size(Representative(x))>1);
+      SortBy(c,x->Size(Representative(x)));
       fselect:=U->not IsSolvableGroup(U);
     elif select<>fail then
       c:=LatticeByCyclicExtension(f,select)!.conjugacyClassesSubgroups;
@@ -1004,6 +1006,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
             if not k in nts then Add(nts,k);fi;
           od;
         od;
+        SortBy(nts,x->Size(x)); # increasing order
         # by setting up `act' as fail, we force a different selection later
         act:=[nts,fail];
 
@@ -1092,8 +1095,8 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
           fi;
         od;
         if Length(as)>0 then
-          Info(InfoLattice,2,"Normal subgroup ",j,", ",Length(as),
-               " subgroups to consider");
+          Info(InfoLattice,2,"Normal subgroup ",j,", Size ",Size(nts[j]),": ",
+               Length(as)," subgroups to consider");
           # there are subgroups that will complement with this kernel.
           # Construct the modulo pcgs and the action of the largest subgroup
           # (which must be the normalizer)
@@ -1398,7 +1401,15 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
 
     pls:=Maximum(SizesPerfectGroups());
     if ForAny(un,i->i>pls) then
-      Error("the perfect residuum is too large");
+      # go through maximals
+      cl:=Unique(List(MaximalSubgroupClassReps(G),PerfectResiduum));
+      cl:=SubgroupsOrbitsAndNormalizers(G,cl,false);
+      cl:=List(cl,x->x.representative);
+      l:=List(cl,RepresentativesPerfectSubgroups);
+      l:=Unique(Concatenation(l));
+      r:=List(SubgroupsOrbitsAndNormalizers(G,l,false),x->x.representative);;
+      SortBy(r,Size);
+      return r;
     fi;
 
     un:=Filtered(un,i->i in PERFRec.sizes);
@@ -1517,11 +1528,13 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
   fi;
 end);
 
-InstallMethod(RepresentativesPerfectSubgroups,"using Holt/Plesken library",
-  true,[IsGroup],0,G->RepsPerfSimpSub(G,false));
+InstallMethod(RepresentativesPerfectSubgroups,
+  "using Holt/Plesken/Hulpke library",true,[IsGroup],0,
+  G->RepsPerfSimpSub(G,false));
 
-InstallMethod(RepresentativesSimpleSubgroups,"using Holt/Plesken library",
-  true,[IsGroup],0,G->RepsPerfSimpSub(G,true));
+InstallMethod(RepresentativesSimpleSubgroups,
+  "using Holt/Plesken/Hulpke library",true,[IsGroup],0,
+  G->RepsPerfSimpSub(G,true));
 
 InstallMethod(RepresentativesSimpleSubgroups,"if perfect subs are known",
   true,[IsGroup and HasRepresentativesPerfectSubgroups],0,
