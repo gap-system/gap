@@ -1,4 +1,4 @@
-#@local G,M,M2,M3,M4,M5,V,bf,bo,cf,homs,m,mat,qf,randM,res,sf,subs,mats,Q
+#@local G,M,M2,M3,M4,M5,V,bf,bo,cf,homs,m,mat,qf,randM,res,sf,subs,mats,Q,orig,S
 gap> START_TEST("meataxe.tst");
 
 #
@@ -185,6 +185,17 @@ gap> Display(res[5]);
  . . . . . 1
 
 #
+gap> G:= SymmetricGroup(3);;
+gap> M:= PermutationGModule( G, GF(2) );;
+gap> mat:= [ [ 1, 1, 1 ], [ 0, 1, 1 ] ] * Z(2);;
+gap> orig:= Immutable( mat );;
+gap> S:= MTX.SubGModule( M, mat );;
+gap> mat = orig;    # the function call must not change the 2nd argument
+true
+gap> S = MTX.SubGModule( M, orig ); # 2nd argument may be immutable
+true
+
+#
 # Tests for MTX.InvariantQuadraticForm and MTX.OrthogonalSign
 # (the documentation is a bit unorthodox)
 #
@@ -231,8 +242,8 @@ gap> Q:= MTX.InvariantQuadraticForm( m );
 fail
 gap> MTX.OrthogonalSign( m );
 fail
-gap> g:= SU(4, 3);;
-gap> m:= GModuleByMats( GeneratorsOfGroup( g ), GF(9) );;
+gap> G:= SU(4, 3);;
+gap> m:= GModuleByMats( GeneratorsOfGroup( G ), GF(9) );;
 gap> MTX.InvariantBilinearForm( m );
 fail
 gap> MTX.InvariantQuadraticForm( m );
