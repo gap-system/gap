@@ -396,7 +396,7 @@ SMTX.SpinnedBasis:=function( arg  )
    if IsList(v) and Length(v)=0 then
      return [];
    elif IsMatrix(v) then
-     TriangulizeMat(v);
+     v:= TriangulizedMat(v);
      ans:=Filtered(v,x->not IsZero(x));
    elif IsList(v) and IsVectorObj(v[1]) then
      v:=TriangulizedMat(Matrix(F,v));
