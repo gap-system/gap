@@ -11,6 +11,7 @@
 ##  This file contains code for the Knuth-Bendix rewriting system for semigroups
 ##  and monoids.
 ##
+# gaplint: disable = analyse-lvars
 
 InstallGlobalFunction(EmptyKBDAG,function(genids)
 local offset,deadend;
@@ -110,48 +111,49 @@ local node,q;
   fi;
 end);
 
-BindGlobal("VerifyKBDAG",function(d,tzrules)
-local offset,node,j,a,idx,left,recurse;
-  if Length(d!.backpoint)<>Length(tzrules) then Error("len");fi;
-  offset:=d.offset;
-  for idx in [1..Length(tzrules)] do
-    left:=tzrules[idx][1];
-
-    node:=d.dag;
-    for j in [1..Length(left)] do
-      a:=left[j]+offset;
-      if node[a]=fail then
-        Error("not stored");
-      elif j=Length(left) then
-        # end -- check
-        if d.backpoint[idx]<>[node,a] or node[a]<>idx then Error("data!"); fi;
-      else
-        if not IsList(node[a]) then Error("too short");fi;
-        node:=node[a]; # go to next letter
-      fi;
-    od;
-  od;
-
-  recurse:=function(n)
-  local i,flag;
-    if not IsList(n) then
-      return;
-    else
-      flag:=true;
-      for i in n do
-        if IsList(i) then
-          recurse(i);
-          flag:=false;
-        elif IsInt(i) then
-          flag:=false;
-        fi;
-      od;
-      if flag and n<>d.dag then Error("stored fail list");fi;
-    fi;
-  end;
-
-  recurse(d.dag);
-end);
+# Function to test validity of DAG structure
+# BindGlobal("VerifyKBDAG",function(d,tzrules)
+# local offset,node,j,a,idx,left,recurse;
+#   if Length(d!.backpoint)<>Length(tzrules) then Error("len");fi;
+#   offset:=d.offset;
+#   for idx in [1..Length(tzrules)] do
+#     left:=tzrules[idx][1];
+#
+#     node:=d.dag;
+#     for j in [1..Length(left)] do
+#       a:=left[j]+offset;
+#       if node[a]=fail then
+#        Error("not stored");
+#      elif j=Length(left) then
+#        # end -- check
+#        if d.backpoint[idx]<>[node,a] or node[a]<>idx then Error("data!"); fi;
+#      else
+#        if not IsList(node[a]) then Error("too short");fi;
+#        node:=node[a]; # go to next letter
+#      fi;
+#    od;
+#  od;
+#
+#  recurse:=function(n)
+#  local i,flag;
+#    if not IsList(n) then
+#      return;
+#    else
+#      flag:=true;
+#      for i in n do
+#        if IsList(i) then
+#          recurse(i);
+#          flag:=false;
+#        elif IsInt(i) then
+#          flag:=false;
+#        fi;
+#      od;
+#      if flag and n<>d.dag then Error("stored fail list");fi;
+#    fi;
+#  end;
+#
+#  recurse(d.dag);
+#end);
 
 ############################################################################
 ##
@@ -182,6 +184,9 @@ DeclareRepresentation("IsKnuthBendixRewritingSystemRep",
 ##  refers to one of the rules. A pair corresponds to a pair
 ##  of rules where confluence was not yet checked (according to
 ##  the Knuth Bendix algorithm).
+##  Pairs might also be given in the form of a 3-entry list
+##  ['A',x,l] to denote all pairs of the form [x,y] for y in l,
+##  respectively ['B',l,y] for pairs [x,y] with x in l.
 ##
 ##  Note that at this stage the kb rws obtained might not be reduced
 ##  (the same relation might even appear several times).
@@ -392,12 +397,37 @@ InstallOtherMethod(AddRuleReduced,
      and IsKnuthBendixRewritingSystemRep, IsList ], 0,
 function(kbrws,v)
 
-  local u,a,b,c,k,n,s,add_rule,remove_rule,fam,ptc,kbdag,abi,rem,
-    remove_rules;
+local u,a,b,c,k,n,s,add_rule,fam,ptc,kbdag,abi,rem,
+  remove_rules;
+
+  # did anyone fiddle with the rules that there are invalid pairs?
+  # This happens e.g. in the fr package.
+  if IsBound(kbrws!.pairs2check)
+    # only do this if its within the fr package to not slow down other uses
+    and not IsBound(kbrws!.kbdag) then
+    b:=kbrws!.pairs2check;
+    k:=false;
+    a:=Length(kbrws!.tzrules);
+    for n in [1..Length(b)] do
+      s:=b[n];
+      if (Length(s)=2 and s[1]>a or s[2]>a)
+          or (s[1]='A' and s[2]>a) or (s[1]='B' and s[3]>a) then
+        b[n]:=fail; k:=true;
+      elif s[1]='A' and ForAny(s[3],x->x>a) then
+        s[3]:=Filtered(s[3],x->x<=a);
+      elif s[1]='B' and ForAny(s[2],x->x>a) then
+        s[2]:=Filtered(s[2],x->x<=a);
+      fi;
+    od;
+    if k then kbrws!.pairs2check:=Filtered(b,x->x<>fail);fi;
+  fi;
+
+
 
     # the fr package assigns initial tzrules on its own, this messes up
     # the dag structure. Delete ...
-    if IsBound(kbrws!.kbdag) and Length(kbrws!.kbdag.backpoint)<>Length(kbrws!.tzrules) then
+    if IsBound(kbrws!.kbdag) and
+      Length(kbrws!.kbdag.backpoint)<>Length(kbrws!.tzrules) then
       Info(InfoPerformance,2,
        "Cannot use dag for lookup since rules were assigned directly");
       #a:=EmptyKBDAG(kbrws!.kbdag.genids);
@@ -422,90 +452,80 @@ function(kbrws,v)
       kbdag:=fail;
     fi;
 
-    #given a Knuth Bendix Rewriting System, kbrws,
-    #removes rule i of the set of rules of kbrws and
-    #modifies the list pairs2check in such a way that the previous indexes
-    #are modified so they correspond to same pairs as before
-    remove_rule:=function(i)
-      local j,q,l,kk;
-
-      if kbdag<>fail then
-        # update lookup structure
-        DeleteRuleKBDAG(kbdag,kbrws!.tzrules[i][1],i);
-      fi;
-
-      #remove rule from the set of rules
-      #q:=kbrws!.tzrules{[1..i-1]};
-      #Append(q,kbrws!.tzrules{[i+1..Length(kbrws!.tzrules)]});
-      #kbrws!.tzrules:=q;
-      q:=kbrws!.tzrules;
-      for j in [i+1..Length(q)] do
-        q[j-1]:=q[j];
-      od;
-      Unbind(q[Length(q)]);
-
-      #VerifyKBDAG(kbdag,kbrws!.tzrules);
-
-      if ptc then
-        #delete pairs of indexes that include i
-        #and change occurrences of indexes k greater than i in the
-        #list of pairs and change them to k-1
-
-        kk:=kbrws!.pairs2check;
-
-        #So we'll construct a new list with the right pairs
-        l:=[];
-        for j in [1..Length(kk)] do
-          if Length(kk[j])=2 then
-            if kk[j][1]<i then
-              if kk[j][2]<i then
-                Add(l,kk[j]);
-              elif kk[j][2]>i then
-                # reindex
-                Add(l,[kk[j][1],kk[j][2]-1]);
-              fi;
-            elif kk[j][1]>i then
-              if kk[j][2]<i then
-                # reindex
-                Add(l,[kk[j][1]-1,kk[j][2]]);
-              elif kk[j][2]>i then
-                # reindex
-                Add(l,[kk[j][1]-1,kk[j][2]-1]);
-              fi;
-            # else rule gets deleted
-            fi;
-          elif kk[j][1]='A' then
-            if kk[j][2]<i then
-              Add(l,kk[j]); # all smaller, no delete
-            elif kk[j][2]>i then
-              Add(l,['A',kk[j][2]-1,Concatenation(
-                Filtered(kk[j][3],x->x<i),Filtered(kk[j][3],x->x>i)-1)]);
-            # else pairs deleted since rule deleted
-            fi;
-          else # 'B' case
-            if kk[j][3]<i then
-              Add(l,kk[j]); # all smaller, no delete
-            elif kk[j][3]>i then
-              Add(l,['B',Concatenation(Filtered(kk[j][2],x->x<i),
-                Filtered(kk[j][2],x->x>i)-1),kk[j][3]-1]);
-            # else pairs deleted since rule deleted
-            fi;
-          fi;
-
-#          if kbrws!.pairs2check[j][1]<>i and kbrws!.pairs2check[j][2]<>i then
-#            a:=kbrws!.pairs2check[j];
-#            for k in [1..2] do
-#              if kbrws!.pairs2check[j][k]>i then
-#                a[k]:=kbrws!.pairs2check[j][k]-1;
+#   older, less efficient version for just single rule
+#    #given a Knuth Bendix Rewriting System, kbrws,
+#    #removes rule i of the set of rules of kbrws and
+#    #modifies the list pairs2check in such a way that the previous indexes
+#    #are modified so they correspond to same pairs as before
+#    remove_rule:=function(i)
+#      local j,q,l,kk;
+#
+#      if kbdag<>fail then
+#        # update lookup structure
+#        DeleteRuleKBDAG(kbdag,kbrws!.tzrules[i][1],i);
+#      fi;
+#
+#      #remove rule from the set of rules
+#      #q:=kbrws!.tzrules{[1..i-1]};
+#      #Append(q,kbrws!.tzrules{[i+1..Length(kbrws!.tzrules)]});
+#      #kbrws!.tzrules:=q;
+#      q:=kbrws!.tzrules;
+#      for j in [i+1..Length(q)] do
+#        q[j-1]:=q[j];
+#      od;
+#      Unbind(q[Length(q)]);
+#
+#      if ptc then
+#        #delete pairs of indexes that include i
+#        #and change occurrences of indexes k greater than i in the
+#        #list of pairs and change them to k-1
+#
+#        kk:=kbrws!.pairs2check;
+#
+#        #So we'll construct a new list with the right pairs
+#        l:=[];
+#        for j in [1..Length(kk)] do
+#          if Length(kk[j])=2 then
+#            if kk[j][1]<i then
+#              if kk[j][2]<i then
+#                Add(l,kk[j]);
+#              elif kk[j][2]>i then
+#                # reindex
+#                Add(l,[kk[j][1],kk[j][2]-1]);
 #              fi;
-#            od;
-#            Add(l,a);
+#            elif kk[j][1]>i then
+#              if kk[j][2]<i then
+#                # reindex
+#                Add(l,[kk[j][1]-1,kk[j][2]]);
+#              elif kk[j][2]>i then
+#                # reindex
+#                Add(l,[kk[j][1]-1,kk[j][2]-1]);
+#              fi;
+#            # else rule gets deleted
+#            fi;
+#          elif kk[j][1]='A' then
+#            if kk[j][2]<i then
+#              Add(l,kk[j]); # all smaller, no delete
+#            elif kk[j][2]>i then
+#              Add(l,['A',kk[j][2]-1,Concatenation(
+#                Filtered(kk[j][3],x->x<i),Filtered(kk[j][3],x->x>i)-1)]);
+#            # else pairs deleted since rule deleted
+#            fi;
+#          else # 'B' case
+#            if kk[j][3]<i then
+#              Add(l,kk[j]); # all smaller, no delete
+#            elif kk[j][3]>i then
+#              Add(l,['B',Concatenation(Filtered(kk[j][2],x->x<i),
+#                Filtered(kk[j][2],x->x>i)-1),kk[j][3]-1]);
+#            # else pairs deleted since rule deleted
+#            fi;
 #          fi;
-
-        od;
-        kbrws!.pairs2check:=l;
-      fi;
-    end;
+#
+#        od;
+#        kbrws!.pairs2check:=l;
+#      fi;
+#
+#    end;
 
     #given a Knuth Bendix Rewriting System, kbrws,
     #removes the rules indexed by weg from the set of rules of kbrws and
@@ -767,6 +787,22 @@ function ( rws )
        " rules" );
 end);
 
+# We store compressed data -- expand, (and also delete old stuff)
+BindGlobal("KBRWSUnpackPairsAt",function(kbrws,p)
+local i,a;
+  i:=kbrws!.pairs2check[p];
+  if IsChar(i[1]) then
+    # We store compressed data -- expand, (and also delete old stuff)
+    if i[1]='A' then
+      a:=List(i[3],x->[i[2],x]);
+    elif i[1]='B' then
+      a:=List(i[2],x->[x,i[3]]);
+    else Error("kind"); fi;
+    kbrws!.pairs2check:=Concatenation(a,kbrws!.pairs2check{[p+1..Length(kbrws!.pairs2check)]});
+    p:=1;
+  fi;
+  return p;
+end);
 
 
 
@@ -776,7 +812,15 @@ end);
 BindGlobal("KBOverlaps",function(ui,vi,kbrws,p)
 local u,v,m,k,a,c,lsu,lsv,lu,eq,i,j;
 
+  # work around copied code in kan package
+  if IsChar(ui) then # must unpack
+    p:=KBRWSUnpackPairsAt(kbrws,p);
+    vi:=kbrws!.pairs2check[p];
+    ui:=vi[1];vi:=vi[2];
+  fi;
+
   u:=kbrws!.tzrules[ui]; v:=kbrws!.tzrules[vi];
+
   lsu:=u[1];
   lu:=Length(lsu);
   lsv:=v[1];
@@ -860,15 +904,7 @@ local   pn,lp,rl,p,i,a;
     i:=kbrws!.pairs2check[p];
     if IsChar(i[1]) then
       # We store compressed data -- expand, (and also delete old stuff)
-      if i[1]='A' then
-        a:=List(i[3],x->[i[2],x]);
-      elif i[1]='B' then
-        a:=List(i[2],x->[x,i[3]]);
-      else Error("kind"); fi;
-      kbrws!.pairs2check:=Concatenation(a,kbrws!.pairs2check{[p+1..Length(kbrws!.pairs2check)]});
-      p:=1;
-      i:=kbrws!.pairs2check[p];
-      lp:=Length(kbrws!.pairs2check);
+      p:=KBRWSUnpackPairsAt(kbrws,p);
     fi;
 
     p:=KBOverlaps(i[1],i[2],kbrws,p)+1;
