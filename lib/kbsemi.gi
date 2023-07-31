@@ -186,7 +186,7 @@ DeclareRepresentation("IsKnuthBendixRewritingSystemRep",
 ##  the Knuth Bendix algorithm).
 ##  Pairs might also be given in the form of a 3-entry list
 ##  ['A',x,l] to denote all pairs of the form [x,y] for y in l,
-##  respectively ['B',l,y] for pairs [x,y[] with x in l.
+##  respectively ['B',l,y] for pairs [x,y] with x in l.
 ##
 ##  Note that at this stage the kb rws obtained might not be reduced
 ##  (the same relation might even appear several times).
