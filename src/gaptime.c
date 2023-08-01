@@ -35,7 +35,7 @@
 #include <sys/resource.h>
 #endif
 
-#if defined(__MACH__) // macOS
+#if defined(__APPLE__) && defined(__MACH__) // macOS
 #include <mach/mach_time.h>
 #elif defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
 #include <time.h>
@@ -101,7 +101,7 @@ Int8 SyNanosecondsSinceEpoch(void)
 {
     Int8 res;
 
-#if defined(__MACH__) // macOS
+#if defined(__APPLE__) && defined(__MACH__) // macOS
     static mach_timebase_info_data_t timeinfo;
     if (timeinfo.denom == 0) {
         (void)mach_timebase_info(&timeinfo);
@@ -161,7 +161,7 @@ static Int8 SyNanosecondsSinceEpochResolution(void)
 {
     Int8 res;
 
-#if defined(__MACH__)
+#if defined(__APPLE__) && defined(__MACH__)
     static mach_timebase_info_data_t timeinfo;
     if (timeinfo.denom == 0) {
         (void)mach_timebase_info(&timeinfo);
@@ -269,7 +269,7 @@ static Obj FuncNanosecondsSinceEpochInfo(Obj self)
     const char * method = "unsupported";
     Int          monotonic = 0;
 
-#if defined(__MACH__)
+#if defined(__APPLE__) && defined(__MACH__)
     method = "mach_absolute_time";
     monotonic = 1;
 #elif defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
