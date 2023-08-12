@@ -3068,7 +3068,7 @@ InstallMethod(IsomorphicSubgroups,"for finite groups",true,
   # override `IsFinitelyPresentedGroup' filter.
   1,
 function(G,H)
-local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
+local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i,ranfun;
 
   if not IsInt(Size(G)/Size(H)) then
     Info(InfoMorph,1,"sizes do not permit embedding");
@@ -3114,6 +3114,22 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
     cnt:=cnt+1;
   od;
 
+  # "random element" function, possibly biased towards smaller orders
+  ranfun:=x->Random(H);
+  if Size(H)<10^5 and Length(AbelianInvariants(H))<4 then
+    # classes that are not contained in normal
+    vsu:=ConjugacyClasses(H);
+    vsu:=Filtered(vsu,x->Size(H)
+      =Size(NormalClosure(H,SubgroupNC(H,[Representative(x)]))));
+    if Length(vsu)>0 then
+      SortBy(vsu,x->Order(Representative(x)));
+      ranfun:=function(x)
+        # random element of a class, selected with bias for smaller orders
+        return Random(vsu[Random([1..Random([1..Length(vsu)])])]);
+      end;
+    fi;
+  fi;
+
   # find a suitable generating system
   bw:=infinity;
   bo:=[0,0];
@@ -3128,9 +3144,9 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
       repeat
         if Length(gens)>2 and Random(1,2)=1 then
           # try to get down to 2 gens
-          gens:=List([1,2],i->Random(H));
+          gens:=List([1,2],i->ranfun(1));
         else
-          gens:=List([1..sg],i->Random(H));
+          gens:=List([1..sg],i->ranfun(1));
         fi;
         # try to get small orders
         for k in [1..Length(gens)] do
@@ -3155,7 +3171,7 @@ local cl,cnt,bg,bw,bo,bi,k,gens,go,imgs,params,emb,clg,sg,vsu,c,i;
     elif Set(go)=Set(bo) then
       # we hit the orders again -> sign that we can't be
       # completely off track
-      cnt:=cnt+Int(bw/Size(G)*3);
+      cnt:=cnt+Int(bw/Size(G)/20);
     fi;
     cnt:=cnt+1;
   until bw/Size(G)*3<cnt;
