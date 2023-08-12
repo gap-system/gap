@@ -986,7 +986,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
       unten, compst, s, nr, nstab, lst, sifa, pinv, blist, bsz, cnt,
       ps, e, mop, mo, lstgens, lstgensop, rep, st, o, oi, i, img, ep,
       siz, rt, j, canrep,step,nu,doneidx,orbcnt,posi,
-      sizes,cluster,sel,lr,lstabs,ssizes,num,actfun,mayflip,
+      sizes,cluster,sel,lr,lstabs,ssizes,num,actfun,mayflip,rs,
       actlimit, uplimit, badlimit,avoidlimit,start,includestab,quot;
 
   actlimit:=300000; # maximal degree on which we try blocks
@@ -1128,10 +1128,10 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
         fi;
       end;
 
-      r:=Filtered(TryMaximalSubgroupClassReps(G:cheap),
+      rs:=Filtered(TryMaximalSubgroupClassReps(G:cheap),
         x->Index(G,x)<=5*avoidlimit);
-      SortBy(r,a->-Size(a));
-      for i in r do
+      SortBy(rs,a->-Size(a));
+      for i in rs do
         if Index(G,i)<maxidx(c) then
           p:=Intersection(a,i);
           AddSet(doneidx,Index(a,p));
@@ -1154,11 +1154,11 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
 
     if maxidx(c)>badlimit then
 
-      r:=ShallowCopy(TryMaximalSubgroupClassReps(a:cheap));
-      r:=Filtered(r,x->Index(a,x)<uplimit and not Index(a,x) in doneidx);
+      rs:=ShallowCopy(TryMaximalSubgroupClassReps(a:cheap));
+      rs:=Filtered(rs,x->Index(a,x)<uplimit and not Index(a,x) in doneidx);
 
-      SortBy(r,a->-Size(a));
-      for j in r do
+      SortBy(rs,a->-Size(a));
+      for j in rs do
         #Print("j=",Size(j),"\n");
         t:=AscendingChain(G,j:refineIndex:=avoidlimit,
                               refineChainActionLimit:=actlimit,indoublecoset);
