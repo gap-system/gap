@@ -1352,3 +1352,18 @@ InstallGlobalFunction(SmallRing,function(x,n)
     return r;
   fi;
 end);
+
+# matrices
+InstallOtherMethod( InverseOp, "for sc ring matrices",
+    [ IsListDefault and IsSCRingObjCollColl ],
+    function( mat )
+    if NestingDepthM( mat ) mod 2 = 0 and IsSmallList( mat ) then
+        if IsRectangularTable( mat ) then
+            return INV_MATRIX_MUTABLE( mat );
+        else
+            return fail;
+        fi;
+    else
+      TryNextMethod();
+    fi;
+    end );
