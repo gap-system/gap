@@ -18,23 +18,47 @@ InstallMethod( PreImagesSet,
     CollFamRangeEqFamElms,
     [ IsPermGroupHomomorphism, IsGroup ],
 function( map, elms )
-local genpreimages,  pre,kg,sz;
+local genpreimages,  pre,kg,sz,ol,orb,pos,dom,one;
   genpreimages:=GeneratorsOfMagmaWithInverses( elms );
-  if Length(genpreimages)>0 and CanEasilyCompareElements(genpreimages[1]) then
-    # remove identities
-    genpreimages:=Filtered(genpreimages,i->i<>One(i));
-  fi;
 
   genpreimages:= List(genpreimages,
                     gen -> PreImagesRepresentative( map, gen ) );
   if fail in genpreimages then
     TryNextMethod();
   fi;
+
+  if HasFittingFreeLiftSetup(Source(map)) and
+    IsIdenticalObj(map,FittingFreeLiftSetup(Source(map)).factorhom) then
+    dom:=FittingFreeLiftSetup(Source(map));
+    pre:=SubgroupByFittingFreeData(Source(map),genpreimages,
+      GeneratorsOfMagmaWithInverses(elms),dom.pcgs);
+    return pre;
+  fi;
+
+  if Length(genpreimages)>0 and CanEasilyCompareElements(genpreimages[1]) then
+    # remove identities
+    genpreimages:=Filtered(genpreimages,i->i<>One(i));
+  fi;
+
+  one:=One(Source(map));
   if HasSize( elms ) then
     sz:=Size( KernelOfMultiplicativeGeneralMapping( map ) ) * Size( elms );
     kg:=GeneratorsOfGroup(KernelOfMultiplicativeGeneralMapping( map ) );
-    if Length(kg)>2 then Add(genpreimages,Random(kg));fi;
+    ol:=Concatenation(genpreimages,kg);
+    dom:=MovedPoints(ol);
+    ol:=Length(Orbits(Group(ol,one),dom));
     pre:=SubgroupNC(Source(map),genpreimages);
+    orb:=List(Orbits(pre,dom),Set);
+    pos:=0;
+    while Length(orb)>ol do
+      repeat
+        pos:=pos+1;
+      until ForAny(orb,x->OnSets(x,kg[pos])<>x);
+      Add(genpreimages,kg[pos]);
+      pre:=SubgroupNC(Source(map),genpreimages);
+      orb:=List(Orbits(pre,dom),Set);
+    od;
+
     StabChainOptions(pre).limit:=sz;
     while Size(pre)<sz do
       pre:=ClosureSubgroupNC(pre,First(kg,i->not i in pre));
@@ -664,6 +688,7 @@ BindGlobal("DoSCMPermGpHom",function(arg)
             dict,
             short,
             FillTransversalShort,
+            ntran, # positions of non-identity generators
             BuildOrb,
             AddToStbO,
             maxstor,
@@ -901,12 +926,16 @@ BindGlobal("DoSCMPermGpHom",function(arg)
     size := Length( S.orbit );
 
     # create new elements until we have reached the size
+
+    ntran:=Filtered([1..Length(mapi[1])],x->not IsOne(mapi[1][x]));
+    # catch all trivial case
+    if Length(ntran)=0 then ntran:=[1..Length(mapi[1])];fi;
     while size <> gsize  do
 
         # try random elements
         elm := rnd[rni];
         img := rne[rni];
-        i := Random( 1, Length( mapi[1] ) );
+        i := Random(ntran);
         rnd[rni] := rnd[rni] * mapi[1][i];
         rne[rni] := rne[rni] * mapi[2][i];
         rni := rni mod two + 1;
@@ -1443,6 +1472,7 @@ InstallMethod( CoKernelOfMultiplicativeGeneralMapping, true,
         [ IsPermGroupGeneralMappingByImages and
           IsToPermGroupGeneralMappingByImages ], 0,
     function( hom )
+    Size(Source(hom)); Size(Range(hom)); # force sizes for RSS
     StabChainPermGroupToPermGroupGeneralMappingByImages( hom );
     return CoKernelOfMultiplicativeGeneralMapping( hom );
 end );

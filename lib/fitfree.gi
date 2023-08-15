@@ -149,9 +149,10 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
     r:=Concatenation(k!.depthsInParent,[Length(ffs.pcgs)+1]);
   fi;
 
+  AddNaturalHomomorphismsPool(U,ker,rest);
   r:=rec(parentffs:=ffs,
             rest:=rest,
-            ker:=ker,
+            radical:=ker,
             pcgs:=k,
             serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
             );
@@ -183,7 +184,7 @@ local ffs,cache,rest,ker,k,r;
     r:=[1..Length(k)];
     r:=rec(parentffs:=ffs,
               rest:=rest,
-              ker:=ker,
+              radical:=ker,
               pcgs:=k,
               serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
               );
@@ -204,7 +205,7 @@ local ffs,cache,rest,ker,k,r;
 end);
 
 InstallGlobalFunction(SubgroupByFittingFreeData,function(G,gens,imgs,ipcgs)
-local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom;
+local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom,subsz,pcimgs;
 
   ffs:=FittingFreeLiftSetup(G);
   # get back to initial group -- dont induce of induce
@@ -251,7 +252,21 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom;
     SetIndicesEANormalSteps(ipcgs,l);
   fi;
 
-  U:=SubgroupNC(G,Concatenation(gens,ipcgs));
+  pcimgs:=List(ipcgs,x->ImagesRepresentative(ffs.pcisom,x));
+
+  ker:=SubgroupNC(G,List(MinimalGeneratingSet(Group(pcimgs,One(Range(ffs.pcisom)))),
+    x->PreImagesRepresentative(ffs.pcisom,x)));
+  SetPcgs(ker,ipcgs);
+  if Length(ipcgs)=0 then
+    SetSize(ker,1);
+  else
+    SetPcgs(ker,ipcgs);
+    SetSize(ker,Product(RelativeOrders(ipcgs)));
+  fi;
+  subsz:=Size(Group(imgs,One(Image(ffs.factorhom))))*Size(ker);
+
+  U:=SubgroupNC(G,Concatenation(gens,GeneratorsOfGroup(ker)));
+  SetSize(U,subsz);
 
   gens:=Concatenation(gens,ipcgs);
   imgs:=Concatenation(imgs,List(ipcgs,x->One(Range(hom))));
@@ -269,16 +284,8 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom;
     SetRecogDecompinfoHomomorphism(rest,RecogDecompinfoHomomorphism(hom));
   fi;
 
-  ker:=SubgroupNC(G,ipcgs);
-  if Length(ipcgs)=0 then
-    SetSize(ker,1);
-  else
-    SetPcgs(ker,ipcgs);
-    SetSize(ker,Product(RelativeOrders(ipcgs)));
-  fi;
   SetKernelOfMultiplicativeGeneralMapping(rest,ker);
 
-  SetSize(U,Size(Group(imgs,One(Image(ffs.factorhom))))*Size(ker));
 
   if Length(ipcgs)=0 then
     r:=[Length(ffs.pcgs)+1];
@@ -290,7 +297,7 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom;
   fi;
   r:=rec(parentffs:=ffs,
             rest:=rest,
-            ker:=ker,
+            radical:=ker,
             pcgs:=ipcgs,
             serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
             );
@@ -302,9 +309,15 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom;
     if ipcgs=MappingGeneratorsImages(ffs.pcisom)[1] then
       pcisom:=ffs.pcisom;
     else
-      pcisom:=List(ipcgs,x->ImagesRepresentative(ffs.pcisom,x));
+      pcisom:=pcimgs;
+      if Length(ipcgs)>0 then
+        # work around error for special trivial group.
+        r:=Group(ipcgs,OneOfPcgs(ipcgs));
+      else
+        r:=SubgroupNC(G,ipcgs);
+      fi;
       RUN_IN_GGMBI:=true;
-      pcisom:=GroupHomomorphismByImagesNC(Group(ipcgs,OneOfPcgs(ipcgs)),
+      pcisom:=GroupHomomorphismByImagesNC(r,
         SubgroupNC(Range(ffs.pcisom),pcisom),
         ipcgs,pcisom);
       RUN_IN_GGMBI:=false;
@@ -317,6 +330,7 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom;
           factorhom:=rest
           );
     SetFittingFreeLiftSetup(U,r);
+    AddNaturalHomomorphismsPool(U,ker,rest);
   fi;
 
   return U;
