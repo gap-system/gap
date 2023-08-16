@@ -956,7 +956,12 @@ DeclareAttributeSuppCT( "NamesOfFusionSources",
 ##    for the argument <A>quick</A>;
 ##    especially, as soon as only one possibility remains
 ##    then this possibility is returned immediately;
-##    the default value is <K>false</K>,
+##    the default value is <K>false</K>
+##    (note that in situations where the group of <A>tbl</A> has no subgroups
+##    with character table <A>subtbl</A>, it may happen that setting
+##    <C>quick</C> to <K>true</K> causes <Ref Oper="PossibleClassFusions"/>
+##    to return solutions,
+##    whereas the value <K>false</K> yields an empty list),
 ##  </Item>
 ##  <Mark><C>verify</C></Mark>
 ##  <Item>
