@@ -122,6 +122,331 @@ local  n,l,o,b,r,p,cl,i,sel,selz,gens,ti,t,tl;
   return o;
 end);
 
+
+# prepare list of subgroups of a permgroup G for conjugacy test and cluster
+# accordingly. returns list with entries
+# clusters (index lists)
+# actors (for each cluster the subgroup that is still acting. Set to trivial
+# if groups are fully conjugated)
+# gps (groups already conjugates so the action is reduced to acts for each
+# cluster)
+# conjugators (for subgroups in list, elements conjugationg to gps)
+# normalizers: if not `false` normalizers of cluster rep in gps
+#
+
+# Another orbit algorithm variant...
+BindGlobal("CCPOSA",function(G,p,q,act)
+local o,s,rep,i,j,img,pos;
+  o:=[p];
+  s:=TrivialSubgroup(G);
+  rep:=[One(G)];
+  i:=1;
+  while i<=Length(o) do
+    for j in GeneratorsOfGroup(G) do
+      img:=act(o[i],j);
+      pos:=Position(o,img);
+      if pos=fail then
+        Add(o,img);
+        Add(rep,rep[i]*j);
+      else
+        s:=ClosureSubgroupNC(s,rep[i]*j/rep[pos]);
+      fi;
+    od;
+    i:=i+1;
+  od;
+  pos:=Position(o,q);
+  if pos=fail then return fail;
+  else return [s,rep[pos]];fi;
+end);
+
+InstallGlobalFunction(ClusterConjugacyPermgroups,function(G,l)
+local acts,gps,clusters,conj,ncl,nacts,i,j,new,q,hom,lhom,c,n,r,len,
+      pat,oa,ob,orbs,k,gens,nnors,m,kk,perm,fur,ooa,oob,lan,subset;
+
+  acts:=[G];
+  gps:=ShallowCopy(l);
+  subset:=ForAll(l,x->IsSubset(G,x));
+  clusters:=[[1..Length(gps)]];
+  conj:=List(gps,x->One(G));
+
+  # orders
+  ncl:=[];
+  nacts:=[];
+  for i in [1..Length(clusters)] do
+    new:=Set(List(gps{clusters[i]},Size));
+    for q in new do
+      c:=Filtered(clusters[i],x->Size(gps[x])=q);
+      Add(ncl,c);
+      Add(nacts,acts[i]);
+    od;
+  od;
+  clusters:=ncl;
+  acts:=nacts;
+
+  # find a homomorphism (already existing)
+  hom:=fail;
+  c:=NaturalHomomorphismsPool(G);
+  new:=Filtered([1..Length(c.ker)],
+    x->IsMapping(c.ops[x]) and c.cost[x]<NrMovedPoints(G));
+  q:=Difference(List(c.ker{new},Size),[1,Size(G)]);
+  if Length(q)>0 then
+    q:=Minimum(q);
+    q:=First(new,x->Size(c.ker[x])=q);
+    hom:=c.ops[q];
+  fi;
+
+  if hom<>fail then # work in factor
+    if Size(Source(hom))>Size(G) then
+      hom:=RestrictedMapping(hom,G);
+    fi;
+    Info(InfoLattice,5,"Factor: ",Size(Range(hom)),"/",
+      Size(KernelOfMultiplicativeGeneralMapping(hom)));
+    ncl:=[];
+    nacts:=[];
+    for i in [1..Length(clusters)] do
+      if Size(Source(hom))=Size(acts[i]) then
+        lhom:=hom;
+      else
+        lhom:=RestrictedMapping(hom,acts[i]);
+      fi;
+      c:=clusters[i];
+      q:=Image(lhom,acts[i]);
+      m:=List(c,x->Image(lhom,gps[x]));
+      new:=ClusterConjugacyPermgroups(q,m);
+      new:=RefineClusterConjugacyPermgroups(new);
+      for j in [1..Length(new.clusters)] do
+        Add(ncl,c{new.clusters[j]});
+        if new.normalizers[j]<>false then
+          n:=new.normalizers[j];
+        else
+          n:=new.actors[j];
+        fi;
+        Info(InfoLattice,5,"reduced (factor) by ",Size(q)/Size(n));
+        Add(nacts,PreImage(lhom,n));
+        for k in new.clusters[j] do
+          r:=PreImagesRepresentative(lhom,new.conjugators[k]);
+          conj[c[k]]:=conj[c[k]]*r;
+          gps[c[k]]:=gps[c[k]]^r;
+        od;
+      od;
+    od;
+    clusters:=ncl;
+    acts:=nacts;
+  fi;
+
+  # same orbits
+  ncl:=[];
+  nacts:=[];
+  for i in [1..Length(clusters)] do
+    c:=clusters[i];
+    q:=MovedPoints(acts[i]);
+    orbs:=[];
+    for j in c do
+      orbs[j]:=List(Orbits(gps[j],q),Set);
+    od;
+    while Length(c)>0 do
+      new:=[c[1]];
+      pat:=Collected(List(orbs[c[1]],Length));
+
+      len:=List(pat,x->x[1]);
+      # TODO: Wreath
+      oa:=List(len,x->Union(Filtered(orbs[c[1]],y->Length(y)=x)));
+      perm:=Sortex(List(oa,Length));
+      oa:=Permuted(oa,perm);
+      len:=Permuted(len,perm);
+      n:=[acts[i]];
+      for j in oa do
+        q:=n[Length(n)];
+        if ForAny(GeneratorsOfGroup(q),x->OnSets(j,x)<>j) then
+          q:=Stabilizer(q,j,OnSets);
+        fi;
+        Add(n,q);
+      od;
+      lan:=n[Length(n)];
+      fur:=Length(Orbits(lan,MovedPoints(acts[i])))
+          <>Length(orbs[c[1]]);
+      if Size(lan)=Size(acts[i]) and not fur then
+        # already all the same
+        Add(ncl,c);
+        Add(nacts,acts[i]);
+        c:=[];
+      else
+        Info(InfoLattice,5,"reduced (orb) by ",Size(acts[i])/Size(n[Length(n)]));
+        for j in [2..Length(c)] do
+          if Collected(List(orbs[c[j]],Length))=pat then
+            r:=One(acts[i]);
+            # already for changed len!
+            ob:=List(len,x->Union(Filtered(orbs[c[j]],y->Length(y)=x)));
+            for k in [1..Length(oa)] do
+              if r<>fail then
+                q:=RepresentativeAction(n[k],ob[k],oa[k],OnSets);
+                if q=fail then r:=fail;
+                else
+                  r:=r*q;
+                  for kk in [k+1..Length(oa)] do
+                    ob[kk]:=OnSets(ob[kk],q);
+                  od;
+                  if fur then
+                    ooa:=Set(Filtered(orbs[c[1]],y->Length(y)=len[k]));
+                    oob:=Set(List(Filtered(orbs[c[j]],y->Length(y)=len[k])),
+                      x->OnSets(x,r));
+                    if ooa<>oob then
+                      q:=CCPOSA(n[k],ooa,oob,OnSetsSets);
+                      if q=fail then r:=fail;
+                      else
+                        Add(n,q[1]); # partition stabilizer
+                        q:=q[2]^-1; # mapping oob to ooa
+                        r:=r*q;
+                        for kk in [k+1..Length(oa)] do
+                          ob[kk]:=OnSets(ob[kk],q);
+                        od;
+                      fi;
+                    fi;
+
+                  fi;
+                fi;
+              fi;
+            od;
+            if r<>fail then
+              q:=c[j];
+              Add(new,q);
+              conj[q]:=conj[q]*r;
+              gps[q]:=gps[q]^r;
+            fi;
+          fi;
+        od;
+        Add(ncl,new);
+        Add(nacts,n[Length(n)]);
+        c:=Difference(c,new);
+      fi;
+    od;
+  od;
+  clusters:=ncl;
+  acts:=nacts;
+
+  # small enough index
+  ncl:=[];
+  nacts:=[];
+  nnors:=[];
+  for i in [1..Length(clusters)] do
+    c:=clusters[i];
+    if Length(c)=1 or Size(acts[i])/Size(gps[c[1]])>1000 then
+      Add(ncl,c);
+      Add(nacts,acts[i]);
+      Add(nnors,false); # no normalizer computed
+    elif Size(acts[i])=Size(gps[c[1]]) then
+      Add(ncl,c);
+      Add(nacts,acts[i]);
+      Add(nnors,acts[i]); # no normalizer computed
+    else
+      Info(InfoLattice,5,"reduced (transversal) by ",Size(acts[i])/Size(gps[c[1]]));
+      while Length(c)>0 do
+        n:=gps[c[1]];
+        ob:=n;
+        gens:=GeneratorsOfGroup(n);
+        if HasSolvableRadical(acts[i]) then
+          k:=Filtered([1..Length(gens)],x->gens[x] in SolvableRadical(acts[i]));
+          gens:=gens{Concatenation(Difference([1..Length(gens)],k),k)};
+        fi;
+        new:=[c[1]];
+        c:=c{[2..Length(c)]};
+        if subset then
+          oa:=RightTransversal(acts[i],n);
+        else
+          n:=Normalizer(acts[i],n);
+          oa:=RightTransversal(acts[i],n);
+        fi;
+        k:=1;
+        while k<=Length(oa) do
+          r:=oa[k];
+          if (not r in n) and ForAll(gens,x->x^r in ob) then
+            n:=ClosureGroup(n,r);
+          fi;
+          for j in c do
+            if ForAll(gens,x->x^r in gps[j]) then # same size
+              Add(new,j);
+              c:=Difference(c,[j]);
+              conj[j]:=conj[j]/r;
+              gps[j]:=ob;
+            fi;
+          od;
+          k:=k+1;
+        od;
+        Add(ncl,new);
+        Add(nacts,fail);
+        nnors[Length(ncl)]:=n;
+      od;
+    fi;
+  od;
+  clusters:=ncl;
+  acts:=nacts;
+
+  return rec(
+    clusters:=clusters,
+    actors:=acts,
+    conjugators:=conj,
+    gps:=gps,
+    normalizers:=nnors
+    );
+
+end);
+
+InstallGlobalFunction(RefineClusterConjugacyPermgroups,function(A)
+local acts,nacts,clusters,ncl,c,conj,gps,nors,nnors,i,j,r,n,new;
+  acts:=A.actors;
+  clusters:=A.clusters;
+  conj:=ShallowCopy(A.conjugators);
+  gps:=ShallowCopy(A.gps);
+  nors:=A.normalizers;
+  nacts:=[];
+  ncl:=[];
+  nnors:=[];
+  for i in [1..Length(clusters)] do
+    c:=clusters[i];
+    if Length(c)=1 or ForAll([2..Length(c)],x->gps[c[1]]=gps[c[x]]) then
+      # all groups in cluster are already the same
+      Add(ncl,c);
+      Add(nacts,acts[i]);
+      if nors[i]=false then
+        if acts[i]=gps[c[1]] then
+          Add(nnors,gps[c[1]]); # do not duplicate the acts, but the subgroup
+        else
+          Add(nnors,Normalizer(acts[i],gps[c[1]]));
+        fi;
+      else
+        Add(nnors,nors[i]);
+      fi;
+    else
+      # need to do hard conjugacy tests
+      while Length(c)>0 do
+        new:=[c[1]];
+        n:=Normalizer(acts[i],gps[c[1]]);
+        for j in [2..Length(c)] do
+          r:=ConjugatorPermGroup(acts[i],gps[c[j]],gps[c[1]]);
+          if r<>fail then
+            Add(new,c[j]);
+            conj[c[j]]:=conj[c[j]]*r;
+            gps[c[j]]:=gps[c[j]]^r;
+          fi;
+        od;
+        c:=Difference(c,new);
+        Add(ncl,new);
+        Add(nacts,n);
+        Add(nnors,n);
+      od;
+    fi;
+  od;
+
+  return rec(
+    clusters:=ncl,
+    actors:=nacts,
+    conjugators:=conj,
+    gps:=gps,
+    normalizers:=nnors
+    );
+
+end);
+
 InstallMethod(SubgroupsOrbitsAndNormalizers,"perm group on list",true,
   [IsPermGroup,IsList,IsBool],0,
 function(G,dom,all)
@@ -131,7 +456,14 @@ function(G,dom,all)
 
   if Length(dom)=0 then
     return dom;
+  elif Length(dom)=1 then
+    return [rec(pos:=1,
+      representative:=dom[1],
+      normalizer:=Normalizer(G,dom[1]))];
   fi;
+
+  # new code -- without `all` option
+
   savemem:=ValueOption("savemem");
   n:=Length(dom);
   if n>20 and ForAll(dom,x->IsSubset(G,x))
@@ -140,177 +472,38 @@ function(G,dom,all)
 
     b:=SmallerDegreePermutationRepresentation(G:cheap);
     if NrMovedPoints(Range(b))<NrMovedPoints(G) then
-#Print("Degreduce ",NrMovedPoints(G)," => ",NrMovedPoints(Range(b)),"\n");
       dom:=SubgroupsOrbitsAndNormalizers(Image(b,G),
         List(dom,x->Image(b,x)),all);
       dom:=List(dom,x->rec(pos:=x.pos,normalizer:=PreImage(b,x.normalizer),
-        representative:=PreImage(b,x.representative)));
+        representative:=dom[x]));
       return dom;
     fi;
   fi;
 
-  l:=n;
+  l:=ClusterConjugacyPermgroups(G,ShallowCopy(dom));
+  l:=RefineClusterConjugacyPermgroups(l);
   o:=[];
-  # determine some points that distinguish groups
-  pts:=MovedPoints(G);
-  pbas:=[pts[1]];
-  ptbas:=[pts[1]];
-  un:=ShallowCopy(Orbit(dom[1],ptbas[1]));
-  domo:=List(dom,x->[Set(Orbit(x,ptbas[1]))]);
-  while Length(pbas)<15 and Length(un)<Length(pts) do
-    p:=First(pts,x->not x in un);
-    Add(ptbas,p);
-    b:=Set(Orbit(dom[1],p));
-    un:=Union(un,b);
-    if ForAny([1..Length(dom)],x->Set(Orbit(dom[x],p))<>b
-      and ForAll([1..Length(pbas)],z->domo[x][z]=domo[1][z]))
-       then
-      Add(pbas,p);
-      for i in [1..Length(dom)] do
-        Add(domo[i],Set(Orbit(dom[i],p)));
-      od;
-    fi;
-  od;
-  allo:=Union(domo);
-  MakeImmutable(allo);
-  IsSSortedList(allo);
-  domo:=List(domo,x->List(x,y->Position(allo,y)));
-  lsd:=Length(Set(domo));
-  Info(InfoLattice,5,Length(pbas)," out of ",Length(ptbas)," yields ",
-       lsd," domo types");
-
-  #domoj:=List([1..Length(pbas)],x->domo{[1..Length(domo)]}[x]);
-  domoj:=List([1..Length(pbas)],x->List([1..Length(allo)],
-          y->Filtered([1..Length(dom)],z->domo[z][x]=y)));
-
-
-  b:=BlistList([1..l],[1..n]);
-  ll:=QuoInt(Size(G),Minimum(List(dom,Size)));
-  while n>0 do
-    p:=Position(b,true);
-    b[p]:=false;
-    startn:=n;
-    n:=n-1;
-    gp:=dom[p];
-    t:=Length(GeneratorsOfGroup(gp));
-    if HasSize(gp) and not HasStabChainMutable(gp) and t>4 then
-      sel:=GeneratorsOfGroup(gp);
-      t:=Group(sel{Set([1,2],i->Random(1,t))},One(gp));
-      while Size(t)<Size(gp) do
-        t:=ClosureGroup(t,Random(sel));
-      od;
-      Info(InfoLattice,5,"reduced ",Length(sel)," -> ",
-                          Length(GeneratorsOfGroup(t)));
-      if IsBound(gp!.comgens) then
-        t!.comgens:=gp!.comgens;
-      fi;
-      gp:=t;
-    fi;
-    r:=rec(representative:=gp,pos:=p);
-    if ll<20 and IndexNC(G,gp)<10000 and lsd*20<Length(dom) then
-      t:=OrbitStabilizer(G,gp);
-      ll:=Length(t.orbit);
-      Info(InfoLattice,5,"orblen=",ll);
-      r.normalizer:=t.stabilizer;
-      if all then r.orbit:=t.orbit; fi;
-      if IsIdenticalObj(t.orbit[1],gp) then
-        t:=t.orbit{[2..Length(t.orbit)]};
-        ll:=ll-1;
-      else
-        t:=ShallowCopy(t.orbit);
-      fi;
-      if Length(t)>0 and Length(t)*Size(t[1])<10000 and n>40000 then
-        List(t,AsSet); # faster in test
-      fi;
-      i:=1;
-      while i<=Length(dom) and ll>0 do
-        if b[i] and Size(dom[i])=Size(r.representative) then
-          p:=PositionProperty(t,j->ForAll(GeneratorsOfGroup(dom[i]),k->k in j));
-          if p<>fail then
-            b[i]:=false;
-            n:=n-1;
-            ll:=ll-1;
-            t:=t{Difference([1..Length(t)],[p])};
-          fi;
-        fi;
-        i:=i+1;
-      od;
-    else
-      r.normalizer:=Normalizer(G,r.representative);
-      rorbs:=List(Orbits(r.representative,pts),i->Immutable(Set(i)));
-      tl:=Index(G,r.normalizer);
-      ll:=tl;
-      Info(InfoLattice,5,"Normalizerindex=",tl);
-      sel:=Filtered([1..l],i->b[i]);
-      selz:=Filtered(sel,
-              i->not HasSize(dom[i]) or Size(dom[i])=Size(r.representative));
-      if tl<=50*Length(selz) then
-        t:=RightTransversal(G,r.normalizer);
-        if Length(selz)>0 then
-          rem:=[];
-          for i in t do
-            sely:=selz;
-            j:=1;
-            while j<=Length(pbas) and Length(sely)>0 do
-              #torb:=Set(Orbit(r.representative,pbas[j]/i),x->x^i);
-              torb:=pbas[j]/i;
-              torb:=First(rorbs,x->torb in x);
-              torb:=Set(torb,x->x^i);
-              MakeImmutable(torb);
-              torb:=Position(allo,torb);
-              if torb=fail then
-                sely:=[];
-              else
-                sely:=Intersection(sely,domoj[j][torb]);
-              fi;
-              j:=j+1;
-            od;
-            if Length(sely)>0 then
-              iinv:=i^-1;
-              p:=First(sely,z->ForAll(GeneratorsOfGroup(dom[z]),
-                                  x->x^iinv in r.representative));
-              if p<>fail then
-                AddSet(rem,p);
-                b[p]:=false;
-                n:=n-1;
-              fi;
-            fi;
-          od;
-
-          sel:=Difference(sel,rem);
-          selz:=Difference(selz,rem);
-
+  for b in [1..Length(l.clusters)] do
+    t:=l.clusters[b];
+      r:=rec(representative:=dom[t[1]],pos:=t[1]);
+      n:=l.normalizers[b];
+      if n=false then
+        if Size(l.actors[b])=Size(r.representative) then
+          n:=r.representative;
+        else
+          n:=Normalizer(l.actors[b]^(l.conjugators[t[1]]^-1),r.representative);
         fi;
       else
-        for i in selz do
-          p:=RepresentativeAction(G,dom[i],r.representative,OnPoints);
-          if p<>fail then
-            b[i]:=false;
-            n:=n-1;
-            RemoveSet(sel,i);
-          fi;
-        od;
+        n:=n^(l.conjugators[t[1]]^-1);
       fi;
-      if all then
-        cl:=ConjugacyClassSubgroups(G,r.representative);
-        SetStabilizerOfExternalSet(cl,r.normalizer);
-        cl:=Enumerator(cl);
-        r.elements:=cl;
-      fi;
-Info(InfoLattice,5,startn-n," conjugates");
-    fi;
-    if not all and savemem<>fail then
-      p:=Size(r.representative);
-      r.representative:=Group(GeneratorsOfGroup(r.representative),
-        One(r.representative));
-      SetSize(r.representative,p);
-      p:=Size(r.normalizer);
-      r.normalizer:=Group(GeneratorsOfGroup(r.normalizer));
-      SetSize(r.normalizer,p);
-    fi;
-    Add(o,r);
+      r.normalizer:=n;
+if all then Error("all");fi;
+      Add(o,r);
+
   od;
+
   return o;
+
 end);
 
 InstallMethod(SubgroupsOrbitsAndNormalizers,"pc group on list",true,
@@ -528,16 +721,9 @@ local pats,spats,lpats,result,pa,lp,lens,h,orbs,p,rep,cln,allorbs,
           rep:=One(G);
         fi;
       fi;
-      #if rep<>() then Error("hee"); fi;
-      #if not IsOne(rep) and Set(orbs,x->OnSets(x,rep))<>allorbs[cln] then
 
       h:=h^rep;
       Add(gpcl[cln][2],h);
-      #a:=Set(Orbits(h,MovedPoints(h)),Set);
-      #p:=Position(allorbs,List(Set(a,Length),x->Union(Filtered(a,y->Length(y)=x))));
-      #if allco[p][2]<>cln then
-#       Error("GGG");
-#      fi;
 
     od;
     Info(InfoLattice,3,Length(gpcl)," orbit lengths classes ");
@@ -570,7 +756,6 @@ local pats,spats,lpats,result,pa,lp,lens,h,orbs,p,rep,cln,allorbs,
               if cnt<0 then
                 nobail:=false; # stop this orbit listing as too expensive.
               else
-      #Print("orblen=",Length(a),"\n");
                 MakeImmutable(a);List(a,IsSet);
                 norb:=norb+1;
                 rep:=norb;
@@ -593,7 +778,6 @@ local pats,spats,lpats,result,pa,lp,lens,h,orbs,p,rep,cln,allorbs,
         od;
 
         if nobail then
-#Print("nobail\n");
           # now lpats are local patterns, but we still have the dictionary to
           # make the orbit conjugation tests cheaper.
           gpcl2:=lpats;
@@ -640,7 +824,6 @@ local pats,spats,lpats,result,pa,lp,lens,h,orbs,p,rep,cln,allorbs,
                         allorbs[k][1]{sela},partimg,OnSetsSets);
                     fi;
                     if lrep1=fail then
-  #if RepresentativeAction(je[1],allorbs[k][1],orbs,OnSetsSets)<>fail then Error("HEH");fi;
                       lrep:=fail;
                     else
                       lrep:=lrep1*lrep;
@@ -661,7 +844,6 @@ local pats,spats,lpats,result,pa,lp,lens,h,orbs,p,rep,cln,allorbs,
                     a:=Stabilizer(a,orbs{sel},OnSetsSets);
                   od;
                   Add(statra,[a,0]);
-  #if a<>Stabilizer(je[1],orbs,OnSetsSets) then Error("STB");fi;
 
                   Add(allorbs,[orbs,sornums,a,ornums,statra]);
                   Add(lpats,[a,[h]]);
@@ -674,7 +856,6 @@ local pats,spats,lpats,result,pa,lp,lens,h,orbs,p,rep,cln,allorbs,
           od;
         else
           # if bailed
-#Print("bailed\n");
           Add(panu,j);
         fi;
       fi;
@@ -682,54 +863,6 @@ local pats,spats,lpats,result,pa,lp,lens,h,orbs,p,rep,cln,allorbs,
     gpcl:=panu;
     Info(InfoLattice,3,Length(gpcl)," orbit classes ");
     Info(InfoLattice,5,List(gpcl,x->Length(x[2])));
-
-# this is redundant now
-#    # now split according to actual orbit partition
-#    panu:=[];
-#    for j in gpcl do
-#      if Length(j[2])=1 then
-#       Add(panu,j);
-#      else
-#       allorbs:=[];
-#       lpats:=[];
-#       for h in j[2] do
-#         orbs:=Set(Orbits(h,MovedPoints(h)),Set);
-#         MakeImmutable(orbs);List(orbs,IsSet);IsSet(orbs);
-#         lp:=Collected(List(orbs,Length));
-#         a:=Filtered([1..Length(allorbs)],x->allorbs[x][2]=lp);
-#         rep:=fail;
-#         k:=0;
-#         while rep=fail and k<Length(a) do
-#           k:=k+1;
-#           # there isn't yet a good method for RepresentativeAction, but
-#           # short orbit is quick
-#           if allorbs[k][1]=orbs then
-#             rep:=One(j[1]);
-#           elif Size(j[1])/Size(allorbs[k][3])>50 then
-#             if allorbs[k][4]=0 then
-#               # delayed transversal
-##              allorbs[k][4]:=RightTransversal(j[1],allorbs[k][3]);
-#             fi;
-#             rep:=First(allorbs[k][4],x->OnSetsSets(allorbs[k][1],x)=orbs);
-#           else
-#             rep:=RepresentativeAction(j[1],allorbs[k][1],orbs,OnSetsSets);
-#           fi;
-#         od;
-#         if rep=fail then
-#           a:=Stabilizer(j[1],orbs,OnSetsSets);
-#           Add(allorbs,[orbs,lp,a,0]);
-#           Add(lpats,[a,[h]]);
-#         else
-#           Add(lpats[k][2],h^(rep^-1));
-#         fi;
-#       od;
-#       Append(panu,lpats);
-#      fi;
-#    od;
-#    gpcl:=panu;
-#
-#    Info(InfoLattice,3,Length(gpcl)," orbit partition classes ");
-#    Info(InfoLattice,5,List(gpcl,x->Length(x[2])));
 
     # now split by cycle structures
     panu:=[];
@@ -750,7 +883,6 @@ local pats,spats,lpats,result,pa,lp,lens,h,orbs,p,rep,cln,allorbs,
           for i in j[2]{a} do
             if not ForAny(orbs,x->ForAll(GeneratorsOfGroup(i),y->y in x)) then
               Add(orbs,i);
-            #else Print("duplicate\n");
             fi;
           od;
           Add(result,[j[1],orbs]);
@@ -764,8 +896,6 @@ local pats,spats,lpats,result,pa,lp,lens,h,orbs,p,rep,cln,allorbs,
 
     od;
     Info(InfoLattice,3," to ",Length(panu)," cyclestruct classes ");
-
-    #Append(result,gpcl);
 
   od;
   return result;

@@ -44,3 +44,6 @@ DeclareGlobalFunction("MinimumGroupOnSubgroupsOrbit");
 ##  very similar subgroups and thus not part of the default
 ##  SubgroupsOrbitsAndNormalizers method.
 DeclareGlobalFunction("PermPreConjtestGroups");
+
+DeclareGlobalFunction("ClusterConjugacyPermgroups");
+DeclareGlobalFunction("RefineClusterConjugacyPermgroups");
