@@ -105,13 +105,13 @@ echo '
 # if ErrorLevel is not defined, something is very wrong, so skip the commit
 if not IsBound(ErrorLevel) then
   Print("Panic, ErrorLevel not defined, skipping this commit\\n");
-  ForceQuitGap(125);
+  FORCE_QUIT_GAP(125);
 fi;
 
 # intercept any further break loops and again, bail out
 OnBreak:=function()
   Print("Panic, break loop was triggered, skipping this commit\\n");
-  ForceQuitGap(125);
+  FORCE_QUIT_GAP(125);
 end;
 
 # check if we are in an error handler...
@@ -125,7 +125,7 @@ if ErrorLevel > 0 then
   else
     # ... for any other error: tell git to skip this commit
     Print("Panic, GAP run into an error during startup, skipping this commit\\n");
-    ForceQuitGap(125);
+    FORCE_QUIT_GAP(125);
   fi;
 fi;
 
