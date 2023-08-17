@@ -2497,7 +2497,7 @@ DeclareGlobalFunction( "FusionsAllowedByRestrictions" );
 ##  constants.
 ##  <P/>
 ##  The argument <A>quick</A> must be a Boolean; if it is <K>true</K> then
-##  only those triples are checked for which for which at least two entries
+##  only those triples are checked for which at least two entries
 ##  in <A>fusions</A> have different images.
 ##  </Description>
 ##  </ManSection>
