@@ -23,6 +23,8 @@ gap> q:= QuotientFromSCTable( T0, id, v );
 [ 0, -1/3, -1/3, -1/3 ]
 gap> v = QuotientFromSCTable( T0, id, q );
 true
+
+# Compute with an algebra by structure constants.
 gap> a:= AlgebraByStructureConstants( Rationals, T0 );
 <algebra of dimension 4 over Rationals>
 gap> Dimension( a );
@@ -33,6 +35,8 @@ gap> IsWholeFamily( a );
 false
 gap> IsWholeFamily( AlgebraByStructureConstants( Cyclotomics, T0 ) );
 true
+gap> IsMagmaWithOne( a );
+false
 
 #
 gap> fam:= ElementsFamily( FamilyObj( a ) );
@@ -104,7 +108,89 @@ gap> v:= Subspace( a, [ v, 0*v, v^0, w ] );
 gap> Dimension( v );
 3
 
+# And now do the same for an algebra-with-one.
+gap> a:= AlgebraWithOneByStructureConstants( Rationals, T0, id );
+<algebra-with-one of dimension 4 over Rationals>
+gap> Dimension( a );
+4
+gap> IsFullSCAlgebra( a );
+true
+gap> IsWholeFamily( a );
+false
+gap> IsMagmaWithOne( a );
+true
+
 #
+gap> fam:= ElementsFamily( FamilyObj( a ) );
+<Family: "SCAlgebraObjFamily">
+gap> ObjByExtRep( fam, [ 0, 1, 0, 1 ] * Z(2) );
+Error, family of <coeffs> does not fit to <Fam>
+gap> ObjByExtRep( fam, [ 0, 1, 0 ] );
+Error, <coeffs> must be a list of length 4
+gap> v:= ObjByExtRep( fam, [ 0, 1, 0, 1 ] );
+v.2+v.4
+gap> t:= AlgebraByStructureConstants( Rationals, [ 0, 0 ] );
+<algebra of dimension 0 over Rationals>
+gap> String(v);
+"v.2+v.4"
+gap> One( fam ); One( v ); v^0; String(v^0);
+v.1
+v.1
+v.1
+"v.1"
+gap> Zero( fam ); Zero( v ); 0*v; String(0*v);
+0*v.1
+0*v.1
+0*v.1
+"0*v.1"
+gap> 0*v = v*0;
+true
+gap> 1*v = v;
+true
+gap> v*1 = v;
+true
+gap> (1/2 * v) * 2 = v;
+true
+gap> 2 * (v * 1/2) = v;
+true
+
+#
+gap> Inverse( v ); v^-1; String( v^-1 );
+(-1/2)*v.2+(-1/2)*v.4
+(-1/2)*v.2+(-1/2)*v.4
+"(-1/2)*v.2+(-1/2)*v.4"
+gap> Inverse( Zero( v) );
+fail
+gap> AdditiveInverse( v ); -v; String( -v );
+(-1)*v.2+(-1)*v.4
+(-1)*v.2+(-1)*v.4
+"(-1)*v.2+(-1)*v.4"
+gap> b:= Basis( a );
+CanonicalBasis( <algebra-with-one of dimension 4 over Rationals> )
+gap> Coefficients( b, v );
+[ 0, 1, 0, 1 ]
+gap> w:= LinearCombination( b, [ 1, 2, 3, 4 ] );
+v.1+(2)*v.2+(3)*v.3+(4)*v.4
+gap> v + w;
+v.1+(3)*v.2+(3)*v.3+(5)*v.4
+gap> v * w;
+(-6)*v.1+(-2)*v.2+(-2)*v.3+(4)*v.4
+gap> v = w;
+false
+gap> v < w;
+true
+gap> w < v;
+false
+gap> s:= Subalgebra( a, [ v, 0*v, v^0, w ] );
+<algebra over Rationals, with 4 generators>
+gap> Dimension( s );
+4
+gap> v:= Subspace( a, [ v, 0*v, v^0, w ] );
+<vector space over Rationals, with 4 generators>
+gap> Dimension( v );
+3
+
+# Special case: QuaternionAlgebra
 gap> a:= QuaternionAlgebra( Rationals, -2, -3 );;
 gap> gens:= GeneratorsOfAlgebra( a );
 [ e, i, j, k ]
@@ -777,6 +863,10 @@ gap> A:= QuaternionAlgebra( GF(5) );
 <algebra-with-one of dimension 4 over GF(5)>
 gap> A = QuaternionAlgebra( [Z(5)] );
 true
+gap> IsDivisionRing( QuaternionAlgebra( Rationals ) );
+true
+gap> IsDivisionRing( QuaternionAlgebra( CF(4) ) );
+false
 
 #
 gap> A:= QuaternionAlgebra( Rationals, 2, 3 );

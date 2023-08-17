@@ -525,7 +525,8 @@ InstallMethod( \in,
 ##  where `$c_{ijk}$ = <sctable>[i][j][1][i_k]'
 ##  and `<sctable>[i][j][2][i_k] = k'.
 ##
-BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
+BindGlobal( "AlgebraByStructureConstantsArg",
+    function( arglist, filter, one_coeffs... )
     local T,      # structure constants table
           n,      # dimensions of structure matrices
           R,      # coefficients ring
@@ -533,7 +534,8 @@ BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
           names,  # names of the algebra generators
           Fam,    # the family of algebra elements
           A,      # the algebra, result
-          gens;   # algebra generators of `A'
+          gens,   # algebra generators of `A'
+          one;    # multiplicative identity, if available
 
     # Check the argument list.
     if not 1 < Length( arglist ) and IsRing( arglist[1] )
@@ -626,6 +628,14 @@ BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
       SetIsTrivial( A, true );
       SetDimension( A, 0 );
     fi;
+    if Length( one_coeffs ) = 1 then
+      # We want to construct an algebra-with_one.
+      one:= ObjByExtRep( Fam, one_coeffs[1] );
+      SetOne( Fam, one );
+      SetOne( A, one );
+      SetFilterObj( A, IsMagmaWithOne );
+      SetGeneratorsOfAlgebraWithOne( A, gens );
+    fi;
     Fam!.basisVectors:= gens;
 #T where is this needed?
 
@@ -641,6 +651,11 @@ end );
 
 InstallGlobalFunction( AlgebraByStructureConstants, function( arg )
     return AlgebraByStructureConstantsArg( arg, IsSCAlgebraObj );
+end );
+
+InstallGlobalFunction( AlgebraWithOneByStructureConstants, function( arg )
+    return AlgebraByStructureConstantsArg( arg{ [ 1 .. Length( arg )-1 ] },
+               IsSCAlgebraObj, arg[ Length( arg ) ] );
 end );
 
 InstallGlobalFunction( LieAlgebraByStructureConstants, function( arg )
@@ -690,7 +705,7 @@ InstallAccessToGenerators( IsSCAlgebraObjCollection and IsFullSCAlgebra,
 #F  QuaternionAlgebra( <F>[, <a>, <b>] )
 ##
 InstallGlobalFunction( QuaternionAlgebra, function( arg )
-    local F, a, b, e, stored, filter, A;
+    local F, a, b, e, z, stored, filter, A;
 
     if   Length( arg ) = 1 and IsRing( arg[1] ) then
       F:= arg[1];
@@ -715,6 +730,7 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
     if e = fail then
       Error( "<F> must have an identity element" );
     fi;
+    z:= Zero( F );
 
     # Generators in the right family may be already available.
     stored := GET_FROM_SORTED_CACHE( QuaternionAlgebraData, [ a, b, FamilyObj( F ) ],
@@ -734,18 +750,15 @@ InstallGlobalFunction( QuaternionAlgebra, function( arg )
       fi;
 
       # Construct the algebra.
-      A:= AlgebraByStructureConstantsArg(
+      return AlgebraByStructureConstantsArg(
               [ F,
                 [ [ [[1],[e]], [[2],[ e]], [[3],[ e]], [[4],[   e]] ],
                   [ [[2],[e]], [[1],[ a]], [[4],[ e]], [[3],[   a]] ],
                   [ [[3],[e]], [[4],[-e]], [[1],[ b]], [[2],[  -b]] ],
                   [ [[4],[e]], [[3],[-a]], [[2],[ b]], [[1],[-a*b]] ],
-                  0, Zero(F) ],
+                  0, z ],
                 "e", "i", "j", "k" ],
-              filter );
-      SetFilterObj( A, IsAlgebraWithOne );
-#T better introduce AlgebraWithOneByStructureConstants?
-      return A;
+              filter, [ e, z, z, z ] );
     end );
 
     A:= AlgebraWithOne( F, GeneratorsOfAlgebra( stored ), "basis" );
