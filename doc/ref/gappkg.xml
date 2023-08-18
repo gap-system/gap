@@ -1303,8 +1303,8 @@ each being a record with the following components.
 
 As an example suppose the following is part of the <F>PackageInfo.g</F>.
 Then &GAP; will load the file <F>fileForB.gd</F> as soon as package
-<C>B</C> is loaded in version 0.6 or newer, and <F>fileForC.gi</F> once
-package <C>C</> is loaded in version 1.2 or newer. 
+<C>B</C> is loaded in version 0.6 or newer, and <F>fileForCD.gi</F> once
+package <C>C</C> and <C>D</C> are loaded in version 1.2 and 0.1 or newer respectively. 
 
 <Log><![CDATA[
 Extensions := [
