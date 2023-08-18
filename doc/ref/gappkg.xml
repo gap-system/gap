@@ -1310,8 +1310,8 @@ Extensions := [
     filename := "gap/fileForB.gd",
   ),
   rec(
-    needed := [ ["C", "1.2"] ],
-    filename := "gap/fileForC.gi",
+    needed := [ ["C", "1.2"] , ["D", "0.1"] ],
+    filename := "gap/fileForCD.gi",
   )
 ],
 ]]></Log>
