@@ -1311,7 +1311,7 @@ Extensions := [
   ),
   rec(
     needed := [ ["C", "0.6"] ],
-    filename := "./gap/fileForC.gi",
+    filename := "gap/fileForC.gi",
   )
 ],
 ]]></Log>
