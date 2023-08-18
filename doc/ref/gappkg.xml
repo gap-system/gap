@@ -1307,7 +1307,7 @@ As an example the following as part of the <F>PackageInfo.g</F> load the file <F
 Extensions := [
   rec(
     needed := [ ["B", "0.6"] ],
-    filename := "./gap/fileForB.gd",
+    filename := "gap/fileForB.gd",
   ),
   rec(
     needed := [ ["C", "0.6"] ],
