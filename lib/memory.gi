@@ -123,13 +123,14 @@ InstallGlobalFunction( CopyMemory,
 
 InstallGlobalFunction( GroupWithMemory,
   function(gens)
-    # gens a list of generators
+    # gens a list of generators or a group
     local g,memgens;
-    if IsGroup(gens) then
-        memgens := GeneratorsWithMemory(GeneratorsOfGroup(gens));
-    else
-        memgens := GeneratorsWithMemory(gens);
+    if not IsGroup(gens) then
+        # trick: ensure all transformations that GroupWithGenerators applies
+        # to the generators are applied here, too
+        gens := GroupWithGenerators(gens);
     fi;
+    memgens := GeneratorsWithMemory(GeneratorsOfGroup(gens));
     g := GroupWithGenerators(memgens);
     return g;
   end);
