@@ -579,6 +579,11 @@ DeclareOperation("GQuotients",[IsGroup,IsGroup]);
 ##  gap> emb:=IsomorphicSubgroups(g,h);
 ##  [ [ (3,4), (1,2) ] -> [ (1,2), (3,4) ],
 ##    [ (3,4), (1,2) ] -> [ (1,3)(2,4), (1,2)(3,4) ] ]
+##  gap> g1:=PSO(-1,8,2);;
+##  gap> Length(IsomorphicSubgroups(g1,PSL(2,7)));
+##  3
+##  gap> Length(IsomorphicSubgroups(g1,PSL(2,7):findall:=false));
+##  1
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

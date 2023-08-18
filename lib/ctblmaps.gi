@@ -4492,11 +4492,17 @@ InstallGlobalFunction( ConsiderStructureConstants,
               sc:= ClassMultiplicationCoefficient( tbl, trpl[1], trpl[2],
                        trpl[3] );
               if sc < subsc then
+                fusions:= Filtered( fusions,
+                                    x -> x{ [ i, j, kk ] } <> trpl );
+                if Length( fusions ) = 0 then
+                  Info( InfoCharacterTable, 2,
+                        "ConsiderStructureConstants: contradiction for ",
+                        [ i, j, kk ] );
+                  return fusions;
+                fi;
                 Info( InfoCharacterTable, 2,
                       "ConsiderStructureConstants: improvement for ",
                       [ i, j, kk ] );
-                fusions:= Filtered( fusions,
-                                    x -> x{ [ i, j, kk ] } <> trpl );
                 parm:= Parametrized( fusions );
               fi;
             od;

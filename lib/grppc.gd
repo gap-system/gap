@@ -101,10 +101,12 @@ DeclareAttribute( "CanonicalPcgsWrtHomePcgs", IsGroup );
 ##  <Attr Name="FamilyPcgs" Arg='grp'/>
 ##
 ##  <Description>
-##  returns a <Q>natural</Q> pcgs of a pc group <A>grp</A>
-##  (with respect to which pcgs operations as described in
-##  Chapter&nbsp;<Ref Chap="Polycyclic Groups"/> are particularly
-##  efficient).
+##  returns, for a pc group <A>grp</A>, a <Q>natural</Q> pcgs of some group
+##  <M>G</M> which contains <A>grp</A> and is maximal with this property.
+##  <P/>
+##  The pcgs operations described in
+##  Chapter&nbsp;<Ref Chap="Polycyclic Groups"/> are particularly efficient
+##  with respect to this pcgs.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
