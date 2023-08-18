@@ -1301,7 +1301,10 @@ each being a record with the following components.
 
 <P/>
 
-As an example the following as part of the <F>PackageInfo.g</F> load the file <F>fileForB.gd</F> as soon as package <C>B</C> is loaded and <F>fileForC.gi</F> once package <C>C</> is loaded. 
+As an example suppose the following is part of the <F>PackageInfo.g</F>.
+Then &GAP; will load the file <F>fileForB.gd</F> as soon as package
+<C>B</C> is loaded in version 0.6 or newer, and <F>fileForC.gi</F> once
+package <C>C</> is loaded in version 1.2 or newer. 
 
 <Log><![CDATA[
 Extensions := [
