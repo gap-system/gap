@@ -1,5 +1,5 @@
 #@local G, H, g, h, tmp, stabChain, s1, s2
-gap> G := GroupWithMemory(GroupByGenerators([ (1,2,3,4,5), (1,2) ]));;
+gap> G := GroupWithMemory([ (1,2,3,4,5), (1,2) ]);;
 gap> H := GroupWithMemory(GL(IsMatrixGroup, 3, 3));;
 gap> g := H.1 ^ 2;; h := H.2 ^ 2;;
 gap> StripMemory(g);
