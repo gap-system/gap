@@ -3143,7 +3143,7 @@ local recog,m,p,inf,a;
           and inf.slpMaxes[1] = [ 1 ..  inf.nrMaxes ]
           and ForAll( inf.slpMaxes[2], l -> 1 in l ) then
         p:=CallFuncList(ValueGlobal("AtlasProgram"),[recog.tomName,1,"find"]);
-        if p<>fail and inf<>fail and IsBound(inf.nrMaxes) then
+        if p<>fail then
           Info(InfoLattice,1,"Maxes of ",recog.tomName," by ATLAS words");
           a:=CallFuncList(ValueGlobal("ResultOfBBoxProgram"),[p.program,G]);
           p:=List([1..inf.nrMaxes],
@@ -3153,7 +3153,7 @@ local recog,m,p,inf,a;
             [x.program,a]));
           m:=List(m,x->SubgroupNC(G,x));
           return m;
-        elif inf<>fail and IsBound(inf.nrMaxes) then
+        else
           Info(InfoLattice,1,"Maxes of ",recog.tomName," by ATLAS group");
           a:=CallFuncList(ValueGlobal("AtlasGroup"),[inf.name]);
           recog:=IsomorphismGroups(a,G);
