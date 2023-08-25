@@ -3123,7 +3123,7 @@ local T,t,hom,inf,nam,i;
 end);
 
 InstallGlobalFunction(TomDataMaxesAlmostSimple,function(G)
-local recog,m;
+local recog,m,p,inf,a;
   # avoid the isomorphism test falling back
   if ValueOption("cheap")=true and IsInt(ValueOption("intersize")) and
   ValueOption("intersize")<=Size(G) then
@@ -3132,6 +3132,41 @@ local recog,m;
 
   recog:=TomDataAlmostSimpleRecognition(G);
   if recog=fail then
+
+    # can we use the Atlasrep package?
+    if IsSimpleGroup(G) and IsPackageMarkedForLoading("atlasrep","")=true
+      and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
+      recog:=DataAboutSimpleGroup(G);
+      inf:=CallFuncList(ValueGlobal("AtlasRepInfoRecord"),[recog.tomName]);
+      if inf<>fail and IsBound( inf.nrMaxes )
+          and IsBound(inf.slpMaxes)
+          and inf.slpMaxes[1] = [ 1 ..  inf.nrMaxes ]
+          and ForAll( inf.slpMaxes[2], l -> 1 in l ) then
+        p:=CallFuncList(ValueGlobal("AtlasProgram"),[recog.tomName,1,"find"]);
+        if p<>fail then
+          Info(InfoLattice,1,"Maxes of ",recog.tomName," by ATLAS words");
+          a:=CallFuncList(ValueGlobal("ResultOfBBoxProgram"),[p.program,G]);
+          p:=List([1..inf.nrMaxes],
+            x->CallFuncList(ValueGlobal("AtlasProgram"),[inf.name,1,"maxes",x]));
+          if ForAny(p,x->x=fail) then return fail;fi;
+          m:=List(p,x->CallFuncList(ValueGlobal("ResultOfStraightLineProgram"),
+            [x.program,a]));
+          m:=List(m,x->SubgroupNC(G,x));
+          return m;
+        else
+          Info(InfoLattice,1,"Maxes of ",recog.tomName," by ATLAS group");
+          a:=CallFuncList(ValueGlobal("AtlasGroup"),[inf.name]);
+          recog:=IsomorphismGroups(a,G);
+          m:=List([1..inf.nrMaxes],x->CallFuncList(
+            ValueGlobal("AtlasSubgroup"),[inf.name,x]));
+          if ForAny(m,x->x=fail) then return fail;fi;
+          Assert(1,ForAll(m,x->IsSubset(a,x)));
+          m:=List(m,x->Image(recog,x));
+          return m;
+        fi;
+      fi;
+    fi;
+
     return fail;
   fi;
   m:=List(MaximalSubgroupsTom(recog[2])[1],i->RepresentativeTom(recog[2],i));
