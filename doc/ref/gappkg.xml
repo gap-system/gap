@@ -1299,6 +1299,26 @@ each being a record with the following components.
 </Item>
 </List>
 
+<P/>
+
+As an example suppose the following is part of the <F>PackageInfo.g</F>.
+Then &GAP; will load the file <F>fileForB.gd</F> as soon as package
+<C>B</C> is loaded in version 0.6 or newer, and <F>fileForCD.gi</F> once
+package <C>C</C> and <C>D</C> are loaded in version 1.2 and 0.1 or newer respectively. 
+
+<Log><![CDATA[
+Extensions := [
+  rec(
+    needed := [ ["B", "0.6"] ],
+    filename := "gap/fileForB.gd",
+  ),
+  rec(
+    needed := [ ["C", "1.2"] , ["D", "0.1"] ],
+    filename := "gap/fileForCD.gi",
+  )
+],
+]]></Log>
+
 Whenever <Ref Func="LoadPackage"/> is called,
 &GAP; checks for package extensions whose conditions now are satisfied,
 and loads them.
