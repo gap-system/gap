@@ -2362,6 +2362,10 @@ InstallGlobalFunction( Agemo, function( arg )
     G := arg[1];
     p := arg[2];
 
+    if IsTrivial(G) then
+        return G;
+    fi;
+
     # <G> must be a <p>-group
     if not IsPGroup(G) or PrimePGroup(G)<>p then
         Error( "Agemo: <G> must be a p-group" );
