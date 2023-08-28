@@ -1267,11 +1267,11 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
         cnt:=indx;
       fi;
 
-      if cano=false and IsSolvableGroup(lst) then
+      if cano=false and indx>20 and IsSolvableGroup(lst) then
         lstgens:=Pcgs(lst);
       else
         lstgens:=GeneratorsOfGroup(lst);
-        if Length(lstgens)>2 then
+        if Length(lstgens)>2 and Length(t)>100 then
           lstgens:=SmallGeneratingSet(lst);
         fi;
       fi;
@@ -1421,7 +1421,12 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
       if normal then
         # in the normal case, we can obtain the other orbits easily via
         # the orbit theorem (same stabilizer)
-        rt:=RightTransversal(lst,st);
+        if Size(lst)/Size(st)<10 then
+          rt:=Orbit(lst,One(st),
+            function(rep,g) return CanonicalRightCosetElement(st,rep*g);end);
+        else
+          rt:=RightTransversal(lst,st:noascendingchain);
+        fi;
         Assert(1,Length(rt)=Length(o));
 
         while bsz>0 do
