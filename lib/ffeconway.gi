@@ -1168,6 +1168,8 @@ end);
 ##
 #M  LogFFE( <x>, <base> )
 ##
+##  The code related to `LogFFE` was copied from the StandardFF package.
+##
 FFECONWAY.DLogShanks:= function(base, x, r)
   local rr, baby, ord, giant, t, pos, i, j;
   rr := RootInt(r, 2);
