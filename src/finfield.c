@@ -1349,7 +1349,7 @@ static Obj INT_FF(FF ff)
             z = succ[ z ];
         }
 #ifdef HPCGAP
-        GrowPlist(IntFF, ff);
+        GROW_PLIST(IntFF, ff);
         ATOMIC_SET_ELM_PLIST( IntFF, ff, conv );
         MEMBAR_WRITE();
         NumFF = LEN_PLIST(IntFF);
