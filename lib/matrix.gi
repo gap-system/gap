@@ -1338,11 +1338,13 @@ InstallMethod( RowsOfMatrix,
 InstallMethod( NumberRows,
     "generic method for a (perhaps empty) matrix",
     [ IsMatrix ],
+    -SUM_FLAGS,
     Length );
 
 InstallMethod( NumberColumns,
     "generic method for a (perhaps empty) matrix",
     [ IsMatrix ],
+    -SUM_FLAGS,
     function( mat )
     if Length( mat ) = 0 then
       return 0;
