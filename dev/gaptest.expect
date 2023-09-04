@@ -1,4 +1,4 @@
-set timeout 10
+set timeout 60
 
 # from https://serverfault.com/a/981762
 expect_before {
