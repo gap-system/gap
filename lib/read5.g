@@ -74,6 +74,7 @@ ReadLib( "algrep.gi"   );
 ReadLib( "lierep.gi"   );
 
 ReadLib( "numtheor.gi" );
+ReadLib( "dlog.gi" );
 ReadLib( "primality.gi");
 ReadLib( "contfrac.gi" );
 ReadLib( "ringsc.gi"    );
