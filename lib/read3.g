@@ -66,6 +66,7 @@ ReadLib( "lierep.gd"   );
 ReadLib( "integer.gd"  );
 ReadLib( "gaussian.gd"  );
 ReadLib( "numtheor.gd" );
+ReadLib( "dlog.gd" );
 ReadLib( "primality.gd");
 ReadLib( "contfrac.gd" );
 ReadLib( "ringsc.gd"   );

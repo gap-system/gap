@@ -1198,91 +1198,21 @@ end);
 ##
 #M  LogFFE( <x>, <base> )
 ##
-##  The code related to `LogFFE` was copied from the StandardFF package.
-##
-FFECONWAY.DLogShanks:= function(base, x, r)
-  local rr, baby, ord, giant, t, pos, i, j;
-  rr := RootInt(r, 2);
-  baby := [One(base)];
-  if x = baby[1] then
-    return 0;
-  fi;
-  for i in [1..rr-1] do
-    baby[i+1] := baby[i]*base;
-    if x = baby[i+1] then
-      return i;
-    fi;
-  od;
-  giant := baby[rr]*base;
-  ord := [0..rr-1];
-  SortParallel(baby, ord);
-  t := x;
-  for j in [1..QuoInt(r, rr)+1] do
-    t := t*giant;
-    pos := PositionSet(baby, t);
-    if IsInt(pos) then
-      return (ord[pos] - j * rr) mod r;
-    fi;
-  od;
-  return fail;
-end;
-
-# recursive method, m can be order of base or its factorization
-# Let r be the largest prime factor of m, then we use
-#     base^e = x with e = a + b*r where 0 <= a < r and
-# 0 <= b < m/r, and compute a with DLogShanks and b by
-# recursion.
-FFECONWAY.DLog:= function(base, x, m...)
-  local r, mm, mp, a, b;
-  if Length(m) = 0 then
-    m := Order(base);
-  else
-    m := m[1];
-  fi;
-  if not IsList(m) then
-    m := Factors(m);
-  fi;
-  if Length(m) = 1 then
-    return FFECONWAY.DLogShanks(base, x, m[1]);
-  fi;
-  r := m[Length(m)];
-  mm := m{[1..Length(m)-1]};
-  mp := Product(mm);
-  a := FFECONWAY.DLogShanks(base^mp, x^mp, r);
-  b := FFECONWAY.DLog(base^r, x/(base^a), mm);
-  return a + b*r;
-end;
-
-FFECONWAY.DoLogFFE:= function(x, base)
-  local ob, o, e;
-  ob := Order(base);
-  o := Order(x);
-  if  ob mod o <> 0 then
-    return fail;
-  fi;
-  if ob <> o then
-    e := ob/o;
-    base := base^e;
-  else
-    e := 1;
-  fi;
-  return FFECONWAY.DLog(base, x, o) * e;
-end;
 
 InstallMethod( LogFFE,
         IsIdenticalObj,
         [IsFFE and IsCoeffsModConwayPolRep, IsFFE and IsCoeffsModConwayPolRep],
-        FFECONWAY.DoLogFFE );
+        DoDLog );
 
 InstallMethod( LogFFE,
         IsIdenticalObj,
         [IsFFE and IsInternalRep, IsFFE and IsCoeffsModConwayPolRep],
-        FFECONWAY.DoLogFFE );
+        DoDLog );
 
 InstallMethod( LogFFE,
         IsIdenticalObj,
         [ IsFFE and IsCoeffsModConwayPolRep, IsFFE and IsInternalRep],
-        FFECONWAY.DoLogFFE );
+        DoDLog );
 
 #############################################################################
 ##
