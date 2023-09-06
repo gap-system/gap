@@ -110,7 +110,6 @@ that tell us for every expression how its value is computed in terms of
 the values of the subexpressions.
 The syntactic rules are given in sections <Ref Sect="Lexical Structure"/>,
 <Ref Sect="Symbols"/>, <Ref Sect="Whitespaces"/>, <Ref Sect="Keywords"/>,
-<!-- <Ref Sect="Identifiers"/>, and <Ref Sect="The Syntax in BNF"/>, -->
 and <Ref Sect="Identifiers"/>,
 the semantic rules are given in sections <Ref Sect="Expressions"/>,
 <Ref Sect="Variables"/>, <Ref Sect="Function Calls"/>,
@@ -350,8 +349,34 @@ Note that the <Q>at</Q>-character is used to implement namespaces
 for global variables in packages. See <Ref Sect="Namespaces"/> for
 details.
 <Index>namespace</Index>
-</Section>
 
+<Subsection Label="Conventions about Identifiers">
+<Heading>Conventions about Identifiers</Heading>
+
+<Index>variable names</Index>
+
+(The following rule is stated also in Section
+<Ref Sect="Variables versus Objects" BookName="tut"/>.)
+
+<P/>
+
+The name of almost every global variable in the &GAP; library
+and in &GAP; packages starts with a <E>capital letter</E>.
+(See Section <Ref Sect="Main Loop"/> for the few exceptions.)
+We recommend to choose only names starting with a <E>small letter</E>
+for user variables, in order to avoid name clashes.
+
+<P/>
+
+For example, valid &GAP; input which assigns some user variables whose names
+start with capital letters may run into errors with a newer version of &GAP;
+or in a &GAP; session with more or newer packages,
+because it may happen that these variables are predefined global variables
+in this situation.
+
+</Subsection>
+
+</Section>
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Expressions">
