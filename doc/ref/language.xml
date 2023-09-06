@@ -363,8 +363,8 @@ details.
 The name of almost every global variable in the &GAP; library
 and in &GAP; packages starts with a <E>capital letter</E>.
 (See Section <Ref Sect="Main Loop"/> for the few exceptions.)
-We recommend to choose only names starting with a <E>small letter</E>
-for user variables, in order to avoid name clashes.
+For user variables, we recommend only choosing names that start with a
+<E>lower case letter</E>, in order to avoid name clashes.
 
 <P/>
 
