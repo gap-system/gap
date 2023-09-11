@@ -811,6 +811,7 @@ totalcnt, interrupt, u, nu, cor, zzz,bigperm,perm,badcores,max,i,hard;
             nu:=ClosureGroup(u,Random(arg[4]));
           fi;
         fi;
+        SetParent(nu,G);
         totalcnt:=totalcnt+1;
         if KnownNaturalHomomorphismsPool(G,N) and
           Minimum(IndexNC(G,v),knowi)<hard
