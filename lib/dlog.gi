@@ -15,13 +15,13 @@
 
 #############################################################################
 ##
-#F  _DLogShanks( <base>, <x>, <r> )
+#F  DLogShanks( <base>, <x>, <r> )
 ##
 ##  Let <base> be a multiplicative element of order <r>.
 ##  Return an integer l such that <x> = <base>^l holds,
 ##  or 'fail' if no such l exists.
 ##
-InstallGlobalFunction( _DLogShanks, function(base, x, r)
+InstallGlobalFunction( DLogShanks, function(base, x, r)
   local rr, baby, ord, giant, t, pos, i, j;
   rr := RootInt(r, 2);
   baby := [One(base)];
@@ -51,15 +51,15 @@ end );
 
 #############################################################################
 ##
-#F  _DLog( <base>, <x>[, <m>] )
+#F  DLog( <base>, <x>[, <m>] )
 ##
 ##  recursive method, <m> can be the order m of <base> or its factorization
 ##  Let r be the largest prime factor of m, then we use
 ##     <base>^e = <x> with e = a + b*r where 0 <= a < r and
 ##     0 <= b < m/r,
-##  and compute a with _DLogShanks and b by recursion.
+##  and compute a with DLogShanks and b by recursion.
 ##
-InstallGlobalFunction( _DLog, function(base, x, m...)
+InstallGlobalFunction( DLog, function(base, x, m...)
   local r, mm, mp, a, b;
   if Length(m) = 0 then
     m := Order(base);
@@ -70,16 +70,16 @@ InstallGlobalFunction( _DLog, function(base, x, m...)
     m := Factors(m);
   fi;
   if Length(m) = 1 then
-    return _DLogShanks(base, x, m[1]);
+    return DLogShanks(base, x, m[1]);
   fi;
   r := m[Length(m)];
   mm := m{[1..Length(m)-1]};
   mp := Product(mm);
-  a := _DLogShanks(base^mp, x^mp, r);
+  a := DLogShanks(base^mp, x^mp, r);
   if a = fail then
     return fail;
   fi;
-  b := _DLog(base^r, x/(base^a), mm);
+  b := DLog(base^r, x/(base^a), mm);
   if b = fail then
     return fail;
   fi;
@@ -104,5 +104,5 @@ BindGlobal( "DoDLog", function(x, base)
   else
     e := 1;
   fi;
-  return _DLog(base, x, o) * e;
+  return DLog(base, x, o) * e;
 end );
