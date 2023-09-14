@@ -42,6 +42,7 @@
 
 <#Include Label="OrderMod">
 <#Include Label="LogMod">
+<#Include Label="DLog">
 <#Include Label="PrimitiveRootMod">
 <#Include Label="IsPrimitiveRootMod">
 
