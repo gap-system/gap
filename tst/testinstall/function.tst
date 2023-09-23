@@ -339,5 +339,30 @@ function ( x ) return ([ [ x ] ]{[ 1 ]}{[ 1 ]})[1, 1]; end
 gap> funcloop(x -> ([ [ x ] ]{[ 1 ]}{[ 1 ]}){[ 1 ]}); # EXPR_ELMS_LIST
 function ( x ) return ([ [ x ] ]{[ 1 ]}{[ 1 ]}){[ 1 ]}; end
 
+# Test functions with very large lists
+gap> r := List([1..(16777216/GAPInfo.BytesPerVariable)-1]);;
+gap> funcstr := String(r);;
+gap> funcstr := Concatenation("func := function() return ", funcstr, "; end;");;
+gap> Read(InputTextString(funcstr));;
+gap> func() = r;
+true
+gap> funcstr := String(List([1..(16777216/GAPInfo.BytesPerVariable)], x -> x));;
+gap> funcstr := Concatenation("func := function() return ", funcstr, "; end;");;
+gap> Read(InputTextString(funcstr));;
+Error, function too large for parser
+
+# Test functions with very large records
+gap> r := rec();; for x in [1..(16777216/GAPInfo.BytesPerVariable-2)/2] do r.(x) := x; od;;
+gap> funcstr := String(r);;
+gap> funcstr := Concatenation("func := function() return ", funcstr, "; end;");;
+gap> Read(InputTextString(funcstr));;
+gap> func() = r;
+true
+gap> r := rec();; for x in [1..(16777216/GAPInfo.BytesPerVariable)/2] do r.(x) := x; od;;
+gap> funcstr := String(r);;
+gap> funcstr := Concatenation("func := function() return ", funcstr, "; end;");;
+gap> Read(InputTextString(funcstr));;
+Error, function too large for parser
+
 #
 gap> STOP_TEST("function.tst", 1);
