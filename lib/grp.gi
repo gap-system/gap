@@ -10,7 +10,7 @@
 ##
 ##  This file contains generic methods for groups.
 ##
-
+## (24/09/23) attempting to resolve conflicts (CDW) 
 
 #############################################################################
 ##
@@ -515,12 +515,12 @@ local p, hom, reps, as, a, b, ap, bp, ab, ap_bp, ab_p, g, h, H, N;
   reps := ConjugacyClasses(Image(hom));
   reps := List(reps, Representative);
   reps := Filtered(reps, g -> not IsOne(g));
-  reps := List(reps, g -> PreImagesRepresentative(hom, g));
+  reps := List(reps, g -> PreImagesRepresentativeNC(hom, g));
 
   as := List(reps, a -> [a,a^p]);
 
   for b in Image(hom) do
-    b := PreImagesRepresentative(hom, b);
+    b := PreImagesRepresentativeNC(hom, b);
     bp := b^p;
     for a in as do
       ap := a[2]; a := a[1];
@@ -5331,7 +5331,7 @@ InstallMethod (MinimalNormalSubgroups,
    function( grp )
       local hom;
       hom := NiceMonomorphism (grp);
-      return List (MinimalNormalSubgroups (NiceObject (grp)), 
+      return List (MinimalNormalSubgroups (NiceObject (grp)),
         N -> PreImagesSetNC(hom, N));
    end);
 
