@@ -1959,12 +1959,18 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   dcnums:=OrbitsDomain(act,[1..Length(rt)]);
   dcnums:=List(dcnums,x->Immutable(Set(x)));
 
-  # ensure that weyl is rep
+
+  # ensure that weyl is rep, if new
+
+  rti:=List(dcnums,x->false); # which double are hit already
   for i in weyl do
     a:=PositionCanonical(rt,i);
     j:=PositionProperty(dcnums,x->a in x);
-    if dcnums[j][1]<>a then
-      dcnums[j]:=Concatenation([a],Difference(dcnums[j],[a]));
+    if rti[j]=false then
+      rti[j]:=true;
+      if dcnums[j][1]<>a then
+        dcnums[j]:=Concatenation([a],Difference(dcnums[j],[a]));
+      fi;
     fi;
   od;
 
@@ -2015,8 +2021,10 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
 
     j:=dcr(i);
     a:=Position(dcnum,j[1]);
-    if not IsBound(dcreps[a]) then dcreps[a]:=i; fi;
-    dcfix[a]:=j[2]^-1; # mapping calculated to weyl elt
+    if not IsBound(dcreps[a]) then
+      dcreps[a]:=i;
+      dcfix[a]:=j[2]^-1; # mapping calculated to weyl elt
+    fi;
   od;
 
   if not ForAll([1..Length(dc)],x->IsBound(dcreps[x])) then
@@ -2812,7 +2820,9 @@ local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens,gl;
       iso:=SplitBNRewritingPresentation(group,borel,weyl,true);
       return IsomorphismGroups(G,Source(iso))*iso;
     else
-      Error("can't do yet");
+      borel:=Group(SpecialPcgs(borel));
+      iso:=SplitBNRewritingPresentation(group,borel,weyl,true);
+      return IsomorphismGroups(G,Source(iso))*iso;
     fi;
 
   elif a.idSimple.series="C" or
@@ -2859,7 +2869,12 @@ local d,f,group,act,g,sy,b,c,borel,weyl,a,i,iso,ucs,gens,gl;
     a:=Image(act,a);
     weyl:=WeylGroupFp("B",d);
     Size(weyl);
-    c:=GQuotients(a,weyl)[1];
+    c:=GQuotients(a,weyl);
+    if Length(c)>1 then
+      c:=Filtered(c,
+        x->KernelOfMultiplicativeGeneralMapping(x)=Intersection(a,borel));
+    fi;
+    c:=c[1];
     a:=SubgroupNC(group,List(GeneratorsOfGroup(weyl),
       x->PreImagesRepresentative(c,x)));
     Size(a);
