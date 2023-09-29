@@ -69,15 +69,6 @@ function( G, fampcgs,pcgs,fphom,words,wordgens,wordimgs)
                 group := G,
                 factorfphom:=fphom
                          );
-                # giving generators enforces a bad presentation
-                #generators := GeneratorsOfGroup( G ) );
-
-#for gen in
-#  List(GeneratorsOfGroup(Range(fphom)),x->PreImagesRepresentative(fphom,x)) do
-#  gen:=(List(pcgs,y->ExponentsOfPcElement(pcgs,y^gen)));
-#  Print(gen,"\n");
-#od;
-#Error("EH");
 
     OCOneCocycles( ocr, false );
     if not IsBound( ocr.complement ) then return []; fi;
@@ -189,6 +180,11 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
     f:=ff.factorhom;
     mgi:=MappingGeneratorsImages(ff.factorhom);
     sel:=Filtered([1..Length(mgi[2])],x->not IsOne(mgi[2][x]));
+    if 4^Length(sel)>Size(Range(ff.factorhom)) then
+      f:=SmallGeneratingSet(Image(ff.factorhom));
+      mgi:=[List(f,x->PreImagesRepresentative(ff.factorhom,x)),f];
+      sel:=[1..Length(mgi[1])];
+    fi;
     gensG:=mgi[1]{sel};
 
     # fp group and word representation for gensG
@@ -903,7 +899,7 @@ local G,types,ff,maxes,lmax,q,d,dorb,dorbt,i,dorbc,dorba,dn,act,comb,smax,soc,
         # eliminate those containing the socle
         lmax:=Filtered(lmax,x->not IsSubset(x,soc));
         Info(InfoLattice,1,Length(lmax)," type 2 maxes");
-for mm in lmax do mm!.type:="2";od;
+        for mm in lmax do mm!.type:="2";od;
         Append(maxes,lmax);
       fi;
 
@@ -913,7 +909,7 @@ for mm in lmax do mm!.type:="2";od;
           lmax:=MaxesType3(act[1],Image(act[2],q),act[3],act[4],act[5],true);
           Info(InfoLattice,1,Length(lmax)," type 3b maxes");
           lmax:=List(lmax,x->PreImage(act[2],x));
-for mm in lmax do mm!.type:="3b";od;
+          for mm in lmax do mm!.type:="3b";od;
           Append(maxes,lmax);
         fi;
 
