@@ -135,7 +135,7 @@ DeclareGlobalFunction( "ElementProperty" );
 ##
 ##  <Description>
 ##  <A>Pr</A> must be a one-argument function that returns <K>true</K> or
-##  <K>false</K> for elements of the group <A>G</A>,
+##  <K>false</K> for elements of the permutation group <A>G</A>,
 ##  and the subset of elements of <A>G</A> that fulfill <A>Pr</A> must
 ##  be a subgroup. (<E>If the latter is not true the result of this operation
 ##  is unpredictable!</E>) This command computes this subgroup.
