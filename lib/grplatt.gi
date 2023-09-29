@@ -3209,7 +3209,7 @@ end);
 #F  LowLayerSubgroups( [<act>,] <G>, <lim> [,<cond> [,<dosub>]] )
 ##
 InstallGlobalFunction(LowLayerSubgroups,function(arg)
-local act,offset,G,lim,cond,dosub,all,alln,m,i,j,jn,new,old,t,k,conjg,sma;
+local act,offset,G,lim,cond,dosub,all,m,i,j,new,old,t,sma;
   act:=arg[1];
   if IsGroup(act) and IsGroup(arg[2]) then
     offset:=2;

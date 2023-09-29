@@ -450,9 +450,7 @@ end);
 InstallMethod(SubgroupsOrbitsAndNormalizers,"perm group on list",true,
   [IsPermGroup,IsList,IsBool],0,
 function(G,dom,all)
-  local savemem, n, l, o, pts, pbas, ptbas, un, domo, p, b, allo, ll, gp, t,
-  sel, r, i, rorbs, tl, selz, rem, sely, j, torb, iinv,
-  cl,lsd,domoj,startn;
+local n,l, o, b, t, r;
 
   if Length(dom)=0 then
     return dom;
@@ -464,7 +462,6 @@ function(G,dom,all)
 
   # new code -- without `all` option
 
-  savemem:=ValueOption("savemem");
   n:=Length(dom);
   if n>20 and ForAll(dom,x->IsSubset(G,x))
     and NrMovedPoints(G)>1000 then
