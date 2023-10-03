@@ -65,28 +65,26 @@ show := PagerAsHelpViewer,
 );
 
 
-if ARCH_IS_WINDOWS() then
-  # html version on Windows
-  HELP_VIEWER_INFO.browser := rec(
-  type := "url",
-  show := function( filename )
-    local pos, winfilename;
-    if not StartsWith(filename, "/cygdrive") and
-       not StartsWith(filename, "/proc/cygdrive") then
-      Error( "the name of the help file ", filename , " must start with /cygdrive or /proc/cygdrive" );
-    else
-      # Ignoring part of the URL after '#' since we are unable
-      # to navigate to the precise location on Windows
-      winfilename:=MakeExternalFilename( SplitString( filename, "#" )[1] );
-    fi;
-    Print( "Opening help page ", winfilename, " in default windows browser ... \c" );
-    Exec( Concatenation("start ", winfilename ) );
-    Print( "done! \n" );
-  end
-  );
+# html version on Windows
+HELP_VIEWER_INFO.browser := rec(
+type := "url",
+show := function( filename )
+  local pos, winfilename;
+  # Ignoring part of the URL after '#' since we are unable
+  # to navigate to the precise location on Windows
+  winfilename:=MakeExternalFilename( SplitString( filename, "#" )[1] );
+  Print( "Opening help page ", winfilename, " in default windows browser ... \c" );
+  Process( DirectoryCurrent(),
+           Filename( DirectoriesSystemPrograms(), "cygstart.exe" ),
+           InputTextNone(),
+           OutputTextNone(),
+           [ winfilename ] );	
+  Print( "done! \n" );         
+end
+);
 
 
-elif ARCH_IS_MAC_OS_X() then
+if ARCH_IS_MAC_OS_X() then
   # html version using macOS default browser
   HELP_VIEWER_INFO.("mac default browser") := rec (
     type := "url",
