@@ -2681,7 +2681,6 @@ local l,mark,i,b,M,no,cnt,j,q,As,a,hom,c,p,ap,prea,prestab,new,sz,k,h;
             a:=b^j;
             p:=First([i..Length(Bs)],x->
               RepresentativeAction(N,a,Bs[x])<>fail);
-    #if Size(b)=2 then Error("WWW");fi;
             if p<>fail and not mark[p] then
               # mark conjugate subgroup off as used
               mark[p]:=true;
@@ -3210,7 +3209,7 @@ end);
 #F  LowLayerSubgroups( [<act>,] <G>, <lim> [,<cond> [,<dosub>]] )
 ##
 InstallGlobalFunction(LowLayerSubgroups,function(arg)
-local act,offset,G,lim,cond,dosub,all,alln,m,i,j,jn,new,old,t,k,conjg;
+local act,offset,G,lim,cond,dosub,all,m,i,j,new,old,t,sma;
   act:=arg[1];
   if IsGroup(act) and IsGroup(arg[2]) then
     offset:=2;
@@ -3229,15 +3228,31 @@ local act,offset,G,lim,cond,dosub,all,alln,m,i,j,jn,new,old,t,k,conjg;
     fi;
   fi;
 
+  FittingFreeLiftSetup(G);
   all:=[G];
-  alln:=[G]; # Normalizers
   m:=[G];
   for i in [1..lim] do
     Info(InfoLattice,1,"Layer ",i,": ",Length(m)," groups");
     new:=[];
-    for j in m do
+    old:=m;
+    for j in old do
       if dosub(j) then
-        m:=MaximalSubgroupClassReps(j:cheap:=false);
+        sma:=fail;
+        if i>1 and IsPermGroup(j) and NrMovedPoints(j)>1000
+          and not HasMaximalSubgroupClassReps(j) then
+          sma:=SmallerDegreePermutationRepresentation(j:cheap);
+          if NrMovedPoints(Range(sma))>=NrMovedPoints(j) then
+            sma:=fail;
+          fi;
+        fi;
+        if sma<>fail then
+          m:=MaximalSubgroupClassReps(Image(sma,j):cheap:=false);
+          m:=List(m,x->PreImage(sma,x));
+          SetMaximalSubgroupClassReps(j,m);
+        else
+          if j<>G then FittingFreeSubgroupSetup(G,j);fi;
+          m:=MaximalSubgroupClassReps(j:cheap:=false);
+        fi;
         Append(new,m);
       fi;
     od;
@@ -3249,45 +3264,25 @@ local act,offset,G,lim,cond,dosub,all,alln,m,i,j,jn,new,old,t,k,conjg;
 
     # conjugate?
     m:=[];
-    # any conjugate before?
-    for j in new do
-      jn:=Normalizer(act,j);
-      old:=Filtered([1..Length(all)],x->
-        Size(all[x])=Size(j) and Size(alln[x])=Size(jn));
-      old:=all{old};
-      if Length(old)>1 then
-        # do we go through normalizer transversal
-        if QuoInt(IndexNC(act,jn),Length(old))<1000
-          or not (IsPermGroup(G) or IsPcGroup(G)) then
-          t:=RightTransversal(act,jn);
-          k:=1;
-          while k<=Length(t) do
-            conjg:=t[k];
-            conjg:=List(GeneratorsOfGroup(j),x->x^conjg);
-            if ForAny(old,x->ForAll(conjg,y->y in x)) then
-              # conjugate --  delete and stop
-              j:=fail;
-              old:=fail;
-              k:=Length(t); # exit loop
-            fi;
-            k:=k+1;
-          od;
+    for j in Set(List(new,Size)) do
+      t:=Filtered(new,x->Size(x)=j);
 
-        fi;
-        # delete so no further test
-        if old<>fail then
-          old:=[];
-        fi;
+      # no need to test conjugacy on top level
+      if Length(t)>1 and i>1 then
+        t:=SubgroupsOrbitsAndNormalizers(act,t,false);
+        t:=List(t,x->x.representative);
       fi;
-      # test if candidates left
-      if old<>fail and ForAll(old,x->RepresentativeAction(act,x,j)=fail) then
-        Add(m,j);
+
+      # conjugate to before?
+      old:=Filtered(all,x->Size(x)=j);
+      if Length(old)>0 then
+        t:=Filtered(t,j->ForAll(old,x->RepresentativeAction(act,x,j)=fail));
       fi;
+
+      Append(m,t);
     od;
-    m:=SubgroupsOrbitsAndNormalizers(act,m,false);
+
     Info(InfoLattice,1,"Layer ",i,": ",Length(m)," new");
-    Append(alln,List(m,x->x.normalizer));
-    m:=List(m,x->x.representative);
     Append(all,m);
   od;
   return all;
