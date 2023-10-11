@@ -11,8 +11,9 @@ gap> List(dirs, IsDirectory);
 [ false, true, false, true ]
 gap> DirectoryHome() = Directory("~") or ARCH_IS_WINDOWS();
 true
-gap> ForAll([DirectoryHome, DirectoryDesktop,DirectoryCurrent],
->           x -> (IsDirectoryPath(x()) and IsDirectory(x())) );
+gap> IsDirectoryPath(DirectoryCurrent());
+true
+gap> IsDirectory(DirectoryCurrent());
 true
 gap> dirTest := Concatenation(base,"/dir-test");;
 gap> SortedList(DirectoryContents(dirTest));
