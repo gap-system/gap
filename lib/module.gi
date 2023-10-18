@@ -410,7 +410,7 @@ InstallMethod( DimensionOfVectors,
 # multiple immediate methods, several of which could apply and each changing
 # the type of the object. Doing so can be costly and thus should be
 # avoided.
-InstallOtherMethod(SetDimension,true,[IsObject and IsAttributeStoringRep,IsObject],
+InstallOtherMethod(SetDimension,true,[IsFreeLeftModule and IsAttributeStoringRep,IsObject],
   100, # override system setter
 function(obj,dim)
 local filt;
