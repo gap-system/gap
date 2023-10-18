@@ -494,7 +494,6 @@ local n,l, o, b, t, r;
         n:=n^(l.conjugators[t[1]]^-1);
       fi;
       r.normalizer:=n;
-if all then Error("all");fi;
       Add(o,r);
 
   od;
