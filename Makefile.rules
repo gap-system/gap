@@ -906,22 +906,6 @@ sysinfo.gap: config.status $(srcdir)/Makefile.rules cnf/GAP-CFLAGS cnf/GAP-CPPFL
 
 
 ########################################################################
-# Compatibility mode
-#
-# If enabled, we prepare the environment to look like it did with
-# the old build system, thus enabling existing packages with kernel
-# extensions to be compiled against this version of GAP/
-########################################################################
-ifeq ($(COMPAT_MODE),yes)
-
-# regenerate bin/gap.sh if necessary
-all: bin/gap.sh
-bin/gap.sh: $(srcdir)/cnf/compat/gap.sh.in config.status
-	$(SHELL) ./config.status $@
-
-endif
-
-########################################################################
 # Specifying GAP calls to use for the test suite and building manuals
 ########################################################################
 

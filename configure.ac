@@ -44,6 +44,10 @@ AC_CONFIG_AUX_DIR([cnf])
 AC_CONFIG_HEADERS([build/config.h:src/config.h.in])
 AC_CONFIG_COMMANDS([build/stamp-h], [echo timestamp > build/stamp-h])
 
+AS_IF([test "x$srcdir" = x.],
+    [AC_MSG_NOTICE([in-tree build])],
+    [AC_MSG_NOTICE([out-of-tree build])])
+
 dnl note that the final version used by the GAP kernel is GAP_BUILD_VERSION
 dnl and is computed by cnf/gap-version-gen.sh, which takes git commit hashes into
 dnl account to produce a more fine-grained version string for GAP development
@@ -931,33 +935,6 @@ AS_IF([test "x$ARCH" != "x"], [GAPARCH="$ARCH"])
 AC_MSG_RESULT([${GAPARCH}])
 AC_DEFINE_UNQUOTED([GAPARCH], ["$GAPARCH"], [the GAP architecture, for kernel extensions])
 AC_SUBST([GAPARCH])
-
-dnl
-dnl User setting: Compatibility mode (on by default)
-dnl
-AC_ARG_ENABLE([compat-mode],
-    [AS_HELP_STRING([--disable-compat-mode], [enable compatibility mode])],
-    [],
-    [enable_compat_mode=yes]
-    )
-AC_MSG_CHECKING([whether to enable compatibility mode for packages])
-AC_MSG_RESULT([$enable_compat_mode])
-
-AC_SUBST([COMPAT_MODE], [$enable_compat_mode])
-AS_IF([test "x$enable_compat_mode" = xyes],
-    [
-    AC_CONFIG_FILES([bin/gap.sh:cnf/compat/gap.sh.in], [chmod +x bin/gap.sh])
-    AS_IF([test x$BUILD_GMP = xyes],[
-      AC_CONFIG_FILES([bin/$GAPARCH/extern/gmp/include/gmp.h:cnf/compat/gmp.h.in])
-    ])
-    AS_IF([test "x$srcdir" = x.],
-        [
-            AC_MSG_NOTICE([in-tree build])
-        ],
-        [
-            AC_MSG_NOTICE([out-of-tree build])
-        ])
-    ])
 
 
 dnl

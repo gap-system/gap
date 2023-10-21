@@ -22,8 +22,7 @@ HPCGAP = @HPCGAP@
 # garbage collector source files
 GC_SOURCES = @GC_SOURCES@
 
-# compatibility mode
-COMPAT_MODE = @COMPAT_MODE@
+# GAP architecture string
 GAPARCH = @GAPARCH@
 
 # maintainer mode
