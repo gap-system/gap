@@ -104,7 +104,13 @@ infinity := "2b defined";
 ##
 ReplacedString := function ( str, old, new, arg... )
     local lss, all, p, s, pp;
+    if old = new then
+        return str;
+    fi;
     lss := LEN_LIST( old );
+    if lss = 0  then
+        Error("<old> must not be empty");
+    fi;
     if LEN_LIST( arg ) > 0  then
         all := arg[1] = "all";
     else
