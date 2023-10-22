@@ -102,18 +102,15 @@ infinity := "2b defined";
 ##
 ##  This cannot be inside "kernel.g" because it is needed to read "kernel.g".
 ##
-ReplacedString := function ( arg )
-    local str, substr, lss, subs, all, p, s, pp;
-    str := arg[1];
-    substr := arg[2];
-    lss := LEN_LIST( substr );
-    subs := arg[3];
-    if LEN_LIST( arg ) > 3  then
-        all := arg[4] = "all";
+ReplacedString := function ( str, old, new, arg... )
+    local lss, all, p, s, pp;
+    lss := LEN_LIST( old );
+    if LEN_LIST( arg ) > 0  then
+        all := arg[1] = "all";
     else
         all := true;
     fi;
-    p := POSITION_SUBSTRING( str, substr, 0 );
+    p := POSITION_SUBSTRING( str, old, 0 );
     if p = fail  then
         return str;
     fi;
@@ -121,10 +118,10 @@ ReplacedString := function ( arg )
     pp := 0;
     while p <> fail  do
         APPEND_LIST_INTR( s, str{[ pp+1 .. p - 1 ]} );
-        APPEND_LIST_INTR( s, subs );
+        APPEND_LIST_INTR( s, new );
         pp := p + lss - 1;
         if all  then
-            p := POSITION_SUBSTRING( str, substr, pp );
+            p := POSITION_SUBSTRING( str, old, pp );
         else
             p := fail;
         fi;
