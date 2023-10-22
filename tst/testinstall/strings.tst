@@ -210,4 +210,12 @@ gap> for len in [10,100,1000,10000,100000] do
 > od;;
 
 #
+gap> ReplacedString("Hello world", "Hello", "Goodbye");
+"Goodbye world"
+gap> ReplacedString("Hello world", "", "");
+"Hello world"
+gap> ReplacedString("Hello world", "", "*");
+Error, <old> must not be empty
+
+#
 gap> STOP_TEST( "strings.tst", 1);
