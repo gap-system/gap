@@ -810,6 +810,10 @@ local l, i, start,nodob,str;
           nodob:=true;
         fi;
       until nodob;
+      # not closed "..." ?
+      if start<i and i=Length(s) and str="" then
+        return fail;
+      fi;
       if Length(str)>0 then
         Add(l,Concatenation(str,s{[start..i]}));
       else
@@ -911,7 +915,13 @@ local nohead,file,sep,f, line, fields, l, r, i,s,t,add,dir;
     if line<>fail then
       line:=Chomp(line);
       if '"' in line and sep=',' then
-        line:=RCSVSplitString(line,sep);
+        r:=RCSVSplitString(line,sep);
+        while r=fail do
+          r:=RCSVReadLine(f);
+          line:=Concatenation(line," ",r);
+          r:=RCSVSplitString(line,sep);
+        od;
+        line:=r;
       else
         line:=SplitString(line,sep);
       fi;
