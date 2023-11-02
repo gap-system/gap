@@ -70,6 +70,9 @@
 #include <process.h>
 #endif
 
+#ifdef HAVE_SELECT
+#include <sys/time.h>
+#endif
 
 // LOCKING
 // In HPC-GAP, be sure to HashLock PtyIOStreams before accessing any of
