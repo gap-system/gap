@@ -72,14 +72,11 @@ end);
 ##   <Oper Name="Log" Arg="f"/>
 ##   <Attr Name="Log2" Arg="f"/>
 ##   <Attr Name="Log10" Arg="f"/>
-##   <Attr Name="Log1p" Arg="f"/>
 ##   <Attr Name="Exp" Arg="f"/>
 ##   <Attr Name="Exp2" Arg="f"/>
 ##   <Attr Name="Exp10" Arg="f"/>
-##   <Attr Name="Expm1" Arg="f"/>
 ##   <Attr Name="CubeRoot" Arg="f"/>
 ##   <Attr Name="Square" Arg="f"/>
-##   <Oper Name="Atan2" Arg="y x"/>
 ##   <Oper Name="Hypothenuse" Arg="x y"/>
 ##   <Attr Name="Ceil" Arg="f"/>
 ##   <Attr Name="Floor" Arg="f"/>
@@ -90,12 +87,12 @@ end);
 ##   <Attr Name="AbsoluteValue" Arg="f" Label="for floats"/>
 ##   <Attr Name="Norm" Arg="f" Label="for floats"/>
 ##   <Attr Name="Frac" Arg="f"/>
-##   <Attr Name="SinCos" Arg="f"/>
 ##   <Attr Name="Erf" Arg="f"/>
 ##   <Attr Name="Zeta" Arg="f"/>
 ##   <Attr Name="Gamma" Arg="f"/>
 ##   <Description>
-##     Standard math functions.
+##     Standard math functions. 
+##     Functions ending in an integer like <C>Log2</C>, <C>Log10</C>, <C>Exp2</C> and <C>Exp10</C> indicate the base used, in <C>log</C> and <C>exp</C> the natural base is used, i.e. <M>e</M>.
 ##   </Description>
 ## </ManSection>
 ## <#/GAPDoc>
@@ -121,25 +118,21 @@ DeclareAttribute("Atanh", IsFloat);
 DeclareOperation("Log", [IsFloat]);
 DeclareAttribute("Log2", IsFloat);
 DeclareAttribute("Log10", IsFloat);
-DeclareAttribute("Log1p", IsFloat);
 DeclareAttribute("Exp", IsFloat);
 DeclareAttribute("Exp2", IsFloat);
 DeclareAttribute("Exp10", IsFloat);
-DeclareAttribute("Expm1", IsFloat);
 DeclareAttribute("CubeRoot", IsFloat);
 DeclareAttribute("Square", IsFloat);
 DeclareAttribute("Ceil", IsFloat);
 DeclareAttribute("Floor", IsFloat);
 DeclareAttribute("Round", IsFloat);
 DeclareAttribute("Trunc", IsFloat);
-DeclareOperation("Atan2", [IsFloat, IsFloat]);
 DeclareAttribute("FrExp", IsFloat);
 DeclareOperation("LdExp", [IsFloat, IsInt]);
 DeclareAttribute("AbsoluteValue", IsFloat);
 #DeclareAttribute("Norm", IsFloat); # already defined
 DeclareOperation("Hypothenuse", [IsFloat, IsFloat]);
 DeclareAttribute("Frac", IsFloat);
-DeclareAttribute("SinCos", IsFloat);
 DeclareAttribute("Erf", IsFloat);
 DeclareAttribute("Zeta", IsFloat);
 DeclareAttribute("Gamma", IsFloat);
@@ -180,12 +173,46 @@ DeclareAttribute("Gamma", IsFloat);
 ##       if <A>x&gt;0</A>.
 ##   </Description>
 ## </ManSection>
-## <#/GAPDoc>
+##  
+## <ManSection>
+##   <Attr Name="SinCos" Arg="x"/>
+##   <Returns>The list <C>[sin(x), cos(x)]</C>.</Returns>
+##   <Description>
+##       The function returns a list with <C>sin</C> and <C>cos</C> of of <A>x</A>.
+##   </Description>
+## </ManSection>
+##  
+## <ManSection>
+##   <Oper Name="Atan2" Arg="y x"/>
+##   <Returns>The polar angle of <A>(x, y)</A> in the plane as float.</Returns>
+##   <Description>
+##        Returns the principal value of the argument (polar angle) of (x, y) in the plane. 
+##        The returned value will always be in <M>(-\pi , \pi]</M> and is not defined on <A>(0,0)</A>.
+##        This function is defined in accordance with IEEE 1788-2015 and imported from IEEE 754.
+##   </Description>
+## </ManSection>
 ##
+## <ManSection>
+##   <Attr Name="Log1p" Arg="x"/>
+##   <Attr Name="Expm1" Arg="x"/>
+##   <Returns>The natural logarithm of <A>x+1</A> or exponential <M>-1</M> of <A>x</A> respectively.</Returns>
+##   <Description>
+##       The first function <C>Log1p</C> returns the natural logarithm <M>log(x+1)</M>.
+##
+##       <P/> The second function <C>Expm1</C> returns the exponential function <M>exp(x)-1</M>
+##
+##       <P/> These two functions are inverse to each other.
+##   </Description>
+## </ManSection>
+## <#/GAPDoc>
 DeclareOperation("EqFloat", [IsFloat, IsFloat]);
 DeclareAttribute("PrecisionFloat", IsFloat);
 DeclareAttribute("SignBit", IsFloat);
 DeclareAttribute("SignFloat", IsFloat);
+DeclareAttribute("SinCos", IsFloat);
+DeclareOperation("Atan2", [IsFloat, IsFloat]);
+DeclareAttribute("Log1p", IsFloat);
+DeclareAttribute("Expm1", IsFloat);
 ################################################################
 
 ################################################################
