@@ -176,7 +176,7 @@ DeclareAttribute("Gamma", IsFloat);
 ##   <Attr Name="SinCos" Arg="x"/>
 ##   <Returns>The list <C>[sin(x), cos(x)]</C>.</Returns>
 ##   <Description>
-##       The function returns a list with <C>sin</C> and <C>cos</C> of of <A>x</A>.
+##       The function returns a list with <C>sin</C> and <C>cos</C> of <A>x</A>.
 ##   </Description>
 ## </ManSection>
 ##
