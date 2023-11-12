@@ -22,7 +22,34 @@ local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
   if Size(r)=1 then
     hom:=IdentityMapping(G);
   else
-    hom:=NaturalHomomorphismByNormalSubgroup(G,r);
+    hom:=fail;
+    if IsBound(G!.cachedFFS) then
+      A:=First(G!.cachedFFS,x->IsSubset(x[1]!.radical,r));
+      if A<>fail then
+        hom:=A[2].rest;
+        pcgs:=A[2].pcgs;
+        pc:=CreateIsomorphicPcGroup(pcgs,true,false);
+        iso := GroupHomomorphismByImagesNC( r, pc, pcgs, GeneratorsOfGroup( pc ));
+        r:=rec(inducedfrom:=A[1],
+               radical:=r,
+               factorhom:=hom,
+               depths:=Set(A[2].serdepths), #Set as factors might vanish
+               pcisom:=iso,
+               pcgs:=pcgs);
+        return r;
+      fi;
+      A:=First(G!.cachedFFS,x->IsSubset(r,x[1]!.radical));
+      if A<>fail then
+        b:=Image(A[2].rest);
+        b:=NaturalHomomorphismByNormalSubgroupNC(b,RadicalGroup(b));
+        hom:=A[2]!.rest*b;
+        SetKernelOfMultiplicativeGeneralMapping(hom,r);
+        AddNaturalHomomorphismsPool(G,r,hom);
+      fi;
+    fi;
+    if hom=fail then
+      hom:=NaturalHomomorphismByNormalSubgroup(G,r);
+    fi;
   fi;
 
   A:=Image(hom);

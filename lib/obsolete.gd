@@ -166,7 +166,7 @@ DeclareObsoleteSynonym( "ReadPkg", "ReadPackage" );
 ##
 #V  KERNEL_VERSION   - Not used in any redistributed package (11/2017)
 #V  VERSION          - Not used in any redistributed package (11/2018)
-#V  GAP_ARCHITECTURE - still used in gbnp (04/2019)
+#V  GAP_ARCHITECTURE - Not used in any redistributed package (10/2023)
 #V  GAP_ROOT_PATHS   - Not used in any redistributed package (03/2018)
 #V  DEBUG_LOADING    - Not used in any redistributed package (04/2019)
 #V  BANNER           - Not used in any redistributed package (04/2019)
@@ -178,7 +178,7 @@ DeclareObsoleteSynonym( "ReadPkg", "ReadPackage" );
 ##
 #BindGlobal( "KERNEL_VERSION", GAPInfo.KernelVersion );
 #BindGlobal( "VERSION", GAPInfo.Version );
-BindGlobal( "GAP_ARCHITECTURE", GAPInfo.Architecture );
+#BindGlobal( "GAP_ARCHITECTURE", GAPInfo.Architecture );
 #BindGlobal( "GAP_ROOT_PATHS", GAPInfo.RootPaths );
 #BindGlobal( "DEBUG_LOADING", GAPInfo.CommandLineOptions.D );
 #BindGlobal( "BANNER", not GAPInfo.CommandLineOptions.b );
@@ -188,9 +188,9 @@ BindGlobal( "GAP_ARCHITECTURE", GAPInfo.Architecture );
 #############################################################################
 ##
 #V  PACKAGES_VERSIONS - Not used in any redistributed package (11/2017)
-#V  Revision          - still used in HAPcryst (04/2019)
+#V  Revision          - Not used in any redistributed package (10/2023)
 #BindGlobal( "PACKAGES_VERSIONS", rec() );
-BindGlobal( "Revision", rec() );
+#BindGlobal( "Revision", rec() );
 
 #############################################################################
 ##
@@ -210,7 +210,7 @@ BindGlobal( "Revision", rec() );
 ##  most 47, with degree 32 needing to be downloaded separately.
 ##
 ##  Not used in any redistributed package (07/2022)
-BindGlobal( "TRANSDEGREES", 30 );
+#BindGlobal( "TRANSDEGREES", 30 );
 
 #############################################################################
 ##
@@ -219,7 +219,7 @@ BindGlobal( "TRANSDEGREES", 30 );
 ##  Moved to obsoletes in May 2003.
 ##
 ##  Not used in any redistributed package (07/2022)
-DeclareObsoleteSynonymAttr( "NormedVectors", "NormedRowVectors" );
+#DeclareObsoleteSynonymAttr( "NormedVectors", "NormedRowVectors" );
 
 #############################################################################
 ##
@@ -269,7 +269,7 @@ DeclareObsoleteSynonymAttr( "NormedVectors", "NormedRowVectors" );
 ##
 ##  Moved to obsolete in Dec 2007.
 ##  Not used in any redistributed package (07/2022)
-DeclareObsoleteSynonym( "FormattedString", "String" );
+#DeclareObsoleteSynonym( "FormattedString", "String" );
 
 
 #############################################################################
@@ -351,7 +351,7 @@ DeclareObsoleteSynonym( "Tuple", "DirectProductElement" );
 # synonym retained for backwards compatibility with GAP 4.4.
 # Moved to obsoletes in April 2012.
 ##  Not used in any redistributed package (07/2022)
-DeclareObsoleteSynonym( "Complementclasses", "ComplementClassesRepresentatives" );
+#DeclareObsoleteSynonym( "Complementclasses", "ComplementClassesRepresentatives" );
 
 
 #############################################################################
@@ -416,7 +416,7 @@ DeclareObsoleteSynonym( "Complementclasses", "ComplementClassesRepresentatives" 
 ##  </ManSection>
 ##
 ##  Not used in any redistributed package (11/2018)
-DeclareOperation( "TeXObj", [ IS_OBJECT ] );
+#DeclareOperation( "TeXObj", [ IS_OBJECT ] );
 
 
 #############################################################################
@@ -436,7 +436,7 @@ DeclareOperation( "TeXObj", [ IS_OBJECT ] );
 ##  </ManSection>
 ##
 ##  Not used in any redistributed package (11/2018)
-DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
+#DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 
 
 #############################################################################
@@ -607,7 +607,7 @@ DeclareObsoleteSynonym( "USER_HOME_EXPAND", "UserHomeExpand" );
 ##
 ##  Not used in any redistributed package (07/2022)
 ##  Safely used in GAP3 compatibility code: ctbllib (11/2018)
-DeclareObsoleteSynonym( "RecFields", "RecNames" );
+#DeclareObsoleteSynonym( "RecFields", "RecNames" );
 
 #############################################################################
 ##
@@ -630,9 +630,9 @@ DeclareObsoleteSynonym( "RecFields", "RecNames" );
 ##  InfoRead used to be used to print when a file is read using `Read()`
 ##
 ##  Not used in any redistributed package (07/2022)
-if GAPInfo.CommandLineOptions.D then InfoRead1 := Print; fi;
-if not IsBound(InfoRead1) then InfoRead1 := Ignore; fi;
-if not IsBound(InfoRead2) then InfoRead2 := Ignore; fi;
+#if GAPInfo.CommandLineOptions.D then InfoRead1 := Print; fi;
+#if not IsBound(InfoRead1) then InfoRead1 := Ignore; fi;
+#if not IsBound(InfoRead2) then InfoRead2 := Ignore; fi;
 
 #############################################################################
 ##
@@ -702,16 +702,16 @@ DeclareGlobalFunction("UnhideGlobalVariables");
 ##
 ##
 ##  Not used in any redistributed package (07/2022)
-BindGlobal("STRING_LIST_DIR", function(dirname)
-    local list;
-
-    list:= LIST_DIR( dirname );
-    if list = fail then
-      return fail;
-    else
-      return JoinStringsWithSeparator( list, "\000" );
-    fi;
-end);
+# BindGlobal("STRING_LIST_DIR", function(dirname)
+#     local list;
+#
+#     list:= LIST_DIR( dirname );
+#     if list = fail then
+#       return fail;
+#     else
+#       return JoinStringsWithSeparator( list, "\000" );
+#     fi;
+# end);
 
 
 #############################################################################
@@ -745,7 +745,7 @@ DeclareObsoleteSynonym("FORCE_QUIT_GAP", "ForceQuitGap", 2);
 ##  <#/GAPDoc>
 ##
 ##  Not used in any redistributed package (05/2021)
-DeclareObsoleteSynonym( "IsLexicographicallyLess", "<" );
+#DeclareObsoleteSynonym( "IsLexicographicallyLess", "<" );
 
 
 #############################################################################

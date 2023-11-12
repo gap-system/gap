@@ -297,8 +297,10 @@ end);
 
 InstallGlobalFunction(DirectoryHome,function()
 local a,h,d;
-  if ARCH_IS_WINDOWS() then
-    h:=StringHOMEPath();
+  h:=StringHOMEPath();
+  if h = fail then
+    return fail;
+  elif ARCH_IS_WINDOWS() then
     d:=List(DirectoryContents(h),LowercaseString);
     a:=First(["My Documents", #en
           "Documents", #en-win8
@@ -322,18 +324,17 @@ local a,h,d;
         h := Concatenation(h,"/");
       fi;
       return Directory(Concatenation(h,a));
-    else
-      return Directory(StringHOMEPath());
     fi;
-  else
-    return Directory(StringHOMEPath());
   fi;
+  return Directory(h);
 end);
 
 InstallGlobalFunction(DirectoryDesktop,function()
 local a,h,d;
   h:=StringHOMEPath();
-  if ARCH_IS_WINDOWS() then
+  if h = fail then
+    return fail;
+  elif ARCH_IS_WINDOWS() then
     d:=List(DirectoryContents(h),LowercaseString);
     a:=First(["Desktop",
               "Bureau", #fr
@@ -346,8 +347,6 @@ local a,h,d;
         h := Concatenation(h,"/");
       fi;
       return Directory(Concatenation(h,a));
-    else
-      return Directory(StringHOMEPath());
     fi;
   else
     d:=List(DirectoryContents(h),LowercaseString);
@@ -361,10 +360,9 @@ local a,h,d;
         h := Concatenation(h,"/");
       fi;
       return Directory(Concatenation(h,a));
-    else
-      return Directory(h);
     fi;
   fi;
+  return Directory(h);
 end);
 
 InstallGlobalFunction(RemoveDirectoryRecursively,

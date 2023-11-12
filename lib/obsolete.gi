@@ -409,18 +409,18 @@ end );
 ##  </ManSection>
 ##
 ##  Not used in any redistributed package (07/2022)
-BIND_GLOBAL( "TeX", function( arg )
-    local   str,  res,  obj;
-
-    str := "";
-    for obj  in arg  do
-        res := TeXObj(obj);
-        APPEND_LIST_INTR( str, res );
-        APPEND_LIST_INTR( str, "%\n" );
-    od;
-    CONV_STRING(str);
-    return str;
-end );
+# BIND_GLOBAL( "TeX", function( arg )
+#     local   str,  res,  obj;
+#
+#     str := "";
+#     for obj  in arg  do
+#         res := TeXObj(obj);
+#         APPEND_LIST_INTR( str, res );
+#         APPEND_LIST_INTR( str, "%\n" );
+#     od;
+#     CONV_STRING(str);
+#     return str;
+# end );
 
 
 #############################################################################
@@ -455,244 +455,244 @@ end );
 ##  <#/GAPDoc>
 ##
 ##  Not used in any redistributed package (11/2018)
-BIND_GLOBAL( "LaTeX", function( arg )
-    local   str,  res,  obj;
-
-    str := "";
-    for obj  in arg  do
-        res := LaTeXObj(obj);
-        APPEND_LIST_INTR( str, res );
-        APPEND_LIST_INTR( str, "%\n" );
-    od;
-    CONV_STRING(str);
-    return str;
-end );
+# BIND_GLOBAL( "LaTeX", function( arg )
+#     local   str,  res,  obj;
+#
+#     str := "";
+#     for obj  in arg  do
+#         res := LaTeXObj(obj);
+#         APPEND_LIST_INTR( str, res );
+#         APPEND_LIST_INTR( str, "%\n" );
+#     od;
+#     CONV_STRING(str);
+#     return str;
+# end );
 
 
 #############################################################################
 ##
 #M  LaTeXObj( <ffe> ) . . . . . .  convert a finite field element into a string
 ##
-InstallMethod(LaTeXObj,"for an internal FFE",true,[IsFFE and IsInternalRep],0,
-function ( ffe )
-local   str, log,deg,char;
-  char:=Characteristic(ffe);
-  if   IsZero( ffe )  then
-    str := Concatenation("0*Z(",String(char),")");
-  else
-    str := Concatenation("Z(",String(char));
-    deg:=DegreeFFE(ffe);
-    if deg <> 1  then
-      str := Concatenation(str,"^{",String(deg),"}");
-    fi;
-    str := Concatenation(str,")");
-    log:= LogFFE(ffe,Z( char ^ deg ));
-    if log <> 1 then
-      str := Concatenation(str,"^{",String(log),"}");
-    fi;
-  fi;
-  ConvertToStringRep( str );
-  return str;
-end );
+# InstallMethod(LaTeXObj,"for an internal FFE",true,[IsFFE and IsInternalRep],0,
+# function ( ffe )
+# local   str, log,deg,char;
+#   char:=Characteristic(ffe);
+#   if   IsZero( ffe )  then
+#     str := Concatenation("0*Z(",String(char),")");
+#   else
+#     str := Concatenation("Z(",String(char));
+#     deg:=DegreeFFE(ffe);
+#     if deg <> 1  then
+#       str := Concatenation(str,"^{",String(deg),"}");
+#     fi;
+#     str := Concatenation(str,")");
+#     log:= LogFFE(ffe,Z( char ^ deg ));
+#     if log <> 1 then
+#       str := Concatenation(str,"^{",String(log),"}");
+#     fi;
+#   fi;
+#   ConvertToStringRep( str );
+#   return str;
+# end );
 
 
 #############################################################################
 ##
 #M  LaTeXObj( <elm> ) . . . . . . . for packed word in default representation
 ##
-InstallMethod( LaTeXObj,"for an element of an f.p. group (default repres.)",
-  true, [ IsElementOfFpGroup and IsPackedElementDefaultRep ],0,
-function( obj )
-  return LaTeXObj( obj![1] );
-end );
-
+# InstallMethod( LaTeXObj,"for an element of an f.p. group (default repres.)",
+#   true, [ IsElementOfFpGroup and IsPackedElementDefaultRep ],0,
+# function( obj )
+#   return LaTeXObj( obj![1] );
+# end );
+#
 
 #############################################################################
 ##
 #M  LaTeXObj
 ##
-InstallMethod(LaTeXObj,"matrix",
-  [IsMatrix],
-function(m)
-local i,j,l,n,s;
-  l:=Length(m);
-  n:=Length(m[1]);
-  s:="\\left(\\begin{array}{";
-  for i in [1..n] do
-    Add(s,'r');
-  od;
-  Append(s,"}%\n");
-  for i in [1..l] do
-    for j in [1..n] do
-      Append(s,LaTeXObj(m[i][j]));
-      if j<n then
-        Add(s,'&');
-      fi;
-    od;
-    Append(s,"\\\\%\n");
-  od;
-  Append(s,"\\end{array}\\right)");
-  return s;
-end);
-
-
-InstallMethod( LaTeXObj,"polynomial",true, [ IsPolynomial ],0,function(pol)
-local fam, ext, str, zero, one, mone, le, c, s, ind, i, j;
-
-  fam:=FamilyObj(pol);
-  ext:=ExtRepPolynomialRatFun(pol);
-  str:="";
-  zero := fam!.zeroCoefficient;
-  one := fam!.oneCoefficient;
-  mone := -one;
-  le:=Length(ext);
-
-  if le=0 then
-    return String(zero);
-  fi;
-  for i  in [ le-1,le-3..1] do
-    if i<le-1 then
-      # this is the second summand, so arithmetic will occur
-    fi;
-
-    if ext[i+1]=one then
-      if i<le-1 then
-        Add(str,'+');
-      fi;
-      c:=false;
-    elif ext[i+1]=mone then
-      Add(str,'-');
-      c:=false;
-    else
-      if IsRat(ext[i+1]) and ext[i+1]<0 then
-        s:=Concatenation("-",LaTeXObj(-ext[i+1]));
-      else
-        s:=LaTeXObj(ext[i+1]);
-      fi;
-
-      if '+' in s and s[1]<>'(' then
-        s:=Concatenation("(",s,")");
-      fi;
-
-      if i<le-1 and s[1]<>'-' then
-        Add(str,'+');
-      fi;
-      Append(str,s);
-      c:=true;
-    fi;
-
-    if Length(ext[i])<2 then
-      # trivial monomial. Do we have to add a '1'?
-      if c=false then
-        Append(str,String(one));
-      fi;
-    else
-      #if c then
-#       Add(str,'*');
-#      fi;
-      for j  in [ 1, 3 .. Length(ext[i])-1 ]  do
-#       if 1 < j  then
-#         Add(str,'*');
+# InstallMethod(LaTeXObj,"matrix",
+#   [IsMatrix],
+# function(m)
+# local i,j,l,n,s;
+#   l:=Length(m);
+#   n:=Length(m[1]);
+#   s:="\\left(\\begin{array}{";
+#   for i in [1..n] do
+#     Add(s,'r');
+#   od;
+#   Append(s,"}%\n");
+#   for i in [1..l] do
+#     for j in [1..n] do
+#       Append(s,LaTeXObj(m[i][j]));
+#       if j<n then
+#         Add(s,'&');
 #       fi;
-        ind:=ext[i][j];
-        if HasIndeterminateName(fam,ind) then
-          Append(str,IndeterminateName(fam,ind));
-        else
-          Append(str,"x_{");
-          Append(str,String(ind));
-          Add(str,'}');
-        fi;
-        if 1 <> ext[i][j+1]  then
-          Append(str,"^{");
-          Append(str,String(ext[i][j+1]));
-          Add(str,'}');
-        fi;
-      od;
-    fi;
-  od;
-
-  return str;
-end);
+#     od;
+#     Append(s,"\\\\%\n");
+#   od;
+#   Append(s,"\\end{array}\\right)");
+#   return s;
+# end);
+#
+#
+# InstallMethod( LaTeXObj,"polynomial",true, [ IsPolynomial ],0,function(pol)
+# local fam, ext, str, zero, one, mone, le, c, s, ind, i, j;
+#
+#   fam:=FamilyObj(pol);
+#   ext:=ExtRepPolynomialRatFun(pol);
+#   str:="";
+#   zero := fam!.zeroCoefficient;
+#   one := fam!.oneCoefficient;
+#   mone := -one;
+#   le:=Length(ext);
+#
+#   if le=0 then
+#     return String(zero);
+#   fi;
+#   for i  in [ le-1,le-3..1] do
+#     if i<le-1 then
+#       # this is the second summand, so arithmetic will occur
+#     fi;
+#
+#     if ext[i+1]=one then
+#       if i<le-1 then
+#         Add(str,'+');
+#       fi;
+#       c:=false;
+#     elif ext[i+1]=mone then
+#       Add(str,'-');
+#       c:=false;
+#     else
+#       if IsRat(ext[i+1]) and ext[i+1]<0 then
+#         s:=Concatenation("-",LaTeXObj(-ext[i+1]));
+#       else
+#         s:=LaTeXObj(ext[i+1]);
+#       fi;
+#
+#       if '+' in s and s[1]<>'(' then
+#         s:=Concatenation("(",s,")");
+#       fi;
+#
+#       if i<le-1 and s[1]<>'-' then
+#         Add(str,'+');
+#       fi;
+#       Append(str,s);
+#       c:=true;
+#     fi;
+#
+#     if Length(ext[i])<2 then
+#       # trivial monomial. Do we have to add a '1'?
+#       if c=false then
+#         Append(str,String(one));
+#       fi;
+#     else
+#       #if c then
+# #       Add(str,'*');
+# #      fi;
+#       for j  in [ 1, 3 .. Length(ext[i])-1 ]  do
+# #       if 1 < j  then
+# #         Add(str,'*');
+# #       fi;
+#         ind:=ext[i][j];
+#         if HasIndeterminateName(fam,ind) then
+#           Append(str,IndeterminateName(fam,ind));
+#         else
+#           Append(str,"x_{");
+#           Append(str,String(ind));
+#           Add(str,'}');
+#         fi;
+#         if 1 <> ext[i][j+1]  then
+#           Append(str,"^{");
+#           Append(str,String(ext[i][j+1]));
+#           Add(str,'}');
+#         fi;
+#       od;
+#     fi;
+#   od;
+#
+#   return str;
+# end);
 
 
 #############################################################################
 ##
 #M  LaTeXObj
 ##
-InstallMethod(LaTeXObj,"rational",
-  [IsRat],
-function(r)
-local n,d;
-  if IsInt(r) then
-    return String(r);
-  fi;
-  n:=NumeratorRat(r);
-  d:=DenominatorRat(r);
-  if AbsInt(n)<5 and AbsInt(d)<5 then
-    return Concatenation(String(n),"/",String(d));
-  else
-    return Concatenation("\\frac{",String(n),"}{",String(d),"}");
-  fi;
-end);
-
-
-InstallMethod(LaTeXObj,"assoc word in letter rep",true,
-  [IsAssocWord and IsLetterAssocWordRep],0,
-function(elm)
-local names,len,i,g,h,e,s;
-
-  names:= ShallowCopy(FamilyObj( elm )!.names);
-  for i in [1..Length(names)] do
-    s:=names[i];
-    e:=Length(s);
-    while e>0 and s[e] in CHARS_DIGITS do
-      e:=e-1;
-    od;
-    if e<Length(s) then
-      if e=Length(s)-1 then
-        s:=Concatenation(s{[1..e]},"_",s{[e+1..Length(s)]});
-      else
-        s:=Concatenation(s{[1..e]},"_{",s{[e+1..Length(s)]},"}");
-      fi;
-      names[i]:=s;
-    fi;
-  od;
-
-  s:="";
-  elm:=LetterRepAssocWord(elm);
-  len:= Length( elm );
-  i:= 2;
-  if len = 0 then
-    return( "id" );
-  else
-    g:=AbsInt(elm[1]);
-    e:=SignInt(elm[1]);
-    while i <= len do
-      h:=AbsInt(elm[i]);
-      if h=g then
-        e:=e+SignInt(elm[i]);
-      else
-        Append(s, names[g] );
-        if e<>1 then
-          Append(s,"^{");
-          Append(s,String(e));
-          Append(s,"}");
-        fi;
-        g:=h;
-        e:=SignInt(elm[i]);
-      fi;
-      i:=i+1;
-    od;
-    Append(s, names[g] );
-    if e<>1 then
-      Append(s,"^{");
-      Append(s,String(e));
-      Append(s,"}");
-    fi;
-  fi;
-  return s;
-end);
-
+# InstallMethod(LaTeXObj,"rational",
+#   [IsRat],
+# function(r)
+# local n,d;
+#   if IsInt(r) then
+#     return String(r);
+#   fi;
+#   n:=NumeratorRat(r);
+#   d:=DenominatorRat(r);
+#   if AbsInt(n)<5 and AbsInt(d)<5 then
+#     return Concatenation(String(n),"/",String(d));
+#   else
+#     return Concatenation("\\frac{",String(n),"}{",String(d),"}");
+#   fi;
+# end);
+#
+#
+# InstallMethod(LaTeXObj,"assoc word in letter rep",true,
+#   [IsAssocWord and IsLetterAssocWordRep],0,
+# function(elm)
+# local names,len,i,g,h,e,s;
+#
+#   names:= ShallowCopy(FamilyObj( elm )!.names);
+#   for i in [1..Length(names)] do
+#     s:=names[i];
+#     e:=Length(s);
+#     while e>0 and s[e] in CHARS_DIGITS do
+#       e:=e-1;
+#     od;
+#     if e<Length(s) then
+#       if e=Length(s)-1 then
+#         s:=Concatenation(s{[1..e]},"_",s{[e+1..Length(s)]});
+#       else
+#         s:=Concatenation(s{[1..e]},"_{",s{[e+1..Length(s)]},"}");
+#       fi;
+#       names[i]:=s;
+#     fi;
+#   od;
+#
+#   s:="";
+#   elm:=LetterRepAssocWord(elm);
+#   len:= Length( elm );
+#   i:= 2;
+#   if len = 0 then
+#     return( "id" );
+#   else
+#     g:=AbsInt(elm[1]);
+#     e:=SignInt(elm[1]);
+#     while i <= len do
+#       h:=AbsInt(elm[i]);
+#       if h=g then
+#         e:=e+SignInt(elm[i]);
+#       else
+#         Append(s, names[g] );
+#         if e<>1 then
+#           Append(s,"^{");
+#           Append(s,String(e));
+#           Append(s,"}");
+#         fi;
+#         g:=h;
+#         e:=SignInt(elm[i]);
+#       fi;
+#       i:=i+1;
+#     od;
+#     Append(s, names[g] );
+#     if e<>1 then
+#       Append(s,"^{");
+#       Append(s,String(e));
+#       Append(s,"}");
+#     fi;
+#   fi;
+#   return s;
+# end);
+#
 
 #############################################################################
 ##
@@ -867,14 +867,14 @@ BindGlobal( "SetUserPreferences", function( arg )
 ##  Moved to obsoletes in October 2018 for GAP 4.11.
 ##
 ##  Not used in any redistributed package (04/2019)
-BIND_GLOBAL( "SetFeatureObj", function ( obj, filter, val )
-    Info( InfoObsolete, 1, "'SetFeatureObj' is obsolete, use 'SetFilterObj' or 'ResetFilterObj' instead" );
-    if val then
-        SetFilterObj( obj, filter );
-    else
-        ResetFilterObj( obj, filter );
-    fi;
-end );
+# BIND_GLOBAL( "SetFeatureObj", function ( obj, filter, val )
+#     Info( InfoObsolete, 1, "'SetFeatureObj' is obsolete, use 'SetFilterObj' or 'ResetFilterObj' instead" );
+#     if val then
+#         SetFilterObj( obj, filter );
+#     else
+#         ResetFilterObj( obj, filter );
+#     fi;
+# end );
 
 #############################################################################
 ##
@@ -1056,25 +1056,25 @@ DeclareObsoleteSynonym( "TmpNameAllArchs", "TmpName" );
 #F  ZERO
 ##
 ##  Not used in any redistributed package (07/2022)
-BindGlobal( "ZERO", ZeroSameMutability );
+#BindGlobal( "ZERO", ZeroSameMutability );
 
 #############################################################################
 ##
 #F  AINV
 ##
 ##  Not used in any redistributed package (07/2022)
-BindGlobal( "AINV", AdditiveInverseSameMutability );
+#BindGlobal( "AINV", AdditiveInverseSameMutability );
 
 #############################################################################
 ##
 #F  ONE_MUT
 ##
 ##  Not used in any redistributed package (07/2022)
-BindGlobal( "ONE_MUT", OneSameMutability );
+#BindGlobal( "ONE_MUT", OneSameMutability );
 
 #############################################################################
 ##
 #F  INV_MUT
 ##
 ##  Not used in any redistributed package (07/2022)
-BindGlobal( "INV_MUT", InverseSameMutability );
+#BindGlobal( "INV_MUT", InverseSameMutability );

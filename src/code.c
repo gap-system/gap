@@ -259,6 +259,10 @@ Stat NewStatOrExpr(CodeState * cs, UInt type, UInt size, UInt line)
     StatHeader * header = STAT_HEADER(cs, stat);
     header->line = line;
     header->size = size;
+    // check size fits inside header
+    if (header->size != size) {
+        ErrorQuit("function too large for parser", 0, 0);
+    }
     header->type = type;
     RegisterStatWithHook(GET_GAPNAMEID_BODY(cs->currBody), line, type);
     // return the new statement

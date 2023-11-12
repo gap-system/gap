@@ -92,8 +92,8 @@ sitive integer)
 gap> \.(r, "a");
 Error, Record Element: <rnam> must be a positive small integer (not a list (st\
 ring))
-gap> \.(r, 1000000);
-Error, Record Element: <rnam> must be a valid rnam (not the integer 1000000)
+gap> \.(r, 100000000);
+Error, Record Element: <rnam> must be a valid rnam (not the integer 100000000)
 
 ##
 gap> IsBound\.(r, RNamObj("y"));
@@ -112,8 +112,8 @@ sitive integer)
 gap> IsBound\.(r, "a");
 Error, Record IsBound: <rnam> must be a positive small integer (not a list (st\
 ring))
-gap> IsBound\.(r, 1000000);
-Error, Record IsBound: <rnam> must be a valid rnam (not the integer 1000000)
+gap> IsBound\.(r, 100000000);
+Error, Record IsBound: <rnam> must be a valid rnam (not the integer 100000000)
 
 ##
 gap> r;
@@ -137,8 +137,8 @@ itive integer)
 gap> Unbind\.(r, "a");
 Error, Record Unbind: <rnam> must be a positive small integer (not a list (str\
 ing))
-gap> Unbind\.(r, 1000000);
-Error, Record Unbind: <rnam> must be a valid rnam (not the integer 1000000)
+gap> Unbind\.(r, 100000000);
+Error, Record Unbind: <rnam> must be a valid rnam (not the integer 100000000)
 
 ##
 gap> r;
@@ -164,7 +164,7 @@ Error, Record Assignment: <rnam> must be a positive small integer (not a large\
 gap> \.\:\=(r, "a", 1);
 Error, Record Assignment: <rnam> must be a positive small integer (not a list \
 (string))
-gap> \.\:\=(r, 1000000, 1);
+gap> \.\:\=(r, 100000000, 1);
 Error, Record Assignment: <rnam> must be a valid rnam (not the integer 1000000\
-)
+00)
 gap> STOP_TEST( "recordname.tst", 1);

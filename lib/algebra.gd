@@ -1648,6 +1648,52 @@ DeclareGlobalFunction( "AlgebraByStructureConstants" );
 
 #############################################################################
 ##
+#F  AlgebraWithOneByStructureConstants( <R>, <sctable>[, <nameinfo>],
+#F                                      <onecoeffs> )
+##
+##  <#GAPDoc Label="AlgebraWithOneByStructureConstants">
+##  <ManSection>
+##  <Func Name="AlgebraWithOneByStructureConstants"
+##   Arg="R, sctable[, nameinfo], onecoeffs"/>
+##
+##  <Description>
+##  The only differences between this function and
+##  <Ref Func="AlgebraByStructureConstants"/> are that
+##  <Ref Func="AlgebraWithOneByStructureConstants"/> takes an additional
+##  argument <A>onecoeffs</A>, the coefficients vector over the ring <A>R</A>
+##  that describes the unique multiplicative identity element of the returned
+##  algebra w. r. t. the defining basis of this algebra,
+##  and that the returned algebra is an algebra-with-one
+##  (see <Ref Func="IsAlgebraWithOne"/>).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> A:= GF(2)^[2,2];;
+##  gap> B:= Basis( A );;
+##  gap> onecoeffs:= Coefficients( B, One( A ) );
+##  [ Z(2)^0, 0*Z(2), 0*Z(2), Z(2)^0 ]
+##  gap> T:= StructureConstantsTable( B );;
+##  gap> sc1:= AlgebraByStructureConstants( GF(2), T );
+##  <algebra of dimension 4 over GF(2)>
+##  gap> HasOne( sc1 );
+##  false
+##  gap> One( sc1 );
+##  v.1+v.4
+##  gap> sc2:= AlgebraWithOneByStructureConstants( GF(2), T, onecoeffs );
+##  <algebra-with-one of dimension 4 over GF(2)>
+##  gap> HasOne( sc2 );
+##  true
+##  gap> One( sc2 );
+##  v.1+v.4
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "AlgebraWithOneByStructureConstants" );
+
+
+#############################################################################
+##
 #F  LieAlgebraByStructureConstants( <R>, <sctable>[, <nameinfo>] )
 ##
 ##  <#GAPDoc Label="LieAlgebraByStructureConstants">

@@ -170,8 +170,15 @@ jobs:
                ${{ matrix.extra }}
                if [[ -n ${NO_COVERAGE} ]] ; then
                   echo "No coverage reporting"
+               elif [ "$RUNNER_OS" == "Linux" ] ; then
+                  # Passing -pthread makes linux gcc generate profiles in a thread-safe way,
+                  # but that is very slow, so we force non-threadsafe generation.
+                  echo "Use non-threadsafe coverage options, updating compiler and linker flags"
+                  echo "CFLAGS=--coverage -O2 -g -fprofile-update=single" >> $GITHUB_ENV
+                  echo "CXXFLAGS=--coverage -O2 -g -fprofile-update=single" >> $GITHUB_ENV
+                  echo "LDFLAGS=--coverage -fprofile-update=single" >> $GITHUB_ENV
                else
-                  echo "Coverage reporting, updating compiler and linker flags"
+                  echo "Using standard coverage options, updating compiler and linker flags"
                   echo "CFLAGS=--coverage -O2 -g" >> $GITHUB_ENV
                   echo "CXXFLAGS=--coverage -O2 -g" >> $GITHUB_ENV
                   echo "LDFLAGS=--coverage" >> $GITHUB_ENV

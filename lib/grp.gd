@@ -1255,8 +1255,7 @@ DeclareAttribute( "ConjugacyClasses", IsGroup );
 ##  <Example><![CDATA[
 ##  gap> ConjugacyClassesMaximalSubgroups(g);
 ##  [ Group( [ (2,4,3), (1,4)(2,3), (1,3)(2,4) ] )^G,
-##    Group( [ (3,4), (1,4)(2,3), (1,3)(2,4) ] )^G,
-##    Group( [ (3,4), (2,4,3) ] )^G ]
+##    Group( [ (3,4), (1,3)(2,4) ] )^G, Group( [ (3,4), (2,4,3) ] )^G ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1302,8 +1301,8 @@ DeclareAttribute( "MaximalSubgroups", IsGroup );
 ##  of <A>G</A>.
 ##  <Example><![CDATA[
 ##  gap> MaximalSubgroupClassReps(g);
-##  [ Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]), Group([ (3,4), (1,4)
-##    (2,3), (1,3)(2,4) ]), Group([ (3,4), (2,4,3) ]) ]
+##  [ Group([ (2,4,3), (1,4)(2,3), (1,3)(2,4) ]),
+##    Group([ (3,4), (1,3)(2,4) ]), Group([ (3,4), (2,4,3) ]) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

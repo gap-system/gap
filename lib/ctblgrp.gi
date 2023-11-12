@@ -67,6 +67,10 @@ local D,C,cl,pl;
           group:=G,# workgroup
           deg:=Size(G),
           size:=Size(G),
+          # when do we consider a class as large, so we might do something
+          # special?
+          classlimit:=10^6,
+          calculatedMats:=[],
           yetmats:=[],
           modulars:=[]
         );
@@ -661,14 +665,10 @@ end );
 ##
 InstallGlobalFunction(SplitStep,function(D,bestMat)
   local raeume,base,M,bestMatCol,bestMatSplit,i,j,k,N,row,col,Row,o,dim,
-        newRaeume,raum,ra,f,activeCols,eigenbase,eigen,v,vo;
+        newRaeume,raum,ra,f,activeCols,eigenbase,eigen,v,vo,partial;
 
   if not bestMat in D.matrices then
     Error("matrix <bestMat> not indicated for splitting");
-  fi;
-
-  if D.classiz[bestMat]>10^6 then
-    Info(InfoWarning,1,"computing class matrix for class of size >10^6");
   fi;
 
   k:=D.klanz;
@@ -681,13 +681,63 @@ InstallGlobalFunction(SplitStep,function(D,bestMat)
     bestMatCol:=D.requiredCols[bestMat];
     bestMatSplit:=D.splitBases[bestMat];
     M:= ZeroMatrix(Integers,k,k);
+
     Info(InfoCharacterTable,1,"Matrix ",bestMat,",Representative of Order ",
        Order(D.classreps[bestMat]),
        ",Centralizer: ",D.centralizers[bestMat]);
+    Info(InfoCharacterTable,2,"Splitting Nr.s",bestMatSplit,
+      "of dimensions ",List(D.raeume{bestMatSplit},x->x.dim));
 
-    Add(D.yetmats,bestMat);
+    partial:=false;
+    if D.classiz[bestMat]>D.classlimit then
+      Info(InfoWarning,1,"computing class matrix for class of size >",
+        D.classlimit);
+      if Length(bestMatSplit)>1 then
+        i:=List(bestMatSplit,x->D.raeume[x].dim);
+        i:=bestMatSplit[Position(i,Minimum(i))];
+        bestMatSplit:=[i];
+        bestMatCol:=Set(D.raeume[i].activeCols);
+        if not IsBound(D.calculatedMats[bestMat]) then
+          D.calculatedMats[bestMat]:=
+            List([1..k],x->ListWithIdenticalEntries(k,0));
+        fi;
+        # need and known
+        col:=Union(bestMatCol,Filtered([1..k],num->ForAny([1..k],
+          x->not IsZero(D.calculatedMats[bestMat][x][num]))));
+        # do we get other spaces for free ?
+        i:=Filtered(D.splitBases[bestMat],
+          x->IsSubset(col,D.raeume[x].activeCols));
+        if i<>bestMatSplit then
+          bestMatSplit:=Union(i,bestMatSplit);
+          bestMatCol:=Union(List(bestMatSplit,x->D.raeume[x].activeCols));
+        fi;
+
+        Info(InfoCharacterTable,1,"Partial:",bestMatSplit);
+        partial:=true;
+      fi;
+    fi;
+
+    if not partial then
+      Add(D.yetmats,bestMat);
+      SubtractSet(D.matrices,[bestMat]);
+    fi;
+    Info(InfoCharacterTable,2,"Columns: ",bestMatCol);
+
     for col in bestMatCol do
-      D.ClassMatrixColumn(D,M,bestMat,col);
+      if IsBound(D.calculatedMats[bestMat]) and
+        ForAny([1..k],x->not IsZero(D.calculatedMats[bestMat][x][col])) then
+        Info(InfoCharacterTable,2,"Re-using cached column ",col);
+        for i in [1..k] do
+          M[i][col]:=D.calculatedMats[bestMat][i][col];
+        od;
+      else
+        D.ClassMatrixColumn(D,M,bestMat,col);
+        if partial then
+          for i in [1..k] do
+            D.calculatedMats[bestMat][i][col]:=M[i][col];
+          od;
+        fi;
+      fi;
     od;
 
     M:=Matrix(D.field,Unpack(M)*o);
@@ -696,7 +746,6 @@ InstallGlobalFunction(SplitStep,function(D,bestMat)
     D.maycent:=true;
 
     newRaeume:=[];
-    SubtractSet(D.matrices,[bestMat]);
     for i in bestMatSplit do
       raum:=raeume[i];
       base:=DxNiceBasis(D,raum);
@@ -719,14 +768,8 @@ InstallGlobalFunction(SplitStep,function(D,bestMat)
       # Base umrechnen
       base:=Matrix(BaseDomain(base[1]),base);
       eigenbase:=List(eigen.base,i->List(i,j->j*base));
-    #eigenvalues:=List(eigen.values,i->i/D.classiz[bestMat]);
 
       Assert(1,Length(eigenbase)>1);
-
-      #if Length(eigenbase)=1 then
-      #  Error("#W This should not happen !");
-      #  Add(newRaeume,raum);
-      #else
 
       ra:=List(eigenbase,i->rec(base:=i,dim:=Length(i)));
 
@@ -2327,7 +2370,6 @@ local n,i,j,aii,Li,L;
       aii:=ER(NumeratorRat(aii))/ER(DenominatorRat(aii));
     else
       return fail;
-      Error("huch");
     fi;
     Li:=IdentityMat(n);
     Li[i][i]:=aii;

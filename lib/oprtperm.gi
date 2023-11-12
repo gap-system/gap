@@ -1373,7 +1373,21 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
 
     # action on permgroups, use backtrack
     elif act = OnPoints and IsPermGroup( d ) and IsPermGroup( e )  then
-        rep := ConjugatorPermGroup( G, d, e );
+
+      if Size(G)<10^5 or NrMovedPoints(G)<500 then
+        rep:=ConjugatorPermGroup(G,d,e);
+      else
+        S:=ClusterConjugacyPermgroups(G,[e,d]);
+        if Length(S.clusters)>1 then return fail;fi;
+        if S.gps[1]=S.gps[2] then
+          rep:=One(G);
+        else
+          rep:=ConjugatorPermGroup(S.actors[1],S.gps[2],S.gps[1]);
+        fi;
+        if rep<>fail then
+          rep:=S.conjugators[2]*rep;
+        fi;
+      fi;
 
     # action on pairs or tuples of other objects, iterate
     elif act = OnPairs  or act = OnTuples  then

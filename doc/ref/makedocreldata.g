@@ -53,6 +53,7 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/cyclotom.g",
     "../../lib/cyclotom.gd",
     "../../lib/cyclotom.gi",
+    "../../lib/dlog.gd",
     "../../lib/dict.gd",
     "../../lib/domain.gd",
     "../../lib/extlset.gd",

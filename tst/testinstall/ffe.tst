@@ -478,6 +478,14 @@ true
 gap> q:=37^3;; r:=Z(q)^1055;; ForAll([0..q-2], i -> LogFFE(r^i,r)=i);
 true
 
+# test the fix for https://github.com/gap-system/gap/issues/3784
+gap> ForAll( Primes, p -> LogFFE( Z(p^2)^4, Z(p^2)^2 ) = 2 );
+true
+gap> ForAll( Primes, p -> p = 2 or LogFFE( Z(p), Z(p^2) ) = p+1 );
+true
+gap> ForAll( Primes, p -> p = 2 or LogFFE( Z(p^2)^(p+1), Z(p) ) = 1 );
+true
+
 # error handling
 gap> LogFFE(0*Z(2), Z(2));
 Error, LogFFE: <z> must be a nonzero finite field element

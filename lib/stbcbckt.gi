@@ -2671,11 +2671,20 @@ Eh, Lh, Nh,G0;
     L := arg[ 3 ];
     issub:=fail;
   elif IsSubset( G, E )   then
+    if Size(G)=Size(E) then
+      return G;
+    fi;
     L := E;
     issub:=true;
   else
     L := TrivialSubgroup( G );
     issub:=false;;
+  fi;
+
+  if issub and HasFittingFreeLiftSetup(G) and NrMovedPoints(G)>1000
+    # radical is at lest 3rd root of |G| -- avoid smallish radical
+    and Size(FittingFreeLiftSetup(G).radical)^3>Size(G) then
+    return NormalizerViaRadical(G,E);
   fi;
 
   mpG:=MovedPoints(GeneratorsOfGroup(G));

@@ -55,6 +55,7 @@
 
 <#Include Label="[2]{algebra}">
 <#Include Label="AlgebraByStructureConstants">
+<#Include Label="AlgebraWithOneByStructureConstants">
 <#Include Label="StructureConstantsTable">
 <#Include Label="EmptySCTable">
 <#Include Label="SetEntrySCTable">

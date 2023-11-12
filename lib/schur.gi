@@ -618,10 +618,8 @@ local G,pl;
   G:=arg[1];
   if not IsFinite(G) then
     Error("cover is only defined for finite groups");
-  elif Size(G)=1 then
+  elif IsTrivial(G) then
     return IdentityMapping(G);
-  elif IsPGroup(G) then
-    TryNextMethod(); # we recursively call the algorithm for the p-sylow
   fi;
   Info(InfoWarning,1,"Warning: EpimorphismSchurCover via Holt's algorithm is under construction");
   if Length(arg)>1 then
