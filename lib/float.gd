@@ -91,7 +91,7 @@ end);
 ##   <Attr Name="Zeta" Arg="f"/>
 ##   <Attr Name="Gamma" Arg="f"/>
 ##   <Description>
-##     Standard math functions. 
+##     Standard math functions.
 ##     Functions ending in an integer like <C>Log2</C>, <C>Log10</C>, <C>Exp2</C> and <C>Exp10</C> indicate the base used, in <C>log</C> and <C>exp</C> the natural base is used, i.e. <M>e</M>.
 ##   </Description>
 ## </ManSection>
@@ -173,7 +173,7 @@ DeclareAttribute("Gamma", IsFloat);
 ##       if <A>x&gt;0</A>.
 ##   </Description>
 ## </ManSection>
-##  
+##
 ## <ManSection>
 ##   <Attr Name="SinCos" Arg="x"/>
 ##   <Returns>The list <C>[sin(x), cos(x)]</C>.</Returns>
@@ -181,12 +181,12 @@ DeclareAttribute("Gamma", IsFloat);
 ##       The function returns a list with <C>sin</C> and <C>cos</C> of of <A>x</A>.
 ##   </Description>
 ## </ManSection>
-##  
+##
 ## <ManSection>
 ##   <Oper Name="Atan2" Arg="y x"/>
 ##   <Returns>The polar angle of <A>(x, y)</A> in the plane as float.</Returns>
 ##   <Description>
-##        Returns the principal value of the argument (polar angle) of (x, y) in the plane. 
+##        Returns the principal value of the argument (polar angle) of (x, y) in the plane.
 ##        The returned value will always be in <M>(-\pi , \pi]</M> and is not defined on <A>(0,0)</A>.
 ##        This function is defined in accordance with IEEE 1788-2015 and imported from IEEE 754.
 ##   </Description>
