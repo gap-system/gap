@@ -87,7 +87,6 @@ end);
 ##   <Attr Name="AbsoluteValue" Arg="f" Label="for floats"/>
 ##   <Attr Name="Norm" Arg="f" Label="for floats"/>
 ##   <Attr Name="Frac" Arg="f"/>
-##   <Attr Name="Erf" Arg="f"/>
 ##   <Attr Name="Zeta" Arg="f"/>
 ##   <Attr Name="Gamma" Arg="f"/>
 ##   <Description>
@@ -133,7 +132,6 @@ DeclareAttribute("AbsoluteValue", IsFloat);
 #DeclareAttribute("Norm", IsFloat); # already defined
 DeclareOperation("Hypothenuse", [IsFloat, IsFloat]);
 DeclareAttribute("Frac", IsFloat);
-DeclareAttribute("Erf", IsFloat);
 DeclareAttribute("Zeta", IsFloat);
 DeclareAttribute("Gamma", IsFloat);
 
@@ -204,6 +202,15 @@ DeclareAttribute("Gamma", IsFloat);
 ##       <P/> These two functions are inverse to each other.
 ##   </Description>
 ## </ManSection>
+##
+## <ManSection>
+##   <Oper Name="Erf" Arg="x"/>
+##   <Returns>The error function given by the Gaussian integral</Returns>
+##   <Description>
+##        Returns the error function imported from IEEE 754 given by the formula:<Br/>
+##        <M> Erf(x) := \frac{2}{\sqrt{\pi}} \int_{0}^{x} exp(- t^2 ) dt </M>
+##   </Description>
+## </ManSection>
 ## <#/GAPDoc>
 DeclareOperation("EqFloat", [IsFloat, IsFloat]);
 DeclareAttribute("PrecisionFloat", IsFloat);
@@ -213,6 +220,7 @@ DeclareAttribute("SinCos", IsFloat);
 DeclareOperation("Atan2", [IsFloat, IsFloat]);
 DeclareAttribute("Log1p", IsFloat);
 DeclareAttribute("Expm1", IsFloat);
+DeclareAttribute("Erf", IsFloat);
 ################################################################
 
 ################################################################
