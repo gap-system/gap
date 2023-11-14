@@ -502,15 +502,15 @@ InstallGlobalFunction( IsCheapConwayPolynomial, function( p, n )
   fi;
   # this is not very precise, hopefully good enough for the moment
   if p < 41 then
-    if n < 100 and IsPrimeInt(n) then
+    if n < 100 and (n = 1 or IsPrimeInt(n)) then
       return true;
     fi;
   elif p < 100 then
-    if n < 40 and IsPrimeInt(n) then
+    if n < 40 and (n = 1 or IsPrimeInt(n)) then
       return true;
     fi;
   elif p < 1000 then
-    if n < 14 and IsPrimeInt(n) then
+    if n < 14 and (n = 1 or IsPrimeInt(n)) then
       return true;
     fi;
   elif p < 2^48 then
