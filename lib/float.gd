@@ -184,8 +184,8 @@ DeclareAttribute("Gamma", IsFloat);
 ##   <Oper Name="Atan2" Arg="y x"/>
 ##   <Returns>The polar angle of <A>(x, y)</A> in the plane as float.</Returns>
 ##   <Description>
-##        Returns the principal value of the argument (polar angle) of (x, y) in the plane.
-##        The returned value will always be in <M>(-\pi , \pi]</M> and is not defined on <A>(0,0)</A>.
+##        Returns the principal value of the argument (polar angle) of <M>(<A>x</A>, <A>y</A>)</M> in the plane.
+##        The returned value will always be in <M>(-\pi , \pi]</M> and is not defined on <M>(0,0)</M>.
 ##        This function is defined in accordance with IEEE 1788-2015 and imported from IEEE 754.
 ##   </Description>
 ## </ManSection>
@@ -193,11 +193,11 @@ DeclareAttribute("Gamma", IsFloat);
 ## <ManSection>
 ##   <Attr Name="Log1p" Arg="x"/>
 ##   <Attr Name="Expm1" Arg="x"/>
-##   <Returns>The natural logarithm of <A>x+1</A> or exponential <M>-1</M> of <A>x</A> respectively.</Returns>
+##   <Returns>The natural logarithm of <M><A>x</A>+1</M> or exponential <M>-1</M> of <A>x</A> respectively.</Returns>
 ##   <Description>
-##       The first function <C>Log1p</C> returns the natural logarithm <M>log(x+1)</M>.
+##       The first function <C>Log1p</C> returns the natural logarithm <M>log(<A>x</A>+1)</M>.
 ##
-##       <P/> The second function <C>Expm1</C> returns the exponential function <M>exp(x)-1</M>
+##       <P/> The second function <C>Expm1</C> returns the exponential function <M>exp(<A>x</A>)-1</M>
 ##
 ##       <P/> These two functions are inverse to each other.
 ##   </Description>
@@ -207,8 +207,8 @@ DeclareAttribute("Gamma", IsFloat);
 ##   <Oper Name="Erf" Arg="x"/>
 ##   <Returns>The error function given by the Gaussian integral</Returns>
 ##   <Description>
-##        Returns the error function imported from IEEE 754 given by the formula:<Br/>
-##        <M> Erf(x) := \frac{2}{\sqrt{\pi}} \int_{0}^{x} exp(- t^2 ) dt </M>
+##        Returns the error function imported from IEEE 754 given by the formula:
+##        <Display> Erf(x) := \frac{2}{\sqrt{\pi}} \int_{0}^{x} exp(- t^2 ) dt </Display>
 ##   </Description>
 ## </ManSection>
 ## <#/GAPDoc>
