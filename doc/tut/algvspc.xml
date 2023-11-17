@@ -16,8 +16,23 @@ algebras in &GAP;.
 <Section Label="Vector Spaces">
 <Heading>Vector Spaces</Heading>
 <P/>
-A <E>vector space</E> over the field <M>F</M> is an additive group
-that is closed under scalar multiplication with elements in <M>F</M>.
+A <E>vector space</E> <M>V</M> over a field <M>F</M> is an (abelian) additive group
+that is closed under scalar multiplication by elements in <M>F</M>, such that 
+<Enum>
+  <Item>
+    <M>1v=v</M>, 
+  </Item>
+  <Item>
+    <M>a(bv)=(ab)v</M>, 
+  </Item>
+  <Item>
+    <M>a(v+w)=av+aw</M>, and 
+  </Item>
+  <Item>
+    <M>(a+b)v=av+bv</M>, 
+  </Item>
+</Enum>
+for all <M>a,b \in F</M> and all <M>v,w \in V</M>.
 In &GAP;, only those domains that are
 constructed as vector spaces are regarded as vector spaces.
 In particular, an additive group that does not know about an
@@ -203,7 +218,7 @@ gap> PreImagesRepresentative( h, [ 1, 0 ] );
 <Section Label="Algebras">
 <Heading>Algebras</Heading>
 
-If a multiplication is defined for the elements of a vector space,
+If a bilinear multiplication is defined for the elements of a vector space,
 and if the vector space is closed under this multiplication then it is
 called an <E>algebra</E>. For example, every field is an algebra:
 <P/>
