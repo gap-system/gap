@@ -1131,31 +1131,26 @@ local cs,       # chief series of G
 
   cs:= ChiefSeriesThrough( G,[Socle(G)] );
 
-  # the first step is always simple
-  if HasAbelianFactorGroup(G,cs[2]) then
-    # try to get the largest abelian factor
-    i:=2;
-    while i<Length(cs) and HasAbelianFactorGroup(G,cs[i+1]) do
-      i:=i+1;
-    od;
-    cs:=Concatenation([G],cs{[i..Length(cs)]});
-    # now cs[1]/cs[2] is the largest abelian factor
-
-    cl:=List(RightTransversal(G,cs[2]),i->[i,G]);
+  # First do socle factor
+  if Size(Socle(G))=Size(G) then
+    cl:=[One(G),G];
+    lastM:=G;
   else
+    lastM:=Socle(G);
     # compute the classes of the simple nonabelian factor by random search
-    hom:=NaturalHomomorphismByNormalSubgroupNC(G,cs[2]);
+    hom:=NaturalHomomorphismByNormalSubgroupNC(G,lastM);
     cl:=ConjugacyClasses(Image(hom));
     cl:=List(cl,i->[PreImagesRepresentative(hom,Representative(i)),
                     PreImage(hom,StabilizerOfExternalSet(i))]);
+    cs:=Concatenation([G],Filtered(cs,x->IsSubset(lastM,x)));
   fi;
-  lastM:=cs[2];
 
-  for i in [3..Length(cs)] do
+  for i in [2..Length(cs)] do
     # we assume that cl contains classreps/centralizers for G/cs[i-1]
     # we want to lift to G/cs[i]
     M:=cs[i-1];
     N:=cs[i];
+
     Info(InfoHomClass,1,i,":",Index(M,N),";  ",Size(N));
     if HasAbelianFactorGroup(M,N) then
       Info(InfoHomClass,2,"abelian factor ignored");
