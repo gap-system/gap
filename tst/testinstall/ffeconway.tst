@@ -52,6 +52,8 @@ gap> fieldpairs := Concatenation(List(fieldsizes, pd -> List(Filtered([1..pd[2]-
   [ 257, 11, 1 ], [ 65521, 2, 1 ], [ 65537, 2, 1 ], [ 268435399, 2, 1 ], 
   [ 4294967291, 2, 1 ], [ 1152921504606846883, 3, 1 ], 
   [ 18446744073709551629, 2, 1 ] ]
+gap> IsCheapConwayPolynomial( 997, 1 );
+true
 
 #
 # construct generating elements
