@@ -2847,7 +2847,12 @@ local c,offset,f,b,r,i,j,fp,bp;
     od;
     if i>r then
       if f<>alpha then
-        NEWTC_ModifiedCoincidence(DATA,f,alpha,WordProductLetterRep(-Reversed(fp),y));
+        if DATA.useAddition then
+          NEWTC_ModifiedCoincidence(DATA,f,alpha,-fp+y);
+        else
+          NEWTC_ModifiedCoincidence(DATA,f,alpha,
+            WordProductLetterRep(-Reversed(fp),y));
+        fi;
       fi;
       return;
     fi;
