@@ -83,6 +83,7 @@ Obj NewFunctionBody(void)
 */
 static Expr * ADDR_EXPR(CodeState * cs, Expr expr)
 {
+    GAP_ASSERT(!(IS_REF_LVAR(expr) || IS_INTEXPR(expr)));
     return (Expr *)PTR_BAG(cs->currBody) + expr / sizeof(Expr);
 }
 
@@ -95,6 +96,7 @@ static Expr * ADDR_EXPR(CodeState * cs, Expr expr)
 */
 static Stat * ADDR_STAT(CodeState * cs, Stat stat)
 {
+    GAP_ASSERT(!(IS_REF_LVAR(stat) || IS_INTEXPR(stat)));
     return (Stat *)PTR_BAG(cs->currBody) + stat / sizeof(Stat);
 }
 
@@ -1098,14 +1100,14 @@ void CodeForEndBody(CodeState * cs, UInt nr)
     // get the variable reference
     var = PopExpr();
 
+    type = STAT_FOR;
+
     // select the type of the for-statement
-    StatHeader * hdr = STAT_HEADER(cs, list);
-    if (hdr->type == EXPR_RANGE && hdr->size == 2 * sizeof(Expr) &&
-        IS_REF_LVAR(var)) {
-        type = STAT_FOR_RANGE;
-    }
-    else {
-        type = STAT_FOR;
+    if (TNUM_STAT_OR_EXPR(cs, list) == EXPR_RANGE) {
+        StatHeader * hdr = STAT_HEADER(cs, list);
+        if (hdr->size == 2 * sizeof(Expr) && IS_REF_LVAR(var)) {
+            type = STAT_FOR_RANGE;
+        }
     }
 
     // allocate the for-statement
