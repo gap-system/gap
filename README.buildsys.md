@@ -55,8 +55,6 @@ can follow the standard procedure:
   to add or remove a kernel C source file, you need to add or remove
   its name here and only here.
 
-* `bin/`: This directory is created for compatibility mode (see below).
-
 * `cnf/`: All files in this directory are part of the build system.
 
 * `extern/`: External libraries we bundle with GAP (such as GMP) are
@@ -111,26 +109,6 @@ or `--enable-hpcgap`.
 Once the configure script has completed, you can run `make` as usual,
 and all the object files and the gap executable will be placed inside
 builddir. Your srcdir will remain untouched.
-
-
-## Compatibility mode
-
-Compatibility mode emulates the build environment of the old GAP build system
-in order to allow packages with kernel extensions to be used with the new
-build system unmodified. As such, it mainly exists to ease the transition
-between new and old build system, and the plan is to remove it once all
-packages have been adapted to the new build system. However, that is still
-far off.
-
-Compatibility mode does the following things:
-
-* create a `bin/gap.sh` shell script invoking `gap`
-* ...
-
-For now, using compatibility mode is required if one wants to build the
-kernel extension for most packages which have one. In the future, we will
-provide an alternative way to do this, and also will extend `gac` to
-cleanly supported building kernel extensions.
 
 
 ## Dependency tracking
