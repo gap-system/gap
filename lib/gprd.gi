@@ -1091,13 +1091,13 @@ local info,map,U,mapfun,P;
         U:=SubgroupNC(G,info.hgens);
       fi;
       map:=GroupHomomorphismByFunction(P,U,mapfun,
-	function(elm)
-	  elm:=elm![n];
-	  if n>info.degI then
-	    elm:=PreImagesRepresentativeNC(info.alpha,elm);
-	  fi;
-	  return elm;
-	end);
+        function(elm)
+          elm:=elm![n];
+          if n>info.degI then
+            elm:=PreImagesRepresentativeNC(info.alpha,elm);
+          fi;
+          return elm;
+        end);
       info.embeddings[n]:=map;
     fi;
     return info.embeddings[n];
@@ -1118,7 +1118,7 @@ local info,map,np;
 
     map:=GroupHomomorphismByFunction(G,info.groups[2],
       function(elm)
-	return PreImagesRepresentativeNC(info.alpha,elm![np]);
+        return PreImagesRepresentativeNC(info.alpha,elm![np]);
       end,
       false, # not bijective
       function(elm)

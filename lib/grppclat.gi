@@ -85,8 +85,8 @@ local f;
               Image( epi, ConjugatorOfConjugatorIsomorphism( aut ) ) );
   else
     aut:= GroupHomomorphismByImagesNC(f,f,GeneratorsOfGroup(f),
-				   List(GeneratorsOfGroup(f),
-	       i->Image(epi,Image(aut,PreImagesRepresentativeNC(epi,i)))));
+                                   List(GeneratorsOfGroup(f),
+               i->Image(epi,Image(aut,PreImagesRepresentativeNC(epi,i)))));
     SetIsInjective(aut,true);
     SetIsSurjective(aut,true);
   fi;
@@ -672,7 +672,7 @@ local g,        # group
 #    hom:=[];
 #    for i in func do
 #      hom2:=GroupHomomorphismByImagesNC(g,g,g.generators,List(g.generators,
-#              j->Image(isom,Image(i,PreImagesRepresentative(isom,j)))));
+#              j->Image(isom,Image(i,PreImagesRepresentativeNC(isom,j)))));
 #      hom2.isMapping:=true;
 #      Add(hom,hom2);
 #    od;
@@ -788,7 +788,7 @@ local g,        # group
 
     hom:= GroupHomomorphismByImagesNC(f,fa,GeneratorsOfGroup(f),
            List(GeneratorsOfGroup(f),i->
-	     Image(hom,PreImagesRepresentativeNC(epi,i))));
+             Image(hom,PreImagesRepresentativeNC(epi,i))));
     Assert(2,KernelOfMultiplicativeGeneralMapping(hom)=n);
 
     # lift the known groups

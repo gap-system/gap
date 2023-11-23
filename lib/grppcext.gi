@@ -379,10 +379,10 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
       genimgs:=List(gens,
           i->ImagesRepresentative(Embedding(D,1),
           PreImagesRepresentativeNC(p1iso,
-            PreImagesRepresentativeNC(pc1,ImagesRepresentative(p1,i))))
-            *ImagesRepresentative(Embedding(D,2),
-                PreImagesRepresentativeNC(p2iso,
-                PreImagesRepresentativeNC(pc2,ImagesRepresentative(p2,i)))) );
+           PreImagesRepresentativeNC(pc1,ImagesRepresentative(p1,i))))
+           *ImagesRepresentative(Embedding(D,2),
+             PreImagesRepresentativeNC(p2iso,
+              PreImagesRepresentativeNC(pc2,ImagesRepresentative(p2,i)))) );
 
     else
       opt:=rec(limit:=s,random:=1);
@@ -426,9 +426,9 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
 
       genimgs:=List(gens,
           i->ImagesRepresentative(Embedding(D,1),
-                PreImagesRepresentativeNC(p1iso,ImagesRepresentative(p1,i)))
+              PreImagesRepresentativeNC(p1iso,ImagesRepresentative(p1,i)))
             *ImagesRepresentative(Embedding(D,2),
-                PreImagesRepresentativeNC(p2iso,ImagesRepresentative(p2,i))) );
+              PreImagesRepresentativeNC(p2iso,ImagesRepresentative(p2,i))) );
 
     fi;
     triso:=GroupHomomorphismByImagesNC(DP,D,gens,genimgs);
@@ -712,9 +712,9 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
       Assert(1,MappingGeneratorsImages(epi)[2]=Ggens);
       f:=function( tup, elm )
           local gens;
-            #gens := List( tup[1], x -> PreImagesRepresentativeNC( elm[1], x ) );
+            #gens := List( tup[1], x -> PreImagesRepresentative( elm[1], x ) );
             #gens := List( gens, x -> MappedPcElement( x, tup[1], tup[2] ) );
-            gens := List( Ggens, x -> PreImagesRepresentativeNC( elm[1], x ) );
+            gens := List( Ggens, x->PreImagesRepresentativeNC( elm[1], x ) );
             gens := List( gens, x -> MappedWord( PreImagesRepresentativeNC(epi,x),
               GeneratorsOfGroup(Source(epi)), tup ) );
             gens := List( gens, x -> x ^ elm[2] );
@@ -731,7 +731,8 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
       elmlist:=[];
 
       tmp:=List(genimgs,x->x[1]);
-      preimlist:=List(tmp,x->[x,List(Ggens,y->PreImagesRepresentativeNC(x,y))]);
+      preimlist:=List(tmp,x->[x,List(Ggens,
+                          y->PreImagesRepresentativeNC(x,y))]);
 
       f:=function( tup, elm )
       local gens,p;
@@ -782,7 +783,8 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 
         if elmlist<>fail then
           tmp:=List(genimgs,x->x[1]);
-          preimlist:=List(tmp,x->[x,List(Ggens,y->PreImagesRepresentativeNC(x,y))]);
+          preimlist:=List(tmp,x->[x,List(Ggens,
+                              y->PreImagesRepresentativeNC(x,y))]);
 
           # ensure we also account for action
           u:=Group(tup);
@@ -1121,7 +1123,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
     # if reduction is suppressed
     elif IsBound( arg[3] ) and not arg[3] then
         all := NormedRowVectors( Image(cc.cohom) );
-        all := List( all, x -> ExtensionSQ(cohom.collector, G, M, 
+        all := List( all, x -> ExtensionSQ(cohom.collector, G, M,
                                PreImagesRepresentativeNC(cc.cohom,x )));
         red := false;
 
@@ -1132,7 +1134,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
         and not HasAutomorphismGroup( G )
     then
         all := NormedRowVectors( Image(cc.cohom) );
-        all := List( all, x -> ExtensionSQ(cc.collector, G, M, 
+        all := List( all, x -> ExtensionSQ(cc.collector, G, M,
                                PreImagesRepresentativeNC(cc.cohom, x )));
         red := false;
 
@@ -1151,7 +1153,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
         Info( InfoExtReps, 2, "   Ext: found ",Length(all)," orbits ");
 
         # create extensions and add info
-        all := List( all, x -> ExtensionSQ(cc.collector, G, M, 
+        all := List( all, x -> ExtensionSQ(cc.collector, G, M,
                                PreImagesRepresentativeNC(cc.cohom, x )));
     fi;
 

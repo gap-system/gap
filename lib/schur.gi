@@ -257,13 +257,14 @@ local s,pcgs,n,l,cov,pco,ng,gens,imgs,ran,zer,i,j,e,a,
     if Order(dc[i])>1 then # the trivial element will not do anything
       q:=Intersection(s,ConjugateSubgroup(s,dc[i]^-1));
       if Size(q)>1 then
-	qs:=PreImage(epi,q);
-	# factor generators
-	gens:=GeneratorsOfGroup(qs);
-	# their conjugates
-	imgs:=List(gens,j->PreImagesRepresentativeNC(epi,Image(epi,j)^dc[i]));
-	rels:=ClosureGroup(rels,CommutGenImgs(pco,gens,imgs,
-			    Intersection(mul,DerivedSubgroup(qs))));
+        qs:=PreImage(epi,q);
+        # factor generators
+        gens:=GeneratorsOfGroup(qs);
+        # their conjugates
+        imgs:=List(gens,
+                  j->PreImagesRepresentativeNC(epi,Image(epi,j)^dc[i]));
+        rels:=ClosureGroup(rels,CommutGenImgs(pco,gens,imgs,
+                            Intersection(mul,DerivedSubgroup(qs))));
       fi;
     fi;
     i:=i+1;
@@ -394,20 +395,20 @@ local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp,pos;
       k:=T[j];
       h:=One(D);
       for l in i do
-	if l<0 then 
-	  g:=Inverse(gens[-l]);
-	else
-	  g:=gens[l];
-	fi;
-	np:=k*g;
-	nk:=TL[PositionCanonical(T,np)];
-	#h:=h*PreImagesRepresentativeNC(s,np/nk);
-	h:=h*elp[Position(el,np/nk)];
-	k:=nk;
+        if l<0 then
+          g:=Inverse(gens[-l]);
+        else
+          g:=gens[l];
+        fi;
+        np:=k*g;
+        nk:=TL[PositionCanonical(T,np)];
+        #h:=h*PreImagesRepresentative(s,np/nk);
+        h:=h*elp[Position(el,np/nk)];
+        k:=nk;
       od;
 
-      #Print(PreImagesRepresentativeNC(s,Image(s,h))*h,"\n");
-      #a:=a/PreImagesRepresentativeNC(s,Image(s,h))*h;
+      #Print(PreImagesRepresentative(s,Image(s,h))*h,"\n");
+      #a:=a/PreImagesRepresentative(s,Image(s,h))*h;
       a:=a/h*elp[Position(el,Image(s,h))];
 
     od;
@@ -558,7 +559,7 @@ local hom,      #isomorphism fp
     s:=sl[pp];
     mg:=IsomorphismPermGroup(KernelOfMultiplicativeGeneralMapping(s));
     mg:=List(IndependentGeneratorsOfAbelianGroup(Image(mg)),
-	  i->PreImagesRepresentativeNC(mg,i));
+          i->PreImagesRepresentativeNC(mg,i));
     sdc:=ListWithIdenticalEntries(Last(ngl),One(Source(s)));
     sdc{[ngl[pp]+1..ngl[pp+1]]}:=mg;
 

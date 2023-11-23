@@ -605,12 +605,12 @@ InstallMethod(HasseDiagramBinaryRelation,
 
         ## return the minimal elements of a list under rel
         HDBRMinElts := function(list, rel)
-        
-            ## x minimal if 
-            ##  {y in list | y<>x and y in PreImagesElmNC(rel,x)} is empty
+
+            ## x minimal if
+            ##  {y in list | y<>x and y in PreImagesElmNC( rel,x)} is empty
             ##
             return Filtered(list,
-              x->IsEmpty(Filtered(list, y-> (y <> x) and 
+              x->IsEmpty(Filtered(list, y-> (y <> x) and
                                             (y in PreImagesElmNC(rel,x)))));
         end;
 
@@ -1781,7 +1781,7 @@ InstallMethod( ImagesRepresentative, "equivalence relations",
 
 #############################################################################
 ##
-#M  PreImagesRepresentativeNC( <rel>, <elm> )  . . for equivalence relations
+#M  PreImagesRepresentativeNC( <rel>, <elm> ) . . . for equivalence relations
 ##
 InstallMethod( PreImagesRepresentativeNC, "equivalence relations",
         FamRangeEqFamElm, [IsEquivalenceRelation, IsObject], 0,

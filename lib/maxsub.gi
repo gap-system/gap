@@ -182,7 +182,7 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
     sel:=Filtered([1..Length(mgi[2])],x->not IsOne(mgi[2][x]));
     if 4^Length(sel)>Size(Range(ff.factorhom)) then
       f:=SmallGeneratingSet(Image(ff.factorhom));
-      mgi:=[List(f,x->PreImagesRepresentative(ff.factorhom,x)),f];
+      mgi:=[List(f,x->PreImagesRepresentativeNC(ff.factorhom,x)),f];
       sel:=[1..Length(mgi[1])];
     fi;
     gensG:=mgi[1]{sel};
@@ -196,7 +196,7 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
     # just in case the stored group generators differ...
     wordfpgens:=List(wordgens,x->ElementOfFpGroup(fam,x));
     wordpre:=List(wordfpgens,x->PreImagesRepresentativeNC(ff.factorhom,
-	      PreImagesRepresentativeNC(fphom,x)));
+              PreImagesRepresentativeNC(fphom,x)));
     fphom:=ff.factorhom*fphom;
     # no assertion as this is not a proper homomorphism, but an inverse
     # multiplicative map
@@ -699,7 +699,7 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
 
   # type 4c
   reps:=List([1..n],
-	     i->PreImagesRepresentativeNC(fact,RepresentativeAction(fg,1,i)));
+          i->PreImagesRepresentativeNC(fact,RepresentativeAction(fg,1,i)));
 
 
   # get the maximal subgroups of A, intersect with t to get the socle part
@@ -758,8 +758,8 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
       #phi:=ActionHomomorphism(fg,u.orbit,OnSets);
       #ue:=Image(phi,fg);
       #reps:=List([1..nlb],i->RepresentativeAction(ue,1,i));
-      #reps:=List(reps,i->PreImagesRepresentativeNC(phi,i));
-      #reps:=List(reps,i->PreImagesRepresentativeNC(fact,i));
+      #reps:=List(reps,i->PreImagesRepresentative(phi,i));
+      #reps:=List(reps,i->PreImagesRepresentative(fact,i));
       #u:=u.stabilizer;
       uphi:=ActionHomomorphism(Image(fact,u),b);
 

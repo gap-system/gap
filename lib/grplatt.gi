@@ -2774,7 +2774,7 @@ local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,emb,u,pos,
     auts:=[];
     for i in GeneratorsOfGroup(n) do
       aut:=GroupHomomorphismByImages(f,f,gens,List(gens,x->
-	    Image(hom,PreImagesRepresentativeNC(hom,x)^i)));
+            Image(hom,PreImagesRepresentativeNC(hom,x)^i)));
       SetIsBijective(aut,true);
       Add(auts,aut);
     od;

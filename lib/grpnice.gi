@@ -281,8 +281,8 @@ function( obj1, obj2 )
     img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
     if img = fail or
       not (img in ImagesSource(nice) and
-	PreImagesRepresentativeNC(nice,img)=obj2) then
-	TryNextMethod();
+        PreImagesRepresentativeNC(nice,img)=obj2) then
+        TryNextMethod();
     fi;
     no:=NiceObject(obj1);
     img1 := ClosureGroup( NiceObject(obj1), img );

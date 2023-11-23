@@ -2102,8 +2102,8 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
         iso:=IsomorphismGroups(G,H);
       fi;
       aut:=GroupGeneralMappingByImages(G,G,gens,
-	    List(gens,
-	      x->PreImagesRepresentativeNC(iso,Image(iso,x)^(1,2))));
+            List(gens,
+              x->PreImagesRepresentativeNC(iso,Image(iso,x)^(1,2))));
       auts:=[aut];
       all:=true;
     fi;
@@ -2163,9 +2163,9 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
         od;
       fi;
       auts:=Concatenation(auts,
-	List(mats,s->GroupGeneralMappingByImages(G,G,gens,List(gens,x->
-		  Image(hom,PreImagesRepresentativeNC(hom,x)^s)))));
-      
+        List(mats,s->GroupGeneralMappingByImages(G,G,gens,List(gens,x->
+                  Image(hom,PreImagesRepresentativeNC(hom,x)^s)))));
+
     else
       gal:=Group(()); # to force trivial
     fi;
@@ -2173,10 +2173,10 @@ local d,id,H,iso,aut,auts,i,all,hom,field,dim,P,diag,mats,gens,gal;
     if Size(gal)>1 then
       # Galois
       auts:=Concatenation(auts,
-	List(MinimalGeneratingSet(gal),
-		s->GroupGeneralMappingByImages(G,G,gens,List(gens,x->
-		  Image(hom,
-		    List(PreImagesRepresentativeNC(hom,x),r->List(r,y->Image(s,y))))))));
+        List(MinimalGeneratingSet(gal),
+                s->GroupGeneralMappingByImages(G,G,gens,List(gens,x->
+                  Image(hom,
+                    List(PreImagesRepresentativeNC(hom,x),r->List(r,y->Image(s,y))))))));
     fi;
 
     # graph
@@ -2344,12 +2344,12 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
       a:=acts[i[j][1]][3];
       genimgs:=[];
       for gen in GeneratorsOfGroup(a) do
-	thom:=i[j][2];
-	thom:=GroupHomomorphismByImagesNC(t,t,GeneratorsOfGroup(t),
-	  List(GeneratorsOfGroup(t),
-	  j->Image(thom,PreImagesRepresentativeNC(thom,j)^gen)));
-	thom:=Image(auph,thom);
-	Add(genimgs,thom);
+        thom:=i[j][2];
+        thom:=GroupHomomorphismByImagesNC(t,t,GeneratorsOfGroup(t),
+          List(GeneratorsOfGroup(t),
+          j->Image(thom,PreImagesRepresentativeNC(thom,j)^gen)));
+        thom:=Image(auph,thom);
+        Add(genimgs,thom);
       od;
 
       ahom:=GroupHomomorphismByImagesNC(a,aup,GeneratorsOfGroup(a),genimgs);
@@ -2404,8 +2404,8 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
   gens:=SmallGeneratingSet(aup);
   for i in gens do
     au:=GroupHomomorphismByImages(g,g,GeneratorsOfGroup(g),
-	 List(GeneratorsOfGroup(g),
-	   j->PreImagesRepresentativeNC(emb,Image(emb,j)^i)));
+         List(GeneratorsOfGroup(g),
+           j->PreImagesRepresentativeNC(emb,Image(emb,j)^i)));
     Add(a,au);
   od;
   au:=Group(a);
@@ -2446,7 +2446,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
     bi:=[];
     for i in newbas do
       s:=List(stbs[i],
-	      x->Image(emb,Image(autom,PreImagesRepresentativeNC(emb,x))));
+              x->Image(emb,Image(autom,PreImagesRepresentativeNC(emb,x))));
       s:=First(orb[orpo[i]],x->ForAll(s,j->x^j=x));
       Add(bi,s);
     od;

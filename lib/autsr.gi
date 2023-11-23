@@ -141,7 +141,7 @@ local ocr,fphom,fpg,free,len,dim,tmp,L0,R,rels,mat,r,RS,i,g,v,cnt;
   fpg:=FreeGeneratorsOfFpGroup(Range(fphom));
   ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(fphom))];
   ocr.generators:=List(GeneratorsOfGroup(Range(fphom)),
-			i->PreImagesRepresentativeNC(fphom,i));
+                        i->PreImagesRepresentativeNC(fphom,i));
   OCAddMatrices(ocr,ocr.generators);
   OCAddRelations(ocr,ocr.generators);
   OCAddSumMatrices(ocr,ocr.generators);
@@ -487,7 +487,7 @@ local S,c,hom,q,a,b,i,t,have,ups,new,u,good,abort,clim,worked,pp,
       cnt:=0;
       for b in t do
         new:=PreImagesRepresentativeNC(hom,b);
-        if (pp=false or new^pp in S) and locond(new) then 
+        if (pp=false or new^pp in S) and locond(new) then
           S:=ClosureGroup(S,new);
           have:=true;
           cnt:=cnt+1;
@@ -1024,39 +1024,31 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       ocr:=OneCocycles(Q,Mim);
       split:=ocr.isSplitExtension;
       if not split then
-	# test: Semisimple and Frattini
-	b:=MTX.BasisRadical(mo);
-	fratsim:=Length(b)=0;
-	if not fratsim then
-	  b:=List(b,x->PreImagesRepresentativeNC(hom,PcElementByExponents(MPcgs,x)));
-	  for j in b do
-	    N:=ClosureSubgroup(N,b);
-	  od;
-	  # insert
-	  for j in [Length(ser),Length(ser)-1..i+1] do
-	    ser[j+1]:=ser[j];
-	  od;
-	  ser[i+1]:=N;
-	  Info(InfoMorph,2,"insert1");
-	else
-	  # Frattini?
-	  fratsim:=IsSubset(FrattiniSubgroup(Q),Mim);
-	  if not fratsim then
-	    N:=Intersection(FrattiniSubgroup(Q),Mim);
-	    # insert
-	    for j in [Length(ser),Length(ser)-1..i+1] do
-	      ser[j+1]:=ser[j];
-	    od;
-	    ser[i+1]:=PreImage(hom,N);
-	    Info(InfoMorph,2,"insert2");
-	  fi;
-          N:=ser[i+1]; # the added normal
-          if rada<>fail 
-             and ForAny(GeneratorsOfGroup(rada),x->N<>Image(x,N)) then
-            Info(InfoMorph,3,"radical automorphism stabilizer");
-            SetIsGroupOfAutomorphismsFiniteGroup(rada,true);
-            NiceMonomorphism(rada:autactbase:=fail,someCharacteristics:=fail);
-            rada:=Stabilizer(rada,N,asAutom);
+        # test: Semisimple and Frattini
+        b:=MTX.BasisRadical(mo);
+        fratsim:=Length(b)=0;
+        if not fratsim then
+          b:=List(b,x->PreImagesRepresentativeNC(hom,PcElementByExponents(MPcgs,x)));
+          for j in b do
+            N:=ClosureSubgroup(N,b);
+          od;
+          # insert in series
+          for j in [Length(ser),Length(ser)-1..i+1] do
+            ser[j+1]:=ser[j];
+          od;
+          ser[i+1]:=N;
+          Info(InfoMorph,2,"insert1");
+        else
+          # Frattini?
+          fratsim:=IsSubset(FrattiniSubgroup(Q),Mim);
+          if not fratsim then
+            N:=Intersection(FrattiniSubgroup(Q),Mim);
+            # insert
+            for j in [Length(ser),Length(ser)-1..i+1] do
+              ser[j+1]:=ser[j];
+            od;
+            ser[i+1]:=PreImage(hom,N);
+            Info(InfoMorph,2,"insert2");
           fi;
           N:=ser[i+1]; # the added normal
         fi;
@@ -1135,11 +1127,11 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       cond:=function(perm)
       local aut,newgens,mo2,iso,a;
         if perm in Aperm then
-	  return true;
-	fi;
+          return true;
+        fi;
         aut:=PreImagesRepresentativeNC(AQiso,perm);
-	newgens:=List(gens,x->PreImagesRepresentativeNC(comiso,
-	  ImagesRepresentative(aut,ImagesRepresentative(comiso,x))));
+        newgens:=List(gens,x->PreImagesRepresentativeNC(comiso,
+          ImagesRepresentative(aut,ImagesRepresentative(comiso,x))));
 
         mo2:=GModuleByMats(LinearActionLayer(newgens,MPcgs),mo.field);
         iso:=MTX.IsomorphismModules(mo,mo2);
@@ -1169,11 +1161,11 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       precond:=function(perm)
       local aut,newgens,mo2;
         if perm in Aperm then
-	  return true;
-	fi;
+          return true;
+        fi;
         aut:=PreImagesRepresentativeNC(AQiso,perm);
-	newgens:=List(GeneratorsOfGroup(Q),
-	  x->PreImagesRepresentativeNC(q,Image(aut,ImagesRepresentative(q,x))));
+        newgens:=List(GeneratorsOfGroup(Q),
+          x->PreImagesRepresentativeNC(q,Image(aut,ImagesRepresentative(q,x))));
         mo2:=GModuleByMats(LinearActionLayer(newgens,MPcgs),mo.field);
         return MTX.IsomorphismModules(mo,mo2)<>fail;
       end;
@@ -1181,11 +1173,11 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       cond:=function(perm)
       local aut,newgens,mo2,iso,a;
         if perm in Aperm then
-	  return true;
-	fi;
+          return true;
+        fi;
         aut:=PreImagesRepresentativeNC(AQiso,perm);
-	newgens:=List(GeneratorsOfGroup(Q),
-	  x->PreImagesRepresentativeNC(q,Image(aut,ImagesRepresentative(q,x))));
+        newgens:=List(GeneratorsOfGroup(Q),
+          x->PreImagesRepresentativeNC(q,Image(aut,ImagesRepresentative(q,x))));
         mo2:=GModuleByMats(LinearActionLayer(newgens,MPcgs),mo.field);
         iso:=MTX.IsomorphismModules(mo,mo2);
         if iso=fail then
@@ -1373,10 +1365,10 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
       for j in GeneratorsOfGroup(rada) do
         k:=GroupHomomorphismByImagesNC(rf,rf,
           GeneratorsOfGroup(rf),
-	  List(GeneratorsOfGroup(rf),
-	    y->ImagesRepresentative(hom,ImagesRepresentative(j,
-	         PreImagesRepresentativeNC(hom,y)))));
-	Assert(2,IsBijective(k));
+          List(GeneratorsOfGroup(rf),
+            y->ImagesRepresentative(hom,ImagesRepresentative(j,
+                 PreImagesRepresentativeNC(hom,y)))));
+        Assert(2,IsBijective(k));
         Add(ind,k);
       od;
 
@@ -1395,81 +1387,81 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
         # reduce to subgroup that induces valid automorphisms
         Info(InfoMorph,1,"Radical autos reduce by factor ",Size(res)/Size(ind));
         resperm:=IsomorphismPermGroup(C);
-	proj:=GroupHomomorphismByImagesNC(AQP,Image(resperm),
-	  B[2],List(GeneratorsOfGroup(res),x->ImagesRepresentative(resperm,x)));
-	C:=PreImage(proj,Image(resperm,ind));
-	C:=List(SmallGeneratingSet(C),x->PreImagesRepresentativeNC(AQiso,x));
-	AQ:=Group(C);
-	SetIsFinite(AQ,true);
-	SetIsGroupOfAutomorphismsFiniteGroup(AQ,true);
+        proj:=GroupHomomorphismByImagesNC(AQP,Image(resperm),
+          B[2],List(GeneratorsOfGroup(res),x->ImagesRepresentative(resperm,x)));
+        C:=PreImage(proj,Image(resperm,ind));
+        C:=List(SmallGeneratingSet(C),x->PreImagesRepresentativeNC(AQiso,x));
+        AQ:=Group(C);
+        SetIsFinite(AQ,true);
+        SetIsGroupOfAutomorphismsFiniteGroup(AQ,true);
         makeaqiso();
       fi;
 
       # # hook for using existing characteristics to reduce for next step
       if somechar<>fail then
         u:=Filtered(Unique(List(somechar,x->Image(hom,x))),x->Size(x)>1);
-	u:=Filtered(u,s->ForAny(GeneratorsOfGroup(AQ),h->Image(h,s)<>s));
-	SortBy(u,Size);
-	Info(InfoMorph,1,"Forced characteristics ",List(u,Size));
+        u:=Filtered(u,s->ForAny(GeneratorsOfGroup(AQ),h->Image(h,s)<>s));
+        SortBy(u,Size);
+        Info(InfoMorph,1,"Forced characteristics ",List(u,Size));
 
-	if scharorb<>fail then
-	  # these are subgroups for which certain orbits must be stabilized.
-	  C:=List(Reversed(scharorb),x->List(x,y->Image(hom,y)));
-	  C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(Q));
-	  Info(InfoMorph,1,"Forced orbits ",List(C,x->Size(x[1])));
-	  Append(u,C);
-	fi;
+        if scharorb<>fail then
+          # these are subgroups for which certain orbits must be stabilized.
+          C:=List(Reversed(scharorb),x->List(x,y->Image(hom,y)));
+          C:=Filtered(C,x->Size(x[1])>1 and Size(x[1])<Size(Q));
+          Info(InfoMorph,1,"Forced orbits ",List(C,x->Size(x[1])));
+          Append(u,C);
+        fi;
 
-	if Length(u)>0 then
-	  C:=MappingGeneratorsImages(AQiso);
-	  if C[2]<>GeneratorsOfGroup(AQP) then
-	    C:=[List(GeneratorsOfGroup(AQP),
-	             x->PreImagesRepresentativeNC(AQiso,x)),
-		     GeneratorsOfGroup(AQP)];
-	  fi;
-	  for j in u do
-	    if IsList(j) then
-	      # stabilizer set of subgroups
-	      jorb:=ShallowCopy(Orbit(AQP,j[1],C[2],C[1],asAutom));
-	      jorpo:=[Position(jorb,j[1]),Position(jorb,j[2])];
-	      if jorpo[2]=fail then
-	        Append(jorb,Orbit(AQP,j[1],C[2],C[1],asAutom));
-		jorpo[2]:=Position(jorb,j[2]);
-	      fi;
-	      if Length(jorb)>Length(j) then
-		B:=ActionHomomorphism(AQP,jorb,C[2],C[1],asAutom); 
-		substb:=Group(List(C[2],x->ImagesRepresentative(B,x)),());
-		substb:=Stabilizer(substb,Set(jorpo),OnSets);
-		substb:=PreImage(B,substb);
-		Info(InfoMorph,2,"Stabilize characteristic orbit ",Size(j[1]),
-		  " :",Size(AQP)/Size(substb) );
-	      else
-	        substb:=AQP;
-	      fi;
+        if Length(u)>0 then
+          C:=MappingGeneratorsImages(AQiso);
+          if C[2]<>GeneratorsOfGroup(AQP) then
+            C:=[List(GeneratorsOfGroup(AQP),
+                     x->PreImagesRepresentativeNC(AQiso,x)),
+                 GeneratorsOfGroup(AQP)];
+          fi;
+          for j in u do
+            if IsList(j) then
+              # stabilizer set of subgroups
+              jorb:=ShallowCopy(Orbit(AQP,j[1],C[2],C[1],asAutom));
+              jorpo:=[Position(jorb,j[1]),Position(jorb,j[2])];
+              if jorpo[2]=fail then
+                Append(jorb,Orbit(AQP,j[1],C[2],C[1],asAutom));
+            jorpo[2]:=Position(jorb,j[2]);
+              fi;
+              if Length(jorb)>Length(j) then
+            B:=ActionHomomorphism(AQP,jorb,C[2],C[1],asAutom);
+            substb:=Group(List(C[2],x->ImagesRepresentative(B,x)),());
+            substb:=Stabilizer(substb,Set(jorpo),OnSets);
+            substb:=PreImage(B,substb);
+            Info(InfoMorph,2,"Stabilize characteristic orbit ",Size(j[1]),
+              " :",Size(AQP)/Size(substb) );
+              else
+                substb:=AQP;
+              fi;
 
 
-	    else
-	      substb:=Stabilizer(AQP,j,C[2],C[1],asAutom);
-	      Info(InfoMorph,2,"Stabilize characteristic subgroup ",Size(j),
-		" :",Size(AQP)/Size(substb) );
-	    fi;
-	    if Size(substb)<Size(AQP) then
-	      B:=Size(substb);
-	      substb:=SmallGeneratingSet(substb);
-	      AQP:=Group(substb);
-	      SetSize(AQP,B);
-	      C:=[List(substb,x->PreImagesRepresentativeNC(AQiso,x)),substb];
-	    fi;
+        else
+          substb:=Stabilizer(AQP,j,C[2],C[1],asAutom);
+          Info(InfoMorph,2,"Stabilize characteristic subgroup ",Size(j),
+        " :",Size(AQP)/Size(substb) );
+        fi;
+        if Size(substb)<Size(AQP) then
+          B:=Size(substb);
+          substb:=SmallGeneratingSet(substb);
+          AQP:=Group(substb);
+          SetSize(AQP,B);
+          C:=[List(substb,x->PreImagesRepresentativeNC(AQiso,x)),substb];
+        fi;
 
-	  od;
-	  AQ:=Group(C[1]);
-	  SetIsFinite(AQ,true);
-	  SetIsGroupOfAutomorphismsFiniteGroup(AQ,true);
-	  SetSize(AQ,Size(AQP));
-	  #AQP:=Group(C[2]); # ensure small gen set
-	  #SetSize(AQP,Size(AQ));
-	  makeaqiso();
-	fi;
+      od;
+      AQ:=Group(C[1]);
+      SetIsFinite(AQ,true);
+      SetIsGroupOfAutomorphismsFiniteGroup(AQ,true);
+      SetSize(AQ,Size(AQP));
+      #AQP:=Group(C[2]); # ensure small gen set
+      #SetSize(AQP,Size(AQ));
+      makeaqiso();
+    fi;
       fi;
 
       lastperm:=AQiso;

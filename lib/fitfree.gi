@@ -81,7 +81,7 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
   else
     iso:=IsomorphismFpGroup(Image(rest,U));
     pregens:=List(GeneratorsOfGroup(Range(iso)),x->
-      PreImagesRepresentative(rest,PreImagesRepresentative(iso,x)));
+      PreImagesRepresentativeNC(rest,PreImagesRepresentativeNC(iso,x)));
     # evaluate relators
     pool:=List(RelatorsOfFpGroup(Range(iso)),
       x->MappedWord(x,FreeGeneratorsOfFpGroup(Range(iso)),pregens));
@@ -91,7 +91,7 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
 
     iso:=IsomorphismFpGroup(Image(rest,U));
     pregens:=List(GeneratorsOfGroup(Range(iso)),x->
-      PreImagesRepresentative(rest,PreImagesRepresentative(iso,x)));
+      PreImagesRepresentativeNC(rest,PreImagesRepresentativeNC(iso,x)));
     # evaluate relators
     pool:=List(RelatorsOfFpGroup(Range(iso)),
       x->MappedWord(x,FreeGeneratorsOfFpGroup(Range(iso)),pregens));
@@ -257,7 +257,7 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom,subsz,pcimgs;
   pcimgs:=List(ipcgs,x->ImagesRepresentative(ffs.pcisom,x));
 
   ker:=SubgroupNC(G,List(MinimalGeneratingSet(Group(pcimgs,One(Range(ffs.pcisom)))),
-    x->PreImagesRepresentative(ffs.pcisom,x)));
+    x->PreImagesRepresentativeNC(ffs.pcisom,x)));
   SetPcgs(ker,ipcgs);
   if Length(ipcgs)=0 then
     SetSize(ker,1);
@@ -1195,9 +1195,9 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
       norm:=n);
     for j in [2..Length(i)] do
       c[i[j]]:=rec(orbit:=i,orbitpos:=j,
-	rep:=PreImagesRepresentativeNC(act,
-	  RepresentativeAction(Image(act),i[1],i[j])),
-	component:=d[i[j]],hall:=h, norm:=n);
+        rep:=PreImagesRepresentativeNC(act,
+          RepresentativeAction(Image(act),i[1],i[j])),
+        component:=d[i[j]],hall:=h, norm:=n);
     od;
   od;
 

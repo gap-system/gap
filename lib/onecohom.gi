@@ -128,7 +128,7 @@ local  hom,fg,fpi,fpg,nt,fam;
     fpg:=FreeGeneratorsOfFpGroup(Range(hom));
     ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(hom))];
     ocr.generators:=List(GeneratorsOfGroup(Range(hom)),
-		          i->PreImagesRepresentativeNC(hom,i));
+                          i->PreImagesRepresentativeNC(hom,i));
 
   else
     if (Index(ocr.group,nt)>Size(nt)^3
@@ -158,11 +158,10 @@ local  hom,fg,fpi,fpg,nt,fam;
       fi;
       fpg:=FreeGeneratorsOfFpGroup(Range(fpi));
       ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(fpi)),
-		      List(GeneratorsOfGroup(Range(fpi)),
-			    i->PreImagesRepresentativeNC(fpi,i))];
+                      List(GeneratorsOfGroup(Range(fpi)),
+                            i->PreImagesRepresentativeNC(fpi,i))];
       if not IsBound(ocr.generators) then
-	ocr.generators:=List(ocr.factorpres[3],
-                            i->PreImagesRepresentativeNC(hom,i));
+        ocr.generators:=List(ocr.factorpres[3],i->PreImagesRepresentativeNC(hom,i));
       fi;
 
 

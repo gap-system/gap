@@ -10,7 +10,7 @@
 ##
 ##  This file contains generic methods for groups.
 ##
-## (24/09/23) attempting to resolve conflicts (CDW) 
+
 
 #############################################################################
 ##
@@ -2091,7 +2091,8 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
               mg:= List( gs, x -> TransposedMat( List( pcgs,
                      y -> one * ExponentsOfPcElement( pcgs, Image( ph,
                           Image( dh, PreImagesRepresentativeNC(
-                           dh, PreImagesRepresentativeNC(ph,y) )^x ) ) )))^-1);
+                           dh, PreImagesRepresentativeNC(
+                             ph,y) )^x ) ) )))^-1);
 #T inverting is not necessary, or?
               mg:= Filtered( mg, x -> x <> idm );
 

@@ -1067,7 +1067,7 @@ InstallMethod( PreImagesElmNC,
 
 #############################################################################
 ##
-#M  PreImagesSetNC( <invmap>, <coll> ) . . for inverse mapping and collection
+#M  PreImagesSetNC( <invmap>, <coll> )  .  for inverse mapping and collection
 ##
 InstallMethod( PreImagesSetNC,
     "for an inverse mapping and a collection",
@@ -1293,7 +1293,7 @@ InstallMethod( PreImageElm,
 
 #############################################################################
 ##
-#M  PreImagesElmNC( <idmap>, <elm> ) . . . . for identity mapping and element
+#M  PreImagesElmNC( <idmap>, <elm> )  . . .  for identity mapping and element
 ##
 InstallMethod( PreImagesElmNC,
     "for identity mapping and object",
@@ -1581,7 +1581,7 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
-#M  PreImagesElmNC( <zeromap>, <elm> ) . . . . . for zero mapping and element
+#M  PreImagesElmNC( <zeromap>, <elm> )  . . . .  for zero mapping and element
 ##
 InstallMethod( PreImagesElmNC,
     "for zero mapping and object",
