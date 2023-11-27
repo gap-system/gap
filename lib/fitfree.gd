@@ -92,7 +92,7 @@ DeclareGlobalFunction("AttemptPermRadicalMethod");
 ##  the image group being
 ##  represented in a way that decomposition into generators will work
 ##  efficiently. In particular, it is possible to use
-##  <Ref Func="PreImagesRepresentativeNC"/> to take the pre-image of elements
+##  <Ref Func="PreImagesRepresentative"/> to take the pre-image of elements
 ##  in the image. For a subgroup <M>U\le G</M>, it is possible to apply
 ##  <Ref Func="RestrictedMapping"> to the homomorphism to obtain a
 ##  corresponding homomorphism for <M>U</M>.
