@@ -1292,7 +1292,7 @@ local cs,       # chief series of G
 
         # define isomorphisms between the components
         reps:=List([1..n],i->
-              PreImagesRepresentativeNC(Qhom,RepresentativeActionNC(Q,1,i)));
+                PreImagesRepresentativeNC(Qhom,RepresentativeAction(Q,1,i)));
 
         genimages:=[];
         for j in GeneratorsOfGroup(G) do
@@ -1645,14 +1645,14 @@ BindGlobal("LiftClassesEANonsolvGeneral",
            h,          # preimage `cl.representative' under <hom>
            cg,
            cNh,        # centralizer of <h> in <N>
-           gens,       # preimage `Centralizer( cl )' under <hom>
+           gens,   # preimage `Centralizer( cl )' under <hom>
            r,          # dimension of <N>
            ran,        # constant range `[ 1 .. r ]'
            aff,        # <N> as affine space
            imgs,  M,   # generating matrices for affine operation
            orb,        # orbit of affine operation
-           rep,        # set of classes with canonical representatives
-           c,  i,      # loop variables
+           rep,# set of classes with canonical representatives
+           c,  i, # loop variables
            PPcgs,denomdepths,
            correctionfactor,
            stabfacgens,
@@ -1961,7 +1961,7 @@ local  classes,            # classes to be constructed, the result
       c := [h * PcElementByExponentsNC( Npcgs,w*com.factorspace),
             stabrad,stabfacgens,stabfacimg,subsz,stabrsubsz];
       #if reduce<>fail then
-  #        Add(classes,[PreImagesRepresentativeNC(reduce,c[1]),
+  #        Add(classes,[PreImagesRepresentative(reduce,c[1]),
   #          PreImage(reduce,c[2])]);
   #      else
 
