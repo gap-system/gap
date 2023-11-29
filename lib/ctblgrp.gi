@@ -1804,7 +1804,7 @@ local often,trans,e,neu,i,inv,cent,l,s,s1,x,dom;
       if dom=fail then
         x:=D.classreps[inv];
 
-        l:=List(s,i->[x^PreImagesRepresentative(e,
+        l:=List(s,i->[x^PreImagesRepresentativeNC(e,
           RepresentativeAction(Image(e),1,i[1])),Size(cent)*Length(i)]);
       else
         l:=List(s,i->[dom[i[1]],Size(cent)*Length(i)]);
