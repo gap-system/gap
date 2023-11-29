@@ -441,7 +441,7 @@ local q,r,tg,dtg,pemb,ugens,g,gi,d,o,gens,genims,i,gr,img,l,mapi;
   #better: orbit algo
   #r:=ShallowCopy(RightTransversal(q,qu));
   #Sort(r,function(a,b) return 1^a<1^b;end);
-  #r:=List(r,i->PreImagesRepresentative(beta,i));
+  #r:=List(r,i-> Representative(beta,i));
 
   # compute transversal with short words from orbit algorithm on points
   o:=[1];
