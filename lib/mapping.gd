@@ -1218,36 +1218,36 @@ DeclareGlobalFunction( "PreImage" );
 ##  (If <A>coll</A> and the result are lists then the positions of
 ##  entries do in general <E>not</E> correspond.)
 ##  <P/>
-##  <Ref Func="PreImages" 
+##  <Ref Func="PreImages"
 ##  Label="set of preimages of the range of a general mapping"/>
 ##  delegates to <Ref Attr="PreImagesRange"/> when
 ##  called with one argument,
 ##  and to <Ref Oper="PreImagesElm"/> resp. <Ref Oper="PreImagesSet"/> when
 ##  called with two arguments.
-##  The corresponding <C>PreImagesNC</C> delegates to <C>PreImagesRange</C> 
+##  The corresponding <C>PreImagesNC</C> delegates to <C>PreImagesRange</C>
 ##  and <C>PreImagesSetNC</C>.
 ##  <P/>
 ##  If the second argument is not an element or a subset of the range of
-##  the first argument, incorrect results may be returned. 
-##  In order to improve this state of affairs, 
-##  <C>PreImages</C> has been renamed <C>PreImagesNC</C> throughout the library, 
-##  and <C>PreImages</C> has been declared a synonym for <C>PreImagesNC</C>. 
+##  the first argument, incorrect results may be returned.
+##  In order to improve this state of affairs,
+##  <C>PreImages</C> has been renamed <C>PreImagesNC</C> throughout the library,
+##  and <C>PreImages</C> has been declared a synonym for <C>PreImagesNC</C>.
 ##  <P/>
-##  In future versions of &GAP; <C>PreImages</C> 
-##  will perform additional checks and reject invalid inputs. 
-##  These additional checks will slow the computation so, 
-##  when the inputs are known to be valid by construction, 
-##  users are recommended to use <C>PreImagesNC</C>. 
+##  In future versions of &GAP; <C>PreImages</C>
+##  will perform additional checks and reject invalid inputs.
+##  These additional checks will slow the computation so,
+##  when the inputs are known to be valid by construction,
+##  users are recommended to use <C>PreImagesNC</C>.
 ##  <P/>
-##  Package authors are asked to convert their methods for 
-##  <C>PreImages</C> to methods for <C>PreImagesNC</C>. 
-##  Only when this has happened will the additional checks be implemented. 
+##  Package authors are asked to convert their methods for
+##  <C>PreImages</C> to methods for <C>PreImagesNC</C>.
+##  Only when this has happened will the additional checks be implemented.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PreImagesNC" );
-DeclareSynonym( "PreImages", PreImagesNC ); 
+DeclareSynonym( "PreImages", PreImagesNC );
 
 
 

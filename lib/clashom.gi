@@ -781,6 +781,7 @@ local clT,        # classes T
 
                     Info(InfoHomClass,5,"Minimum length of this orbit ",
                          minlen," (",diff," missing)");
+
                   fi;
 
                   if minlen*Size(stab)=Size(centralizers[j]) then
@@ -789,11 +790,6 @@ local clT,        # classes T
                     stabtrue:=true;
                   fi;
 
-                  if minlen*Size(stab)=Size(centralizers[j]) then
-                    #Assert(1,Length(smacla)>0);
-                    maxdiff:=diff;
-                    stabtrue:=true;
-                  fi;
 		elif not stabtrue then
 		  # we have an element that stabilizes the conjugacy class.
 		  # correct this to an element that fixes the representative.
