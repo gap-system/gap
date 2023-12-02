@@ -1051,22 +1051,22 @@ DeclareOperation( "PreImageElm",
 ##  Anything may happen if <A>elm</A> is not an element of the range of
 ##  <A>map</A>.
 ##  <P/>
-##  In order to improve this state of affairs, 
-##  <C>PreImagesRepresentative</C> has been renamed 
-##  <C>PreImagesRepresentativeNC</C> throughout the library, 
-##  and <C>PreImagesRepresentative</C> has been declared a synonym for 
-##  <C>PreImagesRepresentativeNC</C>. 
+##  In order to improve this state of affairs,
+##  <C>PreImagesRepresentative</C> has been renamed
+##  <C>PreImagesRepresentativeNC</C> throughout the library,
+##  and <C>PreImagesRepresentative</C> has been declared a synonym for
+##  <C>PreImagesRepresentativeNC</C>.
 ##  <P/>
-##  In future versions of &GAP; <C>PreImagesRepresentative</C> 
-##  will perform additional checks and reject invalid inputs. 
-##  These additional checks will slow the computation so, 
-##  when the inputs are known to be valid by construction, 
-##  users are recommended to use <C>PreImagesRepresentativeNC</C>. 
+##  In future versions of &GAP; <C>PreImagesRepresentative</C>
+##  will perform additional checks and reject invalid inputs.
+##  These additional checks will slow the computation so,
+##  when the inputs are known to be valid by construction,
+##  users are recommended to use <C>PreImagesRepresentativeNC</C>.
 ##  <P/>
-##  Package authors are asked to convert their methods for 
-##  <C>PreImagesRepresentative</C> to methods for 
-##  <C>PreImagesRepresentativeNC</C>. 
-##  Only when this has happened will the additional checks be implemented. 
+##  Package authors are asked to convert their methods for
+##  <C>PreImagesRepresentative</C> to methods for
+##  <C>PreImagesRepresentativeNC</C>.
+##  Only when this has happened will the additional checks be implemented.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1096,26 +1096,26 @@ DeclareSynonym( "PreImagesRepresentative", PreImagesRepresentativeNC );
 ##  Anything may happen if <A>elms</A> is not a subset of the range of
 ##  <A>map</A>.
 ##  <P/>
-##  In order to improve this state of affairs, 
-##  <C>PreImagesSet</C> has been renamed <C>PreImagesSetNC</C> 
-##  throughout the library, and 
-##  <C>PreImagesSet</C> has been declared a synonym for <C>PreImagesSetNC</C>. 
+##  In order to improve this state of affairs,
+##  <C>PreImagesSet</C> has been renamed <C>PreImagesSetNC</C>
+##  throughout the library, and
+##  <C>PreImagesSet</C> has been declared a synonym for <C>PreImagesSetNC</C>.
 ##  <P/>
-##  In future versions of &GAP; <C>PreImagesSet</C> 
-##  will perform additional checks and reject invalid inputs. 
-##  These additional checks will slow the computation so, 
-##  when the inputs are known to be valid by construction, 
-##  users are recommended to use <C>PreImagesSetNC</C>. 
+##  In future versions of &GAP; <C>PreImagesSet</C>
+##  will perform additional checks and reject invalid inputs.
+##  These additional checks will slow the computation so,
+##  when the inputs are known to be valid by construction,
+##  users are recommended to use <C>PreImagesSetNC</C>.
 ##  <P/>
-##  Package authors are asked to convert their methods for 
-##  <C>PreImagesSet</C> to methods for <C>PreImagesSetNC</C>. 
-##  Only when this has happened will the additional checks be implemented. 
+##  Package authors are asked to convert their methods for
+##  <C>PreImagesSet</C> to methods for <C>PreImagesSetNC</C>.
+##  Only when this has happened will the additional checks be implemented.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "PreImagesSetNC", [ IsGeneralMapping, IsListOrCollection ] );
-DeclareSynonym( "PreImagesSet", PreImagesSetNC ); 
+DeclareSynonym( "PreImagesSet", PreImagesSetNC );
 
 
 #############################################################################
@@ -1159,9 +1159,9 @@ DeclareSynonym( "PreImagesSet", PreImagesSetNC );
 ##  (If <A>coll</A> and the result are lists then the positions of
 ##  entries do in general <E>not</E> correspond.)
 ##  <P/>
-##  <Ref Func="PreImage" 
+##  <Ref Func="PreImage"
 ##  Label="set of preimages of the range of a general mapping"/>
-##  delegates to <Ref Attr="PreImagesRange"/> when called with one argument, 
+##  delegates to <Ref Attr="PreImagesRange"/> when called with one argument,
 ##  and to <Ref Oper="PreImageElm"/> resp. <Ref Oper="PreImagesSetNC"/> when
 ##  called with two arguments.
 ##  <P/>
@@ -1176,11 +1176,11 @@ DeclareGlobalFunction( "PreImage" );
 
 #############################################################################
 ##
-#F  PreImages(<map>) 
+#F  PreImages(<map>)
 #F  PreImagesNC(<map>)  . . . set of preimages of the range of a gen. mapping
-#F  PreImages(<map>,<elm>)  
+#F  PreImages(<map>,<elm>)
 #F  PreImagesNC(<map>,<elm>)  set of preimages of an elm under a gen. mapping
-#F  PreImages(<map>,<coll>)  
+#F  PreImages(<map>,<coll>)
 #F  PreImagesNC(<map>,<coll>) set of preimages of a coll. under a gen. mapping
 ##
 ##  <#GAPDoc Label="PreImages">
