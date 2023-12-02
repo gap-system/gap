@@ -790,43 +790,43 @@ local clT,        # classes T
                     stabtrue:=true;
                   fi;
 
-		elif not stabtrue then
-		  # we have an element that stabilizes the conjugacy class.
-		  # correct this to an element that fixes the representative.
-		  # (As we have taken already the centralizer in
-		  # centralizers_r, it is sufficient to correct by
-		  # centralizers_r-conjugation.)
-		  con:=trans[orpo]*gen;
-		  limg:=opfun(repres,con);
-		  con:=con*PreImagesRepresentativeNC(centrhom,
-			   RepresentativeAction(localcent_r,
-						 Image(projections[i],limg),
-						 Representative(orb[p][3])));
-		  stab:=ClosureGroup(stab,con/trans[p]);
-		  if Size(stab)*2*minlen>Size(centralizers[j]) then
-		    Info(InfoHomClass,3,
-		         "true stabilizer found (cannot grow)");
-		    minlen:=Size(centralizers[j])/Size(stab);
-		    maxdiff:=minlen-Sum(orb,i->Size(i[3]));
-		    stabtrue:=true;
-		  fi;
-		fi;
+                elif not stabtrue then
+                  # we have an element that stabilizes the conjugacy class.
+                  # correct this to an element that fixes the representative.
+                  # (As we have taken already the centralizer in
+                  # centralizers_r, it is sufficient to correct by
+                  # centralizers_r-conjugation.)
+                  con:=trans[orpo]*gen;
+                  limg:=opfun(repres,con);
+                  con:=con*PreImagesRepresentativeNC(centrhom,
+                           RepresentativeAction(localcent_r,
+                                                 Image(projections[i],limg),
+                                                 Representative(orb[p][3])));
+                  stab:=ClosureGroup(stab,con/trans[p]);
+                  if Size(stab)*2*minlen>Size(centralizers[j]) then
+                    Info(InfoHomClass,3,
+                         "true stabilizer found (cannot grow)");
+                    minlen:=Size(centralizers[j])/Size(stab);
+                    maxdiff:=minlen-Sum(orb,i->Size(i[3]));
+                    stabtrue:=true;
+                  fi;
+                fi;
 
-		if stabtrue then
+                if stabtrue then
 
-		  smacla:=Filtered(select,i->Size(clTR[i][3])<=maxdiff);
+                  smacla:=Filtered(select,i->Size(clTR[i][3])<=maxdiff);
 
-		  if Length(smacla)<pf then
-		    pf:=Length(smacla);
-		    remainlen:=List(clTR{smacla},i->Size(i[3]));
+                  if Length(smacla)<pf then
+                    pf:=Length(smacla);
+                    remainlen:=List(clTR{smacla},i->Size(i[3]));
 
-		    CompletionBar(InfoHomClass,3,"trueorb ",1-maxdiff/minlen);
-		    #Info(InfoHomClass,3,
-		#	"This is the true orbit length (missing ",
-		#	maxdiff,")");
+                    CompletionBar(InfoHomClass,3,"trueorb ",1-maxdiff/minlen);
+                    #Info(InfoHomClass,3,
+                #        "This is the true orbit length (missing ",
+                #        maxdiff,")");
 
-		    if Size(stab)*Sum(orb,i->Size(i[3]))
-		        =Size(centralizers[j]) then
+                    if Size(stab)*Sum(orb,i->Size(i[3]))
+                        =Size(centralizers[j]) then
                       maxdiff:=0;
 
                     elif Sum(remainlen)=maxdiff then

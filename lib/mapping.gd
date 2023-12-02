@@ -984,22 +984,22 @@ DeclareGlobalFunction( "Images" );
 ##  preimages of <A>elm</A> under <A>map</A>.
 ##  <P/>
 ##  Anything may happen if <A>elm</A> is not an element of the range of
-##  <A>map</A>. 
+##  <A>map</A>.
 ##  <P/>
-##  In order to improve this state of affairs, 
-##  <C>PreImagesElm</C> has been renamed <C>PreImagesElmNC</C> 
-##  throughout the library, and 
-##  <C>PreImagesElm</C> has been declared a synonym for <C>PreImagesElmNC</C>. 
+##  In order to improve this state of affairs,
+##  <C>PreImagesElm</C> has been renamed <C>PreImagesElmNC</C>
+##  throughout the library, and
+##  <C>PreImagesElm</C> has been declared a synonym for <C>PreImagesElmNC</C>.
 ##  <P/>
-##  In future versions of &GAP; <C>PreImagesElm</C> 
-##  will perform additional checks and reject invalid inputs. 
-##  These additional checks will slow the computation so, 
-##  when the inputs are known to be valid by construction, 
-##  users are recommended to use <C>PreImagesElmNC</C>. 
+##  In future versions of &GAP; <C>PreImagesElm</C>
+##  will perform additional checks and reject invalid inputs.
+##  These additional checks will slow the computation so,
+##  when the inputs are known to be valid by construction,
+##  users are recommended to use <C>PreImagesElmNC</C>.
 ##  <P/>
-##  Package authors are asked to convert their methods for 
-##  <C>PreImagesElm</C> to methods for <C>PreImagesElmNC</C>. 
-##  Only when this has happened will the additional checks be implemented. 
+##  Package authors are asked to convert their methods for
+##  <C>PreImagesElm</C> to methods for <C>PreImagesElmNC</C>.
+##  Only when this has happened will the additional checks be implemented.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1044,8 +1044,8 @@ DeclareOperation( "PreImageElm",
 ##
 ##  <Description>
 ##  If <A>elm</A> is an element of the range of the general mapping
-##  <A>map</A> then these operations return either a representative 
-##  of the set of preimages of <A>elm</A> under <A>map</A> or <K>fail</K>, 
+##  <A>map</A> then these operations return either a representative
+##  of the set of preimages of <A>elm</A> under <A>map</A> or <K>fail</K>,
 ##  the latter if and only if <A>elm</A> has no preimages under <A>map</A>.
 ##  <P/>
 ##  Anything may happen if <A>elm</A> is not an element of the range of

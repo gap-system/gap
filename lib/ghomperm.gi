@@ -1581,7 +1581,7 @@ end);
 ##
 #M  PreImagesSetNC( <hom>, <I> )  . . . . . . . . . . . . . . . for const hom
 ##
-InstallMethod( PreImagesSetNC, "constituent homomorphism", 
+InstallMethod( PreImagesSetNC, "constituent homomorphism",
         CollFamRangeEqFamElms, [ IsConstituentHomomorphism, IsPermGroup ], 0,
     function( hom, I )
     local   H,          # preimage of <I>, result

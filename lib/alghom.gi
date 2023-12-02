@@ -586,7 +586,7 @@ InstallMethod( PreImagesRepresentativeNC,
     [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep,
       IsObject ],
     function( map, elm )
-        return PreImagesRepresentativeNC( 
+        return PreImagesRepresentativeNC(
                    AsLeftModuleGeneralMappingByImages(map), elm );
     end );
 

@@ -697,11 +697,11 @@ DeclareOperation( "ModuleByRestriction", [ IsAlgebraModule, IsAlgebra ] );
 ##  <Oper Name="NaturalHomomorphismBySubAlgebraModule" Arg='V, W'/>
 ##
 ##  <Description>
-##  Here <A>V</A> must be a sub-algebra module of <A>V</A>. 
+##  Here <A>V</A> must be a sub-algebra module of <A>V</A>.
 ##  This function returns
-##  the projection from <A>V</A> onto <C><A>V</A>/<A>W</A></C>. 
-##  It is a linear map, that is also a module homomorphism. 
-##  As usual images can be formed with <C>Image( f, v )</C> 
+##  the projection from <A>V</A> onto <C><A>V</A>/<A>W</A></C>.
+##  It is a linear map, that is also a module homomorphism.
+##  As usual images can be formed with <C>Image( f, v )</C>
 ##  and pre-images with <C>PreImagesRepresentativeNC( f, u )</C>.
 ##  <P/>
 ##  The quotient module can also be formed
