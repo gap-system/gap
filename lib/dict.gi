@@ -348,6 +348,8 @@ local hashfun,obj,dom,lookup,maxblist,forcesort;
     else
       hashfun:=SparseIntKey(dom,obj);
     fi;
+  elif dom=fail and IsFFECollColl(obj) then
+    hashfun:=SparseIntKey(dom,obj);
   else
     hashfun:=fail;
   fi;
