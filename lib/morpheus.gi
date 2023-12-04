@@ -2818,6 +2818,44 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
 end);
 
 
+BindGlobal("IsomorphismPGroups",function(G,H)
+local s,p,eG,eH,fG,fH,pc,imgs;
+  s:=Size(G);
+  if Size(H)<>s then return fail;fi;
+  p:=Collected(Factors(s));
+  if Length(p)>1 then TryNextMethod();fi;
+  p:=p[1][1];
+  eG:=CallFuncList(ValueGlobal("EpimorphismPqStandardPresentation"),[G]:
+    Prime:=p);
+  eH:=CallFuncList(ValueGlobal("EpimorphismPqStandardPresentation"),[H]:
+    Prime:=p);
+
+  # check presentations
+  fG:=Range(eG);
+  fH:=Range(eH);
+  if List(RelatorsOfFpGroup(fG),
+    x->MappedWord(x,FreeGeneratorsOfFpGroup(fG),FreeGeneratorsOfFpGroup(fH)))
+      <>RelatorsOfFpGroup(fH) then
+    return fail;
+  fi;
+
+  # move to pc pres
+  pc:=PcGroupFpGroup(fG);
+
+  # new maps to pc
+  imgs:=List(MappingGeneratorsImages(eG)[2],
+    x->MappedWord(UnderlyingElement(x),
+      FreeGeneratorsOfFpGroup(fG),GeneratorsOfGroup(pc)));
+  eG:=GroupHomomorphismByImages(G,pc,MappingGeneratorsImages(eG)[1],imgs);
+
+  imgs:=List(MappingGeneratorsImages(eH)[2],
+    x->MappedWord(UnderlyingElement(x),
+      FreeGeneratorsOfFpGroup(fH),GeneratorsOfGroup(pc)));
+  eH:=GroupHomomorphismByImages(H,pc,MappingGeneratorsImages(eH)[1],imgs);
+
+  return AsGroupGeneralMappingByImages(eG*InverseGeneralMapping(eH));
+end);
+
 #############################################################################
 ##
 #F  IsomorphismGroups(<G>,<H>) . . . . . . . . . .  isomorphism from G onto H
@@ -2857,6 +2895,11 @@ local m;
     m:=IsomorphismSimpleGroups(G,H);
     if m=false then return fail;fi;
     if m<>fail then return m;fi;
+  fi;
+
+  if Size(G)>50 and IsPGroup(G) and
+    IsPackageMarkedForLoading("anupq","")=true then
+    return IsomorphismPGroups(G,H);
   fi;
 
   if Size(SolvableRadical(G))>1 and CanComputeFittingFree(G)
