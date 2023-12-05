@@ -2819,12 +2819,27 @@ end);
 
 
 BindGlobal("IsomorphismPGroups",function(G,H)
-local s,p,eG,eH,fG,fH,pc,imgs;
+local s,p,eG,eH,fG,fH,pc,imgs,pre,post;
   s:=Size(G);
   if Size(H)<>s then return fail;fi;
   p:=Collected(Factors(s));
   if Length(p)>1 then TryNextMethod();fi;
   p:=p[1][1];
+  if IsFpGroup(G) then
+    pre:=fail;
+  else
+    pre:=IsomorphismFpGroup(G);
+    G:=Image(pre,G);
+  fi;
+
+  if IsFpGroup(H) then
+    post:=fail;
+  else
+    post:=IsomorphismFpGroup(H);
+    H:=Image(post,H);
+  fi;
+
+
   eG:=CallFuncList(ValueGlobal("EpimorphismPqStandardPresentation"),[G]:
     Prime:=p);
   eH:=CallFuncList(ValueGlobal("EpimorphismPqStandardPresentation"),[H]:
@@ -2846,6 +2861,7 @@ local s,p,eG,eH,fG,fH,pc,imgs;
   imgs:=List(MappingGeneratorsImages(eG)[2],
     x->MappedWord(UnderlyingElement(x),
       FreeGeneratorsOfFpGroup(fG),GeneratorsOfGroup(pc)));
+
   eG:=GroupHomomorphismByImages(G,pc,MappingGeneratorsImages(eG)[1],imgs);
 
   imgs:=List(MappingGeneratorsImages(eH)[2],
@@ -2853,7 +2869,12 @@ local s,p,eG,eH,fG,fH,pc,imgs;
       FreeGeneratorsOfFpGroup(fH),GeneratorsOfGroup(pc)));
   eH:=GroupHomomorphismByImages(H,pc,MappingGeneratorsImages(eH)[1],imgs);
 
-  return AsGroupGeneralMappingByImages(eG*InverseGeneralMapping(eH));
+  s:=eG*InverseGeneralMapping(eH);
+  if pre<>fail then s:=pre*s;fi;
+  if post<>fail then s:=s*InverseGeneralMapping(post);fi;
+  s:=AsGroupGeneralMappingByImages(s);
+
+  return s;
 end);
 
 #############################################################################
@@ -2891,13 +2912,18 @@ local m;
     fi;
   fi;
 
+  if Size(G)<>Size(H) then
+    return fail;
+  fi;
+
   if IsSimpleGroup(G) then
     m:=IsomorphismSimpleGroups(G,H);
     if m=false then return fail;fi;
     if m<>fail then return m;fi;
   fi;
 
-  if Size(G)>50 and IsPGroup(G) and
+  # 2000 is the limit for using the small groups code
+  if Size(G)>2000 and IsPGroup(G) and
     IsPackageMarkedForLoading("anupq","")=true then
     return IsomorphismPGroups(G,H);
   fi;
@@ -2917,9 +2943,7 @@ local m;
     return PatheticIsomorphism(G,H);
   fi;
 
-  if Size(G)<>Size(H) then
-    return fail;
-  elif ID_AVAILABLE(Size(G)) <> fail
+  if ID_AVAILABLE(Size(G)) <> fail
     and ValueOption(NO_PRECOMPUTED_DATA_OPTION)<>true then
     Info(InfoPerformance,2,"Using Small Groups Library");
     if IdGroup(G)<>IdGroup(H) then
