@@ -10,6 +10,14 @@
 ##
 ##  Pre-computed confluent rewriting systems for certain simple groups,
 ##  that are not too large, but for which the calculation is slow.
+
+##  They have been created by the function `SplitBNRewritingPresentation`,
+##  typically with `weyl` and `borel` hand-selected and not computed by the
+##  generic routine. This data could be verified by calling
+##  `IsomorphismFpGroupForRewriting` on the respective simple group (which
+##  will fetch the data from this file) and verifying that the associated
+##  monoid presentation matches the generators, and is confluent.
+
 ##  They will be interpreted by the function `BuildRewritingFromData`.
 ##  The creator function `ConfluentRewritingData` is in a comment
 ##  in `lib.grpfpiso.gi`.
