@@ -5525,9 +5525,10 @@ local GO,q,d,e,b,r,val,agemo,ngens;
   ngens:=32;
   repeat
     ngens:=ngens*8;
-    q:=PQuotient(G,p,2,ngens);
+    q:=PQuotient(G,p,2,ngens:noninteractive);
   until q<>fail;
   q:=Image(EpimorphismQuotientSystem(q));
+  # factor out G^p
   q:=ShallowCopy(PCentralSeries(q,p));
   if Length(q)=1 then
     Error("Trivial <p> quotient");
@@ -5535,9 +5536,12 @@ local GO,q,d,e,b,r,val,agemo,ngens;
   if Length(q)=2 then
     Add(q,q[2]); # maximal quotient is abelian, second term is trivial
   fi;
+
   d:=LogInt(Index(q[1],q[2]),p);
 
   if p=2 then
+    # This case is taken from the book by Johnson, as Newman's paper only
+    # treats odd n.
     e:=LogInt(Index(q[2],q[3]),p);
     Info(InfoFpGroup,1,b," generators, ",r," relators, p=",p,", d=",d," e=",e);
     q:=r-b+d;
