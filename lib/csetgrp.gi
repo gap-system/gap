@@ -1422,7 +1422,9 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
         # in the normal case, we can obtain the other orbits easily via
         # the orbit theorem (same stabilizer)
         if Size(lst)/Size(st)<10 then
-          rt:=Orbit(lst,One(st),
+          # if the group `st` is handled by a nice monomorphism, the
+          # identity might not be the canonical element for the subgroup.
+          rt:=Orbit(lst,CanonicalRightCosetElement(st,One(st)),
             function(rep,g) return CanonicalRightCosetElement(st,rep*g);end);
         else
           rt:=RightTransversal(lst,st:noascendingchain);
