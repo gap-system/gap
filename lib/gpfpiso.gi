@@ -1960,7 +1960,8 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   dcnums:=List(dcnums,x->Immutable(Set(x)));
 
 
-  # ensure that weyl is rep, if new
+  # ensure that "weyl group" represents double cosets (but allow double
+  # coverage)
 
   rti:=List(dcnums,x->false); # which double are hit already
   for i in weyl do
