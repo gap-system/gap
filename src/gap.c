@@ -1524,9 +1524,9 @@ void InitializeGap (
     if ( SyLoadSystemInitFile ) {
       GAP_TRY {
         if ( READ_GAP_ROOT("lib/init.g") == 0 ) {
-                Pr( "gap: hmm, I cannot find 'lib/init.g' maybe",
-                    0, 0);
-                Pr( " use option '-l <gaproot>'?", 0, 0);
+                Pr( "gap: hmm, I cannot find 'lib/init.g' maybe"
+                    " use option '-l <gaproot>'?\n", 0, 0);
+                SystemErrorCode = 1;
             }
       }
       GAP_CATCH {

@@ -1,0 +1,10 @@
+set timeout 10
+
+# from https://serverfault.com/a/981762
+expect_before {
+    timeout { puts " TIMEOUT "; exit 2 }
+    eof     { puts " EOF ";     exit 1 }
+}
+
+expect "gap: hmm, I cannot find 'lib/init.g' maybe use option '-l <gaproot>'?"
+exit
