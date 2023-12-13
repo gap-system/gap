@@ -290,6 +290,7 @@ function(g,str,N)
       od;
       if Size(ser[1])<Size(f) then
         ser:=ChiefSeriesThrough(f,ser);
+        gens:=Union(gens,Union(List(ser,SmallGeneratingSet)));
       fi;
       if f<>g then
         gens:=List(gens,x->PreImagesRepresentative(hom,x));
@@ -300,6 +301,7 @@ function(g,str,N)
     else
       rad:=g;
     fi;
+
     if Length(ser)=0 or Size(ser[Length(ser)])>Size(rad) then Add(ser,rad);fi;
 
     if Size(rad)>1 then
@@ -479,6 +481,7 @@ function(g,str,N)
   vals:=[];
 
   dec:=[];
+
   for i in [2..Length(ser)] do
     still:=i<Length(ser);
     lgens:=gens{idx[i-1]};
