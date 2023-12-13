@@ -468,11 +468,11 @@ local n,l, o, b, t, r;
     #and NrMovedPoints(G)*1000>Size(G) then
 
     b:=SmallerDegreePermutationRepresentation(G:cheap);
-    if NrMovedPoints(Range(b))<NrMovedPoints(G) then
-      dom:=SubgroupsOrbitsAndNormalizers(Image(b,G),
+    if NrMovedPoints(Range(b))*13/10<NrMovedPoints(G) then
+      l:=SubgroupsOrbitsAndNormalizers(Image(b,G),
         List(dom,x->Image(b,x)),all);
-      dom:=List(dom,x->rec(pos:=x.pos,normalizer:=PreImage(b,x.normalizer),
-        representative:=dom[x]));
+      dom:=List(l,x->rec(pos:=x.pos,normalizer:=PreImage(b,x.normalizer),
+        representative:=dom[x.pos]));
       return dom;
     fi;
   fi;
