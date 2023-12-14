@@ -532,7 +532,7 @@ static inline void printOutput(int fileid, int line, BOOL exec, BOOL visited)
 
 // Mark line as visited, and return true if the line has been previously
 // visited (executed)
-BOOL markVisited(int fileid, UInt line)
+static BOOL markVisited(int fileid, UInt line)
 {
     // Some STATs end up without a file or line -- do not output these
     // as they would just confuse the profile generation later.
@@ -553,31 +553,6 @@ BOOL markVisited(int fileid, UInt line)
         return FALSE;
     }
     return TRUE;
-}
-
-// Return TRUE is Stat has been visited (executed) before
-BOOL visitedStat(Stat stat)
-{
-    int fileid = getFilenameIdOfCurrentFunction();
-    int line = LINE_STAT(stat);
-
-    if (fileid == 0 || line == 0) {
-        return TRUE;
-    }
-
-    if (LEN_PLIST(profileState.visitedStatements) < fileid ||
-        !ELM_PLIST(profileState.visitedStatements, fileid)) {
-        return FALSE;
-    }
-
-    Obj linelist = ELM_PLIST(profileState.visitedStatements, fileid);
-
-    if (LEN_PLIST(linelist) < line || !ELM_PLIST(linelist, line)) {
-        return 0;
-    }
-    else {
-        return 1;
-    }
 }
 
 // type : the type of the statement
