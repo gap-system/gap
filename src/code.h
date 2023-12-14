@@ -26,10 +26,6 @@
 **  Header for any statement or expression encoded in a function body.
 */
 typedef struct {
-    // `visited` starts out as 0 and is set to 1 if the statement or
-    // expression has ever been executed while profiling is turned on
-    unsigned int visited : 1;
-
     // `line` records the line number in the source file in which the
     // statement or expression started
     unsigned int line : 31;
@@ -374,30 +370,6 @@ EXPORT_INLINE Int LINE_STAT(Stat stat)
 {
     return CONST_STAT_HEADER(stat)->line;
 }
-
-
-/****************************************************************************
-**
-*F  VISITED_STAT(<stat>) . . . . . . . . . . . if statement has even been run
-**
-**  'VISITED_STAT' returns true if the statement has ever been executed
-**  while profiling is turned on.
-*/
-EXPORT_INLINE Int VISITED_STAT(Stat stat)
-{
-    return CONST_STAT_HEADER(stat)->visited;
-}
-
-
-/****************************************************************************
-**
-*F  SET_VISITED_STAT(<stat>) . . . . . . . . . . mark statement as having run
-**
-**  'SET_VISITED_STAT' marks the statement as having been executed while
-**  profiling was turned on.
-*/
-void SET_VISITED_STAT(Stat stat);
-
 
 /****************************************************************************
 **
