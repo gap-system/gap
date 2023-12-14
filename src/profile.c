@@ -149,12 +149,6 @@ static struct ProfileState
   int profiledThread;
 #endif
 
-  // Have we previously profiled this execution of GAP? We need this because
-  // code coverage doesn't work more than once, as we use a bit in each Stat
-  // to mark if we previously executed this statement, which we can't
-  // clear
-  UInt profiledPreviously;
-
   Int LongJmpOccurred;
 
   // We store the value of RecursionDepth each time we enter a function.
@@ -723,7 +717,6 @@ enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
 
     profileState.status = Profile_Active;
     RegisterThrowObserver(ProfileRegisterLongJmpOccurred);
-    profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
 #endif
@@ -775,12 +768,6 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
 {
     if (profileState.status != Profile_Disabled) {
       return Fail;
-    }
-
-    if(profileState.profiledPreviously &&
-       coverage == True) {
-        ErrorMayQuit("Code coverage can only be started once per"
-                     " GAP session. Please exit GAP and restart. Sorry.",0,0);
     }
 
     memset(&profileState, 0, sizeof(profileState));
@@ -851,7 +838,6 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
 
     profileState.status = Profile_Active;
     RegisterThrowObserver(ProfileRegisterLongJmpOccurred);
-    profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
 #endif
