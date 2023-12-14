@@ -163,6 +163,10 @@ static struct ProfileState
   // We need to store the actual values, as RecursionDepth can increase
   // by more than one when a GAP function is called
   Obj visitedDepths;
+
+  // Mark which statements in which files have been visited.
+  // This is a plist (index by file id) of plists (indexed by line)
+  Obj visitedStatements;
 } profileState;
 
 // Some GAP functionality (such as syntaxtree) evaluates expressions, which makes
@@ -532,6 +536,56 @@ static inline void printOutput(int fileid, int line, BOOL exec, BOOL visited)
     }
 }
 
+// Mark line as visited, and return true if the line has been previously
+// visited (executed)
+BOOL markVisited(int fileid, UInt line)
+{
+    // Some STATs end up without a file or line -- do not output these
+    // as they would just confuse the profile generation later.
+    if (fileid == 0 || line == 0) {
+        return TRUE;
+    }
+
+    if (LEN_PLIST(profileState.visitedStatements) < fileid ||
+        !ELM_PLIST(profileState.visitedStatements, fileid)) {
+        AssPlist(profileState.visitedStatements, fileid,
+                 NEW_PLIST(T_PLIST, 0));
+    }
+
+    Obj linelist = ELM_PLIST(profileState.visitedStatements, fileid);
+
+    if (LEN_PLIST(linelist) < line || !ELM_PLIST(linelist, line)) {
+        AssPlist(linelist, line, True);
+        return FALSE;
+    }
+    return TRUE;
+}
+
+// Return TRUE is Stat has been visited (executed) before
+BOOL visitedStat(Stat stat)
+{
+    int fileid = getFilenameIdOfCurrentFunction();
+    int line = LINE_STAT(stat);
+
+    if (fileid == 0 || line == 0) {
+        return TRUE;
+    }
+
+    if (LEN_PLIST(profileState.visitedStatements) < fileid ||
+        !ELM_PLIST(profileState.visitedStatements, fileid)) {
+        return FALSE;
+    }
+
+    Obj linelist = ELM_PLIST(profileState.visitedStatements, fileid);
+
+    if (LEN_PLIST(linelist) < line || !ELM_PLIST(linelist, line)) {
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+
 // type : the type of the statement
 // exec : are we executing this statement
 // visit: Was this statement previously visited (that is, executed)
@@ -588,16 +642,14 @@ static void visitStat(Stat stat)
     return;
 #endif
 
-  BOOL visited = VISITED_STAT(stat);
+  int fileid = getFilenameIdOfCurrentFunction();
+  int line = LINE_STAT(stat);
 
-  if (!visited) {
-    SET_VISITED_STAT(stat);
-  }
+  BOOL visited = markVisited(fileid, line);
 
   if (profileState.OutputRepeats || !visited) {
     HashLock(&profileState);
-    outputStat(getFilenameIdOfCurrentFunction(), LINE_STAT(stat),
-               TNUM_STAT(stat), TRUE, visited);
+    outputStat(fileid, line, TNUM_STAT(stat), TRUE, visited);
     HashUnlock(&profileState);
   }
 }
@@ -735,6 +787,7 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
 
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
     profileState.visitedDepths = NEW_PLIST(T_PLIST, 0);
+    profileState.visitedStatements = NEW_PLIST(T_PLIST, 0);
 
     RequireStringRep(SELF_NAME, filename);
 
@@ -875,6 +928,8 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
 
     profileState.visitedDepths = NEW_PLIST(T_PLIST, 0);
+    profileState.visitedStatements = NEW_PLIST(T_PLIST, 0);
+
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
     return 0;
 }
@@ -889,6 +944,8 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
     InitGlobalBag(&OutputtedFilenameList, "src/profile.c:OutputtedFileList");
     InitGlobalBag(&profileState.visitedDepths, "src/profile.c:visitedDepths");
+    InitGlobalBag(&profileState.visitedStatements,
+                  "src/profile.c:visitedStatements");
     return 0;
 }
 
