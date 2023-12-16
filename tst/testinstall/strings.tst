@@ -218,4 +218,12 @@ gap> ReplacedString("Hello world", "", "*");
 Error, <old> must not be empty
 
 #
+gap> x := "abc\000def";
+"abc\000def"
+gap> Length(x);
+7
+gap> Print(x, "\n");
+abcdef
+
+#
 gap> STOP_TEST( "strings.tst", 1);
