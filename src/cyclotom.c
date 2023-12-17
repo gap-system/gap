@@ -621,21 +621,21 @@ static void ConvertToBase(UInt n)
 */
 static Obj Cyclotomic(UInt n, UInt m)
 {
-    Obj                 cyc;            // cyclotomic, result
-    UInt                len;            // number of terms
-    Obj *               cfs;            // pointer to the coefficients
-    UInt4 *             exs;            // pointer to the exponents
-    Obj *               res;            // pointer to the result
-    UInt                gcd, s, t;      // gcd of the exponents, temporary
-    UInt                eql;            // are all coefficients equal?
-    Obj                 cof;            // if so this is the coefficient
-    UInt                i, k;           // loop variables
-    UInt                nn;             // copy of n to factorize
-    UInt                p;              // prime factor
-    static UInt         lastN;          // remember last n, dont recompute
-    static UInt         phi;            // Euler phi(n)
-    static BOOL         isSqfree;       // is n squarefree?
-    static UInt         nrp;            // number of its prime factors
+    Obj                               cyc;            // cyclotomic, result
+    UInt                              len;            // number of terms
+    Obj *                             cfs;            // pointer to the coefficients
+    UInt4 *                           exs;            // pointer to the exponents
+    Obj *                             res;            // pointer to the result
+    UInt                              gcd, s, t;      // gcd of the exponents, temporary
+    UInt                              eql;            // are all coefficients equal?
+    Obj                               cof;            // if so this is the coefficient
+    UInt                              i, k;           // loop variables
+    UInt                              nn;             // copy of n to factorize
+    UInt                              p;              // prime factor
+    static _Thread_local UInt         lastN;          // remember last n, dont recompute
+    static _Thread_local UInt         phi;            // Euler phi(n)
+    static _Thread_local BOOL         isSqfree;       // is n squarefree?
+    static _Thread_local UInt         nrp;            // number of its prime factors
 
     // get a pointer to the cyclotomic and a copy of n to factor
     res = BASE_PTR_PLIST(ResultCyc);
