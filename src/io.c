@@ -1619,23 +1619,23 @@ static inline void FormatOutput(
       while ( prec-- > 0 )  put_a_char(state, ' ');
 
       if (arg1obj) {
-          arg1 = (Int)CONST_CSTR_STRING(arg1obj);
+        arg1 = (Int)CONST_CSTR_STRING(arg1obj);
       }
 
       // print the string
       /* must be careful that line breaks don't go inside
          escaped sequences \n or \123 or similar */
       for ( Int i = 0; i < len; i++ ) {
-          const Char* q = ((const Char *)arg1) + i;
-          if (*q == '\0') continue;
-          if (*q == '\\' && IO()->NoSplitLine == 0) {
-              if (*(q + 1) < '8' && *(q + 1) >= '0')
-                  IO()->NoSplitLine = 3;
-              else
-                  IO()->NoSplitLine = 1;
+        const Char* q = ((const Char *)arg1) + i;
+        if (*q == '\0') continue;
+        if (*q == '\\' && IO()->NoSplitLine == 0) {
+          if (*(q + 1) < '8' && *(q + 1) >= '0')
+            IO()->NoSplitLine = 3;
+          else
+            IO()->NoSplitLine = 1;
         }
         else if (IO()->NoSplitLine > 0)
-            IO()->NoSplitLine--;
+          IO()->NoSplitLine--;
         put_a_char(state, *q);
 
         if (arg1obj) {
