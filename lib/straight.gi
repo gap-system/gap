@@ -2059,6 +2059,17 @@ function(slp,gens,imgs)
     );
 end);
 
+#############################################################################
+##
+#M  ExponentSumWord
+##
+InstallMethod(ExponentSumWord,"for a straight line program word",
+  IsIdenticalObj, [IsAssocWord and IsStraightLineProgElm,IsAssocWord],0,
+function(slp,e)
+  return ExponentSumWord(EvalStraightLineProgElm(slp),
+    EvalStraightLineProgElm(e));
+end);
+
 # words represented as tree elements (those are useful for decoding subgroup
 # presentations)
 
