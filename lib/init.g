@@ -438,6 +438,8 @@ BindGlobal( "ShowKernelInformation", function()
   if GAPInfo.Date <> "today" then
     sysdate := " of ";
     Append(sysdate, GAPInfo.Date);
+  elif GAPInfo.BuildDateTime = "reproducible" then
+    sysdate := "";
   else
     sysdate := " built on ";
     Append(sysdate, GAPInfo.BuildDateTime);

@@ -47,6 +47,7 @@ const char * SyBuildVersion = "@GAP_BUILD_VERSION@";
 *V  SyBuildDateTime . . . . . . . . . .  date and time the build was compiled
 **
 **  'SyBuildDateTime' is set to something like "2020-01-30 09:48:08", with
-**  the value given in local time.
+**  the value given in local time, or 'reproducible' if GAP was built without
+**  a build time, to create a reproducible executable.
 */
 const char * SyBuildDateTime = "@GAP_BUILD_DATETIME@";
