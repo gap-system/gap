@@ -43,5 +43,9 @@ fi
 test "$VN" = "$VC" || {
 	echo >&2 "GAP_BUILD_VERSION = $VN"
 	echo "GAP_BUILD_VERSION = $VN" >$GVF
-	echo "GAP_BUILD_DATETIME = $(date '+%Y-%m-%d %H:%M:%S%z')" >>$GVF
+	if [ -z "$SOURCE_DATE_EPOCH" ]; then
+		echo "GAP_BUILD_DATETIME = $(date '+%Y-%m-%d %H:%M:%S%z')" >>$GVF
+	else
+		echo "GAP_BUILD_DATETIME = reproducible" >>$GVF
+	fi
 }
