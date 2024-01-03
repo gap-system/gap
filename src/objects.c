@@ -228,20 +228,17 @@ void SET_TYPE_OBJ(Obj obj, Obj type)
         break;
 
     default:
-        if (IS_STRING_REP(obj)) {
-            // FIXME/TODO: Hap calls Objectify on a string...
-        }
-        else if (IS_PLIST(obj)) {
-#ifdef HPCGAP
-            MEMBAR_WRITE();
-#endif
-            RetypeBag(obj, T_POSOBJ);
-            SET_TYPE_POSOBJ(obj, type);
-            CHANGED_BAG(obj);
-        }
-        else {
+        if (!IS_PLIST(obj)) {
             ErrorMayQuit("cannot change type of a %s", (Int)TNAM_OBJ(obj), 0);
         }
+        // TODO: we should also reject immutable plists, but that risks
+        // breaking existing code
+#ifdef HPCGAP
+        MEMBAR_WRITE();
+#endif
+        RetypeBag(obj, T_POSOBJ);
+        SET_TYPE_POSOBJ(obj, type);
+        CHANGED_BAG(obj);
         break;
     }
 }
@@ -1338,10 +1335,7 @@ static Obj FuncSET_TYPE_POSOBJ(Obj self, Obj obj, Obj type)
     case T_POSOBJ:
         break;
     default:
-        if (IS_STRING_REP(obj)) {
-            // FIXME/TODO: Hap calls Objectify on a string...
-        }
-        else if (!IS_PLIST(obj)) {
+        if (!IS_PLIST(obj)) {
             ErrorMayQuit("You can't make a positional object from a %s",
                          (Int)TNAM_OBJ(obj), 0);
         }

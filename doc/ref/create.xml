@@ -47,8 +47,8 @@ and why it is useful to have a declaration part and an implementation part.
 
 <Description>
 New objects are created by <Ref Func="Objectify"/>.
-<A>data</A> is a list or a record, and <A>type</A> is the type that the
-desired object shall have.
+<A>data</A> must be a plain list or a plain record, and <A>type</A>
+is the type that the desired object shall have.
 <Ref Func="Objectify"/> turns <A>data</A> into an object with type
 <A>type</A>.
 That is, <A>data</A> is changed, and afterwards it will not be a list or a
