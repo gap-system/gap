@@ -169,7 +169,7 @@ end);
 InstallGlobalFunction(RunTests, function(tests, inopts, fnam)
   local opts, breakOnError, alwaysPrintTracebackOnError, inp, outp,
         pos, cmp, times, ttime, nrlines, s, res, fres, t, f, i,
-        localbag, failures, testsize, size;
+        localbag, failures, startsize, testsize, size;
   # don't enter break loop in case of error during test
   opts := rec( breakOnError := false, alwaysPrintTracebackOnError:= false,
                showProgress := "some", localdef := false );
@@ -182,8 +182,8 @@ InstallGlobalFunction(RunTests, function(tests, inopts, fnam)
   od;
 
   # now start the work
-  size := SizeScreen();
-  testsize := [opts.width, size[2]];
+  startsize := SizeScreen();
+  testsize := [opts.width, startsize[2]];
   SizeScreen(testsize);
 
   # we collect outputs and add them to 'tests.cmp'
@@ -248,7 +248,8 @@ InstallGlobalFunction(RunTests, function(tests, inopts, fnam)
       if opts.showProgress = "some" then
         Print("\r                                    \c\r"); # clear the line
       fi;
-      SizeScreen(size);
+      size := SizeScreen();
+      SizeScreen(startsize);
       if not opts.ignoreSTOP_TEST or
         PositionSublist(tests.inp[i], "STOP_TEST") <> 1 then
         failures := failures + 1;
@@ -257,7 +258,7 @@ InstallGlobalFunction(RunTests, function(tests, inopts, fnam)
         # print output of STOP_TEST
         Print(tests.cmp[i]);
       fi;
-      SizeScreen(testsize);
+      SizeScreen(size);
     fi;
   od;
   if opts.showProgress = "some" then
@@ -268,7 +269,7 @@ InstallGlobalFunction(RunTests, function(tests, inopts, fnam)
   # reset
   BreakOnError := breakOnError;
   AlwaysPrintTracebackOnError:= alwaysPrintTracebackOnError;
-  SizeScreen(size);
+  SizeScreen(startsize);
   return failures;
 end);
 
