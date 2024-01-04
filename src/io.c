@@ -1514,7 +1514,6 @@ static Obj FuncALL_KEYWORDS(Obj self)
 **          Between the '%' and the 'd' an integer might be used  to  specify
 **          the width of a field in which the integer is right justified.  If
 **          the first character is '0' 'Pr' pads with '0' instead of <space>.
-**  '%i'    is a synonym of %d, in line with recent C library developments
 **  '%I'    print an identifier, given as a null terminated character string.
 **  '%H'    print an identifier, given as GAP string in STRING_REP
 **  '%>'    increment the indentation level.
@@ -1564,7 +1563,7 @@ static inline void FormatOutput(
     }
 
     // '%d' print an integer
-    else if ( *p == 'd'|| *p == 'i' ) {
+    else if (*p == 'd') {
       int is_neg = (arg1 < 0);
       if ( is_neg ) {
         arg1 = -arg1;

@@ -1364,7 +1364,7 @@ void WriteGuardError(Obj o)
         return;
     SetGVar(&LastInaccessibleGVar, o);
     ErrorMayQuit(
-        "Attempt to write object %i of type %s without having write access",
+        "Attempt to write object %d of type %s without having write access",
         (Int)o, (Int)TNAM_OBJ(o));
 }
 
@@ -1375,7 +1375,7 @@ void ReadGuardError(Obj o)
         return;
     SetGVar(&LastInaccessibleGVar, o);
     ErrorMayQuit(
-        "Attempt to read object %i of type %s without having read access",
+        "Attempt to read object %d of type %s without having read access",
         (Int)o, (Int)TNAM_OBJ(o));
 }
 #endif
