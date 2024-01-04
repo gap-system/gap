@@ -59,7 +59,7 @@ Error := function( arg )
     for x in arg do
       Print(x);
     od;
-    Print("\n");
+    Print("\nwhile reading ", INPUT_FILENAME(), ":", INPUT_LINENUMBER(), "\n");
     if SHOULD_QUIT_ON_BREAK() then
         ForceQuitGap(1);
     fi;
@@ -71,6 +71,7 @@ ErrorNoReturn := Error;
 ErrorInner := function(options, message)
     Print("Error before error-handling is initialized: ");
     Print(message);
+    Print("\nwhile reading ", INPUT_FILENAME(), ":", INPUT_LINENUMBER(), "\n");
     if SHOULD_QUIT_ON_BREAK() then
         ForceQuitGap(1);
     fi;
