@@ -611,8 +611,6 @@ static UInt CompGetUseRNam(RNam rnam)
 **
 **  'Emit' supports the following '%' format elements:
 **  - '%d' formats an integer,
-**  - '%s' formats a string,
-**  - '%S' formats a string with all the necessary escapes,
 **  - '%g' formats a GAP string,
 **  - '%G' formats a GAP string with all the necessary escapes,
 **  - '%C' does the same but uses only valid C escapes,
@@ -634,7 +632,6 @@ static void Emit(const char * fmt, ...)
     va_list             ap;             // argument list pointer
     Int                 dint;           // integer argument
     CVar                cvar;           // C variable argument
-    Char *              string;         // string argument
     const Char *        p;              // loop variable
     const Char *        hex = "0123456789ABCDEF";
 
@@ -665,13 +662,6 @@ static void Emit(const char * fmt, ...)
             if ( *p == 'd' ) {
                 dint = va_arg( ap, Int );
                 Pr("%d", dint, 0);
-            }
-
-            // emit a C string
-            else if ( *p == 's' || *p == 'S' ) {
-                const Char f[] = { '%', *p, 0 };
-                string = va_arg( ap, Char* );
-                Pr(f, (Int)string, 0);
             }
 
             // emit a GAP string
@@ -5390,8 +5380,8 @@ static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
     // unravel the arguments
     len = LEN_LIST(arg);
     if ( len < 5 ) {
-        ErrorQuit( "usage: COMPILE_FUNC( <output>, <func>, <name>, %s",
-                   (Int)"<magic1>, <magic2>, ... )", 0 );
+        ErrorQuit( "usage: COMPILE_FUNC( <output>, <func>, <name>, "
+                   "<magic1>, <magic2>, ... )", 0, 0 );
     }
     output = ELM_LIST( arg, 1 );
     func   = ELM_LIST( arg, 2 );
