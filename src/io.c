@@ -1513,8 +1513,7 @@ static Obj FuncALL_KEYWORDS(Obj self)
 **          Between the '%' and the 'd' an integer might be used  to  specify
 **          the width of a field in which the integer is right justified.  If
 **          the first character is '0' 'Pr' pads with '0' instead of <space>.
-**  '%I'    print an identifier, given as a null terminated character string.
-**  '%H'    print an identifier, given as GAP string in STRING_REP
+**  '%I'    print an identifier, given as GAP string in STRING_REP.
 **  '%>'    increment the indentation level.
 **  '%<'    decrement the indentation level.
 **  '%%'    can be used to print a single '%' character. No argument is used.
@@ -1686,19 +1685,11 @@ static inline void FormatOutput(
     }
 
     // '%I' print an identifier
-    else if ( *p == 'I' || *p =='H' ) {
-      int found_keyword = 0;
+    else if (*p == 'I') {
+      BOOL found_keyword = FALSE;
 
-      // If arg is a GAP obj, get out the contained string, and
-      // set arg1obj so we can re-evaluate after any possible GC
-      // which occurs in put_a_char
-      if (*p == 'H') {
-        arg1obj = (Obj)arg1;
-        arg1 = (Int)CONST_CSTR_STRING(arg1obj);
-      }
-      else {
-        arg1obj = 0;
-      }
+      arg1obj = (Obj)arg1;
+      arg1 = (Int)CONST_CSTR_STRING(arg1obj);
 
       // check if q matches a keyword
       found_keyword = IsKeyword((const Char *)arg1);
@@ -1729,9 +1720,7 @@ static inline void FormatOutput(
           put_a_char(state, '\\');
         }
         put_a_char(state, c);
-        if (arg1obj) {
-          arg1 = (Int)CONST_CSTR_STRING(arg1obj);
-        }
+        arg1 = (Int)CONST_CSTR_STRING(arg1obj);
       }
 
       // on to the next argument
@@ -1773,15 +1762,15 @@ static inline void FormatOutput(
 
 }
 
-
-static void putToTheStream(void *state, Char c) {
+static void putToTheStream(void *state, Char c)
+{
     PutChrTo((TypOutputFile *)state, c);
 }
 
 static void
 PrTo(TypOutputFile * stream, const Char * format, Int arg1, Int arg2)
 {
-  FormatOutput( putToTheStream, stream, format, arg1, arg2);
+    FormatOutput( putToTheStream, stream, format, arg1, arg2);
 }
 
 void Pr (

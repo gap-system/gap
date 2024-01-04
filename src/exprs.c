@@ -1615,7 +1615,7 @@ void            PrintRecExpr1 (
         // print an ordinary record name
         tmp = READ_EXPR(expr, 2 * i - 2);
         if ( IS_INTEXPR(tmp) ) {
-            Pr("%H", (Int)NAME_RNAM(INT_INTEXPR(tmp)), 0);
+            Pr("%I", (Int)NAME_RNAM(INT_INTEXPR(tmp)), 0);
         }
 
         // print an evaluating record name
