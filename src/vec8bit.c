@@ -538,20 +538,20 @@ static void RewriteVec8Bit(Obj vec, UInt q)
         return;
 
     if (q < q1) {
-        ErrorMayQuit("Cannot convert a vector compressed over GF(%i) to "
-                     "small field GF(%i)",
+        ErrorMayQuit("Cannot convert a vector compressed over GF(%d) to "
+                     "small field GF(%d)",
                      q1, q);
     }
 
     if (((q - 1) % (q1 - 1)) != 0) {
         ErrorMayQuit(
-            "Cannot convert a vector compressed over GF(%i) to GF(%i)", q1,
+            "Cannot convert a vector compressed over GF(%d) to GF(%d)", q1,
             q);
     }
 
     if (DoFilter(IsLockedRepresentationVector, vec) == True) {
         ErrorMayQuit("Cannot convert a locked vector compressed over "
-                     "GF(%i) to GF(%i)",
+                     "GF(%d) to GF(%d)",
                      q1, q);
     }
 
@@ -628,7 +628,7 @@ void RewriteGF2Vec(Obj vec, UInt q)
 
     if (DoFilter(IsLockedRepresentationVector, vec) == True) {
         ErrorMayQuit("Cannot convert a locked vector compressed over "
-                     "GF(2) to GF(%i)",
+                     "GF(2) to GF(%d)",
                      q, 0);
     }
 
@@ -1024,7 +1024,7 @@ static Obj FuncPLAIN_VEC8BIT(Obj self, Obj list)
     }
     if (DoFilter(IsLockedRepresentationVector, list) == True) {
         ErrorMayQuit("Cannot convert a locked vector compressed over "
-                     "GF(%i) to a plain list",
+                     "GF(%d) to a plain list",
                      FIELD_VEC8BIT(list), 0);
     }
     PlainVec8Bit(list);

@@ -963,7 +963,7 @@ FuncPROD_LIST_LIST_DEFAULT(Obj self, Obj listL, Obj listR, Obj depthdiff)
       break;
     default:
         ErrorMayQuit("PROD_LIST_LIST_DEFAULT: depth difference should be -1, "
-                     "0 or 1, not %i",
+                     "0 or 1, not %d",
                      INT_INTOBJ(depthdiff), 0);
     }
   return prod;
