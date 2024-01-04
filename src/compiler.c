@@ -612,7 +612,6 @@ static UInt CompGetUseRNam(RNam rnam)
 **  'Emit' supports the following '%' format elements:
 **  - '%d' formats an integer,
 **  - '%g' formats a GAP string,
-**  - '%G' formats a GAP string with all the necessary escapes,
 **  - '%C' does the same but uses only valid C escapes,
 **  - '%n' formats a name ('_' is converted to '__', special characters are
 **         converted to '_<hex1><hex2>')
@@ -665,7 +664,7 @@ static void Emit(const char * fmt, ...)
             }
 
             // emit a GAP string
-            else if ( *p == 'g' || *p == 'G' || *p == 'C' ) {
+            else if ( *p == 'g' || *p == 'C' ) {
                 const Char f[] = { '%', *p, 0 };
                 Obj str = va_arg( ap, Obj );
                 Pr(f, (Int)str, 0);
@@ -5273,7 +5272,7 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
     for ( i = 1; i <= compFunctionsNr; i++ ) {
         Obj n = NAME_FUNC(ELM_PLIST(CompFunctions,i));
         if ( n != 0 && IsStringConv(n) ) {
-            Emit( "NameFunc[%d] = MakeImmString(\"%G\");\n", i, n );
+            Emit( "NameFunc[%d] = MakeImmString(\"%C\");\n", i, n );
         }
         else {
             Emit( "NameFunc[%d] = 0;\n", i );
