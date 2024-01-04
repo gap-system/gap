@@ -453,8 +453,7 @@ void LockCurrentOutput(BOOL lock);
 **          Between the '%' and the 'd' an integer might be used  to  specify
 **          the width of a field in which the integer is right justified.  If
 **          the first character is '0' 'Pr' pads with '0' instead of <space>.
-**  '%I'    print an identifier, given as a null terminated character string.
-**  '%H'    print an identifier, given as GAP string in STRING_REP
+**  '%I'    print an identifier, given as GAP string in STRING_REP.
 **  '%>'    increment the indentation level.
 **  '%<'    decrement the indentation level.
 **  '%%'    can be used to print a single '%' character. No argument is used.

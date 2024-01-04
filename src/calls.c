@@ -1032,7 +1032,7 @@ static void PrintFunction(Obj func)
         }
 #endif
         if ( NAMS_FUNC(func) != 0 )
-            Pr("%H", (Int)NAMI_FUNC(func, (Int)i), 0);
+            Pr("%I", (Int)NAMI_FUNC(func, (Int)i), 0);
         else
             Pr("<<arg-%d>>", (Int)i, 0);
         if(isvarg && i == narg) {
@@ -1054,7 +1054,7 @@ static void PrintFunction(Obj func)
             Pr("%>local ", 0, 0);
             for ( i = 1; i <= nloc; i++ ) {
                 if ( NAMS_FUNC(func) != 0 )
-                    Pr("%H", (Int)NAMI_FUNC(func, (Int)(narg + i)), 0);
+                    Pr("%I", (Int)NAMI_FUNC(func, (Int)(narg + i)), 0);
                 else
                     Pr("<<loc-%d>>", (Int)i, 0);
                 if (i != nloc)
