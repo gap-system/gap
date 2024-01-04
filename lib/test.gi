@@ -169,7 +169,7 @@ end);
 InstallGlobalFunction(RunTests, function(tests, inopts, fnam)
   local opts, breakOnError, alwaysPrintTracebackOnError, inp, outp,
         pos, cmp, times, ttime, nrlines, s, res, fres, t, f, i,
-        localbag, failures, startsize, testsize, size;
+        localbag, failures, startsize, size;
   # don't enter break loop in case of error during test
   opts := rec( breakOnError := false, alwaysPrintTracebackOnError:= false,
                showProgress := "some", localdef := false );
@@ -183,8 +183,7 @@ InstallGlobalFunction(RunTests, function(tests, inopts, fnam)
 
   # now start the work
   startsize := SizeScreen();
-  testsize := [opts.width, startsize[2]];
-  SizeScreen(testsize);
+  SizeScreen([opts.width, startsize[2]]);
 
   # we collect outputs and add them to 'tests.cmp'
   # also collect timings and add them to 'tests.times'
