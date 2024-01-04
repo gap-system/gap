@@ -433,13 +433,13 @@ void LockCurrentOutput(BOOL lock);
 **  'Pr' is the output function. The first argument is a 'printf' like format
 **  string containing   up   to 2  '%'  format   fields,  specifying  how the
 **  corresponding arguments are to be  printed.  The two arguments are passed
-**  as  'long'  integers.   This  is possible  since every  C object  ('int',
-**  'char', pointers) except 'float' or 'double', which are not used  in GAP,
-**  can be converted to a 'long' without loss of information.
+**  as  'Int'  integers. This assumes that GAP is built on an architecture
+**  where each of the C types possibly passed as argument to 'Pr' ('int',
+**  'char', pointers) can be converted to 'Int' without loss of information.
 **
 **  The function 'Pr' currently support the following '%' format  fields:
 **  '%c'    the corresponding argument represents a character,  usually it is
-**          its ASCII or EBCDIC code, and this character is printed.
+**          its ASCII code, and this character is printed.
 **  '%s'    the corresponding argument is the address of  a  null  terminated
 **          character string which is printed.
 **  '%S'    the corresponding argument is the address of  a  null  terminated
@@ -460,10 +460,6 @@ void LockCurrentOutput(BOOL lock);
 **  '%>'    increment the indentation level.
 **  '%<'    decrement the indentation level.
 **  '%%'    can be used to print a single '%' character. No argument is used.
-**
-**  You must always  cast the arguments to  '(long)' to avoid  problems  with
-**  those compilers with a default integer size of 16 instead of 32 bit.  You
-**  must pass 0 if you don't make use of an argument to please lint.
 */
 
 void Pr(const Char * format, Int arg1, Int arg2);
