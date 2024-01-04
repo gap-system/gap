@@ -1380,7 +1380,7 @@ InstallGlobalFunction( InputOutputLocalProcess,
     od;
     basename := exec{[i+1..Length(exec)]};
     return Objectify(InputOutputStreamByPtyDefaultType,
-                   Immutable([ptynum, basename, argts, false]) );
+                   [ptynum, Immutable(basename), Immutable(argts), false] );
 end);
 
 #############################################################################

@@ -32,7 +32,7 @@ InstallMethod( EmptyRowVector,
                                    IsRowVector
                                and IsEmpty
                                and IsEmptyRowVectorRep ),
-                      MakeImmutable([]) );
+                      [] );
     end );
 
 
