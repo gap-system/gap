@@ -1145,8 +1145,7 @@ local fact, s, t, Q, R, MN, M, N, rep, d, k, theta, Qp,o,i;
   if Length(fact)>1 then
     d:=ord;
     while (d=ord) and Length(fact)>0 do
-      s:=fact[Length(fact)];
-      Unbind(fact[Length(fact)]);
+      s:=Remove(fact);
       t:=ord/s;
       Q:=PowerMod(q,s,p);
       R:=PowerMod(r,s,p);

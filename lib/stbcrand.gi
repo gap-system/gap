@@ -374,8 +374,7 @@ InstallGlobalFunction( SCRMakeStabStrong,
 
         #check whether new elements are really new in the system
         while new <> [] do
-            g := SCRSift( S, new[Length(new)] );
-            Unbind( new[Length(new)] );
+            g := SCRSift( S, Remove(new) );
             if g <> S.identity then
                 SCRMakeStabStrong(S.stabilizer,[g],param,orbits,
                                   where,basesize,base,correct,missing,false);

@@ -184,7 +184,6 @@ static Obj RemPlist(Obj list)
 static Obj RemListOper;
 
 static Obj FuncREM_LIST(Obj self, Obj list)
-
 {
     // dispatch
     if ( IS_PLIST( list ) ) {
@@ -196,7 +195,6 @@ static Obj FuncREM_LIST(Obj self, Obj list)
     else {
         return DoOperation1Args( self, list);
     }
-
 }
 
 

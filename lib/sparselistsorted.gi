@@ -286,7 +286,7 @@ InstallMethod( Unbind\[\], "sparse list by sorted list",
     poss := sl![SL_POSS];
     if Length(poss) > 0 and poss[Length(poss)] = pos then
         Unbind(sl![SL_VALS][Length(poss)]);
-        Unbind(poss[Length(poss)]);
+        Remove(poss);
     fi;
     sl![SL_LENGTH] := pos-1;
     if pos -1 <= MAX_SIZE_LIST_INTERNAL then

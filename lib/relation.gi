@@ -1480,9 +1480,8 @@ InstallGlobalFunction(EquivalenceRelationByPairsNC,
             if p1<=Length(forest) and p2<=Length(forest) and not p1=p2 then
                 Append(forest[p1],forest[p2]);
                 Unbind(forest[p2]);
-                if not p2=Length(forest) then
-                    forest[p2]:=forest[Length(forest)];
-                    Unbind(forest[Length(forest)]);
+                if p2<Length(forest) then
+                    forest[p2]:=Remove(forest);
                 fi;
 
             ##

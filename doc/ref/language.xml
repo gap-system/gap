@@ -1077,18 +1077,15 @@ Note also that the two stacks <C>A</C> and <C>B</C> do not interfere,
 because each call of <C>Stack</C> creates a new variable for <C>stack</C>.
 <P/>
 <Example><![CDATA[
-gap> Stack := function ()
+gap> Stack := function()
 >     local  stack;
 >     stack := [];
 >     return rec(
->       push := function ( value )
+>       push := function( value )
 >         Add( stack, value );
 >       end,
->       pop := function ()
->         local  value;
->         value := stack[Length(stack)];
->         Unbind( stack[Length(stack)] );
->         return value;
+>       pop := function()
+>         return Remove( stack) ;
 >       end
 >     );
 >  end;;

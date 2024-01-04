@@ -366,7 +366,7 @@ function( l1 )
     else
         z := l1[1] * 0;
         while 0 < Length(l1) and l1[Length(l1)] = z  do
-            Unbind( l1[Length(l1)] );
+            Remove(l1);
         od;
     fi;
 end );

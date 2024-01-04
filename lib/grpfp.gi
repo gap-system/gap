@@ -2955,7 +2955,7 @@ j, ok, b,k,tr;
   tr:=[2*m,2*m-1..1];
 
   while Length(ts)>0 do
-    s:=ts[Length(ts)];
+    s:=Remove(ts);
     t:=s[1];
     n:=s[2];
     i:=s[3];
@@ -2965,7 +2965,6 @@ j, ok, b,k,tr;
       sj:=sj+1;
     fi;
     j:=sj;
-    Unbind(ts[Length(ts)]);
 
     # find first open entry
     ok:=true;
@@ -4776,7 +4775,7 @@ local g,i,x;
     fi;
     # free cancellation
     if Length(g)>0 and x=-g[Length(g)] then
-      Unbind(g[Length(g)]);
+      Remove(g);
     else
       Add(g,x);
     fi;

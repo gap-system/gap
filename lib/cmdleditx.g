@@ -117,7 +117,7 @@ BindGlobal("CommandLineHistoryHandler", function(l)
   if key = 0 then  # save line data
     # no trailing white space
     while Length(l[1]) > 0 and l[1][Length(l[1])] in "\n\r\t " do
-      Unbind(l[1][Length(l[1])]);
+      Remove(l[1]);
     od;
     MaxCommandLineHistory := UserPreference("HistoryMaxLines");
     if not IsInt(MaxCommandLineHistory) then

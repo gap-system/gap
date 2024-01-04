@@ -599,7 +599,7 @@ BindGlobal( "MinimalGensLayer", function( pcgs, pcgsS, pcgsN, min )
         pcgsU := InducedPcgsByPcSequenceAndGenerators( pcgs, pcgsN, min );
         if Length( pcgs ) = Length( pcgsV ) then
             pcgsS := pcgsL;
-            Unbind( series[Length(series)] );
+            Remove(series);
         fi;
     od;
     return min;

@@ -2116,17 +2116,16 @@ InstallMethod( ClassPositionsOfElementaryAbelianSeries,
     nsg:= ShallowCopy( ClassPositionsOfNormalSubgroups( tbl ) );
 
     elab:= [ [ 1 .. NrConjugacyClasses( tbl ) ] ];
-    Unbind( nsg[ Length( nsg ) ] );
+    Remove( nsg );
 
     actsize:= Size( tbl );
     classes:= SizesConjugacyClasses( tbl );
 
     repeat
 
-      next:= nsg[ Length( nsg ) ];
+      next:= Remove( nsg );
       nextsize:= Sum( classes{ next }, 0 );
       Add( elab, next );
-      Unbind( nsg[ Length( nsg ) ] );
       nsg:= Filtered( nsg, x -> IsSubset( next, x ) );
 
       if not IsPrimePowerInt( actsize / nextsize ) then
@@ -3321,7 +3320,7 @@ InstallGlobalFunction( LaTeXStringDecompositionMatrix, function( arg )
 
     od;
 
-    Unbind( str[ Length( str ) ] );
+    Remove( str );
     ConvertToStringRep( str );
 
     # Return the result.
@@ -7114,7 +7113,7 @@ InstallGlobalFunction( SortedCharacterTable, function( arg )
 
       if nrfus < Length( fus ) then
         # Delete the fusion to `F' on `tbl'.
-        Unbind( fus[ Length( fus ) ] );
+        Remove( fus );
       fi;
 
       # Store the fusion to `facttbl'.

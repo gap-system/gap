@@ -939,9 +939,7 @@ local live,orbs,orbset,done,nr,p,o,os,orbitextender,bahn,i,j,enum,dict,map,pam;
               if IsBound(map[j]) and map[j]>i then map[j]:=map[j]-1; fi;
             od;
 
-            # Remove entry i, i.e.
-            #p:=[i..Length(orbs)-1];
-            #orbs{p}:=orbs{p+1};Unbind(orbs[Length(orbs)]);
+            # Remove entry i
             Remove(orbs,i);
             Remove(orbset,i);
             Remove(done,i);

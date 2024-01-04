@@ -1065,7 +1065,7 @@ local fam,mfam,fpfam,mfpfam,hom;
             else x:=-i/2;fi;
             # word must be freely cancelled
             if Length(g)>0 and x=-g[Length(g)] then
-              Unbind(g[Length(g)]);
+              Remove(g);
             else Add(g,x); fi;
           od;
           return ElementOfFpGroup(fpfam,AssocWordByLetterRep(fam,g));
@@ -2220,10 +2220,7 @@ if rule[1]=rule[2] then return;fi;
         for p in left do
           Add(stack,rels[p]);
           DeleteRuleKBDAG(rdag,LetterRepAssocWord(rels[p][1]),p);
-          for j in [p+1..Length(rels)] do
-            rels[j-1]:=rels[j];
-          od;
-          Unbind(rels[Length(rels)]);
+          Remove(rels,p);
         od;
         p:=AddRuleKBDAG(rdag,trule[1],Length(rels)+1);
       elif p=false then Error("could be reduced");fi;
@@ -2627,7 +2624,7 @@ if rule[1]=rule[2] then return;fi;
           else x:=-i/2;fi;
           # word must be freely cancelled
           if Length(g)>0 and x=-g[Length(g)] then
-            Unbind(g[Length(g)]);
+            Remove(g);
           else Add(g,x); fi;
         od;
         return ElementOfFpGroup(FamilyObj(One(gp)),
