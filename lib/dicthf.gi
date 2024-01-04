@@ -175,7 +175,7 @@ InstallMethod(SparseIntKey,"for lists of vectors",true,
     [ IsFFECollColl,IsObject ], 0,
 function(m,v)
 local f;
-if not (IsList(m) and IS_PLIST_REP(m) and ForAll(m,i->IsRowVector(i))) then
+if not (IsList(m) and IS_PLIST_REP(m) and ForAll(m,IsRowVector)) then
     TryNextMethod();
   fi;
   f:=DefaultFieldOfMatrix(m);

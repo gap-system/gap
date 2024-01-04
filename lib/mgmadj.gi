@@ -159,7 +159,7 @@ function(m)
   fi;
 
   zero := Objectify(type, rec(elt:=fail));;
-  gens:=Concatenation(List(GeneratorsOfMagma(m), g-> inj(g)), [zero]);
+  gens:=Concatenation(List(GeneratorsOfMagma(m), inj), [zero]);
   out:=Objectify( NewType( FamilyObj( gens ), filts), rec());
 
   # store the magma in the family so that it can be recovered from an element

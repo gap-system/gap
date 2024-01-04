@@ -1019,7 +1019,7 @@ local s,o,a,n,d,f,fn,j,b,i;
       n:=Filtered(NormalSubgroups(i),x->Size(x)>1);
       # if G is not fitting-free it has a proper normal subgroup of
       #  prime-power order
-      if ForAny(n,x->IsPGroup(x)) then
+      if ForAny(n,IsPGroup) then
         return fail;
       fi;
       n:=Filtered(n,IsNonabelianSimpleGroup);

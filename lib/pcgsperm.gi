@@ -306,7 +306,7 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
     elif Length(arg)>4 then
       G:=arg[2];
       U := TrivialSubgroup( G );
-      if ForAll(GeneratorsOfGroup(G),x->IsOne(x)) then G:=[G];
+      if ForAll(GeneratorsOfGroup(G),IsOne) then G:=[G];
                                       else G:=[G,U];fi;
     else
       G:=A;

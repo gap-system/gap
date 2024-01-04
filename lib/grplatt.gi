@@ -1006,7 +1006,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
             if not k in nts then Add(nts,k);fi;
           od;
         od;
-        SortBy(nts,x->Size(x)); # increasing order
+        SortBy(nts,Size); # increasing order
         # by setting up `act' as fail, we force a different selection later
         act:=[nts,fail];
 

@@ -474,7 +474,7 @@ InstallMethod( OrbitsMovedPoints, "for a permutation group", [IsPermGroup],
 function(G)
 local o,i;
   o:=Orbits(G,MovedPoints(G));
-  o:=List(o,x->Set(x));
+  o:=List(o,Set);
   List(o,IsRange); # save memory if long orbits
   Sort(o);
   MakeImmutable(o);

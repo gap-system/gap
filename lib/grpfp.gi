@@ -2070,7 +2070,7 @@ local ind,q,is;
   ind:=List(l,IndexInWholeGroup);
   Print("Found ",Length(l)," subgroups, core indices:\n",Collected(ind),"\n");
   l:=List(Set(ind),y->Filtered(l,x->IndexInWholeGroup(x)=y));
-  l:=List(l,x->Intersection(x));
+  l:=List(l,Intersection);
   SortBy(l,IndexInWholeGroup);
   if Length(l)=1 then
     is:=l[1];

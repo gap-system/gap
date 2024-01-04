@@ -1619,7 +1619,7 @@ InstallGlobalFunction(AutomorphismGroupNilpotentGroup,function(G)
     autS := List(S, AutomorphismGroup);
 
     # Compute automorphism group for G from this
-    gens := Concatenation(List(S, P->Pcgs(P)));
+    gens := Concatenation(List(S, Pcgs));
     off := 0;
     gensAutG := [];
     for i in [1..Length(S)] do

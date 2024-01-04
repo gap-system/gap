@@ -765,7 +765,7 @@ InstallGlobalFunction(BinaryRelationOnPointsNC,
 
         SetSource(rel, Domain([1..d]));
         SetRange(rel, Domain([1..d]));
-        SetSuccessors(rel, List(lst,x->AsSSortedList(x)));
+        SetSuccessors(rel, List(lst,AsSSortedList));
         SetDegreeOfBinaryRelation(rel,d);
 
         return rel;
@@ -923,7 +923,7 @@ InstallMethod(SymmetricClosureBinaryRelation, "for binary relations on points",
               i,j,     #Index variables
               newrel;  #new relation which is the symmetric closure
 
-        suc := List(Successors(rel),x->ShallowCopy(x));
+        suc := List(Successors(rel),ShallowCopy);
         for i in [1..DegreeOfBinaryRelation(rel)] do
             for j in Successors(rel)[i] do
                 UniteSet(suc[j],[i]);
@@ -944,7 +944,7 @@ InstallMethod(TransitiveClosureBinaryRelation, "for binary relations on points",
         local i,j,    #index variables
               suc;    #successors of given relation
 
-        suc := List(Successors(rel),x->ShallowCopy(x));
+        suc := List(Successors(rel),ShallowCopy);
 
         # if \i in suc[j] then everything related to \i
         # should be in suc[j].
@@ -1439,9 +1439,9 @@ InstallGlobalFunction(EquivalenceRelationByPairsNC,
         ##
         if (IsSet(pairs)) or
            (HasIsDuplicateFreeList(pairs) and IsDuplicateFreeList(pairs)) then
-            C := List(pairs,x->ShallowCopy(x));
+            C := List(pairs,ShallowCopy);
         else
-            C := DuplicateFreeList(List(pairs,x->ShallowCopy(x)));
+            C := DuplicateFreeList(List(pairs,ShallowCopy));
         fi;
 
         ##
@@ -1550,7 +1550,7 @@ InstallGlobalFunction(EquivalenceRelationByPairs,
         ## Make a mutable copy of pairs so we don't inadvertently alter
         ##   pairs
         ##
-        C := List(Filtered(pairs,x->not x[1]=x[2]), y->ShallowCopy(y));
+        C := List(Filtered(pairs,x->not x[1]=x[2]), ShallowCopy);
 
         ##
         ## Return diagonal relation if all pairs are of the form (a,a)
@@ -1708,8 +1708,8 @@ InstallMethod(\=, "for eqivalence relations", IsIdenticalObj,
 
             ## Similar lengths of the partition elements
             ##
-            if Set(EquivalenceRelationPartition(x), i->Length(i)) <>
-               Set(EquivalenceRelationPartition(y), i->Length(i)) then
+            if Set(EquivalenceRelationPartition(x), Length) <>
+               Set(EquivalenceRelationPartition(y), Length) then
                return false;
             fi;
 

@@ -1765,7 +1765,7 @@ local often,trans,e,neu,i,inv,cent,l,s,s1,x,dom;
         Add(trans,Orbit(cent,e));
       fi;
     od;
-    often:=List(trans,i->Length(i));
+    often:=List(trans,Length);
     return [List(trans,i->i[1]),often];
   else
     #Info(InfoCharacterTable,3,"using DoubleCosets;");

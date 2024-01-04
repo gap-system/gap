@@ -468,7 +468,7 @@ BindGlobal("MagmaCongruencePartition",
         ##   equivalence
         ##
         C := List(Filtered(GeneratingPairsOfMagmaCongruence(cong),
-                 x->not x[1]=x[2]), y->ShallowCopy(y));
+                 x->not x[1]=x[2]), ShallowCopy);
 
         if IsEmpty(C) then
             SetEquivalenceRelationPartition(cong,[]);
@@ -487,7 +487,7 @@ BindGlobal("MagmaCongruencePartition",
         else
             equivrel := EquivalenceRelationPartition(
                             EquivalenceRelationByPairsNC(Source(cong),C));
-            forest := List(equivrel, x->ShallowCopy(x));
+            forest := List(equivrel, ShallowCopy);
         fi;
 
         ## Check partial closure might be fulfilled by initial closure

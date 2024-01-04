@@ -1020,7 +1020,7 @@ end);
 BindGlobal("NextLevelMaximals",function(g,l)
 local m;
   if Length(l)=0 then return [];fi;
-  m:=Concatenation(List(l,x->MaximalSubgroupClassReps(x)));
+  m:=Concatenation(List(l,MaximalSubgroupClassReps));
   if Length(l)>1 then
     m:=Unique(m);
   fi;

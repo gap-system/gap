@@ -3407,7 +3407,7 @@ InstallHandlingByNiceBasis( "IsDirectSumElementsSpace", rec(
       ev:= ShallowCopy( vec![1] );
       fam:= ElementsFamily( FamilyObj( V ) );
       mods:= fam!.constituentModules;
-      u:= List( mods, x -> Zero( x ) );
+      u:= List( mods, Zero );
       d:= 0;
       k:= 1;
       i:= 1;
@@ -3472,7 +3472,7 @@ InstallMethod( DirectSumOfAlgebraModules,
     fam!.niceVectorFam:= niceVF;
 
     gens:= [ ];
-    zero:= List( list, x -> Zero( x ) );
+    zero:= List( list, Zero );
     for i in [1..Length(list)] do
         gV:= Basis( list[i] );
         for v in gV do

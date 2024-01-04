@@ -158,7 +158,7 @@ function( s )
   local egens, gens, mapfun;
 
   egens := GeneratorsOfSemigroup(s);
-  if not ForAll(egens, g->IsMapping(g)) then
+  if not ForAll(egens, IsMapping) then
     return fail;
   fi;
 
