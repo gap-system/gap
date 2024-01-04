@@ -1502,10 +1502,9 @@ static Obj FuncALL_KEYWORDS(Obj self)
 **          its ASCII code, and this character is printed.
 **  '%s'    the corresponding argument is the address of  a  null  terminated
 **          character string which is printed.
-**  '%S'    the corresponding argument is the address of  a  null  terminated
-**          character string which is printed with escapes.
-**  '%g'    the corresponding argument is the address of an Obj which points
-**          to a string in STRING_REP format which is printed in '%s' format
+**  '%g'    the corresponding argument is the address of a T_STRING string
+**          object which is printed. This is similar to using '%s' to print
+**          CSTR_STRING(arg), but is safe during garbage collection.
 **  '%G'    the corresponding argument is the address of an Obj which points
 **          to a string in STRING_REP format which is printed in '%S' format
 **  '%C'    the corresponding argument is the address of an Obj which points
@@ -1627,65 +1626,6 @@ static inline void FormatOutput(
         else if (IO()->NoSplitLine > 0)
             IO()->NoSplitLine--;
         put_a_char(state, *q);
-
-        if (arg1obj) {
-          arg1 = (Int)CONST_CSTR_STRING(arg1obj);
-        }
-      }
-
-      // on to the next argument
-      arg1 = arg2;
-    }
-
-    // '%S' or '%G' print a string with the necessary escapes
-    else if ( *p == 'S' || *p == 'G' ) {
-
-      // If arg is a GAP obj, get out the contained string, and
-      // set arg1obj so we can re-evaluate after any possible GC
-      // which occurs in put_a_char
-      if (*p == 'G') {
-        arg1obj = (Obj)arg1;
-        arg1 = (Int)CONST_CSTR_STRING(arg1obj);
-      }
-      else {
-        arg1obj = 0;
-      }
-
-
-      // compute how many characters this identifier requires
-      for ( const Char * q = (const Char *)arg1; *q != '\0' && prec > 0; q++ ) {
-        if      ( *q == '\n'  ) { prec -= 2; }
-        else if ( *q == '\t'  ) { prec -= 2; }
-        else if ( *q == '\r'  ) { prec -= 2; }
-        else if ( *q == '\b'  ) { prec -= 2; }
-        else if ( *q == '\01' ) { prec -= 2; }
-        else if ( *q == '\02' ) { prec -= 2; }
-        else if ( *q == '\03' ) { prec -= 2; }
-        else if ( *q == '"'   ) { prec -= 2; }
-        else if ( *q == '\\'  ) { prec -= 2; }
-        else                    { prec -= 1; }
-      }
-
-      // if wanted push an appropriate number of <space>-s
-      while ( prec-- > 0 )  put_a_char(state, ' ');
-
-      if (arg1obj) {
-          arg1 = (Int)CONST_CSTR_STRING(arg1obj);
-      }
-
-      // print the string
-      for ( Int i = 0; ((const Char *)arg1)[i] != '\0'; i++ ) {
-        const Char* q = ((const Char *)arg1) + i;
-        if      ( *q == '\n'  ) { put_a_char(state, '\\'); put_a_char(state, 'n');  }
-        else if ( *q == '\t'  ) { put_a_char(state, '\\'); put_a_char(state, 't');  }
-        else if ( *q == '\r'  ) { put_a_char(state, '\\'); put_a_char(state, 'r');  }
-        else if ( *q == '\b'  ) { put_a_char(state, '\\'); put_a_char(state, 'b');  }
-        else if ( *q == '\01' ) { put_a_char(state, '\\'); put_a_char(state, '>');  }
-        else if ( *q == '\02' ) { put_a_char(state, '\\'); put_a_char(state, '<');  }
-        else if ( *q == '\03' ) { put_a_char(state, '\\'); put_a_char(state, 'c');  }
-        else if ( *q == '"'   ) { put_a_char(state, '\\'); put_a_char(state, '"');  }
-        else if ( *q == '\\'  ) { put_a_char(state, '\\'); put_a_char(state, '\\'); }
-        else                    { put_a_char(state, *q);               }
 
         if (arg1obj) {
           arg1 = (Int)CONST_CSTR_STRING(arg1obj);

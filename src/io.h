@@ -442,10 +442,9 @@ void LockCurrentOutput(BOOL lock);
 **          its ASCII code, and this character is printed.
 **  '%s'    the corresponding argument is the address of  a  null  terminated
 **          character string which is printed.
-**  '%S'    the corresponding argument is the address of  a  null  terminated
-**          character string which is printed with escapes.
-**  '%g'    the corresponding argument is the address of an Obj which points
-**          to a string in STRING_REP format which is printed in '%s' format
+**  '%g'    the corresponding argument is the address of a T_STRING string
+**          object which is printed. This is similar to using '%s' to print
+**          CSTR_STRING(arg), but is safe during garbage collection.
 **  '%G'    the corresponding argument is the address of an Obj which points
 **          to a string in STRING_REP format which is printed in '%S' format
 **  '%C'    the corresponding argument is the address of an Obj which points
