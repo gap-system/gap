@@ -1625,7 +1625,7 @@ static inline void FormatOutput(
       // print the string
       /* must be careful that line breaks don't go inside
          escaped sequences \n or \123 or similar */
-      while (len--) {
+      for (UInt i = 0; i < len; i++) {
         const Char* q = ((const Char *)arg1) + i;
         // skip null bytes; this means 'prec' is off in this case. Fixing this
         // is not worth the effort. So instead, new rule: if you print strings
