@@ -1610,7 +1610,7 @@ static inline void FormatOutput(
       }
 
       // compute how many characters this identifier requires
-      if(len >= prec)
+      if (len >= prec)
         prec = 0;
       else
         prec -= len;
@@ -1625,9 +1625,13 @@ static inline void FormatOutput(
       // print the string
       /* must be careful that line breaks don't go inside
          escaped sequences \n or \123 or similar */
-      for ( Int i = 0; i < len; i++ ) {
+      while (len--) {
         const Char* q = ((const Char *)arg1) + i;
-        if (*q == '\0') continue;
+        // skip null bytes; this means 'prec' is off in this case. Fixing this
+        // is not worth the effort. So instead, new rule: if you print strings
+        // with null bytes, behavior of 'prec' is undefined.
+        if (*q == '\0')
+          continue;
         if (*q == '\\' && IO()->NoSplitLine == 0) {
           if (*(q + 1) < '8' && *(q + 1) >= '0')
             IO()->NoSplitLine = 3;
