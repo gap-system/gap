@@ -23,8 +23,7 @@ InstallMethod( ElementByRws,
     0,
 
 function( fam, elm )
-    elm := Immutable([ elm ]);
-    return Objectify( fam!.defaultType, elm );
+    return Objectify( fam!.defaultType, [ elm ] );
 end );
 
 ##
@@ -43,8 +42,7 @@ function( fam, list )
 
     freefam := UnderlyingFamily( fam!.rewritingSystem );
     elm := ObjByExtRep( freefam, list );
-    elm := Immutable([ elm ]);
-    return Objectify( fam!.defaultType, elm );
+    return Objectify( fam!.defaultType, [ elm ] );
 end );
 
 
