@@ -1587,6 +1587,7 @@ static inline void FormatOutput(
 
     // '%s' or '%g' print a string
     else if ( *p == 's' || *p == 'g') {
+      UInt len;
 
       // If arg is a GAP obj, get out the contained string, and
       // set arg1obj so we can re-evaluate after any possible GC
@@ -1594,36 +1595,44 @@ static inline void FormatOutput(
       if (*p == 'g') {
         arg1obj = (Obj)arg1;
         arg1 = (Int)CONST_CSTR_STRING(arg1obj);
+        len = GET_LEN_STRING(arg1obj);
       }
       else {
         arg1obj = 0;
+        len = strlen((const Char *)arg1);
       }
 
       // compute how many characters this identifier requires
-      for ( const Char * q = (const Char *)arg1; *q != '\0' && prec > 0; q++ ) {
-        prec--;
-      }
+      if (len >= prec)
+        prec = 0;
+      else
+        prec -= len;
 
       // if wanted push an appropriate number of <space>-s
       while ( prec-- > 0 )  put_a_char(state, ' ');
 
       if (arg1obj) {
-          arg1 = (Int)CONST_CSTR_STRING(arg1obj);
+        arg1 = (Int)CONST_CSTR_STRING(arg1obj);
       }
 
       // print the string
       /* must be careful that line breaks don't go inside
          escaped sequences \n or \123 or similar */
-      for ( Int i = 0; ((const Char *)arg1)[i] != '\0'; i++ ) {
-          const Char* q = ((const Char *)arg1) + i;
-          if (*q == '\\' && IO()->NoSplitLine == 0) {
-              if (*(q + 1) < '8' && *(q + 1) >= '0')
-                  IO()->NoSplitLine = 3;
-              else
-                  IO()->NoSplitLine = 1;
+      for (UInt i = 0; i < len; i++) {
+        const Char* q = ((const Char *)arg1) + i;
+        // skip null bytes; this means 'prec' is off in this case. Fixing this
+        // is not worth the effort. So instead, new rule: if you print strings
+        // with null bytes, behavior of 'prec' is undefined.
+        if (*q == '\0')
+          continue;
+        if (*q == '\\' && IO()->NoSplitLine == 0) {
+          if (*(q + 1) < '8' && *(q + 1) >= '0')
+            IO()->NoSplitLine = 3;
+          else
+            IO()->NoSplitLine = 1;
         }
         else if (IO()->NoSplitLine > 0)
-            IO()->NoSplitLine--;
+          IO()->NoSplitLine--;
         put_a_char(state, *q);
 
         if (arg1obj) {
