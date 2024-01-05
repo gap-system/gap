@@ -60,7 +60,7 @@ local i,p;
       Unbind(a[p]);
     fi;
   od;
-  return Filtered(a,i->IsBound(i));
+  return Compacted(a);
 end;
 
 GroupOrbitsMinimumEach := function(G,l)

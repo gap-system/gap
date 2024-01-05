@@ -2196,7 +2196,7 @@ InstallMethod( MutableTransposedMatDestructive,
             Add( mat, store );
         od;
         for i in [1..m] do
-            mat[i]:= Filtered( mat[i], x -> IsBound(x) );
+            mat[i]:= Compacted( mat[i] );
         od;
     fi;
 
@@ -2207,7 +2207,7 @@ InstallMethod( MutableTransposedMatDestructive,
             od;
             Unbind( mat[i] );
         od;
-        mat:= Filtered( mat, x -> IsBound( x ) );
+        mat:= Compacted( mat );
     fi;
 
     # return the transposed

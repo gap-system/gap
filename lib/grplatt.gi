@@ -3863,7 +3863,7 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
               fi;
             od;
           od;
-          a:=Filtered(a,x->IsBound(x));
+          a:=Compacted(a);
           if tb>bound and Length(a)>5*10^(1+LogInt((1+QuoInt(tb,bound)),prime)) then
             bound:=bound*prime;
             tb:=infinity;

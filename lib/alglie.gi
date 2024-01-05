@@ -4391,7 +4391,7 @@ local ReductionModuloTable,   #
 
           Unbind(r[n]);
        fi;
-       r:= Filtered( r, x -> IsBound(x) );
+       r:= Compacted( r );
 
      fi;
 
@@ -4440,7 +4440,7 @@ local ReductionModuloTable,   #
          fi;
        fi;
      od;
-     a:=Filtered(a,x -> IsBound(x));
+     a:=Compacted(a);
      a:= CollectPolynomial( a );
 
      if a = [ ] or a[1][2] = one then
@@ -4546,7 +4546,7 @@ local ReductionModuloTable,   #
            s:= List( s, x -> [ x[1], -rel[i][2]*x[2] ] );
            Append( rel, s );
            Unbind( rel[i] );
-           rel:= Filtered( rel, x -> IsBound( x ) );
+           rel:= Compacted( rel );
 
          else
            i:= i+1;
@@ -4635,12 +4635,10 @@ local ReductionModuloTable,   #
        Tij:= _T[s][t];
        pos:= Position( Tij[1], var );
        if pos <> fail then
-         Unbind( Tij[1][pos] );
+         Remove( Tij[1], pos );
          cf:= Tij[2][pos];
          if s <> c[1] then cf:= -cf; fi;
-         Unbind( Tij[2][pos] );
-         Tij[1]:= Filtered( Tij[1], x -> IsBound(x) );
-         Tij[2]:= Filtered( Tij[2], x -> IsBound(x) );
+         Remove( Tij[2], pos );
          Append( Tij[1], inds );
          Append( Tij[2],  cf*cfs );
          ii:= [ ]; cc:= [ ];
@@ -4714,7 +4712,7 @@ local ReductionModuloTable,   #
          max:= Maximum( max, Length( Flat(r[j][1]) ) );
        fi;
      od;
-     r:= Filtered( r, x -> IsBound(x) );
+     r:= Compacted( r );
      r:= LeftNormalization( r );
      r:= CollectPolynomial( r );
      if not max = 0 then
@@ -5161,7 +5159,7 @@ local ReductionModuloTable,   #
 
                od;
                if relation_found then break; fi;
-               rr:=Filtered(rr,x -> IsBound(x));
+               rr:=Compacted(rr);
              fi;
 
            fi;
@@ -5398,7 +5396,7 @@ local ReductionModuloTable,   #
              Unbind( defs[j][k] );
            fi;
          od;
-         defs[j]:= Filtered( defs[j], x -> IsBound( x ) );
+         defs[j]:= Compacted( defs[j] );
        od;
        i:= i-1;
      od;

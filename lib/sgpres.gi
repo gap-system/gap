@@ -2971,7 +2971,7 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
       fi;
     fi;
   od;
-  ri:=Filtered(ri,x->IsBound(x));
+  ri:=Compacted(ri);
 
 
   # cyclic conjugates, sort by first letter
