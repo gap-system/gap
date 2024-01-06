@@ -663,7 +663,7 @@ static Obj  HdlrFunc8 (
  CHECK_BOUND( t_4, "IsList" );
  SET_ELM_PLIST( t_3, 2, t_4 );
  CHANGED_BAG( t_3 );
- t_4 = NewFunction( NameFunc[9], 2, ArgStringToList("func,args"), HdlrFunc9 );
+ t_4 = NewFunction( NameFunc[9], 2, NewPlistFromArgs(MakeImmString("func"), MakeImmString("args")), HdlrFunc9 );
  SET_ENVI_FUNC( t_4, STATE(CurrLVars) );
  t_5 = NewFunctionBody();
  SET_STARTLINE_BODY(t_5, 49);
@@ -944,7 +944,7 @@ static Obj  HdlrFunc1 (
       f(  );
       return;
   end; */
- t_1 = NewFunction( NameFunc[2], 1, ArgStringToList("f"), HdlrFunc2 );
+ t_1 = NewFunction( NameFunc[2], 1, NewPlistFromArgs(MakeImmString("f")), HdlrFunc2 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 2);
@@ -958,7 +958,7 @@ static Obj  HdlrFunc1 (
       f( 1 );
       return;
   end; */
- t_1 = NewFunction( NameFunc[3], 1, ArgStringToList("f"), HdlrFunc3 );
+ t_1 = NewFunction( NameFunc[3], 1, NewPlistFromArgs(MakeImmString("f")), HdlrFunc3 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 7);
@@ -972,7 +972,7 @@ static Obj  HdlrFunc1 (
       f( 1, 2, 3, 4, 5, 6, 7 );
       return;
   end; */
- t_1 = NewFunction( NameFunc[4], 1, ArgStringToList("f"), HdlrFunc4 );
+ t_1 = NewFunction( NameFunc[4], 1, NewPlistFromArgs(MakeImmString("f")), HdlrFunc4 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 12);
@@ -986,7 +986,7 @@ static Obj  HdlrFunc1 (
       Display( f(  ) );
       return;
   end; */
- t_1 = NewFunction( NameFunc[5], 1, ArgStringToList("f"), HdlrFunc5 );
+ t_1 = NewFunction( NameFunc[5], 1, NewPlistFromArgs(MakeImmString("f")), HdlrFunc5 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 18);
@@ -1000,7 +1000,7 @@ static Obj  HdlrFunc1 (
       Display( f( 1 ) );
       return;
   end; */
- t_1 = NewFunction( NameFunc[6], 1, ArgStringToList("f"), HdlrFunc6 );
+ t_1 = NewFunction( NameFunc[6], 1, NewPlistFromArgs(MakeImmString("f")), HdlrFunc6 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 23);
@@ -1014,7 +1014,7 @@ static Obj  HdlrFunc1 (
       Display( f( 1, 2, 3, 4, 5, 6, 7 ) );
       return;
   end; */
- t_1 = NewFunction( NameFunc[7], 1, ArgStringToList("f"), HdlrFunc7 );
+ t_1 = NewFunction( NameFunc[7], 1, NewPlistFromArgs(MakeImmString("f")), HdlrFunc7 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 28);
