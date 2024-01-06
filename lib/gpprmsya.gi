@@ -497,7 +497,7 @@ local schreiertree, cosetrepresentative, flag, schtree, stab, k, p, j,
   stab:=Group(stab);
 
   orbits:=Orbits(stab,dom{[1..Binomial(n,l2)^l1]},OnPoints);
-  k:=Position(List(orbits, x->Length(x)),l1*l2*(n-l2));
+  k:=Position(List(orbits, Length),l1*l2*(n-l2));
   if k = fail then
     flag:= false;
   else
@@ -2460,7 +2460,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
       k:=CallFuncList(ValueGlobal("AllPrimitiveGroups"),
        [NrMovedPoints,n,SocleTypePrimitiveGroup,
           SocleTypePrimitiveGroup(m),SignPermGroup,-1]);
-      k:=List(k,i->AlternatingSubgroup(i));
+      k:=List(k,AlternatingSubgroup);
       if ForAll(k,j->not IsTransitive(j,[1..n]) or not IsPrimitive(j,[1..n])
               or PrimitiveIdentification(j)<>PrimitiveIdentification(m)) then
         Add(max,m^invol);

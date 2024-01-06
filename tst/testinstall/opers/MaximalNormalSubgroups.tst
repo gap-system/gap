@@ -13,7 +13,7 @@ gap> SortedList(List(MaximalNormalSubgroups(G),N ->List(MinimalGeneratingSet(N),
   [ 2, 60, 4200 ], [ 2, 60, 6300 ], [ 60, 12600 ], [ 60, 12600 ], 
   [ 60, 12600 ], [ 60, 12600 ] ]
 gap> A := AbelianGroup(IsFpGroup, [2,4,8,3,9,5,25,7]);;
-gap> SortedList(List(MaximalNormalSubgroups(A),N -> AbelianInvariants(N)));
+gap> SortedList(List(MaximalNormalSubgroups(A),AbelianInvariants));
 [ [ 2, 2, 3, 5, 7, 8, 9, 25 ], [ 2, 2, 3, 5, 7, 8, 9, 25 ], 
   [ 2, 3, 3, 4, 5, 7, 8, 25 ], [ 2, 3, 4, 4, 5, 7, 9, 25 ], 
   [ 2, 3, 4, 5, 5, 7, 8, 9 ], [ 2, 3, 4, 5, 8, 9, 25 ], 

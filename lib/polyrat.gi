@@ -1644,8 +1644,7 @@ local i,     # loops
     fi;
 
     # compute the possible degrees
-    tmp:=Set(Combinations(List(lp,DegreeOfLaurentPolynomial)),
-                  g -> Sum(g));
+    tmp:=Set(Combinations(List(lp,DegreeOfLaurentPolynomial)),Sum);
     if 1 = i  then
       deg:=tmp;
     else

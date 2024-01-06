@@ -111,7 +111,7 @@ InstallGlobalFunction( FpOfModules, function( pcgs, modus )
     n      := Length( modus );
     words  := ShallowCopy( AsList( pcgs ) );
     traces := List( modus, x -> Concatenation( [x.dimension],
-                                List(x.generators, y -> TraceMat( y ))));
+                                List(x.generators, TraceMat)));
     trset  := Set( traces );
 
     # iterate computation of elements

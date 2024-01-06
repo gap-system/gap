@@ -193,7 +193,7 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
   nonperm:=Filtered(out,i->not IsConjugatorAutomorphism(i));
   syno:=g;
   #syno:=Group(List(Filtered(GeneratorsOfGroup(au),IsInnerAutomorphism),
-#        x->ConjugatorOfConjugatorIsomorphism(x)),One(g));
+#        ConjugatorOfConjugatorIsomorphism),One(g));
   for i in Filtered(out,IsConjugatorAutomorphism) do
     syno:=ClosureGroup(syno,ConjugatorOfConjugatorIsomorphism(i));
   od;
@@ -2061,8 +2061,8 @@ local o,p,gens,hens;
   hens:=IndependentGeneratorsOfAbelianGroup(H);
   hens:=ShallowCopy(hens);
 
-  o:=List(gens,i->Order(i));
-  p:=List(hens,i->Order(i));
+  o:=List(gens,Order);
+  p:=List(hens,Order);
 
   SortParallel(o,gens);
   SortParallel(p,hens);
@@ -3086,7 +3086,7 @@ local Fgens,    # generators of F
 
       val:=Product(pimgs,i->Sum(i,Size));
       if val<bestval then
-        Info(InfoMorph,2,"better value: ",List(u,i->Order(i)),
+        Info(InfoMorph,2,"better value: ",List(u,Order),
               "->",val);
         best:=[u,pimgs];
         bestval:=val;

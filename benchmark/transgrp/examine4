@@ -2868,7 +2868,7 @@ local b,w,a;
     return [t];
   fi;
   b:=List(sys.emb,i->Image(i,c));
-  b:=Subgroup(sys.parent,Concatenation(List(b,i->GeneratorsOfGroup(i))));
+  b:=Subgroup(sys.parent,Concatenation(List(b,GeneratorsOfGroup)));
   w:=Subgroup(sys.parent,Concatenation(GeneratorsOfGroup(b),
                                        GeneratorsOfGroup(t)));
 
@@ -2895,7 +2895,7 @@ local b,w,a,fno,cnt,normalsyl,tf,nt,tno,ntno,i,j,k,com,hom,cs,ker,nf;
     return [t];
   fi;
   b:=List(sys.emb,i->Image(i,c));
-  b:=Subgroup(sys.parent,Concatenation(List(b,i->GeneratorsOfGroup(i))));
+  b:=Subgroup(sys.parent,Concatenation(List(b,GeneratorsOfGroup)));
   w:=Subgroup(sys.parent,Concatenation(GeneratorsOfGroup(b),
                                        GeneratorsOfGroup(t)));
   fno:=Normalizer(Image(sys.blockhom,sys.kr),Image(sys.blockhom,w));

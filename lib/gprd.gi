@@ -239,7 +239,7 @@ function( D )
 
     list := DirectProductInfo( D ).groups;
 
-    if ForAll (list, G -> IsPGroup(G)) then
+    if ForAll(list, IsPGroup) then
         p := fail;
         for G in list do
             if not IsTrivial (G) then

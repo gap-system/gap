@@ -1282,7 +1282,7 @@ local ord,b,ind,num,c,corners,i,j,a,rem,bound,mon,n,monb,dim,sc,k,l,char,hom;
       Add(corners,a); # extra corner
     fi;
   od;
-  if not ForAll(bound,x->IsInt(x)) then
+  if not ForAll(bound,IsInt) then
     Info(InfoWarning,1,"quotient ring has infinite dimension");
     TryNextMethod();
   fi;

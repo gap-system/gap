@@ -3970,7 +3970,7 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
 # wrap the list `todo' into an element of the free Lie algebra.
 
          todo:= List( todo, x -> [x[3],x[2]] );
-         Sort( todo, function( x, y) return x < y; end );
+         Sort( todo, \< );
          tlist:= [];
          for i in [1..Length(todo)] do
            Append( tlist, todo[i] );

@@ -1070,7 +1070,7 @@ local m,s,g,i,j,gen,img,hom,d,pos;
 
   # since f is the full group, exponent sums are with respect to its
   # generators.
-  m:=List(RelatorsOfFpGroup(f),w->ExponentSums(w));
+  m:=List(RelatorsOfFpGroup(f),ExponentSums);
 
   if Length(m)>0 then
     m:=ReducedRelationMat(m);

@@ -2306,7 +2306,7 @@ if rule[1]=rule[2] then return;fi;
       for i in Pcgs(ha) do
         a:=[weylword(i),borelword(i)];
         Info(InfoFpGroup,2,"intersection:",a);
-        a:=List(a,x->trawou(x));
+        a:=List(a,trawou);
         addrule(a);
       od;
       b:=IsomorphismFpMonoid(weyl!.epiweyl);
@@ -2380,7 +2380,7 @@ if rule[1]=rule[2] then return;fi;
           b:=borelword(j);
           k:=borelword(k);
           a:=[b*a,a*k];
-          a:=List(a,x->trawou(x));
+          a:=List(a,trawou);
           addrule(a);
         else
           Add(noncomm[i],jj);
@@ -2487,7 +2487,7 @@ if rule[1]=rule[2] then return;fi;
         k[i]:=Intersection(k[i],[-QuoInt(pri[i],2)..QuoInt(pri[i],2)]);
         k[i]:=List(k[i],x->a[i]^x);
       od;
-      borelelm:=Set(Cartesian(k),x->Product(x));
+      borelelm:=Set(Cartesian(k),Product);
 
     fi;
 

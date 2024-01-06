@@ -58,15 +58,15 @@ gap> Size(t20);
 ##
 gap> grp := EquivalenceRelationPartition(GreensRRelation(s1));;
 gap> grp1 := EquivalenceRelationPartition(GreensRRelation(t1));;
-gap> Set(List(grp,i->Size(i))) = Set(List(grp1,i->Size(i)));
+gap> Set(List(grp,Size)) = Set(List(grp1,Size));
 true
 gap> glp := EquivalenceRelationPartition(GreensLRelation(s1));;
 gap> glp1 := EquivalenceRelationPartition(GreensLRelation(t1));;
-gap> Set(List(glp,i->Size(i))) = Set(List(glp1,i->Size(i)));
+gap> Set(List(glp,Size)) = Set(List(glp1,Size));
 true
 gap> gjp := EquivalenceRelationPartition(GreensJRelation(s1));;
 gap> gjp1 := EquivalenceRelationPartition(GreensJRelation(t1));;
-gap> Set(List(gjp,i->Size(i))) = Set(List(gjp1,i->Size(i)));
+gap> Set(List(gjp,Size)) = Set(List(gjp1,Size));
 true
 
 ##

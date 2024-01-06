@@ -813,7 +813,7 @@ InstallMethod(EggBoxOfDClass, "for a Green's D class", true,
         [IsGreensDClass],0,
     function(d)
 
-    return List(GreensRClasses(d), x-> GreensHClasses(x));
+    return List(GreensRClasses(d), GreensHClasses);
 end);
 
 #############################################################################

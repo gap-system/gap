@@ -1575,7 +1575,7 @@ function( f, w )
 local l,gens,g,i,p;
 
   Info(InfoWarning,2,"obsolete undocumented method");
-  gens:=List(FreeGeneratorsOfFpGroup(f),x->ExtRepOfObj(x));
+  gens:=List(FreeGeneratorsOfFpGroup(f),ExtRepOfObj);
   g:=gens{[1..Length(gens)]}[1];
   l:=List(gens,x->0);
   w:= ExtRepOfObj( w );
