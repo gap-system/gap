@@ -939,7 +939,7 @@ local f,n,p,cand,noca,alt,d,co,dco,res,resf,pat,i,j,k,
           co[i]:=co[i][1]; # throw away unneeded list
           dco[i]:=UnParOrbits(co[i]);
         od;
-        degs:=List(Filtered(co,i->IsBound(i)),GrabCodedLengths);
+        degs:=List(Compacted(co),GrabCodedLengths);
 
         res:=GetResolvent(f,act);
         resf:=Factors(polring,res:factoroptions:=rec(onlydegs:=Union(degs)));

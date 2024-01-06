@@ -595,7 +595,7 @@ InstallGlobalFunction( LieCoboundaryOperator,
              elts:= bL{t};
              z:= elts[q]*elts[r];
              Unbind( elts[q] ); Unbind( elts[r] );
-             elts:= Filtered( elts, x -> IsBound( x ) );
+             elts:= Compacted( elts );
              inp:= [ c ]; Append( inp, elts ); Add( inp, z );
              val:= val+(-1)^(q+r)*ValueCochain( inp );
            od;
@@ -1614,7 +1614,7 @@ InstallGlobalFunction( CollectUEALatticeElement,
                  Add( fac, e[k+1] ); Unbind( e[k+1] );
              fi;
          od;
-         e:= Filtered( e, x-> IsBound(x) );
+         e:= Compacted( e );
          # `e' now contains the rest of the polynomial.
 
          p:= PolynomialByExtRepNC( fam, fac )/(vars[1]^d);
@@ -1648,7 +1648,7 @@ InstallGlobalFunction( CollectUEALatticeElement,
              fi;
          od;
 
-         return Filtered( res, x -> IsBound(x) );
+         return Compacted( res );
      end;
 
 
@@ -1735,9 +1735,8 @@ InstallGlobalFunction( CollectUEALatticeElement,
                 mon[i+1]:= mon[i+1]+mon[i+3];
                 todo[2]:= todo[2]*Binomial(mon[i+1],mon[i+3]);
 
-                Unbind( mon[i+2] );
-                Unbind( mon[i+3] );
-                mon:= Filtered( mon, x -> IsBound(x) );
+                Remove( mon, i+2 );
+                Remove( mon, i+2 );
                 todo[1]:= mon;
             elif mon[i] < mon[i+2] then
 
@@ -2036,7 +2035,7 @@ InstallGlobalFunction( CollectUEALatticeElement,
                         fi;
                     fi;
                 od;
-                todo:= Filtered( todo, x-> IsBound( x ) );
+                todo:= Compacted( todo );
                 collocc:= true;
 
                # We performed one collection step, and we break from
@@ -2124,14 +2123,14 @@ InstallGlobalFunction( CollectUEALatticeElement,
                 else
                     dones[p+1]:= dones[p+1]+mons[i+1];
                     if dones[p+1] = 0 then
-                        Unbind( dones[p] ); Unbind( dones[p+1] );
-                        dones:= Filtered( dones, x -> IsBound(x) );
+                        Remove( dones, p );
+                        Remove( dones, p );
                     fi;
                 fi;
             od;
 
-            Unbind( todo[1] ); Unbind( todo[2] );
-            todo:= Filtered( todo, x -> IsBound(x) );
+            Remove( todo, 1 );
+            Remove( todo, 1 );
 
         fi;
     od;
@@ -2197,8 +2196,8 @@ InstallMethod( \*,
         if len > 0 and lst[len-1] = mons[i] then
             lst[len]:= lst[len]+cfs[i];
             if lst[len] = 0*lst[len] then
-                Unbind( lst[len-1] ); Unbind( lst[len] );
-                lst:= Filtered( lst, x -> IsBound(x) );
+                Remove( lst, len-1 );
+                Remove( lst, len-1 );
                 len:= len-2;
             fi;
 
@@ -2987,8 +2986,8 @@ InstallOtherMethod(\^,
                     else
                         er[pos+1]:= er[pos+1]+cf;
                         if er[pos+1] = 0*er[pos+1] then
-                            Unbind( er[pos] ); Unbind( er[pos+1] );
-                            er:= Filtered( er, x -> IsBound( x ) );
+                            Remove( er, pos );
+                            Remove( er, pos );
                         fi;
                     fi;
                 fi;
@@ -3002,8 +3001,8 @@ InstallOtherMethod(\^,
             else
                 er[pos+1]:= er[pos+1]+cf;
                 if er[pos+1] = 0*er[pos+1] then
-                    Unbind( er[pos] ); Unbind( er[pos+1] );
-                    er:= Filtered( er, x -> IsBound( x ) );
+                    Remove( er, pos );
+                    Remove( er, pos );
                 fi;
             fi;
         fi;
@@ -3074,10 +3073,8 @@ BindGlobal( "TriangulizeWeightRepElementList", function( ww )
     k:= 1;
     while k <= Length( ww ) do
         if IsZero( ww[k] ) then
-            Unbind( ww[k] );
-            Unbind( basechange[k] );
-            ww:= Filtered( ww, x -> IsBound( x ) );
-            basechange:= Filtered( basechange, x -> IsBound( x ) );
+            Remove( ww, k );
+            Remove( basechange, k );
         else
             cf:= ww[k]![1][2];
             ww[k]:= ww[k]/cf;
@@ -3115,8 +3112,8 @@ BindGlobal( "TriangulizeWeightRepElementList", function( ww )
                 Unbind( basechange[i] );
             fi;
         od;
-        ww:= Filtered( ww, x -> IsBound( x ) );
-        basechange:= Filtered( basechange, x -> IsBound( x ) );
+        ww:= Compacted( ww );
+        basechange:= Compacted( basechange );
 
         SortParallel( ww, basechange,
                 function( u, v )
@@ -3512,7 +3509,7 @@ InstallMethod( HighestWeightModule,
                     Unbind( mons[j][i] );
                 fi;
             od;
-            mons[j]:= Filtered( mons[j], x -> IsBound(x) );
+            mons[j]:= Compacted( mons[j] );
 
             Glmsk[j]:= [ ];
             Gk[ j ]:= [ ];
@@ -3732,7 +3729,7 @@ InstallMethod( HighestWeightModule,
                         Unbind( mmm[j][i] );
                     fi;
                 od;
-                mmm[j]:= Filtered( mmm[j], x -> IsBound(x) );
+                mmm[j]:= Compacted( mmm[j] );
                 paths[Position(weights,w[j])]:= mmm[j];
             else
 

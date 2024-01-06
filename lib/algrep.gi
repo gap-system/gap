@@ -1392,9 +1392,8 @@ InstallMethod(\+,
     sum:=  ZippedSum( lu, lv, zero, [\<,\+] );
     if Length( sum ) >= 2 then
         if sum[1] = [] and sum[2] = zero then
-            Unbind( sum[1] );
-            Unbind( sum[2] );
-            sum:= Filtered( sum , x -> IsBound(x) );
+            Remove( sum, 1 );
+            Remove( sum, 1 );
         fi;
     fi;
     if sum = [ ] then sum:= [ [], zero ]; fi;
@@ -1536,10 +1535,8 @@ BindGlobal( "TriangulizeMonomialElementList", function( tt, zero, LM, LC )
         if IsZero( tt[k] ) then
 
             # Get rid of it.
-            Unbind( tt[k] );
-            Unbind( basechange[k] );
-            tt:= Filtered( tt, x -> IsBound( x ) );
-            basechange:= Filtered( basechange, x -> IsBound( x ) );
+            Remove( tt, k );
+            Remove( basechange, k );
         else
 
             # Eliminate all instances of `LM( tt[k] )' that occur `below'
@@ -1560,11 +1557,8 @@ BindGlobal( "TriangulizeMonomialElementList", function( tt, zero, LM, LC )
                     if IsZero( tt[i] ) then
 
                         # Get rid of it.
-                        Unbind( tt[i] );
-                        Unbind( basechange[i] );
-                        tt:= Filtered( tt, x -> IsBound( x ) );
-                        basechange:= Filtered( basechange,
-                                             x -> IsBound( x ) );
+                        Remove( tt, i );
+                        Remove( basechange, i );
                     else
 
                         # Adjust the i-th entry in basechange, we basically
@@ -1882,8 +1876,8 @@ InstallMethod( ConvertToNormalFormMonomialElement,
             fi;
 
         od;
-        tensors:= Filtered( tensors, x -> IsBound( x ) );
-        cfts:= Filtered( cfts, x -> IsBound( x ) );
+        tensors:= Compacted( tensors );
+        cfts:= Compacted( cfts );
     od;
 
     # Merge tensors and coefficients, take equal tensors together.
@@ -2268,9 +2262,9 @@ InstallMethod( ConvertToNormalFormMonomialElement,
             fi;
 
         od;
-        tensors:= Filtered( tensors, x -> IsBound( x ) );
-        cfts:= Filtered( cfts, x -> IsBound( x ) );
-        wedge_inds:= Filtered( wedge_inds, x -> IsBound( x ) );
+        tensors:= Compacted( tensors );
+        cfts:= Compacted( cfts );
+        wedge_inds:= Compacted( wedge_inds );
     od;
 
     # Merge wedges and coefficients, apply permutations to make the wedges
@@ -2292,9 +2286,9 @@ InstallMethod( ConvertToNormalFormMonomialElement,
 
     od;
 
-    tensors:= Filtered( tensors, x -> IsBound(x) );
-    wedge_inds:= Filtered( wedge_inds, x -> IsBound(x) );
-    cfts:= Filtered( cfts, x -> IsBound(x) );
+    tensors:= Compacted( tensors );
+    wedge_inds:= Compacted( wedge_inds );
+    cfts:= Compacted( cfts );
 
     perm:= Sortex( tensors );
     cfts:= Permuted( cfts, perm );
@@ -2602,9 +2596,9 @@ InstallMethod( ConvertToNormalFormMonomialElement,
             fi;
 
         od;
-        tensors:= Filtered( tensors, x -> IsBound( x ) );
-        cfts:= Filtered( cfts, x -> IsBound( x ) );
-        symmetric_inds:= Filtered( symmetric_inds, x -> IsBound( x ) );
+        tensors:= Compacted( tensors );
+        cfts:= Compacted( cfts );
+        symmetric_inds:= Compacted( symmetric_inds );
     od;
 
     # Merge symmetric elements and coefficients, apply permutations to make
@@ -3011,10 +3005,8 @@ BindGlobal( "BasisOfSparseRowSpace",
         if IsZero( tt[k] ) then
 
             # Get rid of it.
-            Unbind( tt[k] );
-            Unbind( basechange[k] );
-            tt:= Filtered( tt, x -> IsBound( x ) );
-            basechange:= Filtered( basechange, x -> IsBound( x ) );
+            Remove( tt, k );
+            Remove( basechange, k );
         else
 
             # If there is a vector starting with the same index as `tt[k]'
@@ -3038,11 +3030,8 @@ BindGlobal( "BasisOfSparseRowSpace",
                     if IsZero( tt[i] ) then
 
                         # Get rid of it.
-                        Unbind( tt[i] );
-                        Unbind( basechange[i] );
-                        tt:= Filtered( tt, x -> IsBound( x ) );
-                        basechange:= Filtered( basechange,
-                                             x -> IsBound( x ) );
+                        Remove( tt, i );
+                        Remove( basechange, i );
                     else
 
                         # Adjust the i-th entry in basechange, we basically

@@ -341,7 +341,7 @@ local clT,        # classes T
           cen:=centralizers[t];
 
           if not IsBound(etas[t]) then
-            if Number(etas,i->IsBound(i))>500 then
+            if Number(etas)>500 then
               for d in
                 Filtered([1..Length(etas)],i->IsBound(etas[i])){[1..500]} do
                 Unbind(etas[d]);
@@ -2288,7 +2288,7 @@ if miss<>1 then
   # something is dodgy -- fallback to the default algorithm
   return fail;Error("HEH?");fi;
     Info(InfoHomClass,3,"Fused ",Length(norb),"*",norb[1].len," ",
-      Number(orb,x->IsBound(x))," left");
+      Number(orb)," left");
     Assert(1,ForAll(rsgens,x->norb[1].rep*bas*npcgsact(x)*basinv=norb[1].rep));
     Assert(1,ForAll(sgens,x->norb[1].rep*bas*npcgsact(x)*basinv=norb[1].rep));
 #if ForAny(rsgens,x->Order(x)=1) then Error("HUH5"); fi;
