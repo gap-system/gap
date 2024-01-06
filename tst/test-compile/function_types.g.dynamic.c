@@ -1,6 +1,6 @@
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "-15431547"
+#define FILE_CRC  "-19094442"
 
 /* global variables used in handlers */
 static GVar G_Print;
@@ -15,13 +15,15 @@ static GVar G_f3;
 static Obj  GF_f3;
 static GVar G_f4;
 static Obj  GF_f4;
+static GVar G_f5;
+static Obj  GF_f5;
 static GVar G_runtest;
 static GVar G_BreakOnError;
 
 /* record names used in handlers */
 
 /* information for the functions */
-static Obj  NameFunc[11];
+static Obj  NameFunc[12];
 static Obj FileName;
 
 /* handler for function 2 */
@@ -167,8 +169,41 @@ static Obj  HdlrFunc5 (
  return 0;
 }
 
-/* handler for function 7 */
-static Obj  HdlrFunc7 (
+/* handler for function 6 */
+static Obj  HdlrFunc6 (
+ Obj  self,
+ Obj  a_a_2Cb )
+{
+ Obj t_1 = 0;
+ Obj t_2 = 0;
+ Obj t_3 = 0;
+ Bag oldFrame;
+ 
+ /* allocate new stack frame */
+ SWITCH_TO_NEW_FRAME(self,0,0,oldFrame);
+ 
+ /* Print( "f5:", a\,b, "\n" ); */
+ t_1 = GF_Print;
+ t_2 = MakeString( "f5:" );
+ t_3 = MakeString( "\n" );
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_3ARGS( t_1, t_2, a_a_2Cb, t_3 );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, a_a_2Cb, t_3 ) );
+ }
+ 
+ /* return; */
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+ 
+ /* return; */
+ SWITCH_TO_OLD_FRAME(oldFrame);
+ return 0;
+}
+
+/* handler for function 8 */
+static Obj  HdlrFunc8 (
  Obj  self )
 {
  Obj t_1 = 0;
@@ -195,8 +230,8 @@ static Obj  HdlrFunc7 (
  return 0;
 }
 
-/* handler for function 8 */
-static Obj  HdlrFunc8 (
+/* handler for function 9 */
+static Obj  HdlrFunc9 (
  Obj  self )
 {
  Obj t_1 = 0;
@@ -223,8 +258,8 @@ static Obj  HdlrFunc8 (
  return 0;
 }
 
-/* handler for function 9 */
-static Obj  HdlrFunc9 (
+/* handler for function 10 */
+static Obj  HdlrFunc10 (
  Obj  self )
 {
  Obj t_1 = 0;
@@ -251,8 +286,8 @@ static Obj  HdlrFunc9 (
  return 0;
 }
 
-/* handler for function 10 */
-static Obj  HdlrFunc10 (
+/* handler for function 11 */
+static Obj  HdlrFunc11 (
  Obj  self )
 {
  Obj t_1 = 0;
@@ -279,8 +314,8 @@ static Obj  HdlrFunc10 (
  return 0;
 }
 
-/* handler for function 6 */
-static Obj  HdlrFunc6 (
+/* handler for function 7 */
+static Obj  HdlrFunc7 (
  Obj  self )
 {
  Obj t_1 = 0;
@@ -363,6 +398,15 @@ static Obj  HdlrFunc6 (
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( INTOBJ_INT(1), INTOBJ_INT(2), INTOBJ_INT(3) ) );
  }
  
+ /* f5( 4 ); */
+ t_1 = GF_f5;
+ if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
+  CALL_1ARGS( t_1, INTOBJ_INT(4) );
+ }
+ else {
+  DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( INTOBJ_INT(4) ) );
+ }
+ 
  /* BreakOnError := false; */
  t_1 = False;
  AssGVar( G_BreakOnError, t_1 );
@@ -371,11 +415,11 @@ static Obj  HdlrFunc6 (
       return f1(  );
   end, [  ] ); */
  t_1 = GF_CALL__WITH__CATCH;
- t_2 = NewFunction( NameFunc[7], 0, 0, HdlrFunc7 );
+ t_2 = NewFunction( NameFunc[8], 0, 0, HdlrFunc8 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
- SET_STARTLINE_BODY(t_3, 29);
- SET_ENDLINE_BODY(t_3, 29);
+ SET_STARTLINE_BODY(t_3, 35);
+ SET_ENDLINE_BODY(t_3, 35);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  t_3 = NEW_PLIST( T_PLIST, 0 );
@@ -391,11 +435,11 @@ static Obj  HdlrFunc6 (
       return f1( 1, 2 );
   end, [  ] ); */
  t_1 = GF_CALL__WITH__CATCH;
- t_2 = NewFunction( NameFunc[8], 0, 0, HdlrFunc8 );
+ t_2 = NewFunction( NameFunc[9], 0, 0, HdlrFunc9 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
- SET_STARTLINE_BODY(t_3, 30);
- SET_ENDLINE_BODY(t_3, 30);
+ SET_STARTLINE_BODY(t_3, 36);
+ SET_ENDLINE_BODY(t_3, 36);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  t_3 = NEW_PLIST( T_PLIST, 0 );
@@ -411,11 +455,11 @@ static Obj  HdlrFunc6 (
       return f2( 1, 2, 3 );
   end, [  ] ); */
  t_1 = GF_CALL__WITH__CATCH;
- t_2 = NewFunction( NameFunc[9], 0, 0, HdlrFunc9 );
+ t_2 = NewFunction( NameFunc[10], 0, 0, HdlrFunc10 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
- SET_STARTLINE_BODY(t_3, 31);
- SET_ENDLINE_BODY(t_3, 31);
+ SET_STARTLINE_BODY(t_3, 37);
+ SET_ENDLINE_BODY(t_3, 37);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  t_3 = NEW_PLIST( T_PLIST, 0 );
@@ -431,11 +475,11 @@ static Obj  HdlrFunc6 (
       return f4(  );
   end, [  ] ); */
  t_1 = GF_CALL__WITH__CATCH;
- t_2 = NewFunction( NameFunc[10], 0, 0, HdlrFunc10 );
+ t_2 = NewFunction( NameFunc[11], 0, 0, HdlrFunc11 );
  SET_ENVI_FUNC( t_2, STATE(CurrLVars) );
  t_3 = NewFunctionBody();
- SET_STARTLINE_BODY(t_3, 32);
- SET_ENDLINE_BODY(t_3, 32);
+ SET_STARTLINE_BODY(t_3, 38);
+ SET_ENDLINE_BODY(t_3, 38);
  SET_FILENAME_BODY(t_3, FileName);
  SET_BODY_FUNC(t_2, t_3);
  t_3 = NEW_PLIST( T_PLIST, 0 );
@@ -471,7 +515,7 @@ static Obj  HdlrFunc1 (
       Print( "f1:", a, "\n" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[2], 1, ArgStringToList("a"), HdlrFunc2 );
+ t_1 = NewFunction( NameFunc[2], 1, NewPlistFromArgs(MakeImmString("a")), HdlrFunc2 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 1);
@@ -484,7 +528,7 @@ static Obj  HdlrFunc1 (
       Print( "f2:", a, ":", b, "\n" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[3], 2, ArgStringToList("a,b"), HdlrFunc3 );
+ t_1 = NewFunction( NameFunc[3], 2, NewPlistFromArgs(MakeImmString("a"), MakeImmString("b")), HdlrFunc3 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 5);
@@ -497,7 +541,7 @@ static Obj  HdlrFunc1 (
       Print( "f3:", a, "\n" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[4], -1, ArgStringToList("a"), HdlrFunc4 );
+ t_1 = NewFunction( NameFunc[4], -1, NewPlistFromArgs(MakeImmString("a")), HdlrFunc4 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 9);
@@ -510,7 +554,7 @@ static Obj  HdlrFunc1 (
       Print( "f4:", a, ":", b, "\n" );
       return;
   end; */
- t_1 = NewFunction( NameFunc[5], -2, ArgStringToList("a,b"), HdlrFunc5 );
+ t_1 = NewFunction( NameFunc[5], -2, NewPlistFromArgs(MakeImmString("a"), MakeImmString("b")), HdlrFunc5 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 13);
@@ -518,6 +562,19 @@ static Obj  HdlrFunc1 (
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_f4, t_1 );
+ 
+ /* f5 := function ( a\,b )
+      Print( "f5:", a\,b, "\n" );
+      return;
+  end; */
+ t_1 = NewFunction( NameFunc[6], 1, NewPlistFromArgs(MakeImmString("a,b")), HdlrFunc6 );
+ SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
+ t_2 = NewFunctionBody();
+ SET_STARTLINE_BODY(t_2, 18);
+ SET_ENDLINE_BODY(t_2, 20);
+ SET_FILENAME_BODY(t_2, FileName);
+ SET_BODY_FUNC(t_1, t_2);
+ AssGVar( G_f5, t_1 );
  
  /* runtest := function (  )
       f1( 2 );
@@ -528,6 +585,7 @@ static Obj  HdlrFunc1 (
       f4( 1 );
       f4( 1, 2 );
       f4( 1, 2, 3 );
+      f5( 4 );
       BreakOnError := false;
       CALL_WITH_CATCH( function (  )
             return f1(  );
@@ -543,11 +601,11 @@ static Obj  HdlrFunc1 (
         end, [  ] );
       return;
   end; */
- t_1 = NewFunction( NameFunc[6], 0, 0, HdlrFunc6 );
+ t_1 = NewFunction( NameFunc[7], 0, 0, HdlrFunc7 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
- SET_STARTLINE_BODY(t_2, 17);
- SET_ENDLINE_BODY(t_2, 34);
+ SET_STARTLINE_BODY(t_2, 22);
+ SET_ENDLINE_BODY(t_2, 40);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_runtest, t_1 );
@@ -572,6 +630,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_f2 = GVarName( "f2" );
  G_f3 = GVarName( "f3" );
  G_f4 = GVarName( "f4" );
+ G_f5 = GVarName( "f5" );
  G_runtest = GVarName( "runtest" );
  G_BreakOnError = GVarName( "BreakOnError" );
  
@@ -588,6 +647,7 @@ static Int PostRestore ( StructInitInfo * module )
  NameFunc[8] = 0;
  NameFunc[9] = 0;
  NameFunc[10] = 0;
+ NameFunc[11] = 0;
  
  return 0;
  
@@ -605,6 +665,7 @@ static Int InitKernel ( StructInitInfo * module )
  InitFopyGVar( "f2", &GF_f2 );
  InitFopyGVar( "f3", &GF_f3 );
  InitFopyGVar( "f4", &GF_f4 );
+ InitFopyGVar( "f5", &GF_f5 );
  
  /* information for the functions */
  InitGlobalBag( &FileName, "function_types.g:FileName("FILE_CRC")" );
@@ -628,6 +689,8 @@ static Int InitKernel ( StructInitInfo * module )
  InitGlobalBag( &(NameFunc[9]), "function_types.g:NameFunc[9]("FILE_CRC")" );
  InitHandlerFunc( HdlrFunc10, "function_types.g:HdlrFunc10("FILE_CRC")" );
  InitGlobalBag( &(NameFunc[10]), "function_types.g:NameFunc[10]("FILE_CRC")" );
+ InitHandlerFunc( HdlrFunc11, "function_types.g:HdlrFunc11("FILE_CRC")" );
+ InitGlobalBag( &(NameFunc[11]), "function_types.g:NameFunc[11]("FILE_CRC")" );
  
  return 0;
  
@@ -660,7 +723,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_DYNAMIC,
  .name        = "function_types.g",
- .crc         = -15431547,
+ .crc         = -19094442,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

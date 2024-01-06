@@ -647,8 +647,8 @@ static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
     Obj nameGetter = MakeImmString("<field getter>");
     Obj nameBSetter = MakeImmString("<boolean field setter>");
     Obj nameBGetter = MakeImmString("<boolean field getter>");
-    Obj dataArgs = ArgStringToList("data");
-    Obj dataValArgs = ArgStringToList("data, val");
+    Obj dataArgs = NewPlistFromArgs(MakeImmString("data"));
+    Obj dataValArgs = NewPlistFromArgs(MakeImmString("data"), MakeImmString("val"));
 
     Obj  setters = NEW_PLIST_IMM(T_PLIST_DENSE, nfields);
     Obj  getters = NEW_PLIST_IMM(T_PLIST_DENSE, nfields);

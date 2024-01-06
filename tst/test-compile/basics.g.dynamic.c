@@ -375,7 +375,7 @@ static Obj  HdlrFunc3 (
  /* vararg_fun := function ( args... )
       return Length( args );
   end; */
- t_1 = NewFunction( NameFunc[4], -1, ArgStringToList("args"), HdlrFunc4 );
+ t_1 = NewFunction( NameFunc[4], -1, NewPlistFromArgs(MakeImmString("args")), HdlrFunc4 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 58);
@@ -612,7 +612,7 @@ static Obj  HdlrFunc3 (
       Display( Length( args ) );
       return;
   end; */
- t_1 = NewFunction( NameFunc[5], -1, ArgStringToList("args"), HdlrFunc5 );
+ t_1 = NewFunction( NameFunc[5], -1, NewPlistFromArgs(MakeImmString("args")), HdlrFunc5 );
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 89);

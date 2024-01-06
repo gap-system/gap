@@ -14,6 +14,11 @@ f4 := function(a,b...)
     Print("f4:",a, ":",b, "\n");
 end;
 
+# weird function argument names...
+f5 := function(a\,b)
+    Print("f5:", a\,b, "\n");
+end;
+
 runtest := function()
     f1(2);
     f2(2,3);
@@ -23,6 +28,7 @@ runtest := function()
     f4(1);
     f4(1,2);
     f4(1,2,3);
+    f5(4);
 
     BreakOnError := false;
 
