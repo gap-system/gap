@@ -63,7 +63,7 @@ InstallGlobalFunction( PopOptions,
     if Length(OptionsStack)=0 then
       Info(InfoWarning,1,"Options stack is already empty");
     else
-      Unbind(OptionsStack[Length(OptionsStack)]);
+      Remove(OptionsStack);
       Info(InfoOptions, 1, "Popping");
     fi;
 end);

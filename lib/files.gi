@@ -374,7 +374,7 @@ InstallGlobalFunction(RemoveDirectoryRecursively,
         return fail;
     fi;
     while Length(dirname) > 0 and dirname[Length(dirname)] = '/' do
-        Unbind(dirname[Length(dirname)]);
+        Remove(dirname);
     od;
     if Length(dirname) = 0 then
         Error("dirname must be nonempty");

@@ -461,7 +461,7 @@ RewriteList:= function( str )
         cand:= GetTagged( str, pair[1] );
         if IsList( cand ) then
           while 0 < Length( cand[2] ) and cand[2][ Length( cand[2] ) ] = '\n' do
-            Unbind( cand[2][ Length( cand[2] ) ] );
+            Remove( cand[2] );
           od;
           Append( newstr, Concatenation( RewriteText( cand[2] ), "\n",
                                          pair[2][1] ) );

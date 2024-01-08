@@ -2078,7 +2078,7 @@ InstallGlobalFunction( GAPDocManualLabFromSixFile,
         return "";
       fi;
       while list[ Length( list ) ] = 0 do
-        Unbind( list[ Length( list ) ] );
+        Remove( list );
       od;
       return JoinStringsWithSeparator( List( list, String ), "." );
     end;

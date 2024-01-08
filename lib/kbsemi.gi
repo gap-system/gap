@@ -74,7 +74,7 @@ local backpoint,i,a,node,offset;
     backpoint[i][1][a]:=backpoint[i][1][a]-1; # decrease index numbers
     backpoint[i-1]:=backpoint[i]; # and correct back pointers
   od;
-  Unbind(backpoint[Length(backpoint)]);
+  Remove(backpoint);
   # now trace through the word and kill nodes that are all fail
 
   offset:=d.offset;
@@ -470,10 +470,7 @@ local u,a,b,c,k,n,s,add_rule,fam,ptc,kbdag,abi,rem,
 #      #Append(q,kbrws!.tzrules{[i+1..Length(kbrws!.tzrules)]});
 #      #kbrws!.tzrules:=q;
 #      q:=kbrws!.tzrules;
-#      for j in [i+1..Length(q)] do
-#        q[j-1]:=q[j];
-#      od;
-#      Unbind(q[Length(q)]);
+#      Remove(q,i);
 #
 #      if ptc then
 #        #delete pairs of indexes that include i
@@ -582,7 +579,7 @@ local u,a,b,c,k,n,s,add_rule,fam,ptc,kbdag,abi,rem,
               a:=[x..y];
             else
               a:=Set(neu{kk[j][3]});
-              if a[Length(a)]=fail then Unbind(a[Length(a)]);fi;
+              if Last(a)=fail then Remove(a);fi;
             fi;
 
             if Length(a)>0 then
@@ -596,7 +593,7 @@ local u,a,b,c,k,n,s,add_rule,fam,ptc,kbdag,abi,rem,
               a:=[x..y];
             else
               a:=Set(neu{kk[j][2]});
-              if a[Length(a)]=fail then Unbind(a[Length(a)]);fi;
+              if Last(a)=fail then Remove(a);fi;
             fi;
 
             if Length(a)>0 then

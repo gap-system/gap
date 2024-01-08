@@ -555,7 +555,7 @@ InstallGlobalFunction( ActionHomomorphism, function( arg )
     if arg[ Length( arg ) ] = "surjective"  or
        arg[ Length( arg ) ] = "onto"  then
         attr := SurjectiveActionHomomorphismAttr;
-        Unbind( arg[ Length( arg ) ] );
+        Remove( arg );
     else
         attr := ActionHomomorphismAttr;
     fi;

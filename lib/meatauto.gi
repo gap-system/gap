@@ -619,9 +619,7 @@ local n, m, zero, ech, k, i, j, found, l;
       k:=k + 1;
     else
       # no non-zero element found, delete from list
-      gens{[k..Length(gens)-1]}:=gens{[k+1..Length(gens)]};
-      Unbind(gens[Length(gens)]);
-      # WAS: gens:=gens{ Cat([1..k-1], [k+1..Length(gens)])};
+      Remove(gens, k);
     fi;
   od;
   return [List(gens,i->ImmutableMatrix(F,i)), ech];

@@ -266,7 +266,7 @@ InstallGlobalFunction(CopyStabChain,function( C1 )
 
         # If all labels are needed, change nothing.
         if Length( need ) = Length( xlab ) - 1  then
-            Unbind( xlab[ Length( xlab ) ] );
+            Remove( xlab );
 
         else
             poss := [  ];
@@ -1032,7 +1032,7 @@ InstallGlobalFunction( ConjugateStabChain, function( arg )
             fi;
             i := Position( l.labpos, 0, i );
         od;
-        Unbind( L[ Length( L ) ] );
+        Remove( L );
     od;
 
     # Now that all labels have been mapped, complete  the `genlabels' and put

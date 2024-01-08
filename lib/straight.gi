@@ -709,8 +709,8 @@ InstallGlobalFunction( StringOfResultOfStraightLineProgram, function( arg )
           Append( result, ", " );
         od;
         if not IsEmpty( line ) then
-          Unbind( result[ Length( result ) ] );
-          Unbind( result[ Length( result ) ] );
+          Remove( result );
+          Remove( result );
         fi;
         Append( result, " ]" );
         return result;
@@ -1479,7 +1479,7 @@ local a,b,      # lines of slp
           Add(l,[la,1,lb,1]);
         else
           l[Length(l)-1]:=ERepAssWorProd(e,j);
-          Unbind(l[Length(l)]);
+          Remove(l);
         fi;
       else
         Error("spurious last entry");
@@ -2478,17 +2478,17 @@ InstallGlobalFunction( IntermediateResultsOfSLPWithoutOverwriteInner,
     ll := [];   # Here we collect the lines of the result, but reversed
     slotsused := [];   # here we collect a (reversed) list of slots used
     while Length(needed) > 0 do
-        i := needed[Length(needed)];
+        i := Remove(needed);
         if i > nrinps then
             Add(slotsused,i);   # this slot is used
             line := l[i-nrinps];
             # We know that all lines are plain lists of integers!
             Add(ll,line);
             for j in [1,3..Length(line)-1] do
+                Assert(2, line[j] < i);
                 AddSet(needed,line[j]);
             od;
         fi;
-        Unbind(needed[Length(needed)]);
     od;
     # Now we have the program in reversed order in ll. The slots used
     # during that calculation are in slotsused. We want to renumber

@@ -742,15 +742,12 @@ return function(o,n)
   if p<>fail then
     if n=fail then
       # delete
-      OBJLIST[p]:=OBJLIST[Length(OBJLIST)];
-      Unbind(OBJLIST[Length(OBJLIST)]);
-      return;
+      Remove(OBJLIST, p);
     else
       OBJLIST[p][2]:=n;
     fi;
   elif n<>fail then
     Add(OBJLIST,[o,n]);
-    p:=Length(OBJLIST);
   fi;
 end;
 end);

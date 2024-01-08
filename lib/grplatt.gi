@@ -3911,8 +3911,7 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
                  and Size(process[Length(process)])>=Maximum(List(l,Size)) do
                   # need to process those that could give next size (or
                   # larger)
-                  a:=process[Length(process)];
-                  Unbind(process[Length(process)]);
+                  a:=Remove(process);
                   m:=maxer(a);
                   Append(l,m);
                 od;
@@ -3920,7 +3919,7 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
 
                 # delete the orders not used any more
                 while Length(l)>0 and Size(l[Length(l)])<divs[Length(divs)] do
-                  Unbind(divs[Length(divs)]); # sizes still in play
+                  Remove(divs); # sizes still in play
                 od;
                 done:=[]; # can ignore anything larger
 
@@ -3938,8 +3937,7 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
               fi;
 
               # get next group
-              a:=l[Length(l)];
-              Unbind(l[Length(l)]);
+              a:=Remove(l);
               Add(done,a);
               if Size(a)=1 then mode:=2;fi;
               return a;

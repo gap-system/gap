@@ -1418,7 +1418,7 @@ InstallGlobalFunction( MakeStabChainLong,
         fi;
     until S = false;
     for S  in newlevs  do
-        Unbind( S[ Length( S ) ] );
+        Remove( S );
     od;
 
     # Construct the cokernel.
