@@ -94,6 +94,31 @@ gap> Index(sym,b);
 3603600
 gap> Length(ContainedConjugates(sym,a,b));
 5
+gap> TwoClosure(SymmetricGroup([3..6]));
+Sym( [ 3 .. 6 ] )
+gap> TwoClosure(AlternatingGroup(6));
+Sym( [ 1 .. 6 ] )
+gap> TwoClosure(AlternatingGroup([3..6]));
+Sym( [ 3 .. 6 ] )
+gap> TwoClosure(Group([(1,2,3,4,5)]));
+Group([ (1,2,3,4,5) ])
+gap> TwoClosure(Group([(2,3,4,5,6)]));
+Group([ (2,3,4,5,6) ])
+gap> TwoClosure(Group([],()));
+Group(())
+gap> TwoClosure(Group([(1,2,3)(4,5,6),(1,4)(2,5)(3,6)])) =
+> Group([ (1,2,3)(4,5,6), (1,4)(2,5)(3,6) ]);
+true
+gap> TwoClosure(Group([(9,2,3)(4,5,6),(9,4)(2,5)(3,6)])) =
+> Group([ (2,3,9)(4,5,6), (2,5)(3,6)(4,9) ]);
+true
+gap> TwoClosure(Group([ (1,8)(2,3)(4,5)(6,7), (1,3)(2,8)(4,6)(5,7),
+> (1,5)(2,6)(3,7)(4,8), (1,2,3)(4,6,5) ])) =
+> Group([ (2,8,3)(4,5,7), (1,5)(2,6)(3,7)(4,8),
+> (1,3)(2,8)(4,6)(5,7), (1,8)(2,3)(4,5)(6,7), (3,8)(4,7) ]);
+true
+gap> TwoClosure(Group((1,2),(3,4)));
+Error, 2-closure: <G> must be transitive
 
 #
 gap> AsSet(SymmetricGroup(3));
