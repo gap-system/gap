@@ -87,6 +87,7 @@ doc/gapmacrodoc.idx
 /src/TAGS
 
 /builds/
+/coverage/
 
 /libgap.la
 .libs/
