@@ -65,7 +65,13 @@ do
   # restore current directory before each test suite
   cd "$BUILDDIR"
 
-  echo "Running test suite $TEST_SUITE"
+  echo
+  echo "+-------------------------------------------"
+  echo "|"
+  echo "| Running test suite $TEST_SUITE"
+  echo "|"
+  echo "+-------------------------------------------"
+  echo
   case $TEST_SUITE in
   testspecial | test-compile)
     cd $SRCDIR/tst/$TEST_SUITE
