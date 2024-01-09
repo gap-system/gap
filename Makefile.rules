@@ -949,6 +949,11 @@ check-manuals: all
 check: all
 	$(TESTGAPcore) $(top_srcdir)/tst/testinstall.g
 
+# citests runs a subset of the tests run by CI -- this is SLOW and still doesn't
+# quite cover everything (e.g. we don't test out-of-tree builds and `make install`)
+citests: all
+	SRCDIR=$(abs_srcdir) dev/ci.sh testexpect testmockpkg testspecial test-compile testlibgap testkernel testinstall
+
 LIBGAPTESTS := $(addprefix tst/testlibgap/,basic api wscreate wsload trycatch)
 
 # run a test in tst/testlibgap
@@ -1009,7 +1014,7 @@ testkernel: ${KERNELTESTS}
 
 .PHONY: testpkgconfigbuild testpkgconfigversion
 
-.PHONY: check
+.PHONY: check citests
 
 ########################################################################
 # Bootstrap rules
