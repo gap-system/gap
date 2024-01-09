@@ -1068,9 +1068,6 @@ end);
 ##  <Log><![CDATA[
 ##  gap> STOP_TEST( "same identifier string as for START_TEST" );
 ##  ]]></Log>
-##  <P/>
-##  Note that the functions in <F>tst/testutil.g</F> temporarily replace
-##  <Ref Func="STOP_TEST"/> before they call <Ref Func="Test"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
