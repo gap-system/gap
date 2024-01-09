@@ -4,7 +4,7 @@
 ##
 gap> START_TEST("coll.tst");
 gap> if not IsBound(TestConsistencyOfEnumeratorByFunctions) then
->   ReadGapRoot( "tst/testenumerator.g" );
+>   ReadGapRoot( "tst/testinstall/testenumerator.g" );
 > fi;
 
 #
