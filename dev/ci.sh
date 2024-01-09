@@ -320,11 +320,11 @@ GAPInput
     ;;
 
   testlibgap)
-    make testlibgap
+    make V=1 testlibgap
     ;;
 
   testkernel)
-    make testkernel
+    make V=1 testkernel
     ;;
 
   testmockpkg)
