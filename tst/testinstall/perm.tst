@@ -26,6 +26,13 @@ gap> (1,2)(1,2);
 Error, Permutation: cycles must be disjoint and duplicate-free
 gap> (1,2,3,2);
 Error, Permutation: cycles must be disjoint and duplicate-free
+gap> (1,2^80);
+Error, Permutation: <expr> must be a positive small integer (not a large posit\
+ive integer)
+#@if 8*GAPInfo.BytesPerVariable = 64
+gap> (1,2^40);
+Error, Permutation literal exceeds maximum permutation degree
+#@fi
 
 # The GAP kernel implements many functions in multiple variants, e.g. to
 # compare permutations for equality, there are actually four functions in the
