@@ -287,7 +287,7 @@ gap> p := ();
 gap> ListPerm( p );
 [  ]
 gap> List([-1,0,1,5], n -> ListPerm( p, n ));
-[ [  ], [  ], [ 1 ], [ 1 .. 5 ] ]
+[ [  ], [  ], [ 1 ], [ 1, 2, 3, 4, 5 ] ]
 
 #
 gap> p := (1,100) / (1,100);
@@ -295,7 +295,7 @@ gap> p := (1,100) / (1,100);
 gap> ListPerm( p );
 [  ]
 gap> List([-1,0,1,5], n -> ListPerm( p, n ));
-[ [  ], [  ], [ 1 ], [ 1 .. 5 ] ]
+[ [  ], [  ], [ 1 ], [ 1, 2, 3, 4, 5 ] ]
 
 #
 gap> p := (1,2^17) / (1,2^17);
@@ -303,7 +303,7 @@ gap> p := (1,2^17) / (1,2^17);
 gap> ListPerm( p );
 [  ]
 gap> List([-1,0,1,5], n -> ListPerm( p, n ));
-[ [  ], [  ], [ 1 ], [ 1 .. 5 ] ]
+[ [  ], [  ], [ 1 ], [ 1, 2, 3, 4, 5 ] ]
 
 #
 gap> p := (1,2,3);
@@ -323,9 +323,9 @@ gap> List([-1,0,1,5], n -> ListPerm( p, n ));
 
 #
 gap> ListPerm( 1 );
-Error, ListPerm: <perm> must be a permutation
+Error, ListPerm: <perm> must be a permutation (not the integer 1)
 gap> ListPerm( (1,2,3), "bla" );
-Error, ListPerm: <n> must be an integer
+Error, ListPerm: <n> must be a small integer (not a list (string))
 
 #
 # PermList

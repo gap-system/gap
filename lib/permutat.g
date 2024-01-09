@@ -464,24 +464,6 @@ SetOne( PermutationsFamily, () );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL( "ListPerm", function( perm, n... )
-    if not IsPerm(perm) then
-        Error("ListPerm: <perm> must be a permutation");
-    fi;
-    if Length(n)=1 then
-        n := n[1];
-        if not IsInt(n) then
-            Error("ListPerm: <n> must be an integer");
-        fi;
-    else
-        n := LargestMovedPoint(perm);
-    fi;
-    if IsOne(perm) then
-        return [1..n];
-    else
-        return OnTuples( [1..n], perm );
-    fi;
-end );
 
 
 #############################################################################

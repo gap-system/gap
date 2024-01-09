@@ -1098,6 +1098,63 @@ static Obj FuncPermList(Obj self, Obj list)
     }
 }
 
+template <typename T>
+static inline Obj ListPerm_(Obj perm, Int len)
+{
+    Obj                 res;            // handle of the image, result
+    Obj *               ptRes;          // pointer to the result
+    const T *           ptPrm;          // pointer to the permutation
+    UInt                deg;            // degree of the permutation
+    UInt                i;              // loop variable
+
+    if (len <= 0)
+        return NewEmptyPlist();
+
+    // copy the list into a mutable plist, which we will then modify in place
+    res = NEW_PLIST(T_PLIST_CYC, len);
+    SET_LEN_PLIST(res, len);
+
+    // get the pointer
+    ptRes = ADDR_OBJ(res) + 1;
+    ptPrm = CONST_ADDR_PERM<T>(perm);
+
+    // loop over the entries of the permutation
+    deg = DEG_PERM<T>(perm);
+    if (deg > len)
+        deg = len;
+    for (i = 1; i <= deg; i++, ptRes++) {
+        *ptRes = INTOBJ_INT(ptPrm[i - 1] + 1);
+    }
+    // add extras if requested
+    for (; i <= len; i++, ptRes++) {
+        *ptRes = INTOBJ_INT(i);
+    }
+
+    return res;
+}
+
+static Obj ListPermOper;
+
+static Obj FuncListPerm1(Obj self, Obj perm)
+{
+    RequirePermutation(SELF_NAME, perm);
+    Int nn = LargestMovedPointPerm(perm);
+    if (TNUM_OBJ(perm) == T_PERM2)
+        return ListPerm_<UInt2>(perm, nn);
+    else
+        return ListPerm_<UInt4>(perm, nn);
+}
+
+static Obj FuncListPerm2(Obj self, Obj perm, Obj n)
+{
+    RequirePermutation(SELF_NAME, perm);
+    Int nn = GetSmallInt(SELF_NAME, n);
+    if (TNUM_OBJ(perm) == T_PERM2)
+        return ListPerm_<UInt2>(perm, nn);
+    else
+        return ListPerm_<UInt4>(perm, nn);
+}
+
 /****************************************************************************
 **
 *F  LargestMovedPointPerm( <perm> ) largest point moved by perm
@@ -2744,6 +2801,22 @@ static StructGVarFilt GVarFilts[] = {
 };
 
 
+
+/****************************************************************************
+**
+*V  GVarOpers . . . . . . . . . . . . . . . . .  list of operations to export
+*/
+static StructGVarOper GVarOpers [] = {
+
+    // ListPerm can take 1 or 2 arguments; since NewOperation ignores the
+    // handler for variadic operations, use DoOperation0Args as a placeholder.
+    { "ListPerm", -1, "perm[, n]", &ListPermOper,
+      (ObjFunc)DoOperation0Args, "src/permutat.cc:ListPerm" },
+
+    { 0, 0, 0, 0, 0, 0 }
+
+};
+
 /****************************************************************************
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
@@ -2817,7 +2890,13 @@ static Int InitKernel (
 
     // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
+
+    // ListPerm needs special consideration because we want distinct kernel
+    // handlers for 1 and 2 arguments
+    InitHandlerFunc( (ObjFunc)FuncListPerm1, "src/permutat.cc:FuncListPerm1" );
+    InitHandlerFunc( (ObjFunc)FuncListPerm2, "src/permutat.cc:FuncListPerm2" );
 
     // make the buffer bag
 #ifndef HPCGAP
@@ -2924,7 +3003,12 @@ static Int InitLibrary (
 {
     // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
+    InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
+
+    // make and install the 'ListPerm' operation
+    SET_HDLR_FUNC( ListPermOper, 1, (ObjFunc)FuncListPerm1);
+    SET_HDLR_FUNC( ListPermOper, 2, (ObjFunc)FuncListPerm2);
 
     // make the identity permutation
     IdentityPerm = NEW_PERM2(0);
