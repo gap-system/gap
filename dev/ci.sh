@@ -217,8 +217,9 @@ GAPInput
     ;;
 
   testmakeinstall)
-    # at this point GAPPREFIX should be set
-    test -n $GAPPREFIX  || (echo "GAPPREFIX must be set" ; exit 1)
+    # get the install prefix from the GAP build system
+    eval $(make print-prefix)
+    GAPPREFIX=$prefix
 
     # verify $GAPPREFIX does not yet exist
     test ! -d $GAPPREFIX

@@ -70,7 +70,7 @@ jobs:
           - os: ubuntu-latest
             shell: bash
             test-suites: "makemanuals testmakeinstall"
-            extra: "GAPPREFIX=/tmp/gapprefix CONFIGFLAGS=\"--prefix=/tmp/gapprefix\" NO_COVERAGE=1"
+            extra: "CONFIGFLAGS=\"--prefix=/tmp/gapprefix\" NO_COVERAGE=1"
 
           - os: ubuntu-20.04
             shell: bash
