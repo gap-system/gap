@@ -3,7 +3,11 @@
 # Continuous integration testing script
 
 # It can also be run manually, to simulate locally what happens in the
-# CI environment (say, for debugging purposes).
+# CI environment (say, for debugging purposes). For example:
+#
+#    dev/ci.sh testinstall
+#
+# run just the 'testinstall' testsuite
 
 set -E # inherit -e
 set -e # exit immediately on errors
@@ -272,7 +276,7 @@ GAPInput
     cd "$SRCDIR/tst/mockpkg"
     testmockpkg "$GAPPREFIX/bin/gap" "$GAPPREFIX/lib/gap"
 
-    # run testsuite for the resulting GAP
+    # run testinstall for the resulting GAP
     $GAPPREFIX/bin/gap --quitonbreak -l ";$SRCDIR" $SRCDIR/tst/testinstall.g
 
     # test integration with pkg-config
