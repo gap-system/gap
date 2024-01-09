@@ -9,9 +9,6 @@ set -ex
 
 SRCDIR=${SRCDIR:-$PWD}
 
-# Make sure any Error() immediately exits GAP with exit code 1.
-GAP="./gap --quitonbreak"
-
 # change into BUILDDIR (creating it if necessary), and turn it into an absolute path
 if [[ -n "$BUILDDIR" ]]
 then
@@ -19,6 +16,11 @@ then
   cd "$BUILDDIR"
 fi
 BUILDDIR=$PWD
+
+GAP=${GAP:-$BUILDDIR/gap}
+
+# Make sure any Error() immediately exits GAP with exit code 1.
+GAP="$GAP --quitonbreak"
 
 # create dir for coverage results unless coverage is disabled
 COVDIR=${COVDIR:-coverage}
