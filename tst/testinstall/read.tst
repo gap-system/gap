@@ -34,6 +34,9 @@ gap> SeekPositionStream(x, 3);
 true
 gap> ReadAll(x);
 "lo\ngoodbye\ni like pies\n"
+gap> CloseStream(x);
+
+#
 gap> x := InputTextString("hello\ngoodbye\ni like pies\n");;
 gap> ReadLine(x);
 "hello\n"
@@ -65,6 +68,9 @@ gap> SeekPositionStream(x, 3);
 true
 gap> ReadAll(x);
 "lo\ngoodbye\ni like pies\n"
+gap> CloseStream(x);
+
+#
 gap> x := StringFile(Filename( DirectoriesLibrary("tst"), "example.txt" ));;
 gap> ReplacedString(x, "\r\n", "\n");
 "hello\ngoodbye\ni like pies\n"

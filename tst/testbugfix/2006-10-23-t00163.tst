@@ -8,3 +8,4 @@ gap> List([0..255], i-> ReadByte(f)) = a;
 true
 gap> RemoveFile(fnam);
 true
+gap> CloseStream(f);
