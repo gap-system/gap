@@ -20,11 +20,21 @@ then
 fi
 BUILDDIR=$PWD
 
-# create dir for coverage results
-COVDIR=coverage
-mkdir -p $COVDIR
+# create dir for coverage results unless coverage is disabled
+COVDIR=${COVDIR:-coverage}
 
+# helper function to generate `--cover` arguments for GAP invocations
+# but only if coverage tracking is enabled (= "not disabled")
+gap_cover_arg () {
+  if [[ -z ${NO_COVERAGE} ]]
+  then
+    extra=${extra:+-$extra}
+    mkdir -p $COVDIR
+    echo "--cover $COVDIR/${TEST_SUITE}${extra}.coverage"
+  fi
+}
 
+#
 testmockpkg () {
     # Try building and loading the mockpkg kernel extension
     gap="$1"
@@ -282,7 +292,7 @@ GAPInput
     TESTMANUALSPASS=yes
     for ch in $SRCDIR/tst/testmanuals/*.tst
     do
-        $GAP -b -L testmanuals.wsp --cover $COVDIR/$(basename $ch).coverage <<GAPInput || TESTMANUALSPASS=no
+        $GAP -b -L testmanuals.wsp $(gap_cover_arg $(basename $ch)) <<GAPInput || TESTMANUALSPASS=no
         TestManualChapter("$ch");
         QuitGap(0);
 GAPInput
@@ -292,7 +302,7 @@ GAPInput
     [[ $TESTMANUALSPASS = yes ]] || exit 1
 
     # while we are at it, also test the workspace code
-    $GAP -A --cover $COVDIR/workspace.coverage <<GAPInput
+    $GAP -A $(gap_cover_arg workspace) <<GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
         # Also test a package banner
         LoadPackage("polycyclic");
@@ -316,12 +326,12 @@ GAPInput
 
     # test building and loading a package kernel extension
     cd "$SRCDIR/tst/mockpkg"
-    testmockpkg "$GAP --cover $COVDIR/testmockpkg.coverage" "$BUILDDIR"
+    testmockpkg "$GAP $(gap_cover_arg)" "$BUILDDIR"
     ;;
 
   testexpect)
-    INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b --cover $COVDIR/${TEST_SUITE}.coverage" $SRCDIR/dev/gaptest.expect
-    INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b --cover $COVDIR/${TEST_SUITE}.coverage -l missing-dir" $SRCDIR/dev/gaptest2.expect
+    INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b $(gap_cover_arg 1)" $SRCDIR/dev/gaptest.expect
+    INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b $(gap_cover_arg 2) -l missing-dir" $SRCDIR/dev/gaptest2.expect
     ;;
 
   *)
@@ -335,7 +345,7 @@ GAPInput
     then
         $GAP $SRCDIR/tst/${TEST_SUITE}.g
     else
-        $GAP --cover $COVDIR/${TEST_SUITE}.coverage \
+        $GAP $(gap_cover_arg) \
             <(echo 'SetUserPreference("ReproducibleBehaviour", true);') \
             $SRCDIR/tst/${TEST_SUITE}.g
     fi
