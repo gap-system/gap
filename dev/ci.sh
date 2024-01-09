@@ -92,8 +92,9 @@ testmockpkg () {
     # Try building and loading the mockpkg kernel extension
     gap="$1"
     gaproot="$2"
-    mockpkg_dir="$PWD"
+    mockpkg_dir="$3"
 
+    cd "$mockpkg_dir"
     echo_and_run ./configure "$gaproot"
     echo_and_run make V=1
     # trick to make it easy to load the package in GAP
@@ -315,8 +316,7 @@ GAPInput
     ln -s $SRCDIR/pkg $GAPPREFIX/share/gap/pkg
 
     # test building and loading package kernel extension
-    cd "$SRCDIR/tst/mockpkg"
-    testmockpkg "$GAPPREFIX/bin/gap" "$GAPPREFIX/lib/gap"
+    testmockpkg "$GAPPREFIX/bin/gap" "$GAPPREFIX/lib/gap" "$SRCDIR/tst/mockpkg"
 
     # run testinstall for the resulting GAP
     $GAPPREFIX/bin/gap --quitonbreak -l ";$SRCDIR" $SRCDIR/tst/testinstall.g
@@ -381,8 +381,7 @@ GAPInput
     echo "${blue}---- END sysinfo.gap ----${normal}"
 
     # test building and loading a package kernel extension
-    cd "$SRCDIR/tst/mockpkg"
-    testmockpkg "$GAP $(gap_cover_arg)" "$BUILDDIR"
+    testmockpkg "$GAP $(gap_cover_arg)" "$BUILDDIR" "$SRCDIR/tst/mockpkg"
     ;;
 
   testexpect)
