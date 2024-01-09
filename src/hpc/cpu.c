@@ -16,6 +16,8 @@
 #include <windows.h>
 #endif
 
+#include "config.h"
+
 #define FALLBACK_CPUS_NUMBER 4
 
 /****************************************************************************
