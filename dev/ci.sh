@@ -12,7 +12,6 @@
 set -E # inherit -e
 set -e # exit immediately on errors
 set -o pipefail # exit on pipe failure
-set -x
 
 SRCDIR=${SRCDIR:-$PWD}
 
@@ -32,6 +31,51 @@ GAP="$GAP --quitonbreak"
 # create dir for coverage results unless coverage is disabled
 COVDIR=${COVDIR:-coverage}
 
+######################################################################
+#
+# Various little helper functions
+
+# is output going to a terminal?
+if test -t 1; then
+
+    # does the terminal support color?
+    ncolors=$(tput colors)
+
+    if test -n "$ncolors" && test $ncolors -ge 8; then
+        bold="$(tput bold)"
+        underline="$(tput smul)"
+        standout="$(tput smso)"
+        normal="$(tput sgr0)"
+        black="$(tput setaf 0)"
+        red="$(tput setaf 1)"
+        green="$(tput setaf 2)"
+        yellow="$(tput setaf 3)"
+        blue="$(tput setaf 4)"
+        magenta="$(tput setaf 5)"
+        cyan="$(tput setaf 6)"
+        white="$(tput setaf 7)"
+    fi
+fi
+
+notice() {
+    printf "${green}%s${normal}\n" "$*"
+}
+
+warning() {
+    printf "${yellow}WARNING: %s${normal}\n" "$*"
+}
+
+error() {
+    printf "${red}ERROR: %s${normal}\n" "$*" 1>&2
+    exit 1
+}
+
+echo_and_run () {
+    cmd="$1" ; shift
+    echo "$cmd" "$@"
+    "$cmd" "$@"
+}
+
 # helper function to generate `--cover` arguments for GAP invocations
 # but only if coverage tracking is enabled (= "not disabled")
 gap_cover_arg () {
@@ -50,13 +94,13 @@ testmockpkg () {
     gaproot="$2"
     mockpkg_dir="$PWD"
 
-    ./configure "$gaproot"
-    make V=1
+    echo_and_run ./configure "$gaproot"
+    echo_and_run make V=1
     # trick to make it easy to load the package in GAP
     rm -f pkg && ln -sf . pkg
     # try to load the kernel extension
     cd "$gaproot"
-    $gap -A -l "$mockpkg_dir;" "$mockpkg_dir/tst/testall.g"
+    echo_and_run $gap -A -l "$mockpkg_dir;" "$mockpkg_dir/tst/testall.g"
 }
 
 
@@ -65,13 +109,13 @@ do
   # restore current directory before each test suite
   cd "$BUILDDIR"
 
-  echo
+  echo "${blue}"
   echo "+-------------------------------------------"
   echo "|"
   echo "| Running test suite $TEST_SUITE"
   echo "|"
   echo "+-------------------------------------------"
-  echo
+  echo "${normal}"
   case $TEST_SUITE in
   testspecial | test-compile)
     cd $SRCDIR/tst/$TEST_SUITE
@@ -145,6 +189,8 @@ GAPInput
     bool_d=build/deps/src/bool.c.d
     bool_lo=build/obj/src/bool.c.lo
 
+    set -x
+
     # this test assumes we are doing an out-of-tree build
     test $BUILDDIR != $SRCDIR
 
@@ -209,6 +255,8 @@ GAPInput
     echo "garbage content 4" > $SRCDIR/src/bool.h
     make print-OBJS  # should print something but not error out
     mv book.h.bak $SRCDIR/src/bool.h
+
+    set +x
 
     ;;
 
@@ -304,7 +352,7 @@ GAPInput
     done
 
     # if there were any failures, abort now.
-    [[ $TESTMANUALSPASS = yes ]] || exit 1
+    [[ $TESTMANUALSPASS = yes ]] || error "reference manual tests failed"
 
     # while we are at it, also test the workspace code
     $GAP -A $(gap_cover_arg workspace) <<GAPInput
@@ -327,7 +375,10 @@ GAPInput
 
   testmockpkg)
     # for debugging it is useful to know what sysinfo.gap contains at this point
+    echo "Content of sysinfo.gap:"
+    echo "${blue}---- BEGIN sysinfo.gap ----${normal}"
     cat "$BUILDDIR/sysinfo.gap"
+    echo "${blue}---- END sysinfo.gap ----${normal}"
 
     # test building and loading a package kernel extension
     cd "$SRCDIR/tst/mockpkg"
@@ -342,8 +393,7 @@ GAPInput
   *)
     if [[ ! -f  $SRCDIR/tst/${TEST_SUITE}.g ]]
     then
-        echo "Could not read test suite $SRCDIR/tst/${TEST_SUITE}.g"
-        exit 1
+        error "Could not read test suite $SRCDIR/tst/${TEST_SUITE}.g"
     fi
 
     if [[ -n ${NO_COVERAGE} ]]
@@ -356,6 +406,8 @@ GAPInput
     fi
     ;;
   esac
+
+  notice "Test suite ${TEST_SUITE} passed"
 done
 
 exit 0
