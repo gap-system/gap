@@ -5,7 +5,10 @@
 # It can also be run manually, to simulate locally what happens in the
 # CI environment (say, for debugging purposes).
 
-set -ex
+set -E # inherit -e
+set -e # exit immediately on errors
+set -o pipefail # exit on pipe failure
+set -x
 
 SRCDIR=${SRCDIR:-$PWD}
 
