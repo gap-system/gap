@@ -41,7 +41,7 @@ testmockpkg () {
 }
 
 
-for TEST_SUITE in $TEST_SUITES
+for TEST_SUITE in "$@"
 do
   # restore current directory before each test suite
   cd "$BUILDDIR"

@@ -254,7 +254,7 @@ jobs:
         uses: mxschmitt/action-tmate@v3
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
       - name: "Run tests"
-        run: ${{ matrix.extra }} dev/ci.sh
+        run: ${{ matrix.extra }} dev/ci.sh ${{ matrix.test-suites }}
       - name: "Upload pdf manuals"
         if: ${{ contains(matrix.test-suites, 'makemanuals') }}
         uses: actions/upload-artifact@v3
