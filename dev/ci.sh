@@ -75,24 +75,12 @@ do
   testpackages)
     cd $SRCDIR/pkg
 
-    # skip PolymakeInterface: no polynmake installed (TODO: is there a polymake package we can use)
+    # skip PolymakeInterface: no polymake installed (TODO: is there a polymake package we can use?)
     rm -rf PolymakeInterface*
     # skip xgap: no X11 headers, and no means to test it
     rm -rf xgap*
     # skip itc because it requires xgap
     rm -rf itc*
-
-    # HACK to work out timestamp issues with anupq
-    touch anupq*/configure* anupq*/Makefile* anupq*/aclocal.m4
-
-    # HACK/WORKAROUND: excise `-march=native` from some configure
-    # scripts by replacing it with `-g0` ; we do it this way to simplify
-    # the patching process (we don't want to use an actual patchh file
-    # that may need to be updated for every new release of the affected
-    # packages'), while ensuring the patched shell scripts keep working;
-    # as an added bonus, the `-g0` helps ensure that any existing ccache
-    # entries for those files are invalidated.
-    perl -pi -e 's;-march=native;-g0;' [Dd]igraphs*/configure [Ss]emigroups*/configure [Ss]emigroups*/libsemigroups/configure
 
     # reset CFLAGS, CXXFLAGS, LDFLAGS before compiling packages, to prevent
     # them from being compiled with coverage gathering, because
