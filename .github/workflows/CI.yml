@@ -70,7 +70,7 @@ jobs:
           - os: ubuntu-latest
             shell: bash
             test-suites: "makemanuals testmakeinstall"
-            extra: "GAPPREFIX=/tmp/gapprefix CONFIGFLAGS=\"--prefix=/tmp/gapprefix\" NO_COVERAGE=1"
+            extra: "CONFIGFLAGS=\"--prefix=/tmp/gapprefix\" NO_COVERAGE=1"
 
           - os: ubuntu-20.04
             shell: bash
@@ -254,9 +254,9 @@ jobs:
         uses: mxschmitt/action-tmate@v3
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
       - name: "Run tests"
-        run: ${{ matrix.extra }} dev/ci.sh
+        run: ${{ matrix.extra }} dev/ci.sh ${{ matrix.test-suites }}
       - name: "Upload pdf manuals"
-        if: ${{ matrix.test-suites == 'makemanuals' }}
+        if: ${{ contains(matrix.test-suites, 'makemanuals') }}
         uses: actions/upload-artifact@v3
         with:
           if-no-files-found: error
@@ -267,7 +267,7 @@ jobs:
             doc/ref/manual.pdf
             doc/tut/manual.pdf
       - name: "Upload html manuals"
-        if: ${{ matrix.test-suites == 'makemanuals' }}
+        if: ${{ contains(matrix.test-suites, 'makemanuals') }}
         uses: actions/upload-artifact@v3
         with:
           if-no-files-found: error

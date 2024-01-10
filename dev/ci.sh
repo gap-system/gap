@@ -3,14 +3,17 @@
 # Continuous integration testing script
 
 # It can also be run manually, to simulate locally what happens in the
-# CI environment (say, for debugging purposes).
+# CI environment (say, for debugging purposes). For example:
+#
+#    dev/ci.sh testinstall
+#
+# run just the 'testinstall' testsuite
 
-set -ex
+set -E # inherit -e
+set -e # exit immediately on errors
+set -o pipefail # exit on pipe failure
 
 SRCDIR=${SRCDIR:-$PWD}
-
-# Make sure any Error() immediately exits GAP with exit code 1.
-GAP="./gap --quitonbreak"
 
 # change into BUILDDIR (creating it if necessary), and turn it into an absolute path
 if [[ -n "$BUILDDIR" ]]
@@ -20,33 +23,100 @@ then
 fi
 BUILDDIR=$PWD
 
-# create dir for coverage results
-COVDIR=coverage
-mkdir -p $COVDIR
+GAP=${GAP:-$BUILDDIR/gap}
 
+# Make sure any Error() immediately exits GAP with exit code 1.
+GAP="$GAP --quitonbreak"
 
+# create dir for coverage results unless coverage is disabled
+COVDIR=${COVDIR:-coverage}
+
+######################################################################
+#
+# Various little helper functions
+
+# is output going to a terminal?
+if test -t 1; then
+
+    # does the terminal support color?
+    ncolors=$(tput colors)
+
+    if test -n "$ncolors" && test $ncolors -ge 8; then
+        bold="$(tput bold)"
+        underline="$(tput smul)"
+        standout="$(tput smso)"
+        normal="$(tput sgr0)"
+        black="$(tput setaf 0)"
+        red="$(tput setaf 1)"
+        green="$(tput setaf 2)"
+        yellow="$(tput setaf 3)"
+        blue="$(tput setaf 4)"
+        magenta="$(tput setaf 5)"
+        cyan="$(tput setaf 6)"
+        white="$(tput setaf 7)"
+    fi
+fi
+
+notice() {
+    printf "${green}%s${normal}\n" "$*"
+}
+
+warning() {
+    printf "${yellow}WARNING: %s${normal}\n" "$*"
+}
+
+error() {
+    printf "${red}ERROR: %s${normal}\n" "$*" 1>&2
+    exit 1
+}
+
+echo_and_run () {
+    cmd="$1" ; shift
+    echo "$cmd" "$@"
+    "$cmd" "$@"
+}
+
+# helper function to generate `--cover` arguments for GAP invocations
+# but only if coverage tracking is enabled (= "not disabled")
+gap_cover_arg () {
+  if [[ -z ${NO_COVERAGE} ]]
+  then
+    extra=${extra:+-$extra}
+    mkdir -p $COVDIR
+    echo "--cover $COVDIR/${TEST_SUITE}${extra}.coverage"
+  fi
+}
+
+#
 testmockpkg () {
     # Try building and loading the mockpkg kernel extension
     gap="$1"
     gaproot="$2"
-    mockpkg_dir="$PWD"
+    mockpkg_dir="$3"
 
-    ./configure "$gaproot"
-    make V=1
+    cd "$mockpkg_dir"
+    echo_and_run ./configure "$gaproot"
+    echo_and_run make V=1
     # trick to make it easy to load the package in GAP
     rm -f pkg && ln -sf . pkg
     # try to load the kernel extension
     cd "$gaproot"
-    $gap -A -l "$mockpkg_dir;" "$mockpkg_dir/tst/testall.g"
+    echo_and_run $gap -A -l "$mockpkg_dir;" "$mockpkg_dir/tst/testall.g"
 }
 
 
-for TEST_SUITE in $TEST_SUITES
+for TEST_SUITE in "$@"
 do
   # restore current directory before each test suite
   cd "$BUILDDIR"
 
-  echo "Running test suite $TEST_SUITE"
+  echo "${blue}"
+  echo "+-------------------------------------------"
+  echo "|"
+  echo "| Running test suite $TEST_SUITE"
+  echo "|"
+  echo "+-------------------------------------------"
+  echo "${normal}"
   case $TEST_SUITE in
   testspecial | test-compile)
     cd $SRCDIR/tst/$TEST_SUITE
@@ -56,24 +126,12 @@ do
   testpackages)
     cd $SRCDIR/pkg
 
-    # skip PolymakeInterface: no polynmake installed (TODO: is there a polymake package we can use)
+    # skip PolymakeInterface: no polymake installed (TODO: is there a polymake package we can use?)
     rm -rf PolymakeInterface*
     # skip xgap: no X11 headers, and no means to test it
     rm -rf xgap*
     # skip itc because it requires xgap
     rm -rf itc*
-
-    # HACK to work out timestamp issues with anupq
-    touch anupq*/configure* anupq*/Makefile* anupq*/aclocal.m4
-
-    # HACK/WORKAROUND: excise `-march=native` from some configure
-    # scripts by replacing it with `-g0` ; we do it this way to simplify
-    # the patching process (we don't want to use an actual patchh file
-    # that may need to be updated for every new release of the affected
-    # packages'), while ensuring the patched shell scripts keep working;
-    # as an added bonus, the `-g0` helps ensure that any existing ccache
-    # entries for those files are invalidated.
-    perl -pi -e 's;-march=native;-g0;' [Dd]igraphs*/configure [Ss]emigroups*/configure [Ss]emigroups*/libsemigroups/configure
 
     # reset CFLAGS, CXXFLAGS, LDFLAGS before compiling packages, to prevent
     # them from being compiled with coverage gathering, because
@@ -131,6 +189,8 @@ GAPInput
     # in case we change file locations again...
     bool_d=build/deps/src/bool.c.d
     bool_lo=build/obj/src/bool.c.lo
+
+    set -x
 
     # this test assumes we are doing an out-of-tree build
     test $BUILDDIR != $SRCDIR
@@ -197,6 +257,8 @@ GAPInput
     make print-OBJS  # should print something but not error out
     mv book.h.bak $SRCDIR/src/bool.h
 
+    set +x
+
     ;;
 
   makemanuals)
@@ -205,8 +267,9 @@ GAPInput
     ;;
 
   testmakeinstall)
-    # at this point GAPPREFIX should be set
-    test -n $GAPPREFIX  || (echo "GAPPREFIX must be set" ; exit 1)
+    # get the install prefix from the GAP build system
+    eval $(make print-prefix)
+    GAPPREFIX=$prefix
 
     # verify $GAPPREFIX does not yet exist
     test ! -d $GAPPREFIX
@@ -243,7 +306,8 @@ GAPInput
     # directories after stripping gap and libgap
     strip $GAPPREFIX/bin/gap > /dev/null
     strip $GAPPREFIX/lib/gap/gap > /dev/null
-    strip $GAPPREFIX/lib/libgap.so > /dev/null
+    strip $GAPPREFIX/lib/libgap.so > /dev/null 2>&1 || :      # for Linux
+    strip -S $GAPPREFIX/lib/libgap.dylib > /dev/null 2>&1 || :   # for macOS
     fgrep -r $BUILDDIR $GAPPREFIX && exit 1
     fgrep -r $SRCDIR $GAPPREFIX && exit 1
     fgrep -r $HOME $GAPPREFIX && exit 1
@@ -252,10 +316,9 @@ GAPInput
     ln -s $SRCDIR/pkg $GAPPREFIX/share/gap/pkg
 
     # test building and loading package kernel extension
-    cd "$SRCDIR/tst/mockpkg"
-    testmockpkg "$GAPPREFIX/bin/gap" "$GAPPREFIX/lib/gap"
+    testmockpkg "$GAPPREFIX/bin/gap" "$GAPPREFIX/lib/gap" "$SRCDIR/tst/mockpkg"
 
-    # run testsuite for the resulting GAP
+    # run testinstall for the resulting GAP
     $GAPPREFIX/bin/gap --quitonbreak -l ";$SRCDIR" $SRCDIR/tst/testinstall.g
 
     # test integration with pkg-config
@@ -282,17 +345,17 @@ GAPInput
     TESTMANUALSPASS=yes
     for ch in $SRCDIR/tst/testmanuals/*.tst
     do
-        $GAP -b -L testmanuals.wsp --cover $COVDIR/$(basename $ch).coverage <<GAPInput || TESTMANUALSPASS=no
+        $GAP -b -L testmanuals.wsp $(gap_cover_arg $(basename $ch)) <<GAPInput || TESTMANUALSPASS=no
         TestManualChapter("$ch");
         QuitGap(0);
 GAPInput
     done
 
     # if there were any failures, abort now.
-    [[ $TESTMANUALSPASS = yes ]] || exit 1
+    [[ $TESTMANUALSPASS = yes ]] || error "reference manual tests failed"
 
     # while we are at it, also test the workspace code
-    $GAP -A --cover $COVDIR/workspace.coverage <<GAPInput
+    $GAP -A $(gap_cover_arg workspace) <<GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
         # Also test a package banner
         LoadPackage("polycyclic");
@@ -303,44 +366,47 @@ GAPInput
     ;;
 
   testlibgap)
-    make testlibgap
+    make V=1 testlibgap
     ;;
 
   testkernel)
-    make testkernel
+    make V=1 testkernel
     ;;
 
   testmockpkg)
     # for debugging it is useful to know what sysinfo.gap contains at this point
+    echo "Content of sysinfo.gap:"
+    echo "${blue}---- BEGIN sysinfo.gap ----${normal}"
     cat "$BUILDDIR/sysinfo.gap"
+    echo "${blue}---- END sysinfo.gap ----${normal}"
 
     # test building and loading a package kernel extension
-    cd "$SRCDIR/tst/mockpkg"
-    testmockpkg "$GAP --cover $COVDIR/testmockpkg.coverage" "$BUILDDIR"
+    testmockpkg "$GAP $(gap_cover_arg)" "$BUILDDIR" "$SRCDIR/tst/mockpkg"
     ;;
 
   testexpect)
-    INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b --cover $COVDIR/${TEST_SUITE}.coverage" $SRCDIR/dev/gaptest.expect
-    INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b --cover $COVDIR/${TEST_SUITE}.coverage -l missing-dir" $SRCDIR/dev/gaptest2.expect
+    INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b $(gap_cover_arg 1)" $SRCDIR/dev/gaptest.expect
+    INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b $(gap_cover_arg 2) -l missing-dir" $SRCDIR/dev/gaptest2.expect
     ;;
 
   *)
     if [[ ! -f  $SRCDIR/tst/${TEST_SUITE}.g ]]
     then
-        echo "Could not read test suite $SRCDIR/tst/${TEST_SUITE}.g"
-        exit 1
+        error "Could not read test suite $SRCDIR/tst/${TEST_SUITE}.g"
     fi
 
     if [[ -n ${NO_COVERAGE} ]]
     then
         $GAP $SRCDIR/tst/${TEST_SUITE}.g
     else
-        $GAP --cover $COVDIR/${TEST_SUITE}.coverage \
+        $GAP $(gap_cover_arg) \
             <(echo 'SetUserPreference("ReproducibleBehaviour", true);') \
             $SRCDIR/tst/${TEST_SUITE}.g
     fi
     ;;
   esac
+
+  notice "Test suite ${TEST_SUITE} passed"
 done
 
 exit 0

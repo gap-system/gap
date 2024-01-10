@@ -170,6 +170,12 @@ vpath src/hpc/%.c $(srcdir)
 vpath src/hpc/%.cc $(srcdir)
 vpath src/hpc/%.s $(srcdir)
 
+vpath tst/testkernel/%.h $(srcdir)
+vpath tst/testkernel/%.c $(srcdir)
+
+vpath tst/testlibgap/%.h $(srcdir)
+vpath tst/testlibgap/%.c $(srcdir)
+
 
 #
 # Finally, include the actual make rules.

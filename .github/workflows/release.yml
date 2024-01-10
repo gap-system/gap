@@ -97,7 +97,7 @@ jobs:
       - name: "Test 'make install' from the primary release archive"
         run: |
           pushd test-gap-tarball/gap*
-          GAPPREFIX=/tmp/gapprefix TEST_SUITES="testmakeinstall" ../../dev/ci.sh
+          ../../dev/ci.sh testmakeinstall
           popd
 
       # Upload the main GAP .tar.gz file (which includes packages).
