@@ -53,7 +53,7 @@ jobs:
             "testmanuals",
 
             # test error reporting and compiling as well as libgap
-            "testexpect testmockpkg testspecial test-compile testlibgap testkernel",
+            "testexpect testmockpkg testspecial test-compile testlibgap testkernel testworkspace",
 
             # compile packages and run GAP tests
             # don't use --enable-debug to prevent the tests from taking too long
