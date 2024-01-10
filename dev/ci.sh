@@ -353,8 +353,14 @@ GAPInput
 
     # if there were any failures, abort now.
     [[ $TESTMANUALSPASS = yes ]] || error "reference manual tests failed"
+    ;;
 
-    # while we are at it, also test the workspace code
+  testworkspace)
+
+    # test saving a workspace, with stdin redirected (this tests for an issue
+    # where we used to disable readline in this case, which lead to issues later
+    # on when loading the workspace without redirected stdin; for details,
+    # see https://github.com/gap-system/gap/issues/5014)
     $GAP -A $(gap_cover_arg workspace) <<GAPInput
         SetUserPreference("ReproducibleBehaviour", true);
         # Also test a package banner
@@ -362,6 +368,10 @@ GAPInput
         SaveWorkspace("test.wsp");
         QuitGap(0);
 GAPInput
+
+    # ... and test loading a workspace, then run testinstall in there
+    # (make sure to not redirect stdin here, see comment above)
+    $GAP -A -L test.wsp $(gap_cover_arg workspace) $SRCDIR/tst/testinstall.g
 
     ;;
 

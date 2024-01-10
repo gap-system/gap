@@ -671,8 +671,10 @@ void InitSystem (
     if (SyWindow)
         SyUseReadline = 0;
     // don't use readline if stdin is not attached to a terminal
-    else if (!isatty(fileno(stdin)))
-        SyUseReadline = 0;
+    // FIXME: disabled this, as it breaks certain workspaces (see also
+    // issue https://github.com/gap-system/gap/issues/5014)
+    //else if (!isatty(fileno(stdin)))
+    //    SyUseReadline = 0;
 #endif
 
     InitSysFiles();
