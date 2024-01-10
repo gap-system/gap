@@ -20,7 +20,7 @@ InstallGlobalFunction( FpGroupPcGroupSQ, function( G )
     f := GeneratorsOfGroup( F );
     g := Pcgs( G );
     n := Length( g );
-    rels := List( [1..n], x -> List( [1..x], y -> false ) );
+    rels := List( [1..n], x -> List( [1..x], ReturnFalse ) );
     for i in [1..n] do
         for j in [1..i-1] do
             w := f[j]^-1 * f[i] * f[j];

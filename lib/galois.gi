@@ -582,7 +582,7 @@ local f,n,i,sh,fu,ps,pps,ind,keineu,ba,bk,j,a,anz,pm,
   n:=DegreeOfUnivariateLaurentPolynomial(f);
 
   sh:=Partitions(n);
-  fu:=List([1..Length(sh)-1],i->false);
+  fu:=List([1..Length(sh)-1],ReturnFalse);
   anz:=List(fu,i->0);
   cnt:=0;
   keineu:=0;
@@ -661,7 +661,7 @@ local n,i,sh,fu,ps,pps,ind,keineu,avoid,cf;
   n:=DegreeOfUnivariateLaurentPolynomial(f);
 
   sh:=Partitions(n);
-  fu:=List([1..Length(sh)-1],i->false);
+  fu:=List([1..Length(sh)-1],ReturnFalse);
   keineu:=0;
   repeat
     repeat
@@ -1256,4 +1256,3 @@ InstallMethod(GaloisType,"for polynomials",true,
 InstallOtherMethod(GaloisType,"for polynomials and list",true,
   [IsUnivariateRationalFunction and IsPolynomial,IsList],0,
   DoGaloisType);
-

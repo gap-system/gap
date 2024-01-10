@@ -2161,7 +2161,7 @@ function( G )
     spec := SpecialPcgs( G );
     weights := LGWeights( spec );
     primes := Set( weights, x -> x[3] );
-    comp := List( primes, x -> false );
+    comp := List( primes, ReturnFalse );
     for i in [1..Length( primes )] do
         gens := spec{Filtered( [1..Length(spec)],
                      x -> weights[x][3] <> primes[i] )};
@@ -2188,7 +2188,7 @@ function( G )
     spec := SpecialPcgs( G );
     weights := LGWeights( spec );
     primes := Set( weights, x -> x[3] );
-    comp := List( primes, x -> false );
+    comp := List( primes, ReturnFalse );
     for i in [1..Length( primes )] do
         gens := spec{Filtered( [1..Length(spec)],
                            x -> weights[x][3] = primes[i] )};
@@ -2219,7 +2219,7 @@ function( G )
     weights := LGWeights( spec );
     primes := Set( weights, x -> x[3] );
     pis    := Combinations( primes );
-    comp   := List( pis, x -> false );
+    comp   := List( pis, ReturnFalse );
     for i in [1..Length( pis )] do
         gens := spec{Filtered( [1..Length(spec)],
                            x -> weights[x][3] in pis[i] )};

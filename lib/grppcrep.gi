@@ -93,7 +93,7 @@ end );
 InstallGlobalFunction( ConjugatedModule, function( pcgsN, g, modu )
 local mats, i, exp;
 
-  mats := List(modu.generators, x -> false );
+  mats := List(modu.generators, ReturnFalse );
   for i in [1..Length(mats)] do
     exp := ExponentsOfPcElement( pcgsN, pcgsN[i]^g );
     mats[i] := ImmutableMatrix(modu.field,MappedVector(exp,modu.generators));
@@ -180,7 +180,7 @@ InstallGlobalFunction( GaloisConjugates, function( modu, F )
 
     # conjugate
     for k in [1..d-1] do
-      mats := List( modu.generators, x -> false );
+      mats := List( modu.generators, ReturnFalse );
       r    := RemInt( p^k, p^d-1 );
       for i in [1..Length(mats)] do
         mats[i]:=ImmutableMatrix(F,List(modu.generators[i],x->List(x,y->y^r)));
@@ -630,5 +630,3 @@ function( G, F, dim )
     od;
     return [gens,modus];
 end );
-
-
