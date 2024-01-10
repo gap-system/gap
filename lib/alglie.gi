@@ -4817,8 +4817,7 @@ local ReductionModuloTable,   #
          # i.e., the previous loop has been executed without breaking
          # caused by finding a relation among the generators.
 
-         vg:=Difference( List( Combinations(e[1],2), x -> Reversed(x) ),
-                                                                     R[2] );
+         vg:=Difference( List( Combinations(e[1],2), Reversed ), R[2] );
          Append( R[2], vg  );
          for i in [1..Length(vg)] do
            d:=d+1;

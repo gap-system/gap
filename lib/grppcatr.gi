@@ -932,7 +932,7 @@ function( G )
     exp    := 1;
     while Size( U ) < Size( G ) do
         sub := Filtered( cl, x -> Order( Representative( x ) ) = p ^ exp );
-        sub := Concatenation( List( sub, x -> AsList(x) ) );
+        sub := Concatenation( List( sub, AsList ) );
         sub := InducedPcgsByPcSequenceAndGenerators( pcgs, Pcgs(U), sub );
         M   := SubgroupByPcgs( G, sub );
         if Size( M ) > Size( U ) then

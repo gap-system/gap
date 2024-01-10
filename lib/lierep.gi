@@ -4079,7 +4079,7 @@ InstallGlobalFunction( ExtendRepresentation,
         n:= Length( mats[1] );
 
         for i in [1..Length(mats)] do
-          Q:= List( mats[i], x -> ShallowCopy(x) );
+          Q:= List( mats[i], ShallowCopy );
           for j in [1..n] do
             Add( Q[j], Zero( F ) );
           od;
