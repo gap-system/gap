@@ -2267,7 +2267,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
     #   Info( InfoPackageLoading, 2, Concatenation( record.PackageName, ": Please be advised to change the date format to `yyyy-mm-dd`") );
     #fi;
 
-    TestOption( record, "License",
+    TestMandat( record, "License",
         x -> IsString(x) and 0 < Length(x),
         "a nonempty string containing an SPDX ID" );
     TestMandat( record, "ArchiveURL", IsURL, "a string started with http://, https:// or ftp://" );
