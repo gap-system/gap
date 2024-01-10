@@ -187,9 +187,7 @@ GAPInput
     test -z "$(make)"
 
     # audit config.h
-    pushd $SRCDIR
-    dev/audit-config-h.sh
-    popd
+    $SRCDIR/dev/audit-config-h.sh
 
     # test: touching all source files does *not* trigger a rebuild if we make
     # a target that doesn't depend on sources. We verify this by replacing the source

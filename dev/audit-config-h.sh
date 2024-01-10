@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # This script scans all kernel sources which do not #include config.h for uses
 # of symbols potentially #defined in `config.h`, with a couple of exceptions
@@ -9,10 +9,13 @@
 # in any of our headers. It can also be used to check which C/C++ source files
 # use any of these headers, and thus ought to
 # #include config.h.
-set -e
+
+set -E # inherit -e
+set -e # exit immediately on errors
+set -o pipefail # exit on pipe failure
 
 # ensure that no .h file #includes config.h
-if git grep -n -w config.h :src/*.h > /dev/null ; then
+if git grep -n -w config.h -- :/src/*.h > /dev/null ; then
   echo "Error, a kernel header file includes config.h"
   exit 1
 fi
@@ -30,7 +33,7 @@ PATTERN=$(egrep '(#define|#undef)' build/config.h | sed -E -e 's;(#define|/\* #u
 PATTERN=${PATTERN%?} # remove trailing "|"
 
 # only consider files that do not #include config.h
-FILES=$(git grep --files-without-match -P '^#include "config\.h"$' src)
+FILES=$(git grep --files-without-match -P '^#include "config\.h"$' -- :/src)
 
 # Next use `git grep` to search all kernel header files for occurrences of any
 # of the symbols in the pattern we just created. We negate the exit code: grep
