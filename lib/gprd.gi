@@ -357,7 +357,7 @@ InstallGlobalFunction (PcgsDirectProduct,
         rels := [];
         pcgs := [];
         indices := [];
-        one := List( info.groups, x -> One(x) );
+        one := List( info.groups, One );
         offset := 0;
         for i in [1..Length(info.groups)] do
             pcgs[i] := pcgsop ( info.groups[i] );

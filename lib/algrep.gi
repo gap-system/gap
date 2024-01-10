@@ -3295,7 +3295,7 @@ InstallMethod( ZeroOp,
         function( u )
 
     return ObjByExtRep( FamilyObj( u ), List(
-                   FamilyObj( u )!.constituentModules, V -> Zero(V) ) );
+                   FamilyObj( u )!.constituentModules, Zero ) );
 end );
 
 

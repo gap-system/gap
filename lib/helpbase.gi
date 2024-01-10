@@ -1372,13 +1372,13 @@ InstallGlobalFunction(HELP, function( str )
 
   # if the topic is 'chapters' display the table of chapters
   elif str = "chapters"  or str = "contents" or book <> "" and str = "" then
-      if ForAll(books, b->  HELP_SHOW_CHAPTERS(b)) then
+      if ForAll(books, HELP_SHOW_CHAPTERS) then
         add( books, "chapters", "chapters" );
       fi;
 
   # if the topic is 'sections' display the table of sections
   elif str = "sections"  then
-      if ForAll(books, b-> HELP_SHOW_SECTIONS(b)) then
+      if ForAll(books, HELP_SHOW_SECTIONS) then
         add(books, "sections", "sections");
       fi;
 
@@ -1409,4 +1409,3 @@ InstallGlobalFunction(HELP, function( str )
      # Print( "Help: Sorry, could not find a match for '", origstr, "'.\n");
   fi;
 end);
-
