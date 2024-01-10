@@ -579,11 +579,10 @@ end );
 InstallGlobalFunction(Arrangements,function ( mset, arg... )
     local   combs, m;
     mset := ShallowCopy(mset);  Sort( mset );
+    m := List( mset, ReturnTrue );
     if Length(arg) = 0  then
-        m := List( mset, i->true );
         combs := ArrangementsA( mset, m, Length(mset), [], 1 );
     elif Length(arg) = 1  then
-        m := List( mset, i->true );
         combs := ArrangementsK( mset, m, Length(mset), arg[1], [], 1 );
     else
         Error("usage: Arrangements( <mset> [, <k>] )");
@@ -1162,7 +1161,7 @@ end );
 InstallGlobalFunction(PermutationsList,function ( mset )
     local   m;
     mset := ShallowCopy(mset);  Sort( mset );
-    m := List( mset, i->true );
+    m := List( mset, ReturnTrue );
     return PermutationsListK(mset,m,Length(mset),Length(mset),[],1);
 end);
 
@@ -1222,7 +1221,7 @@ end );
 InstallGlobalFunction(Derangements,function ( list )
     local   mset, m;
     mset := ShallowCopy(list);  Sort( mset );
-    m := List( mset, i->true );
+    m := List( mset, ReturnTrue );
     return DerangementsK(mset,m,Length(mset),list,Length(mset),[],1);
 end);
 
@@ -1271,7 +1270,7 @@ InstallGlobalFunction(NrDerangements,function ( list )
             od;
         fi;
     else
-        m := List( mset, i->true );
+        m := List( mset, ReturnTrue );
         nr := NrDerangementsK(mset,m,Length(mset),list,Length(mset),1);
     fi;
     return nr;
@@ -1416,7 +1415,7 @@ InstallGlobalFunction(PartitionsSet,function ( set, arg... )
         if set = []  then
             parts := [ [  ] ];
         else
-            m := List( set, i->true );
+            m := List( set, ReturnTrue );
             m[1] := false;
             parts := PartitionsSetA(set,Length(set),m,2,[[set[1]]],1,1);
         fi;
@@ -1429,7 +1428,7 @@ InstallGlobalFunction(PartitionsSet,function ( set, arg... )
                 parts := [ ];
             fi;
         else
-            m := List( set, i->true );
+            m := List( set, ReturnTrue );
             m[1] := false;
             parts := PartitionsSetK(
                         set, Length(set), m, 2, k, [[set[1]]], 1, 1 );

@@ -808,7 +808,7 @@ InstallGlobalFunction( Permut, function( tbl, arec )
        minR:= Minimum(arec.degree); maxR:= Maximum(arec.degree);
        amax:= [1]; amin:= [1];
        Conditor:= permel.Conditor;
-       free:= List(Conditor, x->true);
+       free:= List(Conditor, ReturnTrue);
        free[1]:= false;
        const:= List(Conditor, x-> List(x, y->y[1]));
        solveKnot(const, free);

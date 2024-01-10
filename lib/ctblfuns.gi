@@ -3132,7 +3132,7 @@ InstallMethod( InducedCyclic,
 
     centralizers:= SizesCentralizers( tbl );
     orders:= OrdersClassRepresentatives( tbl );
-    independent:= List( orders, x -> true );
+    independent:= List( orders, ReturnTrue );
     inducedcyclic:= [];
     for i in classes do                         # induce from i-th class
       if independent[i] then
@@ -3179,7 +3179,7 @@ InstallMethod( InducedCyclic,
 
     centralizers:= SizesCentralizers( tbl );
     orders:= OrdersClassRepresentatives( tbl );
-    independent:= List( orders, x -> true );
+    independent:= List( orders, ReturnTrue );
     inducedcyclic:= [];
     for i in classes do                         # induce from i-th class
       if independent[i] then

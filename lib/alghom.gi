@@ -517,10 +517,8 @@ end);
 ##
 #M  IsSingleValued( <map> ) . . . . . . . . . . . . . .  for algebra g.m.b.i.
 ##
-InstallMethod( IsSingleValued,
-    "for algebra g.m.b.i.",
-    [ IsGeneralMapping and IsPolynomialRingDefaultGeneratorMapping ],0,
-    map->true);
+InstallTrueMethod( IsSingleValued, IsGeneralMapping and
+  IsPolynomialRingDefaultGeneratorMapping );
 
 
 #############################################################################

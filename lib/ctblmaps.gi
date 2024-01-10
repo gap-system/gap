@@ -2618,7 +2618,7 @@ BindGlobal( "ModGauss", function( matrix, moduls )
     local i, modgauss, nonzerocol, row;
 
     modgauss:= [];
-    nonzerocol:= List( moduls, i -> true );
+    nonzerocol:= List( moduls, ReturnTrue );
     for i in [ 1 .. Length( matrix[1] ) ] do
       row:= StepModGauss( matrix, moduls, nonzerocol, i );
       if row <> fail then
