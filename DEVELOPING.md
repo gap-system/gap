@@ -29,7 +29,7 @@ GAP 4.12.x release after 4.13.0 has been released, and so on.
 By default all changes go into the `master` branch. Once a release 4.X.Y
 is out, to get changes into the 4.X.(Y+1) release, the usual process is
 to first land them into the `master` branch, and have them "backported"
-later on the.
+later on the `stable-4.X` branch.
 
 The process for backporting is as follows:
 1. someone adds the `backport-to-4.X` label to the pull request (if you
@@ -41,9 +41,9 @@ The process for backporting is as follows:
    backporting PR, which may contain the content of multiple PRs being
    backported).
 3. After a PR has been backported this way, the `backport-to-4.X` label
-   is replaced by a `backport-to-4.X-DONE` label, to avoid it from being
-   processed again (this is also important for our scripts which generate
-   the changelog updates for releases)
+   is replaced by a `backport-to-4.X-DONE` label, to avoid
+   processing it again (this is also important for our scripts which generate
+   the changelog updates for releases).
 
 
 ### Making changes to the release branch directly
@@ -53,9 +53,9 @@ usually because the two branches diverged sufficiently (e.g. code may have
 been rewritten in a major way on `master` which does not lend itself to
 backporting, but we still want to fix a bug in the old implementation for
 the release branch). In that case, you can create a pull request which
-directly targets the `stable-4.X` branch (GitHub allows selecting the target
-branch during creation of pull requests). In that case, it is usually
-a good idea to point out this fact and the reason in the PR description.
+directly targets the `stable-4.X` branch (the target
+branch can be selected on GitHub during the creation of pull requests). When making such a pull request, it's
+a good idea to point it out (and the reason) in the PR description.
 
 
 ## Code formatting
@@ -65,7 +65,7 @@ Some simple rules for formatting code
 - no trailing whitespace
 - all source files should end with a newline
 
-This is automatically done if your editor honors our `.editorconfig`
+This is automatically done if your editor honours our `.editorconfig`
 file. See <https://editorconfig.org> for a list of editors supporting
 this and how to configure them.
 
@@ -75,7 +75,7 @@ contributions to the surrounding code. So if you insert something into a
 function that uses 2-space indentation, also use that.
 
 Please refrain from reformatting code as you edit it, as this makes it
-much harder to review your changes If you feel you must reformat
+much harder to review your changes. If you really must reformat
 something, do so in a separate commit which only contains formatting
 changes.
 
@@ -133,14 +133,14 @@ If you do have the permissions to set labels, here are some guidelines:
 2. If the change is meant to be backported to the stable branch,
    add a "backports" label (see elsewhere in this document for details).
 3. Consider adding one of the "kind" label to indicate whether the change
-   is a bug fix, enhancement or what else.
+   is a bug fix, enhancement or whatever else.
 4. Other labels are mostly optional and can help categorize things for
    the release notes. You are invited to set them but it's not a must.
 
 Some other notes for pull requests
 - please read the section on "Code formatting"
 - try to focus your pull request, i.e. ideally don't change multiple
-  unrelated things in one PR (this makes reviewing your changes easier)
+  unrelated things in one PR (this makes reviewing your changes easier).
 
 
 ## Releases
@@ -170,14 +170,13 @@ multiple parts.
 
 The script `dev/bisect.sh` can be very helpful in tracking down which commit
 introduced a regression. Please read the extensive comments in the file to
-learn what it does and how to use it. To learn how to use it, read the comments
-in it
+learn what it does and how to use it. 
 
 
 ## Vendored dependencies
 
 GAP contains copies of some third party software, mostly to make it easier to
-build GAP "out of the box", with minimal dependencies included.
+build GAP "out of the box", with its minimal dependencies included.
 GAP maintainers may wish to update these dependencies from time to time.
 
 - `extern/gmp`: copy of [GMP](https://gmplib.org), the GNU Multiple Precision
