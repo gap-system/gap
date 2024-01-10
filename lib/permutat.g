@@ -444,39 +444,26 @@ SetOne( PermutationsFamily, () );
 
 #############################################################################
 ##
-#F  ListPerm( <perm>[, <length>] )  . . . . . . . . . . . . .  list of images
+#F  ListPerm( <perm>[, <n>] )  . . . . . . . . . . . . .  list of images
 ##
 ##  <#GAPDoc Label="ListPerm">
 ##  <ManSection>
-##  <Func Name="ListPerm" Arg='perm[, length]'/>
+##  <Func Name="ListPerm" Arg='perm[, n]'/>
 ##
 ##  <Description>
 ##  is a list <M>l</M> that contains the images of the positive integers
-##  under the permutation <A>perm</A>.
+##  from 1 to <A>n</A> under the permutation <A>perm</A>.
 ##  That means that
 ##  <M>l</M><C>[</C><M>i</M><C>]</C> <M>= i</M><C>^</C><A>perm</A>,
-##  where <M>i</M> lies between 1
-##  and the largest point moved by <A>perm</A>
-##  (see&nbsp;<Ref Attr="LargestMovedPoint" Label="for a permutation"/>).
+##  where <M>i</M> lies between 1 and <A>n</A>.
 ##  <P/>
-##  An optional second argument specifies the length of the desired list.
+##  If the optional second argument <A>n</A> is omitted then the largest
+##  point moved by <A>perm</A> is used
+##  (see&nbsp;<Ref Attr="LargestMovedPoint" Label="for a permutation"/>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-BIND_GLOBAL( "ListPerm", function( arg )
-    local n;
-    if Length(arg)=2 then
-        n := arg[2];
-    else
-        n := LargestMovedPoint(arg[1]);
-    fi;
-    if IsOne(arg[1]) then
-        return [1..n];
-    else
-        return OnTuples( [1..n], arg[1] );
-    fi;
-end );
 
 
 #############################################################################

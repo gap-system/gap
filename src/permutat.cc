@@ -1098,6 +1098,63 @@ static Obj FuncPermList(Obj self, Obj list)
     }
 }
 
+template <typename T>
+static inline Obj ListPerm_(Obj perm, Int len)
+{
+    Obj                 res;            // handle of the image, result
+    Obj *               ptRes;          // pointer to the result
+    const T *           ptPrm;          // pointer to the permutation
+    UInt                deg;            // degree of the permutation
+    UInt                i;              // loop variable
+
+    if (len <= 0)
+        return NewEmptyPlist();
+
+    // copy the list into a mutable plist, which we will then modify in place
+    res = NEW_PLIST(T_PLIST_CYC, len);
+    SET_LEN_PLIST(res, len);
+
+    // get the pointer
+    ptRes = ADDR_OBJ(res) + 1;
+    ptPrm = CONST_ADDR_PERM<T>(perm);
+
+    // loop over the entries of the permutation
+    deg = DEG_PERM<T>(perm);
+    if (deg > len)
+        deg = len;
+    for (i = 1; i <= deg; i++, ptRes++) {
+        *ptRes = INTOBJ_INT(ptPrm[i - 1] + 1);
+    }
+    // add extras if requested
+    for (; i <= len; i++, ptRes++) {
+        *ptRes = INTOBJ_INT(i);
+    }
+
+    return res;
+}
+
+static Obj ListPermOper;
+
+static Obj FuncListPerm1(Obj self, Obj perm)
+{
+    RequirePermutation(SELF_NAME, perm);
+    Int nn = LargestMovedPointPerm(perm);
+    if (TNUM_OBJ(perm) == T_PERM2)
+        return ListPerm_<UInt2>(perm, nn);
+    else
+        return ListPerm_<UInt4>(perm, nn);
+}
+
+static Obj FuncListPerm2(Obj self, Obj perm, Obj n)
+{
+    RequirePermutation(SELF_NAME, perm);
+    Int nn = GetSmallInt(SELF_NAME, n);
+    if (TNUM_OBJ(perm) == T_PERM2)
+        return ListPerm_<UInt2>(perm, nn);
+    else
+        return ListPerm_<UInt4>(perm, nn);
+}
+
 /****************************************************************************
 **
 *F  LargestMovedPointPerm( <perm> ) largest point moved by perm
@@ -1951,9 +2008,9 @@ static inline Obj SMALLEST_IMG_TUP_PERM(Obj tup, Obj perm)
 {
     UInt                res;            // handle of the image, result
     const Obj *         ptTup;          // pointer to the tuple
-    const T *           ptPrm;         // pointer to the permutation
+    const T *           ptPrm;          // pointer to the permutation
     UInt                tmp;            // temporary handle
-    UInt                lmp;            // largest moved point
+    UInt                deg;            // degree of the permutation
     UInt                i, k;           // loop variables
 
     res = MAX_DEG_PERM4; // ``infty''.
@@ -1961,12 +2018,12 @@ static inline Obj SMALLEST_IMG_TUP_PERM(Obj tup, Obj perm)
     // get the pointer
     ptTup = CONST_ADDR_OBJ(tup) + LEN_LIST(tup);
     ptPrm = CONST_ADDR_PERM<T>(perm);
-    lmp = DEG_PERM<T>(perm);
+    deg = DEG_PERM<T>(perm);
 
     // loop over the entries of the tuple
     for ( i = LEN_LIST(tup); 1 <= i; i--, ptTup-- ) {
       k = INT_INTOBJ( *ptTup );
-      if ( k <= lmp )
+      if ( k <= deg )
           tmp = ptPrm[k-1] + 1;
       else
           tmp = k;
@@ -2004,7 +2061,7 @@ static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
     Obj *               ptRes;          // pointer to the result
     const T *           ptPrm;          // pointer to the permutation
     Obj                 tmp;            // temporary handle
-    UInt                lmp;            // largest moved point
+    UInt                deg;            // degree of the permutation
     UInt                i, k;           // loop variables
 
     // copy the list into a mutable plist, which we will then modify in place
@@ -2016,14 +2073,14 @@ static inline Obj OnTuplesPerm_(Obj tup, Obj perm)
     // get the pointer
     ptRes = ADDR_OBJ(res) + 1;
     ptPrm = CONST_ADDR_PERM<T>(perm);
-    lmp = DEG_PERM<T>(perm);
+    deg = DEG_PERM<T>(perm);
 
     // loop over the entries of the tuple
     for (i = 1; i <= len; i++, ptRes++) {
         tmp = *ptRes;
         if (IS_POS_INTOBJ(tmp)) {
             k = INT_INTOBJ(tmp);
-            if (k <= lmp) {
+            if (k <= deg) {
                 *ptRes = INTOBJ_INT(ptPrm[k - 1] + 1);
             }
         }
@@ -2073,7 +2130,7 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
     Obj *               ptRes;          // pointer to the result
     const T *           ptPrm;          // pointer to the permutation
     Obj                 tmp;            // temporary handle
-    UInt                lmp;            // largest moved point
+    UInt                deg;            // degree of the permutation
     UInt                i, k;           // loop variables
 
     // copy the list into a mutable plist, which we will then modify in place
@@ -2083,7 +2140,7 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
     // get the pointer
     ptRes = ADDR_OBJ(res) + 1;
     ptPrm = CONST_ADDR_PERM<T>(perm);
-    lmp = DEG_PERM<T>(perm);
+    deg = DEG_PERM<T>(perm);
 
     // loop over the entries of the tuple
     BOOL isSmallIntList = TRUE;
@@ -2091,7 +2148,7 @@ static inline Obj OnSetsPerm_(Obj set, Obj perm)
         tmp = *ptRes;
         if (IS_POS_INTOBJ(tmp)) {
             k = INT_INTOBJ(tmp);
-            if (k <= lmp) {
+            if (k <= deg) {
                 *ptRes = INTOBJ_INT(ptPrm[k - 1] + 1);
             }
         }
@@ -2744,6 +2801,22 @@ static StructGVarFilt GVarFilts[] = {
 };
 
 
+
+/****************************************************************************
+**
+*V  GVarOpers . . . . . . . . . . . . . . . . .  list of operations to export
+*/
+static StructGVarOper GVarOpers [] = {
+
+    // ListPerm can take 1 or 2 arguments; since NewOperation ignores the
+    // handler for variadic operations, use DoOperation0Args as a placeholder.
+    { "ListPerm", -1, "perm[, n]", &ListPermOper,
+      (ObjFunc)DoOperation0Args, "src/permutat.cc:ListPerm" },
+
+    { 0, 0, 0, 0, 0, 0 }
+
+};
+
 /****************************************************************************
 **
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
@@ -2817,7 +2890,13 @@ static Int InitKernel (
 
     // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
+
+    // ListPerm needs special consideration because we want distinct kernel
+    // handlers for 1 and 2 arguments
+    InitHandlerFunc( (ObjFunc)FuncListPerm1, "src/permutat.cc:FuncListPerm1" );
+    InitHandlerFunc( (ObjFunc)FuncListPerm2, "src/permutat.cc:FuncListPerm2" );
 
     // make the buffer bag
 #ifndef HPCGAP
@@ -2924,7 +3003,12 @@ static Int InitLibrary (
 {
     // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
+    InitGVarOpersFromTable( GVarOpers );
     InitGVarFuncsFromTable( GVarFuncs );
+
+    // make and install the 'ListPerm' operation
+    SET_HDLR_FUNC( ListPermOper, 1, (ObjFunc)FuncListPerm1);
+    SET_HDLR_FUNC( ListPermOper, 2, (ObjFunc)FuncListPerm2);
 
     // make the identity permutation
     IdentityPerm = NEW_PERM2(0);
