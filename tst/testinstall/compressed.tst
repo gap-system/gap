@@ -7,15 +7,18 @@ gap> rawfname := Filename(dir, "rawtest.g.gz");;
 # Let us check when we have written a compressed file by checking the gzip header
 # We need raw file access to do this, so we use 'IO'. We stub out this part of the
 # test if IO is not loaded
+#@if IsPackageLoaded("IO")
 gap> checkGzippedFile := function(fname, expected)
 >    local ins, str;
->    if not IsPackageLoaded("IO") then return true; fi;
->    # Use 'ValueGlobal' to avoid warnings about undefined functions
->    ins := ValueGlobal("IO_File")(fname, "r");
->    str := ValueGlobal("IO_Read")(ins, 2);;
+>    ins := IO_File(fname, "r");
+>    str := IO_Read(ins, 2);
+>    IO_Close(ins);
 >    # All gzipped files should start with these two characters
 >    return (str = [CharInt(31),CharInt(139)]) = expected;
 >  end;;
+#@else
+gap> checkGzippedFile := ReturnTrue;;
+#@fi
 gap> str := "hello\ngoodbye\n";;
 
 # Write an uncompressed file
