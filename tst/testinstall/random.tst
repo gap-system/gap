@@ -1,6 +1,6 @@
 #@local R,a,rm,g,orbs,orb,i,getOneInt
 gap> START_TEST("random.tst");
-gap> ReadGapRoot( "tst/testrandom.g" );
+gap> ReadGapRoot( "tst/testinstall/testrandom.g" );
 
 # Test RandomList
 gap> randomTest([1,2,3], RandomList);

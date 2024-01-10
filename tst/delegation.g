@@ -7,9 +7,6 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-##  This file contains utilities for running tests.
-##  It is not read with the library when {\GAP} is started.
-##
 
 
 #############################################################################
