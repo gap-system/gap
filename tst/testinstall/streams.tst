@@ -178,6 +178,7 @@ gap> file := InputTextFile( fname );;
 gap> repeat
 >  line := ReadLine( file );
 > until line = fail;
+gap> CloseStream(file);
 
 # Invalid files
 gap> PrintTo("/", "out");
