@@ -2316,7 +2316,7 @@ local r,        #radical
       gens,
       ser,      # series
       radsize,len,ntrihom,
-      mran,nran,fran,
+      mran,nran,
       central,
       fants,
       d,
@@ -2427,7 +2427,6 @@ local r,        #radical
     #N:=ser[i];
     mran:=[ser.depths[d-1]..len];
     nran:=[ser.depths[d]..len];
-    fran:=[mran,nran];
 
     mpcgs:=InducedPcgsByPcSequenceNC(pcgs,pcgs{mran}) mod
            InducedPcgsByPcSequenceNC(pcgs,pcgs{nran});
@@ -2764,7 +2763,7 @@ local r,        #radical
       pcisom,
       ser,      # series
       radsize,len,
-      mran,nran,fran,
+      mran,nran,
       central,
       #fants,
       reps,
@@ -2913,7 +2912,6 @@ local r,        #radical
     #N:=ser[i];
     mran:=[ser.depths[d-1]..len];
     nran:=[ser.depths[d]..len];
-    fran:=[mran,nran];
 
     mpcgs:=InducedPcgsByPcSequenceNC(pcgs,pcgs{mran}) mod
            InducedPcgsByPcSequenceNC(pcgs,pcgs{nran});
