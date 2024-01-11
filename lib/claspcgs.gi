@@ -599,7 +599,7 @@ local  G,  home,  # the group and the home pcgs
   if IsBound(opt.consider) then
     consider:=opt.consider;
   else
-    consider:=true;
+    consider:=ReturnTrue;
   fi;
 
   # Treat the case of a trivial group.
@@ -919,8 +919,7 @@ Error("This case disabled -- code not yet corrected");
       for cli in [1..Length(cls)]  do
 
         cl:=cls[cli];
-        if consider=true
-         or consider(fhome,cl.representative,cl.centralizerpcgs,K,L)
+        if consider(fhome,cl.representative,cl.centralizerpcgs,K,L)
           then
           if allcent or cent(fhome,cl.centralizerpcgs, N, Ldep) then
             news:=CentralStepClEANS(fhome,QG, QG, N, cl,false);
