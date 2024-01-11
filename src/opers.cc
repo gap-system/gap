@@ -3798,6 +3798,9 @@ static Int InitKernel (
     // install the printing function
     PrintObjFuncs[ T_FLAGS ] = PrintFlags;
 
+    // install the comparison methods
+    EqFuncs[T_FLAGS][T_FLAGS] = EqFlags;
+
 #ifdef GAP_ENABLE_SAVELOAD
     // and the saving function
     SaveObjFuncs[ T_FLAGS ] = SaveFlags;
@@ -3837,12 +3840,8 @@ static Int PostRestore(StructInitInfo * module)
 **
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Int InitLibrary (
-    StructInitInfo *    module )
+static Int InitLibrary(StructInitInfo * module)
 {
-    // HACK: move this here, instead of InitKernel, to avoid ariths.c overwriting it
-    EqFuncs[T_FLAGS][T_FLAGS] = EqFlags;
-
     ExportAsConstantGVar(BASE_SIZE_METHODS_OPER_ENTRY);
 
     HIDDEN_IMPS = NEW_PLIST(T_PLIST, 0);

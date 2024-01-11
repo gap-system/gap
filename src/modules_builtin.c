@@ -53,6 +53,9 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoHookIntrprtr,
     InitInfoTracing,
 
+    // arithmetic operations
+    InitInfoAriths,
+
     // reader, interpreter, coder, caller, compiler, ...
     InitInfoIO,
     InitInfoRead,
@@ -66,9 +69,6 @@ const InitInfoFunc InitFuncsBuiltinModules[] = {
     InitInfoInfo,
     InitInfoIntrprtr,
     InitInfoCompiler,
-
-    // arithmetic operations
-    InitInfoAriths,
 
     // record packages
     InitInfoRecords,
