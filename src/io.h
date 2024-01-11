@@ -92,6 +92,27 @@ enum {
     MAXLENOUTPUTLINE = 4096,
 };
 
+typedef struct {
+    BOOL linewrap;
+    BOOL indent;
+} StreamFormat;
+
+EXPORT_INLINE StreamFormat MakeStreamFormat(BOOL linewrap, BOOL indent)
+{
+    StreamFormat s = {};
+    s.linewrap = linewrap;
+    s.indent = indent;
+    return s;
+}
+
+EXPORT_INLINE BOOL NoStreamFormat(StreamFormat sf)
+{
+    return !sf.linewrap && !sf.indent;
+}
+
+
+StreamFormat StreamFormatFromObj(Obj o);
+Obj          ObjFromStreamFormat(StreamFormat sf);
 
 /****************************************************************************
 **
@@ -113,7 +134,7 @@ struct TypOutputFile {
 
     char line[MAXLENOUTPUTLINE];
     Int  pos;
-    BOOL format;
+    StreamFormat format;
     Int  indent;
 
     // each hint is a triple (position, value, indent)

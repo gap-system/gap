@@ -171,9 +171,9 @@ eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       field2 := "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\
 fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" ) ]
-gap> PrintFormattingStatus(sstream) = false;
+gap> PrintFormattingStatus(sstream) = rec( indent := false, linewrap := false );
 true
-gap> PrintFormattingStatus(fstream) = true;
+gap> PrintFormattingStatus(fstream) = rec( indent := true, linewrap := true );
 true
 gap> CloseStream(sstream);
 gap> CloseStream(fstream);

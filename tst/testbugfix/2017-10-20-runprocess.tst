@@ -7,7 +7,7 @@ gap> func1 := function()
 >    local line,s;
 >    if f <> fail then
 >      s := InputOutputLocalProcess(d,f,[]);;
->      if PrintFormattingStatus(s) <> false then
+>      if PrintFormattingStatus(s) <> rec(linewrap := false, indent := false) then
 >        Print( "unexpected PrintFormattingStatus value\n" );
 >      fi;
 >      SetPrintFormattingStatus(s,false);
@@ -30,7 +30,7 @@ gap> func2 := function()
 >    local line,s;
 >    if f <> fail then
 >      s := InputOutputLocalProcess(d,f,[]);;
->      if PrintFormattingStatus(s) <> false then
+>      if PrintFormattingStatus(s) <> rec(linewrap := false, indent := false) then
 >        Print( "unexpected PrintFormattingStatus value\n" );
 >      fi;
 >      SetPrintFormattingStatus(s,false);

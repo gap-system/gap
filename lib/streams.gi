@@ -860,7 +860,8 @@ function( str, append )
             Unbind(str[i]);
         od;
     fi;
-    return Objectify( OutputTextStringType, [ str, true ] );
+    return Objectify( OutputTextStringType,
+        [ str, _DefaultPrintFormattingStatus() ] );
 end );
 
 
@@ -929,13 +930,9 @@ InstallMethod( PrintFormattingStatus, "output text string",
 ##
 InstallMethod( SetPrintFormattingStatus, "output text string",
         [IsOutputTextStringRep and IsOutputTextStream,
-         IsBool],
+         IsObject],
         function( str, stat)
-    if stat = fail then
-        Error("Print formatting status must be true or false");
-    else
-        str![2] := stat;
-    fi;
+        str![2] := _CheckValidPrintFormattingStatus(stat);
 end);
 
 
@@ -994,7 +991,8 @@ function( str, append )
         atomic OutputTextFileStillOpen do
             AddSet( OutputTextFileStillOpen, fid );
         od;
-        return Objectify( OutputTextFileType, [fid, Immutable(str), true] );
+        return Objectify( OutputTextFileType,
+            [fid, Immutable(str), _DefaultPrintFormattingStatus()]);
     fi;
 end );
 
@@ -1025,7 +1023,8 @@ function( str, append )
         atomic OutputTextFileStillOpen do
             AddSet( OutputTextFileStillOpen, fid );
         od;
-        return Objectify( OutputTextFileType, [fid, Immutable(str), true] );
+        return Objectify( OutputTextFileType,
+            [fid, Immutable(str), _DefaultPrintFormattingStatus() ] );
     fi;
 end );
 
@@ -1130,13 +1129,9 @@ InstallMethod( PrintFormattingStatus, "output text file",
 ##
 InstallMethod( SetPrintFormattingStatus, "output text file",
         [IsOutputTextFileRep and IsOutputTextStream,
-         IsBool],
+         IsObject],
         function( str, stat)
-    if stat = fail then
-        Error("Print formatting status must be true or false");
-    else
-        str![3] := stat;
-    fi;
+        str![3] := _CheckValidPrintFormattingStatus(stat);
 end);
 
 ##  formatting status for stdout or current output
@@ -1151,7 +1146,7 @@ function(str)
   fi;
 end);
 
-InstallOtherMethod( SetPrintFormattingStatus, "for stdout", [IsString, IsBool],
+InstallOtherMethod( SetPrintFormattingStatus, "for stdout", [IsString, IsObject],
 function(str, status)
   if str = "*stdout*" then
     SET_PRINT_FORMATTING_STDOUT(status);
@@ -1252,9 +1247,7 @@ InstallMethod( SetPrintFormattingStatus, "output text none",
         [IsOutputTextNoneRep and IsOutputTextNone,
          IsBool],
         function( str, stat)
-    if stat = fail then
-        Error("Print formatting status must be true or false");
-    fi;
+    _CheckValidPrintFormattingStatus(stat);
 end);
 
 
@@ -1658,7 +1651,7 @@ function ( str )
     if IsOutputTextStream( str )  then
         TryNextMethod();
     fi;
-    return false;
+    return Immutable(rec(indent := false, linewrap := false) );
 end);
 
 
@@ -1673,13 +1666,45 @@ InstallMethod( SetPrintFormattingStatus, "for non-text output stream",
         TryNextMethod();
     fi;
 
-    if stat = true then
-        Error("non-text streams support onlyPrint formatting status false");
-    elif stat = fail then
-        Error("Print formatting status must be true or false");
+    stat := _CheckValidPrintFormattingStatus(stat);
+    if stat.linewrap or stat.indent then
+        Error("non-text streams do not support print formatting");
     fi;
 end);
 
+
+InstallGlobalFunction( "_CheckValidPrintFormattingStatus",
+function(fs)
+    local r;
+    if IsBool(fs) then
+        if fs = fail then
+            Error("Formatting status cannot be 'fail'");
+        fi;
+    elif IsRecord(fs) then
+        if Set(RecNames(fs)) <> ["indent", "linewrap"] then
+            Error("Formatting status records must contain exactly two components, named 'indent' and 'linewrap'");
+        fi;
+        for r in ["indent","linewrap"] do
+            if not fs.(r) in [false, true] then
+                Error(Concatenation(r, " must be 'true' or 'false' in formatting status record"));
+            fi;
+        od;
+    else
+        Error("Formatting status must be a boolean or a record");
+    fi;
+
+    if fs = true then
+        fs := rec(indent := true, linewrap := true);
+    elif fs = false then
+        fs := rec(indent := false, linewrap := false);
+    fi;
+    return Immutable(ShallowCopy(fs));
+end);
+
+InstallGlobalFunction( "_DefaultPrintFormattingStatus",
+function()
+    return Immutable(rec(linewrap := true, indent := true));
+end);
 
 #############################################################################
 ##
