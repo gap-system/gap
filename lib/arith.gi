@@ -672,10 +672,7 @@ InstallMethod( Characteristic,
 InstallMethod( Characteristic,
     "return fail",
     [ IsObject ], -SUM_FLAGS,
-    function( el )
-      return fail;
-    end );
-
+    ReturnFail);
 
 #############################################################################
 ##
