@@ -682,7 +682,7 @@ local  G,  home,  # the group and the home pcgs
 
   # check to which factors we want to lift
 
-  mustlift:=List(eas,i->false);
+  mustlift:=List(eas,ReturnFalse);
   liftkerns:=[];
 
   if candidates=false then

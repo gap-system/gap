@@ -961,7 +961,7 @@ function( G, U )
 
     # compute the orbit of <G> on <pcgs>
     orb := Orbit( G, pcgs, f );
-    res := List( orb, x -> false );
+    res := List( orb, ReturnFalse );
     for i in [1..Length(orb)] do
         L := Subgroup( H, orb[i] );
         SetHomePcgs( L, home );

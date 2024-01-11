@@ -682,7 +682,7 @@ BindGlobal( "LiftInduciblePair", function( epi, ind, M, weight )
     relsP := RelatorsOfFpGroup( P );
     l := Length( relsP );
 
-    E := List( [1..n*d], x -> List( [1..l*d], y -> true ) );
+    E := List( [1..n*d], x -> List( [1..l*d], ReturnTrue ) );
     v := [];
     for k in [1..l] do
         rel := relsP[k];

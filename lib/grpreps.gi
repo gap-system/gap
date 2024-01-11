@@ -15,7 +15,7 @@
 ##
 InstallGlobalFunction( RegularModuleByGens, function( G, gens, F )
     local mats, elms, d, zero, i, mat, j, o;
-    mats := List( gens, x -> false );
+    mats := [];
     elms := AsList( G );
     d    := Length(elms);
     zero := NullMat( d, d, F );
@@ -318,5 +318,3 @@ function( G, F, dim )
     fi;
     return [gens,modus];
 end);
-
-

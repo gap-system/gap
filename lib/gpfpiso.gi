@@ -1966,7 +1966,7 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   # ensure that "weyl group" represents double cosets (but allow double
   # coverage)
 
-  rti:=List(dcnums,x->false); # which double are hit already
+  rti:=List(dcnums,ReturnFalse); # which double are hit already
   for i in weyl do
     a:=PositionCanonical(rt,i);
     j:=PositionProperty(dcnums,x->a in x);

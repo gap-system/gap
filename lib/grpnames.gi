@@ -191,7 +191,7 @@ InstallMethod( NormalComplementNC,
             fi;
           od;
           # Intersection(l, R) can take a long time
-          l := First(l, x -> true);
+          l := First(l, ReturnTrue);
         # if N is big, then Center is hopefully small and fast to compute
         elif HasCenter(G) or Size(N) > Index(G, N) then
           C := Center(G);

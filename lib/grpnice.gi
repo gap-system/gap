@@ -1048,7 +1048,7 @@ end);
 InstallMethod(SeedFaithfulAction,
     "default: fail",
     true,[ IsGroup ],0,
-    G->fail);
+    ReturnFail);
 
 #############################################################################
 ##
