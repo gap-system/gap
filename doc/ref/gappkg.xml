@@ -200,6 +200,11 @@ The following components of this record are <E>mandatory</E>.
   denoting the release date of the current version of the package
   (a date since 1999, when &GAP;&nbsp;4 appeared),
 </Item>
+<Mark><C>License</C></Mark>
+<Item>
+  a nonempty string containing an SPDX ID
+  (see Section <Ref Sect="Selecting a license for a GAP Package"/>),
+</Item>
 <Mark><C>ArchiveURL</C></Mark>
 <Item>
   a string started with <C>http://</C>, <C>https://</C>, or <C>ftp://</C>,
@@ -282,11 +287,6 @@ The following components of this record are <E>mandatory</E>.
 The following components of the record are <E>optional</E>.
 
 <List>
-<Mark><C>License</C></Mark>
-<Item>
-  a nonempty string containing an SPDX ID
-  (see Section <Ref Sect="Selecting a license for a GAP Package"/>),
-</Item>
 <Mark><C>TextFiles</C> or <C>BinaryFiles</C> or <C>TextBinaryFilesPatterns</C></Mark>
 <Item>
   a list of strings that specify which files in the archive are text files
@@ -1304,7 +1304,7 @@ each being a record with the following components.
 As an example suppose the following is part of the <F>PackageInfo.g</F>.
 Then &GAP; will load the file <F>fileForB.gd</F> as soon as package
 <C>B</C> is loaded in version 0.6 or newer, and <F>fileForCD.gi</F> once
-package <C>C</C> and <C>D</C> are loaded in version 1.2 and 0.1 or newer respectively. 
+package <C>C</C> and <C>D</C> are loaded in version 1.2 and 0.1 or newer respectively.
 
 <Log><![CDATA[
 Extensions := [

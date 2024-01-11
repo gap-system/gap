@@ -204,6 +204,8 @@ gap> ValidatePackageInfo(rec());
  with `='
 #E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm\
 /yyyy that represents a date since 1999
+#E  component `License' must be bound to a nonempty string containing an SPDX \
+ID
 #E  component `ArchiveURL' must be bound to a string started with http://, htt\
 ps:// or ftp://
 #E  component `ArchiveFormats' must be bound to a string
@@ -234,6 +236,8 @@ gap> info := rec(
 gap> ValidatePackageInfo(info);
 #E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm\
 /yyyy that represents a date since 1999
+#E  component `License' must be bound to a nonempty string containing an SPDX \
+ID
 #E  component `BookName' must be bound to a string
 #E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
 elative paths to readable files or directories
@@ -260,6 +264,8 @@ gap> info := rec(
 >     AvailabilityTest := ReturnTrue,
 >   );;
 gap> ValidatePackageInfo(info);
+#E  component `License' must be bound to a nonempty string containing an SPDX \
+ID
 #E  component `BookName' must be bound to a string
 #E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
 elative paths to readable files or directories
@@ -288,6 +294,8 @@ gap> info := rec(
 gap> ValidatePackageInfo(info);
 #E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm\
 /yyyy that represents a date since 1999
+#E  component `License' must be bound to a nonempty string containing an SPDX \
+ID
 #E  component `BookName' must be bound to a string
 #E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
 elative paths to readable files or directories
@@ -316,6 +324,8 @@ gap> info := rec(
 gap> ValidatePackageInfo(info);
 #E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm\
 /yyyy that represents a date since 1999
+#E  component `License' must be bound to a nonempty string containing an SPDX \
+ID
 #E  component `BookName' must be bound to a string
 #E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
 elative paths to readable files or directories
@@ -332,6 +342,7 @@ gap> info := rec(
 >     Subtitle := "desc",
 >     Version := "0",
 >     Date := "01/02/3000",
+>     License := "GPL-2.0-or-later",
 >     ArchiveURL := "https://",
 >     ArchiveFormats := "",
 >     README_URL := "https://",
