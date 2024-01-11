@@ -727,8 +727,8 @@ end );
 ##  will take a lot of time for type changes.
 ##  You can avoid this  by  setting the attributes immediately while the
 ##  object is created, as follows.
-##  <Ref Func="ObjectifyWithAttributes"/>
-##  changes the type of object <A>obj</A> to type <A>type</A>
+##  <Ref Func="ObjectifyWithAttributes"/> takes a plain list or record
+##  <A>obj</A> and turns it an object just like <Ref Func="Objectify"/>
 ##  and sets attribute <A>attr1</A> to <A>val1</A>,
 ##  sets attribute <A>attr2</A> to <A>val2</A> and so forth.
 ##  <P/>
