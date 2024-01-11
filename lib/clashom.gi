@@ -1633,7 +1633,7 @@ end);
 #F  LiftClassesEANonsolvGeneral( <H>,<N>,<NT>,<cl> )
 ##
 BindGlobal("LiftClassesEANonsolvGeneral",
-  function( H, Npcgs, cl, hom, pcisom,solvtriv,fran)
+  function(Npcgs, cl, hom, pcisom,solvtriv)
     local  classes,    # classes to be constructed, the result
            correctingelement,
            field,      # field over which <N> is a vector space
@@ -1782,7 +1782,7 @@ end);
 # algorithm. We can't  do this but have to use a more simple-minded
 # orbit/stabilizer approach.
 BindGlobal("LiftClassesEANonsolvCentral",
-  function( H, Npcgs, cl,hom,pcisom,solvtriv,fran )
+  function( Npcgs, cl,hom,pcisom,solvtriv )
 local  classes,            # classes to be constructed, the result
         field,             # field over which <Npcgs> is a vector space
         o,
@@ -1980,7 +1980,7 @@ end);
 #F  LiftClassesEATrivRep
 ##
 BindGlobal("LiftClassesEATrivRep",
-  function( H, Npcgs, cl, fants,hom, pcisom,solvtriv)
+  function( Npcgs, cl, fants,hom, pcisom,solvtriv)
     local  h,field,one,gens,imgs,M,bas,
            c,i,npcgsact,usent,dim,found,nsgens,nsimgs,mo,
            pcgsimgs,
@@ -2450,15 +2450,15 @@ local r,        #radical
                 i->ForAll(mpcgs,
                   j->DepthOfPcElement(pcgs,Comm(i,j))>=ser.depths[d])) ) then
         Info(InfoHomClass,3,"central step");
-        new:=LiftClassesEANonsolvCentral(G,mpcgs,i,hom,pcisom,solvtriv,fran);
+        new:=LiftClassesEANonsolvCentral(mpcgs,i,hom,pcisom,solvtriv);
       elif Length(fants)>0 and Order(i[1])=1 then
         # special case for trivial representative
-        new:=LiftClassesEATrivRep(G,mpcgs,i,fants,hom,pcisom,solvtriv);
+        new:=LiftClassesEATrivRep(mpcgs,i,fants,hom,pcisom,solvtriv);
         if new=fail then
-          new:=LiftClassesEANonsolvGeneral(G,mpcgs,i,hom,pcisom,solvtriv,fran);
+          new:=LiftClassesEANonsolvGeneral(mpcgs,i,hom,pcisom,solvtriv);
         fi;
       else
-        new:=LiftClassesEANonsolvGeneral(G,mpcgs,i,hom,pcisom,solvtriv,fran);
+        new:=LiftClassesEANonsolvGeneral(mpcgs,i,hom,pcisom,solvtriv);
       fi;
       #Assert(3,ForAll(new,x->x[6]
       #  =Size(Group(Concatenation(x[2],DenominatorOfModuloPcgs(mpcgs))))));
@@ -2512,7 +2512,7 @@ end);
 #F  LiftConCandCenNonsolvGeneral( <H>,<N>,<NT>,<cl> )
 ##
 BindGlobal("LiftConCandCenNonsolvGeneral",
-  function( H, Npcgs, reps, hom, pcisom,solvtriv,fran)
+  function(Npcgs, reps, hom, pcisom,solvtriv)
     local  nreps,      # new reps to be constructed, the result
            correctingelement,
            minvec,
@@ -2942,8 +2942,8 @@ local r,        #radical
       fi;
       Info(InfoHomClass,2,Length(sel)," in candidate group");
       select:=Difference(select,sel);
-      new:=LiftConCandCenNonsolvGeneral(G,mpcgs,reps{sel},hom,pcisom,
-             solvtriv,fran);
+      new:=LiftConCandCenNonsolvGeneral(mpcgs,reps{sel},hom,pcisom,
+             solvtriv);
       # conj test
       if new=fail then
         return new;
@@ -3191,5 +3191,3 @@ BindGlobal("TFClassMatrixColumn",function(D,M,r,t)
     fi;
   fi;
 end);
-
-
