@@ -522,7 +522,7 @@ InstallAtExit( function()
 ##
 BIND_GLOBAL( "DirectoryCurrent", function()
     if IsBool( GAPInfo.DirectoryCurrent )  then
-        GAPInfo.DirectoryCurrent := Directory("./");
+        GAPInfo.DirectoryCurrent := Directory(GAP_getcwd());
     fi;
     return GAPInfo.DirectoryCurrent;
 end );
