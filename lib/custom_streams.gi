@@ -200,9 +200,7 @@ end );
 InstallMethod( RewindStream,
     "input text custom",
     [ IsInputTextStream and IsInputTextCustomRep ],
-function( stream )
-    return fail;
-end );
+ReturnFail );
 
 
 #############################################################################
@@ -213,9 +211,7 @@ InstallMethod( SeekPositionStream,
     "input text custom",
     [ IsInputTextStream and IsInputTextCustomRep,
       IsInt ],
-function( stream, pos )
-    return fail;
-end );
+ReturnFail );
 
 
 #############################################################################
