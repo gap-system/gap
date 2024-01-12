@@ -1037,17 +1037,16 @@ static Obj FuncRemoveDir(Obj self, Obj filename)
 
 /****************************************************************************
 **
-*F  FuncIsDir( <self>, <name> )  . . . . . check whether something is a dir
+*F  FuncIS_DIR( <self>, <path> )  . . . . . check whether something is a dir
 */
-static Obj FuncIsDir(Obj self, Obj filename)
+static Obj FuncIS_DIR(Obj self, Obj path)
 {
-    RequireStringRep(SELF_NAME, filename);
+    RequireStringRep(SELF_NAME, path);
 
     // call the system dependent function
-    return SyIsDir( CONST_CSTR_STRING(filename) );
+    return SyFileType(CONST_CSTR_STRING(path)) == 'D' ? True : False;
 }
-
-
+}
 
 
 /****************************************************************************
@@ -1682,7 +1681,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(RemoveFile, filename),
     GVAR_FUNC_1ARGS(CreateDir, filename),
     GVAR_FUNC_1ARGS(RemoveDir, filename),
-    GVAR_FUNC_1ARGS(IsDir, filename),
+    GVAR_FUNC_1ARGS(IS_DIR, path),
     GVAR_FUNC_0ARGS(LastSystemError),
     GVAR_FUNC_1ARGS(IsExistingFile, filename),
     GVAR_FUNC_1ARGS(IsReadableFile, filename),

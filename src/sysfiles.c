@@ -2949,38 +2949,51 @@ Int SyRmdir ( const Char * name )
 
 /****************************************************************************
 **
-*F  SyIsDir( <name> )  . . . . . . . . . . . . .  test if something is a dir
+*F  SyFileType( <path> )
 **
-**  Returns 'F' for a regular file, 'L' for a symbolic link and 'D'
-**  for a real directory, 'C' for a character device, 'B' for a block
-**  device 'P' for a FIFO (named pipe) and 'S' for a socket.
+**  Return a character describing the filesystem object with the given path:
+**  - 'F' for a regular file
+**  - 'L' for a symbolic link
+**  - 'D' for a directory
+**  - 'C' for a character device
+**  - 'B' for a block device
+**  - 'P' for a FIFO (named pipe)
+**  - 'S' for a socket
+**  - `\0` if there was en error (e.g. invalid path, unknown type, etc.)
 */
-Obj SyIsDir ( const Char * name )
+char SyFileType(const Char * path)
 {
-  Int res;
-  struct stat ourlstatbuf;
+    int         res;
+    struct stat ourlstatbuf;
 
-  res = lstat(name,&ourlstatbuf);
-  if (res < 0) {
-    SySetErrorNo();
-    return Fail;
-  }
-  if      (S_ISREG(ourlstatbuf.st_mode)) return ObjsChar['F'];
-  else if (S_ISDIR(ourlstatbuf.st_mode)) return ObjsChar['D'];
-  else if (S_ISLNK(ourlstatbuf.st_mode)) return ObjsChar['L'];
+    res = lstat(path, &ourlstatbuf);
+    if (res < 0) {
+        SySetErrorNo();
+        return 0;
+    }
+    if (S_ISREG(ourlstatbuf.st_mode))
+        return 'F';
+    if (S_ISDIR(ourlstatbuf.st_mode))
+        return 'D';
+    if (S_ISLNK(ourlstatbuf.st_mode))
+        return 'L';
 #ifdef S_ISCHR
-  else if (S_ISCHR(ourlstatbuf.st_mode)) return ObjsChar['C'];
+    if (S_ISCHR(ourlstatbuf.st_mode))
+        return 'C';
 #endif
 #ifdef S_ISBLK
-  else if (S_ISBLK(ourlstatbuf.st_mode)) return ObjsChar['B'];
+    if (S_ISBLK(ourlstatbuf.st_mode))
+        return 'B';
 #endif
 #ifdef S_ISFIFO
-  else if (S_ISFIFO(ourlstatbuf.st_mode)) return ObjsChar['P'];
+    if (S_ISFIFO(ourlstatbuf.st_mode))
+        return 'P';
 #endif
 #ifdef S_ISSOCK
-  else if (S_ISSOCK(ourlstatbuf.st_mode)) return ObjsChar['S'];
+    if (S_ISSOCK(ourlstatbuf.st_mode))
+        return 'S';
 #endif
-  else return ObjsChar['?'];
+    return 0;
 }
 
 

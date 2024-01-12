@@ -411,13 +411,19 @@ Int SyRmdir(const Char * name);
 
 /****************************************************************************
 **
-*F  SyIsDir( <name> )  . . . . . . . . . . . . .  test if something is a dir
+*F  SyFileType( <path> )
 **
-**  Returns 'F' for a regular file, 'L' for a symbolic link and 'D'
-**  for a real directory, 'C' for a character device, 'B' for a block
-**  device 'P' for a FIFO (named pipe) and 'S' for a socket.
+**  Return a character describing the filesystem object with the given path:
+**  - 'F' for a regular file
+**  - 'L' for a symbolic link
+**  - 'D' for a directory
+**  - 'C' for a character device
+**  - 'B' for a block device
+**  - 'P' for a FIFO (named pipe)
+**  - 'S' for a socket
+**  - `\0` if there was en error (e.g. invalid path, unknown type, etc.)
 */
-Obj SyIsDir(const Char * name);
+char SyFileType(const Char * path);
 
 
 /****************************************************************************

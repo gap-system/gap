@@ -169,32 +169,32 @@ gap> CreateDir(fail);
 Error, CreateDir: <filename> must be a string (not the value 'fail')
 gap> RemoveDir(fail);
 Error, RemoveDir: <filename> must be a string (not the value 'fail')
-gap> IsDir(fail);
-Error, IsDir: <filename> must be a string (not the value 'fail')
+gap> IS_DIR(fail);
+Error, IS_DIR: <path> must be a string (not the value 'fail')
 
 #
 gap> tmpdir := MakeImmutable(TmpDirectory());;
 gap> subdir := MakeImmutable(Concatenation(tmpdir, "/subdir"));;
 gap> CreateDir(subdir);
 true
-gap> IsDir(subdir);
-'D'
+gap> IS_DIR(subdir);
+true
 gap> RemoveDir(subdir);
 true
-gap> IsDir(subdir);
-fail
+gap> IS_DIR(subdir);
+false
 gap> CreateDir(subdir);
 true
 gap> FileString(Concatenation(subdir, "/file"), "data");
 4
-gap> IsDir(subdir);
-'D'
+gap> IS_DIR(subdir);
+true
 gap> RemoveDirectoryRecursively(tmpdir);
 true
-gap> IsDir(subdir);
-fail
-gap> IsDir(tmpdir);
-fail
+gap> IS_DIR(subdir);
+false
+gap> IS_DIR(tmpdir);
+false
 
 #
 gap> IsExistingFile(fail);
