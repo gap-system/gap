@@ -257,7 +257,7 @@ jobs:
         run: ${{ matrix.extra }} dev/ci.sh ${{ matrix.test-suites }}
       - name: "Upload pdf manuals"
         if: ${{ contains(matrix.test-suites, 'makemanuals') }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
           name: manuals-pdf
@@ -268,7 +268,7 @@ jobs:
             doc/tut/manual.pdf
       - name: "Upload html manuals"
         if: ${{ contains(matrix.test-suites, 'makemanuals') }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
           name: manuals-html
