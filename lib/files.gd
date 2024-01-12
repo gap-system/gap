@@ -530,6 +530,31 @@ end );
 
 #############################################################################
 ##
+#F  ChangeDirectoryCurrent()  . . . . . . . . . . .  change current directory
+##
+##  <#GAPDoc Label="ChangeDirectoryCurrent">
+##  <ManSection>
+##  <Func Name="ChangeDirectoryCurrent" Arg='path'/>
+##
+##  <Description>
+##  Changes the current directory. Returns <K>true</K> on success and
+##  <K>fail</K> on failure.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "ChangeDirectoryCurrent", function( path )
+    if GAP_chdir(path) = true then
+        GAPInfo.DirectoryCurrent := Directory(GAP_getcwd());
+        return true;
+    else
+        return fail;
+    fi;
+end );
+
+
+#############################################################################
+##
 #F  CrcFile( <filename> )  . . . . . . . . . . . . . . . .  create crc value
 ##
 ##  <#GAPDoc Label="CrcFile">

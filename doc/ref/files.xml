@@ -108,6 +108,7 @@ for more information how to do this.
 <#Include Label="Directory">
 <#Include Label="DirectoryTemporary">
 <#Include Label="DirectoryCurrent">
+<#Include Label="ChangeDirectoryCurrent">
 <#Include Label="DirectoriesLibrary">
 <#Include Label="DirectoriesSystemPrograms">
 <#Include Label="DirectoryContents">
