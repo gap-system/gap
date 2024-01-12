@@ -3034,10 +3034,7 @@ InstallGlobalFunction(CanEasilyCompareElementsFamily,function(fam)
 end);
 
 InstallMethod(CanEasilyCompareElements,"family: default false",
-  [IsFamily],
-function(obj)
-  return false;
-end);
+  [IsFamily], ReturnFalse);
 
 InstallOtherMethod(SetCanEasilyCompareElements,"family setter",
   [IsFamily,IsObject],
