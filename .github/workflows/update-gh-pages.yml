@@ -41,7 +41,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install --no-install-recommends "${packages[@]}"
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Configure GAP
         run: |
           ./autogen.sh && ./configure
