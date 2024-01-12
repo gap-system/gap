@@ -628,9 +628,9 @@ end );
 
 #############################################################################
 ##
-#F  DxEigenbase(<mat>,<field>) . . . . . components of Eigenvects resp. base
+#F  DxEigenbase(<mat>) . . . . . components of Eigenvects resp. base
 ##
-BindGlobal( "DxEigenbase", function(M,f)
+BindGlobal( "DxEigenbase", function(M)
   local dim,i,eigenvalues,base,minpol,bases;
 
   minpol:=MinimalPolynomial(BaseDomain(M),M);
@@ -764,7 +764,7 @@ InstallGlobalFunction(SplitStep,function(D,bestMat)
           N[row,col]:=Row[activeCols[col]];
         od;
       od;
-      eigen:=DxEigenbase(N,f);
+      eigen:=DxEigenbase(N);
       # Base umrechnen
       base:=Matrix(BaseDomain(base[1]),base);
       eigenbase:=List(eigen.base,i->List(i,j->j*base));
