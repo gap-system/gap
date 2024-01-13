@@ -937,7 +937,7 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,gens;
       else
         # extend presentation
         RUN_IN_GGMBI:=true; # hack to skip Nice treatment
-        fphom:=LiftFactorFpHom(fphom,Source(fphom),false,false,mpcgs);
+        fphom:=LiftFactorFpHom(fphom,Source(fphom),false,mpcgs);
         RUN_IN_GGMBI:=false;
         fp:=Image(fphom);
         sp:=Concatenation(sp,mpcgs);
@@ -1263,7 +1263,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
         pcgs:=List([2..Length(dser)],x->ModuloPcgs(dser[x-1],dser[x]));
         for j in pcgs do
           RUN_IN_GGMBI:=true; # hack to skip Nice treatment
-          fphom:=LiftFactorFpHom(fphom,Source(fphom),false,false,j);
+          fphom:=LiftFactorFpHom(fphom,Source(fphom),false,j);
           RUN_IN_GGMBI:=false;
         od;
         gens:=MappingGeneratorsImages(fphom);
@@ -1427,7 +1427,7 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,
         else
           # extend presentation
           RUN_IN_GGMBI:=true; # hack to skip Nice treatment
-          fphom:=LiftFactorFpHom(fphom,Source(fphom),false,false,mpcgs);
+          fphom:=LiftFactorFpHom(fphom,Source(fphom),false,mpcgs);
           RUN_IN_GGMBI:=false;
           fp:=Image(fphom);
           sp:=Concatenation(sp,mpcgs);

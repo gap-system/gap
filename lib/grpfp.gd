@@ -1130,10 +1130,10 @@ DeclareGlobalFunction( "SubgroupGeneratorsCosetTable" );
 
 #############################################################################
 ##
-#F  LiftFactorFpHom(<hom>,<G>,<M>,<N>,<dec>)
+#F  LiftFactorFpHom(<hom>,<G>,<N>,<dec>)
 ##
 ##  <ManSection>
-##  <Func Name="LiftFactorFpHom" Arg='hom,G,M,N,dec'/>
+##  <Func Name="LiftFactorFpHom" Arg='hom,G,N,dec'/>
 ##
 ##  <Description>
 ##  Let <A>hom</A> be an epimorphism from a group <A>G</A> to a finitely presented

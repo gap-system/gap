@@ -381,7 +381,7 @@ local oper,n,R,o,nrit,
             bas:=Basis(sub,bas);
             RUN_IN_GGMBI:=true;
             hom:=GroupGeneralMappingByImagesNC(g,fp,gens,GeneratorsOfGroup(fp));
-            hom:=LiftFactorFpHom(hom,g,"M",SubgroupNC(g,basm),rec(
+            hom:=LiftFactorFpHom(hom,g,SubgroupNC(g,basm),rec(
                   pcgs:=basm,
                   prime:=p,
                   decomp:=function(em)

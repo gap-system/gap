@@ -1062,7 +1062,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
         if H=fail or IsSubset(HN,a) then
           Add(nu,a);Add(nn,n);
           if Size(ser[i])>1 then
-            fphom:=LiftFactorFpHom(u[3][j],a,ser[i-1],ser[i],presmpcgs);
+            fphom:=LiftFactorFpHom(u[3][j],a,ser[i],presmpcgs);
             Add(nf,fphom);
           fi;
         fi;
@@ -1200,7 +1200,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
 
                       Assert(1,KernelOfMultiplicativeGeneralMapping(fphom)=nts[j]);
                       if Size(nts[j])>Size(ser[i]) then
-                        fphom:=LiftFactorFpHom(fphom,c,nts[j],ser[i],npcgs);
+                        fphom:=LiftFactorFpHom(fphom,c,ser[i],npcgs);
                         Assert(1,
                           KernelOfMultiplicativeGeneralMapping(fphom)=ser[i]);
                       fi;
@@ -2309,7 +2309,7 @@ local G,        # group
           Assert(3,KernelOfMultiplicativeGeneralMapping(l!.lattfpres)=M);
           # lift presentation
           # note: if notabelian mpcgs is an fp hom
-          l!.lattfpres:=LiftFactorFpHom(l!.lattfpres,l,M,N,mpcgs);
+          l!.lattfpres:=LiftFactorFpHom(l!.lattfpres,l,N,mpcgs);
           l!.obtain:="lift";
         fi;
       od;
@@ -3984,5 +3984,3 @@ local s,p,incl,cont,i,j,done;
   Sort(incl);
   return incl;
 end);
-
-
