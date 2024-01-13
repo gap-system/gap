@@ -4613,7 +4613,7 @@ DeclareOperation( "PowerMapOfGroup", [ IsGroup, IsInt, IsHomogeneousList ] );
 ##
 ##  <Description>
 ##  is a list of integers, at position <M>i</M> the position of the conjugacy
-##  class containimg the <A>n</A>-th powers of elements in class <M>i</M>
+##  class containing the <A>n</A>-th powers of elements in class <M>i</M>
 ##  of <A>ccl</A>.
 ##  The list <A>invariants</A> contains all invariants besides element order
 ##  that shall be used before membership tests.
