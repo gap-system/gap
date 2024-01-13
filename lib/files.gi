@@ -373,7 +373,8 @@ InstallGlobalFunction(RemoveDirectoryRecursively,
         Error("dirname must be a directory");
         return fail;
     fi;
-    while Length(dirname) > 0 and dirname[Length(dirname)] = '/' do
+    dirname := ShallowCopy(dirname);
+    while Length(dirname) > 0 and Last(dirname) = '/' do
         Remove(dirname);
     od;
     if Length(dirname) = 0 then
