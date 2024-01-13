@@ -5424,10 +5424,10 @@ end);
 
 #############################################################################
 ##
-#F  PowerMapOfGroupWithInvariants( <G>, <n>, <ccl>, <invariants> )
+#F  PowerMapOfGroupWithInvariants( <n>, <ccl>, <invariants> )
 ##
 InstallGlobalFunction( PowerMapOfGroupWithInvariants,
-    function( G, n, ccl, invariants )
+    function( n, ccl, invariants )
 
     local reps,      # list of representatives
           ord,       # list of representative orders
@@ -5522,7 +5522,7 @@ InstallMethod( PowerMapOfGroup,
     "method for a group",
     [ IsGroup, IsInt, IsHomogeneousList ],
     function( G, n, ccl )
-    return PowerMapOfGroupWithInvariants( G, n, ccl, [] );
+    return PowerMapOfGroupWithInvariants( n, ccl, [] );
     end );
 
 
@@ -5536,7 +5536,7 @@ InstallMethod( PowerMapOfGroup,
     "method for a permutation group",
     [ IsGroup and IsPermCollection, IsInt, IsHomogeneousList ],
     function( G, n, ccl )
-    return PowerMapOfGroupWithInvariants( G, n, ccl, [CycleStructurePerm] );
+    return PowerMapOfGroupWithInvariants( n, ccl, [CycleStructurePerm] );
     end );
 
 
@@ -5550,7 +5550,7 @@ InstallMethod( PowerMapOfGroup,
     "method for a matrix group",
     [ IsGroup and IsRingElementCollCollColl, IsInt, IsHomogeneousList ],
     function( G, n, ccl )
-    return PowerMapOfGroupWithInvariants( G, n, ccl, [ TraceMat ] );
+    return PowerMapOfGroupWithInvariants( n, ccl, [ TraceMat ] );
     end );
 
 
