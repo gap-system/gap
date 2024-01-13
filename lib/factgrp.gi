@@ -1280,10 +1280,7 @@ end);
 #M  FindActionKernel(<G>)  . . . . . . . . . . . . . . . . . . . . generic
 ##
 InstallMethod(FindActionKernel,"generic for finite groups",IsIdenticalObj,
-  [IsGroup and IsFinite,IsGroup],0,
-function(G,N)
-  return GenericFindActionKernel(G,N);
-end);
+  [IsGroup and IsFinite,IsGroup],0,GenericFindActionKernel);
 
 RedispatchOnCondition(FindActionKernel,IsIdenticalObj,[IsGroup,IsGroup],
   [IsGroup and IsFinite,IsGroup],0);
