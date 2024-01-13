@@ -781,8 +781,7 @@ local stabilizergen,st,stabrsub,stabrsubsz,ratio,subsz,sz,vp,stabrad,
 end);
 
 InstallGlobalFunction(OrbitMinimumMultistage,
-  function(pcgs,pcgsimgs,pcisom,solvsz,solvtriv,gens,imgs,fgens,
-           factorhom,gpsz,actfun,seed,orblen,stops)
+  function(pcgs,pcgsimgs,gens,imgs,fgens,actfun,seed,orblen,stops)
 
 #was: OrbitMinimumMultistage:=function(pcgs,pcgsimgs,gens,imgs,fgens,actfun,seed,orblen,stops)
 
