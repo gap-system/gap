@@ -1195,7 +1195,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
                     if Size(ser[i])>1 then
                       # need to lift presentation
                       fphom:=ComplementFactorFpHom(ocr.factorfphom,
-                      a,ser[i-1],nts[j],c,
+                      ser[i-1],nts[j],c,
                       ocr.generators,cgs[w.pos]);
 
                       Assert(1,KernelOfMultiplicativeGeneralMapping(fphom)=nts[j]);
@@ -2084,7 +2084,7 @@ local G,        # group
                         # transfer a known presentation
                         if not IsPcGroup(k) then
                           k!.lattfpres:=ComplementFactorFpHom(
-                            ocr.factorfphom,l,M,N,k,ocr.generators,comp);
+                            ocr.factorfphom,M,N,k,ocr.generators,comp);
                           Assert(3,KernelOfMultiplicativeGeneralMapping(k!.lattfpres)=N);
                         fi;
                         k!.obtain:="compl";
