@@ -5570,10 +5570,7 @@ function(G,l)
 end);
 
 InstallOtherMethod( KnowsHowToDecompose,"trivial group",true,
-  [IsGroup,IsEmpty],
-function(G,l)
-  return true;
-end);
+  [IsGroup,IsEmpty], ReturnTrue);
 
 InstallMethod( KnowsHowToDecompose,
     "group: use GeneratorsOfGroup",
