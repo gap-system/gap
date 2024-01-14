@@ -497,7 +497,7 @@ DeclareGlobalFunction( "RemoveDirectoryRecursively" );
 InstallAtExit( function()
   local path;
   for path in GAPInfo.DirectoriesTemporary do
-      if IsDir(path) = 'D' then
+      if IS_DIR(path) then
           RemoveDirectoryRecursively(path);
       else
           PRINT_TO("*errout*", "Temporary directory already removed: ", path, "\n");
@@ -522,9 +522,34 @@ InstallAtExit( function()
 ##
 BIND_GLOBAL( "DirectoryCurrent", function()
     if IsBool( GAPInfo.DirectoryCurrent )  then
-        GAPInfo.DirectoryCurrent := Directory("./");
+        GAPInfo.DirectoryCurrent := Directory(GAP_getcwd());
     fi;
     return GAPInfo.DirectoryCurrent;
+end );
+
+
+#############################################################################
+##
+#F  ChangeDirectoryCurrent()  . . . . . . . . . . .  change current directory
+##
+##  <#GAPDoc Label="ChangeDirectoryCurrent">
+##  <ManSection>
+##  <Func Name="ChangeDirectoryCurrent" Arg='path'/>
+##
+##  <Description>
+##  Changes the current directory. Returns <K>true</K> on success and
+##  <K>fail</K> on failure.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "ChangeDirectoryCurrent", function( path )
+    if GAP_chdir(path) = true then
+        GAPInfo.DirectoryCurrent := Directory(GAP_getcwd());
+        return true;
+    else
+        return fail;
+    fi;
 end );
 
 
