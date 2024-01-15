@@ -226,7 +226,7 @@ function(xset)
 end);
 
 InstallGlobalFunction( ConjugacyClassesTry,
-function ( G, classes, elm, length, fixes )
+function ( G, classes, elm, length )
 local i,D,o,divs,pows,norms,next,nnorms,oq,lelm,from,n,k,m,nu,zen,pr,orb,lo,
       prg,C,u;
 
@@ -342,11 +342,11 @@ local   classes,    # conjugacy classes of <G>, result
 
             if Length(seed)>0 then
               # try random elements
-              cent:=ConjugacyClassesTry( G, classes, seed[1], 0, 1 );
+              cent:=ConjugacyClassesTry( G, classes, seed[1], 0 );
               seed:=seed{[2..Length(seed)]};
             else
               # try random elements
-              cent:=ConjugacyClassesTry( G, classes, Random(cent), 0, 1 );
+              cent:=ConjugacyClassesTry( G, classes, Random(cent), 0 );
             fi;
 
         od;

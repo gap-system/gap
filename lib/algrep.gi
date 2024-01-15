@@ -274,11 +274,11 @@ true,
       local F,V;
 
       if str<>"basis" then
-         Error( "Usage: RightAlgebraModule( <A>, <op>, <gens>, <str>) where the last argument is the string \"basis\"" );
+         Error( "Usage: BiAlgebraModuleByGenerators( <A>, <B>, <opl>, <opr>, <gens>, <str>) where the last argument is the string \"basis\"" );
       fi;
 
       F:= LeftActingDomain( A );
-      V:= VectorSpace( F, str );
+      V:= VectorSpace( F, gens, str );
       return BiAlgebraModule( A, B, opl, opr, V );
 
 end );

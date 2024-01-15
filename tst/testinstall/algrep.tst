@@ -131,4 +131,10 @@ gap> tmp:=Coboundaries(S,1);; Dimension(tmp);; tmp;
 <vector space of dimension 29 over GF(3)>
 
 #
+gap> A:= FullMatrixAlgebra( Rationals, 3 );;
+gap> V:= BiAlgebraModuleByGenerators( A, A, \*, \*, [ [1,0,0] ], "basis" );
+<bi-module over ( Rationals^[ 3, 3 ] ) (left) and ( Rationals^
+[ 3, 3 ] ) (right)>
+
+#
 gap> STOP_TEST( "algrep.tst", 1);

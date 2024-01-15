@@ -1559,7 +1559,7 @@ end);
 # find corresponding characteristic subgroups
 BindGlobal("AGSRMatchedCharacteristics",function(g,h)
 local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
-  props:=function(a,chars)
+  props:=function(a)
   local p,b;
 
     if ID_AVAILABLE(Size(a))<>fail then
@@ -1617,8 +1617,8 @@ local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
   SortBy(cg,x->-Size(x));
   SortBy(ch,x->-Size(x));
 
-  pg:=List(cg,x->props(x,ng));
-  ph:=List(ch,x->props(x,nh));
+  pg:=List(cg,props);
+  ph:=List(ch,props);
   if Collected(pg)<>Collected(ph) then return fail;fi;
 
   stop:=false;
