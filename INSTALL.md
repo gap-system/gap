@@ -198,10 +198,8 @@ by issuing the two commands
 (note that on BSD systems you have to call `gmake` instead of `make`).
 
 Both will produce a lot of text output. You should end up with an executable
-called `gap` which you can use to start GAP. In addition, there is a shell
-script `bin/gap.sh` which you can copy to a directory that is listed in your
-search path. (This shell script starts the `gap` executable and also passes
-an argument to it that indicates where the GAP library is).
+called `gap` which you can use to start GAP. You can create a symbolic link
+to it in a directory that is listed in your `PATH` environment variable.
 
 macOS users please note that this script must be started from within the
 Terminal Application. It is not possible to start GAP by clicking this
@@ -493,11 +491,9 @@ their remedies. Also see the FAQ list on the GAP web pages at
 
 ### GAP starts with a warning `hmm, I cannot find lib/init.g`
 
-This means that GAP cannot find its library. That can happen if you are using
-the shell script `gap.sh` respectively the batch file `gap.bat` but have moved
-the GAP home directory since you compiled GAP. To fix this, you can edit the
-shell script/batch file to give the correct library path. You must start the
-binary with the command line option
+This means that GAP cannot find its library. That can happen if you copied or
+moved the `gap` executable out of its original directory. You may be able
+to fix this by passing it the command line option
 
     -l <path>
 
