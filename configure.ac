@@ -954,18 +954,6 @@ esac
 case "$host_os" in
   *cygwin*)
     CYGWIN=yes
-
-    AS_IF([test "x$enable_compat_mode" = xyes],[
-        wingapdir=$(cygpath -w $(pwd))
-        wincygbin=$(cygpath -w /bin)
-        gapdir=$(echo /proc/cygdrive/"$(cygpath -am $(pwd))" | sed -e 's/:\//\//g')
-        AC_SUBST([wingapdir])
-        AC_SUBST([wincygbin])
-        AC_SUBST([gapdir])
-
-        AC_CONFIG_FILES([bin/gap.bat:cnf/cygwin/gap.bat.in], [chmod +x bin/gap.bat])
-        AC_CONFIG_FILES([bin/gapcmd.bat:cnf/cygwin/gapcmd.bat.in], [chmod +x bin/gapcmd.bat])
-    ])
     ;;
 esac
 
