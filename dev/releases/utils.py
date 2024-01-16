@@ -141,7 +141,7 @@ def run_with_log(args, name, msg = None):
             error(msg+" failed. See "+name+".log.")
 
 def is_possible_gap_release_tag(tag):
-    return re.fullmatch( r"v[1-9]+\.[0-9]+\.[0-9]+", tag) != None
+    return re.fullmatch( r"v[1-9]+\.[0-9]+\.[0-9]+(-.+)?", tag) != None
 
 def verify_is_possible_gap_release_tag(tag):
     if not is_possible_gap_release_tag(tag):

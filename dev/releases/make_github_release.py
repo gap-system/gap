@@ -23,6 +23,7 @@ if len(sys.argv) != 3:
 
 TAG_NAME = sys.argv[1]
 PATH_TO_RELEASE = sys.argv[2]
+VERSION = TAG_NAME[1:]  # strip 'v' prefix
 
 utils.verify_git_clean()
 utils.verify_is_possible_gap_release_tag(TAG_NAME)
@@ -43,7 +44,7 @@ if any(r.tag_name == TAG_NAME for r in utils.CURRENT_REPO.get_releases()):
     utils.error(f"Github release with tag '{TAG_NAME}' already exists!")
 
 # Create release
-RELEASE_NOTE = f"For an overview of changes in GAP {TAG_NAME[1:]} see the " \
+RELEASE_NOTE = f"For an overview of changes in GAP {VERSION} see the " \
     + f"[CHANGES.md](https://github.com/gap-system/gap/blob/{TAG_NAME}/CHANGES.md) file."
 utils.notice(f"Creating release {TAG_NAME}")
 RELEASE = utils.CURRENT_REPO.create_git_release(TAG_NAME, TAG_NAME,
@@ -60,7 +61,7 @@ with utils.working_directory(PATH_TO_RELEASE):
         print(filename)
 
     # Now check that TAG_NAME and the created archives belong together
-    main_archive_name = "gap-" + TAG_NAME[1:] + ".tar.gz"
+    main_archive_name = "gap-" + VERSION + ".tar.gz"
     if not main_archive_name in manifest:
         utils.error(f"Expected to find {main_archive_name} in MANIFEST, but did not!")
 
