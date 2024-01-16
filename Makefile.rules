@@ -431,17 +431,6 @@ libgap.la: $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 
 ifeq ($(SYS_IS_CYGWIN32),yes)
 
-all: bin/gapicon.bmp bin/gapicon.ico bin/instcygwinterminfo.sh bin/cygwin-version.txt
-bin/gapicon.bmp: $(srcdir)/cnf/cygwin/gapicon.bmp
-	cp $< $@
-bin/gapicon.ico: $(srcdir)/cnf/cygwin/gapicon.ico
-	cp $< $@
-bin/instcygwinterminfo.sh: $(srcdir)/cnf/cygwin/instcygwinterminfo.sh
-	cp $< $@
-	chmod a+x $@
-bin/cygwin-version.txt:
-	uname -a > $@
-
 # increase stack size, the default is too small (see issue #1522)
 GAP_LDFLAGS += -Wl,--stack,16777216
 
