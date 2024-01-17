@@ -36,7 +36,7 @@ COVDIR=${COVDIR:-coverage}
 # Various little helper functions
 
 # is output going to a terminal?
-if test -t 1; then
+if test -t 1 && command -v tput >/dev/null 2>&1 ; then
 
     # does the terminal support color?
     ncolors=$(tput colors)
