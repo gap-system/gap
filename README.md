@@ -62,7 +62,7 @@ dependencies (if you do not, GAP will either build its own copies of these,
 slowing down the compilation process, or omit certain features):
 * Development headers for GMP, the GNU Multiple Precision Arithmetic Library
 * Development headers for zlib
-* Development headers for GNU readline
+* Development headers for GNU Readline
 
 On Ubuntu or Debian, you can install these with the following command:
 
