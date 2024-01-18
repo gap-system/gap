@@ -120,7 +120,7 @@ users, or just the current user.
 For the Windows version the installer will already have put
 binaries in place and nothing else needs to be done.
 
-Under Unix you will have to compile such a binary yourself, as described
+Under Unix you will have to compile such a binary yourself as described
 in this section. This also covers macOS, but please first review section
 "GAP for macOS" below for additional information about compilation
 specific to macOS.
@@ -235,7 +235,7 @@ version of GMP included with the GAP archive you downloaded and this will
 be used if GAP does not find a version of GMP already installed on your
 system. You can configure which GMP GAP uses as follows:
 
-./configure --with-gmp=builtin|PREFIX
+    ./configure --with-gmp=builtin|PREFIX
 
 If this option is *not* given, GAP will try to find a suitable version of GMP
 can be found using the specified CPPFLAGS, CFLAGS and LDFLAGS. If not,
@@ -255,7 +255,8 @@ Readline
 GAP optionally also uses the external library GNU Readline (see
 <https://www.gnu.org/software/readline>) for better command line
 editing. GAP will use this library by default if it is available on
-your system. You can configure Readline use as follows:
+your system. You can specify whether to use GNU Readline or not
+and possibly select an alternate version as follows:
 
     ./configure --with-readline=yes|no|"path"
 
@@ -272,9 +273,9 @@ Build 32-bit vs. 64-bit binaries
 
 GAP will attempt to build in 32-bit mode on 32-bit machines and in 64-bit
 mode on 64-bit machines. On a 64-bit machine, you can tell GAP to build in
-32-bit instead, if you know what you are doing. Note that we recommend *against* doing this
-for regular use, as these days the 64 bit version is much better tested and
-generally faster.
+32-bit instead, if you know what you are doing. Note that we recommend
+*against* doing this for regular use, as these days the 64 bit version is
+much better tested and generally faster.
 
 If you wish to force GAP in 32-bit mode, you can do so by invoking
 
@@ -327,20 +328,6 @@ files in the `lib` directory are likely to be corrupt or incomplete. Make
 sure that you used the proper archive and that extraction proceeded without
 errors.
 
-Especially try the command line editing and history facilities, because
-they are probably the most machine dependent feature of GAP. Enter a few
-commands and then make sure that `Ctrl-P` redisplays the last command, that
-`Ctrl-E` moves the cursor to the end of the line, that `Ctrl-B` moves the
-cursor back one character, and that `Ctrl-D` deletes single characters. So,
-after entering the above commands, typing
-
-    Ctrl-P  Ctrl-E  Ctrl-B  Ctrl-B  Ctrl-B  Ctrl-B  Ctrl-D  2  Return
-
-should give the following lines:
-
-    gap> Factors( 10^42 + 2 );
-    [ 2, 3, 433, 953, 128400049, 3145594690908701990242740067 ]
-
 If you want to run a quick test of your GAP installation (though this is
 not required), you can read in a test script that exercises some GAP's
 capabilities. To run this test, we recommend to use a computer with at
@@ -375,6 +362,7 @@ performing all tests from the `tst` directory.
 It takes significantly longer to complete than `testinstall.g`,
 but otherwise produces output similar to the `testinstall.g` test.
 
+
 7 Packages
 ==========
 
@@ -404,7 +392,7 @@ many libraries, headers and tools available. To use it, change to the
     ../bin/BuildPackages.sh
 
 If you have problems with package installations please contact the package
-authors as listed in the packages README file. Many GAP packages have their
+authors as listed in the packages `README` file. Many GAP packages have their
 own development repositories and issue trackers, details of which could be
 found at <https://gap-packages.github.io/>.
 
@@ -414,17 +402,13 @@ found at <https://gap-packages.github.io/>.
 
 Congratulations, your installation is finished.
 
-Once the installation is complete, we would like to ask you to send us a
-short note to <support@gap-system.org>, telling us about the installation.
-(This is just a courtesy; we like to know how many people are using GAP and
-get feedback regarding difficulties (hopefully none) that users may have
-had with installation.)
-
-We also suggest that you subscribe to our GAP Forum mailing list; see the
-GAP web pages for details. Whenever there is a bug fix or new release of
-GAP this is where it is announced. The GAP Forum also deals with user
-questions of a general nature; bug reports and other problems you have
-while installing and/or using GAP should be sent to <support@gap-system.org>.
+Once the installation is complete, you may wish to subscribe to the
+[GAP forum mailing list](https://www.gap-system.org/Contacts/Forum/forum.html),
+which provides help with user questions of a general nature. You can also
+chat with us on [Slack](https://gap-system.org/slack). Bug reports and other
+problems you have while installing and/or using GAP should be reported via
+our [issue tracker](https://github.com/gap-system/gap/issues) or sent via
+email to <support@gap-system.org>.
 
 If you are new to GAP, you might want to read through the following two
 sections for information about the documentation.
@@ -446,7 +430,7 @@ There also is (if installed) an HTML version of some books that can be
 viewed with an HTML browser, see Section "Changing the Help Viewer" of the
 GAP Reference manual.
 
-The manual is also available in pdf format. In the full distribution these
+The manual is also available in PDF format. In the full distribution these
 files are included in the directory `gap-4.X.Y/doc` in the subdirectories
 `tut` (a beginner's tutorial), `ref` (the reference manual), and `hpc` (HPC-GAP
 reference manual).
@@ -518,13 +502,6 @@ sessions will be limited to 3 GB or even less. There are other factors
 which can reduce this limit even further.
 
 We therefore recommend to always build and use GAP in 64-bit mode.
-
-### Recompilation fails or the new binary crashes.
-
-Call `make clean` and restart the `configure` / `make` process completely from
-scratch. (It is possible that the operating system and/or compiler got
-upgraded in the meantime and so the existing .o files cannot be used any
-longer.
 
 ### A calculation runs into an error `no method found`.
 
