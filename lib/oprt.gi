@@ -2100,6 +2100,12 @@ InstallMethod( PermutationOp, "object on list", true,
             fi;
             blist[ new ] := true;
             list[ old ] := new;
+            # Map the "original" points not the images under `act'.
+            # We assume that they are at least as nice as the images.
+            # In the case of automorphisms acting on elements of a f. p. group,
+            # the images are represented by words which are usually longer
+            # than the words in `D'.
+            pnt := D[ new ];
         until new = fst;
         fst := Position( blist, false, fst );
     od;
