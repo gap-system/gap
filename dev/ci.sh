@@ -110,6 +110,8 @@ do
   # restore current directory before each test suite
   cd "$BUILDDIR"
 
+  [[ $GITHUB_ACTIONS = true ]] && echo "::group::Test suite $TEST_SUITE"
+
   echo "${blue}"
   echo "+-------------------------------------------"
   echo "|"
@@ -417,6 +419,8 @@ GAPInput
   esac
 
   notice "Test suite ${TEST_SUITE} passed"
+  [[ $GITHUB_ACTIONS = true ]] && echo "::endgroup::"
+
 done
 
 exit 0
