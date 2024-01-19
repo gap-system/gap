@@ -84,7 +84,7 @@ you need to download the GAP source distribution, that is, a file named
 for GAP 4.X.Y. Alternatively, you can also use the `.tar.gz` or `.zip`
 archives.
 
-If you use Windows, then download the `.exe` installer which contains binaries
+If you use Windows, then download the Windows installer which contains binaries
 for GAP and some packages and provides the standard installation procedure.
 
 
@@ -108,21 +108,16 @@ permissions to read the files.)
 Windows
 -------
 
-If you are using the `.exe` installer (which we strongly recommend),
-simply download and run it. It will offer a standard installation
-procedure, during which you will be able to select an installation path.
-
-Note that the path to the GAP directory must not contain spaces.
-For example, you may install it in a directory named like `C:\gap-4.X.Y`
-(default), `D:\gap` or `C:\Math\GAP\my-gap-4.X.Y`, but you must not install
-it in a directory named like `C:\Users\alice\My Documents\gap-4.X.Y` or
-`C:\Program files\gap-4.X.Y` etc.
+If you are using the Windows installer, simply download and run it.
+It will offer a standard installation procedure, during which you will
+be able to select an installation path. You can either install for all
+users, or just the current user.
 
 
 4 Compilation
 =============
 
-For the Windows version the `.exe` installer will already have put
+For the Windows version the installer will already have put
 binaries in place and nothing else needs to be done.
 
 Under Unix you will have to compile such a binary yourself, as described
@@ -303,9 +298,7 @@ users (including those on macOS) should type
 
     ./gap
 
-Windows users should start GAP with the batch file
-
-    C:\gap-4.X.Y\bin\gap.bat
+Windows users should start GAP using the GAP icon in the start menu.
 
 GAP should start up with its banner and after a little while give you a
 command prompt
@@ -327,7 +320,7 @@ Try a few commands to see if the compilation succeeded.
     [ 29, 101, 281, 9901, 226549, 121499449, 4458192223320340849 ]
 
 If you get the error message `hmm, I cannot find lib/init.g` you are likely
-to have installed only the binary (or used the wrong path on Windows).
+to have installed only the binary (or have a broken installation on Windows).
 
 If GAP starts but you get error messages for the commands you issued, the
 files in the `lib` directory are likely to be corrupt or incomplete. Make
@@ -382,12 +375,6 @@ performing all tests from the `tst` directory.
 It takes significantly longer to complete than `testinstall.g`,
 but otherwise produces output similar to the `testinstall.g` test.
 
-Windows users should note that the Command Prompt user interface provided
-by Microsoft might not offer history scrolling or cut and paste with the
-mouse. To get a better environment, use the script `gap.bat` to start GAP
-instead of `gapcmd.bat`.
-
-
 7 Packages
 ==========
 
@@ -396,9 +383,8 @@ redistribute in the `gap-4.X.Y/pkg` directory, and for packages that consist
 only of GAP code no further installation is necessary.
 
 Some packages however contain external binaries that will require separate
-compilation. (If you use Windows you may not be able to use external
-binaries anyhow, except for those packages whose binaries for Windows are
-included in their distribution, so you may skip the rest of this section.)
+compilation. (If you use the Windows installer these binaries are already
+compiled for you, so you may skip the rest of this section.)
 You can skip this compilation now and do it later -- GAP will work fine,
 but the capabilities of the affected packages won't be available.
 
@@ -558,28 +544,26 @@ This is a problem if you are running a keyboard driver for some non-english
 languages. These drivers catch the ^ character to produce the French circumflex
 accent and do not pass it properly to GAP. For macOS users, as a workaround
 please refer to the section "GAP for macOS" below for information on
-how to install readline and section 5 on how to recompile GAP, for windows no
+how to install readline and section 5 on how to recompile GAP, for Windows no
 fix is known. (One can type `POW(a,b)` for `a^b`.)
 
 ## Problems specific to Windows
 
-### Cut and Paste does not work
+Rather than use the Windows installer, another option is to use the
+"Windows Subsystem for Linux" (<https://learn.microsoft.com/en-us/windows/wsl/install>),
+also known as WSL. This can be found in the "Microsoft Store" in Windows,
+where you will find installers for a selection of Linux distributions (Ubuntu
+is the standard, and best supported). After installing a linux distribution you
+can then follow the guidance for building and using GAP in Linux inside WSL.
 
-You might want to try different shells, using both of the two `.bat`
-files in the `bin` directory: `gap.bat` and `gapcmd.bat`. Also,
-<https://www.gap-system.org/Faq/faq.html#4> might give a remedy.
+The main advantage of using WSL is that the Windows installer does not support
+adding new packages which require compiling kernel modules. Also, GAP is
+slightly faster in WSL.
 
-### GAP does not work in the remote desktop
-
-GAP cannot be started in the Windows Command Prompt shell (via `gapcmd.bat`)
-in the remote desktop. To start GAP in the remote desktop, use the script
-`gap.bat` which should work in such setting.
-
-### You get an error message about the `cygwin1.dll`
-
-GAP comes with a version of this dynamic library. If you have another
-version installed (use "Find"), delete the older one (and probably copy the
-newer one in both places).
+We also support building GAP using 'Cygwin', which is a Unix wrapper for
+Windows. Cygwin is used for making Windows release. Almost all packages are
+supported in the Windows releases. By default the Windows release reads and
+writes files from the user's "Documents" directory.
 
 ### Something else went wrong
 
