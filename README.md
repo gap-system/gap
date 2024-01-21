@@ -55,7 +55,6 @@ least these:
 * a C++ compiler
 * GNU Make
 * GNU Autoconf
-* GNU Libtool
 
 In addition, we recommend that you install at least the following optional
 dependencies (if you do not, GAP will either build its own copies of these,
@@ -66,13 +65,13 @@ slowing down the compilation process, or omit certain features):
 
 On Ubuntu or Debian, you can install these with the following command:
 
-    sudo apt-get install build-essential autoconf libtool libgmp-dev libreadline-dev zlib1g-dev
+    sudo apt-get install build-essential autoconf libgmp-dev libreadline-dev zlib1g-dev
 
 On macOS, you can install the dependencies in several ways:
 
- * using Homebrew: `brew install autoconf libtool gmp readline`
- * using Fink: `fink install autoconf2.6 libtool2 gmp5 readline7`
- * using MacPorts: `port install autoconf libtool gmp readline`
+ * using Homebrew: `brew install autoconf gmp readline`
+ * using Fink: `fink install autoconf2.6 gmp5 readline7`
+ * using MacPorts: `port install autoconf gmp readline`
 
 On other operating systems, you will need to figure out equivalent commands
 to install the required dependencies.

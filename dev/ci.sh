@@ -188,19 +188,19 @@ GAPInput
 
     # in case we change file locations again...
     bool_d=build/deps/src/bool.c.d
-    bool_lo=build/obj/src/bool.c.lo
+    bool_o=build/obj/src/bool.c.o
 
     set -x
 
     # this test assumes we are doing an out-of-tree build
     test $BUILDDIR != $SRCDIR
 
-    # test: create garbage *.d and *.lo files in the source dir; these should not
+    # test: create garbage *.d and *.o files in the source dir; these should not
     # affect the out of tree build, nor should they be removed by `make clean`
     mkdir -p $SRCDIR/build/deps/src
     mkdir -p $SRCDIR/build/obj/src
     echo "garbage content 1" > $SRCDIR/${bool_d}
-    echo "garbage content 2" > $SRCDIR/${bool_lo}
+    echo "garbage content 2" > $SRCDIR/${bool_o}
     echo "garbage content 3" > $SRCDIR/build/version.c
 
     # test: `make clean` works and afterwards we can still `make`; in particular
@@ -208,40 +208,40 @@ GAPInput
     make clean
     make > /dev/null 2>&1
 
-    # verify that deps file has a target for the .lo file but not for the .d file
-    fgrep "bool.c.lo:" ${bool_d} > /dev/null
+    # verify that deps file has a target for the .o file but not for the .d file
+    fgrep "bool.c.o:" ${bool_d} > /dev/null
     fgrep "bool.c.d:" ${bool_d} > /dev/null && exit 1
-    fgrep "garbage content" ${bool_lo} > /dev/null && exit 1
+    fgrep "garbage content" ${bool_o} > /dev/null && exit 1
 
     # verify our "garbage" files are still there
     test -f $SRCDIR/${bool_d}
-    test -f $SRCDIR/${bool_lo}
+    test -f $SRCDIR/${bool_o}
 
-    # test: `make` should regenerate removed *.lo files
-    rm ${bool_lo}
+    # test: `make` should regenerate removed *.o files
+    rm ${bool_o}
     make > /dev/null 2>&1
-    test -f ${bool_lo}
+    test -f ${bool_o}
 
-    # verify that deps file has a target for the .lo file but not for the .d file
-    fgrep "bool.c.lo:" ${bool_d} > /dev/null
+    # verify that deps file has a target for the .o file but not for the .d file
+    fgrep "bool.c.o:" ${bool_d} > /dev/null
     fgrep "bool.c.d:" ${bool_d} > /dev/null && exit 1
-    fgrep "garbage content" ${bool_lo} > /dev/null && exit 1
+    fgrep "garbage content" ${bool_o} > /dev/null && exit 1
 
     # test: `make` should regenerate removed *.d files (and then also regenerate the
-    # corresponding *.lo file, which we verify by overwriting it with garbage)
+    # corresponding *.o file, which we verify by overwriting it with garbage)
     # NOTE: This check was disabled and the corresponding code removed from the
     # build system, as sadly it caused all kinds of issues which were far more
     # annoying than the fringe problem they fixed. If we ever come up with a better
     # implementation for this, the test below can be re-enabled
     #rm ${bool_d}
-    #echo "garbage content 3" > ${bool_lo}
+    #echo "garbage content 3" > ${bool_o}
     #make > /dev/null 2>&1
     #test -f ${bool_d}
 
-    # verify that deps file has a target for the .lo file but not for the .d file
-    fgrep "bool.c.lo:" ${bool_d} > /dev/null
+    # verify that deps file has a target for the .o file but not for the .d file
+    fgrep "bool.c.o:" ${bool_d} > /dev/null
     fgrep "bool.c.d:" ${bool_d} > /dev/null && exit 1
-    fgrep "garbage content" ${bool_lo} > /dev/null && exit 1
+    fgrep "garbage content" ${bool_o} > /dev/null && exit 1
 
     # test: running `make` a second time should produce no output
     test -z "$(make)"

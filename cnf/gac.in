@@ -371,16 +371,6 @@ for input in ${inputs}; do
         *.o) # add '.o' object files to the linker list
             name=$(basename ${input} .o)
             process_o_file $name $input;;
-
-        *.lo)
-            # for backwards compatibility, treat .lo files like .o files this
-            # is useful for package that use an old Makefile.gappkg which
-            # hardcodes the file extension .lo for object files created by
-            # gac. So this only works if the .lo files are honest object files
-            # with the wrong extension; it does *not* support linking .lo
-            # files created by GNU libtool.
-            name=$(basename ${input} .lo)
-            process_o_file $name $input;;
         esac
     done
 

@@ -12,7 +12,6 @@
 /configure
 /confdefs.h
 /conftest*
-/libtool
 /libgap.pc
 /src/config.h.in
 /src/config.h.in~
@@ -28,6 +27,9 @@
 /gap
 /sysinfo.gap
 /sysinfo.gap-*
+/libgap*.dylib*
+/libgap*.dll*
+/libgap*.so*
 
 /bin/gap*.sh
 /bin/*-*/
@@ -88,9 +90,6 @@ doc/gapmacrodoc.idx
 
 /builds/
 /coverage/
-
-/libgap.la
-.libs/
 
 /tst/testlibgap/api
 /tst/testlibgap/basic
