@@ -1893,7 +1893,7 @@ UInt ResizeBag (
 
 static jmp_buf RegsBags;
 
-#if defined(SPARC)
+#if defined(SYS_IS_SPARC)
 static void SparcStackFuncBags(void)
 {
   asm (" ta 0x3 ");
@@ -1998,7 +1998,7 @@ static UInt CollectBags_Mark(UInt FullBags)
 
     // mark from the stack
     _setjmp(RegsBags);
-#if defined(SPARC)
+#if defined(SYS_IS_SPARC)
     SparcStackFuncBags();
 #endif
     GenStackFuncBags();

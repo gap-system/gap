@@ -928,18 +928,9 @@ GP_C_LONG_ALIGN
 
 case "$host_cpu" in
   sparc* )
-    AC_DEFINE([SPARC], [1], [define as 1 on SPARC architecture to flush register windows])
-    SPARC=yes
+    AC_DEFINE([SYS_IS_SPARC], [1], [define as 1 on SPARC architecture to flush register windows])
     ;;
 esac
-
-case "$host_os" in
-  *cygwin*)
-    CYGWIN=yes
-    ;;
-esac
-
-AC_SUBST([SYS_IS_CYGWIN32], [$CYGWIN])
 
 
 dnl

@@ -12,7 +12,6 @@
 #
 
 # GAP specific
-SYS_IS_CYGWIN32 = @SYS_IS_CYGWIN32@
 ABI = @ABI@
 ABI_CFLAGS = @ABI_CFLAGS@
 
