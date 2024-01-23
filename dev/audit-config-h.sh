@@ -21,15 +21,14 @@ if git grep -n -w config.h -- :/src/*.h > /dev/null ; then
 fi
 
 # First scan config.h to obtain a list of all symbols it might define. From
-# this is subtracts a list of "known OK" symbols. The symbols and there reason
+# this is subtracts a list of "known OK" symbols. The symbols and their reason
 # for being on this list are:
 # - `HAVE_FUNC_ATTRIBUTE_`*: these are only used for optimizations; also, our
 #    headers try hard to define them on the fly (at least in GCC and clang)
 # - `HAVE___BUILTIN_MUL_OVERFLOW`: same as above
 # - `SIZEOF_VOID_P`: provided for backwards compatibility in a few packages,
 #    and actually (re-)defined in `common.h`
-# - `SPARC`: only appears in a comment
-PATTERN=$(egrep '(#define|#undef)' build/config.h | sed -E -e 's;(#define|/\* #undef) ([^ ]+) .*$;\2;' | egrep -v 'HAVE_FUNC_ATTRIBUTE_|HAVE___BUILTIN_MUL_OVERFLOW|SIZEOF_VOID_P|SPARC' | tr '\n' '|')
+PATTERN=$(egrep '(#define|#undef)' build/config.h | sed -E -e 's;(#define|/\* #undef) ([^ ]+) .*$;\2;' | egrep -v 'HAVE_FUNC_ATTRIBUTE_|HAVE___BUILTIN_MUL_OVERFLOW|SIZEOF_VOID_P' | tr '\n' '|')
 PATTERN=${PATTERN%?} # remove trailing "|"
 
 # only consider files that do not #include config.h
