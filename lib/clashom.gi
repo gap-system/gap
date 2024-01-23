@@ -2146,11 +2146,9 @@ BindGlobal("LiftClassesEATrivRep",
       lvec:=Concatenation(vec{range},Zero(vec{[i*ssd+1..Length(vec)]}));
       result:=OrbitMinimumMultistage(stabradgens,
            List(stabradgens,x->bas*npcgsact(x)*basinv),
-           pcisom,0,0, # solvable size not needed
            stabfacgens,
            List(stabfacgens,x->bas*npcgsact(x)*basinv),
            stabfacimgs,
-           hom,0, #gpsz not needed
            OnRight,lvec,maxorb,#Maximum(List(lcands,x->x.len)),
            Set(lcands,x->x.rep));
       a:=First(lcands,x->x.rep{range}=result.min{range});
@@ -2178,8 +2176,8 @@ BindGlobal("LiftClassesEATrivRep",
   if false and allcands[1].len>1 then
     Error();
   fi;
-    a:=OrbitMinimumMultistage(pcgs,pcgsimgs,pcisom,0,0,
-        nsgens,nsimgs,nsfgens,hom,0,
+    a:=OrbitMinimumMultistage(pcgs,pcgsimgs,
+        nsgens,nsimgs,nsfgens,
         OnRight,vec,allcands[1].len,minvecs);
     a.nclass:=First(allcands,x->x.rep=a.min);
     return a;

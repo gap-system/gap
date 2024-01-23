@@ -1130,10 +1130,10 @@ DeclareGlobalFunction( "SubgroupGeneratorsCosetTable" );
 
 #############################################################################
 ##
-#F  LiftFactorFpHom(<hom>,<G>,<M>,<N>,<dec>)
+#F  LiftFactorFpHom(<hom>,<G>,<N>,<dec>)
 ##
 ##  <ManSection>
-##  <Func Name="LiftFactorFpHom" Arg='hom,G,M,N,dec'/>
+##  <Func Name="LiftFactorFpHom" Arg='hom,G,N,dec'/>
 ##
 ##  <Description>
 ##  Let <A>hom</A> be an epimorphism from a group <A>G</A> to a finitely presented
@@ -1154,16 +1154,16 @@ DeclareGlobalFunction( "IsomorphismFpGroupByChiefSeriesFactor" );
 
 #############################################################################
 ##
-#F  ComplementFactorFpHom(<hom>,<G>,<M>,<N>,<C>,<Ggens>,<Cgens>)
+#F  ComplementFactorFpHom(<hom>,<M>,<N>,<C>,<Ggens>,<Cgens>)
 ##
 ##  <ManSection>
-##  <Func Name="ComplementFactorFpHom" Arg='hom,G,M,N,C,Ggens,Cgens'/>
+##  <Func Name="ComplementFactorFpHom" Arg='hom,M,N,C,Ggens,Cgens'/>
 ##
 ##  <Description>
-##  Let <A>hom</A> be an epimorphism from a group <A>G</A> to a finitely presented
+##  Let <A>hom</A> be an epimorphism from a group <C>G</C> to a finitely presented
 ##  group <A>F</A> with kernel <A>M</A> and <M>M/N</M> be elementary abelian and <M>C/N</M> a
 ##  complement to <A>M</A> in <M>G/N</M>. The set <A>Cgens</A> is a set of generators of
-##  <A>C</A> modulo <A>N</A>, <A>Ggens</A> are corresponding representatives in <A>G</A>.
+##  <A>C</A> modulo <A>N</A>, <A>Ggens</A> are corresponding representatives in <C>G</C>.
 ##  This function constructs a new epimorphism from <A>C</A> onto <A>F</A>.
 ##  <P/>
 ##  No test of the arguments is performed.

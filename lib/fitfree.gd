@@ -182,9 +182,6 @@ DeclareGlobalFunction("TFMakeInducedPcgsModulo");
 DeclareGlobalFunction("OrbitsRepsAndStabsVectorsMultistage");
 DeclareGlobalFunction("OrbitMinimumMultistage");
 
-# utility function: Evaluate the homomorphism to radical factor ``by hand''.
-DeclareGlobalFunction("TFEvalRFHom");
-
 #############################################################################
 ##
 #F  FittingFreeElementarySeries( <G>, [<A>, <wholesocle>])

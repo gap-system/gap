@@ -16,7 +16,7 @@
 #F  FingerprintPerm( <D>, <el>, <i>, <j>, <orbitJ>, <representatives>)
 #F       Entry i,j of the matrix of el in the permutation representation of G
 ##
-BindGlobal( "FingerprintPerm", function(D,el,i,j,orbitJ,representatives)
+BindGlobal( "FingerprintPerm", function(D,el,orbitJ,representatives)
   local x,a,cycle,cycles;
   a:=0;
   #cycles:=Cycles(el,D.group.orbit);
@@ -55,7 +55,7 @@ BindGlobal("CheapIdentificationPermGroup",function(D,el)
     od;
   fi;
   if t in D.fingerprintCandidates then
-    Add(s,-FingerprintPerm(D,el,D.p1,D.p2,D.fingerprintOrbitStabilizer,
+    Add(s,-FingerprintPerm(D,el,D.fingerprintOrbitStabilizer,
                                     D.fingerprintRepresentatives));
   fi;
   return s;
@@ -205,7 +205,7 @@ local k,structures,ambiguousStructures,i,j,p,cem,ces,z,t,cen,a,
           c:=Filtered([1..D.klanz],i->IdentificationPermGroup(D,
                   D.classreps[i])=s);
           f:=List(c,i->FingerprintPerm(D,
-                    D.classreps[i],D.p1,D.p2,fos,fr));
+                    D.classreps[i],fos,fr));
           if Length(Set(f))>1 then Add(fc,s);
           fi;
         od;

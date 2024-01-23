@@ -4606,14 +4606,14 @@ DeclareOperation( "PowerMapOfGroup", [ IsGroup, IsInt, IsHomogeneousList ] );
 
 #############################################################################
 ##
-#F  PowerMapOfGroupWithInvariants( <G>, <n>, <ccl>, <invariants> )
+#F  PowerMapOfGroupWithInvariants( <n>, <ccl>, <invariants> )
 ##
 ##  <ManSection>
-##  <Func Name="PowerMapOfGroupWithInvariants" Arg='G, n, ccl, invariants'/>
+##  <Func Name="PowerMapOfGroupWithInvariants" Arg='n, ccl, invariants'/>
 ##
 ##  <Description>
 ##  is a list of integers, at position <M>i</M> the position of the conjugacy
-##  class containimg the <A>n</A>-th powers of elements in class <M>i</M>
+##  class containing the <A>n</A>-th powers of elements in class <M>i</M>
 ##  of <A>ccl</A>.
 ##  The list <A>invariants</A> contains all invariants besides element order
 ##  that shall be used before membership tests.

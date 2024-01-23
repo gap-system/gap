@@ -255,7 +255,7 @@ end );
 ##  <Dt_ConvertCoeffVecs> a pair [j, k] occurring in <evlistvec>[i] means that
 ##  <evlist>[i] occurs in f_j with coefficient k.
 ##
-BindGlobal( "Dt_ConvertCoeffVecs", function(evlistvec, pr)
+BindGlobal( "Dt_ConvertCoeffVecs", function(evlistvec)
     local i,j,res;
 
     for  i in [1..Length(evlistvec)]  do
@@ -658,7 +658,7 @@ BindGlobal( "Calcrepsn", function(n, avec, pr, max)
    # finally convert the polynomials to the final state
    pols := Dt_Convert(pols);
    if  pols <> 0  then
-      Dt_ConvertCoeffVecs(pols.evlistvec, pr);
+      Dt_ConvertCoeffVecs(pols.evlistvec);
    fi;
    return pols;
 end );

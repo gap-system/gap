@@ -220,7 +220,7 @@ BindGlobal("MaximalSubgroupClassesSol",function(G)
           if homliftlevel+1<f then
             pcgsM := InducedPcgsByPcSequenceNC( spec, spec{[homliftlevel+1..f-1]} );
             RUN_IN_GGMBI:=true;
-            fphom:=LiftFactorFpHom(fphom,G,Group(spec),
+            fphom:=LiftFactorFpHom(fphom,G,
               Group(spec{[f..Length(spec)]}),pcgsM);
             RUN_IN_GGMBI:=false;
             homliftlevel:=f-1;

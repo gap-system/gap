@@ -635,7 +635,7 @@ function(hom,elm)
 end);
 
 InstallGlobalFunction(LiftFactorFpHom,
-function(hom,G,M,N,mnsf)
+function(hom,G,N,mnsf)
 local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
       ngen, fp, hom2, di, source, dih, dec, i, j;
   fpq:=Range(hom);
@@ -765,7 +765,7 @@ local fpq, qgens, qreps, fpqg, rels, pcgs, p, f, qimg, idx, nimg, decomp,
 end);
 
 InstallGlobalFunction(ComplementFactorFpHom,
-function(h,g,m,n,k,ggens,cgens)
+function(h,m,n,k,ggens,cgens)
 local di, hom;
   if IsBound(h!.decompinfo) then
     di:=ShallowCopy(h!.decompinfo);

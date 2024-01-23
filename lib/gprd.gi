@@ -1139,10 +1139,7 @@ end);
 ##
 InstallMethod( \in,"generic wreath product", IsCollsElms,
   [ IsGroup and HasWreathProductInfo and IsWreathProductElementCollection
-    and IsWholeFamily, IsWreathProductElement ], 0,
-function(G,e)
-  return true;
-end);
+    and IsWholeFamily, IsWreathProductElement ], 0, ReturnTrue);
 
 #
 # semidirect product
