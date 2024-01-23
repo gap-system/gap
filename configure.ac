@@ -37,6 +37,10 @@ AC_INIT([GAP],
 AC_CONFIG_SRCDIR([src/gap.c])
 AC_CONFIG_AUX_DIR([cnf])
 
+dnl we do not use AC_CONFIG_MACRO_DIR but rather a manually created aclocal.m4;
+dnl this is in parts because autoreconf and aclocal are only available via GNU automake,
+dnl which we do not use; but also because there is no obvious benefit to using it.
+
 AC_CONFIG_HEADERS([build/config.h:src/config.h.in])
 AC_CONFIG_COMMANDS([build/stamp-h], [echo timestamp > build/stamp-h])
 
