@@ -275,7 +275,8 @@ static Obj JsonEscapeString(Obj param)
     return copy;
 }
 
-
+// Check if the filename of the file 'id' has even been outputted.
+// We only output this once per file to reduce file size.
 static inline void outputFilenameIdIfRequired(UInt id)
 {
     if (id == 0) {
@@ -343,6 +344,7 @@ static void HookedLineOutput(Obj func, char type)
   HashUnlock(&profileState);
 }
 
+// Called whenever a function is entered
 static void enterFunction(Obj func)
 {
 #ifdef HPCGAP
@@ -354,6 +356,7 @@ static void enterFunction(Obj func)
     HookedLineOutput(func, 'I');
 }
 
+// Called whenever a function exits
 static void leaveFunction(Obj func)
 {
 #ifdef HPCGAP
@@ -377,6 +380,10 @@ static void leaveFunction(Obj func)
 ** If we could rely on the existence of the IO package, we would use that here.
 ** however, we want to be able to start compressing files right at the start
 ** of GAP's execution, before anything else is done.
+**
+** This has not switched to using GAP's internal gzip support because by
+** using an external gzip we get free parallelisation, and GAP code is not
+** 'charged' for the time taken to compress the profile output.
 */
 
 static BOOL endsWithgz(const char * s)
@@ -558,6 +565,7 @@ static BOOL markVisited(int fileid, UInt line)
 // type : the type of the statement
 // exec : are we executing this statement
 // visit: Was this statement previously visited (that is, executed)
+// This deals with code which has been compiled into bytecode.
 static inline void
 outputStat(Int fileid, int line, int type, BOOL exec, BOOL visited)
 {
@@ -585,6 +593,10 @@ outputStat(Int fileid, int line, int type, BOOL exec, BOOL visited)
     printOutput(fileid, line, exec, visited);
 }
 
+// This deals with code which is interpreted without being turned into
+// bytecode. This is only code which is outside of functions and loops.
+// GAP reports the file, line, and if the code is executed or skipped (exec).
+// Code is skipped when an 'if' statement is false, for example.
 static inline void outputInterpretedStat(int fileid, int line, BOOL exec)
 {
     CheckLeaveFunctionsAfterLongjmp();
