@@ -36,7 +36,7 @@ ifndef GAP_KERNEL_MAJOR_VERSION
   KEXT_CXXFLAGS += -I$(GAP_LIB_DIR)/src
 endif
 
-# honor used supplied flags
+# honor user supplied flags
 ALL_CFLAGS := $(KEXT_CFLAGS) $(KEXT_CXXFLAGS) $(CPPFLAGS) $(CFLAGS) $(CXXFLAGS)
 ALL_LDFLAGS := $(KEXT_LDFLAGS) $(LDFLAGS)
 
