@@ -1,5 +1,5 @@
 # issue reported by Michel Lavrauw on 18 October 2023
-#@if LoadPackage("fining",false)
+#@if LoadPackage("fining",false) <> fail
 gap> G:=ProjectivityGroup(PG(8,2));
 The FinInG projectivity group PGL(9,2)
 gap> H:=Group(Identity(G));
