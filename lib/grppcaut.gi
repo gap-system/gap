@@ -480,7 +480,7 @@ local spec,s,n,M,
             Add( part[pos], i );
         fi;
     od;
-    Sort( part, function( x, y ) return Length(x) < Length(y); end );
+    SortBy( part, Length );
 
     # compute partition stabilizer
     if Length(part) > 1 then

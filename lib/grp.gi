@@ -5145,7 +5145,7 @@ local nrm;        # normal subgroups of <G>,result
     nrm:=NormalSubgroupsAbove(G,TrivialSubgroup(G),[]);
 
     # sort the normal subgroups according to their size
-    Sort(nrm,function(a,b) return Size(a) < Size(b); end);
+    SortBy(nrm, Size);
 
     # and return it
     return nrm;

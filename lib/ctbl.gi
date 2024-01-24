@@ -1894,7 +1894,7 @@ InstallMethod( ClassPositionsOfNormalSubgroups,
     # Sort the list of normal subgroups (first lexicographically,
     # then --stable sort-- according to length and thus inclusion).
     normal:= SSortedList( normal );
-    Sort( normal, function( x, y ) return Length(x) < Length(y); end );
+    SortBy( normal, Length );
 
     # Represent the lists as ranges if possible.
     # (It is not possible to do this earlier since the representation
@@ -1967,7 +1967,7 @@ InstallMethod( ClassPositionsOfMinimalNormalSubgroups,
                         i -> ClassPositionsOfNormalClosure( tbl, [ i ] ) );
 
     # Remove non-minimal kernels
-    Sort( normal, function(x,y) return Length(x) < Length(y); end );
+    SortBy( normal, Length );
     minimal:= [];
     for k in normal do
       if ForAll( minimal, x -> not IsSubsetSet( k, x ) ) then

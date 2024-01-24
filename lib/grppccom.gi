@@ -968,7 +968,7 @@ local G,N,M,keep,H,K,f,primes,p,A,S,L,hom,c,cn,nc,ncn,lnc,lncn,q,qs,qn,ser,
   #  S:=GModuleByMats(S,GF(p));
   #  L:=MTX.BasesMinimalSubmodules(S);
   #  if Length(L)>0 then
-  #    Sort(L,function(a,b) return Length(a)<Length(b);end);
+  #    SortBy(L,Length);
   #    L:=List(L[1],x->PcElementByExponents(pcgs,x));
   #    A:=ClosureGroup(K,L);
   ##  fi;

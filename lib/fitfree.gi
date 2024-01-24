@@ -1040,7 +1040,7 @@ local G,gp,p,r,s,c,i,a,prime,sy,k,b,dc,H,e,j,forbid;
   s:=ShallowCopy(r); # real and potential halls to extend
   c:=Combinations(p);
   c:=Filtered(c,x->Length(x)>1 and Length(x)<Length(gp));
-  Sort(c,function(a,b) return Length(a)<Length(b);end);
+  SortBy(c, Length);
   for i in c do
     a:=[];
     # now build all new groups by extending the groups that were obtained

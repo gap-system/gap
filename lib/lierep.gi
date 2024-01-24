@@ -189,7 +189,7 @@ InstallMethod( \+,
         else
           list:= List( l1[k], ShallowCopy );
           Append( list, List( l2[k], ShallowCopy ) );
-          Sort( list, function( t1, t2 ) return t1[1] < t2[1]; end );
+          SortBy( list, t -> t[1] );
           i:= 1;
           while i < Length( list ) do  # take equal things together.
             if list[i][1] = list[i+1][1] then

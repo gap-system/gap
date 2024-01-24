@@ -2393,7 +2393,7 @@ local rt,op,a,l,i,j,u,max,subs;
   if l = 0 then return rec( inclusions := [ [0,1] ], subgroups := [] ); fi;
 
   # compute inclusion information among sets
-  Sort(a,function(x,y)return Length(x)<Length(y);end);
+  SortBy(a, Length);
   # this is n^2 but I hope will not dominate everything.
   subs:=List([1..l],i->Filtered([1..i-1],j->IsSubset(a[i],a[j])));
       # List the sets we know to be contained in each set
@@ -2561,9 +2561,7 @@ local hom,F,cl,cls,lcl,sub,sel,unsel,i,j,rmNonMax;
   unsel:=[1,Size(F)];
   cl:=Filtered(ConjugacyClassesSubgroups(F),
                i->not Size(Representative(i)) in unsel);
-  Sort(cl,function(a,b)
-            return Size(Representative(a))<Size(Representative(b));
-          end);
+  SortBy(cl,a->Size(Representative(a)));
   cl:=Concatenation(List(cl,AsList));
   lcl:=Length(cl);
   cls:=List(cl,Size);

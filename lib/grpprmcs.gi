@@ -1616,7 +1616,7 @@ InstallMethod( SolvableRadical,
       # try orbits
       o:=ShallowCopy(Orbits(G,MovedPoints(G)));
       if Length(o)>1 then
-        Sort(o,function(a,b)return Length(a)<Length(b);end);
+        SortBy(o, Length);
         for i in o do
           Info(InfoGroup,1,"trying orbit length ",Length(o));
           hom:=ActionHomomorphism(G,i,"surjective");
@@ -2574,7 +2574,7 @@ local new,start,n,i,tail, up,u,v;
 
   # make nt also increasing
   nt:=ShallowCopy(nt);
-  Sort(nt,function(a,b) return Size(a)<Size(b);end);
+  SortBy(nt, Size);
 #Print(List(nt,Size),"\n");
 
   start:=1;
