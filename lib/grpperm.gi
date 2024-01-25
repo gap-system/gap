@@ -187,7 +187,7 @@ InstallMethod( IndependentGeneratorsOfAbelianGroup, "for perm group",
     od;
 
     # Sort the independent generators by increasing order
-    Sort( inds, function (a,b) return Order(a) < Order(b); end );
+    SortBy( inds, Order );
 
     # return the independent generators
     return inds;
@@ -2337,7 +2337,7 @@ InstallGlobalFunction(ReducedPermdegree,function(g)
   orb:=ShallowCopy(Orbits(g,dom));
   if Length(orb)=1 then return fail;fi;
   gdeg:=20*LogInt(Size(g),2); # good degree
-  Sort(orb,function(a,b) return Length(a)<Length(b);end);
+  SortBy(orb, Length);
   p:=PositionProperty(orb,i->Length(i)>=gdeg);
   if p=fail then p:=Length(orb);fi;
   ndom:=orb[p];

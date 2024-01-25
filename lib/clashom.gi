@@ -2474,7 +2474,7 @@ local r,        #radical
   if Order(cl[1][1])>1 then
     # the identity is not in first position
     Info(InfoHomClass,2,"identity not first, sorting");
-    Sort(cl,function(a,b) return Order(a[1])<Order(b[1]);end);
+    SortBy(cl,a->Order(a[1]));
   fi;
 
   Info(InfoHomClass,1,"forming classes");

@@ -411,7 +411,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
 
       # clusters as relevant for this subspace
       localclust:=List(clusters,x->Filtered([1..Length(lvecs)],y->idx[y] in x));
-      Sort(localclust,function(a,b) return Length(a)<Length(b);end);
+      SortBy(localclust, Length);
 
       glhom:=IsomorphismPermGroup(localgl);
       glperm:=Image(glhom);
@@ -694,8 +694,8 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
                         # split up using this multiplication data
                         prop:=List(Set(prop),
                           x->Filtered([1..Length(prop)],y->prop[y]=x));
-                        Sort(prop,function(a,b) return Length(a)<Length(b);end);
-  Info(InfoFitFree,5,"split ",clusters[i]," with ",l,":",prop);
+                        SortBy(prop, Length);
+                        Info(InfoFitFree,5,"split ",clusters[i]," with ",l,":",prop);
                         clusters:=Concatenation(clusters{[1..i-1]},
                                   List(prop,x->clusters[i]{x}),
                                   clusters{[i+1..Length(clusters)]});

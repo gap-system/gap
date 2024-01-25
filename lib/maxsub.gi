@@ -368,7 +368,7 @@ local  c, maxs,sel,reps;
         or Size(reps[x])=Size(StabilizerOfExternalSet(c[x])));
 
   reps:=reps{sel};
-  Sort(reps,function(a,b) return Size(a)<Size(b);end);
+  SortBy(reps, Size);
 
   # nor go by descending order through the representatives. Always eliminate
   # all remaining proper subgroups of conjugates. What remains must be

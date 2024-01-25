@@ -2521,12 +2521,12 @@ dom, et, ft, Pr, rbase, BF, Q, data,lc;
       if Length(orb)>7 then
         # join orbits to make only a few
         orb:=ShallowCopy(orb);
-        Sort(orb,function(a,b) return Length(a)<Length(b);end);
+        SortBy(orb, Length);
         comb:=Union(orb{[7..Length(orb)]});
         orb:=Concatenation(orb{[1..6]},[comb]);
       fi;
       comb:=Combinations(orb);
-      Sort(comb,function(a,b) return Sum(a,Length)<Sum(b,Length);end);
+      SortBy(comb,a->Sum(a,Length));
       found:=false;
       pos:=0; # pos1 is empty
       lc:=Length(mpG)*2/3;
@@ -2999,7 +2999,7 @@ local   omega, P, rbase, L, mg, mh, mg_minus_mh, mh_minus_mg;
 #    # go through the orbits step by step
 #    mg:=MovedPoints(G);
 #    mg:=ShallowCopy(Orbits(H,mg));
-#    Sort(mg,function(a,b) return Length(a)<Length(b);end);
+#    SortBy(mg, Length);
 #    for i in mg do
 #      if Length(i)<5 then
 #       G:=Stabilizer(G,Set(i),OnSets);
@@ -3007,7 +3007,7 @@ local   omega, P, rbase, L, mg, mh, mg_minus_mh, mh_minus_mg;
 #    od;
 #    mh:=MovedPoints(H);
 #    mh:=ShallowCopy(Orbits(G,mh));
-#    Sort(mh,function(a,b) return Length(a)<Length(b);end);
+#    SortBy(mh, Length);
 #    for i in mh do
 #      if Length(i)<5 then
 #       H:=Stabilizer(H,Set(i),OnSets);

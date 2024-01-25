@@ -1312,7 +1312,7 @@ local H,d,id,hom,field,C,dom,orbs;
   if Length(orbs)>1 then
     # reduce domain
     orbs:=ShallowCopy(orbs);
-    Sort(orbs,function(a,b) return Length(a)<Length(b);end);
+    SortBy(orbs,Length);
     dom:=dom{Set(orbs[1])};
     hom:=ActionHomomorphism(C,dom,OnLines,"surjective");
   fi;

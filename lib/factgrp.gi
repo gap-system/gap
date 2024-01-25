@@ -967,7 +967,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,bl,
 
   if not IsTransitive(G,MovedPoints(G)) then
     o:=ShallowCopy(OrbitsDomain(G,MovedPoints(G)));
-    Sort(o,function(a,b)return Length(a)<Length(b);end);
+    SortBy(o, Length);
 
     for loop in [1..2] do
       s:=[];
@@ -987,7 +987,7 @@ local o, s, k, gut, erg, H, hom, b, ihom, improve, map, loop,bl,
       Sort(o,function(a,b)return Length(a)>Length(b);end);
     od;
 
-    Sort(o,function(a,b)return Length(a)<Length(b);end);
+    SortBy(o, Length);
 
     erg:=List(GeneratorsOfGroup(G),i->());
     k:=G;

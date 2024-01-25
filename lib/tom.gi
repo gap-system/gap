@@ -165,8 +165,7 @@ InstallGlobalFunction( TableOfMarksByLattice, function( G )
     classes:= ShallowCopy( ConjugacyClassesSubgroups( G ) );
 
     # sort the classes
-    Sort(classes,function(a,b) return Size(Representative(a)) <
-                          Size(Representative(b)); end);
+    SortBy(classes,a->Size(Representative(a)));
     classesZups:=[];
 
     # compute a system of generators for the cyclic sgr. of prime power size

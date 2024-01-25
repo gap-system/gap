@@ -637,7 +637,7 @@ InstallGlobalFunction( ReducedByIsomorphisms, function( list )
     od;
 
     subl := Compacted( subl );
-    Sort( subl, function( x, y ) return Length(x)<Length(y); end );
+    SortBy( subl, Length );
 
     # return
     return Concatenation( done, subl );

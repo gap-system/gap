@@ -495,14 +495,14 @@ local s,c,mp,o,i,step,a;
   repeat
     mp:=MovedPoints(s);
     o:=ShallowCopy(OrbitsDomain(s,mp));
-    Sort(o,function(a,b) return Length(a)<Length(b);end);
+    SortBy(o,Length);
     i:=1;
     step:=false;
     while i<=Length(o) and step=false do
       if not IsTransitive(U,o[i]) then
         Info(InfoCoset,2,"AC: orbit");
         o:=ShallowCopy(OrbitsDomain(U,o[i]));
-        Sort(o,function(a,b) return Length(a)<Length(b);end);
+        SortBy(o,Length);
         # union of same length -- smaller index
         a:=Union(Filtered(o,x->Length(x)=Length(o[1])));
         if Length(a)=Sum(o,Length) then

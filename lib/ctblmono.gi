@@ -81,7 +81,7 @@ InstallMethod( Alpha,
       # of a character of smaller or equal degree.
 
       # Make sure to consider minimal elements of the actual degree first.
-      Sort( ker, function(x,y) return Length(x) < Length(y); end );
+      SortBy( ker, Length );
 
       relevant:= [];
 
@@ -97,7 +97,7 @@ InstallMethod( Alpha,
 
       # Give the trivial kernel a chance to be found first when we
       # consider the next larger degree.
-      Sort( minimal, function(x,y) return Length(x) < Length(y); end );
+      SortBy( minimal, Length );
 
       # Compute the derived lengths
       for k in relevant do

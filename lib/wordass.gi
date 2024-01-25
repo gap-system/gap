@@ -1245,7 +1245,7 @@ local invname, nams, rels, p, a, b, z, i,br;
     if Length(b)=1 then
       Add(rels,PPValWord(gens,nams,b[1]));
     else
-      Sort(b,function(x,y) return Length(x)<Length(y);end);
+      SortBy(b, Length);
       z:=PPValWord(gens,nams,b[1]);
       for i in [2..Length(b)] do
         Add(rels,PPValWord(gens,nams,b[i])/z);

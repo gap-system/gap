@@ -1146,9 +1146,7 @@ local i,j,flag,cl;
   od;
 
   # sort classes by size
-  Sort(cl,function(a,b) return
-    Sum(a,i->i.size)
-      <Sum(b,i->i.size);end);
+  SortBy(cl,a->Sum(a,i->i.size));
   return cl;
 end);
 
@@ -1394,7 +1392,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,ind,cla,m,
     od;
     # now sort by the length of the relators
     for i in [1..len] do
-      Sort(sortrels[i],function(x,y) return x[3]<y[3];end);
+      SortBy(sortrels[i],x->x[3]);
     od;
     if Length(pows)>0 then
       offset:=1-Minimum(List(Filtered(pows,i->Length(i)>0),
@@ -1768,7 +1766,7 @@ local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
       Ggc:=List(gens,i->First(Gcl,j->ForAny(j,j->ForAny(j.classes,k->i in k))));
       combi:=List(Ggc,i->Concatenation(List(i,i->i.classes)));
       bcl:=ShallowCopy(combi);
-      Sort(bcl,function(a,b) return Sum(a,Size)<Sum(b,Size);end);
+      SortBy(bcl,a->Sum(a,Size));
       bg:=gens;
       bpri:=Product(combi,i->Sum(i,Size));
       for i in [1..7*Length(gens)-12] do
@@ -1786,7 +1784,7 @@ local combi,Gr,Gcl,Ggc,Hr,Hcl,bg,bpri,x,dat,
                   j->ForAny(j,j->ForAny(j.classes,k->i in k))));
         combi:=List(Ggc,i->Concatenation(List(i,i->i.classes)));
         Append(bcl,combi);
-        Sort(bcl,function(a,b) return Sum(a,Size)<Sum(b,Size);end);
+        SortBy(bcl,a->Sum(a,Size));
         price:=Product(combi,i->Sum(i,Size));
         Info(InfoMorph,3,"generating system of price:",price,"");
         if price<bpri then

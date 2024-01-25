@@ -1267,9 +1267,7 @@ local s,i,c,classes, lattice,map,GI;
     fi;
     Add(classes,c);
   od;
-  Sort(classes,function(a,b)
-                 return Size(Representative(a))<Size(Representative(b));
-               end);
+  SortBy(classes, a -> Size(Representative(a)));
 
   # create the lattice
   lattice:=Objectify(NewType(FamilyObj(classes),IsLatticeSubgroupsRep),
@@ -1295,7 +1293,7 @@ end);
 #        normal:=true));
 #
 #   # sort the normal subgroups according to their size
-#   Sort(n,function(a,b) return Size(a) < Size(b); end);
+#   SortBy(n, Size);
 #
 #   return n;
 # end);

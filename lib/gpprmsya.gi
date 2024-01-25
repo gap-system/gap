@@ -1323,7 +1323,7 @@ syll, act, typ, sel, bas, wdom, comp, lperm, other, away, i, j,b0,opg,bp;
   else
 
     # first sort by Length
-    Sort(o,function(a,b) return Length(a)<Length(b);end);
+    SortBy(o, Length);
     l:=Length(o);
     pg:=[]; # parent generators
     is:=1;
@@ -1960,7 +1960,7 @@ InstallMethod( OrbitStabilizingParentGroup, "direct product of S_n's",
 function(G)
 local o,d,i,j,l,s;
   o:=ShallowCopy(OrbitsDomain(G,MovedPoints(G)));
-  Sort(o,function(a,b) return Length(a)<Length(b);end);
+  SortBy(o, Length);
   d:=false;
   i:=1;
   while i<=Length(o) do
@@ -2401,7 +2401,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
                           SignPermGroup,SignPermGroup(G)]);
 
     # remove obvious subgroups
-    Sort(l,function(a,b)return Size(a)<Size(b);end);
+    SortBy(l, Size);
     sel:=[];
     for i in [1..Length(l)] do
       if not ForAny([i+1..Length(l)],j->IsSubgroup(l[j],l[i])) then
