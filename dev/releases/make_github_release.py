@@ -13,9 +13,10 @@
 ##  utils.py.
 ##
 ##  If we do import * from utils, then initialize_github can't overwrite the
-##  global GITHUB_INSTANCE and CURRENT_REPO variables.
+##  global CURRENT_REPO variables.
 ##
 import utils
+import utils_github
 import sys
 
 if len(sys.argv) != 3:
@@ -27,11 +28,11 @@ VERSION = TAG_NAME[1:]  # strip 'v' prefix
 
 utils.verify_git_clean()
 utils.verify_is_possible_gap_release_tag(TAG_NAME)
-utils.initialize_github()
+utils_github.initialize_github()
 
 # Error if the tag TAG_NAME hasn't been pushed to CURRENT_REPO yet.
-if not any(tag.name == TAG_NAME for tag in utils.CURRENT_REPO.get_tags()):
-    utils.error(f"Repository {utils.CURRENT_REPO_NAME} has no tag '{TAG_NAME}'")
+if not any(tag.name == TAG_NAME for tag in utils_github.CURRENT_REPO.get_tags()):
+    utils.error(f"Repository {utils_github.CURRENT_REPO_NAME} has no tag '{TAG_NAME}'")
 
 # make sure that TAG_NAME
 # - exists
@@ -40,14 +41,14 @@ if not any(tag.name == TAG_NAME for tag in utils.CURRENT_REPO.get_tags()):
 utils.check_git_tag_for_release(TAG_NAME)
 
 # Error if this release has been already created on GitHub
-if any(r.tag_name == TAG_NAME for r in utils.CURRENT_REPO.get_releases()):
+if any(r.tag_name == TAG_NAME for r in utils_github.CURRENT_REPO.get_releases()):
     utils.error(f"Github release with tag '{TAG_NAME}' already exists!")
 
 # Create release
 RELEASE_NOTE = f"For an overview of changes in GAP {VERSION} see the " \
     + f"[CHANGES.md](https://github.com/gap-system/gap/blob/{TAG_NAME}/CHANGES.md) file."
 utils.notice(f"Creating release {TAG_NAME}")
-RELEASE = utils.CURRENT_REPO.create_git_release(TAG_NAME, TAG_NAME,
+RELEASE = utils_github.CURRENT_REPO.create_git_release(TAG_NAME, TAG_NAME,
                                                 RELEASE_NOTE,
                                                 prerelease=True)
 
@@ -68,4 +69,4 @@ with utils.working_directory(PATH_TO_RELEASE):
     # Upload all assets to release
     utils.notice("Uploading release assets")
     for filename in manifest:
-        utils.upload_asset_with_checksum(RELEASE, filename)
+        utils_github.upload_asset_with_checksum(RELEASE, filename)

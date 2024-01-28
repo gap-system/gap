@@ -26,6 +26,7 @@ import sys
 import tarfile
 import tempfile
 import utils
+import utils_github
 
 if sys.version_info < (3,6):
     utils.error("Python 3.6 or newer is required")
@@ -101,11 +102,11 @@ def download_and_extract_json_gz_asset(asset_name, dest):
 
 ################################################################################
 # Get all releases from 4.11.0 onwards, that are not a draft or prerelease
-utils.CURRENT_REPO_NAME = f"{args.gap_fork}/gap"
-utils.initialize_github(args.token)
+utils_github.CURRENT_REPO_NAME = f"{args.gap_fork}/gap"
+utils_github.initialize_github(args.token)
 utils.notice(f"Will use temporary directory: {tmpdir}")
 
-releases = [ x for x in utils.CURRENT_REPO.get_releases() if
+releases = [ x for x in utils_github.CURRENT_REPO.get_releases() if
                 not x.draft and
                 not x.prerelease and
                 utils.is_possible_gap_release_tag(x.tag_name) and

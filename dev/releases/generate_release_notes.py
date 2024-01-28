@@ -269,10 +269,10 @@ def changes_overview(prs,startdate,rel_type):
 
 def main(rel_type):
 
-    utils.initialize_github()
-    g = utils.GITHUB_INSTANCE
-    repo = utils.CURRENT_REPO
-    
+    utils_github.initialize_github()
+    g = utils_github.GITHUB_INSTANCE
+    repo = utils_github.CURRENT_REPO
+
     # There is a GitHub API capacity of 5000 per hour i.e. that a maximum of 5000 requests can be made to GitHub per hour.
     # Therefore, the following line indicates how many requests are currently still available
     print("Current GitHub API capacity", g.rate_limiting, "at", datetime.now().isoformat() )
