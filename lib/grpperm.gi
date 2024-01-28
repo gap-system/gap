@@ -814,9 +814,7 @@ InstallOtherMethod( ClosureGroup,"permgroup, elements, options",
 
 InstallOtherMethod( ClosureGroup, "empty list",true,
         [ IsPermGroup, IsList and IsEmpty ], 0,
-function( G, nogens )
-    return G;
-end );
+ReturnFirst);
 
 InstallMethod( ClosureGroup, "permgroup, element",true,
   [ IsPermGroup, IsPerm ], 0,
@@ -844,9 +842,7 @@ end );
 
 InstallOtherMethod( ClosureGroup, "empty list and options",true,
         [ IsPermGroup, IsList and IsEmpty, IsRecord ], 0,
-    function( G, nogens, options )
-    return G;
-end );
+ReturnFirst);
 
 #############################################################################
 ##

@@ -872,9 +872,7 @@ end );
 ##
 InstallMethod( ExtendedPcgs, "pcgs, empty list", true,
         [ IsPcgs, IsList and IsEmpty ], 0,
-    function( N, gens )
-    return N;
-end );
+    ReturnFirst );
 
 
 #############################################################################

@@ -626,9 +626,7 @@ end);
 
 InstallMethod( CanComputeIsSubset, "whole fp family group", IsIdenticalObj,
     [ IsSubgroupFpGroup and IsWholeFamily, IsSubgroupFpGroup ], 0,
-function(left,right)
-  return true;
-end);
+    ReturnTrue);
 
 InstallMethod(IsNormalOp,"subgroups of fp group by quot. rep in full fp grp.",
   IsIdenticalObj, [ IsSubgroupFpGroup and IsWholeFamily,

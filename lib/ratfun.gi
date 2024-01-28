@@ -1098,9 +1098,7 @@ InstallMethod(HeuristicCancelPolynomialsExtRep,"ignore",true,
   [IsRationalFunctionsFamily,IsList,IsList],
   # fallback: lower than default for the weakest conditions
   -1,
-function(f,a,b)
-  return fail; # can't do anything
-end);
+ReturnFail);
 
 InstallGlobalFunction(TryGcdCancelExtRepPolynomials,TRY_GCD_CANCEL_EXTREP_POL);
 

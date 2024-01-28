@@ -1331,16 +1331,10 @@ function(G)
 end);
 
 InstallMethod(PerfectResiduum,"for perfect groups",true,
-  [IsPerfectGroup],0,
-function(G)
-  return G;
-end);
+  [IsPerfectGroup],0, IdFunc);
 
 InstallMethod(PerfectResiduum,"for solvable groups",true,
-  [IsSolvableGroup],0,
-function(G)
-  return TrivialSubgroup(G);
-end);
+  [IsSolvableGroup],0, TrivialSubgroup);
 
 #############################################################################
 ##

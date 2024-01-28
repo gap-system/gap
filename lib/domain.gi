@@ -357,10 +357,7 @@ InstallMethod( Intersection2,
     IsIdenticalObj,
     [ IsDomain, IsCollection and IsWholeFamily ],
     SUM_FLAGS, # this is better than everything else
-    function( D1, D2 )
-    return D1;
-    end );
-
+    ReturnFirst);
 
 #############################################################################
 ##

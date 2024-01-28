@@ -69,9 +69,7 @@ InstallMethod( IsBound\[\],
     true,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep,
       IsPosInt ], 0,
-    function( emptyvec, pos )
-    return false;
-    end );
+    ReturnFalse);
 
 
 #############################################################################
@@ -130,9 +128,7 @@ InstallMethod( \+,
     IsIdenticalObj,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep,
       IsRowVector and IsEmpty and IsEmptyRowVectorRep ], 0,
-    function( emptyvec1, emptyvec2 )
-    return emptyvec1;
-    end );
+    ReturnFirst );
 
 
 #############################################################################
@@ -180,9 +176,7 @@ InstallMethod( \*,
     IsCollsElms,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep,
       IsMultiplicativeElement ], 0,
-    function( emptyvec, coeff )
-    return emptyvec;
-    end );
+    ReturnFirst );
 
 
 #############################################################################
@@ -206,9 +200,7 @@ InstallMethod( \*,
     "for empty row vector, and integer",
     true,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep, IsInt ], 0,
-    function( emptyvec, int )
-    return emptyvec;
-    end );
+    ReturnFirst );
 
 
 #############################################################################

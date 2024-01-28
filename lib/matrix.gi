@@ -297,9 +297,7 @@ InstallMethod( ZeroSameMutability,
 InstallMethod( \+,
     "for two null map matrices",
     [ IsNullMapMatrix, IsNullMapMatrix ],
-    function(null,null2)
-    return null;
-end );
+    ReturnFirst );
 
 InstallMethod( AdditiveInverseSameMutability,
     "for a null map matrix",
@@ -314,9 +312,7 @@ InstallMethod( AdditiveInverseOp,
 InstallMethod( \*,
     "for two null map matrices",
     [ IsNullMapMatrix, IsNullMapMatrix ],
-    function(null,null2)
-    return null;
-end );
+    ReturnFirst );
 
 InstallMethod( \*,
     "for a scalar and a null map matrix",
@@ -328,9 +324,7 @@ end );
 InstallMethod( \*,
     "for a null map matrix and a scalar",
     [ IsNullMapMatrix, IsScalar ],
-    function(null,s)
-    return null;
-end );
+    ReturnFirst );
 
 InstallMethod( \*,
     "for vector and null map matrix",

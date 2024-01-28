@@ -3956,11 +3956,7 @@ function(l)
   return Length(l)=0 or CanEasilyCompareElements(l[1]);
 end);
 
-InstallMethod(CanEasilyCompareElements,"empty homogeneous list",
-  [IsHomogeneousList and IsEmpty],
-function(l)
-  return true;
-end);
+InstallTrueMethod(CanEasilyCompareElements, IsHomogeneousList and IsEmpty);
 
 #############################################################################
 ##
@@ -3972,12 +3968,7 @@ function(l)
   return Length(l)=0 or CanEasilySortElements(l[1]);
 end);
 
-InstallMethod(CanEasilySortElements,"empty homogeneous list",
-  [IsHomogeneousList and IsEmpty],
-function(l)
-  return true;
-end);
-
+InstallTrueMethod(CanEasilySortElements, IsHomogeneousList and IsEmpty);
 
 #############################################################################
 ##

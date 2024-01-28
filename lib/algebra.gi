@@ -1567,10 +1567,7 @@ InstallMethod( ClosureLeftOperatorRing,
     IsCollsElms,
     [ IsFLMLOR and IsWholeFamily, IsRingElement ],
     SUM_FLAGS, # this is better than everything else
-    function( A, a )
-    return A;
-    end );
-
+    ReturnFirst);
 
 #############################################################################
 ##
@@ -1607,10 +1604,7 @@ InstallMethod( ClosureLeftOperatorRing,
     IsIdenticalObj,
     [ IsLeftOperatorRing and IsWholeFamily, IsCollection ],
     SUM_FLAGS, # this is better than everything else
-    function( A, S )
-    return A;
-    end );
-
+    ReturnFirst);
 
 #############################################################################
 ##

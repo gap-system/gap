@@ -149,9 +149,7 @@ InstallMethod( MappedWord,
 ##
 InstallOtherMethod( MappedWord, "empty generators list", true,
     [ IsObject, IsEmpty, IsList ], 0,
-function( x, gens1, gens2 )
-  return x;
-end);
+ReturnFirst );
 
 #############################################################################
 ##
