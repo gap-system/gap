@@ -635,11 +635,7 @@ local a,b,fam,i, j,ln,ld,rn,rd;
   od;
   # is there an a-remainder (then a is larger)
   # or are both polynomials equal?
-  if i>0 or i=j then
-    return false;
-  else
-    return true;
-  fi;
+  return not (i>0 or i=j);
 end );
 
 #############################################################################

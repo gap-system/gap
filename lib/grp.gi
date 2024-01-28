@@ -2955,11 +2955,7 @@ local n,a;
   fi;
 
   a:=AutomorphismGroup(G);
-  if ForAny(GeneratorsOfGroup(a),i->Image(i,H)<>H) then
-    return false;
-  else
-    return true;
-  fi;
+  return not ForAny(GeneratorsOfGroup(a),i->Image(i,H)<>H);
 end );
 
 
