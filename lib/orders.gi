@@ -1018,11 +1018,7 @@ function(fam,alphabet)
       fi;
     od;
 
-    if mp<=0 and np<>0 then
-      return true;
-    else
-      return false;
-    fi;
+    return mp<=0 and np<>0;
   end;
 
   ########
@@ -1074,11 +1070,7 @@ function(fam,alphabet)
       fi;
     od;
 
-    if m =0 and n<>0 then
-      return true;
-    else
-        return false;
-      fi;
+    return m =0 and n<>0;
   end;
 
   ltfun:=function(u,v)
@@ -1572,5 +1564,3 @@ InstallOtherMethod(WreathProductOrdering,
   function(f,gensorder,levels)
     return WreathProductOrdering(ElementsFamily(FamilyObj(f)),gensorder,levels);
   end);
-
-

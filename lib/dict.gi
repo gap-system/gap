@@ -174,11 +174,7 @@ InstallMethod(KnowsDictionary,"for lookup sort dictionaries",true,
 function(d,x)
 local p;
   p := PositionSorted(d!.entries,[x]);
-  if p <= Length(d!.entries) and d!.entries[p][1] = x then
-    return true;
-  else
-    return false;
-  fi;
+  return p <= Length(d!.entries) and d!.entries[p][1] = x;
 end);
 
 InstallMethod(KnowsDictionary,"for list dictionaries",true,

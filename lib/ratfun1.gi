@@ -378,11 +378,7 @@ local x,y;
     x:=x-2;
     y:=y-2;
   od;
-  if x<=0 and y>0 then
-    return true;
-  else
-    return false;
-  fi;
+  return x<=0 and y>0;
 end );
 
 ##  Low level workhorse for operations with monomials in Zipped form
@@ -1398,4 +1394,3 @@ local c,i,j,m,ex;
   od;
   return c;
 end );
-

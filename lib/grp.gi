@@ -394,11 +394,7 @@ InstallMethod( IsPowerfulPGroup,
       # for p>3 by Jon Gonzalez-Sanchez, Amaia Zugadi-Reizabal
       # can be found in 'A characterization of powerful p-groups'
       if (p>3) then
-        if (RankPGroup(G)=Log(Order(Omega(G,p)),p)) then
-          return true;
-        else
-          return false;
-        fi;
+        return RankPGroup(G)=Log(Order(Omega(G,p)),p);
       else
         TryNextMethod();
       fi;
@@ -5735,14 +5731,7 @@ InstallMethod(CharacteristicSubgroups,"use automorphisms",true,[IsGroup],
 InstallTrueMethod( CanComputeSize, HasSize );
 
 InstallMethod( CanComputeIndex,"by default impossible unless identical",
-  IsIdenticalObj, [IsGroup,IsGroup],
-function(G,U)
-  if IsIdenticalObj(G,U) then
-    return true;
-  else
-    return false;
-  fi;
-end);
+  IsIdenticalObj, [IsGroup,IsGroup], IsIdenticalObj );
 
 InstallMethod( CanComputeIndex,"if sizes can be computed",IsIdenticalObj,
   [IsGroup and CanComputeSize,IsGroup and CanComputeSize],
