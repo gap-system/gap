@@ -526,7 +526,7 @@ InstallMethod( IsInternallyConsistent,
 
       # If the number of generators is stored then check
       # that only defined positions are accessed.
-      return not ( IsBound( nrgens ) and not IsSubset( defined, gens ) );
+      return not IsBound( nrgens ) or IsSubset( defined, gens );
     end;
 
     len:= Length( lines );
