@@ -2955,7 +2955,7 @@ local n,a;
   fi;
 
   a:=AutomorphismGroup(G);
-  return not ForAny(GeneratorsOfGroup(a),i->Image(i,H)<>H);
+  return ForAll(GeneratorsOfGroup(a),i->Image(i,H)=H);
 end );
 
 
