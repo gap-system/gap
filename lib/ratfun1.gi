@@ -378,11 +378,7 @@ local x,y;
     x:=x-2;
     y:=y-2;
   od;
-  if x<=0 and y>0 then
-    return true;
-  else
-    return false;
-  fi;
+  return x<=0 and y>0;
 end );
 
 ##  Low level workhorse for operations with monomials in Zipped form
@@ -639,11 +635,7 @@ local a,b,fam,i, j,ln,ld,rn,rd;
   od;
   # is there an a-remainder (then a is larger)
   # or are both polynomials equal?
-  if i>0 or i=j then
-    return false;
-  else
-    return true;
-  fi;
+  return not (i>0 or i=j);
 end );
 
 #############################################################################
@@ -1398,4 +1390,3 @@ local c,i,j,m,ex;
   od;
   return c;
 end );
-

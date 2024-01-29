@@ -103,11 +103,7 @@ end;
 ##  </ManSection>
 ##
 IS_SUBSTRING := function( str, sub )
-  if LEN_LIST(sub) > 0 and POSITION_SUBSTRING(str, sub, 0) = fail then
-    return false;
-  else
-    return true;
-  fi;
+  return LEN_LIST(sub) = 0 or POSITION_SUBSTRING(str, sub, 0) <> fail;
 end;
 
 
