@@ -21,6 +21,7 @@ import sys
 import os
 import json
 import gzip
+import requests
 
 from utils import *
 
@@ -28,7 +29,35 @@ def usage():
     print("Usage: `./generate_package_release_notes.py OLD_GAP_VERSION NEW_GAP_VERSION`")
     sys.exit(1)
 
-def main(old_gap_version, new_gap_version):
+
+def find_previous_version(version: str) -> str:
+    major, minor, patchlevel = version.split(".")
+    if major != "4":
+        error("unexpected GAP version, not starting with '4.'")
+    if patchlevel != "0":
+        patchlevel = int(patchlevel) - 1
+        return f"{major}.{minor}.{patchlevel}"
+    minor = int(minor) - 1
+    patchlevel = 0
+    while True:
+        v = f"{major}.{minor}.{patchlevel}"
+        if not is_existing_tag("v" + v):
+            break
+        patchlevel += 1
+    if patchlevel == 0:
+        error("could not determine previous version")
+    patchlevel -= 1
+    return f"{major}.{minor}.{patchlevel}"
+
+def package_infos_url(tag):
+    return f"https://github.com/gap-system/PackageDistro/releases/download/{tag}/package-infos.json.gz"
+
+def url_exists(url):
+    response = requests.get(url)
+    return response.status_code == 200
+
+
+def main(new_gap_version):
 
     # create tmp directory
     tmpdir = os.getcwd() + "/tmp"
@@ -38,11 +67,21 @@ def main(old_gap_version, new_gap_version):
     except FileExistsError:
         pass
 
+    old_gap_version = find_previous_version(new_gap_version)
+    notice(f"generating package release notes for {old_gap_version} -> {new_gap_version}")
+
+    oldtag = "v" + old_gap_version
+    newtag = "v" + new_gap_version
+    if not url_exists(package_infos_url(newtag)):
+        warning("no package infos found for {newtag}, switching to latest")
+        newtag = "latest"
+
     # download package metadata
-    old_json_file = f"{tmpdir}/package-infos-{old_gap_version}.json.gz"
-    download_with_sha256(f"https://github.com/gap-system/PackageDistro/releases/download/v{old_gap_version}/package-infos.json.gz", old_json_file)
-    new_json_file = f"{tmpdir}/package-infos-{new_gap_version}.json.gz"
-    download_with_sha256(f"https://github.com/gap-system/PackageDistro/releases/download/v{new_gap_version}/package-infos.json.gz", new_json_file)
+    old_json_file = f"{tmpdir}/package-infos-{oldtag}.json.gz"
+    new_json_file = f"{tmpdir}/package-infos-{newtag}.json.gz"
+
+    download_with_sha256(package_infos_url(oldtag), old_json_file)
+    download_with_sha256(package_infos_url(newtag), new_json_file)
 
     # parse package metadata
     with gzip.open(old_json_file, "r") as f:
@@ -106,7 +145,7 @@ updated since GAP {old_gap_version}. The full list of updated packages is given 
             print(f"- [**{name}**]({home}): {oldversion} -> {newversion}")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 2:
         usage()
 
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1])
