@@ -1670,7 +1670,7 @@ DeclareGlobalFunction( "PermutationMat" );
 ##  If only <A>vector</A> is given then it is used to compute a default for
 ##  <A>R</A>.
 ##  <P/>
-##  If the <Ref Filt="ConstructingFilter" Label="for a matrix object"/> value
+##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/> value
 ##  of the result implies <Ref Filt="IsCopyable"/> then the result is
 ##  fully mutable.
 ##  <P/>

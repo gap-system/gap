@@ -1664,7 +1664,7 @@ DeclareGlobalFunction( "AlgebraByStructureConstants" );
 ##  that describes the unique multiplicative identity element of the returned
 ##  algebra w. r. t. the defining basis of this algebra,
 ##  and that the returned algebra is an algebra-with-one
-##  (see <Ref Func="IsAlgebraWithOne"/>).
+##  (see <Ref Filt="IsAlgebraWithOne"/>).
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> A:= GF(2)^[2,2];;
