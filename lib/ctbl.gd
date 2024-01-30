@@ -2790,7 +2790,7 @@ DeclareGlobalFunction( "IsClassFusionOfNormalSubgroup" );
 ##  <P/>
 ##  For each <M>2</M>-modular Brauer characters where these conditions are
 ##  not sufficient to determine the indicator, an unknown value
-##  (see <Ref Func="Unknown"/>) is returned.
+##  (see <Ref Oper="Unknown"/>) is returned.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
