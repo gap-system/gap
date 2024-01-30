@@ -14,7 +14,7 @@
 # TODO: implement parts of the steps described in
 # <https://github.com/gap-system/gap-distribution/blob/master/DistributionUpdate/STABLE_BRANCH_CHECKLIST.md>
 
-from utils import error, notice, warning, patchfile
+from utils import error, notice, patchfile
 import utils
 
 import subprocess
@@ -41,10 +41,10 @@ def main(gap_minor_version_str: str) -> None:
     utils.verify_git_repo()
     utils.verify_git_clean()
 
-    notice(f"Switching to master branch")
+    notice("Switching to master branch")
     subprocess.run(["git", "switch", "master"], check=True)
 
-    notice(f"Ensure branch is up-to-date")
+    notice("Ensure branch is up-to-date")
     subprocess.run(["git", "pull", "--ff-only"], check=True)
 
     # create the new branch now, before we add a commit to master
@@ -58,7 +58,7 @@ def main(gap_minor_version_str: str) -> None:
         "doc/versiondata",
     ]
 
-    notice("Updating version to {nextgapversion} on master branch")
+    notice(f"Updating version to {nextgapversion} on master branch")
     for f in files:
         notice("  patching " + f)
         patchfile(f, gapversion + "dev", nextgapversion + "dev")
