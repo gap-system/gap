@@ -127,7 +127,7 @@ def changes_overview(prs, startdate, new_version):
 
 The following gives an overview of the changes compared to the previous
 release. This list is not complete, many more internal or minor changes
-were made, but we tried to keep it to changes which we think might
+were made, but we tried to only list those changes which we think might
 affect some users directly.
 
 """
