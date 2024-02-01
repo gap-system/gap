@@ -140,6 +140,12 @@ def verify_is_possible_gap_release_tag(tag):
     if not is_possible_gap_release_tag(tag):
         error(f"{tag} does not look like the tag of a GAP release version")
 
+def is_existing_tag(tag):
+    res = subprocess.run(
+        ["git", "show-ref", "--quiet", "--verify", "refs/tags/" + tag],
+    )
+    return res.returncode == 0
+
 # Error checked git fetch of tags
 def safe_git_fetch_tags():
     try:
