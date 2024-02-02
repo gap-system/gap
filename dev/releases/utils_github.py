@@ -16,6 +16,8 @@ import subprocess
 import sys
 import github
 
+from utils import error, notice, verify_via_checksumfile
+
 CURRENT_REPO_NAME = os.environ.get("GITHUB_REPOSITORY", "gap-system/gap")
 
 # Initialized by initialize_github
