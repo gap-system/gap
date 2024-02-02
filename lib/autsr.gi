@@ -712,34 +712,36 @@ local somechar,d,i,j,u,v;
     od;
   fi;
 
-  for i in PrimeDivisors(Size(r)) do
-    u:=PCore(r,i);
-    if Size(u)>1 then
-      d:=RefinedSubnormalSeries(d,u);
-      j:=1;
-      repeat
-        v:=Agemo(u,i,j);
-        if Size(v)>1 then
-          d:=RefinedSubnormalSeries(d,v);
-        fi;
-        j:=j+1;
-      until Size(v)=1;
-      j:=1;
-      repeat
-        if Size(u)>=2^24 then
-          v:=u; # bail out as method for `Omega` will do so.
-        else
-          v:=Omega(u,i,j);
-          if Size(v)<Size(u) then
+  if not ForAll([1..Length(d)-1],
+    x->HasElementaryAbelianFactorGroup(d[x],d[x+1])) then
+    for i in PrimeDivisors(Size(r)) do
+      u:=PCore(r,i);
+      if Size(u)>1 then
+        d:=RefinedSubnormalSeries(d,u);
+        j:=1;
+        repeat
+          v:=Agemo(u,i,j);
+          if Size(v)>1 then
             d:=RefinedSubnormalSeries(d,v);
           fi;
           j:=j+1;
-        fi;
+        until Size(v)=1;
+        j:=1;
+        repeat
+          if Size(u)>=2^24 then
+            v:=u; # bail out as method for `Omega` will do so.
+          else
+            v:=Omega(u,i,j);
+            if Size(v)<Size(u) then
+              d:=RefinedSubnormalSeries(d,v);
+            fi;
+            j:=j+1;
+          fi;
 
       until Size(v)=Size(u);
     fi;
-
-  od;
+    od;
+  fi;
   Assert(1,ForAll([1..Length(d)-1],x->Size(d[x])<>Size(d[x+1])));
   return d;
 end);

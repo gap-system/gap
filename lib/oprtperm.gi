@@ -1374,7 +1374,16 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
     # action on permgroups, use backtrack
     elif act = OnPoints and IsPermGroup( d ) and IsPermGroup( e )  then
 
-      if Size(G)<10^5 or NrMovedPoints(G)<500 then
+      if Size(G)<10^5 or NrMovedPoints(G)<500
+        # cyclic is handled special by backtrack
+        or IsCyclic(d) or IsCyclic(e) or
+        # does the group have many short orbits? If so the cluster test
+        # would do a lot of checking
+        Length(Orbits(d,MovedPoints(G)))^2>NrMovedPoints(G)
+        # Do not test for same orbit lengths -- this will be done by next
+        # level routine
+        then
+
         rep:=ConjugatorPermGroup(G,d,e);
       else
         S:=ClusterConjugacyPermgroups(G,[e,d]);
