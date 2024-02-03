@@ -294,7 +294,7 @@ dnl Right now, we only do the latter for 64-bit macOS. See src/hpc/tls.h
 dnl for details.
 dnl
 enable_macos_tls_asm=default
-AS_IF([[test "x$enable_native_tls" == "xyes"]], [
+AS_IF([[test "x$enable_native_tls" = "xyes"]], [
         case "$host" in
             x86_64-apple-darwin*)
                 GAP_DEFINE([USE_PTHREAD_TLS=1])
