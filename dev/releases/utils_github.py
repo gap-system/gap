@@ -73,7 +73,7 @@ def upload_asset_with_checksum(release, filename):
     else:
         notice("Writing new checksum file")
         with open(checksum_filename, "w") as checksumfile:
-            checksumfile.write(sha256file(filename))
+            checksumfile.write(utils.sha256file(filename))
 
     for file in [filename, checksum_filename]:
         try:
