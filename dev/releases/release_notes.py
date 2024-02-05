@@ -242,7 +242,7 @@ def changes_overview(prs, startdate, new_version):
 
     # Could also introduce some consistency checks here for wrong combinations of labels
     filename = "releasenotes_" + new_version + ".md"
-    notice("Writing release notes into file "+filename)
+    notice("Writing release notes into file " + filename)
     relnotes_file = open(filename, "w")
     prs_with_use_title = [pr for pr in prs if has_label(pr, "release notes: use title")]
 
@@ -283,7 +283,7 @@ affect some users directly.
 
     relnotes_file.close()
 
-    notice("Release notes were written into file "+filename)
+    notice("Release notes were written into file " + filename)
 
     unsorted_file = open("unsorted_PRs_" + new_version + ".md", "w")
 
