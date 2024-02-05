@@ -20,14 +20,14 @@
 # A version ending in .0 is consider MAJOR, any other MINOR
 # Don't use this with versions like 4.13.0-beta1
 
-import json
 import gzip
+import json
 import os
-import requests
 import subprocess
 import sys
 
-from utils import error, notice, warning, is_existing_tag, download_with_sha256
+import requests
+from utils import download_with_sha256, error, is_existing_tag, notice, warning
 
 
 def usage(name: str) -> None:

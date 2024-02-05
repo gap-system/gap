@@ -20,14 +20,14 @@ import gzip
 import json
 import os
 import re
-import requests
 import shutil
 import sys
 import tarfile
 import tempfile
+
+import requests
 import utils
 import utils_github
-
 from utils import error, notice
 
 if sys.version_info < (3, 6):

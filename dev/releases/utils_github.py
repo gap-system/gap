@@ -14,8 +14,8 @@ import re
 import shutil
 import subprocess
 import sys
-import github
 
+import github
 from utils import error, notice, sha256file, verify_via_checksumfile
 
 CURRENT_REPO_NAME = os.environ.get("GITHUB_REPOSITORY", "gap-system/gap")

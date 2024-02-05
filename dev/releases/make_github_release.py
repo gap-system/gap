@@ -15,10 +15,10 @@
 ##  If we do import * from utils, then initialize_github can't overwrite the
 ##  global CURRENT_REPO variables.
 ##
-import utils
-import utils_github
 import sys
 
+import utils
+import utils_github
 from utils import error, notice
 
 if len(sys.argv) != 3:

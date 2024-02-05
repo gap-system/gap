@@ -13,8 +13,6 @@
 ##  The version of the gap release is taken from the Makefile variable
 ##  GAP_BUILD_VERSION.
 ##
-from utils import *
-
 import glob
 import grp
 import gzip
@@ -25,6 +23,8 @@ import shutil
 import subprocess
 import sys
 import tarfile
+
+from utils import *
 
 # Insist on Python >= 3.6 for f-strings and other goodies
 if sys.version_info < (3, 6):
