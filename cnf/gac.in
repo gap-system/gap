@@ -63,6 +63,22 @@ GAP_CFLAGS="${GAP_CFLAGS} ${GAC_CFLAGS}"
 GAP_CXXFLAGS="${GAP_CXXFLAGS} ${GAC_CFLAGS}"
 GAP_LDFLAGS="${GAP_LDFLAGS} ${GAC_LDFLAGS}"
 
+# Using the stored C/C++ compilers from sysinfo.gap is sometimes
+# undesirable. For example, if the compiler suite is upgraded or
+# downgraded, the particular executable used to build GAP itself may
+# no longer exist. The CC and CXX environment variables provide a
+# somewhat standard way for the user to indicate which compilers he
+# would like to use. So if those are set, we prefer them to the stored
+# values. This allows people who know what they are doing to override
+# the default behavior, while keeping the defaults safe for normal
+# people.
+if test -n "${CC}"; then
+    c_compiler="${CC}"
+    c_dyn_linker="${CC}"
+fi
+if test -n "${CXX}"; then
+    cxx_compiler="${CXX}"
+fi
 
 # is output going to a terminal?
 if test -t 1 && command -v tput >/dev/null 2>&1 ; then
