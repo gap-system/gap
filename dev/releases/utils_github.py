@@ -16,7 +16,7 @@ import subprocess
 import sys
 import github
 
-from utils import error, notice, verify_via_checksumfile
+from utils import error, notice, sha256file, verify_via_checksumfile
 
 CURRENT_REPO_NAME = os.environ.get("GITHUB_REPOSITORY", "gap-system/gap")
 
@@ -73,7 +73,7 @@ def upload_asset_with_checksum(release, filename):
     else:
         notice("Writing new checksum file")
         with open(checksum_filename, "w") as checksumfile:
-            checksumfile.write(utils.sha256file(filename))
+            checksumfile.write(sha256file(filename))
 
     for file in [filename, checksum_filename]:
         try:
