@@ -10,6 +10,7 @@ affect some users directly.
 
 ### Changes related to handling of packages
 
+- [#5623](https://github.com/gap-system/gap/pull/5623) Change `gac` to respect `CC` and `CXX` environment variables if set (to override the C/C++ compiler it invokes)
 - [#5572](https://github.com/gap-system/gap/pull/5572) Make `License` field for GAP packages mandatory
 - [#5472](https://github.com/gap-system/gap/pull/5472) Stop requiring `Status` in package metadata; we now collect this information centrally
 - [#5401](https://github.com/gap-system/gap/pull/5401) Improve linker flags for kernel extensions under Cygwin
@@ -79,6 +80,7 @@ affect some users directly.
 
 ### Fixed bugs that could lead to incorrect results
 
+- [#5620](https://github.com/gap-system/gap/pull/5620) Fix error in `MaximalAbelianQuotient` applied to a subgroup of an FPGroup which could result in wrong results
 - [#5509](https://github.com/gap-system/gap/pull/5509) Reject GAP function definitions containing huge list or record expressions (millions of entries) instead of silently discarding part of the data
 - [#5495](https://github.com/gap-system/gap/pull/5495) Fix `LogFFE` for finite field elements which are not in `IsInternalRep` (such as elements of "large" finite fields)
 - [#5475](https://github.com/gap-system/gap/pull/5475) Fix an error in calculating subgroup lattices of nonsolvable groups was fixed. This error could lead to subgroups being omitted.
