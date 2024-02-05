@@ -246,6 +246,24 @@ Admissible values:
 Default: <K>false</K>.
 </Item>
 <Mark>
+<Index Key='ShortBanners'><C>ShortBanners</C></Index>
+<C>ShortBanners</C>
+</Mark>
+<Item>
+If this option is set to <K>true</K>, package banners printed during loading
+will only show the name, version and description of a package.
+
+<P/>
+
+Admissible values:
+<K>true</K>,
+<K>false</K>.
+
+<P/>
+
+Default: <K>false</K>.
+</Item>
+<Mark>
 <Index Key='UseColorPrompt'><C>UseColorPrompt</C></Index>
 <C>UseColorPrompt</C>
 </Mark>

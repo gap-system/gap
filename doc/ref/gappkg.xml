@@ -1104,7 +1104,7 @@ it may produce the output looking like this:
 <Log><![CDATA[
 gap> ShowPackageVariables("example");
 ----------------------------------------------------------------
-Loading  Example 3.3 (Example/Template of a GAP Package)
+Loading Example 3.3 (Example/Template of a GAP Package)
 by Werner Nickel (http://www.mathematik.tu-darmstadt.de/~nickel),
    Greg Gamble (http://www.math.rwth-aachen.de/~Greg.Gamble), and
    Alexander Konovalov (http://www.cs.st-andrews.ac.uk/~alexk/).
