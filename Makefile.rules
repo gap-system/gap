@@ -569,7 +569,7 @@ clean:
 	rm -rf extern/build extern/install
 	rm -f bin/gap.sh sysinfo.gap*
 	rm -f gap$(EXEEXT) gac ffgen
-	rm -f libgap$(SHLIB_EXT)
+	rm -f libgap$(SHLIB_EXT) $(LIBGAP_FULL)
 	rm -f libgap.pc
 	rm -rf .libs
 	rm -f doc/wsp.g
