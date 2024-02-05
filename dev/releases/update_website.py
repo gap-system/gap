@@ -67,7 +67,7 @@ tmpdir = tempfile.gettempdir()
 
 # Downloads the asset with name <asset_name> from the current GitHub release
 # (global variable <release>, with assets <assets>) to <writedir>.
-def download_asset_by_name(asset_name, writedir):
+def download_asset_by_name(asset_name: str, writedir: str) -> None:
     try:
         url = [x for x in assets if x.name == asset_name][0].browser_download_url
     except:
@@ -80,7 +80,7 @@ def download_asset_by_name(asset_name, writedir):
         utils.download_with_sha256(url, asset_name)
 
 
-def extract_tarball(tarball):
+def extract_tarball(tarball: str) -> None:
     notice(f"Extracting {tarball} . . .")
     with tarfile.open(tarball) as tar:
         try:
@@ -89,7 +89,7 @@ def extract_tarball(tarball):
             error(f"Failed to extract {tarball}!")
 
 
-def get_date_from_configure_ac(gaproot):
+def get_date_from_configure_ac(gaproot: str) -> str:
     with open(f"{gaproot}/configure.ac", "r") as configure_ac:
         filedata = configure_ac.read()
         try:  # Expect date in YYYY-MM-DD format
@@ -97,15 +97,15 @@ def get_date_from_configure_ac(gaproot):
                 "\[gap_releaseday\], \[(\d{4}-\d{2}-\d{2})\]", filedata
             ).group(1)
             release_date = datetime.datetime.strptime(release_date, "%Y-%m-%d")
+            return release_date.strftime("%d %B %Y")
         except:
             error("Cannot find the release date in configure.ac!")
-    return release_date.strftime("%d %B %Y")
 
 
 # This function deals with package-infos.json.gz and help-links.json.gz.
 # The function downloads the release asset called <asset_name> to the tmpdir.
 # The asset is assumed to be gzipped. It is extracted to the filepath <dest>.
-def download_and_extract_json_gz_asset(asset_name, dest):
+def download_and_extract_json_gz_asset(asset_name: str, dest: str) -> None:
     download_asset_by_name(asset_name, tmpdir)
     with utils.working_directory(tmpdir):
         with gzip.open(asset_name, "rt", encoding="utf-8") as file_in:
@@ -184,8 +184,8 @@ for release in releases:
         }
         asset_data.append(filtered_asset)
     asset_data.sort(key=lambda s: list(map(str, s["name"])))
-    with open(f"{pwd}/_data/assets/{version_safe}.json", "wb") as file:
-        file.write(json.dumps(asset_data, indent=2).encode("utf-8"))
+    with open(f"{pwd}/_data/assets/{version_safe}.json", "wb") as outfile:
+        outfile.write(json.dumps(asset_data, indent=2).encode("utf-8"))
 
     # For new-to-me releases create a file in _Releases/ and _data/package-infos/
     if not known_release:
@@ -201,8 +201,10 @@ for release in releases:
         notice(f"Using release date {date} for GAP {version}")
 
         notice(f"Writing the file _Releases/{version}.html")
-        with open(f"{pwd}/_Releases/{version}.html", "w") as file:
-            file.write(f"---\nversion: {version}\ndate: '{date}'\n---\n")
+        with open(f"{pwd}/_Releases/{version}.html", "wb") as outfile:
+            outfile.write(
+                f"---\nversion: {version}\ndate: '{date}'\n---\n".encode("utf-8")
+            )
 
         notice(f"Writing the file _data/package-infos/{version_safe}.json")
         download_and_extract_json_gz_asset(
@@ -219,8 +221,8 @@ for release in releases:
             "version-safe": version_safe,
             "date": date,
         }
-        with open(f"{pwd}/_data/release.json", "wb") as file:
-            file.write(json.dumps(release_data, indent=2).encode("utf-8"))
+        with open(f"{pwd}/_data/release.json", "wb") as outfile:
+            outfile.write(json.dumps(release_data, indent=2).encode("utf-8"))
 
         notice("Overwriting _data/help.json with the contents of help-links.json.gz")
         download_and_extract_json_gz_asset(
@@ -232,8 +234,8 @@ for release in releases:
         )
         shutil.rmtree("_Packages")
         os.mkdir("_Packages")
-        with open(f"{pwd}/_data/package-infos/{version_safe}.json", "rb") as file:
-            data = json.loads(file.read())
+        with open(f"{pwd}/_data/package-infos/{version_safe}.json", "rb") as infile:
+            data = json.loads(infile.read())
             for pkg in data:
                 with open(f"{pwd}/_Packages/{pkg}.html", "w+") as pkg_file:
                     pkg_file.write(f"---\ntitle: {data[pkg]['PackageName']}\n---\n")

@@ -70,8 +70,7 @@ else:
 # release tag (but then we need to find and process that tag)
 commit_date = subprocess.run(
     ["git", "show", "-s", "--format=%as"], check=True, capture_output=True, text=True
-)
-commit_date = commit_date.stdout.strip()
+).stdout.strip()
 commit_year = commit_date[0:4]
 
 # derive tarball names
@@ -247,7 +246,9 @@ with working_directory(tmpdir + "/" + basename):
 # Create an archive in the current directory with shutil.make_archive, and
 # record the filename of the new archive in <manifest_list>.
 # The arguments of this function match those to shutil.make_archive.
-def make_and_record_archive(name, compression, root_dir, base_dir):
+def make_and_record_archive(
+    name: str, compression: str, root_dir: str, base_dir: str
+) -> None:
     # Deduce file extension from compression
     if compression == "gztar":
         ext = ".tar.gz"

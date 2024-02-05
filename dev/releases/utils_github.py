@@ -28,7 +28,7 @@ CURRENT_REPO = None
 # sets the global variables GITHUB_INSTANCE and CURRENT_REPO
 # If no token is provided, this uses the value of the environment variable
 # GITHUB_TOKEN.
-def initialize_github(token=None):
+def initialize_github(token=None) -> None:
     global GITHUB_INSTANCE, CURRENT_REPO
     if GITHUB_INSTANCE != None or CURRENT_REPO != None:
         error(
@@ -64,7 +64,7 @@ def initialize_github(token=None):
 # just to be safe, in the latter case). Then upload the files <filename> and
 # <filename>.sha256 as assets to the GitHub <release>.
 # Files already ending in ".sha256" are ignored.
-def upload_asset_with_checksum(release, filename):
+def upload_asset_with_checksum(release, filename: str) -> None:
     if not os.path.isfile(filename):
         error(f"{filename} not found")
 

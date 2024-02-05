@@ -14,25 +14,26 @@ import re
 import shutil
 import subprocess
 import sys
+from typing import Iterator, List, NoReturn, Optional
 
 
 # print notices in green
-def notice(msg):
+def notice(msg: str) -> None:
     print("\033[32m" + msg + "\033[0m")
 
 
 # print warnings in yellow
-def warning(msg):
-    print("\033[33m" + msg + "\033[0m")
+def warning(msg: str) -> None:
+    print("\033[33m" + msg + "\033[0m", file=sys.stderr)
 
 
 # print error in red and exit
-def error(msg):
-    print("\033[31m" + msg + "\033[0m")
+def error(msg: str) -> NoReturn:
+    print("\033[31m" + msg + "\033[0m", file=sys.stderr)
     sys.exit(1)
 
 
-def verify_command_available(cmd):
+def verify_command_available(cmd: str) -> None:
     if shutil.which(cmd) == None:
         error(f"the '{cmd}' command was not found, please install it")
     # TODO: do the analog of this in ReleaseTools bash script:
@@ -40,7 +41,7 @@ def verify_command_available(cmd):
     #     error "the 'curl' command was not found, please install it"
 
 
-def verify_git_repo():
+def verify_git_repo() -> None:
     res = subprocess.run(
         ["git", "--git-dir=.git", "rev-parse"], stderr=subprocess.DEVNULL
     )
@@ -49,21 +50,21 @@ def verify_git_repo():
 
 
 # check for uncommitted changes
-def is_git_clean():
+def is_git_clean() -> bool:
     res = subprocess.run(["git", "update-index", "--refresh"])
     if res.returncode == 0:
         res = subprocess.run(["git", "diff-index", "--quiet", "HEAD", "--"])
     return res.returncode == 0
 
 
-def verify_git_clean():
+def verify_git_clean() -> None:
     if not is_git_clean():
         error("uncommitted changes detected")
 
 
 # from https://code.activestate.com/recipes/576620-changedirectory-context-manager/
 @contextlib.contextmanager
-def working_directory(path):
+def working_directory(path: str) -> Iterator[None]:
     """A context manager which changes the working directory to the given
     path, and then changes it back to its previous value on exit.
 
@@ -75,7 +76,7 @@ def working_directory(path):
 
 
 # helper for extracting values of variables set in the GAP Makefiles.rules
-def get_makefile_var(var):
+def get_makefile_var(var: str) -> str:
     res = subprocess.run(["make", f"print-{var}"], check=True, capture_output=True)
     kv = res.stdout.decode("ascii").strip().split("=")
     assert len(kv) == 2
@@ -84,7 +85,7 @@ def get_makefile_var(var):
 
 
 # compute the sha256 checksum of a file
-def sha256file(path):
+def sha256file(path: str) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as f:
         # Read and update hash string value in blocks of 4K
@@ -94,7 +95,7 @@ def sha256file(path):
 
 
 # read a file into memory, apply some transformations, and write it back
-def patchfile(path, pattern, repl):
+def patchfile(path: str, pattern: str, repl: str) -> None:
     # Read in the file
     with open(path, "r") as file:
         filedata = file.read()
@@ -108,20 +109,20 @@ def patchfile(path, pattern, repl):
 
 
 # download file at the given URL to path `dst`
-def download(url, dst):
+def download(url: str, dst: str) -> None:
     notice(f"Downlading {url} to {dst}")
     res = subprocess.run(["curl", "-L", "-C", "-", "-o", dst, url])
     if res.returncode != 0:
         error("failed downloading " + url)
 
 
-def file_matches_checksumfile(filename):
+def file_matches_checksumfile(filename: str) -> bool:
     with open(filename + ".sha256", "r") as f:
         expected_checksum = f.read().strip()
     return expected_checksum == sha256file(filename)
 
 
-def verify_via_checksumfile(filename):
+def verify_via_checksumfile(filename: str) -> None:
     actual_checksum = sha256file(filename)
     with open(filename + ".sha256", "r") as f:
         expected_checksum = f.read().strip()
@@ -133,7 +134,7 @@ def verify_via_checksumfile(filename):
 
 # Download file at the given URL to path `dst`, unless we detect that a file
 # already exists at `dst` with the expected checksum.
-def download_with_sha256(url, dst):
+def download_with_sha256(url: str, dst: str) -> None:
     download(url + ".sha256", dst + ".sha256")
     if os.path.isfile(dst):
         if file_matches_checksumfile(dst):
@@ -144,8 +145,8 @@ def download_with_sha256(url, dst):
 
 
 # Run what ever <args> command and create appropriate log file
-def run_with_log(args, name, msg=None):
-    if msg == None:
+def run_with_log(args: List[str], name: str, msg: Optional[str] = None) -> None:
+    if not msg:
         msg = name
     with open("../" + name + ".log", "w") as fp:
         try:
@@ -154,16 +155,16 @@ def run_with_log(args, name, msg=None):
             error(msg + " failed. See " + name + ".log.")
 
 
-def is_possible_gap_release_tag(tag):
+def is_possible_gap_release_tag(tag: str) -> bool:
     return re.fullmatch(r"v[1-9]+\.[0-9]+\.[0-9]+(-.+)?", tag) != None
 
 
-def verify_is_possible_gap_release_tag(tag):
+def verify_is_possible_gap_release_tag(tag: str) -> None:
     if not is_possible_gap_release_tag(tag):
         error(f"{tag} does not look like the tag of a GAP release version")
 
 
-def is_existing_tag(tag):
+def is_existing_tag(tag: str) -> bool:
     res = subprocess.run(
         ["git", "show-ref", "--quiet", "--verify", "refs/tags/" + tag],
     )
@@ -171,7 +172,7 @@ def is_existing_tag(tag):
 
 
 # Error checked git fetch of tags
-def safe_git_fetch_tags():
+def safe_git_fetch_tags() -> None:
     try:
         subprocess.run(["git", "fetch", "--tags"], check=True)
     except subprocess.CalledProcessError:
@@ -180,14 +181,14 @@ def safe_git_fetch_tags():
 
 # lightweight vs annotated
 # https://stackoverflow.com/questions/40479712/how-can-i-tell-if-a-given-git-tag-is-annotated-or-lightweight#40499437
-def is_annotated_git_tag(tag):
+def is_annotated_git_tag(tag: str) -> bool:
     res = subprocess.run(
         ["git", "for-each-ref", "refs/tags/" + tag], capture_output=True, text=True
     )
     return res.returncode == 0 and res.stdout.split()[1] == "tag"
 
 
-def check_git_tag_for_release(tag):
+def check_git_tag_for_release(tag: str) -> None:
     if not is_annotated_git_tag(tag):
         error(f"There is no annotated tag {tag}")
     # check that tag points to HEAD
