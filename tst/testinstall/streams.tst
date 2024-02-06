@@ -213,9 +213,11 @@ Error, Print formatting status must be true or false
 # too many open files
 gap> streams := [ ];;
 gap> for i in [ 1 .. 300 ] do
->    Add( streams, OutputTextFile( fname, false ) );
+>    stream := OutputTextFile( fname, false );
+>    Assert(0, stream <> fail);
+>    Add( streams, stream );
 > od;;
-Error, Too many open files (internal file descriptor limit reached)
+Error, Assertion failure
 gap> Perform( streams, CloseStream );
 gap> RemoveFile(fname);
 true
