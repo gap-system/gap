@@ -317,6 +317,10 @@ GAPInput
     # HACK: symlink packages so we can start GAP
     ln -s $SRCDIR/pkg $GAPPREFIX/share/gap/pkg
 
+    # ensure the dynamic linker finds the install libgap in our custom prefix
+    export LD_LIBRARY_PATH="$GAPPREFIX/lib"
+    export DYLD_LIBRARY_PATH="$GAPPREFIX/lib"
+
     # test building and loading package kernel extension
     testmockpkg "$GAPPREFIX/bin/gap" "$GAPPREFIX/lib/gap" "$SRCDIR/tst/mockpkg"
 

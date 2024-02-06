@@ -506,13 +506,8 @@ build/main.c: src/main.c
 	@cat $< >> $@
 
 # build rule for the gap executable used by the `install-bin` target
-#
-# we add the -Wl,-rpath,$(libdir) to make it work on Linux when installed in a
-# non-system prefix (as we do for our tests), where $(libdir) is not in one of
-# the default linker search directories. An alternative might be to set
-# LD_LIBRARY_PATH during our tests...
 build/gap-install: libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS build/obj/build/main.c.o
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) build/obj/build/main.c.o $(GAP_LIBS) -Wl,-rpath,$(libdir) -L${abs_builddir} -lgap -o $@
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) build/obj/build/main.c.o $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
 
 endif
 
