@@ -1,0 +1,4 @@
+github
+mypy
+requests
+types-requests

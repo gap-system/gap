@@ -31,8 +31,32 @@ env:
   NO_COVERAGE: 1
 
 jobs:
+  tools:
+    name: "Validate release scripts"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -r dev/releases/requirements.txt
+          python -m pip install pytest mock black isort
+
+      - name: Check code formatting
+        run: python -m black --check --diff dev/releases
+
+      - name: Check imports
+        run: python -m isort --check --profile black dev/releases
+
+      #- name: Validate types
+      #  run: python -m mypy --disallow-untyped-calls --disallow-untyped-defs dev/releases/*.py
+
+      #- name: Run tests
+      #  run: python -m pytest tools/tests/dev/releases*.py -vv
+
   unix:
     name: "Create Unix archives and data"
+    needs: tools
     # Don't run this twice on PRs for branches pushed to the same repository
     if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-latest

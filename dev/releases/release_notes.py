@@ -20,14 +20,15 @@
 # A version ending in .0 is consider MAJOR, any other MINOR
 # Don't use this with versions like 4.13.0-beta1
 
-import json
 import gzip
+import json
 import os
-import requests
 import subprocess
 import sys
+from typing import Any, Dict, List, TextIO
 
-from utils import error, notice, warning, is_existing_tag, download_with_sha256
+import requests
+from utils import download_with_sha256, error, is_existing_tag, notice, warning
 
 
 def usage(name: str) -> None:
@@ -36,13 +37,13 @@ def usage(name: str) -> None:
 
 
 def find_previous_version(version: str) -> str:
-    major, minor, patchlevel = version.split(".")
-    if major != "4":
+    major, minor, patchlevel = map(int, version.split("."))
+    if major != 4:
         error("unexpected GAP version, not starting with '4.'")
-    if patchlevel != "0":
-        patchlevel = int(patchlevel) - 1
+    if patchlevel != 0:
+        patchlevel -= 1
         return f"{major}.{minor}.{patchlevel}"
-    minor = int(minor) - 1
+    minor -= 1
     patchlevel = 0
     while True:
         v = f"{major}.{minor}.{patchlevel}"
@@ -55,16 +56,16 @@ def find_previous_version(version: str) -> str:
     return f"{major}.{minor}.{patchlevel}"
 
 
-def package_infos_url(tag):
+def package_infos_url(tag: str) -> str:
     return f"https://github.com/gap-system/PackageDistro/releases/download/{tag}/package-infos.json.gz"
 
 
-def url_exists(url):
+def url_exists(url: str) -> bool:
     response = requests.get(url)
     return response.status_code == 200
 
 
-def package_updates(relnotes_file, new_gap_version):
+def package_updates(relnotes_file: TextIO, new_gap_version: str) -> None:
     # create tmp directory
     tmpdir = os.getcwd() + "/tmp"
     notice(f"Files will be put in {tmpdir}")
@@ -112,12 +113,13 @@ def package_updates(relnotes_file, new_gap_version):
             home = pkg["PackageWWWHome"]
             desc = pkg["Subtitle"]
             vers = pkg["Version"]
-            authors = [
-                x["FirstNames"] + " " + x["LastName"]
-                for x in pkg["Persons"]
-                if x["IsAuthor"]
-            ]
-            authors = ", ".join(authors)
+            authors = ", ".join(
+                [
+                    x["FirstNames"] + " " + x["LastName"]
+                    for x in pkg["Persons"]
+                    if x["IsAuthor"]
+                ]
+            )
             relnotes_file.write(
                 f"- [**{name}**]({home}) {vers}: {desc}, by {authors}\n"
             )
@@ -202,7 +204,7 @@ def get_tag_date(tag: str) -> str:
     return res.stdout.strip()
 
 
-def get_pr_list(date: str, extra: str) -> str:
+def get_pr_list(date: str, extra: str) -> List[Dict[str, Any]]:
     query = f'merged:>={date} -label:"release notes: not needed" -label:"release notes: added" base:master {extra}'
     print("query: ", query)
     res = subprocess.run(
@@ -226,23 +228,25 @@ def get_pr_list(date: str, extra: str) -> str:
     return json.loads(res.stdout.strip())
 
 
-def pr_to_md(pr):
+def pr_to_md(pr: Dict[str, Any]) -> str:
     """Returns markdown string for the PR entry"""
     k = pr["number"]
     title = pr["title"]
     return f"- [#{k}](https://github.com/gap-system/gap/pull/{k}) {title}\n"
 
 
-def has_label(pr, label):
+def has_label(pr: Dict[str, Any], label: str) -> bool:
     return any(x["name"] == label for x in pr["labels"])
 
 
-def changes_overview(prs, startdate, new_version):
+def changes_overview(
+    prs: List[Dict[str, Any]], startdate: str, new_version: str
+) -> None:
     """Writes files with information for release notes."""
 
     # Could also introduce some consistency checks here for wrong combinations of labels
     filename = "releasenotes_" + new_version + ".md"
-    notice("Writing release notes into file "+filename)
+    notice("Writing release notes into file " + filename)
     relnotes_file = open(filename, "w")
     prs_with_use_title = [pr for pr in prs if has_label(pr, "release notes: use title")]
 
@@ -283,7 +287,7 @@ affect some users directly.
 
     relnotes_file.close()
 
-    notice("Release notes were written into file "+filename)
+    notice("Release notes were written into file " + filename)
 
     unsorted_file = open("unsorted_PRs_" + new_version + ".md", "w")
 
@@ -295,7 +299,7 @@ affect some users directly.
     unsorted_file.write(
         'When done, change their label to "release notes: use title".\n\n'
     )
-    removelist = []
+
     for pr in prs:
         if has_label(pr, "release notes: to be added"):
             unsorted_file.write(pr_to_md(pr))
@@ -312,7 +316,7 @@ affect some users directly.
     unsorted_file.write(
         'as above, or change their label to "release notes: not needed".\n\n'
     )
-    removelist = []
+
     for pr in prs:
         # we need to use both old "release notes: added" label and
         # the newly introduced in "release notes: use title" label
@@ -326,18 +330,18 @@ affect some users directly.
 
 
 def main(new_version: str) -> None:
-    major, minor, patchlevel = new_version.split(".")
-    if major != "4":
+    major, minor, patchlevel = map(int, new_version.split("."))
+    if major != 4:
         error("unexpected GAP version, not starting with '4.'")
-    if patchlevel == "0":
+    if patchlevel == 0:
         # "major" GAP release which changes just the minor version
-        previous_minor = int(minor) - 1
+        previous_minor = minor - 1
         basetag = f"v{major}.{minor}dev"
         # *exclude* PRs backported to previous stable-4.X branch
         extra = f'-label:"backport-to-{major}.{previous_minor}-DONE"'
     else:
         # "minor" GAP release which changes just the patchlevel
-        previous_patchlevel = int(patchlevel) - 1
+        previous_patchlevel = patchlevel - 1
         basetag = f"v{major}.{minor}.{previous_patchlevel}"
         # *include* PRs backported to current stable-4.X branch
         extra = f'label:"backport-to-{major}.{minor}-DONE"'
