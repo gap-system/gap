@@ -58,7 +58,7 @@ RELEASE = utils_github.CURRENT_REPO.create_git_release(
 
 with utils.working_directory(PATH_TO_RELEASE):
     manifest_filename = "MANIFEST"
-    with open(manifest_filename, "r") as manifest_file:
+    with open(manifest_filename, "r", encoding="utf-8") as manifest_file:
         manifest = manifest_file.read().splitlines()
 
     notice(f"Contents of {manifest_filename}:")
@@ -67,7 +67,7 @@ with utils.working_directory(PATH_TO_RELEASE):
 
     # Now check that TAG_NAME and the created archives belong together
     main_archive_name = "gap-" + VERSION + ".tar.gz"
-    if not main_archive_name in manifest:
+    if main_archive_name not in manifest:
         error(f"Expected to find {main_archive_name} in MANIFEST, but did not!")
 
     # Upload all assets to release

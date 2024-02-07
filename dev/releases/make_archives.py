@@ -17,6 +17,7 @@ import glob
 import grp
 import gzip
 import json
+import os
 import pwd
 import re
 import shutil
@@ -24,7 +25,19 @@ import subprocess
 import sys
 import tarfile
 
-from utils import *
+from utils import (
+    download_with_sha256,
+    error,
+    get_makefile_var,
+    notice,
+    patchfile,
+    run_with_log,
+    safe_git_fetch_tags,
+    verify_command_available,
+    verify_git_clean,
+    verify_git_repo,
+    working_directory,
+)
 
 # Insist on Python >= 3.6 for f-strings and other goodies
 if sys.version_info < (3, 6):
@@ -56,11 +69,11 @@ except:
     error("make sure GAP has been compiled via './configure && make'")
 notice(f"Detected GAP version {gapversion}")
 
-if re.fullmatch(r"[1-9]+\.[0-9]+\.[0-9]+", gapversion) != None:
-    notice(f"--- THIS LOOKS LIKE A RELEASE ---")
+if re.fullmatch(r"[1-9]+\.[0-9]+\.[0-9]+", gapversion) is not None:
+    notice("--- THIS LOOKS LIKE A RELEASE ---")
     pkg_tag = f"v{gapversion}"
 else:
-    notice(f"--- THIS LOOKS LIKE A NIGHTLY BUILD ---")
+    notice("--- THIS LOOKS LIKE A NIGHTLY BUILD ---")
     pkg_tag = "latest"
 
 
@@ -195,14 +208,14 @@ with working_directory(tmpdir + "/" + basename):
         subprocess.run(["./configure"], check=True)
         subprocess.run(["make"], check=True)
 
-    notice(f"Constructing help-links JSON file")
+    notice("Constructing help-links JSON file")
     json_output = subprocess.run(
         [
             "./gap",
             "-r",
             "--quiet",
             "--quitonbreak",
-            f"dev/releases/HelpLinks-to-JSON.g",
+            "dev/releases/HelpLinks-to-JSON.g",
         ],
         check=True,
         capture_output=True,
@@ -257,12 +270,12 @@ def make_and_record_archive(
     else:
         error(f"unknown compression type {compression} (not gztar or zip)")
 
-    filename = f"{name}{ext}"
-    notice(f"Creating {filename}")
+    fname = f"{name}{ext}"
+    notice(f"Creating {fname}")
     owner = pwd.getpwuid(0).pw_name
     group = grp.getgrgid(0).gr_name
     shutil.make_archive(name, compression, root_dir, base_dir, owner=owner, group=group)
-    manifest_list.append(filename)
+    manifest_list.append(fname)
 
 
 # Create the remaining archives
@@ -280,7 +293,7 @@ with working_directory(tmpdir):
     # If you create additional archives, make sure to add them to manifest_list!
     manifest_filename = "MANIFEST"
     notice(f"Creating the manifest, with name {manifest_filename}")
-    with open(manifest_filename, "w") as manifest:
+    with open(manifest_filename, "w", encoding="utf-8") as manifest:
         for filename in manifest_list:
             manifest.write(f"{filename}\n")
 
