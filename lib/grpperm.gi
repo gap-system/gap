@@ -2199,7 +2199,7 @@ end);
 ##
 #M  AsList( <G> ) elements of perm group
 ##
-InstallMethod( AsList, "permgp: AsSSortedList", [ IsPermGroup ],
+InstallMethod( AsList, "permgp: ElementsStabChain", [ IsPermGroup ],
   G -> ElementsStabChain( StabChainMutable(G)) );
 
 #############################################################################

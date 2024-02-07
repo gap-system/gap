@@ -1,4 +1,4 @@
-#@local F,G,S,c,cl,f,g,g1,g10,g3,gens,h,hh,i,m,n,pcgs,r,rws,sys,u,v,x,y
+#@local F,G,S,c,cl,f,g,g1,g10,g3,gens,h,hh,i,m,n,pcgs,r,rws,sys,u,v,x,y,iso
 gap> START_TEST("grppc.tst");
 gap> Display(TrivialGroup(IsPcGroup));
 trivial pc-group
@@ -172,5 +172,16 @@ true
 gap> AsSet(Omega(g,3,2)) = Set(Filtered(g, g -> IsOne(g^9)));
 true
 
+#
+gap> F:= FreeGroup(2);; x:= F.1;; y:= F.2;;
+gap> G:= F / [ x^2, y^2, (x*y)^2 ];;
+gap> iso:= IsomorphismPcGroup( G );;
+gap> HasIsSurjective( iso );
+true
+gap> HasImagesSource( iso );
+true
+gap> IsIdenticalObj( Range( iso ), ImagesSource( iso ) );
+true
+
 # that's all, folks
-gap> STOP_TEST( "grppc.tst", 1);
+gap> STOP_TEST( "grppc.tst" );
