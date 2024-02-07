@@ -7,13 +7,8 @@
 ##
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
-import contextlib
-import hashlib
 import os
-import re
-import shutil
 import subprocess
-import sys
 
 import github
 from utils import error, notice, sha256file, verify_via_checksumfile
@@ -30,25 +25,30 @@ CURRENT_REPO = None
 # GITHUB_TOKEN.
 def initialize_github(token=None) -> None:
     global GITHUB_INSTANCE, CURRENT_REPO
-    if GITHUB_INSTANCE != None or CURRENT_REPO != None:
+    if GITHUB_INSTANCE is not None or CURRENT_REPO is not None:
         error(
             "Global variables GITHUB_INSTANCE and CURRENT_REPO"
             + " are already initialized."
         )
-    if token == None and "GITHUB_TOKEN" in os.environ:
+    if token is None and "GITHUB_TOKEN" in os.environ:
         token = os.environ["GITHUB_TOKEN"]
-    if token == None:
+    if token is None:
         temp = subprocess.run(
-            ["git", "config", "--get", "github.token"], text=True, capture_output=True
+            ["git", "config", "--get", "github.token"],
+            text=True,
+            capture_output=True,
+            check=False,
         )
         if temp.returncode == 0:
             token = temp.stdout.strip()
-    if token == None and os.path.isfile(
+    if token is None and os.path.isfile(
         os.path.expanduser("~") + "/.github_shell_token"
     ):
-        with open(os.path.expanduser("~") + "/.github_shell_token", "r") as token_file:
+        with open(
+            os.path.expanduser("~") + "/.github_shell_token", "r", encoding="utf-8"
+        ) as token_file:
             token = token_file.read().strip()
-    if token == None:
+    if token is None:
         error("Error: no access token found or provided")
     g = github.Github(token)
     GITHUB_INSTANCE = g
@@ -80,7 +80,7 @@ def upload_asset_with_checksum(release, filename: str) -> None:
         verify_via_checksumfile(filename)
     else:
         notice("Writing new checksum file")
-        with open(checksum_filename, "w") as checksumfile:
+        with open(checksum_filename, "w", encoding="utf-8") as checksumfile:
             checksumfile.write(sha256file(filename))
 
     for file in [filename, checksum_filename]:

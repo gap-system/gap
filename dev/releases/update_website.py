@@ -80,21 +80,21 @@ def download_asset_by_name(asset_name: str, writedir: str) -> None:
         utils.download_with_sha256(url, asset_name)
 
 
-def extract_tarball(tarball: str) -> None:
-    notice(f"Extracting {tarball} . . .")
-    with tarfile.open(tarball) as tar:
+def extract_tarball(tball: str) -> None:
+    notice(f"Extracting {tball} . . .")
+    with tarfile.open(tball) as tar:
         try:
             tar.extractall()
         except:
-            error(f"Failed to extract {tarball}!")
+            error(f"Failed to extract {tball}!")
 
 
 def get_date_from_configure_ac(gaproot: str) -> str:
-    with open(f"{gaproot}/configure.ac", "r") as configure_ac:
+    with open(f"{gaproot}/configure.ac", "r", encoding="utf-8") as configure_ac:
         filedata = configure_ac.read()
         try:  # Expect date in YYYY-MM-DD format
             release_date = re.search(
-                "\[gap_releaseday\], \[(\d{4}-\d{2}-\d{2})\]", filedata
+                r"\[gap_releaseday\], \[(\d{4}-\d{2}-\d{2})\]", filedata
             ).group(1)
             release_date = datetime.datetime.strptime(release_date, "%Y-%m-%d")
             return release_date.strftime("%d %B %Y")
@@ -109,7 +109,7 @@ def download_and_extract_json_gz_asset(asset_name: str, dest: str) -> None:
     download_asset_by_name(asset_name, tmpdir)
     with utils.working_directory(tmpdir):
         with gzip.open(asset_name, "rt", encoding="utf-8") as file_in:
-            with open(dest, "w") as file_out:
+            with open(dest, "w", encoding="utf-8") as file_out:
                 shutil.copyfileobj(file_in, file_out)
 
 
@@ -155,12 +155,12 @@ for release in releases:
     known_release = os.path.isfile(f"_Releases/{version}.html")
     newest_release = releases.index(release) == 0
     if known_release:
-        notice(f"I have seen this release before")
+        notice("I have seen this release before")
     elif newest_release:
-        notice(f"This is a new release to me, and it has the biggest version number")
+        notice("This is a new release to me, and it has the biggest version number")
     else:
         notice(
-            f"This is a new release to me, but I know about releases with bigger version numbers"
+            "This is a new release to me, but I know about releases with bigger version numbers"
         )
 
     # For all releases, record the assets (in case they were deleted/updated/added)
@@ -237,5 +237,7 @@ for release in releases:
         with open(f"{pwd}/_data/package-infos/{version_safe}.json", "rb") as infile:
             data = json.loads(infile.read())
             for pkg in data:
-                with open(f"{pwd}/_Packages/{pkg}.html", "w+") as pkg_file:
+                with open(
+                    f"{pwd}/_Packages/{pkg}.html", "w+", encoding="utf-8"
+                ) as pkg_file:
                     pkg_file.write(f"---\ntitle: {data[pkg]['PackageName']}\n---\n")
