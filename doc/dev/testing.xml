@@ -213,12 +213,12 @@ you should make sure that the system is up to date, in particular,
 Then proceed as follows in the &GAP; root directory.
 <List>
   <Item>
-    Call <C>make testinstall</C>.
+    Call <C>dev/ci.sh testinstall</C>.
     This reads the file <C>tst/testinstall.g</C>,
     which should require just a few minutes.
   </Item>
   <Item>
-    Call <C>make testmanuals</C>.
+    Call <C>dev/ci.sh testmanuals</C>.
     This runs the examples in the main &GAP; manuals,
     and should also require only a few minutes.
     (Note that a new &GAP; process is started for each manual chapter.
@@ -226,19 +226,19 @@ Then proceed as follows in the &GAP; root directory.
     in the beginning, is reused for each chapter, and removed in the end.)
   </Item>
   <Item>
-    Call <C>make teststandard</C>.
+    Call <C>dev/ci.sh teststandard</C>.
     This runs the tests in <C>tst</C>,
     and may require a couple of hours.
   </Item>
   <Item>
-    Call <C>make testpackages</C>.
+    Call <C>dev/ci.sh testpackages</C>.
     This starts a new &GAP; session for each accepted or deposited package,
     and reads the file given by the component <C>TestFile</C> in the
     <F>PackageInfo.g</F> file (if this is available).
     It may require several hours.
   </Item>
   <Item>
-    Call <C>make testpackagesloading</C>.
+    Call <C>dev/ci.sh testpackagesloading</C>.
     This loads each accepted or deposited package in a new &GAP; session,
     then starts a new &GAP; session and calls <Ref BookName="ref" Func="LoadAllPackages"/>
     to check that all packages may be loaded simultaneosuly.
@@ -246,10 +246,6 @@ Then proceed as follows in the &GAP; root directory.
   </Item>
 </List>
 
-In each case, &GAP; is called with the command line options
-<C>-m 100m -o 550m -A -N -q -x 80 -r</C>,
-cf. <Ref BookName="Ref" Sect="Command Line Options"/>,
-and the assertion level is set to 2 before the tests.
 <P/>
 
 The output is written to files in the directory <F>dev/log</F>,

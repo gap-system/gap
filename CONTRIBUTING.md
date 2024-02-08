@@ -114,10 +114,9 @@ to create a GitHub account, see below for an alternative.
           single space, with blank lines in between, but conventions vary here
 
 * Make sure you have added any necessary tests for your changes.
-* Run all the tests to assure nothing else was accidentally broken.
+* Run some tests to assure nothing else was accidentally broken.
 
-        $ make testinstall
-        $ make teststandard
+        $ make check
 
 * Push your changes to a topic branch in your fork of the repository.
 
