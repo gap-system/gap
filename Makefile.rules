@@ -166,6 +166,14 @@ SOURCES_ALL := $(SOURCES)
 SOURCES_ALL += src/compstat_empty.c
 SOURCES_ALL += src/main.c
 
+
+########################################################################
+#
+########################################################################
+
+SYSINFO_CC := $(CC)
+SYSINFO_CXX := $(CXX)
+
 ########################################################################
 # Preprocessor flags
 #
@@ -907,8 +915,8 @@ GAP_OBJEXT=o
 
 # Build flags for use by `gac` resp. package build systems: these correspond to
 # the usual variables as used by e.g. autotools, with the added prefix `GAP_`.
-GAP_CC="$(CC)"
-GAP_CXX="$(CXX)"
+GAP_CC="$(SYSINFO_CC)"
+GAP_CXX="$(SYSINFO_CXX)"
 GAP_CFLAGS="$(SYSINFO_CFLAGS)"
 GAP_CXXFLAGS="$(SYSINFO_CXXFLAGS)"
 GAP_CPPFLAGS="$(SYSINFO_CPPFLAGS)"
