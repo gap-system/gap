@@ -634,10 +634,7 @@ InstallOtherMethod( \^,
 InstallOtherMethod( \^,
     "for two class functions (conjugation, trivial action)",
     [ IsClassFunction, IsClassFunction ],
-    function( chi, psi )
-    return chi;
-    end );
-
+    ReturnFirst);
 
 #############################################################################
 ##

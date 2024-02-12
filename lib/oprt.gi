@@ -2769,9 +2769,7 @@ InstallMethod( IsSemiRegular,
       IsList,
       IsFunction ],
       20, # we claim this method is very good
-    function( G, D, gens, acts, act )
-    return true;
-end );
+      ReturnTrue);
 
 InstallMethod( IsSemiRegular,
     "G, D, gens, [  ], act",
@@ -3581,9 +3579,7 @@ end);
 ##
 InstallMethod(DomainForAction,"default: fail",true,
   [IsObject,IsListOrCollection,IsFunction],0,
-function(pnt,acts,act)
-  return fail;
-end);
+ReturnFail);
 
 #############################################################################
 ##

@@ -1208,9 +1208,7 @@ InstallMethod( \^,
     true,
     [ IsGeneralMapping and IsOne, IsInt ],
     SUM_FLAGS, # can't do better
-  function ( id, n )
-    return id;
-  end );
+  ReturnFirst );
 
 
 #############################################################################

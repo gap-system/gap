@@ -1499,10 +1499,7 @@ RedispatchOnCondition( FittingSubgroup, true, [IsGroup], [IsFinite], 0);
 #M  FrattiniSubgroup( <G> ) . . . . . . . . . .  Frattini subgroup of a group
 ##
 InstallMethod( FrattiniSubgroup, "method for trivial groups",
-            [ IsGroup and IsTrivial ],
-function(G)
-    return G;
-end);
+            [ IsGroup and IsTrivial ], IdFunc );
 
 InstallMethod( FrattiniSubgroup, "for abelian groups",
             [ IsGroup and IsAbelian ],
@@ -2578,10 +2575,7 @@ InstallMethod( ClosureGroup,
     IsCollsElms,
     [ IsGroup and IsWholeFamily, IsMultiplicativeElementWithInverse ],
     SUM_FLAGS, # this is better than everything else
-    function( G, g )
-    return G;
-    end );
-
+    ReturnFirst);
 
 #############################################################################
 ##
@@ -2607,9 +2601,7 @@ InstallMethod( ClosureGroup,
     IsIdenticalObj,
     [ IsGroup and IsWholeFamily, IsGroup ],
     SUM_FLAGS, # this is better than everything else
-    function( G, H )
-    return G;
-    end );
+    ReturnFirst);
 
 InstallMethod( ClosureGroup,
     "for group and element list",
@@ -2625,11 +2617,7 @@ InstallMethod( ClosureGroup,
 end );
 
 InstallMethod( ClosureGroup, "for group and empty element list",
-    [ IsGroup, IsList and IsEmpty ],
-function( G, nogens )
-  return G;
-end );
-
+    [ IsGroup, IsList and IsEmpty ], ReturnFirst);
 
 #############################################################################
 ##

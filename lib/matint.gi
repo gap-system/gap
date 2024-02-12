@@ -857,9 +857,7 @@ local norm, rs, t, M, r;
 end);
 
 InstallOtherMethod(SolutionIntMat,"empty",true,[IsEmpty,IsObject],0,
-function(mat,v)
-  return fail;
-end);
+ReturnFail);
 
 #############################################################################
 ##

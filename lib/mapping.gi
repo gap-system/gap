@@ -762,9 +762,7 @@ InstallOtherMethod( \+,
     "for general mapping and zero mapping",
     IsIdenticalObj,
     [ IsGeneralMapping, IsGeneralMapping and IsZero ], 0,
-    function( map, zero )
-    return map;
-    end );
+    ReturnFirst );
 
 
 #############################################################################

@@ -193,10 +193,7 @@ InstallMethod( ClosureDivisionRing,
     IsCollsElms,
     [ IsDivisionRing and IsWholeFamily, IsScalar ],
     SUM_FLAGS, # we can't be better than this
-    function( D, d )
-    return D;
-    end );
-
+    ReturnFirst);
 
 #############################################################################
 ##
@@ -229,9 +226,7 @@ InstallMethod( ClosureDivisionRing,
 InstallMethod( ClosureDivisionRing,
     "for division ring and empty list",
     [ IsDivisionRing, IsList and IsEmpty ],
-    function( D, empty )
-    return D;
-    end );
+    ReturnFirst);
 
 
 #############################################################################

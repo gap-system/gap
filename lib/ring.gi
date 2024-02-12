@@ -760,9 +760,7 @@ InstallMethod( ClosureRing,
     IsCollsElms,
     [ IsRing and IsWholeFamily, IsRingElement ],
     SUM_FLAGS, # can't do better
-    function( R, r )
-    return R;
-    end );
+    ReturnFirst );
 
 
 #############################################################################
@@ -800,9 +798,7 @@ InstallMethod( ClosureRing,
     IsIdenticalObj,
     [ IsRing and IsWholeFamily, IsCollection ],
     SUM_FLAGS, # can't do better
-    function( R, S )
-    return R;
-    end );
+    ReturnFirst );
 
 
 #############################################################################

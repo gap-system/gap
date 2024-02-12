@@ -3136,9 +3136,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
       fi;
       end;
 
-    key_dependent_operation:= function( entry )
-      return entry;
-      end;
+    key_dependent_operation:= IdFunc;
 
     # List the cases to be dealt with.
     rules:= [

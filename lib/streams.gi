@@ -1217,10 +1217,7 @@ end );
 InstallMethod( WriteAll,
     "output text none",
     [ IsOutputTextNone and IsOutputTextNoneRep,
-      IsString ],
-function( stream, string )
-    return true;
-end );
+      IsString ], ReturnTrue );
 
 
 #############################################################################
