@@ -145,6 +145,14 @@ On Ubuntu or Debian, you can install these with the following command:
 
     sudo apt-get install build-essential autoconf libgmp-dev libreadline-dev zlib1g-dev
 
+On Fedora:
+
+    sudo dnf install gcc gcc-c++ make autoconf gmp gmp-devel readline readline-devel zlib zlib-devel
+
+On Alpine:
+
+    sudo apk add build-base autoconf gmp-dev readline-dev zlib-dev
+
 On macOS, please follow the instructions in section "GAP for macOS" below.
 
 On other operating systems, you will need to figure out equivalent commands

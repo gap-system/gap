@@ -67,6 +67,14 @@ On Ubuntu or Debian, you can install these with the following command:
 
     sudo apt-get install build-essential autoconf libgmp-dev libreadline-dev zlib1g-dev
 
+On Fedora:
+
+    sudo dnf install gcc gcc-c++ make autoconf gmp gmp-devel readline readline-devel zlib zlib-devel
+
+On Alpine:
+
+    sudo apk add build-base autoconf gmp-dev readline-dev zlib-dev
+
 On macOS, you can install the dependencies in several ways:
 
  * using Homebrew: `brew install autoconf gmp readline`
