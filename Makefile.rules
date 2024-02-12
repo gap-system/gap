@@ -980,6 +980,8 @@ citests: all
 
 LIBGAPTESTS := $(addprefix tst/testlibgap/,basic api wscreate wsload trycatch)
 
+build-testlibgap: ${LIBGAPTESTS}
+
 # run a test in tst/testlibgap
 tst/testlibgap/%: build/obj/tst/testlibgap/%.c.o build/obj/tst/testlibgap/common.c.o libgap$(SHLIB_EXT)
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) -Wl,-rpath,$(abs_builddir) $^ $(GAP_LIBS) -o $@
@@ -1019,6 +1021,8 @@ testpkgconfigbuild: install-libgap install-headers
 
 KERNELTESTS := $(addprefix tst/testkernel/,dstruct)
 
+build-testkernel: ${KERNELTESTS}
+
 # run a test in tst/testkernel
 tst/testkernel/%: build/obj/tst/testkernel/%.c.o libgap$(SHLIB_EXT)
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) -Wl,-rpath,$(abs_builddir) $^ $(GAP_LIBS) -o $@
@@ -1034,7 +1038,7 @@ testkernel: ${KERNELTESTS}
 		$(v) -A -l $(top_srcdir) -q -T --nointeract >$(v).out && \
 		diff $(top_srcdir)/$(v).expect $(v).out && ) :
 
-.PHONY: testlibgap testkernel
+.PHONY: testlibgap testkernel build-testlibgap build-testkernel
 
 .PHONY: testpkgconfigbuild testpkgconfigversion
 
