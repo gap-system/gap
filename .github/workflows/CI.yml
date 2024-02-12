@@ -283,12 +283,127 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
+
+  cross_compile:
+    # The host should always be linux
+    runs-on: ubuntu-22.04
+    name: Cross compiler for s390x
+
+    steps:
+      - name: Install Cross-Compile Support
+        uses: fingolfin/gha-ubuntu-cross@patch-1  # FIXME: see https://github.com/cyberjunk/gha-ubuntu-cross/pull/8
+        with:
+          arch: s390x
+
+      - name: Install general build dependencies
+        run: sudo apt-get install -q -y git autoconf
+
+      - name: Install cross compile dependencies
+        run: sudo apt-get install -q -y git libgmp-dev:s390x libreadline-dev:s390x zlib1g-dev:s390x
+
+      - uses: actions/checkout@v4
+
+      - run: ./autogen.sh
+
+      - name: Native compile
+        run: |
+          # When building a git snapshot, configure & compile a native version of GAP to
+          # generate ffdata.{c,h}, c_oper1.c and c_type1.c -- in a GAP release tarball
+          # this is not necessary.
+          mkdir native-build
+          cd native-build
+          ../configure --without-readline
+          make -j2
+          cp build/c_*.c build/ffdata.* ../src/
+          cd ..
+
+      - name: Configure
+        run: ./configure --host="s390x-linux-gnu"
+
+      - name: Cross compile
+        run: make -j2 V=1 all build-testlibgap build-testkernel
+
+      - name: Fixup sysinfo.gap
+        run: rm sysinfo.gap && make SYSINFO_CC=gcc SYSINFO_CXX=g++ sysinfo.gap
+
+      - name: Download required GAP packages
+        run: make bootstrap-pkg-minimal
+
+      - name: Run tests in VM
+        uses: uraimo/run-on-arch-action@v2
+        with:
+          arch: s390x
+          distro: ubuntu22.04
+
+          # Not required, but speeds up builds
+          githubToken: ${{ github.token }}
+
+          # The shell to run commands with in the container
+          shell: /bin/sh
+
+          # Install some dependencies in the container. This speeds up builds if
+          # you are also using githubToken. Any dependencies installed here will
+          # be part of the container image that gets cached, so subsequent
+          # builds don't have to re-install them. The image layer is cached
+          # publicly in your project's package repository, so it is vital that
+          # no secrets are present in the container state or logs.
+          install: |
+              apt-get update -q -y
+              # we need build-essential for make and gcc (the latter is used by gac and
+              # hence by the tests involving mockpkg)
+              apt-get install -q -y build-essential git libgmp10 libreadline8 zlib1g
+
+          # Do the thing
+          run: |
+            set -x
+            git config --global --add safe.directory $PWD  # see https://github.com/gap-system/gap/issues/4861
+            make citests
+
+
+  openbsd:
+    runs-on: ubuntu-latest
+    name: Test in OpenBSD
+    env:
+      AUTOCONF_VERSION: 2.71
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download required GAP packages
+        run: |
+          wget https://github.com/gap-system/PackageDistro/releases/download/latest/packages-required.tar.gz
+          mkdir pkg
+          cd pkg
+          tar xvf ../packages-required.tar.gz
+
+      - name: Test in OpenBSD
+        id: test
+        uses: vmactions/openbsd-vm@v1
+        with:
+          envs: 'AUTOCONF_VERSION'
+          usesh: true
+          prepare: |
+            pkg_add bash git gmake autoconf-2.71 gmp
+
+          # Do the thing
+          run: |
+            set -x
+            git config --global --add safe.directory $PWD  # see https://github.com/gap-system/gap/issues/4861
+            rm -rf extern  # ensure we don't build and link against bundled libraries
+            ./autogen.sh
+            ./configure --with-gmp=/usr/local --without-readline
+            export MAKE=gmake
+            gmake -j2 V=1
+            gmake citests
+
+
   # The following job is duplicated in release.yml - keep the two in sync.
   # (except for their different 'needs' components).
   slack-notification:
     name: Send Slack notification on status change
     needs:
       - test
+      - cross_compile
+      - openbsd
     if: ${{ always() && github.event_name != 'pull_request' && github.repository == 'gap-system/gap' }}
     runs-on: ubuntu-latest
 
