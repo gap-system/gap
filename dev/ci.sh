@@ -23,6 +23,8 @@ then
 fi
 BUILDDIR=$PWD
 
+MAKE=${MAKE:-make}
+
 GAP=${GAP:-$BUILDDIR/gap}
 
 # Make sure any Error() immediately exits GAP with exit code 1.
@@ -96,7 +98,7 @@ testmockpkg () {
 
     cd "$mockpkg_dir"
     echo_and_run ./configure "$gaproot"
-    echo_and_run make V=1
+    echo_and_run $MAKE V=1
     # trick to make it easy to load the package in GAP
     rm -f pkg && ln -sf . pkg
     # try to load the kernel extension
@@ -207,8 +209,8 @@ GAPInput
 
     # test: `make clean` works and afterwards we can still `make`; in particular
     # build/config.h must be regenerated before any actual compilation
-    make clean
-    make > /dev/null 2>&1
+    $MAKE clean
+    $MAKE > /dev/null 2>&1
 
     # verify that deps file has a target for the .o file but not for the .d file
     fgrep "bool.c.o:" ${bool_d} > /dev/null
@@ -221,7 +223,7 @@ GAPInput
 
     # test: `make` should regenerate removed *.o files
     rm ${bool_o}
-    make > /dev/null 2>&1
+    $MAKE > /dev/null 2>&1
     test -f ${bool_o}
 
     # verify that deps file has a target for the .o file but not for the .d file
@@ -237,7 +239,7 @@ GAPInput
     # implementation for this, the test below can be re-enabled
     #rm ${bool_d}
     #echo "garbage content 3" > ${bool_o}
-    #make > /dev/null 2>&1
+    #$MAKE > /dev/null 2>&1
     #test -f ${bool_d}
 
     # verify that deps file has a target for the .o file but not for the .d file
@@ -246,7 +248,7 @@ GAPInput
     fgrep "garbage content" ${bool_o} > /dev/null && exit 1
 
     # test: running `make` a second time should produce no output
-    test -z "$(make)"
+    test -z "$($MAKE)"
 
     # audit config.h
     $SRCDIR/dev/audit-config-h.sh
@@ -256,7 +258,7 @@ GAPInput
     # code with garbage
     mv $SRCDIR/src/bool.h book.h.bak
     echo "garbage content 4" > $SRCDIR/src/bool.h
-    make print-OBJS  # should print something but not error out
+    $MAKE print-OBJS  # should print something but not error out
     mv book.h.bak $SRCDIR/src/bool.h
 
     set +x
@@ -264,27 +266,27 @@ GAPInput
     ;;
 
   makemanuals)
-    make doc
-    make check-manuals
+    $MAKE doc
+    $MAKE check-manuals
     ;;
 
   testmakeinstall)
     # get the install prefix from the GAP build system
-    eval $(make print-prefix)
+    eval $($MAKE print-prefix)
     GAPPREFIX=$prefix
 
     # verify $GAPPREFIX does not yet exist
     test ! -d $GAPPREFIX
 
     # perform he installation
-    make install
+    $MAKE install
 
     # verify $GAPPREFIX now exists
     test -d $GAPPREFIX
 
     # verify `make install DESTDIR=...` produces identical content, just
     # in a different directory
-    make install DESTDIR=/tmp/DESTDIR
+    $MAKE install DESTDIR=/tmp/DESTDIR
     diff -ru /tmp/DESTDIR/$GAPPREFIX $GAPPREFIX
 
     # change directory to prevent the installed GAP from accidentally picking
@@ -329,9 +331,9 @@ GAPInput
 
     # test integration with pkg-config
     cd "$SRCDIR"
-    # make install # might be actually needed for testpkgconfigbuild
-    make testpkgconfigversion
-    make testpkgconfigbuild
+    # $MAKE install # might be actually needed for testpkgconfigbuild
+    $MAKE testpkgconfigversion
+    $MAKE testpkgconfigbuild
     ;;
 
   testmanuals)
@@ -382,11 +384,11 @@ GAPInput
     ;;
 
   testlibgap)
-    make V=1 testlibgap
+    $MAKE V=1 testlibgap
     ;;
 
   testkernel)
-    make V=1 testkernel
+    $MAKE V=1 testkernel
     ;;
 
   testmockpkg)
