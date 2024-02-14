@@ -254,14 +254,14 @@ def changes_overview(
         # Write out all PRs with 'use title'
         relnotes_file.write(
             f"""
-## GAP {new_version} (TODO insert date here, )
+## GAP {new_version} (TODO insert date here)
 
-    The following gives an overview of the changes compared to the previous
-    release. This list is not complete, many more internal or minor changes
-    were made, but we tried to only list those changes which we think might
-    affect some users directly.
+The following gives an overview of the changes compared to the previous
+release. This list is not complete, many more internal or minor changes
+were made, but we tried to only list those changes which we think might
+affect some users directly.
 
-    """
+"""
         )
 
         for priorityobject in prioritylist:
