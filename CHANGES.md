@@ -1,7 +1,7 @@
 # GAP - history of changes
 
 
-## GAP 4.13.0-alpha1 (February 2024)
+## GAP 4.13.0-alpha2 (February 2024)
 
 The following gives an overview of the changes compared to the previous
 release. This list is not complete, many more internal or minor changes
@@ -53,6 +53,7 @@ affect some users directly.
 
 - [#5585](https://github.com/gap-system/gap/pull/5585) Add function `ChangeDirectoryCurrent` to change current directory (identical to the one provided by the IO package)
 - [#5491](https://github.com/gap-system/gap/pull/5491) Add `AlgebraWithOneByStructureConstants`
+- [#5407](https://github.com/gap-system/gap/pull/5407) Add user preference `ShortBanners` (if enabled package banners are reduced to just name, version and description of a package)
 - [#5359](https://github.com/gap-system/gap/pull/5359) Add new property `IsRegularPGroup`
 - [#5344](https://github.com/gap-system/gap/pull/5344) Support method dispatch based on tags (see the manual section "Tag Based Operations")
 - [#5255](https://github.com/gap-system/gap/pull/5255) Add `AlgebraHomomorphismByFunction` and `AlgebraWithOneHomomorphismByFunction`, formerly provided by the packages FR and XModAlg
