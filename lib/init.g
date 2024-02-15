@@ -410,7 +410,7 @@ end );
 
 BindGlobal( "ShowKernelInformation", function()
   local sysdate, linelen, indent, btop, vert, bbot, print_info,
-        config, str, gap;
+        config, str, gap, warnings;
 
   linelen:= SizeScreen()[1] - 2;
   print_info:= function( prefix, values, suffix )
@@ -465,6 +465,22 @@ BindGlobal( "ShowKernelInformation", function()
     Print( "             Maximum concurrent threads: ",
        GAPInfo.KernelInfo.NUM_CPUS, "\n");
   fi;
+
+  # Warn about poorly tested, or unsupported, variants of GAP
+  warnings := [];
+  
+  if GAPInfo.BytesPerVariable = 4 then
+    Add( warnings, "32-bit CPUs");
+  fi;
+  if GAPInfo.KernelInfo.BIGENDIAN_CPU then
+    Add( warnings, "Big-endian CPUs");
+  fi;
+
+  if warnings <> [] then
+    print_info("\n **** Warning, this copy of GAP was built for: ", warnings,
+               "\n **** This configuration is not officially supported or tested \n\n");
+  fi;
+
   # For each library or configuration setting, print some info.
   config:= [];
   # always mention GMP
