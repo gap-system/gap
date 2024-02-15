@@ -306,7 +306,7 @@ InstallMethod( String,
     [ IsString ],
     function(s)
       if Length(s) = 0 and not IsStringRep(s) then
-        return "[ ]";
+        return "[  ]";
       else
         return s;
       fi;
