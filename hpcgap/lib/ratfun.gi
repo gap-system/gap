@@ -1078,6 +1078,20 @@ function( left, right )
   return SumCoefPolynomial(left, right);
 end);
 
+# divide by constant polynomials
+
+InstallMethod(\/,"constant denominator poly",IsIdenticalObj,
+  [IsPolynomial,IsPolynomial],0,
+function(num,den)
+local e;
+  e:=ExtRepNumeratorRatFun(den);
+  if Length(e)=0 then Error("Division by zero");
+  elif Length(e)>2 or Length(e[1])>0 then TryNextMethod();fi;
+  e:=Inverse(e[2]);
+  if e=fail then TryNextMethod();fi;
+  return e*num;
+end);
+
 InstallGlobalFunction( QuotientPolynomialsExtRep,QUOTIENT_POLYNOMIALS_EXT);
 
 #############################################################################
@@ -1090,9 +1104,7 @@ InstallMethod(HeuristicCancelPolynomialsExtRep,"ignore",true,
   [IsRationalFunctionsFamily,IsList,IsList],
   # fallback: lower than default for the weakest conditions
   -1,
-function(f,a,b)
-  return fail; # can't do anything
-end);
+ReturnFail);
 
 InstallGlobalFunction(TryGcdCancelExtRepPolynomials,TRY_GCD_CANCEL_EXTREP_POL);
 
@@ -1129,7 +1141,7 @@ local fam,t,num,tt,den;
                   ExtRepPolynomialRatFun(left),
                   ExtRepDenominatorRatFun(right));
       num:=ZippedProduct(t[1],ExtRepNumeratorRatFun(right),
-            fam!.zeroCoefficient,fam!.zippedProduct);
+          fam!.zeroCoefficient,fam!.zippedProduct);
       if Length(t[2])=2 and t[2][1]=[] and t[2][2]=fam!.oneCoefficient then
           return PolynomialByExtRepNC(fam,num);
       else
@@ -1140,7 +1152,7 @@ local fam,t,num,tt,den;
                   ExtRepPolynomialRatFun(right),
                   ExtRepDenominatorRatFun(left));
       num:=ZippedProduct(t[1],ExtRepNumeratorRatFun(left),
-            fam!.zeroCoefficient,fam!.zippedProduct);
+          fam!.zeroCoefficient,fam!.zippedProduct);
       if Length(t[2])=2 and t[2][1]=[] and t[2][2]=fam!.oneCoefficient then
           return PolynomialByExtRepNC(fam,num);
       else
@@ -1152,9 +1164,9 @@ local fam,t,num,tt,den;
       tt:=TryGcdCancelExtRepPolynomials(fam,
           ExtRepNumeratorRatFun(right),ExtRepDenominatorRatFun(left));
       num:=ZippedProduct(t[1],tt[1],fam!.zeroCoefficient,
-                    fam!.zippedProduct);
+          fam!.zippedProduct);
       den:=ZippedProduct(t[2],tt[2],fam!.zeroCoefficient,
-                    fam!.zippedProduct);
+          fam!.zippedProduct);
       if Length(den)=2 and den[1]=[] and den[2]=fam!.oneCoefficient then
           return PolynomialByExtRepNC(fam,num);
       else
@@ -1219,14 +1231,14 @@ local fam,num,den,lnum,rnum,lden,rden,t,tmp,tmpp,i;
       # same denominator: add numerators
       num:=ZippedSum(lnum,rnum,fam!.zeroCoefficient,fam!.zippedSum);
       if Length(num)=0 then
-          return Zero(fam);
+        return Zero(fam);
       fi;
       t:=TryGcdCancelExtRepPolynomials(fam,num,lden);
       if Length(t[2])=2 and Length(t[2][1])=0 and t[2][2]=fam!.oneCoefficient
         then
-          return PolynomialByExtRepNC(fam,t[1]);
+        return PolynomialByExtRepNC(fam,t[1]);
       else
-          return RationalFunctionByExtRepNC(fam,t[1],t[2]);
+        return RationalFunctionByExtRepNC(fam,t[1],t[2]);
       fi;
     else
       t:=TryGcdCancelExtRepPolynomials(fam,lden,rden);
@@ -1236,9 +1248,9 @@ local fam,num,den,lnum,rnum,lden,rden,t,tmp,tmpp,i;
                     fam!.zippedProduct);
       num:=ZippedSum(tmp,tmpp,fam!.zeroCoefficient,fam!.zippedSum);
       if Length(t)=3 then
-          tmp:=t[3];
+        tmp:=t[3];
       else
-          tmp:=QuotientPolynomialsExtRep(fam,rden,t[2]);
+        tmp:=QuotientPolynomialsExtRep(fam,rden,t[2]);
       fi;
       tmpp:=TryGcdCancelExtRepPolynomials(fam,num,tmp);
       den:=ZippedProduct(tmpp[2],t[1],fam!.zeroCoefficient,

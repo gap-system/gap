@@ -194,7 +194,7 @@ end);
 
 ##  list of all cases with less than 100*10^9 compatible polynomials, sorted
 ##  w.r.t. this number
-ConwayCandidates := function()
+BindGlobal( "ConwayCandidates", function()
   local cand, p, i;
   # read data
   for p in [2,113,1009] do
@@ -211,7 +211,7 @@ ConwayCandidates := function()
   Sort(cand);
   cand := Filtered(cand, a-> not IsBound(CONWAYPOLDATA[a[2]][a[3]]));
   return cand;
-end;
+end );
 
 ##
 ##
@@ -502,15 +502,15 @@ InstallGlobalFunction( IsCheapConwayPolynomial, function( p, n )
   fi;
   # this is not very precise, hopefully good enough for the moment
   if p < 41 then
-    if n < 100 and IsPrimeInt(n) then
+    if n < 100 and (n = 1 or IsPrimeInt(n)) then
       return true;
     fi;
   elif p < 100 then
-    if n < 40 and IsPrimeInt(n) then
+    if n < 40 and (n = 1 or IsPrimeInt(n)) then
       return true;
     fi;
   elif p < 1000 then
-    if n < 14 and IsPrimeInt(n) then
+    if n < 14 and (n = 1 or IsPrimeInt(n)) then
       return true;
     fi;
   elif p < 2^48 then

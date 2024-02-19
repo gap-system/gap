@@ -687,14 +687,16 @@ InstallGlobalFunction( "InstallHandlingByNiceBasis",
     filter:= ValueGlobal( name );
 
     # Install the detection of the filter.
+    # The mechanism is safe only if the domain can store
+    # its nice variant, thus we will install it only for cases where
+    # 'IsAttributeStoringRep' is guaranteed.
     atomic readwrite NiceBasisFiltersInfo do
       entry:= First( NiceBasisFiltersInfo,
                      x -> IsIdenticalObj( filter, x[1] ) );
       entry[3] := record.detect;
     od;
-
+    filter:= filter and IsAttributeStoringRep;
     InstallTrueMethod( IsHandledByNiceBasis, filter );
-    filter:= IsFreeLeftModule and filter;
 
     # Install the methods.
     InstallMethod( NiceFreeLeftModuleInfo,
@@ -1078,7 +1080,7 @@ InstallMethod( IsCanonicalBasis,
 ##
 #M  Basis( <V> )  . . . . . . . . . . . for free module handled by nice basis
 ##
-BasisForFreeModuleByNiceBasis:= function( V )
+BindGlobal( "BasisForFreeModuleByNiceBasis", function( V )
     local B;
     B:= Objectify( NewType( FamilyObj( V ),
                                 IsFiniteBasisDefault
@@ -1087,7 +1089,7 @@ BasisForFreeModuleByNiceBasis:= function( V )
                    rec() );
     SetUnderlyingLeftModule( B, V );
     return B;
-end;
+end );
 
 InstallMethod( Basis,
     "for free module that is handled by a nice basis",
