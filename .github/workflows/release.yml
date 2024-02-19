@@ -80,6 +80,15 @@ jobs:
           git fetch https://github.com/gap-system/gap --tags --force
           git fetch --tags --force
 
+      - name: "Install autoconf 2.72"   # for compatibility with GCC 14 & clang versions
+        run: |
+          wget https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.xz
+          tar xvf autoconf-2.72.tar.xz
+          cd autoconf-2.72
+          ./configure
+          make
+          sudo make install
+
       - name: "Set up Python"
         uses: actions/setup-python@v5
         with:
