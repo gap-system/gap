@@ -62,6 +62,7 @@ affect some users directly.
 
 - [#5521](https://github.com/gap-system/gap/pull/5521) Fix unexpected error when doing certain calculations in a fitting-free group acting intransitively on its socle factors
 - [#5480](https://github.com/gap-system/gap/pull/5480) Make `GroupWithMemory` behave more like `Group`, and e.g. make the wrapped generators immutable, and for matrices try to convert them to a better representation
+- [#5440](https://github.com/gap-system/gap/pull/5440) Change handling of long command line options like `--norepl` so that repeating them will not toggle behaviour anymore
 - [#5410](https://github.com/gap-system/gap/pull/5410) Support `AbelianInvariants` for infinite cyclic groups
 - [#5210](https://github.com/gap-system/gap/pull/5210) Change `Test` so it immediately outputs failed test results
 - [#5179](https://github.com/gap-system/gap/pull/5179) Quit GAP with non-zero exit code if processing init files fails and `--quitonbreak` is being used
