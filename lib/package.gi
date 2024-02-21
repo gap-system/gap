@@ -2718,9 +2718,7 @@ InstallGlobalFunction( BibEntry, function( arg )
 
     if key = false then
       if GAP then
-        key:= Concatenation( "GAP", GAPInfo.Version );
-      elif IsBound( pkginfo.Version ) then
-        key:= Concatenation( pkginfo.PackageName, pkginfo.Version );
+        key:= "GAP";
       else
         key:= pkginfo.PackageName;
       fi;
