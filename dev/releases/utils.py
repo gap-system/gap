@@ -16,6 +16,8 @@ import subprocess
 import sys
 from typing import Iterator, List, NoReturn, Optional
 
+import requests
+
 
 # print notices in green
 def notice(msg: str) -> None:
@@ -116,32 +118,26 @@ def download(url: str, dst: str) -> None:
         error("failed downloading " + url)
 
 
-def file_matches_checksumfile(filename: str) -> bool:
-    with open(filename + ".sha256", "r", encoding="utf-8") as f:
-        expected_checksum = f.read().strip()
-    return expected_checksum == sha256file(filename)
-
-
-def verify_via_checksumfile(filename: str) -> None:
-    actual_checksum = sha256file(filename)
-    with open(filename + ".sha256", "r", encoding="utf-8") as f:
-        expected_checksum = f.read().strip()
-    if expected_checksum != actual_checksum:
-        error(
-            f"checksum for '{filename}' expected to be {expected_checksum} but got {actual_checksum}"
-        )
-
-
 # Download file at the given URL to path `dst`, unless we detect that a file
 # already exists at `dst` with the expected checksum.
 def download_with_sha256(url: str, dst: str) -> None:
-    download(url + ".sha256", dst + ".sha256")
+    # fetch the checksum file directly into memory
+    r = requests.get(url + ".sha256")
+    if r.status_code != 200:
+        error(f"Failed to download sha256 file {url}.sha256")
+    expected_checksum = r.text.strip()
     if os.path.isfile(dst):
-        if file_matches_checksumfile(dst):
+        actual_checksum = sha256file(dst)
+        if expected_checksum == actual_checksum:
             return
         notice(f"{dst} exists but does not match the checksumfile; redownloading")
+        os.remove(dst)
     download(url, dst)
-    verify_via_checksumfile(dst)
+    actual_checksum = sha256file(dst)
+    if expected_checksum != actual_checksum:
+        error(
+            f"checksum for '{dst}' expected to be {expected_checksum} but got {actual_checksum}"
+        )
 
 
 # Run what ever <args> command and create appropriate log file
