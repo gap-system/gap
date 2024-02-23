@@ -291,7 +291,7 @@ jobs:
 
     steps:
       - name: Install Cross-Compile Support
-        uses: fingolfin/gha-ubuntu-cross@patch-1  # FIXME: see https://github.com/cyberjunk/gha-ubuntu-cross/pull/8
+        uses: cyberjunk/gha-ubuntu-cross@167f2e5e6bc0e78d9420ed64aa66b38bda701088
         with:
           arch: s390x
 
