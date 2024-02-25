@@ -1745,6 +1745,11 @@ InstallMethod( ImmutableVector,"general,2",[IsObject,IsRowVector],0,
 function(f,v)
   local v2;
   if not IsInt(f) then f := Size(f); fi;
+  # 'IsRowVector' implies 'IsList'.
+  # We are not allowed to return a non-list,
+  # thus we are not allowed to call 'Vector'.
+  # Since there is a method for 'IsVectorObj' as the second argument,
+  # we do not deal with proper vector objects here.
   if f <= 256 then
     v2 := CopyToVectorRep(v,f);
     if v2 <> fail then v := v2; fi;
