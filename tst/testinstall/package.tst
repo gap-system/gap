@@ -543,7 +543,7 @@ HTML:
 
 BibXML:
 
-<entry id="mockpkg0.1"><misc>
+<entry id="mockpkg"><misc>
   <author>
     <name><first>Active</first><last>Author</last></name>
     <name><first>Retired</first><last>Author</last></name>
@@ -559,7 +559,7 @@ BibXML:
 
 BibTeX:
 
-@misc{ mockpkg0.1,
+@misc{ mockpkg,
   author =           {Author, A. and Author, R. and Maintainer, O.},
   title =            {{mockpkg},  A  mock  package  for  use by the GAP test
                       suite, {V}ersion 0.1},
@@ -598,7 +598,7 @@ HTML:
 
 BibXML:
 
-<entry id="mockpkg0.1"><misc>
+<entry id="mockpkg"><misc>
   <author>
     <name><first>Active</first><last>Author</last></name>
     <name><first>Retired</first><last>Author</last></name>
@@ -614,7 +614,7 @@ BibXML:
 
 BibTeX:
 
-@misc{ mockpkg0.1,
+@misc{ mockpkg,
   author =           {Author, A. and Author, R. and Maintainer, O.},
   title =            {{mockpkg},  A  mock  package  for  use by the GAP test
                       suite, {V}ersion 0.1},
