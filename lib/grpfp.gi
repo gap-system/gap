@@ -4772,7 +4772,7 @@ local g,i,x;
       x:=-i/2;
     fi;
     # free cancellation
-    if Length(g)>0 and x=-g[Length(g)] then
+    if Length(g)>0 and x=-Last(g) then
       Remove(g);
     else
       Add(g,x);

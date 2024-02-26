@@ -1325,7 +1325,7 @@ InstallMethod(PerfectResiduum,"for groups",true,
   [IsGroup],0,
 function(G)
   G := DerivedSeriesOfGroup(G);
-  G := G[Length(G)];
+  G := Last(G);
   SetIsPerfectGroup(G, true);
   return G;
 end);
@@ -2052,7 +2052,7 @@ local G,        # group
                   vs:=[];
                   if Length(mat)>0 then
                     for k in AsList(VectorSpace(ocr.field,mat)) do
-                      if IsOne(k[Length(k)]) then
+                      if IsOne(Last(k)) then
                         Add(vs,k{[1..Length(vsb)]}*vsb);
                       fi;
                     od;
@@ -3874,8 +3874,8 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
 
               if Length(l)=0 then
                 # no groups there. Start getting new ones
-                a:=Filtered(process,x->Size(x)>=divs[Length(divs)]);
-                process:=Filtered(process,x->Size(x)<divs[Length(divs)]);
+                a:=Filtered(process,x->Size(x)>=Last(divs));
+                process:=Filtered(process,x->Size(x)<Last(divs));
                 for j in a do
                   m:=maxer(j);
                   Append(l,m);
@@ -3883,13 +3883,13 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
                 SortBy(l,Size);
               fi;
 
-              if Size(l[Length(l)])<divs[Length(divs)] then
+              if Size(Last(l))<Last(divs) then
                 # new size.
 
                 if Length(process)>0
-                 and Size(process[Length(process)])<=limit then
+                 and Size(Last(process))<=limit then
                   # switch to lattice
-                  a:=Size(l[Length(l)]);
+                  a:=Size(Last(l));
                   Info(InfoLattice,1,"get full lattice @size ",a);
                   l:=List(ConjugacyClassesSubgroups(G),Representative);
                   l:=Filtered(l,x->Size(x)<=a and
@@ -3900,7 +3900,7 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
                 fi;
 
                 while Length(process)>0
-                 and Size(process[Length(process)])>=Maximum(List(l,Size)) do
+                 and Size(Last(process))>=Maximum(List(l,Size)) do
                   # need to process those that could give next size (or
                   # larger)
                   a:=Remove(process);
@@ -3910,14 +3910,14 @@ local divs,limit,mode,l,process,done,bound,maxer,prime;
                 SortBy(l,Size);
 
                 # delete the orders not used any more
-                while Length(l)>0 and Size(l[Length(l)])<divs[Length(divs)] do
+                while Length(l)>0 and Size(Last(l))<Last(divs) do
                   Remove(divs); # sizes still in play
                 od;
                 done:=[]; # can ignore anything larger
 
                 if mode=1 then
-                  a:=Filtered(l,x->Size(x)=divs[Length(divs)]);
-                  l:=Filtered(l,x->Size(x)<divs[Length(divs)]);
+                  a:=Filtered(l,x->Size(x)=Last(divs));
+                  l:=Filtered(l,x->Size(x)<Last(divs));
                   a:=List(SubgroupsOrbitsAndNormalizers(G,a,false),
                     x->x.representative);
                   Append(l,a);
