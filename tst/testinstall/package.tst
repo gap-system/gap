@@ -516,8 +516,8 @@ new methods:
   mockpkg_Property( ... )*
 
 
-# Test the Cite() command (output changed with GAPDoc 1.6.6)
-#@if CompareVersionNumbers(InstalledPackageVersion("gapdoc"), "1.6.6")
+# Test the Cite() command (output changed with GAPDoc 1.6.6 and again with 1.6.7)
+#@if CompareVersionNumbers(InstalledPackageVersion("gapdoc"), "1.6.7")
 gap> Cite("mockpkg");
 Please use one of the following samples
 to cite mockpkg version from this installation
@@ -567,7 +567,8 @@ BibTeX:
   year =             {2018},
   note =             {GAP package},
   howpublished =     {\href                {https://mockpkg.gap-system.org/}
-                      {\texttt{https://mockpkg.gap-system.org/}}},
+                      {\texttt{https://mockpkg.gap\texttt{\symbol{45}}system.o\
+rg/}}},
   printedkey =       {AAM18}
 }
 
@@ -580,7 +581,7 @@ to cite mockpkg version from this installation
 Text:
 
 [AAM18]  Author,  A., Author, R. and Maintainer, O., mockpkg, A mock package
-for  use  by  the  GAP  test  suite,  Version  0.1  (2018),  (GAP  package),
+for   use   by  the  GAP  test  suite,  Version  0.1  (2018),  GAP  package,
 https://mockpkg.gap-system.org/.
 
 HTML:
