@@ -74,6 +74,9 @@ typedef struct {
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
 
 
+static Obj TYPE_KERNEL_OBJECT;
+
+
 /****************************************************************************
 **
 *V  NameOfType[<type>] . . . . . . . . . . . . . . . . . . . . names of types
@@ -1498,7 +1501,8 @@ BOOL IsbPosObj(Obj obj, Int idx)
 */
 static Obj TypeDatObj(Obj obj)
 {
-    return TYPE_DATOBJ( obj );
+    Obj type = TYPE_DATOBJ( obj );
+    return type ? type : TYPE_KERNEL_OBJECT;
 }
 
 void SetTypeDatObj( Obj obj, Obj type)
@@ -1549,8 +1553,6 @@ static Obj FuncSET_TYPE_DATOBJ(Obj self, Obj obj, Obj type)
 **
 *F  NewKernelBuffer( <size> )  . . . . . . . . . . return a new kernel buffer
 */
-static Obj TYPE_KERNEL_OBJECT;
-
 Obj NewKernelBuffer(UInt size)
 {
     Obj obj = NewBag(T_DATOBJ, size);
