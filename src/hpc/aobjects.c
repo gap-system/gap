@@ -403,7 +403,7 @@ static Obj FuncFromAtomicList(Obj self, Obj list)
     return FromAtomicList(list);
 }
 
-static void MarkAtomicList(Bag bag)
+static void MarkAtomicList(Bag bag, void * ref)
 {
   UInt len;
   const AtomicObj *ptr, *ptrend;
@@ -411,7 +411,7 @@ static void MarkAtomicList(Bag bag)
   len = ALIST_LEN((UInt)(ptr++->atom));
   ptrend = ptr + len + 1;
   while (ptr < ptrend)
-    MarkBag(ptr++->obj);
+    MarkBag(ptr++->obj, ref);
 }
 
 /* T_AREC_INNER substructure:
@@ -449,24 +449,24 @@ static Obj GetTLInner(Obj obj)
   return contents;
 }
 
-static void MarkTLRecord(Bag bag)
+static void MarkTLRecord(Bag bag, void * ref)
 {
-  MarkBag(GetTLInner(bag));
+  MarkBag(GetTLInner(bag), ref);
 }
 
 
-static void MarkAtomicRecord(Bag bag)
+static void MarkAtomicRecord(Bag bag, void * ref)
 {
-  MarkBag(GetTLInner(bag));
+  MarkBag(GetTLInner(bag), ref);
 }
 
-static void MarkAtomicRecord2(Bag bag)
+static void MarkAtomicRecord2(Bag bag, void * ref)
 {
   const AtomicObj *p = CONST_ADDR_ATOM(bag);
   UInt cap = p->atom;
   p += 5;
   while (cap) {
-    MarkBag(p->obj);
+    MarkBag(p->obj, ref);
     p += 2;
     cap--;
   }

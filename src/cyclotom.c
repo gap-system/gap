@@ -1942,9 +1942,9 @@ static Obj FuncCycList(Obj self, Obj list)
 **
 **  'MarkCycSubBags' is the marking function for bags of type 'T_CYC'.
 */
-static void MarkCycSubBags(Obj cyc)
+static void MarkCycSubBags(Obj cyc, void * ref)
 {
-    MarkArrayOfBags( COEFS_CYC( cyc ), SIZE_CYC(cyc) );
+    MarkArrayOfBags( COEFS_CYC( cyc ), SIZE_CYC(cyc), ref );
 }
 
 

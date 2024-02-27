@@ -74,7 +74,10 @@ void GAP_Initialize(int              argc,
 ////
 void GAP_MarkBag(Obj obj)
 {
-    MarkBag(obj);
+    // For now pass a dummy 'ref' value to MarkBag. That's fine
+    // when using GASMAN or Boehm GC. It won't work with Julia GC
+    // but that's fine as GAP.jl doesn't need it.
+    MarkBag(obj, 0);
 }
 
 void GAP_CollectBags(BOOL full)

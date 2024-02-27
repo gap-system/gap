@@ -186,28 +186,21 @@ static jl_datatype_t * DatatypeGapObj;
 static jl_datatype_t * DatatypeSmallBag;
 static jl_datatype_t * DatatypeLargeBag;
 static Bag *           GapStackBottom;
-static jl_ptls_t       JuliaTLS, SaveTLS;
+static jl_ptls_t       JuliaTLS;
 static BOOL            IsJuliaMultiThreaded;
 static jl_task_t *     RootTaskOfMainThread;
 static size_t          MaxPoolObjSize;
-static UInt            YoungRef;
 static int             FullGC;
 static UInt            StartTime, TotalTime;
 
+typedef struct {
+    jl_ptls_t ptls;
+    UInt youngRef;
+} MarkData;
 
 #if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR == 7
 JL_DLLEXPORT void *jl_get_ptls_states(void);
 #endif
-
-void SetJuliaTLS(void)
-{
-    // In Julia >= 1.7 we are supposed to use `jl_get_current_task()->ptls`
-    // instead of calling `jl_get_ptls_states`. But then we depend on the
-    // offset of the member `ptls` of struct `jl_task_t` not changing, so
-    // calling jl_get_ptls_states() is safer.
-    JuliaTLS = jl_get_ptls_states();
-//    JuliaTLS = jl_get_current_task()->ptls;
-}
 
 typedef void * Ptr;
 
@@ -259,9 +252,9 @@ static void * AllocateBagMemory(UInt type, UInt size)
 **  the second time raises a warning, because a non-default marking function
 **  is being replaced.
 */
-static void MarkAllSubBagsDefault(Bag bag)
+static void MarkAllSubBagsDefault(Bag bag, void * ref)
 {
-    MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag));
+    MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag), ref);
 }
 
 TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
@@ -273,15 +266,15 @@ void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
     TabMarkFuncBags[type] = mark_func;
 }
 
-static inline int JMarkTyped(void * obj, jl_datatype_t * ty)
+static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty)
 {
     // only traverse objects internally used by GAP
     if (!jl_typeis(obj, ty))
         return 0;
-    return jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)obj);
+    return jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
 }
 
-static inline int JMark(void * obj)
+static inline int JMark(jl_ptls_t ptls, void * obj)
 {
 #ifdef VALIDATE_MARKING
     // Validate that `obj` is still allocated and not on a
@@ -293,11 +286,11 @@ static inline int JMark(void * obj)
     if (!jl_typeis(ty, jl_datatype_type))
         abort();
 #endif
-    return jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)obj);
+    return jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
 }
 
 // the following is used by JuliaInterface
-void MarkJuliaObjSafe(void * obj)
+void MarkJuliaObjSafe(void * obj, void * ref)
 {
     if (!obj)
         return;
@@ -309,17 +302,17 @@ void MarkJuliaObjSafe(void * obj)
         return;
     if (!jl_typeis(ty, jl_datatype_type))
         return;
-    if (jl_gc_mark_queue_obj(JuliaTLS, (jl_value_t *)obj))
-        YoungRef++;
+    if (jl_gc_mark_queue_obj(((MarkData *)ref)->ptls, (jl_value_t *)obj))
+        ((MarkData *)ref)->youngRef++;
 }
 
 // the following is used by JuliaInterface
-void MarkJuliaObj(void * obj)
+void MarkJuliaObj(void * obj, void * ref)
 {
     if (!obj)
         return;
-    if (JMark(obj))
-        YoungRef++;
+    if (JMark(((MarkData *)ref)->ptls, obj))
+        ((MarkData *)ref)->youngRef++;
 }
 
 
@@ -377,7 +370,7 @@ void MarkJuliaObj(void * obj)
 // the stack buffer or receive a segmentation fault due to hitting a guard
 // page.
 
-static void TryMark(void * p)
+static void TryMark(jl_ptls_t ptls, void * p)
 {
     jl_value_t * p2 = jl_gc_internal_obj_base_ptr(p);
     if (p2 && jl_typeis(p2, DatatypeGapObj)) {
@@ -386,7 +379,7 @@ static void TryMark(void * p)
         // are valid and in current use.
         MarkCache[MARK_HASH((UInt)p2)] = (Bag)p2;
 #endif
-        JMark(p2);
+        JMark(ptls, p2);
     }
 }
 
@@ -417,10 +410,10 @@ static int CmpTaskInfo(TaskInfo i1, TaskInfo i2)
     return cmp_ptr(i1.task, i2.task);
 }
 
-static void MarkFromList(PtrArray * arr)
+static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
 {
     for (Int i = 0; i < arr->len; i++) {
-        JMark(arr->items[i]);
+        JMark(ptls, arr->items[i]);
     }
 }
 
@@ -463,7 +456,7 @@ static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
         // The start of the stack buffer may be protected with guard
         // pages; accessing these results in segmentation faults.
         // Julia catches those segmentation faults and longjmps to
-        // JuliaTLS->safe_restore; we use this mechanism to abort stack
+        // a safe_restore function pointer; we use this mechanism to abort stack
         // scanning when a protected page is hit. For this to work, we
         // must scan the stack from the end of the stack buffer towards
         // the start (i.e. in the direction in which the stack grows).
@@ -511,10 +504,10 @@ ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
             PtrArraySetLen(stack, p + 1);
         }
     }
-    MarkFromList(stack);
+    MarkFromList(jl_get_ptls_states(), stack);
 }
 
-static NOINLINE void TryMarkRange(void * start, void * end)
+static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
 {
     if (lt_ptr(end, start)) {
         SWAP(void *, start, end);
@@ -524,11 +517,11 @@ static NOINLINE void TryMarkRange(void * start, void * end)
     while (lt_ptr(p, q)) {
         void * addr = *(void **)p;
         if (addr) {
-            TryMark(addr);
+            TryMark(ptls, addr);
 #ifdef MARKING_STRESS_TEST
             for (int j = 0; j < 1000; ++j) {
                 UInt val = (UInt)addr + rand() - rand();
-                TryMark((void *)val);
+                TryMark(ptls, (void *)val);
             }
 #endif
         }
@@ -548,6 +541,7 @@ void CHANGED_BAG(Bag bag)
 
 static void GapRootScanner(int full)
 {
+    jl_ptls_t   ptls  = jl_get_ptls_states();
     jl_task_t * task = (jl_task_t *)jl_get_current_task();
     size_t      size;
     int         tid;    // unused
@@ -583,14 +577,14 @@ static void GapRootScanner(int full)
     // references stored in registers.
     jmp_buf registers;
     _setjmp(registers);
-    TryMarkRange(registers, (char *)registers + sizeof(jmp_buf));
-    TryMarkRange((char *)registers + sizeof(jmp_buf), stackend);
+    TryMarkRange(ptls, registers, (char *)registers + sizeof(jmp_buf));
+    TryMarkRange(ptls, (char *)registers + sizeof(jmp_buf), stackend);
 
     // mark all global objects
     for (Int i = 0; i < GlobalCount; i++) {
         Bag p = *GlobalAddr[i];
         if (IS_BAG_REF(p)) {
-            JMark(p);
+            JMark(ptls, p);
         }
     }
 }
@@ -650,14 +644,8 @@ UInt TotalGCTime(void)
 
 static void PreGCHook(int full)
 {
-    // It is possible for the garbage collector to be invoked from a
-    // different thread other than the main thread that is running
-    // GAP. So we save the TLS pointer temporarily and restore it
-    // afterwards. In the long run, JuliaTLS needs to simply become
-    // a thread-local variable.
     FullGC = full;
-    SaveTLS = JuliaTLS;
-    SetJuliaTLS();
+
     // This is the same code as in VarsBeforeCollectBags() for GASMAN.
     // It is necessary because ASS_LVAR() and related functionality
     // does not call CHANGED_BAG() for performance reasons. CHANGED_BAG()
@@ -678,7 +666,6 @@ static void PreGCHook(int full)
 
 static void PostGCHook(int full)
 {
-    JuliaTLS = SaveTLS;
     TotalTime += SyTime() - StartTime;
 #ifdef COLLECT_MARK_CACHE_STATS
     /* printf("\n>>>Attempts: %ld\nHit rate: %lf\nCollision rate: %lf\n",
@@ -703,7 +690,7 @@ static uintptr_t MPtrMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
     void * ty = jl_typeof(header);
     if (ty != DatatypeSmallBag && ty != DatatypeLargeBag)
         return 0;
-    if (JMark(header))
+    if (JMark(ptls, header))
         return 1;
     return 0;
 }
@@ -715,9 +702,9 @@ static uintptr_t BagMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
     BagHeader * hdr = (BagHeader *)obj;
     Bag         contents = (Bag)(hdr + 1);
     UInt        tnum = hdr->type;
-    YoungRef = 0;
-    TabMarkFuncBags[tnum]((Bag)&contents);
-    return YoungRef;
+    MarkData    ref = { ptls, 0 };
+    TabMarkFuncBags[tnum]((Bag)&contents, &ref);
+    return ref.youngRef;
 }
 
 jl_datatype_t * GAP_DeclareGapObj(jl_sym_t *      name,
@@ -758,7 +745,7 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     jl_gc_enable_conservative_gc_support();
     jl_init();
 
-    SetJuliaTLS();
+    JuliaTLS = jl_get_ptls_states();
 #ifdef SKIP_GUARD_PAGES
     SetupGuardPagesSize();
 #endif
@@ -913,7 +900,7 @@ Bag NewBag(UInt type, UInt size)
         alloc_size++;
 
     if (IsJuliaMultiThreaded)
-        SetJuliaTLS();
+        JuliaTLS = jl_get_ptls_states();
     bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), DatatypeGapObj);
     SET_PTR_BAG(bag, 0);
 
@@ -987,7 +974,7 @@ void SwapMasterPoint(Bag bag1, Bag bag2)
 
 // HOOK: mark functions
 
-inline void MarkBag(Bag bag)
+inline void MarkBag(Bag bag, void * ref)
 {
     if (!IS_BAG_REF(bag))
         return;
@@ -1020,29 +1007,29 @@ inline void MarkBag(Bag bag)
     // relies on Julia internals. It is functionally equivalent
     // to:
     //
-    //     if (JMarkTyped(p, DatatypeGapObj)) YoungRef++;
+    //     if (JMarkTyped(p, DatatypeGapObj)) ((MarkData *)ref)->youngRef++;
     //
     switch (jl_astaggedvalue(p)->bits.gc) {
     case 0:
-        if (JMarkTyped(p, DatatypeGapObj))
-            YoungRef++;
+        if (JMarkTyped(((MarkData *)ref)->ptls, p, DatatypeGapObj))
+            ((MarkData *)ref)->youngRef++;
         break;
     case 1:
-        YoungRef++;
+        ((MarkData *)ref)->youngRef++;
         break;
     case 2:
-        JMarkTyped(p, DatatypeGapObj);
+        JMarkTyped(((MarkData *)ref)->ptls, p, DatatypeGapObj);
         break;
     case 3:
         break;
     }
 }
 
-void MarkJuliaWeakRef(void * p)
+void MarkJuliaWeakRef(void * p, void * ref)
 {
     // If `jl_nothing` gets passed in as an argument, it will not
     // be marked. This is harmless, because `jl_nothing` will always
     // be live regardless.
-    if (JMarkTyped(p, jl_weakref_type))
-        YoungRef++;
+    if (JMarkTyped(((MarkData *)ref)->ptls, p, jl_weakref_type))
+        ((MarkData *)ref)->youngRef++;
 }
