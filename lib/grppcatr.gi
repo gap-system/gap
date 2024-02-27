@@ -591,7 +591,7 @@ BindGlobal( "MinimalGensLayer", function( pcgs, pcgsS, pcgsN, min )
         if Length( pcgsM ) <> Length( pcgsL ) then
             Add( series, pcgsM );
         fi;
-        pcgsL := series[Length(series)];
+        pcgsL := Last(series);
 
         # modify minimal gens
         ModifyMinGens( pcgs, pcgsS, pcgsL, min );

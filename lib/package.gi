@@ -2104,7 +2104,7 @@ InstallGlobalFunction( GAPDocManualLabFromSixFile,
       if IsEmpty( list ) or list[1] = 0 then
         return "";
       fi;
-      while list[ Length( list ) ] = 0 do
+      while Last( list ) = 0 do
         Remove( list );
       od;
       return JoinStringsWithSeparator( List( list, String ), "." );
@@ -3004,7 +3004,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
     PkgName:= GAPInfo.PackagesInfo.( pkgname )[1].PackageName;
 
     realname:= function( name )
-        if name[ Length( name ) ] = '@' then
+        if Last(name) = '@' then
           return Concatenation( name, PkgName );
         else
           return name;
@@ -3019,7 +3019,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
           return fail;
         elif Length( entry[1] ) = 3 and entry[1][3] = "mutable"
              and Length( name  ) > 9 and name{ [ 1 .. 8 ] } = "Computed"
-             and name[ Length( name ) ] = 's'
+             and Last(name) = 's'
              and IsBoundGlobal( name{ [ 9 .. Length( name ) - 1 ] } ) then
           return fail;
         elif Length( entry[1] ) = 2
@@ -3088,7 +3088,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
           # (We compare filename and line number in the file
           # with these values for the call of `KeyDependentOperation'.)
           if 9 < Length( name  ) and name{ [ 1 .. 8 ] } = "Computed"
-             and name[ Length( name ) ] = 's'
+             and Last(name) = 's'
              and IsBoundGlobal( name{ [ 9 .. Length( name ) - 1 ] } )
              and ForAny( GAPInfo.data.KeyDependentOperation[2],
                          x -> x[1][1] = name{ [ 9 .. Length( name ) - 1 ] }
@@ -3351,7 +3351,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
 
       # Omit operation and attribute created by `KeyDependentOperation'.
       if 9 < Length( name  ) and name{ [ 1 .. 8 ] } = "Computed"
-         and name[ Length( name ) ] = 's'
+         and Last(name) = 's'
          and IsBoundGlobal( name{ [ 9 .. Length( name ) - 1 ] } )
          and ForAny( GAPInfo.data.KeyDependentOperation[2],
                      x -> x[1][1] = name{ [ 9 .. Length( name ) - 1 ] } ) then

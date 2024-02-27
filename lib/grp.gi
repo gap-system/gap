@@ -602,7 +602,7 @@ InstallMethod( IsNilpotentGroup,
     S := LowerCentralSeriesOfGroup( G );
 
     # <G> is nilpotent if the lower central series reaches the trivial group
-    return IsTrivial( S[ Length( S ) ] );
+    return IsTrivial( Last(S) );
     end );
 
 
@@ -710,7 +710,7 @@ InstallMethod( IsAlmostSimpleGroup,
     fi;
 
     der:= DerivedSeriesOfGroup( G );
-    der:= der[ Length( der ) ];
+    der:= Last(der);
     if IsTrivial( der ) then
       return false;
     fi;
@@ -797,7 +797,7 @@ InstallMethod( IsSolvableGroup,
     S := DerivedSeriesOfGroup( G );
 
     # the group is solvable if the derived series reaches the trivial group
-    isSolvable := IsTrivial( S[ Length( S ) ] );
+    isSolvable := IsTrivial( Last(S) );
 
     # set IsAbelian filter
     isAbelian := isSolvable and Length( S ) <= 2;
@@ -1017,16 +1017,16 @@ local new,i,c;
   od;
   while i<=Length(ser) and not IsSubset(sub,ser[i]) do
     c:=ClosureGroup(sub,ser[i]);
-    if Size(new[Length(new)])>Size(c) then
+    if Size(Last(new))>Size(c) then
       Add(new,c);
     fi;
-    if Size(new[Length(new)])>Size(ser[i]) then
+    if Size(Last(new))>Size(ser[i]) then
       Add(new,ser[i]);
     fi;
     sub:=Intersection(sub,ser[i]);
     i:=i+1;
   od;
-  if Size(sub)<Size(new[Length(new)]) and i<=Length(ser) and Size(sub)>Size(ser[i]) then
+  if Size(sub)<Size(Last(new)) and i<=Length(ser) and Size(sub)>Size(ser[i]) then
     Add(new,sub);
   fi;
   while i<=Length(ser) do
@@ -1087,7 +1087,7 @@ function( grp )
         TryNextMethod();
     fi;
     der := DerivedSeriesOfGroup(grp);
-    if not IsTrivial(der[Length(der)])  then
+    if not IsTrivial(Last(der))  then
         TryNextMethod();
     fi;
 
@@ -1153,9 +1153,9 @@ local cs,i,j,pre,post,c,new,rev;
       rev:=[j];
       i:=post-1;
       repeat
-        if not IsSubset(rev[Length(rev)],cs[i]) then
+        if not IsSubset(Last(rev),cs[i]) then
           c:=ClosureGroup(cs[i],j);
-          if Size(c)>Size(rev[Length(rev)]) then
+          if Size(c)>Size(Last(rev)) then
             # proper down step
             Add(rev,c);
           fi;
@@ -1167,9 +1167,9 @@ local cs,i,j,pre,post,c,new,rev;
 
       i:=pre;
       repeat
-        if not IsSubset(cs[i],new[Length(new)]) then
+        if not IsSubset(cs[i],Last(new)) then
           c:=Intersection(cs[i],j);
-          if Size(c)<Size(new[Length(new)]) then
+          if Size(c)<Size(Last(new)) then
             # proper down step
             Add(new,c);
           fi;
@@ -1223,6 +1223,7 @@ InstallMethod( DerivedSeriesOfGroup,
     [ IsGroup ],
     function ( G )
     local   S,          # derived series of <G>, result
+            lastS,      # last element of S
             D;          # derived subgroups
 
     # print out a warning for infinite groups
@@ -1234,26 +1235,28 @@ InstallMethod( DerivedSeriesOfGroup,
 
     # compute the series by repeated calling of `DerivedSubgroup'
     S := [ G ];
+    lastS := G;
     Info( InfoGroup, 2, "DerivedSeriesOfGroup: step ", Length(S) );
     D := DerivedSubgroup( G );
 
     while
-      (not HasIsTrivial(S[Length(S)]) or
-            not IsTrivial(S[Length(S)])) and
+      (not HasIsTrivial(lastS) or
+            not IsTrivial(lastS)) and
       (
-        (not HasIsPerfectGroup(S[Length(S)]) and
-         not HasAbelianInvariants(S[Length(S)]) and D <> S[ Length(S) ]) or
-        (HasIsPerfectGroup(S[Length(S)]) and not IsPerfectGroup(S[Length(S)]))
-        or (HasAbelianInvariants(S[Length(S)])
-                            and Length(AbelianInvariants(S[Length(S)])) > 0)
+        (not HasIsPerfectGroup(lastS) and
+         not HasAbelianInvariants(lastS) and D <> lastS) or
+        (HasIsPerfectGroup(lastS) and not IsPerfectGroup(lastS))
+        or (HasAbelianInvariants(lastS)
+                            and Length(AbelianInvariants(lastS)) > 0)
       ) do
         Add( S, D );
+        lastS := D;
         Info( InfoGroup, 2, "DerivedSeriesOfGroup: step ", Length(S) );
         D := DerivedSubgroup( D );
     od;
 
     # set filters if the last term is known to be trivial
-    if HasIsTrivial(S[Length(S)]) and IsTrivial(S[Length(S)]) then
+    if HasIsTrivial(lastS) and IsTrivial(lastS) then
       SetIsSolvableGroup(G, true);
       if Length(S) <=2 then
         Assert(3, IsAbelian(G));
@@ -1617,7 +1620,7 @@ InstallMethod( LowerCentralSeriesOfGroup,
     S := [ G ];
     Info( InfoGroup, 2, "LowerCentralSeriesOfGroup: step ", Length(S) );
     C := DerivedSubgroup( G );
-    while C <> S[ Length(S) ]  do
+    while C <> Last(S) do
         Add( S, C );
         Info( InfoGroup, 2, "LowerCentralSeriesOfGroup: step ", Length(S) );
         C := CommutatorSubgroup( G, C );
@@ -2331,15 +2334,15 @@ InstallMethod( UpperCentralSeriesOfGroup,
     S := [ TrivialSubgroup( G ) ];
     Info( InfoGroup, 2, "UpperCentralSeriesOfGroup: step ", Length(S) );
     C := Centre( G );
-    while C <> S[ Length(S) ]  do
+    while C <> Last(S) do
         Add( S, C );
         Info( InfoGroup, 2, "UpperCentralSeriesOfGroup: step ", Length(S) );
         hom := NaturalHomomorphismByNormalSubgroupNC( G, C );
         C := PreImages( hom, Centre( Image( hom ) ) );
     od;
 
-    if S[ Length(S) ] = G then
-        UseIsomorphismRelation( G, S[ Length(S) ] );
+    if Last(S) = G then
+        UseIsomorphismRelation( G, Last(S) );
     fi;
     # return the series when it becomes stable
     return Reversed( S );
@@ -2977,7 +2980,7 @@ InstallMethod( IsPNilpotentOp,
     local ser;
 
     ser := LowerCentralSeriesOfGroup( G );
-    return Size ( ser[ Length( ser ) ] ) mod p <> 0;
+    return Size( Last(ser) ) mod p <> 0;
     end );
 
 RedispatchOnCondition (IsPNilpotentOp, ReturnTrue, [IsGroup, IsPosInt], [IsFinite], 0);
@@ -3336,13 +3339,13 @@ local ser,r,nat,f,Pker,d,i,j,u,loc,p;
     for j in p do
       u:=ClosureGroup(u,SylowSubgroup(d[i-1],j));
       #force elementary
-      while not ForAll(GeneratorsOfGroup(u),x->x^j in loc[Length(loc)]) do
-        r:=NaturalHomomorphismByNormalSubgroupNC(u,loc[Length(loc)]);
+      while not ForAll(GeneratorsOfGroup(u),x->x^j in Last(loc)) do
+        r:=NaturalHomomorphismByNormalSubgroupNC(u,Last(loc));
         Pker:=Omega(Range(r),j,1);
         r:=PreImage(r,Pker);
         Add(loc,r);
       od;
-      if Size(u)<Size(ser[Length(ser)]) then
+      if Size(u)<Size(Last(ser)) then
         Add(loc,u);
       fi;
     od;
@@ -3371,7 +3374,7 @@ InstallMethod( SubnormalSeriesOp,
     S := [ G ];
     Info( InfoGroup, 2, "SubnormalSeries: step ", Length(S) );
     C := NormalClosure( G, U );
-    while C <> S[ Length( S ) ]  do
+    while C <> Last(S)  do
         Add( S, C );
         Info( InfoGroup, 2, "SubnormalSeries: step ", Length(S) );
         C := NormalClosure( C, U );
@@ -3392,7 +3395,7 @@ InstallMethod( IsSubnormal,"generic method for two groups",IsIdenticalObj,
 function ( G, U )
 local s;
   s:=SubnormalSeries(G,U);
-  return U=s[Length(s)];
+  return U=Last(s);
 end);
 
 

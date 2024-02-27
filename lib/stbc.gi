@@ -1819,7 +1819,7 @@ function(S)
 
     lstack := ListStabChain(S);
     Remove(lstack);
-    while Length(lstack) > 0 and Length(lstack[Length(lstack)].orbit) = 1 do
+    while Length(lstack) > 0 and Length(Last(lstack).orbit) = 1 do
         Remove(lstack);
     od;
     r := rec (

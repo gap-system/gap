@@ -1231,7 +1231,7 @@ InstallMethod( IsMonomialCharacterTable,
 InstallGlobalFunction( CharacterTable_IsNilpotentFactor, function( tbl, N )
     local series;
     series:= CharacterTable_UpperCentralSeriesFactor( tbl, N );
-    return Length( series[ Length( series ) ] ) = NrConjugacyClasses( tbl );
+    return Length( Last(series) ) = NrConjugacyClasses( tbl );
     end );
 
 
@@ -1245,7 +1245,7 @@ InstallMethod( IsNilpotentCharacterTable,
     function( tbl )
     local series;
     series:= ClassPositionsOfUpperCentralSeries( tbl );
-    return Length( series[ Length( series ) ] ) = NrConjugacyClasses( tbl );
+    return Length( Last(series) ) = NrConjugacyClasses( tbl );
     end );
 
 
@@ -3300,7 +3300,7 @@ InstallGlobalFunction( LaTeXStringDecompositionMatrix, function( arg )
           if i = r[1] or i-1 in hlines then
             Append( str, " \\rule[0pt]{0pt}{13pt}" );
           fi;
-          if i = r[ Length( r ) ] or i in hlines then
+          if i = Last(r) or i in hlines then
             Append( str, " \\rule[-7pt]{0pt}{5pt}" );
           fi;
 
@@ -4712,7 +4712,7 @@ BindGlobal( "CharacterTableDisplayStringEntryDefault",
         n:= QuoInt(n-1, ll);
       od;
       Add( irrnames, name );
-      return irrnames[ Length( irrnames ) ];
+      return name;
 
     elif    ( IsList( entry ) and not IsString( entry ) )
          or IsUnknown( entry ) then
@@ -5430,7 +5430,7 @@ InstallGlobalFunction( PrintCharacterTable, function( tbl, varname )
             for j in [ 1 .. Length( info ) - 1 ] do
               Print( "\"", info[j], "\\n\",\n" );
             od;
-            Print( "\"", info[ Length( info ) ], "\"\n]);\n" );
+            Print( "\"", Last(info), "\"\n]);\n" );
           else
             Print( "\"", info, "\";\n" );
           fi;
@@ -7001,7 +7001,7 @@ InstallGlobalFunction( SortedCharacterTable, function( arg )
 
     # Check the arguments.
     if not ( Length( arg ) in [ 2, 3 ] and IsOrdinaryTable( arg[1] ) and
-             IsList( arg[ Length( arg ) ] ) and
+             IsList( Last(arg) ) and
              ( Length( arg ) = 2 or IsOrdinaryTable( arg[2] ) ) ) then
       Error( "usage: SortedCharacterTable( <tbl>, <kernel> ) resp.\n",
              "       SortedCharacterTable( <tbl>, <normalseries> ) resp.\n",
@@ -7048,7 +7048,7 @@ InstallGlobalFunction( SortedCharacterTable, function( arg )
       # if the `i'--th irreducible contains none of `kernels' in its kernel,
       # we have `list[i] = -1',
       # for an irreducible with kernel containing
-      # `kernels[ Length( kernels ) ]',
+      # `Last(kernels)',
       # the value is `-(Length( kernels ) + 1)'.
       list:= [];
       if HasIrr( tbl ) then

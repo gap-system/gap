@@ -2623,7 +2623,7 @@ if rule[1]=rule[2] then return;fi;
           if IsOddInt(i) then x:=(i+1)/2;
           else x:=-i/2;fi;
           # word must be freely cancelled
-          if Length(g)>0 and x=-g[Length(g)] then
+          if Length(g)>0 and x=-Last(g) then
             Remove(g);
           else Add(g,x); fi;
         od;
