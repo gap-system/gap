@@ -201,7 +201,8 @@ DeclareAttribute("Zuppos",IsGroup);
 ##  gap> LatticeSubgroups(g);
 ##  <subgroup lattice of <permutation group of size 5184 with
 ##  9 generators>, 566 classes, 27134 subgroups>
-##  ]]></Example> ##  </Description>
+##  ]]></Example>
+##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
