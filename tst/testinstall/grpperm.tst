@@ -1,4 +1,4 @@
-#@local F,G,N,cube,g,s,x,y,a,b,sym,h
+#@local F,G,N,cube,g,s,x,y,a,b,sym,h,iso
 gap> START_TEST("grpperm.tst");
 gap> G := Group((1,2),(1,2,3,4));;
 gap> HasAbelianFactorGroup(G,G);
@@ -80,12 +80,28 @@ gap> Length(MinimalGeneratingSet(G));
 2
 gap> IsomorphismPermGroup(G) = IdentityMapping(G);
 true
+
+#
 gap> g:=SymmetricGroup(6);;
 gap> h:=Action(g,Combinations([1..6],2),OnSets);;
 gap> IsSymmetricGroup(h);
 true
-gap> IsomorphismFpGroup(h);;
-gap> IsomorphismFpGroup(DerivedSubgroup(h));;
+gap> iso:=IsomorphismFpGroup(h);;
+gap> HasSize(ImagesSource(iso));
+true
+gap> iso:=IsomorphismFpGroup(DerivedSubgroup(h));;
+gap> HasSize(ImagesSource(iso));
+true
+
+#
+gap> G:=Group((2,5)(3,4), (1,3)(4,5));;
+gap> Size(G);
+10
+gap> iso:=IsomorphismFpGroup(G);;
+gap> HasSize(Range(iso));
+true
+
+#
 gap> sym:=SymmetricGroup(13);;
 gap> a:=Stabilizer(sym,[[1,2,3],[4,5,6,7]],OnTuplesSets);;Index(sym,a);
 60060
