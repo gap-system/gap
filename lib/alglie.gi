@@ -3776,10 +3776,9 @@ end );
 ##  For the algorithm we refer to C. Reutenauer, Free Lie Algebras, Clarendon
 ##  Press, Oxford, 1993.
 ##
+DeclareGlobalName( "IsLyndonT" );
 
-DeclareGlobalFunction( "IsLyndonT" );
-
-InstallGlobalFunction( IsLyndonT,
+BindGlobal( "IsLyndonT",
 function( t )
 
     # This function tests whether the bracketed expression `t' is

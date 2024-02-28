@@ -2843,7 +2843,6 @@ InstallMethod( Basis,
 ##
 #M  Basis( <A> )  . . . . . .  basis from FLMLOR gens. for associative FLMLOR
 ##
-
 BindGlobal("BasisLieAlgebraAndAssociativeFLMOR",
     function( A )
     local  mb;
@@ -2905,7 +2904,6 @@ InstallMethod( Basis,
 ##  this means that it is sufficient to multiply with generators from one
 ##  side.
 ##
-
 InstallMethod( Basis,
     "for a Lie algebra",
     [ IsLieAlgebra ],
