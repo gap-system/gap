@@ -701,7 +701,7 @@ end );
 DeclareRepresentation( "IsKernelDataObjectRep", IsDataObjectRep );
 
 BIND_GLOBAL( "TYPE_KERNEL_OBJECT",
-          NewType(NewFamily("KernelObjectFamily", IsObject),
+          NewType(NewFamily("KernelObjectFamily", IsObject and IsMutable),
           IsObject and IsKernelDataObjectRep));
 
 InstallMethod( String, [IsKernelDataObjectRep], o->MakeImmutable("<kernel object>"));
