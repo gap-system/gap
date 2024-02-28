@@ -1119,29 +1119,7 @@ end );
 ##  </Description>
 ##  </ManSection>
 ##
-BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
-    local   filt,  filter;
-
-    if GAPInfo.MaxNrArgsMethod < LEN_LIST( filters ) then
-      Error( "methods can have at most ", GAPInfo.MaxNrArgsMethod,
-             " arguments" );
-    fi;
-
-    # This will yield an error if `name' is already bound.
-    BIND_GLOBAL( name, oper );
-    SET_NAME_FUNC( oper, name );
-
-    filt := [];
-    for filter  in filters  do
-        if not IS_OPERATION( filter ) then
-          Error( "<filter> must be an operation" );
-        fi;
-        ADD_LIST( filt, FLAGS_FILTER( filter ) );
-    od;
-
-    STORE_OPER_FLAGS(oper, filt);
-end );
-
+BIND_GLOBAL( "DeclareConstructorKernel", DeclareOperationKernel);
 
 #############################################################################
 ##

@@ -2843,10 +2843,8 @@ InstallMethod( Basis,
 ##
 #M  Basis( <A> )  . . . . . .  basis from FLMLOR gens. for associative FLMLOR
 ##
-InstallMethod( Basis,
-    "for an associative FLMLOR",
-    [ IsFLMLOR and IsAssociative ],
-        function( A )
+BindGlobal("BasisLieAlgebraAndAssociativeFLMOR",
+    function( A )
     local  mb;
 
     # If generators as left module are known
@@ -2864,8 +2862,11 @@ InstallMethod( Basis,
              Zero( A ),
              infinity );
     return ImmutableBasis( mb, A );
-
     end );
+InstallMethod( Basis,
+    "for an associative FLMLOR",
+    [ IsFLMLOR and IsAssociative ],
+    BasisLieAlgebraAndAssociativeFLMOR );
 
 
 #############################################################################
@@ -2906,25 +2907,7 @@ InstallMethod( Basis,
 InstallMethod( Basis,
     "for a Lie algebra",
     [ IsLieAlgebra ],
-    function( A )
-    local  mb;
-
-    # If generators as left module are known
-    # we do not need to multiply at all.
-    if HasGeneratorsOfLeftModule( A ) then
-      TryNextMethod();
-    fi;
-
-    mb:= MutableBasisOfClosureUnderAction(
-             LeftActingDomain( A ),
-             GeneratorsOfLeftOperatorRing( A ),
-             "left",
-             GeneratorsOfLeftOperatorRing( A ),
-             \*,
-             Zero( A ),
-             infinity );
-    return ImmutableBasis( mb, A );
-    end );
+    BasisLieAlgebraAndAssociativeFLMOR );
 
 
 #############################################################################

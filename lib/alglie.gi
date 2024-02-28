@@ -3776,6 +3776,44 @@ end );
 ##  For the algorithm we refer to C. Reutenauer, Free Lie Algebras, Clarendon
 ##  Press, Oxford, 1993.
 ##
+DeclareGlobalName( "IsLyndonT" );
+
+BindGlobal( "IsLyndonT",
+function( t )
+
+    # This function tests whether the bracketed expression `t' is
+    # a Lyndon tree.
+
+    local w,w1,w2,b,y;
+
+    if not IsList( t ) then return true; fi;
+
+    w:= Flat( t );
+    if IsList( t[1] ) then
+        w1:= Flat( t[1] );
+        b:= false;
+    else
+        w1:= [ t[1] ];
+        b:=true;
+    fi;
+    if IsList( t[2] ) then
+        w2:= Flat( t[2] );
+    else
+        w2:= [ t[2] ];
+    fi;
+
+    if w<w2 and w1<w2 then
+        if not b then
+            y:= Flat( [ t[1][2] ] );
+            if y  < w2 then return false; fi;
+        fi;
+    else
+        return false;
+    fi;
+
+    return IsLyndonT(t[1]) and IsLyndonT(t[2]);
+end);
+
 InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
      "for family of free Lie algebra elements, and list",
      true,
@@ -3790,50 +3828,12 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
                ll,              #List
                zero,            #The zero element of the field
                tlist,           #List of elements of the free Lie algebra
-               Dcopy,IsLyndonT; #Two functions
+               Dcopy;           #Two functions
 
          Dcopy:=function( l )
 
            if not IsList(l) then return ShallowCopy( l ); fi;
            return List( l, Dcopy );
-         end;
-
-         IsLyndonT:= function( t )
-
-            # This function tests whether the bracketed expression `t' is
-            # a Lyndon tree.
-
-             local w,w1,w2,b,y;
-
-             if not IsList( t ) then return true; fi;
-
-             w:= Flat( t );
-             if IsList( t[1] ) then
-               w1:= Flat( t[1] );
-               b:= false;
-             else
-               w1:= [ t[1] ];
-               b:=true;
-             fi;
-             if IsList( t[2] ) then
-               w2:= Flat( t[2] );
-             else
-               w2:= [ t[2] ];
-             fi;
-
-             if w<w2 and w1<w2 then
-               if not b then
-                 y:= Flat( [ t[1][2] ] );
-                 if y  < w2 then return false; fi;
-               fi;
-             else
-               return false;
-             fi;
-
-             if not IsLyndonT( t[1] ) then return false; fi;
-             if not IsLyndonT( t[2] ) then return false; fi;
-             return true;
-
          end;
 
          zero:= descr[1];
@@ -4038,47 +4038,9 @@ InstallMethod( PreImagesRepresentative,
 
     function( f, x )
 
-    local   IsLyndonT,  dim,  e,  gens,  imgs,  b1,  b2,  levs,
+    local   dim,  e,  gens,  imgs,  b1,  b2,  levs,
             brackets,  sp,  deg,  newlev,  newbracks,  d,  br1,  br2,
             i,  j,  a,  b,  c,  z,  imz,  cf;
-
-    IsLyndonT:= function( t )
-
-        # This function tests whether the bracketed expression `t' is
-        # a Lyndon tree.
-
-        local w,w1,w2,b,y;
-
-        if not IsList( t ) then return true; fi;
-
-        w:= Flat( t );
-        if IsList( t[1] ) then
-            w1:= Flat( t[1] );
-            b:= false;
-        else
-            w1:= [ t[1] ];
-            b:=true;
-        fi;
-        if IsList( t[2] ) then
-            w2:= Flat( t[2] );
-        else
-            w2:= [ t[2] ];
-        fi;
-
-        if w<w2 and w1<w2 then
-            if not b then
-                y:= Flat( [ t[1][2] ] );
-                if y  < w2 then return false; fi;
-            fi;
-        else
-            return false;
-        fi;
-
-        if not IsLyndonT( t[1] ) then return false; fi;
-        if not IsLyndonT( t[2] ) then return false; fi;
-        return true;
-
-    end;
 
     if not IsBound( f!.bases ) then
 

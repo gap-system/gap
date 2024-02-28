@@ -1491,18 +1491,7 @@ local G,           # common parent
     if eas=fail then
         home:=PcgsElementaryAbelianSeries([G,NT]);
         eas:=EANormalSeriesByPcgs(home);
-        cent:=function(pcgs,grpg,Npcgs,dep)
-              local i,j;
-                for i in grpg do
-                  for j in Npcgs do
-                    if DepthOfPcElement(pcgs,Comm(j,i))<dep then
-                      return false;
-                    fi;
-                  od;
-                od;
-                return true;
-              end;
-
+        cent:=PcClassFactorCentralityTest;
     fi;
     indstep:=IndicesEANormalSteps(home);
 

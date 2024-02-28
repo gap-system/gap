@@ -406,35 +406,35 @@ CallAndInstallPostRestore( function()
   MakeImmutable( GAPInfo.TermEncoding );
 end );
 
-
-
-BindGlobal( "ShowKernelInformation", function()
-  local sysdate, linelen, indent, btop, vert, bbot, print_info,
-        config, str, gap;
+BindGlobal("_PrintInfo",
+function( prefix, values, suffix )
+  local linelen, indent, PL, comma, N;
 
   linelen:= SizeScreen()[1] - 2;
-  print_info:= function( prefix, values, suffix )
-    local PL, comma, N;
+  indent := "             ";
 
-    Print( prefix );
-    PL:= Length(prefix)+1;
-    comma:= "";
-    for N in values do
-      Print( comma );
-      PL:= PL + Length( comma );
-      if PL + Length( N ) > linelen then
-        Print( "\n", indent);
-        PL:= Length(indent)+1;
-      fi;
-      Print( N, "\c" );
-      PL:= PL + Length( N );
-      comma:= ", ";
-    od;
-    if PL + Length( suffix ) + 1 > linelen then
+  Print( prefix );
+  PL:= Length(prefix)+1;
+  comma:= "";
+  for N in values do
+    Print( comma );
+    PL:= PL + Length( comma );
+    if PL + Length( N ) > linelen then
       Print( "\n", indent);
+      PL:= Length(indent)+1;
     fi;
-    Print( suffix );
-  end;
+    Print( N, "\c" );
+    PL:= PL + Length( N );
+    comma:= ", ";
+  od;
+  if PL + Length( suffix ) + 1 > linelen then
+    Print( "\n", indent);
+  fi;
+  Print( suffix );
+end);
+
+BindGlobal( "ShowKernelInformation", function()
+  local sysdate, btop, vert, bbot, config, str, gap;
 
   if GAPInfo.Date <> "today" then
     sysdate := " of ";
@@ -446,7 +446,6 @@ BindGlobal( "ShowKernelInformation", function()
     Append(sysdate, GAPInfo.BuildDateTime);
   fi;
 
-  indent := "             ";
   if GAPInfo.TermEncoding = "UTF-8" then
     btop := "┌───────┐\c"; vert := "│"; bbot := "└───────┘\c";
   else
@@ -495,7 +494,7 @@ BindGlobal( "ShowKernelInformation", function()
     Add(config, "MemCheck");
   fi;
   if config <> [] then
-    print_info( " Configuration:  ", config, "\n" );
+    _PrintInfo( " Configuration:  ", config, "\n" );
   fi;
   if GAPInfo.CommandLineOptions.L <> "" then
     Print( " Loaded workspace: ", GAPInfo.CommandLineOptions.L, "\n" );
@@ -509,8 +508,6 @@ BindGlobal( "ShowKernelInformation", function()
 end );
 
 # delay printing the banner, if -L option was passed (LB)
-
-
 
 CallAndInstallPostRestore( function()
      if not ( GAPInfo.CommandLineOptions.q or
@@ -803,43 +800,17 @@ end );
 ##
 
 BindGlobal( "ShowPackageInformation", function()
-  local linelen, indent, print_info, packagenames;
-
-  linelen:= SizeScreen()[1] - 2;
-  print_info:= function( prefix, values, suffix )
-    local PL, comma, N;
-
-    Print( prefix );
-    PL:= Length(prefix)+1;
-    comma:= "";
-    for N in values do
-      Print( comma );
-      PL:= PL + Length( comma );
-      if PL + Length( N ) > linelen then
-        Print( "\n", indent);
-        PL:= Length(indent)+1;
-      fi;
-      Print( N, "\c" );
-      PL:= PL + Length( N );
-      comma:= ", ";
-    od;
-    if PL + Length( suffix ) + 1 > linelen then
-      Print( "\n", indent);
-    fi;
-    Print( suffix );
-  end;
-
-  indent := "             ";
+  local packagenames;
 
   # For each loaded package, print name and version number.
   packagenames := SortedList( RecNames( GAPInfo.PackagesLoaded ) );
   if not IsEmpty(packagenames) then
-    print_info( " Packages:   ",
-                List( packagenames,
-                      name -> Concatenation(
-                                  GAPInfo.PackagesLoaded.( name )[3], " ",
-                                  GAPInfo.PackagesLoaded.( name )[2] ) ),
-                "\n" );
+    _PrintInfo( " Packages:   ",
+               List( packagenames,
+                     name -> Concatenation(
+                                 GAPInfo.PackagesLoaded.( name )[3], " ",
+                                 GAPInfo.PackagesLoaded.( name )[2] ) ),
+               "\n" );
   fi;
 
   Print( " Try '??help' for help. See also '?copyright', '?cite' and '?authors'",

@@ -1184,33 +1184,6 @@ InstallMethod( LogFFE,
         [ IsFFE and IsCoeffsModConwayPolRep, IsFFE and IsInternalRep],
         DoDLog );
 
-#############################################################################
-##
-#M  Order -- multiplicative order of an FFE
-##
-
-
-InstallMethod( Order,
-        [IsFFE],
-        function(z)
-    local   p,  d,  ord,  facs,  f,  i,  o;
-    p := Characteristic(z);
-    d := DegreeFFE(z);
-    ord := p^d-1;
-    facs := Collected(Factors(Integers,ord));
-    for f in facs do
-        for i in [1..f[2]] do
-            o := ord/f[1];
-            if not IsOne(z^o) then
-                break;
-            fi;
-            ord := o;
-        od;
-    od;
-    return ord;
-end);
-
-
 
 #############################################################################
 ##

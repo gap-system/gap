@@ -217,22 +217,7 @@ InstallMethod( \*, "objects with memory", true,
   end);
 
 InstallMethod( One, "objects with memory", true,
-  [IsObjWithMemory],0,
-  function(a)
-    local r;
-    r := rec(slp := a!.slp, n := 0, el := One(a!.el));
-    Objectify(TypeOfObjWithMemory(FamilyObj(a)),r);
-    if IsMatrixOrMatrixObj(a) then
-      SetFilterObj(r,IsMatrixOrMatrixObj);
-      if IsMatrix(a) then
-        SetFilterObj(r,IsMatrix);
-      fi;
-      if IsMatrixObj(a) then
-        SetFilterObj(r,IsMatrixObj);
-      fi;
-    fi;
-    return r;
-  end);
+  [IsObjWithMemory],0, OneOp);
 
 InstallMethod( OneOp, "objects with memory", true,
   [IsObjWithMemory],0,

@@ -921,18 +921,6 @@ InstallMethod( Units,
     if IsAssociative(R) then
       expo:=1;
 
-      # what power until you get idempotent (counting 1/0 as idempotent)
-      idempo:=function(elm)
-      local a,i;
-        i:=1;
-        a:=elm;
-        repeat
-          a:=a*elm;
-          i:=i+1;
-        until a=a*a;
-        return i;
-      end;
-
       units:= GroupByGenerators( [], one );
       idemp:=[];
       for elm in Enumerator( R ) do
