@@ -46,6 +46,11 @@ void PrecheckRetypeBag(Bag bag, UInt new_type)
             return;
 #endif
 
+        // Some GAP code and packages (including EDIM) produce invalid
+        // T_DATOBJ objects without correct type info, so skip T_DATOBJ for now
+        if (IS_DATOBJ(bag))
+            return;
+
 #ifndef HPCGAP
         // HACK: when using `DeclareGlobalVariable`, the placeholder object of
         // type `IsToBeDefinedObj` is immutable, while `InstallValue` also
