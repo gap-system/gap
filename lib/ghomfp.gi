@@ -1393,7 +1393,20 @@ local s,r,fam,fas,fpf,mapi;
     #extra generators separately, but that is too much work for what is
     #intended as a minor hint.
   fi;
+
+  # Transfer some knowledge about the source group to its image.
+  if HasIsMapping(hom) and IsMapping(hom) then
+    if HasIsInjective(hom) and IsInjective(hom) then
+      UseIsomorphismRelation(s, r);
+    elif HasKernelOfMultiplicativeGeneralMapping(hom) then
+      UseFactorRelation(s, KernelOfMultiplicativeGeneralMapping(hom), r);
+    else
+      UseFactorRelation(s, fail, r);
+    fi;
+  fi;
+
   s:=SubgroupNC(s,mapi[1]);
+
   fam:=FamilyObj(One(r));
   fas:=FamilyObj(One(s));
   if IsPermCollection(s) or IsMatrixCollection(s)
