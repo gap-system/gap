@@ -49,6 +49,17 @@ false
 gap> IsTransitive( Image( IsomorphismPermGroup( SO( 1, 8, 2 ) ) ) );
 true
 
+# a small matrix group over a large field
+gap> F:= GF(3, 16);;  Size( F );
+43046721
+gap> o:= PrimitiveElement(F);;
+gap> a:= o^15 + 2*o^13 + o^12 + o^11 + o^10 + o^8 + o^7 + 2*o^2 + o + 2;;
+gap> Order( a );
+17
+gap> G:= Group( [ [ a ] ] );;
+gap> Size( G );
+17
+
 # 'NiceMonomorphism' shall work for finite rational matrix groups,
 # also if they do not know yet that they are finite.
 gap> G:= Group( [ [ 0, 1 ], [ 1, 0 ] ] );;
