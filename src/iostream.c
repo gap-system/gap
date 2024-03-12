@@ -1010,10 +1010,10 @@ static Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
 
     // Close down the child
     int status;
+    kill(PtyIOStreams[pty].childPID, SIGTERM);
     int retcode = close(PtyIOStreams[pty].ptyFD);
     if (retcode)
         Pr("Strange close return code %d\n", retcode, 0);
-    kill(PtyIOStreams[pty].childPID, SIGTERM);
     // GAP (or another library) might wait on this PID before
     // we handle it. If that happens, waitpid will return -1.
     retcode = waitpid(PtyIOStreams[pty].childPID, &status, WNOHANG);

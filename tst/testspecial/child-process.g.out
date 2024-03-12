@@ -1,0 +1,7 @@
+gap> d := DirectoryCurrent();;
+gap> f := Filename(DirectoriesSystemPrograms(), "rev");;
+gap> s := InputOutputLocalProcess(d,f,[]);;
+gap> Sleep(1);
+gap> CloseStream(s); Print("\n");
+
+gap> QUIT;
