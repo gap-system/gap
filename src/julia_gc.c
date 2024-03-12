@@ -186,7 +186,6 @@ static jl_datatype_t * DatatypeGapObj;
 static jl_datatype_t * DatatypeSmallBag;
 static jl_datatype_t * DatatypeLargeBag;
 static Bag *           GapStackBottom;
-static BOOL            IsJuliaMultiThreaded;
 static jl_task_t *     RootTaskOfMainThread;
 static size_t          MaxPoolObjSize;
 static int             FullGC;
@@ -747,8 +746,6 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
 #ifdef SKIP_GUARD_PAGES
     SetupGuardPagesSize();
 #endif
-
-    IsJuliaMultiThreaded = jl_n_threads > 1;
 
     // These callbacks potentially require access to the Julia
     // TLS and thus need to be installed after initialization.
