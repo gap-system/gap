@@ -115,13 +115,13 @@ enum {
 EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag)
 {
     GAP_ASSERT(bag);
-    return ((*(BagHeader **)bag) - 1);
+    return *(BagHeader **)bag;
 }
 
 EXPORT_INLINE const BagHeader * CONST_BAG_HEADER(Bag bag)
 {
     GAP_ASSERT(bag);
-    return ((*(const BagHeader **)bag) - 1);
+    return *(const BagHeader **)bag;
 }
 
 
@@ -308,13 +308,13 @@ EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr)
 EXPORT_INLINE Bag *PTR_BAG(Bag bag)
 {
     GAP_ASSERT(bag != 0);
-    return *(Bag**)bag;
+    return  (Bag *)((*(BagHeader **)bag) + 1);
 }
 
 EXPORT_INLINE const Bag *CONST_PTR_BAG(Bag bag)
 {
     GAP_ASSERT(bag != 0);
-    return *(const Bag * const *)bag;
+    return  (const Bag *)((*(const BagHeader **)bag) + 1);
 }
 
 #if defined(USE_BOEHM_GC)

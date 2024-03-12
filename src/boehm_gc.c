@@ -55,15 +55,10 @@ struct OpaqueBag {
 
 #ifndef WARD_ENABLED
 
-static inline Bag * DATA(BagHeader * bag)
-{
-    return (Bag *)(((char *)bag) + sizeof(BagHeader));
-}
-
 void SET_PTR_BAG(Bag bag, Bag *val)
 {
     GAP_ASSERT(bag != 0);
-    bag->body = val;
+    bag->body = (Bag *)((BagHeader *)val - 1);
 }
 
 /****************************************************************************
@@ -98,13 +93,18 @@ void InitFreeFuncBag(UInt type, TNumFreeFuncBags finalizer_func)
     TabFreeFuncBags[type] = finalizer_func;
 }
 
-static void StandardFinalizer(void * bagContents, void * data)
+static void StandardFinalizer(void * obj, void * data)
 {
-    Bag    bag;
-    void * bagContents2;
-    bagContents2 = ((char *)bagContents) + sizeof(BagHeader);
-    bag = (Bag)&bagContents2;
-    TabFreeFuncBags[TNUM_BAG(bag)](bag);
+    // create a fake master pointer, just enough so we can call TNUM_BAG on it
+    // and pass it to the callback registered in TabFreeFuncBags
+    Bag  bag = (Bag)&obj;
+    UInt tnum = TNUM_BAG(bag);
+
+    // if a bag needing a finalizer is retyped to a new tnum which no longer
+    // needs one, it may happen that the finalizer is called even though
+    // TabFreeFuncBags[tnum] is NULL
+    if (TabFreeFuncBags[tnum])
+        TabFreeFuncBags[tnum](bag);
 }
 
 static GC_descr GCDesc[MAX_GC_PREFIX_DESC + 1];
@@ -375,7 +375,7 @@ void RetypeBagIntern(Bag bag, UInt new_type)
             old_mem = PTR_BAG(bag);
             old_mem = ((char *)old_mem) - sizeof(BagHeader);
             memcpy(new_mem, old_mem, size);
-            SET_PTR_BAG(bag, DATA(new_mem));
+            bag->body = new_mem;
         }
     }
 #ifdef HPCGAP
@@ -451,7 +451,7 @@ Bag NewBag(UInt type, UInt size)
     header->size = size;
 
     // set the masterpointer
-    SET_PTR_BAG(bag, DATA(header));
+    bag->body = header;
 #ifdef HPCGAP
     switch (DSInfoBags[type]) {
     case DSI_TL:
@@ -537,8 +537,8 @@ UInt ResizeBag(Bag bag, UInt new_size)
 
         // copy data and update the masterpointer
         src = PTR_BAG(bag);
-        memcpy(DATA(header), src, old_size < new_size ? old_size : new_size);
-        SET_PTR_BAG(bag, DATA(header));
+        memcpy(header + 1, src, old_size < new_size ? old_size : new_size);
+        bag->body = header;
     }
     return 1;
 }

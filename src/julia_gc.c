@@ -138,17 +138,6 @@ static UInt MarkCacheHits, MarkCacheAttempts, MarkCacheCollisions;
 
 #endif
 
-static inline Bag * DATA(BagHeader * bag)
-{
-    return (Bag *)(((char *)bag) + sizeof(BagHeader));
-}
-
-static inline void SET_PTR_BAG(Bag bag, Bag *val)
-{
-    GAP_ASSERT(bag != 0);
-    bag->body = val;
-}
-
 static TNumExtraMarkFuncBags ExtraMarkFuncBags;
 
 void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
@@ -171,15 +160,16 @@ void InitFreeFuncBag(UInt type, TNumFreeFuncBags finalizer_func)
 
 static void JFinalizer(jl_value_t * obj)
 {
-    BagHeader * hdr = (BagHeader *)obj;
-    Bag         contents = (Bag)(hdr + 1);
-    UInt        tnum = hdr->type;
+    // create a fake master pointer, just enough so we can call TNUM_BAG on it
+    // and pass it to the callback registered in TabFreeFuncBags
+    Bag  bag = (Bag)&obj;
+    UInt tnum = TNUM_BAG(bag);
 
     // if a bag needing a finalizer is retyped to a new tnum which no longer
-    // needs one, it may happen that JFinalize is called even though
+    // needs one, it may happen that the finalizer is called even though
     // TabFreeFuncBags[tnum] is NULL
     if (TabFreeFuncBags[tnum])
-        TabFreeFuncBags[tnum]((Bag)&contents);
+        TabFreeFuncBags[tnum](bag);
 }
 
 static jl_datatype_t * DatatypeGapObj;
@@ -713,10 +703,10 @@ static uintptr_t MPtrMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
 static uintptr_t BagMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
 {
     BagHeader * hdr = (BagHeader *)obj;
-    Bag         contents = (Bag)(hdr + 1);
     UInt        tnum = hdr->type;
     YoungRef = 0;
-    TabMarkFuncBags[tnum]((Bag)&contents);
+    // the functions in TabMarkFuncBags expect a Bag, so we fake one
+    TabMarkFuncBags[tnum]((Bag)&hdr);
     return YoungRef;
 }
 
@@ -915,7 +905,7 @@ Bag NewBag(UInt type, UInt size)
     if (IsJuliaMultiThreaded)
         SetJuliaTLS();
     bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), DatatypeGapObj);
-    SET_PTR_BAG(bag, 0);
+    bag->body = 0;
 
     BagHeader * header = AllocateBagMemory(type, alloc_size);
 
@@ -925,7 +915,7 @@ Bag NewBag(UInt type, UInt size)
 
 
     // change the masterpointer to reference the new bag memory
-    SET_PTR_BAG(bag, DATA(header));
+    bag->body = header;
     jl_gc_wb_back((void *)bag);
 
     // return the identifier of the new bag
@@ -958,7 +948,7 @@ UInt ResizeBag(Bag bag, UInt new_size)
         memcpy(header, BAG_HEADER(bag), sizeof(BagHeader) + old_size);
 
         // update the master pointer
-        SET_PTR_BAG(bag, DATA(header));
+        bag->body = header;
         jl_gc_wb_back((void *)bag);
     }
 
