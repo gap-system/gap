@@ -78,6 +78,11 @@ GAP_STATIC_ASSERT(sizeof(void *) == sizeof(struct OpaqueBag),
 // #define VALIDATE_MARKING
 
 
+// if USE_GAP_INSIDE_JULIA is defined, then some hacks which are needed
+// to make julia-inside-gap work are disabled. This is mainly for use in
+// the GAP.jl package.
+// #define USE_GAP_INSIDE_JULIA
+
 // Comparing pointers in C without triggering undefined behavior
 // can be difficult. As the GC already assumes that the memory
 // range goes from 0 to 2^k-1 (region tables), we simply convert
@@ -185,8 +190,10 @@ static void JFinalizer(jl_value_t * obj)
 static jl_datatype_t * DatatypeGapObj;
 static jl_datatype_t * DatatypeSmallBag;
 static jl_datatype_t * DatatypeLargeBag;
+#if !defined(USE_GAP_INSIDE_JULIA)
 static Bag *           GapStackBottom;
 static jl_task_t *     RootTaskOfMainThread;
+#endif
 static size_t          MaxPoolObjSize;
 static int             FullGC;
 static UInt            StartTime, TotalTime;
@@ -548,6 +555,8 @@ static void GapRootScanner(int full)
     // current_task != root_task.
     char * stackend = (char *)jl_task_stack_buffer(task, &size, &tid);
     stackend += size;
+
+#if !defined(USE_GAP_INSIDE_JULIA)
     // The following test overrides the stackend if the following two
     // conditions hold:
     //
@@ -562,6 +571,7 @@ static void GapRootScanner(int full)
     if (task == RootTaskOfMainThread) {
         stackend = (char *)GapStackBottom;
     }
+#endif
 
     // Allow installing a custom marking function. This is used for
     // integrating GAP (possibly linked as a shared library) with other code
@@ -622,10 +632,11 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
             active_start += guardpages_size;
         }
 #endif
+#if !defined(USE_GAP_INSIDE_JULIA)
         if (task == RootTaskOfMainThread) {
             active_end = (char *)GapStackBottom;
         }
-
+#endif
         // Unlike the stack of the current task that we scan in
         // GapRootScanner, we do not know the stack pointer. We
         // therefore use a separate routine that scans from the
@@ -741,7 +752,9 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     // that we can track objects allocated during `jl_init()`.
     MaxPoolObjSize = jl_gc_max_internal_obj_size();
     jl_gc_enable_conservative_gc_support();
+#if !defined(USE_GAP_INSIDE_JULIA)
     jl_init();
+#endif
 
 #ifdef SKIP_GUARD_PAGES
     SetupGuardPagesSize();
@@ -804,18 +817,21 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
 
 void InitBags(UInt initial_size, Bag * stack_bottom)
 {
-    GapStackBottom = stack_bottom;
     TotalTime = 0;
 
     if (!DatatypeGapObj) {
         GAP_InitJuliaMemoryInterface(0, 0);
     }
 
+#if !defined(USE_GAP_INSIDE_JULIA)
+    GapStackBottom = stack_bottom;
+
     // If we are embedding Julia in GAP, remember the root task
     // of the main thread. The extent of the stack buffer of that
     // task is calculated a bit differently than for other tasks.
     if (!IsUsingLibGap())
         RootTaskOfMainThread = (jl_task_t *)jl_get_current_task();
+#endif
 }
 
 UInt CollectBags(UInt size, UInt full)
