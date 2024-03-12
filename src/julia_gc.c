@@ -186,7 +186,6 @@ static jl_datatype_t * DatatypeGapObj;
 static jl_datatype_t * DatatypeSmallBag;
 static jl_datatype_t * DatatypeLargeBag;
 static Bag *           GapStackBottom;
-static jl_ptls_t       JuliaTLS;
 static BOOL            IsJuliaMultiThreaded;
 static jl_task_t *     RootTaskOfMainThread;
 static size_t          MaxPoolObjSize;
@@ -220,23 +219,23 @@ static Int          GlobalCount;
 
 /****************************************************************************
 **
-*F  AllocateBagMemory( <type>, <size> )
+*F  AllocateBagMemory( <ptls>, <type>, <size> )
 **
 **  Allocate memory for a new bag.
 **/
-static void * AllocateBagMemory(UInt type, UInt size)
+static void * AllocateBagMemory(jl_ptls_t ptls, UInt type, UInt size)
 {
     // HOOK: return `size` bytes memory of TNUM `type`.
     void * result;
     if (size <= MaxPoolObjSize) {
-        result = (void *)jl_gc_alloc_typed(JuliaTLS, size, DatatypeSmallBag);
+        result = (void *)jl_gc_alloc_typed(ptls, size, DatatypeSmallBag);
     }
     else {
-        result = (void *)jl_gc_alloc_typed(JuliaTLS, size, DatatypeLargeBag);
+        result = (void *)jl_gc_alloc_typed(ptls, size, DatatypeLargeBag);
     }
     memset(result, 0, size);
     if (TabFreeFuncBags[type])
-        jl_gc_schedule_foreign_sweepfunc(JuliaTLS, (jl_value_t *)result);
+        jl_gc_schedule_foreign_sweepfunc(ptls, (jl_value_t *)result);
     return result;
 }
 
@@ -745,7 +744,6 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     jl_gc_enable_conservative_gc_support();
     jl_init();
 
-    JuliaTLS = jl_get_ptls_states();
 #ifdef SKIP_GUARD_PAGES
     SetupGuardPagesSize();
 #endif
@@ -899,12 +897,12 @@ Bag NewBag(UInt type, UInt size)
     if (size == 0)
         alloc_size++;
 
-    if (IsJuliaMultiThreaded)
-        JuliaTLS = jl_get_ptls_states();
-    bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), DatatypeGapObj);
+    jl_ptls_t ptls = jl_get_ptls_states();
+
+    bag = jl_gc_alloc_typed(ptls, sizeof(void *), DatatypeGapObj);
     SET_PTR_BAG(bag, 0);
 
-    BagHeader * header = AllocateBagMemory(type, alloc_size);
+    BagHeader * header = AllocateBagMemory(ptls, type, alloc_size);
 
     header->type = type;
     header->flags = 0;
@@ -939,7 +937,7 @@ UInt ResizeBag(Bag bag, UInt new_size)
             alloc_size++;
 
         // allocate new bag
-        header = AllocateBagMemory(header->type, alloc_size);
+        header = AllocateBagMemory(jl_get_ptls_states(), header->type, alloc_size);
 
         // copy bag header and data, and update size
         memcpy(header, BAG_HEADER(bag), sizeof(BagHeader) + old_size);
