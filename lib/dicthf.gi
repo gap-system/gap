@@ -56,7 +56,7 @@ BindGlobal("HashKeyWholeBag", {x,y} -> HASHKEY_BAG(x,y,0,-1));
 InstallMethod(SparseIntKey,"for finite Gaussian row spaces",true,
     [ IsFFECollColl and IsGaussianRowSpace,IsObject ], 0,
 function(m,v)
-local f,n,bytelen,data,qq,i;
+local f,n,bytelen,data,qq,i,b,s,sl,nn;
   f:=LeftActingDomain(m);
   n:=Size(f);
   if n=2 then
@@ -104,6 +104,26 @@ local f,n,bytelen,data,qq,i;
              end;
 
     fi;
+  elif n > 100000 and Characteristic( f ) < n then
+    # large field, view it as an extension of its prime field
+    # in order to avoid writing down all of its elements
+    if Size( LeftActingDomain( f ) ) <> Characteristic( f ) then
+      f:= AsField( PrimeField( f ), f );
+    fi;
+    b:= Basis( f );
+    s:= LeftActingDomain( f );
+    sl:= AsSSortedList( s );
+    nn:= Size( s );
+    return function( v )
+      local sy, x, c;
+      sy:= 0;
+      for x in v do
+        for c in Coefficients( b, x ) do
+          sy:= nn*sy + ( Position( sl, c ) - 1 );
+        od;
+      od;
+      return sy;
+    end;
   else
     # large field -- vector represented as plist.
     f:=AsSSortedList(f);
