@@ -748,7 +748,7 @@ static void LoadPRec(Obj prec)
 **  'MarkPRecSubBags' is the marking function for bags of type 'T_PREC' or
 **  'T_COMOBJ'.
 */
-void MarkPRecSubBags(Obj bag)
+void MarkPRecSubBags(Obj bag, void * ref)
 {
     const Bag * data = CONST_PTR_BAG(bag);
     const UInt count = SIZE_BAG(bag) / sizeof(Bag);
@@ -756,10 +756,10 @@ void MarkPRecSubBags(Obj bag)
     // data[0] is unused for regular precords, but it is used during copying
     // to store a pointer to the copy; moreover, this mark function is also
     // used for component objects, which store their type in slot 0
-    MarkBag(data[0]);
+    MarkBag(data[0], ref);
 
     for (UInt i = 3; i < count; i += 2) {
-        MarkBag(data[i]);
+        MarkBag(data[i], ref);
     }
 }
 

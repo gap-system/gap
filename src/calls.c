@@ -1611,13 +1611,13 @@ static void LoadFunction(Obj func)
 **
 **  'MarkFunctionSubBags' is the marking function for bags of type 'T_FUNCTION'.
 */
-static void MarkFunctionSubBags(Obj func)
+static void MarkFunctionSubBags(Obj func, void * ref)
 {
     // the first eight slots are pointers to C functions, so we need
     // to skip those for marking
     UInt size = SIZE_BAG(func) / sizeof(Obj) - 8;
     const Bag * data = CONST_PTR_BAG(func) + 8;
-    MarkArrayOfBags(data, size);
+    MarkArrayOfBags(data, size, ref);
 }
 
 

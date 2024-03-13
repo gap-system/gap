@@ -15,43 +15,43 @@
 #include "error.h"
 #include "gasman.h"
 
-void MarkArrayOfBags(const Bag array[], UInt count)
+void MarkArrayOfBags(const Bag array[], UInt count, void * ref)
 {
     for (UInt i = 0; i < count; i++) {
-        MarkBag(array[i]);
+        MarkBag(array[i], ref);
     }
 }
 
-void MarkNoSubBags(Bag bag)
+void MarkNoSubBags(Bag bag, void * ref)
 {
 }
 
-void MarkOneSubBags(Bag bag)
+void MarkOneSubBags(Bag bag, void * ref)
 {
-    MarkArrayOfBags(CONST_PTR_BAG(bag), 1);
+    MarkArrayOfBags(CONST_PTR_BAG(bag), 1, ref);
 }
 
-void MarkTwoSubBags(Bag bag)
+void MarkTwoSubBags(Bag bag, void * ref)
 {
-    MarkArrayOfBags(CONST_PTR_BAG(bag), 2);
+    MarkArrayOfBags(CONST_PTR_BAG(bag), 2, ref);
 }
 
-void MarkThreeSubBags(Bag bag)
+void MarkThreeSubBags(Bag bag, void * ref)
 {
-    MarkArrayOfBags(CONST_PTR_BAG(bag), 3);
+    MarkArrayOfBags(CONST_PTR_BAG(bag), 3, ref);
 }
 
-void MarkFourSubBags(Bag bag)
+void MarkFourSubBags(Bag bag, void * ref)
 {
-    MarkArrayOfBags(CONST_PTR_BAG(bag), 4);
+    MarkArrayOfBags(CONST_PTR_BAG(bag), 4, ref);
 }
 
-void MarkAllSubBags(Bag bag)
+void MarkAllSubBags(Bag bag, void * ref)
 {
-    MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag));
+    MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag), ref);
 }
 
-void MarkAllButFirstSubBags(Bag bag)
+void MarkAllButFirstSubBags(Bag bag, void * ref)
 {
-    MarkArrayOfBags(CONST_PTR_BAG(bag) + 1, SIZE_BAG(bag) / sizeof(Bag) - 1);
+    MarkArrayOfBags(CONST_PTR_BAG(bag) + 1, SIZE_BAG(bag) / sizeof(Bag) - 1, ref);
 }

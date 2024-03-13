@@ -661,10 +661,11 @@ Bag  MakeBagReadOnly(Bag bag);
 **  function for a  type before it allocates  any  bag  of  that type.  It is
 **  probably best to install all marking functions before allocating any bag.
 **
-**  A marking function  is a function  that takes a  single  argument of type
-**  'Bag' and returns nothing, i.e., has return type 'void'.  Such a function
-**  must apply the function 'MarkBag' to each bag  identifier that  appears in
-**  the bag (see below).
+**  A marking function is a function that takes a two arguments, one of type
+**  'Bag' and one of type 'void *' and returns nothing, i.e., has return type
+**  'void'.  Such a function must apply the function 'MarkBag' to each bag
+**  identifier that appears in the bag (see below), passing on its 'void *'
+**  argument unchanged to 'MarkBag' as second argument.
 **
 **  Those functions are applied during the garbage  collection to each marked
 **  bag, i.e., bags  that are assumed to be  still live,  to also mark  their
@@ -673,7 +674,8 @@ Bag  MakeBagReadOnly(Bag bag);
 **
 **  {\Gasman} already provides several marking functions, see below.
 */
-typedef void (* TNumMarkFuncBags )( Bag bag );
+#define GAP_MARK_FUNC_WITH_REF 1
+typedef void (* TNumMarkFuncBags )( Bag bag, void * ref );
 void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func);
 
 #if !defined(USE_THREADSAFE_COPYING) && !defined(USE_BOEHM_GC)
@@ -689,7 +691,7 @@ extern TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
 **  simply returns.  For example   in  {\GAP} the  bags for   large  integers
 **  contain only the digits and no identifiers of bags.
 */
-void MarkNoSubBags(Bag bag);
+void MarkNoSubBags(Bag bag, void * ref);
 
 
 /****************************************************************************
@@ -703,10 +705,10 @@ void MarkNoSubBags(Bag bag);
 **  the indicated number as bag identifiers as their initial entries.
 **  These functions mark those subbags and return.
 */
-void MarkOneSubBags(Bag bag);
-void MarkTwoSubBags(Bag bag);
-void MarkThreeSubBags(Bag bag);
-void MarkFourSubBags(Bag bag);
+void MarkOneSubBags(Bag bag, void * ref);
+void MarkTwoSubBags(Bag bag, void * ref);
+void MarkThreeSubBags(Bag bag, void * ref);
+void MarkFourSubBags(Bag bag, void * ref);
 
 
 /****************************************************************************
@@ -725,14 +727,14 @@ void MarkFourSubBags(Bag bag);
 **  bag identifiers for the elements  of the  list or 0   if an entry has  no
 **  assigned value.
 */
-void MarkAllSubBags(Bag bag);
+void MarkAllSubBags(Bag bag, void * ref);
 
 
 /****************************************************************************
 **
 *F  MarkAllButFirstSubBags(<bag>) . . . .  marks all subbags except the first
 */
-void MarkAllButFirstSubBags(Bag bag);
+void MarkAllButFirstSubBags(Bag bag, void * ref);
 
 
 /****************************************************************************
@@ -749,11 +751,11 @@ void MarkAllButFirstSubBags(Bag bag);
 **  identifier.
 */
 #ifdef USE_BOEHM_GC
-EXPORT_INLINE void MarkBag( Bag bag )
+EXPORT_INLINE void MarkBag( Bag bag, void * ref )
 {
 }
 #else
-void MarkBag(Bag bag);
+void MarkBag(Bag bag, void * ref);
 #endif
 
 
@@ -764,7 +766,7 @@ void MarkBag(Bag bag);
 **  'MarkArrayOfBags' iterates over <count> all bags in the given array,
 **  and marks each bag using MarkBag.
 */
-extern void MarkArrayOfBags(const Bag array[], UInt count);
+extern void MarkArrayOfBags(const Bag array[], UInt count, void * ref);
 
 
 /****************************************************************************

@@ -534,7 +534,7 @@ static Obj FiltIsWPObj(Obj self, Obj wp)
 
 #if defined(USE_GASMAN)
 
-static void MarkWeakPointerObj(Obj wp)
+static void MarkWeakPointerObj(Obj wp, void * ref)
 {
     // can't use the stored length here, in case we are in the middle of
     // copying
@@ -558,7 +558,7 @@ static void SweepWeakPointerObj( Bag *src, Bag *dst, UInt len)
 
 #ifdef USE_JULIA_GC
 
-static void MarkWeakPointerObj(Obj wp)
+static void MarkWeakPointerObj(Obj wp, void * ref)
 {
     // can't use the stored length here, in case we are in the middle of
     // copying
@@ -566,7 +566,7 @@ static void MarkWeakPointerObj(Obj wp)
     for (UInt i = 1; i <= len; i++) {
         Bag elm = CONST_ADDR_OBJ(wp)[i];
         if (IS_BAG_REF(elm))
-            MarkJuliaWeakRef(elm);
+            MarkJuliaWeakRef(elm, ref);
     }
 }
 

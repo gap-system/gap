@@ -672,9 +672,9 @@ void InitSweepFuncBags (
 **  the second time raises a warning, because a non-default marking function
 **  is being replaced.
 */
-static void MarkAllSubBagsDefault(Bag bag)
+static void MarkAllSubBagsDefault(Bag bag, void * ref)
 {
-    MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag));
+    MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag), ref);
 }
 
 
@@ -770,7 +770,7 @@ static Int  DisableMarkBagValidation = 0;
 // Other marking functions don't get to inline MarkBag calls anymore,
 // but luckily these are rare (and usually not performance critical
 // to start with).
-inline void MarkBag(Bag bag)
+inline void MarkBag(Bag bag, void * ref)
 {
   if ( IS_BAG_ID(bag)
        && YoungBags < CONST_PTR_BAG(bag)    // points to a young bag
@@ -1918,7 +1918,7 @@ static NOINLINE void ScanRange(void * vpA, void * vpB)
                 // Need to mark this pointer as readable for valgrind
                 VALGRIND_MAKE_MEM_DEFINED(&pcpy, sizeof(pcpy));
 #endif
-                MarkBag(*pcpy);
+                MarkBag(*pcpy, 0);
             }
         }
     }
@@ -1930,7 +1930,7 @@ static NOINLINE void ScanRange(void * vpA, void * vpB)
                 // Need to mark this pointer as readable for valgrind
                 VALGRIND_MAKE_MEM_DEFINED(&pcpy, sizeof(pcpy));
 #endif
-                MarkBag(*pcpy);
+                MarkBag(*pcpy, 0);
             }
         }
     }
@@ -1961,7 +1961,7 @@ static NOINLINE void GenStackFuncBags(void)
     // slightly. unusual.
     for (p = (Bag *)RegsBags;
          p < (Bag *)((char *)RegsBags + sizeof(RegsBags)); p++)
-        MarkBag( *p );
+        MarkBag(*p, 0);
 
 #ifdef DEBUG_GASMAN_MARKING
     DisableMarkBagValidation = 0;
@@ -1986,7 +1986,7 @@ static UInt CollectBags_Mark(UInt FullBags)
 
     // mark from the static area
     for (int i = 0; i < GlobalBags.nr; i++)
-        MarkBag( *GlobalBags.addr[i] );
+        MarkBag( *GlobalBags.addr[i], 0 );
 
     /* allow installing a custom marking function. This is used for integrating
        GAP (possibly linked as a shared library) with other code bases which use
@@ -2031,9 +2031,9 @@ static UInt CollectBags_Mark(UInt FullBags)
         // bag, which does not prevent the young bag itself from being
         // collected (which is what we need).
         if (CONST_PTR_BAG(first) <= YoungBags)
-            (*TabMarkFuncBags[TNUM_BAG(first)])( first );
+            (*TabMarkFuncBags[TNUM_BAG(first)])( first, 0 );
         else
-            MarkBag(first);
+            MarkBag(first, 0);
     }
 
 
@@ -2059,7 +2059,7 @@ static UInt CollectBags_Mark(UInt FullBags)
         }
 
         // mark subbags
-        (*TabMarkFuncBags[TNUM_BAG(first)])( first );
+        (*TabMarkFuncBags[TNUM_BAG(first)])( first, 0 );
 
         // collect some statistics
         nrLiveBags++;

@@ -171,16 +171,16 @@ static void PrintObjMap(Obj map)
  *  These functions are not yet implemented.
  */
 
-static void MarkObjSet(Obj obj)
+static void MarkObjSet(Obj obj, void * ref)
 {
   UInt size = CONST_ADDR_WORD(obj)[OBJSET_SIZE];
-  MarkArrayOfBags( CONST_ADDR_OBJ(obj) + OBJSET_HDRSIZE, size );
+  MarkArrayOfBags( CONST_ADDR_OBJ(obj) + OBJSET_HDRSIZE, size, ref );
 }
 
-static void MarkObjMap(Obj obj)
+static void MarkObjMap(Obj obj, void * ref)
 {
   UInt size = CONST_ADDR_WORD(obj)[OBJSET_SIZE];
-  MarkArrayOfBags( CONST_ADDR_OBJ(obj) + OBJSET_HDRSIZE, 2 * size );
+  MarkArrayOfBags( CONST_ADDR_OBJ(obj) + OBJSET_HDRSIZE, 2 * size, ref );
 }
 
 /**

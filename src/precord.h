@@ -258,7 +258,7 @@ void CopyPRecord(TraversalState * traversal, Obj copy, Obj original);
 #endif
 
 
-void MarkPRecSubBags(Obj bag);
+void MarkPRecSubBags(Obj bag, void * ref);
 
 
 /****************************************************************************

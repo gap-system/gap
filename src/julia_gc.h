@@ -22,7 +22,7 @@
 **  may result.
 */
 
-void MarkJuliaObj(void * obj);
+void MarkJuliaObj(void * obj, void * ref);
 
 /****************************************************************************
 **
@@ -33,7 +33,7 @@ void MarkJuliaObj(void * obj);
 **  a valid Julia object. If not, it is silently ignored.
 */
 
-void MarkJuliaObjSafe(void * obj);
+void MarkJuliaObjSafe(void * obj, void * ref);
 
 /****************************************************************************
 **
@@ -43,6 +43,6 @@ void MarkJuliaObjSafe(void * obj);
 **  reference and cannot be NULL.
 */
 
-void MarkJuliaWeakRef(void * obj);
+void MarkJuliaWeakRef(void * obj, void * ref);
 
 #endif

@@ -579,16 +579,16 @@ void CLEAN_OBJ(Obj obj)
 
 #if !defined(USE_THREADSAFE_COPYING) && !defined(USE_BOEHM_GC)
 
-static void MarkCopyingSubBags(Obj obj)
+static void MarkCopyingSubBags(Obj obj, void * ref)
 {
     Obj fpl = CONST_ADDR_OBJ(obj)[0];
 
     // mark the forwarding pointer
-    MarkBag(fpl);
+    MarkBag(fpl, ref);
 
     // mark the rest as in the non-copied case
     UInt tnum = INT_INTOBJ(ELM_PLIST(fpl, 3));
-    TabMarkFuncBags[tnum](obj);
+    TabMarkFuncBags[tnum](obj, ref);
 }
 
 #endif
