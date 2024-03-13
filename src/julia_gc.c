@@ -78,6 +78,11 @@ GAP_STATIC_ASSERT(sizeof(void *) == sizeof(struct OpaqueBag),
 // #define VALIDATE_MARKING
 
 
+// if USE_GAP_INSIDE_JULIA is defined, then some hacks which are needed
+// to make julia-inside-gap work are disabled. This is mainly for use in
+// the GAP.jl package.
+// #define USE_GAP_INSIDE_JULIA
+
 // Comparing pointers in C without triggering undefined behavior
 // can be difficult. As the GC already assumes that the memory
 // range goes from 0 to 2^k-1 (region tables), we simply convert
@@ -185,10 +190,10 @@ static void JFinalizer(jl_value_t * obj)
 static jl_datatype_t * DatatypeGapObj;
 static jl_datatype_t * DatatypeSmallBag;
 static jl_datatype_t * DatatypeLargeBag;
+#if !defined(USE_GAP_INSIDE_JULIA)
 static Bag *           GapStackBottom;
-static jl_ptls_t       JuliaTLS;
-static BOOL            IsJuliaMultiThreaded;
 static jl_task_t *     RootTaskOfMainThread;
+#endif
 static size_t          MaxPoolObjSize;
 static int             FullGC;
 static UInt            StartTime, TotalTime;
@@ -220,23 +225,23 @@ static Int          GlobalCount;
 
 /****************************************************************************
 **
-*F  AllocateBagMemory( <type>, <size> )
+*F  AllocateBagMemory( <ptls>, <type>, <size> )
 **
 **  Allocate memory for a new bag.
 **/
-static void * AllocateBagMemory(UInt type, UInt size)
+static void * AllocateBagMemory(jl_ptls_t ptls, UInt type, UInt size)
 {
     // HOOK: return `size` bytes memory of TNUM `type`.
     void * result;
     if (size <= MaxPoolObjSize) {
-        result = (void *)jl_gc_alloc_typed(JuliaTLS, size, DatatypeSmallBag);
+        result = (void *)jl_gc_alloc_typed(ptls, size, DatatypeSmallBag);
     }
     else {
-        result = (void *)jl_gc_alloc_typed(JuliaTLS, size, DatatypeLargeBag);
+        result = (void *)jl_gc_alloc_typed(ptls, size, DatatypeLargeBag);
     }
     memset(result, 0, size);
     if (TabFreeFuncBags[type])
-        jl_gc_schedule_foreign_sweepfunc(JuliaTLS, (jl_value_t *)result);
+        jl_gc_schedule_foreign_sweepfunc(ptls, (jl_value_t *)result);
     return result;
 }
 
@@ -550,6 +555,8 @@ static void GapRootScanner(int full)
     // current_task != root_task.
     char * stackend = (char *)jl_task_stack_buffer(task, &size, &tid);
     stackend += size;
+
+#if !defined(USE_GAP_INSIDE_JULIA)
     // The following test overrides the stackend if the following two
     // conditions hold:
     //
@@ -564,6 +571,7 @@ static void GapRootScanner(int full)
     if (task == RootTaskOfMainThread) {
         stackend = (char *)GapStackBottom;
     }
+#endif
 
     // Allow installing a custom marking function. This is used for
     // integrating GAP (possibly linked as a shared library) with other code
@@ -624,10 +632,11 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
             active_start += guardpages_size;
         }
 #endif
+#if !defined(USE_GAP_INSIDE_JULIA)
         if (task == RootTaskOfMainThread) {
             active_end = (char *)GapStackBottom;
         }
-
+#endif
         // Unlike the stack of the current task that we scan in
         // GapRootScanner, we do not know the stack pointer. We
         // therefore use a separate routine that scans from the
@@ -743,14 +752,13 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     // that we can track objects allocated during `jl_init()`.
     MaxPoolObjSize = jl_gc_max_internal_obj_size();
     jl_gc_enable_conservative_gc_support();
+#if !defined(USE_GAP_INSIDE_JULIA)
     jl_init();
+#endif
 
-    JuliaTLS = jl_get_ptls_states();
 #ifdef SKIP_GUARD_PAGES
     SetupGuardPagesSize();
 #endif
-
-    IsJuliaMultiThreaded = jl_n_threads > 1;
 
     // These callbacks potentially require access to the Julia
     // TLS and thus need to be installed after initialization.
@@ -809,18 +817,21 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
 
 void InitBags(UInt initial_size, Bag * stack_bottom)
 {
-    GapStackBottom = stack_bottom;
     TotalTime = 0;
 
     if (!DatatypeGapObj) {
         GAP_InitJuliaMemoryInterface(0, 0);
     }
 
+#if !defined(USE_GAP_INSIDE_JULIA)
+    GapStackBottom = stack_bottom;
+
     // If we are embedding Julia in GAP, remember the root task
     // of the main thread. The extent of the stack buffer of that
     // task is calculated a bit differently than for other tasks.
     if (!IsUsingLibGap())
         RootTaskOfMainThread = (jl_task_t *)jl_get_current_task();
+#endif
 }
 
 UInt CollectBags(UInt size, UInt full)
@@ -899,12 +910,12 @@ Bag NewBag(UInt type, UInt size)
     if (size == 0)
         alloc_size++;
 
-    if (IsJuliaMultiThreaded)
-        JuliaTLS = jl_get_ptls_states();
-    bag = jl_gc_alloc_typed(JuliaTLS, sizeof(void *), DatatypeGapObj);
+    jl_ptls_t ptls = jl_get_ptls_states();
+
+    bag = jl_gc_alloc_typed(ptls, sizeof(void *), DatatypeGapObj);
     SET_PTR_BAG(bag, 0);
 
-    BagHeader * header = AllocateBagMemory(type, alloc_size);
+    BagHeader * header = AllocateBagMemory(ptls, type, alloc_size);
 
     header->type = type;
     header->flags = 0;
@@ -939,7 +950,7 @@ UInt ResizeBag(Bag bag, UInt new_size)
             alloc_size++;
 
         // allocate new bag
-        header = AllocateBagMemory(header->type, alloc_size);
+        header = AllocateBagMemory(jl_get_ptls_states(), header->type, alloc_size);
 
         // copy bag header and data, and update size
         memcpy(header, BAG_HEADER(bag), sizeof(BagHeader) + old_size);
