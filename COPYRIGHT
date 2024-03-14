@@ -15,12 +15,11 @@ along with GAP; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-Copyright (C) 1988-2022 by its authors, which include:
+Copyright (C) 1988-2024 by its authors, which include:
 
 * Ákos Seress
 * Alex Wegner
 * Alexander Hulpke
-* Alexander Konovalov
 * Alice Niemeyer
 * Andreas Distler
 * Andrew Solomon
@@ -42,6 +41,7 @@ Copyright (C) 1988-2022 by its authors, which include:
 * Claus Fieker
 * Colva M. Roney-Dougal
 * Craig A. Struble
+* Daniel Rademacher
 * David Joyner
 * Derek F. Holt
 * Dmitrii Pasechnik
@@ -89,18 +89,25 @@ Copyright (C) 1988-2022 by its authors, which include:
 * Lucas Jones
 * Lucas Wollenhaupt
 * Lukas Maas
+* Lukas Schnelle
 * Marco Costantini
 * Markus Baumeister
 * Markus Pfeiffer
 * Martin Schönert
+* Mathieu Dutour Sikiric
 * Max Horn
 * Max Neunhöffer
+* Maximilian Downey Twiss
+* Michael Orlitzky
 * Michael Smith
-* Michael Torpey
+* Michael Young (née Torpey)
 * Mohamed Barakat
+* Nikita Hismatov
+* Olexandr Konovalov
 * Oliver Bonten
 * Paul Smith
 * Paula Hähndel
+* Ramón Esteban Romero
 * Reimer Behrends
 * Rob Wainwright
 * Robert Arthur
@@ -121,7 +128,7 @@ Copyright (C) 1988-2022 by its authors, which include:
 * Thomas Merkwitz
 * Udo Polis
 * Ute Schiffer
-* Vinay Wagh
+* VInay Wagh
 * Vladimir Janjic
 * Volker Braun
 * Volkmar Felsch
