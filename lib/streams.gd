@@ -924,7 +924,7 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 ##  true
 ##  gap> y := ReadAll(s);;
 ##  gap> Length(y);
-##  4095
+##  10002
 ##  gap> CloseStream(s);
 ##  gap> s;
 ##  < closed input/output stream to rev >
