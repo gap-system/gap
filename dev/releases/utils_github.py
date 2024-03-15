@@ -11,7 +11,7 @@ import os
 import subprocess
 
 import github
-from utils import error, notice, sha256file, verify_via_checksumfile
+from utils import error, notice, sha256file
 
 CURRENT_REPO_NAME = os.environ.get("GITHUB_REPOSITORY", "gap-system/gap")
 
@@ -57,6 +57,16 @@ def initialize_github(token=None) -> None:
         CURRENT_REPO = GITHUB_INSTANCE.get_repo(CURRENT_REPO_NAME)
     except github.GithubException:
         error("Error: the access token may be incorrect")
+
+
+def verify_via_checksumfile(filename: str) -> None:
+    actual_checksum = sha256file(filename)
+    with open(filename + ".sha256", "r", encoding="utf-8") as f:
+        expected_checksum = f.read().strip()
+    if expected_checksum != actual_checksum:
+        error(
+            f"checksum for '{filename}' expected to be {expected_checksum} but got {actual_checksum}"
+        )
 
 
 # Given the <filename> of a file that does not end with .sha256, create or get
