@@ -56,7 +56,7 @@ BindGlobal("HashKeyWholeBag", {x,y} -> HASHKEY_BAG(x,y,0,-1));
 InstallMethod(SparseIntKey,"for finite Gaussian row spaces",true,
     [ IsFFECollColl and IsGaussianRowSpace,IsObject ], 0,
 function(m,v)
-local f,n,bytelen,data,qq,i,b,s,sl,nn;
+local f,n,bytelen,data,qq,i,b,nn;
   f:=LeftActingDomain(m);
   n:=Size(f);
   if n=2 then
@@ -111,16 +111,12 @@ local f,n,bytelen,data,qq,i,b,s,sl,nn;
       f:= AsField( PrimeField( f ), f );
     fi;
     b:= Basis( f );
-    s:= LeftActingDomain( f );
-    sl:= AsSSortedList( s );
-    nn:= Size( s );
+    nn:= Size( LeftActingDomain( f ) );
     return function( v )
-      local sy, x, c;
+      local sy, x;
       sy:= 0;
       for x in v do
-        for c in Coefficients( b, x ) do
-          sy:= nn*sy + ( Position( sl, c ) - 1 );
-        od;
+        sy:= n * sy + NumberFFVector( Coefficients( b, x ), nn );
       od;
       return sy;
     end;
