@@ -1,7 +1,6 @@
 # GAP - history of changes
 
-
-## GAP 4.13.0-alpha2 (February 2024)
+## GAP 4.13.0 (March 2024)
 
 The following gives an overview of the changes compared to the previous
 release. This list is not complete, many more internal or minor changes
@@ -60,6 +59,7 @@ affect some users directly.
 
 ### Improved and extended functionality
 
+- [#5660](https://github.com/gap-system/gap/pull/5660) Enhance `IsomorphismFpGroup(G)` to transfer in more cases information about `G` to its image
 - [#5521](https://github.com/gap-system/gap/pull/5521) Fix unexpected error when doing certain calculations in a fitting-free group acting intransitively on its socle factors
 - [#5480](https://github.com/gap-system/gap/pull/5480) Make `GroupWithMemory` behave more like `Group`, and e.g. make the wrapped generators immutable, and for matrices try to convert them to a better representation
 - [#5440](https://github.com/gap-system/gap/pull/5440) Change handling of long command line options like `--norepl` so that repeating them will not toggle behaviour anymore
@@ -108,6 +108,7 @@ affect some users directly.
 
 ### Other fixed bugs
 
+- [#5666](https://github.com/gap-system/gap/pull/5666) Fix an issue where closing a subprocess started via `InputOutputLocalProcess` could lead to spurious error messages by that subprocess
 - [#5546](https://github.com/gap-system/gap/pull/5546) Fix printing of GAP strings containing null characters (skip them instead of truncating the string)
 - [#5523](https://github.com/gap-system/gap/pull/5523) Fix infinite recursion in `ReplacedString` when `<old>` string is empty
 - [#5520](https://github.com/gap-system/gap/pull/5520) Restrict `SetDimension` method to `IsFreeLeftModule` to avoid a bug involving `FinInG`
@@ -120,7 +121,9 @@ affect some users directly.
 
 ### Other changes
 
+- [#5653](https://github.com/gap-system/gap/pull/5653) Change `Cite` to not include a version in the generated keys
 - [#5554](https://github.com/gap-system/gap/pull/5554) Make `Objectify` and `ObjectifyWithAttributes` reject input objects which are not plain lists or records
+- [#5366](https://github.com/gap-system/gap/pull/5366) Add user preference `HistoryBackwardSearchSkipIdenticalEntries`
 - [#5180](https://github.com/gap-system/gap/pull/5180) Force `START_TEST` and `STOP_TEST` to be always used in tandem
 - [#3006](https://github.com/gap-system/gap/pull/3006) Forbid installing new implications to representations using `InstallTrueMethod`
 
@@ -128,12 +131,14 @@ affect some users directly.
 
 #### New packages redistributed with GAP
 
-- [**QDistRnd**](https://QEC-pages.github.io/QDistRnd) 0.9.3: Calculate the distance of a q-ary quantum stabilizer code, by Leonid P. Pryadko, Vadim A. Shabashov
+- [**LINS**](https://gap-packages.github.io/LINS/) 0.9: provides an algorithm for computing the normal subgroups of a finitely presented group up to some given index bound., by Friedrich Rober
+- [**QDistRnd**](https://QEC-pages.github.io/QDistRnd) 0.9.4: Calculate the distance of a q-ary quantum stabilizer code, by Leonid P. Pryadko, V. A. Shabashov, V. K. Kozin
 - [**SOTGrps**](https://gap-packages.github.io/sotgrps/) 1.2: Constructing and identifying groups of small order type, by Eileen Pan
+- [**typeset**](https://gap-packages.github.io/typeset/) 1.2.2: Automatic typesetting framework for common GAP objects, with LaTeX generation, by Zachariah Newbery
 
 #### Updated packages redistributed with GAP
 
-The GAP 4.13.0 distribution contains 157 packages, of which 84 have been
+The GAP 4.13.0 distribution contains 159 packages, of which 87 have been
 updated since GAP 4.12.2. The full list of updated packages is given below:
 
 - [**4ti2Interface**](https://homalg-project.github.io/pkg/4ti2Interface): 2022.09-01 -> 2023.02-04
@@ -143,27 +148,29 @@ updated since GAP 4.12.2. The full list of updated packages is given below:
 - [**AtlasRep**](https://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep): 2.1.6 -> 2.1.8
 - [**AutoDoc**](https://gap-packages.github.io/AutoDoc): 2022.10.20 -> 2023.06.19
 - [**Browse**](https://www.math.rwth-aachen.de/~Browse): 1.8.19 -> 1.8.21
-- [**CAP**](https://homalg-project.github.io/pkg/CAP): 2022.12-11 -> 2024.02-01
+- [**CAP**](https://homalg-project.github.io/pkg/CAP): 2022.12-11 -> 2024.03-02
 - [**CaratInterface**](https://www.math.uni-bielefeld.de/~gaehler/gap/packages.php): 2.3.4 -> 2.3.6
 - [**Circle**](https://gap-packages.github.io/circle): 1.6.5 -> 1.6.6
 - [**cohomolo**](https://gap-packages.github.io/cohomolo): 1.6.10 -> 1.6.11
 - [**Congruence**](https://gap-packages.github.io/congruence): 1.2.4 -> 1.2.5
 - [**Cryst**](https://www.math.uni-bielefeld.de/~gaehler/gap/packages.php): 4.1.25 -> 4.1.27
-- [**CTblLib**](https://www.math.rwth-aachen.de/~Thomas.Breuer/ctbllib): 1.3.4 -> 1.3.7
+- [**CTblLib**](https://www.math.rwth-aachen.de/~Thomas.Breuer/ctbllib): 1.3.4 -> 1.3.9
 - [**curlInterface**](https://gap-packages.github.io/curlInterface/): 2.3.1 -> 2.3.2
 - [**cvec**](https://gap-packages.github.io/cvec): 2.7.6 -> 2.8.1
 - [**DESIGN**](https://gap-packages.github.io/design): 1.7 -> 1.8
-- [**Digraphs**](https://digraphs.github.io/Digraphs): 1.6.1 -> 1.7.0
-- [**EDIM**](https://www.math.rwth-aachen.de/~Frank.Luebeck/EDIM): 1.3.6 -> 1.3.7
+- [**Digraphs**](https://digraphs.github.io/Digraphs): 1.6.1 -> 1.7.1
+- [**EDIM**](https://www.math.rwth-aachen.de/~Frank.Luebeck/EDIM): 1.3.6 -> 1.3.8
 - [**Example**](https://gap-packages.github.io/example): 4.3.2 -> 4.3.4
 - [**ExamplesForHomalg**](https://homalg-project.github.io/pkg/ExamplesForHomalg): 2022.11-01 -> 2023.10-01
 - [**ferret**](https://gap-packages.github.io/ferret/): 1.0.9 -> 1.0.10
 - [**FGA**](https://gap-packages.github.io/fga/): 1.4.0 -> 1.5.0
 - [**FinInG**](https://gap-packages.github.io/FinInG): 1.5.4 -> 1.5.6
 - [**float**](https://gap-packages.github.io/float/): 1.0.3 -> 1.0.4
+- [**FORMAT**](https://gap-packages.github.io/format/): 1.4.3 -> 1.4.4
 - [**FPLSA**](https://gap-packages.github.io/FPLSA): 1.2.5 -> 1.2.6
 - [**FR**](https://gap-packages.github.io/fr): 2.4.12 -> 2.4.13
 - [**francy**](https://gap-packages.github.io/francy): 1.2.5 -> 2.0.3
+- [**GAPDoc**](https://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc): 1.6.6 -> 1.6.7
 - [**Gauss**](https://homalg-project.github.io/pkg/Gauss): 2022.11-01 -> 2023.02-04
 - [**GaussForHomalg**](https://homalg-project.github.io/pkg/GaussForHomalg): 2022.08-03 -> 2023.11-01
 - [**GeneralizedMorphismsForCAP**](https://homalg-project.github.io/pkg/GeneralizedMorphismsForCAP): 2022.12-01 -> 2024.01-01
@@ -173,6 +180,7 @@ updated since GAP 4.12.2. The full list of updated packages is given below:
 - [**GrpConst**](https://gap-packages.github.io/grpconst/): 2.6.3 -> 2.6.5
 - [**GUAVA**](https://gap-packages.github.io/guava): 3.17 -> 3.18
 - [**HAP**](https://gap-packages.github.io/hap): 1.47 -> 1.62
+- [**HeLP**](https://gap-packages.github.io/HeLP): 3.5 -> 4.0
 - [**homalg**](https://homalg-project.github.io/pkg/homalg): 2022.11-01 -> 2024.01-01
 - [**HomalgToCAS**](https://homalg-project.github.io/pkg/HomalgToCAS): 2022.11-02 -> 2023.11-01
 - [**idrel**](https://gap-packages.github.io/idrel/): 2.44 -> 2.46
@@ -186,11 +194,11 @@ updated since GAP 4.12.2. The full list of updated packages is given below:
 - [**LAGUNA**](https://gap-packages.github.io/laguna): 3.9.5 -> 3.9.6
 - [**LinearAlgebraForCAP**](https://homalg-project.github.io/pkg/LinearAlgebraForCAP): 2022.12-04 -> 2024.02-02
 - [**LocalizeRingForHomalg**](https://homalg-project.github.io/pkg/LocalizeRingForHomalg): 2022.11-01 -> 2023.10-01
-- [**MatricesForHomalg**](https://homalg-project.github.io/pkg/MatricesForHomalg): 2022.12-01 -> 2023.11-02
+- [**MatricesForHomalg**](https://homalg-project.github.io/pkg/MatricesForHomalg): 2022.12-01 -> 2024.02-01
 - [**ModIsom**](https://gap-packages.github.io/modisom/): 2.5.3 -> 2.5.4
 - [**ModulePresentationsForCAP**](https://homalg-project.github.io/pkg/ModulePresentationsForCAP): 2022.12-01 -> 2024.01-04
 - [**Modules**](https://homalg-project.github.io/pkg/Modules): 2022.11-01 -> 2024.01-01
-- [**MonoidalCategories**](https://homalg-project.github.io/pkg/MonoidalCategories): 2022.12-01 -> 2024.02-02
+- [**MonoidalCategories**](https://homalg-project.github.io/pkg/MonoidalCategories): 2022.12-01 -> 2024.02-04
 - [**NormalizInterface**](https://gap-packages.github.io/NormalizInterface): 1.3.5 -> 1.3.6
 - [**nq**](https://gap-packages.github.io/nq/): 2.5.9 -> 2.5.11
 - [**OpenMath**](https://gap-packages.github.io/openmath): 11.5.2 -> 11.5.3
@@ -206,7 +214,7 @@ updated since GAP 4.12.2. The full list of updated packages is given below:
 - [**RingsForHomalg**](https://homalg-project.github.io/pkg/RingsForHomalg): 2022.11-01 -> 2023.11-02
 - [**SCO**](https://homalg-project.github.io/pkg/SCO): 2022.09-01 -> 2023.08-01
 - [**SCSCP**](https://gap-packages.github.io/scscp): 2.4.0 -> 2.4.2
-- [**Semigroups**](https://semigroups.github.io/Semigroups): 5.2.0 -> 5.3.5
+- [**Semigroups**](https://semigroups.github.io/Semigroups): 5.2.0 -> 5.3.7
 - [**singular**](https://gap-packages.github.io/singular/): 2022.09.23 -> 2023.02.09
 - [**SmallGrp**](https://gap-packages.github.io/smallgrp/): 1.5.1 -> 1.5.3
 - [**StandardFF**](https://www.math.rwth-aachen.de/~Frank.Luebeck/gap/StandardFF/): 0.9.4 -> 1.0
@@ -216,7 +224,7 @@ updated since GAP 4.12.2. The full list of updated packages is given below:
 - [**UGALY**](https://gap-packages.github.io/UGALY): 4.0.3 -> 4.1.3
 - [**UnitLib**](https://gap-packages.github.io/unitlib): 4.1.0 -> 4.2.0
 - [**utils**](https://gap-packages.github.io/utils): 0.81 -> 0.85
-- [**Wedderga**](https://gap-packages.github.io/wedderga): 4.10.2 -> 4.10.4
+- [**Wedderga**](https://gap-packages.github.io/wedderga): 4.10.2 -> 4.10.5
 - [**XGAP**](https://gap-packages.github.io/xgap): 4.31 -> 4.32
 - [**XMod**](https://gap-packages.github.io/xmod/): 2.88 -> 2.92
 - [**YangBaxter**](https://gap-packages.github.io/YangBaxter): 0.10.2 -> 0.10.3

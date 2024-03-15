@@ -25,6 +25,7 @@ import json
 import os
 import subprocess
 import sys
+from datetime import datetime
 from typing import Any, Dict, List, TextIO
 
 import requests
@@ -244,6 +245,9 @@ def changes_overview(
 ) -> None:
     """Writes files with information for release notes."""
 
+    month = datetime.now().strftime("%B")
+    year = datetime.now().year
+
     # Could also introduce some consistency checks here for wrong combinations of labels
     filename = "releasenotes_" + new_version + ".md"
     notice("Writing release notes into file " + filename)
@@ -254,7 +258,7 @@ def changes_overview(
         # Write out all PRs with 'use title'
         relnotes_file.write(
             f"""
-## GAP {new_version} (TODO insert date here)
+## GAP {new_version} ({month} {year})
 
 The following gives an overview of the changes compared to the previous
 release. This list is not complete, many more internal or minor changes
