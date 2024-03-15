@@ -64,6 +64,18 @@ readline support.",
   default := "default",
   ) );
 
+DeclareUserPreference( rec(
+  name:= "HistoryBackwardSearchSkipIdenticalEntries",
+  description:= [
+    "When a command is executed multiple times, it is also stored in history \
+multiple times. Setting this option to <K>true</K> skips identical entries \
+when searching backwards in history."
+    ],
+  default:= false,
+  values:= [ true, false ],
+  multi:= false,
+  ) );
+
 
 if GAPInfo.CommandLineOptions.E then
 ############################################################################
@@ -543,6 +555,9 @@ GAPInfo.CommandLineEditFunctions.Functions.BackwardHistory := function(l)
   while n > 1 do
     n := n - 1;
     if PositionSublist(hist[n], start) = 1 then
+      if UserPreference("HistoryBackwardSearchSkipIdenticalEntries") and hist[n] = l[3] then
+        continue;
+      fi;
       GAPInfo.History.Pos := n;
       GAPInfo.History.Last := n;
       return [1, Length(l[3])+1, hist[n], l[4]];
