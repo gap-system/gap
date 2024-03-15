@@ -441,7 +441,7 @@ local q,r,tg,dtg,pemb,ugens,g,gi,d,o,gens,genims,i,gr,img,l,mapi;
   #better: orbit algo
   #r:=ShallowCopy(RightTransversal(q,qu));
   #Sort(r,function(a,b) return 1^a<1^b;end);
-  #r:=List(r,i->PreImagesRepresentative(beta,i));
+  #r:=List(r,i-> Representative(beta,i));
 
   # compute transversal with short words from orbit algorithm on points
   o:=[1];
@@ -527,9 +527,9 @@ end);
 
 #############################################################################
 ##
-#M  PreImagesSet( <hom>, <u> )
+#M  PreImagesSetNC( <hom>, <u> )
 ##
-InstallMethod( PreImagesSet, "map from (sub)group of fp group",
+InstallMethod( PreImagesSetNC, "map from (sub)group of fp group",
   CollFamRangeEqFamElms,
   [ IsFromFpGroupHomomorphism,IsGroup ],0,
 function(hom,u)
@@ -715,9 +715,9 @@ end);
 
 #############################################################################
 ##
-#M  PreImagesRepresentative
+#M  PreImagesRepresentativeNC
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
   "hom. to standard generators of fp group, using 'MappedWord'",
   FamRangeEqFamElm,
   [IsToFpGroupHomomorphismByImages,IsMultiplicativeElementWithInverse],
@@ -1276,7 +1276,7 @@ local v,aiu,aiv,G,primes,irrel,ma,mau,a,k,gens,imgs,q,dec,deco,piv,co;
   fi;
 
   gens:=SmallGeneratingSet(a);
-  imgs:=List(gens,x->Image(mau,Image(hom,PreImagesRepresentative(ma,x))));
+  imgs:=List(gens,x->Image(mau,Image(hom,PreImagesRepresentativeNC(ma,x))));
   q:=GroupHomomorphismByImages(a,Image(mau),gens,imgs);
   k:=KernelOfMultiplicativeGeneralMapping(q);
 
@@ -1287,7 +1287,7 @@ local v,aiu,aiv,G,primes,irrel,ma,mau,a,k,gens,imgs,q,dec,deco,piv,co;
   dec:=EpimorphismFromFreeGroup(Group(gens));
   deco:=function(x)
     local i;
-    x:=ExponentSums(PreImagesRepresentative(dec,x));
+    x:=ExponentSums(PreImagesRepresentativeNC(dec,x));
     for i in [1..Length(aiv)] do
       x[i]:=x[i] mod aiv[i];
     od;
@@ -1324,7 +1324,7 @@ local hom,pcgs,impcgs;
   impcgs:=FamilyPcgs(Image(hom,M));
   pcgs:=PcgsByPcSequenceCons(IsPcgsDefaultRep,IsModuloPcgsFpGroupRep,
           ElementsFamily(FamilyObj(M)),
-          List(impcgs,i->PreImagesRepresentative(hom,i)),
+          List(impcgs,i->PreImagesRepresentativeNC(hom,i)),
           []
           );
   pcgs!.hom:=hom;

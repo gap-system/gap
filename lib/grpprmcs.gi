@@ -1173,7 +1173,7 @@ InstallGlobalFunction( PullbackKernelCSPG,
        fi;
        for g in gens do
            for j in [1..i-1] do
-               g := PreImagesRepresentative(homlist[i-j],g);
+               g := PreImagesRepresentativeNC(homlist[i-j],g);
            od;
            Add(normals[index],g);
            Add(factors[index],());
@@ -1193,7 +1193,7 @@ InstallGlobalFunction( PullbackCSPG, function(p,homlist)
     # compute a preimage of the permutation p in the input group
     lenhomlist := Length(homlist);
     for i in [1..lenhomlist] do
-        p := PreImagesRepresentative(homlist[lenhomlist+1-i],p);
+        p := PreImagesRepresentativeNC(homlist[lenhomlist+1-i],p);
     od;
     return p;
 end );
@@ -1522,7 +1522,7 @@ InstallMethod( PCoreOp,
             for g in GeneratorsOfGroup( KernelOfMultiplicativeGeneralMapping(
                                             homlist[i] ) ) do
                 for j in [1..i-1] do
-                    g := PreImagesRepresentative(homlist[i-j],g);
+                    g := PreImagesRepresentativeNC(homlist[i-j],g);
                 od;
                 Add(pgenlist,g);
             od;
@@ -1747,7 +1747,7 @@ InstallMethod( SolvableRadical,
             for g in GeneratorsOfGroup( KernelOfMultiplicativeGeneralMapping(
                                             homlist[i] ) ) do
                 for j in [1..i-1] do
-                    g := PreImagesRepresentative(homlist[i-j],g);
+                    g := PreImagesRepresentativeNC(homlist[i-j],g);
                 od;
                 Add(solvable,g);
             od;
@@ -1873,7 +1873,7 @@ InstallMethod( Centre,
         else
            order := Size( centr );
            cent := IntersectionNormalClosurePermGroup(GG,centr,order*Size(GG));
-           cent:= PreImages(tchom,cent);
+           cent:= PreImagesNC(tchom,cent);
            Assert( 1, IsAbelian( cent ) );
            SetIsAbelian( cent, true );
            return cent;
@@ -1917,7 +1917,7 @@ InstallMethod( Centre,
         cent := IntersectionNormalClosurePermGroup
                  ( GG, GroupByGenerators(hgens,()), order*Size(GG) );
         if n <> len then
-          cent:= PreImages( tchom, cent );
+          cent:= PreImagesNC( tchom, cent );
         fi;
         Assert( 1, IsAbelian( cent ) );
         SetIsAbelian( cent, true );
@@ -2012,7 +2012,7 @@ InstallGlobalFunction( CentralizerNormalCSPG, function(G,N)
     # handle case of transitive GG directly
     if Length(significant) = 1  then
         centrnorm := CentralizerNormalTransCSPG(GG,NN);
-        return PreImages(tchom,centrnorm);
+        return PreImagesNC(tchom,centrnorm);
     fi;
 
     # case of intransitive GG
@@ -2054,7 +2054,7 @@ InstallGlobalFunction( CentralizerNormalCSPG, function(G,N)
     if n = len then
        return central;
     else
-       return PreImages(tchom,central);
+       return PreImagesNC(tchom,central);
     fi;
 end );
 

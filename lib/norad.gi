@@ -173,7 +173,7 @@ local d,orb,len,S,depths,rel,stb,img,pos,i,j,k,ii,po,rep,sg,sf,sfs,fr,first,
                     if r<>fail then Add(good,r);fi;
                     return r<>fail;
                   end);
-          good:=List(good,x->PreImagesRepresentative(pacthom,x));
+          good:=List(good,x->PreImagesRepresentativeNC(pacthom,x));
 
           good:=Filtered(good,x->not IsOne(x[2]));
 
@@ -418,7 +418,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
       glact:=ActionHomomorphism(glperm,lvecs,
         GeneratorsOfGroup(glperm),
         List(GeneratorsOfGroup(glperm),
-          x->PreImagesRepresentative(glhom,x)),
+          x->PreImagesRepresentativeNC(glhom,x)),
         OnLines,"surjective");
       stb:=Image(glact);
       for clu in localclust do
@@ -478,7 +478,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
   Info(InfoFitFree,1,"Radsize= ",Size(ufr)," index ",Index(uf,ufr));
 
   uff:=SmallGeneratingSet(uf);
-  ufg:=List(uff,x->PreImagesRepresentative(sus.rest,x));
+  ufg:=List(uff,x->PreImagesRepresentativeNC(sus.rest,x));
 
   n:=Normalizer(Image(factorhom),uf);
 
@@ -503,7 +503,7 @@ local sus,ser,len,factorhom,uf,n,d,up,mran,nran,mpcgs,pcgs,pcisom,nf,ng,np,sub,
     nf:=SmallGeneratingSet(n);
   fi;
 
-  ng:=List(nf,x->PreImagesRepresentative(factorhom,x));
+  ng:=List(nf,x->PreImagesRepresentativeNC(factorhom,x));
   np:=pcgs;
 
   up:=sus.pcgs;
