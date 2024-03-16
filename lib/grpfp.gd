@@ -1364,3 +1364,5 @@ DeclareGlobalFunction("MakeFpGroupToMonoidHomType1");
 
 # used in homomorphisms
 DeclareGlobalName("TRIVIAL_FP_GROUP");
+
+DeclareAttribute("CyclicSubgroupFpGroup", IsFpGroup);
