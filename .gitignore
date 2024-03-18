@@ -66,6 +66,7 @@ doc/*/*.tex
 /doc/*/*.out
 doc/gapmacrodoc.example-1.tst
 doc/gapmacrodoc.idx
+doc/ref/user_pref_list.xml
 
 # GAP packages
 /bootstrap-pkg-full.tar.gz
