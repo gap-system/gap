@@ -52,6 +52,7 @@ pathtodoc := DirectoriesLibrary("doc/ref");
 Read(Filename(pathtodoc, "makedocreldata.g"));
 GAPInfo.ManualDataRef.pathtodoc := pathtodoc;
 GAPInfo.ManualDataRef.pathtoroot := DirectoriesLibrary("");
+UpdateXMLForUserPreferences();
 WriteExamplesTst( testdir, GAPInfo.ManualDataRef );
 
 #

@@ -18,6 +18,7 @@ echo "--------------------"
 base:="@abs_top_srcdir@";;
 books:=["ref", "tut", "hpc", "dev"];;
 latexOpts := rec(Maintitlesize := "\\\\fontsize{36}{38}\\\\selectfont");;
+UpdateXMLForUserPreferences();
 for run in [1,2] do
   for book in books do
     path := Concatenation(base, "/doc/", book);
