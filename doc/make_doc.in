@@ -18,12 +18,7 @@ echo "--------------------"
 base:="@abs_top_srcdir@";;
 books:=["ref", "tut", "hpc", "dev"];;
 latexOpts := rec(Maintitlesize := "\\\\fontsize{36}{38}\\\\selectfont");;
-file:= Filename(DirectoriesLibrary("doc")[1], "ref/user_pref_list.xml");
-old:= StringFile(file);
-new:= XMLForUserPreferences("GAP");
-if old <> new then
-  FileString(file, new);
-fi;
+UpdateXMLForUserPreferences();
 for run in [1,2] do
   for book in books do
     path := Concatenation(base, "/doc/", book);
