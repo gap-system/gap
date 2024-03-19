@@ -1023,7 +1023,7 @@ end );
 #M  CosetTableFromGensAndRels( <fgens>, <grels>, <fsgens> ) . . . . . . . . .
 #M                                                     do a coset enumeration
 ##
-##  'CosetTableFromGensAndRels'  is the working horse  for computing  a coset
+##  'CosetTableFromGensAndRels'  is the workhorse  for computing  a coset
 ##  table of H in G where G is a finitley presented group, H is a subgroup of
 ##  G,  and  G  is the whole group of  H.  It applies a Felsch strategy Todd-
 ##  Coxeter coset enumeration. The expected parameters are

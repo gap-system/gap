@@ -481,7 +481,7 @@ TCENUM:=GAPTCENUM;
 ##  is an internal function which is called by the functions
 ##  <Ref Oper="CosetTable"/>, <Ref Attr="CosetTableInWholeGroup"/>
 ##  and others.
-##  It is, in fact, the proper working horse that performs a Todd-Coxeter
+##  It is, in fact, the workhorse that performs a Todd-Coxeter
 ##  coset enumeration.
 ##  <A>fgens</A> must be a set of free generators and <A>grels</A> a set
 ##  of relators in these generators. <A>fsgens</A> are subgroup generators
