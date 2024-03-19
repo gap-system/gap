@@ -808,10 +808,9 @@ local G, epi, tup, lift, i, found, fac, j, p, iso;
             fi;
             Info(InfoSQ,1,"found quotient of size ", Size(G));
         od;
-    fi;
 
     # if <primes> is a list of primes, we have to use try and error
-    if IsList( primes ) and IsInt( primes[1] ) then
+    elif IsList( primes ) and IsInt( primes[1] ) then
         found := true;
         i     := 1;
         while found and i <= Length( primes ) do
@@ -832,10 +831,9 @@ local G, epi, tup, lift, i, found, fac, j, p, iso;
             fi;
             Info(InfoSQ,1,"found quotient of size ", Size(G));
         od;
-    fi;
 
     # if <primes> is an integer it is size we want
-    if IsInt(primes)  then
+    elif IsInt(primes)  then
         if not IsInt(primes/Size(G)) then
           i:=Lcm(primes,Size(G));
           Info(InfoWarning,1,"Added extra factor ",i/primes,
@@ -866,6 +864,8 @@ local G, epi, tup, lift, i, found, fac, j, p, iso;
                 Info(InfoSQ,1,"found quotient of size ", Size(G));
             od;
         od;
+    else
+        Error("<primes> must be either an integer, a list of integers, or a list of integer lists");
     fi;
 
     # this is the result - should be G only with set epimorphism
