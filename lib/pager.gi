@@ -103,9 +103,9 @@ GAPInfo.UserPreferences.Pager := UserPreference("Pager");
 ##
 # If  the text contains ANSI color sequences we reset  the terminal before
 # we print the last line.
-BindGlobal("PAGER_BUILTIN", function( lines )
-  local formatted, linepos, exitAtEnd, size, wd, pl, count, i, stream, halt,
-        lenhalt, delhaltline, from, len, emptyline, char, out;
+BindGlobal("PAGER_BUILTIN", function( r )
+  local formatted, linepos, nam, exitAtEnd, lines, size, wd, pl, count, i,
+        stream, halt, lenhalt, delhaltline, from, len, emptyline, char, out;
 
   formatted := false;
   linepos := 1;
@@ -113,17 +113,10 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   # don't print this to LOG files
   out := OutputTextUser();
 
-  if IsRecord(lines) then
-    if IsBound(lines.formatted) then
-      formatted := lines.formatted;
-    fi;
-    if IsBound(lines.start) and IsInt(lines.start) then
-      linepos := lines.start;
-    fi;
-    if IsBound( lines.exitAtEnd ) then
-      exitAtEnd:= lines.exitAtEnd;
-    fi;
-    lines := lines.lines;
+  if IsRecord(r) then
+    lines := r.lines;
+  else
+    lines := r;
   fi;
 
   if IsString(lines) then
@@ -134,6 +127,31 @@ BindGlobal("PAGER_BUILTIN", function( lines )
 
   if Length( lines ) = 0 then
     return;
+  fi;
+
+  if IsRecord(r) then
+    if IsBound(r.formatted) then
+      formatted := r.formatted;
+    fi;
+    if IsBound(r.start) then
+      if IsInt(r.start) then
+        linepos := r.start;
+      elif IsString(r.start) and StartsWith(r.start, "/Obj *Func") then
+        # regular expression most likely specified by `PageSource`
+        nam := r.start{[7..Length(r.start)]};
+        linepos:= PositionsProperty(lines,
+                    l -> PositionSublist(l, nam) <> fail);
+        linepos:= First(linepos,
+                    i -> PositionSublist(lines[i], "Obj")
+                         < PositionSublist(lines[i], nam) and
+                         ForAll(lines[i]{[PositionSublist(lines[i], "Obj")+3
+                                   .. PositionSublist(lines[i], nam)-1]},
+                           x -> x = ' '));
+      fi;
+    fi;
+    if IsBound( r.exitAtEnd ) then
+      exitAtEnd:= r.exitAtEnd;
+    fi;
   fi;
 
   size   := SizeScreen();
