@@ -718,9 +718,13 @@ InstallGlobalFunction("Test", function(arg)
     od;
     for i in [1..Length(pf.inp)] do
       new[pf.pos[i]] := "";
-      for j in [1..Number(pf.inp[i], c-> c = '\n')] do
-        Append(new[pf.pos[i]], lines[pf.pos[i]+j-1]);
-        Add(new[pf.pos[i]], '\n');
+      for j in [1 .. Number(pf.inp[i], c -> c = '\n') +
+          Number(pf.outp[i], c -> c = '\n')] do
+        if (j = 1 and StartsWith(lines[pf.pos[i] + j - 1], "gap> ")) or
+            (j > 1 and StartsWith(lines[pf.pos[i] + j - 1], "> ")) then
+          Append(new[pf.pos[i]], lines[pf.pos[i] + j - 1]);
+          Add(new[pf.pos[i]], '\n');
+        fi;
       od;
       if PositionSublist(pf.inp[i], "STOP_TEST") <> 1 then
         Append(new[pf.pos[i]], pf.cmp[i]);
