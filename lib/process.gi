@@ -261,3 +261,77 @@ InstallGlobalFunction( Exec, function( arg )
     Process( dir, shell, InputTextUser(), OutputTextUser(), [ cs, cmd ] );
 
 end );
+
+# TODO: document this, come up with a better name, write some tests...
+BindGlobal( "Exec2", function( arg )
+    local args, result, a, input, output, dir, cmd;
+
+    args := [];
+    result := rec();
+
+    # parse the inputs
+    for a in arg do
+        if IsDirectory(a) then
+            if IsBound(dir) then
+                Error("must specify at most one working directory");
+            fi;
+            dir := a;
+        elif IsInputStream(a) then
+            if IsBound(input) then
+                Error("must specify at most one input stream");
+            fi;
+            input := a;
+        elif IsOutputStream(a) then
+            if IsBound(output) then
+                Error("must specify at most one output stream");
+            fi;
+            output := a;
+        elif IsString(a) then
+            ConvertToStringRep(a);
+            if not IsBound(cmd) then
+                cmd := a;
+            else
+                Add(args, a);
+            fi;
+        else
+            Error("unsupported argument type");
+        fi;
+    od;
+
+    if not IsBound(cmd) then
+        Error("must specify a command to execute");
+    fi;
+
+    # determine full executable path if it is not already a path
+    if not '/' in cmd then
+        a := Filename( DirectoriesSystemPrograms(), cmd );
+        if a = fail and ARCH_IS_WINDOWS() then
+            a := Filename( DirectoriesSystemPrograms(), Concatenation( cmd, ".exe" ) );
+        fi;
+        if a = fail then
+            Error("could not locate executable for '", cmd, "'");
+        fi;
+        cmd := a;
+    fi;
+
+    # set default working directory if necessary
+    if not IsBound(dir) then
+        dir := DirectoryCurrent();
+    fi;
+
+    # if no input stream was specified, pass no input to the command
+    if not IsBound(input) then
+        input := InputTextNone();
+    fi;
+
+    # if no output stream was specified, put output into the returned record
+    if not IsBound(output) then
+        result.output := "";
+        output := OutputTextString(result.output, false);
+    fi;
+
+    # execute the command
+    result.status := Process( dir, cmd, input, output, args );
+
+    return result;
+end );
