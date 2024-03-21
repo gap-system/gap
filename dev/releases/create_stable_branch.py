@@ -100,7 +100,7 @@ def main(gap_minor_version_str: str) -> None:
 
     # push to the server
     input(
-        f"Please 'git push master {stable_branch} v{nextgapversion}dev' now (you may have to temporarily change branch protection rules), then press ENTER"
+        f"Please 'git push origin master {stable_branch} v{nextgapversion}dev' now (you may have to temporarily change branch protection rules), then press ENTER"
     )
 
     input(
