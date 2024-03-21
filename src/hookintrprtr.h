@@ -50,12 +50,16 @@ extern EvalBoolFunc OriginalEvalBoolFuncsForHook[256];
 **
 ** * 'visitStat' is called for every visited Stat (and Expr) from the
 **    GAP bytecode.
+** * 'visitInterpretedStat' is called when code is executed directly,
+**    and will not be turned into bytecode. Only the file and line are given.
 ** * 'enterFunction' and 'leaveFunction' are called whenever a function
 **    is entered, or left. This is passed the function which is being
 **    entered (or left)
 ** * 'registerStat' is called whenever a statement is read from a text
 **    file. Note that you will only see files which are read while your
 **    hooks are running.
+** * 'registerInterpretedStat' is called when code is read which will
+**    not be turned into bytecode. Only the file and line are given.
 ** * 'hookName' is a string is used in debugging messages to describe
 **    the currently active hooks.
 **

@@ -24,7 +24,7 @@ dnl    if any interfaces have been added since the last public release, then
 dnl    increment minor.
 dnl
 m4_define([kernel_major_version], [9])
-m4_define([kernel_minor_version], [0])
+m4_define([kernel_minor_version], [1])
 
 m4_define([GAP_DEFINE], [GAP_DEFINES="$GAP_DEFINES -D$1"])
 
