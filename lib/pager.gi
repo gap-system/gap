@@ -160,6 +160,9 @@ BindGlobal("PAGER_BUILTIN", function( r )
   if IsRecord(r) then
     if IsBound(r.formatted) then
       formatted := r.formatted;
+      if formatted <> true and formatted <> false then
+        Error("unsupported r.formatted value: ", formatted);
+      fi;
     fi;
     if IsBound(r.start) then
       if IsPosInt(r.start) then
@@ -168,10 +171,15 @@ BindGlobal("PAGER_BUILTIN", function( r )
         search := r.start{[2..Length(r.start)]};
         linepos := PositionProperty(lines,
                      l -> PositionSublist(l, search) <> fail);
+      else
+        Error("unsupported r.start value: ", r.start);
       fi;
     fi;
     if IsBound( r.exitAtEnd ) then
       exitAtEnd:= r.exitAtEnd;
+      if exitAtEnd <> true and exitAtEnd <> false then
+        Error("unsupported r.exitAtEnd value: ", exitAtEnd);
+      fi;
     fi;
   fi;
 
@@ -289,6 +297,9 @@ BindGlobal("PAGER_EXTERNAL",  function( lines )
   if IsRecord(lines) then
     if IsBound(lines.start) then
       linepos := lines.start;
+      if not (IsPosInt(lines.start) or IsString(lines.start)) then
+        Error("unsupported lines.start value: ", linepos);
+      fi;
     fi;
     lines := lines.lines;
   fi;
