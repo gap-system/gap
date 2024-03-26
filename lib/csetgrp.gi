@@ -988,9 +988,9 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
       actlimit, uplimit, badlimit,avoidlimit,start,includestab,quot;
 
   actlimit:=300000; # maximal degree on which we try blocks
-  uplimit:=10000; # maximal index for up step
+  uplimit:=500000; # maximal index for up step
   avoidlimit:=200000; # beyond this index we want to get smaller
-  badlimit:=1000000; # beyond this index things might break down
+  badlimit:=5000000; # beyond this index things might break down
 
   mayflip:=true; # are we allowed to flip?
 

@@ -42,7 +42,7 @@ end );
 ##
 #F  RightTransversalPermGroupConstructor( <filter>, <G>, <U> )  . constructor
 ##
-MAX_SIZE_TRANSVERSAL := 100000;
+MAX_SIZE_TRANSVERSAL := 1000000;
 
 BindGlobal( "RightTransversalPermGroupConstructor", function( filter, G, U )
   local GC, UC, noyet, orbs, domain, GCC, UCC, ac, nc, bpt, enum, i;
@@ -62,7 +62,7 @@ BindGlobal( "RightTransversalPermGroupConstructor", function( filter, G, U )
 #Print(SizeStabChain(GCC),"/",SizeStabChain(UCC),":",
 #  SizeStabChain(GCC)/SizeStabChain(UCC),"\n");
           if noyet and (
-          (SizeStabChain(GCC)/SizeStabChain(UCC)*10 >MAX_SIZE_TRANSVERSAL) or
+          (SizeStabChain(GCC)/SizeStabChain(UCC) >MAX_SIZE_TRANSVERSAL) or
           (Length(UCC.genlabels)=0 and
             SizeStabChain(GCC)>MAX_SIZE_TRANSVERSAL)
             ) then
@@ -158,7 +158,8 @@ end );
 InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
     local   orb,  pimg,  img,  vert,  s,  t,  index,
             block,  B,  blist,  pos,  sliced,  lenflock,  i,  j,
-            ss,  tt,t1,t1lim,found,tl,vimg;
+            ss,  tt,t1,t1lim,found,tl,vimg,
+            sel,shortsel,gorpo,pisel,prepi,transinv;
 
     # iterated image
     vimg:=function(point,list)
@@ -251,13 +252,85 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
               t1lim:=50;
             fi;
 
+            sel:=Filtered([1..Maximum(G.orbit)],x->IsBound(U.translabels[x]));
+            shortsel:=Length(sel)<t1lim;
+
+            if shortsel then
+              # inverse transversal elements
+              t1:=ShallowCopy(G.generators);
+              Add(t1,G.identity);
+              vert:=List(t1,x->x^-1);
+              # inverses of transversal, stored compact
+              # TODO: Instead of `Position`, use translabels entry
+              #transinv:=List(G.transversal,x->vert[Position(t1,x)]);
+              transinv:=[];
+              for i in [1..Length(G.transversal)] do
+                if IsBound(G.transversal[i]) then
+                  t:=Position(t1,G.transversal[i]);
+                  if t=fail then
+                    Add(t1,G.transversal[i]);
+                    Add(vert,G.transversal[i]^-1);
+                    t:=Length(t1);
+                  fi;
+                  transinv[i]:=vert[t];
+                fi;
+              od;
+              # Position in orbit
+              gorpo:=[];
+              for i in [1..Length(G.orbit)] do
+                gorpo[G.orbit[i]]:=i;
+              od;
+            fi;
+
             orb := G.orbit{ [ 1 .. U.lenblock ] };
             pimg := [  ];
             while index < U.index  do
+
                 pimg{ orb } := CosetNumber( G.stabilizer, U.stabilizer, s,
                                        orb );
                 t := 2;
-                while t <= U.lenblock  and  index < U.index  do
+
+                if shortsel then
+
+                  # test for the few wrong values, mapping backwards
+
+                  pisel:=Filtered([1..Length(pimg)],
+                    x->IsBound(pimg[x]) and pimg[x] in sel);
+
+                  while t <= U.lenblock  and  index < U.index  do
+
+                    # For this point  in the  block,  find the images  of the
+                    # earlier points under the representative.
+                    vert := G.orbit{ [ 1 .. t-1 ] };
+                    img := G.orbit[ t ];
+                    tl:=[];
+                    while img <> G.orbit[ 1 ]  do
+                      Add(tl,transinv[img]);
+                      img  := img           ^ G.transversal[ img ];
+                    od;
+                    prepi:=pisel;
+                    for t1 in [Length(tl),Length(tl)-1..1] do
+                      prepi:=OnTuples(prepi,tl[t1]);
+                    od;
+
+                    # If $Ust = Us't'$ then $1t'/t/s in 1U$. Also if $1t'/t/s
+                    # in 1U$ then $st/t' =  u.g_1$ with $u  in U, g_1 in G_1$
+                    # and $g_1  =  u_1.s'$ with $u_1  in U_1,  s' in S_1$, so
+                    # $Ust = Us't'$.
+                    #if ForAll( [ 1 .. t-1 ], i -> not
+                    #     vert[ i ] in prepi  )  then
+                    if not ForAny(gorpo{prepi},x->x>=1 and x<=t-1) then
+                      U.repsStab[ t ][ s ] := true;
+                      index := index + lenflock;
+
+                    fi;
+
+                    t := t + 1;
+                  od;
+
+                else
+
+                  while t <= U.lenblock  and  index < U.index  do
 
                     # do not test all points first if not necessary
                     # (test only at most t1lim points, if the test succeeds,
@@ -269,8 +342,8 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
                     vert := G.orbit{ [ 1 .. t1 ] };
                     img := G.orbit[ t ];
                     while img <> G.orbit[ 1 ]  do
-                        vert := OnTuples( vert, G.transversal[ img ] );
-                        img  := img           ^ G.transversal[ img ];
+                      vert := OnTuples( vert, G.transversal[ img ] );
+                      img  := img           ^ G.transversal[ img ];
                     od;
 
                     # If $Ust = Us't'$ then $1t'/t/s in 1U$. Also if $1t'/t/s
@@ -278,7 +351,7 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
                     # and $g_1  =  u_1.s'$ with $u_1  in U_1,  s' in S_1$, so
                     # $Ust = Us't'$.
                     if ForAll( [ 1 .. t1 ], i -> not IsBound
-                       ( U.translabels[ pimg[ vert[ i ] ] ] ) )  then
+                        ( U.translabels[ pimg[ vert[ i ] ] ] ) )  then
 
                       # do all points
                       if t1<t-1 then
@@ -286,8 +359,8 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
                         if t<=10*t1lim then
                           vert := G.orbit{ [ 1 .. t - 1 ] };
                           while img <> G.orbit[ 1 ]  do
-                              vert := OnTuples( vert, G.transversal[ img ] );
-                              img  := img           ^ G.transversal[ img ];
+                            vert := OnTuples( vert, G.transversal[ img ] );
+                            img  := img           ^ G.transversal[ img ];
                           od;
                           found:=ForAll( [ t1+1 .. t - 1 ], i -> not IsBound
                             ( U.translabels[ pimg[ vert[ i ] ] ] ) );
@@ -298,26 +371,28 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
                           # long a list, failure will happen quickly.
                           tl:=[];
                           while img <> G.orbit[ 1 ]  do
-                              Add(tl,G.transversal[img]);
-                              img  := img           ^ G.transversal[ img ];
+                            Add(tl,G.transversal[img]);
+                            img  := img           ^ G.transversal[ img ];
                           od;
                           found:=ForAll( [ t1+1 .. t - 1 ], i -> not IsBound
                             ( U.translabels[ pimg[ vimg(G.orbit[ i ],tl) ] ] ) );
                         fi;
 
-                        if found then
+                          if found then
                             U.repsStab[ t ][ s ] := true;
                             index := index + lenflock;
+                          fi;
+
+                        else
+                          U.repsStab[ t ][ s ] := true;
+                          index := index + lenflock;
                         fi;
-
-                      else
-                        U.repsStab[ t ][ s ] := true;
-                        index := index + lenflock;
                       fi;
-                    fi;
 
-                    t := t + 1;
-                od;
+                      t := t + 1;
+                  od;
+                fi;
+
                 s := s + 1;
             od;
 
