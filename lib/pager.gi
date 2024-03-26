@@ -101,10 +101,38 @@ GAPInfo.UserPreferences.Pager := UserPreference("Pager");
 ##
 #F  PAGER_BUILTIN( <lines> )    . . . . . . . . . . . . . . . .  format lines
 ##
+##  Show <A>lines</A> in a rudimentary pager inside the terminal.
+##  The argument can be either a string or a list of strings or a record.
+##  In the latter case, the component <C>lines</C> must be a string or a
+##  list of strings,
+##  and the following additional components are supported.
+##  <List>
+##  <Mark>formatted</Mark>
+##  <Item>
+##    <K>true</K> or <K>false</K> (default <K>false</K>),
+##    <K>true</K> means that lines not fitting into one terminal line
+##    (see <Ref Func="SizeScreen"/>) will be distributed to several lines,
+##  </Item>
+##  <Mark>start</Mark>
+##  <Item>
+##    a positive integer denoting the position of the first line that is
+##    shown,
+##    or a string starting with <C>"/"</C>, meaning that the first line
+##    containing the substring behind <C>"/"</C> shall be shown;
+##    the default is 1,
+##  </Item>
+##  <Mark>exitAtEnd</Mark>
+##  <Item>
+##    <K>true</K> or <K>false</K> (default <K>true</K>),
+##    meaning whether the pager should terminate automatically
+##    once the last line is shown.
+##  </Item>
+##  </List>
+##
 # If  the text contains ANSI color sequences we reset  the terminal before
 # we print the last line.
 BindGlobal("PAGER_BUILTIN", function( r )
-  local formatted, linepos, nam, exitAtEnd, lines, size, wd, pl, count, i,
+  local formatted, linepos, exitAtEnd, lines, search, size, wd, pl, count, i,
         stream, halt, lenhalt, delhaltline, from, len, emptyline, char, out;
 
   formatted := false;
@@ -134,19 +162,12 @@ BindGlobal("PAGER_BUILTIN", function( r )
       formatted := r.formatted;
     fi;
     if IsBound(r.start) then
-      if IsInt(r.start) then
+      if IsPosInt(r.start) then
         linepos := r.start;
-      elif IsString(r.start) and StartsWith(r.start, "/Obj *Func") then
-        # regular expression most likely specified by `PageSource`
-        nam := r.start{[7..Length(r.start)]};
-        linepos:= PositionsProperty(lines,
-                    l -> PositionSublist(l, nam) <> fail);
-        linepos:= First(linepos,
-                    i -> PositionSublist(lines[i], "Obj")
-                         < PositionSublist(lines[i], nam) and
-                         ForAll(lines[i]{[PositionSublist(lines[i], "Obj")+3
-                                   .. PositionSublist(lines[i], nam)-1]},
-                           x -> x = ' '));
+      elif IsString(r.start) and StartsWith(r.start, "/") then
+        search := r.start{[2..Length(r.start)]};
+        linepos := PositionProperty(lines,
+                     l -> PositionSublist(l, search) <> fail);
       fi;
     fi;
     if IsBound( r.exitAtEnd ) then

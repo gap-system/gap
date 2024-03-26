@@ -522,7 +522,7 @@ BIND_GLOBAL("PageSource", function ( fun, nr... )
               s := First(ss, a-> ':' in a);
               if s <> fail then
                 ss := SplitString(s,":","");
-                l := Concatenation("/Obj *Func", ss[2]);
+                l := Concatenation("/Obj Func", ss[2]);
               fi;
           fi;
         fi;
