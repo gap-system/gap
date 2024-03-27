@@ -208,8 +208,8 @@ You can subscribe to it at <https://lists.uni-kl.de/gap/info/gap>.
 
 ## Additional Resources
 
-* [GAP Tutorial](https://www.gap-system.org/Manuals/doc/tut/chap0_mj.html)
-* [GAP Manual](https://www.gap-system.org/Manuals/doc/ref/chap0_mj.html)
+* [GAP Tutorial](https://docs.gap-system.org/doc/tut/chap0_mj.html)
+* [GAP Manual](https://docs.gap-system.org/doc/ref/chap0_mj.html)
 * [GAP Homepage](https://www.gap-system.org/)
 * [GAP on GitHub: Quickstart](https://github.com/gap-system/gap-git-cheat-sheet/raw/master/gap-git-cheat-sheet.pdf)
 * [Atlassian Git Tutorials](https://www.atlassian.com/git/tutorials/)
