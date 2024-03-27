@@ -1409,7 +1409,7 @@ static Obj FuncPROD_VEC8BIT_FFE(Obj self, Obj vec, Obj ffe)
     GAP_ASSERT(CHAR_FF(FLD_FFE(ffe)) == P_FIELDINFO_8BIT(info));
 
     // check for field compatibility
-    if (d % DEGR_FF(FLD_FFE(ffe))) {
+    if (d % DegreeFFE(ffe)) {
         prod = ProdListScl(vec, ffe);
         CALL_1ARGS(ConvertToVectorRep, prod);
         return prod;
