@@ -35,10 +35,12 @@
 ##
 ##   .formatted (true/false) If true, the builtin pager tries to avoid
 ##                           line breaks by GAP's Print.
-##   .start (number)         The display is started with line .start, but
+##   .start (number/string)  The display is started with line .start or
+##                           at the first line containing .start, but
 ##                           beginning is available via back scrolling.
-##   .exitAtEnd (true/false) If true (default), the pager is terminated
-##                           as soon as the end of the list is reached;
+##   .exitAtEnd (true/false) If true (default), the builtin pager is
+##                           terminated as soon as the end of the list is
+##                           reached;
 ##                           if false, entering 'q' is necessary in order to
 ##                           return from the pager.
 ##
@@ -117,8 +119,8 @@ GAPInfo.UserPreferences.Pager := UserPreference("Pager");
 ##  <Item>
 ##    a positive integer denoting the position of the first line that is
 ##    shown,
-##    or a string starting with <C>"/"</C>, meaning that the first line
-##    containing the substring behind <C>"/"</C> shall be shown;
+##    or a string meaning that the first line containing this string
+##    shall be shown;
 ##    the default is 1,
 ##  </Item>
 ##  <Mark>exitAtEnd</Mark>
@@ -132,8 +134,8 @@ GAPInfo.UserPreferences.Pager := UserPreference("Pager");
 # If  the text contains ANSI color sequences we reset  the terminal before
 # we print the last line.
 BindGlobal("PAGER_BUILTIN", function( r )
-  local formatted, linepos, exitAtEnd, lines, search, size, wd, pl, count, i,
-        stream, halt, lenhalt, delhaltline, from, len, emptyline, char, out;
+  local formatted, linepos, exitAtEnd, lines, size, wd, pl, count, i, stream,
+        halt, lenhalt, delhaltline, from, len, emptyline, char, out;
 
   formatted := false;
   linepos := 1;
@@ -167,10 +169,12 @@ BindGlobal("PAGER_BUILTIN", function( r )
     if IsBound(r.start) then
       if IsPosInt(r.start) then
         linepos := r.start;
-      elif IsString(r.start) and StartsWith(r.start, "/") then
-        search := r.start{[2..Length(r.start)]};
+      elif IsString(r.start) then
         linepos := PositionProperty(lines,
-                     l -> PositionSublist(l, search) <> fail);
+                     l -> PositionSublist(l, r.start) <> fail);
+        if linepos = fail then
+          linepos := 1;
+        fi;
       else
         Error("unsupported r.start value: ", r.start);
       fi;
@@ -240,6 +244,11 @@ BindGlobal("PAGER_BUILTIN", function( r )
   from := linepos;
   len := Length(lines);
   emptyline:= String( "", size[1]-2 );
+  if len < from then
+    # Ignore the start line.
+    # (The pager 'less' shows a warning and then goes to the first line.)
+    from:= 1;
+  fi;
   repeat
     for i in [from..Minimum(len, from+size[2]-2)] do
       pl(lines[i], "\n");
@@ -312,7 +321,9 @@ BindGlobal("PAGER_EXTERNAL",  function( lines )
     od;
     lines := str;
   fi;
-  if linepos > 1 then
+  if IsString(linepos) then
+    cmdargs := [Concatenation("+/", linepos)];
+  elif linepos > 1 then
     cmdargs := [Concatenation("+", String(linepos))];
   else
     cmdargs := [];
