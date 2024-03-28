@@ -35,10 +35,12 @@
 ##
 ##   .formatted (true/false) If true, the builtin pager tries to avoid
 ##                           line breaks by GAP's Print.
-##   .start (number)         The display is started with line .start, but
+##   .start (number/string)  The display is started with line .start or
+##                           at the first line containing .start, but
 ##                           beginning is available via back scrolling.
-##   .exitAtEnd (true/false) If true (default), the pager is terminated
-##                           as soon as the end of the list is reached;
+##   .exitAtEnd (true/false) If true (default), the builtin pager is
+##                           terminated as soon as the end of the list is
+##                           reached;
 ##                           if false, entering 'q' is necessary in order to
 ##                           return from the pager.
 ##
@@ -101,11 +103,39 @@ GAPInfo.UserPreferences.Pager := UserPreference("Pager");
 ##
 #F  PAGER_BUILTIN( <lines> )    . . . . . . . . . . . . . . . .  format lines
 ##
+##  Show <A>lines</A> in a rudimentary pager inside the terminal.
+##  The argument can be either a string or a list of strings or a record.
+##  In the latter case, the component <C>lines</C> must be a string or a
+##  list of strings,
+##  and the following additional components are supported.
+##  <List>
+##  <Mark>formatted</Mark>
+##  <Item>
+##    <K>true</K> or <K>false</K> (default <K>false</K>),
+##    <K>true</K> means that lines not fitting into one terminal line
+##    (see <Ref Func="SizeScreen"/>) will be distributed to several lines,
+##  </Item>
+##  <Mark>start</Mark>
+##  <Item>
+##    a positive integer denoting the position of the first line that is
+##    shown,
+##    or a string meaning that the first line containing this string
+##    shall be shown;
+##    the default is 1,
+##  </Item>
+##  <Mark>exitAtEnd</Mark>
+##  <Item>
+##    <K>true</K> or <K>false</K> (default <K>true</K>),
+##    meaning whether the pager should terminate automatically
+##    once the last line is shown.
+##  </Item>
+##  </List>
+##
 # If  the text contains ANSI color sequences we reset  the terminal before
 # we print the last line.
-BindGlobal("PAGER_BUILTIN", function( lines )
-  local formatted, linepos, exitAtEnd, size, wd, pl, count, i, stream, halt,
-        lenhalt, delhaltline, from, len, emptyline, char, out;
+BindGlobal("PAGER_BUILTIN", function( r )
+  local formatted, linepos, exitAtEnd, lines, size, wd, pl, count, i, stream,
+        halt, lenhalt, delhaltline, from, len, emptyline, char, out;
 
   formatted := false;
   linepos := 1;
@@ -113,17 +143,10 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   # don't print this to LOG files
   out := OutputTextUser();
 
-  if IsRecord(lines) then
-    if IsBound(lines.formatted) then
-      formatted := lines.formatted;
-    fi;
-    if IsBound(lines.start) and IsInt(lines.start) then
-      linepos := lines.start;
-    fi;
-    if IsBound( lines.exitAtEnd ) then
-      exitAtEnd:= lines.exitAtEnd;
-    fi;
-    lines := lines.lines;
+  if IsRecord(r) then
+    lines := r.lines;
+  else
+    lines := r;
   fi;
 
   if IsString(lines) then
@@ -134,6 +157,34 @@ BindGlobal("PAGER_BUILTIN", function( lines )
 
   if Length( lines ) = 0 then
     return;
+  fi;
+
+  if IsRecord(r) then
+    if IsBound(r.formatted) then
+      formatted := r.formatted;
+      if formatted <> true and formatted <> false then
+        Error("unsupported r.formatted value: ", formatted);
+      fi;
+    fi;
+    if IsBound(r.start) then
+      if IsPosInt(r.start) then
+        linepos := r.start;
+      elif IsString(r.start) then
+        linepos := PositionProperty(lines,
+                     l -> PositionSublist(l, r.start) <> fail);
+        if linepos = fail then
+          linepos := 1;
+        fi;
+      else
+        Error("unsupported r.start value: ", r.start);
+      fi;
+    fi;
+    if IsBound( r.exitAtEnd ) then
+      exitAtEnd:= r.exitAtEnd;
+      if exitAtEnd <> true and exitAtEnd <> false then
+        Error("unsupported r.exitAtEnd value: ", exitAtEnd);
+      fi;
+    fi;
   fi;
 
   size   := SizeScreen();
@@ -193,6 +244,11 @@ BindGlobal("PAGER_BUILTIN", function( lines )
   from := linepos;
   len := Length(lines);
   emptyline:= String( "", size[1]-2 );
+  if len < from then
+    # Ignore the start line.
+    # (The pager 'less' shows a warning and then goes to the first line.)
+    from:= 1;
+  fi;
   repeat
     for i in [from..Minimum(len, from+size[2]-2)] do
       pl(lines[i], "\n");
@@ -250,6 +306,9 @@ BindGlobal("PAGER_EXTERNAL",  function( lines )
   if IsRecord(lines) then
     if IsBound(lines.start) then
       linepos := lines.start;
+      if not (IsPosInt(lines.start) or IsString(lines.start)) then
+        Error("unsupported lines.start value: ", linepos);
+      fi;
     fi;
     lines := lines.lines;
   fi;
@@ -262,7 +321,9 @@ BindGlobal("PAGER_EXTERNAL",  function( lines )
     od;
     lines := str;
   fi;
-  if linepos > 1 then
+  if IsString(linepos) then
+    cmdargs := [Concatenation("+/", linepos)];
+  elif linepos > 1 then
     cmdargs := [Concatenation("+", String(linepos))];
   else
     cmdargs := [];

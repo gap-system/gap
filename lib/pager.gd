@@ -30,8 +30,10 @@
 ##  <P/>
 ##  At least on a UNIX system one should use an external pager program like
 ##  <C>less</C> or <C>more</C>.
-##  &GAP; assumes that this program has a command line option <C>+nr</C>
-##  which starts the display of the text with line number <C>nr</C>.
+##  &GAP; assumes that this program has command line options <C>+nr</C> and
+##  <C>+/str</C> which start the display of the text with line number
+##  <C>nr</C> or at the line with the first occurrence of the string
+##  <C>str</C>.
 ##  <P/>
 ##  Which pager is used can be controlled by setting the user preference
 ##  <C>"Pager"</C>.
@@ -77,9 +79,12 @@
 ##  </Item>
 ##  <Mark><C>start</C></Mark>
 ##  <Item>
-##    must be a positive integer.
-##    This is interpreted as the number of the first line shown by the pager
-##    (one may see the beginning of the text via back scrolling).
+##    must be a positive integer or a string.
+##    An integer is interpreted as the number of the first line shown by the
+##    pager, a string is interpreted as a search string such that the first
+##    line containing this string is the first line shown by the pager
+##    (in both cases, one may see the beginning of the text via back
+##    scrolling),
 ##  </Item>
 ##  <Mark><C>exitAtEnd</C></Mark>
 ##  <Item>
