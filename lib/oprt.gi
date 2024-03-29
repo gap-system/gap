@@ -985,11 +985,24 @@ end );
 
 InstallMethod( OrbitOp, "with domain", true, OrbitishReq,0,
 function( G, D, pnt, gens, acts, act )
-local orb,d,gen,i,p;
+local orb,d,gen,i,p,permrec,perms;
+  # is there an option indicating a wish to calculate permutations?
+  permrec:=ValueOption("permutations");
+  if permrec<>fail then
+    if not IsRecord(permrec) then
+      Error("asks for permutations, but no record given");
+    fi;
+    perms:=List(gens,x->[]);
+    permrec.generators:=gens;
+    permrec.permutations:=perms;
+  fi;
+
   pnt:=Immutable(pnt);
-  d:=NewDictionary(pnt,false,D);
   orb := [ pnt ];
-  AddDictionary(d,pnt);
+  if permrec=fail then
+    d:=NewDictionary(pnt,false,D);
+    AddDictionary(d,pnt);
+  fi;
   for p in orb do
     for gen in acts do
       i:=act(p,gen);
@@ -1010,20 +1023,51 @@ InstallOtherMethod( OrbitOp, "standard orbit algorithm:list", true,
           IsList,
           IsFunction ], 0,
 function( G, pnt, gens, acts, act )
-local orb,d,gen,i,p,D;
+local orb,d,gen,i,p,D,perms,permrec,gp,op,l;
+  # is there an option indicating a wish to calculate permutations?
+  permrec:=ValueOption("permutations");
+  if permrec<>fail then
+    if not IsRecord(permrec) then
+      Error("asks for permutations, but no record given");
+    fi;
+    perms:=List(gens,x->[]);
+    permrec.generators:=gens;
+    permrec.permutations:=perms;
+  fi;
+
   # try to find a domain
   D:=DomainForAction(pnt,acts,act);
   pnt:=Immutable(pnt);
-  d:=NewDictionary(pnt,false,D);
   orb := [ pnt ];
-  AddDictionary(d,pnt);
+  if permrec=fail then
+    d:=NewDictionary(pnt,false,D);
+    AddDictionary(d,pnt);
+  else
+    d:=NewDictionary(pnt,true,D);
+    AddDictionary(d,pnt,1);
+  fi;
+  op:=0;
   for p in orb do
+    op:=op+1;
+    gp:=0;
     for gen in acts do
+      gp:=gp+1;
       i:=act(p,gen);
       MakeImmutable(i);
-      if not KnowsDictionary(d,i) then
-        Add( orb, i );
-        AddDictionary(d,i);
+      if permrec=fail then
+        if not KnowsDictionary(d,i) then
+          Add( orb, i );
+          AddDictionary(d,i);
+        fi;
+      else
+        l:=LookupDictionary(d,i);
+        if l=fail then
+          Add( orb, i );
+          AddDictionary(d,i,Length(orb));
+          perms[gp][op]:=Length(orb);
+        else
+          perms[gp][op]:=l;
+        fi;
       fi;
     od;
   od;
