@@ -42,10 +42,56 @@ end );
 ##
 #F  RightTransversalPermGroupConstructor( <filter>, <G>, <U> )  . constructor
 ##
-MAX_SIZE_TRANSVERSAL := 1000000;
+MAX_SIZE_TRANSVERSAL := 100000;
+
+# so far only orbits and perm groups -- TODO: Other deduced actions
+InstallGlobalFunction(ActionRefinedSeries,function(G,U)
+local o,A,ser,act,i;
+  o:=List(Orbits(U,MovedPoints(G)),Set);
+  SortBy(o,Length);
+  A:=G;
+  ser:=[A];
+  act:=[0]; # dummy entry
+  i:=1;
+  while i<=Length(o) and Size(A)>Size(U) do
+    A:=Stabilizer(A,o[i],OnSets);
+    if Size(A)<Size(ser[Length(ser)]) then
+      Add(ser,A);
+      Add(act,[o[i],OnSets]);
+    fi;
+    i:=i+1;
+  od;
+  if Size(A)>Size(U) then
+    Add(ser,U);
+    Add(act,fail);
+  fi;
+  # refine large step?
+  for i in [1..Length(ser)-1] do
+    if IndexNC(ser[i],ser[i+1])>MAX_SIZE_TRANSVERSAL then
+      A:=IntermediateGroup(ser[i],ser[i+1]:cheap);
+      if A<>fail then
+        # refine with action
+        o:=ActionRefinedSeries(ser[i],A);
+        ser:=Concatenation(ser{[1..i]},o[1]{[1..Length(o[1])-1]},
+          ser{[i+1..Length(ser)]});
+        act:=Concatenation(act{[1..i]},o[2]{[1..Length(o[2])-1]},
+          act{[i+1..Length(act)]});
+      else
+        # no refinement, next step
+        i:=i+1;
+      fi;
+    else
+      # no refinement needed, next step
+      i:=i+1;
+    fi;
+  od;
+  # make ascending like AscendingSeries
+  return [Reversed(ser),Reversed(act)];
+end);
 
 BindGlobal( "RightTransversalPermGroupConstructor", function( filter, G, U )
-  local GC, UC, noyet, orbs, domain, GCC, UCC, ac, nc, bpt, enum, i;
+  local GC, UC, noyet, orbs, domain, GCC, UCC, ac, nc, bpt, enum, i,
+    actions,nct;
 
     GC := CopyStabChain( StabChainImmutable( G ) );
     UC := CopyStabChain( StabChainImmutable( U ) );
@@ -66,16 +112,23 @@ BindGlobal( "RightTransversalPermGroupConstructor", function( filter, G, U )
           (Length(UCC.genlabels)=0 and
             SizeStabChain(GCC)>MAX_SIZE_TRANSVERSAL)
             ) then
-            # we potentially go through many steps, making it expensive
-            ac:=AscendingChain(G,U:cheap);
+
+            # first get a factorization through actions
+            ac:=ActionRefinedSeries(G,U);
+            actions:=ac[2];
+            ac:=ac[1];
+
             # go in biggish steps through the chain
             nc:=[ac[1]];
+            nct:=[actions[1]];
             for i in [3..Length(ac)] do
               if Size(ac[i])/Size(nc[Length(nc)])>MAX_SIZE_TRANSVERSAL then
                 Add(nc,ac[i-1]);
+                Add(nct,actions[i-1]);
               fi;
             od;
             Add(nc,ac[Length(ac)]);
+            Add(nct,actions[Length(actions)]);
             if Length(nc)>2 then
               ac:=[];
               for i in [Length(nc),Length(nc)-1..2] do
@@ -810,3 +863,90 @@ function(cos1,cos2)
     od;
     return [];
 end);
+
+
+#############################################################################
+##
+#F  FactorCosetAction( <G>, <U>, [<N>] )  operation on the right cosets Ug
+##                                        with possibility to indicate kernel
+##
+BindGlobal("DoFactorCosetActionPerm",function(arg)
+local G,u,op,h,N,rt,ac,actions,hom,i,q;
+  G:=arg[1];
+  u:=arg[2];
+  if Length(arg)>2 then
+    N:=arg[3];
+  else
+    N:=false;
+  fi;
+  if IsList(u) and Length(u)=0 then
+    u:=G;
+    Error("only trivial operation ?  I Set u:=G;");
+  fi;
+  if N=false then
+    N:=Core(G,u);
+  fi;
+
+  ac:=ActionRefinedSeries(G,u);
+  actions:=ac[2];
+  ac:=ac[1];
+  hom:=false;
+  for i in [2..Length(ac)] do
+    if actions[i-1]<>fail
+      # allow 2GB memory use for writing down orbit
+      and SIZE_OBJ(actions[i-1][1])*IndexNC(ac[i],ac[i-1])<2*10^9 then
+
+      op:=rec();
+      h:=Orbit(ac[i],actions[i-1][1],actions[i-1][2]:permutations:=op);
+      if IsBound(op.permutations) then
+        rt:=List(op.permutations,PermList);
+        q:=Group(rt);
+        SetSize(q,IndexNC(G,N));
+        h:=GroupHomomorphismByImagesNC(ac[i],Group(rt),
+          op.generators,rt);
+      else
+        h:=ActionHomomorphism(ac[i],h,actions[i-1][2],"surjective");
+      fi;
+    else
+      rt:=RightTransversal(ac[i],ac[i-1]);
+      if not IsRightTransversalRep(rt) then
+        # the right transversal has no special `PositionCanonical' method.
+        rt:=List(rt,i->RightCoset(ac[i-1],i));
+      fi;
+      h:=ActionHomomorphism(ac[i],rt,OnRight,"surjective");
+
+    fi;
+    Unbind(op);
+    Unbind(rt);
+    if i=2 then
+      hom:=h;
+    else
+      hom:=KuKGenerators(ac[i],h,hom);;
+      q:=Group(hom);
+      StabChainOptions(q).limit:=Size(ac[i]);
+      hom:=GroupHomomorphismByImagesNC(ac[i],q,GeneratorsOfGroup(ac[i]),hom);;
+    fi;
+  od;
+
+  op:=Image(hom,G);
+  SetSize(op,IndexNC(G,N));
+
+  # and note our knowledge
+  SetKernelOfMultiplicativeGeneralMapping(hom,N);
+  AddNaturalHomomorphismsPool(G,N,hom);
+  return hom;
+end);
+
+InstallMethod(FactorCosetAction,"by right transversal operation",
+  IsIdenticalObj,[IsPermGroup,IsPermGroup],0,
+function(G,U)
+  return DoFactorCosetActionPerm(G,U);
+end);
+
+InstallOtherMethod(FactorCosetAction,
+  "by right transversal operation, given kernel",IsFamFamFam,
+  [IsPermGroup,IsPermGroup,IsPermGroup],0,
+function(G,U,N)
+  return DoFactorCosetActionPerm(G,U,N);
+end);
+

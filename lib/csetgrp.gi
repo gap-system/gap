@@ -332,6 +332,10 @@ local o,b,img,G1,c,m,hardlimit,gens,t,k,intersize;
     fi;
   fi;
 
+  if ValueOption("cheap")=true then
+    return fail; # do not do hard work
+  fi;
+
   if Index(G,U)>hardlimit then
     Info(InfoWarning,1,
       "will have to use permutation action of degree bigger than ", hardlimit);

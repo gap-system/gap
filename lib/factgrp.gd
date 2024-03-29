@@ -157,6 +157,9 @@ DeclareAttribute("NaturalHomomorphismsPool",IsGroup,
 ##  gap> Size(Image(last));
 ##  120
 ##  ]]></Example>
+##  The correspondence of points with cosets will, for performance reasons,
+##  depend on the method used. It is not guaranteed that it will be the same
+##  as used by <C>RightTransversal</C> or <C>RightCosets</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

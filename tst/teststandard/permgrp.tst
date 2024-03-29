@@ -7,7 +7,7 @@ gap> START_TEST("permgrp.tst");
 gap> Size(Normalizer(SymmetricGroup(100),PrimitiveGroup(100,1)));
 1209600
 gap> g:=Image(RegularActionHomomorphism(AbelianGroup([4,5,5])));;
-gap> Size(Normalizer(SymmetricGroup(100),g));       
+gap> Size(Normalizer(SymmetricGroup(100),g));
 96000
 
 # the following tests used to choke GAP, because GAP failed to find
@@ -136,7 +136,7 @@ false
 gap> IsConjugatorAutomorphism(hom);
 true
 
-# classes over larger field extension 
+# classes over larger field extension
 gap> Length(ConjugacyClasses(PSL(2,64)));
 65
 
@@ -148,6 +148,13 @@ gap> AllTransitiveGroups(NrMovedPoints,12,
 # MinimalFaithfulPermutationDegree
 gap>  MinimalFaithfulPermutationDegree(SmallGroup(5^6,33));
 55
+
+# FactorCosetAction
+gap> g:=MathieuGroup(23);;
+gap> u:=Normalizer(g,SylowSubgroup(g,3));;
+gap> act:=FactorCosetAction(g,u);;
+gap> NrMovedPoints(Range(act));
+70840
 
 #
 gap> STOP_TEST( "permgrp.tst", 1);

@@ -441,3 +441,6 @@ DeclareGlobalFunction("IntermediateGroup");
 # forward declaration for recursive call.
 DeclareGlobalFunction("DoConjugateInto");
 
+# action-based ascending seried for perm group
+DeclareGlobalFunction("ActionRefinedSeries");
+
