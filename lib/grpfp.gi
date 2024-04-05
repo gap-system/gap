@@ -4051,6 +4051,7 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, sz,
             RelatorsOfFpGroup(G),[gen],true,false:
               cyclic:=true,limit:=1+max,quiet:=true );
     fi;
+
     if t=fail then
       # we cannot get the size within the permitted limits -- give up
       return fail;
@@ -4097,6 +4098,8 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, sz,
   if max>10^4*sz then
     max:=10^3*sz;
   fi;
+
+  amax:=Maximum(amax,max+1);
 
   useind:=false;
   t1:=timerFunc();
