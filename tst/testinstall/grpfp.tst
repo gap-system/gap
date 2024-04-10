@@ -126,5 +126,18 @@ gap> G:=F/[F.1,F.2];;
 gap> F:=GroupHomomorphismByImagesNC(G,G,[],[]);;
 gap> ImagesRepresentative(F,G.1);;
 
+# IsomorphismFpGroupByGenerators for trivial group
+gap> for G in [ TrivialGroup( IsPermGroup ), TrivialGroup( IsPcGroup ),
+>               TrivialGroup( IsFpGroup ), Group( [], [[Z(3)^0]] ) ] do
+>      iso:= IsomorphismFpGroupByGenerators( G, [] );
+>      if not IsBijective( iso ) then
+>        Error( "problem with IsomorphismFpGroupByGenerators" );
+>      fi;
+>    od;
+gap> IsomorphismFpGroupByGenerators( Group( (1,2) ), [] );
+Error, <gens> must be a generating set for G
+gap> IsomorphismFpGroupByGeneratorsNC( Group( (1,2) ), [], "F" );
+Error, <emptygens> does not generate <G>
+
 #
-gap> STOP_TEST( "grpfp.tst", 1);
+gap> STOP_TEST( "grpfp.tst" );
