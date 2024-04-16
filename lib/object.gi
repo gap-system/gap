@@ -384,7 +384,13 @@ InstallMethod( PrintObj,
     true,
     [ HasName ],
     SUM_FLAGS, # override anything specific
-    function ( obj )  Print( Name( obj ) ); end );
+    function( obj )
+    if ISBOUND_GLOBAL( Name( obj ) ) then
+      Print( Name( obj ) );
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 
 #############################################################################

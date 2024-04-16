@@ -41,7 +41,7 @@ PSL(2,59)
 
 #
 gap> it := SimpleGroupsIterator(20000,80000:NOPSL2);;
-gap> for g in it do Print(g,"\n"); od;
+gap> for g in it do View( g ); Print( "\n" ); od;
 A8
 PSL(3,4)
 PSp(4,3)
@@ -50,7 +50,7 @@ PSU(3,4)
 gap> IsDoneIterator(it);
 true
 gap> it:=SimpleGroupsIterator(1053927211015007279,1053927211015007281);;
-gap> for g in it do Print(g,"\n"); od;
+gap> for g in it do View( g ); Print( "\n" ); od;
 PSL(3,179)
 
 #
