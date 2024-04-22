@@ -183,5 +183,26 @@ true
 gap> IsIdenticalObj( Range( iso ), ImagesSource( iso ) );
 true
 
+#
+gap> G:= AbelianGroup( IsPcGroup, [ 3, 3, 3 ] );;
+gap> S:= AbelianGroup( IsPcGroup, [ 3, 3 ] );;
+gap> f:= GroupHomomorphismByImages( G, S, GeneratorsOfGroup( G ),
+>         [ GeneratorsOfGroup( S )[1], One( S ), One( S ) ] );;
+gap> x:= GeneratorsOfGroup( S )[2];;
+gap> x in Range( f ) and not x in Image( f );
+true
+gap> PreImagesRepresentative( f, x );
+fail
+gap> G:= AbelianGroup( IsPcGroup, [ 3, 3 ] );;
+gap> S:= AbelianGroup( IsPcGroup, [ 3 ] );;
+gap> f:= GroupHomomorphismByImages( G, S, GeneratorsOfGroup( G ),
+>         [ One( S ), One( S ) ] );;
+gap> x:= GeneratorsOfGroup( S )[1];
+f1
+gap> x in Range( f ) and not x in Image( f );
+true
+gap> PreImagesRepresentative( f, x );
+fail
+
 # that's all, folks
 gap> STOP_TEST( "grppc.tst" );

@@ -511,7 +511,11 @@ InstallMethod( PreImagesRepresentative, "method for pcgs hom",
 function( hom, elm )
     local  pcgsR, exp, imgs, pre, i;
 
-    # precompute pcgs
+    if not elm in ImagesSource( hom ) then
+      return fail;
+    fi;
+
+    # Precompute a pcgs for the *image* of 'hom'.
     InversePcgs( hom );
 
     pcgsR := hom!.rangePcgs;
