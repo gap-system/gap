@@ -509,7 +509,7 @@ ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
             PtrArraySetLen(stack, p + 1);
         }
     }
-    MarkFromList(jl_get_ptls_states(), stack);
+    MarkFromList(task->ptls, stack);
 }
 
 static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
