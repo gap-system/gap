@@ -165,20 +165,20 @@ InstallGlobalFunction( CyclotomicPol, function(n)
     k := Product(f, a-> a[1]^(a[2]-1));
     if f[1][1] = 2 then
       if Length(f) = 1 then
-	res := [1, 1];
+        res := [1, 1];
       else
-	if Length(f) = 2 then
-	  res := 1+0*[1..f[2][1]];
-	else
-	  # we cache result for non-prime squarefree odd numbers
-	  res := CYCPOLCache.CPdiffodd(List([2..Length(f)], i-> f[i][1]));
-	fi;
-	# substitute X by -X
-	i := 2;
-	while i <= Length(res) do
-	  res[i] := -res[i];
-	  i := i+2;
-	od;
+        if Length(f) = 2 then
+          res := 1+0*[1..f[2][1]];
+        else
+          # we cache result for non-prime squarefree odd numbers
+          res := CYCPOLCache.CPdiffodd(List([2..Length(f)], i-> f[i][1]));
+        fi;
+        # substitute X by -X
+        i := 2;
+        while i <= Length(res) do
+          res[i] := -res[i];
+          i := i+2;
+        od;
       fi;
     else
       res := CYCPOLCache.CPdiffodd(List(f, a-> a[1]));
@@ -189,8 +189,8 @@ InstallGlobalFunction( CyclotomicPol, function(n)
       l := 0*[1..k-1];
       res := [a[1]];
       for i in [2..Length(a)] do
-	Append(res, l);
-	Add(res, a[i]);
+        Append(res, l);
+        Add(res, a[i]);
       od;
     fi;
     return res;
