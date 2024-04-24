@@ -112,7 +112,7 @@ BindGlobal("CYCPOLCache", rec());
 # Caching is only needed for non-prime squarefree odd numbers (see 1., 2.
 # and 4. recursion rule above).
 CYCPOLCache.CPdiffodd := function(ps)
-    local len, str, a, l, blowup, res, n, m, k, i, c, j, iv;
+    local len, str, a, l, blowup, res, n, m, k, iv, c, i;
     # Case of product of different odd primes,
     # given in list ps.
     # Caching non-trivial cases.
