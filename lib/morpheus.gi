@@ -535,6 +535,12 @@ local hom, gens, c, ran, r, cen, img, u, orbs,
   while Size(u)<Size(g) do
     if Size(u)>1 then SortBy(c,Size);fi; # once an outside class is known, sort
     of:=First(c,x->not Representative(x) in u);
+
+    if of=fail then
+      # rarely reps are in u
+      of:=First(c,
+        x->ForAny(GeneratorsOfGroup(g),y->not Representative(x)^y in u));
+    fi;
     if MemoryUsage(Representative(of))*Size(of)
       # if a single class only requires
       <10000
