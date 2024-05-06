@@ -229,7 +229,7 @@ jobs:
                    sudo apt-get install --no-install-recommends "${packages[@]}"
                    sudo apt-get install pkg-config
                elif [ "$RUNNER_OS" == "macOS" ]; then
-                   brew install gmp zlib pkg-config
+                   brew install autoconf gmp zlib pkg-config
                fi
                python -m pip install gcovr
 
