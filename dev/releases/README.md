@@ -6,6 +6,8 @@
 - All changes to be included in the release are now present in the `stable-X.Y` branch.
     - This includes the release notes for version `X.Y.Z` being included in `CHANGES.md`.
 
+If there is no `stable-X.Y` branch yet (i.e. you are trying to release version `X.Y.0`)
+you first have to create that using the `dev/releases/create_stable_branch.py` script.
 
 ## The release process for GAP -- the quick guide
 
@@ -30,10 +32,13 @@ This is the way the process should happen in practice, with the help of GitHub A
     ```
 4. Wait. Pushing the tag triggers the “[Wrap releases](https://github.com/gap-system/gap/actions/workflows/release.yml)” GitHub Actions workflow on `gap-system/gap`, which wraps the release archives and Windows installers, and creates a release on GitHub with the archives and installers attached. This takes around 90 minutes.
 5. Once the “Wrap releases” workflow has finished, check its log for obvious errors. Also visit the page of the release under <https://github.com/gap-system/gap/releases/> and check that everything looks right, and all files are present (including the Windows .exe installer), e.g. by comparing the asset list to the previous release. At this time this is written, a regular GAP release will have 24 assets (12 archives, and 12 matching sha256 files).
-6. Next either manually dispatch the “[Sync](https://github.com/gap-system/GapWWW/actions/workflows/sync.yml)” GitHub Actions workflow on `gap-system/GapWWW`, or wait overnight for it to happen on schedule.
+6. Edit the new release under <https://github.com/gap-system/gap/releases/> and
+  change the release from "pre-release" to "latest release" (i.e., on <https://github.com/gap-system/gap/releases/edit/vX.Y.Z> disable "Set as a pre-release" and enable "Set as the latest release").
+7. Next either manually dispatch the “[Sync](https://github.com/gap-system/GapWWW/actions/workflows/sync.yml)” GitHub Actions workflow on `gap-system/GapWWW`, or wait overnight for it to happen on schedule.
     - This Workflow creates a pull request to `gap-system/GapWWW`, which updates the GAP website according to the release data hosted on `gap-system/gap`.  Check that the result is sensible.
-6. When it is time to publicise the new GAP release, merge the pull request to GapWWW.
-7. There are currently additional steps required for the changes to appear on <https://www.gap-system.org>, which could be automated but are currently not; these are described in steps 10 and 11 below.
+8. When it is time to publicise the new GAP release, merge the pull request to GapWWW.
+9. There are currently additional steps required for the new manual to appear on <https://docs.gap-system.org>, and to add a copy of the new release files to <https://files.gap-system.org>.
+These could and be automated in the future but are currently not. Details are described in steps 10 and following below.
 
 
 ## The release process for GAP -- the more detailed guide
@@ -92,6 +97,7 @@ Before starting the release process, the scripts have the following dependencies
     ```
     ssh gap-docs   # assumes gap-docs is set up in ~/.ssh/config
     VER=X.Y.Z      # to avoid typing
+    rm -f package-infos.json*  gap-*   # delete leftovers from previous release
     wget https://github.com/gap-system/gap/releases/download/v${VER}/package-infos.json.gz
     gunzip package-infos.json.gz
     wget https://github.com/gap-system/gap/releases/download/v${VER}/gap-${VER}.tar.gz
@@ -102,6 +108,18 @@ Before starting the release process, the scripts have the following dependencies
     ln -s v${VER} http/latest
     ```
 11. Check that <https://docs.gap-system.org> is functioning as expected.
+12. Log into `files.gap-system.org` via SSH, then download the files in appropriate places:
+    ```
+    ssh gap-docs        # assumes gap-docs is set up in ~/.ssh/config
+    VER=X.Y.Z           # to avoid typing
+    cd ~/http           # follow symlink to target director
+    mkdir -p ${VER%.*}  # ensure directories are present
+    cd ${VER%.*}
+    mkdir -p exe zip tar.gz
+    # now download all gap-$VER* files in the release into the appropriate subdirectories
+    cd exe
+    # ... and so on
+    ```
 
 
 ## Post-release instructions
@@ -109,8 +127,6 @@ Before starting the release process, the scripts have the following dependencies
 Once all the above has been completed, do the following:
 
 - Write a release announcement to the GAP Forum and GAP mailing list
-- Go to the new release under <https://github.com/gap-system/gap/releases/> and
-  change the release from "pre-release" to "latest release" (i.e., on <https://github.com/gap-system/gap/releases/edit/vX.Y.Z> disable "Set as a pre-release" and "Set as the latest release")
 - Update <https://www.wikidata.org/wiki/Q677161>
 - Update <https://en.wikipedia.org/wiki/GAP_(computer_algebra_system)>
   (and possibly also translations)

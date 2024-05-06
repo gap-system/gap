@@ -908,6 +908,21 @@ function( G, gens, str )
 end );
 
 
+InstallMethod( IsomorphismFpGroupByGeneratorsNC,
+               "for trivial group",
+               [ IsGroup, IsList and IsEmpty, IsString ],
+function( G, emptygens, name )
+    local hom;
+
+    if not IsTrivial( G ) then
+      Error( "<emptygens> does not generate <G>" );
+    fi;
+    hom:= GroupHomomorphismByImagesNC( G, FreeGroup( 0 ), [], [] );
+    SetIsBijective( hom, true );
+    return hom;
+end );
+
+
 #############################################################################
 ##
 #M  IsomorphismFpGroupBySubnormalSeries( G, series, str )

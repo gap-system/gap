@@ -824,6 +824,24 @@ BindGlobal( "XMLForUserPreferences", function( pkgname )
 
 #############################################################################
 ##
+#F  UpdateXMLForUserPreferences()
+##
+##  Update the file <F>doc/ref/user_pref_list.xml</F> if necessary.
+##
+BindGlobal( "UpdateXMLForUserPreferences", function()
+    local file, old, new;
+
+    file:= Filename(DirectoriesLibrary("doc")[1], "ref/user_pref_list.xml");
+    old:= StringFile(file);
+    new:= XMLForUserPreferences("GAP");
+    if old <> new then
+      FileString(file, new);
+    fi;
+    end );
+
+
+#############################################################################
+##
 #F  WriteGapIniFile( [<dir>, ][true] )
 ##
 BindGlobal( "WriteGapIniFile", function( arg )

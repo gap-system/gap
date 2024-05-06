@@ -1023,7 +1023,7 @@ end );
 #M  CosetTableFromGensAndRels( <fgens>, <grels>, <fsgens> ) . . . . . . . . .
 #M                                                     do a coset enumeration
 ##
-##  'CosetTableFromGensAndRels'  is the working horse  for computing  a coset
+##  'CosetTableFromGensAndRels'  is the workhorse  for computing  a coset
 ##  table of H in G where G is a finitley presented group, H is a subgroup of
 ##  G,  and  G  is the whole group of  H.  It applies a Felsch strategy Todd-
 ##  Coxeter coset enumeration. The expected parameters are
@@ -3790,14 +3790,25 @@ end );
 ##  enumerations with cumulatively bigger coset tables up to table size
 ##  <maxtable>. It returns `fail' if no table could be found.
 BindGlobal("FinIndexCyclicSubgroupGenerator",function(G,maxtable)
-local fgens,grels,max,gens,t,Attempt,perms,short;
+  local fgens, grels, powers, max, gens, t, Attempt, perms, short;
+
   fgens:=FreeGeneratorsOfFpGroup(G);
   grels:=RelatorsOfFpGroup(G);
+
   max:=ValueOption("max");
   if max=fail then
     max:=CosetTableDefaultMaxLimit;
   fi;
   max:=Minimum(max,maxtable);
+
+  powers := List(grels, ExtRepOfObj);
+  powers := Filtered(powers, x -> Length(x) = 2);
+  if not IsEmpty(powers) then
+    SortBy(powers, x -> x[2]);
+    if Last(powers)[2] > 10 then
+      max := Last(powers)[2];
+    fi;
+  fi;
 
   # take the generators, most frequent first
   gens:=GeneratorsOfGroup(G);
@@ -3919,6 +3930,9 @@ local   fgens,      # generators of the free group
           RelatorsOfFpGroup(G),GeneratorsOfGroup(H),true,false:
             cyclic:=true,limit:=1+max );
     e:=NEWTC_CyclicSubgroupOrder(T);
+    SetCyclicSubgroupFpGroup(G, H);
+    # TODO is this correct?
+    SetAugmentedCosetTableMtcInWholeGroup(H, T);
     if e=0 then
       return infinity;
     else
@@ -4037,6 +4051,7 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, sz,
             RelatorsOfFpGroup(G),[gen],true,false:
               cyclic:=true,limit:=1+max,quiet:=true );
     fi;
+
     if t=fail then
       # we cannot get the size within the permitted limits -- give up
       return fail;
@@ -4083,6 +4098,8 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, sz,
   if max>10^4*sz then
     max:=10^3*sz;
   fi;
+
+  amax:=Maximum(amax,max+1);
 
   useind:=false;
   t1:=timerFunc();
@@ -5506,6 +5523,45 @@ end );
 
 InstallMethod( Enumerator,"fp gp.", true,[IsSubgroupFpGroup and IsFinite],0,
   G->RightTransversal(G,TrivialSubgroup(G)));
+
+InstallMethod(Enumerator,
+"for a finite subgroup of an f. p. group with known cyclic subgroup",
+[IsSubgroupFpGroup and IsFinite and HasCyclicSubgroupFpGroup],
+function(G)
+  local H, record;
+
+  H := CyclicSubgroupFpGroup(G);
+  if Size(H) = 1 then # Checking IsTrivial is slow
+    TryNextMethod();
+  fi;
+
+  record := rec(G_mod_H := RightTransversal(G, H),
+                H_mod_1 := RightTransversal(H, TrivialSubgroup(H)));
+
+  record.Length := enum -> Size(enum!.G_mod_H!.group);
+
+  record.NumberElement := function(enum, elt)
+    local n, r, q;
+    n := Size(enum!.G_mod_H!.subgroup);
+    q := PositionCanonical(enum!.G_mod_H, elt);
+    r := PositionCanonical(enum!.H_mod_1, elt * enum!.G_mod_H[q] ^ -1);
+    return (q - 1) * n + r;
+  end;
+
+  record.ElementNumber := function(enum, pos)
+    local n, r, q;
+    n := Size(enum!.G_mod_H!.subgroup);
+    r := RemInt(pos - 1, n) + 1;
+    q := QuoInt(pos - 1, n) + 1;
+    return enum!.H_mod_1[r] * enum!.G_mod_H[q];
+  end;
+
+  record.Membership := function(elt, enum)
+    return ElementsFamily(FamilyObj(enum)) = FamilyObj(elt);
+  end;
+
+  return EnumeratorByFunctions(G, record);
+end);
 
 InstallGlobalFunction(NewmanInfinityCriterion,function(G,p)
 local GO,q,d,e,b,r,val,agemo,ngens;
