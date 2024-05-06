@@ -99,52 +99,102 @@ RedispatchOnCondition(IsIrreducibleRingElement,true,[IsRing,IsPolynomial],
 ##
 #F  CyclotomicPol( <n> )  . . .  coefficients of <n>-th cyclotomic polynomial
 ##
-InstallGlobalFunction( CyclotomicPol, MemoizePosIntFunction(
-function( n )
 
-    local f,   # result (after stripping off other cyclotomic polynomials)
-          div, # divisors of 'n'
-          d,   # one divisor of 'n'
-          q,   # coefficients of a quotient that arises in division
-          g,   # coefficients of 'd'-th cyclotomic polynomial
-          l,   # degree of 'd'-th cycl. pol.
-          m,
-          i,
-          c,
-          k;
-
-    # We have to compute the polynomial. Start with 'X^n - 1' ...
-    f := List( [ 1 .. n ], x -> 0 );
-    f[1]     := -1;
-    f[ n+1 ] :=  1;
-
-    div:= ShallowCopy( DivisorsInt( n ) );
-    RemoveSet( div, n );
-
-    # ... and divide by all 'd'-th cyclotomic polynomials
-    # for proper divisors 'd' of 'n'.
-    for d in div do
-      q := [];
-      g := CyclotomicPol( d );
-      l := Length( g );
-      m := Length( f ) - l;
-      for i  in [ 0 .. m ]  do
-        c := f[ m - i + l ] / g[ l ];
-        for k  in [ 1 .. l ]  do
-          f[ m - i + k ] := f[ m - i + k ] - c * g[k];
-        od;
-        q[ m - i + 1 ] := c;
-      od;
-      f:= q;
+# We use the following recursion formulae for CyclotomicPol(n)
+# (see, e.g., Wikipedia).
+#
+# n prime: 1 + X + ... + X^{n-1}
+# n = 2 k, k > 1 odd:  CyclotomicPol(k)(-X)
+# n = p*m, (p,m)=1:  CyclotomicPol(m)(X^p) / CyclotomicPol(m)
+# n = k * l with k|l: CyclotomicPol(l)(X^k)
+# And CyclotomicPol(n) is palindromic for n > 2.
+BindGlobal("CYCPOLCache", rec());
+# Caching is only needed for non-prime squarefree odd numbers (see 1., 2.
+# and 4. recursion rule above).
+CYCPOLCache.CPdiffodd := function(ps)
+    local len, str, a, l, blowup, res, n, m, k, iv, c, i;
+    # Case of product of different odd primes,
+    # given in list ps.
+    # Caching non-trivial cases.
+    len := Length(ps);
+    if len = 0 then
+      return [-1 ,1];
+    fi;
+    if len = 1 then
+      return 1+0*[1..ps[1]];
+    fi;
+    str := Filtered(String(ps), c-> not c in " []");
+    if IsBound(CYCPOLCache.(str)) then
+      # we return mutable list, therefore ShallowCopy here
+      return ShallowCopy(CYCPOLCache.(str));
+    fi;
+    a := CYCPOLCache.CPdiffodd(ps{[1..len-1]});
+    l := 0*[1..ps[len]-1];
+    # substitute X by X^ps[len]
+    blowup := [a[1]];
+    for i in [2..Length(a)] do
+      Append(blowup, l);
+      Add(blowup, a[i]);
     od;
-
-    # make the coefficients list immutable
-    MakeImmutable( f );
-
-    # return the coefficients list
-    return f;
-end ) );
-
+    # divide blowup by a
+    # need to do only first half because result is palindromic
+    res := [];
+    n := Length(blowup);
+    m := Length(a);
+    k := n-m+1;
+    iv := n-m+[1..m];
+    for i in [0..QuoInt(k,2)] do
+      c := blowup[n-i];
+      res[k-i] := c;
+      res[i+1] := c;
+      blowup{iv} := blowup{iv} - c*a;
+      iv := iv-1;
+    od;
+    CYCPOLCache.(str) := res;
+    return res;
+end;
+InstallGlobalFunction( CyclotomicPol, function(n)
+    local f, k, res, i, a, l;
+    if n = 1 then
+      return [-1, 1];
+    fi;
+    if IsPrime(n) then
+      return 1+0*[1..n];
+    fi;
+    f := Collected(FactorsInt(n));
+    k := Product(f, a-> a[1]^(a[2]-1));
+    if f[1][1] = 2 then
+      if Length(f) = 1 then
+        res := [1, 1];
+      else
+        if Length(f) = 2 then
+          res := 1+0*[1..f[2][1]];
+        else
+          # we cache result for non-prime squarefree odd numbers
+          res := CYCPOLCache.CPdiffodd(List([2..Length(f)], i-> f[i][1]));
+        fi;
+        # substitute X by -X
+        i := 2;
+        while i <= Length(res) do
+          res[i] := -res[i];
+          i := i+2;
+        od;
+      fi;
+    else
+      res := CYCPOLCache.CPdiffodd(List(f, a-> a[1]));
+    fi;
+    if k > 1 then
+      # substitute X by X^k
+      a := res;
+      l := 0*[1..k-1];
+      res := [a[1]];
+      for i in [2..Length(a)] do
+        Append(res, l);
+        Add(res, a[i]);
+      od;
+    fi;
+    return res;
+end);
 
 ############################################################################
 ##
