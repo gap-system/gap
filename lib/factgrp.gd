@@ -150,13 +150,17 @@ DeclareAttribute("NaturalHomomorphismsPool",IsGroup,
 ##  gap> g:=Group((1,2,3,4,5),(1,2));;u:=SylowSubgroup(g,2);;Index(g,u);
 ##  15
 ##  gap> FactorCosetAction(g,u);
-##  <action epimorphism>
+##  [ (1,2,3,4,5), (1,2) ] -> [ (1,4,7,10,13)(2,5,8,11,14)(3,6,9,12,15),\
+##    (1,4)(2,6)(3,5)(7,8)(10,12)(13,14) ]
 ##  gap> StructureDescription(Range(last));
 ##  "S5"
 ##  gap> FactorCosetAction(g,[u,SylowSubgroup(g,3)]);;
 ##  gap> Size(Image(last));
 ##  120
 ##  ]]></Example>
+##  The correspondence of points with cosets will, for performance reasons,
+##  depend on the method used. It is not guaranteed that it will be the same
+##  as used by <C>RightTransversal</C> or <C>RightCosets</C>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

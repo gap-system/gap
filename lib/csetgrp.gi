@@ -332,6 +332,10 @@ local o,b,img,G1,c,m,hardlimit,gens,t,k,intersize;
     fi;
   fi;
 
+  if ValueOption("cheap")=true then
+    return fail; # do not do hard work
+  fi;
+
   if Index(G,U)>hardlimit then
     Info(InfoWarning,1,
       "will have to use permutation action of degree bigger than ", hardlimit);
@@ -988,9 +992,9 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
       actlimit, uplimit, badlimit,avoidlimit,start,includestab,quot;
 
   actlimit:=300000; # maximal degree on which we try blocks
-  uplimit:=10000; # maximal index for up step
+  uplimit:=500000; # maximal index for up step
   avoidlimit:=200000; # beyond this index we want to get smaller
-  badlimit:=1000000; # beyond this index things might break down
+  badlimit:=5000000; # beyond this index things might break down
 
   mayflip:=true; # are we allowed to flip?
 
