@@ -431,18 +431,18 @@ InstallGlobalFunction( AddCosetInfoStabChain, function( G, U, maxmoved )
                             ( U.translabels[ pimg[ vimg(G.orbit[ i ],tl) ] ] ) );
                         fi;
 
-                          if found then
-                            U.repsStab[ t ][ s ] := true;
-                            index := index + lenflock;
-                          fi;
-
-                        else
+                        if found then
                           U.repsStab[ t ][ s ] := true;
                           index := index + lenflock;
                         fi;
-                      fi;
 
-                      t := t + 1;
+                      else
+                        U.repsStab[ t ][ s ] := true;
+                        index := index + lenflock;
+                      fi;
+                    fi;
+
+                    t := t + 1;
                   od;
                 fi;
 
