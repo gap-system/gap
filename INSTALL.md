@@ -252,7 +252,7 @@ it will fallback to compiling its own version of GMP.
 You can force GAP to build its own copy of GMP by passing `--with-gmp=builtin`.
 Finally, you pass a prefix path where GAP should search for a copy of GMP;
 i.e., `--with-gmp=PREFIX` instructs GAP to search for the header file `gmp.h`
-in `PREFIX/includes`, and the library itself in `PREFIX/lib`.
+in `PREFIX/include`, and the library itself in `PREFIX/lib`.
 
 For historical reasons, you may also pass `--with-gmp=system`, which is
 simply ignored by GAP (i.e., the default behavior described above is used).
