@@ -144,11 +144,14 @@ function(G)
   if IsGroup(G) and IsSolvableGroup(G) then
     TryNextMethod();
   elif IsGroup(G) and IsFinite(G) then
+    #This algorithm is described in the paper
+    #"The Minimum Generating Set Problem" by Dhara Thakar and Andrea Lucchini.
+    #link : https://arxiv.org/abs/2306.07633
     cs := ChiefSeries(G);
     phi_GbyG1 := NaturalHomomorphismByNormalSubgroup(G,cs[2]);
     GbyG1 := ImagesSource(phi_GbyG1);
     mingenset_k_reps := List(MinimalGeneratingSet(GbyG1), x -> PreImagesRepresentative(phi_GbyG1, x));
-    # GbyG1 is a simple group, so it can be handelled by GbyG1
+    # GbyG1 is a simple group, so it has a 2 size generating set which can be found easily.
     for k in [3..Length(cs)] do # Lifting
       mingenset_km1_reps := mingenset_k_reps;
       phi_GbyGk := NaturalHomomorphismByNormalSubgroup(G,cs[k]);
@@ -156,7 +159,6 @@ function(G)
       Gkm1byGk := ImagesSource(phi_Gkm1byGk);
       GbyGk := ImagesSource(phi_GbyGk);
       check := gx -> GbyGk = GroupByGenerators(ImagesSet(phi_GbyGk,gx));
-      Gkm1byGk_elem_reps := List(AsList(Gkm1byGk),x -> PreImagesRepresentative(phi_Gkm1byGk,x));
       Gkm1byGk_gen := SmallGeneratingSet(Gkm1byGk);
       Gkm1byGk_gen_reps := List(Gkm1byGk_gen,x -> PreImagesRepresentative(phi_Gkm1byGk,x));
       g := ShallowCopy(mingenset_km1_reps);
@@ -185,11 +187,11 @@ function(G)
           fi;
         fi;
       else
+          Gkm1byGk_elem_reps := List(Gkm1byGk,x -> PreImagesRepresentative(phi_Gkm1byGk,x));
           g0 := ShallowCopy(mingenset_km1_reps);
-          g := ShallowCopy(mingenset_km1_reps);
-          Add(g,Gkm1byGk_elem_reps[1]);
-          g1 := ShallowCopy(g);
-          for g in [g0,g1] do
+          g1 := ShallowCopy(mingenset_km1_reps);  
+          Add(g1,Gkm1byGk_elem_reps[1]);  
+          for g in [g0,g1] do  
             if stop then break;fi;
             l := Length(g);
             L := Length(Gkm1byGk_elem_reps);
@@ -222,7 +224,9 @@ function(G)
           od;
       fi;
     od;
-    if G = GroupByGenerators(mingenset_k_reps) then return mingenset_k_reps; fi;
+    if not G = GroupByGenerators(mingenset_k_reps) then
+      Error("The algorithm is failing. (Computed generating set doesn't generate G)");
+    fi;
     return mingenset_k_reps;
   else
     Error("MinimalGeneratingSet assumes that input group is",
