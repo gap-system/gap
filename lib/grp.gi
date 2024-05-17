@@ -176,8 +176,14 @@ function(G)
             g[i] := temp;
           od;
         od;
-        Add(g,Gkm1byGk_gen_reps[1]);
-        mingenset_k_reps := g;
+        if not stop then
+          Add(g,Gkm1byGk_gen_reps[1]);
+          if check(g) then
+            mingenset_k_reps := g;
+          else
+            Error("The algorithm is failing");
+          fi;
+        fi;
       else
           g0 := ShallowCopy(mingenset_km1_reps);
           g := ShallowCopy(mingenset_km1_reps);
