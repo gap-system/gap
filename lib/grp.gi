@@ -218,13 +218,7 @@ function(G)
       fi;
     od;
     if G = GroupByGenerators(mingenset_k_reps) then return mingenset_k_reps; fi;
-    Print("Calculated mingen doesn't generate the group.");
     return mingenset_k_reps;
-    Error(
-  "`MinimalGeneratingSet' currently assumes that the group is solvable, or\n",
-  "already possesses a generating set of size 2.\n",
-  "In general, try `SmallGeneratingSet' instead, which returns a generating\n",
-  "set that is small but not of guaranteed smallest cardinality");
   fi;
 end);
 
