@@ -139,7 +139,7 @@ function(G)
     Gkm1byGk_gen_reps,
     mingenset_km1_reps,
     mingenset_k_reps,
-    temp,i,j,l,L,x,xl,y,last,gmod,N,g,g0,g1,s,r,stop,
+    temp,i,j,l,L,x,xl,y,prev,gmod,N,g,g0,g1,s,r,stop,
     cs,phi_GbyG1,GbyG1,Gk,Gkm1,phi_GbyGk,phi_Gkm1byGk,k;
   if IsGroup(G) and IsSolvableGroup(G) then
     TryNextMethod();
@@ -164,12 +164,12 @@ function(G)
       stop := false;
       if IsAbelian(Gkm1byGk) then
         if check(g) then mingenset_k_reps := g; fi;
-        for i in [1..Length(g)] do 
+        for i in [1..Length(g)] do
           if stop then break; fi;
           for j in [1..Length(Gkm1byGk_gen_reps)] do
             temp := g[i];
             g[i] := temp * Gkm1byGk_gen_reps[j];
-            if check(g) then 
+            if check(g) then
               mingenset_k_reps := g;
               stop := true;
               break;
@@ -184,26 +184,26 @@ function(G)
           g := ShallowCopy(mingenset_km1_reps);
           Add(g,Gkm1byGk_elem_reps[1]);
           g1 := ShallowCopy(g);
-          for g in [g0,g1] do 
+          for g in [g0,g1] do
             if stop then break;fi;
             l := Length(g);
             L := Length(Gkm1byGk_elem_reps);
             s := L^l;
-            last := [];
-            for i in [l,l-1..1] do last[i] := 1; od;
+            prev := [];
+            for i in [l,l-1..1] do prev[i] := 1; od;
             gmod := ShallowCopy(g);
-            for x in [0..s-1] do 
+            for x in [0..s-1] do
               xl := [];
               for i in [1..l] do xl[i] := 0; od;
               i := 1;
-              while x > 0 do 
+              while x > 0 do
                 r := RemInt(x,L);
                 x := QuoInt(x,L);
                 xl[i]:=r;
                 i:= i+1;
               od;
-              for i in [1..l] do 
-                if xl[i] <> last[i] then
+              for i in [1..l] do
+                if xl[i] <> prev[i] then
                   gmod[i] := g[i] * Gkm1byGk_elem_reps[xl[i]+1];
                 fi;
               od;
@@ -212,7 +212,7 @@ function(G)
                 stop := true;
                 break;
               fi;
-              last := xl;
+              prev := xl;
             od;
           od;
       fi;
