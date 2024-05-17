@@ -238,16 +238,6 @@ end);
 InstallOtherMethod(MinimalGeneratingSet,"fallback method to inform user",true,
   [IsObject],0,
 function(G)
-  local
-    check,GbyGk,
-    Gkm1byGk,
-    Gkm1byGk_elem_reps,
-    Gkm1byGk_gen,
-    Gkm1byGk_gen_reps,
-    mingenset_km1_reps,
-    mingenset_k_reps,
-    temp,i,j,l,L,x,xl,y,prev,gmod,N,g,g0,g1,s,r,stop,
-    cs,phi_GbyG1,GbyG1,phi_GbyGk,phi_Gkm1byGk,k;
   if IsGroup(G) and IsSolvableGroup(G) then
     TryNextMethod();
   elif IsGroup(G) and IsFinite(G) then
