@@ -143,7 +143,7 @@ function(G)
     cs,phi_GbyG1,GbyG1,Gk,Gkm1,phi_GbyGk,phi_Gkm1byGk,k;
   if IsGroup(G) and IsSolvableGroup(G) then
     TryNextMethod();
-  else
+  elif IsGroup(G) and IsFinite(G) then
     cs := ChiefSeries(G);
     phi_GbyG1 := NaturalHomomorphismByNormalSubgroup(G,cs[2]);
     GbyG1 := ImagesSource(phi_GbyG1);
@@ -219,6 +219,8 @@ function(G)
     od;
     if G = GroupByGenerators(mingenset_k_reps) then return mingenset_k_reps; fi;
     return mingenset_k_reps;
+  else
+    Error("MinimalGeneratingSet assumes that input group is finite or solvable or finitely generated nilpotent.");
   fi;
 end);
 
