@@ -140,20 +140,19 @@ function(G)
     mingenset_km1_reps,
     mingenset_k_reps,
     temp,i,j,l,L,x,xl,y,prev,gmod,N,g,g0,g1,s,r,stop,
-    cs,phi_GbyG1,GbyG1,Gk,Gkm1,phi_GbyGk,phi_Gkm1byGk,k;
+    cs,phi_GbyG1,GbyG1,phi_GbyGk,phi_Gkm1byGk,k;
   if IsGroup(G) and IsSolvableGroup(G) then
     TryNextMethod();
   elif IsGroup(G) and IsFinite(G) then
     cs := ChiefSeries(G);
     phi_GbyG1 := NaturalHomomorphismByNormalSubgroup(G,cs[2]);
     GbyG1 := ImagesSource(phi_GbyG1);
-    mingenset_k_reps := List(SmallGeneratingSet(GbyG1), x -> PreImagesRepresentative(phi_GbyG1, x));
+    mingenset_k_reps := List(MinimalGeneratingSet(GbyG1), x -> PreImagesRepresentative(phi_GbyG1, x));
+    # GbyG1 is a simple group, so it can be handelled by GbyG1
     for k in [3..Length(cs)] do # Lifting
       mingenset_km1_reps := mingenset_k_reps;
-      Gk := cs[k];
-      Gkm1 := cs[k-1];
-      phi_GbyGk := NaturalHomomorphismByNormalSubgroup(G,Gk);
-      phi_Gkm1byGk := NaturalHomomorphismByNormalSubgroup(Gkm1,Gk);
+      phi_GbyGk := NaturalHomomorphismByNormalSubgroup(G,cs[k]);
+      phi_Gkm1byGk := NaturalHomomorphismByNormalSubgroup(cs[k-1],cs[k]);
       Gkm1byGk := ImagesSource(phi_Gkm1byGk);
       GbyGk := ImagesSource(phi_GbyGk);
       check := gx -> GbyGk = GroupByGenerators(ImagesSet(phi_GbyGk,gx));
@@ -220,7 +219,8 @@ function(G)
     if G = GroupByGenerators(mingenset_k_reps) then return mingenset_k_reps; fi;
     return mingenset_k_reps;
   else
-    Error("MinimalGeneratingSet assumes that input group is finite or solvable or finitely generated nilpotent.");
+    Error("MinimalGeneratingSet assumes that input group is",
+    "finite or solvable or already has a generating set of 2 elements");
   fi;
 end);
 
