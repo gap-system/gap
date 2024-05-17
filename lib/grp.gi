@@ -130,9 +130,96 @@ end);
 InstallOtherMethod(MinimalGeneratingSet,"fallback method to inform user",true,
   [IsObject],0,
 function(G)
+  local
+    check,GbyGk,
+    Gkm1byGk,
+    Gkm1byGk_L,
+    Gkm1byGk_elem_reps,
+    Gkm1byGk_gen,
+    Gkm1byGk_gen_reps,
+    mingenset_km1_reps,
+    mingenset_k_reps,
+    temp,i,j,l,L,x,xl,y,last,gmod,N,g,g0,g1,s,r,stop,
+    cs,phi_GbyG1,GbyG1,Gk,Gkm1,phi_GbyGk,phi_Gkm1byGk,k;
   if IsGroup(G) and IsSolvableGroup(G) then
     TryNextMethod();
   else
+    cs := ChiefSeries(G);
+    phi_GbyG1 := NaturalHomomorphismByNormalSubgroup(G,cs[2]);
+    GbyG1 := ImagesSource(phi_GbyG1);
+    mingenset_k_reps := List(SmallGeneratingSet(GbyG1), x -> PreImagesRepresentative(phi_GbyG1, x));
+    for k in [3..Length(cs)] do # Lifting
+      mingenset_km1_reps := mingenset_k_reps;
+      Gk := cs[k];
+      Gkm1 := cs[k-1];
+      phi_GbyGk := NaturalHomomorphismByNormalSubgroup(G,Gk);
+      phi_Gkm1byGk := NaturalHomomorphismByNormalSubgroup(Gkm1,Gk);
+      Gkm1byGk := ImagesSource(phi_Gkm1byGk);
+      GbyGk := ImagesSource(phi_GbyGk);
+      check := gx -> GbyGk = GroupByGenerators(ImagesSet(phi_GbyGk,gx));
+      Gkm1byGk_elem_reps := List(AsList(Gkm1byGk),x -> PreImagesRepresentative(phi_Gkm1byGk,x));
+      Gkm1byGk_gen := SmallGeneratingSet(Gkm1byGk);
+      Gkm1byGk_gen_reps := List(Gkm1byGk_gen,x -> PreImagesRepresentative(phi_Gkm1byGk,x));
+      g := ShallowCopy(mingenset_km1_reps);
+      stop := false;
+      if IsAbelian(Gkm1byGk) then
+        if check(g) then mingenset_k_reps := g; fi;
+        for i in [1..Length(g)] do 
+          if stop then break; fi;
+          for j in [1..Length(Gkm1byGk_gen_reps)] do
+            temp := g[i];
+            g[i] := temp * Gkm1byGk_gen_reps[j];
+            if check(g) then 
+              mingenset_k_reps := g;
+              stop := true;
+              break;
+            fi;
+            g[i] := temp;
+          od;
+        od;
+        Add(g,Gkm1byGk_gen_reps[1]);
+        mingenset_k_reps := g;
+      else
+          g0 := ShallowCopy(mingenset_km1_reps);
+          g := ShallowCopy(mingenset_km1_reps);
+          Add(g,Gkm1byGk_elem_reps[1]);
+          g1 := ShallowCopy(g);
+          for g in [g0,g1] do 
+            if stop then break;fi;
+            l := Length(g);
+            L := Length(Gkm1byGk_elem_reps);
+            s := L^l;
+            last := [];
+            for i in [l,l-1..1] do last[i] := 1; od;
+            gmod := ShallowCopy(g);
+            for x in [0..s-1] do 
+              xl := [];
+              for i in [1..l] do xl[i] := 0; od;
+              i := 1;
+              while x > 0 do 
+                r := RemInt(x,L);
+                x := QuoInt(x,L);
+                xl[i]:=r;
+                i:= i+1;
+              od;
+              for i in [1..l] do 
+                if xl[i] <> last[i] then
+                  gmod[i] := g[i] * Gkm1byGk_elem_reps[xl[i]+1];
+                fi;
+              od;
+              if check(gmod) then
+                mingenset_k_reps := gmod;
+                stop := true;
+                break;
+              fi;
+              last := xl;
+            od;
+          od;
+      fi;
+    od;
+    if G = GroupByGenerators(mingenset_k_reps) then return mingenset_k_reps; fi;
+    Print("Calculated mingen doesn't generate the group.");
+    return mingenset_k_reps;
     Error(
   "`MinimalGeneratingSet' currently assumes that the group is solvable, or\n",
   "already possesses a generating set of size 2.\n",
