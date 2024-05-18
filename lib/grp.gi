@@ -27,8 +27,8 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
       Gkm1byGk_elem_reps, # The coset representatives of Gkm1byGk
       Gkm1byGk_gen, # A (small) generating set of Gkm1byGk
       Gkm1byGk_gen_reps, # The coset representatives (CR) of elements Gkm1byGk_gen
-      mingenset_km1_reps, # The CR of minimum generating set (MGS) of GbyGkm1
-      mingenset_k_reps, # The CR of MGS of GbyGk
+      mingenset_k_reps, # The CR of minimum generating set (MGS) of GbyGkm1
+      #mingenset_k_reps, # The CR of MGS of GbyGk
       phi_GbyG1, # Homomorphism for quotient group GbyG1
       GbyG1, # Quotient of G and 2nd group in its chief series
       phi_GbyGk, # Homomorphism for quotient group GbyG1
@@ -41,9 +41,9 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
     # GbyG1 is a simple group, so it has a 2 size generating set which can be found easily.
     # I'll rely on MinimalGeneratingSet to do this.
     for k in [3..Length(cs)] do # Lifting
-      mingenset_km1_reps := mingenset_k_reps;
+      #mingenset_k_reps := mingenset_k_reps;
       # We wish to compute mingenset_k_reps, the CR of MGS of GbyGk,
-      #given mingenset_km1_reps, the CR of MGS of GbyGkm1 .
+      #given mingenset_k_reps, the CR of MGS of GbyGkm1 .
       phi_GbyGk := NaturalHomomorphismByNormalSubgroup(G,cs[k]);
       phi_Gkm1byGk := NaturalHomomorphismByNormalSubgroup(cs[k-1],cs[k]);
       Gkm1byGk := ImagesSource(phi_Gkm1byGk);
@@ -51,7 +51,7 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
       check := gx -> GbyGk = GroupByGenerators(ImagesSet(phi_GbyGk,gx));
       Gkm1byGk_gen := SmallGeneratingSet(Gkm1byGk);
       Gkm1byGk_gen_reps := List(Gkm1byGk_gen,x -> PreImagesRepresentative(phi_Gkm1byGk,x));
-      g := ShallowCopy(mingenset_km1_reps);
+      g := ShallowCopy(mingenset_k_reps);
       stop := false;
       if IsAbelian(Gkm1byGk) then
         if check(g) then mingenset_k_reps := g; fi;
@@ -70,16 +70,13 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
         od;
         if not stop then
           Add(g,Gkm1byGk_gen_reps[1]);
-          if check(g) then
-            mingenset_k_reps := g;
-          else
-            Error("The algorithm is failing");
-          fi;
+          Assert(1,check(g),"The algorithm is failing");
+          mingenset_k_reps := g;
         fi;
       else
           Gkm1byGk_elem_reps := List(Gkm1byGk,x -> PreImagesRepresentative(phi_Gkm1byGk,x));
-          g0 := ShallowCopy(mingenset_km1_reps);
-          g1 := ShallowCopy(mingenset_km1_reps);  
+          g0 := ShallowCopy(mingenset_k_reps);
+          g1 := ShallowCopy(mingenset_k_reps);  
           Add(g1,Gkm1byGk_elem_reps[1]);  
           for g in [g0,g1] do  
             if stop then break;fi;
@@ -114,9 +111,8 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
           od;
       fi;
     od;
-    if not G = GroupByGenerators(mingenset_k_reps) then
-      Error("The algorithm is failing. (Computed generating set doesn't generate G)");
-    fi;
+    Assert(1,G = GroupByGenerators(mingenset_k_reps),
+      "The algorithm is failing. (Computed generating set doesn't generate G)");
     return mingenset_k_reps;
 end);
 
