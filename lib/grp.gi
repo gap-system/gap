@@ -28,7 +28,6 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
       Gkm1byGk_gen, # A (small) generating set of Gkm1byGk
       Gkm1byGk_gen_reps, # The coset representatives (CR) of elements Gkm1byGk_gen
       mingenset_k_reps, # The CR of minimum generating set (MGS) of GbyGkm1
-      #mingenset_k_reps, # The CR of MGS of GbyGk
       phi_GbyG1, # Homomorphism for quotient group GbyG1
       GbyG1, # Quotient of G and 2nd group in its chief series
       phi_GbyGk, # Homomorphism for quotient group GbyG1
@@ -40,21 +39,21 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
     mingenset_k_reps := List(MinimalGeneratingSet(GbyG1), x -> PreImagesRepresentative(phi_GbyG1, x));
     # GbyG1 is a simple group, so it has a 2 size generating set which can be found easily.
     # I'll rely on MinimalGeneratingSet to do this.
+    check := gx -> GbyGk = GroupByGenerators(ImagesSet(phi_GbyGk,gx));
     for k in [3..Length(cs)] do # Lifting
       #mingenset_k_reps := mingenset_k_reps;
       # We wish to compute mingenset_k_reps, the CR of MGS of GbyGk,
       #given mingenset_k_reps, the CR of MGS of GbyGkm1 .
       phi_GbyGk := NaturalHomomorphismByNormalSubgroup(G,cs[k]);
+      GbyGk := ImagesSource(phi_GbyGk);
+      if check(mingenset_k_reps) then break; fi;
       phi_Gkm1byGk := NaturalHomomorphismByNormalSubgroup(cs[k-1],cs[k]);
       Gkm1byGk := ImagesSource(phi_Gkm1byGk);
-      GbyGk := ImagesSource(phi_GbyGk);
-      check := gx -> GbyGk = GroupByGenerators(ImagesSet(phi_GbyGk,gx));
       Gkm1byGk_gen := SmallGeneratingSet(Gkm1byGk);
       Gkm1byGk_gen_reps := List(Gkm1byGk_gen,x -> PreImagesRepresentative(phi_Gkm1byGk,x));
       g := ShallowCopy(mingenset_k_reps);
       stop := false;
       if IsAbelian(Gkm1byGk) then
-        if check(g) then mingenset_k_reps := g; fi;
         for i in [1..Length(g)] do
           if stop then break; fi;
           for j in [1..Length(Gkm1byGk_gen_reps)] do
@@ -74,45 +73,44 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
           mingenset_k_reps := g;
         fi;
       else
-          Gkm1byGk_elem_reps := List(Gkm1byGk,x -> PreImagesRepresentative(phi_Gkm1byGk,x));
-          g0 := ShallowCopy(mingenset_k_reps);
-          g1 := ShallowCopy(mingenset_k_reps);  
-          Add(g1,Gkm1byGk_elem_reps[1]);  
-          for g in [g0,g1] do  
-            if stop then break;fi;
-            l := Length(g);
-            L := Length(Gkm1byGk_elem_reps);
-            s := L^l;
-            prev := [];
-            for i in [l,l-1..1] do prev[i] := 1; od;
-            gmod := ShallowCopy(g);
-            for x in [0..s-1] do
-              xl := [];
-              for i in [1..l] do xl[i] := 0; od;
-              i := 1;
-              while x > 0 do
-                r := RemInt(x,L);
-                x := QuoInt(x,L);
-                xl[i]:=r;
-                i:= i+1;
-              od;
-              for i in [1..l] do
-                if xl[i] <> prev[i] then
-                  gmod[i] := g[i] * Gkm1byGk_elem_reps[xl[i]+1];
-                fi;
-              od;
-              if check(gmod) then
-                mingenset_k_reps := gmod;
-                stop := true;
-                break;
-              fi;
-              prev := xl;
+        Gkm1byGk_elem_reps := List(Enumerator(Gkm1byGk),x -> PreImagesRepresentative(phi_Gkm1byGk,x));
+        g0 := ShallowCopy(mingenset_k_reps);
+        g1 := ShallowCopy(mingenset_k_reps);  
+        Add(g1,Gkm1byGk_elem_reps[1]);
+        for g in [g0,g1] do
+          if stop then break;fi;
+          l := Length(g);
+          L := Length(Gkm1byGk_elem_reps);
+          s := L^l;
+          prev := [];
+          for i in [l,l-1..1] do prev[i] := 1; od;
+          gmod := ShallowCopy(g);
+          for x in [0..s-1] do
+            xl := [];
+            for i in [1..l] do xl[i] := 0; od;
+            i := 1;
+            while x > 0 do
+              r := RemInt(x,L);
+              x := QuoInt(x,L);
+              xl[i]:=r;
+              i:= i+1;
             od;
+            for i in [1..l] do
+              if xl[i] <> prev[i] then
+                gmod[i] := g[i] * Gkm1byGk_elem_reps[xl[i]+1];
+              fi;
+            od;
+            if check(gmod) then
+              mingenset_k_reps := gmod;
+              stop := true;
+              break;
+            fi;
+            prev := xl;
           od;
+        od;
       fi;
     od;
-    Assert(1,G = GroupByGenerators(mingenset_k_reps),
-      "The algorithm is failing. (Computed generating set doesn't generate G)");
+    Assert(1,G = GroupByGenerators(mingenset_k_reps),"The algorithm is failing");
     return mingenset_k_reps;
 end);
 
