@@ -41,9 +41,7 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
     # I'll rely on MinimalGeneratingSet to do this.
     check := gx -> GbyGk = GroupByGenerators(ImagesSet(phi_GbyGk,gx));
     for k in [3..Length(cs)] do # Lifting
-      #mingenset_k_reps := mingenset_k_reps;
-      # We wish to compute mingenset_k_reps, the CR of MGS of GbyGk,
-      #given mingenset_k_reps, the CR of MGS of GbyGkm1 .
+      # We wish to compute the CR of MGS of GbyGk, given the CR of MGS of GbyGkm1 .
       phi_GbyGk := NaturalHomomorphismByNormalSubgroup(G,cs[k]);
       GbyGk := ImagesSource(phi_GbyGk);
       if check(mingenset_k_reps) then break; fi;
