@@ -946,6 +946,9 @@ dnl including pseudo TTY support, signals, etc.
 AC_CHECK_HEADERS([termios.h])
 AC_CHECK_HEADERS([sys/ioctl.h sys/resource.h])
 
+dnl check for ucontext for gasman
+AC_CHECK_HEADERS([ucontext.h])
+
 
 # openpty() is available on various BSD variants, but also in glibc.
 # On BSD systems, one usually needs to add -lutil to LIBS in order

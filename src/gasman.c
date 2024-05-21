@@ -129,6 +129,13 @@
 #include <setjmp.h>
 #include <string.h>
 
+#ifdef HAVE_UCONTEXT_H
+#ifdef __APPLE__
+#define _XOPEN_SOURCE 700
+#endif
+#include <ucontext.h>
+#endif
+
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
 #endif
@@ -1745,7 +1752,11 @@ UInt ResizeBag (
 **  jump buffer 'RegsBags', filled by the C library function 'setjmp', marking
 **  all bags  whose  identifiers appear in 'RegsBags'.  This  is a dirty hack,
 **  that need not work, but actually works on a  surprisingly large number of
-**  machines.  But it will not work on Sun  Sparc machines, which have larger
+**  machines. On Macs, the registers stored in setjmp are 'munged', so we also
+**  use 'getcontext', which provides similar functionality. We always look for
+**  values in both, as there is no harm in scanning both.
+**
+**  This does not work on Sun  Sparc machines, which have larger
 **  register  files, of which  only the part  visible to the current function
 **  will be saved  by  'setjmp'.  For those machines 'GenStackFuncBags' first
 **  calls the operating system to flush the whole register file.  Note that a
@@ -1893,6 +1904,10 @@ UInt ResizeBag (
 
 static jmp_buf RegsBags;
 
+#ifdef HAVE_UCONTEXT_H
+static ucontext_t RegsContextBags;
+#endif
+
 #if defined(SYS_IS_SPARC)
 static void SparcStackFuncBags(void)
 {
@@ -1939,7 +1954,7 @@ static NOINLINE void ScanRange(void * vpA, void * vpB)
 static NOINLINE void GenStackFuncBags(void)
 {
     Bag * top; // top of stack
-    Bag * p;   // loop variable
+    char * p;   // loop variable
 
 #ifdef DEBUG_GASMAN_MARKING
     DisableMarkBagValidation = 1;
@@ -1956,12 +1971,22 @@ static NOINLINE void GenStackFuncBags(void)
     ScanRange(StackBottomBags, top);
 
     // mark content of registers, dirty dirty hack: we treat the jmp_buf
-    // as a sequence of Bag values. Note that sizeof(jmp_buf) need not
+    // and ucontext_t. Note that their sizes need not
     // be a multiple of sizeof(Bag), hence the end condition looks
-    // slightly. unusual.
-    for (p = (Bag *)RegsBags;
-         p < (Bag *)((char *)RegsBags + sizeof(RegsBags)); p++)
-        MarkBag(*p, 0);
+    // slightly unusual.
+    for (p = (char*)&RegsBags;
+         p < ((char *)&RegsBags + sizeof(RegsBags) - (sizeof(Bag) - 1)); p++)
+        {
+            MarkBag(*(Bag*)p, 0);
+        }
+
+#ifdef HAVE_UCONTEXT_H
+    for (p = (char*)&RegsContextBags;
+         p < ((char*)&RegsContextBags + sizeof(RegsContextBags) - (sizeof(Bag) - 1)); p++)
+        {
+            MarkBag(*(Bag*)p, 0);
+        }
+#endif
 
 #ifdef DEBUG_GASMAN_MARKING
     DisableMarkBagValidation = 0;
@@ -1998,6 +2023,17 @@ static UInt CollectBags_Mark(UInt FullBags)
 
     // mark from the stack
     _setjmp(RegsBags);
+#ifdef HAVE_UCONTEXT_H
+// Disable deprecated warnings for getcontext
+#ifdef __GCC__
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
+    getcontext(&RegsContextBags);
+#endif
+
 #if defined(SYS_IS_SPARC)
     SparcStackFuncBags();
 #endif
