@@ -450,7 +450,7 @@ end);
 InstallMethod(SubgroupsOrbitsAndNormalizers,"perm group on list",true,
   [IsPermGroup,IsList,IsBool],0,
 function(G,dom,all)
-local n,l, o, b, t, r;
+local n,l, o, b, t, r,sub;
 
   if Length(dom)=0 then
     return dom;
@@ -463,8 +463,8 @@ local n,l, o, b, t, r;
   # new code -- without `all` option
 
   n:=Length(dom);
-  if n>20 and ForAll(dom,x->IsSubset(G,x))
-    and NrMovedPoints(G)>1000 then
+  sub:=ForAll(dom,x->IsSubset(G,x));
+  if n>20 and sub and NrMovedPoints(G)>1000 then
     #and NrMovedPoints(G)*1000>Size(G) then
 
     b:=SmallerDegreePermutationRepresentation(G:cheap);
@@ -476,6 +476,8 @@ local n,l, o, b, t, r;
       return dom;
     fi;
   fi;
+
+  if not sub then TryNextMethod();fi;
 
   l:=ClusterConjugacyPermgroups(G,ShallowCopy(dom));
   l:=RefineClusterConjugacyPermgroups(l);

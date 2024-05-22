@@ -458,7 +458,11 @@ function( pcgs, gens, imgs )
     if gens = AsList( pcgs ) then return [pcgs, imgs]; fi;
 
     #catch special case: abelian
-    nonab:=not IsAbelian(Group(pcgs,OneOfPcgs(pcgs)));
+    f:=ValueOption("abeliandomain");
+    if not (f in [true,false]) then
+      f:=IsAbelian(Group(pcgs,OneOfPcgs(pcgs)));
+    fi;
+    nonab:=not f;
 
     # get relative orders and composition length
     ro  := RelativeOrders(pcgs);
