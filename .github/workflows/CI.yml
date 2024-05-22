@@ -94,7 +94,7 @@ jobs:
             test-suites: "testpackages testinstall-loadall"
             extra: "ABI=32 NO_COVERAGE=1"
 
-          # this job also tests GAP without readline
+          # this job also tests GAP without readline and gmp
           - os: macos-latest
             shell: bash
             test-suites: "testmockpkg testinstall"
@@ -228,8 +228,9 @@ jobs:
                    fi
                    sudo apt-get update
                    sudo apt-get install --no-install-recommends "${packages[@]}"
+                   sudo apt-get install pkg-config
                elif [ "$RUNNER_OS" == "macOS" ]; then
-                   brew install gmp zlib
+                   brew install autoconf zlib pkg-config
                fi
                python -m pip install gcovr
 
