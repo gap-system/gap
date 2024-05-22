@@ -214,13 +214,13 @@ function(G)
      CanEasilyComputePcgs(G) then
     # discovered solvable -- redo
     return MinimalGeneratingSet(G);
-  else
-    Error(
-  "`MinimalGeneratingSet' currently assumes that the group is solvable, or\n",
-  "already possesses a generating set of size 2.\n",
-  "In general, try `SmallGeneratingSet' instead, which returns a generating\n",
-  "set that is small but not of guaranteed smallest cardinality");
+  elif not IsSolvableGroup(G) then
+    if IsGroup(G) and (not IsCyclic(G)) and HasGeneratorsOfGroup(G)
+        and Length(GeneratorsOfGroup(G)) = 2 then
+      return GeneratorsOfGroup(G);
+    fi;
   fi;
+  TryNextMethod();
 end);
 
 #############################################################################
@@ -232,11 +232,12 @@ InstallOtherMethod(MinimalGeneratingSet,"fallback method to inform user",true,
 function(G)
   if IsGroup(G) and IsSolvableGroup(G) then
     TryNextMethod();
-  elif IsGroup(G) and IsFinite(G) then
-    return MinimalGeneratingSetUsingChiefSeries(G);
   else
-    Error("MinimalGeneratingSet assumes that input group is",
-    "finite or solvable or already has a generating set of 2 elements");
+    Error(
+  "`MinimalGeneratingSet' currently assumes that the group is solvable, or\n",
+  "already possesses a generating set of size 2.\n",
+  "In general, try `SmallGeneratingSet' instead, which returns a generating\n",
+  "set that is small but not of guaranteed smallest cardinality");
   fi;
 end);
 
