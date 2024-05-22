@@ -214,13 +214,13 @@ function(G)
      CanEasilyComputePcgs(G) then
     # discovered solvable -- redo
     return MinimalGeneratingSet(G);
-  elif not IsSolvableGroup(G) then
-    if IsGroup(G) and (not IsCyclic(G)) and HasGeneratorsOfGroup(G)
-        and Length(GeneratorsOfGroup(G)) = 2 then
-      return GeneratorsOfGroup(G);
-    fi;
+  else
+    Error(
+  "`MinimalGeneratingSet' currently assumes that the group is solvable, or\n",
+  "already possesses a generating set of size 2.\n",
+  "In general, try `SmallGeneratingSet' instead, which returns a generating\n",
+  "set that is small but not of guaranteed smallest cardinality");
   fi;
-  TryNextMethod();
 end);
 
 #############################################################################
