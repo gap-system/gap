@@ -40,15 +40,15 @@
 #include <unistd.h>
 
 #include <julia.h>
-#include <julia_threads.h>  // for jl_get_ptls_states
 #include <julia_gcext.h>
+#include <julia_threads.h>    // for jl_get_ptls_states
 
-// fill in the data "behind" bags
-struct OpaqueBag {
-    void * body;
-};
-GAP_STATIC_ASSERT(sizeof(void *) == sizeof(struct OpaqueBag),
-                  "sizeof(OpaqueBag) is wrong");
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR == 7
+// workaround issue with Julia 1.7 headers which "forgot" to export this
+// function
+JL_DLLEXPORT void * jl_get_ptls_states(void);
+#endif
+
 
 /****************************************************************************
 **
@@ -83,17 +83,47 @@ GAP_STATIC_ASSERT(sizeof(void *) == sizeof(struct OpaqueBag),
 // the GAP.jl package.
 // #define USE_GAP_INSIDE_JULIA
 
-// Comparing pointers in C without triggering undefined behavior
-// can be difficult. As the GC already assumes that the memory
-// range goes from 0 to 2^k-1 (region tables), we simply convert
-// to uintptr_t and compare those.
-//
 #ifdef SKIP_GUARD_PAGES
 #include <pthread.h>
 #endif
 
+
+/****************************************************************************
+**
+**  Type declarations
+*/
+
+// fill in the data "behind" bags
+struct OpaqueBag {
+    void * body;
+};
+GAP_STATIC_ASSERT(sizeof(void *) == sizeof(struct OpaqueBag),
+                  "sizeof(OpaqueBag) is wrong");
+
+// internal helper struct passed on to `MarkBag` methods
+typedef struct {
+    jl_ptls_t ptls;
+    UInt      youngRef;
+} MarkData;
+
+
+/****************************************************************************
+**
+**  PtrArray  (declared indirectly by dynarray.h)
+**
+**  Used by the task stack scanning code to keep track of all (potential)
+**  GapObj pointers found in a stack. This is kept in an array so it can
+**  be reused if a task stack has to be scanned again but is provably
+**  unchanged.
+*/
+typedef void * Ptr;
+
 static inline int cmp_ptr(void * p, void * q)
 {
+    // Comparing pointers in C without triggering undefined behavior
+    // can be difficult. As the GC already assumes that the memory
+    // range goes from 0 to 2^k-1 (region tables), we simply convert
+    // to uintptr_t and compare those.
     uintptr_t paddr = (uintptr_t)p;
     uintptr_t qaddr = (uintptr_t)q;
     if (paddr < qaddr)
@@ -104,18 +134,85 @@ static inline int cmp_ptr(void * p, void * q)
         return 0;
 }
 
-static inline int lt_ptr(void * a, void * b)
+#define ELEM_TYPE Ptr
+#define COMPARE cmp_ptr
+
+#include "dynarray.h"
+
+
+/****************************************************************************
+**
+**  TaskInfoTree
+**
+**  Used by the task stack scanning code to keep track of all tasks whose
+**  stacks have been scanned; for each task we store a PtrArray collecting
+**  all the (potential) GapObj pointers found in that task's stack.
+**
+**  TODO: what if a task is GCed, do we ever free the corresponding struct?
+**  Otherwise we have a leak.
+**  TODO: if a task is GCed and then later the same memory location is reused
+**  for a stack, are we safe?
+*/
+typedef struct {
+    jl_task_t * task;
+    PtrArray *  stack;
+} TaskInfo;
+
+static int CmpTaskInfo(TaskInfo i1, TaskInfo i2)
 {
-    return (uintptr_t)a < (uintptr_t)b;
+    return cmp_ptr(i1.task, i2.task);
 }
 
-// align pointer to full word if mis-aligned
-static inline void * align_ptr(void * p)
-{
-    uintptr_t u = (uintptr_t)p;
-    u &= ~(sizeof(p) - 1);
-    return (void *)u;
-}
+#define ELEM_TYPE TaskInfo
+#define COMPARE CmpTaskInfo
+
+#include "baltree.h"
+
+
+/****************************************************************************
+**
+**  Global variables
+*/
+
+// the Julia types for GapObj (= master pointer)
+// and small/large bags
+static jl_datatype_t * DatatypeGapObj;
+static jl_datatype_t * DatatypeSmallBag;
+static jl_datatype_t * DatatypeLargeBag;
+
+static size_t MaxPoolObjSize;
+static int    FullGC;
+static UInt   StartTime, TotalTime;
+
+#ifdef SKIP_GUARD_PAGES
+static size_t GuardPageSize;
+#endif
+
+#if !defined(USE_GAP_INSIDE_JULIA)
+static Bag *       GapStackBottom;
+static jl_task_t * RootTaskOfMainThread;
+#endif
+
+static TNumExtraMarkFuncBags ExtraMarkFuncBags;
+
+static TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
+
+// HACK: TabMarkFuncBags is accessed by MarkCopyingSubBags in src/objects.c
+TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
+
+static TaskInfoTree * task_stacks;
+
+//
+// global bags
+//
+#ifndef NR_GLOBAL_BAGS
+#define NR_GLOBAL_BAGS 20000L
+#endif
+
+static Bag *        GlobalAddr[NR_GLOBAL_BAGS];
+static const Char * GlobalCookie[NR_GLOBAL_BAGS];
+static Int          GlobalCount;
+
 
 #ifndef REQUIRE_PRECISE_MARKING
 
@@ -142,85 +239,6 @@ static UInt MarkCacheHits, MarkCacheAttempts, MarkCacheCollisions;
 #endif
 
 #endif
-
-static inline Bag * DATA(BagHeader * bag)
-{
-    return (Bag *)(((char *)bag) + sizeof(BagHeader));
-}
-
-static inline void SET_PTR_BAG(Bag bag, Bag *val)
-{
-    GAP_ASSERT(bag != 0);
-    bag->body = val;
-}
-
-static TNumExtraMarkFuncBags ExtraMarkFuncBags;
-
-void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
-{
-    ExtraMarkFuncBags = func;
-}
-
-
-/****************************************************************************
-**
-*F  InitFreeFuncBag(<type>,<free-func>)
-*/
-
-static TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
-
-void InitFreeFuncBag(UInt type, TNumFreeFuncBags finalizer_func)
-{
-    TabFreeFuncBags[type] = finalizer_func;
-}
-
-static void JFinalizer(jl_value_t * obj)
-{
-    BagHeader * hdr = (BagHeader *)obj;
-    Bag         contents = (Bag)(hdr + 1);
-    UInt        tnum = hdr->type;
-
-    // if a bag needing a finalizer is retyped to a new tnum which no longer
-    // needs one, it may happen that JFinalize is called even though
-    // TabFreeFuncBags[tnum] is NULL
-    if (TabFreeFuncBags[tnum])
-        TabFreeFuncBags[tnum]((Bag)&contents);
-}
-
-static jl_datatype_t * DatatypeGapObj;
-static jl_datatype_t * DatatypeSmallBag;
-static jl_datatype_t * DatatypeLargeBag;
-#if !defined(USE_GAP_INSIDE_JULIA)
-static Bag *           GapStackBottom;
-static jl_task_t *     RootTaskOfMainThread;
-#endif
-static size_t          MaxPoolObjSize;
-static int             FullGC;
-static UInt            StartTime, TotalTime;
-
-typedef struct {
-    jl_ptls_t ptls;
-    UInt youngRef;
-} MarkData;
-
-#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR == 7
-JL_DLLEXPORT void *jl_get_ptls_states(void);
-#endif
-
-typedef void * Ptr;
-
-#define ELEM_TYPE Ptr
-#define COMPARE cmp_ptr
-
-#include "dynarray.h"
-
-#ifndef NR_GLOBAL_BAGS
-#define NR_GLOBAL_BAGS 20000L
-#endif
-
-static Bag *        GlobalAddr[NR_GLOBAL_BAGS];
-static const Char * GlobalCookie[NR_GLOBAL_BAGS];
-static Int          GlobalCount;
 
 
 /****************************************************************************
@@ -262,15 +280,6 @@ static void MarkAllSubBagsDefault(Bag bag, void * ref)
     MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag), ref);
 }
 
-TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
-
-void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
-{
-    // HOOK: set mark function for type `type`.
-    GAP_ASSERT(TabMarkFuncBags[type] == MarkAllSubBagsDefault);
-    TabMarkFuncBags[type] = mark_func;
-}
-
 static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty)
 {
     // only traverse objects internally used by GAP
@@ -294,7 +303,7 @@ static inline int JMark(jl_ptls_t ptls, void * obj)
     return jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
 }
 
-// the following is used by JuliaInterface
+// helper called directly by GAP.jl / JuliaInterface
 void MarkJuliaObjSafe(void * obj, void * ref)
 {
     if (!obj)
@@ -311,12 +320,22 @@ void MarkJuliaObjSafe(void * obj, void * ref)
         ((MarkData *)ref)->youngRef++;
 }
 
-// the following is used by JuliaInterface
+// helper called directly by GAP.jl / JuliaInterface
 void MarkJuliaObj(void * obj, void * ref)
 {
     if (!obj)
         return;
     if (JMark(((MarkData *)ref)->ptls, obj))
+        ((MarkData *)ref)->youngRef++;
+}
+
+// helper called by MarkWeakPointerObj
+void MarkJuliaWeakRef(void * p, void * ref)
+{
+    // If `jl_nothing` gets passed in as an argument, it will not
+    // be marked. This is harmless, because `jl_nothing` will always
+    // be live regardless.
+    if (JMarkTyped(((MarkData *)ref)->ptls, p, jl_weakref_type))
         ((MarkData *)ref)->youngRef++;
 }
 
@@ -388,6 +407,19 @@ static void TryMark(jl_ptls_t ptls, void * p)
     }
 }
 
+static inline int lt_ptr(void * a, void * b)
+{
+    return (uintptr_t)a < (uintptr_t)b;
+}
+
+// align pointer to full word if mis-aligned
+static inline void * align_ptr(void * p)
+{
+    uintptr_t u = (uintptr_t)p;
+    u &= ~(sizeof(p) - 1);
+    return (void *)u;
+}
+
 static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
 {
     if (lt_ptr(end, start)) {
@@ -405,42 +437,16 @@ static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
     }
 }
 
-typedef struct {
-    jl_task_t * task;
-    PtrArray *  stack;
-} TaskInfo;
-
-static int CmpTaskInfo(TaskInfo i1, TaskInfo i2)
-{
-    return cmp_ptr(i1.task, i2.task);
-}
-
-static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
-{
-    for (Int i = 0; i < arr->len; i++) {
-        JMark(ptls, arr->items[i]);
-    }
-}
-
-#define ELEM_TYPE TaskInfo
-#define COMPARE CmpTaskInfo
-
-#include "baltree.h"
-
-static TaskInfoTree * task_stacks = NULL;
-
 #ifdef SKIP_GUARD_PAGES
 
-static size_t guardpages_size;
-
-void SetupGuardPagesSize(void)
+static void SetupGuardPagesSize(void)
 {
     // This is a generic implementation that assumes that all threads
     // have the default guard pages. This should be correct for the
     // current Julia implementation.
     pthread_attr_t attr;
     pthread_attr_init(&attr);
-    if (pthread_attr_getguardsize(&attr, &guardpages_size) < 0) {
+    if (pthread_attr_getguardsize(&attr, &GuardPageSize) < 0) {
         perror("Julia GC initialization: pthread_attr_getguardsize");
         abort();
     }
@@ -456,13 +462,13 @@ static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
     FindLiveRangeReverse(stack, start, end);
 #else
     volatile jl_jmp_buf * old_safe_restore = jl_get_safe_restore();
-    jl_jmp_buf exc_buf;
+    jl_jmp_buf            exc_buf;
     if (!jl_setjmp(exc_buf, 0)) {
         // The start of the stack buffer may be protected with guard
         // pages; accessing these results in segmentation faults.
         // Julia catches those segmentation faults and longjmps to
-        // a safe_restore function pointer; we use this mechanism to abort stack
-        // scanning when a protected page is hit. For this to work, we
+        // a safe_restore function pointer; we use this mechanism to abort
+        // stack scanning when a protected page is hit. For this to work, we
         // must scan the stack from the end of the stack buffer towards
         // the start (i.e. in the direction in which the stack grows).
         // Note that this will by necessity also scan the unused area
@@ -473,6 +479,13 @@ static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
     }
     jl_set_safe_restore((jl_jmp_buf *)old_safe_restore);
 #endif
+}
+
+static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
+{
+    for (Int i = 0; i < arr->len; i++) {
+        JMark(ptls, arr->items[i]);
+    }
 }
 
 static void
@@ -534,19 +547,10 @@ static NOINLINE void TryMarkRange(jl_ptls_t ptls, void * start, void * end)
     }
 }
 
-BOOL IsGapObj(void * p)
-{
-    return jl_typeis(p, DatatypeGapObj);
-}
-
-void CHANGED_BAG(Bag bag)
-{
-    jl_gc_wb_back(BAG_HEADER(bag));
-}
-
+// Julia callback
 static void GapRootScanner(int full)
 {
-    jl_ptls_t   ptls  = jl_get_ptls_states();
+    jl_ptls_t   ptls = jl_get_ptls_states();
     jl_task_t * task = (jl_task_t *)jl_get_current_task();
     size_t      size;
     int         tid;    // unused
@@ -597,6 +601,7 @@ static void GapRootScanner(int full)
     }
 }
 
+// Julia callback
 static void GapTaskScanner(jl_task_t * task, int root_task)
 {
     // If it is the current task, it has been scanned by GapRootScanner()
@@ -621,15 +626,16 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
             rescan = 0;
     }
 
-    char * active_start, * active_end, * total_start, * total_end;
-    jl_active_task_stack(task, &active_start, &active_end, &total_start, &total_end);
+    char *active_start, *active_end, *total_start, *total_end;
+    jl_active_task_stack(task, &active_start, &active_end, &total_start,
+                         &total_end);
 
     if (active_start) {
 #ifdef SKIP_GUARD_PAGES
         if (total_start == active_start && total_end == active_end) {
             // The "active" range is actually the entire stack buffer
             // and may include guard pages at the start.
-            active_start += guardpages_size;
+            active_start += GuardPageSize;
         }
 #endif
 #if !defined(USE_GAP_INSIDE_JULIA)
@@ -646,11 +652,7 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
     }
 }
 
-UInt TotalGCTime(void)
-{
-    return TotalTime;
-}
-
+// Julia callback
 static void PreGCHook(int full)
 {
     FullGC = full;
@@ -673,6 +675,7 @@ static void PreGCHook(int full)
 #endif
 }
 
+// Julia callback
 static void PostGCHook(int full)
 {
     TotalTime += SyTime() - StartTime;
@@ -716,6 +719,21 @@ static uintptr_t BagMarkFunc(jl_ptls_t ptls, jl_value_t * obj)
     return ref.youngRef;
 }
 
+// the Julia finalizer function for bags
+static void JFinalizer(jl_value_t * obj)
+{
+    BagHeader * hdr = (BagHeader *)obj;
+    Bag         contents = (Bag)(hdr + 1);
+    UInt        tnum = hdr->type;
+
+    // if a bag needing a finalizer is retyped to a new tnum which no longer
+    // needs one, it may happen that JFinalize is called even though
+    // TabFreeFuncBags[tnum] is NULL
+    if (TabFreeFuncBags[tnum])
+        TabFreeFuncBags[tnum]((Bag)&contents);
+}
+
+// helper called directly by GAP.jl (if HAVE_JL_REINIT_FOREIGN_TYPE is on)
 jl_datatype_t * GAP_DeclareGapObj(jl_sym_t *      name,
                                   jl_module_t *   module,
                                   jl_datatype_t * parent)
@@ -724,6 +742,7 @@ jl_datatype_t * GAP_DeclareGapObj(jl_sym_t *      name,
                                0);
 }
 
+// helper called directly by GAP.jl (if HAVE_JL_REINIT_FOREIGN_TYPE is on)
 jl_datatype_t * GAP_DeclareBag(jl_sym_t *      name,
                                jl_module_t *   module,
                                jl_datatype_t * parent,
@@ -815,6 +834,11 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     jl_set_const(module, name, (jl_value_t *)DatatypeLargeBag);
 }
 
+/****************************************************************************
+**
+**  GAP resp. GASMAN APIs
+*/
+
 void InitBags(UInt initial_size, Bag * stack_bottom)
 {
     TotalTime = 0;
@@ -832,6 +856,55 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
     if (!IsUsingLibGap())
         RootTaskOfMainThread = (jl_task_t *)jl_get_current_task();
 #endif
+}
+
+void SetExtraMarkFuncBags(TNumExtraMarkFuncBags func)
+{
+    ExtraMarkFuncBags = func;
+}
+
+void InitMarkFuncBags(UInt type, TNumMarkFuncBags mark_func)
+{
+    // HOOK: set mark function for type `type`.
+    GAP_ASSERT(TabMarkFuncBags[type] == MarkAllSubBagsDefault);
+    TabMarkFuncBags[type] = mark_func;
+}
+
+void InitFreeFuncBag(UInt type, TNumFreeFuncBags finalizer_func)
+{
+    TabFreeFuncBags[type] = finalizer_func;
+}
+
+void InitGlobalBag(Bag * addr, const Char * cookie)
+{
+    // HOOK: Register global root.
+    GAP_ASSERT(GlobalCount < NR_GLOBAL_BAGS);
+    GlobalAddr[GlobalCount] = addr;
+    GlobalCookie[GlobalCount] = cookie;
+    GlobalCount++;
+}
+
+UInt TotalGCTime(void)
+{
+    return TotalTime;
+}
+
+BOOL IsGapObj(void * p)
+{
+    return jl_typeis(p, DatatypeGapObj);
+}
+
+void CHANGED_BAG(Bag bag)
+{
+    jl_gc_wb_back(BAG_HEADER(bag));
+}
+
+void SwapMasterPoint(Bag bag1, Bag bag2)
+{
+    SWAP(UInt *, bag1->body, bag2->body);
+
+    jl_gc_wb((void *)bag1, BAG_HEADER(bag1));
+    jl_gc_wb((void *)bag2, BAG_HEADER(bag2));
 }
 
 UInt CollectBags(UInt size, UInt full)
@@ -892,7 +965,7 @@ void RetypeBagIntern(Bag bag, UInt new_type)
 
 Bag NewBag(UInt type, UInt size)
 {
-    Bag  bag; // identifier of the new bag
+    Bag  bag;    // identifier of the new bag
     UInt alloc_size;
 
     alloc_size = sizeof(BagHeader) + size;
@@ -913,17 +986,15 @@ Bag NewBag(UInt type, UInt size)
     jl_ptls_t ptls = jl_get_ptls_states();
 
     bag = jl_gc_alloc_typed(ptls, sizeof(void *), DatatypeGapObj);
-    SET_PTR_BAG(bag, 0);
+    bag->body = 0;
 
     BagHeader * header = AllocateBagMemory(ptls, type, alloc_size);
-
     header->type = type;
     header->flags = 0;
     header->size = size;
 
-
     // change the masterpointer to reference the new bag memory
-    SET_PTR_BAG(bag, DATA(header));
+    bag->body = header + 1;
     jl_gc_wb_back((void *)bag);
 
     // return the identifier of the new bag
@@ -950,13 +1021,14 @@ UInt ResizeBag(Bag bag, UInt new_size)
             alloc_size++;
 
         // allocate new bag
-        header = AllocateBagMemory(jl_get_ptls_states(), header->type, alloc_size);
+        jl_ptls_t ptls = jl_get_ptls_states();
+        header = AllocateBagMemory(ptls, header->type, alloc_size);
 
         // copy bag header and data, and update size
         memcpy(header, BAG_HEADER(bag), sizeof(BagHeader) + old_size);
 
         // update the master pointer
-        SET_PTR_BAG(bag, DATA(header));
+        bag->body = header + 1;
         jl_gc_wb_back((void *)bag);
     }
 
@@ -965,25 +1037,6 @@ UInt ResizeBag(Bag bag, UInt new_size)
 
     return 1;
 }
-
-void InitGlobalBag(Bag * addr, const Char * cookie)
-{
-    // HOOK: Register global root.
-    GAP_ASSERT(GlobalCount < NR_GLOBAL_BAGS);
-    GlobalAddr[GlobalCount] = addr;
-    GlobalCookie[GlobalCount] = cookie;
-    GlobalCount++;
-}
-
-void SwapMasterPoint(Bag bag1, Bag bag2)
-{
-    SWAP(UInt *, bag1->body, bag2->body);
-
-    jl_gc_wb((void *)bag1, BAG_HEADER(bag1));
-    jl_gc_wb((void *)bag2, BAG_HEADER(bag2));
-}
-
-// HOOK: mark functions
 
 inline void MarkBag(Bag bag, void * ref)
 {
@@ -1034,13 +1087,4 @@ inline void MarkBag(Bag bag, void * ref)
     case 3:
         break;
     }
-}
-
-void MarkJuliaWeakRef(void * p, void * ref)
-{
-    // If `jl_nothing` gets passed in as an argument, it will not
-    // be marked. This is harmless, because `jl_nothing` will always
-    // be live regardless.
-    if (JMarkTyped(((MarkData *)ref)->ptls, p, jl_weakref_type))
-        ((MarkData *)ref)->youngRef++;
 }
