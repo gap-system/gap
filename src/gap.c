@@ -1536,3 +1536,22 @@ void InitializeGap (
     }
 
 }
+
+int gasman_check_do_call(int a, int b, int c, int d, int e, int f, int g);
+void gasman_check_gc(void);
+
+// The following function is used as part of GASMAN's sanity check.
+// It is placed here, rather than in gasman.c, to avoid it being considered
+// for inlining
+NOINLINE void gasman_check_fill_registers(int a, int b, int c, int d, int e, int f, int g) {
+    int a1 = a*b+1;
+    int b1 = b*c+2;
+    int c1 = a*d+3;
+    int d1 = b*d+4;
+    int e1 = e*g+5;
+    int f1 = f*g+6;
+    int g1 = a*g+7;
+    gasman_check_do_call(a1,b1,c1,d1,e1,f1,g1);
+    gasman_check_gc();
+    gasman_check_do_call(a1,b1,c1,d1,e1,f1,g1);
+}

@@ -1273,9 +1273,11 @@ void SetStackBottomBags(void * StackBottom)
     StackBottomBags = StackBottom;
 }
 
+void gasman_check_fill_registers(int a, int b, int c, int d, int e, int f, int g);
 
 void InitBags(UInt initial_size, Bag * stack_bottom)
 {
+
     ClearGlobalBags();
 
     // install the allocator and the abort function
@@ -1323,6 +1325,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
 
     GAP_ASSERT(SanityCheckGasmanPointers());
     CANARY_FORBID_ACCESS_ALL_BAGS();
+    gasman_check_fill_registers(100,100,100,100,100,100,100);
 }
 
 
@@ -2629,4 +2632,55 @@ void SwapMasterPoint(Bag bag1, Bag bag2)
     // Now swap links, so in the end the list will go
     // through the bags in the same order.
     SWAP(Bag, LINK_BAG(bag1), LINK_BAG(bag2));
+}
+
+
+// The following code is used only used to check if GASMAN's code for stack scanning
+// is working correctly.
+int gasman_check_do_call(int a, int b, int c, int d, int e, int f, int g)
+{ // Do a bit of work, to fill some registers
+    int x1 = a*b;
+    int x2 = c/d;
+    int x3 = e*f;
+    int x4 = f*g;
+    int x5 = x3 - x1^x2;
+    int x6 = x2 / x5;
+    int x7 = x4 - x2^x5;
+    return x1+x2+x3+x4+x5+x6+x7;
+}
+
+static jmp_buf gasman_check_jbuf;
+
+#include <stdio.h>
+
+void gasman_check_do_scan(void) {
+    int top = 1;
+    char* stack_top = (char*)&top;
+    for(int i = 100*100+1; i <= 100*100+7; ++i) {
+        int found = 0;
+        for(char* p = (char*)stack_top; p < (char*)StackBottomBags; ++p) {
+            if(*(int*)p == i) {
+                //printf("Found %d on stack\n", i);
+                found = 1;
+            }
+        }
+
+        for(char* p = (char*)gasman_check_jbuf; p < (char*)gasman_check_jbuf + sizeof(gasman_check_jbuf); ++p) {
+            if(*(int*)p == i) {
+                //printf("Found %d in the jmpbuf\n", i);
+                found = 1;
+            }
+        }
+
+        if(!found) {
+            printf("FATAL: Did not find %d. GASMAN is broken\n", i);
+        }
+    }
+}
+
+void gasman_check_gc(void)
+{
+    setjmp(gasman_check_jbuf);
+
+    gasman_check_do_scan();
 }
