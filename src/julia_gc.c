@@ -564,13 +564,12 @@ static void GapRootScanner(int full)
 {
     jl_ptls_t   ptls = jl_get_ptls_states();
     jl_task_t * task = (jl_task_t *)jl_get_current_task();
-    size_t      size;
-    int         tid;    // unused
+
     // We figure out the end of the stack from the current task. While
     // `stack_bottom` is passed to InitBags(), we cannot use that if
     // current_task != root_task.
-    char * stackend = (char *)jl_task_stack_buffer(task, &size, &tid);
-    stackend += size;
+    char *dummy, *stackend;
+    jl_active_task_stack(task, &dummy, &dummy, &dummy, &stackend);
 
 #if !defined(USE_GAP_INSIDE_JULIA)
     // The following test overrides the stackend if the following two
