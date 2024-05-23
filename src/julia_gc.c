@@ -49,6 +49,10 @@
 JL_DLLEXPORT void * jl_get_ptls_states(void);
 #endif
 
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR >= 10
+#define JULIA_MULTIPLE_GC_THREADS_SUPPORTED
+#endif
+
 
 /****************************************************************************
 **
@@ -200,7 +204,10 @@ static TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
 // HACK: TabMarkFuncBags is accessed by MarkCopyingSubBags in src/objects.c
 TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
 
-static TaskInfoTree * task_stacks;
+static TaskInfoTree * TaskStacks;
+#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
+static pthread_mutex_t TaskStacksMutex;
+#endif
 
 //
 // global bags
@@ -491,11 +498,12 @@ static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
 static void
 ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
 {
-    if (!task_stacks) {
-        task_stacks = TaskInfoTreeMake();
-    }
+#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
+    if (jl_n_gcthreads > 1)
+        pthread_mutex_lock(&TaskStacksMutex);
+#endif
     TaskInfo   tmp = { task, NULL };
-    TaskInfo * taskinfo = TaskInfoTreeFind(task_stacks, tmp);
+    TaskInfo * taskinfo = TaskInfoTreeFind(TaskStacks, tmp);
     PtrArray * stack;
     if (taskinfo != NULL) {
         stack = taskinfo->stack;
@@ -505,8 +513,12 @@ ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
     else {
         tmp.stack = PtrArrayMake(1024);
         stack = tmp.stack;
-        TaskInfoTreeInsert(task_stacks, tmp);
+        TaskInfoTreeInsert(TaskStacks, tmp);
     }
+#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
+    if (jl_n_gcthreads > 1)
+        pthread_mutex_unlock(&TaskStacksMutex);
+#endif
     if (rescan) {
         SafeScanTaskStack(stack, start, end);
         // Remove duplicates
@@ -778,6 +790,12 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
 #ifdef SKIP_GUARD_PAGES
     SetupGuardPagesSize();
 #endif
+
+#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
+    if (jl_n_gcthreads > 1)
+        pthread_mutex_init(&TaskStacksMutex, NULL);
+#endif
+    TaskStacks = TaskInfoTreeMake();
 
     // These callbacks potentially require access to the Julia
     // TLS and thus need to be installed after initialization.
