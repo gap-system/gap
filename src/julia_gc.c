@@ -59,10 +59,6 @@ JL_DLLEXPORT void * jl_get_ptls_states(void);
 **  Various options controlling special features of the Julia GC code follow
 */
 
-// if SKIP_GUARD_PAGES is set, stack scanning will attempt to determine
-// the extent of any guard pages and skip them if needed.
-// #define SKIP_GUARD_PAGES
-
 // if REQUIRE_PRECISE_MARKING is defined, we assume that all marking
 // functions are precise, i.e., they only invoke MarkBag on valid bags,
 // immediate objects or NULL pointers, but not on any other random data
@@ -86,10 +82,6 @@ JL_DLLEXPORT void * jl_get_ptls_states(void);
 // to make julia-inside-gap work are disabled. This is mainly for use in
 // the GAP.jl package.
 // #define USE_GAP_INSIDE_JULIA
-
-#ifdef SKIP_GUARD_PAGES
-#include <pthread.h>
-#endif
 
 
 /****************************************************************************
@@ -187,10 +179,6 @@ static jl_datatype_t * DatatypeLargeBag;
 static size_t MaxPoolObjSize;
 static int    FullGC;
 static UInt   StartTime, TotalTime;
-
-#ifdef SKIP_GUARD_PAGES
-static size_t GuardPageSize;
-#endif
 
 #if !defined(USE_GAP_INSIDE_JULIA)
 static Bag *       GapStackBottom;
@@ -444,30 +432,8 @@ static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
     }
 }
 
-#ifdef SKIP_GUARD_PAGES
-
-static void SetupGuardPagesSize(void)
-{
-    // This is a generic implementation that assumes that all threads
-    // have the default guard pages. This should be correct for the
-    // current Julia implementation.
-    pthread_attr_t attr;
-    pthread_attr_init(&attr);
-    if (pthread_attr_getguardsize(&attr, &GuardPageSize) < 0) {
-        perror("Julia GC initialization: pthread_attr_getguardsize");
-        abort();
-    }
-    pthread_attr_destroy(&attr);
-}
-
-#endif
-
-
 static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
 {
-#ifdef SKIP_GUARD_PAGES
-    FindLiveRangeReverse(stack, start, end);
-#else
     volatile jl_jmp_buf * old_safe_restore = jl_get_safe_restore();
     jl_jmp_buf            exc_buf;
     if (!jl_setjmp(exc_buf, 0)) {
@@ -485,7 +451,6 @@ static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
         FindLiveRangeReverse(stack, start, end);
     }
     jl_set_safe_restore((jl_jmp_buf *)old_safe_restore);
-#endif
 }
 
 static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
@@ -642,13 +607,6 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
                          &total_end);
 
     if (active_start) {
-#ifdef SKIP_GUARD_PAGES
-        if (total_start == active_start && total_end == active_end) {
-            // The "active" range is actually the entire stack buffer
-            // and may include guard pages at the start.
-            active_start += GuardPageSize;
-        }
-#endif
 #if !defined(USE_GAP_INSIDE_JULIA)
         if (task == RootTaskOfMainThread) {
             active_end = (char *)GapStackBottom;
@@ -784,10 +742,6 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     jl_gc_enable_conservative_gc_support();
 #if !defined(USE_GAP_INSIDE_JULIA)
     jl_init();
-#endif
-
-#ifdef SKIP_GUARD_PAGES
-    SetupGuardPagesSize();
 #endif
 
 #ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
