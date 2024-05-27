@@ -184,6 +184,8 @@ static jl_datatype_t * DatatypeGapObj;
 static jl_datatype_t * DatatypeSmallBag;
 static jl_datatype_t * DatatypeLargeBag;
 
+static jl_task_t * ScannedRootTask;
+
 static size_t MaxPoolObjSize;
 static int    FullGC;
 static UInt   StartTime, TotalTime;
@@ -565,6 +567,8 @@ static void GapRootScanner(int full)
     jl_ptls_t   ptls = jl_get_ptls_states();
     jl_task_t * task = (jl_task_t *)jl_get_current_task();
 
+    ScannedRootTask = task;
+
     // We figure out the end of the stack from the current task. While
     // `stack_bottom` is passed to InitBags(), we cannot use that if
     // current_task != root_task.
@@ -615,9 +619,8 @@ static void GapRootScanner(int full)
 // Julia callback
 static void GapTaskScanner(jl_task_t * task, int root_task)
 {
-    // If it is the current task, it has been scanned by GapRootScanner()
-    // already.
-    if (task == (jl_task_t *)jl_get_current_task())
+    // If this task has been scanned by GapRootScanner() already, skip it
+    if (task == ScannedRootTask)
         return;
 
     int rescan = 1;
@@ -689,6 +692,7 @@ static void PreGCHook(int full)
 // Julia callback
 static void PostGCHook(int full)
 {
+    ScannedRootTask = 0;
     TotalTime += SyTime() - StartTime;
 #ifdef COLLECT_MARK_CACHE_STATS
     /* printf("\n>>>Attempts: %ld\nHit rate: %lf\nCollision rate: %lf\n",
