@@ -150,7 +150,7 @@ CYCPOLCache.CPdiffodd := function(ps)
       blowup{iv} := blowup{iv} - c*a;
       iv := iv-1;
     od;
-    CYCPOLCache.(str) := res;
+    CYCPOLCache.(str) := Immutable(res);
     return res;
 end;
 InstallGlobalFunction( CyclotomicPol, function(n)
