@@ -32,7 +32,7 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
       GbyG1, # Quotient of G and 2nd group in its chief series
       phi_GbyGk, # Homomorphism for quotient group GbyG1
       phi_Gkm1byGk, # Homomorphism for quotient group Gkm1byGk
-      temp,i,j,l,L,x,xl,y,prev,gmod,N,g,g0,g1,s,r,stop,k;
+      temp,i,j,l,L,x,xl,prev,gmod,g,g0,g1,s,r,stop,k;
     if IsTrivial(G) then return []; fi;
     cs := ChiefSeries(G);
     phi_GbyG1 := NaturalHomomorphismByNormalSubgroup(G,cs[2]);
@@ -74,7 +74,7 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
       else
         Gkm1byGk_elem_reps := List(Enumerator(Gkm1byGk),x -> PreImagesRepresentative(phi_Gkm1byGk,x));
         g0 := ShallowCopy(mingenset_k_reps);
-        g1 := ShallowCopy(mingenset_k_reps);  
+        g1 := ShallowCopy(mingenset_k_reps);
         Add(g1,Gkm1byGk_elem_reps[1]);
         for g in [g0,g1] do
           if stop then break;fi;
