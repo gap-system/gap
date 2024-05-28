@@ -31,5 +31,5 @@ gap> CrossVerifyMinimalGeneratingSetUsingChiefSeries := function(startsize,endsi
 >     return "PASSED";
 > end;
 function( startsize, endsize ) ... end
-gap> CrossVerifyMinimalGeneratingSetUsingChiefSeries(1,10);
+gap> CrossVerifyMinimalGeneratingSetUsingChiefSeries(1,100);
 "PASSED"
