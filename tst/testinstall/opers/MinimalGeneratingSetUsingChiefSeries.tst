@@ -31,5 +31,15 @@ gap> CrossVerifyMinimalGeneratingSetUsingChiefSeries := function(startsize,endsi
 >     return "PASSED";
 > end;
 function( startsize, endsize ) ... end
-gap> CrossVerifyMinimalGeneratingSetUsingChiefSeries(1,100);
+gap> CrossVerifyMinimalGeneratingSetUsingChiefSeries(1,60);
 "PASSED"
+gap> CrossVerifyMinimalGeneratingSetUsingChiefSeries(115,125);
+"PASSED"
+gap> G := AlternatingGroup(5);
+Alt( [ 1 .. 5 ] )
+gap> G := DirectProduct(G,G);;
+gap> mu := MinimalGeneratingSetUsingChiefSeries(G);;
+gap> G = GroupByGenerators(mu);
+true
+gap> Length(mu);
+2
