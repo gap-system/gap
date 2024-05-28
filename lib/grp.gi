@@ -33,6 +33,7 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
       phi_GbyGk, # Homomorphism for quotient group GbyG1
       phi_Gkm1byGk, # Homomorphism for quotient group Gkm1byGk
       temp,i,j,l,L,x,xl,y,prev,gmod,N,g,g0,g1,s,r,stop,k;
+    if IsTrivial(G) then return []; fi;
     cs := ChiefSeries(G);
     phi_GbyG1 := NaturalHomomorphismByNormalSubgroup(G,cs[2]);
     GbyG1 := ImagesSource(phi_GbyG1);
@@ -44,7 +45,7 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
       # We wish to compute the CR of MGS of GbyGk, given the CR of MGS of GbyGkm1 .
       phi_GbyGk := NaturalHomomorphismByNormalSubgroup(G,cs[k]);
       GbyGk := ImagesSource(phi_GbyGk);
-      if check(mingenset_k_reps) then break; fi;
+      if check(mingenset_k_reps) then continue; fi;
       phi_Gkm1byGk := NaturalHomomorphismByNormalSubgroup(cs[k-1],cs[k]);
       Gkm1byGk := ImagesSource(phi_Gkm1byGk);
       Gkm1byGk_gen := SmallGeneratingSet(Gkm1byGk);
