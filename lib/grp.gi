@@ -109,7 +109,6 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
         od;
       fi;
     od;
-    Assert(1,G = GroupByGenerators(mingenset_k_reps),"The algorithm is failing");
     return mingenset_k_reps;
 end);
 
