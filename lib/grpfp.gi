@@ -260,14 +260,20 @@ BindGlobal( "MakeFpGroupCompMethod", function(CMP)
       com:=x->Image(hom,x);
     # if neither is known, try a faithful representation (forcing its
     # computation)
-    elif FPFaithHom(fam)<>fail then
-      hom:=FPFaithHom(fam);
-      com:=x->Image(hom,x);
-    #T Here one could try more elaborate things first
-    # otherwise force computation of a normal form.
     else
-      f:=FpElementNFFunction(fam);
-      com:=x->f(UnderlyingElement(x));
+      hom:= AttributeValueNotSet( FPFaithHom, fam );
+      if hom <> fail then
+        SetFPFaithHom( fam, hom );
+        com:=x->Image(hom,x);
+      #T Here one could try more elaborate things first
+      # otherwise force computation of a normal form.
+      else
+        f:=FpElementNFFunction(fam : CallFromMakeFpGroupCompMethod:= true);
+        com:=x->f(UnderlyingElement(x));
+        # Set the attribute value only *after* we are sure
+        # that the user has not interrupted the 'FpElementNFFunction' call.
+        SetFPFaithHom(fam, fail);
+      fi;
     fi;
     SetCanEasilyCompareElements(fam,true);
     SetCanEasilySortElements(fam,true);
@@ -5185,7 +5191,8 @@ InstallMethod(FpElementNFFunction,true,[IsElementOfFpGroupFamily],0,
 function(fam)
 local iso,k,id,f,ran,g;
   g:=CollectionsFamily(fam)!.wholeGroup;
-  if not (HasIsomorphismFpMonoid(g) and
+  if ValueOption( "CallFromMakeFpGroupCompMethod" ) <> true and
+    not (HasIsomorphismFpMonoid(g) and
     HasReducedConfluentRewritingSystem(Image(IsomorphismFpMonoid(g)))) then
     # first try whether the group is ``small''
     iso:=FPFaithHom(fam);
