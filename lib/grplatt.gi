@@ -3654,6 +3654,139 @@ function(G)
   return DoMinimalFaithfulPermutationDegree(G,true);
 end);
 
+BindGlobal("MinimalFaithfulPermutationDegreeOfSimpleGroup",
+function (G)
+    local
+        series,       # series of simple groups
+        parameter,    # parameters of G in series
+        info,         # information regarding type of simple group
+        d,            # mostly the dimension of vector space for classical groups
+        q,            # elements in the field over which group is define
+        m,            # first parameter
+        b,
+        name,
+        SporDegs,     # The Minimal Permutation Degrees for sporadic groups
+        deg;
+
+    info := IsomorphismTypeInfoFiniteSimpleGroup(G);
+    series := info.series;
+
+    if series = "Spor" then
+        name := info.shortname;
+        SporDegs := [
+            ["M11",11],
+            ["M12",12],
+            ["M22",22],
+            ["M23",23],
+            ["M24",24],
+            ["Co1",98280],
+            ["Co2",2300],
+            ["Co3",276],
+            ["McL",275],
+            ["HS",100],
+            ["Suz",1782],
+            ["Fi22",3510],
+            ["Fi23",31671],
+            ["Fi24",306936],
+            ["M",97239461142009186000],
+            ["B",13571955000],
+            ["Th",143127000],
+            ["HN",1140000],
+            ["He",2058],
+            ["J1",266],
+            ["J2",100],
+            ["J3",6156],
+            ["J4",173067389],
+            ["ON",122760],
+            ["Ly",8835156],
+            ["Ru",4060]
+        ];
+        for deg in SporDegs do 
+            if deg[1] = name then return deg[2]; fi;
+        od;
+    else
+        parameter := info.parameter;
+        if IsList(parameter) then
+            q := parameter[2];
+            m := parameter[1];
+        else q := parameter; fi;
+    fi;
+    if series = "Z" then
+        return q;
+    elif series = "A" then # Alt
+        return q;
+    elif series = "L" then # PSL
+        d := m;
+        if (d = 4 and q = 2) then return 8; fi;
+        if d = 2 then
+            if q = 9 then return 6; fi;
+            if q in [5,7,11] then return q; fi;
+        fi;
+        return (q^d-1)/(q-1);
+    elif series = "2A" then # PSU
+        d := m + 1;
+        if d = 3 and q = 5 then return 50; fi;
+        if d = 3 then return q^3 + 1; fi;
+        if d = 4 then return (q+1)*(q^3 + 1); fi;
+        if d mod 2 = 0 and q = 2 then return (2^(d-1)*(2^d - 1))/3; fi;
+        return ((q^d - (-1)^d)*(q^(d-1) + (-1)^d))/(q^2-1);
+    elif series = "B" then # P\Omega or O
+        d := 2*m +1;
+        if q = 3 and m > 2 then return (3^m)*(3^m - 1)/2; fi;
+        if q > 4 and m > 2 then return (q^(2*m)-1)/(q-1); fi;
+        #Special case : B(2,3) ~ 2A(3,2) = PSU(4,2)
+        if q = 3 and m = 2 then return 27;fi;
+        # B(2,2) is not a simple group.
+        #Special case : B(2,q) ~ C(2,q) = PSp(4,q)
+        if m=2 then return (q^(2*m) -1)/(q-1);fi;
+        #Special case : B(m,2) ~ C(m,2) = PSp(2*m,2)
+        if q = 2 then return (2^(m-1))*(2^m -1); fi;
+    elif series = "2B" then # Sz or _2 B^2
+        if 2^(Log2Int(q)) = q and Log2Int(q) mod 2 = 1 then
+            return q^2 + 1;
+        fi;
+    elif series = "C" then # PSp
+        d := 2*m;
+        if d=4 and q=2 then return 6;fi;
+        if d=4 and q=3 then return 27;fi;
+        if m>2 and q=2 then return (2^(m-1))*(2^m -1);fi;
+        if m>1 and q>2 then return (q^d -1)/(q-1);fi;
+    elif series = "D" then # P\Omega ^+ or O+
+        d := 2*m;
+        if m > 3 then
+            if q < 4 then return q^(m-1)*(q^m -1)/(q-1);
+            else return (q^(m-1) + 1)*(q^m-1)/(q-1); fi;
+        fi;
+    elif series = "2D" then # P\Omega ^- or O-
+        d := 2*m;
+        if m > 3 then return (q^m+1)*(q^(m-1)-1)/(q-1);fi;
+    elif series = "3D" then # ^3 D_4
+        return (q^8 + q^4 + 1)*(q+1);
+    elif series = "E" then #E_n(q)
+        d := m;
+        if d = 6 then return (q^9 - 1)*(q^8 + q^4 + 1)/(q-1);
+        elif d = 7 then return (q^14 - 1)*(q^9 + 1)*(q^5 -1)/(q-1);
+        elif d = 8 then return (q^30 - 1)*(q^12 + 1)*(q^10 + 1)*(q^6 + 1)/(q-1);
+        fi;
+    elif series = "2E" then #2E(6,q)
+        return (q^12 -1)*(q^6 - q^3 + 1)^(q^4 +1)/(q-1);
+    elif series = "F" then #F(4,q)
+        return (q^12 -1)*(q^4 + 1)/(q-1);
+    elif series = "2F" then #2F(4,q)
+        #special case : 2F4(2) ~ Tits
+        if q = 2 then return 1600; fi;
+        return (q^6 + 1)*(q^3 + 1)*(q+1);
+    elif series = "G" then #G(2,q)
+        if q = 3 then return 351; fi;
+        if q = 4 then return 416; fi;
+        return (q^6 -1)/(q-1);
+    elif series = "2G" then #2G(2,q)
+        b := Int(Log(Float(q)) / Log(3.0));
+        if 3^(b+1) = q then b := b+1; fi; #just a safety net
+        if q = 3^b and b mod 2 = 1 then return q^3 + 1; fi;
+    fi;
+    return Concatenation("Couldn't fit", info.name,"aka",StructureDescriptionForFiniteSimpleGroups(G), "into a type","\n");
+end);
 
 # utility function: Find a subgroup $S$ of $G\le P$, with $G'\le S\le G$ such
 # that $[G:S]<=limit$ and that $S\lhd N_P(G)$.
