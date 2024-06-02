@@ -559,6 +559,31 @@ DeclareOperation("MinimalFaithfulPermutationRepresentation",
 
 #############################################################################
 ##
+#F  MinimalFaithfulPermutationDegreeOfSimpleGroup( <G> )
+##
+##  <#GAPDoc Label="MinimalFaithfulPermutationDegreeOfSimpleGroup">
+##  <ManSection>
+##  <Func Name="MinimalFaithfulPermutationDegreeOfSimpleGroup" Arg='G'/>
+##
+##  <Description>
+##  Return the minimal faithful permutation degree of <A>G</A> based
+##  on the type of simple group. This is much faster than
+##  <Ref Oper="MinimalFaithfulPermutationDegree"/>
+##  but limited to simple groups only.
+##  <Example><![CDATA[
+##  gap> MinimalFaithfulPermutationDegreeOfSimpleGroup(PSL(3,3));
+##  13
+##  gap> MinimalFaithfulPermutationDegree(PSL(3,3));
+##  13
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("MinimalFaithfulPermutationDegreeOfSimpleGroup");
+
+#############################################################################
+##
 #F  DescSubgroupIterator( <G> )
 ##
 ##  <#GAPDoc Label="DescSubgroupIterator">

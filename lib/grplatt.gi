@@ -3654,8 +3654,7 @@ function(G)
   return DoMinimalFaithfulPermutationDegree(G,true);
 end);
 
-BindGlobal("MinimalFaithfulPermutationDegreeOfSimpleGroup",
-function (G)
+InstallGlobalFunction(MinimalFaithfulPermutationDegreeOfSimpleGroup,function (G)
     local
         series,       # series of simple groups
         parameter,    # parameters of G in series
@@ -3785,7 +3784,7 @@ function (G)
         if 3^(b+1) = q then b := b+1; fi; #just a safety net
         if q = 3^b and b mod 2 = 1 then return q^3 + 1; fi;
     fi;
-    return Concatenation("Couldn't fit", info.name,"aka",StructureDescriptionForFiniteSimpleGroups(G), "into a type","\n");
+    return Concatenation("Couldn't fit", info.name," aka ",StructureDescriptionForFiniteSimpleGroups(G), "into a type","\n");
 end);
 
 # utility function: Find a subgroup $S$ of $G\le P$, with $G'\le S\le G$ such
