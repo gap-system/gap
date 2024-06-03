@@ -3787,6 +3787,9 @@ InstallGlobalFunction(MinimalFaithfulPermutationDegreeOfSimpleGroup,function (G)
     return Concatenation("Couldn't fit", info.name," aka ",StructureDescriptionForFiniteSimpleGroups(G), "into a type","\n");
 end);
 
+InstallMethod(MinimalFaithfulPermutationDegree,"for simple groups",true,
+  [IsSimpleGroup and IsFinite],0,MinimalFaithfulPermutationDegreeOfSimpleGroup);
+
 # utility function: Find a subgroup $S$ of $G\le P$, with $G'\le S\le G$ such
 # that $[G:S]<=limit$ and that $S\lhd N_P(G)$.
 BindGlobal("BoundedIndexAbelianized",function(P,G,limit)

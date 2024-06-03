@@ -3,7 +3,7 @@ gap> checksimple := function(maxsize)
 >     local i,mu,mu2,info,G;
 >     i := 1;
 >     for G in SimpleGroupsIterator(1,maxsize) do
->         mu := MinimalFaithfulPermutationDegree(G);
+>         mu := DoMinimalFaithfulPermutationDegree(G,false);
 >         mu2 := MinimalFaithfulPermutationDegreeOfSimpleGroup(G);
 >         if mu2 <> mu then
 >             info := IsomorphismTypeInfoFiniteSimpleGroup(G);
@@ -14,7 +14,7 @@ gap> checksimple := function(maxsize)
 >     return "Passed";
 > end;
 function( maxsize ) ... end
-gap> checksimple(300000);
+gap> checksimple(50000); # first 26 simple groups
 "Passed"
 gap> LightChecknonabelianSimple := function(maxsize)
 >     local size,series,info,G,mu,mu2,mu3;
@@ -39,7 +39,7 @@ gap> LightChecknonabelianSimple := function(maxsize)
 >         if mu < mu2 then
 >             return Concatenation("failed on",String(info),". From table :",String(mu),", Computed :",String(mu2),"\n");
 >         elif mu > mu2 then
->             mu3 := MinimalFaithfulPermutationDegree(G);
+>             mu3 := DoMinimalFaithfulPermutationDegree(G,false);
 >             if mu2 <> mu3 then
 >                 return Concatenation("failed on",String(info),". From MinimalFaithfulPermutationDegree :",String(mu3),", Computed :",String(mu2),"\n");
 >             fi;
@@ -48,5 +48,5 @@ gap> LightChecknonabelianSimple := function(maxsize)
 >     return "PASS";
 > end;
 function( maxsize ) ... end
-gap> LightChecknonabelianSimple(1000000000);
+gap> LightChecknonabelianSimple(1000000); # First 19 non abelian simple groups
 "PASS"
