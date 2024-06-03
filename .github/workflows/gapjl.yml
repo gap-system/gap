@@ -1,0 +1,71 @@
+name: CI with GAP.jl
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - "master"
+      - "stable-*.*"
+
+concurrency:
+  # group by workflow and ref; the last slightly strange component ensures that for pull
+  # requests, we limit to 1 concurrent job, but for the default repository branch we don't
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref_name != github.event.repository.default_branch || github.run_number }}
+  # Cancel intermediate builds, but only if it is a pull request build.
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+jobs:
+  test:
+    name: Julia ${{ matrix.julia-version }} - GAP.jl ${{ matrix.gapjl-version }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    continue-on-error: ${{ matrix.julia-version == 'nightly' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        gapjl-version:
+          - 'master'
+        julia-version:
+          - '1.6'
+          - '1'         # latest stable release
+          - 'nightly'
+        os:
+          - ubuntu-latest
+        include:
+          # Add a few macOS jobs (the number we can run in parallel is limited)
+          - gap-version: 'master'
+            julia-version: '1'
+            os: macOS-latest
+
+    steps:
+      - name: Checkout GAP.jl
+        uses: actions/checkout@v4
+        with:
+          repository: 'oscar-system/GAP.jl'
+          ref: ${{ matrix.gapjl-version }}
+      - name: "Set up Julia"
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.julia-version }}
+      - name: Checkout GAP
+        uses: actions/checkout@v4
+        with:
+          path: 'GAPROOT'
+      - name: "Install dependencies (for macOS)"
+        if: runner.os == 'macOS'
+        run: |
+          brew install autoconf zlib # gmp pkg-config
+      - name: "Build GAP"
+        run: |
+          mv GAPROOT /tmp/GAPROOT
+          cd /tmp/GAPROOT
+          ./autogen.sh
+          ./configure
+          make -j`nproc`
+      - name: "Override bundled GAP"
+        run: |
+          julia --proj=override etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override
+      - name: "Run tests"
+        run: |
+           julia --proj=override etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
