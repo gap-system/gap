@@ -2216,7 +2216,7 @@ DeclareAttribute( "LargestElementGroup", IsGroup );
 ##  with getting a reasonably small set of generators, you better use
 ##  <Ref Attr="SmallGeneratingSet"/>.
 ##  <P/>
-##  Another way to find the minimal generating set is 
+##  Another way to find the minimal generating set is
 ##  <C>MinimalGeneratingSetUsingChiefSeries</C>
 ##  which executes in time polynominally bounded by the size of group,
 ##  but is slower than <C>MinimalGeneratingSet</C> for practical purposes.
