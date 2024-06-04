@@ -35,19 +35,19 @@ BindGlobal("MinimalGeneratingSetUsingChiefSeries",function(G)
       temp,i,j,l,L,x,xl,prev,gmod,g,g0,g1,s,r,stop,k;
     if IsTrivial(G) then return []; fi;
     cs := ChiefSeries(G);
-    phi_GbyG1 := NaturalHomomorphismByNormalSubgroup(G,cs[2]);
-    GbyG1 := ImagesSource(phi_GbyG1);
+    phi_GbyG1 := NaturalHomomorphismByNormalSubgroupNC(G,cs[2]);
+    GbyG1 := Image(phi_GbyG1);
     mingenset_k_reps := List(MinimalGeneratingSet(GbyG1), x -> PreImagesRepresentative(phi_GbyG1, x));
     # GbyG1 is a simple group, so it has a 2 size generating set which can be found easily.
     # I'll rely on MinimalGeneratingSet to do this.
-    check := gx -> GbyGk = GroupByGenerators(ImagesSet(phi_GbyGk,gx));
+    check := gx -> GbyGk = GroupWithGenerators(ImagesSet(phi_GbyGk,gx));
     for k in [3..Length(cs)] do # Lifting
       # We wish to compute the CR of MGS of GbyGk, given the CR of MGS of GbyGkm1 .
-      phi_GbyGk := NaturalHomomorphismByNormalSubgroup(G,cs[k]);
-      GbyGk := ImagesSource(phi_GbyGk);
+      phi_GbyGk := NaturalHomomorphismByNormalSubgroupNC(G,cs[k]);
+      GbyGk := Image(phi_GbyGk);
       if check(mingenset_k_reps) then continue; fi;
-      phi_Gkm1byGk := NaturalHomomorphismByNormalSubgroup(cs[k-1],cs[k]);
-      Gkm1byGk := ImagesSource(phi_Gkm1byGk);
+      phi_Gkm1byGk := NaturalHomomorphismByNormalSubgroupNC(cs[k-1],cs[k]);
+      Gkm1byGk := Image(phi_Gkm1byGk);
       Gkm1byGk_gen := SmallGeneratingSet(Gkm1byGk);
       Gkm1byGk_gen_reps := List(Gkm1byGk_gen,x -> PreImagesRepresentative(phi_Gkm1byGk,x));
       g := ShallowCopy(mingenset_k_reps);
