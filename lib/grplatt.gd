@@ -535,6 +535,8 @@ DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 ##  positive integer <M>n=\mu(G)</M> such that <A>G</A> is isomorphic to a
 ##  subgroup of the symmetric group of degree <M>n</M>.
 ##  This can require calculating the whole subgroup lattice.
+##  In case you know that <A>G</A> is simple, use
+##  <C>MinimalFaithfulPermutationDegreeOfSimpleGroup</C> instead.
 ##  The operation
 ##  <Ref Oper="MinimalFaithfulPermutationRepresentation"/>
 ##  returns a
@@ -556,30 +558,6 @@ DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 DeclareOperation("MinimalFaithfulPermutationDegree",[IsGroup and IsFinite]);
 DeclareOperation("MinimalFaithfulPermutationRepresentation",
   [IsGroup and IsFinite]);
-
-#############################################################################
-##
-#F  MinimalFaithfulPermutationDegreeOfSimpleGroup( <G> )
-##
-##  <#GAPDoc Label="MinimalFaithfulPermutationDegreeOfSimpleGroup">
-##  <ManSection>
-##  <Func Name="MinimalFaithfulPermutationDegreeOfSimpleGroup" Arg='G'/>
-##
-##  <Description>
-##  Return the minimal faithful permutation degree of <A>G</A> based
-##  on the type of simple group. This is much faster than
-##  <Ref Oper="MinimalFaithfulPermutationDegree"/>
-##  but limited to simple groups only.
-##  <Example><![CDATA[
-##  gap> MinimalFaithfulPermutationDegreeOfSimpleGroup(PSL(3,3));
-##  13
-##  gap> MinimalFaithfulPermutationDegree(PSL(3,3));
-##  13
-##  ]]></Example>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
 DeclareGlobalFunction("MinimalFaithfulPermutationDegreeOfSimpleGroup");
 
 #############################################################################
