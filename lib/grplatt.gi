@@ -3654,34 +3654,34 @@ function(G)
   return DoMinimalFaithfulPermutationDegree(G,true);
 end);
 
-BindGlobal("SporadicGroupMinimalFaithfulPermutationDegrees", rec(  
-    M11 := 11,  
-    M12 := 12,  
-    M22 := 22,  
-    M23 := 23,  
-    M24 := 24,  
-    Co1 := 98280,  
-    Co2 := 2300,  
-    Co3 := 276,  
-    McL := 275,  
-    HS := 100,  
-    Suz := 1782,  
-    Fi22 := 3510,  
-    Fi23 := 31671,  
-    Fi24 := 306936,  
-    M := 97239461142009186000,  
-    B := 13571955000,  
-    Th := 143127000,  
-    HN := 1140000,  
-    He := 2058,  
-    J1 := 266,  
-    J2 := 100,  
-    J3 := 6156,  
-    J4 := 173067389,  
-    ON := 122760,  
-    Ly := 8835156,  
-    Ru := 4060,  
-)); 
+BindGlobal("SporadicGroupMinimalFaithfulPermutationDegrees", rec(
+    M11 := 11,
+    M12 := 12,
+    M22 := 22,
+    M23 := 23,
+    M24 := 24,
+    Co1 := 98280,
+    Co2 := 2300,
+    Co3 := 276,
+    McL := 275,
+    HS := 100,
+    Suz := 1782,
+    Fi22 := 3510,
+    Fi23 := 31671,
+    Fi24 := 306936,
+    M := 97239461142009186000,
+    B := 13571955000,
+    Th := 143127000,
+    HN := 1140000,
+    He := 2058,
+    J1 := 266,
+    J2 := 100,
+    J3 := 6156,
+    J4 := 173067389,
+    ON := 122760,
+    Ly := 8835156,
+    Ru := 4060,
+));
 
 BindGlobal("MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType",function (info)
     # This function is derived from table 4 of this paper :
@@ -3729,7 +3729,7 @@ BindGlobal("MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType",fu
         return ((q^d - (-1)^d)*(q^(d-1) + (-1)^d))/(q^2-1);
     elif series = "B" then # P\Omega(2*m+1,q) or O
         if q = 3 and m > 2 then return (3^m)*(3^m - 1)/2;
-        elif q > 4 and m > 2 then return (q^(2*m)-1)/(q-1);     
+        elif q > 4 and m > 2 then return (q^(2*m)-1)/(q-1);
         elif q = 3 and m = 2 then return 27; #Special case : B(2,3) ~ 2A(3,2) = PSU(4,2)
         elif q = 2 and m = 2 then # B(2,2) is not a simple group.
           Error("B(2,2) is not a simple group. This shouldn't be happening.\n");
