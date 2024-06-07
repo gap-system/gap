@@ -51,7 +51,7 @@ jobs:
         uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.julia-version }}
-      - name: Checkout GAP.jl
+      - name: Install GAP.jl
         shell: julia --color=yes {0}
         run: |
           using Pkg
