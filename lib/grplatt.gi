@@ -3467,13 +3467,13 @@ end);
 BindGlobal("DoMinimalFaithfulPermutationDegree",
 function(G,dorep)
 local c,n,deg,ind,core,i,j,sum,ma,h,ig,bm,m,sel,ds,ise,cnt,
-  start,cind,nind,sl,idfun,spos,select,bla;
+  start,cind,nind,sl,idfun,spos,select,bla,iswith;
 
   if Size(G)=1 then
     # option allows to calculate actual representation -- maybe access under
     # different name
     if dorep=false then
-      return 1;
+      return 0;
     else
       return GroupHomomorphismByImages(G,Group(()),[One(G)],[()]);
     fi;
@@ -3555,10 +3555,7 @@ local c,n,deg,ind,core,i,j,sum,ma,h,ig,bm,m,sel,ds,ise,cnt,
     ind:=IndexNC(G,c[i]);
     spos:=PositionSorted(sl,Size(c[i]))-1;
 
-
-    if i in sel then
-      # do nothing --already processed
-    elif IsNormal(G,c[i]) then # subgroup normal, must be in other case
+    if IsNormal(G,c[i]) then # subgroup normal, must be in other case
       #core:=Position(n,c[i]);
       core:=nind[i];
 
@@ -3569,7 +3566,13 @@ local c,n,deg,ind,core,i,j,sum,ma,h,ig,bm,m,sel,ds,ise,cnt,
 #Print("|select|=",Length(select),"\n");
       fi;
 
-      for j in [2..core-1] do # Intersect with all prior normals
+      iswith:=[2..core-1]; # what to intersect with
+      # avoid intersecting abelians -- there might be many
+      if i in sel then
+        iswith:=Difference(iswith,nind{sel});
+      fi;
+
+      for j in iswith do # Intersect with all prior normals
         sum:=deg[core][1]+deg[j][1];
         if sum<deg[Length(n)][1] then # otherwise too big for new optimal
           if select=fail then

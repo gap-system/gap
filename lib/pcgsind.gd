@@ -136,6 +136,9 @@ DeclareOperation( "InducedPcgsByGeneratorsNC", [ IsPcgs, IsCollection ] );
 ##  <ManSection>
 ##  <Oper Name="InducedPcgsByGeneratorsWithImages" Arg='pcgs, gens, imgs'/>
 ##
+##  The option `abeliandomain` can be used to avoid a test for the group to
+##  be abelian (which can be costly if the group has hundreds of generators).
+##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
