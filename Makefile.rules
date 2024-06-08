@@ -446,10 +446,7 @@ else ifneq (,$(findstring darwin,$(host_os)))
   LINK_SHLIB_FLAGS = -dynamiclib
   LINK_SHLIB_FLAGS += -compatibility_version $(LIBGAP_COMPAT_VER)
   LINK_SHLIB_FLAGS += -current_version $(LIBGAP_CURRENT_VER)
-  LINK_SHLIB_FLAGS += -Wl,-single_module
-
-  # TODO: set install_name, at least for installed version of the lib?
-  #LINK_SHLIB_FLAGS += -install_name $(libdir)/$(LIBGAP_FULL)
+  LINK_SHLIB_FLAGS += -install_name $(libdir)/$(LIBGAP_FULL)
 
   GAP_CPPFLAGS += -DPIC
   GAP_CFLAGS += -fno-common
