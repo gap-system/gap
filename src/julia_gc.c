@@ -49,15 +49,15 @@
 JL_DLLEXPORT void * jl_get_ptls_states(void);
 #endif
 
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR >= 10
+#define JULIA_MULTIPLE_GC_THREADS_SUPPORTED
+#endif
+
 
 /****************************************************************************
 **
 **  Various options controlling special features of the Julia GC code follow
 */
-
-// if SKIP_GUARD_PAGES is set, stack scanning will attempt to determine
-// the extent of any guard pages and skip them if needed.
-// #define SKIP_GUARD_PAGES
 
 // if REQUIRE_PRECISE_MARKING is defined, we assume that all marking
 // functions are precise, i.e., they only invoke MarkBag on valid bags,
@@ -82,10 +82,6 @@ JL_DLLEXPORT void * jl_get_ptls_states(void);
 // to make julia-inside-gap work are disabled. This is mainly for use in
 // the GAP.jl package.
 // #define USE_GAP_INSIDE_JULIA
-
-#ifdef SKIP_GUARD_PAGES
-#include <pthread.h>
-#endif
 
 
 /****************************************************************************
@@ -180,13 +176,11 @@ static jl_datatype_t * DatatypeGapObj;
 static jl_datatype_t * DatatypeSmallBag;
 static jl_datatype_t * DatatypeLargeBag;
 
+static jl_task_t * ScannedRootTask;
+
 static size_t MaxPoolObjSize;
 static int    FullGC;
 static UInt   StartTime, TotalTime;
-
-#ifdef SKIP_GUARD_PAGES
-static size_t GuardPageSize;
-#endif
 
 #if !defined(USE_GAP_INSIDE_JULIA)
 static Bag *       GapStackBottom;
@@ -200,7 +194,10 @@ static TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
 // HACK: TabMarkFuncBags is accessed by MarkCopyingSubBags in src/objects.c
 TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
 
-static TaskInfoTree * task_stacks;
+static TaskInfoTree * TaskStacks;
+#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
+static pthread_mutex_t TaskStacksMutex;
+#endif
 
 //
 // global bags
@@ -422,9 +419,28 @@ static inline void * align_ptr(void * p)
 
 static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
 {
+    // HACK: the following deals with stacks of 'negative size' exposed by
+    // Julia -- however, despite us having this code in here for a few years,
+    // I know think it may actually be due to a bug on the Julia side. See
+    // <https://github.com/JuliaLang/julia/pull/54639> for details.
     if (lt_ptr(end, start)) {
         SWAP(void *, start, end);
     }
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR <= 11
+    // adjust for Julia guard pages if necessary
+    // In Julia >= 1.12 this is no longer necessary thanks
+    // to <https://github.com/JuliaLang/julia/pull/54591>
+    // TODO: hopefully this actually also gets backported to 1.11.0
+    //
+    // unfortunately jl_guard_size is not exported; fortunately it
+    // is the same in all Julia versions were we need it
+    else {
+        void * new_start = (char *)start + (4096 * 8);
+        if ((uintptr_t)new_start <= (uintptr_t)end) {
+            start = new_start;
+        }
+    }
+#endif
     char * p = (char *)(align_ptr(start));
     char * q = (char *)end - sizeof(void *);
     while (!lt_ptr(q, p)) {
@@ -437,30 +453,8 @@ static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
     }
 }
 
-#ifdef SKIP_GUARD_PAGES
-
-static void SetupGuardPagesSize(void)
-{
-    // This is a generic implementation that assumes that all threads
-    // have the default guard pages. This should be correct for the
-    // current Julia implementation.
-    pthread_attr_t attr;
-    pthread_attr_init(&attr);
-    if (pthread_attr_getguardsize(&attr, &GuardPageSize) < 0) {
-        perror("Julia GC initialization: pthread_attr_getguardsize");
-        abort();
-    }
-    pthread_attr_destroy(&attr);
-}
-
-#endif
-
-
 static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
 {
-#ifdef SKIP_GUARD_PAGES
-    FindLiveRangeReverse(stack, start, end);
-#else
     volatile jl_jmp_buf * old_safe_restore = jl_get_safe_restore();
     jl_jmp_buf            exc_buf;
     if (!jl_setjmp(exc_buf, 0)) {
@@ -478,7 +472,6 @@ static void SafeScanTaskStack(PtrArray * stack, void * start, void * end)
         FindLiveRangeReverse(stack, start, end);
     }
     jl_set_safe_restore((jl_jmp_buf *)old_safe_restore);
-#endif
 }
 
 static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
@@ -491,11 +484,12 @@ static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
 static void
 ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
 {
-    if (!task_stacks) {
-        task_stacks = TaskInfoTreeMake();
-    }
+#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
+    if (jl_n_gcthreads > 1)
+        pthread_mutex_lock(&TaskStacksMutex);
+#endif
     TaskInfo   tmp = { task, NULL };
-    TaskInfo * taskinfo = TaskInfoTreeFind(task_stacks, tmp);
+    TaskInfo * taskinfo = TaskInfoTreeFind(TaskStacks, tmp);
     PtrArray * stack;
     if (taskinfo != NULL) {
         stack = taskinfo->stack;
@@ -505,8 +499,12 @@ ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
     else {
         tmp.stack = PtrArrayMake(1024);
         stack = tmp.stack;
-        TaskInfoTreeInsert(task_stacks, tmp);
+        TaskInfoTreeInsert(TaskStacks, tmp);
     }
+#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
+    if (jl_n_gcthreads > 1)
+        pthread_mutex_unlock(&TaskStacksMutex);
+#endif
     if (rescan) {
         SafeScanTaskStack(stack, start, end);
         // Remove duplicates
@@ -552,13 +550,14 @@ static void GapRootScanner(int full)
 {
     jl_ptls_t   ptls = jl_get_ptls_states();
     jl_task_t * task = (jl_task_t *)jl_get_current_task();
-    size_t      size;
-    int         tid;    // unused
+
+    ScannedRootTask = task;
+
     // We figure out the end of the stack from the current task. While
     // `stack_bottom` is passed to InitBags(), we cannot use that if
     // current_task != root_task.
-    char * stackend = (char *)jl_task_stack_buffer(task, &size, &tid);
-    stackend += size;
+    char *dummy, *stackend;
+    jl_active_task_stack(task, &dummy, &dummy, &dummy, &stackend);
 
 #if !defined(USE_GAP_INSIDE_JULIA)
     // The following test overrides the stackend if the following two
@@ -604,9 +603,8 @@ static void GapRootScanner(int full)
 // Julia callback
 static void GapTaskScanner(jl_task_t * task, int root_task)
 {
-    // If it is the current task, it has been scanned by GapRootScanner()
-    // already.
-    if (task == (jl_task_t *)jl_get_current_task())
+    // If this task has been scanned by GapRootScanner() already, skip it
+    if (task == ScannedRootTask)
         return;
 
     int rescan = 1;
@@ -631,13 +629,6 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
                          &total_end);
 
     if (active_start) {
-#ifdef SKIP_GUARD_PAGES
-        if (total_start == active_start && total_end == active_end) {
-            // The "active" range is actually the entire stack buffer
-            // and may include guard pages at the start.
-            active_start += GuardPageSize;
-        }
-#endif
 #if !defined(USE_GAP_INSIDE_JULIA)
         if (task == RootTaskOfMainThread) {
             active_end = (char *)GapStackBottom;
@@ -678,6 +669,7 @@ static void PreGCHook(int full)
 // Julia callback
 static void PostGCHook(int full)
 {
+    ScannedRootTask = 0;
     TotalTime += SyTime() - StartTime;
 #ifdef COLLECT_MARK_CACHE_STATS
     /* printf("\n>>>Attempts: %ld\nHit rate: %lf\nCollision rate: %lf\n",
@@ -775,9 +767,11 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     jl_init();
 #endif
 
-#ifdef SKIP_GUARD_PAGES
-    SetupGuardPagesSize();
+#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
+    if (jl_n_gcthreads > 1)
+        pthread_mutex_init(&TaskStacksMutex, NULL);
 #endif
+    TaskStacks = TaskInfoTreeMake();
 
     // These callbacks potentially require access to the Julia
     // TLS and thus need to be installed after initialization.
