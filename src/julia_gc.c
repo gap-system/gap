@@ -419,9 +419,28 @@ static inline void * align_ptr(void * p)
 
 static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
 {
+    // HACK: the following deals with stacks of 'negative size' exposed by
+    // Julia -- however, despite us having this code in here for a few years,
+    // I know think it may actually be due to a bug on the Julia side. See
+    // <https://github.com/JuliaLang/julia/pull/54639> for details.
     if (lt_ptr(end, start)) {
         SWAP(void *, start, end);
     }
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR <= 11
+    // adjust for Julia guard pages if necessary
+    // In Julia >= 1.12 this is no longer necessary thanks
+    // to <https://github.com/JuliaLang/julia/pull/54591>
+    // TODO: hopefully this actually also gets backported to 1.11.0
+    //
+    // unfortunately jl_guard_size is not exported; fortunately it
+    // is the same in all Julia versions were we need it
+    else {
+        void * new_start = (char *)start + (4096 * 8);
+        if ((uintptr_t)new_start <= (uintptr_t)end) {
+            start = new_start;
+        }
+    }
+#endif
     char * p = (char *)(align_ptr(start));
     char * q = (char *)end - sizeof(void *);
     while (!lt_ptr(q, p)) {
