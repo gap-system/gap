@@ -86,6 +86,19 @@ that represent a faithful action on vectors.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Automorphisms of SL">
+<Heading>Automorphisms of SL</Heading>
+
+<#Include Label="DiagonalAutomorphismGroupOfSL">
+<#Include Label="FieldAutomorphismGroupOfSL">
+<#Include Label="GraphAutomorphismOfSL">
+<#Include Label="SLAutomorphismDecomposition">
+<#Include Label="ContainsGraphAutomorphismOfSL">
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Invariant Forms">
 <Heading>Invariant Forms</Heading>
 
