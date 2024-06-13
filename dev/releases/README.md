@@ -14,22 +14,22 @@ you first have to create that using the `dev/releases/create_stable_branch.py` s
 This is the way the process should happen in practice, with the help of GitHub Actions. Instructions for achieving the same without GitHub Actions are given later (in case GitHub Actions breaks or disappears).
 
 1. In the `gap-system/PackageDistro` GitHub repository, create an annotated tag `vX.Y.Z` based on its latest `main` branch (this determines which packages get into the release) and push the tag. For example:
-    ```
-    VER=X.Y.Z      # to avoid typing
-    git checkout main
-    git pull
-    git tag -m "Version ${VER}" v${VER} main
-    git push origin v${VER}
-    ```
+```
+VER=X.Y.Z      # to avoid typing
+git checkout main
+git pull
+git tag -m "Version ${VER}" v${VER} main
+git push origin v${VER}
+```
 2. Wait. Pushing the tag triggers the “[Assemble the package distribution](https://github.com/gap-system/PackageDistro/actions/workflows/assemble-distro.yml)” GitHub Actions workflow; on `gap-system/PackageDistro`. This takes a few minutes.
 2. In the `gap-system/gap` GitHub repository, create an annotated tag `vX.Y.Z` at the appropriate commit in the `stable-X.Y` branch, and push the tag. For example:
-    ```
-    VER=X.Y.Z      # to avoid typing
-    git checkout stable-${VER%.*}
-    git pull
-    git tag -m "Version ${VER}" v${VER} stable-${VER%.*}
-    git push origin v${VER}
-    ```
+```
+VER=${VER}      # to avoid typing
+git checkout stable-${VER%.*}
+git pull
+git tag -m "Version ${VER}" v${VER} stable-${VER%.*}
+git push origin v${VER}
+```
 4. Wait. Pushing the tag triggers the “[Wrap releases](https://github.com/gap-system/gap/actions/workflows/release.yml)” GitHub Actions workflow on `gap-system/gap`, which wraps the release archives and Windows installers, and creates a release on GitHub with the archives and installers attached. This takes around 90 minutes.
 5. Once the “Wrap releases” workflow has finished, check its log for obvious errors. Also visit the page of the release under <https://github.com/gap-system/gap/releases/> and check that everything looks right, and all files are present (including the Windows .exe installer), e.g. by comparing the asset list to the previous release. At this time this is written, a regular GAP release will have 24 assets (12 archives, and 12 matching sha256 files).
 6. Edit the new release under <https://github.com/gap-system/gap/releases/> and
@@ -94,32 +94,54 @@ Before starting the release process, the scripts have the following dependencies
    - Deletes, modifies, and adds various JSON and HTML files according to this data.
 9. Inspect the changes, and commit and push them to the master branch to `gap-system/GapWWW`.
 10. Log into `docs.gap-system.org` via SSH, then download and extract the new release tarball into the home directory. Then run the `extract_manuals.py` script, and move the result to the appropriate location.
-    ```
-    ssh gap-docs   # assumes gap-docs is set up in ~/.ssh/config
-    VER=X.Y.Z      # to avoid typing
-    rm -f package-infos.json*  gap-*   # delete leftovers from previous release
-    wget https://github.com/gap-system/gap/releases/download/v${VER}/package-infos.json.gz
-    gunzip package-infos.json.gz
-    wget https://github.com/gap-system/gap/releases/download/v${VER}/gap-${VER}.tar.gz
-    tar xf gap-${VER}.tar.gz
-    GapWWW/etc/extract_manuals.py gap-${VER} package-infos.json
-    mv Manuals http/v${VER}
-    rm http/latest
-    ln -s v${VER} http/latest
-    ```
+```
+ssh gap-docs                        # assumes gap-docs is set up in ~/.ssh/config
+
+VER=X.Y.Z                           # to avoid typing
+cd ~/data                           # follow symlink to target directory
+rm -rf package-infos.json* gap-*    # delete leftovers from previous release
+wget https://github.com/gap-system/gap/releases/download/v${VER}/package-infos.json.gz
+gunzip package-infos.json.gz
+wget https://github.com/gap-system/gap/releases/download/v${VER}/gap-${VER}.tar.gz
+tar xf gap-${VER}.tar.gz
+GapWWW/etc/extract_manuals.py gap-${VER} package-infos.json
+mv Manuals http/v${VER}
+rm http/latest
+ln -s v${VER} http/latest
+```
 11. Check that <https://docs.gap-system.org> is functioning as expected.
 12. Log into `files.gap-system.org` via SSH, then download the files in appropriate places:
-    ```
-    ssh gap-docs        # assumes gap-docs is set up in ~/.ssh/config
-    VER=X.Y.Z           # to avoid typing
-    cd ~/http           # follow symlink to target director
-    mkdir -p ${VER%.*}  # ensure directories are present
-    cd ${VER%.*}
-    mkdir -p exe zip tar.gz
-    # now download all gap-$VER* files in the release into the appropriate subdirectories
-    cd exe
-    # ... and so on
-    ```
+```
+ssh gap-files           # assumes gap-files is set up in ~/.ssh/config
+
+VER=X.Y.Z               # to avoid typing
+cd ~/http               # follow symlink to target directory
+mkdir -p gap-${VER%.*}  # ensure directories are present
+cd gap-${VER%.*}
+mkdir -p exe zip tar.gz
+
+# now download all gap-$VER* files in the release into the appropriate subdirectories
+BASEURL=https://github.com/gap-system/gap/releases/download/v${VER}
+
+cd exe
+wget ${BASEURL}/gap-${VER}-x86_64.exe.sha256
+wget ${BASEURL}/gap-${VER}-x86_64.exe
+cd ..
+
+cd tar.gz
+wget ${BASEURL}/gap-${VER}-core.tar.gz.sha256
+wget ${BASEURL}/gap-${VER}-core.tar.gz
+wget ${BASEURL}/gap-${VER}.tar.gz.sha256
+wget ${BASEURL}/gap-${VER}.tar.gz
+cd ..
+
+cd zip
+wget ${BASEURL}/gap-${VER}.zip.sha256
+wget ${BASEURL}/gap-${VER}.zip
+wget ${BASEURL}/gap-${VER}-core.zip.sha256
+wget ${BASEURL}/gap-${VER}-core.zip
+cd ..
+```
 
 
 ## Post-release instructions
