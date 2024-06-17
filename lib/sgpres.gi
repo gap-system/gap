@@ -2978,6 +2978,10 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
   for i in ri do
     r:=i;
     while not r in ccr[offset+r[1]] do
+      # replace order 2 gens
+      for j in [1..Length(r)] do
+        if -r[j] in ordertwo then r[j]:=-r[j];fi;
+      od;
       AddSet(ccr[offset+r[1]],Immutable(r));
       r:=Concatenation(r{[2..Length(r)]},r{[1]});
     od;
@@ -3191,8 +3195,11 @@ local m,offset,rels,ri,ccr,i,r,ct,A,a,w,n,DATA,p,dr,
     i:=i+1;
   od;
 
+
   NEWTC_Compress(DATA,true); # always compress at the end
   DATA.index:=DATA.n;
+
+  Info(InfoFpGroup,3,"found index ",DATA.index);
 
   if Length(collapse)>0 then
     Info(InfoFpGroup,3,DATA.defcount," definitions");
@@ -3242,6 +3249,7 @@ local freegens,freerels,subgens,aug,trace,e,ldc,up,bastime,start,bl,bw,first,tim
     trace:=arg[5];
   fi;
   start:=timerFunc();
+
   if aug and trace=false then
     e:=NEWTC_DoCosetEnum(freegens,freerels,subgens,aug,trace);
     if e=fail then return fail;fi;
