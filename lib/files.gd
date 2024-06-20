@@ -157,12 +157,10 @@ DeclareGlobalFunction( "DirectoryDesktop" );
 ##  <P/>
 ##  <E>For example</E>,
 ##  in order to locate the system program <C>date</C> use
-##  <Ref Func="DirectoriesSystemPrograms"/> together with the second form of
-##  <Ref Oper="Filename" Label="for a list of directories and a string"/>.
+##  <Ref Func="PathSystemProgram"/>.
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> path := DirectoriesSystemPrograms();;
-##  gap> date := Filename( path, "date" );
+##  gap> date := PathSystemProgram( "date" );
 ##  "/bin/date"
 ##  ]]></Log>
 ##  <P/>
@@ -428,6 +426,37 @@ BIND_GLOBAL( "DirectoriesSystemPrograms", function()
         fi;
     fi;
     return GAPInfo.DirectoriesPrograms;
+end );
+
+
+#############################################################################
+##
+#F  PathSystemProgram( <name> ) . . . . . . . . . .  path of a system program
+##
+##  <#GAPDoc Label="PathSystemProgram">
+##  <ManSection>
+##  <Func Name="PathSystemProgram" Arg='name'/>
+##
+##  <Description>
+##  <Ref Func="PathSystemProgram"/> returns either the path of the first
+##  executable file <A>name</A> in one of the directories returned by
+##  <Ref Func="DirectoriesSystemPrograms"/>,
+##  or <K>fail</K> if no such file exists.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL( "PathSystemProgram", function( name )
+    local dir, path;
+
+    for dir in DirectoriesSystemPrograms() do
+      path:= Filename( dir, name );
+      if IsExecutableFile( path ) then
+        return path;
+      fi;
+    od;
+
+    return fail;
 end );
 
 

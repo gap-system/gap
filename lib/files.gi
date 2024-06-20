@@ -264,7 +264,7 @@ InstallGlobalFunction( Edit, function( name )
     local   editor,  ret;
 
     name := UserHomeExpand(name);
-    editor := Filename( DirectoriesSystemPrograms(), UserPreference("Editor") );
+    editor := PathSystemProgram( UserPreference("Editor") );
     if editor = fail  then
         Error( "cannot locate editor `", UserPreference("Editor"),
                           "' (reset via SetUserPreference(\"Editor\", ...))" );

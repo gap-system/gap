@@ -908,7 +908,7 @@ DeclareCategory( "IsInputOutputStream", IsInputStream and
 ##  <Log><![CDATA[
 ##  gap> d := DirectoryCurrent();
 ##  dir("./")
-##  gap> f := Filename(DirectoriesSystemPrograms(), "rev");
+##  gap> f := PathSystemProgram("rev");
 ##  "/usr/bin/rev"
 ##  gap> s := InputOutputLocalProcess(d,f,[]);
 ##  < input/output stream to rev >
