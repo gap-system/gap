@@ -421,7 +421,7 @@ static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
 {
     // HACK: the following deals with stacks of 'negative size' exposed by
     // Julia -- however, despite us having this code in here for a few years,
-    // I know think it may actually be due to a bug on the Julia side. See
+    // I now think it may actually be due to a bug on the Julia side. See
     // <https://github.com/JuliaLang/julia/pull/54639> for details.
     if (lt_ptr(end, start)) {
         SWAP(void *, start, end);

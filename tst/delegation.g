@@ -53,9 +53,9 @@ for pos in [1..Length(rules)] do
         while true do
           n := POSITION_SUBSTRING(str, r, n);
           if n = fail then break; fi;
-          if n > 1 and str[n-1] in LETTERS then continue; fi;
+          if n > 1 and str[n-1] in CHARS_ALPHA then continue; fi;
           if Length(str) >= n + Length(r) then
-            if not str[n + Length(r)] in LETTERS then
+            if not str[n + Length(r)] in CHARS_ALPHA then
               Add( illegal_delegations, r );
               break;
             fi;
