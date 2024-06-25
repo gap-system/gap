@@ -2785,10 +2785,10 @@ InstallGlobalFunction( BibEntry, function( arg )
       if Length( val ) = 3 then
         if Int( val[2] ) in [ 1 .. 12 ] then
           val:= Concatenation( "  <month>", months[ Int( val[2] ) ],
-                               "</month>\n  <year>", val[3], "</year>\n" );
+                               "</month>\n  <year>", val[1], "</year>\n" );
         else
           val:= Concatenation( "  <month>", val[2],
-                               "</month>\n  <year>", val[3], "</year>\n" );
+                               "</month>\n  <year>", val[1], "</year>\n" );
         fi;
       else
         val:= "";
