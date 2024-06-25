@@ -40,8 +40,7 @@ InstallGlobalFunction(IsLowerAlphaChar,x->x in CHARS_LALPHA);
 ##
 #F  IsAlphaChar(<c>)
 ##
-InstallGlobalFunction(IsAlphaChar,
-  x->x in CHARS_LALPHA or x in CHARS_UALPHA);
+InstallGlobalFunction(IsAlphaChar,x->x in CHARS_ALPHA);
 
 
 #############################################################################

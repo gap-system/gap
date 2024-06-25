@@ -2086,10 +2086,6 @@ InstallGlobalFunction( AutoloadPackages, function()
 ##
 #F  GAPDocManualLab(<pkgname>) . create manual.lab for package w/ GAPDoc docs
 ##
-# avoid warning (will be def. in GAPDoc)
-if not IsBound(StripEscapeSequences) then
-  StripEscapeSequences := 0;
-fi;
 InstallGlobalFunction( GAPDocManualLabFromSixFile,
     function( bookname, sixfilepath )
     local stream, entries, SecNumber, esctex, file;
@@ -2112,7 +2108,7 @@ InstallGlobalFunction( GAPDocManualLabFromSixFile,
 
     # throw away TeX critical characters here
     esctex:= function( str )
-      return Filtered( StripEscapeSequences( str ), c -> not c in "%#$&^_~" );
+      return Filtered( _StripEscapeSequences( str ), c -> not c in "%#$&^_~" );
     end;
 
     bookname:= LowercaseString( bookname );
@@ -2160,9 +2156,6 @@ InstallGlobalFunction( GAPDocManualLab, function(pkgname)
     GAPDocManualLabFromSixFile( book.BookName, file );
   od;
 end );
-if StripEscapeSequences = 0 then
-  Unbind(StripEscapeSequences);
-fi;
 
 
 #############################################################################

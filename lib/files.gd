@@ -794,16 +794,6 @@ end );
 ##
 DeclareGlobalFunction( "Edit" );
 
-# the character set definitions might be needed when processing files, thus
-# they must come earlier.
-BIND_GLOBAL("CHARS_DIGITS",Immutable(SSortedList("0123456789")));
-BIND_GLOBAL("CHARS_UALPHA",
-  Immutable(SSortedList("ABCDEFGHIJKLMNOPQRSTUVWXYZ")));
-BIND_GLOBAL("CHARS_LALPHA",
-  Immutable(SSortedList("abcdefghijklmnopqrstuvwxyz")));
-BIND_GLOBAL("CHARS_SYMBOLS",Immutable(SSortedList(
-  " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")));
-
 
 ##  <#GAPDoc Label="HexSHA256">
 ##  <ManSection>
