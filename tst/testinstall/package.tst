@@ -1,4 +1,4 @@
-#@local entry,equ,pair,sml,oldTermEncoding,pkginfo,info,tmp_dir,mockpkgpath,old_warning_level,p,n,filename
+#@local entry,equ,pair,sml,oldTermEncoding,pkginfo,info,tmp_dir,mockpkgpath,old_warning_level,p,n,filename,IsDateFormatValid
 gap> START_TEST("package.tst");
 
 # CompareVersionNumbers( <supplied>, <required>[, \"equal\"] )
@@ -515,6 +515,23 @@ new methods:
   mockpkg_Operation( G, n )*
   mockpkg_Property( ... )*
 
+
+# Cite() expects GAPInfo.Date to be of the form "YYYY-MM-DD" or "YYYY-Mon-DD" (or "today")
+gap> IsDateFormatValid := function( datestring )
+>      local months, val;
+>      if datestring = "today" then
+>        return true;
+>      fi;
+>      val:= SplitString( datestring, "-" );
+>      if Length( val ) <> 3 then
+>        return false;
+>      fi;
+>      months:= [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+>                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
+>      return Int( val[1] ) in [ 1900 .. 2100 ] and ( val[2] in months or Int( val[2] ) in [ 1 .. 12 ] ) and Int( val[3] ) in [ 1 .. 31 ];
+>    end;;
+gap> IsDateFormatValid( GAPInfo.Date );
+true
 
 # Test the Cite() command (output changed with GAPDoc 1.6.6 and again with 1.6.7)
 #@if CompareVersionNumbers(InstalledPackageVersion("gapdoc"), "1.6.7")
