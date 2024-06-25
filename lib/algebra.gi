@@ -3649,7 +3649,7 @@ InstallMethod( CentralIdempotentsOfAlgebra,
 
       until k>Length(ideals);
 
-      id:= List( ids, e -> PreImagesRepresentative( hom, e ) );
+      id:= List( ids, e -> PreImagesRepresentativeNC( hom, e ) );
 
       # Now we lift the idempotents to the big algebra `A'. The
       # first idempotent is lifted as follows:
