@@ -149,12 +149,6 @@ static struct ProfileState
   int profiledThread;
 #endif
 
-  // Have we previously profiled this execution of GAP? We need this because
-  // code coverage doesn't work more than once, as we use a bit in each Stat
-  // to mark if we previously executed this statement, which we can't
-  // clear
-  UInt profiledPreviously;
-
   Int LongJmpOccurred;
 
   // We store the value of RecursionDepth each time we enter a function.
@@ -163,6 +157,10 @@ static struct ProfileState
   // We need to store the actual values, as RecursionDepth can increase
   // by more than one when a GAP function is called
   Obj visitedDepths;
+
+  // Mark which statements in which files have been visited.
+  // This is a plist (index by file id) of plists (indexed by line)
+  Obj visitedStatements;
 } profileState;
 
 // Some GAP functionality (such as syntaxtree) evaluates expressions, which makes
@@ -277,7 +275,8 @@ static Obj JsonEscapeString(Obj param)
     return copy;
 }
 
-
+// Check if the filename of the file 'id' has even been outputted.
+// We only output this once per file to reduce file size.
 static inline void outputFilenameIdIfRequired(UInt id)
 {
     if (id == 0) {
@@ -345,6 +344,7 @@ static void HookedLineOutput(Obj func, char type)
   HashUnlock(&profileState);
 }
 
+// Called whenever a function is entered
 static void enterFunction(Obj func)
 {
 #ifdef HPCGAP
@@ -356,6 +356,7 @@ static void enterFunction(Obj func)
     HookedLineOutput(func, 'I');
 }
 
+// Called whenever a function exits
 static void leaveFunction(Obj func)
 {
 #ifdef HPCGAP
@@ -379,6 +380,10 @@ static void leaveFunction(Obj func)
 ** If we could rely on the existence of the IO package, we would use that here.
 ** however, we want to be able to start compressing files right at the start
 ** of GAP's execution, before anything else is done.
+**
+** This has not switched to using GAP's internal gzip support because by
+** using an external gzip we get free parallelisation, and GAP code is not
+** 'charged' for the time taken to compress the profile output.
 */
 
 static BOOL endsWithgz(const char * s)
@@ -532,9 +537,35 @@ static inline void printOutput(int fileid, int line, BOOL exec, BOOL visited)
     }
 }
 
+// Mark line as visited, and return true if the line has been previously
+// visited (executed)
+static BOOL markVisited(int fileid, UInt line)
+{
+    // Some STATs end up without a file or line -- do not output these
+    // as they would just confuse the profile generation later.
+    if (fileid == 0 || line == 0) {
+        return TRUE;
+    }
+
+    if (LEN_PLIST(profileState.visitedStatements) < fileid ||
+        !ELM_PLIST(profileState.visitedStatements, fileid)) {
+        AssPlist(profileState.visitedStatements, fileid,
+                 NEW_PLIST(T_PLIST, 0));
+    }
+
+    Obj linelist = ELM_PLIST(profileState.visitedStatements, fileid);
+
+    if (LEN_PLIST(linelist) < line || !ELM_PLIST(linelist, line)) {
+        AssPlist(linelist, line, True);
+        return FALSE;
+    }
+    return TRUE;
+}
+
 // type : the type of the statement
 // exec : are we executing this statement
 // visit: Was this statement previously visited (that is, executed)
+// This deals with code which has been compiled into bytecode.
 static inline void
 outputStat(Int fileid, int line, int type, BOOL exec, BOOL visited)
 {
@@ -562,6 +593,10 @@ outputStat(Int fileid, int line, int type, BOOL exec, BOOL visited)
     printOutput(fileid, line, exec, visited);
 }
 
+// This deals with code which is interpreted without being turned into
+// bytecode. This is only code which is outside of functions and loops.
+// GAP reports the file, line, and if the code is executed or skipped (exec).
+// Code is skipped when an 'if' statement is false, for example.
 static inline void outputInterpretedStat(int fileid, int line, BOOL exec)
 {
     CheckLeaveFunctionsAfterLongjmp();
@@ -588,16 +623,14 @@ static void visitStat(Stat stat)
     return;
 #endif
 
-  BOOL visited = VISITED_STAT(stat);
+  int fileid = getFilenameIdOfCurrentFunction();
+  int line = LINE_STAT(stat);
 
-  if (!visited) {
-    SET_VISITED_STAT(stat);
-  }
+  BOOL visited = markVisited(fileid, line);
 
   if (profileState.OutputRepeats || !visited) {
     HashLock(&profileState);
-    outputStat(getFilenameIdOfCurrentFunction(), LINE_STAT(stat),
-               TNUM_STAT(stat), TRUE, visited);
+    outputStat(fileid, line, TNUM_STAT(stat), TRUE, visited);
     HashUnlock(&profileState);
   }
 }
@@ -671,7 +704,6 @@ enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
 
     profileState.status = Profile_Active;
     RegisterThrowObserver(ProfileRegisterLongJmpOccurred);
-    profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
 #endif
@@ -725,16 +757,11 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
       return Fail;
     }
 
-    if(profileState.profiledPreviously &&
-       coverage == True) {
-        ErrorMayQuit("Code coverage can only be started once per"
-                     " GAP session. Please exit GAP and restart. Sorry.",0,0);
-    }
-
     memset(&profileState, 0, sizeof(profileState));
 
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
     profileState.visitedDepths = NEW_PLIST(T_PLIST, 0);
+    profileState.visitedStatements = NEW_PLIST(T_PLIST, 0);
 
     RequireStringRep(SELF_NAME, filename);
 
@@ -798,7 +825,6 @@ static Obj FuncACTIVATE_PROFILING(Obj self,
 
     profileState.status = Profile_Active;
     RegisterThrowObserver(ProfileRegisterLongJmpOccurred);
-    profileState.profiledPreviously = 1;
 #ifdef HPCGAP
     profileState.profiledThread = TLS(threadID);
 #endif
@@ -875,6 +901,8 @@ static Int InitLibrary (
     InitGVarFuncsFromTable( GVarFuncs );
 
     profileState.visitedDepths = NEW_PLIST(T_PLIST, 0);
+    profileState.visitedStatements = NEW_PLIST(T_PLIST, 0);
+
     OutputtedFilenameList = NEW_PLIST(T_PLIST, 0);
     return 0;
 }
@@ -889,6 +917,8 @@ static Int InitKernel (
     InitHdlrFuncsFromTable( GVarFuncs );
     InitGlobalBag(&OutputtedFilenameList, "src/profile.c:OutputtedFileList");
     InitGlobalBag(&profileState.visitedDepths, "src/profile.c:visitedDepths");
+    InitGlobalBag(&profileState.visitedStatements,
+                  "src/profile.c:visitedStatements");
     return 0;
 }
 
