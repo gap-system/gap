@@ -518,7 +518,7 @@ new methods:
 
 # Cite() expects GAPInfo.Date to be of the form "YYYY-MM-DD" or "YYYY-Mon-DD" (or "today")
 gap> IsDateFormatValid := function( datestring )
->      local months, val;
+>      local val;
 >      if datestring = "today" then
 >        return true;
 >      fi;
@@ -526,9 +526,7 @@ gap> IsDateFormatValid := function( datestring )
 >      if Length( val ) <> 3 then
 >        return false;
 >      fi;
->      months:= [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
->                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
->      return Int( val[1] ) in [ 1900 .. 2100 ] and ( val[2] in months or Int( val[2] ) in [ 1 .. 12 ] ) and Int( val[3] ) in [ 1 .. 31 ];
+>      return Int( val[1] ) in [ 1900 .. 2100 ] and ( val[2] in NameMonth or Int( val[2] ) in [ 1 .. 12 ] ) and Int( val[3] ) in [ 1 .. 31 ];
 >    end;;
 gap> IsDateFormatValid( GAPInfo.Date );
 true

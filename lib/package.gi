@@ -2684,7 +2684,7 @@ Unicode:= "dummy";
 Encode:= "dummy";
 
 InstallGlobalFunction( BibEntry, function( arg )
-    local key, pkgname, pkginfo, GAP, ps, months, val, entry, author;
+    local key, pkgname, pkginfo, GAP, ps, val, entry, author;
 
     key:= false;
     if   Length( arg ) = 1 and IsString( arg[1] ) then
@@ -2778,13 +2778,11 @@ InstallGlobalFunction( BibEntry, function( arg )
     # We put the version information into the <C>title</C> component since
     # the <C>edition</C> component is not supported in the base styles.
 
-    months:= [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
     if GAP then
       val:= SplitString( GAPInfo.Date, "-" );
       if Length( val ) = 3 then
         if Int( val[2] ) in [ 1 .. 12 ] then
-          val:= Concatenation( "  <month>", months[ Int( val[2] ) ],
+          val:= Concatenation( "  <month>", NameMonth[ Int( val[2] ) ],
                                "</month>\n  <year>", val[1], "</year>\n" );
         else
           val:= Concatenation( "  <month>", val[2],
@@ -2838,7 +2836,7 @@ InstallGlobalFunction( BibEntry, function( arg )
                                  and Length( pkginfo.Date ) = 10 then
         if Int( pkginfo.Date{ [ 4, 5 ] } ) in [ 1 .. 12 ] then
           Append( entry, Concatenation(
-            "  <month>", months[ Int( pkginfo.Date{ [ 4, 5 ] } ) ],
+            "  <month>", NameMonth[ Int( pkginfo.Date{ [ 4, 5 ] } ) ],
             "</month>\n",
             "  <year>", pkginfo.Date{ [ 7 .. 10 ] }, "</year>\n" ) );
         else
