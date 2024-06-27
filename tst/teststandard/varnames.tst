@@ -7,7 +7,7 @@ gap> Filtered( NamesSystemGVars(), x -> not x in ALL_KEYWORDS() and
 >            ( Length(x)=1 or (IsLowerAlphaChar(x[1]) and Length(x) < 5) ) );
 [ "*", "+", "-", ".", "/", "<", "=", "E", "X", "Z", "^", "fail", "last", 
   "time" ]
-gap> Filtered(NamesSystemGVars(),name->IsSubset(LETTERS,name));;
+gap> Filtered(NamesSystemGVars(),name->IsSubset(CHARS_ALPHA,name));;
 gap> IsSubset(IDENTS_GVAR(), IDENTS_BOUND_GVARS() );
 true
 gap> E;

@@ -290,13 +290,12 @@ end);
 # +num for starting display in line num
 
 BindGlobal("PAGER_EXTERNAL",  function( lines )
-  local   path,  pager,  linepos,  str,  i,  cmdargs,  stream;
+  local   pager,  linepos,  str,  i,  cmdargs,  stream;
 
   pager := UserPreference("Pager");
   if not (Length(pager) > 0 and pager[1] = '/' and IsExecutableFile(pager))
       then
-    path := DirectoriesSystemPrograms();
-    pager := Filename( path, UserPreference("Pager") );
+    pager := PathSystemProgram( UserPreference("Pager") );
   fi;
   if pager=fail then
     Error( "Pager ", UserPreference("Pager"),

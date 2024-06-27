@@ -349,3 +349,70 @@ BIND_GLOBAL("UserHomeExpand", function(str)
     return str;
   fi;
 end);
+
+
+# the character set definitions might be needed when processing files, thus
+# they must come earlier.
+BIND_GLOBAL("CHARS_DIGITS",MakeImmutable(LIST_SORTED_LIST("0123456789")));
+BIND_GLOBAL("CHARS_UALPHA",
+  MakeImmutable(LIST_SORTED_LIST("ABCDEFGHIJKLMNOPQRSTUVWXYZ")));
+BIND_GLOBAL("CHARS_LALPHA",
+  MakeImmutable(LIST_SORTED_LIST("abcdefghijklmnopqrstuvwxyz")));
+BIND_GLOBAL("CHARS_ALPHA",
+  MakeImmutable(LIST_SORTED_LIST("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")));
+BIND_GLOBAL("CHARS_SYMBOLS",
+  MakeImmutable(LIST_SORTED_LIST(" !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")));
+
+
+#############################################################################
+##
+#F  _StripEscapeSequences( <str> ) . . . . . remove escape sequences from str
+##
+##  <#GAPDoc Label="_StripEscapeSequences">
+##  <ManSection >
+##  <Func Arg="str" Name="_StripEscapeSequences" />
+##  <Returns>string without escape sequences</Returns>
+##  <Description>
+##  This function returns the string one gets from the string <A>str</A> by
+##  removing all escape sequences. If <A>str</A> does not contain such a
+##  sequence then <A>str</A> itself is returned.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL("_StripEscapeSequences", function(str)
+  local   esc,  res,  i,  ls,  p;
+  esc := CHAR_INT(27);
+  res := "";
+  i := 1;
+  ls := Length(str);
+  while i <= ls do
+    if str[i] = esc then
+      i := i+1;
+      while not str[i] in CHARS_ALPHA do
+        i := i+1;
+      od;
+      # first letter is last character of escape sequence
+      i := i+1;
+      # remove \027 marker of inner escape sequences as well
+      if IsBound(str[i]) and str[i] = '\027' then
+        i := i+1;
+      fi;
+    else
+      p := Position(str, esc, i);
+      if p=fail then
+        if i=1 then
+          # don't copy if no escape there
+          return str;
+        else
+          Append(res, str{[i..ls]});
+          return res;
+        fi;
+      else
+        Append(res, str{[i..p-1]});
+        i := p;
+      fi;
+    fi;
+  od;
+  return res;
+end);

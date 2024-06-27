@@ -326,7 +326,7 @@ local s,l,a,e,n,c;
     FWITF:=Filename(DirectoryTemporary(),"clients");
   fi;
   if XLSCLIENTSCMD=false then
-    XLSCLIENTSCMD:=Filename(DirectoriesSystemPrograms(),"xlsclients");
+    XLSCLIENTSCMD:=PathSystemProgram("xlsclients");
   fi;
   if XLSCLIENTSCMD=fail then
     return fail;
@@ -393,7 +393,7 @@ show := function(file)
     file := file.file;
   fi;
   if XRMTCMD=false then
-    XRMTCMD:=Filename(DirectoriesSystemPrograms(),"xrmtcmd");
+    XRMTCMD:=PathSystemProgram("xrmtcmd");
   fi;
   if XRMTCMD<>fail then
     wnum:=FindWindowId("xdvi",file); # get the window ID of a running XDVI

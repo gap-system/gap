@@ -69,10 +69,10 @@
 ##  directory.
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> path := DirectoriesSystemPrograms();;
-##  gap> ls := Filename( path, "ls" );;
+##  gap> ls := PathSystemProgram( "ls" );;
 ##  gap> stdin := InputTextUser();;
 ##  gap> stdout := OutputTextUser();;
+##  gap> path := DirectoriesSystemPrograms();;
 ##  gap> Process( path[1], ls, stdin, stdout, ["-c"] );;
 ##  awk    ls     mkdir
 ##  gap> # current directory, here the root directory
@@ -123,12 +123,10 @@
 ##  Note that input/output redirection commands are <E>not</E> allowed as
 ##  <A>options</A>.
 ##  <P/>
-##  In order to find a system program use <Ref Func="DirectoriesSystemPrograms"/>
-##  together with <Ref Oper="Filename" Label="for a directory and a string"/>.
+##  In order to find a system program use <Ref Func="PathSystemProgram"/>.
 ##  <P/>
 ##  <Log><![CDATA[
-##  gap> path := DirectoriesSystemPrograms();;
-##  gap> date := Filename( path, "date" );
+##  gap> date := PathSystemProgram( "date" );
 ##  "/bin/date"
 ##  ]]></Log>
 ##  <P/>
