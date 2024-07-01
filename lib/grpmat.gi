@@ -1243,6 +1243,146 @@ InstallGlobalFunction( "BlowUpIsomorphism", function( matgrp, B )
 
 #############################################################################
 ##
+#F  DiagonalAutomorphismGroupOfSL(<G>)
+## 
+##  Returns the group of all diagonal automorphsims of G = SL(d,q)
+##  An automorphism f : G -> G is a diagonal automorphism iff
+##  f(U) = D U D^-1 for all U in G and some diagonal matrix D in GL(d,q)
+##
+InstallGlobalFunction("DiagonalAutomorphismGroupOfSL",function(G)
+    local D,x,z,i,M,d,q;
+    d := SLDegree(G);
+    q := Size(SLUnderlyingField(G));
+    z := Z(q);
+    D := [];
+    for i in [1..d] do
+        M := IdentityMatrix(GF(q),d);
+        M[i][i] := z;
+        if ConjugateGroup(G,M) = G then
+            M := ConjugatorAutomorphismNC(G,M);
+            Add(D,M);
+        fi;
+    od;
+    D := GroupWithGenerators(D);
+    return D;
+end);
+
+#############################################################################
+##
+#F  FieldAutomorphismGroupOfSL(<G>)
+## 
+##  Returns the group of all field automorphsims of G = SL(d,q).
+##  A field automorphism of SL(d,q), say f : G -> G is given as
+##  f(U) = [sigma(uij)]_{ij} where uij is an entry in U and sigma
+##  is an automorphism over the field that G acts over.
+##
+InstallGlobalFunction("FieldAutomorphismGroupOfSL",function(G)
+    local f,F,applyf,gens,fgens,d,q;
+    d := SLDegree(G);
+    q := Size(SLUnderlyingField(G));
+    f := FrobeniusAutomorphism(GF(q));
+    # f can generate all automorphisms of GF(q)
+    applyf := function(M)
+        local Mnew,i,j;
+        Mnew := List(M,ShallowCopy);
+        for i in [1..d] do
+            for j in [1..d] do
+                Mnew[i][j] := Image(f,M[i][j]);
+            od;
+        od;
+        return Mnew;
+    end;
+    gens := GeneratorsOfGroup(G);
+    fgens := List(gens,applyf);
+    F := GroupHomomorphismByImagesNC(G,G,gens,fgens);
+    F := GroupWithGenerators([F]);
+    return F;
+end);
+
+#############################################################################
+##
+#F  GraphAutomorphismOfSL(<G>)
+##
+##  Returns the graph automorphism g : G -> G of G = SL(d,q),
+##  given by g(U) = (U^T)^-1 for all U in G.
+##
+InstallGlobalFunction("GraphAutomorphismOfSL",function(G)
+    local g,gens,ggens,d,q;
+    d := SLDegree(G);
+    q := Size(SLUnderlyingField(G));
+    gens := GeneratorsOfGroup(G);
+    ggens := List(gens, U -> (TransposedMat(U))^-1);
+    g := GroupHomomorphismByImagesNC(G,G,gens,ggens);
+    return g;
+end);
+
+
+#############################################################################
+##
+#F  SLAutomorphismDecomposition(<G>,<alpha>)
+##
+##  Returns the decomposition of automorphism alpha of G
+##  (a special linear group) as
+##  alpha = i * d * g * f , or
+##  alpha = i * d * e * f where
+##  i is an inner automorphism of G,
+##  d is a diagonal automorphism of G,
+##  f is a field automorphism of G,
+##  g : G \to G is the graph automorphism i.e. g(U) = (U^T)^-1, and
+##  e = g^2 is the identity automorphism.
+##
+InstallGlobalFunction("SLAutomorphismDecomposition",function(G,alpha)
+    local D,F,I,g,gg,dinv,finv,ginv,i,d,f,gfinv,dgfinv;
+    D := DiagonalAutomorphismGroupOfSL(G);
+    F := FieldAutomorphismGroupOfSL(G);
+    I := InnerAutomorphismGroup(G);
+    g := GraphAutomorphismOfSL(G);
+    gg := GroupWithGenerators([g]);
+    for finv in F do
+        for ginv in gg do
+            gfinv := finv * ginv;
+            for dinv in D do
+                dgfinv := gfinv * dinv;
+                i := alpha * dgfinv;
+                if i in I then
+                    d := dinv^-1;
+                    g := ginv^-1;
+                    f := finv^-1;
+                    return [i,d,g,f];
+                fi;
+            od;
+        od;
+    od;
+    return fail;
+end);
+
+
+#############################################################################
+##
+#F  HasGraphAutomorphism(<G>,<Auts>)
+##
+##  Checks if any of the automorphisms of G,
+##  in Auts , say alpha can be decomposed as
+##  alpha = i * d * g * f , where
+##  i is an inner automorphism of G,
+##  d is a diagonal automorphism of G,
+##  f is a field automorphism of G, and
+##  g : G \to G is the graph automorphism i.e. g(U) = (U^T)^-1
+##
+InstallGlobalFunction("ContainsGraphAutomorphismOfSL",function(G,Auts)
+    local alpha,L,g;
+    for alpha in Auts do
+        L := SLAutomorphismDecomposition(G,alpha);
+        if L = fail then Error("This shouldn't be happening"); fi;
+        g := L[3];
+        if Order(g) = 2 then return false; fi;
+    od;
+    return false;
+end);
+
+
+#############################################################################
+##
 ##  stuff concerning invariant forms of matrix groups
 #T add code for computing invariant forms,
 #T and transforming matrices for normalizing the forms

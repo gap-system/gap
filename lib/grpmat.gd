@@ -556,3 +556,105 @@ DeclareGlobalFunction( "AffineActionByMatrixGroup" );
 DeclareGlobalFunction( "BlowUpIsomorphism" );
 
 DeclareGlobalFunction( "BasisVectorsForMatrixAction" );
+
+#############################################################################
+##
+#F  DiagonalAutomorphismGroupOfSL(<G>)
+##
+##  <#GAPDoc Label="DiagonalAutomorphismGroupOfSL">
+##  <ManSection>
+##  <Func Name="DiagonalAutomorphismGroupOfSL" Arg='G'/>
+##
+##  <Description>
+##  Returns the group of all diagonal automorphsims of <M> G = SL(d,q) </M>.
+##  An automorphism <M> f : G \to G </M> is a diagonal automorphism iff
+##  <M> f(U) = D U D^{-1} \;\forall\, U \in G </M>
+##  for some diagonal matrix <M> D \in GL(d,q) </M> .
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("DiagonalAutomorphismGroupOfSL");
+
+#############################################################################
+##
+#F  FieldAutomorphismGroupOfSL(<G>)
+##
+##  <#GAPDoc Label="FieldAutomorphismGroupOfSL">
+##  <ManSection>
+##  <Func Name="FieldAutomorphismGroupOfSL" Arg='G'/>
+##
+##  <Description>
+##  Returns the group of all field automorphsims of <M> G = SL(d,q) </M>.
+##  A field automorphism <M> f : G \to G </M> is given as
+##  <M> f(U) = [\sigma(U_{ij})]_{ij} </M> where <M> U_{ij} </M> is an entry in U
+##  and <M> \sigma </M> is an automorphism over the field that <A>G</A> acts over.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("FieldAutomorphismGroupOfSL");
+
+#############################################################################
+##
+#F  GraphAutomorphismOfSL(<G>)
+##
+##  <#GAPDoc Label="GraphAutomorphismOfSL">
+##  <ManSection>
+##  <Func Name="GraphAutomorphismOfSL" Arg='G'/>
+##
+##  <Description>
+##  Returns the graph automorphism <M>g : G \to G</M> of <M>G = SL(d,q)</M>,
+##  given by <M>g(U) = (U^T)^{-1} \;\forall\, U \in G </M>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("GraphAutomorphismOfSL");
+
+#############################################################################
+##
+#F  SLAutomorphismDecomposition(<G>,<alpha>)
+##
+##  <#GAPDoc Label="SLAutomorphismDecomposition">
+##  <ManSection>
+##  <Func Name="SLAutomorphismDecomposition" Arg='G, alpha'/>
+##
+##  <Description>
+##  Returns the decomposition of automorphism <M>\alpha</M> of <A>G</A>
+##  which is a special linear group, as
+##  <M> \alpha = i \, d \, g \, f </M> , or
+##  <M> \alpha = i \, d \, e \, f </M> where
+##  <M>i</M> is an inner automorphism of G,
+##  <M>d</M> is a diagonal automorphism of G,
+##  <M>f</M> is a field automorphism of G,
+##  <M>g : G \to G</M> is the graph automorphism i.e.
+##  <M>g(U) = (U^T)^{-1}</M>, and
+##  <M>e = g^2</M> is the identity automorphism.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("SLAutomorphismDecomposition");
+
+#############################################################################
+##
+#F  ContainsGraphAutomorphismOfSL(<G>,<Auts>)
+##
+##  <#GAPDoc Label="ContainsGraphAutomorphismOfSL">
+##  <ManSection>
+##  <Func Name="ContainsGraphAutomorphismOfSL" Arg='G, Auts'/>
+##
+##  <Description>
+##  Checks if any of the automorphisms of <A>G</A>,
+##  in <A>Auts</A> , say <M>\alpha</M> can be decomposed as
+##  <M>\alpha = i\,d\,g\,f</M>, where
+##  <M>i</M> is an inner automorphism of G,
+##  <M>d</M> is a diagonal automorphism of G,
+##  <M>f</M> is a field automorphism of G, and
+##  <M>g</M> is the graph automorphism.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("ContainsGraphAutomorphismOfSL");
