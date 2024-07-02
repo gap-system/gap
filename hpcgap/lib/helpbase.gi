@@ -55,11 +55,6 @@ end);
 ##  This utility will first be used in some debug tools showing what is newly
 ##  installed by loading a package. Can be documented if desired.
 ##
-# avoid warning for vars from GAPDoc package
-if not IsBound(StripEscapeSequences) then
-  StripEscapeSequences := 0;
-fi;
-
 BindGlobal( "IsDocumentedWord", function( arg )
   local inid, word, case, simple, cword, book, matches, a, match;
 
@@ -76,7 +71,7 @@ BindGlobal( "IsDocumentedWord", function( arg )
   for book in HELP_KNOWN_BOOKS[1] do
     matches:= HELP_GET_MATCHES( [ book ], simple, true );
     for a in Concatenation( matches ) do
-      match:= case( StripEscapeSequences( a[1].entries[ a[2] ][1] ) );
+      match:= case( _StripEscapeSequences( a[1].entries[ a[2] ][1] ) );
       if cword in SplitString( match, "", Difference( match, inid ) ) then
         return true;
       fi;
@@ -285,7 +280,7 @@ for pair in TRANSATL do
   for book in HELP_KNOWN_BOOKS[1] do
     matches:= HELP_GET_MATCHES( [ book ], word, false );
     for a in Concatenation( matches ) do
-      match:= StripEscapeSequences( a[1].entries[ a[2] ][1] );
+      match:= _StripEscapeSequences( a[1].entries[ a[2] ][1] );
       patterns:=[];
       for i in [1..Length(TRANSATL)] do
         patterns[i]:=[];
@@ -314,10 +309,6 @@ od;
 return report;
 od; # end atomic
 end);
-
-if StripEscapeSequences = 0 then
-  Unbind(StripEscapeSequences);
-fi;
 
 
 #############################################################################
@@ -1061,9 +1052,6 @@ end);
 if not IsBound( InitialSubstringUTF8String ) then
   InitialSubstringUTF8String:= "dummy";
 fi;
-if not IsBound( LETTERS ) then
-  LETTERS:= "dummy";
-fi;
 if not IsBound( WidthUTF8String ) then
   WidthUTF8String:= "dummy";
 fi;
@@ -1094,7 +1082,7 @@ BindGlobal( "InitialSubstringUTF8Text", function( str, cols )
       fi;
       # Now pos points at an ESC character; all escape sequences we
       # support are terminated by a letter, so search for one.
-      j:= PositionProperty( str, c -> c in LETTERS, pos );
+      j:= PositionProperty( str, c -> c in CHARS_ALPHA, pos );
       if j = fail then
         Error( "string end inside escape sequence" );
       fi;
@@ -1105,9 +1093,6 @@ end );
 
 if not IsReadOnlyGlobal( "InitialSubstringUTF8String" ) then
   Unbind( InitialSubstringUTF8String );
-fi;
-if not IsReadOnlyGlobal( "LETTERS" ) then
-  Unbind( LETTERS );
 fi;
 if not IsReadOnlyGlobal( "WidthUTF8String" ) then
   Unbind( WidthUTF8String );

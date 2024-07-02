@@ -95,7 +95,7 @@ make -j8 || exit 125
 echo "HEAD: "$(git rev-parse HEAD)
 echo "Running tests..."
 
-if [-x bin/gap.sh ] ; then
+if [ -x bin/gap.sh ] ; then
   GAP=bin/gap.sh
 else
   GAP=./gap
@@ -132,9 +132,9 @@ fi;
 # run the actual test
 if Test("'${TESTFILE}'") then
   Print("Commit is good\\n");
-  QuitGap(0);
+  QUIT_GAP(0);
 else
   Print("Commit is bad\\n");
-  QuitGap(1);
+  QUIT_GAP(1);
 fi;
 ' | ${GAP} -A -b -q

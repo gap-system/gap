@@ -26,7 +26,7 @@ const char * SyKernelVersion = "@GAP_VERSION@";
 **
 *V  SyReleaseDay . . . . . . . . . . . . . . release date of this GAP version
 **
-**  'SyReleaseDay' is the date of the release, e.g. "19-Jun-2019"; for
+**  'SyReleaseDay' is the date of the release, e.g. "2019-Jun-19"; for
 **  development versions, this is set to "today".
 */
 const char * SyReleaseDay = "@GAP_RELEASEDAY@";

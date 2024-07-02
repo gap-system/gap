@@ -65,7 +65,7 @@ for x in NamesOfComponents(HELP_BOOKS_INFO) do
 
   for i in [1 .. Length(book.entries)] do
     entry := HELP_BOOK_HANDLER.HelpDataRef(book, i);
-    name := StripEscapeSequences(entry[1]);
+    name := _StripEscapeSequences(entry[1]);
     name := ReplacedString(name, match, "");
     NormalizeWhitespace(name);
 

@@ -89,7 +89,7 @@ Debug := function(arg)
   fi;
 
   # Call the editor:
-  execpath := Filename(DirectoriesSystemPrograms(),DEBUG.EDITOR.command);
+  execpath := PathSystemProgram(DEBUG.EDITOR.command);
   l:= List( DEBUG.EDITOR.args, x -> ReplacedString( x, "###", String( i ) ) );
   Add(l,t);   # append the temporary filename
   Process(DirectoryCurrent(),execpath,InputTextUser(),OutputTextUser(),l);

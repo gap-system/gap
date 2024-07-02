@@ -807,7 +807,7 @@ end);
 ##  <Description>
 ##  The argument <Arg>inlist</Arg> must be either a single filename
 ##  or directory name, or a list of filenames and directories.
-##  The function <Ref Func="TestDirectory" /> will take create a list of files
+##  The function <Ref Func="TestDirectory" /> will create a list of files
 ##  to be tested by taking any files in <Arg>inlist</Arg>, and recursively searching
 ##  any directories in <Arg>inlist</Arg> for files ending in <C>.tst</C>.
 ##  Each of these files is then run through <Ref Func="Test" />, and the results

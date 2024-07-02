@@ -122,6 +122,7 @@ for more information how to do this.
 <Heading>File Names</Heading>
 
 <#Include Label="Filename">
+<#Include Label="PathSystemProgram">
 
 </Section>
 
