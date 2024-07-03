@@ -1316,7 +1316,7 @@ end );
 #F  ReadPackage( [<name>, ]<file> )
 #F  RereadPackage( [<name>, ]<file> )
 ##
-InstallGlobalFunction( ReadPackage, function( arg )
+BindGlobal( "_ReadPackage", function( arg, error )
     local pos, relpath, pkgname, namespace, filename;
 
     # Note that we cannot use `ReadAndCheckFunc' because this calls
@@ -1329,16 +1329,16 @@ InstallGlobalFunction( ReadPackage, function( arg )
       if pos = fail then
         ErrorNoReturn(arg[1], " is not a filename in the form 'package/filepath'");
       fi;
+      pkgname:= arg[1]{ [ 1 .. pos-1 ] };
       relpath:= arg[1]{ [ pos+1 .. Length( arg[1] ) ] };
-      pkgname:= LowercaseString( arg[1]{ [ 1 .. pos-1 ] } );
-      namespace := GAPInfo.PackagesInfo.(pkgname)[1].PackageName;
     elif Length( arg ) = 2 then
-      pkgname:= LowercaseString( arg[1] );
-      namespace := GAPInfo.PackagesInfo.(pkgname)[1].PackageName;
+      pkgname:= arg[1];
       relpath:= arg[2];
     else
       Error( "expected 1 or 2 arguments" );
     fi;
+    pkgname:= LowercaseString( pkgname );
+    namespace := GAPInfo.PackagesInfo.(pkgname)[1].PackageName;
 
     # Note that `DirectoriesPackageLibrary' finds the file relative to the
     # installation path of the info record chosen in `LoadPackage'.
@@ -1348,9 +1348,14 @@ InstallGlobalFunction( ReadPackage, function( arg )
       Read( filename );
       LEAVE_NAMESPACE();
       return true;
-    else
-      return false;
+    elif error then
+      Info(InfoWarning, 1, "ReadPackage could not read <", pkgname, ">/", relpath, "\n");
     fi;
+    return false;
+    end );
+
+InstallGlobalFunction( ReadPackage, function( arg )
+    return _ReadPackage( arg, true );
     end );
 
 InstallGlobalFunction( RereadPackage, function( arg )
@@ -1359,7 +1364,7 @@ InstallGlobalFunction( RereadPackage, function( arg )
     MakeReadWriteGlobal( "REREADING" );
     REREADING:= true;
     MakeReadOnlyGlobal( "REREADING" );
-    res:= CallFuncList( ReadPackage, arg );
+    res:= _ReadPackage( arg, false );
     MakeReadWriteGlobal( "REREADING" );
     REREADING:= false;
     MakeReadOnlyGlobal( "REREADING" );

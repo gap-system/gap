@@ -688,7 +688,8 @@ DeclareGlobalFunction( "DirectoriesPackageLibrary" );
 ##  package to be loaded.)
 ##  <P/>
 ##  If the file is readable then <K>true</K> is returned,
-##  otherwise <K>false</K>.
+##  otherwise a warning is displayed (for <Ref Func="ReadPackage"/>)
+##  or <K>false</K> is returned (for <Ref Func="RereadPackage"/>).
 ##  <P/>
 ##  Each of <A>name</A> and <A>file</A> should be a string.
 ##  The <A>name</A> argument is case insensitive.
