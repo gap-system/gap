@@ -3790,19 +3790,23 @@ end);
 
 #########################################################################
 ##
-#F  CanLiftPermutationDegreeToNormaliserOfPSL(<S>,<G>,<d>,<q>)
+#F  CanLiftPermutationDegreeToNormaliserOfSimpleMatrixGroup(<S>,<G>,<d>,<q>,<type>)
 ##
-##  Checks whether mu(A) = mu(S) when S is isomorphic to PSL(d,q),
+##  Checks whether mu(A) = mu(S) when S is isomorphic to the
+##  simple matrix group specified by "d","q" and "type",
 ##  where A is an automorphism subgroup of S,
 ##  made of all conjugators ^n for all n in normaliser of S in G,
 ##  and mu(X) is the Minimal Faithful Permutation Degree of X.
 ##  This is implemented, as described in this research paper:
 ##  https://dl.acm.org/doi/10.1145/3618260.3649641
-BindGlobal("CanLiftPermutationDegreeToNormaliserOfPSL",function(S,G,d,q)
-    # S is a simple subgroup of G, which is isomorphic to PSL(d,q)
+BindGlobal("CanLiftPermutationDegreeToNormaliserOfSimpleMatrixGroup",function(S,G,d,q,type)
+    # S is a simple subgroup of G, which is isomorphic to PSL(d,q) , or PSp(d,q) , or POmega(1,2d,q)
+    # type is the type of simple group we are dealing with ("PSL","PSp","POmega+")
+    # For the sake of sanity, the varaibles are chosen to represent the process for type="PSL" only,
+    # but work functionally, for every type of simple matrix group specified.
     local
         Sldq,           # SL(d,q) with generators Slgen
-        Slgen,          # Very specific generating set of SL(d,q)
+        Slgen,          # Very specific generating set of SL(d,q), or correspoding group based on "type"
         p,              # q = p^e
         s,g,            # Any element in S
         m2,             # A homomorphism between SL(d,q) and PSL(d,q)
@@ -3853,7 +3857,7 @@ BindGlobal("CanLiftPermutationDegreeToNormaliserOfPSL",function(S,G,d,q)
         finvlis,finv,
         FirstOfimagesOfscalarMatrices,
         scalarMatrices,imagesOfscalars,
-        MakeFieldAutomorphismOfSL,finvmatrixlist;
+        MakeFieldAutomorphismOfSldq,finvmatrixlist,O,phi,PO,POgens;
 
     # Computing Normaliser and Centraliser
     N := Normaliser(G,S);
@@ -3871,39 +3875,116 @@ BindGlobal("CanLiftPermutationDegreeToNormaliserOfPSL",function(S,G,d,q)
     # Calculating Sldq
     p := PrimeDivisors(q)[1];
     Slgen := [];
-    for i in [1..d] do
-        for j in [1..d] do
-            if i=j then continue; fi;
-            for r in [0,1..p-1] do
-                U := IdentityMatrix(GF(q),d);
-                U[i][j] := Z(q)^r;
-                Add(Slgen,U);
+    if type = "PSL" then
+        for i in [1..d] do
+            for j in [1..d] do
+                if i=j then continue; fi;
+                for r in [0,1..p-1] do
+                    U := IdentityMatrix(GF(q),d);
+                    U[i][j] := Z(q)^r;
+                    Add(Slgen,U);
+                od;
             od;
         od;
-    od;
+    elif type="POmega+" then
+        for j in [2..d] do
+            for i in [1..j-1] do
+                for r in [0,1..q-2] do
+                    # I + z(e_{i,j} - e_{-j,-i})
+                    U := IdentityMatrix(GF(q),2*d);
+                    U[i][j] := Z(q)^r;
+                    U[d+j][d+i] := -Z(q)^r;
+                    Add(Slgen,U);
+                    # I + z(e_{j,i} - e_{-i,-j})
+                    U := IdentityMatrix(GF(q),2*d);
+                    U[j][i] := Z(q)^r;
+                    U[d+i][d+j] := -Z(q)^r;
+                    Add(Slgen,U);
+                    # I + z(e_{i,-i} - e_{j,-i})
+                    U := IdentityMatrix(GF(q),2*d);
+                    U[i][d+j] := Z(q)^r;
+                    U[j][d+i] := -Z(q)^r;
+                    Add(Slgen,U);
+                    # I + z(e_{-i,j} - e_{-j,i})
+                    U := IdentityMatrix(GF(q),2*d);
+                    U[d+i][j] := Z(q)^r;
+                    U[d+j][i] := -Z(q)^r;
+                    Add(Slgen,U);
+                od;
+            od;
+        od;
+        d := 2*d;
+    elif type="PSp" then
+        for j in [2..d] do
+            for i in [1..j-1] do
+                for r in [0,1..q-2] do
+                    # I + z(e_{i,j} - e_{-j,-i})
+                    U := IdentityMatrix(GF(q),2*d);
+                    U[i][j] := Z(q)^r;
+                    U[d+j][d+i] := -Z(q)^r;
+                    Add(Slgen,U);
+                    # I - z(e_{-i,-j} - e_{j,i})
+                    U := IdentityMatrix(GF(q),2*d);
+                    U[j][i] := Z(q)^r;
+                    U[d+i][d+j] := -Z(q)^r;
+                    Add(Slgen,U);
+                    # I + z(e_{i,-i} + e_{j,-i})
+                    U := IdentityMatrix(GF(q),2*d);
+                    U[i][d+j] := Z(q)^r;
+                    U[j][d+i] := Z(q)^r;
+                    Add(Slgen,U);
+                    # I - z( - e_{-i,j} - e_{-j,i})
+                    U := IdentityMatrix(GF(q),2*d);
+                    U[d+i][j] := Z(q)^r;
+                    U[d+j][i] := Z(q)^r;
+                    Add(Slgen,U);
+                od;
+            od;
+        od;
+        for i in [1..d] do
+            # I + z e_{i,-i}
+            U := IdentityMatrix(GF(q),2*d);
+            U[i][d+i] := Z(q)^r;
+            Add(Slgen,U);
+            # I + z e_{-i,i}
+            U := IdentityMatrix(GF(q),2*d);
+            U[d+i][i] := Z(q)^r;
+            Add(Slgen,U);
+        od;
+        d := 2*d;
+    fi;
     Sldq := GroupWithGenerators(Slgen);
 
     # Calculating m2 and pS
-    C := Center(Sldq);
+    if type="PSL" or type="PSp" then
+        C := Center(Sldq);
+    elif type="POmega+" then
+        C := Center(GO(1,d,q));
+        C := Filtered(C,x->x in Sldq); #There are only O(q) elements in C
+        C := AsGroup(C);
+    fi;
     m2 := NaturalHomomorphismByNormalSubgroupNC(Sldq,C);
-    pS := Image(m2); #PSL group
+    pS := Image(m2); #PSL(d,q),PSp(d,q),or POmega+(2d,q)
 
     # Calculating StopS
     StopS := IsomorphismSimpleGroups(S,pS); # Isomorphism between S and pS
+    if StopS = fail then StopS := IsomorphismGroups(S,pS);fi;
 
     # Calculating AutpSgens
     AutpSgens := List(AutSgens,x -> InducedAutomorphism(StopS,x));
 
     # Function to get alpha for any lambda
     m2lambm2inv := function(U,lambda,m2,C,p)
-        local ZU,ZV,VZrep,V;
-        ZU := Image(m2,U);
-        ZV := Image(lambda,ZU);
-        VZrep := PreImagesRepresentative(m2,ZV);
-        ZV := RightCoset(C,VZrep);
-        for V in ZV do
+        local UZ,VZ,VZrep,V;
+        UZ := Image(m2,U);
+        VZ := Image(lambda,UZ);
+        VZrep := PreImagesRepresentative(m2,VZ);
+        if Size(C)=1 then return VZrep;fi;
+        VZ := RightCoset(C,VZrep);
+        for V in VZ do
             if Order(V) = p then return V; fi;
         od;
+        Error("No element found");
     end;
 
     # Calculating AutSl
@@ -3923,30 +4004,46 @@ BindGlobal("CanLiftPermutationDegreeToNormaliserOfPSL",function(S,G,d,q)
     flisinit := List([1..Order(f)],x->f^x);
     finvlisinit := List(flisinit,f -> f^-1);
     imagesOfscalars := List(flisinit,f -> List(scalars,f));
-    MakeFieldAutomorphismOfSL := function(f)
-      local gens,row,M,applyfonrow,applyf,fgens,x;
-      gens := GeneratorsOfGroup(Sldq);
+    MakeFieldAutomorphismOfSldq := function(f)
+      local row,M,applyfonrow,applyf,fgens,x;
       applyfonrow := row -> List(row,x -> Image(f,x));
       applyf := M -> List(M,applyfonrow);
-      fgens := List(gens,applyf);
-      return GroupHomomorphismByImagesNC(Sldq,Sldq,gens,fgens);
+      fgens := List(Slgen,applyf);
+      return GroupHomomorphismByImagesNC(Sldq,Sldq,Slgen,fgens);
     end;
-    finvmatrixlist := List(finvlisinit,MakeFieldAutomorphismOfSL);
-    for alpha in AutSlgens do
-      conj := false;
-      FirstOfimagesOfscalarMatrices := List(scalarMatrices,M -> alpha(M)[1][1]);
-      findlis := Filtered([1..Length(flisinit)], i -> FirstOfimagesOfscalarMatrices = imagesOfscalars[i]);
-      finvlis := List(findlis,i -> finvmatrixlist[i]);
-      for finv in finvlis do
-        alphafinv := alpha * finv;
-        if IsConjugatorAutomorphism(alphafinv) then
-          conj := true;
-          break;
-        fi;
-      od;
-      if not conj then return false; fi;
-    od;
+    finvmatrixlist := List(finvlisinit,MakeFieldAutomorphismOfSldq);
+    if type="PSL" or type="PSp" then
+        for alpha in AutSlgens do
+          conj := false;
+          FirstOfimagesOfscalarMatrices := List(scalarMatrices,M -> alpha(M)[1][1]);
+          findlis := Filtered([1..Length(flisinit)], i -> FirstOfimagesOfscalarMatrices = imagesOfscalars[i]);
+          finvlis := List(findlis,i -> finvmatrixlist[i]);
+          for finv in finvlis do
+            alphafinv := alpha * finv;
+            if IsConjugatorAutomorphism(alphafinv) then
+              conj := true;
+              break;
+            fi;
+          od;
+          if not conj then return false; fi;
+        od;
+    elif type="POmega+" then
+        O := GO(1,d,q);
+        C := Center(GO(1,d,q));
+        phi := NaturalHomomorphismByNormalSubgroupNC(O,C);
+        PO := Image(phi);
+        POgens := GeneratorsOfGroup(PO);
+        POgens := List(POgens,x -> PreImagesRepresentative(phi,x));
+        POgens := List(POgens,x-> ConjugatorAutomorphismNC(Sldq,x));
+        PO := GroupWithGenerators(POgens);
+        if d > 8 then
+            for alpha in AutSlgens do
+                if not alpha in PO then return false; fi;
+            od;
+        elif d = 8 then
 
+        fi;
+    fi;
     return true;
 end);
 
@@ -4006,12 +4103,11 @@ BindGlobal("MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgrou
             else return -1; fi;
         fi;
 
-    elif series = "2A" # PSU
+    elif series = "2A" # PSU(3,5)
         and m+1 = 3
         and q = 5 then
         #if not A <~ PSigmaU(3,5) then return 126; fi;
-        if 126000 mod sizeA <> 0 then return 126;
-        else return -1; fi;
+        return -1;
 
     elif series = "D" then #P\Omega^+
         d := 2*m;
@@ -4028,20 +4124,18 @@ BindGlobal("MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgrou
         elif d = 8
             and sizeA/sizeS mod 3 = 0
             then return 3 * mu(S);
-        elif q = 3 and
-            d > 7 and
-            sizeA/sizeS mod 3 <> 0 and
-            Size(PGO(1,2*d,3)) mod sizeA <>0 # (*)
+        elif q = 3 and d > 7 and
+            sizeA/sizeS mod 3 <> 0 then
+            if Size(PGO(1,d,3)) mod sizeA <>0 # (*)
             then return (3^(m-1) + 1) * (3^m -1) / 2 ;
-            else return -1;
+            else return -1; fi;
         fi;
 
     elif series = "G" then
         #if q = 3 and Iso(A,Aut(S)) then return 2 * mu(S);fi;
         if q = 3 and sizeA = Size(Aut(S)) then return 2 * mu(S); fi;
         #This is because A is isomorphic to a subgroup in Aut(S) that contains Inn(S) \cong S at any point.
-        b := Int(Log(Float(q))/Log(3.0));
-        if 3^(b+1) = q then b := b+1; fi; # Just a safety net
+        b := LogInt(q,3);
         if 3^b = q and b >1 then
             #if not A <~ GammaG(q) then return 2 * mu(S); fi;
             if Size(GF(q))*Size(GaloisGroup(AsField(GF(q),GF(3)))) mod sizeA <> 0 then return 2 * mu(S);
@@ -4052,8 +4146,7 @@ BindGlobal("MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgrou
         and 2^Log2Int(q) = q
         and q > 3 then
         #if not A <~ PGammaSp(d,q) then return 2*mu(S); fi;
-        if sizeS * Size(GaloisGroup(AsField(GF(q),GF(2)))) mod sizeA <> 0 then return 2 * mu(S);
-        else return -1; fi;
+        return -1;
     elif series = "F" and 2^Log2Int(q) = q then
         #if not A <~ GammaF(d,q) then return 2*mu(S); fi;
         if sizeS * Size(GaloisGroup(GF(q))) mod sizeA <> 0 then return 2 * mu(S);
@@ -4063,7 +4156,7 @@ BindGlobal("MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgrou
         if sizeS * Size(GaloisGroup(GF(q))) mod sizeA <> 0 then return 2 * mu(S);
         else return -1; fi;
     fi;
-    return MinimalFaithfulPermutationDegreeOfSimpleGroup(S);
+    return mu(S);
 end);
 
 ##################################################################################
@@ -4087,7 +4180,7 @@ InstallGlobalFunction(MinimalFaithfulPermutationDegreeOfSemiSimpleGroup,function
         sizeA,  # Size(A)
         S,      # Slis[1] =~ Slis[i]
         info,   # Information about isomorphism type of S
-        MNS;
+        MNS,m,q;
     mu := 0;
     MNS := MinimalNormalSubgroups(G);
     if Length(MNS) = 1 and MNS[1] = G then return MinimalFaithfulPermutationDegreeOfSimpleGroup(G); fi;
@@ -4100,14 +4193,32 @@ InstallGlobalFunction(MinimalFaithfulPermutationDegreeOfSemiSimpleGroup,function
         muA := MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgroup(sizeA,S);
         if muA = -1 then
             info := IsomorphismTypeInfoFiniteSimpleGroup(S);
-            if info.series = "L"
-                and info.parameter[1] > 2
-                and not (info.parameter[2] = 2 and (info.parameter[1] in [3,4])) then
+            if not IsList(info.parameter) then q := info.parameter;
+            else m := info.parameter[1]; q := info.parameter[2]; fi;
+            if info.series = "L" #PSL
+                and m > 2
+                and not (q = 2 and (m in [3,4])) then
                 #Print("\t PSL type simple subgroup\n");
-                if CanLiftPermutationDegreeToNormaliserOfPSL(S,G,info.parameter[1],info.parameter[2]) then
+                if CanLiftPermutationDegreeToNormaliserOfSimpleMatrixGroup(S,G,m,q,"PSL") then
                     muA := MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
                 else
                     muA := 2*MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
+                fi;
+            elif info.series ="C" #PSp
+                and m = 2
+                and 2^Log2Int(info.parameter[2]) = info.parameter[2] then
+                if CanLiftPermutationDegreeToNormaliserOfSimpleMatrixGroup(S,G,m,q,"PSp") then
+                    muA := MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
+                else
+                    muA := 2*MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
+                fi;
+            elif info.series ="D" #POmega+
+                and q = 3
+                and m >= 4 then
+                if CanLiftPermutationDegreeToNormaliserOfSimpleMatrixGroup(S,G,m,q,"POmega+") then
+                    muA := MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
+                else
+                    muA := (3^(m-1) + 1) * (3^m -1) / 2 ;
                 fi;
             else
                 #Print("\t Leaving to Lattice Algo\n");
