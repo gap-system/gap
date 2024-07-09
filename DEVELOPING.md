@@ -156,14 +156,12 @@ multiple parts.
 - `testinstall`: quick test suite that one can test frequently.
    Run via  `./gap tst/testinstall.g`
 - `teststandard`: slower but more comprehensive test suite.
-   Run via  `./gap tst/testinstall.g`
+   Run via  `./gap tst/teststandard.g`
 - `testextra`: very slow test suite that tests even more
    Run via  `./gap tst/testextra.g`
 - `testbugfix`: additional small test files that are created to verify
    specific bugfixes work as intended
    Run via  `./gap tst/testbugfix.g`
-- `testinstall`: quick test suite that one can test frequently.
-   Run via  `./gap tst/testinstall.g`
 
 
 ## Tracking down regressions

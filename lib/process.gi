@@ -247,10 +247,10 @@ InstallGlobalFunction( Exec, function( arg )
         # on Windows, we use the native shell such that behaviour does
         # not depend on whether cygwin is installed or not.
         # cmd.exe is preferable to old-style `command.com'
-        shell := Filename( DirectoriesSystemPrograms(), "cmd.exe" );
+        shell := PathSystemProgram( "cmd.exe" );
         cs := "/C";
     else
-        shell := Filename( DirectoriesSystemPrograms(), "sh" );
+        shell := PathSystemProgram( "sh" );
         cs := "-c";
     fi;
 

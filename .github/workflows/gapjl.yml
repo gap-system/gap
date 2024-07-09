@@ -25,6 +25,7 @@ jobs:
       fail-fast: false
       matrix:
         gapjl-version:
+          - 'latest-release'
           - 'master'
         julia-version:
           - '1.6'
@@ -34,24 +35,35 @@ jobs:
           - ubuntu-latest
         include:
           # Add a few macOS jobs (the number we can run in parallel is limited)
-          - gap-version: 'master'
+          - gapjl-version: 'latest-release'
+            julia-version: '1'
+            os: macOS-latest
+          - gapjl-version: 'master'
             julia-version: '1'
             os: macOS-latest
 
     steps:
-      - name: Checkout GAP.jl
-        uses: actions/checkout@v4
-        with:
-          repository: 'oscar-system/GAP.jl'
-          ref: ${{ matrix.gapjl-version }}
-      - name: "Set up Julia"
-        uses: julia-actions/setup-julia@v2
-        with:
-          version: ${{ matrix.julia-version }}
       - name: Checkout GAP
         uses: actions/checkout@v4
         with:
           path: 'GAPROOT'
+      - name: "Set up Julia"
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: ${{ matrix.julia-version }}
+      - name: Install GAP.jl
+        shell: julia --color=yes {0}
+        run: |
+          using Pkg
+          if "${{ matrix.gapjl-version }}" == "latest-release"
+            Pkg.add("GAP")
+          else
+            Pkg.add(;name="GAP", rev="${{ matrix.gapjl-version }}")
+          end
+          path = dirname(dirname(Base.find_package("GAP")))
+          open(ENV["GITHUB_ENV"], "a") do io
+              println(io, "GAPJLPATH=$path")
+          end
       - name: "Install dependencies (for macOS)"
         if: runner.os == 'macOS'
         run: |
@@ -65,7 +77,7 @@ jobs:
           make -j`nproc`
       - name: "Override bundled GAP"
         run: |
-          julia --proj=override etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override
+          julia --proj=override $GAPJLPATH/etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override
       - name: "Run tests"
         run: |
-           julia --proj=override etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
+           julia --proj=override $GAPJLPATH/etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"

@@ -10,10 +10,10 @@
 ##
 
 # Usage:
-#     ./generate_release_notes.py VERSION
+#     ./release_notes.py VERSION
 #
 # For example
-#     ./generate_release_notes.py 4.13.1
+#     ./release_notes.py 4.13.1
 #
 # This assumes that the tags named v4.13.1, 4.13dev (?) and v4.13.0 (???) already exists.
 #

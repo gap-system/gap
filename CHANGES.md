@@ -1,5 +1,68 @@
 # GAP - history of changes
 
+## GAP 4.13.1 (June 2024)
+
+The following gives an overview of the changes compared to the previous
+release. This list is not complete, many more internal or minor changes
+were made, but we tried to only list those changes which we think might
+affect some users directly.
+
+### Performance improvements
+
+- [#5677](https://github.com/gap-system/gap/pull/5677) Ensure fp groups for which `Size` successfully computes the order can also be enumerated (previously this could run out of memory)
+
+### Changes to the **Julia** integration
+
+- [#5719](https://github.com/gap-system/gap/pull/5719),
+  [#5722](https://github.com/gap-system/gap/pull/5722),
+  [#5724](https://github.com/gap-system/gap/pull/5724),
+  [#5726](https://github.com/gap-system/gap/pull/5726),
+  [#5727](https://github.com/gap-system/gap/pull/5727),
+  [#5737](https://github.com/gap-system/gap/pull/5737) Enhance Julia GC integration, in particular improve compatibility with multi threaded Julia
+
+### Improved and extended functionality
+
+- [#5682](https://github.com/gap-system/gap/pull/5682) Reject invalid arguments for `SolvableQuotient` and `EpimorphismSolvableQuotient`
+
+### Fixed bugs that could lead to incorrect results
+
+- [#5730](https://github.com/gap-system/gap/pull/5730) Fix an error in `MinimalFaithfulPermutationDegree`, for the case of abelian direct factors
+- [#5688](https://github.com/gap-system/gap/pull/5688) Fix a bug where multiplying a compressed matrix by a finite field element could produce a corrupt result leading to subsequent unexpected errors or even wrong results
+
+### Fixed bugs that could lead to unexpected errors
+
+- [#5723](https://github.com/gap-system/gap/pull/5723) Fix an error message when computing subgroup lattices of certain insolvable groups
+- [#5711](https://github.com/gap-system/gap/pull/5711) Fix regression in `IsomorphismGroups` leading to unexpected break loops
+
+### Other fixed bugs
+
+- [#5709](https://github.com/gap-system/gap/pull/5709) Fix regression in `IsomorphismPermGroupOrFailFpGroup` that caused it to fail in situations that worked in GAP 4.12.2
+- [#5686](https://github.com/gap-system/gap/pull/5686) Fix bug in `Test` with `rewriteToFile` parameter set when applied to mixed input and output test case.
+
+### Package distribution
+
+#### Updated packages redistributed with GAP
+
+The GAP 4.13.1 distribution contains 159 packages, of which 15 have been
+updated since GAP 4.13.0. The full list of updated packages is given below:
+
+- [**CAP**](https://homalg-project.github.io/pkg/CAP): 2024.03-02 -> 2024.06-02
+- [**Congruence**](https://gap-packages.github.io/congruence): 1.2.5 -> 1.2.6
+- [**ferret**](https://gap-packages.github.io/ferret/): 1.0.10 -> 1.0.11
+- [**Forms**](https://gap-packages.github.io/forms): 1.2.9 -> 1.2.11
+- [**GeneralizedMorphismsForCAP**](https://homalg-project.github.io/pkg/GeneralizedMorphismsForCAP): 2024.01-01 -> 2024.04-01
+- [**GUAVA**](https://gap-packages.github.io/guava): 3.18 -> 3.19
+- [**idrel**](https://gap-packages.github.io/idrel/): 2.46 -> 2.47
+- [**json**](https://gap-packages.github.io/json/): 2.2.0 -> 2.2.1
+- [**LiePRing**](https://gap-packages.github.io/liepring/): 2.8 -> 2.9.1
+- [**LinearAlgebraForCAP**](https://homalg-project.github.io/pkg/LinearAlgebraForCAP): 2024.02-02 -> 2024.06-01
+- [**ModulePresentationsForCAP**](https://homalg-project.github.io/pkg/ModulePresentationsForCAP): 2024.01-04 -> 2024.04-01
+- [**MonoidalCategories**](https://homalg-project.github.io/pkg/MonoidalCategories): 2024.02-04 -> 2024.06-01
+- [**SglPPow**](https://gap-packages.github.io/sglppow/): 2.3 -> 2.4
+- [**singular**](https://gap-packages.github.io/singular/): 2023.02.09 -> 2024.06.03
+- [**Smallsemi**](https://gap-packages.github.io/smallsemi/): 0.6.13 -> 0.7.0
+
+
 ## GAP 4.13.0 (March 2024)
 
 The following gives an overview of the changes compared to the previous
