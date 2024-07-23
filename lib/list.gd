@@ -254,6 +254,10 @@ DeclareOperationKernel( "{}",
     [ IsList, IsList ],
     ELMS_LIST );
 
+InstallOtherMethod( \[\],
+    [ IsList, IsList ],
+    ELMS_LIST );
+
 
 #############################################################################
 ##
