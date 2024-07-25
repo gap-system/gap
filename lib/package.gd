@@ -1066,7 +1066,7 @@ DeclareGlobalFunction( "DeclareAutoreadableVariables" );
 ##  respectively, has correct format, and <K>false</K> otherwise;
 ##  in the latter case information about the incorrect components is printed.
 ##  These diagnostic messages can be suppressed by setting the global option
-##  <C>verbose</C> to <K>false</K>.
+##  <C>quiet</C> to <K>true</K>.
 ##  <P/>
 ##  Note that the components used for package loading are checked as well as
 ##  the components that are needed for composing the package overview web
