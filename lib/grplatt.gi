@@ -3654,140 +3654,6 @@ function(G)
   return DoMinimalFaithfulPermutationDegree(G,true);
 end);
 
-BindGlobal("SporadicGroupMinimalFaithfulPermutationDegrees", rec(
-    M11 := 11,
-    M12 := 12,
-    M22 := 22,
-    M23 := 23,
-    M24 := 24,
-    Co1 := 98280,
-    Co2 := 2300,
-    Co3 := 276,
-    McL := 275,
-    HS := 100,
-    Suz := 1782,
-    Fi22 := 3510,
-    Fi23 := 31671,
-    Fi24 := 306936,
-    M := 97239461142009186000,
-    B := 13571955000,
-    Th := 143127000,
-    HN := 1140000,
-    He := 2058,
-    J1 := 266,
-    J2 := 100,
-    J3 := 6156,
-    J4 := 173067389,
-    ON := 122760,
-    Ly := 8835156,
-    Ru := 4060,
-));
-
-BindGlobal("MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType",function (info)
-    # This function is derived from table 4 of this paper :
-    # https://www.ams.org/journals/tran/2015-367-11/S0002-9947-2015-06293-X/S0002-9947-2015-06293-X.pdf
-
-    # `info` is the a record containing information about the type of the simple group,
-    # like one obtained from `IsomorphismTypeInfoFiniteSimpleGroup`. You need to give the series,
-    # parameter, and shortname values in the record.
-    local
-        series,       # series of simple groups
-        d,            # mostly the dimension of vector space for classical groups
-        q,            # elements in the field over which group is defined
-        m,            # first parameter
-        b;            # q = p^b for some prime p
-
-    series := info.series;
-    if series = "Spor" then
-        return SporadicGroupMinimalFaithfulPermutationDegrees.(info.shortname);
-    else
-        if IsList(info.parameter) then
-            q := info.parameter[2];
-            m := info.parameter[1];
-        else
-          q := info.parameter;
-        fi;
-    fi;
-    if series = "Z" then #Cyclic group of prime order
-        return q;
-    elif series = "A" then # Alternating group
-        return q;
-    elif series = "L" then # PSL(m,q)
-        d := m;
-        if (d = 4 and q = 2) then return 8; fi;
-        if d = 2 then
-            if q = 9 then return 6; fi;
-            if q in [5,7,11] then return q; fi;
-        fi;
-        return (q^d-1)/(q-1);
-    elif series = "2A" then # PSU(m+1,q)
-        d := m + 1;
-        if d = 3 and q = 5 then return 50; fi;
-        if d = 3 then return q^3 + 1; fi;
-        if d = 4 then return (q+1)*(q^3 + 1); fi;
-        if d mod 2 = 0 and q = 2 then return (2^(d-1)*(2^d - 1))/3; fi;
-        return ((q^d - (-1)^d)*(q^(d-1) + (-1)^d))/(q^2-1);
-    elif series = "B" then # P\Omega(2*m+1,q) or O
-        if q = 3 and m > 2 then return (3^m)*(3^m - 1)/2;
-        elif q > 4 and m > 2 then return (q^(2*m)-1)/(q-1);
-        elif q = 3 and m = 2 then return 27; #Special case : B(2,3) ~ 2A(3,2) = PSU(4,2)
-        elif q = 2 and m = 2 then # B(2,2) is not a simple group.
-          Error("B(2,2) is not a simple group. This shouldn't be happening.\n");
-        elif m = 2 then return (q^(2*m) -1)/(q-1); #Special case : B(2,q) ~ C(2,q) = PSp(4,q)
-        elif q = 2 then return (2^(m-1))*(2^m -1); #Special case : B(m,2) ~ C(m,2) = PSp(2*m,2)
-        else Error("series B and m,q not of proper form\n"); fi;
-    elif series = "2B" then # Sz or _2 B^2
-        b := Log2Int(q);
-        if 2^b = q and b mod 2 = 1 then return q^2 + 1;
-        else Error("2B series without q of proper form\n"); fi;
-    elif series = "C" then # PSp(2*m,q)
-        d := 2*m;
-        if d=4 and q=2 then return 6;fi;
-        if d=4 and q=3 then return 27;fi;
-        if m>2 and q=2 then return (2^(m-1))*(2^m -1);fi;
-        if m>1 and q>2 then return (q^d -1)/(q-1);fi;
-        Error("series C and m,q are not of proper form\n");
-    elif series = "D" then # POmega(+1,2*m,q) or O+
-        if m > 3 then
-            if q < 4 then return q^(m-1)*(q^m -1)/(q-1);
-            else return (q^(m-1) + 1)*(q^m-1)/(q-1); fi;
-        else Error("series D and m < 4\n"); fi;
-    elif series = "2D" then # POmega(-1,2*m,q) or O-
-        if m > 3 then return (q^m+1)*(q^(m-1)-1)/(q-1);
-        else Error("series 2D and m < 4\n"); fi;
-    elif series = "3D" then # ^3 D_4
-        return (q^8 + q^4 + 1)*(q+1);
-    elif series = "E" then #E_n(q)
-        if m = 6 then return (q^9 - 1)*(q^8 + q^4 + 1)/(q-1);
-        elif m = 7 then return (q^14 - 1)*(q^9 + 1)*(q^5 -1)/(q-1);
-        elif m = 8 then return (q^30 - 1)*(q^12 + 1)*(q^10 + 1)*(q^6 + 1)/(q-1);
-        else Error("series E and m is not 6,7 or 8\n");
-        fi;
-    elif series = "2E" then #2E(6,q)
-        return (q^12 -1)*(q^6 - q^3 + 1)^(q^4 +1)/(q-1);
-    elif series = "F" then #F(4,q)
-        return (q^12 -1)*(q^4 + 1)/(q-1);
-    elif series = "2F" then #2F(4,q)
-        if q = 2 then return 1600; #special case : 2F4(2) ~ Tits
-        else return (q^6 + 1)*(q^3 + 1)*(q+1); fi;
-    elif series = "G" then #G(2,q)
-        if q = 3 then return 351;
-        elif q = 4 then return 416;
-        else return (q^6 -1)/(q-1); fi;
-    elif series = "2G" then #2G(2,q)
-        b := PValuation(q,3);
-        if q = 3^b and b mod 2 = 1 then return q^3 + 1;
-        else Error("series 2G and q not of proper form\n"); fi;
-    fi;
-    Error("series `",series,"` is not valid\n");
-end);
-
-InstallGlobalFunction(MinimalFaithfulPermutationDegreeOfSimpleGroup,function(G)
-    local info;
-    info := IsomorphismTypeInfoFiniteSimpleGroup(G); #This requires computing Size(G)
-    return MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
-end);
-
 #########################################################################
 ##
 #F  CanLiftPermutationDegreeToNormaliserOfSimpleMatrixGroup(<S>,<G>,<d>,<q>,<type>)
@@ -4049,18 +3915,22 @@ end);
 
 ##################################################################################
 ##
-#F  MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgroup(<A>,<S>)
+#F  MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgroup(<A>,<S>,<G>)
 ##
-##  Returns mu(A) where S < A < Aut(S) for simple group S
-##  if it can compute it easily, else returns -1.
+##  Returns mu(A) where S =~ Inn(S) < A < Aut(S) and S is a simple group if G is 0.
+##  If group G is given, A is congruent to the
+##  group of conjugator automorphisms of simple group S < G
+##  , using elements of normalieser of S in G as conjugators.
+##  This function really only need the size of A if G is given
+##  , so that can be given directly instead of the group A too.
 ##  For more details, take a look at this paper :
 ##  https://www.sciencedirect.com/science/article/pii/S0747717118300993
-BindGlobal("MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgroup",function(A,S)
+BindGlobal("MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgroup",function(A,S,G)
     local info,d,q,m,series,name,parameter,mu,Aut,b,sizeS,sizeA;
 
     # Just for convenience
     Aut := AutomorphismGroup;
-    mu := MinimalFaithfulPermutationDegreeOfSimpleGroup;
+    mu := MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType;
 
     if IsInt(A) then sizeA := A;
     else sizeA := Size(A); fi;
@@ -4072,10 +3942,10 @@ BindGlobal("MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgrou
     if series = "Spor" then
         if name = "M12" and
             sizeA = Size(Aut(S))  #A = Aut(S)
-            then return 2 * mu(S);
+            then return 2 * mu(info);
         elif name = "ON" and
             sizeA = Size(Aut(S))  #A = Aut(S)
-            then return 2 * mu(S);
+            then return 2 * mu(info);
         fi;
     else # Set q and m
         parameter := info.parameter;
@@ -4088,7 +3958,14 @@ BindGlobal("MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgrou
     if series = "A" and q = 6 then
         #if not A <~ SymmetricGroup(6) then return 10; fi;
         if 720 mod sizeA <> 0 then return 10;
-        else return -1; fi;
+        else
+            if G = 0 then
+                Assert(not IsInt(A),"If group G is not given, then group A must be given");
+            elif IsInt(A) then
+                A := Normaliser(G,S) / Centraliser(G,S);
+            fi;
+            return MinimalFaithfulPermutationDegree(A);
+        fi;
 
     elif series = "L" then
         d := m;
@@ -4098,65 +3975,113 @@ BindGlobal("MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgrou
             # Thus A <~ PGL(2,7); So, the only requirement for isomorphism is that Size(A) = Size(PGL(2,7)) = 336
             if sizeA = 336 then return 8; fi;
         elif d > 2 and not (q = 2 and (d = 3 or d = 4)) then
-            #if not A <~ GammaL(d,q) then return 2 * mu(S);
-            if Size(GammaL(d,q)) mod sizeA <> 0 then return 2 * mu(S);
-            else return -1; fi;
+            #if not A <~ GammaL(d,q) then return 2 * mu(info);
+            if Size(GammaL(d,q)) mod sizeA <> 0 then
+                return 2 * mu(info);
+            elif G=0 then
+                Assert(not IsInt(A),"If group G is not given, then group A must be given");
+                return MinimalFaithfulPermutationDegree(A);
+            elif CanLiftPermutationDegreeToNormaliserOfSimpleMatrixGroup(S,G,d,q,"PSL") then
+                return MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
+            else
+                return 2*MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
+            fi;
         fi;
 
     elif series = "2A" # PSU(3,5)
         and m+1 = 3
         and q = 5 then
         #if not A <~ PSigmaU(3,5) then return 126; fi;
-        return -1;
+        if G = 0 then
+            Assert(not IsInt(A),"If group G is not given, then group A must be given");
+        elif IsInt(A) then
+            A := Normaliser(G,S) / Centraliser(G,S);
+        fi;
+        return MinimalFaithfulPermutationDegree(A);
 
     elif series = "D" then #P\Omega^+
         d := 2*m;
         if d = 8 and q = 2
             and sizeA/sizeS mod 3 = 0
-            then return 3 * mu(S);
+            then return 3 * mu(info);
         elif d = 8 and q = 3
             and sizeA/sizeS mod 3 = 0
             and sizeA/sizeS mod 12 <> 0
-            then return 3 * mu(S);
+            then return 3 * mu(info);
         elif d = 8 and q = 3
             and sizeA/sizeS mod 12 = 0
             then return 3360;
         elif d = 8
             and sizeA/sizeS mod 3 = 0
-            then return 3 * mu(S);
+            then return 3 * mu(info);
         elif q = 3 and d > 7 and
             sizeA/sizeS mod 3 <> 0 then
             if Size(PGO(1,d,3)) mod sizeA <>0 # (*)
             then return (3^(m-1) + 1) * (3^m -1) / 2 ;
-            else return -1; fi;
+            elif G=0 then
+                Assert(not IsInt(A),"If group G is not given, then group A must be given");
+                return MinimalFaithfulPermutationDegree(A);
+            elif CanLiftPermutationDegreeToNormaliserOfSimpleMatrixGroup(S,G,m,q,"POmega+") then
+                return MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
+            else
+                return (3^(m-1) + 1) * (3^m -1) / 2 ;
+            fi;
         fi;
 
     elif series = "G" then
-        #if q = 3 and Iso(A,Aut(S)) then return 2 * mu(S);fi;
-        if q = 3 and sizeA = Size(Aut(S)) then return 2 * mu(S); fi;
+        #if q = 3 and Iso(A,Aut(S)) then return 2 * mu(info);fi;
+        if q = 3 and sizeA = Size(Aut(S)) then return 2 * mu(info); fi;
         #This is because A is isomorphic to a subgroup in Aut(S) that contains Inn(S) \cong S at any point.
         b := LogInt(q,3);
         if 3^b = q and b >1 then
-            #if not A <~ GammaG(q) then return 2 * mu(S); fi;
-            if Size(GF(q))*Size(GaloisGroup(AsField(GF(q),GF(3)))) mod sizeA <> 0 then return 2 * mu(S);
-            else return -1; fi;
+            #if not A <~ GammaG(q) then return 2 * mu(info); fi;
+            if Size(GF(q))*Size(GaloisGroup(AsField(GF(q),GF(3)))) mod sizeA <> 0 then return 2 * mu(info);
+            else
+                if G = 0 then
+                    Assert(not IsInt(A),"If group G is not given, then group A must be given");
+                elif IsInt(A) then
+                    A := Normaliser(G,S) / Centraliser(G,S);
+                fi;
+                return MinimalFaithfulPermutationDegree(A);
+            fi;
         fi;
     elif series = "C" #PSp
         and m = 2
         and 2^Log2Int(q) = q
         and q > 3 then
-        #if not A <~ PGammaSp(d,q) then return 2*mu(S); fi;
-        return -1;
+        #if not A <~ PGammaSp(d,q) then return 2*mu(info); fi;
+        if G=0 then
+            Assert(not IsInt(A),"If group G is not given, then group A must be given");
+            return MinimalFaithfulPermutationDegree(A);
+        elif CanLiftPermutationDegreeToNormaliserOfSimpleMatrixGroup(S,G,m,q,"PSp") then
+            return MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
+        else
+            return 2*MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
+        fi;
     elif series = "F" and 2^Log2Int(q) = q then
-        #if not A <~ GammaF(d,q) then return 2*mu(S); fi;
-        if sizeS * Size(GaloisGroup(GF(q))) mod sizeA <> 0 then return 2 * mu(S);
-        else return -1; fi;
+        #if not A <~ GammaF(d,q) then return 2*mu(info); fi;
+        if sizeS * Size(GaloisGroup(GF(q))) mod sizeA <> 0 then return 2 * mu(info);
+        else
+            if G = 0 then
+                Assert(not IsInt(A),"If group G is not given, then group A must be given");
+            elif IsInt(A) then
+                A := Normaliser(G,S) / Centraliser(G,S);
+            fi;
+            return MinimalFaithfulPermutationDegree(A);
+        fi;
     elif series = "E" and m = 6 then
-        #if not A <~ GammaE(d,q) then return 2*mu(S); fi;
-        if sizeS * Size(GaloisGroup(GF(q))) mod sizeA <> 0 then return 2 * mu(S);
-        else return -1; fi;
+        #if not A <~ GammaE(d,q) then return 2*mu(info); fi;
+        if sizeS * Size(GaloisGroup(GF(q))) mod sizeA <> 0 then return 2 * mu(info);
+        else
+            if G = 0 then
+                Assert(not IsInt(A),"If group G is not given, then group A must be given");
+            elif IsInt(A) then
+                A := Normaliser(G,S) / Centraliser(G,S);
+            fi;
+            return MinimalFaithfulPermutationDegree(A);
+        fi;
     fi;
-    return mu(S);
+    return mu(info);
 end);
 
 ##################################################################################
@@ -4177,63 +4102,33 @@ InstallGlobalFunction(MinimalFaithfulPermutationDegreeOfSemiSimpleGroup,function
         phi,    # Homomorphism from NGS to NGS/CGS
         A,      # NGS/CGS =~ {^n for n in N_G(S)}
         muA,    # Minimal Permutation Degree of A
-        sizeA,  # Size(A)
         S,      # Slis[1] =~ Slis[i]
         info,   # Information about isomorphism type of S
         MNS,m,q;
     mu := 0;
     MNS := MinimalNormalSubgroups(G);
-    if Length(MNS) = 1 and MNS[1] = G then return MinimalFaithfulPermutationDegreeOfSimpleGroup(G); fi;
+    if Length(MNS) = 1 and MNS[1] = G then
+        info := IsomorphismTypeInfoFiniteSimpleGroup(G);
+        return MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
+    fi;
     for N in MNS do
         Slis := DirectFactorsOfGroup(N);
         S := Slis[1];
         NGS := Normalizer(G,S);
         CGS := Centralizer(G,S);
-        sizeA := Size(NGS)/Size(CGS);
-        muA := MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgroup(sizeA,S);
-        if muA = -1 then
-            info := IsomorphismTypeInfoFiniteSimpleGroup(S);
-            if not IsList(info.parameter) then q := info.parameter;
-            else m := info.parameter[1]; q := info.parameter[2]; fi;
-            if info.series = "L" #PSL
-                and m > 2
-                and not (q = 2 and (m in [3,4])) then
-                #Print("\t PSL type simple subgroup\n");
-                if CanLiftPermutationDegreeToNormaliserOfSimpleMatrixGroup(S,G,m,q,"PSL") then
-                    muA := MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
-                else
-                    muA := 2*MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
-                fi;
-            elif info.series ="C" #PSp
-                and m = 2
-                and 2^Log2Int(info.parameter[2]) = info.parameter[2] then
-                if CanLiftPermutationDegreeToNormaliserOfSimpleMatrixGroup(S,G,m,q,"PSp") then
-                    muA := MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
-                else
-                    muA := 2*MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
-                fi;
-            elif info.series ="D" #POmega+
-                and q = 3
-                and m >= 4 then
-                if CanLiftPermutationDegreeToNormaliserOfSimpleMatrixGroup(S,G,m,q,"POmega+") then
-                    muA := MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
-                else
-                    muA := (3^(m-1) + 1) * (3^m -1) / 2 ;
-                fi;
-            else
-                #Print("\t Leaving to Lattice Algo\n");
-                phi := NaturalHomomorphismByNormalSubgroupNC(NGS,CGS);
-                A := Image(phi);
-                muA := MinimalFaithfulPermutationDegree(A);
-            fi;
-        fi;
+        A := NGS/CGS;
+        muA := MinimalFaithfulPermutationDegreeOfAlmostSimpleGroupWithSimpleSubgroup(A,S,G);
         mu := mu + (Length(Slis) * muA);
     od;
     return mu;
 end);
 
 InstallMethod(MinimalFaithfulPermutationDegree,"for simple groups",true,
-  [IsSimpleGroup and IsFinite],0,MinimalFaithfulPermutationDegreeOfSimpleGroup);
+  [IsSimpleGroup and IsFinite],0,function(S)
+  local info;
+  info := IsomorphismTypeInfoFiniteSimpleGroup(S);
+  return MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(info);
+end);
 
 # utility function: Find a subgroup $S$ of $G\le P$, with $G'\le S\le G$ such
 # that $[G:S]<=limit$ and that $S\lhd N_P(G)$.
