@@ -559,7 +559,7 @@ DeclareSynonym("EmbeddingConjugates",ContainingConjugates);
 DeclareOperation("MinimalFaithfulPermutationDegree",[IsGroup and IsFinite]);
 DeclareOperation("MinimalFaithfulPermutationRepresentation",
   [IsGroup and IsFinite]);
-DeclareGlobalFunction("MinimalFaithfulPermutationDegreeOfSemiSimpleGroup");
+DeclareGlobalFunction("MinimalFaithfulPermutationDegreeOfFittingFreeGroup");
 
 #############################################################################
 ##

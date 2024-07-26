@@ -4086,13 +4086,13 @@ end);
 
 ##################################################################################
 ##
-#F  MinimalFaithfulPermutationDegreeOfSemiSimpleGroup(<G>)
+#F  MinimalFaithfulPermutationDegreeOfFittingFreeGroup(<G>)
 ##
 ##  Returns the minimal faithful permutation degree for a semi-simple group G,
 ##  which is a group that doesn't contain any abelian normal subgroups.
 ##  The function is based on this research paper :
 ##  https://dl.acm.org/doi/10.1145/3618260.3649641
-InstallGlobalFunction(MinimalFaithfulPermutationDegreeOfSemiSimpleGroup,function(G)
+InstallGlobalFunction(MinimalFaithfulPermutationDegreeOfFittingFreeGroup,function(G)
     local
         mu,     # Objective value to compute
         Slis,   # Decomposition of N as direct product of simple groups

@@ -1,21 +1,4 @@
-gap> START_TEST("MinimalFaithfulPermutationDegreeOfSimpleGroup.tst");
-gap> checksimple := function(maxsize)
->     local i,mu,mu2,info,G;
->     i := 1;
->     for G in SimpleGroupsIterator(1,maxsize) do
->         mu := DoMinimalFaithfulPermutationDegree(G,false);
->         mu2 := MinimalFaithfulPermutationDegreeOfSimpleGroup(G);
->         if mu2 <> mu then
->             info := IsomorphismTypeInfoFiniteSimpleGroup(G);
->             return Concatenation("Failed on simple group ",String(i)," i.e. ",info.name,"\n");
->         fi;
->         i := i + 1;
->     od;
->     return "Passed";
-> end;
-function( maxsize ) ... end
-gap> checksimple(50000); # first 26 simple groups
-"Passed"
+gap> START_TEST("MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType.tst");
 gap> Clean := function(INFO)
 >     local SporNames,SeriesNames,info,name,q,size;
 >     info := ShallowCopy(INFO);
@@ -127,3 +110,4 @@ gap> LightChecknonabelianSimple := function(perfectTill)
 function( perfectTill ) ... end
 gap> LightChecknonabelianSimple(10^6);
 "PASS"
+gap> STOP_TEST( "MinimalFaithfulPermutationDegreeOfSimpleGroup.tst", 1);

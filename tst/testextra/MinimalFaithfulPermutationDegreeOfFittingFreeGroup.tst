@@ -1,4 +1,4 @@
-gap> START_TEST("MinimalFaithfulPermutationDegreeOfSemiSimpleGroup.tst");
+gap> START_TEST("MinimalFaithfulPermutationDegreeOfFittingFreeGroup.tst");
 gap> CheckInList := function(L,Mus)
 >     local i,stop,mu,mu2,G,g;
 >     for i in [1..Length(L)] do
@@ -7,7 +7,7 @@ gap> CheckInList := function(L,Mus)
 >         else
 >             mu := DoMinimalFaithfulPermutationDegree(G,false);
 >         fi;
->         mu2 := MinimalFaithfulPermutationDegreeOfSemiSimpleGroup(G);
+>         mu2 := MinimalFaithfulPermutationDegreeOfFittingFreeGroup(G);
 >         if mu2 = mu then
 >         else
 >             return Concatenation("F.A.I.L on",String(G));
@@ -51,3 +51,4 @@ gap> # Products of Simple Groups
 gap> ind := List([1..30],x->Random([1..Length(TestCases)]));;
 gap> CheckInList(List(ind,n->TestCases[n]),List(ind,n->Degs[n]));
 "pass"
+gap> STOP_TEST( "MinimalFaithfulPermutationDegreeOfFittingFreeGroup.tst", 1);
