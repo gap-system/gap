@@ -2234,8 +2234,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
 
     TestOption:= function( record, name, type, typename )
     if IsBound( record.( name ) ) and not type( record.( name ) ) then
-      Print( "#E  component `", name, "', if present, must be bound to ",
-             typename, "\n" );
+      if ValueOption( "quiet" ) <> true then
+        Print( "#E  component `", name, "', if present, must be bound to ",
+               typename, "\n" );
+      fi;
       result:= false;
       return false;
     fi;
@@ -2244,8 +2246,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
 
     TestMandat:= function( record, name, type, typename )
     if not IsBound( record.( name ) ) or not type( record.( name ) ) then
-      Print( "#E  component `", name, "' must be bound to ",
-             typename, "\n" );
+      if ValueOption( "quiet" ) <> true then
+        Print( "#E  component `", name, "' must be bound to ",
+               typename, "\n" );
+      fi;
       result:= false;
       return false;
     fi;
@@ -2303,8 +2307,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                  IsBound(record.BinaryFiles),
                  IsBound(record.TextBinaryFilesPatterns) ],
                a -> a=true ) > 1 then
-      Print("#W  only one of TextFiles, BinaryFiles or TextBinaryFilesPatterns\n");
-      Print("#W  components must be bound\n");
+      if ValueOption( "quiet" ) <> true then
+        Print("#W  only one of TextFiles, BinaryFiles or TextBinaryFilesPatterns\n");
+        Print("#W  components must be bound\n");
+      fi;
     fi;
     if     TestOption( record, "Persons", IsRecordList, "a list of records" )
        and IsBound( record.Persons ) then
@@ -2313,8 +2319,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         TestMandat( subrec, "FirstNames", IsString, "a string" );
         if not (    IsBound( subrec.IsAuthor )
                  or IsBound( subrec.IsMaintainer ) ) then
-          Print( "#E  one of the components `IsAuthor', `IsMaintainer' ",
-                 "must be bound\n" );
+          if ValueOption( "quiet" ) <> true then
+            Print( "#E  one of the components `IsAuthor', `IsMaintainer' ",
+                   "must be bound\n" );
+          fi;
           result:= false;
         fi;
         TestOption( subrec, "IsAuthor", IsProperBool, "`true' or `false'" );
@@ -2325,8 +2333,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                not ( IsBound( subrec.Email ) or
                      IsBound( subrec.WWWHome ) or
                      IsBound( subrec.PostalAddress ) ) then
-            Print( "#E  one of the components `Email', `WWWHome', `PostalAddress'\n",
-                   "#E  must be bound for each package maintainer \n" );
+            if ValueOption( "quiet" ) <> true then
+              Print( "#E  one of the components `Email', `WWWHome', `PostalAddress'\n",
+                     "#E  must be bound for each package maintainer\n" );
+            fi;
             result:= false;
           fi;
         fi;
@@ -2361,7 +2371,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
       fi;
       for subrec in list do
         TestMandat( subrec, "BookName", IsString, "a string" );
-        if IsBound(subrec.Archive) then
+        if IsBound(subrec.Archive) and ValueOption( "quiet" ) <> true then
           Print("#W  PackageDoc.Archive is withdrawn, use PackageDoc.ArchiveURLSubset instead\n");
         fi;
         TestMandat( subrec, "ArchiveURLSubset", IsFilenameList,
@@ -2408,9 +2418,11 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                               and IsString( x[1] )
                               and not LowercaseString( x[1] ) in list );
         if not IsEmpty( list ) then
-          Print( "#E  the needed packages in '",
-                 List( list, x -> x[1] ), "'\n",
-                 "#E  are currently not needed packages of GAP\n" );
+          if ValueOption( "quiet" ) <> true then
+            Print( "#E  the needed packages in '",
+                   List( list, x -> x[1] ), "'\n",
+                   "#E  are currently not needed packages of GAP\n" );
+          fi;
           result:= false;
         fi;
       fi;
