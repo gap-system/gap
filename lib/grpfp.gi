@@ -4046,7 +4046,8 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, HH, t, gen, sz,
   if not HasSize(G) then
     sz:=SIZE_FP_FROM_CYCLIC_INDEX(G);
     SetSize(G,sz);
-  elif Size(G)=infinity then
+  fi;
+  if Size(G)=infinity then
     return fail;
   fi;
 
