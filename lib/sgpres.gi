@@ -3514,7 +3514,7 @@ end );
 # -1: No relators
 InstallGlobalFunction(NEWTC_PresentationMTC,function(arg)
 local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
-  subnum,bad,warn,parameter,str;
+  subnum,parameter,str,wordefs;
 
   DATA:=arg[1];
   if Length(arg)=1 then
@@ -3605,9 +3605,11 @@ local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
   fi;
 
   # add definitions of secondary generators
+  wordefs:=[];
   for i in [subnum+1..DATA.secount] do
     r:=WordProductLetterRep(DATA.secondary[i],[-i]);
     Add(rels,r);
+    wordefs[i]:=r;
   od;
 
   if ForAll(str,IsString) and DATA.secount >=Length(str) then
@@ -3630,49 +3632,49 @@ local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
     TzSearch(pres);
     TzOptions(pres).lengthLimit:=pres!.tietze[TZ_TOTAL]+1;
   fi;
-  #TzGoGo(pres);
   TzOptions(pres).eliminationsLimit:=5;
-  TzGoElim(pres,subnum);
+  TzGoElim(pres,subnum,wordefs);
   if IsEvenInt(parameter) and Length(GeneratorsOfPresentation(pres))>subnum then
-    warn:=true;
-    # Help Tietze with elimination
-    bad:=Reversed(List(GeneratorsOfPresentation(pres)
-          {[subnum+1..Length(GeneratorsOfPresentation(pres))]},
-          x->LetterRepAssocWord(x)[1]));
-    for i in bad do
-      r:=DATA.secondary[i];
-      re:=true;
-      while re do
-        s:=[];
-        re:=false;
-        for j in r do
-          if AbsInt(j)>subnum then
-            re:=true;
-            if j>0 then
-              Append(s,DATA.secondary[j]);
-            else
-              Append(s,-Reversed(DATA.secondary[-j]));
-            fi;
-          else
-            Add(s,j);
-          fi;
-        od;
-        Info(InfoFpGroup,2,"Length =",Length(s));
-        r:=s;
-        if warn and Length(s)>100*Sum(rels,Length) then
-          warn:=false;
-          Error(
-            "Trying to eliminate all auxiliary generators might cause the\n",
-            "size of the presentation to explode. Proceed at risk!");
-        fi;
-      od;
-      r:=AssocWordByLetterRep(fam,Concatenation(r,[-i]));
-      AddRelator(pres,r);
-      #TzSearch(pres); Do *not* search, as this might kill the relator we
-      #just added.
-      TzEliminate(pres,i);
-    od;
-    Assert(0,Length(GeneratorsOfPresentation(pres))=subnum);
+    Error("did not eliminate properly");
+#    warn:=true;
+#    # Help Tietze with elimination
+#    bad:=Reversed(List(GeneratorsOfPresentation(pres)
+#          {[subnum+1..Length(GeneratorsOfPresentation(pres))]},
+#          x->LetterRepAssocWord(x)[1]));
+#    for i in bad do
+#      r:=DATA.secondary[i];
+#      re:=true;
+#      while re do
+#        s:=[];
+#        re:=false;
+#        for j in r do
+#          if AbsInt(j)>subnum then
+#            re:=true;
+#            if j>0 then
+#              Append(s,DATA.secondary[j]);
+#            else
+#              Append(s,-Reversed(DATA.secondary[-j]));
+#            fi;
+#          else
+#            Add(s,j);
+#          fi;
+#        od;
+#        Info(InfoFpGroup,2,"Length =",Length(s));
+#        r:=s;
+#        if warn and Length(s)>100*Sum(rels,Length) then
+#          warn:=false;
+#          Error(
+#            "Trying to eliminate all auxiliary generators might cause the\n",
+#            "size of the presentation to explode. Proceed at risk!");
+#        fi;
+#      od;
+#      r:=AssocWordByLetterRep(fam,Concatenation(r,[-i]));
+#      AddRelator(pres,r);
+#      #TzSearch(pres); Do *not* search, as this might kill the relator we
+#      #just added.
+#      TzEliminate(pres,i);
+#    od;
+#    Assert(0,Length(GeneratorsOfPresentation(pres))=subnum);
 
   fi;
   r:=List(GeneratorsOfPresentation(pres){[1..subnum]},

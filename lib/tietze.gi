@@ -2324,25 +2324,79 @@ InstallGlobalFunction( TzGo, function ( arg )
 end );
 
 # reduce presentation in generators (for MTC)
-InstallGlobalFunction(TzGoElim,function(T,downto)
-local tietze,len,olen;
+InstallGlobalFunction(TzGoElim,function(T,downto,wordefs)
+local tietze,oll,num,gens,gensn,rev,w,i,r,a;
+  gens:=ShallowCopy(T!.generators);
+  gensn:=List(gens,x->LetterRepAssocWord(x)[1]);
+  num:=Length(gens);
+  rev:=ListWithIdenticalEntries(num,fail);
+  for i in [1..Length(gens)] do
+    rev[gensn[i]]:=gens[i];
+  od;
   TzTestInitialSetup(T); # run `1Or2Relators' if not yet done
   tietze := T!.tietze;
 
-  len:=tietze[TZ_TOTAL];
-  olen:=len+1;
-  while tietze[TZ_NUMGENS]-tietze[TZ_NUMREDUNDS]>downto and olen<>len do
-    TzSearch(T);
-    TzEliminateGens(T);
+  while num>downto do
+    if gens[num] in T!.generators then
+      TzSearch(T);
+      # the search might have killed the generator
+      if gens[num] in T!.generators then
+        # does replacement make longer by 25% or more? If so try harder
+        if TzOccurrences(T!.tietze,Position(T!.generators,gens[num]))[1][1]
+          *(Length(wordefs[gensn[num]])-1)*3> T!.tietze[TZ_TOTAL] then
+
+          TzOptions(T).protected:=num;
+          oll:=TzOptions(T).loopLimit;
+          TzOptions(T).loopLimit:=5;
+          TzGo(T); # cleanup
+          TzOptions(T).loopLimit:=oll;
+          TzOptions(T).protected:=downto;
+          TzPrintStatus(T,true);
+
+        fi;
+
+        TzEliminate(T,gens[num]);
+      fi;
+      if gens[num] in T!.generators then
+        Info(InfoFpGroup,1,"increase length limit");
+        TzOptions(T).lengthLimit:=TzOptions(T)!.lengthLimit*100;
+
+        # and re-add the defining relator
+        w:=ShallowCopy(wordefs[gensn[num]]);
+        i:=1;
+        while i<=Length(w) do
+          a:=AbsInt(w[i]);
+          if not rev[a] in T!.generators then
+            r:=wordefs[a];
+            # remove letter itself, regardless how written
+            r:=Filtered(r,x->AbsInt(x)<a);
+            if w[i]<0 then r:=-Reversed(r);fi; # inverse
+            w:=Concatenation(w{[1..i-1]},r,w{[i+1..Length(w)]});
+            i:=i-1; # test first letter replaced
+          fi;
+          i:=i+1;
+        od;
+        AddRelator(T,AssocWordByLetterRep(FamilyObj(T!.1),w));
+        TzEliminate(T,gens[num]);
+        if gens[num] in T!.generators then
+          Error("still not eliminated");
+        fi;
+      fi;
+    fi;
+    num:=num-1;
     if not tietze[TZ_MODIFIED] then TzSearchEqual(T);fi;
-    olen:=len;
-    len:=tietze[TZ_TOTAL];
-    if TzOptions(T).printLevel>0 then  TzPrintStatus(T,true); fi;
+    if TzOptions(T).printLevel>0 and (num mod 100=0 or num<20) then
+
+      TzOptions(T).protected:=num;
+      oll:=TzOptions(T).loopLimit;
+      TzOptions(T).loopLimit:=5;
+      TzGo(T); # cleanup
+      TzOptions(T).loopLimit:=oll;
+      TzOptions(T).protected:=downto;
+      TzPrintStatus(T,true);
+
+    fi;
   od;
-  olen:=TzOptions(T).loopLimit;
-  TzOptions(T).loopLimit:=5;
-  TzGo(T); # cleanup
-  TzOptions(T).loopLimit:=olen;
 end);
 
 
