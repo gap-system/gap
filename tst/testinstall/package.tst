@@ -1,4 +1,4 @@
-#@local entry,equ,pair,sml,oldTermEncoding,pkginfo,info,tmp_dir,mockpkgpath,old_warning_level,p,n,filename,IsDateFormatValid
+#@local entry,equ,pair,sml,oldTermEncoding,pkginfo,info,tmp_dir,mockpkgpath,old_warning_level,p,n,filename,IsDateFormatValid,loadinfo
 gap> START_TEST("package.tst");
 
 # CompareVersionNumbers( <supplied>, <required>[, \"equal\"] )
@@ -699,4 +699,136 @@ gap> SetPackagePath( "mockpkg", "/some/other/directory" );
 Error, another version of package mockpkg is already loaded
 
 #
-gap> STOP_TEST( "package.tst", 1);
+# Test collecting information when calling LoadPackage, using the mock package
+#
+gap> SetPackagePath("mockpkg", mockpkgpath);
+gap> old_warning_level := InfoLevel( InfoWarning );;
+gap> SetInfoLevel( InfoWarning, 0 );
+
+# Try to load a different version of the package.
+gap> loadinfo:= rec();;
+gap> LoadPackage( "mockpkg", "=0.0" : LoadInfo:= loadinfo );
+fail
+gap> loadinfo;
+rec( 
+  comment := "package 'mockpkg' is already loaded, required version =0.0 is no\
+t compatible with the actual version 0.1", name := "mockpkg", 
+  versions := [  ] )
+
+# Force "unload" it (see above, we have done this already once).
+gap> Unbind(GAPInfo.PackagesInfo.mockpkg);
+gap> Unbind(GAPInfo.PackagesLoaded.mockpkg);
+gap> for n in [ "mockpkg_GlobalFunction", "mockpkg_Operation", "mockpkg_Attribute", "Setmockpkg_Attribute", "Hasmockpkg_Attribute", "mockpkg_Property", "Setmockpkg_Property", "Hasmockpkg_Property", "mockpkg_ExtensionData" ] do
+>   if IsBoundGlobal(n) then
+>     MakeReadWriteGlobal(n);
+>     UnbindGlobal(n);
+>   fi;
+> od;
+
+# Notify the package again
+gap> SetPackagePath("mockpkg", mockpkgpath);
+
+# Force unavailability of the mock package, for various reasons.
+# Try to load the package into a not admissible GAP version.
+gap> info:= GAPInfo.PackagesInfo.mockpkg[1];;
+gap> info.Dependencies.GAP:= "=0.0";;
+gap> loadinfo:= rec();;
+gap> LoadPackage( "mockpkg" : LoadInfo:= loadinfo );
+fail
+gap> loadinfo;
+rec( comment := "", name := "mockpkg", 
+  versions := 
+    [ rec( comment := "GAP version =0.0 is required, ", dependencies := [  ], 
+          version := "0.1" ) ] )
+gap> Unbind( info.Dependencies.GAP );
+
+# Try again to load the package into a not admissible GAP version.
+gap> info.Dependencies.NeededOtherPackages:= [ [ "GAP", "=0.0" ] ];;
+gap> info.AvailabilityTest:= ReturnTrue;;
+gap> loadinfo:= rec();;
+gap> LoadPackage( "mockpkg" : LoadInfo:= loadinfo );
+fail
+gap> loadinfo;
+rec( comment := "", name := "mockpkg", 
+  versions := 
+    [ 
+      rec( comment := "", 
+          dependencies := 
+            [ 
+              rec( 
+                  comment := "required GAP version =0.0 is not compatible with \
+the actual version", name := "gap", versions := [  ] ) ], version := "0.1" ) 
+     ] )
+gap> info.Dependencies.NeededOtherPackages:= [];;
+
+# Try to load the package with a too restrictive availability test.
+gap> info:= GAPInfo.PackagesInfo.mockpkg[1];;
+gap> info.AvailabilityTest:= ReturnFalse;;
+gap> loadinfo:= rec();;
+gap> LoadPackage( "mockpkg" : LoadInfo:= loadinfo );
+fail
+gap> loadinfo;
+rec( comment := "", name := "mockpkg", 
+  versions := 
+    [ rec( comment := "the AvailabilityTest function returned false, ", 
+          dependencies := [  ], version := "0.1" ) ] )
+gap> info.AvailabilityTest:= ReturnTrue;;
+
+# Try to load the package with not satisfied dependencies.
+gap> GAPInfo.PackagesInfo.mockpkg2:= [
+>      rec( PackageName := "mockpkg2", Version:= "0.0",
+>           AvailabilityTest:= ReturnTrue,
+>           InstallationPath:= GAPInfo.PackagesInfo.gapdoc[1].InstallationPath,
+>           Dependencies:= rec( OtherPackagesLoadedInAdvance:= [ [ "mockpkg", "" ] ] ) ) ];;
+gap> info.Dependencies.OtherPackagesLoadedInAdvance:= [ [ "mockpkg2", "" ] ];;
+gap> loadinfo:= rec();;
+gap> LoadPackage( "mockpkg" : LoadInfo:= loadinfo );
+fail
+gap> loadinfo;
+rec( comment := "", name := "mockpkg", 
+  versions := 
+    [ 
+      rec( 
+          comment := "package 'mockpkg2' shall be loaded before package 'mockpk\
+g' but must be in the same load cycle, due to other dependencies, ", 
+          dependencies := 
+            [ 
+              rec( comment := "", name := "mockpkg2", 
+                  versions := 
+                    [ 
+                      rec( comment := "", 
+                          dependencies := 
+                            [ 
+                              rec( comment := "", name := "mockpkg", 
+                                  versions := [  ] ) ], version := "0.0" ) ] 
+                 ) ], version := "0.1" ) ] )
+gap> Unbind( info.Dependencies.OtherPackagesLoadedInAdvance );
+gap> Unbind( GAPInfo.PackagesInfo.mockpkg2 );
+gap> info.Dependencies.NeededOtherPackages:= [ [ "gapdoc", "=0.0" ] ];;
+gap> loadinfo:= rec();;
+gap> LoadPackage( "mockpkg" : LoadInfo:= loadinfo );
+fail
+gap> loadinfo;
+rec( comment := "", name := "mockpkg", 
+  versions := 
+    [ 
+      rec( comment := "", 
+          dependencies := 
+            [ 
+              rec( 
+                  comment := "package 'gapdoc' is already loaded, required vers\
+ion =0.0 is not compatible with the actual version 1.6.7.dev", 
+                  name := "gapdoc", versions := [  ] ) ], version := "0.1" ) 
+     ] )
+
+# Try to load an unknown package.
+gap> loadinfo:= rec();;
+gap> LoadPackage( "unavailable_package" : LoadInfo:= loadinfo );
+fail
+gap> loadinfo;
+rec( comment := "package is not listed in GAPInfo.PackagesInfo", 
+  name := "unavailable_package" )
+gap> SetInfoLevel( InfoWarning, old_warning_level );
+
+#
+gap> STOP_TEST( "package.tst" );
