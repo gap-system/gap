@@ -729,7 +729,11 @@ gap> SetPackagePath("mockpkg", mockpkgpath);
 
 # Force unavailability of the mock package, for various reasons.
 # Try to load the package into a not admissible GAP version.
-gap> info:= GAPInfo.PackagesInfo.mockpkg[1];;
+gap> GAPInfo.PackagesInfo.mockpkg:= ShallowCopy( GAPInfo.PackagesInfo.mockpkg );;
+gap> info:= GAPInfo.PackagesInfo.mockpkg;;
+gap> info[1]:= ShallowCopy( info[1] );;
+gap> info:= info[1];;
+gap> info.Dependencies:= ShallowCopy( info.Dependencies );;
 gap> info.Dependencies.GAP:= "=0.0";;
 gap> loadinfo:= rec();;
 gap> LoadPackage( "mockpkg" : LoadInfo:= loadinfo );
