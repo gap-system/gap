@@ -752,8 +752,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
         Append( loadinfo.comment,
                 Concatenation( "package '", name,
                     "' is already loaded, required version ", version,
-                    " is not compatible with the actual version ",
-                    GAPInfo.PackagesLoaded.( name )[2] ) );
+                    " is not compatible with the actual version" ) );
         return false;
       fi;
     fi;

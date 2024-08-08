@@ -712,8 +712,7 @@ fail
 gap> loadinfo;
 rec( 
   comment := "package 'mockpkg' is already loaded, required version =0.0 is no\
-t compatible with the actual version 0.1", name := "mockpkg", 
-  versions := [  ] )
+t compatible with the actual version", name := "mockpkg", versions := [  ] )
 
 # Force "unload" it (see above, we have done this already once).
 gap> Unbind(GAPInfo.PackagesInfo.mockpkg);
@@ -817,9 +816,8 @@ rec( comment := "", name := "mockpkg",
             [ 
               rec( 
                   comment := "package 'gapdoc' is already loaded, required vers\
-ion =0.0 is not compatible with the actual version 1.6.7.dev", 
-                  name := "gapdoc", versions := [  ] ) ], version := "0.1" ) 
-     ] )
+ion =0.0 is not compatible with the actual version", name := "gapdoc", 
+                  versions := [  ] ) ], version := "0.1" ) ] )
 
 # Try to load an unknown package.
 gap> loadinfo:= rec();;
