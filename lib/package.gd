@@ -303,9 +303,30 @@ DeclareGlobalFunction( "LinearOrderByPartialWeakOrder" );
 ##  <P/>
 ##  The arguments <A>record</A> and <A>suggested</A> are used
 ##  for loading packages, as follows.
+##  <P/>
 ##  The record <A>record</A> collects information about the needed and
 ##  suggested packages of the package <A>name</A>, which allows one to
 ##  compute an appropriate loading order of these packages.
+##  After the call, the value of the component <C>LoadInfo</C> of
+##  <A>record</A> is a record with the components
+##  <List>
+##  <Item>
+##    <C>name</C> (the name of the package),
+##  </Item>
+##  <Item>
+##    <C>comment</C> (a string that is empty or describes why the package
+##    cannot be loaded, independent of the installed version), and
+##  </Item>
+##  <Item>
+##    <C>versions</C> (a list of records, one for each installed version of
+##    the package that has been checked; each such record has the components
+##    <C>version</C>, <C>comment</C>, and <C>dependencies</C>,
+##    where the latter is a list of records for each needed package that was
+##    checked, and each entry has the same format as the <C>LoadInfo</C>
+##    record itself.
+##  </Item>
+##  </List>
+##  <P/>
 ##  Finally, the value of <A>suggested</A> determines whether needed and
 ##  suggested packages are considered (value <K>true</K>) or only needed
 ##  packages (value <K>false</K>);
