@@ -67,7 +67,7 @@ Currently the following labels are regarded as relevant for the creation of rele
   I think that these two labels are obsolete in the new workflow where one can automatically create the current state of the `CHANGES.md` section about the forthcoming release **at any time**.
 
 - The above labels describe whether a pull request is relevant at all, and if yes then how it is treated.
-  The script `generate_release_notes.py` groups the pull request based on labels in a list called  `prioritylist`. Each pull request gets assigned to the **first** group/subheading that corresponds to one of its labels. This list can be adjusted over time as needed. Note that any such ordering is always a compromise, there is no best way to do it.
+  The script `release_notes.py` groups the pull request based on labels in a list called  `prioritylist`. Each pull request gets assigned to the **first** group/subheading that corresponds to one of its labels. This list can be adjusted over time as needed. Note that any such ordering is always a compromise, there is no best way to do it.
 
 - For empty groups of pull requests, the subheading need not appear in `CHANGES.md`.
 

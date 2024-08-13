@@ -778,7 +778,7 @@ BIND_GLOBAL("ProfileOperationsOff",function()
     UnprofileMethods(\+,\-,\*,\/,\^,\mod,\<,\=,\in,
                      \.,\.\:\=,IsBound\.,Unbind\.,
                      \[\],\[\]\:\=,IsBound\[\],Unbind\[\]);
-#T Why?  These operations are listed in PFOFILED_OPERATIONS!
+#T Why?  These operations are listed in PROFILED_OPERATIONS!
 end);
 
 BIND_GLOBAL("ProfileOperations",function( arg )
@@ -836,7 +836,7 @@ BIND_GLOBAL("ProfileOperationsAndMethodsOn",function()
     ProfileMethods(\+,\-,\*,\/,\^,\mod,\<,\=,\in,
                      \.,\.\:\=,IsBound\.,Unbind\.,
                      \[\],\[\]\:\=,IsBound\[\],Unbind\[\]);
-#T Why?  These operations are listed in PFOFILED_OPERATIONS!
+#T Why?  These operations are listed in PROFILED_OPERATIONS!
 end);
 
 ProfileOperationsAndMethodsOff := ProfileOperationsOff;

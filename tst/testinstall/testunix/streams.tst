@@ -5,7 +5,7 @@ gap> START_TEST("streams.tst");
 #
 gap> d := DirectoryCurrent();;
 #@if ARCH_IS_UNIX()
-gap> f := Filename(DirectoriesSystemPrograms(), "cat");;
+gap> f := PathSystemProgram("cat");;
 gap> s := InputOutputLocalProcess(d,f,[]);
 < input/output stream to cat >
 gap> WriteLine(s,"The cat sat on the mat");

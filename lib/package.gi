@@ -2086,10 +2086,6 @@ InstallGlobalFunction( AutoloadPackages, function()
 ##
 #F  GAPDocManualLab(<pkgname>) . create manual.lab for package w/ GAPDoc docs
 ##
-# avoid warning (will be def. in GAPDoc)
-if not IsBound(StripEscapeSequences) then
-  StripEscapeSequences := 0;
-fi;
 InstallGlobalFunction( GAPDocManualLabFromSixFile,
     function( bookname, sixfilepath )
     local stream, entries, SecNumber, esctex, file;
@@ -2112,7 +2108,7 @@ InstallGlobalFunction( GAPDocManualLabFromSixFile,
 
     # throw away TeX critical characters here
     esctex:= function( str )
-      return Filtered( StripEscapeSequences( str ), c -> not c in "%#$&^_~" );
+      return Filtered( _StripEscapeSequences( str ), c -> not c in "%#$&^_~" );
     end;
 
     bookname:= LowercaseString( bookname );
@@ -2160,9 +2156,6 @@ InstallGlobalFunction( GAPDocManualLab, function(pkgname)
     GAPDocManualLabFromSixFile( book.BookName, file );
   od;
 end );
-if StripEscapeSequences = 0 then
-  Unbind(StripEscapeSequences);
-fi;
 
 
 #############################################################################
@@ -2241,8 +2234,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
 
     TestOption:= function( record, name, type, typename )
     if IsBound( record.( name ) ) and not type( record.( name ) ) then
-      Print( "#E  component `", name, "', if present, must be bound to ",
-             typename, "\n" );
+      if ValueOption( "quiet" ) <> true then
+        Print( "#E  component `", name, "', if present, must be bound to ",
+               typename, "\n" );
+      fi;
       result:= false;
       return false;
     fi;
@@ -2251,8 +2246,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
 
     TestMandat:= function( record, name, type, typename )
     if not IsBound( record.( name ) ) or not type( record.( name ) ) then
-      Print( "#E  component `", name, "' must be bound to ",
-             typename, "\n" );
+      if ValueOption( "quiet" ) <> true then
+        Print( "#E  component `", name, "' must be bound to ",
+               typename, "\n" );
+      fi;
       result:= false;
       return false;
     fi;
@@ -2310,8 +2307,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                  IsBound(record.BinaryFiles),
                  IsBound(record.TextBinaryFilesPatterns) ],
                a -> a=true ) > 1 then
-      Print("#W  only one of TextFiles, BinaryFiles or TextBinaryFilesPatterns\n");
-      Print("#W  components must be bound\n");
+      if ValueOption( "quiet" ) <> true then
+        Print("#W  only one of TextFiles, BinaryFiles or TextBinaryFilesPatterns\n");
+        Print("#W  components must be bound\n");
+      fi;
     fi;
     if     TestOption( record, "Persons", IsRecordList, "a list of records" )
        and IsBound( record.Persons ) then
@@ -2320,8 +2319,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
         TestMandat( subrec, "FirstNames", IsString, "a string" );
         if not (    IsBound( subrec.IsAuthor )
                  or IsBound( subrec.IsMaintainer ) ) then
-          Print( "#E  one of the components `IsAuthor', `IsMaintainer' ",
-                 "must be bound\n" );
+          if ValueOption( "quiet" ) <> true then
+            Print( "#E  one of the components `IsAuthor', `IsMaintainer' ",
+                   "must be bound\n" );
+          fi;
           result:= false;
         fi;
         TestOption( subrec, "IsAuthor", IsProperBool, "`true' or `false'" );
@@ -2332,8 +2333,10 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                not ( IsBound( subrec.Email ) or
                      IsBound( subrec.WWWHome ) or
                      IsBound( subrec.PostalAddress ) ) then
-            Print( "#E  one of the components `Email', `WWWHome', `PostalAddress'\n",
-                   "#E  must be bound for each package maintainer \n" );
+            if ValueOption( "quiet" ) <> true then
+              Print( "#E  one of the components `Email', `WWWHome', `PostalAddress'\n",
+                     "#E  must be bound for each package maintainer\n" );
+            fi;
             result:= false;
           fi;
         fi;
@@ -2368,7 +2371,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
       fi;
       for subrec in list do
         TestMandat( subrec, "BookName", IsString, "a string" );
-        if IsBound(subrec.Archive) then
+        if IsBound(subrec.Archive) and ValueOption( "quiet" ) <> true then
           Print("#W  PackageDoc.Archive is withdrawn, use PackageDoc.ArchiveURLSubset instead\n");
         fi;
         TestMandat( subrec, "ArchiveURLSubset", IsFilenameList,
@@ -2415,9 +2418,11 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                               and IsString( x[1] )
                               and not LowercaseString( x[1] ) in list );
         if not IsEmpty( list ) then
-          Print( "#E  the needed packages in '",
-                 List( list, x -> x[1] ), "'\n",
-                 "#E  are currently not needed packages of GAP\n" );
+          if ValueOption( "quiet" ) <> true then
+            Print( "#E  the needed packages in '",
+                   List( list, x -> x[1] ), "'\n",
+                   "#E  are currently not needed packages of GAP\n" );
+          fi;
           result:= false;
         fi;
       fi;
@@ -2684,7 +2689,7 @@ Unicode:= "dummy";
 Encode:= "dummy";
 
 InstallGlobalFunction( BibEntry, function( arg )
-    local key, pkgname, pkginfo, GAP, ps, months, val, entry, author;
+    local key, pkgname, pkginfo, GAP, ps, val, entry, author;
 
     key:= false;
     if   Length( arg ) = 1 and IsString( arg[1] ) then
@@ -2778,17 +2783,15 @@ InstallGlobalFunction( BibEntry, function( arg )
     # We put the version information into the <C>title</C> component since
     # the <C>edition</C> component is not supported in the base styles.
 
-    months:= [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ];
     if GAP then
       val:= SplitString( GAPInfo.Date, "-" );
       if Length( val ) = 3 then
         if Int( val[2] ) in [ 1 .. 12 ] then
-          val:= Concatenation( "  <month>", months[ Int( val[2] ) ],
-                               "</month>\n  <year>", val[3], "</year>\n" );
+          val:= Concatenation( "  <month>", NameMonth[ Int( val[2] ) ],
+                               "</month>\n  <year>", val[1], "</year>\n" );
         else
           val:= Concatenation( "  <month>", val[2],
-                               "</month>\n  <year>", val[3], "</year>\n" );
+                               "</month>\n  <year>", val[1], "</year>\n" );
         fi;
       else
         val:= "";
@@ -2838,7 +2841,7 @@ InstallGlobalFunction( BibEntry, function( arg )
                                  and Length( pkginfo.Date ) = 10 then
         if Int( pkginfo.Date{ [ 4, 5 ] } ) in [ 1 .. 12 ] then
           Append( entry, Concatenation(
-            "  <month>", months[ Int( pkginfo.Date{ [ 4, 5 ] } ) ],
+            "  <month>", NameMonth[ Int( pkginfo.Date{ [ 4, 5 ] } ) ],
             "</month>\n",
             "  <year>", pkginfo.Date{ [ 7 .. 10 ] }, "</year>\n" ) );
         else
