@@ -36,6 +36,12 @@
 #endif
 
 
+static ExecStatus ReadCommand(Obj            context,
+                              TypInputFile * input,
+                              BOOL           justTokenize,
+                              Obj *          evalResult,
+                              BOOL *         dualSemicolon);
+
 /****************************************************************************
 **
 *S  TRY_IF_NO_ERROR
@@ -2493,6 +2499,32 @@ ExecStatus ReadEvalCommand(Obj            context,
                            Obj *          evalResult,
                            BOOL *         dualSemicolon)
 {
+    return ReadCommand(context, input, FALSE, evalResult, dualSemicolon);
+}
+
+
+/****************************************************************************
+**
+*F  ReadTokenizeCommand()
+**
+*/
+ExecStatus ReadTokenizeCommand(Obj context, TypInputFile * input, Obj * tokens)
+{
+    return ReadCommand(context, input, TRUE, tokens, 0);
+}
+
+
+/****************************************************************************
+**
+*F  ReadCommand()
+**
+*/
+static ExecStatus ReadCommand(Obj            context,
+                              TypInputFile * input,
+                              BOOL           justTokenize,
+                              Obj *          evalResult,
+                              BOOL *         dualSemicolon)
+{
     volatile ExecStatus status;
     volatile Obj        tilde;
     volatile Obj        errorLVars;
@@ -2509,6 +2541,16 @@ ExecStatus ReadEvalCommand(Obj            context,
     rs->s.input = input;
 
     ClearError();
+
+    if (justTokenize) {
+        // HACK / TODO: explain this
+        rs->intr.returning = STATUS_RETURN;
+        rs->intr.ignoring = 1;
+        if (*evalResult)
+            rs->s.tokens = *evalResult;
+        else
+            rs->s.tokens = *evalResult = NEW_PLIST(T_PLIST, 16);
+    }
 
     // get the first symbol from the input
     Match_(rs, rs->s.Symbol, "", 0);
@@ -2589,7 +2631,7 @@ ExecStatus ReadEvalCommand(Obj            context,
         *dualSemicolon = (rs->s.Symbol == S_DUALSEMICOLON);
 
     // end the interpreter
-    status = IntrEnd(&rs->intr, rs->s.NrError > 0, evalResult);
+    status = IntrEnd(&rs->intr, rs->s.NrError > 0, justTokenize ? 0 : evalResult);
 
     // restore the execution environment
     SWITCH_TO_OLD_LVARS(oldLVars);

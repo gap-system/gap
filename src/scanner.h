@@ -234,6 +234,10 @@ typedef struct {
     // error occurred.
     UInt NrError;
 
+    // HACK: if non-null this points at a plist in which information about the
+    // tokens in an input stream are stored.
+    Obj tokens;
+
 } ScannerState;
 
 
