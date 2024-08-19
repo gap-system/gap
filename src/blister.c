@@ -431,8 +431,7 @@ static Obj ElmsBlist(Obj list, Obj poss)
         lenPoss = LEN_LIST( poss );
 
         // make the result list
-        elms = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenPoss ) );
-        SET_LEN_BLIST( elms, lenPoss );
+        elms = NEW_BLIST( lenPoss );
 
         // loop over the entries of <positions> and select
         block = 0;  bit = 1;
@@ -492,8 +491,7 @@ static Obj ElmsBlist(Obj list, Obj poss)
         }
 
         // make the result list
-        elms = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenPoss ) );
-        SET_LEN_BLIST( elms, lenPoss );
+        elms = NEW_BLIST(lenPoss);
 
         if (inc == 1) {
             CopyBits(CONST_BLOCKS_BLIST(list) + ((pos - 1) / BIPEB),
@@ -1099,9 +1097,7 @@ static Obj FuncBLIST_LIST(Obj self, Obj list, Obj sub)
     RequireSmallList(SELF_NAME, list);
     RequireSmallList(SELF_NAME, sub);
 
-    Int lenList = LEN_LIST( list );
-    Obj blist = NewBag( T_BLIST, SIZE_PLEN_BLIST( lenList ) );
-    SET_LEN_BLIST(blist, lenList);
+    Obj blist = NEW_BLIST(LEN_LIST(list));
 
     FuncUNITE_BLIST_LIST(self, list, blist, sub);
 

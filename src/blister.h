@@ -94,6 +94,21 @@ EXPORT_INLINE void SET_LEN_BLIST(Obj list, Int len)
 
 /****************************************************************************
 **
+*F  NEW_BLIST( <len> )  . . . . . . .  create new boolean list with given len
+**
+**  returns a new blist with <len> entries, all equal to 'false'.
+**
+*/
+EXPORT_INLINE Obj NEW_BLIST(Int len)
+{
+    Obj blist;
+    blist = NewBag(T_BLIST, SIZE_PLEN_BLIST(len));
+    SET_LEN_BLIST(blist, len);
+    return blist;
+}
+
+/****************************************************************************
+**
 *F  BLOCKS_BLIST( <list> )  . . . . . . . . . . first block of a boolean list
 **
 **  returns a pointer to the start of the data of the Boolean list
