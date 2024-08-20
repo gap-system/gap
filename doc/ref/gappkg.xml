@@ -377,12 +377,6 @@ The following components of the record are <E>optional</E>.
     denoting the other packages which shall be loaded together with the
     current package if they are available,
   </Item>
-  <Mark><C>OtherPackagesLoadedInAdvance</C></Mark>
-  <Item>
-    a list of pairs <C>[ pkgname, pkgversion ]</C> of strings,
-    denoting the other packages that must be completely loaded before loading
-    of the current package is started,
-  </Item>
   <Mark><C>ExternalConditions</C></Mark>
   <Item>
     a list of strings or of pairs <C>[ text, URL ]</C> of strings,
@@ -1178,14 +1172,6 @@ In this situation, loading <C>A</C> forces an attempt to load also <C>B</C>,
 but <C>A</C> is loaded even if <C>B</C> is not available.
 <P/>
 
-Also the component <C>Dependencies.OtherPackagesLoadedInAdvance</C> in
-<F>PackageInfo.g</F> is supported, which describes needed packages that
-shall be loaded before the current package is loaded.
-See <Ref Sect="Declaration and Implementation Part of a Package"/>
-for details about this and more generally about the order in which the files
-of the packages in question are read.
-<P/>
-
 All package dependencies must be documented explicitly in the
 <F>PackageInfo.g</F> file. It is important to properly
 identify package dependencies and make the right decision
@@ -1449,21 +1435,10 @@ If one wants to call the function <C>f</C> or to access components of the
 record <C>r</C> in the code of the package <C>A</C> then the problem is
 that it may be not possible to determine a cyclic dependency between <C>A</C>
 and <C>B</C> from the packages <C>A</C> and <C>B</C> alone.
-A safe solution is then to add the name of <C>B</C> to the component
-<C>Dependencies.OtherPackagesLoadedInAdvance</C> of the <F>PackageInfo.g</F>
-file of <C>A</C>.
-The effect is that package <C>B</C> is completely loaded before the file
-<F>read.g</F> of <C>A</C> is read, provided that there is no cyclic
-dependency between <C>A</C> and <C>B</C>,
-and that package <C>A</C> is regarded as not available in the case that
-such a cyclic dependency between <C>A</C> and <C>B</C> exists.
-<P/>
-
-A special case where <C>Dependencies.OtherPackagesLoadedInAdvance</C>
-can be useful is that a package wants to force the complete &GAP; library
-to be read before the file <F>read.g</F> of the package <C>A</C> is read.
-In this situation, the <Q>package name</Q> <C>"gap"</C> should be added
-to this component in the <F>PackageInfo.g</F> file of <C>A</C>.
+A safe solution is then to design <C>A</C> in such a way that the code that
+calls <C>f</C> or accesses <C>r</C> belongs to <E>package extensions</E>
+of <C>A</C> that get loaded only after <C>B</C> has been loaded;
+see Section <Ref Sect="Extensions Provided by a Package"/> for details.
 <P/>
 
 <Index>autoreadable variables</Index>
