@@ -288,16 +288,11 @@ DeclareGlobalFunction( "LinearOrderByPartialWeakOrder" );
 ##    the required version is not installed,
 ##  </Item>
 ##  <Item>
-##    some needed package cannot be loaded,
+##    some needed package cannot be loaded, or
 ##  </Item>
 ##  <Item>
 ##    the <C>AvailabilityTest</C> function in the <F>PackageInfo.g</F> file
-##    of the package returned <K>false</K>, or
-##  </Item>
-##  <Item>
-##    some condition from the (optional) list
-##    <C>Dependencies.OtherPackagesLoadedInAdvance</C> in the
-##    <F>PackageInfo.g</F> file of the package is not satisfied.
+##    of the package returned <K>false</K>.
 ##  </Item>
 ##  </List>
 ##  <P/>
