@@ -488,7 +488,7 @@ InstallTrueMethod( IsPowerfulPGroup, IsFinite and IsPGroup and IsAbelian );
 ##
 ##  <Description>
 ##  <Index Key="RegularPGroup">Regular <M>p</M>-group</Index>
-##  A finite <M>p</M>-group <A>G</A> is said to be a <E>regular <M>p</M>-group</E>
+##  A finite <M>p</M>-group <A>G</A> is a <E>regular <M>p</M>-group</E>
 ##  if for all <M>a,b</M> in <A>G</A>, one has <M>a^p b^p = (a b)^p c^p</M>
 ##  where <M>c</M> is an element of the derived subgroup of the group generated
 ##  by <M>a</M> and <M>b</M> (see&nbsp;<Cite Key="Hal34"/>).
