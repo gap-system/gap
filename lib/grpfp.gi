@@ -1,3 +1,4 @@
+# gaplint: disable = analyse-lvars
 #############################################################################
 ##
 ##  This file is part of GAP, a system for computational discrete algebra.
@@ -3892,8 +3893,7 @@ end);
 ##
 #M  Size( <G> )  . . . . . . . . . . . . . size of a finitely presented group
 ##
-InstallMethod(Size, "for finitely presented groups", true,
-    [ IsSubgroupFpGroup and IsGroupOfFamily ], 0,
+BindGlobal("SIZE_FP_FROM_CYCLIC_INDEX",
 function( G )
 local   fgens,      # generators of the free group
         rels,       # relators of <G>
@@ -3942,6 +3942,8 @@ local   fgens,      # generators of the free group
 
 end );
 
+InstallMethod(Size, "for finitely presented groups", true,
+    [ IsSubgroupFpGroup and IsGroupOfFamily ], 0, SIZE_FP_FROM_CYCLIC_INDEX);
 
 #############################################################################
 ##
@@ -3978,7 +3980,7 @@ end);
 ##
 InstallGlobalFunction(IsomorphismPermGroupOrFailFpGroup,
 function(arg)
-local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, sz,
+local mappow, G, max, p, gens, rels, comb, i, l, m, H, HH, t, gen, sz,
   t1, bad, trial, b, bs, r, nl, o, u, rp, eo, rpo, e, e2, sc, j, z,
   timerFunc,amax,iso,useind;
 
@@ -4042,55 +4044,68 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, sz,
 
   H:=[]; # indicate pseudo-size 0
   if not HasSize(G) then
-    Info(InfoFpGroup,1,"First compute size via cyclic subgroup");
-    t:=FinIndexCyclicSubgroupGenerator(G,max);
-    if t<>fail then
-      gen:=t[1];
-      Unbind(t);
-      t := NEWTC_CosetEnumerator( FreeGeneratorsOfFpGroup(G),
-            RelatorsOfFpGroup(G),[gen],true,false:
-              cyclic:=true,limit:=1+max,quiet:=true );
-    fi;
-
-    if t=fail then
-      # we cannot get the size within the permitted limits -- give up
-      return fail;
-    fi;
-    e:=NEWTC_CyclicSubgroupOrder(t);
-    if e=0 then
-      SetSize(G,infinity);
-      return fail;
-    fi;
-    sz:=e*t.index;
+    sz:=SIZE_FP_FROM_CYCLIC_INDEX(G);
     SetSize(G,sz);
-    Info(InfoFpGroup,1,"found size ",sz);
-    if sz>200*t.index then
-      # try the corresponding perm rep
-      p:=t.ct{t.offset+[1..Length(FreeGeneratorsOfFpGroup(G))]};
-      Unbind(t);
-
-      for j in [1..Length(p)] do
-        p[j]:=PermList(p[j]);
-      od;
-      H:= GroupByGenerators( p );
-      # compute stabilizer chain with size info.
-      StabChain(H,rec(limit:=sz));
-      if Size(H)<sz then
-        # don't try this again
-        comb:=Filtered(comb,i->i<>[gen]);
-      fi;
-    else
-      # for memory reasons it might be better to try other perm rep first
-      Unbind(t);
-    fi;
-
-  elif Size(G)=infinity then
+  fi;
+  if Size(G)=infinity then
     return fail;
   fi;
 
   sz:=Size(G);
+
   if sz*10>max then
     max:=sz*10;
+  fi;
+
+  # do we have a cyclic subgroup by which we can enumerate?
+  if HasCyclicSubgroupFpGroup(G) then
+    trial:=GeneratorsOfGroup(CyclicSubgroupFpGroup(G));
+    trial:=List(trial,UnderlyingElement);
+    Info(InfoFpGroup,1,"Try subgroup ",trial," with ",max);
+    t:=CosetTableFromGensAndRels(gens,rels,trial:silent:=true,max:=max );
+    if t<>fail and IndexCosetTab(t)>1 then
+        p:=t{[1,3..Length(t)-1]};
+        Unbind(t);
+        for j in [1..Length(p)] do
+          p[j]:=PermList(p[j]);
+        od;
+        H:= GroupByGenerators( p );
+
+        StabChain(H,rec(limit:=sz));
+
+        Info(InfoFpGroup,1,"found index ",NrMovedPoints(H)," size ",Size(H));
+
+        if Size(H)<sz then
+          # not good -- induce abelian rep
+          iso:=IsomorphismFpGroup(SubgroupNC(G,
+            List(trial,x->ElementOfFpGroup(FamilyObj(One(G)),x))
+            ):silent:=true,max:=2*max);
+          if iso<>fail then
+
+            HH:=Range(iso);
+            SetSize(HH,sz/NrMovedPoints(H));
+
+#            p:=GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),
+#              GeneratorsOfGroup(H));
+#            ker:=SubgroupNC(HH,List(GeneratorsOfGroup(Kernel(p)),x->
+#              ImagesRepresentative(iso,x)));
+#
+#            # try to find a subgroup not containing `ker`
+# we know that the subgroup is cyclic, thus abelian. so no test needed
+#            if not IsSubset(DerivedSubgroup(HH),ker) then
+              t:=MaximalAbelianQuotient(HH);
+              t:=t*MinimalFaithfulPermutationRepresentation(Range(t));
+              t:=InducedRepFpGroup(iso*t,Source(iso));
+              H:=Group(MappingGeneratorsImages(t)[2]);
+              StabChain(H,rec(limit:=sz));
+            fi;
+#          fi;
+
+        fi;
+
+
+    fi;
+
   fi;
 
   # Do not die on large coset table
@@ -4108,17 +4123,19 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, sz,
     i:=1;
     while Size(H)<sz and i<=Length(comb) do
       trial:=comb[i];
-      if not ForAny(bad,i->IsSubset(i,trial)) then
+      if not ForAny(bad,i->IsSubset(trial,i)) then
         Info(InfoFpGroup,1,"Try subgroup ",trial," with ",max);
         t:=CosetTableFromGensAndRels(gens,rels,trial:silent:=true,max:=max );
-        if t<>fail then
+        if t<>fail and IndexCosetTab(t)>1 then
           Info(InfoFpGroup,1,"has index ",IndexCosetTab(t));
+
           p:=t{[1,3..Length(t)-1]};
           Unbind(t);
           for j in [1..Length(p)] do
             p[j]:=PermList(p[j]);
           od;
           H:= GroupByGenerators( p );
+
           # compute stabilizer chain with size info.
           if Length(trial)=0 then
             # regular is faithful
@@ -4127,14 +4144,16 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, t, gen, sz,
             StabChain(H,rec(limit:=sz));
           fi;
 
-
           # try to use induced rep
-          if Size(H)<sz and Size(H)>1 then
+          if Size(H)<sz and NrMovedPoints(H)<1000 then
+
             iso:=IsomorphismFpGroup(SubgroupNC(G,
               List(trial,x->ElementOfFpGroup(FamilyObj(One(G)),x))
               ):silent:=true,max:=2*max);
-            H:=Range(iso);
-            t:=IsomorphismPermGroupOrFailFpGroup(H,max);
+            HH:=Range(iso);
+            SetSize(HH,sz/NrMovedPoints(H));
+
+            t:=IsomorphismPermGroupOrFailFpGroup(HH,max);
             if t<>fail then
               t:=iso*t;
               iso:=InducedRepFpGroup(t,Source(iso));

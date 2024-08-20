@@ -229,7 +229,9 @@ local r,i,j,u,f,q,n,lim,sel,nat,ok,mi;
     if n=false or i<=Length(n)+1 then
       # still try group
       q:=GQuotients(f,g:findall:=false);
-      if Length(q)>0 then return r;fi; # found
+      if Length(q)>0 then return List(GeneratorsOfGroup(f),
+        x->ImagesRepresentative(q[1],x)) ;fi; # found
+
     fi;
     r:=r+1;
   until false;
