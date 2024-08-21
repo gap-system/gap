@@ -421,7 +421,7 @@ static void FindLiveRangeReverse(PtrArray * arr, void * start, void * end)
 {
     // HACK: the following deals with stacks of 'negative size' exposed by
     // Julia -- however, despite us having this code in here for a few years,
-    // I know think it may actually be due to a bug on the Julia side. See
+    // I now think it may actually be due to a bug on the Julia side. See
     // <https://github.com/JuliaLang/julia/pull/54639> for details.
     if (lt_ptr(end, start)) {
         SWAP(void *, start, end);
@@ -744,6 +744,16 @@ jl_datatype_t * GAP_DeclareBag(jl_sym_t *      name,
                                1, large > 0);
 }
 
+// internal wrapper for jl_boundp to deal with API change in Julia 1.12
+static int gap_jl_boundp(jl_module_t *m, jl_sym_t *var)
+{
+#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR >= 12
+    return jl_boundp(m, var, 1);
+#else
+    return jl_boundp(m, var);
+#endif
+}
+
 // Initialize the integration with Julia's garbage collector; in particular,
 // create Julia types for use in our allocations. The types will be stored
 // in the given 'module', and the MPtr type will be a subtype of 'parent'.
@@ -792,7 +802,7 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
 // Julia defines HAVE_JL_REINIT_FOREIGN_TYPE if `jl_reinit_foreign_type`
 // is available.
 #ifdef HAVE_JL_REINIT_FOREIGN_TYPE
-    if (jl_boundp(module, jl_symbol("GapObj"))) {
+    if (gap_jl_boundp(module, jl_symbol("GapObj"))) {
         DatatypeGapObj =
             (jl_datatype_t *)jl_get_global(module, jl_symbol("GapObj"));
         jl_reinit_foreign_type(DatatypeGapObj, MPtrMarkFunc, NULL);
