@@ -1422,8 +1422,7 @@ static Obj FuncLIST_WITH_IDENTICAL_ENTRIES(Obj self, Obj n, Obj obj)
         memset(CHARS_STRING(list), CHAR_VALUE(obj), len);
     }
     else if (obj == True || obj == False) {
-        list = NewBag(T_BLIST, SIZE_PLEN_BLIST(len));
-        SET_LEN_BLIST(list, len);
+        list = NEW_BLIST(len);
         if (obj == True) {
             UInt * ptrBlist = BLOCKS_BLIST(list);
             for (; len >= BIPEB; len -= BIPEB)
