@@ -1,4 +1,4 @@
-#@local entry,equ,pair,sml,oldTermEncoding,pkginfo,info,tmp_dir,mockpkgpath,old_warning_level,p,n,filename,IsDateFormatValid,loadinfo
+#@local entry,equ,pair,sml,oldTermEncoding,pkginfo,info,tmp_dir,mockpkgpath,old_warning_level,p,n,filename,IsDateFormatValid,loadinfo,eval_loadinfo
 gap> START_TEST("package.tst");
 
 # CompareVersionNumbers( <supplied>, <required>[, \"equal\"] )
@@ -700,6 +700,36 @@ Error, another version of package mockpkg is already loaded
 
 #
 # Test collecting information when calling LoadPackage, using the mock package
+# ('eval_loadinfo' is an example how one can evaluate the returned info.)
+#
+gap> eval_loadinfo:= function( r, indent... )
+> local rr;
+> if Length( indent ) = 0 then
+>   indent:= "";
+> else
+>   indent:= indent[1];
+> fi;
+> Print( indent, "consider package ", r.name, "\n" );
+> indent:= Concatenation( indent, "  " );
+> if IsBound( r.comment ) and r.comment <> "" then
+>   Print( indent, "comment: ", r.comment, "\n" );
+> fi;
+> if IsBound( r.versions ) then
+>   for rr in r.versions do
+>     Print( indent, "consider version ", rr.version, ":\n" );
+>     if IsBound( rr.comment ) and rr.comment <> "" then
+>       Print( indent, "  comment: ", rr.comment, "\n" );
+>     fi;
+>     if Length( rr.dependencies ) <> 0 then
+>       Print( indent, "  dependencies:\n" );
+>       Perform( rr.dependencies,
+>                x -> eval_loadinfo( x, Concatenation( indent, "    " ) ) );
+>     fi;
+>   od;
+> fi;
+> return "";
+> end;;
+
 #
 gap> SetPackagePath("mockpkg", mockpkgpath);
 gap> old_warning_level := InfoLevel( InfoWarning );;
@@ -713,6 +743,10 @@ gap> loadinfo;
 rec( 
   comment := "package 'mockpkg' is already loaded, required version =0.0 is no\
 t compatible with the actual version", name := "mockpkg", versions := [  ] )
+gap> eval_loadinfo( loadinfo );;
+consider package mockpkg
+  comment: package 'mockpkg' is already loaded, required version =0.0 is not c\
+ompatible with the actual version
 
 # Force "unload" it (see above, we have done this already once).
 gap> Unbind(GAPInfo.PackagesInfo.mockpkg);
@@ -738,12 +772,16 @@ gap> info.Dependencies.GAP:= "=0.0";;
 gap> loadinfo:= rec();;
 gap> LoadPackage( "mockpkg" : LoadInfo:= loadinfo );
 fail
+gap> Unbind( info.Dependencies.GAP );
 gap> loadinfo;
 rec( comment := "", name := "mockpkg", 
   versions := 
     [ rec( comment := "GAP version =0.0 is required, ", dependencies := [  ], 
           version := "0.1" ) ] )
-gap> Unbind( info.Dependencies.GAP );
+gap> eval_loadinfo( loadinfo );;
+consider package mockpkg
+  consider version 0.1:
+    comment: GAP version =0.0 is required, 
 
 # Try again to load the package into a not admissible GAP version.
 gap> info.Dependencies.NeededOtherPackages:= [ [ "GAP", "=0.0" ] ];;
@@ -751,6 +789,7 @@ gap> info.AvailabilityTest:= ReturnTrue;;
 gap> loadinfo:= rec();;
 gap> LoadPackage( "mockpkg" : LoadInfo:= loadinfo );
 fail
+gap> info.Dependencies.NeededOtherPackages:= [];;
 gap> loadinfo;
 rec( comment := "", name := "mockpkg", 
   versions := 
@@ -762,7 +801,13 @@ rec( comment := "", name := "mockpkg",
                   comment := "required GAP version =0.0 is not compatible with \
 the actual version", name := "gap", versions := [  ] ) ], version := "0.1" ) 
      ] )
-gap> info.Dependencies.NeededOtherPackages:= [];;
+gap> eval_loadinfo( loadinfo );;
+consider package mockpkg
+  consider version 0.1:
+    dependencies:
+      consider package gap
+        comment: required GAP version =0.0 is not compatible with the actual v\
+ersion
 
 # Try to load the package with a too restrictive availability test.
 gap> info:= GAPInfo.PackagesInfo.mockpkg[1];;
@@ -770,12 +815,16 @@ gap> info.AvailabilityTest:= ReturnFalse;;
 gap> loadinfo:= rec();;
 gap> LoadPackage( "mockpkg" : LoadInfo:= loadinfo );
 fail
+gap> info.AvailabilityTest:= ReturnTrue;;
 gap> loadinfo;
 rec( comment := "", name := "mockpkg", 
   versions := 
     [ rec( comment := "the AvailabilityTest function returned false, ", 
           dependencies := [  ], version := "0.1" ) ] )
-gap> info.AvailabilityTest:= ReturnTrue;;
+gap> eval_loadinfo( loadinfo );;
+consider package mockpkg
+  consider version 0.1:
+    comment: the AvailabilityTest function returned false, 
 
 # Try to load the package with not satisfied dependencies.
 gap> GAPInfo.PackagesInfo.mockpkg2:= [
@@ -805,6 +854,16 @@ g' but must be in the same load cycle, due to other dependencies, ",
                               rec( comment := "", name := "mockpkg", 
                                   versions := [  ] ) ], version := "0.0" ) ] 
                  ) ], version := "0.1" ) ] )
+gap> eval_loadinfo( loadinfo );;
+consider package mockpkg
+  consider version 0.1:
+    comment: package 'mockpkg2' shall be loaded before package 'mockpkg' but m\
+ust be in the same load cycle, due to other dependencies, 
+    dependencies:
+      consider package mockpkg2
+        consider version 0.0:
+          dependencies:
+            consider package mockpkg
 gap> Unbind( info.Dependencies.OtherPackagesLoadedInAdvance );
 gap> Unbind( GAPInfo.PackagesInfo.mockpkg2 );
 gap> info.Dependencies.NeededOtherPackages:= [ [ "gapdoc", "=0.0" ] ];;
@@ -822,6 +881,13 @@ rec( comment := "", name := "mockpkg",
                   comment := "package 'gapdoc' is already loaded, required vers\
 ion =0.0 is not compatible with the actual version", name := "gapdoc", 
                   versions := [  ] ) ], version := "0.1" ) ] )
+gap> eval_loadinfo( loadinfo );;
+consider package mockpkg
+  consider version 0.1:
+    dependencies:
+      consider package gapdoc
+        comment: package 'gapdoc' is already loaded, required version =0.0 is \
+not compatible with the actual version
 
 # Try to load an unknown package.
 gap> loadinfo:= rec();;
@@ -830,6 +896,9 @@ fail
 gap> loadinfo;
 rec( comment := "package is not listed in GAPInfo.PackagesInfo", 
   name := "unavailable_package" )
+gap> eval_loadinfo( loadinfo );;
+consider package unavailable_package
+  comment: package is not listed in GAPInfo.PackagesInfo
 gap> SetInfoLevel( InfoWarning, old_warning_level );
 
 #
