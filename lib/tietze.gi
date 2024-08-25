@@ -2351,7 +2351,7 @@ local tietze,oll,num,gens,gensn,rev,w,i,r,a;
           TzGo(T); # cleanup
           TzOptions(T).loopLimit:=oll;
           TzOptions(T).protected:=downto;
-          TzPrintStatus(T,true);
+          if TzOptions(T).printLevel >= 1 then  TzPrintStatus( T, true );  fi;
 
         fi;
 
@@ -2393,7 +2393,7 @@ local tietze,oll,num,gens,gensn,rev,w,i,r,a;
       TzGo(T); # cleanup
       TzOptions(T).loopLimit:=oll;
       TzOptions(T).protected:=downto;
-      TzPrintStatus(T,true);
+      if TzOptions(T).printLevel >= 1 then  TzPrintStatus( T, true );  fi;
 
     fi;
   od;
