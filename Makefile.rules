@@ -464,6 +464,12 @@ else
   GAP_LDFLAGS += -Wl,--export-dynamic
 endif
 
+ifneq (,$(findstring darwin,$(host_os)))
+INSTALL_NAME_TOOL = install_name_tool
+else
+INSTALL_NAME_TOOL = @echo > /dev/null
+endif
+
 libgap: libgap$(SHLIB_EXT) $(LIBGAP_FULL)
 .PHONY: libgap
 
@@ -513,7 +519,7 @@ build/main.c: src/main.c
 # build rule for the gap executable used by the `install-bin` target
 build/gap-install: libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS build/obj/build/main.c.o
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) build/obj/build/main.c.o $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
-	@install_name_tool -change $(LIBGAP_FULL) $(libdir)/$(LIBGAP_FULL) $@
+	$(INSTALL_NAME_TOOL) -change $(LIBGAP_FULL) $(libdir)/$(LIBGAP_FULL) $@
 
 endif
 
@@ -685,7 +691,7 @@ install-libgap: $(LIBGAP_FULL) libgap.pc
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
 	$(INSTALL) -m 0644 $(LIBGAP_FULL) $(DESTDIR)$(libdir)
 	ln -sf $(LIBGAP_FULL) $(DESTDIR)$(libdir)/libgap$(SHLIB_EXT)
-	install_name_tool -id $(libdir)/$(LIBGAP_FULL) $(DESTDIR)$(libdir)/$(LIBGAP_FULL)
+	$(INSTALL_NAME_TOOL) -id $(libdir)/$(LIBGAP_FULL) $(DESTDIR)$(libdir)/$(LIBGAP_FULL)
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/pkgconfig
 	$(INSTALL) -m 0644 libgap.pc $(DESTDIR)$(libdir)/pkgconfig
 
