@@ -223,4 +223,28 @@ gap> Number(myList,IsRegularPGroup);
 gap> g:=AbelianGroup(ListWithIdenticalEntries(2000,2));;
 
 #
+# Test IsRegularPGroup method thoroughly
+#
+gap> IsRegularPGroup(SmallGroup(8, 3)); # Case 1
+false
+gap> IsRegularPGroup(SmallGroup(2187, 224)); # Case 2
+false
+gap> IsRegularPGroup(SmallGroup(27,3)); # Case 3
+true
+gap> IsRegularPGroup(SmallGroup(81, 1)); # Case 4
+true
+gap> IsRegularPGroup(SmallGroup(243,22)); # Case 5
+true
+gap> IsRegularPGroup(SmallGroup(2187, 4487)); # Case 6
+true
+gap> IsRegularPGroup(SmallGroup(81, 7)); # Case 7
+false
+gap> IsRegularPGroup(SmallGroup(78125, 684)); # Case 8
+true
+gap> IsRegularPGroup(SmallGroup(243, 51)); # Case 10 (no case 9 found)
+false
+gap> IsRegularPGroup(SmallGroup(2187, 663)); # Case 11, takes 3 seconds
+true
+
+#
 gap> STOP_TEST("pgroups.tst", 1);
