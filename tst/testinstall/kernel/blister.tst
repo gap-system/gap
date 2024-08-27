@@ -304,17 +304,17 @@ gap> x;
 [ false, false, true, false ]
 
 # FuncMEET_BLIST
-gap> MEET_BLIST(fail, fail);
+gap> MeetBlist(fail, fail);
 Error, MEET_BLIST: <blist1> must be a boolean list (not the value 'fail')
-gap> MEET_BLIST([true,false], fail);
+gap> MeetBlist([true,false], fail);
 Error, MEET_BLIST: <blist2> must be a boolean list (not the value 'fail')
-gap> MEET_BLIST([true,false,true], [true,false]);
+gap> MeetBlist([true,false,true], [true,false]);
 Error, MEET_BLIST: <blist1> must have the same length as <blist2> (lengths are\
  3 and 2)
 gap> x:= [false,true,true,false];;
-gap> MEET_BLIST(x, [true,true,false,false]);
+gap> MeetBlist(x, [true,true,false,false]);
 true
-gap> MEET_BLIST(x, [true,false,false,false]);
+gap> MeetBlist(x, [true,false,false,false]);
 false
 
 # FuncFLIP_BLIST
