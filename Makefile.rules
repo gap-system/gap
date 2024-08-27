@@ -447,9 +447,7 @@ else ifneq (,$(findstring darwin,$(host_os)))
   LINK_SHLIB_FLAGS += -compatibility_version $(LIBGAP_COMPAT_VER)
   LINK_SHLIB_FLAGS += -current_version $(LIBGAP_CURRENT_VER)
   LINK_SHLIB_FLAGS += -Wl,-single_module
-
-  # TODO: set install_name, at least for installed version of the lib?
-  #LINK_SHLIB_FLAGS += -install_name $(libdir)/$(LIBGAP_FULL)
+  LINK_SHLIB_FLAGS += -headerpad_max_install_names
 
   GAP_CPPFLAGS += -DPIC
   GAP_CFLAGS += -fno-common
@@ -465,6 +463,12 @@ else
   GAP_CFLAGS += -fPIC
   GAP_CXXFLAGS += -fPIC
   GAP_LDFLAGS += -Wl,--export-dynamic
+endif
+
+ifneq (,$(findstring darwin,$(host_os)))
+INSTALL_NAME_TOOL = @install_name_tool
+else
+INSTALL_NAME_TOOL = @echo > /dev/null
 endif
 
 libgap: libgap$(SHLIB_EXT) $(LIBGAP_FULL)
@@ -516,6 +520,7 @@ build/main.c: src/main.c
 # build rule for the gap executable used by the `install-bin` target
 build/gap-install: libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS build/obj/build/main.c.o
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) build/obj/build/main.c.o $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
+	$(INSTALL_NAME_TOOL) -change $(LIBGAP_FULL) $(libdir)/$(LIBGAP_FULL) $@
 
 endif
 
@@ -687,6 +692,7 @@ install-libgap: $(LIBGAP_FULL) libgap.pc
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
 	$(INSTALL) -m 0644 $(LIBGAP_FULL) $(DESTDIR)$(libdir)
 	ln -sf $(LIBGAP_FULL) $(DESTDIR)$(libdir)/libgap$(SHLIB_EXT)
+	$(INSTALL_NAME_TOOL) -id $(libdir)/$(LIBGAP_FULL) $(DESTDIR)$(libdir)/$(LIBGAP_FULL)
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/pkgconfig
 	$(INSTALL) -m 0644 libgap.pc $(DESTDIR)$(libdir)/pkgconfig
 
