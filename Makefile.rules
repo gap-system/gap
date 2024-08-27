@@ -447,6 +447,7 @@ else ifneq (,$(findstring darwin,$(host_os)))
   LINK_SHLIB_FLAGS += -compatibility_version $(LIBGAP_COMPAT_VER)
   LINK_SHLIB_FLAGS += -current_version $(LIBGAP_CURRENT_VER)
   LINK_SHLIB_FLAGS += -Wl,-single_module
+  LINK_SHLIB_FLAGS += -headerpad_max_install_names
 
   GAP_CPPFLAGS += -DPIC
   GAP_CFLAGS += -fno-common
