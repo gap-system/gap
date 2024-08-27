@@ -465,7 +465,7 @@ else
 endif
 
 ifneq (,$(findstring darwin,$(host_os)))
-INSTALL_NAME_TOOL = install_name_tool
+INSTALL_NAME_TOOL = @install_name_tool
 else
 INSTALL_NAME_TOOL = @echo > /dev/null
 endif
