@@ -890,10 +890,11 @@ DeclareSynonym( "SubtractBlist", SUBTR_BLIST );
 ##  <Func Name="MeetBlist" Arg='blist1, blist2'/>
 ##
 ##  <Description>
-##  Returns <K>true</K> if <A>blist1</A> and <A>blist2</A> have <K>true</K> in the same
-##  position and <K>false</K> otherwise. It is equivalent to, but faster than
+##  Returns <K>true</K> if there is a position at which both <A>blist1</A>
+##  and <A>blist2</A> contain <K>true</K>, and <K>false</K> otherwise.
+##  It is equivalent to, but faster than
 ##  <C>SizeBlist(IntersectionBlist(blist1, blist2)) &lt;&gt; 0</C>.
-##  An error is thrown if the lists must have the same length.
+##  An error is thrown if the lists do not have the same length.
 ##  <Example><![CDATA[
 ##  gap> blist1 := [ true, true, true, true ];;
 ##  gap> blist2 := [ true, false, true, false ];;
