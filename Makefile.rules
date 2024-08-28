@@ -308,10 +308,12 @@ ifneq (,$(findstring cygwin,$(host_os)))
 else
   ifneq (,$(findstring darwin,$(host_os)))
     GAC_CFLAGS = -fno-common
-    GAC_LDFLAGS = -bundle -undefined dynamic_lookup -Wl,-no_fixup_chains
+    GAC_LDFLAGS = -bundle -L$(abs_builddir) -lgap
+    GAC_LDFLAGS_FOR_INSTALL = -bundle -L$(libdir) -lgap
   else
     GAC_CFLAGS = -fPIC
-    GAC_LDFLAGS = -shared -fPIC
+    GAC_LDFLAGS = -shared -fPIC -L$(abs_builddir) -lgap
+    GAC_LDFLAGS_FOR_INSTALL = -shared -fPIC -L$(libdir) -lgap
   endif
 endif
 
@@ -510,8 +512,8 @@ libgap$(SHLIB_EXT): $(LIBGAP_FULL)
 	ln -sf $< $@
 
 # build rule for the main gap executable
-gap$(EXEEXT): build/obj/src/main.c.o $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(OBJS) $(GAP_LIBS) -o $@
+gap$(EXEEXT): build/obj/src/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
 
 # generate a modified copy of main.c for use by the `gap-install` binary
 build/main.c: src/main.c config.status
@@ -673,6 +675,7 @@ install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap -I${includedir} $(GAP_DE
 install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_GAP = $(bindir)/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
+install-sysinfo: GAC_LDFLAGS = $(GAC_LDFLAGS_FOR_INSTALL)
 install-sysinfo: GMP_PREFIX =
 install-sysinfo: install-dirs
 	@echo "$$sysinfo_gap" > $(DESTDIR)$(libdir)/gap/sysinfo.gap
