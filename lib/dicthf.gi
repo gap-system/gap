@@ -152,16 +152,11 @@ end);
 ##
 InstallMethod(SparseIntKey,"for bounded tuples",true,
     [ IsList,IsList and IsCyclotomicCollection ], 0,
-function(m,v)
-local c;
-  if Length(m)<>3 or m[1]<>"BoundedTuples" then
+function(m, v)
+  if Length(m) <> 3 or m[1] <> "BoundedTuples" then
     TryNextMethod();
   fi;
-  c:=[1,Maximum(m[2])+1];
-  return function(a)
-    return a*c;
-  end;
-
+  return x -> HashKeyWholeBag(x, Length(x));
 end);
 
 BindGlobal( "SparseIntKeyVecListAndMatrix", function(d,m)
