@@ -32,4 +32,8 @@ gap> Length(Orbit(h,h.1[1],OnRight));
 2079
 gap> Length(Orbit(h,h.2^5,OnPoints));
 693
+gap> Length(Orbit(SymmetricGroup(14), [1 .. 7], OnSets));
+3432
+gap> Length(Orbit(SymmetricGroup(16), [1 .. 8], OnSets));
+12870
 gap> STOP_TEST( "hash2.tst", 1);
