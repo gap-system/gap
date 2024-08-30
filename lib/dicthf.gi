@@ -156,7 +156,16 @@ function(m, v)
   if Length(m) <> 3 or m[1] <> "BoundedTuples" then
     TryNextMethod();
   fi;
-  return x -> HashKeyWholeBag(x, Length(x));
+  # Due to the way BoundedTuples are presently implemented we expect the input
+  # to the hash function to always be a list of integers. This means that using
+  # HashKeyWholeBag should be safe.
+  return function(x)
+    Assert(1, IsPositionsList(x));
+    if not IsPlistRep(x) then
+      x := AsPlist(x);
+    fi;
+    return HashKeyWholeBag(x, 1);
+  end;
 end);
 
 BindGlobal( "SparseIntKeyVecListAndMatrix", function(d,m)
