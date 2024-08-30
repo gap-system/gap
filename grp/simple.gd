@@ -26,8 +26,9 @@
 ##  Groups are specified via their name in ATLAS style notation, with parameters added
 ##  if necessary. The intelligence applied to parsing the name is limited, and at the
 ##  moment no proper extensions can be constructed.
-##  For groups who do not have a permutation representation of small degree the
-##  ATLASREP package might need to be installed to construct theses groups.
+##  For groups which do not have a permutation representation of small degree
+##  the <Package>AtlasRep</Package> package might need to be installed
+##  to construct these groups.
 ##  <Example><![CDATA[
 ##  gap> g:=SimpleGroup("M(23)");
 ##  M23
