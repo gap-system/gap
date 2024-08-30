@@ -513,7 +513,7 @@ gap$(EXEEXT): $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS build/obj/src/ma
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) build/obj/src/main.c.o $(OBJS) $(GAP_LIBS) -o $@
 
 # generate a modified copy of main.c for use by the `gap-install` binary
-build/main.c: src/main.c
+build/main.c: src/main.c config.status
 	@echo "#define SYS_DEFAULT_PATHS \"$(libdir)/gap;$(datarootdir)/gap\"" > $@
 	@cat $< >> $@
 
