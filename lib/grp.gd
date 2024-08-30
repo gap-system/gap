@@ -427,11 +427,21 @@ DeclareOperation( "KnowsHowToDecompose", [ IsGroup, IsList ] );
 ##  <M>p</M>-group, and <K>false</K> otherwise.
 ##  <P/>
 ##  Finite <M>p</M>-groups are precisely those groups whose order
-##  (see&nbsp;<Ref Attr="Size"/>) is a prime power, and are always
-##  nilpotent.
+##  (see&nbsp;<Ref Attr="Size"/>) is <M>1</M> or a prime power
+##  (see&nbsp;<Ref Func="IsPrimePowerInt"/>,
+##  and are always nilpotent.
 ##  <P/>
 ##  Note that <M>p</M>-groups can also be infinite, and in that case,
 ##  need not be nilpotent.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> IsPGroup( DihedralGroup( 8 ) );
+##  true
+##  gap> IsPGroup( TrivialGroup() );
+##  true
+##  gap> IsPGroup( DihedralGroup( 10 ) );
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
