@@ -157,7 +157,7 @@ function(m, v)
     TryNextMethod();
   fi;
   # Due to the way BoundedTuples are presently implemented we expect the input
-  # to the hash function to always be a list of positive integers. This means
+  # to the hash function to always be a list of positive immediate integers. This means
   # that using HashKeyWholeBag should be safe.
   return function(x)
     Assert(1, IsPositionsList(x));
