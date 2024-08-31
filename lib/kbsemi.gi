@@ -11,7 +11,6 @@
 ##  This file contains code for the Knuth-Bendix rewriting system for semigroups
 ##  and monoids.
 ##
-# gaplint: disable = analyse-lvars
 
 InstallGlobalFunction(EmptyKBDAG,function(genids)
 local offset,deadend;
@@ -876,7 +875,7 @@ end);
 
 BindGlobal("GKB_MakeKnuthBendixRewritingSystemConfluent",
 function(kbrws)
-local   pn,lp,rl,p,i,a;
+local   pn,lp,rl,p,i;
 
   if IsBound(kbrws!.invmap) then
     kbrws!.fellowTravel:=[];

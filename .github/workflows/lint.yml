@@ -21,6 +21,6 @@ jobs:
         with:
           python-version: '3.10'
       - name: "Install gaplint with pip"
-        run: pip install gaplint==1.1.5
+        run: pip install gaplint==1.3.2
       - name: "Run gaplint lib/*.g* hpcgap/lib/*.g* grp/*.g lib/hpc/*.g hpcgap/lib/hpc/*.g . . ."
         run: gaplint lib/*.g* hpcgap/lib/*.g* grp/*.g lib/hpc/*.g hpcgap/lib/hpc/*.g
