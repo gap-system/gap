@@ -1305,9 +1305,9 @@ testkernel: ${KERNELTESTS}
 
 # change PKG_BRANCH to stable-X.Y in the stable branch
 PKG_BRANCH = stable-4.12
-PKG_BOOTSTRAP_URL = https://github.com/gap-system/PackageDistro/releases/download/latest/
-PKG_MINIMAL = packages-required.tar.gz
-PKG_FULL = packages.tar.gz
+PKG_BOOTSTRAP_URL = https://github.com/gap-system/gap/releases/download/v4.12.2/
+PKG_MINIMAL = packages-required-v4.12.2.tar.gz
+PKG_FULL = packages-v4.12.2.tar.gz
 DOWNLOAD = $(abs_srcdir)/cnf/download.sh
 
 bootstrap-pkg-minimal:
