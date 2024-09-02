@@ -1,4 +1,3 @@
-# gaplint: disable = analyse-lvars
 #############################################################################
 ##
 ##  This file is part of GAP, a system for computational discrete algebra.
@@ -3980,7 +3979,7 @@ end);
 ##
 InstallGlobalFunction(IsomorphismPermGroupOrFailFpGroup,
 function(arg)
-local mappow, G, max, p, gens, rels, comb, i, l, m, H, HH, t, gen, sz,
+local mappow, G, max, p, gens, rels, comb, i, l, m, H, HH, t, sz,
   t1, bad, trial, b, bs, r, nl, o, u, rp, eo, rpo, e, e2, sc, j, z,
   timerFunc,amax,iso,useind;
 
