@@ -492,13 +492,13 @@ GAP_LDFLAGS += -Wl,--allow-multiple-definition
 # loads that DLL and calls the renamed main function.
 all: bin/$(GAPARCH)/gap.dll
 
-bin/$(GAPARCH)/gap.dll: libgap.dll
+bin/$(GAPARCH)/gap.dll: libgap$(SHLIB_EXT)
 	@$(MKDIR_P) bin/$(GAPARCH)
 	cp $< $@
 
 # build rule for the main gap executable
-gap$(EXEEXT): libgap.dll cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS build/obj/src/main.c.o
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) -Wl,--export-all-symbols build/obj/src/main.c.o $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
+gap$(EXEEXT): build/obj/src/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) -Wl,--export-all-symbols $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
 	@( if which peflags > /dev/null ; then peflags --cygwin-heap=2048 gap$(EXEEXT) ; fi )
 
 else
@@ -509,8 +509,8 @@ libgap$(SHLIB_EXT): $(LIBGAP_FULL)
 	ln -sf $< $@
 
 # build rule for the main gap executable
-gap$(EXEEXT): $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS build/obj/src/main.c.o
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) build/obj/src/main.c.o $(OBJS) $(GAP_LIBS) -o $@
+gap$(EXEEXT): build/obj/src/main.c.o $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(OBJS) $(GAP_LIBS) -o $@
 
 # generate a modified copy of main.c for use by the `gap-install` binary
 build/main.c: src/main.c config.status
@@ -518,8 +518,8 @@ build/main.c: src/main.c config.status
 	@cat $< >> $@
 
 # build rule for the gap executable used by the `install-bin` target
-build/gap-install: libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS build/obj/build/main.c.o
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) build/obj/build/main.c.o $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
+build/gap-install: build/obj/build/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
 	$(INSTALL_NAME_TOOL) -change $(LIBGAP_FULL) $(libdir)/$(LIBGAP_FULL) $@
 
 endif
