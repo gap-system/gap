@@ -2836,11 +2836,26 @@ end );
 #M  Permuted( <list>, <perm> )  . . . apply permutation <perm> to list <list>
 ##
 InstallMethod( Permuted,
-    "for a list and a permutation",
-    [ IsList, IS_PERM ],
+    "for a dense list and a permutation",
+    [ IsDenseList, IS_PERM ],
     function( list, perm )
     # this was proposed by Jean Michel
     return list{ OnTuples( [ 1 .. Length( list ) ], perm^-1 ) };
+    end );
+
+InstallMethod( Permuted,
+    "for a (non-dense) list and a permutation",
+    [ IsList, IS_PERM ],
+    function( list, perm )
+    local result, i;
+
+    result := [];
+    for i in [1 .. Length(list)] do
+      if IsBound(list[i]) then
+        result[i ^ perm] := list[i];
+      fi;
+    od;
+    return result;
     end );
 
 

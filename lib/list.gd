@@ -2010,7 +2010,8 @@ DeclareGlobalFunction( "Cartesian" );
 ##  <Description>
 ##  returns a new list <A>new</A> that contains the elements of the
 ##  list <A>list</A> permuted according to the permutation <A>perm</A>.
-##  That is <C><A>new</A>[<A>i</A>^<A>perm</A>] = <A>list</A>[<A>i</A>]</C>.
+##  That is <C><A>new</A>[<A>i</A>^<A>perm</A>] = <A>list</A>[<A>i</A>]</C>
+##  whenever <C><A>list</A>[<A>i</A>]</C> is bound.
 ##  <P/>
 ##  <Ref Oper="Sortex"/> allows you to compute a permutation that must
 ##  be applied to a list in order to get the sorted list.
@@ -2018,6 +2019,8 @@ DeclareGlobalFunction( "Cartesian" );
 ##  <Example><![CDATA[
 ##  gap> Permuted( [ 5, 4, 6, 1, 7, 5 ], (1,3,5,6,4) );
 ##  [ 1, 4, 5, 5, 6, 7 ]
+##  gap> Permuted( [ 5, 4, 6,, 7, 5 ], (1,3,5,6,4) );
+##  [ , 4, 5, 5, 6, 7 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
