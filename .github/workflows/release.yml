@@ -185,14 +185,6 @@ jobs:
       # The GAP to be wrapped is put into gap-$GAP_VERSION/
       # The gap-windows script requires the GAP directory to be named this way.
 
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.11
-      - name: "Install some python packages"
-        run: |
-          python -m pip install -r dev/releases/requirements.txt
-
       # Download the artifact -- for an actual release, this contains the
       # exact same tarball as was uploaded to the release as an asset
       - name: "Download GAP archive from previous job"
