@@ -35,7 +35,8 @@ git push origin v${VER}
 6. Edit the new release under <https://github.com/gap-system/gap/releases/> and
   change the release from "pre-release" to "latest release" (i.e., on <https://github.com/gap-system/gap/releases/edit/vX.Y.Z> disable "Set as a pre-release" and enable "Set as the latest release").
 7. Next either manually dispatch the “[Sync](https://github.com/gap-system/GapWWW/actions/workflows/sync.yml)” GitHub Actions workflow on `gap-system/GapWWW`, or wait overnight for it to happen on schedule.
-    - This Workflow creates a pull request to `gap-system/GapWWW`, which updates the GAP website according to the release data hosted on `gap-system/gap`.  Check that the result is sensible.
+    - This workflow creates a pull request to `gap-system/GapWWW`, which updates the GAP website according to the release data hosted on `gap-system/gap`.  Check that the result is sensible.
+    - This workflow uses the `update_website.py` script which can also be run manually, see below for more information.
 8. When it is time to publicise the new GAP release, merge the pull request to GapWWW.
 9. There are currently additional steps required for the new manual to appear on <https://docs.gap-system.org>, and to add a copy of the new release files to <https://files.gap-system.org>.
 These could and be automated in the future but are currently not. Details are described in steps 10 and following below.
@@ -88,7 +89,7 @@ Before starting the release process, the scripts have the following dependencies
 5. Access your local clone of the `GapWWW` repository.
 6. Make sure that your clone is up to date with `gap-system/GapWWW`.
 7. Check out the master branch.
-8. Run `update_website.py` in root directory of `GapWWW` (see `update_website.py --help`). This:
+8. Start website update: either as described above via a workflow in the `GapWWW` repository; or by running `update_website.py` in root directory of `GapWWW` (see `update_website.py --help`). This:
    - Fetches the GitHub releases data from `gap-system/gap`.
    - Deletes, modifies, and adds various JSON and HTML files according to this data.
 9. Inspect the changes, and commit and push them to the master branch to `gap-system/GapWWW`.
