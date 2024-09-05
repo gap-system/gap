@@ -1,4 +1,4 @@
-github
+PyGitHub
 mypy
 requests
 types-requests
