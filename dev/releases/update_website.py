@@ -9,10 +9,8 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 ##
-##  This script is intended to implement step 7 of
-##  <https://hackmd.io/AWds-AnZT72XXsbA0oVC6A>, i.e.:
-##
-##  7. Update the website
+##  This script updates the website when there is a new GAP release.
+##  It is to be run from inside a clone of the gap-system/GapWWW repository.
 
 import argparse
 import datetime
@@ -25,9 +23,9 @@ import sys
 import tarfile
 import tempfile
 
+import github
 import requests
 import utils
-import utils_github
 from utils import error, notice
 
 if sys.version_info < (3, 6):
@@ -42,13 +40,8 @@ checked out at the version from which you want to update \
 (most likely the master branch of github.com/gap-system/GapWWW). \
 The script modifies the working directory according to the information \
 on GitHub.""",
-    epilog="""Notes:
-* To learn how to create a GitHub access token, please consult \
-  https://help.github.com/articles/creating-an-access-token-for-command-line-use
-""",
 )
 group = parser.add_argument_group("Repository details and access")
-group.add_argument("--token", type=str, help="GitHub access token")
 group.add_argument(
     "--gap-fork",
     type=str,
@@ -68,6 +61,7 @@ tmpdir = tempfile.gettempdir()
 # Downloads the asset with name <asset_name> from the current GitHub release
 # (global variable <release>, with assets <assets>) to <writedir>.
 def download_asset_by_name(asset_name: str, writedir: str) -> None:
+    global assets
     try:
         url = [x for x in assets if x.name == asset_name][0].browser_download_url
     except:
@@ -114,130 +108,76 @@ def download_and_extract_json_gz_asset(asset_name: str, dest: str) -> None:
 
 
 ################################################################################
-# Get all releases from 4.11.0 onwards, that are not a draft or prerelease
-utils_github.CURRENT_REPO_NAME = f"{args.gap_fork}/gap"
-utils_github.initialize_github(args.token)
+# Get latest GAP release
 notice(f"Will use temporary directory: {tmpdir}")
 
-releases = [
-    x
-    for x in utils_github.CURRENT_REPO.get_releases()
-    if not x.draft
-    and not x.prerelease
-    and utils.is_possible_gap_release_tag(x.tag_name)
-    and (
-        int(x.tag_name[1:].split(".")[0]) > 4
-        or (
-            int(x.tag_name[1:].split(".")[0]) == 4
-            and int(x.tag_name[1:].split(".")[1]) >= 11
-        )
-    )
-]
-if releases:
-    notice(f"Found {len(releases)} published GAP releases >= v4.11.0")
-else:
-    notice("Found no published GAP releases >= v4.11.0")
-    sys.exit(0)
+g = github.Github()  # no token required as we just read a little data
+repo = g.get_repo(f"{args.gap_fork}/gap")
+release = repo.get_latest_release()
 
-# Sort by version number, biggest to smallest
-releases.sort(key=lambda s: list(map(int, s.tag_name[1:].split("."))))
-releases.reverse()
+notice(f"Latest GAP release is {release.title} at tag {release.tag_name}")
+if release.tag_name[0] != "v":
+    error("Tag name has unexpected format")
+version = release.tag_name[1:]
 
 
-################################################################################
-# For each release, extract the appropriate information
-for release in releases:
-    version = release.tag_name[1:]
-    version_safe = version.replace(".", "-")  # Safe for the Jekyll website
-    notice(f"\nProcessing GAP {version}...")
+# Determine which version is currently in GapWWW
+with open("_data/release.json", "r", encoding="utf-8") as f:
+    release_json = json.load(f)
+www_release = release_json["version"]
 
-    # Work out the relevance of this release
-    known_release = os.path.isfile(f"_Releases/{version}.html")
-    newest_release = releases.index(release) == 0
-    if known_release:
-        notice("I have seen this release before")
-    elif newest_release:
-        notice("This is a new release to me, and it has the biggest version number")
-    else:
-        notice(
-            "This is a new release to me, but I know about releases with bigger version numbers"
-        )
+notice(f"GAP release in GapWWW is {www_release}")
 
-    # For all releases, record the assets (in case they were deleted/updated/added)
-    notice(f"Collecting GitHub release asset data in _data/assets/{version_safe}.json")
-    assets = release.get_assets()
-    asset_data = []
-    for asset in assets:
-        if asset.name.endswith(".sha256") or asset.name.endswith(".json.gz"):
-            continue
-        request = requests.get(f"{asset.browser_download_url}.sha256")
-        try:
-            request.raise_for_status()
-            sha256 = request.text.strip()
-        except:
-            error(f"Failed to download {asset.browser_download_url}.sha256")
-        filtered_asset = {
-            "bytes": asset.size,
-            "name": asset.name,
-            "sha256": sha256,
-            "url": asset.browser_download_url,
-        }
-        asset_data.append(filtered_asset)
-    asset_data.sort(key=lambda s: list(map(str, s["name"])))
-    with open(f"{pwd}/_data/assets/{version_safe}.json", "wb") as outfile:
-        outfile.write(json.dumps(asset_data, indent=2).encode("utf-8"))
+# TODO: abort if identical or even older
 
-    # For new-to-me releases create a file in _Releases/ and _data/package-infos/
-    if not known_release:
-        # When we find a previously unknown release, we extract the release date
-        # from the configure.ac file contained in gap-{version}-core.tar.gz.
-        # This date is set by the make_archives.py script.
-        # First download gap-X.Y.Z-core.tar.gz, extract, and fetch the date.
-        tarball = f"gap-{version}-core.tar.gz"
-        download_asset_by_name(tarball, tmpdir)
-        with utils.working_directory(tmpdir):
-            extract_tarball(tarball)
-        date = get_date_from_configure_ac(f"{tmpdir}/gap-{version}")
-        notice(f"Using release date {date} for GAP {version}")
 
-        notice(f"Writing the file _Releases/{version}.html")
-        with open(f"{pwd}/_Releases/{version}.html", "wb") as outfile:
-            outfile.write(
-                f"---\nversion: {version}\ndate: '{date}'\n---\n".encode("utf-8")
-            )
+# For all releases, record the assets (in case they were deleted/updated/added)
+notice(f"Collecting GitHub release asset data in _data/assets.json")
+assets = release.get_assets()
+asset_data = []
+for asset in assets:
+    if asset.name.endswith(".sha256") or asset.name.endswith(".json.gz"):
+        continue
+    request = requests.get(f"{asset.browser_download_url}.sha256")
+    try:
+        request.raise_for_status()
+        sha256 = request.text.strip()
+    except:
+        error(f"Failed to download {asset.browser_download_url}.sha256")
+    filtered_asset = {
+        "bytes": asset.size,
+        "name": asset.name,
+        "sha256": sha256,
+        "url": asset.browser_download_url,
+    }
+    asset_data.append(filtered_asset)
+asset_data.sort(key=lambda s: list(map(str, s["name"])))
+with open(f"{pwd}/_data/assets.json", "wb") as outfile:
+    outfile.write(json.dumps(asset_data, indent=2).encode("utf-8"))
 
-        notice(f"Writing the file _data/package-infos/{version_safe}.json")
-        download_and_extract_json_gz_asset(
-            "package-infos.json.gz", f"{pwd}/_data/package-infos/{version_safe}.json"
-        )
+# Extract the release date from the configure.ac file contained in
+# gap-{version}-core.tar.gz.
+# This date is set by the make_archives.py script.
+# First download gap-X.Y.Z-core.tar.gz, extract, and fetch the date.
+tarball = f"gap-{version}-core.tar.gz"
+download_asset_by_name(tarball, tmpdir)
+with utils.working_directory(tmpdir):
+    extract_tarball(tarball)
+date = get_date_from_configure_ac(f"{tmpdir}/gap-{version}")
+notice(f"Using release date {date} for GAP {version}")
 
-    # For a new-to-me release with biggest version number, also set this is the
-    # 'default'/'main' version on the website (i.e. the most prominent release).
-    # Therefore update _data/release.json, _data/help.json, and _Packages/.
-    if not known_release and newest_release:
-        notice("Rewriting the _data/release.json file")
-        release_data = {
-            "version": version,
-            "version-safe": version_safe,
-            "date": date,
-        }
-        with open(f"{pwd}/_data/release.json", "wb") as outfile:
-            outfile.write(json.dumps(release_data, indent=2).encode("utf-8"))
+notice(f"Writing the file assets/package-infos.json")
+download_and_extract_json_gz_asset(
+    "package-infos.json.gz", f"{pwd}/assets/package-infos.json"
+)
 
-        notice("Overwriting _data/help.json with the contents of help-links.json.gz")
-        download_and_extract_json_gz_asset(
-            "help-links.json.gz", f"{pwd}/_data/help.json"
-        )
+notice("Rewriting the _data/release.json file")
+release_data = {
+    "version": version,
+    "date": date,
+}
+with open(f"{pwd}/_data/release.json", "wb") as outfile:
+    outfile.write(json.dumps(release_data, indent=2).encode("utf-8"))
 
-        notice(
-            "Repopulating _Packages/ with one HTML file for each package in packages-info.json"
-        )
-        shutil.rmtree("_Packages")
-        os.mkdir("_Packages")
-        with open(f"{pwd}/_data/package-infos/{version_safe}.json", "rb") as infile:
-            data = json.loads(infile.read())
-            for pkg in data:
-                with open(
-                    f"{pwd}/_Packages/{pkg}.html", "w+", encoding="utf-8"
-                ) as pkg_file:
-                    pkg_file.write(f"---\ntitle: {data[pkg]['PackageName']}\n---\n")
+notice("Overwriting _data/help.json with the contents of help-links.json.gz")
+download_and_extract_json_gz_asset("help-links.json.gz", f"{pwd}/_data/help.json")
