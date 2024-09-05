@@ -45,7 +45,7 @@ jobs:
       - name: "Install some python packages"
         run: |
           python -m pip install -r dev/releases/requirements.txt
-          python -m pip install pytest mock black isort
+          python -m pip install black isort mypy pytest
 
       - name: "Check code formatting"
         run: python -m black --check --diff dev/releases
