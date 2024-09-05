@@ -29,12 +29,19 @@ from datetime import datetime
 from typing import Any, Dict, List, TextIO
 
 import requests
-from utils import download_with_sha256, error, is_existing_tag, notice, warning
+from utils import download_with_sha256, error, notice, warning
 
 
 def usage(name: str) -> None:
     print(f"Usage: `{name} NEWVERSION`")
     sys.exit(1)
+
+
+def is_existing_tag(tag: str) -> bool:
+    res = subprocess.run(
+        ["git", "show-ref", "--quiet", "--verify", "refs/tags/" + tag], check=False
+    )
+    return res.returncode == 0
 
 
 def find_previous_version(version: str) -> str:

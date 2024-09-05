@@ -9,11 +9,10 @@
 ##
 import os
 import subprocess
+from typing import Optional
 
 import github
 from utils import error, notice, sha256file
-
-from typing import Optional
 
 
 # If no token is provided, this uses the value of the environment variable

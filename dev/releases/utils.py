@@ -14,7 +14,7 @@ import re
 import shutil
 import subprocess
 import sys
-from typing import Iterator, List, NoReturn, Optional
+from typing import Iterator, NoReturn
 
 import requests
 
@@ -38,9 +38,6 @@ def error(msg: str) -> NoReturn:
 def verify_command_available(cmd: str) -> None:
     if shutil.which(cmd) is None:
         error(f"the '{cmd}' command was not found, please install it")
-    # TODO: do the analog of this in ReleaseTools bash script:
-    # command -v curl >/dev/null 2>&1 ||
-    #     error "the 'curl' command was not found, please install it"
 
 
 def verify_git_repo() -> None:
@@ -75,15 +72,6 @@ def working_directory(path: str) -> Iterator[None]:
     os.chdir(path)
     yield
     os.chdir(prev_cwd)
-
-
-# helper for extracting values of variables set in the GAP Makefiles.rules
-def get_makefile_var(var: str) -> str:
-    res = subprocess.run(["make", f"print-{var}"], check=True, capture_output=True)
-    kv = res.stdout.decode("ascii").strip().split("=")
-    assert len(kv) == 2
-    assert kv[0] == var
-    return kv[1]
 
 
 # compute the sha256 checksum of a file
@@ -137,68 +125,4 @@ def download_with_sha256(url: str, dst: str) -> None:
     if expected_checksum != actual_checksum:
         error(
             f"checksum for '{dst}' expected to be {expected_checksum} but got {actual_checksum}"
-        )
-
-
-# Run what ever <args> command and create appropriate log file
-def run_with_log(args: List[str], name: str, msg: Optional[str] = None) -> None:
-    if not msg:
-        msg = name
-    with open("../" + name + ".log", "w", encoding="utf-8") as fp:
-        try:
-            subprocess.run(args, check=True, stdout=fp, stderr=fp)
-        except subprocess.CalledProcessError:
-            error(msg + " failed. See " + name + ".log.")
-
-
-def is_possible_gap_release_tag(tag: str) -> bool:
-    return re.fullmatch(r"v[1-9]+\.[0-9]+\.[0-9]+(-.+)?", tag) is not None
-
-
-def verify_is_possible_gap_release_tag(tag: str) -> None:
-    if not is_possible_gap_release_tag(tag):
-        error(f"{tag} does not look like the tag of a GAP release version")
-
-
-def is_existing_tag(tag: str) -> bool:
-    res = subprocess.run(
-        ["git", "show-ref", "--quiet", "--verify", "refs/tags/" + tag], check=False
-    )
-    return res.returncode == 0
-
-
-# Error checked git fetch of tags
-def safe_git_fetch_tags() -> None:
-    try:
-        subprocess.run(["git", "fetch", "--tags"], check=True)
-    except subprocess.CalledProcessError:
-        error("failed to fetch tags, you may have to do \n" + "git fetch --tags -f")
-
-
-# lightweight vs annotated
-# https://stackoverflow.com/questions/40479712/how-can-i-tell-if-a-given-git-tag-is-annotated-or-lightweight#40499437
-def is_annotated_git_tag(tag: str) -> bool:
-    res = subprocess.run(
-        ["git", "for-each-ref", "refs/tags/" + tag],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    return res.returncode == 0 and res.stdout.split()[1] == "tag"
-
-
-def check_git_tag_for_release(tag: str) -> None:
-    if not is_annotated_git_tag(tag):
-        error(f"There is no annotated tag {tag}")
-    # check that tag points to HEAD
-    tag_commit = subprocess.run(
-        ["git", "rev-parse", tag + "^{}"], check=True, capture_output=True, text=True
-    ).stdout.strip()
-    head = subprocess.run(
-        ["git", "rev-parse", "HEAD"], check=True, capture_output=True, text=True
-    ).stdout.strip()
-    if tag_commit != head:
-        error(
-            f"The tag {tag} does not point to the current commit {head} but"
-            + f" instead points to {tag_commit}"
         )

@@ -24,15 +24,13 @@ import shutil
 import subprocess
 import sys
 import tarfile
+from typing import List, Optional
 
 from utils import (
     download_with_sha256,
     error,
-    get_makefile_var,
     notice,
     patchfile,
-    run_with_log,
-    safe_git_fetch_tags,
     verify_command_available,
     verify_git_clean,
     verify_git_repo,
@@ -43,6 +41,27 @@ from utils import (
 if sys.version_info < (3, 6):
     error("Python 3.6 or newer is required")
 
+
+# helper for extracting values of variables set in the GAP Makefiles.rules
+def get_makefile_var(var: str) -> str:
+    res = subprocess.run(["make", f"print-{var}"], check=True, capture_output=True)
+    kv = res.stdout.decode("ascii").strip().split("=")
+    assert len(kv) == 2
+    assert kv[0] == var
+    return kv[1]
+
+
+# Run what ever <args> command and create appropriate log file
+def run_with_log(args: List[str], name: str, msg: Optional[str] = None) -> None:
+    if not msg:
+        msg = name
+    with open("../" + name + ".log", "w", encoding="utf-8") as fp:
+        try:
+            subprocess.run(args, check=True, stdout=fp, stderr=fp)
+        except subprocess.CalledProcessError:
+            error(msg + " failed. See " + name + ".log.")
+
+
 notice("Checking prerequisites")
 verify_command_available("curl")
 verify_command_available("git")
@@ -52,7 +71,11 @@ verify_git_repo()
 verify_git_clean()
 
 # fetch tags, so we can properly detect
-safe_git_fetch_tags()
+try:
+    subprocess.run(["git", "fetch", "--tags"], check=True)
+except subprocess.CalledProcessError:
+    error("failed to fetch tags, you may have to do \n" + "git fetch --tags -f")
+
 
 # Creating tmp directory
 tmpdir = os.getcwd() + "/tmp"
