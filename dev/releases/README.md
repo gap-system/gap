@@ -56,7 +56,6 @@ Before starting the release process, the scripts have the following dependencies
 - Several python modules, including (e.g. installed using `pip3` (`pip3 install <MODULENAME>`):
   - `PyGithub`
   - `requests`
-  - `python-dateutil`
 
 
 ### Steps

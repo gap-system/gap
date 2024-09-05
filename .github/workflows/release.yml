@@ -94,7 +94,7 @@ jobs:
         with:
           python-version: 3.9
       - name: "Install Python modules"
-        run: pip3 install PyGithub python-dateutil
+        run: pip3 install PyGithub
       - name: "Install latex"
         run: |
           packages=(
