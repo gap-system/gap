@@ -37,21 +37,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: "Install some python packages"
         run: |
           python -m pip install -r dev/releases/requirements.txt
-          python -m pip install pytest mock black isort
+          python -m pip install black isort mypy pytest
 
-      - name: Check code formatting
+      - name: "Check code formatting"
         run: python -m black --check --diff dev/releases
 
-      - name: Check imports
+      - name: "Check imports"
         run: python -m isort --check --profile black dev/releases
 
-      #- name: Validate types
+      #- name: "Validate types"
       #  run: python -m mypy --disallow-untyped-calls --disallow-untyped-defs dev/releases/*.py
 
-      #- name: Run tests
+      #- name: "Run tests"
       #  run: python -m pytest tools/tests/dev/releases*.py -vv
 
   unix:
@@ -92,9 +97,10 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v5
         with:
-          python-version: 3.9
-      - name: "Install Python modules"
-        run: pip3 install PyGithub python-dateutil
+          python-version: 3.11
+      - name: "Install some python packages"
+        run: |
+          python -m pip install -r dev/releases/requirements.txt
       - name: "Install latex"
         run: |
           packages=(
@@ -178,10 +184,6 @@ jobs:
     steps:
       # The GAP to be wrapped is put into gap-$GAP_VERSION/
       # The gap-windows script requires the GAP directory to be named this way.
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.9
 
       # Download the artifact -- for an actual release, this contains the
       # exact same tarball as was uploaded to the release as an asset
