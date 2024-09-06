@@ -121,14 +121,6 @@ static StatHeader * STAT_HEADER(CodeState * cs, Stat stat)
     return (StatHeader *)ADDR_STAT(cs, stat) - 1;
 }
 
-void SET_VISITED_STAT(Stat stat)
-{
-    Stat * addr = (Stat *)STATE(PtrBody) + stat / sizeof(Stat);
-    StatHeader * header = (StatHeader *)addr - 1;
-    header->visited = 1;
-}
-
-
 static Int TNUM_STAT_OR_EXPR(CodeState * cs, Expr expr)
 {
     if (IS_REF_LVAR(expr))
