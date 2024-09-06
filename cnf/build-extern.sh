@@ -26,6 +26,14 @@ if [[ ( ! "$builddir/config.status" -nt "$src/configure" )
 fi
 
 $MAKE -C "$builddir"
+if ! $MAKE -C "$builddir" check; then
+  echo "=== FAILED checking $pkg ==="
+  echo "The copy of $pkg distributed with GAP has failed to pass its internal checks"
+  echo "You can either install the library from a different source, or use"
+  echo "a newer release of GAP"
+  exit 1
+fi
+
 $MAKE -C "$builddir" install
 
 # TODO: insert command to check whether make needs to be called at all?
