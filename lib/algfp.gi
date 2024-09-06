@@ -705,7 +705,7 @@ InstallHandlingByNiceBasis( "IsFpAlgebraElementsSpace", rec(
       if hom = fail then
         TryNextMethod();
       fi;
-      return PreImagesRepresentative( hom, r );
+      return PreImagesRepresentativeNC( hom, r );
       end ) );
 
 

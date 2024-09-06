@@ -19,7 +19,7 @@ local r,img,i,gens,img2;
     gens:=GeneratorsOfGroup(img);
     img2:=Image(h[i],G);
     r[i]:=GroupHomomorphismByImagesNC(img,img2,gens,List(gens,j->
-           Image(h[i],PreImagesRepresentative(h[i+1],j))));
+           Image(h[i],PreImagesRepresentativeNC(h[i+1],j))));
     SetKernelOfMultiplicativeGeneralMapping(r[i],
        Image(h[i+1],KernelOfMultiplicativeGeneralMapping(h[i])));
     img:=img2;
