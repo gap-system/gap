@@ -9,27 +9,15 @@
 ##
 import os
 import subprocess
+from typing import Optional
 
 import github
 from utils import error, notice, sha256file
 
-CURRENT_REPO_NAME = os.environ.get("GITHUB_REPOSITORY", "gap-system/gap")
 
-# Initialized by initialize_github
-GITHUB_INSTANCE = None
-CURRENT_REPO = None
-
-
-# sets the global variables GITHUB_INSTANCE and CURRENT_REPO
 # If no token is provided, this uses the value of the environment variable
 # GITHUB_TOKEN.
-def initialize_github(token=None) -> None:
-    global GITHUB_INSTANCE, CURRENT_REPO
-    if GITHUB_INSTANCE is not None or CURRENT_REPO is not None:
-        error(
-            "Global variables GITHUB_INSTANCE and CURRENT_REPO"
-            + " are already initialized."
-        )
+def initialize_github(token: Optional[str] = None) -> github.Repository.Repository:
     if token is None and "GITHUB_TOKEN" in os.environ:
         token = os.environ["GITHUB_TOKEN"]
     if token is None:
@@ -50,11 +38,11 @@ def initialize_github(token=None) -> None:
             token = token_file.read().strip()
     if token is None:
         error("Error: no access token found or provided")
-    g = github.Github(token)
-    GITHUB_INSTANCE = g
-    notice(f"Accessing repository {CURRENT_REPO_NAME}")
+    g = github.Github(auth=github.Auth.Token(token))
+    repo_name = os.environ.get("GITHUB_REPOSITORY", "gap-system/gap")
+    notice(f"Accessing repository {repo_name}")
     try:
-        CURRENT_REPO = GITHUB_INSTANCE.get_repo(CURRENT_REPO_NAME)
+        return g.get_repo(repo_name)
     except github.GithubException:
         error("Error: the access token may be incorrect")
 
@@ -74,7 +62,9 @@ def verify_via_checksumfile(filename: str) -> None:
 # just to be safe, in the latter case). Then upload the files <filename> and
 # <filename>.sha256 as assets to the GitHub <release>.
 # Files already ending in ".sha256" are ignored.
-def upload_asset_with_checksum(release, filename: str) -> None:
+def upload_asset_with_checksum(
+    release: github.GitRelease.GitRelease, filename: str
+) -> None:
     if not os.path.isfile(filename):
         error(f"{filename} not found")
 
