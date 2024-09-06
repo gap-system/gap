@@ -2163,7 +2163,7 @@ InstallMethod( IsSimpleAlgebra,
     function( L )
     if Characteristic( LeftActingDomain( L ) ) <> 0 then
       TryNextMethod();
-    elif DeterminantMat( KillingMatrix( Basis( L ) ) ) = 0 then
+    elif RankMat( KillingMatrix( Basis( L ) ) ) <> Dimension( L ) then
       return false;
     else
       return Length( DirectSumDecomposition( L ) ) = 1;
@@ -2371,8 +2371,7 @@ InstallMethod( SemiSimpleType,
 
     # We test whether the Killing form of `L' is nondegenerate.
 
-    d:= DeterminantMat( KillingMatrix( Basis( L ) ) );
-    if IsZero( d ) then
+    if RankMat( KillingMatrix( Basis( L ) ) ) <> Dimension( L ) then
       Info( InfoAlgebra, 1,
             "The Killing form of <L> is degenerate." );
       return fail;
@@ -2894,7 +2893,7 @@ InstallMethod( RootSystem,
 
     F:= LeftActingDomain( L );
 
-    if DeterminantMat( KillingMatrix( Basis( L ) ) ) = Zero( F ) then
+    if RankMat( KillingMatrix( Basis( L ) ) ) <> Dimension( L ) then
       Info( InfoAlgebra, 1, "the Killing form of <L> is degenerate" );
       return fail;
     fi;
