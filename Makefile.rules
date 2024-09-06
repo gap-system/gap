@@ -440,6 +440,7 @@ ifneq (,$(findstring cygwin,$(host_os)))
   LIBGAP_FULL = libgap$(SHLIB_EXT)
 
   LINK_SHLIB_FLAGS = -shared -Wl,--enable-auto-image-base -Wl,--out-implib,libgap.dll.a
+  GAP_LDFLAGS += -Wl,-rpath,$(libdir)
 else ifneq (,$(findstring darwin,$(host_os)))
   SHLIB_EXT=.dylib
   LIBGAP_FULL = libgap.$(SHLIB_MAJOR)$(SHLIB_EXT)
@@ -455,6 +456,7 @@ else ifneq (,$(findstring darwin,$(host_os)))
   GAP_CPPFLAGS += -DPIC
   GAP_CFLAGS += -fno-common
   GAP_CXXFLAGS += -fno-common
+  GAP_LDFLAGS += -Wl,-rpath,$(libdir)
 else
   # Note: the following was tested on Linux -- patches making this work better
   # on e.g. FreeBSD/OpenBSD/... are highly welcome
