@@ -5359,19 +5359,37 @@ RedispatchOnCondition(MinimalNormalSubgroups, true,
 ##
 #M  SmallGeneratingSet(<G>)
 ##
+##  Restrict the criteria used by the generic method to situations where
+##  "no method found" errors and expensive/impossible membership computations
+##  do not occur.
+##
 BindGlobal("SMALLGENERATINGSETGENERIC",function (G)
-local  i, U, gens,test;
-  gens := Set(GeneratorsOfGroup(G));
+local  gens, x, i, Ugens, U, test;
+
+  gens:= GeneratorsOfGroup(G);
+  if IsEmpty( gens ) then
+    return gens;
+  fi;
+
+  x:= gens[1];
+  if CanEasilySortElements( x ) then
+    gens:= Set( gens );
+  elif CanEasilyCompareElements( x ) then
+    gens:= DuplicateFreeList( gens );
+  fi;
+
   i := 1;
   while i < Length(gens)  do
-    U:= SubgroupNC( G, gens{ Difference( [ 1 .. Length( gens ) ], [ i ] ) } );
+    Ugens:= gens{ Difference( [ 1 .. Length( gens ) ], [ i ] ) };
+    U:= SubgroupNC( G, Ugens );
+    test:= false;
     if HasIsFinite(G) and IsFinite(G) and CanComputeSizeAnySubgroup(G) then
       test:=Size(U)=Size(G);
-    else
-      test:=IsSubset(U,G);
+    elif CanEasilyTestMembership( U ) then
+      test:= gens[i] in U;
     fi;
     if test then
-      gens:=GeneratorsOfGroup(U);
+      gens:= Ugens;
       # this throws out i, so i is the new i+1;
     else
       i:=i+1;
