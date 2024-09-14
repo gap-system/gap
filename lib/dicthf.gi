@@ -153,7 +153,7 @@ end);
 InstallMethod(SparseIntKey,"for bounded tuples",true,
     [ IsList,IsList and IsCyclotomicCollection ], 0,
 function(m, v)
-  if Length(m)<> 3or m[1]<>"BoundedTuples" then
+  if Length(m)<> 3 or m[1]<>"BoundedTuples" then
     TryNextMethod();
   fi;
   # Due to the way BoundedTuples are presently implemented we expect the input
