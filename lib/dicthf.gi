@@ -153,7 +153,7 @@ end);
 InstallMethod(SparseIntKey,"for bounded tuples",true,
     [ IsList,IsList and IsCyclotomicCollection ], 0,
 function(m, v)
-  if Length(m) <> 3 or m[1] <> "BoundedTuples" then
+  if Length(m)<> 3or m[1]<>"BoundedTuples" then
     TryNextMethod();
   fi;
   # Due to the way BoundedTuples are presently implemented we expect the input
@@ -166,6 +166,23 @@ function(m, v)
     fi;
     return HashKeyWholeBag(x, 1);
   end;
+
+  # alternative code w/o HashKeyBag
+  ## build a weight vector to distinguish lists. Make entries large while staying clearly within
+  ## immediate int (2^55 replacing 2^60, since we take subsequent primes).
+  #step:=NextPrimeInt(QuoInt(2^55,Maximum(m[2])*m[3]));
+  #weights:=[1];
+  #len:=Length(v);
+  ## up to 56 full, then increasingly reduce
+  #len:=Minimum(len,8*RootInt(len));
+  #while Length(weights)<len do
+  #  Add(weights,weights[Length(weights)]+step);
+  #  step:=NextPrimeInt(step);
+  #od;
+  #return function(a)
+  #  return a*weights;
+  #end;
+
 end);
 
 BindGlobal( "SparseIntKeyVecListAndMatrix", function(d,m)
