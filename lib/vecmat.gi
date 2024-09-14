@@ -2142,7 +2142,8 @@ InstallMethod(DomainForAction,"matrix/matrix",IsElmsCollsX,
 function(pnt,acts,act)
 local l,f;
   if (not ForAll(acts,IsMatrix)) or
-    (act<>OnPoints and act<>OnSubspacesByCanonicalBasis and act<>OnRight) then
+    (act<>OnPoints and act<>OnSubspacesByCanonicalBasis and act<>OnRight and act<>OnSets and
+    act<>OnTuples) then
     TryNextMethod(); # strange operation, might extend the domain
   fi;
   l:=NaturalActedSpace(acts,pnt);

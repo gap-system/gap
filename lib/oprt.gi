@@ -3609,6 +3609,7 @@ InstallMethod(DomainForAction,"permutations on lists of integers",true,
 function(pnt,acts,act)
   local m;
   if not (Length(pnt)>0 and ForAll(pnt,IsPosInt) and
+    ForAll(acts,IsPerm) and
     (act=OnSets or act=OnPoints or act=OnRight or act=\^)) then
     TryNextMethod();
   fi;
