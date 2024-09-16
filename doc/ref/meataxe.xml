@@ -78,6 +78,16 @@ bases used are needed as well.
 <Heading>Module Constructions</Heading>
 
 <ManSection>
+<Heading>NaturalGModule</Heading>
+<Func Name="NaturalGModule" Arg='group[, field]' Label="for matrix group and a field"/>
+<Description>
+creates a MeatAxe module over <A>field</A> from the generators of the matrix
+group <A>group</A>. If <A>field</A> is not provided then the value returned by
+<Ref Filt="DefaultFieldOfMatrixGroup"/> is used instead.
+</Description>
+</ManSection>
+
+<ManSection>
 <Func Name="PermutationGModule" Arg='G, F'/>
 
 <Description>
