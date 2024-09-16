@@ -16,7 +16,7 @@ InstallGlobalFunction(GModuleByMats,function(arg)
 local l,f,dim,m;
   l:=arg[1];
   if Length(arg)=1 then
-    Error("Usage: GModuleByMats(<mats>,[<id>,]<field>)");
+    Error("Usage: GModuleByMats(<mats>,[<dim>,]<field>)");
   fi;
   f:=arg[Length(arg)];
   if Length(l)>0 and Characteristic(l[1])<>Characteristic(f) then
@@ -195,7 +195,7 @@ InstallGlobalFunction(WedgeGModule,function( module)
             row:=[];
             for m in [1..dim] do
                for n in [1..m - 1] do
-                  x:=mat[j][m] * mat[k][n] - mat[j][n] * mat[k][m];
+                  x:=mat[j,m] * mat[k,n] - mat[j,n] * mat[k,m];
                   Add(row, x);
                od;
             od;
@@ -392,7 +392,7 @@ SMTX.SpinnedBasis:=function( arg  )
       ngens:=Length(matrices);
    fi;
    ans:=[];
-   zero:=Zero(matrices[1][1][1]);
+   zero:=ZeroOfBaseDomain(matrices[1]);
    if IsList(v) and Length(v)=0 then
      return [];
    elif IsMatrix(v) then
@@ -1494,7 +1494,7 @@ local   L, d, p, M, one, zero, R, h, v, w, i, j, nd, ans,
    else
       return Error("usage: SMTX.FrobeniusAction(<F>, <A>, <v>, [, <basis>] )");
    fi;
-   one :=One(A[1][1]);
+   one :=OneOfBaseDomain(A);
    zero:=Zero(one);
    d:=Length( A );
    M:=ListWithIdenticalEntries(Length(A[1]) + 1,zero);
@@ -3372,7 +3372,7 @@ SMTX.InvariantSesquilinearForm:=function( module  )
    if not IsDiagonalMat(isot) then
      Error("Form does not seem to be of the right kind (non-diagonal)!");
    fi;
-   l:=LogFFE(isot[1][1],Z(q));
+   l:=LogFFE(isot[1,1],Z(q));
    if l mod (r-1) <> 0 then
      Error("Form does not seem to be of the right kind (not (q-1)st root)!");
    fi;
