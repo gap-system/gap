@@ -21,6 +21,12 @@ DeclareGlobalFunction("GModuleByMats");
 
 #############################################################################
 ##
+#F  GModuleByGroup(<group>,[<f>])
+##
+DeclareGlobalFunction("GModuleByGroup");
+
+#############################################################################
+##
 #F  TrivialGModule ( g, F ) . . . trivial G-module
 ##
 ##  g is a finite group, F a field, trivial smash G-module computed.
