@@ -959,7 +959,7 @@ end);
 InstallMethod( WreathProductElementListNC, "generic wreath product", true,
  [ HasWreathProductInfo, IsList ], 0,
 function(G, list)
-  return Objectify(FamilyObj(One(G))!.defaultType, StructuralCopy(list));
+  return Objectify(FamilyObj(One(G))!.defaultType, ShallowCopy(list));
 end);
 
 #############################################################################
