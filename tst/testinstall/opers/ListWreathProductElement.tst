@@ -246,7 +246,8 @@ true
 #
 
 gap> K := FreeGroup("x", "y");;
-gap> AssignGeneratorVariables(K);;
+gap> x := K.1;;
+gap> y := K.2;;
 gap> H := SymmetricGroup(3);;
 gap> W := WreathProduct(K, H);;
 gap> l := [x*y, x, y, (1,2,3)];;
