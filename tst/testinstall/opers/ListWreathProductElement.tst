@@ -245,6 +245,7 @@ true
 # Generic Wreath Product : Bugfix for immutable lists
 #
 
+#
 gap> K := FreeGroup("x", "y");;
 gap> x := K.1;;
 gap> y := K.2;;
