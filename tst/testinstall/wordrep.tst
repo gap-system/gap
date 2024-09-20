@@ -304,4 +304,11 @@ gap> e1=e2;
 true
 
 #
-gap> STOP_TEST("wordrep.tst", 1);
+gap> f:= FreeGroup(IsLetterWordsFamily,4);;
+gap> IsMutable(ExtRepOfObj(f.1));
+false
+gap> IsMutable(ExtRepOfObj(f.1));
+false
+
+#
+gap> STOP_TEST("wordrep.tst");
