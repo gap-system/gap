@@ -253,7 +253,7 @@ gap> W := WreathProduct(K, H);;
 gap> l := [x*y, x, y, (1,2,3)];;
 gap> MakeImmutable(l);;
 gap> w := WreathProductElementList(W, l);;
-gap> l = [x*y, x, y, (1,2,3)]; # was previously l = w
+gap> l = [x*y, x, y, (1,2,3)];
 true
 
 #
