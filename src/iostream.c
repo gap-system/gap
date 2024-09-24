@@ -1007,13 +1007,11 @@ static Obj FuncSIGNAL_CHILD_IOSTREAM(Obj self, Obj stream, Obj sig)
 static Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
 {
     UInt pty = HashLockStreamIfAvailable(stream);
+    int status, retcode;
 
     // Close down the child
-    int status;
     kill(PtyIOStreams[pty].childPID, SIGTERM);
-    int retcode = close(PtyIOStreams[pty].ptyFD);
-    if (retcode)
-        Pr("Strange close return code %d\n", retcode, 0);
+
     // GAP (or another library) might wait on this PID before
     // we handle it. If that happens, waitpid will return -1.
     retcode = waitpid(PtyIOStreams[pty].childPID, &status, WNOHANG);
@@ -1027,6 +1025,10 @@ static Obj FuncCLOSE_PTY_IOSTREAM(Obj self, Obj stream)
         kill(PtyIOStreams[pty].childPID, SIGKILL);
         retcode = waitpid(PtyIOStreams[pty].childPID, &status, 0);
     }
+
+    retcode = close(PtyIOStreams[pty].ptyFD);
+    if (retcode)
+        Pr("Strange close return code %d\n", retcode, 0);
 
     PtyIOStreams[pty].inuse = 0;
 
