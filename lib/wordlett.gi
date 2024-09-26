@@ -171,7 +171,7 @@ local  i,r,elm,len,g,h,e;
 end);
 
 InstallMethod(ExtRepOfObj,"assoc word in letter rep",true,
-  [IsAssocWord and IsLetterAssocWordRep],0,ERepLettWord);
+  [IsAssocWord and IsLetterAssocWordRep],0,x->ShallowCopy(ERepLettWord(x)));
 
 InstallMethod(NumberSyllables,"assoc word in letter rep",true,
   [IsAssocWord and IsLetterAssocWordRep],0,
