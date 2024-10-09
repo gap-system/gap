@@ -164,7 +164,7 @@ function(m, v)
     if not IsPlistRep(x) then
       x := AsPlist(x);
     fi;
-    return HashKeyWholeBag(x, 1);
+    return HashKeyBag(x, 1, 0, Length(x) * GAPInfo.BytesPerVariable);
   end;
 
   # alternative code w/o HashKeyBag
