@@ -70,6 +70,15 @@ bases used are needed as well.
 </Description>
 </ManSection>
 
+
+<ManSection>
+<Heading>GModuleByGroup</Heading>
+<Func Name="GModuleByMats" Arg='group[, field]' Label="for matrix group and a field"/>
+<Description>
+TODO
+</Description>
+</ManSection>
+
 </Section>
 
 
