@@ -433,7 +433,7 @@ InstallMethod( IsPowerfulPGroup,
 InstallMethod( IsRegularPGroup,
     [ IsGroup ],
 function( G )
-local p, hom, reps, a, b, ap_bp, ab_p, H;
+local p, hom, reps, as, a, b, ap, bp, ab, ap_bp, ab_p, g, h, H, N;
 
   if not IsPGroup(G) then
     return false;
@@ -441,34 +441,35 @@ local p, hom, reps, a, b, ap_bp, ab_p, H;
 
   p:=PrimePGroup(G);
   if p = 2 then
-    # see [Hup67, Satz 10.3 a)]
+    # see [Hup67, Satz III.10.3 a)]
     return IsAbelian(G);
   elif p = 3 and DerivedLength(G) > 2 then
-    # see [Hup67, Satz 10.3 b)]
+    # see [Hup67, Satz III.10.3 b)]
     return false;
   elif Size(G) <= p^p then
-    # see [Hal34, Corollary 14.14], [Hall, p. 183], [Hup67, Satz 10.2 b)]
+    # see [Hal34, Corollary 14.14], [Hall, p. 183], [Hup67, Satz III.10.2 b)]
     return true;
   elif NilpotencyClassOfGroup(G) < p then
-    # see [Hal34, Corollary 14.13], [Hall, p. 183], [Hup67, Satz 10.2 a)]
+    # see [Hal34, Corollary 14.13], [Hall, p. 183], [Hup67, Satz III.10.2 a)]
     return true;
   elif IsCyclic(DerivedSubgroup(G)) then
-    # see [Hup67, Satz 10.2 c)]
+    # see [Hup67, Satz III.10.2 c)]
     return true;
   elif Exponent(G) = p then
-    # see [Hup67, Satz 10.2 d)]
+    # see [Hup67, Satz III.10.2 d)]
     return true;
   elif p = 3 and RankPGroup(G) = 2 then
     # see [Hup67, Satz 10.3 b)]: at this point we know that the derived
     # subgroup is not cyclic, hence G is not regular
     return false;
   elif Size(G) < p^p * Size(Agemo(G,p)) then
-    # see [Hal36, Theorem 2.3], [Hup67, Satz 10.13]
+    # see [Hal36, Theorem 2.3], [Hup67, Satz III.10.13]
     return true;
   elif Index(DerivedSubgroup(G),Agemo(DerivedSubgroup(G),p)) < p^(p-1) then
-    # see [Hal36, Theorem 2.3], [Hup67, Satz 10.13]
+    # see [Hal36, Theorem 2.3], [Hup67, Satz III.10.13]
     return true;
   fi;
+
 
   # Fallback to actually check the defining criterion, i.e.:
   # for all a,b in G, we must have that a^p*b^p/(a*b)^p in (<a,b>')^p
@@ -483,27 +484,42 @@ local p, hom, reps, a, b, ap_bp, ab_p, H;
   reps := Filtered(reps, g -> not IsOne(g));
   reps := List(reps, g -> PreImagesRepresentative(hom, g));
 
+  as := List(reps, a -> [a,a^p]);
+
   for b in Image(hom) do
     b := PreImagesRepresentative(hom, b);
-    for a in reps do
+    bp := b^p;
+    for a in as do
+      ap := a[2]; a := a[1];
       # if a and b commute the regularity condition automatically holds
-      if a*b = b*a then continue; fi;
+      ab := a*b;
+      if ab = b*a then continue; fi;
 
       # regularity is also automatic if a^p * b^p = (a*b)^p
-      ap_bp := a^p * b^p;
-      ab_p := (a*b)^p;
+      ap_bp := ap * bp;
+      ab_p := ab^p;
       if ap_bp = ab_p then continue; fi;
 
       # if the subgroup generated H by a and b is itself regular, we are also
-      # done. However we don't use recursion, here, as H may be equal to G;
-      # and also we have to be careful to not use too expensive code here.
-      # But a quick size check is certainly fine.
+      # done. However we don't use recursion here, as it is too expensive.
+      # we just check the direct definition, with a twist to avoid Agemo
+      g := ap_bp / ab_p;
+      h := Comm(a,b)^p;
+      # clearly h is in Agemo(DerivedSubgroup(Group([a,b])), p), so if g=h or
+      # g=h^-1 then the regularity condition is satisfied
+      if g = h or IsOne(g*h) then continue; fi;
       H := Subgroup(G, [a,b]);
-      if Size(H) <= p^p then continue; fi;
-
-      # finally the full check
-      H := DerivedSubgroup(H);
-      if not (ap_bp / ab_p) in Agemo(H, p) then
+      N := NormalClosure(H, [h]);
+      # To follow the definition of regular precisely we should now check if g
+      # is in A:=Agemo(DerivedSubgroup(H), p). Clearly h=[a,b]^p and all its
+      # conjugates are contained in A, and so N is a subgroup of A. But it
+      # could be a *proper* subgroup. Alas, if G is regular, then also H is
+      # regular, and from [Hup67, Hauptsatz III.10.5.b)] we conclude A = N and
+      # the test g in N will succeed. If on the other hand G is not regular,
+      # then H may also be not regular, and then N might be too small. But
+      # that is fine (and even beneficial), because that just means we might
+      # reach the 'return false' faster.
+      if not g in N then
         return false;
       fi;
     od;
