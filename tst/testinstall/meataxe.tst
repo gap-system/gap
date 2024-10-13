@@ -2,6 +2,26 @@
 gap> START_TEST("meataxe.tst");
 
 #
+# GModuleByMats input validation
+#
+gap> GModuleByMats();
+Error, Usage: GModuleByMats(<mats>,[<dim>,]<field>)
+gap> GModuleByMats([], 2, GF(2), "extra");
+Error, Usage: GModuleByMats(<mats>,[<dim>,]<field>)
+gap> GModuleByMats([[[Z(2)]]], 2, GF(2));
+Error, matrices and dim do not fit together
+gap> GModuleByMats([[[Z(2),Z(2)]]], GF(2));
+Error, <l> must be a list of square matrices of the same dimension
+gap> GModuleByMats([[[Z(2)]], [[Z(2),Z(2)],[Z(2),0*Z(2)]]], GF(2));
+Error, <l> must be a list of square matrices of the same dimension
+
+# module with no generators
+gap> GModuleByMats([], 2, GF(2));
+rec( IsOverFiniteField := true, dimension := 2, field := GF(2), 
+  generators := [ <an immutable 2x2 matrix over GF2> ], isMTXModule := true, 
+  smashMeataxe := rec( isZeroGens := true ) )
+
+#
 #
 #
 gap> G:=SymmetricGroup(3);;

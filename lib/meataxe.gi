@@ -14,24 +14,29 @@
 
 InstallGlobalFunction(GModuleByMats,function(arg)
 local l,f,dim,m;
-  l:=arg[1];
-  if Length(arg)=1 then
+  if Length(arg)<>2 and Length(arg)<>3 then
     Error("Usage: GModuleByMats(<mats>,[<dim>,]<field>)");
   fi;
+  l:=arg[1];
   f:=arg[Length(arg)];
   if Length(l)>0 and Characteristic(l[1])<>Characteristic(f) then
       Error("matrices and field do not fit together");
   fi;
   l:=List(l,i->ImmutableMatrix(f,i));
 
-  if ForAny(l,i->Length(i)<>Length(i[1])) or
-    Length(Set(l,Length))>1 then
+  if ForAny(l,i->NrRows(i)<>NrCols(i)) or
+    Length(Set(l,NrRows))>1 then
     Error("<l> must be a list of square matrices of the same dimension");
   fi;
   m:=rec(field:=f,
          isMTXModule:=true);
   if Length(l)>0 then
-    dim:=Length(l[1][1]);
+    dim:=NrRows(l[1]);
+    if Length(arg) = 3 then
+      if dim <> arg[2] then
+        Error("matrices and dim do not fit together");
+      fi;
+    fi;
   elif Length(arg)=2 then
     Error("if no generators are given the dimension must be given explicitly");
   else
