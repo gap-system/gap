@@ -382,7 +382,7 @@ jobs:
           envs: 'AUTOCONF_VERSION'
           usesh: true
           prepare: |
-            pkg_add bash git gmake autoconf-2.71 gmp
+            pkg_add bash git gmake autoconf-2.71p0 gmp
 
           # Do the thing
           run: |
