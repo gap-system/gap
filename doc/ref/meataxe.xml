@@ -101,6 +101,15 @@ moved point (see&nbsp;<Ref Attr="LargestMovedPoint" Label="for a list or collect
 </ManSection>
 
 <ManSection>
+<Func Name="TrivialGModule" Arg='G, F'/>
+
+<Description>
+Called with a group <A>G</A> and a field <A>F</A> (<A>F</A> may be infinite),
+<Ref Func="TrivialGModule"/> returns the trivial module over <A>F</A>.
+</Description>
+</ManSection>
+
+<ManSection>
 <Func Name="TensorProductGModule" Arg='m1, m2'/>
 
 <Description>

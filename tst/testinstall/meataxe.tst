@@ -41,6 +41,15 @@ gap> Display(MTX.IsomorphismModules(M,M));
  . . 1
 
 #
+# Trivial module
+#
+gap> G:=SL(3,3);;
+gap> TrivialGModule(G, GF(2));
+rec( IsOverFiniteField := true, dimension := 1, field := GF(2), 
+  generators := [ <an immutable 1x1 matrix over GF2>, 
+      <an immutable 1x1 matrix over GF2> ], isMTXModule := true )
+
+#
 #
 #
 gap> M2:=TensorProductGModule(M,M);
