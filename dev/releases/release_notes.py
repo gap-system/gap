@@ -178,17 +178,17 @@ updated since GAP {old_gap_version}. The full list of updated packages is given 
 # See also <https://github.com/gap-system/gap/issues/4257>.
 prioritylist = [
     ["release notes: highlight", "Highlights"],
+    ["kind: new feature", "New features"],
+    ["topic: performance", "Performance improvements"],
+    ["kind: enhancement", "Improved and extended functionality"],
+    ["kind: removal or deprecation", "Removed or obsolete functionality"],
     ["topic: packages", "Changes related to handling of packages"],
     ["topic: gac", "Changes to the GAP compiler"],
     ["topic: documentation", "Changes in the documentation"],
-    ["topic: performance", "Performance improvements"],
     ["topic: build system", "Build system"],
     ["topic: julia", "Changes to the **Julia** integration"],
     ["topic: libgap", "Changes to the `libgap` interface"],
     ["topic: HPC-GAP", "Changes to HPC-GAP"],
-    ["kind: new feature", "New features"],
-    ["kind: enhancement", "Improved and extended functionality"],
-    ["kind: removal or deprecation", "Removed or obsolete functionality"],
     ["kind: bug: wrong result", "Fixed bugs that could lead to incorrect results"],
     ["kind: bug: crash", "Fixed bugs that could lead to crashes"],
     [
