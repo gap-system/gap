@@ -12,5 +12,5 @@ true
 #
 gap> PQuotient( FreeGroup(2), 5, 10, 520 : noninteractive ) <> fail;
 true
-gap> gPQuotient( FreeGroup(2), 5, 10, 519 : noninteractive ) = fail;
+gap> PQuotient( FreeGroup(2), 5, 10, 519 : noninteractive ) = fail;
 true

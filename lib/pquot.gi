@@ -1310,9 +1310,9 @@ end );
 
 #############################################################################
 ##
-#F  AbelianPQuotient  . . . . . . try to initialize an abelian p-quotient
-##                    . . . . . . return true if we are sucessful
-##                    . . . . . . return false otherwise
+#F  AbelianPQuotient  . . . . . . . . try to initialize an abelian p-quotient
+##
+##  Return true if we are successful, return false otherwise.
 ##
 InstallGlobalFunction( AbelianPQuotient,
 function( qs )
