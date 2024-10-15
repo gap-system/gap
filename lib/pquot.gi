@@ -1310,7 +1310,9 @@ end );
 
 #############################################################################
 ##
-#F  AbelianPQuotient  . . . . . . . . . . .  initialize an abelian p-quotient
+#F  AbelianPQuotient  . . . . . . try to initialize an abelian p-quotient
+##                    . . . . . . return true if we are sucessful
+##                    . . . . . . return false otherwise
 ##
 InstallGlobalFunction( AbelianPQuotient,
 function( qs )
@@ -1342,6 +1344,9 @@ function( qs )
     generators := DifferenceLists( [1..n], trailers );
 
     ##  Their images are the first d generators.
+    if Length(gens) < d then
+        return false;
+    fi;
     qs!.images{ generators } := gens{[1..d]};
 
     ##  Fix their definitions.
@@ -1367,6 +1372,8 @@ function( qs )
     qs!.collector![SCP_WEIGHTS]{[1..qs!.numberOfGenerators]} :=
       [1..qs!.numberOfGenerators] * 0 + 1;
 
+    return true;
+
 end );
 
 #############################################################################
@@ -1376,7 +1383,8 @@ end );
 InstallGlobalFunction( PQuotient,
 function( arg )
 
-    local   G,  p,  cl,  ngens,  collector,  qs,  t,noninteractive;
+    local   G,  p,  cl,  ngens,  collector,  qs,  t,noninteractive,
+            isAbelianPQuotientSucessful;
 
 
     ##  First we parse the arguments to this function
@@ -1453,7 +1461,20 @@ function( arg )
           LengthOfDescendingSeries(qs)+1, " quotient" );
 
     t := Runtime();
-    AbelianPQuotient( qs );
+    isAbelianPQuotientSucessful := AbelianPQuotient( qs );
+    if not isAbelianPQuotientSucessful then
+        if noninteractive then
+            return fail;
+        else
+            Error( "Collector not large enough ",
+                    "to define generators for abelian p-quotient.\n",
+                    "To return the current quotient (of class ",
+                    LengthOfDescendingSeries(qs), ") type `return;' ",
+                    "and `quit;' otherwise.\n" );
+
+            return qs;
+        fi;
+    fi;
 
     Info( InfoQuotientSystem, 1, "  rank of this layer: ",
           RanksOfDescendingSeries(qs)[LengthOfDescendingSeries(qs)],
