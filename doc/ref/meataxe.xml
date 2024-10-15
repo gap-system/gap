@@ -83,7 +83,7 @@ bases used are needed as well.
 <Description>
 creates a MeatAxe module over <A>field</A> from the generators of the matrix
 group <A>group</A>. If <A>field</A> is not provided then the value returned by
-<Ref Filt="DefaultFieldOfMatrixGroup"/> is used instead.
+<Ref Attr="DefaultFieldOfMatrixGroup"/> is used instead.
 </Description>
 </ManSection>
 
