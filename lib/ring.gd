@@ -491,28 +491,14 @@ DeclareOperation( "ClosureRing", [ IsRing, IsObject ] );
 ##  <Filt Name="IsUniqueFactorizationRing" Arg='R' Type='Category'/>
 ##
 ##  <Description>
-##  A ring <A>R</A> is called a <E>unique factorization ring</E> if it is an
-##  integral ring (see&nbsp;<Ref Prop="IsIntegralRing"/>),
-##  and every nonzero element has a unique factorization into
+##  A ring <A>R</A> is called a <E>unique factorization ring</E> if
+##  every nonzero element has a unique factorization into
 ##  irreducible elements,
 ##  i.e., a  unique representation as product of irreducibles
 ##  (see <Ref Oper="IsIrreducibleRingElement"/>).
 ##  Unique in this context means unique up to permutations of the factors and
 ##  up to multiplication of the factors by units
 ##  (see&nbsp;<Ref Attr="Units"/>).
-##  <P/>
-##  Mathematically, a field should therefore also be a unique factorization
-##  ring, since every nonzero element is a unit.
-##  In &GAP;, however,
-##  at least at present fields do not lie in the filter
-##  <Ref Filt="IsUniqueFactorizationRing"/>,
-##  since operations such as <Ref Oper="Factors"/>,
-##  <Ref Func="Gcd" Label="for (a ring and) several elements"/>,
-##  <Ref Oper="StandardAssociate"/> and so on do
-##  not apply to fields (the results would be trivial, and not
-##  especially useful) and methods which require their arguments to
-##  lie in <Ref Filt="IsUniqueFactorizationRing"/> expect these operations
-##  to work.
 ##  <P/>
 ##  (Note that we cannot install a subset maintained method for this filter
 ##  since the factorization of an element needs not exist in a subring.
@@ -545,7 +531,7 @@ DeclareCategory( "IsUniqueFactorizationRing", IsRing );
 ##  <Filt Name="IsEuclideanRing" Arg='R' Type='Category'/>
 ##
 ##  <Description>
-##  A ring <M>R</M> is called a Euclidean ring if it is an integral ring and
+##  A ring <M>R</M> is called a Euclidean ring if it is a non-trivial commutative ring and
 ##  there exists a function <M>\delta</M>, called the Euclidean degree, from
 ##  <M>R-\{0_R\}</M> into a well-ordered set (such as the nonnegative integers),
 ##  such that for every pair <M>r \in R</M> and <M>s \in  R-\{0_R\}</M> there
@@ -624,7 +610,7 @@ InstallSubsetMaintenance( IsIntegralRing,
 InstallTrueMethod( IsIntegralRing,
     IsRing and IsMagmaWithInversesIfNonzero and IsNonTrivial );
 InstallTrueMethod( IsIntegralRing,
-    IsUniqueFactorizationRing and IsNonTrivial );
+    IsRing and IsCyclotomicCollection and IsNonTrivial );
 
 
 #############################################################################
