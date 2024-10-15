@@ -491,9 +491,8 @@ DeclareOperation( "ClosureRing", [ IsRing, IsObject ] );
 ##  <Filt Name="IsUniqueFactorizationRing" Arg='R' Type='Category'/>
 ##
 ##  <Description>
-##  A ring <A>R</A> is called a <E>unique factorization ring</E> if it is an
-##  integral ring (see&nbsp;<Ref Prop="IsIntegralRing"/>),
-##  and every nonzero element has a unique factorization into
+##  A ring <A>R</A> is called a <E>unique factorization ring</E> if
+##  every nonzero element has a unique factorization into
 ##  irreducible elements,
 ##  i.e., a  unique representation as product of irreducibles
 ##  (see <Ref Oper="IsIrreducibleRingElement"/>).
@@ -532,7 +531,7 @@ DeclareCategory( "IsUniqueFactorizationRing", IsRing );
 ##  <Filt Name="IsEuclideanRing" Arg='R' Type='Category'/>
 ##
 ##  <Description>
-##  A ring <M>R</M> is called a Euclidean ring if it is an integral ring and
+##  A ring <M>R</M> is called a Euclidean ring if it is a non-trivial commutative ring and
 ##  there exists a function <M>\delta</M>, called the Euclidean degree, from
 ##  <M>R-\{0_R\}</M> into a well-ordered set (such as the nonnegative integers),
 ##  such that for every pair <M>r \in R</M> and <M>s \in  R-\{0_R\}</M> there
@@ -611,7 +610,7 @@ InstallSubsetMaintenance( IsIntegralRing,
 InstallTrueMethod( IsIntegralRing,
     IsRing and IsMagmaWithInversesIfNonzero and IsNonTrivial );
 InstallTrueMethod( IsIntegralRing,
-    IsUniqueFactorizationRing and IsNonTrivial );
+    IsRing and IsCyclotomicCollection and IsNonTrivial );
 
 
 #############################################################################
