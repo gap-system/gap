@@ -501,19 +501,6 @@ DeclareOperation( "ClosureRing", [ IsRing, IsObject ] );
 ##  up to multiplication of the factors by units
 ##  (see&nbsp;<Ref Attr="Units"/>).
 ##  <P/>
-##  Mathematically, a field should therefore also be a unique factorization
-##  ring, since every nonzero element is a unit.
-##  In &GAP;, however,
-##  at least at present fields do not lie in the filter
-##  <Ref Filt="IsUniqueFactorizationRing"/>,
-##  since operations such as <Ref Oper="Factors"/>,
-##  <Ref Func="Gcd" Label="for (a ring and) several elements"/>,
-##  <Ref Oper="StandardAssociate"/> and so on do
-##  not apply to fields (the results would be trivial, and not
-##  especially useful) and methods which require their arguments to
-##  lie in <Ref Filt="IsUniqueFactorizationRing"/> expect these operations
-##  to work.
-##  <P/>
 ##  (Note that we cannot install a subset maintained method for this filter
 ##  since the factorization of an element needs not exist in a subring.
 ##  As an example, consider the subring <M>4 &NN; + 1</M> of the ring
