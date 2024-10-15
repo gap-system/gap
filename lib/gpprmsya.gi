@@ -933,7 +933,7 @@ end);
 ##
 BindGlobal( "SYMGP_STABILIZER", function(sym, arg...)
     local  k, act, pt, mov, stab, nat, diff, int, bls, mov1, parts,
-           part, bl, i, gens, size;
+           part, bl, i, gens, size, alt;
     k := Length(arg);
     act := arg[k];
     pt := arg[k-3];
@@ -941,13 +941,17 @@ BindGlobal( "SYMGP_STABILIZER", function(sym, arg...)
     if arg[k-1] <> arg[k-2] then
         TryNextMethod();
     fi;
+    alt := IsNaturalAlternatingGroup(sym);
+    if alt then
+      sym := SymmetricParentGroup(sym);
+    fi;
     mov := MovedPoints(sym);
     if act = OnPoints and IsPosInt(pt) then
         if pt in mov then
             stab := SymmetricGroup(Difference(mov,[pt]));
         else
             stab := sym;
-        fi ;
+        fi;
         nat := true;
     elif (act = OnTuples or act = OnPairs) and IsList(pt) and ForAll(pt, IsPosInt) then
         stab := SymmetricGroup(Difference(mov, Set(pt)));
@@ -1005,6 +1009,9 @@ BindGlobal( "SYMGP_STABILIZER", function(sym, arg...)
     if nat then
         SetIsNaturalSymmetricGroup(stab,true);
     fi;
+    if alt then
+        stab := AlternatingSubgroup(stab);
+    fi;
     return stab;
 end );
 
@@ -1033,15 +1040,7 @@ InstallOtherMethod( StabilizerOp,"alternating group", true,
   # the objects might be a group element: rank up
         {} -> RankFilter(IsMultiplicativeElementWithInverse) +
         RankFilter(IsSolvableGroup),
-function(g, arg...)
-local s;
-  s:=SymmetricParentGroup(g);
-  # we cannot go to the symmetric group if the acting elements are different
-  if arg[2]<>arg[3] or not IsSubset(s,arg[2]) then
-    TryNextMethod();
-  fi;
-  return AlternatingSubgroup(Stabilizer(s,arg[1],GeneratorsOfGroup(s),GeneratorsOfGroup(s),arg[4]));
-end);
+        SYMGP_STABILIZER);
 
 
 InstallOtherMethod( StabilizerOp,"alternating group", true,
@@ -1049,9 +1048,7 @@ InstallOtherMethod( StabilizerOp,"alternating group", true,
   # the objects might be a group element: rank up
         {} -> RankFilter(IsMultiplicativeElementWithInverse) +
         RankFilter(IsSolvableGroup),
-        function(g, arg...)
-    return AlternatingSubgroup(CallFuncList(Stabilizer, Concatenation([SymmetricParentGroup(g)], arg)));
-end);
+        SYMGP_STABILIZER);
 
 InstallMethod( CentralizerOp,
     "element in natural alternating group",
