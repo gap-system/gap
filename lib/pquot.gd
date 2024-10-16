@@ -26,11 +26,11 @@ DeclareGlobalFunction( "AbelianPQuotient" );
 
 #############################################################################
 ##
-#F  PQuotient(<F>, <p>[, <c>][, <logord>][, <ctype>])  . .  pq of an fp group
+#F  PQuotient(<F>, <p>[, <c>][, <logord>][, <ctype>] : noninteractive)  . .  pq of an fp group
 ##
 ##  <#GAPDoc Label="PQuotient">
 ##  <ManSection>
-##  <Func Name="PQuotient" Arg='F, p[, c][, logord][, ctype]'/>
+##  <Func Name="PQuotient" Arg='F, p[, c][, logord][, ctype] : noninteractive'/>
 ##
 ##  <Description>
 ##  computes a factor <A>p</A>-group of a finitely presented group <A>F</A>
@@ -61,10 +61,11 @@ DeclareGlobalFunction( "AbelianPQuotient" );
 ##  most <M>p^{256}</M>. If the parameter <A>logord</A> is present, it will
 ##  compute with factor groups of order at most <M>p^{<A>logord</A>}</M>.
 ##  If this parameter is specified, then the parameter <A>c</A> must also be
-##  given.  The present
-##  implementation produces an error message if the order of a
-##  <M>p</M>-quotient exceeds <M>p^{256}</M> or <M>p^{<A>logord</A>}</M>,
-##  respectively.
+##  given. If the order of a <M>p</M>-quotient exceeds <M>p^{256}</M>
+##  or <M>p^{<A>logord</A>}</M>,
+##  respectively, the behaviour of the algorithm depends on the option
+##  <A>noninteractive</A>: if it is present, the current implementation
+##  produces an error message; otherwise it returns <C>fail</C>.
 ##  Note that the order of intermediate <M>p</M>-groups may be larger than
 ##  the final order of a <M>p</M>-quotient.
 ##  <P/>
