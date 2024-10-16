@@ -398,7 +398,8 @@ InstallMethod( UpperCentralSeries, [ IsGroup ], UpperCentralSeriesOfGroup );
 ##  Note that in general we do not want that setting a 'Name' value changes
 ##  the behaviour of 'PrintObj'.
 ##
-Perform( [ "IsGaussianIntegers", "IsGaussianRationals", "IsIntegers",
+Perform( [ "IsCyclotomicCollection and IsWholeFamily",
+           "IsGaussianIntegers", "IsGaussianRationals", "IsIntegers",
            "IsRationals" ],
   function( filtname )
     InstallMethod( PrintObj,
