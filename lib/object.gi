@@ -377,18 +377,6 @@ end );
 
 #############################################################################
 ##
-#M  PrintObj( <obj> )
-##
-InstallMethod( PrintObj,
-    "for an object with name",
-    true,
-    [ HasName ],
-    SUM_FLAGS, # override anything specific
-    function ( obj )  Print( Name( obj ) ); end );
-
-
-#############################################################################
-##
 #M  ViewObj( <obj> )  . . . . . . . . . . . . . . . . for an object with name
 ##
 InstallMethod( ViewObj,

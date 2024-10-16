@@ -389,6 +389,32 @@ InstallMethod( UpperCentralSeries, [ IsAlgebra ],
 InstallMethod( UpperCentralSeries, [ IsGroup ], UpperCentralSeriesOfGroup );
 
 
+#############################################################################
+##
+#M  PrintObj( <obj> )
+##
+##  For a few global variables, we want that their 'Name' value is used by
+##  'PrintObj'.
+##  Note that in general we do not want that setting a 'Name' value changes
+##  the behaviour of 'PrintObj'.
+##
+Perform( [ "IsCyclotomicCollection and IsWholeFamily",
+           "IsGaussianIntegers", "IsGaussianRationals", "IsIntegers",
+           "IsRationals" ],
+  function( filtname )
+    InstallMethod( PrintObj,
+      [ filtname ],
+      SUM_FLAGS, # override anything specific
+      function( obj )
+        if ISBOUND_GLOBAL( Name( obj ) ) then
+          Print( Name( obj ) );
+        else
+          TryNextMethod();
+        fi;
+      end );
+  end );
+
+
 DeclareGlobalFunction( "InsertElmList" );
 
 InstallGlobalFunction(InsertElmList, function (list, pos, elm)
