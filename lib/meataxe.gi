@@ -135,6 +135,26 @@ end);
 
 #############################################################################
 ##
+#F  NaturalGModule ( g[, F] )
+##
+## g is a matrix group, F a field.
+## The corresponding natural module is output.
+InstallGlobalFunction(NaturalGModule,function(group, field...)
+  if not IsMatrixGroup(group) then
+    Error("<group> must be a matrix group");
+  fi;
+  if Length(field) = 0 then
+    field := DefaultFieldOfMatrixGroup(group);
+  elif Length(field) = 1 then
+    field := field[1];
+  else
+    Error("too many arguments");
+  fi;
+  return GModuleByMats(GeneratorsOfGroup(group), DimensionOfMatrixGroup(group), field);
+end);
+
+#############################################################################
+##
 #F PermutationGModule( g, F) . permutation module
 ##
 ## g is a permutation group, F a field.
@@ -3418,18 +3438,18 @@ end;
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> g:= SO(-1, 4, 2);;
-##  gap> m:= GModuleByMats( GeneratorsOfGroup( g ), GF(2) );;
+##  gap> m:= NaturalGModule( g );;
 ##  gap> Display( MTX.InvariantQuadraticForm( m ) );
 ##   . . . .
 ##   1 . . .
 ##   . . 1 .
 ##   . . 1 1
-##  gap> g:= SP(4, 2);;
-##  gap> m:= GModuleByMats( GeneratorsOfGroup( g ), GF(2) );;
+##  gap> g:= Sp(4, 2);;
+##  gap> m:= NaturalGModule( g );;
 ##  gap> MTX.InvariantQuadraticForm( m );
 ##  fail
-##  gap> g:= SP(4, 3);;
-##  gap> m:= GModuleByMats( GeneratorsOfGroup( g ), GF(3) );;
+##  gap> g:= Sp(4, 3);;
+##  gap> m:= NaturalGModule( g );;
 ##  gap> q:= MTX.InvariantQuadraticForm( m );;
 ##  gap> q = - TransposedMat( q );  # antisymmetric inv. bilinear form
 ##  true

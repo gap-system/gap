@@ -37,6 +37,14 @@ DeclareGlobalFunction("InducedGModule");
 
 #############################################################################
 ##
+#F  NaturalGModule ( g[, F] )
+##
+## g is a matrix group, F a field.
+## The corresponding natural module is output.
+DeclareGlobalFunction("NaturalGModule");
+
+#############################################################################
+##
 #F PermutationGModule ( g, F) . permutation module
 ##
 ## g is a permutation group, F a field.
