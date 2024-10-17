@@ -582,9 +582,6 @@ on all composition factors except number <A>nr</A>.
 <Section Label="meataxe:Invariant Forms">
 <Heading>MeatAxe Functionality for Invariant Forms</Heading>
 
-The functions in this section can only be applied to an absolutely irreducible
-MeatAxe module.
-
 <ManSection>
 <Func Name="MTX.InvariantBilinearForm" Arg='module'/>
 
@@ -617,6 +614,7 @@ or <K>fail</K> if no such form exists.
 returns a basis of the underlying vector space of <A>module</A> which is contained
 in an orbit of the action of the generators of module on that space.
 This is used by <Ref Func="MTX.InvariantQuadraticForm"/> in characteristic 2.
+Requires <A>module</A> to be irreducible.
 </Description>
 </ManSection>
 

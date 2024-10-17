@@ -3311,21 +3311,19 @@ end;
 ##
 #F  InvariantBilinearForm( module ) . . . .
 ##
-## Look for an invariant bilinear form of the absolutely irreducible
-## GModule module. Return fail, or the matrix of the form.
+## Look for an invariant bilinear form of the GModule module.
+## Return fail, or the matrix of the form.
 SMTX.InvariantBilinearForm:=function( module  )
    local DM, iso;
 
-   if not SMTX.IsMTXModule(module) or
-                            not SMTX.IsAbsolutelyIrreducible(module) then
-      Error(
- "Argument of InvariantBilinearForm is not an absolutely irreducible module");
+   if not SMTX.IsMTXModule(module) then
+      Error("Argument of InvariantBilinearForm is not a module");
    fi;
    if IsBound(module.InvariantBilinearForm) then
      return module.InvariantBilinearForm;
    fi;
    DM:=SMTX.DualModule(module);
-   iso:=MTX.IsomorphismIrred(module,DM);
+   iso:=MTX.IsomorphismModules(module,DM);
    if iso = fail then
        SMTX.SetInvariantBilinearForm(module, fail);
        return fail;
@@ -3368,23 +3366,19 @@ end;
 ##
 #F  InvariantSesquilinearForm( module ) . . . .
 ##
-## Look for an invariant sesquililinear form of the absolutely irreducible
-## GModule module. Return fail, or the matrix of the form.
+## Look for an invariant sesquililinear form of the GModule module.
+## Return fail, or the matrix of the form.
 SMTX.InvariantSesquilinearForm:=function( module  )
    local DM, q, r, iso, isot, l;
 
-   if not SMTX.IsMTXModule(module) or
-                            not SMTX.IsAbsolutelyIrreducible(module) then
-      Error(
- "Argument of InvariantSesquilinearForm is not an absolutely irreducible module"
-   );
+   if not SMTX.IsMTXModule(module) then
+      Error("Argument of InvariantSesquilinearForm is not a module");
    fi;
-
    if IsBound(module.InvariantSesquilinearForm) then
      return module.InvariantSesquilinearForm;
    fi;
    DM:=SMTX.TwistedDualModule(module);
-   iso:=MTX.IsomorphismIrred(module,DM);
+   iso:=MTX.IsomorphismModules(module,DM);
    if iso = fail then
        SMTX.SetInvariantSesquilinearForm(module, fail);
        return fail;
