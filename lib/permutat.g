@@ -602,11 +602,11 @@ end);
 ##  Let <A>src</A> and <A>dst</A> be lists of positive integers of the same
 ##  length, such that there is a permutation <M>\pi</M> such that
 ##  <C>OnTuples(<A>src</A>,</C> <M>\pi</M><C>) = <A>dst</A></C>.
-##  <Ref Func="MappingPermListList"/> returns the permutation <C>p</C> from the
-##  previous sentence, i.e.  <A>src</A><C>[</C><M>i</M><C>]^</C><M>p =</M>
-##  <A>dst</A><C>[</C><M>i</M><C>]</C>.
-##  The permutation <M>\pi</M> fixes any point which is not in <A>src</A> or
-##  <A>dst</A>.
+##  <Ref Func="MappingPermListList"/> returns such a permutation
+##  (i. e., <A>src</A><C>[</C><M>i</M><C>]^</C><M>\pi =</M>
+##  <A>dst</A><C>[</C><M>i</M><C>]</C> holds),
+##  with the property that <M>\pi</M> fixes any point which is not in
+##  <A>src</A> or <A>dst</A>.
 ##  If there are several such permutations, it is not specified which of them
 ##  <Ref Func="MappingPermListList"/> returns. If there is no such
 ##  permutation, then <Ref Func="MappingPermListList"/> returns <K>fail</K>.

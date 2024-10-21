@@ -121,7 +121,7 @@ DeclareConstructor( "GeneralLinearGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 ##  <Ref Prop="IsNaturalGLnZ"/>).
 ##  <P/>
 ##  Currently supported rings <A>R</A> are finite fields,
-##  the ring <Ref Var="Integers"/>,
+##  the ring <Ref Var="Integers" Label="global variable"/>,
 ##  and residue class rings <C>Integers mod <A>m</A></C>,
 ##  see <Ref Sect="Residue Class Rings"/>.
 ##  <P/>

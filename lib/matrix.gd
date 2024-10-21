@@ -1347,7 +1347,7 @@ DeclareGlobalFunction( "BaseFixedSpace" );
 ##  <List>
 ##  <Mark><C>subspace</C></Mark>
 ##  <Item>
-##  s a basis of the space spanned by <A>mat</A> in upper triangular
+##  is a basis of the space spanned by <A>mat</A> in upper triangular
 ##  form with leading ones at all echelon steps and zeroes above these ones.
 ##  </Item>
 ##  <Mark><C>factorspace</C></Mark>
@@ -1754,16 +1754,14 @@ DeclareGlobalFunction( "DiagonalMat" );
 ##  <P/>
 ##  The matrix of the reflection in <M>v</M> is defined as
 ##  <Display Mode="M">
-##  M = I_n +
-##    \overline{{v^{tr}}} \cdot (w-1) / ( v \overline{{v^{tr}}} ) \cdot v
+##  M = I_n + <A>conj</A>(v^{tr}) \cdot (<A>root</A>-1) /
+##  (v \cdot <A>conj</A>(v^{tr})) \cdot v
 ##  </Display>
-##  where <M>w</M> equals <A>root</A>,
-##  <M>n</M> is the length of the coefficient list,
-##  and <M>\overline{{\vphantom{x}}}</M> denotes the conjugation.
+##  where <M>n</M> is the length of the coefficient list.
 ##  <P/>
-##  So <M>v</M> is mapped to <M>w v</M>, with default <M>-v</M>,
-##  and any vector <M>x</M> with the property
-##  <M>x \overline{{v^{tr}}} = 0</M> is fixed by the reflection.
+##  So <M>v</M> is mapped to <A>root</A><M> \cdot v</M>,
+##  with default <M>-v</M>, and any vector <M>x</M> with the property
+##  <M>x \cdot </M><A>conj</A><M>(v^{tr}) = 0</M> is fixed by the reflection.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

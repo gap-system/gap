@@ -323,7 +323,7 @@ DeclareOperation( "PositionStream", [ IsInputStream ] );
 ##  A default method is supplied for <Ref Oper="ReadAll"/> which simply calls
 ##  <Ref Oper="ReadLine"/> repeatedly.
 ##  This is only really safe for streams which cannot block.
-##  Other streams should install a method for <Ref Oper="ReadAll"/>
+##  Other streams should install a method for <Ref Oper="ReadAll"/>.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> i := InputTextString( "1Hallo\nYou\n1" );;
@@ -401,7 +401,7 @@ DeclareOperation( "ReadByte", [ IsInputStream ] );
 ##  may also return <K>fail</K> or return an incomplete line if the other
 ##  process has not yet written any more. It will always wait (block) for at
 ##  least one byte to be available, but will then return as much input
-##  as is available, up to a limit of one  line
+##  as is available, up to a limit of one line.
 ##  <P/>
 ##  A default method is supplied for <Ref Oper="ReadLine"/> which simply calls <Ref Oper="ReadByte"/>
 ##  repeatedly. This is only safe for streams that cannot block. The kernel

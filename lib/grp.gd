@@ -4739,8 +4739,8 @@ DeclareGlobalFunction("GroupEnumeratorByClosure");
 ##
 ##  <Description>
 ##  The operation <Ref Oper="LowIndexSubgroups"/> computes representatives of
-##  the conjugacy classes of subgroups of the group <A>G</A> that index less
-##  than or equal to <A>index</A>.
+##  the conjugacy classes of subgroups of the group <A>G</A> that have index
+##  less than or equal to <A>index</A>.
 ##  <P/>
 ##  For finitely presented groups this operation simply defaults to
 ##  <Ref Oper="LowIndexSubgroupsFpGroup"/>. In other cases, it uses repeated

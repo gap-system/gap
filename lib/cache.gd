@@ -71,7 +71,7 @@ InstallMethod( FlushCaches, "return method", [], function() end );
 ##  <Mark><C>defaults</C> (default an empty list)</Mark>
 ##  <Item>
 ##    Used to initialise the cache, both initially and after each flush.
-##    If <C>defaults[i]</C> is bound, then this is used as default vale
+##    If <C>defaults[i]</C> is bound, then this is used as default value
 ##    for the input <C>i</C>.
 ##  </Item>
 ##  <Mark><C>flush</C> (default <K>true</K>)</Mark>
