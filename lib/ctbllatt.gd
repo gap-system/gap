@@ -237,13 +237,6 @@ DeclareGlobalFunction( "Extract" );
 ##        [ 0, 0, 1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, -1, 1, 0, 0, 0 ],
 ##        [ 0, 0, 0, 0, 0, 1, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 1, 1 ],
 ##        [ 0, 0, 0, 0, 0, 0, 1, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 1 ] ] )
-##  ]]></Example>
-##  <P/>
-##  In the following example we temporarily decrease the line length limit
-##  from its default value <M>80</M> to <M>62</M>
-##  in order to get a nicer output format.
-##  <P/>
-##  <Example><![CDATA[
 ##  gap> emb2:= OrthogonalEmbeddingsSpecialDimension( s6, rem, gram, 8 );
 ##  rec(
 ##    irreducibles :=
@@ -317,10 +310,6 @@ DeclareGlobalFunction( "OrthogonalEmbeddingsSpecialDimension" );
 ##      component.
 ##  </Item>
 ##  </List>
-##  <P/>
-##  In the following example we temporarily decrease the line length limit
-##  from its default value <M>80</M> to <M>62</M>
-##  in order to get a nicer output format.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> s4:= CharacterTable( "Symmetric", 4 );;
@@ -402,10 +391,6 @@ DeclareGlobalFunction( "Decreased" );
 ##  So <Ref Func="DnLattice"/> might be useful even if it fails to find
 ##  irreducible characters.
 ##  <P/>
-##  In the following example we temporarily decrease the line length limit
-##  from its default value <M>80</M> to <M>62</M>
-##  in order to get a nicer output format.
-##  <P/>
 ##  <Example><![CDATA[
 ##  gap> s4:= CharacterTable( "Symmetric", 4 );;
 ##  gap> red:= [ [ 2, 0, 2, 2, 0 ], [ 4, 0, 0, 1, 2 ],
@@ -452,10 +437,6 @@ DeclareGlobalFunction( "DnLattice" );
 ##  <P/>
 ##  <Ref Func="DnLatticeIterative"/> returns a record with the same
 ##  components and meaning of components as <Ref Func="LLL"/>.
-##  <P/>
-##  In the following example we temporarily decrease the line length limit
-##  from its default value <M>80</M> to <M>62</M>
-##  in order to get a nicer output format.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> s4:= CharacterTable( "Symmetric", 4 );;
