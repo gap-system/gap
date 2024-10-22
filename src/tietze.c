@@ -1573,9 +1573,9 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(TzRenumberGens, tietze),
     GVAR_FUNC_1ARGS(TzReplaceGens, tietze),
     GVAR_FUNC_3ARGS(TzSubstituteGen, tietze, gennum, word),
-    GVAR_FUNC_XARGS(TzOccurrences, -1, "arg..."),
-    GVAR_FUNC_XARGS(TzOccurrencesPairs, -1, "arg..."),
-    GVAR_FUNC_XARGS(TzSearchC, -1, "arg..."),
+    GVAR_FUNC_XARGS(TzOccurrences, -1, "arg"),
+    GVAR_FUNC_XARGS(TzOccurrencesPairs, -1, "arg"),
+    GVAR_FUNC_XARGS(TzSearchC, -1, "arg"),
     GVAR_FUNC_2ARGS(REDUCE_LETREP_WORDS_REW_SYS, tzwords, word),
     { 0, 0, 0, 0, 0 }
 

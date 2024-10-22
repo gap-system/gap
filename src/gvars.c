@@ -1419,7 +1419,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(MakeConstantGVar, name),
     GVAR_FUNC_1ARGS(IsReadOnlyGVar, name),
     GVAR_FUNC_1ARGS(IsConstantGVar, name),
-    GVAR_FUNC_XARGS(AUTO, -3, "func, arg, names..."),
+    GVAR_FUNC_XARGS(AUTO, -3, "func, arg, names"),
 
     GVAR_FUNC_1ARGS(DeclareGlobalName, name),
 
