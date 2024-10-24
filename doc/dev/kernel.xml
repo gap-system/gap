@@ -193,7 +193,7 @@ areas of memory, each with a size and a <C>TNUM</C> (type number)
 in the range 0--253 (type numbers are defined in the file <F>objects.h</F>;
 there are some spare numbers reserved for further extensions; types 254 and 255
 are reserved for &GASMAN;. See Section
-<Ref Label="Sect-Objects" /> for more details).
+<Ref Sect="Sect-Objects" /> for more details).
 <P/>
 
 Bags have stable handles
@@ -399,7 +399,7 @@ Other objects with weak behaviour could be implemented in a similar way.
 <Heading>Interfaces</Heading>
 
 The modules at the bottom of the picture from the section
-<Ref Label="Sect-BigPicture" /> (<E>objects</E>, <E>gasman</E> and
+<Ref Sect="Sect-BigPicture" /> (<E>objects</E>, <E>gasman</E> and
 <E>system</E>), and white boxes (<E>arithmetic</E>, <E>lists</E>,
 <E>calls/operations</E>, <E>records</E>)
 provide interfaces intended for use in the kernel.
