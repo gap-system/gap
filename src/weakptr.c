@@ -151,7 +151,7 @@ static inline void SET_ELM_WPOBJ(Obj list, UInt pos, Obj val)
         return;
     }
     if (!IS_BAG_REF(ptr[pos])) {
-        ptr[pos] = (Bag)jl_gc_new_weakref((jl_value_t *)val);
+        ptr[pos] = (Bag)jl_gc_new_weakref_th(jl_get_ptls_states(), (jl_value_t *)val);
         jl_gc_wb_back(BAG_HEADER(list));
     }
     else {
