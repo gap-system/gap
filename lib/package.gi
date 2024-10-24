@@ -2982,6 +2982,10 @@ InstallGlobalFunction( Cite, function(arg)
     Print("WARNING: No working version of package ", name, " is available!\n");
     return;
   fi;
+  # special handling for "The GAP Team"
+  bib:= ReplacedString( bib,
+            "<name><first>The</first><last>GAP Team</last></name>",
+            "<name><last>The GAP Team</last></name>" );
   parse:= ParseBibXMLextString( bib );
   # use encoding of terminal for printing
   en := function(str)
