@@ -396,5 +396,36 @@ true
 gap> v*g = v;
 true
 
+#############################################################################
+##
+##  12. ExtendedVectors, EnumeratorOfNormedRowVectors
+##
+##  The functions 'ExtendedVectors', 'EnumeratorOfNormedRowVectors' are
+##  undocumented but there should be some tests
+##  since they are used in library functions.
+##
+gap> for F in [ GF(2), GF(3), GF(4), GF(257) ] do
+>      for n in [ 0, 1, 2 ] do
+>        A:= ExtendedVectors( F^n );
+>        for i in [ 1 .. Size( A ) ] do
+>          v:= A[i];
+>          if Position( A, v ) <> i then
+>            Error( "problem with 'ExtendedVectors( ", F, "^", n, " )" );
+>          fi;
+>        od;
+>      od;
+>    od;
+gap> for F in [ GF(2), GF(3), GF(4), GF(257) ] do
+>      for n in [ 0, 1, 2 ] do
+>        A:= EnumeratorOfNormedRowVectors( F^n );
+>        for i in [ 1 .. Size( A ) ] do
+>          v:= A[i];
+>          if Position( A, v ) <> i then
+>            Error( "problem with 'ExtendedVectors( ", F, "^", n, " )" );
+>          fi;
+>        od;
+>      od;
+>    od;
+
 ##
 gap> STOP_TEST( "vspcrow.tst" );
