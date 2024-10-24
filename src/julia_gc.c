@@ -744,6 +744,7 @@ jl_datatype_t * GAP_DeclareBag(jl_sym_t *      name,
                                1, large > 0);
 }
 
+#ifdef HAVE_JL_REINIT_FOREIGN_TYPE
 // internal wrapper for jl_boundp to deal with API change in Julia 1.12
 static int gap_jl_boundp(jl_module_t *m, jl_sym_t *var)
 {
@@ -753,6 +754,7 @@ static int gap_jl_boundp(jl_module_t *m, jl_sym_t *var)
     return jl_boundp(m, var);
 #endif
 }
+#endif
 
 // Initialize the integration with Julia's garbage collector; in particular,
 // create Julia types for use in our allocations. The types will be stored

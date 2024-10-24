@@ -130,7 +130,7 @@ jobs:
           - os: ubuntu-20.04
             shell: bash
             test-suites: "testinstall"
-            extra: "JULIA=yes CONFIGFLAGS=\"--enable-debug --disable-Werror\""
+            extra: "JULIA=yes CONFIGFLAGS=\"--enable-debug\""
 
           - os: windows-2019
             # The 'run' steps in this job use Cygwin's bash, once it is set up.
