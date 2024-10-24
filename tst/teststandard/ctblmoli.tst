@@ -18,4 +18,4 @@ gap> List( [ 0,3 .. 48 ], i -> ValueMolienSeries( m, i ) );
 [ 1, 0, 0, 0, 2, 0, 5, 0, 13, 3, 33, 15, 87, 58, 203, 178, 472 ]
 
 #
-gap> STOP_TEST( "ctblmoli.tst", 1);
+gap> STOP_TEST("ctblmoli.tst");

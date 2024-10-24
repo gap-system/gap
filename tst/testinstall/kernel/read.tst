@@ -252,4 +252,4 @@ Syntax error: <end-of-file> expected in stream:1
 fail
 
 #
-gap> STOP_TEST("kernel/read.tst", 1);
+gap> STOP_TEST("kernel/read.tst");

@@ -939,4 +939,4 @@ gap> Print(ExtRepOfObj( ReducedQuotient( rws, w, l[1] ) ),"\n");
   2, 56, 30, 57, 1, 58, 1, 59, 4, 60, 4, 61, 4 ]
 
 #############################################################################
-gap> STOP_TEST( "rwspcsng.tst", 1);
+gap> STOP_TEST("rwspcsng.tst");

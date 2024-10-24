@@ -101,4 +101,4 @@ gap> Q:=R/id;
 <ring with 1 generator>
 gap> Elements(Q);
 [ 0*q1, q1, 2*q1, 3*q1, 4*q1, 5*q1, 6*q1, -q1 ]
-gap> STOP_TEST( "alghom.tst", 1);
+gap> STOP_TEST("alghom.tst");

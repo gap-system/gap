@@ -496,4 +496,4 @@ gap> endoendo:= End( f, endo );
 End( GF(3), End( GF(3), GF(3^3) ) )
 gap> Dimension( endoendo );
 81
-gap> STOP_TEST( "vspchom.tst", 1);
+gap> STOP_TEST("vspchom.tst");

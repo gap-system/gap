@@ -18,4 +18,4 @@ gap> MULT_BYT_LETTREP([], []);
 ""
 
 #
-gap> STOP_TEST("kernel/objfgelm.tst", 1);
+gap> STOP_TEST("kernel/objfgelm.tst");

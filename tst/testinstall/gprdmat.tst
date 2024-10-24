@@ -88,4 +88,4 @@ gap> Image(emb);
 <matrix group with 3 generators>
 
 #
-gap> STOP_TEST("gprdmat.tst", 1);
+gap> STOP_TEST("gprdmat.tst");

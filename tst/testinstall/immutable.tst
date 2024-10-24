@@ -148,4 +148,4 @@ gap> ConvertToMatrixRep(v, 1);
 fail
 
 #
-gap> STOP_TEST( "immutable.tst", 1);
+gap> STOP_TEST("immutable.tst");

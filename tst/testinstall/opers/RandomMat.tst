@@ -37,4 +37,4 @@ gap> RandomMat(0);
 Error, usage: RandomMat( [rs ,] <m>, <n> [, <F>] )
 
 #
-gap> STOP_TEST("RandomMat.tst", 1);
+gap> STOP_TEST("RandomMat.tst");

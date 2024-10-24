@@ -53,4 +53,4 @@ gap> for i in [1..10] do
 gap> if not prof then UnprofileLineByLine(); fi;
 gap> IsLineByLineProfileActive();
 false
-gap> STOP_TEST("prof.tst", 1);
+gap> STOP_TEST("prof.tst");

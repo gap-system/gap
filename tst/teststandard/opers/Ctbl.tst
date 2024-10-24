@@ -9,4 +9,4 @@ gap> Length(Irr(w));
 22
 
 #
-gap> STOP_TEST("Ctbl.tst",1);
+gap> STOP_TEST("Ctbl.tst");

@@ -163,4 +163,4 @@ gap> Concatenation(List(R, GreensHClasses)) = H;
 true
 
 #
-gap> STOP_TEST( "semirel.tst", 1);
+gap> STOP_TEST("semirel.tst");

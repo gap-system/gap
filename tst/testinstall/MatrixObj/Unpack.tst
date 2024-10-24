@@ -9,4 +9,4 @@ gap> v5 := Vector(GF(5), ll*One(GF(5)));
 [ Z(5)^0, Z(5), Z(5)^3, Z(5)^2, 0*Z(5), Z(5)^0 ]
 gap> Unpack( v5 );
 [ Z(5)^0, Z(5), Z(5)^3, Z(5)^2, 0*Z(5), Z(5)^0 ]
-gap> STOP_TEST( "Unpack.tst", 1);
+gap> STOP_TEST("Unpack.tst");

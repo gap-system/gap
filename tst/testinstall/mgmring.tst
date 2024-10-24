@@ -25,4 +25,4 @@ gap> img:= Image( rembrm, Z(3) );
 (Z(3))*()
 gap> PreImagesRepresentative( rembrm, img );
 Z(3)
-gap> STOP_TEST( "mgmring.tst", 1);
+gap> STOP_TEST("mgmring.tst");

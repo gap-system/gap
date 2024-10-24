@@ -53,4 +53,4 @@ gap> c := ReadByte(process);
 fail
 gap> CloseStream(process);
 #@fi
-gap> STOP_TEST("streamio.tst", 1);
+gap> STOP_TEST("streamio.tst");

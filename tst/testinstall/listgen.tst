@@ -168,4 +168,4 @@ gap> p2:=Position(t,(5,7)(6,8));
 fail
 
 # that's all, folks
-gap> STOP_TEST( "listgen.tst", 1);
+gap> STOP_TEST("listgen.tst");

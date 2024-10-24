@@ -65,4 +65,4 @@ gap> y = [len+1..len*2];
 true
 
 #
-gap> STOP_TEST("innerfunc.tst", 1);
+gap> STOP_TEST("innerfunc.tst");

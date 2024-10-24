@@ -106,4 +106,4 @@ gap> r;
 [ 0 .. 9 ]
 
 #
-gap> STOP_TEST("kernel/range.tst", 1);
+gap> STOP_TEST("kernel/range.tst");

@@ -14,4 +14,4 @@ gap> doTests := function(startrange, lengthrange)
 >    od;
 > end;;
 gap> doTests([1..64],[0..128]);
-gap> STOP_TEST("ElmsBlist.tst", 1);
+gap> STOP_TEST("ElmsBlist.tst");

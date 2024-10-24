@@ -112,4 +112,4 @@ gap> OBJ_MAP_KEYS(fail);
 Error, OBJ_MAP_KEYS: <map> must be an object map (not the value 'fail')
 
 #
-gap> STOP_TEST( "objmap.tst", 1);
+gap> STOP_TEST("objmap.tst");

@@ -206,4 +206,4 @@ gap> Gcd(t, u/3);
 1
 
 #
-gap> STOP_TEST( "ratfun.tst", 1);
+gap> STOP_TEST("ratfun.tst");

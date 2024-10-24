@@ -262,5 +262,5 @@ gap> CheckRepeatedSerialization("abc"); # T_STRING
 gap> CheckRepeatedSerialization([1,2,3]); # T_PLIST
 
 #
-gap> STOP_TEST("hpc/serialize.tst", 1);
+gap> STOP_TEST("hpc/serialize.tst");
 #@fi

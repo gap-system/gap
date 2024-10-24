@@ -503,4 +503,4 @@ gap> Subsemigroup(S, []);
 <empty partial perm semigroup>
 
 #
-gap> STOP_TEST( "semigrp.tst", 1);
+gap> STOP_TEST("semigrp.tst");

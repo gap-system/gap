@@ -298,4 +298,4 @@ gap> ExecuteProcess("","",0,0,[1]);
 Error, ExecuteProcess: <tmp> must be a string (not the integer 1)
 
 #
-gap> STOP_TEST("kernel/streams.tst", 1);
+gap> STOP_TEST("kernel/streams.tst");

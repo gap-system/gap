@@ -49,4 +49,4 @@ gap> Display(function(l,n) return IsBound(l.(n));end);
 function ( l, n )
     return IsBound( l.(n) );
 end
-gap> STOP_TEST("bound.tst", 1);
+gap> STOP_TEST("bound.tst");

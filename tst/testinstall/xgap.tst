@@ -45,4 +45,4 @@ gap> HasSize(t);
 true
 gap> Size(t); 
 1
-gap> STOP_TEST( "xgap.tst", 1);
+gap> STOP_TEST("xgap.tst");

@@ -81,4 +81,4 @@ gap> FrattiniSubgroup(G);
 Group([  ])
 
 #
-gap> STOP_TEST("FrattiniSubgroup.tst", 1);
+gap> STOP_TEST("FrattiniSubgroup.tst");

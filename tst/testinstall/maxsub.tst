@@ -31,4 +31,4 @@ gap> SortedList(List(msc, H -> Index(G, H)));
 [ 5, 6, 10 ]
 
 #
-gap> STOP_TEST("maxsub.tst", 1);
+gap> STOP_TEST("maxsub.tst");

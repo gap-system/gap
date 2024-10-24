@@ -33,4 +33,4 @@ gap> Set(ComplementClassesRepresentatives(G, N), H -> H^G)=Set([ Group([ (1,2) ]
 true
 
 #
-gap> STOP_TEST("ComplementClassesRepresentatives.tst", 1);
+gap> STOP_TEST("ComplementClassesRepresentatives.tst");

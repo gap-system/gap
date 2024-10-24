@@ -44,4 +44,4 @@ gap> List([0..7], n -> CallFuncList(ReturnFail,[1..n]));
 [ fail, fail, fail, fail, fail, fail, fail, fail ]
 
 #
-gap> STOP_TEST("kernel/bool.tst", 1);
+gap> STOP_TEST("kernel/bool.tst");

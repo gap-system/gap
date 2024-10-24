@@ -1506,4 +1506,4 @@ gap> ForAll([1..30], k->not IsPrimePowerInt((1009*P)^k));
 true
 
 #
-gap> STOP_TEST( "intarith.tst", 1);
+gap> STOP_TEST("intarith.tst");

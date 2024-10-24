@@ -402,4 +402,4 @@ Error, Range: <last> must be a small integer (not a permutation (small))
 gap> f(-2^60,2^60-1);
 Error, Range: the length of a range must be a small integer
 #@fi
-gap> STOP_TEST( "range.tst", 1);
+gap> STOP_TEST("range.tst");

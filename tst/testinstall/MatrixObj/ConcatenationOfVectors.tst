@@ -20,4 +20,4 @@ gap> vv := ConcatenationOfVectors( [ v3, v4, v3 ] );
 gap> Unpack( vv );
 [ Z(5)^0, Z(5), Z(5)^3, Z(5)^2, 0*Z(5), Z(5)^0, Z(5)^0, Z(5), Z(5), Z(5)^2, 
   0*Z(5), Z(5)^0, Z(5)^0, Z(5), Z(5)^3, Z(5)^2, 0*Z(5), Z(5)^0 ]
-gap> STOP_TEST("ConcatenationOfVectors.tst",1);
+gap> STOP_TEST("ConcatenationOfVectors.tst");

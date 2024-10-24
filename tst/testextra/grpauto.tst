@@ -323,4 +323,4 @@ gap> gp2:=Group((3,19,53,9,34)(6,29,69,15,48)(8,72,52,33,18)
 > (174,178,233,203,238)(177,217,244,190,194));;
 gap> IsomorphismGroups(gp1,gp2)=fail;
 false
-gap>STOP_TEST("grpauto.tst",1);
+gap>STOP_TEST("grpauto.tst");

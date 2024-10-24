@@ -46,4 +46,4 @@ gap> K:=Subgroup(H, [H.1, H.2^2]);; IsInfiniteAbelianizationGroup(K);
 false
 
 #
-gap> STOP_TEST("IsInfiniteAbelianizationGroup.tst", 1);
+gap> STOP_TEST("IsInfiniteAbelianizationGroup.tst");

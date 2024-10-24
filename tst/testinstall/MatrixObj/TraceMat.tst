@@ -10,4 +10,4 @@ gap> TraceMat( m2 );
 5
 gap> TraceMat( m3 );
 Z(7)^5
-gap> STOP_TEST( "TraceMat.tst", 1);
+gap> STOP_TEST("TraceMat.tst");

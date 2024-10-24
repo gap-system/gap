@@ -337,4 +337,4 @@ function() for PrintObj{[1]} in [1,2,3] do od; end();
                        ^
 
 #
-gap> STOP_TEST("coder.tst", 1);
+gap> STOP_TEST("coder.tst");

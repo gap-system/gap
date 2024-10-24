@@ -328,4 +328,4 @@ gap> IsMinimalNonmonomial( S4 );
 false
 
 ##
-gap> STOP_TEST( "ctblmono.tst", 1);
+gap> STOP_TEST("ctblmono.tst");

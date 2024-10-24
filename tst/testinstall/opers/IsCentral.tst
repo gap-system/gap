@@ -89,4 +89,4 @@ gap> List(GeneratorsOfLeftOperatorRingWithOne(R), x->IsCentral(R,SubringNC(R,[x]
 [ false, false, true ]
 
 #
-gap> STOP_TEST("IsCentral.tst", 10000);
+gap> STOP_TEST("IsCentral.tst");

@@ -92,4 +92,4 @@ gap> Size(Socle(G));
 gap> G := Group([], IdentityMat (4, GF(2)));;
 gap> IsTrivial(Socle(G));
 true
-gap> STOP_TEST("Socle.tst", 1);
+gap> STOP_TEST("Socle.tst");

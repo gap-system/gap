@@ -386,4 +386,4 @@ gap> for i in [0..200] do
 > od;
 
 #
-gap> STOP_TEST("kernel/blister.tst", 1);
+gap> STOP_TEST("kernel/blister.tst");

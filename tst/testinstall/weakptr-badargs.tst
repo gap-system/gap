@@ -43,4 +43,4 @@ Error, LengthWPObj: <wp> must be a weak pointer object (not an empty plain lis\
 t)
 gap> LengthWPObj(0);
 Error, LengthWPObj: <wp> must be a weak pointer object (not the integer 0)
-gap> STOP_TEST( "weakptr-badargs.tst", 1);
+gap> STOP_TEST("weakptr-badargs.tst");

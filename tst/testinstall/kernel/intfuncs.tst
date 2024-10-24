@@ -22,4 +22,4 @@ gap> HASHKEY_BAG("x", 0, 0, fail);
 Error, HASHKEY_BAG: <maxlen> must be a small integer (not the value 'fail')
 
 #
-gap> STOP_TEST("kernel/intfuncs.tst", 1);
+gap> STOP_TEST("kernel/intfuncs.tst");

@@ -117,4 +117,4 @@ Error, Conversion error: <i> must be a non-negative integer (not the value 'fa\
 il')
 
 #
-gap> STOP_TEST("kernel/integer.tst", 1);
+gap> STOP_TEST("kernel/integer.tst");

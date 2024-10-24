@@ -9,4 +9,4 @@ Error, TRANSPOSED_MAT8BIT: <mat> must belong to Is8BitMatrixRep (not the value\
  'fail')
 
 #
-gap> STOP_TEST("kernel/vec8bit.tst", 1);
+gap> STOP_TEST("kernel/vec8bit.tst");

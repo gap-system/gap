@@ -28,4 +28,4 @@ gap> check([InfiniteListOfNames("a")]);
 [ true, true, true ]
 gap> check([ ["a","b"], InfiniteListOfNames("a")]);
 [ false, false, false ]
-gap> STOP_TEST( "table.tst", 1);
+gap> STOP_TEST("table.tst");

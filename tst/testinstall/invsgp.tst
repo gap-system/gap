@@ -50,4 +50,4 @@ gap> S = EvalString(String(S));
 true
 
 #
-gap> STOP_TEST( "invsgp.tst", 1);
+gap> STOP_TEST("invsgp.tst");

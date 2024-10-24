@@ -8,4 +8,4 @@ gap> Inverse(hom);;
 gap> p mod InducedPcgsByPcSequence(p,p{[1..100]});;
 
 #############################################################################
-gap> STOP_TEST( "pcgrp.tst", 1);
+gap> STOP_TEST("pcgrp.tst");

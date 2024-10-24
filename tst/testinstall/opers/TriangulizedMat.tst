@@ -30,4 +30,4 @@ gap> TriangulizedMat([[1,2],[3,6]]);
 [ [ 1, 2 ], [ 0, 0 ] ]
 
 #
-gap> STOP_TEST("TriangulizedMat.tst", 1);
+gap> STOP_TEST("TriangulizedMat.tst");

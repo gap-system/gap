@@ -61,4 +61,4 @@ gap> IsGroup (Union ([SymmetricGroup (4)]));
 true
 gap> Union(Group((1,2)), Group((1,2)), Group((1,2))) = Group((1,2));
 true
-gap> STOP_TEST( "union.tst", 1);
+gap> STOP_TEST("union.tst");

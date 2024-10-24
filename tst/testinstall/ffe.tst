@@ -513,4 +513,4 @@ gap> ForAll(qs,x->Rochambeau(GF(x))=0);
 true
 
 #
-gap> STOP_TEST( "ffe.tst", 1);
+gap> STOP_TEST("ffe.tst");

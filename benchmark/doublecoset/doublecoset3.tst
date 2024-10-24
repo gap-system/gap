@@ -10,4 +10,4 @@ gap> dc:=DoubleCosetRepsAndSizes(g,u,u);;
 gap> Length(dc);Sum(dc,x->x[2])=Size(g);
 913
 true
-gap> STOP_TEST( "doublecoset3.tst", 1);
+gap> STOP_TEST("doublecoset3.tst");

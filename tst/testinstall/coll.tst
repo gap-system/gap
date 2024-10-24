@@ -688,4 +688,4 @@ gap> Difference(M2, [1]);
 [ 0 ]
 
 #
-gap> STOP_TEST( "coll.tst", 1);
+gap> STOP_TEST("coll.tst");

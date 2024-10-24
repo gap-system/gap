@@ -226,4 +226,4 @@ gap> Print(x, "\n");
 abcdef
 
 #
-gap> STOP_TEST( "strings.tst", 1);
+gap> STOP_TEST("strings.tst");

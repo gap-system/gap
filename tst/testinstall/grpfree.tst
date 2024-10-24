@@ -277,4 +277,4 @@ gap> SetIsWholeFamily( F, true );
 gap> GroupHomomorphismByImagesNC( F, H, gens, GeneratorsOfGroup( H ) );;
 
 #
-gap> STOP_TEST( "grpfree.tst", 1);
+gap> STOP_TEST("grpfree.tst");

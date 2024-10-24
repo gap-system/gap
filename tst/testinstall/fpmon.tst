@@ -44,4 +44,4 @@ gap> y in S;
 true
 
 #
-gap> STOP_TEST( "fpmon.tst", 1);
+gap> STOP_TEST("fpmon.tst");

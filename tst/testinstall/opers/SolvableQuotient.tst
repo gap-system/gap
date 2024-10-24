@@ -30,4 +30,4 @@ Error, <primes> must be either an integer, a list of integers, or a list of in\
 teger lists
 
 #
-gap> STOP_TEST("SolvableQuotient.tst", 10000);
+gap> STOP_TEST("SolvableQuotient.tst");

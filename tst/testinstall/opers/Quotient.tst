@@ -125,4 +125,4 @@ gap> Quotient(R, t, 0*t);
 fail
 
 #
-gap> STOP_TEST("Quotient.tst", 1);
+gap> STOP_TEST("Quotient.tst");

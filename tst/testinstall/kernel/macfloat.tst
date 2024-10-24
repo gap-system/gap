@@ -40,4 +40,4 @@ gap> FREXP_MACFLOAT(pi);
 [ 0.785398, 2 ]
 
 #
-gap> STOP_TEST("kernel/macfloat.tst", 1);
+gap> STOP_TEST("kernel/macfloat.tst");

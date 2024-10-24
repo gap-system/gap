@@ -157,4 +157,4 @@ gap> NrMovedPoints(Range(act));
 70840
 
 #
-gap> STOP_TEST( "permgrp.tst", 1);
+gap> STOP_TEST("permgrp.tst");

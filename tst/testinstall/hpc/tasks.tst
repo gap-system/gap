@@ -77,4 +77,4 @@ gap> TaskResult(task3);
 gap> task4 := ScheduleTask([], GcdInt, 6, 10);;
 gap> TaskResult(task4);
 2
-gap> STOP_TEST( "tasks.tst", 1 );
+gap> STOP_TEST("tasks.tst");

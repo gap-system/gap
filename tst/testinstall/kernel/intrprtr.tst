@@ -30,4 +30,4 @@ gap> Assert(100, true, "message\n");
 gap> Assert(100, false, "message\n");
 
 #
-gap> STOP_TEST("kernel/intrprtr.tst", 1);
+gap> STOP_TEST("kernel/intrprtr.tst");

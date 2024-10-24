@@ -25,4 +25,4 @@ gap> cheeseval;
 [ 2 ]
 gap> MakeReadWriteGlobal("cheesefun"); UnbindGlobal("cheesefun");
 gap> MakeReadWriteGlobal("cheeseval"); UnbindGlobal("cheeseval");
-gap> STOP_TEST("flush.tst", 1);
+gap> STOP_TEST("flush.tst");

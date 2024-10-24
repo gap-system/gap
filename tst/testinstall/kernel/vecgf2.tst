@@ -8,4 +8,4 @@ gap> TRANSPOSED_GF2MAT(fail);
 Error, TRANSPOSED_GF2MAT: Need compressed matrix over GF(2)
 
 #
-gap> STOP_TEST("kernel/vecgf2.tst", 1);
+gap> STOP_TEST("kernel/vecgf2.tst");

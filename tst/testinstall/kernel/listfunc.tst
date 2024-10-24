@@ -134,4 +134,4 @@ gap> STRONGLY_CONNECTED_COMPONENTS_DIGRAPH([]);
 [  ]
 
 #
-gap> STOP_TEST("kernel/listfunc.tst", 1);
+gap> STOP_TEST("kernel/listfunc.tst");

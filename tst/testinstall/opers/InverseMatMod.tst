@@ -11,4 +11,4 @@ gap> for d in [1..10] do
 > od;
 
 #
-gap> STOP_TEST("InverseMatMod.tst", 1);
+gap> STOP_TEST("InverseMatMod.tst");

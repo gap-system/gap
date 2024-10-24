@@ -7,4 +7,4 @@ gap> [Length(l),Sum(l,Size)];
 [ 41, 80896 ]
 
 #
-gap> STOP_TEST("Lattice.tst",1);
+gap> STOP_TEST("Lattice.tst");

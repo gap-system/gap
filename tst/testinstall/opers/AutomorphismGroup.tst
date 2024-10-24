@@ -28,4 +28,4 @@ gap> AutomorphismGroup(G);
 <group of size 1000 with 4 generators>
 
 #
-gap> STOP_TEST("AutomorphismGroup.tst",1);
+gap> STOP_TEST("AutomorphismGroup.tst");

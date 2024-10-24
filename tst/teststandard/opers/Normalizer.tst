@@ -8,4 +8,4 @@ gap> hom:=IsomorphismPermGroup(G);;
 gap> g:=Image(hom,G);;u:=Image(hom,U);;
 gap> Normalizer(g,u)=NormalizerViaRadical(g,u);
 true
-gap> STOP_TEST("Normalizer.tst", 1);
+gap> STOP_TEST("Normalizer.tst");

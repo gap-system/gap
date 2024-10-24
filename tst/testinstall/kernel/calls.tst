@@ -124,4 +124,4 @@ Error, UNPROFILE_FUNC: <func> must be a function (not the value 'fail')
 gap> UNPROFILE_FUNC(x->x);
 
 #
-gap> STOP_TEST("kernel/calls.tst", 1);
+gap> STOP_TEST("kernel/calls.tst");

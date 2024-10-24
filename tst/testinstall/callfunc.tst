@@ -149,4 +149,4 @@ gap> f := function() return o2(1,2,3,4,6,7); end;; f();
 Error, Function Calls: <func> must return a value
 gap> f := function() return o2(1,2,3,4,5,6,7); end;; f();
 Error, Function Calls: <func> must return a value
-gap> STOP_TEST( "callfunc.tst", 1);
+gap> STOP_TEST("callfunc.tst");

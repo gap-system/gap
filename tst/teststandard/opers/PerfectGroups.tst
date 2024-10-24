@@ -17,4 +17,4 @@ gap> List(gp,NrMovedPoints);
 [ 240, 28, 768, 128, 400, 224, 116, 80, 308, 1024, 560 ]
 
 #
-gap> STOP_TEST("PerfectGroups.tst",1);
+gap> STOP_TEST("PerfectGroups.tst");

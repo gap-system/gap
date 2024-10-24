@@ -353,4 +353,4 @@ gap> SetX(r, r, {i,j} -> (sets[i]=sets[j]) = (i=j));
 [ true ]
 
 #
-gap> STOP_TEST( "cyclotom.tst", 1);
+gap> STOP_TEST("cyclotom.tst");

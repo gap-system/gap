@@ -35,7 +35,7 @@ WriteExamplesTst := function(directory, meta)
                    AppendTo(output, "\n");
                 fi;
             od;
-            AppendTo(output, "\n\n\ngap> STOP_TEST(\"", chname, "\", 0);");
+            AppendTo(output, "\n\n\ngap> STOP_TEST(\"", chname, "\");");
         fi;
     od;
     return chapterfiles;

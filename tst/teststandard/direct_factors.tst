@@ -124,4 +124,4 @@ gap> SortedList(List(DirectFactorsOfGroup(G),IdGroup));
 [ [ 2, 1 ], [ 6, 1 ], [ 24, 12 ] ]
 
 #
-gap> STOP_TEST("direct_factors.tst", 1);
+gap> STOP_TEST("direct_factors.tst");

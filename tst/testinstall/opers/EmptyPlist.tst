@@ -29,4 +29,4 @@ gap> l;
 [ ,,,, 5,,,,,,, 2 ]
 
 #
-gap> STOP_TEST("EmptyPlist.tst", 1);
+gap> STOP_TEST("EmptyPlist.tst");

@@ -47,4 +47,4 @@ gap> Size(AutomorphismGroup(g));
 1440
 
 #
-gap> STOP_TEST("AutomorphismGroup.tst",1);
+gap> STOP_TEST("AutomorphismGroup.tst");

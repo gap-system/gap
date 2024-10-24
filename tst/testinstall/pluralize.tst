@@ -231,4 +231,4 @@ gap> Pluralize(5, "millennium");
 "\>5\< millennia"
 
 #
-gap> STOP_TEST("pluralize.tst",1);
+gap> STOP_TEST("pluralize.tst");

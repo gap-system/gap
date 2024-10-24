@@ -5,4 +5,4 @@ gap> GroupByGenerators( Group( (1,2) ) );
 Group([ (), (1,2) ])
 gap> GroupWithGenerators( Group( (1,2) ) );
 Group([ (), (1,2) ])
-gap> STOP_TEST("2018-12-06-GroupWithGenerators.tst", 1);
+gap> STOP_TEST("2018-12-06-GroupWithGenerators.tst");

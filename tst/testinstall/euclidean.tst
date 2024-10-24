@@ -57,4 +57,4 @@ gap> checkEuclideanRing(Integers mod ((2*3*5*7)^3));
 true
 
 #
-gap> STOP_TEST( "euclidean.tst", 1);
+gap> STOP_TEST("euclidean.tst");

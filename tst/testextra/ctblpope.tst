@@ -53,4 +53,4 @@ gap> if IsPackageMarkedForLoading( "ctbllib", "" ) then
 > fi;
 
 ##
-gap> STOP_TEST( "ctblpope.tst", 1 );
+gap> STOP_TEST("ctblpope.tst");

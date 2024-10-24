@@ -130,4 +130,4 @@ function ( x )
 end
 
 #
-gap> STOP_TEST("coding.tst", 1);
+gap> STOP_TEST("coding.tst");

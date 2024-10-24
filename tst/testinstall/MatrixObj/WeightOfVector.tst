@@ -29,4 +29,4 @@ gap> v6 := Vector(GF(5), l3*One(GF(5)));
 [ 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5), 0*Z(5) ]
 gap> WeightOfVector( v6 );
 0
-gap> STOP_TEST( "WeightOfVector.tst", 1);
+gap> STOP_TEST("WeightOfVector.tst");

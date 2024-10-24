@@ -123,4 +123,4 @@ gap> function() return IsAssociative and IsAssociative; end();
 <Property "IsAssociative">
 
 #
-gap> STOP_TEST( "boolean.tst", 1);
+gap> STOP_TEST("boolean.tst");

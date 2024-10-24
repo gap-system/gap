@@ -340,4 +340,4 @@ gap> funcloop(x -> ([ [ x ] ]{[ 1 ]}{[ 1 ]}){[ 1 ]}); # EXPR_ELMS_LIST
 function ( x ) return ([ [ x ] ]{[ 1 ]}{[ 1 ]}){[ 1 ]}; end
 
 #
-gap> STOP_TEST("function.tst", 1);
+gap> STOP_TEST("function.tst");

@@ -95,4 +95,4 @@ gap> IdGroup(SylowSubgroup(G, 5));
 [ 25, 2 ]
 gap> IdGroup(HallSubgroup(G, [5,7]));
 [ 175, 2 ]
-gap> STOP_TEST("sylowhall.tst", 1);
+gap> STOP_TEST("sylowhall.tst");

@@ -108,4 +108,4 @@ gap> testRead("empty.txt", {} -> InputTextFile(Filename(dir, "empty.txt")),
 gap> testRead("lines string", {} -> InputTextString(Concatenation(lines)), lines, true);
 gap> testRead("empty string", {} -> InputTextString(""), [], true);
 gap> testRead("dummy input", {} -> InputTextNone(), [], true);
-gap> STOP_TEST("files.tst", 1);
+gap> STOP_TEST("files.tst");

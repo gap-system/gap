@@ -84,4 +84,4 @@ gap> WeylGroupFp("F",4);
 gap> ConfluentMonoidPresentationForGroup(SmallGroup(24,12));;
 
 # that's all, folks
-gap> STOP_TEST( "twocohom.tst", 1);
+gap> STOP_TEST("twocohom.tst");

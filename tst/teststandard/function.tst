@@ -27,4 +27,4 @@ gap> ReadAsFunction(InputTextString(funcstr));;
 Error, function too large for parser
 
 #
-gap> STOP_TEST("function.tst", 1);
+gap> STOP_TEST("function.tst");

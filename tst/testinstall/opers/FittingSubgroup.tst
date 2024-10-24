@@ -45,4 +45,4 @@ gap> HasIsNilpotentGroup(FittingSubgroup(p));
 true
 
 #
-gap> STOP_TEST("FittingSubgroup.tst", 1);
+gap> STOP_TEST("FittingSubgroup.tst");

@@ -532,4 +532,4 @@ gap> ## Matrices as Linear Mappings
 gap> ##
 gap> ##
 gap> ########################################################################
-gap> STOP_TEST( "matrix.tst", 1);
+gap> STOP_TEST("matrix.tst");

@@ -35,4 +35,4 @@ gap> m := StabChainBaseStrongGenerators(
 >    ());;
 gap> Log(SizeStabChain(m), 2) = 1000;
 true
-gap> STOP_TEST("stabchain.tst", 1);
+gap> STOP_TEST("stabchain.tst");

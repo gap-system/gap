@@ -68,4 +68,4 @@ gap> IsSolvableGroup(G) and IsPGroup(G) and IsNilpotentGroup(G);
 true
 gap> PrimePGroup(G);
 2
-gap> STOP_TEST("IsSolvableGroup.tst", 1);
+gap> STOP_TEST("IsSolvableGroup.tst");

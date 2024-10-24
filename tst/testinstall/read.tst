@@ -108,4 +108,4 @@ gap> READ_ALL_COMMANDS(InputTextString("SymmetricGroup(42); Print(\"Hello, world
 gap> READ_ALL_COMMANDS(InputTextString("SymmetricGroup(42); Print(\"Hello, world\");"), false, true, function(o) ViewObj(o); return o; end );
 [ [ true, Sym( [ 1 .. 42 ] ), false, Sym( [ 1 .. 42 ] ), "Sym( [ 1 .. 42 ] )" 
      ], [ true,, false,, "Hello, world" ] ]
-gap> STOP_TEST( "read.tst", 1);
+gap> STOP_TEST("read.tst");

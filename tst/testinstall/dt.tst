@@ -121,4 +121,4 @@ gap> Rules(collH);
   f8^-1*f10*f8*f10^-1, f9^-1*f10*f9*f10^-1 ]
 
 #
-gap> STOP_TEST("dt.tst", 1);
+gap> STOP_TEST("dt.tst");

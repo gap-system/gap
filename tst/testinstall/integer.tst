@@ -189,4 +189,4 @@ gap> CoefficientsQadic(3^5*2^7,2);
 [ 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1 ]
 
 #
-gap> STOP_TEST("integers.tst", 1);
+gap> STOP_TEST("integers.tst");

@@ -266,4 +266,4 @@ gap> Length(p);
 gap> p:=List(p,x->Image(IsomorphismPermGroup(x)));;
 gap> List(p,Size);
 [ 61440, 61440, 61440, 61440 ]
-gap> STOP_TEST( "grpperm.tst", 1);
+gap> STOP_TEST("grpperm.tst");

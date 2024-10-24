@@ -258,4 +258,4 @@ gap> l = [x*y, x, y, (1,2,3)];
 true
 
 #
-gap> STOP_TEST("ListWreathProductElement.tst", 1);
+gap> STOP_TEST("ListWreathProductElement.tst");

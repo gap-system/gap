@@ -21,4 +21,4 @@ false
 gap> LoadedModules();;
 
 #
-gap> STOP_TEST("kernel/modules.tst", 1);
+gap> STOP_TEST("kernel/modules.tst");

@@ -153,4 +153,4 @@ gap> TranslateString("abc","def");
 Error, TranslateString: <trans> must have length >= 256
 
 #
-gap> STOP_TEST("kernel/strinobj.tst", 1);
+gap> STOP_TEST("kernel/strinobj.tst");

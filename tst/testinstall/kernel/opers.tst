@@ -401,4 +401,4 @@ Error, UNTRACE_METHODS: <oper> must be an operation (not the integer 1)
 gap> UntraceMethods( [ IsCyclic ] );
 
 #
-gap> STOP_TEST("kernel/opers.tst", 1);
+gap> STOP_TEST("kernel/opers.tst");
