@@ -73,11 +73,11 @@ jobs:
           mv GAPROOT /tmp/GAPROOT
           cd /tmp/GAPROOT
           ./autogen.sh
-          ./configure
+          ./configure --enable-Werror
           make -j`nproc`
       - name: "Override bundled GAP"
         run: |
-          julia --proj=override $GAPJLPATH/etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override
+          julia --proj=override $GAPJLPATH/etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override --enable-Werror
       - name: "Run tests"
         run: |
            julia --proj=override $GAPJLPATH/etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
