@@ -168,4 +168,4 @@ gap> List([1..10], i-> Random(rs, l8));
   670406272576191605 ]
 
 #@fi
-gap> STOP_TEST( "randlist.tst", 1);
+gap> STOP_TEST("randlist.tst");

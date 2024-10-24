@@ -19,4 +19,4 @@ gap> ListBlist([1..5],[true,false,true,false,true]);
 [ 1, 3, 5 ]
 
 #
-gap> STOP_TEST("ListBlist.tst", 1);
+gap> STOP_TEST("ListBlist.tst");

@@ -69,4 +69,4 @@ gap> Number(R,x->IsUnit(R,x));
 16
 gap> RingInt(GF(2));
 Error, RingOfIntegralCyclotomics : an argument is not cyclotomic field !
-gap> STOP_TEST( "zmodnze.tst", 1);
+gap> STOP_TEST("zmodnze.tst");

@@ -54,4 +54,4 @@ gap> ser = ser2;
 true
 
 #
-gap> STOP_TEST( "ctblmoli.tst", 1);
+gap> STOP_TEST("ctblmoli.tst");

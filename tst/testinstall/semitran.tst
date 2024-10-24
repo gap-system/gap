@@ -371,4 +371,4 @@ gap> BruteForceInverseCheck(last2);
 true
 
 #
-gap> STOP_TEST( "semitran.tst", 1);
+gap> STOP_TEST("semitran.tst");

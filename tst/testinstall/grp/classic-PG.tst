@@ -139,4 +139,4 @@ gap> PGammaL( 3, 6 );
 Error, usage: GeneralLinearGroup( [<filter>, ]<d>, <R> )
 
 #
-gap> STOP_TEST("classic-PG.tst", 1);
+gap> STOP_TEST("classic-PG.tst");

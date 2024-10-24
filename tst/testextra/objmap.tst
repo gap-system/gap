@@ -44,4 +44,4 @@ gap> SortedList(OBJ_MAP_KEYS(y)) = keyresult;
 true
 gap> SortedList(OBJ_MAP_VALUES(y)) = valresult;
 true
-gap> STOP_TEST( "objmap.tst", 1);
+gap> STOP_TEST("objmap.tst");

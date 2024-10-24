@@ -12,4 +12,4 @@ gap> List([2,3,5], p -> IsPNilpotent(G,p));
 [ true, false, true ]
 
 #
-gap> STOP_TEST("IsPNilpotent.tst", 10000);
+gap> STOP_TEST("IsPNilpotent.tst");

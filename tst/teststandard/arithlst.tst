@@ -66,4 +66,4 @@ gap> TestOfAdditiveListArithmetic( LieAlgebra( GF(3)^[2,2] ), 4 );
 # gap> # block matrix!
 # gap> TestOfAdditiveListArithmetic( blockmats, 4 );
 # gap> TestOfMultiplicativeListArithmetic( blockmats, 4 );
-gap> STOP_TEST( "arithlst.tst", 1);
+gap> STOP_TEST("arithlst.tst");

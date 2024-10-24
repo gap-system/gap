@@ -77,4 +77,4 @@ gap> Unknown(123);
 Unknown(123)
 
 #
-gap> STOP_TEST( "unknown.tst", 1);
+gap> STOP_TEST("unknown.tst");

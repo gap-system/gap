@@ -145,4 +145,4 @@ gap> RightCoset(Group( [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ),
 true
 
 #
-gap> STOP_TEST("cset.tst", 1);
+gap> STOP_TEST("cset.tst");

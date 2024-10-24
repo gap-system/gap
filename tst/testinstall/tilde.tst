@@ -218,4 +218,4 @@ gap> (function() return  [2,rem(~),3,4,rem(~),5,6,rem(~)]; end)();
 [ , 1, 3,, 1, 5,, 1 ]
 
 #
-gap> STOP_TEST( "tilde.tst", 1);
+gap> STOP_TEST("tilde.tst");

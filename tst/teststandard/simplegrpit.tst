@@ -54,4 +54,4 @@ gap> for g in it do Print(g,"\n"); od;
 PSL(3,179)
 
 #
-gap> STOP_TEST("simplegrpit.tst", 1);
+gap> STOP_TEST("simplegrpit.tst");

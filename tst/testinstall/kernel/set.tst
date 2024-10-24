@@ -81,4 +81,4 @@ Error, SUBTR_SET: <set2> must be a small list (not the integer 1)
 gap> SUBTR_SET([],[]);
 
 #
-gap> STOP_TEST("kernel/set.tst", 1);
+gap> STOP_TEST("kernel/set.tst");

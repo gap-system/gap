@@ -22,4 +22,4 @@ gap> gp:=FpGroupCocycle(coh,coh.cohomology[1],true);;
 gap> gp:=Image(IsomorphismPermGroup(gp));;
 gap> Size(Group(GeneratorsOfGroup(gp)));
 61440
-gap> STOP_TEST( "perfect.tst", 1);
+gap> STOP_TEST("perfect.tst");

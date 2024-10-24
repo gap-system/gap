@@ -223,4 +223,4 @@ gap> RemoveFile(fname);
 true
 
 #
-gap> STOP_TEST( "streams.tst", 1);
+gap> STOP_TEST("streams.tst");

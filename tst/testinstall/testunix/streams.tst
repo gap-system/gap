@@ -24,4 +24,4 @@ gap> s;
 #@fi
 
 #
-gap> STOP_TEST( "streams.tst", 1);
+gap> STOP_TEST("streams.tst");

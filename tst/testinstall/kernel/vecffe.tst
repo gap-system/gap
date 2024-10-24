@@ -125,4 +125,4 @@ gap> SMALLEST_FIELD_VECFFE([Z(8), Z(4)]);
 64
 
 #
-gap> STOP_TEST("kernel/vecffe.tst", 1);
+gap> STOP_TEST("kernel/vecffe.tst");

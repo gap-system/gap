@@ -57,4 +57,4 @@ gap> for A in [ GF(5), Integers, Rationals ] do
 >    od;
 
 #
-gap> STOP_TEST("associate.tst", 1);
+gap> STOP_TEST("associate.tst");

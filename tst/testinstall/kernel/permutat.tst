@@ -120,4 +120,4 @@ gap> SCR_SIFT_HELPER(fail, fail, fail);
 Error, SCR_SIFT_HELPER: <stb> must be a plain record (not the value 'fail')
 
 #
-gap> STOP_TEST("kernel/permutat.tst", 1);
+gap> STOP_TEST("kernel/permutat.tst");

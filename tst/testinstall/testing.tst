@@ -31,4 +31,4 @@ pass
 
 #
 #
-gap> STOP_TEST("testing.tst", 1);
+gap> STOP_TEST("testing.tst");

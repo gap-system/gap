@@ -126,4 +126,4 @@ gap> Gcd(f,g);
 t^8*u-u
 
 #
-gap> STOP_TEST( "ratfun_gf5.tst", 1);
+gap> STOP_TEST("ratfun_gf5.tst");

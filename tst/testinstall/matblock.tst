@@ -125,4 +125,4 @@ ct)
 #@fi
 
 #
-gap> STOP_TEST( "matblock.tst", 1);
+gap> STOP_TEST("matblock.tst");

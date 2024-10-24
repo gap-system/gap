@@ -49,4 +49,4 @@ gap> SCTableEntry([[[[0],[1]]],2,3], 1, 1, 1);
 3
 
 #
-gap> STOP_TEST("kernel/sctable.tst", 1);
+gap> STOP_TEST("kernel/sctable.tst");

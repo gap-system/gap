@@ -29,4 +29,4 @@ gap> GeneratorsOfGroup(H);
 [ b, a*b^-1*a*b*a^-1 ]
 
 #
-gap> STOP_TEST("HallSubgroup.tst", 1);
+gap> STOP_TEST("HallSubgroup.tst");

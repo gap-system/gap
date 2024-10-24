@@ -23,4 +23,4 @@ gap> Projection(nn,1);
 [ f1, f2, f3, f4 ] -> [ b, a^9, a^4, <identity ...> ]
 gap> Projection(nn,2);
 [ f1, f2, f3, f4 ] -> [ c^9, c^6, <identity ...>, c^4 ]
-gap> STOP_TEST("SubdirectProduct.tst", 10000);
+gap> STOP_TEST("SubdirectProduct.tst");

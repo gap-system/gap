@@ -5241,4 +5241,4 @@ gap> List( [ 4 .. 8 ], i -> InitialSubstringUTF8Text( s, i ) );
   "abc\033[1mdef\033[31mgh\033[0m" ]
 
 #
-gap> STOP_TEST( "stringobj.tst", 1);
+gap> STOP_TEST("stringobj.tst");

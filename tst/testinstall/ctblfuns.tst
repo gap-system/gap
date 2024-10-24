@@ -91,4 +91,4 @@ gap> chi = chi^0;
 true
 
 #
-gap> STOP_TEST( "ctblfuns.tst", 1);
+gap> STOP_TEST("ctblfuns.tst");

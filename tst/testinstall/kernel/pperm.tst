@@ -23,4 +23,4 @@ gap> dom; img;
 [ 2 .. 4 ]
 
 #
-gap> STOP_TEST("kernel/pperm.tst", 1);
+gap> STOP_TEST("kernel/pperm.tst");

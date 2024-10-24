@@ -108,4 +108,4 @@ gap> testTrace({} -> LeftQuotient(4,2));
 rec( InvSameMut := rec( integer := 1 ), 
   LQuo := rec( integer := rec( integer := 1 ) ), 
   Prod := rec( rational := rec( integer := 1 ) ) )
-gap> STOP_TEST("trace.tst", 1);
+gap> STOP_TEST("trace.tst");

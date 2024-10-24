@@ -123,4 +123,4 @@ gap> MakeImmutable(w);
 [ rec( self := ~ ) ]
 
 #
-gap> STOP_TEST( "weakptr.tst", 1);
+gap> STOP_TEST("weakptr.tst");

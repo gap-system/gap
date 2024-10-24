@@ -409,4 +409,4 @@ function ( x )
 end
 
 # that's all, folks
-gap> STOP_TEST( "listindex.tst", 1);
+gap> STOP_TEST("listindex.tst");

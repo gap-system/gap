@@ -93,4 +93,4 @@ gap> InstallMethod(Unbind\., [cat, IsPosInt], function(x,i) end);
 gap> Unbind(mockRec.1);
 
 #
-gap> STOP_TEST("kernel/records.tst", 1);
+gap> STOP_TEST("kernel/records.tst");

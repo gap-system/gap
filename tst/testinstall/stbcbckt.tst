@@ -8,4 +8,4 @@ gap> IsTrivial(Intersection(G, G ^ p));
 true
 
 #
-gap> STOP_TEST("stbcbckt.tst", 1);
+gap> STOP_TEST("stbcbckt.tst");

@@ -528,4 +528,4 @@ gap> List(Elements(R), x -> Int(StandardAssociateUnit(R, x)));
 [ 1, 1, 5, 1, 7, 2, 5, 4, 8 ]
 
 #
-gap> STOP_TEST( "zmodnz.tst", 1);
+gap> STOP_TEST("zmodnz.tst");

@@ -80,4 +80,4 @@ gap> JACOBI_INT(1, fail);
 Error, JACOBI_INT: <m> must be an integer (not the value 'fail')
 
 #
-gap> STOP_TEST( "numtheor.tst", 1);
+gap> STOP_TEST("numtheor.tst");

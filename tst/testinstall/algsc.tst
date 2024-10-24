@@ -929,4 +929,4 @@ gap> List( GeneratorsOfAlgebra( A ), x -> x^2 );
 [ s1, t1, 0*s1, 0*s1, 0*s1, 0*s1, 0*s1, 0*s1 ]
 
 #############################################################################
-gap> STOP_TEST( "algsc.tst", 1);
+gap> STOP_TEST("algsc.tst");

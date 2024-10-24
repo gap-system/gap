@@ -384,4 +384,4 @@ gap> CloseMutableBasis( mb, [ [ E(3)+E(4) ] ] );
 false
 
 ##
-gap> STOP_TEST( "vspcmat.tst", 1);
+gap> STOP_TEST("vspcmat.tst");

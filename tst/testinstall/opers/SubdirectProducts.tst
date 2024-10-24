@@ -30,4 +30,4 @@ gap> Set(SubdirectProducts(A, H), IdGroup);
 [ [ 72, 42 ], [ 144, 188 ] ]
 
 #
-gap> STOP_TEST("SubdirectProducts.tst", 10000);
+gap> STOP_TEST("SubdirectProducts.tst");

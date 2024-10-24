@@ -23,4 +23,4 @@ gap> List([0 .. 10], n ->
 [ 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
 
 #
-gap> STOP_TEST("oprtperm.tst", 1);
+gap> STOP_TEST("oprtperm.tst");

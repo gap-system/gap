@@ -14,4 +14,4 @@ gap> Length(ConjugacyClassesSubgroups(h));
 9
 
 #
-gap> STOP_TEST("Matobjnz.tst",1);
+gap> STOP_TEST("Matobjnz.tst");

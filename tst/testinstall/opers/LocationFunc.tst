@@ -37,4 +37,4 @@ gap> LocationFunc(SYNTAX_TREE_CODE(SYNTAX_TREE(x->x)));
 fail
 
 #
-gap> STOP_TEST("LocationFunc.tst", 1);
+gap> STOP_TEST("LocationFunc.tst");

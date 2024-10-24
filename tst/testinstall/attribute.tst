@@ -103,4 +103,4 @@ gap> SetStabChainMutable(grp, [3,4]);
 gap> StabChainMutable(grp);
 [ 3, 4 ]
 gap> SetInfoLevel(InfoAttributes, attributeinfo);
-gap> STOP_TEST("attribute.tst", 1);
+gap> STOP_TEST("attribute.tst");

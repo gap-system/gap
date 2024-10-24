@@ -30,4 +30,4 @@ Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `IsCommutative' on 1 arguments
 gap> dive(80);
 Depth 80
-gap> STOP_TEST( "depth.tst", 1);
+gap> STOP_TEST("depth.tst");

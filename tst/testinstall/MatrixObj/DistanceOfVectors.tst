@@ -29,4 +29,4 @@ gap> DistanceOfVectors( v5, v6 );
 3
 gap> DistanceOfVectors( v4, v6 );
 5
-gap> STOP_TEST( "DistanceOfVectors.tst", 1);
+gap> STOP_TEST("DistanceOfVectors.tst");

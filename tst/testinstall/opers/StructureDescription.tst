@@ -115,4 +115,4 @@ gap> StructureDescription(AbelianGroup([0,2,0]));
 "Z x Z x C2"
 
 #
-gap> STOP_TEST("StructureDescription.tst", 1);
+gap> STOP_TEST("StructureDescription.tst");

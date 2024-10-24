@@ -29,4 +29,4 @@ gap> CycleFromList( [0] );
 Error, CycleFromList: List must only contain positive integers.
 gap> CycleFromList( [true] );
 Error, CycleFromList: List must only contain positive integers.
-gap> STOP_TEST("CyclesFromList", 1);
+gap> STOP_TEST("CyclesFromList");

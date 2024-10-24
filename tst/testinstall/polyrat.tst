@@ -13,4 +13,4 @@ gap> ApproximateRoot(2,2);
 779770732423810/551381172667677
 
 #
-gap> STOP_TEST( "polyrat.tst", 1);
+gap> STOP_TEST("polyrat.tst");

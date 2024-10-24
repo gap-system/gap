@@ -57,4 +57,4 @@ false
 # > od;
 
 #
-gap> STOP_TEST( "ctblmono.tst", 1);
+gap> STOP_TEST("ctblmono.tst");

@@ -77,4 +77,4 @@ gap> NameFunction(bf.booleanSetters[1]);
 "<boolean field setter>"
 
 #
-gap> STOP_TEST("bitfields.tst", 1);
+gap> STOP_TEST("bitfields.tst");

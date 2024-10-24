@@ -186,4 +186,4 @@ gap> y := Reversed(x);;
 gap> ParallelFilterCheck(x, y, false);
 gap> y := [6,6,5,5,4,4,3,3,2,2,1,1];;
 gap> ParallelFilterCheck(x, y, false);
-gap> STOP_TEST("sort.tst", 1);
+gap> STOP_TEST("sort.tst");

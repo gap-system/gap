@@ -272,4 +272,4 @@ gap> FreeMagmaWithOne(IsLetterWordsFamily, 3);
 Error, the first argument must not be a filter
 
 #
-gap> STOP_TEST( "mgmfree.tst", 1);
+gap> STOP_TEST("mgmfree.tst");

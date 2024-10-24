@@ -38,4 +38,4 @@ gap> function() Assert(100, true, "message\n"); end();
 gap> function() Assert(100, false, "message\n"); end();
 
 #
-gap> STOP_TEST("kernel/stats.tst", 1);
+gap> STOP_TEST("kernel/stats.tst");

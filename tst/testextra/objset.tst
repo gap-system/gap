@@ -35,4 +35,4 @@ gap> GASMAN("collect");
 gap> result := List([1..setvals], x -> [x,[x]]);;
 gap> SortedList(OBJ_SET_VALUES(y)) = result;
 true
-gap> STOP_TEST( "objset.tst", 1);
+gap> STOP_TEST("objset.tst");

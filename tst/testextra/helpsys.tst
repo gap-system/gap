@@ -17,4 +17,4 @@ gap> for i in [1..Length(HELP_LAST.TOPICS)] do HELP(String(i)); od;
 gap> PAGER_EXTERNAL:=savepager;;
 gap> MakeReadOnlyGlobal("PAGER_EXTERNAL");
 gap> SetUserPreference("Pager",savepagerprefs);
-gap> STOP_TEST( "helpsys.tst", 1);
+gap> STOP_TEST("helpsys.tst");

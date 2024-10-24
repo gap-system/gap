@@ -103,4 +103,4 @@ true
 # true
 
 #
-gap> STOP_TEST("primality.tst", 1);
+gap> STOP_TEST("primality.tst");

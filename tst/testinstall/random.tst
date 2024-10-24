@@ -195,4 +195,4 @@ gap> getOneInt("a") = getOneInt("a\000\000\000b");
 false
 
 #
-gap> STOP_TEST("random.tst", 1);
+gap> STOP_TEST("random.tst");

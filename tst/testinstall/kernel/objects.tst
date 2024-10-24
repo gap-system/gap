@@ -93,4 +93,4 @@ gap> # not be allowed, but InstallValue relies on it...
 #@fi
 
 #
-gap> STOP_TEST("kernel/objects.tst", 1);
+gap> STOP_TEST("kernel/objects.tst");

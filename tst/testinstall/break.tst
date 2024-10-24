@@ -144,4 +144,4 @@ gap> f := function() local i; i := 1; repeat i := i + 1; break; until i in [1..5
 gap> f();
 
 #
-gap> STOP_TEST("break.tst", 1);
+gap> STOP_TEST("break.tst");

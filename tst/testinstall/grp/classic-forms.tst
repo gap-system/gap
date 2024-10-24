@@ -201,4 +201,4 @@ gap> ForAll(grps, CheckSize);
 true
 
 #
-gap> STOP_TEST("classic-forms.tst", 1);
+gap> STOP_TEST("classic-forms.tst");

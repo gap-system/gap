@@ -110,4 +110,4 @@ gap> Set(NormalSubgroups(G)) =
 true
 
 #
-gap> STOP_TEST( "NormalSubgroups.tst", 1);
+gap> STOP_TEST("NormalSubgroups.tst");

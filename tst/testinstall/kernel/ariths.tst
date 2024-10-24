@@ -441,4 +441,4 @@ gap> MakeReadOnlyGlobal("VMETHOD_PRINT_INFO");
 gap> MakeReadOnlyGlobal("NEXT_VMETHOD_PRINT_INFO");
 
 #
-gap> STOP_TEST("kernel/ariths.tst", 1);
+gap> STOP_TEST("kernel/ariths.tst");

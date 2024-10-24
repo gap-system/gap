@@ -171,4 +171,4 @@ gap> FreeSemigroup("gen" : generatorNames := "string");
 <free semigroup on the generators [ gen ]>
 
 #
-gap> STOP_TEST( "smgrpfre.tst", 1);
+gap> STOP_TEST("smgrpfre.tst");

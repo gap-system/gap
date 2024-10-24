@@ -45,4 +45,4 @@ gap> IsTrivial(NormalClosure(F, [ ])); # corner case
 true
 
 #
-gap> STOP_TEST("NormalClosure.tst", 1);
+gap> STOP_TEST("NormalClosure.tst");

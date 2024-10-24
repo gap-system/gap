@@ -149,4 +149,4 @@ gap> PerfectGroup(30,1);
 Error, PerfectGroup(30,1) does not exist !
 
 #
-gap> STOP_TEST("perfectgroups.tst", 1);
+gap> STOP_TEST("perfectgroups.tst");

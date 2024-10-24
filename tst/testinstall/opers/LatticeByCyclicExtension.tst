@@ -15,4 +15,4 @@ gap> LatticeByCyclicExtension(G, [fun,fun]);
 127 subgroups, restricted under further condition l!.func>
 
 #
-gap> STOP_TEST("LatticeByCyclicExtension.tst", 1);
+gap> STOP_TEST("LatticeByCyclicExtension.tst");

@@ -314,4 +314,4 @@ gap> SimpleGroup("X(4,3)");
 Error, Can't handle type X
 
 #
-gap> STOP_TEST("SimpleGroup.tst", 10000);
+gap> STOP_TEST("SimpleGroup.tst");

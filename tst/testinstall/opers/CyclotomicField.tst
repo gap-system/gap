@@ -10,4 +10,4 @@ gap> List([1..8], i -> IsIdenticalObj(x[i], y[i]));
 [ true, true, true, true, true, true, true, true ]
 gap> List([1..8], i -> IsIdenticalObj(x[i], z[i]));
 [ true, true, false, true, false, false, false, false ]
-gap> STOP_TEST( "CyclotomicField.tst", 1);
+gap> STOP_TEST("CyclotomicField.tst");

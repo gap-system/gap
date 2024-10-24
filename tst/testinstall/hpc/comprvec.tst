@@ -89,5 +89,5 @@ gap> z=v;
 true
 gap> IsIdenticalObj(z,v);   
 false
-gap> STOP_TEST( "comprvec.tst", 1 );
+gap> STOP_TEST("comprvec.tst");
 #@fi

@@ -247,4 +247,4 @@ gap> IsRegularPGroup(SmallGroup(2187, 663)); # Case 11, takes 3 seconds
 true
 
 #
-gap> STOP_TEST("pgroups.tst", 1);
+gap> STOP_TEST("pgroups.tst");

@@ -3199,4 +3199,4 @@ gap> SetUserPreference("TransformationDisplayLimit", display);;
 gap> SetUserPreference("NotationForTransformations", notation);;
 
 #
-gap> STOP_TEST("trans.tst", 1);
+gap> STOP_TEST("trans.tst");

@@ -290,4 +290,4 @@ for PrintObj{[1]} in [1,2,3] do od;
 
 #
 #
-gap> STOP_TEST("interpreter.tst", 1);
+gap> STOP_TEST("interpreter.tst");

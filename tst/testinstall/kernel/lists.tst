@@ -128,4 +128,4 @@ gap> ADD_SET(l, [1]);
 Error, Panic: cannot convert <list> (is a positional object) to a plain list
 
 #
-gap> STOP_TEST("kernel/lists.tst", 1);
+gap> STOP_TEST("kernel/lists.tst");

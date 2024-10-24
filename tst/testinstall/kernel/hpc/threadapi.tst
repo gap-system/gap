@@ -396,5 +396,5 @@ gap> THREAD_COUNTERS_GET();
 gap> if old_state = 1 then THREAD_COUNTERS_ENABLE(); else THREAD_COUNTERS_DISABLE(); fi;
 
 #
-gap> STOP_TEST("kernel/threadapi.tst", 1);
+gap> STOP_TEST("kernel/threadapi.tst");
 #@fi

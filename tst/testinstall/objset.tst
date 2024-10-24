@@ -95,4 +95,4 @@ Error, CLEAR_OBJ_SET: <set> must be a mutable object set (not the value 'fail'\
 )
 
 #
-gap> STOP_TEST( "objset.tst", 1);
+gap> STOP_TEST("objset.tst");

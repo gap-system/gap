@@ -53,4 +53,4 @@ gap> RandomInvertibleMat(1,1,1);
 Error, usage: RandomInvertibleMat( [rs ,] <m> [, <R>] )
 
 #
-gap> STOP_TEST("RandomInvertibleMat.tst", 1);
+gap> STOP_TEST("RandomInvertibleMat.tst");

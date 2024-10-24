@@ -10,4 +10,4 @@ gap> inv := InverseGeneralMapping(phi);
 IdentityMapping( Group(()) )
 gap> HasIsMapping(inv);
 true
-gap> STOP_TEST( "triviso.tst", 1);
+gap> STOP_TEST("triviso.tst");

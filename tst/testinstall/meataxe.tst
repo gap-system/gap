@@ -279,4 +279,4 @@ gap> MTX.OrthogonalSign( m );
 fail
 
 #
-gap> STOP_TEST("meataxe.tst", 1);
+gap> STOP_TEST("meataxe.tst");

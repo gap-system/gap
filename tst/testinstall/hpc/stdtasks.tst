@@ -94,5 +94,5 @@ gap> IsMilestoneAchieved(m);
 true
 
 #
-gap> STOP_TEST( "stdtasks.tst", 1 );
+gap> STOP_TEST("stdtasks.tst");
 #@fi

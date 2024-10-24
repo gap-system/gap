@@ -137,4 +137,4 @@ gap> V:= BiAlgebraModuleByGenerators( A, A, \*, \*, [ [1,0,0] ], "basis" );
 [ 3, 3 ] ) (right)>
 
 #
-gap> STOP_TEST( "algrep.tst", 1);
+gap> STOP_TEST("algrep.tst");

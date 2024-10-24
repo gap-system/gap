@@ -188,4 +188,4 @@ stream:1
 .0qn;
 ^^^
 gap> Unbind(x);
-gap> STOP_TEST( "longnumber.tst", 1);
+gap> STOP_TEST("longnumber.tst");

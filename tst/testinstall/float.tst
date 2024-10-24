@@ -821,4 +821,4 @@ gap> DisplayString(1.3);
 "1.3\n"
 
 #
-gap> STOP_TEST( "float.tst", 1);
+gap> STOP_TEST("float.tst");

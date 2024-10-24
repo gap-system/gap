@@ -55,5 +55,5 @@ gap> a;
 [ ,,, ]
 
 
-gap> STOP_TEST( "alist.tst", 1 );
+gap> STOP_TEST("alist.tst");
 #@fi

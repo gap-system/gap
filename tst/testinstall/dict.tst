@@ -20,4 +20,4 @@ gap> for i in [1..1000] do
 > od;
 gap> dict;
 <sparse hash table of size 1002>
-gap> STOP_TEST( "dict.tst", 1);
+gap> STOP_TEST("dict.tst");

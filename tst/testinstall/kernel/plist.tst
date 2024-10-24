@@ -43,4 +43,4 @@ gap> ASS_PLIST_DEFAULT(fail, 1, fail);
 Error, <list> must be a mutable plain list (not the value 'fail')
 
 #
-gap> STOP_TEST("kernel/plist.tst", 1);
+gap> STOP_TEST("kernel/plist.tst");

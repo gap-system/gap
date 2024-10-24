@@ -87,4 +87,4 @@ gap> MemoizePosIntFunction(func, rec(invalid_OPTION := 1));
 Error, Invalid option: invalid_OPTION
 
 #
-gap> STOP_TEST("memoize.tst", 1);
+gap> STOP_TEST("memoize.tst");

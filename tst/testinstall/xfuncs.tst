@@ -90,4 +90,4 @@ gap> SumX([1,2],[1,2],[1,2], (1,2), x -> x);
 Error, gens[4] must be a collection, a list, a boolean, or a function
 gap> ProductX([1,2],[1,2],[1,2], (1,2), x -> x);
 Error, gens[4] must be a collection, a list, a boolean, or a function
-gap> STOP_TEST("xfuncs.tst", 1);
+gap> STOP_TEST("xfuncs.tst");

@@ -68,4 +68,4 @@ gap> IS_IDENTICAL_OBJ(y2,y);
 true
 
 #
-gap> STOP_TEST( "switch.tst", 1);
+gap> STOP_TEST("switch.tst");

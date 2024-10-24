@@ -48,4 +48,4 @@ gap> ret = List([1..tasks], x -> fail);
 true
 gap> atomic readwrite a do Print(a = [taskssum,0],"\n"); od;
 true
-gap> STOP_TEST( "threads.tst", 1 );
+gap> STOP_TEST("threads.tst");

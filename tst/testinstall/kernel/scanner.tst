@@ -419,4 +419,4 @@ Syntax error: expression expected in stream:1
 ^
 
 #
-gap> STOP_TEST("kernel/scanner.tst", 1);
+gap> STOP_TEST("kernel/scanner.tst");

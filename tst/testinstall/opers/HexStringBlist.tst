@@ -39,4 +39,4 @@ gap> HexStringBlistEncode(BlistStringDecode("10000000F1"));
 "10s03F1"
 
 #
-gap> STOP_TEST("HexStringBlist.tst", 1);
+gap> STOP_TEST("HexStringBlist.tst");

@@ -73,4 +73,4 @@ gap> f(1);
 Error, '~' does not have a value here
 
 #
-gap> STOP_TEST("kernel/exprs.tst", 1);
+gap> STOP_TEST("kernel/exprs.tst");

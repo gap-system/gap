@@ -141,4 +141,4 @@ gap> SigmaL(3,6);
 Error, <subfield> must be a prime or a finite field
 
 #
-gap> STOP_TEST("classic-S.tst", 1);
+gap> STOP_TEST("classic-S.tst");

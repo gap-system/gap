@@ -66,4 +66,4 @@ gap> checkswap := function(switches)
 >  end;;
 gap> ForAll(Combinations([1,2,3,4,5,6,7,8,9]), checkswap);
 true
-gap> STOP_TEST( "mptr.tst", 1);
+gap> STOP_TEST("mptr.tst");

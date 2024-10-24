@@ -100,4 +100,4 @@ gap> str2;
 gap> SetDefaultInfoOutput(MakeImmutable("*Print*"));
 gap> Info(InfoTest2, 1, "NormalOut");
 #I  NormalOut
-gap> STOP_TEST("info.tst", 1);
+gap> STOP_TEST("info.tst");

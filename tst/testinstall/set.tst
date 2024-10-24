@@ -93,4 +93,4 @@ gap> [0..2016] = Set([1..2017], x -> (x * 503) mod 2017);
 true
 gap> [0..2016] = Set([1..5000], x -> (x * 503) mod 2017);
 true
-gap> STOP_TEST( "set.tst", 1);
+gap> STOP_TEST("set.tst");

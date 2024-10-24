@@ -49,4 +49,4 @@ gap> SCRSift(S,GeneratorsOfGroup(m)[1]);
 ()
 
 #
-gap> STOP_TEST( "stabchain.tst", 1);
+gap> STOP_TEST("stabchain.tst");

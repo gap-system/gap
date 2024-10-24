@@ -21,4 +21,4 @@ gap> GroupStabChain(sc) = SymmetricGroup(4);
 true
 
 #
-gap> STOP_TEST("stbc.tst", 1);
+gap> STOP_TEST("stbc.tst");

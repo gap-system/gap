@@ -23,4 +23,4 @@ gap> List( v );
 [  ]
 gap> List( v, DegreeFFE );
 [  ]
-gap> STOP_TEST( "ListOp.tst", 1);
+gap> STOP_TEST("ListOp.tst");

@@ -21,4 +21,4 @@ gap> Length;
 gap> zzzz -> zzzz + 1;;
 gap> "zzzz" in Filtered(NamesGVars(), x -> not IsBoundGlobal(x));
 false
-gap> STOP_TEST( "varnames.tst", 1);
+gap> STOP_TEST("varnames.tst");

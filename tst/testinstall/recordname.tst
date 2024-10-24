@@ -167,4 +167,4 @@ Error, Record Assignment: <rnam> must be a positive small integer (not a list \
 gap> \.\:\=(r, 100000000, 1);
 Error, Record Assignment: <rnam> must be a valid rnam (not the integer 1000000\
 00)
-gap> STOP_TEST( "recordname.tst", 1);
+gap> STOP_TEST("recordname.tst");

@@ -568,4 +568,4 @@ gap> Size(Normalizer(G,Subgroup(G,[G.1,G.2])));
 144
 
 #############################################################################
-gap> STOP_TEST( "grppcnrm.tst", 1);
+gap> STOP_TEST("grppcnrm.tst");

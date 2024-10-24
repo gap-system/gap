@@ -7,4 +7,4 @@ gap> AbelianInvariants(G);
 [ 0 ]
 
 #
-gap> STOP_TEST( "AbelianInvariants.tst", 1);
+gap> STOP_TEST("AbelianInvariants.tst");

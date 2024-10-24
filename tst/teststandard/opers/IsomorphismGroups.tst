@@ -12,4 +12,4 @@ gap> IsomorphismGroups(g,h)<>fail;
 true
 
 #
-gap> STOP_TEST("IsomorphismGroups.tst",1);
+gap> STOP_TEST("IsomorphismGroups.tst");

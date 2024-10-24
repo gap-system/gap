@@ -267,4 +267,4 @@ gap> UPDATE_STAT("foobar", fail);
 Error, UPDATE_STAT: unsupported <name> value 'foobar'
 
 #
-gap> STOP_TEST("kernel/gap.tst", 1);
+gap> STOP_TEST("kernel/gap.tst");

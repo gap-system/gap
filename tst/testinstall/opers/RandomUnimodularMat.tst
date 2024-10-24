@@ -37,4 +37,4 @@ gap> RandomUnimodularMat(1,1);
 Error, usage: RandomUnimodularMat( [rs ,] <m> )
 
 #
-gap> STOP_TEST("RandomUnimodularMat.tst", 1);
+gap> STOP_TEST("RandomUnimodularMat.tst");

@@ -119,4 +119,4 @@ gap> mat := Matrix( [[2,4,5],[7,11,-4],[-3,20,0]]);;
 gap> AddMatrixColumnsLeft(mat,1,3,-3);
 gap> mat= Matrix( [ [-13,4,5], [19,11,-4], [-3,20,0]]);
 true
-gap> STOP_TEST("ElementaryMatrices.tst",1);
+gap> STOP_TEST("ElementaryMatrices.tst");

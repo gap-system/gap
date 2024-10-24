@@ -1811,4 +1811,4 @@ gap> g:=Group(GeneratorsOfGroup(g));;
 gap> iso:=IsomorphismFpGroupByCompositionSeries(g);;
 gap> iso:=IsomorphismFpGroup(g);;
 gap> rep:=ImagesRepresentative(iso,Product(GeneratorsOfGroup(g)));;
-gap> STOP_TEST( "grpprmcs.tst", 1);
+gap> STOP_TEST("grpprmcs.tst");

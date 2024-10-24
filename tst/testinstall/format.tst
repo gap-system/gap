@@ -104,4 +104,4 @@ gap> PrintFormatted("abc{3}\n", 2);
 Error, out of bounds -- asked for {3} when there are only 1 arguments
 gap> PrintFormatted("abc{x}\n", rec(y := 2));
 Error, no record member 'x'
-gap> STOP_TEST("format.tst",1);
+gap> STOP_TEST("format.tst");

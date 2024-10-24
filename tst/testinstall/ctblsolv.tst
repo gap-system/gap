@@ -9,4 +9,4 @@ gap> for pair in [ [ 18, 3 ], [ 27, 3 ], [ 36, 7 ], [ 50, 3 ], [ 54, 4 ] ] do
 >        Error( IdGroup( G ) );
 >      fi;
 >    od;
-gap> STOP_TEST( "ctblsolv.tst", 1);
+gap> STOP_TEST("ctblsolv.tst");
