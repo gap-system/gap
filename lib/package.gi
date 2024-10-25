@@ -1234,8 +1234,10 @@ InstallGlobalFunction( DefaultPackageBannerString,
           Append( str, role );
           for i in [ 1 .. Length( persons ) ] do
             person:= persons[i];
-            Append( str, person.FirstNames );
-            Append( str, " " );
+            if IsBound( person.FirstNames ) then
+              Append( str, person.FirstNames );
+              Append( str, " " );
+            fi;
             Append( str, person.LastName );
             if   IsBound( person.WWWHome ) then
               Append( str, Concatenation( " (", person.WWWHome, ")" ) );
@@ -2402,7 +2404,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
        and IsBound( record.Persons ) then
       for subrec in record.Persons do
         TestMandat( subrec, "LastName", IsString, "a string" );
-        TestMandat( subrec, "FirstNames", IsString, "a string" );
+        TestOption( subrec, "FirstNames", IsString, "a string" );
         if not (    IsBound( subrec.IsAuthor )
                  or IsBound( subrec.IsMaintainer ) ) then
           if ValueOption( "quiet" ) <> true then
@@ -2899,8 +2901,11 @@ InstallGlobalFunction( BibEntry, function( arg )
       author:= List( Filtered( pkginfo.Persons,
         person -> person.IsAuthor or person.IsMaintainer ),
           person -> Concatenation(
-            "    <name><first>", person.FirstNames,
-            "</first><last>", person.LastName, "</last></name>\n" ) );
+            "    <name>",
+            CallFuncList( function(x) if IsBound( x.FirstNames ) then
+              return Concatenation( "<first>", person.FirstNames, "</first>" );
+              else return ""; fi; end, [ person ] ),
+            "<last>", person.LastName, "</last></name>\n" ) );
       if not IsEmpty( author ) then
         Append( entry, Concatenation(
           "  <author>\n",
@@ -2911,7 +2916,7 @@ InstallGlobalFunction( BibEntry, function( arg )
         "  <title><C>", pkginfo.PackageName, "</C>" ) );
       if IsBound( pkginfo.Subtitle ) then
         Append( entry, Concatenation(
-          ", ", ps( pkginfo.Subtitle ) ) );
+          ", <C>", ps( pkginfo.Subtitle ), "</C>" ) );
       fi;
       if IsBound( pkginfo.Version ) then
         Append( entry, Concatenation(
