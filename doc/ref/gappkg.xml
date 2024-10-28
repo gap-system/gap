@@ -300,10 +300,6 @@ The following components of the record are <E>optional</E>.
   <Item>
     a string,
   </Item>
-  <Mark><C>FirstNames</C></Mark>
-  <Item>
-    a string,
-  </Item>
   <Mark>at least one of <C>IsAuthor</C> or <C>IsMaintainer</C></Mark>
   <Item>
     <K>true</K> or <K>false</K>,
@@ -311,6 +307,10 @@ The following components of the record are <E>optional</E>.
   </List>
   and optional components
   <List>
+  <Mark><C>FirstNames</C></Mark>
+  <Item>
+    a string (was mandatory before &GAP; 4.14),
+  </Item>
   <Mark><C>PostalAddress</C></Mark>
   <Item>
     a string,
