@@ -566,7 +566,7 @@ BibXML:
     <name><first>Retired</first><last>Author</last></name>
     <name><first>Only</first><last>Maintainer</last></name>
   </author>
-  <title><C>mockpkg</C>, A mock package for use by the GAP test suite,
+  <title><C>mockpkg</C>, <C>A mock package for use by the GAP test suite</C>,
          <C>V</C>ersion 0.1</title>
   <howpublished><URL>https://mockpkg.gap-system.org/</URL></howpublished>
   <month>Mar</month>
@@ -578,8 +578,8 @@ BibTeX:
 
 @misc{ mockpkg,
   author =           {Author, A. and Author, R. and Maintainer, O.},
-  title =            {{mockpkg},  A  mock  package  for  use by the GAP test
-                      suite, {V}ersion 0.1},
+  title =            {{mockpkg},  {A  mock  package  for use by the GAP test
+                      suite}, {V}ersion 0.1},
   month =            {Mar},
   year =             {2018},
   note =             {GAP package},
