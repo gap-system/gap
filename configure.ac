@@ -773,7 +773,9 @@ AC_SUBST([READLINE_LIBS])
 
 
 dnl Find julia
-AS_IF([test "x$with_julia" != xno ],[
+
+AC_DEFUN([FIND_JULIA],
+[
   AS_IF([test -x "$with_julia" && test ! -d "$with_julia" ],
   [
     JULIA="${with_julia}"
@@ -791,32 +793,50 @@ AS_IF([test "x$with_julia" != xno ],[
     AC_PATH_PROG([JULIA], [julia], [], [$JULIA_PATH])
   ])
   AS_IF([test "x$JULIA" = x],[ AC_MSG_ERROR([no julia executable found]) ])
+  JL_SHARE=$($JULIA --startup-file=no -e 'print(joinpath(Sys.BINDIR, Base.DATAROOTDIR, "julia"))')
+])
+
+AS_IF([test "x$with_julia" != xno ],[
+
+  AS_IF([test "x$JULIA_VERSION" != x],[],
+        [test "x$JULIA_CFLAGS" != x],[],
+        [test "x$JULIA_LDFLAGS" != x],[],
+        [test "x$JULIA_LIBS" != x],[],
+        [FIND_JULIA])
 
   AC_MSG_CHECKING([for Julia version])
-  JULIA_VERSION=$(${JULIA} --startup-file=no -e 'print("$(VERSION.major).$(VERSION.minor)")')
-  AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain Julia version])])
+  AS_IF([test "x$JULIA_VERSION" = x],[
+    JULIA_VERSION=$(${JULIA} --startup-file=no -e 'print("$(VERSION.major).$(VERSION.minor)")')
+    AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain Julia version])])
+  ])
   AC_MSG_RESULT([${JULIA_VERSION}])
 
-  JL_SHARE=$($JULIA --startup-file=no -e 'print(joinpath(Sys.BINDIR, Base.DATAROOTDIR, "julia"))')
-  AS_IF([test -f "${JL_SHARE}/julia-config.jl"], [], [AC_MSG_ERROR([no julia-config.jl found])])
-
   AC_MSG_CHECKING([for JULIA_CFLAGS])
-  JULIA_CFLAGS=$(${JULIA} --startup-file=no ${JL_SHARE}/julia-config.jl --cflags 2>/dev/null)
-  JULIA_CFLAGS=${JULIA_CFLAGS/-std=gnu99/}  # need to remove -std=gnu99 for our C11 and C++ code
-  AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_CFLAGS from julia-config.jl])])
+  AS_IF([test "x$JULIA_CFLAGS" = x],[
+    AS_IF([test -f "${JL_SHARE}/julia-config.jl"], [], [AC_MSG_ERROR([no julia-config.jl found])])
+    JULIA_CFLAGS=$(${JULIA} --startup-file=no ${JL_SHARE}/julia-config.jl --cflags 2>/dev/null)
+    JULIA_CFLAGS=${JULIA_CFLAGS/-std=gnu99/}  # need to remove -std=gnu99 for our C11 and C++ code
+    AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_CFLAGS from julia-config.jl])])
+  ])
   AC_MSG_RESULT([${JULIA_CFLAGS}])
 
   AC_MSG_CHECKING([for JULIA_LDFLAGS])
-  JULIA_LDFLAGS=$(${JULIA} --startup-file=no ${JL_SHARE}/julia-config.jl --ldflags)
-  AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_LDFLAGS from julia-config.jl])])
-  JULIA_LDFLAGS=${JULIA_LDFLAGS//\'/}
+  AS_IF([test "x$JULIA_LDFLAGS" = x],[
+    AS_IF([test -f "${JL_SHARE}/julia-config.jl"], [], [AC_MSG_ERROR([no julia-config.jl found])])
+    JULIA_LDFLAGS=$(${JULIA} --startup-file=no ${JL_SHARE}/julia-config.jl --ldflags)
+    AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_LDFLAGS from julia-config.jl])])
+    JULIA_LDFLAGS=${JULIA_LDFLAGS//\'/}
+  ])
   AC_MSG_RESULT([${JULIA_LDFLAGS}])
 
   AC_MSG_CHECKING([for JULIA_LIBS])
-  JULIA_LIBS=$(${JULIA} --startup-file=no ${JL_SHARE}/julia-config.jl --ldlibs)
-  AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_LIBS from julia-config.jl])])
-  # remove apostrophes, they confuse libtool in some cases.
-  JULIA_LIBS=${JULIA_LIBS//\'/}
+  AS_IF([test "x$JULIA_LIBS" = x],[
+    AS_IF([test -f "${JL_SHARE}/julia-config.jl"], [], [AC_MSG_ERROR([no julia-config.jl found])])
+    JULIA_LIBS=$(${JULIA} --startup-file=no ${JL_SHARE}/julia-config.jl --ldlibs)
+    AS_IF([ test $? != 0 ], [AC_MSG_ERROR([failed to obtain JULIA_LIBS from julia-config.jl])])
+    # remove apostrophes, they confuse libtool in some cases.
+    JULIA_LIBS=${JULIA_LIBS//\'/}
+  ])
   AC_MSG_RESULT([${JULIA_LIBS}])
 ],
 [
@@ -825,7 +845,6 @@ AS_IF([test "x$with_julia" != xno ],[
     AC_MSG_ERROR([ julia was selected as GC, but julia support was disabled ])
   ])
 ])
-AC_SUBST([JULIA])
 AC_SUBST([JULIA_VERSION])
 AC_SUBST([JULIA_CFLAGS])
 AC_SUBST([JULIA_LDFLAGS])
