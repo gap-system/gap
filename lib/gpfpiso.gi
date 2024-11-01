@@ -392,7 +392,7 @@ function(g,str,N)
       fi;
 
       # the range is elementary. Use this for the fp group isomorphism
-      f:=Range(hom);
+      f:=Image(hom);
       # calculate automorphisms of f induced by G
       fgens:=GeneratorsOfGroup(f);
       auts:=List(GeneratorsOfGroup(g),i->
