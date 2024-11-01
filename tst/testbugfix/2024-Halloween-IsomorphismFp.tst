@@ -5,4 +5,4 @@ gap> G:=PSL(3,7);;
 gap> maxes := MaximalSubgroupClassReps(G);;
 gap> maxes1 := MaximalSubgroupClassReps(maxes[1]);;
 gap> maxes12:= maxes1[2];;
-gap> StructureDescription(maxes12:short);;
+gap> StructureDescription(maxes12:short);;  # used to trigger an error
