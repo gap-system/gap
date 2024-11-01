@@ -273,13 +273,6 @@ The following components of this record are <E>mandatory</E>.
   </Item>
   </List>
 </Item>
-<Mark><C>AvailabilityTest</C></Mark>
-<Item>
-  a function with no arguments that returns <K>true</K> if the package is
-  available, and <K>false</K> otherwise
-  (can be <Ref Func="ReturnTrue"/> if the package consists only of &GAP;
-  code).
-</Item>
 </List>
 
 The following components of the record are <E>optional</E>.
@@ -383,6 +376,13 @@ The following components of the record are <E>optional</E>.
     denoting conditions on external programs,
   </Item>
   </List>
+</Item>
+<Mark><C>AvailabilityTest</C></Mark>
+<Item>
+  a function with no arguments that returns <K>true</K> if the package is
+  available, and <K>false</K> otherwise
+  (can be <Ref Func="ReturnTrue"/> if the package consists only of &GAP;
+  code; this is also the default value),
 </Item>
 <Mark><C>BannerString</C> or <C>BannerFunction</C></Mark>
 <Item>

@@ -217,7 +217,6 @@ ps:// or ftp://
 #E  component `PackageWWWHome' must be bound to a string started with http://,\
  https:// or ftp://
 #E  component `PackageDoc' must be bound to a record or a list of records
-#E  component `AvailabilityTest' must be bound to a function
 false
 gap> ValidatePackageInfo(rec() : quiet);
 false

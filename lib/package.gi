@@ -865,7 +865,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
 
       # Test whether the availability test function fits.
       GAPInfo.PackageCurrent:= inforec;
-      test:= inforec.AvailabilityTest();
+      test:= (not IsBound(inforec.AvailabilityTest)) or (inforec.AvailabilityTest() = true);
       Unbind( GAPInfo.PackageCurrent );
       if test = true then
         LogPackageLoadingMessage( PACKAGE_DEBUG,
@@ -2524,7 +2524,7 @@ InstallGlobalFunction( ValidatePackageInfo, function( info )
                                   ForAll( l, IsString ) ) and
                          IsBound( r.filename ) and IsString( r.filename ) ),
         "a list of records with components `needed' and `filename'" );
-    TestMandat( record, "AvailabilityTest", IsFunction, "a function" );
+    TestOption( record, "AvailabilityTest", IsFunction, "a function" );
     TestOption( record, "BannerFunction", IsFunction, "a function" );
     TestOption( record, "BannerString", IsString, "a string" );
     TestOption( record, "TestFile", IsFilename,
