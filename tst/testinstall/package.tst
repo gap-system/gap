@@ -231,7 +231,6 @@ gap> info := rec(
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
 >     PackageWWWHome := "https://",
->     PackageDoc := rec(),
 >     AvailabilityTest := ReturnTrue,
 >   );;
 gap> ValidatePackageInfo(info);
@@ -239,16 +238,7 @@ gap> ValidatePackageInfo(info);
 /yyyy that represents a date since 1999
 #E  component `License' must be bound to a nonempty string containing an SPDX \
 ID
-#E  component `BookName' must be bound to a string
-#E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
-elative paths to readable files or directories
-#E  component `HTMLStart' must be bound to a string denoting a relative path t\
-o a readable file
-#E  component `PDFFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `SixFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `LongTitle' must be bound to a string
+#E  component `PackageDoc' must be bound to a record or a list of records
 false
 gap> info := rec(
 >     PackageName := "pkg",
@@ -261,22 +251,12 @@ gap> info := rec(
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
 >     PackageWWWHome := "https://",
->     PackageDoc := rec(),
 >     AvailabilityTest := ReturnTrue,
 >   );;
 gap> ValidatePackageInfo(info);
 #E  component `License' must be bound to a nonempty string containing an SPDX \
 ID
-#E  component `BookName' must be bound to a string
-#E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
-elative paths to readable files or directories
-#E  component `HTMLStart' must be bound to a string denoting a relative path t\
-o a readable file
-#E  component `PDFFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `SixFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `LongTitle' must be bound to a string
+#E  component `PackageDoc' must be bound to a record or a list of records
 false
 gap> info := rec(
 >     PackageName := "pkg",
@@ -289,7 +269,6 @@ gap> info := rec(
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
 >     PackageWWWHome := "https://",
->     PackageDoc := rec(),
 >     AvailabilityTest := ReturnTrue,
 >   );;
 gap> ValidatePackageInfo(info);
@@ -297,16 +276,7 @@ gap> ValidatePackageInfo(info);
 /yyyy that represents a date since 1999
 #E  component `License' must be bound to a nonempty string containing an SPDX \
 ID
-#E  component `BookName' must be bound to a string
-#E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
-elative paths to readable files or directories
-#E  component `HTMLStart' must be bound to a string denoting a relative path t\
-o a readable file
-#E  component `PDFFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `SixFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `LongTitle' must be bound to a string
+#E  component `PackageDoc' must be bound to a record or a list of records
 false
 gap> info := rec(
 >     PackageName := "pkg",
@@ -319,7 +289,6 @@ gap> info := rec(
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
 >     PackageWWWHome := "https://",
->     PackageDoc := rec(),
 >     AvailabilityTest := ReturnTrue,
 >   );;
 gap> ValidatePackageInfo(info);
@@ -327,16 +296,7 @@ gap> ValidatePackageInfo(info);
 /yyyy that represents a date since 1999
 #E  component `License' must be bound to a nonempty string containing an SPDX \
 ID
-#E  component `BookName' must be bound to a string
-#E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
-elative paths to readable files or directories
-#E  component `HTMLStart' must be bound to a string denoting a relative path t\
-o a readable file
-#E  component `PDFFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `SixFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `LongTitle' must be bound to a string
+#E  component `PackageDoc' must be bound to a record or a list of records
 false
 gap> info := rec(
 >     PackageName := "pkg",
