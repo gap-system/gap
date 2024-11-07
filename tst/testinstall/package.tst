@@ -231,7 +231,7 @@ gap> info := rec(
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
 >     PackageWWWHome := "https://",
->     AvailabilityTest := ReturnTrue,
+>     AvailabilityTest := "invalid",  # ought to be a function
 >   );;
 gap> ValidatePackageInfo(info);
 #E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm\
@@ -239,6 +239,7 @@ gap> ValidatePackageInfo(info);
 #E  component `License' must be bound to a nonempty string containing an SPDX \
 ID
 #E  component `PackageDoc' must be bound to a record or a list of records
+#E  component `AvailabilityTest', if present, must be bound to a function
 false
 gap> info := rec(
 >     PackageName := "pkg",
