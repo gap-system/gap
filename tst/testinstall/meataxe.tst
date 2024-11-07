@@ -254,8 +254,8 @@ gap> MTX.InvariantQuadraticForm( m );
 Error, Argument of InvariantQuadraticForm is not an absolutely irreducible mod\
 ule
 gap> MTX.OrthogonalSign( m );
-Error, Argument of InvariantBilinearForm is not an absolutely irreducible modu\
-le
+Error, Argument of InvariantQuadraticForm is not an absolutely irreducible mod\
+ule
 gap> mats:= GeneratorsOfGroup( SP( 4, 2 ) );;
 gap> m:= GModuleByMats( mats, GF(2) );;
 gap> Q:= MTX.InvariantQuadraticForm( m );
