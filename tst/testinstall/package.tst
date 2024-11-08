@@ -217,7 +217,6 @@ ps:// or ftp://
 #E  component `PackageWWWHome' must be bound to a string started with http://,\
  https:// or ftp://
 #E  component `PackageDoc' must be bound to a record or a list of records
-#E  component `AvailabilityTest' must be bound to a function
 false
 gap> ValidatePackageInfo(rec() : quiet);
 false
@@ -225,119 +224,76 @@ gap> info := rec(
 >     PackageName := "pkg",
 >     Subtitle := "desc",
 >     Version := "0",
->     Date := "01/20/2015",
+>     Date := "01/20/2015",      # invalid date, validator should flag it
+>     License := "GPL-2.0-or-later",
 >     ArchiveURL := "https://",
 >     ArchiveFormats := "",
 >     README_URL := "https://",
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
 >     PackageWWWHome := "https://",
->     PackageDoc := rec(),
->     AvailabilityTest := ReturnTrue,
+>     AvailabilityTest := "invalid",  # ought to be a function
 >   );;
 gap> ValidatePackageInfo(info);
 #E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm\
 /yyyy that represents a date since 1999
-#E  component `License' must be bound to a nonempty string containing an SPDX \
-ID
-#E  component `BookName' must be bound to a string
-#E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
-elative paths to readable files or directories
-#E  component `HTMLStart' must be bound to a string denoting a relative path t\
-o a readable file
-#E  component `PDFFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `SixFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `LongTitle' must be bound to a string
+#E  component `PackageDoc' must be bound to a record or a list of records
+#E  component `AvailabilityTest', if present, must be bound to a function
 false
 gap> info := rec(
 >     PackageName := "pkg",
 >     Subtitle := "desc",
 >     Version := "0",
->     Date := "2013-05-22",
+>     Date := "2013-05-22",     # valid ISO 8601 date
+>     License := "GPL-2.0-or-later",
 >     ArchiveURL := "https://",
 >     ArchiveFormats := "",
 >     README_URL := "https://",
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
 >     PackageWWWHome := "https://",
->     PackageDoc := rec(),
 >     AvailabilityTest := ReturnTrue,
 >   );;
 gap> ValidatePackageInfo(info);
-#E  component `License' must be bound to a nonempty string containing an SPDX \
-ID
-#E  component `BookName' must be bound to a string
-#E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
-elative paths to readable files or directories
-#E  component `HTMLStart' must be bound to a string denoting a relative path t\
-o a readable file
-#E  component `PDFFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `SixFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `LongTitle' must be bound to a string
+#E  component `PackageDoc' must be bound to a record or a list of records
 false
 gap> info := rec(
 >     PackageName := "pkg",
 >     Subtitle := "desc",
 >     Version := "0",
->     Date := "2013-22-05",
+>     Date := "2013-22-05",      # invalid date, validator should flag it
+>     License := "GPL-2.0-or-later",
 >     ArchiveURL := "https://",
 >     ArchiveFormats := "",
 >     README_URL := "https://",
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
 >     PackageWWWHome := "https://",
->     PackageDoc := rec(),
 >     AvailabilityTest := ReturnTrue,
 >   );;
 gap> ValidatePackageInfo(info);
 #E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm\
 /yyyy that represents a date since 1999
-#E  component `License' must be bound to a nonempty string containing an SPDX \
-ID
-#E  component `BookName' must be bound to a string
-#E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
-elative paths to readable files or directories
-#E  component `HTMLStart' must be bound to a string denoting a relative path t\
-o a readable file
-#E  component `PDFFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `SixFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `LongTitle' must be bound to a string
+#E  component `PackageDoc' must be bound to a record or a list of records
 false
 gap> info := rec(
 >     PackageName := "pkg",
 >     Subtitle := "desc",
 >     Version := "0",
->     Date := "2013-05-22-",
+>     Date := "2013-05-22-",   # invalid date, validator should flag it
+>     License := "GPL-2.0-or-later",
 >     ArchiveURL := "https://",
 >     ArchiveFormats := "",
 >     README_URL := "https://",
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
 >     PackageWWWHome := "https://",
->     PackageDoc := rec(),
 >     AvailabilityTest := ReturnTrue,
 >   );;
 gap> ValidatePackageInfo(info);
 #E  component `Date' must be bound to a string of the form yyyy-mm-dd or dd/mm\
 /yyyy that represents a date since 1999
-#E  component `License' must be bound to a nonempty string containing an SPDX \
-ID
-#E  component `BookName' must be bound to a string
-#E  component `ArchiveURLSubset' must be bound to a list of strings denoting r\
-elative paths to readable files or directories
-#E  component `HTMLStart' must be bound to a string denoting a relative path t\
-o a readable file
-#E  component `PDFFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `SixFile' must be bound to a string denoting a relative path to \
-a readable file
-#E  component `LongTitle' must be bound to a string
+#E  component `PackageDoc' must be bound to a record or a list of records
 false
 gap> info := rec(
 >     PackageName := "pkg",
@@ -351,7 +307,7 @@ gap> info := rec(
 >     PackageInfoURL := "https://",
 >     AbstractHTML := "",
 >     PackageWWWHome := "https://",
->     PackageDoc := rec(),
+>     PackageDoc := rec(),    # incomplete PackageDoc record
 >     AvailabilityTest := ReturnTrue,
 >   );;
 gap> ValidatePackageInfo(info);
