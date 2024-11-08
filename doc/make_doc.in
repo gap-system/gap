@@ -19,6 +19,11 @@ base:="@abs_top_srcdir@";;
 books:=["ref", "tut", "hpc", "dev"];;
 latexOpts := rec(Maintitlesize := "\\\\fontsize{36}{38}\\\\selectfont");;
 UpdateXMLForUserPreferences();
+outputstring:= "";;
+outputstream:= OutputTextString(outputstring, true);;
+SetPrintFormattingStatus(outputstream, false);
+SetInfoOutput(InfoGAPDoc, outputstream);
+SetInfoOutput(InfoWarning, outputstream);
 for run in [1,2] do
   for book in books do
     path := Concatenation(base, "/doc/", book);
@@ -29,10 +34,10 @@ for run in [1,2] do
         continue;
     fi;
 
-    Print("----------------------------\n");
-    Print("Building GAP manual '",book,"' at ",path,"\n");
-    Print("Run ",run," of 2\n");
-    Print("----------------------------\n");
+    AppendTo(outputstream, "----------------------------\n");
+    AppendTo(outputstream, "Building GAP manual '",book,"' at ",path,"\n");
+    AppendTo(outputstream, "Run ",run," of 2\n");
+    AppendTo(outputstream, "----------------------------\n");
 
     # for the reference manual, extra list of source files to scan
     if book = "ref" then
@@ -66,4 +71,12 @@ for run in [1,2] do
     MakeGAPDocDoc( path, "main.xml", files, book, "../..", "MathJax" $NOPDF);;
   od;
 od;
+CloseStream(outputstream);
+UnbindInfoOutput(InfoGAPDoc);
+UnbindInfoOutput(InfoWarning);
+Print(outputstring);
+outputstring:= ReplacedString(outputstring, "\c", "");;
+errors:= Filtered(SplitString(outputstring, "\n"),
+           x -> StartsWith(x, "#W ") and x <> "#W There are overfull boxes:");;
+QuitGap(Length(errors) = 0);
 EOF
