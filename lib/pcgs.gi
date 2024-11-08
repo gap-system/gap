@@ -231,7 +231,7 @@ InstallMethod( IsPrimeOrdersPcgs,
     0,
 
 function( pcgs )
-    return ForAll( RelativeOrders(pcgs), x -> IsPrimeInt(x) );
+    return ForAll( RelativeOrders(pcgs), IsPrimeInt );
 end );
 
 #############################################################################
@@ -841,7 +841,7 @@ function( pcgs, orders )
             ForAll( orders, x -> x <> 0 and x <> infinity ) );
     fi;
     if IsFiniteOrdersPcgs(pcgs) and not HasIsPrimeOrdersPcgs(pcgs)  then
-        SetIsPrimeOrdersPcgs( pcgs, ForAll( orders, x -> IsPrimeInt(x) ) );
+        SetIsPrimeOrdersPcgs( pcgs, ForAll( orders, IsPrimeInt ) );
     fi;
     # and call the system setter function
     SET_RELATIVE_ORDERS( pcgs, orders );

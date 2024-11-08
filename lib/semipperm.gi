@@ -92,7 +92,7 @@ s-> CodegreeOfPartialPermCollection(GeneratorsOfSemigroup(s)));
 InstallMethod(CodegreeOfPartialPermSemigroup,
 "for an inverse partial perm semigroup",
 [IsPartialPermSemigroup and IsInverseSemigroup and HasGeneratorsOfSemigroup],
-s-> DegreeOfPartialPermSemigroup(s));
+DegreeOfPartialPermSemigroup);
 
 InstallMethod(RankOfPartialPermSemigroup,
 "for a partial perm semigroup with generators of semigroup",
