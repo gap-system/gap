@@ -3369,7 +3369,7 @@ end;
 ## Look for an invariant sesquililinear form of the GModule module.
 ## Return fail, or the matrix of the form.
 SMTX.InvariantSesquilinearForm:=function( module  )
-   local DM, q, r, iso, isot, l;
+   local DM, iso;
 
    if not SMTX.IsMTXModule(module) then
       Error("Argument of InvariantSesquilinearForm is not a module");
@@ -3383,20 +3383,7 @@ SMTX.InvariantSesquilinearForm:=function( module  )
        SMTX.SetInvariantSesquilinearForm(module, fail);
        return fail;
    fi;
-   # Replace iso by a scalar multiple to get iso twisted symmetric
-   q:=Size(module.field);
-   r:=RootInt(q,2);
-   isot:=List( TransposedMat(iso), x -> List(x, y->y^r) );
-   isot:=iso * isot^-1;
-   if not IsDiagonalMat(isot) then
-     Error("Form does not seem to be of the right kind (non-diagonal)!");
-   fi;
-   l:=LogFFE(isot[1,1],Z(q));
-   if l mod (r-1) <> 0 then
-     Error("Form does not seem to be of the right kind (not (q-1)st root)!");
-   fi;
-   iso:=Z(q)^(l/(r-1)) * iso;
-   iso:=ImmutableMatrix(GF(q), iso);
+   iso:=ImmutableMatrix(module.field, iso);
    SMTX.SetInvariantSesquilinearForm(module, iso);
    return iso;
 end;
