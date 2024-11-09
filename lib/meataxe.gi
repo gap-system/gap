@@ -2618,17 +2618,14 @@ SMTX.Homomorphisms:= function(m1, m2)
       rowno:=colno;
       looking:=true;
       while rowno <= dim1 and looking do
-         if m1bas[rowno][colno] <> zero then
+         if m1bas[rowno,colno] <> zero then
             looking:=false;
             if rowno <> colno then
                # swap rows rowno and colno
-               vec:=m1bas[rowno]; m1bas[rowno]:=m1bas[colno];
-               m1bas[colno]:=vec;
+               SwapMatrixRows(m1bas, rowno, colno);
                # and of course the same in the images
                for i in [1..imlen] do
-                  vec:=imbases[i][rowno];
-                  imbases[i][rowno]:=imbases[i][colno];
-                  imbases[i][colno]:=vec;
+                  SwapMatrixRows(imbases[i], rowno, colno);
                od;
             fi;
             # and then clear remainder of column
