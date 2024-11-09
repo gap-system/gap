@@ -1564,14 +1564,10 @@ local   L, d, p, M, one, zero, R, h, w, i, j, nd, ans;
    nd:=nd - 1;
    ans:=[];
    for i in [1..nd - 1] do
-      ans[i]:=[];
-      for j in [1..nd] do ans[i][j]:=zero; od;
+      ans[i]:=ListWithIdenticalEntries(nd,zero);
       ans[i][i + 1]:=one;
    od;
-   ans[nd]:=[];
-   for j in [1..nd] do
-      ans[nd][j]:= - p[j];
-   od;
+   ans[nd]:=-p{[1..nd]};
 
    return ans;
 end;
