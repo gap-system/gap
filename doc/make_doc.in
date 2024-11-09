@@ -78,5 +78,10 @@ Print(outputstring);
 outputstring:= ReplacedString(outputstring, "\c", "");;
 errors:= Filtered(SplitString(outputstring, "\n"),
            x -> StartsWith(x, "#W ") and x <> "#W There are overfull boxes:");;
-QuitGap(Length(errors) = 0);
+if Length(errors) = 0 then
+  QuitGap(true);
+else
+  Print(errors, "\n");
+  QuitGap(false);
+fi;
 EOF
