@@ -1685,7 +1685,7 @@ SMTX.AbsoluteIrreducibilityTest:=function( module )
 local dim, ndim, gcd, div, e, ct, F, q, ok,
       M, v, M0, v0, C, C0, centmat, one, zero,
       pow, matrices, newmatrices, looking,
-      basisN, basisB, basisBN, P, Pinv, i, j, k, nblocks;
+      basisN, basisB, basisBN, P, Pinv, i, j, k, offset, nblocks;
 
    if not SMTX.IsMTXModule(module) then
       Error("Argument of IsAbsoluteIrreducible is not a module");
@@ -1812,13 +1812,14 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
          od;
          # Make the sum of copies of C0 as centmat
          centmat:=NullMat(dim, dim, F);
+         ConvertToMatrixRep(centmat, F);
          nblocks:=dim/e;
+         Assert(0, NrRows(C0) = e); # ???
          for i in [1..nblocks] do
-            for j in [1..e] do
-               for k in [1..e] do
-                  centmat[ (i - 1) * e + j][ (i - 1) * e + k]:=C0[j][k];
-               od;
-            od;
+            offset := (i - 1) * e;
+            CopySubMatrix(C0, centmat,
+                          [1..e], [offset+1..offset+e],
+                          [1..e], [offset+1..offset+e]);
          od;
          centmat := ImmutableMatrix(F, centmat);
          Info(InfoMeatAxe,2,"Checking that it centralises the generators.");
