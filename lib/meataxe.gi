@@ -492,6 +492,18 @@ end;
 
 SMTX.SubmoduleGModule:=SMTX.SubGModule;
 
+# internal helper to create a new induced/quotient/sub module over
+# a given module, taking MTX.IsZeroGens into account
+SMTX._NewGModule:=function(module, newgens)
+   local F;
+   F:=SMTX.Field(module);
+   if SMTX.IsZeroGens(module) then
+     return GModuleByMats([],Length(newgens[1]),F);
+   else
+     return GModuleByMats(newgens,F);
+   fi;
+end;
+
 #############################################################################
 ##
 #F  SMTX.SubQuotActions(module,sub,typ) . . .
@@ -631,7 +643,7 @@ end;
 ## module for which sub is the basis.
 ## If sub does not generate a submodule then fail is returned.
 SMTX.InducedActionSubmoduleNB:=function( module, sub )
-   local   ans, smodule, F;
+   local   ans;
 
    if Length(sub) = 0 then
       return List(module.generators,i->[[]]);
@@ -643,18 +655,12 @@ SMTX.InducedActionSubmoduleNB:=function( module, sub )
      return fail;
    fi;
 
-   F:=SMTX.Field(module);
-   if SMTX.IsZeroGens(module) then
-     smodule:=GModuleByMats([],Length(ans.smatrices[1]),F);
-   else
-     smodule:=GModuleByMats(ans.smatrices,F);
-   fi;
-   return smodule;
+   return SMTX._NewGModule(module, ans.smatrices);
 end;
 
 # Ditto, but allowing also unnormed modules
 SMTX.InducedActionSubmodule:=function(module,sub)
-local nb,ans,smodule,F;
+local nb,ans;
 
    nb:=SMTX.NormedBasisAndBaseChange(sub);
    sub:=nb[1];
@@ -671,13 +677,7 @@ local nb,ans,smodule,F;
    fi;
 
    # conjugate the matrices to correspond to given sub
-   F:=SMTX.Field(module);
-   if SMTX.IsZeroGens(module) then
-     smodule:=GModuleByMats([],Length(ans.smatrices[1]),F);
-   else
-     smodule:=GModuleByMats(List(ans.smatrices,i->i^nb),F);
-   fi;
-   return smodule;
+   return SMTX._NewGModule(module, List(ans.smatrices,i->i^nb));;
 end;
 
 SMTX.ProperSubmoduleBasis:=function(module)
@@ -698,7 +698,7 @@ end;
 ## is the quotient module.
 ##
 SMTX.InducedActionFactorModule:=function(module, sub, compl...)
-local ans, F, qmodule;
+local ans;
 
    sub:=TriangulizedMat(sub);
 
@@ -719,13 +719,7 @@ local ans, F, qmodule;
      ans.qmatrices:=List(ans.qmatrices,i->i^sub);
    fi;
 
-   F:=SMTX.Field(module);
-   if SMTX.IsZeroGens(module) then
-     qmodule:=GModuleByMats([],Length(ans.qmatrices[1]),F);
-   else
-     qmodule:=GModuleByMats(ans.qmatrices, F);
-   fi;
-   return qmodule;
+   return SMTX._NewGModule(module, ans.qmatrices);
 end;
 
 #############################################################################
@@ -734,7 +728,7 @@ end;
 ##
 # FIXME: this function is never used and documented. Keep it or remove it?
 SMTX.InducedActionFactorModuleWithBasis:=function(module,sub)
-local ans, F, qmodule;
+local ans, qmodule;
 
    sub:=TriangulizedMat(sub);
 
@@ -750,13 +744,7 @@ local ans, F, qmodule;
 
    # fetch new basis
    sub:=ans.nbasis{[Length(sub)+1..module.dimension]};
-
-   F:=SMTX.Field(module);
-   if SMTX.IsZeroGens(module) then
-     qmodule:=GModuleByMats([],Length(ans.qmatrices[1]),F);
-   else
-     qmodule:=GModuleByMats(ans.qmatrices, F);
-   fi;
+   qmodule:=SMTX._NewGModule(module, ans.qmatrices);
    return [qmodule,sub];
 
 end;
@@ -780,7 +768,7 @@ end;
 ## corresponding matrices of smodule and qmodule resepctively.
 ## If sub is not the basis of a submodule then fail is returned.
 SMTX.InducedAction:=function(module, sub, typ... )
-local ans,F,erg;
+local ans,erg;
 
    if Length(typ)>0 then
      typ:=typ[1];
@@ -796,27 +784,14 @@ local ans,F,erg;
 
    ans:=[];
 
-   F:=SMTX.Field(module);
    if IsBound(erg.smatrices) then
-     if SMTX.IsZeroGens(module) then
-       Add(ans,GModuleByMats([],Length(erg.smatrices[1]), F));
-     else
-       Add(ans,GModuleByMats(erg.smatrices, F));
-     fi;
+     Add(ans,SMTX._NewGModule(module, erg.smatrices));
    fi;
    if IsBound(erg.qmatrices) then
-     if SMTX.IsZeroGens(module) then
-       Add(ans,GModuleByMats([],Length(erg.qmatrices[1]), F));
-     else
-       Add(ans,GModuleByMats(erg.qmatrices, F));
-     fi;
+     Add(ans,SMTX._NewGModule(module, erg.qmatrices));
    fi;
    if IsBound(erg.nmatrices) then
-     if SMTX.IsZeroGens(module) then
-       Add(ans,GModuleByMats([],Length(erg.nmatrices[1]), F));
-     else
-       Add(ans,GModuleByMats(erg.nmatrices, F));
-     fi;
+     Add(ans,SMTX._NewGModule(module, erg.nmatrices));
    fi;
    if IsBound(erg.nbasis) then
      Add(ans,erg.nbasis);
