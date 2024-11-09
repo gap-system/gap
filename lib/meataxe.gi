@@ -453,7 +453,6 @@ SMTX.SpinnedBasis:=function( arg  )
          for  j in [1..subdim] do
             k:=w[leadpos[j]];
             if k <> zero then
-               #w:=w - k * ans[j];
                AddRowVector(w,ans[j],-k);
             fi;
          od;
@@ -463,7 +462,6 @@ SMTX.SpinnedBasis:=function( arg  )
             # we have found a new generator of the submodule
             subdim:=subdim + 1;
             leadpos[subdim]:=j;
-            #w:=(w[j]^-1) * w;
             MultVector(w,w[j]^-1);
             Add( ans, w );
             if subdim = dim then
@@ -1538,10 +1536,10 @@ local   L, d, p, M, one, zero, R, h, w, i, j, nd, ans;
       p[j]:=one;
 
       # divide by known left sides
-      w:=v;
+      w:=ShallowCopy( v );
       while h <= d and IsBound( L[h] ) do
-         p:=p - w[h] * R[h];
-         w:=w - w[h] * L[h];
+         AddVector(p, R[h], -w[h]);
+         AddVector(w, L[h], -w[h]);
          h:=PositionNonZero(w, h);
       od;
 
@@ -1601,9 +1599,9 @@ local  L, d, subd, subd0, zero, h, v, w, i, bno, gno, vno, newb, ngens;
    for i in [1..subd] do
       v:=basis[i];
       h:=PositionNonZero(v);
-      w:=v;
+      w:=ShallowCopy(v);
       while h <= d and IsBound( L[h] )  do
-         w:=w - w[h] * L[h];
+         AddVector(w, L[h], -w[h]);
          h:=PositionNonZero(w, h);
       od;
       if h <= d then
@@ -1619,9 +1617,9 @@ local  L, d, subd, subd0, zero, h, v, w, i, bno, gno, vno, newb, ngens;
       # translate vector vno of block bno by generator gno
       v:= basis[ (bno - 1) * subd0 + vno] * matrices[gno];
       h:=PositionNonZero(v);
-      w:=v;
+      w:=ShallowCopy(v);
       while h <= d and IsBound( L[h] )  do
-         w:=w - w[h] * L[h];
+         AddVector(w, L[h], -w[h]);
          h:=PositionNonZero(w, h);
       od;
       if h <= d then
@@ -2473,7 +2471,7 @@ SMTX.Homomorphisms:= function(m1, m2)
    fi;
 
    m1bas:=[];
-   m1bas[1]:= SMTX.AlgElNullspaceVec(m1);
+   m1bas[1]:= ShallowCopy(SMTX.AlgElNullspaceVec(m1));
 
    # In any homomorphism from m1 to m2, the vector in the nullspace of the
    # algebraic element that was used to prove irreducibility (which is now
@@ -2506,7 +2504,7 @@ SMTX.Homomorphisms:= function(m1, m2)
       return [];
    fi;
 
-   imbases:=List(N, vec -> [vec]);
+   imbases:=List(N, vec -> [ShallowCopy(vec)]);
 
    # Now the main algorithm starts. We are going to spin the vectors in m1bas
    # under the action of the module generators, norming as we go. Every
@@ -2553,9 +2551,9 @@ SMTX.Homomorphisms:= function(m1, m2)
          for  j in [1..subdim] do
             k:=vec[leadpos[j]];
             if k <> zero then
-               vec:=vec - k * m1bas[j];
+               AddVector(vec, m1bas[j], -k);
                for i in [1..imlen] do
-                  imvecs[i]:=imvecs[i] - k * imbases[i][j];
+                  AddVector(imvecs[i], imbases[i][j], -k);
                od;
             fi;
          od;
@@ -2574,13 +2572,13 @@ SMTX.Homomorphisms:= function(m1, m2)
             # vec has reduced to zero. We get relations among the imvecs.
             # (these are given by the transpose of imvec)
             # reduce these against any existing relations.
-            newrels:=TransposedMat(imvecs);
+            newrels:=TransposedMatMutable(imvecs);
             for i in [1..Length(newrels)] do
                vec:=newrels[i];
                for j in [1..numrels] do
                   k:=vec[leadposrels[j]];
                   if k <> zero then
-                     vec:=vec - k * rels[j];
+                     AddVector(vec, rels[j], -k);
                   fi;
                od;
                Assert(0, Length(vec) = imlen);
@@ -2626,9 +2624,9 @@ SMTX.Homomorphisms:= function(m1, m2)
             for j in [1..dim1] do
                if j <> colno and m1bas[j][colno] <> zero then
                   k:=m1bas[j][colno];
-                  m1bas[j]:=m1bas[j] - k * m1bas[colno];
+                  AddVector(m1bas[j], m1bas[colno], -k);
                   for i in [1..imlen] do
-                     imbases[i][j]:=imbases[i][j] - k * imbases[i][colno];
+                     AddVector(imbases[i][j], imbases[i][colno], -k);
                   od;
                fi;
             od;
@@ -2714,14 +2712,13 @@ local e, F, dim1, dim2, centmat, fullimbas, oldhoms,
    while homno < dimhoms and newdim < dimhoms do
       homno:=homno + 1;
       nexthom:=oldhoms[homno];
-      vec:=nexthom[1];
+      vec:=ShallowCopy(nexthom[1]);
 
       # Now check whether vec is in existing submodule spanned by fullimbas
-      j:=1;
       for j in [1..subdim] do
          k:=vec[leadpos[j]];
          if k <> zero then
-            vec:=vec - k * fullimbas[j];
+            AddVector(vec, fullimbas[j], -k);
          fi;
       od;
 
@@ -2736,12 +2733,11 @@ local e, F, dim1, dim2, centmat, fullimbas, oldhoms,
          k:=vec[j]^-1;
          fullimbas[subdim]:=k * vec;
          for i in [2..dim1] do
-            vec:=nexthom[i];
-            j:=1;
-            for  j in [1..subdim] do
+            vec:=ShallowCopy(nexthom[i]);
+            for j in [1..subdim] do
                k:=vec[leadpos[j]];
                if k <> zero then
-                  vec:=vec - k * fullimbas[j];
+                  AddVector(vec, fullimbas[j], -k);
                fi;
             od;
 
@@ -3209,8 +3205,8 @@ end;
 ## an orbit of the action of G.
 ## The code is similar to that of SpinnedBasis.
 SMTX.BasisInOrbit:=function( module  )
-   local   v, matrices, ngens, zero,  ans, normedans,
-           dim, subdim, leadpos, w, normedw, i, j, k, l, m, F;
+   local   v, matrices, zero,  ans, normedans,
+           dim, subdim, leadpos, w, normedw, i, j, k, m, F;
 
    if not SMTX.IsMTXModule(module) or not SMTX.IsIrreducible(module) then
       Error("Argument of BasisInOrbit is not an irreducible module");
@@ -3220,7 +3216,6 @@ SMTX.BasisInOrbit:=function( module  )
    dim:=SMTX.Dimension(module);
    F:=SMTX.Field(module);
    matrices:=module.generators;
-   ngens:=Length(matrices);
 
    zero:=Zero(F);
    v:=IdentityMat(dim,F)[1];
@@ -3231,17 +3226,15 @@ SMTX.BasisInOrbit:=function( module  )
 
    i:=1;
    while i <= subdim and subdim < dim do
-      for l in [1..ngens] do
-         m:=matrices[l];
+      for m in matrices do
          # apply generator m to submodule generator i
          w:=ans[i] * m;
-         normedw:=w;
          # try to express w in terms of existing submodule generators
-         j:=1;
-         for  j in [1..subdim] do
+         normedw:=ShallowCopy(w);
+         for j in [1..subdim] do
             k:=normedw[leadpos[j]];
             if k <> zero then
-               normedw:=normedw - k * normedans[j];
+               AddVector(normedw, normedans[j], -k);
             fi;
          od;
 
@@ -3251,7 +3244,7 @@ SMTX.BasisInOrbit:=function( module  )
             # we have found a new generator of the submodule
             subdim:=subdim + 1;
             leadpos[subdim]:=j;
-            normedw:=(normedw[j]^-1) * normedw;
+            MultVector(normedw, normedw[j]^-1);
             Add( ans, w );
             Add( normedans, normedw );
             if subdim = dim then
