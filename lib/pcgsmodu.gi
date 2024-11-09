@@ -572,7 +572,7 @@ InstallOtherMethod( IsPrimeOrdersPcgs,
     0,
 
 function( pcgs )
-    return ForAll( RelativeOrders(pcgs), x -> IsPrimeInt(x) );
+    return ForAll( RelativeOrders(pcgs), IsPrimeInt );
 end );
 
 

@@ -188,7 +188,7 @@ local gens, inn,out, nonperm, syno, orb, orbi, perms, free, rep, i, maxl, gen,
   #sym:=SymmetricGroup(MovedPoints(g));
   #syno:=Normalizer(sym,g);
 
-  inn:=Filtered(GeneratorsOfGroup(au),i->IsInnerAutomorphism(i));
+  inn:=Filtered(GeneratorsOfGroup(au),IsInnerAutomorphism);
   out:=Filtered(GeneratorsOfGroup(au),i->not IsInnerAutomorphism(i));
   nonperm:=Filtered(out,i->not IsConjugatorAutomorphism(i));
   syno:=g;
