@@ -1775,6 +1775,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
                      if C[1][i] <> zero then  ok:=1; fi;
                   od;
                until ok=1;
+               ConvertToVectorRep(C[1], F);
                for i in [2..ndim] do C[i]:=C[i - 1] * M0; od;
                C:=ImmutableMatrix(F,C);
             fi;
