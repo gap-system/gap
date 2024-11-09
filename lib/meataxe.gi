@@ -1499,24 +1499,20 @@ end;
 ## It is based on code of MinPolCoeffsMat.
 ## The optional third argument is for returning the basis for this block.
 ##
-SMTX.FrobeniusAction:=function( arg )
-local   L, d, p, M, one, zero, R, h, v, w, i, j, nd, ans,
-        A, basis,fld;
+SMTX.FrobeniusAction:=function( fld, A, v, basis... )
+local   L, d, p, M, one, zero, R, h, w, i, j, nd, ans;
 
-   fld:=arg[1];
-   A:=arg[2];
-   v:=arg[3];
-   if Length(arg) = 3  then
+   if Length(basis) = 0  then
       basis:=0;
-   elif Length(arg) = 4  then
-      basis:=arg[4];
+   elif Length(basis) = 1  then
+      basis:=basis[1];
    else
       return Error("usage: SMTX.FrobeniusAction(<F>, <A>, <v>, [, <basis>] )");
    fi;
    one :=OneOfBaseDomain(A);
-   zero:=Zero(one);
-   d:=Length( A );
-   M:=ListWithIdenticalEntries(Length(A[1]) + 1,zero);
+   zero:=ZeroOfBaseDomain(A);
+   d:=NrRows( A );
+   M:=ListWithIdenticalEntries(NrCols(A) + 1,zero);
    M:=ImmutableVector(fld,M);
    v:=ImmutableVector(fld,v);
    A:=ImmutableMatrix(fld,A);
