@@ -494,7 +494,7 @@ SMTX.SubmoduleGModule:=SMTX.SubGModule;
 
 #############################################################################
 ##
-#F  SMTX.SubQuotActionsModule(matrices,sub,dim,subdim,field,typ) . . .
+#F  SMTX.SubQuotActions(module,sub,typ) . . .
 ##  generators of sub- and quotient-module and original module wrt new basis
 ##
 ##  IT IS ASSUMED THAT THE GENERATORS OF SUB ARE NORMED.
@@ -507,12 +507,16 @@ SMTX.SubmoduleGModule:=SMTX.SubGModule;
 ##  See the description for 'SMTX.InducedAction' for
 ##  description of the matrices
 ##
-SMTX.SubQuotActions:=function(matrices,sub,dim,subdim,F,typ)
-local s, c, q, leadpos, zero, zerov, smatrices, newg, im, newim, k, subi,
+SMTX.SubQuotActions:=function(module,sub,typ)
+local matrices, dim, subdim, F,
+      s, c, q, leadpos, zero, zerov, smatrices, newg, im, newim, k, subi,
       qmats, smats, nmats, sr, qr, g, h, erg, i, j;
 
+  dim:=SMTX.Dimension(module);
+  F:=SMTX.Field(module);
+  matrices:=module.generators;
+
   Assert(0, dim = Length(sub[1]));
-  Assert(0, subdim = Length(sub));
 
   s:=(typ mod 2)=1; # subspace indicator
   typ:=QuoInt(typ,2);
@@ -521,6 +525,7 @@ local s, c, q, leadpos, zero, zerov, smatrices, newg, im, newim, k, subi,
 
   zero:=Zero(F);
   leadpos:=SubGModLeadPos(sub);
+  subdim:=Length(sub);
 
   if subdim*2<dim and not (q or c) then
     # the subspace dimension is small and we only want the subspace action:
@@ -626,21 +631,19 @@ end;
 ## module for which sub is the basis.
 ## If sub does not generate a submodule then fail is returned.
 SMTX.InducedActionSubmoduleNB:=function( module, sub )
-   local   ans, dim, subdim, smodule,F;
+   local   ans, smodule, F;
 
-   subdim:=Length(sub);
-   if subdim = 0 then
+   if Length(sub) = 0 then
       return List(module.generators,i->[[]]);
    fi;
-   dim:=SMTX.Dimension(module);
-   F:=SMTX.Field(module);
 
-   ans:=SMTX.SubQuotActions(module.generators,sub,dim,subdim,F,1);
+   ans:=SMTX.SubQuotActions(module,sub,1);
 
    if ans=fail then
      return fail;
    fi;
 
+   F:=SMTX.Field(module);
    if SMTX.IsZeroGens(module) then
      smodule:=GModuleByMats([],Length(ans.smatrices[1]),F);
    else
@@ -651,30 +654,28 @@ end;
 
 # Ditto, but allowing also unnormed modules
 SMTX.InducedActionSubmodule:=function(module,sub)
-local nb,ans,dim,subdim,smodule,F;
-  nb:=SMTX.NormedBasisAndBaseChange(sub);
-  sub:=nb[1];
-  nb:=nb[2];
+local nb,ans,smodule,F;
 
-   subdim:=Length(sub);
-   if subdim = 0 then
+   nb:=SMTX.NormedBasisAndBaseChange(sub);
+   sub:=nb[1];
+   nb:=nb[2];
+
+   if Length(sub) = 0 then
       return List(module.generators,i->[[]]);
    fi;
-   dim:=SMTX.Dimension(module);
-   F:=SMTX.Field(module);
 
-   ans:=SMTX.SubQuotActions(module.generators,
-                                sub,dim,subdim,F,1);
+   ans:=SMTX.SubQuotActions(module,sub,1);
 
    if ans=fail then
      return fail;
    fi;
 
    # conjugate the matrices to correspond to given sub
+   F:=SMTX.Field(module);
    if SMTX.IsZeroGens(module) then
      smodule:=GModuleByMats([],Length(ans.smatrices[1]),F);
    else
-    smodule:=GModuleByMats(List(ans.smatrices,i->i^nb),F);
+     smodule:=GModuleByMats(List(ans.smatrices,i->i^nb),F);
    fi;
    return smodule;
 end;
@@ -696,43 +697,35 @@ end;
 ## Qmodule is returned, where qmodule
 ## is the quotient module.
 ##
-SMTX.InducedActionFactorModule:=function(arg)
-local module,sub,  ans, dim, subdim, F,qmodule;
-
-   module:=arg[1];
-   sub:=arg[2];
+SMTX.InducedActionFactorModule:=function(module, sub, compl...)
+local ans, F, qmodule;
 
    sub:=TriangulizedMat(sub);
 
-   subdim:=Length(sub);
-   dim:=SMTX.Dimension(module);
-   if subdim = dim then
+   if Length(sub) = SMTX.Dimension(module) then
       return List(module.generators,i->[[]]);
    fi;
 
-   F:=SMTX.Field(module);
-
-   ans:=SMTX.SubQuotActions(module.generators,
-                                sub,dim,subdim,F,2);
+   ans:=SMTX.SubQuotActions(module,sub,2);
 
    if ans=fail then
      return fail;
    fi;
 
-   if Length(arg)=3 then
+   if Length(compl)=1 then
      # compute basechange
-     sub:=Concatenation(sub,arg[3]);
+     sub:=Concatenation(sub,compl[1]);
      sub:=sub*Inverse(ans.nbasis);
      ans.qmatrices:=List(ans.qmatrices,i->i^sub);
    fi;
 
+   F:=SMTX.Field(module);
    if SMTX.IsZeroGens(module) then
      qmodule:=GModuleByMats([],Length(ans.qmatrices[1]),F);
    else
-    qmodule:=GModuleByMats(ans.qmatrices, F);
+     qmodule:=GModuleByMats(ans.qmatrices, F);
    fi;
    return qmodule;
-
 end;
 
 #############################################################################
@@ -741,20 +734,15 @@ end;
 ##
 # FIXME: this function is never used and documented. Keep it or remove it?
 SMTX.InducedActionFactorModuleWithBasis:=function(module,sub)
-local ans, dim, subdim, F,qmodule;
+local ans, F, qmodule;
 
    sub:=TriangulizedMat(sub);
 
-   subdim:=Length(sub);
-   dim:=SMTX.Dimension(module);
-   if subdim = dim then
+   if Length(sub) = SMTX.Dimension(module) then
       return List(module.generators,i->[[]]);
    fi;
 
-   F:=SMTX.Field(module);
-
-   ans:=SMTX.SubQuotActions(module.generators,
-                                sub,dim,subdim,F,2);
+   ans:=SMTX.SubQuotActions(module,sub,2);
 
    if ans=fail then
      return fail;
@@ -763,10 +751,11 @@ local ans, dim, subdim, F,qmodule;
    # fetch new basis
    sub:=ans.nbasis{[Length(sub)+1..module.dimension]};
 
+   F:=SMTX.Field(module);
    if SMTX.IsZeroGens(module) then
      qmodule:=GModuleByMats([],Length(ans.qmatrices[1]),F);
    else
-    qmodule:=GModuleByMats(ans.qmatrices, F);
+     qmodule:=GModuleByMats(ans.qmatrices, F);
    fi;
    return [qmodule,sub];
 
@@ -790,22 +779,16 @@ end;
 ##                                        C  B
 ## corresponding matrices of smodule and qmodule resepctively.
 ## If sub is not the basis of a submodule then fail is returned.
-SMTX.InducedAction:=function( arg )
-local module,sub,typ,ans,dim,subdim,F,erg;
+SMTX.InducedAction:=function(module, sub, typ... )
+local ans,F,erg;
 
-   module:=arg[1];
-   sub:=arg[2];
-   if Length(arg)>2 then
-     typ:=arg[3];
+   if Length(typ)>0 then
+     typ:=typ[1];
    else
      typ:=7;
    fi;
-   subdim:=Length(sub);
-   dim:=SMTX.Dimension(module);
-   F:=SMTX.Field(module);
 
-   erg:=SMTX.SubQuotActions(module.generators,
-                                sub,dim,subdim,F,typ);
+   erg:=SMTX.SubQuotActions(module,sub,typ);
 
    if erg=fail then
      return fail;
@@ -813,6 +796,7 @@ local module,sub,typ,ans,dim,subdim,F,erg;
 
    ans:=[];
 
+   F:=SMTX.Field(module);
    if IsBound(erg.smatrices) then
      if SMTX.IsZeroGens(module) then
        Add(ans,GModuleByMats([],Length(erg.smatrices[1]), F));
@@ -849,16 +833,14 @@ end;
 ##  as InducedActionSubmoduleNB but for a matrix.
 # FIXME: this function is never used and documented. Keep it or remove it?
 SMTX.InducedActionSubMatrixNB:=function( mat, sub )
-local subdim, dim, F, ans;
+local module, ans;
 
-   subdim:=Length(sub);
-   if subdim = 0 then
+   if Length(sub) = 0 then
       return [];
    fi;
-   dim:=Length(mat);
-   F:=DefaultFieldOfMatrix(mat);
 
-   ans:=SMTX.SubQuotActions([mat],sub,dim,subdim,F,1);
+   module:=GModuleByMats([mat], DefaultFieldOfMatrix(mat));
+   ans:=SMTX.SubQuotActions(module,sub,1);
 
    if ans=fail then
      return fail;
@@ -871,19 +853,18 @@ end;
 # Ditto, but allowing also unnormed modules
 # FIXME: this function is never used and documented. Keep it or remove it?
 SMTX.InducedActionSubMatrix:=function(mat,sub)
-local nb, subdim, dim, F, ans;
-  nb:=SMTX.NormedBasisAndBaseChange(sub);
-  sub:=nb[1];
-  nb:=nb[2];
+local nb, module, ans;
 
-   subdim:=Length(sub);
-   if subdim = 0 then
+   nb:=SMTX.NormedBasisAndBaseChange(sub);
+   sub:=nb[1];
+   nb:=nb[2];
+
+   if Length(sub) = 0 then
       return [];
    fi;
-   dim:=Length(mat);
-   F:=DefaultFieldOfMatrix(mat);
 
-   ans:=SMTX.SubQuotActions([mat],sub,dim,subdim,F,1);
+   module:=GModuleByMats([mat], DefaultFieldOfMatrix(mat));
+   ans:=SMTX.SubQuotActions(module,sub,1);
 
    if ans=fail then
      return fail;
@@ -900,37 +881,30 @@ end;
 ##
 ##  as InducedActionFactor, but for a matrix.
 ##
-SMTX.InducedActionFactorMatrix:=function(arg)
-local mat, sub, subdim, dim, F, ans;
+SMTX.InducedActionFactorMatrix:=function(mat, sub, compl...)
+local module, ans;
 
-   mat:=arg[1];
-   sub:=arg[2];
-
+   module:=GModuleByMats([mat], DefaultFieldOfMatrix(mat));
    sub:=TriangulizedMat(sub);
 
-   subdim:=Length(sub);
-   dim:=Length(mat);
-   if subdim = dim then
+   if Length(sub) = SMTX.Dimension(module) then
       return [];
    fi;
 
-   F:=DefaultFieldOfMatrix(mat);
-
-   ans:=SMTX.SubQuotActions([mat],sub,dim,subdim,F,2);
+   ans:=SMTX.SubQuotActions(module,sub,2);
 
    if ans=fail then
      return fail;
    fi;
 
-   if Length(arg)=3 then
+   if Length(compl)=1 then
      # compute basechange
-     sub:=Concatenation(sub,arg[3]);
+     sub:=Concatenation(sub,compl[1]);
      sub:=sub*Inverse(ans.nbasis);
      ans.qmatrices:=List(ans.qmatrices,i->i^sub);
    fi;
 
    return ans.qmatrices[1];
-
 end;
 
 SMTX.SMCoRaEl:=function(matrices,ngens,newgenlist,dim,F)
