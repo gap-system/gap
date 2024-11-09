@@ -390,18 +390,14 @@ end );
 ## It is returned as a list of normed vectors.
 ## If the optional third argument is present, then only the first ngens
 ## matrices in the list are used.
-SMTX.SpinnedBasis:=function( arg  )
-   local   v, matrices, ngens, zero,ldim,step,
-           ans, dim, subdim, leadpos, w, i, j, k, l, m,F;
+SMTX.SpinnedBasis:=function( v, matrices, F, ngens... )
+   local   zero, ldim, step, ans, dim, subdim, leadpos, w, i, j, k, l, m;
 
-   if Length(arg) < 3 or Length(arg) > 4 then
+   if Length(ngens) > 1 then
       Error("Usage:  SpinnedBasis( v, matrices, F, [ngens] )");
    fi;
-   v:=arg[1];
-   matrices:=arg[2];
-   F:=arg[3];
-   if Length(arg) = 4 then
-      ngens:=arg[4];
+   if Length(ngens) = 1 then
+      ngens:=ngens[1];
       if ngens <= 0 or ngens > Length(matrices) then
          ngens:=Length(matrices);
       fi;
@@ -449,7 +445,6 @@ SMTX.SpinnedBasis:=function( arg  )
          # apply generator m to submodule generator i
          w:=ShallowCopy(ans[i] * m);
          # try to express w in terms of existing submodule generators
-         j:=1;
          for  j in [1..subdim] do
             k:=w[leadpos[j]];
             if k <> zero then
@@ -965,7 +960,7 @@ SMTX.RAND_ELM_LIMIT:=5000;
 ## is not an end-user function but only called internally
 SMTX.IrreducibilityTest:=function( module )
    local matrices, tmatrices, ngens, ans,  M, mat, g1, g2, maxdeg,
-         newgenlist, coefflist, orig_ngens, zero,
+         newgenlist, coefflist, zero,
          N, NT, v, subbasis, fac, sfac, pol, orig_pol, q, dim, ndim, i,
          l, trying, deg, facno, bestfacno, F, count, R, rt0,idmat,
          pfac1, pfac2, quotRem, pfr, idemp, M2, mat2, mat3;
@@ -981,8 +976,7 @@ SMTX.IrreducibilityTest:=function( module )
    fi;
    matrices:=ShallowCopy(module.generators);
    dim:=SMTX.Dimension(module);
-   ngens:=Length(matrices);
-   orig_ngens:=ngens;
+   ngens:=Length(module.generators);
    F:=SMTX.Field(module);
    zero:=Zero(F);
    R:=PolynomialRing(F);
@@ -1099,7 +1093,7 @@ SMTX.IrreducibilityTest:=function( module )
 
                   Info(InfoMeatAxe,5,"Evaluated nullspace. Dimension = ",
                        ndim,". Time = ",Runtime()-rt0,".");
-                  subbasis:=SMTX.SpinnedBasis(v, matrices, F,orig_ngens);
+                  subbasis:=SMTX.SpinnedBasis(v, module.generators, F);
                   Info(InfoMeatAxe,5,"Spun up vector. Dimension = ",
                        Length(subbasis),". Time = ",Runtime()-rt0,".");
                   if Length(subbasis) < dim then
@@ -1113,16 +1107,14 @@ SMTX.IrreducibilityTest:=function( module )
                      # module is definitely irreducible.
                      mat:=TransposedMat(mat);
                      if Length(tmatrices)=0 then
-                        for i in [1..orig_ngens] do
-                           Add(tmatrices, TransposedMat(matrices[i]));
-                        od;
+                        tmatrices := List(module.generators, TransposedMat);
                      fi;
                      Info(InfoMeatAxe,5,"Transposed matrices. Time = ",
                           Runtime()-rt0,".");
                      NT:=NullspaceMat(mat);
                      Info(InfoMeatAxe,5,"Evaluated nullspace. Dimension = ",
                           Length(NT),". Time = ",Runtime()-rt0, ".");
-                     subbasis:=SMTX.SpinnedBasis(NT[1],tmatrices,F,orig_ngens);
+                     subbasis:=SMTX.SpinnedBasis(NT[1],tmatrices,F);
                      Info(InfoMeatAxe,5,"Spun up vector. Dimension = ",
                           Length(subbasis),". Time = ",Runtime()-rt0, ".");
                      if Length(subbasis) < dim then
@@ -1134,7 +1126,7 @@ SMTX.IrreducibilityTest:=function( module )
                         # that way, but we'll certainly get a proper submodule.
                         v:=SMTX.OrthogonalVector(subbasis);
                         SMTX.SetSubbasis(module,
-                          SMTX.SpinnedBasis(v,matrices,F,orig_ngens));
+                          SMTX.SpinnedBasis(v,module.generators,F));
                         ans:=false;
                      else
                         ans:=true;
@@ -1179,7 +1171,7 @@ SMTX.IrreducibilityTest:=function( module )
                      mat3:=mat2*M2*mat2;
                      v:=v*(M*mat3 - mat3*M);
                      # This vector might lie in a proper subspace!
-                     subbasis:=SMTX.SpinnedBasis(v, matrices, F,orig_ngens);
+                     subbasis:=SMTX.SpinnedBasis(v, module.generators, F);
                      Info(InfoMeatAxe,5,"Spun up vector. Dimension = ",
                        Length(subbasis),". Time = ",Runtime()-rt0,".");
                      if Length(subbasis) < dim and Length(subbasis) <> 0  then
@@ -1238,7 +1230,7 @@ end;
 ## Returns false if module is irreducible.
 SMTX.RandomIrreducibleSubGModule:=function( module )
    local  ranSub, subbasis, submodule, subbasis2, submodule2,
-   F, el, M, fac, N, i, matrices, ngens, genpair;
+   F, el, M, fac, N, i, matrices, genpair;
 
    if not SMTX.IsMTXModule(module) then
       return Error("Argument of RandomIrreducibleSubGModule is not a module.");
@@ -1299,12 +1291,10 @@ SMTX.RandomIrreducibleSubGModule:=function( module )
       # Only the actual algebra element and its nullspace have to be recomputed
       # This code is essentially from IsomorphismGModule
       matrices:=ShallowCopy(submodule2.generators);
-      ngens:=Length(matrices);
       for genpair in el[1] do
-         ngens:=ngens + 1;
-         matrices[ngens]:=matrices[genpair[1]] * matrices[genpair[2]];
+         Add(matrices, matrices[genpair[1]] * matrices[genpair[2]]);
       od;
-      M:=ImmutableMatrix(F,Sum([1..ngens], i-> el[2][i] * matrices[i]));
+      M:=ImmutableMatrix(F,Sum([1..Length(matrices)], i-> el[2][i] * matrices[i]));
       SMTX.SetAlgElMat(submodule2,M);
       N:=NullspaceMat(SMTX_Value(fac,M,M^0));
       SMTX.SetAlgElNullspaceVec(submodule2,N[1]);
@@ -1324,7 +1314,7 @@ end;
 ## irreducible, and the degree of the relevant field extension otherwise.
 ## This is needed for testing for equivalence of modules.
 SMTX.GoodElementGModule:=function( module )
-local matrices, ngens, M, mat,  N, newgenlist, coefflist,
+local matrices, M, mat,  N, newgenlist, coefflist,
       fac, pol, oldpol,  q, deg, i, l,
       trying, dim, mindim, F, R, count, rt0, idmat;
 
@@ -1347,7 +1337,6 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist,
 
    dim:=SMTX.Dimension(module);
    matrices:=ShallowCopy(module.generators);
-   ngens:=Length(matrices);
    F:=SMTX.Field(module);
    R:=PolynomialRing(F);
 
@@ -1367,8 +1356,7 @@ local matrices, ngens, M, mat,  N, newgenlist, coefflist,
       fi;
       Info(InfoMeatAxe,5,"Choosing random element number ",count,".");
 
-      M:=SMTX.SMCoRaEl(matrices,ngens,newgenlist,dim,F);
-      ngens:=Length(matrices);
+      M:=SMTX.SMCoRaEl(matrices,Length(matrices),newgenlist,dim,F);
 
       coefflist:=M[2];
       pol:=M[3];
@@ -2029,13 +2017,12 @@ end;
 ## composition factor.
 ##
 SMTX.Distinguish:=function( cf, i )
-   local el, genpair, ngens, orig_ngens, mat, matsi, mats, M, idmat,
+   local el, genpair, ngens, mat, matsi, mats, M, idmat,
          dim, F, fac, p, q, oldp, found, extdeg, j, k,
          lcf, lf, x, y, wno, deg, trying, N, fact, R;
 
    lcf:=Length(cf);
    ngens:=Length(cf[1][1].generators);
-   orig_ngens:=ngens;
    F:=SMTX.Field(cf[1][1]);
    R:=PolynomialRing(F);
    matsi:=ShallowCopy(cf[i][1].generators);
@@ -2055,11 +2042,9 @@ SMTX.Distinguish:=function( cf, i )
          mats:=ShallowCopy(cf[j][1].generators);
          dim:=SMTX.Dimension(cf[j][1]);
          for genpair in el[1] do
-            ngens:=ngens + 1;
-            mats[ngens]:=mats[genpair[1]] * mats[genpair[2]];
+            Add(mats, mats[genpair[1]] * mats[genpair[2]]);
          od;
-         M:=ImmutableMatrix(F,Sum([1..ngens], k -> el[2][k] * mats[k]));
-         ngens:=orig_ngens;
+         M:=ImmutableMatrix(F,Sum([1..Length(mats)], k -> el[2][k] * mats[k]));
          mat:=SMTX_Value(fact, M, M^0);
          if RankMat(mat) < dim then
             found:=false;
@@ -2088,11 +2073,10 @@ SMTX.Distinguish:=function( cf, i )
          while y = x and ngens > 1 do y:=Random(1, ngens); od;
          Add(el[1], [x, y]);
          ngens:=ngens + 1;
-         matsi[ngens]:=matsi[x] * matsi[y];
+         Add(matsi, matsi[x] * matsi[y]);
       fi;
       # Now take the new random element
-      el[2]:=[];
-      for j in [1..ngens] do el[2][j]:=Random(F); od;
+      el[2]:=List([1..ngens], j -> Random(F));
       # First evaluate on cf[i][1].
       M:=ImmutableMatrix(F,Sum([1..ngens], k ->  el[2][k] * matsi[k]));
       p:=CharacteristicPolynomialMatrixNC(F,M,1);
@@ -2148,12 +2132,10 @@ SMTX.Distinguish:=function( cf, i )
             if j <> i and found then
                mats:=ShallowCopy(cf[j][1].generators);
                dim:=SMTX.Dimension(cf[j][1]);
-               ngens:=orig_ngens;
                for genpair in el[1] do
-                  ngens:=ngens + 1;
-                  mats[ngens]:=mats[genpair[1]] * mats[genpair[2]];
+                  Add(mats, mats[genpair[1]] * mats[genpair[2]]);
                od;
-               M:=ImmutableMatrix(F,Sum([1..ngens], k -> el[2][k] * mats[k]));
+               M:=ImmutableMatrix(F,Sum([1..Length(mats)], k -> el[2][k] * mats[k]));
                mat:=SMTX_Value(fact, M, M^0);
                if RankMat(mat) < dim then
                   found:=false;
@@ -2181,35 +2163,30 @@ end;
 ## cf[i][1] is calculated and returned - i.e. if cf[i][2] = 1.
 ##
 SMTX.MinimalSubGModule:=function( module, cf, i )
-   local el, genpair, ngens, orig_ngens, mat, mats, M, F,
+   local el, genpair, mat, mats, M, F,
          k, N, fact;
 
    if SMTX.IsMTXModule(module) = false then
       return Error("First argument is not a module.");
    fi;
 
-   ngens:=Length(module.generators);
-   orig_ngens:=ngens;
    F:=SMTX.Field(module);
 
    # Apply the alg. el. of factor i to module
    el:=SMTX.AlgEl(cf[i][1]);
    mats:=ShallowCopy(module.generators);
    for genpair in el[1] do
-      ngens:=ngens + 1;
-      mats[ngens]:=mats[genpair[1]] * mats[genpair[2]];
+      Add(mats, mats[genpair[1]] * mats[genpair[2]]);
    od;
 
-   M:=ImmutableMatrix(F,Sum([1..ngens], k -> el[2][k] * mats[k]));
+   M:=ImmutableMatrix(F,Sum([1..Length(mats)], k -> el[2][k] * mats[k]));
+
    # Now throw away extra generators of module
-   for k in [orig_ngens + 1..ngens] do
-      Unbind(mats[k]);
-   od;
-   ngens:=orig_ngens;
+   mats:=ShallowCopy(module.generators);
    fact:=SMTX.AlgElCharPolFac(cf[i][1]);
    mat:=SMTX_Value(fact, M,M^0);
    N:=NullspaceMat(mat);
-   return SMTX.SpinnedBasis(N[1], mats,F, ngens);
+   return SMTX.SpinnedBasis(N[1], mats, F);
 
 end;
 
@@ -2229,7 +2206,7 @@ end;
 ##
 SMTX.IsomorphismComp:=function(module1, module2, action)
    local matrices, matrices1, matrices2, F, dim, swapmodule, genpair,
-         swapped, orig_ngens, i, j, el, p, fac, ngens, M, mat, v1, v2, v,
+         swapped, i, j, el, p, fac, M, mat, v1, v2, v,
          N, basis, basis1, basis2;
 
    if SMTX.IsMTXModule(module1) = false then
@@ -2268,9 +2245,7 @@ SMTX.IsomorphismComp:=function(module1, module2, action)
    SMTX.GoodElementGModule(module1);
    matrices1:=module1.generators;
    matrices2:=ShallowCopy(module2.generators);
-   ngens:=Length(matrices1);
-   orig_ngens:=ngens;
-   if ngens <> Length(matrices2) then
+   if Length(matrices1) <> Length(matrices2) then
       Error("GModules have different numbers of defining matrices.");
    fi;
 
@@ -2283,15 +2258,12 @@ SMTX.IsomorphismComp:=function(module1, module2, action)
    Info(InfoMeatAxe,2,"Extending generating set for second module.");
    el:=SMTX.AlgEl(module1);
    for genpair in el[1] do
-      ngens:=ngens + 1;
-      matrices2[ngens]:=matrices2[genpair[1]] * matrices2[genpair[2]];
+      Add(matrices2, matrices2[genpair[1]] * matrices2[genpair[2]]);
    od;
-   M:=ImmutableMatrix(F,Sum([1..ngens], i -> el[2][i] * matrices2[i]));
+   M:=ImmutableMatrix(F,Sum([1..Length(matrices2)], i -> el[2][i] * matrices2[i]));
    # Having done that, we no longer want the extra generators of module2,
    # so we throw them away again.
-   for i in [orig_ngens + 1..ngens] do
-      Unbind(matrices2[i]);
-   od;
+   matrices2:=ShallowCopy(module2.generators);
 
    Info(InfoMeatAxe,2,
         "Calculating characteristic polynomial for second module.");
@@ -2379,7 +2351,7 @@ end;
 ##
 SMTX.Homomorphisms:= function(m1, m2)
 
-   local F, ngens, orig_ngens, mats1, mats2, dim1, dim2, m1bas, imbases,
+   local F, mats1, mats2, dim1, dim2, m1bas, imbases,
          el, genpair, fac, mat, N, imlen, subdim, leadpos, vec, imvecs,
          numrels, rels, leadposrels, newrels, bno, genno, colno, rowno,
          zero, looking, ans, i, j, k;
@@ -2395,8 +2367,7 @@ SMTX.Homomorphisms:= function(m1, m2)
    fi;
    mats1:=m1.generators;
    mats2:=ShallowCopy(m2.generators);
-   ngens:=Length(mats1);
-   if ngens <> Length(mats2) then
+   if Length(mats1) <> Length(mats2) then
       return Error("GModules have different numbers of generators.");
    fi;
 
@@ -2429,19 +2400,14 @@ SMTX.Homomorphisms:= function(m1, m2)
    # store a basis in imbases.
 
    Info(InfoMeatAxe,2,"Extending generating set for second module.");
-   orig_ngens:=ngens;
    el:=SMTX.AlgEl(m1);
    for genpair in el[1] do
-      ngens:=ngens + 1;
-      mats2[ngens]:=mats2[genpair[1]] * mats2[genpair[2]];
+      Add(mats2, mats2[genpair[1]] * mats2[genpair[2]]);
    od;
-   mat:=ImmutableMatrix(F,Sum([1..ngens], i -> el[2][i] * mats2[i]));
+   mat:=ImmutableMatrix(F,Sum([1..Length(mats2)], i -> el[2][i] * mats2[i]));
    # Having done that, we no longer want the extra generators of m2,
    # so we throw them away again.
-   for i in [orig_ngens + 1..ngens] do
-      Unbind(mats2[i]);
-   od;
-   ngens:=orig_ngens;
+   mats2:=ShallowCopy(m2.generators);
 
    fac:=SMTX.AlgElCharPolFac(m1);
    mat:=SMTX_Value(fac, mat,mat^0);
@@ -2486,17 +2452,13 @@ SMTX.Homomorphisms:= function(m1, m2)
    Info(InfoMeatAxe,2,"Starting spinning.");
    bno:=1;
    while bno <= subdim do
-      for genno in [1..ngens] do
+      for genno in [1..Length(mats1)] do
          # apply generator no. genno to submodule generator bno
          vec:=m1bas[bno] * mats1[genno];
          # and do the same to the images
-         imvecs:=[];
-         for i in [1..imlen] do
-            imvecs[i]:=imbases[i][bno] * mats2[genno];
-         od;
+         imvecs:=List([1..imlen], i -> imbases[i][bno] * mats2[genno]);
          # try to express w in terms of existing submodule generators
          # make same changes to images
-         j:=1;
          for  j in [1..subdim] do
             k:=vec[leadpos[j]];
             if k <> zero then
