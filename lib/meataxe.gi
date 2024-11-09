@@ -458,8 +458,7 @@ SMTX.SpinnedBasis:=function( arg  )
             fi;
          od;
 
-         j:=1;
-         while j <= dim and w[j] = zero do j:=j + 1; od;
+         j := PositionNonZero(w);
          if j <= dim then
             # we have found a new generator of the submodule
             subdim:=subdim + 1;
@@ -1536,10 +1535,7 @@ local   L, d, p, M, one, zero, R, h, v, w, i, j, nd, ans,
    repeat
 
       # compute the head of <v>
-      h:=1;
-      while v[h] = zero  do
-         h:=h + 1;
-      od;
+      h:=PositionNonZero(v);
 
       # start with appropriate polynomial x^(<j> - 1)
       p:=ShallowCopy( M );
@@ -1550,9 +1546,7 @@ local   L, d, p, M, one, zero, R, h, v, w, i, j, nd, ans,
       while h <= d and IsBound( L[h] ) do
          p:=p - w[h] * R[h];
          w:=w - w[h] * L[h];
-         while h <= d and w[h] = zero do
-            h:=h + 1;
-         od;
+         h:=PositionNonZero(w, h);
       od;
 
       # if <v> is not the zero vector try next power
@@ -1614,16 +1608,11 @@ local  L, d, subd, subd0, zero, h, v, w, i, bno, gno, vno, newb, ngens;
    # First find normalized generators for subspace itself.
    for i in [1..subd] do
       v:=basis[i];
-      h:=1;
-      while v[h] = zero  do
-         h:=h + 1;
-      od;
+      h:=PositionNonZero(v);
       w:=v;
       while h <= d and IsBound( L[h] )  do
          w:=w - w[h] * L[h];
-         while h <= d and w[h] = zero  do
-            h:=h + 1;
-         od;
+         h:=PositionNonZero(w, h);
       od;
       if h <= d then
          L[h]:=w * w[h]^-1;
@@ -1637,16 +1626,11 @@ local  L, d, subd, subd0, zero, h, v, w, i, bno, gno, vno, newb, ngens;
    while subd < d do
       # translate vector vno of block bno by generator gno
       v:= basis[ (bno - 1) * subd0 + vno] * matrices[gno];
-      h:=1;
-      while h<=d and v[h] = zero  do
-         h:=h + 1;
-      od;
+      h:=PositionNonZero(v);
       w:=v;
       while h <= d and IsBound( L[h] )  do
          w:=w - w[h] * L[h];
-         while h <= d and w[h] = zero  do
-            h:=h + 1;
-         od;
+         h:=PositionNonZero(w, h);
       od;
       if h <= d then
          # new generator (and block)
@@ -2548,8 +2532,7 @@ SMTX.Homomorphisms:= function(m1, m2)
    # leadpos[j] will be the position of the first nonzero entry in m1bas[j]
    leadpos:=[];
    vec:=m1bas[1];
-   j:=1;
-   while j <= dim1 and vec[j] = zero do j:=j + 1; od;
+   j:=PositionNonZero(vec);
    leadpos[1]:=j;
    k:=vec[j]^-1;
    m1bas[1]:=k * vec;
@@ -2583,8 +2566,7 @@ SMTX.Homomorphisms:= function(m1, m2)
             fi;
          od;
 
-         j:=1;
-         while j <= dim1 and vec[j] = zero do j:=j + 1; od;
+         j:=PositionNonZero(vec);
          if j <= dim1 then
             # we have found a new generator of the submodule
             subdim:=subdim + 1;
@@ -2607,8 +2589,8 @@ SMTX.Homomorphisms:= function(m1, m2)
                      vec:=vec - k * rels[j];
                   fi;
                od;
-               j:=1;
-               while j <= imlen and vec[j] = zero do j:=j + 1; od;
+               Assert(0, Length(vec) = imlen);
+               j:=PositionNonZero(vec);
                if j <= imlen then
                   # we have a new relation
                   numrels:=numrels + 1;
@@ -2752,8 +2734,8 @@ local e, F, dim1, dim2, centmat, fullimbas, oldhoms,
          fi;
       od;
 
-      j:=1;
-      while j <= dim2 and vec[j] = zero do j:=j + 1; od;
+      Assert(0, Length(vec) = dim2);
+      j:=PositionNonZero(vec);
 
       if j <= dim2 then
          # vec is not in the image, so we adjoin this homomorphism to the list;
@@ -2772,8 +2754,7 @@ local e, F, dim1, dim2, centmat, fullimbas, oldhoms,
                fi;
             od;
 
-            j:=1;
-            while j <= dim2 and vec[j] = zero do j:=j + 1; od;
+            j := PositionNonZero(vec);
             subdim:=subdim + 1;
             leadpos[subdim]:=j;
             k:=vec[j]^-1;
@@ -3273,10 +3254,8 @@ SMTX.BasisInOrbit:=function( module  )
             fi;
          od;
 
-         j:=1;
-         while j <= dim and normedw[j] = zero do
-            j:=j + 1;
-         od;
+         Assert(0, Length(normedw) = dim);
+         j:=PositionNonZero(normedw);
          if j <= dim then
             # we have found a new generator of the submodule
             subdim:=subdim + 1;
