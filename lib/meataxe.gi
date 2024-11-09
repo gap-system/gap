@@ -436,7 +436,7 @@ SMTX.SpinnedBasis:=function( arg  )
    leadpos:=SubGModLeadPos(ans);
    for i in [1..Length(ans)] do
      w:=ans[i];
-     j:=w[PositionNonZero(w)];
+     j:=w[leadpos[i]];
      if not IsOne(j) then
        ans[i]:=j^-1*ans[i];
      fi;
