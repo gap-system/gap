@@ -366,22 +366,14 @@ SMTX.OrthogonalVector:=function( subbasis )
    return v;
 end;
 
-BindGlobal( "SubGModLeadPos", function(sub,dim,subdim,zero)
-local leadpos,i,j,k;
+BindGlobal( "SubGModLeadPos", function(sub)
+local leadpos;
    ## As in SpinnedBasis, leadpos[i] gives the position of the first nonzero
    ## entry (which will always be 1) of sub[i].
-
-   leadpos:=[];
-   for i in [1..subdim] do
-      j:=1;
-      while j <= dim and sub[i][j]=zero do j:=j + 1; od;
-      leadpos[i]:=j;
-      for k in [1..i - 1] do
-         if leadpos[k] = j then
-            Error("Subbasis isn't normed.");
-         fi;
-      od;
-   od;
+   leadpos:=List(sub, PositionNonZero);
+   if not IsDuplicateFree(leadpos) then
+      Error("Subbasis isn't normed.");
+   fi;
   return leadpos;
 end );
 
@@ -441,7 +433,7 @@ SMTX.SpinnedBasis:=function( arg  )
    subdim:=Length(ans);
    ldim:=subdim;
    step:=10;
-   leadpos:=SubGModLeadPos(ans,dim,subdim,zero);
+   leadpos:=SubGModLeadPos(ans);
    for i in [1..Length(ans)] do
      w:=ans[i];
      j:=w[PositionNonZero(w)];
@@ -522,13 +514,16 @@ SMTX.SubQuotActions:=function(matrices,sub,dim,subdim,F,typ)
 local s, c, q, leadpos, zero, zerov, smatrices, newg, im, newim, k, subi,
       qmats, smats, nmats, sr, qr, g, h, erg, i, j;
 
+  Assert(0, dim = Length(sub[1]));
+  Assert(0, subdim = Length(sub));
+
   s:=(typ mod 2)=1; # subspace indicator
   typ:=QuoInt(typ,2);
   q:=(typ mod 2)=1; # quotient indicator
   c:=typ>1; # common indicator
 
   zero:=Zero(F);
-  leadpos:=SubGModLeadPos(sub,dim,subdim,zero);
+  leadpos:=SubGModLeadPos(sub);
 
   if subdim*2<dim and not (q or c) then
     # the subspace dimension is small and we only want the subspace action:
@@ -3260,7 +3255,7 @@ SMTX.BasisInOrbit:=function( module  )
    ans:=[v];
    normedans:=[v];
    subdim:=1;
-   leadpos:=SubGModLeadPos(ans,dim,subdim,zero);
+   leadpos:=SubGModLeadPos(ans);
 
    i:=1;
    while i <= subdim and subdim < dim do
