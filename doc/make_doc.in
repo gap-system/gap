@@ -19,12 +19,14 @@ base:="@abs_top_srcdir@";;
 books:=["ref", "tut", "hpc", "dev"];;
 latexOpts := rec(Maintitlesize := "\\\\fontsize{36}{38}\\\\selectfont");;
 UpdateXMLForUserPreferences();
-outputstring:= "";;
-outputstream:= OutputTextString(outputstring, true);;
-SetPrintFormattingStatus(outputstream, false);
-SetInfoOutput(InfoGAPDoc, outputstream);
-SetInfoOutput(InfoWarning, outputstream);
 for run in [1,2] do
+  # collect output messages separately in both runs
+  outputstring:= "";;
+  outputstream:= OutputTextString(outputstring, true);;
+  SetPrintFormattingStatus(outputstream, false);
+  SetInfoOutput(InfoGAPDoc, outputstream);
+  SetInfoOutput(InfoWarning, outputstream);
+
   for book in books do
     path := Concatenation(base, "/doc/", book);
     dir := Directory(path);
@@ -70,11 +72,14 @@ for run in [1,2] do
     SetGapDocLaTeXOptions("color", latexOpts);
     MakeGAPDocDoc( path, "main.xml", files, book, "../..", "MathJax" $NOPDF);;
   od;
+
+  CloseStream(outputstream);
+  UnbindInfoOutput(InfoGAPDoc);
+  UnbindInfoOutput(InfoWarning);
+  Print(outputstring);
 od;
-CloseStream(outputstream);
-UnbindInfoOutput(InfoGAPDoc);
-UnbindInfoOutput(InfoWarning);
-Print(outputstring);
+
+# evaluate the outputs for the second run
 outputstring:= ReplacedString(outputstring, "\c", "");;
 errors:= Filtered(SplitString(outputstring, "\n"),
            x -> StartsWith(x, "#W ") and x <> "#W There are overfull boxes:");;
