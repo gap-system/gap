@@ -1950,6 +1950,79 @@ static Obj FuncELM_GF2MAT(Obj self, Obj mat, Obj row)
 
 /****************************************************************************
 **
+*F  FuncSWAP_ROWS_GF2MAT( <self>, <mat>, <r1>, <r2> )
+**
+*/
+static Obj FuncSWAP_ROWS_GF2MAT(Obj self, Obj mat, Obj row1, Obj row2)
+{
+    RequireMutable(SELF_NAME, mat, "mat");
+
+    UInt r1 = GetSmallInt(SELF_NAME, row1);
+    UInt r2 = GetSmallInt(SELF_NAME, row2);
+    UInt m = LEN_GF2MAT(mat);
+    if (m < r1) {
+        ErrorMayQuit("row index %d exceeds %d, the number of rows", r1, m);
+    }
+    if (m < r2) {
+        ErrorMayQuit("row index %d exceeds %d, the number of rows", r2, m);
+    }
+
+    Obj a = ELM_GF2MAT(mat, r1);
+    Obj b = ELM_GF2MAT(mat, r2);
+
+    SET_ELM_GF2MAT(mat, r1, b);
+    SET_ELM_GF2MAT(mat, r2, a);
+
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  FuncSWAP_COLS_GF2MAT( <self>, <mat>, <c1>, <c2> )
+**
+*/
+static Obj FuncSWAP_COLS_GF2MAT(Obj self, Obj mat, Obj col1, Obj col2)
+{
+    UInt c1 = GetSmallInt(SELF_NAME, col1);
+    UInt c2 = GetSmallInt(SELF_NAME, col2);
+    UInt m = LEN_GF2MAT(mat);
+    if (m == 0)
+        return 0;
+
+    UInt n = LEN_GF2VEC(ELM_GF2MAT(mat, 1));
+    if (n < c1) {
+        ErrorMayQuit("column index %d exceeds %d, the number of columns", c1, n);
+    }
+    if (n < c2) {
+        ErrorMayQuit("column index %d exceeds %d, the number of columns", c2, n);
+    }
+
+    for (UInt i = 1; i <= m; ++i) {
+        Obj vec = ELM_GF2MAT(mat, i);
+        if (!IS_MUTABLE_OBJ(vec)) {
+            ErrorMayQuit("row %d is immutable", i, 0);
+        }
+        if (LEN_GF2VEC(vec) != n) {
+            ErrorMayQuit("row length mismatch, %d versus %d", n, LEN_GF2VEC(vec));
+        }
+
+        Obj a = ELM_GF2VEC(vec, c1);
+        Obj b = ELM_GF2VEC(vec, c2);
+        if (a != b) {
+            // one entry is 1, the other is 0; so to switch them,
+            // we can simply flip each individually
+            BLOCK_ELM_GF2VEC(vec, c1) ^= MASK_POS_GF2VEC(c1);
+            BLOCK_ELM_GF2VEC(vec, c2) ^= MASK_POS_GF2VEC(c2);
+        }
+    }
+
+    return 0;
+}
+
+
+/****************************************************************************
+**
 *F  FuncUNB_GF2VEC( <self>, <list>, <pos> ) . unbind position of a GF2 vector
 **
 **  'UNB_GF2VEC' unbind  the element at  the position  <pos> in  a GF2 vector
@@ -4048,6 +4121,8 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_3ARGS(ASS_GF2VEC, gf2vec, pos, elm),
     GVAR_FUNC_2ARGS(ELM_GF2MAT, gf2mat, pos),
     GVAR_FUNC_3ARGS(ASS_GF2MAT, gf2mat, pos, elm),
+    GVAR_FUNC_3ARGS(SWAP_ROWS_GF2MAT, gf2mat, row1, row2),
+    GVAR_FUNC_3ARGS(SWAP_COLS_GF2MAT, gf2mat, col1, col2),
     GVAR_FUNC_2ARGS(UNB_GF2VEC, gf2vec, pos),
     GVAR_FUNC_2ARGS(UNB_GF2MAT, gf2mat, pos),
     GVAR_FUNC_1ARGS(ZERO_GF2VEC, gf2vec),
