@@ -657,6 +657,24 @@ end);
 
 #############################################################################
 ##
+#M  SwapMatrixRows( <gf2mat>, <row1>, <row2> )  . . . swap rows of GF2 matrix
+##
+InstallMethod( SwapMatrixRows, "for a mutable GF2 matrix, and two row numbers",
+  [ IsList and IsGF2MatrixRep and IsMutable, IsPosInt, IsPosInt ],
+  SWAP_ROWS_GF2MAT );
+
+
+#############################################################################
+##
+#M  SwapMatrixColumns( <gf2mat>, <col1>, <col2> ) . . swap cols of GF2 matrix
+##
+InstallMethod( SwapMatrixColumns, "for a mutable GF2 matrix, and two column numbers",
+  [ IsList and IsGF2MatrixRep and IsMutable, IsPosInt, IsPosInt ],
+  SWAP_COLS_GF2MAT );
+
+
+#############################################################################
+##
 #M  PrintObj( <gf2mat> )  . . . . . . . . . . . . . . . .  print a GF2 matrix
 ##
 InstallMethod( PrintObj,
