@@ -1488,11 +1488,10 @@ InstallMethod( DeterminantMatDestructive,
             i := i + 1;
 
             # make its row the current row
+            row := mat[j];
             if i <> j  then
-                row := mat[j];  mat[j] := mat[i];  mat[i] := row;
+                SwapMatrixRows(mat, j, i);
                 sgn := -sgn;
-            else
-                row := mat[j];
             fi;
             piv := row[k];
 
@@ -1565,13 +1564,10 @@ function( mat )
             Info( InfoMatrix, 2, "  nonzero columns: ", k );
 
             # ... make its row the current row, ...
+            row := mat[j];
             if k <> j then
-                row    := mat[j];
-                mat[j] := mat[k];
-                mat[k] := row;
+                SwapMatrixRows(mat, j, k);
                 sgn    := -sgn;
-            else
-                row := mat[j];
             fi;
 
             # ... and normalize the row.
@@ -1788,31 +1784,19 @@ local R,M,transform,divide,swaprow, swapcol, addcol, addrow, multcol, multrow, l
   fi;
 
   swaprow:=function(a,b)
-  local r;
-    r:=M[a];
-    M[a]:=M[b];
-    M[b]:=r;
+    SwapMatrixRows(M, a, b);
     if transform then
-      r:=left[a];
-      left[a]:=left[b];
-      left[b]:=r;
+      SwapMatrixRows(left, a, b);
       if basmat<>fail then
-        r:=basmat[a];
-        basmat[a]:=basmat[b];
-        basmat[b]:=r;
+        SwapMatrixRows(basmat, a, b);
       fi;
     fi;
   end;
 
   swapcol:=function(a,b)
-  local c;
-    c:=M{[1..l]}[a];
-    M{[1..l]}[a]:=M{[1..l]}[b];
-    M{[1..l]}[b]:=c;
+    SwapMatrixColumns(M, a, b);
     if transform then
-      c:=right{[1..n]}[a];
-      right{[1..n]}[a]:=right{[1..n]}[b];
-      right{[1..n]}[b]:=c;
+      SwapMatrixColumns(right, a, b);
     fi;
   end;
 
