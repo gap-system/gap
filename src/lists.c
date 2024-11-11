@@ -1799,6 +1799,61 @@ void AsssListLevelCheck (
 
 /****************************************************************************
 **
+*F  FuncSWAP_MAT_ROWS( <self>, <mat>, <row1>, <row2> )
+*/
+static Obj SwapMatRows;
+
+static Obj FuncSWAP_MAT_ROWS(Obj self, Obj mat, Obj row1, Obj row2)
+{
+    if (IS_POS_INTOBJ(row1) && IS_POS_INTOBJ(row2) && IS_PLIST(mat)) {
+        Int r1 = INT_INTOBJ(row1);
+        Int r2 = INT_INTOBJ(row2);
+        Obj row1list = r1 <= LEN_PLIST(mat) ? ELM_PLIST(mat, r1) : 0;
+        Obj row2list = r1 <= LEN_PLIST(mat) ? ELM_PLIST(mat, r2) : 0;
+        if (!row1list)
+            ErrorMayQuit("Matrix Element: <mat>[%d] must have an assigned value",
+                         (Int)r1, 0);
+        if (!row2list)
+            ErrorMayQuit("Matrix Element: <mat>[%d] must have an assigned value",
+                         (Int)r2, 0);
+
+        SET_ELM_PLIST(mat, r1, row2list);
+        SET_ELM_PLIST(mat, r2, row1list);
+        return 0;
+    }
+
+    return DoOperation3Args(SwapMatRows, mat, row1, row2);
+}
+
+
+/****************************************************************************
+**
+*F  FuncSWAP_MAT_COLS( <self>, <mat>, <col1>, <col2> )
+*/
+static Obj SwapMatCols;
+
+static Obj FuncSWAP_MAT_COLS(Obj self, Obj mat, Obj col1, Obj col2)
+{
+    if (IS_POS_INTOBJ(col1) && IS_POS_INTOBJ(col2) && IS_PLIST(mat)) {
+        Int c1 = INT_INTOBJ(col1);
+        Int c2 = INT_INTOBJ(col2);
+        Int nrows = LEN_PLIST(mat);
+        for (int r = 1; r <= nrows; r++) {
+            Obj row = ELM_LIST(mat, r);
+            Obj elm1 = ELM_LIST(row, c1);
+            Obj elm2 = ELM_LIST(row, c2);
+            ASS_LIST(row, c1, elm2);
+            ASS_LIST(row, c2, elm1);
+        }
+        return 0;
+    }
+
+    return DoOperation3Args(SwapMatCols, mat, col1, col2);
+}
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
 
@@ -1864,6 +1919,9 @@ static StructGVarOper GVarOpers[] = {
 
     GVAR_OPER_4ARGS(ASS_MAT, mat, row, col, obj, &AssMatOper),
     GVAR_OPER_3ARGS(ELM_MAT, mat, row, col, &ElmMatOper),
+
+    GVAR_OPER_3ARGS(SWAP_MAT_ROWS, mat, row1, row2, &SwapMatRows),
+    GVAR_OPER_3ARGS(SWAP_MAT_COLS, mat, col1, col2, &SwapMatCols),
 
     { 0, 0, 0, 0, 0, 0 }
 

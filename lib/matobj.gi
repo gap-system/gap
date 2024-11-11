@@ -1852,18 +1852,6 @@ InstallMethod( SwapMatrixRows, "for a mutable matrix object, and two row numbers
 
   end );
 
-InstallEarlyMethod( SwapMatrixRows,
-  function( mat, i, j )
-    local tmp;
-    if IsPlistRep(mat) then
-      tmp := mat[i];
-      mat[i] := mat[j];
-      mat[j] := tmp;
-    else
-      TryNextMethod();
-    fi;
-  end );
-
 ############################################################################
 
 InstallMethod( SwapMatrixColumns, "for a mutable matrix object, and two column numbers",
@@ -1879,20 +1867,6 @@ InstallMethod( SwapMatrixColumns, "for a mutable matrix object, and two column n
         od;
     fi;
 
-  end );
-
-InstallEarlyMethod( SwapMatrixColumns,
-  function( mat, i, j )
-    local row, tmp;
-    if IsPlistRep(mat) then
-      for row in mat do
-        tmp := row[i];
-        row[i] := row[j];
-        row[j] := tmp;
-      od;
-    else
-      TryNextMethod();
-    fi;
   end );
 
 
