@@ -1519,7 +1519,7 @@ end;
 ##  It is called by IsAbsolutelyIrreducible()
 ##
 SMTX.CompleteBasis:=function( matrices, basis )
-local  L, d, subd, subd0, zero, h, v, w, i, bno, gno, vno, newb, ngens;
+local  L, d, subd, subd0, h, v, w, i, bno, gno, vno, newb, ngens;
 
    subd:=Length(basis);
    subd0:=subd;
@@ -1529,7 +1529,6 @@ local  L, d, subd, subd0, zero, h, v, w, i, bno, gno, vno, newb, ngens;
    fi;
    # L is list of normalized generators of the subspace spanned by basis.
    L:=[];
-   zero:=Zero(basis[1][1]);
    ngens:=Length(matrices);
 
    # First find normalized generators for subspace itself.
@@ -1612,7 +1611,7 @@ SMTX.AbsoluteIrreducibilityTest:=function( module )
 local dim, ndim, gcd, div, e, ct, F, q, ok,
       M, v, M0, v0, C, C0, centmat, one, zero,
       pow, matrices, newmatrices, looking,
-      basisN, basisB, basisBN, P, Pinv, i, j, k, offset, nblocks;
+      basisN, basisB, basisBN, P, Pinv, i, offset, nblocks;
 
    if not SMTX.IsMTXModule(module) then
       Error("Argument of IsAbsoluteIrreducible is not a module");
