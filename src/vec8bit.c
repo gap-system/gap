@@ -3949,6 +3949,79 @@ static Obj FuncELM_MAT8BIT(Obj self, Obj mat, Obj pos)
 
 /****************************************************************************
 **
+*F  FuncSWAP_ROWS_MAT8BIT( <self>, <mat>, <r1>, <r2> )
+**
+*/
+static Obj FuncSWAP_ROWS_MAT8BIT(Obj self, Obj mat, Obj row1, Obj row2)
+{
+    RequireMat8BitRep(SELF_NAME, mat);
+    RequireMutable(SELF_NAME, mat, "mat");
+
+    UInt r1 = GetSmallInt(SELF_NAME, row1);
+    UInt r2 = GetSmallInt(SELF_NAME, row2);
+    UInt m = LEN_MAT8BIT(mat);
+    if (m < r1) {
+        ErrorMayQuit("row index %d exceeds %d, the number of rows", r1, m);
+    }
+    if (m < r2) {
+        ErrorMayQuit("row index %d exceeds %d, the number of rows", r2, m);
+    }
+
+    Obj a = ELM_MAT8BIT(mat, r1);
+    Obj b = ELM_MAT8BIT(mat, r2);
+
+    SET_ELM_MAT8BIT(mat, r1, b);
+    SET_ELM_MAT8BIT(mat, r2, a);
+
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  FuncSWAP_COLS_MAT8BIT( <self>, <mat>, <c1>, <c2> )
+**
+*/
+static Obj FuncSWAP_COLS_MAT8BIT(Obj self, Obj mat, Obj col1, Obj col2)
+{
+    RequireMat8BitRep(SELF_NAME, mat);
+    UInt c1 = GetSmallInt(SELF_NAME, col1);
+    UInt c2 = GetSmallInt(SELF_NAME, col2);
+    UInt m = LEN_MAT8BIT(mat);
+    if (m == 0)
+        return 0;
+
+    UInt n = LEN_VEC8BIT(ELM_MAT8BIT(mat, 1));
+    if (n < c1) {
+        ErrorMayQuit("column index %d exceeds %d, the number of columns", c1, n);
+    }
+    if (n < c2) {
+        ErrorMayQuit("column index %d exceeds %d, the number of columns", c2, n);
+    }
+
+    for (UInt i = 1; i <= m; ++i) {
+        Obj vec = ELM_MAT8BIT(mat, i);
+        if (!IS_MUTABLE_OBJ(vec)) {
+            ErrorMayQuit("row %d is immutable", i, 0);
+        }
+        if (LEN_VEC8BIT(vec) != n) {
+            ErrorMayQuit("row length mismatch, %d versus %d", n, LEN_VEC8BIT(vec));
+        }
+
+        Obj a = FuncELM_VEC8BIT(self, vec, col1);
+        Obj b = FuncELM_VEC8BIT(self, vec, col2);
+        if (a != b) {
+            ASS_VEC8BIT(vec, col1, b);
+            ASS_VEC8BIT(vec, col2, a);
+        }
+    }
+
+    return 0;
+}
+
+
+/****************************************************************************
+**
 *F  SumMat8BitMat8Bit( <ml> ,<mr>)
 **
 **  Caller's job to do all checks
@@ -5878,6 +5951,8 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(INV_MAT8BIT_IMMUTABLE, mat),
     GVAR_FUNC_3ARGS(ASS_MAT8BIT, mat, pos, obj),
     GVAR_FUNC_2ARGS(ELM_MAT8BIT, mat, pos),
+    GVAR_FUNC_3ARGS(SWAP_ROWS_MAT8BIT, mat, row1, row2),
+    GVAR_FUNC_3ARGS(SWAP_COLS_MAT8BIT, mat, col1, col2),
     GVAR_FUNC_2ARGS(SUM_MAT8BIT_MAT8BIT, ml, mr),
     GVAR_FUNC_2ARGS(DIFF_MAT8BIT_MAT8BIT, ml, mr),
     GVAR_FUNC_3ARGS(ADD_COEFFS_VEC8BIT_3, vec1, vec2, mult),
