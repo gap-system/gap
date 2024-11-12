@@ -60,7 +60,7 @@ DeclareGlobalFunction( "AbelianPQuotient" );
 ##  By default the value of the paramter <A>logord</A> is set to <M>256</M>.
 ##  If the parameter <A>logord</A> is specified, then the parameter <A>c</A> must also be
 ##  given.
-##  The algorithm will only compute with factor groups of order
+##  The algorithm only computes with factor groups of order
 ##  at most <M>p^{<A>logord</A>}</M>.
 ##  If the order of a factor group exceeds <M>p^{<A>logord</A>}</M>,
 ##  the behaviour of the algorithm depends on the option
