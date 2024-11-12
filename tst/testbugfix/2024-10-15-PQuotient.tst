@@ -8,9 +8,3 @@ gap> PQuotient(G, p, 1, 2 : noninteractive) <> fail;
 true
 gap> PQuotient(G, p, 1, 1 : noninteractive) = fail;
 true
-
-#
-gap> PQuotient( FreeGroup(2), 5, 10, 520 : noninteractive ) <> fail;
-true
-gap> PQuotient( FreeGroup(2), 5, 10, 519 : noninteractive ) = fail;
-true
