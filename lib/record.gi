@@ -40,13 +40,11 @@ InstallMethod( PrintObj,
 ## first used). Except for the sorting of components this does the same as
 ## the former (now removed) kernel function FuncPRINT_PREC_DEFAULT.
     function( record )
-    local com, i, snam, nam, names, order;
+    local com, i, snam, nam, names;
     Print("\>\>rec(\n\>\>");
     com := false;
 
-    names := List(RecNames(record));
-    order := [1..Length(names)];
-    SortParallel(names, order);
+    names := Set(RecNames(record));
 
     for i in [1..Length(names)] do
         nam := names[i];
@@ -55,7 +53,7 @@ InstallMethod( PrintObj,
         else
             com := true;
         fi;
-        SET_PRINT_OBJ_INDEX(order[i]);
+        SET_PRINT_OBJ_INDEX(RNamObj(nam));
         # easy if nam is integer or valid identifier:
         if ForAll(nam, x-> x in IdentifierLetters) and Size(nam) > 0 then
           Print(nam, "\< := \>");
@@ -114,13 +112,11 @@ InstallMethod( ViewObj,
     "record",
     [ IsRecord ],
     function( record )
-    local nam, com, i, snam, names, order;
+    local nam, com, i, snam, names;
     Print("\>\>rec( \>\>");
     com := false;
 
-    names := List(RecNames(record));
-    order := [1..Length(names)];
-    SortParallel(names, order);
+    names := Set(RecNames(record));
 
     for i in [1..Length(names)] do
         nam := names[i];
@@ -129,7 +125,7 @@ InstallMethod( ViewObj,
         else
             com := true;
         fi;
-        SET_PRINT_OBJ_INDEX(order[i]);
+        SET_PRINT_OBJ_INDEX(RNamObj(nam));
         # easy if nam is integer or valid identifier:
         if ForAll(nam, x-> x in IdentifierLetters) and Size(nam) > 0 then
           Print(nam, " := ");
