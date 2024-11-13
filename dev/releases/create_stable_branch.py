@@ -9,11 +9,6 @@
 ##  SPDX-License-Identifier: GPL-2.0-or-later
 ##
 
-# TODO: this is incomplete work in progress
-
-# TODO: implement parts of the steps described in
-# <https://github.com/gap-system/gap-distribution/blob/master/DistributionUpdate/STABLE_BRANCH_CHECKLIST.md>
-
 import subprocess
 import sys
 
