@@ -136,6 +136,25 @@ InstallOtherMethod( Unbind\[\], "for a compressed MatFFE",
     fi;
 end);
 
+
+#############################################################################
+##
+#M  SwapMatrixRows( <mat>, <row1>, <row2> )
+##
+InstallMethod( SwapMatrixRows, "for a mutable compressed MatFFE, and two row numbers",
+  [ IsList and Is8BitMatrixRep and IsMutable, IsPosInt, IsPosInt ],
+  SWAP_ROWS_MAT8BIT );
+
+
+#############################################################################
+##
+#M  SwapMatrixColumns( <mat>, <col1>, <col2> )
+##
+InstallMethod( SwapMatrixColumns, "for a mutable compressed MatFFE, and two column numbers",
+  [ IsList and Is8BitMatrixRep and IsMutable, IsPosInt, IsPosInt ],
+  SWAP_COLS_MAT8BIT );
+
+
 #############################################################################
 ##
 #M  ViewObj( <mat> )
