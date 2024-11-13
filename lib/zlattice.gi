@@ -196,8 +196,7 @@ InstallGlobalFunction( LinearIndependentColumns, function( mat )
 
             # Swap rows `j' and `i'.
             row:= mat[j];
-            mat[j]:= mat[i];
-            mat[i]:= row;
+            SwapMatrixRows(mat, i, j);
 
             # Normalize column `k'.
             val:= row[k];
