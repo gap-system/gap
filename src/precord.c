@@ -521,11 +521,6 @@ void SortPRecRNam (
 */
 
 
-static void PrintPathPRec(Obj rec, Int indx)
-{
-    Pr(".%I", (Int)NAME_RNAM(labs(GET_RNAM_PREC(rec, indx))), 0);
-}
-
 /****************************************************************************
 **
 *F  FuncREC_NAMES( <self>, <rec> )  . . . . . . . .  record names of a record
@@ -850,8 +845,6 @@ static Int InitKernel (
     // install printer
     PrintObjFuncs[  T_PREC            ] = PrintPRec;
     PrintObjFuncs[  T_PREC +IMMUTABLE ] = PrintPRec;
-    PrintPathFuncs[ T_PREC            ] = PrintPathPRec;
-    PrintPathFuncs[ T_PREC +IMMUTABLE ] = PrintPathPRec;
 
     // install the comparison methods
     for (UInt t1 = T_PREC; t1 <= T_PREC + IMMUTABLE; t1++) {
