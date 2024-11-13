@@ -50,15 +50,8 @@ static ModuleStateOffset ObjectsStateOffset = -1;
 
 typedef struct {
     UInt  PrintObjDepth;
-#ifdef HPCGAP
-    Obj   PrintObjThissObj;
-    Obj * PrintObjThiss;
-    Obj   PrintObjIndicesObj;
-    Int * PrintObjIndices;
-#else
     Obj   PrintObjThiss[MAXPRINTDEPTH];
     Int   PrintObjIndices[MAXPRINTDEPTH];
-#endif
 
     // This variable is used to allow a ViewObj method to call PrintObj on the
     // same object without triggering use of '~'. It contains one of the
@@ -940,18 +933,20 @@ static void PrintInaccessibleObject(Obj obj)
 }
 #endif
 
-#ifdef HPCGAP
-// On-demand creation of the PrintObj stack
-static void InitPrintObjStack(ObjectsModuleState * os)
+static void PRINT_PATH(Obj obj, Int idx)
 {
-    if (!os->PrintObjThiss) {
-        os->PrintObjThissObj = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Obj)+sizeof(Obj));
-        os->PrintObjThiss = ADDR_OBJ(os->PrintObjThissObj)+1;
-        os->PrintObjIndicesObj = NewBag(T_DATOBJ, MAXPRINTDEPTH*sizeof(Int)+sizeof(Obj));
-        os->PrintObjIndices = (Int *)(ADDR_OBJ(os->PrintObjIndicesObj)+1);
+    UInt tnum = TNUM_OBJ(obj);
+    if (tnum == T_PREC || tnum == T_PREC + IMMUTABLE) {
+        Pr(".%I", (Int)NAME_RNAM(labs(GET_RNAM_PREC(obj, idx))), 0);
+    }
+    else if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM) {
+        Pr("[%d]", idx, 0);
+    }
+    else {
+        ErrorQuit("Panic: tried to print a path of unsupported type '%s'",
+                  (Int)tnum, 0);
     }
 }
-#endif
 
 /****************************************************************************
 **
@@ -969,10 +964,6 @@ void PrintObj(Obj obj)
 #endif
 
     ObjectsModuleState * os = &MODULE_STATE(Objects);
-
-#ifdef HPCGAP
-    InitPrintObjStack(os);
-#endif
 
     // First check if <obj> is actually the current object being viewed, since
     // ViewObj(<obj>) may result in a call to PrintObj(<obj>); in that case,
@@ -1095,10 +1086,6 @@ void ViewObj(Obj obj)
 
     ObjectsModuleState * os = &MODULE_STATE(Objects);
 
-#ifdef HPCGAP
-    InitPrintObjStack(os);
-#endif
-
     // print the path if <obj> is on the stack
     if (IS_ON_PRINT_STACK(os, obj)) {
         Pr("~", 0, 0);
@@ -1137,25 +1124,6 @@ static Obj FuncVIEW_OBJ(Obj self, Obj obj)
 {
     ViewObj( obj );
     return 0;
-}
-
-
-/****************************************************************************
-**
-*V  PrintPathFuncs[<type>]  . . . . . . printer for subobjects of type <type>
-**
-**  'PrintPathFuncs'  is   the   dispatch table  that     contains for  every
-**  appropriate type of objects a pointer to  the path printer for objects of
-**  that type.  The path  printer is the function '<func>(<obj>,<indx>)' that
-**  should be  called  to print  the  selector   that selects  the  <indx>-th
-**  subobject of the object <obj> of this type.
-*/
-void (* PrintPathFuncs [ LAST_REAL_TNUM /* +PRINTING */+1 ])( Obj obj, Int indx );
-
-static void PrintPathError(Obj obj, Int indx)
-{
-    ErrorQuit("Panic: tried to print a path of unsupported type '%s'",
-              (Int)TNAM_OBJ(obj), 0);
 }
 
 
@@ -2167,12 +2135,6 @@ static Int InitKernel (
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
         assert(PrintObjFuncs[ t ] == 0);
         PrintObjFuncs[ t ] = PrintObjObject;
-    }
-
-    // enter 'PrintUnknownObj' in the dispatching tables
-    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
-        assert(PrintPathFuncs[ t ] == 0);
-        PrintPathFuncs[ t ] = PrintPathError;
     }
 
 #ifdef GAP_ENABLE_SAVELOAD

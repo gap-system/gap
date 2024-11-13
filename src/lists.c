@@ -1646,7 +1646,6 @@ Obj             TYPES_LIST_FAM (
 /****************************************************************************
 **
 *F  PrintListDefault(<list>)  . . . . . . . . . . . . . . . . .  print a list
-*F  PrintPathList(<list>,<indx>)  . . . . . . . . . . . . . print a list path
 **
 **  'PrintListDefault' simply prints the elements in the given list.
 **  The line break hints are consistent with those
@@ -1676,11 +1675,6 @@ static void PrintListDefault(Obj list)
         }
     }
     Pr(" %4<]", 0, 0);
-}
-
-static void PrintPathList(Obj list, Int indx)
-{
-    Pr("[%d]", indx, 0);
 }
 
 
@@ -2215,7 +2209,6 @@ static Int InitKernel (
     // install the default printers
     for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         PrintObjFuncs [ type ] = PrintListDefault;
-        PrintPathFuncs[ type ] = PrintPathList;
     }
 
 
