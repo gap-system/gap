@@ -536,7 +536,7 @@ function(d)
   return(STRINGIFY("DoubleCoset(\<",
                    ViewString(LeftActingGroup(d)),",\>",
                    ViewString(Representative(d)),",\>",
-                   ViewString(RightActingGroup(d)),")"));
+                   ViewString(RightActingGroup(d)),"\<)"));
 end);
 
 InstallMethodWithRandomSource(Random,
