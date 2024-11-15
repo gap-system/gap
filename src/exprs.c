@@ -1187,8 +1187,7 @@ static void RecExpr2(Obj rec, Expr expr)
         sub = EVAL_EXPR( tmp );
         AssPRec(rec,rnam,sub);
     }
-    SortPRecRNam(rec,0);
-
+    SortPRecRNam(rec);
 }
 
 

@@ -222,7 +222,7 @@ static void MakeImmutablePRec(Obj rec)
     // Sort the record at this point. This can never hurt, unless the record
     // will never be accessed again anyway. But for HPC-GAP it is essential so
     // that immutable records are actually binary unchanging.
-    SortPRecRNam(rec, 0);
+    SortPRecRNam(rec);
 }
 
 
@@ -250,7 +250,7 @@ UInt PositionPRec(Obj rec, UInt rnam, int cleanup)
 #else
         if (cleanup) {
 #endif
-            SortPRecRNam(rec,0);
+            SortPRecRNam(rec);
         } else {
             // We are not allowed to cleanup, so we live with it, we
             // first try to find rnam in the mess at the end, then
@@ -391,7 +391,7 @@ void AssPRec (
     len = LEN_PREC( rec );
 
     if (len % 1000 == 0) {   // A hack to occasionally do some cleanup!
-        SortPRecRNam(rec,0);
+        SortPRecRNam(rec);
     }
 
     UInt i = PositionPRec(rec, rnam, 0);
@@ -424,15 +424,12 @@ static void PrintPRec(Obj rec)
 
 /****************************************************************************
 **
-*F  SortPRecRNam(<rec>, <inplace>) . . . . . . . sort the Rnams of the record
+*F  SortPRecRNam(<rec>) . . . . . . . . . . . .  sort the Rnams of the record
 **
 **  This is needed after the components of a record have been assigned
 **  in not necessarily sorted order in the kernel. It is automatically
 **  called on the first read access if necessary. See the top of "precord.c"
 **  for a comment on lazy sorting.
-**  The second argument remains for backwards compatibility with packages
-**  and should always be 0.
-**
 */
 static int PrecComparer(const void *a, const void *b)
 {
@@ -443,11 +440,8 @@ static int PrecComparer(const void *a, const void *b)
     else return 1;
 }
 
-void SortPRecRNam (
-    Obj                 rec, int inplace )
+void SortPRecRNam(Obj rec)
 {
-    GAP_ASSERT(inplace == 0);
-
     UInt len = LEN_PREC(rec);
     UInt i,j,k,save;
     int issorted = 1;
@@ -544,7 +538,7 @@ static Obj InnerRecNames(Obj rec)
     Obj                 string;         // one name as string
     UInt                i;
     Obj                 name;
-    SortPRecRNam(rec,0);   // Make sure rnams are sorted and thus negative
+    SortPRecRNam(rec);   // Make sure rnams are sorted and thus negative
 
     // allocate the list
     list = NEW_PLIST( T_PLIST, LEN_PREC(rec) );
@@ -617,8 +611,8 @@ static Int EqPRec(Obj left, Obj right)
         return 0;
 
     // ensure records are sorted by their RNam
-    SortPRecRNam(left,0);
-    SortPRecRNam(right,0);
+    SortPRecRNam(left);
+    SortPRecRNam(right);
 
     CheckRecursionBefore();
 
@@ -662,8 +656,8 @@ static Int LtPRec(Obj left, Obj right)
     GAP_ASSERT(IS_PREC(right));
 
     // ensure records are sorted by their RNam
-    SortPRecRNam(left,0);
-    SortPRecRNam(right,0);
+    SortPRecRNam(left);
+    SortPRecRNam(right);
 
     CheckRecursionBefore();
     res = 0;

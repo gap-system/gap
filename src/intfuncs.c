@@ -699,7 +699,7 @@ static Obj FuncMAKE_BITFIELDS(Obj self, Obj widths)
         AssPRec(ms, RNamName("booleanGetters"), bgetters);
         AssPRec(ms, RNamName("booleanSetters"), bsetters);
     }
-    SortPRecRNam(ms, 0);
+    SortPRecRNam(ms);
     MakeImmutableNoRecurse(ms);
     return ms;
 }

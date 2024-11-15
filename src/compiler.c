@@ -2742,7 +2742,7 @@ static void CompRecExpr2(CVar rec, Expr expr)
 
         if ( IS_TEMP_CVAR( rnam ) )  FreeTemp( TEMP_CVAR( rnam ) );
     }
-    Emit( "SortPRecRNam( %c, 0 );\n", rec );
+    Emit( "SortPRecRNam( %c );\n", rec );
 
 }
 

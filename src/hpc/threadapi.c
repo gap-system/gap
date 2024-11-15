@@ -2019,7 +2019,7 @@ MigrateObjects(int count, Obj * objects, Region * target, int retype)
     for (i = 0; i < count; i++) {
         Obj obj = objects[i];
         if (TNUM_OBJ(obj) == T_PREC) {
-            SortPRecRNam(obj, 0);
+            SortPRecRNam(obj);
         }
         SET_REGION(obj, target);
     }

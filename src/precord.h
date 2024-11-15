@@ -237,18 +237,14 @@ void UnbPRec(Obj rec, UInt rnam);
 
 /****************************************************************************
 **
-*F  SortPRecRNam(<rec>, <inplace>) . . . . . . . sort the Rnams of the record
+*F  SortPRecRNam(<rec>) . . . . . . . . . . . .  sort the Rnams of the record
 **
 **  This is needed after the components of a record have been assigned
 **  in not necessarily sorted order in the kernel. It is automatically
 **  called on the first read access if necessary. See the top of "precord.c"
 **  for a comment on lazy sorting.
-**  If inplace is 1 then a slightly slower algorithm is used of
-**  which we know that it does not produce garbage collections.
-**  If inplace is 0 a garbage collection may be triggered.
-**
 */
-void SortPRecRNam(Obj rec, int inplace);
+void SortPRecRNam(Obj rec);
 
 
 #ifdef USE_THREADSAFE_COPYING

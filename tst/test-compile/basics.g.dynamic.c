@@ -566,7 +566,7 @@ static Obj  HdlrFunc3 (
  t_3 = (Obj)R_myopt;
  t_4 = True;
  AssPRec( t_2, (UInt)t_3, t_4 );
- SortPRecRNam( t_2, 0 );
+ SortPRecRNam( t_2 );
  CALL_1ARGS( GF_PushOptions, t_2 );
  if ( TNUM_OBJ( l_vararg__fun ) == T_FUNCTION ) {
   t_2 = CALL_0ARGS( l_vararg__fun );
@@ -590,7 +590,7 @@ static Obj  HdlrFunc3 (
  t_3 = (Obj)R_myopt;
  t_4 = MakeString( "value" );
  AssPRec( t_2, (UInt)t_3, t_4 );
- SortPRecRNam( t_2, 0 );
+ SortPRecRNam( t_2 );
  CALL_1ARGS( GF_PushOptions, t_2 );
  if ( TNUM_OBJ( l_vararg__fun ) == T_FUNCTION ) {
   t_2 = CALL_0ARGS( l_vararg__fun );
@@ -719,7 +719,7 @@ static Obj  HdlrFunc3 (
  t_2 = (Obj)R_myopt;
  t_3 = True;
  AssPRec( t_1, (UInt)t_2, t_3 );
- SortPRecRNam( t_1, 0 );
+ SortPRecRNam( t_1 );
  CALL_1ARGS( GF_PushOptions, t_1 );
  
  /* vararg_fun(  ); */
@@ -734,7 +734,7 @@ static Obj  HdlrFunc3 (
  t_2 = (Obj)R_myopt;
  t_3 = MakeString( "value" );
  AssPRec( t_1, (UInt)t_2, t_3 );
- SortPRecRNam( t_1, 0 );
+ SortPRecRNam( t_1 );
  CALL_1ARGS( GF_PushOptions, t_1 );
  
  /* vararg_fun(  ); */
@@ -1565,8 +1565,8 @@ static Obj  HdlrFunc9 (
  t_6 = NEW_PREC( 0 );
  SET_ELM_PLIST( t_5, 2, t_6 );
  CHANGED_BAG( t_5 );
- SortPRecRNam( t_6, 0 );
- SortPRecRNam( t_3, 0 );
+ SortPRecRNam( t_6 );
+ SortPRecRNam( t_3 );
  if ( TNUM_OBJ( t_1 ) == T_FUNCTION ) {
   CALL_1ARGS( t_1, t_2 );
  }
@@ -1661,7 +1661,7 @@ static Obj  HdlrFunc9 (
  t_1 = NEW_PREC( 1 );
  t_2 = (Obj)R_a;
  AssPRec( t_1, (UInt)t_2, INTOBJ_INT(1) );
- SortPRecRNam( t_1, 0 );
+ SortPRecRNam( t_1 );
  l_x = t_1;
  
  /* x.b := 2; */
@@ -1935,7 +1935,7 @@ static Obj  HdlrFunc10 (
  t_1 = NEW_PREC( 1 );
  t_2 = (Obj)R_a;
  AssPRec( t_1, (UInt)t_2, INTOBJ_INT(1) );
- SortPRecRNam( t_1, 0 );
+ SortPRecRNam( t_1 );
  l_x = t_1;
  
  /* Display( IsBound( x.a ) ); */
@@ -1976,7 +1976,7 @@ static Obj  HdlrFunc10 (
  t_1 = NEW_PREC( 1 );
  t_2 = (Obj)R_a;
  AssPRec( t_1, (UInt)t_2, INTOBJ_INT(1) );
- SortPRecRNam( t_1, 0 );
+ SortPRecRNam( t_1 );
  l_x = t_1;
  
  /* Display( IsBound( x.("a") ) ); */
@@ -2020,7 +2020,7 @@ static Obj  HdlrFunc10 (
  t_1 = NEW_PREC( 1 );
  t_2 = (Obj)R_a;
  AssPRec( t_1, (UInt)t_2, INTOBJ_INT(1) );
- SortPRecRNam( t_1, 0 );
+ SortPRecRNam( t_1 );
  l_x = t_1;
  
  /* Display( IsBound( x!.a ) ); */
@@ -2061,7 +2061,7 @@ static Obj  HdlrFunc10 (
  t_1 = NEW_PREC( 1 );
  t_2 = (Obj)R_a;
  AssPRec( t_1, (UInt)t_2, INTOBJ_INT(1) );
- SortPRecRNam( t_1, 0 );
+ SortPRecRNam( t_1 );
  l_x = t_1;
  
  /* Display( IsBound( x!.("a") ) ); */
