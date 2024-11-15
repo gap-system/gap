@@ -682,8 +682,8 @@ static Int LtPRec(Obj left, Obj right)
         // The sense of this comparison is determined by the rule that
         // unbound entries compare less than bound ones
         if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
-            res = !LT(NAME_RNAM(labs(GET_RNAM_PREC(left, i))),
-                      NAME_RNAM(labs(GET_RNAM_PREC(right, i))));
+            res = !LT(NAME_RNAM(-GET_RNAM_PREC(left, i)),
+                      NAME_RNAM(-GET_RNAM_PREC(right, i)));
             break;
         }
 
