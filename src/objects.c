@@ -986,6 +986,9 @@ void PrintObj(Obj obj)
     // dispatch to the appropriate printing function
     else if (os->PrintObjDepth < MAXPRINTDEPTH) {
 
+        Obj oldThis = os->PrintObjThiss[os->PrintObjDepth];
+        Int oldIndx = os->PrintObjIndices[os->PrintObjDepth];
+
         // push obj on the stack
         os->PrintObjThiss[os->PrintObjDepth] = obj;
         os->PrintObjIndices[os->PrintObjDepth] = 0;
@@ -998,6 +1001,8 @@ void PrintObj(Obj obj)
 
         // pop <obj> from the stack
         os->PrintObjDepth--;
+        os->PrintObjThiss[os->PrintObjDepth] = oldThis;
+        os->PrintObjIndices[os->PrintObjDepth] = oldIndx;
     }
     else {
         Pr("\nprinting stopped, too many recursion levels!\n", 0, 0);
@@ -1097,6 +1102,9 @@ void ViewObj(Obj obj)
     // dispatch to the appropriate viewing function
     else if (os->PrintObjDepth < MAXPRINTDEPTH) {
 
+        Obj oldThis = os->PrintObjThiss[os->PrintObjDepth];
+        Int oldIndx = os->PrintObjIndices[os->PrintObjDepth];
+
         // push obj on the stack
         os->PrintObjThiss[os->PrintObjDepth] = obj;
         os->PrintObjIndices[os->PrintObjDepth] = 0;
@@ -1109,6 +1117,8 @@ void ViewObj(Obj obj)
 
         // pop <obj> from the stack
         os->PrintObjDepth--;
+        os->PrintObjThiss[os->PrintObjDepth] = oldThis;
+        os->PrintObjIndices[os->PrintObjDepth] = oldIndx;
     }
     else {
         Pr("\nviewing stopped, too many recursion levels!\n", 0, 0);
