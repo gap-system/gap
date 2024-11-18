@@ -291,7 +291,7 @@ jobs:
 
     steps:
       - name: Install Cross-Compile Support
-        uses: cyberjunk/gha-ubuntu-cross@167f2e5e6bc0e78d9420ed64aa66b38bda701088
+        uses: cyberjunk/gha-ubuntu-cross@e4dbbe43513699c9007d69f22dc429e8c1912b23
         with:
           arch: s390x
 
