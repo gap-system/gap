@@ -229,7 +229,7 @@ jobs:
                    sudo apt-get install --no-install-recommends "${packages[@]}"
                    sudo apt-get install pkg-config
                elif [ "$RUNNER_OS" == "macOS" ]; then
-                   brew install autoconf zlib pkg-config
+                   brew install autoconf zlib # pkg-config resp. pkgconf are pre-installed
                fi
                python -m pip install gcovr
 
