@@ -1,6 +1,6 @@
 # GAP - history of changes
 
-## GAP 4.14.0-beta1 (November 2024)
+## GAP 4.14.0 (December 2024)
 
 The following gives an overview of the changes compared to the previous
 release. This list is not complete, many more internal or minor changes
@@ -38,6 +38,7 @@ affect some users directly.
 
 ### Build system
 
+- [#5851](https://github.com/gap-system/gap/pull/5851) Change GAP kernel version to 9.1 (also changes the shared library version)
 - [#5789](https://github.com/gap-system/gap/pull/5789) Improve linker flags for kernel extensions on macOS
 
 ### Fixed bugs that could lead to incorrect results
@@ -72,13 +73,14 @@ affect some users directly.
 
 #### Updated packages redistributed with GAP
 
-The GAP 4.14.0 distribution contains 162 packages, of which 65 have been
+The GAP 4.14.0 distribution contains 162 packages, of which 67 have been
 updated since GAP 4.13.1. The full list of updated packages is given below:
 
+- [**4ti2Interface**](https://homalg-project.github.io/pkg/4ti2Interface): 2023.02-04 -> 2024.11-01
 - [**ANUPQ**](https://gap-packages.github.io/anupq/): 3.3.0 -> 3.3.1
 - [**AtlasRep**](https://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep): 2.1.8 -> 2.1.9
 - [**Automata**](https://gap-packages.github.io/automata/): 1.15 -> 1.16
-- [**CAP**](https://homalg-project.github.io/pkg/CAP): 2024.06-02 -> 2024.10-08
+- [**CAP**](https://homalg-project.github.io/pkg/CAP): 2024.06-02 -> 2024.11-02
 - [**CaratInterface**](https://www.math.uni-bielefeld.de/~gaehler/gap/packages.php): 2.3.6 -> 2.3.7
 - [**CddInterface**](https://homalg-project.github.io/CddInterface): 2022.11.01 -> 2024.09.02
 - [**Congruence**](https://gap-packages.github.io/congruence): 1.2.6 -> 1.2.7
@@ -91,10 +93,11 @@ updated since GAP 4.13.1. The full list of updated packages is given below:
 - [**DeepThought**](https://gap-packages.github.io/DeepThought/): 1.0.6 -> 1.0.7
 - [**DESIGN**](https://gap-packages.github.io/design): 1.8 -> 1.8.2
 - [**Digraphs**](https://digraphs.github.io/Digraphs): 1.7.1 -> 1.9.0
+- [**Example**](https://gap-packages.github.io/example): 4.3.4 -> 4.4.0
 - [**ferret**](https://gap-packages.github.io/ferret/): 1.0.11 -> 1.0.14
 - [**float**](https://gap-packages.github.io/float/): 1.0.4 -> 1.0.5
 - [**Forms**](https://gap-packages.github.io/forms): 1.2.11 -> 1.2.12
-- [**Gauss**](https://homalg-project.github.io/pkg/Gauss): 2023.02-04 -> 2023.08-01
+- [**Gauss**](https://homalg-project.github.io/pkg/Gauss): 2023.02-04 -> 2024.11-01
 - [**GaussForHomalg**](https://homalg-project.github.io/pkg/GaussForHomalg): 2023.11-01 -> 2024.08-01
 - [**GBNP**](https://gap-packages.github.io/gbnp/): 1.0.5 -> 1.1.0
 - [**GeneralizedMorphismsForCAP**](https://homalg-project.github.io/pkg/GeneralizedMorphismsForCAP): 2024.04-01 -> 2024.09-03
@@ -107,7 +110,7 @@ updated since GAP 4.13.1. The full list of updated packages is given below:
 - [**idrel**](https://gap-packages.github.io/idrel/): 2.47 -> 2.48
 - [**images**](https://gap-packages.github.io/images/): 1.3.2 -> 1.3.3
 - [**IntPic**](https://gap-packages.github.io/intpic): 0.3.0 -> 0.4.0
-- [**IO**](https://gap-packages.github.io/io): 4.8.2 -> 4.9.0
+- [**IO**](https://gap-packages.github.io/io): 4.8.2 -> 4.9.1
 - [**json**](https://gap-packages.github.io/json/): 2.2.1 -> 2.2.2
 - [**JupyterKernel**](https://gap-packages.github.io/JupyterKernel/): 1.5.0 -> 1.5.1
 - [**LAGUNA**](https://gap-packages.github.io/laguna): 3.9.6 -> 3.9.7
@@ -116,7 +119,7 @@ updated since GAP 4.13.1. The full list of updated packages is given below:
 - [**lpres**](https://gap-packages.github.io/lpres): 1.0.3 -> 1.1.1
 - [**MajoranaAlgebras**](https://gap-packages.github.io/MajoranaAlgebras/): 1.5.1 -> 1.5.2
 - [**matgrp**](https://www.math.colostate.edu/~hulpke/matgrp): 0.70 -> 0.71
-- [**MatricesForHomalg**](https://homalg-project.github.io/pkg/MatricesForHomalg): 2024.02-01 -> 2024.08-05
+- [**MatricesForHomalg**](https://homalg-project.github.io/pkg/MatricesForHomalg): 2024.02-01 -> 2024.11-02
 - [**ModIsom**](https://gap-packages.github.io/modisom/): 2.5.4 -> 3.0.0
 - [**ModulePresentationsForCAP**](https://homalg-project.github.io/pkg/ModulePresentationsForCAP): 2024.04-01 -> 2024.09-02
 - [**MonoidalCategories**](https://homalg-project.github.io/pkg/MonoidalCategories): 2024.06-01 -> 2024.09-05
@@ -127,7 +130,7 @@ updated since GAP 4.13.1. The full list of updated packages is given below:
 - [**PatternClass**](https://gap-packages.github.io/PatternClass/): 2.4.3 -> 2.4.5
 - [**profiling**](https://gap-packages.github.io/profiling/): 2.5.4 -> 2.6.0
 - [**recog**](https://gap-packages.github.io/recog): 1.4.2 -> 1.4.3
-- [**RingsForHomalg**](https://homalg-project.github.io/pkg/RingsForHomalg): 2023.11-02 -> 2024.06-01
+- [**RingsForHomalg**](https://homalg-project.github.io/pkg/RingsForHomalg): 2023.11-02 -> 2024.11-02
 - [**SCSCP**](https://gap-packages.github.io/scscp): 2.4.2 -> 2.4.3
 - [**Semigroups**](https://semigroups.github.io/Semigroups): 5.3.7 -> 5.4.0
 - [**SgpViz**](https://gap-packages.github.io/sgpviz): 0.999.5 -> 0.999.6
