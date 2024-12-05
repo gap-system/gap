@@ -169,7 +169,7 @@ gap> CloseStream(stream);
 # test PrintFormattingStatus
 gap> stream := OutputGzipFile( fname, false );;
 gap> PrintFormattingStatus(stream);
-true
+rec( indent := true, linewrap := true )
 gap> PrintTo( stream, "a very long line that GAP is going to wrap at 80 chars by default if we don't do anything about it\n");
 gap> CloseStream(stream);
 gap> StringFile(fname);
@@ -178,7 +178,7 @@ gap> StringFile(fname);
 gap> stream := OutputGzipFile( fname, false );;
 gap> SetPrintFormattingStatus(stream, false);
 gap> PrintFormattingStatus(stream);
-false
+rec( indent := false, linewrap := false )
 gap> PrintTo( stream, "a very long line that GAP is going to wrap at 80 chars by default if we don't do anything about it\n");
 gap> CloseStream(stream);
 gap> StringFile(fname);
