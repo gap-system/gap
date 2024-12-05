@@ -4,7 +4,7 @@ Instead edit either the template file `doc/versiondata.in`, or edit
 `Makefile.rules` (which has code for generating this file), or edit
 `configure.ac` (where the value being substituted come from)
 -->
-<!ENTITY VERSIONNUMBER "4.15dev">
+<!ENTITY VERSIONNUMBER "4.14dev">
 <!ENTITY RELEASEDAY "today">
 <!ENTITY RELEASEYEAR "this year">
-<!ENTITY GAPDIRNAME "gap-4.15dev">
+<!ENTITY GAPDIRNAME "gap-4.14dev">
