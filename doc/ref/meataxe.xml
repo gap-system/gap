@@ -602,7 +602,7 @@ gap> ForAll(MTX.Generators(m), x -> x*form*TransposedMat(x) = form);
 true
 ]]></Example>
 
-Since GAP 4.14 also modules which are not absolutely irreducible are supported:
+Since GAP 4.14 modules that are not absolutely irreducible are also supported:
 <Example><![CDATA[
 gap> g1:= GeneratorsOfGroup(SO(-1, 4, 5));;
 gap> g2:= GeneratorsOfGroup(SO(+1, 4, 5));;
@@ -650,7 +650,7 @@ gap> ForAll(MTX.Generators(m), x -> x*form*TransposedMat(frob5(x)) = form);
 true
 ]]></Example>
 
-Since GAP 4.14 also reducible modules are supported:
+Since GAP 4.14 modules that are not absolutely irreducible are also supported:
 <Example><![CDATA[
 gap> g1:= GeneratorsOfGroup(SU(3, 5));;
 gap> g2:= GeneratorsOfGroup(SU(4, 5));;
