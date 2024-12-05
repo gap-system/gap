@@ -1423,7 +1423,7 @@ static void HandleMethodNotFound(
   AssPRec(r,RNamIsVerbose,verbose ? True : False);
   AssPRec(r,RNamIsConstructor,constructor ? True : False);
   AssPRec(r,RNamPrecedence,INTOBJ_INT(precedence));
-  SortPRecRNam(r,0);
+  SortPRecRNam(r);
   CALL_1ARGS(HANDLE_METHOD_NOT_FOUND, r);
 #ifdef HPCGAP
   TLS(currentRegion) = savedRegion;

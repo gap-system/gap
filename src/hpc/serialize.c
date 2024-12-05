@@ -584,7 +584,7 @@ static Obj DeserializeRecord(DeserializerState * state, UInt tnum)
         Obj el = DeserializeObj(state);
         SET_ELM_PREC(result, i, el);
     }
-    SortPRecRNam(result, 0);
+    SortPRecRNam(result);
     if (tnum == T_PREC + IMMUTABLE)
         RetypeBag(result, tnum);
     return result;

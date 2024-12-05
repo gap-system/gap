@@ -1164,7 +1164,7 @@ static Obj SemiEchelonListGF2Vecs(Obj mat, UInt TransformationsNeeded)
         if (LEN_PLIST(relns) == 0)
             RetypeBag(relns, T_PLIST_EMPTY);
     }
-    SortPRecRNam(res, 0);
+    SortPRecRNam(res);
     return res;
 }
 
