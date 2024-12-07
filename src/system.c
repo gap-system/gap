@@ -465,8 +465,8 @@ static Int setGapRootPath( Char **argv, void *Dummy)
 
 static Int enableMemCheck(Char ** argv, void * dummy)
 {
-    SyFputs( "# Error: --enableMemCheck not supported by this copy of GAP\n", 3);
-    SyFputs( "  pass --enable-memory-checking to ./configure\n", 3 );
+    fputs("# Error: --enableMemCheck not supported by this copy of GAP\n", stderr);
+    fputs("  pass --enable-memory-checking to ./configure\n", stderr);
     SyExit(2);
 }
 #endif
@@ -474,10 +474,11 @@ static Int enableMemCheck(Char ** argv, void * dummy)
 
 static Int printVersion(Char ** argv, void * dummy)
 {
-    SyFputs("GAP ", 1);
-    SyFputs(SyBuildVersion, 1);
-    SyFputs(" built on ", 1);
-    SyFputs(SyBuildDateTime, 1);
+    fputs("GAP ", stdout);
+    fputs(SyBuildVersion, stdout);
+    fputs(" built on ", stdout);
+    fputs(SyBuildDateTime, stdout);
+    fputs("\n", stdout);
     SyExit(0);
 }
 

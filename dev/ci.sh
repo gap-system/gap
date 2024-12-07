@@ -405,6 +405,24 @@ GAPInput
   testexpect)
     INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b $(gap_cover_arg 1)" $SRCDIR/dev/gaptest.expect
     INPUTRC=/tmp/inputrc expect -c "spawn $GAP -A -b $(gap_cover_arg 2) -l missing-dir" $SRCDIR/dev/gaptest2.expect
+
+    # not using expect but in a similar vein: check `gap --version output`
+    echo "Testing 'gap --version'"
+    $GAP --version 0>gap_stdin 1>gap_stdout 2>gap_stderr
+    if [ -s gap_stdin ] ; then
+        echo "Error, 'gap --version' prints to stdin but should not"
+        exit 1
+    fi
+    if [ -s gap_stderr ] ; then
+        echo "Error, 'gap --version' prints to stderr but should not"
+        exit 1
+    fi
+    if ! fgrep -q 'GAP 4.' gap_stdout; then
+        # must look like "GAP 4.X.y ..."
+        echo "Error, 'gap --version' does not print expected output to stdout"
+        exit 1
+    fi
+
     ;;
 
   *)
