@@ -474,10 +474,11 @@ static Int enableMemCheck(Char ** argv, void * dummy)
 
 static Int printVersion(Char ** argv, void * dummy)
 {
-    SyFputs("GAP ", 1);
-    SyFputs(SyBuildVersion, 1);
-    SyFputs(" built on ", 1);
-    SyFputs(SyBuildDateTime, 1);
+    puts("GAP ");
+    puts(SyBuildVersion);
+    puts(" built on ");
+    puts(SyBuildDateTime);
+    puts("\n");
     SyExit(0);
 }
 
