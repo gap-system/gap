@@ -39,7 +39,7 @@ git push origin v${VER}
     - This workflow uses the `update_website.py` script which can also be run manually, see below for more information.
 8. When it is time to publicise the new GAP release, merge the pull request to GapWWW.
 9. There are currently additional steps required for the new manual to appear on <https://docs.gap-system.org>, and to add a copy of the new release files to <https://files.gap-system.org>.
-These could and be automated in the future but are currently not. Details are described in steps 10 and following below.
+These could and should be automated in the future but are currently not. Details are described in steps 10 and following below.
 
 
 ## The release process for GAP -- the more detailed guide
@@ -104,6 +104,9 @@ wget https://github.com/gap-system/gap/releases/download/v${VER}/package-infos.j
 gunzip package-infos.json.gz
 wget https://github.com/gap-system/gap/releases/download/v${VER}/gap-${VER}.tar.gz
 tar xf gap-${VER}.tar.gz
+cd GapWWW
+git pull
+cd ..
 GapWWW/etc/extract_manuals.py gap-${VER} package-infos.json
 mv Manuals http/v${VER}
 rm http/latest
@@ -112,35 +115,10 @@ ln -s v${VER} http/latest
 11. Check that <https://docs.gap-system.org> is functioning as expected.
 12. Log into `files.gap-system.org` via SSH, then download the files in appropriate places:
 ```
-ssh gap-files           # assumes gap-files is set up in ~/.ssh/config
-
-VER=X.Y.Z               # to avoid typing
-cd ~/http               # follow symlink to target directory
-mkdir -p gap-${VER%.*}  # ensure directories are present
-cd gap-${VER%.*}
-mkdir -p exe zip tar.gz
-
-# now download all gap-$VER* files in the release into the appropriate subdirectories
-BASEURL=https://github.com/gap-system/gap/releases/download/v${VER}
-
-cd exe
-wget ${BASEURL}/gap-${VER}-x86_64.exe.sha256
-wget ${BASEURL}/gap-${VER}-x86_64.exe
-cd ..
-
-cd tar.gz
-wget ${BASEURL}/gap-${VER}-core.tar.gz.sha256
-wget ${BASEURL}/gap-${VER}-core.tar.gz
-wget ${BASEURL}/gap-${VER}.tar.gz.sha256
-wget ${BASEURL}/gap-${VER}.tar.gz
-cd ..
-
-cd zip
-wget ${BASEURL}/gap-${VER}.zip.sha256
-wget ${BASEURL}/gap-${VER}.zip
-wget ${BASEURL}/gap-${VER}-core.zip.sha256
-wget ${BASEURL}/gap-${VER}-core.zip
-cd ..
+# assumes gap-files is set up in ~/.ssh/config
+scp dev/releases/download_release.sh gap-files:
+ssh gap-files
+./download_release.sh X.Y.Z   # e.g. 4.14.0
 ```
 
 
