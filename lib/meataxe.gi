@@ -514,16 +514,37 @@ end;
 ##  See the description for 'SMTX.InducedAction' for
 ##  description of the matrices
 ##
-SMTX.SubQuotActions:=function(module,sub,typ)
-local matrices, dim, subdim, F,
+SMTX.SubQuotActions:=function(arg)
+local module, sub, typ, matrices, dim, subdim, F,
       s, c, q, leadpos, zero, zerov, smatrices, newg, im, newim, k, subi,
       qmats, smats, nmats, sr, qr, g, h, erg, i, j;
 
-  dim:=SMTX.Dimension(module);
-  F:=SMTX.Field(module);
-  matrices:=module.generators;
+  if Length(arg) = 3 then
+    # module,sub,typ
+    module:=arg[1];
+    sub:=arg[2];
+    typ:=arg[3];
+    dim:=SMTX.Dimension(module);
+    F:=SMTX.Field(module);
+    matrices:=module.generators;
+  elif Length(arg) = 6 then
+    # matrices,sub,dim,subdim,F,typ
+    #
+    # old variant, supported for backwards compatibility with
+    # the polycyclic package and possibly private code that directly
+    # calls this function
+    matrices:=arg[1];
+    sub:=arg[2];
+    dim:=arg[3];
+    subdim:=arg[4];
+    F:=arg[5];
+    typ:=arg[6];
+    Assert(0, Length(sub) = subdim);
+  else
+    Error("wrong number of arguments");
+  fi;
 
-  Assert(0, dim = Length(sub[1]));
+  Assert(0, ForAll(sub, x -> dim = Length(x)));
 
   s:=(typ mod 2)=1; # subspace indicator
   typ:=QuoInt(typ,2);
