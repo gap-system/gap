@@ -134,6 +134,7 @@
 #endif
 
 #ifdef GAP_MEM_CHECK
+#include <stdio.h>
 #include <sys/mman.h>
 #endif
 
@@ -1140,7 +1141,7 @@ Int EnableMemCheck = 0;
 
 Int enableMemCheck(Char ** argv, void * dummy)
 {
-    SyFputs( "# Warning: --enableMemCheck causes SEVERE slowdowns. Starting GAP may take several days!\n", 3 );
+    fputs("# Warning: --enableMemCheck causes SEVERE slowdowns. Starting GAP may take several days!\n", stderr);
     EnableMemCheck = 1;
     return 1;
 }
