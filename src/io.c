@@ -686,7 +686,7 @@ UInt CloseInputLog ( void )
 **
 *F  OpenOutputLog( <filename> )  . . . . . . . . . . .  log output to a file
 **
-**  'OpenInputLog'  instructs the  scanner to echo   all output to  the files
+**  'OpenOutputLog'  instructs the  scanner to echo  all output to  the files
 **  '*stdout*' and '*errout*' to the file with name  <filename>.  The file is
 **  truncated to size 0 if it existed, otherwise it is created.
 **
@@ -749,7 +749,7 @@ UInt OpenOutputLogStream (
 **
 *F  CloseOutputLog()  . . . . . . . . . . . . . . . close the current logfile
 **
-**  'CloseInputLog' closes   the current logfile   again, so  that output  to
+**  'CloseOutputLog' closes  the  current logfile  again, so  that output  to
 **  '*stdout*'  and    '*errout*'  will no   longer  be   echoed to  a  file.
 **  'CloseOutputLog' will return 1 to indicate success.
 **
