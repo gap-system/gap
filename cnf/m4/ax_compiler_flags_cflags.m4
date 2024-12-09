@@ -97,7 +97,6 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
             -Wmissing-format-attribute dnl
             -Wmissing-include-dirs dnl
             dnl -Wmissing-noreturn dnl
-            -Wmissing-variable-declarations dnl
             -Wno-pragmas dnl # for GCC and the ObjFunc typedef
             dnl -Wnull-dereference dnl
             -Wpacked dnl
@@ -134,6 +133,7 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
             -Wnested-externs dnl
             -Wold-style-definition dnl
             -Wstrict-prototypes dnl
+            -Wmissing-variable-declarations dnl
             ],ax_warn_cflags_variable,[$ax_compiler_flags_test])
         fi
 
