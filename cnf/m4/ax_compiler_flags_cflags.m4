@@ -97,7 +97,6 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
             -Wmissing-format-attribute dnl
             -Wmissing-include-dirs dnl
             dnl -Wmissing-noreturn dnl
-            -Wmissing-variable-declarations dnl
             -Wno-pragmas dnl # for GCC and the ObjFunc typedef
             dnl -Wnull-dereference dnl
             -Wpacked dnl
@@ -123,7 +122,7 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
         # accept similar warnings flags.
         AS_VAR_SET(ax_warn_cxxflags_variable,[$ax_warn_cflags_variable])
 
-        # Test for warnings that only work in C++, not in C
+        # Test for warnings that only work in C, not in C++
         if test "$ax_compiler_cxx" = "no" ; then
             AX_APPEND_COMPILE_FLAGS([ dnl
             dnl -Wdeclaration-after-statement dnl
@@ -134,6 +133,7 @@ AC_DEFUN([AX_COMPILER_WARNING_FLAGS],[
             -Wnested-externs dnl
             -Wold-style-definition dnl
             -Wstrict-prototypes dnl
+            -Wmissing-variable-declarations dnl
             ],ax_warn_cflags_variable,[$ax_compiler_flags_test])
         fi
 
