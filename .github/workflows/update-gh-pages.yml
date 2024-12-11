@@ -48,9 +48,9 @@ jobs:
       - name: Build GAP
         run: |
           make -j4
-      - name: Download minimal packages
+      - name: Download packages
         run: |
-          make bootstrap-pkg-minimal
+          make bootstrap-pkg-full
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
