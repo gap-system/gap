@@ -304,10 +304,6 @@ The following components of the record are <E>optional</E>.
   <Item>
     a string (was mandatory before &GAP; 4.14),
   </Item>
-  <Mark><C>PostalAddress</C></Mark>
-  <Item>
-    a string,
-  </Item>
   <Mark><C>Place</C></Mark>
   <Item>
     a string,
