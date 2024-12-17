@@ -314,7 +314,7 @@ The following components of the record are <E>optional</E>.
   </Item>
   </List>
   If the <C>IsMaintainer</C> value is <K>true</K> then also one of the
-  following components is mandatory.
+  following components is mandatory, otherwise these components are optional.
   <List>
   <Mark><C>Email</C></Mark>
   <Item>
