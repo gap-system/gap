@@ -32,7 +32,9 @@
 #include "lists.h"
 #include "modules.h"
 #include "plist.h"
+#include "precord.h"
 #include "read.h"
+#include "records.h"
 #include "scanner.h"
 #include "stringobj.h"
 #include "symbols.h"
@@ -115,8 +117,8 @@ struct IOModuleState {
 
     Int NoSplitLine;
 
-    BOOL PrintFormattingForStdout;
-    BOOL PrintFormattingForErrout;
+    StreamFormat PrintFormattingForStdout;
+    StreamFormat PrintFormattingForErrout;
 };
 
 // for debugging from GDB / lldb, we mark this as extern inline
@@ -851,7 +853,7 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
     else if (streq(filename, "*errout*"))
         output->format = IO()->PrintFormattingForErrout;
     else
-        output->format = TRUE;
+        output->format = MakeStreamFormat(TRUE, TRUE);
     output->indent = 0;
 
     // variables related to line splitting, very bad place to split
@@ -886,7 +888,8 @@ UInt OpenOutputStream(TypOutputFile * output, Obj stream)
     output->file = -1;
     output->line[0] = '\0';
     output->pos = 0;
-    output->format = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
+    output->format =
+        StreamFormatFromObj(CALL_1ARGS(PrintFormattingStatus, stream));
     output->indent = 0;
 
     // variables related to line splitting, very bad place to split
@@ -1235,20 +1238,12 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
 
   // '\01', increment indentation level
   if ( ch == '\01' ) {
-
-    if (!stream->format)
-      return;
-
     // add hint to break line
     addLineBreakHint(stream, stream->pos, 16*stream->indent, 1);
   }
 
   // '\02', decrement indentation level
   else if ( ch == '\02' ) {
-
-    if (!stream->format)
-      return;
-
     // if this is a better place to split the line remember it
     addLineBreakHint(stream, stream->pos, 16*stream->indent, -1);
   }
@@ -1282,8 +1277,7 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
 
     // and dump it from the buffer
     stream->pos = 0;
-    if (stream->format)
-      {
+    if (stream->format.indent) {
         // indent for next line
         for ( i = 0;  i < stream->indent; i++ )
           stream->line[ stream->pos++ ] = ' ';
@@ -1318,12 +1312,12 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
 
       /* if we are going to split at the end of the line, and we are
          formatting discard blanks */
-      if ( stream->format && spos == stream->pos && ch == ' ' ) {
+      if (stream->format.linewrap && spos == stream->pos && ch == ' ') {
         ;
       }
 
       // full line, acceptable split position
-      else if ( stream->format && spos != 0 ) {
+      else if (stream->format.linewrap && spos != 0) {
 
         // add character to the line, terminate it
         stream->line[ stream->pos++ ] = ch;
@@ -1340,18 +1334,19 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
         PutLineTo( stream, spos );
         spos--;
 
-        // indent for the rest
         stream->pos = 0;
+        if (stream->format.indent) {
+          // indent for the rest
         for ( i = 0; i < stream->hints[3*hint+2]; i++ )
           stream->line[ stream->pos++ ] = ' ';
         spos -= stream->hints[3*hint+2];
+        }
 
         // copy the rest onto the next line
         for ( i = 0; str[ i ] != '\0'; i++ )
           stream->line[ stream->pos++ ] = str[ i ];
         // recover line break hints for copied rest
-        for ( i = hint+1; stream->hints[3*i] != -1; i++ )
-        {
+        for (i = hint + 1; stream->hints[3 * i] != -1; i++) {
           stream->hints[3*(i-hint-1)] = stream->hints[3*i]-spos;
           stream->hints[3*(i-hint-1)+1] = stream->hints[3*i+1];
           stream->hints[3*(i-hint-1)+2] = stream->hints[3*i+2];
@@ -1362,9 +1357,8 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
       // full line, no split position
       else {
 
-        if (stream->format)
-          {
-            /* append a '\',*/
+        if (stream->format.linewrap) {
+          // append a '\'
             stream->line[ stream->pos++ ] = '\\';
             stream->line[ stream->pos++ ] = '\n';
           }
@@ -1376,8 +1370,7 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
         stream->pos = 0;
         stream->line[ stream->pos++ ] = ch;
 
-        if (stream->format)
-          stream->hints[0] = -1;
+        stream->hints[0] = -1;
       }
 
     }
@@ -1816,6 +1809,42 @@ void SPrTo(Char *buffer, UInt maxlen, const Char *format, Int arg1, Int arg2)
 }
 
 
+// Convert GAP-level print formatting objects to kernel level, and vice-versa
+
+StreamFormat StreamFormatFromObj(Obj o)
+{
+  if (o == True) {
+    return MakeStreamFormat(TRUE, TRUE);
+  }
+  if (o == False) {
+    return MakeStreamFormat(FALSE, FALSE);
+  }
+
+  RequirePlainRec("Stream formatting", o);
+
+  Obj indent = ElmPRec(o, RNamName("indent"));
+  Obj linewrap = ElmPRec(o, RNamName("linewrap"));
+
+  RequireTrueOrFalse("indent in stream formatting", indent);
+  RequireTrueOrFalse("linewrap in stream formatting", linewrap);
+
+  BOOL i = (indent == True);
+  BOOL l = (linewrap == True);
+
+  return MakeStreamFormat(l, i);
+}
+
+Obj ObjFromStreamFormat(StreamFormat sf)
+{
+  Obj o = NEW_PREC(2);
+  Obj indent = sf.indent ? True : False;
+  Obj linewrap = sf.linewrap ? True : False;
+  AssPRec(o, RNamName("indent"), indent);
+  AssPRec(o, RNamName("linewrap"), linewrap);
+  return o;
+}
+
+
 static Obj FuncINPUT_FILENAME(Obj self)
 {
     if (IO()->Input == 0)
@@ -1832,7 +1861,7 @@ static Obj FuncINPUT_LINENUMBER(Obj self)
 
 static Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val)
 {
-    BOOL format = (val != False);
+    StreamFormat    format = StreamFormatFromObj(val);
     TypOutputFile * output = IO()->Output;
     while (output) {
         if (!output->stream && output->file == 1)
@@ -1845,12 +1874,12 @@ static Obj FuncSET_PRINT_FORMATTING_STDOUT(Obj self, Obj val)
 
 static Obj FuncPRINT_FORMATTING_STDOUT(Obj self)
 {
-    return IO()->PrintFormattingForStdout ? True : False;
+    return ObjFromStreamFormat(IO()->PrintFormattingForStdout);
 }
 
 static Obj FuncSET_PRINT_FORMATTING_ERROUT(Obj self, Obj val)
 {
-    BOOL format = (val != False);
+    StreamFormat    format = StreamFormatFromObj(val);
     TypOutputFile * output = IO()->Output;
     while (output) {
         if (!output->stream && output->file == 3)
@@ -1863,7 +1892,7 @@ static Obj FuncSET_PRINT_FORMATTING_ERROUT(Obj self, Obj val)
 
 static Obj FuncPRINT_FORMATTING_ERROUT(Obj self)
 {
-    return IO()->PrintFormattingForErrout ? True : False;
+    return ObjFromStreamFormat(IO()->PrintFormattingForErrout);
 }
 
 /****************************************************************************
@@ -1882,8 +1911,8 @@ static Obj FuncCALL_WITH_FORMATTING_STATUS(Obj self, Obj status, Obj func, Obj a
     if (!output)
         ErrorMayQuit("CALL_WITH_FORMATTING_STATUS called while no output is open", 0, 0);
 
-    BOOL old = output->format;
-    output->format = (status != False);
+    StreamFormat old = output->format;
+    output->format = StreamFormatFromObj(status);
 
     Obj result;
     GAP_TRY
@@ -1964,8 +1993,8 @@ static Int InitKernel (
     IO()->Output = 0;
     IO()->InputLog = 0;
     IO()->OutputLog = 0;
-    IO()->PrintFormattingForStdout = TRUE;
-    IO()->PrintFormattingForErrout = TRUE;
+    IO()->PrintFormattingForStdout = MakeStreamFormat(TRUE, TRUE);
+    IO()->PrintFormattingForErrout = MakeStreamFormat(TRUE, TRUE);
 
     OpenOutput(&IO()->DefaultOutput, "*stdout*", FALSE);
 
