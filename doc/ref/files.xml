@@ -81,10 +81,6 @@ directories. For example when &GAP; wants to read its library file
 <C>GAPInfo.RootPaths</C> until it finds the path of an existing file.
 The first file found this way is read.
 <P/>
-Furthermore, &GAP; looks for available packages by examining the
-subdirectories <F>pkg/</F> in each of the directories in
-<C>GAPInfo.RootPaths</C>.
-<P/>
 The root directories are specified via one or several of the
 <C>-l paths</C> command line options, see <Ref Sect="Command Line Options"/>.
 Furthermore, by default &GAP; automatically prepends a user specific &GAP; root
@@ -105,7 +101,15 @@ for more information how to do this.
 <Heading>GAP Package Directories</Heading>
 <Index Key="GAPInfo.PackageDirectories"><C>GAPInfo.PackageDirectories</C></Index>
 
-TODO
+When &GAP; is started it determines a list of directories potentially
+containing packages called the <E>&GAP; package directories</E>.
+In a running &GAP; session this list can be found in <C>GAPInfo.PackageDirectories</C>.
+<P/>
+Every subdirectory <F>pkg/</F> in a &GAP; root directory is automatically
+added to this list.
+<P/>
+&GAP; looks for available packages by examining each of the directories in
+<C>GAPInfo.PackageDirectories</C>.
 
 </Section>
 
