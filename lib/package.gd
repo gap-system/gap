@@ -961,7 +961,7 @@ DeclareGlobalFunction( "ExtendRootDirectories" );
 ##  Let <A>paths</A> be a list of strings that denote paths to intended
 ##  &GAP; package directories (see <Ref Sect="GAP Package Directories"/>).
 ##  The function <Ref Func="ExtendPackageDirectories"/> adds these paths to
-##  the global list <C>GAPInfo.PackagePaths</C> and calls the initialization of
+##  the global list <C>GAPInfo.PackageDirectories</C> and calls the initialization of
 ##  available &GAP; packages,
 ##  such that later calls to <Ref Func="LoadPackage"/> will find the &GAP;
 ##  packages that are contained in the directories given by <A>paths</A>.
