@@ -937,7 +937,7 @@ static void PRINT_PATH(Obj obj, Int idx)
 {
     UInt tnum = TNUM_OBJ(obj);
     if (tnum == T_PREC || tnum == T_PREC + IMMUTABLE) {
-        Pr(".%I", (Int)NAME_RNAM(labs(GET_RNAM_PREC(obj, idx))), 0);
+        Pr(".%I", (Int)NAME_RNAM(idx), 0);
     }
     else if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM) {
         Pr("[%d]", idx, 0);
