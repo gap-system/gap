@@ -35,3 +35,11 @@ gap> g * h;
   [ Z(3)^0, 0*Z(3), 0*Z(3) ] ] with mem>
 gap> g * G.1;
 Error, \* for objects with memory: a!.slp and b!.slp must be identical
+
+# ImmutableMatrix on a matrix with memory
+# see https://github.com/gap-system/gap/issues/5872
+gap> G:=GroupWithMemory(SL(4,16));;
+gap> g:=ImmutableMatrix(GF(4), G.1^5);
+<[ [ Z(2^2), 0*Z(2), 0*Z(2), 0*Z(2) ], [ 0*Z(2), Z(2^2)^2, 0*Z(2), 0*Z(2) ], 
+  [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ] 
+ ] with mem>
