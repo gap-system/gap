@@ -448,6 +448,21 @@ InstallOtherMethod(ProjectiveOrder,"object with memory",
     return ProjectiveOrder(a!.el);
   end);
 
+InstallOtherMethod( ImmutableMatrix,"object with memory",[IsField,IsMatrixOrMatrixObj and IsObjWithMemory],
+function(f,a)
+    local r;
+    r := rec(slp := a!.slp, n := a!.n, el := ImmutableMatrix(f, a!.el));
+    Objectify(TypeOfObjWithMemory(FamilyObj(a)),r);
+    SetFilterObj(r,IsMatrixOrMatrixObj);
+    if IsMatrix(a) then
+      SetFilterObj(r,IsMatrix);
+    fi;
+    if IsMatrixObj(a) then
+      SetFilterObj(r,IsMatrixObj);
+    fi;
+    return r;
+end);
+
 # Free group methods:
 
 InstallOtherMethod( Length, "for a word with memory",
