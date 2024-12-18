@@ -302,6 +302,7 @@ CallAndInstallPostRestore( function()
 
     # paths
     GAPInfo.RootPaths:= GAPInfo.KernelInfo.GAP_ROOT_PATHS;
+    GAPInfo.PackageDirectories := [];
     if  IsBound(GAPInfo.SystemEnvironment.HOME) then
       GAPInfo.UserHome := GAPInfo.SystemEnvironment.HOME;
     else
