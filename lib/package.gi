@@ -286,7 +286,7 @@ end );
 ##  In earlier versions, this function had an argument; now we ignore it.
 ##
 InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
-    local pkgdirs, pkgdir, ignore, name, files, record, r;
+    local pkgdirs, pkgdir, pkgdirstrs, ignore, name, files, record, r;
 
     if IsBound( GAPInfo.PackagesInfoInitialized ) and
        GAPInfo.PackagesInfoInitialized = true then
@@ -301,6 +301,13 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     LogPackageLoadingMessage( PACKAGE_DEBUG,
         "entering InitializePackagesInfoRecords", "GAP" );
 
+    # the first time this is called, add the cmd line args to the list
+    if IsEmpty(GAPInfo.PackageDirectories) then
+        for pkgdirstrs in GAPInfo.CommandLineOptions.packagedirs do
+            pkgdirs:= List( SplitString( pkgdirstrs, ";" ), Directory);
+            APPEND_LIST_INTR( GAPInfo.PackageDirectories, pkgdirs );
+        od;
+    fi;
     # add any new pkg directories to the list
     pkgdirs:= DirectoriesLibrary( "pkg" );
     if pkgdirs <> fail then
