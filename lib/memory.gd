@@ -19,8 +19,6 @@ DeclareRepresentation("IsObjWithMemory",
     IsComponentObjectRep and IsObjWithMemoryRankFilter and
     IsMultiplicativeElementWithInverse, ["slp","n","el"]);
 
-DeclareAttribute("TypeOfObjWithMemory",IsFamily);
-
 DeclareGlobalFunction( "GeneratorsWithMemory" );
 DeclareOperation( "StripMemory", [IsObject] );
 DeclareOperation( "ForgetMemory", [IsObject] );
