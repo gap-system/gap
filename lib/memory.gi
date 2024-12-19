@@ -12,34 +12,30 @@
 ##
 #############################################################################
 
+BindGlobal( "ObjWithMemory", function( slp, n, el )
+  local filt;
 
-InstallMethod(TypeOfObjWithMemory,"generic",true,[IsFamily],0,
-function(fam)
-  return NewType(fam,IsObjWithMemory);
-end);
+  filt:= IsObjWithMemory;
+  if IsMatrixOrMatrixObj( el ) then
+    filt:= filt and IsMatrixOrMatrixObj;
+    if IsMatrix( el ) then
+      filt:= filt and IsMatrix;
+    fi;
+    if IsMatrixObj( el ) then
+      filt:= filt and IsMatrixObj;
+    fi;
+  fi;
+
+  return Objectify( NewType( FamilyObj( el ), filt ),
+                    rec( slp:= slp, n:= n, el:= el ) );
+end );
 
 InstallGlobalFunction( GeneratorsWithMemory,
   function(l)
     # l is a list of objects
-    local i,ll,o,r,slp;
+    local slp;
     slp := rec(prog := [],nogens := Length(l));
-    ll := [];
-    for i in [1..Length(l)] do
-      o := l[i];
-      r := rec(slp := slp, n := i, el := o);
-      Objectify(TypeOfObjWithMemory(FamilyObj(o)),r);
-      if IsMatrixOrMatrixObj(o) then
-        SetFilterObj(r,IsMatrixOrMatrixObj);
-        if IsMatrix(o) then
-          SetFilterObj(r,IsMatrix);
-        fi;
-        if IsMatrixObj(o) then
-          SetFilterObj(r,IsMatrixObj);
-        fi;
-      fi;
-      Add(ll,r);
-    od;
-    return ll;
+    return List( [ 1 .. Length( l ) ], i -> ObjWithMemory( slp, i, l[i] ) );
   end);
 
 InstallMethod( StripMemory, "for an object with memory",
@@ -116,9 +112,7 @@ InstallGlobalFunction( CopyMemory,
   function(gwm,h)
     # h must be a homomorphic image of gwm, the memory of gwm is copied to
     # h. Returns a new object with memory instead of h.
-    local hwm;
-    hwm := rec(slp := gwm!.slp, n := gwm!.n, el := h);
-    return Objectify(TypeOfObjWithMemory(FamilyObj(h)),hwm);
+    return ObjWithMemory( gwm!.slp, gwm!.n, h );
   end);
 
 InstallGlobalFunction( GroupWithMemory,
@@ -189,31 +183,20 @@ end);
 InstallMethod( \*, "objects with memory", true,
   [IsObjWithMemory,IsObjWithMemory],0,
   function(a,b)
-    local r,slp;
+    local slp;
     slp := a!.slp;
-    if not IsIdenticalObj(a!.slp, b!.slp) then
+    if not IsIdenticalObj( slp, b!.slp ) then
         ErrorNoReturn("\\* for objects with memory: a!.slp and b!.slp must be identical");
     fi;
     if a!.n = 0 then   # the identity!
-        r := rec(slp := slp, n := b!.n, el := b!.el);
+      return ObjWithMemory( slp, b!.n, b!.el );
     elif b!.n = 0 then   # the identity!
-        r := rec(slp := slp, n := a!.n, el := a!.el);
+      return ObjWithMemory( slp, a!.n, a!.el );
     else
-        r := rec(slp := slp, n := Length(slp.prog)+slp.nogens+1,
-                 el := a!.el*b!.el);
-        Add(slp.prog,[a!.n,1,b!.n,1]);
+      Add( slp.prog, [ a!.n, 1, b!.n, 1 ] );
+      return ObjWithMemory( slp, Length( slp.prog ) + slp.nogens,
+                            a!.el * b!.el );
     fi;
-    Objectify(TypeOfObjWithMemory(FamilyObj(a)),r);
-    if IsMatrixOrMatrixObj(a) then
-      SetFilterObj(r,IsMatrixOrMatrixObj);
-      if IsMatrix(a) then
-        SetFilterObj(r,IsMatrix);
-      fi;
-      if IsMatrixObj(a) then
-        SetFilterObj(r,IsMatrixObj);
-      fi;
-    fi;
-    return r;
   end);
 
 InstallMethod( One, "objects with memory", true,
@@ -221,69 +204,33 @@ InstallMethod( One, "objects with memory", true,
 
 InstallMethod( OneOp, "objects with memory", true,
   [IsObjWithMemory],0,
-  function(a)
-    local r;
-    r := rec(slp := a!.slp, n := 0, el := One(a!.el));
-    Objectify(TypeOfObjWithMemory(FamilyObj(a)),r);
-    if IsMatrixOrMatrixObj(a) then
-      SetFilterObj(r,IsMatrixOrMatrixObj);
-      if IsMatrix(a) then
-        SetFilterObj(r,IsMatrix);
-      fi;
-      if IsMatrixObj(a) then
-        SetFilterObj(r,IsMatrixObj);
-      fi;
-    fi;
-    return r;
-  end);
+  a -> ObjWithMemory( a!.slp, 0, One( a!.el ) ) );
 
 InstallMethod( InverseOp, "objects with memory", true,
   [IsObjWithMemory],0,
   function(a)
-    local r,slp;
+    local slp;
     slp := a!.slp;
     if a!.n <> 0 then
-        r := rec(slp := slp, n := Length(slp.prog)+slp.nogens+1,
-                 el := InverseOp(a!.el));
-        Add(slp.prog,[a!.n,-1]);
+      Add( slp.prog, [ a!.n, -1 ] );
+      return ObjWithMemory( slp, Length( slp.prog ) + slp.nogens,
+                            InverseOp( a!.el ) );
     else
-        r := rec(slp := slp, n := 0, el := a!.el);
+      return ObjWithMemory( slp, 0, a!.el );
     fi;
-    Objectify(TypeOfObjWithMemory(FamilyObj(a)),r);
-    if IsMatrixOrMatrixObj(a) then
-      SetFilterObj(r,IsMatrixOrMatrixObj);
-      if IsMatrix(a) then
-        SetFilterObj(r,IsMatrix);
-      fi;
-      if IsMatrixObj(a) then
-        SetFilterObj(r,IsMatrixObj);
-      fi;
-    fi;
-    return r;
   end);
 
 InstallMethod( \^, "objects with memory", true,
   [IsObjWithMemory,IsInt],0,
   function(a,b)
-    local r,slp;
+    local slp;
     slp := a!.slp;
     if a!.n = 0 then
-        r := rec(slp := slp, n := 0, el := a!.el);
+      return ObjWithMemory( slp, 0, a!.el );
     else
-        r := rec(slp := slp, n := Length(slp.prog)+slp.nogens+1,el := a!.el^b);
-        Add(slp.prog,[a!.n,b]);
+      Add( slp.prog, [ a!.n, b ] );
+      return ObjWithMemory( slp, Length( slp.prog ) + slp.nogens, a!.el^b );
     fi;
-    Objectify(TypeOfObjWithMemory(FamilyObj(a)),r);
-    if IsMatrixOrMatrixObj(a) then
-      SetFilterObj(r,IsMatrixOrMatrixObj);
-      if IsMatrix(a) then
-        SetFilterObj(r,IsMatrix);
-      fi;
-      if IsMatrixObj(a) then
-        SetFilterObj(r,IsMatrixObj);
-      fi;
-    fi;
-    return r;
   end);
 
 InstallMethod(\=,"two objects with memory",IsIdenticalObj,
@@ -374,10 +321,7 @@ InstallMethod(RestrictedPerm,
   "for a permutation with memory and a list of integers",true,
   [ IsPerm and IsObjWithMemory, IsList ], 0,
   function(a,l)
-    local r;
-    r := rec(slp := a!.slp, n := a!.n, el := RestrictedPerm(a!.el,l));
-    Objectify(TypeOfObjWithMemory(FamilyObj(a)),r);
-    return r;
+    return ObjWithMemory( a!.slp, a!.n, RestrictedPerm( a!.el, l ) );
   end);
 
 InstallMethod(SignPerm,
@@ -450,17 +394,7 @@ InstallOtherMethod(ProjectiveOrder,"object with memory",
 
 InstallOtherMethod( ImmutableMatrix,"object with memory",[IsField,IsMatrixOrMatrixObj and IsObjWithMemory],
 function(f,a)
-    local r;
-    r := rec(slp := a!.slp, n := a!.n, el := ImmutableMatrix(f, a!.el));
-    Objectify(TypeOfObjWithMemory(FamilyObj(a)),r);
-    SetFilterObj(r,IsMatrixOrMatrixObj);
-    if IsMatrix(a) then
-      SetFilterObj(r,IsMatrix);
-    fi;
-    if IsMatrixObj(a) then
-      SetFilterObj(r,IsMatrixObj);
-    fi;
-    return r;
+    return ObjWithMemory( a!.slp, a!.n, ImmutableMatrix( f, a!.el ) );
 end);
 
 # Free group methods:
