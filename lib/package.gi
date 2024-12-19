@@ -286,7 +286,7 @@ end );
 ##  In earlier versions, this function had an argument; now we ignore it.
 ##
 InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
-    local pkgdirs, pkgdir, ignore, name, files, record, r;
+    local pkgdirs, pkgdir, pkgdirstrs, ignore, name, files, record, r;
 
     if IsBound( GAPInfo.PackagesInfoInitialized ) and
        GAPInfo.PackagesInfoInitialized = true then
@@ -300,8 +300,24 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
 
     LogPackageLoadingMessage( PACKAGE_DEBUG,
         "entering InitializePackagesInfoRecords", "GAP" );
+
+    # the first time this is called, add the cmd line args to the list
+    if IsEmpty(GAPInfo.PackageDirectories) then
+        for pkgdirstrs in GAPInfo.CommandLineOptions.packagedirs do
+            pkgdirs:= List( SplitString( pkgdirstrs, ";" ), Directory);
+            APPEND_LIST_INTR( GAPInfo.PackageDirectories, pkgdirs );
+        od;
+    fi;
+    # add any new pkg directories to the list
     pkgdirs:= DirectoriesLibrary( "pkg" );
-    if pkgdirs = fail then
+    if pkgdirs <> fail then
+        pkgdirs:= Filtered( pkgdirs, dir -> not dir in GAPInfo.PackageDirectories );
+        if not IsEmpty(pkgdirs) then
+            APPEND_LIST_INTR( GAPInfo.PackageDirectories, pkgdirs );
+        fi;
+    fi;
+
+    if IsEmpty(GAPInfo.PackageDirectories) then
       LogPackageLoadingMessage( PACKAGE_DEBUG,
           "exit InitializePackagesInfoRecords (no pkg directories found)",
           "GAP" );
@@ -327,7 +343,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     # Loop over the package directories,
     # remove the packages listed in `NOAUTO' files from GAP's suggested
     # packages, and unite the information for the directories.
-    for pkgdir in pkgdirs do
+    for pkgdir in GAPInfo.PackageDirectories do
 
       if IsBound( GAPInfo.ExcludeFromAutoload ) then
         UniteSet( GAPInfo.ExcludeFromAutoload,
@@ -1936,6 +1952,7 @@ InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
     local i;
 
     rootpaths:= Filtered( rootpaths, path -> not path in GAPInfo.RootPaths );
+    # TODO: validate the paths???
     if not IsEmpty( rootpaths ) then
       # 'DirectoriesLibrary' concatenates root paths with directory names.
       for i in [ 1 .. Length( rootpaths ) ] do
@@ -1948,6 +1965,35 @@ InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
           rootpaths ) );
       # Clear the cache.
       GAPInfo.DirectoriesLibrary:= AtomicRecord( rec() );
+      # Reread the package information.
+      if IsBound( GAPInfo.PackagesInfoInitialized ) and
+         GAPInfo.PackagesInfoInitialized = true then
+        GAPInfo.PackagesInfoInitialized:= false;
+        InitializePackagesInfoRecords();
+      fi;
+    fi;
+    end );
+
+
+#############################################################################
+##
+#F  ExtendPackageDirectories( <paths_or_dirs> )
+##
+InstallGlobalFunction( ExtendPackageDirectories, function( paths_or_dirs )
+    local p, changed;
+    changed:= false;
+    for p in paths_or_dirs do
+      if IsString( p ) then
+        p:= Directory( p );
+      elif not IsDirectory( p ) then
+        Error("input must be a list of path strings or directory objects");
+      fi;
+      if not p in GAPInfo.PackageDirectories then
+        Add( GAPInfo.PackageDirectories, p );
+        changed:= true;
+      fi;
+    od;
+    if changed then
       # Reread the package information.
       if IsBound( GAPInfo.PackagesInfoInitialized ) and
          GAPInfo.PackagesInfoInitialized = true then
