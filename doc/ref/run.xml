@@ -192,13 +192,17 @@ total allocated memory of 4096 kilobytes are available afterwards.
 </Item>
 <Mark><Index Key="-h"><C>-h</C></Index>
 <C>-h</C></Mark>
+<Mark><Index Key="--help"><C>--help</C></Index>
+<C>--help</C></Mark>
 <Item>
-tells &GAP; to print a summary of all available options (<C>-h</C> is mnemonic
-for <Q>help</Q>). &GAP; exits after printing the summary, all other options
+tells &GAP; to print a summary of all available options.
+&GAP; exits after printing the summary, all other options
 are ignored.
 </Item>
 <Mark><Index Key="-K"><C>-K</C></Index>
 <C>-K </C><A>memory</A></Mark>
+<Mark><Index Key="--limitworkspace"><C>--limitworkspace</C></Index>
+<C>--limitworkspace </C><A>memory</A></Mark>
 <Item>
 is like the <C>-o</C> option.
 But while the latter actually allocates more memory if the system allows it
@@ -217,6 +221,8 @@ see <Ref Subsect="Garbage Collection"/>.)
 </Item>
 <Mark><Index Key="-l"><C>-l</C></Index>
 <C>-l </C><A>path_list</A></Mark>
+<Mark><Index Key="--roots"><C>--roots</C></Index>
+<C>--roots </C><A>path_list</A></Mark>
 <Item>
 can be used to set or modify &GAP;'s list of root directories
 (see <Ref Sect="GAP Root Directories"/>).
@@ -268,6 +274,8 @@ files. This option may be repeated to toggle this behavior on and off.
 </Item>
 <Mark><Index Key="-m"><C>-m</C></Index>
 <C>-m </C><A>memory</A></Mark>
+<Mark><Index Key="--minworkspace"><C>--minworkspace</C></Index>
+<C>--minworkspace </C><A>memory</A></Mark>
 <Item>
 tells &GAP; to allocate <A>memory</A> bytes at startup time.
 If the last character of <A>memory</A> is <C>k</C> or <C>K</C>
@@ -304,6 +312,8 @@ obsolete variables.
 </Item>
 <Mark><Index Key="-o"><C>-o</C></Index>
 <C>-o </C><A>memory</A></Mark>
+<Mark><Index Key="--maxworkspace"><C>--maxworkspace</C></Index>
+<C>--maxworkspace </C><A>memory</A></Mark>
 <Item>
 tells &GAP; to allocate at most <A>memory</A> bytes without asking.
 The option argument <A>memory</A> is specified as with the <C>-m</C>
@@ -367,8 +377,16 @@ and also suppresses displaying any error backtrace.
 This is intended for automated testing of &GAP;. This option may be
 repeated to toggle this behavior on and off.
 </Item>
+<Mark><Index Key="--version"><C>--version</C></Index>
+<C>--version</C></Mark>
+<Item>
+tells &GAP; to print its version and then exit immediately, all other options
+are ignored.
+</Item>
 <Mark><Index Key="-x"><C>-x</C></Index>
 <C>-x </C><A>length</A></Mark>
+<Mark><Index Key="--width"><C>--width</C></Index>
+<C>--width </C><A>length</A></Mark>
 <Item>
 With this option  you can tell  &GAP;  how long lines  are.  &GAP; uses
 this value to decide when to split long lines. After starting &GAP;  you
@@ -382,6 +400,8 @@ redirect the output to a printer, you may want to increase this value.
 </Item>
 <Mark><Index Key="-y"><C>-y</C></Index>
 <C>-y </C><A>length</A></Mark>
+<Mark><Index Key="--line"><C>--line</C></Index>
+<C>--line </C><A>length</A></Mark>
 <Item>
 With this option you can tell &GAP; how  many  lines  your  screen  has.
 &GAP; uses this value to decide after how many lines of on-line help  it
