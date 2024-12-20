@@ -304,8 +304,12 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     # the first time this is called, add the cmd line args to the list
     if IsEmpty(GAPInfo.PackageDirectories) then
         for pkgdirstrs in GAPInfo.CommandLineOptions.packagedirs do
-            pkgdirs:= List( SplitString( pkgdirstrs, ";" ), Directory);
-            APPEND_LIST_INTR( GAPInfo.PackageDirectories, pkgdirs );
+            pkgdirs:= List( SplitString( pkgdirstrs, ";" ), Directory );
+            for pkgdir in pkgdirs do
+                if not pkgdir in GAPInfo.PackageDirectories then
+                    Add( GAPInfo.PackageDirectories, pkgdir );
+                fi;
+            od;
         od;
     fi;
     # add any new pkg directories to the list
