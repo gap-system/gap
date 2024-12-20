@@ -96,7 +96,7 @@ BIND_GLOBAL( "GAPInfo", rec(
                      "of root paths" ] ),
       rec( short:= "r", default := false, help := ["disable/enable user GAP root dir", "GAPInfo.UserGapRoot"] ),
       rec( long := "packagedirs", default := [], arg := "<paths>",
-           help := [ "set or modify the GAP directory paths",
+           help := [ "add additional GAP directory paths",
                      "Directories are separated using ';'." ] ),
       ,
       rec( section:= ["Loading:"] ),

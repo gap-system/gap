@@ -1952,7 +1952,6 @@ InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
     local i;
 
     rootpaths:= Filtered( rootpaths, path -> not path in GAPInfo.RootPaths );
-    # TODO: validate the paths???
     if not IsEmpty( rootpaths ) then
       # 'DirectoriesLibrary' concatenates root paths with directory names.
       for i in [ 1 .. Length( rootpaths ) ] do

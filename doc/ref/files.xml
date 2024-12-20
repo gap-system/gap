@@ -81,6 +81,10 @@ directories. For example when &GAP; wants to read its library file
 <C>GAPInfo.RootPaths</C> until it finds the path of an existing file.
 The first file found this way is read.
 <P/>
+Subdirectories <F>pkg/</F> in each of the directories in <C>GAPInfo.RootPaths</C>
+appear in <C>GAPInfo.PackageDirectories</C> (see <Ref Sect="GAP Package Directories"/>),
+which controls where &GAP; looks for available packages.
+<P/>
 The root directories are specified via one or several of the
 <C>-l paths</C> command line options, see <Ref Sect="Command Line Options"/>.
 Furthermore, by default &GAP; automatically prepends a user specific &GAP; root
@@ -91,6 +95,8 @@ This directory can be used to tell &GAP; about personal preferences,
 to always load some additional code, to install additional packages,
 or to overwrite some &GAP; files. See <Ref Sect="sect:gap.ini"/>
 for more information how to do this.
+After &GAP; has been started , one can add additional root directories
+via the function <Ref Func="ExtendRootDirectories"/>.
 <P/>
 
 </Section>
@@ -106,11 +112,13 @@ containing packages called the <E>&GAP; package directories</E>.
 In a running &GAP; session this list can be found in <C>GAPInfo.PackageDirectories</C>.
 <P/>
 Every subdirectory <F>pkg/</F> in a &GAP; root directory is automatically
-added to this list.
+added to this list. Further package directories can be specified via one or several of the
+<C>-/packagedirs paths</C> command line options, see <Ref Sect="Command Line Options"/>,
+or after &GAP; has been started via the function <Ref Func="ExtendPackageDirectories"/>.
 <P/>
 &GAP; looks for available packages by examining each of the directories in
 <C>GAPInfo.PackageDirectories</C>.
-
+The root directories are specified
 </Section>
 
 
