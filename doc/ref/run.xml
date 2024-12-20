@@ -278,7 +278,7 @@ see <Ref Var="GAPInfo"/>.
 Usually this option is used inside a startup script to specify
 where additional &GAP; packages are located on the system.
 The <C>--packagedirs</C> option can also be used by individual users to tell &GAP;
-about additional &GAP; packages, without the need to setup a complete root
+about additional &GAP; packages, without the need to set up a complete root
 directory structure.
 </Item>
 <Mark><Index Key="-M"><C>-M</C></Index>
