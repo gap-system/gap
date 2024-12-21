@@ -355,6 +355,10 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
                         LowercaseString ) );
       fi;
 
+      # pkgdir may be a package instead of a package directory
+      files := FindPackageInfosInSubdirectories( pkgdir, "" );
+      AddPackageInfos( files, pkgdir, ignore );
+
       # Loop over subdirectories of this package directory.
       for name in Set( DirectoryContents( Filename( pkgdir, "" ) ) ) do
 
