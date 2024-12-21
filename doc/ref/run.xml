@@ -192,15 +192,17 @@ total allocated memory of 4096 kilobytes are available afterwards.
 </Item>
 <Mark><Index Key="-h"><C>-h</C></Index>
 <C>-h</C></Mark>
+<Item></Item>
 <Mark><Index Key="--help"><C>--help</C></Index>
 <C>--help</C></Mark>
 <Item>
 tells &GAP; to print a summary of all available options.
-&GAP; exits after printing the summary, all other options
-are ignored.
+&GAP; exits after printing the summary, all options coming
+after are ignored.
 </Item>
 <Mark><Index Key="-K"><C>-K</C></Index>
 <C>-K </C><A>memory</A></Mark>
+<Item></Item>
 <Mark><Index Key="--limitworkspace"><C>--limitworkspace</C></Index>
 <C>--limitworkspace </C><A>memory</A></Mark>
 <Item>
@@ -221,6 +223,7 @@ see <Ref Subsect="Garbage Collection"/>.)
 </Item>
 <Mark><Index Key="-l"><C>-l</C></Index>
 <C>-l </C><A>path_list</A></Mark>
+<Item></Item>
 <Mark><Index Key="--roots"><C>--roots</C></Index>
 <C>--roots </C><A>path_list</A></Mark>
 <Item>
@@ -274,6 +277,7 @@ files. This option may be repeated to toggle this behavior on and off.
 </Item>
 <Mark><Index Key="-m"><C>-m</C></Index>
 <C>-m </C><A>memory</A></Mark>
+<Item></Item>
 <Mark><Index Key="--minworkspace"><C>--minworkspace</C></Index>
 <C>--minworkspace </C><A>memory</A></Mark>
 <Item>
@@ -312,6 +316,7 @@ obsolete variables.
 </Item>
 <Mark><Index Key="-o"><C>-o</C></Index>
 <C>-o </C><A>memory</A></Mark>
+<Item></Item>
 <Mark><Index Key="--maxworkspace"><C>--maxworkspace</C></Index>
 <C>--maxworkspace </C><A>memory</A></Mark>
 <Item>
@@ -380,11 +385,12 @@ repeated to toggle this behavior on and off.
 <Mark><Index Key="--version"><C>--version</C></Index>
 <C>--version</C></Mark>
 <Item>
-tells &GAP; to print its version and then exit immediately, all other options
-are ignored.
+tells &GAP; to print its version and then exit immediately,
+all options coming after are ignored.
 </Item>
 <Mark><Index Key="-x"><C>-x</C></Index>
 <C>-x </C><A>length</A></Mark>
+<Item></Item>
 <Mark><Index Key="--width"><C>--width</C></Index>
 <C>--width </C><A>length</A></Mark>
 <Item>
@@ -400,6 +406,7 @@ redirect the output to a printer, you may want to increase this value.
 </Item>
 <Mark><Index Key="-y"><C>-y</C></Index>
 <C>-y </C><A>length</A></Mark>
+<Item></Item>
 <Mark><Index Key="--line"><C>--line</C></Index>
 <C>--line </C><A>length</A></Mark>
 <Item>
