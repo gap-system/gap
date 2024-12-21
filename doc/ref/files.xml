@@ -115,6 +115,10 @@ Every subdirectory <F>pkg/</F> in a &GAP; root directory is automatically
 added to this list. Further package directories can be specified via one or several
 <C>--packagedirs paths</C> command line options, see <Ref Sect="Command Line Options"/>,
 or after &GAP; has been started via the function <Ref Func="ExtendPackageDirectories"/>.
+The order of the directories in <C>GAPInfo.PackageDirectories</C> is as follows:
+first the package directories specified via the command line option <C>--packagedirs </C>,
+then the subdirectories of the &GAP; root directories that were known at startup in the
+same order, and finally the directories added after &GAP; has been started.
 <P/>
 &GAP; looks for available packages by examining each of the directories in
 <C>GAPInfo.PackageDirectories</C>.
