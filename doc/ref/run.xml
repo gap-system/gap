@@ -270,8 +270,8 @@ The list always contains all subdirectories <F>pkg/</F> in a &GAP; root director
 <A>path_list</A> should be a list of directories separated by semicolons.
 No whitespace is permitted before or after a semicolon, and the first and
 last character of <A>path_list</A> may not be a semicolon.
-After &GAP; has completed its startup procedure  and
-displays the prompt, the list of package directories can be  seen  in  the
+After &GAP; has completed its startup procedure and
+displays the prompt, the list of package directories can be seen in the
 variable <C>GAPInfo.PackageDirectories</C>,
 see <Ref Var="GAPInfo"/>.
 <P/>
