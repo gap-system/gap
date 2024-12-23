@@ -534,10 +534,15 @@ BIND_GLOBAL("PageSource", function ( fun, nr... )
         else
           Print( "Source not available.\n" );
         fi;
-    elif not (IsExistingFile(f) and IsReadableFile(f)) then
-        Print( "Cannot access code from file \"",f,"\".\n");
     else
+      if not IsExistingFile(f) and IsExistingFile(Concatenation(f, ".gz")) then
+        f:= Concatenation(f, ".gz");
+      fi;
+      if not (IsExistingFile(f) and IsReadableFile(f)) then
+        Print( "Cannot access code from file \"",f,"\".\n");
+      else
         Print( "Showing source in ", f, " (from line ", l, ")\n" );
         Pager(rec(lines := StringFile(f), formatted := true, start := l));
+      fi;
     fi;
 end);
