@@ -309,7 +309,6 @@ GAPInput
     # verify that there are no references to the build, source or home
     # directories after stripping gap and libgap
     strip $GAPPREFIX/bin/gap > /dev/null
-    strip $GAPPREFIX/lib/gap/gap > /dev/null
     strip $GAPPREFIX/lib/libgap.so > /dev/null 2>&1 || :      # for Linux
     strip -S $GAPPREFIX/lib/libgap.dylib > /dev/null 2>&1 || :   # for macOS
     fgrep -r $BUILDDIR $GAPPREFIX && exit 1
