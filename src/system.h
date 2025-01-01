@@ -134,6 +134,6 @@ void Panic_(const char * file, int line, const char * fmt, ...) NORETURN
 **  answer the user interrupts '<ctr>-C', scans the command line for options,
 **  sets up the GAP root paths, locates the '.gaprc' file (if any), and more.
 */
-void InitSystem(Int argc, Char * argv[], UInt handleSignals);
+void InitSystem(int argc, const char * argv[], BOOL handleSignals);
 
 #endif // GAP_SYSTEM_H

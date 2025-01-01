@@ -167,7 +167,7 @@ void CallbackForAllBags(void (*func)(Bag));
 **
 */
 #ifdef GAP_MEM_CHECK
-Int enableMemCheck(Char ** argv, void * dummy);
+int enableMemCheck(const char * argv[], void * dummy);
 extern Int EnableMemCheck;
 #endif
 

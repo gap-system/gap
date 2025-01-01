@@ -16,9 +16,9 @@
 
 #include "common.h"
 
-Int enableProfilingAtStartup(Char ** argv, void * dummy);
-Int enableMemoryProfilingAtStartup(Char ** argv, void * dummy);
-Int enableCodeCoverageAtStartup(Char ** argv, void * dummy);
+int  enableProfilingAtStartup(const char * argv[], void * dummy);
+int  enableMemoryProfilingAtStartup(const char * argv[], void * dummy);
+int  enableCodeCoverageAtStartup(const char * argv[], void * dummy);
 void pauseProfiling(void);
 void unpauseProfiling(void);
 

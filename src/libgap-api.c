@@ -59,7 +59,7 @@ void GAP_Initialize(int              argc,
 {
     UsingLibGap = TRUE;
 
-    InitializeGap(&argc, argv, handleSignals);
+    InitializeGap(&argc, (const char **)argv, handleSignals);
     SetExtraMarkFuncBags(markBagsCallback);
     STATE(JumpToCatchCallback) = errorCallback;
 

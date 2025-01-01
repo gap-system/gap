@@ -652,7 +652,7 @@ static struct InterpreterHooks profileHooks = { visitStat,
 
 
 static void
-enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
+enableAtStartup(const char * filename, Int repeats, TickMethod tickMethod)
 {
     if (profileState.status == Profile_Active) {
         Panic("-P or -C can only be passed once\n");
@@ -685,7 +685,7 @@ enableAtStartup(char * filename, Int repeats, TickMethod tickMethod)
 // This function is for when GAP is started with -c, and
 // enables profiling at startup. If anything goes wrong,
 // we quit straight away.
-Int enableCodeCoverageAtStartup( Char **argv, void * dummy)
+int enableCodeCoverageAtStartup(const char * argv[], void * dummy)
 {
     enableAtStartup(argv[0], 0, Tick_Mem);
     return 1;
@@ -694,7 +694,7 @@ Int enableCodeCoverageAtStartup( Char **argv, void * dummy)
 // This function is for when GAP is started with -P, and
 // enables profiling at startup. If anything goes wrong,
 // we quit straight away.
-Int enableProfilingAtStartup( Char **argv, void * dummy)
+int enableProfilingAtStartup(const char * argv[], void * dummy)
 {
     TickMethod tickMethod = Tick_WallTime;
 #ifdef HAVE_GETTIMEOFDAY
@@ -708,7 +708,7 @@ Int enableProfilingAtStartup( Char **argv, void * dummy)
     return 1;
 }
 
-Int enableMemoryProfilingAtStartup(Char ** argv, void * dummy)
+int enableMemoryProfilingAtStartup(const char * argv[], void * dummy)
 {
     enableAtStartup(argv[0], 1, Tick_Mem);
     return 1;
