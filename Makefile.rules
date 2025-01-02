@@ -614,20 +614,23 @@ install: install-bin install-doc install-gaproot install-sysinfo install-headers
 	@echo "| via support@gap-system.org or https://github.com/gap-system/gap/issues   |"
 	@echo "+--------------------------------------------------------------------------+"
 
+# auxiliary target to prevent race conditions when creating certain directories
+install-dirs:
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/pkg
+
 install-bin: build/gap-install
 	# install a special build of gap with SYS_DEFAULT_PATHS set suitably
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(bindir)
 	$(INSTALL) -m 0755 build/gap-install $(DESTDIR)$(bindir)/gap
-	# for backwards compatibility, also install it into $(libdir)/gap
-	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
-	$(INSTALL) -m 0755 build/gap-install $(DESTDIR)$(libdir)/gap/gap
 	# install gac
 	sed -e "s;@SYSINFO_GAPROOT@;$(libdir)/gap;" < $(srcdir)/cnf/gac.in > $(DESTDIR)$(bindir)/gac
 	chmod 0755 $(DESTDIR)$(bindir)/gac
 
-install-doc:
-	# TODO: should this depend on the 'doc' target? but that target is phony
-	# and will re-run each time it is invoked, which is not really what we want.
+# TODO: should 'install-doc' depend on the 'doc' target? but that target is phony
+# and will re-run each time it is invoked, which is not really what we want.
+install-doc: install-dirs
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/doc
 	$(INSTALL) -m 0644 $(srcdir)/doc/gapmacro.tex $(DESTDIR)$(datarootdir)/gap/doc/
 	$(INSTALL) -m 0644 $(srcdir)/doc/manualindex $(DESTDIR)$(datarootdir)/gap/doc/
@@ -641,11 +644,7 @@ install-doc:
 # install most of the GAP "root" directory (containing arch independent files),
 # with a few exceptions: the `doc` dir is installed by `install-doc`, and
 # `install-sysinfo` creates `sysinfo.gap`
-install-gaproot: CITATION
-	# create subdirectories
-	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap
-	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/pkg
-
+install-gaproot: install-dirs CITATION
 	# install GAP library files
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(datarootdir)/gap/hpcgap
 	for dir in grp lib lib/hpc hpcgap/lib hpcgap/lib/hpc hpcgap/lib/distributed ; do \
@@ -674,8 +673,7 @@ install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_GAP = $(bindir)/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
 install-sysinfo: GMP_PREFIX =
-install-sysinfo:
-	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)/gap
+install-sysinfo: install-dirs
 	@echo "$$sysinfo_gap" > $(DESTDIR)$(libdir)/gap/sysinfo.gap
 	chmod 0644 $(DESTDIR)$(libdir)/gap/sysinfo.gap
 
@@ -688,7 +686,7 @@ install-headers: $(FFDATA_H) build/version.h
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
 	$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
 
-install-libgap: $(LIBGAP_FULL) libgap.pc
+install-libgap: install-dirs $(LIBGAP_FULL) libgap.pc
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
 	$(INSTALL) -m 0644 $(LIBGAP_FULL) $(DESTDIR)$(libdir)
 	ln -sf $(LIBGAP_FULL) $(DESTDIR)$(libdir)/libgap$(SHLIB_EXT)
@@ -697,7 +695,7 @@ install-libgap: $(LIBGAP_FULL) libgap.pc
 	$(INSTALL) -m 0644 libgap.pc $(DESTDIR)$(libdir)/pkgconfig
 
 
-.PHONY: install install-bin install-doc install-gaproot install-headers install-libgap
+.PHONY: install install-dirs install-bin install-doc install-gaproot install-headers install-libgap
 
 ########################################################################
 # Building subprojects
