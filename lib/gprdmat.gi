@@ -256,7 +256,8 @@ InstallGlobalFunction(MatWreathProduct,function(A,B)
 local f,n,m,Agens,Bgens,emb,i,j,a,g,dim,rans,range,orbs;
   f:=DefaultFieldOfMatrixGroup(A);
   n:=DimensionOfMatrixGroup(A);
-  m:=LargestMovedPoint(B);
+  # force trivial top group to act on one point
+  m:=Maximum(1, LargestMovedPoint(B));
   dim:=n*m;
   emb:=[];
   rans:=[];
@@ -272,11 +273,26 @@ local f,n,m,Agens,Bgens,emb,i,j,a,g,dim,rans,range,orbs;
     emb[j]:=Agens;
   od;
   orbs := OrbitsDomain(B);
-  Agens := Concatenation(List(orbs, orb -> emb[orb[1]]));
-
-  Bgens:=List(GeneratorsOfGroup(B),
-          x->KroneckerProduct(PermutationMat(x,m,f),One(A)));
-  g:=Group(Concatenation(Agens,Bgens));
+  # force trivial top group to act on one point
+  if IsEmpty(orbs) then
+    orbs := [[1]];
+  fi;
+  # generators for the cases where one component is trivial
+  if IsTrivial(A) and IsTrivial(B) then
+    g := Group( One(A) );
+  elif IsTrivial(A) then
+    Bgens:=List(GeneratorsOfGroup(B),
+            x->PermutationMat(x,m,f));
+    g := Group(Bgens);
+  elif IsTrivial(B) then
+    Agens := Concatenation(List(orbs, orb -> emb[orb[1]]));
+    g := Group(Agens);
+  else
+    Agens := Concatenation(List(orbs, orb -> emb[orb[1]]));
+    Bgens:=List(GeneratorsOfGroup(B),
+            x->KroneckerProduct(PermutationMat(x,m,f),One(A)));
+    g:=Group(Concatenation(Agens,Bgens));
+  fi;
   if HasSize(A) then
     SetSize(g,Size(A)^m*Size(B));
   fi;
