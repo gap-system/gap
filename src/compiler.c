@@ -5346,85 +5346,8 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2)
 
 /****************************************************************************
 **
-*F  FuncCOMPILE_FUNC( <self>, <output>, <func>, <name>, <crc>, <magic2> )
-*/
-static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
-{
-    Obj                 output;
-    Obj                 func;
-    Obj                 name;
-    Obj                 crc;
-    Obj                 magic2;
-    Int                 nr;
-    Int                 len;
-
-    // unravel the arguments
-    len = LEN_LIST(arg);
-    if ( len < 5 ) {
-        ErrorQuit( "usage: COMPILE_FUNC( <output>, <func>, <name>, "
-                   "<crc>, <magic2>, ... )", 0, 0 );
-    }
-    output = ELM_LIST( arg, 1 );
-    func   = ELM_LIST( arg, 2 );
-    name   = ELM_LIST( arg, 3 );
-    crc    = ELM_LIST( arg, 4 );
-    magic2 = ELM_LIST( arg, 5 );
-
-    RequireStringRep(SELF_NAME, output);
-    RequireFunction(SELF_NAME, func);
-    RequireStringRep(SELF_NAME, name);
-    RequireSmallInt(SELF_NAME, crc);
-    RequireStringRep(SELF_NAME, magic2);
-
-    // possible optimiser flags
-    CompFastIntArith        = 1;
-    CompFastPlainLists      = 1;
-    CompFastListFuncs       = 1;
-    CompCheckTypes          = 1;
-    CompCheckListElements   = 1;
-
-    if ( 6 <= len ) {
-        CompFastIntArith        = EQ( ELM_LIST( arg,  6 ), True );
-    }
-    if ( 7 <= len ) {
-        CompFastPlainLists      = EQ( ELM_LIST( arg,  7 ), True );
-    }
-    if ( 8 <= len ) {
-        CompFastListFuncs       = EQ( ELM_LIST( arg,  8 ), True );
-    }
-    if ( 9 <= len ) {
-        CompCheckTypes          = EQ( ELM_LIST( arg,  9 ), True );
-    }
-    if ( 10 <= len ) {
-        CompCheckListElements   = EQ( ELM_LIST( arg, 10 ), True );
-    }
-
-    // compile the function
-    nr = CompileFunc(
-        output, func, name,
-        INT_INTOBJ(crc), magic2 );
-
-
-    return INTOBJ_INT(nr);
-}
-
-
-/****************************************************************************
-**
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
-
-/****************************************************************************
-**
-*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
-*/
-static StructGVarFunc GVarFuncs[] = {
-
-    GVAR_FUNC_XARGS(COMPILE_FUNC, -1, "arg"),
-    { 0, 0, 0, 0, 0 }
-
-};
-
 
 /****************************************************************************
 **
@@ -5441,9 +5364,6 @@ static Int InitKernel (
     CompCheckTypes = 1;
     CompCheckListElements = 1;
     CompPass = 0;
-
-    // init filters and functions
-    InitHdlrFuncsFromTable( GVarFuncs );
 
     // register global bags with the garbage collector
     InitGlobalBag( &CompInfoGVar,  "src/compiler.c:CompInfoGVar"  );
@@ -5639,9 +5559,6 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    // init filters and functions
-    InitGVarFuncsFromTable( GVarFuncs );
-
     return PostRestore( module );
 }
 
