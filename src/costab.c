@@ -2337,7 +2337,7 @@ static Int InitKernel (
     // import type object
     InitCopyGVar("TYPE_LOWINDEX_DATA", &TYPE_LOWINDEX_DATA);
 
-    // static variables
+    // register global bags with the garbage collector
     InitGlobalBag( &objRel      , "src/costab.c:objRel"       );
     InitGlobalBag( &objNums     , "src/costab.c:objNums"      );
     InitGlobalBag( &objFactor   , "src/costab.c:objFactor"    );

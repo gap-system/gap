@@ -4163,11 +4163,9 @@ void IntrAssertEnd3Args(IntrState * intr)
 static Int InitKernel (
     StructInitInfo *    module )
 {
+    // register global bags with the garbage collector
     InitGlobalBag( &STATE(ErrorLVars), "STATE(ErrorLVars)"         );
-
-    // Ensure that the value in '~' does not get garbage collected
     InitGlobalBag( &STATE(Tilde), "STATE(Tilde)" );
-
     InitGlobalBag( &VoidReturnMarker, "VoidReturnMarker");
 
     // Create a bag which is not used anywhere else

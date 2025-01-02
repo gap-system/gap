@@ -453,7 +453,7 @@ static Int InitKernel (
 {
     UInt                type;           // loop variable
 
-    // make the list of names of record names
+    // register global bags with the garbage collector
     InitGlobalBag( &NamesRNam, "src/records.c:NamesRNam" );
 
     // make the hash list of record names

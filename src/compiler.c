@@ -5463,7 +5463,7 @@ static Int InitKernel (
     // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    // announce the global variables
+    // register global bags with the garbage collector
     InitGlobalBag( &CompInfoGVar,  "src/compiler.c:CompInfoGVar"  );
     InitGlobalBag( &CompInfoRNam,  "src/compiler.c:CompInfoRNam"  );
     InitGlobalBag( &CompFunctions, "src/compiler.c:CompFunctions" );

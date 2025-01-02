@@ -2077,10 +2077,8 @@ static Int InitKernel (
     // install the marking function
     InitMarkFuncBags( T_CYC, MarkCycSubBags );
 
-    // create the result buffer
+    // register global bags with the garbage collector
     InitGlobalBag( &ResultCyc , "src/cyclotom.c:ResultCyc" );
-
-    // tell Gasman about the place were we remember the primitive root
     InitGlobalBag( &LastECyc, "src/cyclotom.c:LastECyc" );
 
     // install the type function

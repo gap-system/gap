@@ -2898,12 +2898,8 @@ static Int InitKernel (
     InitHandlerFunc( (ObjFunc)FuncListPerm1, "src/permutat.cc:FuncListPerm1" );
     InitHandlerFunc( (ObjFunc)FuncListPerm2, "src/permutat.cc:FuncListPerm2" );
 
-    // make the buffer bag
-#ifndef HPCGAP
+    // register global bags with the garbage collector
     InitGlobalBag( &TmpPerm, "src/permutat.cc:TmpPerm" );
-#endif
-
-    // make the identity permutation
     InitGlobalBag( &IdentityPerm, "src/permutat.cc:IdentityPerm" );
 
 #ifdef GAP_ENABLE_SAVELOAD

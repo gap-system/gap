@@ -1315,7 +1315,7 @@ static StructGVarFunc GVarFuncs[] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    // list of exit functions
+    // register global bags with the garbage collector
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
 
     // init filters and functions

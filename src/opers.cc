@@ -3669,6 +3669,7 @@ static Int InitKernel (
 
     CountFlags = 0;
 
+    // register global bags with the garbage collector
     InitGlobalBag( &StringFilterSetter, "src/opers.c:StringFilterSetter" );
     InitGlobalBag( &ArglistObj,         "src/opers.c:ArglistObj"         );
     InitGlobalBag( &ArglistObjVal,      "src/opers.c:ArglistObjVal"      );
@@ -3748,21 +3749,13 @@ static Int InitKernel (
     ImportGVarFromLibrary( "TYPE_FLAGS", &TYPE_FLAGS );
     TypeObjFuncs[ T_FLAGS ] = TypeFlags;
 
-
-    // set up hidden implications
+    // register global bags with the garbage collector
     InitGlobalBag( &WITH_HIDDEN_IMPS_FLAGS_CACHE, "src/opers.c:WITH_HIDDEN_IMPS_FLAGS_CACHE");
     InitGlobalBag( &HIDDEN_IMPS, "src/opers.c:HIDDEN_IMPS");
-
-    // set up implications
     InitGlobalBag( &WITH_IMPS_FLAGS_CACHE, "src/opers.c:WITH_IMPS_FLAGS_CACHE");
     InitGlobalBag( &IMPLICATIONS_SIMPLE, "src/opers.c:IMPLICATIONS_SIMPLE");
     InitGlobalBag( &IMPLICATIONS_COMPOSED, "src/opers.c:IMPLICATIONS_COMPOSED");
-
-    // make the 'true' operation
     InitGlobalBag( &ReturnTrueFilter, "src/opers.c:ReturnTrueFilter" );
-
-    // install the (function) copies of global variables
-    /*for the inside-out (kernel to library) interface                    */
     InitGlobalBag( &TRY_NEXT_METHOD, "src/opers.c:TRY_NEXT_METHOD" );
 
     ImportFuncFromLibrary("ReturnTrue", &ReturnTrue);
