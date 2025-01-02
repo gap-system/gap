@@ -3861,11 +3861,8 @@ static Int InitKernel(StructInitInfo * module)
     InitHdlrFiltsFromTable(GVarFilts);
     InitHdlrFuncsFromTable(GVarFuncs);
 
-// make the buffer bag
-#ifndef HPCGAP
+    // register global bags with the garbage collector
     InitGlobalBag(&TmpPPerm, "src/pperm.c:TmpPPerm");
-#endif
-
     InitGlobalBag(&EmptyPartialPerm, "src/pperm.c:EmptyPartialPerm");
 
 #ifdef GAP_ENABLE_SAVELOAD

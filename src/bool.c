@@ -347,7 +347,7 @@ static Int InitKernel (
     ImportGVarFromLibrary( "TYPE_BOOL", &TYPE_BOOL );
     TypeObjFuncs[ T_BOOL ] = TypeBool;
 
-    // make the boolean bags
+    // register boolean bags with the garbage collector
     InitGlobalBag( &True,  "src/bool.c:TRUE"  );
     InitGlobalBag( &False, "src/bool.c:FALSE" );
     InitGlobalBag( &Fail,  "src/bool.c:FAIL"  );

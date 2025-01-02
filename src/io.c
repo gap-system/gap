@@ -1981,7 +1981,7 @@ static Int InitKernel (
     DeclareGVar(&DEFAULT_OUTPUT_STREAM, "DEFAULT_OUTPUT_STREAM");
 
 #else
-    // tell GASMAN about the global bags
+    // register global bags with the garbage collector
     InitGlobalBag(&(IO()->InputLogFileOrStream.stream),
                   "src/io.c:InputLogFileOrStream");
     InitGlobalBag(&(IO()->OutputLogFileOrStream.stream),

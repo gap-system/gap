@@ -1528,7 +1528,7 @@ static Int InitKernel (
     InitFopyGVar( "PrimitiveRootMod", &PrimitiveRootMod );
     TypeObjFuncs[ T_FFE ] = TypeFFE;
 
-    // create the fields and integer conversion bags
+    // register global bags with the garbage collector
     InitGlobalBag( &SuccFF, "src/finfield.c:SuccFF" );
     InitGlobalBag( &TypeFF, "src/finfield.c:TypeFF" );
     InitGlobalBag( &TypeFF0, "src/finfield.c:TypeFF0" );

@@ -1548,7 +1548,7 @@ static Int InitKernel (
 {
     UInt                i;              // loop variable
 
-    // make the global bags known to Gasman
+    // register global bags with the garbage collector
     InitGlobalBag( &STATE(ReturnObjStat), "src/stats.c:ReturnObjStat" );
 
     // connect to external functions

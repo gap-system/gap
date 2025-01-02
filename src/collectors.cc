@@ -1738,7 +1738,7 @@ static Int InitLibrary (
 
 static Int InitModuleState(void)
 {
-#ifndef HPCGAP
+    // register global bags with the garbage collector
     InitGlobalBag( &CollectorsState()->SC_NW_STACK, "SC_NW_STACK" );
     InitGlobalBag( &CollectorsState()->SC_LW_STACK, "SC_LW_STACK" );
     InitGlobalBag( &CollectorsState()->SC_PW_STACK, "SC_PW_STACK" );
@@ -1746,7 +1746,6 @@ static Int InitModuleState(void)
     InitGlobalBag( &CollectorsState()->SC_GE_STACK, "SC_GE_STACK" );
     InitGlobalBag( &CollectorsState()->SC_CW_VECTOR, "SC_CW_VECTOR" );
     InitGlobalBag( &CollectorsState()->SC_CW2_VECTOR, "SC_CW2_VECTOR" );
-#endif
 
     const UInt maxStackSize = 256;
     const UInt desiredStackSize = sizeof(Obj) * (maxStackSize + 2);

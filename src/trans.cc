@@ -4210,12 +4210,8 @@ static Int InitKernel(StructInitInfo * module)
     InitHdlrFiltsFromTable(GVarFilts);
     InitHdlrFuncsFromTable(GVarFuncs);
 
-// make the buffer bag
-#ifndef HPCGAP
+    // register global bags with the garbage collector
     InitGlobalBag(&MODULE_STATE(Trans).TmpTrans, "src/trans.c:TmpTrans");
-#endif
-
-    // make the identity trans
     InitGlobalBag(&IdentityTrans, "src/trans.c:IdentityTrans");
 
 #ifdef GAP_ENABLE_SAVELOAD

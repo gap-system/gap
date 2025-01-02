@@ -3184,7 +3184,7 @@ static Int InitKernel (
     MakeBagTypePublic(T_BODY);
 #endif
 
-    // allocate the statements and expressions stacks
+    // register global bags with the garbage collector
     InitGlobalBag(&CS(StackStat), "CS(StackStat)");
     InitGlobalBag(&CS(StackExpr), "CS(StackExpr)");
 
