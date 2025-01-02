@@ -4915,7 +4915,11 @@ static void CompInfo(Stat stat)
     Int                 narg;
     Int                 i;
 
-    Emit( "\n/* Info( ... ); */\n" );
+    // print a comment
+    if ( CompPass == 2 ) {
+        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+    }
+
     sel = CompExpr( ARGI_INFO( stat, 1 ) );
     lev = CompExpr( ARGI_INFO( stat, 2 ) );
     lst = CVAR_TEMP( NewTemp( "lst" ) );
@@ -4951,7 +4955,11 @@ static void CompAssert2(Stat stat)
     CVar                lev;            // the level
     CVar                cnd;            // the condition
 
-    Emit( "\n/* Assert( ... ); */\n" );
+    // print a comment
+    if ( CompPass == 2 ) {
+        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+    }
+
     lev = CompExpr(READ_STAT(stat, 0));
     Emit( "if ( STATE(CurrentAssertionLevel) >= %i ) {\n", lev );
     cnd = CompBoolExpr(READ_STAT(stat, 1));
@@ -4976,7 +4984,11 @@ static void CompAssert3(Stat stat)
     CVar                cnd;            // the condition
     CVar                msg;            // the message
 
-    Emit( "\n/* Assert( ... ); */\n" );
+    // print a comment
+    if ( CompPass == 2 ) {
+        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+    }
+
     lev = CompExpr(READ_STAT(stat, 0));
     Emit( "if ( STATE(CurrentAssertionLevel) >= %i ) {\n", lev );
     cnd = CompBoolExpr(READ_STAT(stat, 1));
