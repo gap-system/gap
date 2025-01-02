@@ -5163,11 +5163,6 @@ static void CompFunc(Obj func)
     // compile the body
     CompStat( OFFSET_FIRST_STAT );
 
-    // emit the code to switch back to the old frame and return
-    Emit( "\n/* return; */\n" );
-
-    Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
-    Emit( "return 0;\n" );
     Emit( "}\n" );
 
     // switch back to old frame
