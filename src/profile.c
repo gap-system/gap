@@ -34,10 +34,10 @@
 
 #include "config.h"
 
-#include <stdio.h>
+#include <stdio.h>                      // for fprintf, fflush, popen, pclose, fopen, fclose
 #include <sys/time.h>                   // for gettimeofday
-#include <sys/types.h>
-#include <unistd.h>
+#include <sys/types.h>                  // for pid_t
+#include <unistd.h>                     // for getpid
 #ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>               // definition of 'struct rusage'
 #endif

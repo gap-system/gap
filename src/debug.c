@@ -30,12 +30,11 @@
 
 #include "config.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #if defined(HAVE_BACKTRACE) && defined(GAP_PRINT_BACKTRACE)
 #include <execinfo.h>
 #include <signal.h>
+#include <stdio.h>      // for fprintf, fileno
+#include <stdlib.h>     // for exit
 
 static void BacktraceHandler(int sig) NORETURN;
 

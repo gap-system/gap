@@ -43,7 +43,7 @@
 #include "hpc/guards.h"
 #endif
 
-#include <stdio.h>
+#include <stdio.h>      // for snprintf
 
 
 /****************************************************************************

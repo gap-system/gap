@@ -20,9 +20,9 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include <stdlib.h>     // for getenv, realpath, ...
+#include <string.h>     // for snprintf
+#include <unistd.h>     // for access, readlink, ...
 
 #if defined(__APPLE__) && defined(__MACH__)
 // Workaround: TRUE / FALSE are also defined by the macOS Mach-O headers

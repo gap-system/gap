@@ -23,12 +23,11 @@
 
 #ifdef GAP_MEM_CHECK
 #include <fcntl.h>
+#include <stdlib.h>     // for qsort
+#include <unistd.h>     // for ftruncate, getpid, unlink
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include <stdio.h>      // for fputs
 
 #ifdef HAVE_MADVISE
 #include <sys/mman.h>
@@ -36,6 +35,9 @@
 
 #ifdef HAVE_VM_ALLOCATE
 #include <mach/mach.h>
+#elif defined(HAVE_SBRK)
+#include <string.h>     // for memset
+#include <unistd.h>     // for sbrk
 #endif
 
 

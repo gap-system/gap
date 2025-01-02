@@ -36,7 +36,7 @@
 #include "hpc/thread.h"
 #endif
 
-#include <stdio.h>
+#include <stdio.h>  // for fprintf
 
 
 static Obj ErrorInner;

@@ -46,10 +46,7 @@
 #include "hpc/aobjects.h"
 #include "hpc/guards.h"
 #include "hpc/thread.h"
-#include <pthread.h>
 #endif
-
-#include <stdio.h>
 
 
 #ifdef HPCGAP
@@ -58,6 +55,8 @@
 
 
 #ifdef USE_GVAR_BUCKETS
+
+#include <stdio.h>      // for sprintf
 
 #define GVAR_BUCKETS 1024
 #define GVAR_BUCKET_SIZE 1024

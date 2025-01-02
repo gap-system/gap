@@ -32,7 +32,7 @@
 #include "records.h"
 #include "stringobj.h"
 
-#include <stdlib.h>
+#include <stdlib.h>     // for labs
 
 
 static Obj TYPE_ALIST;

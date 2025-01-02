@@ -64,7 +64,7 @@ extern "C" {
 #include "plist.h"
 #include "saveload.h"
 
-#include <stdio.h>
+#include <stdio.h>      // for snprintf
 
 } // extern "C"
 

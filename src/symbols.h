@@ -14,7 +14,7 @@
 #include "common.h"
 
 #ifdef HPCGAP
-#include <pthread.h>
+#include <pthread.h>    // for pthread_rwlock_t
 #endif
 
 // some auxiliary typedefs for SymbolTable

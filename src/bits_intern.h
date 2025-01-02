@@ -13,7 +13,7 @@
 
 #include "system.h"
 
-#include <string.h>
+#include <string.h>     // for memcpy
 
 
 #define ALL_BITS_UINT  (~(UInt)0)

@@ -35,8 +35,8 @@
 
 #include "config.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h>      // for snprintf
+#include <stdlib.h>     // for strtod
 
 
 #define RequireMacFloat(funcname, op) \

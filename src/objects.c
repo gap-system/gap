@@ -32,15 +32,13 @@
 #include "hpc/guards.h"
 #include "hpc/thread.h"
 #include "hpc/traverse.h"
+#include <stdio.h>      // for sprintf
+#include <stdlib.h>     // for getenv
 #endif
 
 #if defined(USE_THREADSAFE_COPYING)
 #include "hpc/traverse.h"
 #endif
-
-#include <stdio.h>
-#include <stdlib.h>
-
 
 enum {
     MAXPRINTDEPTH = 64,
