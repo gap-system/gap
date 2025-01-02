@@ -30,6 +30,8 @@
 #include "precord.h"
 #include "read.h"
 #include "records.h"
+#include "scanner.h"
+#include "stats.h"
 #include "stringobj.h"
 #include "sysfiles.h"
 #include "sysopt.h"
@@ -314,6 +316,31 @@ static void READ_INNER(TypInputFile * input)
           }
 
     }
+}
+
+
+Obj FuncTOKENIZE_STREAM(Obj self, Obj stream)
+{
+    TypInputFile input = { 0 };
+    if (!OpenInputStream(&input, stream, FALSE)) {
+        return Fail;
+    }
+
+    Obj            result = NEW_PLIST(T_PLIST, 16);
+    while (1) {
+        ClearError();
+        Obj        tokens = 0;
+        ExecStatus status = ReadTokenizeCommand(0, &input, &tokens);
+        if (status == STATUS_EOF)
+            break;
+        GAP_ASSERT(tokens != 0);
+        PushPlist(result, tokens);
+        PushPlist(result, INTOBJ_INT(status));
+    }
+
+    CloseInput(&input);
+    ClearError();
+    return result;
 }
 
 
@@ -1694,6 +1721,9 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(READ_AS_FUNC, input),
     GVAR_FUNC_1ARGS(READ_GAP_ROOT, filename),
     GVAR_FUNC_3ARGS(CALL_WITH_STREAM, stream, func, args),
+
+    GVAR_FUNC_1ARGS(TOKENIZE_STREAM, stream),
+
     GVAR_FUNC_1ARGS(LOG_TO, filename),
     GVAR_FUNC_1ARGS(LOG_TO_STREAM, filename),
     GVAR_FUNC_0ARGS(CLOSE_LOG_TO),
@@ -1792,6 +1822,86 @@ static Int InitLibrary (
 {
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
+
+#define EXPORT_IN_PREC(r, symbol)                                            \
+    AssPRec(r, RNamName(#symbol), ObjInt_UInt((UInt4)symbol))
+
+    Obj scannerSymbols = NEW_PREC(80);
+    AssGVar(GVarName("SCANNER_SYMBOLS"), scannerSymbols);
+
+    EXPORT_IN_PREC(scannerSymbols, S_AND);
+    EXPORT_IN_PREC(scannerSymbols, S_ASSERT);
+    EXPORT_IN_PREC(scannerSymbols, S_ASSIGN);
+    EXPORT_IN_PREC(scannerSymbols, S_ATOMIC);
+    EXPORT_IN_PREC(scannerSymbols, S_BDOT);
+    EXPORT_IN_PREC(scannerSymbols, S_BLBRACK);
+    EXPORT_IN_PREC(scannerSymbols, S_BREAK);
+    EXPORT_IN_PREC(scannerSymbols, S_CHAR);
+    EXPORT_IN_PREC(scannerSymbols, S_COLON);
+    EXPORT_IN_PREC(scannerSymbols, S_COMMA);
+    EXPORT_IN_PREC(scannerSymbols, S_CONTINUE);
+    EXPORT_IN_PREC(scannerSymbols, S_DIV);
+    EXPORT_IN_PREC(scannerSymbols, S_DO);
+    EXPORT_IN_PREC(scannerSymbols, S_DOT);
+    EXPORT_IN_PREC(scannerSymbols, S_DOTDOT);
+    EXPORT_IN_PREC(scannerSymbols, S_DOTDOTDOT);
+    EXPORT_IN_PREC(scannerSymbols, S_DUALSEMICOLON);
+    EXPORT_IN_PREC(scannerSymbols, S_ELIF);
+    EXPORT_IN_PREC(scannerSymbols, S_ELSE);
+    EXPORT_IN_PREC(scannerSymbols, S_END);
+    EXPORT_IN_PREC(scannerSymbols, S_EOF);
+    EXPORT_IN_PREC(scannerSymbols, S_EQ);
+    EXPORT_IN_PREC(scannerSymbols, S_FALSE);
+    EXPORT_IN_PREC(scannerSymbols, S_FI);
+    EXPORT_IN_PREC(scannerSymbols, S_FLOAT);
+    EXPORT_IN_PREC(scannerSymbols, S_FOR);
+    EXPORT_IN_PREC(scannerSymbols, S_FUNCTION);
+    EXPORT_IN_PREC(scannerSymbols, S_GE);
+    EXPORT_IN_PREC(scannerSymbols, S_GT);
+    EXPORT_IN_PREC(scannerSymbols, S_HELP);
+    EXPORT_IN_PREC(scannerSymbols, S_IDENT);
+    EXPORT_IN_PREC(scannerSymbols, S_IF);
+    EXPORT_IN_PREC(scannerSymbols, S_ILLEGAL);
+    EXPORT_IN_PREC(scannerSymbols, S_IN);
+    EXPORT_IN_PREC(scannerSymbols, S_INFO);
+    EXPORT_IN_PREC(scannerSymbols, S_INT);
+    EXPORT_IN_PREC(scannerSymbols, S_ISBOUND);
+    EXPORT_IN_PREC(scannerSymbols, S_LBRACE);
+    EXPORT_IN_PREC(scannerSymbols, S_LBRACK);
+    EXPORT_IN_PREC(scannerSymbols, S_LE);
+    EXPORT_IN_PREC(scannerSymbols, S_LOCAL);
+    EXPORT_IN_PREC(scannerSymbols, S_LPAREN);
+    EXPORT_IN_PREC(scannerSymbols, S_LT);
+    EXPORT_IN_PREC(scannerSymbols, S_MAPTO);
+    EXPORT_IN_PREC(scannerSymbols, S_MINUS);
+    EXPORT_IN_PREC(scannerSymbols, S_MOD);
+    EXPORT_IN_PREC(scannerSymbols, S_MULT);
+    EXPORT_IN_PREC(scannerSymbols, S_NE);
+    EXPORT_IN_PREC(scannerSymbols, S_NOT);
+    EXPORT_IN_PREC(scannerSymbols, S_OD);
+    EXPORT_IN_PREC(scannerSymbols, S_OR);
+    EXPORT_IN_PREC(scannerSymbols, S_PLUS);
+    EXPORT_IN_PREC(scannerSymbols, S_POW);
+    EXPORT_IN_PREC(scannerSymbols, S_PRAGMA);
+    EXPORT_IN_PREC(scannerSymbols, S_QQUIT);
+    EXPORT_IN_PREC(scannerSymbols, S_QUIT);
+    EXPORT_IN_PREC(scannerSymbols, S_RBRACE);
+    EXPORT_IN_PREC(scannerSymbols, S_RBRACK);
+    EXPORT_IN_PREC(scannerSymbols, S_READONLY);
+    EXPORT_IN_PREC(scannerSymbols, S_READWRITE);
+    EXPORT_IN_PREC(scannerSymbols, S_REC);
+    EXPORT_IN_PREC(scannerSymbols, S_REPEAT);
+    EXPORT_IN_PREC(scannerSymbols, S_RETURN);
+    EXPORT_IN_PREC(scannerSymbols, S_RPAREN);
+    EXPORT_IN_PREC(scannerSymbols, S_SEMICOLON);
+    EXPORT_IN_PREC(scannerSymbols, S_STRING);
+    EXPORT_IN_PREC(scannerSymbols, S_THEN);
+    EXPORT_IN_PREC(scannerSymbols, S_TILDE);
+    EXPORT_IN_PREC(scannerSymbols, S_TRUE);
+    EXPORT_IN_PREC(scannerSymbols, S_TRYNEXT);
+    EXPORT_IN_PREC(scannerSymbols, S_UNBIND);
+    EXPORT_IN_PREC(scannerSymbols, S_UNTIL);
+    EXPORT_IN_PREC(scannerSymbols, S_WHILE);
 
 
     return PostRestore( module );
