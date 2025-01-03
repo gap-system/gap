@@ -277,19 +277,6 @@ const Char * SyDotGapPath(void)
 }
 
 
-/****************************************************************************
-**
-*F  InitSystem( <argc>, <argv> )  . . . . . . . . . initialize system package
-**
-**  'InitSystem' is called very early during the initialization from  'main'.
-**  It is passed the command line array  <argc>, <argv>  to look for options.
-**
-**  For UNIX it initializes the default files 'stdin', 'stdout' and 'stderr',
-**  installs the handler 'syAnswerIntr' to answer the user interrupts
-**  '<ctr>-C', scans the command line for options, sets up the GAP root paths,
-**  locates the '.gaprc' file (if any), and more.
-*/
-
 #if defined(USE_GASMAN) || defined(USE_BOEHM_GC)
 typedef struct { Char symbol; UInt value; } sizeMultiplier;
 
@@ -533,11 +520,8 @@ static const struct optInfo options[] = {
   { 0, "", 0, 0, 0}};
 
 
-void InitSystem(int argc, const char * argv[], BOOL handleSignals)
+static void InitSysOpts(void)
 {
-    UInt                i;             // loop variable
-    Int res;                       // return from option processing function
-
     // Initialize global and static variables
     SyCTRD = 1;
     SyCompilePlease = FALSE;
@@ -583,10 +567,12 @@ void InitSystem(int argc, const char * argv[], BOOL handleSignals)
 #endif // defined(USE_GASMAN)
     SyUseModule = 1;
     SyWindow = 0;
+}
 
-    if (handleSignals) {
-        SyInstallAnswerIntr();
-    }
+static void ParseCommandLineOptions(int argc, const char * argv[])
+{
+    UInt                i;             // loop variable
+    Int res;                       // return from option processing function
 
     // scan the command line for options that we have to process in the kernel
     // we just scan the whole command line looking for the keys for the options we recognise
@@ -640,19 +626,10 @@ void InitSystem(int argc, const char * argv[], BOOL handleSignals)
         }
 
       }
+}
 
-    InitSysFiles();
-
-    // now that the user has had a chance to give -x and -y,
-    // we determine the size of the screen ourselves
-    getwindowsize();
-
-    // when running in package mode set ctrl-d and line editing
-    if ( SyWindow ) {
-        SyRedirectStderrToStdOut();
-        syWinPut( 0, "@p", "1." );
-    }
-
+static void InitDotGapPath(void)
+{
     // the users home directory
     if ( getenv("HOME") != 0 ) {
         strxcpy(DotGapPath, getenv("HOME"), sizeof(DotGapPath));
@@ -677,4 +654,34 @@ void InitSystem(int argc, const char * argv[], BOOL handleSignals)
         }
         DotGapPath[strlen(DotGapPath)-1] = '\0';
     }
+}
+
+
+void InitSystem(int argc, const char * argv[], BOOL handleSignals)
+{
+    InitSysOpts();
+
+    if (handleSignals) {
+        SyInstallAnswerIntr();
+    }
+
+    InitSysFiles();
+
+    ParseCommandLineOptions(argc, argv);
+
+#ifdef HAVE_LIBREADLINE
+    InitReadline();
+#endif
+
+    // now that the user has had a chance to give -x and -y,
+    // we determine the size of the screen ourselves
+    getwindowsize();
+
+    // when running in package mode set ctrl-d and line editing
+    if (SyWindow) {
+        SyRedirectStderrToStdOut();
+        syWinPut(0, "@p", "1.");
+    }
+
+    InitDotGapPath();
 }
