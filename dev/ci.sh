@@ -99,11 +99,9 @@ testmockpkg () {
     cd "$mockpkg_dir"
     echo_and_run ./configure "$gaproot"
     echo_and_run $MAKE V=1
-    # trick to make it easy to load the package in GAP
-    rm -f pkg && ln -sf . pkg
     # try to load the kernel extension
     cd "$gaproot"
-    echo_and_run $gap -A -l "$mockpkg_dir;" "$mockpkg_dir/tst/testall.g"
+    echo_and_run $gap -A --packagedirs "$mockpkg_dir" "$mockpkg_dir/tst/testall.g"
 }
 
 
