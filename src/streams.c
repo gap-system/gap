@@ -246,7 +246,17 @@ static Obj FuncREAD_COMMAND_REAL(Obj self, Obj stream, Obj echo)
     if (!OpenInputStream(&input, stream, echo == True)) {
         return result;
     }
-    ExecStatus status = ReadEvalCommand(0, &input, &evalResult, 0);
+    ExecStatus status;
+
+    GAP_TRY
+    {
+        status = ReadEvalCommand(0, &input, &evalResult, 0);
+    }
+    GAP_CATCH
+    {
+        CloseInput(&input);
+        GAP_THROW();
+    }
     CloseInput(&input);
 
     if (status == STATUS_EOF || status == STATUS_QQUIT)
@@ -405,7 +415,11 @@ Int READ_GAP_ROOT ( const Char * filename )
     }
 
     TypInputFile input;
-    if (OpenInput(&input, path)) {
+    if (!OpenInput(&input, path))
+        return 0;
+
+    GAP_TRY
+    {
         while (1) {
             ExecStatus status = ReadEvalCommand(0, &input, 0, 0);
             if (STATE(UserHasQuit) || STATE(UserHasQUIT))
@@ -417,11 +431,14 @@ Int READ_GAP_ROOT ( const Char * filename )
                 break;
             }
         }
-        CloseInput(&input);
-        return 1;
     }
-
-    return 0;
+    GAP_CATCH
+    {
+        CloseInput(&input);
+        GAP_THROW();
+    }
+    CloseInput(&input);
+    return 1;
 }
 
 
@@ -807,8 +824,17 @@ static Obj FuncREAD(Obj self, Obj inputObj)
     if (!OpenInputFileOrStream(SELF_NAME, &input, inputObj))
         return False;
 
-    // read the file
-    READ_INNER(&input);
+    GAP_TRY
+    {
+        // read the file
+        READ_INNER(&input);
+    }
+    GAP_CATCH
+    {
+        CloseInput(&input);
+        GAP_THROW();
+    }
+
     if (!CloseInput(&input)) {
         ErrorQuit("Panic: READ cannot close input", 0, 0);
     }
@@ -857,38 +883,47 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
     // get the starting time
     UInt oldPrintObjState = SetPrintObjState(0);
 
-    // now do the reading
-    while (1) {
-        Obj  evalResult;
-        BOOL dualSemicolon;
-        UInt oldtime = SyTime();
+    BOOL rethrow = FALSE;
 
-        // read and evaluate the command
-        SetPrintObjState(0);
-        ExecStatus status =
-            ReadEvalCommand(context, &input, &evalResult, &dualSemicolon);
+    GAP_TRY
+    {
+        // now do the reading
+        while (1) {
+            Obj  evalResult;
+            BOOL dualSemicolon;
+            UInt oldtime = SyTime();
 
-        // stop the stopwatch
-        UpdateTime(oldtime);
+            // read and evaluate the command
+            SetPrintObjState(0);
+            ExecStatus status =
+                ReadEvalCommand(context, &input, &evalResult, &dualSemicolon);
 
-        // handle ordinary command
-        if (status == STATUS_END && evalResult != 0) {
-            UpdateLast(evalResult);
-            if (!dualSemicolon) {
-                ViewObjHandler(evalResult);
+            // stop the stopwatch
+            UpdateTime(oldtime);
+
+            // handle ordinary command
+            if (status == STATUS_END && evalResult != 0) {
+                UpdateLast(evalResult);
+                if (!dualSemicolon) {
+                    ViewObjHandler(evalResult);
+                }
+            }
+
+            // handle return-value or return-void command
+            else if (status == STATUS_RETURN) {
+                Pr("'return' must not be used in file read-eval loop\n", 0, 0);
+            }
+
+            // handle quit command or <end-of-file>
+            else if (status == STATUS_EOF || status == STATUS_QUIT ||
+                     status == STATUS_QQUIT) {
+                break;
             }
         }
-
-        // handle return-value or return-void command
-        else if (status == STATUS_RETURN) {
-            Pr("'return' must not be used in file read-eval loop\n", 0, 0);
-        }
-
-        // handle quit command or <end-of-file>
-        else if (status == STATUS_EOF || status == STATUS_QUIT ||
-                 status == STATUS_QQUIT) {
-            break;
-        }
+    }
+    GAP_CATCH
+    {
+        rethrow = TRUE;
     }
 
     SetPrintObjState(oldPrintObjState);
@@ -896,10 +931,10 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
     LockCurrentOutput(FALSE);
 
     res = CloseInput(&input);
-    GAP_ASSERT(res);
-
     res &= CloseOutput(&output);
-    GAP_ASSERT(res);
+
+    if (rethrow)
+        GAP_THROW();
 
     return res ? True : False;
 }
@@ -915,7 +950,18 @@ static Obj FuncREAD_AS_FUNC(Obj self, Obj inputObj)
     if (!OpenInputFileOrStream(SELF_NAME, &input, inputObj))
         return False;
 
-    Obj func = READ_AS_FUNC(&input);
+    Obj func;
+
+    GAP_TRY
+    {
+        func = READ_AS_FUNC(&input);
+    }
+    GAP_CATCH
+    {
+        CloseInput(&input);
+        GAP_THROW();
+    }
+
     if (!CloseInput(&input)) {
         ErrorQuit("Panic: READ_AS_FUNC cannot close input", 0, 0);
     }
