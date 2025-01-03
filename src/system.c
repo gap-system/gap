@@ -559,11 +559,15 @@ void InitSystem (
     SyCompilePlease = 0;
     SyDebugLoading = 0;
     SyLineEdit = 1;
-#ifdef HPCGAP
+#ifdef HAVE_LIBREADLINE
+  #ifdef HPCGAP
     SyUseReadline = 0;
-    SyNumProcessors = SyCountProcessors();
-#else
+  #else
     SyUseReadline = 1;
+  #endif
+#endif
+#ifdef HPCGAP
+    SyNumProcessors = SyCountProcessors();
 #endif
     SyNrCols = 0;
     SyNrColsLocked = 0;
@@ -656,11 +660,8 @@ void InitSystem (
         }
 
       }
-#if !defined(HAVE_LIBREADLINE)
-    // don't use readline of readline is not available (obviously)
-    // so that e.g. the GAP banner reports this correctly.
-    SyUseReadline = 0;
-#else
+
+#ifdef HAVE_LIBREADLINE
     // don't use readline if in Window mode (e.g. for XGAP)
     if (SyWindow)
         SyUseReadline = 0;

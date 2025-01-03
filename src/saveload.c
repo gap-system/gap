@@ -32,6 +32,8 @@
 #include "sysstr.h"
 #include "version.h"
 
+#include "config.h"
+
 #include <stdio.h>
 #include <unistd.h>
 
@@ -499,9 +501,11 @@ static Char * GetKernelDescription(void)
 {
     static Char SyKernelDescription[256];
     strcpy(SyKernelDescription, SyKernelVersion);
+#ifdef HAVE_LIBREADLINE
     if (SyUseReadline) {
         strcat(SyKernelDescription, " with readline");
     }
+#endif
     return SyKernelDescription;
 }
 
