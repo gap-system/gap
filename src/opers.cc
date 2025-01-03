@@ -46,8 +46,6 @@ extern "C" {
 #include <pthread.h>
 #endif
 
-#include <stdio.h>
-
 #include "config.h"
 
 } // extern "C"

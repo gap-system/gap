@@ -44,7 +44,7 @@
 #include <dlfcn.h>
 #endif
 
-#include <stdio.h>
+#include <stdio.h>      // for fprintf, stderr
 
 
 /****************************************************************************

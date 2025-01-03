@@ -37,9 +37,8 @@
 #ifdef HPCGAP
 #include "hpc/guards.h"
 #include "hpc/thread.h"
+#include <stdlib.h>     // for alloca
 #endif
-
-#include <stdlib.h>
 
 
 static ModuleStateOffset FuncsStateOffset = -1;

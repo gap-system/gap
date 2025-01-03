@@ -20,8 +20,6 @@
 #include "hpc/thread.h"
 #endif
 
-#include <stdlib.h>
-
 
 void InitSymbolTableKernel(SymbolTable *      symtab,
                            const char *       cookieCount,

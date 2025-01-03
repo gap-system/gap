@@ -13,8 +13,6 @@
 
 #include "gaputils.h"
 
-#include <stdio.h>
-
 static ThrowObserver throwObservers[16];
 
 int RegisterThrowObserver(ThrowObserver func)

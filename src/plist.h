@@ -28,7 +28,7 @@
 
 #include "objects.h"
 
-#include <string.h>
+#include <string.h>  // for memcpy
 
 /****************************************************************************
 **

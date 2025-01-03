@@ -31,7 +31,6 @@
 #include "records.h"
 #include "stats.h"
 #include "stringobj.h"
-#include "sysenv.h"
 #include "sysopt.h"
 #include "sysstr.h"
 #include "system.h"

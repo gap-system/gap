@@ -47,7 +47,7 @@
 #include "hpc/traverse.h"
 #endif
 
-#include <stdlib.h>
+#include <stdlib.h>     // for qsort
 
 /****************************************************************************
 **

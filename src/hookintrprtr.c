@@ -21,7 +21,7 @@
 
 #include "hpc/thread.h"
 
-#include <string.h>
+#include <string.h>     // for memcpy
 
 
 // List of active hooks
