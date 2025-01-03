@@ -1429,8 +1429,6 @@ StructInitInfo * InitInfoGap ( void )
 **  general    `InitLibrary'  will  create    all objects    and  then  calls
 **  `PostRestore'.  This function is only used when restoring.
 */
-static Obj POST_RESTORE;
-
 void InitializeGap (
     int *               pargc,
     char *              argv [],
@@ -1461,9 +1459,6 @@ void InitializeGap (
 #ifdef HPCGAP
     InitMainThread();
 #endif
-
-    InitGlobalBag(&POST_RESTORE, "gap.c: POST_RESTORE");
-    InitFopyGVar( "POST_RESTORE", &POST_RESTORE);
 
 #ifdef GAP_ENABLE_SAVELOAD
     if ( SyRestoring ) {
@@ -1497,6 +1492,7 @@ void InitializeGap (
 
         /* Call POST_RESTORE which is a GAP function that now takes control,
            calls the post restore functions and then runs a GAP session */
+        Obj POST_RESTORE = ValGVar(GVarName("POST_RESTORE"));
         if (POST_RESTORE != 0 && IS_FUNC(POST_RESTORE)) {
           Call0ArgsInNewReader(POST_RESTORE);
         }
