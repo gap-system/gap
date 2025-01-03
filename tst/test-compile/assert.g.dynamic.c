@@ -47,7 +47,7 @@ static Obj  HdlrFunc2 (
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
  }
  
- /* Assert( ... ); */
+ /* Assert( 1, false, "fail-A" ); */
  if ( STATE(CurrentAssertionLevel) >= 1 ) {
   t_2 = False;
   t_1 = (Obj)(UInt)(t_2 != False);
@@ -62,7 +62,7 @@ static Obj  HdlrFunc2 (
   }
  }
  
- /* Assert( ... ); */
+ /* Assert( 1, false ); */
  if ( STATE(CurrentAssertionLevel) >= 1 ) {
   t_2 = False;
   t_1 = (Obj)(UInt)(t_2 != False);
@@ -71,7 +71,7 @@ static Obj  HdlrFunc2 (
   }
  }
  
- /* Assert( ... ); */
+ /* Assert( 0, true, "fail-B" ); */
  if ( STATE(CurrentAssertionLevel) >= 0 ) {
   t_2 = True;
   t_1 = (Obj)(UInt)(t_2 != False);
@@ -86,7 +86,7 @@ static Obj  HdlrFunc2 (
   }
  }
  
- /* Assert( ... ); */
+ /* Assert( 0, true ); */
  if ( STATE(CurrentAssertionLevel) >= 0 ) {
   t_2 = True;
   t_1 = (Obj)(UInt)(t_2 != False);
@@ -122,7 +122,7 @@ static Obj  HdlrFunc2 (
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
  }
  
- /* Assert( ... ); */
+ /* Assert( 3, false, "fail-C" ); */
  if ( STATE(CurrentAssertionLevel) >= 3 ) {
   t_2 = False;
   t_1 = (Obj)(UInt)(t_2 != False);
@@ -137,7 +137,7 @@ static Obj  HdlrFunc2 (
   }
  }
  
- /* Assert( ... ); */
+ /* Assert( 3, false ); */
  if ( STATE(CurrentAssertionLevel) >= 3 ) {
   t_2 = False;
   t_1 = (Obj)(UInt)(t_2 != False);
@@ -146,7 +146,7 @@ static Obj  HdlrFunc2 (
   }
  }
  
- /* Assert( ... ); */
+ /* Assert( 2, true, "fail-D" ); */
  if ( STATE(CurrentAssertionLevel) >= 2 ) {
   t_2 = True;
   t_1 = (Obj)(UInt)(t_2 != False);
@@ -161,7 +161,7 @@ static Obj  HdlrFunc2 (
   }
  }
  
- /* Assert( ... ); */
+ /* Assert( 2, true ); */
  if ( STATE(CurrentAssertionLevel) >= 2 ) {
   t_2 = True;
   t_1 = (Obj)(UInt)(t_2 != False);
@@ -170,7 +170,7 @@ static Obj  HdlrFunc2 (
   }
  }
  
- /* Assert( ... ); */
+ /* Assert( 2, false, "pass!\n" ); */
  if ( STATE(CurrentAssertionLevel) >= 2 ) {
   t_2 = False;
   t_1 = (Obj)(UInt)(t_2 != False);
@@ -194,10 +194,6 @@ static Obj  HdlrFunc2 (
  else {
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
  }
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -239,10 +235,6 @@ static Obj  HdlrFunc1 (
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_runtest, t_1 );
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
