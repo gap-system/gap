@@ -596,15 +596,6 @@ void InitSystem (
     SyUseModule = 1;
     SyWindow = 0;
 
-#ifdef USE_GASMAN
-    for (i = 0; i < 2; i++) {
-      UInt j;
-      for (j = 0; j < 7; j++) {
-        SyGasmanNumbers[i][j] = 0;
-      }
-    }
-#endif
-
     if (handleSignals) {
         SyInstallAnswerIntr();
     }
