@@ -348,8 +348,6 @@ static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
     Stat                body2;          // second stat. of body of loop
     Stat                body3;          // third  stat. of body of loop
     UInt                i;              // loop variable
-    Obj                 nfun, dfun;     /* functions for NextIterator and
-                                           IsDoneIterator                  */
 
     GAP_ASSERT(1 <= nr && nr <= 3);
 
@@ -410,6 +408,8 @@ static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
 
     // general case
     else {
+        Obj nfun;    // function for NextIterator
+        Obj dfun;    // function for IsDoneIterator
 
         // get the iterator
         list = CALL_1ARGS( ITERATOR, list );

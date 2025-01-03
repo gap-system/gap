@@ -105,22 +105,9 @@ static SymbolTable GVarSymbolTable;
 **
 *V  TLVars  . . . . . . . . . . . . . . . . . . . . . thread-local variables
 */
-
 static Obj TLVars;
 
 #endif
-
-/****************************************************************************
-**
-*F  VAL_GVAR(<gvar>)  . . . . . . . . . . . . . . .  value of global variable
-**
-**  'VAL_GVAR' returns the  value of the global  variable  <gvar>.  If <gvar>
-**  has no  assigned value, 'VAL_GVAR' returns 0.   In this case <gvar> might
-**  be an automatic global variable, and one should call 'ValAutoGVar', which
-**  will return the value of <gvar>  after evaluating <gvar>-s expression, or
-**  0 if <gvar> was not an automatic variable.
-**
-*/
 
 #ifdef USE_GVAR_BUCKETS
 

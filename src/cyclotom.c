@@ -824,7 +824,7 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
   if (n8 > INT_INTOBJ_MAX)
     ErrorMayQuit("This computation would require a cyclotomic field too large to be handled", 0, 0);
 
-  /* Switch to UInt now we know we can*/
+  // Switch to UInt now we know we can
   n = (UInt)n8;
 
   // Handle the soft limit
@@ -1418,7 +1418,7 @@ static Obj PowCyc(Obj opL, Obj opR)
     // get the exponent
     exp = INT_INTOBJ(opR);
 
-    /* for $cyc^0$ return 1, for $cyc^1$ return cyc, for $rat^exp$ delegate*/
+    // for $cyc^0$ return 1, for $cyc^1$ return cyc, for $rat^exp$ delegate
     if ( exp == 0 ) {
         pow = INTOBJ_INT(1);
     }
@@ -1568,7 +1568,7 @@ static Obj FuncIS_CYC_INT(Obj self, Obj val)
     const Obj *         cfs;            // pointer to the coefficients
     UInt                i;              // loop variable
 
-    /* return 'true' if <obj> is a cyclotomic integer and 'false' otherwise*/
+    // return 'true' if <obj> is a cyclotomic integer and 'false' otherwise
     if ( IS_INT(val) ) {
         return True;
     }

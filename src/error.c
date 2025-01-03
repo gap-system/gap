@@ -72,9 +72,9 @@ UInt OpenErrorOutput(TypOutputFile * output)
     }
 
     if (!ret) {
-        /* It may be we already tried and failed to open *errout* above but
-         * but this is an extreme case so it can't hurt to try again
-         * anyways */
+        // It may be we already tried and failed to open *errout* above but
+        // but this is an extreme case so it can't hurt to try again
+        // anyways
         ret = OpenOutput(output, "*errout*", FALSE);
         if (ret) {
             Pr("failed to open error stream\n", 0, 0);
@@ -276,8 +276,8 @@ Obj CALL_WITH_CATCH(Obj func, volatile Obj args)
         // in case func was a kernel function.
         TakeInterrupt();
 #ifdef HPCGAP
-        /* There should be no locks to pop off the stack, but better safe than
-         * sorry. */
+        // There should be no locks to pop off the stack, but better safe than
+        // sorry.
         PopRegionLocks(lockSP);
         TLS(currentRegion) = savedRegion;
 #endif

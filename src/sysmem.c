@@ -303,8 +303,8 @@ int SyTryToIncreasePool(void)
 
 static void *SyMMapStart = NULL;   // Start of mmap'ed region for POOL
 static void *SyMMapEnd;            // End of mmap'ed region for POOL
-static void *SyMMapAdvised;        /* We have already advised about non-usage
-                                      up to here. */
+static void *SyMMapAdvised;        // We have already advised about non-usage
+                                   // up to here.
 
 void SyMAdviseFree(void)
 {

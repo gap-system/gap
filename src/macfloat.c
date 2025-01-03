@@ -653,7 +653,7 @@ static Int InitKernel (
     // equivalents
 
     // Anything else, like mixed ops with rationals, we can leave to the
-    // library at least for a while */
+    // library at least for a while
 
     return 0;
 }
