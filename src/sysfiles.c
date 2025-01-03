@@ -3232,7 +3232,10 @@ void InitSysFiles(void)
     setbuf(stdin, (char *)0);
     setbuf(stdout, (char *)0);
     setbuf(stderr, (char *)0);
+}
 
+void InitReadline(void)
+{
 #ifdef HAVE_LIBREADLINE
     // don't use readline if in Window mode (e.g. for XGAP)
     if (SyWindow)

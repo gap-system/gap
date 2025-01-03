@@ -484,6 +484,9 @@ void * SyMemmove(void * dst, const void * src, size_t size);
 // initialization.
 void InitSysFiles(void);
 
+//
+void InitReadline(void);
+
 /****************************************************************************
 **
 *F  InitInfoSysFiles()  . . . . . . . . . . . . . . . table of init functions
