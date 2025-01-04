@@ -70,6 +70,17 @@ static UInt SystemErrorCode;
 
 /****************************************************************************
 **
+*V  SyLoadSystemInitFile  . . . . . . should GAP load 'lib/init.g' at startup
+**
+**  TODO: this variable could be made static or even deleted. However for
+**  now the GAP.jl Julia package is accessing it, so we have to keep it.
+**  See also issue #5890 for the reasons behind this.
+*/
+Int SyLoadSystemInitFile = 1;
+
+
+/****************************************************************************
+**
 *V  Last  . . . . . . . . . . . . . . . . . . . . . . global variable  'last'
 **
 **  'Last',  'Last2', and 'Last3'  are the  global variables 'last', 'last2',
@@ -1527,21 +1538,33 @@ void InitializeGap (
     // make command line available to GAP level
     InitKernelArgs(argc, argv);
 
-    // read the init files
-    // this now actually runs the GAP session, we only get
-    // past here when we're about to exit.
-    if ( SyLoadSystemInitFile ) {
-      GAP_TRY {
-        if ( READ_GAP_ROOT("lib/init.g") == 0 ) {
-                Pr( "gap: hmm, I cannot find 'lib/init.g' maybe"
-                    " use option '-l <gaproot>'?\n", 0, 0);
+    // should GAP load 'lib/init.g' on initialization?
+    if (SyCompilePlease) {
+        SyLoadSystemInitFile = 0;
+    }
+#ifdef GAP_ENABLE_SAVELOAD
+    else if (SyRestoring) {
+        SyLoadSystemInitFile = 0;
+    }
+#endif
+
+    if (SyLoadSystemInitFile) {
+        // read the init files
+        // depending on the command line this now actually runs the GAP
+        // session, we only get past here when we're about to exit.
+        GAP_TRY
+        {
+            if (READ_GAP_ROOT("lib/init.g") == 0) {
+                Pr("gap: hmm, I cannot find 'lib/init.g' maybe"
+                   " use option '-l <gaproot>'?\n",
+                   0, 0);
                 SystemErrorCode = 1;
             }
-      }
-      GAP_CATCH {
-          Panic("Caught error at top-most level, probably quit from "
-                "library loading");
-      }
+        }
+        GAP_CATCH
+        {
+            Panic("Caught error at top-most level, probably quit from "
+                  "library loading");
+        }
     }
-
 }
