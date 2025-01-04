@@ -677,19 +677,6 @@ void InitSystem (
     // we determine the size of the screen ourselves
     getwindowsize();
 
-#ifdef USE_GASMAN
-    // fix max if it is lower than min
-    if ( SyStorMax != 0 && SyStorMax < SyStorMin ) {
-        SyStorMax = SyStorMin;
-    }
-
-    // fix pool size if larger than SyStorKill
-    if ( SyStorKill != 0 && SyAllocPool != 0 &&
-                            SyAllocPool > 1024 * SyStorKill ) {
-        SyAllocPool = SyStorKill * 1024;
-    }
-#endif
-
     // when running in package mode set ctrl-d and line editing
     if ( SyWindow ) {
         SyRedirectStderrToStdOut();
