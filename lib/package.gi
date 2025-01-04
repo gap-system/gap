@@ -286,7 +286,7 @@ end );
 ##  In earlier versions, this function had an argument; now we ignore it.
 ##
 InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
-    local pkgdirs, pkgdir, pkgdirstrs, ignore, name, files, record, r;
+    local pkgdirs, pkgdir, pkgdirstrs, ignore, name, file, files, record, r;
 
     if IsBound( GAPInfo.PackagesInfoInitialized ) and
        GAPInfo.PackagesInfoInitialized = true then
@@ -356,18 +356,20 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
       fi;
 
       # pkgdir may be a package instead of a package directory
-      files := FindPackageInfosInSubdirectories( pkgdir, "" );
-      AddPackageInfos( files, pkgdir, ignore );
+      file:= Filename( [ pkgdir ], "PackageInfo.g" );
+      if file <> fail then
+        AddPackageInfos( [ [ file, "" ] ], pkgdir, ignore );
+      else
+        # Loop over subdirectories of this package directory.
+        for name in Set( DirectoryContents( Filename( pkgdir, "" ) ) ) do
 
-      # Loop over subdirectories of this package directory.
-      for name in Set( DirectoryContents( Filename( pkgdir, "" ) ) ) do
+            ## Get all package dirs
+            files := FindPackageInfosInSubdirectories( pkgdir, name );
 
-          ## Get all package dirs
-          files := FindPackageInfosInSubdirectories( pkgdir, name );
+            AddPackageInfos( files, pkgdir, ignore );
 
-          AddPackageInfos( files, pkgdir, ignore );
-
-      od;
+        od;
+      fi;
     od;
 
     # Sort the available info records by their version numbers.
