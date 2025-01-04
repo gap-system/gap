@@ -85,10 +85,6 @@ static Obj  HdlrFunc2 (
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
 }
 
 /* handler for function 3 */
@@ -120,10 +116,6 @@ static Obj  HdlrFunc3 (
  else {
   DoOperation2Args( CallFuncListOper, a_f, NewPlistFromArgs( INTOBJ_INT(1) ) );
  }
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -172,10 +164,6 @@ static Obj  HdlrFunc4 (
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
 }
 
 /* handler for function 5 */
@@ -219,10 +207,6 @@ static Obj  HdlrFunc5 (
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
 }
 
 /* handler for function 6 */
@@ -262,10 +246,6 @@ static Obj  HdlrFunc6 (
  else {
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
  }
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -323,10 +303,6 @@ static Obj  HdlrFunc7 (
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
 }
 
 /* handler for function 9 */
@@ -343,10 +319,6 @@ static Obj  HdlrFunc9 (
  /* return args; */
  SWITCH_TO_OLD_FRAME(oldFrame);
  return a_args;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
 }
 
 /* handler for function 10 */
@@ -370,10 +342,6 @@ static Obj  HdlrFunc10 (
  else {
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
  }
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -405,10 +373,6 @@ static Obj  HdlrFunc11 (
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
 }
 
 /* handler for function 12 */
@@ -432,10 +396,6 @@ static Obj  HdlrFunc12 (
  else {
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
  }
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -467,10 +427,6 @@ static Obj  HdlrFunc13 (
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
 }
 
 /* handler for function 14 */
@@ -498,10 +454,6 @@ static Obj  HdlrFunc14 (
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
 }
 
 /* handler for function 15 */
@@ -525,10 +477,6 @@ static Obj  HdlrFunc15 (
  else {
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2 ) );
  }
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -922,10 +870,6 @@ static Obj  HdlrFunc8 (
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
 }
 
 /* handler for function 1 */
@@ -1081,10 +1025,6 @@ static Obj  HdlrFunc1 (
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_runtest, t_1 );
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);

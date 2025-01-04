@@ -114,20 +114,6 @@ static Int CompPass;
 
 /****************************************************************************
 **
-*V  compilerMagic1  . . . . . . . . . . . . . . . . . . . . .  current magic1
-*/
-static Int compilerMagic1;
-
-
-/****************************************************************************
-**
-*V  compilerMagic2  . . . . . . . . . . . . . . . . . . . . .  current magic2
-*/
-static Obj compilerMagic2;
-
-
-/****************************************************************************
-**
 *T  CVar  . . . . . . . . . . . . . . . . . . . . . . .  type for C variables
 **
 **  A C variable represents the result of compiling an expression.  There are
@@ -4929,7 +4915,11 @@ static void CompInfo(Stat stat)
     Int                 narg;
     Int                 i;
 
-    Emit( "\n/* Info( ... ); */\n" );
+    // print a comment
+    if ( CompPass == 2 ) {
+        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+    }
+
     sel = CompExpr( ARGI_INFO( stat, 1 ) );
     lev = CompExpr( ARGI_INFO( stat, 2 ) );
     lst = CVAR_TEMP( NewTemp( "lst" ) );
@@ -4965,7 +4955,11 @@ static void CompAssert2(Stat stat)
     CVar                lev;            // the level
     CVar                cnd;            // the condition
 
-    Emit( "\n/* Assert( ... ); */\n" );
+    // print a comment
+    if ( CompPass == 2 ) {
+        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+    }
+
     lev = CompExpr(READ_STAT(stat, 0));
     Emit( "if ( STATE(CurrentAssertionLevel) >= %i ) {\n", lev );
     cnd = CompBoolExpr(READ_STAT(stat, 1));
@@ -4990,7 +4984,11 @@ static void CompAssert3(Stat stat)
     CVar                cnd;            // the condition
     CVar                msg;            // the message
 
-    Emit( "\n/* Assert( ... ); */\n" );
+    // print a comment
+    if ( CompPass == 2 ) {
+        Emit( "\n/* " ); PrintStat( stat ); Emit( " */\n" );
+    }
+
     lev = CompExpr(READ_STAT(stat, 0));
     Emit( "if ( STATE(CurrentAssertionLevel) >= %i ) {\n", lev );
     cnd = CompBoolExpr(READ_STAT(stat, 1));
@@ -5165,11 +5163,6 @@ static void CompFunc(Obj func)
     // compile the body
     CompStat( OFFSET_FIRST_STAT );
 
-    // emit the code to switch back to the old frame and return
-    Emit( "\n/* return; */\n" );
-
-    Emit( "SWITCH_TO_OLD_FRAME(oldFrame);\n" );
-    Emit( "return 0;\n" );
     Emit( "}\n" );
 
     // switch back to old frame
@@ -5179,9 +5172,9 @@ static void CompFunc(Obj func)
 
 /****************************************************************************
 **
-*F  CompileFunc( <filename>, <func>, <name>, <magic1>, <magic2> ) . . compile
+*F  CompileFunc( <filename>, <func>, <name>, <crc>, <magic2> ) . . compile
 */
-Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
+Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2)
 {
     Int                 i;              // loop variable
     UInt                col;
@@ -5194,10 +5187,6 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
     }
     col = SyNrCols;
     SyNrCols = 255;
-
-    // store the magic values
-    compilerMagic1 = magic1;
-    compilerMagic2 = magic2;
 
     // create 'CompInfoGVar' and 'CompInfoRNam'
     CompInfoGVar = NewKernelBuffer(sizeof(UInt) * 1024);
@@ -5217,7 +5206,7 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
     // emit code to include the interface files
     Emit( "/* C file produced by GAC */\n" );
     Emit( "#include \"compiled.h\"\n" );
-    Emit( "#define FILE_CRC  \"%d\"\n", magic1 );
+    Emit( "#define FILE_CRC  \"%d\"\n", crc );
 
     // emit code for global variables
     Emit( "\n/* global variables used in handlers */\n" );
@@ -5303,7 +5292,7 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
           magic2 );
     for ( i = 1; i <= compFunctionsNr; i++ ) {
         Emit( "InitHandlerFunc( HdlrFunc%d, \"%g:HdlrFunc%d(\"FILE_CRC\")\" );\n",
-              i, compilerMagic2, i );
+              i, magic2, i );
         Emit( "InitGlobalBag( &(NameFunc[%d]), \"%g:NameFunc[%d](\"FILE_CRC\")\" );\n",
                i, magic2, i );
     }
@@ -5342,7 +5331,7 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
         Emit( ".type        = MODULE_STATIC,\n" );
     }
     Emit( ".name        = \"%g\",\n", magic2 );
-    Emit( ".crc         = %d,\n",     magic1 );
+    Emit( ".crc         = %d,\n",     crc );
     Emit( ".initKernel  = InitKernel,\n" );
     Emit( ".initLibrary = InitLibrary,\n" );
     Emit( ".postRestore = PostRestore,\n" );
@@ -5364,85 +5353,8 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int magic1, Obj magic2)
 
 /****************************************************************************
 **
-*F  FuncCOMPILE_FUNC( <self>, <output>, <func>, <name>, <magic1>, <magic2> )
-*/
-static Obj FuncCOMPILE_FUNC(Obj self, Obj arg)
-{
-    Obj                 output;
-    Obj                 func;
-    Obj                 name;
-    Obj                 magic1;
-    Obj                 magic2;
-    Int                 nr;
-    Int                 len;
-
-    // unravel the arguments
-    len = LEN_LIST(arg);
-    if ( len < 5 ) {
-        ErrorQuit( "usage: COMPILE_FUNC( <output>, <func>, <name>, "
-                   "<magic1>, <magic2>, ... )", 0, 0 );
-    }
-    output = ELM_LIST( arg, 1 );
-    func   = ELM_LIST( arg, 2 );
-    name   = ELM_LIST( arg, 3 );
-    magic1 = ELM_LIST( arg, 4 );
-    magic2 = ELM_LIST( arg, 5 );
-
-    RequireStringRep(SELF_NAME, output);
-    RequireFunction(SELF_NAME, func);
-    RequireStringRep(SELF_NAME, name);
-    RequireSmallInt(SELF_NAME, magic1);
-    RequireStringRep(SELF_NAME, magic2);
-
-    // possible optimiser flags
-    CompFastIntArith        = 1;
-    CompFastPlainLists      = 1;
-    CompFastListFuncs       = 1;
-    CompCheckTypes          = 1;
-    CompCheckListElements   = 1;
-
-    if ( 6 <= len ) {
-        CompFastIntArith        = EQ( ELM_LIST( arg,  6 ), True );
-    }
-    if ( 7 <= len ) {
-        CompFastPlainLists      = EQ( ELM_LIST( arg,  7 ), True );
-    }
-    if ( 8 <= len ) {
-        CompFastListFuncs       = EQ( ELM_LIST( arg,  8 ), True );
-    }
-    if ( 9 <= len ) {
-        CompCheckTypes          = EQ( ELM_LIST( arg,  9 ), True );
-    }
-    if ( 10 <= len ) {
-        CompCheckListElements   = EQ( ELM_LIST( arg, 10 ), True );
-    }
-
-    // compile the function
-    nr = CompileFunc(
-        output, func, name,
-        INT_INTOBJ(magic1), magic2 );
-
-
-    return INTOBJ_INT(nr);
-}
-
-
-/****************************************************************************
-**
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
 */
-
-/****************************************************************************
-**
-*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
-*/
-static StructGVarFunc GVarFuncs[] = {
-
-    GVAR_FUNC_XARGS(COMPILE_FUNC, -1, "arg"),
-    { 0, 0, 0, 0, 0 }
-
-};
-
 
 /****************************************************************************
 **
@@ -5459,9 +5371,6 @@ static Int InitKernel (
     CompCheckTypes = 1;
     CompCheckListElements = 1;
     CompPass = 0;
-
-    // init filters and functions
-    InitHdlrFuncsFromTable( GVarFuncs );
 
     // register global bags with the garbage collector
     InitGlobalBag( &CompInfoGVar,  "src/compiler.c:CompInfoGVar"  );
@@ -5657,9 +5566,6 @@ static Int PostRestore (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    // init filters and functions
-    InitGVarFuncsFromTable( GVarFuncs );
-
     return PostRestore( module );
 }
 

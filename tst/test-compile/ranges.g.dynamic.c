@@ -36,10 +36,6 @@ static Obj  HdlrFunc2 (
  t_1 = Range2Check( a_a, a_b );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
 }
 
 /* handler for function 3 */
@@ -59,10 +55,6 @@ static Obj  HdlrFunc3 (
  t_1 = Range3Check( a_a, a_b, a_c );
  SWITCH_TO_OLD_FRAME(oldFrame);
  return t_1;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
 }
 
 /* handler for function 4 */
@@ -286,10 +278,6 @@ static Obj  HdlrFunc4 (
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
  return 0;
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
 }
 
 /* handler for function 1 */
@@ -353,10 +341,6 @@ static Obj  HdlrFunc1 (
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_runtest, t_1 );
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);

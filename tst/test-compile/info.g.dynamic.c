@@ -52,7 +52,7 @@ static Obj  HdlrFunc2 (
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
  }
  
- /* Info( ... ); */
+ /* Info( InfoDebug, 2, "Do not print" ); */
  t_1 = GC_InfoDebug;
  CHECK_BOUND( t_1, "InfoDebug" );
  t_3 = InfoCheckLevel( t_1, INTOBJ_INT(2) );
@@ -65,7 +65,7 @@ static Obj  HdlrFunc2 (
   InfoDoPrint( t_1, INTOBJ_INT(2), t_2 );
  }
  
- /* Info( ... ); */
+ /* Info( InfoDebug, 1, "print this A" ); */
  t_1 = GC_InfoDebug;
  CHECK_BOUND( t_1, "InfoDebug" );
  t_3 = InfoCheckLevel( t_1, INTOBJ_INT(1) );
@@ -109,7 +109,7 @@ static Obj  HdlrFunc2 (
   DoOperation2Args( CallFuncListOper, t_1, NewPlistFromArgs( t_2, t_3 ) );
  }
  
- /* Info( ... ); */
+ /* Info( InfoDebug, 3, "Do not print" ); */
  t_1 = GC_InfoDebug;
  CHECK_BOUND( t_1, "InfoDebug" );
  t_3 = InfoCheckLevel( t_1, INTOBJ_INT(3) );
@@ -122,7 +122,7 @@ static Obj  HdlrFunc2 (
   InfoDoPrint( t_1, INTOBJ_INT(3), t_2 );
  }
  
- /* Info( ... ); */
+ /* Info( InfoDebug, 2, "print this B" ); */
  t_1 = GC_InfoDebug;
  CHECK_BOUND( t_1, "InfoDebug" );
  t_3 = InfoCheckLevel( t_1, INTOBJ_INT(2) );
@@ -135,7 +135,7 @@ static Obj  HdlrFunc2 (
   InfoDoPrint( t_1, INTOBJ_INT(2), t_2 );
  }
  
- /* Info( ... ); */
+ /* Info( InfoDebug, 1, "print ", "this ", "C" ); */
  t_1 = GC_InfoDebug;
  CHECK_BOUND( t_1, "InfoDebug" );
  t_3 = InfoCheckLevel( t_1, INTOBJ_INT(1) );
@@ -153,10 +153,6 @@ static Obj  HdlrFunc2 (
   CHANGED_BAG(t_2);
   InfoDoPrint( t_1, INTOBJ_INT(1), t_2 );
  }
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);
@@ -193,10 +189,6 @@ static Obj  HdlrFunc1 (
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_runtest, t_1 );
- 
- /* return; */
- SWITCH_TO_OLD_FRAME(oldFrame);
- return 0;
  
  /* return; */
  SWITCH_TO_OLD_FRAME(oldFrame);

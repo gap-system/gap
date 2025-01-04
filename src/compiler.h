@@ -17,9 +17,9 @@
 
 /****************************************************************************
 **
-*F  CompileFunc(<output>,<func>,<name>,<magic1>,<magic2>) . . . . . . compile
+*F  CompileFunc( <filename>, <func>, <name>, <crc>, <magic2> ) . . compile
 */
-Int CompileFunc(Obj output, Obj func, Obj name, Int magic1, Obj magic2);
+Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2);
 
 
 /****************************************************************************
