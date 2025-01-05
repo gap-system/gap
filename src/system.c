@@ -581,58 +581,66 @@ static void InitSysOpts(void)
 
 static void ParseCommandLineOptions(int argc, const char * argv[])
 {
-    UInt i;      // loop variable
-    Int  res;    // return from option processing function
-
     // scan the command line for options that we have to process in the kernel
     // we just scan the whole command line looking for the keys for the
     // options we recognise anything else will presumably be dealt with in the
     // library
     while (argc > 1) {
-        if (argv[1][0] == '-') {
+        argv++;
+        argc--;
+        const char * opt = *argv;
 
-            if (strlen(argv[1]) != 2 && argv[1][1] != '-') {
-                fputs("gap: sorry, options must not be grouped '", stderr);
-                fputs(argv[1], stderr);
-                fputs("'.\n", stderr);
-                usage();
-            }
+        // look for an option starting with '-' and skip anything else
+        if (opt[0] != '-')
+            continue;
 
-
-            for (i = 0;
-                 options[i].shortkey != argv[1][1] &&
-                 (argv[1][1] != '-' || argv[1][2] == 0 ||
-                  strcmp(options[i].longkey, argv[1] + 2)) &&
-                 (options[i].shortkey != 0 || options[i].longkey[0] != 0);
-                 i++)
-                ;
-
-
-            if (argc < 2 + options[i].minargs) {
-                Char buf[2];
-                fputs("gap: option ", stderr);
-                fputs(argv[1], stderr);
-                fputs(" requires at least ", stderr);
-                buf[0] = options[i].minargs + '0';
-                buf[1] = '\0';
-                fputs(buf, stderr);
-                fputs(" arguments\n", stderr);
-                usage();
-            }
-            if (options[i].handler) {
-                res = (*options[i].handler)(argv + 2, options[i].otherArg);
-                GAP_ASSERT(res == options[i].minargs);
-            }
-            else
-                res = options[i].minargs;
-            // recordOption(argv[1][1], res,  argv+2);
-            argv += 1 + res;
-            argc -= 1 + res;
+        // all options should either have the short form `-x` or the
+        // long form `--option`, reject anything else immediately
+        if (strlen(opt) != 2 && opt[1] != '-') {
+            fputs("gap: sorry, options must not be grouped '", stderr);
+            fputs(opt, stderr);
+            fputs("'.\n", stderr);
+            usage();
         }
-        else {
-            argv++;
-            argc--;
+
+        // check our table of options for a match...
+        int i = 0;
+        while (options[i].handler != 0) {
+            GAP_ASSERT(options[i].shortkey != 0 ||
+                       options[i].longkey[0] != 0);
+
+            // matching shortkey?
+            if (options[i].shortkey == opt[1])
+                break;
+
+            // matching long key?
+            if (opt[1] == '-' && opt[2] != 0 &&
+                !strcmp(options[i].longkey, opt + 2)) {
+                break;
+            }
+
+            i++;
         }
+
+        if (options[i].handler == 0)
+            continue;
+
+        if (argc < 1 + options[i].minargs) {
+            Char buf[2];
+            fputs("gap: option ", stderr);
+            fputs(opt, stderr);
+            fputs(" requires at least ", stderr);
+            buf[0] = options[i].minargs + '0';
+            buf[1] = '\0';
+            fputs(buf, stderr);
+            fputs(" arguments\n", stderr);
+            usage();
+        }
+
+        (*options[i].handler)(argv + 1, options[i].otherArg);
+
+        argv += options[i].minargs;
+        argc -= options[i].minargs;
     }
 }
 
