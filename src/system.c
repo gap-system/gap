@@ -249,13 +249,12 @@ UInt SyWindow;
 **  If ret is 0 'SyExit' should signal to a calling process that all is  ok.
 **  If ret is 1 'SyExit' should signal a  failure  to  the  calling process.
 */
-void SyExit (
-    UInt                ret )
+void SyExit(UInt ret)
 {
 #ifdef USE_JULIA_GC
     jl_atexit_hook(ret);
 #endif
-    exit( (int)ret );
+    exit((int)ret);
 }
 
 
