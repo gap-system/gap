@@ -1475,6 +1475,8 @@ void InitializeGap(void * stackBottom, int argc, const char * argv[], BOOL handl
     // call kernel initialisation
     ModulesInitKernel();
 
+    InitRootPaths(argc, argv);
+
 #ifdef HPCGAP
     InitMainThread();
 #endif
