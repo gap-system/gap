@@ -4173,8 +4173,7 @@ static Int InitKernel (
 
     InitFopyGVar( "CONVERT_FLOAT_LITERAL_EAGER", &CONVERT_FLOAT_LITERAL_EAGER);
 
-
-    /* The work of handling Options is also delegated*/
+    // The work of handling options is also delegated
     ImportFuncFromLibrary( "PushOptions", &PushOptions );
     ImportFuncFromLibrary( "PopOptions",  &PopOptions  );
 

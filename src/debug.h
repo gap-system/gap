@@ -14,10 +14,8 @@
 #ifndef GAP_DEBUG_H
 #define GAP_DEBUG_H
 
-/* GAP_ASSERT is a version of 'assert' which is enabled by the
-** configure option --enable-debug
-*/
-
+// GAP_ASSERT is a version of 'assert' which is enabled by the
+// configure option --enable-debug
 #ifdef GAP_KERNEL_DEBUG
 #define GAP_ASSERT(x) assert(x)
 

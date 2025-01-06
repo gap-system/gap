@@ -1490,8 +1490,8 @@ void InitializeGap (
         LoadWorkspace(SyRestoring);
         SyRestoring = NULL;
 
-        /* Call POST_RESTORE which is a GAP function that now takes control,
-           calls the post restore functions and then runs a GAP session */
+        // Call POST_RESTORE which is a GAP function that now takes control,
+        // calls the post restore functions and then runs a GAP session
         Obj POST_RESTORE = ValGVar(GVarName("POST_RESTORE"));
         if (POST_RESTORE != 0 && IS_FUNC(POST_RESTORE)) {
           Call0ArgsInNewReader(POST_RESTORE);
@@ -1513,10 +1513,9 @@ void InitializeGap (
     // check initialisation
     ModulesCheckInit();
 
-    /* read the init files
-       this now actually runs the GAP session, we only get
-       past here when we're about to exit.
-                                           */
+    // read the init files
+    // this now actually runs the GAP session, we only get
+    // past here when we're about to exit.
     if ( SyLoadSystemInitFile ) {
       GAP_TRY {
         if ( READ_GAP_ROOT("lib/init.g") == 0 ) {
