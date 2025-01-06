@@ -3234,6 +3234,16 @@ void InitSysFiles(void)
     setbuf(stderr, (char *)0);
 
 #ifdef HAVE_LIBREADLINE
+    // don't use readline if in Window mode (e.g. for XGAP)
+    if (SyWindow)
+        SyUseReadline = 0;
+
+    // don't use readline if stdin is not attached to a terminal
+    // FIXME: disabled this, as it breaks certain workspaces (see also
+    // issue https://github.com/gap-system/gap/issues/5014)
+    //else if (!isatty(fileno(stdin)))
+    //    SyUseReadline = 0;
+
     if (SyUseReadline) {
         rl_readline_name = "GAP";
         rl_initialize();

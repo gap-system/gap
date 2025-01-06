@@ -249,13 +249,12 @@ UInt SyWindow;
 **  If ret is 0 'SyExit' should signal to a calling process that all is  ok.
 **  If ret is 1 'SyExit' should signal a  failure  to  the  calling process.
 */
-void SyExit (
-    UInt                ret )
+void SyExit(UInt ret)
 {
 #ifdef USE_JULIA_GC
     jl_atexit_hook(ret);
 #endif
-    exit( (int)ret );
+    exit((int)ret);
 }
 
 
@@ -559,11 +558,15 @@ void InitSystem (
     SyCompilePlease = 0;
     SyDebugLoading = 0;
     SyLineEdit = 1;
-#ifdef HPCGAP
+#ifdef HAVE_LIBREADLINE
+  #ifdef HPCGAP
     SyUseReadline = 0;
-    SyNumProcessors = SyCountProcessors();
-#else
+  #else
     SyUseReadline = 1;
+  #endif
+#endif
+#ifdef HPCGAP
+    SyNumProcessors = SyCountProcessors();
 #endif
     SyNrCols = 0;
     SyNrColsLocked = 0;
@@ -656,39 +659,12 @@ void InitSystem (
         }
 
       }
-#if !defined(HAVE_LIBREADLINE)
-    // don't use readline of readline is not available (obviously)
-    // so that e.g. the GAP banner reports this correctly.
-    SyUseReadline = 0;
-#else
-    // don't use readline if in Window mode (e.g. for XGAP)
-    if (SyWindow)
-        SyUseReadline = 0;
-    // don't use readline if stdin is not attached to a terminal
-    // FIXME: disabled this, as it breaks certain workspaces (see also
-    // issue https://github.com/gap-system/gap/issues/5014)
-    //else if (!isatty(fileno(stdin)))
-    //    SyUseReadline = 0;
-#endif
 
     InitSysFiles();
 
     // now that the user has had a chance to give -x and -y,
     // we determine the size of the screen ourselves
     getwindowsize();
-
-#ifdef USE_GASMAN
-    // fix max if it is lower than min
-    if ( SyStorMax != 0 && SyStorMax < SyStorMin ) {
-        SyStorMax = SyStorMin;
-    }
-
-    // fix pool size if larger than SyStorKill
-    if ( SyStorKill != 0 && SyAllocPool != 0 &&
-                            SyAllocPool > 1024 * SyStorKill ) {
-        SyAllocPool = SyStorKill * 1024;
-    }
-#endif
 
     // when running in package mode set ctrl-d and line editing
     if ( SyWindow ) {
