@@ -157,8 +157,6 @@ extern Char * SyRestoring;
 
 extern UInt SyInitializing;
 
-extern Char ** SyOriginalArgv;
-extern UInt    SyOriginalArgc;
 
 /****************************************************************************
 **

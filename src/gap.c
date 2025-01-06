@@ -1052,13 +1052,22 @@ static Obj FuncSHOULD_QUIT_ON_BREAK(Obj self)
 ** The general idea is to put all kernel-specific info in here, and clean up
 ** the assortment of global variables previously used
 */
+static Obj KernelArgs;
+
+static void InitKernelArgs(int argc, char * argv[])
+{
+    // make command line available to GAP level
+    KernelArgs = NEW_PLIST_IMM(T_PLIST, argc);
+    for (int i = 0; i < argc; i++) {
+        PushPlist(KernelArgs, MakeImmString(argv[i]));
+    }
+}
 
 static Obj FuncKERNEL_INFO(Obj self)
 {
     Obj  res = NEW_PREC(0);
     UInt r;
     Obj  tmp;
-    UInt i;
 
     AssPRec(res, RNamName("GAP_ARCHITECTURE"), MakeImmString(GAPARCH));
     AssPRec(res, RNamName("KERNEL_VERSION"), MakeImmString(SyKernelVersion));
@@ -1073,15 +1082,11 @@ static Obj FuncKERNEL_INFO(Obj self)
     AssPRec(res, RNamName("uname"), SyGetOsRelease());
 
     // make command line available to GAP level
-    tmp = NEW_PLIST_IMM(T_PLIST, 16);
-    for (i = 0; SyOriginalArgv[i]; i++) {
-        PushPlist(tmp, MakeImmString(SyOriginalArgv[i]));
-    }
-    AssPRec(res, RNamName("COMMAND_LINE"), tmp);
+    AssPRec(res, RNamName("COMMAND_LINE"), KernelArgs);
 
     // make environment available to GAP level
     tmp = NEW_PREC(0);
-    for (i = 0; environ[i]; i++) {
+    for (int i = 0; environ[i]; i++) {
         Char * p = strchr(environ[i], '=');
         if (!p) {
             // should never happen...
@@ -1317,6 +1322,7 @@ static Int InitKernel (
 {
     // register global bags with the garbage collector
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
+    InitGlobalBag( &KernelArgs, "src/gap.c:KernelArgs" );
 
     // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
@@ -1434,8 +1440,10 @@ void InitializeGap (
     char *              argv [],
     UInt                handleSignals )
 {
+    const int argc = *pargc;
+
     // initialize the basic system and gasman
-    InitSystem( *pargc, argv, handleSignals );
+    InitSystem(argc, argv, handleSignals);
 
     // Initialise memory  -- have to do this here to make sure we are at top of C stack
     InitBags(
@@ -1490,6 +1498,9 @@ void InitializeGap (
         LoadWorkspace(SyRestoring);
         SyRestoring = NULL;
 
+        // make command line available to GAP level
+        InitKernelArgs(argc, argv);
+
         // Call POST_RESTORE which is a GAP function that now takes control,
         // calls the post restore functions and then runs a GAP session
         Obj POST_RESTORE = ValGVar(GVarName("POST_RESTORE"));
@@ -1512,6 +1523,9 @@ void InitializeGap (
 
     // check initialisation
     ModulesCheckInit();
+
+    // make command line available to GAP level
+    InitKernelArgs(argc, argv);
 
     // read the init files
     // this now actually runs the GAP session, we only get

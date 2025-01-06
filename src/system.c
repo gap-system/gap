@@ -540,11 +540,6 @@ static const struct optInfo options[] = {
   { 0, "", 0, 0, 0}};
 
 
-Char ** SyOriginalArgv;
-UInt SyOriginalArgc;
-
-
-
 void InitSystem (
     Int                 argc,
     Char *              argv [],
@@ -602,10 +597,6 @@ void InitSystem (
     if (handleSignals) {
         SyInstallAnswerIntr();
     }
-
-    // save the original command line for export to GAP
-    SyOriginalArgc = argc;
-    SyOriginalArgv = argv;
 
     // scan the command line for options that we have to process in the kernel
     // we just scan the whole command line looking for the keys for the options we recognise
