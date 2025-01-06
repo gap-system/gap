@@ -269,6 +269,27 @@ It is not possible  to use &GAP; without the  library files, so you must
 not  ignore this warning.  You  should leave &GAP;   and start it again,
 specifying the correct root path using the <C>-l</C> option.
 </Item>
+<Mark><Index Key="--packagedirs"><C>--packagedirs</C></Index>
+<C>--packagedirs </C><A>path_list</A></Mark>
+<Item>
+can be used to add paths to &GAP;'s list of package directories
+(see <Ref Sect="GAP Package Directories"/>).
+The list always contains all subdirectories <F>pkg</F> in a &GAP; root directory.
+<P/>
+<A>path_list</A> should be a list of directories separated by semicolons.
+No whitespace is permitted before or after a semicolon, and the first and
+last character of <A>path_list</A> may not be a semicolon.
+After &GAP; has completed its startup procedure and
+displays the prompt, the list of package directories can be seen in the
+variable <C>GAPInfo.PackageDirectories</C>,
+see <Ref Var="GAPInfo"/>.
+<P/>
+Usually this option is used inside a startup script to specify
+where additional &GAP; packages are located on the system.
+The <C>--packagedirs</C> option can also be used by individual users to tell &GAP;
+about additional &GAP; packages, without the need to set up a complete root
+directory structure.
+</Item>
 <Mark><Index Key="-M"><C>-M</C></Index>
 <C>-M</C></Mark>
 <Item>

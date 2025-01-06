@@ -95,6 +95,9 @@ BIND_GLOBAL( "GAPInfo", rec(
                      "directories to the end/start of existing list",
                      "of root paths" ] ),
       rec( short:= "r", default := false, help := ["disable/enable user GAP root dir", "GAPInfo.UserGapRoot"] ),
+      rec( long := "packagedirs", default := [], arg := "<paths>",
+           help := [ "add additional GAP directory paths",
+                     "Directories are separated using ';'." ] ),
       ,
       rec( section:= ["Loading:"] ),
       rec( short:= "A", default := false, help := ["disable/enable autoloading of suggested", "GAP packages"] ),
@@ -302,6 +305,7 @@ CallAndInstallPostRestore( function()
 
     # paths
     GAPInfo.RootPaths:= GAPInfo.KernelInfo.GAP_ROOT_PATHS;
+    GAPInfo.PackageDirectories := [];
     if  IsBound(GAPInfo.SystemEnvironment.HOME) then
       GAPInfo.UserHome := GAPInfo.SystemEnvironment.HOME;
     else

@@ -96,6 +96,7 @@ that is they will be loaded automatically when &GAP; starts
 
 <#Include Label="SetPackagePath">
 <#Include Label="ExtendRootDirectories">
+<#Include Label="ExtendPackageDirectories">
 <#Include Label="DisplayPackageLoadingLog">
 
 </Section>
