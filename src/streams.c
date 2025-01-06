@@ -853,9 +853,10 @@ static Obj FuncREAD(Obj self, Obj inputObj)
 static Obj FuncREAD_STREAM_LOOP(Obj self,
                                 Obj instream,
                                 Obj outstream,
-                                Obj context)
+                                Obj ctx)
 {
     Int res;
+    volatile Obj context = ctx;
 
     RequireInputStream(SELF_NAME, instream);
     RequireOutputStream(SELF_NAME, outstream);
