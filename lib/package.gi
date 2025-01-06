@@ -317,7 +317,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
     if pkgdirs <> fail then
         pkgdirs:= Filtered( pkgdirs, dir -> not dir in GAPInfo.PackageDirectories );
         if not IsEmpty(pkgdirs) then
-            APPEND_LIST_INTR( GAPInfo.PackageDirectories, pkgdirs );
+            Append( GAPInfo.PackageDirectories, pkgdirs );
         fi;
     fi;
 
@@ -356,12 +356,12 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
       fi;
 
       # pkgdir may be a package instead of a package directory
-      file:= Filename( [ pkgdir ], "PackageInfo.g" );
+      file:= Filename( pkgdir, "PackageInfo.g" );
       if file <> fail then
         AddPackageInfos( [ [ file, "" ] ], pkgdir, ignore );
       else
         # Loop over subdirectories of this package directory.
-        for name in Set( DirectoryContents( Filename( pkgdir, "" ) ) ) do
+        for name in Set( DirectoryContents( pkgdir ) ) do
 
             ## Get all package dirs
             files := FindPackageInfosInSubdirectories( pkgdir, name );
