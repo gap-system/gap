@@ -65,6 +65,7 @@ jobs:
     # Don't run this twice on PRs for branches pushed to the same repository
     if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     outputs:
       gap-build-version: ${{ steps.get-build.outputs.name }}
 
@@ -171,6 +172,7 @@ jobs:
     name: "Create Windows x86_64 installer"
     needs: unix
     runs-on: windows-2019
+    timeout-minutes: 120
     env:
       CHERE_INVOKING: 1
       GAP_VERSION: ${{ needs.unix.outputs.gap-build-version }}
