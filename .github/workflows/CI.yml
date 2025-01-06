@@ -89,7 +89,7 @@ jobs:
           # this job also tests GAP without readline and gmp
           - os: macos-latest
             shell: bash
-            test-suites: "testmockpkg testinstall"
+            test-suites: "testmockpkg testinstall testworkspace"
             extra: "BOOTSTRAP_MINIMAL=yes"
 
           # run bugfix regression tests
