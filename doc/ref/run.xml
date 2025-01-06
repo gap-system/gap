@@ -265,7 +265,7 @@ specifying the correct root path using the <C>-l</C> option.
 <Item>
 can be used to add paths to &GAP;'s list of package directories
 (see <Ref Sect="GAP Package Directories"/>).
-The list always contains all subdirectories <F>pkg/</F> in a &GAP; root directory.
+The list always contains all subdirectories <F>pkg</F> in a &GAP; root directory.
 <P/>
 <A>path_list</A> should be a list of directories separated by semicolons.
 No whitespace is permitted before or after a semicolon, and the first and

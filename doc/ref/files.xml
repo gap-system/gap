@@ -81,8 +81,8 @@ directories. For example when &GAP; wants to read its library file
 <C>GAPInfo.RootPaths</C> until it finds the path of an existing file.
 The first file found this way is read.
 <P/>
-Subdirectories <F>pkg/</F> in each of the directories in <C>GAPInfo.RootPaths</C>
-appear in <C>GAPInfo.PackageDirectories</C> (see <Ref Sect="GAP Package Directories"/>),
+Any subdirectories named <F>pkg/</F> in one of the directories in <C>GAPInfo.RootPaths</C>
+are added to <C>GAPInfo.PackageDirectories</C> (see <Ref Sect="GAP Package Directories"/>),
 which controls where &GAP; looks for available packages.
 <P/>
 The root directories are specified via one or several of the
@@ -108,16 +108,16 @@ via the function <Ref Func="ExtendRootDirectories"/>.
 <Index Key="GAPInfo.PackageDirectories"><C>GAPInfo.PackageDirectories</C></Index>
 
 When &GAP; is started it determines a list of directories potentially
-containing packages called the <E>&GAP; package directories</E>.
+containing packages. We refer to these as the <E>&GAP; package directories</E>.
 In a running &GAP; session this list can be found in <C>GAPInfo.PackageDirectories</C>.
 <P/>
-Every subdirectory <F>pkg/</F> in a &GAP; root directory is automatically
+Every subdirectory <F>pkg</F> in a &GAP; root directory is automatically
 added to this list. Further package directories can be specified via one or several
 <C>--packagedirs paths</C> command line options, see <Ref Sect="Command Line Options"/>,
 or after &GAP; has been started via the function <Ref Func="ExtendPackageDirectories"/>.
 The order of the directories in <C>GAPInfo.PackageDirectories</C> is as follows:
-first the package directories specified via the command line option <C>--packagedirs </C>,
-then the subdirectories of the &GAP; root directories that were known at startup in the
+first the package directories specified via the command line option <C>--packagedirs</C>,
+then the subdirectories <F>pkg</F> of the &GAP; root directories that were known at startup in the
 same order, and finally the directories added after &GAP; has been started.
 <P/>
 &GAP; looks for available packages by examining each of the directories in
