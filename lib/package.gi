@@ -356,7 +356,7 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
       fi;
 
       # pkgdir may be a package instead of a package directory
-      file:= Filename( pkgdir, "PackageInfo.g" );
+      file:= Filename( [ pkgdir ], "PackageInfo.g" );
       if file <> fail then
         AddPackageInfos( [ [ file, "" ] ], pkgdir, ignore );
       else
