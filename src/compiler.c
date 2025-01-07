@@ -4994,9 +4994,7 @@ static void CompAssert3(Stat stat)
     cnd = CompBoolExpr(READ_STAT(stat, 1));
     Emit( "if ( ! %c ) {\n", cnd );
     msg = CompExpr(READ_STAT(stat, 2));
-    Emit( "if ( %c != (Obj)(UInt)0 )", msg );
-    Emit( "{\n if ( IS_STRING_REP ( %c ) )\n", msg);
-    Emit( "   PrintString1( %c);\n else\n   PrintObj(%c);\n}\n", msg, msg );
+    Emit( "AssertionFailureWithMessage(%c);\n", msg );
     Emit( "}\n" );
     Emit( "}\n" );
 

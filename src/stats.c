@@ -925,13 +925,8 @@ static ExecStatus ExecAssert3Args(Stat stat)
         RequireTrueOrFalse("Assert", cond);
         if (cond == False) {
             message = EVAL_EXPR(READ_STAT(stat, 2));
-            if ( message != (Obj) 0 ) {
-                SET_BRK_CALL_TO( stat );
-                if (IS_STRING_REP( message ))
-                    PrintString1( message );
-                else
-                    PrintObj(message);
-            }
+            SET_BRK_CALL_TO( stat );
+            AssertionFailureWithMessage(message);
         }
     }
     return STATUS_END;

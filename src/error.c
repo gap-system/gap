@@ -596,6 +596,23 @@ void AssertionFailure(void)
     ErrorReturnVoid("Assertion failure", 0, 0, "you may 'return;'");
 }
 
+void AssertionFailureWithMessage(Obj message)
+{
+    if (message == 0) {
+        // this case is triggered by code like this: Assert(0, false, Error("boo"));
+        // at least if the user enters `return;` into the break loop opened by this.
+        AssertionFailure();
+    }
+    else if (IS_STRING_REP(message)) {
+        ErrorReturnVoid("Assertion failure: %g", (Int)message, 0, "you may 'return;'");
+    }
+    else {
+        PrintObj(message);
+        Pr("\n", 0, 0);
+        AssertionFailure();
+    }
+}
+
 
 /****************************************************************************
 **

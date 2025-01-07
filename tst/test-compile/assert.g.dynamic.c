@@ -1,6 +1,6 @@
 /* C file produced by GAC */
 #include "compiled.h"
-#define FILE_CRC  "47091879"
+#define FILE_CRC  "-125967076"
 
 /* global variables used in handlers */
 static GVar G_Print;
@@ -10,6 +10,7 @@ static Obj  GF_SetAssertionLevel;
 static GVar G_AssertionLevel;
 static Obj  GF_AssertionLevel;
 static GVar G_runtest;
+static GVar G_BreakOnError;
 
 /* record names used in handlers */
 
@@ -53,12 +54,7 @@ static Obj  HdlrFunc2 (
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
    t_2 = MakeString( "fail-A" );
-   if ( t_2 != (Obj)(UInt)0 ){
-     if ( IS_STRING_REP ( t_2 ) )
-       PrintString1( t_2);
-     else
-       PrintObj(t_2);
-   }
+   AssertionFailureWithMessage(t_2);
   }
  }
  
@@ -77,12 +73,7 @@ static Obj  HdlrFunc2 (
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
    t_2 = MakeString( "fail-B" );
-   if ( t_2 != (Obj)(UInt)0 ){
-     if ( IS_STRING_REP ( t_2 ) )
-       PrintString1( t_2);
-     else
-       PrintObj(t_2);
-   }
+   AssertionFailureWithMessage(t_2);
   }
  }
  
@@ -128,12 +119,7 @@ static Obj  HdlrFunc2 (
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
    t_2 = MakeString( "fail-C" );
-   if ( t_2 != (Obj)(UInt)0 ){
-     if ( IS_STRING_REP ( t_2 ) )
-       PrintString1( t_2);
-     else
-       PrintObj(t_2);
-   }
+   AssertionFailureWithMessage(t_2);
   }
  }
  
@@ -152,12 +138,7 @@ static Obj  HdlrFunc2 (
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
    t_2 = MakeString( "fail-D" );
-   if ( t_2 != (Obj)(UInt)0 ){
-     if ( IS_STRING_REP ( t_2 ) )
-       PrintString1( t_2);
-     else
-       PrintObj(t_2);
-   }
+   AssertionFailureWithMessage(t_2);
   }
  }
  
@@ -170,18 +151,26 @@ static Obj  HdlrFunc2 (
   }
  }
  
+ /* BreakOnError := false; */
+ t_1 = False;
+ AssGVar( G_BreakOnError, t_1 );
+ 
  /* Assert( 2, false, "pass!\n" ); */
  if ( STATE(CurrentAssertionLevel) >= 2 ) {
   t_2 = False;
   t_1 = (Obj)(UInt)(t_2 != False);
   if ( ! t_1 ) {
    t_2 = MakeString( "pass!\n" );
-   if ( t_2 != (Obj)(UInt)0 ){
-     if ( IS_STRING_REP ( t_2 ) )
-       PrintString1( t_2);
-     else
-       PrintObj(t_2);
-   }
+   AssertionFailureWithMessage(t_2);
+  }
+ }
+ 
+ /* Assert( 2, false ); */
+ if ( STATE(CurrentAssertionLevel) >= 2 ) {
+  t_2 = False;
+  t_1 = (Obj)(UInt)(t_2 != False);
+  if ( ! t_1 ) {
+   AssertionFailure();
   }
  }
  
@@ -223,7 +212,9 @@ static Obj  HdlrFunc1 (
       Assert( 3, false );
       Assert( 2, true, "fail-D" );
       Assert( 2, true );
+      BreakOnError := false;
       Assert( 2, false, "pass!\n" );
+      Assert( 2, false );
       Print( "end of function\n" );
       return;
   end; */
@@ -231,7 +222,7 @@ static Obj  HdlrFunc1 (
  SET_ENVI_FUNC( t_1, STATE(CurrLVars) );
  t_2 = NewFunctionBody();
  SET_STARTLINE_BODY(t_2, 1);
- SET_ENDLINE_BODY(t_2, 18);
+ SET_ENDLINE_BODY(t_2, 20);
  SET_FILENAME_BODY(t_2, FileName);
  SET_BODY_FUNC(t_1, t_2);
  AssGVar( G_runtest, t_1 );
@@ -250,6 +241,7 @@ static Int PostRestore ( StructInitInfo * module )
  G_SetAssertionLevel = GVarName( "SetAssertionLevel" );
  G_AssertionLevel = GVarName( "AssertionLevel" );
  G_runtest = GVarName( "runtest" );
+ G_BreakOnError = GVarName( "BreakOnError" );
  
  /* record names used in handlers */
  
@@ -309,7 +301,7 @@ static Int InitLibrary ( StructInitInfo * module )
 static StructInitInfo module = {
  .type        = MODULE_DYNAMIC,
  .name        = "assert.g",
- .crc         = 47091879,
+ .crc         = -125967076,
  .initKernel  = InitKernel,
  .initLibrary = InitLibrary,
  .postRestore = PostRestore,

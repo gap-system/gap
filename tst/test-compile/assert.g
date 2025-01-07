@@ -10,9 +10,11 @@ runtest := function()
     Assert(3, false);
     Assert(2, true, "fail-D");
     Assert(2, true);
+
+    # ensure we don't abort after an error
+    BreakOnError := false;
+
     Assert(2, false, "pass!\n");
-    # We can't test this next line, as it produces
-    # <compiled or corrupted statement> when compiled
-    # Assert(2, false);
+    Assert(2, false);
     Print("end of function\n");
 end;

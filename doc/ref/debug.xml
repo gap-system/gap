@@ -344,10 +344,9 @@ if AssertionLevel() >= lev and not <cond> then
 fi;
 ]]></Log>
 <P/>
-With the <A>message</A> argument form of the <Ref Func="Assert"/> statement,
-if the global assertion level is at least <A>lev</A>, condition <A>cond</A>
-is tested and if it does not return <K>true</K> then <A>message</A> is
-evaluated and printed.
+If the <A>message</A> argument form of the <Ref Func="Assert"/> statement
+is provided, and if an error is raised, then this message is printed as part of
+the error.
 <P/>
 Assertions are used at various places in the library.
 Thus turning assertions on can slow code execution significantly.
