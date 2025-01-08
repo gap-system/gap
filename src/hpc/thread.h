@@ -44,9 +44,9 @@ void AddGCRoots(void);
 void RemoveGCroots(void);
 
 void RunThreadedMain(
-        int (*mainFunction)(int, char **),
+        int (*mainFunction)(int, const char **),
         int argc,
-        char **argv );
+        const char **argv );
 
 void CreateMainRegion(void);
 Obj RunThread(void (*start)(void *), void *arg);

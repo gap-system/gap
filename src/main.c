@@ -30,7 +30,7 @@
 #include <mach-o/dyld.h>
 #endif
 
-extern int realmain(int argc, char * argv[]);
+extern int realmain(int argc, const char * argv[]);
 
 /****************************************************************************
 **
@@ -188,7 +188,7 @@ static void SetupInitialGapRoot(const char * argv0)
 }
 #endif
 
-int main(int argc, char * argv[])
+int main(int argc, const char * argv[])
 {
     InstallBacktraceHandlers();
     SetupInitialGapRoot(argv[0]);

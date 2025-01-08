@@ -77,11 +77,11 @@ UInt SyCTRD;
 *V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
 *V  SyCompileMagic1 . . . . . . . . . . . . . . . . . . and this magic string
 */
-Int SyCompilePlease;
-Char * SyCompileOutput;
-Char * SyCompileInput;
-Char * SyCompileName;
-Char * SyCompileMagic1;
+BOOL SyCompilePlease;
+const char * SyCompileOutput;
+const char * SyCompileInput;
+const char * SyCompileName;
+const char * SyCompileMagic1;
 
 
 /****************************************************************************
@@ -315,7 +315,7 @@ static const UInt maxmem = 15000000000000000000UL;
 static const UInt maxmem = 4000000000UL;
 #endif
 
-static BOOL ParseMemory(Char * s, UInt *result)
+static BOOL ParseMemory(const char * s, UInt * result)
 {
     char * end;
     const double size = strtod(s, &end);
@@ -365,13 +365,13 @@ static void usage(void)
 struct optInfo {
   Char shortkey;
   Char longkey[50];
-  Int (*handler)(Char **, void *);
+  int (*handler)(const char * argv[], void *);
   void *otherArg;
   UInt minargs;
 };
 
 
-static Int toggle( Char ** argv, void *Variable )
+static int toggle(const char * argv[], void * Variable)
 {
   UInt * variable = (UInt *) Variable;
   *variable = !*variable;
@@ -379,11 +379,11 @@ static Int toggle( Char ** argv, void *Variable )
 }
 
 #ifdef HPCGAP
-static Int storePosInteger( Char **argv, void *Where )
+static int storePosInteger(const char * argv[], void * Where)
 {
   UInt *where = (UInt *)Where;
   UInt n;
-  Char *p = argv[0];
+  const char *p = argv[0];
   n = 0;
   while (IsDigit(*p)) {
     n = n * 10 + (*p-'0');
@@ -399,16 +399,16 @@ static Int storePosInteger( Char **argv, void *Where )
 #endif
 
 #ifdef GAP_ENABLE_SAVELOAD
-static Int storeString( Char **argv, void *Where )
+static int storeString(const char * argv[], void * Where)
 {
-  Char **where = (Char **)Where;
-  *where = argv[0];
-  return 1;
+    const char ** where = (const char **)Where;
+    *where = argv[0];
+    return 1;
 }
 #endif
 
 #ifdef USE_GASMAN
-static Int storeMemory( Char **argv, void *Where )
+static int storeMemory(const char * argv[], void * Where)
 {
     UInt * where = (UInt *)Where;
     if (!ParseMemory(argv[0], where))
@@ -418,7 +418,7 @@ static Int storeMemory( Char **argv, void *Where )
 #endif
 
 #if defined(USE_GASMAN) || defined(USE_BOEHM_GC)
-static Int storeMemory2( Char **argv, void *Where )
+static int storeMemory2(const char * argv[], void * Where)
 {
     UInt * where = (UInt *)Where;
     if (!ParseMemory(argv[0], where))
@@ -428,9 +428,9 @@ static Int storeMemory2( Char **argv, void *Where )
 }
 #endif
 
-static Int processCompilerArgs( Char **argv, void * dummy)
+static int processCompilerArgs(const char * argv[], void * dummy)
 {
-    SyCompilePlease = 1;
+    SyCompilePlease = TRUE;
     SyCompileOutput = argv[0];
     SyCompileInput = argv[1];
     SyCompileName = argv[2];
@@ -439,21 +439,21 @@ static Int processCompilerArgs( Char **argv, void * dummy)
 }
 
 #ifdef GAP_ENABLE_SAVELOAD
-static Int unsetString( Char **argv, void *Where)
+static int unsetString(const char * argv[], void * Where)
 {
   *(Char **)Where = (Char *)0;
   return 0;
 }
 #endif
 
-static Int forceLineEditing( Char **argv,void *Level)
+static int forceLineEditing(const char * argv[], void * Level)
 {
   UInt level = (UInt)Level;
   SyLineEdit = level;
   return 0;
 }
 
-static Int setGapRootPath( Char **argv, void *Dummy)
+static int setGapRootPath(const char * argv[], void * Dummy)
 {
   SySetGapRootPath( argv[0] );
   return 1;
@@ -463,7 +463,7 @@ static Int setGapRootPath( Char **argv, void *Dummy)
 #ifndef GAP_MEM_CHECK
 // Provide stub with helpful error message
 
-static Int enableMemCheck(Char ** argv, void * dummy)
+static int enableMemCheck(const char * argv[], void * dummy)
 {
     fputs("# Error: --enableMemCheck not supported by this copy of GAP\n", stderr);
     fputs("  pass --enable-memory-checking to ./configure\n", stderr);
@@ -472,7 +472,7 @@ static Int enableMemCheck(Char ** argv, void * dummy)
 #endif
 
 
-static Int printVersion(Char ** argv, void * dummy)
+static int printVersion(const char * argv[], void * dummy)
 {
     fputs("GAP ", stdout);
     fputs(SyBuildVersion, stdout);
@@ -533,17 +533,14 @@ static const struct optInfo options[] = {
   { 0, "", 0, 0, 0}};
 
 
-void InitSystem (
-    Int                 argc,
-    Char *              argv [],
-    UInt                handleSignals )
+void InitSystem(int argc, const char * argv[], BOOL handleSignals)
 {
     UInt                i;             // loop variable
     Int res;                       // return from option processing function
 
     // Initialize global and static variables
     SyCTRD = 1;
-    SyCompilePlease = 0;
+    SyCompilePlease = FALSE;
     SyDebugLoading = 0;
     SyLineEdit = 1;
 #ifdef HAVE_LIBREADLINE

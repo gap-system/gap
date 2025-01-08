@@ -299,13 +299,13 @@ void InitMainThread(void)
     TLS(CountActive) = 1;
 }
 
-static NOINLINE void RunThreadedMain2(int (*mainFunction)(int, char **),
+static NOINLINE void RunThreadedMain2(int (*mainFunction)(int, const char **),
                              int     argc,
-                             char ** argv);
+                             const char ** argv);
 
-void RunThreadedMain(int (*mainFunction)(int, char **),
+void RunThreadedMain(int (*mainFunction)(int, const char **),
                      int     argc,
-                     char ** argv)
+                     const char ** argv)
 {
 #ifndef USE_NATIVE_TLS
 #ifdef STACK_GROWS_UP
@@ -335,9 +335,9 @@ void RunThreadedMain(int (*mainFunction)(int, char **),
     RunThreadedMain2(mainFunction, argc, argv);
 }
 
-static void RunThreadedMain2(int (*mainFunction)(int, char **),
+static void RunThreadedMain2(int (*mainFunction)(int, const char **),
                              int     argc,
-                             char ** argv)
+                             const char ** argv)
 {
     int                    i;
     static pthread_mutex_t main_thread_mutex;

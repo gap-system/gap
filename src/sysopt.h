@@ -36,11 +36,11 @@ extern UInt SyCTRD;
 *V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
 *V  SyCompileMagic1 . . . . . . . . . . . . . . . . . . and this magic string
 */
-extern Int SyCompilePlease;
-extern Char * SyCompileOutput;
-extern Char * SyCompileInput;
-extern Char * SyCompileName;
-extern Char * SyCompileMagic1;
+extern BOOL SyCompilePlease;
+extern const char * SyCompileOutput;
+extern const char * SyCompileInput;
+extern const char * SyCompileName;
+extern const char * SyCompileMagic1;
 
 
 /****************************************************************************

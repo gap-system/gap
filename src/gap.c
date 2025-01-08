@@ -398,14 +398,14 @@ static Obj FuncSHELL(Obj self,
     return (Obj)0;
 }
 
-int realmain( int argc, char * argv[] )
+int realmain(int argc, const char * argv[])
 {
   UInt                type;                   // result of compile
   Obj                 func;                   // function (compiler)
   Int4                crc;                    // crc of file to compile
 
   // initialize everything and read init.g which runs the GAP session
-  InitializeGap( &argc, argv, 1 );
+  InitializeGap(&argc, argv, 1);
   if (!STATE(UserHasQUIT)) {         /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
     // maybe compile in which case init.g got skipped
@@ -1065,7 +1065,7 @@ static Obj FuncSHOULD_QUIT_ON_BREAK(Obj self)
 */
 static Obj KernelArgs;
 
-static void InitKernelArgs(int argc, char * argv[])
+static void InitKernelArgs(int argc, const char * argv[])
 {
     // make command line available to GAP level
     KernelArgs = NEW_PLIST_IMM(T_PLIST, argc);
@@ -1445,11 +1445,14 @@ StructInitInfo * InitInfoGap ( void )
 **  `PostRestore': Everything in  `InitLibrary' execpt  creating objects.  In
 **  general    `InitLibrary'  will  create    all objects    and  then  calls
 **  `PostRestore'.  This function is only used when restoring.
+**
+**  Note that this function does not take the usual argc, argv pair for a
+**  list of arguments, but instead a pointer to argc is passed. This is a
+**  trick to get a pointer to the execution stack on the level of the calling
+**  function. We use the resulting pointer as a hint to the garbage collector
+**  as to where the execution stack (might) start.
 */
-void InitializeGap (
-    int *               pargc,
-    char *              argv [],
-    UInt                handleSignals )
+void InitializeGap(int * pargc, const char * argv[], BOOL handleSignals)
 {
     const int argc = *pargc;
 

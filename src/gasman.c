@@ -1139,7 +1139,7 @@ int RegisterAfterCollectFuncBags(TNumCollectFuncBags func)
 
 Int EnableMemCheck = 0;
 
-Int enableMemCheck(Char ** argv, void * dummy)
+int enableMemCheck(const char * argv[], void * dummy)
 {
     fputs("# Warning: --enableMemCheck causes SEVERE slowdowns. Starting GAP may take several days!\n", stderr);
     EnableMemCheck = 1;
