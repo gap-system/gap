@@ -107,6 +107,7 @@ static Char DotGapPath[GAP_PATH_MAX];
 */
 static Int IgnoreGapRC;
 
+
 /****************************************************************************
 **
 *V  SyLineEdit  . . . . . . . . . . . . . . . . . . . .  support line editing
@@ -117,6 +118,7 @@ static Int IgnoreGapRC;
 */
 UInt SyLineEdit;
 
+
 /****************************************************************************
 **
 *V  SyUseReadline   . . . . . . . . . . . . . . . . . .  support line editing
@@ -124,6 +126,7 @@ UInt SyLineEdit;
 **  Switch for not using readline although GAP is compiled with libreadline
 */
 UInt SyUseReadline;
+
 
 /****************************************************************************
 **
@@ -138,11 +141,10 @@ UInt SyUseReadline;
 **  'SyRead' uses it to decide when to start scrolling the echoed input line.
 **
 **  See also InitWindowSize().
-**
-**  Put in this package because the command line processing takes place here.
 */
 UInt SyNrCols;
 UInt SyNrColsLocked;
+
 
 /****************************************************************************
 **
@@ -153,12 +155,11 @@ UInt SyNrColsLocked;
 **  Per default this is 24, which is the  usual  size  of  terminal  screens.
 **  It can be changed with the '-y' option for larger terminals or  printers.
 **
-**  'SyHelp' uses this to decide where to stop with '-- <space> for more --'.
-**
 **  See also InitWindowSize().
 */
 UInt SyNrRows;
 UInt SyNrRowsLocked;
+
 
 /****************************************************************************
 **
@@ -175,17 +176,26 @@ UInt SyNrRowsLocked;
 */
 UInt SyQuiet;
 
+
 /****************************************************************************
 **
 *V  SyQuitOnBreak . . . . . . . . . . exit GAP instead of entering break loop
+**
+**  'SyQuitOnBreak' determines whether GAP should quit (with non-zero return
+**  value) instead of entering the break loop.
+**
+**  False by default, can be changed with the '--quitonbreak' option.
+**
+**  Put in this package because the command line processing takes place here.
 */
 UInt SyQuitOnBreak;
+
 
 /****************************************************************************
 **
 *V  SyRestoring . . . . . . . . . . . . . . . . . . . . restoring a workspace
 **
-**  `SyRestoring' determines whether GAP is restoring a workspace or not.  If
+**  'SyRestoring' determines whether GAP is restoring a workspace or not.  If
 **  it is zero no restoring should take place otherwise it holds the filename
 **  of a workspace to restore.
 **
@@ -199,7 +209,7 @@ Char * SyRestoring;
 **
 *V  SyInitializing                               set to 1 during library init
 **
-**  `SyInitializing' is set to 1 during the library initialization phase of
+**  'SyInitializing' is set to 1 during the library initialization phase of
 **  startup. It suppresses some behaviours that may not be possible so early
 **  such as homogeneity tests in the plist code.
 */

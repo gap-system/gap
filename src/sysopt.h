@@ -49,11 +49,13 @@ extern const char * SyCompileMagic1;
 */
 extern Int SyDebugLoading;
 
+
 /****************************************************************************
 **
 *F  SyDotGapPath()
 */
 const Char * SyDotGapPath(void);
+
 
 /****************************************************************************
 **
@@ -65,6 +67,7 @@ const Char * SyDotGapPath(void);
 */
 extern UInt SyLineEdit;
 
+
 /****************************************************************************
 **
 *V  SyUseReadline   . . . . . . . . . . . . . . . . . .  support line editing
@@ -72,6 +75,7 @@ extern UInt SyLineEdit;
 **  Switch for not using readline although GAP is compiled with libreadline
 */
 extern UInt SyUseReadline;
+
 
 /****************************************************************************
 **
@@ -85,10 +89,11 @@ extern UInt SyUseReadline;
 **  'Pr' uses this to decide where to insert a <newline> on the output lines.
 **  'SyRead' uses it to decide when to start scrolling the echoed input line.
 **
-**  Put in this package because the command line processing takes place here.
+**  See also InitWindowSize().
 */
 extern UInt SyNrCols;
 extern UInt SyNrColsLocked;
+
 
 /****************************************************************************
 **
@@ -99,7 +104,7 @@ extern UInt SyNrColsLocked;
 **  Per default this is 24, which is the  usual  size  of  terminal  screens.
 **  It can be changed with the '-y' option for larger terminals or  printers.
 **
-**  'SyHelp' uses this to decide where to stop with '-- <space> for more --'.
+**  See also InitWindowSize().
 */
 extern UInt SyNrRows;
 extern UInt SyNrRowsLocked;
@@ -109,7 +114,7 @@ extern UInt SyNrRowsLocked;
 **
 *V  SyQuiet . . . . . . . . . . . . . . . . . . . . . . . . . suppress prompt
 **
-**  'SyQuit' determines whether GAP should print the prompt and  the  banner.
+**  'SyQuiet' determines whether GAP should print the prompt and the  banner.
 **
 **  Per default its false, i.e. GAP prints the prompt and  the  nice  banner.
 **  It can be changed by the '-q' option to have GAP operate in silent  mode.
@@ -119,6 +124,7 @@ extern UInt SyNrRowsLocked;
 **  Put in this package because the command line processing takes place here.
 */
 extern UInt SyQuiet;
+
 
 /****************************************************************************
 **
@@ -133,6 +139,7 @@ extern UInt SyQuiet;
 */
 extern UInt SyQuitOnBreak;
 
+
 /****************************************************************************
 **
 *V  SyRestoring . . . . . . . . . . . . . . . . . . . . restoring a workspace
@@ -145,6 +152,7 @@ extern UInt SyQuitOnBreak;
 #ifdef GAP_ENABLE_SAVELOAD
 extern Char * SyRestoring;
 #endif
+
 
 /****************************************************************************
 **
