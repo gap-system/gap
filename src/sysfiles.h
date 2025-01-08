@@ -434,11 +434,11 @@ char SyFileType(const Char * path);
 
 /****************************************************************************
 **
-*F  void getwindowsize( void )  . probe the OS for the window size and
+*F  void InitWindowSize( void )  . probe the OS for the window size and
 **                               set SyNrRows and SyNrCols accordingly
 */
 
-void getwindowsize(void);
+void InitWindowSize(void);
 
 /****************************************************************************
 **
