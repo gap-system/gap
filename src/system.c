@@ -630,30 +630,34 @@ static void ParseCommandLineOptions(int argc, const char * argv[])
 
 static void InitDotGapPath(void)
 {
-    // the users home directory
-    if ( getenv("HOME") != 0 ) {
-        strxcpy(DotGapPath, getenv("HOME"), sizeof(DotGapPath));
-# if defined(__APPLE__)
-        // On Mac OS, add .gap to the sys roots, but leave
-        // DotGapPath at $HOME/Library/Preferences/GAP
-        strxcat(DotGapPath, "/.gap;", sizeof(DotGapPath));
-        if (!IgnoreGapRC) {
-          SySetGapRootPath(DotGapPath);
-        }
+    const char * home = getenv("HOME");
+    if (home == 0)
+        return;
 
-        strxcpy(DotGapPath, getenv("HOME"), sizeof(DotGapPath));
-        strxcat(DotGapPath, "/Library/Preferences/GAP;", sizeof(DotGapPath));
-# elif defined(__CYGWIN__)
-        strxcat(DotGapPath, "/_gap;", sizeof(DotGapPath));
-# else
-        strxcat(DotGapPath, "/.gap;", sizeof(DotGapPath));
-# endif
+#if defined(__CYGWIN__)
+    strxcpy(DotGapPath, home, sizeof(DotGapPath));
+    strxcat(DotGapPath, "/_gap;", sizeof(DotGapPath));
+#else
+    strxcpy(DotGapPath, home, sizeof(DotGapPath));
+    strxcat(DotGapPath, "/.gap;", sizeof(DotGapPath));
+#endif
 
-        if (!IgnoreGapRC) {
-          SySetGapRootPath(DotGapPath);
-        }
-        DotGapPath[strlen(DotGapPath)-1] = '\0';
+    if (!IgnoreGapRC) {
+        SySetGapRootPath(DotGapPath);
     }
+
+#if defined(__APPLE__)
+    strxcpy(DotGapPath, home, sizeof(DotGapPath));
+    strxcat(DotGapPath, "/Library/Preferences/GAP;", sizeof(DotGapPath));
+
+    if (!IgnoreGapRC) {
+        SySetGapRootPath(DotGapPath);
+    }
+#endif
+
+    // get rid of trailing semicolon (which was added to ensure
+    // SySetGapRootPath prepends the path to the list of root paths)
+    DotGapPath[strlen(DotGapPath) - 1] = '\0';
 }
 
 
