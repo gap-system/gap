@@ -137,7 +137,7 @@ UInt SyUseReadline;
 **  'Pr' uses this to decide where to insert a <newline> on the output lines.
 **  'SyRead' uses it to decide when to start scrolling the echoed input line.
 **
-**  See also getwindowsize() below.
+**  See also InitWindowSize().
 **
 **  Put in this package because the command line processing takes place here.
 */
@@ -155,7 +155,7 @@ UInt SyNrColsLocked;
 **
 **  'SyHelp' uses this to decide where to stop with '-- <space> for more --'.
 **
-**  See also getwindowsize() below.
+**  See also InitWindowSize().
 */
 UInt SyNrRows;
 UInt SyNrRowsLocked;
@@ -675,7 +675,7 @@ void InitSystem(int argc, const char * argv[], BOOL handleSignals)
 
     // now that the user has had a chance to give -x and -y,
     // we determine the size of the screen ourselves
-    getwindowsize();
+    InitWindowSize();
 
     // when running in package mode set ctrl-d and line editing
     if (SyWindow) {

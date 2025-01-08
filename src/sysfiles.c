@@ -1047,7 +1047,7 @@ UInt SyIsIntr ( void )
 
 /****************************************************************************
 **
-*F  getwindowsize() . . . . . . . get screen size from termcap or TIOCGWINSZ
+*F  InitWindowSize() . . . . . . . get screen size from termcap or TIOCGWINSZ
 **
 **  For UNIX  we  install 'syWindowChangeIntr' to answer 'SIGWINCH'.
 */
@@ -1069,7 +1069,7 @@ void syWindowChangeIntr ( int signr )
 
 #endif // TIOCGWINSZ
 
-void getwindowsize( void )
+void InitWindowSize(void)
 {
 // it might be that SyNrRows, SyNrCols have been set by the user with -x, -y
 // otherwise they are zero
