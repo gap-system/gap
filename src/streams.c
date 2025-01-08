@@ -881,8 +881,8 @@ static Obj FuncREAD_STREAM_LOOP(Obj self,
 
     LockCurrentOutput(TRUE);
 
-    // get the starting time
-    UInt oldPrintObjState = SetPrintObjState(0);
+    // save the old print state
+    volatile UInt oldPrintObjState = SetPrintObjState(0);
 
     BOOL rethrow = FALSE;
 
