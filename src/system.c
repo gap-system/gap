@@ -209,13 +209,6 @@ UInt SyInitializing;
 
 /****************************************************************************
 **
-*V  SyLoadSystemInitFile  . . . . . . should GAP load 'lib/init.g' at startup
-*/
-Int SyLoadSystemInitFile = 1;
-
-
-/****************************************************************************
-**
 *V  SyUseModule . . . . . . . . . check for static modules in 'READ_GAP_ROOT'
 */
 int SyUseModule;
@@ -662,16 +655,6 @@ void InitSystem (
         SyRedirectStderrToStdOut();
         syWinPut( 0, "@p", "1." );
     }
-
-    // should GAP load 'init/lib.g' on initialization
-    if ( SyCompilePlease ) {
-        SyLoadSystemInitFile = 0;
-    }
-#ifdef GAP_ENABLE_SAVELOAD
-    else if ( SyRestoring ) {
-        SyLoadSystemInitFile = 0;
-    }
-#endif
 
     // the users home directory
     if ( getenv("HOME") != 0 ) {

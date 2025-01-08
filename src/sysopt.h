@@ -161,6 +161,10 @@ extern UInt SyInitializing;
 /****************************************************************************
 **
 *V  SyLoadSystemInitFile  . . . . . . should GAP load 'lib/init.g' at startup
+**
+**  TODO: this variable could be made static or even deleted. However for
+**  now the GAP.jl Julia package is accessing it, so we have to keep it.
+**  See also issue #5890 for the reasons behind this.
 */
 extern Int SyLoadSystemInitFile;
 
