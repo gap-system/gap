@@ -3899,14 +3899,19 @@ end);
 #M  Size( <G> )  . . . . . . . . . . . . . size of a finitely presented group
 ##
 BindGlobal("SIZE_FP_FROM_CYCLIC_INDEX",
-function( G )
+function( G, max... )  # max = maximal coset table length required
 local   fgens,      # generators of the free group
         rels,       # relators of <G>
         H,          # subgroup of <G>
         gen,        # generator of cyclic subgroup
-        max,        # maximal coset table length required
         e,
         T;          # coset table of <G> by <H>
+
+  if Length(max) = 0 then
+      max := infinity;
+  else
+      max := max[1];
+  fi;
 
   fgens := FreeGeneratorsOfFpGroup( G );
   rels  := RelatorsOfFpGroup( G );
@@ -3926,8 +3931,13 @@ local   fgens,      # generators of the free group
     fi;
     # the group could be quite big -- try to find a cyclic subgroup of
     # finite index.
-    gen:=FinIndexCyclicSubgroupGenerator(G,infinity);
-    max:=gen[2];
+    gen:=FinIndexCyclicSubgroupGenerator(G,max);
+    if gen = fail then
+      return fail;
+    fi;
+    if max = infinity then
+      max:=gen[2];
+    fi;
     gen:=gen[1];
 
     H := Subgroup(G,[gen]);
@@ -4049,7 +4059,10 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, HH, t, sz,
 
   H:=[]; # indicate pseudo-size 0
   if not HasSize(G) then
-    sz:=SIZE_FP_FROM_CYCLIC_INDEX(G);
+    sz:=SIZE_FP_FROM_CYCLIC_INDEX(G, max);
+    if sz = fail then
+      return fail;
+    fi;
     SetSize(G,sz);
   fi;
   if Size(G)=infinity then
