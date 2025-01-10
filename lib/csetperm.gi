@@ -883,10 +883,12 @@ local G,u,op,h,N,rt,ac,actions,hom,i,q;
     u:=G;
     Error("only trivial operation ?  I Set u:=G;");
   fi;
+  if IsSubset(u, G) then
+    return DoFactorCosetAction(G, u, G);
+  fi;
   if N=false then
     N:=Core(G,u);
   fi;
-
   ac:=ActionRefinedSeries(G,u);
   actions:=ac[2];
   ac:=ac[1];

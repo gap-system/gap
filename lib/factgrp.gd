@@ -167,6 +167,8 @@ DeclareAttribute("NaturalHomomorphismsPool",IsGroup,
 ##
 DeclareOperation( "FactorCosetAction", [IsGroup,IsGroup] );
 
+DeclareGlobalFunction( "DoFactorCosetAction" );
+
 #############################################################################
 ##
 #F  ImproveActionDegreeByBlocks( <G>, <N> , <hom> [,forceblocks] )

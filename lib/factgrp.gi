@@ -475,7 +475,7 @@ end);
 #F  FactorCosetAction( <G>, <U>, [<N>] )  operation on the right cosets Ug
 ##                                        with possibility to indicate kernel
 ##
-BindGlobal("DoFactorCosetAction",function(arg)
+InstallGlobalFunction("DoFactorCosetAction",function(arg)
 local G,u,op,h,N,rt;
   G:=arg[1];
   u:=arg[2];
