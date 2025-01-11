@@ -155,6 +155,8 @@ gap> u:=Normalizer(g,SylowSubgroup(g,3));;
 gap> act:=FactorCosetAction(g,u);;
 gap> NrMovedPoints(Range(act));
 70840
+gap> NrMovedPoints(Range(FactorCosetAction(g,g)));
+0
 
 #
 gap> STOP_TEST("permgrp.tst");
