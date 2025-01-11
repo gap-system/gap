@@ -72,7 +72,7 @@ jobs:
             test-suites: "makemanuals testmakeinstall"
             extra: "CONFIGFLAGS=\"--prefix=/tmp/gapprefix\" NO_COVERAGE=1"
 
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             shell: bash
             test-suites: "teststandard"
             extra: "ABI=32 CONFIGFLAGS=\"\""
@@ -121,13 +121,13 @@ jobs:
 
           # same as above, but in 32 bit mode, also turn off debugging (see
           # elsewhere in this file for an explanation).
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             shell: bash
             test-suites: "testbuildsys testmockpkg testinstall"
             extra: "NO_COVERAGE=1 ABI=32 BUILDDIR=out-of-tree CONFIGFLAGS=\"\""
 
           # test Julia integration
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             shell: bash
             test-suites: "testinstall"
             extra: "JULIA=yes CONFIGFLAGS=\"--enable-debug\""
