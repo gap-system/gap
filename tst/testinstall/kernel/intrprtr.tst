@@ -22,9 +22,12 @@ gap> Assert(0, 0, "message\n");
 Error, Assert: <cond> must be 'true' or 'false' (not the integer 0)
 gap> Assert(0, true, "message\n");
 gap> Assert(0, false, "message\n");
-message
+Error, Assertion failure: message
+
 gap> Assert(0, false, 1); Print("\n"); # message can also be any object
 1
+Error, Assertion failure
+
 gap> Assert(100, 0, "message\n");
 gap> Assert(100, true, "message\n");
 gap> Assert(100, false, "message\n");

@@ -4082,7 +4082,6 @@ void IntrAssertAfterCondition(IntrState * intr)
         return;
     }
 
-
     condition = PopObj(intr);
 
     if (condition == True)
@@ -4105,7 +4104,6 @@ void IntrAssertEnd2Args(IntrState * intr)
         CodeAssertEnd2Args(intr->cs);
         return;
     }
-
 
     if (intr->ignoring == 0)
         AssertionFailure();
@@ -4132,15 +4130,9 @@ void IntrAssertEnd3Args(IntrState * intr)
         return;
     }
 
-
     if (intr->ignoring == 0) {
         message = PopVoidObj(intr);
-        if (message != (Obj)0) {
-            if (IS_STRING_REP(message))
-                PrintString1(message);
-            else
-                PrintObj(message);
-        }
+        AssertionFailureWithMessage(message);
     }
     else
         intr->ignoring -= 2;

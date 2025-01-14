@@ -30,9 +30,11 @@ gap> function() Assert(0, 0, "message\n"); end();
 Error, Assert: <cond> must be 'true' or 'false' (not the integer 0)
 gap> function() Assert(0, true, "message\n"); end();
 gap> function() Assert(0, false, "message\n"); end();
-message
+Error, Assertion failure: message
+
 gap> function() Assert(0, false, 1); Print("\n"); end(); # message can also be any object
 1
+Error, Assertion failure
 gap> function() Assert(100, 0, "message\n"); end();
 gap> function() Assert(100, true, "message\n"); end();
 gap> function() Assert(100, false, "message\n"); end();

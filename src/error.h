@@ -383,10 +383,12 @@ Obj CALL_WITH_CATCH(Obj func, Obj args);
 /****************************************************************************
 **
 *F  AssertionFailure() . . . . . . . . . . .  trigger a GAP assertion failure
+*F  AssertionFailureWithMessage(<obj>)
 **
-**  This helper function is used by GAP's 'Assert' statement.
+**  These helper functions are used by GAP's 'Assert' statement.
 */
 void AssertionFailure(void);
+void AssertionFailureWithMessage(Obj message);
 
 
 /****************************************************************************
