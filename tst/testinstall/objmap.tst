@@ -1,4 +1,4 @@
-#@local MAPvals,a,b,c,p,x,i
+#@local MAPvals,a,b,c,p,x,i,y,keyresult,valresult
 gap> START_TEST("objmap.tst");
 gap> OBJ_MAP([]);
 OBJ_MAP([  ])
@@ -59,7 +59,7 @@ gap> CONTAINS_OBJ_MAP(b, p);
 false
 gap> x := OBJ_MAP();
 OBJ_MAP([  ])
-gap> MAPvals := 10;;
+gap> MAPvals := 5000;;
 gap> for i in [1..MAPvals] do
 > ADD_OBJ_MAP(x, i, i*10);
 > if List([1..i], z -> FIND_OBJ_MAP(x,z,-1)) <> [1..i]*10 then
@@ -92,6 +92,20 @@ gap> for i in [1..MAPvals] do
 >   Print("Invalid OBJ_MAP_VALUES");
 > fi;
 > od;
+
+#
+gap> y := OBJ_MAP([]);
+OBJ_MAP([  ])
+gap> for i in [1..MAPvals] do
+> ADD_OBJ_MAP(y, [i,[i]], [i,[i,i]]);
+> od;
+gap> GASMAN("collect");
+gap> keyresult := List([1..MAPvals], x -> [x,[x]]);;
+gap> valresult := List([1..MAPvals], x -> [x,[x,x]]);;
+gap> SortedList(OBJ_MAP_KEYS(y)) = keyresult;
+true
+gap> SortedList(OBJ_MAP_VALUES(y)) = valresult;
+true
 
 #
 gap> ADD_OBJ_MAP(fail, fail, fail);

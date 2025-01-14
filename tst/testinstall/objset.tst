@@ -1,4 +1,4 @@
-#@local a,b,c,p,setvals,x,i
+#@local a,b,c,p,setvals,x,i,y,result
 gap> START_TEST("objset.tst");
 
 # basic constructor
@@ -51,7 +51,7 @@ false
 #
 gap> x := OBJ_SET();
 OBJ_SET([  ])
-gap> setvals := 1000;;
+gap> setvals := 5000;;
 gap> for i in [1..setvals] do
 > ADD_OBJ_SET(x, i);
 > if not ForAll([1..i], z -> FIND_OBJ_SET(x, z)) then
@@ -76,6 +76,17 @@ gap> for i in [1..setvals] do
 >   Print("Invalid OBJ_SET_VALUES");
 > fi;
 > od;
+
+#
+gap> y := OBJ_SET([]);
+OBJ_SET([  ])
+gap> for i in [1..setvals] do
+> ADD_OBJ_SET(y, [i,[i]]);
+> od;
+gap> GASMAN("collect");
+gap> result := List([1..setvals], x -> [x,[x]]);;
+gap> SortedList(OBJ_SET_VALUES(y)) = result;
+true
 
 #
 gap> ADD_OBJ_SET(fail, fail);
