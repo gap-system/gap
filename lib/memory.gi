@@ -24,6 +24,9 @@ BindGlobal( "ObjWithMemory", function( slp, n, el )
     if IsMatrixObj( el ) then
       filt:= filt and IsMatrixObj;
     fi;
+    if HasBaseDomain( el ) then
+      filt:= filt and HasBaseDomain;
+    fi;
   fi;
 
   return Objectify( NewType( FamilyObj( el ), filt ),
