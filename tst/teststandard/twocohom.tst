@@ -58,6 +58,9 @@ gap> cp:=CompatiblePairs(g,mo);
 <group of size 240 with 4 generators>
 gap> Length(ExtensionRepresentatives(g,mo,cp));
 2
+gap> mo:= TrivialGModule( g, GF(3) );;
+gap> Length( Extensions( g, mo ) );
+1
 
 # New code for Pc groups
 gap> g:=AbelianGroup([2,2]);;
