@@ -2026,7 +2026,7 @@ InstallOtherMethod(Extensions,"generic method for finite groups",
 function(G,M)
 local coh;
   coh:=TwoCohomologyGeneric(G,M);
-  return List(Elements(VectorSpace(coh.module.field,coh.cohomology)),
+  return List(Elements(VectorSpace(coh.module.field,coh.cohomology,coh.zero)),
     x->FpGroupCocycle(coh,x,true:normalform));
 end);
 
