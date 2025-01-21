@@ -153,7 +153,7 @@ InstallMethod( CompositionMapping2,
 InstallMethod( IsInjective,
     "for a composition mapping",
     true,
-    [ IsCompositionMappingRep ], 0,
+    [ IsCompositionMappingRep ], SUM_FLAGS,
     function( com )
     if IsInjective( com!.map1 ) and IsInjective( com!.map2 ) then
       return true;
@@ -176,7 +176,7 @@ InstallMethod( IsInjective,
 InstallMethod( IsSingleValued,
     "for a composition mapping",
     true,
-    [ IsCompositionMappingRep ], 0,
+    [ IsCompositionMappingRep ], SUM_FLAGS,
     function( com )
     if IsSingleValued( com!.map1 ) and IsSingleValued( com!.map2 ) then
       return true;
@@ -199,7 +199,7 @@ InstallMethod( IsSingleValued,
 InstallMethod( IsSurjective,
     "for a composition mapping",
     true,
-    [ IsCompositionMappingRep ], 0,
+    [ IsCompositionMappingRep ], SUM_FLAGS,
     function( com )
     if   not IsSurjective( com!.map2 ) then
       return false;
@@ -218,7 +218,7 @@ InstallMethod( IsSurjective,
 InstallMethod( IsTotal,
     "for a composition mapping",
     true,
-    [ IsCompositionMappingRep ], 0,
+    [ IsCompositionMappingRep ], SUM_FLAGS,
     function( com )
     if not IsTotal( com!.map1 ) then
       return false;
