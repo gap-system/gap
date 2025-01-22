@@ -689,12 +689,12 @@ InstallGlobalFunction( DisplayPackageLoadingLog, function( arg )
 ##
 InstallGlobalFunction( PackageAvailabilityInfo,
     function( name, version, record, suggested, checkall )
-    local comp, loadinfo, InvalidStrongDependencies, Name, equal, pair,
+    local comp, loadinfo, Name, equal, pair,
           currversion, inforec, skip, msg, dep, currloadinfo, GAPequal,
           record_local, wght, pos, needed, test, name2, testpair;
 
     # Initialize the dependency info.
-    for comp in [ "AlreadyHandled", "Dependencies", "StrongDependencies",
+    for comp in [ "AlreadyHandled", "Dependencies",
                   "InstallationPaths", "Weights" ] do
       if not IsBound( record.( comp ) ) then
         record.( comp ):= [];
@@ -712,41 +712,6 @@ InstallGlobalFunction( PackageAvailabilityInfo,
     loadinfo.name:= name;
     loadinfo.versions:= [];
     loadinfo.comment:= "";
-
-    InvalidStrongDependencies:= function( dependencies, weights,
-                                          strong_dependencies, loadinfo )
-      local result, order, pair, cycle;
-
-      result:= false;
-      if not IsEmpty( strong_dependencies ) then
-        order:= LinearOrderByPartialWeakOrder( dependencies, weights ).cycles;
-        for pair in strong_dependencies do
-          for cycle in order do
-            if IsSubset( cycle, pair ) then
-              # This condition was imposed by some
-              # `OtherPackagesLoadedInAdvance' component.
-              LogPackageLoadingMessage( PACKAGE_INFO,
-                  [ Concatenation( "PackageAvailabilityInfo: package '",
-                        pair[1], "'" ),
-                    Concatenation( "shall be loaded before package '", name,
-                        "' but must be" ),
-                    "in the same load cycle, due to other dependencies" ],
-                  Name );
-              Append( loadinfo.comment,
-                      Concatenation( "package '", pair[1],
-                          "' shall be loaded before package '", name,
-                          "' but must be in the same load cycle, ",
-                          "due to other dependencies, " ) );
-              result:= true;
-              if not checkall then
-                return result;
-              fi;
-            fi;
-          od;
-        od;
-      fi;
-      return result;
-    end;
 
     Name:= name;
     name:= LowercaseString( name );
@@ -934,15 +899,9 @@ InstallGlobalFunction( PackageAvailabilityInfo,
       # If the GAP library is not yet loaded then assign
       # weight 0 to all packages that may be loaded before the GAP library,
       # and weight 1 to those that need the GAP library to be loaded
-      # in advance.
-      # The latter means that either another package or the GAP library
-      # itself is forced to be loaded in advance,
-      # for example because the current package has no `read.g' file.
+      # in advance because they have no `read.g' file.
       if Filename( [ Directory( inforec.InstallationPath ) ], "read.g" )
-         = fail or
-         ( not IsBound( GAPInfo.LibraryLoaded ) and
-           IsBound( dep.OtherPackagesLoadedInAdvance ) and
-           not IsEmpty( dep.OtherPackagesLoadedInAdvance ) ) then
+         = fail and not IsBound( GAPInfo.LibraryLoaded ) then
         wght:= 1;
       else
         wght:= 0;
@@ -956,12 +915,6 @@ InstallGlobalFunction( PackageAvailabilityInfo,
 
       # Check the dependencies of this package version.
       needed:= [];
-      if IsBound( dep.OtherPackagesLoadedInAdvance ) then
-        Append( record_local.StrongDependencies,
-                List( dep.OtherPackagesLoadedInAdvance,
-                      x -> [ LowercaseString( x[1] ), name ] ) );
-        Append( needed, dep.OtherPackagesLoadedInAdvance );
-      fi;
       if IsBound( dep.NeededOtherPackages ) then
         Append( needed, dep.NeededOtherPackages );
       fi;
@@ -1013,17 +966,6 @@ InstallGlobalFunction( PackageAvailabilityInfo,
         skip:= true;
       fi;
 
-      if InvalidStrongDependencies( record_local.Dependencies,
-             record_local.Weights, record_local.StrongDependencies, currloadinfo ) then
-        # This package version cannot be loaded due to conditions
-        # imposed by `OtherPackagesLoadedInAdvance' components.
-        # (Log messages are added inside the function.)
-        if not checkall then
-          continue;
-        fi;
-        skip:= true;
-      fi;
-
       # All checks for this version have been performed.
       # Go to the next installed version if some check failed.
       if skip then
@@ -1037,7 +979,6 @@ InstallGlobalFunction( PackageAvailabilityInfo,
            [ name, [ inforec.InstallationPath, inforec.Version,
                      inforec.PackageName, false ] ] );
       record.Dependencies:= record_local.Dependencies;
-      record.StrongDependencies:= record_local.StrongDependencies;
       record.AlreadyHandled:= record_local.AlreadyHandled;
       record.Weights:= record_local.Weights;
 
@@ -1059,18 +1000,9 @@ InstallGlobalFunction( PackageAvailabilityInfo,
                      suggested, checkall );
           if test <> true then
             Add( record_local.Dependencies, [ name2, name ] );
-            if IsString( test ) then
-              if InvalidStrongDependencies( record_local.Dependencies,
-                     record_local.Weights,
-                     record_local.StrongDependencies,
-                     rec( comment:= "" ) ) then
-                test:= false;
-              fi;
-            fi;
             if test <> false then
               record.InstallationPaths:= record_local.InstallationPaths;
               record.Dependencies:= record_local.Dependencies;
-              record.StrongDependencies:= record_local.StrongDependencies;
               record.AlreadyHandled:= record_local.AlreadyHandled;
               record.Weights:= record_local.Weights;
             fi;
