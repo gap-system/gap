@@ -770,12 +770,7 @@ consider package mockpkg
     comment: the AvailabilityTest function returned false, 
 
 # Try to load the package with not satisfied dependencies.
-gap> GAPInfo.PackagesInfo.mockpkg2:= [
->      rec( PackageName := "mockpkg2", Version:= "0.0",
->           AvailabilityTest:= ReturnTrue,
->           InstallationPath:= GAPInfo.PackagesInfo.gapdoc[1].InstallationPath,
->           Dependencies:= rec( OtherPackagesLoadedInAdvance:= [ [ "mockpkg", "" ] ] ) ) ];;
-gap> info.Dependencies.OtherPackagesLoadedInAdvance:= [ [ "mockpkg2", "" ] ];;
+gap> info.Dependencies.NeededOtherPackages:= [ [ "mockpkg", "=0.0" ] ];;
 gap> loadinfo:= rec();;
 gap> LoadPackage( "mockpkg" : LoadInfo:= loadinfo );
 fail
@@ -783,30 +778,20 @@ gap> loadinfo;
 rec( comment := "", name := "mockpkg", 
   versions := 
     [ 
-      rec( 
-          comment := "package 'mockpkg2' shall be loaded before package 'mockpk\
-g' but must be in the same load cycle, due to other dependencies, ", 
+      rec( comment := "", 
           dependencies := 
             [ 
-              rec( comment := "", name := "mockpkg2", 
-                  versions := 
-                    [ 
-                      rec( comment := "", 
-                          dependencies := 
-                            [ 
-                              rec( comment := "", name := "mockpkg", 
-                                  versions := [  ] ) ], version := "0.0" ) ] 
-                 ) ], version := "0.1" ) ] )
+              rec( 
+                  comment := "for package 'mockpkg', version 0.1 is assumed on \
+an outer level, but version =0.0 is required here", name := "mockpkg", 
+                  versions := [  ] ) ], version := "0.1" ) ] )
 gap> eval_loadinfo( loadinfo );;
 consider package mockpkg
   consider version 0.1:
-    comment: package 'mockpkg2' shall be loaded before package 'mockpkg' but m\
-ust be in the same load cycle, due to other dependencies, 
     dependencies:
-      consider package mockpkg2
-        consider version 0.0:
-          dependencies:
-            consider package mockpkg
+      consider package mockpkg
+        comment: for package 'mockpkg', version 0.1 is assumed on an outer lev\
+el, but version =0.0 is required here
 gap> Unbind( info.Dependencies.OtherPackagesLoadedInAdvance );
 gap> Unbind( GAPInfo.PackagesInfo.mockpkg2 );
 gap> info.Dependencies.NeededOtherPackages:= [ [ "gapdoc", "=0.0" ] ];;
