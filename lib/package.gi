@@ -896,16 +896,7 @@ InstallGlobalFunction( PackageAvailabilityInfo,
 
       record_local:= StructuralCopy( record );
 
-      # If the GAP library is not yet loaded then assign
-      # weight 0 to all packages that may be loaded before the GAP library,
-      # and weight 1 to those that need the GAP library to be loaded
-      # in advance because they have no `read.g' file.
-      if Filename( [ Directory( inforec.InstallationPath ) ], "read.g" )
-         = fail and not IsBound( GAPInfo.LibraryLoaded ) then
-        wght:= 1;
-      else
-        wght:= 0;
-      fi;
+      wght:= 1;
       pos:= PositionProperty( record_local.Weights, pair -> pair[1] = name );
       if pos = fail then
         Add( record_local.Weights, [ name, wght ] );
@@ -1721,19 +1712,6 @@ InstallGlobalFunction( LoadPackage, function( arg )
         GAPInfo.PackagesLoaded.( pkgname ):= paths[2][ pos ];
       od;
 
-      # If the weight is 1 and the GAP library is not yet loaded
-      # then load the GAP library now.
-      if order.weights[i] = 1 and not IsBound( GAPInfo.LibraryLoaded ) then
-        LogPackageLoadingMessage( PACKAGE_DEBUG,
-            [ "read the impl. part of the GAP library" ], Name );
-        ReadGapRoot( "lib/read.g" );
-        GAPInfo.LibraryLoaded:= true;
-        LoadPackage_ReadImplementationParts( Concatenation(
-            GAPInfo.delayedImplementationParts, secondrun ), false );
-        GAPInfo.delayedImplementationParts:= [];
-        secondrun:= [];
-      fi;
-
       if loadsuggested then
         msg:= "start loading needed/suggested/self packages";
       else
@@ -1783,36 +1761,29 @@ InstallGlobalFunction( LoadPackage, function( arg )
         Add( secondrun, [ info, filename ] );
       od;
 
-      if IsBound( GAPInfo.LibraryLoaded )
-         and GAPInfo.LibraryLoaded = true then
-        # Read the `read.g' files collected up to now.
-        # Afterwards show the banners.
-        # (We have delayed this until now because it uses functionality
-        # from the package GAPDoc.)
-        # Note that no banners are printed during autoloading.
-        LoadPackage_ReadImplementationParts( secondrun, banner );
-        secondrun:= [];
-      fi;
+      # Read the `read.g' files collected up to now.
+      # Afterwards show the banners.
+      # (We have delayed this until now because it uses functionality
+      # from the package GAPDoc.)
+      # Note that no banners are printed during autoloading.
+      LoadPackage_ReadImplementationParts( secondrun, banner );
+      secondrun:= [];
 
     od;
 
-    if IsBound( GAPInfo.LibraryLoaded ) then
-      # Load those package extensions whose condition is satisfied.
-      for i in [ 1 .. Length( GAPInfo.PackageExtensionsPending ) ] do
-        entry:= GAPInfo.PackageExtensionsPending[i];
-        if ForAll( entry.needed, l -> IsPackageLoaded( l[1], l[2] ) ) then
-          ReadPackage( entry.providedby, entry.filename );
-          Add( GAPInfo.PackageExtensionsLoaded, entry );
-          Unbind( GAPInfo.PackageExtensionsPending[i] );
-          LogPackageLoadingMessage( PACKAGE_DEBUG,
-              "load extension ", entry.filename,
-              " of package ", entry.providedby );
-        fi;
-      od;
-      GAPInfo.PackageExtensionsPending:= Compacted( GAPInfo.PackageExtensionsPending );
-    else
-      Append( GAPInfo.delayedImplementationParts, secondrun );
-    fi;
+    # Load those package extensions whose condition is satisfied.
+    for i in [ 1 .. Length( GAPInfo.PackageExtensionsPending ) ] do
+      entry:= GAPInfo.PackageExtensionsPending[i];
+      if ForAll( entry.needed, l -> IsPackageLoaded( l[1], l[2] ) ) then
+        ReadPackage( entry.providedby, entry.filename );
+        Add( GAPInfo.PackageExtensionsLoaded, entry );
+        Unbind( GAPInfo.PackageExtensionsPending[i] );
+        LogPackageLoadingMessage( PACKAGE_DEBUG,
+            "load extension ", entry.filename,
+            " of package ", entry.providedby );
+      fi;
+    od;
+    GAPInfo.PackageExtensionsPending:= Compacted( GAPInfo.PackageExtensionsPending );
 
     LogPackageLoadingMessage( PACKAGE_DEBUG, "return from LoadPackage",
         Name );
@@ -2040,8 +2011,6 @@ InstallGlobalFunction( AutoloadPackages, function()
     GAPInfo.PackagesInfoInitialized:= false;
     InitializePackagesInfoRecords();
 
-    GAPInfo.delayedImplementationParts:= [];
-
     # If --bare is specified, load no packages
     if GAPInfo.CommandLineOptions.bare then
       neededPackages := [];
@@ -2075,20 +2044,6 @@ InstallGlobalFunction( AutoloadPackages, function()
         PopOptions();
       fi;
     fi;
-
-    # If necessary then load the implementation part of the GAP library,
-    # and the implementation parts of the packages loaded up to now.
-    if not IsBound( GAPInfo.LibraryLoaded ) then
-      LogPackageLoadingMessage( PACKAGE_DEBUG,
-          [ "read the impl. part of the GAP library" ], "GAP" );
-      ReadGapRoot( "lib/read.g" );
-      GAPInfo.LibraryLoaded:= true;
-      GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel + 1;
-      LoadPackage_ReadImplementationParts(
-          GAPInfo.delayedImplementationParts, false );
-      GAPInfo.LoadPackageLevel:= GAPInfo.LoadPackageLevel - 1;
-    fi;
-    Unbind( GAPInfo.delayedImplementationParts );
 
     # Load suggested packages of GAP (suppressing banners).
     if   GAPInfo.CommandLineOptions.A then
