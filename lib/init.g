@@ -669,6 +669,13 @@ end );
 
 #############################################################################
 ##
+##  Load the implementation part of the GAP library.
+##
+ReadGapRoot( "lib/read.g" );
+
+
+#############################################################################
+##
 ##  Autoload packages (suppressing banners).
 ##  (If GAP was started with a workspace then the user may have given
 ##  additional directories, so more suggested packages may become available.
@@ -677,8 +684,6 @@ end );
 ##  `InstallAndCallPostRestore' because some packages may install their own
 ##  post-restore functions, and when a workspaces gets restored then these
 ##  functions must be called *before* loading new packages.)
-##
-##  Load the implementation part of the GAP library.
 ##
 ##  Load additional packages, such that their names appear in the banner.
 ##
