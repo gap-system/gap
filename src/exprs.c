@@ -40,6 +40,37 @@
 #include "hpc/aobjects.h"
 #endif
 
+struct ExprsState {
+
+/****************************************************************************
+**
+*V  PrintPrecedence  . . . . . . . . . . . . . . . . current precedence level
+**
+**  'PrintPrecedence' contains the current precedence level, i.e., an integer
+**  indicating the binding power of the currently printed operator. If one of
+**  the operands is an operation that has lower binding power it is printed
+**  in parenthesis. If the right operand has the same binding power it is put
+**  in parenthesis, since all the operations are left associative.
+**  Precedence: 14: ^; 12: mod,/,*; 10: -,+; 8: in,=; 6: not; 4: and; 2: or.
+**  This sometimes puts in superfluous parenthesis: 2 * f( (3 + 4) ), since it
+**  doesn't know that a function call adds automatically parenthesis.
+*/
+UInt PrintPrecedence;
+
+UInt OldPrintPrecedence;
+
+};
+
+static ModuleStateOffset ExprsStateOffset = -1;
+
+extern inline struct ExprsState * ExprsState(void)
+{
+    return (struct ExprsState *)StateSlotsAtOffset(ExprsStateOffset);
+}
+
+#define PrintPrecedence ExprsState()->PrintPrecedence
+#define OldPrintPrecedence ExprsState()->OldPrintPrecedence
+
 /****************************************************************************
 **
 *V  EvalExprFuncs[<type>]  . . . . . evaluator for expressions of type <type>
@@ -1224,7 +1255,10 @@ void InstallPrintExprFunc(unsigned int pos, PrintExprFunc f)
 */
 void PrintExpr(Expr expr)
 {
+    UInt oldPrec = OldPrintPrecedence = PrintPrecedence;
+    PrintPrecedence = 0;
     (*PrintExprFuncs[TNUM_EXPR(expr)])(expr);
+    PrintPrecedence = oldPrec;
 }
 
 
@@ -1244,34 +1278,6 @@ static void PrintUnknownExpr(Expr expr)
 }
 
 
-struct ExprsState {
-
-/****************************************************************************
-**
-*V  PrintPrecedence  . . . . . . . . . . . . . . . . current precedence level
-**
-**  'PrintPrecedence' contains the current precedence level, i.e., an integer
-**  indicating the binding power of the currently printed operator. If one of
-**  the operands is an operation that has lower binding power it is printed
-**  in parenthesis. If the right operand has the same binding power it is put
-**  in parenthesis, since all the operations are left associative.
-**  Precedence: 14: ^; 12: mod,/,*; 10: -,+; 8: in,=; 6: not; 4: and; 2: or.
-**  This sometimes puts in superfluous parenthesis: 2 * f( (3 + 4) ), since it
-**  doesn't know that a function call adds automatically parenthesis.
-*/
-UInt PrintPrecedence;
-
-};
-
-static ModuleStateOffset ExprsStateOffset = -1;
-
-extern inline struct ExprsState * ExprsState(void)
-{
-    return (struct ExprsState *)StateSlotsAtOffset(ExprsStateOffset);
-}
-
-#define PrintPrecedence ExprsState()->PrintPrecedence
-
 /****************************************************************************
 **
 *F  PrintNot(<expr>)  . . . . . . . . . . . . .  print a boolean not operator
@@ -1280,9 +1286,7 @@ extern inline struct ExprsState * ExprsState(void)
 */
 static void PrintNot(Expr expr)
 {
-    UInt                oldPrec;
-
-    oldPrec = PrintPrecedence;
+    UInt oldPrec = OldPrintPrecedence;
     PrintPrecedence = 6;
 
     // if necessary print the opening parenthesis
@@ -1296,8 +1300,6 @@ static void PrintNot(Expr expr)
     // if necessary print the closing parenthesis
     if ( oldPrec >= PrintPrecedence ) Pr("%2<)", 0, 0);
     else Pr("%2<", 0, 0);
-
-    PrintPrecedence = oldPrec;
 }
 
 
@@ -1310,9 +1312,7 @@ static void PrintNot(Expr expr)
 */
 static void PrintAInv(Expr expr)
 {
-    UInt                oldPrec;
-
-    oldPrec = PrintPrecedence;
+    UInt oldPrec = OldPrintPrecedence;
     PrintPrecedence = 11;
 
     // if necessary print the opening parenthesis
@@ -1332,11 +1332,10 @@ static void PrintAInv(Expr expr)
 
 static void PrintBinop(Expr expr)
 {
-    UInt                oldPrec;        // old precedence level
     const Char *        op;             // operand
     BOOL                printEqPrec = FALSE; // Print() at equal precedence
-    // remember the current precedence level
-    oldPrec = PrintPrecedence;
+
+    UInt oldPrec = OldPrintPrecedence;
 
     // select the new precedence level
     switch ( TNUM_EXPR(expr) ) {
@@ -1396,9 +1395,6 @@ static void PrintBinop(Expr expr)
         (oldPrec == PrintPrecedence && printEqPrec))
         Pr("%2<)", 0, 0);
     else Pr("%2<", 0, 0);
-
-    // restore the old precedence level
-    PrintPrecedence = oldPrec;
 }
 
 

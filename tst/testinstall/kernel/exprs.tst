@@ -59,7 +59,25 @@ function ( x )
 end
 gap> Display( x -> 2 * f( 3 + 4 ));
 function ( x )
-    return 2 * f( (3 + 4) );
+    return 2 * f( 3 + 4 );
+end
+gap> Display({}->1^(1,2,2*(4-1)));
+function (  )
+    return 1 ^ (1,2,2 * (4 - 1));
+end
+gap> Display({}->1-[1-1]);
+function (  )
+    return 1 - [ 1 - 1 ];
+end
+gap> Display(function (  )
+>     return 1 - function (  )
+>             return 1 - 1;
+>         end(  );
+> end);
+function (  )
+    return 1 - function (  )
+              return 1 - 1;
+          end(  );
 end
 
 # PrintTildeExpr, EvalTildeExpr
