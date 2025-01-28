@@ -56,14 +56,15 @@ end );
 #F  FinitePolycyclicCollector_IsConfluent( <col> )
 ##
 BindGlobal( "FinitePolycyclicCollector_IsConfluent", function( col, failed )
-    local   gens,  rods,  k,  gk,  j,  gj,  i,  gi,  r1,  r2;
+    local   gens,  rods,  k,  gk,  j,  gj,  i,  gi,  r1,  r2,  R, R1;
 
     gens := GeneratorsOfRws(col);
     rods := RelativeOrders(col);
 
     # be verbose for debugging
-    #Print( "#I  'IsConfluent' part 1\n" );
-    #R := Runtime();
+    Info( InfoTiming + InfoConfluence, 2,
+          "'IsConfluent' starting part 1" );
+    R := Runtime();  R1 := R;
 
     # consistency relations: gk * ( gj * gi ) = ( gk * gj ) * gi
     for k  in [ 1 .. Length(gens) ]  do
@@ -86,8 +87,10 @@ BindGlobal( "FinitePolycyclicCollector_IsConfluent", function( col, failed )
     od;
 
     # be verbose for debugging
-    #Print( "#I  'IsConfluent' part 2, ", Runtime()-R, "\n" );
-    #R := Runtime();
+    Info( InfoTiming + InfoConfluence, 2,
+          "'IsConfluent' part 1 took ", Runtime()-R, " ms, ",
+          "starting part 2" );
+    R := Runtime();
 
     # consistency relations: gj^ej-1 * ( gj * gi ) = ( gj^ej-1 * gj ) * gi
     for j  in [ 1 .. Length(gens) ]  do
@@ -109,8 +112,10 @@ BindGlobal( "FinitePolycyclicCollector_IsConfluent", function( col, failed )
     od;
 
     # be verbose for debugging
-    #Print( "#I  'IsConfluent' part 3, ", Runtime()-R, "\n" );
-    #R := Runtime();
+    Info( InfoTiming + InfoConfluence, 2,
+          "'IsConfluent' part 2 took ", Runtime()-R, " ms, ",
+          "starting part 3" );
+    R := Runtime();
 
     # consistency relations: gj * ( gi^ei-1 * gi ) = ( gj * gi^ei-1 ) * gi
     for j  in [ 1 .. Length( gens ) ]  do
@@ -132,8 +137,10 @@ BindGlobal( "FinitePolycyclicCollector_IsConfluent", function( col, failed )
     od;
 
     # be verbose for debugging
-    #Print( "#I  'IsConfluent' part 4, ", Runtime()-R, "\n" );
-    #R := Runtime();
+    Info( InfoTiming + InfoConfluence, 2,
+          "'IsConfluent' part 3 took ", Runtime()-R, " ms, ",
+          "starting part 4" );
+    R := Runtime();
 
     # consistency relations: gi * ( gi^ei-1 * gi ) = ( gi * gi^ei-1 ) * gi
     for i  in [ 1 .. Length( gens ) ]  do
@@ -150,7 +157,10 @@ BindGlobal( "FinitePolycyclicCollector_IsConfluent", function( col, failed )
             fi;
         fi;
     od;
-    #Print( "#I  'IsConfluent' done, ", Runtime()-R, "\n" );
+    Info( InfoTiming + InfoConfluence, 2,
+          "'IsConfluent' part 4 took, ", Runtime()-R, " ms" );
+    Info( InfoTiming + InfoConfluence, 1,
+          "'IsConfluent' took ", Runtime()-R1, " ms" );
 
     # we passed all consistency checks
     if failed = false  then
