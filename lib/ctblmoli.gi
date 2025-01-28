@@ -208,6 +208,7 @@ InstallGlobalFunction( MolienSeries, function( arg )
           chi,          # character of `tbl', optional third argument
           numers,       # list of numerators   of sum of polynomial quotients
           denoms,       # list of denominators of sum of polynomial quotients
+          R,
           x,            # indeterminate
           tblclasses,   # class lengths of `tbl'
           orders,       # representative orders of `tbl'
@@ -279,7 +280,8 @@ InstallGlobalFunction( MolienSeries, function( arg )
     # `pol' is an additive polynomial.
     numers:= [];
     denoms:= [];
-    x:= Indeterminate( Rationals );
+    R:= UnivariatePolynomialRing(Rationals);
+    x:= R.1;
     pol:= Zero( x );
 
     tblclasses:= SizesConjugacyClasses( tbl );
@@ -361,7 +363,7 @@ InstallGlobalFunction( MolienSeries, function( arg )
           # Split the summand into two summands, with denominators
           # the special factor `f' resp. the remaining factors `F'.
           f:= ( x ^ special[1] - 1 ) ^ special[2];
-          repr:= GcdRepresentation( F, f );
+          repr:= GcdRepresentation( R, F, f );
 
           # Reduce the numerators if possible.
           num:= numer * repr[1];
@@ -413,7 +415,7 @@ InstallGlobalFunction( MolienSeries, function( arg )
             # $\prod_{j>i} f_j$ is stored in `F', and $f_i$ is in `f'.
 
             # at first position $r_i$, at second position $q_i$
-            repr:= GcdRepresentation( F, f );
+            repr:= GcdRepresentation( R, F, f );
 
             # The numerator $p_i$.
             p:= q * repr[1];

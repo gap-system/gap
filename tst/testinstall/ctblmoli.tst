@@ -54,4 +54,15 @@ gap> ser = ser2;
 true
 
 #
+# MolienSeries used to hang when given an non-character as input
+# now an error is raised
+#
+gap> G:=Group((1,2,3,4,5,6,7),(5,6,7));;
+gap> MolienSeries(NaturalCharacter(G));
+( 1-z^3+z^6-z^9+z^12-z^15+z^18 ) / ( (1-z^7)*(1-z^5)*(1-z^4)*(1-z^3)^2*(1-z^2)\
+*(1-z) )
+gap> MolienSeries(-NaturalCharacter(G));
+Error, <ns> must be a subset of <R>
+
+#
 gap> STOP_TEST("ctblmoli.tst");
