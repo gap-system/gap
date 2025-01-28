@@ -114,7 +114,7 @@ BindGlobal( "FinitePolycyclicCollector_IsConfluent", function( col, failed )
     # be verbose for debugging
     Info( InfoTiming + InfoConfluence, 2,
           "'IsConfluent' part 2 took ", Runtime()-R, " ms, ",
-          "'IsConfluent' starting part 3" );
+          "starting part 3" );
     R := Runtime();
 
     # consistency relations: gj * ( gi^ei-1 * gi ) = ( gj * gi^ei-1 ) * gi
@@ -139,7 +139,7 @@ BindGlobal( "FinitePolycyclicCollector_IsConfluent", function( col, failed )
     # be verbose for debugging
     Info( InfoTiming + InfoConfluence, 2,
           "'IsConfluent' part 3 took ", Runtime()-R, " ms, ",
-          "'IsConfluent' starting part 4" );
+          "starting part 4" );
     R := Runtime();
 
     # consistency relations: gi * ( gi^ei-1 * gi ) = ( gi * gi^ei-1 ) * gi
