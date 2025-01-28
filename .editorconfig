@@ -15,8 +15,12 @@ indent_style = space
 indent_size = 4
 charset = utf-8
 
-#
+# trailing whitespace are relevant in .tst files
 [*.tst]
+trim_trailing_whitespace = false
+
+# our GAPDoc XML files may contain tests for which trailing whitespace are relevant
+[*.xml]
 trim_trailing_whitespace = false
 
 # In Makefile one must use tab indentation
