@@ -910,6 +910,12 @@ DeclareGlobalFunction( "LoadAllPackages" );
 ##  contained in the <F>PackageInfo.g</F> file at <A>pkgpath</A> instead,
 ##  such that only the version installed at <A>pkgpath</A> can be loaded
 ##  with <Ref Func="LoadPackage"/>.
+##  <P/>
+##  One should call <Ref Func="SetPackagePath"/> immediately before loading
+##  the package in question.
+##  Note that calling <Ref Func="ExtendPackageDirectories"/> or
+##  <Ref Func="ExtendRootDirectories"/> may change the available versions
+##  of the package <A>pkgname</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
