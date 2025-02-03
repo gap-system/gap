@@ -55,10 +55,25 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,clos,bas,rad;
     a:=DerivedSubgroup(G);
     if Size(a)=Size(G) then
       return [gens,[TrivialModule(Length(gens),F)]];
-    else
-      a:=MaximalAbelianQuotient(G);
+    elif IsPrimeField(F) then
+      if IsAbelian(G) then
+        if CanEasilyComputePcgs(G) then
+          # call `IrreducibleMethods` again;
+          # we assume that now another method is applicable
+          return IrreducibleModules(G, F, 1);
+        else
+          # delegate to a pc group,
+          # for which another method is available
+          a:= IsomorphismPcGroup(G);
+        fi;
+      else
+        # delegate to a proper factor group
+        a:= MaximalAbelianQuotient(G);
+      fi;
       si:=List(gens,x->ImagesRepresentative(a,x));
-      sub:=IrreducibleModules(Group(si),F,1);
+      sub:= Group(si);
+      SetIsAbelian(sub, true);
+      sub:=IrreducibleModules(sub,F,1);
       if sub[1]=si then
         return [gens,sub[2]];
       else
