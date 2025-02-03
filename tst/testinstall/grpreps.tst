@@ -16,5 +16,21 @@ gap> res2:= AbsolutelyIrreducibleModules( G2, F, 10 );;
 gap> List( res2[2], r -> [ r.field, r.dimension ] );
 [ [ GF(2), 1 ] ]
 
+# Test that the delegation between methods for 'IrreducibleModules' works.
+gap> Length( IrreducibleModules( AlternatingGroup(5), GF(3), 1 )[2] ) = 1;
+true
+gap> Length( IrreducibleModules( Group( (1,2), (1,2) ), GF(3), 1 )[2] ) = 2;
+true
+gap> Length( IrreducibleModules( Group( (1,2), (1,2) ), GF(4), 1 )[2] ) = 1;
+true
+gap> Length( IrreducibleModules( Group( (1,2,3,4,5) ), GF(4), 1 )[2] ) = 1;
+true
+gap> Length( IrreducibleModules( CyclicGroup( IsFpGroup, 2 ), GF(3), 1 )[2] ) = 2;
+true
+gap> Length( IrreducibleModules( CyclicGroup( IsFpGroup, 2 ), GF(4), 1 )[2] ) = 1;
+true
+gap> Length( IrreducibleModules( SymmetricGroup(5), GF(3), 1 )[2] ) = 2;
+true
+
 #
 gap> STOP_TEST( "grpreps.tst" );
