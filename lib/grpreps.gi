@@ -55,8 +55,8 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,clos,bas,rad;
     a:=DerivedSubgroup(G);
     if Size(a)=Size(G) then
       return [gens,[TrivialModule(Length(gens),F)]];
-    elif IsPrimeField(F) then
-      if IsAbelian(G) then
+    elif IsAbelian(G) then
+      if IsPrimeField(F) then
         if CanEasilyComputePcgs(G) then
           # call `IrreducibleMethods` again;
           # we assume that now another method is applicable
@@ -67,23 +67,27 @@ local modu, modus,gens,v,subs,sub,ser,i,j,a,si,dims,cf,mats,clos,bas,rad;
           a:= IsomorphismPcGroup(G);
         fi;
       else
-        # delegate to a proper factor group
-        a:= MaximalAbelianQuotient(G);
+        a:= IsomorphismPermGroup(G);
       fi;
-      si:=List(gens,x->ImagesRepresentative(a,x));
-      sub:= Group(si);
-      SetIsAbelian(sub, true);
-      sub:=IrreducibleModules(sub,F,1);
-      if sub[1]=si then
-        return [gens,sub[2]];
-      else
-        modu:=[];
-        for i in sub[2] do
+    else
+      # delegate to a proper factor group
+      a:= MaximalAbelianQuotient(G);
+    fi;
+    si:=List(gens,x->ImagesRepresentative(a,x));
+    sub:= Group(si);
+    SetIsAbelian(sub, true);
+    sub:= IrreducibleModules(sub,F,0);
+    if sub[1]=si then
+      return [gens, Filtered( sub[2], x -> x.dimension = 1 )];
+    else
+      modu:=[];
+      for i in sub[2] do
+        if i.dimension = 1 then
           v:=GroupHomomorphismByImages(Image(a),Group(i.generators),sub[1],i.generators);
           Add(modu,GModuleByMats(List(si,x->ImagesRepresentative(v,x)),F));
-        od;
-        return [gens,modu];
-      fi;
+        fi;
+      od;
+      return [gens,modu];
     fi;
 
   fi;

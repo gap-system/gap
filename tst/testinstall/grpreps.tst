@@ -21,11 +21,13 @@ gap> Length( IrreducibleModules( AlternatingGroup(5), GF(3), 1 )[2] ) = 1;
 true
 gap> Length( IrreducibleModules( Group( (1,2), (1,2) ), GF(3), 1 )[2] ) = 2;
 true
-gap> true; # Length( IrreducibleModules( Group( (1,2), (1,2) ), GF(4), 1 )[2] ) = 1;
+gap> Length( IrreducibleModules( Group( (1,2), (1,2) ), GF(4), 1 )[2] ) = 1;
+true
+gap> Length( IrreducibleModules( Group( (1,2,3,4,5) ), GF(4), 1 )[2] ) = 1;
 true
 gap> Length( IrreducibleModules( CyclicGroup( IsFpGroup, 2 ), GF(3), 1 )[2] ) = 2;
 true
-gap> true; # Length( IrreducibleModules( CyclicGroup( IsFpGroup, 2 ), GF(4), 1 )[2] ) = 1;
+gap> Length( IrreducibleModules( CyclicGroup( IsFpGroup, 2 ), GF(4), 1 )[2] ) = 1;
 true
 gap> Length( IrreducibleModules( SymmetricGroup(5), GF(3), 1 )[2] ) = 2;
 true
