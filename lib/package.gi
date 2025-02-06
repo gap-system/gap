@@ -1864,6 +1864,7 @@ InstallGlobalFunction( SetPackagePath, function( pkgname, pkgpath )
 InstallGlobalFunction( ExtendRootDirectories, function( rootpaths )
     local i;
 
+    rootpaths:= List( rootpaths, GAP_realpath );
     rootpaths:= Filtered( rootpaths, path -> not path in GAPInfo.RootPaths );
     if not IsEmpty( rootpaths ) then
       # 'DirectoriesLibrary' concatenates root paths with directory names.

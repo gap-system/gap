@@ -18,6 +18,7 @@
 #include "sysstr.h"
 #include "system.h"
 
+#include <limits.h>
 #include <stdlib.h>
 
 
@@ -197,13 +198,27 @@ void SySetGapRootPath(const Char * string)
         return;
     const UInt userhomelen = strlen(userhome);
     for (i = 0; i < MAX_GAP_DIRS && SyGapRootPaths[i][0]; i++) {
-        const UInt pathlen = strlen(SyGapRootPaths[i]);
+        UInt pathlen = strlen(SyGapRootPaths[i]);
         if (SyGapRootPaths[i][0] == '~' &&
             userhomelen + pathlen < sizeof(SyGapRootPaths[i])) {
             SyMemmove(SyGapRootPaths[i] + userhomelen,
                       // don't copy the ~ but the trailing '\0'
                       SyGapRootPaths[i] + 1, pathlen);
             memcpy(SyGapRootPaths[i], userhome, userhomelen);
+        }
+
+        // convert all paths to absolute paths
+        Char tempstr[GAP_PATH_MAX];
+
+        if (NULL == realpath(SyGapRootPaths[i], tempstr)) {
+            SySetErrorNo();
+        } else {
+            strxcpy(SyGapRootPaths[i], tempstr, sizeof(SyGapRootPaths[i]));
+            pathlen = strlen(SyGapRootPaths[i]);
+            if (SyGapRootPaths[i][pathlen - 1] != '/') {
+                SyGapRootPaths[i][pathlen] = '/';
+                SyGapRootPaths[i][pathlen + 1] = '\0';
+            }
         }
     }
 }
