@@ -153,6 +153,7 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
   r:=rec(parentffs:=ffs,
             rest:=rest,
             radical:=ker,
+            ker:=ker,
             pcgs:=k,
             serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
             );
@@ -185,6 +186,7 @@ local ffs,cache,rest,ker,k,r;
     r:=rec(parentffs:=ffs,
               rest:=rest,
               radical:=ker,
+              ker:=ker,
               pcgs:=k,
               serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
               );
@@ -298,6 +300,7 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom,subsz,pcimgs;
   r:=rec(parentffs:=ffs,
             rest:=rest,
             radical:=ker,
+            ker:=ker,
             pcgs:=ipcgs,
             serdepths:=List(ffs.depths,y->First([1..Length(r)],x->r[x]>=y))
             );
