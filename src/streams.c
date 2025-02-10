@@ -42,6 +42,7 @@
 
 #include <dirent.h>
 #include <errno.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -1080,6 +1081,22 @@ static Obj FuncGAP_chdir(Obj self, Obj path)
     return True;
 }
 
+/****************************************************************************
+**
+*F  FuncGAP_realpath( <self>, <path> ) . . . .  TODO
+*/
+static Obj FuncGAP_realpath(Obj self, Obj path)
+{
+    RequireStringRep(SELF_NAME, path);
+    char resolved_path[PATH_MAX];
+
+    if (NULL == realpath(CONST_CSTR_STRING(path), resolved_path)) {
+        SySetErrorNo();
+        return Fail;
+    }
+    return MakeString(resolved_path);
+}
+
 
 /****************************************************************************
 **
@@ -1716,6 +1733,7 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(IS_DIR, path),
     GVAR_FUNC_0ARGS(GAP_getcwd),
     GVAR_FUNC_1ARGS(GAP_chdir, path),
+    GVAR_FUNC_1ARGS(GAP_realpath, path),
     GVAR_FUNC_0ARGS(LastSystemError),
     GVAR_FUNC_1ARGS(IsExistingFile, filename),
     GVAR_FUNC_1ARGS(IsReadableFile, filename),
