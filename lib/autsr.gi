@@ -1561,6 +1561,7 @@ end);
 # find corresponding characteristic subgroups
 BindGlobal("AGSRMatchedCharacteristics",function(g,h)
 local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
+
   props:=function(a)
   local p,b;
 
@@ -1583,8 +1584,11 @@ local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
     return p;
   end;
 
+  # Process that G-subgroup i matches H-subgroup j. Return true if there is
+  # a problem.
   coinc:=function(i,j)
   local a,b,sa,sb,sel,p,q;
+    if pg[i]<>ph[j] then Error("matching bug");fi;
     a:=cg[i];
     b:=ch[j];
     Add(ng,a);
@@ -1595,6 +1599,7 @@ local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
     sel:=Difference([1..Length(ch)],[j]);
     ch:=ch{sel};
     ph:=ph{sel};
+    # find associated modules and further match
     sa:=AGSRModuleLayerSeries(a);
     sb:=AGSRModuleLayerSeries(b);
     if List(sa,Size)<>List(sb,Size) then return true;fi;
@@ -1605,7 +1610,8 @@ local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
         if q<>fail then return true;fi;
       elif q=fail then return true;
       else
-        if coinc(p,q) then return true;fi;
+        if pg[p]<>ph[q] # but not same properties
+         or coinc(p,q) then return true;fi;
       fi;
     od;
     return false;
@@ -1614,20 +1620,24 @@ local a,props,cg,ch,clg,clh,ng,nh,coug,couh,pg,ph,i,j,stop,coinc;
   ng:=[];
   nh:=[];
 
+  # get the characteristic subgroups
   cg:=ShallowCopy(CharacteristicSubgroups(g));
   ch:=ShallowCopy(CharacteristicSubgroups(h));
   SortBy(cg,x->-Size(x));
   SortBy(ch,x->-Size(x));
 
+  # find list of properties, tryign to match them up
   pg:=List(cg,props);
   ph:=List(ch,props);
-  if Collected(pg)<>Collected(ph) then return fail;fi;
 
   stop:=false;
   while Length(cg)>0 and not stop do
+    # test in loop as list changes
+    if Collected(pg)<>Collected(ph) then return fail;fi;
     i:=First([1..Length(pg)],x->Number(pg,y->y=pg[x])=1);
     if i<>fail then
       # found a unique one -- process
+      # because properties agree this must match
       j:=Position(ph,pg[i]);
       if coinc(i,j) then return fail;fi;
     else
