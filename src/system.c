@@ -512,7 +512,7 @@ static const struct optInfo options[] = {
   { 'o', "", storeMemory2, &SyStorMax, 1 }, // library with new interface
 #endif
   { 'p', "", toggle, &SyWindow, 0 }, // ??
-  { 'q', "", toggle, &SyQuiet, 0 }, // ??
+  { 'q', "quiet", toggle, &SyQuiet, 0 }, // ??
 #ifdef HPCGAP
   { 'S', "", toggle, &ThreadUI, 0 }, // Thread UI
   { 'Z', "", toggle, &DeadlockCheck, 0 }, // Deadlock prevention
