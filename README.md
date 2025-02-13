@@ -95,6 +95,23 @@ Afterwards you can proceed as described in `INSTALL.md`. If you are on macOS,
 we recommend that you take a look at section "GAP for macOS" of `INSTALL.md`
 for a few additional hints.
 
+### Building GAP with Docker
+
+You can build and run GAP from the latest source code using Docker. Follow these steps:
+
+**Build the Docker Image:**
+
+To build the GAP Docker image, run:
+
+    docker build -t gap .
+
+**Run GAP in a Container:**
+
+Once the image is built, you can run GAP using:
+
+    docker run --rm -it gap
+
+This will start an interactive GAP session inside the container.
 
 ## Obtaining the GAP package distribution
 
