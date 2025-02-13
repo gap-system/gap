@@ -18,13 +18,6 @@ RUN ./autogen.sh && \
     ./configure && \
     make -j$(nproc)
 
-FROM alpine:latest
-
-RUN apk add --no-cache gmp zlib
-
-WORKDIR /opt
-COPY --from=builder /opt/gap /opt/gap
-
 RUN adduser -D -g "" gapuser
 USER gapuser
 
