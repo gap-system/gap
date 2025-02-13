@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:latest AS builder
 
 RUN apk add --no-cache \
     build-base \
@@ -17,7 +17,17 @@ RUN git clone --depth=1 https://github.com/gap-system/gap.git
 WORKDIR /opt/gap
 
 RUN ./autogen.sh && \
-    ./configure && \
+    ./configure --parallel=$(nproc) && \
     make -j$(nproc)
 
-CMD ["./gap"]
+FROM alpine:latest
+
+RUN apk add --no-cache gmp zlib
+
+WORKDIR /opt/gap
+COPY --from=builder /opt/gap /opt/gap
+
+RUN adduser -D -g "" gapuser
+USER gapuser
+
+ENTRYPOINT ["./gap"]
