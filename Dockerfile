@@ -12,9 +12,7 @@ RUN apk add --no-cache \
 
 WORKDIR /opt
 
-RUN git clone --depth=1 https://github.com/gap-system/gap.git
-
-WORKDIR /opt/gap
+COPY . .
 
 RUN ./autogen.sh && \
     ./configure --parallel=$(nproc) && \
@@ -24,7 +22,7 @@ FROM alpine:latest
 
 RUN apk add --no-cache gmp zlib
 
-WORKDIR /opt/gap
+WORKDIR /opt
 COPY --from=builder /opt/gap /opt/gap
 
 RUN adduser -D -g "" gapuser
