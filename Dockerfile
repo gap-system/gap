@@ -15,7 +15,7 @@ WORKDIR /opt
 COPY . .
 
 RUN ./autogen.sh && \
-    ./configure --parallel=$(nproc) && \
+    ./configure && \
     make -j$(nproc)
 
 FROM alpine:latest
