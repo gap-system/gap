@@ -12,6 +12,7 @@
 #include "sysroots.h"
 
 #include "gaputils.h"
+#include "listfunc.h"
 #include "plist.h"
 #include "stringobj.h"
 #include "sysfiles.h"
@@ -47,8 +48,7 @@ char SyDefaultRootPath[GAP_PATH_MAX] = "./";
 **  name of a library file 'strcat( SyGapRootPaths[i], "lib/init.g" );'  must
 **  be a valid filename.
 */
-enum { MAX_GAP_DIRS = 16 };
-static Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
+Obj SyGapRootPaths;
 
 
 /****************************************************************************
@@ -62,13 +62,12 @@ static Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
 Obj SyFindGapRootFile(const Char * filename)
 {
     int len = strlen(filename);
-    for (int k = 0; k < ARRAY_SIZE(SyGapRootPaths); k++) {
-        if (SyGapRootPaths[k][0]) {
-            Obj path = MakeString(SyGapRootPaths[k]);
-            AppendCStr(path, filename, len);
-            if (SyIsReadableFile(CSTR_STRING(path)) == 0) {
-                return path;
-            }
+    int npaths = LEN_PLIST(SyGapRootPaths);
+    for (int k = 1; k <= npaths; k++) {
+        Obj path = CopyToStringRep(ELM_PLIST(SyGapRootPaths, k));
+        AppendCStr(path, filename, len);
+        if (SyIsReadableFile(CSTR_STRING(path)) == 0) {
+            return path;
         }
     }
     return 0;
@@ -95,10 +94,12 @@ Obj SyFindGapRootFile(const Char * filename)
 */
 void SySetGapRootPath(const Char * string)
 {
-    const Char * p;
-    Char *       q;
-    Int          i;
-    Int          n;
+    Int pos = 1;
+
+    if (SyGapRootPaths == 0) {
+        SyGapRootPaths = NEW_PLIST(T_PLIST_EMPTY, 0); // FIXME
+    }
+
 
     // set string to a default value if unset
     if (string == 0 || *string == 0) {
@@ -107,110 +108,79 @@ void SySetGapRootPath(const Char * string)
 
     // check if we append, prepend or overwrite.
     if (string[0] == ';') {
-        // Count the number of root directories already present.
-        n = 0;
-        while (SyGapRootPaths[n][0] != '\0')
-            n++;
+        // append
+        pos = LEN_PLIST(SyGapRootPaths) + 1;
 
         // Skip leading semicolon.
         string++;
     }
     else if (string[strlen(string) - 1] == ';') {
-        // Count the number of directories in 'string'.
-        n = 0;
-        p = string;
-        while (*p)
-            if (*p++ == ';')
-                n++;
-
-        // Find last root path.
-        for (i = 0; i < MAX_GAP_DIRS; i++)
-            if (SyGapRootPaths[i][0] == '\0')
-                break;
-        i--;
-
-#ifdef HPCGAP
-        n *= 2;    // for each root <ROOT> we also add <ROOT/hpcgap> as a root
-#endif
-
-        // Move existing root paths to the back
-        if (i + n >= MAX_GAP_DIRS)
-            return;
-        while (i >= 0) {
-            memcpy(SyGapRootPaths[i + n], SyGapRootPaths[i],
-                   sizeof(SyGapRootPaths[i + n]));
-            i--;
-        }
-
-        n = 0;
+        // prepend
     }
     else {
-        // Make sure to wipe out all possibly existing root paths
-        for (i = 0; i < MAX_GAP_DIRS; i++)
-            SyGapRootPaths[i][0] = '\0';
-        n = 0;
+        SET_LEN_PLIST(SyGapRootPaths, 0);
+        RetypeBagSM(SyGapRootPaths, T_PLIST_EMPTY);
+        // TODO: also adjust filters...
     }
 
     // unpack the argument
-    p = string;
+    const Char * p = string;
     while (*p) {
-        if (n >= MAX_GAP_DIRS)
-            return;
+        Obj path;
 
-        q = SyGapRootPaths[n];
-        while (*p && *p != ';') {
-            *q = *p++;
-
-#ifdef SYS_IS_CYGWIN32
-            // change backslash to slash for Windows
-            if (*q == '\\')
-                *q = '/';
-#endif
-
+        // locate next semicolon or string end
+        const Char * q = p;
+        while (*q && *q != ';') {
             q++;
         }
-        if (q == SyGapRootPaths[n]) {
-            strxcpy(SyGapRootPaths[n], "./", sizeof(SyGapRootPaths[n]));
+
+        if (q == p) {
+            // empty string treated as ./
+            path = MakeString("./");
+            // TODO: insert output of getcwd??
+        } else {
+            if (*p == '~') {
+                const char * userhome = getenv("HOME");
+                if (!userhome)
+                    userhome = "";
+                path = MakeString(userhome);
+                p++;
+                AppendCStr(path, p, q - p);
+            }
+            else {
+                path = MakeStringWithLen(p, q - p);
+            }
+
+            Char * r = CSTR_STRING(path);
+    #ifdef SYS_IS_CYGWIN32
+            while (*r) {
+                // change backslash to slash for Windows
+                if (*r == '\\')
+                    *r = '/';
+                r++;
+            }
+    #endif
+
+            // ensure path ends with a slash
+            r = CSTR_STRING(path) + GET_LEN_STRING(path) - 1;
+            if (*r != '/') {
+                AppendCStr(path, "/", 1);
+            }
         }
-        else if (q[-1] != '/') {
-            *q++ = '/';
-            *q = '\0';
-        }
-        else {
-            *q = '\0';
-        }
-        if (*p) {
-            p++;
-        }
-        n++;
+
+        p = *q ? q + 1 : q;
+
+        AddPlist3(SyGapRootPaths, path, pos);
+        pos++;
+
 #ifdef HPCGAP
         // for each root <ROOT> to be added, we first add <ROOT/hpcgap> as a root
-        if (n < MAX_GAP_DIRS) {
-            gap_strlcpy(SyGapRootPaths[n], SyGapRootPaths[n - 1],
-                    sizeof(SyGapRootPaths[n]));
-        }
-        strxcat(SyGapRootPaths[n - 1], "hpcgap/",
-                sizeof(SyGapRootPaths[n - 1]));
-        n++;
-#endif
-    }
+        path = CopyToStringRep(path);
+        AppendCStr(path, "hpcgap/", 7);
 
-    // replace leading tilde ~ by HOME environment variable
-    // TODO; instead of iterating over all entries each time, just
-    // do this for the new entries
-    char * userhome = getenv("HOME");
-    if (!userhome || !*userhome)
-        return;
-    const UInt userhomelen = strlen(userhome);
-    for (i = 0; i < MAX_GAP_DIRS && SyGapRootPaths[i][0]; i++) {
-        const UInt pathlen = strlen(SyGapRootPaths[i]);
-        if (SyGapRootPaths[i][0] == '~' &&
-            userhomelen + pathlen < sizeof(SyGapRootPaths[i])) {
-            SyMemmove(SyGapRootPaths[i] + userhomelen,
-                      // don't copy the ~ but the trailing '\0'
-                      SyGapRootPaths[i] + 1, pathlen);
-            memcpy(SyGapRootPaths[i], userhome, userhomelen);
-        }
+        AddPlist3(SyGapRootPaths, path, pos);
+        pos++;
+#endif
     }
 }
 
@@ -221,12 +191,5 @@ void SySetGapRootPath(const Char * string)
 */
 Obj SyGetGapRootPaths(void)
 {
-    Obj tmp = NEW_PLIST_IMM(T_PLIST, MAX_GAP_DIRS);
-    for (int i = 0; i < MAX_GAP_DIRS; i++) {
-        if (SyGapRootPaths[i][0]) {
-            PushPlist(tmp, MakeImmString(SyGapRootPaths[i]));
-        }
-    }
-    MakeImmutableNoRecurse(tmp);
-    return tmp;
+    return SyGapRootPaths;
 }
