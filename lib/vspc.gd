@@ -739,7 +739,7 @@ InstallTrueMethod( IsFinite, IsSubspacesVectorSpace );
 ##  <Attr Name="Subspaces" Arg='V[, k]'/>
 ##
 ##  <Description>
-##  Called with a finite vector space <A>v</A>,
+##  Called with a finite vector space <A>V</A>,
 ##  <Ref Attr="Subspaces"/> returns the domain of all subspaces of <A>V</A>.
 ##  <P/>
 ##  Called with <A>V</A> and a nonnegative integer <A>k</A>,
