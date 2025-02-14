@@ -25,7 +25,24 @@
 */
 extern char SyDefaultRootPath[GAP_PATH_MAX];
 
-#include <stddef.h>
+
+/****************************************************************************
+**
+*V  SyGapRootPaths  . . . . . . . . . . . . . . . . . . . array of root paths
+**
+**  'SyGapRootPaths' contains the  names   of the directories where   the GAP
+**  files are located.
+**
+**  It is modified by the command line option -l.
+**
+**  It is copied into the GAP variable 'GAPInfo.RootPaths' and used by
+**  'SyFindGapRootFile'.
+**
+**  Each entry must end  with the pathname separator, e.g. if 'init.g' is the
+**  name of a library file 'strcat( SyGapRootPaths[i], "lib/init.g" );'  must
+**  be a valid filename.
+*/
+extern Obj SyGapRootPaths;
 
 
 /****************************************************************************
