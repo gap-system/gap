@@ -208,7 +208,7 @@ void SySetGapRootPath(const Char * string)
         }
 
         // convert all paths to absolute paths
-        Char tempstr[GAP_PATH_MAX];
+        char tempstr[PATH_MAX];
 
         if (NULL == realpath(SyGapRootPaths[i], tempstr)) {
             SySetErrorNo();
