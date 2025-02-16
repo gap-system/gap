@@ -44,86 +44,72 @@
 */
 static void AddList3(Obj list, Obj obj, Int pos)
 {
-    Int                 len;
-    Int                 i;
+    Int len;
+    Int i;
     len = LEN_LIST(list);
-    if (pos == (Int) -1)
-      pos = len + 1;
-    for (i = len +1; i > pos; i--)
-      ASS_LIST(list, i, ELM_LIST(list, i-1));
-    ASS_LIST( list, pos, obj );
+    if (pos == (Int)-1)
+        pos = len + 1;
+    for (i = len + 1; i > pos; i--)
+        ASS_LIST(list, i, ELM_LIST(list, i - 1));
+    ASS_LIST(list, pos, obj);
 }
 
-void            AddList (
-    Obj                 list,
-    Obj                 obj)
+void AddList(Obj list, Obj obj)
 {
-  AddList3(list, obj, -1);
+    AddList3(list, obj, -1);
 }
 
 
-static void AddPlist3(Obj list, Obj obj, Int pos)
+void AddPlist3(Obj list, Obj obj, Int pos)
 {
-  UInt len;
+    UInt len;
 
-    if ( ! IS_PLIST_MUTABLE(list) ) {
+    if (!IS_PLIST_MUTABLE(list)) {
         ErrorMayQuit("List Assignment: <list> must be a mutable list", 0, 0);
     }
     // in order to be optimistic when building list call assignment
-    len = LEN_PLIST( list );
+    len = LEN_PLIST(list);
     if (pos == (Int)-1)
-      pos = len + 1;
-    if ( len == 0) {
-        AssPlistEmpty( list, pos, obj );
+        pos = len + 1;
+    if (len == 0) {
+        AssPlistEmpty(list, pos, obj);
         return;
     }
     if (pos <= len) {
-      GROW_PLIST(list, len+1);
-      SET_LEN_PLIST(list, len+1);
-      Obj * ptr = ADDR_OBJ(list) + pos;
-      SyMemmove(ptr + 1, ptr, sizeof(Obj) * (len - pos + 1));
+        GROW_PLIST(list, len + 1);
+        SET_LEN_PLIST(list, len + 1);
+        Obj * ptr = ADDR_OBJ(list) + pos;
+        SyMemmove(ptr + 1, ptr, sizeof(Obj) * (len - pos + 1));
     }
     ASS_LIST(list, pos, obj);
 }
 
-void            AddPlist (
-    Obj                 list,
-    Obj                 obj)
+void AddPlist(Obj list, Obj obj)
 {
-
-  AddPlist3(list, obj, -1);
+    AddPlist3(list, obj, -1);
 }
 
 static Obj AddListOper;
 
 static Obj FuncADD_LIST3(Obj self, Obj list, Obj obj, Obj pos)
 {
-    // dispatch
-  Int ipos;
-  if (pos == (Obj)0)
-    ipos = -1;
-  else if (IS_POS_INTOBJ(pos))
-    ipos = INT_INTOBJ(pos);
-  else {
-    DoOperation3Args( self, list,  obj, pos);
-    return (Obj) 0;
-  }
-  UInt tnum = TNUM_OBJ(list);
-  if ( IS_PLIST( list ) ) {
-    AddPlist3( list, obj, ipos );
-  } else if ( FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM ) {
-    AddList3( list, obj, ipos );
-#ifdef HPCGAP
-  // Only support adding to end of atomic lists
-  } else if ( tnum == T_ALIST && pos == (Obj)0 ) {
-    AddAList( list, obj );
-#endif
-  } else {
-    if (pos == 0)
-      DoOperation2Args( self, list, obj );
-    else
-      DoOperation3Args( self, list, obj, pos);
-  }
+    if (!IS_POS_INTOBJ(pos)) {
+        DoOperation3Args(self, list, obj, pos);
+        return 0;
+    }
+
+    UInt tnum = TNUM_OBJ(list);
+    if (FIRST_PLIST_TNUM <= tnum && tnum <= LAST_PLIST_TNUM) {
+        AddPlist3(list, obj, INT_INTOBJ(pos));
+        return 0;
+    }
+    else if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM) {
+        AddList3(list, obj, INT_INTOBJ(pos));
+        return 0;
+    }
+    else {
+        DoOperation3Args(self, list, obj, pos);
+    }
 
     return 0;
 }
@@ -131,8 +117,23 @@ static Obj FuncADD_LIST3(Obj self, Obj list, Obj obj, Obj pos)
 
 static Obj FuncADD_LIST(Obj self, Obj list, Obj obj)
 {
-  FuncADD_LIST3(self, list, obj, (Obj)0);
-  return (Obj) 0;
+    UInt tnum = TNUM_OBJ(list);
+    if (FIRST_PLIST_TNUM <= tnum && tnum <= LAST_PLIST_TNUM) {
+        AddPlist3(list, obj, -1);
+    }
+    else if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM) {
+        AddList3(list, obj, -1);
+    }
+#ifdef HPCGAP
+    else if (tnum == T_ALIST) {
+        AddAList(list, obj);
+    }
+#endif
+    else {
+        DoOperation2Args(self, list, obj);
+    }
+
+    return 0;
 }
 
 
