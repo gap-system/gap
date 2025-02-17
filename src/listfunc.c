@@ -60,7 +60,7 @@ void AddList(Obj list, Obj obj)
 }
 
 
-static void AddPlist3(Obj list, Obj obj, Int pos)
+void AddPlist3(Obj list, Obj obj, Int pos)
 {
     UInt len;
 
