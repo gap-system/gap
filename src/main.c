@@ -41,7 +41,7 @@ extern int realmain(int argc, const char * argv[]);
 
 static void SetupInitialGapRoot(const char * argv0)
 {
-    SySetGapRootPath(SYS_DEFAULT_PATHS);
+    gap_strlcpy(SyDefaultRootPath, SYS_DEFAULT_PATHS, sizeof(SyDefaultRootPath));
 }
 
 #else
@@ -165,7 +165,7 @@ static void SySetInitialGapRootPaths(const char * GAPExecLocation)
             strxcat(initgbuf, "lib/init.g", sizeof(initgbuf));
 
             if (SyIsReadableFile(initgbuf) == 0) {
-                SySetGapRootPath(pathbuf);
+                gap_strlcpy(SyDefaultRootPath, pathbuf, sizeof(SyDefaultRootPath));
                 // escape from loop
                 return;
             }
@@ -173,11 +173,6 @@ static void SySetInitialGapRootPaths(const char * GAPExecLocation)
             strxcat(pathbuf, "../", sizeof(pathbuf));
         }
     }
-
-    // Set GAP root path to current directory, if we have no other
-    // idea, and for backwards compatibility.
-    // Note that GAPExecLocation must always end with a slash.
-    SySetGapRootPath("./");
 }
 
 static void SetupInitialGapRoot(const char * argv0)

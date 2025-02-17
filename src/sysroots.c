@@ -23,6 +23,16 @@
 
 /****************************************************************************
 **
+*V  SyDefaultRootPath
+**
+**  Default initial root path. Default is the current directory, if we have
+**  no other idea, for backwards compatibility.
+*/
+char SyDefaultRootPath[GAP_PATH_MAX] = "./";
+
+
+/****************************************************************************
+**
 *V  SyGapRootPaths  . . . . . . . . . . . . . . . . . . . array of root paths
 **
 **  'SyGapRootPaths' contains the  names   of the directories where   the GAP
