@@ -53,28 +53,24 @@ static Char SyGapRootPaths[MAX_GAP_DIRS][GAP_PATH_MAX];
 
 /****************************************************************************
 **
-*F  SyFindGapRootFile( <filename>, <buf>, <size> ) . find file in system area
+*F  SyFindGapRootFile( <filename> ) . . . . . . . .  find file in system area
 **
-**  <buf> must point to a buffer of at least <size> characters. This function
-**  then searches for a readable file with the name <filename> in the system
-**  area. If sich a file is found then its absolute path is copied into
-**  <buf>, and <buf> is returned. If no file is found or if <buf> is not big
-**  enough, then <buf> is set to an empty string and NULL is returned.
+**  This function searches for a readable file with the name <filename> in
+**  the system area. If such a file is found then its absolute path is
+**  returned as a string object. If no file is found then NULL is returned.
 */
-Char * SyFindGapRootFile(const Char * filename, Char * buf, size_t size)
+Obj SyFindGapRootFile(const Char * filename)
 {
+    int len = strlen(filename);
     for (int k = 0; k < ARRAY_SIZE(SyGapRootPaths); k++) {
         if (SyGapRootPaths[k][0]) {
-            if (gap_strlcpy(buf, SyGapRootPaths[k], size) >= size)
-                continue;
-            if (gap_strlcat(buf, filename, size) >= size)
-                continue;
-            if (SyIsReadableFile(buf) == 0) {
-                return buf;
+            Obj path = MakeString(SyGapRootPaths[k]);
+            AppendCStr(path, filename, len);
+            if (SyIsReadableFile(CSTR_STRING(path)) == 0) {
+                return path;
             }
         }
     }
-    buf[0] = '\0';
     return 0;
 }
 
