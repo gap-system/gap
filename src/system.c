@@ -713,5 +713,7 @@ void InitRootPaths(int argc, const char * argv[])
     // second stage of command line options parsing: handle root paths
     ParseCommandLineOptions(argc, argv, 1);
 
+    SySetGapRootPath(SyDefaultRootPath);
+
     InitDotGapPath();
 }
