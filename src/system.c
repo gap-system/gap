@@ -710,10 +710,10 @@ void InitSystem(int argc, const char * argv[], BOOL handleSignals)
 
 void InitRootPaths(int argc, const char * argv[])
 {
+    SySetGapRootPath(SyDefaultRootPath);
+
     // second stage of command line options parsing: handle root paths
     ParseCommandLineOptions(argc, argv, 1);
-
-    SySetGapRootPath(SyDefaultRootPath);
 
     InitDotGapPath();
 }
