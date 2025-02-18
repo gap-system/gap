@@ -139,7 +139,17 @@ void SySetGapRootPath(const Char * string)
             path = MakeString("./");
             // TODO: insert output of getcwd??
         } else {
-            path = MakeStringWithLen(p, q - p);
+            if (*p == '~') {
+                const char * userhome = getenv("HOME");
+                if (!userhome)
+                    userhome = "";
+                path = MakeString(userhome);
+                p++;
+                AppendCStr(path, p, q - p);
+            }
+            else {
+                path = MakeStringWithLen(p, q - p);
+            }
 
             Char * r = CSTR_STRING(path);
     #ifdef SYS_IS_CYGWIN32
@@ -172,28 +182,6 @@ void SySetGapRootPath(const Char * string)
         pos++;
 #endif
     }
-
-#if 0
-// TODO: add this code back in
-
-    // replace leading tilde ~ by HOME environment variable
-    // TODO; instead of iterating over all entries each time, just
-    // do this for the new entries
-    char * userhome = getenv("HOME");
-    if (!userhome || !*userhome)
-        return;
-    const UInt userhomelen = strlen(userhome);
-    for (i = 0; i < MAX_GAP_DIRS && SyGapRootPaths[i][0]; i++) {
-        const UInt pathlen = strlen(SyGapRootPaths[i]);
-        if (SyGapRootPaths[i][0] == '~' &&
-            userhomelen + pathlen < sizeof(SyGapRootPaths[i])) {
-            SyMemmove(SyGapRootPaths[i] + userhomelen,
-                      // don't copy the ~ but the trailing '\0'
-                      SyGapRootPaths[i] + 1, pathlen);
-            memcpy(SyGapRootPaths[i], userhome, userhomelen);
-        }
-    }
-#endif
 }
 
 
