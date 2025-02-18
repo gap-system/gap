@@ -137,6 +137,7 @@ void SySetGapRootPath(const Char * string)
         if (q == p) {
             // empty string treated as ./
             path = MakeString("./");
+            // TODO: insert output of getcwd??
         } else {
             path = MakeStringWithLen(p, q - p);
 
