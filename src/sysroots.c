@@ -94,7 +94,6 @@ Obj SyFindGapRootFile(const Char * filename)
 */
 void SySetGapRootPath(const Char * string)
 {
-    Int pos;
     Int pos = 1;
 
     if (SyGapRootPaths == 0) {
