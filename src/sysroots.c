@@ -64,7 +64,7 @@ Obj SyFindGapRootFile(const Char * filename)
     int len = strlen(filename);
     int npaths = LEN_PLIST(SyGapRootPaths);
     for (int k = 1; k <= npaths; k++) {
-        Obj path = ELM_PLIST(SyGapRootPaths, k);
+        Obj path = CopyToStringRep(ELM_PLIST(SyGapRootPaths, k));
         AppendCStr(path, filename, len);
         if (SyIsReadableFile(CSTR_STRING(path)) == 0) {
             return path;
