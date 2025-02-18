@@ -1332,8 +1332,14 @@ end );
 InstallMethod( TrivialCharacter,
     "for a character table",
     [ IsNearlyCharacterTable ],
-    tbl -> Character( tbl,
-               ListWithIdenticalEntries( NrConjugacyClasses( tbl ), 1 ) ) );
+    function( tbl )
+    local chi;
+
+    chi:= Character( tbl,
+              ListWithIdenticalEntries( NrConjugacyClasses( tbl ), 1 ) );
+    SetIsIrreducibleCharacter( chi, true );
+    return chi;
+    end );
 
 
 #############################################################################

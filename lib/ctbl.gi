@@ -954,6 +954,41 @@ InstallMethod( IBr,
 
 #############################################################################
 ##
+#M  SetIrr( <tbl>, <list> ) . . . . . . . . . . . . . . for a character table
+#M  SetIrr( <G>, <list> ) . . . . . . . . . . . . . . . . . . . . for a group
+##
+##  Provide a special setter method that sets the irreducibility flag in the
+##  characters.
+##
+InstallMethod( SetIrr,
+    "set the irreducibility flag",
+    [ IsCharacterTable, IsList ],
+    function( tbl, irr )
+    local chi;
+
+    for chi in irr do
+      SetIsIrreducibleCharacter( chi, true );
+    od;
+
+    TryNextMethod();
+    end );
+
+InstallMethod( SetIrr,
+    "set the irreducibility flag",
+    [ IsGroup, IsList ],
+    function( G, irr )
+    local chi;
+
+    for chi in irr do
+      SetIsIrreducibleCharacter( chi, true );
+    od;
+
+    TryNextMethod();
+    end );
+
+
+#############################################################################
+##
 #M  LinearCharacters( <G> )
 ##
 ##  Delegate to the two-argument version, as for `Irr'.
@@ -972,7 +1007,7 @@ InstallMethod( LinearCharacters,
     "for a group, and zero",
     [ IsGroup, IsZeroCyc ],
     function( G, zero )
-    local tbl, pi, img, fus;
+    local tbl, pi, img, fus, res, chi;
 
     if HasOrdinaryCharacterTable( G ) then
       tbl:= OrdinaryCharacterTable( G );
@@ -992,8 +1027,11 @@ InstallMethod( LinearCharacters,
 # We cannot use this because the source of `pi' may be not identical with `G'!
     fus:= FusionConjugacyClasses( pi );
     tbl:= CharacterTable( G );
-    return List( Irr( img, 0 ), x -> Character( tbl, x{ fus } ) );
-#T related to `DxLinearCharacters'?
+    res:= List( Irr( img, 0 ), x -> Character( tbl, x{ fus } ) );
+    for chi in res do
+      SetIsIrreducibleCharacter( chi, true );
+    od;
+    return res;
     end );
 
 
@@ -1005,11 +1043,21 @@ InstallMethod( LinearCharacters,
     "for a group, and positive integer",
     [ IsGroup, IsPosInt ],
     function( G, p )
+    local ordt, modt, res, chi;
+
     if not IsPrimeInt( p ) then
       Error( "<p> must be a prime" );
     fi;
-    return Filtered( LinearCharacters( G, 0 ),
-                     chi -> Conductor( chi ) mod p <> 0 );
+
+    ordt:= OrdinaryCharacterTable( G );
+    modt:= BrauerTable( ordt, p );
+    res:= DuplicateFreeList(
+              RestrictedClassFunctions( LinearCharacters( ordt ), modt ) );
+
+    for chi in res do
+      SetIsIrreducibleCharacter( chi, true );
+    od;
+    return res;
     end );
 
 
@@ -1021,7 +1069,7 @@ InstallMethod( LinearCharacters,
     "for an ordinary table",
     [ IsOrdinaryTable ],
     function( ordtbl )
-    local lin, pi;
+    local lin, pi, chi;
     if HasIrr( ordtbl ) then
       return Filtered( Irr( ordtbl ), chi -> chi[1] = 1 );
     elif HasUnderlyingGroup( ordtbl ) then
@@ -1031,6 +1079,9 @@ InstallMethod( LinearCharacters,
         lin:= List( lin, lambda -> Character( ordtbl,
                   Permuted( ValuesOfClassFunction( lambda ), pi ) ) );
       fi;
+      for chi in lin do
+        SetIsIrreducibleCharacter( chi, true );
+      od;
       return lin;
     else
       TryNextMethod();
@@ -1045,9 +1096,17 @@ InstallMethod( LinearCharacters,
 InstallMethod( LinearCharacters,
     "for a Brauer table",
     [ IsBrauerTable ],
-    modtbl -> DuplicateFreeList( RestrictedClassFunctions(
+    function( modtbl )
+    local res, chi;
+
+    res:= DuplicateFreeList( RestrictedClassFunctions(
                   LinearCharacters( OrdinaryCharacterTable( modtbl ) ),
-                  modtbl ) ) );
+                  modtbl ) );
+    for chi in res do
+      SetIsIrreducibleCharacter( chi, true );
+    od;
+    return res;
+    end );
 
 
 #############################################################################

@@ -15,7 +15,7 @@
 ##  as words in generators.
 InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
   local pcgs, hom, Gab, abinv, exp, e, Ee, genexp,
-        clexps, tab, irgens, a, lin, c, res, j, i, sz;
+        clexps, tab, irgens, a, lin, c, res, j, i, sz, chi;
   if Size(G) = 1 then
     return [TrivialCharacter(G)];
   fi;
@@ -54,7 +54,9 @@ InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
   # coefficients of a linear combination of irgens
   c := 0*[1..Length(abinv)];
   for i in [1..sz] do
-    Add(res, Character(tab, Ee{((clexps * lin) mod exp)+1}));
+    chi:= Character(tab, Ee{((clexps * lin) mod exp)+1});
+    SetIsIrreducibleCharacter( chi, true );
+    Add(res, chi);
     if i < sz then
       c[1] := c[1]+1;
       lin := lin + irgens[1];
@@ -2007,7 +2009,7 @@ BindGlobal( "IrreducibleRepresentationsByBaumClausen", function( G )
       for i in [ 1 .. lg ] do
         mat:= NullMat( dim, dim, Rationals );
         for k in [ 1 .. dim ] do
-          mat[k][ rep[i].perm[k] ]:=
+          mat[ k, rep[i].perm[k] ]:=
               Ee^( rep[i].diag[ rep[i].perm[k] ] / gcd );
         od;
         images[i]:= mat;
