@@ -1,4 +1,4 @@
-#@local g,t
+#@local g,t,lin
 gap> START_TEST("ctbl.tst");
 
 # `ClassPositionsOf...' for the trivial group (which usually causes trouble)
@@ -376,6 +376,47 @@ gap> Indicator( t mod 3, 2 );
 [ 1, 1, 1, 1 ]
 gap> Indicator( t mod 2, 2 );
 [ 1, 1 ]
+
+# linear characters
+gap> lin:= LinearCharacters( SmallGroup( 24, 12 ) );;
+gap> Length( lin );
+2
+gap> ForAll( lin, HasIsIrreducibleCharacter );
+true
+gap> lin:= LinearCharacters( SymmetricGroup( 4 ) );;
+gap> Length( lin );
+2
+gap> ForAll( lin, HasIsIrreducibleCharacter );
+true
+gap> lin:= LinearCharacters( SymmetricGroup( 4 ), 2 );;
+gap> Length( lin );
+1
+gap> ForAll( lin, HasIsIrreducibleCharacter );
+true
+gap> lin:= LinearCharacters( CharacterTable( SymmetricGroup( 4 ) ) );;
+gap> Length( lin );
+2
+gap> ForAll( lin, HasIsIrreducibleCharacter );
+true
+gap> lin:= LinearCharacters( CharacterTable( SymmetricGroup( 4 ), 2 ) );;
+gap> Length( lin );
+1
+gap> ForAll( lin, HasIsIrreducibleCharacter );
+true
+
+# irreducibility flag
+gap> ForAll( Irr( SymmetricGroup( 4 ) ), HasIsIrreducibleCharacter );
+true
+gap> ForAll( Irr( SymmetricGroup( 4 ), 2 ), HasIsIrreducibleCharacter );
+true
+gap> ForAll( Irr( CharacterTable( SymmetricGroup( 4 ) ) ),
+>            HasIsIrreducibleCharacter );
+true
+gap> ForAll( Irr( CharacterTable( SymmetricGroup( 4 ), 2 ) ),
+>            HasIsIrreducibleCharacter );
+true
+gap> HasIsIrreducibleCharacter( TrivialCharacter( SymmetricGroup( 4 ) ) );
+true
 
 ##
 gap> STOP_TEST( "ctbl.tst" );
