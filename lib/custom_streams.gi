@@ -339,11 +339,8 @@ InstallMethod( PrintFormattingStatus, "output text custom",
 ##
 InstallMethod( SetPrintFormattingStatus, "output text custom",
         [IsOutputTextCustomRep and IsOutputTextStream,
-         IsBool],
+         IsObject],
         function( str, stat)
-    if stat = fail then
-        Error("Print formatting status must be true or false");
-    else
+    CheckValidPrintFormattingStatus(stat);
         str!.formatting := stat;
-    fi;
 end);
