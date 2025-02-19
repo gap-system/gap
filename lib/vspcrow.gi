@@ -757,7 +757,10 @@ InstallOtherMethod( SemiEchelonBasis,
       # but perhaps the base domain must be adjusted.
       gensi:= Immutable( List( gens, v -> ChangedBaseDomain( v, F ) ) );
     else
-      # We expect 'gens' to be a list of lists.
+      # We expect 'gens' to be a list of lists,
+      # perhaps a list of vectors over a small finite field.
+      # However, we cannot assume that the internal representation of
+      # 'gens' is nice.
       gensi:= ImmutableMatrix( F, gens );
     fi;
     SetBasisVectors( B, gensi );
@@ -887,7 +890,7 @@ local d,z;
   d:=LeftActingDomain(V);
   z:=Zero( d ) * [ 1 .. DimensionOfVectors( V ) ];
   if IsField(d) and IsFinite(d) and Size(d)<=256 then
-    z := ImmutableVector( d, z );
+    z:= MakeImmutable( Vector( d, z ) );
   fi;
   return z;
 end);
@@ -1040,6 +1043,7 @@ InstallMethod( NormedRowVectors,
     [ IsGaussianRowSpace ],
     function( V )
     local base,       # basis vectors
+          example,    # one vector which is used as an example
           elms,       # element list, result
           elms2,      # intermediate element list
           F,          # `LeftActingDomain( V )'
@@ -1063,8 +1067,9 @@ InstallMethod( NormedRowVectors,
       return [];
     fi;
 
-    elms      := [ base[1] ];
-    elms2     := [ base[1] ];
+    example   := base[1];
+    elms      := [ example ];
+    elms2     := [ example ];
     F         := LeftActingDomain( V );
     q         := Size( F );
     fieldelms := List( AsSSortedList( F ), x -> x - 1 );
@@ -1081,7 +1086,7 @@ InstallMethod( NormedRowVectors,
         toadd:= base[j+1] + i * base[j];
         for k in [ 1 .. len ] do
           v:= elms2[k] + toadd;
-          v:= ImmutableVector( q, v );
+          v:= MakeImmutable( Vector( v, example ) );
           new[ pos + k ]:= v;
         od;
         pos:= pos + len;
@@ -1875,7 +1880,7 @@ BindGlobal( "ElementNumber_ExtendedVectors", function( enum, n )
       Error( "<enum>[", n, "] must have an assigned value" );
     fi;
     n:= Concatenation( enum!.spaceEnumerator[n], [ enum!.one ] );
-    return ImmutableVector( enum!.q, n );
+    return MakeImmutable( Vector( n, enum!.exampleVector ) );
 end );
 
 BindGlobal( "NumberElement_ExtendedVectors", function( enum, elm )
@@ -1935,6 +1940,8 @@ BindGlobal( "ExtendedVectors", function( V )
                len             := Length( Zero( V ) ) + 1 ) );
 
     enum!.q:= Size( LeftActingDomain( V ) );
+    enum!.exampleVector:= ImmutableVector( enum!.q,
+                              Concatenation( Zero( V ), [ enum!.one ] ) );
     if     IsFinite( LeftActingDomain( V ) )
        and IsPrimeInt( Size( LeftActingDomain( V ) ) )
        and Size( LeftActingDomain( V ) ) < 256
@@ -1984,7 +1991,7 @@ BindGlobal( "ElementNumber_NormedRowVectors", function( T, num )
         v[ i ] := f[ num mod q + 1 ];
         num := QuoInt( num, q );
     od;
-    return ImmutableVector( q, v );
+    return MakeImmutable( Vector( v, T!.exampleVector ) );
 end );
 
 BindGlobal( "NumberElement_NormedRowVectors", function( T, elm )
@@ -2033,20 +2040,24 @@ BindGlobal( "PrintObj_NormedRowVectors", function( T )
 end );
 
 BindGlobal( "EnumeratorOfNormedRowVectors", function( V )
+    local F;
+
     if not ( IsFullRowModule( V ) and IsFinite( V ) ) then
       Error( "<V> must be a finite full row space" );
     fi;
 
+    F:= LeftActingDomain( V );
     return EnumeratorByFunctions( FamilyObj( V ), rec(
                ElementNumber   := ElementNumber_NormedRowVectors,
                NumberElement   := NumberElement_NormedRowVectors,
                Length          := Length_NormedRowVectors,
                PrintObj        := PrintObj_NormedRowVectors,
 
-               enumeratorField := Enumerator( LeftActingDomain( V ) ),
+               enumeratorField := Enumerator( F ),
                domain          := V,
                dimension       := Dimension( V ),
-               one             := One( LeftActingDomain( V ) ) ) );
+               exampleVector   := ImmutableVector( F, Zero( V ) ),
+               one             := One( F ) ) );
 end );
 
 
