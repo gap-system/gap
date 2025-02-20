@@ -140,4 +140,10 @@ gap> IsomorphismFpGroupByGeneratorsNC( Group( (1,2) ), [], "F" );
 Error, <emptygens> does not generate <G>
 
 #
+gap> F:= FreeGroup( 1 );;
+gap> G:= F / [ F.1^2 ];;
+gap> Length( ConjugacyClasses( G ) );
+2
+
+#
 gap> STOP_TEST( "grpfp.tst" );

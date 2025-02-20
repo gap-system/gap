@@ -422,6 +422,7 @@ function(G)
   fi;
 end);
 
+RedispatchOnCondition( ConjugacyClasses, true, [ IsGroup ], [ IsFinite ], 0 );
 
 DEFAULT_CLASS_ORBIT_LIMIT:=500;
 InstallGlobalFunction(ConjugacyClassesForSmallGroup,function(G)
