@@ -16,7 +16,7 @@
 #F  PerfGrpLoad(<size>)  force loading of secondary files, return index
 ##
 InstallGlobalFunction( PerfGrpLoad, function(sz)
-local p,pos,name,libname;
+local p,pos,name,file;
   if PERFRec=fail then
     ReadGrp("perf0.grp");
   fi;
@@ -36,22 +36,20 @@ local p,pos,name,libname;
     p:=12+p;
   fi;
   name:=Concatenation("perf",String(p),".grp");
-  libname := SHALLOW_COPY_OBJ( "grp" );
-  APPEND_LIST_INTR( libname, "/" );
-  APPEND_LIST_INTR( libname, name );
-  while not READ_GAP_ROOT( libname ) do
+  file:=Filename( DirectoriesLibrary( "grp" ), name );
+  while file = fail do
     Error("\n\n",
     "For reasons of size, the perfect groups library for orders >10^6 is\n",
     "not distributed fully by default. To access the group requested, get\n",
     "the file ",name," from\n",
     "https://github.com/hulpke/extraperfect\n",
-    "and put it in the `grp` subdirectory of your GAP installation. Then",
+    "and put it in the `grp` subdirectory of a GAP root path. Then",
     " type \n\nreturn;\n\n",
     "to continue in this GAP session ",
     "(which will read in the file).\n\n\n");
+    file:=Filename( DirectoriesLibrary( "grp" ), name );
   od;
-
-  ReadGrp(name);
+  Read(file);
   return pos;
 end );
 
