@@ -5857,3 +5857,47 @@ InstallMethod( IndependentGeneratorsOfAbelianGroup,
   IndependentGeneratorsOfMaximalAbelianQuotientOfFpGroup );
 
 BindGlobal( "TRIVIAL_FP_GROUP", FreeGroup(0) / [] );
+
+
+#############################################################################
+##
+#M  ConjugacyClasses( <G> ) . . . . . . . .  for f.p. groups (error messages)
+##
+##  For an FpGroup that does not have the 'IsFinite' flag,
+##  we do not want that calling 'ConjugacyClasses' triggers a call of
+##  'IsFinite',
+##  see the introduction of the Chapter "Finitely Presented Groups"
+##  in the Reference Manual.
+##
+InstallMethod( ConjugacyClasses,
+  "throw an error for f.p. groups without HasIsFinite",
+  [ IsSubgroupFpGroup ],
+  function( G )
+  if HasIsFinite( G ) then
+    if IsFinite( G ) then
+      # Something went wrong, we should not get here.
+      ErrorNoReturn( "there should be a higher ranked method" );
+    else
+      # We can at least give a better message than "no method found".
+      ErrorNoReturn( "the f.p. group <G> is not finite" );
+    fi;
+  fi;
+
+  while not ( HasIsFinite( G ) and IsFinite( G ) ) do
+    if HasIsFinite( G ) then
+      ErrorNoReturn( "the f.p. group <G> is not finite" );
+    fi;
+    Error( "the f.p. group <G> does not know whether it is finite,\n",
+           "no 'ConjugacyClasses' method is available for such groups,\n",
+           "see the introduction to Chapter \"Finitely Presented Groups\"\n",
+           "in the Reference Manual for the background.\n",
+           "Perhaps you want to replace <G> by a group of another type.\n",
+           "If you want to continue with the given <G> then\n",
+           "you can call 'IsFinite( G );' and then enter 'return;'" );
+  od;
+  if HasIsFinite( G ) and IsFinite( G ) then
+    # The type of 'G' has changed since we entered the method,
+    # it is safe to call the operation again.
+    return ConjugacyClasses( G );
+  fi;
+end );
