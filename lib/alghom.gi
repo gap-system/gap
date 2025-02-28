@@ -66,9 +66,9 @@ InstallMethod( AlgebraGeneralMappingByImages,
           filter,
           i,basic;
 
-    # Handle the case that `gens' is a basis or empty.
+    # Handle the case that `gens' is empty.
     # We can form a left module general mapping directly.
-    if IsBasis( gens ) or IsEmpty( gens ) then
+    if IsEmpty( gens ) then
 
       map:= LeftModuleGeneralMappingByImages( S, R, gens, imgs );
       SetIsAlgebraGeneralMapping( map, true );
@@ -327,6 +327,7 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
     A:=MappingGeneratorsImages(alg_gen_map);
     origgenerators := A[1];
     origgenimages  := A[2];
+    A:= Source( alg_gen_map );
 
     if IsBasis( origgenerators ) then
 
@@ -337,8 +338,6 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
 
       generators := ShallowCopy( origgenerators );
       genimages  := ShallowCopy( origgenimages );
-
-      A:= Source( alg_gen_map );
 
       left:= not (    ( HasIsAssociative( A ) and IsAssociative( A ) )
                    or ( HasIsLieAlgebra( A ) and IsLieAlgebra( A ) ) );
@@ -402,6 +401,8 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
       # pairs we obtain below, but rather only those that are not linearly
       # dependent on the already known pairs.
       len := Length( generators );
+      generators:= ShallowCopy( generators );
+      genimages:= ShallowCopy( genimages );
       for i in [ 1 .. len ] do
         for j in [ 1 .. len ] do
           Add( generators, generators[i] * generators[j] );
