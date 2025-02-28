@@ -101,4 +101,15 @@ gap> Q:=R/id;
 <ring with 1 generator>
 gap> Elements(Q);
 [ 0*q1, q1, 2*q1, 3*q1, 4*q1, 5*q1, 6*q1, -q1 ]
+
+# bugfix
+gap> A:= Rationals;;  b:= Basis( A );;
+gap> b = [ 1 ];
+true
+gap> AlgebraHomomorphismByImages( A, A, [ 1 ], [ 2 ] );
+fail
+gap> AlgebraHomomorphismByImages( A, A, b, [ 2 ] );
+fail
+
+#
 gap> STOP_TEST("alghom.tst");
