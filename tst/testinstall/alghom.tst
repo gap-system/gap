@@ -110,6 +110,11 @@ gap> AlgebraHomomorphismByImages( A, A, [ 1 ], [ 2 ] );
 fail
 gap> AlgebraHomomorphismByImages( A, A, b, [ 2 ] );
 fail
+gap> map:= AlgebraHomomorphismByImages( A, A, b, [ 1 ] );;
+gap> IsAlgebraGeneralMappingByImagesDefaultRep( map );
+true
+gap> IsLinearGeneralMappingByImagesDefaultRep( map );
+false
 
 #
 gap> STOP_TEST("alghom.tst");
