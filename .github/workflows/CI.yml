@@ -331,7 +331,7 @@ jobs:
         run: make bootstrap-pkg-minimal
 
       - name: Run tests in VM
-        uses: uraimo/run-on-arch-action@v2
+        uses: uraimo/run-on-arch-action@v3
         with:
           arch: s390x
           distro: ubuntu22.04
