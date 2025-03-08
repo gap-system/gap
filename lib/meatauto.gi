@@ -797,7 +797,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
               uu:=uu - z * u[l];
             fi;
           od;
-      c:=ImmutableVector(F,c);
+          c:=ImmutableVector(F,c);
 
           # Note: at this point, <x> has been reduced modulo the
           # semi-ech basis <U> union <v>, and that
@@ -1248,7 +1248,7 @@ local base, i,n;
   fi;
   # the easy options have run out
 
-  # Last case, both modules are idecomposable but not necessarily irreducible.
+  # Last case, both modules are indecomposable but not necessarily irreducible.
   # In this case, compute Hom and look for isom in the basis.
 
   base:=SMTX.BasisModuleHomomorphisms(M1, M2);
