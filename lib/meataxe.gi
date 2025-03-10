@@ -742,7 +742,7 @@ end;
 ##
 #F  SMTX.InducedActionFactorModuleWithBasis( module, sub )
 ##
-# FIXME: this function is never used and documented. Keep it or remove it?
+# FIXME: this function is never used and undocumented. Keep it or remove it?
 SMTX.InducedActionFactorModuleWithBasis:=function(module,sub)
 local ans, qmodule;
 
@@ -822,7 +822,7 @@ end;
 #F  SMTX.InducedActionSubMatrixNB( mat, sub ) . . . . construct submodule
 ##
 ##  as InducedActionSubmoduleNB but for a matrix.
-# FIXME: this function is never used and documented. Keep it or remove it?
+# FIXME: this function is never used and undocumented. Keep it or remove it?
 SMTX.InducedActionSubMatrixNB:=function( mat, sub )
 local module, ans;
 
@@ -842,7 +842,7 @@ local module, ans;
 end;
 
 # Ditto, but allowing also unnormed modules
-# FIXME: this function is never used and documented. Keep it or remove it?
+# FIXME: this function is never used and undocumented. Keep it or remove it?
 SMTX.InducedActionSubMatrix:=function(mat,sub)
 local nb, module, ans;
 
