@@ -1433,8 +1433,8 @@ end);
 
 # compute a change of basis that exhibits the matrix algebra
 # defined by the basis 'matalg' in triangular form.
-BindGlobal("SMTX_NilpotentBasis",function (matalg)
-local decompose, field, Y, mats, newbase;
+BindGlobal("SMTX_NilpotentBasis",function (matalg,field)
+local decompose, Y, mats, newbase;
 
   decompose := function ( m, b )
   local n, subs, vs, vsi,rep, newm,j,ran;
@@ -1476,8 +1476,6 @@ local decompose, field, Y, mats, newbase;
 
   # return empty list if empty matrix list
   if Length(matalg) = 0 then return []; fi;
-
-  field := DefaultField(matalg[1][1]);
 
   Y   := [];
 
@@ -1562,7 +1560,7 @@ BindGlobal("SMTX_ModuleAutomorphisms",function(m)
     # of the endomorphism algebra as a circle group
     nilbase:=SMTX.BasisEndomorphismsRadical(h[i].component[2]);
     if Length(nilbase)>0 then
-      nilbase:=SMTX_NilpotentBasis(nilbase);
+      nilbase:=SMTX_NilpotentBasis(nilbase,f);
       nilbase:=nilbase[2]^-1*nilbase[1]*nilbase[2];
     fi;
     a:=(Size(f)^Length(nilbase))^(r^2);
