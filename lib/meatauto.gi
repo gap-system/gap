@@ -559,8 +559,8 @@ local n, m, zero, ech, k, i, j, found, l;
   # copy the list to avoid destroying the original list
   gens:=List(gens,i->List(i,ShallowCopy));
 
-  n:=Length(gens[1]);
-  m:=Length(gens[1][1]);
+  n:=NrRows(gens[1]);
+  m:=NrCols(gens[1]);
   zero:=Zero(F);
 
   ech:=[];
@@ -570,7 +570,7 @@ local n, m, zero, ech, k, i, j, found, l;
     i:=1; j:=1;
     found:=false;
     while not found and i <= n do
-      if (gens[k][i][j] <> zero) then
+      if (gens[k][i,j] <> zero) then
         found:=true;
       else
         j:=j + 1;
@@ -586,12 +586,12 @@ local n, m, zero, ech, k, i, j, found, l;
       Add(ech, [i,j]);
 
       # First normalise the [i,j] position to 1
-      gens[k]:=gens[k] / gens[k][i][j];
+      gens[k]:=gens[k] / gens[k][i,j];
 
       # Now zero position [i,j] in all further generators
       for l in [k+1..Length(gens)] do
-        if (gens[l][i][j] <> zero) then
-          gens[l]:=gens[l] - gens[k] * gens[l][i][j];
+        if (gens[l][i,j] <> zero) then
+          gens[l]:=gens[l] - gens[k] * gens[l][i,j];
         fi;
       od;
       k:=k + 1;
@@ -992,8 +992,8 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
 
     for i in [1..nildim] do
       r:=echelon[nilech[i]][1]; c:=echelon[nilech[i]][2];
-      if a[r][c] <> zero then
-        a:=a - a[r][c] * nilbase[i] / nilbase[i][r][c];
+      if a[r,c] <> zero then
+        a:=a - a[r,c] * nilbase[i] / nilbase[i][r,c];
       fi;
     od;
 
@@ -1002,7 +1002,7 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
     while not done and k <= Length(remain) do
       l:=remain[k];
       r:=echelon[l][1]; c:=echelon[l][2];
-      if a[r][c] <> zero then
+      if a[r,c] <> zero then
         done:=true;
       else
         k:=k + 1;
@@ -1381,7 +1381,7 @@ BindGlobal("SMTX_EcheloniseNilpotentMatAlg",function (matalg, F)
 local zero, n, flags, base, ech, k, diff, i, j, found, l;
 
   zero:=Zero(F);
-  n := Length(matalg[1][1]);
+  n := NrCols(matalg[1]);
   flags := NullMat(n,n);
 
   base := matalg;
@@ -1393,8 +1393,8 @@ local zero, n, flags, base, ech, k, diff, i, j, found, l;
     i := 2; j := i - diff;
     found := false;
     while not found and diff < n do
-      if (base[k][i][j] <> zero) and
-        (flags[i][j] = 0) then
+      if (base[k][i,j] <> zero) and
+        (flags[i,j] = 0) then
         found := true;
       else
         i := i + 1;
@@ -1413,12 +1413,12 @@ local zero, n, flags, base, ech, k, diff, i, j, found, l;
       Add(ech, [i,j]);
 
       # First normalise the [i,j] position to 1
-      base[k] := base[k] / base[k][i][j];
+      base[k] := base[k] / base[k][i,j];
 
       # Now zero position [i,j] in all other basis elements
       for l in [1..Length(base)] do
-        if (l <> k) and (base[l][i][j] <> zero) then
-          base[l] := base[l] - base[k] * base[l][i][j];
+        if (l <> k) and (base[l][i,j] <> zero) then
+          base[l] := base[l] - base[k] * base[l][i,j];
         fi;
       od;
       k := k + 1;
@@ -1445,7 +1445,7 @@ local decompose, field, Y, mats, newbase;
       Append(Y, b);
     else
 
-      n := Length(m[1][1]);
+      n := NrCols(m[1]);
 
       # find the intersection of the nullspaces
       subs:=NullspaceMat(m[1]);
@@ -1481,7 +1481,7 @@ local decompose, field, Y, mats, newbase;
 
   Y   := [];
 
-  decompose( matalg, IdentityMat(Length(matalg[1][1]), field));
+  decompose( matalg, IdentityMat(NrCols(matalg[1]), field));
   #
   # Y is the change of basis matrix
 
