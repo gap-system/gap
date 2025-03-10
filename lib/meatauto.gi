@@ -191,38 +191,16 @@ local n, weights, mat, vec, ReduceRow, t,
   od;
 end);
 
-BindGlobal("SMTX_NewEqns",function (arg)
-local X, n, F, V, eqns;
-
-  if Length(arg) <2 then
-    Error("NewEqns(dim, field) or NewEqns(X, V)");
-  fi;
-
-  if IsInt(arg[1]) then
-    X := false;
-    n := arg[1];
-    F := arg[2];
-  else
-    X := arg[1];
-    V := arg[2];
-    n := Length(X[1]);
-    F := Field(X[1][1]); # Note: prime field only
-  fi;
-
-  eqns := rec();
-  eqns.dim := n;              # number of variables
-  eqns.field := F;            # field over which the equation hold
-  eqns.mat := [];             # left-hand sides of system
-  eqns.weights := [];         # echelon weights for lhs matrix
-  eqns.vec := [];             # right-hand sides of system
-  eqns.failed := false;         # flag to indicate inconsistent system
-  eqns.index := [];           # index for row ordering
-
-  if IsMatrix(X) then
-    SMTX_AddEqns(eqns, X, V);
-  fi;
-
-  return eqns;
+BindGlobal("SMTX_NewEqns",function (dim, field)
+  return rec(
+    dim := dim,         # number of variables
+    field := field,     # field over which the equation hold
+    mat := [],          # left-hand sides of system
+    weights := [],      # echelon weights for lhs matrix
+    vec := [],          # right-hand sides of system
+    failed := false,    # flag to indicate inconsistent system
+    index := [],        # index for row ordering
+  );
 end);
 
 BindGlobal("SMTX_KillAbovePivotsEqns",function (eqns)
