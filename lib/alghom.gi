@@ -590,16 +590,6 @@ InstallMethod( PreImagesRepresentative,
                                     elm );
     end );
 
-InstallMethod( PreImagesRepresentative,
-    "for algebra g.m.b.i. knowing inverse, and element",
-    FamRangeEqFamElm,
-    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep
-      and HasInverseGeneralMapping,
-      IsObject ],
-    function( map, elm )
-    return ImagesRepresentative( InverseGeneralMapping(map), elm );
-    end );
-
 
 #############################################################################
 ##
@@ -652,7 +642,7 @@ InstallMethod( CompositionMapping2,
 #M  CompositionMapping2( <map2>, map1> )  for algebra hom. & algebra g.m.b.i.
 ##
 InstallMethod( CompositionMapping2,
-    "for left module hom. and algebra g.m.b.i.",
+    "for algebra hom. and algebra g.m.b.i.",
     FamSource1EqFamRange2,
     [ IsAlgebraHomomorphism,
           IsAlgebraGeneralMapping
@@ -664,20 +654,19 @@ InstallMethod( CompositionMapping2,
           mapi1,mapi2;
 
     mapi1:=MappingGeneratorsImages(map1);
-    mapi2:=MappingGeneratorsImages(map2);
     # Compute images for the generators of `map1'.
-    if     IsAlgebraGeneralMappingByImagesDefaultRep( map2 )
-       and mapi1[2]=mapi2[1] then
-
-      gens      := mapi1[1];
-      genimages := mapi2[2];
-
+    gens:= mapi1[1];
+    if IsAlgebraGeneralMappingByImagesDefaultRep( map2 ) then
+      mapi2:= MappingGeneratorsImages( map2 );
+      if mapi1[2] = mapi2[1] then
+        genimages:= mapi2[2];
+      else
+        genimages:= List( mapi1[2],
+                          v -> ImagesRepresentative( map2, v ) );
+      fi;
     else
-
-      gens:= mapi1[1];
       genimages:= List( mapi1[2],
                         v -> ImagesRepresentative( map2, v ) );
-
     fi;
 
     # Construct the linear general mapping.

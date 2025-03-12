@@ -901,7 +901,9 @@ InstallMethod( InverseGeneralMapping,
 InstallMethod( IsSingleValued,
     "for an inverse mapping",
     true,
-    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 0,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ],
+    {} -> RankFilter( RespectsAddition and RespectsAdditiveInverses )
+          - RankFilter( IsInverseGeneralMappingRep ) + 1,
     inv -> IsInjective( InverseGeneralMapping( inv ) ) );
 
 
@@ -912,7 +914,9 @@ InstallMethod( IsSingleValued,
 InstallMethod( IsInjective,
     "for an inverse mapping",
     true,
-    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 0,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ],
+    {} -> RankFilter( RespectsAddition and RespectsAdditiveInverses )
+          - RankFilter( IsInverseGeneralMappingRep ) + 1,
     inv -> IsSingleValued( InverseGeneralMapping( inv ) ) );
 
 
@@ -923,7 +927,9 @@ InstallMethod( IsInjective,
 InstallMethod( IsSurjective,
     "for an inverse mapping",
     true,
-    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 0,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ],
+    {} -> RankFilter( RespectsAddition and RespectsAdditiveInverses )
+          - RankFilter( IsInverseGeneralMappingRep ) + 1,
     inv -> IsTotal( InverseGeneralMapping( inv ) ) );
 
 
@@ -934,7 +940,9 @@ InstallMethod( IsSurjective,
 InstallMethod( IsTotal,
     "for an inverse mapping",
     true,
-    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 0,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ],
+    {} -> RankFilter( RespectsAddition and RespectsAdditiveInverses )
+          - RankFilter( IsInverseGeneralMappingRep ) + 1,
     inv -> IsSurjective( InverseGeneralMapping( inv ) ) );
 
 
@@ -1027,7 +1035,7 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  ImagesSet( <invmap>, <coll> ) . . . .  for inverse mapping and collection
+#M  ImagesRepresentative( <invmap>, <coll> )  . .  for inv. mapping and coll.
 ##
 InstallMethod( ImagesRepresentative,
     "for an inverse mapping and an element",
