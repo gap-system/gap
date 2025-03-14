@@ -980,7 +980,7 @@ end);
 BindGlobal("ProperModuleDecomp",function (M)
 local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
       echelon, nildim, p, maxorder, maxa, nilbase, nilech, cnt, remain,
-      coeffs, a, rk, order, fit, pos, newa, lastdim, i;
+      coeffs, a, rk, order, fit, pos, newa, lastdim, i, fac, f;
 
   # Check whether we have found the indecomposability proof. That is,
   # see whether our regular element generates a subalgebra which
@@ -1125,7 +1125,20 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
         else
           cnt:=cnt + 1;
         fi;
-      else
+
+        # if the minimal polynomial is not irreducible, pick any non-trivial
+        # proper factor from it and evaluate the result at a; the resulting
+        # matrix will be non-zero and non-regular, giving us a chance to find
+        # a splitting in the next step
+        fac := Factors(MinimalPolynomialMatrixNC( F, a, 1 ));
+        if Length(fac) > 1 then # not irreducible?
+          f := Set(fac)[1]; # pick factor with minimal degree
+          a := f(a);
+          rk := RankMat(a);
+        fi;
+      fi;
+
+      if rk < n then
         fit:=FittingSplitModule(a,rk,F);
         if fit<>fail then
           return fit;
