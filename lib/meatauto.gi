@@ -191,38 +191,16 @@ local n, weights, mat, vec, ReduceRow, t,
   od;
 end);
 
-BindGlobal("SMTX_NewEqns",function (arg)
-local X, n, F, V, eqns;
-
-  if Length(arg) <2 then
-    Error("NewEqns(dim, field) or NewEqns(X, V)");
-  fi;
-
-  if IsInt(arg[1]) then
-    X := false;
-    n := arg[1];
-    F := arg[2];
-  else
-    X := arg[1];
-    V := arg[2];
-    n := Length(X[1]);
-    F := Field(X[1][1]); # Note: prime field only
-  fi;
-
-  eqns := rec();
-  eqns.dim := n;              # number of variables
-  eqns.field := F;            # field over which the equation hold
-  eqns.mat := [];             # left-hand sides of system
-  eqns.weights := [];         # echelon weights for lhs matrix
-  eqns.vec := [];             # right-hand sides of system
-  eqns.failed := false;         # flag to indicate inconsistent system
-  eqns.index := [];           # index for row ordering
-
-  if IsMatrix(X) then
-    SMTX_AddEqns(eqns, X, V);
-  fi;
-
-  return eqns;
+BindGlobal("SMTX_NewEqns",function (dim, field)
+  return rec(
+    dim := dim,         # number of variables
+    field := field,     # field over which the equation hold
+    mat := [],          # left-hand sides of system
+    weights := [],      # echelon weights for lhs matrix
+    vec := [],          # right-hand sides of system
+    failed := false,    # flag to indicate inconsistent system
+    index := [],        # index for row ordering
+  );
 end);
 
 BindGlobal("SMTX_KillAbovePivotsEqns",function (eqns)
@@ -338,6 +316,7 @@ local n, coeffs, x, zero, z, i;
         coeffs[i]:=z;
       fi;
     od;
+    ConvertToVectorRep(coeffs);
   fi;
 
   if mode=1 then
@@ -579,10 +558,10 @@ local n, m, zero, ech, k, i, j, found, l;
     return [ [], [] ];
   fi;
   # copy the list to avoid destroying the original list
-  gens:=List(gens,i->List(i,ShallowCopy));
+  gens:=List(gens,MutableCopyMatrix);
 
-  n:=Length(gens[1]);
-  m:=Length(gens[1][1]);
+  n:=NrRows(gens[1]);
+  m:=NrCols(gens[1]);
   zero:=Zero(F);
 
   ech:=[];
@@ -592,7 +571,7 @@ local n, m, zero, ech, k, i, j, found, l;
     i:=1; j:=1;
     found:=false;
     while not found and i <= n do
-      if (gens[k][i][j] <> zero) then
+      if (gens[k][i,j] <> zero) then
         found:=true;
       else
         j:=j + 1;
@@ -608,12 +587,12 @@ local n, m, zero, ech, k, i, j, found, l;
       Add(ech, [i,j]);
 
       # First normalise the [i,j] position to 1
-      gens[k]:=gens[k] / gens[k][i][j];
+      gens[k]:=gens[k] / gens[k][i,j];
 
       # Now zero position [i,j] in all further generators
       for l in [k+1..Length(gens)] do
-        if (gens[l][i][j] <> zero) then
-          gens[l]:=gens[l] - gens[k] * gens[l][i][j];
+        if (gens[l][i,j] <> zero) then
+          gens[l]:=gens[l] - gens[k] * gens[l][i,j];
         fi;
       od;
       k:=k + 1;
@@ -700,6 +679,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
     ans:=SpinHomFindVector(work);
     v0:=ans[1];
     M:=ans[2];
+    ConvertToMatrixRep(M);
 
     # find residue of <v0> modulo current submodule <U>
     x:=EchResidueCoeffs(U, echu, v0,2);
@@ -776,6 +756,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
           # difference between <v0^m> and <uu> in <U>.
           x:=v[i] * gV[j];
           m:=ag;
+          ConvertToMatrixRep(m);
           uu:=u[i] * gV[j];
 
           ret:=EchResidueCoeffs(U, echu, x,3);
@@ -823,6 +804,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
             uu:=v[i] * gV[j] - s1;
 
             X:=NullMat(t, nw, F);
+            ConvertToMatrixRep(X);
             for l in [1..Length(v)] do
               if c[l] <> zero then
                 if Length(X) > 0 then
@@ -1014,8 +996,8 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
 
     for i in [1..nildim] do
       r:=echelon[nilech[i]][1]; c:=echelon[nilech[i]][2];
-      if a[r][c] <> zero then
-        a:=a - a[r][c] * nilbase[i] / nilbase[i][r][c];
+      if a[r,c] <> zero then
+        a:=a - a[r,c] * nilbase[i] / nilbase[i][r,c];
       fi;
     od;
 
@@ -1024,7 +1006,7 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
     while not done and k <= Length(remain) do
       l:=remain[k];
       r:=echelon[l][1]; c:=echelon[l][2];
-      if a[r][c] <> zero then
+      if a[r,c] <> zero then
         done:=true;
       else
         k:=k + 1;
@@ -1171,7 +1153,7 @@ end);
 
 
 BindGlobal("SMTX_Indecomposition",function(m)
-local n, F, stack, i, d, d2, md, b, endo, sel, e1, e2;
+local n, F, stack, i, d, d2, md, b, binv, endo, sel, e1, e2;
   if not IsBound(m.indecomposition) then
     n:=m.dimension;
     F:=m.field;
@@ -1189,9 +1171,10 @@ local n, F, stack, i, d, d2, md, b, endo, sel, e1, e2;
         Assert(1,ForAll(md,i->i<>fail));
         # Translate endomorphism rings
         b:=Concatenation(d[1],d[2]); # local new basis
+        binv := b^-1;
         # basechange
         endo:=List(stack[i][2].basisModuleEndomorphisms,
-                   i->b*i/b);
+                   mat->b*mat*binv);
         sel:=[1..Length(d[1])];
         e1:=List(endo,i->i{sel}{sel});
         e1:=SMTX_EcheloniseMats(e1,F)[1];
@@ -1385,7 +1368,7 @@ BindGlobal("SMTX_EcheloniseNilpotentMatAlg",function (matalg, F)
 local zero, n, flags, base, ech, k, diff, i, j, found, l;
 
   zero:=Zero(F);
-  n := Length(matalg[1][1]);
+  n := NrCols(matalg[1]);
   flags := NullMat(n,n);
 
   base := matalg;
@@ -1397,8 +1380,8 @@ local zero, n, flags, base, ech, k, diff, i, j, found, l;
     i := 2; j := i - diff;
     found := false;
     while not found and diff < n do
-      if (base[k][i][j] <> zero) and
-        (flags[i][j] = 0) then
+      if (base[k][i,j] <> zero) and
+        (flags[i,j] = 0) then
         found := true;
       else
         i := i + 1;
@@ -1417,12 +1400,12 @@ local zero, n, flags, base, ech, k, diff, i, j, found, l;
       Add(ech, [i,j]);
 
       # First normalise the [i,j] position to 1
-      base[k] := base[k] / base[k][i][j];
+      base[k] := base[k] / base[k][i,j];
 
       # Now zero position [i,j] in all other basis elements
       for l in [1..Length(base)] do
-        if (l <> k) and (base[l][i][j] <> zero) then
-          base[l] := base[l] - base[k] * base[l][i][j];
+        if (l <> k) and (base[l][i,j] <> zero) then
+          base[l] := base[l] - base[k] * base[l][i,j];
         fi;
       od;
       k := k + 1;
@@ -1437,8 +1420,8 @@ end);
 
 # compute a change of basis that exhibits the matrix algebra
 # defined by the basis 'matalg' in triangular form.
-BindGlobal("SMTX_NilpotentBasis",function (matalg)
-local decompose, field, Y, mats, newbase;
+BindGlobal("SMTX_NilpotentBasis",function (matalg,field)
+local decompose, Y, mats, newbase;
 
   decompose := function ( m, b )
   local n, subs, vs, vsi,rep, newm,j,ran;
@@ -1449,7 +1432,7 @@ local decompose, field, Y, mats, newbase;
       Append(Y, b);
     else
 
-      n := Length(m[1][1]);
+      n := NrCols(m[1]);
 
       # find the intersection of the nullspaces
       subs:=NullspaceMat(m[1]);
@@ -1481,11 +1464,9 @@ local decompose, field, Y, mats, newbase;
   # return empty list if empty matrix list
   if Length(matalg) = 0 then return []; fi;
 
-  field := DefaultField(matalg[1][1]);
-
   Y   := [];
 
-  decompose( matalg, IdentityMat(Length(matalg[1][1]), field));
+  decompose( matalg, IdentityMat(NrCols(matalg[1]), field));
   #
   # Y is the change of basis matrix
 
@@ -1566,7 +1547,7 @@ BindGlobal("SMTX_ModuleAutomorphisms",function(m)
     # of the endomorphism algebra as a circle group
     nilbase:=SMTX.BasisEndomorphismsRadical(h[i].component[2]);
     if Length(nilbase)>0 then
-      nilbase:=SMTX_NilpotentBasis(nilbase);
+      nilbase:=SMTX_NilpotentBasis(nilbase,f);
       nilbase:=nilbase[2]^-1*nilbase[1]*nilbase[2];
     fi;
     a:=(Size(f)^Length(nilbase))^(r^2);
