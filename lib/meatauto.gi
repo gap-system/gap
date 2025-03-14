@@ -1171,7 +1171,7 @@ end);
 
 
 BindGlobal("SMTX_Indecomposition",function(m)
-local n, F, stack, i, d, d2, md, b, endo, sel, e1, e2;
+local n, F, stack, i, d, d2, md, b, binv, endo, sel, e1, e2;
   if not IsBound(m.indecomposition) then
     n:=m.dimension;
     F:=m.field;
@@ -1189,9 +1189,10 @@ local n, F, stack, i, d, d2, md, b, endo, sel, e1, e2;
         Assert(1,ForAll(md,i->i<>fail));
         # Translate endomorphism rings
         b:=Concatenation(d[1],d[2]); # local new basis
+        binv := b^-1;
         # basechange
         endo:=List(stack[i][2].basisModuleEndomorphisms,
-                   i->b*i/b);
+                   mat->b*mat*binv);
         sel:=[1..Length(d[1])];
         e1:=List(endo,i->i{sel}{sel});
         e1:=SMTX_EcheloniseMats(e1,F)[1];
