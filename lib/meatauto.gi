@@ -316,6 +316,7 @@ local n, coeffs, x, zero, z, i;
         coeffs[i]:=z;
       fi;
     od;
+    ConvertToVectorRep(coeffs);
   fi;
 
   if mode=1 then
@@ -557,7 +558,7 @@ local n, m, zero, ech, k, i, j, found, l;
     return [ [], [] ];
   fi;
   # copy the list to avoid destroying the original list
-  gens:=List(gens,i->List(i,ShallowCopy));
+  gens:=ShallowCopy(gens);
 
   n:=NrRows(gens[1]);
   m:=NrCols(gens[1]);
@@ -678,6 +679,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
     ans:=SpinHomFindVector(work);
     v0:=ans[1];
     M:=ans[2];
+    ConvertToMatrixRep(M);
 
     # find residue of <v0> modulo current submodule <U>
     x:=EchResidueCoeffs(U, echu, v0,2);
@@ -754,6 +756,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
           # difference between <v0^m> and <uu> in <U>.
           x:=v[i] * gV[j];
           m:=ag;
+          ConvertToMatrixRep(m);
           uu:=u[i] * gV[j];
 
           ret:=EchResidueCoeffs(U, echu, x,3);
@@ -801,6 +804,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
             uu:=v[i] * gV[j] - s1;
 
             X:=NullMat(t, nw, F);
+            ConvertToMatrixRep(X);
             for l in [1..Length(v)] do
               if c[l] <> zero then
                 if Length(X) > 0 then
