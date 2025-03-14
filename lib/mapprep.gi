@@ -900,10 +900,8 @@ InstallMethod( InverseGeneralMapping,
 ##
 InstallMethod( IsSingleValued,
     "for an inverse mapping",
-    true,
     [ IsGeneralMapping and IsInverseGeneralMappingRep ],
-    {} -> RankFilter( RespectsAddition and RespectsAdditiveInverses )
-          - RankFilter( IsInverseGeneralMappingRep ) + 1,
+    SUM_FLAGS,
     inv -> IsInjective( InverseGeneralMapping( inv ) ) );
 
 
@@ -913,10 +911,8 @@ InstallMethod( IsSingleValued,
 ##
 InstallMethod( IsInjective,
     "for an inverse mapping",
-    true,
     [ IsGeneralMapping and IsInverseGeneralMappingRep ],
-    {} -> RankFilter( RespectsAddition and RespectsAdditiveInverses )
-          - RankFilter( IsInverseGeneralMappingRep ) + 1,
+    SUM_FLAGS,
     inv -> IsSingleValued( InverseGeneralMapping( inv ) ) );
 
 
@@ -926,10 +922,8 @@ InstallMethod( IsInjective,
 ##
 InstallMethod( IsSurjective,
     "for an inverse mapping",
-    true,
     [ IsGeneralMapping and IsInverseGeneralMappingRep ],
-    {} -> RankFilter( RespectsAddition and RespectsAdditiveInverses )
-          - RankFilter( IsInverseGeneralMappingRep ) + 1,
+    SUM_FLAGS,
     inv -> IsTotal( InverseGeneralMapping( inv ) ) );
 
 
@@ -939,10 +933,8 @@ InstallMethod( IsSurjective,
 ##
 InstallMethod( IsTotal,
     "for an inverse mapping",
-    true,
     [ IsGeneralMapping and IsInverseGeneralMappingRep ],
-    {} -> RankFilter( RespectsAddition and RespectsAdditiveInverses )
-          - RankFilter( IsInverseGeneralMappingRep ) + 1,
+    SUM_FLAGS,
     inv -> IsSurjective( InverseGeneralMapping( inv ) ) );
 
 
