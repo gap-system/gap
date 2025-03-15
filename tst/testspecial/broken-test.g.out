@@ -38,6 +38,30 @@ ParseTestInput( full, opts.ignoreComments, fnam ) at GAPROOT/lib/test.gi:LINE ca
  called from read-eval loop at *stdin*:2
 type 'quit;' to quit to outer loop
 brk> quit;
+gap> Test("broken-test-7.tst", rec(width := 800));
+Error, Invalid test file: #@elif after #@else at broken-test-7.tst:7 at GAPROOT/lib/test.gi:LINE called from
+testError( "Invalid test file: #@elif after #@else" ); at GAPROOT/lib/test.gi:LINE called from
+ParseTestInput( full, opts.ignoreComments, fnam ) at GAPROOT/lib/test.gi:LINE called from
+<function "Test">( <arguments> )
+ called from read-eval loop at *stdin*:2
+type 'quit;' to quit to outer loop
+brk> quit;
+gap> Test("broken-test-8.tst", rec(width := 800));
+Error, Invalid test file: #@elif without #@if at broken-test-8.tst:1 at GAPROOT/lib/test.gi:LINE called from
+testError( "Invalid test file: #@elif without #@if" ); at GAPROOT/lib/test.gi:LINE called from
+ParseTestInput( full, opts.ignoreComments, fnam ) at GAPROOT/lib/test.gi:LINE called from
+<function "Test">( <arguments> )
+ called from read-eval loop at *stdin*:2
+type 'quit;' to quit to outer loop
+brk> quit;
+gap> Test("broken-test-9.tst", rec(width := 800));
+Error, Invalid test file: Unterminated #@if at broken-test-9.tst:7 at GAPROOT/lib/test.gi:LINE called from
+testError( "Invalid test file: Unterminated #@if" ); at GAPROOT/lib/test.gi:LINE called from
+ParseTestInput( full, opts.ignoreComments, fnam ) at GAPROOT/lib/test.gi:LINE called from
+<function "Test">( <arguments> )
+ called from read-eval loop at *stdin*:2
+type 'quit;' to quit to outer loop
+brk> quit;
 gap> Test("invalidtestfile.tst", rec(width := 800));
 Error, Invalid test file at invalidtestfile.tst:7 at GAPROOT/lib/test.gi:LINE called from
 testError( "Invalid test file" ); at GAPROOT/lib/test.gi:LINE called from
