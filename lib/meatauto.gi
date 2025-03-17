@@ -1126,11 +1126,16 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
           cnt:=cnt + 1;
         fi;
 
-        # if the minimal polynomial is not irreducible, pick any non-trivial
-        # proper factor from it and evaluate the result at a; the resulting
-        # matrix will be non-zero and non-regular, giving us a chance to find
-        # a splitting in the next step
-        fac := Factors(MinimalPolynomialMatrixNC( F, a, 1 ));
+        # Compute the order polynomial of `a` with respect to a random vector,
+        # i.e., a (cheap) factor of the minimal polynomial, then pick the any
+        # factor of that (in practice, we pick one with minimal degree for
+        # efficiency) and evaluate it at a. The resulting matrix will be
+        # non-zero and non-regular, giving us a chance to find a splitting in
+        # the next step.
+        coeffs:=List([1..n], x -> Random(F));
+        ConvertToVectorRep(coeffs);
+        f := Matrix_OrderPolynomialSameField( F, a, coeffs, 1 );
+        fac := Factors(f);
         if Length(fac) > 1 then # not irreducible?
           f := Set(fac)[1]; # pick factor with minimal degree
           a := f(a);
