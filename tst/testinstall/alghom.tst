@@ -1,5 +1,5 @@
 #@local A,B,C,ExampleRing,I,O,P,Q,R,T,b,coker,f,gensq,id,ker,m1,m2,map,pols
-#@local pr,q,x,y,z
+#@local pr,q,x,y,z,inv,gens,map1,map2
 gap> START_TEST("alghom.tst");
 
 # An example of a non-homomorphism which is total but not single-valued.
@@ -102,7 +102,7 @@ gap> Q:=R/id;
 gap> Elements(Q);
 [ 0*q1, q1, 2*q1, 3*q1, 4*q1, 5*q1, 6*q1, -q1 ]
 
-# bugfix
+# bugfixes
 gap> A:= Rationals;;  b:= Basis( A );;
 gap> b = [ 1 ];
 true
@@ -115,6 +115,16 @@ gap> IsAlgebraGeneralMappingByImagesDefaultRep( map );
 true
 gap> IsLinearGeneralMappingByImagesDefaultRep( map );
 false
+gap> inv:= InverseGeneralMapping( map );;
+gap> PreImagesRepresentative( map, 1 );
+1
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [ 1/2, 1, 2/3, 2 ] );
+gap> A:= AlgebraByStructureConstants( Rationals, T );;
+gap> gens:= GeneratorsOfAlgebra( A );;
+gap> map1:= AlgebraHomomorphismByImages( A, A, gens, gens );;
+gap> map2:= AlgebraHomomorphismByFunction( A, A, x -> 2*x );;
+gap> CompositionMapping2( map2, map1 );;  # no error
 
 #
 gap> STOP_TEST("alghom.tst");
