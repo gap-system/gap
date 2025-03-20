@@ -42,6 +42,8 @@
 ##       outside the blocks in `blocks'.
 ##  \enditems
 ##
+##  Currently matrices in `IsBlockMatrixRep' are *not* in `IsMatrixObj'.
+##
 DeclareRepresentation( "IsBlockMatrixRep",
     IsComponentObjectRep,
     [ "blocks", "zero", "nrb", "ncb", "rpb", "cpb" ] );
@@ -157,6 +159,16 @@ InstallMethod( NrCols,
     "for an ordinary block matrix",
     [ IsOrdinaryMatrix and IsBlockMatrixRep ],
     blockmat -> blockmat!.ncb * blockmat!.cpb );
+
+
+#############################################################################
+##
+#M  BaseDomain( <blockmat> )  . . . . . . . . . . . . . .  for a block matrix
+##
+InstallMethod( BaseDomain,
+    "for an ordinary block matrix",
+    [ IsOrdinaryMatrix and IsBlockMatrixRep ],
+    blockmat -> BaseDomain( Concatenation( List( blockmat!.blocks, x -> x[3] ) ) ) );
 
 
 #############################################################################
@@ -639,6 +651,18 @@ InstallOtherMethod( OneOp,
       TryNextMethod();
     fi;
     end );
+
+
+#############################################################################
+##
+#M  ZeroOp( <bm> ) . . . . . . . . . . . . . . . . . . . . for a block matrix
+##
+InstallOtherMethod( ZeroOp,
+    "for an ordinary block matrix",
+    [ IsOrdinaryMatrix and IsBlockMatrixRep ], 3,
+    # being a block matrix is better than being a small list
+    bm -> BlockMatrix( [],
+                       bm!.nrb, bm!.ncb, bm!.rpb, bm!.cpb, bm!.zero ) );
 
 
 #############################################################################

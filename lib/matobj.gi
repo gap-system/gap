@@ -250,6 +250,14 @@ InstallOtherMethod( Vector,
     { v, example } -> v );
 
 
+# The following method is used when one deals with matrices that are not in
+# 'IsPlistep' but whose 'CompatibleVectorFilter' is 'IsPlistRep'.
+# Currently 'IsBlockMatrixRep' is an example for that.
+InstallTagBasedMethod( NewVector,
+  IsPlistRep,
+  { filter, basedomain, list } -> Unpack( list ) );
+
+
 #############################################################################
 ##
 #M  ZeroVector( <filt>, <R>, <len> )

@@ -1,4 +1,4 @@
-#@local dim,m1,m2,m3,mm,o1,o2,p1,p2,p3,p4,tmp,z
+#@local dim,m1,m2,m3,mm,o1,o2,p1,p2,p3,p4,tmp,z,R,G,H,reps,ind,img
 gap> START_TEST("matblock.tst");
 gap> m1 := BlockMatrix( [ [ 1, 1, [[1,1],[0,1]] ],
 >                         [ 1, 3, [[1,0],[0,1]] ],
@@ -60,6 +60,8 @@ gap> p4:= TransposedMat( m1 ) * m2;
 gap> p3 = p4;
 false
 gap> z = AsBlockMatrix( z, 2, 2 );
+true
+gap> Zero( m3 ) = z;
 true
 gap> MatrixByBlockMatrix( m1 );
 [ [ 1, 1, 0, 0, 1, 0, 0, 0 ], [ 0, 1, 0, 0, 0, 1, 0, 0 ], 
@@ -123,6 +125,29 @@ gap> m1[1,2] := 5;
 Error, Matrix Assignment: <mat> must be a mutable matrix (not a component obje\
 ct)
 #@fi
+
+# Matrix operations for block matrices
+gap> R:= BaseDomain( MatrixByBlockMatrix( m2 ) );;
+gap> R = BaseDomain( m2 );
+true
+gap> TraceMatrix( m2 ) = TraceMatrix( MatrixByBlockMatrix( m2 ) );
+true
+gap> Determinant( m2 ) = Determinant( MatrixByBlockMatrix( m2 ) );
+true
+gap> MinimalPolynomial( R, m2 ) = MinimalPolynomial( R, MatrixByBlockMatrix( m2 ) );
+true
+
+# Groups that consist of block matrices
+gap> G:= SmallGroup( 24, 12 );;
+gap> H:= SylowSubgroup( G, 2 );;
+gap> reps:= IrreducibleRepresentations( H );;
+gap> ind:= InducedRepresentation( reps[5], G );;
+gap> img:= Image( ind );
+<matrix group with 4 generators>
+gap> ForAll( GeneratorsOfGroup( img ), IsBlockMatrixRep );
+true
+gap> Size( img );
+24
 
 #
 gap> STOP_TEST("matblock.tst");
