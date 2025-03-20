@@ -451,7 +451,7 @@ gap> Last([0..3]);
 3
 gap> Last(Enumerator(Integers));
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `LastOp' on 1 arguments
+Error, no 1st choice method found for `LastOp' on 1 argument
 gap> Last([0,1,2,3], IsFFE);
 fail
 gap> Last([0..3], IsFFE);
