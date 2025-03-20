@@ -31,16 +31,38 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
         ErrorNoReturn(s, " at ", fnam, ":", i);
     fi;
   end;
-  checkifelsefi := l -> ForAny(["#@if","#@else","#@fi"], x -> StartsWith(l, x));
-  # Set to true if we find a #@if, #@else or #@fi. Used to check these do not
-  # occur in the middle of a single input/output test block.
+  checkifelsefi := l -> ForAny(["#@if","#@elif","#@else","#@fi"],
+                               x -> StartsWith(l, x));
+  # Set to true if we find a #@if, #@elif, #@else or #@fi. Used to check these
+  # do not occur in the middle of a single input/output test block.
   foundcmd := false;
-  # skipstate represents the current status of '#@if/#@else/#@fi'
+  # skipstate represents the current status of '#@if/#@elif/#@else/#@fi'
   # 0: not in a '#@if'
-  # 1: in a #@if with a true condition
-  #-1: in a #@if with a false condition
-  # 2: in the #@else of a #@if with a false condition
-  #-2: in the #@else of a #@if with a true condition
+  # 1: in the first #@if or #@elif with a true condition
+  #-1: in an #@if or #@elif with a false condition before the first #@if or
+  #    @elif with a true condition
+  # 2: in the #@else when all #@if and #@elif had a false condition
+  #-2: in the #@else after an #@if or #@elif with a true condition
+  #-3: in an #@elif after an #@if or #@elif with a true condition
+  # The transition table can be written as
+  # state | keyword | condition | new state
+  #  0    | #@if    | true      |  1
+  #  0    | #@if    | false     | -1
+  #  1    | #@elif  | true      | -3
+  #  1    | #@elif  | false     | -3
+  #  1    | #@else  |           | -2
+  #  1    | #@fi    |           |  0
+  # -1    | #@elif  | true      |  1
+  # -1    | #@elif  | false     | -1
+  # -1    | #@else  |           |  2
+  # -1    | #@fi    |           |  0
+  #  2    | #@fi    |           |  0
+  # -2    | #@fi    |           |  0
+  # -3    | #@elif  | true      | -3
+  # -3    | #@elif  | false     | -3
+  # -3    | #@else  |           | -2
+  # -3    | #@fi    |           |  0
+  # Any other transition is a syntax error.
   # Code is executed whenever skipstate >= 0
   skipstate := 0;
   while i <= Length(lines) do
@@ -56,14 +78,33 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
             else
                 skipstate := -1;
             fi;
+        elif StartsWith(lines[i], "#@elif") then
+            if skipstate = 0 then
+                testError("Invalid test file: #@elif without #@if");
+            elif skipstate = 2 or skipstate = -2 then
+                testError("Invalid test file: #@elif after #@else");
+            elif skipstate = -1 then
+                # No ifs or elifs were true, check condition
+                if EvalString(lines[i]{[7..Length(lines[i])]}) then
+                    skipstate := 1;
+                else
+                    skipstate := -1;
+                fi;
+            else
+                # Some if or elif was true, dont evaluate elif
+                skipstate := -3;
+            fi;
         elif StartsWith(lines[i], "#@else") then
             if skipstate = 0 then
                 testError("Invalid test file: #@else without #@if");
-            elif AbsoluteValue(skipstate) = 2 then
+            elif skipstate = 2 or skipstate = -2 then
                 testError("Invalid test file: two #@else");
+            elif skipstate = -1 then
+                # No ifs or elifs were true, evaluate else
+                skipstate := 2;
             else
-                # change 1 -> -2, -1 -> 2
-                skipstate := skipstate * -2;
+                # Some if or elif was true, dont evaluate else
+                skipstate := -2;
             fi;
         else # Must be #@fi
             if skipstate = 0 then
@@ -373,20 +414,29 @@ end);
 ##  <Item>Execute the code <C>gapcode</C> before any test in the input is run.
 ##  This allows defining global variables when using <C>#@local</C>.
 ##  </Item>
-##  <Mark>#@if EXPR ...  [#@else] ... #@fi</Mark>
+##  <Mark>#@if EXPR ... {#@elif EXPR ...} [#@else ...] #@fi</Mark>
 ##  <Item>A <C>#@if</C> allows to conditionally skip parts of the test input depending on
 ##  the value of a boolean expression. The exact behavior is done as follows:
 ##  <P/>
-##  If the &GAP; expression <C>EXPR</C> evaluates to <K>true</K>, then the lines after the
-##  <C>#@if</C> are used until either a <C>#@else</C> or <C>#@fi</C> is
-##  reached. If a <C>#@else</C> is present then the code after the <C>#@else</C>
-##  is used if and only if <C>EXPR</C> evaluated to <K>false</K>. Finally,
-##  once <C>#fi</C> is reached, evaluation continues normally.
+##  If the first &GAP; expression <C>EXPR</C> evaluates to <K>true</K>, then the lines after
+##  the <C>#@if</C> are used until either a <C>#@elif</C>, <C>#@else</C> or <C>#@fi</C> is
+##  reached.
+##  If an <C>#@elif</C> is present, then the lines after <C>#@elif</C> are used if and
+##  only if its <C>EXPR</C> evaluates to <K>true</K> and all previous <C>#@if</C> and
+##  <C>#@elif</C> clauses had expressions evaluating to <K>false</K>. In this case
+##  the lines after <C>#@elif</C> are used until either a <C>#@elif</C>, <C>#@else</C> or
+##  <C>#@fi</C> is reached.
+##  If an <C>#@else</C> is present then the lines after the <C>#@else</C>
+##  are used if and only if <C>EXPR</C> evaluated to <K>false</K> in all <C>#@if</C> and
+##  <C>#@elif</C> clauses. Finally, once <C>#fi</C> is reached, evaluation continues
+##  normally.
 ##  <P/>
-##  Note that <C>EXPR</C> is evaluated after all <C>#@exec</C> lines have been
+##  Note that each <C>EXPR</C> is evaluated after all <C>#@exec</C> lines have been
 ##  executed but before any tests are run. Thus, it cannot depend on test
 ##  results or packages loaded in tests, but it can depend on packages loaded
 ##  via <C>#@exec</C>.
+##  <P/>
+##  In addition <C>#@if</C> clauses cannot be nested within each other.
 ##  <P/>
 ##  As an example, the &GAP; test suite contains the test file
 ##  <C>tst/testinstall/pperm.tst</C> which contains the lines:
