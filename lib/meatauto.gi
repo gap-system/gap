@@ -1377,31 +1377,28 @@ SMTX.IsomorphismModules:=SMTX_IsomorphismModules;
 # running down diagonals below the main diagonal:
 #   [2,1], [3,2], [4,3], ..., [3,1], [4,2], ..., [n-1,1], [n, 2], [n,1]
 BindGlobal("SMTX_EcheloniseNilpotentMatAlg",function (matalg, F)
-local zero, n, flags, base, ech, k, diff, i, j, found, l;
+local zero, n, base, ech, k, diff, i, j, found, l;
 
   zero:=Zero(F);
   n := NrCols(matalg[1]);
-  flags := NullMat(n,n);
 
-  base := matalg;
+  base := ShallowCopy(matalg);
   ech := [];
   k := 1;
 
   while k <= Length(base) do
     diff := 1;
-    i := 2; j := i - diff;
+    i := 2;
     found := false;
     while not found and diff < n do
-      if (base[k][i,j] <> zero) and
-        (flags[i,j] = 0) then
+      j := i - diff;
+      if base[k][i,j] <> zero then
         found := true;
       else
         i := i + 1;
-        j := i - diff;
-        if (i > n) then
+        if i > n then
           diff := diff + 1;
           i := diff + 1;
-          j := i - diff;
         fi;
       fi;
     od;
