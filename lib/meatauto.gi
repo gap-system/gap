@@ -980,7 +980,7 @@ end);
 BindGlobal("ProperModuleDecomp",function (M)
 local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
       echelon, nildim, p, maxorder, maxa, nilbase, nilech, cnt, remain,
-      coeffs, a, rk, order, fit, pos, newa, lastdim, i;
+      coeffs, a, rk, order, fit, pos, newa, lastdim, i, fac, f;
 
   # Check whether we have found the indecomposability proof. That is,
   # see whether our regular element generates a subalgebra which
@@ -1125,7 +1125,25 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
         else
           cnt:=cnt + 1;
         fi;
-      else
+
+        # Compute the order polynomial of `a` with respect to a random vector,
+        # i.e., a (cheap) factor of the minimal polynomial, then pick the any
+        # factor of that (in practice, we pick one with minimal degree for
+        # efficiency) and evaluate it at a. The resulting matrix will be
+        # non-zero and non-regular, giving us a chance to find a splitting in
+        # the next step.
+        coeffs:=List([1..n], x -> Random(F));
+        ConvertToVectorRep(coeffs);
+        f := Matrix_OrderPolynomialSameField( F, a, coeffs, 1 );
+        fac := Factors(f);
+        if Length(fac) > 1 then # not irreducible?
+          f := Set(fac)[1]; # pick factor with minimal degree
+          a := f(a);
+          rk := RankMat(a);
+        fi;
+      fi;
+
+      if rk < n then
         fit:=FittingSplitModule(a,rk,F);
         if fit<>fail then
           return fit;
