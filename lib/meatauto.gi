@@ -263,7 +263,7 @@ local mat, n, one, zerovec, i, k, nullspace, row;
     for i  in [ NrRows(mat)+1 .. n ]  do
       Add(mat, zerovec);
     od;
-    ConvertToMatrixRep(mat);
+    ConvertToMatrixRep(mat, e.field);
   fi;
 
   # The following comment from NullspaceMat:
@@ -673,7 +673,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
     ans:=SpinHomFindVector(work);
     v0:=ans[1];
     M:=ans[2];
-    ConvertToMatrixRep(M);
+    ConvertToMatrixRep(M, F);
 
     # find residue of <v0> modulo current submodule <U>
     x:=EchResidueCoeffs(U, echu, v0,2);
@@ -750,7 +750,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
           # difference between <v0^m> and <uu> in <U>.
           x:=v[i] * gV[j];
           m:=ag;
-          ConvertToMatrixRep(m);
+          ConvertToMatrixRep(m, F);
           uu:=u[i] * gV[j];
 
           ret:=EchResidueCoeffs(U, echu, x,3);
@@ -798,7 +798,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
             uu:=v[i] * gV[j] - s1;
 
             X:=NullMat(t, nw, F);
-            ConvertToMatrixRep(X);
+            ConvertToMatrixRep(X, F);
             for l in [1..Length(v)] do
               if c[l] <> zero then
                 if Length(X) > 0 then
@@ -850,6 +850,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
       hom:=[];
       if r > 0 then
         Uhom:=NullMat(r, nw, F);
+        ConvertToMatrixRep(Uhom, F);
         for l in [1..s] do
           if ans[i][l] <> zero then
             Uhom:=Uhom + ans[i][l] * homs[l];
