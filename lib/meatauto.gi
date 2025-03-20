@@ -552,7 +552,7 @@ end);
 # If a linearly dependent set of elements is supplied, this
 # routine will trim it down to a basis.
 BindGlobal("SMTX_EcheloniseMats",function (gens, F)
-local n, m, zero, ech, k, i, j, found, l;
+local n, m, zero, ech, k, i, j, l;
 
   if Length(gens) = 0 then
     return [ [], [] ];
@@ -568,20 +568,14 @@ local n, m, zero, ech, k, i, j, found, l;
   k:=1;
 
   while k <= Length(gens) do
-    i:=1; j:=1;
-    found:=false;
-    while not found and i <= n do
-      if (gens[k][i,j] <> zero) then
-        found:=true;
-      else
-        j:=j + 1;
-        if (j > m) then
-          j:=1; i:=i + 1;
-        fi;
+    for i in [1..n] do
+      j:=PositionNonZero(gens[k][i]);
+      if j <= m then
+        break;
       fi;
     od;
 
-    if found then
+    if j <= m then
 
       # Now basis element k will have echelonisation index [i,j]
       Add(ech, [i,j]);
