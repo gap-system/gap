@@ -1879,6 +1879,47 @@ InstallMethod( SwapMatrixColumns, "for a mutable matrix object, and two column n
 
 
 ############################################################################
+
+InstallMethod( AddMatrixRight, "for a mutable matrix object, a matrix object and a scalar",
+  [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsObject ],
+  function( dstmat, srcmat, scalar )
+    local i, j;
+#     Assert(0, NrRows(dstmat) = NrRows(srcmat));
+#     Assert(0, NrCols(dstmat) = NrCols(srcmat));
+    for i in [1..NrRows(dstmat)] do
+      for j in [1..NrCols(dstmat)] do
+        dstmat[i,j] := dstmat[i,j] + srcmat[i,j] * scalar;
+      od;
+    od;
+  end );
+
+InstallEarlyMethod( AddMatrixRight,
+  function( dstmat, srcmat, scalar )
+    local i;
+    if IsPlistRep(dstmat) and IsPlistRep(srcmat) then
+  #     Assert(0, NrRows(dstmat) = NrRows(srcmat));
+#     Assert(0, NrCols(dstmat) = NrCols(srcmat));
+      for i in [1..NrRows(dstmat)] do
+        AddRowVector(dstmat[i], srcmat[i], scalar);
+      od;
+    else
+      TryNextMethod();
+    fi;
+  end );
+
+InstallMethod( AddMatrixRight, "for a mutable 8bit matrix, an 8bit matrix and a scalar",
+  [ Is8BitMatrixRep and IsMutable, Is8BitMatrixRep, IsFFE ],
+  function( dstmat, srcmat, scalar )
+    local i, j;
+#     Assert(0, NrRows(dstmat) = NrRows(srcmat));
+#     Assert(0, NrCols(dstmat) = NrCols(srcmat));
+    for i in [1..NrRows(dstmat)] do
+      ADD_COEFFS_VEC8BIT_3(dstmat[i], srcmat[i], scalar);
+    od;
+  end );
+
+
+############################################################################
 ##  Fallback method for DeterminantMatrix
 InstallMethod(DeterminantMatrix, ["IsMatrixObj"],
 function( mat )

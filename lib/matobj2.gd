@@ -2052,3 +2052,24 @@ DeclareOperationKernel( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, I
 ##  <#/GAPDoc>
 ##
 DeclareOperationKernel( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ], SWAP_MAT_COLS );
+
+
+############################################################################
+##
+##
+##
+DeclareOperation( "AddMatrixRight", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsObject ] );
+#DeclareOperation( "AddMatrixLeft", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsObject ] );
+
+# TODO: which default, left or right?
+#DeclareSynonym( "AddMatrix", AddMatrixRowsLeft);
+
+############################################################################
+##
+##
+##
+#DeclareOperation( "MultMatrixRight", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsObject ] );
+#DeclareOperation( "MultMatrixLeft", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsObject ] );
+
+# TODO: which default, left or right?
+#DeclareSynonym( "MultMatrix", MultMatrixLeft);
