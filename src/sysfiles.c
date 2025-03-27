@@ -2796,7 +2796,7 @@ void SySetErrorNo ( void )
 **
 *F  SyIsExistingFile( <name> )  . . . . . . . . . . . does file <name> exists
 **
-**  'SyIsExistingFile' returns 1 if the  file <name> exists and 0  otherwise.
+**  'SyIsExistingFile' returns 0 if the  file <name> exists and -1 otherwise.
 **  It does not check if the file is readable, writable or excuteable. <name>
 **  is a system dependent description of the file.
 */
@@ -2846,7 +2846,7 @@ Int SyIsReadableFile ( const Char * name )
 **
 *F  SyIsWritableFile( <name> )  . . . . . . . . . is the file <name> writable
 **
-**  'SyIsWritableFile'   returns  1  if  the  file  <name> is  writable and 0
+**  'SyIsWritableFile'   returns  0  if  the  file  <name> is  writable and -1
 **  otherwise. <name> is a system dependent description of the file.
 */
 Int SyIsWritableFile ( const Char * name )
@@ -2861,12 +2861,11 @@ Int SyIsWritableFile ( const Char * name )
     return res;
 }
 
-
 /****************************************************************************
 **
 *F  SyIsExecutableFile( <name> )  . . . . . . . . . is file <name> executable
 **
-**  'SyIsExecutableFile' returns 1 if the  file <name>  is  executable and  0
+**  'SyIsExecutableFile' returns 0 if the  file <name>  is  executable and -1
 **  otherwise. <name> is a system dependent description of the file.
 */
 Int SyIsExecutableFile ( const Char * name )
@@ -2886,7 +2885,7 @@ Int SyIsExecutableFile ( const Char * name )
 **
 *F  SyIsDirectoryPath( <name> ) . . . . . . . . .  is file <name> a directory
 **
-**  'SyIsDirectoryPath' returns 1 if the  file <name>  is a directory  and  0
+**  'SyIsDirectoryPath' returns 0 if the  file <name>  is a directory  and -1
 **  otherwise. <name> is a system dependent description of the file.
 */
 Int SyIsDirectoryPath ( const Char * name )
@@ -2899,6 +2898,32 @@ Int SyIsDirectoryPath ( const Char * name )
         return -1;
     }
     return S_ISDIR(buf.st_mode) ? 0 : -1;
+}
+
+/****************************************************************************
+**
+*F  SyIsWritablePath( <name> ) . . . . . . . . .is <name> a valid output path
+**
+**  'SyIsWritablePath' returns 0 if the file <name> is an existing
+**  writable file (not a directory) or a non-existent file in an
+**  existing writable directory and -1 otherwise. <name> is a system
+**  dependent description of the file.
+*/
+Int SyIsWritablePath(const Char * name)
+{
+    if (0 == SyIsDirectoryPath(name))
+        return -1;
+    if (0 == SyIsWritableFile(name))
+        return 0;
+    if (0 == SyIsExistingFile(name))
+        return -1;
+    Char * slash = rindex(name, '/');
+    if (!slash)
+        return SyIsWritableFile(".");
+    Char basename[slash - name + 1];
+    memcpy(basename, name, slash - name);
+    basename[slash - name] = '\0';
+    return SyIsWritableFile(basename);
 }
 
 
