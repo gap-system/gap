@@ -1047,7 +1047,7 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
   if Length(basis) = 1 then
     # if endomorphism algebra has dimension 1 then indecomposable
     #SMTX.SetEndAlgResidueFlag(M, F.root * GModOps.EndAlgBasisFlag(M)[1], F.size - 1);
-    SMTX.SetEndAlgResidue(M, [PrimitiveElement(F)*basis[1], Size(F) - 1]);
+    SMTX.SetEndAlgResidue(M, [PrimitiveElement(F)*One(basis[1]), Size(F) - 1]);
     Info(InfoMtxHom,3,"basislength 1");
     SMTX.SetBasisEndomorphismsRadical(M, []);
     return fail;
