@@ -1,4 +1,4 @@
-#@local dir,fname,file,line,stream,tmpdir,res,streams,i
+#@local dir,fname,file,line,stream,tmpdir,res,streams,i,func,linewrap,indent
 gap> START_TEST("streams.tst");
 
 #
@@ -85,23 +85,83 @@ gap> ReadAll(stream, 3);
 gap> CloseStream(stream);
 
 # test PrintFormattingStatus
-gap> stream := OutputTextFile( fname, false );;
+gap> func := function(x) if x then return "a very long line that GAP is going to wrap at 80 chars by default if we don't do anything about it"; fi; end;;
+gap> for linewrap in [false,true] do
+> for indent in [false,true] do
+> stream := OutputTextFile(fname, false);
+> SetPrintFormattingStatus(stream, rec(linewrap := linewrap, indent := indent));
+> PrintTo(stream, func);
+> CloseStream(stream);
+> Print([linewrap, indent, StringFile(fname)],"\n");
+> od;
+> od;
+[ false, false, 
+  "function ( x )\nif x then\nreturn \"a very long line that GAP is going to w\
+rap at 80 chars by default if we don't do anything about it\";\nfi;\nreturn;\n\
+end" ]
+[ false, true, 
+  "function ( x )\n    if x then\n        return \"a very long line that GAP i\
+s going to wrap at 80 chars by default if we don't do anything about it\";\n  \
+  fi;\n    return;\nend" ]
+[ true, false, 
+  "function ( x )\nif x then\nreturn \"a very long line that GAP is going to w\
+rap at 80 chars by default if w\\\ne don't do anything about it\";\nfi;\nretur\
+n;\nend" ]
+[ true, true, 
+  "function ( x )\n    if x then\n        return \n         \"a very long line\
+ that GAP is going to wrap at 80 chars by default if\\\n we don't do anything \
+about it\";\n    fi;\n    return;\nend" ]
+gap> for linewrap in [false,true] do
+> for indent in [false,true] do
+> res := "";
+> stream := OutputTextString(res, true);
+> SetPrintFormattingStatus(stream, rec(linewrap := linewrap, indent := indent));
+> PrintTo(stream, func);
+> CloseStream(stream);
+> Print([linewrap, indent, res],"\n");
+> od;
+> od;
+[ false, false, 
+  "function ( x )\nif x then\nreturn \"a very long line that GAP is going to w\
+rap at 80 chars by default if we don't do anything about it\";\nfi;\nreturn;\n\
+end" ]
+[ false, true, 
+  "function ( x )\n    if x then\n        return \"a very long line that GAP i\
+s going to wrap at 80 chars by default if we don't do anything about it\";\n  \
+  fi;\n    return;\nend" ]
+[ true, false, 
+  "function ( x )\nif x then\nreturn \"a very long line that GAP is going to w\
+rap at 80 chars by default if w\\\ne don't do anything about it\";\nfi;\nretur\
+n;\nend" ]
+[ true, true, 
+  "function ( x )\n    if x then\n        return \n         \"a very long line\
+ that GAP is going to wrap at 80 chars by default if\\\n we don't do anything \
+about it\";\n    fi;\n    return;\nend" ]
+gap> stream := OutputTextString(res, true);
+OutputTextString(181)
+gap> SetPrintFormattingStatus(stream, true);
 gap> PrintFormattingStatus(stream);
-true
-gap> PrintTo( stream, "a very long line that GAP is going to wrap at 80 chars by default if we don't do anything about it\n");
-gap> CloseStream(stream);
-gap> StringFile(fname);
-"a very long line that GAP is going to wrap at 80 chars by default if we don't\
- \\\ndo anything about it\n"
-gap> stream := OutputTextFile( fname, false );;
+rec( indent := true, linewrap := true )
 gap> SetPrintFormattingStatus(stream, false);
 gap> PrintFormattingStatus(stream);
-false
-gap> PrintTo( stream, "a very long line that GAP is going to wrap at 80 chars by default if we don't do anything about it\n");
-gap> CloseStream(stream);
-gap> StringFile(fname);
-"a very long line that GAP is going to wrap at 80 chars by default if we don't\
- do anything about it\n"
+rec( indent := false, linewrap := false )
+gap> SetPrintFormattingStatus(stream, rec(indent := false, linewrap := true));
+gap> PrintFormattingStatus(stream);
+rec( indent := false, linewrap := true )
+gap> SetPrintFormattingStatus(stream, fail);
+Error, Formatting status cannot be 'fail'
+gap> SetPrintFormattingStatus(stream, 6);
+Error, Formatting status must be a boolean or a record
+gap> SetPrintFormattingStatus(stream, rec(indent := false));
+Error, Formatting status records must contain exactly two components, named 'i\
+ndent' and 'linewrap'
+gap> SetPrintFormattingStatus(stream, rec(indent := false, linewrap := 12));
+Error, linewrap must be 'true' or 'false' in formatting status record
+gap> SetPrintFormattingStatus(stream, rec(indent := false, linewrap := false, extra := true));
+Error, Formatting status records must contain exactly two components, named 'i\
+ndent' and 'linewrap'
+gap> PrintFormattingStatus(stream);
+rec( indent := false, linewrap := true )
 
 #
 # string streams
@@ -208,7 +268,7 @@ true
 gap> WriteByte(stream, 300);
 Error, <byte> must an integer between 0 and 255
 gap> SetPrintFormattingStatus(stream, fail);
-Error, Print formatting status must be true or false
+Error, Formatting status cannot be 'fail'
 
 # too many open files
 gap> streams := [ ];;
