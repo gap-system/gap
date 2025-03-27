@@ -96,7 +96,11 @@ function(f,p,check)
   fam!.deg:=deg;
   i:=List([1..DegreeOfLaurentPolynomial(p)],i->fam!.zeroCoefficient);
   i[2]:=fam!.oneCoefficient;
+
+  # Create a vector in the prefered internal representation.
   i:=ImmutableVector(f,i,true);
+  fam!.exampleCoefficientVector:= i;
+
   fam!.primitiveElm:=MakeImmutable(ObjByExtRep(fam,i));
   fam!.indeterminateName:=MakeImmutable("a");
 
@@ -600,7 +604,7 @@ local i,fam,f,g,t,h,rf,rg,rh;
     #od;
   od;
   rf:=1/f[Length(f)]*rf;
-  rf:=ImmutableVector(fam!.baseField, rf, true);
+  rf:= MakeImmutable( Vector( rf, fam!.exampleCoefficientVector ) );
   return AlgExtElm(fam,rf);
 end);
 
@@ -899,7 +903,7 @@ function(rs,e)
 local fam,l;
   fam:=e!.extFam;
   l:=List([1..fam!.deg],i->Random(rs,fam!.baseField));
-  l:=ImmutableVector(fam!.baseField,l,true);
+  l:= MakeImmutable( Vector( l, fam!.exampleCoefficientVector ) );
   return AlgExtElm(fam,l);
 end);
 
