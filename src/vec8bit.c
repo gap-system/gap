@@ -3347,7 +3347,11 @@ static Obj FuncCONV_MAT8BIT(Obj self, Obj list, Obj q)
     GROW_PLIST(list, len + 1);
     for (i = len; i >= 1; i--) {
         tmp = ELM_PLIST(list, i);
-        GAP_ASSERT(IS_VEC8BIT_REP(tmp));
+        if (!IS_VEC8BIT_REP(tmp)) {
+            ErrorMayQuit("CONV_MAT8BIT: argument must be a list of "
+                         "compressed 8bit vectors", 0, 0);
+        }
+
         type = TypeVec8BitLocked(iq, IS_MUTABLE_OBJ(tmp));
         SetTypeDatObj(tmp, type);
         SET_ELM_MAT8BIT(list, i, tmp);
