@@ -1038,7 +1038,7 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
   if n = 1 then
     # A 1-dimensional module is always indecomposable
     Info(InfoMtxHom,3,"1dimensional");
-    SMTX.SetEndAlgResidue(M, [[[ PrimitiveElement(F) ]], Size(F) - 1]);
+    SMTX.SetEndAlgResidue(M, [[[ PrimitiveRoot(F) ]], Size(F) - 1]);
     SMTX.SetBasisEndomorphismsRadical(M, []);
     return fail;
   fi;
@@ -1047,7 +1047,7 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
   if Length(basis) = 1 then
     # if endomorphism algebra has dimension 1 then indecomposable
     #SMTX.SetEndAlgResidueFlag(M, F.root * GModOps.EndAlgBasisFlag(M)[1], F.size - 1);
-    SMTX.SetEndAlgResidue(M, [PrimitiveElement(F)*One(basis[1]), Size(F) - 1]);
+    SMTX.SetEndAlgResidue(M, [PrimitiveRoot(F)*One(basis[1]), Size(F) - 1]);
     Info(InfoMtxHom,3,"basislength 1");
     SMTX.SetBasisEndomorphismsRadical(M, []);
     return fail;
@@ -1532,7 +1532,7 @@ BindGlobal("SMTX_ModuleAutomorphisms",function(m)
     q:=SMTX.EndAlgResidue(h[i].component[2]);
     w:=q[1];
     q:=q[2]+1;
-    Fqr:=PrimitiveElement(GF(q));
+    Fqr:=Z(q);
     gl:=GL(r,q);
     autorder:=autorder*Size(gl);
     Info(InfoMtxHom,3,"increase by gl",Size(gl)," ",autorder);
@@ -1540,10 +1540,10 @@ BindGlobal("SMTX_ModuleAutomorphisms",function(m)
       a:=IdentityMat(m.dimension,f);
       for j in [1..r] do
         for k in [1..r] do
-          if IsZero(g[j][k]) then
+          if IsZero(g[j,k]) then
             subm:=w*0;
           else
-            subm:=w^LogFFE(g[j][k],Fqr);
+            subm:=w^LogFFE(g[j,k],Fqr);
           fi;
           a{[(j-1)*dim+1..j*dim]}{[(k-1)*dim+1..k*dim]}:=subm;
         od;
