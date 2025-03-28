@@ -228,8 +228,10 @@ InstallMethod( \^, "objects with memory", true,
   function(a,b)
     local slp;
     slp := a!.slp;
-    if a!.n = 0 then
+    if a!.n = 0 or b = 0 then
       return ObjWithMemory( slp, 0, a!.el );
+    elif b = 1 then
+      return ObjWithMemory( slp, a!.n, a!.el );
     else
       Add( slp.prog, [ a!.n, b ] );
       return ObjWithMemory( slp, Length( slp.prog ) + slp.nogens, a!.el^b );
