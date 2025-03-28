@@ -455,36 +455,53 @@ InstallTrueMethod( IsDihedralGroup, HasDihedralGenerators );
 
 #############################################################################
 ##
-#P  IsQuaternionGroup( <G> )
-#A  QuaternionGenerators( <G> )
+#P  IsDicyclicGroup( <G> )
+#P  IsGeneralizedQuaternionGroup( <G> )
+#A  DicyclicGenerators( <G> )
+#A  GeneralizedQuaternionGenerators( <G> )
 ##
 ##  <#GAPDoc Label="IsQuaternionGroup">
 ##  <ManSection>
+##  <Prop Name="IsDicyclicGroup" Arg="G"/>
+##  <Attr Name="DicyclicGenerators" Arg="G"/>
 ##  <Prop Name="IsGeneralisedQuaternionGroup" Arg="G"/>
-##  <Prop Name="IsQuaternionGroup" Arg="G"/>
 ##  <Attr Name="GeneralisedQuaternionGenerators" Arg="G"/>
+##  <Prop Name="IsQuaternionGroup" Arg="G"/>
 ##  <Attr Name="QuaternionGenerators" Arg="G"/>
 ##
 ##  <Description>
-##    <Ref Prop="IsGeneralisedQuaternionGroup"/> indicates whether the group
-##    <A>G</A> is a generalized quaternion group of size <M>N = 2^(k+1)</M>,
-##    <M>k >= 2</M>.
-##    If it is, methods may set the attribute <Ref Attr="GeneralisedQuaternionGenerators" />
-##    to [<A>t</A>,<A>s</A>], where <A>t</A> and <A>s</A> are two elements such that <A>G</A> =
-##    <M>\langle t, s | s^{(2^k)} = 1, t^2 = s^{(2^k-1)}, s^t = s^{-1} \rangle</M>.
-##    <Ref Prop="IsQuaternionGroup"/> and <Ref Attr="QuaternionGenerators" /> are
-##    provided for backwards compatibility with existing code.
+##  <Ref Prop="IsDicyclicGroup"/> indicates whether the group
+##  <A>G</A> is a dicyclic group of order <M>N = 4n</M>.
+##  If it is, methods may set the attribute <Ref Attr="DicyclicGenerators"/>
+##  to <M>[ t, s ]</M>, where <M>t</M> and <M>s</M> are two elements
+##  such that <A>G</A> =
+##  <M>\langle t, s | s^{2n} = 1, t^2 = s^n, s^t = s^{-1} \rangle</M> holds.
+##  <P/>
+##  <Ref Prop="IsGeneralisedQuaternionGroup"/> indicates whether <A>G</A> is
+##  a generalized quaternion group, i. e.,
+##  a dicyclic group of <M>2</M>-power order.
+##  If it is, methods may set the attribute
+##  <Ref Attr="GeneralisedQuaternionGenerators"/> to the value of
+##  <Ref Attr="DicyclicGenerators"/> for <A>G</A>.
+##  <P/>
+##  <Ref Prop="IsQuaternionGroup"/> and <Ref Attr="QuaternionGenerators"/>
+##  are provided for backwards compatibility with existing code.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
+DeclareProperty( "IsDicyclicGroup", IsGroup );
 DeclareProperty( "IsGeneralisedQuaternionGroup", IsGroup );
+DeclareAttribute( "DicyclicGenerators", IsGroup );
 DeclareAttribute( "GeneralisedQuaternionGenerators", IsGroup );
+
 # Backwards compatibility
 DeclareSynonymAttr( "IsQuaternionGroup", IsGeneralisedQuaternionGroup );
 DeclareSynonymAttr( "QuaternionGenerators", GeneralisedQuaternionGenerators );
 
-InstallTrueMethod( IsGroup, IsQuaternionGroup );
+InstallTrueMethod( IsGroup, IsDicyclicGroup );
+InstallTrueMethod( IsDicyclicGroup, HasDicyclicGenerators );
+InstallTrueMethod( IsGroup, IsGeneralisedQuaternionGroup );
 InstallTrueMethod( IsGeneralisedQuaternionGroup, HasGeneralisedQuaternionGenerators );
 
 
