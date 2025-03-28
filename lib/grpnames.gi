@@ -1021,27 +1021,29 @@ end);
 
 #############################################################################
 ##
-#M  IsQuaternionGroup( <G> ) . . . . . . . . . . . . . . . . . generic method
+#M  IsDicyclicGroup( <G> ) . . . . . . . . . . . . . . . . . . generic method
+#M  IsGeneralizedQuaternionGroup( <G> )  . . . . . . . . . . . generic method
 ##
-BindGlobal( "DoComputeGeneralisedQuaternionGenerators", function(G)
+BindGlobal( "DoComputeDicyclicGenerators", function(G)
     local  N,    # size of G
-           k,    # ld(N)
            n,    # N/2
+           a,    # N/4
            G1,   # derived subgroup of G
-           Zn,   # cyclic normal subgroup of index 2 in G
            T,    # transversal of G/G1
-           t, s, # canonical generators of the quaternion group
-           i;    # counter
+           i,    # counter
+           Zn,   # cyclic normal subgroup of index 2 in G
+           t, s, # canonical generators of the dicyclic group
+           gens;
 
     N := Size(G);
-    k := LogInt(N,2);
-    if not( 2^k = N and k >= 3 ) then return fail; fi;
+    if N mod 4 <> 0 then return fail; fi;
     n := N/2;
+    a := n/2;
 
-    # G = <t, s | s^(2^k) = 1, t^2 = s^(2^k-1), s^t = s^-1>
+    # G = <t, s | s^(2a) = 1, t^2 = s^a, s^t = s^-1>
     # ==> Comm(s, t) = s^-1 t s t = s^-2 ==> G' = < s^2 >
     G1 := DerivedSubgroup(G);
-    if not ( IsCyclic(G1) and Size(G1) = n/2 ) then return fail; fi;
+    if not ( IsCyclic(G1) and Size(G1) = a ) then return fail; fi;
 
     # find a normal subgroup of G of type Zn
     # G/G1 = {1*G1, t*G1, s*G1, t*s*G1}
@@ -1061,29 +1063,55 @@ BindGlobal( "DoComputeGeneralisedQuaternionGenerators", function(G)
 
     # choose generator s of Zn
     repeat s := Random(Zn); until Order(s) = n;
-    return [t,s];
+    gens:= [ t, s ];
+    SetDicyclicGenerators( G, gens );
+    return gens;
 end );
 
+BindGlobal( "DoComputeGeneralisedQuaternionGenerators",
+    function( G )
+    local N, gens;
+
+    N:= Size( G );
+    if not ( IsEvenInt( N ) and IsPrimePowerInt( N ) and N >= 8 ) then
+      return fail;
+    elif HasDicyclicGenerators( G ) then
+      return DicyclicGenerators( G );
+    fi;
+    gens:= DoComputeDicyclicGenerators( G );
+    if gens <> fail then
+      SetGeneralisedQuaternionGenerators( G, gens );
+    fi;
+    return gens;
+    end );
+
+InstallMethod( IsDicyclicGroup,
+    "for a finite group",
+    [ IsGroup and IsFinite ],
+    G -> DoComputeDicyclicGenerators( G ) <> fail );
+
 InstallMethod( IsGeneralisedQuaternionGroup,
-               "for a group",
-               true,
-               [ IsGroup and IsFinite ],
-               0,
-function(G)
+    "for a finite group",
+    [ IsGroup and IsFinite ],
+    G -> DoComputeGeneralisedQuaternionGenerators( G ) <> fail );
+
+InstallMethod( DicyclicGenerators,
+    "for a finite group",
+    [ IsGroup and IsFinite ],
+    function(G)
     local gens;
 
-    gens := DoComputeGeneralisedQuaternionGenerators(G);
+    gens:= DoComputeDicyclicGenerators(G);
+    SetIsDicyclicGroup( G, gens <> fail );
     if gens = fail then
-        return false;
-    else
-        SetGeneralisedQuaternionGenerators(G, gens);
+      ErrorNoReturn( "G is not a dicyclic group");
     fi;
-    return true;
-end);
+    return gens;
+    end);
 
 InstallMethod( GeneralisedQuaternionGenerators,
-               "for a group",
-               [ IsGroup and IsFinite ],
+    "for a finite group",
+    [ IsGroup and IsFinite ],
 function(G)
     local gens;
 
@@ -1094,6 +1122,8 @@ function(G)
     fi;
     return gens;
 end);
+
+
 #############################################################################
 ##
 #M  IsQuasiDihedralGroup( <G> ) . . . . . . . . . . . . . . .  generic method
