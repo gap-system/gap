@@ -405,12 +405,24 @@ InstallMethod( NiceMonomorphism,
 ##  we can decide finiteness.
 ##
 ##  (Note that nice monomorphisms may be used also for infinite groups,
-##  for example for non-rational matrix groups over the cyclotomics.)
+##  for example for non-rational matrix groups over the cyclotomics,
+##  where the image of the monomorphism is a rational matrix group.)
 ##
 InstallMethod( IsHandledByNiceMonomorphism,
     "for a cyclotomic matrix group",
     [ IsCyclotomicMatrixGroup ],
     IsFinite );
+
+
+#############################################################################
+##
+#F  MayBeHandledByNiceMonomorphism( <G> ) . . . for a cyclotomic matrix group
+##
+##  Since we can decide finiteness for a cyclotomic matrix group,
+##  it makes sense to set 'MayBeHandledByNiceMonomorphism' for it,
+##  see the documentation of this filter.
+##
+InstallTrueMethod( MayBeHandledByNiceMonomorphism, IsCyclotomicMatrixGroup );
 
 
 #############################################################################
