@@ -996,7 +996,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
   avoidlimit:=200000; # beyond this index we want to get smaller
   badlimit:=5000000; # beyond this index things might break down
 
-  mayflip:=true; # are we allowed to flip?
+  mayflip:=true; # are we allowed to flip for better chain as well?
 
   # Do we *want* stabilizers
   includestab:=ValueOption("includestab")=true;
@@ -1094,6 +1094,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
       a:=c;
       flip:=not flip;
       c:=c1;
+      stabs:=[b]; # make sure stabs also flips over
 
     elif IsPermGroup(G) then
 
