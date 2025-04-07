@@ -429,7 +429,7 @@ SubgroupMethodByNiceMonomorphism( FrattiniSubgroup,
 ##
 #M  HallSubgroup
 ##
-GroupMethodByNiceMonomorphismCollOther( HallSubgroup,
+GroupMethodByNiceMonomorphismCollOther( HallSubgroupOp,
     [ IsGroup, IsList ],
 function(g,l)
 local mon,h;
