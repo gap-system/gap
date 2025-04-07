@@ -65,7 +65,7 @@ slowing down the compilation process, or omit certain features):
 
 On Ubuntu or Debian, you can install these with the following command:
 
-    sudo apt-get install build-essential autoconf libgmp-dev libreadline-dev zlib1g-dev
+    sudo apt-get install build-essential autoconf libgmp-dev libreadline-dev zlib1g-dev yacc texlive-full
 
 On Fedora:
 
