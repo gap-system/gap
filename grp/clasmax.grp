@@ -25903,7 +25903,7 @@ local l,a,gf,conj,r,gp;
           a:=Group(a[1].generators);
           Assert(1,Size(a)=120);
           Add(l,a);
-          conj:=[[PrimitiveElement(gf),0],[0,1]]*One(gf);
+          conj:=[[PrimitiveRoot(gf),0],[0,1]]*One(gf);
           Add(l,a^conj);
         fi;
       fi;
