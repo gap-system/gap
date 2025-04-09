@@ -2068,8 +2068,8 @@ DeclareOperation( "AddMatrixRight", [ IsMatrixOrMatrixObj and IsMutable, IsMatri
 ##
 ##
 ##
-#DeclareOperation( "MultMatrixRight", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsObject ] );
-#DeclareOperation( "MultMatrixLeft", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsObject ] );
+#DeclareOperation( "MultMatrixRight", [ IsMatrixOrMatrixObj and IsMutable, IsObject ] );
+#DeclareOperation( "MultMatrixLeft", [ IsMatrixOrMatrixObj and IsMutable, IsObject ] );
 
 # TODO: which default, left or right?
 #DeclareSynonym( "MultMatrix", MultMatrixLeft);
