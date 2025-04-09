@@ -2143,10 +2143,12 @@ DeclareOperation( "ListOp", [ IsListOrCollection, IsFunction ] );
 ##
 #O  SortedList( <C> )
 #O  SortedList( <list> )
+#O  SortedListBy( <list> , <func> )
 ##
 ##  <#GAPDoc Label="SortedList">
 ##  <ManSection>
 ##  <Oper Name="SortedList" Arg='listorcoll[, func]'/>
+##  <Oper Name="SortedListBy" Arg='listorcoll, func'/>
 ##
 ##  <Description>
 ##  <Ref Oper="SortedList"/> returns a new mutable and dense list <A>new</A>.
@@ -2158,7 +2160,21 @@ DeclareOperation( "ListOp", [ IsListOrCollection, IsFunction ] );
 ##  and <A>new</A> contains the elements in sorted order,
 ##  w.r.t.&nbsp;<C>&lt;</C> or <A>func</A> if it is specified.
 ##  For details, please refer to <Ref Oper="Sort"/>.
-##  <C><A>new</A>[<A>pos</A>]</C> executes in constant time
+##  <P/>
+##  <Ref Oper="SortedListBy"/> also returns a new mutable and dense list <A>new</A>.
+##  The first argument must be a collection or list <A>listorcoll</A> which may
+##  contain holes but whose elements lie in the same family
+##  (see&nbsp;<Ref Sect="Families"/>).
+##  <C>Length( <A>new</A> )</C> is the number of elements of
+##  <A>listorcoll</A>,
+##  and <A>new</A> has elements in an order such that
+##  <C>func(new[i]) &lt;= func(new[i+1])</C> for all relevant
+##  <A>i</A>. <A>func</A> must thus be a function on one argument which returns
+##  values that can be compared.  Each <C>func(listorcoll[i])</C> is computed just
+##  once and stored, making this more efficient than using the two-argument
+##  version of <Ref Oper="SortedList"/> in many cases.
+##  <P/>
+##  In both cases, <C><A>new</A>[<A>pos</A>]</C> executes in constant time
 ##  (see&nbsp;<Ref Filt="IsConstantTimeAccessList"/>),
 ##  and the size of <A>new</A> in memory is proportional to its length.
 ##  <P/>
@@ -2171,6 +2187,16 @@ DeclareOperation( "ListOp", [ IsListOrCollection, IsFunction ] );
 ##  true
 ##  gap> SortedList( [ 1, 2, 1,, 3, 2 ] );
 ##  [ 1, 1, 2, 2, 3 ]
+##  gap> SortedListBy(SymmetricGroup(3), Order);
+##  [ (), (1,3), (2,3), (1,2), (1,2,3), (1,3,2) ]
+##  gap> SortedListBy( [ 3, 1,,, -6, 5, -2,, -5, 3, 3,,, -1 ], x -> x^2 );
+##  [ 1, -1, -2, 3, 3, 3, 5, -5, -6 ]
+##  gap> l:=SortedListBy( [ 2, 1,, 1, -5,, 3, -5 ], x -> x^3);
+##  [ -5, -5, 1, 1, 2, 3 ]
+##  gap> IsMutable( l );  IsSortedList( l );  IsConstantTimeAccessList( l );
+##  true
+##  true
+##  true
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -2178,6 +2204,7 @@ DeclareOperation( "ListOp", [ IsListOrCollection, IsFunction ] );
 ##
 DeclareOperation( "SortedList", [ IsListOrCollection ] );
 DeclareOperation( "SortedList", [ IsListOrCollection, IsFunction ] );
+DeclareOperation( "SortedListBy", [ IsListOrCollection, IsFunction ] );
 
 
 #############################################################################
