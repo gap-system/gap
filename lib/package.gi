@@ -1948,8 +1948,8 @@ For backwards compatibility, the default lists most of packages \
 that were autoloaded in &GAP; 4.4 (add or remove packages as you like)."
     ],
   default:= [ "autpgrp", "alnuth", "crisp", "ctbllib", "factint", "fga",
-              "irredsol", "laguna", "polenta", "polycyclic", "resclasses",
-              "sophus", "tomlib" ],
+              "irredsol", "laguna", "PackageManager", "polenta", "polycyclic",
+              "resclasses", "sophus", "tomlib" ],
   values:= function() return RecNames( GAPInfo.PackagesInfo ); end,
   multi:= true,
   ) );
