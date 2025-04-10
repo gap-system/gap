@@ -293,7 +293,7 @@ BIND_GLOBAL( "InstallTagBasedMethod", function( oper, meth... )
       Error( "usage: InstallTagBasedMethod( oper[, tag], meth )" );
     fi;
 
-    if FIND_OBJ_MAP( dict, tag, fail ) <> fail then
+    if not REREADING and FIND_OBJ_MAP( dict, tag, fail ) <> fail then
       Error( "<tag> has already been set in <dict>" );
     elif not IS_FUNCTION( meth ) then
       Error( "<meth> must be a function" );
