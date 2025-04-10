@@ -784,6 +784,24 @@ end);
 
 #############################################################################
 ##
+#M  SortedListBy( <C> , <func> )
+##
+InstallMethod(SortedListBy, "for a list or collection and a function",
+[ IsListOrCollection, IsFunction ],
+function(C, func)
+local images, l;
+  if IsList(C) then
+    l := Compacted(C);
+  else
+    l := List(C);
+  fi;
+  images := List(l, func);
+  SortParallel(images, l);
+  return l;
+end);
+
+#############################################################################
+##
 #M  SSortedList( <C> )
 ##
 InstallMethod( SSortedList,
