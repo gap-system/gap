@@ -306,6 +306,51 @@ plain list rep, and an ffe",
 
 #############################################################################
 ##
+#M  MultVectorRight( <list>, <mul> )
+##
+InstallMethod( MultVectorRight,
+    "for a mutable dense list, and an object",
+    [ IsDenseList and IsMutable,
+      IsObject ],
+function( l, m )
+    local   i;
+    for i  in [ 1 .. Length(l) ]  do
+        l[i] := l[i] * m;
+    od;
+end );
+InstallOtherMethod( MultVectorRight, "error if immutable",
+    [ IsList, IsObject ],
+    L1_IMMUTABLE_ERROR);
+
+# TODO: Check if MULT_VECTOR_RIGHT_2 exists and if not, implement it
+# InstallMethod( MultVectorRight,
+#     "kernel method for a mutable dense small list, and an object",
+#     IsCollsElms,
+#     [ IsSmallList and IsDenseList and IsMutable,
+#       IsObject ],
+#     MULT_VECTOR_LEFT_2
+# );
+
+InstallMethod( MultVectorRight,
+    "kernel method for a mutable dense plain list of \
+cyclotomics, and a cyclotomic",
+    IsCollsElms,
+    [ IsDenseList and IsMutable and IsPlistRep and IsCyclotomicCollection,
+      IsCyclotomic ],
+    MULT_VECTOR_2_FAST
+);
+# TODO: Check if MULT_VECTOR_VECFFES does the right thing for multiplying form the right
+# InstallMethod( MultVectorRight,
+#     "kernel method for a mutable row vector of ffes in \
+# plain list rep, and an ffe",
+#     IsCollsElms,
+#     [ IsRowVector and IsMutable and IsPlistRep and IsFFECollection,
+#       IsFFE],0,
+#     MULT_VECTOR_VECFFES );
+
+
+#############################################################################
+##
 #M  RightShiftRowVector( <list>, <shift>, <fill> )
 ##
 InstallMethod( RightShiftRowVector,"generic method",
