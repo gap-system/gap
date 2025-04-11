@@ -1877,15 +1877,60 @@ InstallMethod( SwapMatrixColumns, "for a mutable matrix object, and two column n
 
   end );
 
+#############################################################################
+##
+#M  AddMatrix( <mat1>, <mat2> )
+##
 
-############################################################################
+InstallMethod( AddMatrix, "for a mutable matrix object and a matrix object",
+  [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj ],
+  function( dstmat, srcmat )
+    local i, j;
+    # Assert(0, NrRows(dstmat) = NrRows(srcmat));
+    # Assert(0, NrCols(dstmat) = NrCols(srcmat));
+    for i in [1..NrRows(dstmat)] do
+      for j in [1..NrCols(dstmat)] do
+        dstmat[i,j] := dstmat[i,j] + srcmat[i,j];
+      od;
+    od;
+  end );
 
-InstallMethod( AddMatrixRight, "for a mutable matrix object, a matrix object and a scalar",
-  [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsObject ],
+InstallEarlyMethod( AddMatrix,
+  function( dstmat, srcmat )
+    local i;
+    if IsPlistRep(dstmat) and IsPlistRep(srcmat) then
+      # Assert(0, NrRows(dstmat) = NrRows(srcmat));
+      # Assert(0, NrCols(dstmat) = NrCols(srcmat));
+      for i in [1..NrRows(dstmat)] do
+        AddRowVector(dstmat[i], srcmat[i]);
+      od;
+    else
+      TryNextMethod();
+    fi;
+  end );
+
+InstallMethod( AddMatrix, "for a mutable 8bit matrix and an 8bit matrix",
+  [ Is8BitMatrixRep and IsMutable, Is8BitMatrixRep ],
+  function( dstmat, srcmat )
+    local i, j;
+    # Assert(0, NrRows(dstmat) = NrRows(srcmat));
+    # Assert(0, NrCols(dstmat) = NrCols(srcmat));
+    for i in [1..NrRows(dstmat)] do
+      ADD_COEFFS_VEC8BIT_3(dstmat[i], srcmat[i]);
+    od;
+  end );
+
+#############################################################################
+##
+#M  AddMatrix( <mat1>, <mat2>, <mult> )
+##
+
+InstallMethod( AddMatrix, "for a mutable matrix object, a matrix object, and a scalar",
+  [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsScalar ],
   function( dstmat, srcmat, scalar )
     local i, j;
-#     Assert(0, NrRows(dstmat) = NrRows(srcmat));
-#     Assert(0, NrCols(dstmat) = NrCols(srcmat));
+    # Assert(0, NrRows(dstmat) = NrRows(srcmat));
+    # Assert(0, NrCols(dstmat) = NrCols(srcmat));
     for i in [1..NrRows(dstmat)] do
       for j in [1..NrCols(dstmat)] do
         dstmat[i,j] := dstmat[i,j] + srcmat[i,j] * scalar;
@@ -1893,12 +1938,12 @@ InstallMethod( AddMatrixRight, "for a mutable matrix object, a matrix object and
     od;
   end );
 
-InstallEarlyMethod( AddMatrixRight,
+InstallEarlyMethod( AddMatrix,
   function( dstmat, srcmat, scalar )
     local i;
     if IsPlistRep(dstmat) and IsPlistRep(srcmat) then
-  #     Assert(0, NrRows(dstmat) = NrRows(srcmat));
-#     Assert(0, NrCols(dstmat) = NrCols(srcmat));
+      # Assert(0, NrRows(dstmat) = NrRows(srcmat));
+      # Assert(0, NrCols(dstmat) = NrCols(srcmat));
       for i in [1..NrRows(dstmat)] do
         AddRowVector(dstmat[i], srcmat[i], scalar);
       od;
@@ -1907,20 +1952,76 @@ InstallEarlyMethod( AddMatrixRight,
     fi;
   end );
 
-InstallMethod( AddMatrixRight, "for a mutable 8bit matrix, an 8bit matrix and a scalar",
+InstallMethod( AddMatrix, "for a mutable 8bit matrix, an 8bit matrix, and a scalar",
   [ Is8BitMatrixRep and IsMutable, Is8BitMatrixRep, IsFFE ],
   function( dstmat, srcmat, scalar )
     local i, j;
-#     Assert(0, NrRows(dstmat) = NrRows(srcmat));
-#     Assert(0, NrCols(dstmat) = NrCols(srcmat));
+    # Assert(0, NrRows(dstmat) = NrRows(srcmat));
+    # Assert(0, NrCols(dstmat) = NrCols(srcmat));
     for i in [1..NrRows(dstmat)] do
       ADD_COEFFS_VEC8BIT_3(dstmat[i], srcmat[i], scalar);
     od;
   end );
 
+#############################################################################
+##
+#M  MultMatrixRight( <mat>, <mult> )
+##
+
+InstallMethod( MultMatrixRight, "for a mutable matrix object and a scalar",
+  [ IsMatrixOrMatrixObj and IsMutable, IsScalar ],
+  function( mat, scalar )
+    local i, j;
+    for i in [1..NrRows(mat)] do
+      for j in [1..NrCols(mat)] do
+        mat[i,j] := mat[i,j] * scalar;
+      od;
+    od;
+  end );
+
+InstallEarlyMethod( MultMatrixRight,
+  function( mat, scalar )
+    local i;
+    if IsPlistRep(mat) and IsScalar(scalar) then
+      for i in [1..NrRows(mat)] do
+        MultVectorRight(mat[i], scalar);
+      od;
+    else
+      TryNextMethod();
+    fi;
+  end );
+
+#############################################################################
+##
+#M  MultMatrixLeft( <mat>, <mult> )
+##
+
+InstallMethod( MultMatrixLeft, "for a mutable matrix object and a scalar",
+  [ IsMatrixOrMatrixObj and IsMutable, IsScalar ],
+  function( mat, scalar )
+    local i, j;
+    for i in [1..NrRows(mat)] do
+      for j in [1..NrCols(mat)] do
+        mat[i,j] := scalar * mat[i,j];
+      od;
+    od;
+  end );
+
+InstallEarlyMethod( MultMatrixLeft,
+  function( mat, scalar )
+    local i;
+    if IsPlistRep(mat) and IsScalar(scalar) then
+      for i in [1..NrRows(mat)] do
+        MultVectorLeft(mat[i], scalar);
+      od;
+    else
+      TryNextMethod();
+    fi;
+  end );
 
 ############################################################################
 ##  Fallback method for DeterminantMatrix
+
 InstallMethod(DeterminantMatrix, ["IsMatrixObj"],
 function( mat )
   return DeterminantMat( Unpack( mat ) );

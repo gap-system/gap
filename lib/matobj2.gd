@@ -2053,23 +2053,85 @@ DeclareOperationKernel( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, I
 ##
 DeclareOperationKernel( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ], SWAP_MAT_COLS );
 
+############################################################################
+##
+##  <#GAPDoc Label="AddMatrixRight">
+##  <ManSection>
+##  <Oper Name="AddMatrixRight" Arg='M, N[, c]'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Computes the calculation <M>M + c \cdot N</M> in-place, storing the result in <A>M</A>.
+##  If both of the matrices are lists-of-lists, then the program utilises <Ref Oper="AddRowVector"/>
+##  to perform the operation even faster.
+##  <Example><![CDATA[
+##  gap> mat1 := [ [ 1, 2 ], [ 3, 4 ] ];
+##  [ [ 1, 2 ], [ 3, 4 ] ]
+##  gap> mat2 := [ [ 1, 0 ], [ 3, -1 ] ];
+##  [ [ 1, 0 ], [ 3, -1 ] ]
+##  gap> AddMatrix( mat1, mat2, 2 );
+##  gap> mat1;
+##  [ [ 3, 2 ], [ 9, 2 ] ]
+##  gap> mat2;
+##  [ [ 1, 0 ], [ 3, -1 ] ]
+##  gap> AddMatrix( mat1, [ [ 1, 0], [ 3, -1] ] );
+##  gap> mat1;
+##  [ [ 4, 2 ], [ 12, 1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj ] );
+DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsScalar ] );
 
 ############################################################################
 ##
+##  <#GAPDoc Label="MultMatrix">
+##  <ManSection>
+##  <Oper Name="MultMatrix" Arg='mat, c'/>
+##  <Oper Name="MultMatrixLeft" Arg='mat, c'/>
+##  <Oper Name="MultMatrixRight" Arg='mat, c'/>
 ##
+##  <Returns>nothing</Returns>
 ##
-DeclareOperation( "AddMatrixRight", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsObject ] );
-#DeclareOperation( "AddMatrixLeft", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsObject ] );
-
-# TODO: which default, left or right?
-#DeclareSynonym( "AddMatrix", AddMatrixRowsLeft);
-
-############################################################################
+##  <Description>
+##  <P/>
+##  These functions multiply the entries of <A>mat</A> by <A>c</A> in-place.
+##  <Ref Oper="MultMatrixRight"/> performs the operation <M>mat \cdot c</M>,
+##  whereas <Ref Oper="MultMatrixLeft"/> performs the operation <M>c \cdot mat</M>
+##  and <Ref Oper="MultMatrix"/> is an alias for <Ref Oper="MultMatrixLeft"/>.
+##  In all of these, if the matrix <A>mat</A> is a lists-of-lists, then the program
+##  utilises the fast in-place operations <Ref Oper="MultVectorRight"/> and <Ref Oper="MultVectorLeft"/>.
+##  to perform the operation even faster.
+##  <Example><![CDATA[
+##  gap> mat1 := [ [ 1, 2 ], [ 3, 4 ] ];
+##  [ [ 1, 2 ], [ 3, 4 ] ]
+##  gap> MultMatrixRight(mat1, -2);
+##  gap> mat1;
+##  [ [ -2, -4 ], [ -6, -8 ] ]
+##  gap> MultMatrix(mat1, -2); # Note that this is the same as calling MultMatrixLeft(mat1, -2)
+##  gap> mat1;
+##  [ [ 4, 8 ], [ 12, 16 ] ]
+##  gap> A := FreeAssociativeAlgebra(Rationals, 2);
+##  <algebra over Rationals, with 2 generators>
+##  gap> mat2 := [ [ A.1, A.2 ], [ A.1 * 2, A.2 * 3 ] ];
+##  [ [ (1)*x.1, (1)*x.2 ], [ (2)*x.1, (3)*x.2 ] ]
+##  gap> MultMatrixLeft(mat2, A.1);
+##  gap> mat2;
+##  [ [ (1)*x.1^2, (1)*x.1*x.2 ], [ (2)*x.1^2, (3)*x.1*x.2 ] ]
+##  gap> mat2 := [ [ A.1, A.2 ], [ A.1 * 2, A.2 * 3 ] ];
+##  [ [ (1)*x.1, (1)*x.2 ], [ (2)*x.1, (3)*x.2 ] ]
+##  gap> MultMatrixRight(mat2, A.1);
+##  gap> mat2;
+##  [ [ (1)*x.1^2, (1)*x.2*x.1 ], [ (2)*x.1^2, (3)*x.2*x.1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
-##
-##
-#DeclareOperation( "MultMatrixRight", [ IsMatrixOrMatrixObj and IsMutable, IsObject ] );
-#DeclareOperation( "MultMatrixLeft", [ IsMatrixOrMatrixObj and IsMutable, IsObject ] );
-
-# TODO: which default, left or right?
-#DeclareSynonym( "MultMatrix", MultMatrixLeft);
+DeclareOperation( "MultMatrixRight", [ IsMatrixOrMatrixObj and IsMutable, IsScalar ] );
+DeclareOperation( "MultMatrixLeft", [ IsMatrixOrMatrixObj and IsMutable, IsScalar ] );
+DeclareSynonym( "MultMatrix", MultMatrixLeft);
