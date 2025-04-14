@@ -7,9 +7,9 @@ TestReadingMatrix := function(m)
     PrintHeadline("m[i][j]");
     MyBench(function()
         local u, i, j, rows, cols, x;
-        rows := [1..Length(m)];
-        cols := [1..Length(m[1])];
-        for u in [1..QuoInt(100000,Length(m)*Length(m[1]))] do
+        rows := [1..NrRows(m)];
+        cols := [1..NrCols(m)];
+        for u in [1..QuoInt(100000,NrRows(m)*NrCols(m))] do
             for i in rows do
                 for j in cols do
                     x:=m[i][j];
@@ -21,9 +21,9 @@ TestReadingMatrix := function(m)
     PrintHeadline("m[i,j]");
     MyBench(function()
         local u, i, j, rows, cols, x;
-        rows := [1..Length(m)];
-        cols := [1..Length(m[1])];
-        for u in [1..QuoInt(100000,Length(m)*Length(m[1]))] do
+        rows := [1..NrRows(m)];
+        cols := [1..NrCols(m)];
+        for u in [1..QuoInt(100000,NrRows(m)*NrCols(m))] do
             for i in rows do
                 for j in cols do
                     x:=m[i,j];
@@ -35,9 +35,9 @@ TestReadingMatrix := function(m)
     PrintHeadline("MatElm(m,i,j)");
     MyBench(function()
         local u, i, j, rows, cols, x;
-        rows := [1..Length(m)];
-        cols := [1..Length(m[1])];
-        for u in [1..QuoInt(100000,Length(m)*Length(m[1]))] do
+        rows := [1..NrRows(m)];
+        cols := [1..NrCols(m)];
+        for u in [1..QuoInt(100000,NrRows(m)*NrCols(m))] do
             for i in rows do
                 for j in cols do
                     x:=MatElm(m,i,j);
@@ -50,9 +50,9 @@ TestReadingMatrix := function(m)
     f:=ApplicableMethod(MatElm, [m,1,1]);;
     MyBench(function()
         local u, i, j, rows, cols, x;
-        rows := [1..Length(m)];
-        cols := [1..Length(m[1])];
-        for u in [1..QuoInt(100000,Length(m)*Length(m[1]))] do
+        rows := [1..NrRows(m)];
+        cols := [1..NrCols(m)];
+        for u in [1..QuoInt(100000,NrRows(m)*NrCols(m))] do
             for i in rows do
                 for j in cols do
                     x:=f(m,i,j);
@@ -70,9 +70,9 @@ TestWritingMatrix := function(m)
     MyBench(function()
         local u, i, j, rows, cols, x;
         x:=m[1][1];
-        rows := [1..Length(m)];
-        cols := [1..Length(m[1])];
-        for u in [1..QuoInt(100000,Length(m)*Length(m[1]))] do
+        rows := [1..NrRows(m)];
+        cols := [1..NrCols(m)];
+        for u in [1..QuoInt(100000,NrRows(m)*NrCols(m))] do
             for i in rows do
                 for j in cols do
                     m[i][j]:=x;
@@ -85,9 +85,9 @@ TestWritingMatrix := function(m)
     MyBench(function()
         local u, i, j, rows, cols, x;
         x:=m[1][1];
-        rows := [1..Length(m)];
-        cols := [1..Length(m[1])];
-        for u in [1..QuoInt(100000,Length(m)*Length(m[1]))] do
+        rows := [1..NrRows(m)];
+        cols := [1..NrCols(m)];
+        for u in [1..QuoInt(100000,NrRows(m)*NrCols(m))] do
             for i in rows do
                 for j in cols do
                     m[i,j]:=x;
@@ -100,9 +100,9 @@ TestWritingMatrix := function(m)
     MyBench(function()
         local u, i, j, rows, cols, x;
         x:=m[1][1];
-        rows := [1..Length(m)];
-        cols := [1..Length(m[1])];
-        for u in [1..QuoInt(100000,Length(m)*Length(m[1]))] do
+        rows := [1..NrRows(m)];
+        cols := [1..NrCols(m)];
+        for u in [1..QuoInt(100000,NrRows(m)*NrCols(m))] do
             for i in rows do
                 for j in cols do
                     SetMatElm(m,i,j,x);
@@ -116,9 +116,9 @@ TestWritingMatrix := function(m)
     MyBench(function()
         local u, i, j, rows, cols, x;
         x:=m[1][1];
-        rows := [1..Length(m)];
-        cols := [1..Length(m[1])];
-        for u in [1..QuoInt(100000,Length(m)*Length(m[1]))] do
+        rows := [1..NrRows(m)];
+        cols := [1..NrCols(m)];
+        for u in [1..QuoInt(100000,NrRows(m)*NrCols(m))] do
             for i in rows do
                 for j in cols do
                     f(m,i,j,x);
