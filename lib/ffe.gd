@@ -258,7 +258,7 @@ DeclareCategoryCollections( "IsFFECollColl" );
 ##  by their coefficients with respect to the canonical basis of the field.
 ##  <P/>
 ##  Elements in <Ref Filt="IsLogOrderedFFE"/> are ordered according to their
-##  discrete logarithms with respect to the <Ref Attr="PrimitiveElement"/>
+##  discrete logarithms with respect to the <Ref Attr="PrimitiveRoot"/>
 ##  attribute of the field.
 ##  For the comparison of finite field elements with other &GAP; objects,
 ##  see&nbsp;<Ref Sect="Comparisons"/>.
