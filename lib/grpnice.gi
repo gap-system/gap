@@ -56,47 +56,22 @@ end);
 ##
 #M  GeneratorsOfMagmaWithInverses( <group> )  .  get generators from nice obj
 ##
-InstallMethod( GeneratorsOfMagmaWithInverses,
-    true,
-    [ IsGroup and IsHandledByNiceMonomorphism ],
-    0,
-
-function( grp )
-    local   nice;
-    nice := NiceMonomorphism(grp);
-    return List( GeneratorsOfGroup(NiceObject(grp)),
-                 x -> PreImagesRepresentative(nice,x) );
-end );
+AttributeMethodByNiceMonomorphismList( GeneratorsOfMagmaWithInverses,
+  [ IsGroup ] );
 
 
 #############################################################################
 ##
 #M  SmallGeneratingSet( <group> )  .  get generators from nice obj
 ##
-InstallMethod( SmallGeneratingSet, true,
-    [ IsGroup and IsHandledByNiceMonomorphism ], 0,
-
-function( grp )
-    local   nice;
-    nice := NiceMonomorphism(grp);
-    return List( SmallGeneratingSet(NiceObject(grp)),
-                 x -> PreImagesRepresentative(nice,x) );
-end );
+AttributeMethodByNiceMonomorphismList( SmallGeneratingSet, [ IsGroup ] );
 
 
 #############################################################################
 ##
 #M  MinimalGeneratingSet( <group> )  .  get generators from nice obj
 ##
-InstallMethod( MinimalGeneratingSet, true,
-    [ IsGroup and IsHandledByNiceMonomorphism ], 0,
-
-function( grp )
-    local   nice;
-    nice := NiceMonomorphism(grp);
-    return List( MinimalGeneratingSet(NiceObject(grp)),
-                 x -> PreImagesRepresentative(nice,x) );
-end );
+AttributeMethodByNiceMonomorphismList( MinimalGeneratingSet, [ IsGroup ] );
 
 
 #############################################################################
@@ -223,13 +198,8 @@ PropertyMethodByNiceMonomorphismCollColl( \=,
 ##
 #M  \in( <elm>, <G> ) . . . . . . . . . . . . . . . . .  test if <elm> in <G>
 ##
-InstallMethod( \in,
-    "by nice monomorphism",
-    IsElmsColls,
-    [ IsMultiplicativeElementWithInverse,
-      IsGroup and IsHandledByNiceMonomorphism ],
-    0,
-
+AttributeMethodByNiceMonomorphismElmColl( \in,
+    [ IsMultiplicativeElementWithInverse, IsGroup ],
 function( elm, G )
     local   nice,  img;
 
@@ -301,13 +271,10 @@ GroupMethodByNiceMonomorphismCollColl( ClosureGroup,
 ##
 #M  ClosureGroup( <G>, <elm> )  . . . . . . . . closure of group with element
 ##
-# don't use `GroupMethodByNiceMonomorphismCollElm' to treat case of element
-# contained in.
-#GroupMethodByNiceMonomorphismCollElm( ClosureGroup,
-#    [ IsGroup, IsMultiplicativeElementWithInverse ] );
-InstallMethod(ClosureGroup,"by niceo",
-  IsCollsElms,[IsGroup and IsHandledByNiceMonomorphism,
-               IsMultiplicativeElementWithInverse],0,
+##  Don't use the generic code of `GroupMethodByNiceMonomorphismCollElm'
+##  to treat case of element membership.
+GroupMethodByNiceMonomorphismCollElm( ClosureGroup,
+  [ IsGroup, IsMultiplicativeElementWithInverse ],
 function( obj1, obj2 )
     local   nice,no,  img,  img1;
     nice := NiceMonomorphism(obj1);
@@ -360,10 +327,10 @@ GroupSeriesMethodByNiceMonomorphism( CompositionSeries,
 
 #############################################################################
 ##
-#M  ConjugacyClasses
+#M  ConjugacyClasses( <G> )  . . . . . . . . . . conjugacy classes of a group
 ##
-InstallMethod(ConjugacyClasses,"via niceomorphism",true,
-  [IsGroup and IsHandledByNiceMonomorphism],0,
+AttributeMethodByNiceMonomorphism( ConjugacyClasses,
+    [ IsGroup ],
 function(g)
 local mon,cl,clg,c,i;
   cl:=ConjugacyClassesForSmallGroup(g);
@@ -462,8 +429,8 @@ SubgroupMethodByNiceMonomorphism( FrattiniSubgroup,
 ##
 #M  HallSubgroup
 ##
-InstallMethod(HallSubgroupOp,"via niceomorphism",true,
-  [IsGroup and IsHandledByNiceMonomorphism,IsList],0,
+GroupMethodByNiceMonomorphismCollOther( HallSubgroupOp,
+    [ IsGroup, IsList ],
 function(g,l)
 local mon,h;
    mon:=NiceMonomorphism(g);
@@ -698,9 +665,8 @@ GroupSeriesMethodByNiceMonomorphism( LowerCentralSeriesOfGroup,
 ##
 #M  MaximalSubgroupClassReps( <G> )
 ##
-InstallOtherMethod( CalcMaximalSubgroupClassReps,
-  "handled by nice monomorphism, transfer tainter",
-  [IsGroup and IsHandledByNiceMonomorphism],
+AttributeMethodByNiceMonomorphism( CalcMaximalSubgroupClassReps,
+  [ IsGroup ],
 function( G )
 local   nice,  img,  sub,i;
   nice := NiceMonomorphism(G);
@@ -823,8 +789,8 @@ InstallMethodWithRandomSource( Random,
 ##
 #M  RationalClasses
 ##
-InstallMethod(RationalClasses,"via niceomorphism",true,
-  [IsGroup and IsHandledByNiceMonomorphism],0,
+AttributeMethodByNiceMonomorphism( RationalClasses,
+    [ IsGroup ],
 function(g)
 local mon,cl,clg,c,i;
    mon:=NiceMonomorphism(g);
@@ -848,8 +814,8 @@ end);
 ##
 #M  RightCosets
 ##
-InstallMethod(RightCosetsNC,"via niceomorphism",true,
-  [IsGroup and IsHandledByNiceMonomorphism,IsGroup],0,
+GroupMethodByNiceMonomorphismCollOther( RightCosetsNC,
+    [ IsGroup, IsGroup ],
 function(g,u)
 local mon,rt;
    mon:=NiceMonomorphism(g);
@@ -1080,9 +1046,9 @@ DeclareRepresentation( "IsEnumeratorByNiceomorphismRep",
 ##
 #M  Enumerator( <G> ) . . . . . . . . . . . . . . . . .  enumerator by niceo
 ##
-InstallMethod( Enumerator,"use nice monomorphism",true,
-        [ IsGroup and IsHandledByNiceMonomorphism and IsFinite ], 0,
-function( G )
+AttributeMethodByNiceMonomorphism( Enumerator,
+  [ IsGroup and IsAttributeStoringRep ],
+  function( G )
     return Objectify(
         NewType( FamilyObj(G), IsList and IsEnumeratorByNiceomorphismRep ),
         rec( group:=G,
