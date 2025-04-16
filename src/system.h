@@ -136,4 +136,8 @@ void Panic_(const char * file, int line, const char * fmt, ...) NORETURN
 */
 void InitSystem(int argc, const char * argv[], BOOL handleSignals);
 
+
+void InitRootPaths(int argc, const char * argv[]);
+
+
 #endif // GAP_SYSTEM_H
