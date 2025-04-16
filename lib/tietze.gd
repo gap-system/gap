@@ -156,7 +156,7 @@ DeclareSynonym("AbstractWordTzWord",AssocWordByLetterRep);
 ##  is only practicable if you are running an interactive job because you
 ##  have to know the value of <M>i</M>. Hence the proper way to access the new
 ##  generator is to write
-##  <C>GeneratorsOfPresentation(P)[Length(GeneratorsOfPresentation(P))]</C>.
+##  <C>Last(GeneratorsOfPresentation(P))</C>.
 ##  <Example><![CDATA[
 ##  gap> G := PerfectGroup(IsFpGroup, 120 );;
 ##  gap> H := Subgroup( G, [ G.1^G.2, G.3 ] );;
@@ -166,7 +166,7 @@ DeclareSynonym("AbstractWordTzWord",AssocWordByLetterRep);
 ##  #I  now the presentation has 5 generators, the new generator is _x7
 ##  gap> gens := GeneratorsOfPresentation( P );
 ##  [ _x1, _x2, _x4, _x5, _x7 ]
-##  gap> gen := gens[Length( gens )];
+##  gap> gen := Last(gens);
 ##  _x7
 ##  gap> gen = P!.7;
 ##  true
@@ -1974,7 +1974,7 @@ DeclareGlobalFunction("TzSort");
 ##  <P/>
 ##  <Log><![CDATA[
 ##  AddGenerator( P );
-##  g := GeneratorsOfPresentation(P)[Length(GeneratorsOfPresentation(P))];
+##  g := Last(GeneratorsOfPresentation(P));
 ##  AddRelator( P, g^-1 * word );
 ##  ]]></Log>
 ##  <P/>
@@ -2191,7 +2191,7 @@ DeclareGlobalFunction("TzSubstituteCyclicJoins");
 ##  <P/>
 ##  <Log><![CDATA[
 ##     AddGenerator( T );
-##     gen := T.generators[Length( T.generators )];
+##     gen := Last(T.generators);
 ##     AddRelator( T, gen^-1 * word );
 ##  ]]></Log>
 ##  <P/>

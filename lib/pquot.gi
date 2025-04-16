@@ -857,7 +857,7 @@ function( qs )
 
                     if bs[ 1 ] > c then
                         bs := [];
-                    elif c <= bs[ Length(bs) ] then
+                    elif c <= Last(bs) then
                         bs := [bs[1]..c];
                     fi;
                 fi;

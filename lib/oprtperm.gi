@@ -1179,7 +1179,7 @@ InstallMethod( IsSemiRegular, "permgroup on numbers", true,
         perm[l][orbs[i][1]] := orbs[i+1][1];
         used[l][orbs[i+1][1]] := true;
     od;
-    perm[l][orbs[Length(orbs)][1]] := orbs[1][1];
+    perm[l][Last(orbs)[1]] := orbs[1][1];
     used[l][orbs[1][1]] := true;
 
     # compute the orbit of the first representative

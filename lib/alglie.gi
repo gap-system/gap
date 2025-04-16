@@ -28,7 +28,7 @@ InstallMethod( LieUpperCentralSeries,
 
     S := [ TrivialSubalgebra( L ) ];
     C := LieCentre( L );
-    while C <> S[ Length(S) ]  do
+    while C <> Last(S)  do
 
       # Replace `L' by `L / C', compute its centre, and get the preimage
       # under the natural homomorphism.
@@ -61,7 +61,7 @@ InstallMethod( LieLowerCentralSeries,
     # Compute the series by repeated calling of `ProductSpace'.
     S := [ L ];
     C := LieDerivedSubalgebra( L );
-    while C <> S[ Length(S) ]  do
+    while C <> Last(S)  do
       Add( S, C );
       C:= ProductSpace( L, C );
     od;
@@ -104,7 +104,7 @@ InstallMethod( LieDerivedSeries,
     # Compute the series by repeated calling of `LieDerivedSubalgebra'.
     S := [ L ];
     D := LieDerivedSubalgebra( L );
-    while D <> S[ Length(S) ]  do
+    while D <> Last(S)  do
       Add( S, D );
       D:= LieDerivedSubalgebra( D );
     od;
@@ -127,7 +127,7 @@ InstallMethod( IsLieSolvable,
     local D;
 
     D:= LieDerivedSeries( L );
-    return Dimension( D[ Length( D ) ] ) = 0;
+    return Dimension( Last(D) ) = 0;
     end );
 
 InstallTrueMethod( IsLieSolvable, IsLieNilpotent );
@@ -146,7 +146,7 @@ InstallMethod( IsLieNilpotent,
     local D;
 
     D:= LieLowerCentralSeries( L );
-    return Dimension( D[ Length( D ) ] ) = 0;
+    return Dimension( Last(D) ) = 0;
     end );
 
 
@@ -597,7 +597,7 @@ InstallMethod( AdjointMatrix,
     x:= Coefficients( B, x );
     n:= Length( BasisVectors( B ) );
     T:= StructureConstantsTable( B );
-    zerovector:= [ 1 .. n ] * T[ Length( T ) ];
+    zerovector:= [ 1 .. n ] * Last(T);
     M:= [];
     for j in [ 1 .. n ] do
       row:= ShallowCopy( zerovector );
@@ -5330,7 +5330,7 @@ local ReductionModuloTable,   #
                                       if d in degs then
                                         return gradcomps[Position(degs,d)];
                                       else
-                                        return gradcomps[Length(gradcomps)];
+                                        return Last(gradcomps);
                                       fi;
                                      end
                   ) );
@@ -5665,7 +5665,7 @@ InstallMethod( JenningsLieAlgebra,
                                             if d in [1..Length(grading)] then
                                               return grading[d];
                                             else
-                                              return grading[Length(grading)];
+                                              return Last(grading);
                                             fi;
                                          end
                       )
@@ -5864,7 +5864,7 @@ InstallMethod( PCentralLieAlgebra,
                                             if d in [1..Length(grading)] then
                                               return grading[d];
                                             else
-                                              return grading[Length(grading)];
+                                              return Last(grading);
                                             fi;
                                          end
                       )

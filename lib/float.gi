@@ -798,13 +798,13 @@ InstallOtherMethod( UnivariateRationalFunctionByCoefficients, "ring",
         function(r,ncof,dcof,val,ind)
     local fam;
     fam := RationalFunctionsFamily( r );
-    if Length( ncof ) > 0 and (IsZero( ncof[1] ) or IsZero( ncof[Length( ncof )] ))  then
+    if Length( ncof ) > 0 and (IsZero( ncof[1] ) or IsZero( Last( ncof ) ))  then
         if not IsMutable( ncof )  then
             ncof := ShallowCopy( ncof );
         fi;
         val := val + RemoveOuterCoeffs( ncof, fam!.zeroCoefficient );
     fi;
-    if Length( dcof ) > 0 and (IsZero( dcof[1] ) or IsZero( dcof[Length( dcof )] ))  then
+    if Length( dcof ) > 0 and (IsZero( dcof[1] ) or IsZero( Last( dcof ) ))  then
         if not IsMutable( dcof )  then
             dcof := ShallowCopy( dcof );
         fi;

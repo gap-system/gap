@@ -5301,7 +5301,7 @@ InstallGlobalFunction( CollapsedMat, function( mat, maps )
       for j in nontrivblocks[i] do fusion[j]:= pos; od;
       pos:= pos + 1;
     od;
-    for i in [ minima[ Length( minima ) ] + 1 .. Length( mat[1] ) ] do
+    for i in [ Last(minima) + 1 .. Length( mat[1] ) ] do
       if not IsBound( fusion[i] ) then
         fusion[i]:= pos;
         pos:= pos + 1;

@@ -33,7 +33,7 @@ function( arg )
     then Error("for usage, see ?GroupHomomorphismByImages"); fi;
 
     if not IsGroup(arrgh[2]) then
-      arrgh:=Concatenation([arrgh[1],Group(arrgh[Length(arrgh)])],
+      arrgh:=Concatenation([arrgh[1],Group(Last(arrgh))],
                            arrgh{[2..Length(arrgh)]});
     fi;
 

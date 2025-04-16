@@ -14,7 +14,7 @@
 BindGlobal("HomomorphismsSeries",function(G,h)
 local r,img,i,gens,img2;
   r:=ShallowCopy(h);
-  img:=Image(h[Length(h)],G);
+  img:=Image(Last(h),G);
   for i in [Length(h)-1,Length(h)-2..1] do
     gens:=GeneratorsOfGroup(img);
     img2:=Image(h[i],G);

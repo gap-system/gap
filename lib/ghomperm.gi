@@ -661,7 +661,7 @@ local dom, l, n, i, j,o,mp,lp,x;
   if Length(l)=0 then
     return fail;
   fi;
-  return l[Length(l)][2];
+  return Last(l)[2];
 end );
 
 #############################################################################

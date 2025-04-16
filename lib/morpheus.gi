@@ -2302,7 +2302,7 @@ InstallGlobalFunction(AutomorphismGroupFittingFree,function(g)
         Add(ttypes,[Length(acts)]);
         Add(ttypnam,tty);
         Info(InfoMorph,1,"New isomorphism type: ",
-          ttypnam[Length(ttypnam)].name);
+          Last(ttypnam).name);
       fi;
     fi;
   od;

@@ -1099,7 +1099,7 @@ function( G, n )
             od;
 
             # only the radical is missing now
-            index := Length( series[Length(series)] );
+            index := Length( Last(series) );
             order := p^index;
             phi := phi * (order^n);
             if phi = 0 then return 0; fi;
@@ -1610,7 +1610,7 @@ local   home,i,  N,  O,  I,  E,  L;
   fi;
 
   # typecheck arguments
-  if 1 < Size(S[Length(S)])  then
+  if 1 < Size(Last(S))  then
       S := ShallowCopy( S );
       Add( S, TrivialSubgroup(S[1]) );
   fi;

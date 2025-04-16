@@ -282,7 +282,7 @@ local brg,str,p,a,param,g,s,small,plus,sets;
       if '=' in brg then
         brg:=brg{[1..Position(brg,'=')-1]};
       fi;
-      while brg[Length(brg)]=' ' do
+      while Last(brg)=' ' do
         brg:=brg{[1..Length(brg)-1]};
       od;
       brg:=[brg];

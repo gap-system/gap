@@ -921,7 +921,7 @@ InstallMethod( MinimalPolynomial,
       # The coefficients of the minimal polynomial
       # are given by the linear relation.
       coe:= NullspaceMat( mat )[1];
-      coe:= Inverse( coe[ Length( coe ) ] ) * coe;
+      coe:= Inverse( Last(coe) ) * coe;
 
     fi;
 

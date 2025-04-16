@@ -330,7 +330,7 @@ InstallGlobalFunction( AddEquationsSQ, function( eq, t1, t2 )
         v := Length(x);
         if 0 < v  then w := (v-1)*n + Length(x[v]);  fi;
         while 0 < v and IsBound(eq.system[w])  do
-            c := -x[v][Length(x[v])];
+            c := -Last(x[v]);
             for i  in eq.spos[w]  do
                 if IsBound(x[i])  then
                     x[i] := ShallowCopy( x[i] );
@@ -347,7 +347,7 @@ InstallGlobalFunction( AddEquationsSQ, function( eq, t1, t2 )
             if 0 < v  then w := (v-1)*n + Length(x[v]);  fi;
         od;
         if 0 < v  then
-            eq.system[w] := x * (1/x[v][Length(x[v])]);
+            eq.system[w] := x * (1/Last(x[v]));
             eq.spos[w]   := Filtered( [1..eq.nrels], t -> IsBound(x[t]) );
         fi;
     od;
@@ -1723,7 +1723,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
             e:=Filtered(DerivedSeriesOfGroup(m),
               # roughly 5 for 1000, 30 for 10^6, 170 for 10^9
               x->IndexNC(m,x)^4<=Size(m));
-            m:=e[Length(e)];
+            m:=Last(e);
             it:=DescSubgroupIterator(m:skip:=LogInt(Size(p),2));
           fi;
 

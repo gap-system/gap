@@ -318,7 +318,7 @@ InstallGlobalFunction( DecompositionInt, function( A, B, depth )
       else
         b:= b{ choice };
         coeff:= PadicCoefficients( A, Aqinv, b, p, depth );
-        if coeff[ Length( coeff ) ] = nullv then
+        if Last(coeff) = nullv then
           sol := nullv;
           for i in Reversed( [ 1 .. Length( coeff ) - 1 ] ) do
             sol := sol * p + coeff[i];
@@ -1539,7 +1539,7 @@ InstallGlobalFunction( OrthogonalEmbeddings, function( arg )
           mult[i] := a[i];
           while a[i] > 0 do
              s := s - 1;
-             if M[s][Length( M[s] )] = 1 then
+             if Last(M[s]) = 1 then
                 k := k -1;
              fi;
              a[i] := a[i] - 1;
@@ -1665,7 +1665,7 @@ if l = 0 then return l; fi;
 if l = t then
           while a[l] > 0 do
              s := s -1;
-             if M[s][Length( M[s] )] = 1 then
+             if Last(M[s]) = 1 then
                 k := k - 1;
              fi;
              a[l] := a[l] - 1;
@@ -1678,7 +1678,7 @@ l:= deca( t-1 );
        else
           if a[l] <> 0 then
              s := s - 1;
-             if M[s][Length( M[s] )] = 1 then
+             if Last(M[s]) = 1 then
                 k := k - 1;
              fi;
              a[l] := a[l] - 1;

@@ -1785,7 +1785,7 @@ InstallMethod( PrintObj,
             for i in [1..Length(eu[k])-1] do
                 Print(eu[k][i],"<x>");
             od;
-            Print( eu[k][Length(eu[k])], ")" );
+            Print( Last(eu[k]), ")" );
             if k+1 <> Length( eu ) then
                 if not ( IsRat( eu[k+3] ) and eu[k+3] < 0 ) then
                     Print("+");
@@ -2160,7 +2160,7 @@ InstallMethod( PrintObj,
             for i in [1..Length(eu[k])-1] do
                 Print(eu[k][i],"/\\");
             od;
-            Print( eu[k][Length(eu[k])], ")" );
+            Print( Last(eu[k]), ")" );
             if k+1 <> Length( eu ) then
                 if not ( IsRat( eu[k+3] ) and eu[k+3] < 0 ) then
                     Print("+");
@@ -2495,7 +2495,7 @@ InstallMethod( PrintObj,
             for i in [1..Length(eu[k])-1] do
                 Print(eu[k][i],".");
             od;
-            Print( eu[k][Length(eu[k])], ")" );
+            Print( Last(eu[k]), ")" );
             if k+1 <> Length( eu ) then
                 if not ( IsRat( eu[k+3] ) and eu[k+3] < 0 ) then
                     Print("+");

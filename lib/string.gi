@@ -687,7 +687,7 @@ end );
 ##
 InstallGlobalFunction(Chomp, function(str)
 
-  if IsString(str) and str <> "" and str[Length(str)] = '\n' then
+  if IsString(str) and str <> "" and Last(str) = '\n' then
     if 1 < Length(str) and str[Length(str) - 1] = '\r' then
       return str{[1 .. Length(str) - 2]};
     fi;
@@ -878,7 +878,7 @@ local nohead,file,sep,f, line, fields, l, r, i,s,t,add,dir;
     if IsBool(arg[2]) then
       nohead:=arg[2];
     fi;
-    sep:=arg[Length(arg)];
+    sep:=Last(arg);
     if IsString(sep) then
       sep:=sep[1];
     elif not IsChar(sep) then

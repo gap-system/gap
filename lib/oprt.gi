@@ -552,8 +552,8 @@ end );
 InstallGlobalFunction( ActionHomomorphism, function( arg )
     local   attr,  xset,  p;
 
-    if arg[ Length( arg ) ] = "surjective"  or
-       arg[ Length( arg ) ] = "onto"  then
+    if Last( arg ) = "surjective"  or
+       Last( arg ) = "onto"  then
         attr := SurjectiveActionHomomorphismAttr;
         Remove( arg );
     else
@@ -568,8 +568,8 @@ InstallGlobalFunction( ActionHomomorphism, function( arg )
          and Source( arg[ 2 ]!.actionHomomorphism ) = arg[ 1 ]  then
         return arg[ 2 ]!.actionHomomorphism;  # GAP-3 compatibility
     else
-        if IsFunction( arg[ Length( arg ) ] )  then  p := 1;
-                                               else  p := 0;  fi;
+        if IsFunction( Last( arg ) )  then  p := 1;
+                                      else  p := 0;  fi;
         if Length( arg ) mod 2 = p  then
             xset := CallFuncList( ExternalSet, arg );
         elif IsIdenticalObj( FamilyObj( arg[ 2 ] ),
@@ -944,7 +944,7 @@ end);
 InstallGlobalFunction( Action, function( arg )
     local   hom,  O;
 
-    if not IsString(arg[Length(arg)]) then
+    if not IsString(Last(arg)) then
       Add(arg,"surjective"); # enforce surjective action homomorphism -- we
                              # anyhow compute the image
     fi;
@@ -2089,8 +2089,8 @@ InstallGlobalFunction( Permutation, function( arg )
         if IsDomain( D )  then
             D := Enumerator( D );
         fi;
-        if IsFunction( arg[ Length( arg ) ] )  then
-            act := arg[ Length( arg ) ];
+        if IsFunction( Last( arg ) )  then
+            act := Last( arg );
         else
             act := OnPoints;
         fi;
@@ -2187,8 +2187,8 @@ InstallGlobalFunction( PermutationCycle, function( arg )
             D := Enumerator( D );
         fi;
         pnt := arg[ 3 ];
-        if IsFunction( arg[ Length( arg ) ] )  then
-            act := arg[ Length( arg ) ];
+        if IsFunction( Last( arg ) )  then
+            act := Last( arg );
         else
             act := OnPoints;
         fi;
@@ -2266,8 +2266,8 @@ InstallGlobalFunction( Cycle, function( arg )
             p := 2;
         fi;
         pnt := arg[ p ];
-        if IsFunction( arg[ Length( arg ) ] )  then
-            act := arg[ Length( arg ) ];
+        if IsFunction( Last( arg ) )  then
+            act := Last( arg );
         else
             act := OnPoints;
         fi;
@@ -2347,8 +2347,8 @@ InstallGlobalFunction( Cycles, function( arg )
         if IsDomain( D )  then
             D := Enumerator( D );
         fi;
-        if IsFunction( arg[ Length( arg ) ] )  then
-            act := arg[ Length( arg ) ];
+        if IsFunction( Last( arg ) )  then
+            act := Last( arg );
         else
             act := OnPoints;
         fi;
@@ -2562,8 +2562,8 @@ InstallGlobalFunction( CycleLength, function( arg )
           p := 2;
       fi;
       pnt := arg[ p ];
-      if IsFunction( arg[ Length( arg ) ] )  then
-          act := arg[ Length( arg ) ];
+      if IsFunction( Last( arg ) )  then
+          act := Last( arg );
       else
           act := OnPoints;
       fi;
@@ -2624,8 +2624,8 @@ InstallGlobalFunction( CycleLengths, function( arg )
         if IsDomain( D )  then
             D := Enumerator( D );
         fi;
-        if IsFunction( arg[ Length( arg ) ] )  then
-            act := arg[ Length( arg ) ];
+        if IsFunction( Last( arg ) )  then
+            act := Last( arg );
         else
             act := OnPoints;
         fi;
@@ -2890,8 +2890,8 @@ local   G,  D,  d,  e,  gens,  acts,  act,  xset,  hom,  p,  rep;
           return One(G);
         fi;
 
-        if IsFunction( arg[ Length( arg ) ] )  then
-            act := arg[ Length( arg ) ];
+        if IsFunction( Last( arg ) )  then
+            act := Last( arg );
         else
             act := OnPoints;
         fi;

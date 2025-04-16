@@ -96,7 +96,7 @@ local props,pool,test,c,f,r,tablecache,tmp;
           p:=PositionProperty(fingerprints,x->x[1]=f);
           if p=fail then
             Add(a,f(g));
-            Add(fingerprints,[f,a[Length(a)]]);
+            Add(fingerprints,[f,Last(a)]);
           else
             Add(a,fingerprints[p][2]);
           fi;

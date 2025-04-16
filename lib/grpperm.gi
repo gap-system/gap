@@ -1672,13 +1672,13 @@ InstallMethod( Socle,"test primitive", true, [ IsPermGroup ], 0,
     #    fi;
     #    if shortcut  then
     #        ds := DerivedSeriesOfGroup( G );
-    #        return ds[ Length( ds ) ];
+    #        return Last(ds);
     #    fi;
     fi;
 
     coll := Collected( Factors(Integers, Size( G ) ) );
     if deg < 78125  then
-        p := coll[ Length( coll ) ][ 1 ];
+        p := Last(coll)[ 1 ];
     else
         i := Length( coll );
         while coll[ i ][ 2 ] = 1  do
@@ -1699,7 +1699,7 @@ InstallMethod( Socle,"test primitive", true, [ IsPermGroup ], 0,
     L := NormalClosure( G, SubgroupNC( G, [ z,z^Random(G) ] ) );
     if deg >= 78125  then
         ds := DerivedSeriesOfGroup( L );
-        L := ds[ Length( ds ) ];
+        L := Last(ds);
     fi;
     if IsSemiRegular( L, Omega )  then
         L := ClosureSubgroup( L, Centralizer( G, L ) );

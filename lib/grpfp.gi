@@ -2081,7 +2081,7 @@ local ind,q,is;
   else
     # force a final reduction
     is:=Intersection(l{[1..Length(l)-1]});
-    is:=Intersection(is,l[Length(l)]:reduce:=true);
+    is:=Intersection(is,Last(l):reduce:=true);
   fi;
   q:=DefiningQuotientHomomorphism(is);
   return q;
@@ -3063,7 +3063,7 @@ local m, rels, rel,w, wo, ok, a, k, t, ts, data, i, j;
   for i in RelatorsOfFpGroup(G) do
     w:=LetterRepAssocWord(i);
     # cyclic reduction
-    while Length(w)>0 and w[1]=-w[Length(w)] do
+    while Length(w)>0 and w[1]=-Last(w) do
       w:=w{[2..Length(w)-1]};
     od;
 
@@ -3877,8 +3877,8 @@ BindGlobal("FinIndexCyclicSubgroupGenerator",function(G,maxtable)
         x->[Order(MappedWord(x,FreeGeneratorsOfFpGroup(G),perms)),x]);
       # prefer large order and short word length
       SortBy(short,x->[x[1],-Length(x[2])]);
-      Info(InfoFpGroup,1,"FIS: better ",short[Length(short)][1]);
-      return [ElementOfFpGroup(FamilyObj(One(G)),short[Length(short)][2]),
+      Info(InfoFpGroup,1,"FIS: better ",Last(short)[1]);
+      return [ElementOfFpGroup(FamilyObj(One(G)),Last(short)[2]),
               max];
     fi;
     if max*3/2<maxtable and max*2>maxtable then
@@ -4224,7 +4224,7 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, HH, t, sz,
           rp:=r^(o/i);
           eo:=[1]; # {1} is a base
           for z in [2..i] do
-            Add(eo,eo[Length(eo)]^rp);
+            Add(eo,Last(eo)^rp);
           od;
           rpo:=[0..i-1];
           SortParallel(eo,rpo);

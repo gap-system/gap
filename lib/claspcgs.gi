@@ -705,7 +705,7 @@ local  G,  home,  # the group and the home pcgs
     if step>2 then
       # we created a factor, so we have to lift at the end
       mustlift[step]:=true;
-      liftkerns[step]:=eas[Length(eas)];
+      liftkerns[step]:=Last(eas);
     fi;
   fi;
 
@@ -1056,7 +1056,7 @@ local  G,home,  # the group and the home pcgs
     # make steps larger if possible
     L:=[Length(eas)];
     for step in [Length(eas)-1,Length(eas)-2..1] do
-      if (Size(eas[step])/Size(eas[L[Length(L)]])>2^15 and not step+1 in L) or not HasElementaryAbelianFactorGroup(eas[step],eas[L[Length(L)]]) then
+      if (Size(eas[step])/Size(eas[Last(L)])>2^15 and not step+1 in L) or not HasElementaryAbelianFactorGroup(eas[step],eas[Last(L)]) then
         Add(L,step+1);
       fi;
     od;

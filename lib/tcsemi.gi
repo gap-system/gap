@@ -188,8 +188,8 @@ function(cong)
               active, " active, ", defind - active, " killed.\n");
       fi;
 
-      a:= w[1][Length(w[1])];
-      b:= w[2][Length(w[2])];
+      a:= Last(w[1]);
+      b:= Last(w[2]);
       u:= table[a][s];
       v:= table[b][t];
 
@@ -259,8 +259,8 @@ function(cong)
               active, " active, ", defind - active, " killed.\n");
       fi;
 
-      a:= w[1][Length(w[1])];
-      b:= w[2][Length(w[2])];
+      a:= Last(w[1]);
+      b:= Last(w[2]);
       u:= table[a][s];
       v:= table[b][t];
 
