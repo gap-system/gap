@@ -407,7 +407,7 @@ function(name, args)
         ErrorNoReturn("usage: ", name, "( [<filter>, [<field>, ] ] <size> )");
     fi;
 
-    size := args[Length(args)];
+    size := Last(args);
     if not IsFilter(args[1]) then
         ErrorNoReturn("usage: <filter> must be a filter");
     fi;

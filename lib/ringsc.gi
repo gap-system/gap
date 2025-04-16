@@ -309,7 +309,7 @@ local fam,r,w,l,o;
       w:=w*x;
       if w=o then
         # last entry was inverse
-        return l[Length(l)];
+        return Last(l);
       fi;
       if w in l then
         # loop without inverse -- not invertible

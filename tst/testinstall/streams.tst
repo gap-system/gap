@@ -146,9 +146,9 @@ gap> stream;
 InputTextString(8,56)
 gap> ReadAllLine(stream, true);
 "some line\n"
-gap> ReadAllLine(stream, line -> 0 < Length(line) and line[Length(line)] = '\n');
+gap> ReadAllLine(stream, line -> 0 < Length(line) and Last(line) = '\n');
 "another line\n"
-gap> ReadAllLine(stream, false, line -> 0 < Length(line) and line[Length(line)] = '\n');
+gap> ReadAllLine(stream, false, line -> 0 < Length(line) and Last(line) = '\n');
 "last line without newline"
 gap> ReadAllLine(stream);
 fail

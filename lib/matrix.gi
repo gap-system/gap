@@ -551,7 +551,7 @@ BindGlobal( "Matrix_MinimalPolynomialSameField", function( fld, mat, ind )
         #mp := (mp*op)/GcdOp(mp, op);
         #mp:=mp/LeadingCoefficient(mp);
         mp:=QUOTREM_LAURPOLS_LISTS(ProductCoeffs(mp,op),GcdCoeffs(mp,op))[1];
-        mp:=mp/mp[Length(mp)];
+        mp:=mp/Last(mp);
 
         for j in [1..Length(span)] do
             if IsBound(span[j]) then

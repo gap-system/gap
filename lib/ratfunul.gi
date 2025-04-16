@@ -753,7 +753,7 @@ local val,brci,fam;
 
   g:=PowerModCoeffs(g,Length(g),e,m,Length(m));
   if Length(g)>0 and (g[1]=fam!.zeroCoefficient or
-             g[Length(g)]=fam!.zeroCoefficient) then
+             Last(g)=fam!.zeroCoefficient) then
       g:=ShallowCopy(g);
       val:=RemoveOuterCoeffs(g,fam!.zeroCoefficient);
   else
@@ -901,7 +901,7 @@ local fam;
   if Length(f[1])=0 then
     return fam!.zeroCoefficient;
   else
-    return f[1][Length(f[1])];
+    return Last(f[1]);
   fi;
 end);
 
@@ -1337,13 +1337,13 @@ function( fam, cofs,dc, val, ind )
   # construct a laurent polynomial
 
   fam:=RationalFunctionsFamily(fam);
-  if Length(cofs)>0 and (IsZero(cofs[1]) or IsZero(cofs[Length(cofs)])) then
+  if Length(cofs)>0 and (IsZero(cofs[1]) or IsZero(Last(cofs))) then
     if not IsMutable(cofs) then
       cofs:=ShallowCopy(cofs);
     fi;
     val:=val+RemoveOuterCoeffs(cofs,fam!.zeroCoefficient);
   fi;
-  if Length(dc)>0 and (IsZero(dc[1]) or IsZero(dc[Length(dc)])) then
+  if Length(dc)>0 and (IsZero(dc[1]) or IsZero(Last(dc))) then
     if not IsMutable(dc) then
       dc:=ShallowCopy(dc);
     fi;

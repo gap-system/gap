@@ -1918,7 +1918,7 @@ InstallMethod( Factors,
 
     # We really have to compute the factorization.
     # First split the polynomial into leading coefficient and monic part.
-    lc:= coeffs[ Length( coeffs ) ];
+    lc:= Last(coeffs);
     if not IsOne( lc ) then
       coeffs:= coeffs / lc;
     fi;

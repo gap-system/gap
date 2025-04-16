@@ -252,7 +252,7 @@ InstallMethod( CompositionSeries,
     SetSize( fac, factorsize[Length(normals)] );
     SetIsSimpleGroup( fac, true );
     fahom:=GroupHomomorphismByImagesNC( s, fac,
-                    normals[Length(normals)], factors[Length(normals)] );
+                    Last(normals), factors[Length(normals)] );
     if IsIdenticalObj(Parent(t),s) then
       Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,fahom);
     fi;
@@ -523,14 +523,14 @@ InstallGlobalFunction( CasesCSPG, function(G)
 
     # degree is not prime power
     primes := Factors(Integers,degree);
-    if primes[1] < primes[Length(primes)] then
+    if primes[1] < Last(primes) then
         output[1] := 1;
         # only case when index of primitive group in socle is not 2*prime
         if Length(primes)=15  then
             output[2] := 12;
             output[3] := 5;
         else
-            output[2] := primes[1]*primes[Length(primes)];
+            output[2] := primes[1]*Last(primes);
             output[3] := Length(primes)/2;
         fi;
         return output;
@@ -2591,7 +2591,7 @@ local new,start,n,i,tail, up,u,v;
     # now n does not contain ser[i]
 
     # was n actually in the series?
-    if new[Length(new)]=n then
+    if Last(new)=n then
       # yes, go on and add the rest of the series
       start:=i; # next time start from next step
     else
@@ -2626,7 +2626,7 @@ local new,start,n,i,tail, up,u,v;
       Append(new,up);
 #Print("C",List([1..Length(new)-1],x->Size(new[x+1])/Size(new[x])),"\n");
       i:=i+1;
-      while i<=Length(ser) and Size(new[Length(new)])>=Size(ser[i]) do
+      while i<=Length(ser) and Size(Last(new))>=Size(ser[i]) do
         i:=i+1;
       od;
 
@@ -2681,7 +2681,7 @@ local G,H,nser,U,i,j,k,cs,n,mat,mats,row,p,one,m,v,ser,gens,r,dim,im,
       n:=List(ocs,i->Intersection(U,i));
       cs:=[U];
       for i in [2..Length(n)] do
-        if Size(cs[Length(cs)])>Size(n[i]) then
+        if Size(Last(cs))>Size(n[i]) then
           Add(cs,n[i]);
         fi;
       od;

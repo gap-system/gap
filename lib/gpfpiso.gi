@@ -302,7 +302,7 @@ function(g,str,N)
       rad:=g;
     fi;
 
-    if Length(ser)=0 or Size(ser[Length(ser)])>Size(rad) then Add(ser,rad);fi;
+    if Length(ser)=0 or Size(Last(ser))>Size(rad) then Add(ser,rad);fi;
 
     if Size(rad)>1 then
       if HasChiefSeries(g) and N in ChiefSeries(g) and rad in ChiefSeries(g) then
@@ -1079,7 +1079,7 @@ local fam,mfam,fpfam,mfpfam,hom;
             if IsOddInt(i) then x:=(i+1)/2;
             else x:=-i/2;fi;
             # word must be freely cancelled
-            if Length(g)>0 and x=-g[Length(g)] then
+            if Length(g)>0 and x=-Last(g) then
               Remove(g);
             else Add(g,x); fi;
           od;
@@ -1618,7 +1618,7 @@ local i,j,u,o,r,stb,m,g,img,p,rep,b,expand,dict,act,gens,gf,writestab;
 
     # orbit/rep stabilizer
     o:=[CanonicalRightCosetElement(u,rep)];
-    dict:=NewDictionary(rep,true,chain[Length(chain)]);
+    dict:=NewDictionary(rep,true,Last(chain));
     AddDictionary(dict,o[1],1);
     r:=[[0,One(sub)]];
     stb:=[];
@@ -1949,7 +1949,7 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   single:=IndexNC(group,borel)<10^7;
 
   while Length(ac)>2 and
-    IndexNC(ac[Length(ac)],ac[Length(ac)-2])<10^7 do
+    IndexNC(Last(ac),ac[Length(ac)-2])<10^7 do
     ac:=ac{Difference([1..Length(ac)],[Length(ac)-1])};
   od;
 
@@ -2981,7 +2981,7 @@ local p,dat,lev,l,sub,c,s,r,dc;
     l:=Filtered(l,IsSolvableGroup);
   until Length(l)>0;
   SortBy(l,Size);
-  l:=l[Length(l)]; # will be "borel"
+  l:=Last(l); # will be "borel"
 
   dc:=DoubleCosets(G,l,l);
 

@@ -299,7 +299,7 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
     if IsList( A )  then
         G:=A;
         A:=A[1];
-        U := G[ Length( G ) ];
+        U := Last(G);
         if HasPcgs( U )  and  IsPcgsPermGroupRep( Pcgs( U ) )  then
             U := CopyStabChain( Pcgs( U )!.stabChain );
         fi;
@@ -357,7 +357,7 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
     od;
 
     grp := G[ 1 ];
-    whole := IsTrivial( G[ Length( G ) ] );
+    whole := IsTrivial( Last(G) );
 
     oldlen := Length( U.labels );
     series := [ U ];
@@ -434,9 +434,9 @@ InstallGlobalFunction(TryPcgsPermGroup,function(arg)
             SetIsNilpotentGroup( grp, true );
         fi;
     else
-        pcgs!.denominator := G[ Length( G ) ];
-        if     HasIsSolvableGroup( G[ Length( G ) ] )
-           and IsSolvableGroup( G[ Length( G ) ] )  then
+        pcgs!.denominator := Last(G);
+        if     HasIsSolvableGroup( Last(G) )
+           and IsSolvableGroup( Last(G) )  then
             SetIsSolvableGroup( grp, true );
         fi;
     fi;

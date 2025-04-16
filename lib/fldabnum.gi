@@ -1186,7 +1186,7 @@ InstallGlobalFunction( LenstraBase, function( n, stabilizer, supergroup, m )
           if ForAny( zumb, x -> ( ( x - pnt * rep ) * d ) mod n = 0 ) then
             Append( orbits, List( neworbits,
                               x -> List( x, y -> (y*rep) mod n ) ) );
-            for ppnt in orbits[ Length( orbits ) ] do
+            for ppnt in Last(orbits) do
               SubtractSet( zumb, List( [ 0..d-1 ],
                               k -> ( ppnt + k * n / d ) mod n ) );
             od;

@@ -538,7 +538,7 @@ local hom,      #isomorphism fp
       Add(sl,SchuMu(G,p));
       ab:=AbelianInvariants(KernelOfMultiplicativeGeneralMapping(s));
       ms:=ms*Product(ab);
-      Add(ngl,ngl[Length(ngl)]+Length(ab));
+      Add(ngl,Last(ngl)+Length(ab));
     fi;
   od;
   Info(InfoSchur,1,"Relevant primes:",pll);
@@ -547,8 +547,8 @@ local hom,      #isomorphism fp
     return IdentityMapping(G);
   fi;
 
-  #F:=FreeGroup(List([1..ngl[Length(ngl)]],x->Concatenation("@",String(x))));
-  F:=FreeGroup(ngl[Length(ngl)]);
+  #F:=FreeGroup(List([1..Last(ngl)],x->Concatenation("@",String(x))));
+  F:=FreeGroup(Last(ngl));
 
   rels:=[];
   rel2:=[];
@@ -559,7 +559,7 @@ local hom,      #isomorphism fp
     mg:=IsomorphismPermGroup(KernelOfMultiplicativeGeneralMapping(s));
     mg:=List(IndependentGeneratorsOfAbelianGroup(Image(mg)),
           i->PreImagesRepresentative(mg,i));
-    sdc:=ListWithIdenticalEntries(ngl[Length(ngl)],One(Source(s)));
+    sdc:=ListWithIdenticalEntries(Last(ngl),One(Source(s)));
     sdc{[ngl[pp]+1..ngl[pp+1]]}:=mg;
 
     sdc:=GroupHomomorphismByImagesNC(F,KernelOfMultiplicativeGeneralMapping(s),

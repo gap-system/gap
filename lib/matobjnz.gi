@@ -1600,7 +1600,7 @@ function( fld, mat, ind )
         op := ZModnZMOPI( fld, mat, vec, span);
         op:=List(op);
         mp:=QUOTREM_LAURPOLS_LISTS(ProductCoeffs(mp,op),GcdCoeffs(mp,AsList(op)))[1];
-        mp:=mp/mp[Length(mp)];
+        mp:=mp/Last(mp);
         Info(InfoMatrix,2,"So Far ",dim,", Span=",Length(span));
 
         for j in [1..Length(span)] do

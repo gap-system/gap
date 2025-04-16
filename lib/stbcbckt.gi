@@ -855,9 +855,9 @@ end );
 ##
 InstallGlobalFunction( AddRefinement, function( rbase, func, args )
     if    Length( args ) = 0
-       or not IsList( args[ Length( args ) ] )
-       or Length( args[ Length( args ) ] ) <> 0  then
-        Add( rbase.rfm[ Length( rbase.rfm ) ], rec( func := func,
+       or not IsList( Last(args) )
+       or Length( Last(args) ) <> 0  then
+        Add( Last(rbase.rfm), rec( func := func,
                                                     args := args ) );
         Info( InfoBckt, 1, "Refinement ", func, ": ",
                 NumberCells( rbase.partition ), " cells" );
@@ -1540,7 +1540,7 @@ InstallGlobalFunction( PartitionBacktrack,
     fi;
 
     org := [  ];  orb := [  ];  orB := [  ];
-    range := [ 1 .. rbase.domain[ Length( rbase.domain ) ] ];
+    range := [ 1 .. Last(rbase.domain) ];
     blen := infinity;
     rep := PBEnumerate( 1, not repr );
     if not repr  then
@@ -1884,7 +1884,7 @@ InstallGlobalFunction( NextLevelRegularGroups, function( P, rbase )
         rbase.trees := [ EmptyStabChain( [  ], rbase.regorb.identity, p ) ];
         AddRefinement( rbase, STBBCKT_STRING_REGORB1, [ d, 1 ] );
     else
-        tree := rbase.trees[ Length( rbase.trees ) ];
+        tree := Last(rbase.trees);
         if Length( tree.orbit ) < Length( rbase.regorb.orbit )  then
             p := PositionProperty( rbase.regorb.orbit, q ->
                          P.lengths[ CellNoPoint(P,q) ] <> 1

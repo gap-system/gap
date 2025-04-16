@@ -4128,7 +4128,7 @@ InstallGlobalFunction( ExtendRepresentation,
       while i<= le do
         w:= ShallowCopy( wds[i] );
 
-        for j in [ w[ Length(w) ]..Length( mats )] do
+        for j in [ Last(w)..Length( mats )] do
             m:= asbas[i]*mats[j];
             if not IsContainedInSpan( sp, m ) then
                 ready:= false;

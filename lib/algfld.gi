@@ -599,7 +599,7 @@ local i,fam,f,g,t,h,rf,rg,rh;
     #  t:=t-1;
     #od;
   od;
-  rf:=1/f[Length(f)]*rf;
+  rf:=1/Last(f)*rf;
   rf:=ImmutableVector(fam!.baseField, rf, true);
   return AlgExtElm(fam,rf);
 end);
@@ -829,7 +829,7 @@ local fam,c,m;
   until RankMat(m)<Length(m);
   m:=NullspaceMat(m)[1];
   # make monic
-  m:=m/m[Length(m)];
+  m:=m/Last(m);
   return UnivariatePolynomialByCoefficients(FamilyObj(fam!.zeroCoefficient),m,inum);
 end);
 
@@ -1253,7 +1253,7 @@ local opt,irrfacs, coeffring, i, factors, ind, coeffs, val,
 
   # We really have to compute the factorization.
   # First split the polynomial into leading coefficient and monic part.
-  lc:= coeffs[ Length( coeffs ) ];
+  lc:= Last(coeffs);
   if not IsOne( lc ) then
     coeffs:= coeffs / lc;
   fi;
