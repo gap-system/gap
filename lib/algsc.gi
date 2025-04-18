@@ -654,8 +654,9 @@ InstallGlobalFunction( AlgebraByStructureConstants, function( arg )
 end );
 
 InstallGlobalFunction( AlgebraWithOneByStructureConstants, function( arg )
-    return AlgebraByStructureConstantsArg( arg{ [ 1 .. Length( arg )-1 ] },
-               IsSCAlgebraObj, arg[ Length( arg ) ] );
+    local onecoeffs;
+    onecoeffs := Remove(arg);
+    return AlgebraByStructureConstantsArg( arg, IsSCAlgebraObj, onecoeffs );
 end );
 
 InstallGlobalFunction( LieAlgebraByStructureConstants, function( arg )
