@@ -921,10 +921,9 @@ BindGlobal( "NextIterator_WeylOrbit", function( it )
                 nu:= [];
                 foundsucc:= true;
             else
-                a:= stack[Length(stack)];
+                a:= Remove( stack );
                 mu:= a[1]; bound:= a[2]+1;
                 len:= len-1;
-                Remove( stack, Length(stack) );
             fi;
 
         fi;
