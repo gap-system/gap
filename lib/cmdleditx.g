@@ -129,7 +129,7 @@ BindGlobal("CommandLineHistoryHandler", function(l)
       for i in [2..Length(hist)-1] do
         hist[i] := hist[i+1];
       od;
-      Last(hist) := l[1];
+      hist[Length(hist)] := l[1];
       if hist[1] > 2 then
         hist[1] := hist[1]-1;
       else
