@@ -81,7 +81,7 @@ local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
     if Length(p)>0 then
       i:=List(p,x->[(x-A)*(18-x),x]);
       Sort(i);
-      p:=i[Length(i)][2]; # best split
+      p:=Last(i)[2]; # best split
       if not p in depths then
         depths:=Concatenation(Filtered(depths,x->x<=A),[p],
                   Filtered(depths,x->x>A));
@@ -101,7 +101,7 @@ local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
     p:=ords[A];
     A:=[A..depths[Position(depths,A)+1]-1];
     pc:=InducedPcgsByPcSequence(pcgs,pcgs{[A[1]..Length(pcgs)]}) mod
-        InducedPcgsByPcSequence(pcgs,pcgs{[A[Length(A)]+1..Length(pcgs)]});
+        InducedPcgsByPcSequence(pcgs,pcgs{[Last(A)+1..Length(pcgs)]});
     mo:=LinearActionLayer(G,pc);
     mo:=GModuleByMats(mo,GF(p));
     b:=MTX.BasesCompositionSeries(mo);
@@ -134,12 +134,12 @@ local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
       b:=A[1];
       pc:=Concatenation(pcgs{[1..b-1]},
            Concatenation(np),
-           pcgs{[A[Length(A)]+1..Length(pcgs)]});
+           pcgs{[Last(A)+1..Length(pcgs)]});
 
       pcgs:=PermgroupSuggestPcgs(G,pc);
       #depths:=Concatenation(Filtered(depths,x->x<=b),
 #              List([1..Length(np)-1],x->b+Sum(List(np{[1..x]},Length))),
-#              Filtered(depths,x->x>A[Length(A)]));
+#              Filtered(depths,x->x>Last(A)));
       depths:=IndicesEANormalSteps(pcgs);
       ords:=RelativeOrders(pcgs);
     else
@@ -568,7 +568,7 @@ local limit, r, pcgs, ser, ind, m, p, l, l2, good, i, j,nser,hom;
         l2:=[[]];
         good:=false;
         for j in [1..Length(l)] do
-          if p^(Length(l[j])-Length(l2[Length(l2)]))>limit then
+          if p^(Length(l[j])-Length(Last(l2)))>limit then
             if Length(good)>0 then
               Add(l2,good);
             fi;

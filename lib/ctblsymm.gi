@@ -1669,10 +1669,10 @@ BindGlobal( "MatrixSpinCharsSn", function( n )
         elif IsOddInt( n - Length( bars[i] ) ) and bars[i] = pi then
           Add( char, E(4)^( ( n - Length( bars[i] ) + 1 ) / 2 )
                      * ER( Product( bars[i] ) / 2 ) );
-          Add( char, -char[ Length( char ) ] );
+          Add( char, -Last( char ) );
 
-          Add( achar, char[ Length( char ) ] );
-          Add( achar, -achar[ Length( achar ) ] );
+          Add( achar, Last( char ) );
+          Add( achar, -Last( achar ) );
 
         else
           Add( char, 0 );

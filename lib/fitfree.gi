@@ -379,7 +379,7 @@ local G,A,wholesocle,ff,r,ser,fser,hom,q,s,d,act,o,i,j,a,perm,k;
           function(u,a) return Image(a,u);end);
       fser:=[TrivialSubgroup(q)];
       for i in o do
-        a:=fser[Length(fser)];
+        a:=Last(fser);
         for j in i do
           a:=ClosureGroup(a,j);
         od;
@@ -396,7 +396,7 @@ local G,A,wholesocle,ff,r,ser,fser,hom,q,s,d,act,o,i,j,a,perm,k;
     perm:=ActionHomomorphism(q,d,"surjective");
     k:=PreImage(hom,KernelOfMultiplicativeGeneralMapping(perm));
     if Size(s)<Size(KernelOfMultiplicativeGeneralMapping(perm)) then
-      s:=ser[Length(ser)];
+      s:=Last(ser);
       hom:=NaturalHomomorphismByNormalSubgroupNC(k,s);
       q:=Image(hom);
       act:=List(GeneratorsOfGroup(A),x->InducedAutomorphism(hom,x));
@@ -1338,7 +1338,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
           cgens:=GeneratorsOfGroup(ocr.complement);
         od;
 
-        if Size(dser[Length(dser)])>Size(j.hall) then
+        if Size(Last(dser))>Size(j.hall) then
           gens:=[];
           for z in cgens do
             b:=Order(z);

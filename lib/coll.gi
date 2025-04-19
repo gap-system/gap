@@ -2687,7 +2687,7 @@ InstallGlobalFunction(Union, function(arg)
             rd := x;
             min := x[1];
             smin := x[2];
-            max := x[Length(x)];
+            max := Last(x);
         else
             s := Set(x);
             if Length(s) = 1 then
@@ -2708,7 +2708,7 @@ InstallGlobalFunction(Union, function(arg)
                 fi;
                 min := s[1];
                 smin := s[2];
-                max := s[Length(s)];
+                max := Last(s);
             fi;
         fi;
         #
@@ -2825,7 +2825,7 @@ InstallGlobalFunction(Union, function(arg)
             #
             Add(needed,[minNeeded, minNeeded+stride..r[1]-stride]);
         fi;
-        rmax := r[Length(r)];
+        rmax := Last(r);
         if rmax >= minNeeded then
             #
             # Progress with sweep
@@ -2857,7 +2857,7 @@ InstallGlobalFunction(Union, function(arg)
         # but represents it as a union of ranges
         #
         outs := [];
-        max2 := r2[Length(r2)];
+        max2 := Last(r2);
         if Length(r) = 1 then
             #
             # This case is simpler
@@ -2866,7 +2866,7 @@ InstallGlobalFunction(Union, function(arg)
             fi;
             return outs;
         fi;
-        max := r[Length(r)];
+        max := Last(r);
 
         #
         # There is a good kernel intersection for two ranges
@@ -2884,7 +2884,7 @@ InstallGlobalFunction(Union, function(arg)
             return outs;
         fi;
 
-        max2 := r2[Length(r2)];
+        max2 := Last(r2);
 
         #
         # In general we have the bit before r2, the bit after and

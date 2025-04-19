@@ -378,7 +378,7 @@ InstallGlobalFunction( CompositionMapping, function ( arg )
     fi;
 
     # compute the composition
-    com := arg[ Length( arg ) ];
+    com := Last( arg );
     if not IsGeneralMapping( com ) then
       Error( "<com> must be (general) mapping" );
     fi;

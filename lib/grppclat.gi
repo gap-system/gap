@@ -54,7 +54,7 @@ local G,morph,N,s,p,e,i,j,k,ise,fine,cor;
         fi;
       od;
     od;
-    Assert(1,HasElementaryAbelianFactorGroup(s[Length(s)],cor));
+    Assert(1,HasElementaryAbelianFactorGroup(Last(s),cor));
     ise:=cor;
     Add(s,ise);
     p:=Position(e,ise);
@@ -569,8 +569,8 @@ local g,        # group
       xo;       # xternal orbits
 
   g:=arg[1];
-  if Length(arg)>1 and IsRecord(arg[Length(arg)]) then
-    opt:=arg[Length(arg)];
+  if Length(arg)>1 and IsRecord(Last(arg)) then
+    opt:=Last(arg);
   else
     opt:=rec();
   fi;
@@ -871,7 +871,7 @@ local g,        # group
             for bpos in ex do
               Add(bs,B[Representative(bpos)]);
               Add(bsnorms,StabilizerOfExternalSet(bpos));
-#            Assert(1,Normalizer(no,B[bpos[1]])=bsnorms[Length(bsnorms)]);
+#            Assert(1,Normalizer(no,B[bpos[1]])=Last(bsnorms));
             od;
           fi;
 

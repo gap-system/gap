@@ -3374,7 +3374,7 @@ local p,new,start,half;
     start:=p+Length(r);
     p:=PositionSublist(s,r,start);
     while p<>fail do
-      if start>Length(s) or Length(new)=0 or new[Length(new)]<>-s[start] then
+      if start>Length(s) or Length(new)=0 or Last(new)<>-s[start] then
         Append(new,s{[start..p-1]});
       else
         new:=WordProductLetterRep(new,s{[start..p-1]});
@@ -3382,7 +3382,7 @@ local p,new,start,half;
       start:=p+Length(r);
       p:=PositionSublist(s,r,start);
     od;
-    if start>Length(s) or Length(new)=0 or new[Length(new)]<>-s[start] then
+    if start>Length(s) or Length(new)=0 or Last(new)<>-s[start] then
       Append(new,s{[start..Length(s)]});
     else
       new:=WordProductLetterRep(new,s{[start..Length(s)]});

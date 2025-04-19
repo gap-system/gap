@@ -256,25 +256,25 @@ local acts,gps,clusters,conj,ncl,nacts,i,j,new,q,hom,lhom,c,n,r,len,
       len:=Permuted(len,perm);
       n:=[acts[i]];
       for j in oa do
-        q:=n[Length(n)];
+        q:=Last(n);
         if ForAny(GeneratorsOfGroup(q),x->OnSets(j,x)<>j) then
           q:=Stabilizer(q,j,OnSets);
         fi;
         Add(n,q);
       od;
-      lan:=n[Length(n)];
+      lan:=Last(n);
       fur:=Length(Orbits(lan,MovedPoints(acts[i])))
           <>Length(orbs[c[1]]);
-      localn:=[n[Length(n)]];
+      localn:=[Last(n)];
       if Size(lan)=Size(acts[i]) and not fur then
         # already all the same
         Add(ncl,c);
         Add(nacts,acts[i]);
         c:=[];
       else
-        Info(InfoLattice,5,"reduced (orb) by ",Size(acts[i])/Size(n[Length(n)]));
+        Info(InfoLattice,5,"reduced (orb) by ",Size(acts[i])/Size(Last(n)));
         for j in [2..Length(c)] do
-          localn:=[n[Length(n)]];
+          localn:=[Last(n)];
           if Collected(List(orbs[c[j]],Length))=pat then
             r:=One(acts[i]);
             # already for changed len!
@@ -323,7 +323,7 @@ local acts,gps,clusters,conj,ncl,nacts,i,j,new,q,hom,lhom,c,n,r,len,
                       r:=r*q;
                     fi;
                   else
-                    Add(localn,Stabilizer(localn[Length(localn)],ooa,OnSetsSets));
+                    Add(localn,Stabilizer(Last(localn),ooa,OnSetsSets));
                   fi;
 
                 fi;
@@ -347,7 +347,7 @@ local acts,gps,clusters,conj,ncl,nacts,i,j,new,q,hom,lhom,c,n,r,len,
           fi;
         od;
         Add(ncl,new);
-        Add(nacts,localn[Length(localn)]);
+        Add(nacts,Last(localn));
         c:=Difference(c,new);
       fi;
     od;
@@ -665,8 +665,8 @@ local  n,o,dom,cl,i,s,j,t,ti,tl,gens;
       while j<=Length(dom) do
         if Size(dom[j])=s and ForAll(gens,k->k^ti in dom[j]) then
           # hit
-          dom[j]:=dom[Length(dom)];
-          Unbind(dom[Length(dom)]);
+          dom[j]:=Last(dom);
+          Remove(dom);
         else
           j:=j+1;
         fi;

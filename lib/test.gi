@@ -159,15 +159,15 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
       foundcmd := false;
       Add(outp, "");
       Add(inp, lines[i]{[6..Length(lines[i])]});
-      Add(inp[Length(inp)], '\n');
+      Add(Last(inp), '\n');
       Add(pos, i);
       i := i+1;
     elif StartsWith(lines[i], "> ") then
       if foundcmd then
         testError("Invalid test file: #@ command found in the middle of a single test");
       fi;
-      Append(inp[Length(inp)], lines[i]{[3..Length(lines[i])]});
-      Add(inp[Length(inp)], '\n');
+      Append(Last(inp), lines[i]{[3..Length(lines[i])]});
+      Add(Last(inp), '\n');
       i := i+1;
     elif StartsWith(lines[i], ">\t") then
         testError("Invalid test file: Continuation prompt '> ' followed by a tab, expected a regular space");
@@ -175,8 +175,8 @@ InstallGlobalFunction(ParseTestInput, function(str, ignorecomments, fnam)
       if foundcmd and not ForAll(lines[i], c -> c = ' ' or c = '\t') then
         testError("Invalid test file: #@ command found in the middle of a single test");
       fi;
-      Append(outp[Length(outp)], lines[i]);
-      Add(outp[Length(outp)], '\n');
+      Append(Last(outp), lines[i]);
+      Add(Last(outp), '\n');
       i := i+1;
     else
       testError("Invalid test file");
@@ -318,7 +318,7 @@ BindGlobal("TEST", AtomicRecord( rec(Timings := rec())));
 TEST.transformFunctions := AtomicRecord(rec());
 TEST.transformFunctions.removenl := function(a)
   a := ShallowCopy(a);
-  while Length(a) > 0 and a[Length(a)] = '\n' do
+  while Length(a) > 0 and Last(a) = '\n' do
     Remove(a);
   od;
   return a;
@@ -760,7 +760,7 @@ InstallGlobalFunction("Test", function(arg)
   fi;
   if IsString(opts.rewriteToFile) then
     lines := SplitString(full, "\n", "");
-    ign := pf.pos[Length(pf.pos)];
+    ign := Last(pf.pos);
     new := [];
     for i in ign do
       new[i] := lines[i];

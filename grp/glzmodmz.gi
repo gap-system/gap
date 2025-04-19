@@ -367,7 +367,7 @@ local oper,n,R,o,nrit,
               e:=List(e,Int);
               e:=b+pp*List([1..n],x->e{[(x-1)*n+1..x*n]});
               addmat(e);
-              if e=basm[Length(basm)] then
+              if e=Last(basm) then
                 # was added
                 Add(ngens,e);
                 g:=Group(ngens);

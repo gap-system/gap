@@ -254,7 +254,7 @@ function( home, list, modulo )
 
     depthsInParent:=fail; # do not set by default
     dd:=fail; # do not set by default
-    if IsEmpty(wd) or wd[Length(wd)] = Length(wd)  then
+    if IsEmpty(wd) or Last(wd) = Length(wd)  then
         filter := filter and IsModuloTailPcgsRep;
         # are we even: tail mod further tail?
         if IsSubsetInducedPcgsRep(pcgs) and IsModuloTailPcgsRep(pcgs)

@@ -365,7 +365,7 @@ function( l1 )
         return;
     else
         z := l1[1] * 0;
-        while 0 < Length(l1) and l1[Length(l1)] = z  do
+        while 0 < Length(l1) and Last(l1) = z  do
             Remove(l1);
         od;
     fi;
@@ -1110,7 +1110,7 @@ InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
     for j in [2..Length(f)] do
         fdi[j-1]:=f[j]-f[j-1];
     od;
-    Add(fdi,-f[Length(f)]); # the subtraction multiple we need at the end.
+    Add(fdi,-Last(f)); # the subtraction multiple we need at the end.
 
     fdip := List(fdi, x-> Position(fdi,x));
 
@@ -1273,7 +1273,7 @@ BindGlobal( "AClosestVectorDriver", function(mat,f,vec,cnt,stop,coords)
     for j in [2..q] do
         fdi[j-1]:=f[j]-f[j-1];
     od;
-    Add(fdi,-f[Length(f)]); # the subtraction multiple we need at the end.
+    Add(fdi,-Last(f)); # the subtraction multiple we need at the end.
 
     fdip := List(fdi, x-> Position(fdi,x));
 

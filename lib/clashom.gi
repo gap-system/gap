@@ -2183,7 +2183,7 @@ BindGlobal("LiftClassesEATrivRep",
 
   end;
 
-  orpo:=NewDictionary(orb[Length(orb)].rep,true,field^Length(orb[1].rep));
+  orpo:=NewDictionary(Last(orb).rep,true,field^Length(orb[1].rep));
   for p in [1..Length(orb)] do
     AddDictionary(orpo,orb[p].rep,p);
   od;

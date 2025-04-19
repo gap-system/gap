@@ -1444,7 +1444,7 @@ InstallMethod( ReadLine, "iostream",
         stream![4] := true;
         return fail;
     fi;
-    while sofar[Length(sofar)] <> '\n' do
+    while Last(sofar) <> '\n' do
         chunk := READ_IOSTREAM_NOWAIT( stream![1], 1);
         if chunk = fail or Length(chunk) = 0 then
             stream![4] := true;
@@ -1492,7 +1492,7 @@ InstallOtherMethod( ReadAllLine, "iostream,boolean",
         [ IsInputOutputStream, IsBool ],
     function(iostream, nofail)
     return ReadAllLine(iostream, nofail,
-                       line -> 0 < Length(line) and line[Length(line)] = '\n');
+                       line -> 0 < Length(line) and Last(line) = '\n');
 end);
 
 InstallOtherMethod( ReadAllLine, "iostream,function",

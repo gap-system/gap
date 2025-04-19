@@ -437,7 +437,7 @@ DeclareOperation( "ReadLine", [ IsInputStream ] );
 ##  equivalent to passing the function
 ##  <P/>
 ##  <Log><![CDATA[
-##  line -> 0 < Length(line) and line[Length(line)] = '\n'
+##  line -> 0 < Length(line) and Last(line) = '\n'
 ##  ]]></Log>
 ##  <P/>
 ##  for the <A>IsAllLine</A> argument. The purpose of the <A>IsAllLine</A> argument  is

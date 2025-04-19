@@ -20,7 +20,7 @@ local f,typ,lc;
 
 # trap code for unreduced coeffs.
 # if Length(coeffs[1])>0
-#    and (IsZero(coeffs[1][1]) or IsZero(coeffs[1][Length(coeffs[1])])) then
+#    and (IsZero(coeffs[1][1]) or IsZero(Last(coeffs[1]))) then
 #   Error("zero coeff!");
 # fi;
 
@@ -690,7 +690,7 @@ local   quot, lcq,  lmq,  mon,  i, coeff;
       od;
 
       ##  now add the quotient of the coefficients
-      coeff := p[Length(p)] / lcq;
+      coeff := Last(p) / lcq;
 
       ##  Add coeff, mon to quot, the result is sorted in reversed order.
       Add( quot,  coeff );
@@ -879,7 +879,7 @@ local w;
     u:=w;
   od;
   if Length(u)>0 then
-    return u*u[Length(u)]^-1;
+    return u*Last(u)^-1;
   else
     return u;
   fi;

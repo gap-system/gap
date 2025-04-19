@@ -959,7 +959,7 @@ InstallGlobalFunction( LatticeSubgroupsByTom, function( G )
 
     marks:=MarksTom(tom);
     for i in [1..Length(classes)] do
-         SetSize(classes[i],marks[i][1]/marks[i][Length(marks[i])]);
+         SetSize(classes[i],marks[i][1]/Last(marks[i]));
     od;
 
     # Create the lattice.
@@ -1324,7 +1324,7 @@ InstallMethod( LengthsTom,
     function( tom )
     local nrSubs;
     nrSubs:= NrSubsTom( tom );
-    return nrSubs[ Length( nrSubs ) ];
+    return Last(nrSubs);
     end );
 
 
@@ -1728,7 +1728,7 @@ InstallMethod( IsAbelianTom,
 
     # All subgroups must be normal.
     for sub in [ 1 .. Length( order ) ] do
-      if marks[ sub ][1] <> marks[ sub ][ Length( marks[ sub ] ) ] then
+      if marks[ sub ][1] <> Last(marks[ sub ]) then
         return false;
       fi;
     od;
@@ -2641,7 +2641,7 @@ InstallMethod( DecomposedFixedPointVector,
       if i = 0 then
         working:= false;
       else
-        dec[i]:= fix[i]/marks[i][Length(marks[i])];
+        dec[i]:= fix[i]/Last(marks[i]);
         for j in [1..Length(subs[i])] do
           fix[subs[i][j]]:= fix[subs[i][j]] - dec[i] * marks[i][j];
         od;
@@ -2770,7 +2770,7 @@ InstallMethod( FactorGroupTom,
 
     marks:= MarksTom( tom );
     subs:= SubsTom( tom );
-    if marks[ nor ][1] <> marks[ nor ][ Length( marks[nor] ) ] then
+    if marks[ nor ][1] <> Last(marks[ nor ]) then
       Error( "<nor>-th class of subgroups not normal" );
     fi;
     facsubs:= [];

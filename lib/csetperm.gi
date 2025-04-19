@@ -55,7 +55,7 @@ local o,A,ser,act,i;
   i:=1;
   while i<=Length(o) and Size(A)>Size(U) do
     A:=Stabilizer(A,o[i],OnSets);
-    if Size(A)<Size(ser[Length(ser)]) then
+    if Size(A)<Size(Last(ser)) then
       Add(ser,A);
       Add(act,[o[i],OnSets]);
     fi;
@@ -122,13 +122,13 @@ BindGlobal( "RightTransversalPermGroupConstructor", function( filter, G, U )
             nc:=[ac[1]];
             nct:=[actions[1]];
             for i in [3..Length(ac)] do
-              if Size(ac[i])/Size(nc[Length(nc)])>MAX_SIZE_TRANSVERSAL then
+              if Size(ac[i])/Size(Last(nc))>MAX_SIZE_TRANSVERSAL then
                 Add(nc,ac[i-1]);
                 Add(nct,actions[i-1]);
               fi;
             od;
-            Add(nc,ac[Length(ac)]);
-            Add(nct,actions[Length(actions)]);
+            Add(nc,Last(ac));
+            Add(nct,Last(actions));
             if Length(nc)>2 then
               ac:=[];
               for i in [Length(nc),Length(nc)-1..2] do

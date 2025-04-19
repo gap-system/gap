@@ -279,7 +279,7 @@ end );
             fi;
 
             # Last argument must be the actual method
-            if not IsFunction(args[Length(args)]) then
+            if not IsFunction(Last(args)) then
                 ErrorNoReturn("Argument list must end with the method");
             fi;
 

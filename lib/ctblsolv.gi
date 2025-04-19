@@ -1093,7 +1093,7 @@ InstallMethod( BaumClausenInfo,
         Append( pcgs, List( SpecialPcgs( ImagesSource( j ) ),
                             x -> PreImagesRepresentative( j, x ) ) );
       od;
-      Append( pcgs, SpecialPcgs( ssr.ds[ Length( ssr.ds ) ]) );
+      Append( pcgs, SpecialPcgs( Last(ssr.ds) ) );
       G:= ImagesSource( hom );
       pcgs:= List( pcgs, x -> ImagesRepresentative( hom, x ) );
       pcgs:= Filtered( pcgs, x -> Order( x ) <> 1 );
@@ -1359,7 +1359,7 @@ InstallMethod( BaumClausenInfo,
                                                             [ root ] ) ) ],
                               D ) );
           Assert( 2, BaumClausenInfoDebug.testrep( pcgs{ [ i .. lg ] },
-                              nextnonlin1[ Length( nextnonlin1 ) ], e ),
+                              Last(nextnonlin1), e ),
                   Concatenation( "BaumClausenInfo: failed assertion in ",
                       "inducing linear representations ",
                       "(i = ", String( i ), ")\n" ) );
@@ -1434,7 +1434,7 @@ InstallMethod( BaumClausenInfo,
                       diag := List( X.diag,
                              x -> ( x  + k + value ) mod e ) ) ], rep ) );
             Assert( 2, BaumClausenInfoDebug.testrep( pcgs{ [ i .. lg ] },
-                                nextnonlin2[ Length( nextnonlin2 ) ], e ),
+                                Last(nextnonlin2), e ),
                     Concatenation( "BaumClausenInfo: failed assertion in ",
                         "extending nonlinear representations ",
                         "(i = ", String( i ), ")\n" ) );
@@ -1519,7 +1519,7 @@ InstallMethod( BaumClausenInfo,
 
           Add( nextnonlin2, Concatenation( [ D_gi ], D ) );
           Assert( 2, BaumClausenInfoDebug.testrep( pcgs{ [ i .. lg ] },
-                              nextnonlin2[ Length( nextnonlin2 ) ], e ),
+                              Last(nextnonlin2), e ),
                   Concatenation( "BaumClausenInfo: failed assertion in ",
                       "inducing nonlinear representations ",
                       "(i = ", String( i ), ")\n" ) );

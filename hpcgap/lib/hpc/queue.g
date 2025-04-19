@@ -176,7 +176,7 @@ BIND_GLOBAL("QueueTail", function(queue)
     if tail <> 3 then
       return queue[tail-1];
     else
-      return queue[Length(queue)];
+      return Last(queue);
     fi;
   fi;
 end);

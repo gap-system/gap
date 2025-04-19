@@ -322,7 +322,7 @@ local pol, fam, inum, r;
       r:=List([1..Minimum(DegreeOfUnivariateLaurentPolynomial(pol),
                           Random([2,2,2,2,3,3,3,4,5,6]))],
               i->One(fam)*Random(Integers));
-    until not IsZero(r[Length(r)]);
+    until not IsZero(Last(r));
   fi;
   r:=UnivariatePolynomialByCoefficients(fam,r,inum+1);
   Info(InfoPoly,2,"Tschirnhausen transformation with ",r);
@@ -656,7 +656,7 @@ local n,i,sh,fu,ps,pps,ind,keineu,avoid,cf;
   # Nenner mit in den Z"ahler bringen
   cf:=CoefficientsOfUnivariatePolynomial(f);
   avoid:=Lcm(Concatenation([NumeratorRat(d),DenominatorRat(d)],
-                List(cf,DenominatorRat),[NumeratorRat(cf[Length(cf)])]));
+                List(cf,DenominatorRat),[NumeratorRat(Last(cf))]));
   Info(InfoGalois,1,"Partitions Test");
   n:=DegreeOfUnivariateLaurentPolynomial(f);
 

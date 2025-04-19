@@ -176,7 +176,7 @@ function(m, v)
   ## up to 56 full, then increasingly reduce
   #len:=Minimum(len,8*RootInt(len));
   #while Length(weights)<len do
-  #  Add(weights,weights[Length(weights)]+step);
+  #  Add(weights,Last(weights)+step);
   #  step:=NextPrimeInt(step);
   #od;
   #return function(a)
