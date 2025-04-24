@@ -401,7 +401,7 @@ InstallMethod( ViewString,
       fi;
       if Length(list) > 2 then
         Append( str, " .. " );
-        Append( str, String( list[ Length( list ) ] ) );
+        Append( str, String( Last(list) ) );
       fi;
     fi;
     Append( str, " ]" );
@@ -422,7 +422,7 @@ InstallMethod( String,
             Append( str, String( list[ 2 ] ) );
         fi;
         Append( str, " .. " );
-        Append( str, String( list[ Length( list ) ] ) );
+        Append( str, String( Last(list) ) );
     fi;
     Append( str, " ]" );
     ConvertToStringRep( str );
@@ -2618,7 +2618,7 @@ InstallMethod( MaximumList,
     if Length( list ) = 0 then
         Error( "MaximumList: <list> must contain at least one element" );
     fi;
-    max := list[ Length( list ) ];
+    max := Last(list);
     for elm in list do
         if max < elm  then
             max := elm;
@@ -2648,7 +2648,7 @@ InstallMethod( MaximumList,
     if Length( range ) = 0 then
         Error( "MaximumList: <range> must contain at least one element" );
     fi;
-    max := range[ Length( range ) ];
+    max := Last(range);
     if max < range[1] then
         return range[1];
     fi;
@@ -2728,7 +2728,7 @@ InstallMethod( MinimumList,
     if Length( list ) = 0 then
         Error( "MinimumList: <list> must contain at least one element" );
     fi;
-    min := list[ Length( list ) ];
+    min := Last(list);
     for elm  in list  do
         if elm < min then
             min := elm;
@@ -3919,9 +3919,9 @@ InstallMethod( ViewObj,
       Print( list[1], ", ", list[2] );
     elif 2 < Length( list ) then
       if list[2] - list[1] <> 1  then
-        Print( list[1], ", ", list[2], " .. ", list[ Length( list ) ] );
+        Print( list[1], ", ", list[2], " .. ", Last(list) );
       else
-        Print( list[1], " .. ", list[ Length( list ) ] );
+        Print( list[1], " .. ", Last(list) );
       fi;
     fi;
     Print( " ]" );

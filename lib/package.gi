@@ -3158,7 +3158,7 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
       # Extract a comment if possible.
       if IsString( entry[1][2] ) then
         # Store also the comment for this method installation.
-        return [ name, entry[1][ Length( entry[1] ) ],
+        return [ name, Last(entry[1]),
                  entry[2], entry[3], entry[1][2] ];
       else
         pos:= PositionProperty( entry[1],
@@ -3167,13 +3167,13 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
         if pos <> fail then
           # Create a comment from the list of strings that describe filters.
           return [ NameFunction( entry[1][1] ),
-                   entry[1][ Length( entry[1] ) ],
+                   Last(entry[1]),
                    entry[2], entry[3], Concatenation( "for ",
                    JoinStringsWithSeparator( entry[1][ pos ], ", " ) ) ];
         else
           # We know no comment.
           return [ NameFunction( entry[1][1] ),
-                   entry[1][ Length( entry[1] ) ],
+                   Last(entry[1]),
                    entry[2], entry[3] ];
         fi;
       fi;

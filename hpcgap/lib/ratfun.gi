@@ -1479,7 +1479,7 @@ local e;
   if Length(e)=0 then
     return FamilyObj(pol)!.zeroCoefficient;
   fi;
-  return e[Length(e)];
+  return Last(e);
 end );
 
 #############################################################################
@@ -1933,8 +1933,8 @@ local cp, mons, L, T, perm, vars, nvars, F, R1, var, degrees, d, p,
       div:=Product(L{terms});
       div:=MVFactorInverseKroneckerMapUnivariate(div,varpow);
       ediv:=ExtRepPolynomialRatFun(div);
-      #if not IsOne(ediv[Length(ediv)]) then
-      #  div:=div/ediv[Length(ediv)];
+      #if not IsOne(Last(ediv)) then
+      #  div:=div/Last(ediv);
       #  ediv:=ExtRepPolynomialRatFun(div);
       #fi;
       # call the library routine used to test quotient of polynomials

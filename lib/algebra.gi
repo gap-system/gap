@@ -492,7 +492,7 @@ InstallGlobalFunction( SetEntrySCTable, function( T, i, j, list )
     fi;
 
     # Check `list', and construct the table entry.
-    zero:= T[ Length( T ) ];
+    zero:= Last(T);
     Fam:= FamilyObj( zero );
     entry:= [ [], [] ];
     for k in [ 1, 3 .. Length( list ) -1 ] do
@@ -580,7 +580,7 @@ InstallGlobalFunction( GapInputSCTable, function( T, varnam )
     # Initialize, and set the ranges for the loops.
     dim:= Length( T ) - 2;
     str:= Concatenation( varnam, ":= EmptySCTable( ",
-                         String( dim ), ", ", String( T[ Length( T ) ] ) );
+                         String( dim ), ", ", String( Last(T) ) );
     lower:= [ 1 .. dim ];
     if   T[ dim+1 ] =  1 then
       Append( str, ", \"symmetric\"" );
@@ -736,7 +736,7 @@ InstallGlobalFunction( QuotientFromSCTable, function( T, x, c )
       return c;
     fi;
 
-    zero:= ListWithIdenticalEntries( n, T[ Length( T ) ] );
+    zero:= ListWithIdenticalEntries( n, Last(T) );
     for i in [ 1 .. n ] do
       row:= ShallowCopy( zero );
       for j in [ 1 .. n ] do
@@ -769,7 +769,7 @@ InstallGlobalFunction( TestJacobi, function( T )
           sum,
           t;
 
-    zero:= T[ Length( T ) ];
+    zero:= Last(T);
     n:= Length( T ) - 2;
 
     for i in [ 1 .. n ] do
@@ -2456,7 +2456,7 @@ BindGlobal( "CentreFromSCTable", function( T )
           val;     # loop over structure constants in $c_{ij}$
 
     n:= Length( T ) - 2;
-    M:= NullMat( n, n*n, T[ Length( T ) ] );
+    M:= NullMat( n, n*n, Last(T) );
     for i in [ 1 .. n ] do
       row:= M[i];
       for j in [ 1 .. n ] do
@@ -2924,7 +2924,7 @@ InstallOtherMethod( PowerSubalgebraSeries,
     # Compute the series by repeated calling of `ProductSpace'.
     S := [ A ];
     D := ProductSpace( A, A );
-    while D <> S[ Length(S) ]  do
+    while D <> Last(S)  do
       Add( S, D );
       D:= ProductSpace( D, D );
     od;

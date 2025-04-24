@@ -73,7 +73,7 @@ local G,N,K,s, h, q, fpi, factorpres, com, comgens, cen, ocrels, fpcgs, ncom,
     h:=List(s,x->ClosureGroup(K,x));
     s:=[h[1]];
     for i in h{[2..Length(h)]} do
-      if Size(i)<Size(s[Length(s)]) then
+      if Size(i)<Size(Last(s)) then
         Add(s,i);
       fi;
     od;

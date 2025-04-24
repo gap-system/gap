@@ -3972,7 +3972,7 @@ end );
 ##  is more or less equivalent to that of
 ##
 ##     AddGenerator( T );
-##     gen := T!.generators[Length( T!.generators )];
+##     gen := Last( T!.generators );
 ##     AddRelator( T, gen^-1 * word );
 ##
 ##  The  essential  difference  is,  that  `TzSubstituteWord',  as  a  Tietze
@@ -4010,7 +4010,7 @@ InstallGlobalFunction( TzSubstituteWord, function ( T, word )
 
     # add a new generator.
     AddGenerator( T );
-    gen := T!.generators[Length( T!.generators )];
+    gen := Last( T!.generators );
 
     # add the corresponding relator.
     if TzOptions(T).printLevel >= 1 then  Print(

@@ -262,7 +262,7 @@ InstallGlobalFunction(CopyStabChain,function( C1 )
 
     # Second pass: Find the new positions of the labels.
     for xlab  in Xlabels  do
-        need := xlab[ Length( xlab ) ];
+        need := Last( xlab );
 
         # If all labels are needed, change nothing.
         if Length( need ) = Length( xlab ) - 1  then
@@ -1018,7 +1018,7 @@ InstallGlobalFunction( ConjugateStabChain, function( arg )
     # labels that  did  not appear     as edges  and   remove the   auxiliary
     # components.
     for L  in newlevs  do
-        l := L[ Length( L ) ];
+        l := Last( L );
         i := Position( l.labpos, 0 );
         while i <> fail  do
             if i in l.genlabels  then
@@ -1200,7 +1200,7 @@ local   S;
         fi;
     fi;
     if Length( arg ) mod 2 = 1  then
-        InitializeSchreierTree( S, arg[ Length( arg ) ] );
+        InitializeSchreierTree( S, Last( arg ) );
     fi;
     return S;
 end);

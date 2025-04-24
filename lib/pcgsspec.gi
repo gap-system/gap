@@ -610,7 +610,7 @@ function( pcgs )
         SetIsSpecialPcgs( newpcgs, true );
 
         w:=pcgssys.weights;
-        if w[Length(w)][1]=1 then
+        if Last(w)[1]=1 then
           SetIndicesCentralNormalSteps( newpcgs, pcgssys.first );
           if Length(Set(RelativeOrders(newpcgs)))=1 then
             SetIndicesPCentralNormalStepsPGroup( newpcgs, pcgssys.first );
@@ -727,13 +727,13 @@ local s,H,iso,pc,w;
   SetLGLayers(pc,LGLayers(s));
   SetLGFirst(pc,LGFirst(s));
   SetIsSpecialPcgs(pc,true);
-  if Length(LGWeights(pc)) = 0 or LGWeights(pc)[Length(LGWeights(pc))][1]=1 then
+  if Length(LGWeights(pc)) = 0 or Last(LGWeights(pc))[1]=1 then
         SetIsPcgsCentralSeries(pc,true);
   fi;
   SetIndicesEANormalSteps( pc, LGFirst(pc) );
   SetIndicesChiefNormalSteps( pc, LGFirst(pc) );
   w:=LGWeights(pc);
-  if Length(w) > 0 and w[Length(w)][1]=1 then
+  if Length(w) > 0 and Last(w)[1]=1 then
     SetIndicesCentralNormalSteps( pc, LGFirst(pc));
     if Length(Set(RelativeOrders(pc)))=1 then
       SetIndicesPCentralNormalStepsPGroup( pc, LGFirst(pc) );
@@ -961,7 +961,7 @@ InstallMethod( IndicesEANormalSteps, "special pcgs: LGFirst", true,
 BindGlobal( "DoCentralSeriesPcgsIfNilpot", function(G)
 local w;
   w:=LGWeights(SpecialPcgs(G));
-  if w[Length(w)][1]<>1 then
+  if Last(w)[1]<>1 then
     Error("The group is not nilpotent");
   fi;
   return SpecialPcgs(G);

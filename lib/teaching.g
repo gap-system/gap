@@ -545,7 +545,7 @@ end);
 
 InstallGlobalFunction(RootsOfPolynomial,function(arg)
   local p, R;
-  p:=arg[Length(arg)];
+  p:=Last(arg);
   if not IsUnivariatePolynomial(p) then
     Error("<p> must be an univariate polynomial");
   fi;

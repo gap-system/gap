@@ -19,8 +19,8 @@ gap> x:=0;;
 gap> for x in [1..Length(gns)-1] do
 > Append(rel,List(gns,y->[gns[x]*y,y*gns[x]]));
 > Add(rel,[gns[x]^(x+1),gns[x]]);
-> Add(rel,[gns[x]*gns[Length(gns)],gns[x]]);
-> Add(rel,[gns[Length(gns)]*gns[x],gns[x]]);
+> Add(rel,[gns[x]*Last(gns),gns[x]]);
+> Add(rel,[Last(gns)*gns[x],gns[x]]);
 > od;
 gap> s := f/rel;;
 gap> sgns := GeneratorsOfSemigroup(s);;

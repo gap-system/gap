@@ -6,7 +6,7 @@ gap> START_TEST( "example_4.12.10.tst" );
 ## This is code from Exercise 2.10.1.
 gap> syl := function(n,p)
 >  local divs, lpd, S;
->  divs := Factors(n); lpd := divs[Length(divs)]; divs := Combinations(divs);
+>  divs := Factors(n); lpd := Last(divs); divs := Combinations(divs);
 >  Add(divs[1],1); divs := List( divs, Product );
 >  S := Filtered( divs, x-> x mod p = 1 and x > lpd );
 >  S := Filtered( S, x -> Gcd( n/x, p-1 ) <> 1 );

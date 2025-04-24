@@ -53,7 +53,7 @@ BindGlobal( "PCGS_STABILIZER", function( arg )
             # add it if it is new
             if j = fail  then
                 o := ros[i];
-                Add( prod, prod[Length(prod)] * o );
+                Add( prod, Last(prod) * o );
                 Add( n, i );
                 len := Length(orb);
                 l1  := 0;
@@ -116,7 +116,7 @@ BindGlobal( "PCGS_STABILIZER", function( arg )
             # add it if it is new
             if j = fail  then
                 o := ros[i];
-                Add( prod, prod[Length(prod)] * o );
+                Add( prod, Last(prod) * o );
                 Add( n, i );
                 len := Length(orb);
                 l1  := 0;
@@ -210,7 +210,7 @@ BindGlobal( "PCGS_STABILIZER_HOMOMORPHIC", function( arg )
             # add it if it is new
             if j = fail  then
                 o := ros[i];
-                Add( prod, prod[Length(prod)] * o );
+                Add( prod, Last(prod) * o );
                 Add( n, i );
                 len := Length(orb);
                 l1  := 0;

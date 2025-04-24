@@ -605,7 +605,7 @@ local cs,nr,u,no,un,S,rad,res,ise,uno;
   no:=Intersection(nr[1],res);
   if not no in nr then nr:=Concatenation([no],nr);fi;
   if Length(nr)>1 then
-    no:=ClosureGroup(nr[Length(nr)],res);
+    no:=ClosureGroup(Last(nr),res);
     if not no in nr then Add(nr,no);fi;
   fi;
 
@@ -920,11 +920,11 @@ local ff,r,d,ser,u,v,i,j,k,p,bd,e,gens,lhom,M,N,hom,Q,Mim,q,ocr,split,MPcgs,
 
   ser:=[TrivialSubgroup(G)];
   for i in d{[2..Length(d)]} do
-    u:=ser[Length(ser)];
+    u:=Last(ser);
     for p in PrimeDivisors(Size(i)/Size(u)) do
       bd:=PValuation(Size(i)/Size(u),p); # max p-exponent
       u:=ClosureSubgroup(u,SylowSubgroup(i,p));
-      v:=ser[Length(ser)];
+      v:=Last(ser);
       while not HasElementaryAbelianFactorGroup(u,v) do
         gens:=Filtered(GeneratorsOfGroup(u),x->not x in v);
         e:=List(gens,x->First([1..bd],a->x^(p^a) in v));
@@ -1481,7 +1481,7 @@ end);
 BindGlobal("AGSRModuleLayerSeries",function(g)
 local s,l,r,i,j,sy,hom,p,pcgs;
   s:=ShallowCopy(DerivedSeriesOfGroup(g));
-  r:=SolvableRadical(s[Length(s)]);
+  r:=SolvableRadical(Last(s));
   if Size(r)>1 then # cannot be last, as solvable
     Append(s,DerivedSeriesOfGroup(r));
   fi;
@@ -1495,7 +1495,7 @@ local s,l,r,i,j,sy,hom,p,pcgs;
         sy:=SylowSystem(Image(hom));
         l:=[sy[1]];
         for j in [2..Length(sy)-1] do
-          Add(l,ClosureGroup(l[Length(l)],sy[j]));
+          Add(l,ClosureGroup(Last(l),sy[j]));
         od;
         l:=Reversed(l);
         l:=List(l,x->PreImage(hom,x));

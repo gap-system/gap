@@ -52,7 +52,7 @@ function( str )
     if '\\' in str or (':' in str and str[2] <> ':') then
         Error( "<str> must not contain '\\' or ':'" );
     fi;
-    if Length( str ) > 0 and str[Length(str)] = '/'  then
+    if Length( str ) > 0 and Last(str) = '/'  then
         str := Immutable(str);
     else
         str := Immutable( Concatenation( str, "/" ) );
@@ -320,7 +320,7 @@ local a,h,d;
               "ÐœÐ¾Ð¸ Ð”Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ñ‹", #ru
               ],x->LowercaseString(x) in d);
     if a<>fail then
-      if h[Length(h)]<>'/' then
+      if Last(h)<>'/' then
         h := Concatenation(h,"/");
       fi;
       return Directory(Concatenation(h,a));
@@ -343,7 +343,7 @@ local a,h,d;
               "Î•Ï€Î¹Ï†Î¬Î½ÎµÎ¹Î± ÎµÏÎ³Î±ÏƒÎ¯Î±Ï‚", #gr
              ],x->LowercaseString(x) in d);
     if a<>fail then
-      if h[Length(h)]<>'/' then
+      if Last(h)<>'/' then
         h := Concatenation(h,"/");
       fi;
       return Directory(Concatenation(h,a));
@@ -356,7 +356,7 @@ local a,h,d;
               "Escritorio", #es
              ],x->LowercaseString(x) in d);
     if a<>fail then
-      if h[Length(h)]<>'/' then
+      if Last(h)<>'/' then
         h := Concatenation(h,"/");
       fi;
       return Directory(Concatenation(h,a));

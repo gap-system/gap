@@ -440,7 +440,7 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,cheap,olda;
         fi;
         if Index(b,a)>bound and Length(c)>1 then
           bb:=IntermediateGroup(b,c[Length(c)-1]);
-          if bb<>fail and Size(bb)>Size(c[Length(c)]) then
+          if bb<>fail and Size(bb)>Size(Last(c)) then
             c:=Concatenation(c{[1..Length(c)-1]},[bb],Filtered(cc,x->Size(x)>=Size(b)));
             return RefinedChain(G,c);
           fi;
@@ -454,8 +454,8 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens,cheap,olda;
       od;
     fi;
   od;
-  Add(c,cc[Length(cc)]);
-  a:=c[Length(c)];
+  Add(c,Last(cc));
+  a:=Last(c);
   for i in [Length(c)-1,Length(c)-2..1] do
     #enforce parent relations
     if not HasParent(c[i]) then
@@ -1823,7 +1823,7 @@ local trans,m,i;
 
   m:=[1];
   for i in [Length(t),Length(t)-1..2] do
-    Add(m,m[Length(m)]*Length(t[i]));
+    Add(m,Last(m)*Length(t[i]));
   od;
   m:=Reversed(m);
   trans:=Objectify(NewType(FamilyObj(G),
