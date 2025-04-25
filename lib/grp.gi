@@ -1720,8 +1720,11 @@ local cheap,nolattice,intersize,attr,kill,i,flags,sup,sub,l;
   # finally kill superseded ones (by replacing with last, which possibly was
   # just added)
   for i in Reversed(Set(kill)) do
-    attr[i]:=attr[Length(attr)];
-    Unbind(attr[Length(attr)]);
+    if i = Length(attr) then
+      Remove(attr);
+    else
+      attr[i]:=Remove(attr);
+    fi;
   od;
   return l;
 end);

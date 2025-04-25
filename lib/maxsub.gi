@@ -375,8 +375,7 @@ local  c, maxs,sel,reps;
   # maximal.
   maxs:=[];
   while Length(reps)>0 do
-    c:=reps[Length(reps)];
-    reps:=reps{[1..Length(reps)-1]};
+    c:=Remove(reps);
     # we have eliminated all subgroups of larger maxes, so remaining must be
     # maximal
     Add(maxs,c);
