@@ -419,7 +419,7 @@ local l;
   then
     Error("inconsistency!");
   fi;
-  return CoefficientsOfLaurentPolynomial(f);
+  return CoefficientsOfUnivariateRationalFunction(f);
 end);
 
 ## now everything else will be installed based on properties and will use
