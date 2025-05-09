@@ -142,8 +142,7 @@ gap> G:= SmallGroup( 24, 12 );;
 gap> H:= SylowSubgroup( G, 2 );;
 gap> reps:= IrreducibleRepresentations( H );;
 gap> ind:= InducedRepresentation( reps[5], G );;
-gap> img:= Image( ind );
-<matrix group with 4 generators>
+gap> img:= Image( ind );;
 gap> ForAll( GeneratorsOfGroup( img ), IsBlockMatrixRep );
 true
 gap> Size( img );
