@@ -109,16 +109,16 @@ struct ReaderState {
     UInt ReadTilde;
 
     // 'CurrLHSGVar' is the current left hand side of an assignment.  It is
-    // used to prevent undefined global variable  warnings, when reading a
+    // used to prevent undefined global variable warnings, when reading a
     // recursive function.
     UInt CurrLHSGVar;
 
     UInt CurrentGlobalForLoopVariables[100];
     UInt CurrentGlobalForLoopDepth;
 
-    // 'LoopNesting' records how many nested loops are active. It starts out
-    // at 0 and is increment each time we enter a loop, and decrement when we
-    // exit one. It is used to determine whether 'break' and 'continue'
+    // 'LoopNesting' records how many nested loops are active. Initially it
+    // is 0 and is incremented each time we enter a loop, and decremented when
+    // we exit one. It is used to determine whether 'break' and 'continue'
     // statements are valid.
     UInt LoopNesting;
 };
