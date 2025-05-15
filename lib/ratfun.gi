@@ -504,7 +504,7 @@ local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c, mbra,le;
   le:=Length(ext);
 
   if le=0 then
-    return String(zero);
+    return ShallowCopy(String(zero));
   fi;
   for i  in [ le-1,le-3..1] do
     if i<le-1 then
