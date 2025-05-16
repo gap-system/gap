@@ -276,6 +276,12 @@ gap> Inverse(M.1*M.2*M.1);
 fail
 gap> Inverse(One(M)) = One(M);
 true
+gap> One(M)^-1 = One(M);
+true
+gap> IsMultiplicativeElementWithInverse(M.1);
+true
+gap> IsMultiplicativeElementWithInverse(One(M));
+true
 
 # wfilt
 gap> FreeMagma(IsSyllableWordsFamily, 4);
