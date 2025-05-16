@@ -265,6 +265,18 @@ Error, usage: FreeMagmaWithOne( <rank>[, <name>] )
               FreeMagmaWithOne( <names> )
               FreeMagmaWithOne( infinity[, <name>][, <init>] )
 
+# inverse
+gap> M := FreeMagma(1);;
+gap> Inverse(M.1);
+fail
+gap> M := FreeMagmaWithOne(2);;
+gap> Inverse(M.1);
+fail
+gap> Inverse(M.1*M.2*M.1);
+fail
+gap> Inverse(One(M)) = One(M);
+true
+
 # wfilt
 gap> FreeMagma(IsSyllableWordsFamily, 4);
 Error, the first argument must not be a filter

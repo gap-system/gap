@@ -229,6 +229,22 @@ InstallMethod( Size,
 
 #############################################################################
 ##
+#M  InverseOp( <x> ) . . . . . . . . . . . . . . . .  for free magma element
+##
+InstallOtherMethod( InverseOp,
+    "for free magma element",
+    [ IsNonassocWord ],
+    function( x )
+    if IsMultiplicativeElementWithOne( x ) and x = One( x ) then
+      return One( x );
+    else
+      return fail;
+    fi;
+    end );
+
+
+#############################################################################
+##
 #M  Random( <S> ) . . . . . . . . . . . . . .  random element of a free magma
 ##
 #T use better method for the whole family
