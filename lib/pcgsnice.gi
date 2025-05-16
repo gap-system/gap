@@ -13,8 +13,8 @@
 ##
 #M  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . . via nice monomorphism
 ##
-InstallMethod( Pcgs, "via niceomorphism", true,
-  [ IsGroup and IsHandledByNiceMonomorphism ], 0,
+AttributeMethodByNiceMonomorphism( Pcgs,
+  [ IsGroup ],
     function( G )
     local   nice,  npcgs,  pcgs;
 
@@ -43,15 +43,8 @@ end );
 AttributeMethodByNiceMonomorphismCollElm( DepthOfPcElement,
         [ IsPcgs, IsMultiplicativeElementWithInverse ] );
 
-InstallOtherMethod( DepthOfPcElement, true,
-        [ IsPcgs and IsHandledByNiceMonomorphism,
-          IsMultiplicativeElementWithInverse,
-          IsPosInt ], 0,
-    function( pcgs, g, depth )
-    return DepthOfPcElement( NiceObject( pcgs ),
-                   ImagesRepresentative( NiceMonomorphism( pcgs ), g ),
-                   depth );
-end );
+AttributeMethodByNiceMonomorphismCollElmOther( DepthOfPcElement,
+        [ IsPcgs, IsMultiplicativeElementWithInverse, IsPosInt ] );
 
 #############################################################################
 ##
@@ -62,39 +55,23 @@ AttributeMethodByNiceMonomorphismCollElm( LeadingExponentOfPcElement,
 
 #############################################################################
 ##
-#M  ExponentsOfPcElement( <pcgs>, <g> [ , <poss> ] )  . via nice monomorphism
+#M  ExponentsOfPcElement( <pcgs>, <g>[, <poss>] ) . . . via nice monomorphism
 ##
 AttributeMethodByNiceMonomorphismCollElm( ExponentsOfPcElement,
         [ IsPcgs, IsMultiplicativeElementWithInverse ] );
 
-InstallOtherMethod( ExponentsOfPcElement, true,
-        [ IsPcgs and IsHandledByNiceMonomorphism,
-          IsMultiplicativeElementWithInverse,
-          IsList and IsCyclotomicCollection ], 0,
-    function( pcgs, g, poss )
-    return ExponentsOfPcElement( NiceObject( pcgs ),
-                   ImagesRepresentative( NiceMonomorphism( pcgs ), g ),
-                   poss );
-end );
+AttributeMethodByNiceMonomorphismCollElmOther( ExponentsOfPcElement,
+        [ IsPcgs, IsMultiplicativeElementWithInverse,
+          IsList and IsCyclotomicCollection ] );
 
-InstallOtherMethod( ExponentsOfPcElement, "perm group with 0 positions", true,
-        [ IsPcgs and IsHandledByNiceMonomorphism,
-          IsMultiplicativeElementWithInverse,
-          IsList and IsEmpty ], 0,
-    function( pcgs, g, poss )
-    return [  ];
-end );
+AttributeMethodByNiceMonomorphismCollElmOther( ExponentsOfPcElement,
+        [ IsPcgs, IsMultiplicativeElementWithInverse,
+          IsList and IsEmpty ],
+        { pcgs, g, poss } -> [] );
 
 #############################################################################
 ##
 #M  ExponentOfPcElement( <pcgs>, <g>, <pos> ) . . . . . via nice monomorphism
 ##
-InstallMethod( ExponentOfPcElement, "via nicoemorphism", true,
-        [ IsPcgs and IsHandledByNiceMonomorphism,
-          IsMultiplicativeElementWithInverse,
-          IsPosInt ], 0,
-    function( pcgs, g, pos )
-    return ExponentOfPcElement( NiceObject( pcgs ),
-                   ImagesRepresentative( NiceMonomorphism( pcgs ), g ),
-                   pos );
-end );
+AttributeMethodByNiceMonomorphismCollElmOther( ExponentOfPcElement,
+        [ IsPcgs, IsMultiplicativeElementWithInverse, IsPosInt ] );
