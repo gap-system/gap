@@ -236,7 +236,7 @@ InstallOtherMethod( InverseOp,
     [ IsNonassocWord ],
     function( x )
     if IsMultiplicativeElementWithOne( x ) and x = One( x ) then
-      return One( x );
+      return x;
     else
       return fail;
     fi;
