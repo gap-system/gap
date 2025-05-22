@@ -269,6 +269,8 @@ Error, usage: FreeMagmaWithOne( <rank>[, <name>] )
 gap> M := FreeMagma(1);;
 gap> Inverse(M.1);
 fail
+gap> M.1^-1;
+fail
 gap> M := FreeMagmaWithOne(2);;
 gap> Inverse(M.1);
 fail
@@ -277,6 +279,8 @@ fail
 gap> Inverse(One(M)) = One(M);
 true
 gap> One(M)^-1 = One(M);
+true
+gap> One(M)^-5 = One(M);
 true
 gap> IsMultiplicativeElementWithInverse(M.1);
 true
