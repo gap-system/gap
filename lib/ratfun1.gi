@@ -1236,7 +1236,7 @@ local q,p,e,i,j,cnt,sel,si;
   q:=QuotientPolynomialsExtRep(fam,den,num);
   if q<>fail then
     # true quotient
-    return [[[],fam!.oneCoefficient],q,num];
+    return [[[],fam!.oneCoefficient],q];
   fi;
 
   q:=HeuristicCancelPolynomialsExtRep(fam,num,den);
