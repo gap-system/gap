@@ -1,4 +1,4 @@
-#@local det,mat,p0,p1,p2,q0,q1,q2,t,y1,y2,y3,u,f,g,data
+#@local det,mat,p0,p1,p2,q0,q1,q2,t,y1,y2,y3,u,f,g,data,fam
 gap> START_TEST("ratfun.tst");
 
 #
@@ -204,6 +204,17 @@ gap> Gcd(f,g);
 t^8*u-u
 gap> Gcd(t, u/3);
 1
+
+#
+# TryGcdCancelExtRepPolynomials
+#
+gap> fam := FamilyObj(t);;
+gap> TryGcdCancelExtRepPolynomials(fam, ExtRepPolynomialRatFun(t), ExtRepPolynomialRatFun(u));
+[ [ [ 100, 1 ], 1 ], [ [ 101, 1 ], 1 ] ]
+gap> TryGcdCancelExtRepPolynomials(fam, ExtRepPolynomialRatFun(t*u), ExtRepPolynomialRatFun(u));
+[ [ [ 100, 1 ], 1 ], [ [  ], 1 ] ]
+gap> TryGcdCancelExtRepPolynomials(fam, ExtRepPolynomialRatFun(t), ExtRepPolynomialRatFun(u*t));
+[ [ [  ], 1 ], [ [ 101, 1 ], 1 ] ]
 
 #
 gap> STOP_TEST("ratfun.tst");
