@@ -83,9 +83,9 @@ BOOL IsUsingLibGap(void);
 
 /****************************************************************************
 **
-*F  InitializeGap( <argc>, <argv>, <handleSignals> )  . . . . . . .  init GAP
+*F  InitializeGap() . . . . . . . . . . . . . . . . . . . . .  initialize GAP
 */
-void InitializeGap(int * pargc, const char * argv[], BOOL handleSignals);
+void InitializeGap(void * stackBottom, int argc, const char * argv[], BOOL handleSignals);
 
 
 /****************************************************************************
