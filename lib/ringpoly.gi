@@ -165,17 +165,25 @@ function( r, n )
         type := type and IsUnivariatePolynomialRing;
     fi;
 
-    # Polynomial rings over commutative rings are themselves commutative.
-    if HasIsCommutative( r ) and IsCommutative( r ) then
-      type:= type and IsCommutative;
+    # Polynomial rings are commutative if and only if their coefficient ring is.
+    if HasIsCommutative( r ) then
+      if IsCommutative( r ) then
+        type := type and IsCommutative;
+      else
+        type := type and HasIsCommutative;
+      fi;
     fi;
 
-    # Polynomial rings over associative rings are themselves associative.
-    if HasIsAssociative( r ) and IsAssociative( r ) then
-      type:= type and IsAssociative;
+    # Polynomial rings are associative if and only if their coefficient ring is.
+    if HasIsAssociative( r ) then
+      if IsAssociative( r ) then
+        type := type and IsAssociative;
+      else
+        type := type and HasIsAssociative;
+      fi;
     fi;
 
-    # Polynomial rings over integral rings are themselves integral.
+    # Polynomial rings are integral if and only if their coefficient ring is.
     if HasIsIntegralRing( r ) then
       if IsIntegralRing( r ) then
         type := type and IsIntegralRing;
