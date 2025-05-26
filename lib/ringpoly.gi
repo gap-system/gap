@@ -818,7 +818,7 @@ function(f,R)
   # For an integral domain S, the function fields over S and over its fraction
   # field coincide. Hence we check whether the coefficients lie in the fraction
   # field of cring if the fraction field is implemented in GAP.
-  if crng = Integers then
+  if IsIntegers(crng) then
     crng := Rationals;
   elif IsPolynomialRing(crng) then
     crnginds := IndeterminatesOfPolynomialRing(crng);
