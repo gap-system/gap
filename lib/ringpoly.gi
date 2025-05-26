@@ -176,8 +176,12 @@ function( r, n )
     fi;
 
     # Polynomial rings over integral rings are themselves integral.
-    if HasIsIntegralRing( r ) and IsIntegralRing( r ) then
-      type := type and IsIntegralRing;
+    if HasIsIntegralRing( r ) then
+      if IsIntegralRing( r ) then
+        type := type and IsIntegralRing;
+      else
+        type := type and HasIsIntegralRing;
+      fi;
     fi;
 
     # set categories to allow method selection according to base ring
