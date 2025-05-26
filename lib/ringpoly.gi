@@ -170,9 +170,14 @@ function( r, n )
       type:= type and IsCommutative;
     fi;
 
-    # Polynomial rings over commutative rings are themselves commutative.
+    # Polynomial rings over associative rings are themselves associative.
     if HasIsAssociative( r ) and IsAssociative( r ) then
       type:= type and IsAssociative;
+    fi;
+
+    # Polynomial rings over integral rings are themselves integral.
+    if HasIsIntegralRing( r ) and IsIntegralRing( r ) then
+      type := type and IsIntegralRing;
     fi;
 
     # set categories to allow method selection according to base ring
