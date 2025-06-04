@@ -198,6 +198,129 @@ RUN_IN_GGMBI:=false; # If somebody would call `GHBI' to make a
 
 #############################################################################
 ##
+#F  MayBeHandledByNiceMonomorphism( <G> )
+##
+##  This filter is intended to deal with the following situation.
+##  We have a group <A>G</A> that can be handled via a nice monomorphism
+##  if it satisfies certain conditions, but we do not want to check these
+##  conditions until we can take advantage of the nice monomorphism,
+##  i.e., until the call of an operation for which a method is installed
+##  that has <Ref Prop="IsHandledByNiceMonomorphism"/> as a requirement for
+##  one of its arguments.
+##
+##  More precisely:
+##  Only those operations are supported for which these methods get installed
+##  via the functions <Q><C>SomethingMethodByNiceMonomorphismSomething</C></Q>
+##  in <F>lib/grpnice.gi</F>.
+##  If <Ref Filt="MayBeHandledByNiceMonomorphism"/> is set for <A>G</A>
+##  then all these operations have also a method that gets installed with
+##  requirements where <Ref Prop="IsHandledByNiceMonomorphism"/> is replaced
+##  by <Ref Filt="MayBeHandledByNiceMonomorphism"/>.
+##  These methods call <Ref Prop="IsHandledByNiceMonomorphism"/>;
+##  if the result is <K>false</K> then <Ref Func="TryNextMethod"/> gets
+##  called, if the result is <K>true</K> then the corresponding method gets
+##  called that is installed for the situation that
+##  <Ref Prop="IsHandledByNiceMonomorphism"/> is already stored.
+##  Additionally, the filter <Ref Filt="MayBeHandledByNiceMonomorphism"/>
+##  gets reset in both cases since it is not useful anymore.
+##
+##  The <Ref Filt="MayBeHandledByNiceMonomorphism"/> mechanism can be used
+##  for example if <A>G</A> is a matrix group for which finiteness can be
+##  decided but is not a priori known,
+##  such as groups of matrices with entries in some cyclotomic field.
+##  These groups can be handled by a nice monomorphism if they are finite,
+##  hence a <Ref Prop="IsHandledByNiceMonomorphism"/> method can be installed
+##  that checks finiteness.
+##
+##  The mechanism is <E>not</E> intended for situations where
+##  <Ref Prop="IsHandledByNiceMonomorphism"/> cannot be decided.
+##  For example, it is not suitable for arbitrary finitely presented groups.
+##
+##  The filter <Ref Prop="IsHandledByNiceMonomorphism"/> must not have
+##  implications because it will be reset for a group as soon as we find out
+##  the <Ref Prop="IsHandledByNiceMonomorphism"/> value for it.
+##
+DeclareFilter( "MayBeHandledByNiceMonomorphism" );
+
+
+#############################################################################
+##
+##  The following functions are used as methods for operations that require
+##  <Ref Filt="MayBeHandledByNiceMonomorphism"/> and call
+##  <Ref Prop="IsHandledByNiceMonomorphism"/>.
+##
+BindGlobal( "MethodForMayBeHandledByNiceMonomorphism",
+  function( meth, check )
+    return function( obj... )
+      local i, flag;
+
+      for i in check do
+        flag:= IsHandledByNiceMonomorphism( obj[i] );
+        ResetFilterObj( obj[i], MayBeHandledByNiceMonomorphism );
+        if not flag then
+          TryNextMethod();
+        fi;
+      od;
+      return CallFuncList( meth, obj );
+    end;
+  end );
+
+
+#############################################################################
+##
+#F  InstallNiceMonomorphismMethod( <oper>, <par>, <methtext>, <fampred>,
+#F                                 <check>, <meth> )
+##
+##  Install the method <A>meth</A> for the operation <A>oper</A>,
+##  for the case that the arguments satisfy the requirements in <A>par</A>
+##  and such that for each position <M>i</M> in the list <A>check</A>,
+##  also <Ref Prop="IsHandledByNiceMonomorphism"/> is required for the
+##  <M>i</M>-th argument.
+##  The family relation between the arguments is given by <A>fampred</A>,
+##  and the comment for the method installation is <A>methtext</A>.
+##
+##  Additionally, install a method for the situation where
+##  <Ref Prop="IsHandledByNiceMonomorphism"/> is replaced by
+##  <Ref Filt="MayBeHandledByNiceMonomorphism"/>, such that this method
+##  delegates to <A>meth</A> if the relevant arguments are in
+##  <Ref Prop="IsHandledByNiceMonomorphism"/>.
+##
+BindGlobal( "InstallNiceMonomorphismMethod",
+  function( oper, par, methtext, fampred, check, meth )
+    local nargs, req1, req2, i;
+
+    # Check the argument length.
+    nargs:= NumberArgumentsFunction( meth );
+    if nargs <> Length( par ) then
+      Error( "need ", Pluralize( nargs, "argument" ), " for ",
+             NameFunction( oper ) );
+    fi;
+
+    req1:= ShallowCopy( par );
+    req2:= ShallowCopy( par );
+    for i in check do
+      req1[i]:= req1[i] and IsHandledByNiceMonomorphism;
+      req2[i]:= req2[i] and MayBeHandledByNiceMonomorphism;
+    od;
+
+    # Install the methods.
+    InstallOtherMethod( oper,
+        Concatenation( "handled by nice monomorphism: ", methtext ),
+        fampred,
+        req1,
+        0,
+        meth );
+
+    InstallOtherMethod( oper,
+        Concatenation( "perhaps handled by nice monomorphism: ", methtext ),
+        fampred,
+        req2,
+        0,
+        MethodForMayBeHandledByNiceMonomorphism( meth, check ) );
+  end );
+
+#############################################################################
+##
 #O  GroupByNiceMonomorphism( <nice>, <grp> )
 ##
 ##  <ManSection>
@@ -214,33 +337,34 @@ DeclareOperation(
 
 #############################################################################
 ##
-#F  AttributeMethodByNiceMonomorphism( <oper>, <par> )
+#F  AttributeMethodByNiceMonomorphism( <oper>, <par>[, <meth>] )
 ##
-##  <ManSection>
-##  <Func Name="AttributeMethodByNiceMonomorphism" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BindGlobal( "AttributeMethodByNiceMonomorphism", function( oper, par )
+BindGlobal( "AttributeMethodByNiceMonomorphism",
+  function( oper, par, meth... )
+  if Length( meth ) = 0 then
+    meth:= obj -> oper( NiceObject( obj ) );
+  else
+    meth:= meth[1];
+  fi;
 
-    # check the argument length
-    if 1 <> Length(par)  then
-        Error( "need only one argument for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
+  InstallNiceMonomorphismMethod( oper, par, "attribute",
+    true, [ 1 ], meth );
+end );
 
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: Attribute",
-        true,
-        par,
-        0,
-        function( obj )
-            return oper( NiceObject(obj) );
-        end );
+
+#############################################################################
+##
+#F  AttributeMethodByNiceMonomorphismList( <oper>, <par> )
+##
+BindGlobal( "AttributeMethodByNiceMonomorphismList", function( oper, par )
+  InstallNiceMonomorphismMethod( oper, par, "attribute list",
+    true, [ 1 ],
+    function( obj )
+      local nice;
+      nice:= NiceMonomorphism( obj );
+      return List( oper( NiceObject( obj ) ),
+                   x -> PreImagesRepresentative( nice, x ) );
+    end );
 end );
 
 
@@ -248,38 +372,16 @@ end );
 ##
 #F  AttributeMethodByNiceMonomorphismCollColl( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="AttributeMethodByNiceMonomorphismCollColl" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BindGlobal( "AttributeMethodByNiceMonomorphismCollColl",
-    function( oper, par )
-
-    # check the argument length
-    if 2 <> Length(par)  then
-        Error( "need two arguments for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-    par[2] := par[2] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: attribute CollColl",
-        IsIdenticalObj,
-        par,
-        0,
-        function( obj1, obj2 )
-            if not IsIdenticalObj( NiceMonomorphism(obj1),
-                                NiceMonomorphism(obj2) )
-            then
-                TryNextMethod();
-            fi;
-            return oper( NiceObject(obj1), NiceObject(obj2) );
-        end );
+BindGlobal( "AttributeMethodByNiceMonomorphismCollColl", function( oper, par )
+ InstallNiceMonomorphismMethod( oper, par, "attribute CollColl",
+   IsIdenticalObj, [ 1, 2 ],
+    function( obj1, obj2 )
+      if not IsIdenticalObj( NiceMonomorphism(obj1),
+                             NiceMonomorphism(obj2) ) then
+        TryNextMethod();
+      fi;
+      return oper( NiceObject(obj1), NiceObject(obj2) );
+    end );
 end );
 
 
@@ -287,78 +389,69 @@ end );
 ##
 #F  AttributeMethodByNiceMonomorphismCollElm( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="AttributeMethodByNiceMonomorphismCollElm" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
 BindGlobal( "AttributeMethodByNiceMonomorphismCollElm", function( oper, par )
-
-    # check the argument length
-    if 2 <> Length(par)  then
-        Error( "need two arguments for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: attribute CollElm",
-        IsCollsElms,
-        par,
-        0,
-        function( obj1, obj2 )
-            local   nice,img;
-            nice:=NiceMonomorphism(obj1);
-            img := ImagesRepresentative( nice, obj2:actioncanfail:=true );
-            if img = fail or
-              not (img in ImagesSource(nice) and
-                PreImagesRepresentative(nice,img)=obj2) then
-                TryNextMethod();
-            fi;
-            return oper( NiceObject(obj1), img );
-        end );
+  InstallNiceMonomorphismMethod( oper, par, "attribute CollElm",
+    IsCollsElms, [ 1 ],
+    function( obj1, obj2 )
+      local nice, img;
+      nice:= NiceMonomorphism( obj1 );
+      img := ImagesRepresentative( nice, obj2 : actioncanfail:= true );
+      if img = fail or
+         not ( img in ImagesSource( nice ) and
+               PreImagesRepresentative( nice, img ) = obj2 ) then
+        TryNextMethod();
+      fi;
+      return oper( NiceObject( obj1 ), img );
+    end );
 end );
+
 
 #############################################################################
 ##
-#F  AttributeMethodByNiceMonomorphismElmColl( <oper>, <par> )
+#F  AttributeMethodByNiceMonomorphismCollElmOther( <oper>, <par>[, <meth>] )
 ##
-##  <ManSection>
-##  <Func Name="AttributeMethodByNiceMonomorphismElmColl" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BindGlobal( "AttributeMethodByNiceMonomorphismElmColl", function( oper, par )
+BindGlobal( "AttributeMethodByNiceMonomorphismCollElmOther",
+  function( oper, par, meth... )
+  if Length( meth ) = 0 then
+    meth:= function( obj1, obj2, obj3 )
+      local nice, img;
+      nice:= NiceMonomorphism( obj1 );
+      img := ImagesRepresentative( nice, obj2 );
+      return oper( NiceObject( obj1 ), img, obj3 );
+    end;
+  else
+    meth:= meth[1];
+  fi;
 
-    # check the argument length
-    if 2 <> Length(par)  then
-        Error( "need two arguments for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[2] := par[2] and IsHandledByNiceMonomorphism;
+  InstallNiceMonomorphismMethod( oper, par, "attribute CollElmOther",
+    true, [ 1 ], meth );
+end );
 
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: attributeElmColl",
-        IsElmsColls,
-        par,
-        0,
-        function( obj1, obj2 )
-            local   nice,img;
-            nice:=NiceMonomorphism(obj2);
-            img := ImagesRepresentative( nice, obj1 );
-            if img = fail or
-              not (img in ImagesSource(nice) and
-                PreImagesRepresentative(nice,img)=obj1) then
-                TryNextMethod();
-            fi;
-            return oper( img,NiceObject(obj2));
-        end );
+
+#############################################################################
+##
+#F  AttributeMethodByNiceMonomorphismElmColl( <oper>, <par>[, <meth>] )
+##
+BindGlobal( "AttributeMethodByNiceMonomorphismElmColl",
+  function( oper, par, meth... )
+  if Length( meth ) = 0 then
+    meth:= function( obj1, obj2 )
+      local nice, img;
+      nice:= NiceMonomorphism( obj2 );
+      img := ImagesRepresentative( nice, obj1 : actioncanfail:= true );
+      if img = fail or
+         not (img in ImagesSource( nice ) and
+              PreImagesRepresentative( nice, img ) = obj1) then
+        TryNextMethod();
+      fi;
+      return oper( img, NiceObject( obj2 ) );
+    end;
+  else
+    meth:= meth[1];
+  fi;
+
+  InstallNiceMonomorphismMethod( oper, par, "attribute ElmColl",
+    IsElmsColls, [ 2 ], meth );
 end );
 
 
@@ -367,61 +460,36 @@ end );
 #F  GroupMethodByNiceMonomorphism( <oper>, <par> )
 ##
 BindGlobal( "GroupMethodByNiceMonomorphism", function( oper, par )
-
-    # check the argument length
-    if 1 <> Length(par)  then
-        Error( "need only one argument for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism:group",
-        true,
-        par,
-        0,
-        function( obj )
-            local   nice,  img;
-            nice := NiceMonomorphism(obj);
-            img  := oper( NiceObject(obj) );
-            return GroupByNiceMonomorphism( nice, img );
-        end );
+  InstallNiceMonomorphismMethod( oper, par, "group",
+    true, [ 1 ],
+    function( obj )
+      local nice, img;
+      nice := NiceMonomorphism( obj );
+      img  := oper( NiceObject( obj ) );
+      return GroupByNiceMonomorphism( nice, img );
+    end );
 end );
 
 
 #############################################################################
 ##
-#F  GroupMethodByNiceMonomorphismCollOther( <oper>, <par> )
+#F  GroupMethodByNiceMonomorphismCollOther( <oper>, <par>[, <meth>] )
 ##
-##  <ManSection>
-##  <Func Name="GroupMethodByNiceMonomorphismCollOther" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BindGlobal( "GroupMethodByNiceMonomorphismCollOther", function( oper, par )
+BindGlobal( "GroupMethodByNiceMonomorphismCollOther",
+  function( oper, par, meth... )
+  if Length( meth ) = 0 then
+    meth:= function( obj, other )
+      local nice, img;
+      nice := NiceMonomorphism( obj );
+      img  := oper( NiceObject( obj ), other );
+      return GroupByNiceMonomorphism( nice, img );
+    end;
+  else
+    meth:= meth[1];
+  fi;
 
-    # check the argument length
-    if 2 <> Length(par)  then
-        Error( "need two argument for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: group CollOther",
-        true,
-        par,
-        0,
-        function( obj, other )
-            local   nice,  img;
-            nice := NiceMonomorphism(obj);
-            img  := oper( NiceObject(obj), other );
-            return GroupByNiceMonomorphism( nice, img );
-        end );
+  InstallNiceMonomorphismMethod( oper, par, "group CollOther",
+    true, [ 1 ], meth );
 end );
 
 
@@ -429,38 +497,18 @@ end );
 ##
 #F  GroupMethodByNiceMonomorphismCollColl( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="GroupMethodByNiceMonomorphismCollColl" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
 BindGlobal( "GroupMethodByNiceMonomorphismCollColl", function( oper, par )
-
-    # check the argument length
-    if 2 <> Length(par)  then
-        Error( "need two arguments for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-    par[2] := par[2] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism:group CollColl",
-        IsIdenticalObj,
-        par,
-        0,
-        function( obj1, obj2 )
-            local   nice,  img;
-            nice := NiceMonomorphism(obj1);
-            if not IsIdenticalObj( nice, NiceMonomorphism(obj2) )  then
-                TryNextMethod();
-            fi;
-            img := oper( NiceObject(obj1), NiceObject(obj2) );
-            return GroupByNiceMonomorphism( nice, img );
-        end );
+  InstallNiceMonomorphismMethod( oper, par, "group CollColl",
+    IsIdenticalObj, [ 1, 2 ],
+    function( obj1, obj2 )
+      local nice, img;
+      nice := NiceMonomorphism( obj1 );
+      if not IsIdenticalObj( nice, NiceMonomorphism( obj2 ) )  then
+        TryNextMethod();
+      fi;
+      img := oper( NiceObject( obj1 ), NiceObject( obj2 ) );
+      return GroupByNiceMonomorphism( nice, img );
+    end );
 end );
 
 
@@ -468,40 +516,27 @@ end );
 ##
 #F  GroupMethodByNiceMonomorphismCollElm( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="GroupMethodByNiceMonomorphismCollElm" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BindGlobal( "GroupMethodByNiceMonomorphismCollElm", function( oper, par )
+BindGlobal( "GroupMethodByNiceMonomorphismCollElm",
+  function( oper, par, meth... )
+  if Length( meth ) = 0 then
+    meth:= function( obj1, obj2 )
+      local nice, img, img1;
+      nice := NiceMonomorphism( obj1 );
+      img  := ImagesRepresentative( nice, obj2 : actioncanfail:= true );
+      if img = fail or
+         not (img in ImagesSource( nice ) and
+              PreImagesRepresentative( nice, img ) = obj2) then
+        TryNextMethod();
+      fi;
+      img1 := oper( NiceObject( obj1 ), img );
+      return GroupByNiceMonomorphism( nice, img1 );
+    end;
+  else
+    meth:= meth[1];
+  fi;
 
-    # check the argument length
-    if 2 <> Length(par)  then
-        Error( "need two arguments for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: group CollElm",
-        IsCollsElms,
-        par,
-        0,
-        function( obj1, obj2 )
-            local   nice,  img,  img1;
-            nice := NiceMonomorphism(obj1);
-            img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
-            if img = fail or
-              not (img in ImagesSource(nice) and
-                PreImagesRepresentative(nice,img)=obj2) then
-                TryNextMethod();
-            fi;
-            img1 := oper( NiceObject(obj1), img );
-            return GroupByNiceMonomorphism( nice, img1 );
-        end );
+  InstallNiceMonomorphismMethod( oper, par, "group CollElm",
+    IsCollsElms, [ 1 ], meth );
 end );
 
 
@@ -509,75 +544,38 @@ end );
 ##
 #F  SubgroupMethodByNiceMonomorphism( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="SubgroupMethodByNiceMonomorphism" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
 BindGlobal( "SubgroupMethodByNiceMonomorphism", function( oper, par )
-
-    # check the argument length
-    if 1 <> Length(par)  then
-        Error( "need only one argument for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: Subgroup",
-        true,
-        par,
-        0,
-        function( obj )
-            local   nice,  img,  sub;
-            nice := NiceMonomorphism(obj);
-            img  := oper( NiceObject(obj) );
-            sub  := GroupByNiceMonomorphism( nice, img );
-            SetParent( sub, obj );
-            return sub;
-        end );
+  InstallNiceMonomorphismMethod( oper, par, "subgroup",
+    true, [ 1 ],
+    function( obj )
+      local nice, img, sub;
+      nice := NiceMonomorphism( obj );
+      img  := oper( NiceObject( obj ) );
+      sub  := GroupByNiceMonomorphism( nice, img );
+      SetParent( sub, obj );
+      return sub;
+    end );
 end );
+
 
 #############################################################################
 ##
 #F  SubgroupsMethodByNiceMonomorphism( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="SubgroupsMethodByNiceMonomorphism" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
 BindGlobal( "SubgroupsMethodByNiceMonomorphism", function( oper, par )
-
-    # check the argument length
-    if 1 <> Length(par)  then
-        Error( "need only one argument for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: subgroups",
-        true,
-        par,
-        0,
-        function( obj )
-            local   nice,  img,  sub,i;
-            nice := NiceMonomorphism(obj);
-            img  := ShallowCopy(oper( NiceObject(obj) ));
-            for i in [1..Length(img)] do
-              sub  := GroupByNiceMonomorphism( nice, img[i] );
-              SetParent( sub, obj );
-              img[i]:=sub;
-            od;
-            return img;
-        end );
+  InstallNiceMonomorphismMethod( oper, par, "subgroups",
+    true, [ 1 ],
+    function( obj )
+      local nice, img, sub, i;
+      nice := NiceMonomorphism( obj );
+      img  := ShallowCopy( oper( NiceObject( obj ) ) );
+      for i in [ 1 .. Length( img ) ] do
+        sub  := GroupByNiceMonomorphism( nice, img[i] );
+        SetParent( sub, obj );
+        img[i]:=sub;
+      od;
+      return img;
+    end );
 end );
 
 
@@ -585,37 +583,17 @@ end );
 ##
 #F  SubgroupMethodByNiceMonomorphismCollOther( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="SubgroupMethodByNiceMonomorphismCollOther" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-BindGlobal( "SubgroupMethodByNiceMonomorphismCollOther",
-    function( oper, par )
-
-    # check the argument length
-    if 2 <> Length(par)  then
-        Error( "need two argument for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: subgroup CollOther",
-        true,
-        par,
-        0,
-        function( obj, other )
-            local   nice,  img,  sub;
-            nice := NiceMonomorphism(obj);
-            img  := oper( NiceObject(obj), other );
-            sub  := GroupByNiceMonomorphism( nice, img );
-            SetParent( sub, obj );
-            return sub;
-        end );
+BindGlobal( "SubgroupMethodByNiceMonomorphismCollOther", function( oper, par )
+  InstallNiceMonomorphismMethod( oper, par, "subgroup CollOther",
+    true, [ 1 ],
+    function( obj, other )
+      local nice, img, sub;
+      nice := NiceMonomorphism( obj );
+      img  := oper( NiceObject( obj ), other );
+      sub  := GroupByNiceMonomorphism( nice, img );
+      SetParent( sub, obj );
+      return sub;
+    end );
 end );
 
 
@@ -623,46 +601,26 @@ end );
 ##
 #F  SubgroupMethodByNiceMonomorphismCollColl( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="SubgroupMethodByNiceMonomorphismCollColl" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
 BindGlobal( "SubgroupMethodByNiceMonomorphismCollColl", function( oper, par )
-
-    # check the argument length
-    if 2 <> Length(par)  then
-        Error( "need two arguments for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-    par[2] := par[2] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: Subgroup CollColl",
-        IsIdenticalObj,
-        par,
-        0,
-        function( obj1, obj2 )
-            local   nice,  img,  sub;
-            if not IsSubgroup( obj1, obj2 )  then
-                TryNextMethod();
-            fi;
-            nice := NiceMonomorphism(obj1);
-            img:=ImagesSet(nice,obj2);
-            if img = fail or
-              not (IsSubset(ImagesSource(nice),img) and
-                PreImagesSet(nice,img)=obj2) then
-                TryNextMethod();
-            fi;
-            img := oper( NiceObject(obj1), img );
-            sub := GroupByNiceMonomorphism( nice, img );
-            SetParent( sub, obj1 );
-            return sub;
-        end );
+  InstallNiceMonomorphismMethod( oper, par, "subgroup CollColl",
+    IsIdenticalObj, [ 1, 2 ],
+    function( obj1, obj2 )
+      local nice, img, sub;
+      if not IsSubgroup( obj1, obj2 )  then
+        TryNextMethod();
+      fi;
+      nice := NiceMonomorphism( obj1 );
+      img:=ImagesSet( nice, obj2 );
+      if img = fail or
+         not ( IsSubset( ImagesSource( nice ), img ) and
+               PreImagesSet( nice, img ) = obj2 ) then
+        TryNextMethod();
+      fi;
+      img := oper( NiceObject( obj1 ), img );
+      sub := GroupByNiceMonomorphism( nice, img );
+      SetParent( sub, obj1 );
+      return sub;
+    end );
 end );
 
 
@@ -670,42 +628,23 @@ end );
 ##
 #F  SubgroupMethodByNiceMonomorphismCollElm( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="SubgroupMethodByNiceMonomorphismCollElm" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
 BindGlobal( "SubgroupMethodByNiceMonomorphismCollElm", function( oper, par )
-
-    # check the argument length
-    if 2 <> Length(par)  then
-        Error( "need two arguments for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: subgroup CollElm",
-        IsCollsElms,
-        par,
-        0,
-        function( obj1, obj2 )
-            local   nice,  img,  img1,  sub;
-            nice := NiceMonomorphism(obj1);
-            img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
-            if img = fail or
-              not (img in ImagesSource(nice) and
-                PreImagesRepresentative(nice,img)=obj2) then
-                TryNextMethod();
-            fi;
-            img1 := oper( NiceObject(obj1), img );
-            sub  := GroupByNiceMonomorphism( nice, img1 );
-            SetParent( sub, obj1 );
-            return sub;
-        end );
+  InstallNiceMonomorphismMethod( oper, par, "subgroup CollElm",
+    IsCollsElms, [ 1 ],
+    function( obj1, obj2 )
+      local nice, img, img1, sub;
+      nice := NiceMonomorphism( obj1 );
+      img  := ImagesRepresentative( nice, obj2 : actioncanfail:= true );
+      if img = fail or
+         not ( img in ImagesSource( nice ) and
+               PreImagesRepresentative (nice , img ) = obj2 ) then
+        TryNextMethod();
+      fi;
+      img1 := oper( NiceObject( obj1 ), img );
+      sub  := GroupByNiceMonomorphism( nice, img1 );
+      SetParent( sub, obj1 );
+      return sub;
+    end );
 end );
 
 
@@ -721,13 +660,6 @@ DeclareSynonym( "PropertyMethodByNiceMonomorphism",
 ##
 #F  PropertyMethodByNiceMonomorphismCollColl( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="PropertyMethodByNiceMonomorphismCollColl" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
 DeclareSynonym( "PropertyMethodByNiceMonomorphismCollColl",
     AttributeMethodByNiceMonomorphismCollColl );
 
@@ -735,13 +667,6 @@ DeclareSynonym( "PropertyMethodByNiceMonomorphismCollColl",
 #############################################################################
 ##
 #F  PropertyMethodByNiceMonomorphismCollElm( <oper>, <par> )
-##
-##  <ManSection>
-##  <Func Name="PropertyMethodByNiceMonomorphismCollElm" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
 ##
 DeclareSynonym( "PropertyMethodByNiceMonomorphismCollElm",
     AttributeMethodByNiceMonomorphismCollElm );
@@ -751,13 +676,6 @@ DeclareSynonym( "PropertyMethodByNiceMonomorphismCollElm",
 ##
 #F  PropertyMethodByNiceMonomorphismElmColl( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="PropertyMethodByNiceMonomorphismElmColl" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
 DeclareSynonym( "PropertyMethodByNiceMonomorphismElmColl",
     AttributeMethodByNiceMonomorphismElmColl );
 
@@ -766,43 +684,24 @@ DeclareSynonym( "PropertyMethodByNiceMonomorphismElmColl",
 ##
 #F  GroupSeriesMethodByNiceMonomorphism( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="GroupSeriesMethodByNiceMonomorphism" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
 BindGlobal( "GroupSeriesMethodByNiceMonomorphism", function( oper, par )
-
-    # check the argument length
-    if 1 <> Length(par)  then
-        Error( "need only one argument for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: GroupSeries",
-        true,
-        par,
-        0,
-        function( obj )
-            local   nice,  list,  i;
-            nice := NiceMonomorphism(obj);
-            list := oper( NiceObject(obj) );
-            if not IsList( list ) then
-              # The result may be 'fail'.
-              return list;
-            fi;
-            list:= ShallowCopy( list );
-            for i  in [ 1 .. Length(list) ]  do
-                list[i] := GroupByNiceMonomorphism( nice, list[i] );
-                SetParent( list[i], obj );
-            od;
-            return list;
-        end );
+  InstallNiceMonomorphismMethod( oper, par, "GroupSeries",
+    true, [ 1 ],
+    function( obj )
+      local nice, list, i;
+      nice := NiceMonomorphism( obj );
+      list := oper( NiceObject( obj ) );
+      if not IsList( list ) then
+        # The result may be 'fail'.
+        return list;
+      fi;
+      list:= ShallowCopy( list );
+      for i in [ 1 .. Length( list ) ] do
+        list[i] := GroupByNiceMonomorphism( nice, list[i] );
+        SetParent( list[i], obj );
+      od;
+      return list;
+    end );
 end );
 
 
@@ -810,39 +709,20 @@ end );
 ##
 #F  GroupSeriesMethodByNiceMonomorphismCollOther( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="GroupSeriesMethodByNiceMonomorphismCollOther" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
 BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollOther",
-    function( oper, par )
-
-    # check the argument length
-    if 2 <> Length(par)  then
-        Error( "need two argument for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: GroupSeries CollOther",
-        true,
-        par,
-        0,
-        function( obj, other )
-            local   nice,  list,  i;
-            nice := NiceMonomorphism(obj);
-            list := ShallowCopy( oper( NiceObject(obj), other ) );
-            for i  in [ 1 .. Length(list) ]  do
-                list[i] := GroupByNiceMonomorphism( nice, list[i] );
-                SetParent( list[i], obj );
-            od;
-            return list;
-        end );
+  function( oper, par )
+  InstallNiceMonomorphismMethod( oper, par, "GroupSeries CollOther",
+    true, [ 1 ],
+    function( obj, other )
+      local nice, list, i;
+      nice := NiceMonomorphism( obj );
+      list := ShallowCopy( oper( NiceObject( obj ), other ) );
+      for i in [ 1 .. Length( list ) ] do
+        list[i] := GroupByNiceMonomorphism( nice, list[i] );
+        SetParent( list[i], obj );
+      od;
+      return list;
+    end );
 end );
 
 
@@ -850,43 +730,23 @@ end );
 ##
 #F  GroupSeriesMethodByNiceMonomorphismCollColl( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="GroupSeriesMethodByNiceMonomorphismCollColl" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
 BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollColl",
-    function( oper, par )
-
-    # check the argument length
-    if 2 <> Length(par)  then
-        Error( "need two arguments for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-    par[2] := par[2] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism: GroupSeries CollColl",
-        IsIdenticalObj,
-        par,
-        0,
-        function( obj1, obj2 )
-            local   nice,  list,  i;
-            nice := NiceMonomorphism(obj1);
-            if not IsIdenticalObj( nice, NiceMonomorphism(obj2) )  then
-                TryNextMethod();
-            fi;
-            list := ShallowCopy(oper(NiceObject(obj1),NiceObject(obj2)));
-            for i  in [ 1 .. Length(list) ]  do
-                list[i] := GroupByNiceMonomorphism( nice, list[i] );
-                SetParent( list[i], obj1 );
-            od;
-            return list;
-        end );
+  function( oper, par )
+  InstallNiceMonomorphismMethod( oper, par, "GroupSeries CollColl",
+    IsIdenticalObj, [ 1, 2 ],
+    function( obj1, obj2 )
+      local nice, list, i;
+      nice := NiceMonomorphism( obj1 );
+      if not IsIdenticalObj( nice, NiceMonomorphism( obj2 ) )  then
+        TryNextMethod();
+      fi;
+      list := ShallowCopy( oper( NiceObject( obj1 ), NiceObject( obj2 ) ) );
+      for i in [ 1 .. Length( list ) ] do
+        list[i] := GroupByNiceMonomorphism( nice, list[i] );
+        SetParent( list[i], obj1 );
+      od;
+      return list;
+    end );
 end );
 
 
@@ -894,46 +754,28 @@ end );
 ##
 #F  GroupSeriesMethodByNiceMonomorphismCollElm( <oper>, <par> )
 ##
-##  <ManSection>
-##  <Func Name="GroupSeriesMethodByNiceMonomorphismCollElm" Arg='oper, par'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
 BindGlobal( "GroupSeriesMethodByNiceMonomorphismCollElm",
-    function( oper, par )
-
-    # check the argument length
-    if 2 <> Length(par)  then
-        Error( "need two arguments for ", NameFunction(oper) );
-    fi;
-    par    := ShallowCopy(par);
-    par[1] := par[1] and IsHandledByNiceMonomorphism;
-
-    # install the method
-    InstallOtherMethod( oper,
-        "handled by nice monomorphism:GroupSeries CollElm",
-        IsCollsElms,
-        par,
-        0,
-        function( obj1, obj2 )
-            local   nice,  img,  list,  i;
-            nice := NiceMonomorphism(obj1);
-            img  := ImagesRepresentative( nice, obj2:actioncanfail:=true );
-            if img = fail or
-              not (img in ImagesSource(nice) and
-                PreImagesRepresentative(nice,img)=obj2) then
-                TryNextMethod();
-            fi;
-            list := ShallowCopy( oper( NiceObject(obj1), img ) );
-            for i  in [ 1 .. Length(list) ]  do
-                list[i] := GroupByNiceMonomorphism( nice, list[i] );
-                SetParent( list[i], obj1 );
-            od;
-            return list;
-        end );
+  function( oper, par )
+  InstallNiceMonomorphismMethod( oper, par, "GroupSeries CollElm",
+    IsCollsElms, [ 1 ],
+    function( obj1, obj2 )
+      local nice, img, list, i;
+      nice := NiceMonomorphism( obj1 );
+      img  := ImagesRepresentative( nice, obj2 : actioncanfail:= true );
+      if img = fail or
+         not ( img in ImagesSource( nice ) and
+               PreImagesRepresentative( nice, img ) = obj2 ) then
+        TryNextMethod();
+      fi;
+      list := ShallowCopy( oper( NiceObject( obj1 ), img ) );
+      for i in [ 1 .. Length( list ) ] do
+        list[i] := GroupByNiceMonomorphism( nice, list[i] );
+        SetParent( list[i], obj1 );
+      od;
+      return list;
+    end );
 end );
+
 
 #############################################################################
 ##

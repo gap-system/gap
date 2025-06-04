@@ -436,6 +436,137 @@ gap> SetNiceMonomorphism( g, hom );
 gap> HasNiceMonomorphism( g );
 true
 
+# MayBeHandledByNiceMonomorphism and IsHandledByNiceMonomorphism
+# - check a method installed by AttributeMethodByNiceMonomorphism
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> HasIsHandledByNiceMonomorphism( g ); MayBeHandledByNiceMonomorphism( g );
+false
+true
+gap> AbelianInvariants( g );
+[ 2 ]
+gap> HasIsHandledByNiceMonomorphism( g ); IsHandledByNiceMonomorphism( g );
+true
+true
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> SmallGeneratingSet( g );;
+gap> HasIsHandledByNiceMonomorphism( g ); IsHandledByNiceMonomorphism( g );
+true
+true
+
+# - check a method installed by AttributeMethodByNiceMonomorphismElmColl
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> A * B in g;
+true
+gap> HasIsHandledByNiceMonomorphism( g ); IsHandledByNiceMonomorphism( g );
+true
+true
+
+# - check a method installed by AttributeMethodByNiceMonomorphismCollColl
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> g2:= GroupWithGenerators( [ A, B ] );;
+gap> SetParent( g2, g );
+gap> Index( g, g2 );
+4
+gap> HasIsHandledByNiceMonomorphism( g ); IsHandledByNiceMonomorphism( g );
+true
+true
+
+# - check a method installed by AttributeMethodByNiceMonomorphismCollElm
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> res:= Pcgs( g );;
+gap> HasIsHandledByNiceMonomorphism( res );
+true
+gap> DepthOfPcElement( res, One( g ) );
+7
+gap> DepthOfPcElement( res, One( g ), 5 );
+7
+
+# - GroupMethodByNiceMonomorphism seems to be not used
+# - GroupMethodByNiceMonomorphismCollOther seems to be not used
+# - check a method installed by GroupMethodByNiceMonomorphismCollColl
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> g2:= CommutatorSubgroup( g, g );;
+gap> Size( g2 );
+48
+gap> HasIsHandledByNiceMonomorphism( g ); IsHandledByNiceMonomorphism( g );
+true
+true
+
+# - check a method installed by GroupMethodByNiceMonomorphismCollElm
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> g2:= SubgroupNC( g, [ A, B ] );;  # need a parent
+gap> HasIsHandledByNiceMonomorphism( g2 ); MayBeHandledByNiceMonomorphism( g2 );
+false
+true
+gap> g2:= ConjugateGroup( g2, C );;
+gap> HasIsHandledByNiceMonomorphism( g2 ); IsHandledByNiceMonomorphism( g2 );
+true
+true
+
+# - check a method installed by SubgroupMethodByNiceMonomorphism
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> DerivedSubgroup( g );;
+gap> HasIsHandledByNiceMonomorphism( g ); IsHandledByNiceMonomorphism( g );
+true
+true
+
+# - check a method installed by SubgroupsMethodByNiceMonomorphism
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> g2:= NormalSubgroups( g );;
+gap> HasIsHandledByNiceMonomorphism( g ); IsHandledByNiceMonomorphism( g );
+true
+true
+gap> ForAll( g2, HasNiceMonomorphism );
+true
+
+# - check a method installed by SubgroupMethodByNiceMonomorphismCollOther
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> g2:= SylowSubgroup( g, 2 );;
+gap> HasIsHandledByNiceMonomorphism( g ); IsHandledByNiceMonomorphism( g );
+true
+true
+
+# - check a method installed by SubgroupMethodByNiceMonomorphismCollColl
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> g2:= Centralizer( g, Group( [ A ] ) );;
+gap> HasIsHandledByNiceMonomorphism( g ); IsHandledByNiceMonomorphism( g );
+true
+true
+
+# - check a method installed by SubgroupMethodByNiceMonomorphismCollElm
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> g2:= Centralizer( g, A );;
+gap> HasIsHandledByNiceMonomorphism( g ); IsHandledByNiceMonomorphism( g );
+true
+true
+
+# - check a method installed by GroupSeriesMethodByNiceMonomorphism
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> g2:= DerivedSeriesOfGroup( g );;
+gap> HasIsHandledByNiceMonomorphism( g ); IsHandledByNiceMonomorphism( g );
+true
+true
+
+# - check a method installed by GroupSeriesMethodByNiceMonomorphismCollOther
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> g2:= PCentralSeriesOp( g, 2 );;
+gap> HasIsHandledByNiceMonomorphism( g ); IsHandledByNiceMonomorphism( g );
+true
+true
+
+# - check a method installed by GroupSeriesMethodByNiceMonomorphismCollColl
+gap> g:= GroupWithGenerators( [ A, B, C ] );;
+gap> g2:= SubgroupNC( g, [ A ] );;
+gap> HasIsHandledByNiceMonomorphism( g ); MayBeHandledByNiceMonomorphism( g );
+false
+true
+gap> g2:= SubnormalSeries( g, g2 );;
+gap> HasIsHandledByNiceMonomorphism( g ); IsHandledByNiceMonomorphism( g );
+true
+true
+
+# - GroupSeriesMethodByNiceMonomorphismCollElm seems to be not used
+
 # printing of identity mapping string in direct product element (PR #3753) 
 gap> String(IdentityMapping(SymmetricGroup(3)));
 "IdentityMapping( SymmetricGroup( [ 1 .. 3 ] ) )"
