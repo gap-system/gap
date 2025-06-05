@@ -168,18 +168,18 @@ end);
 
 ###############################################################################
 ##
-#F  TensorProductGModule( m1, m2 )  . . tensor product of two G-modules
+#F  TensorProductGModule( module1, module2 )  . . tensor product of two G-modules
 ##
 ## TensorProductGModule calculates the tensor product of smash
-## modules m1 and m2.
+## modules module1 and module2.
 ## They are assumed to be modules over the same algebra so, in particular,
 ## they  should have the same number of generators.
 ##
-InstallGlobalFunction(TensorProductGModule,function( m1, m2)
+InstallGlobalFunction(TensorProductGModule,function( module1, module2)
    local mat1, mat2, F1, F2,  gens, i, l;
 
-   mat1:=SMTX.Generators(m1); mat2:=SMTX.Generators(m2);
-   F1:=SMTX.Field(m1); F2:=SMTX.Field(m2);
+   mat1:=SMTX.Generators(module1); mat2:=SMTX.Generators(module2);
+   F1:=SMTX.Field(module1); F2:=SMTX.Field(module2);
    if F1 <> F2 then
       Error("GModules are defined over different fields.\n");
    fi;
@@ -2225,7 +2225,7 @@ end;
 ## Otherwise who knows what will happen?
 ##
 SMTX.IsomorphismComp:=function(module1, module2, action)
-   local matrices, matrices1, matrices2, F, dim, swapmodule, genpair,
+   local matrices, mats1, mats2, F, dim, swapmodule, genpair,
          swapped, i, j, el, p, fac, M, mat, v1, v2, v,
          N, basis, basis1, basis2;
 
@@ -2263,9 +2263,9 @@ SMTX.IsomorphismComp:=function(module1, module2, action)
    Info(InfoMeatAxe,2,
         "Checking nullspace 1-dimensional over centralising field.");
    SMTX.GoodElementGModule(module1);
-   matrices1:=module1.generators;
-   matrices2:=ShallowCopy(module2.generators);
-   if Length(matrices1) <> Length(matrices2) then
+   mats1:=module1.generators;
+   mats2:=ShallowCopy(module2.generators);
+   if Length(mats1) <> Length(mats2) then
       Error("GModules have different numbers of defining matrices.");
    fi;
 
@@ -2278,12 +2278,12 @@ SMTX.IsomorphismComp:=function(module1, module2, action)
    Info(InfoMeatAxe,2,"Extending generating set for second module.");
    el:=SMTX.AlgEl(module1);
    for genpair in el[1] do
-      Add(matrices2, matrices2[genpair[1]] * matrices2[genpair[2]]);
+      Add(mats2, mats2[genpair[1]] * mats2[genpair[2]]);
    od;
-   M:=ImmutableMatrix(F,Sum([1..Length(matrices2)], i -> el[2][i] * matrices2[i]));
+   M:=ImmutableMatrix(F,Sum([1..Length(mats2)], i -> el[2][i] * mats2[i]));
    # Having done that, we no longer want the extra generators of module2,
    # so we throw them away again.
-   matrices2:=ShallowCopy(module2.generators);
+   mats2:=ShallowCopy(module2.generators);
 
    Info(InfoMeatAxe,2,
         "Calculating characteristic polynomial for second module.");
@@ -2304,7 +2304,7 @@ SMTX.IsomorphismComp:=function(module1, module2, action)
    # That concludes the easy tests for nonisomorphism. Now we must proceed
    # to spin up. We first form the direct sum of the generating matrices.
    Info(InfoMeatAxe,2,"Spinning up in direct sum.");
-   matrices:=SMTX.MatrixSum(matrices1, matrices2);
+   matrices:=SMTX.MatrixSum(mats1, mats2);
    v1:=SMTX.AlgElNullspaceVec(module1);
    v2:=N[1];
    if IsVectorObj(v1) then v1:=Unpack(v1);fi;
@@ -2345,14 +2345,14 @@ end;
 
 #############################################################################
 ##
-#F  SMTX.MatrixSum(matrices1, matrices2) direct sum of two lists of matrices
+#F  SMTX.MatrixSum(mats1, mats2) direct sum of two lists of matrices
 ##
-SMTX.MatrixSum:=function(matrices1, matrices2)
+SMTX.MatrixSum:=function(mats1, mats2)
    local matrices, nmats, i;
    matrices:=[];
-   nmats:=Length(matrices1);
+   nmats:=Length(mats1);
    for i in [1..nmats] do
-      matrices[i]:=DirectSumMat(matrices1[i],matrices2[i]);
+      matrices[i]:=DirectSumMat(mats1[i],mats2[i]);
    od;
 
    return  matrices;
@@ -2361,75 +2361,75 @@ end;
 
 #############################################################################
 ##
-#F  SMTX.Homomorphisms( m1, m2) . . . . homomorphisms from an irreducible
+#F  SMTX.Homomorphisms( module1, module2) . . . . homomorphisms from an irreducible
 ##                         . . . GModule to an arbitrary GModule
 ##
-## It is assumed that m1 is a module that has been proved irreducible
-##  (using IsIrreducible), and m2 is an arbitrary module for the same group.
-## A basis of the space of G-homomorphisms from m1 to m2 is returned.
+## It is assumed that module1 is a module that has been proved irreducible
+##  (using IsIrreducible), and module2 is an arbitrary module for the same group.
+## A basis of the space of G-homomorphisms from module1 to module2 is returned.
 ## Each homomorphism is given as a list of base images.
 ##
-SMTX.Homomorphisms:= function(m1, m2)
+SMTX.Homomorphisms:= function(module1, module2)
 
    local F, mats1, mats2, dim1, dim2, m1bas, imbases,
          el, genpair, fac, mat, N, imlen, subdim, leadpos, vec, imvecs,
          numrels, rels, leadposrels, newrels, bno, genno, colno, rowno,
          zero, looking, ans, i, j, k;
 
-   if not SMTX.IsMTXModule(m1) then
+   if not SMTX.IsMTXModule(module1) then
       return Error("First argument is not a module.");
-   elif not SMTX.IsIrreducible(m1) then
+   elif not SMTX.IsIrreducible(module1) then
       return Error("First module is not known to be irreducible.");
    fi;
 
-   if not SMTX.IsMTXModule(m2) then
+   if not SMTX.IsMTXModule(module2) then
       return Error("Second argument is not a module.");
    fi;
-   mats1:=m1.generators;
-   mats2:=ShallowCopy(m2.generators);
+   mats1:=module1.generators;
+   mats2:=ShallowCopy(module2.generators);
    if Length(mats1) <> Length(mats2) then
       return Error("GModules have different numbers of generators.");
    fi;
 
-   F:=SMTX.Field(m1);
-   if F <> SMTX.Field(m2) then
+   F:=SMTX.Field(module1);
+   if F <> SMTX.Field(module2) then
       return Error("GModules are defined over different fields.");
    fi;
    zero:=Zero(F);
 
-   dim1:=SMTX.Dimension(m1); dim2:=SMTX.Dimension(m2);
+   dim1:=SMTX.Dimension(module1); dim2:=SMTX.Dimension(module2);
 
    if dim1=1 then
-     # m1 is 1-dimensional -- eigenspace intersection
-     el:=List([1..Length(m1.generators)],x->NullspaceMat(m2.generators[x]-m1.generators[x][1][1]*m2.generators[x]^0));
+     # module1 is 1-dimensional -- eigenspace intersection
+     el:=List([1..Length(module1.generators)],x->NullspaceMat(module2.generators[x]-module1.generators[x][1][1]*module2.generators[x]^0));
 
      imvecs:=el[1];
      for j in [2..Length(el)] do
        imvecs:=SumIntersectionMat(imvecs,el[j])[2];
      od;
-     return List(imvecs,x->ImmutableMatrix(m1.field,[x]));
+     return List(imvecs,x->ImmutableMatrix(module1.field,[x]));
    fi;
 
    m1bas:=[];
-   m1bas[1]:= ShallowCopy(SMTX.AlgElNullspaceVec(m1));
+   m1bas[1]:= ShallowCopy(SMTX.AlgElNullspaceVec(module1));
 
-   # In any homomorphism from m1 to m2, the vector in the nullspace of the
+   # In any homomorphism from module1 to module2, the vector in the nullspace of the
    # algebraic element that was used to prove irreducibility (which is now
    # m1bas[1]) must map onto a vector in the nullspace of the same algebraic
-   # element evaluated in m2. We therefore calculate this nullspaces, and
+   # element evaluated in module2. We therefore calculate this nullspaces, and
    # store a basis in imbases.
 
    Info(InfoMeatAxe,2,"Extending generating set for second module.");
-   el:=SMTX.AlgEl(m1);
+   el:=SMTX.AlgEl(module1);
    for genpair in el[1] do
       Add(mats2, mats2[genpair[1]] * mats2[genpair[2]]);
    od;
    mat:=ImmutableMatrix(F,Sum([1..Length(mats2)], i -> el[2][i] * mats2[i]));
-   # Having done that, we no longer want the extra generators of m2,
+   # Having done that, we no longer want the extra generators of module2,
    # so we throw them away again.
-   mats2:=ShallowCopy(m2.generators);
+   mats2:=ShallowCopy(module2.generators);
 
-   fac:=SMTX.AlgElCharPolFac(m1);
+   fac:=SMTX.AlgElCharPolFac(module1);
    mat:=SMTX_Value(fac, mat,mat^0);
    Info(InfoMeatAxe,2,"Calculating nullspace for second module.");
    N:=NullspaceMat(mat);
@@ -2449,7 +2449,7 @@ SMTX.Homomorphisms:= function(m1, m2)
    # under a homomorphism must be zero. This leads to a linear relation
    # amongst some vectors in imbas. We store up such relations, echelonizing as
    # we go. At the end, if we have numrels subch independent relations, then
-   # there will be imlen - numrels independent homomorphisms from m1 to m2,
+   # there will be imlen - numrels independent homomorphisms from module1 to module2,
    # which we can then calculate.
 
    subdim:=1; # the dimension of module spanned by m1bas
@@ -2588,40 +2588,40 @@ end;
 
 #############################################################################
 ##
-#F  SMTX.SortHomGModule( m1, m2, homs)  . . sort output of HomGModule
+#F  SMTX.SortHomGModule( module1, module2, homs)  . . sort output of HomGModule
 ##                                           according to their images
 ##
-## It is assumed that m1 is a module that has been proved irreducible
-## (using IsIrreducible), and m2 is an arbitrary module for the same group,
-## and that homs is the output of a call HomGModule(m1, m2).
-## Let e be the degree of the centralising field of m1.
+## It is assumed that module1 is a module that has been proved irreducible
+## (using IsIrreducible), and module2 is an arbitrary module for the same group,
+## and that homs is the output of a call HomGModule(module1, module2).
+## Let e be the degree of the centralising field of module1.
 ## If e = 1 then SMTX.SortHomGModule does nothing. If e > 1, then it replaces
 ## the basis contained in homs by a new basis arranged in the form
 ## b11, b12, ..., b1e, b21, b22, ...b2e, ..., br1, br2, ...bre,  where each
 ## block of  e  adjacent basis vectors are all equivalent under the
-## centralising field of m1, and so they all have the same image in  m2.
+## centralising field of module1, and so they all have the same image in  module2.
 ## A complete list of the distinct images can then be obtained with a call
-## to DistinctIms(m1, m2, homs).
+## to DistinctIms(module1, module2, homs).
 ##
-SMTX.SortHomGModule:=function(m1, m2, homs)
+SMTX.SortHomGModule:=function(module1, module2, homs)
 local e, F, dim1, dim2, centmat, fullimbas, oldhoms,
       homno, dimhoms, newdim, subdim, leadpos, vec, nexthom,
       i, j, k, zero;
 
-   if SMTX.IsAbsolutelyIrreducible(m1) then return; fi;
+   if SMTX.IsAbsolutelyIrreducible(module1) then return; fi;
 
-   e:=SMTX.DegreeFieldExt(m1);
-   F:=SMTX.Field(m1);
+   e:=SMTX.DegreeFieldExt(module1);
+   F:=SMTX.Field(module1);
    zero:=Zero(F);
 
-   dim1:=SMTX.Dimension(m1);  dim2:=SMTX.Dimension(m2);
-   centmat:=SMTX.CentMat(m1);
+   dim1:=SMTX.Dimension(module1);  dim2:=SMTX.Dimension(module2);
+   centmat:=SMTX.CentMat(module1);
 
    fullimbas:=[];
    subdim:=0;
    leadpos:=[];
 
-   # fullimbas will contain an echelonised basis for the submodule of m2
+   # fullimbas will contain an echelonised basis for the submodule of module2
    # generated by all images of the basis vectors of hom that we have found
    # so far; subdim is its length.
 
@@ -2631,7 +2631,7 @@ local e, F, dim1, dim2, centmat, fullimbas, oldhoms,
    # If so, we reject hom. If not, then hom is adjoined to the new
    # basis of homs, as are the other e-1 linearly independent homomorphisms
    # that are equivalent to hom by a multiplication by centmat. The
-   # resulting block of e homomorphisms all have the same image in m2.
+   # resulting block of e homomorphisms all have the same image in module2.
 
    # first make a copy of homs.
 
@@ -2738,38 +2738,37 @@ end;
 
 #############################################################################
 ##
-#F SMTX.MinimalSubGModules(m1, m2, [max]) . .
-## minimal submodules of m2 isomorphic to m1
+#F SMTX.MinimalSubGModules(module1, module2, [max]) . .
+## minimal submodules of module2 isomorphic to module1
 ##
-## It is assumed that m1 is a module that has been proved irreducible
-##  (using IsIrreducible), and m2 is an arbitrary module for the same group.
+## It is assumed that module1 is a module that has been proved irreducible
+##  (using IsIrreducible), and module2 is an arbitrary module for the same group.
 ## MinimalSubGModules computes and outputs a list of normed bases for all of the
-## distinct minimal submodules of m2 that are isomorphic to m1.
+## distinct minimal submodules of module2 that are isomorphic to module1.
 ## max is an optional maximal number - if the total number of submodules
 ## exceeds max, then the procedure aborts.
 ## First HomGModule is called and then SMTX.SortHomGModule to get a basis for
-## the homomorphisms from m1 to m2 in the correct order.
+## the homomorphisms from module1 to module2 in the correct order.
 ## It is then easy to write down the list of distinct images.
 ##
-SMTX.MinimalSubGModules:=function(arg)
+SMTX.MinimalSubGModules:=function(module1, module2, arg...)
 
-   local m1, m2, max, e, homs, coeff,  dimhom, edimhom, F, elF, q,
+   local max, e, homs, coeff,  dimhom, edimhom, F, elF, q,
          submodules, sub, adno, more, count, sr, er, i, j, k;
 
-   if Length(arg) < 2 or Length(arg) > 3 then
+   if Length(arg) > 1 then
       Error("Number of arguments to MinimalSubGModules must be 2 or 3.");
    fi;
 
-   m1:=arg[1]; m2:=arg[2];
-   if Length(arg) = 2 then max:=0; else max:=arg[3]; fi;
+   if Length(arg) = 0 then max:=0; else max:=arg[3]; fi;
 
-   Info(InfoMeatAxe,2,"Calculating homomorphisms from m1 to m2.");
-   homs:=SMTX.Homomorphisms(m1, m2);
+   Info(InfoMeatAxe,2,"Calculating homomorphisms from module1 to module2.");
+   homs:=SMTX.Homomorphisms(module1, module2);
    Info(InfoMeatAxe,2,"Sorting them.");
-   SMTX.SortHomGModule(m1, m2, homs);
+   SMTX.SortHomGModule(module1, module2, homs);
 
-   F:=SMTX.Field(m1);
-   e:=SMTX.DegreeFieldExt(m1);
+   F:=SMTX.Field(module1);
+   e:=SMTX.DegreeFieldExt(module1);
    dimhom:=Length(homs);
    edimhom:=dimhom / e;
    submodules:=[];
@@ -3052,26 +3051,26 @@ end;
 
 #############################################################################
 ##
-#F SMTX.SpanOfMinimalSubGModules(m1, m2) . .
-## span of the minimal submodules of m2 isomorphic to m1
+#F SMTX.SpanOfMinimalSubGModules(module1, module2) . .
+## span of the minimal submodules of module2 isomorphic to module1
 ##
-## It is assumed that m1 is a module that has been proved irreducible
-##  (using IsIrreducible), and m2 is an arbitrary module for the same group.
+## It is assumed that module1 is a module that has been proved irreducible
+##  (using IsIrreducible), and module2 is an arbitrary module for the same group.
 ## SpanOfMinimalSubGModules computes a normed bases for the span of
-## the minimal submodules of m2 that are isomorphic to m1,
+## the minimal submodules of module2 that are isomorphic to module1,
 ## First HomGModule is called.
 ##
-SMTX.SpanOfMinimalSubGModules:=function(m1, m2)
+SMTX.SpanOfMinimalSubGModules:=function(module1, module2)
    local  homs, e, mat, i;
-   Info(InfoMeatAxe,2,"Calculating homomorphisms from m1 to m2.");
-   homs:=SMTX.Homomorphisms(m1, m2);
+   Info(InfoMeatAxe,2,"Calculating homomorphisms from module1 to module2.");
+   homs:=SMTX.Homomorphisms(module1, module2);
    if homs=[] then
      return [];
    fi;
    Info(InfoMeatAxe,2,"Sorting them.");
-   SMTX.SortHomGModule(m1, m2, homs);
+   SMTX.SortHomGModule(module1, module2, homs);
 
-   e:=SMTX.DegreeFieldExt(m1);
+   e:=SMTX.DegreeFieldExt(module1);
    # homs are now grouped so that each block of e have the same image.
    # We only want one from each block.
    if e > 1 then
@@ -3083,7 +3082,7 @@ SMTX.SpanOfMinimalSubGModules:=function(m1, m2)
    # The span of the images of homs is what we want!
    mat:=Concatenation(homs);
    TriangulizeMat(mat);
-   mat:=ImmutableMatrix(m1.field,mat);
+   mat:=ImmutableMatrix(module1.field,mat);
    return mat;
 end;
 
