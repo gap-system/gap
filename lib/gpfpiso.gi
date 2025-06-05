@@ -2415,25 +2415,29 @@ if rule[1]=rule[2] then return;fi;
         od;
       od;
     od;
-
     # modified coxeter relations with blocking borels in between
     # normalize using bn-pairs
     for pri in coxrels do
       pri:=pri[1];
       a:=List(pri,x->trawou(weylword(wgens[x])));
-      for jj in Cartesian(noncelm{pri{[2..Length(pri)]}}) do
-        if not ForAll(jj,IsOne) then
-          b:=wgens[pri[1]]*Product([1..Length(jj)],x->jj[x]*wgens[pri[x+1]]);
-          j:=decomp(b);
-          j:=[borelword(j[1]),weylword(j[2]),borelword(j[3])];
-          k:=List(jj,x->trawou(borelword(x)));
-          b:=a[1]*Product([1..Length(jj)],x->k[x]*a[x+1]);
-          j:=j[1]*j[2]*j[3];
-          b:=[b,trawou(j)];
-          addrule(b);
-        fi;
-      od;
+      if Product(List(noncelm{pri{[2..Length(pri)]}},Length))>10^7 then
+        Info(InfoWarning,1,"Likely huge RWS");
+      else
+        for jj in Cartesian(noncelm{pri{[2..Length(pri)]}}) do
+          if not ForAll(jj,IsOne) then
+            b:=wgens[pri[1]]*Product([1..Length(jj)],x->jj[x]*wgens[pri[x+1]]);
+            j:=decomp(b);
+            j:=[borelword(j[1]),weylword(j[2]),borelword(j[3])];
+            k:=List(jj,x->trawou(borelword(x)));
+            b:=a[1]*Product([1..Length(jj)],x->k[x]*a[x+1]);
+            j:=j[1]*j[2]*j[3];
+            b:=[b,trawou(j)];
+            addrule(b);
+          fi;
+        od;
+      fi;
     od;
+
   else
 
     # BN-style reductions
