@@ -3513,7 +3513,7 @@ end );
 # 1: Do a quick reduction without trying to eliminate all secondary gens.
 # -1: No relators
 InstallGlobalFunction(NEWTC_PresentationMTC,function(arg)
-local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
+local DATA,rels,i,j,k,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
   subnum,parameter,str,wordefs;
 
   DATA:=arg[1];
@@ -3626,6 +3626,7 @@ local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
   fam:=FamilyObj(One(f));
   rels:=List(rels,x->AssocWordByLetterRep(fam,x));
   pres:=PresentationFpGroup(f/rels);
+  TzInitGeneratorImages(pres);
   TzOptions(pres).protected:=subnum;
   TzOptions(pres).printLevel:=InfoLevel(InfoFpGroup);
   if parameter=1 then
@@ -3633,6 +3634,28 @@ local DATA,rels,i,j,w,f,r,s,fam,ri,a,offset,rset,re,stack,pres,
     TzOptions(pres).lengthLimit:=pres!.tietze[TZ_TOTAL]+1;
   fi;
   TzOptions(pres).eliminationsLimit:=5;
+
+  # did any generators end up eliminated?
+  for i in Flat(Difference(List(GeneratorsOfGroup(f),LetterRepAssocWord),
+    List(pres!.generators,LetterRepAssocWord))) do
+
+    for j in [1..Length(wordefs)] do
+      k:=1;
+      while IsBound(wordefs[j]) and k<=Length(wordefs[j]) do
+        if wordefs[j][k]=i then
+          wordefs[j]:=Concatenation(wordefs[j]{[1..k-1]},
+          pres!.imagesOldGens[i],
+          wordefs[j]{[k+1..Length(wordefs[j])]});
+        elif wordefs[j][k]=-i then
+          wordefs[j]:=Concatenation(wordefs[j]{[1..k-1]},
+          -Reversed(pres!.imagesOldGens[i]),
+          wordefs[j]{[k+1..Length(wordefs[j])]});
+        fi;
+        k:=k+1;
+      od;
+    od;
+  od;
+
   TzGoElim(pres,subnum,wordefs);
   if IsEvenInt(parameter) and Length(GeneratorsOfPresentation(pres))>subnum then
     Error("did not eliminate properly");
