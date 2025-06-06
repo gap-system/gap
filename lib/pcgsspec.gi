@@ -686,12 +686,7 @@ InstallOtherMethod( SpecialPcgs,
 function( group )
     local   spec;
 
-    if HasPcgs(group)  then
-        spec := SpecialPcgs( Pcgs( group ) );
-    else
-        spec := SpecialPcgs( AttributeValueNotSet( Pcgs, group ) );
-        SetPcgs( group, spec );
-    fi;
+    spec := SpecialPcgs( Pcgs( group ) );
     SetGroupOfPcgs (spec, group);
     return spec;
 end );
