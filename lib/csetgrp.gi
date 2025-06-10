@@ -833,7 +833,7 @@ end);
 #end);
 
 InstallGlobalFunction( DoubleCosets, function(G,U,V)
-  if not IsSubset(G,U) and IsSubset(G,V) then
+  if not (IsSubset(G,U) and IsSubset(G,V)) then
     Error("not contained");
   fi;
   return DoubleCosetsNC(G,U,V);
