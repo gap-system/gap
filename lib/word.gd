@@ -206,7 +206,7 @@ DeclareCategoryCollections( "IsWord" );
 ##  <#/GAPDoc>
 ##
 DeclareCategory( "IsNonassocWord", IsWord );
-DeclareSynonym( "IsNonassocWordWithOne", IsNonassocWord and IsWordWithOne );
+DeclareSynonym( "IsNonassocWordWithOne", IsNonassocWord and IsWordWithInverse );
 
 
 #############################################################################
