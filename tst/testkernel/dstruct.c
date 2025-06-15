@@ -2,10 +2,11 @@
  * Small program to test data structures used by the Julia GC integration.
  */
 
-#include <libgap-api.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "libgap-api.h"
 
 static int int_cmp(int a, int b)
 {
