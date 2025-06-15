@@ -189,16 +189,16 @@ SYSINFO_CPPFLAGS =
 
 # The "build/" directory contains generated header files and thus is
 # placed into the list of include directories.
-GAP_CPPFLAGS += -I$(builddir)/build
-SYSINFO_CPPFLAGS += -I$(abs_builddir)/build
+GAP_CPPFLAGS += -iquote $(builddir)/build
+SYSINFO_CPPFLAGS += -iquote $(abs_builddir)/build
 
 # The other source files are relative to the srcdir
-GAP_CPPFLAGS += -I$(srcdir)/src
-SYSINFO_CPPFLAGS += -I$(abs_srcdir)/src
+GAP_CPPFLAGS += -iquote $(srcdir)/src
+SYSINFO_CPPFLAGS += -iquote $(abs_srcdir)/src
 
 # For backwards compatibility with certain packages and their kernel
 # extensions, also add the root of the srcdir to the package CPPFLAGS
-SYSINFO_CPPFLAGS += -I$(abs_srcdir)
+SYSINFO_CPPFLAGS += -iquote $(abs_srcdir)
 
 # Add GAP_DEFINES (from autoconf, contains -D flags)
 GAP_CPPFLAGS += $(GAP_DEFINES)
