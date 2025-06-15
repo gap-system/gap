@@ -8,7 +8,7 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "hpc/misc.h"
+#include "misc.h"
 
 #include <stdlib.h>
 #include <string.h>

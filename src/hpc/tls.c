@@ -8,8 +8,8 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "gapstate.h"
-#include "hpc/thread.h"
+#include "../gapstate.h"
+#include "thread.h"
 
 #include <string.h>
 

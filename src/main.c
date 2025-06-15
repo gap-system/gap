@@ -9,16 +9,8 @@
 */
 
 #include "common.h"
-#include "sysfiles.h"
-#include "sysroots.h"
-#include "sysstr.h"
-#include "system.h"
-
-#ifdef HPCGAP
-#include "hpc/thread.h"
-#endif
-
 #include "config.h"
+#include "system_all.h"
 
 #include <stdlib.h>     // for getenv, realpath, ...
 #include <string.h>     // for snprintf

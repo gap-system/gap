@@ -15,7 +15,7 @@ static int int_cmp(int a, int b)
 #define ELEM_TYPE int
 #define COMPARE int_cmp
 
-#include "baltree.h"
+#include "gap/baltree.h"
 
 void ShowTree(intTree * btree)
 {
@@ -84,7 +84,7 @@ void TestScapegoatTrees(void)
 #define ELEM_TYPE int
 #define COMPARE int_cmp
 
-#include "dynarray.h"
+#include "gap/dynarray.h"
 
 void ShowArray(intArray * arr)
 {

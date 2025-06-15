@@ -8,17 +8,17 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "hpc/region.h"
+#include "region.h"
 
 #ifdef USE_BOEHM_GC
-#include "boehm_gc.h"
+#include "../boehm_gc.h"
 #endif
-#include "gasman.h"
-#include "objects.h"
+#include "../gasman.h"
+#include "../objects.h"
 
-// #include "hpc/misc.h"
-#include "hpc/thread.h"
-#include "hpc/guards.h"
+// #include "misc.h"
+#include "thread.h"
+#include "guards.h"
 
 
 #include <pthread.h>
