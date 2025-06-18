@@ -279,7 +279,7 @@ InstallOtherMethod( InverseOp,
     "for free magma element",
     [ IsNonassocWord ],
     function( x )
-    if IsMultiplicativeElementWithOne( x ) and x = One( x ) then
+    if IsMultiplicativeElementWithOne( x ) and IsOne( x ) then
       return x;
     else
       return fail;
