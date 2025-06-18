@@ -2066,7 +2066,7 @@ DeclareProperty( "IsSkewFieldFamily", IsFamily );
 #P  IsUFDFamily( <family> )
 ##
 ##  <ManSection>
-##  <Prop Name="IsUFDFamily" Arg='family'/>
+##  <Filt Name="IsUFDFamily" Arg='family'/>
 ##
 ##  <Description>
 ##  the family <A>family</A> is at least a commutative ring-with-one,
@@ -2075,7 +2075,20 @@ DeclareProperty( "IsSkewFieldFamily", IsFamily );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareProperty( "IsUFDFamily", IsFamily );
+DeclareCategory( "IsUFDFamily", IsFamily );
+
+# IsUFDFamily used to be defined as a property, and some packages are using
+# SetIsUFDFamily. For backwards compatibility, we provide a replacement
+BIND_GLOBAL("SetIsUFDFamily", function(fam, val)
+    if val then
+      SetFilterObj(fam, IsUFDFamily);
+    elif IsUFDFamily(fam) then
+      Error("cannot remove filter IsUFDFamily");
+      # Actually, we could use ResetFilterObj, but dropping a filter later on
+      # can result in all kinds of problematic situations, so it is better to
+      # avoid this.
+    fi;
+end);
 
 
 #############################################################################

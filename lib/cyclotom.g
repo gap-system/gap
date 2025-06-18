@@ -372,7 +372,7 @@ SetCharacteristic( CyclotomicsFamily, 0 );
 ##
 #v  IsUFDFamily( CyclotomicsFamily )
 ##
-SetIsUFDFamily( CyclotomicsFamily, true );
+SetFilterObj( CyclotomicsFamily, IsUFDFamily );
 
 
 #############################################################################

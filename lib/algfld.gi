@@ -131,7 +131,7 @@ function(f,p,check)
   od;
   fam!.mulrange:=MakeImmutable(red);
 
-  SetIsUFDFamily(fam,true);
+  SetFilterObj(fam,IsUFDFamily);
   SetCoefficientsFamily(fam,FamilyObj(One(f)));
 
   # and set one and zero

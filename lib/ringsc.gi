@@ -403,8 +403,6 @@ InstallGlobalFunction( RingByStructureConstants, function( arg )
         NewType( Fam, IsSCRingObj and IsDenseCoeffVectorRep );
 
     SetCoefficientsFamily( Fam, ElementsFamily( FamilyObj( Integers ) ) );
-    # temporary
-    SetIsUFDFamily(Fam,false);
 
     # Make the generators and the ring.
     SetZero( Fam, ObjByExtRep( Fam, List( [ 1 .. n ], x -> 0 ) ) );
