@@ -1245,10 +1245,12 @@ InstallMethod( Irr,
     SetIrr( cG, irr );
 
     # Store the class and character parameters.
-    cp:= List( cp{ perm }, x -> [ 1, x ] );
+    cp:= List( cp, x -> [ 1, x ] );
+    MakeImmutable( cp );
+    SetCharacterParameters( cG, cp );
+    cp:= cp{ perm };
     MakeImmutable( cp );
     SetClassParameters( cG, cp );
-    SetCharacterParameters( cG, cp );
 
     # Compute and store the power maps.
     pow:= ComputedPowerMaps( cG );
@@ -1270,6 +1272,93 @@ InstallMethod( Irr,
           List( cp, x -> gentbl.orders[1]( deg, x[2] ) ) );
     fi;
     SetInfoText( cG, Concatenation( "computed using ", gentbl.text ) );
+
+    # Return the irreducibles.
+    return irr;
+end );
+
+
+#############################################################################
+##
+#M  Irr( <An> )
+##
+##  Use `CharTableAlternating' (see above) for computing the irreducibles;
+##  use the class parameters in order to make the table
+##  compatible with the conjugacy classes of <An>.
+##  (Note that the pairs of classes obtained by splitting classes of the
+##  symmetric group can be chosen independently.)
+##
+##  Note that we do *not* call `CharacterTable( "Symmetric", <n> )' directly
+##  because the character table library may be not installed.
+##
+InstallMethod( Irr,
+    "ordinary characters for natural alternating group",
+    [ IsNaturalAlternatingGroup, IsZeroCyc ],
+    function( G, zero )
+    local gentbl, dom, deg, cG, whole, cp, perm, i, pos, charparas, irr, pow,
+          known, inv;
+
+    gentbl:= CharTableAlternating;
+    dom:= MovedPoints( G );
+    deg:= Length( dom );
+    if deg = 0 then
+      dom:= [ 1 ];
+      deg:= 1;
+    fi;
+    cG:= CharacterTable( G );
+
+    # Compute the character table information.
+    whole:= gentbl.wholetable( gentbl, deg );
+
+    # Compute the correspondence of classes.
+    cp:= List( whole.ClassParameters, x -> x[2] );
+    perm:= [];
+    for i in ConjugacyClasses( G ) do
+      i:= List( Orbits( SubgroupNC( G, [ Representative(i) ] ), dom ),
+                Length );
+      Sort( i );
+      i:= Reversed( i );
+      pos:= Position( cp, i );
+      if pos = fail then
+        # splitting class
+        pos:= Position( cp, [ i, '+' ] );
+        if pos in perm then
+          pos:= Position( cp, [ i, '-' ] );
+        fi;
+      fi;
+      Add( perm, pos );
+    od;
+
+    # Adjust the irreducibles.
+    cp:= cp{ perm };
+    charparas:= gentbl.charparam[1]( deg );
+    irr:= List( whole.Irr, x -> Character( cG, x{ perm } ) );
+    MakeImmutable( irr );
+    SetIrr( cG, irr );
+
+    # Adjust and store the class and character parameters.
+    cp:= whole.ClassParameters{ perm };
+    SetClassParameters( cG, MakeImmutable( cp ) );
+    SetCharacterParameters( cG, MakeImmutable( whole.ClassParameters ) );
+
+    # Adjust and store the power maps.
+    pow:= ComputedPowerMaps( cG );
+    known:= whole.ComputedPowerMaps;
+    inv:= InverseMap( perm );
+    for i in [ 1 .. Length( known ) ] do
+      if IsBound( known[i] ) and not IsBound( pow[i] ) then
+        pow[i]:= MakeImmutable( inv{ known[i]{ perm } } );
+      fi;
+    od;
+
+    # Compute and store centralizer orders and representative orders.
+    if not HasSizesCentralizers( cG ) then
+      SetSizesCentralizers( cG, MakeImmutable( whole.SizesCentralizers{ perm } ) );
+    fi;
+    if not HasOrdersClassRepresentatives( cG ) then
+      SetOrdersClassRepresentatives( cG, MakeImmutable( whole.OrdersClassRepresentatives{ perm } ) );
+    fi;
+    SetInfoText( cG, MakeImmutable( whole.InfoText ) );
 
     # Return the irreducibles.
     return irr;
