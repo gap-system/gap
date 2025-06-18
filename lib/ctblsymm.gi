@@ -1241,16 +1241,13 @@ InstallMethod( Irr,
 
     # Compute the irreducibles.
     irr:= List( gentbl.matrix( deg ), i -> Character( cG, i{ perm } ) );
-    MakeImmutable( irr );
-    SetIrr( cG, irr );
+    SetIrr( cG, MakeImmutable( irr ) );
 
     # Store the class and character parameters.
     cp:= List( cp, x -> [ 1, x ] );
-    MakeImmutable( cp );
-    SetCharacterParameters( cG, cp );
+    SetCharacterParameters( cG, MakeImmutable( cp ) );
     cp:= cp{ perm };
-    MakeImmutable( cp );
-    SetClassParameters( cG, cp );
+    SetClassParameters( cG, MakeImmutable( cp ) );
 
     # Compute and store the power maps.
     pow:= ComputedPowerMaps( cG );
@@ -1265,13 +1262,13 @@ InstallMethod( Irr,
     # Compute and store centralizer orders and representative orders.
     if not HasSizesCentralizers( cG ) then
       SetSizesCentralizers( cG,
-          List( cp, x -> gentbl.centralizers[1]( deg, x[2] ) ) );
+          MakeImmutable( List( cp, x -> gentbl.centralizers[1]( deg, x[2] ) ) ) );
     fi;
     if not HasOrdersClassRepresentatives( cG ) then
       SetOrdersClassRepresentatives( cG,
-          List( cp, x -> gentbl.orders[1]( deg, x[2] ) ) );
+          MakeImmutable( List( cp, x -> gentbl.orders[1]( deg, x[2] ) ) ) );
     fi;
-    SetInfoText( cG, Concatenation( "computed using ", gentbl.text ) );
+    SetInfoText( cG, MakeImmutable( Concatenation( "computed using ", gentbl.text ) ) );
 
     # Return the irreducibles.
     return irr;
@@ -1295,10 +1292,8 @@ InstallMethod( Irr,
     "ordinary characters for natural alternating group",
     [ IsNaturalAlternatingGroup, IsZeroCyc ],
     function( G, zero )
-    local gentbl, dom, deg, cG, whole, cp, perm, i, pos, charparas, irr, pow,
-          known, inv;
+    local dom, deg, cG, gentbl, whole, cp, perm, i, pos, irr, pow, known, inv;
 
-    gentbl:= CharTableAlternating;
     dom:= MovedPoints( G );
     deg:= Length( dom );
     if deg = 0 then
@@ -1308,12 +1303,13 @@ InstallMethod( Irr,
     cG:= CharacterTable( G );
 
     # Compute the character table information.
+    gentbl:= CharTableAlternating;
     whole:= gentbl.wholetable( gentbl, deg );
 
     # Compute the correspondence of classes.
     cp:= List( whole.ClassParameters, x -> x[2] );
     perm:= [];
-    for i in ConjugacyClasses( G ) do
+    for i in ConjugacyClasses( cG ) do
       i:= List( Orbits( SubgroupNC( G, [ Representative(i) ] ), dom ),
                 Length );
       Sort( i );
@@ -1330,16 +1326,12 @@ InstallMethod( Irr,
     od;
 
     # Adjust the irreducibles.
-    cp:= cp{ perm };
-    charparas:= gentbl.charparam[1]( deg );
     irr:= List( whole.Irr, x -> Character( cG, x{ perm } ) );
-    MakeImmutable( irr );
-    SetIrr( cG, irr );
+    SetIrr( cG, MakeImmutable( irr ) );
 
     # Adjust and store the class and character parameters.
-    cp:= whole.ClassParameters{ perm };
-    SetClassParameters( cG, MakeImmutable( cp ) );
-    SetCharacterParameters( cG, MakeImmutable( whole.ClassParameters ) );
+    SetClassParameters( cG, MakeImmutable( whole.ClassParameters{ perm } ) );
+    SetCharacterParameters( cG, MakeImmutable( whole.CharacterParameters ) );
 
     # Adjust and store the power maps.
     pow:= ComputedPowerMaps( cG );
