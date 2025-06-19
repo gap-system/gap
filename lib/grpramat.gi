@@ -265,7 +265,7 @@ InstallMethod( IsFinite,
     "cyclotomic matrix group",
     [ IsCyclotomicMatrixGroup ],
 function( G )
-
+    # The code below is based on the algorithm described in [DFO13]
     local badPrimes, n, g, FindPrimesInMatDenominators, p, e, H, phi, gens, rels;
 
     # if not rational, use the nice monomorphism into a rational matrix group
