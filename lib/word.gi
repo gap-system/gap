@@ -269,3 +269,33 @@ InstallMethod( OneOp,
     true,
     [ IsNonassocWordWithOne ], 0,
     x -> ObjByExtRep( FamilyObj( x ), 0 ) );
+
+
+#############################################################################
+##
+#M  InverseOp( <x> ) . . . . . . . . . . . . . . . .  for free magma element
+##
+InstallOtherMethod( InverseOp,
+    "for free magma element",
+    [ IsNonassocWord ],
+    function( x )
+    if IsMultiplicativeElementWithOne( x ) and IsOne( x ) then
+      return x;
+    else
+      return fail;
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  <elm>^<int>. . . . . . . . . . .  for free magma element and negative int
+##
+InstallOtherMethod( \^,
+  [ "IsNonassocWord", "IsNegRat and IsInt" ],
+  function( x, n )
+  if IsMultiplicativeElementWithOne( x ) and IsOne( x ) then
+    return x;
+  fi;
+  return fail;
+  end );
