@@ -240,6 +240,23 @@ function( G )
 
 end );
 
+
+BindGlobal("MinkowskiMultiple", function(n)
+    local res;
+    if n <= 0 then
+        Error("<n> must be a positive integer");
+    fi;
+    res := 2;
+    for n in [n,n-1..2] do
+        if IsOddInt(n) then
+            res := res * 2;
+        else
+            res := res * DenominatorRat(Bernoulli(n)/n);
+        fi;
+    od;
+    return res;
+end);
+
 #############################################################################
 ##
 #M  IsFinite( G ) . . . . . . . . . . .  IsFinite for cyclotomic matrix group
@@ -287,8 +304,10 @@ function( G )
     e := One(GF(p));
     H := Group( GeneratorsOfGroup( G ) * e );
 
-    # TODO: could speed up things by checking Minkowski bounds here to
-    # immediately reject some G as infinite -- at least for small enough n
+    # check Minkowski bounds here to immediately reject some G as infinite
+    if MinkowskiMultiple(n) mod Size(H) <> 0 then
+        return false;
+    fi;
 
     # evaluate relators
     phi := IsomorphismFpGroupByGenerators(H, GeneratorsOfGroup( H ));
