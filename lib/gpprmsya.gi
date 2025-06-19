@@ -216,8 +216,7 @@ end);
 
 InstallMethod( ConjugacyClasses,
     "alternating",
-    true,
-    [ IsNaturalAlternatingGroup ], 0,
+    [ IsNaturalAlternatingGroup ], OVERRIDENICE,
 function ( G )
     local   classes,    # conjugacy classes of <G>, result
             prt,        # partition of <G>
@@ -1720,8 +1719,7 @@ end);
 
 InstallMethod( ConjugacyClasses,
     "symmetric",
-    true,
-    [ IsNaturalSymmetricGroup ], 0,
+    [ IsNaturalSymmetricGroup ], OVERRIDENICE,
 function ( G )
     local   classes,    # conjugacy classes of <G>, result
             prt,        # partition of <G>
