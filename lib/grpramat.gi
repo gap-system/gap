@@ -266,7 +266,7 @@ InstallMethod( IsFinite,
     [ IsCyclotomicMatrixGroup ],
 function( G )
     # The code below is based on the algorithm described in [DFO13]
-    local badPrimes, n, g, FindPrimesInMatDenominators, p, e, H, phi, gens, rels;
+    local badPrimes, n, g, FindPrimesInMatDenominators, p, e, H, phi, gens, rels, nice;
 
     # if not rational, use the nice monomorphism into a rational matrix group
     if not IsRationalMatrixGroup( G ) then
@@ -319,9 +319,12 @@ function( G )
     fi;
 
     # set as a nice monomorphism
-    phi := GroupHomomorphismByFunction(G, H,  x -> x * e);
-    SetNiceMonomorphism(G, phi);
+    gens := GeneratorsOfGroup(Range(phi));
+    nice := GroupHomomorphismByFunction(G, H,  x -> x * e,
+        y -> MappedWord(phi(y), gens, GeneratorsOfGroup(G)));
+    SetNiceMonomorphism(G, nice);
     SetNiceObject(G, H);
+    SetIsHandledByNiceMonomorphism(G, true);
     return true;
 end );
 
