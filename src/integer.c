@@ -2641,9 +2641,9 @@ static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
        res = INTOBJ_INT((Int)(nextrandMT_int32(mt) & ((UInt4)-1 >> (32-n))));
      }
      else {
-       unsigned long  rd;
+       UInt8 rd;
        rd = nextrandMT_int32(mt);
-       rd += (unsigned long) ((UInt4) nextrandMT_int32(mt) &
+       rd += (UInt8) ((UInt4) nextrandMT_int32(mt) &
                               ((UInt4)-1 >> (64-n))) << 32;
        res = INTOBJ_INT((Int)rd);
      }
