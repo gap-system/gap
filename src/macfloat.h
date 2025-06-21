@@ -15,19 +15,11 @@
 
 #include "objects.h"
 
-#ifdef VERY_LONG_DOUBLES
-typedef long double /* __float128 */ Double;
-#define PRINTFDIGITS 20
-#define PRINTFFORMAT "Lg"
-#define STRTOD strtold
-#define MATH(name) name##l
-#else
 typedef double Double;
 #define PRINTFDIGITS 16
 #define PRINTFFORMAT "g"
 #define STRTOD strtod
 #define MATH(name) name
-#endif
 
 Double VAL_MACFLOAT(Obj obj);
 void SET_VAL_MACFLOAT(Obj obj, Double val);
