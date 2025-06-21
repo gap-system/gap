@@ -1,4 +1,4 @@
-#include <gap_all.h>    // GAP headers
+#include "gap_all.h"    // GAP headers
 
 Obj FuncTestCommand(Obj self)
 {
