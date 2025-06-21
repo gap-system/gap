@@ -28,7 +28,7 @@ enum {
 *V  Symbol  . . . . . . . . . . . . . . . . .  current symbol read from input
 **
 **  The  variable 'Symbol' contains the current  symbol read from  the input.
-**  It is represented as an unsigned long integer.
+**  It is represented as an uintptr_t.
 **
 **  The possible values for 'Symbol' are defined in the  definition  file  of
 **  this package as follows:
@@ -146,7 +146,7 @@ enum SCANNER_SYMBOLS {
 **  between members in one class.  And now  every symbol class, many of which
 **  contain   just  one  symbol,  has exactly  one   of  the  remaining most
 **  significant 29  bits  set.   Thus   sets  of symbols  are  represented as
-**  unsigned long integers, which is typedef-ed to 'TypSymbolSet'.
+**  uintptr_t, which is typedef-ed to 'TypSymbolSet'.
 **
 **  The classes are as follows, all other symbols are in a class themself:
 **      identifiers, IsBound, Unbind, Info, Assert
