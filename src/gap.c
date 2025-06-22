@@ -405,7 +405,7 @@ int realmain(int argc, const char * argv[])
   Int4                crc;                    // crc of file to compile
 
   // initialize everything and read init.g which runs the GAP session
-  InitializeGap(&argc, argv, 1);
+  InitializeGap(&argc, argc, argv, 1);
   if (!STATE(UserHasQUIT)) {         /* maybe the user QUIT from the initial
                                    read of init.g  somehow*/
     // maybe compile in which case init.g got skipped
@@ -1452,21 +1452,18 @@ StructInitInfo * InitInfoGap ( void )
 **  function. We use the resulting pointer as a hint to the garbage collector
 **  as to where the execution stack (might) start.
 */
-void InitializeGap(int * pargc, const char * argv[], BOOL handleSignals)
+void InitializeGap(void * stackBottom, int argc, const char * argv[], BOOL handleSignals)
 {
-    const int argc = *pargc;
-
     // initialize the basic system and gasman
     InitSystem(argc, argv, handleSignals);
 
     // Initialise memory  -- have to do this here to make sure we are at top of C stack
-    InitBags(
+    Bag * alignedStackBottom = (Bag *)(((UInt)stackBottom / C_STACK_ALIGN) * C_STACK_ALIGN);
 #if defined(USE_GASMAN)
-        SyStorMin,
+    InitBags(SyStorMin, alignedStackBottom);
 #else
-        0,
+    InitBags(0, alignedStackBottom);
 #endif
-             (Bag *)(((UInt)pargc / C_STACK_ALIGN) * C_STACK_ALIGN));
 
     STATE(UserHasQUIT) = FALSE;
     STATE(UserHasQuit) = FALSE;
@@ -1477,6 +1474,8 @@ void InitializeGap(int * pargc, const char * argv[], BOOL handleSignals)
 
     // call kernel initialisation
     ModulesInitKernel();
+
+    InitRootPaths(argc, argv);
 
 #ifdef HPCGAP
     InitMainThread();

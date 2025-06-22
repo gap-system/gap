@@ -360,11 +360,12 @@ static void usage(void)
 }
 
 struct optInfo {
-  Char shortkey;
-  Char longkey[50];
-  int (*handler)(const char * argv[], void *);
-  void *otherArg;
-  UInt minargs;
+    int phase;
+    char shortkey;
+    char longkey[50];
+    int (*handler)(const char * argv[], void *);
+    void *otherArg;
+    UInt minargs;
 };
 
 
@@ -486,48 +487,48 @@ static int printVersion(const char * argv[], void * dummy)
 // These options must be kept in sync with those in system.g, so the help
 // output is correct
 static const struct optInfo options[] = {
-  { 'C',  "", processCompilerArgs, 0, 4}, // must handle in kernel
-  { 'D',  "debug-loading", toggle, &SyDebugLoading, 0}, // must handle in kernel
+  { 0, 'C',  "", processCompilerArgs, 0, 4}, // must handle in kernel
+  { 0, 'D',  "debug-loading", toggle, &SyDebugLoading, 0}, // must handle in kernel
 #if defined(USE_GASMAN) || defined(USE_BOEHM_GC)
-  { 'K',  "maximal-workspace", storeMemory2, &SyStorKill, 1}, // could handle from library with new interface
+  { 0, 'K',  "maximal-workspace", storeMemory2, &SyStorKill, 1}, // could handle from library with new interface
 #endif
 #ifdef GAP_ENABLE_SAVELOAD
-  { 'L', "", storeString, &SyRestoring, 1}, // must be handled in kernel
-  { 'R', "", unsetString, &SyRestoring, 0}, // kernel
+  { 0, 'L', "", storeString, &SyRestoring, 1}, // must be handled in kernel
+  { 0, 'R', "", unsetString, &SyRestoring, 0}, // kernel
 #endif
-  { 'M', "", toggle, &SyUseModule, 0}, // must be handled in kernel
-  { 'e', "", toggle, &SyCTRD, 0 }, // kernel
-  { 'f', "", forceLineEditing, (void *)2, 0 }, // probably library now
-  { 'E', "", toggle, &SyUseReadline, 0 }, // kernel
-  { 'l', "roots", setGapRootPath, 0, 1}, // kernel
+  { 0, 'M', "", toggle, &SyUseModule, 0}, // must be handled in kernel
+  { 0, 'e', "", toggle, &SyCTRD, 0 }, // kernel
+  { 0, 'f', "", forceLineEditing, (void *)2, 0 }, // probably library now
+  { 0, 'E', "", toggle, &SyUseReadline, 0 }, // kernel
+  { 1, 'l', "roots", setGapRootPath, 0, 1}, // kernel
 #ifdef USE_GASMAN
-  { 'm', "", storeMemory2, &SyStorMin, 1 }, // kernel
+  { 0, 'm', "", storeMemory2, &SyStorMin, 1 }, // kernel
 #endif
-  { 'r', "", toggle, &IgnoreGapRC, 0 }, // kernel
+  { 0, 'r', "", toggle, &IgnoreGapRC, 0 }, // kernel
 #ifdef USE_GASMAN
-  { 's', "", storeMemory, &SyAllocPool, 1 }, // kernel
+  { 0, 's', "", storeMemory, &SyAllocPool, 1 }, // kernel
 #endif
-  { 'n', "", forceLineEditing, 0, 0}, // prob library
+  { 0, 'n', "", forceLineEditing, 0, 0}, // prob library
 #ifdef USE_GASMAN
-  { 'o', "", storeMemory2, &SyStorMax, 1 }, // library with new interface
+  { 0, 'o', "", storeMemory2, &SyStorMax, 1 }, // library with new interface
 #endif
-  { 'p', "", toggle, &SyWindow, 0 }, // ??
-  { 'q', "quiet", toggle, &SyQuiet, 0 }, // ??
+  { 0, 'p', "", toggle, &SyWindow, 0 }, // ??
+  { 0, 'q', "quiet", toggle, &SyQuiet, 0 }, // ??
 #ifdef HPCGAP
-  { 'S', "", toggle, &ThreadUI, 0 }, // Thread UI
-  { 'Z', "", toggle, &DeadlockCheck, 0 }, // Deadlock prevention
-  { 'P', "", storePosInteger, &SyNumProcessors, 1 }, // number of CPUs
-  { 'G', "", storePosInteger, &SyNumGCThreads, 1 }, // number of GC threads
-  { 0  , "single-thread", toggle, &SingleThreadStartup, 0 }, // startup with one thread only
+  { 0, 'S', "", toggle, &ThreadUI, 0 }, // Thread UI
+  { 0, 'Z', "", toggle, &DeadlockCheck, 0 }, // Deadlock prevention
+  { 0, 'P', "", storePosInteger, &SyNumProcessors, 1 }, // number of CPUs
+  { 0, 'G', "", storePosInteger, &SyNumGCThreads, 1 }, // number of GC threads
+  { 0, 0  , "single-thread", toggle, &SingleThreadStartup, 0 }, // startup with one thread only
 #endif
   // The following options must be handled in the kernel so they are set up before loading the library
-  { 0  , "prof", enableProfilingAtStartup, 0, 1},    // enable profiling at startup
-  { 0  , "memprof", enableMemoryProfilingAtStartup, 0, 1 }, // enable memory profiling at startup
-  { 0  , "cover", enableCodeCoverageAtStartup, 0, 1}, // enable code coverage at startup
-  { 0  , "quitonbreak", toggle, &SyQuitOnBreak, 0}, // Quit GAP if we enter the break loop
-  { 0  , "enableMemCheck", enableMemCheck, 0, 0 },
-  { 0  , "version", printVersion, 0, 0 },
-  { 0, "", 0, 0, 0}};
+  { 0, 0  , "prof", enableProfilingAtStartup, 0, 1},    // enable profiling at startup
+  { 0, 0  , "memprof", enableMemoryProfilingAtStartup, 0, 1 }, // enable memory profiling at startup
+  { 0, 0  , "cover", enableCodeCoverageAtStartup, 0, 1}, // enable code coverage at startup
+  { 0, 0  , "quitonbreak", toggle, &SyQuitOnBreak, 0}, // Quit GAP if we enter the break loop
+  { 0, 0  , "enableMemCheck", enableMemCheck, 0, 0 },
+  { 0, 0  , "version", printVersion, 0, 0 },
+  { 0, 0, "", 0, 0, 0}};
 
 
 static void InitSysOpts(void)
@@ -579,7 +580,7 @@ static void InitSysOpts(void)
     SyWindow = 0;
 }
 
-static void ParseCommandLineOptions(int argc, const char * argv[])
+static void ParseCommandLineOptions(int argc, const char * argv[], int phase)
 {
     // scan the command line for options that we have to process in the kernel
     // we just scan the whole command line looking for the keys for the
@@ -637,7 +638,8 @@ static void ParseCommandLineOptions(int argc, const char * argv[])
             usage();
         }
 
-        (*options[i].handler)(argv + 1, options[i].otherArg);
+        if (options[i].phase == phase)
+            (*options[i].handler)(argv + 1, options[i].otherArg);
 
         argv += options[i].minargs;
         argc -= options[i].minargs;
@@ -687,7 +689,9 @@ void InitSystem(int argc, const char * argv[], BOOL handleSignals)
 
     InitSysFiles();
 
-    ParseCommandLineOptions(argc, argv);
+    // first stage of command line options parsing: handle everything except
+    // for root paths
+    ParseCommandLineOptions(argc, argv, 0);
 
 #ifdef HAVE_LIBREADLINE
     InitReadline();
@@ -702,6 +706,14 @@ void InitSystem(int argc, const char * argv[], BOOL handleSignals)
         SyRedirectStderrToStdOut();
         syWinPut(0, "@p", "1.");
     }
+}
+
+void InitRootPaths(int argc, const char * argv[])
+{
+    SySetGapRootPath(SyDefaultRootPath);
+
+    // second stage of command line options parsing: handle root paths
+    ParseCommandLineOptions(argc, argv, 1);
 
     InitDotGapPath();
 }
