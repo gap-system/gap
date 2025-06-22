@@ -18,7 +18,7 @@ unsigned      max_deg;
 
 void make_primes()
 {
-    unsigned long i, j;
+    unsigned int i, j;
     for (i = 2; i <= MAX_FF; i++)
         is_prime[i] = 1;
     for (i = 2; i * i <= MAX_FF; i++) {
@@ -31,7 +31,7 @@ void make_primes()
 
 void make_ff()
 {
-    unsigned long i, j, d;
+    unsigned int i, j, d;
     for (i = 2; i <= MAX_FF; i++) {
         if (is_prime[i]) {
             for (j = i, d = 1; j <= MAX_FF; j *= i, d++) {

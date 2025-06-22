@@ -33,7 +33,7 @@
 **
 **  The  first  entry is  the logical  length of the list,  represented as  a
 **  {\GAP} immediate integer.  The other entries are blocks, represented as C
-**  unsigned  long integer.   Each  block corresponds  to  <n>  (usually  32)
+**  uintptr_t integers.   Each  block corresponds  to  <n>  (usually  32)
 **  elements of the list.  The <j>-th bit (the bit corresponding to '2\^<j>')
 **  in  the <i>-th block  is 1 if  the element  '<list>[BIPEB*<i>+<j>+1]'  it
 **  'true'  and '0' if  it  is 'false'.  If the logical length of the boolean
@@ -268,8 +268,8 @@ static Obj ShallowCopyBlist(Obj list)
 */
 static Int EqBlist(Obj listL, Obj listR)
 {
-    long                lenL;           // length of the left operand
-    long                lenR;           // length of the right operand
+    Int                 lenL;           // length of the left operand
+    Int                 lenR;           // length of the right operand
     const UInt *        ptrL;           // pointer to the left operand
     const UInt *        ptrR;           // pointer to the right operand
     UInt                i;              // loop variable

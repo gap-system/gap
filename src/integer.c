@@ -2614,8 +2614,8 @@ static Obj FuncIS_PROBAB_PRIME_INT(Obj self, Obj n, Obj reps)
 **  InitRandomMT.
 **
 **  Implementation details are a bit tricky to obtain the same random
-**  integers on 32 bit and 64 bit machines (which have different long
-**  integer digit lengths and different ranges of small integers).
+**  integers on 32 bit and 64 bit machines (which have different ranges of
+**  integers).
 **
 */
 static Obj FuncRandomIntegerMT(Obj self, Obj mtstr, Obj nrbits)
