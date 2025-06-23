@@ -231,6 +231,8 @@ SYSINFO_CFLAGS += $(PTHREAD_CFLAGS)
 
 GAP_CFLAGS += $(JULIA_CFLAGS) # not added to SYSINFO_CFLAGS
 
+GAP_CFLAGS += -Wno-incompatible-pointer-types
+
 # Finally add user provided CFLAGS
 GAP_CFLAGS += $(CFLAGS)
 SYSINFO_CFLAGS += $(CFLAGS)
