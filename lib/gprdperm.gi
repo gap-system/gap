@@ -621,16 +621,21 @@ local   G,H,        # factors
     # force trivial group to act on 1 point
     if degG = 0 then domG := [1]; degG := 1; fi;
 
-    for i  in [1..degI]  do
-        components[i]:=[(i-1)*degG+1..i*degG];
-        shift := MappingPermListList( domG, components[i] );
-        Add(perms,shift);
-        for gen  in Ggens  do
-            Add( gens, gen ^ shift );
-        od;
-        if i=1 then gens1:=ShallowCopy(gens);fi;
-    od;
-    basegens:=ShallowCopy(gens);
+    if IsTrivial(G) then
+      gens1 := [ One(G) ];
+      basegens := ShallowCopy(gens1);
+    else
+      for i  in [1..degI]  do
+          components[i]:=[(i-1)*degG+1..i*degG];
+          shift := MappingPermListList( domG, components[i] );
+          Add(perms,shift);
+          for gen  in Ggens  do
+              Add( gens, gen ^ shift );
+          od;
+          if i=1 then gens1:=ShallowCopy(gens);fi;
+      od;
+      basegens:=ShallowCopy(gens);
+    fi;
 
     # reduce generator number if it becomes too large -- only first base
     # part
@@ -649,7 +654,9 @@ local   G,H,        # factors
             od;
         od;
         shift:=PermList(shift);
-        Add( gens, shift );
+        if not IsOne(shift) then
+            Add( gens, shift );
+        fi;
         Add(hgens, shift );
     od;
 
@@ -1039,7 +1046,9 @@ InstallGlobalFunction( WreathProductProductAction, function( G, H )
                      ( Position( domG, domG[ q ] ^ gen ) - q ) * val );
             od;
             q:=PermList( list + 1 );
-            Add(gens,q);
+            if not IsOne(q) then
+              Add(gens,q);
+            fi;
             Add(basegens[i],q);
             val := Val;
         od;
@@ -1060,7 +1069,9 @@ InstallGlobalFunction( WreathProductProductAction, function( G, H )
             Add( list, q );
         od;
         q:=PermList( list + 1 );
-        Add(gens,q);
+        if not IsOne(q) then
+          Add(gens,q);
+        fi;
         Add(hgens,q);
     od;
     W := GroupByGenerators( gens, () );  # `gens' arose from `PermList'
