@@ -440,7 +440,6 @@ ifneq (,$(findstring cygwin,$(host_os)))
   LIBGAP_FULL = libgap$(SHLIB_EXT)
 
   LINK_SHLIB_FLAGS = -shared -Wl,--enable-auto-image-base -Wl,--out-implib,libgap.dll.a
-  GAP_LDFLAGS += -Wl,-rpath,$(libdir)
 else ifneq (,$(findstring darwin,$(host_os)))
   SHLIB_EXT=.dylib
   LIBGAP_FULL = libgap.$(SHLIB_MAJOR)$(SHLIB_EXT)
@@ -451,12 +450,12 @@ else ifneq (,$(findstring darwin,$(host_os)))
   LINK_SHLIB_FLAGS += -current_version $(LIBGAP_CURRENT_VER)
   LINK_SHLIB_FLAGS += -Wl,-single_module
   LINK_SHLIB_FLAGS += -Wl,-headerpad_max_install_names
+  LINK_SHLIB_FLAGS += -Wl,-install_name,$(abs_builddir)/$(LIBGAP_FULL)
   GAP_INSTALL_EXTRAFLAGS = -Wl,-headerpad_max_install_names
 
   GAP_CPPFLAGS += -DPIC
   GAP_CFLAGS += -fno-common
   GAP_CXXFLAGS += -fno-common
-  GAP_LDFLAGS += -Wl,-rpath,$(libdir)
 else
   # Note: the following was tested on Linux -- patches making this work better
   # on e.g. FreeBSD/OpenBSD/... are highly welcome
@@ -481,7 +480,7 @@ libgap: libgap$(SHLIB_EXT) $(LIBGAP_FULL)
 
 # Linking rule and dependencies for libgap
 $(LIBGAP_FULL): $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) -o $@ $(LINK_SHLIB_FLAGS) $(GAP_LDFLAGS) $(OBJS) $(GAP_LIBS)
+	$(QUIET_LINK)$(LINK) -o $@ $(LINK_SHLIB_FLAGS) $(GAP_LDFLAGS) -Wl,-rpath,$(abs_builddir) $(OBJS) $(GAP_LIBS)
 
 ifneq (,$(findstring cygwin,$(host_os)))
 
@@ -515,7 +514,7 @@ libgap$(SHLIB_EXT): $(LIBGAP_FULL)
 
 # build rule for the main gap executable
 gap$(EXEEXT): build/obj/src/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(GAP_LIBS) -Wl,-rpath,$(abs_builddir) -L${abs_builddir} -lgap -o $@
 
 # generate a modified copy of main.c for use by the `gap-install` binary
 build/main.c: src/main.c config.status
@@ -524,7 +523,7 @@ build/main.c: src/main.c config.status
 
 # build rule for the gap executable used by the `install-bin` target
 build/gap-install: build/obj/build/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(GAP_INSTALL_EXTRAFLAGS) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(GAP_INSTALL_EXTRAFLAGS) -Wl,-rpath,$(libdir) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
 	$(INSTALL_NAME_TOOL) -change $(LIBGAP_FULL) $(libdir)/$(LIBGAP_FULL) $@
 
 endif
