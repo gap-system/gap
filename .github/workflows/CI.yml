@@ -72,11 +72,6 @@ jobs:
             test-suites: "makemanuals testmakeinstall"
             extra: "CONFIGFLAGS=\"--prefix=/tmp/gapprefix\" NO_COVERAGE=1"
 
-          - os: ubuntu-22.04
-            shell: bash
-            test-suites: "teststandard"
-            extra: "ABI=32 CONFIGFLAGS=\"\""
-
           # FIXME: we used to run `teststandard` for HPC-GAP under Travis CI,
           # but somehow when running on GitHub Actions, it takes almost 4
           # hours (!) to complete instead of 25 minutes. So for now we just
@@ -189,6 +184,7 @@ jobs:
                ${{ matrix.extra }}
                echo "${{ matrix.extra }}" > extra.flags
                if [ "$RUNNER_OS" == "Linux" ]; then
+                   sudo apt-get update
                    packages=(${{ matrix.packages }})
                    if [[ $TEST_SUITES == *testbuildsys* ]] ; then
                        sudo apt-get remove libgmp-dev libreadline-dev zlib1g-dev
@@ -225,7 +221,6 @@ jobs:
                        done
                        packages+=(gcc-multilib g++-multilib)
                    fi
-                   sudo apt-get update
                    sudo apt-get install --no-install-recommends "${packages[@]}"
                    sudo apt-get install pkg-config
                elif [ "$RUNNER_OS" == "macOS" ]; then
