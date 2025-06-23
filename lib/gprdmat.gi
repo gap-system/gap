@@ -279,10 +279,9 @@ local f,n,m,Agens,Bgens,emb,i,j,a,g,dim,rans,range,orbs;
   fi;
   # generators for the cases where one component is trivial
   if IsTrivial(A) and IsTrivial(B) then
-    g := Group( One(A) );
+    g := A;
   elif IsTrivial(A) then
-    Bgens:=List(GeneratorsOfGroup(B),
-            x->PermutationMat(x,m,f));
+    Bgens:=List(GeneratorsOfGroup(B), x -> PermutationMat(x,m,f));
     g := Group(Bgens);
   elif IsTrivial(B) then
     Agens := Concatenation(List(orbs, orb -> emb[orb[1]]));
