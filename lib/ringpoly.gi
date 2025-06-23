@@ -825,16 +825,6 @@ function(f,R)
     crng := FunctionField(CoefficientsRing(crng), crnginds);
   fi;
 
-  # For an integral domain S, the function fields over S and over its fraction
-  # field coincide. Hence we check whether the coefficients lie in the fraction
-  # field of cring if the fraction field is implemented in GAP.
-  if IsIntegers(crng) then
-    crng := Rationals;
-  elif IsPolynomialRing(crng) then
-    crnginds := IndeterminatesOfPolynomialRing(crng);
-    crng := FunctionField(CoefficientsRing(crng), crnginds);
-  fi;
-
   for ext in [ExtRepNumeratorRatFun(f),ExtRepDenominatorRatFun(f)] do
     # first check the indeterminates
     for exp  in ext{[1,3 .. Length(ext)-1]}  do
