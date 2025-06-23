@@ -2201,9 +2201,8 @@ static Int InitKernel (
 
 
     // install tests for being copyable
-    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type += 2 ) {
+    for ( type = FIRST_LIST_TNUM; type <= LAST_LIST_TNUM; type++ ) {
         IsCopyableObjFuncs[ type           ] = AlwaysYes;
-        IsCopyableObjFuncs[ type+IMMUTABLE ] = AlwaysYes;
     }
 
     // install the default printers
@@ -2213,16 +2212,12 @@ static Int InitKernel (
 
 
     // initialise filter table
-    for ( type = FIRST_LIST_TNUM;  type <= LAST_LIST_TNUM;  type +=2 ) {
+    for ( type = FIRST_LIST_TNUM;  type <= LAST_LIST_TNUM;  type++ ) {
         ClearFiltsTNums   [ type            ] = 0;
-        ClearFiltsTNums   [ type +IMMUTABLE ] = 0;
         for ( i = 0;  i <= LAST_FN;  i++ ) {
             SetFiltListTNums  [ type            ][i] = 0;
-            SetFiltListTNums  [ type +IMMUTABLE ][i] = 0;
             ResetFiltListTNums[ type            ][i] = 0;
-            ResetFiltListTNums[ type +IMMUTABLE ][i] = 0;
             HasFiltListTNums  [ type            ][i] = -1;
-            HasFiltListTNums  [ type +IMMUTABLE ][i] = -1;
         }
     }
 
