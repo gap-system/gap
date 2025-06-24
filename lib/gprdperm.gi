@@ -621,21 +621,17 @@ local   G,H,        # factors
     # force trivial group to act on 1 point
     if degG = 0 then domG := [1]; degG := 1; fi;
 
-    if IsTrivial(G) then
-      gens1 := [ One(G) ];
-      basegens := ShallowCopy(gens1);
-    else
-      for i  in [1..degI]  do
-          components[i]:=[(i-1)*degG+1..i*degG];
-          shift := MappingPermListList( domG, components[i] );
-          Add(perms,shift);
-          for gen  in Ggens  do
-              Add( gens, gen ^ shift );
-          od;
-          if i=1 then gens1:=ShallowCopy(gens);fi;
-      od;
-      basegens:=ShallowCopy(gens);
-    fi;
+    for i  in [1..degI]  do
+        components[i]:=[(i-1)*degG+1..i*degG];
+        shift := MappingPermListList( domG, components[i] );
+        Add(perms,shift);
+        for gen  in Ggens  do
+            Add( gens, gen ^ shift );
+        od;
+        if i=1 then gens1:=ShallowCopy(gens);fi;
+    od;
+    basegens:=gens;
+    gens:=Filtered(gens, g -> not IsOne(g));
 
     # reduce generator number if it becomes too large -- only first base
     # part
