@@ -208,44 +208,33 @@ BIND_GLOBAL( "TYPE_CHAR", NewType( CharsFamily, IsChar and IsInternalRep ) );
 
 #############################################################################
 ##
-#V  TYPES_STRING . . . . . . . . . . . . . . . . . . . . . types of strings
-##
-##  <ManSection>
-##  <Var Name="TYPES_STRING"/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
+##  Types and family for strings
 ##
 BIND_GLOBAL( "StringFamily", NewFamily( "StringsFamily", IsCharCollection ) );
 
-BIND_GLOBAL( "TYPES_STRING",
-        [ NewType( StringFamily, IsString and IsStringRep and
-                IsMutable ), # T_STRING
+BIND_GLOBAL( "TYPE_STRING_MUTABLE",
+          NewType( StringFamily, IsString and IsStringRep and
+                IsMutable ) );
 
-          NewType( StringFamily, IsString and IsStringRep ),
-          # T_STRING + IMMUTABLE
+BIND_GLOBAL( "TYPE_STRING_IMMUTABLE",
+          NewType( StringFamily, IsString and IsStringRep ) );
 
+BIND_GLOBAL( "TYPE_STRING_NSORT_MUTABLE",
           NewType (StringFamily, IsString and IsStringRep and
-                  HasIsSSortedList and IsMutable ),
-          # T_STRING_NSORT
+                  HasIsSSortedList and IsMutable ) );
 
+BIND_GLOBAL( "TYPE_STRING_NSORT_IMMUTABLE",
           NewType (StringFamily, IsString and IsStringRep and
-                  HasIsSSortedList ),
-          # T_STRING_NSORT +IMMUTABLE
+                  HasIsSSortedList ) );
 
+BIND_GLOBAL( "TYPE_STRING_SSORT_MUTABLE",
           NewType (StringFamily, IsString and IsStringRep and
-                  IsSSortedList and IsMutable ),
-          # T_STRING_SSORT
+                  IsSSortedList and IsMutable ) );
 
+BIND_GLOBAL( "TYPE_STRING_SSORT_IMMUTABLE",
           NewType (StringFamily, IsString and IsStringRep and
-                  IsSSortedList )
-          # T_STRING_SSORT +IMMUTABLE
-          ]);
+                  IsSSortedList ) );
 
-if IsHPCGAP then
-    MakeReadOnlySingleObj( TYPES_STRING );
-fi;
 
 #############################################################################
 ##
