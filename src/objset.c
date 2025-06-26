@@ -43,13 +43,13 @@ static Obj TypeObjMap(Obj obj)
 static inline BOOL IS_OBJSET(Obj obj)
 {
     UInt tnum = TNUM_OBJ(obj);
-    return tnum == T_OBJSET || tnum == T_OBJSET + IMMUTABLE;
+    return tnum == T_OBJSET;
 }
 
 static inline BOOL IS_OBJMAP(Obj obj)
 {
     UInt tnum = TNUM_OBJ(obj);
-    return tnum == T_OBJMAP || tnum == T_OBJMAP + IMMUTABLE;
+    return tnum == T_OBJMAP;
 }
 
 /** Object sets and maps --------------------
@@ -1085,9 +1085,7 @@ static Obj FuncOBJ_MAP_KEYS(Obj self, Obj map)
 */
 static StructBagNames BagNames[] = {
   { T_OBJSET          , "object set" },
-  { T_OBJSET+IMMUTABLE, "immutable object set" },
   { T_OBJMAP          , "object map" },
-  { T_OBJMAP+IMMUTABLE, "immutable object map" },
   { -1, "" }
 };
 
@@ -1129,22 +1127,16 @@ static Int InitKernel (
 
   // install kind functions
   TypeObjFuncs[T_OBJSET          ] = TypeObjSet;
-  TypeObjFuncs[T_OBJSET+IMMUTABLE] = TypeObjSet;
   TypeObjFuncs[T_OBJMAP          ] = TypeObjMap;
-  TypeObjFuncs[T_OBJMAP+IMMUTABLE] = TypeObjMap;
   // install global variables
   InitCopyGVar("TYPE_OBJSET", &TYPE_OBJSET);
   InitCopyGVar("TYPE_OBJMAP", &TYPE_OBJMAP);
   // install mark functions
   InitMarkFuncBags(T_OBJSET          , MarkObjSet);
-  InitMarkFuncBags(T_OBJSET+IMMUTABLE, MarkObjSet);
   InitMarkFuncBags(T_OBJMAP          , MarkObjMap);
-  InitMarkFuncBags(T_OBJMAP+IMMUTABLE, MarkObjMap);
   // install print functions
   PrintObjFuncs[ T_OBJSET           ] = PrintObjSet;
-  PrintObjFuncs[ T_OBJSET+IMMUTABLE ] = PrintObjSet;
   PrintObjFuncs[ T_OBJMAP           ] = PrintObjMap;
-  PrintObjFuncs[ T_OBJMAP+IMMUTABLE ] = PrintObjMap;
 
 #ifdef USE_THREADSAFE_COPYING
   SetTraversalMethod(T_OBJSET, TRAVERSE_BY_FUNCTION, TraverseObjSet, CopyObjSet);
@@ -1154,14 +1146,10 @@ static Int InitKernel (
 #ifdef GAP_ENABLE_SAVELOAD
   // Install saving functions
   SaveObjFuncs[ T_OBJSET            ] = SaveObjSet;
-  SaveObjFuncs[ T_OBJSET +IMMUTABLE ] = SaveObjSet;
   SaveObjFuncs[ T_OBJMAP            ] = SaveObjMap;
-  SaveObjFuncs[ T_OBJMAP +IMMUTABLE ] = SaveObjMap;
 
   LoadObjFuncs[ T_OBJSET            ] = LoadObjSet;
-  LoadObjFuncs[ T_OBJSET +IMMUTABLE ] = LoadObjSet;
   LoadObjFuncs[ T_OBJMAP            ] = LoadObjMap;
-  LoadObjFuncs[ T_OBJMAP +IMMUTABLE ] = LoadObjMap;
 #endif
 
   // init filters and functions
