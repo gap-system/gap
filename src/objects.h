@@ -493,25 +493,6 @@ void SET_TYPE_OBJ(Obj obj, Obj type);
 
 /****************************************************************************
 **
-*F  MUTABLE_TNUM( <type> )  . . . . . . . . . . mutable type of internal type
-*/
-#define MUTABLE_TNUM(type) \
-    ( ( (type) < FIRST_IMM_MUT_TNUM ? (type) : \
-       ( LAST_IMM_MUT_TNUM < (type) ? (type) : \
-        ( ((((type)-T_PLIST)&(~IMMUTABLE))+T_PLIST) ) ) ) )
-
-
-/****************************************************************************
-**
-*F  IMMUTABLE_TNUM( <type> )  . . . . . . . . immutable type of internal type
-*/
-#define IMMUTABLE_TNUM(type) \
-    ( ( (type) < FIRST_IMM_MUT_TNUM ? (type) : \
-       ( LAST_IMM_MUT_TNUM < (type) ? (type) : \
-        ( ((((type)-T_PLIST)|IMMUTABLE)+T_PLIST) ) ) ) )
-
-/****************************************************************************
-**
 *F  MakeImmutable( <obj> ) . . . . . . . . . . . . . make an object immutable
 */
 void MakeImmutable(Obj obj);
