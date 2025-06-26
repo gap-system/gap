@@ -414,7 +414,7 @@ static Obj ShallowCopyObjDefault(Obj obj)
     Obj *               n;
 
     // make the new object and copy the contents
-    new = NewBag( MUTABLE_TNUM(TNUM_OBJ(obj)), SIZE_OBJ(obj) );
+    new = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
     o = CONST_ADDR_OBJ(obj);
     n = ADDR_OBJ( new );
     memcpy(n, o, SIZE_OBJ(obj) );

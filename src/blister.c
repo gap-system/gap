@@ -216,7 +216,7 @@ static Obj DoCopyBlist(Obj list, Int mut)
     Obj copy;
 
     // make a copy
-    copy = NewBag(MUTABLE_TNUM(TNUM_OBJ(list)), SIZE_OBJ(list));
+    copy = NewBag(TNUM_OBJ(list), SIZE_OBJ(list));
     if (!mut)
         MakeImmutableNoRecurse(copy);
 
