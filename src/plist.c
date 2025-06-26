@@ -230,7 +230,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
 
 #ifdef HPCGAP
     if (!CheckWriteAccess(list)) {
-      return MUTABLE_TNUM(TNUM_OBJ(list));
+      return TNUM_OBJ(list);
     }
 #endif
     // if list has `OBJ_FLAG_TESTING' keep that
@@ -449,7 +449,7 @@ static Int KTNumHomPlist(Obj list)
 
 #ifdef HPCGAP
     if (!CheckWriteAccess(list)) {
-      return MUTABLE_TNUM(TNUM_OBJ(list));
+      return TNUM_OBJ(list);
     }
 #endif
 
@@ -656,7 +656,7 @@ static Obj TypePlistWithKTNum (
       tnum = KTNumPlist( list, &family);
       CLEAR_OBJ_FLAG( list, OBJ_FLAG_TESTING );
     } else {
-      tnum = MUTABLE_TNUM(TNUM_OBJ(list));
+      tnum = TNUM_OBJ(list);
       family = 0;
     }
 #else
@@ -760,7 +760,7 @@ Obj ShallowCopyPlist(Obj list)
 
     // make the new object and copy the contents
     len = LEN_PLIST(list);
-    new = NEW_PLIST(MUTABLE_TNUM(TNUM_OBJ(list)), len);
+    new = NEW_PLIST(TNUM_OBJ(list), len);
     memcpy(ADDR_OBJ(new), CONST_ADDR_OBJ(list), (len + 1) * sizeof(Obj));
     // 'CHANGED_BAG(new);' not needed, <new> is newest object
     return new;
@@ -1302,7 +1302,7 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
         lenPoss = LEN_LIST( poss );
 
         // get the (mutable) tnum of list
-        tnum = MUTABLE_TNUM(TNUM_OBJ(list));
+        tnum = TNUM_OBJ(list);
 
         // make the result list
         // try to assert as many properties as possible
@@ -1382,7 +1382,7 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
         }
 
         // get the (mutable) tnum of list
-        tnum = MUTABLE_TNUM(TNUM_OBJ(list));
+        tnum = TNUM_OBJ(list);
 
         // make the result list
         // try to assert as many properties as possible
