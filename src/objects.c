@@ -934,7 +934,7 @@ static void PrintInaccessibleObject(Obj obj)
 static void PRINT_PATH(Obj obj, Int idx)
 {
     UInt tnum = TNUM_OBJ(obj);
-    if (tnum == T_PREC || tnum == T_PREC + IMMUTABLE) {
+    if (IS_PREC(obj)) {
         Pr(".%I", (Int)NAME_RNAM(idx), 0);
     }
     else if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM) {
