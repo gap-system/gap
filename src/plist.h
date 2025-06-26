@@ -50,14 +50,14 @@ EXPORT_INLINE Obj NEW_PLIST(UInt type, Int plen)
 
 EXPORT_INLINE Obj NEW_PLIST_IMM(UInt type, Int plen)
 {
-    return NEW_PLIST(type | IMMUTABLE, plen);
+    Obj list = NEW_PLIST(type, plen);
+    MakeImmutableNoRecurse(list);
+    return list;
 }
 
 EXPORT_INLINE Obj NEW_PLIST_WITH_MUTABILITY(Int mut, UInt type, Int plen)
 {
-    if (!mut)
-        type |= IMMUTABLE;
-    return NEW_PLIST(type, plen);
+    return mut ? NEW_PLIST(type, plen) : NEW_PLIST_IMM(type, plen);
 }
 
 /****************************************************************************
