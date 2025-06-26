@@ -66,39 +66,6 @@ Int RegisterPackageTNUM(const char * name, Obj (*typeObjFunc)(Obj obj));
 
 /****************************************************************************
 **
-*F  NEXT_ENUM_EVEN( <id> )
-*F  START_ENUM_RANGE_EVEN( <id> )
-*F  END_ENUM_RANGE_ODD( <id> )
-**
-**  'NEXT_ENUM_EVEN' can be used in an enum to force <id> to use the next
-**  available even integer value.
-**
-**  'START_ENUM_RANGE_EVEN' is a variant of 'START_ENUM_RANGE' which always
-**  sets the value of <id> to the next even integer.
-**
-**  'END_ENUM_RANGE_ODD' is a variant of 'END_ENUM_RANGE' which always sets
-**  the value of <id> to an odd integer.
-*/
-#define NEXT_ENUM_EVEN(id)   \
-    _##id##_pre, \
-    id = _##id##_pre + (_##id##_pre & 1)
-#define START_ENUM_RANGE_EVEN(id)   \
-    NEXT_ENUM_EVEN(id), \
-    _##id##_post = id - 1
-#define END_ENUM_RANGE_ODD(id)   \
-    _##id##_pre, \
-    id = _##id##_pre - !(_##id##_pre & 1)
-
-
-/****************************************************************************
-**
-*/
-enum {
-    IMMUTABLE = 1    // IMMUTABLE is not a TNUM, but rather a bitmask
-};
-
-/****************************************************************************
-**
 *S  T_<name>  . . . . . . . . . . . . . . . . symbolic names for object types
 *S  FIRST_CONSTANT_TNUM, LAST_CONSTANT_TNUM . . . . range of constant   types
 *S  FIRST_RECORD_TNUM,   LAST_RECORD_TNUM . . . . . range of record     types
@@ -168,57 +135,57 @@ enum TNUM {
     END_ENUM_RANGE(LAST_CONSTANT_TNUM),
 
     // first mutable/immutable TNUM
-    START_ENUM_RANGE_EVEN(FIRST_IMM_MUT_TNUM),
+    START_ENUM_RANGE(FIRST_IMM_MUT_TNUM),
 
         // records
-        START_ENUM_RANGE_EVEN(FIRST_RECORD_TNUM),
+        START_ENUM_RANGE(FIRST_RECORD_TNUM),
             T_PREC,
-        END_ENUM_RANGE_ODD(LAST_RECORD_TNUM),
+        END_ENUM_RANGE(LAST_RECORD_TNUM),
 
         // lists
-        START_ENUM_RANGE_EVEN(FIRST_LIST_TNUM),
+        START_ENUM_RANGE(FIRST_LIST_TNUM),
 
             // plists
-            START_ENUM_RANGE_EVEN(FIRST_PLIST_TNUM),
-                NEXT_ENUM_EVEN(T_PLIST),
-                NEXT_ENUM_EVEN(T_PLIST_NDENSE),
-                NEXT_ENUM_EVEN(T_PLIST_DENSE),
-                NEXT_ENUM_EVEN(T_PLIST_DENSE_NHOM),
-                NEXT_ENUM_EVEN(T_PLIST_DENSE_NHOM_SSORT),
-                NEXT_ENUM_EVEN(T_PLIST_DENSE_NHOM_NSORT),
-                NEXT_ENUM_EVEN(T_PLIST_EMPTY),
-                NEXT_ENUM_EVEN(T_PLIST_HOM),
-                NEXT_ENUM_EVEN(T_PLIST_HOM_NSORT),
-                NEXT_ENUM_EVEN(T_PLIST_HOM_SSORT),
-                NEXT_ENUM_EVEN(T_PLIST_TAB),
-                NEXT_ENUM_EVEN(T_PLIST_TAB_NSORT),
-                NEXT_ENUM_EVEN(T_PLIST_TAB_SSORT),
-                NEXT_ENUM_EVEN(T_PLIST_TAB_RECT),
-                NEXT_ENUM_EVEN(T_PLIST_TAB_RECT_NSORT),
-                NEXT_ENUM_EVEN(T_PLIST_TAB_RECT_SSORT),
-                NEXT_ENUM_EVEN(T_PLIST_CYC),
-                NEXT_ENUM_EVEN(T_PLIST_CYC_NSORT),
-                NEXT_ENUM_EVEN(T_PLIST_CYC_SSORT),
-                NEXT_ENUM_EVEN(T_PLIST_FFE),
-            END_ENUM_RANGE_ODD(LAST_PLIST_TNUM),
+            START_ENUM_RANGE(FIRST_PLIST_TNUM),
+                T_PLIST,
+                T_PLIST_NDENSE,
+                T_PLIST_DENSE,
+                T_PLIST_DENSE_NHOM,
+                T_PLIST_DENSE_NHOM_SSORT,
+                T_PLIST_DENSE_NHOM_NSORT,
+                T_PLIST_EMPTY,
+                T_PLIST_HOM,
+                T_PLIST_HOM_NSORT,
+                T_PLIST_HOM_SSORT,
+                T_PLIST_TAB,
+                T_PLIST_TAB_NSORT,
+                T_PLIST_TAB_SSORT,
+                T_PLIST_TAB_RECT,
+                T_PLIST_TAB_RECT_NSORT,
+                T_PLIST_TAB_RECT_SSORT,
+                T_PLIST_CYC,
+                T_PLIST_CYC_NSORT,
+                T_PLIST_CYC_SSORT,
+                T_PLIST_FFE,
+            END_ENUM_RANGE(LAST_PLIST_TNUM),
 
             // other kinds of lists
-            NEXT_ENUM_EVEN(T_RANGE_NSORT),
-            NEXT_ENUM_EVEN(T_RANGE_SSORT),
-            NEXT_ENUM_EVEN(T_BLIST),
-            NEXT_ENUM_EVEN(T_BLIST_NSORT),
-            NEXT_ENUM_EVEN(T_BLIST_SSORT),
-            NEXT_ENUM_EVEN(T_STRING),
-            NEXT_ENUM_EVEN(T_STRING_NSORT),
-            NEXT_ENUM_EVEN(T_STRING_SSORT),
+            T_RANGE_NSORT,
+            T_RANGE_SSORT,
+            T_BLIST,
+            T_BLIST_NSORT,
+            T_BLIST_SSORT,
+            T_STRING,
+            T_STRING_NSORT,
+            T_STRING_SSORT,
 
-        END_ENUM_RANGE_ODD(LAST_LIST_TNUM),
+        END_ENUM_RANGE(LAST_LIST_TNUM),
 
         // object sets and maps
-        START_ENUM_RANGE_EVEN(FIRST_OBJSET_TNUM),
-            NEXT_ENUM_EVEN(T_OBJSET),
-            NEXT_ENUM_EVEN(T_OBJMAP),
-        END_ENUM_RANGE_ODD(LAST_OBJSET_TNUM),
+        START_ENUM_RANGE(FIRST_OBJSET_TNUM),
+            T_OBJSET,
+            T_OBJMAP,
+        END_ENUM_RANGE(LAST_OBJSET_TNUM),
 
     // last mutable/immutable TNUM
     END_ENUM_RANGE(LAST_IMM_MUT_TNUM),
@@ -509,9 +476,7 @@ void MakeImmutable(Obj obj);
 */
 EXPORT_INLINE void MakeImmutableNoRecurse(Obj obj)
 {
-    UInt type = TNUM_OBJ(obj);
-    GAP_ASSERT((FIRST_IMM_MUT_TNUM <= type) && (type <= LAST_IMM_MUT_TNUM));
-    RetypeBag(obj, type | IMMUTABLE);
+    GAP_ASSERT((FIRST_IMM_MUT_TNUM <= TNUM_OBJ(obj)) && (TNUM_OBJ(obj) <= LAST_IMM_MUT_TNUM));
     SET_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE);
 }
 
@@ -543,8 +508,8 @@ EXPORT_INLINE BOOL IS_MUTABLE_OBJ(Obj obj)
         return FALSE;
     if (TEST_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE))
         return FALSE;
-    if (FIRST_IMM_MUT_TNUM <= tnum && tnum <= LAST_IMM_MUT_TNUM)
-        return !(tnum & IMMUTABLE);
+    if (tnum <= LAST_IMM_MUT_TNUM)
+        return TRUE;
     return ((*IsMutableObjFuncs[tnum])(obj));
 }
 
