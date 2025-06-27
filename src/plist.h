@@ -234,16 +234,6 @@ EXPORT_INLINE BOOL IS_DENSE_PLIST(Obj list)
 
 /****************************************************************************
 **
-*F  IS_PLIST_MUTABLE( <list> )  . . . . . . . . . . . is a plain list mutable
-*/
-EXPORT_INLINE BOOL IS_PLIST_MUTABLE(Obj list)
-{
-    GAP_ASSERT(IS_PLIST(list));
-    return !((TNUM_OBJ(list) - T_PLIST) % 2);
-}
-
-/****************************************************************************
-**
 *F  AssPlist( <list>, <pos>, <val>) . . . . . . . . .  assign to a plain list
 */
 void AssPlist(Obj list, Int pos, Obj val);
