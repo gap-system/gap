@@ -1285,7 +1285,7 @@ end );
 ##  (Note that the pairs of classes obtained by splitting classes of the
 ##  symmetric group can be chosen independently.)
 ##
-##  Note that we do *not* call `CharacterTable( "Symmetric", <n> )' directly
+##  Note that we do *not* call `CharacterTable( "Alternating", <n> )' directly
 ##  because the character table library may be not installed.
 ##
 InstallMethod( Irr,

@@ -1472,7 +1472,7 @@ DeclareAttribute( "DegreeOfCharacter", IsClassFunction );
 ##  gap> der:= DerivedSubgroup( S4 );
 ##  Alt( [ 1 .. 4 ] )
 ##  gap> List( Irr( der ), chi -> InertiaSubgroup( S4, chi ) );
-##  [ S4, Alt( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ), S4 ]
+##  [ S4, S4, Alt( [ 1 .. 4 ] ), Alt( [ 1 .. 4 ] ) ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
