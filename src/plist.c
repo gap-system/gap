@@ -266,7 +266,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
 #endif
     else if (TEST_OBJ_FLAG(elm, OBJ_FLAG_TESTING)) {
         isHom   = 0;
-        areMut  = IS_PLIST_MUTABLE(elm);
+        areMut  = IS_MUTABLE_OBJ(elm);
         isTable = 0;
     }
     else {
@@ -331,7 +331,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
 #endif
         else if (TEST_OBJ_FLAG(elm, OBJ_FLAG_TESTING)) {
             isHom   = 0;
-            areMut  = (areMut || IS_PLIST_MUTABLE(elm));
+            areMut  = (areMut || IS_MUTABLE_OBJ(elm));
             isTable = 0;
             isRect = 0;
         }
@@ -2375,7 +2375,7 @@ static Obj FuncASS_PLIST_DEFAULT(Obj self, Obj plist, Obj pos, Obj val)
     Int                 p;
 
     p = GetPositiveSmallInt("List Assignment", pos);
-    if (!IS_PLIST(plist) || !IS_PLIST_MUTABLE(plist)) {
+    if (!IS_PLIST(plist) || !IS_MUTABLE_OBJ(plist)) {
         RequireArgumentEx(0, plist, "<list>", "must be a mutable plain list");
     }
 
