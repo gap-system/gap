@@ -11,17 +11,17 @@
 /*
  * Functionality to traverse nested object structures.
  */
-#include "hpc/traverse.h"
+#include "traverse.h"
 
-#include "bool.h"
-#include "error.h"
-#include "fibhash.h"
-#include "gaputils.h"
-#include "modules.h"
-#include "plist.h"
+#include "../bool.h"
+#include "../error.h"
+#include "../fibhash.h"
+#include "../gaputils.h"
+#include "../modules.h"
+#include "../plist.h"
 
-#include "hpc/guards.h"
-#include "hpc/thread.h"
+#include "guards.h"
+#include "thread.h"
 
 #ifndef WARD_ENABLED
 

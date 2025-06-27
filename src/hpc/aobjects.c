@@ -10,27 +10,27 @@
 **  This file contains the GAP interface for thread primitives.
 */
 
-#include "hpc/aobjects.h"
+#include "aobjects.h"
 
-#include "hpc/guards.h"
-#include "hpc/thread.h"
-#include "hpc/traverse.h"
+#include "guards.h"
+#include "thread.h"
+#include "traverse.h"
 
-#include "ariths.h"
-#include "bool.h"
-#include "calls.h"
-#include "error.h"
-#include "fibhash.h"
-#include "gaputils.h"
-#include "gvars.h"
-#include "io.h"
-#include "lists.h"
-#include "modules.h"
-#include "objects.h"
-#include "plist.h"
-#include "precord.h"
-#include "records.h"
-#include "stringobj.h"
+#include "../ariths.h"
+#include "../bool.h"
+#include "../calls.h"
+#include "../error.h"
+#include "../fibhash.h"
+#include "../gaputils.h"
+#include "../gvars.h"
+#include "../io.h"
+#include "../lists.h"
+#include "../modules.h"
+#include "../objects.h"
+#include "../plist.h"
+#include "../precord.h"
+#include "../records.h"
+#include "../stringobj.h"
 
 #include <stdlib.h>     // for labs
 
