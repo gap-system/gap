@@ -249,6 +249,8 @@ true
 # now trigger the Mann criterion
 gap> IsRegularPGroup(DirectProduct(List([[27,3],[243,22]],SmallGroup)));
 true
+gap> IsRegularPGroup(DirectProduct(List([[27,3],[243,22],[27,3]],SmallGroup)));
+true
 gap> IsRegularPGroup(DirectProduct(List([[27,3],[243,25]],SmallGroup)));
 false
 
