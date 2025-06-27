@@ -205,7 +205,7 @@ static Obj TYPE_LIST_EMPTY_MUTABLE;
 static Obj TYPE_LIST_EMPTY_IMMUTABLE;
 static Obj TYPE_LIST_HOM;
 
-static Obj TypePlistWithKTNum( Obj list, UInt *ktnum );
+static Obj TypePlistWithKTNum(Obj list, UInt * ktnum);
 
 static Int KTNumPlist(Obj list, Obj * famfirst)
 {
@@ -231,7 +231,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
 
 #ifdef HPCGAP
     if (!CheckWriteAccess(list)) {
-      return TNUM_OBJ(list);
+      return MUTABLE_TNUM(TNUM_OBJ(list));
     }
 #endif
     // if list has `OBJ_FLAG_TESTING' keep that
@@ -245,8 +245,8 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
 
     // special case for empty list
     if ( lenList == 0 ) {
-        res = IS_MUTABLE_OBJ(list) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE;
-        RetypeBagIfWritable(list, res);
+        res = T_PLIST_EMPTY;
+        RetypeBagSM(list, res);
         if (famfirst != (Obj *) 0)
           *famfirst = (Obj) 0;
         return res;
@@ -432,7 +432,6 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
         SET_FILT_LIST( list, areMut ? FN_IS_DENSE : FN_IS_RECT );
         res = T_PLIST_TAB_RECT;
     }
-    res = res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE );
     return res;
 }
 
@@ -451,7 +450,7 @@ static Int KTNumHomPlist(Obj list)
 
 #ifdef HPCGAP
     if (!CheckWriteAccess(list)) {
-      return TNUM_OBJ(list);
+      return MUTABLE_TNUM(TNUM_OBJ(list));
     }
 #endif
 
@@ -560,13 +559,12 @@ static Int KTNumHomPlist(Obj list)
       res = T_PLIST_HOM;
 
  finish:
-    res = res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE );
     return res;
 }
 
 static Obj TypePlist(Obj list)
 {
-  return TypePlistWithKTNum( list, (UInt *) 0);
+    return TypePlistWithKTNum(list, 0);
 }
 
 static Obj TypePlistNDense(Obj list)
@@ -613,7 +611,10 @@ static Obj TypePlistEmpty(Obj list)
 
 static Obj TypePlistHomHelper(Obj family, UInt tnum, UInt knr, Obj list)
 {
-    GAP_ASSERT(knr <= tnum);
+    // make sure tnum reflects mutability
+    if (!IS_MUTABLE_OBJ(list))
+        tnum |= IMMUTABLE;
+
     knr = tnum - knr + 1;
 
     // get the list types of that family
@@ -656,7 +657,7 @@ static Obj TypePlistWithKTNum (
       tnum = KTNumPlist( list, &family);
       CLEAR_OBJ_FLAG( list, OBJ_FLAG_TESTING );
     } else {
-      tnum = TNUM_OBJ(list);
+      tnum = MUTABLE_TNUM(TNUM_OBJ(list));
       family = 0;
     }
 #else
@@ -669,24 +670,18 @@ static Obj TypePlistWithKTNum (
       *ktnum = tnum;
 
     // handle special cases
-    switch (tnum)
-      {
-      case T_PLIST_NDENSE:
-      case T_PLIST_NDENSE+IMMUTABLE:
+    switch (tnum) {
+    case T_PLIST_NDENSE:
         return TypePlistNDense(list);
-      case T_PLIST_DENSE_NHOM:
-      case T_PLIST_DENSE_NHOM+IMMUTABLE:
+    case T_PLIST_DENSE_NHOM:
         return TypePlistDenseNHom(list);
-      case T_PLIST_DENSE_NHOM_SSORT:
-      case T_PLIST_DENSE_NHOM_SSORT+IMMUTABLE:
+    case T_PLIST_DENSE_NHOM_SSORT:
         return TypePlistDenseNHomSSort(list);
-      case T_PLIST_DENSE_NHOM_NSORT:
-      case T_PLIST_DENSE_NHOM_NSORT+IMMUTABLE:
+    case T_PLIST_DENSE_NHOM_NSORT:
         return TypePlistDenseNHomNSort(list);
-      case T_PLIST_EMPTY:
-      case T_PLIST_EMPTY+IMMUTABLE:
+    case T_PLIST_EMPTY:
         return TypePlistEmpty(list);
-      default: ; // fall through into the rest of the function
+    default: ;  // fall through into the rest of the function
     }
 
     // handle homogeneous list
