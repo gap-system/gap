@@ -462,14 +462,30 @@ Int             GrowString (
 **
 **  'TypeString' is the function in 'TypeObjFuncs' for strings.
 */
-static Obj TYPES_STRING;
-
+static Obj TYPE_STRING_MUTABLE;
+static Obj TYPE_STRING_IMMUTABLE;
+static Obj TYPE_STRING_NSORT_MUTABLE;
+static Obj TYPE_STRING_NSORT_IMMUTABLE;
+static Obj TYPE_STRING_SSORT_MUTABLE;
+static Obj TYPE_STRING_SSORT_IMMUTABLE;
 
 static Obj TypeString(Obj list)
 {
-    return ELM_PLIST(TYPES_STRING, TNUM_OBJ(list) - T_STRING + 1);
+    BOOL mut = IS_MUTABLE_OBJ(list);
+    return mut ? TYPE_STRING_MUTABLE : TYPE_STRING_IMMUTABLE;
 }
 
+static Obj TypeStringNSort(Obj list)
+{
+    BOOL mut = IS_MUTABLE_OBJ(list);
+    return mut ? TYPE_STRING_NSORT_MUTABLE : TYPE_STRING_NSORT_IMMUTABLE;
+}
+
+static Obj TypeStringSSort(Obj list)
+{
+    BOOL mut = IS_MUTABLE_OBJ(list);
+    return mut ? TYPE_STRING_SSORT_MUTABLE : TYPE_STRING_SSORT_IMMUTABLE;
+}
 
 
 /****************************************************************************
@@ -2049,11 +2065,18 @@ static Int InitKernel (
     TypeObjFuncs[ T_CHAR ] = TypeChar;
 
     // install the type method
-    ImportGVarFromLibrary( "TYPES_STRING", &TYPES_STRING );
-    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
-        TypeObjFuncs[ t1            ] = TypeString;
-        TypeObjFuncs[ t1 +IMMUTABLE ] = TypeString;
-    }
+    ImportGVarFromLibrary("TYPE_STRING_MUTABLE", &TYPE_STRING_MUTABLE);
+    ImportGVarFromLibrary("TYPE_STRING_IMMUTABLE", &TYPE_STRING_IMMUTABLE);
+    ImportGVarFromLibrary("TYPE_STRING_NSORT_MUTABLE", &TYPE_STRING_NSORT_MUTABLE);
+    ImportGVarFromLibrary("TYPE_STRING_NSORT_IMMUTABLE", &TYPE_STRING_NSORT_IMMUTABLE);
+    ImportGVarFromLibrary("TYPE_STRING_SSORT_MUTABLE", &TYPE_STRING_SSORT_MUTABLE);
+    ImportGVarFromLibrary("TYPE_STRING_SSORT_IMMUTABLE", &TYPE_STRING_SSORT_IMMUTABLE);
+    TypeObjFuncs[ T_STRING                  ] = TypeString;
+    TypeObjFuncs[ T_STRING       +IMMUTABLE ] = TypeString;
+    TypeObjFuncs[ T_STRING_NSORT            ] = TypeStringNSort;
+    TypeObjFuncs[ T_STRING_NSORT +IMMUTABLE ] = TypeStringNSort;
+    TypeObjFuncs[ T_STRING_SSORT            ] = TypeStringSSort;
+    TypeObjFuncs[ T_STRING_SSORT +IMMUTABLE ] = TypeStringSSort;
 
     // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
