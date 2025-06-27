@@ -60,12 +60,6 @@ void PrecheckRetypeBag(Bag bag, UInt new_type)
         if (TNUM_BAG(bag) == T_POSOBJ)
             return;
 #endif
-        Int oldImm = !IS_MUTABLE_OBJ(bag);
-        Int newImm = new_type & IMMUTABLE;
-        if (oldImm && !newImm) {
-            ErrorMayQuit(
-                "RetypeBag: cannot change immutable object to mutable", 0, 0);
-        }
     }
 }
 #endif
@@ -74,32 +68,12 @@ void PrecheckRetypeBag(Bag bag, UInt new_type)
 // TODO: perhaps this should become RetypeObj ?
 void RetypeBagSM(Bag bag, UInt new_type)
 {
-    if (FIRST_IMM_MUT_TNUM <= new_type && new_type <= LAST_IMM_MUT_TNUM) {
-        Int oldImm = !IS_MUTABLE_OBJ(bag);
-        Int newImm = new_type & IMMUTABLE;
-        if (newImm)
-            ErrorMayQuit(
-                "RetypeBagSM: target tnum should not indicate immutability",
-                0, 0);
-        if (oldImm)
-            new_type |= IMMUTABLE;
-    }
     RetypeBag(bag, new_type);
 }
 
 #ifdef HPCGAP
 void RetypeBagSMIfWritable(Bag bag, UInt new_type)
 {
-    if (FIRST_IMM_MUT_TNUM <= new_type && new_type <= LAST_IMM_MUT_TNUM) {
-        Int oldImm = !IS_MUTABLE_OBJ(bag);
-        Int newImm = new_type & IMMUTABLE;
-        if (newImm)
-            ErrorMayQuit(
-                "RetypeBagSM: target tnum should not indicate immutability",
-                0, 0);
-        if (oldImm)
-            new_type |= IMMUTABLE;
-    }
     RetypeBagIfWritable(bag, new_type);
 }
 #endif

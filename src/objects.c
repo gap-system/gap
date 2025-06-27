@@ -414,7 +414,7 @@ static Obj ShallowCopyObjDefault(Obj obj)
     Obj *               n;
 
     // make the new object and copy the contents
-    new = NewBag( MUTABLE_TNUM(TNUM_OBJ(obj)), SIZE_OBJ(obj) );
+    new = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
     o = CONST_ADDR_OBJ(obj);
     n = ADDR_OBJ( new );
     memcpy(n, o, SIZE_OBJ(obj) );
@@ -812,9 +812,10 @@ void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1])( Obj );
 
 void MakeImmutable( Obj obj )
 {
-  if (IS_MUTABLE_OBJ( obj ))
-    {
-      (*(MakeImmutableObjFuncs[TNUM_OBJ(obj)]))(obj);
+    if (IS_MUTABLE_OBJ( obj )) {
+        (*(MakeImmutableObjFuncs[TNUM_OBJ(obj)]))(obj);
+        SET_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE);
+        GAP_ASSERT(!IS_MUTABLE_OBJ(obj));
     }
 }
 
@@ -934,7 +935,7 @@ static void PrintInaccessibleObject(Obj obj)
 static void PRINT_PATH(Obj obj, Int idx)
 {
     UInt tnum = TNUM_OBJ(obj);
-    if (tnum == T_PREC || tnum == T_PREC + IMMUTABLE) {
+    if (IS_PREC(obj)) {
         Pr(".%I", (Int)NAME_RNAM(idx), 0);
     }
     else if (FIRST_LIST_TNUM <= tnum && tnum <= LAST_LIST_TNUM) {

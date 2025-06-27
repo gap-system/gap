@@ -335,8 +335,7 @@ static Obj ZeroListDefault(Obj list)
 
     if (IS_PLIST( list ))
       {
-        if (TNUM_OBJ(list) == T_PLIST_FFE ||
-            TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+        if (TNUM_OBJ(list) == T_PLIST_FFE)
           RetypeBag(res, TNUM_OBJ(list));
         else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
                  TNUM_OBJ(list) < T_PLIST_FFE)
@@ -398,8 +397,7 @@ static Obj ZeroListMutDefault(Obj list)
 
     if (IS_PLIST( list ))
       {
-        if (TNUM_OBJ(list) == T_PLIST_FFE ||
-            TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+        if (TNUM_OBJ(list) == T_PLIST_FFE)
           RetypeBag(res, T_PLIST_FFE);
         else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
                  TNUM_OBJ(list) < T_PLIST_FFE)
@@ -494,8 +492,7 @@ static Obj AInvMutListDefault(Obj list)
     // Now adjust the result TNUM info
 
     if (IS_PLIST(list)) {
-        if (TNUM_OBJ(list) == T_PLIST_FFE ||
-            TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+        if (TNUM_OBJ(list) == T_PLIST_FFE)
           RetypeBag(res, T_PLIST_FFE);
         else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
                  TNUM_OBJ(list) < T_PLIST_FFE)
@@ -549,8 +546,7 @@ static Obj AInvListDefault(Obj list)
     // Now adjust the result TNUM info
 
     if (IS_PLIST(list)) {
-        if (TNUM_OBJ(list) == T_PLIST_FFE ||
-            TNUM_OBJ(list) == T_PLIST_FFE+IMMUTABLE)
+        if (TNUM_OBJ(list) == T_PLIST_FFE)
           RetypeBag(res, TNUM_OBJ(list));
         else if (TNUM_OBJ(list) >= T_PLIST_CYC &&
                  TNUM_OBJ(list) < T_PLIST_FFE)
@@ -989,8 +985,8 @@ static Obj OneMatrix(Obj mat, UInt mut)
     Obj                 one = 0;        // one element
     UInt                len;            // length (and width) of matrix
     UInt                i, k;           // loop variables
-    UInt                rtype= 0;       // tnum for rows of result
-    UInt                ctype = 0;      // tnum for  result
+    BOOL                rmut;           // rows of result mutable?
+    BOOL                cmut;           // result mutable?
 
     // check that the operand is a *square* matrix
     len = LEN_LIST( mat );
@@ -1006,7 +1002,7 @@ static Obj OneMatrix(Obj mat, UInt mut)
       one = ONE_SAMEMUT(zero);
       CheckedMakeImmutable(zero);
       CheckedMakeImmutable(one);
-      ctype = rtype = T_PLIST+IMMUTABLE;
+      cmut = rmut = FALSE;
       break;
 
     case 1:
@@ -1014,34 +1010,36 @@ static Obj OneMatrix(Obj mat, UInt mut)
       one = ONE_SAMEMUT(zero);
       if (IS_MUTABLE_OBJ(mat))
         {
-          ctype = T_PLIST;
-          rtype = IS_MUTABLE_OBJ(ELM_LIST(mat, 1)) ? T_PLIST : T_PLIST + IMMUTABLE;
+          cmut = TRUE;
+          rmut = IS_MUTABLE_OBJ(ELM_LIST(mat, 1));
         }
       else
-        ctype = rtype = T_PLIST + IMMUTABLE;
+          cmut = rmut = FALSE;
       break;
 
     case 2:
       zero = ZERO_SAMEMUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
       one  = ONE( zero );
-      ctype = rtype = T_PLIST;
+      cmut = rmut = TRUE;
       break;
     }
 
-
-
     // make the identity matrix
-    res = NEW_PLIST(  ctype, len );
+    res = NEW_PLIST(T_PLIST, len);
     SET_LEN_PLIST( res, len );
     for ( i = 1; i <= len; i++ ) {
-        row = NEW_PLIST( rtype , len );
+        row = NEW_PLIST(T_PLIST, len);
         SET_LEN_PLIST( row, len );
         for ( k = 1; k <= len; k++ )
             SET_ELM_PLIST( row, k, zero );
         SET_ELM_PLIST( row, i, one );
+        if (!rmut)
+            MakeImmutableNoRecurse(row);
         SET_ELM_PLIST( res, i, row );
         CHANGED_BAG( res );
     }
+    if (!cmut)
+        MakeImmutableNoRecurse(res);
 
     // return the identity matrix
     return res;
@@ -1092,7 +1090,8 @@ static Obj InvMatrix(Obj mat, UInt mut)
     Obj                 one = 0;        // one element
     UInt                len;            // length (and width) of matrix
     UInt                i, k, l;        // loop variables
-    UInt                rtype = 0, ctype = 0;   // types for lists to be created
+    BOOL                rmut;           // rows of result mutable?
+    BOOL                cmut;           // result mutable?
 
     // check that the operand is a *square* matrix
     len = LEN_LIST( mat );
@@ -1102,43 +1101,41 @@ static Obj InvMatrix(Obj mat, UInt mut)
     }
 
     // get the zero and the one
-    switch(mut)
-      {
-      case 0:
+    switch (mut) {
+    case 0:
         zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
         one = ONE_SAMEMUT(zero);
-        ctype = rtype = T_PLIST+IMMUTABLE;
         CheckedMakeImmutable(zero);
         CheckedMakeImmutable(one);
+        cmut = rmut = FALSE;
         break;
 
-      case 1:
+    case 1:
         zero = ZERO_MUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
         one = ONE_SAMEMUT(zero);
-        if (IS_MUTABLE_OBJ(mat))
-          {
-            ctype = T_PLIST;
-            rtype = IS_MUTABLE_OBJ(ELM_LIST(mat, 1)) ? T_PLIST : T_PLIST+IMMUTABLE;
-          }
+        if (IS_MUTABLE_OBJ(mat)) {
+            cmut = TRUE;
+            rmut = IS_MUTABLE_OBJ(ELM_LIST(mat, 1));
+        }
         else
-          ctype = rtype = T_PLIST+IMMUTABLE;
+            cmut = rmut = FALSE;
         break;
 
-      case 2:
+    case 2:
         zero = ZERO_SAMEMUT( ELM_LIST( ELM_LIST( mat, 1 ), 1 ) );
         one  = ONE( zero );
-        ctype = rtype = T_PLIST;
+        cmut = rmut = TRUE;
         break;
-      }
+    }
 
     // make a matrix of the form $ ( Id_<len> | <mat> ) $
-    res = NEW_PLIST( ctype, len );
-    SET_LEN_PLIST( res, len );
-    for ( i = 1; i <= len; i++ ) {
-        row = NEW_PLIST( rtype, 2 * len );
-        SET_LEN_PLIST( row, 2 * len );
-        SET_ELM_PLIST( res, i, row );
-        CHANGED_BAG( res );
+    res = NEW_PLIST(T_PLIST, len);
+    SET_LEN_PLIST(res, len);
+    for (i = 1; i <= len; i++) {
+        row = NEW_PLIST(T_PLIST, 2 * len);
+        SET_LEN_PLIST(row, 2 * len);
+        SET_ELM_PLIST(res, i, row);
+        CHANGED_BAG(res);
     }
     for ( i = 1; i <= len; i++ ) {
         row = ELM_PLIST( res, i );
@@ -1203,9 +1200,14 @@ static Obj InvMatrix(Obj mat, UInt mut)
 
     // throw away the right halves of each row
     for ( i = 1; i <= len; i++ ) {
-        SET_LEN_PLIST( ELM_PLIST( res, i ), len );
-        SHRINK_PLIST(  ELM_PLIST( res, i ), len );
+        row = ELM_PLIST(res, i);
+        SET_LEN_PLIST(row, len);
+        SHRINK_PLIST(row, len);
+        if (!rmut)
+            MakeImmutableNoRecurse(row);
     }
+    if (!cmut)
+        MakeImmutableNoRecurse(res);
 
     return res;
 }
@@ -2152,11 +2154,11 @@ static Int InitKernel (
       }
 
     }
-    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
-      for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE+IMMUTABLE; t2++) {
+    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE; t1++) {
+      for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE; t2++) {
         SumFuncs[t1][t2] = SumListList;
       }
-      for (t2 = T_PLIST_TAB; t2 <= T_PLIST_TAB_RECT_SSORT+IMMUTABLE; t2++) {
+      for (t2 = T_PLIST_TAB; t2 <= T_PLIST_TAB_RECT_SSORT; t2++) {
         SumFuncs[t1][t2] = SumSclList;
         SumFuncs[t2][t1] = SumListScl;
       }
@@ -2170,11 +2172,11 @@ static Int InitKernel (
         DiffFuncs[t2][t1] = DiffSclList;
       }
     }
-    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
-      for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE+IMMUTABLE; t2++) {
+    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE; t1++) {
+      for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE; t2++) {
         DiffFuncs[t1][t2] = DiffListList;
       }
-      for (t2 = T_PLIST_TAB; t2 <= T_PLIST_TAB_RECT_SSORT+IMMUTABLE; t2++) {
+      for (t2 = T_PLIST_TAB; t2 <= T_PLIST_TAB_RECT_SSORT; t2++) {
         DiffFuncs[t1][t2] = DiffSclList;
         DiffFuncs[t2][t1] = DiffListScl;
       }
@@ -2195,8 +2197,8 @@ static Int InitKernel (
         ProdFuncs[t2][t1] = ProdSclList;
       }
     }
-    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
-      for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE+IMMUTABLE; t2++) {
+    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE; t1++) {
+      for (t2 = T_PLIST_CYC; t2 <= T_PLIST_FFE; t2++) {
         ProdFuncs[t1][t2] = ProdListList;
       }
     }
