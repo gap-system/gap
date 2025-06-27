@@ -992,6 +992,8 @@ static Obj OneMatrix(Obj mat, UInt mut)
     BOOL                rmut;           // rows of result mutable?
     BOOL                cmut;           // result mutable?
 
+    GAP_ASSERT(mut <= 2);
+
     // check that the operand is a *square* matrix
     len = LEN_LIST( mat );
     if ( len != LEN_LIST( ELM_LIST( mat, 1 ) ) ) {
@@ -1096,6 +1098,8 @@ static Obj InvMatrix(Obj mat, UInt mut)
     UInt                i, k, l;        // loop variables
     BOOL                rmut;           // rows of result mutable?
     BOOL                cmut;           // result mutable?
+
+    GAP_ASSERT(mut <= 2);
 
     // check that the operand is a *square* matrix
     len = LEN_LIST( mat );
