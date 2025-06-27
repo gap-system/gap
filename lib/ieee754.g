@@ -144,7 +144,7 @@ BindGlobal("IEEE754FLOAT", rec(
     creator := MACFLOAT_STRING,
     eager := 'l'));
 
-SetIsUFDFamily(IEEE754FloatsFamily,true);
+SetFilterObj(IEEE754FloatsFamily, IsUFDFamily);
 SetZero(IEEE754FloatsFamily, NewFloat(IsIEEE754FloatRep,0));
 SetOne(IEEE754FloatsFamily, NewFloat(IsIEEE754FloatRep,0));
 

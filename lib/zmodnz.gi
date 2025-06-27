@@ -1106,8 +1106,7 @@ InstallGlobalFunction( ZmodnZ, function( n )
     # Store the objects type.
     F!.typeOfZmodnZObj:= NewType( F, IsZmodnZObjNonprime and IsModulusRep );
 
-    # as n is no prime, the family is no UFD
-    SetIsUFDFamily(F,false);
+    # as n is no prime, the family is no UFD, so we don't add IsUFDFamily as a filter
 
     # Make the domain.
     R:= RingWithOneByGenerators( [ ZmodnZObj( F, 1 ) ] );
