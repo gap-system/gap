@@ -611,10 +611,9 @@ static Obj TypePlistEmpty(Obj list)
 static Obj TypePlistHomHelper(Obj family, UInt tnum, UInt knr, Obj list)
 {
     // make sure tnum reflects mutability
+    knr = 2*(tnum - knr) + 1;
     if (!IS_MUTABLE_OBJ(list))
-        tnum |= IMMUTABLE;
-
-    knr = tnum - knr + 1;
+        knr++;
 
     // get the list types of that family
     Obj types = TYPES_LIST_FAM(family);
