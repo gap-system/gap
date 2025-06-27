@@ -233,14 +233,14 @@ static inline Obj EXT_TRANS(Obj f)
 static inline void SET_IMG_TRANS(Obj f, Obj img)
 {
     GAP_ASSERT(IS_TRANS(f));
-    GAP_ASSERT(img == NULL || (IS_PLIST(img) && !IS_PLIST_MUTABLE(img)));
+    GAP_ASSERT(img == NULL || (IS_PLIST(img) && !IS_MUTABLE_OBJ(img)));
     ADDR_OBJ(f)[0] = img;
 }
 
 static inline void SET_KER_TRANS(Obj f, Obj ker)
 {
     GAP_ASSERT(IS_TRANS(f));
-    GAP_ASSERT(ker == NULL || (IS_PLIST(ker) && !IS_PLIST_MUTABLE(ker) &&
+    GAP_ASSERT(ker == NULL || (IS_PLIST(ker) && !IS_MUTABLE_OBJ(ker) &&
                                LEN_PLIST(ker) == DEG_TRANS(f)));
     ADDR_OBJ(f)[1] = ker;
 }
@@ -3366,7 +3366,7 @@ static Obj FuncOnPosIntSetsTrans(Obj self, Obj set, Obj f, Obj n)
     }
 
     if (IS_PLIST(set)) {
-        res = NEW_PLIST_WITH_MUTABILITY(IS_PLIST_MUTABLE(set), T_PLIST_CYC_SSORT, len);
+        res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(set), T_PLIST_CYC_SSORT, len);
         SET_LEN_PLIST(res, len);
     }
     else {
