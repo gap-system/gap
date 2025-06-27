@@ -377,20 +377,20 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
         }
       }
 
+    if (famfirst != 0) {
+        *famfirst = (isDense && isHom) ? family : 0;
+    }
+
     // set the appropriate flags (not the hom. flag if elms are mutable)
     if      ( ! isDense ) {
         SET_FILT_LIST( list, FN_IS_NDENSE );
         res = T_PLIST_NDENSE;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) 0;
     }
     else if ( isDense && ! isHom ) {
         SET_FILT_LIST( list, FN_IS_DENSE );
         if ( ! areMut )
             SET_FILT_LIST( list, FN_IS_NHOMOG );
         res = T_PLIST_DENSE_NHOM;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) 0;
     }
     else if ( isDense &&   isHom && ! isTable ) {
         SET_FILT_LIST( list, areMut ? FN_IS_DENSE : FN_IS_HOMOG );
@@ -423,23 +423,15 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
           }
         else
           res = T_PLIST_HOM;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) family;
-
     }
     else  if ( isDense &&   isHom &&   isTable && !isRect )  {
         SET_FILT_LIST( list, areMut ? FN_IS_DENSE : FN_IS_TABLE );
         res = T_PLIST_TAB;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) family;
     }
-    else
-      {
+    else {
         SET_FILT_LIST( list, areMut ? FN_IS_DENSE : FN_IS_RECT );
         res = T_PLIST_TAB_RECT;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) family;
-      }
+    }
     res = res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE );
     return res;
 }
