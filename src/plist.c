@@ -759,20 +759,14 @@ static Obj TypePlistFfe(Obj list)
 **  'ShallowCopyPlist'  only copies up to  the  logical length, the result is
 **  always a mutable list.
 */
-Obj             ShallowCopyPlist (
-    Obj                 list )
+Obj ShallowCopyPlist(Obj list)
 {
     Obj                 new;
     UInt                len;
 
     // make the new object and copy the contents
     len = LEN_PLIST(list);
-    if ( ! IS_PLIST_MUTABLE(list) ) {
-        new = NEW_PLIST( TNUM_OBJ(list) - IMMUTABLE, len );
-    }
-    else {
-        new = NEW_PLIST( TNUM_OBJ(list), len );
-    }
+    new = NEW_PLIST(MUTABLE_TNUM(TNUM_OBJ(list)), len);
     memcpy(ADDR_OBJ(new), CONST_ADDR_OBJ(list), (len + 1) * sizeof(Obj));
     // 'CHANGED_BAG(new);' not needed, <new> is newest object
     return new;
@@ -1297,6 +1291,7 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
     Int                 pos;            // <position> as integer
     Int                 inc;            // increment in a range
     Int                 i;              // loop variable
+    Int                 tnum;           // TNUM of <list>
 
     // select no element
     if ( LEN_LIST(poss) == 0 ) {
@@ -1312,22 +1307,23 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
         // get the length of <positions>
         lenPoss = LEN_LIST( poss );
 
+        // get the (mutable) tnum of list
+        tnum = MUTABLE_TNUM(TNUM_OBJ(list));
+
         // make the result list
         // try to assert as many properties as possible
         if (HAS_FILT_LIST(list, FN_IS_SSORT) && HAS_FILT_LIST(poss, FN_IS_SSORT))
           {
-            elms = NEW_PLIST( MUTABLE_TNUM(TNUM_OBJ(list)), lenPoss);
+            elms = NEW_PLIST(tnum, lenPoss);
             RESET_FILT_LIST( elms, FN_IS_NHOMOG); // can't deduce this one
           }
         else if (HAS_FILT_LIST(list, FN_IS_RECT))
           elms = NEW_PLIST( T_PLIST_TAB_RECT, lenPoss );
         else if (HAS_FILT_LIST(list, FN_IS_TABLE))
           elms = NEW_PLIST( T_PLIST_TAB, lenPoss );
-        else if (T_PLIST_CYC <= TNUM_OBJ(list) && TNUM_OBJ(list) <=
-                                                  T_PLIST_CYC_SSORT+IMMUTABLE)
+        else if (T_PLIST_CYC <= tnum && tnum <= T_PLIST_CYC_SSORT)
           elms = NEW_PLIST( T_PLIST_CYC, lenPoss );
-        else if (T_PLIST_FFE <= TNUM_OBJ(list) && TNUM_OBJ(list) <=
-                                                  T_PLIST_FFE+IMMUTABLE)
+        else if (T_PLIST_FFE <= tnum && tnum <= T_PLIST_FFE)
           elms = NEW_PLIST( T_PLIST_FFE, lenPoss );
         else if (HAS_FILT_LIST(list, FN_IS_HOMOG))
           elms = NEW_PLIST( T_PLIST_HOM, lenPoss );
@@ -1391,19 +1387,20 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
                 (Int)pos + (lenPoss - 1) * inc, 0);
         }
 
+        // get the (mutable) tnum of list
+        tnum = MUTABLE_TNUM(TNUM_OBJ(list));
+
         // make the result list
         // try to assert as many properties as possible
         if      ( HAS_FILT_LIST(list, FN_IS_SSORT) && inc > 0 )
-          elms = NEW_PLIST( MUTABLE_TNUM(TNUM_OBJ(list)), lenPoss );
+          elms = NEW_PLIST( tnum, lenPoss );
         else if (HAS_FILT_LIST(list, FN_IS_RECT))
           elms = NEW_PLIST( T_PLIST_TAB_RECT, lenPoss );
         else if (HAS_FILT_LIST(list, FN_IS_TABLE))
           elms = NEW_PLIST( T_PLIST_TAB, lenPoss );
-        else if (T_PLIST_CYC <= TNUM_OBJ(list) && TNUM_OBJ(list) <=
-                                                  T_PLIST_CYC_SSORT+IMMUTABLE)
+        else if (T_PLIST_CYC <= tnum && tnum <= T_PLIST_CYC_SSORT)
           elms = NEW_PLIST( T_PLIST_CYC, lenPoss );
-        else if (T_PLIST_FFE <= TNUM_OBJ(list) && TNUM_OBJ(list) <=
-                                                  T_PLIST_FFE+IMMUTABLE)
+        else if (T_PLIST_FFE <= tnum && tnum <= T_PLIST_FFE)
           elms = NEW_PLIST( T_PLIST_FFE, lenPoss );
         else if (HAS_FILT_LIST(list, FN_IS_HOMOG))
           elms = NEW_PLIST( T_PLIST_HOM, lenPoss );
