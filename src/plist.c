@@ -377,20 +377,20 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
         }
       }
 
+    if (famfirst != 0) {
+        *famfirst = (isDense && isHom) ? family : 0;
+    }
+
     // set the appropriate flags (not the hom. flag if elms are mutable)
     if      ( ! isDense ) {
         SET_FILT_LIST( list, FN_IS_NDENSE );
         res = T_PLIST_NDENSE;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) 0;
     }
     else if ( isDense && ! isHom ) {
         SET_FILT_LIST( list, FN_IS_DENSE );
         if ( ! areMut )
             SET_FILT_LIST( list, FN_IS_NHOMOG );
         res = T_PLIST_DENSE_NHOM;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) 0;
     }
     else if ( isDense &&   isHom && ! isTable ) {
         SET_FILT_LIST( list, areMut ? FN_IS_DENSE : FN_IS_HOMOG );
@@ -423,23 +423,15 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
           }
         else
           res = T_PLIST_HOM;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) family;
-
     }
     else  if ( isDense &&   isHom &&   isTable && !isRect )  {
         SET_FILT_LIST( list, areMut ? FN_IS_DENSE : FN_IS_TABLE );
         res = T_PLIST_TAB;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) family;
     }
-    else
-      {
+    else {
         SET_FILT_LIST( list, areMut ? FN_IS_DENSE : FN_IS_RECT );
         res = T_PLIST_TAB_RECT;
-        if (famfirst != (Obj *) 0)
-          *famfirst = (Obj) family;
-      }
+    }
     res = res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE );
     return res;
 }
@@ -577,6 +569,48 @@ static Obj TypePlist(Obj list)
   return TypePlistWithKTNum( list, (UInt *) 0);
 }
 
+static Obj TypePlistNDense(Obj list)
+{
+    if (IS_MUTABLE_OBJ(list))
+        return TYPE_LIST_NDENSE_MUTABLE;
+    else
+        return TYPE_LIST_NDENSE_IMMUTABLE;
+}
+
+#define TypePlistDense TypePlist
+
+static Obj TypePlistDenseNHom(Obj list)
+{
+    if (IS_MUTABLE_OBJ(list))
+        return TYPE_LIST_DENSE_NHOM_MUTABLE;
+    else
+        return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
+}
+
+static Obj TypePlistDenseNHomSSort(Obj list)
+{
+    if (IS_MUTABLE_OBJ(list))
+        return TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE;
+    else
+        return TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE;
+}
+
+static Obj TypePlistDenseNHomNSort(Obj list)
+{
+    if (IS_MUTABLE_OBJ(list))
+        return TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE;
+    else
+        return TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE;
+}
+
+static Obj TypePlistEmpty(Obj list)
+{
+    if (IS_MUTABLE_OBJ(list))
+        return TYPE_LIST_EMPTY_MUTABLE;
+    else
+        return TYPE_LIST_EMPTY_IMMUTABLE;
+}
+
 static Obj TypePlistHomHelper(Obj family, UInt tnum, UInt knr, Obj list)
 {
     GAP_ASSERT(knr <= tnum);
@@ -638,25 +672,20 @@ static Obj TypePlistWithKTNum (
     switch (tnum)
       {
       case T_PLIST_NDENSE:
-        return TYPE_LIST_NDENSE_MUTABLE;
       case T_PLIST_NDENSE+IMMUTABLE:
-        return TYPE_LIST_NDENSE_IMMUTABLE;
+        return TypePlistNDense(list);
       case T_PLIST_DENSE_NHOM:
-        return TYPE_LIST_DENSE_NHOM_MUTABLE;
       case T_PLIST_DENSE_NHOM+IMMUTABLE:
-        return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
+        return TypePlistDenseNHom(list);
       case T_PLIST_DENSE_NHOM_SSORT:
-        return TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE;
       case T_PLIST_DENSE_NHOM_SSORT+IMMUTABLE:
-        return TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE;
+        return TypePlistDenseNHomSSort(list);
       case T_PLIST_DENSE_NHOM_NSORT:
-        return TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE;
       case T_PLIST_DENSE_NHOM_NSORT+IMMUTABLE:
-        return TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE;
+        return TypePlistDenseNHomNSort(list);
       case T_PLIST_EMPTY:
-        return TYPE_LIST_EMPTY_MUTABLE;
       case T_PLIST_EMPTY+IMMUTABLE:
-        return TYPE_LIST_EMPTY_IMMUTABLE;
+        return TypePlistEmpty(list);
       default: ; // fall through into the rest of the function
     }
 
@@ -670,65 +699,17 @@ static Obj TypePlistWithKTNum (
     UInt i;
     for (i = 1; i <= len; i++) {
       if (ELM_LIST(list, i) == (Obj) 0) {
-        if (IS_MUTABLE_OBJ(list))
-          return TYPE_LIST_NDENSE_MUTABLE;
-        else
-          return TYPE_LIST_NDENSE_IMMUTABLE;
+        return TypePlistNDense(list);
       }
     }
 
-    if (IS_MUTABLE_OBJ(list))
-      return TYPE_LIST_DENSE_NHOM_MUTABLE;
-    else
-      return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
+    return TypePlistDenseNHom(list);
 #else
     // what's going on here?
     ErrorQuit( "Panic: strange type tnum '%s' ('%d')",
                (Int)TNAM_OBJ(list), (Int)(TNUM_OBJ(list)) );
     return 0;
 #endif
-}
-
-static Obj TypePlistNDense(Obj list)
-{
-    if (IS_MUTABLE_OBJ(list))
-        return TYPE_LIST_NDENSE_MUTABLE;
-    else
-        return TYPE_LIST_NDENSE_IMMUTABLE;
-}
-
-#define         TypePlistDense       TypePlist
-
-static Obj TypePlistDenseNHom(Obj list)
-{
-    if (IS_MUTABLE_OBJ(list))
-        return TYPE_LIST_DENSE_NHOM_MUTABLE;
-    else
-        return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
-}
-
-static Obj TypePlistDenseNHomSSort(Obj list)
-{
-    if (IS_MUTABLE_OBJ(list))
-        return TYPE_LIST_DENSE_NHOM_SSORT_MUTABLE;
-    else
-        return TYPE_LIST_DENSE_NHOM_SSORT_IMMUTABLE;
-}
-
-static Obj TypePlistDenseNHomNSort(Obj list)
-{
-    if (IS_MUTABLE_OBJ(list))
-        return TYPE_LIST_DENSE_NHOM_NSORT_MUTABLE;
-    else
-        return TYPE_LIST_DENSE_NHOM_NSORT_IMMUTABLE;
-}
-
-static Obj TypePlistEmpty(Obj list)
-{
-    if (IS_MUTABLE_OBJ(list))
-        return TYPE_LIST_EMPTY_MUTABLE;
-    else
-        return TYPE_LIST_EMPTY_IMMUTABLE;
 }
 
 static Obj TypePlistHom(Obj list)
