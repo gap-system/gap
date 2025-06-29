@@ -243,8 +243,16 @@ gap> IsRegularPGroup(SmallGroup(78125, 684)); # Case 8
 true
 gap> IsRegularPGroup(SmallGroup(243, 51)); # Case 10 (no case 9 found)
 false
-gap> IsRegularPGroup(SmallGroup(2187, 663)); # Case 11, takes 3 seconds
+gap> IsRegularPGroup(SmallGroup(2187, 663)); # Case 11
 true
+
+# now trigger the Mann criterion
+gap> IsRegularPGroup(DirectProduct(List([[27,3],[243,22]],SmallGroup)));
+true
+gap> IsRegularPGroup(DirectProduct(List([[27,3],[243,22],[27,3]],SmallGroup)));
+true
+gap> IsRegularPGroup(DirectProduct(List([[27,3],[243,25]],SmallGroup)));
+false
 
 #
 gap> STOP_TEST("pgroups.tst");

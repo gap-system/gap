@@ -465,11 +465,35 @@ local p, hom, reps, as, a, b, ap, bp, ab, ap_bp, ab_p, g, h, H, N;
   elif Size(G) < p^p * Size(Agemo(G,p)) then
     # see [Hal36, Theorem 2.3], [Hup67, Satz III.10.13]
     return true;
-  elif Index(DerivedSubgroup(G),Agemo(DerivedSubgroup(G),p)) < p^(p-1) then
+  elif Index(DerivedSubgroup(G), Agemo(DerivedSubgroup(G),p)) < p^(p-1) then
     # see [Hal36, Theorem 2.3], [Hup67, Satz III.10.13]
     return true;
   fi;
 
+  # We now use Proposition 2 from A. Mann, "Regular p-groups. II", 1972, DOI
+  # 10.1007/BF02764891, which states: If N is a central elementary abelian
+  # subgroup of order p^2, such that G/M is regular for all M with 1<M<N, then
+  # G is regular. The reverse implication also holds as all sections of a
+  # regular p-group are again regular.
+  #
+  # Such a subgroup exists if and only if the center of G is not cyclic.
+  #
+  # As a heuristic, if the index of he center in G is small we may be better off
+  # without this criterion.
+  H := Center(G);
+  if not IsCyclic(H) and Index(G, H) > 250 then
+    if Size(H) = p^2 then
+      N := H;
+    else
+      N := Group(Filtered(Pcgs(H), g -> Order(g) = p){[1,2]});
+    fi;
+    Assert(0, Size(N) = p^2);
+    Assert(0, IsElementaryAbelian(N));
+    reps := MinimalNormalSubgroups(N);
+    Info( InfoGroup, 2, "IsRegularPGroup: using Mann criterion, |G| = ", Size(G),
+       ", |reps| = ", Length(reps));
+    return ForAll(reps, M -> IsRegularPGroup(G/M));
+  fi;
 
   # Fallback to actually check the defining criterion, i.e.:
   # for all a,b in G, we must have that a^p*b^p/(a*b)^p in (<a,b>')^p
