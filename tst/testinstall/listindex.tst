@@ -227,8 +227,8 @@ gap> l := [];; Append(l,l); l;
 gap> l := [1,2,3,4];; Append(l,l); l;
 [ 1, 2, 3, 4, 1, 2, 3, 4 ]
 gap> Append(Immutable([1,2,3]), [1,2,3]);
-Error, FuncAPPEND_LIST_INTR: <list1> must be a mutable list (not an immutable \
-plain list of cyclotomics)
+Error, FuncAPPEND_LIST_INTR: <list1> must be a mutable list (not a plain list \
+of cyclotomics)
 gap> Append([1,2,3], () );
 Error, FuncAPPEND_LIST_INTR: <list2> must be a small list (not a permutation (\
 small))
@@ -284,8 +284,8 @@ gap> CopyListEntries(s,3,-1,"abc",4,-3,2);
 Error, COPY_LIST_ENTRIES: <tolst> must be a mutable plain list (not a list (st\
 ring))
 gap> CopyListEntries(s,3,-1,Immutable([1,2,3]),4,-3,2);
-Error, COPY_LIST_ENTRIES: <tolst> must be a mutable plain list (not an immutab\
-le plain list of cyclotomics)
+Error, COPY_LIST_ENTRIES: <tolst> must be a mutable plain list (not a plain li\
+st of cyclotomics)
 gap> CopyListEntries(s, "cheese", 1, l, 1, 1, 2);
 Error, CopyListEntries: <fromind> must be a small integer (not a list (string)\
 )
