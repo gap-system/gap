@@ -194,6 +194,9 @@ void SET_TYPE_OBJ(Obj obj, Obj type)
         break;
 #endif
     case T_PREC:
+        if (!IS_MUTABLE_OBJ(obj)) {
+            ErrorMayQuit("cannot change type of an immutable %s", (Int)TNAM_OBJ(obj), 0);
+        }
 #ifdef HPCGAP
         MEMBAR_WRITE();
 #endif
@@ -1181,6 +1184,9 @@ static Obj FuncSET_TYPE_COMOBJ(Obj self, Obj obj, Obj type)
 {
     switch (TNUM_OBJ(obj)) {
     case T_PREC:
+        if (!IS_MUTABLE_OBJ(obj)) {
+            ErrorMayQuit("You can't make a component object from an immutable %s", (Int)TNAM_OBJ(obj), 0);
+        }
     case T_COMOBJ:
 #ifdef HPCGAP
     case T_AREC:
