@@ -486,7 +486,7 @@ local p, hom, reps, as, a, b, ap, bp, ab, ap_bp, ab_p, g, h, H, N;
   # claimed that it suffices to check just two subgroups M of N. This result
   # is attributed to the above paper by Mann, but I can't find it in there,
   # and it also simply is wrong: for example, the direct product of
-  # SmallGroup(3^5,22) and SmallGroup(3^5,22) has a center if order p^2 = 9,
+  # SmallGroup(3^5,22) and SmallGroup(3^5,22) has a center of order p^2 = 9,
   # which contains four subgroups M of order p = 3. For two of those the
   # corresponding quotient G/M is regular, and for the other two it is not.
   H := Center(G);
