@@ -169,7 +169,7 @@ gap> TNUM_OBJ(Z(2));
 gap> TNUM_OBJ(rec());
 20
 gap> TNUM_OBJ([]);
-34
+27
 
 #
 gap> TNAM_OBJ(0);
