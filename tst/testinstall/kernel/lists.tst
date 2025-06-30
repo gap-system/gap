@@ -29,7 +29,7 @@ Error, no 1st choice method found for `IsBound[]' on 2 arguments
 
 #
 gap> UNB_LIST(1,2);
-Error, Unbind: <list> must be a list (not the integer 1)
+Error, List Unbind: <list> must be a mutable list
 gap> UNB_LIST([1],1);
 gap> UNB_LIST([1],2);
 
@@ -79,7 +79,7 @@ gap> ELMS_LIST_DEFAULT([1,2,3],[1..2]);
 
 #
 gap> ASS_LIST(1,1,1);
-Error, List Assignments: <list> must be a list (not the integer 1)
+Error, List Assignment: <list> must be a mutable list
 gap> l:=[];; ASS_LIST(l,1,1); l;
 [ 1 ]
 
@@ -89,7 +89,7 @@ Error, List Assignments: <rhss> must be a dense list (not the integer 1)
 gap> ASSS_LIST([1],1,[1]);
 Error, List Assignments: <poss> must be a dense list of positive integers
 gap> ASSS_LIST(1,[1],[1]);
-Error, List Assignments: <list> must be a list (not the integer 1)
+Error, List Assignments: <list> must be a mutable list
 gap> l:=[];; ASSS_LIST(l,[1],[1]); l;
 [ 1 ]
 
@@ -99,7 +99,7 @@ Error, List Assignments: <rhss> must be a dense list
 gap> ASSS_LIST_DEFAULT([1],1,[1]);
 Error, List Assignments: <poss> must be a dense list of positive integers
 gap> ASSS_LIST_DEFAULT(1,[1],[1]);
-Error, List Assignments: <list> must be a list (not the integer 1)
+Error, List Assignment: <list> must be a mutable list
 gap> l:=[];; ASSS_LIST_DEFAULT(l,[1],[1]); l;
 [ 1 ]
 
