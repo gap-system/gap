@@ -478,8 +478,17 @@ local p, hom, reps, as, a, b, ap, bp, ab, ap_bp, ab_p, g, h, H, N;
   #
   # Such a subgroup exists if and only if the center of G is not cyclic.
   #
-  # As a heuristic, if the index of he center in G is small we may be better off
-  # without this criterion.
+  # As a heuristic, we only apply this criterion if the index of the center in
+  # G is not too small, as otherwise a brute force search is faster.
+  #
+  # Note: the book Y. Berkovich, "Groups of Prime Power Order, Volume 1", 2008
+  # states a stronger version of this as Corollary 7.7, where it is basically
+  # claimed that it suffices to check just two subgroups M of N. This result
+  # is attributed to the above paper by Mann, but I can't find it in there,
+  # and it also simply is wrong: for example, the direct product of
+  # SmallGroup(3^5,22) and SmallGroup(3^5,22) has a center if order p^2 = 9,
+  # which contains four subgroups M of order p = 3. For two of those the
+  # corresponding quotient G/M is regular, and for the other two it is not.
   H := Center(G);
   if not IsCyclic(H) and Index(G, H) > 250 then
     if Size(H) = p^2 then
