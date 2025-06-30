@@ -27,6 +27,8 @@
 
 #include <stdio.h>
 
+// TODO/FIXME: serialize mutability information again somehow?
+
 typedef struct SerializerState {
     Obj                   stack;
     Obj    obj;
@@ -761,6 +763,7 @@ static Obj DeserializeTypedObj(DeserializerState * state, UInt tnum)
                 ErrorQuit("DeserializeTypedObj: expected plist, got %s", (Int)TNAM_OBJ(result), 0);
             break;
         case T_PREC:
+            // TODO/FIXME: reject immutable ones?
             result = DeserializeObj(state);
             if (TNUM_OBJ(result) != T_COMOBJ)
                 ErrorQuit("DeserializeTypedObj: expected component object, got %s", (Int)TNAM_OBJ(result), 0);
