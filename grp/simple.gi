@@ -954,6 +954,134 @@ local p,e,f,rels,gp;
   return gp;
 end);
 
+BindGlobal("SporadicGroupMinimalFaithfulPermutationDegrees", rec(
+    M11 := 11,
+    M12 := 12,
+    M22 := 22,
+    M23 := 23,
+    M24 := 24,
+    Co1 := 98280,
+    Co2 := 2300,
+    Co3 := 276,
+    McL := 275,
+    HS := 100,
+    Suz := 1782,
+    Fi22 := 3510,
+    Fi23 := 31671,
+    Fi24 := 306936,
+    M := 97239461142009186000,
+    B := 13571955000,
+    Th := 143127000,
+    HN := 1140000,
+    He := 2058,
+    J1 := 266,
+    J2 := 100,
+    J3 := 6156,
+    J4 := 173067389,
+    ON := 122760,
+    Ly := 8835156,
+    Ru := 4060,
+));
+
+InstallGlobalFunction(MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType,function (info)
+    # This function is derived from table 4 of this paper :
+    # https://www.ams.org/journals/tran/2015-367-11/S0002-9947-2015-06293-X/S0002-9947-2015-06293-X.pdf
+
+    # `info` is the a record containing information about the type of the simple group,
+    # like one obtained from `IsomorphismTypeInfoFiniteSimpleGroup`. You need to give the series,
+    # parameter, and shortname values in the record.
+    local
+        series,       # series of simple groups
+        d,            # mostly the dimension of vector space for classical groups
+        q,            # elements in the field over which group is defined
+        m,            # first parameter
+        b;            # q = p^b for some prime p
+
+    series := info.series;
+    if series = "Spor" then
+        return SporadicGroupMinimalFaithfulPermutationDegrees.(info.shortname);
+    else
+        if IsList(info.parameter) then
+            q := info.parameter[2];
+            m := info.parameter[1];
+        else
+          q := info.parameter;
+        fi;
+    fi;
+    if series = "Z" then #Cyclic group of prime order
+        return q;
+    elif series = "A" then # Alternating group
+        return q;
+    elif series = "L" then # PSL(m,q)
+        d := m;
+        if (d = 4 and q = 2) then return 8; fi;
+        if d = 2 then
+            if q = 9 then return 6; fi;
+            if q in [5,7,11] then return q; fi;
+        fi;
+        return (q^d-1)/(q-1);
+    elif series = "2A" then # PSU(m+1,q)
+        d := m + 1;
+        if d = 3 and q = 5 then return 50; fi;
+        if d = 3 then return q^3 + 1; fi;
+        if d = 4 then return (q+1)*(q^3 + 1); fi;
+        if d mod 2 = 0 and q = 2 then return (2^(d-1)*(2^d - 1))/3; fi;
+        return ((q^d - (-1)^d)*(q^(d-1) + (-1)^d))/(q^2-1);
+    elif series = "B" then # P\Omega(2*m+1,q) or O
+        if q = 3 and m > 2 then return (3^m)*(3^m - 1)/2;
+        elif q > 4 and m > 2 then return (q^(2*m)-1)/(q-1);
+        elif q = 3 and m = 2 then return 27; #Special case : B(2,3) ~ 2A(3,2) = PSU(4,2)
+        elif q = 2 and m = 2 then # B(2,2) is not a simple group.
+          Error("B(2,2) is not a simple group. This shouldn't be happening.\n");
+        elif m = 2 then return (q^(2*m) -1)/(q-1); #Special case : B(2,q) ~ C(2,q) = PSp(4,q)
+        elif q = 2 then return (2^(m-1))*(2^m -1); #Special case : B(m,2) ~ C(m,2) = PSp(2*m,2)
+        else Error("series B and m,q not of proper form\n"); fi;
+    elif series = "2B" then # Sz or _2 B^2
+        b := Log2Int(q);
+        if 2^b = q and b mod 2 = 1 then return q^2 + 1;
+        else Error("2B series without q of proper form\n"); fi;
+    elif series = "C" then # PSp(2*m,q)
+        d := 2*m;
+        if d=4 and q=2 then return 6;fi;
+        if d=4 and q=3 then return 27;fi;
+        if m>2 and q=2 then return (2^(m-1))*(2^m -1);fi;
+        if m>1 and q>2 then return (q^d -1)/(q-1);fi;
+        Error("series C and m,q are not of proper form\n");
+    elif series = "D" then # POmega(+1,2*m,q) or O+
+        if m > 3 then
+            if q < 4 then return q^(m-1)*(q^m -1)/(q-1);
+            else return (q^(m-1) + 1)*(q^m-1)/(q-1); fi;
+        else Error("series D and m < 4\n"); fi;
+    elif series = "2D" then # POmega(-1,2*m,q) or O-
+        if m > 3 then return (q^m+1)*(q^(m-1)-1)/(q-1);
+        else Error("series 2D and m < 4\n"); fi;
+    elif series = "3D" then # ^3 D_4
+        return (q^8 + q^4 + 1)*(q+1);
+    elif series = "E" then #E_n(q)
+        if m = 6 then return (q^9 - 1)*(q^8 + q^4 + 1)/(q-1);
+        elif m = 7 then return (q^14 - 1)*(q^9 + 1)*(q^5 -1)/(q-1);
+        elif m = 8 then return (q^30 - 1)*(q^12 + 1)*(q^10 + 1)*(q^6 + 1)/(q-1);
+        else Error("series E and m is not 6,7 or 8\n");
+        fi;
+    elif series = "2E" then #2E(6,q)
+        return (q^12 -1)*(q^6 - q^3 + 1)^(q^4 +1)/(q-1);
+    elif series = "F" then #F(4,q)
+        return (q^12 -1)*(q^4 + 1)/(q-1);
+    elif series = "2F" then #2F(4,q)
+        if q = 2 then return 1600; #special case : 2F4(2) ~ Tits
+        else return (q^6 + 1)*(q^3 + 1)*(q+1); fi;
+    elif series = "G" then #G(2,q)
+        if q = 3 then return 351;
+        elif q = 4 then return 416;
+        else return (q^6 -1)/(q-1); fi;
+    elif series = "2G" then #2G(2,q)
+        b := PValuation(q,3);
+        if q = 3^b and b mod 2 = 1 then return q^3 + 1;
+        else Error("series 2G and q not of proper form\n"); fi;
+    fi;
+    Error("series `",series,"` is not valid\n");
+end);
+
 InstallOtherMethod(DataAboutSimpleGroup,true,[IsRecord],0,
 function(id)
 local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
@@ -1219,6 +1347,7 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
               tomName:=nam,
               allExtensions:=e,
               fullAutGroup:=aut,
+              minPerDeg:=MinimalFaithfulPermutationDegreeOfSimpleGroupWithIsomorphismType(id),
               classicalId:=ClassicalIsomorphismTypeFiniteSimpleGroup(id));
   if classaut<>fail then
     result.outerAutomorphismGroup:=classaut;
