@@ -14,16 +14,16 @@ on:
       - v[1-9]+.[0-9]+.[0-9]    # allow v1.2.3
       - v[1-9]+.[0-9]+.[0-9]-*  # allow v1.2.3-beta3 etc.
     branches:
-      - master
-      - stable-*
+      - 'master'
+      - 'stable-*'
   schedule:
     # Every day at 3:33 AM UTC
     - cron: '33 3 * * *'
 
 concurrency:
   # group by workflow and ref; the last slightly strange component ensures that for pull
-  # requests, we limit to 1 concurrent job, but for the master branch we don't
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref != 'refs/heads/master' || github.run_number }}
+  # requests, we limit to 1 concurrent job, but for the default repository branch we don't
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref_name != github.event.repository.default_branch || github.run_number }}
   # Cancel intermediate builds, but only if it is a pull request build.
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
@@ -62,8 +62,6 @@ jobs:
   unix:
     name: "Create Unix archives and data"
     needs: tools
-    # Don't run this twice on PRs for branches pushed to the same repository
-    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:

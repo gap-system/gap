@@ -10,14 +10,18 @@ on:
         type: boolean
   pull_request:
   push:
+    branches:
+      - 'master'
+      - 'stable-*'
+    tags: '*'
   schedule:
     # Every day at 2:30 AM UTC
     - cron: '30 2 * * *'
 
 concurrency:
   # group by workflow and ref; the last slightly strange component ensures that for pull
-  # requests, we limit to 1 concurrent job, but for the master branch we don't
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref != 'refs/heads/master' || github.run_number }}
+  # requests, we limit to 1 concurrent job, but for the default repository branch we don't
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref_name != github.event.repository.default_branch || github.run_number }}
   # Cancel intermediate builds, but only if it is a pull request build.
   cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 
@@ -30,8 +34,6 @@ env:
 jobs:
   test:
     name: ${{ matrix.test-suites }} - ${{ matrix.extra }} - ${{ matrix.os }}
-    # Don't run this twice on PRs for branches pushed to the same repository
-    if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     defaults:
