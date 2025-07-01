@@ -169,7 +169,7 @@ jobs:
   cygwin:
     name: "Create Windows x86_64 installer"
     needs: unix
-    runs-on: windows-2019
+    runs-on: windows-2022
     timeout-minutes: 120
     env:
       CHERE_INVOKING: 1

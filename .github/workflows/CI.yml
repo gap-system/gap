@@ -129,7 +129,7 @@ jobs:
             test-suites: "testinstall"
             extra: "JULIA=yes CONFIGFLAGS=\"--enable-debug\""
 
-          - os: windows-2019
+          - os: windows-2022
             # The 'run' steps in this job use Cygwin's bash, once it is set up.
             #   --login: make a login shell (so PATH is set up)
             #   -o igncr: Accept windows line endings
