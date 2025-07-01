@@ -4,8 +4,8 @@ on:
   pull_request:
   push:
     branches:
-      - "master"
-      - "stable-*.*"
+      - 'master'
+      - 'stable-*'
   schedule:
     # Every day at 3:10 AM UTC
     - cron: '10 3 * * *'

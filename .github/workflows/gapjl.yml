@@ -5,8 +5,8 @@ on:
   pull_request:
   push:
     branches:
-      - "master"
-      - "stable-*.*"
+      - 'master'
+      - 'stable-*'
 
 concurrency:
   # group by workflow and ref; the last slightly strange component ensures that for pull
