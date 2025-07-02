@@ -8,22 +8,22 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "hpc/thread.h"
+#include "thread.h"
 
-#include "code.h"
-#include "error.h"
-#include "fibhash.h"
-#include "gapstate.h"
-#include "gvars.h"
-#include "modules.h"
-#include "plist.h"
-#include "stats.h"
-#include "stringobj.h"
-#include "vars.h"
+#include "../code.h"
+#include "../error.h"
+#include "../fibhash.h"
+#include "../gapstate.h"
+#include "../gvars.h"
+#include "../modules.h"
+#include "../plist.h"
+#include "../stats.h"
+#include "../stringobj.h"
+#include "../vars.h"
 
-#include "hpc/guards.h"
-#include "hpc/misc.h"
-#include "hpc/threadapi.h"
+#include "guards.h"
+#include "misc.h"
+#include "threadapi.h"
 
 #include <errno.h>
 #include <pthread.h>

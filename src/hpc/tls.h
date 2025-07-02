@@ -11,7 +11,7 @@
 #ifndef GAP_TLS_H
 #define GAP_TLS_H
 
-#include "system.h"
+#include "../system.h"
 
 #if !defined(HPCGAP)
 #error This header is only meant to be used with HPC-GAP
@@ -60,7 +60,7 @@
 // assembly code for pthread_getspecific() is implemented in a way
 // consistent with such code.
 
-#include "hpc/tlsconfig.h"
+#include "tlsconfig.h"
 
 #include <setjmp.h>
 

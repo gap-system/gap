@@ -14,7 +14,31 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include "debug.h"
+// GAP_ASSERT is a version of 'assert' which is enabled by the
+// configure option --enable-debug
+#ifdef GAP_KERNEL_DEBUG
+#define GAP_ASSERT(x) assert(x)
+
+// Enable various GAP debugging features
+#define COUNT_BAGS
+#else
+#define GAP_ASSERT(x)
+#endif
+
+// Portable compile time assertion.
+#if defined(static_assert)
+// If available, use _Static_assert resp. static_assert from C11.
+#define GAP_STATIC_ASSERT(cond, msg)    static_assert(cond, msg)
+#else
+// If the compiler does not support _Static_assert resp. static_assert,
+// fall back to a hack (the error message is a bit ugly in that case).
+#define _intern_CONCAT_(X, Y)  X ## Y
+#define _intern_CONCAT(X, Y)  _intern_CONCAT_(X,Y)
+#define GAP_STATIC_ASSERT(cond, msg) \
+    typedef char _intern_CONCAT(static_assertion_, __LINE__)[(cond)? 1 : -1]
+#endif
+
+void InstallBacktraceHandlers(void);
 
 // check if we are on a 64 or 32 bit machine; in the former
 // case, define SYS_IS_64_BIT.

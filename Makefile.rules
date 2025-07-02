@@ -192,13 +192,10 @@ SYSINFO_CPPFLAGS =
 GAP_CPPFLAGS += -I$(builddir)/build
 SYSINFO_CPPFLAGS += -I$(abs_builddir)/build
 
-# The other source files are relative to the srcdir
-GAP_CPPFLAGS += -I$(srcdir)/src
-SYSINFO_CPPFLAGS += -I$(abs_srcdir)/src
-
-# For backwards compatibility with certain packages and their kernel
-# extensions, also add the root of the srcdir to the package CPPFLAGS
-SYSINFO_CPPFLAGS += -I$(abs_srcdir)
+# The other source files are bundled and exported through the few
+# headers in the extra directory.
+GAP_CPPFLAGS += -I$(srcdir)/src/extra -I$(srcdir)/src/system
+SYSINFO_CPPFLAGS += -I$(abs_srcdir)/src/extra
 
 # Add GAP_DEFINES (from autoconf, contains -D flags)
 GAP_CPPFLAGS += $(GAP_DEFINES)
@@ -405,7 +402,7 @@ DEPFLAGS = -MQ $(OBJFILE) -MMD -MP -MF $(DEPFILE)
 # DEPFILE and OBJFILE above)
 ########################################################################
 
-obj_deps = build/config.h build/version.h $(FFDATA_H)
+obj_deps = build/config.h build/version.h $(FFDATA_H) build/common.h
 
 
 # Build rule for C++ source files
@@ -549,6 +546,14 @@ build/ffdata.h build/ffdata.c: ffgen
 	./ffgen -b build/ffdata
 
 ########################################################################
+# Symlink common.h to the build directory for ffdata.h and version.h
+########################################################################
+
+build/common.h: $(abs_srcdir)/src/common.h
+	@$(MKDIR_P) $(@D)
+	ln -sf $< $@
+
+########################################################################
 # The "tags" target regenerates the tags file using Exuberant Ctags
 ########################################################################
 
@@ -669,7 +674,7 @@ install-gaproot: install-dirs CITATION
 
 
 # the following lines adjust variables for the installed sysinfo.gap
-install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap -I${includedir} $(GAP_DEFINES)
+install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap/extra $(GAP_DEFINES)
 install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_GAP = $(bindir)/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
@@ -686,6 +691,8 @@ install-headers: $(FFDATA_H) build/version.h
 	$(INSTALL) -m 0644 $(builddir)/build/version.h $(DESTDIR)$(includedir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
 	$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/extra
+	$(INSTALL) -m 0644 $(srcdir)/src/extra/*.h $(DESTDIR)$(includedir)/gap/extra
 
 install-libgap: install-dirs $(LIBGAP_FULL) libgap.pc
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)
