@@ -472,12 +472,15 @@ void MakeImmutable(Obj obj);
 **  This is an unsafe helper function, for use in functions installed as
 **  handlers in 'MakeImmutableObjFuncs' for internal objects tracking their
 **  mutability, i.e., in the range FIRST_IMM_MUT_TNUM to LAST_IMM_MUT_TNUM.
-**  It only modifies the TNUM, and does not make subobjects immutable.
+**  It only sets an object flag, and does not make subobjects immutable.
 */
 EXPORT_INLINE void MakeImmutableNoRecurse(Obj obj)
 {
     GAP_ASSERT((FIRST_IMM_MUT_TNUM <= TNUM_OBJ(obj)) && (TNUM_OBJ(obj) <= LAST_IMM_MUT_TNUM));
     SET_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE);
+#ifdef HPCGAP
+    MakeBagPublic(obj);
+#endif
 }
 
 
