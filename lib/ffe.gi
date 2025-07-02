@@ -189,7 +189,7 @@ InstallGlobalFunction( FFEFamily, function( p )
         SetZero( F, ZmodnZObj( F, 0 ) );
 
         # The whole family is a unique factorisation domain.
-        SetIsUFDFamily( F, true );
+        SetFilterObj( F, IsUFDFamily );
 
         return F;
 

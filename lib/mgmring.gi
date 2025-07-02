@@ -796,6 +796,8 @@ InstallGlobalFunction( FreeMagmaRing, function( R, M )
                 [ ElementOfMagmaRing( F, zero, [ one ], [ One( M ) ] ) ] );
       fi;
 
+      SetOne(F, One(RM));
+
     else
 
       SetGeneratorsOfLeftOperatorRing( RM,
@@ -803,6 +805,7 @@ InstallGlobalFunction( FreeMagmaRing, function( R, M )
                 x -> ElementOfMagmaRing( F, zero, [ one ], [ x ] ) ) );
 
     fi;
+    SetZero(F, Zero(RM));
 
     # Return the ring.
     return RM;

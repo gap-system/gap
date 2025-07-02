@@ -37,7 +37,7 @@ BIND_GLOBAL( "TYPE_FFE", MemoizePosIntFunction(
         local fam;
         fam:= NewFamily( "FFEFamily",
         IS_FFE,CanEasilySortElements,CanEasilySortElements );
-        SetIsUFDFamily( fam, true );
+        SetFilterObj( fam, IsUFDFamily );
         SetCharacteristic( fam, p );
         return NewType( fam, IS_FFE and IsInternalRep and HasDegreeFFE);
     end, rec(flush := false) ));
