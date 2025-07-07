@@ -28,7 +28,7 @@ InstallMethod( IsIntegerMatrixGroup, [ IsCyclotomicMatrixGroup ],
     function( G )
     local gen;
     gen := GeneratorsOfGroup( G );
-    return ForAll( Flat( gen ), IsInt ) and
+    return ForAll( gen, r -> ForAll( r, IsInt ) ) and
            ForAll( gen, g -> AbsInt( DeterminantMat( g ) ) = 1 );
     end
 );
@@ -320,8 +320,19 @@ function( G )
 
     # set as a nice monomorphism
     gens := GeneratorsOfGroup(Range(phi));
-    nice := GroupHomomorphismByFunction(G, H,  x -> x * e,
-        y -> MappedWord(phi(y), gens, GeneratorsOfGroup(G)));
+    nice := GroupHomomorphismByFunction(G, H,
+              function(x)
+                  if ValueOption("actioncanfail")=true then
+                    if not ForAll( x, r -> ForAll( r, IsInt ) ) then
+                      return fail;
+                    fi;
+                  fi;
+                  return x * e;
+              end,
+              function(y)
+                return MappedWord(phi(y), gens, GeneratorsOfGroup(G));
+              end
+            );
     SetNiceMonomorphism(G, nice);
     SetNiceObject(G, H);
     SetIsHandledByNiceMonomorphism(G, true);
