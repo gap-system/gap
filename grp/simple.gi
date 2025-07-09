@@ -299,9 +299,14 @@ local brg,str,p,a,param,g,s,small,plus,sets;
     then
     str:=Concatenation(str{[1..p-1]},",",str{[p+1..Length(str)]});
   fi;
+
+  # the weird F3+ name
+  if UppercaseString(str)="F3+" then str:="FI24'";fi;
+
   # blanks,parentheses,_,^,' do not contribute to parsing
   a:=" ()_^'";
   str:=UppercaseString(Filtered(str,x->not x in a));
+
   # are there parameters in the string?
   # skip leading numbers for indicating 2/3 twist
   if Length(str)>1 then
