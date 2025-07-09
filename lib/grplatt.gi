@@ -2634,6 +2634,7 @@ local cls, len, sz, max, z, t, i, j, k;
 
   max:=MaximalSubgroupsLattice(L);
   for i in [1..Length(cls)] do
+    z:=ClassElementLattice(cls[i],len[i]); # force computation of transv.
     for j in max[i] do
       for k in [1..len[i]] do
         if k=1 then
