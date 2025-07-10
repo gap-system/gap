@@ -51,3 +51,11 @@ gap> AsList(G);
   f2^-42*f1, f2^43*f1, f2^-43*f1, f2^44*f1, f2^-44*f1, f2^45*f1, f2^-45*f1, 
   f2^46*f1, f2^-46*f1, f2^47*f1, f2^-47*f1, f2^48*f1, f2^-48*f1, f2^49*f1, 
   f2^-49*f1, f2^50*f1 ]
+
+# Issue #6031 - too small max. cosets
+gap> F := FreeGroup("x", "y", "z");;
+gap> R := ParseRelators(GeneratorsOfGroup(F), 
+> "x^25=y^25=z^125=1, [x,y]=1, z^y=z^6, z^x=y^5*z, x^5=z^50");;
+gap> H_F := F/R;;
+gap> H := Image(IsomorphismPcGroup(H_F));
+<pc group of size 15625 with 6 generators>

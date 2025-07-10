@@ -3796,7 +3796,7 @@ end );
 ##  enumerations with cumulatively bigger coset tables up to table size
 ##  <maxtable>. It returns `fail' if no table could be found.
 BindGlobal("FinIndexCyclicSubgroupGenerator",function(G,maxtable)
-  local fgens, grels, powers, max, gens, t, Attempt, perms, short;
+  local fgens, grels, max, gens, t, Attempt, perms, short;
 
   fgens:=FreeGeneratorsOfFpGroup(G);
   grels:=RelatorsOfFpGroup(G);
@@ -3806,15 +3806,6 @@ BindGlobal("FinIndexCyclicSubgroupGenerator",function(G,maxtable)
     max:=CosetTableDefaultMaxLimit;
   fi;
   max:=Minimum(max,maxtable);
-
-  powers := List(grels, ExtRepOfObj);
-  powers := Filtered(powers, x -> Length(x) = 2);
-  if not IsEmpty(powers) then
-    SortBy(powers, x -> x[2]);
-    if Last(powers)[2] > 10 then
-      max := Last(powers)[2];
-    fi;
-  fi;
 
   # take the generators, most frequent first
   gens:=GeneratorsOfGroup(G);
