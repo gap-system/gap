@@ -1491,10 +1491,12 @@ local n,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
     bw:=0;
     # run through them in pl sequence
     for n in Filtered(D.permlist,i->i in D.matrices) do
-      Info(InfoCharacterTable,3,n,":",Int(wert[n]));
-      if IsBound(wert[n]) and wert[n]>bw then
-        bn:=n;
-        bw:=wert[n];
+      if IsBound(wert[n]) then
+        Info(InfoCharacterTable,3,n,":",Int(wert[n]));
+        if wert[n]>bw then
+          bn:=n;
+          bw:=wert[n];
+        fi;
       fi;
     od;
 
@@ -2104,26 +2106,7 @@ local G,     # group
   od;
   D.projectionMat:=M;
 
-  #if (USECTPGROUP or Size(G)<2000 or k*10>=Size(G))
-  #   and IsBound(G.isAgGroup) and G.isAgGroup
-  #    then # Anfangscharaktere ausrechnen
-#
-#    m:=CharTablePGroup(G,"meckere nicht").irreducibles;
-#    if Length(m)<k then
-#
-#      C.irreducibles:=[];
-#      IncludeIrreducibles(D,m);
-#
-#    else
-#
-#      # The irreducibles are complete.
-#      C.irreducibles:=m;
-#      D.raeume:=[];
-#
-#    fi;
-#  else
-    DxIncludeIrreducibles(D,DxLinearCharacters(D));
-#  fi;
+  DxIncludeIrreducibles(D,DxLinearCharacters(D));
 
   if Length(D.raeume)>0 then
     # indicate Stabilizer of the whole orbit,simultaneously compute
@@ -2222,8 +2205,6 @@ local C,u,irr;
   # Sort the characters by degrees.
   irr:=SortedCharacters(C,irr);
 
-  SetInfoText(C,"origin: Dixon's Algorithm");
-
   # Throw away not any longer used components of the Dixon record.
   for u in Difference(RecNames(D),
     ["ClassElement","centmulCandidates","centmulMults","characterTable",
@@ -2292,9 +2273,11 @@ InstallMethod( Irr,
     "Dixon/Schneider",
     [ IsGroup, IsZeroCyc ],
     function( G, zero )
-    local irr;
+    local irr, C;
     irr:= IrrDixonSchneider( G );
-    SetIrr( OrdinaryCharacterTable( G ), irr );
+    C:= OrdinaryCharacterTable( G );
+    SetIrr( C, irr );
+    SetInfoText( C, "origin: Dixon's Algorithm" );
     return irr;
     end );
 
