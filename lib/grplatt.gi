@@ -3114,7 +3114,7 @@ local T,t,hom,inf,nam,i;
 end);
 
 InstallGlobalFunction(TomDataMaxesAlmostSimple,function(G)
-local recog,m,p,inf,a;
+local recog,m,p,inf,a,i;
   # avoid the isomorphism test falling back
   if ValueOption("cheap")=true and IsInt(ValueOption("intersize")) and
   ValueOption("intersize")<=Size(G) then
@@ -3143,6 +3143,10 @@ local recog,m,p,inf,a;
           m:=List(p,x->CallFuncList(ValueGlobal("ResultOfStraightLineProgram"),
             [x.program,a]));
           m:=List(m,x->SubgroupNC(G,x));
+          for i in [1..inf.nrMaxes] do
+            SetSize(m[i],inf.sizesMaxes[i]);
+          od;
+
           return m;
         else
           Info(InfoLattice,1,"Maxes of ",recog.tomName," by ATLAS group");
