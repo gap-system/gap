@@ -14,7 +14,7 @@
 
 #############################################################################
 ##
-#V  USECTPGROUP . . . . . . . . . . indicates,whether CharTablePGroup should
+#V  USECTPGROUP . . . . . . . . . . indicates whether CharTablePGroup should
 ##                                  always be called
 USECTPGROUP := false;
 
@@ -23,7 +23,7 @@ USECTPGROUP := false;
 ##
 #V  DXLARGEGROUPORDER
 ##
-##  If a group is small,we may use enumerations of the elements to speed up
+##  If a group is small we may use enumerations of the elements to speed up
 ##  the computations. The criterion is the size, compared to the global
 ##  variable DXLARGEGROUPORDER.
 ##
@@ -40,11 +40,11 @@ InstallGlobalFunction( IsDxLargeGroup, G -> Size(G) > DXLARGEGROUPORDER );
 ##
 ##  comparison is based first on the size of the class and afterwards on the
 ##  order of the representatives. Thus the 1-Class is in the first position,
-##  as required. Since sorting is primary by the class sizes,smaller
-##  classes are in earlier positions,making the active columns those to
-##  smaller classes,reducing the work for calculating class matrices!
-##  Additionally galois conjugated classes are together,thus increasing the
-##  chance,that with one columns of them active to be several acitive,
+##  as required. Since sorting is primary by the class sizes, smaller
+##  classes are in earlier positions, making the active columns those to
+##  smaller classes, reducing the work for calculating class matrices!
+##  Additionally Galois conjugated classes are together, thus increasing the
+##  chance that with one columns of them active that several are active,
 ##  reducing computation time !
 ##
 InstallGlobalFunction( ClassComparison, function(c,d)
@@ -160,24 +160,24 @@ local p,primes,i,cl,spr,j,allpowermaps,pm,ex;
       if not IsInt(pm[i]) then
         cl:=i;
         ex:=p mod D.orders[i];
-if ex=0 then
-  pm[i]:=1;
-else
-        if ex>D.orders[i]/2 then
-          # can we get it cheaper via the inverse
-          ex:=AbsInt(D.orders[i]-ex);
-          cl:=D.inversemap[i];
+        if ex=0 then
+          pm[i]:=1;
+        else
+          if ex>D.orders[i]/2 then
+            # can we get it cheaper via the inverse
+            ex:=AbsInt(D.orders[i]-ex);
+            cl:=D.inversemap[i];
+          fi;
+          if ex<p or (ex=p and IsInt(pm[cl])) then
+            # compose the ex-th power
+            j:=Factors(ex);
+            while Length(j)>0 do
+              cl:=allpowermaps[j[1]][cl];
+              j:=j{[2..Length(j)]};
+            od;
+            pm[i]:=cl;
+          fi;
         fi;
-        if ex<p or (ex=p and IsInt(pm[cl])) then
-          # compose the ex-th power
-          j:=Factors(ex);
-          while Length(j)>0 do
-            cl:=allpowermaps[j[1]][cl];
-            j:=j{[2..Length(j)]};
-          od;
-          pm[i]:=cl;
-        fi;
-fi;
       fi;
     od;
 
@@ -204,9 +204,9 @@ end );
 ##
 #F  DxCalcPrimeClasses(<D>)
 ##
-##  Compute primary classes of the group $G$,that is,every class of $G$
+##  Compute primary classes of the group $G$, that is, every class of $G$
 ##  is the power of one of these classes.
-##  'DxCalcPrimeClasses(<D>)' returns a list,each entry being a list whose
+##  'DxCalcPrimeClasses(<D>)' returns a list, each entry being a list whose
 ##  $i$-th entry is the $i$-th power of a primary class.
 ##
 ##  It is assumed that the power maps for all primes up to the maximal
@@ -348,12 +348,12 @@ end );
 #F  DxIncludeIrreducibles(<D>,<new>,[<newmod>]) . . . . handle (newly?) found
 #F                                                               irreducibles
 ##
-##  This routine will do all handling,whenever characters have been found
-##  by other means,than the Dixon/Schneider algorithm. First the routine
-##  checks,which characters are not new (this allows one to include huge bulks
+##  This routine will do all handling whenever characters have been found
+##  by other means than the Dixon/Schneider algorithm. First the routine
+##  checks which characters are not new (this allows one to include huge bulks
 ##  of irreducibles got by tensoring). Then the characters are closed under
 ##  images of the CharacterMorphisms. Afterwards the character spaces are
-##  stripped of the new characters,the characters are included as
+##  stripped of the new characters, the characters are included as
 ##  irreducibles and possible degrees etc. are corrected. If the modular
 ##  images of the irreducibles are known, they may be given in newmod.
 ##
