@@ -804,7 +804,10 @@ local str, orbish, func,isnotest;
               act := OnPoints;
           fi;
           if     Length( arg ) > 2
-            and famrel( FamilyObj( arg[ 2 ] ), FamilyObj( arg[ 3 ] ) )
+            and (famrel( FamilyObj( arg[ 2 ] ), FamilyObj( arg[ 3 ] ) ) or
+              # blocks with empty seed
+              (IsListOrCollection(arg[2]) and IsListOrCollection(arg[3])
+                and Length(arg[3])=0) )
             # for blocks on the groups elements
             and not (IsOperation(usetype) and le=4)
             then
@@ -878,7 +881,7 @@ local str, orbish, func,isnotest;
       fi;
 
       if used<>[1..Length(arg)] then
-        Info(InfoWarning,1,name,": Argumemnts #",
+        Info(InfoWarning,1,name,": Arguments #",
           Difference([1..Length(arg)],used)," were ignored");
       fi;
       return result;
