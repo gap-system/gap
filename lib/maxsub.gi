@@ -871,10 +871,20 @@ local G,types,ff,maxes,lmax,q,d,dorb,dorbt,i,dorbc,dorba,dn,act,comb,smax,soc,
     fi;
     for mm in lmax do mm!.type:="1";od;
     Append(maxes,lmax);
+
   fi;
 
   if "brute" in types then
     maxes:=MaxesByLattice(q);
+  elif IsSimpleGroup(soc) and Size(Centralizer(q,soc))=1
+    and HasSolvableFactorGroup(q,soc) then
+    # Almost simple
+    SetPerfectResiduum(q,soc);
+    if "2" in types then
+      lmax:=MaxesAlmostSimple(q);
+      lmax:=Filtered(lmax,x->not x in maxes); # radical factor already there
+      Append(maxes,lmax);
+    fi;
 
   elif ForAny(types,x->x<>"1") then # we want other types as well, decompose
     d:=DirectFactorsFittingFreeSocle(q);
