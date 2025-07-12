@@ -192,13 +192,13 @@ SYSINFO_CPPFLAGS =
 GAP_CPPFLAGS += -I$(builddir)/build
 SYSINFO_CPPFLAGS += -I$(abs_builddir)/build
 
-# The other source files are relative to the srcdir
-GAP_CPPFLAGS += -I$(srcdir)/src
-SYSINFO_CPPFLAGS += -I$(abs_srcdir)/src
-
-# For backwards compatibility with certain packages and their kernel
-# extensions, also add the root of the srcdir to the package CPPFLAGS
-SYSINFO_CPPFLAGS += -I$(abs_srcdir)
+# The other source files are bundled and exported through the few headers in
+# the `src/extra/` directory. We deliberately do not add `src/` itself as an
+# include directory to improve portability: it helps avoid clashes between our
+# headers and system headers (e.g. for `io.h` this would otherwise be a
+# problem on MinGW).
+GAP_CPPFLAGS += -I$(srcdir)/src/extra
+SYSINFO_CPPFLAGS += -I$(abs_srcdir)/src/extra
 
 # Add GAP_DEFINES (from autoconf, contains -D flags)
 GAP_CPPFLAGS += $(GAP_DEFINES)
@@ -513,10 +513,11 @@ libgap$(SHLIB_EXT): $(LIBGAP_FULL)
 gap$(EXEEXT): build/obj/src/main.c.o $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
 	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(OBJS) $(GAP_LIBS) -o $@
 
-# generate a modified copy of main.c for use by the `gap-install` binary
-build/main.c: src/main.c config.status
+# generate a special main.c which sets SYS_DEFAULT_PATHS and then includes
+# regular main.c; this is used to build the `gap-install` binary
+build/main.c: sysinfo.gap
 	@echo "#define SYS_DEFAULT_PATHS \"$(libdir)/gap;$(datarootdir)/gap\"" > $@
-	@cat $< >> $@
+	@echo "#include \"$(abs_srcdir)/src/main.c\"" >> $@
 
 # build rule for the gap executable used by the `install-bin` target
 build/gap-install: build/obj/build/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
@@ -542,7 +543,7 @@ build/c_%.c: $(srcdir)/lib/%.g build/gap-nocomp$(EXEEXT)
 # The "ffdata" target regenerates build/ffdata.{c,h} using etc/ffgen.c
 ########################################################################
 
-ffgen: $(srcdir)/etc/ffgen.c src/common.h build/config.h
+ffgen: $(srcdir)/etc/ffgen.c build/config.h
 	$(QUIET_CC)$(CC) -Wall -Wextra $(GAP_CPPFLAGS) $< -o $@
 
 build/ffdata.h build/ffdata.c: ffgen
@@ -669,7 +670,7 @@ install-gaproot: install-dirs CITATION
 
 
 # the following lines adjust variables for the installed sysinfo.gap
-install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap -I${includedir} $(GAP_DEFINES)
+install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap/extra $(GAP_DEFINES)
 install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_GAP = $(bindir)/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
@@ -686,6 +687,8 @@ install-headers: $(FFDATA_H) build/version.h
 	$(INSTALL) -m 0644 $(builddir)/build/version.h $(DESTDIR)$(includedir)/gap
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/hpc
 	$(INSTALL) -m 0644 $(srcdir)/src/hpc/*.h $(DESTDIR)$(includedir)/gap/hpc
+	$(INSTALL) -d -m 0755 $(DESTDIR)$(includedir)/gap/extra
+	$(INSTALL) -m 0644 $(srcdir)/src/extra/*.h $(DESTDIR)$(includedir)/gap/extra
 
 install-libgap: install-dirs $(LIBGAP_FULL) libgap.pc
 	$(INSTALL) -d -m 0755 $(DESTDIR)$(libdir)

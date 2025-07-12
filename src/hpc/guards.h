@@ -11,8 +11,8 @@
 #ifndef GAP_HPC_GUARD_H
 #define GAP_HPC_GUARD_H
 
-#include "hpc/region.h"
-#include "hpc/tls.h"
+#include "region.h"
+#include "tls.h"
 
 #ifndef HPCGAP
 #error This header is only meant to be used with HPC-GAP

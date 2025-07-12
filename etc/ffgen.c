@@ -62,7 +62,7 @@ void emit_code(FILE * dest, int header)
         fprintf(dest, "#ifndef GAP_FFDATA_H\n");
         fprintf(dest, "#define GAP_FFDATA_H\n");
         fprintf(dest, "\n");
-        fprintf(dest, "#include \"common.h\"\n");
+        fprintf(dest, "#include <stdint.h>\n");
         fprintf(dest, "\n");
         fprintf(dest, "enum {\n");
         fprintf(dest, "    NUM_SHORT_FINITE_FIELDS = %d,\n", num_ff);
@@ -72,18 +72,18 @@ void emit_code(FILE * dest, int header)
         fprintf(dest, "    VAL_BITS_FFE = %d\n", needed_bits(MAX_FF - 1));
         fprintf(dest, "};\n");
         fprintf(dest, "\n");
-        fprintf(dest, "extern const UInt4 SizeFF[NUM_SHORT_FINITE_FIELDS+1];\n");
-        fprintf(dest, "extern const UInt1 DegrFF[NUM_SHORT_FINITE_FIELDS+1];\n");
-        fprintf(dest, "extern const UInt4 CharFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        fprintf(dest, "extern const uint32_t SizeFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        fprintf(dest, "extern const uint8_t DegrFF[NUM_SHORT_FINITE_FIELDS+1];\n");
+        fprintf(dest, "extern const uint32_t CharFF[NUM_SHORT_FINITE_FIELDS+1];\n");
         fprintf(dest, "\n");
         if (num_ff < 65536)
-            fprintf(dest, "typedef UInt2 FF;\n");
+            fprintf(dest, "typedef uint16_t FF;\n");
         else
-            fprintf(dest, "typedef UInt4 FF;\n");
+            fprintf(dest, "typedef uint32_t FF;\n");
         if (MAX_FF <= 65536)
-            fprintf(dest, "typedef UInt2 FFV;\n");
+            fprintf(dest, "typedef uint16_t FFV;\n");
         else
-            fprintf(dest, "typedef UInt4 FFV;\n");
+            fprintf(dest, "typedef uint32_t FFV;\n");
         fprintf(dest, "\n");
         fprintf(dest, "#endif // GAP_FFDATA_H\n");
     }
@@ -94,7 +94,7 @@ void emit_code(FILE * dest, int header)
         fprintf(dest, " * to find them. Indices start at 1.\n");
         fprintf(dest, " */\n");
         fprintf(dest, "\n");
-        fprintf(dest, "const UInt1 DegrFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
+        fprintf(dest, "const uint8_t DegrFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
         fprintf(dest, " %3d,", 0);
         for (i = 0, j = 1; i <= MAX_FF; i++) {
             if (is_ff[i]) {
@@ -109,7 +109,7 @@ void emit_code(FILE * dest, int header)
             fprintf(dest, "\n");
         fprintf(dest, "};\n");
         fprintf(dest, "\n");
-        fprintf(dest, "const UInt4 CharFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
+        fprintf(dest, "const uint32_t CharFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
         fprintf(dest, " %9d,", 0);
         for (i = 0, j = 1; i <= MAX_FF; i++) {
             if (is_ff[i]) {
@@ -124,7 +124,7 @@ void emit_code(FILE * dest, int header)
             fprintf(dest, "\n");
         fprintf(dest, "};\n");
         fprintf(dest, "\n");
-        fprintf(dest, "const UInt4 SizeFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
+        fprintf(dest, "const uint32_t SizeFF[NUM_SHORT_FINITE_FIELDS+1] = {\n");
         fprintf(dest, " %9d,", 0);
         for (i = 0, j = 1; i <= MAX_FF; i++) {
             if (is_ff[i]) {

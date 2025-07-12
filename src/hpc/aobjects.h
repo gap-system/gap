@@ -11,8 +11,8 @@
 #ifndef GAP_AOBJECTS_H
 #define GAP_AOBJECTS_H
 
-#include "objects.h"
-#include "hpc/atomic.h"
+#include "../objects.h"
+#include "atomic.h"
 
 #ifndef HPCGAP
 #error This header is only meant to be used with HPC-GAP
