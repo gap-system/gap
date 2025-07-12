@@ -28,7 +28,7 @@ InstallMethod( IsIntegerMatrixGroup, [ IsCyclotomicMatrixGroup ],
     function( G )
     local gen;
     gen := GeneratorsOfGroup( G );
-    return ForAll( Flat( gen ), IsInt ) and
+    return ForAll( gen, r -> ForAll( r, IsInt ) ) and
            ForAll( gen, g -> AbsInt( DeterminantMat( g ) ) = 1 );
     end
 );
@@ -240,6 +240,23 @@ function( G )
 
 end );
 
+
+BindGlobal("MinkowskiMultiple", function(n)
+    local res;
+    if n <= 0 then
+        Error("<n> must be a positive integer");
+    fi;
+    res := 2;
+    for n in [n,n-1..2] do
+        if IsOddInt(n) then
+            res := res * 2;
+        else
+            res := res * DenominatorRat(Bernoulli(n)/n);
+        fi;
+    od;
+    return res;
+end);
+
 #############################################################################
 ##
 #M  IsFinite( G ) . . . . . . . . . . .  IsFinite for cyclotomic matrix group
@@ -248,110 +265,78 @@ InstallMethod( IsFinite,
     "cyclotomic matrix group",
     [ IsCyclotomicMatrixGroup ],
 function( G )
-
-    local lat, ilat, grp, mat;
+    # The code below is based on the algorithm described in [DFO13]
+    local badPrimes, n, g, FindPrimesInMatDenominators, p, e, H, phi, gens, rels, nice;
 
     # if not rational, use the nice monomorphism into a rational matrix group
     if not IsRationalMatrixGroup( G ) then
         # the following does not use NiceObject(G) as the only method for
         # that currently requires IsHandledByNiceMonomorphism
-        return IsFinite( Image( NiceMonomorphism( G ), G ) );
+        SetNiceObject( G, Image( NiceMonomorphism( G ), G ) );
+        return IsFinite( NiceObject( G ) );
     fi;
 
     # if not integer, choose basis in which it is integer
-    if not IsIntegerMatrixGroup( G ) then
-        lat := InvariantLattice( G );
-        if lat = fail then
-            return false;
-        fi;
-        ilat := lat^-1;
-        grp := G^(ilat);
-        IsFinite( grp );
-        # IsFinite may have set the size, so we save it
-        if HasSize( grp ) then
-            SetSize( G, Size( grp ) );
-        fi;
-        # IsFinite may have set an invariant quadratic form
-        if HasInvariantQuadraticForm( grp ) then
-            mat := InvariantQuadraticForm( grp ).matrix;
-            mat := ilat * mat * TransposedMat( ilat );
-            SetInvariantQuadraticForm( G, rec( matrix := mat ) );
-        fi;
-        return IsFinite( grp );
-    else
-        return IsFinite( G );  # now G knows it is integer
-    fi;
-
-end );
-
-#############################################################################
-##
-#M  IsFinite( G ) . . . . . . . . . . . . . IsFinite for integer matrix group
-##
-#T  This method should evetually be replaced or complemented by the methods
-#T  used in GRIM!
-InstallMethod( IsFinite,
-    "via Minkowski kernel (short but not too efficient)",
-    [ IsIntegerMatrixGroup ],
-function( G )
-
-    local grp, size, dim, basis, gens, gensp, orb, rep, stb, img, sch, i,
-          pnt, gen, tmp;
-
-    grp   := G;
-    size  := 1;
-    dim   := DimensionOfMatrixGroup( grp );
-    basis := Immutable( IdentityMat( dim, GF( 2 ) ) );
-    for i in [1..dim] do
-        orb   := [ basis[i] ];
-        gens  := GeneratorsOfGroup( grp );
-        gensp := List(gens,i->ImmutableMatrix(2,i*Z(2),true));
-        rep   := [ One( grp ) ];
-        stb   := [];
-        for pnt in orb do
-            for gen in [1..Length(gens)] do
-                img := pnt * gensp[gen];
-                if not img in orb  then
-                    Add( orb, img );
-                    tmp := rep[ Position( orb, pnt ) ] * gens[gen];
-                    # simple test for infinite order
-                    # Order() would be too expensive to do on all elements
-                    if AbsInt( TraceMat( tmp ) ) > dim then
-                        return false;
-                    fi;
-                    Add( rep, tmp );
-                else
-                    sch := rep[ Position( orb, pnt ) ] * gens[gen]
-                           / rep[ Position( orb, img ) ];
-                    if i = dim then
-                        if sch <> One( grp ) then
-                            if sch * sch <> One( grp ) then
-                                return false;
-                            fi;
-                            if ForAny( stb, x -> x * sch <> sch * x ) then
-                                return false;
-                            fi;
-                        fi;
-                    else
-                        # simple test for infinite order
-                        # Order() would be too expensive to do on all elements
-                        if AbsInt( TraceMat( sch ) ) > dim then
-                            return false;
-                        fi;
-                    fi;
-                    AddSet( stb, sch );
+    badPrimes := [ 2 ];
+    n := DimensionOfMatrixGroup( G );
+    FindPrimesInMatDenominators := function( mat )
+        local i, j, d;
+        for i in [1..n] do
+            for j in [1..n] do
+                d := DenominatorRat(mat[i,j]);
+                if d > 1 then
+                    UniteSet(badPrimes, PrimeDivisors(d));
                 fi;
             od;
         od;
-        grp  := GroupByGenerators( stb, One( grp ) );
-        size := size * Length( orb );
+    end;
+    for g in GeneratorsOfGroup( G ) do
+        FindPrimesInMatDenominators(g);
+        FindPrimesInMatDenominators(g^-1);
     od;
 
-    # if we arrive here, the group is finite
-    SetIsFinite( grp, true );
-    SetSize( G, size * Size( grp ) );
-    return true;
+    p := 3;
+    while p in badPrimes do
+        p := NextPrimeInt(p);
+    od;
 
+    # now reduce mod p
+    e := One(GF(p));
+    H := Group( GeneratorsOfGroup( G ) * e );
+
+    # check Minkowski bounds here to immediately reject some G as infinite
+    if MinkowskiMultiple(n) mod Size(H) <> 0 then
+        return false;
+    fi;
+
+    # evaluate relators
+    phi := IsomorphismFpGroupByGenerators(H, GeneratorsOfGroup( H ));
+
+    gens := GeneratorsOfGroup(FreeGroupOfFpGroup(Range(phi)));
+    rels := RelatorsOfFpGroup(Range(phi));
+    if not ForAll(rels, r -> IsOne(MappedWord(r, gens, GeneratorsOfGroup(G)))) then
+        return false;
+    fi;
+
+    # set as a nice monomorphism
+    gens := GeneratorsOfGroup(Range(phi));
+    nice := GroupHomomorphismByFunction(G, H,
+              function(x)
+                  if ValueOption("actioncanfail")=true then
+                    if not ForAll( x, r -> ForAll( r, IsInt ) ) then
+                      return fail;
+                    fi;
+                  fi;
+                  return x * e;
+              end,
+              function(y)
+                return MappedWord(phi(y), gens, GeneratorsOfGroup(G));
+              end
+            );
+    SetNiceMonomorphism(G, nice);
+    SetNiceObject(G, H);
+    SetIsHandledByNiceMonomorphism(G, true);
+    return true;
 end );
 
 

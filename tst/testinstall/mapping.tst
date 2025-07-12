@@ -421,8 +421,6 @@ true
 
 # set NiceMonomorphism by hand (as suggested in the Tutorial)
 gap> g:= Group( [ [ [ 0, 1 ], [ 1, 0 ] ] ] );;
-gap> IsHandledByNiceMonomorphism( g );
-true
 gap> vecs:= Orbit( g, [ 1, 0 ], OnRight );;
 gap> hom:= ActionHomomorphism( g, vecs, OnRight );;
 gap> HasNiceMonomorphism( g );

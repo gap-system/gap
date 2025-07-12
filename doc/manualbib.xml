@@ -1587,6 +1587,23 @@
   <other type="fjournal">Archiv der Mathematik</other>
 </article></entry>
 
+<entry id="DFO13"><article>
+  <author>
+    <name><first>A. S.</first><last>Detinko</last></name>
+    <name><first>D. L.</first><last>Flannery</last></name>
+    <name><first>E. A.</first><last>O'Brien</last></name>
+  </author>
+  <title>Recognizing finite matrix groups over infinite fields</title>
+  <journal><value key="jsymc"/></journal>
+  <year>2013</year>
+  <volume>50</volume>
+  <pages>100&ndash;109</pages>
+  <issn>0747-7171</issn>
+  <other type="fjournal">Journal of Symbolic Computation</other>
+  <url>https://doi.org/10.1016/j.jsc.2012.04.002</url>
+  <other type="doi">10.1016/j.jsc.2012.04.002</other>
+</article></entry>
+
 <entry id="Dix67"><article>
   <author>
     <name><first>John D.</first><last>Dixon</last></name>
