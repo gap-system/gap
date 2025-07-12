@@ -139,7 +139,7 @@ Error, <gens> must be a generating set for G
 gap> IsomorphismFpGroupByGeneratorsNC( Group( (1,2) ), [], "F" );
 Error, <emptygens> does not generate <G>
 
-# RWS for G2(3)
+# RWS for G2(3) and S_6(2)
 gap> g:=SimpleGroup("G2(3)");;
 gap> hom:=IsomorphismFpGroupForRewriting(g);;
 gap> m:=Image(IsomorphismFpMonoid(Image(hom)));;
@@ -147,6 +147,13 @@ gap> F:=m!.rewritingSystem;;;
 gap> ReducedForm(F,UnderlyingElement(
 > Product(GeneratorsOfMonoid(m){[1,3..19]})));
 w1*B5*b6*b7*B8*w2*b1*B3*B4*b5*b6*b7
+gap> g:=SimpleGroup("S6(2)");;
+gap> hom:=IsomorphismFpGroupForRewriting(g);;
+gap> m:=Image(IsomorphismFpMonoid(Image(hom)));;
+gap> F:=m!.rewritingSystem;;;
+gap> ReducedForm(F,UnderlyingElement(
+> Product(GeneratorsOfMonoid(m){[1,3..19]})));
+b2*b4*w1*b1*b6*b8*b9
 
 #
 gap> STOP_TEST( "grpfp.tst" );
