@@ -516,7 +516,7 @@ gap$(EXEEXT): build/obj/src/main.c.o $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GA
 # generate a modified copy of main.c for use by the `gap-install` binary
 build/main.c: sysinfo.gap
 	@echo "#define SYS_DEFAULT_PATHS \"$(libdir)/gap;$(datarootdir)/gap\"" > $@
-	@echo "#include \"$(abs_srcdir)/src/main.c\"" > $@
+	@echo "#include \"$(abs_srcdir)/src/main.c\"" >> $@
 
 # build rule for the gap executable used by the `install-bin` target
 build/gap-install: build/obj/build/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
