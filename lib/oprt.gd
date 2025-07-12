@@ -760,14 +760,18 @@ local str, orbish, func,isnotest;
 
     # Create the wrapper function.
     func := function( arg )
-    local   G,  D,  pnt,  gens,  acts,  act,  xset,  p,  attrG,  result,le;
+    local   G,  D,  pnt,  gens,  acts,  act,  xset,  p,  attrG,
+    result,le,used;
 
+      used:=[];
       # Get the arguments.
       if Length( arg ) <= 2 and IsExternalSet( arg[ 1 ] )  then
           xset := arg[ 1 ];
+          AddSet(used,1);
           if Length(arg)>1 then
             # force immutability
             pnt := Immutable(arg[ 2 ]);
+            AddSet(used,2);
           else
               # `Blocks' like operations
               pnt:=[];
@@ -791,18 +795,24 @@ local str, orbish, func,isnotest;
       elif 2 <= Length( arg ) then
           le:=Length(arg);
           G := arg[ 1 ];
+          AddSet(used,1);
           if IsFunction( arg[ le ] )  then
               act := arg[ le ];
+              AddSet(used,le);
               le:=le-1;
           else
               act := OnPoints;
           fi;
           if     Length( arg ) > 2
-            and famrel( FamilyObj( arg[ 2 ] ), FamilyObj( arg[ 3 ] ) )
+            and (famrel( FamilyObj( arg[ 2 ] ), FamilyObj( arg[ 3 ] ) ) or
+              # blocks with empty seed
+              (IsListOrCollection(arg[2]) and IsListOrCollection(arg[3])
+                and Length(arg[3])=0) )
             # for blocks on the groups elements
             and not (IsOperation(usetype) and le=4)
             then
               D := arg[ 2 ];
+              AddSet(used,2);
               if IsDomain( D )  then
            if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
               fi;
@@ -811,9 +821,12 @@ local str, orbish, func,isnotest;
               p := 2;
           fi;
           pnt := Immutable(arg[ p ]);
+          AddSet(used,p);
           if Length( arg ) > p + 1  then
               gens := arg[ p + 1 ];
               acts := arg[ p + 2 ];
+              AddSet(used,p+1);
+              AddSet(used,p+2);
           fi;
       else
         Error( "usage: ", name, "(<xset>,<pnt>)\n",
@@ -867,6 +880,10 @@ local str, orbish, func,isnotest;
           Setter( usetype )( G, result );
       fi;
 
+      if used<>[1..Length(arg)] then
+        Info(InfoWarning,1,name,": Arguments #",
+          Difference([1..Length(arg)],used)," were ignored");
+      fi;
       return result;
   end;
   BIND_GLOBAL( name, func );

@@ -724,7 +724,7 @@ local m, fact, fg, reps, ma, idx, nm, embs, proj, kproj, k, ag, agl, ug,
 
   #4b: Get minimal blocks on socle components
 
-  bl:=RepresentativesMinimalBlocks(fg,[1..n],1);
+  bl:=RepresentativesMinimalBlocks(fg,[1..n]);
   bl:=Filtered(bl,i->Length(i)<n);
   if Length(bl)>0 then
     Info(InfoLattice,1,Length(bl)," minimal block systems");
