@@ -192,8 +192,11 @@ SYSINFO_CPPFLAGS =
 GAP_CPPFLAGS += -I$(builddir)/build
 SYSINFO_CPPFLAGS += -I$(abs_builddir)/build
 
-# The other source files are bundled and exported through the few
-# headers in the extra directory.
+# The other source files are bundled and exported through the few headers in
+# the `src/extra/` directory. We deliberately do not add `src/` itself as an
+# include directory to improve portability: it helps avoid clashes between our
+# headers and system headers (e.g. for `io.h` this would otherwise be a
+# problem on MinGW).
 GAP_CPPFLAGS += -I$(srcdir)/src/extra
 SYSINFO_CPPFLAGS += -I$(abs_srcdir)/src/extra
 
