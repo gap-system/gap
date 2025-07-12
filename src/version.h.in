@@ -13,9 +13,6 @@
 #ifndef GAP_VERSION_H
 #define GAP_VERSION_H
 
-#include "common.h"
-
-
 /****************************************************************************
 **
 **  GAP_KERNEL_MAJOR_VERSION
