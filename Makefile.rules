@@ -402,7 +402,7 @@ DEPFLAGS = -MQ $(OBJFILE) -MMD -MP -MF $(DEPFILE)
 # DEPFILE and OBJFILE above)
 ########################################################################
 
-obj_deps = build/config.h build/version.h $(FFDATA_H) build/common.h
+obj_deps = build/config.h build/version.h $(FFDATA_H)
 
 
 # Build rule for C++ source files
@@ -539,19 +539,11 @@ build/c_%.c: $(srcdir)/lib/%.g build/gap-nocomp$(EXEEXT)
 # The "ffdata" target regenerates build/ffdata.{c,h} using etc/ffgen.c
 ########################################################################
 
-ffgen: $(srcdir)/etc/ffgen.c src/common.h build/config.h
+ffgen: $(srcdir)/etc/ffgen.c build/config.h
 	$(QUIET_CC)$(CC) -Wall -Wextra $(GAP_CPPFLAGS) $< -o $@
 
 build/ffdata.h build/ffdata.c: ffgen
 	./ffgen -b build/ffdata
-
-########################################################################
-# Symlink common.h to the build directory for ffdata.h and version.h
-########################################################################
-
-build/common.h: $(abs_srcdir)/src/common.h
-	@$(MKDIR_P) $(@D)
-	ln -sf $< $@
 
 ########################################################################
 # The "tags" target regenerates the tags file using Exuberant Ctags
