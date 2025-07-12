@@ -28,7 +28,7 @@ InstallMethod( IsIntegerMatrixGroup, [ IsCyclotomicMatrixGroup ],
     function( G )
     local gen;
     gen := GeneratorsOfGroup( G );
-    return ForAll( gen, r -> ForAll( r, IsInt ) ) and
+    return ForAll( gen, mat -> ForAll( mat, row -> ForAll( row, IsInt ) ) ) and
            ForAll( gen, g -> AbsInt( DeterminantMat( g ) ) = 1 );
     end
 );
