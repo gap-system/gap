@@ -143,8 +143,8 @@ Error, <emptygens> does not generate <G>
 gap> g:=SimpleGroup("G2(3)");;
 gap> hom:=IsomorphismFpGroupForRewriting(g);;
 gap> m:=Image(IsomorphismFpMonoid(Image(hom)));;
-gap> kb:=m!.rewritingSystem;;;
-gap> ReducedForm(kb,UnderlyingElement(
+gap> F:=m!.rewritingSystem;;;
+gap> ReducedForm(F,UnderlyingElement(
 > Product(GeneratorsOfMonoid(m){[1,3..19]})));
 w1*B5*b6*b7*B8*w2*b1*B3*B4*b5*b6*b7
 
