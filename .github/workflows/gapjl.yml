@@ -28,7 +28,7 @@ jobs:
           - 'latest-release'
           - 'master'
         julia-version:
-          - '1.6'
+          - '1.10'
           - '1'         # latest stable release
           - 'nightly'
         os:
@@ -80,4 +80,4 @@ jobs:
           julia --proj=override $GAPJLPATH/etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override --enable-Werror
       - name: "Run tests"
         run: |
-           julia --proj=override $GAPJLPATH/etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
+          julia --proj=override $GAPJLPATH/etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
