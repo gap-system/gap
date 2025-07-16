@@ -19,13 +19,14 @@ gap> IsBergerCondition( S4 );
 true
 gap> IsBergerCondition( Sl23 );
 false
-gap> List( Irr( Sl23 ), IsBergerCondition );
+gap> irr:= SortedList( Irr( Sl23 ) );;
+gap> List( irr, IsBergerCondition );
 [ true, true, true, false, false, false, true ]
-gap> List( Irr( Sl23 ), Degree );
+gap> List( irr, Degree );
 [ 1, 1, 1, 2, 2, 2, 3 ]
 
 ##
-gap> chi:= Irr( Sl23 )[7];
+gap> chi:= irr[7];
 Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] )
 gap> n:= DerivedSubgroup( Sl23 );;
 gap> test:= TestHomogeneous( chi, n );;
@@ -33,7 +34,7 @@ gap> test.isHomogeneous;  test.comment;  test.multiplicity;
 false
 "restriction checked"
 1
-gap> chi:= Irr( Sl23 )[4];
+gap> chi:= irr[4];
 Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] )
 gap> cln:= ClassPositionsOfNormalSubgroup( CharacterTable( Sl23 ), n );
 [ 1, 4, 7 ]
@@ -41,21 +42,21 @@ gap> TestHomogeneous( chi, cln );
 rec( comment := "restricts irreducibly", isHomogeneous := true )
 
 ##
-gap> chi:= Irr( Sl23 )[4];;
+gap> chi:= irr[4];;
 gap> TestQuasiPrimitive( chi );
 rec( comment := "all restrictions checked", isQuasiPrimitive := true )
-gap> chi:= Irr( Sl23 )[7];;
+gap> chi:= irr[7];;
 gap> test:= TestQuasiPrimitive( chi );;
 gap> test.isQuasiPrimitive;  test.comment;
 false
 "restriction checked"
-gap> IsPrimitive( Irr( Sl23 )[4] );
+gap> IsPrimitive( irr[4] );
 true
-gap> IsPrimitive( Irr( Sl23 )[7] );
+gap> IsPrimitive( irr[7] );
 false
 
 ##
-gap> List( Irr( Sl23 ), IsInducedFromNormalSubgroup );
+gap> List( irr, IsInducedFromNormalSubgroup );
 [ false, false, false, false, false, false, true ]
 gap> List( Irr( S4 ){ [ 1, 3, 4 ] },
 >          TestInducedFromNormalSubgroup );
