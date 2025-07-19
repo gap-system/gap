@@ -725,7 +725,7 @@ static void JFinalizer(jl_value_t * obj)
         TabFreeFuncBags[tnum]((Bag)&contents);
 }
 
-// helper called directly by GAP.jl (if HAVE_JL_REINIT_FOREIGN_TYPE is on)
+// helper called directly by GAP.jl
 jl_datatype_t * GAP_DeclareGapObj(jl_sym_t *      name,
                                   jl_module_t *   module,
                                   jl_datatype_t * parent)
@@ -734,7 +734,7 @@ jl_datatype_t * GAP_DeclareGapObj(jl_sym_t *      name,
                                0);
 }
 
-// helper called directly by GAP.jl (if HAVE_JL_REINIT_FOREIGN_TYPE is on)
+// helper called directly by GAP.jl
 jl_datatype_t * GAP_DeclareBag(jl_sym_t *      name,
                                jl_module_t *   module,
                                jl_datatype_t * parent,
@@ -744,29 +744,17 @@ jl_datatype_t * GAP_DeclareBag(jl_sym_t *      name,
                                1, large > 0);
 }
 
-#ifdef HAVE_JL_REINIT_FOREIGN_TYPE
-// internal wrapper for jl_boundp to deal with API change in Julia 1.12
-static int gap_jl_boundp(jl_module_t *m, jl_sym_t *var)
-{
-#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR >= 12
-    return jl_boundp(m, var, 1);
-#else
-    return jl_boundp(m, var);
-#endif
-}
-#endif
 
 // Initialize the integration with Julia's garbage collector; in particular,
-// create Julia types for use in our allocations. The types will be stored
-// in the given 'module', and the MPtr type will be a subtype of 'parent'.
+// create Julia types for use in our allocations.
+// This function assumes that the types have already been declared in the
+// Julia module 'module' (e.g., by GAP_DeclareGapObj and GAP_DeclareBag).
 //
 // If 'module' is NULL then 'jl_main_module' is used.
-// If 'parent' is NULL then 'jl_any_type' is used.
+// 'parent' is not used but still provided for compatibility.
 void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
                                   jl_datatype_t * parent)
 {
-    jl_sym_t * name;
-
     // HOOK: initialization happens here.
     for (UInt i = 0; i < NUM_TYPES; i++) {
         TabMarkFuncBags[i] = MarkAllSubBagsDefault;
@@ -797,47 +785,19 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
         module = jl_main_module;
     }
 
-    if (parent == 0) {
-        parent = jl_any_type;
-    }
+    DatatypeGapObj =
+        (jl_datatype_t *)jl_get_global(module, jl_symbol("GapObj"));
+    jl_reinit_foreign_type(DatatypeGapObj, MPtrMarkFunc, NULL);
 
-// Julia defines HAVE_JL_REINIT_FOREIGN_TYPE if `jl_reinit_foreign_type`
-// is available.
-#ifdef HAVE_JL_REINIT_FOREIGN_TYPE
-    if (gap_jl_boundp(module, jl_symbol("GapObj"))) {
-        DatatypeGapObj =
-            (jl_datatype_t *)jl_get_global(module, jl_symbol("GapObj"));
-        jl_reinit_foreign_type(DatatypeGapObj, MPtrMarkFunc, NULL);
+    DatatypeSmallBag =
+        (jl_datatype_t *)jl_get_global(module, jl_symbol("SmallBag"));
+    jl_reinit_foreign_type(DatatypeSmallBag, BagMarkFunc, JFinalizer);
 
-        DatatypeSmallBag =
-            (jl_datatype_t *)jl_get_global(module, jl_symbol("SmallBag"));
-        jl_reinit_foreign_type(DatatypeSmallBag, BagMarkFunc, JFinalizer);
+    DatatypeLargeBag =
+        (jl_datatype_t *)jl_get_global(module, jl_symbol("LargeBag"));
+    jl_reinit_foreign_type(DatatypeLargeBag, BagMarkFunc, JFinalizer);
 
-        DatatypeLargeBag =
-            (jl_datatype_t *)jl_get_global(module, jl_symbol("LargeBag"));
-        jl_reinit_foreign_type(DatatypeLargeBag, BagMarkFunc, JFinalizer);
-
-        return;
-    }
-#endif
-
-    // create and store data type for master pointers
-    name = jl_symbol("GapObj");
-    DatatypeGapObj = GAP_DeclareGapObj(name, module, parent);
-    GAP_ASSERT(jl_is_datatype(DatatypeGapObj));
-    jl_set_const(module, name, (jl_value_t *)DatatypeGapObj);
-
-    // create and store data type for small bags
-    name = jl_symbol("SmallBag");
-    DatatypeSmallBag = GAP_DeclareBag(name, module, jl_any_type, 0);
-    GAP_ASSERT(jl_is_datatype(DatatypeSmallBag));
-    jl_set_const(module, name, (jl_value_t *)DatatypeSmallBag);
-
-    // create and store data type for large bags
-    name = jl_symbol("LargeBag");
-    DatatypeLargeBag = GAP_DeclareBag(name, module, jl_any_type, 1);
-    GAP_ASSERT(jl_is_datatype(DatatypeLargeBag));
-    jl_set_const(module, name, (jl_value_t *)DatatypeLargeBag);
+    return;
 }
 
 /****************************************************************************
