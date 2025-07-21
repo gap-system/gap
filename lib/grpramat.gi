@@ -303,7 +303,6 @@ function( G )
     # now reduce mod p
     e := One(GF(p));
     H := Group( GeneratorsOfGroup( G ) * e );
-    UseIsomorphismRelation(G, H);
 
     # check Minkowski bounds here to immediately reject some G as infinite
     if MinkowskiMultiple(n) mod Size(H) <> 0 then
