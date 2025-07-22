@@ -1,4 +1,4 @@
-#@local a,b,c2,e,f,g,iter,l,s,F,rels,sub,iso,G
+#@local a,b,c2,e,f,g,iter,l,s,F,rels,sub,iso,G,hom,m
 gap> START_TEST("grpfp.tst");
 gap> f:= FreeGroup( "a", "b" );;  a := f.1;;  b := f.2;;
 gap> c2:= f / [ a*b*a^-2*b*a/b, (b^-1*a^3*b^-1*a^-3)^2*a ];;
@@ -138,6 +138,28 @@ gap> IsomorphismFpGroupByGenerators( Group( (1,2) ), [] );
 Error, <gens> must be a generating set for G
 gap> IsomorphismFpGroupByGeneratorsNC( Group( (1,2) ), [], "F" );
 Error, <emptygens> does not generate <G>
+
+# intended error messages
+gap> F:= FreeGroup( "a", "b" );;  a := F.1;;  b := F.2;;
+gap> G:= F / [ a^2, b^2, Comm( a, b ) ];;
+gap> ConjugacyClasses( G );
+Error, the f.p. group <G> does not know whether it is finite,
+no 'ConjugacyClasses' method is available for such groups,
+see the introduction to Chapter "Finitely Presented Groups"
+in the Reference Manual for the background.
+Perhaps you want to replace <G> by a group of another type.
+If you want to continue with the given <G> then
+you can call 'IsFinite( G );' and then enter 'return;'.
+(This call may not terminate.)
+gap> IsFinite( G );  Length( ConjugacyClasses( G ) );
+true
+4
+gap> G:= F / [ a*b ];;
+gap> ConjugacyClasses( G );
+Error, the f.p. group <G> is not finite
+gap> IsFinite( G );  ConjugacyClasses( G );
+false
+Error, the f.p. group <G> is not finite
 
 # RWS for G2(3) and S_6(2)
 gap> g:=SimpleGroup("G2(3)");;

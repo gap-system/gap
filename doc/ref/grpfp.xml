@@ -116,8 +116,10 @@ or a permutation group (see <Ref Attr="IsomorphismPermGroup"/>).
 
 In fact,
 calling a function such as <Ref Attr="ConjugacyClasses" Label="attribute"/>
-with an FpGroup that does not store that it is finite
-may result in an error message.
+with an FpGroup for which <C>HasIsFinite</C> returns <K>false</K>
+may result in an error message,
+because the developers of the FpGroup code do not want an <E>automatic</E>
+<Ref Prop="IsFinite"/> test (which may not terminate) in the function.
 (Once the <Ref Prop="IsFinite"/> value is known, the computation in question
 can be done with the FpGroup, but still it is advisable to use a better
 internal representation.)

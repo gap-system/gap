@@ -5874,13 +5874,10 @@ InstallMethod( ConjugacyClasses,
   [ IsSubgroupFpGroup ],
   function( G )
   if HasIsFinite( G ) then
-    if IsFinite( G ) then
-      # Something went wrong, we should not get here.
-      ErrorNoReturn( "there should be a higher ranked method" );
-    else
-      # We can at least give a better message than "no method found".
-      ErrorNoReturn( "the f.p. group <G> is not finite" );
-    fi;
+    # If 'G' knows to be finite then we should not get here.
+    Assert( 0, not IsFinite( G ), "there should be a higher ranked method" );
+    # We can at least give a better message than "no method found".
+    ErrorNoReturn( "the f.p. group <G> is not finite" );
   fi;
 
   while not ( HasIsFinite( G ) and IsFinite( G ) ) do
@@ -5893,7 +5890,8 @@ InstallMethod( ConjugacyClasses,
            "in the Reference Manual for the background.\n",
            "Perhaps you want to replace <G> by a group of another type.\n",
            "If you want to continue with the given <G> then\n",
-           "you can call 'IsFinite( G );' and then enter 'return;'" );
+           "you can call 'IsFinite( G );' and then enter 'return;'.\n",
+           "(This call may not terminate.)" );
   od;
   if HasIsFinite( G ) and IsFinite( G ) then
     # The type of 'G' has changed since we entered the method,
