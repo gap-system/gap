@@ -1986,7 +1986,7 @@ It runs quite a bit longer, maybe 10-20 minutes, and produces
 an output similar to the testinstall.g test.
 To run it, also start a new &GAP; session and then call
 <Log><![CDATA[
-gap> Read( Filename( DirectoriesLibrary( "tst" ), "testall.g" ) );
+gap> Read( Filename( DirectoriesLibrary( "tst" ), "teststandard.g" ) );
 ]]></Log>
 You may repeat the same check loading your package with <C>OnlyNeeded</C>
 option. Remember to perform each subsequent test in a new &GAP; session.
