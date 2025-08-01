@@ -41,7 +41,7 @@ local   pcgs,r,hom,A,iso,p,i,depths,ords,b,mo,pc,limit,good,new,start,np;
       A:=First(G!.cachedFFS,x->IsSubset(r,x[1]!.radical));
       if A<>fail then
         b:=Image(A[2].rest);
-        b:=NaturalHomomorphismByNormalSubgroupNC(b,RadicalGroup(b));
+        b:=NaturalHomomorphismByNormalSubgroupNC(b,SolvableRadical(b));
         hom:=A[2]!.rest*b;
         SetKernelOfMultiplicativeGeneralMapping(hom,r);
         AddNaturalHomomorphismsPool(G,r,hom);
