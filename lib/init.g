@@ -639,7 +639,7 @@ end );
 ##
 #X  files installing compatibility with deprecated, obsolescent or
 ##  obsolete GAP4 behaviour;
-##  *not* to be read if `GAPInfo.UserPreferences.ReadObsolete' has the value
+##  *not* to be read if `UserPreference( "ReadObsolete" )' has the value
 ##  `false'
 ##  (this value can be set in the `gap.ini' file)
 ##
@@ -654,8 +654,6 @@ which may vanish in a future version of &GAP;"
   values:= [ true, false ],
   multi:= false,
   ) );
-# HACKUSERPREF temporary hack for AtlasRep and CTblLib:
-GAPInfo.UserPreferences.ReadObsolete := UserPreference("ReadObsolete");
 
 ReadLib("obsolete.g"); # the helpers in there are always read
 CallAndInstallPostRestore( function()
