@@ -50,4 +50,11 @@ gap> checkGens( WreathProductProductAction(IP, IP) );
 true
 
 #
+gap> K := Group([ () ]);;
+gap> H := Group([ (1,2,3,4,5,6,7), (6,7,8) ]);;
+gap> G := WreathProduct(K, H);;
+gap> WreathProductInfo(G).components;
+[ [ 1 ], [ 2 ], [ 3 ], [ 4 ], [ 5 ], [ 6 ], [ 7 ], [ 8 ] ]
+
+#
 gap> STOP_TEST("WreathProductWithTrivialGroups.tst");
