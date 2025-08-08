@@ -813,7 +813,10 @@ local str, orbish, func,isnotest;
           pnt:= Immutable( arg[3] );
           # deal with Omega
           D:= arg[2];
-          if IsDomain( D ) then
+          if not ( famrel( FamilyObj( D ), FamilyObj( pnt ) ) or
+                   ( IsList( pnt ) and IsEmpty( pnt ) ) ) then
+            Error( "wrong relation between <D> and <pnt>" );
+          elif IsDomain( D ) then
             if IsFinite( D ) then
               D:= AsSSortedList( D );
             else

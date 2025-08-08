@@ -1,4 +1,4 @@
-#@local G,c5,d,eo,es,ess
+#@local G,c5,d,eo,es,ess,gens,res
 gap> START_TEST("oprt.tst");
 gap> c5:=CyclicGroup(IsPermGroup,5);;
 gap> d:=Combinations([1..5],2);;
@@ -43,4 +43,31 @@ gap> IsTransitive( G, [ 2, 3 ] );
 false
 gap> Transitivity( G, [ 2, 3 ] );
 0
+
+##  variants of Orbit( G[, Omega], pnt[, gens, acts][, act] )
+gap> G:= SymmetricGroup( 5 );;
+gap> gens:= GeneratorsOfGroup( G );;
+gap> res:= [ 1 .. 5 ];;
+gap> SortedList( Orbit( G, 1 ) ) = res;
+true
+gap> SortedList( Orbit( G, [ 1 .. 5 ], 1 ) ) = res;
+true
+gap> SortedList( Orbit( G, 1, gens, gens ) ) = res;
+true
+gap> SortedList( Orbit( G, [ 1 .. 5 ], 1, gens, gens ) ) = res;
+true
+gap> SortedList( Orbit( G, 1, OnPoints ) ) = res;
+true
+gap> SortedList( Orbit( G, [ 1 .. 5 ], 1, OnPoints ) ) = res;
+true
+gap> SortedList( Orbit( G, 1, gens, gens, OnPoints ) ) = res;
+true
+gap> SortedList( Orbit( G, [ 1 .. 5 ], 1, gens, gens, OnPoints ) ) = res;
+true
+gap> Orbit( G, GF(7), 1 );
+Error, wrong relation between <D> and <pnt>
+gap> Orbit( G, GF(7), 1, OnPoints );
+Error, wrong relation between <D> and <pnt>
+
+##
 gap> STOP_TEST( "oprt.tst" );
