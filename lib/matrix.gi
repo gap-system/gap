@@ -2387,7 +2387,7 @@ function( mat )
 
     # check if <A> is invertible
     c := CoefficientsOfUnivariatePolynomial(p);
-    if c[1] = Zero(c[1])  then
+    if IsZero(c[1])  then
         Error( "matrix <mat> must be invertible" );
     fi;
 

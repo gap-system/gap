@@ -1489,7 +1489,7 @@ InstallMethod( AdjointAssociativeAlgebra,
             found:= false;
             l1:= 1; l2:= 1;
             while not found do
-              if m[l1][l2] <> Zero( F ) then
+              if not IsZero( m[l1][l2] ) then
                 Add( posits, [l1,l2] );
                 found:= true;
               else
@@ -1992,7 +1992,7 @@ InstallMethod( DirectSumDecomposition,
                 Append( comlist, List( B[i], y -> bb[j]*y ) );
             od;
 
-            if not ForAll( comlist, x -> x = Zero(L) ) then
+            if not ForAll( comlist, IsZero ) then
               Append( bb, B[i] );
               B:= Filtered( B, x -> x <> B[i] );
               i:= 1;

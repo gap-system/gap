@@ -681,7 +681,7 @@ BIND_GLOBAL("QUOMOD_UPOLY",function (r,s,m)
 local f,g,h,fs,gs,hs,q,t;
     f := s;  fs := 1;
     g := m;  gs := 0;
-    while g <> Zero(g) do
+    while not IsZero(g) do
         t := QuotientRemainder(f,g);
         h := g;          hs := gs;
         g := t[2];       gs := fs - t[1]*gs;
@@ -883,7 +883,7 @@ local dom,deg,inum,i,c;
   for i in [0..deg] do
     Add(c,Random(dom));
   od;
-  while c[deg+1]=Zero(dom) do
+  while IsZero(c[deg+1]) do
     c[deg+1]:=Random(dom);
   od;
   return LaurentPolynomialByCoefficients(FamilyObj(c[1]),c,0,inum);
