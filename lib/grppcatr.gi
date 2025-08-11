@@ -839,7 +839,7 @@ InstallGlobalFunction (CentrePcGroup, function( G )
                     conj := List( pcgsF,
                             x -> ExponentsOfPcElement( pcgsF, x^g ) )
                             * One( field );
-                    if conj = conj^0  then
+                    if IsOne( conj )  then
                         AddSet( newgens, g );
                     else
                         Add( matlist, conj );
