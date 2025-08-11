@@ -434,7 +434,7 @@ function( G, flag )
 
     # in the sl-case we have to split this class
     if flag then
-      if DeterminantMat(mat)=Z(q)^0 then
+      if IsOne(DeterminantMat(mat)) then
         gcd := Gcd(Concatenation(List(a, b-> b[4])));
         gcd := Gcd(gcd, q-1);
         mat := [mat];

@@ -362,7 +362,7 @@ local   cr,  opt,  irf,  i,  ind,  v,  l,  g,  k,  d,
   fi;
 
   # return the factorization and store it
-  if l<>l^0 then
+  if not IsOne(l) then
     facs[1] := facs[1]*l;
   fi;
   if not (IsBound(opt.onlydegs) or IsBound(opt.stopdegs))  then

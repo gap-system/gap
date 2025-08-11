@@ -1404,7 +1404,7 @@ InstallMethod( PrintObj,
             if lst[k+1] > 0 and k>1 then
                 Print("+" );
             fi;
-            if lst[k+1] <> lst[k+1]^0 then
+            if not IsOne(lst[k+1]) then
                 Print( lst[k+1],"*");
             fi;
             if lst[k] = [] then
