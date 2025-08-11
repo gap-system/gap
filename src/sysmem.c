@@ -24,10 +24,10 @@
 #ifdef GAP_MEM_CHECK
 #include <fcntl.h>
 #include <stdlib.h>     // for qsort
-#include <unistd.h>     // for ftruncate, getpid, unlink
 #endif
 
 #include <stdio.h>      // for fputs
+#include <unistd.h>     // for ftruncate, getpid, unlink, sysconf (for _SC_PAGESIZE)
 
 #ifdef HAVE_MADVISE
 #include <sys/mman.h>
