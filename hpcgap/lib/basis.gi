@@ -1404,7 +1404,7 @@ InstallMethod( Coefficients,
     IsCollsElms,
     [ IsBasis and IsEmpty, IsVector ], SUM_FLAGS,
     function( B, v )
-    if v = Zero( UnderlyingLeftModule( B ) ) then
+    if IsZero( v ) then
       return [];
     else
       return fail;

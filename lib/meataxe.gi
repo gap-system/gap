@@ -578,7 +578,7 @@ local module, sub, typ, matrices, dim, subdim, F,
 
         # Check that the vector is now zero - if not, then sub was
         # not the basis of a submodule
-        if im <> Zero(im) then return fail; fi;
+        if not IsZero(im) then return fail; fi;
         Add(newg, newim);
       od;
       Add(smatrices,ImmutableMatrix(F,newg));
@@ -1161,7 +1161,7 @@ SMTX.IrreducibilityTest:=function( module )
                      pfac2:=orig_pol;
                      while true do
                        quotRem := QuotRemLaurpols(pfac2, sfac[facno], 3);
-                       if quotRem[2] <> Zero(R) then
+                       if not IsZero(quotRem[2]) then
                          break;
                        fi;
                        pfac2 := quotRem[1];
@@ -3045,7 +3045,7 @@ local a,u,i,nb;
   u:=[];
   for i in nb do
     TriangulizeMat(i);
-    Add(u,Filtered(i,j->j<>Zero(j)));
+    Add(u,Filtered(i,j->not IsZero(j)));
   od;
   return u;
 end;

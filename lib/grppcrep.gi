@@ -355,7 +355,7 @@ InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim )
             L := GF(p^b);
             for j in [1..Length(f)] do
               w := PrimitiveRoot( L ) ^ ((p^b - 1)/r);
-              while Value( f[j], w ) <> Zero( E ) do
+              while not IsZero( Value( f[j], w ) ) do
                 w := w * PrimitiveRoot( L )^ ((p^b - 1)/r);
               od;
               mats:=List(Concatenation([w*c*iso],modu.generators),
@@ -432,7 +432,7 @@ InstallGlobalFunction( InitAbsAndIrredModules, function( r, F, dim )
                 E := GF( p^b );
                 for j in [ 1..Length( f ) ] do
                     w := PrimitiveRoot(E)^QuoInt( p^b-1, r );
-                    while Value( f[j], w ) <> Zero( F ) do
+                    while not IsZero( Value( f[j], w ) ) do
                         w := w * PrimitiveRoot(E)^QuoInt( p^b-1, r );
                     od;
                     modu := GModuleByMats( [ImmutableMatrix(E,[[w]])], E );
