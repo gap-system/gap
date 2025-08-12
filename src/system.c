@@ -47,7 +47,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <unistd.h>
+#include <unistd.h>     // for sysconf (and _SC_PAGESIZE)
 
 #include <sys/stat.h>
 

@@ -27,7 +27,7 @@
 #endif
 
 #include <stdio.h>      // for fputs
-#include <unistd.h>     // for ftruncate, getpid, unlink, sysconf (for _SC_PAGESIZE)
+#include <unistd.h>     // for ftruncate, getpid, unlink, sbrk, sysconf (and _SC_PAGESIZE)
 
 #ifdef HAVE_MADVISE
 #include <sys/mman.h>
@@ -37,7 +37,6 @@
 #include <mach/mach.h>
 #elif defined(HAVE_SBRK)
 #include <string.h>     // for memset
-#include <unistd.h>     // for sbrk
 #endif
 
 
