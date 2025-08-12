@@ -27,7 +27,7 @@
 #endif
 
 #include <stdio.h>      // for fputs
-#include <unistd.h>     // for ftruncate, getpid, unlink, sbrk, sysconf (and _SC_PAGESIZE)
+#include <unistd.h>     // for ftruncate, getpid, unlink, sbrk, sysconf
 
 #ifdef HAVE_MADVISE
 #include <sys/mman.h>
@@ -419,9 +419,7 @@ static int SyTryToIncreasePool(void)
 static void SyInitialAllocPool(void)
 {
 #ifdef HAVE_SYSCONF
-#ifdef _SC_PAGESIZE
    pagesize = sysconf(_SC_PAGESIZE);
-#endif
 #endif
    // Otherwise we take the default of 4k as pagesize.
 
