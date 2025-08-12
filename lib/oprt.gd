@@ -760,18 +760,20 @@ local str, orbish, func,isnotest;
 
     # Create the wrapper function.
     func := function( arg )
-    local   G,  D,  pnt,  gens,  acts,  act,  xset,  p,  attrG,
-    result,le,used;
+    local le, usage, xset, pnt, G, D, gens, acts, act, attrG, result;
 
-      used:=[];
+      le:= Length( arg );
+      usage:= Concatenation( "usage: ", name, "(<xset>,<pnt>)\n",
+              "or ", name, "(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])" );
+
       # Get the arguments.
-      if Length( arg ) <= 2 and IsExternalSet( arg[ 1 ] )  then
+      if le = 0 then
+        Error( usage );
+      elif le <= 2 and IsExternalSet( arg[ 1 ] )  then
           xset := arg[ 1 ];
-          AddSet(used,1);
           if Length(arg)>1 then
             # force immutability
             pnt := Immutable(arg[ 2 ]);
-            AddSet(used,2);
           else
               # `Blocks' like operations
               pnt:=[];
@@ -792,45 +794,43 @@ local str, orbish, func,isnotest;
           else
               act := FunctionAction( xset );
           fi;
-      elif 2 <= Length( arg ) then
-          le:=Length(arg);
-          G := arg[ 1 ];
-          AddSet(used,1);
-          if IsFunction( arg[ le ] )  then
-              act := arg[ le ];
-              AddSet(used,le);
-              le:=le-1;
-          else
-              act := OnPoints;
+      elif 2 <= le and le <= 6 then
+        G:= arg[ 1 ];
+        if IsFunction( arg[ le ] )  then
+          act:= arg[ le ];
+          le:= le-1;
+        else
+          act:= OnPoints;
+        fi;
+        # now we have one of the following:
+        # le = 2:  G, pnt[, act]
+        # le = 3:  G, Omega, pnt[, act]
+        # le = 4:  G, pnt, gens, acts[, act]
+        # le = 5:  G, Omega, pnt, gens, acts[, act]
+        if IsEvenInt( le ) then
+          pnt:= Immutable( arg[2] );
+        else
+          pnt:= Immutable( arg[3] );
+          # deal with Omega
+          D:= arg[2];
+          if not ( famrel( FamilyObj( D ), FamilyObj( pnt ) ) or
+                   ( IsList( pnt ) and IsEmpty( pnt ) ) ) then
+            Error( "wrong relation between <D> and <pnt>" );
+          elif IsDomain( D ) then
+            if IsFinite( D ) then
+              D:= AsSSortedList( D );
+            else
+              D:= Enumerator( D );
+            fi;
           fi;
-          if     Length( arg ) > 2
-            and (famrel( FamilyObj( arg[ 2 ] ), FamilyObj( arg[ 3 ] ) ) or
-              # blocks with empty seed
-              (IsListOrCollection(arg[2]) and IsListOrCollection(arg[3])
-                and Length(arg[3])=0) )
-            # for blocks on the groups elements
-            and not (IsOperation(usetype) and le=4)
-            then
-              D := arg[ 2 ];
-              AddSet(used,2);
-              if IsDomain( D )  then
-           if IsFinite( D ) then D:= AsSSortedList( D ); else D:= Enumerator( D ); fi;
-              fi;
-              p := 3;
-          else
-              p := 2;
-          fi;
-          pnt := Immutable(arg[ p ]);
-          AddSet(used,p);
-          if Length( arg ) > p + 1  then
-              gens := arg[ p + 1 ];
-              acts := arg[ p + 2 ];
-              AddSet(used,p+1);
-              AddSet(used,p+2);
-          fi;
+        fi;
+        if le > 3 then
+          # deal with acts, gens
+          gens:= arg[ le - 1 ];
+          acts:= arg[ le ];
+        fi;
       else
-        Error( "usage: ", name, "(<xset>,<pnt>)\n",
-              "or ", name, "(<G>[,<Omega>],<pnt>[,<gens>,<acts>][,<act>])" );
+        Error( usage );
       fi;
 
       if not IsBound( gens )  then
@@ -880,10 +880,6 @@ local str, orbish, func,isnotest;
           Setter( usetype )( G, result );
       fi;
 
-      if used<>[1..Length(arg)] then
-        Info(InfoWarning,1,name,": Arguments #",
-          Difference([1..Length(arg)],used)," were ignored");
-      fi;
       return result;
   end;
   BIND_GLOBAL( name, func );
