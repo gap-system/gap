@@ -353,7 +353,8 @@ DeclareGlobalFunction( "EH" );
 ##  <Ref Func="ER"/> is installed as method for the operation
 ##  <Ref Oper="Sqrt"/>, for rational argument.
 ##  <P/>
-##  From a theorem of Gauss we know that
+##  From a theorem of Gauss
+##  (see <Cite Key="Lan70" Where="QS4 in Ch. IV, Par. 3"/>) we know that
 ##  <M>b_{<A>N</A>} =</M>
 ##  <Table Align="lcl">
 ##  <Row>
