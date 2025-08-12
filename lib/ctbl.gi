@@ -4313,7 +4313,7 @@ InstallMethod( BrauerTableOp,
     "for ordinary character table, and positive integer",
     [ IsOrdinaryTable, IsPosInt ],
     function( tbl, p )
-    local result, modtbls, id, fusions, pos, source, ppart, n, bl, inv,
+    local result, modtbls, id, fusions, pos, source, N, ppart, n, bl, inv,
           choice, fusion, rest, b, brest, brestset, l;
 
     result:= fail;
@@ -4354,6 +4354,17 @@ InstallMethod( BrauerTableOp,
         result:= CharacterTableIsoclinic( modtbls, tbl );
       fi;
     else
+      N:= ClassPositionsOfPCore( tbl, p );
+      if Length( N ) <> 1 then
+        modtbls:= BrauerTable( tbl / N, p );
+        if modtbls <> fail then
+          result:= CharacterTableRegular( tbl, p );
+          SetIrr( result,
+            RestrictedClassFunctions( Irr( modtbls ), result ) );
+        fi;
+      fi;
+    fi;
+    if result = fail then
       ppart:= 1;
       n:= Size( tbl );
       while n mod p = 0 do

@@ -340,6 +340,13 @@ true
 gap> IsCharacterTable( t mod 5 );
 true
 
+# ... where all Brauer characters lift to characteristic zero,
+#     and the p-core is nontrivial
+gap> g:= DirectProduct( SymmetricGroup(5), SymmetricGroup( 3 ) );;
+gap> t:= CharacterTable( g );;
+gap> IsCharacterTable( t mod 3 );
+true
+
 # ... where the Brauer tables of the factors of a product can be computed
 gap> g:= AlternatingGroup( 5 );;
 gap> t:= CharacterTable( g );;
