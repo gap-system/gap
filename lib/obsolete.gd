@@ -76,9 +76,9 @@
 ##  for example in order to make sure that one's own &GAP; code does not rely
 ##  on the obsolete variables.
 ##  For that, one can use the <C>-O</C> command line option
-##  (see <Ref Label="Command Line Options"/>) or set the component
+##  (see <Ref Label="Command Line Options"/>) or set the user preference
 ##  <C>ReadObsolete</C> in the file <F>gap.ini</F> to <K>false</K>
-##  (see <Ref Sect="sect:gap.ini"/>). Note that <C>-O</C> command
+##  (see <Ref Sect="sect:gap.ini"/>). Note that the <C>-O</C> command
 ##  line option overrides <C>ReadObsolete</C>.
 ##  <P/>
 ##  (Note that the condition whether the library files with the obsolete

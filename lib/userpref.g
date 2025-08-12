@@ -620,8 +620,6 @@ BindGlobal( "StringUserPreferences", function( arg )
     # Run over the preferences, first the ones that belong to GAP,
     # then the ones that belong to packages
     pkglist := Concatenation(["gap"], Difference(RecNames( pref ), ["gap"] ));
-## HACKUSERPREF  temporary until all packages are adjusted
-    pkglist := Filtered(pkglist, a-> not a in ["Pager","ReadObsolete"]);
     for pkgname in pkglist do
       Append( str, ListWithIdenticalEntries( 77, '#' ) );
       Append( str, "\n\n" );
@@ -662,9 +660,6 @@ BindGlobal( "ShowUserPreferences", function(arg)
       pkglist := Concatenation(  [ "gap" ],
                        Difference( RecNames( pref ), [ "gap" ] ) );
     fi;
-
-## HACKUSERPREF  temporary until all packages are adjusted
-    pkglist := Filtered(pkglist, a-> not a in ["Pager","ReadObsolete"]);
 
     str:= "";
     for pkgname in pkglist do

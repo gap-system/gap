@@ -96,8 +96,6 @@ leave the <C>Pager</C> and <C>PagerOptions</C> preferences empty."
     fi;
   end,
   ) );
-## HACKUSERPREF  temporary until all packages are adjusted
-GAPInfo.UserPreferences.Pager := UserPreference("Pager");
 
 #############################################################################
 ##
