@@ -268,6 +268,22 @@ DeclareSynonym( "MutableCopyMat", MutableCopyMatrix );
 
 #############################################################################
 ##
+#F  SCRSiftOld( <S>, <g> )
+##
+##  Moved to obsoletes in August 2025.
+##
+##  The function was never documented.
+##  It was a library code version of 'SCRSift', which is a kernel function
+##  (see https://github.com/gap-system/gap/pull/525).
+##  The functions 'SCRSiftOld' and 'SiftedPermutation' do essentially the
+##  same, in particular they return the same results, thus 'SCRSiftOld' is
+##  obsolete.
+##
+DeclareObsoleteSynonym( "SCRSiftOld", "SiftedPermutation" );
+
+
+#############################################################################
+##
 ##  Not used in any redistributed package
 DeclareObsoleteSynonym( "ZeroSM", "ZeroSameMutability" );
 DeclareObsoleteSynonym( "AdditiveInverseSM", "AdditiveInverseSameMutability" );
