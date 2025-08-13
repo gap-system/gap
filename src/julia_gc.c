@@ -43,16 +43,6 @@
 #include <julia_gcext.h>
 #include <julia_threads.h>    // for jl_get_ptls_states
 
-#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR == 7
-// workaround issue with Julia 1.7 headers which "forgot" to export this
-// function
-JL_DLLEXPORT void * jl_get_ptls_states(void);
-#endif
-
-#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR >= 10
-#define JULIA_MULTIPLE_GC_THREADS_SUPPORTED
-#endif
-
 
 /****************************************************************************
 **
@@ -195,9 +185,7 @@ static TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
 TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
 
 static TaskInfoTree * TaskStacks;
-#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
 static pthread_mutex_t TaskStacksMutex;
-#endif
 
 //
 // global bags
@@ -484,10 +472,8 @@ static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
 static void
 ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
 {
-#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
     if (jl_n_gcthreads > 1)
         pthread_mutex_lock(&TaskStacksMutex);
-#endif
     TaskInfo   tmp = { task, NULL };
     TaskInfo * taskinfo = TaskInfoTreeFind(TaskStacks, tmp);
     PtrArray * stack;
@@ -501,10 +487,8 @@ ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
         stack = tmp.stack;
         TaskInfoTreeInsert(TaskStacks, tmp);
     }
-#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
     if (jl_n_gcthreads > 1)
         pthread_mutex_unlock(&TaskStacksMutex);
-#endif
     if (rescan) {
         SafeScanTaskStack(stack, start, end);
         // Remove duplicates
@@ -725,7 +709,7 @@ static void JFinalizer(jl_value_t * obj)
         TabFreeFuncBags[tnum]((Bag)&contents);
 }
 
-// helper called directly by GAP.jl (if HAVE_JL_REINIT_FOREIGN_TYPE is on)
+// helper called directly by GAP.jl
 jl_datatype_t * GAP_DeclareGapObj(jl_sym_t *      name,
                                   jl_module_t *   module,
                                   jl_datatype_t * parent)
@@ -734,7 +718,7 @@ jl_datatype_t * GAP_DeclareGapObj(jl_sym_t *      name,
                                0);
 }
 
-// helper called directly by GAP.jl (if HAVE_JL_REINIT_FOREIGN_TYPE is on)
+// helper called directly by GAP.jl
 jl_datatype_t * GAP_DeclareBag(jl_sym_t *      name,
                                jl_module_t *   module,
                                jl_datatype_t * parent,
@@ -744,7 +728,6 @@ jl_datatype_t * GAP_DeclareBag(jl_sym_t *      name,
                                1, large > 0);
 }
 
-#ifdef HAVE_JL_REINIT_FOREIGN_TYPE
 // internal wrapper for jl_boundp to deal with API change in Julia 1.12
 static int gap_jl_boundp(jl_module_t *m, jl_sym_t *var)
 {
@@ -754,7 +737,6 @@ static int gap_jl_boundp(jl_module_t *m, jl_sym_t *var)
     return jl_boundp(m, var);
 #endif
 }
-#endif
 
 // Initialize the integration with Julia's garbage collector; in particular,
 // create Julia types for use in our allocations. The types will be stored
@@ -779,10 +761,8 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     jl_init();
 #endif
 
-#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
     if (jl_n_gcthreads > 1)
         pthread_mutex_init(&TaskStacksMutex, NULL);
-#endif
     TaskStacks = TaskInfoTreeMake();
 
     // These callbacks potentially require access to the Julia
@@ -801,9 +781,6 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
         parent = jl_any_type;
     }
 
-// Julia defines HAVE_JL_REINIT_FOREIGN_TYPE if `jl_reinit_foreign_type`
-// is available.
-#ifdef HAVE_JL_REINIT_FOREIGN_TYPE
     if (gap_jl_boundp(module, jl_symbol("GapObj"))) {
         DatatypeGapObj =
             (jl_datatype_t *)jl_get_global(module, jl_symbol("GapObj"));
@@ -819,7 +796,6 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
 
         return;
     }
-#endif
 
     // create and store data type for master pointers
     name = jl_symbol("GapObj");
