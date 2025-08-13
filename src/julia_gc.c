@@ -43,10 +43,6 @@
 #include <julia_gcext.h>
 #include <julia_threads.h>    // for jl_get_ptls_states
 
-#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR >= 10
-#define JULIA_MULTIPLE_GC_THREADS_SUPPORTED
-#endif
-
 
 /****************************************************************************
 **
@@ -189,9 +185,7 @@ static TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
 TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
 
 static TaskInfoTree * TaskStacks;
-#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
 static pthread_mutex_t TaskStacksMutex;
-#endif
 
 //
 // global bags
@@ -478,10 +472,8 @@ static void MarkFromList(jl_ptls_t ptls, PtrArray * arr)
 static void
 ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
 {
-#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
     if (jl_n_gcthreads > 1)
         pthread_mutex_lock(&TaskStacksMutex);
-#endif
     TaskInfo   tmp = { task, NULL };
     TaskInfo * taskinfo = TaskInfoTreeFind(TaskStacks, tmp);
     PtrArray * stack;
@@ -495,10 +487,8 @@ ScanTaskStack(int rescan, jl_task_t * task, void * start, void * end)
         stack = tmp.stack;
         TaskInfoTreeInsert(TaskStacks, tmp);
     }
-#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
     if (jl_n_gcthreads > 1)
         pthread_mutex_unlock(&TaskStacksMutex);
-#endif
     if (rescan) {
         SafeScanTaskStack(stack, start, end);
         // Remove duplicates
@@ -771,10 +761,8 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     jl_init();
 #endif
 
-#ifdef JULIA_MULTIPLE_GC_THREADS_SUPPORTED
     if (jl_n_gcthreads > 1)
         pthread_mutex_init(&TaskStacksMutex, NULL);
-#endif
     TaskStacks = TaskInfoTreeMake();
 
     // These callbacks potentially require access to the Julia
