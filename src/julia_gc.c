@@ -43,12 +43,6 @@
 #include <julia_gcext.h>
 #include <julia_threads.h>    // for jl_get_ptls_states
 
-#if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR == 7
-// workaround issue with Julia 1.7 headers which "forgot" to export this
-// function
-JL_DLLEXPORT void * jl_get_ptls_states(void);
-#endif
-
 #if JULIA_VERSION_MAJOR == 1 && JULIA_VERSION_MINOR >= 10
 #define JULIA_MULTIPLE_GC_THREADS_SUPPORTED
 #endif
