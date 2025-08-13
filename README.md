@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/gap-system/gap/workflows/CI/badge.svg?branch=master)](https://github.com/gap-system/gap/actions?query=workflow%3ACI+branch%3Amaster)
+[![Build Status](https://github.com/gap-system/gap/actions/workflows/CI.yml/badge.svg)](https://github.com/gap-system/gap/actions/workflows/CI.yml)
 [![Code Coverage](https://codecov.io/gh/gap-system/gap/branch/master/graphs/badge.svg)](https://codecov.io/gh/gap-system/gap/branch/master)
 [![ref](https://img.shields.io/badge/docs-ref-blue)](https://gap-system.github.io/gap/doc/ref/chap0_mj.html)
 [![dev](https://img.shields.io/badge/docs-dev-blue)](https://gap-system.github.io/gap/doc/dev/chap0_mj.html)
