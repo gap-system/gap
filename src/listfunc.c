@@ -64,7 +64,7 @@ void AddPlist3(Obj list, Obj obj, Int pos)
 {
     UInt len;
 
-    if (!IS_PLIST_MUTABLE(list)) {
+    if (!IS_MUTABLE_OBJ(list)) {
         ErrorMayQuit("List Assignment: <list> must be a mutable list", 0, 0);
     }
     // in order to be optimistic when building list call assignment
@@ -162,7 +162,7 @@ static Obj RemPlist(Obj list)
     Int                 pos;
     Obj removed;
 
-    if ( ! IS_PLIST_MUTABLE(list) ) {
+    if ( ! IS_MUTABLE_OBJ(list) ) {
         ErrorMayQuit("Remove: <list> must be a mutable list", 0, 0);
     }
     pos = LEN_PLIST( list );

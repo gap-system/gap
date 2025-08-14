@@ -821,10 +821,10 @@ InstallGlobalFunction( RepresentationsOfMatrix,
             Print(" compressed over GF(",Q_VEC8BIT(m),") ");
         elif IsPlistRep(m) then
             Print(" plain list, tnum: ",TNUM_OBJ(m)," ");
-            if TNUM_OBJ(m) in [T_PLIST_FFE,T_PLIST_FFE+1] then
+            if TNUM_OBJ(m) in T_PLIST_FFE then
                 Print("known to be vecffe over GF(",CHAR_FFE_DEFAULT(m[1]),"^",
                       DEGREE_FFE_DEFAULT(m[1]),") ");
-            elif TNUM_OBJ(m) in [T_PLIST_CYC..T_PLIST_CYC_SSORT+1] then
+            elif TNUM_OBJ(m) in [T_PLIST_CYC..T_PLIST_CYC_SSORT] then
                 Print("known to be vector of cyclotomics ");
             fi;
         else

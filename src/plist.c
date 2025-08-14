@@ -110,8 +110,7 @@ void             GrowPlist (
 **  Here begins a new attempt by Steve to describe how it all works:
 **
 **  We begin with the TNUMs attached to the objects. They are defined in
-**  objects.h and consist of the following, each of which can be qualified by
-**  adding the constant IMMUTABLE.
+**  objects.h and consist of the following.
 **
 **   T_PLIST                    nothing is known
 **   T_PLIST_NDENSE             known to have a hole
@@ -205,7 +204,7 @@ static Obj TYPE_LIST_EMPTY_MUTABLE;
 static Obj TYPE_LIST_EMPTY_IMMUTABLE;
 static Obj TYPE_LIST_HOM;
 
-static Obj TypePlistWithKTNum( Obj list, UInt *ktnum );
+static Obj TypePlistWithKTNum(Obj list, UInt * ktnum);
 
 static Int KTNumPlist(Obj list, Obj * famfirst)
 {
@@ -245,7 +244,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
 
     // special case for empty list
     if ( lenList == 0 ) {
-        res = IS_MUTABLE_OBJ(list) ? T_PLIST_EMPTY : T_PLIST_EMPTY+IMMUTABLE;
+        res = T_PLIST_EMPTY;
         RetypeBagIfWritable(list, res);
         if (famfirst != (Obj *) 0)
           *famfirst = (Obj) 0;
@@ -266,7 +265,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
 #endif
     else if (TEST_OBJ_FLAG(elm, OBJ_FLAG_TESTING)) {
         isHom   = 0;
-        areMut  = IS_PLIST_MUTABLE(elm);
+        areMut  = IS_MUTABLE_OBJ(elm);
         isTable = 0;
     }
     else {
@@ -331,7 +330,7 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
 #endif
         else if (TEST_OBJ_FLAG(elm, OBJ_FLAG_TESTING)) {
             isHom   = 0;
-            areMut  = (areMut || IS_PLIST_MUTABLE(elm));
+            areMut  = (areMut || IS_MUTABLE_OBJ(elm));
             isTable = 0;
             isRect = 0;
         }
@@ -432,7 +431,6 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
         SET_FILT_LIST( list, areMut ? FN_IS_DENSE : FN_IS_RECT );
         res = T_PLIST_TAB_RECT;
     }
-    res = res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE );
     return res;
 }
 
@@ -560,13 +558,12 @@ static Int KTNumHomPlist(Obj list)
       res = T_PLIST_HOM;
 
  finish:
-    res = res + ( IS_MUTABLE_OBJ(list) ? 0 : IMMUTABLE );
     return res;
 }
 
 static Obj TypePlist(Obj list)
 {
-  return TypePlistWithKTNum( list, (UInt *) 0);
+    return TypePlistWithKTNum(list, 0);
 }
 
 static Obj TypePlistNDense(Obj list)
@@ -613,8 +610,10 @@ static Obj TypePlistEmpty(Obj list)
 
 static Obj TypePlistHomHelper(Obj family, UInt tnum, UInt knr, Obj list)
 {
-    GAP_ASSERT(knr <= tnum);
-    knr = tnum - knr + 1;
+    // make sure tnum reflects mutability
+    knr = 2*(tnum - knr) + 1;
+    if (!IS_MUTABLE_OBJ(list))
+        knr++;
 
     // get the list types of that family
     Obj types = TYPES_LIST_FAM(family);
@@ -669,24 +668,18 @@ static Obj TypePlistWithKTNum (
       *ktnum = tnum;
 
     // handle special cases
-    switch (tnum)
-      {
-      case T_PLIST_NDENSE:
-      case T_PLIST_NDENSE+IMMUTABLE:
+    switch (tnum) {
+    case T_PLIST_NDENSE:
         return TypePlistNDense(list);
-      case T_PLIST_DENSE_NHOM:
-      case T_PLIST_DENSE_NHOM+IMMUTABLE:
+    case T_PLIST_DENSE_NHOM:
         return TypePlistDenseNHom(list);
-      case T_PLIST_DENSE_NHOM_SSORT:
-      case T_PLIST_DENSE_NHOM_SSORT+IMMUTABLE:
+    case T_PLIST_DENSE_NHOM_SSORT:
         return TypePlistDenseNHomSSort(list);
-      case T_PLIST_DENSE_NHOM_NSORT:
-      case T_PLIST_DENSE_NHOM_NSORT+IMMUTABLE:
+    case T_PLIST_DENSE_NHOM_NSORT:
         return TypePlistDenseNHomNSort(list);
-      case T_PLIST_EMPTY:
-      case T_PLIST_EMPTY+IMMUTABLE:
+    case T_PLIST_EMPTY:
         return TypePlistEmpty(list);
-      default: ; // fall through into the rest of the function
+    default: ;  // fall through into the rest of the function
     }
 
     // handle homogeneous list
@@ -759,20 +752,14 @@ static Obj TypePlistFfe(Obj list)
 **  'ShallowCopyPlist'  only copies up to  the  logical length, the result is
 **  always a mutable list.
 */
-Obj             ShallowCopyPlist (
-    Obj                 list )
+Obj ShallowCopyPlist(Obj list)
 {
     Obj                 new;
     UInt                len;
 
     // make the new object and copy the contents
     len = LEN_PLIST(list);
-    if ( ! IS_PLIST_MUTABLE(list) ) {
-        new = NEW_PLIST( TNUM_OBJ(list) - IMMUTABLE, len );
-    }
-    else {
-        new = NEW_PLIST( TNUM_OBJ(list), len );
-    }
+    new = NEW_PLIST(TNUM_OBJ(list), len);
     memcpy(ADDR_OBJ(new), CONST_ADDR_OBJ(list), (len + 1) * sizeof(Obj));
     // 'CHANGED_BAG(new);' not needed, <new> is newest object
     return new;
@@ -1297,6 +1284,7 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
     Int                 pos;            // <position> as integer
     Int                 inc;            // increment in a range
     Int                 i;              // loop variable
+    Int                 tnum;           // TNUM of <list>
 
     // select no element
     if ( LEN_LIST(poss) == 0 ) {
@@ -1312,22 +1300,23 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
         // get the length of <positions>
         lenPoss = LEN_LIST( poss );
 
+        // get the (mutable) tnum of list
+        tnum = TNUM_OBJ(list);
+
         // make the result list
         // try to assert as many properties as possible
         if (HAS_FILT_LIST(list, FN_IS_SSORT) && HAS_FILT_LIST(poss, FN_IS_SSORT))
           {
-            elms = NEW_PLIST( MUTABLE_TNUM(TNUM_OBJ(list)), lenPoss);
+            elms = NEW_PLIST(tnum, lenPoss);
             RESET_FILT_LIST( elms, FN_IS_NHOMOG); // can't deduce this one
           }
         else if (HAS_FILT_LIST(list, FN_IS_RECT))
           elms = NEW_PLIST( T_PLIST_TAB_RECT, lenPoss );
         else if (HAS_FILT_LIST(list, FN_IS_TABLE))
           elms = NEW_PLIST( T_PLIST_TAB, lenPoss );
-        else if (T_PLIST_CYC <= TNUM_OBJ(list) && TNUM_OBJ(list) <=
-                                                  T_PLIST_CYC_SSORT+IMMUTABLE)
+        else if (T_PLIST_CYC <= tnum && tnum <= T_PLIST_CYC_SSORT)
           elms = NEW_PLIST( T_PLIST_CYC, lenPoss );
-        else if (T_PLIST_FFE <= TNUM_OBJ(list) && TNUM_OBJ(list) <=
-                                                  T_PLIST_FFE+IMMUTABLE)
+        else if (T_PLIST_FFE <= tnum && tnum <= T_PLIST_FFE)
           elms = NEW_PLIST( T_PLIST_FFE, lenPoss );
         else if (HAS_FILT_LIST(list, FN_IS_HOMOG))
           elms = NEW_PLIST( T_PLIST_HOM, lenPoss );
@@ -1391,19 +1380,20 @@ static Obj ElmsPlistDense(Obj list, Obj poss)
                 (Int)pos + (lenPoss - 1) * inc, 0);
         }
 
+        // get the (mutable) tnum of list
+        tnum = TNUM_OBJ(list);
+
         // make the result list
         // try to assert as many properties as possible
         if      ( HAS_FILT_LIST(list, FN_IS_SSORT) && inc > 0 )
-          elms = NEW_PLIST( MUTABLE_TNUM(TNUM_OBJ(list)), lenPoss );
+          elms = NEW_PLIST( tnum, lenPoss );
         else if (HAS_FILT_LIST(list, FN_IS_RECT))
           elms = NEW_PLIST( T_PLIST_TAB_RECT, lenPoss );
         else if (HAS_FILT_LIST(list, FN_IS_TABLE))
           elms = NEW_PLIST( T_PLIST_TAB, lenPoss );
-        else if (T_PLIST_CYC <= TNUM_OBJ(list) && TNUM_OBJ(list) <=
-                                                  T_PLIST_CYC_SSORT+IMMUTABLE)
+        else if (T_PLIST_CYC <= tnum && tnum <= T_PLIST_CYC_SSORT)
           elms = NEW_PLIST( T_PLIST_CYC, lenPoss );
-        else if (T_PLIST_FFE <= TNUM_OBJ(list) && TNUM_OBJ(list) <=
-                                                  T_PLIST_FFE+IMMUTABLE)
+        else if (T_PLIST_FFE <= tnum && tnum <= T_PLIST_FFE)
           elms = NEW_PLIST( T_PLIST_FFE, lenPoss );
         else if (HAS_FILT_LIST(list, FN_IS_HOMOG))
           elms = NEW_PLIST( T_PLIST_HOM, lenPoss );
@@ -2383,7 +2373,7 @@ static Obj FuncASS_PLIST_DEFAULT(Obj self, Obj plist, Obj pos, Obj val)
     Int                 p;
 
     p = GetPositiveSmallInt("List Assignment", pos);
-    if (!IS_PLIST(plist) || !IS_PLIST_MUTABLE(plist)) {
+    if (!IS_PLIST(plist) || !IS_MUTABLE_OBJ(plist)) {
         RequireArgumentEx(0, plist, "<list>", "must be a mutable plain list");
     }
 
@@ -2493,64 +2483,45 @@ static Obj FuncIsRectangularTablePlist(Obj self, Obj plist)
 */
 static StructBagNames BagNames[] = {
   { T_PLIST,                                "plain list" },
-  { T_PLIST            +IMMUTABLE,          "immutable plain list" },
 
   { T_PLIST_NDENSE,                         "non-dense plain list" },
-  { T_PLIST_NDENSE     +IMMUTABLE,          "immutable non-dense plain list" },
 
   { T_PLIST_DENSE,                          "dense plain list" },
-  { T_PLIST_DENSE      +IMMUTABLE,          "immutable dense plain list" },
 
   { T_PLIST_DENSE_NHOM,                     "dense non-homogeneous plain list" },
-  { T_PLIST_DENSE_NHOM +IMMUTABLE,          "immutable dense non-homogeneous plain list" },
 
   { T_PLIST_DENSE_NHOM_SSORT,               "dense non-homogeneous strictly-sorted plain list" },
-  { T_PLIST_DENSE_NHOM_SSORT +IMMUTABLE,    "immutable dense non-homogeneous strictly-sorted plain list" },
 
   { T_PLIST_DENSE_NHOM_NSORT,               "dense non-homogeneous non-strictly-sorted plain list" },
-  { T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE,    "immutable dense non-homogeneous non-strictly-sorted plain list" },
 
   { T_PLIST_EMPTY,                          "empty plain list" },
-  { T_PLIST_EMPTY      +IMMUTABLE,          "immutable empty plain list" },
 
   { T_PLIST_HOM,                            "homogeneous plain list" },
-  { T_PLIST_HOM        +IMMUTABLE,          "immutable homogeneous plain list" },
 
   { T_PLIST_HOM_NSORT,                      "homogeneous non-strictly-sorted plain list" },
-  { T_PLIST_HOM_NSORT  +IMMUTABLE,          "immutable homogeneous non-strictly-sorted plain list" },
 
   { T_PLIST_HOM_SSORT,                      "homogeneous strictly-sorted plain list" },
-  { T_PLIST_HOM_SSORT +IMMUTABLE,           "immutable homogeneous strictly-sorted plain list" },
 
   { T_PLIST_TAB,                            "plain list (table)" },
-  { T_PLIST_TAB       +IMMUTABLE,           "immutable plain list (table)" },
 
   { T_PLIST_TAB_NSORT,                      "non-strictly-sorted plain list (table)" },
-  { T_PLIST_TAB_NSORT +IMMUTABLE,           "immutable non-strictly-sorted plain list (table)" },
 
   { T_PLIST_TAB_SSORT,                      "strictly-sorted plain list (table)" },
-  { T_PLIST_TAB_SSORT +IMMUTABLE,           "immutable strictly-sorted plain list (table)" },
 
   { T_PLIST_TAB_RECT,                       "plain list (rectangular table)" },
-  { T_PLIST_TAB_RECT       +IMMUTABLE,      "immutable plain list (rectangular table)" },
 
   { T_PLIST_TAB_RECT_NSORT,                 "non-strictly-sorted plain list (rectangular table)" },
-  { T_PLIST_TAB_RECT_NSORT +IMMUTABLE,      "immutable non-strictly-sorted plain list (rectangular table)" },
 
   { T_PLIST_TAB_RECT_SSORT,                 "strictly-sorted plain list (rectangular table)" },
-  { T_PLIST_TAB_RECT_SSORT +IMMUTABLE,      "immutable strictly-sorted plain list (rectangular table)" },
 
   { T_PLIST_CYC,                            "plain list of cyclotomics" },
-  { T_PLIST_CYC       +IMMUTABLE,           "immutable plain list of cyclotomics" },
 
   { T_PLIST_CYC_NSORT,                      "non-strictly-sorted plain list of cyclotomics" },
-  { T_PLIST_CYC_NSORT +IMMUTABLE,           "immutable non-strictly-sorted plain list of cyclotomics" },
 
   { T_PLIST_CYC_SSORT,                      "strictly-sorted plain list of cyclotomics" },
-  { T_PLIST_CYC_SSORT +IMMUTABLE,           "immutable strictly-sorted plain list of cyclotomics" },
 
   { T_PLIST_FFE,                            "plain list of small finite field elements" },
-  { T_PLIST_FFE +IMMUTABLE,                 "immutable plain list of small finite field elements" },
+
 
   { -1,                                     "" }
 };
@@ -3257,23 +3228,19 @@ static Int InitKernel (
     // GASMAN marking functions and GASMAN names
     InitBagNamesFromTable( BagNames );
 
-    for ( t1 = T_PLIST;  t1 < T_PLIST_FFE ;  t1 += 2 ) {
+    for ( t1 = T_PLIST;  t1 < T_PLIST_FFE ;  t1++ ) {
         InitMarkFuncBags( t1                     , MarkAllButFirstSubBags );
-        InitMarkFuncBags( t1 +IMMUTABLE          , MarkAllButFirstSubBags );
     }
 
     InitMarkFuncBags( T_PLIST_FFE                     , MarkNoSubBags );
-    InitMarkFuncBags( T_PLIST_FFE +IMMUTABLE          , MarkNoSubBags );
 
     // If T_PLIST_FFE is not the last PLIST type then some more
     // work needs to be done here
 
 #ifdef GAP_ENABLE_SAVELOAD
-    for ( t1 = T_PLIST;  t1 <= LAST_PLIST_TNUM;  t1 += 2 ) {
+    for ( t1 = T_PLIST;  t1 <= LAST_PLIST_TNUM;  t1++ ) {
         SaveObjFuncs[ t1            ] = SavePlist;
-        SaveObjFuncs[ t1 +IMMUTABLE ] = SavePlist;
         LoadObjFuncs[ t1            ] = LoadPlist;
-        LoadObjFuncs[ t1 +IMMUTABLE ] = LoadPlist;
     }
 #endif
 
@@ -3313,32 +3280,23 @@ static Int InitKernel (
 
     // install the type methods
     TypeObjFuncs[ T_PLIST                       ] = TypePlist;
-    TypeObjFuncs[ T_PLIST            +IMMUTABLE ] = TypePlist;
     TypeObjFuncs[ T_PLIST_NDENSE                ] = TypePlistNDense;
-    TypeObjFuncs[ T_PLIST_NDENSE     +IMMUTABLE ] = TypePlistNDense;
     TypeObjFuncs[ T_PLIST_DENSE                 ] = TypePlistDense;
-    TypeObjFuncs[ T_PLIST_DENSE      +IMMUTABLE ] = TypePlistDense;
     TypeObjFuncs[ T_PLIST_DENSE_NHOM            ] = TypePlistDenseNHom;
-    TypeObjFuncs[ T_PLIST_DENSE_NHOM +IMMUTABLE ] = TypePlistDenseNHom;
     TypeObjFuncs[ T_PLIST_DENSE_NHOM_SSORT            ] = TypePlistDenseNHomSSort;
-    TypeObjFuncs[ T_PLIST_DENSE_NHOM_SSORT +IMMUTABLE ] = TypePlistDenseNHomSSort;
     TypeObjFuncs[ T_PLIST_DENSE_NHOM_NSORT            ] = TypePlistDenseNHomNSort;
-    TypeObjFuncs[ T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE ] = TypePlistDenseNHomNSort;
     TypeObjFuncs[ T_PLIST_EMPTY                 ] = TypePlistEmpty;
-    TypeObjFuncs[ T_PLIST_EMPTY      +IMMUTABLE ] = TypePlistEmpty;
 
-    for ( t1 = T_PLIST_HOM; t1 <= T_PLIST_TAB_RECT_SSORT; t1 += 2 ) {
+    for ( t1 = T_PLIST_HOM; t1 <= T_PLIST_TAB_RECT_SSORT; t1++ ) {
         TypeObjFuncs[ t1            ] = TypePlistHom;
-        TypeObjFuncs[ t1 +IMMUTABLE ] = TypePlistHom;
     }
 
-    for ( t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
+    for ( t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT; t1++ ) {
         TypeObjFuncs[ t1            ] = TypePlistCyc;
-        TypeObjFuncs[ t1 +IMMUTABLE ] = TypePlistCyc;
     }
 
     TypeObjFuncs[ T_PLIST_FFE            ] = TypePlistFfe;
-    TypeObjFuncs[ T_PLIST_FFE +IMMUTABLE ] = TypePlistFfe;
+
 
     // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
@@ -3352,25 +3310,22 @@ static Int InitKernel (
 
 
     // install the shallow copy methods
-    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1++ ) {
         ShallowCopyObjFuncs[ t1            ] = ShallowCopyPlist;
-        ShallowCopyObjFuncs[ t1 +IMMUTABLE ] = ShallowCopyPlist;
     }
 
 #ifdef USE_THREADSAFE_COPYING
     for (t1 = FIRST_PLIST_TNUM; t1 <= LAST_PLIST_TNUM; t1++) {
         SetTraversalMethod(t1, TRAVERSE_BY_FUNCTION, TraversePlist, CopyPlist);
     }
-    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE+IMMUTABLE; t1++) {
+    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_FFE; t1++) {
         SetTraversalMethod(t1, TRAVERSE_NONE, 0, 0);
     }
 #else
     // install the copy list methods
-    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1++ ) {
         CopyObjFuncs [ t1                     ] = CopyPlist;
-        CopyObjFuncs [ t1 +IMMUTABLE          ] = CopyPlist;
         CleanObjFuncs[ t1                     ] = CleanPlist;
-        CleanObjFuncs[ t1 +IMMUTABLE          ] = CleanPlist;
     }
 #endif
 
@@ -3384,69 +3339,56 @@ static Int InitKernel (
 
 
     // install the list length methods
-    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1++ ) {
         LenListFuncs[ t1            ] = LenPlist;
-        LenListFuncs[ t1 +IMMUTABLE ] = LenPlist;
     }
     LenListFuncs[ T_PLIST_EMPTY           ] = LenPlistEmpty;
-    LenListFuncs[ T_PLIST_EMPTY+IMMUTABLE ] = LenPlistEmpty;
 
 
     // install the list element test methods
-    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1++ ) {
         IsbListFuncs  [ t1            ] = IsbPlist;
-        IsbListFuncs  [ t1 +IMMUTABLE ] = IsbPlist;
     }
-    for ( t1 = T_PLIST_DENSE; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST_DENSE; t1 <= LAST_PLIST_TNUM; t1++ ) {
         IsbListFuncs  [ t1            ] = IsbPlistDense;
-        IsbListFuncs  [ t1 +IMMUTABLE ] = IsbPlistDense;
     }
 
 
     // install the list element methods
-    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1++ ) {
         Elm0ListFuncs [ t1            ] = Elm0Plist;
-        Elm0ListFuncs [ t1 +IMMUTABLE ] = Elm0Plist;
     }
-    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1++ ) {
         Elm0vListFuncs[ t1            ] = Elm0vPlist;
-        Elm0vListFuncs[ t1 +IMMUTABLE ] = Elm0vPlist;
     }
-    for ( t1 = T_PLIST; t1 <= T_PLIST_NDENSE; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= T_PLIST_NDENSE; t1++ ) {
         ElmListFuncs  [ t1            ] = ElmPlist;
-        ElmListFuncs  [ t1 +IMMUTABLE ] = ElmPlist;
     }
-    for ( t1 = T_PLIST_DENSE; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST_DENSE; t1 <= LAST_PLIST_TNUM; t1++ ) {
         ElmListFuncs  [ t1            ] = ElmPlistDense;
-        ElmListFuncs  [ t1 +IMMUTABLE ] = ElmPlistDense;
     }
-    for ( t1 = T_PLIST; t1 <= T_PLIST_NDENSE; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= T_PLIST_NDENSE; t1++ ) {
         ElmvListFuncs [ t1            ] = ElmvPlist;
-        ElmvListFuncs [ t1 +IMMUTABLE ] = ElmvPlist;
     }
-    for ( t1 = T_PLIST_DENSE; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST_DENSE; t1 <= LAST_PLIST_TNUM; t1++ ) {
         ElmvListFuncs [ t1            ] = ElmvPlistDense;
-        ElmvListFuncs [ t1 +IMMUTABLE ] = ElmvPlistDense;
     }
-    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1++ ) {
         ElmwListFuncs [ t1            ] = ElmvPlistDense;
-        ElmwListFuncs [ t1 +IMMUTABLE ] = ElmvPlistDense;
     }
 
 
     // install the list elements methods
-    for ( t1 = T_PLIST; t1 <= T_PLIST_NDENSE; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= T_PLIST_NDENSE; t1++ ) {
         ElmsListFuncs   [ t1            ] = ElmsPlist;
-        ElmsListFuncs   [ t1 +IMMUTABLE ] = ElmsPlist;
     }
-    for ( t1 = T_PLIST_DENSE; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST_DENSE; t1 <= LAST_PLIST_TNUM; t1++ ) {
         ElmsListFuncs   [ t1            ] = ElmsPlistDense;
-        ElmsListFuncs   [ t1 +IMMUTABLE ] = ElmsPlistDense;
     }
 
 
     // install the list unbind methods
-    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1++ ) {
         UnbListFuncs    [ t1            ] = UnbPlist;
     }
 
@@ -3461,11 +3403,11 @@ static Int InitKernel (
     AssListFuncs    [ T_PLIST_EMPTY           ] = AssPlistEmpty;
 
 
-    for ( t1 = T_PLIST_HOM; t1 < T_PLIST_CYC; t1 += 2 ) {
+    for ( t1 = T_PLIST_HOM; t1 < T_PLIST_CYC; t1++ ) {
       AssListFuncs[ t1                ] = AssPlistHomog;
     }
 
-    for ( t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
+    for ( t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT; t1++ ) {
       AssListFuncs[ t1                ] = AssPlistCyc;
     }
 
@@ -3473,178 +3415,113 @@ static Int InitKernel (
 
     // install the list assignments methods
     AsssListFuncs   [ T_PLIST            ] = AsssPlist;
-    for ( t1 = T_PLIST_NDENSE; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST_NDENSE; t1 <= LAST_PLIST_TNUM; t1++ ) {
         AsssListFuncs   [ t1             ] = AsssPlistXXX;
     }
 
 
     // install the dense list test methods
     IsDenseListFuncs[ T_PLIST                   ] = IsDensePlist;
-    IsDenseListFuncs[ T_PLIST        +IMMUTABLE ] = IsDensePlist;
     IsDenseListFuncs[ T_PLIST_NDENSE            ] = AlwaysNo;
-    IsDenseListFuncs[ T_PLIST_NDENSE +IMMUTABLE ] = AlwaysNo;
-    for ( t1 = T_PLIST_DENSE; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    for ( t1 = T_PLIST_DENSE; t1 <= LAST_PLIST_TNUM; t1++ ) {
         IsDenseListFuncs[ t1            ] = AlwaysYes;
-        IsDenseListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
     }
 
 
     // install the homogeneous list test methods
-    IsHomogListFuncs[ T_PLIST                       ] = IsHomogPlist;
-    IsHomogListFuncs[ T_PLIST            +IMMUTABLE ] = IsHomogPlist;
-    IsHomogListFuncs[ T_PLIST_NDENSE                ] = AlwaysNo;
-    IsHomogListFuncs[ T_PLIST_NDENSE     +IMMUTABLE ] = AlwaysNo;
-    IsHomogListFuncs[ T_PLIST_DENSE                 ] = IsHomogPlist;
-    IsHomogListFuncs[ T_PLIST_DENSE      +IMMUTABLE ] = IsHomogPlist;
-    IsHomogListFuncs[ T_PLIST_DENSE_NHOM            ] = AlwaysNo;
-    IsHomogListFuncs[ T_PLIST_DENSE_NHOM +IMMUTABLE ] = AlwaysNo;
-    IsHomogListFuncs[ T_PLIST_DENSE_NHOM_SSORT            ] = AlwaysNo;
-    IsHomogListFuncs[ T_PLIST_DENSE_NHOM_SSORT +IMMUTABLE ] = AlwaysNo;
-    IsHomogListFuncs[ T_PLIST_DENSE_NHOM_NSORT            ] = AlwaysNo;
-    IsHomogListFuncs[ T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE ] = AlwaysNo;
-    IsHomogListFuncs[ T_PLIST_EMPTY                 ] = AlwaysYes;
-    IsHomogListFuncs[ T_PLIST_EMPTY      +IMMUTABLE ] = AlwaysYes;
-    for ( t1 = T_PLIST_HOM; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
+    IsHomogListFuncs[ T_PLIST                  ] = IsHomogPlist;
+    IsHomogListFuncs[ T_PLIST_NDENSE           ] = AlwaysNo;
+    IsHomogListFuncs[ T_PLIST_DENSE            ] = IsHomogPlist;
+    IsHomogListFuncs[ T_PLIST_DENSE_NHOM       ] = AlwaysNo;
+    IsHomogListFuncs[ T_PLIST_DENSE_NHOM_SSORT ] = AlwaysNo;
+    IsHomogListFuncs[ T_PLIST_DENSE_NHOM_NSORT ] = AlwaysNo;
+    IsHomogListFuncs[ T_PLIST_EMPTY            ] = AlwaysYes;
+    for ( t1 = T_PLIST_HOM; t1 <= LAST_PLIST_TNUM; t1++ ) {
         IsHomogListFuncs[ t1            ] = AlwaysYes;
-        IsHomogListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
     }
 
 
     // install the equal length list test methods
-    IsTableListFuncs[ T_PLIST                       ] = IsTablePlist;
-    IsTableListFuncs[ T_PLIST            +IMMUTABLE ] = IsTablePlist;
-    IsTableListFuncs[ T_PLIST_NDENSE                ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_NDENSE     +IMMUTABLE ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_DENSE                 ] = IsTablePlist;
-    IsTableListFuncs[ T_PLIST_DENSE      +IMMUTABLE ] = IsTablePlist;
-    IsTableListFuncs[ T_PLIST_DENSE_NHOM            ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_DENSE_NHOM +IMMUTABLE ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_DENSE_NHOM_SSORT            ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_DENSE_NHOM_SSORT +IMMUTABLE ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_DENSE_NHOM_NSORT            ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_DENSE_NHOM_NSORT +IMMUTABLE ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_EMPTY                 ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_EMPTY      +IMMUTABLE ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_HOM                   ] = IsTablePlist;
-    IsTableListFuncs[ T_PLIST_HOM        +IMMUTABLE ] = IsTablePlist;
-    IsTableListFuncs[ T_PLIST_HOM_NSORT             ] = IsTablePlist;
-    IsTableListFuncs[ T_PLIST_HOM_NSORT  +IMMUTABLE ] = IsTablePlist;
-    IsTableListFuncs[ T_PLIST_HOM_SSORT             ] = IsTablePlist;
-    IsTableListFuncs[ T_PLIST_HOM_SSORT  +IMMUTABLE ] = IsTablePlist;
-    IsTableListFuncs[ T_PLIST_TAB                   ] = AlwaysYes;
-    IsTableListFuncs[ T_PLIST_TAB        +IMMUTABLE ] = AlwaysYes;
-    IsTableListFuncs[ T_PLIST_TAB_NSORT             ] = AlwaysYes;
-    IsTableListFuncs[ T_PLIST_TAB_NSORT  +IMMUTABLE ] = AlwaysYes;
-    IsTableListFuncs[ T_PLIST_TAB_SSORT             ] = AlwaysYes;
-    IsTableListFuncs[ T_PLIST_TAB_SSORT  +IMMUTABLE ] = AlwaysYes;
-    IsTableListFuncs[ T_PLIST_TAB_RECT                   ] = AlwaysYes;
-    IsTableListFuncs[ T_PLIST_TAB_RECT        +IMMUTABLE ] = AlwaysYes;
-    IsTableListFuncs[ T_PLIST_TAB_RECT_NSORT             ] = AlwaysYes;
-    IsTableListFuncs[ T_PLIST_TAB_RECT_NSORT  +IMMUTABLE ] = AlwaysYes;
-    IsTableListFuncs[ T_PLIST_TAB_RECT_SSORT             ] = AlwaysYes;
-    IsTableListFuncs[ T_PLIST_TAB_RECT_SSORT  +IMMUTABLE ] = AlwaysYes;
-    IsTableListFuncs[ T_PLIST_CYC                   ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_CYC        +IMMUTABLE ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_CYC_NSORT             ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_CYC_NSORT  +IMMUTABLE ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_CYC_SSORT             ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_CYC_SSORT  +IMMUTABLE ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_FFE                   ] = AlwaysNo;
-    IsTableListFuncs[ T_PLIST_FFE        +IMMUTABLE ] = AlwaysNo;
+    IsTableListFuncs[ T_PLIST                  ] = IsTablePlist;
+    IsTableListFuncs[ T_PLIST_NDENSE           ] = AlwaysNo;
+    IsTableListFuncs[ T_PLIST_DENSE            ] = IsTablePlist;
+    IsTableListFuncs[ T_PLIST_DENSE_NHOM       ] = AlwaysNo;
+    IsTableListFuncs[ T_PLIST_DENSE_NHOM_SSORT ] = AlwaysNo;
+    IsTableListFuncs[ T_PLIST_DENSE_NHOM_NSORT ] = AlwaysNo;
+    IsTableListFuncs[ T_PLIST_EMPTY            ] = AlwaysNo;
+    IsTableListFuncs[ T_PLIST_HOM              ] = IsTablePlist;
+    IsTableListFuncs[ T_PLIST_HOM_NSORT        ] = IsTablePlist;
+    IsTableListFuncs[ T_PLIST_HOM_SSORT        ] = IsTablePlist;
+    IsTableListFuncs[ T_PLIST_TAB              ] = AlwaysYes;
+    IsTableListFuncs[ T_PLIST_TAB_NSORT        ] = AlwaysYes;
+    IsTableListFuncs[ T_PLIST_TAB_SSORT        ] = AlwaysYes;
+    IsTableListFuncs[ T_PLIST_TAB_RECT         ] = AlwaysYes;
+    IsTableListFuncs[ T_PLIST_TAB_RECT_NSORT   ] = AlwaysYes;
+    IsTableListFuncs[ T_PLIST_TAB_RECT_SSORT   ] = AlwaysYes;
+    IsTableListFuncs[ T_PLIST_CYC              ] = AlwaysNo;
+    IsTableListFuncs[ T_PLIST_CYC_NSORT        ] = AlwaysNo;
+    IsTableListFuncs[ T_PLIST_CYC_SSORT        ] = AlwaysNo;
+    IsTableListFuncs[ T_PLIST_FFE              ] = AlwaysNo;
 
 
     // install the strictly sorted list test methods
-    IsSSortListFuncs[ T_PLIST                      ] = IsSSortPlist;
-    IsSSortListFuncs[ T_PLIST           +IMMUTABLE ] = IsSSortPlist;
-    IsSSortListFuncs[ T_PLIST_NDENSE               ] = AlwaysNo;
-    IsSSortListFuncs[ T_PLIST_NDENSE    +IMMUTABLE ] = AlwaysNo;
-    IsSSortListFuncs[ T_PLIST_DENSE                ] = IsSSortPlistDense;
-    IsSSortListFuncs[ T_PLIST_DENSE     +IMMUTABLE ] = IsSSortPlistDense;
-    IsSSortListFuncs[ T_PLIST_DENSE_NHOM           ] = IsSSortPlistDense;
-    IsSSortListFuncs[ T_PLIST_DENSE_NHOM+IMMUTABLE ] = IsSSortPlistDense;
-    IsSSortListFuncs[ T_PLIST_DENSE_NHOM_SSORT           ] = AlwaysYes;
-    IsSSortListFuncs[ T_PLIST_DENSE_NHOM_SSORT+IMMUTABLE ] = AlwaysYes;
-    IsSSortListFuncs[ T_PLIST_DENSE_NHOM_NSORT           ] = AlwaysNo;
-    IsSSortListFuncs[ T_PLIST_DENSE_NHOM_NSORT+IMMUTABLE ] = AlwaysNo;
-    IsSSortListFuncs[ T_PLIST_EMPTY                ] = AlwaysYes;
-    IsSSortListFuncs[ T_PLIST_EMPTY     +IMMUTABLE ] = AlwaysYes;
-    IsSSortListFuncs[ T_PLIST_HOM                  ] = IsSSortPlistHom;
-    IsSSortListFuncs[ T_PLIST_HOM       +IMMUTABLE ] = IsSSortPlistHom;
-    IsSSortListFuncs[ T_PLIST_HOM_NSORT            ] = AlwaysNo;
-    IsSSortListFuncs[ T_PLIST_HOM_NSORT +IMMUTABLE ] = AlwaysNo;
-    IsSSortListFuncs[ T_PLIST_HOM_SSORT            ] = AlwaysYes;
-    IsSSortListFuncs[ T_PLIST_HOM_SSORT +IMMUTABLE ] = AlwaysYes;
-    IsSSortListFuncs[ T_PLIST_TAB                  ] = IsSSortPlistHom;
-    IsSSortListFuncs[ T_PLIST_TAB       +IMMUTABLE ] = IsSSortPlistHom;
-    IsSSortListFuncs[ T_PLIST_TAB_NSORT            ] = AlwaysNo;
-    IsSSortListFuncs[ T_PLIST_TAB_NSORT +IMMUTABLE ] = AlwaysNo;
-    IsSSortListFuncs[ T_PLIST_TAB_SSORT            ] = AlwaysYes;
-    IsSSortListFuncs[ T_PLIST_TAB_SSORT +IMMUTABLE ] = AlwaysYes;
-    IsSSortListFuncs[ T_PLIST_TAB_RECT                  ] = IsSSortPlistHom;
-    IsSSortListFuncs[ T_PLIST_TAB_RECT       +IMMUTABLE ] = IsSSortPlistHom;
-    IsSSortListFuncs[ T_PLIST_TAB_RECT_NSORT            ] = AlwaysNo;
-    IsSSortListFuncs[ T_PLIST_TAB_RECT_NSORT +IMMUTABLE ] = AlwaysNo;
-    IsSSortListFuncs[ T_PLIST_TAB_RECT_SSORT            ] = AlwaysYes;
-    IsSSortListFuncs[ T_PLIST_TAB_RECT_SSORT +IMMUTABLE ] = AlwaysYes;
-    IsSSortListFuncs[ T_PLIST_CYC                  ] = IsSSortPlistHom;
-    IsSSortListFuncs[ T_PLIST_CYC       +IMMUTABLE ] = IsSSortPlistHom;
-    IsSSortListFuncs[ T_PLIST_CYC_NSORT            ] = AlwaysNo;
-    IsSSortListFuncs[ T_PLIST_CYC_NSORT +IMMUTABLE ] = AlwaysNo;
-    IsSSortListFuncs[ T_PLIST_CYC_SSORT            ] = AlwaysYes;
-    IsSSortListFuncs[ T_PLIST_CYC_SSORT +IMMUTABLE ] = AlwaysYes;
-    IsSSortListFuncs[ T_PLIST_FFE                  ] = IsSSortPlistHom;
-    IsSSortListFuncs[ T_PLIST_FFE       +IMMUTABLE ] = IsSSortPlistHom;
+    IsSSortListFuncs[ T_PLIST                  ] = IsSSortPlist;
+    IsSSortListFuncs[ T_PLIST_NDENSE           ] = AlwaysNo;
+    IsSSortListFuncs[ T_PLIST_DENSE            ] = IsSSortPlistDense;
+    IsSSortListFuncs[ T_PLIST_DENSE_NHOM       ] = IsSSortPlistDense;
+    IsSSortListFuncs[ T_PLIST_DENSE_NHOM_SSORT ] = AlwaysYes;
+    IsSSortListFuncs[ T_PLIST_DENSE_NHOM_NSORT ] = AlwaysNo;
+    IsSSortListFuncs[ T_PLIST_EMPTY            ] = AlwaysYes;
+    IsSSortListFuncs[ T_PLIST_HOM              ] = IsSSortPlistHom;
+    IsSSortListFuncs[ T_PLIST_HOM_NSORT        ] = AlwaysNo;
+    IsSSortListFuncs[ T_PLIST_HOM_SSORT        ] = AlwaysYes;
+    IsSSortListFuncs[ T_PLIST_TAB              ] = IsSSortPlistHom;
+    IsSSortListFuncs[ T_PLIST_TAB_NSORT        ] = AlwaysNo;
+    IsSSortListFuncs[ T_PLIST_TAB_SSORT        ] = AlwaysYes;
+    IsSSortListFuncs[ T_PLIST_TAB_RECT         ] = IsSSortPlistHom;
+    IsSSortListFuncs[ T_PLIST_TAB_RECT_NSORT   ] = AlwaysNo;
+    IsSSortListFuncs[ T_PLIST_TAB_RECT_SSORT   ] = AlwaysYes;
+    IsSSortListFuncs[ T_PLIST_CYC              ] = IsSSortPlistHom;
+    IsSSortListFuncs[ T_PLIST_CYC_NSORT        ] = AlwaysNo;
+    IsSSortListFuncs[ T_PLIST_CYC_SSORT        ] = AlwaysYes;
+    IsSSortListFuncs[ T_PLIST_FFE              ] = IsSSortPlistHom;
 
 
     // install the position list test methods
-    for ( t1 = T_PLIST; t1 <= T_PLIST_FFE; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= T_PLIST_FFE; t1++ ) {
         IsPossListFuncs[ t1            ] = IsPossPlist;
-        IsPossListFuncs[ t1 +IMMUTABLE ] = IsPossPlist;
     }
 
 
     // install the position list methods
-    for ( t1 = T_PLIST; t1 <= T_PLIST_NDENSE; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= T_PLIST_NDENSE; t1++ ) {
         PosListFuncs[ t1            ] = PosPlist;
-        PosListFuncs[ t1 +IMMUTABLE ] = PosPlist;
     }
-    for ( t1 = T_PLIST_DENSE; t1 <= T_PLIST_FFE; t1 += 2 ) {
+    for ( t1 = T_PLIST_DENSE; t1 <= T_PLIST_FFE; t1++ ) {
         PosListFuncs[ t1            ] = PosPlistDense;
-        PosListFuncs[ t1 +IMMUTABLE ] = PosPlistDense;
     }
 
     PosListFuncs[ T_PLIST_DENSE_NHOM_SSORT            ] = PosPlistSort;
-    PosListFuncs[ T_PLIST_DENSE_NHOM_SSORT +IMMUTABLE ] = PosPlistSort;
     PosListFuncs[ T_PLIST_HOM_SSORT            ] = PosPlistHomSort;
-    PosListFuncs[ T_PLIST_HOM_SSORT +IMMUTABLE ] = PosPlistHomSort;
     PosListFuncs[ T_PLIST_TAB_SSORT            ] = PosPlistHomSort;
-    PosListFuncs[ T_PLIST_TAB_SSORT +IMMUTABLE ] = PosPlistHomSort;
     PosListFuncs[ T_PLIST_TAB_RECT_SSORT            ] = PosPlistHomSort;
-    PosListFuncs[ T_PLIST_TAB_RECT_SSORT +IMMUTABLE ] = PosPlistHomSort;
     PosListFuncs[ T_PLIST_CYC_SSORT            ] = PosPlistHomSort;
-    PosListFuncs[ T_PLIST_CYC_SSORT +IMMUTABLE ] = PosPlistHomSort;
+
 
 
     // install the plain list methods
-    for ( t1 = T_PLIST; t1 <= T_PLIST_FFE; t1 += 2 ) {
+    for ( t1 = T_PLIST; t1 <= T_PLIST_FFE; t1++ ) {
         PlainListFuncs[ t1            ] = PlainPlist;
-        PlainListFuncs[ t1 +IMMUTABLE ] = PlainPlist;
     }
 
-    for (t1 = T_PLIST; t1 < T_PLIST_DENSE_NHOM; t1 += 2 )
+    for (t1 = T_PLIST; t1 < T_PLIST_DENSE_NHOM; t1++ )
       MakeImmutableObjFuncs[ t1 ] = MakeImmutablePlistInHom;
 
-    for (t1 = T_PLIST_DENSE_NHOM; t1 <= T_PLIST_FFE; t1 += 2 )
+    for (t1 = T_PLIST_DENSE_NHOM; t1 <= T_PLIST_FFE; t1++ )
       MakeImmutableObjFuncs[ t1 ] = MakeImmutablePlistNoMutElms;
 
     // mutable tables may have mutable rows
     MakeImmutableObjFuncs[T_PLIST_TAB] = MakeImmutablePlistInHom;
-
-#ifdef HPCGAP
-    for ( t1 = T_PLIST; t1 <= LAST_PLIST_TNUM; t1 += 2 ) {
-        MakeBagTypePublic(t1 +IMMUTABLE);
-    }
-#endif
 
     return 0;
 }
