@@ -966,6 +966,44 @@ function( left, right )
   return ExtRepPolynomialRatFun(left)=ExtRepPolynomialRatFun(right);
 end);
 
+
+#############################################################################
+##
+#M  IsZero( <ratfun> )
+##
+InstallMethod( IsZero,
+    "ratfun",
+    [ IsRationalFunction ],
+    function( f )
+    if HasCoefficientsOfLaurentPolynomial(f) then
+      f := CoefficientsOfLaurentPolynomial(f);
+      return Length(f) = 2 and Length(f[1]) = 0 and f[2] = 0;
+    else
+      return Length(ExtRepNumeratorRatFun(f)) = 0;
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  IsOne( <ratfun> )
+##
+InstallMethod( IsOne,
+    "ratfun",
+    [ IsRationalFunction ],
+    function( f )
+    if HasCoefficientsOfLaurentPolynomial(f) then
+      f := CoefficientsOfLaurentPolynomial(f);
+      return Length(f) = 2 and Length(f[1]) = 1 and IsOne(f[1][1]) and f[2] = 0;
+    elif HasExtRepDenominatorRatFun(f) then
+      return ExtRepDenominatorRatFun(f) = ExtRepNumeratorRatFun(f);
+    else
+      f := ExtRepNumeratorRatFun(f);
+      return Length(f) = 2 and Length(f[1]) = 0 and f[2] = 1;
+    fi;
+    end );
+
+
 #############################################################################
 ##
 #M  <ratfun> < <ratfun>

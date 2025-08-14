@@ -1102,7 +1102,7 @@ InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
     ConvertToVectorRepNC(vec,f);
     # build the data structures
     f:=AsSSortedList(f);
-    Assert(1,f[1]=Zero(f[1]));
+    Assert(1,IsZero(f[1]));
 
     # get differences between field entries (so we can get the next vector
     # with one addition)
@@ -1265,7 +1265,7 @@ BindGlobal( "AClosestVectorDriver", function(mat,f,vec,cnt,stop,coords)
     # build the data structures
     f:=AsSSortedList(f);
     q := Length(f);
-    Assert(1,f[1]=Zero(f[1]));
+    Assert(1,IsZero(f[1]));
 
     # get differences between field entries (so we can get the next vector
     # with one addition)

@@ -52,7 +52,7 @@ BindGlobal("IsCentralModule",function( G, modu )
     local mats;
     if Length( modu ) > 1 then return false; fi;
     mats := LinearOperationLayer( G, modu );
-    return ForAll( mats, x -> x = x^0 );
+    return ForAll( mats, IsOne );
 end);
 
 #############################################################################

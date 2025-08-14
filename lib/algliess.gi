@@ -767,7 +767,7 @@ BindGlobal( "SimpleLieAlgebraTypeW", function( n, F )
           for k in [1..Length( n )] do
             cf:= Binomial( ex[k], x1[1][k] ) * cf;
           od;
-          if cf<>Zero(F) then
+          if not IsZero(cf) then
             no:=Position(eltlist,[ex,x2[2]]);
             AddendumSCTable( T, i, j, no, cf );
           fi;
@@ -779,7 +779,7 @@ BindGlobal( "SimpleLieAlgebraTypeW", function( n, F )
           for k in [1..Length( n )] do
             cf:= Binomial( ex[k], x2[1][k] ) * cf;
           od;
-          if cf<>Zero(F) then
+          if not IsZero(cf) then
             no:=Position(eltlist,[ex,x1[2]]);
             AddendumSCTable( T, i, j, no, -cf );
           fi;
@@ -948,7 +948,7 @@ BindGlobal( "SimpleLieAlgebraTypeH", function( n, F )
           cf[pos]:= -One( F );
         fi;
       od;
-      if cf <> Zero( F )*cf then
+      if not IsZero(cf) then
         if IsBound( sp ) then
           if not IsContainedInSpan( sp, cf ) then
             CloseMutableBasis( sp, cf );
@@ -1070,7 +1070,7 @@ BindGlobal( "SimpleLieAlgebraTypeK", function( n, F )
               y1:= ShallowCopy(x1); y2:= ShallowCopy(x2);
               y1[k]:=y1[k]-1; y2[k+r]:=y2[k+r]-1;
               v:=coef( y1+y2, y1, F );
-              if v<>Zero(F) then
+              if not IsZero(v) then
                 pos:= Position( eltlist, y1+y2 );
                 vals[pos]:= vals[pos] + v;
               fi;
@@ -1080,7 +1080,7 @@ BindGlobal( "SimpleLieAlgebraTypeK", function( n, F )
               y1:= ShallowCopy(x1); y2:= ShallowCopy(x2);
               y1[k]:=y1[k]-1; y2[ m ]:=y2[ m ]-1;
               v:=coef(x1+y2,y1,F)*(x2[k]+1);
-              if v<>Zero(F) then
+              if not IsZero(v) then
                 pos:= Position( eltlist, x1+y2 );
                 vals[pos]:= vals[pos]-v;
               fi;
@@ -1094,7 +1094,7 @@ BindGlobal( "SimpleLieAlgebraTypeK", function( n, F )
               y1:= ShallowCopy(x1); y2:= ShallowCopy(x2);
               y1[m]:=y1[m]-1; y2[k+r]:=y2[k+r]-1;
               v:=coef( y1+x2, y2, F )*(x1[k+r]+1);
-              if v<>Zero( F ) then
+              if not IsZero(v) then
                 pos:= Position( eltlist, y1+x2 );
                 vals[pos]:= vals[pos] + v;
               fi;
@@ -1105,7 +1105,7 @@ BindGlobal( "SimpleLieAlgebraTypeK", function( n, F )
               y1[m]:=y1[m]-1; y2[ m ]:=y2[ m ]-1;
               y1[k+r]:=y1[k+r]+1; y2[k]:=y2[k]+1;
               v:=coef(y1+y2,y1,F)*y1[k+r]*y2[k];
-              if v<>Zero(F) then
+              if not IsZero(v) then
                 pos:= Position( eltlist, y1+y2 );
                 vals[pos]:= vals[pos]-v;
               fi;
@@ -1114,7 +1114,7 @@ BindGlobal( "SimpleLieAlgebraTypeK", function( n, F )
               y1[m]:=y1[m]-1; y2[ m ]:=y2[ m ]-1;
               y1[k]:=y1[k]+1; y2[k+r]:=y2[k+r]+1;
               v:=coef(y1+y2,y1,F)*y1[k]*y2[k+r];
-              if v<>Zero(F) then
+              if not IsZero(v) then
                 pos:= Position( eltlist, y1+y2 );
                 vals[pos]:= vals[pos]+v;
               fi;
@@ -1124,7 +1124,7 @@ BindGlobal( "SimpleLieAlgebraTypeK", function( n, F )
               y1:= ShallowCopy(x1); y2:= ShallowCopy(x2);
               y1[m]:=y1[m]-1; y2[k]:=y2[k]-1;
               v:=coef( y1+x2, y2, F )*(x1[k]+1);
-              if v <> Zero(F) then
+              if not IsZero(v) then
                 pos:= Position( eltlist, y1+x2 );
                 vals[pos]:= vals[pos] + v;
               fi;
@@ -1138,7 +1138,7 @@ BindGlobal( "SimpleLieAlgebraTypeK", function( n, F )
               y1:= ShallowCopy(x1); y2:= ShallowCopy(x2);
               y1[k+r]:=y1[k+r]-1; y2[k]:=y2[k]-1;
               v:=coef( y1+y2, y1, F );
-              if v<>Zero(F) then
+              if not IsZero(v) then
                 pos:= Position( eltlist, y1+y2 );
                 vals[pos]:= vals[pos] - v;
               fi;
@@ -1148,7 +1148,7 @@ BindGlobal( "SimpleLieAlgebraTypeK", function( n, F )
               y1:= ShallowCopy(x1); y2:= ShallowCopy(x2);
               y1[k+r]:=y1[k+r]-1; y2[ m ]:=y2[ m ]-1;
               v:=coef(x1+y2,y1,F)*(x2[k+r]+1);
-              if v<>Zero(F) then
+              if not IsZero(v) then
                 pos:= Position( eltlist, x1+y2 );
                 vals[pos]:= vals[pos]-v;
               fi;
@@ -1160,7 +1160,7 @@ BindGlobal( "SimpleLieAlgebraTypeK", function( n, F )
             y1:= ShallowCopy(x1);
             y1[m]:=y1[m]-1;
             v:=coef(y1+x2,x2,F);
-            if v<>Zero(F) then
+            if not IsZero(v) then
               pos:= Position( eltlist, y1+x2 );
               vals[pos]:= vals[pos]-2*v;
             fi;
@@ -1170,7 +1170,7 @@ BindGlobal( "SimpleLieAlgebraTypeK", function( n, F )
             y2:= ShallowCopy(x2);
             y2[m]:=y2[m]-1;
             v:= coef(x1+y2,x1,F);
-            if v<>Zero(F) then
+            if not IsZero(v) then
               pos:= Position( eltlist, x1+y2 );
               vals[pos]:= vals[pos]+2*v;
             fi;
@@ -1182,8 +1182,9 @@ BindGlobal( "SimpleLieAlgebraTypeK", function( n, F )
 
         ii:=[]; cc:=[];
         for k in [1..Length(vals)] do
-          if vals[k] <> Zero( F ) then
-            Add(ii,k); Add(cc,vals[k]);
+          if not IsZero(vals[k]) then
+            Add(ii,k);
+            Add(cc,vals[k]);
           fi;
         od;
 

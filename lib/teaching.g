@@ -565,7 +565,7 @@ InstallGlobalFunction(RootsOfPolynomial,function(arg)
     if Size(R)>10^7 then
       Error("R is not an UFD and too large to test for roots");
     fi;
-    return Filtered(Enumerator(R),x->Value(p,x)=Zero(R));
+    return Filtered(Enumerator(R),x->IsZero(Value(p,x)));
   fi;
 end);
 

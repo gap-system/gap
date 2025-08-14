@@ -1835,7 +1835,7 @@ local  classes,            # classes to be constructed, the result
   List(comms,x->ConvertToVectorRep(x,field));
   space:=List(comms,ShallowCopy);
   TriangulizeMat(space);
-  space:=Filtered(space,i->i<>Zero(i)); # remove spurious columns
+  space:=Filtered(space,i->not IsZero(i)); # remove spurious columns
 
   com:=BaseSteinitzVectors(IdentityMat(n,field),space);
 

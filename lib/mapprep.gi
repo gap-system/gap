@@ -1588,7 +1588,7 @@ InstallMethod( PreImagesElm,
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsZero, IsObject ], SUM_FLAGS,
     function( zero, elm )
-    if elm = Zero( Range( zero ) ) then
+    if IsZero( elm ) then
       return Source( zero );
     else
       return [];
@@ -1622,7 +1622,7 @@ InstallMethod( PreImagesRepresentative,
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsZero, IsObject ], SUM_FLAGS,
     function( zero, elm )
-    if elm = Zero( Range( zero ) ) then
+    if IsZero( elm ) then
       return Zero( Source( zero ) );
     else
       return fail;

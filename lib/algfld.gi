@@ -1404,7 +1404,7 @@ local n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
     Info(InfoPoly,2,"testing combination ",combi,": ");
     fft:=ff{combi};
     ffp:=List(fft,i->AlgebraicPolynomialModP(kfam,i,fm[1],p));
-    roots:=Filtered(fm,i->ForAny(ffp,j->Value(j,i)=Zero(k)));
+    roots:=Filtered(fm,i->ForAny(ffp,j->IsZero(Value(j,i))));
     if Length(roots)<>Sum(ffd{combi}) then
       Error("serious error");
     fi;
@@ -1413,7 +1413,7 @@ local n,e,ff,p,ffp,ffd,roots,allroots,nowroots,fm,fft,comb,combi,k,h,i,j,
     j:=1;
     while j<=Length(roots) and gut do
       ffp:=List(fft,i->AlgebraicPolynomialModP(kfam,i,roots[j],p));
-      nowroots:=Filtered(allroots,i->ForAny(ffp,j->Value(j,i)=Zero(k)));
+      nowroots:=Filtered(allroots,i->ForAny(ffp,j->IsZero(Value(j,i))));
       gut := Length(nowroots)=Sum(ffd{combi});
       j:=j+1;
     od;

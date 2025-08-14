@@ -547,8 +547,8 @@ InstallMethod( IsAssociated,
     if HasUnits( R ) then
       return ForAny( Units( R ), u -> r = u * s );
 
-    elif s = Zero( R ) then
-      return r = Zero( R );
+    elif IsZero( s ) then
+      return IsZero( r );
 
     # or check if the quotient is a unit
     else
@@ -879,7 +879,7 @@ InstallMethod( IsUnit,
     else
 
       # simply try to compute the inverse
-      return r <> Zero( R ) and Quotient( R, one, r ) <> fail;
+      return not IsZero( r ) and Quotient( R, one, r ) <> fail;
 #T allowed?
     fi;
     end );
@@ -1153,7 +1153,7 @@ InstallMethod( QuotientMod,
 
     f := s;  fs := 1;
     g := m;  gs := 0;
-    while g <> Zero( R ) do
+    while not IsZero( g ) do
         t := QuotientRemainder( R, f, g );
         h := g;          hs := gs;
         g := t[2];       gs := fs - t[1] * gs;
@@ -1309,7 +1309,7 @@ InstallMethod( GcdOp,
     # perform a Euclidean algorithm
     u := r;
     v := s;
-    while v <> Zero( R ) do
+    while not IsZero( v ) do
         w := v;
         v := EuclideanRemainder( R, u, v );
         u := w;
@@ -1398,14 +1398,14 @@ InstallMethod( GcdRepresentationOp,
     local   f, g, h, fx, gx, hx, q, t;
     f := x;  fx := One( R );
     g := y;  gx := Zero( R );
-    while g <> Zero( R ) do
+    while not IsZero( g ) do
         t := QuotientRemainder( R, f, g );
         h := g;          hx := gx;
         g := t[2];       gx := fx - t[1] * gx;
         f := h;          fx := hx;
     od;
     q := StandardAssociateUnit(R, f);
-    if y = Zero( R ) then
+    if IsZero( y ) then
         return [ q * fx, Zero( R ) ];
     else
         return [ q * fx, Quotient( R, q * (f - fx * x), y ) ];
@@ -1488,7 +1488,7 @@ InstallMethod( LcmOp,
     function( R, r, s )
 
     # compute the least common multiple
-    if r = Zero( R ) and s = Zero( R ) then
+    if IsZero( r ) and IsZero( s ) then
       return r;
     elif r in R and s in R then
       return StandardAssociate( R, Quotient( R, r, GcdOp( R, r, s ) ) * s );

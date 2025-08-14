@@ -1354,7 +1354,7 @@ local  p2, res, j, i,ii,o,d,b,lco,degs, step, cnew, sel, deli,
   until 0 = Length(sel) or Length(sel)<step;
 
   # if <split> is true we *must* find a complete factorization.
-  if split and 0 < Length(res.remaining) and f<>f^0 then
+  if split and 0 < Length(res.remaining) and not IsOne(f) then
 #and not(IsBound(opt.onlydegs) or IsBound(opt.stopdegs)) then
 
     # the remaining f must be an irreducible factor,larger than deg/2

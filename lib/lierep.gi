@@ -1404,7 +1404,7 @@ InstallMethod( PrintObj,
             if lst[k+1] > 0 and k>1 then
                 Print("+" );
             fi;
-            if lst[k+1] <> lst[k+1]^0 then
+            if not IsOne(lst[k+1]) then
                 Print( lst[k+1],"*");
             fi;
             if lst[k] = [] then
@@ -3866,7 +3866,7 @@ InstallGlobalFunction( ExtendRepresentation,
        F:= LeftActingDomain( L );
 
        A:=EvalMat( w, mats );
-       if A <> Zero(F)*A then return false; fi;
+       if not IsZero(A) then return false; fi;
 
        mons:= [ ExtRepOfObj( w )[2][1] ];
        orb:=[ w ];
@@ -3892,7 +3892,7 @@ InstallGlobalFunction( ExtendRepresentation,
            c1:= elts[i]*c-c*elts[i];
            val:= EvalMat( c1, mats );
 
-           if val <> Zero( F ) * val then return false; fi;
+           if not IsZero( val ) then return false; fi;
            vv:= ListWithIdenticalEntries( Length(mons), Zero( F ) );
            r:= ExtRepOfObj( c1 )[2];
            mons1:= [ ];

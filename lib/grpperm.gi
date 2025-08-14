@@ -106,7 +106,7 @@ InstallGlobalFunction( IndependentGeneratorsAbelianPPermGroup,
             h := g ^ (p^(i-1));
 
             # reduce <g> and <h>
-            while h <> h^0
+            while not IsOne(h)
               and IsBound(trns[SmallestMovedPoint(h)^h])
             do
                 g := g / pows[ trns[SmallestMovedPoint(h)^h] ];
@@ -114,7 +114,7 @@ InstallGlobalFunction( IndependentGeneratorsAbelianPPermGroup,
             od;
 
             # if this is linear independent, add it to the generators
-            if h <> h^0  then
+            if not IsOne(h) then
                 Add( inds, g );
                 Add( pows, g );
                 Add( base, h );
@@ -141,7 +141,7 @@ InstallGlobalFunction( IndependentGeneratorsAbelianPPermGroup,
 
         # prepare for the next round
         gens := gens2;
-        pows := List( pows,i->i^ p );
+        pows := List( pows, i->i^p );
 
     od;
 
@@ -175,7 +175,8 @@ InstallMethod( IndependentGeneratorsOfAbelianGroup, "for perm group",
         for g  in GeneratorsOfGroup( G )  do
             o := Order(g);
             while o mod p = 0  do o := o / p; od;
-            if g^o <> g^0  then Add( gens, g^o );  fi;
+            g := g^o;
+            if not IsOne(g)  then Add( gens, g );  fi;
         od;
 
         # append the independent generators for the Sylow <p> subgroup

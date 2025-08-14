@@ -1140,7 +1140,7 @@ InstallMethod( IsAssociated,
     IsCollsElmsElms,
     [ IsDivisionRing, IsRingElement, IsRingElement ],
     function ( F, r, s )
-    return (r = Zero( F ) ) = (s = Zero( F ) );
+    return IsZero( r ) = IsZero( s );
     end );
 
 
@@ -1153,7 +1153,7 @@ InstallMethod( StandardAssociate,
     IsCollsElms,
     [ IsDivisionRing, IsScalar ],
     function ( R, r )
-    if r = Zero( R ) then
+    if IsZero( r ) then
         return Zero( R );
     else
         return One( R );
@@ -1170,7 +1170,7 @@ InstallMethod( StandardAssociateUnit,
     IsCollsElms,
     [ IsDivisionRing, IsScalar ],
     function ( R, r )
-    if r = Zero( R ) then
+    if IsZero( r ) then
         return One( R );
     else
         return r^-1;

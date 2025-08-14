@@ -2017,8 +2017,8 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                 oprs:=preimage!.operators;
                 type:=preimage!.type;
             else
-                if Q[ 1 ] = Zero( Q[ 1 ] )  then  i:=1;
-                                            else  i:=2;  fi;
+                if IsZero( Q[ 1 ] )  then  i:=1;
+                                     else  i:=2;  fi;
                 if Length( GeneratorsOfGroup( preimage ) ) = 1  then
                     gens:=[ GeneratorsOfGroup( preimage )[ 1 ] ^ i ];
                     oprs:=[ preimage!.operators          [ 1 ] ^ i ];
@@ -2026,8 +2026,8 @@ InstallGlobalFunction( CentralStepRatClPGroup,
                     elif preimage!.type = 2  then  type:=i + 1;
                                              else  type:=3;          fi;
                 else
-                    if Q[ 2 ] = Zero( Q[ 2 ] )  then  j:=1;
-                                                else  j:=2;  fi;
+                    if IsZero( Q[ 2 ] )  then  j:=1;
+                                         else  j:=2;  fi;
                     if i = 1  then
                         gens:=[ GeneratorsOfGroup( preimage )[ 1 ],
                                   GeneratorsOfGroup( preimage )[ 2 ] ^ j ];
