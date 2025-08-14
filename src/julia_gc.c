@@ -728,28 +728,21 @@ jl_datatype_t * GAP_DeclareBag(jl_sym_t *      name,
                                1, large > 0);
 }
 
-#if defined(USE_GAP_INSIDE_JULIA)
 // Initialize the integration with Julia's garbage collector; in particular,
 // create Julia types for use in our allocations.
+// If 'defined(USE_GAP_INSIDE_JULIA)' (ie this function gets called from julia):
 // This function assumes that the types have already been declared in the
 // Julia module 'module' (e.g., by GAP_DeclareGapObj and GAP_DeclareBag).
 // In particular, 'module' may not be NULL.
+// If '!defined(USE_GAP_INSIDE_JULIA)' (ie this function gets called from GAP):
+// The types will be storied in the given 'module', or 'jl_main_module' if
+// 'module' is NULL.
 void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
-                                  jl_datatype_t * parent /* unused */)
+                                  jl_datatype_t * /* unused */)
 {
+#if defined(USE_GAP_INSIDE_JULIA)
     GAP_ASSERT(module != 0);
-
 #else
-
-// Initialize the integration with Julia's garbage collector; in particular,
-// create Julia types for use in our allocations. The types will be stored
-// in the given 'module', and the MPtr type will be a subtype of 'parent'.
-//
-// If 'module' is NULL then 'jl_main_module' is used.
-// If 'parent' is NULL then 'jl_any_type' is used.
-void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
-                                  jl_datatype_t * parent)
-{
     jl_sym_t * name;
 #endif
 
@@ -794,13 +787,9 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
         module = jl_main_module;
     }
 
-    if (parent == 0) {
-        parent = jl_any_type;
-    }
-
     // create and store data type for master pointers
     name = jl_symbol("GapObj");
-    DatatypeGapObj = GAP_DeclareGapObj(name, module, parent);
+    DatatypeGapObj = GAP_DeclareGapObj(name, module, jl_any_type);
     GAP_ASSERT(jl_is_datatype(DatatypeGapObj));
     jl_set_const(module, name, (jl_value_t *)DatatypeGapObj);
 
