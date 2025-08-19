@@ -735,10 +735,10 @@ jl_datatype_t * GAP_DeclareBag(jl_sym_t *      name,
 // Julia module 'module' (e.g., by GAP_DeclareGapObj and GAP_DeclareBag).
 // In particular, 'module' may not be NULL.
 // If '!defined(USE_GAP_INSIDE_JULIA)' (ie this function gets called from GAP):
-// The types will be storied in the given 'module', or 'jl_main_module' if
+// The types will be stored in the given 'module', or 'jl_main_module' if
 // 'module' is NULL.
 void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
-                                  jl_datatype_t * /* unused */)
+                                  jl_datatype_t * parent /* unused */)
 {
 #if defined(USE_GAP_INSIDE_JULIA)
     GAP_ASSERT(module != 0);
@@ -817,6 +817,10 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
     TotalTime = 0;
 
 #if !defined(USE_GAP_INSIDE_JULIA)
+    // initialize Julia memory interface. Note that this is only necessary
+    // when we run standalone. In contrast, when GAP is loaded from GAP.jl
+    // then GAP.jl invokes `GAP_InitJuliaMemoryInterface` at an appropriate
+    // point in time.
     GAP_InitJuliaMemoryInterface(0, 0);
 
     GapStackBottom = stack_bottom;
