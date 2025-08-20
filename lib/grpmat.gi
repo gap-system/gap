@@ -584,7 +584,7 @@ InstallMethod( IsomorphismPermGroup,
     # The downranking is compatible with that for the method for
     # 'IsGroup and IsFinite and IsHandledByNiceMonomorphism'
     # (see 'lib/grpnice.gi').
-    5-NICE_FLAGS,
+    {} -> 1-RankFilter( IsHandledByNiceMonomorphism ),
     IsomorphismPermGroupForMatrixGroup );
 
 
@@ -839,7 +839,8 @@ BindGlobal( "RespectsQuadraticForm", function( Q, M )
 ##
 InstallMethod( \in, "respecting quadratic form", IsElmsColls,
     [ IsMatrix, IsFullSubgroupGLorSLRespectingQuadraticForm ],
-    NICE_FLAGS,  # this method is better than the one using a nice monom.;
+    {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
+                 # this method is better than the one using a nice monom.;
                  # it has the same rank as the method based on the inv.
                  # bilinear form, which is cheaper to check,
                  # thus we install the current method first
@@ -851,7 +852,7 @@ InstallMethod( \in, "respecting quadratic form", IsElmsColls,
 
 InstallMethod( \in, "respecting bilinear form", IsElmsColls,
     [ IsMatrix, IsFullSubgroupGLorSLRespectingBilinearForm ],
-    NICE_FLAGS,  # this method is better than the one using a nice monom.
+    {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
 function( mat, G )
     local inv;
     if not IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
@@ -864,7 +865,7 @@ end );
 
 InstallMethod( \in, "respecting sesquilinear form", IsElmsColls,
     [ IsMatrix, IsFullSubgroupGLorSLRespectingSesquilinearForm ],
-    NICE_FLAGS,  # this method is better than the one using a nice monom.
+    {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
 function( mat, G )
     local pow, inv;
     if not IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )

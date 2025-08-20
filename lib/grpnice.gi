@@ -553,10 +553,11 @@ PropertyMethodByNiceMonomorphism( IsSupersolvableGroup,
 InstallMethod(IsomorphismPermGroup,"via niceomorphisms",true,
   [IsGroup and IsFinite and IsHandledByNiceMonomorphism],
   # This is intended to be better than the generic ``action on element''
-  # method. However for example for matrix groups there are better methods.
+  # method (with requirement 'IsGroup and IsFinite').
+  # However for example for matrix groups there are better methods.
   # The downranking is compatible with that for the method for finite
   # matrix groups in 'lib/grpmat.gi'.
-  -NICE_FLAGS+5,
+  {} -> 1 - RankFilter( IsHandledByNiceMonomorphism ),
 function(g)
 local mon,iso;
   mon:=NiceMonomorphism(g);
@@ -950,7 +951,8 @@ end);
 ##
 InstallMethod( AsGroupGeneralMappingByImages,
   "for Niceomorphisms: avoid recursion",true,
-  [IsGroupGeneralMapping and IsNiceMonomorphism],NICE_FLAGS,
+  [IsGroupGeneralMapping and IsNiceMonomorphism],
+  {} -> RankFilter( IsHandledByNiceMonomorphism ),
 function(hom)
 local h, tmp;
   # we actually want to use the next method with `RUN_IN_GGMBI' set to
