@@ -977,10 +977,16 @@ InstallMethod( IsZero,
     function( f )
     if HasCoefficientsOfLaurentPolynomial(f) then
       f := CoefficientsOfLaurentPolynomial(f);
-      return Length(f) = 2 and Length(f[1]) = 0 and f[2] = 0;
-    else
+      return Length(f[1]) = 0;
+    elif HasCoefficientsOfUnivariateRationalFunction(f) then
+      f := CoefficientsOfUnivariateRationalFunction(f);
+      return Length(f[1]) = 0;
+    elif HasExtRepPolynomialRatFun(f) then
+      return Length(ExtRepPolynomialRatFun(f)) = 0;
+    elif HasExtRepNumeratorRatFun(f) then
       return Length(ExtRepNumeratorRatFun(f)) = 0;
     fi;
+    TryNextMethod();
     end );
 
 
@@ -995,12 +1001,19 @@ InstallMethod( IsOne,
     if HasCoefficientsOfLaurentPolynomial(f) then
       f := CoefficientsOfLaurentPolynomial(f);
       return Length(f) = 2 and Length(f[1]) = 1 and IsOne(f[1][1]) and f[2] = 0;
-    elif HasExtRepDenominatorRatFun(f) then
+    elif HasCoefficientsOfUnivariateRationalFunction(f) then
+      f := CoefficientsOfUnivariateRationalFunction(f);
+      return Length(f) = 3 and f[3] = 0 and f[1] = f[2];
+    elif HasExtRepPolynomialRatFun(f) then
+      f := ExtRepPolynomialRatFun(f);
+      return Length(f) = 2 and Length(f[1]) = 0 and IsOne(f[2]);
+    elif HasExtRepNumeratorRatFun(f) and HasExtRepDenominatorRatFun(f) then
       return ExtRepDenominatorRatFun(f) = ExtRepNumeratorRatFun(f);
-    else
+    elif HasExtRepNumeratorRatFun(f) then
       f := ExtRepNumeratorRatFun(f);
-      return Length(f) = 2 and Length(f[1]) = 0 and f[2] = 1;
+      return Length(f) = 2 and Length(f[1]) = 0 and IsOne(f[2]);
     fi;
+    TryNextMethod();
     end );
 
 

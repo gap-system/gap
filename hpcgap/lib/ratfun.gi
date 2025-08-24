@@ -972,6 +972,57 @@ function( left, right )
   return ExtRepPolynomialRatFun(left)=ExtRepPolynomialRatFun(right);
 end);
 
+
+#############################################################################
+##
+#M  IsZero( <ratfun> )
+##
+InstallMethod( IsZero,
+    "ratfun",
+    [ IsRationalFunction ],
+    function( f )
+    if HasCoefficientsOfLaurentPolynomial(f) then
+      f := CoefficientsOfLaurentPolynomial(f);
+      return Length(f[1]) = 0;
+    elif HasCoefficientsOfUnivariateRationalFunction(f) then
+      f := CoefficientsOfUnivariateRationalFunction(f);
+      return Length(f[1]) = 0;
+    elif HasExtRepPolynomialRatFun(f) then
+      return Length(ExtRepPolynomialRatFun(f)) = 0;
+    elif HasExtRepNumeratorRatFun(f) then
+      return Length(ExtRepNumeratorRatFun(f)) = 0;
+    fi;
+    TryNextMethod();
+    end );
+
+
+#############################################################################
+##
+#M  IsOne( <ratfun> )
+##
+InstallMethod( IsOne,
+    "ratfun",
+    [ IsRationalFunction ],
+    function( f )
+    if HasCoefficientsOfLaurentPolynomial(f) then
+      f := CoefficientsOfLaurentPolynomial(f);
+      return Length(f) = 2 and Length(f[1]) = 1 and IsOne(f[1][1]) and f[2] = 0;
+    elif HasCoefficientsOfUnivariateRationalFunction(f) then
+      f := CoefficientsOfUnivariateRationalFunction(f);
+      return Length(f) = 3 and f[3] = 0 and f[1] = f[2];
+    elif HasExtRepPolynomialRatFun(f) then
+      f := ExtRepPolynomialRatFun(f);
+      return Length(f) = 2 and Length(f[1]) = 0 and IsOne(f[2]);
+    elif HasExtRepNumeratorRatFun(f) and HasExtRepDenominatorRatFun(f) then
+      return ExtRepDenominatorRatFun(f) = ExtRepNumeratorRatFun(f);
+    elif HasExtRepNumeratorRatFun(f) then
+      f := ExtRepNumeratorRatFun(f);
+      return Length(f) = 2 and Length(f[1]) = 0 and IsOne(f[2]);
+    fi;
+    TryNextMethod();
+    end );
+
+
 #############################################################################
 ##
 #M  <ratfun> < <ratfun>
