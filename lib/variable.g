@@ -126,6 +126,8 @@ end );
 ##  <Ref Func="InstallValue"/> does <E>not</E> work if <A>value</A> is an
 ##  <Q>immediate object</Q>, i.e., an internally represented small integer or
 ##  finite field element. It also fails for booleans.
+##  In addition, the use of any other type of <A>value</A> except for a list
+##  or record is deprecated.
 ##  Furthermore, <Ref Func="InstallFlushableValue"/> works only if
 ##  <A>value</A> is a list or a record.
 ##  (Note that <Ref Func="InstallFlushableValue"/> makes sense only for
@@ -158,7 +160,11 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
         Error("InstallValue: a value has been installed already");
     fi;
     if TNUM_OBJ(value) in UNCLONEABLE_TNUMS then
-       Error("InstallValue: <value> cannot be immediate, boolean or character");
+       Error("InstallValue: <value> cannot be immediate, boolean or character, ",
+             "and it should rather be a record or a list");
+    fi;
+    if not IS_REC(value) and not IS_PLIST_REP(value) and not IS_STRING_REP(value) then
+      Print("WARNING, InstallValue: <value> should be a record or list while reading ", INPUT_FILENAME(), ":", INPUT_LINENUMBER(), "\n");
     fi;
     if IsFamily( value ) then
       INFO_DEBUG( 1,
