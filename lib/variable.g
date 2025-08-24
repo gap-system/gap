@@ -157,6 +157,9 @@ BIND_GLOBAL( "InstallValue", function ( gvar, value )
        IsToBeDefinedObj( gvar ) then
         Error("InstallValue: a value has been installed already");
     fi;
+    if not IS_REC(value) and not IS_PLIST_REP(value) and not IS_STRING_REP(value) then
+      Print("WARNING, InstallValue: <value> should be a record or list while reading ", INPUT_FILENAME(), ":", INPUT_LINENUMBER(), "\n");
+    fi;
     if IsFamily( value ) then
       INFO_DEBUG( 1,
           "please use `BindGlobal' for the family object ",
