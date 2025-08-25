@@ -24,6 +24,53 @@ gap> List(data, IsUnivariateRationalFunction);
 [ true, true, true, true, true, true, false, false, false, false, false ]
 gap> List(data, IsLaurentPolynomial);
 [ true, true, true, true, true, false, false, false, false, false, false ]
+gap> List(data, IsZero);
+[ true, false, false, false, false, false, false, false, false, true, false ]
+gap> List(data, IsOne);
+[ false, true, false, false, false, false, false, false, false, false, false ]
+
+#
+# some more tests in special representations
+#
+gap> helper := [
+>   f -> PolynomialByExtRep(FamilyObj(f), ExtRepPolynomialRatFun(f)),
+>   f -> RationalFunctionByExtRep(FamilyObj(f), ExtRepNumeratorRatFun(f), ExtRepDenominatorRatFun(f)),
+>   f -> UnivariatePolynomial(GF(5),CoefficientsOfUnivariatePolynomial(f),IndeterminateNumberOfUnivariateLaurentPolynomial(f)),
+>   f -> UnivariateRationalFunctionByCoefficients(FamilyObj(f),
+>               CoefficientsOfUnivariateRationalFunction(f)[1],
+>               CoefficientsOfUnivariateRationalFunction(f)[2],
+>               CoefficientsOfUnivariateRationalFunction(f)[3],
+>               IndeterminateNumberOfUnivariateRationalFunction(f)),
+> ];;
+
+#
+gap> data2 := Concatenation(List(helper, f -> [f(t), f(t^0), f(t*0)]));
+[ t, Z(5)^0, 0*Z(5), t/Z(5)^0, Z(5)^0/Z(5)^0, 0*Z(5)/Z(5)^0, t, Z(5)^0, 
+  0*Z(5), Z(5)^0*x_100, Z(5)^0, 0*Z(5) ]
+gap> List(data2, IsOne);
+[ false, true, false, false, true, false, false, true, false, false, true, 
+  false ]
+gap> List(data2, IsZero);
+[ false, false, true, false, false, true, false, false, true, false, false, 
+  true ]
+gap> List(data2, NamesOfComponents);
+[ [ "ExtRepPolynomialRatFun" ], [ "ExtRepPolynomialRatFun" ], 
+  [ "ExtRepPolynomialRatFun" ], 
+  [ "ExtRepNumeratorRatFun", "ExtRepDenominatorRatFun" ], 
+  [ "ExtRepNumeratorRatFun", "ExtRepDenominatorRatFun" ], 
+  [ "ExtRepNumeratorRatFun", "ExtRepDenominatorRatFun" ], 
+  [ "CoefficientsOfLaurentPolynomial", 
+      "IndeterminateNumberOfUnivariateRationalFunction" ], 
+  [ "CoefficientsOfLaurentPolynomial", 
+      "IndeterminateNumberOfUnivariateRationalFunction" ], 
+  [ "CoefficientsOfLaurentPolynomial", 
+      "IndeterminateNumberOfUnivariateRationalFunction" ], 
+  [ "CoefficientsOfLaurentPolynomial", 
+      "IndeterminateNumberOfUnivariateRationalFunction" ], 
+  [ "CoefficientsOfLaurentPolynomial", 
+      "IndeterminateNumberOfUnivariateRationalFunction" ], 
+  [ "CoefficientsOfLaurentPolynomial", 
+      "IndeterminateNumberOfUnivariateRationalFunction" ] ]
 
 #
 # arithmetics

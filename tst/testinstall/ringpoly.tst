@@ -1,4 +1,4 @@
-#@local R,P,F,fam,f,PP,PF
+#@local R,P,F,fam,f,PP,PF,old_ITER_POLY_WARN
 gap> START_TEST("ringpoly.tst");
 
 # Commutativity and associativity
@@ -30,6 +30,7 @@ gap> f in F;
 true
 
 # Membership for function fields over polynomial rings
+gap> old_ITER_POLY_WARN := ITER_POLY_WARN;;
 gap> ITER_POLY_WARN := false;;
 gap> P := PolynomialRing(Rationals, 2);;
 gap> PP := PolynomialRing(P, 2);;
@@ -45,6 +46,7 @@ gap> fam := FamilyObj(PP.1);;
 gap> f := RationalFunctionByExtRep(fam, [ [], One(P) ], [ [ 2, 1 ], 1/2*One(P) ]);;
 gap> f in PF;
 true
+gap> ITER_POLY_WARN := old_ITER_POLY_WARN;;
 
 #
 gap> STOP_TEST("ringpoly.tst");
