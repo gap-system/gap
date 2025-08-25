@@ -431,7 +431,7 @@ end);
 ##
 InstallMethod( \in, "TF method, use tree",IsElmsColls,
   [ IsMultiplicativeElementWithInverse,
-    IsGroup and IsFinite and HasFittingFreeLiftSetup], OVERRIDENICE,
+    IsGroup and IsFinite and HasFittingFreeLiftSetup], OverrideNice,
 function(e, G)
 local f;
   f:=FittingFreeLiftSetup(G);
@@ -445,7 +445,7 @@ end );
 #M  SolvableRadical( <G> ) . . . . . . . . . . . . . . using TF method
 ##
 InstallMethod( SolvableRadical, "TF method, use tree",
-  [ IsGroup and IsFinite and HasFittingFreeLiftSetup], OVERRIDENICE,
+  [ IsGroup and IsFinite and HasFittingFreeLiftSetup], OverrideNice,
 function(G)
 local f;
   f:=FittingFreeLiftSetup(G);
@@ -1470,7 +1470,7 @@ end);
 ##
 InstallMethod( HallSubgroupOp, "fitting free",true,
     [ IsGroup and IsFinite and CanComputeFittingFree,IsList ],
-    OVERRIDENICE,
+    OverrideNice,
 function(G,pi)
 local l;
   if CanEasilyComputePcgs(G) then
@@ -1495,7 +1495,7 @@ end);
 ##
 InstallMethod( SylowSubgroupOp, "fitting free",true,
   [ IsGroup and IsFinite and CanComputeFittingFree,IsPosInt ],
-  OVERRIDENICE,
+  OverrideNice,
 function(G,pi)
 local l;
   if IsPermGroup(G) or IsPcGroup(G) then TryNextMethod();fi;

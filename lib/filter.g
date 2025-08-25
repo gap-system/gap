@@ -504,7 +504,17 @@ BIND_GLOBAL( "GETTER_FLAGS", 2*SUM_FLAGS );
 ##
 #V  NICE_FLAGS
 ##
-##  is the rank of `IsHandledByNiceMonomorphism'.
+##  is the initial incremental rank of `IsHandledByNiceMonomorphism'.
+##
+##  This value should not be used for explicitly upranking or downranking
+##  methods, since the rank of `IsHandledByNiceMonomorphism' gets increased
+##  due to `InstallTrueMethod' calls while the library gets loaded.
+##
+##  In order to install a new method that overrides methods installed with
+##  requirement `IsHandledByNiceMonomorphism',
+##  one can use `{} -> RankFilter( IsHandledByNiceMonomorphism )'
+##  as incremental rank of the new method.
+##
 BIND_GLOBAL("NICE_FLAGS",QUO_INT(SUM_FLAGS,30));
 
 

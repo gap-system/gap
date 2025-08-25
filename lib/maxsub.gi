@@ -1015,10 +1015,10 @@ end);
 #F  MaximalSubgroupClassReps(<G>) . . . . TF method
 ##
 InstallMethod(MaximalSubgroupClassReps,"TF method",true,
-  [IsGroup and IsFinite and CanComputeFittingFree],OVERRIDENICE,DoMaxesTF);
+  [IsGroup and IsFinite and CanComputeFittingFree],OverrideNice,DoMaxesTF);
 
 InstallMethod(CalcMaximalSubgroupClassReps,"TF method",true,
-  [IsGroup and IsFinite and CanComputeFittingFree],OVERRIDENICE,
+  [IsGroup and IsFinite and CanComputeFittingFree],OverrideNice,
 function(G)
   return DoMaxesTF(G);
 end);

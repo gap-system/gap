@@ -11,8 +11,9 @@
 ##  This file contains functions using the trivial-fitting paradigm.
 ##
 
-BindGlobal("OVERRIDENICE",Maximum(NICE_FLAGS,
-               RankFilter(IsMatrixGroup and IsFinite)));
+BindGlobal( "OverrideNice",
+    {} -> Maximum( RankFilter( IsHandledByNiceMonomorphism ),
+                   RankFilter( IsMatrixGroup and IsFinite ) ) );
 
 #############################################################################
 ##
