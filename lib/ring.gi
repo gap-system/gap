@@ -330,7 +330,7 @@ InstallOtherMethod( InterpolatedPolynomial, true,
         od;
         a[i] := t[1];
     od;
-    p := a[Length(x)];
+    p := a[Length(x)] * Indeterminate(R)^0;
     for i  in [ Length(x)-1, Length(x)-2 .. 1 ]  do
         p := p * (Indeterminate(R)-x[i]) + a[i];
     od;
