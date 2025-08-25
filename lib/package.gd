@@ -1365,3 +1365,34 @@ DeclareGlobalFunction( "Cite" );
 DeclareGlobalFunction( "ShowPackageVariables" );
 
 DeclareGlobalFunction( "PackageVariablesInfo" );
+
+
+# a utility function
+DeclareGlobalName( "PrescribedPackageVersions" );
+
+
+#############################################################################
+##
+#F  PackagesLoaded()
+##
+##  <ManSection>
+##  <Func Name="PackagesLoaded" Arg=''/>
+##
+##  <Returns>
+##  a string that describes the names of all currently loaded &GAP; packages
+##  and their version numbers.
+##  </Returns>
+##
+##  <Description>
+##  The result consists of <C>\n</C> separated lines of the form
+##  <C>name = "version"</C>,
+##  where <C>name</C> is the name of a loaded &GAP; package
+##  and <C>version</C> is its version.
+##  <P/>
+##  One can print this string to a file and set the user preference
+##  <C>"PrescribedPackageVersions"</C> to the name of this file,
+##  Then starting &GAP; anew will load exactly the same packages.
+##  </Description>
+##  </ManSection>
+##
+DeclareGlobalName( "PackagesLoaded" );
