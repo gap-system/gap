@@ -555,9 +555,10 @@ InstallMethod(IsomorphismPermGroup,"via niceomorphisms",true,
   # This is intended to be better than the generic ``action on element''
   # method (with requirement 'IsGroup and IsFinite').
   # However for example for matrix groups there are better methods.
-  # The downranking is compatible with that for the method for finite
+  # Thus we do not want the upranking via 'IsHandledByNiceMonomorphism'.
+  # The same happens for the method for finite
   # matrix groups in 'lib/grpmat.gi'.
-  {} -> 1 - RankFilter( IsHandledByNiceMonomorphism ),
+  [ [ IsGroup and IsFinite ], 1 ],
 function(g)
 local mon,iso;
   mon:=NiceMonomorphism(g);

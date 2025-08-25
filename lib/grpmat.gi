@@ -581,10 +581,11 @@ InstallMethod( IsomorphismPermGroup,
 InstallMethod( IsomorphismPermGroup,
     "finite matrix group",
     [ IsMatrixGroup and IsFinite and IsHandledByNiceMonomorphism ],
-    # The downranking is compatible with that for the method for
-    # 'IsGroup and IsFinite and IsHandledByNiceMonomorphism'
-    # (see 'lib/grpnice.gi').
-    {} -> 1-RankFilter( IsHandledByNiceMonomorphism ),
+    # We do not want the upranking via 'IsHandledByNiceMonomorphism',
+    # analogous to the situation with the method for
+    # 'IsGroup and IsFinite and IsHandledByNiceMonomorphism'in
+    # 'lib/grpnice.gi'.
+    [ [ IsMatrixGroup and IsFinite ], 1 ],
     IsomorphismPermGroupForMatrixGroup );
 
 

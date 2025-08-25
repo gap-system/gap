@@ -222,6 +222,13 @@ call of <Ref Func="InstallMethod"/>, as follows.
   If <A>val</A> is a function with zero arguments then add the value
   returned by this function to the rank computed from the filters.
 </Item>
+<Item>
+  If <A>val</A> is a list of the form <C>[ filters ]</C> or
+  <C>[ filters, abs ]</C>, where <C>filters</C> is a list of filters
+  and <C>abs</C>, if given, is an integer, then ignore the filters in
+  <A>args-filt</A> for the rank computation, and instead take the sum of
+  the filters in <C>filters</C> (including involved filters) plus <C>abs</C>.
+</Item>
 </List>
 <P/>
 So the argument <A>val</A> can be used to raise or lower the priority
@@ -230,6 +237,9 @@ The variant where <A>val</A> is a function can be useful if one wants
 to shift the rank of the method by the rank of certain filters;
 note that such ranks need not be constant during a &GAP; session,
 they can grow due to implications, see <Ref Func="InstallTrueMethod"/>.
+The variant where <A>val</A> is a list can be useful for example if one wants
+that certain filters that are involved in <A>args-filt</A> are required but
+shall not count for the rank of the method.
 <P/>
 Note that for operations which are constructors special rules with respect
 to applicability and rank of the corresponding methods apply
