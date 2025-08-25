@@ -1828,11 +1828,8 @@ static void UnbString(Obj string, Int pos)
 static StructBagNames BagNames[] = {
   { T_CHAR,                           "character"                      },
   { T_STRING,                         "list (string)"                  },
-  { T_STRING              +IMMUTABLE, "list (string,imm)"              },
   { T_STRING_SSORT,                   "list (string,ssort)"            },
-  { T_STRING_SSORT        +IMMUTABLE, "list (string,ssort,imm)"        },
   { T_STRING_NSORT,                   "list (string,nsort)"            },
-  { T_STRING_NSORT        +IMMUTABLE, "list (string,nsort,imm)"        },
   { -1,                               ""                               }
 };
 
@@ -2038,13 +2035,9 @@ static Int InitKernel (
     InitMarkFuncBags( T_CHAR , MarkNoSubBags );
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
         InitMarkFuncBags( t1                     , MarkNoSubBags );
-        InitMarkFuncBags( t1          +IMMUTABLE , MarkNoSubBags );
     }
 
 #ifdef HPCGAP
-    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
-      MakeBagTypePublic( t1 + IMMUTABLE );
-    }
     MakeBagTypePublic(T_CHAR);
 #endif
 
@@ -2072,11 +2065,8 @@ static Int InitKernel (
     ImportGVarFromLibrary("TYPE_STRING_SSORT_MUTABLE", &TYPE_STRING_SSORT_MUTABLE);
     ImportGVarFromLibrary("TYPE_STRING_SSORT_IMMUTABLE", &TYPE_STRING_SSORT_IMMUTABLE);
     TypeObjFuncs[ T_STRING                  ] = TypeString;
-    TypeObjFuncs[ T_STRING       +IMMUTABLE ] = TypeString;
     TypeObjFuncs[ T_STRING_NSORT            ] = TypeStringNSort;
-    TypeObjFuncs[ T_STRING_NSORT +IMMUTABLE ] = TypeStringNSort;
     TypeObjFuncs[ T_STRING_SSORT            ] = TypeStringSSort;
-    TypeObjFuncs[ T_STRING_SSORT +IMMUTABLE ] = TypeStringSSort;
 
     // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
@@ -2101,78 +2091,56 @@ static Int InitKernel (
 
 #ifdef GAP_ENABLE_SAVELOAD
     // install the saving method
-    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
+    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 ++ ) {
         SaveObjFuncs[ t1            ] = SaveString;
-        SaveObjFuncs[ t1 +IMMUTABLE ] = SaveString;
         LoadObjFuncs[ t1            ] = LoadString;
-        LoadObjFuncs[ t1 +IMMUTABLE ] = LoadString;
     }
 #endif
 
 #if !defined(USE_THREADSAFE_COPYING)
     // install the copy method
-    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
+    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 ++ ) {
         CopyObjFuncs [ t1                     ] = CopyString;
-        CopyObjFuncs [ t1          +IMMUTABLE ] = CopyString;
         CleanObjFuncs[ t1                     ] = 0;
-        CleanObjFuncs[ t1          +IMMUTABLE ] = 0;
     }
 #endif
 
     // install the print method
-    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
+    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 ++ ) {
         PrintObjFuncs[ t1            ] = PrintString;
-        PrintObjFuncs[ t1 +IMMUTABLE ] = PrintString;
     }
 
     // install the comparison methods
-    for ( t1 = T_STRING; t1 <= T_STRING_SSORT+IMMUTABLE; t1++ ) {
-        for ( t2 = T_STRING; t2 <= T_STRING_SSORT+IMMUTABLE; t2++ ) {
+    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1++ ) {
+        for ( t2 = T_STRING; t2 <= T_STRING_SSORT; t2++ ) {
             EqFuncs[ t1 ][ t2 ] = EqString;
             LtFuncs[ t1 ][ t2 ] = LtString;
         }
     }
 
     // install the list methods
-    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
+    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 ++ ) {
         LenListFuncs    [ t1            ] = LenString;
-        LenListFuncs    [ t1 +IMMUTABLE ] = LenString;
         IsbListFuncs    [ t1            ] = IsbString;
-        IsbListFuncs    [ t1 +IMMUTABLE ] = IsbString;
         Elm0ListFuncs   [ t1            ] = Elm0String;
-        Elm0ListFuncs   [ t1 +IMMUTABLE ] = Elm0String;
         Elm0vListFuncs  [ t1            ] = Elm0vString;
-        Elm0vListFuncs  [ t1 +IMMUTABLE ] = Elm0vString;
         ElmListFuncs    [ t1            ] = ElmString;
-        ElmListFuncs    [ t1 +IMMUTABLE ] = ElmString;
         ElmvListFuncs   [ t1            ] = ElmvString;
-        ElmvListFuncs   [ t1 +IMMUTABLE ] = ElmvString;
         ElmwListFuncs   [ t1            ] = ElmwString;
-        ElmwListFuncs   [ t1 +IMMUTABLE ] = ElmwString;
         ElmsListFuncs   [ t1            ] = ElmsString;
-        ElmsListFuncs   [ t1 +IMMUTABLE ] = ElmsString;
         UnbListFuncs    [ t1            ] = UnbString;
         AssListFuncs    [ t1            ] = AssString;
         AsssListFuncs   [ t1            ] = AsssString;
         IsDenseListFuncs[ t1            ] = AlwaysYes;
-        IsDenseListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
         IsHomogListFuncs[ t1            ] = AlwaysYes;
-        IsHomogListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
         IsTableListFuncs[ t1            ] = AlwaysNo;
-        IsTableListFuncs[ t1 +IMMUTABLE ] = AlwaysNo;
         IsSSortListFuncs[ t1            ] = IsSSortString;
-        IsSSortListFuncs[ t1 +IMMUTABLE ] = IsSSortString;
         IsPossListFuncs [ t1            ] = IsPossString;
-        IsPossListFuncs [ t1 +IMMUTABLE ] = IsPossString;
         PosListFuncs    [ t1            ] = PosString;
-        PosListFuncs    [ t1 +IMMUTABLE ] = PosString;
         PlainListFuncs  [ t1            ] = PlainString;
-        PlainListFuncs  [ t1 +IMMUTABLE ] = PlainString;
     }
     IsSSortListFuncs[ T_STRING_NSORT            ] = AlwaysNo;
-    IsSSortListFuncs[ T_STRING_NSORT +IMMUTABLE ] = AlwaysNo;
     IsSSortListFuncs[ T_STRING_SSORT            ] = AlwaysYes;
-    IsSSortListFuncs[ T_STRING_SSORT +IMMUTABLE ] = AlwaysYes;
 
 
     // install the `IsString' functions
@@ -2182,15 +2150,11 @@ static Int InitKernel (
     }
 
     IsStringFuncs[ T_PLIST                 ] = IsStringList;
-    IsStringFuncs[ T_PLIST      +IMMUTABLE ] = IsStringList;
     IsStringFuncs[ T_PLIST_DENSE           ] = IsStringList;
-    IsStringFuncs[ T_PLIST_DENSE+IMMUTABLE ] = IsStringList;
     IsStringFuncs[ T_PLIST_EMPTY           ] = AlwaysYes;
-    IsStringFuncs[ T_PLIST_EMPTY+IMMUTABLE ] = AlwaysYes;
 
-    for ( t1 = T_PLIST_HOM; t1 <= T_PLIST_HOM_SSORT; t1 += 2 ) {
+    for ( t1 = T_PLIST_HOM; t1 <= T_PLIST_HOM_SSORT; t1 ++ ) {
         IsStringFuncs[ t1            ] = IsStringListHom;
-        IsStringFuncs[ t1 +IMMUTABLE ] = IsStringListHom;
     }
 
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1++ ) {

@@ -340,8 +340,8 @@ void UnbPRec (
 {
     UInt                len;            // length of <rec>
 
-    // Accept T_PREC and T_COMOBJ, reject T_PREC+IMMUTABLE
-    if (TNUM_OBJ(rec) == T_PREC+IMMUTABLE) {
+    // Accept mutable T_PREC and T_COMOBJ, reject immutable T_PREC
+    if (TNUM_OBJ(rec) == T_PREC && !IS_MUTABLE_OBJ(rec)) {
         ErrorMayQuit("Record Unbind: <rec> must be a mutable record", 0, 0);
     }
 
@@ -381,8 +381,8 @@ void AssPRec (
 {
     UInt                len;            // length of <rec>
 
-    // Accept T_PREC and T_COMOBJ, reject T_PREC+IMMUTABLE
-    if (TNUM_OBJ(rec) == T_PREC+IMMUTABLE) {
+    // Accept mutable T_PREC and T_COMOBJ, reject immutable T_PREC
+    if (TNUM_OBJ(rec) == T_PREC && !IS_MUTABLE_OBJ(rec)) {
         ErrorMayQuit("Record Assignment: <rec> must be a mutable record", 0,
                      0);
     }
@@ -764,7 +764,6 @@ void MarkPRecSubBags(Obj bag, void * ref)
 */
 static StructBagNames BagNames[] = {
   { T_PREC,                     "record (plain)"            },
-  { T_PREC +IMMUTABLE,          "record (plain,imm)"        },
   { -1,                         ""                          }
 };
 
@@ -793,12 +792,6 @@ static Int InitKernel (
     InitBagNamesFromTable( BagNames );
 
     InitMarkFuncBags( T_PREC                     , MarkPRecSubBags );
-    InitMarkFuncBags( T_PREC +IMMUTABLE          , MarkPRecSubBags );
-
-#ifdef HPCGAP
-    // Immutable records are public
-    MakeBagTypePublic( T_PREC +IMMUTABLE );
-#endif
 
     // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
@@ -806,54 +799,38 @@ static Int InitKernel (
 #ifdef GAP_ENABLE_SAVELOAD
     // Install saving functions
     SaveObjFuncs[ T_PREC            ] = SavePRec;
-    SaveObjFuncs[ T_PREC +IMMUTABLE ] = SavePRec;
     LoadObjFuncs[ T_PREC            ] = LoadPRec;
-    LoadObjFuncs[ T_PREC +IMMUTABLE ] = LoadPRec;
 #endif
 
     // install into record function tables
     ElmRecFuncs[ T_PREC            ] = ElmPRec;
-    ElmRecFuncs[ T_PREC +IMMUTABLE ] = ElmPRec;
     IsbRecFuncs[ T_PREC            ] = IsbPRec;
-    IsbRecFuncs[ T_PREC +IMMUTABLE ] = IsbPRec;
     AssRecFuncs[ T_PREC            ] = AssPRec;
-    AssRecFuncs[ T_PREC +IMMUTABLE ] = AssPRec;
     UnbRecFuncs[ T_PREC            ] = UnbPRec;
-    UnbRecFuncs[ T_PREC +IMMUTABLE ] = UnbPRec;
 
     // install tests for being copyable
     IsCopyableObjFuncs[ T_PREC            ] = AlwaysYes;
-    IsCopyableObjFuncs[ T_PREC +IMMUTABLE ] = AlwaysYes;
 
 #ifdef USE_THREADSAFE_COPYING
     SetTraversalMethod(T_PREC           , TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
-    SetTraversalMethod(T_PREC +IMMUTABLE, TRAVERSE_BY_FUNCTION, TraversePRecord, CopyPRecord);
 #else
     // install into copy function tables
     CopyObjFuncs [ T_PREC                     ] = CopyPRec;
-    CopyObjFuncs [ T_PREC +IMMUTABLE          ] = CopyPRec;
     CleanObjFuncs[ T_PREC                     ] = CleanPRec;
-    CleanObjFuncs[ T_PREC +IMMUTABLE          ] = CleanPRec;
 #endif
 
     // install printer
     PrintObjFuncs[  T_PREC            ] = PrintPRec;
-    PrintObjFuncs[  T_PREC +IMMUTABLE ] = PrintPRec;
 
     // install the comparison methods
-    for (UInt t1 = T_PREC; t1 <= T_PREC + IMMUTABLE; t1++) {
-        for (UInt t2 = T_PREC; t2 <= T_PREC + IMMUTABLE; t2++) {
-            EqFuncs[t1][t2] = EqPRec;
-            LtFuncs[t1][t2] = LtPRec;
-        }
-    }
+    EqFuncs[T_PREC][T_PREC] = EqPRec;
+    LtFuncs[T_PREC][T_PREC] = LtPRec;
 
     // install the type functions
     ImportGVarFromLibrary( "TYPE_PREC_MUTABLE",   &TYPE_PREC_MUTABLE   );
     ImportGVarFromLibrary( "TYPE_PREC_IMMUTABLE", &TYPE_PREC_IMMUTABLE );
 
     TypeObjFuncs[ T_PREC            ] = TypePRec;
-    TypeObjFuncs[ T_PREC +IMMUTABLE ] = TypePRec;
 
     MakeImmutableObjFuncs[ T_PREC   ] = MakeImmutablePRec;
 
