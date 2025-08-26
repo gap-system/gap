@@ -951,9 +951,7 @@ static Obj FuncINTER_RANGE(Obj self, Obj r1, Obj r2)
 */
 static StructBagNames BagNames[] = {
   { T_RANGE_NSORT,                     "list (range,nsort)"            },
-  { T_RANGE_NSORT +IMMUTABLE,          "list (range,nsort,imm)"        },
   { T_RANGE_SSORT,                     "list (range,ssort)"            },
-  { T_RANGE_SSORT +IMMUTABLE,          "list (range,ssort,imm)"        },
   { -1,                                ""                              }
 };
 
@@ -1096,15 +1094,7 @@ static Int InitKernel (
     InitBagNamesFromTable( BagNames );
 
     InitMarkFuncBags(   T_RANGE_NSORT                     , MarkAllSubBags );
-    InitMarkFuncBags(   T_RANGE_NSORT +IMMUTABLE          , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_SSORT                     , MarkAllSubBags );
-    InitMarkFuncBags(   T_RANGE_SSORT +IMMUTABLE          , MarkAllSubBags );
-
-#ifdef HPCGAP
-    // Make immutable bags public
-    MakeBagTypePublic( T_RANGE_NSORT + IMMUTABLE );
-    MakeBagTypePublic( T_RANGE_SSORT + IMMUTABLE );
-#endif
 
     // install the type function
     ImportGVarFromLibrary( "TYPE_RANGE_NSORT_MUTABLE",
@@ -1120,9 +1110,7 @@ static Int InitKernel (
                            &TYPE_RANGE_SSORT_IMMUTABLE );
 
     TypeObjFuncs[ T_RANGE_NSORT            ] = TypeRangeNSort;
-    TypeObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = TypeRangeNSort;
     TypeObjFuncs[ T_RANGE_SSORT            ] = TypeRangeSSort;
-    TypeObjFuncs[ T_RANGE_SSORT +IMMUTABLE ] = TypeRangeSSort;
 
     // init filters and functions
     InitHdlrFiltsFromTable( GVarFilts );
@@ -1131,25 +1119,17 @@ static Int InitKernel (
 #ifdef GAP_ENABLE_SAVELOAD
     // Saving functions
     SaveObjFuncs[T_RANGE_NSORT            ] = SaveRange;
-    SaveObjFuncs[T_RANGE_NSORT +IMMUTABLE ] = SaveRange;
     SaveObjFuncs[T_RANGE_SSORT            ] = SaveRange;
-    SaveObjFuncs[T_RANGE_SSORT +IMMUTABLE ] = SaveRange;
     LoadObjFuncs[T_RANGE_NSORT            ] = LoadRange;
-    LoadObjFuncs[T_RANGE_NSORT +IMMUTABLE ] = LoadRange;
     LoadObjFuncs[T_RANGE_SSORT            ] = LoadRange;
-    LoadObjFuncs[T_RANGE_SSORT +IMMUTABLE ] = LoadRange;
 #endif
 
 #if !defined(USE_THREADSAFE_COPYING)
     // install the copy methods
     CopyObjFuncs [ T_RANGE_NSORT                     ] = CopyRange;
-    CopyObjFuncs [ T_RANGE_NSORT +IMMUTABLE          ] = CopyRange;
     CopyObjFuncs [ T_RANGE_SSORT                     ] = CopyRange;
-    CopyObjFuncs [ T_RANGE_SSORT +IMMUTABLE          ] = CopyRange;
     CleanObjFuncs[ T_RANGE_NSORT                     ] = 0;
-    CleanObjFuncs[ T_RANGE_NSORT +IMMUTABLE          ] = 0;
     CleanObjFuncs[ T_RANGE_SSORT                     ] = 0;
-    CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE          ] = 0;
 #endif
 
     // Make immutable methods
@@ -1158,9 +1138,7 @@ static Int InitKernel (
 
     // install the print method
     PrintObjFuncs[ T_RANGE_NSORT            ] = PrintRange;
-    PrintObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = PrintRange;
     PrintObjFuncs[ T_RANGE_SSORT            ] = PrintRange;
-    PrintObjFuncs[ T_RANGE_SSORT +IMMUTABLE ] = PrintRange;
 
     // initialise list tables
     InitClearFiltsTNumsFromTable   ( ClearFiltsTab );
@@ -1180,37 +1158,21 @@ static Int InitKernel (
 
     // install the list functions in the tables
     LenListFuncs    [ T_RANGE_NSORT            ] = LenRange;
-    LenListFuncs    [ T_RANGE_NSORT +IMMUTABLE ] = LenRange;
     LenListFuncs    [ T_RANGE_SSORT            ] = LenRange;
-    LenListFuncs    [ T_RANGE_SSORT +IMMUTABLE ] = LenRange;
     IsbListFuncs    [ T_RANGE_NSORT            ] = IsbRange;
-    IsbListFuncs    [ T_RANGE_NSORT +IMMUTABLE ] = IsbRange;
     IsbListFuncs    [ T_RANGE_SSORT            ] = IsbRange;
-    IsbListFuncs    [ T_RANGE_SSORT +IMMUTABLE ] = IsbRange;
     Elm0ListFuncs   [ T_RANGE_NSORT            ] = Elm0Range;
-    Elm0ListFuncs   [ T_RANGE_NSORT +IMMUTABLE ] = Elm0Range;
     Elm0ListFuncs   [ T_RANGE_SSORT            ] = Elm0Range;
-    Elm0ListFuncs   [ T_RANGE_SSORT +IMMUTABLE ] = Elm0Range;
     Elm0vListFuncs  [ T_RANGE_NSORT            ] = Elm0vRange;
-    Elm0vListFuncs  [ T_RANGE_NSORT +IMMUTABLE ] = Elm0vRange;
     Elm0vListFuncs  [ T_RANGE_SSORT            ] = Elm0vRange;
-    Elm0vListFuncs  [ T_RANGE_SSORT +IMMUTABLE ] = Elm0vRange;
     ElmListFuncs    [ T_RANGE_NSORT            ] = ElmRange;
-    ElmListFuncs    [ T_RANGE_NSORT +IMMUTABLE ] = ElmRange;
     ElmListFuncs    [ T_RANGE_SSORT            ] = ElmRange;
-    ElmListFuncs    [ T_RANGE_SSORT +IMMUTABLE ] = ElmRange;
     ElmvListFuncs   [ T_RANGE_NSORT            ] = ElmvRange;
-    ElmvListFuncs   [ T_RANGE_NSORT +IMMUTABLE ] = ElmvRange;
     ElmvListFuncs   [ T_RANGE_SSORT            ] = ElmvRange;
-    ElmvListFuncs   [ T_RANGE_SSORT +IMMUTABLE ] = ElmvRange;
     ElmwListFuncs   [ T_RANGE_NSORT            ] = ElmvRange;
-    ElmwListFuncs   [ T_RANGE_NSORT +IMMUTABLE ] = ElmvRange;
     ElmwListFuncs   [ T_RANGE_SSORT            ] = ElmvRange;
-    ElmwListFuncs   [ T_RANGE_SSORT +IMMUTABLE ] = ElmvRange;
     ElmsListFuncs   [ T_RANGE_NSORT            ] = ElmsRange;
-    ElmsListFuncs   [ T_RANGE_NSORT +IMMUTABLE ] = ElmsRange;
     ElmsListFuncs   [ T_RANGE_SSORT            ] = ElmsRange;
-    ElmsListFuncs   [ T_RANGE_SSORT +IMMUTABLE ] = ElmsRange;
     UnbListFuncs    [ T_RANGE_NSORT            ] = UnbRange;
     UnbListFuncs    [ T_RANGE_SSORT            ] = UnbRange;
     AssListFuncs    [ T_RANGE_NSORT            ] = AssRange;
@@ -1218,33 +1180,20 @@ static Int InitKernel (
     AsssListFuncs   [ T_RANGE_NSORT            ] = AsssRange;
     AsssListFuncs   [ T_RANGE_SSORT            ] = AsssRange;
     IsDenseListFuncs[ T_RANGE_NSORT            ] = AlwaysYes;
-    IsDenseListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = AlwaysYes;
     IsDenseListFuncs[ T_RANGE_SSORT            ] = AlwaysYes;
-    IsDenseListFuncs[ T_RANGE_SSORT +IMMUTABLE ] = AlwaysYes;
     IsHomogListFuncs[ T_RANGE_NSORT            ] = AlwaysYes;
-    IsHomogListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = AlwaysYes;
     IsHomogListFuncs[ T_RANGE_SSORT            ] = AlwaysYes;
-    IsHomogListFuncs[ T_RANGE_SSORT +IMMUTABLE ] = AlwaysYes;
     IsTableListFuncs[ T_RANGE_NSORT            ] = AlwaysNo;
-    IsTableListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = AlwaysNo;
     IsTableListFuncs[ T_RANGE_SSORT            ] = AlwaysNo;
-    IsTableListFuncs[ T_RANGE_SSORT +IMMUTABLE ] = AlwaysNo;
     IsSSortListFuncs[ T_RANGE_NSORT            ] = AlwaysNo;
-    IsSSortListFuncs[ T_RANGE_NSORT +IMMUTABLE ] = AlwaysNo;
     IsSSortListFuncs[ T_RANGE_SSORT            ] = AlwaysYes;
-    IsSSortListFuncs[ T_RANGE_SSORT +IMMUTABLE ] = AlwaysYes;
     IsPossListFuncs [ T_RANGE_NSORT            ] = IsPossRange;
-    IsPossListFuncs [ T_RANGE_NSORT +IMMUTABLE ] = IsPossRange;
     IsPossListFuncs [ T_RANGE_SSORT            ] = IsPossRange;
-    IsPossListFuncs [ T_RANGE_SSORT +IMMUTABLE ] = IsPossRange;
     PosListFuncs    [ T_RANGE_NSORT            ] = PosRange;
-    PosListFuncs    [ T_RANGE_NSORT +IMMUTABLE ] = PosRange;
     PosListFuncs    [ T_RANGE_SSORT            ] = PosRange;
-    PosListFuncs    [ T_RANGE_SSORT +IMMUTABLE ] = PosRange;
     PlainListFuncs  [ T_RANGE_NSORT            ] = PlainRange;
-    PlainListFuncs  [ T_RANGE_NSORT +IMMUTABLE ] = PlainRange;
     PlainListFuncs  [ T_RANGE_SSORT            ] = PlainRange;
-    PlainListFuncs  [ T_RANGE_SSORT +IMMUTABLE ] = PlainRange;
+
 
     return 0;
 }

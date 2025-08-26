@@ -362,10 +362,10 @@ false
 gap> TNAM_OBJ(x);
 "plain list"
 gap> TNAM_OBJ(y);
-"immutable plain list"
+"plain list"
 gap> IsSSortedList(y);;
 gap> TNAM_OBJ(y);
-"immutable dense non-homogeneous strictly-sorted plain list"
+"dense non-homogeneous strictly-sorted plain list"
 
 # String, for a range
 gap> l := [5 .. 10];
