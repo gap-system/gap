@@ -541,22 +541,11 @@ BIND_GLOBAL( "INSTALL_METHOD",
         fi;
       od;
 
-      rank:= function()
-        local res, i;
-
-        if LEN_LIST( alt_rank ) = 1 then
-          res:= 0;
-        else
-          res:= alt_rank[2];
-        fi;
-        for i in filters do
-          res:= res - RankFilter( i );
-        od;
-        for i in alt_rank[1] do
-          res:= res + RankFilter( i );
-        od;
-        return res;
-      end;
+      if LEN_LIST( alt_rank ) = 1 then
+        rank:= RANK_SHIFT_FUNCTION( filters, alt_rank[1], 0 );
+      else
+        rank:= RANK_SHIFT_FUNCTION( filters, alt_rank[1], alt_rank[2] );
+      fi;
       pos := pos+1;
     else
       rank:= 0;

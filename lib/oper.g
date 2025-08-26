@@ -2069,6 +2069,34 @@ end );
 
 #############################################################################
 ##
+#F  RANK_SHIFT_FUNCTION( <filters>, <alt_rank> )
+##
+##  Apparently it is important that this function does not get compiled,
+##  thus it cannot be in 'lib/oper1.g', in particular not inside the body
+##  of the function 'INSTALL_METHOD'.
+##  (When one puts the code there and compiles 'lib/oper1.g' then calling
+##  'BindingsOfClosure(INSTALL_METHOD)', which occurs in the tests from
+##  'tst/testinstall/opers/BindingsOfClosure.tst', ends in a
+##  segmentation fault.)
+##
+BIND_GLOBAL( "RANK_SHIFT_FUNCTION", function( filters, alt_filters, rank )
+    return function()
+      local i, res;
+
+      res:= rank;
+      for i in filters do
+        res:= res - RankFilter( i );
+      od;
+      for i in alt_filters do
+        res:= res + RankFilter( i );
+      od;
+      return res;
+    end;
+end );
+
+
+#############################################################################
+##
 #F  CHECK_ALL_METHOD_RANKS
 ##
 ##  Debugging helper which checks that all methods are sorted correctly
