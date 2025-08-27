@@ -4394,7 +4394,7 @@ DeclareOperation( "CharacterTableWithSortedClasses",
 ##  of a class of <M>F</M> are consecutive,
 ##  and that the succession of preimages is that of <A>facttbl</A>.
 ##  The <Ref Attr="Irr" Label="for a character table"/> value of <A>tbl</A>
-##  is sorted as with <C>SortCharTable( <A>tbl</A>, <A>kernel</A> )</C>.
+##  is sorted as with <C>SortedCharacterTable( <A>tbl</A>, <A>kernel</A> )</C>.
 ##  <P/>
 ##  (<E>Note</E> that the transformation is only unique up to table
 ##  automorphisms of <M>F</M>, and this need not be unique up to table
