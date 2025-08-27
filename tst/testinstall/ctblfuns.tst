@@ -91,4 +91,11 @@ gap> chi = chi^0;
 true
 
 #
+gap> tbl:= CharacterTable( SymmetricGroup( 4 ) );;
+gap> chi:= ClassFunction( tbl, 0 * Irr( tbl )[1] );
+ClassFunction( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 0, 0, 0, 0, 0 ] )
+gap> AntiSymmetricParts( tbl, [ chi ], 2 );
+[ VirtualCharacter( CharacterTable( Sym( [ 1 .. 4 ] ) ), [ 0, 0, 0, 0, 0 ] ) ]
+
+#
 gap> STOP_TEST("ctblfuns.tst");
