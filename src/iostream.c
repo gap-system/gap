@@ -44,7 +44,9 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
+#ifdef HAVE_TERMIOS_H
 #include <termios.h>
+#endif
 #include <unistd.h>
 
 #ifdef HAVE_SYS_WAIT_H

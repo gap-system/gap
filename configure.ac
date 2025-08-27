@@ -955,6 +955,19 @@ case "$host_cpu" in
     ;;
 esac
 
+dnl
+dnl Detect Windows/MinGW platform
+dnl
+case "$host_os" in
+  *mingw* | *msys* )
+    AC_DEFINE([SYS_IS_MINGW], [1], [define as 1 on MinGW/Windows])
+    AC_DEFINE([GAP_DISABLE_SUBPROCESS_CODE], [1], [disable subprocess support on MinGW])
+    ;;
+  *cygwin* )
+    AC_DEFINE([SYS_IS_CYGWIN32], [1], [define as 1 on Cygwin])
+    ;;
+esac
+
 
 dnl
 dnl check for the existence of various header files

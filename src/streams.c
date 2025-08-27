@@ -13,6 +13,18 @@
 
 #include "streams.h"
 
+#include "config.h"
+
+// Include system headers first to avoid conflicts on Windows/MinGW
+// where dirent.h includes system io.h which can conflict with GAP's io.h
+#include <dirent.h>
+#include <errno.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+
 #include "bool.h"
 #include "calls.h"
 #include "error.h"
@@ -37,16 +49,6 @@
 #include "sysstr.h"
 #include "trycatch.h"
 #include "vars.h"
-
-#include "config.h"
-
-#include <dirent.h>
-#include <errno.h>
-#include <limits.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-#include <unistd.h>
 
 #ifdef HAVE_SELECT
 // For FuncUNIXSelect

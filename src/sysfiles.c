@@ -44,7 +44,9 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef HAVE_TERMIOS_H
 #include <termios.h>
+#endif
 #include <time.h>
 #include <unistd.h>
 
@@ -867,7 +869,9 @@ Int SyIsEndOfFile (
 **  continue signals if this particular version  of UNIX supports them, so we
 **  can turn the terminal line back to cooked mode before stopping GAP.
 */
+#ifdef HAVE_TERMIOS_H
 static struct termios   syOld, syNew;           // old and new terminal state
+#endif
 
 #ifdef SIGTSTP
 
@@ -898,6 +902,7 @@ UInt syStartraw ( Int fid )
         else {                                             return 0; }
     }
 
+#ifdef HAVE_TERMIOS_H
     // try to get the terminal attributes, will fail if not terminal
     const int fd = SyBufFileno(fid);
     GAP_ASSERT(fd >= 0);
@@ -928,6 +933,11 @@ UInt syStartraw ( Int fid )
 
     // indicate success
     return 1;
+#else
+    // On systems without termios (e.g., Windows), we can't do raw mode
+    // Return 0 to indicate that raw mode is not available
+    return 0;
+#endif
 }
 
 
@@ -943,6 +953,7 @@ void syStopraw (
     if ( SyWindow )
         return;
 
+#ifdef HAVE_TERMIOS_H
 #ifdef SIGTSTP
     // remove signal handler for stop
     signal( SIGTSTP, SIG_DFL );
@@ -953,6 +964,8 @@ void syStopraw (
     GAP_ASSERT(fd >= 0);
     if (tcsetattr(fd, TCSANOW, &syOld) == -1)
         fputs("gap: 'tcsetattr' could not turn off raw mode!\n",stderr);
+#endif
+    // On systems without termios, nothing to do
 }
 
 
