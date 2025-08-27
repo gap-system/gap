@@ -284,6 +284,20 @@ DeclareObsoleteSynonym( "SCRSiftOld", "SiftedPermutation" );
 
 #############################################################################
 ##
+#V  OVERRIDENICE
+##
+##  Moved to obsoletes in August 2025.
+##
+##  Use 'OverrideNice()' instead, in order to take the current value of
+##  'RankFilter( IsHandledByNiceMonomorphism )' into account,
+##  not the initial value of the filter.
+##
+BindGlobal( "OVERRIDENICE", Maximum( NICE_FLAGS,
+               RankFilter( IsMatrixGroup and IsFinite ) ) );
+
+
+#############################################################################
+##
 ##  Not used in any redistributed package
 DeclareObsoleteSynonym( "ZeroSM", "ZeroSameMutability" );
 DeclareObsoleteSynonym( "AdditiveInverseSM", "AdditiveInverseSameMutability" );

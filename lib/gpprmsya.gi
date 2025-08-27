@@ -216,7 +216,7 @@ end);
 
 InstallMethod( ConjugacyClasses,
     "alternating",
-    [ IsNaturalAlternatingGroup ], OVERRIDENICE,
+    [ IsNaturalAlternatingGroup ], OverrideNice,
 function ( G )
     local   classes,    # conjugacy classes of <G>, result
             prt,        # partition of <G>
@@ -1719,7 +1719,7 @@ end);
 
 InstallMethod( ConjugacyClasses,
     "symmetric",
-    [ IsNaturalSymmetricGroup ], OVERRIDENICE,
+    [ IsNaturalSymmetricGroup ], OverrideNice,
 function ( G )
     local   classes,    # conjugacy classes of <G>, result
             prt,        # partition of <G>
@@ -2473,7 +2473,7 @@ local G,max,dom,n,A,S,issn,p,i,j,m,k,powdec,pd,gps,v,invol,sel,mf,l,prim;
 end);
 
 InstallMethod( CalcMaximalSubgroupClassReps, "symmetric", true,
-    [ IsNaturalSymmetricGroup and IsFinite], OVERRIDENICE,
+    [ IsNaturalSymmetricGroup and IsFinite], OverrideNice,
 function ( G )
 local m;
   m:=MaximalSubgroupsSymmAlt(G,false);
@@ -2485,7 +2485,7 @@ local m;
 end);
 
 InstallMethod( CalcMaximalSubgroupClassReps, "alternating", true,
-    [ IsNaturalAlternatingGroup and IsFinite], OVERRIDENICE,
+    [ IsNaturalAlternatingGroup and IsFinite], OverrideNice,
 function ( G )
 local m;
   m:=MaximalSubgroupsSymmAlt(G,false);

@@ -207,13 +207,39 @@ the error message <Q>no method found</Q> is signaled.
 <P/>
 Otherwise, the applicable method with highest <E>rank</E> is selected and then
 called.
-This rank is given by the sum of the ranks of the filters in the list
+This rank is usually given by the sum of the ranks of the filters in the list
 <A>args-filt</A>,
-<E>including involved filters</E>,
-plus the number <A>val</A> used in the call of
-<Ref Func="InstallMethod"/>.
-So the argument <A>val</A> can be used to raise the priority of a method
-relative to other methods for <A>opr</A>.
+<E>including involved filters</E>.
+This value can be modified by the optional <A>val</A> argument used in the
+call of <Ref Func="InstallMethod"/>, as follows.
+<P/>
+<List>
+<Item>
+  If <A>val</A> is an integer then add this value to the rank computed
+  from the filters.
+</Item>
+<Item>
+  If <A>val</A> is a function with zero arguments then add the value
+  returned by this function to the rank computed from the filters.
+</Item>
+<Item>
+  If <A>val</A> is a list of the form <C>[ filters ]</C> or
+  <C>[ filters, abs ]</C>, where <C>filters</C> is a list of filters
+  and <C>abs</C>, if given, is an integer, then ignore the filters in
+  <A>args-filt</A> for the rank computation, and instead take the sum of
+  the filters in <C>filters</C> (including involved filters) plus <C>abs</C>.
+</Item>
+</List>
+<P/>
+So the argument <A>val</A> can be used to raise or lower the priority
+of a method relative to other methods for <A>opr</A>.
+The variant where <A>val</A> is a function can be useful if one wants
+to shift the rank of the method by the rank of certain filters;
+note that such ranks need not be constant during a &GAP; session,
+they can grow due to implications, see <Ref Func="InstallTrueMethod"/>.
+The variant where <A>val</A> is a list can be useful for example if one wants
+that certain filters that are involved in <A>args-filt</A> are required but
+shall not count for the rank of the method.
 <P/>
 Note that for operations which are constructors special rules with respect
 to applicability and rank of the corresponding methods apply
