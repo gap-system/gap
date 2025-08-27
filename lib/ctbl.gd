@@ -1629,8 +1629,8 @@ DeclareAttributeSuppCT( "CharacterParameters", IsNearlyCharacterTable,
 ##  "A5"
 ##  gap> tbl:= CharacterTable( Group( () ) );;
 ##  gap> Identifier( tbl );  Identifier( tbl mod 2 );
-##  "CT9"
-##  "CT9mod2"
+##  "CT8"
+##  "CT8mod2"
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
