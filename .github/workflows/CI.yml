@@ -137,6 +137,12 @@ jobs:
             shell: C:\cygwin64\bin\bash.exe --login -o igncr '{0}'
             test-suites: "testmockpkg testinstall"
 
+          # Test MinGW/MSYS2 compilation support
+          - os: windows-2022
+            shell: msys2 {0}
+            test-suites: "testinstall"
+            extra: "MINGW=yes NO_COVERAGE=1"
+
     env:
       TEST_SUITES: ${{ matrix.test-suites }}
 
@@ -149,15 +155,31 @@ jobs:
           python-version: "3.11"
 
       - uses: gap-actions/setup-cygwin@v1
-        if: ${{ runner.os == 'Windows' }}
+        if: ${{ runner.os == 'Windows' && !contains(matrix.extra, 'MINGW=yes') }}
         with:
           PKGS_TO_INSTALL: 'wget,git,gcc-g++,gcc-core,m4,libgmp-devel,make,automake,libtool,autoconf,autoconf2.5,zlib-devel,libreadline-devel,libmpc-devel,libmpfr-devel,xdg-utils,pkg-config'
+
+      - uses: msys2/setup-msys2@v2
+        if: ${{ runner.os == 'Windows' && contains(matrix.extra, 'MINGW=yes') }}
+        with:
+          msystem: MINGW64
+          install: >-
+            git
+            make
+            autoconf
+            automake
+            libtool
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-gmp
+            mingw-w64-x86_64-zlib
+            mingw-w64-x86_64-readline
+            mingw-w64-x86_64-pkg-config
 
       # There are two cygwin installs on github actions (ours,
       # and a preinstalled one which we can't use as not enough packages are installed.
       # Due to conflicts between these two, we cannot spawn new Cygwin processes and
       # then use IO between processes
-      - if: ${{ runner.os == 'Windows' }}
+      - if: ${{ runner.os == 'Windows' && !contains(matrix.extra, 'MINGW=yes') }}
         name: "Remove tests which do not work on github actions in Windows"
         run: |
                rm tst/testinstall/testunix/streamio.tst tst/testinstall/testunix/streams.tst

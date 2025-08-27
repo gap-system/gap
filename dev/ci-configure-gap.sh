@@ -5,7 +5,7 @@ set -ex
 SRCDIR=${SRCDIR:-$PWD}
 
 # print some data useful for debugging issues with the build
-gcov --version
+gcov --version || echo "gcov not available"
 printenv | sort
 git show --pretty=fuller -s
 
