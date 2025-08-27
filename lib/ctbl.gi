@@ -687,7 +687,7 @@ InstallOtherMethod( \/,
 InstallMethod( CharacterDegrees,
     "for a group, and zero (call the one-argument version)",
     [ IsGroup, IsZeroCyc ],
-    { G, zero } -> CharacterDegrees( G ) );
+    { G, zero } -> List( CharacterDegrees( G ), ShallowCopy ) );
 
 BindGlobal( "CharacterDegreesAbelian", function( G, p )
     G:= Size( G );
@@ -754,7 +754,7 @@ InstallMethod( CharacterDegrees,
 
     Assert( 1, IsPrimeInt( p ) );
     if Size( G ) mod p <> 0 then
-      return CharacterDegrees( G );
+      return List( CharacterDegrees( G ), ShallowCopy );
     elif IsAbelian( G ) then
       return CharacterDegreesAbelian( G, p );
     elif HasOrdinaryCharacterTable( G ) then
@@ -763,7 +763,7 @@ InstallMethod( CharacterDegrees,
       if IsBound( ComputedBrauerTables( tbl )[p] ) then
         modtbl:= ComputedBrauerTables( tbl )[p];
         if HasIrr( modtbl ) then
-          return CharacterDegrees( modtbl );
+          return List( CharacterDegrees( modtbl ), ShallowCopy );
         fi;
       fi;
     fi;
@@ -771,7 +771,7 @@ InstallMethod( CharacterDegrees,
       return CharacterDegreesConlon( G, p );
     else
       # Perhaps we cannot compute the result.
-      return CharacterDegrees( CharacterTable( G, p ) );
+      return List( CharacterDegrees( CharacterTable( G, p ) ), ShallowCopy );
     fi;
     end );
 
