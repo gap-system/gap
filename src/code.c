@@ -1653,7 +1653,7 @@ void CodeCharExpr(CodeState * cs, Char chr)
 
     // allocate the character expression
     litr = NewExpr(cs, EXPR_CHAR, sizeof(UInt));
-    WRITE_EXPR(cs, litr, 0, chr);
+    WRITE_EXPR(cs, litr, 0, (UChar)chr);
 
     // push the literal expression
     PushExpr( litr );

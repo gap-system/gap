@@ -785,7 +785,7 @@ static Obj EvalFalseExpr(Expr expr)
 */
 static Obj EvalCharExpr(Expr expr)
 {
-    return ObjsChar[ READ_EXPR(expr, 0) ];
+    return ObjsChar[ (UChar)READ_EXPR(expr, 0) ];
 }
 
 
