@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <stdint.h>
 
+#include "config.h"
 #include "debug.h"
 
 // check if we are on a 64 or 32 bit machine; in the former

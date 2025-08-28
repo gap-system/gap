@@ -22,9 +22,9 @@
 #define environ (*_NSGetEnviron())
 
 #elif defined(SYS_IS_MINGW)
-// MinGW: just declare 'environ' (provided by the C runtime); avoid remapping
-// to '_environ' to prevent undeclared identifier issues in some toolchains.
-extern char ** environ;
+// MinGW: Use _environ which is guaranteed to be available
+extern char ** _environ;
+#define environ _environ
 
 #elif !defined(environ)
 extern char ** environ;   // generic fallback

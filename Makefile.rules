@@ -438,6 +438,16 @@ ifneq (,$(findstring cygwin,$(host_os)))
   LIBGAP_FULL = libgap$(SHLIB_EXT)
 
   LINK_SHLIB_FLAGS = -shared -Wl,--enable-auto-image-base -Wl,--out-implib,libgap.dll.a
+else ifneq (,$(findstring mingw,$(host_os)))
+  SHLIB_EXT=.dll
+  LIBGAP_FULL = libgap$(SHLIB_EXT)
+
+  LINK_SHLIB_FLAGS = -shared -Wl,--enable-auto-image-base -Wl,--out-implib,libgap.dll.a
+  
+  GAP_CPPFLAGS += -DPIC
+  GAP_CFLAGS += -fPIC
+  GAP_CXXFLAGS += -fPIC
+  GAP_LDFLAGS += -Wl,--export-all-symbols
 else ifneq (,$(findstring darwin,$(host_os)))
   SHLIB_EXT=.dylib
   LIBGAP_FULL = libgap.$(SHLIB_MAJOR)$(SHLIB_EXT)
