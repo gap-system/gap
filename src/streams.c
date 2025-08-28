@@ -1043,8 +1043,17 @@ static Obj FuncTmpDirectory(Obj self)
     const char * extra = "/gaptempdirXXXXXX";
     AppendCStr(name, extra, strlen(extra));
 
+#ifdef HAVE_MKDTEMP
     if (mkdtemp(CSTR_STRING(name)) == 0)
         return Fail;
+#else
+    // Fallback for systems without mkdtemp (like MinGW)
+    if (mktemp(CSTR_STRING(name)) == 0)
+        return Fail;
+    // Try to create the directory
+    if (SyMkdir(CONST_CSTR_STRING(name)) == -1)
+        return Fail;
+#endif
     return name;
 }
 
@@ -1137,6 +1146,7 @@ static Obj FuncGAP_chdir(Obj self, Obj path)
 static Obj FuncGAP_realpath(Obj self, Obj path)
 {
     RequireStringRep(SELF_NAME, path);
+#ifdef HAVE_REALPATH
     char resolved_path[PATH_MAX];
 
     if (NULL == realpath(CONST_CSTR_STRING(path), resolved_path)) {
@@ -1144,6 +1154,11 @@ static Obj FuncGAP_realpath(Obj self, Obj path)
         return Fail;
     }
     return MakeString(resolved_path);
+#else
+    // Fallback for systems without realpath (like MinGW)
+    // Just return the original path as-is
+    return CopyObj(path, 0);
+#endif
 }
 
 
