@@ -3924,10 +3924,12 @@ InstallGlobalFunction( AntiSymmetricParts, function( tbl, characters, n )
         od;
 
       od;
-      if IsClassFunction( chi ) and sym[1] > 0 then
-        sym:= ClassFunctionSameType( tbl, chi, sym );
-      elif HasIsVirtualCharacter( chi ) and IsVirtualCharacter( chi ) then
-        sym:= VirtualCharacter( tbl, sym );
+      if IsClassFunction( chi ) then
+        if IsZero( sym ) then
+          sym:= VirtualCharacter( tbl, sym );
+        else
+          sym:= ClassFunctionSameType( tbl, chi, sym );
+        fi;
       fi;
       Add( antisymmetricparts, sym );
 
