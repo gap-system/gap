@@ -1030,6 +1030,7 @@ AC_CHECK_FUNCS([setitimer])
 dnl check for functions dealing with virtual memory
 AC_CHECK_FUNCS([vm_allocate sbrk madvise sysconf])
 AC_CHECK_FUNCS([realpath readlink mkdtemp])
+AC_CHECK_FUNCS([lstat ttyname])
 
 dnl check for large-file support (for accessing files whose sizes or inodes require 64bits)
 AC_SYS_LARGEFILE
