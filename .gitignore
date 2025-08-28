@@ -23,6 +23,7 @@
 /extern/install/
 
 /ffgen
+ffgen.exe
 /gac
 /gap
 /sysinfo.gap
