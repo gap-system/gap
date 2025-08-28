@@ -38,29 +38,6 @@
 #ifdef SYS_IS_MINGW
 // On MinGW, some POSIX functions like access, read, write are in io.h
 #include <io.h>
-// MinGW POSIX compatibility - declare functions explicitly if not found
-extern int read(int fd, void *buf, unsigned int count);
-extern int write(int fd, const void *buf, unsigned int count);
-extern int open(const char *pathname, int flags, ...);
-extern int close(int fd);
-extern long lseek(int fd, long offset, int whence);
-extern int isatty(int fd);
-extern int access(const char *pathname, int mode);
-extern int mkdir(const char *pathname);
-extern int rmdir(const char *pathname);
-// access() mode constants
-#ifndef F_OK
-#define F_OK 0
-#endif
-#ifndef R_OK
-#define R_OK 4
-#endif
-#ifndef W_OK
-#define W_OK 2
-#endif
-#ifndef X_OK
-#define X_OK 1
-#endif
 #endif
 
 #include <sys/types.h>
