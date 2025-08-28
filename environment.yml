@@ -7,67 +7,26 @@
 #   conda env create -f environment.yml
 #   conda activate gap-dev
 #
-# For Windows MinGW development specifically:
-# 1. Install MSYS2 from https://www.msys2.org/
-# 2. Install MinGW packages via pacman:
-#    pacman -S git make autoconf automake libtool 
-#    pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-gmp
-#    pacman -S mingw-w64-x86_64-zlib mingw-w64-x86_64-readline
-#    pacman -S mingw-w64-x86_64-pkg-config
-# 3. Use this conda environment for additional development tools
-#
-# Building GAP:
-#   ./autogen.sh
-#   ./configure --host=x86_64-w64-mingw32  # For MinGW on Windows
-#   make
-#
-# Testing:
-#   make check  # Basic tests
-#   make citests  # Comprehensive tests
-#
-# The CI configuration in .github/workflows/CI.yml shows the exact
-# setup used for automated testing.
+# For Windows, you have to install MinGW-w64 separately
+# (see README.md for instructions).
 
 name: gap-dev
 channels:
   - conda-forge
-  - defaults
 dependencies:
   # Core development tools
-  - git
   - make
-  - autoconf
-  - automake  
-  - libtool
   - pkg-config
+  # - autoconf # not available on Windows
+  # - automake # not available on Windows
+  # - libtool # not available on Windows
 
-  # C/C++ compiler and build tools  
-  - gcc_linux-64  # Linux GCC compiler
-  - gxx_linux-64  # Linux G++ compiler
-  
-  # Required libraries for GAP (cross-platform)
-  - gmp           # GNU Multiple Precision Arithmetic Library
-  - zlib          # Compression library
-  - readline      # Command line editing library
-  
-  # Python tools for development and testing
-  - python >=3.8
-  - gcovr         # For coverage reporting
-  
-  # Optional but useful development tools
-  - wget
-  - tar
-  - gzip
-  - unzip
-  
-  # Build and debugging tools
-  - gdb
-  - ccache        # For faster rebuilds
+  # C/C++ compiler and build tools
+  # - compilers (not available on Windows)
+  - ccache
 
-  # Documentation tools (optional)
-  - texlive-core  # For manual building
-  
-  # Python packages via pip
-  - pip
-  - pip:
-    - pytest      # For any Python-based tests
+  # Required libraries
+  - gmp # GNU Multiple Precision Arithmetic Library
+  - zlib # Compression library
+  #- readline # Command line editing library (not available on Windows)
+
