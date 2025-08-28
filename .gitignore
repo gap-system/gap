@@ -28,9 +28,10 @@ src/ffdata.c
 src/ffdata.h
 
 /ffgen
-ffgen.exe
+/ffgen.exe
 /gac
 /gap
+/gap.exe
 /sysinfo.gap
 /sysinfo.gap-*
 /libgap*.dylib*
