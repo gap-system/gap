@@ -22,6 +22,11 @@
 /extern/build/
 /extern/install/
 
+# Temporary build directories and artifacts
+native-build/
+src/ffdata.c
+src/ffdata.h
+
 /ffgen
 ffgen.exe
 /gac
