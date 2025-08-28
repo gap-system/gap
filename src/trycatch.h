@@ -16,6 +16,7 @@
 #include "funcs.h"    // for SetRecursionDepth
 #include "gapstate.h"
 #include "system.h"    // for NORETURN
+#include "config.h"    // for SYS_IS_MINGW
 
 #include <setjmp.h>
 #include <string.h>    // for memcpy
