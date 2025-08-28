@@ -573,9 +573,9 @@ static void InitSysOpts(void)
 #endif // defined(SYS_IS_64_BIT)
 
 #ifdef SYS_IS_64_BIT
-    SyAllocPool = 4096L*1024*1024;   // Note this is in bytes!
+    SyAllocPool = 4096LL*1024*1024;   // Note this is in bytes!
 #else
-    SyAllocPool = 1536L*1024*1024;   // Note this is in bytes!
+    SyAllocPool = 1536LL*1024*1024;   // Note this is in bytes!
 #endif // defined(SYS_IS_64_BIT)
     SyStorOverrun = SY_STOR_OVERRUN_CLEAR;
     SyStorKill = 0;
