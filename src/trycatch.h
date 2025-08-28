@@ -20,6 +20,15 @@
 #include <setjmp.h>
 #include <string.h>    // for memcpy
 
+// Handle platform differences for setjmp
+#ifdef SYS_IS_MINGW
+// On MinGW/Windows, _setjmp requires two arguments, so use regular setjmp
+#define GAP_SETJMP(jmp_buf) setjmp(jmp_buf)
+#else
+// On POSIX systems, use _setjmp for better performance
+#define GAP_SETJMP(jmp_buf) _setjmp(jmp_buf)
+#endif
+
 
 /****************************************************************************
 **
@@ -87,7 +96,7 @@ void InvokeTryCatchHandler(TryCatchMode mode);
     GAP_TryCatchEnv gap__env;                                                \
     gap_safe_trycatch(&gap__env);                                            \
     InvokeTryCatchHandler(TryEnter);                                         \
-    if (!_setjmp(STATE(ReadJmpError)))                                       \
+    if (!GAP_SETJMP(STATE(ReadJmpError)))                                    \
         for (gap__i = 1; gap__i; gap__i = 0,                                 \
             InvokeTryCatchHandler(TryLeave),                                 \
             gap_restore_trycatch(&gap__env))
