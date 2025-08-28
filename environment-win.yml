@@ -1,10 +1,10 @@
 # GAP Development Environment
 #
 # This conda environment provides the necessary tools and libraries for
-# developing and testing GAP on Linux and macOS.
+# developing and testing GAP on Windows.
 #
 # Usage:
-#   conda env create -f environment.yml
+#   conda env create -f environment-win.yml
 #   conda activate gap-dev
 
 name: gap-dev
@@ -14,16 +14,16 @@ dependencies:
   # Core development tools
   - make
   - pkg-config
-  - autoconf
-  - automake
-  - libtool
+  - m2-autoconf
+  - m2-libtool
+  - m2-m4
+  - m2-grep
+  - m2-sed
 
   # C/C++ compiler and build tools
-  - compilers
+  - m2w64-gcc
   - ccache
 
   # Required libraries
-  - gmp # GNU Multiple Precision Arithmetic Library
-  - zlib # Compression library
-  - readline # Command line editing library
-
+  - m2w64-gmp # GNU Multiple Precision Arithmetic Library
+  - m2w64-zlib # Compression library
