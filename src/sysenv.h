@@ -22,9 +22,8 @@
 #define environ (*_NSGetEnviron())
 
 #elif defined(SYS_IS_MINGW)
-// MinGW: Use _environ which is guaranteed to be available
-extern char ** _environ;
-#define environ _environ
+// MinGW: On cross-compilation, just use environ directly
+extern char ** environ;
 
 #elif !defined(environ)
 extern char ** environ;   // generic fallback
