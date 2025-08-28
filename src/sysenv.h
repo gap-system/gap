@@ -22,12 +22,12 @@
 #define environ (*_NSGetEnviron())
 
 #elif defined(SYS_IS_MINGW)
-// MinGW: On cross-compilation, just use environ directly
-extern char ** environ;
+// MinGW exposes environ via <stdlib.h>
+#include <stdlib.h>
+#endif
 
-#elif !defined(environ)
+#ifndef environ
 extern char ** environ;   // generic fallback
-
 #endif
 
 #endif    // GAP_SYSENV_H
