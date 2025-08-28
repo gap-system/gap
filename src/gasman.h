@@ -36,6 +36,7 @@
 #ifndef GAP_GASMAN_H
 #define GAP_GASMAN_H
 
+#include "funcs.h"    // for GAP_SETJMP/GAP_LONGJMP
 #include "common.h"
 
 

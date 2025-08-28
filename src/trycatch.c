@@ -58,5 +58,6 @@ void GAP_THROW(void)
     int depth = STATE(TryCatchDepth);
     for (int i = 0; i < ARRAY_SIZE(throwObservers) && throwObservers[i]; ++i)
         (throwObservers[i])(depth);
-    _longjmp(STATE(ReadJmpError), 1);
+
+    GAP_LONGJMP(STATE(ReadJmpError), 1);
 }

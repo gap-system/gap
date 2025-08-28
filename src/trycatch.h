@@ -13,22 +13,13 @@
 #ifndef GAP_TRYCATCH_H
 #define GAP_TRYCATCH_H
 
-#include "funcs.h"    // for SetRecursionDepth
+#include "funcs.h"    // for SetRecursionDepth, GAP_SETJMP/GAP_LONGJMP
 #include "gapstate.h"
 #include "system.h"    // for NORETURN
-#include "config.h"    // for SYS_IS_MINGW
 
 #include <setjmp.h>
 #include <string.h>    // for memcpy
 
-// Handle platform differences for setjmp
-#ifdef SYS_IS_MINGW
-// On MinGW/Windows, _setjmp requires two arguments, so use regular setjmp
-#define GAP_SETJMP(jmp_buf) setjmp(jmp_buf)
-#else
-// On POSIX systems, use _setjmp for better performance
-#define GAP_SETJMP(jmp_buf) _setjmp(jmp_buf)
-#endif
 
 
 /****************************************************************************

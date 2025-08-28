@@ -18,6 +18,7 @@
 #define GAP_FUNCS_H
 
 #include "common.h"
+#include "config.h"
 
 /****************************************************************************
 **
@@ -63,5 +64,16 @@ EXPORT_INLINE void CheckRecursionBefore( void )
 *F  InitInfoFuncs() . . . . . . . . . . . . . . . . . table of init functions
 */
 StructInitInfo * InitInfoFuncs ( void );
+
+// Handle platform differences for setjmp/longjmp
+#ifdef SYS_IS_MINGW
+// On MinGW/Windows, _setjmp requires two arguments, so use regular setjmp
+#define GAP_SETJMP(jmp_buf) setjmp(jmp_buf)
+#define GAP_LONGJMP(jmp_buf, val) longjmp(jmp_buf, val)
+#else
+// On POSIX systems, use _setjmp/_longjmp for better performance
+#define GAP_SETJMP(jmp_buf) _setjmp(jmp_buf)
+#define GAP_LONGJMP(jmp_buf, val) _longjmp(jmp_buf, val)
+#endif
 
 #endif // GAP_FUNCS_H
