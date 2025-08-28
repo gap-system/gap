@@ -26,12 +26,30 @@ if [[ ( ! "$builddir/config.status" -nt "$src/configure" )
 fi
 
 $MAKE -C "$builddir"
-if ! $MAKE -C "$builddir" check; then
-  echo "=== FAILED checking $pkg ==="
-  echo "The copy of $pkg distributed with GAP has failed to pass its internal checks"
-  echo "You can either install the library from a different source, or use"
-  echo "a newer release of GAP"
-  exit 1
+# Skip tests for cross-compilation as they cannot run on host system
+# Check if --host was passed and differs from --build (cross-compilation)
+if echo "$@" | grep -q -- "--host=" && echo "$@" | grep -q -- "--build="; then
+  host_arg=$(echo "$@" | grep -o -- "--host=[^ ]*" | cut -d= -f2)
+  build_arg=$(echo "$@" | grep -o -- "--build=[^ ]*" | cut -d= -f2)
+  if [ "$host_arg" != "$build_arg" ]; then
+    echo "=== SKIPPING tests for $pkg (cross-compilation: build=$build_arg, host=$host_arg) ==="
+  else
+    if ! $MAKE -C "$builddir" check; then
+      echo "=== FAILED checking $pkg ==="
+      echo "The copy of $pkg distributed with GAP has failed to pass its internal checks"
+      echo "You can either install the library from a different source, or use"
+      echo "a newer release of GAP"
+      exit 1
+    fi
+  fi
+else
+  if ! $MAKE -C "$builddir" check; then
+    echo "=== FAILED checking $pkg ==="
+    echo "The copy of $pkg distributed with GAP has failed to pass its internal checks"
+    echo "You can either install the library from a different source, or use"
+    echo "a newer release of GAP"
+    exit 1
+  fi
 fi
 
 $MAKE -C "$builddir" install

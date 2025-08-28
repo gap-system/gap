@@ -81,6 +81,11 @@ doc/ref/user_pref_list.xml
 
 # external dependencies
 /extern/gmp*/
+# Ignore zlib build artifacts
+/extern/zlib/*.o
+/extern/zlib/*.a
+/extern/zlib/*.so*
+/extern/zlib/zlibrc.o
 
 # tests, test logs, package build logs
 /dev/log

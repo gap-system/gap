@@ -595,7 +595,14 @@ AS_IF([test x$gmp_found = xno],[
   GMP_PREFIX='${abs_builddir}/extern/install/gmp'
   GMP_CPPFLAGS='-I${abs_builddir}/extern/install/gmp/include'
   GMP_LDFLAGS='-L${abs_builddir}/extern/install/gmp/lib'
-  GMP_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/gmp/lib -lgmp'
+  case "$host_os" in
+    *mingw* | *msys* )
+      GMP_LIBS='-lgmp'
+      ;;
+    *)
+      GMP_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/gmp/lib -lgmp'
+      ;;
+  esac
 ])
 
 AC_SUBST([BUILD_GMP])
@@ -673,7 +680,14 @@ AS_IF([test x$zlib_found = xno],[
   BUILD_ZLIB=yes
   ZLIB_CPPFLAGS='-I${abs_builddir}/extern/install/zlib/include'
   ZLIB_LDFLAGS='-L${abs_builddir}/extern/install/zlib/lib'
-  ZLIB_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/zlib/lib -lz'
+  case "$host_os" in
+    *mingw* | *msys* )
+      ZLIB_LIBS='-lz'
+      ;;
+    *)
+      ZLIB_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/zlib/lib -lz'
+      ;;
+  esac
 ])
 
 AC_SUBST([BUILD_ZLIB])

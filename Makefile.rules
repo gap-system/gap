@@ -746,11 +746,19 @@ EXTERN_FILES += $(GMP_FILES)
 gmp: $(GMP_FILES)
 $(GMP_FILES):
 	touch "$(abs_srcdir)/extern/gmp/doc/gmp.info"
+ifneq (,$(findstring mingw,$(host_os)))
+	MAKE=$(MAKE) $(srcdir)/cnf/build-extern.sh gmp "$(abs_srcdir)/extern/gmp" \
+	$(EXTERN_CONFIGFLAGS) \
+	ABI="$(ABI)" \
+	--enable-static \
+	--disable-shared
+else
 	MAKE=$(MAKE) $(srcdir)/cnf/build-extern.sh gmp "$(abs_srcdir)/extern/gmp" \
 	$(EXTERN_CONFIGFLAGS) \
 	ABI="$(ABI)" \
 	--disable-static \
 	--enable-shared
+endif
 
 .PHONY: gmp
 
@@ -784,6 +792,10 @@ zlib: $(ZLIB_FILES)
 ifneq (,$(findstring cygwin,$(host_os)))
 $(ZLIB_FILES):
 	MAKE=$(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" $(srcdir)/cnf/build-cygwin-zlib.sh
+
+else ifneq (,$(findstring mingw,$(host_os)))
+$(ZLIB_FILES):
+	MAKE=$(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)" $(srcdir)/cnf/build-mingw-zlib.sh
 
 else
 
