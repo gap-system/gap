@@ -21,9 +21,13 @@
 #include <crt_externs.h>
 #define environ (*_NSGetEnviron())
 
-#elif !defined(environ)
-
+#elif defined(SYS_IS_MINGW)
+// MinGW: just declare 'environ' (provided by the C runtime); avoid remapping
+// to '_environ' to prevent undeclared identifier issues in some toolchains.
 extern char ** environ;
+
+#elif !defined(environ)
+extern char ** environ;   // generic fallback
 
 #endif
 
