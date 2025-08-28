@@ -82,7 +82,9 @@
 
 #include <zlib.h>
 
+#ifndef SYS_IS_MINGW
 #include <sys/utsname.h>
+#endif
 
 
 // 'EndLineHook' is a GAP-level variable which can be set to a function to be
@@ -358,6 +360,7 @@ static Obj FuncCrcString(Obj self, Obj str)
 Obj SyGetOsRelease(void)
 {
     Obj            r = NEW_PREC(0);
+#ifndef SYS_IS_MINGW
     struct utsname buf;
     if (!uname(&buf)) {
         AssPRec(r, RNamName("sysname"), MakeImmString(buf.sysname));
@@ -366,6 +369,7 @@ Obj SyGetOsRelease(void)
         AssPRec(r, RNamName("version"), MakeImmString(buf.version));
         AssPRec(r, RNamName("machine"), MakeImmString(buf.machine));
     }
+#endif
 
     return r;
 }
