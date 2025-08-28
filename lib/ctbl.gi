@@ -658,38 +658,120 @@ InstallOtherMethod( \/,
 #M  CharacterDegrees( <G> ) . . . . . . . . . . . . . . . . . . . for a group
 #M  CharacterDegrees( <G>, <zero> ) . . . . . . . . . .  for a group and zero
 ##
-##  The attribute delegates to the two-argument version.
-##  The two-argument version delegates to `Irr'.
+##  - The two-argument version with second argument zero
+##    delegates to the one-argument version.
+##
+##  - The two-argument version with second argument a positive integer <p>
+##    has one method that
+##    - calls the one-argument version if <p> does not divide the group order,
+##    - calls 'CharacterDegreesAbelian' if the group is abelian,
+##    - uses stored irreducibles of the Brauer character table in question,
+##    - calls 'CharacterDegreesConlon' if the group is solvable,
+##    - and delegates to the Brauer character table in question otherwise
+##      (which may result in an error if the degrees  cannot be computed).
+##
+##  - The one-argument version has at least the following methods,
+##    listed according to decreasing rank:
+##    - system getter,
+##    - applicable to 'IsGroup and IsAbelian',
+##    - applicable to 'IsGroup and HasIrr',
+##    - applicable to 'IsGroup and HasOrdinaryCharacterTable'
+##      (call 'TryNextMethod()' if the table does not store irreducibles),
+##    - applicable to 'IsGroup and IsHandledByNiceMonomorphism'
+##      (gets installed via 'AttributeMethodByNiceMonomorphism'),
+##    - applicable to 'IsGroup and MayBeHandledByNiceMonomorphism'
+##      (gets installed via 'AttributeMethodByNiceMonomorphism'),
+##    - applicable to 'IsGroup'
+##      (this method decides about the algorithm to be used).
 ##
 InstallMethod( CharacterDegrees,
-    "for a group (call the two-argument version)",
-    [ IsGroup ],
-    G -> CharacterDegrees( G, 0 ) );
+    "for a group, and zero (call the one-argument version)",
+    [ IsGroup, IsZeroCyc ],
+    { G, zero } -> List( CharacterDegrees( G ), ShallowCopy ) );
+
+BindGlobal( "CharacterDegreesAbelian", function( G, p )
+    G:= Size( G );
+    if p <> 0 then
+      while G mod p = 0 do
+        G:= G / p;
+      od;
+    fi;
+    return [ [ 1, G ] ];
+    end );
 
 InstallMethod( CharacterDegrees,
-    "for a group, and zero",
-    [ IsGroup, IsZeroCyc ],
-    function( G, zero )
+    "for an abelian group",
+    [ IsGroup and IsAbelian ],
+    {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
+    G -> CharacterDegreesAbelian( G, 0 ) );
 
-    # Force a check whether the group is solvable.
-    if not HasIsSolvableGroup( G ) and IsSolvableGroup( G ) then
+InstallMethod( CharacterDegrees,
+    "for a group with known Irr value",
+    [ IsGroup and HasIrr ],
+    {} -> RankFilter( IsHandledByNiceMonomorphism ) + 1, # override nice mon. method
+    G -> Collected( List( Irr( G ), DegreeOfCharacter ) ) );
 
-      # There is a better method which is now applicable.
-      return CharacterDegrees( G, 0 );
+InstallMethod( CharacterDegrees,
+    "for a group with known OrdinaryCharacterTable value",
+    [ IsGroup and HasOrdinaryCharacterTable ],
+    {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
+    function( G )
+    G:= OrdinaryCharacterTable( G );
+    if not HasIrr( G ) then
+      TryNextMethod();
     fi;
-
-    # For nonsolvable groups, there is just the brute force method.
     return Collected( List( Irr( G ), DegreeOfCharacter ) );
     end );
 
 InstallMethod( CharacterDegrees,
+    "for a group",
+    [ IsGroup ],
+    function( G )
+    # We assume that the 'Irr' value is not known,
+    # otherwise a method with higher rank would have been successful.
+    if IsAbelian( G ) then
+      return CharacterDegreesAbelian( G, 0 );
+    elif IsSupersolvableGroup( G ) then
+      return CharacterDegreesBaumClausen( G );
+    elif IsSolvableGroup( G ) then
+      return CharacterDegreesConlon( G, 0 );
+    else
+      # We have no better methods.
+      return Collected( List( Irr( G ), DegreeOfCharacter ) );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  CharacterDegrees( <G>, <p> )  . . . . . . . . . . . . . . . for prime <p>
+##
+InstallMethod( CharacterDegrees,
     "for a group, and positive integer",
     [ IsGroup, IsPosInt ],
     function( G, p )
-    if Size( G ) mod p = 0 then
-      return CharacterDegrees( CharacterTable( G, p ) );
+    local tbl, modtbl;
+
+    Assert( 1, IsPrimeInt( p ) );
+    if Size( G ) mod p <> 0 then
+      return List( CharacterDegrees( G ), ShallowCopy );
+    elif IsAbelian( G ) then
+      return CharacterDegreesAbelian( G, p );
+    elif HasOrdinaryCharacterTable( G ) then
+      # Perhaps the 'p'-modular irreducibles are stored.
+      tbl:= CharacterTable( G );
+      if IsBound( ComputedBrauerTables( tbl )[p] ) then
+        modtbl:= ComputedBrauerTables( tbl )[p];
+        if HasIrr( modtbl ) then
+          return List( CharacterDegrees( modtbl ), ShallowCopy );
+        fi;
+      fi;
+    fi;
+    if IsSolvableGroup( G ) then
+      return CharacterDegreesConlon( G, p );
     else
-      return CharacterDegrees( G, 0 );
+      # Perhaps we cannot compute the result.
+      return List( CharacterDegrees( CharacterTable( G, p ) ), ShallowCopy );
     fi;
     end );
 
@@ -708,7 +790,8 @@ InstallMethod( CharacterDegrees,
     [ IsCharacterTable ],
     function( tbl )
     if HasUnderlyingGroup( tbl ) and not HasIrr( tbl ) then
-      return CharacterDegrees( UnderlyingGroup( tbl ) );
+      return CharacterDegrees( UnderlyingGroup( tbl ),
+                               UnderlyingCharacteristic( tbl ) );
     else
       return Collected( List( Irr( tbl ), DegreeOfCharacter ) );
     fi;

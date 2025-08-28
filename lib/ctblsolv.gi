@@ -73,25 +73,6 @@ InstallMethod(LinearCharacters, ["CanEasilyComputePcgs"], function(G)
   return res;
 end);
 
-#############################################################################
-##
-#M  CharacterDegrees( <G>, <p> )  . . . . . . . . . . .  for an abelian group
-##
-InstallMethod( CharacterDegrees,
-    "for an abelian group, and an integer p (just strip off the p-part)",
-    [ IsGroup and IsAbelian, IsInt ],
-    {} -> RankFilter(IsZeroCyc), # There is a method for groups for
-                           # the integer zero which is worse
-    function( G, p )
-    G:= Size( G );
-    if p <> 0 then
-      while G mod p = 0 do
-        G:= G / p;
-      od;
-    fi;
-    return [ [ 1, G ] ];
-    end );
-
 
 #############################################################################
 ##
@@ -200,8 +181,6 @@ InstallGlobalFunction( ProjectiveCharDeg, function( G, z, q )
     p:= Factors( i )[1];
 
     if not IsAbelian( N ) then
-
-      h:= NaturalHomomorphismByNormalSubgroupNC( G, SubgroupNC( G, [ z ] ) );
 
       # `c' is a list of complement classes of `N' modulo `z'
       c:= List( ComplementClassesRepresentatives( ImagesSource( h ), ImagesSet( h, N ) ),
@@ -332,7 +311,7 @@ InstallGlobalFunction( ProjectiveCharDeg, function( G, z, q )
     orbs:= Filtered( orbs,
               o -> not IsZero( CanonicalRepresentativeOfExternalSet( o ) ) );
 
-    # In this case the stabilzers of the kernels are already the
+    # In this case the stabilizers of the kernels are already the
     # stabilizers of the characters.
     for orb in orbs do
       k:= KernelUnderDualAction( O, Opcgs,
@@ -464,19 +443,19 @@ BindGlobal( "CharacterDegreesConlon", function( G, q )
     # (Note that we must not call `TryNextMethod' because the method
     # for abelian groups has higher rank.)
     if IsAbelian( G ) then
-      r:= CharacterDegrees( G, q );
+      r:= CharacterDegreesAbelian( G, q );
       Info( InfoCharacterTable, 1,
             "CharacterDegrees: returns ", r );
       return r;
     elif not ( q = 0 or IsPrimeInt( q ) ) then
-      Error( "<q> mut be zero or a prime" );
+      Error( "<q> must be zero or a prime" );
     fi;
 
     # Choose a normal elementary abelian `p'-subgroup `N',
     # not necessarily minimal.
     N:= ElementaryAbelianSeriesLargeSteps( G );
     N:= N[ Length( N ) - 1 ];
-    r:= CharacterDegrees( G / N, q );
+    r:= CharacterDegreesConlon( G / N, q );
     p:= Factors( Size( N ) )[1];
 
     if p = q then
@@ -538,20 +517,6 @@ BindGlobal( "CharacterDegreesConlon", function( G, q )
     Info( InfoCharacterTable, 1,
           "CharacterDegrees: returns ", r );
     return r;
-    end );
-
-InstallMethod( CharacterDegrees,
-    "for a solvable group and an integer (Conlon's algorithm)",
-    [ IsGroup and IsSolvableGroup, IsInt ],
-    {} -> RankFilter(IsZeroCyc), # There is a method for groups for
-                           # the integer zero which is worse
-    function( G, q )
-    if HasIrr( G ) then
-      # Use the known irreducibles.
-      TryNextMethod();
-    else
-      return CharacterDegreesConlon( G, q );
-    fi;
     end );
 
 
@@ -2199,6 +2164,25 @@ InstallMethod( IrrBaumClausen,
 
     # Return the result.
     return irreducibles;
+    end );
+
+
+#############################################################################
+##
+#F  CharacterDegreesBaumClausen( <G> )  . . . . . . . .  for a solvable group
+##
+##  For a solvable group <G>, return the character degrees of the factor
+##  group '<G> / DerivedSubgroup( <R> )',
+##  where <R> is the supersolvable residuum of <G>.
+##  The value is a sorted list of pairs '[ <d>, <n> ]'
+##  where <d> is an irreducible degree and <n> is its multiplicity.
+##
+BindGlobal( "CharacterDegreesBaumClausen", function( G )
+    local info;
+
+    info:= BaumClausenInfo( G );
+    return Concatenation( [ [ 1, Length( info.lin ) ] ],
+               Collected( List( info.nonlin, l -> Length( l[1].diag ) ) ) );
     end );
 
 
