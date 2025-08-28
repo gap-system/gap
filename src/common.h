@@ -63,11 +63,21 @@ GAP_STATIC_ASSERT(sizeof(void *) == SIZEOF_VOID_P, "sizeof(void *) is wrong");
 // wanted to, a lot more work (and planning) would have to be invested into
 // that anyway.
 #ifndef EXPORT_INLINE
-#ifdef HPCGAP
-#define EXPORT_INLINE static inline
-#else
-#define EXPORT_INLINE inline
-#endif
+#  ifdef HPCGAP
+#    define EXPORT_INLINE static inline
+#  elif defined(SYS_IS_MINGW)
+    // On MinGW we normally use 'static inline' to avoid multiple definition
+    // errors. A translation unit (debug.c) that wants externally visible
+    // inline symbols can define DEBUG_FORCE_EXTERN_INLINE before including
+    // this header to switch them to 'extern inline'.
+#    ifdef DEBUG_FORCE_EXTERN_INLINE
+#      define EXPORT_INLINE extern inline
+#    else
+#      define EXPORT_INLINE static inline
+#    endif
+#  else
+#    define EXPORT_INLINE inline
+#  endif
 #endif
 
 
