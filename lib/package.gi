@@ -286,7 +286,8 @@ end );
 ##  In earlier versions, this function had an argument; now we ignore it.
 ##
 InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
-    local pkgdirs, pkgdir, pkgdirstrs, ignore, name, file, files, record, r;
+    local pkgdirs, pkgdir, pkgdirstrs, ignore, name, file, files, record, r,
+          exact;
 
     if IsBound( GAPInfo.PackagesInfoInitialized ) and
        GAPInfo.PackagesInfoInitialized = true then
@@ -371,6 +372,17 @@ InstallGlobalFunction( InitializePackagesInfoRecords, function( arg )
         od;
       fi;
     od;
+
+    # If exact version numbers are prescribed then ignore all package
+    # versions that do not fit to the list.
+    exact:= PrescribedPackageVersions(
+              UserPreference( "PrescribedPackageVersions" ) );
+    if exact <> fail then
+      GAPInfo.PackagesInfo:= Filtered( GAPInfo.PackagesInfo,
+          r -> [ LowercaseString( r.PackageName ), r.Version ] in exact );
+      GAPInfo.PrescribedPackageVersions:= List( exact,
+          pair -> [ pair[1], Concatenation( "=", pair[2] ) ] );
+    fi;
 
     # Sort the available info records by their version numbers.
     # (Sort stably in order to make sure that an instance from the first
@@ -1993,6 +2005,46 @@ The level can be changed in a running session using \
   multi:= false,
   ) );
 
+# And a preference for prescribing explicit package versions.
+BindGlobal( "PrescribedPackageVersions", function( filename )
+  local exact;
+
+  if IsString( filename ) and filename <> "" then
+    filename:= UserHomeExpand( filename );
+    if IsReadableFile( filename ) then
+      exact:= List( SplitString( StringFile( filename ), "\n" ),
+        line -> Filtered( SplitString( line, "=", " " ), x -> x <> "" ) );
+      if ForAll( exact, x -> Length( x ) = 2 and
+                             Length( x[2] ) > 2 and
+                             x[2][1] = '\"' and Last( x[2] ) = '\"' ) then
+        return List( exact, pair -> [ LowercaseString( pair[1] ),
+                                       ReplacedString( pair[2], "\"", "" ) ] );
+      fi;
+    fi;
+  fi;
+  return fail;
+end );
+
+DeclareUserPreference( rec(
+  name:= "PrescribedPackageVersions",
+  description:= [
+    "If the value is a nonempty string then it is assumed to be the name \
+of a file that consists of lines of the form <C>name = \"version\"</C>, \
+where <C>name</C> is the (case insensitive) name of a package \
+and <C>version</C> is the exact version of the package <C>name</C> \
+that shall be loaded. \
+In this case, &GAP;'s automatic package loading mechanism will try to load \
+exactly these package versions, all other available packages (in particular \
+suggested packages that are not listed in the file) will be ignored, \
+and an error will occur if not all of the given packages can be loaded \
+in the prescribed versions. \
+This preference overrides the preferences <C>\"PackagesToLoad\"</C>, \
+<C>\"ExcludeFromAutoload\"</C>, <C>\"PackagesToIgnore\"</C>."
+    ],
+  default:= "",
+  check:= filename -> PrescribedPackageVersions( filename ) <> fail,
+  ) );
+
 InstallGlobalFunction( AutoloadPackages, function()
     local msg, pair, excludedpackages, name, record, neededPackages;
 
@@ -2014,6 +2066,9 @@ InstallGlobalFunction( AutoloadPackages, function()
     # If --bare is specified, load no packages
     if GAPInfo.CommandLineOptions.bare then
       neededPackages := [];
+    elif IsBound( GAPInfo.PrescribedPackageVersions ) then
+      neededPackages := GAPInfo.PrescribedPackageVersions;
+      PushOptions( rec( OnlyNeeded:= true ) );
     else
       neededPackages := GAPInfo.Dependencies.NeededOtherPackages;
     fi;
@@ -2089,6 +2144,9 @@ InstallGlobalFunction( AutoloadPackages, function()
       od;
       LogPackageLoadingMessage( PACKAGE_DEBUG,
           "suggested packages loaded", "GAP" );
+    fi;
+    if IsBound( GAPInfo.PrescribedPackageVersions ) then
+      PopOptions();
     fi;
 
     # Load the documentation for not yet loaded packages.
@@ -3549,4 +3607,40 @@ InstallGlobalFunction( ShowPackageVariables, function( arg )
     else
       Print( result );
     fi;
+    end );
+
+
+#############################################################################
+##
+#F  PackagesLoaded()
+##
+##  <ManSection>
+##  <Func Name="PackagesLoaded" Arg=''/>
+##
+##  <Returns>
+##  a string that describes the names of all currently loaded &GAP; packages
+##  and their version numbers.
+##  </Returns>
+##
+##  <Description>
+##  The result consists of <C>\n</C> separated lines of the form
+##  <C>name = "version"</C>,
+##  where <C>name</C> is the name of a loaded &GAP; package
+##  and <C>version</C> is its version.
+##  <P/>
+##  One can print this string to a file and set the user preference
+##  <C>"PrescribedPackageVersions"</C> to the name of this file,
+##  Then starting &GAP; anew will try to load exactly the same packages,
+##  and signal an error if this isnot possible.
+##  </Description>
+##  </ManSection>
+##
+BindGlobal( "PackagesLoaded", function()
+    local l;
+
+    l:= List( RecNames( GAPInfo.PackagesLoaded ),
+              x -> GAPInfo.PackagesLoaded.( x ) );
+    return JoinStringsWithSeparator(
+             Set( l, x -> Concatenation( x[3], " = \"", x[2], "\"" ) ),
+             "\n" );
     end );
