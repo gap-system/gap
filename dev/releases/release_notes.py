@@ -264,7 +264,8 @@ def changes_overview(
         ]
         # Write out all PRs with 'use title'
         relnotes_file.write(
-            f"""
+            f"""# GAP - history of changes
+
 ## GAP {new_version} ({month} {year})
 
 The following gives an overview of the changes compared to the previous
