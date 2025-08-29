@@ -1,5 +1,5 @@
 [![Build Status](https://github.com/gap-system/gap/actions/workflows/CI.yml/badge.svg)](https://github.com/gap-system/gap/actions/workflows/CI.yml)
-[![Code Coverage](https://codecov.io/gh/gap-system/gap/branch/master/graphs/badge.svg)](https://codecov.io/gh/gap-system/gap/branch/master)
+[![Code Coverage](https://codecov.io/gh/gap-system/gap/branch/stable-4.15/graphs/badge.svg)](https://codecov.io/gh/gap-system/gap/branch/stable-4.15)
 [![ref](https://img.shields.io/badge/docs-ref-blue)](https://gap-system.github.io/gap/doc/ref/chap0_mj.html)
 [![dev](https://img.shields.io/badge/docs-dev-blue)](https://gap-system.github.io/gap/doc/dev/chap0_mj.html)
 [![hpc](https://img.shields.io/badge/docs-hpc-blue)](https://gap-system.github.io/gap/doc/hpc/chap0_mj.html)
