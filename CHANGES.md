@@ -61,7 +61,7 @@ affect some users directly.
 
 ### Fixed bugs that could lead to unexpected errors
 
-- [#6033](https://github.com/gap-system/gap/pull/6033) Fix regression introduced in GAP 4.13.1 that could cause coset enumeration to fail in cases were it used to work fine in GAP 4.13.0
+- [#6033](https://github.com/gap-system/gap/pull/6033) Fix regression introduced in GAP 4.13.1 that could cause coset enumeration to fail in cases where it used to work fine in GAP 4.13.0
 - [#5997](https://github.com/gap-system/gap/pull/5997) Fix error in membership test for rational functions
 - [#5955](https://github.com/gap-system/gap/pull/5955) Fix errors for algebra homomorphisms (infinite recursions and "no method found" errors), in particular concerning homomorphisms that are constructed as inverse mappings
 - [#5935](https://github.com/gap-system/gap/pull/5935) Fix an unexpected error in `IsomorphismGroups`
