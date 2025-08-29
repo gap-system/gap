@@ -96,7 +96,7 @@ affect some users directly.
 
 #### Updated packages redistributed with GAP
 
-The GAP 4.15.0 distribution contains 164 packages, of which 58 have been
+The GAP 4.15.0 distribution contains 164 packages, of which 59 have been
 updated since GAP 4.14.0. The full list of updated packages is given below:
 
 - [**ACE**](https://gap-packages.github.io/ace): 5.6.2 -> 5.7.0
@@ -116,10 +116,11 @@ updated since GAP 4.14.0. The full list of updated packages is given below:
 - [**cvec**](https://gap-packages.github.io/cvec): 2.8.2 -> 2.8.4
 - [**datastructures**](https://gap-packages.github.io/datastructures): 0.3.1 -> 0.3.3
 - [**DeepThought**](https://gap-packages.github.io/DeepThought/): 1.0.7 -> 1.0.9
-- [**Digraphs**](https://digraphs.github.io/Digraphs): 1.9.0 -> 1.10.1
+- [**Digraphs**](https://digraphs.github.io/Digraphs): 1.9.0 -> 1.11.0
 - [**Example**](https://gap-packages.github.io/example): 4.4.0 -> 4.4.1
 - [**float**](https://gap-packages.github.io/float/): 1.0.5 -> 1.0.9
 - [**Forms**](https://gap-packages.github.io/forms): 1.2.12 -> 1.2.13
+- [**FPLSA**](https://gap-packages.github.io/FPLSA): 1.2.6 -> 1.2.7
 - [**GeneralizedMorphismsForCAP**](https://homalg-project.github.io/pkg/GeneralizedMorphismsForCAP): 2024.09-03 -> 2025.08-01
 - [**GradedModules**](https://homalg-project.github.io/pkg/GradedModules): 2024.01-01 -> 2024.12-01
 - [**groupoids**](https://gap-packages.github.io/groupoids/): 1.76 -> 1.78
@@ -144,7 +145,7 @@ updated since GAP 4.14.0. The full list of updated packages is given below:
 - [**QDistRnd**](https://QEC-pages.github.io/QDistRnd): 0.9.4 -> 0.9.5
 - [**recog**](https://gap-packages.github.io/recog): 1.4.3 -> 1.4.4
 - [**SCSCP**](https://gap-packages.github.io/scscp): 2.4.3 -> 2.4.4
-- [**Semigroups**](https://semigroups.github.io/Semigroups): 5.4.0 -> 5.5.3
+- [**Semigroups**](https://semigroups.github.io/Semigroups): 5.4.0 -> 5.5.4
 - [**singular**](https://gap-packages.github.io/singular/): 2024.06.03 -> 2025.08.26
 - [**smallantimagmas**](https://gap-packages.github.io/smallantimagmas): 0.2.12 -> 0.4.1
 - [**Smallsemi**](https://gap-packages.github.io/smallsemi/): 0.7.1 -> 0.7.2
