@@ -92,7 +92,7 @@ affect some users directly.
 
 #### Packages no longer redistributed with GAP
 
-- **ToricVarieties**: TODO
+- **ToricVarieties**: This package was withdrawn by the authors as they stopped development on it in favor of a more featureful successor as part of the OSCAR computer algebra system.
 
 #### Updated packages redistributed with GAP
 
