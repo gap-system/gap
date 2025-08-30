@@ -22,9 +22,16 @@
 /extern/build/
 /extern/install/
 
+# Temporary build directories and artifacts
+native-build/
+src/ffdata.c
+src/ffdata.h
+
 /ffgen
+/ffgen.exe
 /gac
 /gap
+/gap.exe
 /sysinfo.gap
 /sysinfo.gap-*
 /libgap*.dylib*
@@ -75,6 +82,11 @@ doc/ref/user_pref_list.xml
 
 # external dependencies
 /extern/gmp*/
+# Ignore zlib build artifacts
+/extern/zlib/*.o
+/extern/zlib/*.a
+/extern/zlib/*.so*
+/extern/zlib/zlibrc.o
 
 # tests, test logs, package build logs
 /dev/log

@@ -23,8 +23,8 @@
 
 #ifdef GAP_MEM_CHECK
 #include <fcntl.h>
-#include <stdlib.h>     // for qsort
 #endif
+#include <stdlib.h>     // for qsort, calloc
 
 #include <stdio.h>      // for fputs
 #include <unistd.h>     // for ftruncate, getpid, unlink, sbrk, sysconf

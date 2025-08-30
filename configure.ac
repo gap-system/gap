@@ -595,7 +595,14 @@ AS_IF([test x$gmp_found = xno],[
   GMP_PREFIX='${abs_builddir}/extern/install/gmp'
   GMP_CPPFLAGS='-I${abs_builddir}/extern/install/gmp/include'
   GMP_LDFLAGS='-L${abs_builddir}/extern/install/gmp/lib'
-  GMP_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/gmp/lib -lgmp'
+  case "$host_os" in
+    *mingw* | *msys* )
+      GMP_LIBS='-lgmp'
+      ;;
+    *)
+      GMP_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/gmp/lib -lgmp'
+      ;;
+  esac
 ])
 
 AC_SUBST([BUILD_GMP])
@@ -673,7 +680,14 @@ AS_IF([test x$zlib_found = xno],[
   BUILD_ZLIB=yes
   ZLIB_CPPFLAGS='-I${abs_builddir}/extern/install/zlib/include'
   ZLIB_LDFLAGS='-L${abs_builddir}/extern/install/zlib/lib'
-  ZLIB_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/zlib/lib -lz'
+  case "$host_os" in
+    *mingw* | *msys* )
+      ZLIB_LIBS='-lz'
+      ;;
+    *)
+      ZLIB_LIBS='-Wl,-rpath,${abs_builddir}/extern/install/zlib/lib -lz'
+      ;;
+  esac
 ])
 
 AC_SUBST([BUILD_ZLIB])
@@ -955,6 +969,19 @@ case "$host_cpu" in
     ;;
 esac
 
+dnl
+dnl Detect Windows/MinGW platform
+dnl
+case "$host_os" in
+  *mingw* | *msys* )
+    AC_DEFINE([SYS_IS_MINGW], [1], [define as 1 on MinGW/Windows])
+    AC_DEFINE([GAP_DISABLE_SUBPROCESS_CODE], [1], [disable subprocess support on MinGW])
+    ;;
+  *cygwin* )
+    AC_DEFINE([SYS_IS_CYGWIN32], [1], [define as 1 on Cygwin])
+    ;;
+esac
+
 
 dnl
 dnl check for the existence of various header files
@@ -1016,6 +1043,8 @@ AC_CHECK_FUNCS([setitimer])
 
 dnl check for functions dealing with virtual memory
 AC_CHECK_FUNCS([vm_allocate sbrk madvise sysconf])
+AC_CHECK_FUNCS([realpath readlink mkdtemp])
+AC_CHECK_FUNCS([lstat ttyname])
 
 dnl check for large-file support (for accessing files whose sizes or inodes require 64bits)
 AC_SYS_LARGEFILE

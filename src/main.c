@@ -60,9 +60,17 @@ find_yourself(const char * argv0, char * result, size_t resultsize)
 
     // absolute path, like '/usr/bin/gap'
     if (argv0[0] == '/') {
+#ifdef HAVE_REALPATH
         if (realpath(argv0, result) && !access(result, F_OK)) {
             return;    // success
         }
+#else
+        // Fallback: just copy the path and check if it exists
+        gap_strlcpy(result, argv0, resultsize);
+        if (!access(result, F_OK)) {
+            return;    // success
+        }
+#endif
     }
     // relative path, like 'bin/gap.sh'
     else if (strchr(argv0, '/')) {
@@ -70,9 +78,17 @@ find_yourself(const char * argv0, char * result, size_t resultsize)
             return;
         gap_strlcat(tmpbuf, "/", sizeof(tmpbuf));
         gap_strlcat(tmpbuf, argv0, sizeof(tmpbuf));
+#ifdef HAVE_REALPATH
         if (realpath(tmpbuf, result) && !access(result, F_OK)) {
             return;    // success
         }
+#else
+        // Fallback: just copy the constructed path and check if it exists
+        gap_strlcpy(result, tmpbuf, resultsize);
+        if (!access(result, F_OK)) {
+            return;    // success
+        }
+#endif
     }
     // executable name, like 'gap'
     else {
@@ -83,9 +99,17 @@ find_yourself(const char * argv0, char * result, size_t resultsize)
             gap_strlcpy(tmpbuf, pathitem, sizeof(tmpbuf));
             gap_strlcat(tmpbuf, "/", sizeof(tmpbuf));
             gap_strlcat(tmpbuf, argv0, sizeof(tmpbuf));
+#ifdef HAVE_REALPATH
             if (realpath(tmpbuf, result) && !access(result, F_OK)) {
                 return;    // success
             }
+#else
+            // Fallback: just copy the constructed path and check if it exists
+            gap_strlcpy(result, tmpbuf, resultsize);
+            if (!access(result, F_OK)) {
+                return;    // success
+            }
+#endif
         }
     }
 
@@ -108,23 +132,29 @@ static void SetupGAPLocation(const char * argv0, char * GAPExecLocation)
 
     // try Linux procfs
     if (!*locBuf) {
+#ifdef HAVE_READLINK
         ssize_t ret = readlink("/proc/self/exe", locBuf, sizeof(locBuf));
         if (ret < 0)
             *locBuf = 0;    // reset buffer after error
+#endif
     }
 
     // try FreeBSD / DragonFly BSD procfs
     if (!*locBuf) {
+#ifdef HAVE_READLINK
         ssize_t ret = readlink("/proc/curproc/file", locBuf, sizeof(locBuf));
         if (ret < 0)
             *locBuf = 0;    // reset buffer after error
+#endif
     }
 
     // try NetBSD procfs
     if (!*locBuf) {
+#ifdef HAVE_READLINK
         ssize_t ret = readlink("/proc/curproc/exe", locBuf, sizeof(locBuf));
         if (ret < 0)
             *locBuf = 0;    // reset buffer after error
+#endif
     }
 
     // if we are still failing, go and search the path
@@ -133,8 +163,13 @@ static void SetupGAPLocation(const char * argv0, char * GAPExecLocation)
     }
 
     // resolve symlinks (if present)
+#ifdef HAVE_REALPATH
     if (!realpath(locBuf, GAPExecLocation))
         *GAPExecLocation = 0;    // reset buffer after error
+#else
+    // Fallback: just copy the path without resolving symlinks
+    gap_strlcpy(GAPExecLocation, locBuf, GAP_PATH_MAX);
+#endif
 
     // now strip the executable name off
     length = strlen(GAPExecLocation);

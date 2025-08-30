@@ -459,8 +459,9 @@ static inline Int8 CPUmicroseconds(void)
 
   return (Int8)buf.ru_utime.tv_sec * 1000000 + (Int8)buf.ru_utime.tv_usec;
 #else
-  // Should never get here!
-  abort();
+  // Fallback for systems without getrusage (e.g., Windows/MinGW)
+  // Use wall clock time instead of CPU time
+  return SyNanosecondsSinceEpoch() / 1000;
 #endif
 }
 

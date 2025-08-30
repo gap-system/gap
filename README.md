@@ -81,6 +81,13 @@ On macOS, you can install the dependencies in several ways:
  * using Fink: `fink install autoconf2.6 gmp5 readline7`
  * using MacPorts: `port install autoconf gmp readline`
 
+On Windows, you need to install the MinGW-w64 toolchain, for example by:
+    winget install -e --id RProject.Rtools
+    $env:Path = "$env:RTOOLS45_HOME\x86_64-w64-mingw32.static.posix\bin;$env:RTOOLS45_HOME\usr\bin;" + $env:Path  # in PowerShell
+    set PATH=%RTOOLS45_HOME%\x86_64-w64-mingw32.static.posix\bin;%RTOOLS45_HOME%\usr\bin;%PATH%  # in cmd.exe
+    pacman -Sy
+    pacman -S autoconf automake libtool
+
 On other operating systems, you will need to figure out equivalent commands
 to install the required dependencies.
 
@@ -89,7 +96,8 @@ to install the required dependencies.
 
 Then to build GAP, first run this command to generate the `configure` script:
 
-    ./autogen.sh
+    ./autogen.sh # Linux, macOS
+    bash autogen.sh # Windows
 
 Afterwards you can proceed as described in `INSTALL.md`. If you are on macOS,
 we recommend that you take a look at section "GAP for macOS" of `INSTALL.md`

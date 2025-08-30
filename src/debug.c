@@ -8,11 +8,8 @@
 **  SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-// set EXPORT_INLINE to 'extern inline' to force an instance of each
-// function marked with EXPORT_INLINE to be actually emitted, so that
-// it can e.g. be accessed from gdb or lldb, or from software using
-// libgap as a shared library
-#define EXPORT_INLINE extern inline
+// Request that common.h use 'extern inline' (see common.h for details)
+#define DEBUG_FORCE_EXTERN_INLINE 1
 
 #include "common.h"
 

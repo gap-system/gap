@@ -14,39 +14,31 @@
 // ensure we can access large files
 #define _FILE_OFFSET_BITS 64
 
-#include "sysfiles.h"
-
-#include "bool.h"
-#include "calls.h"
-#include "error.h"
-#include "gapstate.h"
-#include "gaputils.h"
-#include "gvars.h"
-#include "io.h"
-#include "lists.h"
-#include "modules.h"
-#include "plist.h"
-#include "precord.h"
-#include "read.h"
-#include "records.h"
-#include "stats.h"
-#include "stringobj.h"
-#include "sysopt.h"
-#include "sysstr.h"
-#include "system.h"
-
-#include "hpc/thread.h"
+#ifdef SYS_IS_MINGW
+// Feature test macros needed for POSIX functions on MinGW
+#define _GNU_SOURCE
+#define _POSIX_SOURCE
+#define _POSIX_C_SOURCE 200809L
+#endif
 
 #include "config.h"
 
+// System includes first to avoid conflicts with GAP headers
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef HAVE_TERMIOS_H
 #include <termios.h>
+#endif
 #include <time.h>
 #include <unistd.h>
+
+#ifdef SYS_IS_MINGW
+// On MinGW, some POSIX functions like access, read, write are in io.h
+#include <io.h>
+#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -80,7 +72,33 @@
 
 #include <zlib.h>
 
+#ifndef SYS_IS_MINGW
 #include <sys/utsname.h>
+#endif
+
+// GAP includes after system includes to avoid header conflicts
+#include "sysfiles.h"
+
+#include "bool.h"
+#include "calls.h"
+#include "error.h"
+#include "gapstate.h"
+#include "gaputils.h"
+#include "gvars.h"
+#include "io.h"
+#include "lists.h"
+#include "modules.h"
+#include "plist.h"
+#include "precord.h"
+#include "read.h"
+#include "records.h"
+#include "stats.h"
+#include "stringobj.h"
+#include "sysopt.h"
+#include "sysstr.h"
+#include "system.h"
+
+#include "hpc/thread.h"
 
 
 // 'EndLineHook' is a GAP-level variable which can be set to a function to be
@@ -356,6 +374,7 @@ static Obj FuncCrcString(Obj self, Obj str)
 Obj SyGetOsRelease(void)
 {
     Obj            r = NEW_PREC(0);
+#ifndef SYS_IS_MINGW
     struct utsname buf;
     if (!uname(&buf)) {
         AssPRec(r, RNamName("sysname"), MakeImmString(buf.sysname));
@@ -364,6 +383,7 @@ Obj SyGetOsRelease(void)
         AssPRec(r, RNamName("version"), MakeImmString(buf.version));
         AssPRec(r, RNamName("machine"), MakeImmString(buf.machine));
     }
+#endif
 
     return r;
 }
@@ -867,7 +887,9 @@ Int SyIsEndOfFile (
 **  continue signals if this particular version  of UNIX supports them, so we
 **  can turn the terminal line back to cooked mode before stopping GAP.
 */
+#ifdef HAVE_TERMIOS_H
 static struct termios   syOld, syNew;           // old and new terminal state
+#endif
 
 #ifdef SIGTSTP
 
@@ -898,6 +920,7 @@ UInt syStartraw ( Int fid )
         else {                                             return 0; }
     }
 
+#ifdef HAVE_TERMIOS_H
     // try to get the terminal attributes, will fail if not terminal
     const int fd = SyBufFileno(fid);
     GAP_ASSERT(fd >= 0);
@@ -928,6 +951,11 @@ UInt syStartraw ( Int fid )
 
     // indicate success
     return 1;
+#else
+    // On systems without termios (e.g., Windows), we can't do raw mode
+    // Return 0 to indicate that raw mode is not available
+    return 0;
+#endif
 }
 
 
@@ -943,6 +971,7 @@ void syStopraw (
     if ( SyWindow )
         return;
 
+#ifdef HAVE_TERMIOS_H
 #ifdef SIGTSTP
     // remove signal handler for stop
     signal( SIGTSTP, SIG_DFL );
@@ -953,6 +982,8 @@ void syStopraw (
     GAP_ASSERT(fd >= 0);
     if (tcsetattr(fd, TCSANOW, &syOld) == -1)
         fputs("gap: 'tcsetattr' could not turn off raw mode!\n",stderr);
+#endif
+    // On systems without termios, nothing to do
 }
 
 
@@ -1014,12 +1045,16 @@ static void syAnswerIntr(int signr)
 
 void SyInstallAnswerIntr ( void )
 {
+#ifdef HAVE_SIGACTION
     struct sigaction sa;
 
     sa.sa_handler = syAnswerIntr;
     sigemptyset(&(sa.sa_mask));
     sa.sa_flags = SA_RESTART;
     sigaction( SIGINT, &sa, NULL );
+#elif defined(HAVE_SIGNAL)
+    signal(SIGINT, syAnswerIntr);
+#endif
 }
 
 
@@ -2925,7 +2960,11 @@ Int SyMkdir ( const Char * name )
 {
     Int res;
     SyClearErrorNo();
+#ifdef SYS_IS_MINGW
+    res = mkdir(name);
+#else
     res = mkdir(name, 0777);
+#endif
     if (res == -1)
        SySetErrorNo();
     return res;
@@ -2964,7 +3003,11 @@ char SyFileType(const Char * path)
     int         res;
     struct stat ourlstatbuf;
 
+#ifdef HAVE_LSTAT
     res = lstat(path, &ourlstatbuf);
+#else
+    res = stat(path, &ourlstatbuf);
+#endif
     if (res < 0) {
         SySetErrorNo();
         return 0;
@@ -2973,8 +3016,10 @@ char SyFileType(const Char * path)
         return 'F';
     if (S_ISDIR(ourlstatbuf.st_mode))
         return 'D';
+#ifdef S_ISLNK
     if (S_ISLNK(ourlstatbuf.st_mode))
         return 'L';
+#endif
 #ifdef S_ISCHR
     if (S_ISCHR(ourlstatbuf.st_mode))
         return 'C';
@@ -3200,8 +3245,13 @@ void InitSysFiles(void)
     if (syBuf[0].isTTY) {
         // if stdin is on a terminal, make sure stdout in on the same terminal
         if (stat_in.st_dev != stat_out.st_dev ||
-            stat_in.st_ino != stat_out.st_ino)
+            stat_in.st_ino != stat_out.st_ino) {
+#ifdef HAVE_TTYNAME
             syBuf[0].echo = open(ttyname(fileno(stdin)), O_WRONLY);
+#else
+            // fallback: keep the default stdout echo
+#endif
+        }
     }
 
     // set up stdout
@@ -3219,8 +3269,13 @@ void InitSysFiles(void)
     if (syBuf[2].isTTY) {
         // if stderr is on a terminal, make sure errin in on the same terminal
         if (stat_in.st_dev != stat_err.st_dev ||
-            stat_in.st_ino != stat_err.st_ino)
+            stat_in.st_ino != stat_err.st_ino) {
+#ifdef HAVE_TTYNAME
             syBuf[2].fp = open(ttyname(fileno(stderr)), O_RDONLY);
+#else
+            // fallback: keep the default stdin fp
+#endif
+        }
     }
 
     // set up errout

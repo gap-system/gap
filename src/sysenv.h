@@ -21,10 +21,13 @@
 #include <crt_externs.h>
 #define environ (*_NSGetEnviron())
 
-#elif !defined(environ)
+#elif defined(SYS_IS_MINGW)
+// MinGW exposes environ via <stdlib.h>
+#include <stdlib.h>
+#endif
 
-extern char ** environ;
-
+#ifndef environ
+extern char ** environ;   // generic fallback
 #endif
 
 #endif    // GAP_SYSENV_H

@@ -195,7 +195,8 @@ Change to the directory `gap-4.X.Y` (which you just created by unpacking).
 To get started quickly you may simply build GAP with default settings
 by issuing the two commands
 
-    ./configure
+    ./configure # Linux, macOS
+    bash ./configure # Windows
     make
 
 (note that on BSD systems you have to call `gmake` instead of `make`).

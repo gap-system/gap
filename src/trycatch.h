@@ -13,12 +13,13 @@
 #ifndef GAP_TRYCATCH_H
 #define GAP_TRYCATCH_H
 
-#include "funcs.h"    // for SetRecursionDepth
+#include "funcs.h"    // for SetRecursionDepth, GAP_SETJMP/GAP_LONGJMP
 #include "gapstate.h"
 #include "system.h"    // for NORETURN
 
 #include <setjmp.h>
 #include <string.h>    // for memcpy
+
 
 
 /****************************************************************************
@@ -87,7 +88,7 @@ void InvokeTryCatchHandler(TryCatchMode mode);
     GAP_TryCatchEnv gap__env;                                                \
     gap_safe_trycatch(&gap__env);                                            \
     InvokeTryCatchHandler(TryEnter);                                         \
-    if (!_setjmp(STATE(ReadJmpError)))                                       \
+    if (!GAP_SETJMP(STATE(ReadJmpError)))                                    \
         for (gap__i = 1; gap__i; gap__i = 0,                                 \
             InvokeTryCatchHandler(TryLeave),                                 \
             gap_restore_trycatch(&gap__env))

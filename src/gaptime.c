@@ -62,7 +62,7 @@ UInt SyTime(void)
     // a substitute (it is not perfect, as NanosecondsSinceEpoch()
     // is walltime, while RUSAGE_SELF is CPU time).
     return SyNanosecondsSinceEpoch()/1000000000;
-#else
+#elif defined(HAVE_GETRUSAGE)
     struct rusage buf;
 
     if (getrusage(RUSAGE_SELF, &buf)) {
@@ -71,6 +71,10 @@ UInt SyTime(void)
                      (Int)strerror(errno), (Int)errno);
     }
     return buf.ru_utime.tv_sec * 1000 + buf.ru_utime.tv_usec / 1000;
+#else
+    // Fallback for systems without getrusage (e.g., Windows/MinGW)
+    // Use wall clock time instead of CPU time as an approximation
+    return SyNanosecondsSinceEpoch()/1000000;
 #endif
 }
 
@@ -210,8 +214,10 @@ static Obj FuncRuntime(Obj self)
 static Obj FuncRUNTIMES(Obj self)
 {
     UInt          tmp;
-    struct rusage buf;
     Obj           res = NEW_PLIST(T_PLIST, 4);
+
+#ifdef HAVE_GETRUSAGE
+    struct rusage buf;
 
     if (getrusage(RUSAGE_SELF, &buf)) {
         ErrorMayQuit("RUNTIMES: call to getrusage(RUSAGE_SELF) failed: "
@@ -234,6 +240,15 @@ static Obj FuncRUNTIMES(Obj self)
 
     tmp = buf.ru_stime.tv_sec * 1000 + buf.ru_stime.tv_usec / 1000;
     ASS_LIST(res, 4, ObjInt_UInt(tmp));
+#else
+    // Fallback for systems without getrusage (e.g., Windows/MinGW)
+    // Return current time for user and system time, zero for children
+    tmp = SyTime();
+    ASS_LIST(res, 1, ObjInt_UInt(tmp));  // user time
+    ASS_LIST(res, 2, ObjInt_UInt(0));    // system time (unavailable)
+    ASS_LIST(res, 3, ObjInt_UInt(0));    // children user time (unavailable)
+    ASS_LIST(res, 4, ObjInt_UInt(0));    // children system time (unavailable)
+#endif
 
     return res;
 }
