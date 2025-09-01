@@ -148,7 +148,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - uses: gap-actions/setup-cygwin@v1
+      - uses: gap-actions/setup-cygwin@v2
         if: ${{ runner.os == 'Windows' }}
         with:
           PKGS_TO_INSTALL: 'wget,git,gcc-g++,gcc-core,m4,libgmp-devel,make,automake,libtool,autoconf,autoconf2.5,zlib-devel,libreadline-devel,libmpc-devel,libmpfr-devel,xdg-utils,pkg-config'
