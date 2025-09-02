@@ -205,7 +205,7 @@ jobs:
           ref: main
           path: gap-windows
 
-      - uses: gap-actions/setup-cygwin@v1
+      - uses: gap-actions/setup-cygwin@v2
 
       # Currently, the gap-windows/release_gap.sh script wraps the GAP
       # contained in gap-${GAP_VERSION}, and outputs its installer to
