@@ -26,7 +26,8 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareSynonym( "IsFFEMatrixGroup", IsFFECollCollColl and IsMatrixGroup );
+DeclareCategory( "IsFFEMatrixGroup", IsMatrixGroup );
+InstallTrueMethod( IsFFEMatrixGroup, IsFFECollCollColl and IsMatrixGroup );
 
 
 #############################################################################
