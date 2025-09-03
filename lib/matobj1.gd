@@ -263,6 +263,36 @@ DeclareCategory( "IsMatrixObj", IsMatrixOrMatrixObj );
 DeclareCategory( "IsRowListMatrix", IsMatrixObj );
 
 
+
+#############################################################################
+##
+# Two filters to speed up some methods:
+DeclareFilter( "IsIntVector" );  # TODO: replace this legacy filter from matobjplist.gi with something better
+DeclareFilter( "IsFFEVector" );
+
+DeclareCategory( "IsFFEVectorObj", IsVectorObj );
+DeclareCategory( "IsCyclotomicVectorObj", IsVectorObj );
+
+DeclareCategory( "IsFFEMatrixOrMatrixObj", IsMatrixOrMatrixObj );
+# DeclareSynonym( "IsFFEMatrix", IsFFEMatrixOrMatrixObj and IsMatrix );
+# DeclareSynonym( "IsFFEMatrixObj", IsFFEMatrixOrMatrixObj and IsMatrixObj );
+# or maybe
+# DeclareProperty( "IsFFEMatrix", IsMatrix );
+# DeclareProperty( "IsFFEMatrixObj", IsMatrixObj );
+
+DeclareCategory( "IsCyclotomicMatrixOrMatrixObj", IsMatrixOrMatrixObj );
+# DeclareSynonym( "IsCyclotomicMatrix", IsCyclotomicMatrixOrMatrixObj and IsMatrix );
+# DeclareSynonym( "IsCyclotomicMatrixObj", IsCyclotomicMatrixOrMatrixObj and IsMatrixObj );
+# or maybe have them be properties with methods so users are not confused ?!?
+# DeclareProperty( "IsCyclotomicMatrix", IsMatrix );
+# DeclareProperty( "IsCyclotomicMatrixObj", IsMatrixObj );
+
+
+InstallTrueMethod( IsFFEMatrixOrMatrixObj, IsFFECollColl and IsMatrix );
+InstallTrueMethod( IsCyclotomicMatrixOrMatrixObj, IsCyclotomicCollColl and IsMatrix );
+
+
+
 #############################################################################
 ##
 #A  BaseDomain( <vector> )
