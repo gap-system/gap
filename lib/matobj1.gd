@@ -275,14 +275,14 @@ DeclareCategory( "IsCyclotomicVectorObj", IsVectorObj );
 
 DeclareCategory( "IsFFEMatrixOrMatrixObj", IsMatrixOrMatrixObj );
 # DeclareSynonym( "IsFFEMatrix", IsFFEMatrixOrMatrixObj and IsMatrix );
-# DeclareSynonym( "IsFFEMatrixObj", IsFFEMatrixOrMatrixObj and IsMatrixObj );
+DeclareSynonym( "IsFFEMatrixObj", IsFFEMatrixOrMatrixObj and IsMatrixObj );
 # or maybe
 # DeclareProperty( "IsFFEMatrix", IsMatrix );
 # DeclareProperty( "IsFFEMatrixObj", IsMatrixObj );
 
 DeclareCategory( "IsCyclotomicMatrixOrMatrixObj", IsMatrixOrMatrixObj );
 # DeclareSynonym( "IsCyclotomicMatrix", IsCyclotomicMatrixOrMatrixObj and IsMatrix );
-# DeclareSynonym( "IsCyclotomicMatrixObj", IsCyclotomicMatrixOrMatrixObj and IsMatrixObj );
+DeclareSynonym( "IsCyclotomicMatrixObj", IsCyclotomicMatrixOrMatrixObj and IsMatrixObj );
 # or maybe have them be properties with methods so users are not confused ?!?
 # DeclareProperty( "IsCyclotomicMatrix", IsMatrix );
 # DeclareProperty( "IsCyclotomicMatrixObj", IsMatrixObj );
@@ -291,6 +291,12 @@ DeclareCategory( "IsCyclotomicMatrixOrMatrixObj", IsMatrixOrMatrixObj );
 InstallTrueMethod( IsFFEMatrixOrMatrixObj, IsFFECollColl and IsMatrix );
 InstallTrueMethod( IsCyclotomicMatrixOrMatrixObj, IsCyclotomicCollColl and IsMatrix );
 
+
+DeclareCategoryCollections( "IsFFEMatrixObj" );
+DeclareCategoryCollections( "IsCyclotomicMatrixObj" );
+
+#DeclareCategoryCollections( "IsFFE" );
+#DeclareCategoryCollections( "IsFFECollection" );
 
 
 #############################################################################
