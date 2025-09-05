@@ -6,7 +6,7 @@ gap> IsConjugate( SymmetricGroup(5), Group((1,2)), Group((3,4,5)));
 false
 
 # This runs into the TryNextMethod case
-gap> IsConjugate( SymmetricGroup(200),PrimitiveGroup(200,4), PrimitiveGroup(200,3));
+gap> IsConjugate( SymmetricGroup(200),SymmetricGroup(200), AlternatingGroup(200));
 false
 
 # Here, using SubgpConjSymmgp yields a significant speedup

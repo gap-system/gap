@@ -355,15 +355,20 @@ gap> IsCharacterTable( t mod 5 );
 true
 
 # test a bugfix
-gap> g:= SmallGroup( 96, 3 );;
+#gap> g:= SmallGroup( 96, 3 );;
+gap> g:= PcGroupCode( 55306968584587147680, 96 );;
 gap> t:= CharacterTable( g );;
 gap> ClassPositionsOfLowerCentralSeries( t );
 [ [ 1 .. 12 ], [ 1, 3, 4, 5, 6, 9, 10, 11 ] ]
-gap> g:= SmallGroup( 3^5, 22 );;
+
+#gap> g:= SmallGroup( 3^5, 22 );;
+gap> g:= PcGroupCode( 27823197465625143, 3^5 );;
 gap> t:= CharacterTable( g );;
 gap> ClassPositionsOfLowerCentralSeries( t );
 [ [ 1 .. 35 ], [ 1, 4, 6, 12, 15 ], [ 1, 6, 15 ], [ 1 ] ]
-gap> g:= SmallGroup( 96, 66 );;
+
+#gap> g:= SmallGroup( 96, 66 );;
+gap> g:= PcGroupCode( 509649248191328977712712, 96 );;
 gap> t:= CharacterTable( g );;
 gap> ClassPositionsOfSupersolvableResiduum( t );
 [ 1, 5, 6 ]
@@ -385,7 +390,9 @@ gap> Indicator( t mod 2, 2 );
 [ 1, 1 ]
 
 # linear characters
-gap> lin:= LinearCharacters( SmallGroup( 24, 12 ) );;
+#gap> g := SmallGroup( 24, 12 );;
+gap> g := PcGroupCode( 5790338948, 24 );;
+gap> lin:= LinearCharacters( g );;
 gap> Length( lin );
 2
 gap> ForAll( lin, HasIsIrreducibleCharacter );
