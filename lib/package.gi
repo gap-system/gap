@@ -1737,8 +1737,8 @@ InstallGlobalFunction( LoadPackage, function( arg )
         if IsBound( info.Extensions ) then
           for entry in info.Extensions do
             LogPackageLoadingMessage( PACKAGE_DEBUG,
-                "notify extension ", entry.filename,
-                " of package ", pkgname );
+                Concatenation( "notify extension ", entry.filename ),
+                pkgname );
             r:= ShallowCopy( entry );
             r.providedby:= pkgname;
             Add( GAPInfo.PackageExtensionsPending, Immutable( r ) );
@@ -1779,8 +1779,8 @@ InstallGlobalFunction( LoadPackage, function( arg )
         Add( GAPInfo.PackageExtensionsLoaded, entry );
         Unbind( GAPInfo.PackageExtensionsPending[i] );
         LogPackageLoadingMessage( PACKAGE_DEBUG,
-            "load extension ", entry.filename,
-            " of package ", entry.providedby );
+            Concatenation( "load extension ", entry.filename ),
+            entry.providedby );
       fi;
     od;
     GAPInfo.PackageExtensionsPending:= Compacted( GAPInfo.PackageExtensionsPending );
