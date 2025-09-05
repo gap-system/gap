@@ -615,13 +615,13 @@ if not IsBound( TextAttr ) then
 fi;
 #T needed? (decl. of GAPDoc is loaded before)
 
-InstallGlobalFunction( LogPackageLoadingMessage, function( arg )
-    local severity, message, currpkg, i;
+InstallGlobalFunction( LogPackageLoadingMessage, function( severity, message, currpkg... )
+    local i;
 
-    severity:= arg[1];
-    message:= arg[2];
-    if Length( arg ) = 3 then
-      currpkg:= arg[3];
+    if Length( currpkg ) = 1 then
+      currpkg:= currpkg[1];
+    elif Length( currpkg ) > 1 then
+      Error("usage: LogPackageLoadingMessage( <severity>, <message>[, <name>] )");
     elif IsBound( GAPInfo.PackageCurrent ) then
       # This happens inside availability tests.
       currpkg:= GAPInfo.PackageCurrent.PackageName;
