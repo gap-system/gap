@@ -122,7 +122,3 @@ BindGlobal( "ROWSPOS", 4 );
 #BindGlobal( "BDPOS", 1 );   # see above
 BindGlobal( "ELSPOS", 2 );
 
-# Two filters to speed up some methods:
-DeclareFilter( "IsIntVector" );
-DeclareFilter( "IsFFEVector" );
-
