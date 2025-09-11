@@ -1447,6 +1447,10 @@ InstallMethod( LowerCentralSeriesOfGroup,"for permgrp", true, [ IsPermGroup ], 0
     function( G )
     local  pcgs,  series;
 
+    if IsTrivial(G) then
+        return [G];
+    fi;
+
     if    not DefaultStabChainOptions.tryPcgs
        or HasIsNilpotentGroup( G )  and  not IsNilpotentGroup( G )
        and not (HasIsNilpotentGroup(G) and IsNilpotentGroup(G)) then
