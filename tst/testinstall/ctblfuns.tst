@@ -16,16 +16,21 @@ gap> List( irr, x -> InertiaSubgroup( S4, x ) );
   Group([ (3,4), (1,4)(2,3) ]), Sym( [ 1 .. 4 ] ) ]
 gap> List( last, Size );
 [ 8, 8, 8, 24 ]
-gap> l:=List( AllSmallGroups(12), CharacterTable );;
+
+#gap> l:=List( AllSmallGroups(12), CharacterTable );;
+gap> l:=List([ 3913, 266, 7012, 321, 1 ],
+>            i -> CharacterTable(PcGroupCode(i, 12)));;
 gap> List( l, ConjugacyClasses );;
 gap> List( l, SizesConjugacyClasses );;
 gap> List( l, OrdersClassRepresentatives );;
 gap> List( l, Irr );;
 gap> ForAll( l, IsInternallyConsistent);
 true
-gap> ForAll(AllSmallGroups(12),g -> IsInternallyConsistent(CharacterTable(g) mod 2));
+gap> l:=List([3913, 266, 7012, 321, 1], i -> PcGroupCode(i, 12));;
+gap> ForAll(l,g -> IsInternallyConsistent(CharacterTable(g) mod 2));
 true
-gap> ForAll(AllSmallGroups(12),g -> IsInternallyConsistent(TableOfMarks(g)));
+gap> l:=List([3913, 266, 7012, 321, 1], i -> PcGroupCode(i, 12));;
+gap> ForAll(l,g -> IsInternallyConsistent(TableOfMarks(g)));
 true
 
 # Up to GAP 4.11.1, the following returned 'fail' results.
