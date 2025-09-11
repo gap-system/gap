@@ -3848,16 +3848,16 @@ InstallGlobalFunction( RandomInvertibleMat, function ( arg )
 
     # now construct the random matrix
     mat := [];
-    for i  in [1..m]  do
-        repeat
+    repeat
+        for i  in [1..m]  do
             row := [];
             for k  in [1..m]  do
                 row[k] := Random( rs, R );
             od;
             ConvertToVectorRepNC( row, R );
             mat[i] := row;
-        until NullspaceMat( mat ) = [];
-    od;
+        od;
+    until RankMat( mat ) = m;
 
     # We do *not* call ConvertToMatrixRep here, as that can cause
     # unexpected problems for the user (e.g. if a matrix over GF(2) is
