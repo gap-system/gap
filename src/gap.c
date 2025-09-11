@@ -1335,6 +1335,8 @@ static Int InitKernel (
     InitGlobalBag( &WindowCmdString, "src/gap.c:WindowCmdString" );
     InitGlobalBag( &KernelArgs, "src/gap.c:KernelArgs" );
 
+    InitGlobalBag( &SyGapRootPaths, "src/gap.c:SyGapRootPaths" ); // FIXME
+
     // init filters and functions
     InitHdlrFuncsFromTable( GVarFuncs );
 
