@@ -350,13 +350,12 @@ DeclareProperty( "IsPrimitiveCharacter", IsClassFunction );
 ##  rec( comment := "all restrictions checked", isQuasiPrimitive := true )
 ##  gap> chi:= Irr( Sl23 )[7];
 ##  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] )
-##  gap> TestQuasiPrimitive( chi );
-##  rec( character := Character( CharacterTable( Group(
-##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ],
-##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ],
-##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ),
-##    [ 1, -1, 1, -1, 1 ] ), comment := "restriction checked",
-##    isQuasiPrimitive := false )
+##  gap> test:= TestQuasiPrimitive( chi );;
+##  gap> test.isQuasiPrimitive; test.comment;
+##  false
+##  "restriction checked"
+##  gap> ValuesOfClassFunction( test.character );
+##  [ 1, -1, 1, -1, 1 ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

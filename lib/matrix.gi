@@ -747,7 +747,7 @@ InstallMethod( CharacteristicPolynomial, "spinning over field",
         fi;
         return false;
     end,
-    [ IsField, IsField, IsOrdinaryMatrix, IsPosInt ],
+    [ IsField, IsField, IsMatrixOrMatrixObj, IsPosInt ],
     function( F, E, mat, inum )
         local B;
 
@@ -766,7 +766,7 @@ InstallMethod( CharacteristicPolynomial, "spinning over field",
 
 InstallMethod( CharacteristicPolynomialMatrixNC, "spinning over field",
     IsElmsCollsX,
-    [ IsField, IsOrdinaryMatrix, IsPosInt ],
+    [ IsField, IsMatrixOrMatrixObj, IsPosInt ],
   Matrix_CharacteristicPolynomialSameField);
 
 
@@ -777,7 +777,7 @@ InstallMethod( CharacteristicPolynomialMatrixNC, "spinning over field",
 InstallMethod( MinimalPolynomial,
     "spinning over field",
     IsElmsCollsX,
-    [ IsField, IsOrdinaryMatrix, IsPosInt ],
+    [ IsField, IsMatrixOrMatrixObj, IsPosInt ],
 function( F, mat,inum )
     local fld, B;
 
@@ -814,7 +814,7 @@ end);
 
 InstallMethod( MinimalPolynomialMatrixNC, "spinning over field",
     IsElmsCollsX,
-    [ IsField, IsOrdinaryMatrix, IsPosInt ],
+    [ IsField, IsMatrixOrMatrixObj, IsPosInt ],
   Matrix_MinimalPolynomialSameField);
 
 
@@ -1459,7 +1459,7 @@ end);
 ##
 InstallMethod( DeterminantMatDestructive,
     "fraction-free method",
-    [ IsOrdinaryMatrix and IsMutable],
+    [ IsMatrixOrMatrixObj and IsMutable],
     function ( mat )
     local   det, sgn, row, zero, m, i, j, k, mult, row2, piv;
 
@@ -1530,7 +1530,7 @@ end);
 ##  through here also.
 ##
 InstallMethod( DeterminantMatDestructive,"non fraction free",
-    [ IsOrdinaryMatrix and IsFFECollColl and IsMutable],
+    [ IsMatrixOrMatrixObj and IsFFECollColl and IsMutable],
 function( mat )
     local   m,  zero,  det,  sgn,  k,  j,  row,  l, row2, x;
 
@@ -1605,7 +1605,7 @@ InstallMethod( DeterminantMat,
     end );
 
 InstallMethod( DeterminantMatDestructive,"nonprime residue rings",
-    [ IsOrdinaryMatrix and
+    [ IsMatrixOrMatrixObj and
     CategoryCollections(CategoryCollections(IsZmodnZObjNonprime)) and IsMutable],
   DeterminantMatDivFree);
 
@@ -1641,7 +1641,7 @@ InstallMethod( DeterminantMatDestructive,"nonprime residue rings",
 ##
 InstallMethod( DeterminantMatDivFree,
     "Division-free method",
-    [ IsMatrix ],
+    [ IsMatrixOrMatrixObj ],
     function ( M )
         local u,v,w,i,   ## indices
               a,b,c,x,y, ## temp indices
@@ -2197,7 +2197,7 @@ end );
 ##
 InstallMethod( NullspaceMat,
     "generic method for ordinary matrices",
-    [ IsOrdinaryMatrix ],
+    [ IsMatrixOrMatrixObj ],
     mat -> SemiEchelonMatTransformation(mat).relations );
 
 InstallOtherMethod(NullspaceMat,"matrix objects",[IsMatrixObj],
@@ -2218,7 +2218,7 @@ end);
 
 InstallMethod( NullspaceMatDestructive,
     "generic method for ordinary matrices",
-    [ IsOrdinaryMatrix  and IsMutable],
+    [ IsMatrixOrMatrixObj  and IsMutable],
     mat -> SemiEchelonMatTransformationDestructive(mat).relations );
 
 InstallOtherMethod( TriangulizedNullspaceMat,
@@ -2243,7 +2243,7 @@ end );
 
 InstallMethod( TriangulizedNullspaceMatNT,
     "generic method",
-    [ IsOrdinaryMatrix ],
+    [ IsMatrixOrMatrixObj ],
     function( mat )
     local   nullspace, n, empty, i, k, row, zero, one;#
 
@@ -2287,7 +2287,7 @@ InstallMethod( TriangulizedNullspaceMatNT,
 end );
 
 #InstallMethod(TriangulizedNullspaceMat,"generic method",
-#    [IsOrdinaryMatrix],
+#    [IsMatrixOrMatrixObj],
 #    function ( mat )
 #    # triangulize the transposed of the matrix
 #    return TriangulizedNullspaceMatNT(
@@ -2295,7 +2295,7 @@ end );
 #end );
 
 #InstallMethod(TriangulizedNullspaceMatDestructive,"generic method",
-#    [IsOrdinaryMatrix],
+#    [IsMatrixOrMatrixObj],
 #    function ( mat )
 #    # triangulize the transposed of the matrix
 #    return TriangulizedNullspaceMatNT(
@@ -2402,7 +2402,7 @@ end );
 ##
 InstallOtherMethod( RankMatDestructive,
     "generic method for mutable matrices",
-    [ IsMatrix and IsMutable ],
+    [ IsMatrixOrMatrixObj and IsMutable ],
     function( mat )
     mat:= SemiEchelonMatDestructive( mat );
     if mat <> fail then
@@ -2413,7 +2413,7 @@ InstallOtherMethod( RankMatDestructive,
 
 InstallOtherMethod( RankMat,
     "generic method for matrices",
-    [ IsMatrix ],
+    [ IsMatrixOrMatrixObj ],
     mat -> RankMatDestructive( MutableCopyMatrix( mat ) ) );
 
 
