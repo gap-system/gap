@@ -1848,7 +1848,13 @@ local a,h,i,q,d,img,geni,gen,hom,lcs,c,sqa,cnqs,genum;
         Error("infinite quotients currently impossible");
     fi;
     if Length(a) = 0 then
-        return NaturalHomomorphismByNormalSubgroup(g,g);
+        hom:= NaturalHomomorphismByNormalSubgroup(g,g);
+        if IsSubgroupFpGroup( Range( hom ) ) then
+          # Do not return an identity mapping,
+          # in order to avoid  infinite recursions.
+          hom:= GroupHomomorphismByImages( g, SymmetricGroup( 1 ), [], [] );
+        fi;
+        return hom;
     fi;
 
     h:=[];
