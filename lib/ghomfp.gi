@@ -533,10 +533,13 @@ InstallMethod( PreImagesSet, "map from (sub)group of fp group",
   CollFamRangeEqFamElms,
   [ IsFromFpGroupHomomorphism,IsGroup ],0,
 function(hom,u)
-local s,t,p,w,c,q,chom,tg,thom,hi,i,lp,max;
+local s,gens,t,p,w,c,q,chom,tg,thom,hi,i,lp,max;
   s:=Source(hom);
-  if HasIsWholeFamily(s) and IsWholeFamily(s) then
-    t:=List(GeneratorsOfGroup(s),i->Image(hom,i));
+  gens:= GeneratorsOfGroup( s );
+  if Length( gens ) = 0 then
+    return s;
+  elif HasIsWholeFamily(s) and IsWholeFamily(s) then
+    t:=List(gens,i->Image(hom,i));
     if IsPermGroup(Range(hom)) and LargestMovedPoint(t)<>NrMovedPoints(t) then
       c:=MappingPermListList(MovedPoints(t),[1..NrMovedPoints(t)]);
       t:=List(t,i->i^c);
@@ -759,6 +762,9 @@ local aug,w,pres,f,fam,opt;
   # catch trivial case of rank 0 group
   if Length(GeneratorsOfGroup(FamilyObj(u)!.wholeGroup))=0 then
     return IsomorphismFpGroup(FamilyObj(u)!.wholeGroup,str);
+  elif Length( GeneratorsOfGroup( u ) ) = 0 or
+       ( HasIsTrivial( u ) and IsTrivial( u ) ) then
+    return GroupHomomorphismByImages( u, FreeGroup( 0 ), [], [] );
   fi;
 
   # get an augmented coset table from the group. Since we don't care about
@@ -1052,7 +1058,7 @@ local Q,Ggens,gens,hom;
   Ggens:=GeneratorsOfGroup(G);
   # generators of G in image
   gens:=List(Ggens,elm->());  # a new group is created
-  Q:=GroupWithGenerators(gens);
+  Q:=GroupWithGenerators(gens, ());
   hom:=GroupHomomorphismByImagesNC(G,Q,Ggens,gens);
   SetKernelOfMultiplicativeGeneralMapping(hom,N);
   return hom;
