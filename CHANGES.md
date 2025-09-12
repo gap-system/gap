@@ -1,6 +1,6 @@
 # GAP - history of changes
 
-## GAP 4.15.0 (August 2025)
+## GAP 4.15.0 (September 2025)
 
 The following gives an overview of the changes compared to the previous
 release. This list is not complete, many more internal or minor changes
@@ -13,6 +13,7 @@ affect some users directly.
 
 ### Performance improvements
 
+- [#6088](https://github.com/gap-system/gap/pull/6088) Speed up `RandomInvertibleMat` and `Random(GL(n,q))`
 - [#6075](https://github.com/gap-system/gap/pull/6075) Speed up `CharacterDegrees`
 - [#6060](https://github.com/gap-system/gap/pull/6060) Optimize `IsZero` and `IsOne` for rational functions and (Laurent) polynomials
 - [#6020](https://github.com/gap-system/gap/pull/6020) Speed up `IsRegularPGroup` for direct products
@@ -48,6 +49,7 @@ affect some users directly.
 
 ### Fixed bugs that could lead to incorrect results
 
+- [#6110](https://github.com/gap-system/gap/pull/6110) Fix `LowerCentralSeriesOfGroup` and `NilpotencyClassOfGroup` for trivial groups to return a list of length 1 resp. the value 0 (and not a list of length 2 resp. the value 1)
 - [#6002](https://github.com/gap-system/gap/pull/6002) Fix bug in `SpecialPcgs` that could corrupt group objects and cause nonsense outputs
 - [#5982](https://github.com/gap-system/gap/pull/5982) Fix a bug that could lead to `ConjugacyClassesSubgroups` to return wrong results when applied to permutation groups
 - [#5975](https://github.com/gap-system/gap/pull/5975) Fix bug in double cosets computation that could lead to wrong results (the error is detectable by the sizes of the double cosets not summing up to the group order)
@@ -73,7 +75,7 @@ affect some users directly.
 
 - [#6070](https://github.com/gap-system/gap/pull/6070) Ensure `InterpolatedPolynomial` always returns a polynomial, even for "constant" input
 - [#6038](https://github.com/gap-system/gap/pull/6038) Fix an unexpected error when using `DotFileLattice`
-- [#6005](https://github.com/gap-system/gap/pull/6005) Ensure ˋDoubleCosets( G, U, V )ˋ checks that both ˋUˋ and ˋVˋ are contained in ˋGˋ, and immediately throws an error if this is not the case
+- [#6005](https://github.com/gap-system/gap/pull/6005) Ensure `DoubleCosets( G, U, V )` checks that both `U` and `V` are contained in `G`, and immediately throws an error if this is not the case
 - [#5936](https://github.com/gap-system/gap/pull/5936) Fix `--quiet` in the command line interface to be identical to `-q`
 - [#5900](https://github.com/gap-system/gap/pull/5900) Fix `IsomorphismPermGroupOrFailFpGroup` to honor its second argument, which limits the coset table size that gets used before it gives up
 - [#5864](https://github.com/gap-system/gap/pull/5864) Fix 'gap --version' to send its output to stdout and include a trailing newline
@@ -86,8 +88,8 @@ affect some users directly.
 
 #### New packages redistributed with GAP
 
-- [**ALCO**](https://bnasmith.github.io/alco/) 1.1.1: Tools for algebraic combinatorics, by Benjamin Nasmith
-- [**IBNP**](https://gap-packages.github.io/ibnp/) 0.16: Involutive Bases for Noncommutative Polynomials, by Gareth A. Evans, Christopher D. Wensley
+- [**ALCO**](https://bnasmith.github.io/alco/) 1.1.2: Tools for algebraic combinatorics, by Benjamin Nasmith
+- [**IBNP**](https://gap-packages.github.io/ibnp/) 0.17: Involutive Bases for Noncommutative Polynomials, by Gareth A. Evans, Christopher D. Wensley
 - [**InduceReduce**](https://gap-packages.github.io/InduceReduce/) 1.1: Unger's algorithm to compute character tables of finite groups, by Jonathan Gruber
 
 #### Packages no longer redistributed with GAP
@@ -96,7 +98,7 @@ affect some users directly.
 
 #### Updated packages redistributed with GAP
 
-The GAP 4.15.0 distribution contains 164 packages, of which 59 have been
+The GAP 4.15.0 distribution contains 164 packages, of which 63 have been
 updated since GAP 4.14.0. The full list of updated packages is given below:
 
 - [**ACE**](https://gap-packages.github.io/ace): 5.6.2 -> 5.7.0
@@ -116,21 +118,24 @@ updated since GAP 4.14.0. The full list of updated packages is given below:
 - [**cvec**](https://gap-packages.github.io/cvec): 2.8.2 -> 2.8.4
 - [**datastructures**](https://gap-packages.github.io/datastructures): 0.3.1 -> 0.3.3
 - [**DeepThought**](https://gap-packages.github.io/DeepThought/): 1.0.7 -> 1.0.9
-- [**Digraphs**](https://digraphs.github.io/Digraphs): 1.9.0 -> 1.11.0
+- [**Digraphs**](https://digraphs.github.io/Digraphs): 1.9.0 -> 1.12.1
 - [**Example**](https://gap-packages.github.io/example): 4.4.0 -> 4.4.1
+- [**ferret**](https://gap-packages.github.io/ferret/): 1.0.14 -> 1.0.15
 - [**float**](https://gap-packages.github.io/float/): 1.0.5 -> 1.0.9
 - [**Forms**](https://gap-packages.github.io/forms): 1.2.12 -> 1.2.13
 - [**FPLSA**](https://gap-packages.github.io/FPLSA): 1.2.6 -> 1.2.7
 - [**GeneralizedMorphismsForCAP**](https://homalg-project.github.io/pkg/GeneralizedMorphismsForCAP): 2024.09-03 -> 2025.08-01
 - [**GradedModules**](https://homalg-project.github.io/pkg/GradedModules): 2024.01-01 -> 2024.12-01
-- [**groupoids**](https://gap-packages.github.io/groupoids/): 1.76 -> 1.78
+- [**GRAPE**](https://gap-packages.github.io/grape): 4.9.2 -> 4.9.3
+- [**groupoids**](https://gap-packages.github.io/groupoids/): 1.76 -> 1.79
 - [**GUAVA**](https://gap-packages.github.io/guava): 3.19 -> 3.20
 - [**HAP**](https://gap-packages.github.io/hap): 1.66 -> 1.70
+- [**HomalgToCAS**](https://homalg-project.github.io/pkg/HomalgToCAS): 2023.11-01 -> 2025.08-01
 - [**IO**](https://gap-packages.github.io/io): 4.9.1 -> 4.9.3
 - [**json**](https://gap-packages.github.io/json/): 2.2.2 -> 2.2.3
 - [**LinearAlgebraForCAP**](https://homalg-project.github.io/pkg/LinearAlgebraForCAP): 2024.10-01 -> 2025.08-02
 - [**matgrp**](https://www.math.colostate.edu/~hulpke/matgrp): 0.71 -> 0.72
-- [**MatricesForHomalg**](https://homalg-project.github.io/pkg/MatricesForHomalg): 2024.11-02 -> 2025.08-01
+- [**MatricesForHomalg**](https://homalg-project.github.io/pkg/MatricesForHomalg): 2024.11-02 -> 2025.09-01
 - [**ModulePresentationsForCAP**](https://homalg-project.github.io/pkg/ModulePresentationsForCAP): 2024.09-02 -> 2025.08-02
 - [**Modules**](https://homalg-project.github.io/pkg/Modules): 2024.01-01 -> 2024.12-01
 - [**MonoidalCategories**](https://homalg-project.github.io/pkg/MonoidalCategories): 2024.09-05 -> 2025.08-02
@@ -144,6 +149,7 @@ updated since GAP 4.14.0. The full list of updated packages is given below:
 - [**profiling**](https://gap-packages.github.io/profiling/): 2.6.0 -> 2.6.2
 - [**QDistRnd**](https://QEC-pages.github.io/QDistRnd): 0.9.4 -> 0.9.5
 - [**recog**](https://gap-packages.github.io/recog): 1.4.3 -> 1.4.4
+- [**RepnDecomp**](https://gap-packages.github.io/RepnDecomp): 1.3.0 -> 1.3.1
 - [**SCSCP**](https://gap-packages.github.io/scscp): 2.4.3 -> 2.4.4
 - [**Semigroups**](https://semigroups.github.io/Semigroups): 5.4.0 -> 5.5.4
 - [**singular**](https://gap-packages.github.io/singular/): 2024.06.03 -> 2025.08.26
@@ -152,7 +158,7 @@ updated since GAP 4.14.0. The full list of updated packages is given below:
 - [**ToolsForHomalg**](https://homalg-project.github.io/pkg/ToolsForHomalg): 2024.09-01 -> 2025.05-01
 - [**typeset**](https://gap-packages.github.io/typeset/): 1.2.2 -> 1.2.3
 - [**UnitLib**](https://gap-packages.github.io/unitlib): 4.2.0 -> 5.0.0
-- [**utils**](https://gap-packages.github.io/utils): 0.85 -> 0.91
+- [**utils**](https://gap-packages.github.io/utils): 0.85 -> 0.92
 - [**Wedderga**](https://gap-packages.github.io/wedderga): 4.10.5 -> 4.11.1
 - [**XMod**](https://gap-packages.github.io/xmod/): 2.92 -> 2.95
 - [**XModAlg**](https://gap-packages.github.io/xmodalg/): 1.23 -> 1.32
