@@ -519,7 +519,7 @@
   \ifnum\subsecno=0 \edef\@currentlabel{\thechapter.\the\secno}\else
   \edef\@currentlabel{\thechapter.\the\secno.\the\subsecno}\fi\fi
   \@xp\ifx\csname r@\book:\xpandlowr\endcsname\@currentlabel\else%
-  %\immediate\write16{Label `\book:#1' has changed.}%
+  \immediate\write16{Label `\book:#1' has changed.}%
   \global\labchangedtrue\fi%
   \expandafter\ifx\csname pdfdest@\xpandlowr\endcsname\relax
   \nameddest{\xpandlowr}%
