@@ -1780,8 +1780,6 @@ sub convert_chap {
       if ($sec->{secnum} == 0) {
           if (defined($chap->{sections}[1])) {
               sectionlist $chap;
-          } else {
-              print STDERR "Warning: Chapter has no sections\n";
           }
       }
 
