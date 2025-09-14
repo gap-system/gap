@@ -32,7 +32,7 @@
 \Chapter{The gapmacro.tex Manual Format}
 
 This document describes a restricted {\TeX} format,
-which is defined by the of macros in the file 
+which is defined by the of macros in the file
 
 \){\kernttindent GAPPATH/doc/gapmacro.tex}
 
@@ -50,7 +50,7 @@ the  general  layout of the  files  in case  you need to   write your own
 package documentation.
 
 If you are planning to write new documentation for a {\GAP} package,
-one alternative to using the format described in this document 
+one alternative to using the format described in this document
 is to use the \package{GAPDoc} package,
 see Chapter ``Introduction and Example''
 in the \package{GAPDoc} manual,
@@ -160,7 +160,7 @@ used to load the labels of  the  other  books  in  case  cross-references
 occur. <booki> should be the path of the directory  containing  the  book
 whose references you want to load. However, as said above this requires
 changes to the `manual.tex' file if the package is not installed  in  the
-standard location. `\\UseGapDocReferences' can also be used to load 
+standard location. `\\UseGapDocReferences' can also be used to load
 \package{GAPDoc} style references, but this function exists only for backward
 compatibility.
 
@@ -365,46 +365,46 @@ deactivate by adding the following {\TeX} just after the line
 Of course, you need not set options which are marked as default.
 
 \beginitems
-   
+
 `\\usepsfonts' & (default) use the standard Postscript fonts for typesetting
 
-`\\usecmfonts' & use the TeX standard (Computer Modern) fonts (this was the 
+`\\usecmfonts' & use the TeX standard (Computer Modern) fonts (this was the
     behaviour until {\GAP} 4.4).
-    
-`\\addlinks' & (default) This inserts pdf links within the document, so 
+
+`\\addlinks' & (default) This inserts pdf links within the document, so
     that you can click on a reference or citation. This will only work
     with pdftex, otherwise this has no effect.
 
-`\\nolinks' & This switches off additional pdf links within the document (this was the 
+`\\nolinks' & This switches off additional pdf links within the document (this was the
     behaviour until {\GAP} 4.4.
 
-`\\citebooksfalse' & (default) References to external books will just print the 
+`\\citebooksfalse' & (default) References to external books will just print the
    chapter/section/subsection number(s).
-   
+
 `\\citebookstrue' & References to external books will be printed as
-    `GAP Reference Manual, 2.7.12' instead of just `2.7.12', similarly 
-    for the GAP tutorial. If you cite other books, you have to define 
-    for each book `XXX' a macro `\\xxxManual' which expands to the text 
+    `GAP Reference Manual, 2.7.12' instead of just `2.7.12', similarly
+    for the GAP tutorial. If you cite other books, you have to define
+    for each book `XXX' a macro `\\xxxManual' which expands to the text
     which you want to be inserted before the number for package `XXX'.
     (Note that the `xxx' in `\\xxxManual' must always be lower case, regardless
     of the actual package name `XXX'.)
-    
+
     &
-    If you want to cite from the manual of a package ``OtherPackage'', then you should 
-    add the line 
-    
-\begintt 
+    If you want to cite from the manual of a package ``OtherPackage'', then you should
+    add the line
+
+\begintt
 \gdef\otherpackageManual{The OtherPackage Manual}
 \endtt
    & at the beginning of your main {\TeX} input file.
 
-`\\biblitemfalse' & (default, same as in {\GAP} 4.4) In the bibliography, 
-   print abbreviations for papers right-aligned 
-   
+`\\biblitemfalse' & (default, same as in {\GAP} 4.4) In the bibliography,
+   print abbreviations for papers right-aligned
+
 `\\biblitemtrue' & Print abbreviations left-aligned in the bibliography. d
    Depending on the abbreviations you use, you may need more indentation.
    You may set `\\bibindent' to another value (the present default is 3 pc)
-   if you get overfull `\\hbox'es.  (This effect also exists if you use 
+   if you get overfull `\\hbox'es.  (This effect also exists if you use
    `\\bibitemsfalse'
    but there is not very obvious because long abbreviations will
    protrude into the left margin only.)
@@ -446,7 +446,7 @@ crash, due to the discovery of what it sees as two  `\\Section'  commands
 within the one section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Suppressing Indexing and Labelling of a Section and Resolving 
+\Section{Suppressing Indexing and Labelling of a Section and Resolving
 Label Clashes}
 
 \indextt{\\null!use in index suppression}
@@ -518,7 +518,7 @@ label reference is required.
 A section of this document has the title
 ``Structuring the text: Chapters and Sections'',
 which contains a colon. Hence, to refer to that section, one *must* use a
-long label: 
+long label:
 \begintt
 Section "gapmacro:Structuring the text: Chapters and Sections"
 \endtt
@@ -529,12 +529,12 @@ produces: Section "gapmacro:Structuring the text: Chapters and Sections".
 In actual fact long labels are first sanitised by conversion to lower case
 and removal of superfluous white space (multiple blanks and new lines are
 converted to a single space). The same sanitisation process is applied to
-references. Thus, 
+references. Thus,
 \begintt
 Section "gapmacro:Structuring the text:                          Chapters
 and Sections"
 \endtt
-also produces: 
+also produces:
 Section "gapmacro:Structuring the text:                          Chapters
 and Sections".
 So, don't worry about references to labels being broken over  lines
@@ -573,13 +573,13 @@ the following section.
     sets <text> in `typewriter style'.
     This is typically used to denote {\GAP} keywords such  as  `for'  and
     `false' or variables that are not  arguments  to  a  function,  e.g.,
-    `{\lq}for\pif' produces `for'. 
-    See also `\<<text>>'. 
+    `{\lq}for\pif' produces `for'.
+    See also `\<<text>>'.
     Use `\\\<' to get a ``less than'' sign.
 
 `\lq\lq<text>\pif\pif' &
-    encloses <text> in double quotes, 
-    e.g., `\lq{\lq}double-quoted text\pif\pif' produces 
+    encloses <text> in double quotes,
+    e.g., `\lq{\lq}double-quoted text\pif\pif' produces
     ``double-quoted text''.
     In particular, `\lq\lq<text>\pif\pif' does *not* set  `\lq<text>\pif'
     in typewriter  style;  use  `{\lq\{{\lq}text\pif\}\pif}'  to  produce
@@ -587,13 +587,13 @@ the following section.
     be defined later or is used in an uncommon way.
 
 `\\lq' &
-    sets a single left quote: `\lq'. 
+    sets a single left quote: `\lq'.
     For a phrase <text> that is to be defined later  or  is  used  in  an
     uncommon way, please use `\lq\lq<text>\pif\pif' (which encloses <text>
     in double quotes rather than single quotes).
 
 `\\rq', `\\pif' &
-    each set a single apostrophe (right quote): `\pif'.  For the HTML and 
+    each set a single apostrophe (right quote): `\pif'.  For the HTML and
     on-line manuals `\\accent19\{\}' also sets an apostrophe; however the
     {\TeX}-derived manuals produce an acute-d blankspace (what it in fact
     is).
@@ -614,7 +614,7 @@ the following section.
 The function `Group' constructs a group generated by <gens>.
 \endtt
 
-  & 
+  &
     The `F' at the end of the first line in the above  example  indicates
     that `Group' is a function (see the `\\>' entry, below).
 
@@ -731,19 +731,19 @@ The function `Group' constructs a group generated by <gens>.
     right for {\GAP} packages.
 
 `\\>' &
-    produces a subsection. 
+    produces a subsection.
     The line following the `\\>' entry must either contain another `\\>'
     entry (in which case the further entries are assumed to be variants
     and do not start a new subsection) or must be empty.
     The description text will follow this empty line.
 
   & There are several forms of the `\\>' command.
-    In all forms, a label and index entry are generated; the HTML 
+    In all forms, a label and index entry are generated; the HTML
     converter uses the label to form an index entry, respecting case
     and setting in roman type.
-    If the next non-space character is not a left quote (`\lq') it is 
-    assumed that the subsection is for a ``function''; we exhibit 
-    these forms first. 
+    If the next non-space character is not a left quote (`\lq') it is
+    assumed that the subsection is for a ``function''; we exhibit
+    these forms first.
 
 `\\><func>' &
     While this form is supported; it  is  discouraged.  If  <func>  is  a
@@ -769,7 +769,7 @@ The function `Group' constructs a group generated by <gens>.
     manual index. Here is an example of how to use `\\>'; the index entry
     is ```Size'''  (in  typewriter  type,  with  mixed  case  preserved).
 
-\begintt 
+\begintt
 \>Size( <obj> ) A
 \endtt
 
@@ -838,7 +838,7 @@ The function `Group' constructs a group generated by <gens>.
     same as for `\\atindex'.
 
 `\\>\lq<global-var>{\rq} V' &
-    This is actually a short-hand for: 
+    This is actually a short-hand for:
     ``{`\\>\lq<global-var>\rq\{<global-var>\}@\{\lq<global-var>\rq\} V'}''
     to  save  you  some  typing  when  creating  subsections  for  global
     variables, i.e., <global-var>  is  the  label  and  the  index  entry
@@ -1054,7 +1054,7 @@ indicates the list should be numbered with uppercase roman numerals (`I', `II',
 
 The `\\beginlist' of the above example was followed by `\%ordered\{a\}' and
 so the list is numbered using lowercase letters in the HTML version and using
-the ordered list environment (rather than the description environment). 
+the ordered list environment (rather than the description environment).
 
 Occasionally, it is necessary to break from a list, add some explanatory
 text and then restart the list, and resume numbering the items from where
@@ -1093,7 +1093,7 @@ the comment after the first `\\itemitem' in a sequence is interpreted.
 There are two types of *verbatim* environments.
 Example {\GAP} sessions are typeset in typewriter style
 using the `\\beginexample', `\\endexample' environment.
-Make sure that`\\beginexample', `\\endexample',  `\\begintt' 
+Make sure that`\\beginexample', `\\endexample',  `\\begintt'
 and `\\endtt' are on lines of their own.
 
 \begintt
@@ -1109,9 +1109,9 @@ gap> 1+2;
 3
 \endexample
 
-All examples in a chapter will also be written to files with the extension 
+All examples in a chapter will also be written to files with the extension
 `.example-<chapno>.tst', where <chapno> is the chapter number. These `.tst'
-files can be used to verify the examples in the manual. See 
+files can be used to verify the examples in the manual. See
 "Testing the Examples" below for details.
 
 \indextt{\\beginexample!indicating unstable output}
@@ -1220,25 +1220,25 @@ $$
 
 Ideally, the {\GAP} examples (the text between `\\beginexample'
 and `\\endexample') should be chosen such that every user obtains the
-same output (up to line breaks and whitespace) when typing in your example. 
+same output (up to line breaks and whitespace) when typing in your example.
 
 This is often difficult to achieve, or can only be achieved at the cost of
 writing unnecessarily complicated examples. Therefore, it is recommended that
-you choose examples in such a way that when a user starts {\GAP}, loads your 
+you choose examples in such a way that when a user starts {\GAP}, loads your
 package and types the examples of a chapter in the given order, then (s)he will
-see the same output as in the manual examples. (This will ensure that the 
+see the same output as in the manual examples. (This will ensure that the
 global random number generator is initialized to the *same* values.
 For more details,
 see the last paragraph of ``Starting and Leaving GAP''
 in the {\GAP} Tutorial.)
-In cases where this is 
-impossible, you may use `\\testexamplefalse' before `\\beginexample', see 
+In cases where this is
+impossible, you may use `\\testexamplefalse' before `\\beginexample', see
 "Examples, Lists, and Verbatim".
 
 As mentioned above, a {\TeX} run of the manual produces files
 `manual.example-<chapno>.tst', one for each chapter containing at least
 one {\GAP} example (the text between `\\beginexample'
-and `\\endexample'). These files can be read into {\GAP} using `ReadTest' 
+and `\\endexample'). These files can be read into {\GAP} using `ReadTest'
 (see `?ReadTest'), to ensure that the {\GAP} output for the examples
 hasn't changed.
 
@@ -1259,7 +1259,7 @@ use it correctly. These uses are:
 \item{1.}
 A line *beginning* with 16 (or more) `\%' symbols marks the  *end*  of  a
 section, or the *end* of a chapter introduction  (which  may  be  empty).
-Such  a  line  *must* precede  *every*  `\\Section' 
+Such  a  line  *must* precede  *every*  `\\Section'
 (see~"gapmacro:Structuring the text: Chapters and Sections").
 
 \item{2.}
@@ -1404,7 +1404,7 @@ Finally, there is
 
 \begintt
 %display{nontext}
-%HTML version (interpreted normally by HTML converter, after removing the 
+%HTML version (interpreted normally by HTML converter, after removing the
 %\% symbol)
 %enddisplay
 \endtt
@@ -1480,7 +1480,7 @@ Assuming that all necessary files are there (a `manual.lab' file for each
 on a Unix system the following calls will then produce a file `manual.dvi'
 as well as a file `manual.six' which is used by the {\GAP} help functions.
 If you are missing some of the needed files and don't have `CVS' access to
-{\GAP}, just send an email request for them to 
+{\GAP}, just send an email request for them to
 \Mailto{support@gap-system.org}.
 
 Go to the directory holding the manual. Call
@@ -1693,10 +1693,10 @@ denoted by <gdfile>, there should be:
 \)\kernttindent\#\#\ \ should have two \# characters followed by 2 blank
 \)\kernttindent\#\#\ \ space characters at the left margin. The text
 \)\kernttindent\#\#\ \ can and should include any necessary \{\\TeX\}
-\)\kernttindent\#\#\ \ mark-up and indexing commands. 
+\)\kernttindent\#\#\ \ mark-up and indexing commands.
 \)\kernttindent\#\#
 \)\kernttindent\#\#\ \ A fileheader may consist of any number of paragraphs.
-\)\kernttindent\#\#\ \ It is terminated by a totally empty line (i.e.~a 
+\)\kernttindent\#\#\ \ It is terminated by a totally empty line (i.e.~a
 \)\kernttindent\#\#\ \ line devoid even of \# characters).
 \)\kernttindent\#\#
 
@@ -1729,7 +1729,7 @@ $<X>, <Y>, \dots, <Z> \in \{ `A', `C', `F', `M', `R', `O', `P', `V'  \}$.
 If the letter is `V' then no parentheses or arguments should  follow  the
 ``function name'' <funci>.
 
-\item{--} 
+\item{--}
 The letters, <X>, <Y>, \dots, <Z> are printed in the manual. If a  letter
 is `A' or `P', then also the letters `S'  and  `T'  are  printed  if  the
 setter and the tester are available. If  the  letter  is  `A',  then  the
@@ -1752,7 +1752,7 @@ there should be two blank space characters between  the  `\#\#'  and  the
 text. Lines starting with `\#T' (or  some  other  non-`\#'  character  in
 place of `T') are ignored.
 
-\item{--} 
+\item{--}
 It is assumed that for each ``function  name''  <func>,  <func2>,  \dots,
 <funcn> there is a corresponding {\GAP} declaration (which  need  not  be
 via a `Declare...' command, e.g.~it  might  be  `BindGlobal')  after  the

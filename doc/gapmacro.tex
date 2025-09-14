@@ -57,39 +57,39 @@
 %%
 %%  The following macros can be used just after inputting gapmacro.tex to control
 %%  the layout.
-%%    \casesensitivetrue makes labels case sensitive (this is still experimental 
+%%    \casesensitivetrue makes labels case sensitive (this is still experimental
 %%     and not currently supported by the html converter)
 %%  \casesensitivefalse & (default) labels are case insensitive
 %%
-%%  \addlinks (default) This inserts pdf links within the document, so 
+%%  \addlinks (default) This inserts pdf links within the document, so
 %%    that you can click on a reference or citation. This will only work
 %%    with pdftex, otherwise this has no effect.
 %%
 %%  \nolinks This switches off additional pdf links within the document.
 %%
-%%  \citebookstrue References to external books will be 
-%%     "GAP Reference Manual, 2.7.12" instead of just "2.7.12", similarly 
-%%     for the GAP tutorial. If you cite other books, you have to define 
-%%     macros \xxxManual which must expand to the text which you want to 
+%%  \citebookstrue References to external books will be
+%%     "GAP Reference Manual, 2.7.12" instead of just "2.7.12", similarly
+%%     for the GAP tutorial. If you cite other books, you have to define
+%%     macros \xxxManual which must expand to the text which you want to
 %%     be inserted before the number for package xxx (lower case).
 %%  \citebooksfalse (default) just print the number
 %%
 %%  \usepsfonts (default) use the standard Postscript fonts for typesetting
 %%  \usecmfonts use the TeX standard fonts
 %%
-%%  \biblitemfalse (default) In the bibliography, print abbreviations for 
+%%  \biblitemfalse (default) In the bibliography, print abbreviations for
 %%    papers right-aligned (as in gapmacro.tex)
 %%  \biblitemtrue print abbreviations left-aligned
-%%  \bibindent (default: 3 pc) indentation used in the bibliography - 
-%%    depending 
-%%    on the abbreviations you use, you may need more (this is not very 
+%%  \bibindent (default: 3 pc) indentation used in the bibliography -
+%%    depending
+%%    on the abbreviations you use, you may need more (this is not very
 %%    obvious if you use \biblitemfalse because long abbreviations will
 %%    protrude into the left margin only, but will cause overfull hboxes
 %%    when using \biblitemtrue
 
 \input amssym.tex
 
-\catcode`@=11 
+\catcode`@=11
 
 % Page dimensions and double column output.
 \hsize 39pc
@@ -113,7 +113,7 @@
     \gdef\endlink{\pdfliteral{0 0 0 rg}\pdfendlink\endgroup}%
 }
 
-% do we run pdftex? 
+% do we run pdftex?
 \ifx\pdfdest\undefined
     \immediate\write16{Running TeX}
     % no: define dummy bookmarking functions
@@ -148,7 +148,7 @@
 \fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
+%
 %  Generic double column output.
 %
 %    Modified from a routine written by Donald Knuth (The TeXBook, App. E)
@@ -244,7 +244,7 @@
     \font\tenbf=ptmb7t at 10pt % boldface extended
     \font\sevenbf=ptmb7t at 7pt
     \font\fivebf=ptmb7t at 5pt
-    % additional fonts needed by gapmacro.tex    
+    % additional fonts needed by gapmacro.tex
     \font\tentt=cmtt10 % typewriter
     \font\tensl=ptmro7t at 10pt
     \font\tenit=ptmri7t at 10pt % text italic
@@ -256,8 +256,8 @@
     \font\sf=phvr7t at 10 pt
     \font\bsf=phvb7t at 10 pt
     \font\smallrom=ptmr7t at 8pt
-    \font\sevenit=ptmri7t at 7pt     
-    \font\fiveit=ptmri7t at 5pt 
+    \font\sevenit=ptmri7t at 7pt
+    \font\fiveit=ptmri7t at 5pt
     \inst@allfonts
 }
 \outer\def\usecmfonts{
@@ -290,7 +290,7 @@
     \font\bsf=cmssdc10
     \font\smallrom=cmr8
     \font\sevenit=cmti10 at 7pt
-    \font\fiveit=cmti10 at 5pt 
+    \font\fiveit=cmti10 at 5pt
     \inst@allfonts
 }
 
@@ -395,7 +395,7 @@
 \newif\iftestexample\global\testexampletrue
 \newread \labelin  \newread \indexin  \newread \tocin  \newread \citein
 \countdef\chapno=1 \newcount\secno    \newcount\subsecno \newcount\exno
-\newcount\indentno 
+\newcount\indentno
 \newcount\chapnum  %GG \chapnum is a numerical \chapno for the .six file
 \def\chapterno{{\edef\tempa{\thechapter}\tempa}}
 %\def\folio{\ifnum\pageno<0 \romannumeral-\pageno \else
@@ -408,14 +408,14 @@
 %AH
 \def\folio{\ifnum\pageno<0 \romannumeral-\pageno \else
   \number\pageno\fi}
-  
+
 %\def\doindex#1#2#3{\protectedwrite\indexout{\noexpand\indexentry{#1#2#3}%
 %  {\ifnum\pageno<0\romannumeral-\pageno\else%
 %   \number\pageno\fi}}%
 %  \ifvmode\nobreak\else\unskip\fi}
 
-{\catcode`<=\active \catcode`_=\active \catcode`!=\active \catcode`*=\active 
-\catcode``=\active 
+{\catcode`<=\active \catcode`_=\active \catcode`!=\active \catcode`*=\active
+\catcode``=\active
 
 \global\let\n@exp\noexpand
 
@@ -442,7 +442,7 @@
 \catcode`*=\active \def*{\ifmmode\let\next=\*\else\let\next=\bold\fi\next}
                    \def\bold#1*{{\bf #1\/}}             \chardef\*=`*
 \catcode`<=\active \def<#1>{{\chardef*=`*\let_=\_\it#1\/}}
-                                                       
+
 \catcode`"=\active \def"{\begingroup\undoquotes\doref}  \chardef\"=`"
                                                         \chardef\\=`\\
 
@@ -463,12 +463,12 @@
 \def\printbookref#1:#2:"{\printref{#1:#2}}
 
 % Macros which write labels, citations and index entries on auxiliary files.
-% 
+%
 % 1. Some code was moved around so that all the labels and indexing stuff
 %    would be together.
 % 2. Modified \makelabel, \printref and \label to be more like the LaTeX
 %    commands \newlabel, \ref and \label, respectively. The commands:
-%    \@xp, \@firstoftwo, \@secondoftwo, \namedef, \@ifundefined 
+%    \@xp, \@firstoftwo, \@secondoftwo, \namedef, \@ifundefined
 %    \protectedwrite are adapted pieces of LaTeX code (\@xp is actually
 %    AmSLaTeX's abbreviation of \expandafter).
 % 3. The upshot of 2. is that now underscore is allowed in labels and
@@ -511,7 +511,7 @@
        \ifcitebooks\expandafter\csname\next Manual\endcsname,\space\fi
        \csname r@\xpandlowr\endcsname\fi}
 
-\newif\ifnewlab 
+\newif\ifnewlab
 
 % Macros which write labels, citations and index entries on auxiliary files.
 \gdef\label#1{\@xplowr{#1}%
@@ -519,7 +519,7 @@
   \ifnum\subsecno=0 \edef\@currentlabel{\thechapter.\the\secno}\else
   \edef\@currentlabel{\thechapter.\the\secno.\the\subsecno}\fi\fi
   \@xp\ifx\csname r@\book:\xpandlowr\endcsname\@currentlabel\else%
-  %\immediate\write16{Label `\book:#1' has changed.}%
+  \immediate\write16{Label `\book:#1' has changed.}%
   \global\labchangedtrue\fi%
   \expandafter\ifx\csname pdfdest@\xpandlowr\endcsname\relax
   \nameddest{\xpandlowr}%
@@ -591,8 +591,8 @@
    \xdef\ors{\the\ortoks}\endgroup}
 \def\setors{{\xdef\ors{} \count0=\chapno
    \loop\ifnum\count0>0 \addor \advance\count0 by -1\repeat}}
-\def\appno#1{\expandafter\ifcase\expandafter#1\ors\or A\or B\or C\or D\or E\or 
-   F\or G\or H\or I\or J\or K\or L\or M\or N\or O\or P\or Q\or R\or S\or T\or 
+\def\appno#1{\expandafter\ifcase\expandafter#1\ors\or A\or B\or C\or D\or E\or
+   F\or G\or H\or I\or J\or K\or L\or M\or N\or O\or P\or Q\or R\or S\or T\or
    U\or V\or W\or X\or Y\or Z\else\immediate\write16{Counter too large} \fi}
 
 % Macros for chapter and section headings.
@@ -601,7 +601,7 @@
 \outer\def\Input#1{\def\filename{#1.tex}\input #1}
 \def\emptychapter{\noexpand\tocstrut}
 \def\normalchapter{\the\chapno}
-% GG 
+% GG
 \def\appendixchapter{\appno\chapno} % \appno behaves like LaTeX's \Alph
 \newif\ifchapter           % set to true when \thechapter = \normalchapter
                            % ... or ...  when \thechapter = \appendixchapter
@@ -798,7 +798,7 @@
 % The date
 
 \def\Today{{\Day} {\Month} {\Year}}
-  
+
 % Miscellaneous macros.
 \def\N{{\Bbb N}} \def\Z{{\Bbb Z}} \def\Q{{\Bbb Q}} \def\R{{\Bbb R}}
 \def\C{{\Bbb C}} \def\F{{\Bbb F}} \def\calR{{\cal R}}
@@ -832,7 +832,7 @@
   %\setbox0=\vbox{\Bibliography}
   \endgroup
   \labchangedfalse
-  
+
   % Open the auxiliary files for output.
   \immediate\openout\tocout   =\jobname.toc
   \immediate\openout\labelout =\jobname.lab
@@ -845,18 +845,18 @@
   \ifodd\pageno\else\headlinefalse\null\vfill\eject\fi
 %  \pageno=1
 }
-  
+
 \outer\def\Chapters{\vfill\eject
   \chapno=0 \let\thechapter=\normalchapter \chaptertrue
   \def\lefthead{{\it Chapter \the\chapno. \chapname}}
   \def\righthead{\ifx\botmark\empty\lefthead\else{\it \botmark}\fi}}
 
 % GG
-% Rather than reset \chapno in \Appendices, for the .six file (which GAP's 
-% help uses), we number appendices as if they were chapters (via \the\chapno) 
-% i.e. if the last chapter was numbered 7 then for the .six file the first 
+% Rather than reset \chapno in \Appendices, for the .six file (which GAP's
+% help uses), we number appendices as if they were chapters (via \the\chapno)
+% i.e. if the last chapter was numbered 7 then for the .six file the first
 % appendix would be numbered 8.
-% The \setors macro puts (\number\chapno - 1) \or s in the \ors macro so that 
+% The \setors macro puts (\number\chapno - 1) \or s in the \ors macro so that
 % \appno\chapno (= \appendixchapter) numbers the appendices sequentially from A
 % for the .lab file (which TeX uses).
 \outer\def\Appendices{\vfill\eject
@@ -1011,7 +1011,7 @@
   \begingroup\undoquotes\frenchspacing
   \parindent\bibindent
   \pretolerance=5000 %badness allowed for hypenation
-  \tolerance=5000    %badness allowed before overfull boxes appear 
+  \tolerance=5000    %badness allowed before overfull boxes appear
   \parskip 1ex plus 0.5ex minus 0.5ex
   \def\begin##1##2{} \def\end##1{}
   \let\newblock=\relax \let\em=\sl
@@ -1046,7 +1046,7 @@ e.g., ```PermutationCharacter''' comes before ``permutation group''.%
   \bigskip
   \begindoublecolumns
   \pretolerance=5000 %badness allowed for hypenation
-  \tolerance=5000    %badness allowed before overfull boxes appear 
+  \tolerance=5000    %badness allowed before overfull boxes appear
   \parindent 0pt \parskip 0pt \rightskip 0pt plus2em \emergencystretch 2em
   \everypar{\hangindent\smallmanindent}
   \def\par{\endgraf\leftskip 0pt}
