@@ -3194,7 +3194,7 @@ local m,all,m2;
     m2:=Concatenation(List(m,MaximalSubgroupClassReps));
     m2:=Unique(Filtered(m2,x->Index(G,x)<=n));
     m2:=List(SubgroupsOrbitsAndNormalizers(G,m2,false),x->x.representative);
-    m2:=Filtered(m2,x->ForAll(all,y->RepresentativeAction(G,x,y)=fail));
+    m2:= Filtered( m2, x -> ForAll( all, y-> not IsConjugate( G, x, y ) ) );
     Append(all,m2);
     m:=Filtered(m2,x->Index(G,x)<=n/2); # otherwise subgroups will have too large index
   od;
