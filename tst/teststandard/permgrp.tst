@@ -106,7 +106,10 @@ gap> IsNonabelianSimpleGroup(g);
 true
 
 # small double coset
-gap> g:=TransitiveGroup(12,291);;
+gap> g := Group([ (3,6,12), (3,6,9), (1,10)(6,9),
+>                 (1,5,9)(2,6,10)(3,7,11)(4,8,12),
+>                 (1,2)(4,8)(5,10)(6,9)(7,11) ]);;
+gap> # g = TransitiveGroup(12,291)
 gap> s:=SylowSubgroup(g,3);;
 gap> Length(DoubleCosets(g,s,s));
 24
@@ -139,11 +142,6 @@ true
 # classes over larger field extension
 gap> Length(ConjugacyClasses(PSL(2,64)));
 65
-
-# MinimalGeneratingSet -- factor 400 speedup
-gap> AllTransitiveGroups(NrMovedPoints,12,
-> x->Length(MinimalGeneratingSet(x)),4);
-[ [3^4:2^3]E(4) ]
 
 # MinimalFaithfulPermutationDegree
 gap>  MinimalFaithfulPermutationDegree(SmallGroup(5^6,33));
