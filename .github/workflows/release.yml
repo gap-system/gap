@@ -68,10 +68,18 @@ jobs:
       gap-build-version: ${{ steps.get-build.outputs.name }}
 
     steps:
+      # We need to force fetch tags on the repository in the next step, which
+      # requires fetching the entire history. Therefore, we might as well do
+      # that here when checking out the repo, which is what setting fetch-depth
+      # to 0 accomplishes here.
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
+      # We need to know the git tags of the repository, because the GAP build
+      # system uses the tags to generate the version string for the GAP build,
+      # which we then extract in the "Record the GAP build version" step below.
+      #
       # When an annotated tag is pushed, then for some reason we don't see it
       # in this action; instead an unannotated tag with the same name is
       # present, we resolve this by force-fetching tags.
