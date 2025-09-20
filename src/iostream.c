@@ -309,11 +309,24 @@ static Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self)
 // posix_spawn_file_actions_addchdir_np. To keep things simple, we detect this
 // case and use some preprocessor tricks to make things work in either case.
 //
-#if !defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR) &&                      \
+// Mac OS X 26.0 has posix_spawn_file_actions_addchdir, and xcode generates
+// code which uses it even in older versions of Mac OS X. Therefore if both
+// functions are defined, we will always use the older _np version.
+#if defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR) ||                       \
     defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR_NP)
+
+#if !defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR)
 #define HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR
-#define posix_spawn_file_actions_addchdir(f, d)                              \
+#endif
+
+#if HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR_NP
+#define posix_spawn_file_actions_addchdir_func(f, d)                         \
     posix_spawn_file_actions_addchdir_np(f, d)
+#else
+#define posix_spawn_file_actions_addchdir_func(f, d)                         \
+    posix_spawn_file_actions_addchdir(f, d)
+#endif
+
 #endif
 
 
@@ -368,9 +381,12 @@ static int posix_spawn_with_dir(pid_t *                      pid,
     // the next POSIX revision in mid-2020. When this will appear in public
     // is anyones guess. On the upside, also OpenBSD, FreeBSD, and Solaris
     // implement the _np versions of the API.
+    //
+    // UPDATE: We continue to use the _np version when it is defined, to
+    // avoid issues in MAC OS X.
 
 #ifdef HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR
-    if (posix_spawn_file_actions_addchdir(file_actions, dir)) {
+    if (posix_spawn_file_actions_addchdir_func(file_actions, dir)) {
         PErr("posix_spawn_with_dir: addchdir failed");
         return 1;
     }
