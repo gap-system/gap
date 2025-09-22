@@ -309,9 +309,10 @@ static Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self)
 // posix_spawn_file_actions_addchdir_np. To keep things simple, we detect this
 // case and use some preprocessor tricks to make things work in either case.
 //
-// Mac OS X 26.0 has posix_spawn_file_actions_addchdir, and xcode generates
-// code which uses it even in older versions of Mac OS X. Therefore if both
+// macOS 26 has posix_spawn_file_actions_addchdir, but Xcode generates
+// code which uses it even in older versions of macOS. Therefore if both
 // functions are defined, we will always use the older _np version.
+// See issue <https://github.com/gap-system/gap/issues/6118> for details.
 #if defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR) ||                       \
     defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR_NP)
 
@@ -382,8 +383,8 @@ static int posix_spawn_with_dir(pid_t *                      pid,
     // is anyones guess. On the upside, also OpenBSD, FreeBSD, and Solaris
     // implement the _np versions of the API.
     //
-    // UPDATE: We continue to use the _np version when it is defined, to
-    // avoid issues in MAC OS X.
+    // UPDATE: For now we still prefer the _np version if available, to
+    // avoid issues in macOS 26 (see <https://github.com/gap-system/gap/issues/6118>.
 
 #ifdef HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR
     if (posix_spawn_file_actions_addchdir_func(file_actions, dir)) {
