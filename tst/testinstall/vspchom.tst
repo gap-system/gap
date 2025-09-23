@@ -31,9 +31,9 @@ gap> ImagesRepresentative( map1, 0*Z(3)^0 );
 0*Z(3)
 gap> ImagesRepresentative( map1, Z(3)^0 );
 Z(3^3)
-gap> PreImagesRepresentative( map1, 0*Z(3) );
+gap> PreImagesRepresentativeNC( map1, 0*Z(3) );
 0*Z(3)
-gap> PreImagesRepresentative( map1, Z(27) );
+gap> PreImagesRepresentativeNC( map1, Z(27) );
 Z(3)^0
 gap> 2 * map1 = - map1;
 true
@@ -60,9 +60,9 @@ gap> ImagesRepresentative( map2, Z(27) );
 [ Z(3)^0, Z(3)^0 ]
 gap> ImagesRepresentative( map2, Z(9) );
 fail
-gap> PreImagesRepresentative( map2, [ Z(3)^0, Z(3)^0 ] );
+gap> PreImagesRepresentativeNC( map2, [ Z(3)^0, Z(3)^0 ] );
 Z(3^3)
-gap> PreImagesRepresentative( map2, [ 0*Z(3)^0, 0*Z(3)^0 ] );
+gap> PreImagesRepresentativeNC( map2, [ 0*Z(3)^0, 0*Z(3)^0 ] );
 0*Z(3)
 gap> 2 * map2 = - map2;
 true
@@ -89,9 +89,9 @@ gap> ImagesRepresentative( map3, [ Z(3)^0, 0*Z(3)^0 ] );
 Z(3)^0
 gap> ImagesRepresentative( map3, [ 0*Z(3)^0, Z(3)^0 ] );
 Z(3^3)^3
-gap> PreImagesRepresentative( map3, Z(27) );
+gap> PreImagesRepresentativeNC( map3, Z(27) );
 [ Z(3)^0, Z(3)^0 ]
-gap> PreImagesRepresentative( map3, Z(3)^0 );
+gap> PreImagesRepresentativeNC( map3, Z(3)^0 );
 [ Z(3)^0, 0*Z(3) ]
 gap> 2 * map3 = - map3;
 true
@@ -204,9 +204,9 @@ gap> ImagesRepresentative( map5, 0*Z(3)^0 );
 0*Z(3)
 gap> ImagesRepresentative( map5, Z(3)^0 );
 Z(3^3)^19
-gap> PreImagesRepresentative( map5, 0*Z(3) );
+gap> PreImagesRepresentativeNC( map5, 0*Z(3) );
 0*Z(3)
-gap> PreImagesRepresentative( map5, Z(27) );
+gap> PreImagesRepresentativeNC( map5, Z(27) );
 fail
 gap> 2 * map5 = - map5;
 true
@@ -232,9 +232,9 @@ gap> ImagesRepresentative( map6, Z(27) );
 [ 0*Z(3), 0*Z(3) ]
 gap> ImagesRepresentative( map6, Z(9) );
 fail
-gap> PreImagesRepresentative( map6, [ Z(3)^0, Z(3)^0 ] );
+gap> PreImagesRepresentativeNC( map6, [ Z(3)^0, Z(3)^0 ] );
 Z(3)
-gap> PreImagesRepresentative( map6, [ 0*Z(3)^0, 0*Z(3)^0 ] );
+gap> PreImagesRepresentativeNC( map6, [ 0*Z(3)^0, 0*Z(3)^0 ] );
 0*Z(3)
 gap> 2 * map6 = - map6;
 true
@@ -260,9 +260,9 @@ gap> ImagesRepresentative( map7, [ Z(3)^0, 0*Z(3)^0 ] );
 Z(3^3)^21
 gap> ImagesRepresentative( map7, [ 0*Z(3)^0, Z(3)^0 ] );
 Z(3^3)^21
-gap> PreImagesRepresentative( map7, Z(27) );
+gap> PreImagesRepresentativeNC( map7, Z(27) );
 fail
-gap> PreImagesRepresentative( map7, Z(3)^0 );
+gap> PreImagesRepresentativeNC( map7, Z(3)^0 );
 fail
 gap> 2 * map7 = - map7;
 true
@@ -365,9 +365,9 @@ gap> ImagesRepresentative( nathom, [ Z(3), Z(3)^0 ] );
 [ Z(3)^0 ]
 gap> ImagesRepresentative( nathom, [ Z(3)^0, Z(3)^0 ] );
 [ 0*Z(3) ]
-gap> PreImagesRepresentative( nathom, [ Z(3)^0 ] );
+gap> PreImagesRepresentativeNC( nathom, [ Z(3)^0 ] );
 [ Z(3)^0, 0*Z(3) ]
-gap> PreImagesRepresentative( nathom, [ 0*Z(3) ] );
+gap> PreImagesRepresentativeNC( nathom, [ 0*Z(3) ] );
 [ 0*Z(3), 0*Z(3) ]
 gap> 2 * nathom = - nathom;
 true
