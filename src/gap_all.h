@@ -88,6 +88,10 @@ extern "C" {
 #include "hpc/traverse.h"
 #endif
 
+#ifdef USE_JULIA_GC
+#include "julia_gc.h"
+#endif
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
