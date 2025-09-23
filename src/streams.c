@@ -1135,7 +1135,7 @@ static Obj FuncGAP_chdir(Obj self, Obj path)
 static Obj FuncGAP_realpath(Obj self, Obj path)
 {
     RequireStringRep(SELF_NAME, path);
-    char resolved_path[PATH_MAX];
+    char resolved_path[GAP_PATH_MAX];
 
     if (NULL == realpath(CONST_CSTR_STRING(path), resolved_path)) {
         SySetErrorNo();
