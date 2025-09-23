@@ -22,7 +22,7 @@ InstallMethod( MultMatrixRowLeft, "for a mutable IsRowListMatrix, a row number, 
   [ IsRowListMatrix and IsMutable, IsInt, IsObject ],
   function( mat, row, scalar )
 
-    mat[row] := scalar * mat[row];
+    MultVectorLeft(mat[row], scalar);
 
   end );
 
@@ -35,7 +35,7 @@ InstallMethod( MultMatrixRowRight, "for a mutable IsRowListMatrix, a row number,
   [ IsRowListMatrix and IsMutable, IsInt, IsObject ],
   function( mat, row, scalar )
 
-    mat[row] := mat[row] * scalar;
+    MultVectorRight(mat[row], scalar);
 
   end );
 
@@ -48,7 +48,8 @@ InstallMethod( AddMatrixRowsLeft, "for a mutable IsRowListMatrix, two row number
   [ IsRowListMatrix and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, row1, row2, scalar )
 
-    mat[row1] := mat[row1] + scalar * mat[row2];
+    AddVector(mat[row1], mat[row2], scalar);
+    # TODO: AddVector does not specify left/right... we need both variants I guess
 
   end );
 
@@ -61,7 +62,8 @@ InstallMethod( AddMatrixRowsRight, "for a mutable IsRowListMatrix, two row numbe
   [ IsRowListMatrix and IsMutable, IsInt, IsInt, IsObject ] ,
   function( mat, row1, row2, scalar )
 
-    mat[row1] := mat[row1] + mat[row2] * scalar;
+    AddVector(mat[row1], mat[row2], scalar);
+    # TODO: AddVector does not specify left/right... we need both variants I guess
 
   end );
 
@@ -77,7 +79,5 @@ InstallMethod( SwapMatrixRows, "for a mutable IsRowListMatrix, and two row numbe
     temp := mat[row1];
     mat[row1] := mat[row2];
     mat[row2] := temp;
-    #mat{[row1,row2]} := mat{[row2,row1]};
 
   end );
-
