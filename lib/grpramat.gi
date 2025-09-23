@@ -335,6 +335,7 @@ function( G )
             );
     SetNiceMonomorphism(G, nice);
     SetNiceObject(G, H);
+    UseIsomorphismRelation(H, G);
     SetIsHandledByNiceMonomorphism(G, true);
     return true;
 end );
