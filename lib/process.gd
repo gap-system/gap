@@ -184,3 +184,5 @@ DeclareOperation( "Process",
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "Exec" );
+
+DeclareGlobalName( "Exec2" );
