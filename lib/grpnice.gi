@@ -876,7 +876,7 @@ GroupSeriesMethodByNiceMonomorphism( UpperCentralSeriesOfGroup,
 
 #############################################################################
 ##
-#M  RepresentativeAction( <G> )
+#M  RepresentativeAction( <G>, <g>, <h>, OnPoints )
 ##
 InstallOtherMethod(RepresentativeActionOp,"nice group on elements",
   IsCollsElmsElmsX,[IsHandledByNiceMonomorphism and IsGroup,
@@ -898,6 +898,26 @@ local hom,rep;
   fi;
   return rep;
 end);
+
+
+#############################################################################
+##
+#M  IsConjugate( <G>, <U>, <V> )
+##
+InstallOtherMethod( IsConjugate,
+  "nice group on subgroups",
+  IsFamFamFam,
+  [ IsGroup and IsHandledByNiceMonomorphism, IsGroup, IsGroup ],
+  function( G, U, V )
+  local hom;
+
+  hom:= NiceMonomorphism( G );
+  if not ( IsSubset( Source( hom ), U ) and IsSubset( Source( hom ), V ) ) then
+    TryNextMethod();
+  fi;
+  return IsConjugate( NiceObject( G ), ImagesSet( hom, U ), ImagesSet( hom, V ) );
+end);
+
 
 #############################################################################
 ##
