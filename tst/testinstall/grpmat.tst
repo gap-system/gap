@@ -71,5 +71,9 @@ gap> IsomorphismFpGroup( G );;
 gap> TrivialSubgroup( GL(2, 2) );
 <matrix group of size 1>
 
+# The following should take less than a second.
+gap> Length( LowIndexSubgroups( GL(2,5), 50 ) ) = 31;
+true
+
 #
 gap> STOP_TEST( "grpmat.tst" );
