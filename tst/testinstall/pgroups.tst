@@ -125,11 +125,26 @@ gap> G := F/[ r^3, s^2, r*s*r*s ];
 <fp group on the generators [ r, s ]>
 gap> IsNilpotentGroup(G);
 false
-gap> ForAll(List([1..11], i -> TransitiveGroup(8,i)), IsPGroup);
+gap> myList := [
+>  [ (1,2,3,4,5,6,7,8) ], [ (1,2,3,8)(4,5,6,7), (1,5)(2,6)(3,7)(4,8) ],
+>  [ (1,8)(2,3)(4,5)(6,7), (1,3)(2,8)(4,6)(5,7), (1,5)(2,6)(3,7)(4,8) ],
+>  [ (1,2,3,8)(4,5,6,7), (1,6)(2,5)(3,4)(7,8) ],
+>  [ (1,2,3,8)(4,5,6,7), (1,7,3,5)(2,6,8,4) ],
+>  [ (1,2,3,4,5,6,7,8), (1,6)(2,5)(3,4)(7,8) ],
+>  [ (1,2,3,4,5,6,7,8), (1,5)(3,7) ], [ (1,2,3,4,5,6,7,8), (1,3)(2,6)(5,7) ],
+>  [ (1,8)(2,3)(4,5)(6,7), (1,3)(2,8)(4,6)(5,7), (1,5)(2,6)(3,7)(4,8),
+>      (4,5)(6,7) ], [ (1,5)(3,7), (1,2,3,8)(4,5,6,7) ],
+>  [ (1,5)(3,7), (1,3,5,7)(2,4,6,8), (1,4,5,8)(2,3,6,7) ] ];;
+gap> Apply(myList, Group);
+gap> # myList = List([1..11], i -> TransitiveGroup(8,i))
+gap> ForAll(myList, IsPGroup);
 true
-gap> IsPGroup(TransitiveGroup(8, 12));
+gap> G := Group([ (1,3,5,7)(2,4,6,8), (1,3,8)(4,5,7) ]);;
+gap> # G = TransitiveGroup(8, 12)
+gap> IsPGroup(G);
 false
-gap> IsNilpotentGroup(TransitiveGroup(8, 12));
+gap> # G = TransitiveGroup(8, 12)
+gap> IsNilpotentGroup(G);
 false
 gap> IsPGroup(AlternatingGroup(3));
 true
