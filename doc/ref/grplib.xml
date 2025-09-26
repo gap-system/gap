@@ -24,20 +24,22 @@ initially knows the following groups:
  Classical matrix groups (see&nbsp;<Ref Sect="Classical Groups"/>),
 </Item>
 <Item>
- the transitive permutation groups of degree at most 30,
+ a library of transitive permutation groups up to a degree bound,
     provided by the <Package>TransGrp</Package> package
     (see&nbsp;<Ref BookName="transgrp" Sect="Transitive Permutation Groups"/>),
 </Item>
 <Item>
- a library of groups of small order (see&nbsp;<Ref BookName="smallgrp" Chap="The Small Groups Library"/>),
+ a library of groups of small order,
+    provided by the <Package>SmallGrp</Package> package
+    (see&nbsp;<Ref BookName="smallgrp" Chap="The Small Groups Library"/>),
 </Item>
 <Item>
-  the  finite perfect  groups of   size  at most <M>2\cdot 10^6</M>
-  (see&nbsp;<Ref Sect="Finite Perfect Groups"/>).
+ a libary of finite perfect groups up to a size bound,
+    (see&nbsp;<Ref Sect="Finite Perfect Groups"/>),
 </Item>
 <Item>
-  the  primitive  permutation groups of degree
-    <M>&lt; 4096</M>, provided by the <Package>PrimGrp</Package> package
+ a library of primitive permutations groups up to a degree bound,
+    provided by the <Package>PrimGrp</Package> package
     (see&nbsp;<Ref BookName="primgrp" Sect="Primitive Permutation Groups"/>),
 </Item>
 <Item>
