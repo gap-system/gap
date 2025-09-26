@@ -959,24 +959,31 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  and harmless if it to passed as input to &GAP;,
 ##  but may be unhelpful if the output is to be passed as input to another
 ##  program.
-##  It is possible to turn off this behaviour for a stream using the
-##  <Ref Oper="SetPrintFormattingStatus"/> operation, and to test whether it
-##  is on or off using <Ref Oper="PrintFormattingStatus"/>.
+##  It is possible to control this behaviour for a stream using the
+##  <Ref Oper="SetPrintFormattingStatus"/> operation, and to query it
+##  using <Ref Oper="PrintFormattingStatus"/>.
+##  <P/>
+##  The formatting status is stored in a record with two members,
+##  <A>linewrap</A> and <A>indent</A>, which control if GAP wraps lines,
+##  or indents, respectively. These two both take a boolean.
+##  <P/>
+##  For backwards compatability, all functions which control print formatting
+##  will also take a boolean, which sets <A>linewrap</A> and <A>indent</A> to
+##  the given boolean value.
 ##  <P/>
 ##  <Ref Oper="SetPrintFormattingStatus"/> sets whether output sent to the
 ##  output stream <A>stream</A> via <Ref Func="PrintTo"/>,
 ##  <Ref Func="AppendTo"/>, etc.
 ##  will be formatted with line breaks and
-##  indentation.  If  the  second  argument <A>newstatus</A> is <K>true</K>
-##  then output will be so formatted, and if <K>false</K> then it will not.
-##  If the stream is not a text stream, only <K>false</K> is allowed.
+##  indentation. The second argument <A>newstatus</A> is a record or boolean,
+##  as described above.
+##  If the stream is not a text stream, both <A>linewrap</A> and <A>indent</A>
+##  can only be set to <K>false</K>.
 ##  <P/>
-##  <Ref Oper="PrintFormattingStatus"/> returns <K>true</K> if output sent to
-##  the output text stream <A>stream</A>  via <Ref Func="PrintTo"/>,
-##  <Ref Func="AppendTo"/>, etc.
-##  will be formatted with line breaks and
-##  indentation, and <K>false</K> otherwise.
-##  For non-text streams, it returns <K>false</K>.
+##  <Ref Oper="PrintFormattingStatus"/> returns a record containing the
+##  current value of <A>linewrap</A> and <A>indent</A> for the output text
+##  stream <A>stream</A>. For non-text streams, these values area always
+##  both <K>false</K>.
 ##  If as argument <A>stream</A> the string <C>"*stdout*"</C> is given, these
 ##  functions refer to the formatting status of the standard output (so usually
 ##  the user's terminal screen).<P/>
@@ -997,7 +1004,7 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  gap> Print(s,"\n");
 ##  [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
 ##    67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113 ]
-##  gap> SetPrintFormattingStatus(str, false);
+##  gap> SetPrintFormattingStatus(str, rec(indent:=false,linewrap:=false));
 ##  gap> PrintTo(str,Primes{[1..30]});
 ##  gap> s;
 ##  "[ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,\
@@ -1015,7 +1022,7 @@ DeclareGlobalFunction( "InputOutputLocalProcess" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "SetPrintFormattingStatus", [IsOutputStream, IsBool] );
+DeclareOperation( "SetPrintFormattingStatus", [IsOutputStream, IsObject] );
 DeclareOperation( "PrintFormattingStatus", [IsOutputStream] );
 
 
@@ -1259,3 +1266,6 @@ DeclareGlobalFunction( "InputFromUser" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "OpenExternal" );
+
+DeclareGlobalFunction( "_CheckValidPrintFormattingStatus");
+DeclareGlobalFunction( "_DefaultPrintFormattingStatus");
