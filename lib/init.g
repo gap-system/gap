@@ -447,9 +447,9 @@ BindGlobal( "ShowKernelInformation", function()
   fi;
 
   if GAPInfo.TermEncoding = "UTF-8" then
-    btop := "   ● G";
-    bmid := "● ●  A";
-    bbot := "   ● P";
+    btop := "   \033[94m● \033[1;31mG\033[0m";
+    bmid := "\033[92m● \033[91m●  \033[1;31mA\033[0m";
+    bbot := "   \033[93m● \033[1;31mP\033[0m";
   else
     btop := "   o G";
     bmid := "o o  A";
