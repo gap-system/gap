@@ -145,4 +145,12 @@ gap> List(Iterator(SymmetricGroup(3)));
 [ (), (2,3), (1,3), (1,3,2), (1,2,3), (1,2) ]
 gap> AsList(SymmetricGroup(6)) = List(Iterator(SymmetricGroup(6)));
 true
+
+#
+gap> g:= SymmetricGroup( 4 );;
+gap> h:= Subgroup( g, [ () ] );;
+gap> IsSolvable( h );
+true
+
+#
 gap> STOP_TEST("grpperm.tst");
