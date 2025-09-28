@@ -50,6 +50,7 @@ affect some users directly.
 
 ### Fixed bugs that could lead to incorrect results
 
+- [#6130](https://github.com/gap-system/gap/pull/6130) Fix a wrong `false` result of `IsSolvable` for certain trivial permutation groups
 - [#6110](https://github.com/gap-system/gap/pull/6110) Fix `LowerCentralSeriesOfGroup` and `NilpotencyClassOfGroup` for trivial groups to return a list of length 1 resp. the value 0 (and not a list of length 2 resp. the value 1)
 - [#6002](https://github.com/gap-system/gap/pull/6002) Fix bug in `SpecialPcgs` that could corrupt group objects and cause nonsense outputs
 - [#5982](https://github.com/gap-system/gap/pull/5982) Fix a bug that could lead to `ConjugacyClassesSubgroups` to return wrong results when applied to permutation groups
@@ -121,7 +122,7 @@ updated since GAP 4.14.0. The full list of updated packages is given below:
 - [**cvec**](https://gap-packages.github.io/cvec): 2.8.2 -> 2.8.4
 - [**datastructures**](https://gap-packages.github.io/datastructures): 0.3.1 -> 0.3.3
 - [**DeepThought**](https://gap-packages.github.io/DeepThought/): 1.0.7 -> 1.0.9
-- [**Digraphs**](https://digraphs.github.io/Digraphs): 1.9.0 -> 1.12.2
+- [**Digraphs**](https://digraphs.github.io/Digraphs): 1.9.0 -> 1.13.1
 - [**Example**](https://gap-packages.github.io/example): 4.4.0 -> 4.4.1
 - [**ferret**](https://gap-packages.github.io/ferret/): 1.0.14 -> 1.0.15
 - [**float**](https://gap-packages.github.io/float/): 1.0.5 -> 1.0.9
@@ -160,7 +161,7 @@ updated since GAP 4.14.0. The full list of updated packages is given below:
 - [**SCSCP**](https://gap-packages.github.io/scscp): 2.4.3 -> 2.4.4
 - [**Semigroups**](https://semigroups.github.io/Semigroups): 5.4.0 -> 5.5.4
 - [**singular**](https://gap-packages.github.io/singular/): 2024.06.03 -> 2025.08.26
-- [**smallantimagmas**](https://gap-packages.github.io/smallantimagmas): 0.2.12 -> 0.4.1
+- [**smallantimagmas**](https://gap-packages.github.io/smallantimagmas): 0.2.12 -> 0.5.1
 - [**Smallsemi**](https://gap-packages.github.io/smallsemi/): 0.7.1 -> 0.7.2
 - [**SONATA**](https://gap-packages.github.io/sonata/): 2.9.6 -> 2.9.7
 - [**ToolsForHomalg**](https://homalg-project.github.io/pkg/ToolsForHomalg): 2024.09-01 -> 2025.05-01
