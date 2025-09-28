@@ -13,21 +13,21 @@ you first have to create that using the `dev/releases/create_stable_branch.py` s
 
 This is the way the process should happen in practice, with the help of GitHub Actions. Instructions for achieving the same without GitHub Actions are given later (in case GitHub Actions breaks or disappears).
 
-1. In the `gap-system/PackageDistro` GitHub repository, create an annotated tag `vX.Y.Z` based on its latest `main` branch (this determines which packages get into the release) and push the tag. For example:
+1. In the `gap-system/PackageDistro` GitHub repository, create an annotated and signed tag `vX.Y.Z` based on its latest `main` branch (this determines which packages get into the release) and push the tag. For example:
 ```
 VER=X.Y.Z      # to avoid typing
 git checkout main
 git pull
-git tag -m "Version ${VER}" v${VER} main
+git tag -s -m "Version ${VER}" v${VER} main
 git push origin v${VER}
 ```
 2. Wait. Pushing the tag triggers the “[Assemble the package distribution](https://github.com/gap-system/PackageDistro/actions/workflows/assemble-distro.yml)” GitHub Actions workflow; on `gap-system/PackageDistro`. This takes a few minutes.
-2. In the `gap-system/gap` GitHub repository, create an annotated tag `vX.Y.Z` at the appropriate commit in the `stable-X.Y` branch, and push the tag. For example:
+2. In the `gap-system/gap` GitHub repository, create an annotated and signed tag `vX.Y.Z` at the appropriate commit in the `stable-X.Y` branch, and push the tag. For example:
 ```
 VER=${VER}      # to avoid typing
 git checkout stable-${VER%.*}
 git pull
-git tag -m "Version ${VER}" v${VER} stable-${VER%.*}
+git tag -s -m "Version ${VER}" v${VER} stable-${VER%.*}
 git push origin v${VER}
 ```
 4. Wait. Pushing the tag triggers the “[Wrap releases](https://github.com/gap-system/gap/actions/workflows/release.yml)” GitHub Actions workflow on `gap-system/gap`, which wraps the release archives and Windows installers, and creates a release on GitHub with the archives and installers attached. This takes around 90 minutes.
