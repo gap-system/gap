@@ -156,3 +156,11 @@ Foundation; either version 2 of the License, or (at your option) any later
 version. For details, please refer to the GAP reference manual, as well as the
 file `LICENSE` in the root directory of the GAP distribution or see
 <https://www.gnu.org/licenses/gpl.html>.
+
+**Logo Notice:** The GAP logo is © 2024, Max Horn and is a trademark of the
+GAP project. The logo is not covered by the GPL and may only be used as
+described in the [GAP Logo Usage Policy](LOGO.md).
+
+**Distributor Note:** Linux distributions, Homebrew, and similar packaging
+systems may use the GAP logo when distributing GAP, even if minor adjustments
+are applied for compatibility, provided the software is still clearly GAP.
