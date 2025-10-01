@@ -283,8 +283,8 @@ Error, the argument must be a semigroup with a multiplicative neutral element
 # Test IsomorphismTransformationSemigroup for a transformation semigroup
 gap> S := Semigroup(Transformation([1, 4, 6, 2, 5, 3, 7, 8, 9, 9]));;
 gap> IsomorphismTransformationSemigroup(S);
-IdentityMapping( <commutative transformation semigroup of degree 10 with 1 
- generator> )
+IdentityMapping( <commutative transformation semigroup of degree 10 with 
+ 1 generator> )
 gap> BruteForceIsoCheck(last);
 true
 gap> BruteForceInverseCheck(last2);
@@ -312,8 +312,8 @@ true
 
 # Test IsomorphismTransformationSemigroup for a perm group
 gap> IsomorphismTransformationSemigroup(Group((1,2,3)));
-MappingByFunction( Group([ (1,2,3) ]), <transformation group of degree 3 with
-  1 generator>, <Attribute "AsTransformation">, <Attribute "AsPermutation"> )
+MappingByFunction( Group([ (1,2,3) ]), <transformation group of degree 3 with 
+ 1 generator>, <Attribute "AsTransformation">, <Attribute "AsPermutation"> )
 gap> BruteForceIsoCheck(last);
 true
 gap> BruteForceInverseCheck(last2);

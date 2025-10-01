@@ -788,22 +788,22 @@ gap> MultiplicativeZero(UUU);
 0
 gap> One(R);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, no 1st choice method found for `OneMutable' on 1 argument
 gap> One(U);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, no 1st choice method found for `OneMutable' on 1 argument
 gap> One(UU);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, no 1st choice method found for `OneMutable' on 1 argument
 gap> One(UUU);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, no 1st choice method found for `OneMutable' on 1 argument
 gap> One(S);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, no 1st choice method found for `OneMutable' on 1 argument
 gap> One(V);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `OneMutable' on 1 arguments
+Error, no 1st choice method found for `OneMutable' on 1 argument
 gap> ParentAttr(R);
 <Rees 0-matrix semigroup 7x6 over Group([ (1,2) ])>
 gap> ParentAttr(U);
@@ -908,8 +908,8 @@ gap> mat:=[ [ Transformation( [ 7, 7, 2, 6, 6, 4, 2, 8, 9, 11, 10, 4 ] ),
 >      Transformation( [ 8, 8, 9, 9, 9, 11, 10, 6, 7, 2, 4, 8 ] ), 
 >      Transformation( [ 4, 4, 4, 1, 1, 6, 7, 9, 8, 10, 11, 1 ] ) ] ];;
 gap> R:=ReesMatrixSemigroup(S, mat);               
-<Rees matrix semigroup 4x3 over <transformation semigroup of degree 12 with 7 
-  generators>>
+<Rees matrix semigroup 4x3 over <transformation semigroup of degree 12 with 
+  7 generators>>
 gap> IsSimpleSemigroup(R);
 true
 gap> IsWholeFamily(R);
