@@ -21,30 +21,32 @@ initially knows the following groups:
     groups (see&nbsp;<Ref Sect="Basic Groups"/>),
 </Item>
 <Item>
- Classical matrix groups (see&nbsp;<Ref Sect="Classical Groups"/>),
+ classical matrix groups (see&nbsp;<Ref Sect="Classical Groups"/>),
 </Item>
 <Item>
- the transitive permutation groups of degree at most 30,
+ a library of transitive permutation groups,
     provided by the <Package>TransGrp</Package> package
     (see&nbsp;<Ref BookName="transgrp" Sect="Transitive Permutation Groups"/>),
 </Item>
 <Item>
- a library of groups of small order (see&nbsp;<Ref BookName="smallgrp" Chap="The Small Groups Library"/>),
+ a library of groups of small order,
+    provided by the <Package>SmallGrp</Package> package
+    (see&nbsp;<Ref BookName="smallgrp" Chap="The Small Groups Library"/>),
 </Item>
 <Item>
-  the  finite perfect  groups of   size  at most <M>2\cdot 10^6</M>
-  (see&nbsp;<Ref Sect="Finite Perfect Groups"/>).
+ a libary of finite perfect groups,
+    (see&nbsp;<Ref Sect="Finite Perfect Groups"/>),
 </Item>
 <Item>
-  the  primitive  permutation groups of degree
-    <M>&lt; 4096</M>, provided by the <Package>PrimGrp</Package> package
+ a library of primitive permutations groups,
+    provided by the <Package>PrimGrp</Package> package
     (see&nbsp;<Ref BookName="primgrp" Sect="Primitive Permutation Groups"/>),
 </Item>
 <Item>
-  the  irreducible solvable subgroups of  <M>GL(n,p)</M> for
-    <M>n>1</M> and <M>p^n &lt; 256</M>, provided by the
-    <Package>PrimGrp</Package> package
-    (see <Ref BookName="primgrp" Sect="Irreducible Solvable Matrix Groups"/>),
+  the irreducible solvable subgroups of <M>GL(n,q)</M> for
+    <M>n>1</M>, <M>q</M> a prime power and <M>q^n &lt; 2^{24}</M>,
+    provided by the <Package>IRREDSOL</Package> package
+    (see <Ref BookName="irredsol" Sect="Overview"/>),
 </Item>
 <Item>
  the irreducible maximal finite integral matrix groups
@@ -52,8 +54,9 @@ initially knows the following groups:
     (see&nbsp;<Ref Sect="Irreducible Maximal Finite Integral Matrix Groups"/>),
 </Item>
 <Item>
- the  crystallographic  groups  of  dimension  at most  4
-<!-- %  (see&nbsp;<Ref Sect="The Crystallographic Groups Library"/>). -->
+ the crystallographic groups of dimension at most 4, provided by the
+     <Package>CrystCat</Package> package
+    (see <Ref BookName="crystcat" Chap="The Crystallographic Groups Catalog"/>).
 </Item>
 </List>
 <P/>
