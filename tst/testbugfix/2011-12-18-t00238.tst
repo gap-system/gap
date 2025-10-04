@@ -2,5 +2,7 @@
 # Computing normalizers inside the trivial group could error out.
 gap> Normalizer(Group(()),Group((1,2,3)));
 Group(())
-gap> Normalizer(Group(()),TransitiveGroup(3,1));
+gap> h := Group([ (1,2,3) ]);;
+gap> # h = TransitiveGroup(3,1)
+gap> Normalizer(Group(()),h);
 Group(())

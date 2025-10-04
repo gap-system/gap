@@ -25,7 +25,8 @@ false
 gap> iso4:=iso3*InnerAutomorphism(g,r^-1);;
 gap> iso4=IdentityMapping(g);
 true
-gap> g:=TransitiveGroup(6,7);;
+gap> g := Group([ (1,4)(2,5), (1,3,5)(2,4,6), (1,5)(2,4) ]);;
+gap> # g = TransitiveGroup(6,7)
 gap> IsSolvableGroup(g);
 true
 gap> Size(AutomorphismGroup(g));
