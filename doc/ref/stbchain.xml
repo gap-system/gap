@@ -187,7 +187,7 @@ This subsection explains
 some  &GAP;  functions   which   are   local   to   the   library   file
 <F>lib/stbcbckt.gi</F> which contains the code for backtracking in permutation
 groups. They are mentioned here because you might find them helpful  when
-you want  to  implement  you  own  backtracking  function  based  on  the
+you want  to  implement  your own  backtracking  function  based  on  the
 partition concept. An important argument to most of the functions is  the
 R-base <M>R</M>, which you should regard as a black box. We will tell you how
 to set it up, how to maintain it and where to pass it as argument, but it
