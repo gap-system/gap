@@ -11,6 +11,8 @@
 ##  groups.
 
 SetAssertionLevel(2);
+LoadPackage("SmallGrp", false);;
+LoadPackage("TransGrp", false);;
 
 TestsForGroup:=function(G)
 local u,cs,ncs,n,rep,i,au,hom,cl,co;
