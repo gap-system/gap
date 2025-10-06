@@ -1345,10 +1345,8 @@ DeclareOperation( "Norm", [ IsOrdinaryTable, IsHomogeneousList ] );
 ##  by listing the positions of conjugacy classes in the centre.)
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> List( Irr( S4 ), CentreOfCharacter );
-##  [ Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]), Group(()),
-##    Group([ (1,2)(3,4), (1,3)(2,4) ]), Group(()),
-##    Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]) ]
+##  gap> List( Irr( S4 ), chi -> StructureDescription(CentreOfCharacter(chi)) );
+##  [ "S4", "1", "C2 x C2", "1", "S4" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1506,9 +1504,8 @@ DeclareOperation( "InertiaSubgroup",
 ##  affords <A>chi</A>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> List( Irr( S4 ), KernelOfCharacter );
-##  [ Alt( [ 1 .. 4 ] ), Group(()), Group([ (1,2)(3,4), (1,3)(2,4) ]),
-##    Group(()), Group([ (), (1,2), (1,2)(3,4), (1,2,3), (1,2,3,4) ]) ]
+##  gap> List( Irr( S4 ), chi -> StructureDescription(KernelOfCharacter(chi)) );
+##  [ "A4", "1", "C2 x C2", "1", "S4" ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
