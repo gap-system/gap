@@ -323,7 +323,7 @@ function( G )
     nice := GroupHomomorphismByFunction(G, H,
               function(x)
                   if ValueOption("actioncanfail")=true then
-                    if not ForAll( x, r -> ForAll( r, IsRat ) ) then
+                    if not ForAll( x, r -> ForAll( r, v -> IsRat(v) and DenominatorRat( v ) mod p <> 0 ) ) then
                       return fail;
                     fi;
                   fi;
