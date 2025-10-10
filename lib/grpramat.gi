@@ -266,7 +266,7 @@ InstallMethod( IsFinite,
     [ IsCyclotomicMatrixGroup ],
 function( G )
     # The code below is based on the algorithm described in [DFO13]
-    local badPrimes, n, g, FindPrimesInMatDenominators, p, e, H, phi, gens, rels, nice;
+    local badPrimes, n, g, FindPrimesInMatDenominators, p, e, H, phi, gens, rels, nice, inv, Hnice;
 
     # if not rational, use the nice monomorphism into a rational matrix group
     if not IsRationalMatrixGroup( G ) then
@@ -309,8 +309,11 @@ function( G )
         return false;
     fi;
 
+    Hnice := NiceMonomorphism(H);
+    H := NiceObject(H);
+
     # evaluate relators
-    phi := IsomorphismFpGroupByGenerators(H, GeneratorsOfGroup( H ));
+    phi := IsomorphismFpGroupByGeneratorsNC(H, GeneratorsOfGroup( H ) : method := "fast");
 
     gens := GeneratorsOfGroup(FreeGroupOfFpGroup(Range(phi)));
     rels := RelatorsOfFpGroup(Range(phi));
@@ -318,8 +321,11 @@ function( G )
         return false;
     fi;
 
+    # bypass the finite field matrix group in the middle so that we can
+    # compute preimages more easily
+    inv := GroupHomomorphismByImagesNC(H, G : noassert);
+
     # set as a nice monomorphism
-    gens := GeneratorsOfGroup(Range(phi));
     nice := GroupHomomorphismByFunction(G, H,
               function(x)
                   if ValueOption("actioncanfail")=true then
@@ -327,10 +333,10 @@ function( G )
                       return fail;
                     fi;
                   fi;
-                  return x * e;
+                  return Hnice(x * e);
               end,
               function(y)
-                return MappedWord(phi(y), gens, GeneratorsOfGroup(G));
+                return inv(y);
               end
             );
     SetNiceMonomorphism(G, nice);
