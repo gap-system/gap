@@ -470,3 +470,5 @@ DeclareGlobalFunction("RepresentationsPermutationIrreducibleCharacters");
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction("NthRootsInGroup");
+
+DeclareGlobalName( "ComputeAllPowerMaps" );
