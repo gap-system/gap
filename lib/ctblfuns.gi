@@ -3133,6 +3133,11 @@ InstallMethod( InducedCyclic,
           j,
           single;
 
+    if HasUnderlyingGroup( tbl ) then
+      # Precompute the power maps if possible.
+      ComputeAllPowerMaps( tbl );
+    fi;
+
     centralizers:= SizesCentralizers( tbl );
     orders:= OrdersClassRepresentatives( tbl );
     independent:= List( orders, ReturnTrue );
