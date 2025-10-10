@@ -371,25 +371,23 @@ DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 ##  CharacterTable( <pc group of size 8 with 3 generators> )
 ##  gap> t2:= CharacterTable( grps[2] );  SetName( t2, "t2" );
 ##  CharacterTable( <pc group of size 8 with 3 generators> )
-##  gap> irr1:= Irr( grps[1] );
-##  [ Character( t1, [ 1, 1, 1, 1, 1 ] ),
-##    Character( t1, [ 1, -1, -1, 1, 1 ] ),
-##    Character( t1, [ 1, -1, 1, 1, -1 ] ),
-##    Character( t1, [ 1, 1, -1, 1, -1 ] ),
-##    Character( t1, [ 2, 0, 0, -2, 0 ] ) ]
-##  gap> irr2:= Irr( grps[2] );
-##  [ Character( t2, [ 1, 1, 1, 1, 1 ] ),
-##    Character( t2, [ 1, -1, -1, 1, 1 ] ),
-##    Character( t2, [ 1, -1, 1, 1, -1 ] ),
-##    Character( t2, [ 1, 1, -1, 1, -1 ] ),
-##    Character( t2, [ 2, 0, 0, -2, 0 ] ) ]
+##  gap> CharacterDegrees( t1 );
+##  [ [ 1, 4 ], [ 2, 1 ] ]
+##  gap> irr1:= Irr( grps[1] );;
+##  gap> irr2:= Irr( grps[2] );;
 ##  gap> irr1 = irr2;
 ##  true
+##  gap> irr1[1];
+##  Character( t1, [ 1, 1, 1, 1, 1 ] )
+##  gap> irr1[5];
+##  Character( t1, [ 2, 0, 0, -2, 0 ] )
+##  gap> irr2[1];
+##  Character( t2, [ 1, 1, 1, 1, 1 ] )
 ##  gap> IsSSortedList( irr1 );
 ##  false
-##  gap> irr1[1] < irr1[2];
+##  gap> irr1[1] < irr1[2];  # the triv. character has no '-1'
 ##  false
-##  gap> irr1[2] < irr1[3];
+##  gap> irr1[2] < irr1[5];
 ##  true
 ##  ]]></Example>
 ##  <#/GAPDoc>
@@ -1861,7 +1859,7 @@ DeclareOperation( "TensorProductOp", [ IsDenseList, IsClassFunction ] );
 ##  Then <Ref Oper="RestrictedClassFunction"/> returns the class function of
 ##  <M>H</M> obtained by restricting <A>chi</A> to <M>H</M>.
 ##  <P/>
-##  If <A>chi</A> is a class function of a <E>factor group</E> <M>G</M>of
+##  If <A>chi</A> is a class function of a <E>factor group</E> <M>G</M> of
 ##  <M>H</M>, where <A>target</A> is either the group <M>H</M>
 ##  or a homomorphism from <M>H</M> to <M>G</M>
 ##  or the character table of <M>H</M>

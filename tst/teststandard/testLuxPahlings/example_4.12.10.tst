@@ -106,12 +106,9 @@ gap> ind1 := InducedClassFunctionsByFusionMap(t11, ct, Irr(t11), pf[1]);;
 gap> ind2 := InducedClassFunctionsByFusionMap(t11, ct, Irr(t11), pf[2]);;
 gap> Set(ind1) = Set(ind2);
 true
-gap> ind1:= Filtered(ind1, x -> x[1] = Size(ct)/Size(t11));;
-gap> MatScalarProducts(Irr(ct){b19},ind1{[1..8]});
-[ [ 1, 1, 1, 2, 0, 0, 1, 1, 1 ], [ 0, 1, 1, 1, 1, 1, 1, 1, 1 ], 
-  [ 0, 0, 1, 0, 1, 1, 1, 1, 1 ], [ 0, 1, 0, 0, 1, 1, 1, 1, 1 ], 
-  [ 0, 1, 0, 0, 1, 1, 1, 1, 1 ], [ 0, 0, 1, 0, 1, 1, 1, 1, 1 ], 
-  [ 0, 0, 1, 1, 1, 0, 1, 1, 1 ], [ 0, 1, 0, 1, 0, 1, 1, 1, 1 ] ]
+gap> mat:= MatScalarProducts(Irr(ct){b19},ind1);;
+gap> First( mat, row -> row[3] = 0 and row[4] = 1 );
+[ 0, 1, 0, 1, 0, 1, 1, 1, 1 ]
 
 ######################################################################
 gap> STOP_TEST( "example_4.12.10.tst" );
