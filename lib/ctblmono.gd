@@ -266,13 +266,13 @@ DeclareProperty( "IsBergerCondition", IsClassFunction );
 ##  gap> n:= DerivedSubgroup( Sl23 );;
 ##  gap> chi:= Irr( Sl23 )[7];
 ##  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] )
-##  gap> TestHomogeneous( chi, n );
-##  rec( character := Character( CharacterTable( Group(
-##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ],
-##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ],
-##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ),
-##    [ 1, -1, 1, -1, 1 ] ), comment := "restriction checked",
-##    isHomogeneous := false, multiplicity := 1 )
+##  gap> test:= TestHomogeneous( chi, n );;
+##  gap> test.isHomogeneous;  test.comment;  test.multiplicity;
+##  false
+##  "restriction checked"
+##  1
+##  gap> Degree( test.character );
+##  1
 ##  gap> chi:= Irr( Sl23 )[4];
 ##  Character( CharacterTable( SL(2,3) ), [ 2, 1, 1, -2, -1, -1, 0 ] )
 ##  gap> cln:= ClassPositionsOfNormalSubgroup( CharacterTable( Sl23 ), n );
@@ -350,13 +350,12 @@ DeclareProperty( "IsPrimitiveCharacter", IsClassFunction );
 ##  rec( comment := "all restrictions checked", isQuasiPrimitive := true )
 ##  gap> chi:= Irr( Sl23 )[7];
 ##  Character( CharacterTable( SL(2,3) ), [ 3, 0, 0, 3, 0, 0, -1 ] )
-##  gap> TestQuasiPrimitive( chi );
-##  rec( character := Character( CharacterTable( Group(
-##      [ [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ],
-##        [ [ Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ],
-##        [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]) ),
-##    [ 1, -1, 1, -1, 1 ] ), comment := "restriction checked",
-##    isQuasiPrimitive := false )
+##  gap> test:= TestQuasiPrimitive( chi );;
+##  gap> test.isQuasiPrimitive;  test.comment;
+##  false
+##  "restriction checked"
+##  gap> Degree( test.character );
+##  1
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
