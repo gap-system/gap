@@ -848,9 +848,11 @@ InstallMethod( Irr,
     "for a supersolvable group (Baum-Clausen algorithm)",
     [ IsGroup and IsSupersolvableGroup, IsZeroCyc ],
     function( G, zero )
-    local irr;
+    local irr, tbl;
     irr:= IrrBaumClausen( G );
-    SetIrr( OrdinaryCharacterTable( G ), irr );
+    tbl:= OrdinaryCharacterTable( G );
+    SetIrr( tbl, irr );
+    ComputeAllPowerMaps( tbl );
     return irr;
     end );
 
@@ -858,9 +860,11 @@ InstallMethod( Irr,
     "for a supersolvable group with known `IrrBaumClausen'",
     [ IsGroup and IsSupersolvableGroup and HasIrrBaumClausen, IsZeroCyc ],
     function( G, zero )
-    local irr;
+    local irr, tbl;
     irr:= IrrBaumClausen( G );
-    SetIrr( OrdinaryCharacterTable( G ), irr );
+    tbl:= OrdinaryCharacterTable( G );
+    SetIrr( tbl, irr );
+    ComputeAllPowerMaps( tbl );
     return irr;
     end );
 
