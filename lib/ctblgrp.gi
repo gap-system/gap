@@ -139,9 +139,10 @@ local p,primes,i,cl,spr,j,allpowermaps,pm,ex;
   od;
 
   for p in primes do
-    allpowermaps[p]:=List(D.classrange,i->ShallowCopy(D.classrange));
-    allpowermaps[p][1]:=1;
-    #allpowermaps[p]:=InitPowerMap(D.characterTable,p);
+    if not IsBound( allpowermaps[p] ) then
+      allpowermaps[p]:=List(D.classrange,i->ShallowCopy(D.classrange));
+      allpowermaps[p][1]:=1;
+    fi;
   od;
 
   for p in primes do
@@ -199,6 +200,27 @@ fi;
     MakeImmutable( pm );
   od;
 end );
+
+
+#############################################################################
+##
+#F  ComputeAllPowerMaps( <tbl> )
+##
+##  Computing all power maps is cheaper than successively computing some
+##  values of individual power maps.
+##  The current code is a hack.
+##  (Apparently 'DxCalcAllPowerMaps' is much faster than other available
+##  functions.)
+##  It should be improved as soon as we have a general tool for the
+##  identification of conjugacy classes.
+##
+BindGlobal( "ComputeAllPowerMaps", function( tbl )
+  tbl:= UnderlyingGroup( tbl );
+  if not HasDixonRecord( tbl ) then
+    DxCalcAllPowerMaps( DixonRecord( tbl ) );
+  fi;
+end );
+
 
 #############################################################################
 ##
