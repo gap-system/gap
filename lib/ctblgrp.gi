@@ -2313,6 +2313,7 @@ InstallMethod( Irr,
         # The list is complete.
         C:= OrdinaryCharacterTable( G );
         SetIrr( C, irr );
+        ComputeAllPowerMaps( C );
         return irr;
       fi;
       # We feed the partial list into the Dixon-Schneider-algorithm.
