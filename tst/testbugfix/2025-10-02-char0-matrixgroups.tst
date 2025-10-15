@@ -29,3 +29,15 @@ gap> Centralizer(G,[[0, 0, 0, 0], [0, 1/3, 1/3, 1/3], [0, 1/3, 1/3, 1/3], [0, 1/
 <matrix group with 4 generators>
 gap> Size(last);
 24
+
+#
+# Another problem related to this: Using `Image` to apply an intermediate nice
+# monomorphism for a FFE matrix group would raise an error if testing inputs
+# outside its domain; changing this to use ImageElm instead produces `fail`,
+# which is what we need for e.g. membership tests.
+# See <https://github.com/gap-system/gap/issues/6142>
+#
+gap> G:=Group([ [ [ 1, 0, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ], [ 0, 1, 0, 0 ] ], [ [ 0, 1/2*E(5)+1/2*E(5)^4, 1/2, 1/2*E(5)^2+1/2*E(5)^3 ], [ 1/2*E(5)+1/2*E(5)^4, -1/2*E(5)^2-1/2*E(5)^3, -1/2, 0 ], [ 1/2, -1/2, -1/2, -1/2 ], [ 1/2*E(5)^2+1/2*E(5)^3, 0, -1/2, -1/2*E(5)-1/2*E(5)^4 ] ] ]);;
+gap> g:=[ [ 1, 0, 0, 0 ], [ 0, -1/2, 1/2*E(5)^2+1/2*E(5)^3, -1/2*E(5)-1/2*E(5)^4 ], [ 0, 1/2*E(5)^2+1/2*E(5)^3, 1/2*E(5)+1/2*E(5)^4, 1/2 ], [ 0, -1/2*E(5)-1/2*E(5)^4, 1/2, 1/2*E(5)^2+1/2*E(5)^3 ] ];;
+gap> g in G;
+false
