@@ -501,13 +501,11 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
   larg;
 
     # catch arguments
-    A:=fail;
     larg:=ShallowCopy(arg);
     if Length(larg)>2 and IsGroupOfAutomorphismsFiniteGroup(arg[1]) and
       Source(One(arg[1]))=arg[2] then
       #automorphism group given
-      A:=larg[1];
-      larg:=larg{[2..Length(larg)]};
+      A:=Remove(larg, 1);
     else
       A:=fail;
     fi;
@@ -523,6 +521,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
       # then add module automorphisms
       gens:=GeneratorsOfGroup(G);
       if A=fail then
+        Info( InfoCompPairs, 1, "    CompP: compute aut group");
         A:=AutomorphismGroup(G);
       fi;
       triso:=IsomorphismPermGroup(A);
@@ -577,8 +576,10 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 
     # automorphism groups of G and M
     if Length( larg ) = 2 then
-        Info( InfoCompPairs, 1, "    CompP: compute aut group");
-        A := AutomorphismGroup( G );
+        if A=fail then
+          Info( InfoCompPairs, 1, "    CompP: compute aut group");
+          A:=AutomorphismGroup(G);
+        fi;
         B := GL( M.dimension, Characteristic( M.field ) );
         D := DirectProduct( A, B );
     else
