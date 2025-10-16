@@ -333,7 +333,7 @@ function( G )
                       return fail;
                     fi;
                   fi;
-                  return Hnice(x * e);
+                  return ImageElm(Hnice, x * e);
               end,
               function(y)
                 return inv(y);
