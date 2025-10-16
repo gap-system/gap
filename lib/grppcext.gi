@@ -497,26 +497,24 @@ end);
 InstallGlobalFunction( CompatiblePairs, function( arg )
 local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
   K2, f, tmp, Ggens, pcgs, l, idx, u, tup,Dos,elmlist,preimlist,pows,
-  baspt,newimgs,i,j,basicact,neu,K1nontriv,epi,hf,pool,modulehom,test,
-  larg;
+  baspt,newimgs,i,j,basicact,neu,K1nontriv,epi,hf,pool,modulehom,test;
 
     # catch arguments
-    larg:=ShallowCopy(arg);
-    if Length(larg)>2 and IsGroupOfAutomorphismsFiniteGroup(arg[1]) and
+    if Length(arg)>2 and IsGroupOfAutomorphismsFiniteGroup(arg[1]) and
       Source(One(arg[1]))=arg[2] then
       #automorphism group given
-      A:=Remove(larg, 1);
+      A:=Remove(arg, 1);
     else
       A:=fail;
     fi;
-    G := larg[1];
-    M := larg[2];
+    G := arg[1];
+    M := arg[2];
     Mgrp := GroupByGenerators( M.generators );
     Ggens:=Pcgs(G);
     oper:=fail;
     if IsPcgs(Ggens) and Length(Ggens)=Length(M.generators) then
       oper := GroupHomomorphismByImagesNC( G, Mgrp, Ggens, M.generators );
-    elif Length(larg)=2 then
+    elif Length(arg)=2 then
       # search through automorphism group for projection image and reps,
       # then add module automorphisms
       gens:=GeneratorsOfGroup(G);
@@ -575,7 +573,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
     fi;
 
     # automorphism groups of G and M
-    if Length( larg ) = 2 then
+    if Length( arg ) = 2 then
         if A=fail then
           Info( InfoCompPairs, 1, "    CompP: compute aut group");
           A:=AutomorphismGroup(G);
@@ -583,7 +581,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
         B := GL( M.dimension, Characteristic( M.field ) );
         D := DirectProduct( A, B );
     else
-        D := larg[3];
+        D := arg[3];
         A := DirectProductInfo(D).groups[1];
     fi;
 
@@ -609,7 +607,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
     Dos:=Size(D);
 
     # compute stabilizer of K in A
-    if Length( larg ) <= 3 or not larg[4] then
+    if Length( arg ) <= 3 or not arg[4] then
 
       # get kernel of oper
       K := KernelOfMultiplicativeGeneralMapping( oper );
