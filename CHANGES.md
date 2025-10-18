@@ -1,5 +1,45 @@
 # GAP - history of changes
 
+## GAP 4.15.1 (October 2025)
+
+The following gives an overview of the changes compared to the previous
+release. This list is not complete, many more internal or minor changes
+were made, but we tried to only list those changes which we think might
+affect some users directly.
+
+### Performance improvements
+
+- [#6138](https://github.com/gap-system/gap/pull/6138) Make various operations for finite matrix groups in characteristic 0 faster (fixes a performance regression from GAP 4.15.0)
+
+### Improved and extended functionality
+
+- [#6134](https://github.com/gap-system/gap/pull/6134) Make `Irr` for solvable groups faster by using the result of `IrrBaumClausen` in `IrrDixonSchneider`. (This may cause a changed ordering of the `Irr` result).)
+
+### Fixed bugs that could lead to incorrect results
+
+- [#6146](https://github.com/gap-system/gap/pull/6146) Fix `CompatiblePairs` to not ignore the optional automorphism group argument
+- [#6137](https://github.com/gap-system/gap/pull/6137) Fix `in` and other functionality for finite matrix groups in characteristic 0 (they had regressed in GAP 4.15.0)
+
+### Fixed bugs that could lead to unexpected errors
+
+- [#6140](https://github.com/gap-system/gap/pull/6140) Fix an unexpected error that could occur when working with matrix groups in characteristic zero
+
+### Package distribution
+
+#### Updated packages redistributed with GAP
+
+The GAP 4.15.1 distribution contains 166 packages, of which 7 have been
+updated since GAP 4.15.0. The full list of updated packages is given below:
+
+- [**AutoDoc**](https://gap-packages.github.io/AutoDoc): 2025.05.09 -> 2025.10.16
+- [**cohomolo**](https://gap-packages.github.io/cohomolo): 1.6.11 -> 1.6.12
+- [**datastructures**](https://gap-packages.github.io/datastructures): 0.3.3 -> 0.4.0
+- [**idrel**](https://gap-packages.github.io/idrel/): 2.48 -> 2.49
+- [**InduceReduce**](https://gap-packages.github.io/InduceReduce/): 1.1 -> 1.3
+- [**SmallClassNr**](https://stertooy.github.io/SmallClassNr): 1.4.1 -> 1.4.2
+- [**TwistedConjugacy**](https://stertooy.github.io/TwistedConjugacy): 3.1.0 -> 3.1.1
+
+
 ## GAP 4.15.0 (September 2025)
 
 The following gives an overview of the changes compared to the previous
