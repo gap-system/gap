@@ -96,27 +96,16 @@ Before starting the release process, the scripts have the following dependencies
 ```
 ssh gap-docs                        # assumes gap-docs is set up in ~/.ssh/config
 
-VER=X.Y.Z                           # to avoid typing
-cd ~/data                           # follow symlink to target directory
-rm -rf package-infos.json* gap-*    # delete leftovers from previous release
-wget https://github.com/gap-system/gap/releases/download/v${VER}/package-infos.json.gz
-gunzip package-infos.json.gz
-wget https://github.com/gap-system/gap/releases/download/v${VER}/gap-${VER}.tar.gz
-tar xf gap-${VER}.tar.gz
-cd GapWWW
-git pull
-cd ..
-GapWWW/etc/extract_manuals.py gap-${VER} package-infos.json
-mv Manuals http/v${VER}
-rm http/latest
-ln -s v${VER} http/latest
+# then on the docs host
+./download_manuals.sh X.Y.Z   # e.g. 4.14.0
 ```
 11. Check that <https://docs.gap-system.org> is functioning as expected.
 12. Log into `files.gap-system.org` via SSH, then download the files in appropriate places:
 ```
 # assumes gap-files is set up in ~/.ssh/config
-scp dev/releases/download_release.sh gap-files:
 ssh gap-files
+
+# then on the files host
 ./download_release.sh X.Y.Z   # e.g. 4.14.0
 ```
 
