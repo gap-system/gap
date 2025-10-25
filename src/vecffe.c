@@ -36,7 +36,7 @@
 static BOOL IsVecFFE(Obj obj)
 {
     UInt tnum = TNUM_OBJ(obj);
-    if (tnum == T_PLIST_FFE || tnum == T_PLIST_FFE + IMMUTABLE)
+    if (tnum == T_PLIST_FFE)
         return TRUE;
 
     // must be a plain list of length >= 1
@@ -838,8 +838,7 @@ static Obj ZeroMutVecFFE(Obj vec)
     UInt i, len;
     Obj res;
     Obj z;
-    GAP_ASSERT(TNUM_OBJ(vec) >= T_PLIST_FFE &&
-               TNUM_OBJ(vec) <= T_PLIST_FFE + IMMUTABLE);
+    GAP_ASSERT(TNUM_OBJ(vec) == T_PLIST_FFE);
     len = LEN_PLIST(vec);
     assert(len);
     res  = NEW_PLIST(T_PLIST_FFE, len);
@@ -855,8 +854,7 @@ static Obj ZeroVecFFE(Obj vec)
     UInt i, len;
     Obj res;
     Obj z;
-    GAP_ASSERT(TNUM_OBJ(vec) >= T_PLIST_FFE &&
-               TNUM_OBJ(vec) <= T_PLIST_FFE + IMMUTABLE);
+    GAP_ASSERT(TNUM_OBJ(vec) == T_PLIST_FFE);
     len = LEN_PLIST(vec);
     assert(len);
     res  = NEW_PLIST(TNUM_OBJ(vec), len);
@@ -942,29 +940,19 @@ static StructGVarFunc GVarFuncs [] = {
 static Int InitKernel (
     StructInitInfo *    module )
 {
-    Int                 t1;
-    Int                 t2;
-
     // install the arithmetic operation methods
-    for (t1 = T_PLIST_FFE; t1 <= T_PLIST_FFE + IMMUTABLE; t1++) {
-        SumFuncs[  T_FFE ][  t1   ] = SumFFEVecFFE;
-        SumFuncs[   t1   ][ T_FFE ] = SumVecFFEFFE;
-        DiffFuncs[ T_FFE ][  t1   ] = DiffFFEVecFFE;
-        DiffFuncs[  t1   ][ T_FFE ] = DiffVecFFEFFE;
-        ProdFuncs[ T_FFE ][  t1   ] = ProdFFEVecFFE;
-        ProdFuncs[  t1   ][ T_FFE ] = ProdVecFFEFFE;
-        ZeroSameMutFuncs[t1] = ZeroVecFFE;
-        ZeroMutFuncs[  t1   ] = ZeroMutVecFFE;
-    }
+    SumFuncs[  T_FFE ][  T_PLIST_FFE   ] = SumFFEVecFFE;
+    SumFuncs[   T_PLIST_FFE   ][ T_FFE ] = SumVecFFEFFE;
+    DiffFuncs[ T_FFE ][  T_PLIST_FFE   ] = DiffFFEVecFFE;
+    DiffFuncs[  T_PLIST_FFE   ][ T_FFE ] = DiffVecFFEFFE;
+    ProdFuncs[ T_FFE ][  T_PLIST_FFE   ] = ProdFFEVecFFE;
+    ProdFuncs[  T_PLIST_FFE   ][ T_FFE ] = ProdVecFFEFFE;
+    ZeroSameMutFuncs[  T_PLIST_FFE   ] = ZeroVecFFE;
+    ZeroMutFuncs[  T_PLIST_FFE   ] = ZeroMutVecFFE;
 
-    for (t1 = T_PLIST_FFE; t1 <= T_PLIST_FFE + IMMUTABLE; t1++) {
-        for (t2 = T_PLIST_FFE; t2 <= T_PLIST_FFE + IMMUTABLE; t2++) {
-            SumFuncs[  t1 ][ t2 ] =  SumVecFFEVecFFE;
-            DiffFuncs[ t1 ][ t2 ] = DiffVecFFEVecFFE;
-            ProdFuncs[ t1 ][ t2 ] = ProdVecFFEVecFFE;
-        }
-    }
-
+    SumFuncs[  T_PLIST_FFE ][ T_PLIST_FFE ] =  SumVecFFEVecFFE;
+    DiffFuncs[ T_PLIST_FFE ][ T_PLIST_FFE ] = DiffVecFFEVecFFE;
+    ProdFuncs[ T_PLIST_FFE ][ T_PLIST_FFE ] = ProdVecFFEVecFFE;
 
     InitHdlrFuncsFromTable(GVarFuncs);
 
