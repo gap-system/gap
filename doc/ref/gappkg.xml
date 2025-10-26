@@ -756,7 +756,7 @@ There should be at least a text version of your documentation provided for use
 in the terminal running  &GAP; and some nicely printable version in
 <C>.pdf</C> format.
 Many &GAP; users like to browse the documentation in HTML format
-via their Web browser. As a package author, you are not obliged
+via their web browser. As a package author, you are not obliged
 to provide an HTML version of your package  manual,
 <!-- TODO: What about requiring an HTML version? -->
 but if you use the &GAPDoc; package you should have no trouble in producing one.

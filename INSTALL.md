@@ -22,13 +22,14 @@ for Windows.
 Alternative installation methods which aim to simplify the installation
 mostly by offering precompiled binaries are:
 
+* Several Linux distributions such as Debian/Ubuntu or Fedora have
+  packaged GAP itself; see e.g. <https://repology.org/project/gap/versions>
 * GAP installer for Homebrew (package manager for macOS)
 * Docker image for GAP and most of the packages
 * the rsync-based binary distribution for Linux
 
 Note, however, that these are updated independently and may not yet provide
-the latest GAP release. Further details are available on the GAP website
-here: <https://www.gap-system.org/Download/alternatives.html>.
+the latest GAP release.
 
 
 1 Installation Overview
@@ -49,9 +50,9 @@ section "Installing required dependencies" in the file `README.md`.
 To get maximum benefit from GAP and from various packages, we recommend
 to install a number of other free software libraries (and their associated
 development tools) although they are not required for basic operation.
-See <https://www.gap-system.org/Download/tools.html> for more details.
+See Section "Compilation" below for more details.
 
-The installation consists of five easy steps:
+The installation consists of five steps:
 
 1. Get the archive suitable for your system
 2. Unpack the archive in the directory where you wish to install GAP
@@ -76,7 +77,7 @@ common problems with the installation.
 =====================
 
 You can get archives for the GAP distribution from the GAP website at
-<https://www.gap-system.org/Releases/>. If you use Unix (including macOS),
+<https://www.gap-system.org/install/>. If you use Unix (including macOS),
 you need to download the GAP source distribution, that is, a file named
 
     gap-4.X.Y.tar.bz2
@@ -147,7 +148,7 @@ On Ubuntu or Debian, you can install these with the following command:
 
 On Fedora:
 
-    sudo dnf install gcc gcc-c++ make autoconf gmp gmp-devel readline readline-devel zlib zlib-devel
+    sudo dnf install gcc gcc-c++ make autoconf gmp-devel readline-devel zlib-devel
 
 On Alpine:
 
@@ -164,27 +165,35 @@ prerequisites. Here is an incomplete list of GAP packages and their requirements
 
 - 4ti2Interface
   - Debian/Ubuntu: 4ti2
+  - Fedora: 4ti2-devel
   - Homebrew: (not currently available)
 - alnuth
   - Debian/Ubuntu: pari-gp
+  - Fedora: pari-gp
   - Homebrew: pari
 - browse
   - Debian/Ubuntu: libncurses-dev
+  - Fedora: ncurses-devel
   - Homebrew: ncurses
 - CddInterface
   - Debian/Ubuntu: libcdd-dev
+  - Fedora: cddlib-devel
   - Homebrew: cddlib
 - curlInterface
   - Debian/Ubuntu: libcurl4-openssl-dev
+  - Fedora: curl-devel
   - Homebrew: curl
 - float
   - Debian/Ubuntu: libfplll-dev libmpc-dev libmpfi-dev libmpfr-dev
+  - Fedora: fplll libmpc-devel mpfi-devel mpfr-devel
   - Homebrew: fplll libmpc mpfi mpfr
 - singular
   - Debian/Ubuntu: singular
+  - Fedora: Singular
   - Homebrew: singular
 - ZeroMQInterface
   - Debian/Ubuntu: libzmq3-dev
+  - Fedora: zeromq-devel
   - Homebrew: zmq
 
 
@@ -411,7 +420,7 @@ found at <https://gap-packages.github.io/>.
 Congratulations, your installation is finished.
 
 Once the installation is complete, you may wish to subscribe to the
-[GAP forum mailing list](https://www.gap-system.org/Contacts/Forum/forum.html),
+[GAP forum mailing list](https://www.gap-system.org/forum/),
 which provides help with user questions of a general nature. You can also
 chat with us on [Slack](https://gap-system.org/slack). Bug reports and other
 problems you have while installing and/or using GAP should be reported via
@@ -465,7 +474,7 @@ the help system which provides useful search features.
 
 This section lists a few common problems when installing or running GAP and
 their remedies. Also see the FAQ list on the GAP web pages at
-<https://www.gap-system.org/Faq/faq.html>.
+<https://www.gap-system.org/faq/>.
 
 ### GAP starts with a warning `hmm, I cannot find lib/init.g`
 

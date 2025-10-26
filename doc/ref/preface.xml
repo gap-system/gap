@@ -75,12 +75,9 @@ provide copyright and licensing information.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Authors and Maintainers">
 <Heading>Authors and Maintainers</Heading>
-&GAP; is the work of very many people, many of whom still maintain
-parts of the system. A complete list of authors, and an approximation
-to the current list of maintainers can be found on the &GAP;
-website at
- <URL>https://www.gap-system.org/Contacts/People/authors.html</URL> and
- <URL>https://www.gap-system.org/Contacts/People/modules.html</URL>.
+&GAP; is the work of very many people, some of whom still maintain
+parts of the system. A complete list of authors can be found at
+ <URL>https://github.com/gap-system/gap/blob/master/COPYRIGHT</URL>.
 
 All &GAP; packages have their
 own authors and maintainers. It should however be noted that some
@@ -105,8 +102,7 @@ We also include with this distribution a
 number of packages which have not (yet) gone through our refereeing
 process. Some may be accepted in the future, in other cases the
 authors have chosen not to submit them.  More information can be found
-on our website
-(see Section <Ref Sect="Further Information about GAP"/>).
+on our website <URL>https://www.gap-system.org</URL>.
 <P/>
 
 </Section>
@@ -136,20 +132,4 @@ technical architect of &GAP; 3 and &GAP; 4.
 <#Include SYSTEM "../ref/copyright.xml">
 </Section>
 
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Further Information about GAP">
-<Heading>Further Information about &GAP;</Heading>
-<Index Subkey="for GAP">web sites</Index>
-<Index>email addresses</Index>
-<Index Subkey="email address">support</Index>
-<#Include SYSTEM "../ref/moreinfo.xml">
-</Section>
-
 </Chapter>
-
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<!-- %% -->
-<!-- %E -->
-

@@ -50,15 +50,4 @@ system and list sources of further information about &GAP;.
 <#Include SYSTEM "../ref/overview.xml">
 </Section>
 
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<Section Label="Further Information about GAP">
-<Heading>Further Information about &GAP;</Heading>
-<#Include SYSTEM "../ref/moreinfo.xml">
-</Section>
-
 </Chapter>
-
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-<!-- %% -->
-<!-- %E -->
-
