@@ -10,11 +10,11 @@
 GAP is a system for computational discrete algebra, with particular emphasis
 on computational group theory. GAP provides a programming language, a library
 of thousands of functions implementing algebraic algorithms written in the GAP
-language as well as large data libraries of algebraic objects. For a more
-detailed overview, see
-  <https://www.gap-system.org/Overview/overview.html>.
+language as well as large data libraries of algebraic objects. For some more
+information, see
+  <https://www.gap-system.org/about/>.
 For a description of the mathematical capabilities, see
-  <https://www.gap-system.org/Overview/Capabilities/capabilities.html>.
+  <https://www.gap-system.org/capabilities/>.
 
 GAP is used in research and teaching for studying groups and their
 representations, rings, vector spaces, algebras, combinatorial structures, and
@@ -26,9 +26,8 @@ easily modify or extend it for your special use.
 
 ## Download a stable release version
 
-The latest stable release of the GAP system, including all currently
-redistributed GAP packages, can be obtained from
-  <https://www.gap-system.org/Releases/index.html>.
+The latest stable release of the GAP system can be obtained from
+  <https://www.gap-system.org/install/>.
 Afterwards, follow the instructions in the file `INSTALL.md` in the GAP root
 directory.
 
@@ -69,7 +68,7 @@ On Ubuntu or Debian, you can install these with the following command:
 
 On Fedora:
 
-    sudo dnf install gcc gcc-c++ make autoconf gmp gmp-devel readline readline-devel zlib zlib-devel
+    sudo dnf install gcc gcc-c++ make autoconf gmp-devel readline-devel zlib-devel
 
 On Alpine:
 
@@ -134,18 +133,13 @@ please read the [contributor guidelines](CONTRIBUTING.md). Additional informatio
 
 To keep up to date on GAP news (discussion of problems, release announcements,
 bug fixes), you can subscribe to the
-[GAP forum](https://www.gap-system.org/Contacts/Forum/forum.html) and
+[GAP forum](https://www.gap-system.org/forum/) and
 [GAP development](https://lists.uni-kl.de/gap/info/gap) mailing lists,
-notifications on GitHub, and chat with us on [Slack](https://gap-system.org/slack).
+notifications on GitHub, or chat with us on [Slack](https://gap-system.org/slack).
 
-If you have any questions about working with GAP, you can ask them on
-[GAP forum](https://www.gap-system.org/Contacts/Forum/forum.html) (requires subscription)
-or [GAP support](https://www.gap-system.org/Contacts/People/supportgroup.html) mailing lists.
-
-Please tell us about your use of GAP in research or teaching. We maintain a
-[bibliography of publications citing GAP](https://www.gap-system.org/Doc/Bib/bib.html).
-Please [help us](https://www.gap-system.org/Contacts/publicationfeedback.html)
-keeping it up to date.
+If you have any questions about working with GAP, you can ask them on the
+[GAP forum](https://www.gap-system.org/forum/) mailing list (requires subscription)
+or [use one of our various support channels](https://www.gap-system.org/issues).
 
 
 # License

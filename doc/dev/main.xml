@@ -47,7 +47,6 @@ there is a concept of <E>modules</E> where  parts of the
 <#Include SYSTEM "lib.xml">
 <#Include SYSTEM "documentation.xml">
 <#Include SYSTEM "testing.xml">
-<#Include SYSTEM "git.xml">
 <#Include SYSTEM "pkgdist.xml">
 <#Include SYSTEM "website.xml">
 <#Include SYSTEM "newcode.xml">

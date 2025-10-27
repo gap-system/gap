@@ -846,7 +846,7 @@ static Obj FuncREAD(Obj self, Obj inputObj)
 **
 *F  FuncREAD_STREAM_LOOP( <self>, <instream>, <outstream> ) . . read a stream
 **
-**  Read data from <instream> in a read-eval-view loop and write all output
+**  Read data from <instream> in a read-eval-print loop and write all output
 **  to <outstream>. This is used by the GAP function `RunTests` and hence
 **  indirectly for implementing `Test` and `TestDirectory`,
 */

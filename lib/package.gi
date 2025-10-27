@@ -2554,7 +2554,7 @@ GAPInfo.PackagesRestrictions := AtomicRecord(rec(
               "  with the current version of GAP.\n",
               "  It is strongly recommended to update to the ",
               "most recent version, see URL\n",
-              "      https://www.gap-system.org/Packages/autpgrp.html\n" );
+              "      https://gap-packages.github.io/autpgrp/\n" );
         fi;
         end )) ));
 
