@@ -41,7 +41,7 @@ Colorado State University, Fort Collins.
 More information on the motivation and development of &GAP; to date,
 can be found on our website in a section entitled
 <Q>Some History of &GAP;</Q>:
-<URL>https://www.gap-system.org/Doc/History/history.html</URL>.
+<URL>https://www.gap-system.org/about/history/</URL>.
 <P/>
 For those readers who have used an earlier version of &GAP;, an
 overview of the changes from &GAP;&nbsp;4.4 and a brief
@@ -81,7 +81,7 @@ a number of packages. The core system consists of four main parts.
       algorithms.
     </Item>
     <Item>
-      a <Q>read-eval-view</Q> style user interface.
+      a <Q>read-eval-print loop</Q> (REPL) user interface.
     </Item>
     </List>
 </Item>
@@ -106,7 +106,7 @@ A <E>library of group theoretical data</E> which contains
 <Item>
     The <E>documentation</E>.  This is available as on-line help, as
     printable files in PDF format and as HTML for viewing
-    with a Web browser.
+    with a web browser.
 </Item>
 </Enum>
 <P/>
@@ -146,7 +146,7 @@ Representations; therefore, installation and usage of packages is recommended.
 <P/>
 Further details about &GAP; packages can be found in chapter
 <Ref BookName="ref" Chap="Using and Developing GAP Packages"/>, and on the
-&GAP; website here: <URL>https://www.gap-system.org/Packages/packages.html</URL>.
+&GAP; website at <URL>https://www.gap-system.org/packages/authors/</URL>.
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
