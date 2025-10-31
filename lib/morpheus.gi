@@ -26,6 +26,9 @@ MORPHEUSELMS := 50000;
 InstallMethod(Order,"for automorphisms",true,[IsGroupHomomorphism],0,
 function(hom)
 local map,phi,o,lo,i,j,start,img,d,nat,ser,jord,first;
+  if not IsEndoGeneralMapping( hom ) then
+    Error( "Source and Range of <hom> must be equal" );
+  fi;
   d:=Source(hom);
   if not (HasIsFinite(d) and IsFinite(d)) then
     TryNextMethod();

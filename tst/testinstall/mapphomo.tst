@@ -71,6 +71,20 @@ fail
 gap> GroupHomomorphismByImages(G, H, [], []);
 fail
 
+# Order for homomorphisms
+gap> G:= SymmetricGroup( 3 );;
+gap> hom:= IdentityMapping( G );;
+gap> Order( hom );
+1
+gap> One( hom ) = hom;
+true
+gap> H:= Group( (1,2) );;
+gap> hom:= RestrictedMapping( hom, H );;
+gap> Order( hom );
+Error, Source and Range of <hom> must be equal
+gap> One( hom );
+fail
+
 # Check that group homomorphisms created by a function can compute preimages.
 gap> for G in [ SymmetricGroup(5), SmallGroup( 24, 12 ), GL(2,3) ] do
 >      hom:= GroupHomomorphismByFunction( G, G, x -> x );
