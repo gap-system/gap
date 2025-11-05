@@ -1,4 +1,4 @@
-#@local g,h,l,l2,p2,perm,t,filt,lcpy,permsp
+#@local g,h,l,l2,p2,perm,t,filt,lcpy,permsp,old_paras,G,U,tr
 gap> START_TEST("listgen.tst");
 gap> List( [ 1 .. 10 ], x -> x^2 );
 [ 1, 4, 9, 16, 25, 36, 49, 64, 81, 100 ]
@@ -156,6 +156,8 @@ gap> String( l );
 "[ 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]"
 gap> String( [ 1 .. 10 ] );
 "[ 1 .. 10 ]"
+
+# right transversals
 gap> g:=Group((1,5)(2,6)(3,7)(4,8),(1,3)(2,4)(5,7)(6,8),(1,2)(3,4)(5,6)(7,8), 
 > (5,6)(7,8), (5,7)(6,8), (3,4)(7,8), (3,5)(4,6), (2,3)(6,7));;
 gap> h:=Subgroup(g,[(5,6)(7,8),(5,7)(6,8),(2,4)(6,8),(2,5)(4,7),(1,2)(3,4)]);;
@@ -166,6 +168,21 @@ gap> IsSSortedList(t);
 true
 gap> p2:=Position(t,(5,7)(6,8));
 fail
+
+# right transversals, see pull request #6114
+gap> old_paras:= [ BITLIST_LIMIT_TRANSVERSAL, MAX_SIZE_TRANSVERSAL ];;
+gap> BITLIST_LIMIT_TRANSVERSAL:= 59;;
+gap> MAX_SIZE_TRANSVERSAL:= 59;;
+gap> G:= AtlasGroup( "J1" );;
+gap> U:= TrivialSubgroup( G );;
+gap> tr:= RightTransversalPermGroupConstructor(
+>           IsRightTransversalPermGroupRep, G, U );;
+gap> Length( tr ) = Size( G );
+true
+gap> PositionCanonical( tr, GeneratorsOfGroup( G )[1] ) <= Length( tr );
+true
+gap> BITLIST_LIMIT_TRANSVERSAL:= old_paras[1];;
+gap> MAX_SIZE_TRANSVERSAL:= old_paras[2];;
 
 # that's all, folks
 gap> STOP_TEST("listgen.tst");
