@@ -1819,7 +1819,10 @@ DeclareRepresentation( "IsFactoredTransversalRep",
     # group, subgroup, list of transversals (descending)
 BindGlobal("FactoredTransversal",function(G,S,t)
 local trans,m,i;
-  Assert(1,ForAll([1..Length(t)-1],i->t[i]!.subgroup=t[i+1]!.group));
+  Assert(1,ForAll([1..Length(t)-1],
+                  i ->    (not IsBound(t[i]!.subgroup))
+                       or (not IsBound(t[i+1]!.group))
+                       or t[i]!.subgroup = t[i+1]!.group));
 
   m:=[1];
   for i in [Length(t),Length(t)-1..2] do
