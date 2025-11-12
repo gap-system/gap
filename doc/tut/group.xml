@@ -1,12 +1,12 @@
-<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
-<!-- %W  group.tex                 GAP documentation             Thomas Breuer -->
-<!-- %W                                                         & Frank Celler -->
-<!-- %W                                                     & Martin Schönert -->
-<!-- %W                                                       & Heiko Theißen -->
+<!-- %W  group.tex           GAP documentation               Thomas Breuer -->
+<!-- %W                                                     & Frank Celler -->
+<!-- %W                                                  & Martin Schönert -->
+<!-- %W                                                    & Heiko Theißen -->
 <!-- %% -->
 <!-- %% -->
-<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik,  RWTH Aachen,   Germany -->
+<!-- %Y  Copyright 1997,  Lehrstuhl D für Mathematik, RWTH Aachen, Germany -->
 <!-- %% -->
 <!-- %%  This file contains a tutorial introduction to groups. -->
 <!-- %% -->
@@ -168,10 +168,9 @@ action domain of <C>norm</C>. (It only happens that both are subsets of the
 natural numbers.) We can now form  images and preimages under the natural
 homomorphism. The set of  preimages of an element under  <C>hom</C> is a coset
 modulo <C>elab</C>.
-We use the function <Ref Func="PreImages" BookName="ref"/> here because
-<C>hom</C> is not
-a bijection, so an  element of the range can   have several preimages  or
-none at all.
+We use the function <Ref Func="PreImages" BookName="ref"/> here 
+because <C>hom</C> is not a bijection, 
+so an element of the range can have several preimages or none at all.
 <P/>
 <Example><![CDATA[
 gap> ker:= Kernel( hom );
@@ -942,18 +941,20 @@ gap> PreImage( hom, TrivialSubgroup(s3) );  # the kernel
 Group([ (1,4)(2,3), (1,3)(2,4) ])
 ]]></Example>
 <P/>
-This homomorphism  from <M>S_4</M> onto  <M>S_3</M>  is well known  from elementary
-group theory.  Images   of elements and  subgroups  under   <C>hom</C> can  be
+This homomorphism  from <M>S_4</M> onto <M>S_3</M> is well known from 
+elementary group theory.  
+Images of elements and subgroups under <C>hom</C> can be
 calculated with the function <Ref Func="Image" BookName="ref"/>.
-But since the mapping <C>hom</C> is  not bijective, we  cannot use the
-function <Ref Func="PreImage" BookName="ref"/> for  preimages   of
-elements  (they can have   several preimages). Instead,   we have  to use
-<Ref Func="PreImagesRepresentative" BookName="ref"/>,
-which  returns  one  preimage if at  least one
-exists (and would  return <K>fail</K> if none  exists, which  cannot occur for
+But since the mapping <C>hom</C> is not bijective, we cannot use the
+function <Ref Func="PreImage" BookName="ref"/> for preimages of elements 
+(they can have several preimages).  
+Instead, we have to use 
+<Ref Func="PreImagesRepresentative" BookName="ref"/> 
+which returns one preimage if at least one exists 
+(and would return <K>fail</K> if none exists, which cannot occur for
 our surjective <C>hom</C>).
-On the other hand, we  can use <Ref Func="PreImage" BookName="ref"/> for the
-preimage of a set (which always exists, even if it  is empty).
+On the other hand, we can use <Ref Func="PreImage" BookName="ref"/> for the
+preimage of a set (which always exists, even if it is empty).
 <P/>
 Suppose we mistype the input when trying to construct a homomorphism as below.
 <P/>
