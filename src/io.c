@@ -777,6 +777,36 @@ UInt CloseOutputLog ( void )
     return 1;
 }
 
+
+// Locate the previously opened stdout/errout; return NULL if none found
+static TypOutputFile * findStdoutErrout(void)
+{
+    TypOutputFile * output = IO()->Output;
+    while (output) {
+        if (output->file == 1 || output->file == 3)
+            break;
+        output = output->prev;
+    }
+    return output;
+}
+
+
+// copy information about the output status between two TypOutputFile structs;
+// this is used to save/restore information about the screen content when
+// switching between stdout and errout resp. when opening stdout / errout a
+// second time. So for example, we correctly keep track of which terminal
+// column the cursor is, so that things like line wrapping keep working
+// correctly.
+static void copyOutputFileStruct(TypOutputFile * dst, TypOutputFile * src)
+{
+    memcpy(dst->line, src->line, sizeof(src->line));
+    dst->pos = src->pos;
+    dst->column = src->column;
+    dst->indent = src->indent;
+    memcpy(dst->hints, src->hints, sizeof(src->hints));
+}
+
+
 /****************************************************************************
 **
 *F  OpenOutput( <filename> )  . . . . . . . . . open a file as current output
@@ -815,19 +845,28 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
 {
     GAP_ASSERT(output);
 
+    const BOOL isStdout = streq(filename, "*stdout*");
+    const BOOL isErrout = streq(filename, "*errout*");
+
     // do nothing for stdout and errout if caught
     if (IO()->Output != NULL && IO()->IgnoreStdoutErrout == IO()->Output &&
-        (streq(filename, "*errout*") || streq(filename, "*stdout*"))) {
+        (isErrout || isStdout)) {
         return 1;
     }
 
 #ifdef HPCGAP
     /* Handle *defout* specially; also, redirect *errout* if we already
      * have a default channel open. */
-    if (streq(filename, "*defout*") ||
-        (streq(filename, "*errout*") && TLS(threadID) != 0))
+    if (streq(filename, "*defout*") || (isErrout && TLS(threadID) != 0))
         return OpenDefaultOutput(output);
 #endif
+
+    TypOutputFile * prevStdoutErrout = 0;
+    if (isErrout || isStdout) {
+        // sync with previous stdout/errout so that line wrapping and
+        // formatting work correctly across opening/reopening them
+        prevStdoutErrout = findStdoutErrout();
+    }
 
     // try to open the file
     Int file = SyFopen(filename, append ? "a" : "w", FALSE);
@@ -846,9 +885,10 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
     output->file = file;
     output->line[0] = '\0';
     output->pos = 0;
-    if (streq(filename, "*stdout*"))
+    output->column = 0;
+    if (isStdout)
         output->format = IO()->PrintFormattingForStdout;
-    else if (streq(filename, "*errout*"))
+    else if (isErrout)
         output->format = IO()->PrintFormattingForErrout;
     else
         output->format = TRUE;
@@ -856,6 +896,10 @@ UInt OpenOutput(TypOutputFile * output, const Char * filename, BOOL append)
 
     // variables related to line splitting, very bad place to split
     output->hints[0] = -1;
+
+    if (prevStdoutErrout) {
+        copyOutputFileStruct(output, prevStdoutErrout);
+    }
 
     // indicate success
     return 1;
@@ -886,6 +930,7 @@ UInt OpenOutputStream(TypOutputFile * output, Obj stream)
     output->file = -1;
     output->line[0] = '\0';
     output->pos = 0;
+    output->column = 0;
     output->format = (CALL_1ARGS(PrintFormattingStatus, stream) == True);
     output->indent = 0;
 
@@ -947,6 +992,15 @@ UInt CloseOutput(TypOutputFile * output)
 
     // don't keep GAP objects alive unnecessarily
     output->stream = 0;
+
+    if (output->file == 1 || output->file == 3) {
+        // sync with previous stdout/errout so that line wrapping and
+        // formatting work correctly across opening/reopening them
+        TypOutputFile * prevStdoutErrout = findStdoutErrout();
+        if (prevStdoutErrout) {
+            copyOutputFileStruct(prevStdoutErrout, output);
+       }
+    }
 
     return 1;
 }
@@ -1074,6 +1128,10 @@ static Char GetLine(TypInputFile * input)
                  Call0ArgsInNewReader( PrintPromptHook );
             else
                  Pr( "%s%c", (Int)STATE(Prompt), (Int)'\03' );
+
+          // HACK HACK HACK: the input will end with a newline, so
+          // column should be reset
+          IO()->Output->column = 0;
         }
     }
 
@@ -1240,7 +1298,7 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
       return;
 
     // add hint to break line
-    addLineBreakHint(stream, stream->pos, 16*stream->indent, 1);
+    addLineBreakHint(stream, stream->column + stream->pos, 16*stream->indent, 1);
   }
 
   // '\02', decrement indentation level
@@ -1250,7 +1308,7 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
       return;
 
     // if this is a better place to split the line remember it
-    addLineBreakHint(stream, stream->pos, 16*stream->indent, -1);
+    addLineBreakHint(stream, stream->column + stream->pos, 16*stream->indent, -1);
   }
 
   // '\03', print line
@@ -1261,8 +1319,7 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
       {
         stream->line[ stream->pos ] = '\0';
         PutLineTo(stream, stream->pos );
-
-        // start the next line
+        stream->column += stream->pos;
         stream->pos      = 0;
       }
     // reset line break hints
@@ -1282,6 +1339,8 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
 
     // and dump it from the buffer
     stream->pos = 0;
+    stream->column = 0;
+
     if (stream->format)
       {
         // indent for next line
@@ -1297,13 +1356,14 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
 #ifdef HPCGAP
   /* TODO: For threads other than the main thread, reserve some extra
      space for the thread id indicator. See issue #136. */
-  else if (stream->pos <
+  else if (stream->column + stream->pos <
            SyNrCols - 2 - 6 * (TLS(threadID) != 0) - IO()->NoSplitLine) {
 #else
-  else if (stream->pos < SyNrCols - 2 - IO()->NoSplitLine) {
+  else if (stream->column + stream->pos < SyNrCols - 2 - IO()->NoSplitLine) {
 #endif
 
     // put the character on this line
+    // FIXME: buffer overflow possible if SyNrCols exceeds MAXLENOUTPUTLINE
     stream->line[ stream->pos++ ] = ch;
 
   }
@@ -1338,6 +1398,7 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
         stream->line[ spos++ ] = '\n';
         stream->line[ spos   ] = '\0';
         PutLineTo( stream, spos );
+        stream->column = 0;
         spos--;
 
         // indent for the rest
@@ -1371,6 +1432,10 @@ static void PutChrTo(TypOutputFile * stream, Char ch)
         // and print the line
         stream->line[ stream->pos   ] = '\0';
         PutLineTo( stream, stream->pos );
+        if (stream->format)
+          stream->column = 0;
+        else
+          stream->column += stream->pos;
 
         // add the character to the next line
         stream->pos = 0;
@@ -1900,6 +1965,25 @@ static Obj FuncCALL_WITH_FORMATTING_STATUS(Obj self, Obj status, Obj func, Obj a
     return result;
 }
 
+// flush pending output on stdout/errout, and ensure we are
+// at the start of a new line. also reset any formatting hints
+static Obj FuncFLUSH_STDOUT_ERROUT(Obj self)
+{
+    TypOutputFile * output = findStdoutErrout();
+    if (output && (output->pos || output->column)) {
+        output->line[output->pos++] = '\n';
+        output->line[output->pos++] = '\0';
+        PutLineTo(output, output->pos);
+
+        output->line[0] = '\0';
+        output->pos = 0;
+        output->column = 0;
+        output->indent = 0;
+        output->hints[0] = -1;
+    }
+    return 0;
+}
+
 static Obj FuncIS_INPUT_TTY(Obj self)
 {
     GAP_ASSERT(IO()->Input);
@@ -1934,6 +2018,7 @@ static StructGVarFunc GVarFuncs [] = {
     GVAR_FUNC_1ARGS(SET_PRINT_FORMATTING_ERROUT, format),
     GVAR_FUNC_0ARGS(PRINT_FORMATTING_ERROUT),
     GVAR_FUNC_3ARGS(CALL_WITH_FORMATTING_STATUS, status, func, args),
+    GVAR_FUNC_0ARGS(FLUSH_STDOUT_ERROUT),
     GVAR_FUNC_0ARGS(IS_INPUT_TTY),
     GVAR_FUNC_0ARGS(IS_OUTPUT_TTY),
     GVAR_FUNC_0ARGS(GET_FILENAME_CACHE),
