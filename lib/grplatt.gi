@@ -1016,7 +1016,6 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
         nts:=Union(Orbits(G,nts));
         act:=ActionHomomorphism(G,nts,"surjective");
         act:=[nts,act];
-          
 
       elif select=IsNonabelianSimpleGroup then
         # simple -> no extensions, only the trivial subgroup is valid.
