@@ -2784,7 +2784,7 @@ InstallGlobalFunction( BibEntry, function( arg )
     # <Mark><C>author</C></Mark>
     # <Item>
     #   computed from the <C>Persons</C> component of the package,
-    #   not distinguishing authors and maintainers,
+    #   just taking authors,
     #   keeping the ordering of entries,
     # </Item>
     # <Mark><C>title</C></Mark>
@@ -2846,7 +2846,7 @@ InstallGlobalFunction( BibEntry, function( arg )
     else
       entry:= Concatenation( "<entry id=\"", key, "\"><misc>\n" );
       author:= List( Filtered( pkginfo.Persons,
-        person -> person.IsAuthor or person.IsMaintainer ),
+        person -> person.IsAuthor ),
           person -> Concatenation(
             "    <name>",
             CallFuncList( function(x) if IsBound( x.FirstNames ) then
