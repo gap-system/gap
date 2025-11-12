@@ -1439,7 +1439,8 @@ end);
 InstallGlobalFunction(FpGroupCocycle,function(arg)
 local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
       it,hom,trysy,prime,mindeg,fps,ei,mgens,mwrd,nn,newfree,mfpi,mmats,sub,
-      tab,tab0,evalprod,gensmrep,invsmrep,zerob,step,simi,simiq,wasbold,
+      tab,tab0,evalprod,gensmrep,invsmrep,zerob,simi,simiq,wasbold,
+      #step,
       mon,ord,mn,melmvec,killgens,frew,fffam,ofgens,rws,formalinverse;
 
   # function to evaluate product (as integer list) in gens (and their
