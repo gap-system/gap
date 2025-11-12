@@ -26,11 +26,11 @@ DeclareGlobalFunction( "AbelianPQuotient" );
 
 #############################################################################
 ##
-#F  PQuotient(<F>, <p>[, <c>][, <logord>][, <ctype>])  . .  pq of an fp group
+#F  PQuotient(<F>, <p>[, <c>][, <logord>][, <ctype>] : noninteractive)  . .  pq of an fp group
 ##
 ##  <#GAPDoc Label="PQuotient">
 ##  <ManSection>
-##  <Func Name="PQuotient" Arg='F, p[, c][, logord][, ctype]'/>
+##  <Func Name="PQuotient" Arg='F, p[, c][, logord][, ctype] : noninteractive'/>
 ##
 ##  <Description>
 ##  computes a factor <A>p</A>-group of a finitely presented group <A>F</A>
@@ -57,16 +57,21 @@ DeclareGlobalFunction( "AbelianPQuotient" );
 ##  In case <A>F</A> does not have a largest factor <A>p</A>-group,
 ##  the algorithm will not terminate.
 ##  <P/>
-##  By default the algorithm computes only with factor groups of order at
-##  most <M>p^{256}</M>. If the parameter <A>logord</A> is present, it will
-##  compute with factor groups of order at most <M>p^{<A>logord</A>}</M>.
-##  If this parameter is specified, then the parameter <A>c</A> must also be
-##  given.  The present
-##  implementation produces an error message if the order of a
-##  <M>p</M>-quotient exceeds <M>p^{256}</M> or <M>p^{<A>logord</A>}</M>,
-##  respectively.
-##  Note that the order of intermediate <M>p</M>-groups may be larger than
-##  the final order of a <M>p</M>-quotient.
+##  By default the value of the paramter <A>logord</A> is set to <M>256</M>.
+##  If the parameter <A>logord</A> is specified, then the parameter <A>c</A> must also be
+##  given.
+##  The algorithm only computes with factor groups of order
+##  at most <M>p^{<A>logord</A>}</M>.
+##  If the order of a factor group exceeds <M>p^{<A>logord</A>}</M>,
+##  the behaviour of the algorithm depends on the option
+##  <A>noninteractive</A>: if it is present, the current implementation
+##  produces an error message; otherwise it returns <C>fail</C>.
+##  Note that the order of intermediate <M>p</M>-groups, which are constructed by the algorithm
+##  during the computation, may be larger than the final order of a <M>p</M>-quotient
+##  in the series. Thus a <M>p</M>-quotient is not necessarily computed
+##  even if its order does not exceed <M>p^{<A>logord</A>}</M>.
+##  However, for the first quotient we can guarantee that it is found,
+##  if the order does not exceed <M>p^{<A>logord</A>}</M>.
 ##  <P/>
 ##  The parameter <A>ctype</A> determines the type of collector that is used
 ##  for computations within the factor <A>p</A>-group.
