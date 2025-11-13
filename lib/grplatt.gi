@@ -992,6 +992,7 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
     if Length(mpcgs)>0 then
       gf:=GF(RelativeOrders(mpcgs)[1]);
       if select=IsPerfectGroup then
+
         # the only normal subgroups are those that are normal under any
         # subgroup so far.
 
@@ -1008,7 +1009,13 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
         od;
         SortBy(nts,Size); # increasing order
         # by setting up `act' as fail, we force a different selection later
-        act:=[nts,fail];
+        #act:=[nts,fail];
+
+        # there is an issue in selecting representatives. Form G-orbits to
+        # remain in usual case.
+        nts:=Union(Orbits(G,nts));
+        act:=ActionHomomorphism(G,nts,"surjective");
+        act:=[nts,act];
 
       elif select=IsNonabelianSimpleGroup then
         # simple -> no extensions, only the trivial subgroup is valid.
