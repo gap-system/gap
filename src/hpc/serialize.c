@@ -27,6 +27,8 @@
 
 #include <stdio.h>
 
+// TODO/FIXME: serialize mutability information again somehow?
+
 typedef struct SerializerState {
     Obj                   stack;
     Obj    obj;
@@ -585,8 +587,6 @@ static Obj DeserializeRecord(DeserializerState * state, UInt tnum)
         SET_ELM_PREC(result, i, el);
     }
     SortPRecRNam(result);
-    if (tnum == T_PREC + IMMUTABLE)
-        RetypeBag(result, tnum);
     return result;
 }
 
@@ -713,7 +713,6 @@ static Obj LookupIntTag(Obj tag)
 retry:
     switch (map ? TNUM_OBJ(map) : -1) {
     case T_OBJMAP:
-    case T_OBJMAP + IMMUTABLE:
         result = LookupObjMap(map, tag);
         if (result || func)
             return result;
@@ -741,7 +740,6 @@ static Obj DeserializeTypedObj(DeserializerState * state, UInt tnum)
     switch (tagtnum) {
     case T_INT:
     case T_STRING:
-    case T_STRING + IMMUTABLE:
         if (tagtnum == T_INT) {
             tag = DeserializeInt(state, T_INT);
             type = LookupIntTag(tag);
@@ -765,6 +763,7 @@ static Obj DeserializeTypedObj(DeserializerState * state, UInt tnum)
                 ErrorQuit("DeserializeTypedObj: expected plist, got %s", (Int)TNAM_OBJ(result), 0);
             break;
         case T_PREC:
+            // TODO/FIXME: reject immutable ones?
             result = DeserializeObj(state);
             if (TNUM_OBJ(result) != T_COMOBJ)
                 ErrorQuit("DeserializeTypedObj: expected component object, got %s", (Int)TNAM_OBJ(result), 0);
@@ -858,7 +857,6 @@ static void SerializeTypedObj(SerializerState * state, Obj obj)
         switch (TNUM_OBJ(rep)) {
         case T_INT:
         case T_STRING:
-        case T_STRING + IMMUTABLE:
             SerializeObj(state, rep);
             UInt sp = LEN_PLIST(state->stack);
             switch (TNUM_OBJ(obj)) {
@@ -1058,13 +1056,13 @@ static Int InitKernel(StructInitInfo * module)
     for (i = FIRST_PLIST_TNUM; i <= LAST_PLIST_TNUM; i++) {
         RegisterSerializerFunctions(i, SerializeList, DeserializeList);
     }
-    for (i = T_RANGE_NSORT; i <= T_RANGE_SSORT + IMMUTABLE; i++) {
+    for (i = T_RANGE_NSORT; i <= T_RANGE_SSORT; i++) {
         RegisterSerializerFunctions(i, SerializeRange, DeserializeRange);
     }
-    for (i = T_BLIST; i <= T_BLIST_SSORT + IMMUTABLE; i++) {
+    for (i = T_BLIST; i <= T_BLIST_SSORT; i++) {
         RegisterSerializerFunctions(i, SerializeBlist, DeserializeBlist);
     }
-    for (i = T_STRING; i <= T_STRING_SSORT + IMMUTABLE; i++) {
+    for (i = T_STRING; i <= T_STRING_SSORT; i++) {
         RegisterSerializerFunctions(i, SerializeString, DeserializeString);
     }
 
