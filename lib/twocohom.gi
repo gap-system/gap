@@ -1439,7 +1439,8 @@ end);
 InstallGlobalFunction(FpGroupCocycle,function(arg)
 local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
       it,hom,trysy,prime,mindeg,fps,ei,mgens,mwrd,nn,newfree,mfpi,mmats,sub,
-      tab,tab0,evalprod,gensmrep,invsmrep,zerob,step,simi,simiq,wasbold,
+      tab,tab0,evalprod,gensmrep,invsmrep,zerob,simi,simiq,wasbold,
+      #step,
       mon,ord,mn,melmvec,killgens,frew,fffam,ofgens,rws,formalinverse;
 
   # function to evaluate product (as integer list) in gens (and their
@@ -1834,8 +1835,8 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
               # module is irreducible).
               e:=LargerQuotientBySubgroupAbelianization(mfpi,m:cheap);
               if e<>fail then
-                step:=0;
-                while step<=1 do
+#                step:=0;
+#                while step<=1 do
                   # Now write down the combined representation in wreath
 
                   e:=DefiningQuotientHomomorphism(e);
@@ -1859,26 +1860,30 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
                     x->IsOne(MappedWord(x,FreeGeneratorsOfFpGroup(fps),
                       GeneratorsOfGroup(e!.quot)))));
 
-                  if step=0 then
-                    i:=GroupHomomorphismByImagesNC(e!.quot,p,
-                      GeneratorsOfGroup(e!.quot),
-                      GeneratorsOfGroup(p));
-                    j:=PreImage(i,m);
-                    if AbelianInvariants(j)=AbelianInvariants(newfree) then
-                      step:=2;
-                      Info(InfoExtReps,2,"Small bit did good");
-                    else
-                      Info(InfoExtReps,2,"Need expensive version");
-                      e:=LargerQuotientBySubgroupAbelianization(mfpi,m:
-                        cheap:=false);
-                      e:=Intersection(e,
-                        KernelOfMultiplicativeGeneralMapping(quot));
-                    fi;
-                  fi;
-
-
-                  step:=step+1;
-                od;
+#                  if step=0 then
+#                    tab:=GroupHomomorphismByImagesNC(e!.quot,p,
+#                      GeneratorsOfGroup(e!.quot),
+#                      GeneratorsOfGroup(p));
+#                    j:=PreImage(tab,m);
+#                    if AbelianInvariants(j)=AbelianInvariants(newfree) then
+#                      step:=2;
+#                      Info(InfoExtReps,2,"Small bit did good");
+#                    else
+#                      Info(InfoExtReps,2,"Use expensive version");
+#
+#                      tab:=LargerQuotientBySubgroupAbelianization(mfpi,m:
+#                        cheap:=false);
+#                      if tab<>fail then
+#                        e:=Intersection(e,
+#                          KernelOfMultiplicativeGeneralMapping(quot));
+#                        step:=2;
+#                      fi;
+#                    fi;
+#                  fi;
+#
+#
+#                  step:=step+1;
+#                od;
 
               fi;
 
@@ -1894,12 +1899,12 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
                 j:=List(Orbits(j,MovedPoints(j)),x->Stabilizer(j,x[1]));
                 j:=List(j,x->PreImage(i,x));
                 e:=Intersection(j);
-                e:=Intersection(e,KernelOfMultiplicativeGeneralMapping(quot));
               fi;
             fi;
 
-
             if e<>fail then
+              e:=Intersection(e,KernelOfMultiplicativeGeneralMapping(quot));
+              Info(InfoExtReps,2,"Resulting deg=",NrMovedPoints(e!.quot));
               # can we do better degree -- greedy block reduction?
               nn:=e!.quot;
               if IsTransitive(nn,MovedPoints(nn)) then
