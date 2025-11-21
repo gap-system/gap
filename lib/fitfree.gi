@@ -81,7 +81,7 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
   else
     iso:=IsomorphismFpGroup(Image(rest,U));
     pregens:=List(GeneratorsOfGroup(Range(iso)),x->
-      PreImagesRepresentative(rest,PreImagesRepresentative(iso,x)));
+      PreImagesRepresentativeNC(rest,PreImagesRepresentativeNC(iso,x)));
     # evaluate relators
     pool:=List(RelatorsOfFpGroup(Range(iso)),
       x->MappedWord(x,FreeGeneratorsOfFpGroup(Range(iso)),pregens));
@@ -91,7 +91,7 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
 
     iso:=IsomorphismFpGroup(Image(rest,U));
     pregens:=List(GeneratorsOfGroup(Range(iso)),x->
-      PreImagesRepresentative(rest,PreImagesRepresentative(iso,x)));
+      PreImagesRepresentativeNC(rest,PreImagesRepresentativeNC(iso,x)));
     # evaluate relators
     pool:=List(RelatorsOfFpGroup(Range(iso)),
       x->MappedWord(x,FreeGeneratorsOfFpGroup(Range(iso)),pregens));
@@ -135,7 +135,7 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
 #    od;
     SetSize(U,Size(Image(rest))*Size(kpc));
     k:=InducedPcgs(FamilyPcgs(Image(pcisom)),kpc);
-    k:=List(k,x->PreImagesRepresentative(pcisom,x));
+    k:=List(k,x->PreImagesRepresentativeNC(pcisom,x));
     k:=InducedPcgsByPcSequenceNC(ffs.pcgs,k);
     ker:=SubgroupNC(G,k);
     SetSize(ker,Size(kpc));
@@ -257,7 +257,7 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom,subsz,pcimgs;
   pcimgs:=List(ipcgs,x->ImagesRepresentative(ffs.pcisom,x));
 
   ker:=SubgroupNC(G,List(MinimalGeneratingSet(Group(pcimgs,One(Range(ffs.pcisom)))),
-    x->PreImagesRepresentative(ffs.pcisom,x)));
+    x->PreImagesRepresentativeNC(ffs.pcisom,x)));
   SetPcgs(ker,ipcgs);
   if Length(ipcgs)=0 then
     SetSize(ker,1);
@@ -916,8 +916,9 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,gens;
   s:=SylowSubgroup(Image(hom),prime);
   fphom:=IsomorphismFpGroup(s);
   fp:=Image(fphom);
-  sf:=List(GeneratorsOfGroup(Image(fphom)),x->PreImagesRepresentative(fphom,x));
-  sg:=List(sf,x->PreImagesRepresentative(hom,x));
+  sf:=List(GeneratorsOfGroup(Image(fphom)),
+        x->PreImagesRepresentativeNC(fphom,x));
+  sg:=List(sf,x->PreImagesRepresentativeNC(hom,x));
   sp:=[];
   RUN_IN_GGMBI:=true; # hack to skip Nice treatment
   fphom:=GroupGeneralMappingByImagesNC(Group(sg,One(G)),fp,sg,
@@ -1194,7 +1195,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
       norm:=n);
     for j in [2..Length(i)] do
       c[i[j]]:=rec(orbit:=i,orbitpos:=j,
-        rep:=PreImagesRepresentative(act,
+        rep:=PreImagesRepresentativeNC(act,
           RepresentativeAction(Image(act),i[1],i[j])),
         component:=d[i[j]],hall:=h, norm:=n);
     od;
@@ -1232,7 +1233,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
       fp:=Range(fphom);
       gens:=MappingGeneratorsImages(fphom);
       imgs:=gens[2];gens:=gens[1];
-      gens:=List(gens,x->PreImagesRepresentative(act,x));
+      gens:=List(gens,x->PreImagesRepresentativeNC(act,x));
 
       # adapt to normalize B
       gens:=List(gens,x->x/RepresentativeAction(t,b^x,b));
@@ -1280,7 +1281,7 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
       fp:=Image(fphom);
       gens:=MappingGeneratorsImages(fphom);
       imgs:=gens[2];gens:=gens[1];
-      gens:=List(gens,x->PreImagesRepresentative(hom,x));
+      gens:=List(gens,x->PreImagesRepresentativeNC(hom,x));
     fi;
 
     # now run through the candidates for Hall in S
@@ -1408,8 +1409,9 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,
   for s in HallsFittingFree(Image(hom),pi) do
     fphom:=IsomorphismFpGroup(s);
     fp:=Image(fphom);
-    sf:=List(GeneratorsOfGroup(Image(fphom)),x->PreImagesRepresentative(fphom,x));
-    sg:=List(sf,x->PreImagesRepresentative(hom,x));
+    sf:=List(GeneratorsOfGroup(Image(fphom)),
+          x->PreImagesRepresentativeNC(fphom,x));
+    sg:=List(sf,x->PreImagesRepresentativeNC(hom,x));
     sp:=[];
     RUN_IN_GGMBI:=true; # hack to skip Nice treatment
     fphom:=GroupGeneralMappingByImagesNC(Group(sg,One(G)),fp,sg,

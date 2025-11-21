@@ -378,11 +378,11 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
 
       genimgs:=List(gens,
           i->ImagesRepresentative(Embedding(D,1),
-          PreImagesRepresentative(p1iso,
-            PreImagesRepresentative(pc1,ImagesRepresentative(p1,i))))
-            *ImagesRepresentative(Embedding(D,2),
-                PreImagesRepresentative(p2iso,
-                PreImagesRepresentative(pc2,ImagesRepresentative(p2,i)))) );
+          PreImagesRepresentativeNC(p1iso,
+           PreImagesRepresentativeNC(pc1,ImagesRepresentative(p1,i))))
+           *ImagesRepresentative(Embedding(D,2),
+             PreImagesRepresentativeNC(p2iso,
+              PreImagesRepresentativeNC(pc2,ImagesRepresentative(p2,i)))) );
 
     else
       opt:=rec(limit:=s,random:=1);
@@ -426,9 +426,9 @@ local ag, p1iso, agp, p2iso, DP, p1, p2, gens, genimgs, triso,s,i,u,opt,
 
       genimgs:=List(gens,
           i->ImagesRepresentative(Embedding(D,1),
-                PreImagesRepresentative(p1iso,ImagesRepresentative(p1,i)))
+              PreImagesRepresentativeNC(p1iso,ImagesRepresentative(p1,i)))
             *ImagesRepresentative(Embedding(D,2),
-                PreImagesRepresentative(p2iso,ImagesRepresentative(p2,i))) );
+              PreImagesRepresentativeNC(p2iso,ImagesRepresentative(p2,i))) );
 
     fi;
     triso:=GroupHomomorphismByImagesNC(DP,D,gens,genimgs);
@@ -528,7 +528,7 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
         gens,M.generators);
       test:=function(perm)
       local aut,imgs,mat;
-        aut:=PreImagesRepresentative(triso,perm);
+        aut:=PreImagesRepresentativeNC(triso,perm);
         imgs:=List(gens,x->ImagesRepresentative(aut,x));
         imgs:=List(imgs,x->ImagesRepresentative(modulehom,x));
         mat:=MTX.IsomorphismModules(M,GModuleByMats(imgs,M.field));
@@ -696,9 +696,9 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 
     basicact:=function( tup, elm )
     local gens;
-      #gens := List( tup[1], x -> PreImagesRepresentative( elm[1], x ) );
+      #gens := List( tup[1], x -> PreImagesRepresentativeNC( elm[1], x ) );
       #gens := List( gens, x -> MappedPcElement( x, tup[1], tup[2] ) );
-      gens := List( Ggens, x -> PreImagesRepresentative( elm[1], x ) );
+      gens := List( Ggens, x -> PreImagesRepresentativeNC( elm[1], x ) );
       gens := List( gens, x -> MappedPcElement( x, Ggens, tup ) );
       gens := List( gens, x -> x ^ elm[2] );
       return gens;
@@ -713,8 +713,8 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
           local gens;
             #gens := List( tup[1], x -> PreImagesRepresentative( elm[1], x ) );
             #gens := List( gens, x -> MappedPcElement( x, tup[1], tup[2] ) );
-            gens := List( Ggens, x -> PreImagesRepresentative( elm[1], x ) );
-            gens := List( gens, x -> MappedWord( PreImagesRepresentative(epi,x),
+            gens := List( Ggens, x->PreImagesRepresentativeNC( elm[1], x ) );
+            gens := List( gens, x -> MappedWord( PreImagesRepresentativeNC(epi,x),
               GeneratorsOfGroup(Source(epi)), tup ) );
             gens := List( gens, x -> x ^ elm[2] );
             return gens;
@@ -730,13 +730,14 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
       elmlist:=[];
 
       tmp:=List(genimgs,x->x[1]);
-      preimlist:=List(tmp,x->[x,List(Ggens,y->PreImagesRepresentative(x,y))]);
+      preimlist:=List(tmp,x->[x,List(Ggens,
+                          y->PreImagesRepresentativeNC(x,y))]);
 
       f:=function( tup, elm )
       local gens,p;
         p:=PositionProperty(preimlist,x->IsIdenticalObj(x[1],elm[1]));
         if p=fail then
-          gens := List( Ggens, x -> PreImagesRepresentative( elm[1], x ) );
+          gens := List( Ggens, x -> PreImagesRepresentativeNC( elm[1], x ) );
         else
           gens:=preimlist[p][2];
         fi;
@@ -781,7 +782,8 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
 
         if elmlist<>fail then
           tmp:=List(genimgs,x->x[1]);
-          preimlist:=List(tmp,x->[x,List(Ggens,y->PreImagesRepresentative(x,y))]);
+          preimlist:=List(tmp,x->[x,List(Ggens,
+                              y->PreImagesRepresentativeNC(x,y))]);
 
           # ensure we also account for action
           u:=Group(tup);
@@ -911,7 +913,7 @@ BindGlobal( "MatrixOperationOfCPGroup", function( cc, gens  )
 
     mats := List( gens, x -> [] );
     base := Basis( Image( cc.cohom ) );
-    prei := List( base, x -> PreImagesRepresentative( cc.cohom, x ) );
+    prei := List( base, x -> PreImagesRepresentativeNC( cc.cohom, x ) );
 
     pcgs := Pcgs( cc.group );
     ords := RelativeOrders( pcgs );
@@ -1008,7 +1010,7 @@ function( G, M, C )
         return [ExtensionSQ( cc.collector, G, M, 0 )];
     elif Dimension( Image(cc.cohom)) = 1 then
         c := Basis(Image(cc.cohom))[1];
-        c := PreImagesRepresentative(cc.cohom, c);
+        c := PreImagesRepresentativeNC(cc.cohom, c);
         return [ExtensionSQ( cc.collector, G, M, 0 ),
                 ExtensionSQ( cc.collector, G, M, c )];
     fi;
@@ -1018,7 +1020,7 @@ function( G, M, C )
     # compute orbit of mats on H^2( G, M )
     Mgrp := GroupByGenerators( mats );
     orbs := OrbitsDomain( Mgrp, Image(cc.cohom), OnRight );
-    orbs := List( orbs, x -> PreImagesRepresentative( cc.cohom, x[1] ) );
+    orbs := List( orbs, x -> PreImagesRepresentativeNC( cc.cohom, x[1] ) );
     ext  := List( orbs, x -> ExtensionSQ( cc.collector, G, M, x ) );
     return ext;
 end);
@@ -1113,7 +1115,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
         red := true;
 
     elif Dimension( Image(cc.cohom ) ) = 1 then
-        c := PreImagesRepresentative(cc.cohom, Basis(Image(cc.cohom))[1]);
+        c := PreImagesRepresentativeNC(cc.cohom, Basis(Image(cc.cohom))[1]);
         all := [ExtensionSQ( C, G, M, c)];
         red := true;
 
@@ -1121,7 +1123,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
     elif IsBound( arg[3] ) and not arg[3] then
         all := NormedRowVectors( Image(cc.cohom) );
         all := List( all, x -> ExtensionSQ(cohom.collector, G, M,
-                               PreImagesRepresentative(cc.cohom,x )));
+                               PreImagesRepresentativeNC(cc.cohom,x )));
         red := false;
 
     # sometimes we do not want to reduce
@@ -1132,7 +1134,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
     then
         all := NormedRowVectors( Image(cc.cohom) );
         all := List( all, x -> ExtensionSQ(cc.collector, G, M,
-                               PreImagesRepresentative(cc.cohom, x )));
+                               PreImagesRepresentativeNC(cc.cohom, x )));
         red := false;
 
     # then we want to reduce
@@ -1151,7 +1153,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
 
         # create extensions and add info
         all := List( all, x -> ExtensionSQ(cc.collector, G, M,
-                               PreImagesRepresentative(cc.cohom, x )));
+                               PreImagesRepresentativeNC(cc.cohom, x )));
     fi;
 
     if red then
