@@ -212,6 +212,7 @@ Error, Print formatting status must be true or false
 
 # too many open files
 gap> streams := [ ];;
+gap> fname := Filename(tmpdir, "testdata");;
 gap> for i in [ 1 .. 300 ] do
 >    stream := OutputTextFile( fname, false );
 >    Assert(0, stream <> fail);
