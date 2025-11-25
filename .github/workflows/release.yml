@@ -35,7 +35,7 @@ jobs:
     name: "Validate release scripts"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: "Set up Python"
         uses: actions/setup-python@v6
@@ -72,7 +72,7 @@ jobs:
       # requires fetching the entire history. Therefore, we might as well do
       # that here when checking out the repo, which is what setting fetch-depth
       # to 0 accomplishes here.
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -207,7 +207,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "Clone the Windows installer maker scripts"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: gap-system/gap-windows
           ref: main
