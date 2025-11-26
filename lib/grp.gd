@@ -556,7 +556,7 @@ DeclareAttribute( "PrimePGroup", IsPGroup );
 ##  <Description>
 ##  The <M>p</M>-class of a <M>p</M>-group <A>G</A>
 ##  (see&nbsp;<Ref Prop="IsPGroup"/>)
-##  is the length of the lower <M>p</M>-central series
+##  is the number of steps in the lower <M>p</M>-central series
 ##  (see&nbsp;<Ref Oper="PCentralSeries"/>) of <A>G</A>.
 ##  If <A>G</A> is not a <M>p</M>-group then an error is issued.
 ##  </Description>
@@ -580,7 +580,9 @@ DeclareAttribute( "PClassPGroup", IsPGroup );
 ##  which is defined as the minimal size of a generating system of <A>G</A>.
 ##  If <A>G</A> is not a <M>p</M>-group then an error is issued.
 ##  <Example><![CDATA[
-##  gap> h:=Group((1,2,3,4),(1,3));;
+##  gap> h:= Group((1,2,3,4), (1,3));;
+##  gap> Length(PCentralSeries(h));
+##  3
 ##  gap> PClassPGroup(h);
 ##  2
 ##  gap> RankPGroup(h);
