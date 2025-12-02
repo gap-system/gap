@@ -194,6 +194,9 @@ void SET_TYPE_OBJ(Obj obj, Obj type)
         break;
 #endif
     case T_PREC:
+        if (!IS_MUTABLE_OBJ(obj)) {
+            ErrorMayQuit("cannot change type of an immutable %s", (Int)TNAM_OBJ(obj), 0);
+        }
 #ifdef HPCGAP
         MEMBAR_WRITE();
 #endif
@@ -414,7 +417,7 @@ static Obj ShallowCopyObjDefault(Obj obj)
     Obj *               n;
 
     // make the new object and copy the contents
-    new = NewBag( MUTABLE_TNUM(TNUM_OBJ(obj)), SIZE_OBJ(obj) );
+    new = NewBag( TNUM_OBJ(obj), SIZE_OBJ(obj) );
     o = CONST_ADDR_OBJ(obj);
     n = ADDR_OBJ( new );
     memcpy(n, o, SIZE_OBJ(obj) );
@@ -812,9 +815,10 @@ void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1])( Obj );
 
 void MakeImmutable( Obj obj )
 {
-  if (IS_MUTABLE_OBJ( obj ))
-    {
-      (*(MakeImmutableObjFuncs[TNUM_OBJ(obj)]))(obj);
+    if (IS_MUTABLE_OBJ( obj )) {
+        (*(MakeImmutableObjFuncs[TNUM_OBJ(obj)]))(obj);
+        SET_OBJ_FLAG(obj, OBJ_FLAG_IMMUTABLE);
+        GAP_ASSERT(!IS_MUTABLE_OBJ(obj));
     }
 }
 
@@ -1180,6 +1184,9 @@ static Obj FuncSET_TYPE_COMOBJ(Obj self, Obj obj, Obj type)
 {
     switch (TNUM_OBJ(obj)) {
     case T_PREC:
+        if (!IS_MUTABLE_OBJ(obj)) {
+            ErrorMayQuit("You can't make a component object from an immutable %s", (Int)TNAM_OBJ(obj), 0);
+        }
     case T_COMOBJ:
 #ifdef HPCGAP
     case T_AREC:
