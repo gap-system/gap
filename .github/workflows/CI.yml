@@ -141,7 +141,7 @@ jobs:
       TEST_SUITES: ${{ matrix.test-suites }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: "Set up Python"
         uses: actions/setup-python@v6
@@ -299,7 +299,7 @@ jobs:
       - name: Install cross compile dependencies
         run: sudo apt-get install -q -y git libgmp-dev:s390x libreadline-dev:s390x zlib1g-dev:s390x
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - run: ./autogen.sh
 
@@ -365,7 +365,7 @@ jobs:
     env:
       AUTOCONF_VERSION: 2.71
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Download required GAP packages
         run: |
