@@ -1,4 +1,4 @@
-#@local a,b,c2,e,f,g,iter,l,s,F,rels,sub,iso,G,hom,m
+#@local a,b,c2,e,f,g,iter,l,s,F,rels,sub,iso,G,hom,m,H
 gap> START_TEST("grpfp.tst");
 gap> f:= FreeGroup( "a", "b" );;  a := f.1;;  b := f.2;;
 gap> c2:= f / [ a*b*a^-2*b*a/b, (b^-1*a^3*b^-1*a^-3)^2*a ];;
@@ -176,6 +176,15 @@ gap> F:=m!.rewritingSystem;;;
 gap> ReducedForm(F,UnderlyingElement(
 > Product(GeneratorsOfMonoid(m){[1,3..19]})));
 b2*b4*w1*b1*b6*b8*b9
+
+#
+gap> F:= FreeGroup( 1 );;
+gap> G:= F / [ F.1 ];;
+gap> H:= Subgroup( G, [ G.1 ] );;
+gap> IsomorphismPermGroup( G ) <> fail;
+true
+gap> IsomorphismPermGroup( H ) <> fail;
+true
 
 #
 gap> STOP_TEST( "grpfp.tst" );

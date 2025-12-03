@@ -4017,7 +4017,7 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, HH, t, sz,
     max:=CosetTableDefaultMaxLimit;
   fi;
 
-  # handle free and trivial group
+  # handle trivial free group
   if 0 = Length( FreeGeneratorsOfFpGroup( G )) then
     p:=GroupHomomorphismByImagesNC(G,GroupByGenerators([],()),[],[]);
     SetIsomorphismPermGroup(G,p);
@@ -4056,11 +4056,15 @@ local mappow, G, max, p, gens, rels, comb, i, l, m, H, HH, t, sz,
     fi;
     SetSize(G,sz);
   fi;
-  if Size(G)=infinity then
+  sz:= Size(G);
+  if sz = infinity then
     return fail;
+  elif sz = 1 then
+    # handle trivial group
+    p:= GroupHomomorphismByImagesNC( G, GroupByGenerators( [], () ), [], [] );
+    SetIsomorphismPermGroup( G, p );
+    return p;
   fi;
-
-  sz:=Size(G);
 
   if sz*10>max then
     max:=sz*10;
