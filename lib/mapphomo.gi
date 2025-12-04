@@ -330,9 +330,9 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesElm( <map>, <elm> )  .  for s.p. gen. mapping resp. mult. & inv.
+#M  PreImagesElmNC( <map>, <elm> ) . for s.p. gen. mapping resp. mult. & inv.
 ##
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "method for s.p. general mapping respecting mult. & inv., and element",
     FamRangeEqFamElm,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
@@ -340,7 +340,7 @@ InstallMethod( PreImagesElm,
       function( map, elm )
     local   pre;
 
-    pre:= PreImagesRepresentative( map, elm );
+    pre:= PreImagesRepresentativeNC( map, elm );
     if pre = fail then
       return [];
     else
@@ -351,9 +351,9 @@ InstallMethod( PreImagesElm,
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> ) .  for s.p. gen. mapping resp. mult. & inv.
+#M  PreImagesSetNC( <map>, <elms> )  for s.p. gen. mapping resp. mult. & inv.
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for s.p. general mapping respecting mult. & inv., and group",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
@@ -367,7 +367,7 @@ InstallMethod( PreImagesSet,
     fi;
 
     genpreimages:= List(genpreimages,
-                      gen -> PreImagesRepresentative( map, gen ) );
+                      gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
@@ -384,7 +384,7 @@ InstallMethod( PreImagesSet,
     return pre;
     end );
 
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for injective s.p. mapping respecting mult. & inv., and group",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and IsMapping and IsInjective and
@@ -395,7 +395,7 @@ InstallMethod( PreImagesSet,
 
     pre := SubgroupNC( Source( map ),
                     List( GeneratorsOfMagmaWithInverses( elms ),
-                          gen -> PreImagesRepresentative( map, gen ) ) );
+                          gen -> PreImagesRepresentativeNC( map, gen ) ) );
     UseIsomorphismRelation( elms, pre );
     return pre;
     end );
@@ -684,9 +684,9 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesElm( <map>, <elm> )  for s.p. gen. mapping resp. add. & add.inv.
+#M  PreImagesElmNC( <map>, <elm> ) for s.p. gen. mapping resp. add. & add.inv.
 ##
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "method for s.p. gen. mapping respecting add. & add.inv., and element",
     FamRangeEqFamElm,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
@@ -694,7 +694,7 @@ InstallMethod( PreImagesElm,
       function( map, elm )
     local   pre;
 
-    pre:= PreImagesRepresentative( map, elm );
+    pre:= PreImagesRepresentativeNC( map, elm );
     if pre = fail then
       return [];
     else
@@ -705,9 +705,9 @@ InstallMethod( PreImagesElm,
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> ) for s.p. gen. mapping resp. add. & add.inv.
+#M  PreImagesSetNC( <map>, <elms> ) for s.p. gen. mapping resp. add. & add.inv.
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for s.p. gen. mapping resp. add. & add.inv., and add. group",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
@@ -715,7 +715,7 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfAdditiveGroup( elms ),
-                      gen -> PreImagesRepresentative( map, gen ) );
+                      gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
@@ -890,9 +890,9 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> ) . . . .  for linear mapping and left module
+#M  PreImagesSetNC( <map>, <elms> ) . . .  for linear mapping and left module
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for linear mapping and left module",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
@@ -901,7 +901,7 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfLeftModule( elms ),
-                         gen -> PreImagesRepresentative( map, gen ) );
+                         gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
@@ -984,9 +984,9 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> ) . . . . . . . . for algebra hom. and FLMLOR
+#M  PreImagesSetNC( <map>, <elms> ) . . . . . . . for algebra hom. and FLMLOR
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for algebra hom. and FLMLOR",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
@@ -995,7 +995,7 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfLeftOperatorRing( elms ),
-                         gen -> PreImagesRepresentative( map, gen ) );
+                         gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
@@ -1010,9 +1010,9 @@ InstallMethod( PreImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> )  for alg.-with-one hom. and FLMLOR-with-one
+#M  PreImagesSetNC( <map>, <elms> ) for alg.-with-one hom. and FLMLOR-with-one
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "method for algebra-with-one hom. and FLMLOR-with-one",
     CollFamRangeEqFamElms,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
@@ -1022,7 +1022,7 @@ InstallMethod( PreImagesSet,
     function( map, elms )
     local genpreimages;
     genpreimages:= List( GeneratorsOfLeftOperatorRingWithOne( elms ),
-                         gen -> PreImagesRepresentative( map, gen ) );
+                         gen -> PreImagesRepresentativeNC( map, gen ) );
     if fail in genpreimages then
       TryNextMethod();
     fi;
