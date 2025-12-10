@@ -688,6 +688,7 @@ DeclareAttribute( "IdentityMapping", IsCollection );
 ##  to be a mapping.
 ##  However, <Ref Attr="Inverse"/> works for a bijective general mapping <A>map</A>
 ##  only if the source and range of <A>map</A> coincide.
+##  This behaviour agrees with the definition of <A>Inverse</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
