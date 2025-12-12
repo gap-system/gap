@@ -45,13 +45,6 @@ InstallMethod( Directory,
     [ IsString ],
 function( str )
     str := UserHomeExpand(str);
-    #
-    # ':' or '\\' probably are untranslated MS-DOS or MacOS path
-    # separators, but ':' in position 2 may be OK
-    #
-    if '\\' in str or (':' in str and str[2] <> ':') then
-        Error( "<str> must not contain '\\' or ':'" );
-    fi;
     if Length( str ) > 0 and Last(str) = '/'  then
         str := Immutable(str);
     else
