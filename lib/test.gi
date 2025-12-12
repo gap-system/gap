@@ -600,7 +600,8 @@ end);
 DeclareGlobalName("TextAttr"); # from GAPDoc
 DeclareGlobalName("DefaultReportDiffColors"); # initialized in Test() or by the user
 BindGlobal("DefaultReportDiff", function(inp, expout, found, fnam, line, time)
-  if UserPreference("UseColorsInTerminal") = true then
+  if UserPreference("UseColorsInTerminal") = true
+     and IsBound( GAPInfo.PackagesLoaded.gapdoc ) then
     Print(DefaultReportDiffColors.message);
     Print("########> Diff in ");
     if IsStream(fnam) then
@@ -646,7 +647,8 @@ InstallGlobalFunction("Test", function(arg)
   else
     nopts := rec();
   fi;
-  if not IsBound(DefaultReportDiffColors) then
+  if not IsBound(DefaultReportDiffColors)
+     and IsBound( GAPInfo.PackagesLoaded.gapdoc ) then
     BindGlobal("DefaultReportDiffColors", rec(
         message := TextAttr.4,  # blue text
         input := "",
