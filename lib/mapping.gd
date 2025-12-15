@@ -682,15 +682,13 @@ DeclareAttribute( "IdentityMapping", IsCollection );
 ##  if and only if the underlying relation of <A>map</A> contains the pair
 ##  <M>(s,r)</M>.
 ##  <P/>
-##  See the introduction to Chapter&nbsp;<Ref Chap="Mappings"/>
-##  for the subtleties concerning the difference between
-##  <Ref Attr="InverseGeneralMapping"/> and <Ref Attr="Inverse"/>.
-##  <P/>
 ##  Note that the inverse general mapping of a mapping <A>map</A> is
 ##  in general only a general mapping.
-##  If <A>map</A> knows to be bijective its inverse general mapping will know
+##  If <A>map</A> knows to be bijective, then its inverse general mapping will know
 ##  to be a mapping.
-##  In this case also <C>Inverse( <A>map</A> )</C> works.
+##  However, <Ref Attr="Inverse"/> works for a bijective general mapping <A>map</A>
+##  only if the source and range of <A>map</A> coincide.
+##  This behaviour agrees with the definition of <A>Inverse</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
