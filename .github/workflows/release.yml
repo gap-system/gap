@@ -152,7 +152,7 @@ jobs:
       #
       # Warning: the result is a single .zip file (so things are compressed twice).
       - name: "Upload GAP tarball"
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           if-no-files-found: error
           name: gap
@@ -161,7 +161,7 @@ jobs:
 
       # Always upload metadata, and keep longer, since it is much smaller.
       - name: "Upload JSON metadata"
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           if-no-files-found: error
           name: "JSON metadata"
@@ -239,7 +239,7 @@ jobs:
       # Artifacts live for 1 day, i.e. until the next cron job runs.
       - name: "Upload the installer as an artifact"
         if: ${{ github.event_name == 'schedule' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           if-no-files-found: error
           name: gap-${{ env.GAP_VERSION }}-x86_64.exe
