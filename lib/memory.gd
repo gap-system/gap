@@ -64,6 +64,12 @@
 ##  In such cases, probably a method for elements with memory is missing,
 ##  and perhaps some existing methods are installed with too weak
 ##  requirements.
+##  As a solution, one can then add the missing method,
+##  or ask &GAP; support for help.
+##  <P/>
+##  An overview of the currently supported functionality for objects with
+##  memory can be computed with <Ref Func="MethodsForObjWithMemory"/>,
+##  this may be helpful for finding code that can be adapted.
 ##  <#/GAPDoc>
 
 
@@ -230,18 +236,69 @@ DeclareGlobalFunction( "SLPOfElms" );
 
 #############################################################################
 ##
-#F  StripMemory( <obj> )
+#F  MethodsForObjWithMemory()
+##
+##  <#GAPDoc Label="MethodsForObjWithMemory">
+##  <ManSection>
+##  <Func Name="MethodsForObjWithMemory" Arg=''/>
+##
+##  <Description>
+##  This function is intended to give an overview of those methods in the
+##  current &GAP; session for which at least one argument is required to be
+##  in the filter <Ref Filt="IsObjWithMemory"/>.
+##  <P/>
+##  The return value is a list of records, with the same components as the
+##  ones returned by <Ref Func="MethodsOperation"/>.
+##  In particular, the <C>func</C> component of each record is the method
+##  itself, and the <C>info</C> component is a string that describes its
+##  requirements.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> res:= MethodsForObjWithMemory();;
+##  gap> for r in res{ [ 1 .. 10 ] } do
+##  >      Print( r.info, "\n" );
+##  >    od;
+##  ViewObj: [ IsObjWithMemory ]
+##  =: [ IsObjWithMemory, IsObjWithMemory ]
+##  =: [ IsMultiplicativeElement, IsObjWithMemory ]
+##  =: [ IsObjWithMemory, IsMultiplicativeElement ]
+##  <: [ IsObjWithMemory, IsObjWithMemory ]
+##  <: [ IsMultiplicativeElement, IsObjWithMemory ]
+##  <: [ IsObjWithMemory, IsMultiplicativeElement ]
+##  PrintObj: [ IsObjWithMemory ]
+##  Length: [ IsMatrix and IsObjWithMemory ]
+##  Length: [ IsObjWithMemory and IsWord ]
+##  ]]></Example>
+##  <P/>
+##  Note that some functions may provide a special treatment for objects in
+##  <Ref Filt="IsObjWithMemory"/> but no arguments of the function are
+##  objects with memory.
+##  For example, there is a <Ref Oper="One"/> method for a group
+##  that checks whether the generators are objects with memory,
+##  and if yes returns an identity element with memory.
+##  Such functions do not occur in the output of
+##  <Ref Func="MethodsForObjWithMemory"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "MethodsForObjWithMemory" );
+
+
+#############################################################################
+##
+#O  StripMemory( <obj> )
 ##
 ##  <#GAPDoc Label="StripMemory">
 ##  <ManSection>
-##  <Func Name="StripMemory" Arg='obj'/>
+##  <Oper Name="StripMemory" Arg='obj'/>
 ##
 ##  <Description>
-##  For a list <A>obj</A>, <Ref Func="StripMemory"/> returns a new list
-##  of the <Ref Func="StripMemory"/> results for the entries of <A>obj</A>.
+##  For a list <A>obj</A>, <Ref Oper="StripMemory"/> returns a new list
+##  of the <Ref Oper="StripMemory"/> results for the entries of <A>obj</A>.
 ##  <P/>
 ##  If <A>obj</A> is not a list and in the filter
-##  <Ref Filt="IsObjWithMemory"/>, <Ref Func="StripMemory"/> returns the
+##  <Ref Filt="IsObjWithMemory"/>, <Ref Oper="StripMemory"/> returns the
 ##  underlying object without memory.
 ##  <P/>
 ##  Otherwise <A>obj</A> is returned.

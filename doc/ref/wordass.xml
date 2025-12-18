@@ -169,6 +169,7 @@ free groups usually benefit from using a letter representation.
 <#Include Label="SLPOfElm">
 <#Include Label="SLPOfElms">
 <#Include Label="StripMemory">
+<#Include Label="MethodsForObjWithMemory">
 
 </Section>
 </Chapter>

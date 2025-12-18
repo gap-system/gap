@@ -46,6 +46,22 @@ InstallGlobalFunction( GeneratorsWithMemory, function(l)
     return List( [ 1 .. Length( l ) ], i -> ObjWithMemory( slp, i, l[i] ) );
   end);
 
+InstallGlobalFunction( MethodsForObjWithMemory, function()
+  local flags, methods, op, n;
+
+  flags:= FLAGS_FILTER( IsObjWithMemory );
+  methods:= [];
+  for op in OPERATIONS do
+    for n in [ 1 .. 6 ] do
+      Append( methods,
+          Filtered( MethodsOperation( op, n ),
+              r -> r.early = false and
+                   ForAny( r.argFilt, fl -> IS_SUBSET_FLAGS( fl, flags ) ) ) );
+    od;
+  od;
+  return methods;
+end );
+
 InstallMethod( StripMemory,
   [ "IsObjWithMemory" ],
   el -> el!.el );
@@ -186,11 +202,9 @@ InstallMethod( \*,
         ErrorNoReturn("\\* for objects with memory: a!.slp and b!.slp must be identical");
     fi;
     if a!.n = 0 then   # the identity!
-      return ObjWithMemory( slp, b!.n, b!.el );
-#T why can't we return b?
+      return b;
     elif b!.n = 0 then   # the identity!
-      return ObjWithMemory( slp, a!.n, a!.el );
-#T why can't we return a?
+      return a;
     else
       Add( slp.prog, [ a!.n, 1, b!.n, 1 ] );
       return ObjWithMemory( slp, Length( slp.prog ) + slp.nogens,
@@ -216,8 +230,7 @@ InstallMethod( InverseOp,
       return ObjWithMemory( slp, Length( slp.prog ) + slp.nogens,
                             InverseOp( a!.el ) );
     else
-      return ObjWithMemory( slp, 0, a!.el );
-#T why can't we return a?
+      return a;
     fi;
   end);
 
