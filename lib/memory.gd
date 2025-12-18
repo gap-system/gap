@@ -273,7 +273,7 @@ DeclareGlobalFunction( "SLPOfElms" );
 ##  Note that some functions may provide a special treatment for objects in
 ##  <Ref Filt="IsObjWithMemory"/> but no arguments of the function are
 ##  objects with memory.
-##  For example, there is a <Ref Oper="One"/> method for a group
+##  For example, there is a <Ref Attr="One"/> method for a group
 ##  that checks whether the generators are objects with memory,
 ##  and if yes returns an identity element with memory.
 ##  Such functions do not occur in the output of
