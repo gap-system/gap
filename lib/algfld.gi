@@ -1040,6 +1040,14 @@ end);
 
 #############################################################################
 ##
+#M  DefaultRingByGenerators( <elms> )
+##
+InstallMethod( DefaultRingByGenerators,
+  [ "IsList and IsAlgebraicElementCollection" ],
+  DefaultFieldByGenerators );
+
+#############################################################################
+##
 #M  DefaultFieldOfMatrixGroup( <elms> )
 ##
 InstallMethod(DefaultFieldOfMatrixGroup,"alg elms",

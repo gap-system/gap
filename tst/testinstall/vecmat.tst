@@ -73,6 +73,8 @@ false
 # zero vector over GF(9) but not in internal format
 gap> F := F9;; v := ListWithIdenticalEntries( 3, Zero(F) );
 [ !0*Z(3), !0*Z(3), !0*Z(3) ]
+gap> IsIdenticalObj( BaseDomain( v ), F );
+true
 gap> w := ImmutableVector( 9, v );
 [ !0*Z(3), !0*Z(3), !0*Z(3) ]
 gap> v = w;
@@ -199,6 +201,8 @@ false
 gap> F := F9;; m := IdentityMat( 3, F );
 [ [ !Z(3)^0, !0*Z(3), !0*Z(3) ], [ !0*Z(3), !Z(3)^0, !0*Z(3) ], 
   [ !0*Z(3), !0*Z(3), !Z(3)^0 ] ]
+gap> IsIdenticalObj( BaseDomain( m ), F );
+true
 gap> w := ImmutableMatrix( 9, m );
 [ [ !Z(3)^0, !0*Z(3), !0*Z(3) ], [ !0*Z(3), !Z(3)^0, !0*Z(3) ], 
   [ !0*Z(3), !0*Z(3), !Z(3)^0 ] ]
