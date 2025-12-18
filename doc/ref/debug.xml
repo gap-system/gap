@@ -73,6 +73,7 @@ afterwards.
 <Heading>Inspecting Applicable Methods</Heading>
 
 <#Include Label="ApplicableMethod">
+<#Include Label="MethodsOperation">
 
 </Section>
 

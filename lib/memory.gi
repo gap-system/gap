@@ -12,10 +12,16 @@
 ##
 #############################################################################
 
+
+# low-level construction of an object with memory
 BindGlobal( "ObjWithMemory", function( slp, n, el )
   local filt;
 
   filt:= IsObjWithMemory;
+
+  # For permutations, the `IsPerm` filter for the new element
+  # is inherited from their family.
+  # This is not the case for matrices, thus we have to work.
   if IsMatrixOrMatrixObj( el ) then
     filt:= filt and IsMatrixOrMatrixObj;
     if IsMatrix( el ) then
@@ -33,38 +39,52 @@ BindGlobal( "ObjWithMemory", function( slp, n, el )
                     rec( slp:= slp, n:= n, el:= el ) );
 end );
 
-InstallGlobalFunction( GeneratorsWithMemory,
-  function(l)
+InstallGlobalFunction( GeneratorsWithMemory, function(l)
     # l is a list of objects
     local slp;
     slp := rec(prog := [],nogens := Length(l));
     return List( [ 1 .. Length( l ) ], i -> ObjWithMemory( slp, i, l[i] ) );
   end);
 
-InstallMethod( StripMemory, "for an object with memory",
-  [ IsObjWithMemory ],
-  function( el )
-    return el!.el;
-  end );
+InstallGlobalFunction( MethodsForObjWithMemory, function()
+  local flags, methods, op, n;
 
-InstallMethod( StripMemory, "for a list",
-  [ IsList ],
-  function( l )
-    return List(l,StripMemory);
-  end );
+  flags:= FLAGS_FILTER( IsObjWithMemory );
+  methods:= [];
+  for op in OPERATIONS do
+    for n in [ 1 .. 6 ] do
+      Append( methods,
+          Filtered( MethodsOperation( op, n ),
+              r -> r.early = false and
+                   ForAny( r.argFilt, fl -> IS_SUBSET_FLAGS( fl, flags ) ) ) );
+    od;
+  od;
+  return methods;
+end );
 
-InstallMethod( StripMemory, "fallback for all objects",
-  [ IsObject ],
-  function( ob ) return ob; end );
+InstallMethod( StripMemory,
+  [ "IsObjWithMemory" ],
+  el -> el!.el );
 
-InstallMethod( ForgetMemory, "nice error message for all objects",
-  [ IsObject ],
+InstallMethod( StripMemory,
+  [ "IsList" ],
+  l -> List( l, StripMemory ) );
+
+InstallMethod( StripMemory,
+  "fallback for all objects",
+  [ "IsObject" ],
+  IdFunc );
+
+InstallMethod( ForgetMemory,
+  "nice error message for all objects",
+  [ "IsObject" ],
   function( ob )
     Error( "This object does not allow forgetting memory." );
   end );
 
-InstallMethod( ForgetMemory, "nice error message for memory objects",
-  [ IsObjWithMemory ],
+InstallMethod( ForgetMemory,
+  "nice error message for memory objects",
+  [ "IsObjWithMemory" ],
   function( el )
     Error( "You probably mean \"StripMemory\" instead of \"ForgetMemory\"." );
   end );
@@ -84,24 +104,10 @@ InstallGlobalFunction( StripStabChain,
   function(S)
     # Throws away all memories of elements in the stabchain
     # Does *not* copy stabchain!
-    local i,identity;
-    for i in [1..Length(S.labels)] do
-        if IsObjWithMemory(S.labels[i]) then
-            S.labels[i] := S.labels[i]!.el;
-        fi;
-    od;
-    for i in [1..Length(S.generators)] do
-        if IsObjWithMemory(S.generators[i]) then
-            S.generators[i] := S.generators[i]!.el;
-        fi;
-    od;
+    ForgetMemory( S.labels );
+    ForgetMemory( S.generators );
     if IsBound(S.transversal) then
-        for i in [1..Length(S.transversal)] do
-            if IsBound(S.transversal[i]) and
-               IsObjWithMemory(S.transversal[i]) then
-                S.transversal[i] := S.transversal[i]!.el;
-            fi;
-        od;
+      ForgetMemory( S.transversal );
     fi;
     if IsObjWithMemory(S.identity) then
         S.identity := S.identity!.el;
@@ -146,7 +152,7 @@ InstallGlobalFunction( SLPOfElm,
 
 InstallGlobalFunction( SLPOfElms,
   function(elms)
-    # Returns a straight line program to write elm as in the original
+    # Returns a straight line program to write elms as in the original
     # generators.
     if ForAny(elms{[2..Length(elms)]}, x -> not IsIdenticalObj(elms[1]!.slp, x!.slp)) then
         ErrorNoReturn("SLPOfElms: the slp components of all elements must be identical");
@@ -157,8 +163,10 @@ InstallGlobalFunction( SLPOfElms,
 
 # Generic methods for group elements with memory:
 
-InstallOtherMethod( One, "partial method for a group (beats to ask family)",
-  true, [ IsMagmaWithOne and IsGroup ], 101,
+InstallMethod( One,
+  "partial method for a group (beats to ask family)",
+  # the method for `IsMagmaWithOne` has incremental rank 100
+  [ "IsMagmaWithOne and IsGroup" ], 101,
   function( M )
     local gens;
     gens := GeneratorsOfGroup(M);
@@ -169,22 +177,24 @@ InstallOtherMethod( One, "partial method for a group (beats to ask family)",
     fi;
   end );
 
-InstallMethod( ViewObj, "objects with memory", true, [IsObjWithMemory],0,
+InstallMethod( ViewObj,
+  [ "IsObjWithMemory" ],
   function(o)
     Print("<");
     ViewObj(o!.el);
     Print(" with mem>");
-end);
+  end);
 
-InstallMethod( PrintObj, "objects with memory", true, [IsObjWithMemory],0,
+InstallMethod( PrintObj,
+  [ "IsObjWithMemory" ],
   function(o)
     Print("<");
     PrintObj(o!.el);
     Print(" with mem>");
-end);
+  end);
 
-InstallMethod( \*, "objects with memory", true,
-  [IsObjWithMemory,IsObjWithMemory],0,
+InstallMethod( \*,
+  [ "IsObjWithMemory", "IsObjWithMemory" ],
   function(a,b)
     local slp;
     slp := a!.slp;
@@ -192,9 +202,9 @@ InstallMethod( \*, "objects with memory", true,
         ErrorNoReturn("\\* for objects with memory: a!.slp and b!.slp must be identical");
     fi;
     if a!.n = 0 then   # the identity!
-      return ObjWithMemory( slp, b!.n, b!.el );
+      return b;
     elif b!.n = 0 then   # the identity!
-      return ObjWithMemory( slp, a!.n, a!.el );
+      return a;
     else
       Add( slp.prog, [ a!.n, 1, b!.n, 1 ] );
       return ObjWithMemory( slp, Length( slp.prog ) + slp.nogens,
@@ -202,15 +212,16 @@ InstallMethod( \*, "objects with memory", true,
     fi;
   end);
 
-InstallMethod( One, "objects with memory", true,
-  [IsObjWithMemory],0, OneOp);
+InstallMethod( One,
+  [ "IsObjWithMemory" ],
+  OneOp);
 
-InstallMethod( OneOp, "objects with memory", true,
-  [IsObjWithMemory],0,
+InstallMethod( OneOp,
+  [ "IsObjWithMemory" ],
   a -> ObjWithMemory( a!.slp, 0, One( a!.el ) ) );
 
-InstallMethod( InverseOp, "objects with memory", true,
-  [IsObjWithMemory],0,
+InstallMethod( InverseOp,
+  [ "IsObjWithMemory" ],
   function(a)
     local slp;
     slp := a!.slp;
@@ -219,12 +230,12 @@ InstallMethod( InverseOp, "objects with memory", true,
       return ObjWithMemory( slp, Length( slp.prog ) + slp.nogens,
                             InverseOp( a!.el ) );
     else
-      return ObjWithMemory( slp, 0, a!.el );
+      return a;
     fi;
   end);
 
-InstallMethod( \^, "objects with memory", true,
-  [IsObjWithMemory,IsInt],0,
+InstallMethod( \^,
+  [ "IsObjWithMemory", "IsInt" ],
   function(a,b)
     local slp;
     slp := a!.slp;
@@ -238,12 +249,22 @@ InstallMethod( \^, "objects with memory", true,
     fi;
   end);
 
-InstallMethod(\=,"two objects with memory",IsIdenticalObj,
-  [IsObjWithMemory,IsObjWithMemory],0,
-  function(a,b)
-    return a!.el = b!.el;
-  end);
+InstallMethod( \=, IsIdenticalObj,
+  [ "IsObjWithMemory", "IsObjWithMemory" ],
+  { a, b } -> a!.el = b!.el );
 
+InstallMethod( \=, IsIdenticalObj,
+  [ "IsObjWithMemory", "IsMultiplicativeElement" ],
+  { a, x } -> a!.el = x );
+
+InstallMethod( \=, IsIdenticalObj,
+  [ "IsMultiplicativeElement", "IsObjWithMemory" ],
+  { x, a } -> x = a!.el );
+
+# If the underlying elements are different then consider only their
+# < relation.
+# If the underlying elements are equal then consider also the positions
+# in the straight line program.
 InstallGlobalFunction( SortFunctionWithMemory,
   function(a,b)
     if a!.el < b!.el then
@@ -255,155 +276,111 @@ InstallGlobalFunction( SortFunctionWithMemory,
     fi;
   end);
 
-InstallMethod(\<,"two objects with memory",IsIdenticalObj,
-  [IsObjWithMemory,IsObjWithMemory],0,
-  function(a,b)
-    return a!.el < b!.el;
-  end);
+InstallMethod( \<, IsIdenticalObj,
+  [ "IsObjWithMemory", "IsObjWithMemory" ],
+  { a, b } -> a!.el < b!.el );
 
-InstallMethod(\=,"objects with memory with x",IsIdenticalObj,
-  [IsObjWithMemory,IsMultiplicativeElement],0,
-  function(a,x)
-    return a!.el=x;
-  end);
+InstallMethod( \<, IsIdenticalObj,
+  [ "IsObjWithMemory", "IsMultiplicativeElement" ],
+  { a, x } -> a!.el < x );
 
-InstallMethod(\=,"x with objects with memory",IsIdenticalObj,
-  [IsMultiplicativeElement,IsObjWithMemory],0,
-  function(x,a)
-    return x=a!.el;
-  end);
+InstallMethod( \<, IsIdenticalObj,
+  [ "IsMultiplicativeElement", "IsObjWithMemory" ],
+  { x, a } -> x < a!.el );
 
-InstallMethod(\<,"objects with memory with x",IsIdenticalObj,
-  [IsObjWithMemory,IsMultiplicativeElement],0,
-  function(a,x)
-    return a!.el<x;
-  end);
+InstallMethod( Order,
+  [ "IsObjWithMemory" ],
+  a -> Order( a!.el ) );
 
-InstallMethod(\<,"x with objects with memory",IsIdenticalObj,
-  [IsObjWithMemory,IsMultiplicativeElement],0,
-  function(a,x)
-    return x<a!.el;
-  end);
+InstallMethod( IsOne,
+  [ "IsObjWithMemory" ],
+  a -> IsOne( a!.el ) );
 
-InstallMethod(Order,"object with memory",true, [IsObjWithMemory],0,
-  function(a)
-    return Order(a!.el);
-  end);
+# permutation methods
 
-InstallMethod(IsOne,"object with memory",true, [IsObjWithMemory],0,
-  function(a)
-    return IsOne(a!.el);
-  end);
+InstallMethod( LargestMovedPoint,
+  [ "IsObjWithMemory and IsPerm" ],
+  a -> LargestMovedPoint( a!.el ) );
 
-# Permutation methods for permutations with memory:
+InstallMethod( \^,
+  [ "IsInt", "IsObjWithMemory and IsPerm" ],
+  { a, b } -> a^b!.el );
 
-InstallMethod(LargestMovedPoint,"permutation with memory",true,
-  [IsObjWithMemory and IsPerm],0,
-  function(a)
-    return LargestMovedPoint(a!.el);
-  end);
+InstallMethod( \/,
+  [ "IsInt", "IsObjWithMemory and IsPerm" ],
+  { a, b } -> a / b!.el );
 
-InstallMethod(\^,"integer and permutation with memory", true,
-  [IsInt, IsObjWithMemory and IsPerm],0,
-  function(a,b)
-    return a^b!.el;
-  end);
+InstallOtherMethod( CycleOp,
+  [ "IsPerm and IsObjWithMemory", "IsInt" ],
+  { p, i } -> CycleOp( p!.el, i ) );
 
-InstallMethod(\/,"integer and permutation with memory", true,
-  [IsInt, IsObjWithMemory and IsPerm],0,
-  function(a,b)
-    return a / b!.el;
-  end);
+InstallOtherMethod( CycleLengthOp,
+  [ "IsPerm and IsObjWithMemory", "IsInt" ],
+  { p, i } -> CycleLengthOp( p!.el, i ) );
 
-InstallOtherMethod(CycleLengthOp,
-  "for a permutation with memory and an integer",true,
-  [ IsPerm and IsObjWithMemory, IsInt ], 0,
-  function(p,e)
-    return CycleLengthOp(p!.el,e);
-  end);
+InstallMethod( CycleStructurePerm,
+  [ "IsPerm and IsObjWithMemory" ],
+  p -> CycleStructurePerm( p!.el ) );
 
-InstallMethod(RestrictedPerm,
-  "for a permutation with memory and a list of integers",true,
-  [ IsPerm and IsObjWithMemory, IsList ], 0,
-  function(a,l)
-    return ObjWithMemory( a!.slp, a!.n, RestrictedPerm( a!.el, l ) );
-  end);
+InstallMethod( RestrictedPerm,
+  [ "IsPerm and IsObjWithMemory", "IsList" ],
+  { a, l } -> ObjWithMemory( a!.slp, a!.n, RestrictedPerm( a!.el, l ) ) );
 
-InstallMethod(SignPerm,
-  "for a permutation with memory",true,
-  [ IsPerm and IsObjWithMemory ], 0,
-  function(a)
-  return SignPerm(a!.el);
-end);
-
-InstallOtherMethod(CycleOp,
-  "for a permutation with memory and an integer",true,
-  [ IsPerm and IsObjWithMemory, IsInt ], 0,
-  function(a,p)
-    return CycleOp(a!.el,p);
-  end);
-
-InstallOtherMethod(CycleStructurePerm,
-  "for a permutation with memory",true,
-  [ IsPerm and IsObjWithMemory ], 0,
-  p->CycleStructurePerm(p!.el));
+InstallMethod( SignPerm,
+  [ "IsPerm and IsObjWithMemory" ],
+  a -> SignPerm( a!.el ) );
 
 # MatrixObj methods:
 
-InstallOtherMethod( BaseDomain, "for a matrix with memory",
-  [ IsMatrixOrMatrixObj and IsObjWithMemory ],
-  M -> BaseDomain(M!.el) );
+InstallMethod( BaseDomain,
+  [ "IsMatrixOrMatrixObj and IsObjWithMemory" ],
+  M -> BaseDomain( M!.el ) );
 
-InstallOtherMethod( NumberRows, "for a matrix with memory",
-  [ IsMatrixOrMatrixObj and IsObjWithMemory ],
-  M -> NumberRows(M!.el) );
+InstallMethod( NumberRows,
+  [ "IsMatrixOrMatrixObj and IsObjWithMemory" ],
+  M -> NumberRows( M!.el ) );
 
-InstallOtherMethod( NumberColumns, "for a matrix with memory",
-  [ IsMatrixOrMatrixObj and IsObjWithMemory ],
-  M -> NumberColumns(M!.el) );
+InstallMethod( NumberColumns,
+  [ "IsMatrixOrMatrixObj and IsObjWithMemory" ],
+  M -> NumberColumns( M!.el ) );
 
-InstallOtherMethod( MatElm, "for a matrix with memory",
-  [ IsMatrixOrMatrixObj and IsObjWithMemory, IsPosInt, IsPosInt ],
+InstallMethod( MatElm,
+  [ "IsMatrixOrMatrixObj and IsObjWithMemory", "IsPosInt", "IsPosInt" ],
   { M, i, j } -> M!.el[i,j] );
 
 # legacy matrix methods
 
-InstallOtherMethod( Length, "for a matrix with memory",
-  [ IsMatrix and IsObjWithMemory ], M -> Length(M!.el) ) ;
+InstallOtherMethod( Length,
+  [ "IsMatrix and IsObjWithMemory" ],
+  M -> Length( M!.el ) ) ;
 
-InstallOtherMethod( ELM_LIST, "for a matrix with memory",
-  [ IsMatrix and IsObjWithMemory, IsPosInt ],
-  function(M,i)
-    return M!.el[i];
-  end);
+InstallOtherMethod( ELM_LIST,
+  [ "IsMatrix and IsObjWithMemory", "IsPosInt" ],
+  { M, i } -> M!.el[i] );
 
-InstallOtherMethod( \*, "for a row vector and a matrix with memory",
-  [ IsListDefault and IsSmallList, IsMatrix and IsObjWithMemory ], 0,
-  function(v,M)
-    return v * M!.el;
-  end);
+InstallOtherMethod( \*,
+  [ "IsListDefault and IsSmallList", "IsMatrix and IsObjWithMemory" ],
+  { v, M } -> v * M!.el );
 
-InstallOtherMethod( \*, "for a scalar and a matrix with memory",
-  [ IsScalar, IsMatrixOrMatrixObj and IsObjWithMemory ], 0,
-  { s, M } ->  s * M!.el );
+InstallOtherMethod( \*,
+  [ "IsScalar", "IsMatrixOrMatrixObj and IsObjWithMemory" ],
+  { s, M } -> s * M!.el );
 
-InstallOtherMethod( \*, "for a matrix with memory and a scalar",
-  [ IsMatrixOrMatrixObj and IsObjWithMemory, IsScalar ], 0,
-  { M , s} ->  M!.el * s );
+InstallOtherMethod( \*,
+  [ "IsMatrixOrMatrixObj and IsObjWithMemory", "IsScalar" ],
+  { M , s } -> M!.el * s );
 
-InstallOtherMethod(ProjectiveOrder,"object with memory",
-  [IsObjWithMemory],0,
-  function(a)
-    return ProjectiveOrder(a!.el);
-  end);
+InstallOtherMethod( ProjectiveOrder,
+  [ "IsObjWithMemory" ],
+  a -> ProjectiveOrder( a!.el ) );
 
-InstallOtherMethod( ImmutableMatrix,"object with memory",[IsField,IsMatrixOrMatrixObj and IsObjWithMemory],
-function(f,a)
-    return ObjWithMemory( a!.slp, a!.n, ImmutableMatrix( f, a!.el ) );
-end);
+InstallOtherMethod( ImmutableMatrix,
+  [ "IsField", "IsMatrixOrMatrixObj and IsObjWithMemory" ],
+  { f, a } -> ObjWithMemory( a!.slp, a!.n, ImmutableMatrix( f, a!.el ) ) );
 
-# Free group methods:
+# free group element methods
 
-InstallOtherMethod( Length, "for a word with memory",
-  [ IsObjWithMemory and IsWord ], a -> Length(a!.el) );
+InstallOtherMethod( Length,
+  [ "IsObjWithMemory and IsWord" ],
+  a -> Length( a!.el ) );
 
