@@ -755,7 +755,7 @@ local   v,  R,  U,  x,  O,  n,  g,  q,  o,  bas;
       if Length(g[3])=0 and Length(g[4])>0 then
         # in this case `FFPOrderKnownDividend' might run in an infinite
         # recursion.
-  Error("cannot compute order due to limits in the integer factorization!");
+        Error("cannot compute order due to limits in the integer factorization!");
       fi;
       #o := FFPOrderKnownDividend(R,EuclideanRemainder(R,x,g[1]),g[1],g[3]);
       bas:=QuotRemLaurpols(x,g[1],2);
@@ -763,9 +763,9 @@ local   v,  R,  U,  x,  O,  n,  g,  q,  o,  bas;
       if Length(g[4])>0 then
         q:=DegreeOfLaurentPolynomial(PowerMod(bas,o[1],g[1]));
         if not(q=0 or q=DEGREE_ZERO_LAURPOL) then
-  # in fact x^o[1] is not congruent to a constant -- we really need the
-  # primes.
-  Error("cannot compute order due to limits in the integer factorization!");
+          # in fact x^o[1] is not congruent to a constant -- we really need the
+          # primes.
+          Error("cannot compute order due to limits in the integer factorization!");
         fi;
       fi;
       q := Characteristic(CoefficientsRing(R))^g[2];

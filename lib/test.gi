@@ -633,7 +633,8 @@ BindGlobal("DefaultReportDiff", function(inp, expout, found, fnam, line, time)
     Print("# Input is:\n", inp);
     Print("# Expected output:\n", expout);
     Print("# But found:\n", found);
-    Print("########\n");  fi;
+    Print("########\n");
+  fi;
 end);
 
 InstallGlobalFunction("Test", function(arg)
