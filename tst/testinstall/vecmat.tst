@@ -224,6 +224,8 @@ gap> m = w;
 true
 gap> IsMutable(w);
 false
+gap> DefaultFieldOfMatrix( m ) = F;
+true
 gap> CharacteristicPolynomial( m );
 x_1^3-!Z(3)^0
 
