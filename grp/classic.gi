@@ -150,7 +150,7 @@ InstallMethod( GeneralUnitaryGroupCons,
 
        # We use the isomorphism of 'SU(2,q)' and 'SL(2,q)':
        # 'e' is mapped to '-e' under the Frobenius mapping.
-       e:= Z(q^2) - Z(q^2)^q;
+       e:= z - z^q;
        if q = 2 then
          mat1[1,1]:= z;
          mat1[2,2]:= z;
@@ -255,7 +255,7 @@ InstallMethod( SpecialUnitaryGroupCons,
 
          # We use the isomorphism of 'SU(2,q)' and 'SL(2,q)':
          # 'e' is mapped to '-e' under the Frobenius mapping.
-         e:= Z(q^2) - Z(q^2)^q;
+         e:= z - z^q;
          if q <= 3 then
            mat1[1,2]:= e;
            mat2[1,2]:= e;
