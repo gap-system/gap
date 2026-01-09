@@ -1196,7 +1196,7 @@ end);
 
 #############################################################################
 ##
-#M  LogFFE( <x>, <base> )
+#M  LogFFE
 ##
 
 InstallMethod( LogFFE,
@@ -1213,6 +1213,7 @@ InstallMethod( LogFFE,
         IsIdenticalObj,
         [ IsFFE and IsCoeffsModConwayPolRep, IsFFE and IsInternalRep],
         DoDLog );
+
 
 #############################################################################
 ##
