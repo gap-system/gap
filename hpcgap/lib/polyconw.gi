@@ -133,7 +133,7 @@ end);
 ##    str := "";
 ##    get := OutputTextString(str, false);
 ##    comm := "wget -q ftp://ftp.comlab.ox.ac.uk/pub/Documents/techpapers/Richard.Brent/factors/factors.gz -O - | gzip -dc ";
-##    Process(DirectoryCurrent(), Filename(DirectoriesSystemPrograms(),"sh"),
+##    Process(DirectoryCurrent(), PathSystemProgram("sh"),
 ##            InputTextUser(), get, ["-c", comm]);
 ##    res := [[],[]];
 ##    n := 0;
