@@ -1266,3 +1266,53 @@ InstallMethod( InvariantBilinearForm,
     Q:= InvariantQuadraticForm( matgrp ).matrix;
     return rec( matrix:= ( Q + TransposedMat( Q ) ) );
     end );
+
+#############################################################################
+##
+#M  ConjugateGroup( <G>, <g> ) of a matrix group
+##
+InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
+    [ IsMatrixGroup, IsMultiplicativeElementWithInverse ],
+    function( G, g )
+    local   H, m, ginv;
+
+    H := GroupByGenerators( OnTuples( GeneratorsOfGroup( G ), g ), One(G) );
+    UseIsomorphismRelation( G, H );
+    if HasIsGeneralLinearGroup( G ) then
+      SetIsGeneralLinearGroup( H, IsGeneralLinearGroup( G ) );
+    fi;
+    if HasIsSpecialLinearGroup( G ) then
+      SetIsSpecialLinearGroup( H, IsSpecialLinearGroup( G ) );
+    fi;
+    if HasIsSubgroupSL( G ) then
+      SetIsSubgroupSL( H, IsSubgroupSL( G ) );
+    fi;
+    if HasInvariantBilinearForm( G ) or HasInvariantQuadraticForm( G ) then
+      ginv := g^-1;
+    fi;
+    if HasInvariantBilinearForm( G ) then
+      m := ginv * InvariantBilinearForm(G).matrix * TransposedMat(ginv);
+      SetInvariantBilinearForm( H, rec( matrix := m ) );
+    fi;
+    if HasInvariantQuadraticForm( G ) then
+      m := ginv * InvariantQuadraticForm(G).matrix * TransposedMat(ginv);
+      SetInvariantQuadraticForm( H, rec( matrix := m ) );
+    fi;
+    if IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ g ] ) ) then
+      if HasIsNaturalGL( G ) then
+        SetIsNaturalGL( H, IsNaturalGL( G ) );
+      fi;
+      if HasIsNaturalSL( G ) then
+        SetIsNaturalSL( H, IsNaturalSL( G ) );
+      fi;
+      if HasIsFullSubgroupGLorSLRespectingBilinearForm( G )
+          and IsFullSubgroupGLorSLRespectingBilinearForm( G ) then
+        SetIsFullSubgroupGLorSLRespectingBilinearForm( H, true );
+      fi;
+      if HasIsFullSubgroupGLorSLRespectingQuadraticForm( G )
+          and IsFullSubgroupGLorSLRespectingQuadraticForm( G ) then
+        SetIsFullSubgroupGLorSLRespectingQuadraticForm( H, true );
+      fi;
+    fi;
+    return H;
+end );
