@@ -4,9 +4,6 @@ Files:
 
 - `build.sh`: Run as `etc/emscripten/build.sh` from a fresh copy of GAP.
 
-Note that this built copy has one major weakness -- the 'gap.data' (which includes all packages files) is huge.
-
-
 - `web-template`: Uses 'xterm-pty' to create a "nice" interface to the Wasm GAP.
 
 See 'run-web-demo.sh' as an example on how to set up a working website.
