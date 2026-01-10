@@ -9,7 +9,7 @@ onmessage = (msg) => {
     // Download all split parts
     // It will look for gap.data.part1, part2, etc. until it hits a 404.
     while (true) {
-      const url = location.origin + `/gap.data.part${i}`;
+      const url = `gap.data.part${i}`;
       try {
         const response = await fetch(url);
         if (!response.ok) break; // Stop when we hit 404
@@ -60,7 +60,7 @@ onmessage = (msg) => {
     }
 
     // Load GAP.
-    importScripts(location.origin + "/gap.js");
+    importScripts("gap.js");
 
     emscriptenHack(new TtyClient(msg.data));
   }
