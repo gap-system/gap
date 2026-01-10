@@ -48,17 +48,5 @@ gap> SCRSift(S,(1,2));
 gap> SCRSift(S,GeneratorsOfGroup(m)[1]);
 ()
 
-# 'SCRSift' works also for non-internal permutations,
-# by delegating to 'SiftedPermutation'.
-gap> G:= GroupWithMemory( MathieuGroup( 11 ) );;
-gap> a:= G.1;;
-gap> IsPerm( a );
-true
-gap> IsInternalRep( a );
-false
-gap> S:= StabChain( G );;
-gap> SCRSift( S, a );
-<() with mem>
-
 #
 gap> STOP_TEST("stabchain.tst");

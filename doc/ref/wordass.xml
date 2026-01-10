@@ -155,6 +155,23 @@ free groups usually benefit from using a letter representation.
 <#Include Label="StretchImportantSLPElement">
 
 </Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Objects with Memory">
+<Heading>Objects with Memory</Heading>
+
+<#Include Label="objwithmemory">
+
+<#Include Label="IsObjWithMemory">
+<#Include Label="GeneratorsWithMemory">
+<#Include Label="GroupWithMemory">
+<#Include Label="SLPOfElm">
+<#Include Label="SLPOfElms">
+<#Include Label="StripMemory">
+<#Include Label="MethodsForObjWithMemory">
+
+</Section>
 </Chapter>
 
 
