@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>demo</title>
+    <title>gap-wasm</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.17.0/css/xterm.css">
   </head>
   <body>
@@ -14,7 +14,7 @@
       const { master, slave } = openpty();
       xterm.loadAddon(master);
 
-      const worker = new Worker("./example.worker.js");
+      const worker = new Worker("/gap-worker.js");
       new TtyServer(slave).start(worker);
     </script>
 
