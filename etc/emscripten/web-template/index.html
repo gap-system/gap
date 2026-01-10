@@ -14,7 +14,7 @@
       const { master, slave } = openpty();
       xterm.loadAddon(master);
 
-      const worker = new Worker("/gap-worker.js");
+      const worker = new Worker("gap-worker.js");
       new TtyServer(slave).start(worker);
     </script>
 
