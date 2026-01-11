@@ -31,21 +31,21 @@
 #define PC_DEEP_THOUGHT_BOUND       13
 #define PC_ORDERS                   14
 
-#define PC_DEFAULT_TYPE             21
+#define PC_DEFAULT_TYPE             15
 
 /* the following are defined in polycyclic:
 
-#define PC_PCP_ELEMENTS_FAMILY          22
-#define PC_PCP_ELEMENTS_TYPE            23
+#define PC_PCP_ELEMENTS_FAMILY          16
+#define PC_PCP_ELEMENTS_TYPE            17
 
-#define PC_COMMUTATORS                  24
-#define PC_INVERSECOMMUTATORS           25
-#define PC_COMMUTATORSINVERSE           26
-#define PC_INVERSECOMMUTATORSINVERSE    27
+#define PC_COMMUTATORS                  18
+#define PC_INVERSECOMMUTATORS           19
+#define PC_COMMUTATORSINVERSE           20
+#define PC_INVERSECOMMUTATORSINVERSE    21
 
-#define PC_NILPOTENT_COMMUTE            28
-#define PC_WEIGHTS                      29
-#define PC_ABELIAN_START                30
+#define PC_NILPOTENT_COMMUTE            22
+#define PC_WEIGHTS                      23
+#define PC_ABELIAN_START                24
 */
 
 /****************************************************************************
