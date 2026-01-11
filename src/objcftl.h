@@ -30,7 +30,6 @@
 #define PC_DEEP_THOUGHT_POLS        12
 #define PC_DEEP_THOUGHT_BOUND       13
 #define PC_ORDERS                   14
-
 #define PC_DEFAULT_TYPE             15
 
 /* the following are defined in polycyclic:
