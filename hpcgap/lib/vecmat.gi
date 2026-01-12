@@ -1584,9 +1584,13 @@ local sf, rep, ind, ind2, row, i,big,l,nr;
   if IsMatrixObj(matrix) then
     # result is a matrix object iff 'matrix' is
     if field=BaseDomain(matrix) then
-      return Immutable(matrix);
+      if change then
+        return MakeImmutable(matrix);
+      else
+        return Immutable(matrix);
+      fi;
     else
-      return ImmutableMatrix(field,Unpack(matrix));
+      return MakeImmutable(ChangedBaseDomain(matrix, field));
     fi;
   elif not (IsPlistRep(matrix) or IsGF2MatrixRep(matrix) or
     Is8BitMatrixRep(matrix)) then
