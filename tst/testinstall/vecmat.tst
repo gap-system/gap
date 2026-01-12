@@ -224,6 +224,10 @@ gap> m = w;
 true
 gap> IsMutable(w);
 false
+gap> DefaultFieldOfMatrix( m ) = F;
+true
+gap> CharacteristicPolynomial( m );
+x_1^3-!Z(3)^0
 
 # identity matrix over a ring with zero divisors
 gap> F := Integers mod 6;; m := IdentityMat( 3, F );

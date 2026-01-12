@@ -1255,6 +1255,23 @@ end );
 
 #############################################################################
 ##
+#M  DefaultFieldOfMatrix( <algext-mat> )
+##
+InstallMethod( DefaultFieldOfMatrix,
+    [ "IsMatrix and IsAlgebraicElementCollColl" ],
+function( mat )
+    local fam;
+
+    fam:= ElementsFamily( ElementsFamily( FamilyObj( mat) ) );
+    if not IsBound( fam!.wholeExtension ) then
+      TryNextMethod();
+    fi;
+    return fam!.wholeExtension;
+end );
+
+
+#############################################################################
+##
 #M  BaseDomain( <v> )
 #M  OneOfBaseDomain( <v> )
 #M  ZeroOfBaseDomain( <v> )
