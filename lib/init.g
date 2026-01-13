@@ -815,11 +815,13 @@ BindGlobal( "ShowPackageInformation", function()
                                  GAPInfo.PackagesLoaded.( name )[2] ) ),
                "\n" );
   fi;
+end );
 
+BindGlobal( "ShowHelpInformation", function()
   Print( " Try '??help' for help. See also '?copyright', '?cite' and '?authors'",
          "\n" );
 end );
-#T show also root paths?
+
 
 CallAndInstallPostRestore( function()
      if not ( GAPInfo.CommandLineOptions.q or
@@ -828,12 +830,14 @@ CallAndInstallPostRestore( function()
          ShowKernelInformation();
        fi;
        ShowPackageInformation();
+       ShowHelpInformation();
      fi;
      end );
 
 BindGlobal ("ShowSystemInformation", function ()
     ShowKernelInformation();
     ShowPackageInformation();
+    ShowHelpInformation();
 end );
 
 
