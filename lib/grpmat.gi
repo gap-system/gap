@@ -1274,9 +1274,9 @@ InstallMethod( InvariantBilinearForm,
 InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
     [ IsMatrixGroup, IsMultiplicativeElementWithInverse ],
     function( G, g )
-    local   H, m, ginv;
+    local   H, m, ginv, nice, conj;
 
-    H := GroupByGenerators( OnTuples( GeneratorsOfGroup( G ), g ), One(G) );
+    H := GroupByGenerators( OnTuples( GeneratorsOfGroup( G ), g ), One( G ) );
     UseIsomorphismRelation( G, H );
     if HasIsGeneralLinearGroup( G ) then
       SetIsGeneralLinearGroup( H, IsGeneralLinearGroup( G ) );
@@ -1287,15 +1287,18 @@ InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
     if HasIsSubgroupSL( G ) then
       SetIsSubgroupSL( H, IsSubgroupSL( G ) );
     fi;
-    if HasInvariantBilinearForm( G ) or HasInvariantQuadraticForm( G ) then
-      ginv := g^-1;
-    fi;
     if HasInvariantBilinearForm( G ) then
-      m := ginv * InvariantBilinearForm(G).matrix * TransposedMat(ginv);
+      if not IsBound( ginv ) then
+        ginv := g^-1;
+      fi;
+      m := ginv * InvariantBilinearForm( G ).matrix * TransposedMat( ginv );
       SetInvariantBilinearForm( H, rec( matrix := m ) );
     fi;
     if HasInvariantQuadraticForm( G ) then
-      m := ginv * InvariantQuadraticForm(G).matrix * TransposedMat(ginv);
+      if not IsBound( ginv ) then
+        ginv := g^-1;
+      fi;
+      m := ginv * InvariantQuadraticForm( G ).matrix * TransposedMat( ginv );
       SetInvariantQuadraticForm( H, rec( matrix := m ) );
     fi;
     if IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ g ] ) ) then
@@ -1314,5 +1317,16 @@ InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
         SetIsFullSubgroupGLorSLRespectingQuadraticForm( H, true );
       fi;
     fi;
+    if HasNiceMonomorphism( G ) then
+      nice := NiceMonomorphism( G );
+      if not IsBound( ginv ) then
+        ginv := g^-1;
+      fi;
+      conj := GroupHomomorphismByFunction( H, G, y -> g*y*ginv, x -> ginv*x*g );
+      SetNiceMonomorphism( H, conj * nice );
+      if HasNiceObject( G ) then
+        SetNiceObject( H, NiceObject( G ) );
+      fi;
+     fi;
     return H;
 end );
