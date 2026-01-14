@@ -1272,9 +1272,10 @@ end );
 ##  <Ref Oper="SylowSubgroup"/>,
 ##  and this list is mutable because one may want to enter groups into it
 ##  as they are computed.
-##  <!-- in the current implementation, one can overwrite values of mutable-->
-##  <!-- attributes; is this really intended?-->
-##  <!-- if yes then it should be documented!-->
+##  <P/>
+##  Mutable and immutable attributes behave differently w. r. t. repeated
+##  calls of the function that sets the attribute value,
+##  see <Ref Func="Setter"/>.
 ##  <P/>
 ##  If no argument for <A>rank</A> is given, then the rank of the tester is 1.
 ##  <P/>

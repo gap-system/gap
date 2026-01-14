@@ -533,6 +533,34 @@ for example, <C>Setter( Size )( <A>obj</A>, <A>val</A> )</C>
 sets <A>val</A> as size of the
 object <A>obj</A> if the size was not yet known.
 <P/>
+Calling the setter an of attribute for an object which stores already
+a value for this attribute <E>has no effect</E>,
+except if the attribute has been created as a <E>mutable</E> attribute
+(see <Ref Func="NewAttribute"/>).
+For mutable attributes, each call of the setter
+<E>replaces the stored value</E>.
+(Usually mutable attributes are used to store a mutable list or record once,
+and later add data to this value, and then one should take care not to call
+the setter of the attribute again.)
+<P/>
+<Example><![CDATA[
+gap> imm_attr:= NewAttribute( "imm_attr", IsGroup );;
+gap> mut_attr:= NewAttribute( "mut_attr", IsGroup, "mutable" );;
+gap> G:= SymmetricGroup( 4 );;
+gap> Setter( imm_attr )( G, 0 );
+gap> imm_attr( G );
+0
+gap> Setter( imm_attr )( G, 1 );  # This call has no effect.
+gap> imm_attr( G );
+0
+gap> Setter( mut_attr )( G, 0 );
+gap> mut_attr( G );
+0
+gap> Setter( mut_attr )( G, 1 );  # This call replaces the stored value.
+gap> mut_attr( G );
+1
+]]></Example>
+<P/>
 For each attribute <A>attr</A> that is declared with
 <Ref Func="DeclareAttribute"/> resp.&nbsp;<Ref Func="DeclareProperty"/>,
 tester and setter are automatically made accessible by the names
