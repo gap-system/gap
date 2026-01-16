@@ -54,6 +54,8 @@ gap> grps:=[];;
 gap> for d in [3,5,7] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, GO(d,q));
+>     Add(grps, GO(d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps, GO(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
 >   od;
 > od;
 gap> ForAll(grps, CheckGeneratorsInvertible);
@@ -71,6 +73,10 @@ gap> for d in [2,4,6,8] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, GO(+1,d,q));
 >     Add(grps, GO(-1,d,q));
+>     Add(grps, GO(+1,d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps, GO(-1,d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps, GO(+1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>     Add(grps, GO(-1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
 >   od;
 > od;
 gap> ForAll(grps, CheckGeneratorsInvertible);
@@ -87,6 +93,8 @@ gap> grps:=[];;
 gap> for d in [3,5,7] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, SO(d,q));
+>     Add(grps, SO(d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps, SO(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
 >   od;
 > od;
 gap> ForAll(grps, CheckGeneratorsSpecial);
@@ -104,6 +112,10 @@ gap> for d in [2,4,6,8] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, SO(+1,d,q));
 >     Add(grps, SO(-1,d,q));
+>     Add(grps, SO(+1,d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps, SO(-1,d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps, SO(+1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>     Add(grps, SO(-1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
 >   od;
 > od;
 gap> ForAll(grps, CheckGeneratorsSpecial);
@@ -124,6 +136,8 @@ gap> grps:=[];;
 gap> for d in [3,5,7] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, Omega(d,q));
+>     Add(grps, Omega(d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps, Omega(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
 >   od;
 > od;
 gap> ForAll(grps, CheckGeneratorsSpecial);
@@ -141,6 +155,10 @@ gap> for d in [2,4,6,8] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, Omega(+1,d,q));
 >     Add(grps, Omega(-1,d,q));
+>     Add(grps, Omega(+1,d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps, Omega(-1,d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps, Omega(+1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>     Add(grps, Omega(-1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
 >   od;
 > od;
 gap> ForAll(grps, CheckGeneratorsSpecial);
@@ -191,6 +209,8 @@ gap> grps:=[];;
 gap> for d in [2,4,6,8] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, Sp(d,q));
+>     Add(grps, Sp(d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps, Sp(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
 >   od;
 > od;
 gap> ForAll(grps, CheckGeneratorsSpecial);

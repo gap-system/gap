@@ -345,7 +345,8 @@ DeclareAttribute( "InvariantBilinearForm", IsMatrixGroup );
 ##  <Description>
 ##  This property tests, whether a matrix group <A>matgrp</A> is the full
 ##  subgroup of GL or SL (the property <Ref Prop="IsSubgroupSL"/> determines
-##  which it is) respecting the form stored as the value of
+##  which it is) in the right dimension over the (smallest) ring which
+##  contains all entries of its elements, respecting the form stored as the value of
 ##  <Ref Attr="InvariantBilinearForm"/> for <A>matgrp</A>.
 ##  </Description>
 ##  </ManSection>
@@ -462,7 +463,9 @@ DeclareAttribute( "InvariantQuadraticForm", IsMatrixGroup );
 ##  <Description>
 ##  This property tests, whether the matrix group <A>matgrp</A> is the full
 ##  subgroup of GL or SL (the property <Ref Prop="IsSubgroupSL"/> determines
-##  which it is) respecting the <Ref Attr="InvariantQuadraticForm"/> value
+##  which it is) in the right dimension over the (smallest) ring which
+##  contains all entries of its elements,
+##  respecting the <Ref Attr="InvariantQuadraticForm"/> value
 ##  of <A>matgrp</A>.
 ##  <Example><![CDATA[
 ##  gap> g:= Sp( 2, 3 );;
