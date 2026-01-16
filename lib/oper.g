@@ -2017,7 +2017,35 @@ if BASE_SIZE_METHODS_OPER_ENTRY <> 6 then
     Error("MethodsOperation must be updated for new BASE_SIZE_METHODS_OPER_ENTRY");
 fi;
 
-# TODO: document this?!
+
+#############################################################################
+##
+#F  MethodsOperation( <oper>, <n> )
+##
+##  <#GAPDoc Label="MethodsOperation">
+##  <ManSection>
+##  <Func Name="MethodsOperation" Arg='oper, n'/>
+##
+##  <Description>
+##  Return a list of records that describe the installed methods for the
+##  operation <A>oper</A>, with <A>n</A> arguments.
+##  <P/>
+##  Each record has at least the following components.
+##  <P/>
+##  <List>
+##  <Mark>func</Mark>
+##  <Item>the method itself, a &GAP; function,</Item>
+##  <Mark>rank</Mark>
+##  <Item>the rank of the method, an integer or infinity,</Item>
+##  <Mark>info</Mark>
+##  <Item>a string that describes when the method is applicable,</Item>
+##  <Mark>location</Mark>
+##  <Item>filename and start line where the method gets installed.</Item>
+##  </List>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
 BIND_GLOBAL("MethodsOperation", function(oper, nargs)
     local early, meths, len, result, i, m;
 
