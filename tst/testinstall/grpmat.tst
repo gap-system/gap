@@ -1,4 +1,4 @@
-#@local cl,g,gd,gens,hom,i,img,iso,pcgs,u,G,F,o,a
+#@local cl,g,gd,gens,hom,i,img,iso,pcgs,u,G,F,o,a,m,nice,H
 gap> START_TEST("grpmat.tst");
 gap> i := E(4);; G := Group([[i,0],[0,-i]],[[0,1],[-1,0]]);;
 gap> gens := GeneratorsOfGroup( G );; IsSSortedList( gens );
@@ -66,6 +66,20 @@ gap> G:= Group( [ [ 0, 1 ], [ 1, 0 ] ] );;
 gap> NiceMonomorphism( G );;
 gap> G:= Group( [ [ 0, 1 ], [ 1, 0 ] ] );;
 gap> IsomorphismFpGroup( G );;
+
+# 'NiceMonomorphism' and 'NiceObject' are consistent.
+gap> m:= [ [ E(4) ] ];;
+gap> G:= Group( m );;                # not rational matrix group
+gap> nice:= NiceMonomorphism( G );;
+gap> H:= SubgroupNC( G, [ m^2 ] );;  # rational matrix group
+gap> HasNiceMonomorphism( H );
+true
+gap> IsIdenticalObj( NiceMonomorphism( H ), nice );
+true
+gap> IsFinite( H );
+true
+gap> NiceObject( H ) = Image( nice, H );
+true
 
 #
 gap> TrivialSubgroup( GL(2, 2) );
