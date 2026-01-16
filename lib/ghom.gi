@@ -980,6 +980,32 @@ end);
 
 #############################################################################
 ##
+#M  MakeConjugatorIsomorphismNC( <G>, <H>, <g> )
+##
+##  Assumes H = G^g
+BindGlobal( "MakeConjugatorIsomorphismNC",
+function( G, H, g )
+    local fam, filter, hom;
+
+    if IsIdenticalObj( G, H ) then
+      filter:= IsConjugatorAutomorphism;
+    else
+      filter:= IsConjugatorIsomorphism;
+    fi;
+    fam:= ElementsFamily( FamilyObj( G ) );
+    hom:= ObjectifyWithAttributes( rec(),
+                     NewType( GeneralMappingsFamily( fam, fam ),
+                                  filter
+                              and IsSPGeneralMapping
+                              and IsAttributeStoringRep ),
+                     ConjugatorOfConjugatorIsomorphism, g,
+                     Source, G,
+                     Range, H );
+    return hom;
+end );
+
+#############################################################################
+##
 #M  ConjugatorIsomorphism( <G>, <g> )
 ##
 InstallMethod( ConjugatorIsomorphism,
@@ -987,18 +1013,9 @@ InstallMethod( ConjugatorIsomorphism,
     IsCollsElms,
     [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
     function( G, g )
-    local fam, hom;
-
-    fam:= ElementsFamily( FamilyObj( G ) );
-    hom:= Objectify( NewType( GeneralMappingsFamily( fam, fam ),
-                                  IsConjugatorIsomorphism
-                              and IsSPGeneralMapping
-                              and IsAttributeStoringRep ),
-                     rec() );
-    SetConjugatorOfConjugatorIsomorphism( hom, g );
-    SetSource( hom, G );
-    SetRange(  hom, ConjugateGroup( G, g ) );
-    return hom;
+    local H;
+    H := ConjugateGroup( G, g );
+    return MakeConjugatorIsomorphismNC( G, H, g );
     end );
 
 
@@ -1011,18 +1028,7 @@ InstallMethod( ConjugatorAutomorphismNC,
     IsCollsElms,
     [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
     function( G, g )
-    local fam, hom;
-
-    fam:= ElementsFamily( FamilyObj( G ) );
-    hom:= Objectify( NewType( GeneralMappingsFamily( fam, fam ),
-                                  IsConjugatorAutomorphism
-                              and IsSPGeneralMapping
-                              and IsAttributeStoringRep ),
-                     rec() );
-    SetConjugatorOfConjugatorIsomorphism( hom, g );
-    SetSource( hom, G );
-    SetRange(  hom, G );
-    return hom;
+    return MakeConjugatorIsomorphismNC( G, G, g );
     end );
 
 

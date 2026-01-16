@@ -496,11 +496,10 @@ gap> g2:= SubgroupNC( g, [ A, B ] );;  # need a parent
 gap> HasIsHandledByNiceMonomorphism( g2 ); MayBeHandledByNiceMonomorphism( g2 );
 false
 true
-
-#gap> g2:= ConjugateGroup( g2, C );;
-#gap> HasIsHandledByNiceMonomorphism( g2 ); IsHandledByNiceMonomorphism( g2 );
-#true
-#true
+gap> g2:= ClosureGroup( g2, B );;
+gap> HasIsHandledByNiceMonomorphism( g2 ); IsHandledByNiceMonomorphism( g2 );
+true
+true
 
 # - check a method installed by SubgroupMethodByNiceMonomorphism
 gap> g:= GroupWithGenerators( [ A, B, C ] );;
