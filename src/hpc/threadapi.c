@@ -2023,7 +2023,7 @@ MigrateObjects(int count, Obj * objects, Region * target, int retype)
     // they need to be sorted, as sorting upon access may prove impossible.
     for (i = 0; i < count; i++) {
         Obj obj = objects[i];
-        if (TNUM_OBJ(obj) == T_PREC) {
+        if (TNUM_OBJ(obj) == T_PREC && IS_MUTABLE_OBJ(obj)) {
             SortPRecRNam(obj);
         }
         SET_REGION(obj, target);

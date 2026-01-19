@@ -50,14 +50,14 @@ EXPORT_INLINE Obj NEW_PLIST(UInt type, Int plen)
 
 EXPORT_INLINE Obj NEW_PLIST_IMM(UInt type, Int plen)
 {
-    return NEW_PLIST(type | IMMUTABLE, plen);
+    Obj list = NEW_PLIST(type, plen);
+    MakeImmutableNoRecurse(list);
+    return list;
 }
 
 EXPORT_INLINE Obj NEW_PLIST_WITH_MUTABILITY(Int mut, UInt type, Int plen)
 {
-    if (!mut)
-        type |= IMMUTABLE;
-    return NEW_PLIST(type, plen);
+    return mut ? NEW_PLIST(type, plen) : NEW_PLIST_IMM(type, plen);
 }
 
 /****************************************************************************
@@ -230,16 +230,6 @@ EXPORT_INLINE BOOL IS_DENSE_PLIST(Obj list)
 {
     return T_PLIST_DENSE <= TNUM_OBJ(list) &&
            TNUM_OBJ(list) <= LAST_PLIST_TNUM;
-}
-
-/****************************************************************************
-**
-*F  IS_PLIST_MUTABLE( <list> )  . . . . . . . . . . . is a plain list mutable
-*/
-EXPORT_INLINE BOOL IS_PLIST_MUTABLE(Obj list)
-{
-    GAP_ASSERT(IS_PLIST(list));
-    return !((TNUM_OBJ(list) - T_PLIST) % 2);
 }
 
 /****************************************************************************

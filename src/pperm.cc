@@ -247,7 +247,7 @@ static inline Obj DOM_PPERM(Obj f)
 static inline void SET_IMG_PPERM(Obj f, Obj img)
 {
     GAP_ASSERT(IS_PPERM(f));
-    GAP_ASSERT(IS_PLIST(img) && !IS_PLIST_MUTABLE(img));
+    GAP_ASSERT(IS_PLIST(img) && !IS_MUTABLE_OBJ(img));
     GAP_ASSERT(DOM_PPERM(f) == NULL ||
                LEN_PLIST(img) == LEN_PLIST(DOM_PPERM(f)));
     // TODO check entries of img are valid
@@ -257,7 +257,7 @@ static inline void SET_IMG_PPERM(Obj f, Obj img)
 static inline void SET_DOM_PPERM(Obj f, Obj dom)
 {
     GAP_ASSERT(IS_PPERM(f));
-    GAP_ASSERT(IS_PLIST(dom) && !IS_PLIST_MUTABLE(dom));
+    GAP_ASSERT(IS_PLIST(dom) && !IS_MUTABLE_OBJ(dom));
     GAP_ASSERT(IMG_PPERM(f) == NULL ||
                LEN_PLIST(dom) == LEN_PLIST(IMG_PPERM(f)));
     // TODO check entries of img are valid
