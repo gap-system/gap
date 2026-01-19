@@ -268,12 +268,13 @@ function( G )
     # The code below is based on the algorithm described in [DFO13]
     local badPrimes, n, g, FindPrimesInMatDenominators, p, e, H, phi, gens, rels, nice, inv, Hnice;
 
-    # if not rational, use the nice monomorphism into a rational matrix group
-    if not IsRationalMatrixGroup( G ) then
-        # the following does not use NiceObject(G) as the only method for
-        # that currently requires IsHandledByNiceMonomorphism
-        SetNiceObject( G, Image( NiceMonomorphism( G ), G ) );
-        return IsFinite( NiceObject( G ) );
+    if HasNiceMonomorphism( G ) then
+      # Assume that the computation is easier in the image.
+      return IsFinite( NiceObject( G ) );
+    elif not IsRationalMatrixGroup( G ) then
+      # Use the nice monomorphism into a rational matrix group.
+      NiceMonomorphism( G );
+      return IsFinite( NiceObject( G ) );
     fi;
 
     # if not integer, choose basis in which it is integer
@@ -319,8 +320,12 @@ function( G )
     rels := RelatorsOfFpGroup(Range(phi));
     if not ForAll(rels, r -> IsOne(MappedWord(r, gens, GeneratorsOfGroup(G)))) then
         return false;
+    elif HasNiceMonomorphism( G ) or HasNiceObject( G ) then
+        # The two values must be consistent, we cannot set them here.
+        return true;
     fi;
 
+    # Set a nice monomorphism in 'G'.
     # bypass the finite field matrix group in the middle so that we can
     # compute preimages more easily
     inv := GroupHomomorphismByImagesNC(H, G : noassert);
