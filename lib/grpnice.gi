@@ -354,14 +354,6 @@ end);
 
 #############################################################################
 ##
-#M  ConjugateGroup( <G>, <g> )  . . . . . . . . . . . . . .  conjugate of <G>
-##
-GroupMethodByNiceMonomorphismCollElm( ConjugateGroup,
-    [ IsGroup and HasParent, IsMultiplicativeElementWithInverse ] );
-
-
-#############################################################################
-##
 #M  Core( <G>, <U> )  . . . . . . . . . . . . . . . .  core of a <U> in a <G>
 ##
 GroupMethodByNiceMonomorphismCollColl( CoreOp,
