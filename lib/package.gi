@@ -2556,6 +2556,26 @@ GAPInfo.PackagesRestrictions := AtomicRecord(rec(
               "most recent version, see URL\n",
               "      https://gap-packages.github.io/autpgrp/\n" );
         fi;
+        end )),
+
+  polycyclic := MakeImmutable(rec(
+    OnInitialization := function( pkginfo )
+        if CompareVersionNumbers( pkginfo.Version, "2.17" ) = false then
+          return false;
+        fi;
+        return true;
+        end,
+    OnLoad := function( pkginfo )
+        if CompareVersionNumbers( pkginfo.Version, "2.17" ) = false then
+          Print( "  The package `polycyclic'",
+              " should better be upgraded at least to version 2.17,\n",
+              "  the given version (", pkginfo.Version,
+              ") is known to be incompatible\n",
+              "  with the current version of GAP.\n",
+              "  It is strongly recommended to update to the ",
+              "most recent version, see URL\n",
+              "      https://gap-packages.github.io/polycyclic/\n" );
+        fi;
         end )) ));
 
 
