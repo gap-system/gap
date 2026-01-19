@@ -105,12 +105,7 @@ end );
 ##
 #M  NiceObject( <group> ) . . . . . . . . . . . . .  get nice object of group
 ##
-InstallMethod( NiceObject,
-    true,
-    [ IsGroup and IsHandledByNiceMonomorphism ],
-    0,
-
-function( G )
+_NiceObject_method:= function( G )
     local   nice,  img,  D;
 
     nice := NiceMonomorphism( G );
@@ -132,7 +127,17 @@ function( G )
         SetBaseOfGroup( img, UnderlyingExternalSet( nice )!.basePermImage );
     fi;
     return img;
-end );
+end;
+
+InstallMethod( NiceObject,
+    [ IsGroup and IsHandledByNiceMonomorphism ],
+    _NiceObject_method );
+
+InstallMethod( NiceObject,
+    [ IsGroup and HasNiceMonomorphism ],
+    _NiceObject_method );
+
+Unbind( _NiceObject_method );
 
 
 #############################################################################
