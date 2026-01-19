@@ -401,17 +401,7 @@ static Int InitLibrary (
     ExportAsConstantGVar(PC_DEEP_THOUGHT_POLS);
     ExportAsConstantGVar(PC_DEEP_THOUGHT_BOUND);
     ExportAsConstantGVar(PC_ORDERS);
-    ExportAsConstantGVar(PC_WORD_STACK);
-    ExportAsConstantGVar(PC_STACK_SIZE);
-    ExportAsConstantGVar(PC_WORD_EXPONENT_STACK);
-    ExportAsConstantGVar(PC_SYLLABLE_STACK);
-    ExportAsConstantGVar(PC_EXPONENT_STACK);
-    ExportAsConstantGVar(PC_STACK_POINTER);
     ExportAsConstantGVar(PC_DEFAULT_TYPE);
-
-    // signal to polycyclic that 'CollectPolycyclic' does not use resp.
-    // require stacks inside the collector objects
-    AssConstantGVar(GVarName("NO_STACKS_INSIDE_COLLECTORS"), True);
 
     // init filters and functions
     InitGVarFuncsFromTable( GVarFuncs );
