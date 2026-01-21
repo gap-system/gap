@@ -794,12 +794,12 @@ BindGlobal("DoSCMPermGpHom",function(arg)
       if maxstor>65535 then
         maxstor:=maxstor*2; # perms need twice as much memory
       fi;
-      maxstor:=Int(40*1024^2/maxstor); # allocate at most 40MB to the perms
+      maxstor:=Int(80*1024^2/maxstor); # allocate at most 80MB to the perms
       # but don't be crazy
       maxstor:=Minimum(maxstor,
                  Size(Source(hom))/10,
-                 500*LogInt(Size(Source(hom)),2),
-                 25000);
+                 1500*LogInt(Size(Source(hom)),2),
+                 400000);
 
       # fill transversal with elements that are short words
       # This is similar to Minkwitz' approach and produces much shorter
