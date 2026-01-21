@@ -1567,7 +1567,7 @@ InstallMethod( String,
              String( Unpack( v ) ), " )" ) );
 
 BindGlobal( "ViewStringForMatrixObj",
-    M -> Concatenation( "<matrix object of dimensions ",
+    M -> Concatenation( "<a matrix object of dimensions ",
              String( NumberRows( M ) ), "x", String( NumberColumns( M ) ),
              " over ", String( BaseDomain( M ) ), ">" ) );
 
@@ -1576,8 +1576,222 @@ InstallMethod( ViewString,
     ViewStringForMatrixObj );
 
 InstallMethod( DisplayString,
-    [ IsMatrixOrMatrixObj ],
-    ViewStringForMatrixObj );
+[ IsMatrixOrMatrixObj ],
+function(M)
+local i,j,m,numberCols,numberRows,baseDom,zeroEle,outputstring, MaxRowSize, MaxColumnSize, maxp, bl, arr, arrrow, l, k, max, counter, icounter;
+    numberRows := NrRows(M);
+    numberCols := NrCols(M);
+    baseDom := BaseDomain(M);
+    zeroEle := Zero(baseDom);
+    MaxRowSize := 16;
+    MaxColumnSize := 16;
+    maxp:=1;
+    bl:=" ";
+    outputstring := "<a ";
+    if IsMutable(M) then
+        Append(outputstring, "mutable ");
+    else
+        Append(outputstring, "immutable ");
+    fi;
+    Append(outputstring,Concatenation(String(numberRows),"x",String(numberCols),"-matrix over ",String(baseDom)," [\n"));
+    if numberCols > MaxColumnSize then
+        if numberRows > MaxRowSize then
+            arr := ZeroMatrix(Rationals,6,6);
+            for i in [1,2,3] do
+                for j in [1,2,3] do
+                    arr[i,j] := String(M[i,j]);
+                od;
+                counter := 4;
+                for j in [numberCols-2,numberCols-1,numberCols] do
+                    arr[i,counter] := String(M[i,j]);
+                    counter := counter + 1;
+                od;
+            od;
+            icounter := 4;
+            for i in [numberRows-2,numberRows-1,numberRows] do
+                for j in [1,2,3] do
+                    arr[icounter,j] := String(M[i,j]);
+                od;
+                counter := 4;
+                for j in [numberCols-2,numberCols-1,numberCols] do
+                    arr[icounter,counter] := String(M[i,j]);
+                    counter := counter + 1;
+                od;
+                icounter := icounter + 1;
+            od;
+            max := Maximum( List( arr, 
+                    function(x)
+                         if Length(x) = 0 then
+                             return 1;
+                         else
+                             return Maximum( List(x,Length) );
+                         fi;
+                         end) );
+            for i in [1,2,3] do
+                Append(outputstring, "[ " );
+                for j in [1,2,3] do
+                    if zeroEle = M[i,j] then
+                        Append(outputstring, String( ".", max + maxp ) );
+                    else
+                        Append(outputstring, String( arr[ i ][ j ], max + maxp ) );
+                    fi;
+                    Append(outputstring," " );
+                od;
+                Append(outputstring," ... ");
+                counter := 4;
+                for j in [numberCols-2,numberCols-1,numberCols] do
+                    if zeroEle = M[i,j] then
+                        Append(outputstring, String( ".", max + maxp ) );
+                    else
+                        Append(outputstring, String( arr[ i ][ counter ], max + maxp ) );
+                    fi;
+                    if counter = 6  then
+                        Append(outputstring,Concatenation( " ]",bl ));
+                    else
+                        Append(outputstring," " );
+                    fi;
+                    counter := counter + 1;
+                od;
+                Append(outputstring,"\n");
+            od;
+            Append(outputstring," .......... \n");
+            icounter := 4;
+            for i in [numberRows-2,numberRows-1,numberRows] do
+                Append(outputstring, "[ " );
+                for j in [1,2,3] do
+                    if zeroEle = M[i,j] then
+                        Append(outputstring, String( ".", max + maxp ) );
+                    else
+                        Append(outputstring, String( arr[ icounter ][ j ], max + maxp ) );
+                    fi;
+                    Append(outputstring," " );
+                od;
+                Append(outputstring," ... ");
+                counter := 4;
+                for j in [numberCols-2,numberCols-1,numberCols] do
+                    if zeroEle = M[i,j] then
+                        Append(outputstring, String( ".", max + maxp ) );
+                    else
+                        Append(outputstring, String( arr[ icounter ][ counter ], max + maxp ) );
+                    fi;
+                    if counter = 6  then
+                        Append(outputstring,Concatenation( " ]",bl ));
+                    else
+                        Append(outputstring," " );
+                    fi;
+                od;
+                Append(outputstring,"]\n");
+                icounter := icounter + 1;
+            od;
+        fi;
+    elif numberRows > MaxRowSize then
+        arr := ZeroMatrix(Rationals,6,numberCols);
+        for i in [1,2,3] do
+            for j in [1..numberCols] do
+                arr[i,j] := String(M[i,j]);
+            od;
+        od;
+        icounter := 4;
+        for i in [numberRows-2,numberRows-1,numberRows] do
+            for j in [1..numberCols] do
+                arr[icounter,j] := String(M[i,j]);
+            od;
+            icounter := icounter + 1;
+        od;
+        max := Maximum( List( arr, 
+                function(x)
+                      if Length(x) = 0 then
+                          return 1;
+                      else
+                          return Maximum( List(x,Length) );
+                      fi;
+                      end) );
+        for i in [1,2,3] do
+            Append(outputstring, "[ " );
+            for j in [1..numberCols] do
+                if zeroEle = M[i,j] then
+                    Append(outputstring, String( ".", max + maxp ) );
+                else
+                    Append(outputstring, String( arr[ i ][ j ], max + maxp ) );
+                fi;
+                if j = numberCols then
+                    Append(outputstring,Concatenation( " ]",bl ));
+                else
+                    Append(outputstring," " );
+                fi;
+            od;
+            Append(outputstring,"\n");
+        od;
+        Append(outputstring," .......... \n");
+        icounter := 4;
+        for i in [numberRows-2,numberRows-1,numberRows] do
+            Append(outputstring,"[ ");
+            for j in [1..numberCols] do
+                if zeroEle = M[i,j] then
+                    Append(outputstring, String( ".", max + maxp ) );
+                else
+                    Append(outputstring, String( arr[ icounter ][ j ], max + maxp ) );
+                fi;
+                if j = numberCols then
+                    Append(outputstring,Concatenation( " ]",bl ));
+                else
+                    Append(outputstring," " );
+                fi;
+            od;
+            Append(outputstring,"\n");
+            icounter := icounter + 1;
+        od;
+    else
+        arr := MutableCopyMat(M);
+        for i in [1..numberRows] do
+            for j in [1..numberCols] do
+              arr[i,j] := String(M[i,j]);
+            od;
+        od;
+        max := Maximum( List( arr, 
+                    function(x)
+                         if Length(x) = 0 then
+                             return 1;
+                         else
+                             return Maximum( List(x,Length) );
+                         fi;
+                         end) );
+        for l in [ 1 .. Length( arr ) ] do
+            Append(outputstring, "[ " );
+            for k in [ 1 .. Length( arr[ l ] ) ]  do
+                if zeroEle = M[l,k] then
+                    Append(outputstring, String( ".", max + maxp ) );
+                else
+                    Append(outputstring, String( arr[ l ][ k ], max + maxp ) );
+                fi;
+                if k = Length( arr[ l ] )  then
+                    Append(outputstring,Concatenation( " ]",bl ));
+                else
+                    Append(outputstring," " );
+                fi;
+            od;
+            Append(outputstring, "\n" );    
+        od;
+        #        for i in [1..numberRows] do
+        #    for j in [1..numberCols] do
+        #        if j = 1 then
+        #            Append(outputstring,"[");
+        #        else
+        #            Append(outputstring," ");
+        #        fi;
+        #        if zeroEle = M[i,j] then
+        #            Append(outputstring,".");
+        #        else
+        #            Append(outputstring,String(M[i,j]));
+        #        fi;
+        #    od;
+        #    Append(outputstring,"]\n");
+        # od;
+    fi;
+    Append(outputstring,"]");
+    Append(outputstring,">\n");
+    return outputstring;
+end);
 
 InstallMethod( String,
     [ IsMatrixObj ],
