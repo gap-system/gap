@@ -45,7 +45,7 @@
 ##  Currently matrices in `IsBlockMatrixRep' are *not* in `IsMatrixObj'.
 ##
 DeclareRepresentation( "IsBlockMatrixRep",
-    IsComponentObjectRep,
+    IsComponentObjectRep and IsMatrix,
     [ "blocks", "zero", "nrb", "ncb", "rpb", "cpb" ] );
 
 
