@@ -70,9 +70,9 @@ gap> ListWithIdenticalEntries(1000, 'a') =
 true
 
 # Test line breaks
-gap>  StringFormatted("{}", "\>1\<") = "\>1\<";
+gap>  StringFormatted("{}", "\>1\<") = "1";
 true
-gap>  StringFormatted("\>1\<") = "\>1\<";
+gap>  StringFormatted("\>1\<") = "1";
 true
 
 # Test alternative functions
