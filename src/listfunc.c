@@ -24,7 +24,10 @@
 #include "permutat.h"
 #include "plist.h"
 #include "pperm.h"
+#include "precord.h"
+#include "records.h"
 #include "set.h"
+#include "stats.h"
 #include "stringobj.h"
 #include "sysfiles.h"
 #include "trans.h"
@@ -1462,6 +1465,121 @@ static Obj FuncLIST_WITH_IDENTICAL_ENTRIES(Obj self, Obj n, Obj obj)
     return list;
 }
 
+static Obj FastCallFuncList(Obj func, Obj list)
+{
+    switch (LEN_PLIST(list)) {
+    case 0:
+        return CALL_0ARGS(func);
+    case 1:
+        return CALL_1ARGS(func, ELM_PLIST(list, 1));
+    case 2:
+        return CALL_2ARGS(func, ELM_PLIST(list, 1), ELM_PLIST(list, 2));
+    case 3:
+        return CALL_3ARGS(func, ELM_PLIST(list, 1), ELM_PLIST(list, 2),
+                          ELM_PLIST(list, 3));
+    case 4:
+        return CALL_4ARGS(func, ELM_PLIST(list, 1), ELM_PLIST(list, 2),
+                          ELM_PLIST(list, 3), ELM_PLIST(list, 4));
+    case 5:
+        return CALL_5ARGS(func, ELM_PLIST(list, 1), ELM_PLIST(list, 2),
+                          ELM_PLIST(list, 3), ELM_PLIST(list, 4),
+                          ELM_PLIST(list, 5));
+    case 6:
+        return CALL_6ARGS(func, ELM_PLIST(list, 1), ELM_PLIST(list, 2),
+                          ELM_PLIST(list, 3), ELM_PLIST(list, 4),
+                          ELM_PLIST(list, 5), ELM_PLIST(list, 6));
+    default:
+        return CALL_XARGS(func, list);
+    }
+}
+
+static Obj IsListOrCollection;
+
+// TODO: document this a bit
+static int FoldLeftXHelp(Obj   gens,
+                         Obj   foldFunc,
+                         Obj * acc,
+                         Obj   abortValue,
+                         Obj   args,
+                         int   genIndex,
+                         int   valIndex)
+{
+    while (genIndex <= LEN_PLIST(gens)) {
+        Obj gen = ELM_PLIST(gens, genIndex);
+        if (IS_FUNC(gen))
+            gen = FastCallFuncList(gen, args);
+        if (gen == True)
+            genIndex++;
+        else if (gen == False)
+            return 0;
+        else if (IS_LIST(gen)) {
+            const int len = LEN_LIST(gen);
+            for (int i = 1; i <= len; i++) {
+                Obj elm = ELM0_LIST(gen, i);
+                if (!elm)
+                    continue; // skip holes
+                AssPlist(args, valIndex, elm);
+                if (FoldLeftXHelp(gens, foldFunc, acc, abortValue, args,
+                                  genIndex + 1, valIndex + 1))
+                    return 1;
+            }
+            UNB_LIST(args, valIndex);
+            return 0;
+        }
+        else if (CALL_1ARGS(IsListOrCollection, gen) == True) {
+            // get the iterator
+            Obj iter = CALL_1ARGS(ITERATOR, gen);
+
+            Obj nfun, dfun;
+            if (IS_PREC_OR_COMOBJ(iter) &&
+                CALL_1ARGS(STD_ITER, iter) == True) {
+                // this can avoid method selection overhead on iterator
+                dfun = ElmPRec(iter, RNamName("IsDoneIterator"));
+                nfun = ElmPRec(iter, RNamName("NextIterator"));
+            }
+            else {
+                dfun = IS_DONE_ITER;
+                nfun = NEXT_ITER;
+            }
+
+            // loop over the iterator
+            while (CALL_1ARGS(dfun, iter) == False) {
+
+                // get the element and assign it to the variable
+                Obj elm = CALL_1ARGS(nfun, iter);
+
+                AssPlist(args, valIndex, elm);
+                if (FoldLeftXHelp(gens, foldFunc, acc, abortValue, args,
+                                  genIndex + 1, valIndex + 1))
+                    return 1;
+            }
+            UNB_LIST(args, valIndex);
+            return 0;
+        }
+        else {
+            ErrorMayQuit("gens[%d] must be a collection, a list, a boolean, "
+                         "or a function",
+                         genIndex, 0);
+        }
+    }
+    *acc = CALL_2ARGS(foldFunc, *acc, args);
+    return abortValue == *acc;
+}
+
+// TODO: document this a bit
+Obj FuncFOLD_LEFT_X(
+    Obj self, Obj gens, Obj foldFunc, Obj init, Obj abortValue)
+{
+    if (!IS_PLIST(gens))
+        return Fail;
+    if (!IS_FUNC(foldFunc))
+        return Fail;
+
+    Obj args = NEW_PLIST(T_PLIST, LEN_PLIST(gens));
+    FoldLeftXHelp(gens, foldFunc, &init, abortValue, args, 1, 1);
+    return init;
+}
+
 /****************************************************************************
 **
 *F * * * * * * * * * * * * * initialize module * * * * * * * * * * * * * * *
@@ -1515,6 +1633,9 @@ static StructGVarFunc GVarFuncs[] = {
                     "srclist,srcstart,srcinc,dstlist,dststart,dstinc,number"),
     GVAR_FUNC_1ARGS(STRONGLY_CONNECTED_COMPONENTS_DIGRAPH, digraph),
     GVAR_FUNC_2ARGS(LIST_WITH_IDENTICAL_ENTRIES, n, obj),
+
+    GVAR_FUNC_4ARGS(FOLD_LEFT_X, gens, foldFunc, init, abortValue),
+
     { 0, 0, 0, 0, 0 }
 
 };
@@ -1531,10 +1652,12 @@ static Int InitKernel (
     InitHdlrOpersFromTable( GVarOpers );
     InitHdlrFuncsFromTable( GVarFuncs );
 
-    // ADD_LIST needs special consideration because we want distinct kernel
+    //  ADD_LIST needs special consideration because we want distinct kernel
     // handlers for 2 and 3 arguments
     InitHandlerFunc( FuncADD_LIST, "src/listfunc.c:FuncADD_LIST" );
     InitHandlerFunc( FuncADD_LIST3, "src/listfunc.c:FuncADD_LIST3" );
+
+    ImportFuncFromLibrary("IsListOrCollection", &IsListOrCollection);
 
     return 0;
 }
