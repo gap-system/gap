@@ -27,7 +27,7 @@ Depth 80
 # Just want an error to occur to check the depth is reset correctly
 gap> IsAbelian(2);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `IsCommutative' on 1 arguments
+Error, no 1st choice method found for `IsCommutative' on 1 argument
 gap> dive(80);
 Depth 80
 gap> STOP_TEST("depth.tst");

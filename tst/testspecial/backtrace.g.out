@@ -154,7 +154,7 @@ gap> ###########################################################################
 gap> f:=function() local i; for i in true do return 1; od; return 2; end;;
 gap> f();
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `Iterator' on 1 arguments at GAPROOT/lib/methsel2.g:LINE called from
+Error, no 1st choice method found for `Iterator' on 1 argument at GAPROOT/lib/methsel2.g:LINE called from
 for i in true do
     return 1;
 od; at *stdin*:33 called from
@@ -182,7 +182,7 @@ gap>
 gap> f:=function(x) local i,j; for i in true do return 1; od; return 2; end;;
 gap> f([1,2,3]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `Iterator' on 1 arguments at GAPROOT/lib/methsel2.g:LINE called from
+Error, no 1st choice method found for `Iterator' on 1 argument at GAPROOT/lib/methsel2.g:LINE called from
 for i in true do
     return 1;
 od; at *stdin*:35 called from
@@ -212,7 +212,7 @@ gap>
 gap> f:=function(x) local i,j; Unbind(x); for i in true do return 1; od; return 2; end;;
 gap> f([1,2,3]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `Iterator' on 1 arguments at GAPROOT/lib/methsel2.g:LINE called from
+Error, no 1st choice method found for `Iterator' on 1 argument at GAPROOT/lib/methsel2.g:LINE called from
 for i in true do
     return 1;
 od; at *stdin*:37 called from
@@ -242,7 +242,7 @@ gap>
 gap> f:=function(x) local i,j; Unbind(x); j := 4; for i in true do return 1; od; return 2; end;;
 gap> f([1,2,3]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `Iterator' on 1 arguments at GAPROOT/lib/methsel2.g:LINE called from
+Error, no 1st choice method found for `Iterator' on 1 argument at GAPROOT/lib/methsel2.g:LINE called from
 for i in true do
     return 1;
 od; at *stdin*:39 called from

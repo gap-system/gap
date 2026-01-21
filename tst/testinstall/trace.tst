@@ -23,7 +23,7 @@ gap> InstallImmediateMethod( Size, "for abelian mockobj", cat and IsAbelian, 0, 
 gap> a := Objectify(type,rec());;
 gap> Size(a);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `Size' on 1 arguments
+Error, no 1st choice method found for `Size' on 1 argument
 gap> SetIsAbelian(a, true);
 #I RunImmediateMethods
 #I  immediate: Size: for abelian mockobj at stream:1

@@ -43,7 +43,7 @@ gap> SortedList(names) = [str1021, str1022a, str1023, str1022b, "x", "y"];
 true
 gap> RecNames( () );
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `RecNames' on 1 arguments
+Error, no 1st choice method found for `RecNames' on 1 argument
 gap> REC_NAMES( () );
 Error, REC_NAMES: <rec> must be a record (not a permutation (small))
 gap> REC_NAMES_COMOBJ( () );

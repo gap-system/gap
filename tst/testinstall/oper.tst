@@ -21,7 +21,7 @@ gap> InstallTagBasedMethod( newop, IsInt,
 >        { oper, n } -> 4*n );
 gap> newop( IsList );
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `newop' on 1 arguments
+Error, no 1st choice method found for `newop' on 1 argument
 gap> newop( IsList, 1, 2 );
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `newop' on 3 arguments
