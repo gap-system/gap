@@ -347,8 +347,8 @@ ELM_LIST( m, row, col ) at *stdin*:54
   local variables: <none>
  called from
 return l[2, 1]; at *stdin*:55
-  arguments: <none>
-  local variables: <none>
+arguments: <none>
+local variables: <none>
  called from
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:2

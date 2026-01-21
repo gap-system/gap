@@ -240,6 +240,9 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
 
     # Local functions that print the user feedback.
     printEarlyMessage := function(stream)
+        if stream = "*errout*" then
+            FLUSH_STDOUT_ERROUT();
+        fi;
         PrintTo(stream, "Error, ");
         # earlyMessage usually contains information about what went wrong.
         for x in earlyMessage do
