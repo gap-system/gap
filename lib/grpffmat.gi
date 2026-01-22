@@ -701,45 +701,22 @@ end );
 
 #############################################################################
 ##
-#M  NrConjugacyClasses( <G> ) . . . . . . . . . . . . . .  Method for GU(n,q)
+#M  NrConjugacyClasses( <G> ) . . . . . . . .  Method for GU(n,q) and SU(n,q)
 ##
 InstallMethod( NrConjugacyClasses,
-               "for GU(n,q)",
-               true,
+               "for GU(n,q) and SU(n,q)",
                [ IsFFEMatrixGroup and IsFinite
                  and IsFullSubgroupGLorSLRespectingSesquilinearForm ],
-               0,
 function ( G )
-
   local  n,q;
 
-  if IsSubgroupSL(G) then TryNextMethod(); fi;
-
   n := DimensionOfMatrixGroup(G);
-  q := RootInt(Size(FieldOfMatrixGroup(G)));
+  q := RootInt(Size(InvariantSesquilinearForm(G).baseDomain));
 
+  if IsSubgroupSL(G) then
+    return NrConjugacyClassesSU(n,q);
+  fi;
   return NrConjugacyClassesGU(n,q);
-end );
-
-#############################################################################
-##
-#M  NrConjugacyClasses( <G> ) . . . . . . . . . .  Method for natural SU(n,q)
-##
-InstallMethod( NrConjugacyClasses,
-               "for natural SU",
-               true,
-               [ IsFFEMatrixGroup and IsFinite
-                 and IsFullSubgroupGLorSLRespectingSesquilinearForm
-                 and IsSubgroupSL ],
-               0,
-function ( G )
-
-  local  n,q;
-
-  n := DimensionOfMatrixGroup(G);
-  q := RootInt(Size(FieldOfMatrixGroup(G)));
-
-  return NrConjugacyClassesSU(n,q);
 end );
 
 
