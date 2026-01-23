@@ -2627,7 +2627,13 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
         a:=PseudoRandom(gp);
       fi;
       e:=Order(a);
-      if e in r then
+      # `r` is either a list or a record,
+      # the latter describing the range
+      # `[ r.first, r.first + r.offset .. r.last ]`,
+      # also if this range cannot be created in GAP.
+      if ( IsList( r ) and e in r ) or
+         ( IsRecord( r ) and r.first <= e and e <= r.last
+                         and ( e - r.first ) mod r.offset = 0 ) then
         a:=a^QuoInt(e,o);
         if z=fail or Size(Centralizer(gp,a))=z then
           return a;
@@ -2731,7 +2737,7 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
   if gens=fail then
     Info(InfoMorph,1,"Isomorphism simple: ad-hoc");
     # not found by table or other -- try a 2/something ad-hoc
-    rt:=[2,4..Size(g)];
+    rt:= rec( first:= 2, offset:= 2, last:= Size(g) );
     gens:=[findElm(g,2,fail,rt)];
     z:=Size(Centralizer(g,gens[1]));
 
@@ -2740,7 +2746,7 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
     m:=Maximum(Filtered(Factors(Size(g)),x->x<100));
     cnt:=0;
     repeat
-      gens[2]:=findElm(g,m,fail,[m,2*m..Size(g)]);
+      gens[2]:=findElm(g,m,fail, rec( first:= m, offset:= m, last:= Size(g) ));
       if isFull(SubgroupNC(g,gens)) then
         b:=gens;
         y:=Size(Centralizer(g,gens[2]));
@@ -2765,7 +2771,7 @@ local d,iso,a,b,c,o,s,two,rt,r,z,e,y,re,m,gens,cnt,lim,p,
     od;
     gens:=b;
     e:=Order(gens[2]);
-    re:=[e,2*e..Size(g)];
+    re:= rec( first:= e, offset:= e, last:= Size(g) );
     y:=Size(Centralizer(g,gens[2]));
   fi;
   Info(InfoMorph,1,"generators ",List(gens,Order));
