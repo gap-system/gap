@@ -150,15 +150,13 @@ def package_updates(relnotes_file: TextIO, new_gap_version: str) -> None:
     updated = new_json.keys() & old_json.keys()
     updated = [p for p in updated if old_json[p]["Version"] != new_json[p]["Version"]]
     if len(updated) > 0:
-        relnotes_file.write(
-            f"""
+        relnotes_file.write(f"""
 #### Updated packages redistributed with GAP
 
 The GAP {new_gap_version} distribution contains {len(new_json)} packages, of which {len(updated)} have been
 updated since GAP {old_gap_version}. The full list of updated packages is given below:
 
-""".lstrip()
-        )
+""".lstrip())
         for p in sorted(updated):
             old = old_json[p]
             new = new_json[p]
@@ -263,8 +261,7 @@ def changes_overview(
             pr for pr in prs if has_label(pr, "release notes: use title")
         ]
         # Write out all PRs with 'use title'
-        relnotes_file.write(
-            f"""# GAP - history of changes
+        relnotes_file.write(f"""# GAP - history of changes
 
 ## GAP {new_version} ({month} {year})
 
@@ -273,8 +270,7 @@ release. This list is not complete, many more internal or minor changes
 were made, but we tried to only list those changes which we think might
 affect some users directly.
 
-"""
-        )
+""")
 
         for priorityobject in prioritylist:
             matches = [
