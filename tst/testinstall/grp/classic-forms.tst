@@ -4,7 +4,7 @@
 #@local CheckMembershipBilinear, CheckMembershipBilinear2
 #@local CheckMembershipSesquilinear
 #@local CheckMembershipQuadratic, CheckMembershipQuadratic2
-#@local grps1, grps2, grps, d, q
+#@local grps1, grps2, grps, d, q, G, m
 #
 # Tests invariant forms of classic groups
 #
@@ -337,6 +337,13 @@ gap> ForAll(grps1, CheckMembershipBilinear);
 true
 gap> ForAll(grps2, CheckMembershipBilinear2);
 true
+
+# an undocumented helper function
+gap> G:= GeneralOrthogonalGroup( 3, GF(5) );;
+gap> m:= [ [ 0, 1, 0 ], [ 0, 0, 0 ], [ 0, 0, 1 ] ] * Z(5)^0;;
+gap> SetInvariantQuadraticFormFromMatrix( G, m );
+Error, only the three argument variant of SetInvariantQuadraticFormFromMatrix \
+is supported
 
 #
 gap> STOP_TEST("classic-forms.tst");

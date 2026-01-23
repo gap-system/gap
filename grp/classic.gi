@@ -358,10 +358,10 @@ InstallMethod( SpecialUnitaryGroupCons,
 ##  In both forms, set the 'baseDomain' component.
 ##
 BindGlobal( "SetInvariantQuadraticFormFromMatrix", function( g, mat, F... )
-    if Length( F ) = 0 then
+    if Length( F ) <> 1 then
       # In earlier versions of GAP, no 'baseDomain' was stored.
-      Error( "the two argument variant of ",
-             "SetInvariantQuadraticFormFromMatrix is no longer supported" );
+      Error( "only the three argument variant of ",
+             "SetInvariantQuadraticFormFromMatrix is supported" );
     fi;
     SetInvariantQuadraticForm( g, rec( matrix:= mat, baseDomain:= F[1] ) );
     SetInvariantBilinearForm( g, rec( matrix:= mat+TransposedMat(mat),
