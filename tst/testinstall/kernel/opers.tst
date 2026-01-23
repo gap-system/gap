@@ -294,7 +294,7 @@ gap> CLEAR_CACHE_INFO();
 gap> opcheck := OPERS_CACHE_INFO();;
 #@if GAPInfo.KernelInfo.KernelDebug and IsHPCGAP
 gap> opcheck{[1..11]};
-[ 2, 0, 0, 6, 0, 0, 6, 0, 0, 2, 0 ]
+[ 2, 0, 0, 6, 0, 0, 10, 0, 0, 2, 0 ]
 #@fi
 
 # FIXME: the following code skips entry 4 (OperationHit, which is normally
@@ -338,7 +338,7 @@ gap> opcheck{[1..11]};
 #
 #@if GAPInfo.KernelInfo.KernelDebug and not IsHPCGAP
 gap> opcheck{Difference([1..11], [4])};
-[ 2, 0, 0, 0, 0, 4, 0, 0, 2, 0 ]
+[ 2, 0, 0, 0, 0, 8, 0, 0, 2, 0 ]
 #@fi
 #@if not GAPInfo.KernelInfo.KernelDebug
 gap> opcheck{[1..11]};
