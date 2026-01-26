@@ -567,10 +567,14 @@ local map;
     map:=NicomorphismOfGeneralMatrixGroup(G,false,false);
     SetNiceMonomorphism(G,map);
   fi;
-  if IsIdenticalObj(Source(map),G) then
+  if IsIdenticalObj(Source(map),G) and IsBijective(map) then
     return map;
   fi;
-  return GeneralRestrictedMapping(map,G,NiceObject(G));
+  if IsIdenticalObj(map, NiceMonomorphism(G)) then
+    return GeneralRestrictedMapping(map,G,NiceObject(G));
+  else
+    return GeneralRestrictedMapping(map,G,ImagesSet(map,G));
+  fi;
 end);
 
 InstallMethod( IsomorphismPermGroup,
