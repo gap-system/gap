@@ -33,7 +33,7 @@ env:
 jobs:
   tools:
     name: "Validate release scripts"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v6
 
@@ -262,7 +262,7 @@ jobs:
       - unix
       - cygwin
     if: ${{ always() && github.event_name != 'pull_request' && github.repository == 'gap-system/gap' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
 
     steps:
       - name: Get branch name
