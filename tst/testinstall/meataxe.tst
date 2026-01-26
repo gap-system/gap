@@ -1,4 +1,4 @@
-#@local G,M,M2,M3,M4,M5,V,bf,bo,cf,homs,m,mat,qf,randM,res,sf,subs,mats,Q,orig,S
+#@local G,M,M2,M3,M4,M5,V,bf,bo,cf,homs,m,mat,qf,randM,res,sf,subs,mats,Q,orig,S,g1,g2,form,frob5
 gap> START_TEST("meataxe.tst");
 
 #
@@ -113,6 +113,16 @@ gap> MTX.OrthogonalSign(M2);
 1
 gap> SMTX.RandomIrreducibleSubGModule(M2); # returns false for irreducible module
 false
+
+# test invariant form detection on reducible module with two isomorphic
+# components (hence many automorphisms exist)
+gap> g1:= GeneratorsOfGroup(SU(4, 5));;
+gap> g2:= GeneratorsOfGroup(SU(4, 5));;
+gap> m:= GModuleByMats(SMTX.MatrixSum(g1,g2), GF(25));;
+gap> form:= MTX.InvariantSesquilinearForm( m );;
+gap> frob5 := g -> List(g,row->List(row,x->x^5));; # field involution
+gap> ForAll(MTX.Generators(m), x -> x*form*TransposedMat(frob5(x)) = form);
+true
 
 #
 gap> Display(MTX.IsomorphismModules(M,M));
@@ -263,8 +273,8 @@ gap> MTX.InvariantQuadraticForm( m );
 Error, Argument of InvariantQuadraticForm is not an absolutely irreducible mod\
 ule
 gap> MTX.OrthogonalSign( m );
-Error, Argument of InvariantBilinearForm is not an absolutely irreducible modu\
-le
+Error, Argument of InvariantQuadraticForm is not an absolutely irreducible mod\
+ule
 gap> mats:= GeneratorsOfGroup( SP( 4, 2 ) );;
 gap> m:= GModuleByMats( mats, GF(2) );;
 gap> Q:= MTX.InvariantQuadraticForm( m );

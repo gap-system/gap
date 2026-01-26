@@ -591,15 +591,47 @@ on all composition factors except number <A>nr</A>.
 <Section Label="meataxe:Invariant Forms">
 <Heading>MeatAxe Functionality for Invariant Forms</Heading>
 
-The functions in this section can only be applied to an absolutely irreducible
-MeatAxe module.
-
 <ManSection>
 <Func Name="MTX.InvariantBilinearForm" Arg='module'/>
 
 <Description>
 returns an invariant bilinear form, which may be symmetric or anti-symmetric,
 of <A>module</A>, or <K>fail</K> if no such form exists.
+
+<Example><![CDATA[
+gap> g:= SO(-1, 4, 5);;
+gap> m:= NaturalGModule( g );;
+gap> form:= MTX.InvariantBilinearForm( m );;
+gap> Display( form );
+ . 3 . .
+ 3 . . .
+ . . 2 .
+ . . . 1
+gap> ForAll(MTX.Generators(m), x -> x*form*TransposedMat(x) = form);
+true
+]]></Example>
+
+Since GAP 4.14 modules that are not absolutely irreducible are also supported:
+<Example><![CDATA[
+gap> g1:= GeneratorsOfGroup(SO(-1, 4, 5));;
+gap> g2:= GeneratorsOfGroup(SO(+1, 4, 5));;
+gap> m:= GModuleByMats(SMTX.MatrixSum(g1,g2), GF(5));;
+gap> MTX.IsIrreducible(m);
+false
+gap> form:= MTX.InvariantBilinearForm( m );;
+gap> Display( form );
+ . 3 . . . . . .
+ 3 . . . . . . .
+ . . 2 . . . . .
+ . . . 1 . . . .
+ . . . . . 3 . .
+ . . . . 3 . . .
+ . . . . . . 1 .
+ . . . . . . . 1
+gap> ForAll(MTX.Generators(m), x -> x*form*TransposedMat(x) = form);
+true
+]]></Example>
+
 </Description>
 </ManSection>
 
@@ -612,6 +644,42 @@ returns an invariant hermitian (= self-adjoint) sesquilinear form of
 <A>module</A>,
 which must be defined over a finite field whose order is a square,
 or <K>fail</K> if no such form exists.
+
+<Example><![CDATA[
+gap> g:= SU(4, 5);;
+gap> m:= NaturalGModule( g );;
+gap> form:= MTX.InvariantSesquilinearForm( m );;
+gap> Display( form );
+ . . . 1
+ . . 1 .
+ . 1 . .
+ 1 . . .
+gap> frob5 := g -> List(g,row->List(row,x->x^5));; # field involution
+gap> ForAll(MTX.Generators(m), x -> x*form*TransposedMat(frob5(x)) = form);
+true
+]]></Example>
+
+Since GAP 4.14 modules that are not absolutely irreducible are also supported:
+<Example><![CDATA[
+gap> g1:= GeneratorsOfGroup(SU(3, 5));;
+gap> g2:= GeneratorsOfGroup(SU(4, 5));;
+gap> m:= GModuleByMats(SMTX.MatrixSum(g1,g2), GF(25));;
+gap> MTX.IsIrreducible(m);
+false
+gap> form:= MTX.InvariantSesquilinearForm( m );;
+gap> Display( form );
+ . . 1 . . . .
+ . 1 . . . . .
+ 1 . . . . . .
+ . . . . . . 1
+ . . . . . 1 .
+ . . . . 1 . .
+ . . . 1 . . .
+gap> frob5 := g -> List(g,row->List(row,x->x^5));; # field involution
+gap> ForAll(MTX.Generators(m), x -> x*form*TransposedMat(frob5(x)) = form);
+true
+]]></Example>
+
 </Description>
 </ManSection>
 
@@ -626,6 +694,7 @@ or <K>fail</K> if no such form exists.
 returns a basis of the underlying vector space of <A>module</A> which is contained
 in an orbit of the action of the generators of module on that space.
 This is used by <Ref Func="MTX.InvariantQuadraticForm"/> in characteristic 2.
+Requires <A>module</A> to be irreducible.
 </Description>
 </ManSection>
 
