@@ -91,4 +91,18 @@ gap> IsBijective(IsomorphismPermGroupForMatrixGroup(G));
 true
 
 #
+# Verify that things that were computed as being isomorphisms
+# also *know* they are isomorphisms
+#
+gap> G:=Group(Z(3)^0*[[2,0],[0,1]]);;
+gap> iso:= IsomorphismPermGroupForMatrixGroup( G );;
+gap> HasIsBijective( iso );
+true
+gap> G:=Group(Z(3)^0*[[2,0],[0,1]]);;
+gap> NiceMonomorphism( G );;
+gap> iso:= IsomorphismPermGroupForMatrixGroup( G );;
+gap> HasIsBijective( iso );
+true
+
+#
 gap> STOP_TEST("IsomorphismPermGroupForMatrixGroup.tst");
