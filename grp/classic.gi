@@ -361,7 +361,8 @@ BindGlobal( "SetInvariantQuadraticFormFromMatrix", function( g, mat, F... )
     if Length( F ) <> 1 then
       # In earlier versions of GAP, no 'baseDomain' was stored.
       Error( "only the three argument variant of ",
-             "SetInvariantQuadraticFormFromMatrix is supported" );
+             "SetInvariantQuadraticFormFromMatrix is supported, ",
+             "the form record needs a 'baseDomain' component" );
     fi;
     SetInvariantQuadraticForm( g, rec( matrix:= mat, baseDomain:= F[1] ) );
     SetInvariantBilinearForm( g, rec( matrix:= mat+TransposedMat(mat),

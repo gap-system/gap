@@ -847,6 +847,12 @@ InstallMethod( \in, "respecting quadratic form", IsElmsColls,
                  # thus we install the current method first
     function( mat, G )
     # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form.
+    # If 'FieldOfMatrixGroup( G )' differs from 'baseDomain' of the form
+    # then the former is a subset of the latter.
+    # Since 'mat' must be defined over 'FieldOfMatrixGroup( G )',
+    # we may check this perhaps stronger condition.
+    # This way, there are more situations where we get a 'false' result
+    # without checking whether the form is respected.
     return IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
        and ( not IsSubgroupSL( G ) or IsOne( DeterminantMat( mat ) ) )
        and RespectsQuadraticForm( InvariantQuadraticForm( G ).matrix, mat );
@@ -857,7 +863,8 @@ InstallMethod( \in, "respecting bilinear form", IsElmsColls,
     {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
 function( mat, G )
     local inv;
-    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form.
+    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form,
+    # see the comment for the '\in' method above.
     if not IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
        or ( IsSubgroupSL( G ) and not IsOne( DeterminantMat( mat ) ) ) then
       return false;
@@ -871,7 +878,8 @@ InstallMethod( \in, "respecting sesquilinear form", IsElmsColls,
     {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
 function( mat, G )
     local form, pow, inv;
-    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form.
+    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form,
+    # see the comment for the '\in' method above.
     if not IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
        or ( IsSubgroupSL( G ) and not IsOne( DeterminantMat( mat ) ) ) then
       return false;
