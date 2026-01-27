@@ -1286,7 +1286,7 @@ InstallMethod( InvariantBilinearForm,
 InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
     [ IsMatrixGroup, IsMultiplicativeElementWithInverse ],
     function( G, g )
-    local   H, F, form, m, D, ginv, pow, nice, conj;
+    local   H, F, form, m, D, ginv, pow;
 
     H := GroupByGenerators( OnTuples( GeneratorsOfGroup( G ), g ), One( G ) );
     UseIsomorphismRelation( G, H );
