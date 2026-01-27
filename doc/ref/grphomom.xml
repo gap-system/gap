@@ -349,7 +349,8 @@ are satisfied.
 <P/>
 <List>
 <Item>
-  <C>G</C> does not store a nice monomorphism yet.
+  <C>G</C> does not store a nice monomorphism already
+  (i.e., <C>HasNiceMonomorphism( G )</C> returns <K>false</K>).
 </Item>
 <Item>
   <C>map</C> stores that it is injective.
