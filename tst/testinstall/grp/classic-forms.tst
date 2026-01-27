@@ -343,7 +343,7 @@ gap> G:= GeneralOrthogonalGroup( 3, GF(5) );;
 gap> m:= [ [ 0, 1, 0 ], [ 0, 0, 0 ], [ 0, 0, 1 ] ] * Z(5)^0;;
 gap> SetInvariantQuadraticFormFromMatrix( G, m );
 Error, only the three argument variant of SetInvariantQuadraticFormFromMatrix \
-is supported
+is supported, the form record needs a 'baseDomain' component
 
 #
 gap> STOP_TEST("classic-forms.tst");
