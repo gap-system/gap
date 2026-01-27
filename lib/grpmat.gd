@@ -322,11 +322,20 @@ InstallTrueMethod(IsSubgroupSL,IsNaturalSL);
 ##  <Attr Name="InvariantBilinearForm" Arg='matgrp'/>
 ##
 ##  <Description>
-##  This attribute describes a bilinear form that is invariant under the
-##  matrix group <A>matgrp</A>.
-##  The form is given by a record with the component <C>matrix</C>
-##  which is a matrix <M>F</M> such that for every generator <M>g</M> of
-##  <A>matgrp</A> the equation <M>g \cdot F \cdot g^{tr} = F</M> holds.
+##  For a matrix group <A>matgrp</A>, <Ref Attr="InvariantBilinearForm"/>
+##  returns a record containing at least the components <C>matrix</C>,
+##  whose value is a matrix <M>M</M>,
+##  and <C>baseDomain</C>, whose value is a field.
+##  <P/>
+##  This record describes a bilinear form that is invariant under
+##  <A>matgrp</A>.
+##  For every generator <M>g</M> of <A>matgrp</A>,
+##  the equation <M>g \cdot M \cdot g^{tr} = M</M> holds.
+##  <P/>
+##  The attribute value is set for example in groups constructed with
+##  <Ref Func="SymplecticGroup" Label="for dimension and field size"/>.
+##  Together with <Ref Prop="IsFullSubgroupGLorSLRespectingBilinearForm"/>,
+##  it can be used for efficient membership tests in <A>matgrp</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -343,11 +352,19 @@ DeclareAttribute( "InvariantBilinearForm", IsMatrixGroup );
 ##  <Prop Name="IsFullSubgroupGLorSLRespectingBilinearForm" Arg='matgrp'/>
 ##
 ##  <Description>
-##  This property tests, whether a matrix group <A>matgrp</A> is the full
-##  subgroup of GL or SL (the property <Ref Prop="IsSubgroupSL"/> determines
-##  which it is) in the right dimension over the (smallest) ring which
-##  contains all entries of its elements, respecting the form stored as the value of
+##  If this property is set then the matrix group <A>matgrp</A> is the full
+##  subgroup of <C>GL</C><M>(d, q)</M> or <C>SL</C><M>(d, q)</M>
+##  respecting the form stored as the value of
 ##  <Ref Attr="InvariantBilinearForm"/> for <A>matgrp</A>.
+##  <P/>
+##  The value <M>d</M> is the <Ref Attr="DimensionOfMatrixGroup"/> value of
+##  <A>matgrp</A>,
+##  and <M>q</M> is the size of the <C>baseDomain</C> component of the
+##  record stored as <Ref Attr="InvariantBilinearForm"/>.
+##  <P/>
+##  The property <Ref Prop="IsSubgroupSL"/> of <A>matgrp</A> determines
+##  whether <C>GL</C> or <C>SL</C> is meant for
+##  <Ref Prop="IsFullSubgroupGLorSLRespectingBilinearForm"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -365,17 +382,25 @@ InstallTrueMethod( IsGroup, IsFullSubgroupGLorSLRespectingBilinearForm );
 ##  <Attr Name="InvariantSesquilinearForm" Arg='matgrp'/>
 ##
 ##  <Description>
-##  This attribute describes a sesquilinear form that is invariant under the
-##  matrix group <A>matgrp</A> over the field <M>F</M> with <M>q^2</M>
-##  elements.
-##  The form is given by a record with the component <C>matrix</C>
-##  which is a matrix <M>M</M> such that for every generator <M>g</M> of
-##  <A>matgrp</A>
+##  For a matrix group <A>matgrp</A>, <Ref Attr="InvariantSesquilinearForm"/>
+##  returns a record containing at least the components <C>matrix</C>,
+##  whose value is a matrix <M>M</M>,
+##  and <C>baseDomain</C>, whose value is a field <M>F</M>.
+##  <P/>
+##  This record describes a sesquilinear form that is invariant under
+##  <A>matgrp</A>.
+##  For every generator <M>g</M> of <A>matgrp</A>,
 ##  the equation <M>g \cdot M \cdot (g^{tr})^f = M</M> holds,
-##  where <M>f</M> is the automorphism of <M>F</M> that raises each element
-##  to its <M>q</M>-th power.
+##  where <M>f</M> is an automorphism of <M>F</M>.
+##  If <M>F</M> has <M>q^2</M> elements then <M>f</M> raises each element
+##  of <M>F</M> to its <M>q</M>-th power.
 ##  (<M>f</M> can be obtained as a power of the
 ##  <Ref Attr="FrobeniusAutomorphism"/> value of <M>F</M>.)
+##  <P/>
+##  The attribute value is set for example in groups constructed with
+##  <Ref Func="GeneralUnitaryGroup"/>. Together with
+##  <Ref Prop="IsFullSubgroupGLorSLRespectingSesquilinearForm"/>,
+##  it can be used for efficient membership tests in <A>matgrp</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -392,10 +417,19 @@ DeclareAttribute( "InvariantSesquilinearForm", IsMatrixGroup );
 ##  <Prop Name="IsFullSubgroupGLorSLRespectingSesquilinearForm" Arg='matgrp'/>
 ##
 ##  <Description>
-##  This property tests, whether a matrix group <A>matgrp</A> is the full
-##  subgroup of GL or SL (the property <Ref Prop="IsSubgroupSL"/> determines
-##  which it is) respecting the form stored as the value of
+##  If this property is set then the matrix group <A>matgrp</A> is the full
+##  subgroup of <C>GL</C><M>(d, q)</M> or <C>SL</C><M>(d, q)</M>
+##  respecting the form stored as the value of
 ##  <Ref Attr="InvariantSesquilinearForm"/> for <A>matgrp</A>.
+##  <P/>
+##  The value <M>d</M> is the <Ref Attr="DimensionOfMatrixGroup"/> value of
+##  <A>matgrp</A>,
+##  and <M>q</M> is the size of the <C>baseDomain</C> component of the
+##  record stored as <Ref Attr="InvariantSesquilinearForm"/>.
+##  <P/>
+##  The property <Ref Prop="IsSubgroupSL"/> of <A>matgrp</A> determines
+##  whether <C>GL</C> or <C>SL</C> is meant for
+##  <Ref Prop="IsFullSubgroupGLorSLRespectingSesquilinearForm"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -415,36 +449,41 @@ InstallTrueMethod( IsGroup, IsFullSubgroupGLorSLRespectingSesquilinearForm );
 ##
 ##  <Description>
 ##  For a matrix group <A>matgrp</A>, <Ref Attr="InvariantQuadraticForm"/>
-##  returns a record containing at least the component <C>matrix</C>
-##  whose value is a matrix <M>Q</M>.
-##  The quadratic form <M>q</M> on the natural vector space <M>V</M> on which
-##  <A>matgrp</A> acts is given by <M>q(v) = v Q v^{tr}</M>,
+##  returns a record containing at least the components <C>matrix</C>,
+##  whose value is a matrix <M>Q</M>,
+##  and <C>baseDomain</C>, whose value is a field <M>F</M>.
+##  <P/>
+##  The quadratic form <M>q</M> on the natural <M>F</M>-vector space <M>V</M>
+##  on which <A>matgrp</A> acts is given by <M>q(v) = v Q v^{tr}</M>,
 ##  and the invariance under <A>matgrp</A> is given by the equation
 ##  <M>q(v) = q(v M)</M> for all <M>v \in V</M> and <M>M</M> in
 ##  <A>matgrp</A>.
 ##  (Note that the invariance of <M>q</M> does <E>not</E> imply that the
 ##  matrix <M>Q</M> is invariant under <A>matgrp</A>.)
 ##  <P/>
-##  <M>q</M> is defined relative to an invariant symmetric bilinear form
-##  <M>f</M> (see&nbsp;<Ref Attr="InvariantBilinearForm"/>),
+##  The function <M>q</M> is defined relative to an invariant symmetric
+##  bilinear form <M>b</M> (see&nbsp;<Ref Attr="InvariantBilinearForm"/>),
 ##  via the equation
 ##  <M>q(\lambda x + \mu y) =
-##  \lambda^2 q(x) + \lambda \mu f(x,y) + \mu^2 q(y)</M>,
+##  \lambda^2 q(x) + \lambda \mu b(x,y) + \mu^2 q(y)</M>,
 ##  see <Cite Key="CCN85" Where="Chapter 3.4"/>.
-##  If <M>f</M> is represented by the matrix <M>F</M> then this implies
-##  <M>F = Q + Q^{tr}</M>.
-##  In characteristic different from <M>2</M>, we have <M>q(x) = f(x,x)/2</M>,
+##  If <M>b</M> is represented by the matrix <M>B</M> then this implies
+##  <M>B = Q + Q^{tr}</M>.
+##  In characteristic different from <M>2</M>, we have <M>q(x) = b(x,x)/2</M>,
 ##  so <M>Q</M> can be chosen as the strictly upper triangular part of
-##  <M>F</M> plus half of the diagonal part of <M>F</M>.
-##  In characteristic <M>2</M>, <M>F</M> does not determine <M>Q</M>
+##  <M>B</M> plus half of the diagonal part of <M>B</M>.
+##  In characteristic <M>2</M>, <M>B</M> does not determine <M>Q</M>
 ##  but still <M>Q</M> can be chosen as an upper (or lower) triangular matrix.
 ##  <P/>
 ##  Whenever the <Ref Attr="InvariantQuadraticForm"/> value is set in a
 ##  matrix group then also the <Ref Attr="InvariantBilinearForm"/> value
 ##  can be accessed,
 ##  and the two values are compatible in the above sense.
-##  <!-- So wouldn't it be natural to store the inv. bilinear form in the-->
-##  <!-- record of the invariant quadratic form?-->
+##  <P/>
+##  The attribute value is set for example in groups constructed with
+##  <Ref Func="GeneralOrthogonalGroup"/>. Together with
+##  <Ref Prop="IsFullSubgroupGLorSLRespectingQuadraticForm"/>,
+##  it can be used for efficient membership tests in <A>matgrp</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -461,35 +500,45 @@ DeclareAttribute( "InvariantQuadraticForm", IsMatrixGroup );
 ##  <Prop Name="IsFullSubgroupGLorSLRespectingQuadraticForm" Arg='matgrp'/>
 ##
 ##  <Description>
-##  This property tests, whether the matrix group <A>matgrp</A> is the full
-##  subgroup of GL or SL (the property <Ref Prop="IsSubgroupSL"/> determines
-##  which it is) in the right dimension over the (smallest) ring which
-##  contains all entries of its elements,
-##  respecting the <Ref Attr="InvariantQuadraticForm"/> value
-##  of <A>matgrp</A>.
+##  If this property is set then the matrix group <A>matgrp</A> is the full
+##  subgroup of <C>GL</C><M>(d, q)</M> or <C>SL</C><M>(d, q)</M>
+##  respecting the form stored as the value of
+##  <Ref Attr="InvariantQuadraticForm"/> for <A>matgrp</A>.
+##  <P/>
+##  The value <M>d</M> is the <Ref Attr="DimensionOfMatrixGroup"/> value of
+##  <A>matgrp</A>,
+##  and <M>q</M> is the size of the <C>baseDomain</C> component of the
+##  record stored as <Ref Attr="InvariantQuadraticForm"/>.
+##  <P/>
+##  The property <Ref Prop="IsSubgroupSL"/> of <A>matgrp</A> determines
+##  whether <C>GL</C> or <C>SL</C> is meant for
+##  <Ref Prop="IsFullSubgroupGLorSLRespectingQuadraticForm"/>.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> g:= Sp( 2, 3 );;
 ##  gap> m:= InvariantBilinearForm( g ).matrix;
 ##  [ [ 0*Z(3), Z(3)^0 ], [ Z(3), 0*Z(3) ] ]
-##  gap> [ 0, 1 ] * m * [ 1, -1 ];           # evaluate the bilinear form
+##  gap> [ 0, 1 ] * m * [ 1, -1 ];       # evaluate the bilinear form
 ##  Z(3)
 ##  gap> IsFullSubgroupGLorSLRespectingBilinearForm( g );
 ##  true
 ##  gap> g:= SU( 2, 4 );;
 ##  gap> m:= InvariantSesquilinearForm( g ).matrix;
 ##  [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ]
-##  gap> [ 0, 1 ] * m * [ 1, 1 ];            # evaluate the bilinear form
+##  gap> [ 0, 1 ] * m * [ 1, 1 ];        # evaluate the sesquilinear form
 ##  Z(2)^0
 ##  gap> IsFullSubgroupGLorSLRespectingSesquilinearForm( g );
+##  true
+##  gap> IsSubgroupSL( g );
 ##  true
 ##  gap> g:= GO( 1, 2, 3 );;
 ##  gap> m:= InvariantBilinearForm( g ).matrix;
 ##  [ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, 0*Z(3) ] ]
-##  gap> [ 0, 1 ] * m * [ 1, 1 ];            # evaluate the bilinear form
+##  gap> [ 0, 1 ] * m * [ 1, 1 ];        # evaluate the bilinear form
 ##  Z(3)^0
 ##  gap> q:= InvariantQuadraticForm( g ).matrix;
 ##  [ [ 0*Z(3), Z(3)^0 ], [ 0*Z(3), 0*Z(3) ] ]
-##  gap> [ 0, 1 ] * q * [ 0, 1 ];            # evaluate the quadratic form
+##  gap> [ 0, 1 ] * q * [ 0, 1 ];        # evaluate the quadratic form
 ##  0*Z(3)
 ##  gap> IsFullSubgroupGLorSLRespectingQuadraticForm( g );
 ##  true
