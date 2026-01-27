@@ -52,7 +52,7 @@ function ( filter, q )
 
   SetName(G,Concatenation("Sz(",String(q),")"));
   SetDimensionOfMatrixGroup(G,4);
-  SetFieldOfMatrixGroup(G,f);
+  SetFieldOfMatrixGroup(G,f);  # the first generator contains a prim. root
   SetIsFinite(G,true);
   SetSize(G,q^2*(q-1)*(q^2+1));
   SetIsSimpleGroup(G, q > 2);

@@ -846,6 +846,13 @@ InstallMethod( \in, "respecting quadratic form", IsElmsColls,
                  # bilinear form, which is cheaper to check,
                  # thus we install the current method first
     function( mat, G )
+    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form.
+    # If 'FieldOfMatrixGroup( G )' differs from 'baseDomain' of the form
+    # then the former is a subset of the latter.
+    # Since 'mat' must be defined over 'FieldOfMatrixGroup( G )',
+    # we may check this perhaps stronger condition.
+    # This way, there are more situations where we get a 'false' result
+    # without checking whether the form is respected.
     return IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
        and ( not IsSubgroupSL( G ) or IsOne( DeterminantMat( mat ) ) )
        and RespectsQuadraticForm( InvariantQuadraticForm( G ).matrix, mat );
@@ -856,6 +863,8 @@ InstallMethod( \in, "respecting bilinear form", IsElmsColls,
     {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
 function( mat, G )
     local inv;
+    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form,
+    # see the comment for the '\in' method above.
     if not IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
        or ( IsSubgroupSL( G ) and not IsOne( DeterminantMat( mat ) ) ) then
       return false;
@@ -868,13 +877,16 @@ InstallMethod( \in, "respecting sesquilinear form", IsElmsColls,
     [ IsMatrix, IsFullSubgroupGLorSLRespectingSesquilinearForm ],
     {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
 function( mat, G )
-    local pow, inv;
+    local form, pow, inv;
+    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form,
+    # see the comment for the '\in' method above.
     if not IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ mat ] ) )
        or ( IsSubgroupSL( G ) and not IsOne( DeterminantMat( mat ) ) ) then
       return false;
     fi;
-    pow:= RootInt( Size( FieldOfMatrixGroup( G ) ) );
-    inv:= InvariantSesquilinearForm(G).matrix;
+    form:= InvariantSesquilinearForm(G);
+    pow:= RootInt( Size( form.baseDomain ) );
+    inv:= form.matrix;
     return mat * inv * List( TransposedMat( mat ),
                              row -> List( row, x -> x^pow ) )
            = inv;
@@ -1274,7 +1286,7 @@ InstallMethod( InvariantBilinearForm,
 InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
     [ IsMatrixGroup, IsMultiplicativeElementWithInverse ],
     function( G, g )
-    local   H, m, ginv;
+    local   H, F, form, m, D, ginv, pow;
 
     H := GroupByGenerators( OnTuples( GeneratorsOfGroup( G ), g ), One( G ) );
     UseIsomorphismRelation( G, H );
@@ -1287,27 +1299,45 @@ InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
     if HasIsSubgroupSL( G ) then
       SetIsSubgroupSL( H, IsSubgroupSL( G ) );
     fi;
+    F:= FieldOfMatrixList( [ g ] );
     if HasInvariantBilinearForm( G ) then
       if not IsBound( ginv ) then
         ginv := g^-1;
       fi;
-      m := ginv * InvariantBilinearForm( G ).matrix * TransposedMat( ginv );
-      SetInvariantBilinearForm( H, rec( matrix := m ) );
+      form := InvariantBilinearForm( G );
+      m := ginv * form.matrix * TransposedMat( ginv );
+      if not IsBound( D ) then
+        D:= form.baseDomain;
+        if not IsSubset( D, F ) then
+          D:= ClosureField( D, F );
+        fi;
+      fi;
+      SetInvariantBilinearForm( H, rec( matrix := m, baseDomain := D ) );
     fi;
     if HasInvariantQuadraticForm( G ) then
       if not IsBound( ginv ) then
         ginv := g^-1;
       fi;
-      m := ginv * InvariantQuadraticForm( G ).matrix * TransposedMat( ginv );
-      SetInvariantQuadraticForm( H, rec( matrix := m ) );
+      form := InvariantQuadraticForm( G );
+      m := ginv * form.matrix * TransposedMat( ginv );
+      if not IsBound( D ) then
+        D:= form.baseDomain;
+        if not IsSubset( D, F ) then
+          D:= ClosureField( D, F );
+        fi;
+      fi;
+      SetInvariantQuadraticForm( H, rec( matrix := m, baseDomain := D ) );
     fi;
-    if IsSubset( FieldOfMatrixGroup( G ), FieldOfMatrixList( [ g ] ) ) then
+    if IsSubset( FieldOfMatrixGroup( G ), F ) then
       if HasIsNaturalGL( G ) then
         SetIsNaturalGL( H, IsNaturalGL( G ) );
       fi;
       if HasIsNaturalSL( G ) then
         SetIsNaturalSL( H, IsNaturalSL( G ) );
       fi;
+
+      # We have in particular that the 'baseDomain' of a stored invariant form
+      # contains 'F'.
       if HasIsFullSubgroupGLorSLRespectingBilinearForm( G )
           and IsFullSubgroupGLorSLRespectingBilinearForm( G ) then
         SetIsFullSubgroupGLorSLRespectingBilinearForm( H, true );
@@ -1315,6 +1345,22 @@ InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
       if HasIsFullSubgroupGLorSLRespectingQuadraticForm( G )
           and IsFullSubgroupGLorSLRespectingQuadraticForm( G ) then
         SetIsFullSubgroupGLorSLRespectingQuadraticForm( H, true );
+      fi;
+
+      # For a stored sesquilinear form, we have to keep the meaning
+      # of the involutory field automorphism,
+      # which is defined by the 'baseDomain' component of the form.
+      # We transfer the form only if the field of definition does not grow.
+      if HasInvariantSesquilinearForm( G ) then
+        if not IsBound( ginv ) then
+          ginv:= g^-1;
+        fi;
+        form:= InvariantSesquilinearForm( G );
+        D:= form.baseDomain;
+        pow:= RootInt( Size( D ) );
+        m:= ginv * form.matrix * List( TransposedMat( ginv ),
+                                       row -> List( row, x -> x^pow ) );
+        SetInvariantSesquilinearForm( H, rec( matrix:= m, baseDomain:= D ) );
       fi;
     fi;
     return H;

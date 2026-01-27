@@ -1,3 +1,10 @@
+#@local CheckGeneratorsInvertible, CheckGeneratorsSpecial, CheckField
+#@local CheckBilinearForm, CheckQuadraticForm, frob, CheckSesquilinearForm
+#@local CheckSize, CheckClasses, CheckMembershipFromForm
+#@local CheckMembershipBilinear, CheckMembershipBilinear2
+#@local CheckMembershipSesquilinear
+#@local CheckMembershipQuadratic, CheckMembershipQuadratic2
+#@local grps1, grps2, grps, d, q, G, m
 #
 # Tests invariant forms of classic groups
 #
@@ -11,6 +18,12 @@ gap> CheckGeneratorsInvertible := function(G)
 gap> CheckGeneratorsSpecial := function(G)
 >   return ForAll(GeneratorsOfGroup(G),
 >               g -> IsOne(Determinant(g)));
+> end;;
+
+# verify `FieldOfMatrixGroup`
+gap> CheckField := function(G)
+>   return FieldOfMatrixGroup( G )
+>          = FieldOfMatrixGroup( Group( GeneratorsOfGroup( G ), One( G ) ) );
 > end;;
 
 # verify that forms are given and preserved
@@ -34,7 +47,7 @@ gap> frob := function(g,aut)
 gap> CheckSesquilinearForm := function(G)
 >   local M, F, aut;
 >   M := InvariantSesquilinearForm(G).matrix;
->   F := FieldOfMatrixGroup(G);
+>   F := InvariantSesquilinearForm(G).baseDomain;
 >   aut := FrobeniusAutomorphism(F);
 >   aut := aut^(DegreeOverPrimeField(F)/2);
 >   return ForAll(GeneratorsOfGroup(G),
@@ -44,87 +57,166 @@ gap> CheckSesquilinearForm := function(G)
 # verify group size if the underlying module is small
 gap> CheckSize := function(g)
 >    if Size(FieldOfMatrixGroup(g))^DimensionOfMatrixGroup(g) < 1000 then
->        return Size(g) = Size(Group(GeneratorsOfGroup(g)));
+>        return Size(g) = Size(Group(GeneratorsOfGroup(g), One(g)));
+>    fi;
+>    return true;
+> end;;
+
+# verify class numbers if the group is small
+gap> CheckClasses:= function( G )
+>    if Size(FieldOfMatrixGroup(G))^DimensionOfMatrixGroup(G) < 1000 then
+>        return NrConjugacyClasses(G)
+>               = NrConjugacyClasses(Group(GeneratorsOfGroup(G), One(G)));
+>    fi;
+>    return true;
+> end;;
+
+# run some membership tests (there are special methods based on forms)
+gap> CheckMembershipFromForm:= function( G, form )
+>    local full;
+>    full:= GL( DimensionOfMatrixGroup( G ), form.baseDomain );
+>    return ForAll( [ 1 .. 10 ], i -> PseudoRandom( G ) in G ) and
+>           ( ForAny( GeneratorsOfGroup( full ), g -> not ( g in G ) ) or
+>             Size( G ) = Size( full ) );
+> end;;
+gap> CheckMembershipBilinear:= function( G )
+>    return HasIsFullSubgroupGLorSLRespectingBilinearForm( G )
+>           and IsFullSubgroupGLorSLRespectingBilinearForm( G )
+>           and CheckMembershipFromForm( G, InvariantBilinearForm( G ) );
+> end;;
+gap> CheckMembershipBilinear2:= function( G )
+>    if HasIsFullSubgroupGLorSLRespectingBilinearForm( G )
+>       and IsFullSubgroupGLorSLRespectingBilinearForm( G ) then
+>      return CheckMembershipFromForm( G, InvariantBilinearForm( G ) );
+>    fi;
+>    return true;
+> end;;
+gap> CheckMembershipSesquilinear:= function( G )
+>    return HasIsFullSubgroupGLorSLRespectingSesquilinearForm( G )
+>           and IsFullSubgroupGLorSLRespectingSesquilinearForm( G )
+>           and CheckMembershipFromForm( G, InvariantSesquilinearForm( G ) );
+> end;;
+gap> CheckMembershipQuadratic:= function( G )
+>    return HasIsFullSubgroupGLorSLRespectingQuadraticForm( G )
+>           and IsFullSubgroupGLorSLRespectingQuadraticForm( G )
+>           and CheckMembershipFromForm( G, InvariantQuadraticForm( G ) );
+> end;;
+gap> CheckMembershipQuadratic2:= function( G )
+>    if HasIsFullSubgroupGLorSLRespectingQuadraticForm( G )
+>       and IsFullSubgroupGLorSLRespectingQuadraticForm( G ) then
+>      return CheckMembershipFromForm( G, InvariantQuadraticForm( G ) );
 >    fi;
 >    return true;
 > end;;
 
 # odd-dimensional general orthogonal groups
-gap> grps:=[];;
-gap> for d in [3,5,7] do
+gap> grps1:=[];;
+gap> grps2:=[];;
+gap> for d in [1,3,5,7] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
->     Add(grps, GO(d,q));
->     Add(grps, GO(d,q) ^ RandomInvertibleMat(d,GF(q)));
->     Add(grps, GO(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>     Add(grps1, GO(d,q));
+>     Add(grps2, GO(d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps2, GO(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
 >   od;
 > od;
+gap> grps:= Concatenation( grps1, grps2 );;
 gap> ForAll(grps, CheckGeneratorsInvertible);
+true
+gap> ForAll(grps, CheckField);
 true
 gap> ForAll(grps, CheckBilinearForm);
 true
 gap> ForAll(grps, CheckQuadraticForm);
 true
 gap> ForAll(grps, CheckSize);
+true
+gap> ForAll(grps1, CheckMembershipQuadratic);
+true
+gap> ForAll(grps2, CheckMembershipQuadratic2);
 true
 
 # even-dimensional general orthogonal groups
-gap> grps:=[];;
+gap> grps1:=[];;
+gap> grps2:=[];;
 gap> for d in [2,4,6,8] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
->     Add(grps, GO(+1,d,q));
->     Add(grps, GO(-1,d,q));
->     Add(grps, GO(+1,d,q) ^ RandomInvertibleMat(d,GF(q)));
->     Add(grps, GO(-1,d,q) ^ RandomInvertibleMat(d,GF(q)));
->     Add(grps, GO(+1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
->     Add(grps, GO(-1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>     Add(grps1, GO(+1,d,q));
+>     Add(grps1, GO(-1,d,q));
+>     Add(grps2, GO(+1,d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps2, GO(-1,d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps2, GO(+1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>     Add(grps2, GO(-1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
 >   od;
 > od;
+gap> grps:= Concatenation( grps1, grps2 );;
 gap> ForAll(grps, CheckGeneratorsInvertible);
+true
+gap> ForAll(grps, CheckField);
 true
 gap> ForAll(grps, CheckBilinearForm);
 true
 gap> ForAll(grps, CheckQuadraticForm);
 true
 gap> ForAll(grps, CheckSize);
+true
+gap> ForAll(grps1, CheckMembershipQuadratic);
+true
+gap> ForAll(grps2, CheckMembershipQuadratic2);
 true
 
 # odd-dimensional special orthogonal groups
-gap> grps:=[];;
-gap> for d in [3,5,7] do
+gap> grps1:=[];;
+gap> grps2:=[];;
+gap> for d in [1,3,5,7] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
->     Add(grps, SO(d,q));
->     Add(grps, SO(d,q) ^ RandomInvertibleMat(d,GF(q)));
->     Add(grps, SO(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>     Add(grps1, SO(d,q));
+>     Add(grps2, SO(d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps2, SO(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
 >   od;
 > od;
+gap> grps:= Concatenation( grps1, grps2 );;
 gap> ForAll(grps, CheckGeneratorsSpecial);
+true
+gap> ForAll(grps, CheckField);
 true
 gap> ForAll(grps, CheckBilinearForm);
 true
 gap> ForAll(grps, CheckQuadraticForm);
 true
 gap> ForAll(grps, CheckSize);
+true
+gap> ForAll(grps1, CheckMembershipQuadratic);
+true
+gap> ForAll(grps2, CheckMembershipQuadratic2);
 true
 
 # even-dimensional special orthogonal groups
-gap> grps:=[];;
+gap> grps1:=[];;
+gap> grps2:=[];;
 gap> for d in [2,4,6,8] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
->     Add(grps, SO(+1,d,q));
->     Add(grps, SO(-1,d,q));
->     Add(grps, SO(+1,d,q) ^ RandomInvertibleMat(d,GF(q)));
->     Add(grps, SO(-1,d,q) ^ RandomInvertibleMat(d,GF(q)));
->     Add(grps, SO(+1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
->     Add(grps, SO(-1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>     Add(grps1, SO(+1,d,q));
+>     Add(grps1, SO(-1,d,q));
+>     Add(grps2, SO(+1,d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps2, SO(-1,d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps2, SO(+1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>     Add(grps2, SO(-1,d,q) ^ RandomInvertibleMat(d,GF(q^2)));
 >   od;
 > od;
+gap> grps:= Concatenation( grps1, grps2 );;
 gap> ForAll(grps, CheckGeneratorsSpecial);
+true
+gap> ForAll(grps, CheckField);
 true
 gap> ForAll(grps, CheckBilinearForm);
 true
 gap> ForAll(grps, CheckQuadraticForm);
 true
 gap> ForAll(grps, CheckSize);
+true
+gap> ForAll(grps1, CheckMembershipQuadratic);
+true
+gap> ForAll(grps2, CheckMembershipQuadratic2);
 true
 
 #
@@ -133,7 +225,7 @@ true
 
 # odd-dimensional
 gap> grps:=[];;
-gap> for d in [3,5,7] do
+gap> for d in [1,3,5,7] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
 >     Add(grps, Omega(d,q));
 >     Add(grps, Omega(d,q) ^ RandomInvertibleMat(d,GF(q)));
@@ -141,6 +233,8 @@ gap> for d in [3,5,7] do
 >   od;
 > od;
 gap> ForAll(grps, CheckGeneratorsSpecial);
+true
+gap> ForAll(grps, CheckField);
 true
 gap> ForAll(grps, CheckBilinearForm);
 true
@@ -163,6 +257,8 @@ gap> for d in [2,4,6,8] do
 > od;
 gap> ForAll(grps, CheckGeneratorsSpecial);
 true
+gap> ForAll(grps, CheckField);
+true
 gap> ForAll(grps, CheckBilinearForm);
 true
 gap> ForAll(grps, CheckQuadraticForm);
@@ -175,17 +271,25 @@ true
 #
 
 # general unitary groups
-gap> grps:=[];;
+gap> grps1:=[];;
+gap> grps2:=[];;
 gap> for d in [1..6] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
->     Add(grps, GU(d,q));
+>     Add(grps1, GU(d,q));
+>     Add(grps1, GU(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>     Add(grps2, GU(d,q) ^ RandomInvertibleMat(d,GF(q^4)));
 >   od;
 > od;
+gap> grps:= Concatenation( grps1, grps2 );;
 gap> ForAll(grps, CheckGeneratorsInvertible);
 true
-gap> ForAll(grps, CheckSesquilinearForm);
+gap> ForAll(grps, CheckField);
+true
+gap> ForAll(grps1, CheckSesquilinearForm);
 true
 gap> ForAll(grps, CheckSize);
+true
+gap> ForAll(grps1, CheckClasses);
 true
 
 # special unitary groups
@@ -197,28 +301,49 @@ gap> for d in [1..6] do
 > od;
 gap> ForAll(grps, CheckGeneratorsInvertible);
 true
+gap> ForAll(grps, CheckField);
+true
 gap> ForAll(grps, CheckSesquilinearForm);
 true
 gap> ForAll(grps, CheckSize);
+true
+gap> ForAll(grps, CheckClasses);
+true
+gap> ForAll(grps, CheckMembershipSesquilinear);
 true
 
 #
 # symplectic groups
 #
-gap> grps:=[];;
+gap> grps1:=[];;
+gap> grps2:=[];;
 gap> for d in [2,4,6,8] do
 >   for q in [2,3,4,5,7,8,9,16,17,25,27] do
->     Add(grps, Sp(d,q));
->     Add(grps, Sp(d,q) ^ RandomInvertibleMat(d,GF(q)));
->     Add(grps, Sp(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>     Add(grps1, Sp(d,q));
+>     Add(grps2, Sp(d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps2, Sp(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
 >   od;
 > od;
+gap> grps:= Concatenation( grps1, grps2 );;
 gap> ForAll(grps, CheckGeneratorsSpecial);
+true
+gap> ForAll(grps, CheckField);
 true
 gap> ForAll(grps, CheckBilinearForm);
 true
 gap> ForAll(grps, CheckSize);
 true
+gap> ForAll(grps1, CheckMembershipBilinear);
+true
+gap> ForAll(grps2, CheckMembershipBilinear2);
+true
+
+# an undocumented helper function
+gap> G:= GeneralOrthogonalGroup( 3, GF(5) );;
+gap> m:= [ [ 0, 1, 0 ], [ 0, 0, 0 ], [ 0, 0, 1 ] ] * Z(5)^0;;
+gap> SetInvariantQuadraticFormFromMatrix( G, m );
+Error, only the three argument variant of SetInvariantQuadraticFormFromMatrix \
+is supported, the form record needs a 'baseDomain' component
 
 #
 gap> STOP_TEST("classic-forms.tst");
