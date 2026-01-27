@@ -1274,7 +1274,7 @@ InstallMethod( InvariantBilinearForm,
 InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
     [ IsMatrixGroup, IsMultiplicativeElementWithInverse ],
     function( G, g )
-    local   H, m, ginv, nice, conj;
+    local   H, m, ginv;
 
     H := GroupByGenerators( OnTuples( GeneratorsOfGroup( G ), g ), One( G ) );
     UseIsomorphismRelation( G, H );
@@ -1317,16 +1317,5 @@ InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
         SetIsFullSubgroupGLorSLRespectingQuadraticForm( H, true );
       fi;
     fi;
-    if HasNiceMonomorphism( G ) then
-      nice := NiceMonomorphism( G );
-      if not IsBound( ginv ) then
-        ginv := g^-1;
-      fi;
-      conj := GroupHomomorphismByFunction( H, G, y -> g*y*ginv, x -> ginv*x*g );
-      SetNiceMonomorphism( H, conj * nice );
-      if HasNiceObject( G ) then
-        SetNiceObject( H, NiceObject( G ) );
-      fi;
-     fi;
     return H;
 end );
