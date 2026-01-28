@@ -556,7 +556,7 @@ end );
 ##
 BindGlobal( "IsomorphismPermGroupForMatrixGroup",
 function(G)
-local map;
+local map,H;
   if HasNiceMonomorphism(G) and IsPermGroup(Range(NiceMonomorphism(G))) then
     map:=NiceMonomorphism(G);
   else
@@ -567,10 +567,17 @@ local map;
     map:=NicomorphismOfGeneralMatrixGroup(G,false,false);
     SetNiceMonomorphism(G,map);
   fi;
-  if IsIdenticalObj(Source(map),G) then
+  if IsIdenticalObj(Source(map),G) and IsBijective(map) then
     return map;
   fi;
-  return GeneralRestrictedMapping(map,G,NiceObject(G));
+  if IsIdenticalObj(map, NiceMonomorphism(G)) then
+    H:=NiceObject(G);
+  else
+    H:=ImagesSet(map,G);
+  fi;
+  map:=GeneralRestrictedMapping(map, G, H);
+  SetIsBijective(map, true);
+  return map;
 end);
 
 InstallMethod( IsomorphismPermGroup,
