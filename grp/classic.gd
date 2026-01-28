@@ -18,20 +18,28 @@
 ##  <#GAPDoc Label="[1]{classic}">
 ##  The following functions return classical groups.
 ##  <P/>
+##  <E>Generators</E>
+##  <P/>
+##  <List>
+##  <Item>
 ##  For the linear, symplectic, and unitary groups (the latter in dimension
 ##  at least <M>3</M>),
 ##  the generators are taken from&nbsp;<Cite Key="Tay87"/>.
+##  </Item>
+##  <Item>
 ##  For the unitary groups in dimension <M>2</M>, the isomorphism of
 ##  SU<M>(2,q)</M> and SL<M>(2,q)</M> is used,
 ##  see for example&nbsp;<Cite Key="Hup67"/>.
-##  <P/>
+##  </Item>
+##  <Item>
 ##  The generators of the general and special orthogonal groups are taken
 ##  from&nbsp;<Cite Key="IshibashiEarnest94"/> and
 ##  <Cite Key="KleidmanLiebeck90"/>,
 ##  except that the generators of the groups in odd dimension in even
 ##  characteristic are constructed via the isomorphism to a symplectic group,
 ##  see for example&nbsp;<Cite Key="Car72a"/>.
-##  <P/>
+##  </Item>
+##  <Item>
 ##  The generators of the groups <M>\Omega^\epsilon(d, q)</M> are taken
 ##  from&nbsp;<Cite Key="RylandsTalor98"/>,
 ##  except that in odd dimension and even characteristic,
@@ -45,7 +53,8 @@
 ##  except in the case <M>(d,q) = (5,2)</M>,
 ##  where the matrices from&nbsp;<Cite Key="RylandsTalor98"/> generate
 ##  the simple group <M>S_4(2)'</M> and not the group <M>S_4(2)</M>.
-##  <P/>
+##  </Item>
+##  <Item>
 ##  The generators for the semilinear groups are constructed from the
 ##  generators of the corresponding linear groups plus one additional
 ##  generator that describes the action of the group of field automorphisms;
@@ -53,15 +62,36 @@
 ##  this yields the matrix groups <M>Gamma</M>L<M>(d, p^f)</M> and
 ##  <M>Sigma</M>L<M>(d, p^f)</M> as groups of <M>d f \times df</M> matrices
 ##  over the field with <M>p</M> elements.
+##  </Item>
+##  <Item>
+##  The generators for the conformal symplectic groups are taken
+##  from&nbsp;<Cite Key="Tay21"/>.
+##  </Item>
+##  </List>
 ##  <P/>
+##  <E>Invariant forms</E>
+##  <P/>
+##  <List>
+##  <Item>
 ##  For symplectic and orthogonal matrix groups returned by the functions
 ##  described below, the invariant bilinear form is stored as the value of
 ##  the attribute <Ref Attr="InvariantBilinearForm"/>.
-##  Analogously, the invariant sesquilinear form defining the unitary groups
+##  </Item>
+##  <Item>
+##  The invariant sesquilinear form defining the unitary groups
 ##  is stored as the value of the attribute
 ##  <Ref Attr="InvariantSesquilinearForm"/>).
+##  </Item>
+##  <Item>
 ##  The defining quadratic form of orthogonal groups is stored as the value
 ##  of the attribute <Ref Attr="InvariantQuadraticForm"/>.
+##  </Item>
+##  <Item>
+##  The bilinear form that is invariant up to scalars under the
+##  conformal symplectic group is stored as the value of the attribute
+##  <Ref Attr="InvariantBilinearFormUpToScalars"/>.
+##  </Item>
+##  </List>
 ##  <P/>
 ##  Note that due to the different sources for the generators,
 ##  the invariant forms for the groups <M>\Omega(e,d,q)</M> are in general
@@ -707,45 +737,51 @@ DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 
 #############################################################################
 ##
+#F  SymplecticGroup( [<filt>, ]<d>, <R>[, <form>] ) . . . .  symplectic group
 #F  SymplecticGroup( [<filt>, ]<d>, <q>[, <form>] ) . . . .  symplectic group
 #F  SymplecticGroup( [<filt>, ]<form> ) . . . . . . . . . .  symplectic group
+#F  Sp( [<filt>, ]<d>, <R>[, <form>] )
 #F  Sp( [<filt>, ]<d>, <q>[, <form>] )
 #F  Sp( [<filt>, ]<form> )
+#F  SP( [<filt>, ]<d>, <R>[, <form>] )
 #F  SP( [<filt>, ]<d>, <q>[, <form>] )
 #F  SP( [<filt>, ]<form> )
 ##
 ##  <#GAPDoc Label="SymplecticGroup">
 ##  <ManSection>
 ##  <Heading>SymplecticGroup</Heading>
+##  <Func Name="SymplecticGroup" Arg='[filt, ]d, R[, form]'
+##   Label="for dimension and a ring"/>
 ##  <Func Name="SymplecticGroup" Arg='[filt, ]d, q[, form]'
 ##   Label="for dimension and field size"/>
-##  <Func Name="SymplecticGroup" Arg='[filt, ]d, ring[, form]'
-##   Label="for dimension and a ring"/>
 ##  <Func Name="SymplecticGroup" Arg='[filt, ]form'
 ##   Label="for form"/>
+##  <Func Name="Sp" Arg='[filt, ]d, R[, form]'
+##   Label="for dimension and a ring"/>
 ##  <Func Name="Sp" Arg='[filt, ]d, q[, form]'
 ##   Label="for dimension and field size"/>
-##  <Func Name="Sp" Arg='[filt, ]d, ring[, form]'
-##   Label="for dimension and a ring"/>
 ##  <Func Name="Sp" Arg='[filt, ]form'
 ##   Label="for form"/>
+##  <Func Name="SP" Arg='[filt, ]d, R[, form]'
+##   Label="for dimension and a ring"/>
 ##  <Func Name="SP" Arg='[filt, ]d, q[, form]'
 ##   Label="for dimension and field size"/>
-##  <Func Name="SP" Arg='[filt, ]d, ring[, form]'
-##   Label="for dimension and a ring"/>
 ##  <Func Name="SP" Arg='[filt, ]form'
 ##   Label="for form"/>
 ##
 ##  <Description>
 ##  constructs a group isomorphic to the symplectic group
-##  Sp( <A>d</A>, <A>q</A> ) of those <M><A>d</A> \times <A>d</A></M>
-##  matrices over the field with <A>q</A> elements (respectively the ring
-##  <A>ring</A>)
+##  Sp( <A>d</A>, <A>R</A> ) of those <M><A>d</A> \times <A>d</A></M>
+##  matrices over the ring <A>R</A> or the field with <A>q</A> elements,
+##  respectively,
 ##  that respect a fixed nondegenerate symplectic form,
 ##  in the category given by the filter <A>filt</A>.
 ##  <P/>
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the symplectic group itself.
+##  Another supported value for <A>filt</A> is
+##  <Ref Filt="IsPermGroup"/>;
+##  in this case, the argument <A>form</A> is not supported.
 ##  <P/>
 ##  At the moment finite fields or residue class rings
 ##  <C>Integers mod <A>q</A></C>, with <A>q</A> an odd prime power, are
@@ -759,7 +795,7 @@ DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 ##  or a group with stored <Ref Attr="InvariantBilinearForm"/> value
 ##  (and then this form is taken).
 ##  <P/>
-##  A given <A>form</A> determines and <A>d</A>, and also <A>q</A>
+##  A given <A>form</A> determines <A>d</A>, and also <A>R</A>
 ##  except if <A>form</A> is a matrix that does not store its
 ##  <Ref Attr="BaseDomain" Label="for a matrix object"/> value.
 ##  These parameters can be entered, and an error is signalled if they do
