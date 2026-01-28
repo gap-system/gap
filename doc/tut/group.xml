@@ -1218,7 +1218,9 @@ composition of two maps (a nice monomorphism and an isomorphism)
 which know that they are injective.
 In general, the injectivity flag of a map <C>map</C> gets set if one tests
 the property by calling <C>IsInjective( map )</C>;
-if one is sure that <C>map</C> is injective and wants to avoid the
+note that this call may compute and store some different nice monomorphism
+in the source of <C>map</C>.
+If one is sure that <C>map</C> is injective and wants to avoid the
 potentially expensive test then one can set the flag by explicitly
 calling <C>SetIsInjective( map, true )</C>.
 <P/>

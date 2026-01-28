@@ -344,11 +344,33 @@ nice monomorphism of a given group <C>G</C>,
 for example if <C>G</C> is a matrix group and <C>map</C> describes the
 faithful action of <C>G</C> on a small set of vectors.
 In such a case, one can prescribe this monomorphism via
-<C>SetNiceMonomorphism( G, map )</C>,
-provided that <C>map</C> stores that it is injective.
-The latter can be achieved by calling <C>IsInjective( map )</C> or,
-if one is sure that <C>map</C> is injective and one wants to avoid the
-overhead of the test, by calling <C>SetIsInjective( map, true )</C>.
+<C>SetNiceMonomorphism( G, map )</C> if certain technical requirements
+are satisfied.
+<P/>
+<List>
+<Item>
+  <C>G</C> does not store a nice monomorphism already
+  (i.e., <C>HasNiceMonomorphism( G )</C> returns <K>false</K>).
+</Item>
+<Item>
+  <C>map</C> stores that it is injective.
+  This can be achieved by calling <C>IsInjective( map )</C> or,
+  if one is sure that <C>map</C> is injective and one wants to avoid the
+  overhead of the test, by calling <C>SetIsInjective( map, true )</C>.
+  Note that the <C>IsInjective</C> call for <C>map</C> may compute and store
+  some different nice monomorphism in the source of <C>map</C>,
+  which is probably <C>G</C>.
+</Item>
+<Item>
+  <C>map</C> knows that it is a group homomorphism,
+  calling <Ref Oper="ImagesSet"/> with <C>map</C> and a subgroup of <C>G</C>
+  returns a group object, and analogously <Ref Oper="PreImagesSet"/> for an
+  image group returns a group object.
+  For example,
+  mappings constructed with <Ref Func="GeneralMappingByElements"/> will
+  <E>not</E> be <Q>nice enough</Q> to serve as nice monomorphisms.
+</Item>
+</List>
 
 <#Include Label="IsHandledByNiceMonomorphism">
 <#Include Label="NiceMonomorphism">
