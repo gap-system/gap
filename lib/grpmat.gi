@@ -82,30 +82,9 @@ end );
 ##
 #M  DimensionOfMatrixGroup( <mat-grp> )
 ##
-InstallMethod( DimensionOfMatrixGroup, "from generators",
-    [ IsMatrixGroup and HasGeneratorsOfGroup ],
-    function( grp )
-    if not IsEmpty( GeneratorsOfGroup( grp ) )  then
-      return NumberRows( GeneratorsOfGroup( grp )[1] );
-    else
-        TryNextMethod();
-    fi;
-end );
-
-InstallMethod( DimensionOfMatrixGroup, "from one",
-    [ IsMatrixGroup and HasOne ], 1,
-    grp -> NumberRows( One( grp ) ) );
-
-# InstallOtherMethod( DimensionOfMatrixGroup,
-#         "from source of nice monomorphism",
-#         [ IsMatrixGroup and HasNiceMonomorphism ],
-#     grp -> DimensionOfMatrixGroup( Source( NiceMonomorphism( grp ) ) ) );
-#T this was illegal,
-#T since it assumes that the source is a different object than the
-#T original group; if this fails then we run into an infinite recursion!
-
-#T why not delegate to `Representative' instead of installing
-#T different methods?
+InstallMethod( DimensionOfMatrixGroup,
+    [ IsMatrixGroup ],
+    grp -> NumberRows( Representative( grp ) ) );
 
 
 #############################################################################
