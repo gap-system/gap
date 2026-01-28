@@ -4901,6 +4901,15 @@
   <url>https://arxiv.org/abs/2201.09155</url>
 </article></entry>
 
+<entry id="Tay21"><misc>
+  <author>
+    <name><first>D. E.</first><last>Taylor</last></name>
+  </author>
+  <title>Conjugacy Classes in Finite Conformal Symplectic Groups</title>
+  <year>2021</year>
+  <howpublished>https://www.maths.usyd.edu.au/u/don/code/Magma/CSpConjugacy.pdf</howpublished>
+</misc></entry>
+
 <entry id="Theissen93"><mastersthesis>
   <author>
     <name><first>Heiko</first><last>Theißen</last></name>

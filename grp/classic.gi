@@ -12,78 +12,112 @@
 
 #############################################################################
 ##
-#M  SymplecticGroupCons( <IsMatrixGroup>, <d>, <q> )
+#F  GeneratorsAndFormOfSymplecticGroupOverFiniteField( <filt>, <F>, <d>, <q> )
+##
+##  Return '[ <gens>, <form> ]'.
+##  The function is used in 'SymplecticGroupCons' and
+##  'ConformalSymplecticGroupCons'.
+##
+BindGlobal( "GeneratorsAndFormOfSymplecticGroupOverFiniteField",
+    function( filt, F, d, q )
+    local o, mat1, mat2, z, i, c;
+
+    # construct the generators of 'Sp(d, q)'
+    o:= One( F );
+    if d = 4 and q = 2  then
+      # special case Sp(4,2)
+      mat1:= Matrix( filt, F, [1,0,1,1,1,0,0,1,0,1,0,1,1,1,1,1] * o, 4 );
+      mat2:= Matrix( filt, F, [0,0,1,0,1,0,0,0,0,0,0,1,0,1,0,0] * o, 4 );
+    else
+      z:= PrimitiveRoot( F );
+      mat1:= IdentityMatrix( filt, F, d );
+      mat2:= ZeroMatrix( filt, F, d, d );
+      for i  in [ 2 .. d/2 ]      do mat2[i,i-1]:= o;  od;
+      for i  in [ d/2+1 .. d-1 ]  do mat2[i,i+1]:= o;  od;
+
+      if q mod 2 = 1  then
+        mat1[  1,    1] := z;
+        mat1[  d,    d] := z^-1;
+        mat2[  1,    1] := o;
+        mat2[  1,d/2+1] := o;
+        mat2[d-1,  d/2] := o;
+        mat2[  d,  d/2] := -o;
+      elif q <> 2  then
+        mat1[    1,    1] := z;
+        mat1[  d/2,  d/2] := z;
+        mat1[d/2+1,d/2+1] := z^-1;
+        mat1[    d,    d] := z^-1;
+        mat2[    1,d/2-1] := o;
+        mat2[    1,  d/2] := o;
+        mat2[    1,d/2+1] := o;
+        mat2[d/2+1,  d/2] := o;
+        mat2[    d,  d/2] := o;
+      else
+        mat1[    1,  d/2] := o;
+        mat1[    1,    d] := o;
+        mat1[d/2+1,    d] := o;
+        mat2[    1,d/2+1] := o;
+        mat2[    d,  d/2] := o;
+      fi;
+    fi;
+
+    mat1:= ImmutableMatrix( F, mat1, true );
+    mat2:= ImmutableMatrix( F, mat2, true );
+
+    # construct the matrix of the form
+    c:= ZeroMatrix( filt, F, d, d );
+    for i in [ 1 .. d/2 ] do
+      c[i,d-i+1]:= o;
+      c[d/2+i,d/2-i+1]:= -o;
+    od;
+
+    return [ [ mat1, mat2 ], c ];
+end );
+
+
+#############################################################################
+##
+#M  SymplecticGroupCons( <IsMatrixGroup>, <d>, <F> )
 ##
 InstallMethod( SymplecticGroupCons,
-    "matrix group for dimension and finite field size",
+    "matrix group for dimension and finite field",
     [ IsMatrixGroup and IsFinite,
       IsPosInt,
-      IsPosInt ],
-    function( filter, d, q )
-    local   g,  f,  z,  o,  mat1,  mat2,  i,  size,  qi,  c;
+      IsField and IsFinite ],
+    function( filter, d, f )
+    local q, o, filt, g, c, data, size, qi, i;
 
     # the dimension must be even
     if d mod 2 = 1  then
         Error( "the dimension <d> must be even" );
     fi;
-    f := GF(q);
-    z := PrimitiveRoot( f );
+    q := Size( f );
     o := One( f );
 
-    # if the dimension is two it is a special linear group
+    # Decide about the internal representation of group generators.
+    filt:= ValueOption( "ConstructingFilter" );
+    if filt = fail then
+      filt:= IsPlistRep;
+    fi;
+
     if d = 2 then
-        g := SL( 2, q );
+        # if the dimension is two it is a special linear group
+        g := SL( 2, f );
 
+        c:= ZeroMatrix( filt, f, 2, 2 );
+        c[1,2]:= o;
+        c[2,1]:= -o;
     else
+        data:= GeneratorsAndFormOfSymplecticGroupOverFiniteField( filt,
+                   f, d, q );
+        c:= data[2];
 
-        # Sp(4,2)
-        if d = 4 and q = 2  then
-            mat1 := [ [1,0,1,1], [1,0,0,1], [0,1,0,1], [1,1,1,1] ] * o;
-            mat2 := [ [0,0,1,0], [1,0,0,0], [0,0,0,1], [0,1,0,0] ] * o;
-
-        # Sp(d,q)
-        else
-            mat1 := IdentityMat( d, f );
-            mat2 := NullMat( d, d, f );
-            for i  in [ 2 .. d/2 ]      do mat2[i,i-1]:= o;  od;
-            for i  in [ d/2+1 .. d-1 ]  do mat2[i,i+1]:= o;  od;
-
-            if q mod 2 = 1  then
-                mat1[  1,    1] := z;
-                mat1[  d,    d] := z^-1;
-                mat2[  1,    1] := o;
-                mat2[  1,d/2+1] := o;
-                mat2[d-1,  d/2] := o;
-                mat2[  d,  d/2] := -o;
-
-            elif q <> 2  then
-                mat1[    1,    1] := z;
-                mat1[  d/2,  d/2] := z;
-                mat1[d/2+1,d/2+1] := z^-1;
-                mat1[    d,    d] := z^-1;
-                mat2[    1,d/2-1] := o;
-                mat2[    1,  d/2] := o;
-                mat2[    1,d/2+1] := o;
-                mat2[d/2+1,  d/2] := o;
-                mat2[    d,  d/2] := o;
-
-            else
-                mat1[    1,  d/2] := o;
-                mat1[    1,    d] := o;
-                mat1[d/2+1,    d] := o;
-                mat2[    1,d/2+1] := o;
-                mat2[    d,  d/2] := o;
-            fi;
-        fi;
-
-        mat1:=ImmutableMatrix(f,mat1,true);
-        mat2:=ImmutableMatrix(f,mat2,true);
         # avoid to call 'Group' because this would check invertibility ...
-        g := GroupWithGenerators( [ mat1, mat2 ] );
+        g := GroupWithGenerators( data[1] );
         SetName( g, Concatenation("Sp(",String(d),",",String(q),")") );
         SetDimensionOfMatrixGroup( g, d );
 
-        # 'mat1' contains a primitive root of 'f'.
+        # The first generator contains a primitive root of 'f'.
         SetFieldOfMatrixGroup( g, f );
 
         # add the size
@@ -96,12 +130,7 @@ InstallMethod( SymplecticGroupCons,
         SetSize( g, q^((d/2)^2) * size );
     fi;
 
-    # construct the form
-    c := NullMat( d, d, f );
-    for i  in [ 1 .. d/2 ]  do
-        c[i,d-i+1] := o;
-        c[d/2+i,d/2-i+1] := -o;
-    od;
+    # set the form
     SetInvariantBilinearForm( g,
         rec( matrix:= ImmutableMatrix( f, c, true ), baseDomain:= f ) );
     SetIsFullSubgroupGLorSLRespectingBilinearForm(g,true);
@@ -111,15 +140,17 @@ InstallMethod( SymplecticGroupCons,
     return g;
     end );
 
+
+#############################################################################
+##
+#M  SymplecticGroupCons( <IsMatrixGroup>, <d>, <q> )
+##
 InstallMethod( SymplecticGroupCons,
-    "matrix group for dimension and finite field",
+    "matrix group for dimension and finite field size",
     [ IsMatrixGroup and IsFinite,
       IsPosInt,
-      IsField and IsFinite ],
-function(filt,n,f)
-  return SymplecticGroupCons(filt,n,Size(f));
-end);
-
+      IsPosInt ],
+    { filt, n, q } -> SymplecticGroupCons( filt, n, GF(q) ) );
 
 
 #############################################################################
