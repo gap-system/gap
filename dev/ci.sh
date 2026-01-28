@@ -309,8 +309,11 @@ GAPInput
     strip $GAPPREFIX/bin/gap > /dev/null
     strip $GAPPREFIX/lib/libgap.so > /dev/null 2>&1 || :      # for Linux
     strip -S $GAPPREFIX/lib/libgap.dylib > /dev/null 2>&1 || :   # for macOS
+    echo "Check if BUILDDIR=$BUILDDIR occurs in $GAPPREFIX"
     fgrep -r $BUILDDIR $GAPPREFIX && exit 1
+    echo "Check if SRCDIR=$SRCDIR occurs in $GAPPREFIX"
     fgrep -r $SRCDIR $GAPPREFIX && exit 1
+    echo "Check if HOME=$HOME occurs in $GAPPREFIX"
     fgrep -r $HOME $GAPPREFIX && exit 1
 
     # HACK: symlink packages so we can start GAP
