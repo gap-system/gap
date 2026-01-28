@@ -24,7 +24,7 @@
 **
 **  The first entry is the handle of the logical length.  The second entry is
 **  the first element of the range.  The last  entry  is the  increment.  All
-**  three are represented as immediate GAP integers.
+**  three are represented as GAP integers (immediate or large integers).
 **
 **  The element at position <pos> is thus simply <first> + (<pos>-1) * <inc>.
 **
@@ -54,6 +54,7 @@
 #include "ariths.h"
 #include "bool.h"
 #include "error.h"
+#include "integer.h"
 #include "gaputils.h"
 #include "io.h"
 #include "lists.h"
@@ -113,6 +114,84 @@ Obj NEW_RANGE(Int len, Int low, Int inc)
 }
 
 
+Obj NEW_RANGE_BIGINT(Obj len, Obj low, Obj inc)
+{
+    Obj range;
+
+    // Determine sort type based on increment sign
+    if (IS_POS_INT(inc))
+        range = NewBag(T_RANGE_SSORT, 3 * sizeof(Obj));
+    else
+        range = NewBag(T_RANGE_NSORT, 3 * sizeof(Obj));
+    SET_LEN_RANGE_OBJ(range, len);
+    SET_LOW_RANGE_OBJ(range, low);
+    SET_INC_RANGE_OBJ(range, inc);
+
+    return range;
+}
+
+
+/****************************************************************************
+**
+*F  GET_ELM_RANGE_BIGINT(<list>,<pos>) . . . .  element of a range (big ints)
+**
+**  'GET_ELM_RANGE_BIGINT' returns the <pos>-th element of the range <list>.
+**  <pos> must be a GAP integer.  Works with ranges containing large integers.
+*/
+Obj GET_ELM_RANGE_BIGINT(Obj list, Obj pos)
+{
+    GAP_ASSERT(IS_RANGE(list));
+    GAP_ASSERT(IS_INT(pos));
+
+    Obj low = GET_LOW_RANGE_BIGINT(list);
+    Obj inc = GET_INC_RANGE_BIGINT(list);
+
+    // Compute: low + (pos - 1) * inc
+    Obj pos_minus_1 = DiffInt(pos, INTOBJ_INT(1));
+    Obj offset = ProdInt(pos_minus_1, inc);
+    return SumInt(low, offset);
+}
+
+
+/****************************************************************************
+**
+*F  IS_RANGE_ALL_SMALL(<list>)  . . test if all elements fit in small integers
+**
+**  'IS_RANGE_ALL_SMALL' returns 1 if the range <list> has all its elements
+**  representable as immediate integers (SmallInts). This includes checking
+**  that the last element (low + (len-1) * inc) fits in a SmallInt.
+**
+**  NOTE: This function accesses range data directly to avoid calling
+**  GET_LEN_RANGE/GET_LOW_RANGE/GET_INC_RANGE which would cause recursion.
+*/
+BOOL IS_RANGE_ALL_SMALL(Obj list)
+{
+    GAP_ASSERT(IS_RANGE(list));
+
+    // First check if length, low, and inc are all small integers
+    if (!IS_RANGE_SMALL(list))
+        return FALSE;
+
+    // Access the range data directly (avoiding GET_*_RANGE which call us)
+    Int len = INT_INTOBJ(CONST_ADDR_OBJ(list)[0]);
+
+    // Empty ranges and single-element ranges are trivially small
+    if (len <= 1)
+        return TRUE;
+
+    // Compute the last element: low + (len - 1) * inc
+    // using big integer arithmetic to detect overflow
+    Obj low = CONST_ADDR_OBJ(list)[1];
+    Obj inc = CONST_ADDR_OBJ(list)[2];
+    Obj len_minus_1 = INTOBJ_INT(len - 1);
+    Obj offset = ProdInt(len_minus_1, inc);
+    Obj last = SumInt(low, offset);
+
+    // Check if the last element fits in a SmallInt
+    return IS_INTOBJ(last);
+}
+
+
 #if !defined(USE_THREADSAFE_COPYING)
 
 /****************************************************************************
@@ -166,14 +245,26 @@ static Obj CopyRange(Obj list, Int mut)
 */
 static void PrintRange(Obj list)
 {
-    Pr( "%2>[ %2>%d",
-       GET_LOW_RANGE(list), 0 );
-    if ( GET_INC_RANGE(list) != 1 ) {
-        Pr( "%<,%< %2>%d",
-           GET_LOW_RANGE(list)+GET_INC_RANGE(list), 0);
+    Obj low = GET_LOW_RANGE_BIGINT(list);
+    Obj inc = GET_INC_RANGE_BIGINT(list);
+    Obj len = GET_LEN_RANGE_BIGINT(list);
+
+    // Print: [ <first>
+    Pr("%2>[ %2>", 0, 0);
+    PrintObj(low);
+
+    // If increment is not 1, print: , <second>
+    if (!EqInt(inc, INTOBJ_INT(1))) {
+        Pr("%<,%< %2>", 0, 0);
+        PrintObj(SumInt(low, inc));
     }
-    Pr( "%2< .. %2>%d%4< ]",
-       GET_LOW_RANGE(list)+(GET_LEN_RANGE(list)-1)*GET_INC_RANGE(list), 0 );
+
+    // Print: .. <last> ]
+    // last = low + (len - 1) * inc
+    Obj last = SumInt(low, ProdInt(DiffInt(len, INTOBJ_INT(1)), inc));
+    Pr("%2< .. %2>", 0, 0);
+    PrintObj(last);
+    Pr("%4< ]", 0, 0);
 }
 
 
@@ -186,9 +277,9 @@ static void PrintRange(Obj list)
 */
 static Int EqRange(Obj listL, Obj listR)
 {
-    return ( GET_LEN_RANGE(listL) == GET_LEN_RANGE(listR)
-          && GET_LOW_RANGE(listL) == GET_LOW_RANGE(listR)
-          && GET_INC_RANGE(listL) == GET_INC_RANGE(listR) );
+    return EqInt(GET_LEN_RANGE_BIGINT(listL), GET_LEN_RANGE_BIGINT(listR))
+        && EqInt(GET_LOW_RANGE_BIGINT(listL), GET_LOW_RANGE_BIGINT(listR))
+        && EqInt(GET_INC_RANGE_BIGINT(listL), GET_INC_RANGE_BIGINT(listR));
 }
 
 
@@ -201,22 +292,29 @@ static Int EqRange(Obj listL, Obj listR)
 */
 static Int LtRange(Obj listL, Obj listR)
 {
+    Obj lowL = GET_LOW_RANGE_BIGINT(listL);
+    Obj lowR = GET_LOW_RANGE_BIGINT(listR);
+    Obj incL = GET_INC_RANGE_BIGINT(listL);
+    Obj incR = GET_INC_RANGE_BIGINT(listR);
+    Obj lenL = GET_LEN_RANGE_BIGINT(listL);
+    Obj lenR = GET_LEN_RANGE_BIGINT(listR);
+
     // first compare the first elements
-    if ( GET_LOW_RANGE(listL) < GET_LOW_RANGE(listR) )
+    if (LtInt(lowL, lowR))
         return 1;
-    else if ( GET_LOW_RANGE(listR) < GET_LOW_RANGE(listL) )
+    else if (LtInt(lowR, lowL))
         return 0;
 
     // next compare the increments (or the second elements)
-    if ( GET_INC_RANGE(listL) < GET_INC_RANGE(listR) )
+    if (LtInt(incL, incR))
         return 1;
-    else if ( GET_INC_RANGE(listR) < GET_INC_RANGE(listL) )
+    else if (LtInt(incR, incL))
         return 0;
 
     // finally compare the lengths
-    if ( GET_LEN_RANGE(listL) < GET_LEN_RANGE(listR) )
+    if (LtInt(lenL, lenR))
         return 1;
-    else if ( GET_LEN_RANGE(listR) < GET_LEN_RANGE(listL) )
+    else if (LtInt(lenR, lenL))
         return 0;
 
     // the two ranges are equal
@@ -231,10 +329,17 @@ static Int LtRange(Obj listL, Obj listR)
 **  'LenRange' returns the length of the range <list> as a C integer.
 **
 **  'LenRange' is the function in 'LenListFuncs' for ranges.
+**
+**  Note: For ranges with length that doesn't fit in a SmallInt, this will
+**  give incorrect results.  Use GET_LEN_RANGE_BIGINT for arbitrary ranges.
 */
 static Int LenRange(Obj list)
 {
-    return GET_LEN_RANGE( list );
+    Obj len = GET_LEN_RANGE_BIGINT(list);
+    if (!IS_INTOBJ(len)) {
+        ErrorMayQuit("Length of range is too large", 0, 0);
+    }
+    return INT_INTOBJ(len);
 }
 
 
@@ -250,7 +355,10 @@ static Int LenRange(Obj list)
 */
 static BOOL IsbRange(Obj list, Int pos)
 {
-    return (pos <= GET_LEN_RANGE(list));
+    Obj len = GET_LEN_RANGE_BIGINT(list);
+    Obj posObj = INTOBJ_INT(pos);
+    // pos <= len is equivalent to !(len < pos)
+    return !LtInt(len, posObj);
 }
 
 
@@ -269,8 +377,10 @@ static BOOL IsbRange(Obj list, Int pos)
 */
 static Obj Elm0Range(Obj list, Int pos)
 {
-    if ( pos <= GET_LEN_RANGE( list ) ) {
-        return GET_ELM_RANGE( list, pos );
+    Obj len = GET_LEN_RANGE_BIGINT(list);
+    Obj posObj = INTOBJ_INT(pos);
+    if (!LtInt(len, posObj)) {
+        return GET_ELM_RANGE_BIGINT(list, posObj);
     }
     else {
         return 0;
@@ -279,7 +389,7 @@ static Obj Elm0Range(Obj list, Int pos)
 
 static Obj Elm0vRange(Obj list, Int pos)
 {
-    return GET_ELM_RANGE( list, pos );
+    return GET_ELM_RANGE_BIGINT(list, INTOBJ_INT(pos));
 }
 
 
@@ -302,18 +412,20 @@ static Obj Elm0vRange(Obj list, Int pos)
 static Obj ElmRange(Obj list, Int pos)
 {
     // check the position
-    if ( GET_LEN_RANGE( list ) < pos ) {
+    Obj len = GET_LEN_RANGE_BIGINT(list);
+    Obj posObj = INTOBJ_INT(pos);
+    if (LtInt(len, posObj)) {
         ErrorMayQuit("List Element: <list>[%d] must have an assigned value",
                      (Int)pos, 0);
     }
 
     // return the selected element
-    return GET_ELM_RANGE( list, pos );
+    return GET_ELM_RANGE_BIGINT(list, posObj);
 }
 
 static Obj ElmvRange(Obj list, Int pos)
 {
-    return GET_ELM_RANGE( list, pos );
+    return GET_ELM_RANGE_BIGINT(list, INTOBJ_INT(pos));
 }
 
 
@@ -509,12 +621,16 @@ static void AsssRange(Obj list, Obj poss, Obj vals)
 */
 static BOOL IsPossRange(Obj list)
 {
+    Obj low = GET_LOW_RANGE_BIGINT(list);
+    Obj len = GET_LEN_RANGE_BIGINT(list);
+
     // test if the first element is positive
-    if ( GET_LOW_RANGE( list ) <= 0 )
+    if (!IS_POS_INT(low))
         return FALSE;
 
     // test if the last element is positive
-    if ( INT_INTOBJ( GET_ELM_RANGE( list, GET_LEN_RANGE(list) ) ) <= 0 )
+    Obj last = GET_ELM_RANGE_BIGINT(list, len);
+    if (!IS_POS_INT(last))
         return FALSE;
 
     // otherwise <list> is a positions list
@@ -532,54 +648,77 @@ static BOOL IsPossRange(Obj list)
 **
 **  'PosRange' is the function in 'PosListFuncs' for ranges.
 */
-Obj             PosRange (
-    Obj                 list,
-    Obj                 val,
-    Obj                 start )
+Obj PosRange(Obj list, Obj val, Obj start)
 {
-    Int                 k;              // position, result
-    Int                 lenList;        // length of <list>
-    Int                 low;            // first element of <list>
-    Int                 inc;            // increment of <list>
-    Int                 v;              // numerical value of <val>
-    Int    istart;
+    // val must be an integer to be in a range
+    if (!IS_INT(val))
+        return Fail;
 
     // if the starting position is too big to be a small int
     // then there can't be anything to find
     if (!IS_INTOBJ(start))
-      return Fail;
+        return Fail;
 
-    istart = INT_INTOBJ(start);
+    Int istart = INT_INTOBJ(start);
+
     // get the length, the first element, and the increment of <list>
-    lenList = GET_LEN_RANGE(list);
-    low     = GET_LOW_RANGE(list);
-    inc     = GET_INC_RANGE(list);
+    Obj lenObj = GET_LEN_RANGE_BIGINT(list);
+    Obj low = GET_LOW_RANGE_BIGINT(list);
+    Obj inc = GET_INC_RANGE_BIGINT(list);
 
-    // look for an integer, and not beyond the list end
-    if ( IS_INTOBJ(val) && istart < lenList ) {
-        v = INT_INTOBJ(val);
-        if ( 0 < inc
-          && low + istart * inc <= v && v <= low + (lenList-1) * inc
-          && (v - low) % inc == 0 ) {
-            k = (v - low) / inc + 1;
+    // For small int ranges where all elements fit in SmallInts, use optimized path
+    if (IS_RANGE_ALL_SMALL(list) && IS_INTOBJ(val)) {
+        Int lenList = INT_INTOBJ(lenObj);
+        Int lowInt = INT_INTOBJ(low);
+        Int incInt = INT_INTOBJ(inc);
+        Int v = INT_INTOBJ(val);
+        Int k = 0;
+
+        if (istart < lenList) {
+            if (0 < incInt
+                && lowInt + istart * incInt <= v && v <= lowInt + (lenList-1) * incInt
+                && (v - lowInt) % incInt == 0) {
+                k = (v - lowInt) / incInt + 1;
+            }
+            else if (incInt < 0
+                && lowInt + (lenList-1) * incInt <= v && v <= lowInt + istart * incInt
+                && (v - lowInt) % incInt == 0) {
+                k = (v - lowInt) / incInt + 1;
+            }
         }
-        else if ( inc < 0
-          && low + (lenList-1) * inc <= v && v <= low + istart * inc
-          && (v - low) % inc == 0 ) {
-            k = (v - low) / inc + 1;
-        }
-        else {
-            k = 0;
-        }
+        return k == 0 ? Fail : INTOBJ_INT(k);
     }
 
-    // otherwise it cannot be an element of the range
-    else {
-        k = 0;
-    }
+    // General case for big integers
+    // Check if istart >= length (using big int comparison)
+    Obj istartObj = INTOBJ_INT(istart);
+    if (!LtInt(istartObj, lenObj))
+        return Fail;
 
-    // return the position
-    return k == 0 ? Fail : INTOBJ_INT(k);
+    // Compute: diff = val - low
+    Obj diff = DiffInt(val, low);
+
+    // Check if diff % inc == 0
+    Obj rem = ModInt(diff, inc);
+    if (!EqInt(rem, INTOBJ_INT(0)))
+        return Fail;
+
+    // Compute position: k = diff / inc + 1
+    Obj k = SumInt(QuoInt(diff, inc), INTOBJ_INT(1));
+
+    // Check if k > istart (position must be after start)
+    if (!LtInt(istartObj, k))
+        return Fail;
+
+    // Check if k <= length
+    if (LtInt(lenObj, k))
+        return Fail;
+
+    // Check if k is positive
+    if (!IS_POS_INT(k))
+        return Fail;
+
+    return k;
 }
 
 
@@ -593,29 +732,56 @@ Obj             PosRange (
 */
 static void PlainRange(Obj list)
 {
-    Int                 lenList;        // length of <list>
-    Int                 low;            // first element of <list>
-    Int                 inc;            // increment of <list>
+    Obj                 lenObj;         // length of <list> as GAP int
+    Obj                 low;            // first element of <list>
+    Obj                 inc;            // increment of <list>
+    Int                 lenList;        // length as C integer
     Int                 i;              // loop variable
+    BOOL                allSmall;       // whether all elements fit in SmallInts
 
     // get the length, the first element, and the increment of <list>
-    lenList = GET_LEN_RANGE( list );
-    low     = GET_LOW_RANGE( list );
-    inc     = GET_INC_RANGE( list );
+    lenObj = GET_LEN_RANGE_BIGINT(list);
+    low    = GET_LOW_RANGE_BIGINT(list);
+    inc    = GET_INC_RANGE_BIGINT(list);
+
+    // Check if all elements fit in SmallInts before retyping the bag
+    allSmall = IS_RANGE_ALL_SMALL(list);
+
+    // length must fit in a small integer to convert to plain list
+    if (!IS_INTOBJ(lenObj)) {
+        ErrorMayQuit("Range is too large to convert to a plain list", 0, 0);
+    }
+    lenList = INT_INTOBJ(lenObj);
 
     // change the type of the list, and allocate enough space
     if (lenList == 0)
         RetypeBagSM(list, T_PLIST_EMPTY);
-    else if (inc > 0)
+    else if (IS_POS_INT(inc))
         RetypeBagSM(list, T_PLIST_CYC_SSORT);
     else
         RetypeBagSM(list, T_PLIST_CYC_NSORT);
-    GROW_PLIST( list, lenList );
-    SET_LEN_PLIST( list, lenList );
+    GROW_PLIST(list, lenList);
+    SET_LEN_PLIST(list, lenList);
 
     // enter the values in <list>
-    for ( i = 1; i <= lenList; i++ ) {
-        SET_ELM_PLIST( list, i, INTOBJ_INT( low + (i-1) * inc ) );
+    // For small ranges where all elements fit in SmallInts, use fast C arithmetic;
+    // for big int ranges (or ranges where elements overflow), use GAP arithmetic
+    if (allSmall) {
+        Int lowInt = INT_INTOBJ(low);
+        Int incInt = INT_INTOBJ(inc);
+        for (i = 1; i <= lenList; i++) {
+            SET_ELM_PLIST(list, i, INTOBJ_INT(lowInt + (i - 1) * incInt));
+        }
+    }
+    else {
+        Obj val = low;
+        for (i = 1; i <= lenList; i++) {
+            SET_ELM_PLIST(list, i, val);
+            CHANGED_BAG(list);
+            if (i < lenList) {
+                val = SumInt(val, inc);
+            }
+        }
     }
 }
 
@@ -813,6 +979,102 @@ Obj Range3Check (
     }
     else {
         range = NEW_RANGE((l - f) / i + 1, f, i);
+    }
+    return range;
+}
+
+
+/****************************************************************************
+**
+*F  Range2CheckBigInt( <first>, <last> )  . . . . . . . . . . construct range
+**
+**  'Range2CheckBigInt' constructs a range from <first> to <last> with
+**  increment 1.  Both <first> and <last> can be arbitrary GAP integers.
+*/
+Obj Range2CheckBigInt(Obj first, Obj last)
+{
+    Obj range;
+
+    if (!IS_INT(first)) {
+        RequireArgument("Range", first, "must be an integer");
+    }
+    if (!IS_INT(last)) {
+        RequireArgument("Range", last, "must be an integer");
+    }
+
+    // if <first> is larger than <last> the range is empty
+    if (LtInt(last, first)) {
+        range = NEW_PLIST(T_PLIST, 0);
+    }
+    // if <first> is equal to <last> the range is a singleton list
+    else if (EqInt(first, last)) {
+        range = NEW_PLIST(T_PLIST, 1);
+        SET_LEN_PLIST(range, 1);
+        SET_ELM_PLIST(range, 1, first);
+    }
+    // else make the range
+    else {
+        // length = (last - first) + 1
+        Obj len = SumInt(DiffInt(last, first), INTOBJ_INT(1));
+        range = NEW_RANGE_BIGINT(len, first, INTOBJ_INT(1));
+    }
+    return range;
+}
+
+
+/****************************************************************************
+**
+*F  Range3CheckBigInt( <first>, <second>, <last> )  . . . . . construct range
+**
+**  'Range3CheckBigInt' constructs a range from <first> to <last> with
+**  increment <second> - <first>.  All arguments can be arbitrary GAP integers.
+*/
+Obj Range3CheckBigInt(Obj first, Obj second, Obj last)
+{
+    Obj range;
+
+    if (!IS_INT(first)) {
+        RequireArgument("Range", first, "must be an integer");
+    }
+    if (!IS_INT(second)) {
+        RequireArgument("Range", second, "must be an integer");
+    }
+    if (!IS_INT(last)) {
+        RequireArgument("Range", last, "must be an integer");
+    }
+
+    if (EqInt(first, second)) {
+        ErrorQuit("Range: <second> must not be equal to <first>", 0, 0);
+    }
+
+    Obj inc = DiffInt(second, first);
+    Obj diff = DiffInt(last, first);
+
+    // Check divisibility: (last - first) % inc == 0
+    Obj rem = ModInt(diff, inc);
+    if (!EqInt(rem, INTOBJ_INT(0))) {
+        ErrorQuit("Range: <last>-<first> must be divisible by <inc>", 0, 0);
+    }
+
+    // Check if range is empty
+    BOOL inc_positive = IS_POS_INT(inc);
+    BOOL first_gt_last = LtInt(last, first);
+    BOOL first_lt_last = LtInt(first, last);
+
+    if ((inc_positive && first_gt_last) || (!inc_positive && first_lt_last)) {
+        range = NEW_PLIST(T_PLIST, 0);
+    }
+    // if <first> is equal to <last> the range is a singleton list
+    else if (EqInt(first, last)) {
+        range = NEW_PLIST(T_PLIST, 1);
+        SET_LEN_PLIST(range, 1);
+        SET_ELM_PLIST(range, 1, first);
+    }
+    // else make the range
+    else {
+        // length = (last - first) / inc + 1
+        Obj len = SumInt(QuoInt(diff, inc), INTOBJ_INT(1));
+        range = NEW_RANGE_BIGINT(len, first, inc);
     }
     return range;
 }

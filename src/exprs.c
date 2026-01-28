@@ -959,63 +959,40 @@ static Obj EvalListTildeExpr(Expr expr)
 */
 static Obj EvalRangeExpr(Expr expr)
 {
-    Obj                 range;          // range, result
-    Obj                 val;            // subvalue of range
-    Int                 low;            // low (as C integer)
-    Int                 inc;            // increment (as C integer)
-    Int                 high;           // high (as C integer)
+    Obj                 first;          // first element of range
+    Obj                 second;         // second element (if present)
+    Obj                 last;           // last element of range
 
-    // evaluate the low value
-    val = EVAL_EXPR(READ_EXPR(expr, 0));
-    low = GetSmallIntEx("Range", val, "<first>");
+    // evaluate the first value
+    first = EVAL_EXPR(READ_EXPR(expr, 0));
+    if (!IS_INT(first)) {
+        RequireArgumentEx("Range", first, "<first>", "must be an integer");
+    }
 
     // evaluate the second value (if present)
-    if ( SIZE_EXPR(expr) == 3*sizeof(Expr) ) {
-        val = EVAL_EXPR(READ_EXPR(expr, 1));
-        Int ival = GetSmallIntEx("Range", val, "<second>");
-        if (ival == low) {
-            ErrorMayQuit("Range: <second> must not be equal to <first> (%d)",
-                         (Int)low, 0);
+    if (SIZE_EXPR(expr) == 3 * sizeof(Expr)) {
+        second = EVAL_EXPR(READ_EXPR(expr, 1));
+        if (!IS_INT(second)) {
+            RequireArgumentEx("Range", second, "<second>", "must be an integer");
         }
-        inc = ival - low;
+
+        // evaluate and check the last value
+        last = EVAL_EXPR(READ_EXPR(expr, 2));
+        if (!IS_INT(last)) {
+            RequireArgumentEx("Range", last, "<last>", "must be an integer");
+        }
+
+        return Range3CheckBigInt(first, second, last);
     }
     else {
-        inc = 1;
-    }
-
-    // evaluate and check the high value
-    val = EVAL_EXPR(READ_EXPR(expr, SIZE_EXPR(expr) / sizeof(Expr) - 1));
-    high = GetSmallIntEx("Range", val, "<last>");
-    if ((high - low) % inc != 0) {
-        ErrorMayQuit(
-            "Range: <last>-<first> (%d) must be divisible by <inc> (%d)",
-            (Int)(high - low), (Int)inc);
-    }
-
-    // if <low> is larger than <high> the range is empty
-    if ( (0 < inc && high < low) || (inc < 0 && low < high) ) {
-        range = NewEmptyPlist();
-    }
-
-    // if <low> is equal to <high> the range is a singleton list
-    else if ( low == high ) {
-        range = NEW_PLIST( T_PLIST_CYC_SSORT, 1 );
-        SET_LEN_PLIST( range, 1 );
-        SET_ELM_PLIST( range, 1, INTOBJ_INT(low) );
-    }
-
-    // else make the range
-    else {
-        // the length must be a small integer as well
-        if ((high-low) / inc + 1 > INT_INTOBJ_MAX) {
-             ErrorQuit("Range: the length of a range must be a small integer",
-                        0, 0);
+        // evaluate and check the last value
+        last = EVAL_EXPR(READ_EXPR(expr, 1));
+        if (!IS_INT(last)) {
+            RequireArgumentEx("Range", last, "<last>", "must be an integer");
         }
-        range = NEW_RANGE((high - low) / inc + 1, low, inc);
-    }
 
-    // return the range
-    return range;
+        return Range2CheckBigInt(first, last);
+    }
 }
 
 
