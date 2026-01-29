@@ -58,7 +58,7 @@ G (size 6)
  | C2
 S (1 gens, size 3)
  | C3
-1 (size 1)
+1 (0 gens, size 1)
 
 # that's all, folks
 gap> STOP_TEST("morpheus.tst");
