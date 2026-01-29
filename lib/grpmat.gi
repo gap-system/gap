@@ -839,7 +839,8 @@ BindGlobal( "RespectsQuadraticForm", function( Q, M )
 #M  <mat> in <G>  . . . . . . . . . . . . . . . . . . . .  is form invariant?
 ##
 InstallMethod( \in, "respecting quadratic form", IsElmsColls,
-    [ IsMatrix, IsFullSubgroupGLorSLRespectingQuadraticForm ],
+    [ IsMatrixOrMatrixObj,
+      IsFullSubgroupGLorSLRespectingQuadraticForm ],
     {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
                  # this method is better than the one using a nice monom.;
                  # it has the same rank as the method based on the inv.
@@ -859,7 +860,8 @@ InstallMethod( \in, "respecting quadratic form", IsElmsColls,
     end );
 
 InstallMethod( \in, "respecting bilinear form", IsElmsColls,
-    [ IsMatrix, IsFullSubgroupGLorSLRespectingBilinearForm ],
+    [ IsMatrixOrMatrixObj,
+      IsFullSubgroupGLorSLRespectingBilinearForm ],
     {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
 function( mat, G )
     local inv;
@@ -874,7 +876,8 @@ function( mat, G )
 end );
 
 InstallMethod( \in, "respecting sesquilinear form", IsElmsColls,
-    [ IsMatrix, IsFullSubgroupGLorSLRespectingSesquilinearForm ],
+    [ IsMatrixOrMatrixObj,
+      IsFullSubgroupGLorSLRespectingSesquilinearForm ],
     {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
 function( mat, G )
     local form, pow, inv;
