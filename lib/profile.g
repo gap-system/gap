@@ -1047,15 +1047,33 @@ end);
 ##
 ##  <Description>
 ##  <Ref Func="START_TEST"/> and <Ref Func="STOP_TEST"/> may be optionally
-##  used in files that are read via <Ref Func="Test"/>. If used,
-##  <Ref Func="START_TEST"/> reinitialize the caches and the global
-##  random number generator, in order to be independent of the reading
-##  order of several test files. Furthermore, the assertion level
-##  (see&nbsp;<Ref Func="Assert"/>) is set to <M>2</M> (if it was lower before) by
+##  used in files that are read via <Ref Func="Test"/>.
+##  If used, <Ref Func="START_TEST"/> reinitializes
+##  <List>
+##  <Item>
+##    the caches (see <Ref Oper="FlushCaches"/>),
+##  </Item>
+##  <Item>
+##    the global random number generators
+##    (see <Ref Var="GlobalMersenneTwister"/>), and
+##  </Item>
+##  <Item>
+##    the global options stack (see Chapter <Ref Chap="Options Stack"/>),
+##  </Item>
+##  </List>
+##  in order to be independent of the reading order
+##  of several test files.
+##  <P/>
+##  Furthermore, the assertion level (see&nbsp;<Ref Func="Assert"/>)
+##  is set to <M>2</M> (if it was lower before) by
 ##  <Ref Func="START_TEST"/> and set back to the previous value in the
 ##  subsequent <Ref Func="STOP_TEST"/> call.
 ##  <P/>
-##  To use these options, a test file should be started with a line
+##  Also <Ref Func="STOP_TEST"/> reinitializes the global options stack,
+##  otherwise it could happen that options which got set during the tests
+##  are not reset after the tests.
+##  <P/>
+##  To use this feature, a test file should be started with a line
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> START_TEST( "arbitrary identifier string" );
@@ -1080,6 +1098,11 @@ START_TEST := function( name )
     FlushCaches();
     Reset(GlobalRandomSource);
     Reset(GlobalMersenneTwister);
+
+    while not IsEmpty(OptionsStack) do
+      PopOptions();
+    od;
+
     CollectGarbage(true);
     GAPInfo.TestData.START_TIME := Runtime();
     GAPInfo.TestData.START_NAME := name;
@@ -1114,6 +1137,10 @@ STOP_TEST_QUIET := function( name, args... )
     Unbind( GAPInfo.TestData.START_TIME );
     Unbind( GAPInfo.TestData.START_NAME );
     Unbind( GAPInfo.TestData.InfoPerformanceLevel );
+
+    while not IsEmpty(OptionsStack) do
+      PopOptions();
+    od;
 
     return time;
 end;
