@@ -193,14 +193,6 @@ end );
 
 #############################################################################
 ##
-#M  \=( <G>, <H> )  . . . . . . . . . . . . . .  test if two groups are equal
-##
-PropertyMethodByNiceMonomorphismCollColl( \=,
-    [ IsGroup, IsGroup ] );
-
-
-#############################################################################
-##
 #M  \in( <elm>, <G> ) . . . . . . . . . . . . . . . . .  test if <elm> in <G>
 ##
 AttributeMethodByNiceMonomorphismElmColl( \in,
@@ -525,14 +517,6 @@ PropertyMethodByNiceMonomorphism( IsSimpleGroup,
 ##
 PropertyMethodByNiceMonomorphism( IsSolvableGroup,
     [ IsGroup ] );
-
-
-#############################################################################
-##
-#M  IsSubset( <G>, <H> ) . . . . . . . . . . . . .  test for subset of groups
-##
-PropertyMethodByNiceMonomorphismCollColl( IsSubset,
-    [ IsGroup, IsGroup ] );
 
 
 #############################################################################
