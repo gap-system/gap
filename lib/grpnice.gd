@@ -62,13 +62,13 @@ DeclareFilter("IsNiceMonomorphism");
 
 #############################################################################
 ##
-#O  RestrictedNiceMonomorphism(<hom>,<G>)
+#A  RestrictedNiceMonomorphism(<G>)
 ##
 ##  <ManSection>
-##  <Oper Name="RestrictedNiceMonomorphism" Arg='hom, G'/>
+##  <Attr Name="RestrictedNiceMonomorphism" Arg='G'/>
 ##
 ##  <Description>
-##  returns the restriction of the nice monomorphism <A>hom</A> onto
+##  returns the restriction of the nice monomorphism of <A>G</A> onto
 ##  <A>G</A>.
 ##  In contrast to <Ref Func="RestrictedMapping"/>,
 ##  this operation returns an object which has the filter
@@ -89,7 +89,7 @@ DeclareFilter("IsNiceMonomorphism");
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction("RestrictedNiceMonomorphism");
+DeclareAttribute("RestrictedNiceMonomorphism", IsObject);
 
 #############################################################################
 ##

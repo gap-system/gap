@@ -535,10 +535,8 @@ end );
 ##
 BindGlobal( "IsomorphismPermGroupForMatrixGroup",
 function(G)
-local map,H;
-  if HasNiceMonomorphism(G) and IsPermGroup(Range(NiceMonomorphism(G))) then
-    map:=NiceMonomorphism(G);
-  else
+local map;
+  if not HasNiceMonomorphism(G) or not IsPermGroup(Range(NiceMonomorphism(G))) then
     if not HasIsFinite(G) then
       Info(InfoWarning,1,
            "IsomorphismPermGroup: The group is not known to be finite");
@@ -546,15 +544,13 @@ local map,H;
     map:=NicomorphismOfGeneralMatrixGroup(G,false,false);
     SetNiceMonomorphism(G,map);
   fi;
-  if IsIdenticalObj(Source(map),G) and IsBijective(map) then
+  if IsPermGroup(Range(NiceMonomorphism(G))) then
+    map:=RestrictedNiceMonomorphism(G);
+  fi;
+  if IsIdenticalObj(Source(map),G) and IsSurjective(map) then
     return map;
   fi;
-  if IsIdenticalObj(map, NiceMonomorphism(G)) then
-    H:=NiceObject(G);
-  else
-    H:=ImagesSet(map,G);
-  fi;
-  map:=GeneralRestrictedMapping(map, G, H);
+  map:=GeneralRestrictedMapping(map, G, ImagesSet(map,G));
   SetIsBijective(map, true);
   return map;
 end);

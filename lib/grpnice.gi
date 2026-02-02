@@ -37,10 +37,16 @@ end);
 
 #############################################################################
 ##
-#O  RestrictedNiceMonomorphism(<hom>,<G>)
+#O  RestrictedNiceMonomorphism(<G>)
 ##
-InstallGlobalFunction(RestrictedNiceMonomorphism,
-function(hom,G)
+InstallMethod(RestrictedNiceMonomorphism,
+  [IsObject],
+function(G)
+  local hom;
+  hom:=NiceMonomorphism(G);
+  if IsIdenticalObj(Source(hom),G) and IsSurjective(hom) then
+    return hom;
+  fi;
   hom:=RestrictedMapping(hom,G:surjective);
 
   # CompositionMapping methods need this to avoid forming an AsGHBI of an
@@ -542,9 +548,9 @@ InstallMethod(IsomorphismPermGroup,"via niceomorphisms",true,
   [ [ IsGroup and IsFinite ], 1 ],
 function(g)
 local mon,iso;
-  mon:=NiceMonomorphism(g);
-  if not IsIdenticalObj(Source(mon),g) then
-    mon:=RestrictedNiceMonomorphism(mon,g);
+  mon:=RestrictedNiceMonomorphism(g);
+  if IsPermGroup(Range(mon)) then
+    return mon;
   fi;
   iso:=IsomorphismPermGroup(NiceObject(g));
   if iso=fail then
@@ -565,9 +571,9 @@ InstallMethod(IsomorphismPcGroup,"via niceomorphisms",true,
   [IsGroup and IsFinite and IsHandledByNiceMonomorphism],0,
 function(g)
 local mon,iso;
-  mon:=NiceMonomorphism(g);
-  if not IsIdenticalObj(Source(mon),g) then
-    mon:=RestrictedNiceMonomorphism(mon,g);
+  mon:=RestrictedNiceMonomorphism(g);
+  if IsPcGroup(Range(mon)) then
+    return mon;
   fi;
   iso:=IsomorphismPcGroup(NiceObject(g));
   if iso=fail then
@@ -588,9 +594,9 @@ InstallOtherMethod(IsomorphismFpGroup,"via niceomorphism",true,
   [IsGroup and IsHandledByNiceMonomorphism,IsString],0,
 function(g,nam)
 local mon,iso;
-  mon:=NiceMonomorphism(g);
-  if not IsIdenticalObj(Source(mon),g) then
-    mon:=RestrictedNiceMonomorphism(mon,g);
+  mon:=RestrictedNiceMonomorphism(g);
+  if IsFpGroup(Range(mon)) then
+    return mon;
   fi;
   iso:=IsomorphismFpGroup(NiceObject(g),nam);
   if iso=fail then
@@ -608,11 +614,8 @@ InstallMethod(IsomorphismFpGroupByGeneratorsNC,"via niceomorphism/w. gens",
   IsFamFamX,[IsGroup and IsHandledByNiceMonomorphism, IsList,IsString],0,
 function(g,c,nam)
 local mon,iso;
-  mon:=NiceMonomorphism(g);
+  mon:=RestrictedNiceMonomorphism(g);
   c:=List(c,i->Image(mon,i));
-  if not IsIdenticalObj(Source(mon),g) then
-    mon:=RestrictedNiceMonomorphism(mon,g);
-  fi;
   iso:=IsomorphismFpGroupByGeneratorsNC(NiceObject(g),c,nam);
   if iso=fail then
     return fail;
@@ -909,9 +912,9 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
     function( G, N )
     local   nice;
 
-    nice := RestrictedNiceMonomorphism(NiceMonomorphism( G ),G);
-    G := ImagesSet( nice,G );
-    N := ImagesSet   ( nice, N );
+    nice := RestrictedNiceMonomorphism(G);
+    G := ImagesSet( nice, G );
+    N := ImagesSet( nice, N );
     return CompositionMapping( NaturalHomomorphismByNormalSubgroup( G, N ),
                    nice );
 end );
@@ -930,10 +933,7 @@ local nice,geni,map2,tmp;
   fi;
   tmp := RUN_IN_GGMBI;
   RUN_IN_GGMBI:=true;
-  nice:=NiceMonomorphism(G);
-  if not IsIdenticalObj(Source(nice),G) then
-    nice:=RestrictedNiceMonomorphism(nice,G);
-  fi;
+  nice:=RestrictedNiceMonomorphism(G);
   geni:=List(gens,i->ImageElm(nice,i));
   map2:=GroupGeneralMappingByImagesNC(NiceObject(G),H,geni,imgs);
   RUN_IN_GGMBI:=tmp;
