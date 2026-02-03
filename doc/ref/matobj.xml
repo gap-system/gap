@@ -177,7 +177,7 @@ section.
 
 One implementation of such matrices is given by the
 <Ref Attr="ConstructingFilter" Label="for a matrix object"/> value
-<Ref Filt="IsPlistMatrixRep"/>,
+<Ref Filt="IsRowPlistMatrixRep"/>,
 and any row of these matrices is a vector object in
 <Ref Filt="IsPlistVectorRep"/>.
 Note that these objects do <E>not</E> lie in <Ref Filt="IsList"/>
@@ -370,7 +370,7 @@ described in this chapter is supported.
 
 <#Include Label="IsGF2MatrixRep">
 <#Include Label="Is8BitMatrixRep">
-<#Include Label="IsPlistMatrixRep">
+<#Include Label="IsRowPlistMatrixRep">
 <#Include Label="IsZmodnZMatrixRep">
 
 </Section>

@@ -62,16 +62,16 @@ DeclareRepresentation( "IsPlistVectorRep",
 
 #############################################################################
 ##
-##  <#GAPDoc Label="IsPlistMatrixRep">
+##  <#GAPDoc Label="IsRowPlistMatrixRep">
 ##  <ManSection>
-##  <Filt Name="IsPlistMatrixRep" Arg='obj' Type="Representation"/>
+##  <Filt Name="IsRowPlistMatrixRep" Arg='obj' Type="Representation"/>
 ##
 ##  <Description>
-##  An object <A>obj</A> in <Ref Filt="IsPlistMatrixRep"/> describes
+##  An object <A>obj</A> in <Ref Filt="IsRowPlistMatrixRep"/> describes
 ##  a matrix object (see <Ref Filt="IsMatrixObj"/>) that behaves similar to
 ##  a list of its rows, in the sense of <Ref Filt="IsRowListMatrix"/>.
 ##  <P/>
-##  <Ref Filt="IsPlistMatrixRep"/> implies <Ref Filt="IsCopyable"/>,
+##  <Ref Filt="IsRowPlistMatrixRep"/> implies <Ref Filt="IsCopyable"/>,
 ##  thus matrix objects in this representation can be mutable.
 ##  </Description>
 ##  </ManSection>
@@ -97,13 +97,13 @@ DeclareRepresentation( "IsPlistVectorRep",
 ##  </Item>
 ##  </Enum>
 ##  <P/>
-##  Any <A>obj</A> in <Ref Filt="IsPlistMatrixRep"/> satisfies that
+##  Any <A>obj</A> in <Ref Filt="IsRowPlistMatrixRep"/> satisfies that
 ##  each entry in the stored plain list is a vector in
 ##  <Ref Filt="IsPlistVectorRep"/>, whose base domain is identical with the
 ##  stored base domain of <A>obj</A> and whose length is the stored number
 ##  of columns.
 ##
-DeclareRepresentation( "IsPlistMatrixRep",
+DeclareRepresentation( "IsRowPlistMatrixRep",
         IsRowListMatrix and IsPositionalObjectRep
     and IsCopyable
     and IsNoImmediateMethodsObject

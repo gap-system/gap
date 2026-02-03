@@ -250,7 +250,7 @@ gap> IsMutable(w);
 false
 
 # matrix object
-gap> m:= Matrix( IsPlistMatrixRep, GF(2), [ [ Z(2) ] ] );
+gap> m:= Matrix( IsRowPlistMatrixRep, GF(2), [ [ Z(2) ] ] );
 <1x1-matrix over GF(2)>
 gap> w:= ImmutableMatrix( GF(4), m );
 <immutable 1x1-matrix over GF(2^2)>

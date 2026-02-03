@@ -97,10 +97,10 @@ BindGlobal( "MakeIsPlistVectorRep",
 
 ############################################################################
 ##
-#F  MakeIsPlistMatrixRep( <basedomain>, <emptyvector>, <ncols>, <list>,
+#F  MakeIsRowPlistMatrixRep( <basedomain>, <emptyvector>, <ncols>, <list>,
 #F                        <check> )
 ##
-##  Construct a new matrix in the filter 'IsPlistMatrixRep' with base domain
+##  Construct a new matrix in the filter 'IsRowPlistMatrixRep' with base domain
 ##  <basedomain> and rows given by the list <list>, whose entries must be
 ##  'IsPlistVectorObj' vectors with base domain <basedomain> and length <ncols>.
 ##  <emptyvector> must be an 'IsPlistVectorObj' vector of length zero and with
@@ -118,7 +118,7 @@ BindGlobal( "MakeIsPlistVectorRep",
 ##  the entries lie in <basedomain>; this check is assumed to belong to the
 ##  creation of the vectors.)
 ##
-BindGlobal( "MakeIsPlistMatrixRep",
+BindGlobal( "MakeIsRowPlistMatrixRep",
   function( basedomain, emptyvector, ncols, list, check )
     local fam, types, typ, row;
     fam:= CollectionsFamily( FamilyObj( basedomain ) );
@@ -129,12 +129,12 @@ BindGlobal( "MakeIsPlistMatrixRep",
       # initialize type cache
       # TODO: make this thread safe for HPC-GAP
       fam!.PlistMatrixRepTypes:= [
-          NewType( fam, IsPlistMatrixRep ),
-          NewType( fam, IsPlistMatrixRep and IsMutable ),
+          NewType( fam, IsRowPlistMatrixRep ),
+          NewType( fam, IsRowPlistMatrixRep and IsMutable ),
       ];
       fam!.PlistMatrixRepTypesEasyCompare:= [
-          NewType( fam, IsPlistMatrixRep and CanEasilyCompareElements ),
-          NewType( fam, IsPlistMatrixRep and CanEasilyCompareElements and IsMutable ),
+          NewType( fam, IsRowPlistMatrixRep and CanEasilyCompareElements ),
+          NewType( fam, IsRowPlistMatrixRep and CanEasilyCompareElements and IsMutable ),
       ];
     fi;
     if HasCanEasilyCompareElements( Representative( basedomain ) ) and
@@ -189,7 +189,7 @@ InstallTagBasedMethod( NewZeroVector,
   end );
 
 InstallTagBasedMethod( NewMatrix,
-  IsPlistMatrixRep,
+  IsRowPlistMatrixRep,
   function( filter, basedomain, ncols, list )
     local nd, filterVectors, m, e, i;
 
@@ -216,12 +216,12 @@ InstallTagBasedMethod( NewMatrix,
         fi;
     od;
     e := NewVector(filterVectors, basedomain, []);
-    return MakeIsPlistMatrixRep( basedomain, e, ncols, m, true );
+    return MakeIsRowPlistMatrixRep( basedomain, e, ncols, m, true );
   end );
 
 # This is faster than the default method.
 InstallTagBasedMethod( NewZeroMatrix,
-  IsPlistMatrixRep,
+  IsRowPlistMatrixRep,
   function( filter, basedomain, rows, cols )
     local m,i,e,filter2;
     filter2 := IsPlistVectorRep;
@@ -230,7 +230,7 @@ InstallTagBasedMethod( NewZeroMatrix,
     for i in [1..rows] do
         m[i] := ZeroVector( cols, e );
     od;
-    return MakeIsPlistMatrixRep( basedomain, e, cols, m, false );
+    return MakeIsRowPlistMatrixRep( basedomain, e, cols, m, false );
   end );
 
 
@@ -279,7 +279,7 @@ InstallMethod( Display, [ "IsPlistVectorRep" ],
     Print(v![ELSPOS],"\n>\n");
   end );
 
-InstallMethod( CompatibleVectorFilter, ["IsPlistMatrixRep"],
+InstallMethod( CompatibleVectorFilter, ["IsRowPlistMatrixRep"],
   M -> IsPlistVectorRep );
 
 ############################################################################
@@ -309,7 +309,7 @@ InstallMethod( ZeroVector,
   { len, v } -> NewZeroVector( IsPlistVectorRep, v![BDPOS], len ) );
 
 InstallMethod( ZeroVector,
-  [ "IsInt", "IsPlistMatrixRep" ],
+  [ "IsInt", "IsRowPlistMatrixRep" ],
   { len, M } -> NewZeroVector( IsPlistVectorRep, M![BDPOS], len ) );
 
 InstallMethod( Vector,
@@ -624,19 +624,19 @@ InstallMethod( CopySubVector,
 ############################################################################
 
 InstallMethod( BaseDomain,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   M -> M![BDPOS] );
 
 InstallMethod( NumberRows,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   M -> Length( M![ROWSPOS] ) );
 
 InstallMethod( NumberColumns,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   M -> M![RLPOS] );
 
 InstallMethod( DimensionsMat,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   M -> [ Length( M![ROWSPOS]), M![RLPOS] ] );
 
 
@@ -645,16 +645,16 @@ InstallMethod( DimensionsMat,
 ############################################################################
 
 InstallMethod( ZeroMatrix,
-  [ "IsInt", "IsInt", "IsPlistMatrixRep" ],
+  [ "IsInt", "IsInt", "IsRowPlistMatrixRep" ],
   function( nrows, ncols, M )
     local t, list;
     t := M![EMPOS];
     list := List([1..nrows],i->ZeroVector(ncols,t));
-    return MakeIsPlistMatrixRep( M![BDPOS], t, ncols, list, false );
+    return MakeIsRowPlistMatrixRep( M![BDPOS], t, ncols, list, false );
   end );
 
 InstallMethod( IdentityMatrix,
-  [ "IsInt", "IsPlistMatrixRep" ],
+  [ "IsInt", "IsRowPlistMatrixRep" ],
   function( nrows, M )
     local t, list, o, i;
     t := M![EMPOS];
@@ -663,11 +663,11 @@ InstallMethod( IdentityMatrix,
     for i in [1..nrows] do
         list[i][i] := o;
     od;
-    return MakeIsPlistMatrixRep( M![BDPOS], t, nrows, list, false );
+    return MakeIsRowPlistMatrixRep( M![BDPOS], t, nrows, list, false );
   end );
 
 InstallMethod( Matrix,
-  [ "IsList", "IsInt", "IsPlistMatrixRep" ],
+  [ "IsList", "IsInt", "IsRowPlistMatrixRep" ],
   function( list, ncols, M )
     local basedomain, check, i,l,nrrows,t;
     t := M![EMPOS];
@@ -707,7 +707,7 @@ InstallMethod( Matrix,
     if not IsMutable( list ) then
       MakeImmutable( l );
     fi;
-    return MakeIsPlistMatrixRep( basedomain, t, ncols, l, false );
+    return MakeIsRowPlistMatrixRep( basedomain, t, ncols, l, false );
   end );
 
 
@@ -718,11 +718,11 @@ InstallMethod( Matrix,
 InstallOtherMethod( \[\],
 #T Once the declaration of '\[\]' for 'IsMatrixObj' disappears,
 #T we can use 'InstallMethod'.
-  [ "IsPlistMatrixRep", "IsPosInt" ],
+  [ "IsRowPlistMatrixRep", "IsPosInt" ],
   { M, p } -> M![ROWSPOS][p] );
 
 InstallMethod( \[\]\:\=,
-  [ "IsPlistMatrixRep and IsMutable", "IsPosInt", "IsPlistVectorRep" ],
+  [ "IsRowPlistMatrixRep and IsMutable", "IsPosInt", "IsPlistVectorRep" ],
   function( M, p, v )
     if ValueOption( "check" ) <> false and
        ( not IsIdenticalObj( M![BDPOS], v![BDPOS] ) or
@@ -733,12 +733,12 @@ InstallMethod( \[\]\:\=,
   end );
 
 InstallMethod( \{\},
-  [ "IsPlistMatrixRep", "IsList" ],
-  { M, list } -> MakeIsPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
+  [ "IsRowPlistMatrixRep", "IsList" ],
+  { M, list } -> MakeIsRowPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
                      M![ROWSPOS]{ list }, false ) );
 
 InstallMethod( Add,
-  [ "IsPlistMatrixRep and IsMutable", "IsPlistVectorRep" ],
+  [ "IsRowPlistMatrixRep and IsMutable", "IsPlistVectorRep" ],
   function( M, v )
     if ValueOption( "check" ) <> false and
        ( not IsIdenticalObj( M![BDPOS], v![BDPOS] ) or
@@ -749,7 +749,7 @@ InstallMethod( Add,
   end );
 
 InstallMethod( Add,
-  [ "IsPlistMatrixRep and IsMutable", "IsPlistVectorRep", "IsPosInt" ],
+  [ "IsRowPlistMatrixRep and IsMutable", "IsPlistVectorRep", "IsPosInt" ],
   function( M, v, p )
     if ValueOption( "check" ) <> false and
        ( not IsIdenticalObj( M![BDPOS], v![BDPOS] ) or
@@ -760,11 +760,11 @@ InstallMethod( Add,
   end );
 
 InstallMethod( Remove,
-  [ "IsPlistMatrixRep and IsMutable" ],
+  [ "IsRowPlistMatrixRep and IsMutable" ],
   M -> Remove( M![ROWSPOS] ) );
 
 InstallMethod( Remove,
-  [ "IsPlistMatrixRep and IsMutable", "IsPosInt" ],
+  [ "IsRowPlistMatrixRep and IsMutable", "IsPosInt" ],
   function( M, p )
     if p <= Length( M![ROWSPOS] ) then
       return Remove( M![ROWSPOS], p );
@@ -772,11 +772,11 @@ InstallMethod( Remove,
   end );
 
 InstallMethod( IsBound\[\],
-  [ "IsPlistMatrixRep", "IsPosInt" ],
+  [ "IsRowPlistMatrixRep", "IsPosInt" ],
   { M, p } -> p <= Length( M![ROWSPOS] ) );
 
 InstallMethod( Unbind\[\],
-  [ "IsPlistMatrixRep and IsMutable", "IsPosInt" ],
+  [ "IsRowPlistMatrixRep and IsMutable", "IsPosInt" ],
   function( M, p )
     if p <> Length( M![ROWSPOS] ) then
         ErrorNoReturn("Unbind\\[\\]: Matrices must stay dense, you cannot Unbind here");
@@ -785,8 +785,8 @@ InstallMethod( Unbind\[\],
   end );
 
 InstallMethod( \{\}\:\=,
-  [ "IsPlistMatrixRep and IsMutable", "IsList",
-    "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep and IsMutable", "IsList",
+    "IsRowPlistMatrixRep" ],
   function( M, pp, N )
     if ValueOption( "check" ) <> false and
        ( not IsIdenticalObj( M![BDPOS], N![BDPOS] ) or
@@ -797,7 +797,7 @@ InstallMethod( \{\}\:\=,
   end );
 
 InstallMethod( Append,
-  [ "IsPlistMatrixRep and IsMutable", "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep and IsMutable", "IsRowPlistMatrixRep" ],
   function( M, N )
     if ValueOption( "check" ) <> false and
        ( not IsIdenticalObj( M![BDPOS], N![BDPOS] ) or
@@ -808,35 +808,35 @@ InstallMethod( Append,
   end );
 
 InstallMethod( ShallowCopy,
-  [ "IsPlistMatrixRep" ],
-  M -> MakeIsPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
+  [ "IsRowPlistMatrixRep" ],
+  M -> MakeIsRowPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
            ShallowCopy( M![ROWSPOS] ), false ) );
 
 InstallMethod( PostMakeImmutable,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   function( M )
     MakeImmutable( M![ROWSPOS] );
   end );
 
 InstallMethod( ListOp,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   M -> List( M![ROWSPOS] ) );
 
 InstallMethod( ListOp,
-  [ "IsPlistMatrixRep", "IsFunction" ],
+  [ "IsRowPlistMatrixRep", "IsFunction" ],
   { M, f } -> List( M![ROWSPOS], f ) );
 
 InstallMethod( Unpack,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   M -> List( M![ROWSPOS], v -> ShallowCopy( v![ELSPOS] ) ) );
 
 InstallMethod( MutableCopyMatrix,
-  [ "IsPlistMatrixRep" ],
-  M -> MakeIsPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
+  [ "IsRowPlistMatrixRep" ],
+  M -> MakeIsRowPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
            List( M![ROWSPOS], ShallowCopy ), false ) );
 
 InstallMethod( ExtractSubMatrix,
-  [ "IsPlistMatrixRep", "IsList", "IsList" ],
+  [ "IsRowPlistMatrixRep", "IsList", "IsList" ],
   function( M, rowspos, colspos )
     local i, list;
     list := M![ROWSPOS]{ rowspos };
@@ -844,12 +844,12 @@ InstallMethod( ExtractSubMatrix,
       list[i]:= MakeIsPlistVectorRep( list[i]![BDPOS],
                     list[i]![ELSPOS]{ colspos }, false );
     od;
-    return MakeIsPlistMatrixRep( M![BDPOS], M![EMPOS], Length( colspos ),
+    return MakeIsRowPlistMatrixRep( M![BDPOS], M![EMPOS], Length( colspos ),
                list, false );
   end );
 
 InstallMethod( CopySubMatrix,
-  [ "IsPlistMatrixRep", "IsPlistMatrixRep and IsMutable",
+  [ "IsRowPlistMatrixRep", "IsRowPlistMatrixRep and IsMutable",
     "IsList", "IsList", "IsList", "IsList" ],
   function( M, N, srcrows, dstrows, srccols, dstcols )
     local i;
@@ -881,11 +881,11 @@ InstallOtherMethod( CopySubMatrix,
 #T move to another file?
 
 InstallMethod( MatElm,
-  [ "IsPlistMatrixRep", "IsPosInt", "IsPosInt" ],
+  [ "IsRowPlistMatrixRep", "IsPosInt", "IsPosInt" ],
   { M, row, col } -> M![ROWSPOS][row]![ELSPOS][col] );
 
 InstallMethod( SetMatElm,
-  [ "IsPlistMatrixRep and IsMutable", "IsPosInt", "IsPosInt", "IsObject" ],
+  [ "IsRowPlistMatrixRep and IsMutable", "IsPosInt", "IsPosInt", "IsObject" ],
   function( M, row, col, ob )
     if ValueOption( "check" ) <> false then
       if not ob in BaseDomain( M ) then
@@ -902,16 +902,16 @@ InstallMethod( SetMatElm,
 # Printing and viewing methods:
 ############################################################################
 
-InstallMethod( ViewObj, [ "IsPlistMatrixRep" ],
+InstallMethod( ViewObj, [ "IsRowPlistMatrixRep" ],
   function( M )
     Print("<");
     if not IsMutable(M) then Print("immutable "); fi;
     Print(Length(M![ROWSPOS]),"x",M![RLPOS],"-matrix over ",M![BDPOS],">");
   end );
 
-InstallMethod( PrintObj, [ "IsPlistMatrixRep" ],
+InstallMethod( PrintObj, [ "IsRowPlistMatrixRep" ],
   function( M )
-    Print("NewMatrix(IsPlistMatrixRep");
+    Print("NewMatrix(IsRowPlistMatrixRep");
     if IsFinite(M![BDPOS]) and IsField(M![BDPOS]) then
         Print(",GF(",Size(M![BDPOS]),"),");
     else
@@ -920,7 +920,7 @@ InstallMethod( PrintObj, [ "IsPlistMatrixRep" ],
     Print(NumberColumns(M),",",Unpack(M),")");
   end );
 
-InstallMethod( Display, [ "IsPlistMatrixRep" ],
+InstallMethod( Display, [ "IsRowPlistMatrixRep" ],
   function( M )
     local i;
     Print("<");
@@ -937,10 +937,10 @@ InstallMethod( Display, [ "IsPlistMatrixRep" ],
     Print("]>\n");
   end );
 
-InstallMethod( String, [ "IsPlistMatrixRep" ],
+InstallMethod( String, [ "IsRowPlistMatrixRep" ],
   function( M )
     local st;
-    st := "NewMatrix(IsPlistMatrixRep";
+    st := "NewMatrix(IsRowPlistMatrixRep";
     Add(st,',');
     if IsFinite(M![BDPOS]) and IsField(M![BDPOS]) then
         Append(st,"GF(");
@@ -962,31 +962,31 @@ InstallMethod( String, [ "IsPlistMatrixRep" ],
 ############################################################################
 
 InstallMethod( \+,
-  [ "IsPlistMatrixRep", "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep", "IsRowPlistMatrixRep" ],
   function( a, b )
     if ValueOption( "check" ) <> false and
        ( not IsIdenticalObj( a![BDPOS], b![BDPOS] ) or
          a![RLPOS] <> b![RLPOS] ) then
       Error( "<a> and <b> are not compatible" );
     fi;
-    return MakeIsPlistMatrixRep( a![BDPOS], a![EMPOS], a![RLPOS],
+    return MakeIsRowPlistMatrixRep( a![BDPOS], a![EMPOS], a![RLPOS],
                SUM_LIST_LIST_DEFAULT( a![ROWSPOS], b![ROWSPOS] ), false );
   end );
 
 InstallMethod( \-,
-  [ "IsPlistMatrixRep", "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep", "IsRowPlistMatrixRep" ],
   function( a, b )
     if ValueOption( "check" ) <> false and
        ( not IsIdenticalObj( a![BDPOS], b![BDPOS] ) or
          a![RLPOS] <> b![RLPOS] ) then
       Error( "<a> and <b> are not compatible" );
     fi;
-    return MakeIsPlistMatrixRep( a![BDPOS], a![EMPOS], a![RLPOS],
+    return MakeIsRowPlistMatrixRep( a![BDPOS], a![EMPOS], a![RLPOS],
                DIFF_LIST_LIST_DEFAULT( a![ROWSPOS], b![ROWSPOS] ), false );
   end );
 
 InstallMethod( \*,
-  [ "IsPlistMatrixRep", "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep", "IsRowPlistMatrixRep" ],
   function( a, b )
     local i,j,l,v,w;
     if ValueOption( "check" ) <> false then
@@ -1012,15 +1012,15 @@ InstallMethod( \*,
     if not IsMutable(a) and not IsMutable(b) then
         MakeImmutable(l);
     fi;
-    return MakeIsPlistMatrixRep( a![BDPOS], a![EMPOS], b![RLPOS], l, false );
+    return MakeIsRowPlistMatrixRep( a![BDPOS], a![EMPOS], b![RLPOS], l, false );
   end );
 
 InstallMethod( \=,
-  [ "IsPlistMatrixRep", "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep", "IsRowPlistMatrixRep" ],
   { a, b } -> EQ_LIST_LIST_DEFAULT( a![ROWSPOS], b![ROWSPOS] ) );
 
 InstallMethod( \<,
-  [ "IsPlistMatrixRep", "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep", "IsRowPlistMatrixRep" ],
   { a, b } -> LT_LIST_LIST_DEFAULT( a![ROWSPOS], b![ROWSPOS] ) );
 
 # According to "Mutability Status and List Arithmetic":
@@ -1028,7 +1028,7 @@ InstallMethod( \<,
 # all its rows are mutable if the first row of 'M' is mutable,
 # and all its rows are immutable otherwise.
 InstallMethod( AdditiveInverseSameMutability,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   function( M )
     local l;
 
@@ -1039,23 +1039,23 @@ InstallMethod( AdditiveInverseSameMutability,
     else
       l:= List( M![ROWSPOS], AdditiveInverseImmutable );
     fi;
-    return MakeIsPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS], l, false );
+    return MakeIsRowPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS], l, false );
   end );
 
 InstallMethod( AdditiveInverseImmutable,
-  [ "IsPlistMatrixRep" ],
-  M -> MakeIsPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
+  [ "IsRowPlistMatrixRep" ],
+  M -> MakeIsRowPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
            MakeImmutable( List( M![ROWSPOS], AdditiveInverseImmutable ) ),
            false ) );
 
 # all rows mutable
 InstallMethod( AdditiveInverseMutable,
-  [ "IsPlistMatrixRep" ],
-  M -> MakeIsPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
+  [ "IsRowPlistMatrixRep" ],
+  M -> MakeIsRowPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
            List( M![ROWSPOS], AdditiveInverseMutable ), false ) );
 
 InstallMethod( ZeroSameMutability,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   function( M )
     local l;
 
@@ -1066,25 +1066,25 @@ InstallMethod( ZeroSameMutability,
     else
       l:= List( M![ROWSPOS], ZeroImmutable );
     fi;
-    return MakeIsPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS], l, false );
+    return MakeIsRowPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS], l, false );
   end );
 
 InstallMethod( ZeroImmutable,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   function( M )
-    M:= MakeIsPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
+    M:= MakeIsRowPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
             MakeImmutable( List( M![ROWSPOS], ZeroImmutable ) ), false );
     SetIsZero( M, true );
     return M;
   end );
 
 InstallMethod( ZeroMutable,
-  [ "IsPlistMatrixRep" ],
-  M -> MakeIsPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
+  [ "IsRowPlistMatrixRep" ],
+  M -> MakeIsRowPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
            List( M![ROWSPOS], ZeroMutable ), false ) );
 
 InstallMethod( IsZero,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   function( M )
     local i;
     for i in [1..Length(M![ROWSPOS])] do
@@ -1096,7 +1096,7 @@ InstallMethod( IsZero,
   end );
 
 InstallMethod( IsOne,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   function( M )
     local n, i, row;
     if Length(M![ROWSPOS]) <> M![RLPOS] then
@@ -1116,7 +1116,7 @@ InstallMethod( IsOne,
   end );
 
 InstallMethod( OneSameMutability,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   function( M )
     local o, i;
     if M![RLPOS] <> Length(M![ROWSPOS]) then
@@ -1142,7 +1142,7 @@ InstallMethod( OneSameMutability,
   end );
 
 InstallMethod( OneMutable,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   function( M )
     if M![RLPOS] <> Length(M![ROWSPOS]) then
         #Error("OneMutable: Matrix is not square");
@@ -1153,7 +1153,7 @@ InstallMethod( OneMutable,
   end );
 
 InstallMethod( OneImmutable,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   function( M )
     if M![RLPOS] <> Length(M![ROWSPOS]) then
         #Error("OneImmutable: Matrix is not square");
@@ -1169,7 +1169,7 @@ InstallMethod( OneImmutable,
 # lists of plain lists:
 
 InstallMethod( InverseMutable,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   function( M )
     local n;
     if M![RLPOS] <> Length(M![ROWSPOS]) then
@@ -1185,7 +1185,7 @@ InstallMethod( InverseMutable,
   end );
 
 InstallMethod( InverseImmutable,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   function( M )
     local n;
     if M![RLPOS] <> Length(M![ROWSPOS]) then
@@ -1201,7 +1201,7 @@ InstallMethod( InverseImmutable,
   end );
 
 InstallMethod( InverseSameMutability,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   function( M )
     local n;
     if M![RLPOS] <> Length(M![ROWSPOS]) then
@@ -1221,12 +1221,12 @@ InstallMethod( InverseSameMutability,
   end );
 
 InstallMethod( RankMat,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   M -> RankMat( List( M![ROWSPOS], x -> x![ELSPOS] ) ) );
 
 InstallMethodWithRandomSource( Randomize,
   "for a random source and a mutable plist matrix",
-  [ IsRandomSource, IsPlistMatrixRep and IsMutable ],
+  [ IsRandomSource, IsRowPlistMatrixRep and IsMutable ],
   function( rs, M )
     local v;
     for v in M![ROWSPOS] do
@@ -1236,18 +1236,18 @@ InstallMethodWithRandomSource( Randomize,
   end );
 
 InstallMethod( TransposedMatMutable,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   function( M )
     local i,n;
     n := ListWithIdenticalEntries(M![RLPOS],0);
     for i in [1..M![RLPOS]] do
         n[i]:= Vector(List(M![ROWSPOS],v->v![ELSPOS][i]),M![EMPOS]);
     od;
-    return MakeIsPlistMatrixRep( M![BDPOS], M![EMPOS], Length(M![ROWSPOS]), n, false );
+    return MakeIsRowPlistMatrixRep( M![BDPOS], M![EMPOS], Length(M![ROWSPOS]), n, false );
   end );
 
 InstallMethod( \*,
-  [ "IsPlistVectorRep", "IsPlistMatrixRep" ],
+  [ "IsPlistVectorRep", "IsRowPlistMatrixRep" ],
   function( v, M )
     local i,res,s;
     if ValueOption( "check" ) <> false and
@@ -1269,7 +1269,7 @@ InstallMethod( \*,
   end );
 
 #InstallMethod( \^,
-#  [ "IsPlistMatrixRep", "IsInt" ],
+#  [ "IsRowPlistMatrixRep", "IsInt" ],
 #  function( M, i )
 #    local mi;
 #    if M![RLPOS] <> Length(M![ROWSPOS]) then
@@ -1291,8 +1291,8 @@ InstallMethod( ConstructingFilter,
   v -> IsPlistVectorRep );
 
 InstallMethod( ConstructingFilter,
-  [ "IsPlistMatrixRep" ],
-  M -> IsPlistMatrixRep );
+  [ "IsRowPlistMatrixRep" ],
+  M -> IsRowPlistMatrixRep );
 
 InstallMethod( ChangedBaseDomain,
   [ "IsPlistVectorRep", "IsRing" ],
@@ -1305,9 +1305,9 @@ InstallMethod( ChangedBaseDomain,
   end );
 
 InstallMethod( ChangedBaseDomain,
-  [ "IsPlistMatrixRep", "IsRing" ],
+  [ "IsRowPlistMatrixRep", "IsRing" ],
   function( M, r )
-    r:= NewMatrix( IsPlistMatrixRep, r, M![RLPOS],
+    r:= NewMatrix( IsRowPlistMatrixRep, r, M![RLPOS],
                    List( M![ROWSPOS], x-> x![ELSPOS] ) );
     if not IsMutable( M ) then
       MakeImmutable( r );
@@ -1317,6 +1317,6 @@ InstallMethod( ChangedBaseDomain,
 
 # We know that 'CompatibleVectorFilter( M )' is 'IsPlistVectorRep'.
 InstallMethod( CompatibleVector,
-  [ "IsPlistMatrixRep" ],
+  [ "IsRowPlistMatrixRep" ],
   M -> NewZeroVector( IsPlistVectorRep, BaseDomain( M ), NumberRows( M ) ) );
 

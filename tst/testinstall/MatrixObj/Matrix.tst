@@ -31,7 +31,7 @@ gap> Display(m);
  1 .
 
 #
-gap> m := Matrix( IsPlistMatrixRep, GF(2), [[1,2],[3,4]] * Z(2) );
+gap> m := Matrix( IsRowPlistMatrixRep, GF(2), [[1,2],[3,4]] * Z(2) );
 <2x2-matrix over GF(2)>
 gap> Display(m);
 <2x2-matrix over GF(2):

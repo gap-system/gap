@@ -46,37 +46,37 @@ gap> TestZeroMatrix(Is8BitMatrixRep, GF(257), 2, 3);
 Error, Is8BitMatrixRep only supports base fields with 3 to 256 elements
 
 #
-# IsPlistMatrixRep
+# IsRowPlistMatrixRep
 #
-gap> TestZeroMatrix(IsPlistMatrixRep, GF(2), 2, 3);
+gap> TestZeroMatrix(IsRowPlistMatrixRep, GF(2), 2, 3);
 <2x3-matrix over GF(2)>
-gap> TestZeroMatrix(IsPlistMatrixRep, GF(2), 2, 0);
+gap> TestZeroMatrix(IsRowPlistMatrixRep, GF(2), 2, 0);
 <2x0-matrix over GF(2)>
-gap> TestZeroMatrix(IsPlistMatrixRep, GF(2), 0, 3);
+gap> TestZeroMatrix(IsRowPlistMatrixRep, GF(2), 0, 3);
 <0x3-matrix over GF(2)>
 
 #
-gap> TestZeroMatrix(IsPlistMatrixRep, Integers, 2, 3);
+gap> TestZeroMatrix(IsRowPlistMatrixRep, Integers, 2, 3);
 <2x3-matrix over Integers>
-gap> TestZeroMatrix(IsPlistMatrixRep, Integers, 2, 0);
+gap> TestZeroMatrix(IsRowPlistMatrixRep, Integers, 2, 0);
 <2x0-matrix over Integers>
-gap> TestZeroMatrix(IsPlistMatrixRep, Integers, 0, 3);
+gap> TestZeroMatrix(IsRowPlistMatrixRep, Integers, 0, 3);
 <0x3-matrix over Integers>
 
 #
-gap> TestZeroMatrix(IsPlistMatrixRep, Rationals, 2, 3);
+gap> TestZeroMatrix(IsRowPlistMatrixRep, Rationals, 2, 3);
 <2x3-matrix over Rationals>
-gap> TestZeroMatrix(IsPlistMatrixRep, Rationals, 2, 0);
+gap> TestZeroMatrix(IsRowPlistMatrixRep, Rationals, 2, 0);
 <2x0-matrix over Rationals>
-gap> TestZeroMatrix(IsPlistMatrixRep, Rationals, 0, 3);
+gap> TestZeroMatrix(IsRowPlistMatrixRep, Rationals, 0, 3);
 <0x3-matrix over Rationals>
 
 #
-gap> TestZeroMatrix(IsPlistMatrixRep, Integers mod 4, 2, 3);
+gap> TestZeroMatrix(IsRowPlistMatrixRep, Integers mod 4, 2, 3);
 <2x3-matrix over (Integers mod 4)>
-gap> TestZeroMatrix(IsPlistMatrixRep, Integers mod 4, 2, 0);
+gap> TestZeroMatrix(IsRowPlistMatrixRep, Integers mod 4, 2, 0);
 <2x0-matrix over (Integers mod 4)>
-gap> TestZeroMatrix(IsPlistMatrixRep, Integers mod 4, 0, 3);
+gap> TestZeroMatrix(IsRowPlistMatrixRep, Integers mod 4, 0, 3);
 <0x3-matrix over (Integers mod 4)>
 
 #

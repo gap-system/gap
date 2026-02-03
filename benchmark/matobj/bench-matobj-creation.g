@@ -100,9 +100,9 @@ RunMatObjTest := function(desc, filter, ring)
     TestCreatingMatrixObj(filter, ring);
 end;
 
-RunMatObjTest("GF(2) IsPlistMatrixRep", IsPlistMatrixRep, GF(2));
-RunMatObjTest("integer IsPlistMatrixRep", IsPlistMatrixRep, Integers);
-RunMatObjTest("rational IsPlistMatrixRep", IsPlistMatrixRep, Rationals);
+RunMatObjTest("GF(2) IsRowPlistMatrixRep", IsRowPlistMatrixRep, GF(2));
+RunMatObjTest("integer IsRowPlistMatrixRep", IsRowPlistMatrixRep, Integers);
+RunMatObjTest("rational IsRowPlistMatrixRep", IsRowPlistMatrixRep, Rationals);
 
 # TODO: other reps
 # TODO: other compare with creating plist-of-plist
