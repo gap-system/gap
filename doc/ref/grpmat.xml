@@ -91,6 +91,8 @@ that represent a faithful action on vectors.
 
 <#Include Label="InvariantBilinearForm">
 <#Include Label="IsFullSubgroupGLorSLRespectingBilinearForm">
+<#Include Label="InvariantBilinearFormUpToScalars">
+<#Include Label="IsFullSubgroupGLRespectingBilinearFormUpToScalars">
 <#Include Label="InvariantSesquilinearForm">
 <#Include Label="IsFullSubgroupGLorSLRespectingSesquilinearForm">
 <#Include Label="InvariantQuadraticForm">

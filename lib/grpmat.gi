@@ -821,7 +821,8 @@ BindGlobal( "RespectsQuadraticForm", function( Q, M )
 #M  <mat> in <G>  . . . . . . . . . . . . . . . . . . . .  is form invariant?
 ##
 InstallMethod( \in, "respecting quadratic form", IsElmsColls,
-    [ IsMatrix, IsFullSubgroupGLorSLRespectingQuadraticForm ],
+    [ IsMatrixOrMatrixObj,
+      IsFullSubgroupGLorSLRespectingQuadraticForm ],
     {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
                  # this method is better than the one using a nice monom.;
                  # it has the same rank as the method based on the inv.
@@ -841,7 +842,8 @@ InstallMethod( \in, "respecting quadratic form", IsElmsColls,
     end );
 
 InstallMethod( \in, "respecting bilinear form", IsElmsColls,
-    [ IsMatrix, IsFullSubgroupGLorSLRespectingBilinearForm ],
+    [ IsMatrixOrMatrixObj,
+      IsFullSubgroupGLorSLRespectingBilinearForm ],
     {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
 function( mat, G )
     local inv;
@@ -856,7 +858,8 @@ function( mat, G )
 end );
 
 InstallMethod( \in, "respecting sesquilinear form", IsElmsColls,
-    [ IsMatrix, IsFullSubgroupGLorSLRespectingSesquilinearForm ],
+    [ IsMatrixOrMatrixObj,
+      IsFullSubgroupGLorSLRespectingSesquilinearForm ],
     {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
 function( mat, G )
     local form, pow, inv;
@@ -872,6 +875,54 @@ function( mat, G )
     return mat * inv * List( TransposedMat( mat ),
                              row -> List( row, x -> x^pow ) )
            = inv;
+end );
+
+# The forms package contains this function with the name '_IsEqualModScalars',
+# note that the function 'IsEqualProjective' from the recog package
+# cannot be used because the matrices that describe forms can have zero rows.
+BindGlobal( "_IsEqualModScalars_GAP",
+    function( mat1, mat2 )
+    local m, n, i, j, s;
+
+    m:= NrRows( mat1 );
+    if m <> NrRows( mat2 ) then
+      return false;
+    fi;
+    n:= NrCols( mat1 );
+    if n <> NrCols( mat2 ) then
+      return false;
+    fi;
+    for i in [ 1 .. m ] do
+      for j in [ 1 .. n ] do
+        if not IsZero( mat1[ i, j ] ) then
+          s:= mat2[ i, j ] / mat1[ i, j ];
+          if IsZero( s ) then
+            return false;
+          elif IsRowListMatrix( mat1 ) and IsRowListMatrix( mat2 ) then
+            # separate case for performance reasons
+            return ForAll( [ 1 .. m ], i -> s * mat1[i] = mat2[i] );
+          fi;
+          return s * mat1 = mat2;
+        fi;
+      od;
+    od;
+    return IsZero( mat2 );
+end );
+
+InstallMethod( \in, "respecting bilinear form up to scalars", IsElmsColls,
+  [ IsMatrixOrMatrixObj,
+    IsFullSubgroupGLRespectingBilinearFormUpToScalars ],
+  {} -> RankFilter( IsHandledByNiceMonomorphism ), # override nice mon. method
+function( mat, G )
+    local inv;
+    # We may use `FieldOfMatrixGroup( G )` instead of `baseDomain` of the form,
+    # see the comment for the '\in' method above.
+    if not IsSubset( FieldOfMatrixGroup( G ),
+                     FieldOfMatrixList( [ mat ] ) ) then
+      return false;
+    fi;
+    inv:= InvariantBilinearFormUpToScalars( G ).matrix;
+    return _IsEqualModScalars_GAP( inv, mat * inv * TransposedMat( mat ) );
 end );
 
 
