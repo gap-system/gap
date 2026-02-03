@@ -13,6 +13,7 @@ GAPInfo.ManualDataRef:= rec(
     "../../src/sysfiles.c",
     "../../grp/basic.gd",
     "../../grp/classic.gd",
+    "../../grp/conformal.gd",
     "../../grp/perf.gd",
     "../../grp/ree.gd",
     "../../grp/suzuki.gd",

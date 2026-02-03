@@ -1,7 +1,10 @@
 #@local CheckGeneratorsInvertible, CheckGeneratorsSpecial, CheckField
-#@local CheckBilinearForm, CheckQuadraticForm, frob, CheckSesquilinearForm
+#@local CheckBilinearForm, CheckBilinearFormUpToScalars
+#@local CheckQuadraticForm, frob, CheckSesquilinearForm
 #@local CheckSize, CheckClasses, CheckMembershipFromForm
 #@local CheckMembershipBilinear, CheckMembershipBilinear2
+#@local CheckMembershipBilinearUpToScalars
+#@local CheckMembershipBilinearUpToScalars2
 #@local CheckMembershipSesquilinear
 #@local CheckMembershipQuadratic, CheckMembershipQuadratic2
 #@local grps1, grps2, grps, d, q, G, m
@@ -32,6 +35,12 @@ gap> CheckBilinearForm := function(G)
 >   M := InvariantBilinearForm(G).matrix;
 >   return ForAll(GeneratorsOfGroup(G),
 >               g -> g*M*TransposedMat(g) = M);
+> end;;
+gap> CheckBilinearFormUpToScalars := function(G)
+>   local M;
+>   M := InvariantBilinearFormUpToScalars(G).matrix;
+>   return ForAll(GeneratorsOfGroup(G),
+>               g -> _IsEqualModScalars_GAP(g*M*TransposedMat(g), M));
 > end;;
 gap> CheckQuadraticForm := function(G)
 >   local M, Q;
@@ -77,7 +86,8 @@ gap> CheckMembershipFromForm:= function( G, form )
 >    full:= GL( DimensionOfMatrixGroup( G ), form.baseDomain );
 >    return ForAll( [ 1 .. 10 ], i -> PseudoRandom( G ) in G ) and
 >           ( ForAny( GeneratorsOfGroup( full ), g -> not ( g in G ) ) or
->             Size( G ) = Size( full ) );
+>             Size( G ) = Size( full ) ) and
+>           not HasNiceMonomorphism( G );
 > end;;
 gap> CheckMembershipBilinear:= function( G )
 >    return HasIsFullSubgroupGLorSLRespectingBilinearForm( G )
@@ -88,6 +98,20 @@ gap> CheckMembershipBilinear2:= function( G )
 >    if HasIsFullSubgroupGLorSLRespectingBilinearForm( G )
 >       and IsFullSubgroupGLorSLRespectingBilinearForm( G ) then
 >      return CheckMembershipFromForm( G, InvariantBilinearForm( G ) );
+>    fi;
+>    return true;
+> end;;
+gap> CheckMembershipBilinearUpToScalars:= function( G )
+>    return HasIsFullSubgroupGLRespectingBilinearFormUpToScalars( G )
+>           and IsFullSubgroupGLRespectingBilinearFormUpToScalars( G )
+>           and CheckMembershipFromForm( G,
+>                 InvariantBilinearFormUpToScalars( G ) );
+> end;;
+gap> CheckMembershipBilinearUpToScalars2:= function( G )
+>    if HasIsFullSubgroupGLRespectingBilinearFormUpToScalars( G )
+>       and IsFullSubgroupGLRespectingBilinearFormUpToScalars( G ) then
+>      return CheckMembershipFromForm( G,
+>               InvariantBilinearFormUpToScalars( G ) );
 >    fi;
 >    return true;
 > end;;
@@ -336,6 +360,32 @@ true
 gap> ForAll(grps1, CheckMembershipBilinear);
 true
 gap> ForAll(grps2, CheckMembershipBilinear2);
+true
+
+#
+# conformal symplectic groups
+#
+gap> grps1:=[];;
+gap> grps2:=[];;
+gap> for d in [2,4,6,8] do
+>   for q in [2,3,4,5,7,8,9,16,17,25,27] do
+>     Add(grps1, CSp(d,q));
+>     Add(grps2, CSp(d,q) ^ RandomInvertibleMat(d,GF(q)));
+>     Add(grps2, CSp(d,q) ^ RandomInvertibleMat(d,GF(q^2)));
+>   od;
+> od;
+gap> grps:= Concatenation( grps1, grps2 );;
+gap> ForAll(grps, CheckGeneratorsInvertible);
+true
+gap> ForAll(grps, CheckField);
+true
+gap> ForAll(grps1, CheckBilinearFormUpToScalars);
+true
+gap> ForAll(grps, CheckSize);
+true
+gap> ForAll(grps1, CheckMembershipBilinearUpToScalars);
+true
+gap> ForAll(grps2, CheckMembershipBilinearUpToScalars2);
 true
 
 # an undocumented helper function
