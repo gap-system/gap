@@ -68,8 +68,8 @@ InstallAttributeFunction(
 ##  Any type that is created for <C>fam</C> (see <Ref Func="NewType"/>) will
 ##  describe objects in these filters, and thus
 ##  any object that is created in <C>fam</C> (see <Ref Func="Objectify"/>)
-##  will lie automatically in these filters.
-##  (It does not make a difference whether one uses <A>req</A> or <A>imp</A>
+##  will lie automatically in <A>req</A><C> and </C><A>imp</A>.
+##  (Thus it does not matter whether one uses <A>req</A> or <A>imp</A>
 ##  or both in the call, the distinction has only historical reasons.)
 ##  <P/>
 ##  The filter <A>famfilter</A>, if given, specifies a filter that will hold
