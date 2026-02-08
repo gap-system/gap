@@ -107,10 +107,13 @@ DeclareOperation(
 ##  <ManSection>
 ##  <Oper Name="MultVector" Arg='list1, mul'/>
 ##  <Oper Name="MultVectorLeft" Arg='list1, mul'/>
+##  <Oper Name="MultVectorRight" Arg='list1, mul'/>
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  This operation calculates <A>mul</A>*<A>list1</A> in-place.
+##  These operations multiply the entries of <A>list1</A> by <A>mul</A> in-place.
+##  The operation <Ref Oper="MultVectorLeft"/> calculates <A>mul \cdot list1</A> and
+##  the operation <Ref Oper="MultVectorRight"/> calculates <A>list1 \cdot mul</A>.
 ##  <P/>
 ##  Note that <C>MultVector</C> is just a synonym for
 ##  <C>MultVectorLeft</C>.
@@ -122,7 +125,10 @@ DeclareOperation(
     "MultVectorLeft",
         [ IsMutable and IsList,
           IsObject ] );
-# For VectorObj objects there also exists a MultVectorRight operation
+DeclareOperation(
+    "MultVectorRight",
+        [ IsMutable and IsList,
+          IsObject ] );
 DeclareSynonym( "MultVector", MultVectorLeft );
 
 #############################################################################
