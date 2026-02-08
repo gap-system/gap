@@ -308,10 +308,12 @@ ifneq (,$(findstring cygwin,$(host_os)))
 else
   ifneq (,$(findstring darwin,$(host_os)))
     GAC_CFLAGS = -fno-common
-    GAC_LDFLAGS = -bundle -undefined dynamic_lookup -Wl,-no_fixup_chains
+    GAC_LDFLAGS = -bundle -L$(abs_builddir) -lgap
+    GAC_LDFLAGS_FOR_INSTALL = -bundle -L$(libdir) -lgap
   else
     GAC_CFLAGS = -fPIC
-    GAC_LDFLAGS = -shared -fPIC
+    GAC_LDFLAGS = -shared -fPIC -L$(abs_builddir) -lgap
+    GAC_LDFLAGS_FOR_INSTALL = -shared -fPIC -L$(libdir) -lgap
   endif
 endif
 
@@ -448,6 +450,7 @@ else ifneq (,$(findstring darwin,$(host_os)))
   LINK_SHLIB_FLAGS += -current_version $(LIBGAP_CURRENT_VER)
   LINK_SHLIB_FLAGS += -Wl,-single_module
   LINK_SHLIB_FLAGS += -Wl,-headerpad_max_install_names
+  LINK_SHLIB_FLAGS += -Wl,-install_name,$(abs_builddir)/$(LIBGAP_FULL)
   GAP_INSTALL_EXTRAFLAGS = -Wl,-headerpad_max_install_names
 
   GAP_CPPFLAGS += -DPIC
@@ -477,7 +480,7 @@ libgap: libgap$(SHLIB_EXT) $(LIBGAP_FULL)
 
 # Linking rule and dependencies for libgap
 $(LIBGAP_FULL): $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) -o $@ $(LINK_SHLIB_FLAGS) $(GAP_LDFLAGS) $(OBJS) $(GAP_LIBS)
+	$(QUIET_LINK)$(LINK) -o $@ $(LINK_SHLIB_FLAGS) $(GAP_LDFLAGS) -Wl,-rpath,$(abs_builddir) $(OBJS) $(GAP_LIBS)
 
 ifneq (,$(findstring cygwin,$(host_os)))
 
@@ -510,8 +513,8 @@ libgap$(SHLIB_EXT): $(LIBGAP_FULL)
 	ln -sf $< $@
 
 # build rule for the main gap executable
-gap$(EXEEXT): build/obj/src/main.c.o $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(OBJS) $(GAP_LIBS) -o $@
+gap$(EXEEXT): build/obj/src/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(GAP_LIBS) -Wl,-rpath,$(abs_builddir) -L${abs_builddir} -lgap -o $@
 
 # generate a special main.c which sets SYS_DEFAULT_PATHS and then includes
 # regular main.c; this is used to build the `gap-install` binary
@@ -521,7 +524,7 @@ build/main.c: sysinfo.gap
 
 # build rule for the gap executable used by the `install-bin` target
 build/gap-install: build/obj/build/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(GAP_INSTALL_EXTRAFLAGS) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(GAP_INSTALL_EXTRAFLAGS) -Wl,-rpath,$(libdir) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
 	$(INSTALL_NAME_TOOL) -change $(LIBGAP_FULL) $(libdir)/$(LIBGAP_FULL) $@
 
 endif
@@ -674,6 +677,7 @@ install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap/extra $(GAP_DEFINES)
 install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_GAP = $(bindir)/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
+install-sysinfo: GAC_LDFLAGS = $(GAC_LDFLAGS_FOR_INSTALL)
 install-sysinfo: GMP_PREFIX =
 install-sysinfo: install-dirs
 	@echo "$$sysinfo_gap" > $(DESTDIR)$(libdir)/gap/sysinfo.gap
