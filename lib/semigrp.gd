@@ -300,7 +300,7 @@ DeclareAttribute("CayleyGraphDualSemigroup",IsSemigroup);
 ##  generators, and the labels given to the generators, can be specified in
 ##  several different ways.
 ##  Warning: the labels of generators are only an aid for printing,
-##  and do not necessarily distinguish generators;
+##  and do not necessarily distinguish elements of the semigroup;
 ##  see the examples at the end for more information.
 ##  <List>
 ##    <Mark>
@@ -323,7 +323,7 @@ DeclareAttribute("CayleyGraphDualSemigroup",IsSemigroup);
 ##    </Item>
 ##    <Mark>2: For given generator names</Mark>
 ##    <Item>
-##      Called with various (at least one) nonempty strings,
+##      Called with various (one or more) distinct nonempty strings,
 ##      <Ref Func="FreeSemigroup" Label="for various names"/> returns
 ##      a free semigroup on as many generators as arguments, which are labelled
 ##      <A>name1</A>, <A>name2</A>, etc.
@@ -331,7 +331,7 @@ DeclareAttribute("CayleyGraphDualSemigroup",IsSemigroup);
 ##    <Mark>3: For a given list of generator names</Mark>
 ##    <Item>
 ##      Called with a nonempty finite list <A>names</A> of
-##      nonempty strings,
+##      distinct nonempty strings,
 ##      <Ref Func="FreeSemigroup" Label="for a list of names"/> returns
 ##      a free semigroup on <C>Length(<A>names</A>)</C> generators, whose
 ##      <C>i</C>-th generator is labelled <A>names</A><C>[i]</C>.
@@ -417,6 +417,8 @@ DeclareAttribute("CayleyGraphDualSemigroup",IsSemigroup);
 ##  distinguish letters.
 ##  It is possible to create arbitrarily weird situations by choosing strange
 ##  names for the letters.
+##  However, as a small step to avoiding confusion, it is disallowed to choose
+##  duplicate generator names.
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> f := FreeGroup( "x", "x" );
