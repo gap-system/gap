@@ -115,7 +115,7 @@ end);
 ##  <#/GAPDoc>
 
 BIND_GLOBAL("CoverageLineByLine", function(name)
-  return ProfileLineByLine(name, rec(coverage := true));
+  return ProfileLineByLine(name, rec(coverage := true, recordMem := true));
 end);
 
 #############################################################################
