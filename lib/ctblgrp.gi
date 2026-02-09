@@ -1605,7 +1605,7 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,pow,pos,i,j,k,gen,
   # not easily transfer to mod p.
   k:=Image(piso,TrivialSubgroup(D.galMorphisms));
   gpcgs:=Pcgs(k);
-  gals:=List(gpcgs,i->PreImagesRepresentative(piso,i));
+  gals:=List(gpcgs,i->PreImagesRepresentativeNC(piso,i));
   ord:=List(gpcgs,i->RelativeOrderOfPcElement(gpcgs,i));
   l:=Length(gpcgs);
 
@@ -1826,7 +1826,7 @@ local often,trans,e,neu,i,inv,cent,l,s,s1,x,dom;
       if dom=fail then
         x:=D.classreps[inv];
 
-        l:=List(s,i->[x^PreImagesRepresentative(e,
+        l:=List(s,i->[x^PreImagesRepresentativeNC(e,
           RepresentativeAction(Image(e),1,i[1])),Size(cent)*Length(i)]);
       else
         l:=List(s,i->[dom[i[1]],Size(cent)*Length(i)]);

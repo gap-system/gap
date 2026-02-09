@@ -442,7 +442,7 @@ InstallMethod( ImagesElm,
     return [ LieObject( elm ) ];
     end );
 
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "for Lie embedding and Lie object in default representation",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsLieEmbeddingRep,

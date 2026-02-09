@@ -955,7 +955,8 @@ InstallGlobalFunction(LatticeViaRadical,function(arg)
       #k:=PreImage(hom,a);
       # make generators of homomorphism fit nicely to presentation
       gf:=IsomorphismFpGroup(a);
-      e:=List(MappingGeneratorsImages(gf)[1],x->PreImagesRepresentative(hom,x));
+      e:=List(MappingGeneratorsImages(gf)[1],
+           x->PreImagesRepresentativeNC(hom,x));
       # we cannot guarantee that the parent contains e, so no
       # ClosureSubgroup.
       k:=ClosureGroup(KernelOfMultiplicativeGeneralMapping(hom),e);
@@ -2780,7 +2781,7 @@ local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,emb,u,pos,
     auts:=[];
     for i in GeneratorsOfGroup(n) do
       aut:=GroupHomomorphismByImages(f,f,gens,List(gens,x->
-            Image(hom,PreImagesRepresentative(hom,x)^i)));
+            Image(hom,PreImagesRepresentativeNC(hom,x)^i)));
       SetIsBijective(aut,true);
       Add(auts,aut);
     od;
@@ -2857,7 +2858,7 @@ local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,emb,u,pos,
                     for dc in DoubleCosetRepsAndSizes(t[7],ind,t[8]) do
                       # form the subdirect product
                       g:=List(GeneratorsOfGroup(j[1]),
-                            x->x*Image(emb,PreImagesRepresentative(t[5],
+                            x->x*Image(emb,PreImagesRepresentativeNC(t[5],
                               Image(dc[1],Image(iso,x))) ));
                       Append(g,List(GeneratorsOfGroup(t[1]),x->Image(emb,x)));
                       g:=Subgroup(D,g);

@@ -47,9 +47,9 @@ gap> Size(Image(iota2 * pi1));
 1
 
 #
-gap> ForAll(G1, g -> PreImagesRepresentative(iota1, ImagesRepresentative(iota1, g)) = g);
+gap> ForAll(G1, g -> PreImagesRepresentativeNC(iota1, ImagesRepresentative(iota1, g)) = g);
 true
-gap> ForAll(G2, g -> PreImagesRepresentative(iota2, ImagesRepresentative(iota2, g)) = g);
+gap> ForAll(G2, g -> PreImagesRepresentativeNC(iota2, ImagesRepresentative(iota2, g)) = g);
 true
 gap> Size(Images(pi1,KernelOfMultiplicativeGeneralMapping(pi1)));
 1

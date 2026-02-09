@@ -515,12 +515,12 @@ local p, hom, reps, as, a, b, ap, bp, ab, ap_bp, ab_p, g, h, H, N;
   reps := ConjugacyClasses(Image(hom));
   reps := List(reps, Representative);
   reps := Filtered(reps, g -> not IsOne(g));
-  reps := List(reps, g -> PreImagesRepresentative(hom, g));
+  reps := List(reps, g -> PreImagesRepresentativeNC(hom, g));
 
   as := List(reps, a -> [a,a^p]);
 
   for b in Image(hom) do
-    b := PreImagesRepresentative(hom, b);
+    b := PreImagesRepresentativeNC(hom, b);
     bp := b^p;
     for a in as do
       ap := a[2]; a := a[1];
@@ -1793,7 +1793,7 @@ local hom,gens;
   fi;
   hom:=IsomorphismPermGroup(G);
   gens:=IndependentGeneratorsOfAbelianGroup(Image(hom,G));
-  return List(gens,i->PreImagesRepresentative(hom,i));
+  return List(gens,i->PreImagesRepresentativeNC(hom,i));
 end);
 
 
@@ -2090,8 +2090,9 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
               # dual space of the module, w.r.t. `pcgs'.
               mg:= List( gs, x -> TransposedMat( List( pcgs,
                      y -> one * ExponentsOfPcElement( pcgs, Image( ph,
-                          Image( dh, PreImagesRepresentative(
-                           dh, PreImagesRepresentative(ph,y) )^x ) ) )))^-1);
+                          Image( dh, PreImagesRepresentativeNC(
+                           dh, PreImagesRepresentativeNC(
+                             ph,y) )^x ) ) )))^-1);
 #T inverting is not necessary, or?
               mg:= Filtered( mg, x -> x <> idm );
 
@@ -2141,11 +2142,11 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
 
                     # Construct a group element corresponding to
                     # the basis element of the submodule.
-                    Add( tmp2, PreImagesRepresentative( ph,
+                    Add( tmp2, PreImagesRepresentativeNC( ph,
                                    PcElementByExponentsNC( pcgs, v ) ) );
 
                   od;
-                  Add( ds, PreImagesSet( dh,
+                  Add( ds, PreImagesSetNC( dh,
                             SubgroupNC( df, Concatenation( tmp2, gen ) ) ) );
                 od;
                 Append( gen, tmp2 );
@@ -2154,14 +2155,14 @@ InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
             else
 
               # cyclic case
-              Add( ds, PreImagesSet( dh,
+              Add( ds, PreImagesSetNC( dh,
                            SubgroupNC( df, AsSSortedList( gen ) ) ) );
 
             fi;
           od;
 
           # Generate the new candidate.
-          ssr:= PreImagesSet( dh, SubgroupNC( df, AsSSortedList( gen ) ) );
+          ssr:= PreImagesSetNC( dh, SubgroupNC( df, AsSSortedList( gen ) ) );
 
         fi;
 
@@ -2392,7 +2393,7 @@ InstallMethod( UpperCentralSeriesOfGroup,
         Add( S, C );
         Info( InfoGroup, 2, "UpperCentralSeriesOfGroup: step ", Length(S) );
         hom := NaturalHomomorphismByNormalSubgroupNC( G, C );
-        C := PreImages( hom, Centre( Image( hom ) ) );
+        C := PreImagesNC( hom, Centre( Image( hom ) ) );
     od;
 
     if Last(S) = G then
@@ -3593,7 +3594,7 @@ InstallMethod( HallSubgroupOp,
 
     iso := IsomorphismPermGroup( G );
     H := HallSubgroup( ImagesSource( iso ), pi );
-    return PreImagesSet(iso, H);
+    return PreImagesSetNC(iso, H);
     end );
 
 
@@ -5332,7 +5333,7 @@ InstallMethod (MinimalNormalSubgroups,
       local hom;
       hom := NiceMonomorphism (grp);
       return List (MinimalNormalSubgroups (NiceObject (grp)),
-        N -> PreImagesSet (hom, N));
+        N -> PreImagesSetNC(hom, N));
    end);
 
 
