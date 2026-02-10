@@ -2382,7 +2382,7 @@ InstallMethod( NumberRows, "for a gf2 matrix",
 InstallMethod( NumberColumns, "for a gf2 matrix",
   [ IsGF2MatrixRep ], function( m ) return Length(m[1]); end );
 # FIXME: this breaks down for matrices with 0 rows
-InstallMethod( Vector, "for a list of gf2 elements and a gf2 vector",
+InstallOtherMethod( Vector, "for a list of gf2 elements and a gf2 vector",
   [ IsList and IsFFECollection, IsGF2VectorRep ],
   function( l, v )
     local r;
@@ -2391,7 +2391,7 @@ InstallMethod( Vector, "for a list of gf2 elements and a gf2 vector",
     return r;
   end );
 
-InstallMethodWithRandomSource( Randomize,
+InstallOtherMethodWithRandomSource( Randomize,
     "for a random source and a mutable gf2 vector",
     [ IsRandomSource, IsGF2VectorRep and IsMutable ],
   function( rs, v )
@@ -2448,7 +2448,7 @@ InstallMethod( ExtractSubMatrix, "for a gf2 matrix, and two lists",
     return mm;
   end );
 
-InstallMethod( CopySubVector, "for two gf2 vectors, and two ranges",
+InstallOtherMethod( CopySubVector, "for two gf2 vectors, and two ranges",
   [IsGF2VectorRep, IsGF2VectorRep and IsMutable, IsRange, IsRange],
         function( v, w, f, t )
     local l;
@@ -2461,7 +2461,7 @@ InstallMethod( CopySubVector, "for two gf2 vectors, and two ranges",
     fi;
   end );
 
-  InstallMethod( CopySubVector, "for two gf2 vectors, and two lists",
+InstallOtherMethod( CopySubVector, "for two gf2 vectors, and two lists",
   [IsGF2VectorRep, IsGF2VectorRep and IsMutable, IsList, IsList],
         function( v, w, f, t )
     w{t} := v{f};
@@ -2599,14 +2599,46 @@ InstallMethod( CompatibleVectorFilter,
   [ IsGF2MatrixRep ],
   M -> IsGF2VectorRep );
 
-InstallMethod( WeightOfVector, "for a gf2 vector",
+InstallOtherMethod( WeightOfVector, "for a gf2 vector",
   [ IsGF2VectorRep ],
   function( v )
     return WeightVecFFE(v);
   end );
 
-InstallMethod( DistanceOfVectors, "for two gf2 vectors",
+InstallOtherMethod( DistanceOfVectors, "for two gf2 vectors",
   [ IsGF2VectorRep, IsGF2VectorRep ],
   function( v, w )
     return DistanceVecFFE(v,w);
+  end );
+
+
+#############################################################################
+##
+##  What follows now are some hacks in order to get rid of
+##  the 'IsVectorObj' filter for 'IsGF2VectorRep' and
+##  the 'IsMatrixObj' filter for 'IsGF2MatrixRep'.
+##  Note that the objects in 'IsGF2MatrixRep' are in 'IsMatrix'
+##  because they get the type 'TYPE_LIST_GF2MAT' or 'TYPE_LIST_GF2MAT_IMM'.
+
+# Without the following, the chosen 'ListOp' method would be `ShallowCopy`.
+# This would in fact be better than the method below, but some test output
+# would have to be adjusted.
+InstallOtherMethod( ListOp,
+  [ IsGF2VectorRep ],
+  v -> List( [ 1 .. Length( v ) ], i -> v[i] ) );
+
+# The following method is called in many tests.
+# I would say it is a bad idea, one can do better by changing several
+# methods on a deeper level.
+# For example, 'DirectSumMat' calls 'NullMat' (not 'ZeroMatrix'),
+# and this function does not create a 'GF2MatrixRep'.
+# Changing 'DirectSumMat' would solve some of the problems.
+InstallOtherMethod( CopySubMatrix,
+  "for two plists -- fallback in case of bad rep.",
+  [ IsGF2MatrixRep, IsPlistRep and IsMutable, IsList, IsList, IsList, IsList ],
+  function( M, N, srcrows, dstrows, srccols, dstcols )
+    local i;
+    for i in [ 1 .. Length( srcrows ) ] do
+      N[ dstrows[i] ]{ dstcols }:= M[ srcrows[i] ]{ srccols };
+    od;
   end );
