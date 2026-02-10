@@ -2634,7 +2634,6 @@ InstallOtherMethod( ListOp,
 # and this function does not create a 'GF2MatrixRep'.
 # Changing 'DirectSumMat' would solve some of the problems.
 InstallOtherMethod( CopySubMatrix,
-  "for two plists -- fallback in case of bad rep.",
   [ IsGF2MatrixRep, IsPlistRep and IsMutable, IsList, IsList, IsList, IsList ],
   function( M, N, srcrows, dstrows, srccols, dstcols )
     local i;
