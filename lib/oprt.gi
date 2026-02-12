@@ -3380,7 +3380,7 @@ end );
 InstallMethod( PreImagesRepresentative,"IsLinearActionHomomorphism",
   FamRangeEqFamElm, [ IsLinearActionHomomorphism, IsPerm ], 0,
 function( hom, elm )
-  local   V, xset,lab,f;
+  local   V, G, Grep, xset,lab,f;
 
   # is this method applicable? Test whether the domain contains a vector
   # space basis (respectively just get this basis).
@@ -3393,20 +3393,21 @@ function( hom, elm )
   #if not elm in Image( hom )  then return fail; fi;
   xset:=UnderlyingExternalSet(hom);
   V := HomeEnumerator(xset);
-  f:=DefaultFieldOfMatrixGroup(Source(hom));
+  G:= Source( hom );
+  Grep:= Representative( G );
+  f:=DefaultFieldOfMatrixGroup(G);
 
   if not IsBound(hom!.linActBasisPositions) then
     hom!.linActBasisPositions:=List(lab,i->PositionCanonical(V,i));
   fi;
   if not IsBound(hom!.linActInverse) then
-    lab:=ImmutableMatrix(f,lab);
+    lab:=ImmutableMatrix(f, Matrix( lab, Grep ));
     hom!.linActInverse:=Inverse(lab);
   fi;
 
   elm:=OnTuples(hom!.linActBasisPositions,elm); # image points
   elm:=V{elm}; # the corresponding vectors
-  f:=DefaultFieldOfMatrixGroup(Source(hom));
-  elm:=ImmutableMatrix(f,elm);
+  elm:=ImmutableMatrix(f, Matrix( elm, Grep ));
 
   return hom!.linActInverse*elm;
 end );
