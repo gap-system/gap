@@ -1202,6 +1202,15 @@ InstallOtherMethod( \^,
     [ IsVectorObj, IsMatrixObj ],
     \* );
 
+#TODO: This is an ugly hack.
+#      Action homomorphisms for matrix groups use vector spaces,
+#      which currently consist of lists not vector objects.
+#      If we want to act on the vectors with matrix groups consisting of
+#      matrix objects, we have to support the following.
+InstallOtherMethod( \^,
+    [ IsRowVector, IsMatrixObj ],
+    { v, M } -> v ^ Unpack( M ) );
+
 
 ############################################################################
 ##
