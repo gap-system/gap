@@ -124,31 +124,66 @@ end );
 
 #############################################################################
 ##
-#M  NiceMonomorphism( <ffe-mat-grp> )
+#V  FULLGLNICOCACHE
+##
+##  'NicomorphismFFMatGroupOnFullSpace' uses a cache of length up to 5,
+##  as follows.
+##
+##  - If the argument is a matrix group that fits to an entry of this
+##    cache, in the sense that dimension, field of definition,
+##    and 'ConstructingFilter' of the matrices in the group are the same as
+##    for the cached value, the stored mapping is returned.
+##  - If a new mapping has to be constructed, the first cached entry is
+##    dropped and the new mapping gets added to the cache.
 ##
 MakeThreadLocal("FULLGLNICOCACHE"); # avoid recreating same homom. repeatedly
-FULLGLNICOCACHE:=[];
-InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
-    local   field,  dim,  V,  xset,  nice;
+BindGlobal( "FULLGLNICOCACHE", [] );
 
-    field := FieldOfMatrixGroup( grp );
-    dim   := DimensionOfMatrixGroup( grp );
+
+#############################################################################
+##
+#M  NiceMonomorphism( <ffe-mat-grp> )
+##
+InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
+    local   rep, filt,  dim,  field,  V,  xset,  nice;
+
+    rep:= Representative( grp );
+    field:= FieldOfMatrixGroup( grp );
+    if IsBlockMatrixRep( rep ) then
+      # There is no support for these matrices acting on vectors.
+      filt:= IsPlistRep;
+    elif Size( field ) = 2 and Is8BitMatrixRep( rep ) then
+      # We cannot keep both 'field' and 'Is8BitMatrixRep',
+      # the latter does not admit matrices over GF(2).
+      filt:= IsGF2MatrixRep;
+#TODO: How can we get rid of these hacks?
+    else
+      filt:= ConstructingFilter( rep );
+    fi;
+    dim:= DimensionOfMatrixGroup( grp );
 
     #check cache
-    V:=Size(field);
-    nice:=First(FULLGLNICOCACHE,x->x[1]=V and x[2]=dim);
-    if nice<>fail then return nice[3];fi;
+    nice:= First( FULLGLNICOCACHE,
+                  x -> x[1] = field and x[2] = dim and x[3] = filt );
+
+    if nice<>fail then return nice[4];fi;
 
     if not (HasIsNaturalGL(grp) and IsNaturalGL(grp)) then
-      grp:=GL(dim,field); # enforce map on full GL
+      # enforce map on full GL
+      grp:= GL( dim, field : ConstructingFilter:= filt );
     fi;
     V     := field ^ dim;
     xset := ExternalSet( grp, V );
 
-
     # STILL: reverse the base to get point sorting compatible with lexicographic
     # vector arrangement
-    SetBaseOfGroup( xset, One( grp ));
+    if IsList( One( grp ) ) then
+      SetBaseOfGroup( xset, One( grp ));
+    else
+      SetBaseOfGroup( xset, List( One( grp ), List ) );
+#TODO: this is an ugly hack,
+#      probably we will have to support vector spaces consisting of 'VectorObj's
+    fi;
     nice := ActionHomomorphism( xset,"surjective" );
     SetIsInjective( nice, true );
     if not HasNiceMonomorphism(grp) then
@@ -158,12 +193,12 @@ InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
     SetIsCanonicalNiceMonomorphism(nice,true);
     if Size(V)>10^5 then
       # store only one big one and have it get thrown out quickly
-      FULLGLNICOCACHE[1]:=[Size(field),dim,nice];
+      FULLGLNICOCACHE[1]:= [ field, dim, filt, nice ];
     else
       if Length(FULLGLNICOCACHE)>4 then
-        FULLGLNICOCACHE:=FULLGLNICOCACHE{[2..5]};
+        Remove( FULLGLNICOCACHE, 1 );
       fi;
-      Add(FULLGLNICOCACHE,[Size(field),dim,nice]);
+      Add( FULLGLNICOCACHE, [ field, dim, filt, nice ] );
     fi;
 
     return nice;
@@ -190,8 +225,7 @@ local tt;
     # if the permutation image would be too large, compute the orbit.
     TryNextMethod();
   fi;
-  return NicomorphismFFMatGroupOnFullSpace( GL( DimensionOfMatrixGroup( grp ),
-                  Size( FieldOfMatrixGroup( Parent(grp) ) ) ) );
+  return NicomorphismFFMatGroupOnFullSpace( grp );
 end );
 
 #############################################################################
@@ -249,6 +283,8 @@ end);
 
 InstallMethod( \in, "general linear group", IsElmsColls,
     [ IsMatrix, IsFFEMatrixGroup and IsFinite and IsNaturalGL ], 0,
+#T OrMatrixObj
+#T too low rank? (below nice monom. method?)
     function( mat, G )
     return     Length( mat ) = Length( mat[ 1 ] )
            and Length( mat ) = DimensionOfMatrixGroup( G )
@@ -258,6 +294,7 @@ end );
 
 InstallMethod( \in, "special linear group", IsElmsColls,
     [ IsMatrix, IsFFEMatrixGroup and IsFinite and IsNaturalSL ], 0,
+#T OrMatrixObj
     function( mat, G )
     return     Length( mat ) = Length( mat[ 1 ] )
            and Length( mat ) = DimensionOfMatrixGroup( G )
