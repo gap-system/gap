@@ -283,8 +283,6 @@ end);
 
 InstallMethod( \in, "general linear group", IsElmsColls,
     [ IsMatrix, IsFFEMatrixGroup and IsFinite and IsNaturalGL ], 0,
-#T OrMatrixObj
-#T too low rank? (below nice monom. method?)
     function( mat, G )
     return     Length( mat ) = Length( mat[ 1 ] )
            and Length( mat ) = DimensionOfMatrixGroup( G )
@@ -292,15 +290,40 @@ InstallMethod( \in, "general linear group", IsElmsColls,
            and Length( mat ) = RankMat( mat );
 end );
 
+InstallMethod( \in, "general linear group", IsElmsColls,
+    [ IsMatrixObj, IsFFEMatrixGroup and IsFinite and IsNaturalGL ], 0,
+    function( mat, G )
+    local n, F;
+    n:= NumberRows( mat );
+    F:= FieldOfMatrixGroup( G );
+    return     n = NumberColumns( mat )
+           and n = DimensionOfMatrixGroup( G )
+           and n = RankMat( mat )
+           and ( IsSubset( F, BaseDomain( mat ) ) or
+                 ForAll( Unpack( mat ), row -> IsSubset( F, row ) ) );
+end );
+
 InstallMethod( \in, "special linear group", IsElmsColls,
     [ IsMatrix, IsFFEMatrixGroup and IsFinite and IsNaturalSL ], 0,
-#T OrMatrixObj
     function( mat, G )
     return     Length( mat ) = Length( mat[ 1 ] )
            and Length( mat ) = DimensionOfMatrixGroup( G )
            and ForAll( mat, row -> IsSubset( FieldOfMatrixGroup( G ), row ) )
            and Length( mat ) = RankMat( mat )
            and DeterminantMat(mat)=One(FieldOfMatrixGroup( G ));
+end );
+
+InstallMethod( \in, "special linear group", IsElmsColls,
+    [ IsMatrixObj, IsFFEMatrixGroup and IsFinite and IsNaturalSL ], 0,
+    function( mat, G )
+    local n, F;
+    n:= NumberRows( mat );
+    F:= FieldOfMatrixGroup( G );
+    return     n = NumberColumns( mat )
+           and n = DimensionOfMatrixGroup( G )
+           and ( IsSubset( F, BaseDomain( mat ) ) or
+                 ForAll( Unpack( mat ), row -> IsSubset( F, row ) ) )
+           and DeterminantMat( mat ) = One( F );
 end );
 
 
