@@ -151,7 +151,7 @@ jobs:
       - uses: gap-actions/setup-cygwin@v2
         if: ${{ runner.os == 'Windows' }}
         with:
-          PKGS_TO_INSTALL: 'wget,git,gcc-g++,gcc-core,m4,libgmp-devel,make,automake,libtool,autoconf,autoconf2.5,zlib-devel,libreadline-devel,libmpc-devel,libmpfr-devel,xdg-utils,pkg-config'
+          extra-pkgs-to-install: 'libmpc-devel,libmpfr-devel,pkg-config'
 
       # There are two cygwin installs on github actions (ours,
       # and a preinstalled one which we can't use as not enough packages are installed.
