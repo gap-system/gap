@@ -1160,6 +1160,26 @@ InstallMethod( \*,
     -SUM_FLAGS,
     { s, M } -> Matrix( s * Unpack( M ), M ) );
 
+InstallMethod( \*,
+    "for (non-matrix) matrix object and matrix",
+    [ IsMatrixObj, IsMatrix ],
+    function( matobj, mat )
+      if IsMatrix( matobj ) then
+        TryNextMethod();
+      fi;
+      Error( "<matobj> * <mat> is not defined" );
+    end );
+
+InstallMethod( \*,
+    "for matrix and (non-matrix) matrix object",
+    [ IsMatrix, IsMatrixObj ],
+    function( mat, matobj )
+      if IsMatrix( matobj ) then
+        TryNextMethod();
+      fi;
+      Error( "<mat> * <matobj> is not defined" );
+    end );
+
 InstallMethod( \/,
     "for matrix object and scalar",
     [ IsMatrixObj, IsScalar ],
