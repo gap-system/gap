@@ -1592,11 +1592,11 @@ BindGlobal( "ViewStringForMatrixObj",
              " over ", String( BaseDomain( M ) ), ">" ) );
 
 InstallMethod( ViewString,
-    [ IsMatrixOrMatrixObj ],
+    [ IsMatrixObj ],
     ViewStringForMatrixObj );
 
 InstallMethod( DisplayString,
-    [ IsMatrixOrMatrixObj ],
+    [ IsMatrixObj ],
     ViewStringForMatrixObj );
 
 InstallMethod( String,
