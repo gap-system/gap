@@ -482,6 +482,21 @@ InstallMethod( \*, "8 bit matrix * 8 bit matrix", IsIdenticalObj,
 
 #############################################################################
 ##
+#M  \*( <8bitmat>, <matrix> ) . . . .  product of an 8Bit matrix and a matrix
+#M  \*( <matrix>, <8bitmat> ) . . . .  product of a matrix and an 8Bit matrix
+##
+InstallMethod( \*,
+    "for 8 bit matrix and matrix",
+    [ IsMatrix and Is8BitMatrixRep, IsMatrix ],
+    PROD_LIST_SCL_DEFAULT );
+
+InstallMethod( \*,
+    "for matrix and 8 bit matrix",
+    [ IsMatrix, IsMatrix and Is8BitMatrixRep ],
+    PROD_LIST_SCL_DEFAULT );
+
+#############################################################################
+##
 #M  <ffe> * <mat>
 ##
 ##  If <ffe> lies in the field of <mat> then we return a matrix in
