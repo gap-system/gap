@@ -84,7 +84,7 @@ end );
 # Find element in G to conjugate B into A
 # call with G,A,B;
 InstallGlobalFunction(DoConjugateInto,function(g,a,b,onlyone)
-local cla,clb,i,j,k,bd,r,rep,b2,dc,
+local cla,clb,i,j,k,bd,r,rep,b2,dc,idx,clu,
   gens,conjugate;
 
   Info(InfoCoset,2,"call DoConjugateInto ",Size(g)," ",Size(a)," ",Size(b));
@@ -160,27 +160,64 @@ local cla,clb,i,j,k,bd,r,rep,b2,dc,
       if r=fail then
         Info(InfoCoset,1,"Too many subset combinations");
       else
+        clu:=[]; # potential conjugate ones
         Info(InfoCoset,1,"Testing ",Length(r)," combinations");
         dc:=[];
         for i in r do
           k:=List(i,x->Union(clb{x}));
           k:=RepresentativeAction(g,k,cla,OnTuplesSets);
           if k<>fail then
-            Add(dc,[i,k]);
+            # find the conjugate orbit constellation
+            b2:=OnSetsSets(Set(clb),k);
+            Add(dc,[i,k,b2]);
+            j:=First([1..Length(clu)],x->RepresentativeAction(a,dc[clu[x][1]][3],b2,OnSetsSets)<>fail);
+            if j= fail then Add(clu,[Length(dc)]);j:=Length(clu);
+            else Add(clu[j],Length(dc));fi;
+            Add(dc[Length(dc)],j); # cluster position
           fi;
         od;
         if Length(dc)>0 then g:=Stabilizer(g,cla,OnTuplesSets);fi;
         rep:=[];
-        for i in dc do
-          r:=DoConjugateInto(g,a,b^i[2],onlyone);
+        idx:=[];
+        for i in [1..Length(dc)] do
+          r:=DoConjugateInto(g,a,b^dc[i][2],onlyone);
           if onlyone then
-            if r<>fail then return i[2]*r;fi;
+            if r<>fail then return dc[i][2]*r;fi;
           else
-            if r<>fail then Append(rep,List(r,x->i[2]*x));fi;
+            if r<>fail then
+              Append(rep,List(r,x->dc[i][2]*x));
+              Append(idx,ListWithIdenticalEntries(Length(r),dc[i][4]));
+            fi;
           fi;
         od;
         if onlyone then return fail; #otherwise would have found and stopped
-        else return rep;fi;
+        else 
+          if ForAny(clu,x->Length(x)>1) then
+            # there are potential conjugates left
+            r:=rep;
+            k:=Union(Filtered(clu,x->Length(x)=1));
+            j:=Filtered([1..Length(idx)],y->idx[y] in k);
+            rep:=rep{j}; # those that do not need to be tested
+            clu:=Difference([1..Length(clu)],k);
+            for j in clu do
+              b2:=Filtered([1..Length(idx)],x->idx[x]=j);
+              Info(InfoCoset,2,"Testing ",b2," for conjugacy");
+              b2:=r{b2}; # the reps that need testing for duplicates
+              bd:=[];
+              for j in b2 do
+                k:=b^j;
+                if not ForAny(bd,x->RepresentativeAction(a,x,k)<>fail) then
+                  Add(rep,j);
+                  Add(bd,k);
+                else
+                  Info(InfoCoset,2,"Eliminated conjugate");
+                fi;
+              od;
+            od;
+
+          fi;
+          return rep;
+        fi;
       fi;
     else
       # orbits are fixed. Make sure b is so
