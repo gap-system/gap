@@ -124,6 +124,22 @@ end );
 
 #############################################################################
 ##
+##  the natural G-set of a matrix group consists of the vectors of the
+##  natural module
+##
+InstallOtherMethod( ExternalSet,
+    [ IsFFEMatrixGroup and IsFinite ],
+    function( G )
+    local basis, zero;
+
+    basis:= RowsOfMatrix( One( G ) );
+    zero:= Zero( basis[1] );
+    return ExternalSet( G, AsListOfFreeLeftModule_internal(
+                               FieldOfMatrixGroup( G ), basis, zero ) );
+end );
+
+#############################################################################
+##
 #V  FULLGLNICOCACHE
 ##
 ##  'NicomorphismFFMatGroupOnFullSpace' uses a cache of length up to 5,
@@ -145,14 +161,15 @@ BindGlobal( "FULLGLNICOCACHE", [] );
 #M  NiceMonomorphism( <ffe-mat-grp> )
 ##
 InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
-    local   rep, filt,  dim,  field,  V,  xset,  nice;
+    local   rep, filt,  q,  dim,  field,  xset,  nice;
 
     rep:= Representative( grp );
     field:= FieldOfMatrixGroup( grp );
+    q:= Size( field );
     if IsBlockMatrixRep( rep ) then
       # There is no support for these matrices acting on vectors.
       filt:= IsPlistRep;
-    elif Size( field ) = 2 and Is8BitMatrixRep( rep ) then
+    elif q = 2 and Is8BitMatrixRep( rep ) then
       # We cannot keep both 'field' and 'Is8BitMatrixRep',
       # the latter does not admit matrices over GF(2).
       filt:= IsGF2MatrixRep;
@@ -172,17 +189,14 @@ InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
       # enforce map on full GL
       grp:= GL( dim, field : ConstructingFilter:= filt );
     fi;
-    V     := field ^ dim;
-    xset := ExternalSet( grp, V );
+    xset := ExternalSet( grp );
 
     # STILL: reverse the base to get point sorting compatible with lexicographic
     # vector arrangement
     if IsList( One( grp ) ) then
       SetBaseOfGroup( xset, One( grp ));
     else
-      SetBaseOfGroup( xset, List( One( grp ), List ) );
-#TODO: this is an ugly hack,
-#      probably we will have to support vector spaces consisting of 'VectorObj's
+      SetBaseOfGroup( xset, RowsOfMatrix( One( grp ) ) );
     fi;
     nice := ActionHomomorphism( xset,"surjective" );
     SetIsInjective( nice, true );
@@ -191,7 +205,7 @@ InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
     fi;
     # because we act on the full space we are canonical.
     SetIsCanonicalNiceMonomorphism(nice,true);
-    if Size(V)>10^5 then
+    if q^dim > 10^5 then
       # store only one big one and have it get thrown out quickly
       FULLGLNICOCACHE[1]:= [ field, dim, filt, nice ];
     else
@@ -568,10 +582,23 @@ InstallMethodWithRandomSource( Random,
     "for a random source and natural GL",
     [ IsRandomSource, IsFFEMatrixGroup and IsFinite and IsNaturalGL ],
 function(rs, G)
-    local m;
-    m := RandomInvertibleMat( rs, DimensionOfMatrixGroup( G ),
-                 FieldOfMatrixGroup( G ) );
-    return ImmutableMatrix(FieldOfMatrixGroup(G), m, true);
+    local d, F, m;
+
+    d:= DimensionOfMatrixGroup( G );
+    F:= FieldOfMatrixGroup( G );
+    m:= Representative( G );
+    if IsMatrix( m ) then
+      m:= RandomInvertibleMat( rs, d, F );
+      m:= ImmutableMatrix(F, m, true);
+    else
+      m:= ZeroMatrix( d, d, m );
+      repeat
+        Randomize( rs, m );
+      until RankMat( m ) = d;
+      MakeImmutable( m );
+    fi;
+
+    return m;
 end);
 
 
@@ -587,11 +614,26 @@ InstallMethodWithRandomSource( Random,
     "for a random source and natural SL",
     [ IsRandomSource, IsFFEMatrixGroup and IsFinite and IsNaturalSL ],
 function(rs, G)
-    local m;
-    m:= RandomInvertibleMat( rs, DimensionOfMatrixGroup( G ),
-                FieldOfMatrixGroup( G ) );
-    MultVector(m[1], DeterminantMat(m)^-1);
-    return ImmutableMatrix(FieldOfMatrixGroup(G), m, true);
+    local d, m, F, det;
+
+    d:= DimensionOfMatrixGroup( G );
+    m:= Representative( G );
+    if IsMatrix( m ) then
+      F:= FieldOfMatrixGroup( G );
+      m:= RandomInvertibleMat( rs, d, F );
+      MultVector( m[1], DeterminantMat( m )^-1 );
+      m:= ImmutableMatrix( F, m, true );
+    else
+      m:= ZeroMatrix( d, d, m );
+      repeat
+        Randomize( rs, m );
+        det:= DeterminantMat( m );
+      until not IsZero( det );
+      MultMatrixRow( m, 1, det^-1 );
+      MakeImmutable( m );
+    fi;
+
+    return m;
 end);
 
 #############################################################################

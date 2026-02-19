@@ -655,7 +655,7 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i,blockacttest;
     elif IsExternalSetByActorsRep( xset )  then
         filter := filter and IsActionHomomorphismByActors;
     elif     IsMatrixGroup( G )
-         and IsScalarList( D[ 1 ] ) then
+         and ( IsScalarList( D[ 1 ] ) or IsVectorObj( D[ 1 ] ) ) then
       if  act in [ OnPoints, OnRight ]  then
         # we act linearly. This might be used to compute preimages by linear
         # algebra
@@ -663,7 +663,8 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i,blockacttest;
         # vector space base. This will be done the first time,
         # `LinearActionBasis' is called (i.e. in the preimages routine).
         filter := filter and IsLinearActionHomomorphism;
-      elif act=OnLines then
+      elif act=OnLines and IsScalarList( D[1] ) then
+#TODO: Fix IsProjectiveActionHomomorphism before IsVectorObj gets supported.
         filter := filter and IsProjectiveActionHomomorphism;
       fi;
 
@@ -3468,18 +3469,24 @@ end);
 InstallMethod(LinearActionBasis,"find basis in domain",true,
   [IsLinearActionHomomorphism],0,
 function(hom)
-local xset,D,b,t,i,r,pos;
+local xset, base, M, D, b, t, i, r, pos, v;
   xset:=UnderlyingExternalSet(hom);
   if Size(xset)=0 then
     return fail;
   fi;
-  pos:=[];
   # if there is a base, check whether it's full rank, if yes, take it
-  if HasBaseOfGroup(xset)
-     and RankMat(BaseOfGroup(xset))=Length(BaseOfGroup(xset)[1]) then
-    # this implies injectivity
-    SetIsInjective(hom,true);
-    return BaseOfGroup(xset);
+  if HasBaseOfGroup(xset) then
+    base:= BaseOfGroup(xset);
+    if IsMatrix( base ) then
+      M:= base;
+    elif ForAll( base, IsVectorObj ) then
+      M:= Matrix( BaseOfGroup( xset ), One( ActingDomain( xset ) ) );
+    fi;
+    if RankMat( M ) = NrCols( M ) then
+      # this implies injectivity
+      SetIsInjective(hom,true);
+      return base;
+    fi;
   fi;
   # otherwise we've to find a basis from the domain.
   D:=HomeEnumerator(xset);
@@ -3487,12 +3494,15 @@ local xset,D,b,t,i,r,pos;
   t:=[];
   r:=Length(D[1]);
   i:=1;
+  pos:=[];
   while Length(b)<r and i<=Length(D) do
-    if RankMat(Concatenation(t,[D[i]]))>Length(t) then
+    v:= Unpack( D[i] );
+#TODO: try to get rid of 'Unpack'
+    if RankMat(Concatenation(t,[v]))>Length(t) then
       # new indep. vector
       Add(b,D[i]);
       Add(pos,i);
-      Add(t,ShallowCopy(D[i]));
+      Add(t, v);
       TriangulizeMat(t); # for faster rank tests
     fi;
     i:=i+1;

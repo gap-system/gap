@@ -175,23 +175,26 @@ InstallMethod( Size,
 ##  Either this basis has been entered when the space was constructed, or a
 ##  basis is computed together with the elements list.
 ##
-BindGlobal( "AsListOfFreeLeftModule", function( V )
+
+##  The vectors in 'base' are assumed to be linearly independent.
+BindGlobal( "AsListOfFreeLeftModule_internal", function( F, base, zero )
     local elms,      # elements list, result
           B,         # $F$-basis of $V$
           new,       # intermediate elements list
           v,         # one generator of $V$
           i;         # loop variable
 
-    if not IsFinite( V ) then
-      Error( "cannot compute elements list of infinite domain <V>" );
+    elms:= [ zero ];
+
+    if IsEmpty( base ) then
+      return elms;
+    elif not IsFinite( F ) then
+      Error( "cannot compute elements list over infinite domain <F>" );
     fi;
 
-    B    := Basis( V );
-    elms := [ Zero( V ) ];
-#T check whether we have the elements now ?
-    for v in BasisVectors( B ) do
+    for v in base do
       new:= [];
-      for i in AsList( LeftActingDomain( V ) ) do
+      for i in AsList( F ) do
         Append( new, List( elms, x -> x + i * v ) );
       od;
       elms:= new;
@@ -201,6 +204,10 @@ BindGlobal( "AsListOfFreeLeftModule", function( V )
     # Return the elements list.
     return elms;
 end );
+
+BindGlobal( "AsListOfFreeLeftModule",
+    V -> AsListOfFreeLeftModule_internal( LeftActingDomain( V ),
+             BasisVectors( Basis( V ) ), Zero( V ) ) );
 
 InstallMethod( AsList,
     "for a free left module",
