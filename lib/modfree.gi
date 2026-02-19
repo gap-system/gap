@@ -179,7 +179,6 @@ InstallMethod( Size,
 ##  The vectors in 'base' are assumed to be linearly independent.
 BindGlobal( "AsListOfFreeLeftModule_internal", function( F, base, zero )
     local elms,      # elements list, result
-          B,         # $F$-basis of $V$
           new,       # intermediate elements list
           v,         # one generator of $V$
           i;         # loop variable
