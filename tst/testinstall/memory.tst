@@ -31,6 +31,7 @@ gap> iter := Iterator(tmp);;
 gap> NextIterator(iter);
 <() with mem>
 gap> iter := IteratorStabChain(StabChain(GroupWithMemory([ () ])));;
+gap> iter := ShallowCopy( iter );;
 gap> NextIterator(iter);
 <() with mem>
 gap> s1 := SLPOfElm(g);;

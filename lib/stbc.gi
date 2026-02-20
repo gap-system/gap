@@ -1832,7 +1832,8 @@ function(S)
         , state := 0
         , NextIterator := NextIterator_StabChain
         , IsDoneIterator := iter -> (iter!.state = 2)
-        , ShallowCopy := iter -> rec( stack := iter!.stack
+        , ShallowCopy := iter -> rec( one := iter!.one
+                                    , stack := iter!.stack
                                     , pos := ShallowCopy(iter!.pos)
                                     , epos := iter!.epos
                                     , rep := ShallowCopy(iter!.rep)
