@@ -124,31 +124,80 @@ end );
 
 #############################################################################
 ##
-#M  NiceMonomorphism( <ffe-mat-grp> )
+##  the natural G-set of a matrix group consists of the vectors of the
+##  natural module
+##
+InstallOtherMethod( ExternalSet,
+    [ IsFFEMatrixGroup and IsFinite ],
+    function( G )
+    local basis, zero;
+
+    basis:= RowsOfMatrix( One( G ) );
+    zero:= Zero( basis[1] );
+    return ExternalSet( G, AsListOfFreeLeftModule_internal(
+                               FieldOfMatrixGroup( G ), basis, zero ) );
+end );
+
+#############################################################################
+##
+#V  FULLGLNICOCACHE
+##
+##  'NicomorphismFFMatGroupOnFullSpace' uses a cache of length up to 5,
+##  as follows.
+##
+##  - If the argument is a matrix group that fits to an entry of this
+##    cache, in the sense that dimension, field of definition,
+##    and 'ConstructingFilter' of the matrices in the group are the same as
+##    for the cached value, the stored mapping is returned.
+##  - If a new mapping has to be constructed, the first cached entry is
+##    dropped and the new mapping gets added to the cache.
 ##
 MakeThreadLocal("FULLGLNICOCACHE"); # avoid recreating same homom. repeatedly
-FULLGLNICOCACHE:=[];
-InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
-    local   field,  dim,  V,  xset,  nice;
+BindGlobal( "FULLGLNICOCACHE", [] );
 
-    field := FieldOfMatrixGroup( grp );
-    dim   := DimensionOfMatrixGroup( grp );
+
+#############################################################################
+##
+#M  NiceMonomorphism( <ffe-mat-grp> )
+##
+InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
+    local   rep, filt,  q,  dim,  field,  xset,  nice;
+
+    rep:= Representative( grp );
+    field:= FieldOfMatrixGroup( grp );
+    q:= Size( field );
+    if IsBlockMatrixRep( rep ) then
+      # There is no support for these matrices acting on vectors.
+      filt:= IsPlistRep;
+    elif q = 2 and Is8BitMatrixRep( rep ) then
+      # We cannot keep both 'field' and 'Is8BitMatrixRep',
+      # the latter does not admit matrices over GF(2).
+      filt:= IsGF2MatrixRep;
+#TODO: How can we get rid of these hacks?
+    else
+      filt:= ConstructingFilter( rep );
+    fi;
+    dim:= DimensionOfMatrixGroup( grp );
 
     #check cache
-    V:=Size(field);
-    nice:=First(FULLGLNICOCACHE,x->x[1]=V and x[2]=dim);
-    if nice<>fail then return nice[3];fi;
+    nice:= First( FULLGLNICOCACHE,
+                  x -> x[1] = field and x[2] = dim and x[3] = filt );
+
+    if nice<>fail then return nice[4];fi;
 
     if not (HasIsNaturalGL(grp) and IsNaturalGL(grp)) then
-      grp:=GL(dim,field); # enforce map on full GL
+      # enforce map on full GL
+      grp:= GL( dim, field : ConstructingFilter:= filt );
     fi;
-    V     := field ^ dim;
-    xset := ExternalSet( grp, V );
-
+    xset := ExternalSet( grp );
 
     # STILL: reverse the base to get point sorting compatible with lexicographic
     # vector arrangement
-    SetBaseOfGroup( xset, One( grp ));
+    if IsList( One( grp ) ) then
+      SetBaseOfGroup( xset, One( grp ));
+    else
+      SetBaseOfGroup( xset, RowsOfMatrix( One( grp ) ) );
+    fi;
     nice := ActionHomomorphism( xset,"surjective" );
     SetIsInjective( nice, true );
     if not HasNiceMonomorphism(grp) then
@@ -156,14 +205,14 @@ InstallGlobalFunction( NicomorphismFFMatGroupOnFullSpace, function( grp )
     fi;
     # because we act on the full space we are canonical.
     SetIsCanonicalNiceMonomorphism(nice,true);
-    if Size(V)>10^5 then
+    if q^dim > 10^5 then
       # store only one big one and have it get thrown out quickly
-      FULLGLNICOCACHE[1]:=[Size(field),dim,nice];
+      FULLGLNICOCACHE[1]:= [ field, dim, filt, nice ];
     else
       if Length(FULLGLNICOCACHE)>4 then
-        FULLGLNICOCACHE:=FULLGLNICOCACHE{[2..5]};
+        Remove( FULLGLNICOCACHE, 1 );
       fi;
-      Add(FULLGLNICOCACHE,[Size(field),dim,nice]);
+      Add( FULLGLNICOCACHE, [ field, dim, filt, nice ] );
     fi;
 
     return nice;
@@ -190,8 +239,7 @@ local tt;
     # if the permutation image would be too large, compute the orbit.
     TryNextMethod();
   fi;
-  return NicomorphismFFMatGroupOnFullSpace( GL( DimensionOfMatrixGroup( grp ),
-                  Size( FieldOfMatrixGroup( Parent(grp) ) ) ) );
+  return NicomorphismFFMatGroupOnFullSpace( grp );
 end );
 
 #############################################################################
@@ -256,6 +304,19 @@ InstallMethod( \in, "general linear group", IsElmsColls,
            and Length( mat ) = RankMat( mat );
 end );
 
+InstallMethod( \in, "general linear group", IsElmsColls,
+    [ IsMatrixObj, IsFFEMatrixGroup and IsFinite and IsNaturalGL ], 0,
+    function( mat, G )
+    local n, F;
+    n:= NumberRows( mat );
+    F:= FieldOfMatrixGroup( G );
+    return     n = NumberColumns( mat )
+           and n = DimensionOfMatrixGroup( G )
+           and n = RankMat( mat )
+           and ( IsSubset( F, BaseDomain( mat ) ) or
+                 ForAll( Unpack( mat ), row -> IsSubset( F, row ) ) );
+end );
+
 InstallMethod( \in, "special linear group", IsElmsColls,
     [ IsMatrix, IsFFEMatrixGroup and IsFinite and IsNaturalSL ], 0,
     function( mat, G )
@@ -264,6 +325,19 @@ InstallMethod( \in, "special linear group", IsElmsColls,
            and ForAll( mat, row -> IsSubset( FieldOfMatrixGroup( G ), row ) )
            and Length( mat ) = RankMat( mat )
            and DeterminantMat(mat)=One(FieldOfMatrixGroup( G ));
+end );
+
+InstallMethod( \in, "special linear group", IsElmsColls,
+    [ IsMatrixObj, IsFFEMatrixGroup and IsFinite and IsNaturalSL ], 0,
+    function( mat, G )
+    local n, F;
+    n:= NumberRows( mat );
+    F:= FieldOfMatrixGroup( G );
+    return     n = NumberColumns( mat )
+           and n = DimensionOfMatrixGroup( G )
+           and ( IsSubset( F, BaseDomain( mat ) ) or
+                 ForAll( Unpack( mat ), row -> IsSubset( F, row ) ) )
+           and DeterminantMat( mat ) = One( F );
 end );
 
 
@@ -508,10 +582,23 @@ InstallMethodWithRandomSource( Random,
     "for a random source and natural GL",
     [ IsRandomSource, IsFFEMatrixGroup and IsFinite and IsNaturalGL ],
 function(rs, G)
-    local m;
-    m := RandomInvertibleMat( rs, DimensionOfMatrixGroup( G ),
-                 FieldOfMatrixGroup( G ) );
-    return ImmutableMatrix(FieldOfMatrixGroup(G), m, true);
+    local d, F, m;
+
+    d:= DimensionOfMatrixGroup( G );
+    F:= FieldOfMatrixGroup( G );
+    m:= Representative( G );
+    if IsMatrix( m ) then
+      m:= RandomInvertibleMat( rs, d, F );
+      m:= ImmutableMatrix(F, m, true);
+    else
+      m:= ZeroMatrix( d, d, m );
+      repeat
+        Randomize( rs, m );
+      until RankMat( m ) = d;
+      MakeImmutable( m );
+    fi;
+
+    return m;
 end);
 
 
@@ -527,11 +614,26 @@ InstallMethodWithRandomSource( Random,
     "for a random source and natural SL",
     [ IsRandomSource, IsFFEMatrixGroup and IsFinite and IsNaturalSL ],
 function(rs, G)
-    local m;
-    m:= RandomInvertibleMat( rs, DimensionOfMatrixGroup( G ),
-                FieldOfMatrixGroup( G ) );
-    MultVector(m[1], DeterminantMat(m)^-1);
-    return ImmutableMatrix(FieldOfMatrixGroup(G), m, true);
+    local d, m, F, det;
+
+    d:= DimensionOfMatrixGroup( G );
+    m:= Representative( G );
+    if IsMatrix( m ) then
+      F:= FieldOfMatrixGroup( G );
+      m:= RandomInvertibleMat( rs, d, F );
+      MultVector( m[1], DeterminantMat( m )^-1 );
+      m:= ImmutableMatrix( F, m, true );
+    else
+      m:= ZeroMatrix( d, d, m );
+      repeat
+        Randomize( rs, m );
+        det:= DeterminantMat( m );
+      until not IsZero( det );
+      MultMatrixRow( m, 1, det^-1 );
+      MakeImmutable( m );
+    fi;
+
+    return m;
 end);
 
 #############################################################################
