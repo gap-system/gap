@@ -173,7 +173,7 @@ function( basedomain )
 ##      elif IsFinite(basedomain) and IsZmodnZObj(Zero(basedomain)) then
 ##        return IsZmodnZMatrixRep;
     fi;
-    return IsPlistMatrixRep;
+    return IsRowPlistMatrixRep;
 end);
 
 

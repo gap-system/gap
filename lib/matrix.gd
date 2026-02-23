@@ -1679,9 +1679,9 @@ DeclareGlobalFunction( "PermutationMat" );
 ##  [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), Z(3) ] ]
 ##  gap> Is8BitMatrixRep( d1 );
 ##  true
-##  gap> d2:= DiagonalMatrix( IsPlistMatrixRep, GF(9), [ 1, 2 ] * Z(3)^0 );
+##  gap> d2:= DiagonalMatrix( IsRowPlistMatrixRep, GF(9), [ 1, 2 ] * Z(3)^0 );
 ##  <2x2-matrix over GF(3^2)>
-##  gap> IsPlistMatrixRep( d2 );
+##  gap> IsRowPlistMatrixRep( d2 );
 ##  true
 ##  gap> DiagonalMatrix( [ 1, 2 ] );
 ##  <2x2-matrix over Rationals>

@@ -45,26 +45,26 @@ gap> TestCompanionMatrix(Is8BitMatrixRep, One(x), F);
 Error, NewCompanionMatrix: degree of <pol> must be at least 1
 
 #
-# IsPlistMatrixRep
+# IsRowPlistMatrixRep
 #
 gap> F:= GF(251);;  x:= X(F);;
-gap> TestCompanionMatrix(IsPlistMatrixRep, x+1, F);
+gap> TestCompanionMatrix(IsRowPlistMatrixRep, x+1, F);
 <1x1-matrix over GF(251)>
-gap> TestCompanionMatrix(IsPlistMatrixRep, x^2+x+1, F);
+gap> TestCompanionMatrix(IsRowPlistMatrixRep, x^2+x+1, F);
 <2x2-matrix over GF(251)>
 
 #
 gap> F:= Integers;;  x:= X(F);;
-gap> TestCompanionMatrix(IsPlistMatrixRep, x+1, F);
+gap> TestCompanionMatrix(IsRowPlistMatrixRep, x+1, F);
 <1x1-matrix over Integers>
-gap> TestCompanionMatrix(IsPlistMatrixRep, x^2+x+1, F);
+gap> TestCompanionMatrix(IsRowPlistMatrixRep, x^2+x+1, F);
 <2x2-matrix over Integers>
 
 #
 gap> F:= Rationals;;  x:= X(F);;
-gap> TestCompanionMatrix(IsPlistMatrixRep, x+1, F);
+gap> TestCompanionMatrix(IsRowPlistMatrixRep, x+1, F);
 <1x1-matrix over Rationals>
-gap> TestCompanionMatrix(IsPlistMatrixRep, x^2+x+1, F);
+gap> TestCompanionMatrix(IsRowPlistMatrixRep, x^2+x+1, F);
 <2x2-matrix over Rationals>
 
 #

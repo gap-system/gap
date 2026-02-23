@@ -1220,7 +1220,7 @@ DeclareOperation( "IdentityMatrix", [ IsOperation, IsSemiring, IsInt ] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> x:= X( GF(5) );;  pol:= x^3 + x^2 + 2*x + 3;;
-##  gap> M:= CompanionMatrix( IsPlistMatrixRep, pol, GF(25) );;
+##  gap> M:= CompanionMatrix( IsRowPlistMatrixRep, pol, GF(25) );;
 ##  gap> Display( M );
 ##  <3x3-matrix over GF(5^2):
 ##  [[ 0*Z(5), 0*Z(5), Z(5) ]

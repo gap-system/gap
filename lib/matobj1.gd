@@ -115,7 +115,7 @@ DeclareCategory( "IsVectorObj", IsVector and IsVecOrMatObj and IsRowVectorOrVect
 ##  true
 ##  false
 ##  true
-##  gap> m:= NewIdentityMatrix( IsPlistMatrixRep, GF(2), 2 );;
+##  gap> m:= NewIdentityMatrix( IsRowPlistMatrixRep, GF(2), 2 );;
 ##  gap> IsMatrix( m );  IsMatrixObj( m ); IsMatrixOrMatrixObj( m );
 ##  false
 ##  true

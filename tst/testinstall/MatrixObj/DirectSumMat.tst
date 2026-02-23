@@ -28,7 +28,7 @@ gap> DirectSumMat( N, N );
   [ 0, 0, x_3, x_4 ] ]
 
 # matrix objects
-gap> M:= Matrix( IsPlistMatrixRep, Rationals, [ 1, 2, 3, 4 ], 2 );
+gap> M:= Matrix( IsRowPlistMatrixRep, Rationals, [ 1, 2, 3, 4 ], 2 );
 <2x2-matrix over Rationals>
 gap> DirectSumMat( M ) = M;
 true

@@ -40,37 +40,37 @@ gap> TestIdentityMatrix(Is8BitMatrixRep, GF(257), 2);
 Error, Is8BitMatrixRep only supports base fields with 3 to 256 elements
 
 #
-# IsPlistMatrixRep
+# IsRowPlistMatrixRep
 #
-gap> TestIdentityMatrix(IsPlistMatrixRep, GF(2), 2);
+gap> TestIdentityMatrix(IsRowPlistMatrixRep, GF(2), 2);
 <2x2-matrix over GF(2)>
-gap> TestIdentityMatrix(IsPlistMatrixRep, GF(2), 0);
+gap> TestIdentityMatrix(IsRowPlistMatrixRep, GF(2), 0);
 <0x0-matrix over GF(2)>
-gap> TestIdentityMatrix(IsPlistMatrixRep, GF(2), -1);
+gap> TestIdentityMatrix(IsRowPlistMatrixRep, GF(2), -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #
-gap> TestIdentityMatrix(IsPlistMatrixRep, Integers, 2);
+gap> TestIdentityMatrix(IsRowPlistMatrixRep, Integers, 2);
 <2x2-matrix over Integers>
-gap> TestIdentityMatrix(IsPlistMatrixRep, Integers, 0);
+gap> TestIdentityMatrix(IsRowPlistMatrixRep, Integers, 0);
 <0x0-matrix over Integers>
-gap> TestIdentityMatrix(IsPlistMatrixRep, Integers, -1);
+gap> TestIdentityMatrix(IsRowPlistMatrixRep, Integers, -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #
-gap> TestIdentityMatrix(IsPlistMatrixRep, Rationals, 2);
+gap> TestIdentityMatrix(IsRowPlistMatrixRep, Rationals, 2);
 <2x2-matrix over Rationals>
-gap> TestIdentityMatrix(IsPlistMatrixRep, Rationals, 0);
+gap> TestIdentityMatrix(IsRowPlistMatrixRep, Rationals, 0);
 <0x0-matrix over Rationals>
-gap> TestIdentityMatrix(IsPlistMatrixRep, Rationals, -1);
+gap> TestIdentityMatrix(IsRowPlistMatrixRep, Rationals, -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #
-gap> TestIdentityMatrix(IsPlistMatrixRep, Integers mod 4, 2);
+gap> TestIdentityMatrix(IsRowPlistMatrixRep, Integers mod 4, 2);
 <2x2-matrix over (Integers mod 4)>
-gap> TestIdentityMatrix(IsPlistMatrixRep, Integers mod 4, 0);
+gap> TestIdentityMatrix(IsRowPlistMatrixRep, Integers mod 4, 0);
 <0x0-matrix over (Integers mod 4)>
-gap> TestIdentityMatrix(IsPlistMatrixRep, Integers mod 4, -1);
+gap> TestIdentityMatrix(IsRowPlistMatrixRep, Integers mod 4, -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #

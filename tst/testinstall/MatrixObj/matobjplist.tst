@@ -15,17 +15,17 @@ Error, the elements in <list> must lie in <basedomain>
 gap> MakeIsPlistVectorRep( GF(4), [ Z(2) ], true );;
 
 #
-gap> MakeIsPlistMatrixRep( Integers, [], 2, [], true );;
+gap> MakeIsRowPlistMatrixRep( Integers, [], 2, [], true );;
 Error, <emptyvector> must be in 'IsPlistVectorRep'
-gap> M:= MakeIsPlistMatrixRep( Integers, e, 2, [], true );;
-gap> MakeIsPlistMatrixRep( Rationals, e, 2, [], true );;
+gap> M:= MakeIsRowPlistMatrixRep( Integers, e, 2, [], true );;
+gap> MakeIsRowPlistMatrixRep( Rationals, e, 2, [], true );;
 Error, <emptyvector> must have the given base domain
-gap> MakeIsPlistMatrixRep( Integers, e, 1, [ v ], true );;
-gap> MakeIsPlistMatrixRep( Integers, e, 2, [ v ], true );;
+gap> MakeIsRowPlistMatrixRep( Integers, e, 1, [ v ], true );;
+gap> MakeIsRowPlistMatrixRep( Integers, e, 2, [ v ], true );;
 Error, the entries of <list> must have length <ncols>
-gap> MakeIsPlistMatrixRep( Integers, e, 2, [ [ 1, 2 ] ], true );;
+gap> MakeIsRowPlistMatrixRep( Integers, e, 2, [ [ 1, 2 ] ], true );;
 Error, the entries of <list> must be in 'IsPlistVectorRep'
-gap> MakeIsPlistMatrixRep( Integers, e, 1, [ w ], true );;
+gap> MakeIsRowPlistMatrixRep( Integers, e, 1, [ w ], true );;
 Error, the entries of <list> must have the given base domain
 
 #
@@ -43,29 +43,29 @@ gap> IsMutable( z );
 true
 
 #
-gap> NewMatrix( IsPlistMatrixRep, Integers, 2, [] );;
-gap> NewMatrix( IsPlistMatrixRep, Integers, 2, [ 1 ] );;
+gap> NewMatrix( IsRowPlistMatrixRep, Integers, 2, [] );;
+gap> NewMatrix( IsRowPlistMatrixRep, Integers, 2, [ 1 ] );;
 Error, NewMatrix: Length of <list> is not a multiple of <ncols>
-gap> NewMatrix( IsPlistMatrixRep, Integers, 2, [ [ 1 ] ] );;
+gap> NewMatrix( IsRowPlistMatrixRep, Integers, 2, [ [ 1 ] ] );;
 Error, the entries of <list> must have length <ncols>
-gap> NewMatrix( IsPlistMatrixRep, Integers, 2, [ [ 1, 2 ] ] );;
-gap> NewMatrix( IsPlistMatrixRep, Integers, 2, [ v ] );;
+gap> NewMatrix( IsRowPlistMatrixRep, Integers, 2, [ [ 1, 2 ] ] );;
+gap> NewMatrix( IsRowPlistMatrixRep, Integers, 2, [ v ] );;
 Error, the entries of <list> must have length <ncols>
-gap> M:= NewMatrix( IsPlistMatrixRep, Integers, 2, [ v2, v2 ] );;
+gap> M:= NewMatrix( IsRowPlistMatrixRep, Integers, 2, [ v2, v2 ] );;
 gap> IsMutable( M ) and ForAll( [ 1 .. Length( M ) ], i -> IsMutable( M[i] ) );
 true
 
 #
-gap> NewZeroMatrix( IsPlistMatrixRep, Integers, 0, 0 );;
-gap> NewZeroMatrix( IsPlistMatrixRep, Integers, 2, 0 );;
-gap> NewZeroMatrix( IsPlistMatrixRep, Integers, 0, 3 );;
-gap> M:= NewZeroMatrix( IsPlistMatrixRep, Integers, 2, 3 );;
+gap> NewZeroMatrix( IsRowPlistMatrixRep, Integers, 0, 0 );;
+gap> NewZeroMatrix( IsRowPlistMatrixRep, Integers, 2, 0 );;
+gap> NewZeroMatrix( IsRowPlistMatrixRep, Integers, 0, 3 );;
+gap> M:= NewZeroMatrix( IsRowPlistMatrixRep, Integers, 2, 3 );;
 gap> IsMutable( M ) and ForAll( [ 1 .. Length( M ) ], i -> IsMutable( M[i] ) );
 true
 
 #
-gap> NewIdentityMatrix( IsPlistMatrixRep, Integers, 0 );;
-gap> M:= NewIdentityMatrix( IsPlistMatrixRep, Integers, 2 );;
+gap> NewIdentityMatrix( IsRowPlistMatrixRep, Integers, 0 );;
+gap> M:= NewIdentityMatrix( IsRowPlistMatrixRep, Integers, 2 );;
 gap> IsMutable( M ) and ForAll( [ 1 .. Length( M ) ], i -> IsMutable( M[i] ) );
 true
 
