@@ -26,7 +26,8 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareSynonym( "IsMatrixGroup", IsRingElementCollCollColl and IsGroup );
+DeclareCategory( "IsMatrixGroup", IsGroup );
+InstallTrueMethod( IsMatrixGroup, IsRingElementCollCollColl and IsGroup );
 
 #############################################################################
 ##
