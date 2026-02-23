@@ -444,9 +444,9 @@ end );
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <map>, <elm> ) . . . . . .  for ring g.m.b.i.
+#M  PreImagesRepresentativeNC( <map>, <elm> ) . . . . . .  for ring g.m.b.i.
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for ring g.m.b.i., and element",
     FamRangeEqFamElm,
     [ IsRingGeneralMapping and IsRingGeneralMappingByImagesDefaultRep,
