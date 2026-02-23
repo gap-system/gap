@@ -30,7 +30,7 @@
 EXPORT_INLINE BOOL IS_BLIST_REP(Obj list)
 {
     return T_BLIST <= TNUM_OBJ(list) &&
-           TNUM_OBJ(list) <= T_BLIST_SSORT + IMMUTABLE;
+           TNUM_OBJ(list) <= T_BLIST_SSORT;
 }
 
 
