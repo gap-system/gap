@@ -1353,14 +1353,6 @@ InstallMethod( InverseSameMutability, "for a zmodnz matrix",
     return n;
   end );
 
-InstallMethod( RankMat, "for a zmodnz matrix", [ IsZmodnZMatrixRep ],
-function( m )
-  m:=MutableCopyMatrix(m);
-  m:=SemiEchelonMatDestructive(m);
-  if m<>fail then m:=Length(m.vectors);fi;
-  return m;
-end);
-
 
 #InstallMethodWithRandomSource( Randomize,
 #  "for a random source and a mutable zmodnz matrix",
@@ -1488,14 +1480,6 @@ InstallMethod( CompatibleVector, "for a zmodnz matrix",
   function( v )
     return NewZeroVector(IsZmodnZVectorRep,BaseDomain(v),NumberRows(v));
   end );
-
-InstallMethod( DeterminantMat, "for a zmodnz matrix", [ IsZmodnZMatrixRep ],
-function( a )
-local m;
-  m:=Size(BaseDomain(a));
-  a:=List(a![ROWSPOS],x->x![ELSPOS]);
-  return ZmodnZObj(DeterminantMat(a),m);
-end );
 
 
 # Minimal/Characteristic  Polynomial stuff
