@@ -1084,7 +1084,7 @@ local m,s,g,i,j,gen,img,hom,d,pos;
     d:=DiagonalOfMat(s.normal);
     pos:=Filtered([1..Length(d)],x->d[x]<>1);
     d:=d{pos};
-    SetAbelianInvariants(f,d);
+    SetAbelianInvariants( f, AbelianInvariantsOfList( d ) );
 
     # Make abelian group
     g:=AbelianGroup(d);
