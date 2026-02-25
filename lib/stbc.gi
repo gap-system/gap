@@ -1778,7 +1778,7 @@ function(iter)
         else
             iter!.state := 1;
         fi;
-        return ();
+        return iter!.one;
     elif iter!.state = 1 then
         l := Length(iter!.stack);
         # Identity is special cased since we only want to
@@ -1815,22 +1815,25 @@ end);
 
 InstallGlobalFunction(IteratorStabChain,
 function(S)
-    local r,lstack;
+    local r, lstack, one;
 
     lstack := ListStabChain(S);
+    one:= lstack[1].identity;
     Remove(lstack);
     while Length(lstack) > 0 and Length(Last(lstack).orbit) = 1 do
         Remove(lstack);
     od;
     r := rec (
-          stack := lstack
+          one:= one
+        , stack := lstack
         , pos := List(lstack, x -> 1)
         , epos := List(lstack, x -> Length(x.orbit))
-        , rep := List(lstack, x -> ())
+        , rep := List(lstack, x -> one)
         , state := 0
         , NextIterator := NextIterator_StabChain
         , IsDoneIterator := iter -> (iter!.state = 2)
-        , ShallowCopy := iter -> rec( stack := iter!.stack
+        , ShallowCopy := iter -> rec( one := iter!.one
+                                    , stack := iter!.stack
                                     , pos := ShallowCopy(iter!.pos)
                                     , epos := iter!.epos
                                     , rep := ShallowCopy(iter!.rep)

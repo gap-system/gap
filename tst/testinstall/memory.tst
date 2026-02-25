@@ -1,4 +1,5 @@
-#@local G, H, g, h, tmp, stabChain, s1, s2, a, S, prod, i, v, s, pow, m, mm
+#@local G, H, g, h, tmp, stabChain, iter, s1, s2, a, S, prod, i, v, s, pow
+#@local m, mm
 gap> START_TEST( "memory.tst" );
 
 #
@@ -25,6 +26,14 @@ gap> stabChain.labels[1];
 gap> StripStabChain(stabChain);;
 gap> stabChain.labels[1];
 ()
+gap> tmp := GroupWithMemory(GroupByGenerators([ (1,2,3,4,5), (1,2) ]));;
+gap> iter := Iterator(tmp);;
+gap> NextIterator(iter);
+<() with mem>
+gap> iter := IteratorStabChain(StabChain(GroupWithMemory([ () ])));;
+gap> iter := ShallowCopy( iter );;
+gap> NextIterator(iter);
+<() with mem>
 gap> s1 := SLPOfElm(g);;
 gap> g = ResultOfStraightLineProgram(s1, GeneratorsOfGroup(H));
 true
