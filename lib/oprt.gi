@@ -3525,7 +3525,7 @@ end);
 ##    group.
 ##
 ##  'LinearActionBasis' checks a stronger variant of these conditions.
-##  If they are satisfied then it returns the vector of the basis,
+##  If they are satisfied then it returns the vectors of the basis,
 ##  and sets additional components in 'hom'.
 ##  If they are not satisfied then 'fail' is returned.
 ##
@@ -3546,11 +3546,12 @@ local xset,G,D,b,t,i,r,binv,pos,dets,roots,dim,f;
   roots:=Set(RootsOfUPol(f,X(f)^dim-1));
   D:=List(GeneratorsOfGroup(G),DeterminantMat);
 
-  if ( HasIsNaturalGL(G) and IsNaturalGL(G) ) or
-     PrimitiveRoot( f ) * One( G ) in G then
-    dets:= fail;  # no correction necessary
+  if ( HasIsNaturalGL(G) and IsNaturalGL(G) ) then
+    # No correction is necessary.
+    dets:= fail;
     roots:= fail;
   elif ForAll( D, IsOne ) and Length( roots ) = 1 then
+    # Preimages can be computed uniquely from the given data.
     dets:=[];
     roots:=[];
     for i in Filtered( AsSSortedList( f ), x -> not IsZero( x ) ) do
@@ -3562,6 +3563,7 @@ local xset,G,D,b,t,i,r,binv,pos,dets,roots,dim,f;
     od;
     SortParallel( dets, roots );
   else
+    # We do not know how to compute preimages from the given data.
     return fail;
   fi;
 
