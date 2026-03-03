@@ -1214,6 +1214,21 @@ end);
 
 #############################################################################
 ##
+#M  \*( <gf2mat>, <matrix> )  . . . . .  product of a GF2 matrix and a matrix
+#M  \*( <matrix>, <gf2mat> )  . . . . .  product of a matrix and a GF2 matrix
+##
+InstallMethod( \*,
+    "for GF2 matrix and matrix",
+    [ IsMatrix and IsListDefault and IsGF2MatrixRep, IsMatrix ],
+    PROD_LIST_SCL_DEFAULT );
+
+InstallMethod( \*,
+    "for matrix and GF2 matrix",
+    [ IsMatrix, IsMatrix and IsListDefault and IsGF2MatrixRep ],
+    PROD_LIST_SCL_DEFAULT );
+
+#############################################################################
+##
 #F  ConvertToVectorRep(<v>)
 ##
 
