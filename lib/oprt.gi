@@ -663,8 +663,7 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i,blockacttest;
         # vector space base. This will be done the first time,
         # `LinearActionBasis' is called (i.e. in the preimages routine).
         filter := filter and IsLinearActionHomomorphism;
-      elif act=OnLines and IsScalarList( D[1] ) then
-#TODO: Fix IsProjectiveActionHomomorphism before IsVectorObj gets supported.
+      elif act=OnLines then
         filter := filter and IsProjectiveActionHomomorphism;
       fi;
 
@@ -3439,7 +3438,7 @@ end );
 InstallMethod( PreImagesRepresentative,"IsProjectiveActionHomomorphism",
   FamRangeEqFamElm, [ IsProjectiveActionHomomorphism, IsPerm ], 0,
 function( hom, elm )
-  local   V,  mat, xset,lab,f,dim,sol,i;
+  local   V,  G, Grep, mat, xset,lab,f,dim,sol,i;
 
   # is this method applicable? Test whether field
   # finite, that the domain contains a vector
@@ -3456,18 +3455,20 @@ function( hom, elm )
   #if not elm in Image( hom )  then return fail; fi;
   xset:=UnderlyingExternalSet(hom);
   V := HomeEnumerator(xset);
-  f:=DefaultFieldOfMatrixGroup(Source(hom));
-  dim:=DimensionOfMatrixGroup(Source(hom));
+  G:= Source( hom );
+  Grep:= Representative( G );
+  f:=DefaultFieldOfMatrixGroup(G);
+  dim:=DimensionOfMatrixGroup(G);
 
   elm:=OnTuples(hom!.projActBasisPositions,elm); # image points
   elm:=V{elm}; # the corresponding vectors
 
-  mat:=elm{[1..dim]};
+  mat:= Matrix( List( elm{ [ 1 .. dim ] }, ShallowCopy ), Grep );
   sol:=SolutionMat(mat,elm[dim+1]);
   for i in [1..dim] do
-    mat[i]:=sol[i]*mat[i];
+    MultMatrixRow( mat, i, sol[i] );
   od;
-  mat:=hom!.projActInverse*ImmutableMatrix(f,mat);
+  mat:= hom!.projActInverse * mat;
 
   # correct scalar using determinant if needed
   if hom!.correctionFactors[1]<>fail then
@@ -3478,7 +3479,7 @@ function( hom, elm )
     fi;
   fi;
 
-  return mat;
+  return MakeImmutable( mat );
 end);
 
 #############################################################################
@@ -3562,7 +3563,7 @@ end);
 InstallOtherMethod(LinearActionBasis,"projective with extra vector",true,
   [IsProjectiveActionHomomorphism],0,
 function(hom)
-local xset,G,D,b,t,i,r,binv,pos,dets,roots,dim,f;
+local xset,G,Grep,D,b,t,i,r,binv,pos,dets,roots,dim,f,v;
   xset:=UnderlyingExternalSet(hom);
   if Size(xset)=0 then
     return fail;
@@ -3570,6 +3571,7 @@ local xset,G,D,b,t,i,r,binv,pos,dets,roots,dim,f;
 
   # will the determinants suffice to get suitable scalars?
   G:= Source(hom);
+  Grep:= Representative( G );
   dim:=DimensionOfMatrixGroup(G);
   f:=DefaultFieldOfMatrixGroup(G);
 
@@ -3605,11 +3607,13 @@ local xset,G,D,b,t,i,r,binv,pos,dets,roots,dim,f;
   i:=1;
   pos:=[];
   while Length(b)<r and i<=Length(D) do
-    if RankMat(Concatenation(t,[D[i]]))>Length(t) then
+    v:= Unpack( D[i] );
+#TODO: try to get rid of 'Unpack'
+    if RankMat(Concatenation(t,[v]))>Length(t) then
       # new indep. vector
       Add(b,D[i]);
       Add(pos,i);
-      Add(t,ShallowCopy(D[i]));
+      Add(t,v);
       TriangulizeMat(t); # for faster rank tests
     fi;
     i:=i+1;
@@ -3619,15 +3623,20 @@ local xset,G,D,b,t,i,r,binv,pos,dets,roots,dim,f;
   fi;
 
   # try to find a vector that has nonzero coefficients for all b
-  binv:=Inverse(ImmutableMatrix(f,b));
+  binv:= Inverse( ImmutableMatrix( f, Matrix( b, Grep ) ) );
   while i<=Length(D) do
-    if ForAll(D[i]*binv,x->not IsZero(x)) then
+    if ForAll( Unpack( D[i] * binv ), x -> not IsZero(x) ) then
+#TODO: get rid of 'Unpack'?
       Add(b,D[i]);
       Add(pos,i);
       hom!.projActBasisPositions:=pos;
-      hom!.projActInverse:=ImmutableMatrix(f,binv*Inverse(DiagonalMat(D[i]*binv)));
+      hom!.projActInverse:= ImmutableMatrix( f,
+              binv * Inverse( DiagonalMatrix( D[i] * binv, binv ) ) );
       hom!.correctionFactors:=[dets,roots];
-      return ImmutableMatrix(f,b);
+      if IsScalarList( D[1] ) then
+        b:= ImmutableMatrix(f,b);
+      fi;
+      return b;
     fi;
     i:=i+1;
   od;
