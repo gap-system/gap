@@ -271,5 +271,7 @@ typedef ExecStatus (*ExecStatFunc)(Stat);
 typedef void (*PrintStatFunc)(Stat);
 typedef void (*PrintExprFunc)(Expr);
 
+//
+#include "precise_gc.h"
 
 #endif // GAP_COMMON_H

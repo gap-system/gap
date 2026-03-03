@@ -37,6 +37,7 @@
 #define GAP_GASMAN_H
 
 #include "common.h"
+#include "precise_gc.h"
 
 
 /****************************************************************************
@@ -112,13 +113,13 @@ enum {
 **
 **  'BAG_HEADER' returns the header of the bag with the identifier <bag>.
 */
-EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag)
+EXPORT_INLINE BagHeader * BAG_HEADER(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(bag);
     return ((*(BagHeader **)bag) - 1);
 }
 
-EXPORT_INLINE const BagHeader * CONST_BAG_HEADER(Bag bag)
+EXPORT_INLINE const BagHeader * CONST_BAG_HEADER(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(bag);
     return ((*(const BagHeader **)bag) - 1);
@@ -141,7 +142,7 @@ EXPORT_INLINE const BagHeader * CONST_BAG_HEADER(Bag bag)
 **  to  call  to  mark all subbags  of a  given bag (see "InitMarkFuncBags").
 **  Apart from that {\Gasman} does not care at all about types.
 */
-EXPORT_INLINE UInt TNUM_BAG(Bag bag)
+EXPORT_INLINE UInt TNUM_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     return CONST_BAG_HEADER(bag)->type;
 }
@@ -173,17 +174,17 @@ EXPORT_INLINE UInt TNUM_BAG(Bag bag)
 **  of the form (1 << i). Currently, 'i' must be in the range from 0 to
 **  7 (inclusive).
 */
-EXPORT_INLINE uint8_t TEST_BAG_FLAG(Bag bag, uint8_t flag)
+EXPORT_INLINE uint8_t TEST_BAG_FLAG(Bag bag, uint8_t flag) GAP_GC_NOTSAFEPOINT
 {
     return CONST_BAG_HEADER(bag)->flags & flag;
 }
 
-EXPORT_INLINE void SET_BAG_FLAG(Bag bag, uint8_t flag)
+EXPORT_INLINE void SET_BAG_FLAG(Bag bag, uint8_t flag) GAP_GC_NOTSAFEPOINT
 {
     BAG_HEADER(bag)->flags |= flag;
 }
 
-EXPORT_INLINE void CLEAR_BAG_FLAG(Bag bag, uint8_t flag)
+EXPORT_INLINE void CLEAR_BAG_FLAG(Bag bag, uint8_t flag) GAP_GC_NOTSAFEPOINT
 {
     BAG_HEADER(bag)->flags &= ~flag;
 }
@@ -198,7 +199,7 @@ EXPORT_INLINE void CLEAR_BAG_FLAG(Bag bag, uint8_t flag)
 **
 **  See also 'IS_INTOBJ' and 'IS_FFE'.
 */
-EXPORT_INLINE BOOL IS_BAG_REF(Obj bag)
+EXPORT_INLINE BOOL IS_BAG_REF(Obj bag) GAP_GC_NOTSAFEPOINT
 {
     return bag && !((Int)bag & 0x03);
 }
@@ -217,7 +218,7 @@ EXPORT_INLINE BOOL IS_BAG_REF(Obj bag)
 **  the size of a bag when it allocates it with 'NewBag' and may later change
 **  it with 'ResizeBag' (see "NewBag" and "ResizeBag").
 */
-EXPORT_INLINE UInt SIZE_BAG(Bag bag)
+EXPORT_INLINE UInt SIZE_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     return CONST_BAG_HEADER(bag)->size;
 }
@@ -232,7 +233,7 @@ EXPORT_INLINE UInt SIZE_BAG(Bag bag)
 **  atomic operations that require a memory barrier in between dereferencing
 **  the bag pointer and accessing the contents of the bag.
 */
-EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr)
+EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr) GAP_GC_NOTSAFEPOINT
 {
     return ((const BagHeader *)ptr)[-1].size;
 }
