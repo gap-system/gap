@@ -88,6 +88,7 @@ doc/ref/user_pref_list.xml
 /extern/gmp*/
 
 # tests, test logs, package build logs
+/dev/julia
 /dev/log
 /log
 /tst/testmanuals/*.tst
