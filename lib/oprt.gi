@@ -3508,58 +3508,63 @@ end);
 
 #############################################################################
 ##
-#A  LinearActionBasis(<hom>)
+#M  LinearActionBasis(<hom>)
+##
+##  Under certain conditions, a homomorphism for a projective action can use
+##  linear algebra to compute preimages:
+##
+##  - The set of normed vectors on which the group acts contains a basis of
+##    the vector space,
+##  - there is another normed vector whose coefficients w.r.t. this basis
+##    are all nonzero,
+##  - either the acting group contains all scalar matrices over the field
+##    of definition
+##    or the acting group is contained in the special linear group and
+##    the determinant of a matrix in the general linear group determines
+##    uniquely a scalar that multiplies the matrix into the special linear
+##    group.
+##
+##  'LinearActionBasis' checks a stronger variant of these conditions.
+##  If they are satisfied then it returns the vectors of the basis,
+##  and sets additional components in 'hom'.
+##  If they are not satisfied then 'fail' is returned.
 ##
 InstallOtherMethod(LinearActionBasis,"projective with extra vector",true,
   [IsProjectiveActionHomomorphism],0,
 function(hom)
-local xset,D,b,t,i,r,binv,pos,kero,dets,roots,dim,f;
+local xset,G,D,b,t,i,r,binv,pos,dets,roots,dim,f;
   xset:=UnderlyingExternalSet(hom);
   if Size(xset)=0 then
     return fail;
   fi;
 
   # will the determinants suffice to get suitable scalars?
-  dim:=DimensionOfMatrixGroup(Source(hom));
-  f:=DefaultFieldOfMatrixGroup(Source(hom));
+  G:= Source(hom);
+  dim:=DimensionOfMatrixGroup(G);
+  f:=DefaultFieldOfMatrixGroup(G);
 
   roots:=Set(RootsOfUPol(f,X(f)^dim-1));
+  D:=List(GeneratorsOfGroup(G),DeterminantMat);
 
-  D:=List(GeneratorsOfGroup(Source(hom)),DeterminantMat);
-  D:=AsSSortedList(Group(D));
-
-  if Length(roots)<=1 then
-    # 1 will always be root
-    kero:=[One(f)];
-  elif HasIsNaturalGL(Source(hom)) and IsNaturalGL(Source(hom)) then
-    # the full GL clearly will contain the kernel
-    kero:=roots; # to skip test
-  elif not IsSubset(D,roots) then
-    # even the kernel determinants are not reached, so clearly kernel not in
-    return fail;
+  if ( HasIsNaturalGL(G) and IsNaturalGL(G) ) then
+    # No correction is necessary.
+    dets:= fail;
+    roots:= fail;
+  elif ForAll( D, IsOne ) and Length( roots ) = 1 then
+    # Preimages can be computed uniquely from the given data.
+    dets:=[];
+    roots:=[];
+    for i in Filtered( AsSSortedList( f ), x -> not IsZero( x ) ) do
+      b:= i^dim;
+      if not b in dets then
+        Add( dets, b );
+        Add( roots, i^-1 ); # the factor by which we must correct
+      fi;
+    od;
+    SortParallel( dets, roots );
   else
-    kero:=List(AsSSortedList(KernelOfMultiplicativeGeneralMapping(hom)),x->x[1][1]^dim);
-  fi;
-
-  if not IsSubset(kero,roots) then
-    # we cannot fix the scalar with the determinant
+    # We do not know how to compute preimages from the given data.
     return fail;
-  fi;
-
-  dets:=[];
-  roots:=[];
-  for i in Filtered(AsSSortedList(f),x->not IsZero(x)) do
-    b:=i^dim;
-    if not b in dets then
-      Add(dets,b);
-      Add(roots,i^-1); # the factor by which we must correct
-    fi;
-  od;
-  SortParallel(dets,roots);
-
-  if IsSubset(D,dets) then
-    dets:=fail; # not that we do not need to correct with determinant as all
-                # values are fine
   fi;
 
   # find a basis from the domain.
@@ -3580,7 +3585,7 @@ local xset,D,b,t,i,r,binv,pos,kero,dets,roots,dim,f;
     i:=i+1;
   od;
   if Length(b)<r then
-    return fail;
+    return fail; # no vector space basis found
   fi;
 
   # try to find a vector that has nonzero coefficients for all b
