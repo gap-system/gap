@@ -3438,7 +3438,7 @@ end );
 InstallMethod( PreImagesRepresentative,"IsProjectiveActionHomomorphism",
   FamRangeEqFamElm, [ IsProjectiveActionHomomorphism, IsPerm ], 0,
 function( hom, elm )
-  local   V,  G, Grep, mat, xset,lab,f,dim,sol,i;
+  local   V,  G, Grep, mat, xset,lab,dim,sol,i;
 
   # is this method applicable? Test whether field
   # finite, that the domain contains a vector
@@ -3457,7 +3457,6 @@ function( hom, elm )
   V := HomeEnumerator(xset);
   G:= Source( hom );
   Grep:= Representative( G );
-  f:=DefaultFieldOfMatrixGroup(G);
   dim:=DimensionOfMatrixGroup(G);
 
   elm:=OnTuples(hom!.projActBasisPositions,elm); # image points
