@@ -3417,6 +3417,25 @@ end );
 ##
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . .  build matrix
 ##
+##  The idea is as follows.
+##  We have an $F$-basis $(v_1, \ldots, v_n)$.
+##  The matrix $M \in GL(n, F)$ acts first by right multiplication,
+##  let $w_i = v_i M$.
+##  Due to the projective action, we know only the normed vectors $c_i w_i$,
+##  where $c_i \in F \setminus \{ 0 \}$.
+##  The data computed by 'LinearActionBasis' (if its result is not 'fail')
+##  provide a vector $v = \sum_i a_i v_i$ such that all $a_i \not= 0$,
+##  and we know the normed vector $c w$ where $w = v M$ and $c \in F$.
+##
+##  We can compute the decomposition $c w = \sum_i b_i (c_i w_i)$,
+##  and get $\sum_i b_i (c_i w_i) = c v M = c \sum_i a_i w_i$,
+##  which means $c_i = c a_i/b_i$ for all $i$.
+##  Thus we can reconstruct the matrix $M$ up to the scalar factor $c$.
+##
+##  In the cases that are supported, either $c$ is irrelevant because the
+##  matrix group contains all scalar matrices, or we know that the preimage
+##  has determinant $1$ and taking the root in question is unique.
+##
 InstallMethod( PreImagesRepresentative,"IsProjectiveActionHomomorphism",
   FamRangeEqFamElm, [ IsProjectiveActionHomomorphism, IsPerm ], 0,
 function( hom, elm )
