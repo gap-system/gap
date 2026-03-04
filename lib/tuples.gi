@@ -498,7 +498,7 @@ InstallOtherMethod( \+,
 
 InstallOtherMethod( \*,
     "for a direct product element, and a non-list",
-    [ IsDirectProductElement, IsObject ], 5,
+    [ IsDirectProductElement, IsObject ],
     function( dpelm, nonlist )
     if IsListOrCollection( nonlist ) then
       TryNextMethod();
@@ -508,12 +508,26 @@ InstallOtherMethod( \*,
 
 InstallOtherMethod( \*,
     "for a non-list, and a direct product element",
-    [ IsObject, IsDirectProductElement ], 5,
+    [ IsObject, IsDirectProductElement ],
     function( nonlist, dpelm )
     if IsListOrCollection( nonlist ) then
       TryNextMethod();
     fi;
     return DirectProductElement( List( dpelm, entry -> nonlist * entry ) );
+    end );
+
+InstallOtherMethod( \*,
+    "for a direct product element, and an integer",
+    [ IsDirectProductElement, IsInt ],
+    function( dpelm, int )
+    return DirectProductElement( List( dpelm, entry -> entry * int ) );
+    end );
+
+InstallOtherMethod( \*,
+    "for an integer, and a direct product element",
+    [ IsInt, IsDirectProductElement ],
+    function( int, dpelm )
+    return DirectProductElement( List( dpelm, entry -> int * entry ) );
     end );
 
 
