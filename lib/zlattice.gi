@@ -1244,18 +1244,21 @@ end );
 InstallGlobalFunction( ShortestVectors, function( arg )
     local
     # variables
-          n,  checkpositiv, a, llg, nullv, m, c, con, b, v,
+          n, positiveOnly, a, llg, zeroCoeffs, m, c, continueSearch, b, v,
     # procedures
-          srt, vschr;
+          search, emitVector;
 
-    # search for shortest vectors
-    srt := function( d, dam )
-    local i, j, x, k, k1, q;
+    # Enumerate coefficient vectors recursively in the LLL-reduced basis,
+    # starting near the nearest integer to keep the search tree small.
+    search := function( d, norm )
+    local i, j, x, k, nextnorm, q;
     if d = 0 then
-       if v = nullv then
-          con := false;
+       # Once the zero coefficient vector is reached, the remaining branch
+       # would only enumerate the already covered opposite vectors.
+       if v = zeroCoeffs then
+          continueSearch := false;
        else
-          vschr( dam );
+          emitVector( norm );
        fi;
     else
        x := 0;
@@ -1267,7 +1270,7 @@ InstallGlobalFunction( ShortestVectors, function( arg )
           i := i - SignInt( x );
        fi;
        k := i + x;
-       q := ( m + 1/1000 - dam ) / llg.B[d];
+       q := ( m + 1/1000 - norm ) / llg.B[d];
        if k * k < q then
           repeat
              i := i + 1;
@@ -1275,10 +1278,10 @@ InstallGlobalFunction( ShortestVectors, function( arg )
           until k * k >= q and k > 0;
           i := i - 1;
           k := k - 1;
-          while k * k < q and con do
+          while k * k < q and continueSearch do
              v[d] := i;
-             k1 := llg.B[d] * k * k + dam;
-             srt( d-1, k1 );
+             nextnorm := llg.B[d] * k * k + norm;
+             search( d-1, nextnorm );
              i := i - 1;
              k := k - 1;
           od;
@@ -1286,8 +1289,8 @@ InstallGlobalFunction( ShortestVectors, function( arg )
     fi;
     end;
 
-    # output of vector
-    vschr := function( dam )
+    # Convert coefficients back to the original basis before storing them.
+    emitVector := function( norm )
     local newvec, i, j, w, haspos, hasneg;
     newvec := [];
     haspos := false;
@@ -1304,7 +1307,7 @@ InstallGlobalFunction( ShortestVectors, function( arg )
        fi;
        newvec[i] := w;
     od;
-    if checkpositiv then
+    if positiveOnly then
        if haspos and hasneg then
           return;
        elif hasneg then
@@ -1312,7 +1315,7 @@ InstallGlobalFunction( ShortestVectors, function( arg )
        fi;
     fi;
     Add(c.vectors, newvec);
-    Add(c.norms, dam);
+    Add(c.norms, norm);
     end;
 
     # main program
@@ -1327,16 +1330,16 @@ InstallGlobalFunction( ShortestVectors, function( arg )
     elif IsBound( arg[3] ) then
        if IsString( arg[3] ) then
           if arg[3] = "positive" then
-             checkpositiv := true;
+             positiveOnly := true;
           else
-             checkpositiv := false;
+             positiveOnly := false;
           fi;
        else
           Error ( "third argument must be string\n",
           "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )");
        fi;
     else
-       checkpositiv := false;
+       positiveOnly := false;
     fi;
 
     a := arg[1];
@@ -1345,14 +1348,15 @@ InstallGlobalFunction( ShortestVectors, function( arg )
     b := List( a, ShallowCopy );
     c     := rec( vectors:= [], norms:= [] );
     v     := ListWithIdenticalEntries( n, 0 );
-    nullv := ListWithIdenticalEntries( n, 0 );
+    zeroCoeffs := ListWithIdenticalEntries( n, 0 );
 
     llg:= LLLReducedGramMat( b );
 #T here check that the matrix is really regular
 #T (empty relations component)
 
-    con := true;
-    srt( n, 0 );
+    # The small offset avoids missing vectors on the exact norm boundary.
+    continueSearch := true;
+    search( n, 0 );
 
     Info( InfoZLattice, 2,
           "ShortestVectors: ", Length( c.vectors ), " vectors found" );
