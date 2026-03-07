@@ -1328,12 +1328,11 @@ InstallGlobalFunction( ShortestVectors, function( arg )
        Error ( "second argument must be integer\n",
           "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )");
     elif IsBound( arg[3] ) then
-       if IsString( arg[3] ) then
-          if arg[3] = "positive" then
-             positiveOnly := true;
-          else
-             positiveOnly := false;
-          fi;
+       if arg[3] = "positive" then
+          positiveOnly := true;
+       elif IsString( arg[3] ) then
+          Error ( "third argument must be \"positive\"\n",
+          "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )");
        else
           Error ( "third argument must be string\n",
           "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )");
@@ -1714,7 +1713,7 @@ l := deca( l-1 );
     fi;
     g := List( arg[1], ShallowCopy );
     checkdim := false;
-    chpo := "xxx";
+    chpo := fail;
     if IsBound( arg[2] ) then
        if IsString( arg[2] ) then
           chpo := arg[2];
@@ -1759,7 +1758,11 @@ l := deca( l-1 );
     invg  := Symmatinv( g );
     m     := invg.enuminator;
     invg  := invg.inverse;
-    x     := ShortestVectors( invg, m, chpo );
+    if chpo = "positive" then
+       x := ShortestVectors( invg, m, chpo );
+    else
+       x := ShortestVectors( invg, m );
+    fi;
     t     := Length(x.vectors);
     for i in [1..t] do
        x.vectors[i][n+1] := x.norms[i];

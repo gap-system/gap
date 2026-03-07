@@ -13,3 +13,6 @@ gap> Length( sv.vectors );
 120
 gap> ForAll( sv.vectors, x -> ForAll( x, y -> y >= 0 ) );
 true
+gap> ShortestVectors( [ [ 2 ] ], 2, "bogus" );
+Error, third argument must be "positive"
+usage: ShortestVectors( <mat>, <integer> [,<"positive">] )
