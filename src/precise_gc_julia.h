@@ -18,7 +18,13 @@
 #include "precise_gc.h"
 
 #if defined(USE_JULIA_GC)
+#ifdef __cplusplus
+extern "C++" {
+#endif
 #include <julia.h>
+#ifdef __cplusplus
+}
+#endif
 
 #define GAP_GC_PUSH1(arg1) JL_GC_PUSH1(arg1)
 #define GAP_GC_PUSH2(arg1, arg2) JL_GC_PUSH2(arg1, arg2)
