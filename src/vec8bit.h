@@ -35,7 +35,7 @@ Obj CopyVec8Bit(Obj list, UInt mut);
 **
 *F  IS_VEC8BIT_REP( <obj> ) . . .  check that <obj> is in 8bit GFQ vector rep
 */
-extern Obj IsVec8bitRep;
+extern Obj IsVec8bitRep GAP_GC_GLOBALLY_ROOTED;
 
 EXPORT_INLINE BOOL IS_VEC8BIT_REP(Obj obj)
 {

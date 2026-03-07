@@ -1395,8 +1395,8 @@ static UInt RNamArguments;
 static UInt RNamIsVerbose;
 static UInt RNamIsConstructor;
 static UInt RNamPrecedence;
-static Obj  HANDLE_METHOD_NOT_FOUND;
-static Obj  CHECK_REPEATED_ATTRIBUTE_SET;
+static Obj  HANDLE_METHOD_NOT_FOUND GAP_GC_GLOBALLY_ROOTED;
+static Obj  CHECK_REPEATED_ATTRIBUTE_SET GAP_GC_GLOBALLY_ROOTED;
 
 static void HandleMethodNotFound(
     Obj oper, Obj arglist, UInt verbose, UInt constructor, Int precedence)
@@ -1439,7 +1439,7 @@ static void HandleMethodNotFound(
 
 #ifdef USE_GASMAN
 
-static Obj FLUSH_ALL_METHOD_CACHES;
+static Obj FLUSH_ALL_METHOD_CACHES GAP_GC_GLOBALLY_ROOTED;
 
 static Int NextTypeID;
 static Obj IsType;
@@ -1684,9 +1684,9 @@ CacheMethod(Obj cacheBag, UInt n, Int prec, Obj * ids, Obj method)
 }
 #endif // WARD_ENABLED
 
-static Obj ReturnTrue;
-static Obj VMETHOD_PRINT_INFO;
-static Obj NEXT_VMETHOD_PRINT_INFO;
+static Obj ReturnTrue GAP_GC_GLOBALLY_ROOTED;
+static Obj VMETHOD_PRINT_INFO GAP_GC_GLOBALLY_ROOTED;
+static Obj NEXT_VMETHOD_PRINT_INFO GAP_GC_GLOBALLY_ROOTED;
 
 // This function searches through the methods of operation <oper> with
 // arity <n>, looking for those matching the given <types>. Among these,
@@ -2639,9 +2639,9 @@ static void ConvertOperationIntoAttribute(Obj oper, ObjFunc_1ARGS hdlr)
 **
 *F  DoProperty( <name> )  . . . . . . . . . . . . . . . . make a new property
 */
-Obj SET_FILTER_OBJ;
+Obj SET_FILTER_OBJ GAP_GC_GLOBALLY_ROOTED;
 
-Obj RESET_FILTER_OBJ;
+Obj RESET_FILTER_OBJ GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

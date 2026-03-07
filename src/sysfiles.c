@@ -1863,7 +1863,7 @@ static Char * syFgetsNoEdit(Char * line, UInt length, Int fid, UInt block)
 /* will be imported from library, first is generic function which does some
    checks before returning result to kernel, the second is the list of handler
    functions which do the actual work. */
-static Obj LineEditKeyHandler;
+static Obj LineEditKeyHandler GAP_GC_GLOBALLY_ROOTED;
 static Obj LineEditKeyHandlers;
 static Obj GAPInfo;
 

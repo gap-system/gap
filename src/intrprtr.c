@@ -323,8 +323,8 @@ void IntrFuncCallBegin(IntrState * intr)
     }
 }
 
-static Obj PushOptions;
-static Obj PopOptions;
+static Obj PushOptions GAP_GC_GLOBALLY_ROOTED;
+static Obj PopOptions GAP_GC_GLOBALLY_ROOTED;
 
 void IntrFuncCallEnd(IntrState * intr, UInt funccall, UInt options, UInt nr)
 {

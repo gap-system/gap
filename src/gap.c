@@ -63,7 +63,7 @@
 
 #include <gmp.h>
 
-static Obj Error;
+static Obj Error GAP_GC_GLOBALLY_ROOTED;
 
 static UInt SystemErrorCode;
 

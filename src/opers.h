@@ -483,14 +483,14 @@ BOOL IS_SUBSET_FLAGS(Obj flags1, Obj flags2);
 **
 *V  SET_FILTER_OBJ  . . . . . . . . . . . .  library function to set a filter
 */
-extern Obj SET_FILTER_OBJ;
+extern Obj SET_FILTER_OBJ GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
 **
 *V  RESET_FILTER_OBJ  . . . . . . . . . .  library function to reset a filter
 */
-extern Obj RESET_FILTER_OBJ;
+extern Obj RESET_FILTER_OBJ GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

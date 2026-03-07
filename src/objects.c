@@ -813,7 +813,7 @@ static Obj FuncDEEP_COPY_OBJ(Obj self, Obj obj)
 **
 */
 
-static Obj PostMakeImmutableOp = 0;
+static Obj PostMakeImmutableOp GAP_GC_GLOBALLY_ROOTED = 0;
 
 void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1])( Obj );
 
@@ -1743,7 +1743,7 @@ static void LoadDatObj(Obj datobj)
 **  WARNING: at the moment the functions breaks on cloning `[1,~]'.  This can
 **  be fixed if necessary.
 */
-static Obj IsToBeDefinedObj;
+static Obj IsToBeDefinedObj GAP_GC_GLOBALLY_ROOTED;
 
 static Obj REREADING;
 

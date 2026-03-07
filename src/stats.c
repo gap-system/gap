@@ -333,10 +333,10 @@ static ExecStatus ExecIfElifElse(Stat stat)
 **  for the loop variable, the second slot points to the list-expression, and
 **  the remaining slots points to the statements.
 */
-Obj ITERATOR;
-Obj IS_DONE_ITER;
-Obj NEXT_ITER;
-Obj STD_ITER;
+Obj ITERATOR GAP_GC_GLOBALLY_ROOTED;
+Obj IS_DONE_ITER GAP_GC_GLOBALLY_ROOTED;
+Obj NEXT_ITER GAP_GC_GLOBALLY_ROOTED;
+Obj STD_ITER GAP_GC_GLOBALLY_ROOTED;
 
 static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
 {

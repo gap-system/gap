@@ -51,12 +51,12 @@
 static Char GetLine(TypInputFile * input);
 static void PutLine2(TypOutputFile * output, const Char * line, UInt len);
 
-static Obj ReadLineFunc;
-static Obj WriteAllFunc;
-static Obj IsInputStringStream;
-static Obj IsOutputStringStream;
-static Obj PositionStream;
-static Obj SeekPositionStream;
+static Obj ReadLineFunc GAP_GC_GLOBALLY_ROOTED;
+static Obj WriteAllFunc GAP_GC_GLOBALLY_ROOTED;
+static Obj IsInputStringStream GAP_GC_GLOBALLY_ROOTED;
+static Obj IsOutputStringStream GAP_GC_GLOBALLY_ROOTED;
+static Obj PositionStream GAP_GC_GLOBALLY_ROOTED;
+static Obj SeekPositionStream GAP_GC_GLOBALLY_ROOTED;
 
 // 'PrintPromptHook' is a GAP-level variable which can be set to a function
 // for printing the GAP prompt. If not bound, 'STATE(Prompt)' is printed.

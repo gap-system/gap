@@ -105,8 +105,8 @@ void SetRecursionDepth(Int depth)
 **  resulting from the procedure call, which in fact is always 0.
 */
 
-static Obj PushOptions;
-static Obj PopOptions;
+static Obj PushOptions GAP_GC_GLOBALLY_ROOTED;
+static Obj PopOptions GAP_GC_GLOBALLY_ROOTED;
 
 static ALWAYS_INLINE Obj EvalOrExecCall(Int ignoreResult, UInt nr, Stat call, Stat opts)
 {

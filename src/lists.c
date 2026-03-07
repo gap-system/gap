@@ -78,12 +78,12 @@ static BOOL IsListObject(Obj obj)
 */
 BOOL (*IsSmallListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsSmallListFilt;
-static Obj HasIsSmallListFilt;
-static Obj LengthAttr;
-static Obj NumberRowsAttr;
-static Obj NumberColumnsAttr;
-static Obj SetIsSmallList;
+static Obj IsSmallListFilt GAP_GC_GLOBALLY_ROOTED;
+static Obj HasIsSmallListFilt GAP_GC_GLOBALLY_ROOTED;
+static Obj LengthAttr GAP_GC_GLOBALLY_ROOTED;
+static Obj NumberRowsAttr GAP_GC_GLOBALLY_ROOTED;
+static Obj NumberColumnsAttr GAP_GC_GLOBALLY_ROOTED;
+static Obj SetIsSmallList GAP_GC_GLOBALLY_ROOTED;
 
 static BOOL IsSmallListObject(Obj obj)
 {

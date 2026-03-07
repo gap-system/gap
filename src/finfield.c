@@ -55,8 +55,8 @@ static Obj TypeFF0;
 **
 **  These GAP functions are called to compute types of finite field elemnents
 */
-static Obj TYPE_FFE;
-static Obj TYPE_FFE0;
+static Obj TYPE_FFE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_FFE0 GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
@@ -599,7 +599,7 @@ static void PrFFE(Obj ffe)
 **  'SumFFEFFE' just does the conversions mentioned  above and then calls the
 **  function 'SUM_FFV' to do the actual addition.
 */
-static Obj SUM_FFE_LARGE;
+static Obj SUM_FFE_LARGE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj SumFFEFFE(Obj opL, Obj opR)
 {
@@ -750,7 +750,7 @@ static Obj AInvFFE(Obj op)
 **  'DiffFFEFFE' just does the conversions mentioned above and then calls the
 **  functions 'NEG_FFV' and 'SUM_FFV' to do the actual subtraction.
 */
-static Obj DIFF_FFE_LARGE;
+static Obj DIFF_FFE_LARGE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj DiffFFEFFE(Obj opL, Obj opR)
 {
@@ -852,7 +852,7 @@ static Obj DiffIntFFE(Obj opL, Obj opR)
 **  'ProdFFEFFE' just does the conversions mentioned above and then calls the
 **  function 'PROD_FFV' to do the actual multiplication.
 */
-static Obj PROD_FFE_LARGE;
+static Obj PROD_FFE_LARGE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj ProdFFEFFE(Obj opL, Obj opR)
 {
@@ -974,7 +974,7 @@ static Obj InvFFE(Obj op)
 **  'QuoFFEFFE' just does the conversions mentioned  above and then calls the
 **  function 'QUO_FFV' to do the actual division.
 */
-static Obj QUO_FFE_LARGE;
+static Obj QUO_FFE_LARGE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj QuoFFEFFE(Obj opL, Obj opR)
 {
@@ -1166,7 +1166,7 @@ static Obj FiltIS_FFE(Obj self, Obj obj)
 **  'LogFFE'  returns the logarithm of  the nonzero finite  field element <z>
 **  with respect to the root <r> which must lie in the same field like <z>.
 */
-static Obj LOG_FFE_LARGE;
+static Obj LOG_FFE_LARGE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncLOG_FFE_DEFAULT(Obj self, Obj opZ, Obj opR)
 {
@@ -1340,7 +1340,7 @@ static Obj FuncINT_FFE_DEFAULT(Obj self, Obj z)
 **  'Z' returns the generators  of the small finite  field with <q> elements.
 **  <q> must be a positive prime power.
 */
-static Obj ZOp;
+static Obj ZOp GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncZ(Obj self, Obj q)
 {

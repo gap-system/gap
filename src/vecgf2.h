@@ -240,8 +240,8 @@ extern Obj TYPE_LIST_GF2MAT;
 extern Obj TYPE_LIST_GF2MAT_IMM;
 
 
-extern Obj IsGF2VectorRep;
-extern Obj IsGF2MatrixRep;
+extern Obj IsGF2VectorRep GAP_GC_GLOBALLY_ROOTED;
+extern Obj IsGF2MatrixRep GAP_GC_GLOBALLY_ROOTED;
 
 Obj ShallowCopyVecGF2(Obj vec);
 

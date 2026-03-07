@@ -54,8 +54,8 @@
 #endif
 
 
-static Obj IsInputStream;
-static Obj IsOutputStream;
+static Obj IsInputStream GAP_GC_GLOBALLY_ROOTED;
+static Obj IsOutputStream GAP_GC_GLOBALLY_ROOTED;
 
 #define RequireInputStream(funcname, op)                                     \
     RequireArgumentCondition(funcname, op,                                   \

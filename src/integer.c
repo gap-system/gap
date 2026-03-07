@@ -168,7 +168,7 @@ static inline void ENSURE_BAG(Bag bag)
 
 
 // for fallbacks to library
-static Obj String;
+static Obj String GAP_GC_GLOBALLY_ROOTED;
 static Obj IsIntFilt;
 
 

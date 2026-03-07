@@ -71,8 +71,8 @@
 ** #define IS_VEC8BIT_REP(obj) \
 **  (TNUM_OBJ(obj)==T_DATOBJ && True == DoFilter(IsVec8bitRep,obj))
 */
-Obj        IsVec8bitRep;
-static Obj Is8BitMatrixRep;
+Obj        IsVec8bitRep GAP_GC_GLOBALLY_ROOTED;
+static Obj Is8BitMatrixRep GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
@@ -96,8 +96,8 @@ static Obj FieldInfo8Bit;
 **
 */
 static Obj TYPES_VEC8BIT;
-static Obj TYPE_VEC8BIT;
-static Obj TYPE_VEC8BIT_LOCKED;
+static Obj TYPE_VEC8BIT GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_VEC8BIT_LOCKED GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeVec8Bit(UInt q, UInt mut)
 {
@@ -136,7 +136,7 @@ static Obj TypeVec8BitLocked(UInt q, UInt mut)
 **
 */
 static Obj TYPES_MAT8BIT;
-static Obj TYPE_MAT8BIT;
+static Obj TYPE_MAT8BIT GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeMat8Bit(UInt q, UInt mut)
 {

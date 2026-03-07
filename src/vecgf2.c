@@ -84,7 +84,7 @@ Obj TYPE_LIST_GF2MAT_IMM;
 **
 *V  IsGF2VectorRep  . . . . . . . . . . . . . . . . . . . . . . . . .  filter
 */
-Obj IsGF2VectorRep;
+Obj IsGF2VectorRep GAP_GC_GLOBALLY_ROOTED;
 
 Obj IsGF2MatrixRep;
 

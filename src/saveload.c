@@ -51,7 +51,7 @@ static Int LoadFile = -1;
 static UInt1 LoadBuffer[100000];
 static UInt1* LBPointer;
 static UInt1* LBEnd;
-static Obj userHomeExpand;
+static Obj userHomeExpand GAP_GC_GLOBALLY_ROOTED;
 
 static Int OpenForSave( Obj fname )
 {

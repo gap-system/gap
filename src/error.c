@@ -41,7 +41,7 @@
 
 static Obj ErrorInner;
 static Obj ERROR_OUTPUT = NULL;
-static Obj IsOutputStream;
+static Obj IsOutputStream GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
