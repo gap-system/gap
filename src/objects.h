@@ -375,7 +375,7 @@ EXPORT_INLINE const Char * TNAM_OBJ(Obj obj)
 **
 **  'SIZE_OBJ' returns the size of the object <obj>.
 */
-EXPORT_INLINE UInt SIZE_OBJ(Obj obj)
+EXPORT_INLINE UInt SIZE_OBJ(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return SIZE_BAG(obj);
 }
@@ -388,12 +388,12 @@ EXPORT_INLINE UInt SIZE_OBJ(Obj obj)
 **  'ADDR_OBJ' returns the absolute address of the memory block of the object
 **  <obj>.
 */
-EXPORT_INLINE Obj *ADDR_OBJ(Obj obj)
+EXPORT_INLINE Obj *ADDR_OBJ(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return PTR_BAG(obj);
 }
 
-EXPORT_INLINE const Obj *CONST_ADDR_OBJ(Obj obj)
+EXPORT_INLINE const Obj *CONST_ADDR_OBJ(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return CONST_PTR_BAG(obj);
 }

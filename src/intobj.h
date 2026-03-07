@@ -112,7 +112,7 @@ EXPORT_INLINE Int ARE_INTOBJS(Obj o1, Obj o2)
 GAP_STATIC_ASSERT((-1) >> 1 == -1, "right shifts are not arithmetic");
 GAP_STATIC_ASSERT((-2) >> 1 == -1, "right shifts are not arithmetic");
 
-EXPORT_INLINE Int INT_INTOBJ(Obj o)
+EXPORT_INLINE Int INT_INTOBJ(Obj o) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_INTOBJ(o));
     return (Int)o >> 2;
@@ -126,6 +126,7 @@ EXPORT_INLINE Int INT_INTOBJ(Obj o)
 **  'INTOBJ_INT' converts the C integer <i> to an (immediate) integer object.
 */
 EXPORT_INLINE Obj INTOBJ_INT(Int i)
+    GAP_GC_NOTSAFEPOINT GAP_GC_GLOBALLY_ROOTED
 {
     Obj o;
     GAP_ASSERT(INT_INTOBJ_MIN <= i && i <= INT_INTOBJ_MAX);

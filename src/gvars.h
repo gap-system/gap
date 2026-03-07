@@ -110,7 +110,7 @@ Obj ValGVarTL(UInt gvar);
 **  'NameGVar' returns the name of the global variable <gvar> as a GAP
 **  string.
 */
-Obj NameGVar(UInt gvar);
+Obj NameGVar(UInt gvar) GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

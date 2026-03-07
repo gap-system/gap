@@ -306,13 +306,13 @@ EXPORT_INLINE UInt SIZE_BAG_CONTENTS(const void *ptr) GAP_GC_NOTSAFEPOINT
 **  the application  must inform {\Gasman}  that it  has changed  the bag, by
 **  calling 'CHANGED_BAG(old)' in the above example (see "CHANGED_BAG").
 */
-EXPORT_INLINE Bag *PTR_BAG(Bag bag)
+EXPORT_INLINE Bag *PTR_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(bag != 0);
     return *(Bag**)bag;
 }
 
-EXPORT_INLINE const Bag *CONST_PTR_BAG(Bag bag)
+EXPORT_INLINE const Bag *CONST_PTR_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(bag != 0);
     return *(const Bag * const *)bag;
@@ -361,7 +361,7 @@ void SET_PTR_BAG(Bag bag, Bag *val);
 
 #if defined(USE_BOEHM_GC)
 
-EXPORT_INLINE void CHANGED_BAG(Bag bag)
+EXPORT_INLINE void CHANGED_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
 }
 
@@ -397,7 +397,7 @@ extern Bag   ChangedBags;
 BOOL         InWorkspaceRestore(void);
 #endif
 
-EXPORT_INLINE void CHANGED_BAG(Bag bag)
+EXPORT_INLINE void CHANGED_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(!InWorkspaceRestore());
     if (CONST_PTR_BAG(bag) <= YoungBags && LINK_BAG(bag) == bag) {
@@ -493,7 +493,7 @@ EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size)
 **  'RetypeBagIntern' is the internal version of 'RetypeBag', implemented by
 **  the GC backend. It is called by 'RetypeBag'.
 */
-void RetypeBagIntern(Bag bag, UInt new_type);
+void RetypeBagIntern(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT;
 
 #ifdef HPCGAP
 void RetypeBagIfWritable(Bag bag, UInt new_type);
@@ -524,7 +524,7 @@ EXPORT_INLINE void RetypeBag(Bag bag, UInt new_type)
 **  FIXME: for now, this checks the tnums; later, this will be turned
 **  into a check for an object flag
 */
-void RetypeBagSM(Bag bag, UInt new_type);
+void RetypeBagSM(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT;
 #ifdef HPCGAP
 void RetypeBagSMIfWritable(Bag bag, UInt new_type);
 #else
@@ -602,7 +602,7 @@ UInt CollectBags(UInt size, UInt full);
 **
 *F  SwapMasterPoint( <bag1>, <bag2> ) . . . swap pointer of <bag1> and <bag2>
 */
-void SwapMasterPoint(Bag bag1, Bag bag2);
+void SwapMasterPoint(Bag bag1, Bag bag2) GAP_GC_NOTSAFEPOINT;
 
 
 /****************************************************************************

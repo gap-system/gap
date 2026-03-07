@@ -552,7 +552,7 @@ static Obj NewGVarBucket(void)
 }
 #endif
 
-Obj NameGVar ( UInt gvar )
+Obj NameGVar ( UInt gvar ) GAP_GC_GLOBALLY_ROOTED
 {
     return ELM_GVAR_LIST( NameGVars, gvar );
 }

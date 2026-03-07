@@ -178,7 +178,9 @@ EXPORT_INLINE Int LEN_PLIST(Obj list)
 **  the length of <list>.
 **
 */
-EXPORT_INLINE void SET_ELM_PLIST(Obj list, Int pos, Obj val)
+EXPORT_INLINE void SET_ELM_PLIST(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
+                                 Obj val GAP_GC_ROOTED_ARGUMENT)
+    GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
     GAP_ASSERT(pos >= 1);
@@ -195,7 +197,8 @@ EXPORT_INLINE void SET_ELM_PLIST(Obj list, Int pos, Obj val)
 **  <list>.  If <list> has no assigned element at position <pos>, 'ELM_PLIST'
 **  returns 0.
 */
-EXPORT_INLINE Obj ELM_PLIST(Obj list, Int pos)
+EXPORT_INLINE Obj ELM_PLIST(Obj list GAP_GC_PROPAGATES_ROOT, Int pos)
+    GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_PLIST_OR_POSOBJ(list));
     GAP_ASSERT(pos >= 1);
@@ -246,7 +249,8 @@ EXPORT_INLINE BOOL IS_PLIST_MUTABLE(Obj list)
 **
 *F  AssPlist( <list>, <pos>, <val>) . . . . . . . . .  assign to a plain list
 */
-void AssPlist(Obj list, Int pos, Obj val);
+void AssPlist(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
+              Obj val GAP_GC_ROOTED_ARGUMENT);
 
 /****************************************************************************
 **
@@ -258,7 +262,7 @@ void AssPlist(Obj list, Int pos, Obj val);
 **  instead.
 **
 */
-EXPORT_INLINE UInt PushPlist(Obj list, Obj val)
+EXPORT_INLINE UInt PushPlist(Obj list GAP_GC_ROOTING_ARGUMENT, Obj val GAP_GC_ROOTED_ARGUMENT)
 {
     const UInt pos = LEN_PLIST(list) + 1;
     GROW_PLIST(list, pos);
