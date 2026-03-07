@@ -1289,26 +1289,32 @@ InstallGlobalFunction( ShortestVectors, function( arg )
 
     # output of vector
     vschr := function( dam )
-    local i, j, w, neg;
+    local i, j, w, haspos, hasneg;
     c.vectors[anz] := [];
-    neg := false;
+    haspos := false;
+    hasneg := false;
     for i in [1..n] do
        w := 0;
        for j in [1..n] do
           w := w + v[j] * llg.transformation[j][i];
        od;
        if w < 0 then
-          neg := true;
-#T better here check testpositiv and return!
+          hasneg := true;
+       elif w > 0 then
+          haspos := true;
        fi;
        c.vectors[anz][i] := w;
     od;
-    if checkpositiv and neg then
-       Unbind(c.vectors[anz]);
-       anz := anz - 1;
-    else
-       c.norms[anz] := dam;
+    if checkpositiv then
+       if haspos and hasneg then
+          Unbind(c.vectors[anz]);
+          anz := anz - 1;
+          return;
+       elif hasneg then
+          c.vectors[anz] := -c.vectors[anz];
+       fi;
     fi;
+    c.norms[anz] := dam;
     end;
 
     # main program
