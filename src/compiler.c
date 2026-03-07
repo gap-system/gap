@@ -5242,8 +5242,8 @@ Int CompileFunc(Obj filename, Obj func, Obj name, Int crc, Obj magic2)
 
     // emit code for the functions
     Emit( "\n/* information for the functions */\n" );
-    Emit( "static Obj  NameFunc[%d];\n", compFunctionsNr+1 );
-    Emit( "static Obj FileName;\n" );
+    Emit( "static Obj NameFunc[%d] GAP_GC_GLOBALLY_ROOTED;\n", compFunctionsNr+1 );
+    Emit( "static Obj FileName GAP_GC_GLOBALLY_ROOTED;\n" );
 
 
     // now compile the handlers
