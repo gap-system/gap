@@ -25,7 +25,7 @@
 
 #include <setjmp.h>
 
-static Obj RecordedStats;
+static Obj RecordedStats GAP_GC_GLOBALLY_ROOTED;
 
 // Report the 1 argument operation 'name' was applied to 'op'
 void ReportWrappedOperation1(const char * cname, Obj op)

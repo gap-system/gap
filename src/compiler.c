@@ -523,7 +523,7 @@ typedef UInt    GVar;
 #define COMP_USE_GVAR_COPY      (1 << 1)
 #define COMP_USE_GVAR_FOPY      (1 << 2)
 
-static Bag CompInfoGVar;
+static Bag CompInfoGVar GAP_GC_GLOBALLY_ROOTED;
 
 static void CompSetUseGVar(GVar gvar, UInt mode)
 {
@@ -565,7 +565,7 @@ typedef UInt    RNam;
 
 #define COMP_USE_RNAM_ID        (1 << 0)
 
-static Bag CompInfoRNam;
+static Bag CompInfoRNam GAP_GC_GLOBALLY_ROOTED;
 
 static void CompSetUseRNam(RNam rnam, UInt mode)
 {
@@ -5019,7 +5019,7 @@ static void CompAssert3(Stat stat)
 **  'CompFunc' compiles the function <func>, i.e., it emits  the code for the
 **  handler of the function <func> and the handlers of all its subfunctions.
 */
-static Obj CompFunctions;
+static Obj CompFunctions GAP_GC_GLOBALLY_ROOTED;
 
 static void CompFunc(Obj func)
 {

@@ -145,7 +145,7 @@ EXPORT_INLINE BOOL IS_PERM(Obj f)
 **
 **  'IdentityPerm' is an identity permutation.
 */
-extern  Obj             IdentityPerm;
+extern  Obj             IdentityPerm GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

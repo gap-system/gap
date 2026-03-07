@@ -107,11 +107,11 @@ static const CompilerT Compilers[];
 
 // plain list mapping statement tnums to strings
 // like "EXPR_INT"
-static Obj typeStrings;
+static Obj typeStrings GAP_GC_GLOBALLY_ROOTED;
 
 // plain record mapping strings like "EXPR_INT" to the
 // corresponding statement tnum
-static Obj typeRec;
+static Obj typeRec GAP_GC_GLOBALLY_ROOTED;
 
 
 static Obj ElmRecST(UInt1 tnum, Obj node, const char * name)

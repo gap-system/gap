@@ -80,7 +80,7 @@
 **  'PtrGVars' is a pointer  to the 'ValGVars' bag+1. This makes it faster to
 **  access global variables.
 */
-static Obj   ValGVars[GVAR_BUCKETS];
+static Obj   ValGVars[GVAR_BUCKETS] GAP_GC_GLOBALLY_ROOTED;
 static Obj * PtrGVars[GVAR_BUCKETS];
 #else
 /*
@@ -93,7 +93,7 @@ static Obj * PtrGVars[GVAR_BUCKETS];
 **  'PtrGVars' must be  recalculated afterwards.   This is done in function
 **  'GVarsAfterCollectBags' which is called by 'VarsAfterCollectBags'.
 */
-static Obj   ValGVars;
+static Obj   ValGVars GAP_GC_GLOBALLY_ROOTED;
 static Obj * PtrGVars;
 #endif
 
@@ -143,11 +143,11 @@ inline Obj ValGVar(UInt gvar) {
 *V  FopiesGVars . . . . . . . .  internal function copies of global variables
 */
 #ifdef USE_GVAR_BUCKETS
-static Obj             NameGVars[GVAR_BUCKETS];
-static Obj             FlagsGVars[GVAR_BUCKETS];
-static Obj             ExprGVars[GVAR_BUCKETS];
-static Obj             CopiesGVars[GVAR_BUCKETS];
-static Obj             FopiesGVars[GVAR_BUCKETS];
+static Obj             NameGVars[GVAR_BUCKETS] GAP_GC_GLOBALLY_ROOTED;
+static Obj             FlagsGVars[GVAR_BUCKETS] GAP_GC_GLOBALLY_ROOTED;
+static Obj             ExprGVars[GVAR_BUCKETS] GAP_GC_GLOBALLY_ROOTED;
+static Obj             CopiesGVars[GVAR_BUCKETS] GAP_GC_GLOBALLY_ROOTED;
+static Obj             FopiesGVars[GVAR_BUCKETS] GAP_GC_GLOBALLY_ROOTED;
 
 #define ELM_GVAR_LIST( list, gvar ) \
     ELM_PLIST( list[GVAR_BUCKET(gvar)], GVAR_INDEX(gvar) )
@@ -160,11 +160,11 @@ static Obj             FopiesGVars[GVAR_BUCKETS];
 
 #else   // USE_GVAR_BUCKETS
 
-static Obj             NameGVars;
-static Obj             FlagsGVars;
-static Obj             ExprGVars;
-static Obj             CopiesGVars;
-static Obj             FopiesGVars;
+static Obj             NameGVars GAP_GC_GLOBALLY_ROOTED;
+static Obj             FlagsGVars GAP_GC_GLOBALLY_ROOTED;
+static Obj             ExprGVars GAP_GC_GLOBALLY_ROOTED;
+static Obj             CopiesGVars GAP_GC_GLOBALLY_ROOTED;
+static Obj             FopiesGVars GAP_GC_GLOBALLY_ROOTED;
 
 #define ELM_GVAR_LIST( list, gvar ) \
     ELM_PLIST( list, gvar )
@@ -276,7 +276,7 @@ BOOL IsDeclaredGVar(UInt gvar)
 **  'ErrorMustEvalToFuncHandler'  is  the  handler  that  signals  the  error
 **  ``Function: <func> must be a function''.
 */
-Obj             ErrorMustEvalToFuncFunc;
+Obj             ErrorMustEvalToFuncFunc GAP_GC_GLOBALLY_ROOTED;
 
 static Obj ErrorMustEvalToFuncHandler(Obj self, Obj args)
 {
@@ -296,7 +296,7 @@ static Obj ErrorMustEvalToFuncHandler(Obj self, Obj args)
 **  'ErrorMustHaveAssObjHandler'  is  the  handler  that  signals  the  error
 **  ``Variable: <<unknown>> must have an assigned value''.
 */
-Obj             ErrorMustHaveAssObjFunc;
+Obj             ErrorMustHaveAssObjFunc GAP_GC_GLOBALLY_ROOTED;
 
 static Obj ErrorMustHaveAssObjHandler(Obj self, Obj args)
 {

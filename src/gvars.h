@@ -53,7 +53,7 @@ Obj ValGVar(UInt gvar);
 **  'ErrorMustEvalToFuncFunc' is a (variable number of  args)  function  that
 **  signals the error ``Function Calls: <func> must be a function''.
 */
-extern Obj ErrorMustEvalToFuncFunc;
+extern Obj ErrorMustEvalToFuncFunc GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -63,7 +63,7 @@ extern Obj ErrorMustEvalToFuncFunc;
 **  'ErrorMustHaveAssObjFunc' is a (variable number of  args)  function  that
 **  signals the error ``Variable: <<unknown>> must have an assigned value''.
 */
-extern Obj ErrorMustHaveAssObjFunc;
+extern Obj ErrorMustHaveAssObjFunc GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

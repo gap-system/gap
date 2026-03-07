@@ -81,7 +81,7 @@ static Obj Is8BitMatrixRep GAP_GC_GLOBALLY_ROOTED;
 **  This list caches the field info used for the fast arithmetic
 */
 
-static Obj FieldInfo8Bit;
+static Obj FieldInfo8Bit GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

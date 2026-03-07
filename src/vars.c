@@ -55,7 +55,7 @@
 **  have to check for the bottom, slowing it down.
 **
 */
-static Bag BottomLVars;
+static Bag BottomLVars GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

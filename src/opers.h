@@ -74,7 +74,7 @@ enum OperExtras {
 **
 *V  TRY_NEXT_METHOD . . . . . . . . . . . . . . . . .  'TRY_NEXT_METHOD' flag
 */
-extern Obj TRY_NEXT_METHOD;
+extern Obj TRY_NEXT_METHOD GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -518,7 +518,7 @@ Obj NewAndFilter(Obj oper1, Obj oper2);
 **
 *V  ReturnTrueFilter . . . . . . . . . . . . . . . . the return 'true' filter
 */
-extern Obj ReturnTrueFilter;
+extern Obj ReturnTrueFilter GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

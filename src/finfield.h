@@ -134,7 +134,7 @@ GAP_STATIC_ASSERT(FIELD_BITS_FFE + VAL_BITS_FFE + 3 <= 8*sizeof(Obj),
 #define SUCC_FF(ff)             ((const FFV*)(1+CONST_ADDR_OBJ( ELM_PLIST( SuccFF, ff ) )))
 #endif
 
-extern  Obj             SuccFF;
+extern  Obj             SuccFF GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

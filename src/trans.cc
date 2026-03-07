@@ -181,7 +181,7 @@ static ModuleStateOffset TransStateOffset = -1;
 typedef struct {
 #endif
     // TmpTrans is essentially the same as TmpPerm
-    DECL_MODULE_STATE Obj TmpTrans;
+    DECL_MODULE_STATE Obj TmpTrans GAP_GC_GLOBALLY_ROOTED;
 #ifdef HPCGAP
 } TransModuleState;
 
@@ -201,7 +201,7 @@ static inline UInt4 * AddrTmpTrans(void)
 **  'IdentityTrans' is an identity transformation.
 */
 // mp this will become a ReadOnly object?
-static Obj IdentityTrans;
+static Obj IdentityTrans GAP_GC_GLOBALLY_ROOTED;
 
 /*******************************************************************************
 ** Forward declarations

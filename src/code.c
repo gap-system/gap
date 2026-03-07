@@ -47,10 +47,10 @@ GAP_STATIC_ASSERT(sizeof(StatHeader) == 8, "StatHeader has wrong size");
 #ifdef HPCGAP
 struct CodeModuleState {
 #endif
-DECL_MODULE_STATE Bag StackStat;
+DECL_MODULE_STATE Bag StackStat GAP_GC_GLOBALLY_ROOTED;
 DECL_MODULE_STATE Int CountStat;
 
-DECL_MODULE_STATE Bag StackExpr;
+DECL_MODULE_STATE Bag StackExpr GAP_GC_GLOBALLY_ROOTED;
 DECL_MODULE_STATE Int CountExpr;
 #ifdef HPCGAP
 };

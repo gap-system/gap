@@ -1046,7 +1046,7 @@ static Obj EvalStringExpr(Expr expr)
 **  value.
 */
 static Obj CONVERT_FLOAT_LITERAL;
-static Obj FLOAT_LITERAL_CACHE;
+static Obj FLOAT_LITERAL_CACHE GAP_GC_GLOBALLY_ROOTED;
 static Obj MAX_FLOAT_LITERAL_CACHE_SIZE;
 
 static Obj EvalFloatExprLazy(Expr expr)

@@ -71,15 +71,15 @@ extern "C" {
 **
 *V  TRY_NEXT_METHOD . . . . . . . . . . . . . . . . .  'TRY_NEXT_METHOD' flag
 */
-Obj TRY_NEXT_METHOD;
+Obj TRY_NEXT_METHOD GAP_GC_GLOBALLY_ROOTED;
 
 
 #define CACHE_SIZE 5
 
 
-static Obj StringFilterSetter;
-static Obj ArglistObjVal;
-static Obj ArglistObj;
+static Obj StringFilterSetter GAP_GC_GLOBALLY_ROOTED;
+static Obj ArglistObjVal GAP_GC_GLOBALLY_ROOTED;
+static Obj ArglistObj GAP_GC_GLOBALLY_ROOTED;
 
 
 static Obj SetterAndFilter(Obj getter);
@@ -683,8 +683,8 @@ static void StoreHashTable(Obj ht, Int hash, Obj new_with, Obj new_flags)
 }
 
 
-static Obj HIDDEN_IMPS;
-static Obj WITH_HIDDEN_IMPS_FLAGS_CACHE;
+static Obj HIDDEN_IMPS GAP_GC_GLOBALLY_ROOTED;
+static Obj WITH_HIDDEN_IMPS_FLAGS_CACHE GAP_GC_GLOBALLY_ROOTED;
 enum { HIDDEN_IMPS_CACHE_LENGTH = 20003 };
 
 // Forward declaration of FuncFLAGS_FILTER
@@ -806,9 +806,9 @@ static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 }
 
 
-static Obj IMPLICATIONS_SIMPLE;
-static Obj IMPLICATIONS_COMPOSED;
-static Obj WITH_IMPS_FLAGS_CACHE;
+static Obj IMPLICATIONS_SIMPLE GAP_GC_GLOBALLY_ROOTED;
+static Obj IMPLICATIONS_COMPOSED GAP_GC_GLOBALLY_ROOTED;
+static Obj WITH_IMPS_FLAGS_CACHE GAP_GC_GLOBALLY_ROOTED;
 enum { IMPS_CACHE_LENGTH = 21001 };
 
 /****************************************************************************
@@ -1217,7 +1217,7 @@ static Obj FuncIS_AND_FILTER(Obj self, Obj filt)
 **
 *V  ReturnTrueFilter . . . . . . . . . . . . . . . . the return 'true' filter
 */
-Obj ReturnTrueFilter;
+Obj ReturnTrueFilter GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

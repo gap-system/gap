@@ -120,7 +120,7 @@ static void PushObj(IntrState * intr, Obj val)
  * The only place other than these methods which access the stack is
  * the permutation reader, but it only directly accesses values it wrote,
  * so it will not see this magic value. */
-static Obj VoidReturnMarker;
+static Obj VoidReturnMarker GAP_GC_GLOBALLY_ROOTED;
 
 static void PushFunctionVoidReturn(IntrState * intr)
 {

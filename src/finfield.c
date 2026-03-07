@@ -43,9 +43,9 @@
 **  TypeFF0 holds the types of the zero elements of the finite fields.
 */
 
-Obj SuccFF;
-static Obj TypeFF;
-static Obj TypeFF0;
+Obj SuccFF GAP_GC_GLOBALLY_ROOTED;
+static Obj TypeFF GAP_GC_GLOBALLY_ROOTED;
+static Obj TypeFF0 GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -1245,7 +1245,7 @@ static Obj FuncLOG_FFE_DEFAULT(Obj self, Obj opZ, Obj opR)
 **  element <z>, which must of course be  an element  of a prime field, i.e.,
 **  the smallest integer <i> such that '<i> * <z>^0 = <z>'.
 */
-static Obj IntFF;
+static Obj IntFF GAP_GC_GLOBALLY_ROOTED;
 #ifdef HPCGAP
 static Int NumFF;
 #endif

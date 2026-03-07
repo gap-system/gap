@@ -113,7 +113,7 @@ static inline UInt DEG_PPERM(Obj f)
 
 #define IMAGEPP(i, ptf, deg) (i <= deg ? ptf[i - 1] : 0)
 
-static Obj EmptyPartialPerm;
+static Obj EmptyPartialPerm GAP_GC_GLOBALLY_ROOTED;
 
 #define RequirePartialPerm(funcname, op)                                     \
     RequireArgumentCondition(funcname, op, IS_PPERM(op),                     \
@@ -138,7 +138,7 @@ typedef struct {
      * The buffer is *not* guaranteed to have any particular value, routines
      * that require a zero-initialization need to do this at the start.
      */
-    DECL_MODULE_STATE Obj TmpPPerm;
+    DECL_MODULE_STATE Obj TmpPPerm GAP_GC_GLOBALLY_ROOTED;
 
 #ifdef HPCGAP
 } PPermModuleState;

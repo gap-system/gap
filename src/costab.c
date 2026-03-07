@@ -26,20 +26,20 @@
 **
 *V  declaration of static variables
 */
-static Obj      objRel;                 // handle of a relator
-static Obj      objNums;                // handle of parallel numbers list
-static Obj      objTable;               // handle of the coset table
-static Obj      objTable2;              // handle of coset factor table
-static Obj      objNext;
-static Obj      objPrev;
-static Obj      objFactor;
-static Obj      objTree;                // handle of subgroup gens tree
+static Obj      objRel GAP_GC_GLOBALLY_ROOTED;                 // handle of a relator
+static Obj      objNums GAP_GC_GLOBALLY_ROOTED;                // handle of parallel numbers list
+static Obj      objTable GAP_GC_GLOBALLY_ROOTED;               // handle of the coset table
+static Obj      objTable2 GAP_GC_GLOBALLY_ROOTED;              // handle of coset factor table
+static Obj      objNext GAP_GC_GLOBALLY_ROOTED;
+static Obj      objPrev GAP_GC_GLOBALLY_ROOTED;
+static Obj      objFactor GAP_GC_GLOBALLY_ROOTED;
+static Obj      objTree GAP_GC_GLOBALLY_ROOTED;                // handle of subgroup gens tree
 
-static Obj      objTree1;               // first tree component
-static Obj      objTree2;               // second tree component
+static Obj      objTree1 GAP_GC_GLOBALLY_ROOTED;               // first tree component
+static Obj      objTree2 GAP_GC_GLOBALLY_ROOTED;               // second tree component
 
-static Obj      objExponent;            // handle of subgroup order
-static Obj      objWordValue;           // handle of word value
+static Obj      objExponent GAP_GC_GLOBALLY_ROOTED;            // handle of subgroup order
+static Obj      objWordValue GAP_GC_GLOBALLY_ROOTED;           // handle of word value
 
 static Int      treeType;               // tree type
 static Int      treeWordLength;         // maximal tree word length

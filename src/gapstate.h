@@ -45,13 +45,13 @@ typedef struct GAPState {
 #endif
 
     // From intrprtr.c
-    DECL_GAP_STATE Obj Tilde;
+    DECL_GAP_STATE Obj Tilde GAP_GC_GLOBALLY_ROOTED;
 
     // The current assertion level for use in Assert
     DECL_GAP_STATE Int CurrentAssertionLevel;
 
     // From gvar.c
-    DECL_GAP_STATE Obj CurrNamespace;
+    DECL_GAP_STATE Obj CurrNamespace GAP_GC_GLOBALLY_ROOTED;
 
     // From vars.c
 
@@ -61,7 +61,7 @@ typedef struct GAPState {
     // Assignments to the local variables change this bag. We do not call
     // 'CHANGED_BAG' for each of such change. Instead we wait until a garbage
     // collection begins and then call 'CHANGED_BAG' in 'BeginCollectBags'.
-    DECL_GAP_STATE Bag CurrLVars;
+    DECL_GAP_STATE Bag CurrLVars GAP_GC_GLOBALLY_ROOTED;
 
     // 'PtrLVars' is a pointer to the 'STATE(CurrLVars)' bag. This makes it
     // faster to access local variables.
@@ -70,7 +70,7 @@ typedef struct GAPState {
     // 'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
     DECL_GAP_STATE Obj * PtrLVars;
 
-    DECL_GAP_STATE Bag LVarsPool[16];
+    DECL_GAP_STATE Bag LVarsPool[16] GAP_GC_GLOBALLY_ROOTED;
 
     // From read.c
     DECL_GAP_STATE jmp_buf ReadJmpError;
@@ -88,7 +88,7 @@ typedef struct GAPState {
     // `ReturnObjStat` is the result of the return-statement that was last
     // executed. It is set in `ExecReturnObj` and used in the handlers that
     // interpret functions.
-    DECL_GAP_STATE Obj ReturnObjStat;
+    DECL_GAP_STATE Obj ReturnObjStat GAP_GC_GLOBALLY_ROOTED;
 
     DECL_GAP_STATE ExecStatFunc * CurrExecStatFuncs;
 
@@ -108,7 +108,7 @@ typedef struct GAPState {
     // Set by `FuncJUMP_TO_CATCH` to the value of its second argument, and
     // and then later extracted by `CALL_WITH_CATCH`. Not currently used by
     // the GAP kernel itself, as far as I can tell.
-    DECL_GAP_STATE Obj ThrownObject;
+    DECL_GAP_STATE Obj ThrownObject GAP_GC_GLOBALLY_ROOTED;
 
     // Set to TRUE when a read-eval-loop encounters a `quit` statement.
     DECL_GAP_STATE BOOL UserHasQuit;
@@ -119,7 +119,7 @@ typedef struct GAPState {
     // Set by the primary read-eval loop in `FuncSHELL`, based on the value of
     // `ErrorLLevel`. Also, `ReadEvalCommand` saves and restores this value
     // before executing code.
-    DECL_GAP_STATE Obj ErrorLVars;
+    DECL_GAP_STATE Obj ErrorLVars GAP_GC_GLOBALLY_ROOTED;
 
     // Records where on the stack `ErrorLVars` is relative to the top; this is
     // modified by `FuncDownEnv` / `FuncUpEnv`, and ultimately used and

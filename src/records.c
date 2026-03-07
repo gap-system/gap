@@ -32,7 +32,7 @@
 
 static SymbolTable RNamSymbolTable;
 
-static Obj NamesRNam;
+static Obj NamesRNam GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **

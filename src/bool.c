@@ -30,7 +30,7 @@
 **
 **   'True' is the value 'true'.
 */
-Obj True;
+Obj True GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -39,7 +39,7 @@ Obj True;
 **
 **  'False' is the value 'false'.
 */
-Obj False;
+Obj False GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -48,7 +48,7 @@ Obj False;
 **
 **  'Fail' is the value 'fail'.
 */
-Obj Fail;
+Obj Fail GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
@@ -58,7 +58,7 @@ Obj Fail;
 **  where the kernel cannot handle a null reference easily. This object is
 **  never exposed to GAP code and only used within the kernel.
 */
-Obj Undefined;
+Obj Undefined GAP_GC_GLOBALLY_ROOTED;
 
 
 

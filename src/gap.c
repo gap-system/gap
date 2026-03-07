@@ -561,7 +561,7 @@ static Obj FuncSizeScreen(Obj self, Obj args)
 **
 *F  FuncWindowCmd( <self>, <args> ) . . . . . . . .  execute a window command
 */
-static Obj WindowCmdString;
+static Obj WindowCmdString GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncWindowCmd(Obj self, Obj args)
 {
@@ -1068,7 +1068,7 @@ static Obj FuncSHOULD_QUIT_ON_BREAK(Obj self)
 ** The general idea is to put all kernel-specific info in here, and clean up
 ** the assortment of global variables previously used
 */
-static Obj KernelArgs;
+static Obj KernelArgs GAP_GC_GLOBALLY_ROOTED;
 
 static void InitKernelArgs(int argc, const char * argv[])
 {

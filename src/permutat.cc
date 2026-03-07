@@ -79,7 +79,7 @@ extern "C" {
 **
 **  'IdentityPerm' is an identity permutation.
 */
-Obj             IdentityPerm;
+Obj             IdentityPerm GAP_GC_GLOBALLY_ROOTED;
 
 
 static const UInt MAX_DEG_PERM4 = ((Int)1 << (sizeof(UInt) == 8 ? 32 : 28)) - 1;
@@ -104,7 +104,7 @@ typedef struct {
 **  costs (particularly when starting new threads).
 **  Use the UseTmpPerm(<size>) utility function to ensure it is constructed!
 */
-DECL_MODULE_STATE Obj TmpPerm;
+DECL_MODULE_STATE Obj TmpPerm GAP_GC_GLOBALLY_ROOTED;
 
 #ifdef HPCGAP
 } PermutatModuleState;

@@ -40,7 +40,7 @@
 **  'ObjsChar' contains all the character values.  That way we do not need to
 **  allocate new bags for new characters.
 */
-extern Obj ObjsChar[256];
+extern Obj ObjsChar[256] GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

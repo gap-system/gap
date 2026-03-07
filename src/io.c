@@ -71,7 +71,7 @@ static Obj SetPrintFormattingStatus;
 **
 **  'FilenameCache' is a list of previously opened filenames.
 */
-static Obj FilenameCache;
+static Obj FilenameCache GAP_GC_GLOBALLY_ROOTED;
 static SymbolTable FilenameSymbolTable;
 
 enum {
@@ -105,8 +105,8 @@ struct IOModuleState {
     // this file.
     DECL_MODULE_STATE TypOutputFile * OutputLog;
 
-    DECL_MODULE_STATE TypOutputFile InputLogFileOrStream;
-    DECL_MODULE_STATE TypOutputFile OutputLogFileOrStream;
+    DECL_MODULE_STATE TypOutputFile InputLogFileOrStream GAP_GC_GLOBALLY_ROOTED;
+    DECL_MODULE_STATE TypOutputFile OutputLogFileOrStream GAP_GC_GLOBALLY_ROOTED;
 
     DECL_MODULE_STATE TypOutputFile DefaultOutput;
 

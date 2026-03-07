@@ -159,7 +159,7 @@ struct CycModuleState {
 **  It is created in 'InitCyc' with room for up to 1000 coefficients  and  is
 **  resized when need arises.
 */
-DECL_MODULE_STATE Obj ResultCyc;
+DECL_MODULE_STATE Obj ResultCyc GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
@@ -179,7 +179,7 @@ DECL_MODULE_STATE Obj ResultCyc;
 **  is called to compute $e_n^i$ and can then do this easier by just  putting
 **  1 at the <i>th place in 'ResultCyc' and then calling 'Cyclotomic'.
 */
-DECL_MODULE_STATE Obj  LastECyc;
+DECL_MODULE_STATE Obj  LastECyc GAP_GC_GLOBALLY_ROOTED;
 DECL_MODULE_STATE UInt LastNCyc;
 
 #ifdef HPCGAP

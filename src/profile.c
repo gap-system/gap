@@ -106,7 +106,7 @@
 ** Store the current state of the profiler
 */
 
-static Obj OutputtedFilenameList;
+static Obj OutputtedFilenameList GAP_GC_GLOBALLY_ROOTED;
 
 struct StatementLocation
 {
@@ -162,7 +162,7 @@ static struct ProfileState
   // a longjmp.
   // We need to store the actual values, as RecursionDepth can increase
   // by more than one when a GAP function is called
-  Obj visitedDepths;
+  Obj visitedDepths GAP_GC_GLOBALLY_ROOTED;
 } profileState;
 
 // Some GAP functionality (such as syntaxtree) evaluates expressions, which makes
