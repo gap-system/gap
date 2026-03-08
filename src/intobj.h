@@ -160,7 +160,7 @@ EXPORT_INLINE int DETECT_INTOBJ_OVERFLOW(UInt o) GAP_GC_NOTSAFEPOINT
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The sum itself is stored in <o>.
 */
-EXPORT_INLINE int sum_intobjs(Obj * o, Obj l, Obj r)
+EXPORT_INLINE int sum_intobjs(Obj * o, Obj l, Obj r) GAP_GC_NOTSAFEPOINT
 {
     const Int tmp = (Int)l + (Int)r - 1;
     if (DETECT_INTOBJ_OVERFLOW(tmp))
@@ -179,7 +179,7 @@ EXPORT_INLINE int sum_intobjs(Obj * o, Obj l, Obj r)
 **  <l> and <r> can be stored as (immediate) integer object  and 0 otherwise.
 **  The difference itself is stored in <o>.
 */
-EXPORT_INLINE int diff_intobjs(Obj * o, Obj l, Obj r)
+EXPORT_INLINE int diff_intobjs(Obj * o, Obj l, Obj r) GAP_GC_NOTSAFEPOINT
 {
     const Int tmp = (Int)l - (Int)r + 1;
     if (DETECT_INTOBJ_OVERFLOW(tmp))
@@ -218,7 +218,7 @@ EXPORT_INLINE int diff_intobjs(Obj * o, Obj l, Obj r)
 
 
 #ifdef HAVE___BUILTIN_MUL_OVERFLOW
-EXPORT_INLINE Obj prod_intobjs(Int l, Int r)
+EXPORT_INLINE Obj prod_intobjs(Int l, Int r) GAP_GC_NOTSAFEPOINT
 {
     Int prod;
     if (__builtin_mul_overflow(l >> 1, r ^ 1, &prod))
@@ -233,7 +233,7 @@ EXPORT_INLINE Obj prod_intobjs(Int l, Int r)
 #define HalfInt Int2
 #endif
 
-EXPORT_INLINE Obj prod_intobjs(Int l, Int r)
+EXPORT_INLINE Obj prod_intobjs(Int l, Int r) GAP_GC_NOTSAFEPOINT
 {
     if (l == (Int)INTOBJ_INT(0) || r == (Int)INTOBJ_INT(0))
         return INTOBJ_INT(0);

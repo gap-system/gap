@@ -37,7 +37,7 @@ BOOL IsBottomLVars(Obj lvars);
 *F  IS_LVARS_OR_HVARS()
 **
 */
-EXPORT_INLINE BOOL IS_LVARS_OR_HVARS(Obj obj)
+EXPORT_INLINE BOOL IS_LVARS_OR_HVARS(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     UInt tnum = TNUM_OBJ(obj);
     return tnum == T_LVARS || tnum == T_HVARS;
@@ -55,12 +55,12 @@ typedef struct {
 *F  FUNC_LVARS . . . . . . . . . . . function to which the given lvars belong
 **
 */
-EXPORT_INLINE Obj FUNC_LVARS_PTR(const void * lvars_ptr)
+EXPORT_INLINE Obj FUNC_LVARS_PTR(const void * lvars_ptr) GAP_GC_NOTSAFEPOINT
 {
     return ((const LVarsHeader *)lvars_ptr)->func;
 }
 
-EXPORT_INLINE Obj FUNC_LVARS(Obj lvars_obj)
+EXPORT_INLINE Obj FUNC_LVARS(Obj lvars_obj) GAP_GC_NOTSAFEPOINT
 {
     return FUNC_LVARS_PTR(CONST_ADDR_OBJ(lvars_obj));
 }
@@ -71,12 +71,12 @@ EXPORT_INLINE Obj FUNC_LVARS(Obj lvars_obj)
 *F  STAT_LVARS . . . . . . . current statement in function of the given lvars
 **
 */
-EXPORT_INLINE Expr STAT_LVARS_PTR(const void * lvars_ptr)
+EXPORT_INLINE Expr STAT_LVARS_PTR(const void * lvars_ptr) GAP_GC_NOTSAFEPOINT
 {
     return ((const LVarsHeader *)lvars_ptr)->stat;
 }
 
-EXPORT_INLINE Expr STAT_LVARS(Obj lvars_obj)
+EXPORT_INLINE Expr STAT_LVARS(Obj lvars_obj) GAP_GC_NOTSAFEPOINT
 {
     return STAT_LVARS_PTR(CONST_ADDR_OBJ(lvars_obj));
 }
@@ -87,12 +87,12 @@ EXPORT_INLINE Expr STAT_LVARS(Obj lvars_obj)
 *F  PARENT_LVARS . . . . . . . . . . . . . .  parent lvars of the given lvars
 **
 */
-EXPORT_INLINE Obj PARENT_LVARS_PTR(const void * lvars_ptr)
+EXPORT_INLINE Obj PARENT_LVARS_PTR(const void * lvars_ptr) GAP_GC_NOTSAFEPOINT
 {
     return ((const LVarsHeader *)lvars_ptr)->parent;
 }
 
-EXPORT_INLINE Obj PARENT_LVARS(Obj lvars_obj)
+EXPORT_INLINE Obj PARENT_LVARS(Obj lvars_obj) GAP_GC_NOTSAFEPOINT
 {
     return PARENT_LVARS_PTR(CONST_ADDR_OBJ(lvars_obj));
 }
@@ -107,7 +107,7 @@ EXPORT_INLINE Obj PARENT_LVARS(Obj lvars_obj)
 **  This  is  in this package,  because  it is stored   along  with the local
 **  variables in the local variables bag.
 */
-EXPORT_INLINE Obj CURR_FUNC(void)
+EXPORT_INLINE Obj CURR_FUNC(void) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_LVARS_OR_HVARS(STATE(CurrLVars)));
     GAP_ASSERT(STATE(PtrLVars) == PTR_BAG(STATE(CurrLVars)));
@@ -119,7 +119,7 @@ EXPORT_INLINE Obj CURR_FUNC(void)
 **
 *F  SET_BRK_CALL_TO(expr) . . . set expr. which was called from current frame
 */
-EXPORT_INLINE void SET_BRK_CALL_TO(Expr expr)
+EXPORT_INLINE void SET_BRK_CALL_TO(Expr expr) GAP_GC_NOTSAFEPOINT
 {
     ((LVarsHeader *)STATE(PtrLVars))->stat = expr;
 }
@@ -139,7 +139,8 @@ void FreeLVarsBag(Bag bag);
 *F  MakeHighVars( <bag> ) . . turn all frames on the stack into high vars
 */
 
-EXPORT_INLINE void MakeHighVars( Bag bag ) {
+EXPORT_INLINE void MakeHighVars(Bag bag) GAP_GC_NOTSAFEPOINT
+{
   while (bag && TNUM_OBJ(bag) == T_LVARS) {
     RetypeBag(bag, T_HVARS);
     bag = PARENT_LVARS(bag);

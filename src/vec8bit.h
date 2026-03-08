@@ -83,7 +83,7 @@ Obj GetFieldInfo8Bit(UInt q);
 **  'LEN_VEC8BIT' returns the logical length of the 8bit GFQ vector <list>,
 **  as a C integer.
 */
-EXPORT_INLINE UInt LEN_VEC8BIT(Obj list)
+EXPORT_INLINE UInt LEN_VEC8BIT(Obj list) GAP_GC_NOTSAFEPOINT
 {
     return (UInt)CONST_ADDR_OBJ(list)[1];
 }
@@ -97,7 +97,7 @@ EXPORT_INLINE UInt LEN_VEC8BIT(Obj list)
 **  to the C integer <len>.
 **
 */
-EXPORT_INLINE void SET_LEN_VEC8BIT(Obj list, UInt len)
+EXPORT_INLINE void SET_LEN_VEC8BIT(Obj list, UInt len) GAP_GC_NOTSAFEPOINT
 {
     ADDR_OBJ(list)[1] = (Obj)len;
 }
@@ -110,7 +110,7 @@ EXPORT_INLINE void SET_LEN_VEC8BIT(Obj list, UInt len)
 **  'FIELD_VEC8BIT' returns the field size Q of the 8bit GFQ vector <list>,
 **  as a C integer.
 */
-EXPORT_INLINE UInt FIELD_VEC8BIT(Obj list)
+EXPORT_INLINE UInt FIELD_VEC8BIT(Obj list) GAP_GC_NOTSAFEPOINT
 {
     return (UInt)CONST_ADDR_OBJ(list)[2];
 }
@@ -123,7 +123,7 @@ EXPORT_INLINE UInt FIELD_VEC8BIT(Obj list)
 **  'SET_FIELD_VEC8BIT' sets the field size of the 8bit GFQ vector <vec>,
 **  to the C integer <q>.
 */
-EXPORT_INLINE void SET_FIELD_VEC8BIT(Obj list, UInt q)
+EXPORT_INLINE void SET_FIELD_VEC8BIT(Obj list, UInt q) GAP_GC_NOTSAFEPOINT
 {
     ADDR_OBJ(list)[2] = (Obj)q;
 }
@@ -135,12 +135,12 @@ EXPORT_INLINE void SET_FIELD_VEC8BIT(Obj list, UInt q)
 **
 **  returns a pointer to the start of the data of the 8bit GFQ vector
 */
-EXPORT_INLINE UInt * BLOCKS_VEC8BIT(Obj list)
+EXPORT_INLINE UInt * BLOCKS_VEC8BIT(Obj list) GAP_GC_NOTSAFEPOINT
 {
     return (UInt *)(ADDR_OBJ(list) + 3);
 }
 
-EXPORT_INLINE const UInt * CONST_BLOCKS_VEC8BIT(Obj list)
+EXPORT_INLINE const UInt * CONST_BLOCKS_VEC8BIT(Obj list) GAP_GC_NOTSAFEPOINT
 {
     return (const UInt *)(CONST_ADDR_OBJ(list) + 3);
 }
@@ -152,12 +152,12 @@ EXPORT_INLINE const UInt * CONST_BLOCKS_VEC8BIT(Obj list)
 **
 **  returns a pointer to the start of the data of the 8bit GFQ vector
 */
-EXPORT_INLINE UInt1 * BYTES_VEC8BIT(Obj list)
+EXPORT_INLINE UInt1 * BYTES_VEC8BIT(Obj list) GAP_GC_NOTSAFEPOINT
 {
     return (UInt1 *)BLOCKS_VEC8BIT(list);
 }
 
-EXPORT_INLINE const UInt1 * CONST_BYTES_VEC8BIT(Obj list)
+EXPORT_INLINE const UInt1 * CONST_BYTES_VEC8BIT(Obj list) GAP_GC_NOTSAFEPOINT
 {
     return (const UInt1 *)CONST_BLOCKS_VEC8BIT(list);
 }
@@ -195,94 +195,95 @@ struct FieldInfo8Bit {
 typedef struct FieldInfo8Bit * FieldInfo8BitPtr;
 typedef const struct FieldInfo8Bit * ConstFieldInfo8BitPtr;
 
-EXPORT_INLINE FieldInfo8BitPtr FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE FieldInfo8BitPtr FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return (FieldInfo8BitPtr)ADDR_OBJ(info);
 }
 
-EXPORT_INLINE ConstFieldInfo8BitPtr CONST_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE ConstFieldInfo8BitPtr CONST_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return (ConstFieldInfo8BitPtr)CONST_ADDR_OBJ(info);
 }
 
-EXPORT_INLINE UInt Q_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE UInt Q_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->q;
 }
 
-EXPORT_INLINE UInt P_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE UInt P_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->p;
 }
 
-EXPORT_INLINE UInt D_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE UInt D_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->d;
 }
 
-EXPORT_INLINE UInt ELS_BYTE_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE UInt ELS_BYTE_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->e;
 }
 
-EXPORT_INLINE const Obj *CONST_FFE_FELT_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE const Obj *CONST_FFE_FELT_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->FFE_FELT;
 }
 
-EXPORT_INLINE Obj FFE_FELT_FIELDINFO_8BIT(Obj info, UInt i)
+EXPORT_INLINE Obj FFE_FELT_FIELDINFO_8BIT(Obj info, UInt i) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(i < 256);
     return CONST_FIELDINFO_8BIT(info)->FFE_FELT[i];
 }
 
-EXPORT_INLINE const Obj * GAPSEQ_FELT_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE const Obj * GAPSEQ_FELT_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->GAPSEQ;
 }
 
 EXPORT_INLINE void SET_GAPSEQ_FELT_FIELDINFO_8BIT(Obj info, UInt i, Obj d)
+    GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(i < 256);
     FIELDINFO_8BIT(info)->GAPSEQ[i] = d;
 }
 
-EXPORT_INLINE const UInt1 * FELT_FFE_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE const UInt1 * FELT_FFE_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->FELT_FFE;
 }
 
-EXPORT_INLINE const UInt1 * SETELT_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE const UInt1 * SETELT_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->SETELT;
 }
 
-EXPORT_INLINE const UInt1 * GETELT_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE const UInt1 * GETELT_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->GETELT;
 }
 
-EXPORT_INLINE const UInt1 * SCALAR_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE const UInt1 * SCALAR_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->SCALAR;
 }
 
-EXPORT_INLINE const UInt1 * INNER_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE const UInt1 * INNER_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->INNER;
 }
 
-EXPORT_INLINE const UInt1 * PMULL_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE const UInt1 * PMULL_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->PMULL;
 }
 
-EXPORT_INLINE const UInt1 * PMULU_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE const UInt1 * PMULU_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->PMULU;
 }
 
-EXPORT_INLINE const UInt1 * ADD_FIELDINFO_8BIT(Obj info)
+EXPORT_INLINE const UInt1 * ADD_FIELDINFO_8BIT(Obj info) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FIELDINFO_8BIT(info)->ADD;
 }

@@ -171,7 +171,7 @@ GAP_STATIC_ASSERT(sizeof(UInt) >= 2 * sizeof(FFV),
 **  If $a+b <= o$ we have $a * b ~ z^{a-1} * z^{b-1} = z^{(a+b-1)-1} ~ a+b-1$
 **  otherwise   we   have $a * b ~ z^{(a+b-2)-(o-1)} = z^{(a+b-o)-1} ~ a+b-o$
 */
-EXPORT_INLINE FFV PROD_FFV(FFV a, FFV b, const FFV * f)
+EXPORT_INLINE FFV PROD_FFV(FFV a, FFV b, const FFV * f) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(a <= f[0]);
     GAP_ASSERT(b <= f[0]);
@@ -204,7 +204,7 @@ EXPORT_INLINE FFV PROD_FFV(FFV a, FFV b, const FFV * f)
 **  otherwise we have
 **  $a + b ~ z^{b-1}+z^{a-1} = z^{b-1} * (z^{(a-1)-(b-1)}+1) ~ b * f[a-b+1]$.
 */
-EXPORT_INLINE FFV SUM_FFV(FFV a, FFV b, const FFV * f)
+EXPORT_INLINE FFV SUM_FFV(FFV a, FFV b, const FFV * f) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(a <= f[0]);
     GAP_ASSERT(b <= f[0]);
@@ -235,7 +235,7 @@ EXPORT_INLINE FFV SUM_FFV(FFV a, FFV b, const FFV * f)
 **  otherwise we have
 **  $-a ~ -1 * z^{a-1} = z^{a+(o-1)/2-1} = z^{a+(o-1)/2-1-(o-1)} ~ a-(o-1)/2$
 */
-EXPORT_INLINE FFV NEG_FFV(FFV a, const FFV * f)
+EXPORT_INLINE FFV NEG_FFV(FFV a, const FFV * f) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(a <= f[0]);
     UInt q1 = f[0];
@@ -265,7 +265,7 @@ EXPORT_INLINE FFV NEG_FFV(FFV a, const FFV * f)
 **  If $0 <= a-b$ we have  $a / b ~ z^{a-1} / z^{b-1} = z^{a-b+1-1} ~ a-b+1$,
 **  otherwise   we   have  $a / b ~ z^{a-b+1-1}  =  z^{a-b+(o-1)}   ~ a-b+o$.
 */
-EXPORT_INLINE FFV QUO_FFV(FFV a, FFV b, const FFV * f)
+EXPORT_INLINE FFV QUO_FFV(FFV a, FFV b, const FFV * f) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(a <= f[0]);
     GAP_ASSERT(b <= f[0]);
@@ -294,7 +294,7 @@ EXPORT_INLINE FFV QUO_FFV(FFV a, FFV b, const FFV * f)
 **  If the finite field element is 0 the power is also 0, otherwise  we  have
 **  $a^n ~ (z^{a-1})^n = z^{(a-1)*n} = z^{(a-1)*n % (o-1)} ~ (a-1)*n % (o-1)$
 */
-EXPORT_INLINE FFV POW_FFV(FFV a, UInt n, const FFV * f)
+EXPORT_INLINE FFV POW_FFV(FFV a, UInt n, const FFV * f) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(a <= f[0]);
     GAP_ASSERT(n <= f[0]);
@@ -317,7 +317,7 @@ EXPORT_INLINE FFV POW_FFV(FFV a, UInt n, const FFV * f)
 **  represented.
 **
 */
-EXPORT_INLINE FF FLD_FFE(Obj ffe)
+EXPORT_INLINE FF FLD_FFE(Obj ffe) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_FFE(ffe));
     return (FF)((UInt)(ffe) >> 3) & ((1 << FIELD_BITS_FFE) - 1);
@@ -333,7 +333,7 @@ EXPORT_INLINE FF FLD_FFE(Obj ffe)
 **  and otherwise if <ffe> is $z^i$, it returns $i+1$.
 **
 */
-EXPORT_INLINE FFV VAL_FFE(Obj ffe)
+EXPORT_INLINE FFV VAL_FFE(Obj ffe) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_FFE(ffe));
     return (FFV)((UInt)(ffe) >> (3 + FIELD_BITS_FFE)) &
