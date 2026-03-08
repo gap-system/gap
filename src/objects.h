@@ -523,7 +523,7 @@ void MakeImmutable(Obj obj);
 **  mutability, i.e., in the range FIRST_IMM_MUT_TNUM to LAST_IMM_MUT_TNUM.
 **  It only modifies the TNUM, and does not make subobjects immutable.
 */
-EXPORT_INLINE void MakeImmutableNoRecurse(Obj obj)
+EXPORT_INLINE void MakeImmutableNoRecurse(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     UInt type = TNUM_OBJ(obj);
     GAP_ASSERT((FIRST_IMM_MUT_TNUM <= type) && (type <= LAST_IMM_MUT_TNUM));

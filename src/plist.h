@@ -263,7 +263,7 @@ void AssPlist(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
 **
 */
 EXPORT_INLINE UInt PushPlist(Obj list GAP_GC_ROOTING_ARGUMENT,
-                             Obj val GAP_GC_ROOTED_ARGUMENT)
+                             Obj val GAP_GC_ROOTED_ARGUMENT GAP_GC_MAYBE_UNROOTED)
 {
     const UInt pos = LEN_PLIST(list) + 1;
     GAP_GC_PUSH1(&val);
