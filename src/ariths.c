@@ -803,10 +803,13 @@ ArithMethod2 DiffFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj DiffDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp;
+    Obj                 tmp = 0;
 
+    GAP_GC_PUSH1(&tmp);
     tmp = AINV_SAMEMUT(opR);
-    return SUM( opL, tmp );
+    tmp = SUM( opL, tmp );
+    GAP_GC_POP();
+    return tmp;
 }
 
 
@@ -956,9 +959,12 @@ ArithMethod2 QuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj QuoDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp;
+    Obj                 tmp = 0;
+    GAP_GC_PUSH1(&tmp);
     tmp = INV_SAMEMUT(opR);
-    return PROD( opL, tmp );
+    tmp = PROD( opL, tmp );
+    GAP_GC_POP();
+    return tmp;
 }
 
 
@@ -1043,9 +1049,12 @@ ArithMethod2 LQuoFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj LQuoDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp;
+    Obj                 tmp = 0;
+    GAP_GC_PUSH1(&tmp);
     tmp = INV_SAMEMUT(opL);
-    return PROD( tmp, opR );
+    tmp = PROD( tmp, opR );
+    GAP_GC_POP();
+    return tmp;
 }
 
 
@@ -1130,9 +1139,12 @@ ArithMethod2 PowFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj PowDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp;
+    Obj                 tmp = 0;
+    GAP_GC_PUSH1(&tmp);
     tmp = LQUO( opR, opL );
-    return PROD( tmp, opR );
+    tmp = PROD( tmp, opR );
+    GAP_GC_POP();
+    return tmp;
 }
 
 
@@ -1218,11 +1230,14 @@ ArithMethod2 CommFuncs [LAST_REAL_TNUM+1][LAST_REAL_TNUM+1];
 */
 static Obj CommDefault(Obj opL, Obj opR)
 {
-    Obj                 tmp1;
-    Obj                 tmp2;
+    Obj                 tmp1 = 0;
+    Obj                 tmp2 = 0;
+    GAP_GC_PUSH2(&tmp1, &tmp2);
     tmp1 = PROD( opR, opL );
     tmp2 = PROD( opL, opR );
-    return LQUO( tmp1, tmp2 );
+    tmp1 = LQUO( tmp1, tmp2 );
+    GAP_GC_POP();
+    return tmp1;
 }
 
 
