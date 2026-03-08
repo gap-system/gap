@@ -1100,13 +1100,13 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
     RequireStringRep(SELF_NAME, prg);
     Int iin = GetSmallInt(SELF_NAME, in);
     Int iout = GetSmallInt(SELF_NAME, out);
-    RequireSmallList(SELF_NAME, args);
+    RequirePlainList(SELF_NAME, args);
 
     // create an argument array
-    for (i = 1; i <= LEN_LIST(args); i++) {
+    for (i = 1; i <= LEN_PLIST(args); i++) {
         if (i == 1023)
             break;
-        tmp = ELM_LIST(args, i);
+        tmp = ELM_PLIST(args, i);
         RequireStringRep(SELF_NAME, tmp);
         ExecArgs[i] = tmp;
     }
