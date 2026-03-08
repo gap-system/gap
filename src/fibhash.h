@@ -17,7 +17,7 @@ enum {
     FIB_HASH_BITS = sizeof(void *) * 8,
 };
 
-EXPORT_INLINE UInt FibHash(UInt word, unsigned bits)
+EXPORT_INLINE UInt FibHash(UInt word, unsigned bits) GAP_GC_NOTSAFEPOINT
 {
     const UInt FIB_HASH_MULT = (FIB_HASH_BITS == 64) ? 0x9e3779b97f4a7c13UL : 0x9e3779b9UL;
     return (word * FIB_HASH_MULT) >> (FIB_HASH_BITS - bits);
