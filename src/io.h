@@ -411,7 +411,7 @@ Int GetInputLinePosition(TypInputFile * input);
 UInt GetInputFilenameID(TypInputFile * input);
 
 // get the filename (as GAP string object) with the given id
-Obj GetCachedFilename(UInt id);
+Obj GetCachedFilename(UInt id) GAP_GC_GLOBALLY_ROOTED;
 
 
 // Reset the indentation level of the current output to zero. The indentation
@@ -476,4 +476,3 @@ void FlushRestOfInputLine(TypInputFile * input);
 StructInitInfo * InitInfoIO(void);
 
 #endif // GAP_IO_H
-

@@ -44,19 +44,19 @@
         "must be a macfloat")
 
 
-Double VAL_MACFLOAT(Obj obj)
+Double VAL_MACFLOAT(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     Double val;
     memcpy(&val, CONST_ADDR_OBJ(obj), sizeof(Double));
     return val;
 }
 
-void SET_VAL_MACFLOAT(Obj obj, Double val)
+void SET_VAL_MACFLOAT(Obj obj, Double val) GAP_GC_NOTSAFEPOINT
 {
     memcpy(ADDR_OBJ(obj), &val, sizeof(Double));
 }
 
-BOOL IS_MACFLOAT(Obj obj)
+BOOL IS_MACFLOAT(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return TNUM_OBJ(obj) == T_MACFLOAT;
 }
@@ -72,7 +72,7 @@ BOOL IS_MACFLOAT(Obj obj)
 */
 static Obj TYPE_MACFLOAT GAP_GC_GLOBALLY_ROOTED;
 
-static Obj TypeMacfloat(Obj val)
+static Obj TypeMacfloat(Obj val) GAP_GC_NOTSAFEPOINT
 {
     return TYPE_MACFLOAT;
 }
@@ -140,7 +140,7 @@ static void PrintMacfloat(Obj x)
 **  'EqMacfloat' returns 'True' if the two macfloatean values <macfloatL> and <macfloatR> are
 **  equal, and 'False' otherwise.
 */
-static Int EqMacfloat(Obj macfloatL, Obj macfloatR)
+static Int EqMacfloat(Obj macfloatL, Obj macfloatR) GAP_GC_NOTSAFEPOINT
 {
   return VAL_MACFLOAT(macfloatL) == VAL_MACFLOAT(macfloatR);
 }
@@ -156,7 +156,7 @@ static Obj FuncEQ_MACFLOAT(Obj self, Obj macfloatL, Obj macfloatR)
 *F  LtMacfloat( <macfloatL>, <macfloatR> )  . . . . . . . . .  test if <macfloatL> <  <macfloatR>
 **
 */
-static Int LtMacfloat(Obj macfloatL, Obj macfloatR)
+static Int LtMacfloat(Obj macfloatL, Obj macfloatR) GAP_GC_NOTSAFEPOINT
 {
   return VAL_MACFLOAT(macfloatL) < VAL_MACFLOAT(macfloatR);
 }
@@ -472,6 +472,7 @@ static Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
   int str_len = (int) (log(fabs(f)) / log(16.0)) + 3;
 
   Obj str = NEW_STRING(str_len);
+  GAP_GC_PUSH1(&str);
   char *s = CSTR_STRING(str), *p = s+str_len-1;
   if (f < 0.0) {
     f = -f;
@@ -482,7 +483,9 @@ static Obj FuncINTFLOOR_MACFLOAT(Obj self, Obj macfloat)
     *p-- = d < 10 ? '0'+d : 'a'+d-10;
     f /= 16.0;
   }
-  return IntHexString(str);
+  str = IntHexString(str);
+  GAP_GC_POP();
+  return str;
 }
 
 static Obj FuncSTRING_DIGITS_MACFLOAT(Obj self, Obj gapprec, Obj f)
@@ -506,10 +509,12 @@ static Obj FuncFREXP_MACFLOAT(Obj self, Obj f)
 {
   int i;
   Obj d = NEW_MACFLOAT(frexp (VAL_MACFLOAT(f), &i));
+  GAP_GC_PUSH1(&d);
   Obj l = NEW_PLIST(T_PLIST,2);
   SET_ELM_PLIST(l,1,d);
   SET_ELM_PLIST(l,2,INTOBJ_INT(i));
   SET_LEN_PLIST(l,2);
+  GAP_GC_POP();
   return l;
 }
 

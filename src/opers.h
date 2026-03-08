@@ -470,7 +470,7 @@ EXPORT_INLINE void SET_ELM_FLAGS(Obj list, UInt pos) GAP_GC_NOTSAFEPOINT
 **
 *F  IS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . . . subset test
 */
-BOOL IS_SUBSET_FLAGS(Obj flags1, Obj flags2);
+BOOL IS_SUBSET_FLAGS(Obj flags1, Obj flags2) GAP_GC_NOTSAFEPOINT;
 
 
 /****************************************************************************

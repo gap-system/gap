@@ -250,7 +250,7 @@ EXPORT_INLINE BOOL IS_PLIST_MUTABLE(Obj list) GAP_GC_NOTSAFEPOINT
 *F  AssPlist( <list>, <pos>, <val>) . . . . . . . . .  assign to a plain list
 */
 void AssPlist(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
-              Obj val GAP_GC_ROOTED_ARGUMENT);
+              Obj val GAP_GC_ROOTED_ARGUMENT GAP_GC_MAYBE_UNROOTED);
 
 /****************************************************************************
 **

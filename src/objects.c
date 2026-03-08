@@ -903,7 +903,7 @@ static Obj FuncGET_TNAM_FROM_TNUM(Obj self, Obj obj)
 
 // This function is used to keep track of which objects are already
 // being printed or viewed to trigger the use of ~ when needed.
-static inline BOOL IS_ON_PRINT_STACK(Obj obj)
+static inline BOOL IS_ON_PRINT_STACK(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     if (!(FIRST_RECORD_TNUM <= TNUM_OBJ(obj) &&
           TNUM_OBJ(obj) <= LAST_LIST_TNUM))

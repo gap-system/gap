@@ -40,13 +40,13 @@ static Obj TypeObjMap(Obj obj)
     return TYPE_OBJMAP;
 }
 
-static inline BOOL IS_OBJSET(Obj obj)
+static inline BOOL IS_OBJSET(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     UInt tnum = TNUM_OBJ(obj);
     return tnum == T_OBJSET || tnum == T_OBJSET + IMMUTABLE;
 }
 
-static inline BOOL IS_OBJMAP(Obj obj)
+static inline BOOL IS_OBJMAP(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     UInt tnum = TNUM_OBJ(obj);
     return tnum == T_OBJMAP || tnum == T_OBJMAP + IMMUTABLE;

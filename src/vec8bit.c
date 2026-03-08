@@ -3337,26 +3337,26 @@ static BOOL IS_MAT8BIT_REP(Obj obj)
            True == DoFilter(Is8BitMatrixRep, obj);
 }
 
-static inline Int LEN_MAT8BIT(Obj mat)
+static inline Int LEN_MAT8BIT(Obj mat) GAP_GC_ROOTING_ARGUMENT
 {
     return INT_INTOBJ(CONST_ADDR_OBJ(mat)[1]);
 }
 
-static inline void SET_LEN_MAT8BIT(Obj mat, Int l)
+static inline void SET_LEN_MAT8BIT(Obj mat, Int l) GAP_GC_ROOTING_ARGUMENT
 {
     GAP_ASSERT(l >= 0);
     GAP_ASSERT(l <= SIZE_OBJ(mat) / sizeof(Obj) - 1);
     ADDR_OBJ(mat)[1] = INTOBJ_INT(l);
 }
 
-static inline Obj ELM_MAT8BIT(Obj mat, Int i)
+static inline Obj ELM_MAT8BIT(Obj mat, Int i) GAP_GC_ROOTING_ARGUMENT
 {
     GAP_ASSERT(i >= 1);
     GAP_ASSERT(i <= SIZE_OBJ(mat) / sizeof(Obj) - 1);
     return CONST_ADDR_OBJ(mat)[i + 1];
 }
 
-static inline void SET_ELM_MAT8BIT(Obj mat, Int i, Obj row)
+static inline void SET_ELM_MAT8BIT(Obj mat, Int i, Obj row) GAP_GC_ROOTING_ARGUMENT
 {
     GAP_ASSERT(i >= 1);
     GAP_ASSERT(i <= SIZE_OBJ(mat) / sizeof(Obj) - 1);
@@ -3364,13 +3364,13 @@ static inline void SET_ELM_MAT8BIT(Obj mat, Int i, Obj row)
     ADDR_OBJ(mat)[i + 1] = row;
 }
 
-static inline UInt FIELD_MAT8BIT(Obj mat)
+static inline UInt FIELD_MAT8BIT(Obj mat) GAP_GC_ROOTING_ARGUMENT
 {
     GAP_ASSERT(IS_MAT8BIT_REP(mat));
     return FIELD_VEC8BIT(ELM_MAT8BIT(mat, 1));
 }
 
-static inline UInt NR_COLS_MAT8BIT(Obj mat)
+static inline UInt NR_COLS_MAT8BIT(Obj mat) GAP_GC_ROOTING_ARGUMENT
 {
     GAP_ASSERT(IS_MAT8BIT_REP(mat));
     return LEN_VEC8BIT(ELM_MAT8BIT(mat, 1));

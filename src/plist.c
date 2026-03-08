@@ -1480,10 +1480,8 @@ static void UnbPlist(Obj list, Int pos)
 **
 **  'AssPlist' is the function in 'AssListFuncs' for plain lists.
 */
-void            AssPlist (
-    Obj                 list GAP_GC_ROOTING_ARGUMENT,
-    Int                 pos,
-    Obj                 val GAP_GC_ROOTED_ARGUMENT )
+void AssPlist(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
+              Obj val GAP_GC_ROOTED_ARGUMENT GAP_GC_MAYBE_UNROOTED)
 {
     // resize the list if necessary
     if ( LEN_PLIST( list ) < pos ) {

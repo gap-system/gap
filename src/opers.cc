@@ -394,7 +394,7 @@ static Int IsSubsetFlagsCalls;
 **
 *F  IS_SUBSET_FLAGS( <flags1>, <flags2> ) . subset test with no safety check
 */
-BOOL IS_SUBSET_FLAGS(Obj flags1, Obj flags2)
+BOOL IS_SUBSET_FLAGS(Obj flags1, Obj flags2) GAP_GC_NOTSAFEPOINT
 {
     Int    len1;
     Int    len2;
