@@ -218,22 +218,30 @@ static Obj FuncRUNTIMES(Obj self)
                      "%s (errno %d)",
                      (Int)strerror(errno), (Int)errno);
     }
-    tmp = buf.ru_utime.tv_sec * 1000 + buf.ru_utime.tv_usec / 1000;
-    ASS_LIST(res, 1, ObjInt_UInt(tmp));
+    {
+        GAP_GC_PUSH1(&res);
+        tmp = buf.ru_utime.tv_sec * 1000 + buf.ru_utime.tv_usec / 1000;
+        AssPlist(res, 1, ObjInt_UInt(tmp));
 
-    tmp = buf.ru_stime.tv_sec * 1000 + buf.ru_stime.tv_usec / 1000;
-    ASS_LIST(res, 2, ObjInt_UInt(tmp));
+        tmp = buf.ru_stime.tv_sec * 1000 + buf.ru_stime.tv_usec / 1000;
+        AssPlist(res, 2, ObjInt_UInt(tmp));
+        GAP_GC_POP();
+    }
 
     if (getrusage(RUSAGE_CHILDREN, &buf)) {
         ErrorMayQuit("RUNTIMES: call to getrusage(RUSAGE_CHILDREN) failed: "
                      "%s (errno %d)",
                      (Int)strerror(errno), (Int)errno);
     }
-    tmp = buf.ru_utime.tv_sec * 1000 + buf.ru_utime.tv_usec / 1000;
-    ASS_LIST(res, 3, ObjInt_UInt(tmp));
+    {
+        GAP_GC_PUSH1(&res);
+        tmp = buf.ru_utime.tv_sec * 1000 + buf.ru_utime.tv_usec / 1000;
+        AssPlist(res, 3, ObjInt_UInt(tmp));
 
-    tmp = buf.ru_stime.tv_sec * 1000 + buf.ru_stime.tv_usec / 1000;
-    ASS_LIST(res, 4, ObjInt_UInt(tmp));
+        tmp = buf.ru_stime.tv_sec * 1000 + buf.ru_stime.tv_usec / 1000;
+        AssPlist(res, 4, ObjInt_UInt(tmp));
+        GAP_GC_POP();
+    }
 
     return res;
 }
@@ -264,7 +272,7 @@ static Obj FuncNanosecondsSinceEpoch(Obj self)
 */
 static Obj FuncNanosecondsSinceEpochInfo(Obj self)
 {
-    Obj          res, tmp;
+    Obj          res;
     Int8         resolution;
     const char * method = "unsupported";
     BOOL         monotonic = FALSE;
@@ -281,10 +289,8 @@ static Obj FuncNanosecondsSinceEpochInfo(Obj self)
 #endif
 
     res = NEW_PREC(4);
-    // Note this has to be "DYN" since we're not passing a
-    // literal but a const char *
-    tmp = MakeImmString(method);
-    AssPRec(res, RNamName("Method"), tmp);
+    GAP_GC_PUSH1(&res);
+    AssPRec(res, RNamName("Method"), MakeImmString(method));
     AssPRec(res, RNamName("Monotonic"), monotonic ? True : False);
     resolution = SyNanosecondsSinceEpochResolution();
     if (resolution > 0) {
@@ -295,6 +301,7 @@ static Obj FuncNanosecondsSinceEpochInfo(Obj self)
         AssPRec(res, RNamName("Resolution"), ObjInt_Int8(-resolution));
         AssPRec(res, RNamName("Reliable"), False);
     }
+    GAP_GC_POP();
     return res;
 }
 

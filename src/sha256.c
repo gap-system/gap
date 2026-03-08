@@ -245,11 +245,13 @@ Obj FuncGAP_SHA256_INIT(Obj self)
     sha256_state_t * sptr;
 
     result = NewBag(T_DATOBJ, sizeof(UInt4) + sizeof(sha256_state_t));
+    GAP_GC_PUSH1(&result);
     SET_TYPE_OBJ(result, GAP_SHA256_State_Type);
 
     sptr = (sha256_state_t *)(&ADDR_OBJ(result)[1]);
     sha256_init(sptr);
 
+    GAP_GC_POP();
     return result;
 }
 
@@ -282,6 +284,7 @@ Obj FuncGAP_SHA256_FINAL(Obj self, Obj state)
                              "must be a SHA256 state");
 
     result = NEW_PLIST(T_PLIST, 8);
+    GAP_GC_PUSH1(&result);
     SET_LEN_PLIST(result, 8);
 
     sptr = (sha256_state_t *)(&ADDR_OBJ(state)[1]);
@@ -292,6 +295,7 @@ Obj FuncGAP_SHA256_FINAL(Obj self, Obj state)
         SET_ELM_PLIST(result, i + 1, ObjInt_UInt(sptr->r[i]));
         CHANGED_BAG(result);
     }
+    GAP_GC_POP();
     return result;
 }
 
@@ -342,11 +346,13 @@ Obj FuncGAP_SHA256_HMAC(Obj self, Obj key, Obj text)
     sha256_final(&st);
 
     result = NEW_PLIST(T_PLIST, 8);
+    GAP_GC_PUSH1(&result);
     SET_LEN_PLIST(result, 8);
     for (i = 0; i < 8; i++) {
         SET_ELM_PLIST(result, i + 1, ObjInt_UInt(st.r[i]));
         CHANGED_BAG(result);
     }
+    GAP_GC_POP();
     return result;
 }
 
