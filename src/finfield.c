@@ -119,8 +119,8 @@ static FF LookupPrimePower(UInt q)
 FF FiniteFieldBySize(UInt q)
 {
     FF    ff;            // finite field, result
-    Obj   tmp;           // temporary bag
-    Obj   succBag;       // successor table bag
+    Obj   tmp = 0;       // temporary bag
+    Obj   succBag = 0;   // successor table bag
     FFV * succ;          // successor table
     FFV * indx;          // index table
     UInt  p;             // characteristic of the field
@@ -160,6 +160,7 @@ FF FiniteFieldBySize(UInt q)
     p = CHAR_FF(ff);
 
     // allocate a bag for the successor table and one for a temporary
+    GAP_GC_PUSH2(&tmp, &succBag);
     tmp = NewKernelBuffer(sizeof(Obj) + q * sizeof(FFV));
     succBag = NewKernelBuffer(sizeof(Obj) + q * sizeof(FFV));
 
@@ -248,6 +249,7 @@ FF FiniteFieldBySize(UInt q)
 #endif
 
     // return the finite field
+    GAP_GC_POP();
     return ff;
 }
 
