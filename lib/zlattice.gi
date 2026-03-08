@@ -1706,7 +1706,7 @@ l := deca( l-1 );
        Error( "first argument must be symmetric Gram matrix\n",
               "usage : Orthog... ( < gram-matrix > \n",
               " [, <\"positive\"> ] [, < integer > ] )" );
-    elif Length( arg[1] ) <> Length( arg[1][1] ) then
+    elif NrRows( arg[1] ) <> NrCols( arg[1] ) then
        Error( "Gram matrix must be quadratic\n",
               "usage : Orthog... ( < gram-matrix >\n",
               " [, <\"positive\"> ] [, < integer > ] )" );
