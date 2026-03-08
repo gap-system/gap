@@ -140,6 +140,7 @@ static Obj CopyRange(Obj list, Int mut)
 
     // make a copy
     copy = NewBag(TNUM_OBJ(list), SIZE_OBJ(list));
+    GAP_GC_PUSH1(&copy);
     if (!mut)
         MakeImmutableNoRecurse(copy);
     ADDR_OBJ(copy)[0] = CONST_ADDR_OBJ(list)[0];
@@ -152,6 +153,7 @@ static Obj CopyRange(Obj list, Int mut)
     ADDR_OBJ(copy)[2] = CONST_ADDR_OBJ(list)[2];
 
     // return the copy
+    GAP_GC_POP();
     return copy;
 }
 
@@ -357,6 +359,7 @@ static Obj ElmsRange(Obj list, Obj poss)
 
         // make the result list
         elms = NEW_PLIST( T_PLIST, lenPoss );
+        GAP_GC_PUSH1(&elms);
         SET_LEN_PLIST( elms, lenPoss );
 
         // loop over the entries of <positions> and select
@@ -385,6 +388,8 @@ static Obj ElmsRange(Obj list, Obj poss)
             SET_ELM_PLIST( elms, i, elm );
 
         }
+
+        GAP_GC_POP();
 
     }
 
