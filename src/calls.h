@@ -106,64 +106,64 @@ typedef struct {
     // additional data follows for operations
 } FuncBag;
 
-EXPORT_INLINE FuncBag * FUNC(Obj func)
+EXPORT_INLINE FuncBag * FUNC(Obj func) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
     return (FuncBag *)ADDR_OBJ(func);
 }
 
-EXPORT_INLINE const FuncBag * CONST_FUNC(Obj func)
+EXPORT_INLINE const FuncBag * CONST_FUNC(Obj func) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
     return (const FuncBag *)CONST_ADDR_OBJ(func);
 }
 
 
-EXPORT_INLINE ObjFunc HDLR_FUNC(Obj func, Int i)
+EXPORT_INLINE ObjFunc HDLR_FUNC(Obj func, Int i) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(0 <= i && i < 8);
     return CONST_FUNC(func)->handlers[i];
 }
 
-EXPORT_INLINE Obj NAME_FUNC(Obj func)
+EXPORT_INLINE Obj NAME_FUNC(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FUNC(func)->name;
 }
 
-EXPORT_INLINE Int NARG_FUNC(Obj func)
+EXPORT_INLINE Int NARG_FUNC(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return INT_INTOBJ(CONST_FUNC(func)->nargs);
 }
 
-EXPORT_INLINE Obj NAMS_FUNC(Obj func)
+EXPORT_INLINE Obj NAMS_FUNC(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FUNC(func)->namesOfArgsAndLocals;
 }
 
 Obj NAMI_FUNC(Obj func, Int i);
 
-EXPORT_INLINE Obj PROF_FUNC(Obj func)
+EXPORT_INLINE Obj PROF_FUNC(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FUNC(func)->prof;
 }
 
-EXPORT_INLINE UInt NLOC_FUNC(Obj func)
+EXPORT_INLINE UInt NLOC_FUNC(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return INT_INTOBJ(CONST_FUNC(func)->nloc);
 }
 
-EXPORT_INLINE Obj BODY_FUNC(Obj func)
+EXPORT_INLINE Obj BODY_FUNC(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FUNC(func)->body;
 }
 
-EXPORT_INLINE Obj ENVI_FUNC(Obj func)
+EXPORT_INLINE Obj ENVI_FUNC(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FUNC(func)->envi;
 }
 
 #ifdef HPCGAP
-EXPORT_INLINE Obj LCKS_FUNC(Obj func)
+EXPORT_INLINE Obj LCKS_FUNC(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return CONST_FUNC(func)->locks;
 }
@@ -171,6 +171,7 @@ EXPORT_INLINE Obj LCKS_FUNC(Obj func)
 #endif
 
 EXPORT_INLINE void SET_HDLR_FUNC(Obj func, Int i, ObjFunc hdlr)
+    GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(0 <= i && i < 8);
     FUNC(func)->handlers[i] = hdlr;
@@ -178,39 +179,40 @@ EXPORT_INLINE void SET_HDLR_FUNC(Obj func, Int i, ObjFunc hdlr)
 
 void SET_NAME_FUNC(Obj func, Obj name);
 
-EXPORT_INLINE void SET_NARG_FUNC(Obj func, Int nargs)
+EXPORT_INLINE void SET_NARG_FUNC(Obj func, Int nargs) GAP_GC_NOTSAFEPOINT
 {
     FUNC(func)->nargs = INTOBJ_INT(nargs);
 }
 
 EXPORT_INLINE void SET_NAMS_FUNC(Obj func, Obj namesOfArgsAndLocals)
+    GAP_GC_NOTSAFEPOINT
 {
     FUNC(func)->namesOfArgsAndLocals = namesOfArgsAndLocals;
 }
 
-EXPORT_INLINE void SET_PROF_FUNC(Obj func, Obj prof)
+EXPORT_INLINE void SET_PROF_FUNC(Obj func, Obj prof) GAP_GC_NOTSAFEPOINT
 {
     FUNC(func)->prof = prof;
 }
 
-EXPORT_INLINE void SET_NLOC_FUNC(Obj func, UInt nloc)
+EXPORT_INLINE void SET_NLOC_FUNC(Obj func, UInt nloc) GAP_GC_NOTSAFEPOINT
 {
     FUNC(func)->nloc = INTOBJ_INT(nloc);
 }
 
-EXPORT_INLINE void SET_BODY_FUNC(Obj func, Obj body)
+EXPORT_INLINE void SET_BODY_FUNC(Obj func, Obj body) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(body) == T_BODY);
     FUNC(func)->body = body;
 }
 
-EXPORT_INLINE void SET_ENVI_FUNC(Obj func, Obj envi)
+EXPORT_INLINE void SET_ENVI_FUNC(Obj func, Obj envi) GAP_GC_NOTSAFEPOINT
 {
     FUNC(func)->envi = envi;
 }
 
 #ifdef HPCGAP
-EXPORT_INLINE void SET_LCKS_FUNC(Obj func, Obj locks)
+EXPORT_INLINE void SET_LCKS_FUNC(Obj func, Obj locks) GAP_GC_NOTSAFEPOINT
 {
     FUNC(func)->locks = locks;
 }
@@ -226,42 +228,42 @@ EXPORT_INLINE void SET_LCKS_FUNC(Obj func, Obj locks)
 BOOL IsKernelFunction(Obj func);
 
 
-EXPORT_INLINE ObjFunc_0ARGS HDLR_0ARGS(Obj func)
+EXPORT_INLINE ObjFunc_0ARGS HDLR_0ARGS(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return (ObjFunc_0ARGS)(void *)HDLR_FUNC(func, 0);
 }
 
-EXPORT_INLINE ObjFunc_1ARGS HDLR_1ARGS(Obj func)
+EXPORT_INLINE ObjFunc_1ARGS HDLR_1ARGS(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return (ObjFunc_1ARGS)(void *)HDLR_FUNC(func, 1);
 }
 
-EXPORT_INLINE ObjFunc_2ARGS HDLR_2ARGS(Obj func)
+EXPORT_INLINE ObjFunc_2ARGS HDLR_2ARGS(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return (ObjFunc_2ARGS)(void *)HDLR_FUNC(func, 2);
 }
 
-EXPORT_INLINE ObjFunc_3ARGS HDLR_3ARGS(Obj func)
+EXPORT_INLINE ObjFunc_3ARGS HDLR_3ARGS(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return (ObjFunc_3ARGS)(void *)HDLR_FUNC(func, 3);
 }
 
-EXPORT_INLINE ObjFunc_4ARGS HDLR_4ARGS(Obj func)
+EXPORT_INLINE ObjFunc_4ARGS HDLR_4ARGS(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return (ObjFunc_4ARGS)(void *)HDLR_FUNC(func, 4);
 }
 
-EXPORT_INLINE ObjFunc_5ARGS HDLR_5ARGS(Obj func)
+EXPORT_INLINE ObjFunc_5ARGS HDLR_5ARGS(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return (ObjFunc_5ARGS)(void *)HDLR_FUNC(func, 5);
 }
 
-EXPORT_INLINE ObjFunc_6ARGS HDLR_6ARGS(Obj func)
+EXPORT_INLINE ObjFunc_6ARGS HDLR_6ARGS(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return (ObjFunc_6ARGS)(void *)HDLR_FUNC(func, 6);
 }
 
-EXPORT_INLINE ObjFunc_1ARGS HDLR_XARGS(Obj func)
+EXPORT_INLINE ObjFunc_1ARGS HDLR_XARGS(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return (ObjFunc_1ARGS)(void *)HDLR_FUNC(func, 7);
 }
@@ -271,7 +273,7 @@ EXPORT_INLINE ObjFunc_1ARGS HDLR_XARGS(Obj func)
 **
 *F  IS_FUNC( <obj> )  . . . . . . . . . . . . . check if object is a function
 */
-EXPORT_INLINE BOOL IS_FUNC(Obj obj)
+EXPORT_INLINE BOOL IS_FUNC(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return TNUM_OBJ(obj) == T_FUNCTION;
 }
