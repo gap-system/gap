@@ -226,7 +226,7 @@ BOOL IsbPRec(Obj rec, UInt rnam);
 **  name <rnam> in the plain record <rec>.
 */
 void AssPRec(Obj rec GAP_GC_ROOTING_ARGUMENT, UInt rnam,
-             Obj val GAP_GC_ROOTED_ARGUMENT);
+             Obj val GAP_GC_ROOTED_ARGUMENT GAP_GC_MAYBE_UNROOTED);
 
 
 /****************************************************************************

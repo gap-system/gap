@@ -376,10 +376,8 @@ void UnbPRec (
 **  'AssPRec' assigns the value <val> to the record component with the record
 **  name <rnam> in the plain record <rec>.
 */
-void AssPRec (
-    Obj                 rec,
-    UInt                rnam,
-    Obj                 val )
+void AssPRec(Obj rec GAP_GC_ROOTING_ARGUMENT, UInt rnam,
+             Obj val GAP_GC_ROOTED_ARGUMENT GAP_GC_MAYBE_UNROOTED)
 {
     UInt                len;            // length of <rec>
 
@@ -388,6 +386,8 @@ void AssPRec (
         ErrorMayQuit("Record Assignment: <rec> must be a mutable record", 0,
                      0);
     }
+
+    GAP_GC_PUSH1(&val);
 
     // get the length of the record
     len = LEN_PREC( rec );
@@ -410,6 +410,8 @@ void AssPRec (
     // assign the value to the component
     SET_ELM_PREC( rec, i, val );
     CHANGED_BAG( rec );
+
+    GAP_GC_POP();
 }
 
 /****************************************************************************
