@@ -188,7 +188,7 @@ typedef struct {
 #define TmpTrans MODULE_STATE(Trans, TmpTrans)
 #endif
 
-static inline UInt4 * AddrTmpTrans(void)
+static inline UInt4 * AddrTmpTrans(void) GAP_GC_NOTSAFEPOINT
 {
     return ADDR_TRANS4(TmpTrans);
 }
@@ -213,19 +213,19 @@ static Obj FuncIMAGE_SET_TRANS(Obj self, Obj f);
 ** Internal functions for transformations
 *******************************************************************************/
 
-static inline Obj IMG_TRANS(Obj f)
+static inline Obj IMG_TRANS(Obj f) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_TRANS(f));
     return CONST_ADDR_OBJ(f)[0];
 }
 
-static inline Obj KER_TRANS(Obj f)
+static inline Obj KER_TRANS(Obj f) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_TRANS(f));
     return CONST_ADDR_OBJ(f)[1];
 }
 
-static inline Obj EXT_TRANS(Obj f)
+static inline Obj EXT_TRANS(Obj f) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_TRANS(f));
     return CONST_ADDR_OBJ(f)[2];

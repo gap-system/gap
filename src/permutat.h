@@ -24,7 +24,7 @@
 *F  DEG_PERM4(<perm>) . . . . . . . . . . . . . degree of (large) permutation
 *F  ADDR_PERM4(<perm>)  . . . . . . . absolute address of (large) permutation
 */
-EXPORT_INLINE UInt SIZEBAG_PERM2(UInt deg)
+EXPORT_INLINE UInt SIZEBAG_PERM2(UInt deg) GAP_GC_NOTSAFEPOINT
 {
     return sizeof(Obj) + deg * sizeof(UInt2);
 }
@@ -34,22 +34,22 @@ EXPORT_INLINE Obj NEW_PERM2(UInt deg)
     return NewBag(T_PERM2, SIZEBAG_PERM2(deg));
 }
 
-EXPORT_INLINE UInt DEG_PERM2(Obj perm)
+EXPORT_INLINE UInt DEG_PERM2(Obj perm) GAP_GC_NOTSAFEPOINT
 {
     return (SIZE_OBJ(perm) - sizeof(Obj)) / sizeof(UInt2);
 }
 
-EXPORT_INLINE UInt2 * ADDR_PERM2(Obj perm)
+EXPORT_INLINE UInt2 * ADDR_PERM2(Obj perm) GAP_GC_NOTSAFEPOINT
 {
     return (UInt2 *)(ADDR_OBJ(perm) + 1);
 }
 
-EXPORT_INLINE const UInt2 * CONST_ADDR_PERM2(Obj perm)
+EXPORT_INLINE const UInt2 * CONST_ADDR_PERM2(Obj perm) GAP_GC_NOTSAFEPOINT
 {
     return (const UInt2 *)(CONST_ADDR_OBJ(perm) + 1);
 }
 
-EXPORT_INLINE UInt SIZEBAG_PERM4(UInt deg)
+EXPORT_INLINE UInt SIZEBAG_PERM4(UInt deg) GAP_GC_NOTSAFEPOINT
 {
     return sizeof(Obj) + deg * sizeof(UInt4);
 }
@@ -59,22 +59,22 @@ EXPORT_INLINE Obj NEW_PERM4(UInt deg)
     return NewBag(T_PERM4, SIZEBAG_PERM4(deg));
 }
 
-EXPORT_INLINE UInt DEG_PERM4(Obj perm)
+EXPORT_INLINE UInt DEG_PERM4(Obj perm) GAP_GC_NOTSAFEPOINT
 {
     return (SIZE_OBJ(perm) - sizeof(Obj)) / sizeof(UInt4);
 }
 
-EXPORT_INLINE UInt4 * ADDR_PERM4(Obj perm)
+EXPORT_INLINE UInt4 * ADDR_PERM4(Obj perm) GAP_GC_NOTSAFEPOINT
 {
     return (UInt4 *)(ADDR_OBJ(perm) + 1);
 }
 
-EXPORT_INLINE const UInt4 * CONST_ADDR_PERM4(Obj perm)
+EXPORT_INLINE const UInt4 * CONST_ADDR_PERM4(Obj perm) GAP_GC_NOTSAFEPOINT
 {
     return (const UInt4 *)(CONST_ADDR_OBJ(perm) + 1);
 }
 
-EXPORT_INLINE Obj STOREDINV_PERM(Obj perm)
+EXPORT_INLINE Obj STOREDINV_PERM(Obj perm) GAP_GC_NOTSAFEPOINT
 {
     Obj inv = ADDR_OBJ(perm)[0];
     // Check inv has the same TNAM as perm.
@@ -133,7 +133,7 @@ EXPORT_INLINE void CLEAR_STOREDINV_PERM(Obj perm)
 #define IS_PERM4(perm)  (TNUM_OBJ(perm) == T_PERM4)
 
 
-EXPORT_INLINE BOOL IS_PERM(Obj f)
+EXPORT_INLINE BOOL IS_PERM(Obj f) GAP_GC_NOTSAFEPOINT
 {
     return (TNUM_OBJ(f) == T_PERM2 || TNUM_OBJ(f) == T_PERM4);
 }

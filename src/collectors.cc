@@ -64,7 +64,7 @@ DECL_MODULE_STATE UInt SC_MAX_STACK_SIZE;
 static ModuleStateOffset CollectorsStateOffset = -1;
 
 // for debugging from GDB / lldb, we mark this as extern inline
-extern inline struct CollectorsState_ * CollectorsState(void)
+extern inline struct CollectorsState_ * CollectorsState(void) GAP_GC_NOTSAFEPOINT
 {
     return (struct CollectorsState_ *)StateSlotsAtOffset(CollectorsStateOffset);
 }

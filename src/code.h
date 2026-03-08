@@ -116,7 +116,7 @@ typedef struct {
 
 } BodyHeader;
 
-EXPORT_INLINE BodyHeader *BODY_HEADER(Obj body)
+EXPORT_INLINE BodyHeader *BODY_HEADER(Obj body) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(body) == T_BODY);
     return (BodyHeader *)ADDR_OBJ(body);
@@ -142,7 +142,7 @@ void SET_ENDLINE_BODY(Obj body, UInt val);
 
 Obj GET_VALUE_FROM_CURRENT_BODY(Int ix);
 
-EXPORT_INLINE Obj VALUES_BODY(Obj body)
+EXPORT_INLINE Obj VALUES_BODY(Obj body) GAP_GC_NOTSAFEPOINT
 {
     return BODY_HEADER(body)->values;
 }
@@ -319,7 +319,7 @@ enum STAT_TNUM {
 **  'ADDR_STAT' returns   the  absolute address of the    memory block of the
 **  statement <stat>.
 */
-EXPORT_INLINE const Stat * CONST_ADDR_STAT(Stat stat)
+EXPORT_INLINE const Stat * CONST_ADDR_STAT(Stat stat) GAP_GC_NOTSAFEPOINT
 {
     return (const Stat *)STATE(PtrBody) + stat / sizeof(Stat);
 }
@@ -329,7 +329,7 @@ EXPORT_INLINE const Stat * CONST_ADDR_STAT(Stat stat)
 **
 *F  READ_STAT(<stat>,<idx>)
 */
-EXPORT_INLINE Stat READ_STAT(Stat stat, UInt idx)
+EXPORT_INLINE Stat READ_STAT(Stat stat, UInt idx) GAP_GC_NOTSAFEPOINT
 {
     return CONST_ADDR_STAT(stat)[idx];
 }
@@ -339,7 +339,7 @@ EXPORT_INLINE Stat READ_STAT(Stat stat, UInt idx)
 **
 *F  CONST_STAT_HEADER(<stat>)
 */
-EXPORT_INLINE const StatHeader * CONST_STAT_HEADER(Stat stat)
+EXPORT_INLINE const StatHeader * CONST_STAT_HEADER(Stat stat) GAP_GC_NOTSAFEPOINT
 {
     return (const StatHeader *)CONST_ADDR_STAT(stat) - 1;
 }
@@ -351,7 +351,7 @@ EXPORT_INLINE const StatHeader * CONST_STAT_HEADER(Stat stat)
 **
 **  'TNUM_STAT' returns the type of the statement <stat>.
 */
-EXPORT_INLINE Int TNUM_STAT(Stat stat)
+EXPORT_INLINE Int TNUM_STAT(Stat stat) GAP_GC_NOTSAFEPOINT
 {
     return CONST_STAT_HEADER(stat)->type;
 }
@@ -363,7 +363,7 @@ EXPORT_INLINE Int TNUM_STAT(Stat stat)
 **
 **  'SIZE_STAT' returns the size of the statement <stat>.
 */
-EXPORT_INLINE Int SIZE_STAT(Stat stat)
+EXPORT_INLINE Int SIZE_STAT(Stat stat) GAP_GC_NOTSAFEPOINT
 {
     return CONST_STAT_HEADER(stat)->size;
 }
@@ -375,7 +375,7 @@ EXPORT_INLINE Int SIZE_STAT(Stat stat)
 **
 **  'LINE_STAT' returns the line number of the statement <stat>.
 */
-EXPORT_INLINE Int LINE_STAT(Stat stat)
+EXPORT_INLINE Int LINE_STAT(Stat stat) GAP_GC_NOTSAFEPOINT
 {
     return CONST_STAT_HEADER(stat)->line;
 }
@@ -388,7 +388,7 @@ EXPORT_INLINE Int LINE_STAT(Stat stat)
 **  'VISITED_STAT' returns true if the statement has ever been executed
 **  while profiling is turned on.
 */
-EXPORT_INLINE Int VISITED_STAT(Stat stat)
+EXPORT_INLINE Int VISITED_STAT(Stat stat) GAP_GC_NOTSAFEPOINT
 {
     return CONST_STAT_HEADER(stat)->visited;
 }
@@ -419,17 +419,17 @@ void SET_VISITED_STAT(Stat stat);
 **  'LVAR_REF_LVAR' returns the local variable (by its index) to which <expr>
 **  is a (immediate) reference.
 */
-EXPORT_INLINE BOOL IS_REF_LVAR(Expr expr)
+EXPORT_INLINE BOOL IS_REF_LVAR(Expr expr) GAP_GC_NOTSAFEPOINT
 {
     return ((Int)expr & 0x03) == 0x03;
 }
 
-EXPORT_INLINE Expr REF_LVAR_LVAR(Int lvar)
+EXPORT_INLINE Expr REF_LVAR_LVAR(Int lvar) GAP_GC_NOTSAFEPOINT
 {
     return (Expr)((lvar << 2) + 0x03);
 }
 
-EXPORT_INLINE Int LVAR_REF_LVAR(Expr expr)
+EXPORT_INLINE Int LVAR_REF_LVAR(Expr expr) GAP_GC_NOTSAFEPOINT
 {
     return (Int)expr >> 2;
 }
@@ -450,17 +450,17 @@ EXPORT_INLINE Int LVAR_REF_LVAR(Expr expr)
 **  'INT_INTEXPR' converts the (immediate) integer  expression <expr> to a  C
 **  integer.
 */
-EXPORT_INLINE BOOL IS_INTEXPR(Expr expr)
+EXPORT_INLINE BOOL IS_INTEXPR(Expr expr) GAP_GC_NOTSAFEPOINT
 {
     return ((Int)expr & 0x03) == 0x01;
 }
 
-EXPORT_INLINE Expr INTEXPR_INT(Int indx)
+EXPORT_INLINE Expr INTEXPR_INT(Int indx) GAP_GC_NOTSAFEPOINT
 {
     return (Expr)(((UInt)indx << 2) + 0x01);
 }
 
-EXPORT_INLINE Int INT_INTEXPR(Expr expr)
+EXPORT_INLINE Int INT_INTEXPR(Expr expr) GAP_GC_NOTSAFEPOINT
 {
     return ((Int)expr-0x01) >> 2;
 }
@@ -565,7 +565,7 @@ enum EXPR_TNUM {
 **
 **  'TNUM_EXPR' returns the type of the expression <expr>.
 */
-EXPORT_INLINE Int TNUM_EXPR(Expr expr)
+EXPORT_INLINE Int TNUM_EXPR(Expr expr) GAP_GC_NOTSAFEPOINT
 {
     if (IS_REF_LVAR(expr))
         return EXPR_REF_LVAR;
@@ -599,7 +599,7 @@ EXPORT_INLINE Int TNUM_EXPR(Expr expr)
 */
 #define CONST_ADDR_EXPR(expr) CONST_ADDR_STAT(expr)
 
-EXPORT_INLINE Stat READ_EXPR(Expr expr, Int idx)
+EXPORT_INLINE Stat READ_EXPR(Expr expr, Int idx) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(!IS_REF_LVAR(expr));
     GAP_ASSERT(!IS_INTEXPR(expr));

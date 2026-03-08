@@ -24,7 +24,7 @@
 **
 **  'NAME_RNAM' returns the name (as an Obj) for the record name <rnam>.
 */
-Obj NAME_RNAM(UInt rnam);
+Obj NAME_RNAM(UInt rnam) GAP_GC_NOTSAFEPOINT;
 
 
 /****************************************************************************

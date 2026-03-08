@@ -58,7 +58,7 @@ DECL_MODULE_STATE Int CountExpr;
 static ModuleStateOffset CodeStateOffset = -1;
 
 // for debugging from GDB / lldb, we mark this as extern inline
-extern inline struct CodeModuleState * CShelper(void)
+extern inline struct CodeModuleState * CShelper(void) GAP_GC_NOTSAFEPOINT
 {
     return (struct CodeModuleState *)StateSlotsAtOffset(CodeStateOffset);
 }

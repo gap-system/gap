@@ -773,7 +773,7 @@ static BOOL IsbString(Obj list, Int pos)
 **  <pos> must be  a positive integer  less than  or  equal to  the length of
 **  <list>.
 */
-static inline Obj GET_ELM_STRING(Obj list, Int pos)
+static inline Obj GET_ELM_STRING(Obj list, Int pos) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(pos > 0);
@@ -790,7 +790,7 @@ static inline Obj GET_ELM_STRING(Obj list, Int pos)
 **  'SET_ELM_STRING'  sets the  <pos>-th  character  of  the string  <list>.
 **  <val> must be a character and <list> stay a string after the assignment.
 */
-static inline void SET_ELM_STRING(Obj list, Int pos, Obj val)
+static inline void SET_ELM_STRING(Obj list, Int pos, Obj val) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(IS_STRING_REP(list));
     GAP_ASSERT(pos > 0);

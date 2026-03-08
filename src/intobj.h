@@ -56,7 +56,7 @@ enum {
 **  'IS_INTOBJ' returns 1 if the object <o> is an (immediate) integer object,
 **  and 0 otherwise.
 */
-EXPORT_INLINE BOOL IS_INTOBJ(Obj o)
+EXPORT_INLINE BOOL IS_INTOBJ(Obj o) GAP_GC_NOTSAFEPOINT
 {
     return (Int)o & 0x01;
 }
@@ -69,7 +69,7 @@ EXPORT_INLINE BOOL IS_INTOBJ(Obj o)
 **  'IS_POS_INTOBJ' returns 1 if the object <o> is an (immediate) integer
 **  object encoding a positive integer, and 0 otherwise.
 */
-EXPORT_INLINE BOOL IS_POS_INTOBJ(Obj o)
+EXPORT_INLINE BOOL IS_POS_INTOBJ(Obj o) GAP_GC_NOTSAFEPOINT
 {
     return ((Int)o & 0x01) && ((Int)o > 0x01);
 }
@@ -81,7 +81,7 @@ EXPORT_INLINE BOOL IS_POS_INTOBJ(Obj o)
 **  'IS_NONNEG_INTOBJ' returns 1 if the object <o> is an (immediate) integer
 **  object encoding a non-negative integer, and 0 otherwise.
 */
-EXPORT_INLINE BOOL IS_NONNEG_INTOBJ(Obj o)
+EXPORT_INLINE BOOL IS_NONNEG_INTOBJ(Obj o) GAP_GC_NOTSAFEPOINT
 {
     return ((Int)o & 0x01) && ((Int)o > 0);
 }
@@ -94,7 +94,7 @@ EXPORT_INLINE BOOL IS_NONNEG_INTOBJ(Obj o)
 **  'ARE_INTOBJS' returns 1 if the objects <o1> and <o2> are both (immediate)
 **  integer objects.
 */
-EXPORT_INLINE Int ARE_INTOBJS(Obj o1, Obj o2)
+EXPORT_INLINE Int ARE_INTOBJS(Obj o1, Obj o2) GAP_GC_NOTSAFEPOINT
 {
     return (Int)o1 & (Int)o2 & 0x01;
 }
@@ -139,7 +139,7 @@ EXPORT_INLINE Obj INTOBJ_INT(Int i)
 //
 // Check whether the sign and guard bit of the given word match.
 //
-EXPORT_INLINE int DETECT_INTOBJ_OVERFLOW(UInt o)
+EXPORT_INLINE int DETECT_INTOBJ_OVERFLOW(UInt o) GAP_GC_NOTSAFEPOINT
 {
     const UInt BITS_IN_UINT = sizeof(UInt) * 8;
     // extract sign bit + guard bit

@@ -123,7 +123,7 @@ struct IOModuleState {
 };
 
 // for debugging from GDB / lldb, we mark this as extern inline
-extern inline struct IOModuleState * IOHelper(void)
+extern inline struct IOModuleState * IOHelper(void) GAP_GC_NOTSAFEPOINT
 {
     return (struct IOModuleState *)StateSlotsAtOffset(IOStateOffset);
 }

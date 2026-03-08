@@ -45,7 +45,7 @@ struct CFTLModuleState {
 };
 
 // for debugging from GDB / lldb, we mark this as extern inline
-extern inline struct CFTLModuleState *CFTLState(void)
+extern inline struct CFTLModuleState *CFTLState(void) GAP_GC_NOTSAFEPOINT
 {
     return (struct CFTLModuleState *)StateSlotsAtOffset(CFTLStateOffset);
 }

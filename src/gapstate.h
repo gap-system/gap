@@ -143,7 +143,7 @@ GAP_STATIC_ASSERT(sizeof(GAPState) < 32768, "GAPState is too big");
 
 #define DECL_MODULE_STATE
 
-EXPORT_INLINE GAPState * ActiveGAPState(void)
+EXPORT_INLINE GAPState * ActiveGAPState(void) GAP_GC_NOTSAFEPOINT
 {
     return (GAPState *)GetTLS();
 }
@@ -164,7 +164,7 @@ EXPORT_INLINE GAPState * ActiveGAPState(void)
 // Offset into StateSlots
 typedef Int ModuleStateOffset;
 
-EXPORT_INLINE void * StateSlotsAtOffset(ModuleStateOffset offset)
+EXPORT_INLINE void * StateSlotsAtOffset(ModuleStateOffset offset) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(0 <= offset && offset < STATE_SLOTS_SIZE);
     return &STATE(StateSlots)[offset];

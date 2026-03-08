@@ -40,12 +40,12 @@ static Obj NamesRNam GAP_GC_GLOBALLY_ROOTED;
 **
 **  'IS_VALID_RNAM' returns if <rnam> is a valid record name.
 */
-static BOOL IS_VALID_RNAM(UInt rnam)
+static BOOL IS_VALID_RNAM(UInt rnam) GAP_GC_NOTSAFEPOINT
 {
     return rnam != 0 && rnam <= LEN_PLIST(NamesRNam);
 }
 
-extern inline Obj NAME_RNAM(UInt rnam)
+extern inline Obj NAME_RNAM(UInt rnam) GAP_GC_NOTSAFEPOINT
 {
     return ELM_PLIST(NamesRNam, rnam);
 }
