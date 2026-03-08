@@ -45,7 +45,8 @@ static BOOL IS_VALID_RNAM(UInt rnam) GAP_GC_NOTSAFEPOINT
     return rnam != 0 && rnam <= LEN_PLIST(NamesRNam);
 }
 
-extern inline Obj NAME_RNAM(UInt rnam) GAP_GC_NOTSAFEPOINT
+extern inline Obj NAME_RNAM(UInt rnam)
+    GAP_GC_NOTSAFEPOINT GAP_GC_GLOBALLY_ROOTED
 {
     return ELM_PLIST(NamesRNam, rnam);
 }

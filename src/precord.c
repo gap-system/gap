@@ -165,6 +165,7 @@ static Obj CopyPRec(Obj rec, Int mut)
 
     // make a copy
     copy = NewBag(T_PREC, SIZE_OBJ(rec));
+    GAP_GC_PUSH1(&copy);
     if (!mut)
         MakeImmutableNoRecurse(copy);
     memcpy(ADDR_OBJ(copy), CONST_ADDR_OBJ(rec), SIZE_OBJ(rec));
@@ -182,6 +183,7 @@ static Obj CopyPRec(Obj rec, Int mut)
         SET_ELM_PREC(copy, i, tmp);
         CHANGED_BAG(copy);
     }
+    GAP_GC_POP();
 
     // return the copy
     return copy;
@@ -537,6 +539,7 @@ static Obj InnerRecNames(Obj rec)
 
     // allocate the list
     list = NEW_PLIST( T_PLIST, LEN_PREC(rec) );
+    GAP_GC_PUSH1(&list);
     SET_LEN_PLIST( list, LEN_PREC(rec) );
 
     // loop over the components
@@ -548,6 +551,7 @@ static Obj InnerRecNames(Obj rec)
         SET_ELM_PLIST( list, i, string );
         CHANGED_BAG( list );
     }
+    GAP_GC_POP();
 
     // return the list
     return list;
