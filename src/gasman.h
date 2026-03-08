@@ -496,7 +496,7 @@ EXPORT_INLINE Bag NewWordSizedBag(UInt type, UInt size)
 void RetypeBagIntern(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT;
 
 #ifdef HPCGAP
-void RetypeBagIfWritable(Bag bag, UInt new_type);
+void RetypeBagIfWritable(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT;
 #else
 #define RetypeBagIfWritable(x,y)     RetypeBag(x,y)
 #endif
@@ -504,10 +504,10 @@ void RetypeBagIfWritable(Bag bag, UInt new_type);
 #ifdef GAP_KERNEL_DEBUG
 // This helper tests whether the type change is "allowed". As such, it rejects
 // attempts to retype an immutable list or record into a mutable one.
-void PrecheckRetypeBag(Bag bag, UInt new_type);
+void PrecheckRetypeBag(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT;
 #endif
 
-EXPORT_INLINE void RetypeBag(Bag bag, UInt new_type)
+EXPORT_INLINE void RetypeBag(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT
 {
 #ifdef GAP_KERNEL_DEBUG
     PrecheckRetypeBag(bag, new_type);
@@ -526,7 +526,7 @@ EXPORT_INLINE void RetypeBag(Bag bag, UInt new_type)
 */
 void RetypeBagSM(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT;
 #ifdef HPCGAP
-void RetypeBagSMIfWritable(Bag bag, UInt new_type);
+void RetypeBagSMIfWritable(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT;
 #else
 #define RetypeBagSMIfWritable(x,y)   RetypeBagSM(x,y)
 #endif

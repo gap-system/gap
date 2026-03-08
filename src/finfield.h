@@ -349,7 +349,7 @@ EXPORT_INLINE FFV VAL_FFE(Obj ffe)
 **  with the value <val>.
 **
 */
-EXPORT_INLINE Obj NEW_FFE(FF fld, FFV val)
+EXPORT_INLINE Obj NEW_FFE(FF fld, FFV val) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(val < SIZE_FF(fld));
     return (Obj)(((UInt)val << (3 + FIELD_BITS_FFE)) | ((UInt)fld << 3) |
