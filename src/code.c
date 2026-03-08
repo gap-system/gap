@@ -166,7 +166,7 @@ static inline void PopOffsBody(CodeState * cs)
 
 // filename
 
-Obj GET_FILENAME_BODY(Obj body)
+Obj GET_FILENAME_BODY(Obj body) GAP_GC_NOTSAFEPOINT
 {
     Obj val = BODY_HEADER(body)->filename_or_id;
     if (IS_INTOBJ(val)) {
@@ -177,7 +177,8 @@ Obj GET_FILENAME_BODY(Obj body)
     return val;
 }
 
-void SET_FILENAME_BODY(Obj body, Obj val)
+void SET_FILENAME_BODY(Obj body GAP_GC_ROOTING_ARGUMENT,
+                       Obj val GAP_GC_ROOTED_ARGUMENT)
 {
     GAP_ASSERT(IS_STRING_REP(val));
     MakeImmutable(val);
@@ -186,7 +187,7 @@ void SET_FILENAME_BODY(Obj body, Obj val)
 
 // gapnameid
 
-UInt GET_GAPNAMEID_BODY(Obj body)
+UInt GET_GAPNAMEID_BODY(Obj body) GAP_GC_NOTSAFEPOINT
 {
     Obj gapnameid = BODY_HEADER(body)->filename_or_id;
     return IS_POS_INTOBJ(gapnameid) ? INT_INTOBJ(gapnameid) : 0;
@@ -205,7 +206,8 @@ Obj GET_LOCATION_BODY(Obj body)
     return (location && IS_STRING_REP(location)) ? location : 0;
 }
 
-void SET_LOCATION_BODY(Obj body, Obj val)
+void SET_LOCATION_BODY(Obj body GAP_GC_ROOTING_ARGUMENT,
+                       Obj val GAP_GC_ROOTED_ARGUMENT)
 {
     GAP_ASSERT(IS_STRING_REP(val));
     MakeImmutable(val);
@@ -214,7 +216,7 @@ void SET_LOCATION_BODY(Obj body, Obj val)
 
 // startline
 
-UInt GET_STARTLINE_BODY(Obj body)
+UInt GET_STARTLINE_BODY(Obj body) GAP_GC_NOTSAFEPOINT
 {
     Obj line = BODY_HEADER(body)->startline_or_location;
     return IS_POS_INTOBJ(line) ? INT_INTOBJ(line) : 0;
@@ -227,7 +229,7 @@ void SET_STARTLINE_BODY(Obj body, UInt val)
 
 // endline
 
-UInt GET_ENDLINE_BODY(Obj body)
+UInt GET_ENDLINE_BODY(Obj body) GAP_GC_NOTSAFEPOINT
 {
     Obj line = BODY_HEADER(body)->endline;
     return IS_POS_INTOBJ(line) ? INT_INTOBJ(line) : 0;

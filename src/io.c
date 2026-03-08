@@ -269,7 +269,7 @@ static void AddCachedFilename(SymbolTable * symtab, UInt id, Obj name)
     AssPlist(FilenameCache, id, name);
 }
 
-Obj GetCachedFilename(UInt id) GAP_GC_GLOBALLY_ROOTED
+Obj GetCachedFilename(UInt id) GAP_GC_NOTSAFEPOINT GAP_GC_GLOBALLY_ROOTED
 {
     return ELM_PLIST(FilenameCache, id);
 }

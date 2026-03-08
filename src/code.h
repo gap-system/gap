@@ -122,22 +122,25 @@ EXPORT_INLINE BodyHeader *BODY_HEADER(Obj body) GAP_GC_NOTSAFEPOINT
     return (BodyHeader *)ADDR_OBJ(body);
 }
 
-Obj  GET_FILENAME_BODY(Obj body);
-void SET_FILENAME_BODY(Obj body, Obj val);
+Obj  GET_FILENAME_BODY(Obj body) GAP_GC_NOTSAFEPOINT;
+void SET_FILENAME_BODY(Obj body GAP_GC_ROOTING_ARGUMENT,
+                       Obj val GAP_GC_ROOTED_ARGUMENT);
 
-UInt GET_GAPNAMEID_BODY(Obj body);
+UInt GET_GAPNAMEID_BODY(Obj body) GAP_GC_NOTSAFEPOINT;
 void SET_GAPNAMEID_BODY(Obj body, UInt val);
 
 // see documentation of `startline_or_location` for more information about the
 // "location" of a body
-Obj  GET_LOCATION_BODY(Obj body);
-void SET_LOCATION_BODY(Obj body, Obj val);
+Obj  GET_LOCATION_BODY(Obj body) GAP_GC_NOTSAFEPOINT;
+void SET_LOCATION_BODY(Obj body GAP_GC_ROOTING_ARGUMENT,
+                       Obj val GAP_GC_ROOTED_ARGUMENT);
 
 // see documentation of `startline_or_location` for more information about the
 // "startline" of a body
-UInt GET_STARTLINE_BODY(Obj body);
+UInt GET_STARTLINE_BODY(Obj body) GAP_GC_NOTSAFEPOINT;
 void SET_STARTLINE_BODY(Obj body, UInt val);
-UInt GET_ENDLINE_BODY(Obj body);
+
+UInt GET_ENDLINE_BODY(Obj body) GAP_GC_NOTSAFEPOINT;
 void SET_ENDLINE_BODY(Obj body, UInt val);
 
 Obj GET_VALUE_FROM_CURRENT_BODY(Int ix);
