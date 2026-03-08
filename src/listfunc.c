@@ -185,7 +185,7 @@ static Obj RemPlist(Obj list)
     return removed;
 }
 
-static Obj RemListOper;
+static Obj RemListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncREM_LIST(Obj self, Obj list)
 {
@@ -277,7 +277,7 @@ static Obj FuncAPPEND_LIST_INTR(Obj self, Obj list1, Obj list2)
     return 0;
 }
 
-static Obj AppendListOper;
+static Obj AppendListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncAPPEND_LIST(Obj self, Obj list, Obj obj)
 {

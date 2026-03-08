@@ -1130,7 +1130,7 @@ void PrintKernelFunction(Obj func)
 **  'IsFunction' returns   'true'  if  <func>   is a function    and  'false'
 **  otherwise.
 */
-static Obj IsFunctionFilt;
+static Obj IsFunctionFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_FUNCTION(Obj self, Obj obj)
 {
@@ -1157,8 +1157,8 @@ static Obj FiltIS_FUNCTION(Obj self, Obj obj)
 **  'CallFuncList' calls the  function <func> with the arguments list <list>,
 **  i.e., it is equivalent to '<func>( <list>[1], <list>[2]... )'.
 */
-Obj CallFuncListOper;
-static Obj CallFuncListWrapOper;
+Obj CallFuncListOper GAP_GC_GLOBALLY_ROOTED;
+static Obj CallFuncListWrapOper GAP_GC_GLOBALLY_ROOTED;
 
 Obj CallFuncList ( Obj func, Obj list )
 {
@@ -1237,8 +1237,8 @@ static Obj FuncCALL_FUNC_LIST_WRAP(Obj self, Obj func, Obj list)
 **
 *F  AttrNAME_FUNC( <self>, <func> ) . . . . . . . . . . .  name of a function
 */
-static Obj NameFuncAttr;
-static Obj SET_NAME_FUNC_Oper;
+static Obj NameFuncAttr GAP_GC_GLOBALLY_ROOTED;
+static Obj SET_NAME_FUNC_Oper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj AttrNAME_FUNC(Obj self, Obj func)
 {
@@ -1275,7 +1275,7 @@ static Obj FuncSET_NAME_FUNC(Obj self, Obj func, Obj name)
 **
 *F  FuncNARG_FUNC( <self>, <func> ) . . . . number of arguments of a function
 */
-static Obj NARG_FUNC_Oper;
+static Obj NARG_FUNC_Oper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncNARG_FUNC(Obj self, Obj func)
 {
@@ -1292,7 +1292,7 @@ static Obj FuncNARG_FUNC(Obj self, Obj func)
 **
 *F  FuncNAMS_FUNC( <self>, <func> ) . . . . names of local vars of a function
 */
-static Obj NAMS_FUNC_Oper;
+static Obj NAMS_FUNC_Oper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncNAMS_FUNC(Obj self, Obj func)
 {
@@ -1311,7 +1311,7 @@ static Obj FuncNAMS_FUNC(Obj self, Obj func)
 *F  FuncLOCKS_FUNC( <self>, <func> ) . . . . locking status of a possibly
 **                                           atomic function
 */
-static Obj LOCKS_FUNC_Oper;
+static Obj LOCKS_FUNC_Oper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncLOCKS_FUNC(Obj self, Obj func)
 {
@@ -1337,7 +1337,7 @@ static Obj FuncLOCKS_FUNC(Obj self, Obj func)
 **
 *F  FuncPROF_FUNC( <self>, <func> ) . . . . . .  profiling info of a function
 */
-static Obj PROF_FUNC_Oper;
+static Obj PROF_FUNC_Oper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncPROF_FUNC(Obj self, Obj func)
 {

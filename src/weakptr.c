@@ -514,7 +514,7 @@ static Obj TypeWPObj(Obj wp)
 **
 *F  FuncIsWPObj(<self>,<wp>) . . . . . . . . handler for GAP function IsWPObj
 */
-static Obj IsWPObjFilt;
+static Obj IsWPObjFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIsWPObj(Obj self, Obj wp)
 {

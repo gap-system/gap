@@ -744,7 +744,7 @@ extern void (*MakeImmutableObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 */
 void PrintObj(Obj obj);
 
-extern Obj PrintObjOper;
+extern Obj PrintObjOper GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **

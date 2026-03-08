@@ -809,7 +809,7 @@ static Obj FuncShrinkAllocationPlist(Obj self, Obj plist)
 **
 *F  FiltIS_PLIST_REP( <self>, <obj> ) . . . . . . . .  handler for `IS_PLIST'
 */
-static Obj IsPlistFilt;
+static Obj IsPlistFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_PLIST_REP(Obj self, Obj obj)
 {

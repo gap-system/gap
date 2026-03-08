@@ -1140,7 +1140,7 @@ static Obj PowFFEFFE(Obj opL, Obj opR)
 **  and 'false' otherwise.   'IsFFE' will cause  an  error if  called with an
 **  unbound variable.
 */
-static Obj IsFFEFilt;
+static Obj IsFFEFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_FFE(Obj self, Obj obj)
 {

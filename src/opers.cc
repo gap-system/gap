@@ -3132,7 +3132,7 @@ static Obj FuncINSTALL_GLOBAL_FUNCTION(Obj self, Obj oper, Obj func)
 **
 *F  FiltIS_OPERATION( <self>, <obj> ) . . . . . . . . . is <obj> an operation
 */
-static Obj IsOperationFilt;
+static Obj IsOperationFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_OPERATION(Obj self, Obj obj)
 {

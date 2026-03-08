@@ -1019,7 +1019,7 @@ static UInt SizeBlist(Obj blist)
 **  otherwise.  A value is a   boolean list if  it is  a lists without  holes
 **  containing only  'true' and 'false'.
 */
-static Obj IsBlistFilt;
+static Obj IsBlistFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_BLIST(Obj self, Obj val)
 {
@@ -1052,7 +1052,7 @@ static Obj FuncIS_BLIST_CONV(Obj self, Obj val)
 **
 *F  FiltIS_BLIST_REP( <self>, <obj> ) . . test if value is a boolean list rep
 */
-static Obj IsBlistRepFilt;
+static Obj IsBlistRepFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_BLIST_REP(Obj self, Obj obj)
 {

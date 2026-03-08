@@ -142,7 +142,7 @@ static Int LtBool(Obj boolL, Obj boolR)
 **  'IsBool'  returns  'true'  if  <obj>  is   a boolean  value  and  'false'
 **  otherwise.
 */
-static Obj IsBoolFilt;
+static Obj IsBoolFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_BOOL(Obj self, Obj obj)
 {

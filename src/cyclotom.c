@@ -1489,7 +1489,7 @@ static Obj PowCyc(Obj opL, Obj opR)
 **  'E'  returns a  primitive  root of order <n>, which must  be  a  positive
 **  integer, represented as cyclotomic.
 */
-static Obj EOper;
+static Obj EOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncE(Obj self, Obj n)
 {
@@ -1535,7 +1535,7 @@ static Obj FuncE(Obj self, Obj n)
 **  'IsCyc' returns 'true'  if the value <val> is   a cyclotomic and  'false'
 **  otherwise.
 */
-static Obj IsCycFilt;
+static Obj IsCycFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_CYC(Obj self, Obj val)
 {
@@ -1564,7 +1564,7 @@ static Obj FiltIS_CYC(Obj self, Obj val)
 **
 **  'IsCycInt' relies on the fact that the base is an integral base.
 */
-static Obj IsCycIntOper;
+static Obj IsCycIntOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncIS_CYC_INT(Obj self, Obj val)
 {
@@ -1608,7 +1608,7 @@ static Obj FuncIS_CYC_INT(Obj self, Obj val)
 **  'Conductor' returns the N of the cyclotomic <cyc>, i.e., the order of the
 **  roots of which <cyc> is written as a linear combination.
 */
-static Obj ConductorAttr;
+static Obj ConductorAttr GAP_GC_GLOBALLY_ROOTED;
 
 static Obj AttrCONDUCTOR(Obj self, Obj cyc)
 {
@@ -1677,7 +1677,7 @@ static Obj AttrCONDUCTOR(Obj self, Obj cyc)
 **  of which <cyc> is written as a linear combination.  The <i>th element  of
 **  the list is the coefficient of $e_l^{i-1}$.
 */
-static Obj CoeffsCycOper;
+static Obj CoeffsCycOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncCOEFFS_CYC(Obj self, Obj cyc)
 {
@@ -1737,7 +1737,7 @@ static Obj FuncCOEFFS_CYC(Obj self, Obj cyc)
 **  <ord> may be any integer, of course if it is not relative prime to  $ord$
 **  the mapping will not be an automorphism, though still an endomorphism.
 */
-static Obj GaloisCycOper;
+static Obj GaloisCycOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncGALOIS_CYC(Obj self, Obj cyc, Obj ord)
 {
@@ -1897,7 +1897,7 @@ static Obj FuncGALOIS_CYC(Obj self, Obj cyc, Obj ord)
 **  'CycList' returns the cyclotomic described by the list <list>
 **  of rationals.
 */
-static Obj CycListOper;
+static Obj CycListOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncCycList(Obj self, Obj list)
 {

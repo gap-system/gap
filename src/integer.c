@@ -169,7 +169,7 @@ static inline void ENSURE_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 
 // for fallbacks to library
 static Obj String GAP_GC_GLOBALLY_ROOTED;
-static Obj IsIntFilt;
+static Obj IsIntFilt GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

@@ -4081,7 +4081,7 @@ static Obj TypeTrans4(Obj f)
     return TYPE_TRANS4;
 }
 
-static Obj IsTransFilt;
+static Obj IsTransFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_TRANS(Obj self, Obj val)
 {

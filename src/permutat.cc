@@ -991,7 +991,7 @@ static Obj OnePerm(Obj op)
 **  'IsPerm' returns 'true' if the value <val> is a permutation and  'false'
 **  otherwise.
 */
-static Obj IsPermFilt;
+static Obj IsPermFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_PERM(Obj self, Obj val)
 {

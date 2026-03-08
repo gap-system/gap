@@ -280,7 +280,7 @@ static Obj FuncSET_TYPE_OBJ(Obj self, Obj obj, Obj type)
 */
 BOOL (*IsMutableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsMutableObjFilt;
+static Obj IsMutableObjFilt GAP_GC_GLOBALLY_ROOTED;
 
 static BOOL IsMutableObjError(Obj obj)
 {
@@ -315,7 +315,7 @@ static Obj FiltIS_MUTABLE_OBJ(Obj self, Obj obj)
 
 #ifdef HPCGAP
 
-static Obj IsInternallyMutableObjFilt;
+static Obj IsInternallyMutableObjFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_INTERNALLY_MUTABLE_OBJ(Obj self, Obj obj)
 {
@@ -345,7 +345,7 @@ BOOL IsInternallyMutableObj(Obj obj)
 */
 BOOL (*IsCopyableObjFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsCopyableObjFilt;
+static Obj IsCopyableObjFilt GAP_GC_GLOBALLY_ROOTED;
 
 static BOOL IsCopyableObjError(Obj obj)
 {
@@ -376,7 +376,7 @@ static Obj FiltIS_COPYABLE_OBJ(Obj self, Obj obj)
 */
 Obj (*ShallowCopyObjFuncs[LAST_REAL_TNUM+1]) ( Obj obj );
 
-static Obj ShallowCopyObjOper;
+static Obj ShallowCopyObjOper GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -1030,7 +1030,7 @@ void (* PrintObjFuncs [ LAST_REAL_TNUM  +1 ])( Obj obj );
 **
 *F  PrintObjObject( <obj> ) . . . . . . . . . . . . . . . . . print an object
 */
-Obj PrintObjOper;
+Obj PrintObjOper GAP_GC_GLOBALLY_ROOTED;
 
 static void PrintObjObject(Obj obj)
 {
@@ -1082,7 +1082,7 @@ static Obj FuncSET_PRINT_OBJ_INDEX(Obj self, Obj index)
 **  recursion works nicely.
 */
 
-static Obj ViewObjOper;
+static Obj ViewObjOper GAP_GC_GLOBALLY_ROOTED;
 
 void ViewObj(Obj obj)
 {

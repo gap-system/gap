@@ -191,7 +191,7 @@ static Obj FuncNameRNam(Obj self, Obj rnam)
 */
 BOOL (*IsRecFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsRecFilt;
+static Obj IsRecFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_REC(Obj self, Obj obj)
 {

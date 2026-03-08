@@ -1169,7 +1169,7 @@ static void PlainString(Obj list)
 */
 BOOL (*IsStringFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 
-static Obj IsStringFilt;
+static Obj IsStringFilt GAP_GC_GLOBALLY_ROOTED;
 
 static BOOL IsStringList(Obj list)
 {
@@ -1413,7 +1413,7 @@ static Obj FuncCONV_STRING(Obj self, Obj string)
 **
 *F  FiltIS_STRING_REP( <self>, <obj> )  . . . . test if value is a string rep
 */
-static Obj IsStringRepFilt;
+static Obj IsStringRepFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_STRING_REP(Obj self, Obj obj)
 {

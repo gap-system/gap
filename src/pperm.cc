@@ -3742,7 +3742,7 @@ static Obj TypePPerm4(Obj f)
     return TYPE_PPERM4;
 }
 
-static Obj IsPPermFilt;
+static Obj IsPPermFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_PPERM(Obj self, Obj val)
 {

@@ -635,7 +635,7 @@ static void PlainRange(Obj list)
 **  otherwise.  As a  side effect 'IsRange' converts proper ranges represented
 **  the ordinary way to the compact representation.
 */
-static Obj IsRangeFilt;
+static Obj IsRangeFilt GAP_GC_GLOBALLY_ROOTED;
 
 static BOOL IsRange(Obj list)
 {
@@ -873,7 +873,7 @@ static Obj SumRangeInt(Obj opL, Obj opR)
 **
 *F  FiltIS_RANGE_REP( <self>, <obj> ) . . . . . test if value is in range rep
 */
-static Obj IsRangeRepFilt;
+static Obj IsRangeRepFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_RANGE_REP(Obj self, Obj obj)
 {

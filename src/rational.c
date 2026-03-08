@@ -671,7 +671,7 @@ static Obj PowRat(Obj opL, Obj opR)
 **  'IsRat' returns  'true' if  the  value <val> is  a  rational and  'false'
 **  otherwise.
 */
-static Obj IsRatFilt;
+static Obj IsRatFilt GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FiltIS_RAT(Obj self, Obj val)
 {

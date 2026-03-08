@@ -488,7 +488,7 @@ void PrintKernelFunction(Obj func);
 
 Obj CallFuncList(Obj func, Obj list);
 
-extern Obj CallFuncListOper;
+extern Obj CallFuncListOper GAP_GC_GLOBALLY_ROOTED;
 
 /****************************************************************************
 **
