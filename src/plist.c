@@ -1502,24 +1502,13 @@ void            AssPlist (
 static void AssPlistXXX(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
                         Obj val GAP_GC_ROOTED_ARGUMENT)
 {
-  Int len;
+    Int len = LEN_PLIST( list );
 
     // the list will probably loose its flags/properties
     CLEAR_FILTS_LIST(list);
 
-    // resize the list if necessary
-    len = LEN_PLIST( list );
-    if ( len < pos ) {
-        GAP_GC_PUSH1(&val);
-        GROW_PLIST( list, pos );
-        GAP_GC_POP();
-        SET_LEN_PLIST( list, pos );
-    }
-
     // now perform the assignment
-    SET_ELM_PLIST( list, pos, val );
-    if ( IS_BAG_REF( val ) )
-        CHANGED_BAG( list );
+    AssPlist(list, pos, val);
 
     // We may be able cheaply to tell that the list is non-dense
     if (len +1 < pos)
@@ -1529,21 +1518,10 @@ static void AssPlistXXX(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
 static void AssPlistCyc(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
                         Obj val GAP_GC_ROOTED_ARGUMENT)
 {
-  Int len;
-
-  // resize the list if necessary
-  len = LEN_PLIST( list );
-  if ( len < pos ) {
-    GAP_GC_PUSH1(&val);
-    GROW_PLIST( list, pos );
-    GAP_GC_POP();
-    SET_LEN_PLIST( list, pos );
-  }
+    Int len = LEN_PLIST( list );
 
     // now perform the assignment
-    SET_ELM_PLIST( list, pos, val );
-    if ( IS_BAG_REF( val ) )
-        CHANGED_BAG( list );
+    AssPlist(list, pos, val);
 
     // try and maintain maximum information about the list
     if (pos > len + 1) {
@@ -1571,21 +1549,10 @@ void AssPlistFfe   (
     Int                 pos,
     Obj                 val GAP_GC_ROOTED_ARGUMENT )
 {
-    Int len;
-
-    // resize the list if necessary
-    len = LEN_PLIST( list );
-    if ( len < pos ) {
-        GAP_GC_PUSH1(&val);
-        GROW_PLIST( list, pos );
-        GAP_GC_POP();
-        SET_LEN_PLIST( list, pos );
-    }
+    Int len = LEN_PLIST( list );
 
     // now perform the assignment
-    SET_ELM_PLIST( list, pos, val );
-    if ( IS_BAG_REF( val ) )
-        CHANGED_BAG( list );
+    AssPlist(list, pos, val);
 
     // try and maintain maximum information about the list
     if( pos > len + 1 ) {
@@ -1634,27 +1601,17 @@ void AssPlistFfe   (
 static void AssPlistDense(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
                           Obj val GAP_GC_ROOTED_ARGUMENT)
 {
-  Int len;
+    Int len = LEN_PLIST( list );
 
-  // the list will probably loose its flags/properties
-  CLEAR_FILTS_LIST(list);
-
-  // resize the list if necessary
-  len = LEN_PLIST( list );
-  if ( len < pos ) {
-    GAP_GC_PUSH1(&val);
-    GROW_PLIST( list, pos );
-    GAP_GC_POP();
-    SET_LEN_PLIST( list, pos );
-  }
+    // the list will probably loose its flags/properties
+    CLEAR_FILTS_LIST(list);
 
     // now perform the assignment
-    SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
+    AssPlist(list, pos, val);
 
     // restore denseness if we can
     if (pos <= len+1)
-      SET_FILT_LIST( list, FN_IS_DENSE );
+        SET_FILT_LIST( list, FN_IS_DENSE );
     else
         SET_FILT_LIST( list, FN_IS_NDENSE );
 }
@@ -1662,24 +1619,13 @@ static void AssPlistDense(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
 static void AssPlistHomog(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
                           Obj val GAP_GC_ROOTED_ARGUMENT)
 {
-  Int len;
-  Obj fam;
+    Int len = LEN_PLIST( list );
 
-  // the list may loose its flags/properties
-  CLEAR_FILTS_LIST(list);
-
-  // resize the list if necessary
-  len = LEN_PLIST( list );
-  if ( len < pos ) {
-    GAP_GC_PUSH1(&val);
-    GROW_PLIST( list, pos );
-    GAP_GC_POP();
-    SET_LEN_PLIST( list, pos );
-  }
+    // the list may loose its flags/properties
+    CLEAR_FILTS_LIST(list);
 
     // now perform the assignment
-    SET_ELM_PLIST( list, pos, val );
-    CHANGED_BAG( list );
+    AssPlist(list, pos, val);
 
     // restore denseness if we can
     if (pos <= len+1)
@@ -1709,10 +1655,7 @@ static void AssPlistHomog(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
         else if (!SyInitializing && !IS_MUTABLE_OBJ(val))
           {
             // find the family of an original list element
-            if (pos != 1)
-              fam = FAMILY_OBJ(ELM_PLIST(list, 1));
-            else
-              fam = FAMILY_OBJ(ELM_PLIST(list, 2));
+            Obj fam = FAMILY_OBJ(ELM_PLIST(list, (pos != 1) ? 1 : 2));
 
             // restore homogeneity if we can
             if (fam == FAMILY_OBJ( val ))
