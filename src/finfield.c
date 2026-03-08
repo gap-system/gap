@@ -65,7 +65,7 @@ static Obj TYPE_FFE0 GAP_GC_GLOBALLY_ROOTED;
 **  Local copy of GAP function PrimitiveRootMod, used when initializing new
 **  fields.
 */
-static Obj PrimitiveRootMod;
+static Obj PrimitiveRootMod GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************

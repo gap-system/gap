@@ -884,7 +884,7 @@ static Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
 }
 
 
-static Int ReadFromPty2(UInt stream, Char * buf, Int maxlen, UInt block)
+static Int ReadFromPty2(UInt stream, Char * buf, Int maxlen, UInt block) GAP_GC_NOTSAFEPOINT
 {
     // read at most maxlen bytes from stream, into buf. If block is non-zero
     // then wait for at least one byte to be available. Otherwise don't.
