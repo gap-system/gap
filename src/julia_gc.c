@@ -883,11 +883,6 @@ BOOL IsGapObj(void * p)
     return jl_typeis(p, DatatypeGapObj);
 }
 
-void CHANGED_BAG(Bag bag)
-{
-    jl_gc_wb_back(BAG_HEADER(bag));
-}
-
 void SwapMasterPoint(Bag bag1, Bag bag2)
 {
     SWAP(UInt *, bag1->body, bag2->body);

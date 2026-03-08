@@ -367,7 +367,10 @@ EXPORT_INLINE void CHANGED_BAG(Bag bag)
 
 #elif defined(USE_JULIA_GC)
 
-void CHANGED_BAG(Bag bag);
+EXPORT_INLINE void CHANGED_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
+{
+    jl_gc_wb_back(BAG_HEADER(bag));
+}
 
 BOOL IsGapObj(void *);
 
@@ -383,7 +386,7 @@ BOOL IsGapObj(void *);
 **
 */
 
-void CHANGED_BAG(Bag b);
+void CHANGED_BAG(Bag b) GAP_GC_NOTSAFEPOINT;
 
 #elif defined(USE_GASMAN)
 
