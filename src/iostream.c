@@ -303,16 +303,20 @@ static Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self)
 
 
 //
-// posix_spawn_file_actions_addchdir was only recently added to POSIX, and
+// posix_spawn_file_actions_addchdir was only "recently" added to POSIX, and
 // most implementations therefore do not yet use this final name, but instead
 // provide the functionality under the alternate name
-// posix_spawn_file_actions_addchdir_np. To keep things simple, we detect this
-// case and use some preprocessor tricks to make things work in either case.
+// posix_spawn_file_actions_addchdir_np.
 //
-// macOS 26 has posix_spawn_file_actions_addchdir, but Xcode generates
-// code which uses it even in older versions of macOS. Therefore if both
-// functions are defined, we will always use the older _np version.
+// For most platforms, configure checks are sufficient to choose between the
+// standard and _np names. macOS is trickier: recent SDKs declare the standard
+// name, but a binary built against them may still target an older macOS which
+// only provides the _np symbol at runtime, possibly leading to crashes.
 // See issue <https://github.com/gap-system/gap/issues/6118> for details.
+// To preserve that compatibility, we continue to prefer the _np API on Apple
+// for now and locally suppress its deprecation warning in newer SDKs. If
+// Apple ever removes the _np symbol, we can revisit this and switch to a more
+// complex runtime selection scheme.
 #if defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR) ||                       \
     defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR_NP)
 
@@ -320,13 +324,20 @@ static Obj FuncDEFAULT_SIGCHLD_HANDLER(Obj self)
 #define HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR
 #endif
 
-#if HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR_NP
-#define posix_spawn_file_actions_addchdir_func(f, d)                         \
-    posix_spawn_file_actions_addchdir_np(f, d)
+static int posix_spawn_file_actions_addchdir_func(
+    posix_spawn_file_actions_t * file_actions, const char * dir)
+{
+#if defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR_NP) && defined(__APPLE__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    return posix_spawn_file_actions_addchdir_np(file_actions, dir);
+#pragma GCC diagnostic pop
+#elif defined(HAVE_POSIX_SPAWN_FILE_ACTIONS_ADDCHDIR_NP)
+    return posix_spawn_file_actions_addchdir_np(file_actions, dir);
 #else
-#define posix_spawn_file_actions_addchdir_func(f, d)                         \
-    posix_spawn_file_actions_addchdir(f, d)
+    return posix_spawn_file_actions_addchdir(file_actions, dir);
 #endif
+}
 
 #endif
 
