@@ -185,7 +185,9 @@ UInt4 nextrandMT_int32(UInt4* mt)
 integrate with GAP  SL*/
 
 
+#ifndef FORCE_INLINE
 #define FORCE_INLINE static inline
+#endif
 
 #ifndef SYS_IS_64_BIT
 
