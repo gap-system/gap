@@ -382,7 +382,9 @@ static Int InitKernel (
 static Int InitLibrary (
     StructInitInfo *    module )
 {
-    Obj             tmp;
+    Obj tmp = 0;
+
+    GAP_GC_PUSH1(&tmp);
 
     // init filters and functions
     InitGVarFiltsFromTable( GVarFilts );
@@ -418,6 +420,8 @@ static Int InitLibrary (
     SET_HDLR_FUNC( tmp, 2, ReturnFail2);
     SET_HDLR_FUNC( tmp, 3, ReturnFail3);
     AssReadOnlyGVar( GVarName( "RETURN_FAIL" ), tmp );
+
+    GAP_GC_POP();
 
     return 0;
 }
