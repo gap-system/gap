@@ -119,21 +119,21 @@ static inline Obj NEW_TRANS(UInt deg)
 }
 
 template <typename T>
-static inline T * ADDR_TRANS(Obj f)
+static inline T * ADDR_TRANS(Obj f) GAP_GC_NOTSAFEPOINT
 {
     ASSERT_IS_TRANS<T>(f);
     return (T *)(ADDR_OBJ(f) + 3);
 }
 
 template <typename T>
-static inline const T * CONST_ADDR_TRANS(Obj f)
+static inline const T * CONST_ADDR_TRANS(Obj f) GAP_GC_NOTSAFEPOINT
 {
     ASSERT_IS_TRANS<T>(f);
     return (const T *)(CONST_ADDR_OBJ(f) + 3);
 }
 
 template <typename T>
-static inline UInt DEG_TRANS(Obj f)
+static inline UInt DEG_TRANS(Obj f) GAP_GC_NOTSAFEPOINT
 {
     ASSERT_IS_TRANS<T>(f);
     return (UInt)(SIZE_OBJ(f) - 3 * sizeof(Obj)) / sizeof(T);

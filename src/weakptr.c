@@ -78,7 +78,7 @@ static inline void FORGET_WP(Obj wp, UInt pos)
 **  Objects at the end of <wp> may evaporate, so the stored length can only
 **  be regarded as an upper bound.
 */
-static inline void STORE_LEN_WPOBJ(Obj wp, Int len)
+static inline void STORE_LEN_WPOBJ(Obj wp, Int len) GAP_GC_NOTSAFEPOINT
 {
     ADDR_OBJ(wp)[0] = INTOBJ_INT(len);
 }
@@ -94,7 +94,7 @@ static inline void STORE_LEN_WPOBJ(Obj wp, Int len)
 **  Note that as the list can mutate under your feet, the length may be
 **  an overestimate.
 */
-static inline Int STORED_LEN_WPOBJ(Obj wp)
+static inline Int STORED_LEN_WPOBJ(Obj wp) GAP_GC_NOTSAFEPOINT
 {
     return INT_INTOBJ(CONST_ADDR_OBJ(wp)[0]);
 }

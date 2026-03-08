@@ -83,17 +83,17 @@ enum {
     DEFAULT_OBJSET_SIZE = (1 << DEFAULT_OBJSET_BITS),
 };
 
-static inline UInt * ADDR_WORD(Obj obj)
+static inline UInt * ADDR_WORD(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return ((UInt *)(ADDR_OBJ(obj)));
 }
 
-static inline const UInt * CONST_ADDR_WORD(Obj obj)
+static inline const UInt * CONST_ADDR_WORD(Obj obj) GAP_GC_NOTSAFEPOINT
 {
     return ((const UInt *)(CONST_ADDR_OBJ(obj)));
 }
 
-static inline Obj READ_SLOT(Obj container, int slot)
+static inline Obj READ_SLOT(Obj container, int slot) GAP_GC_NOTSAFEPOINT
 {
 #ifdef GAP_KERNEL_DEBUG
     GAP_ASSERT(slot >= 0);
@@ -107,6 +107,7 @@ static inline Obj READ_SLOT(Obj container, int slot)
 }
 
 static inline void WRITE_SLOT(Obj container, int slot, Obj elm)
+    GAP_GC_NOTSAFEPOINT
 {
 #ifdef GAP_KERNEL_DEBUG
     GAP_ASSERT(slot >= 0);

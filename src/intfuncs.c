@@ -522,17 +522,17 @@ typedef struct {
     Obj offset;
 } BitfieldFuncBag;
 
-static inline const BitfieldFuncBag * CBFB(Obj func)
+static inline const BitfieldFuncBag * CBFB(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return (const BitfieldFuncBag *)CONST_ADDR_OBJ(func);
 }
 
-static inline BitfieldFuncBag * BFB(Obj func)
+static inline BitfieldFuncBag * BFB(Obj func) GAP_GC_NOTSAFEPOINT
 {
     return (BitfieldFuncBag *)ADDR_OBJ(func);
 }
 
-static inline UInt MASK_BITFIELD_FUNC(Obj func)
+static inline UInt MASK_BITFIELD_FUNC(Obj func) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
     GAP_ASSERT(SIZE_OBJ(func) == sizeof(BitfieldFuncBag));
@@ -546,7 +546,7 @@ static inline void SET_MASK_BITFIELD_FUNC(Obj func, UInt mask)
     BFB(func)->mask = ObjInt_UInt(mask);
 }
 
-static inline UInt OFFSET_BITFIELD_FUNC(Obj func)
+static inline UInt OFFSET_BITFIELD_FUNC(Obj func) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(TNUM_OBJ(func) == T_FUNCTION);
     GAP_ASSERT(SIZE_OBJ(func) == sizeof(BitfieldFuncBag));

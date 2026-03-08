@@ -105,37 +105,38 @@
 /****************************************************************************
 **
 */
-static inline UInt SIZE_CYC(Obj cyc)
+static inline UInt SIZE_CYC(Obj cyc) GAP_GC_NOTSAFEPOINT
 {
     return SIZE_OBJ(cyc) / (sizeof(Obj)+sizeof(UInt4));
 }
 
-static inline Obj * COEFS_CYC(Obj cyc)
+static inline Obj * COEFS_CYC(Obj cyc) GAP_GC_NOTSAFEPOINT
 {
     return ADDR_OBJ(cyc);
 }
 
-static inline const Obj * CONST_COEFS_CYC(Obj cyc)
+static inline const Obj * CONST_COEFS_CYC(Obj cyc) GAP_GC_NOTSAFEPOINT
 {
     return CONST_ADDR_OBJ(cyc);
 }
 
-static inline UInt4 * EXPOS_CYC(Obj cyc, UInt len)
+static inline UInt4 * EXPOS_CYC(Obj cyc, UInt len) GAP_GC_NOTSAFEPOINT
 {
     return (UInt4 *)(ADDR_OBJ(cyc)+(len));
 }
 
 static inline const UInt4 * CONST_EXPOS_CYC(Obj cyc, UInt len)
+    GAP_GC_NOTSAFEPOINT
 {
     return (const UInt4 *)(CONST_ADDR_OBJ(cyc)+(len));
 }
 
-static inline Obj NOF_CYC(Obj cyc)
+static inline Obj NOF_CYC(Obj cyc) GAP_GC_NOTSAFEPOINT
 {
     return CONST_COEFS_CYC(cyc)[0];
 }
 
-static inline void SET_NOF_CYC(Obj cyc, Obj val)
+static inline void SET_NOF_CYC(Obj cyc, Obj val) GAP_GC_NOTSAFEPOINT
 {
     COEFS_CYC(cyc)[0] = val;
 }

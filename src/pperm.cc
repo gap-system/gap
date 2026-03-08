@@ -87,21 +87,21 @@ static void ASSERT_IS_PPERM(Obj pperm)
 }
 
 template <typename T>
-static inline T * ADDR_PPERM(Obj f)
+static inline T * ADDR_PPERM(Obj f) GAP_GC_NOTSAFEPOINT
 {
     ASSERT_IS_PPERM<T>(f);
     return (T *)(ADDR_OBJ(f) + 2) + 1;
 }
 
 template <typename T>
-static inline const T * CONST_ADDR_PPERM(Obj f)
+static inline const T * CONST_ADDR_PPERM(Obj f) GAP_GC_NOTSAFEPOINT
 {
     ASSERT_IS_PPERM<T>(f);
     return (const T *)(CONST_ADDR_OBJ(f) + 2) + 1;
 }
 
 template <typename T>
-static inline UInt DEG_PPERM(Obj f)
+static inline UInt DEG_PPERM(Obj f) GAP_GC_NOTSAFEPOINT
 {
     ASSERT_IS_PPERM<T>(f);
     return (UInt)(SIZE_OBJ(f) - sizeof(T) - 2 * sizeof(Obj)) / sizeof(T);
@@ -163,14 +163,14 @@ static inline void ResizeTmpPPerm(UInt len)
  *****************************************************************************/
 
 template <typename T>
-static inline UInt GET_CODEG_PPERM(Obj f)
+static inline UInt GET_CODEG_PPERM(Obj f) GAP_GC_NOTSAFEPOINT
 {
     ASSERT_IS_PPERM<T>(f);
     return *(const T *)(CONST_ADDR_OBJ(f) + 2);
 }
 
 template <typename T>
-static inline void SET_CODEG_PPERM(Obj f, T codeg)
+static inline void SET_CODEG_PPERM(Obj f, T codeg) GAP_GC_NOTSAFEPOINT
 {
     ASSERT_IS_PPERM<T>(f);
     *(T *)(ADDR_OBJ(f) + 2) = codeg;

@@ -231,22 +231,22 @@ enum { BAG_SLACK = 0 };
 
 // TIGHT_WORDS_BAG defines the actual amount of space a Bag requires,
 // without BAG_SLACK.
-static inline UInt TIGHT_WORDS_BAG(UInt size)
+static inline UInt TIGHT_WORDS_BAG(UInt size) GAP_GC_NOTSAFEPOINT
 {
     return (size + sizeof(Bag) - 1) / sizeof(Bag);
 }
 
-static inline UInt WORDS_BAG(UInt size)
+static inline UInt WORDS_BAG(UInt size) GAP_GC_NOTSAFEPOINT
 {
     return TIGHT_WORDS_BAG(size) + BAG_SLACK;
 }
 
-static inline Bag *DATA(BagHeader *bag)
+static inline Bag *DATA(BagHeader *bag) GAP_GC_NOTSAFEPOINT
 {
     return (Bag *)(bag + 1);
 }
 
-static inline void SET_PTR_BAG(Bag bag, Bag *val)
+static inline void SET_PTR_BAG(Bag bag, Bag *val) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(bag != 0);
     bag->body = val;

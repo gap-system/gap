@@ -156,7 +156,7 @@ GAP_STATIC_ASSERT( sizeof(mp_limb_t) == sizeof(UInt), "gmp limb size incompatibl
 ** The bug this works around is explained more in
 ** https://github.com/gap-system/gap/issues/3434
 */
-static inline void ENSURE_BAG(Bag bag)
+static inline void ENSURE_BAG(Bag bag) GAP_GC_NOTSAFEPOINT
 {
 // Note: This workaround is only required with the original GMP and not with
 // MPIR
@@ -392,7 +392,7 @@ static Obj GMPorINTOBJ_MPZ( mpz_t v )
 #define MPZ_FAKEMPZ(fake)   (UPDATE_FAKEMPZ(fake), fake->v)
 
 // UPDATE_FAKEMPZ is a helper function for the MPZ_FAKEMPZ macro
-static inline void UPDATE_FAKEMPZ( fake_mpz_t fake )
+static inline void UPDATE_FAKEMPZ(fake_mpz_t fake) GAP_GC_NOTSAFEPOINT
 {
   fake->v->_mp_d = fake->obj ? (mp_ptr)ADDR_INT(fake->obj) : &fake->tmp;
 }
@@ -721,7 +721,7 @@ Obj MakeObjInt(const UInt * limbs, int size)
 // This function returns an immediate integer, or
 // an integer object with exactly one limb, and returns
 // its absolute value as an unsigned integer.
-static inline UInt AbsOfSmallInt(Obj x)
+static inline UInt AbsOfSmallInt(Obj x) GAP_GC_NOTSAFEPOINT
 {
     if (!IS_INTOBJ(x)) {
         GAP_ASSERT(SIZE_INT(x) == 1);
