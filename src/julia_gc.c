@@ -271,7 +271,7 @@ static void MarkAllSubBagsDefault(Bag bag, void * ref)
     MarkArrayOfBags(CONST_PTR_BAG(bag), SIZE_BAG(bag) / sizeof(Bag), ref);
 }
 
-static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty)
+static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty) GAP_GC_NOTSAFEPOINT
 {
     // only traverse objects internally used by GAP
     if (!jl_typeis(obj, ty))
@@ -279,7 +279,7 @@ static inline int JMarkTyped(jl_ptls_t ptls, void * obj, jl_datatype_t * ty)
     return jl_gc_mark_queue_obj(ptls, (jl_value_t *)obj);
 }
 
-static inline int JMark(jl_ptls_t ptls, void * obj)
+static inline int JMark(jl_ptls_t ptls, void * obj) GAP_GC_NOTSAFEPOINT
 {
 #ifdef VALIDATE_MARKING
     // Validate that `obj` is still allocated and not on a
@@ -295,7 +295,7 @@ static inline int JMark(jl_ptls_t ptls, void * obj)
 }
 
 // helper called directly by GAP.jl / JuliaInterface
-void MarkJuliaObjSafe(void * obj, void * ref)
+void MarkJuliaObjSafe(void * obj, void * ref) GAP_GC_NOTSAFEPOINT
 {
     if (!obj)
         return;
@@ -312,7 +312,7 @@ void MarkJuliaObjSafe(void * obj, void * ref)
 }
 
 // helper called directly by GAP.jl / JuliaInterface
-void MarkJuliaObj(void * obj, void * ref)
+void MarkJuliaObj(void * obj, void * ref) GAP_GC_NOTSAFEPOINT
 {
     if (!obj)
         return;
@@ -321,7 +321,7 @@ void MarkJuliaObj(void * obj, void * ref)
 }
 
 // helper called by MarkWeakPointerObj
-void MarkJuliaWeakRef(void * p, void * ref)
+void MarkJuliaWeakRef(void * p, void * ref) GAP_GC_NOTSAFEPOINT
 {
     // If `jl_nothing` gets passed in as an argument, it will not
     // be marked. This is harmless, because `jl_nothing` will always
@@ -985,7 +985,7 @@ Bag NewBag(UInt type, UInt size)
     return bag;
 }
 
-UInt ResizeBag(Bag bag, UInt new_size)
+UInt ResizeBag(Bag bag GAP_GC_MAYBE_UNROOTED GAP_GC_ROOTS_TEMPORARILY, UInt new_size)
 {
     BagHeader * header = BAG_HEADER(bag);
     UInt        old_size = header->size;
@@ -1006,7 +1006,9 @@ UInt ResizeBag(Bag bag, UInt new_size)
 
         // allocate new bag
         jl_ptls_t ptls = jl_get_ptls_states();
+        GAP_GC_PUSH1(&bag);
         header = AllocateBagMemory(ptls, header->type, alloc_size);
+        GAP_GC_POP();
 
         // copy bag header and data, and update size
         memcpy(header, BAG_HEADER(bag), sizeof(BagHeader) + old_size);
@@ -1022,7 +1024,7 @@ UInt ResizeBag(Bag bag, UInt new_size)
     return 1;
 }
 
-inline void MarkBag(Bag bag, void * ref)
+inline void MarkBag(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT
 {
     if (!IS_BAG_REF(bag))
         return;

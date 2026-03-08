@@ -561,11 +561,11 @@ void RetypeBagSMIfWritable(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT;
 **  data areas of all bags may change.  So you must not keep  any pointers to
 **  or into the data areas of bags over calls to 'ResizeBag' (see "PTR_BAG").
 */
-UInt ResizeBag(Bag bag, UInt new_size);
+UInt ResizeBag(Bag bag GAP_GC_MAYBE_UNROOTED GAP_GC_ROOTS_TEMPORARILY, UInt new_size);
 
 // ResizedWordSizedBag is the same as ResizeBag, except it round 'size'
 // up to the next multiple of sizeof(UInt)
-EXPORT_INLINE UInt ResizeWordSizedBag(Bag bag, UInt size)
+EXPORT_INLINE UInt ResizeWordSizedBag(Bag bag GAP_GC_MAYBE_UNROOTED GAP_GC_ROOTS_TEMPORARILY, UInt size)
 {
     UInt padding = 0;
     if(size % sizeof(UInt) != 0) {
@@ -759,7 +759,7 @@ EXPORT_INLINE void MarkBag( Bag bag, void * ref )
 {
 }
 #else
-void MarkBag(Bag bag, void * ref);
+void MarkBag(Bag bag, void * ref) GAP_GC_NOTSAFEPOINT;
 #endif
 
 
