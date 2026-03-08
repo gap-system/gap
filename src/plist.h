@@ -262,10 +262,13 @@ void AssPlist(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
 **  instead.
 **
 */
-EXPORT_INLINE UInt PushPlist(Obj list GAP_GC_ROOTING_ARGUMENT, Obj val GAP_GC_ROOTED_ARGUMENT)
+EXPORT_INLINE UInt PushPlist(Obj list GAP_GC_ROOTING_ARGUMENT,
+                             Obj val GAP_GC_ROOTED_ARGUMENT)
 {
     const UInt pos = LEN_PLIST(list) + 1;
+    GAP_GC_PUSH1(&val);
     GROW_PLIST(list, pos);
+    GAP_GC_POP();
     SET_LEN_PLIST(list, pos);
     SET_ELM_PLIST(list, pos, val);
     if (IS_BAG_REF(val))
@@ -373,9 +376,11 @@ Obj ShallowCopyPlist(Obj list);
 **
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list
 */
-void AssPlistEmpty(Obj list, Int pos, Obj val);
+void AssPlistEmpty(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
+                   Obj val GAP_GC_ROOTED_ARGUMENT);
 
-void AssPlistFfe(Obj list, Int pos, Obj val);
+void AssPlistFfe(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
+                 Obj val GAP_GC_ROOTED_ARGUMENT);
 
 /****************************************************************************
 **

@@ -1481,13 +1481,15 @@ static void UnbPlist(Obj list, Int pos)
 **  'AssPlist' is the function in 'AssListFuncs' for plain lists.
 */
 void            AssPlist (
-    Obj                 list,
+    Obj                 list GAP_GC_ROOTING_ARGUMENT,
     Int                 pos,
-    Obj                 val )
+    Obj                 val GAP_GC_ROOTED_ARGUMENT )
 {
     // resize the list if necessary
     if ( LEN_PLIST( list ) < pos ) {
+        GAP_GC_PUSH1(&val);
         GROW_PLIST( list, pos );
+        GAP_GC_POP();
         SET_LEN_PLIST( list, pos );
     }
 
@@ -1497,7 +1499,8 @@ void            AssPlist (
         CHANGED_BAG( list );
 }
 
-static void AssPlistXXX(Obj list, Int pos, Obj val)
+static void AssPlistXXX(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
+                        Obj val GAP_GC_ROOTED_ARGUMENT)
 {
   Int len;
 
@@ -1507,7 +1510,9 @@ static void AssPlistXXX(Obj list, Int pos, Obj val)
     // resize the list if necessary
     len = LEN_PLIST( list );
     if ( len < pos ) {
+        GAP_GC_PUSH1(&val);
         GROW_PLIST( list, pos );
+        GAP_GC_POP();
         SET_LEN_PLIST( list, pos );
     }
 
@@ -1521,14 +1526,17 @@ static void AssPlistXXX(Obj list, Int pos, Obj val)
       SET_FILT_LIST(list, FN_IS_NDENSE);
 }
 
-static void AssPlistCyc(Obj list, Int pos, Obj val)
+static void AssPlistCyc(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
+                        Obj val GAP_GC_ROOTED_ARGUMENT)
 {
   Int len;
 
   // resize the list if necessary
   len = LEN_PLIST( list );
   if ( len < pos ) {
+    GAP_GC_PUSH1(&val);
     GROW_PLIST( list, pos );
+    GAP_GC_POP();
     SET_LEN_PLIST( list, pos );
   }
 
@@ -1559,16 +1567,18 @@ static void AssPlistCyc(Obj list, Int pos, Obj val)
 }
 
 void AssPlistFfe   (
-    Obj                 list,
+    Obj                 list GAP_GC_ROOTING_ARGUMENT,
     Int                 pos,
-    Obj                 val )
+    Obj                 val GAP_GC_ROOTED_ARGUMENT )
 {
     Int len;
 
     // resize the list if necessary
     len = LEN_PLIST( list );
     if ( len < pos ) {
+        GAP_GC_PUSH1(&val);
         GROW_PLIST( list, pos );
+        GAP_GC_POP();
         SET_LEN_PLIST( list, pos );
     }
 
@@ -1621,7 +1631,8 @@ void AssPlistFfe   (
       }
 }
 
-static void AssPlistDense(Obj list, Int pos, Obj val)
+static void AssPlistDense(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
+                          Obj val GAP_GC_ROOTED_ARGUMENT)
 {
   Int len;
 
@@ -1631,7 +1642,9 @@ static void AssPlistDense(Obj list, Int pos, Obj val)
   // resize the list if necessary
   len = LEN_PLIST( list );
   if ( len < pos ) {
+    GAP_GC_PUSH1(&val);
     GROW_PLIST( list, pos );
+    GAP_GC_POP();
     SET_LEN_PLIST( list, pos );
   }
 
@@ -1646,7 +1659,8 @@ static void AssPlistDense(Obj list, Int pos, Obj val)
         SET_FILT_LIST( list, FN_IS_NDENSE );
 }
 
-static void AssPlistHomog(Obj list, Int pos, Obj val)
+static void AssPlistHomog(Obj list GAP_GC_ROOTING_ARGUMENT, Int pos,
+                          Obj val GAP_GC_ROOTED_ARGUMENT)
 {
   Int len;
   Obj fam;
@@ -1657,7 +1671,9 @@ static void AssPlistHomog(Obj list, Int pos, Obj val)
   // resize the list if necessary
   len = LEN_PLIST( list );
   if ( len < pos ) {
+    GAP_GC_PUSH1(&val);
     GROW_PLIST( list, pos );
+    GAP_GC_POP();
     SET_LEN_PLIST( list, pos );
   }
 
@@ -1716,9 +1732,9 @@ static void AssPlistHomog(Obj list, Int pos, Obj val)
 *F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list
 */
 void AssPlistEmpty (
-    Obj                 list,
+    Obj                 list GAP_GC_ROOTING_ARGUMENT,
     Int                 pos,
-    Obj                 val )
+    Obj                 val GAP_GC_ROOTED_ARGUMENT )
 {
     // if <pos> is large than one use `AssPlistDense'
     if ( 1 != pos ) {
