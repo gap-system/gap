@@ -221,7 +221,7 @@ static void GrowResultCyc(UInt size)
 **
 **  'TypeCyc' is the function in 'TypeObjFuncs' for cyclotomics.
 */
-static Obj TYPE_CYC;
+static Obj TYPE_CYC GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeCyc(Obj cyc)
 {

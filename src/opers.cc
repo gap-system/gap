@@ -118,7 +118,7 @@ static void PrintFlags(Obj flags)
 **
 *F  TypeFlags( <flags> )  . . . . . . . . . . . . . . .  type of a flags list
 */
-static Obj TYPE_FLAGS;
+static Obj TYPE_FLAGS GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeFlags(Obj flags)
 {
@@ -1442,7 +1442,7 @@ static void HandleMethodNotFound(
 static Obj FLUSH_ALL_METHOD_CACHES GAP_GC_GLOBALLY_ROOTED;
 
 static Int NextTypeID;
-static Obj IsType;
+static Obj IsType GAP_GC_GLOBALLY_ROOTED;
 
 static void FixTypeIDs( Bag b ) {
   if ( (TNUM_OBJ( b )  == T_POSOBJ) &&
@@ -3108,7 +3108,7 @@ static Obj FuncNEW_GLOBAL_FUNCTION(Obj self, Obj name)
 **
 *F  FuncINSTALL_GLOBAL_FUNCTION( <self>, <oper>, <func> )
 */
-static Obj REREADING;
+static Obj REREADING GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncINSTALL_GLOBAL_FUNCTION(Obj self, Obj oper, Obj func)
 {

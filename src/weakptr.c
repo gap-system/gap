@@ -502,7 +502,7 @@ static Obj FuncElmWPObj(Obj self, Obj wp, Obj pos)
 **  same type.
 */
 
-static Obj TYPE_WPOBJ;
+static Obj TYPE_WPOBJ GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeWPObj(Obj wp)
 {

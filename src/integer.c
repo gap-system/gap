@@ -180,11 +180,11 @@ static Obj IsIntFilt;
 **
 **  'TypeInt' is the function in 'TypeObjFuncs' for integers.
 */
-static Obj TYPE_INT_SMALL_ZERO;
-static Obj TYPE_INT_SMALL_POS;
-static Obj TYPE_INT_SMALL_NEG;
-static Obj TYPE_INT_LARGE_POS;
-static Obj TYPE_INT_LARGE_NEG;
+static Obj TYPE_INT_SMALL_ZERO GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_INT_SMALL_POS GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_INT_SMALL_NEG GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_INT_LARGE_POS GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_INT_LARGE_NEG GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeIntSmall(Obj val)
 {

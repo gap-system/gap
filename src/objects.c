@@ -73,7 +73,7 @@ typedef struct {
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
 
 
-static Obj TYPE_KERNEL_OBJECT;
+static Obj TYPE_KERNEL_OBJECT GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
@@ -1745,7 +1745,7 @@ static void LoadDatObj(Obj datobj)
 */
 static Obj IsToBeDefinedObj GAP_GC_GLOBALLY_ROOTED;
 
-static Obj REREADING;
+static Obj REREADING GAP_GC_GLOBALLY_ROOTED;
 
 static Obj FuncCLONE_OBJ(Obj self, Obj dst, Obj src)
 {

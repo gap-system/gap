@@ -1864,8 +1864,8 @@ static Char * syFgetsNoEdit(Char * line, UInt length, Int fid, UInt block)
    checks before returning result to kernel, the second is the list of handler
    functions which do the actual work. */
 static Obj LineEditKeyHandler GAP_GC_GLOBALLY_ROOTED;
-static Obj LineEditKeyHandlers;
-static Obj GAPInfo;
+static Obj LineEditKeyHandlers GAP_GC_GLOBALLY_ROOTED;
+static Obj GAPInfo GAP_GC_GLOBALLY_ROOTED;
 
 #ifdef HAVE_LIBREADLINE
 

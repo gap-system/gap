@@ -63,8 +63,8 @@
 **
 **  'TypePRec' is the function in 'TypeObjFuncs' for plain records.
 */
-static Obj TYPE_PREC_MUTABLE;
-static Obj TYPE_PREC_IMMUTABLE;
+static Obj TYPE_PREC_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_PREC_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypePRec(Obj prec)
 {

@@ -22,7 +22,7 @@
 
 #include <string.h>
 
-static Obj GAP_SHA256_State_Type;
+static Obj GAP_SHA256_State_Type GAP_GC_GLOBALLY_ROOTED;
 
 // Implements the SHA256 hash function as per the description in
 // https://web.archive.org/web/20130526224224/http://csrc.nist.gov/groups/STM/cavp/documents/shs/sha256-384-512.pdf

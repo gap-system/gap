@@ -70,7 +70,7 @@ BOOL IS_MACFLOAT(Obj obj)
 **
 **  'TypeMacfloat' is the function in 'TypeObjFuncs' for macfloatean values.
 */
-static Obj TYPE_MACFLOAT;
+static Obj TYPE_MACFLOAT GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeMacfloat(Obj val)
 {

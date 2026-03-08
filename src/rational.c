@@ -88,8 +88,8 @@ static inline Obj MakeRat(Obj num, Obj den)
 **
 **  'TypeRat' is the function in 'TypeObjFuncs' for rationals.
 */
-static Obj TYPE_RAT_POS;
-static Obj TYPE_RAT_NEG;
+static Obj TYPE_RAT_POS GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_RAT_NEG GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeRat(Obj rat)
 {

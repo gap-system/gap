@@ -71,7 +71,7 @@ Obj Undefined GAP_GC_GLOBALLY_ROOTED;
 **
 **  'TypeBool' is the function in 'TypeObjFuncs' for boolean values.
 */
-static Obj TYPE_BOOL;
+static Obj TYPE_BOOL GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeBool(Obj val)
 {

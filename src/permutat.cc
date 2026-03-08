@@ -137,9 +137,9 @@ static inline T * ADDR_TMP_PERM()
 **
 **  'TypePerm' is the function in 'TypeObjFuncs' for permutations.
 */
-static Obj TYPE_PERM2;
+static Obj TYPE_PERM2 GAP_GC_GLOBALLY_ROOTED;
 
-static Obj TYPE_PERM4;
+static Obj TYPE_PERM4 GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypePerm2(Obj perm)
 {
@@ -811,7 +811,7 @@ static Obj PowIntPerm(Obj opL, Obj opR)
 **  point and so on, until we come  back to  <opL>.  The  last point  is  the
 **  preimage of <opL>.  This is faster because the cycles are  usually short.
 */
-static Obj PERM_INVERSE_THRESHOLD;
+static Obj PERM_INVERSE_THRESHOLD GAP_GC_GLOBALLY_ROOTED;
 
 template <typename T>
 static Obj QuoIntPerm(Obj opL, Obj opR)
@@ -1201,7 +1201,7 @@ UInt LargestMovedPointPerm(Obj perm)
 */
 
 // Import 'Infinity', as a return value for the identity permutation
-static Obj Infinity;
+static Obj Infinity GAP_GC_GLOBALLY_ROOTED;
 
 template <typename T>
 static inline Obj SmallestMovedPointPerm_(Obj perm)

@@ -3726,7 +3726,7 @@ static void LoadPPerm4(Obj f)
 #endif
 
 
-static Obj TYPE_PPERM2;
+static Obj TYPE_PPERM2 GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypePPerm2(Obj f)
 {
@@ -3734,7 +3734,7 @@ static Obj TypePPerm2(Obj f)
     return TYPE_PPERM2;
 }
 
-static Obj TYPE_PPERM4;
+static Obj TYPE_PPERM4 GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypePPerm4(Obj f)
 {

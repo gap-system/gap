@@ -4067,14 +4067,14 @@ static void LoadTrans4(Obj f)
 #endif
 
 
-static Obj TYPE_TRANS2;
+static Obj TYPE_TRANS2 GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeTrans2(Obj f)
 {
     return TYPE_TRANS2;
 }
 
-static Obj TYPE_TRANS4;
+static Obj TYPE_TRANS4 GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeTrans4(Obj f)
 {

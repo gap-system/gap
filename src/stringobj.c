@@ -94,7 +94,7 @@ Obj ObjsChar [256] GAP_GC_GLOBALLY_ROOTED;
 **
 **  'TypeChar' is the function in 'TypeObjFuncs' for character values.
 */
-static Obj TYPE_CHAR;
+static Obj TYPE_CHAR GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeChar(Obj chr)
 {
@@ -462,12 +462,12 @@ Int             GrowString (
 **
 **  'TypeString' is the function in 'TypeObjFuncs' for strings.
 */
-static Obj TYPE_STRING_MUTABLE;
-static Obj TYPE_STRING_IMMUTABLE;
-static Obj TYPE_STRING_NSORT_MUTABLE;
-static Obj TYPE_STRING_NSORT_IMMUTABLE;
-static Obj TYPE_STRING_SSORT_MUTABLE;
-static Obj TYPE_STRING_SSORT_IMMUTABLE;
+static Obj TYPE_STRING_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_NSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_NSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_SSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_STRING_SSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeString(Obj list)
 {

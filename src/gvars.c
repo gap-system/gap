@@ -312,7 +312,7 @@ static Obj ErrorMustHaveAssObjHandler(Obj self, Obj args)
 **  'AssGVar' assigns the value <val> to the global variable <gvar>.
 */
 
-static Obj REREADING;                   // Copy of GAP global variable REREADING
+static Obj REREADING GAP_GC_GLOBALLY_ROOTED; // Copy of GAP global variable REREADING
 
 // We store pointers to C global variables as GAP immediate integers.
 static Obj * ELM_COPS_PLIST(Obj cops, UInt i)

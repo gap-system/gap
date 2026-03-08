@@ -963,10 +963,10 @@ Obj ArgStringToList(const Char *nams_c) {
 **
 **  'TypeFunction' is the function in 'TypeObjFuncs' for functions.
 */
-static Obj TYPE_FUNCTION;
-static Obj TYPE_OPERATION;
-static Obj TYPE_FUNCTION_WITH_NAME;
-static Obj TYPE_OPERATION_WITH_NAME;
+static Obj TYPE_FUNCTION GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_OPERATION GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_FUNCTION_WITH_NAME GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_OPERATION_WITH_NAME GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeFunction(Obj func)
 {

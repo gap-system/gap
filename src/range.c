@@ -72,8 +72,8 @@
 **  'TypeRangeNSort' is the  function in 'TypeObjFuncs' for ranges which are
 **  not strictly sorted.
 */
-static Obj TYPE_RANGE_NSORT_IMMUTABLE;
-static Obj TYPE_RANGE_NSORT_MUTABLE;
+static Obj TYPE_RANGE_NSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_RANGE_NSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeRangeNSort(Obj list)
 {
@@ -89,8 +89,8 @@ static Obj TypeRangeNSort(Obj list)
 **  'TypeRangeSSort' is the function in 'TypeObjFuncs' for ranges which are
 **  strictly sorted.
 */
-static Obj TYPE_RANGE_SSORT_IMMUTABLE;
-static Obj TYPE_RANGE_SSORT_MUTABLE;
+static Obj TYPE_RANGE_SSORT_IMMUTABLE GAP_GC_GLOBALLY_ROOTED;
+static Obj TYPE_RANGE_SSORT_MUTABLE GAP_GC_GLOBALLY_ROOTED;
 
 static Obj TypeRangeSSort(Obj list)
 {

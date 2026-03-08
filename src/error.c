@@ -39,8 +39,8 @@
 #include <stdio.h>  // for fprintf
 
 
-static Obj ErrorInner;
-static Obj ERROR_OUTPUT = NULL;
+static Obj ErrorInner GAP_GC_GLOBALLY_ROOTED;
+static Obj ERROR_OUTPUT GAP_GC_GLOBALLY_ROOTED = NULL;
 static Obj IsOutputStream GAP_GC_GLOBALLY_ROOTED;
 
 

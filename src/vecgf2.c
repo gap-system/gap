@@ -93,14 +93,14 @@ Obj IsGF2MatrixRep;
 **
 *V  GF2One  . . . . . . . . . . . . . . . . . . . . . . . . . . .  one of GF2
 */
-static Obj GF2One;
+static Obj GF2One GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
 **
 *V  GF2Zero . . . . . . . . . . . . . . . . . . . . . . . . . . . zero of GF2
 */
-static Obj GF2Zero;
+static Obj GF2Zero GAP_GC_GLOBALLY_ROOTED;
 
 #define RequireGF2VecRep(funcname, op)                                       \
     RequireArgumentCondition(funcname, op, IS_GF2VEC_REP(op),               \
