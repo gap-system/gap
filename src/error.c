@@ -185,7 +185,7 @@ static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
 }
 
 static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
-                                       Obj activeContext)
+                                       Obj activeContext, Obj level)
 {
     if (IsBottomLVars(context))
         return 0;
@@ -213,7 +213,8 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
         Obj  body = BODY_FUNC(func);
         Obj  filename = GET_FILENAME_BODY(body);
         if (activeContext != Fail) {
-            Pr(context == activeContext ? "* " : "  ", 0, 0);
+            Pr(context == activeContext ? "*[%d] " : " [%d] ",
+               INT_INTOBJ(level), 0);
         }
         if (IsKernelFunction(func)) {
             PrintKernelFunction(func);
@@ -646,7 +647,8 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_2ARGS(CALL_WITH_CATCH, func, args),
     GVAR_FUNC_1ARGS(JUMP_TO_CATCH, payload),
 
-    GVAR_FUNC_3ARGS(PRINT_CURRENT_STATEMENT, stream, context, activeContext),
+    GVAR_FUNC_4ARGS(PRINT_CURRENT_STATEMENT, stream, context, activeContext,
+                    level),
     GVAR_FUNC_1ARGS(CURRENT_STATEMENT_LOCATION, context),
 
     GVAR_FUNC_1ARGS(SetUserHasQuit, value),

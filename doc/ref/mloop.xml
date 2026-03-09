@@ -836,10 +836,10 @@ Error, !
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> Where();
-* Error( "!\n" ); at *stdin*:3 called from
-  test( n + 1 ); at *stdin*:3 called from
-  test( n + 1 ); at *stdin*:3 called from
-  test( n + 1 ); at *stdin*:3 called from
+*[1] Error( "!\n" ); at *stdin*:3 called from
+ [2] test( n + 1 ); at *stdin*:3 called from
+ [3] test( n + 1 ); at *stdin*:3 called from
+ [4] test( n + 1 ); at *stdin*:3 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> n;
@@ -848,20 +848,20 @@ brk> DownEnv();
 brk> n;
 3
 brk> Where();
-  Error( "!\n" ); at *stdin*:3 called from
-* test( n + 1 ); at *stdin*:3 called from
-  test( n + 1 ); at *stdin*:3 called from
-  test( n + 1 ); at *stdin*:3 called from
+ [1] Error( "!\n" ); at *stdin*:3 called from
+*[2] test( n + 1 ); at *stdin*:3 called from
+ [3] test( n + 1 ); at *stdin*:3 called from
+ [4] test( n + 1 ); at *stdin*:3 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:5
 brk> DownEnv( 2 );
 brk> n;
 1
 brk> Where();
-  Error( "!\n" ); at *stdin*:3 called from
-  test( n + 1 ); at *stdin*:3 called from
-  test( n + 1 ); at *stdin*:3 called from
-* test( n + 1 ); at *stdin*:3 called from
+ [1] Error( "!\n" ); at *stdin*:3 called from
+ [2] test( n + 1 ); at *stdin*:3 called from
+ [3] test( n + 1 ); at *stdin*:3 called from
+*[4] test( n + 1 ); at *stdin*:3 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:8
 brk> DownEnv( -2 );

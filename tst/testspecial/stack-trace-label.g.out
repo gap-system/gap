@@ -4,7 +4,7 @@ gap> f := function()
 gap> f();
 Error, foo
 Stack trace:
-* Error( "foo" ); at *stdin*:3 called from
+*[1] Error( "foo" ); at *stdin*:3 called from
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:5
 you can 'quit;' to quit to outer loop, or
