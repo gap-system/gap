@@ -832,19 +832,24 @@ static Obj FuncAUTO(Obj self, Obj args)
     UInt                gvar;           // one global variable
     UInt                i;              // loop variable
 
+    RequirePlainList(SELF_NAME, args);
+    RequireDenseList(SELF_NAME, args);
+    RequireArgumentCondition(SELF_NAME, args, LEN_PLIST(args) >= 2,
+                             "must be a list of length at least 2");
+
     // get and check the function
-    func = ELM_LIST( args, 1 );
+    func = ELM_PLIST( args, 1 );
     RequireFunction(SELF_NAME, func);
 
     // get the argument
-    arg = ELM_LIST( args, 2 );
+    arg = ELM_PLIST( args, 2 );
 
     // make the list of function and argument
     list = NewPlistFromArgs(func, arg);
 
     // make the global variables automatic
     for ( i = 3; i <= LEN_LIST(args); i++ ) {
-        name = ELM_LIST( args, i );
+        name = ELM_PLIST( args, i );
         RequireStringRep(SELF_NAME, name);
         gvar = GVarName( CONST_CSTR_STRING(name) );
         SET_ELM_GVAR_LIST( ValGVars, gvar, 0 );
