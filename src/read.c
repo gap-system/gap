@@ -192,7 +192,7 @@ static void MatchSemicolon(ReaderState * rs, TypSymbolSet skipto)
 // Search the plist 'nams' for a string equal to 'value' between and
 // including index 'start' and 'end' and return its index; return 0 if not
 // found.
-static UInt findValueInNams(Obj nams, const Char * val, UInt start, UInt end)
+static UInt findValueInNams(Obj nams, const Char * val, UInt start, UInt end) GAP_GC_NOTSAFEPOINT
 {
     GAP_ASSERT(LEN_PLIST(nams) < MAX_FUNC_LVARS);
     for (UInt i = start; i <= end; i++) {

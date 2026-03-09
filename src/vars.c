@@ -2040,7 +2040,7 @@ static Obj FuncENVI_FUNC(Obj self, Obj func)
 *F  IsBottomLVars(<lvars>) . .  check whether some lvars are the bottom lvars
 **
 */
-BOOL IsBottomLVars(Obj lvars)
+BOOL IsBottomLVars(Obj lvars) GAP_GC_NOTSAFEPOINT
 {
     return lvars == BottomLVars;
 }

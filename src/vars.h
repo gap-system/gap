@@ -29,7 +29,7 @@
 **
 *F  IsBottomLVars(<lvars>) . . test whether lvars is at the call stack bottom
 */
-BOOL IsBottomLVars(Obj lvars);
+BOOL IsBottomLVars(Obj lvars) GAP_GC_NOTSAFEPOINT;
 
 
 /****************************************************************************
