@@ -105,13 +105,15 @@ gap> UpEnv(1,2);
 Error, usage: UpEnv( [ <depth> ] )
 gap> UpEnv(fail);
 Error, usage: UpEnv( [ <depth> ] )
+gap> CurrentEnv();
+fail
 
 #
 gap> CURRENT_STATEMENT_LOCATION(GetCurrentLVars());
 fail
-gap> PRINT_CURRENT_STATEMENT("*errout*", GetCurrentLVars());
-gap> f:=function() PRINT_CURRENT_STATEMENT("*errout*", GetCurrentLVars()); Print("\n"); end;; f();
-PRINT_CURRENT_STATEMENT( "*errout*", GetCurrentLVars(  ) ); at stream:1
+gap> PRINT_CURRENT_STATEMENT("*errout*", GetCurrentLVars(), fail);
+gap> f:=function() PRINT_CURRENT_STATEMENT("*errout*", GetCurrentLVars(), fail); Print("\n"); end;; f();
+PRINT_CURRENT_STATEMENT( "*errout*", GetCurrentLVars(  ), fail ); at stream:1
 
 #
 gap> CALL_WITH_CATCH(fail,fail);

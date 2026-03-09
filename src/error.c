@@ -135,6 +135,20 @@ static Obj FuncUpEnv(Obj self, Obj args)
     return (Obj)0;
 }
 
+static Obj FuncCurrentEnv(Obj self)
+{
+    if (!STATE(ErrorLVars) || IsBottomLVars(STATE(ErrorLVars)))
+        return Fail;
+    MakeHighVars(STATE(ErrorLVars));
+    return STATE(ErrorLVars);
+}
+
+static Obj FuncSET_ERROR_LVARS(Obj self, Obj lvars)
+{
+    STATE(ErrorLVars) = lvars;
+    return (Obj)0;
+}
+
 static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
 {
     if (IsBottomLVars(context))
@@ -170,7 +184,8 @@ static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
     return retlist;
 }
 
-static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
+static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
+                                       Obj activeContext)
 {
     if (IsBottomLVars(context))
         return 0;
@@ -197,6 +212,9 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
         Stat call = STAT_LVARS(context);
         Obj  body = BODY_FUNC(func);
         Obj  filename = GET_FILENAME_BODY(body);
+        if (activeContext != Fail) {
+            Pr(context == activeContext ? "* " : "  ", 0, 0);
+        }
         if (IsKernelFunction(func)) {
             PrintKernelFunction(func);
             Obj funcname = NAME_FUNC(func);
@@ -622,11 +640,13 @@ static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC_XARGS(DownEnv, -1, "args"),
     GVAR_FUNC_XARGS(UpEnv, -1, "args"),
+    GVAR_FUNC_0ARGS(CurrentEnv),
+    GVAR_FUNC_1ARGS(SET_ERROR_LVARS, lvars),
 
     GVAR_FUNC_2ARGS(CALL_WITH_CATCH, func, args),
     GVAR_FUNC_1ARGS(JUMP_TO_CATCH, payload),
 
-    GVAR_FUNC_2ARGS(PRINT_CURRENT_STATEMENT, stream, context),
+    GVAR_FUNC_3ARGS(PRINT_CURRENT_STATEMENT, stream, context, activeContext),
     GVAR_FUNC_1ARGS(CURRENT_STATEMENT_LOCATION, context),
 
     GVAR_FUNC_1ARGS(SetUserHasQuit, value),

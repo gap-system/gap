@@ -31,6 +31,7 @@ gap> o(1,2,3,4,5,6);
 [ 1, 2, 3, 4, 5, 6 ]
 gap> o(1,2,3,4,5,6,7); # not (yet?) supported
 Error, sorry: cannot yet have X argument operations
+Stack trace:
 not in any function at *stdin*:25
 gap> 
 gap> # with tracing
@@ -58,6 +59,7 @@ gap> o(1,2,3,4,5,6);
 [ 1, 2, 3, 4, 5, 6 ]
 gap> o(1,2,3,4,5,6,7);
 Error, sorry: cannot yet have X argument operations
+Stack trace:
 not in any function at *stdin*:36
 gap> UntraceMethods( o ); # not (yet?) supported
 gap> 
@@ -78,6 +80,7 @@ gap> o(1,2,3,4,5,6);
 [ 1, 2, 3, 4, 5, 6 ]
 gap> o(1,2,3,4,5,6,7); # not (yet?) supported
 Error, sorry: cannot yet have X argument operations
+Stack trace:
 not in any function at *stdin*:47
 gap> 
 gap> #
@@ -110,6 +113,7 @@ gap> o(IsInt,2,3,4,5,6);
 [ <Category "IsInt">, 2, 3, 4, 5, 6 ]
 gap> o(IsInt,2,3,4,5,6,7); # not (yet?) supported
 Error, sorry: cannot yet have X argument constructors
+Stack trace:
 not in any function at *stdin*:70
 gap> 
 gap> # with tracing
@@ -134,6 +138,7 @@ gap> o(IsInt,2,3,4,5,6);
 [ <Category "IsInt">, 2, 3, 4, 5, 6 ]
 gap> o(IsInt,2,3,4,5,6,7); # not (yet?) supported
 Error, sorry: cannot yet have X argument constructors
+Stack trace:
 not in any function at *stdin*:80
 gap> UntraceMethods( o );
 gap> 
@@ -152,5 +157,6 @@ gap> o(IsInt,2,3,4,5,6);
 [ <Category "IsInt">, 2, 3, 4, 5, 6 ]
 gap> o(IsInt,2,3,4,5,6,7); # not (yet?) supported
 Error, sorry: cannot yet have X argument constructors
+Stack trace:
 not in any function at *stdin*:90
 gap> QUIT;
