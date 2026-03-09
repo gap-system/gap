@@ -89,6 +89,30 @@ gap> IsLowerTriangularMat([[1,0],[1,1],[1,1]]);
 true
 
 #
+gap> IsSymmetricMat(NullMat(3, 3));
+true
+gap> IsSymmetricMat(IdentityMat(3));
+true
+gap> IsSymmetricMat([[1]]);
+true
+gap> IsSymmetricMat([[1,2],[2,1]]);
+true
+gap> IsSymmetricMat([[1,2,3],[2,4,5],[3,5,6]]);
+true
+gap> IsSymmetricMat([[0,1],[2,0]]);
+false
+gap> IsSymmetricMat([[1,1],[1,1]]);
+true
+gap> IsSymmetricMat(NullMat(2, 3));
+false
+gap> IsSymmetricMat(NullMat(3, 2));
+false
+gap> IsSymmetricMat([[1,2,3],[2,4,5]]);
+false
+gap> IsSymmetricMat([[1,2],[3,4],[5,6]]);
+false
+
+#
 gap> m := Z(5)^0 * [[0, 1], [1, 0]];;
 gap> m := GeneratorsWithMemory([m])[1];;
 gap> BaseDomain(m) = GF(5);

@@ -251,6 +251,31 @@ InstallMethod( IsLowerTriangularMatrix,
 
 #############################################################################
 ##
+#M  IsSymmetricMatrix(<mat>)
+##
+InstallMethod( IsSymmetricMatrix,
+    "for a matrix",
+    [ IsMatrixOrMatrixObj ],
+    function( mat )
+    local i, j;
+    if NrRows( mat ) <> NrCols( mat ) then
+        return false;
+    fi;
+    for i in [ 1 .. NrRows( mat ) ] do
+        for j in [ i+1 .. NrCols( mat ) ] do
+            if mat[i,j] <> mat[j,i] then
+                return false;
+            fi;
+        od;
+    od;
+    return true;
+    end );
+
+InstallTrueMethod( IsSymmetricMatrix, IsMatrixOrMatrixObj and IsEmptyMatrix );
+
+
+#############################################################################
+##
 #M  DiagonalOfMatrix(<mat>) . . . . . . . . . . . . . . .  diagonal of matrix
 ##
 InstallGlobalFunction( DiagonalOfMatrix, function ( mat )
