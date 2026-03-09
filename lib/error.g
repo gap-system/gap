@@ -424,7 +424,6 @@ BIND_GLOBAL("Error", function(arg)
     ErrorInner(
         rec(
             context := ParentLVars(GetCurrentLVars()),
-            tracebackContext := ~.context,
             mayReturnVoid := true,
             lateMessage := true,
         ),
@@ -437,7 +436,6 @@ BIND_GLOBAL("ErrorNoReturn", function(arg)
     ErrorInner(
         rec(
             context := ParentLVars(GetCurrentLVars()),
-            tracebackContext := ~.context,
             mayReturnVoid := false,
             mayReturnObj := false,
             lateMessage := "type 'quit;' to quit to outer loop",
