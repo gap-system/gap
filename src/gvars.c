@@ -81,7 +81,7 @@
 **  access global variables.
 */
 static Obj   ValGVars[GVAR_BUCKETS] GAP_GC_GLOBALLY_ROOTED;
-static Obj * PtrGVars[GVAR_BUCKETS];
+static Obj * PtrGVars[GVAR_BUCKETS] GAP_GC_GLOBALLY_ROOTED;
 #else
 /*
 **  'ValGVars' is the bag containing the values of the global variables.
@@ -94,7 +94,7 @@ static Obj * PtrGVars[GVAR_BUCKETS];
 **  'GVarsAfterCollectBags' which is called by 'VarsAfterCollectBags'.
 */
 static Obj   ValGVars GAP_GC_GLOBALLY_ROOTED;
-static Obj * PtrGVars;
+static Obj * PtrGVars GAP_GC_GLOBALLY_ROOTED;
 #endif
 
 static SymbolTable GVarSymbolTable;
@@ -125,7 +125,7 @@ static Obj TLVars;
 #endif
 
 
-inline Obj ValGVar(UInt gvar) {
+inline Obj ValGVar(UInt gvar) GAP_GC_GLOBALLY_ROOTED {
   Obj result = VAL_GVAR_INTERN(gvar);
 #ifdef HPCGAP
   MEMBAR_READ();
@@ -557,7 +557,7 @@ Obj NameGVar ( UInt gvar ) GAP_GC_GLOBALLY_ROOTED
     return ELM_GVAR_LIST( NameGVars, gvar );
 }
 
-Obj ExprGVar ( UInt gvar )
+Obj ExprGVar ( UInt gvar ) GAP_GC_GLOBALLY_ROOTED
 {
     return ELM_GVAR_LIST( ExprGVars, gvar );
 }
@@ -846,6 +846,7 @@ static Obj FuncAUTO(Obj self, Obj args)
 
     // make the list of function and argument
     list = NewPlistFromArgs(func, arg);
+    GAP_GC_PUSH1(&list);
 
     // make the global variables automatic
     for ( i = 3; i <= LEN_LIST(args); i++ ) {
@@ -858,6 +859,7 @@ static Obj FuncAUTO(Obj self, Obj args)
         CHANGED_GVAR_LIST( ExprGVars, gvar );
     }
 
+    GAP_GC_POP();
     return 0;
 }
 
@@ -895,8 +897,11 @@ UInt            completion_gvar (
     numGVars = LengthSymbolTable(&GVarSymbolTable);
     next = 0;
     for ( i = 1; i <= numGVars; i++ ) {
+        Int isbound;
+
         // consider only variables which are currently bound for completion
-        if ( VAL_GVAR_INTERN( i ) || ELM_GVAR_LIST( ExprGVars, i )) {
+        isbound = ValGVar( i ) || ExprGVar( i );
+        if ( isbound ) {
             curr = CONST_CSTR_STRING( NameGVar( i ) );
             for ( k = 0; name[k] != 0 && curr[k] == name[k]; k++ ) ;
             if ( k < len || curr[k] <= name[k] )  continue;
@@ -929,6 +934,8 @@ static Obj FuncIDENTS_GVAR(Obj self)
     UInt                numGVars;
     Obj                 strcopy;
 
+    GAP_GC_PUSH2(&copy, &strcopy);
+
     numGVars = LengthSymbolTable(&GVarSymbolTable);
 
     copy = NEW_PLIST_IMM( T_PLIST, numGVars );
@@ -940,6 +947,7 @@ static Obj FuncIDENTS_GVAR(Obj self)
         CHANGED_BAG( copy );
     }
     SET_LEN_PLIST( copy, numGVars );
+    GAP_GC_POP();
     return copy;
 }
 
@@ -949,6 +957,8 @@ static Obj FuncIDENTS_BOUND_GVARS(Obj self)
     UInt                i, j;
     UInt                numGVars;
     Obj                 strcopy;
+
+    GAP_GC_PUSH2(&copy, &strcopy);
 
     numGVars = LengthSymbolTable(&GVarSymbolTable);
 
@@ -965,6 +975,7 @@ static Obj FuncIDENTS_BOUND_GVARS(Obj self)
         }
     }
     SET_LEN_PLIST( copy, j - 1 );
+    GAP_GC_POP();
     return copy;
 }
 

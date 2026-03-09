@@ -524,9 +524,9 @@ EXPORT_INLINE void RetypeBag(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT
 **  FIXME: for now, this checks the tnums; later, this will be turned
 **  into a check for an object flag
 */
-void RetypeBagSM(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT;
+void RetypeBagSM(Bag bag, UInt new_type);
 #ifdef HPCGAP
-void RetypeBagSMIfWritable(Bag bag, UInt new_type) GAP_GC_NOTSAFEPOINT;
+void RetypeBagSMIfWritable(Bag bag, UInt new_type);
 #else
 #define RetypeBagSMIfWritable(x,y)   RetypeBagSM(x,y)
 #endif

@@ -41,7 +41,7 @@
 **  will return the value of <gvar>  after evaluating <gvar>-s expression, or
 **  0 if <gvar> was not an automatic variable.
 */
-Obj ValGVar(UInt gvar);
+Obj ValGVar(UInt gvar) GAP_GC_GLOBALLY_ROOTED;
 
 #define VAL_GVAR(gvar)      ValGVar(gvar)
 
@@ -119,7 +119,7 @@ Obj NameGVar(UInt gvar) GAP_GC_GLOBALLY_ROOTED;
 **
 **  'ExprGVar' returns the expression of the automatic global variable <gvar>.
 */
-Obj ExprGVar(UInt gvar);
+Obj ExprGVar(UInt gvar) GAP_GC_GLOBALLY_ROOTED;
 
 
 /****************************************************************************
