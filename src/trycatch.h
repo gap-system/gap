@@ -100,6 +100,7 @@ void InvokeTryCatchHandler(TryCatchMode mode);
 typedef struct {
     volatile int tryCatchDepth;
     volatile Int recursionDepth;
+    volatile GAP_GCStackState gcStack;
     jmp_buf      jb;
 } GAP_TryCatchEnv;
 
@@ -108,6 +109,7 @@ static inline int gap_safe_trycatch(GAP_TryCatchEnv * env)
 {
     memcpy(env->jb, STATE(ReadJmpError), sizeof(jmp_buf));
     env->recursionDepth = GetRecursionDepth();
+    env->gcStack = GAP_GC_SAVE_STACK_STATE();
     env->tryCatchDepth = STATE(TryCatchDepth)++;
     return 0;
 }
@@ -115,6 +117,7 @@ static inline int gap_safe_trycatch(GAP_TryCatchEnv * env)
 static inline int gap_restore_trycatch(GAP_TryCatchEnv * env)
 {
     memcpy(STATE(ReadJmpError), env->jb, sizeof(jmp_buf));
+    GAP_GC_RESTORE_STACK_STATE(env->gcStack);
     SetRecursionDepth(env->recursionDepth);
     STATE(TryCatchDepth) = env->tryCatchDepth;
     return 0;

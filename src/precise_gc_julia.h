@@ -26,6 +26,18 @@ extern "C++" {
 }
 #endif
 
+typedef void * GAP_GCStackState;
+
+static inline GAP_GCStackState GAP_GC_SAVE_STACK_STATE(void)
+{
+    return (GAP_GCStackState)jl_pgcstack;
+}
+
+static inline void GAP_GC_RESTORE_STACK_STATE(GAP_GCStackState state)
+{
+    jl_pgcstack = (jl_gcframe_t *)state;
+}
+
 #define GAP_GC_PUSH1(arg1) JL_GC_PUSH1(arg1)
 #define GAP_GC_PUSH2(arg1, arg2) JL_GC_PUSH2(arg1, arg2)
 #define GAP_GC_PUSH3(arg1, arg2, arg3) JL_GC_PUSH3(arg1, arg2, arg3)
@@ -38,6 +50,18 @@ extern "C++" {
 #define GAP_GC_POP() JL_GC_POP()
 
 #else
+
+typedef void * GAP_GCStackState;
+
+static inline GAP_GCStackState GAP_GC_SAVE_STACK_STATE(void)
+{
+    return 0;
+}
+
+static inline void GAP_GC_RESTORE_STACK_STATE(GAP_GCStackState state)
+{
+    (void)state;
+}
 
 #define GAP_GC_PUSH1(arg1) ((void)0)
 #define GAP_GC_PUSH2(arg1, arg2) ((void)0)
