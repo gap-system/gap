@@ -1241,10 +1241,10 @@ end );
 ##
 #F  ShortestVectors( <mat>, <bound> [, \"positive\" ] )
 ##
-InstallGlobalFunction( ShortestVectors, function( arg )
+InstallGlobalFunction( ShortestVectors, function( a, m, arg... )
     local
     # variables
-          n, positiveOnly, a, llg, zeroCoeffs, m, c, continueSearch, b, v,
+          n, positiveOnly, llg, zeroCoeffs, c, continueSearch, b, v, i, j,
     # procedures
           search, emitVector;
 
@@ -1320,38 +1320,42 @@ InstallGlobalFunction( ShortestVectors, function( arg )
 
     # main program
     # check input
-    if    not IsBound( arg[1] )
-       or not IsList( arg[1] ) or not IsList( arg[1][1] ) then
-       Error ( "first argument must be Gram matrix\n",
+    if not IsMatrixOrMatrixObj( a ) or NrRows( a ) <> NrCols( a ) then
+       Error ( "first argument must be a square Gram matrix\n",
           "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )" );
-    elif not IsBound( arg[2] ) or not IsInt( arg[2] ) then
-       Error ( "second argument must be integer\n",
+    elif not IsInt( m ) or m < 0 then
+       Error ( "second argument must be a nonnegative integer\n",
           "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )");
-    elif IsBound( arg[3] ) then
-       if arg[3] = "positive" then
+    elif IsBound( arg[1] ) then
+       if arg[1] = "positive" then
           positiveOnly := true;
-       elif IsString( arg[3] ) then
-          Error ( "third argument must be \"positive\"\n",
-          "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )");
        else
-          Error ( "third argument must be string\n",
+          Error ( "third argument, if given, must be \"positive\"\n",
           "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )");
        fi;
     else
        positiveOnly := false;
     fi;
 
-    a := arg[1];
-    m := arg[2];
-    n := Length( a );
-    b := List( a, ShallowCopy );
+    n := NrRows( a );
+    for i in [ 1 .. n ] do
+       for j in [ 1 .. i - 1 ] do
+          if a[i,j] <> a[j,i] then
+             Error ( "first argument must be a symmetric Gram matrix\n",
+                "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )" );
+          fi;
+       od;
+    od;
+    b := List( [ 1 .. n ], i -> List( [ 1 .. n ], j -> a[i,j] ) );
     c     := rec( vectors:= [], norms:= [] );
     v     := ListWithIdenticalEntries( n, 0 );
     zeroCoeffs := ListWithIdenticalEntries( n, 0 );
 
     llg:= LLLReducedGramMat( b );
-#T here check that the matrix is really regular
-#T (empty relations component)
+    if Length( llg.relations ) <> 0 then
+       Error ( "first argument must be a regular Gram matrix\n",
+          "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )" );
+    fi;
 
     # The small offset avoids missing vectors on the exact norm boundary.
     continueSearch := true;
