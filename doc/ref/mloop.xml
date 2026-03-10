@@ -827,7 +827,7 @@ on the execution stack are displayed by <Ref Func="Where"/>).
 present this is the local variables bag used by the break loop for local
 variable lookup; outside such a context it returns <K>fail</K>.
 <P/>
-<Example><![CDATA[
+<Log><![CDATA[
 gap> OnBreak := function() end;; # eliminate back-tracing on entry to break loop
 gap> test:= function( n )
 >    if n > 3 then Error( "!\n" ); fi; test( n+1 ); end;;
@@ -869,7 +869,7 @@ brk> n;
 3
 brk> quit;
 gap> OnBreak := Where;; # restore OnBreak to its default value
-]]></Example>
+]]></Log>
 <P/>
 Note that the change of the environment caused by <Ref Func="DownEnv"/>
 only affects variable access in the break loop.
