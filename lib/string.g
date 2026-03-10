@@ -326,6 +326,8 @@ InstallMethod( String,
 ##  function returns a new string with the leading <C>'~'</C> substituted by
 ##  the user's home directory as stored in <C>GAPInfo.UserHome</C>.
 ##  Otherwise <A>str</A> is returned unchanged.
+##  <P/>
+##  This function is the inverse of <Ref Func="UserHomeContract"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -334,6 +336,35 @@ BIND_GLOBAL("UserHomeExpand", function(str)
   if IsString(str) and Length(str) > 0 and str[1] = '~'
         and IsString(GAPInfo.UserHome) and Length( GAPInfo.UserHome ) > 0 then
     return Concatenation( GAPInfo.UserHome, str{[2..Length(str)]});
+  else
+    return str;
+  fi;
+end);
+
+#############################################################################
+##
+#F  UserHomeContract( <str> ) . . . . . . . . . contract leading user home
+##
+##  <#GAPDoc Label="UserHomeContract">
+##  <ManSection>
+##  <Func Name="UserHomeContract" Arg='str'/>
+##  <Description>
+##  If the string <A>str</A> starts with the user's home directory as stored
+##  in <C>GAPInfo.UserHome</C> then this function returns a new string with
+##  that prefix replaced by a leading <C>'~'</C> character.
+##  Otherwise <A>str</A> is returned unchanged.
+##  <P/>
+##  This function is the inverse of <Ref Func="UserHomeExpand"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL("UserHomeContract", function(str)
+  if IsString(str) and Length(str) > 0
+        and IsString(GAPInfo.UserHome) and Length(GAPInfo.UserHome) > 0
+        and PositionSublist(str, GAPInfo.UserHome) = 1 then
+    return Concatenation("~",
+                         str{[Length(GAPInfo.UserHome) + 1..Length(str)]});
   else
     return str;
   fi;
