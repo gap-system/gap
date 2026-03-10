@@ -583,6 +583,17 @@ DeclareUserPreference( rec(
   check:= val -> IsInt( val ) and 0 <= val,
   ) );
 DeclareUserPreference( rec(
+  name:= "WhereDepth",
+  description:= [
+    "The number of stack frames shown by <C>Where</C> and <C>WhereWithVars</C> \
+when called without an explicit depth argument, e.g. in the default <C>OnBreak</C> \
+handler. Increase this value if the default of 5 is not enough to locate the \
+source of an error."
+    ],
+  default:= 5,
+  check:= val -> IsInt( val ) and 0 <= val,
+  ) );
+DeclareUserPreference( rec(
   name:= "ReproducibleBehaviour",
   description:= [
     "This preference disables code in &GAP; which changes behaviour based on time \

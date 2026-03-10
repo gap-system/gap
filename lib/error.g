@@ -169,6 +169,9 @@ end);
 
 BIND_GLOBAL("WHERE_INTERNAL", function(depth, showlocals)
     local activecontext;
+    if not IsInt(depth) or depth < 0 then
+        depth := 5;
+    fi;
     if ErrorLVars = fail or ErrorLVars = GetBottomLVars() then
         PrintTo(ERROR_OUTPUT, "not in any function ");
     else
@@ -181,7 +184,7 @@ end);
 BIND_GLOBAL("WhereWithVars", function(arg)
     local   depth;
     if LEN_LIST(arg) = 0 then
-        depth := 5;
+        depth := UserPreference("WhereDepth");
     else
         depth := arg[1];
     fi;
@@ -192,7 +195,7 @@ end);
 BIND_GLOBAL("Where", function(arg)
     local   depth;
     if LEN_LIST(arg) = 0 then
-        depth := 5;
+        depth := UserPreference("WhereDepth");
     else
         depth := arg[1];
     fi;
