@@ -93,7 +93,8 @@ static inline const UInt * CONST_ADDR_WORD(Obj obj) GAP_GC_NOTSAFEPOINT
     return ((const UInt *)(CONST_ADDR_OBJ(obj)));
 }
 
-static inline Obj READ_SLOT(Obj container, int slot) GAP_GC_NOTSAFEPOINT
+static inline Obj READ_SLOT(Obj container GAP_GC_PROPAGATES_ROOT, int slot)
+    GAP_GC_NOTSAFEPOINT
 {
 #ifdef GAP_KERNEL_DEBUG
     GAP_ASSERT(slot >= 0);
@@ -106,7 +107,8 @@ static inline Obj READ_SLOT(Obj container, int slot) GAP_GC_NOTSAFEPOINT
     return CONST_ADDR_OBJ(container)[OBJSET_HDRSIZE + slot];
 }
 
-static inline void WRITE_SLOT(Obj container, int slot, Obj elm)
+static inline void WRITE_SLOT(Obj container GAP_GC_ROOTING_ARGUMENT, int slot,
+                              Obj elm GAP_GC_ROOTED_ARGUMENT)
     GAP_GC_NOTSAFEPOINT
 {
 #ifdef GAP_KERNEL_DEBUG
@@ -279,7 +281,8 @@ Int FindObjSet(Obj set, Obj obj) {
  *  should do so, unless loading a workspace.
  */
 
-static void AddObjSetNew(Obj set, Obj obj)
+static void AddObjSetNew(Obj set GAP_GC_ROOTING_ARGUMENT,
+                         Obj obj GAP_GC_ROOTED_ARGUMENT)
 {
   UInt size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
   UInt hash = ObjHash(set, obj);
@@ -313,7 +316,8 @@ static void AddObjSetNew(Obj set, Obj obj)
  *  This function adds `obj` to `set` if the set doesn't contain it already.
  */
 
-void AddObjSet(Obj set, Obj obj) {
+void AddObjSet(Obj set GAP_GC_ROOTING_ARGUMENT, Obj obj GAP_GC_ROOTED_ARGUMENT)
+{
   GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
   if (FindObjSet(set, obj) >= 0)
     return;
@@ -395,6 +399,8 @@ static void ResizeObjSet(Obj set, UInt bits)
   UInt i, new_size = (1 << bits);
   Int size = CONST_ADDR_WORD(set)[OBJSET_SIZE];
   Obj new = NewBag(T_OBJSET, (OBJSET_HDRSIZE+new_size)*sizeof(Bag));
+  Obj obj = 0;
+  GAP_GC_PUSH2(&new, &obj);
   GAP_ASSERT(TNUM_OBJ(set) == T_OBJSET);
   GAP_ASSERT(new_size >= size);
   ADDR_WORD(new)[OBJSET_SIZE] = new_size;
@@ -402,12 +408,13 @@ static void ResizeObjSet(Obj set, UInt bits)
   ADDR_WORD(new)[OBJSET_USED] = 0;
   ADDR_WORD(new)[OBJSET_DIRTY] = 0;
   for (i = OBJSET_HDRSIZE + size - 1; i >= OBJSET_HDRSIZE; i--) {
-    Obj obj = CONST_ADDR_OBJ(set)[i];
+    obj = CONST_ADDR_OBJ(set)[i];
     if (obj && obj != Undefined) {
         AddObjSetNew(new, obj);
     }
   }
   SwapMasterPoint(set, new);
+  GAP_GC_POP();
 }
 
 #ifdef GAP_ENABLE_SAVELOAD
@@ -547,7 +554,7 @@ Int FindObjMap(Obj map, Obj obj) {
  *  if such an entry was not found, otherwise return the corresponding value.
  */
 
-Obj LookupObjMap(Obj map, Obj obj) {
+Obj LookupObjMap(Obj map GAP_GC_PROPAGATES_ROOT, Obj obj) {
   Int index = FindObjMap(map, obj);
   if (index < 0)
     return (Obj) 0;
@@ -566,7 +573,9 @@ Obj LookupObjMap(Obj map, Obj obj) {
  *  should do so, unless loading a workspace.
  */
 
-static void AddObjMapNew(Obj map, Obj key, Obj value)
+static void AddObjMapNew(Obj map GAP_GC_ROOTING_ARGUMENT,
+                         Obj key GAP_GC_ROOTED_ARGUMENT,
+                         Obj value GAP_GC_ROOTED_ARGUMENT)
 {
   UInt size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
   UInt hash = ObjHash(map, key);
@@ -600,7 +609,10 @@ static void AddObjMapNew(Obj map, Obj key, Obj value)
  *  entry with that key, its value will be replaced.
  */
 
-void AddObjMap(Obj map, Obj key, Obj value) {
+void AddObjMap(Obj map GAP_GC_ROOTING_ARGUMENT,
+               Obj key GAP_GC_ROOTED_ARGUMENT,
+               Obj value GAP_GC_ROOTED_ARGUMENT)
+{
   GAP_ASSERT(TNUM_OBJ(map) == T_OBJMAP);
   Int pos;
   pos = FindObjMap(map, key);
@@ -718,17 +730,22 @@ static void ResizeObjMap(Obj map, UInt bits)
   UInt size = CONST_ADDR_WORD(map)[OBJSET_SIZE];
   GAP_ASSERT(new_size >= size);
   Obj new = NewBag(T_OBJMAP, (OBJSET_HDRSIZE+2*new_size)*sizeof(Bag));
+  Obj key = 0;
+  Obj value = 0;
+  GAP_GC_PUSH3(&new, &key, &value);
   ADDR_WORD(new)[OBJSET_SIZE] = new_size;
   ADDR_WORD(new)[OBJSET_BITS] = bits;
   ADDR_WORD(new)[OBJSET_USED] = 0;
   ADDR_WORD(new)[OBJSET_DIRTY] = 0;
   for (i = 0; i < size; i++) {
-    Obj obj = READ_SLOT(map, i*2);
-    if (obj && obj != Undefined) {
-        AddObjMapNew(new, obj, READ_SLOT(map, i * 2 + 1));
+    key = READ_SLOT(map, i*2);
+    if (key && key != Undefined) {
+        value = READ_SLOT(map, i * 2 + 1);
+        AddObjMapNew(new, key, value);
     }
   }
   SwapMasterPoint(map, new);
+  GAP_GC_POP();
 }
 
 #ifdef GAP_ENABLE_SAVELOAD
@@ -812,25 +829,29 @@ static void CopyObjMap(TraversalState * traversal, Obj copy, Obj original)
 
 static Obj FuncOBJ_SET(Obj self, Obj arg)
 {
-  Obj result;
-  Obj list;
+  Obj result = 0;
+  Obj list = 0;
+  Obj obj = 0;
   UInt i, len;
   switch (LEN_PLIST(arg)) {
     case 0:
       return NewObjSet();
-    case 1:
+    case 1: {
+      GAP_GC_PUSH3(&result, &list, &obj);
       list = ELM_PLIST(arg, 1);
       if (!IS_LIST(list))
         ErrorQuit("OBJ_SET: Argument must be a list", 0, 0);
       result = NewObjSet();
       len = LEN_LIST(list);
       for (i = 1; i <= len; i++) {
-        Obj obj = ELM_LIST(list, i);
+        obj = ELM_LIST(list, i);
         if (obj)
           AddObjSet(result, obj);
       }
       CHANGED_BAG(result);
+      GAP_GC_POP();
       return result;
+    }
     default:
       ErrorQuit("OBJ_SET: Too many arguments", 0, 0);
       return (Obj) 0; // flow control hint
@@ -931,25 +952,30 @@ static Obj FuncOBJ_SET_VALUES(Obj self, Obj set)
 
 static Obj FuncOBJ_MAP(Obj self, Obj arg)
 {
-  Obj result;
-  Obj list;
+  Obj result = 0;
+  Obj list = 0;
+  Obj key = 0;
+  Obj value = 0;
   UInt i, len;
   switch (LEN_PLIST(arg)) {
     case 0:
       return NewObjMap();
-    case 1:
+    case 1: {
+      GAP_GC_PUSH4(&result, &list, &key, &value);
       list = ELM_PLIST(arg, 1);
       if (!IS_LIST(list) || LEN_LIST(list) % 2 != 0)
         ErrorQuit("OBJ_MAP: Argument must be a list with even length", 0, 0);
       result = NewObjMap();
       len = LEN_LIST(list);
       for (i = 1; i <= len; i += 2) {
-        Obj key = ELM_LIST(list, i);
-        Obj value = ELM_LIST(list, i+1);
+        key = ELM_LIST(list, i);
+        value = ELM_LIST(list, i+1);
         if (key && value)
           AddObjMap(result, key, value);
       }
+      GAP_GC_POP();
       return result;
+    }
     default:
       ErrorQuit("OBJ_MAP: Too many arguments", 0, 0);
       return (Obj) 0; // flow control hint

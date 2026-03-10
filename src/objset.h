@@ -24,15 +24,18 @@ enum {
 
 Obj  NewObjSet(void);
 Int  FindObjSet(Obj set, Obj obj);
-void AddObjSet(Obj set, Obj obj);
+void AddObjSet(Obj set GAP_GC_ROOTING_ARGUMENT,
+               Obj obj GAP_GC_ROOTED_ARGUMENT);
 void RemoveObjSet(Obj set, Obj obj);
 void ClearObjSet(Obj set);
 Obj  ObjSetValues(Obj set);
 
 Obj  NewObjMap(void);
 Int  FindObjMap(Obj map, Obj key);
-Obj  LookupObjMap(Obj map, Obj key);
-void AddObjMap(Obj map, Obj key, Obj value);
+Obj  LookupObjMap(Obj map GAP_GC_PROPAGATES_ROOT, Obj key);
+void AddObjMap(Obj map GAP_GC_ROOTING_ARGUMENT,
+               Obj key GAP_GC_ROOTED_ARGUMENT,
+               Obj value GAP_GC_ROOTED_ARGUMENT);
 void RemoveObjMap(Obj map, Obj obj);
 void ClearObjMap(Obj map);
 Obj  ObjMapValues(Obj map);
