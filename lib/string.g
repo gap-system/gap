@@ -327,15 +327,24 @@ InstallMethod( String,
 ##  the user's home directory as stored in <C>GAPInfo.UserHome</C>.
 ##  Otherwise <A>str</A> is returned unchanged.
 ##  <P/>
+##  A trailing slash in <C>GAPInfo.UserHome</C> is ignored when expanding
+##  paths.
+##  <P/>
 ##  This function is the counterpart of <Ref Func="UserHomeContract"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("UserHomeExpand", function(str)
+  local home;
+
   if IsString(str) and Length(str) > 0 and str[1] = '~'
         and IsString(GAPInfo.UserHome) and Length( GAPInfo.UserHome ) > 0 then
-    return Concatenation( GAPInfo.UserHome, str{[2..Length(str)]});
+    home := ShallowCopy(GAPInfo.UserHome);
+    while Length(home) > 1 and Last(home) = '/' do
+      Remove(home);
+    od;
+    return Concatenation(home, str{[2..Length(str)]});
   else
     return str;
   fi;
@@ -355,7 +364,8 @@ end);
 ##  Otherwise <A>str</A> is returned unchanged.
 ##  <P/>
 ##  A trailing slash in <C>GAPInfo.UserHome</C> is ignored when contracting
-##  absolute paths.
+##  absolute paths, and repeated <C>'/'</C> characters immediately after the
+##  home directory prefix are normalized to a single slash in the result.
 ##  <P/>
 ##  This function is the counterpart of <Ref Func="UserHomeExpand"/>.
 ##  </Description>
@@ -370,6 +380,7 @@ BIND_GLOBAL("UserHomeContract", function(str)
     return str;
   fi;
 
+  # Treat UserHome values that differ only by trailing slashes as the same path.
   home := ShallowCopy(GAPInfo.UserHome);
   while Length(home) > 1 and Last(home) = '/' do
     Remove(home);
@@ -392,10 +403,14 @@ BIND_GLOBAL("UserHomeContract", function(str)
     return "~";
   fi;
 
+  # Canonicalize redundant separators right after the home-directory boundary.
   suffix := str{[homeLen + 2..Length(str)]};
   while Length(suffix) > 0 and suffix[1] = '/' do
-    suffix := suffix{[2..Length(suffix)]};
+    Remove(suffix, 1);
   od;
+  if Length(suffix) = 0 then
+    return "~";
+  fi;
   return Concatenation("~/", suffix);
 end);
 
