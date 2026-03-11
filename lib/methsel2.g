@@ -247,7 +247,15 @@ end;
       APPEND_LIST(no_method_found, " argument is 'fail' which might point to an earlier problem\n" );
     fi;
   od;
-  ErrorNoReturn(no_method_found);
+  ErrorInner(
+      rec(
+          context := GetCurrentLVars(),
+          tracebackContext := ParentLVars(GetCurrentLVars()),
+          mayReturnVoid := false,
+          mayReturnObj := false,
+          lateMessage := "type 'quit;' to quit to outer loop"
+      ),
+      [ no_method_found ]);
 end;
 
 ## This is the other part of the above mentioned dirty trick:

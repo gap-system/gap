@@ -6,8 +6,7 @@ gap> SetFilterObj(badgroup, filt);
 gap> old_OnBreak:=OnBreak;;
 gap> OnBreak:=fail;; # prevent backtrace with line numbers that keep chaning
 gap> View([[badgroup]]); # <- trigger break loop
-Error, Rational operations: <divisor> must not be zero in
-  0 / 0 at *stdin*:3 called from 
+Error, Rational operations: <divisor> must not be zero
 type 'quit;' to quit to outer loop
 brk> quit;
 [ [ 

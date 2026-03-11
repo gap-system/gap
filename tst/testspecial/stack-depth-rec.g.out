@@ -69,23 +69,23 @@ rec(
                                                                                                                                                                                                                                                                 printing stopped, too many recursion levels!
                                                                                                                                                                                                                                                                  ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) )
 gap> String(r);
-Error, recursion depth trap (5000) in
-  String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from 
-String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
-String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
-String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
-String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
-String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
+Error, recursion depth trap (5000)
+Stack trace:
+*[1] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
+ [2] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
+ [3] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
+ [4] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
+ [5] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
 ...  at *stdin*:4
 you may 'return;'
 brk> return; # try once more
-Error, recursion depth trap (5000) in
-  String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from 
-String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
-String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
-String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
-String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
-String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
+Error, recursion depth trap (5000)
+Stack trace:
+*[1] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
+ [2] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
+ [3] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
+ [4] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
+ [5] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
 ...  at *stdin*:4
 you may 'return;'
 brk> QUIT;

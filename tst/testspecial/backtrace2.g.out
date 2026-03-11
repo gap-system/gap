@@ -26,53 +26,61 @@ gap> test:= function( n )
 > end;;
 gap> test( 1 );
 Error, !
- at *stdin*:24 called from
-test( n + 1 ); at *stdin*:26 called from
-test( n + 1 ); at *stdin*:26 called from
+Stack trace:
+*[1] Error( "!\n" ); at *stdin*:24 called from
+ [2] test( n + 1 ); at *stdin*:26 called from
+ [3] test( n + 1 ); at *stdin*:26 called from
 <function "test">( <arguments> )
  called from read-eval loop at *stdin*:28
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> n; Where();
 3
-test( n + 1 ); at *stdin*:26 called from
-test( n + 1 ); at *stdin*:26 called from
+*[1] Error( "!\n" ); at *stdin*:24 called from
+ [2] test( n + 1 ); at *stdin*:26 called from
+ [3] test( n + 1 ); at *stdin*:26 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> DownEnv(); n; Where();
 2
-test( n + 1 ); at *stdin*:26 called from
-test( n + 1 ); at *stdin*:26 called from
+ [1] Error( "!\n" ); at *stdin*:24 called from
+*[2] test( n + 1 ); at *stdin*:26 called from
+ [3] test( n + 1 ); at *stdin*:26 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:2
 brk> DownEnv(); n; Where();
 1
-test( n + 1 ); at *stdin*:26 called from
-test( n + 1 ); at *stdin*:26 called from
+ [1] Error( "!\n" ); at *stdin*:24 called from
+ [2] test( n + 1 ); at *stdin*:26 called from
+*[3] test( n + 1 ); at *stdin*:26 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:3
 brk> DownEnv(); n; Where();
 1
-test( n + 1 ); at *stdin*:26 called from
-test( n + 1 ); at *stdin*:26 called from
+ [1] Error( "!\n" ); at *stdin*:24 called from
+ [2] test( n + 1 ); at *stdin*:26 called from
+*[3] test( n + 1 ); at *stdin*:26 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:4
 brk> UpEnv(); n; Where();
 2
-test( n + 1 ); at *stdin*:26 called from
-test( n + 1 ); at *stdin*:26 called from
+ [1] Error( "!\n" ); at *stdin*:24 called from
+*[2] test( n + 1 ); at *stdin*:26 called from
+ [3] test( n + 1 ); at *stdin*:26 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:5
 brk> UpEnv(); n; Where();
 3
-test( n + 1 ); at *stdin*:26 called from
-test( n + 1 ); at *stdin*:26 called from
+*[1] Error( "!\n" ); at *stdin*:24 called from
+ [2] test( n + 1 ); at *stdin*:26 called from
+ [3] test( n + 1 ); at *stdin*:26 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:6
 brk> UpEnv(); n; Where();
 3
-test( n + 1 ); at *stdin*:26 called from
-test( n + 1 ); at *stdin*:26 called from
+*[1] Error( "!\n" ); at *stdin*:24 called from
+ [2] test( n + 1 ); at *stdin*:26 called from
+ [3] test( n + 1 ); at *stdin*:26 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:7
 brk> quit;
@@ -88,53 +96,61 @@ gap> test:= function( n )
 >   test( n+1 );
 > end;;
 gap> test( 1 );
-Error, Rational operations: <divisor> must not be zero in
-  1 / 0 at *stdin*:35 called from 
-test( n + 1 ); at *stdin*:37 called from
-test( n + 1 ); at *stdin*:37 called from
+Error, Rational operations: <divisor> must not be zero
+Stack trace:
+*[1] 1 / 0 at *stdin*:35 called from
+ [2] test( n + 1 ); at *stdin*:37 called from
+ [3] test( n + 1 ); at *stdin*:37 called from
 <function "test">( <arguments> )
  called from read-eval loop at *stdin*:39
 type 'quit;' to quit to outer loop
 brk> n; Where();
 3
-test( n + 1 ); at *stdin*:37 called from
-test( n + 1 ); at *stdin*:37 called from
+*[1] 1 / 0 at *stdin*:35 called from
+ [2] test( n + 1 ); at *stdin*:37 called from
+ [3] test( n + 1 ); at *stdin*:37 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> DownEnv(); n; Where();
 2
-test( n + 1 ); at *stdin*:37 called from
-test( n + 1 ); at *stdin*:37 called from
+ [1] 1 / 0 at *stdin*:35 called from
+*[2] test( n + 1 ); at *stdin*:37 called from
+ [3] test( n + 1 ); at *stdin*:37 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:2
 brk> DownEnv(); n; Where();
 1
-test( n + 1 ); at *stdin*:37 called from
-test( n + 1 ); at *stdin*:37 called from
+ [1] 1 / 0 at *stdin*:35 called from
+ [2] test( n + 1 ); at *stdin*:37 called from
+*[3] test( n + 1 ); at *stdin*:37 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:3
 brk> DownEnv(); n; Where();
 1
-test( n + 1 ); at *stdin*:37 called from
-test( n + 1 ); at *stdin*:37 called from
+ [1] 1 / 0 at *stdin*:35 called from
+ [2] test( n + 1 ); at *stdin*:37 called from
+*[3] test( n + 1 ); at *stdin*:37 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:4
 brk> UpEnv(); n; Where();
 2
-test( n + 1 ); at *stdin*:37 called from
-test( n + 1 ); at *stdin*:37 called from
+ [1] 1 / 0 at *stdin*:35 called from
+*[2] test( n + 1 ); at *stdin*:37 called from
+ [3] test( n + 1 ); at *stdin*:37 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:5
 brk> UpEnv(); n; Where();
 3
-test( n + 1 ); at *stdin*:37 called from
-test( n + 1 ); at *stdin*:37 called from
+*[1] 1 / 0 at *stdin*:35 called from
+ [2] test( n + 1 ); at *stdin*:37 called from
+ [3] test( n + 1 ); at *stdin*:37 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:6
 brk> UpEnv(); n; Where();
 3
-test( n + 1 ); at *stdin*:37 called from
-test( n + 1 ); at *stdin*:37 called from
+*[1] 1 / 0 at *stdin*:35 called from
+ [2] test( n + 1 ); at *stdin*:37 called from
+ [3] test( n + 1 ); at *stdin*:37 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:7
 brk> quit;
@@ -152,60 +168,61 @@ gap> test:= function( n )
 > end;;
 gap> test( 1 );
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `IsCommutative' on 1 arguments at GAPROOT/lib/methsel2.g:LINE called from
-IsAbelian( 1 ) at *stdin*:47 called from
-test( n + 1 ); at *stdin*:49 called from
-test( n + 1 ); at *stdin*:49 called from
+Error, no 1st choice method found for `IsCommutative' on 1 arguments
+Stack trace:
+*[1] IsAbelian( 1 ) at *stdin*:47 called from
+ [2] test( n + 1 ); at *stdin*:49 called from
+ [3] test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *stdin*:51
 type 'quit;' to quit to outer loop
 brk> n; Where();
 3
-IsAbelian( 1 ) at *stdin*:47 called from
-test( n + 1 ); at *stdin*:49 called from
-test( n + 1 ); at *stdin*:49 called from
+*[1] IsAbelian( 1 ) at *stdin*:47 called from
+ [2] test( n + 1 ); at *stdin*:49 called from
+ [3] test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> DownEnv(); n; Where();
 3
-IsAbelian( 1 ) at *stdin*:47 called from
-test( n + 1 ); at *stdin*:49 called from
-test( n + 1 ); at *stdin*:49 called from
+*[1] IsAbelian( 1 ) at *stdin*:47 called from
+ [2] test( n + 1 ); at *stdin*:49 called from
+ [3] test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:2
 brk> DownEnv(); n; Where();
 2
-IsAbelian( 1 ) at *stdin*:47 called from
-test( n + 1 ); at *stdin*:49 called from
-test( n + 1 ); at *stdin*:49 called from
+ [1] IsAbelian( 1 ) at *stdin*:47 called from
+*[2] test( n + 1 ); at *stdin*:49 called from
+ [3] test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:3
 brk> DownEnv(); n; Where();
 1
-IsAbelian( 1 ) at *stdin*:47 called from
-test( n + 1 ); at *stdin*:49 called from
-test( n + 1 ); at *stdin*:49 called from
+ [1] IsAbelian( 1 ) at *stdin*:47 called from
+ [2] test( n + 1 ); at *stdin*:49 called from
+*[3] test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:4
 brk> UpEnv(); n; Where();
 2
-IsAbelian( 1 ) at *stdin*:47 called from
-test( n + 1 ); at *stdin*:49 called from
-test( n + 1 ); at *stdin*:49 called from
+ [1] IsAbelian( 1 ) at *stdin*:47 called from
+*[2] test( n + 1 ); at *stdin*:49 called from
+ [3] test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:5
 brk> UpEnv(); n; Where();
 3
-IsAbelian( 1 ) at *stdin*:47 called from
-test( n + 1 ); at *stdin*:49 called from
-test( n + 1 ); at *stdin*:49 called from
+*[1] IsAbelian( 1 ) at *stdin*:47 called from
+ [2] test( n + 1 ); at *stdin*:49 called from
+ [3] test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:6
 brk> UpEnv(); n; Where();
 3
-IsAbelian( 1 ) at *stdin*:47 called from
-test( n + 1 ); at *stdin*:49 called from
-test( n + 1 ); at *stdin*:49 called from
+*[1] IsAbelian( 1 ) at *stdin*:47 called from
+ [2] test( n + 1 ); at *stdin*:49 called from
+ [3] test( n + 1 ); at *stdin*:49 called from
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:7
 brk> quit;

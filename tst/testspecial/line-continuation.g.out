@@ -4,9 +4,11 @@ gap> # counter only once, so that both examples below report the error in line 2
 gap> #
 gap> EvalString("123\\\n45x;");
 Error, Variable: '12345x' must have a value
+Stack trace:
 not in any function at stream:2
 Error, Could not evaluate string.
- at GAPROOT/lib/string.gi:LINE called from
+Stack trace:
+*[1] Error( "Could not evaluate string.\n" ); at GAPROOT/lib/string.gi:LINE called from
 <function "EvalString">( <arguments> )
  called from read-eval loop at *stdin*:6
 you can 'quit;' to quit to outer loop, or
@@ -14,9 +16,11 @@ you can 'return;' to continue
 brk> quit;
 gap> EvalString("123\\\r\n45x;");
 Error, Variable: '12345x' must have a value
+Stack trace:
 not in any function at stream:2
 Error, Could not evaluate string.
- at GAPROOT/lib/string.gi:LINE called from
+Stack trace:
+*[1] Error( "Could not evaluate string.\n" ); at GAPROOT/lib/string.gi:LINE called from
 <function "EvalString">( <arguments> )
  called from read-eval loop at *stdin*:6
 you can 'quit;' to quit to outer loop, or

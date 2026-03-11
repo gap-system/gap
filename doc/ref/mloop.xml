@@ -811,6 +811,7 @@ variable at the lowest level can be accessed.
 <Heading>DownEnv and UpEnv</Heading>
 <Func Name="DownEnv" Arg='nr'/>
 <Func Name="UpEnv" Arg='nr'/>
+<Func Name="CurrentEnv" Arg=''/>
 
 <Description>
 <Ref Func="DownEnv"/> moves down <A>nr</A> steps in the environment and
@@ -822,39 +823,47 @@ but in the reverse direction
 (the mnemonic rule to remember the difference between
 <Ref Func="DownEnv"/> and <Ref Func="UpEnv"/> is the order in which commands
 on the execution stack are displayed by <Ref Func="Where"/>).
+<Ref Func="CurrentEnv"/> returns the currently selected environment. At
+present this is the local variables bag used by the break loop for local
+variable lookup; outside such a context it returns <K>fail</K>.
 <P/>
 <Log><![CDATA[
-gap> OnBreak := function() Where(0); end;; # eliminate back-tracing on
-gap>                                       # entry to break loop
+gap> OnBreak := function() end;; # eliminate back-tracing on entry to break loop
 gap> test:= function( n )
 >    if n > 3 then Error( "!\n" ); fi; test( n+1 ); end;;
 gap> test( 1 );
 Error, !
-Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> Where();
- called from
-test( n + 1 ); called from
-test( n + 1 ); called from
-test( n + 1 ); called from
-<function>( <arguments> ) called from read-eval-loop
+*[1] Error( "!\n" ); at *stdin*:3 called from
+ [2] test( n + 1 ); at *stdin*:3 called from
+ [3] test( n + 1 ); at *stdin*:3 called from
+ [4] test( n + 1 ); at *stdin*:3 called from
+<function "test">( <arguments> )
+ called from read-eval loop at *errin*:1
 brk> n;
 4
 brk> DownEnv();
 brk> n;
 3
 brk> Where();
- called from
-test( n + 1 ); called from
-test( n + 1 ); called from
-<function>( <arguments> ) called from read-eval-loop
+ [1] Error( "!\n" ); at *stdin*:3 called from
+*[2] test( n + 1 ); at *stdin*:3 called from
+ [3] test( n + 1 ); at *stdin*:3 called from
+ [4] test( n + 1 ); at *stdin*:3 called from
+<function "test">( <arguments> )
+ called from read-eval loop at *errin*:5
 brk> DownEnv( 2 );
 brk> n;
 1
 brk> Where();
- called from
-<function>( <arguments> ) called from read-eval-loop
+ [1] Error( "!\n" ); at *stdin*:3 called from
+ [2] test( n + 1 ); at *stdin*:3 called from
+ [3] test( n + 1 ); at *stdin*:3 called from
+*[4] test( n + 1 ); at *stdin*:3 called from
+<function "test">( <arguments> )
+ called from read-eval loop at *errin*:8
 brk> DownEnv( -2 );
 brk> n;
 3
