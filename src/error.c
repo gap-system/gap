@@ -188,24 +188,8 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
                                        Obj activeContext, Obj level,
                                        Obj totalDepth)
 {
-    UInt levelInt = INT_INTOBJ(level);
-    UInt totalDepthInt = INT_INTOBJ(totalDepth);
-    UInt prefixWidth = 0;
-    UInt levelWidth = 0;
-    UInt i;
-
     if (IsBottomLVars(context))
         return 0;
-
-    while (totalDepthInt > 0) {
-        prefixWidth++;
-        totalDepthInt /= 10;
-    }
-    i = levelInt;
-    while (i > 0) {
-        levelWidth++;
-        i /= 10;
-    }
 
     // HACK: we want to redirect output
     // Try to print the output to stream. Use *errout* as a fallback.
@@ -224,6 +208,12 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
     BOOL rethrow = FALSE;
     GAP_TRY
     {
+        UInt levelInt = INT_INTOBJ(level);
+        UInt totalDepthInt = INT_INTOBJ(totalDepth);
+        UInt prefixWidth = 0;
+        UInt levelWidth = 0;
+        UInt i;
+
         char prefix[32];
         Obj func = FUNC_LVARS(context);
         Obj funcname = NAME_FUNC(func);
@@ -232,7 +222,18 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
         Stat call = STAT_LVARS(context);
         Obj  body = BODY_FUNC(func);
         Obj  filename = GET_FILENAME_BODY(body);
+
+        while (totalDepthInt > 0) {
+            prefixWidth++;
+            totalDepthInt /= 10;
+        }
+
         if (activeContext != Fail) {
+            i = levelInt;
+            while (i > 0) {
+                levelWidth++;
+                i /= 10;
+            }
             snprintf(prefix, sizeof(prefix), "%c%*s[%lu] ",
                      context == activeContext ? '*' : ' ',
                      (int)(prefixWidth - levelWidth), "",
