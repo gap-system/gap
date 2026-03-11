@@ -91,6 +91,19 @@ To run a specific test file, pass it to `./gap`, for example:
 ./gap -q tst/testinstall/magma.tst -c 'QUIT;'
 ```
 
+### REPL / break-loop output tests
+
+Use `tst/testspecial/` for tests that exercise the interactive REPL,
+break loops, or other output that depends on GAP's terminal handling.
+
+- `./tst/testspecial/run_gap.sh ./gap tst/testspecial/<name>.g [outfile]`
+  runs a single special test, captures combined output, prevents GAP from
+  attaching to the terminal, and rewrites local paths in the transcript.
+- From `tst/testspecial/`, `GAPDIR=../.. ./run_all.sh` runs the full special
+  test suite.
+- From `tst/testspecial/`, `./regenerate_tests.sh` regenerates all expected
+  `.out` files.
+
 ## Commit messages and pull requests
 
 When writing commit messages, use the title format `component: Brief summary`.

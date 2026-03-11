@@ -135,6 +135,20 @@ static Obj FuncUpEnv(Obj self, Obj args)
     return (Obj)0;
 }
 
+static Obj FuncCurrentEnv(Obj self)
+{
+    if (!STATE(ErrorLVars) || IsBottomLVars(STATE(ErrorLVars)))
+        return Fail;
+    MakeHighVars(STATE(ErrorLVars));
+    return STATE(ErrorLVars);
+}
+
+static Obj FuncSET_ERROR_LVARS(Obj self, Obj lvars)
+{
+    STATE(ErrorLVars) = lvars;
+    return (Obj)0;
+}
+
 static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
 {
     if (IsBottomLVars(context))
@@ -170,7 +184,8 @@ static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
     return retlist;
 }
 
-static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
+static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
+                                       Obj activeContext, Obj level)
 {
     if (IsBottomLVars(context))
         return 0;
@@ -197,6 +212,10 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context)
         Stat call = STAT_LVARS(context);
         Obj  body = BODY_FUNC(func);
         Obj  filename = GET_FILENAME_BODY(body);
+        if (activeContext != Fail) {
+            Pr(context == activeContext ? "*[%d] " : " [%d] ",
+               INT_INTOBJ(level), 0);
+        }
         if (IsKernelFunction(func)) {
             PrintKernelFunction(func);
             Obj funcname = NAME_FUNC(func);
@@ -365,8 +384,7 @@ static Obj CallErrorInner(const Char * msg,
                           UInt         justQuit,
                           UInt         mayReturnVoid,
                           UInt         mayReturnObj,
-                          Obj          lateMessage,
-                          UInt         printThisStatement)
+                          Obj          lateMessage)
 {
     // Must do this before creating any other GAP objects,
     // as one of the args could be a pointer into a Bag.
@@ -392,8 +410,6 @@ static Obj CallErrorInner(const Char * msg,
     AssPRec(r, RNamName("justQuit"), justQuit ? True : False);
     AssPRec(r, RNamName("mayReturnObj"), mayReturnObj ? True : False);
     AssPRec(r, RNamName("mayReturnVoid"), mayReturnVoid ? True : False);
-    AssPRec(r, RNamName("printThisStatement"),
-            printThisStatement ? True : False);
     AssPRec(r, RNamName("lateMessage"), lateMessage);
     l = NewPlistFromArgs(EarlyMsg);
     MakeImmutableNoRecurse(l);
@@ -414,7 +430,7 @@ static Obj CallErrorInner(const Char * msg,
 
 void ErrorQuit(const Char * msg, Int arg1, Int arg2)
 {
-    CallErrorInner(msg, arg1, arg2, 1, 0, 0, False, 1);
+    CallErrorInner(msg, arg1, arg2, 1, 0, 0, False);
     Panic("ErrorQuit must not return");
 }
 
@@ -449,7 +465,7 @@ Obj ErrorReturnObj(const Char * msg, Int arg1, Int arg2, const Char * msg2)
 {
     Obj LateMsg;
     LateMsg = MakeString(msg2);
-    return CallErrorInner(msg, arg1, arg2, 0, 0, 1, LateMsg, 1);
+    return CallErrorInner(msg, arg1, arg2, 0, 0, 1, LateMsg);
 }
 
 
@@ -461,7 +477,7 @@ void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
 {
     Obj LateMsg;
     LateMsg = MakeString(msg2);
-    CallErrorInner(msg, arg1, arg2, 0, 1, 0, LateMsg, 1);
+    CallErrorInner(msg, arg1, arg2, 0, 1, 0, LateMsg);
     // ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' );
 }
 
@@ -472,7 +488,7 @@ void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
 void ErrorMayQuit(const Char * msg, Int arg1, Int arg2)
 {
     Obj LateMsg = MakeString("type 'quit;' to quit to outer loop");
-    CallErrorInner(msg, arg1, arg2, 0, 0, 0, LateMsg, 1);
+    CallErrorInner(msg, arg1, arg2, 0, 0, 0, LateMsg);
     Panic("ErrorMayQuit must not return");
 }
 
@@ -622,11 +638,14 @@ static StructGVarFunc GVarFuncs[] = {
 
     GVAR_FUNC_XARGS(DownEnv, -1, "args"),
     GVAR_FUNC_XARGS(UpEnv, -1, "args"),
+    GVAR_FUNC_0ARGS(CurrentEnv),
+    GVAR_FUNC_1ARGS(SET_ERROR_LVARS, lvars),
 
     GVAR_FUNC_2ARGS(CALL_WITH_CATCH, func, args),
     GVAR_FUNC_1ARGS(JUMP_TO_CATCH, payload),
 
-    GVAR_FUNC_2ARGS(PRINT_CURRENT_STATEMENT, stream, context),
+    GVAR_FUNC_4ARGS(PRINT_CURRENT_STATEMENT, stream, context, activeContext,
+                    level),
     GVAR_FUNC_1ARGS(CURRENT_STATEMENT_LOCATION, context),
 
     GVAR_FUNC_1ARGS(SetUserHasQuit, value),

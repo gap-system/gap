@@ -1,0 +1,13 @@
+gap> f := function()
+>     Error("foo");
+> end;;
+gap> f();
+Error, foo
+Stack trace:
+*[1] Error( "foo" ); at *stdin*:3 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *stdin*:5
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> quit;
+gap> QUIT;

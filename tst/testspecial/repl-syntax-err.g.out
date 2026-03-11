@@ -6,7 +6,8 @@ gap> # error then is displayed. The next line then contains another syntax
 gap> # error, which wasn't reported correctly before the above issues was
 gap> # fixed.
 gap> Error(""):
-Error,  called from
+Error,
+Stack trace:
 not in any function at *stdin*:9
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue

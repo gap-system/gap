@@ -22,6 +22,7 @@ gap>
 gap> # test formatting status for errout
 gap> 1/0; # trigger a break loop
 Error, Rational operations: <divisor> must not be zero
+Stack trace:
 not in any function at *stdin*:14
 type 'quit;' to quit to outer loop
 brk> old := PrintFormattingStatus("*errout*");

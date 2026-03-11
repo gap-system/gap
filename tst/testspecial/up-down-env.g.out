@@ -6,13 +6,13 @@ gap> ##
 gap> f:=lvl -> 1/lvl + f(lvl-1);
 function( lvl ) ... end
 gap> f(7);
-Error, Rational operations: <divisor> must not be zero in
-  1 / lvl at *stdin*:7 called from 
-f( lvl - 1 ) at *stdin*:7 called from
-f( lvl - 1 ) at *stdin*:7 called from
-f( lvl - 1 ) at *stdin*:7 called from
-f( lvl - 1 ) at *stdin*:7 called from
-f( lvl - 1 ) at *stdin*:7 called from
+Error, Rational operations: <divisor> must not be zero
+Stack trace:
+*[1] 1 / lvl at *stdin*:7 called from
+ [2] f( lvl - 1 ) at *stdin*:7 called from
+ [3] f( lvl - 1 ) at *stdin*:7 called from
+ [4] f( lvl - 1 ) at *stdin*:7 called from
+ [5] f( lvl - 1 ) at *stdin*:7 called from
 ...  at *stdin*:8
 type 'quit;' to quit to outer loop
 brk> UpEnv(1); lvl;
@@ -49,7 +49,8 @@ brk> ##
 brk> ##  start a fresh execution context
 brk> ##
 brk> Read("top-level-error.g");
-Error, foo called from
+Error, foo
+Stack trace:
 not in any function at top-level-error.g:1
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
@@ -57,6 +58,7 @@ brk_2> Where(20);
 not in any function at *errin*:1
 brk_2> lvl; # since `Read` started a fresh execution context, we can't access lvl here
 Error, Variable: 'lvl' must have a value
+Stack trace:
 not in any function at *errin*:2
 brk_2> quit;
 brk> lvl;

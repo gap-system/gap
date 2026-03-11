@@ -57,6 +57,40 @@ BIND_GLOBAL("AncestorLVars", function(lv, depth)
 end);
 
 ErrorLVars := fail;
+ErrorTracebackLVars := fail;
+
+BIND_GLOBAL("GET_VISIBLE_ERROR_LVARS", function()
+    local active, context, bottom;
+
+    if ErrorTracebackLVars = fail then
+        return fail;
+    fi;
+
+    active := CurrentEnv();
+    if active = fail then
+        return ErrorTracebackLVars;
+    fi;
+    bottom := GetBottomLVars();
+    context := ErrorTracebackLVars;
+    while context <> bottom do
+        if context = active then
+            return active;
+        fi;
+        context := ParentLVars(context);
+    od;
+    return ErrorTracebackLVars;
+end);
+
+BIND_GLOBAL("ERROR_MESSAGE_ENDS_WITH_NEWLINE", function(message)
+    local last;
+
+    if Length(message) = 0 then
+        return false;
+    fi;
+
+    last := Last(message);
+    return IsString(last) and Length(last) > 0 and Last(last) = '\n';
+end);
 
 # In this method the line hint changes in every PrintTo are balanced, because at the moment
 # PrintTo(ERROR_OUTPUT,...) resets the indentation level every time it is called.
@@ -99,16 +133,20 @@ BIND_GLOBAL("PRETTY_PRINT_VARS", function(context)
     PrintTo(ERROR_OUTPUT,"\n");
 end);
 
-BIND_GLOBAL("WHERE", function(depth, context, showlocals)
-    local bottom, lastcontext, f;
+BIND_GLOBAL("WHERE", function(depth, context, activecontext, showlocals)
+    local bottom, lastcontext, f, level;
     if depth <= 0 then
         return;
     fi;
     bottom := GetBottomLVars();
+    if context = bottom then
+        PrintTo(ERROR_OUTPUT, "called from read-eval loop ");
+        return;
+    fi;
     lastcontext := context;
-    context := ParentLVars(context);
+    level := 1;
     while depth > 0  and context <> bottom do
-        PRINT_CURRENT_STATEMENT(ERROR_OUTPUT, context);
+        PRINT_CURRENT_STATEMENT(ERROR_OUTPUT, context, activecontext, level);
         if showlocals then
             PRETTY_PRINT_VARS(context);
         fi;
@@ -117,6 +155,7 @@ BIND_GLOBAL("WHERE", function(depth, context, showlocals)
         lastcontext := context;
         context := ParentLVars(context);
         depth := depth-1;
+        level := level + 1;
     od;
     if depth = 0 then
         PrintTo(ERROR_OUTPUT, "...  ");
@@ -129,10 +168,12 @@ end);
 
 
 BIND_GLOBAL("WHERE_INTERNAL", function(depth, showlocals)
+    local activecontext;
     if ErrorLVars = fail or ErrorLVars = GetBottomLVars() then
         PrintTo(ERROR_OUTPUT, "not in any function ");
     else
-        WHERE(depth, ErrorLVars, showlocals);
+        activecontext := GET_VISIBLE_ERROR_LVARS();
+        WHERE(depth, ErrorTracebackLVars, activecontext, showlocals);
     fi;
     PrintTo(ERROR_OUTPUT, "at ", INPUT_FILENAME(), ":", INPUT_LINENUMBER(), "\n");
 end);
@@ -172,9 +213,10 @@ end);
 #
 Unbind(ErrorInner);
 BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
-    local   context, mayReturnVoid,  mayReturnObj,  lateMessage,
-            x,  prompt,  res, errorLVars, justQuit, printThisStatement,
-            printEarlyMessage, printEarlyTraceback, lastErrorStream;
+    local   context, tracebackContext, mayReturnVoid, mayReturnObj,
+            lateMessage, x, prompt, res, errorLVars, errorTracebackLVars,
+            kernelErrorLVars, justQuit, printEarlyMessage,
+            printEarlyTraceback, printAutomaticTraceback, lastErrorStream;
 
     context := options.context;
     if not IsLVarsBag(context) then
@@ -216,15 +258,15 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
         mayReturnObj := false;
     fi;
 
-    if IsBound(options.printThisStatement) then
-        printThisStatement := options.printThisStatement;
-        if not printThisStatement in [false, true] then
-            PrintTo(ERROR_OUTPUT, "ErrorInner: option printThisStatement must be true or false\n");
+    if IsBound(options.tracebackContext) then
+        tracebackContext := options.tracebackContext;
+        if not IsLVarsBag(tracebackContext) then
+            PrintTo(ERROR_OUTPUT, "ErrorInner: option tracebackContext must be a local variables bag\n");
             LEAVE_ALL_NAMESPACES();
             JUMP_TO_CATCH(1);
         fi;
     else
-        printThisStatement := true;
+        tracebackContext := context;
     fi;
 
     if IsBound(options.lateMessage) then
@@ -248,27 +290,31 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
     end;
 
     printEarlyTraceback := function(stream)
-        local location;
-        if printThisStatement then
-            if context <> GetBottomLVars() then
-                PrintTo(stream, " in\n  ");
-                PRINT_CURRENT_STATEMENT(stream, context);
-                PrintTo(stream, " called from ");
-            fi;
-        else
-            location := CURRENT_STATEMENT_LOCATION(context);
-            if location <> fail then
-              PrintTo(stream, " at ", location[1], ":", location[2]);
-            fi;
-            PrintTo(stream, " called from");
+        if not ERROR_MESSAGE_ENDS_WITH_NEWLINE(earlyMessage) then
+            PrintTo(stream, "\n");
         fi;
-        PrintTo(ERROR_OUTPUT, "\n");
+    end;
+
+    printAutomaticTraceback := function()
+        if IsBound(OnBreak) and IsFunction(OnBreak) then
+            if OnBreak = Where or OnBreak = WhereWithVars then
+                PrintTo(ERROR_OUTPUT, "Stack trace:\n");
+            fi;
+            OnBreak();
+        fi;
     end;
 
     ErrorLevel := ErrorLevel+1;
     ERROR_COUNT := ERROR_COUNT+1;
     errorLVars := ErrorLVars;
+    errorTracebackLVars := ErrorTracebackLVars;
+    kernelErrorLVars := CurrentEnv();
+    if kernelErrorLVars = fail then
+        kernelErrorLVars := GetBottomLVars();
+    fi;
     ErrorLVars := context;
+    ErrorTracebackLVars := tracebackContext;
+    SET_ERROR_LVARS(context);
     # Do we want to skip the break loop?
     # BreakOnError is initialized by the `-T` command line flag in init.g
     if QUITTING or not BreakOnError then
@@ -283,9 +329,7 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
             printEarlyMessage(ERROR_OUTPUT);
             if AlwaysPrintTracebackOnError then
                 printEarlyTraceback(ERROR_OUTPUT);
-                if IsBound(OnBreak) and IsFunction(OnBreak) then
-                    OnBreak();
-                fi;
+                printAutomaticTraceback();
             else
                 PrintTo(ERROR_OUTPUT, "\n");
             fi;
@@ -313,6 +357,8 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
         fi;
         ErrorLevel := ErrorLevel-1;
         ErrorLVars := errorLVars;
+        ErrorTracebackLVars := errorTracebackLVars;
+        SET_ERROR_LVARS(kernelErrorLVars);
         if ErrorLevel = 0 then LEAVE_ALL_NAMESPACES(); fi;
         JUMP_TO_CATCH(0);
     fi;
@@ -323,17 +369,14 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
     if SHOULD_QUIT_ON_BREAK() then
         # Again, the default is to not print the rest of the traceback.
         # If AlwaysPrintTracebackOnError is true we do so anyways.
-        if AlwaysPrintTracebackOnError
-            and IsBound(OnBreak) and IsFunction(OnBreak) then
-            OnBreak();
+        if AlwaysPrintTracebackOnError then
+            printAutomaticTraceback();
         fi;
         ForceQuitGap(1);
     fi;
 
     # OnBreak() is set to Where() by default, which prints the traceback.
-    if IsBound(OnBreak) and IsFunction(OnBreak) then
-        OnBreak();
-    fi;
+    printAutomaticTraceback();
 
     # Now print lateMessage and OnBreakMessage a la "press return; to .."
     if IsString(lateMessage) then
@@ -355,6 +398,8 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
     fi;
     ErrorLevel := ErrorLevel-1;
     ErrorLVars := errorLVars;
+    ErrorTracebackLVars := errorTracebackLVars;
+    SET_ERROR_LVARS(kernelErrorLVars);
     if res = fail then
         if IsBound(OnQuit) and IsFunction(OnQuit) then
             OnQuit();
@@ -381,7 +426,6 @@ BIND_GLOBAL("Error", function(arg)
             context := ParentLVars(GetCurrentLVars()),
             mayReturnVoid := true,
             lateMessage := true,
-            printThisStatement := false,
         ),
         arg);
 end);
@@ -395,7 +439,6 @@ BIND_GLOBAL("ErrorNoReturn", function(arg)
             mayReturnVoid := false,
             mayReturnObj := false,
             lateMessage := "type 'quit;' to quit to outer loop",
-            printThisStatement := false,
         ),
         arg);
 end);

@@ -1,0 +1,19 @@
+gap> # test method-not-found traceback rendering while preserving helper access
+gap> f := a -> a + a;;
+gap> f(());
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `+' on 2 arguments
+Stack trace:
+*[1] a + a at *stdin*:3 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *stdin*:4
+type 'quit;' to quit to outer loop
+brk> ShowMethods(1);
+#I  Searching Method for + with 2 arguments:
+#I  Total: 138 entries
+brk> Where(5);
+*[1] a + a at *stdin*:3 called from
+<function "f">( <arguments> )
+ called from read-eval loop at *errin*:2
+brk> quit;
+gap> QUIT;
