@@ -154,6 +154,39 @@ DeclareSynonym( "IsLowerTriangularMat", IsLowerTriangularMatrix );
 
 #############################################################################
 ##
+#P  IsSymmetricMatrix( <mat> )
+#P  IsSymmetricMat( <mat> )
+##
+##  <#GAPDoc Label="IsSymmetricMat">
+##  <ManSection>
+##  <Prop Name="IsSymmetricMatrix" Arg='mat'/>
+##  <Prop Name="IsSymmetricMat" Arg='mat'/>
+##
+##  <Description>
+##  return <K>true</K> if the matrix <A>mat</A> is a square matrix and
+##  satisfies <C><A>mat</A>[i,j] = <A>mat</A>[j,i]</C> for all
+##  <M>i, j</M>, and <K>false</K> otherwise.
+##  <Example><![CDATA[
+##  gap> IsSymmetricMatrix( [ [ 1 ] ] );
+##  true
+##  gap> IsSymmetricMatrix( [ [ 1, 2 ], [ 2, 1 ] ] );
+##  true
+##  gap> IsSymmetricMatrix( [ [ 0, 1 ], [ 2, 0 ] ] );
+##  false
+##  gap> IsSymmetricMatrix( [ [ 1, 2, 3 ], [ 2, 4, 5 ] ] );
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsSymmetricMatrix", IsMatrixOrMatrixObj );
+
+DeclareSynonym( "IsSymmetricMat", IsSymmetricMatrix );
+
+
+#############################################################################
+##
 #F  DiagonalOfMatrix( <mat> )
 #F  DiagonalOfMat( <mat> )
 ##

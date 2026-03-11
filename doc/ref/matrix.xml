@@ -310,6 +310,7 @@ see&nbsp;<Ref Sect="Mutability and Copyability"/>.
 <#Include Label="IsDiagonalMat">
 <#Include Label="IsUpperTriangularMat">
 <#Include Label="IsLowerTriangularMat">
+<#Include Label="IsSymmetricMat">
 
 </Section>
 
