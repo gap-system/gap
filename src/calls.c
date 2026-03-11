@@ -1081,11 +1081,13 @@ void PrintKernelFunction(Obj func)
     Obj body = BODY_FUNC(func);
     Obj filename = body ? GET_FILENAME_BODY(body) : 0;
     if (filename) {
+        // A precise location means this is pure kernel code.
         if ( GET_LOCATION_BODY(body) ) {
             Pr("<<kernel code>> from %g:%g",
                 (Int)filename,
                 (Int)GET_LOCATION_BODY(body));
         }
+        // A start line without a precise location denotes compiled GAP code.
         else if ( GET_STARTLINE_BODY(body) ) {
             Pr("<<compiled GAP code>> from %g:%d",
                 (Int)filename,
@@ -1093,6 +1095,8 @@ void PrintKernelFunction(Obj func)
         }
     }
     else {
+        // Some legacy/generated cases still lack enough metadata to
+        // distinguish kernel from compiled code.
         Pr("<<kernel or compiled code>>", 0, 0);
     }
 }

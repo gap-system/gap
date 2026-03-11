@@ -8,7 +8,8 @@ Stack trace:
 not in any function at stream:2
 Error, Could not evaluate string.
 Stack trace:
-*[1] Error( "Could not evaluate string.\n" ); at GAPROOT/lib/string.gi:LINE called from
+*[1] Error( "Could not evaluate string.\n" );
+   @ GAPROOT/lib/string.gi:LINE
 <function "EvalString">( <arguments> )
  called from read-eval loop at *stdin*:6
 you can 'quit;' to quit to outer loop, or
@@ -20,7 +21,8 @@ Stack trace:
 not in any function at stream:2
 Error, Could not evaluate string.
 Stack trace:
-*[1] Error( "Could not evaluate string.\n" ); at GAPROOT/lib/string.gi:LINE called from
+*[1] Error( "Could not evaluate string.\n" );
+   @ GAPROOT/lib/string.gi:LINE
 <function "EvalString">( <arguments> )
  called from read-eval loop at *stdin*:6
 you can 'quit;' to quit to outer loop, or

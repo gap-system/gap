@@ -78,12 +78,11 @@ fi;
 ##  Group([ b ])
 ##  gap> Index( f, u );
 ##  Error, the coset enumeration has defined more than 4096000 cosets
-##   called from
-##  TCENUM.CosetTableFromGensAndRels( fgens, grels, fsgens ) called from
-##  CosetTableFromGensAndRels( fgens, grels, fsgens ) called from
-##  TryCosetTableInWholeGroup( H ) called from
-##  CosetTableInWholeGroup( H ) called from
-##  IndexInWholeGroup( H ) called from
+##  *[1] TCENUM.CosetTableFromGensAndRels( fgens, grels, fsgens )
+##   [2] CosetTableFromGensAndRels( fgens, grels, fsgens )
+##   [3] TryCosetTableInWholeGroup( H )
+##   [4] CosetTableInWholeGroup( H )
+##   [5] IndexInWholeGroup( H )
 ##  ...
 ##  Entering break read-eval-print loop ...
 ##  type 'return;' if you want to continue with a new limit of 8192000 cosets,

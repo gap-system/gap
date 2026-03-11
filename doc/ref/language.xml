@@ -1556,24 +1556,19 @@ If the expression <A>expr</A> is a function call then this function must
 return a value.  If the function does not return a value an error is
 signalled and you enter a break loop (see <Ref Sect="Break Loops"/>).
 As usual you can leave the break  loop  with <C>quit;</C>.
-If you enter <C>return <A>return-expr</A>;</C> the value of the expression
-<A>return-expr</A> is assigned to the variable,
-and execution continues after the assignment.
 <P/>
 <Log><![CDATA[
 gap> f1:= function( x ) Print( "value: ", x, "\n" ); end;;
 gap> f2:= function( x ) return f1( x ); end;;
 gap> f2( 4 );
 value: 4
-Function Calls: <func> must return a value at
-return f1( x );
- called from
-<function>( <arguments> ) called from read-eval-loop
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you can supply one by 'return <value>;' to continue
-brk> return "hello";
-"hello"
+Error, Function Calls: <func> must return a value
+*[1] f1( x )
+   @ *stdin*:2
+<function "f2">( <arguments> )
+ called from read-eval loop at *stdin*:3
+type 'quit;' to quit to outer loop
+brk>
 ]]></Log>
 <P/>
 In the above example, the function <C>f2</C> calls <C>f1</C> with argument

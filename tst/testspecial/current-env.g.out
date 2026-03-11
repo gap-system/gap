@@ -8,10 +8,12 @@ gap> f := function()
 gap> f();
 Error, You cannot loop over the integer 1 did you mean the range [1..1]
 Stack trace:
-*[1] Error( "You cannot loop over the integer ", n, " did you mean the range [1..", n, "]" ); at GAPROOT/lib/integer.gi:LINE called from
+*[1] Error( "You cannot loop over the integer ", n, " did you mean the range [1..", n, "]" );
+   @ GAPROOT/lib/integer.gi:LINE
  [2] for i in 1 do
     return 1;
-od; at *stdin*:6 called from
+od;
+   @ *stdin*:6
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:9
 you can 'quit;' to quit to outer loop, or
