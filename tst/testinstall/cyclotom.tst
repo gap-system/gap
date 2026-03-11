@@ -353,4 +353,44 @@ gap> SetX(r, r, {i,j} -> (sets[i]=sets[j]) = (i=j));
 [ true ]
 
 #
+# IsSubset for cyclotomic semirings and ranges
+#
+gap> IsSubset(Integers, [1..10^15]);
+true
+gap> IsSubset(Integers, [-10..10]);
+true
+gap> IsSubset(Rationals, [1..10^15]);
+true
+gap> IsSubset(GaussianIntegers, [1..10^15]);
+true
+gap> IsSubset(GaussianRationals, [1..10^15]);
+true
+gap> IsSubset(PositiveIntegers, [1..10^15]);
+true
+gap> IsSubset(PositiveIntegers, [0..10]);
+false
+gap> IsSubset(PositiveIntegers, [-5..5]);
+false
+gap> IsSubset(NonnegativeIntegers, [0..10^15]);
+true
+gap> IsSubset(NonnegativeIntegers, [-1..10]);
+false
+gap> IsSubset(NonnegativeIntegers, [1..10]);
+true
+
+# descending ranges
+gap> IsSubset(PositiveIntegers, [10,9..1]);
+true
+gap> IsSubset(PositiveIntegers, [10,9..0]);
+false
+gap> IsSubset(NonnegativeIntegers, [10,9..0]);
+true
+gap> IsSubset(NonnegativeIntegers, [5,3..-1]);
+false
+
+# empty ranges
+gap> IsSubset(PositiveIntegers, [1..0]);
+true
+
+#
 gap> STOP_TEST("cyclotom.tst");
