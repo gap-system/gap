@@ -234,7 +234,9 @@ gap> UserHomeContract("/tmp/gap-home");
 gap> UserHomeContract("/tmp/gap-home/.gap");
 "~/.gap"
 gap> UserHomeContract("/tmp/gap-homedir");
-"~dir"
+"/tmp/gap-homedir"
+gap> UserHomeContract("/tmp/gap-home-extra");
+"/tmp/gap-home-extra"
 gap> UserHomeContract("~/already");
 "~/already"
 gap> UserHomeExpand(UserHomeContract("/tmp/gap-home/.gap"));
@@ -244,6 +246,19 @@ gap> UserHomeContract(1234);
 gap> GAPInfo.UserHome := "";;
 gap> UserHomeContract("/tmp/gap-home/.gap");
 "/tmp/gap-home/.gap"
+gap> GAPInfo.UserHome := "/tmp/gap-home/";;
+gap> UserHomeContract("/tmp/gap-home");
+"~"
+gap> UserHomeContract("/tmp/gap-home/");
+"~"
+gap> UserHomeContract("/tmp/gap-home/.gap");
+"~/.gap"
+gap> UserHomeContract("/tmp/gap-home//.gap");
+"~/.gap"
+gap> UserHomeContract("/tmp/gap-homedir");
+"/tmp/gap-homedir"
+gap> UserHomeContract("/tmp/gap-home-extra");
+"/tmp/gap-home-extra"
 gap> if hadHome then GAPInfo.UserHome := savedHome; else Unbind(GAPInfo.UserHome); fi;;
 
 #

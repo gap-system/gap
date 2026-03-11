@@ -327,7 +327,7 @@ InstallMethod( String,
 ##  the user's home directory as stored in <C>GAPInfo.UserHome</C>.
 ##  Otherwise <A>str</A> is returned unchanged.
 ##  <P/>
-##  This function is the inverse of <Ref Func="UserHomeContract"/>.
+##  This function is the counterpart of <Ref Func="UserHomeContract"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -354,20 +354,49 @@ end);
 ##  that prefix replaced by a leading <C>'~'</C> character.
 ##  Otherwise <A>str</A> is returned unchanged.
 ##  <P/>
-##  This function is the inverse of <Ref Func="UserHomeExpand"/>.
+##  A trailing slash in <C>GAPInfo.UserHome</C> is ignored when contracting
+##  absolute paths.
+##  <P/>
+##  This function is the counterpart of <Ref Func="UserHomeExpand"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("UserHomeContract", function(str)
-  if IsString(str) and Length(str) > 0
-        and IsString(GAPInfo.UserHome) and Length(GAPInfo.UserHome) > 0
-        and PositionSublist(str, GAPInfo.UserHome) = 1 then
-    return Concatenation("~",
-                         str{[Length(GAPInfo.UserHome) + 1..Length(str)]});
-  else
+  local home, homeLen, suffix;
+
+  if not IsString(str) or Length(str) = 0
+        or not IsString(GAPInfo.UserHome) or Length(GAPInfo.UserHome) = 0 then
     return str;
   fi;
+
+  home := ShallowCopy(GAPInfo.UserHome);
+  while Length(home) > 1 and Last(home) = '/' do
+    Remove(home);
+  od;
+  homeLen := Length(home);
+
+  if not IsMatchingSublist(str, home) then
+    return str;
+  fi;
+
+  if Length(str) = homeLen then
+    return "~";
+  fi;
+
+  if str[homeLen + 1] <> '/' then
+    return str;
+  fi;
+
+  if Length(str) = homeLen + 1 then
+    return "~";
+  fi;
+
+  suffix := str{[homeLen + 2..Length(str)]};
+  while Length(suffix) > 0 and suffix[1] = '/' do
+    suffix := suffix{[2..Length(suffix)]};
+  od;
+  return Concatenation("~/", suffix);
 end);
 
 
