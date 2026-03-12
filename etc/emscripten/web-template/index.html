@@ -8,6 +8,16 @@
     <script src="https://cdn.jsdelivr.net/npm/xterm@4.17.0/lib/xterm.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xterm-pty@0.9.4/index.js"></script>
     <script>
+      fetch("startup_manifest.json")
+        .then(res => res.json())
+        .then(manifest => {
+          manifest.forEach(file => {
+            if file.startsWith("/assets/") {
+              fetch(file.substring(1));
+            }
+          });
+        });
+
       const xterm = new Terminal();
       xterm.open(document.getElementById("terminal"));
 
@@ -18,8 +28,6 @@
       new TtyServer(slave).start(worker);
     </script>
 
-    <!-- Hack to get around lack of SharedArrayBuffer on github pages -->
     <script src="coi-serviceworker.js"></script>
   </body>
 </html>
-
