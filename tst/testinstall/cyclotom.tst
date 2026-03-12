@@ -1,4 +1,4 @@
-#@local a,cyc,gm,i,l1,l2,l3,mat,n,r,x,y,z,sets
+#@local a,b,cyc,gm,i,l1,l2,l3,mat,n,r,ranges,s,x,y,z,sets
 gap> START_TEST("cyclotom.tst");
 
 # Check basic arithmetic operations.
@@ -353,44 +353,15 @@ gap> SetX(r, r, {i,j} -> (sets[i]=sets[j]) = (i=j));
 [ true ]
 
 #
-# IsSubset for cyclotomic semirings and ranges
+# IsSubset for cyclotomic semirings and ranges for large bounds
 #
-gap> IsSubset(Integers, [1..10^15]);
-true
-gap> IsSubset(Integers, [-10..10]);
-true
-gap> IsSubset(Rationals, [1..10^15]);
-true
-gap> IsSubset(GaussianIntegers, [1..10^15]);
-true
-gap> IsSubset(GaussianRationals, [1..10^15]);
-true
-gap> IsSubset(PositiveIntegers, [1..10^15]);
-true
-gap> IsSubset(PositiveIntegers, [0..10]);
-false
-gap> IsSubset(PositiveIntegers, [-5..5]);
-false
-gap> IsSubset(NonnegativeIntegers, [0..10^15]);
-true
-gap> IsSubset(NonnegativeIntegers, [-1..10]);
-false
-gap> IsSubset(NonnegativeIntegers, [1..10]);
-true
-
-# descending ranges
-gap> IsSubset(PositiveIntegers, [10,9..1]);
-true
-gap> IsSubset(PositiveIntegers, [10,9..0]);
-false
-gap> IsSubset(NonnegativeIntegers, [10,9..0]);
-true
-gap> IsSubset(NonnegativeIntegers, [5,3..-1]);
-false
-
-# empty ranges
-gap> IsSubset(PositiveIntegers, [1..0]);
-true
+gap> sets:=[ PositiveIntegers, NonnegativeIntegers, Integers, GaussianIntegers, GaussianRationals, Cyclotomics ];;
+gap> b:=2^(8*GAPInfo.BytesPerVariable - 6);;
+gap> ranges:=[ [-2..-1], [-1..0], [-1..1], [0..1], [1..2], [-b..-1], [-b..0], [-b..1], [-1..b], [0..b], [1..b], [-b,b]];;
+gap> SetX(ranges, sets, {r,s} -> IsSubset(s,r) = (IsEmpty(r) or (First(r) in s and Last(r) in s)));
+[ true ]
+gap> SetX(ranges, sets, {r,s} -> not IsSubset(r,s));
+[ true ]
 
 #
 gap> STOP_TEST("cyclotom.tst");
