@@ -116,9 +116,12 @@ cat << 'EOF' >> lazy_fs.js
             } catch(e) {} 
             createdDirs[parent] = true;
         }
-        
+
+        // Encode filename by replacing special characters with UTF-8 escape sequences (eg., "(S2twistS1)#10.scb")
+        var encodedURL = file.split('/').map(encodeURIComponent).join('/');
+
         // Map the file lazily
-        FS.createLazyFile(parent, name, file, true, false);
+        FS.createLazyFile(parent, name, encodedURL, true, false);
     });
 });
 EOF
