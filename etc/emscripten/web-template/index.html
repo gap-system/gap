@@ -12,7 +12,7 @@
         .then(res => res.json())
         .then(manifest => {
           manifest.forEach(file => {
-            if file.startsWith("/assets/") {
+            if (file.startsWith("/assets/")) {
               fetch(file.substring(1));
             }
           });
