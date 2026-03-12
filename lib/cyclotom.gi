@@ -2069,24 +2069,13 @@ InstallMethod( IsSubset, "for a cyclotomic semiring and a range",
              [IsCyclotomicCollection and IsSemiringWithOne,
               IsRange],
 function (D, R)
-  local lo;
-  if IsEmpty( R ) then return true; fi;
-  # Ranges contain only integers.
-  if IsPositiveIntegers( D ) then
-    # PositiveIntegers contains all integers >= 1
-    lo := Minimum( R[1], R[Length(R)] );
-    return lo >= 1;
-  elif IsNonnegativeIntegers( D ) then
-    # NonnegativeIntegers contains all integers >= 0
-    lo := Minimum( R[1], R[Length(R)] );
-    return lo >= 0;
-  elif IsIntegers( D ) or IsRationals( D )
-       or IsGaussianIntegers( D ) or IsGaussianRationals( D )
-       or (HasIsWholeFamily( D ) and IsWholeFamily( D )) then
-    # These domains contain all integers, so any range is a subset
-    return true;
-  fi;
-  TryNextMethod();
+  if IsEmpty(R) then return true; fi;
+  # Since D is a semiring-with-one, and thus in particular an additive magma,
+  # it suffices to check whether the start and end point of the given range
+  # are contained in it. Actually it suffices if the smaller one is contained
+  # in it, but figuring out which end is smaller is more work than just
+  # directly checking both end points.
+  return First(R) in D and Last(R) in D;
 end );
 
 
