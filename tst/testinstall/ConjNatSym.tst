@@ -5,6 +5,10 @@ true
 gap> IsConjugate( SymmetricGroup(5), Group((1,2)), Group((3,4,5)));
 false
 
+# Subgroups with different known orders cannot be conjugate
+gap> IsConjugate( SymmetricGroup(10), Group((1,2,3,4,5)), Group((1,2,3)));
+false
+
 # This runs into the TryNextMethod case
 gap> IsConjugate( SymmetricGroup(200),SymmetricGroup(200), AlternatingGroup(200));
 false
