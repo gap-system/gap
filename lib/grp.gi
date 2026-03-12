@@ -2955,6 +2955,11 @@ end);
 
 InstallMethod(IsConjugate,"subgroups",IsFamFamFam,[IsGroup, IsGroup,IsGroup],
 function(g,x,y)
+  # conjugate subgroups must have the same order
+  if HasSize(x) and HasSize(y) and Size(x) <> Size(y) then
+    return false;
+  fi;
+
   # shortcut for normal subgroups
   if (HasIsNormalInParent(x) and IsNormalInParent(x)
       and CanComputeIsSubset(Parent(x),g) and IsSubset(Parent(x),g))
