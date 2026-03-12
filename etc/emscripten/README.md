@@ -6,7 +6,7 @@ Files:
 
 - `web-template`: Uses 'xterm-pty' to create a "nice" interface to the Wasm GAP.
 
-- `build_startup_manifest.js`: Build `startup_manifest.json` that contains resources to preload.
+- `build_startup_manifest.js`: Run it in the web root directory to build `startup_manifest.json` that contains resources to preload.
 
 See 'run-web-demo.sh' as an example on how to set up a working website.
 
