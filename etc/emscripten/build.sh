@@ -88,43 +88,15 @@ emmake make bootstrap-pkg-full
 # Copy in files from native_build
 cp native-build/build/c_*.c native-build/build/ffdata.* src/
 
-# Generate lazy_fs.js for lazy loading
-cat << 'EOF' > lazy_fs.js
-Module.preRun = Module.preRun || [];
-Module.preRun.push(function() {
-    var files = [
-EOF
-
 # Dynamically find and append ALL required files to the JS array
 # The flag -type f is safe because the only symbolic link is 'tst/mockpkg/Makefile.gappkg',
 # which is safe to ignore
-find pkg lib grp tst doc hpcgap dev benchmark -type f | sed -e 's/.*/        "&",/' >> lazy_fs.js
+find pkg lib grp tst doc hpcgap dev benchmark -type f | python3 etc/emscripten/generate_mapping.py
 
-cat << 'EOF' >> lazy_fs.js
-    ];
-    
-    var createdDirs = {};
-    files.forEach(function(file) {
-        var parts = file.split('/');
-        var name = parts.pop();
-        var parent = '/' + parts.join('/');
-        
-        // Create the directory structure if it doesn't exist
-        if (!createdDirs[parent]) {
-            try {
-                FS.mkdirTree(parent);
-            } catch(e) {} 
-            createdDirs[parent] = true;
-        }
-
-        // Encode filename by replacing special characters with UTF-8 escape sequences (eg., "(S2twistS1)#10.scb")
-        var encodedURL = file.split('/').map(encodeURIComponent).join('/');
-
-        // Map the file lazily
-        FS.createLazyFile(parent, name, encodedURL, true, false);
-    });
-});
-EOF
+if [ $? -ne 0 ]; then
+    echo "Build aborted: generate_mapping.py failed."
+    exit 1
+fi
 
 # The EXEEXT is usually for windows, but here it lets us set GAP's extension,
 # which lets us produce a html page to run GAP in.
