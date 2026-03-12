@@ -57,6 +57,22 @@ mkdir -p "$AUX_PREFIX"
     emmake make install
 )
 
+# There are two problems with building GAP
+# 1) GAP builds some executables (ffgen and gap-nocomp), which it wants to
+#    execute while building. We get these files from 'native-build'.
+# 2) 'configure' gets confused by some of the LDFLAGS we need, so we have to pass
+#     them in to 'make'
+#
+# These options are:
+# -sASYNCIFY -- we don't care about ASYNC, but this forces the compiler to output
+# all variables onto the stack, which is required for GASMAN
+# Note we could use 'ALLOW_MEMORY_GROWTH', both we don't currently, we instead set
+# a big memory window.
+# -O2 : Some optimisation
+# EXEEXT=.html -- this is actually a GAP makefile option, it lets us make the
+# output 'gap.html', which makes emscripten output a html page we can load
+# --pre-js lazy_fs.js : Prepend lazy_fs.js that is generated for lazy loading
+
 # Run configure if we don't have a makefile, or someone configured this
 # GAP for standard building (emscripten builds will use 'emcc')
 if [[ ! -f GNUmakefile ]] || ! grep '/emcc' GNUmakefile > /dev/null; then
@@ -66,14 +82,13 @@ if [[ ! -f GNUmakefile ]] || ! grep '/emcc' GNUmakefile > /dev/null; then
     LDFLAGS="-s ASYNCIFY=1 -O2"
 fi;
 
-# Get basic required packages
+# Get full required packages
 emmake make bootstrap-pkg-full
 
 # Copy in files from native_build
 cp native-build/build/c_*.c native-build/build/ffdata.* src/
 
-# Generate lazy_fs.js for on-demand loading
-echo "Generating lazy file system map for on-demand loading..."
+# Generate lazy_fs.js for lazy loading
 cat << 'EOF' > lazy_fs.js
 Module.preRun = Module.preRun || [];
 Module.preRun.push(function() {
@@ -81,6 +96,8 @@ Module.preRun.push(function() {
 EOF
 
 # Dynamically find and append ALL required files to the JS array
+# The flag -type f is safe because the only symbolic link is 'tst/mockpkg/Makefile.gappkg',
+# which is safe to ignore
 find pkg lib grp tst doc hpcgap dev benchmark -type f | sed -e 's/.*/        "&",/' >> lazy_fs.js
 
 cat << 'EOF' >> lazy_fs.js
@@ -105,9 +122,7 @@ cat << 'EOF' >> lazy_fs.js
     });
 });
 EOF
-# -------------------------------------------------------
 
 # The EXEEXT is usually for windows, but here it lets us set GAP's extension,
 # which lets us produce a html page to run GAP in.
-# Replaced all --preload-file flags with --pre-js lazy_fs.js
 emmake make -j8 LDFLAGS="--pre-js lazy_fs.js -s ASYNCIFY=1 -sTOTAL_STACK=32mb -sASYNCIFY_STACK_SIZE=32000000 -sINITIAL_MEMORY=2048mb -O2" EXEEXT=".html"
