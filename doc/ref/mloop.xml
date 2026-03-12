@@ -476,11 +476,9 @@ indicate that you are in a break loop.
 <P/>
 <Log><![CDATA[
 gap> 1/0;
-Rational operations: <divisor> must not be zero
-not in any function
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you can replace <divisor> via 'return <divisor>;' to continue
+Error, Rational operations: <divisor> must not be zero
+not in any function at *stdin*:2
+type 'quit;' to quit to outer loop
 ]]></Log>
 <P/>
 If errors occur within a break loop &GAP; enters another break loop at a
@@ -488,12 +486,10 @@ If errors occur within a break loop &GAP; enters another break loop at a
 <P/>
 <Log><![CDATA[
 brk> 1/0;
-Rational operations: <divisor> must not be zero
-not in any function
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you can replace <divisor> via 'return <divisor>;' to continue
-brk_02>
+Error, Rational operations: <divisor> must not be zero
+not in any function at *stdin*:2
+type 'quit;' to quit to outer loop
+brk_2>
 ]]></Log>
 <P/>
 There are two ways to leave a break loop,
@@ -511,7 +507,7 @@ Note that &GAP; code between <C>quit;</C> and the end of the input line
 is ignored.
 <P/>
 <Log><![CDATA[
-brk_02> quit;
+brk_2> quit;
 brk>
 ]]></Log>
 <P/>
