@@ -89,6 +89,22 @@ gap> IsLowerTriangularMat([[1,0],[1,1],[1,1]]);
 true
 
 #
+gap> IsSquareMat(NullMat(3, 3));
+true
+gap> IsSquareMat(IdentityMat(3));
+true
+gap> IsSquareMat([[1]]);
+true
+gap> IsSquareMat([[1,2],[3,4]]);
+true
+gap> IsSquareMat(NullMat(2, 3));
+false
+gap> IsSquareMat(NullMat(3, 2));
+false
+gap> IsSquareMat([[1,2,3],[4,5,6]]);
+false
+
+#
 gap> IsSymmetricMat(NullMat(3, 3));
 true
 gap> IsSymmetricMat(IdentityMat(3));
@@ -110,6 +126,26 @@ false
 gap> IsSymmetricMat([[1,2,3],[2,4,5]]);
 false
 gap> IsSymmetricMat([[1,2],[3,4],[5,6]]);
+false
+
+#
+gap> IsAntisymmetricMat(NullMat(3, 3));
+true
+gap> IsAntisymmetricMat([[0]]);
+true
+gap> IsAntisymmetricMat([[0,1],[-1,0]]);
+true
+gap> IsAntisymmetricMat([[0,2,3],[-2,0,5],[-3,-5,0]]);
+true
+gap> IsAntisymmetricMat([[0,1],[1,0]]);
+false
+gap> IsAntisymmetricMat([[1,0],[0,1]]);
+false
+gap> IsAntisymmetricMat(NullMat(2, 3));
+false
+gap> IsAntisymmetricMat(NullMat(3, 2));
+false
+gap> IsAntisymmetricMat([[1,2,3],[4,5,6]]);
 false
 
 #
