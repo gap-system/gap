@@ -1244,7 +1244,7 @@ end );
 InstallGlobalFunction( ShortestVectors, function( arg )
     local
     # variables
-          n,  checkpositiv, a, llg, nullv, m, c, anz, con, b, v,
+          n,  checkpositiv, a, llg, nullv, m, c, con, b, v,
     # procedures
           srt, vschr;
 
@@ -1255,7 +1255,6 @@ InstallGlobalFunction( ShortestVectors, function( arg )
        if v = nullv then
           con := false;
        else
-          anz := anz + 1;
           vschr( dam );
        fi;
     else
@@ -1289,26 +1288,31 @@ InstallGlobalFunction( ShortestVectors, function( arg )
 
     # output of vector
     vschr := function( dam )
-    local i, j, w, neg;
-    c.vectors[anz] := [];
-    neg := false;
+    local newvec, i, j, w, haspos, hasneg;
+    newvec := [];
+    haspos := false;
+    hasneg := false;
     for i in [1..n] do
        w := 0;
        for j in [1..n] do
           w := w + v[j] * llg.transformation[j][i];
        od;
        if w < 0 then
-          neg := true;
-#T better here check testpositiv and return!
+          hasneg := true;
+       elif w > 0 then
+          haspos := true;
        fi;
-       c.vectors[anz][i] := w;
+       newvec[i] := w;
     od;
-    if checkpositiv and neg then
-       Unbind(c.vectors[anz]);
-       anz := anz - 1;
-    else
-       c.norms[anz] := dam;
+    if checkpositiv then
+       if haspos and hasneg then
+          return;
+       elif hasneg then
+          newvec := -newvec;
+       fi;
     fi;
+    Add(c.vectors, newvec);
+    Add(c.norms, dam);
     end;
 
     # main program
@@ -1347,7 +1351,6 @@ InstallGlobalFunction( ShortestVectors, function( arg )
 #T here check that the matrix is really regular
 #T (empty relations component)
 
-    anz := 0;
     con := true;
     srt( n, 0 );
 
