@@ -326,17 +326,92 @@ InstallMethod( String,
 ##  function returns a new string with the leading <C>'~'</C> substituted by
 ##  the user's home directory as stored in <C>GAPInfo.UserHome</C>.
 ##  Otherwise <A>str</A> is returned unchanged.
+##  <P/>
+##  A trailing slash in <C>GAPInfo.UserHome</C> is ignored when expanding
+##  paths.
+##  <P/>
+##  This function is the counterpart of <Ref Func="UserHomeContract"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 BIND_GLOBAL("UserHomeExpand", function(str)
+  local home;
+
   if IsString(str) and Length(str) > 0 and str[1] = '~'
         and IsString(GAPInfo.UserHome) and Length( GAPInfo.UserHome ) > 0 then
-    return Concatenation( GAPInfo.UserHome, str{[2..Length(str)]});
+    home := ShallowCopy(GAPInfo.UserHome);
+    while Length(home) > 1 and Last(home) = '/' do
+      Remove(home);
+    od;
+    return Concatenation(home, str{[2..Length(str)]});
   else
     return str;
   fi;
+end);
+
+#############################################################################
+##
+#F  UserHomeContract( <str> ) . . . . . . . . . contract leading user home
+##
+##  <#GAPDoc Label="UserHomeContract">
+##  <ManSection>
+##  <Func Name="UserHomeContract" Arg='str'/>
+##  <Description>
+##  If the string <A>str</A> starts with the user's home directory as stored
+##  in <C>GAPInfo.UserHome</C> then this function returns a new string with
+##  that prefix replaced by a leading <C>'~'</C> character.
+##  Otherwise <A>str</A> is returned unchanged.
+##  <P/>
+##  A trailing slash in <C>GAPInfo.UserHome</C> is ignored when contracting
+##  absolute paths, and repeated <C>'/'</C> characters immediately after the
+##  home directory prefix are normalized to a single slash in the result.
+##  <P/>
+##  This function is the counterpart of <Ref Func="UserHomeExpand"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL("UserHomeContract", function(str)
+  local home, homeLen, suffix;
+
+  if not IsString(str) or Length(str) = 0
+        or not IsString(GAPInfo.UserHome) or Length(GAPInfo.UserHome) = 0 then
+    return str;
+  fi;
+
+  # Treat UserHome values that differ only by trailing slashes as the same path.
+  home := ShallowCopy(GAPInfo.UserHome);
+  while Length(home) > 1 and Last(home) = '/' do
+    Remove(home);
+  od;
+  homeLen := Length(home);
+
+  if not IsMatchingSublist(str, home) then
+    return str;
+  fi;
+
+  if Length(str) = homeLen then
+    return "~";
+  fi;
+
+  if str[homeLen + 1] <> '/' then
+    return str;
+  fi;
+
+  if Length(str) = homeLen + 1 then
+    return "~";
+  fi;
+
+  # Canonicalize redundant separators right after the home-directory boundary.
+  suffix := str{[homeLen + 2..Length(str)]};
+  while Length(suffix) > 0 and suffix[1] = '/' do
+    Remove(suffix, 1);
+  od;
+  if Length(suffix) = 0 then
+    return "~";
+  fi;
+  return Concatenation("~/", suffix);
 end);
 
 

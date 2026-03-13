@@ -2,7 +2,7 @@
 ##
 ##  This file tests output methods (mainly for strings)
 ##
-#@local x, str, len
+#@local hadHome, len, savedHome, str, x
 gap> START_TEST("strings.tst");
 
 # FFE
@@ -224,6 +224,50 @@ gap> Length(x);
 7
 gap> Print(x, "\n");
 abcdef
+
+# UserHomeContract
+gap> hadHome := IsBound(GAPInfo.UserHome);;
+gap> if hadHome then savedHome := GAPInfo.UserHome; fi;;
+gap> GAPInfo.UserHome := "/tmp/gap-home";;
+gap> UserHomeContract("/tmp/gap-home");
+"~"
+gap> UserHomeContract("/tmp/gap-home/.gap");
+"~/.gap"
+gap> UserHomeContract("/tmp/gap-homedir");
+"/tmp/gap-homedir"
+gap> UserHomeContract("/tmp/gap-home-extra");
+"/tmp/gap-home-extra"
+gap> UserHomeContract("~/already");
+"~/already"
+gap> UserHomeExpand(UserHomeContract("/tmp/gap-home/.gap"));
+"/tmp/gap-home/.gap"
+gap> UserHomeContract(1234);
+1234
+gap> GAPInfo.UserHome := "";;
+gap> UserHomeContract("/tmp/gap-home/.gap");
+"/tmp/gap-home/.gap"
+gap> GAPInfo.UserHome := "/tmp/gap-home/";;
+gap> UserHomeContract("/tmp/gap-home");
+"~"
+gap> UserHomeContract("/tmp/gap-home/");
+"~"
+gap> UserHomeContract("/tmp/gap-home/.gap");
+"~/.gap"
+gap> UserHomeContract("/tmp/gap-home//.gap");
+"~/.gap"
+gap> UserHomeContract("/tmp/gap-homedir");
+"/tmp/gap-homedir"
+gap> UserHomeContract("/tmp/gap-home-extra");
+"/tmp/gap-home-extra"
+gap> UserHomeContract(UserHomeExpand("~"));
+"~"
+gap> UserHomeContract(UserHomeExpand("~/"));
+"~"
+gap> UserHomeExpand(UserHomeContract("/tmp/gap-home/"));
+"/tmp/gap-home"
+gap> UserHomeExpand(UserHomeContract("/tmp/gap-home//.gap"));
+"/tmp/gap-home/.gap"
+gap> if hadHome then GAPInfo.UserHome := savedHome; else Unbind(GAPInfo.UserHome); fi;;
 
 #
 gap> STOP_TEST("strings.tst");
