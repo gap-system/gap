@@ -71,7 +71,7 @@ mkdir -p "$AUX_PREFIX"
 # -O2 : Some optimisation
 # EXEEXT=.html -- this is actually a GAP makefile option, it lets us make the
 # output 'gap.html', which makes emscripten output a html page we can load
-# --preload-file : The directories containing files GAP needs to run
+# --pre-js lazy_fs.js : Prepend lazy_fs.js that is generated for lazy loading
 
 # Run configure if we don't have a makefile, or someone configured this
 # GAP for standard building (emscripten builds will use 'emcc')
@@ -82,25 +82,22 @@ if [[ ! -f GNUmakefile ]] || ! grep '/emcc' GNUmakefile > /dev/null; then
     LDFLAGS="-s ASYNCIFY=1 -O2"
 fi;
 
-# Get basic required packages
-emmake make bootstrap-pkg-minimal
+# Get full required packages
+emmake make bootstrap-pkg-full
 
 # Copy in files from native_build
 cp native-build/build/c_*.c native-build/build/ffdata.* src/
 
+# Dynamically find and append ALL required files to the JS array
+# The flag -type f is safe because the only symbolic link is 'tst/mockpkg/Makefile.gappkg',
+# which is safe to ignore
+find pkg lib grp tst doc hpcgap dev benchmark -type f | python3 etc/emscripten/generate_mapping.py
+
+if [ $? -ne 0 ]; then
+    echo "Build aborted: generate_mapping.py failed."
+    exit 1
+fi
+
 # The EXEEXT is usually for windows, but here it lets us set GAP's extension,
-# which lets us produce a html page to run GAP in
-emmake make -j8 LDFLAGS="--preload-file pkg --preload-file lib --preload-file grp --preload-file tst -s ASYNCIFY=1 -sTOTAL_STACK=32mb -sASYNCIFY_STACK_SIZE=32000000 -sINITIAL_MEMORY=2048mb -O2" EXEEXT=".html"
-
-# SPLIT THE DATA FILE
-echo "Splitting gap.data..."
-split -b 75m gap.data "gap.data.part"
-
-# Rename to .part1, .part2...
-i=1
-for f in gap.data.part*; do
-    mv "$f" "gap.data.part$i"
-    echo "Created gap.data.part$i"
-    ((i++))
-done
-rm gap.data
+# which lets us produce a html page to run GAP in.
+emmake make -j8 LDFLAGS="-lidbfs.js --pre-js lazy_fs.js -s ASYNCIFY=1 -sTOTAL_STACK=32mb -sASYNCIFY_STACK_SIZE=32000000 -sINITIAL_MEMORY=2048mb -O2" EXEEXT=".html"
