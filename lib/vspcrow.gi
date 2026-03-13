@@ -1033,44 +1033,26 @@ InstallMethod( Intersection2,
 
 #############################################################################
 ##
-#M  NormedRowVectors( <V> )
+#M  NormedRowVectors_internal( <F>, <base> )
 ##
-InstallMethod( NormedRowVectors,
-    "for Gaussian row space",
-    [ IsGaussianRowSpace ],
-    function( V )
-    local base,       # basis vectors
-          elms,       # element list, result
-          elms2,      # intermediate element list
-          F,          # `LeftActingDomain( V )'
-          q,          # `Size( F )'
-          fieldelms,  # elements of `F' (in other succession)
-          j,          # loop over `base'
-          new,        # intermediate element list
-          pos,        # position in `new' to store the next element
-          len,        # actual length of `elms2'
-          i,          # loop over field elements
-          toadd,      # vector to add to known vectors
-          k,          # loop over `elms2'
-          v;          # one normed row vector
+##  Assume that <base> is a list of row vectors or vector objects over <F>
+##  that is in echelon form.
+##
+BindGlobal( "NormedRowVectors_internal", function( F, base )
+    local elms, elms2, fieldelms, j, new, pos, len, i, toadd, k;
 
-    if not IsFinite( V ) then
-      Error( "sorry, cannot compute normed vectors of infinite domain <V>" );
-    fi;
-
-    base:= Reversed( BasisVectors( CanonicalBasis( V ) ) );
     if Length( base ) = 0 then
       return [];
+    elif not IsFinite( F ) then
+      Error( "sorry, cannot compute normed vectors over infinite domain <F>" );
     fi;
 
+    base      := Reversed( base );
     elms      := [ base[1] ];
     elms2     := [ base[1] ];
-    F         := LeftActingDomain( V );
-    q         := Size( F );
     fieldelms := List( AsSSortedList( F ), x -> x - 1 );
 
     for j in [ 1 .. Length( base ) - 1 ] do
-
       # Here `elms2' has the form
       # $b_i + M = b_i + \langle b_{i+1}, \ldots, b_n \rangle$.
       # Compute $b_{i-1} + \bigcup_{\lambda\in F} \lambda b_i + ( b_i + M )$.
@@ -1080,9 +1062,7 @@ InstallMethod( NormedRowVectors,
       for i in fieldelms do
         toadd:= base[j+1] + i * base[j];
         for k in [ 1 .. len ] do
-          v:= elms2[k] + toadd;
-          v:= ImmutableVector( q, v );
-          new[ pos + k ]:= v;
+          new[ pos + k ]:= ImmutableVector( F, elms2[k] + toadd );
         od;
         pos:= pos + len;
       od;
@@ -1090,8 +1070,26 @@ InstallMethod( NormedRowVectors,
 
       # `elms2' is a set here.
       Append( elms, elms2 );
-
     od;
+
+    # Return the result.
+    return elms;
+    end );
+
+
+#############################################################################
+##
+#M  NormedRowVectors( <V> )
+##
+InstallMethod( NormedRowVectors,
+    "for Gaussian row space",
+    [ IsGaussianRowSpace ],
+    function( V )
+    local base,       # basis vectors
+          elms;       # element list, result
+
+    base:= BasisVectors( CanonicalBasis( V ) );
+    elms:= NormedRowVectors_internal( LeftActingDomain( V ), base );
 
     # The list is strictly sorted, so we store this.
     MakeImmutable( elms );
