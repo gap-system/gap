@@ -1,5 +1,5 @@
 gap> func := function ( )
->     Error( );
+>     Error( "oops" );
 > end;
 function(  ) ... end
 gap> 
@@ -7,7 +7,7 @@ gap> func := SYNTAX_TREE_CODE( SYNTAX_TREE( func ) );
 function(  ) ... end
 gap> 
 gap> func( );
-Error, 
+Error, oops
 Stack trace:
 *[1] 
 <function "func">( <arguments> )
