@@ -1,6 +1,7 @@
 <html>
   <head>
     <title>gap-wasm</title>
+    <script src="coi-serviceworker.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.17.0/css/xterm.css">
   </head>
   <body>
@@ -14,21 +15,8 @@
       const { master, slave } = openpty();
       xterm.loadAddon(master);
 
-      fetch("startup_manifest.json")
-        .then(res => res.json())
-        .then(async (manifest) => {
-          const cache = await caches.open('gap-assets');
-          const urls = manifest
-            .filter(file => file.startsWith("/assets/"))
-            .map(file => file.substring(1));
-          await cache.addAll(urls);
-        })
-        .then(() => {
-          const worker = new Worker("gap-worker.js");
-          new TtyServer(slave).start(worker);
-        });
+      const worker = new Worker("gap-worker.js");
+      new TtyServer(slave).start(worker);
     </script>
-
-    <script src="coi-serviceworker.js"></script>
   </body>
 </html>
