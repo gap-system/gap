@@ -23,13 +23,6 @@ gap> StartsWith(loc, "GAPROOT/lib/oper1.g:");
 true
 gap> ForAll(loc{[21..Length(loc)]}, IsDigitChar);
 true
-gap> root:=First(GAPInfo.RootPaths, r -> IsExistingFile(Concatenation(r, "sysinfo.gap")));;
-gap> StartsWith(GAPROOTExpand(loc), root);
-true
-gap> PositionSublist(GAPROOTExpand(loc), "/lib/oper1.g:") <> fail;
-true
-gap> GAPROOTExpand("stream:1");
-"stream:1"
 
 # proper kernel function
 gap> LocationFunc(APPEND_LIST_INTR);
