@@ -6,7 +6,8 @@ function(  ) ... end
 gap> f();
 Error, Variable: 'l' must have an assigned value
 Stack trace:
-*[1] return l[1]; at *stdin*:4 called from
+*[1] return l[1];
+   @ *stdin*:4
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:6
 type 'quit;' to quit to outer loop

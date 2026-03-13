@@ -119,10 +119,15 @@
 ##  <Log><![CDATA[
 ##  gap> Z(11,40);
 ##  Error, Conway Polynomial 11^40 will need to computed and might be slow
-##  return to continue called from
-##  FFECONWAY.ZNC( p, d ) called from
-##  <function>( <arguments> ) called from read-eval-loop
-##  Entering break read-eval-print loop ...
+##  return to continue
+##  *[1] Error( "Conway Polynomial ", p, "^", d, " will need to computed and might be slow\n", "return to continue" );
+##     @ GAPROOT/lib/ffeconway.gi:81
+##   [2] FFECONWAY.SetUpConwayStuff( p, d );
+##     @ GAPROOT/lib/ffeconway.gi:140
+##   [3] FFECONWAY.ZNC( p, d )
+##     @ GAPROOT/lib/ffeconway.gi:167
+##  <function "ZOp method">( <arguments> )
+##   called from read-eval loop at *stdin*:2
 ##  you can 'quit;' to quit to outer loop, or
 ##  you can 'return;' to continue
 ##  brk>

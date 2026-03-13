@@ -1,0 +1,76 @@
+gap> f11 := function()
+>     Error("foo");
+> end;;
+gap> f10 := function()
+>     return f11();
+> end;;
+gap> f9 := function()
+>     return f10();
+> end;;
+gap> f8 := function()
+>     return f9();
+> end;;
+gap> f7 := function()
+>     return f8();
+> end;;
+gap> f6 := function()
+>     return f7();
+> end;;
+gap> f5 := function()
+>     return f6();
+> end;;
+gap> f4 := function()
+>     return f5();
+> end;;
+gap> f3 := function()
+>     return f4();
+> end;;
+gap> f2 := function()
+>     return f3();
+> end;;
+gap> f1 := function()
+>     return f2();
+> end;;
+gap> f1();
+Error, foo
+Stack trace:
+*[1] Error( "foo" );
+   @ *stdin*:3
+ [2] f11(  )
+   @ *stdin*:6
+ [3] f10(  )
+   @ *stdin*:9
+ [4] f9(  )
+   @ *stdin*:12
+ [5] f8(  )
+   @ *stdin*:15
+...  at *stdin*:35
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> Where(12);
+* [1] Error( "foo" );
+    @ *stdin*:3
+  [2] f11(  )
+    @ *stdin*:6
+  [3] f10(  )
+    @ *stdin*:9
+  [4] f9(  )
+    @ *stdin*:12
+  [5] f8(  )
+    @ *stdin*:15
+  [6] f7(  )
+    @ *stdin*:18
+  [7] f6(  )
+    @ *stdin*:21
+  [8] f5(  )
+    @ *stdin*:24
+  [9] f4(  )
+    @ *stdin*:27
+ [10] f3(  )
+    @ *stdin*:30
+ [11] f2(  )
+    @ *stdin*:33
+<function "f1">( <arguments> )
+ called from read-eval loop at *errin*:1
+brk> quit;
+gap> QUIT;

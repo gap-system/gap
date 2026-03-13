@@ -928,10 +928,13 @@ end);
 ##  <P/>
 ##  <Log><![CDATA[
 ##  gap> SylowSubgroup( s4, 6 );
-##  Error, SylowSubgroup: <p> must be a prime called from
-##  <compiled or corrupted call value>  called from
-##  <function>( <arguments> ) called from read-eval-loop
-##  Entering break read-eval-print loop ...
+##  Error, SylowSubgroup: <p> must be a prime
+##  *[1] <<compiled GAP function>>
+##     @ GAPROOT/lib/oper1.g:964
+##   [2] <<compiled GAP function "SylowSubgroup default method">>
+##     @ GAPROOT/lib/oper1.g:1007
+##  <function "SylowSubgroup default method">( <arguments> )
+##   called from read-eval loop at *stdin*:3
 ##  you can 'quit;' to quit to outer loop, or
 ##  you can 'return;' to continue
 ##  brk> quit;

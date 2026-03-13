@@ -78,14 +78,18 @@ fi;
 ##  Group([ b ])
 ##  gap> Index( f, u );
 ##  Error, the coset enumeration has defined more than 4096000 cosets
-##   called from
-##  TCENUM.CosetTableFromGensAndRels( fgens, grels, fsgens ) called from
-##  CosetTableFromGensAndRels( fgens, grels, fsgens ) called from
-##  TryCosetTableInWholeGroup( H ) called from
-##  CosetTableInWholeGroup( H ) called from
-##  IndexInWholeGroup( H ) called from
-##  ...
-##  Entering break read-eval-print loop ...
+##  Stack trace:
+##  *[1] Error( "the coset enumeration has defined more ", "than ", limit, " cosets\n" );
+##     @ GAPROOT/lib/grpfp.gi:1230
+##   [2] TCENUM.CosetTableFromGensAndRels( fgens, grels, fsgens )
+##     @ GAPROOT/lib/grpfp.gi:1068
+##   [3] CosetTableFromGensAndRels( fgens, grels, fsgens )
+##     @ GAPROOT/lib/grpfp.gi:1346
+##   [4] TryCosetTableInWholeGroup( H )
+##     @ GAPROOT/lib/grpfp.gi:1359
+##   [5] CosetTableInWholeGroup( H )
+##     @ GAPROOT/lib/grpfp.gi:1733
+##  ...  at *stdin*:3
 ##  type 'return;' if you want to continue with a new limit of 8192000 cosets,
 ##  type 'quit;' if you want to quit the coset enumeration,
 ##  type 'maxlimit := 0; return;' in order to continue without a limit
