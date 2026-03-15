@@ -34,3 +34,18 @@ gap> if false then Stabilizer; fi;
 Syntax error: found an expression when a statement was expected in stream:1
 if false then Stabilizer; fi;
                         ^
+
+#
+# WhereDepth user preference
+#
+gap> UserPreference("WhereDepth");
+5
+gap> SetUserPreference("WhereDepth", 10);
+gap> UserPreference("WhereDepth");
+10
+gap> SetUserPreference("WhereDepth", 0);
+gap> UserPreference("WhereDepth");
+0
+gap> SetUserPreference("WhereDepth", 5);
+gap> UserPreference("WhereDepth");
+5
