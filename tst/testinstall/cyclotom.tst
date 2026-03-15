@@ -1,4 +1,4 @@
-#@local a,cyc,gm,i,l1,l2,l3,mat,n,r,x,y,z,sets
+#@local a,b,cyc,gm,i,l1,l2,l3,mat,n,r,ranges,s,x,y,z,sets
 gap> START_TEST("cyclotom.tst");
 
 # Check basic arithmetic operations.
@@ -350,6 +350,17 @@ gap> SetX(r, r, {i,j} -> Union(sets[i],sets[j]) = sets[Maximum(i,j)]);
 gap> SetX(r, r, {i,j} -> IsSubset(sets[i],sets[j]) = (i>=j));
 [ true ]
 gap> SetX(r, r, {i,j} -> (sets[i]=sets[j]) = (i=j));
+[ true ]
+
+#
+# IsSubset for cyclotomic semirings and ranges for large bounds
+#
+gap> sets:=[ PositiveIntegers, NonnegativeIntegers, Integers, GaussianIntegers, GaussianRationals, Cyclotomics ];;
+gap> b:=2^(8*GAPInfo.BytesPerVariable - 6);;
+gap> ranges:=[ [-2..-1], [-1..0], [-1..1], [0..1], [1..2], [-b..-1], [-b..0], [-b..1], [-1..b], [0..b], [1..b], [-b,b]];;
+gap> SetX(ranges, sets, {r,s} -> IsSubset(s,r) = (IsEmpty(r) or (First(r) in s and Last(r) in s)));
+[ true ]
+gap> SetX(ranges, sets, {r,s} -> not IsSubset(r,s));
 [ true ]
 
 #
