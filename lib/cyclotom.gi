@@ -2079,6 +2079,12 @@ function (D, R)
 end );
 
 
+InstallMethod( IsSubset, "for a range and a cyclotomic semiring",
+             [IsRange,
+              IsCyclotomicCollection and IsSemiringWithOne],
+    ReturnFalse );
+
+
 InstallMethod( Intersection2, "for certain cyclotomic semirings",
              [IsCyclotomicCollection and IsSemiringWithOne,
               IsCyclotomicCollection and IsSemiringWithOne],
