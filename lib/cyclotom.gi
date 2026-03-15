@@ -2079,8 +2079,8 @@ function (D, R)
 end );
 
 
-InstallMethod( IsSubset, "for a range and a cyclotomic semiring",
-             [IsRange,
+InstallMethod( IsSubset, "for a list and a cyclotomic semiring",
+             [IsList,
               IsCyclotomicCollection and IsSemiringWithOne],
     ReturnFalse );
 
