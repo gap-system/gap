@@ -1337,15 +1337,10 @@ InstallGlobalFunction( ShortestVectors, function( a, m, arg... )
        positiveOnly := false;
     fi;
 
-    n := NrRows( a );
-    for i in [ 1 .. n ] do
-       for j in [ 1 .. i - 1 ] do
-          if a[i,j] <> a[j,i] then
-             Error ( "first argument must be a symmetric Gram matrix\n",
-                "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )" );
-          fi;
-       od;
-    od;
+    if not IsSymmetricMatrix(a) then
+        Error ( "first argument must be a symmetric Gram matrix\n",
+           "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )" );
+    fi;
     b := List( [ 1 .. n ], i -> List( [ 1 .. n ], j -> a[i,j] ) );
     c     := rec( vectors:= [], norms:= [] );
     v     := ListWithIdenticalEntries( n, 0 );
