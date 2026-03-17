@@ -344,10 +344,14 @@ static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
     UInt                vart;           // variable type
     Obj                 list;           // list to loop over
     Obj                 elm;            // one element of the list
+    Obj                 nfun;           // function for NextIterator
+    Obj                 dfun;           // function for IsDoneIterator
     Stat                body1;          // first  stat. of body of loop
     Stat                body2;          // second stat. of body of loop
     Stat                body3;          // third  stat. of body of loop
     UInt                i;              // loop variable
+    ExecStatus          status;
+    ExecStatus          result;
 
     GAP_ASSERT(1 <= nr && nr <= 3);
 
@@ -365,6 +369,13 @@ static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
         var = READ_EXPR(varstat, 0);
         vart = 'g';
     }
+
+    list = 0;
+    elm = 0;
+    nfun = 0;
+    dfun = 0;
+    result = STATUS_END;
+    GAP_GC_PUSH4(&list, &elm, &nfun, &dfun);
 
     // evaluate the list
     list = EVAL_EXPR(READ_STAT(stat, 1));
@@ -397,20 +408,39 @@ static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
 #endif
 
             // execute the statements in the body
-            EXEC_STAT_IN_LOOP(body1);
-            if (nr >= 2)
-                EXEC_STAT_IN_LOOP(body2);
-            if (nr >= 3)
-                EXEC_STAT_IN_LOOP(body3);
+            status = EXEC_STAT(body1);
+            if (status != STATUS_END) {
+                if (status == STATUS_CONTINUE)
+                    continue;
+                result = (status == STATUS_RETURN) ? STATUS_RETURN : STATUS_END;
+                goto done;
+            }
+            if (nr >= 2) {
+                status = EXEC_STAT(body2);
+                if (status != STATUS_END) {
+                    if (status == STATUS_CONTINUE)
+                        continue;
+                    result =
+                        (status == STATUS_RETURN) ? STATUS_RETURN : STATUS_END;
+                    goto done;
+                }
+            }
+            if (nr >= 3) {
+                status = EXEC_STAT(body3);
+                if (status != STATUS_END) {
+                    if (status == STATUS_CONTINUE)
+                        continue;
+                    result =
+                        (status == STATUS_RETURN) ? STATUS_RETURN : STATUS_END;
+                    goto done;
+                }
+            }
         }
 
     }
 
     // general case
     else {
-        Obj nfun;    // function for NextIterator
-        Obj dfun;    // function for IsDoneIterator
-
         // get the iterator
         list = CALL_1ARGS( ITERATOR, list );
 
@@ -440,16 +470,40 @@ static ALWAYS_INLINE ExecStatus ExecForHelper(Stat stat, UInt nr)
 #endif
 
             // execute the statements in the body
-            EXEC_STAT_IN_LOOP(body1);
-            if (nr >= 2)
-                EXEC_STAT_IN_LOOP(body2);
-            if (nr >= 3)
-                EXEC_STAT_IN_LOOP(body3);
+            status = EXEC_STAT(body1);
+            if (status != STATUS_END) {
+                if (status == STATUS_CONTINUE)
+                    continue;
+                result = (status == STATUS_RETURN) ? STATUS_RETURN : STATUS_END;
+                goto done;
+            }
+            if (nr >= 2) {
+                status = EXEC_STAT(body2);
+                if (status != STATUS_END) {
+                    if (status == STATUS_CONTINUE)
+                        continue;
+                    result =
+                        (status == STATUS_RETURN) ? STATUS_RETURN : STATUS_END;
+                    goto done;
+                }
+            }
+            if (nr >= 3) {
+                status = EXEC_STAT(body3);
+                if (status != STATUS_END) {
+                    if (status == STATUS_CONTINUE)
+                        continue;
+                    result =
+                        (status == STATUS_RETURN) ? STATUS_RETURN : STATUS_END;
+                    goto done;
+                }
+            }
         }
 
     }
 
-    return STATUS_END;
+done:
+    GAP_GC_POP();
+    return result;
 }
 
 static ExecStatus ExecFor(Stat stat)
@@ -502,11 +556,16 @@ static ALWAYS_INLINE ExecStatus ExecForRangeHelper(Stat stat, UInt nr)
     Stat                body2;          // second stat. of body of loop
     Stat                body3;          // third  stat. of body of loop
     Int                 i;              // loop variable
+    ExecStatus          status;
+    ExecStatus          result;
 
     GAP_ASSERT(1 <= nr && nr <= 3);
 
     // get the variable (initialize them first to please 'lint')
     lvar = LVAR_REF_LVAR(READ_STAT(stat, 0));
+    elm = 0;
+    result = STATUS_END;
+    GAP_GC_PUSH1(&elm);
 
     // evaluate the range
     VisitStatIfHooked(READ_STAT(stat, 1));
@@ -535,14 +594,36 @@ static ALWAYS_INLINE ExecStatus ExecForRangeHelper(Stat stat, UInt nr)
 #endif
 
         // execute the statements in the body
-        EXEC_STAT_IN_LOOP(body1);
-        if (nr >= 2)
-            EXEC_STAT_IN_LOOP(body2);
-        if (nr >= 3)
-            EXEC_STAT_IN_LOOP(body3);
+        status = EXEC_STAT(body1);
+        if (status != STATUS_END) {
+            if (status == STATUS_CONTINUE)
+                continue;
+            result = (status == STATUS_RETURN) ? STATUS_RETURN : STATUS_END;
+            goto done;
+        }
+        if (nr >= 2) {
+            status = EXEC_STAT(body2);
+            if (status != STATUS_END) {
+                if (status == STATUS_CONTINUE)
+                    continue;
+                result = (status == STATUS_RETURN) ? STATUS_RETURN : STATUS_END;
+                goto done;
+            }
+        }
+        if (nr >= 3) {
+            status = EXEC_STAT(body3);
+            if (status != STATUS_END) {
+                if (status == STATUS_CONTINUE)
+                    continue;
+                result = (status == STATUS_RETURN) ? STATUS_RETURN : STATUS_END;
+                goto done;
+            }
+        }
     }
 
-    return STATUS_END;
+done:
+    GAP_GC_POP();
+    return result;
 }
 
 static ExecStatus ExecForRange(Stat stat)
@@ -841,6 +922,12 @@ static ExecStatus ExecInfo(Stat stat)
     Obj             args;
     Obj             arg;
 
+    selectors = 0;
+    level = 0;
+    args = 0;
+    arg = 0;
+    GAP_GC_PUSH4(&selectors, &level, &args, &arg);
+
     selectors = EVAL_EXPR( ARGI_INFO( stat, 1 ) );
     level = EVAL_EXPR( ARGI_INFO( stat, 2) );
 
@@ -869,6 +956,7 @@ static ExecStatus ExecInfo(Stat stat)
         // and print them
         InfoDoPrint(selectors, level, args);
     }
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -887,6 +975,10 @@ static ExecStatus ExecAssert2Args(Stat stat)
     Int             lev;
     Obj             cond;
 
+    level = 0;
+    cond = 0;
+    GAP_GC_PUSH2(&level, &cond);
+
     level = EVAL_EXPR(READ_STAT(stat, 0));
     lev = GetSmallIntEx("Assert", level, "<lev>");
 
@@ -898,6 +990,7 @@ static ExecStatus ExecAssert2Args(Stat stat)
         }
     }
 
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -917,6 +1010,11 @@ static ExecStatus ExecAssert3Args(Stat stat)
     Obj             cond;
     Obj             message;
 
+    level = 0;
+    cond = 0;
+    message = 0;
+    GAP_GC_PUSH3(&level, &cond, &message);
+
     level = EVAL_EXPR(READ_STAT(stat, 0));
     lev = GetSmallIntEx("Assert", level, "<lev>");
 
@@ -929,6 +1027,7 @@ static ExecStatus ExecAssert3Args(Stat stat)
             AssertionFailureWithMessage(message);
         }
     }
+    GAP_GC_POP();
     return STATUS_END;
 }
 
@@ -1524,7 +1623,9 @@ static void PrintPragma(Stat stat)
     UInt ix = READ_STAT(stat, 0);
     Obj string = GET_VALUE_FROM_CURRENT_BODY(ix);
 
+    GAP_GC_PUSH1(&string);
     Pr("#%g", (Int)string, 0);
+    GAP_GC_POP();
 }
 
 
