@@ -1341,6 +1341,7 @@ InstallGlobalFunction( ShortestVectors, function( a, m, arg... )
         Error ( "first argument must be a symmetric Gram matrix\n",
            "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )" );
     fi;
+    n := NrRows( a );
     b := List( [ 1 .. n ], i -> List( [ 1 .. n ], j -> a[i,j] ) );
     c     := rec( vectors:= [], norms:= [] );
     v     := ListWithIdenticalEntries( n, 0 );
