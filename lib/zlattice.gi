@@ -1342,7 +1342,7 @@ InstallGlobalFunction( ShortestVectors, function( a, m, arg... )
            "usage: ShortestVectors( <mat>, <integer> [,<\"positive\">] )" );
     fi;
     n := NrRows( a );
-    b := List( [ 1 .. n ], i -> List( [ 1 .. n ], j -> a[i,j] ) );
+    b := MutableCopyMatrix( a );
     c     := rec( vectors:= [], norms:= [] );
     v     := ListWithIdenticalEntries( n, 0 );
     zeroCoeffs := ListWithIdenticalEntries( n, 0 );
