@@ -2326,6 +2326,19 @@ InstallMethod( Irr,
     return irr;
     end );
 
+InstallMethod( Irr,
+    "for a group with known `IrrDixonSchneider'",
+    [ IsGroup and HasIrrDixonSchneider, IsZeroCyc ],
+    function( G, zero )
+    local irr, tbl;
+    irr:= IrrDixonSchneider( G );
+    tbl:= OrdinaryCharacterTable( G );
+    SetIrr( tbl, irr );
+    ComputeAllPowerMaps( tbl );
+    SetInfoText( tbl, "origin: Dixon's Algorithm" );
+    return irr;
+    end );
+
 
 #############################################################################
 ##
@@ -2374,6 +2387,7 @@ InstallMethod( Irr,
     od;
     irr:= List( irr, x -> Character( tbl, x ) );
     SetIrr( tbl, irr );
+    SetInfoText( tbl, "origin: via the nice monomorphism of the group" );
     return irr;
 end );
 

@@ -1,4 +1,4 @@
-#@local g,t,lin
+#@local g,t,lin,G
 gap> START_TEST("ctbl.tst");
 
 # `ClassPositionsOf...' for the trivial group (which usually causes trouble)
@@ -432,6 +432,24 @@ gap> ForAll( Irr( CharacterTable( SymmetricGroup( 4 ), 2 ) ),
 true
 gap> HasIsIrreducibleCharacter( TrivialCharacter( SymmetricGroup( 4 ) ) );
 true
+
+# concurring 'Irr' methods
+gap> G:= SmallGroup( 24, 5 );;
+gap> IsSupersolvable( G );
+true
+gap> Irr( G );;
+gap> InfoText( OrdinaryCharacterTable( G ) );
+"origin: Baum-Clausen Algorithm"
+gap> G:= SmallGroup( 24, 5 );;
+gap> IsSupersolvable( G );
+true
+gap> IrrConlon( G );;  Irr( G );;
+gap> InfoText( OrdinaryCharacterTable( G ) );
+"origin: Conlon's Algorithm"
+gap> G:= SmallGroup( 24, 5 );;
+gap> IrrDixonSchneider( G );;  Irr( G );;
+gap> InfoText( OrdinaryCharacterTable( G ) );
+"origin: Dixon's Algorithm"
 
 ##
 gap> STOP_TEST( "ctbl.tst" );

@@ -823,9 +823,11 @@ InstallMethod( Irr,
     "for a supersolvable group (Conlon's algorithm)",
     [ IsGroup and IsSupersolvableGroup, IsZeroCyc ],
     function( G, zero )
-    local irr;
+    local irr, tbl;
     irr:= IrrConlon( G );
-    SetIrr( OrdinaryCharacterTable( G ), irr );
+    tbl:= OrdinaryCharacterTable( G );
+    SetIrr( tbl, irr );
+    SetInfoText( tbl, "origin: Conlon's Algorithm" );
     return irr;
     end );
 
@@ -833,9 +835,11 @@ InstallMethod( Irr,
     "for a supersolvable group with known `IrrConlon'",
     [ IsGroup and IsSupersolvableGroup and HasIrrConlon, IsZeroCyc ],
     function( G, zero )
-    local irr;
+    local irr, tbl;
     irr:= IrrConlon( G );
-    SetIrr( OrdinaryCharacterTable( G ), irr );
+    tbl:= OrdinaryCharacterTable( G );
+    SetIrr( tbl, irr );
+    SetInfoText( tbl, "origin: Conlon's Algorithm" );
     return irr;
     end );
 
@@ -853,6 +857,7 @@ InstallMethod( Irr,
     tbl:= OrdinaryCharacterTable( G );
     SetIrr( tbl, irr );
     ComputeAllPowerMaps( tbl );
+    SetInfoText( tbl, "origin: Baum-Clausen Algorithm" );
     return irr;
     end );
 
@@ -865,6 +870,7 @@ InstallMethod( Irr,
     tbl:= OrdinaryCharacterTable( G );
     SetIrr( tbl, irr );
     ComputeAllPowerMaps( tbl );
+    SetInfoText( tbl, "origin: Baum-Clausen Algorithm" );
     return irr;
     end );
 
