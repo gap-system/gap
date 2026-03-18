@@ -2482,27 +2482,44 @@ DeclareGlobalFunction( "Elements" );
 ##
 #O  FoldLeft( <C>, <func>[, <init>] )
 ##
+##  <#GAPDoc Label="FoldLeft">
 ##  <ManSection>
-##  <Func Name="FoldLeft" Arg='C, func[, init]'/>
+##  <Oper Name="FoldLeft" Arg='C, func[, init]'/>
 ##
 ##  <Description>
-##  TODO
+##  <Ref Oper="FoldLeft"/> applies the binary function <A>func</A>
+##  left-associatively to the elements of the list or collection <A>C</A>.
+##  <P/>
+##  If no initial accumulator <A>init</A> is given, the first element of
+##  <A>C</A> is used as the initial accumulator and the remaining elements
+##  are combined with it from left to right. In that case <A>C</A> must not
+##  be empty.
+##  <P/>
+##  If <A>init</A> is given, the accumulator is initialized with
+##  <A>init</A>. Then an empty list or collection is allowed, and
+##  <A>init</A> is returned unchanged in that case.
+##  <P/>
+##  If <A>C</A> is a list with holes, these holes are ignored, just as when
+##  iterating over the list with a <C>for</C>-loop.
+##  <P/>
+##  This operation can be used to express reductions similar to
+##  <Ref Func="Sum"/> or <Ref Func="Product"/>, but it is more general
+##  because the accumulator is updated by an arbitrary binary function.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> FoldLeft( [ 1 .. 10 ], \+ );
+##  55
+##  gap> FoldLeft( [ 1 .. 4 ], \*, 2 );
+##  48
+##  gap> FoldLeft( [ 1,, 3 ], function( a, b ) return a + b; end );
+##  4
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
-##  TODO: explain in docs that to imitate the behavior of
-##    x := Sum(list, func, init);
-##  one can do this:
-##    x := FoldLeft(list, {x,y} -> x + func(y), func(init));
-##  or of course also this (but requires more memory)
-##    x := FoldLeft(List(list, func), \+);
-##
-##  There is no good way to imitate `Sum(list, func)` without
-##  an initial value.
-##
-DeclareGlobalFunction( "FoldLeft" );
-DeclareOperation( "FoldLeftOp", [ IsListOrCollection, IsFunction ] );
-DeclareOperation( "FoldLeftOp", [ IsListOrCollection, IsFunction, IsObject ] );
+DeclareOperation( "FoldLeft", [ IsListOrCollection, IsFunction ] );
+DeclareOperation( "FoldLeft", [ IsListOrCollection, IsFunction, IsObject ] );
 
 
 #############################################################################
@@ -2518,8 +2535,10 @@ DeclareOperation( "FoldLeftOp", [ IsListOrCollection, IsFunction, IsObject ] );
 ##  which applies an accumulation function <A>func</A> to a bunch of
 ##  inputs which are derived from <A>gens</A>.
 ##  <P/>
-##  Specifically, let <C>n</A> denote the length of <A>gens</A>. Then
-##  each of the entries <A>gens</A><C>[1]</C>, <M>\ldots</M> <A>gens</A><C>[n]</C>
+##  The argument <A>gens</A> must be a plain list whose entries describe a
+##  sequence of nested loops and filters. Specifically, let <C>n</C> denote
+##  the length of <A>gens</A>. Then each of the entries
+##  <A>gens</A><C>[1]</C>, <M>\ldots</M> <A>gens</A><C>[n]</C>
 ##  must be one of the following:
 ##  <List>
 ##  <Mark>a list or collection</Mark>
@@ -2543,68 +2562,32 @@ DeclareOperation( "FoldLeftOp", [ IsListOrCollection, IsFunction, IsObject ] );
 ##  The argument <A>func</A> must be a binary function, whose first
 ##  argument is an accumulator variable, and the second argument is
 ##  the tuple of values of the loop-variables.
-##
-# TODO: continue editing after this point
-# TODO: document initial as initial accumulator value
-# TODO: document abortValue
-# TODO: perhaps explain how to implement ListX via FoldLeftX as one of
-#       the examples?
-#
-##
 ##  <P/>
-##  Thus <C>ListX( <A>list</A>, <A>func</A> )</C> is the same as
-##  <C>List( <A>list</A>, <A>func</A> )</C>,
-##  and <C>ListX( <A>list</A>, <A>func</A>, x -> x )</C> is the same as
-##  <C>Filtered( <A>list</A>, <A>func</A> )</C>.
+##  The accumulator is initialized with <A>init</A>. For every tuple that is
+##  produced by the loops and filters described by <A>gens</A>,
+##  <A>func</A> is called with the current accumulator and that tuple.
+##  Its return value becomes the new accumulator.
 ##  <P/>
-##  As a more elaborate example, assume <A>arg1</A> is a list or collection,
-##  <A>arg2</A> is a function returning <K>true</K> or <K>false</K>,
-##  <A>arg3</A> is a function returning a list or collection, and
-##  <A>arg4</A> is another function returning <K>true</K> or <K>false</K>,
-##  then
-##  <P/>
-##  <C><A>result</A> := ListX( <A>arg1</A>, <A>arg2</A>, <A>arg3</A>,
-##  <A>arg4</A>, <A>func</A> );</C>
-##  <P/>
-##  is equivalent to
-##  <P/>
-##  <Listing><![CDATA[
-##  result := [];
-##  for v1 in arg1 do
-##    if arg2( v1 ) then
-##      for v2 in arg3( v1 ) do
-##        if arg4( v1, v2 ) then
-##          Add( result, func( v1, v2 ) );
-##        fi;
-##      od;
-##    fi;
-##  od;
-##  ]]></Listing>
-##  <P/>
-##  The following example shows how <Ref Func="ListX"/> can be used to
-##  compute all pairs and all strictly sorted pairs of elements in a list.
+##  If the optional argument <A>abortValue</A> is given, iteration stops as
+##  soon as the accumulator becomes identical to <A>abortValue</A>.
+##  This is useful for short-circuiting computations such as
+##  <Ref Func="ForAllX"/> and <Ref Func="ForAnyX"/>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> l:= [ 1, 2, 3, 4 ];;
-##  gap> pair:= function( x, y ) return [ x, y ]; end;;
-##  gap> ListX( l, l, pair );
-##  [ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 1 ], [ 2, 2 ], 
-##    [ 2, 3 ], [ 2, 4 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], [ 3, 4 ], 
-##    [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ]
-##  ]]></Example>
-##  <P/>
-##  In the following example, <Ref Oper="\&lt;"/> is the comparison
-##  operation:
-##  <P/>
-##  <Example><![CDATA[
-##  gap> ListX( l, l, \<, pair );
-##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ], [ 3, 4 ] ]
+##  gap> FoldLeftX( [ [ 1 .. 3 ], i -> [ 1 .. i ],
+##  >                function( i, j ) return i <> j; end ],
+##  >              function( acc, x ) return acc + 1; end, 0 );
+##  3
+##  gap> FoldLeftX( [ [ 1 .. 3 ], [ 1 .. 3 ], \< ],
+##  >              function( acc, x )
+##  >                Add( acc, ShallowCopy( x ) );
+##  >                return acc;
+##  >              end, [] );
+##  [ [ 1, 2 ], [ 1, 3 ], [ 2, 3 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
-##
-##  TODO: document FoldLeftX (based on ListX documentation?)
 ##
 DeclareGlobalFunction( "FoldLeftX" );
 
@@ -3079,9 +3062,12 @@ DeclareGlobalFunction( "ProductX" );
 ##  <Func Name="ForAllX" Arg='arg1, arg2, ... func'/>
 ##
 ##  <Description>
-##  <Ref Func="ForAllX"/> returns <K>true</A> if all elements are
-##  <K>true</A> in the list obtained by calling <Ref Func="ListX"/> with the
-##  same arguments. Otherwise <K>false</A> is returned.
+##  <Ref Func="ForAllX"/> returns <K>true</K> if all elements are
+##  <K>true</K> in the list obtained by calling <Ref Func="ListX"/> with the
+##  same arguments. Otherwise <K>false</K> is returned.
+##  As with <Ref Func="ForAll"/>, the last argument must return either
+##  <K>true</K> or <K>false</K>, and evaluation stops as soon as the result
+##  is known.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3098,9 +3084,12 @@ DeclareGlobalFunction( "ForAllX" );
 ##  <Func Name="ForAnyX" Arg='arg1, arg2, ... func'/>
 ##
 ##  <Description>
-##  <Ref Func="ForAnyX"/> returns <K>true</A> if any element is
-##  <K>true</A> in the list obtained by calling <Ref Func="ListX"/> with the
-##  same arguments. Otherwise <K>false</A> is returned.
+##  <Ref Func="ForAnyX"/> returns <K>true</K> if any element is
+##  <K>true</K> in the list obtained by calling <Ref Func="ListX"/> with the
+##  same arguments. Otherwise <K>false</K> is returned.
+##  As with <Ref Func="ForAny"/>, the last argument must return either
+##  <K>true</K> or <K>false</K>, and evaluation stops as soon as the result
+##  is known.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3117,14 +3106,20 @@ DeclareGlobalFunction( "ForAnyX" );
 ##  <Func Name="FilteredX" Arg='arg1, arg2, ... func'/>
 ##
 ##  <Description>
-##  <Ref Func="FilteredX"/> returns the TODO of the elements in the list
-##  obtained by <Ref Func="ListX"/> when this is called with the same
-##  arguments.
+##  <Ref Func="FilteredX"/> returns the tuples of loop-variable values for
+##  which the last argument returns <K>true</K>.
+##  In other words, it keeps precisely those tuples that would pass the
+##  filters when calling <Ref Func="ListX"/> with the same generators.
+##  <P/>
+##  Even with only one generator, the result consists of singleton tuples.
+##  Thus <C>FilteredX( [ 1 .. 4 ], IsEvenInt )</C> returns
+##  <C>[ [ 2 ], [ 4 ] ]</C>, not <C>[ 2, 4 ]</C>.
+##  Use <Ref Func="Filtered"/> if you want to filter the elements of a single
+##  list or collection directly.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-## TODO: perhaps better to document this in terms of FoldLeftX
 DeclareGlobalFunction( "FilteredX" );
 
 
@@ -3137,9 +3132,10 @@ DeclareGlobalFunction( "FilteredX" );
 ##  <Func Name="NumberX" Arg='arg1, arg2, ... func'/>
 ##
 ##  <Description>
-##  <Ref Func="NumberX"/> returns the TODO of the elements in the list
-##  obtained by <Ref Func="ListX"/> when this is called with the same
-##  arguments.
+##  <Ref Func="NumberX"/> returns the number of tuples selected by the last
+##  argument, using the same generators as <Ref Func="ListX"/>.
+##  Equivalently, it counts the entries of the result that
+##  <Ref Func="FilteredX"/> would return with the same arguments.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3158,7 +3154,8 @@ DeclareGlobalFunction( "NumberX" );
 ##  <Description>
 ##  <Ref Func="PerformX"/> works like <Ref Func="ListX"/> except that it
 ##  returns nothing and ignores the return values of <A>func</A>.
-##  arguments.
+##  It is useful for iterating through the tuples described by the generators
+##  purely for their side effects.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

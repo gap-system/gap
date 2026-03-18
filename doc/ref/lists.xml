@@ -1697,6 +1697,8 @@ The following functions are generalizations of
 <Ref Func="Number"/>,
 and <Ref Func="Perform"/>.
 
+<#Include Label="FoldLeft">
+<#Include Label="FoldLeftX">
 <#Include Label="ListX">
 <#Include Label="SetX">
 <#Include Label="SumX">
@@ -1902,4 +1904,3 @@ such as before objectifying, or calling some kernel functions.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-

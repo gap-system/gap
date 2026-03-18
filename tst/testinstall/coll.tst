@@ -325,10 +325,36 @@ gap> FoldLeft([1..10], \+) = Sum([1..10]);
 true
 gap> FoldLeft([1..10], \+, 5) = Sum([1..10], 5);
 true
+gap> FoldLeft([1,,3], function(a,b) return a+b; end);
+4
+gap> FoldLeft([,2,3], function(a,b) return a+b; end);
+5
+gap> FoldLeft([], function(a,b) return a+b; end, 10);
+10
 gap> FoldLeft([1..3], \-);
 -4
 gap> FoldLeft([1..3], \-, 0);
 -6
+gap> FoldLeft([], function(a,b) return a+b; end);
+Error, folding an empty collection without initial value is not supported
+
+#############################################################################
+#
+# FoldLeftX
+#
+gap> FoldLeftX([[1..2], [3..4]],
+>   function(acc, x)
+>     Display(x);
+>     return true;
+>   end, false, true);
+[ 1, 3 ]
+true
+gap> FoldLeftX(123, function(acc, x) return acc; end, 0);
+Error, usage: FoldLeftX( <gens>, <func>, <init>[, <abortValue>] )
+gap> FoldLeftX([1], 123, 0);
+Error, usage: FoldLeftX( <gens>, <func>, <init>[, <abortValue>] )
+gap> FoldLeftX([1], function(acc, x) return acc; end, 0, false, true);
+Error, usage: FoldLeftX( <gens>, <func>, <init>[, <abortValue>] )
 
 #############################################################################
 #
@@ -344,6 +370,8 @@ gap> # verify short circuit works
 gap> ForAllX([1..2], [3..4], function(i,j) Display([i,j]); return false; end);
 [ 1, 3 ]
 false
+gap> ForAllX([1], x -> 1);
+Error, <expr> must be 'true' or 'false' (not the integer 1)
 
 #############################################################################
 #
@@ -359,6 +387,8 @@ gap> # verify short circuit works
 gap> ForAnyX([1..2], [3..4], function(i,j) Display([i,j]); return true; end);
 [ 1, 3 ]
 true
+gap> ForAnyX([1], x -> 1);
+Error, <expr> must be 'true' or 'false' (not the integer 1)
 
 #############################################################################
 #

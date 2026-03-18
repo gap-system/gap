@@ -1716,45 +1716,54 @@ end );
 #F  FoldLeft( <coll>, <func> )
 #F  FoldLeft( <coll>, <func>, <init> )
 ##
-InstallGlobalFunction( FoldLeft,
-    function( arg )
-    local tnum, C, func, result, i, l;
-    l := Length( arg );
-    if l < 2 or l > 3 or not IsFunction(arg[2]) then
+InstallEarlyMethod( FoldLeft,
+    function( C, func )
+    local tnum, result, found, x;
+    if not IsFunction( func ) then
       Error( "usage: FoldLeft( <C>, <func>[, <init>] )" );
     fi;
-    tnum:= TNUM_OBJ( arg[1] );
-    # handle built-in lists directly, to avoid method dispatch overhead
-    if FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM then
-      C:= arg[1];
-      func:= arg[2];
-      if l = 2 then
-        if IsEmpty( C ) then
-          Error("folding an empty collection without initial value is not supported");
-        else
-          result:= C[1];
-          for i in [ 2 .. Length( C ) ] do
-            result:= func( result, C[i] );
-          od;
-        fi;
-      else
-        result:= arg[3];
-        for i in C do
-          result:= func( result, i );
-        od;
-      fi;
-      return result;
-    else
-      return CallFuncList( FoldLeftOp, arg );
+    tnum:= TNUM_OBJ( C );
+    if not ( FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM ) then
+      TryNextMethod();
     fi;
-end );
+    found := false;
+    for x in C do
+      if found then
+        result := func( result, x );
+      else
+        result := x;
+        found := true;
+      fi;
+    od;
+    if not found then
+      Error("folding an empty collection without initial value is not supported");
+    fi;
+    return result;
+ end );
+
+InstallEarlyMethod( FoldLeft,
+    function( C, func, init )
+    local tnum, result, x;
+    if not IsFunction( func ) then
+      Error( "usage: FoldLeft( <C>, <func>[, <init>] )" );
+    fi;
+    tnum:= TNUM_OBJ( C );
+    if not ( FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM ) then
+      TryNextMethod();
+    fi;
+    result := init;
+    for x in C do
+      result := func( result, x );
+    od;
+    return result;
+ end );
 
 
 #############################################################################
 ##
-#M  FoldLeftOp( <C>, <func> )  . . . . . . . for a list/collection, and a function
+#M  FoldLeft( <C>, <func> )  . . . . . . . . for a list/collection, and a function
 ##
-InstallMethod( FoldLeftOp,
+InstallMethod( FoldLeft,
     "for a list/collection, and a function",
     [ IsListOrCollection, IsFunction ],
     function ( C, func )
@@ -1773,9 +1782,9 @@ InstallMethod( FoldLeftOp,
 
 #############################################################################
 ##
-#M  FoldLeftOp( <C>, <func>, <init> )  . for a list/coll., a func., and init. val.
+#M  FoldLeft( <C>, <func>, <init> )  . . for a list/coll., a func., and init. val.
 ##
-InstallMethod( FoldLeftOp,
+InstallMethod( FoldLeft,
     "for a list/collection, and a function, and an initial value",
     [ IsListOrCollection, IsFunction, IsObject ],
     function ( C, func, init )
@@ -1795,6 +1804,9 @@ InstallMethod( FoldLeftOp,
 InstallGlobalFunction( FoldLeftX, function ( gens, f, init, extra... )
     local abortValue;
 
+    if not IsPlistRep( gens ) or not IsFunction( f ) or Length(extra) > 1 then
+        Error( "usage: FoldLeftX( <gens>, <func>, <init>[, <abortValue>] )" );
+    fi;
     if Length(extra) > 0 then
         abortValue := extra[1];
     else
@@ -1861,7 +1873,14 @@ end );
 InstallGlobalFunction( ForAllX, function ( arg )
     local f;
     f := Remove(arg);
-    return FoldLeftX(arg, {acc,x} -> CallFuncList(f, x), true, false);
+    return FoldLeftX(arg,
+            function(acc, x)
+                if CallFuncList(f, x) then
+                    return true;
+                else
+                    return false;
+                fi;
+            end, true, false);
 end );
 
 
@@ -1872,7 +1891,14 @@ end );
 InstallGlobalFunction( ForAnyX, function ( arg )
     local f;
     f := Remove(arg);
-    return FoldLeftX(arg, {acc,x} -> CallFuncList(f, x), false, true);
+    return FoldLeftX(arg,
+            function(acc, x)
+                if CallFuncList(f, x) then
+                    return true;
+                else
+                    return false;
+                fi;
+            end, false, true);
 end );
 
 
