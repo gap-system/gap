@@ -657,7 +657,8 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
               CanonicalRepresentativeOfExternalSet( orb ) );
       if not zn in k then
         t:= StabilizerOfExternalSet( orb );
-        Assert( 1, IsIdenticalObj( Parent( t ), G ) );
+        Assert( 1, IsIdenticalObj( Parent( t ), G ),
+                "in CoveringTriplesCharacters" );
         h:= NaturalHomomorphismByNormalSubgroupNC( t, k );
         img:= ImagesSource( h );
         Append( r,
