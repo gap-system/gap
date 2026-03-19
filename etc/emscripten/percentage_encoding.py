@@ -30,8 +30,8 @@ def main():
             f.write('    var physicalDir = "assets/";\n')
             
             f.write("    var createdDirs = {};\n")
-            f.write("    Object.keys(fileMap).forEach(function(virtualPath) {\n")
-            f.write("        var parts = virtualPath.split('/');\n")
+            f.write("    Object.keys(fileMap).forEach(function(appPath) {\n")
+            f.write("        var parts = appPath.split('/');\n")
             f.write("        parts.pop();\n")
             f.write("        var parentDir = '/' + parts.join('/');\n")
             f.write("        if (!createdDirs[parentDir]) {\n")
@@ -46,8 +46,8 @@ def main():
             
             f.write("    FS.syncfs(true, async function(err) {\n")
 
-            f.write("        Object.keys(fileMap).forEach(function(virtualPath) {\n")
-            f.write("            var parts = virtualPath.split('/');\n")
+            f.write("        Object.keys(fileMap).forEach(function(appPath) {\n")
+            f.write("            var parts = appPath.split('/');\n")
             f.write("            parts.pop();\n")
             f.write("            var parentDir = '/' + parts.join('/');\n")
             f.write("            try { FS.mkdirTree('/gap_idb_cache' + parentDir); } catch(e) {}\n")
@@ -55,7 +55,7 @@ def main():
 
             f.write("        var needsSave = false;\n")
             f.write("        var startupSet = new Set();\n")
-            
+
             f.write("        try {\n")
             f.write("            const manifestRes = await fetch('startup_manifest.json');\n")
             f.write("            if (manifestRes.ok) {\n")
@@ -67,34 +67,37 @@ def main():
             f.write("            }\n")
             f.write("        } catch (e) {}\n\n")
 
-            f.write("        var fetchPromises = Object.keys(fileMap).map(async function(virtualPath) {\n")
-            f.write("            var physicalName = fileMap[virtualPath];\n")
+            f.write("        var fetchPromises = Object.keys(fileMap).map(async function(appPath) {\n")
+            f.write("            var fetchRelativePath = fileMap[appPath];\n")
             
-            f.write("            var physicalPath = physicalDir + physicalName;\n")
-            f.write("            var cachePath = '/gap_idb_cache/' + physicalName;\n")
-            f.write("            var finalPath = '/' + virtualPath;\n\n")
+            f.write("            var fetchPath = physicalDir + fetchRelativePath;\n")
+            f.write("            var idbfsPath = '/gap_idb_cache/' + appPath;\n")
+            f.write("            var finalAppPath = '/' + appPath;\n\n")
             
-            f.write("            if (startupSet.has(physicalDir + virtualPath)) {\n")
+            # For example, if appPath is "pkg/jupyterviz/examples/EV Charge Points.json",
+            # then fetchPath is "pkg/jupyterviz/examples/EV%2520Charge%2520Points.json"
+
+            f.write("            if (startupSet.has(fetchPath)) {\n")
             f.write("                try {\n")
-            f.write("                    FS.stat(cachePath);\n")
-            f.write("                    FS.writeFile(finalPath, FS.readFile(cachePath));\n")
+            f.write("                    FS.stat(idbfsPath);\n")
+            f.write("                    FS.writeFile(finalAppPath, FS.readFile(idbfsPath));\n")
             f.write("                } catch (e) {\n")
             f.write("                    try {\n")
-            f.write("                        const response = await fetch(physicalPath);\n")
+            f.write("                        const response = await fetch(fetchPath);\n")
             f.write("                        if (response.ok) {\n")
             f.write("                            const buffer = await response.arrayBuffer();\n")
             f.write("                            const data = new Uint8Array(buffer);\n")
-            f.write("                            FS.writeFile(finalPath, data);\n")
-            f.write("                            FS.writeFile(cachePath, data);\n")
+            f.write("                            FS.writeFile(finalAppPath, data);\n")
+            f.write("                            FS.writeFile(idbfsPath, data);\n")
             f.write("                            needsSave = true;\n")
             f.write("                        }\n")
             f.write("                    } catch (fetchErr) {}\n")
             f.write("                }\n")
             f.write("            } else {\n")
-            f.write("                var parts = virtualPath.split('/');\n")
+            f.write("                var parts = appPath.split('/');\n")
             f.write("                var fileName = parts.pop();\n")
             f.write("                var parentDir = '/' + parts.join('/');\n")
-            f.write("                FS.createLazyFile(parentDir, fileName, physicalPath, true, false);\n")
+            f.write("                FS.createLazyFile(parentDir, fileName, fetchPath, true, false);\n")
             f.write("            }\n")
             f.write("        });\n\n")
             
