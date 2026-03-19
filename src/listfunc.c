@@ -1495,7 +1495,10 @@ static Obj FastCallFuncList(Obj func, Obj list)
 
 static Obj IsListOrCollection;
 
-// TODO: document this a bit
+// Recursively walk the generator/filter description in `gens`, updating
+// `args` with the currently selected loop variables and folding each produced
+// tuple into `*acc`. Return 1 if folding should stop because `abortValue`
+// was reached, and 0 otherwise.
 static int FoldLeftXHelp(Obj   gens,
                          Obj   foldFunc,
                          Obj * acc,
@@ -1566,7 +1569,9 @@ static int FoldLeftXHelp(Obj   gens,
     return abortValue == *acc;
 }
 
-// TODO: document this a bit
+// Kernel entry point for FoldLeftX after GAP-level argument validation.
+// It allocates the tuple workspace and delegates the actual traversal to
+// FoldLeftXHelp, which performs short-circuiting via `abortValue`.
 Obj FuncFOLD_LEFT_X(
     Obj self, Obj gens, Obj foldFunc, Obj init, Obj abortValue)
 {
