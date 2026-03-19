@@ -2511,7 +2511,7 @@ DeclareGlobalFunction( "Elements" );
 ##  55
 ##  gap> FoldLeft( [ 1 .. 4 ], \*, 2 );
 ##  48
-##  gap> FoldLeft( [ 1,, 3 ], function( a, b ) return a + b; end );
+##  gap> FoldLeft( [ 1,, 3 ], { a, b } -> a + b );
 ##  4
 ##  ]]></Example>
 ##  </Description>
@@ -2531,7 +2531,7 @@ DeclareOperation( "FoldLeft", [ IsListOrCollection, IsFunction, IsObject ] );
 ##  <Func Name="FoldLeftX" Arg='gens, func, init[, abortValue]'/>
 ##
 ##  <Description>
-##  <Ref Func="FoldLeftX"/> is a generalization of <Ref Func="FoldLeft"/>
+##  <Ref Func="FoldLeftX"/> is a generalization of <Ref Oper="FoldLeft"/>
 ##  which applies an accumulation function <A>func</A> to a bunch of
 ##  inputs which are derived from <A>gens</A>.
 ##  <P/>
@@ -2559,6 +2559,12 @@ DeclareOperation( "FoldLeft", [ IsListOrCollection, IsFunction, IsObject ] );
 ##  </Item>
 ##  </List>
 ##  <P/>
+##  Each function occurring in <A>gens</A> is called with the values selected
+##  by the preceding entries of <A>gens</A>, in order.
+##  Thus the function in <A>gens</A><C>[k]</C> receives one argument for each
+##  of <A>gens</A><C>[1]</C>, <M>\ldots</M>, <A>gens</A><C>[k-1]</C> that
+##  introduced a loop variable.
+##  <P/>
 ##  The argument <A>func</A> must be a binary function, whose first
 ##  argument is an accumulator variable, and the second argument is
 ##  the tuple of values of the loop-variables.
@@ -2575,8 +2581,8 @@ DeclareOperation( "FoldLeft", [ IsListOrCollection, IsFunction, IsObject ] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> FoldLeftX( [ [ 1 .. 3 ], i -> [ 1 .. i ],
-##  >                function( i, j ) return i <> j; end ],
-##  >              function( acc, x ) return acc + 1; end, 0 );
+##  >                { i, j } -> i <> j ],
+##  >              { acc, x } -> acc + 1, 0 );
 ##  3
 ##  gap> FoldLeftX( [ [ 1 .. 3 ], [ 1 .. 3 ], \< ],
 ##  >              function( acc, x )
@@ -2917,6 +2923,8 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##
 ##  <Description>
 ##  <Ref Func="ListX"/> returns a new list constructed from the arguments.
+##  The general mechanism underlying this and the related <Q>X</Q>-functions
+##  is described in <Ref Func="FoldLeftX"/>.
 ##  <P/>
 ##  Each of the arguments <A>arg1</A>, <A>arg2</A>, <M>\ldots</M> <A>argn</A>
 ##  must be one of the following:
@@ -3109,7 +3117,7 @@ DeclareGlobalFunction( "ForAnyX" );
 ##  <Ref Func="FilteredX"/> returns the tuples of loop-variable values for
 ##  which the last argument returns <K>true</K>.
 ##  In other words, it keeps precisely those tuples that would pass the
-##  filters when calling <Ref Func="ListX"/> with the same generators.
+##  filters when calling <Ref Func="ListX"/> with the same arguments.
 ##  <P/>
 ##  Even with only one generator, the result consists of singleton tuples.
 ##  Thus <C>FilteredX( [ 1 .. 4 ], IsEvenInt )</C> returns
@@ -3133,7 +3141,7 @@ DeclareGlobalFunction( "FilteredX" );
 ##
 ##  <Description>
 ##  <Ref Func="NumberX"/> returns the number of tuples selected by the last
-##  argument, using the same generators as <Ref Func="ListX"/>.
+##  argument, using the same arguments as <Ref Func="ListX"/>.
 ##  Equivalently, it counts the entries of the result that
 ##  <Ref Func="FilteredX"/> would return with the same arguments.
 ##  </Description>
@@ -3154,7 +3162,7 @@ DeclareGlobalFunction( "NumberX" );
 ##  <Description>
 ##  <Ref Func="PerformX"/> works like <Ref Func="ListX"/> except that it
 ##  returns nothing and ignores the return values of <A>func</A>.
-##  It is useful for iterating through the tuples described by the generators
+##  It is useful for iterating through the tuples described by the arguments
 ##  purely for their side effects.
 ##  </Description>
 ##  </ManSection>
