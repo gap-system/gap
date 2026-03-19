@@ -2947,6 +2947,11 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##  </Item>
 ##  </List>
 ##  <P/>
+##  Each function occurring among the arguments is called with the values
+##  selected by the preceding arguments, in order.
+##  Thus the function in the <A>k</A>-th argument position receives one
+##  argument for each preceding argument that introduced a loop variable.
+##  <P/>
 ##  The last argument <A>func</A> must be a function,
 ##  it is applied to the values of the loop-variables
 ##  and the results are collected.
@@ -2986,7 +2991,7 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##  <Example><![CDATA[
 ##  gap> l:= [ 1, 2, 3, 4 ];;
 ##  gap> pair:= function( x, y ) return [ x, y ]; end;;
-##  gap> ListX( l, l, pair );
+##  gap> ListX( l, l, {x,y} -> [x,y] );
 ##  [ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 1 ], [ 2, 2 ],
 ##    [ 2, 3 ], [ 2, 4 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], [ 3, 4 ],
 ##    [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ]
@@ -3017,6 +3022,11 @@ DeclareGlobalFunction( "ListX" );
 ##  <Description>
 ##  The only difference between <Ref Func="SetX"/> and <Ref Func="ListX"/>
 ##  is that the result list of <Ref Func="SetX"/> is strictly sorted.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> SetX( [ 1 .. 3 ], [ 1 .. 3 ], \+ );
+##  [ 2, 3, 4, 5, 6 ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3035,6 +3045,11 @@ DeclareGlobalFunction( "SetX" );
 ##  <Description>
 ##  <Ref Func="SumX"/> returns the sum of the elements in the list obtained
 ##  by <Ref Func="ListX"/> when this is called with the same arguments.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> SumX( [ 1 .. 3 ], [ 1 .. 3 ], \+ );
+##  36
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3054,6 +3069,11 @@ DeclareGlobalFunction( "SumX" );
 ##  <Ref Func="ProductX"/> returns the product of the elements in the list
 ##  obtained by <Ref Func="ListX"/> when this is called with the same
 ##  arguments.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ProductX( [ 1 .. 3 ], [ 1 .. 3 ], \+ );
+##  172800
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3076,6 +3096,11 @@ DeclareGlobalFunction( "ProductX" );
 ##  As with <Ref Func="ForAll"/>, the last argument must return either
 ##  <K>true</K> or <K>false</K>, and evaluation stops as soon as the result
 ##  is known.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ForAllX( [ 1 .. 3 ], [ 1 .. 3 ], \< );
+##  false
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3098,6 +3123,11 @@ DeclareGlobalFunction( "ForAllX" );
 ##  As with <Ref Func="ForAny"/>, the last argument must return either
 ##  <K>true</K> or <K>false</K>, and evaluation stops as soon as the result
 ##  is known.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ForAnyX( [ 1 .. 3 ], [ 1 .. 3 ], \< );
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3124,6 +3154,13 @@ DeclareGlobalFunction( "ForAnyX" );
 ##  <C>[ [ 2 ], [ 4 ] ]</C>, not <C>[ 2, 4 ]</C>.
 ##  Use <Ref Func="Filtered"/> if you want to filter the elements of a single
 ##  list or collection directly.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> FilteredX( [ 1 .. 4 ], IsEvenInt );
+##  [ [ 2 ], [ 4 ] ]
+##  gap> FilteredX( [ 1 .. 4 ], [ 1 .. 4 ], \< );
+##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ], [ 3, 4 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3144,6 +3181,13 @@ DeclareGlobalFunction( "FilteredX" );
 ##  argument, using the same arguments as <Ref Func="ListX"/>.
 ##  Equivalently, it counts the entries of the result that
 ##  <Ref Func="FilteredX"/> would return with the same arguments.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> NumberX( [ 1 .. 4 ], IsEvenInt );
+##  2
+##  gap> NumberX( [ 1 .. 4 ], [ 1 .. 4 ], \< );
+##  6
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -3164,6 +3208,11 @@ DeclareGlobalFunction( "NumberX" );
 ##  returns nothing and ignores the return values of <A>func</A>.
 ##  It is useful for iterating through the tuples described by the arguments
 ##  purely for their side effects.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> PerformX( [ 1 .. 2 ], [ 3 .. 4 ], Print );  Print( "\n" );
+##  13142324
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
