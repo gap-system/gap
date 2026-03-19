@@ -91,7 +91,7 @@ cp native-build/build/c_*.c native-build/build/ffdata.* src/
 # Dynamically find and append ALL required files to the JS array
 # The flag -type f is safe because the only symbolic link is 'tst/mockpkg/Makefile.gappkg',
 # which is safe to ignore
-find pkg lib grp tst doc hpcgap dev benchmark -type f | python3 etc/emscripten/generate_mapping.py
+find pkg lib grp tst doc hpcgap dev benchmark -type f | python3 etc/emscripten/percentage_encoding.py
 
 if [ $? -ne 0 ]; then
     echo "Build aborted: generate_mapping.py failed."

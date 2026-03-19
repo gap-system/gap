@@ -1,9 +1,8 @@
 import sys
-import hashlib
+import urllib.parse
 import os
 
 def main():
-    seen_hashes = {}
     mappings = []
 
     for line in sys.stdin:
@@ -11,18 +10,11 @@ def main():
         if not path:
             continue
 
-        h = hashlib.md5(path.encode('utf-8')).hexdigest()
-        _, ext = os.path.splitext(path)
-        hashed_name = f"{h}{ext}"
+        encoded_name = urllib.parse.quote(path, safe='/')
+        
+        fetch_name = encoded_name.replace('%', '%25')
 
-        if hashed_name in seen_hashes:
-            print("\nError: Hash collision detected!", file=sys.stderr)
-            print(f"File 1: {seen_hashes[hashed_name]}", file=sys.stderr)
-            print(f"File 2: {path}", file=sys.stderr)
-            sys.exit(1)
-
-        seen_hashes[hashed_name] = path
-        mappings.append((path, hashed_name))
+        mappings.append((path, fetch_name))
 
     try:
         with open('lazy_fs.js', 'w', encoding='utf-8') as f:
@@ -30,9 +22,9 @@ def main():
             f.write("Module.preRun.push(function() {\n")
             f.write("    var fileMap = {\n")
             
-            for path, hashed_name in mappings:
+            for path, fetch_name in mappings:
                 safe_path = path.replace('"', '\\"')
-                f.write(f'        "{safe_path}": "{hashed_name}",\n')
+                f.write(f'        "{safe_path}": "{fetch_name}",\n')
             
             f.write("    };\n\n")
             f.write('    var physicalDir = "assets/";\n')
@@ -53,6 +45,14 @@ def main():
             f.write("    addRunDependency('idbfs_sync');\n\n")
             
             f.write("    FS.syncfs(true, async function(err) {\n")
+
+            f.write("        Object.keys(fileMap).forEach(function(virtualPath) {\n")
+            f.write("            var parts = virtualPath.split('/');\n")
+            f.write("            parts.pop();\n")
+            f.write("            var parentDir = '/' + parts.join('/');\n")
+            f.write("            try { FS.mkdirTree('/gap_idb_cache' + parentDir); } catch(e) {}\n")
+            f.write("        });\n\n")
+
             f.write("        var needsSave = false;\n")
             f.write("        var startupSet = new Set();\n")
             
@@ -69,11 +69,12 @@ def main():
 
             f.write("        var fetchPromises = Object.keys(fileMap).map(async function(virtualPath) {\n")
             f.write("            var physicalName = fileMap[virtualPath];\n")
+            
             f.write("            var physicalPath = physicalDir + physicalName;\n")
             f.write("            var cachePath = '/gap_idb_cache/' + physicalName;\n")
             f.write("            var finalPath = '/' + virtualPath;\n\n")
             
-            f.write("            if (startupSet.has(physicalPath)) {\n")
+            f.write("            if (startupSet.has(physicalDir + virtualPath)) {\n")
             f.write("                try {\n")
             f.write("                    FS.stat(cachePath);\n")
             f.write("                    FS.writeFile(finalPath, FS.readFile(cachePath));\n")
@@ -108,7 +109,7 @@ def main():
             f.write("    });\n")
             f.write("});\n")
             
-        print(f"Successfully mapped {len(mappings)} files into lazy_fs.js", file=sys.stderr)
+        print(f"Successfully encoded {len(mappings)} files into lazy_fs.js", file=sys.stderr)
     
     except Exception as e:
         print(f"Failed to write lazy_fs.js: {e}", file=sys.stderr)

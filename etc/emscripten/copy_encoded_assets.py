@@ -1,12 +1,9 @@
 import sys
-import hashlib
+import urllib.parse
 import os
 import shutil
 
 def main():
-    if len(sys.argv) < 2:
-        print("Error: Must provide destination directory.", file=sys.stderr)
-        sys.exit(1)
 
     dest_dir = sys.argv[1]
     os.makedirs(dest_dir, exist_ok=True)
@@ -18,11 +15,11 @@ def main():
         if not path:
             continue
 
-        h = hashlib.md5(path.encode('utf-8')).hexdigest()
-        _, ext = os.path.splitext(path)
-        hashed_name = f"{h}{ext}"
+        encoded_name = urllib.parse.quote(path, safe='/')
 
-        dest_path = os.path.join(dest_dir, hashed_name)
+        dest_path = os.path.join(dest_dir, encoded_name)
+
+        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
 
         shutil.copy2(path, dest_path)
         copied_count += 1
