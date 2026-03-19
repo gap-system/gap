@@ -18,29 +18,40 @@ const server = http.createServer((req, res) => {
         urlPath = '/index.html';
     }
 
-    const filePath = path.join(BASE_DIR, urlPath);
+    let localDiskPath = urlPath;
+    try {
+        localDiskPath = decodeURIComponent(urlPath);
+    } catch (e) {}
+
+    const filePath = path.join(BASE_DIR, localDiskPath);
 
     fs.readFile(filePath, (err, data) => {
         if (err) {
-            console.error(`[404] Ignored missing file: ${urlPath}`);
+            console.error(`[404] Ignored missing file: ${localDiskPath}`);
             res.writeHead(404);
             res.end(`404: File not found`);
             return;
         }
 
-        if (urlPath !== '/favicon.ico' && !requestedFiles.has(urlPath)) {
-            requestedFiles.add(urlPath);
+        const ignored = ['/favicon.ico', '/index.html', '/lazy_fs.js', '/startup_manifest.json'];
+        if (!ignored.includes(urlPath)) {
+            let manifestPath = urlPath.startsWith('/') ? urlPath.substring(1) : urlPath;
             
-            const manifest = Array.from(requestedFiles);
-            fs.writeFileSync(LOG_FILE, JSON.stringify(manifest, null, 4));
-            
-            console.log(`[Loaded & Logged] ${urlPath} (Total: ${requestedFiles.size})`);
+            if (!requestedFiles.has(manifestPath)) {
+                requestedFiles.add(manifestPath);
+                
+                const manifest = Array.from(requestedFiles);
+                fs.writeFileSync(LOG_FILE, JSON.stringify(manifest, null, 4));
+                
+                console.log(`[Loaded & Logged] ${manifestPath} (Total: ${requestedFiles.size})`);
+            }
         }
 
         let contentType = 'application/octet-stream';
         if (urlPath.endsWith('.html')) contentType = 'text/html';
         else if (urlPath.endsWith('.js')) contentType = 'text/javascript';
         else if (urlPath.endsWith('.wasm')) contentType = 'application/wasm';
+        else if (urlPath.endsWith('.css')) contentType = 'text/css';
 
         res.writeHead(200, {
             'Content-Type': contentType,
