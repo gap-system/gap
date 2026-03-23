@@ -293,11 +293,10 @@ InstallMethod( IsAntisymmetricMatrix,
     "for a matrix",
     [ IsMatrixOrMatrixObj ],
     function( mat )
-    local i, j, zero;
+    local i, j;
     if not IsSquareMatrix( mat ) then
         return false;
     fi;
-    zero := ZeroOfBaseDomain( mat );
     for i in [ 1 .. NrRows( mat ) ] do
         for j in [ 1 .. i ] do
             if mat[i,j] <> -mat[j,i] then
