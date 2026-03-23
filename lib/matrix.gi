@@ -720,7 +720,7 @@ InstallMethod( Display,
 ##
 InstallMethod( CharacteristicPolynomial,
     "supply field and indeterminate 1",
-    [ IsMatrix ],
+    [ IsMatrixOrMatrixObj ],
     mat -> CharacteristicPolynomialMatrixNC(
             DefaultFieldOfMatrix( mat ), mat, 1 ) );
 
@@ -739,7 +739,7 @@ InstallMethod( CharacteristicPolynomial,
         fi;
         return false;
     end,
-    [ IsField, IsField, IsMatrix ],
+    [ IsField, IsField, IsMatrixOrMatrixObj ],
     function( F, E, mat )
     return CharacteristicPolynomial( F, E, mat, 1);
     end );
@@ -794,6 +794,39 @@ InstallMethod( CharacteristicPolynomialMatrixNC, "spinning over field",
     [ IsField, IsOrdinaryMatrix, IsPosInt ],
   Matrix_CharacteristicPolynomialSameField);
 
+InstallOtherMethod( CharacteristicPolynomial,
+    "matrix object, supply field",
+    [ IsMatrixObj, IsPosInt ],
+    function( mat, indnum )
+        local F;
+        F := DefaultFieldOfMatrix( mat );
+        return CharacteristicPolynomial( F, F, mat, indnum );
+    end );
+
+InstallOtherMethod( CharacteristicPolynomial,
+    "matrix object, spinning over field",
+    function( famF, famE, fammat, famid )
+        local fam;
+        if HasElementsFamily( fammat ) then
+            fam := ElementsFamily( fammat );
+            return IsIdenticalObj( famF, fam )
+               and IsIdenticalObj( famE, fam );
+        fi;
+        return false;
+    end,
+    [ IsField, IsField, IsMatrixObj, IsPosInt ],
+    function( F, E, mat, inum )
+        return CharacteristicPolynomial( F, E, Unpack( mat ), inum );
+    end );
+
+InstallOtherMethod( CharacteristicPolynomialMatrixNC,
+    "matrix object, spinning over field",
+    IsElmsCollsX,
+    [ IsField, IsMatrixObj, IsPosInt ],
+    function( F, mat, inum )
+        return CharacteristicPolynomialMatrixNC( F, Unpack( mat ), inum );
+    end );
+
 
 #############################################################################
 ##
@@ -825,14 +858,14 @@ end );
 
 InstallOtherMethod( MinimalPolynomial,
     "supply field",
-    [ IsMatrix,IsPosInt ],
+    [ IsMatrixOrMatrixObj, IsPosInt ],
 function(m,n)
   return MinimalPolynomial( DefaultFieldOfMatrix( m ), m, n );
 end);
 
 InstallOtherMethod( MinimalPolynomial,
     "supply field and indeterminate 1",
-    [ IsMatrix ],
+    [ IsMatrixOrMatrixObj ],
 function(m)
   return MinimalPolynomial( DefaultFieldOfMatrix( m ), m, 1 );
 end);
@@ -841,6 +874,22 @@ InstallMethod( MinimalPolynomialMatrixNC, "spinning over field",
     IsElmsCollsX,
     [ IsField, IsOrdinaryMatrix, IsPosInt ],
   Matrix_MinimalPolynomialSameField);
+
+InstallOtherMethod( MinimalPolynomial,
+    "matrix object, spinning over field",
+    IsElmsCollsX,
+    [ IsField, IsMatrixObj, IsPosInt ],
+    function( F, mat, inum )
+        return MinimalPolynomial( F, Unpack( mat ), inum );
+    end );
+
+InstallOtherMethod( MinimalPolynomialMatrixNC,
+    "matrix object, spinning over field",
+    IsElmsCollsX,
+    [ IsField, IsMatrixObj, IsPosInt ],
+    function( F, mat, inum )
+        return MinimalPolynomialMatrixNC( F, Unpack( mat ), inum );
+    end );
 
 
 #############################################################################
@@ -881,6 +930,11 @@ function ( mat )
     # loop over the standard basis vectors
     return OrderMatTrial(mat,infinity);
 end );
+
+InstallOtherMethod( Order,
+    "matrix objects",
+    [ IsMatrixObj ],
+    mat -> Order( Unpack( mat ) ) );
 
 
 #############################################################################
@@ -2436,6 +2490,11 @@ function( mat )
     # compute the order of <p>
     return ProjectiveOrder(p);
 end );
+
+InstallOtherMethod( ProjectiveOrder,
+    "matrix objects over finite fields",
+    [ IsMatrixObj and IsFFECollColl ],
+    mat -> ProjectiveOrder( Unpack( mat ) ) );
 
 
 #############################################################################

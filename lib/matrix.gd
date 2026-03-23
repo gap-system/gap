@@ -750,7 +750,7 @@ DeclareOperation( "Eigenvectors", [ IsRing, IsMatrix ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "ProjectiveOrder", IsMatrix );
+DeclareAttribute( "ProjectiveOrder", IsMatrixOrMatrixObj );
 
 #############################################################################
 ##
@@ -2120,12 +2120,12 @@ DeclareSynonym("OnSubspacesByCanonicalBasisGF2",OnSubspacesByCanonicalBasis);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "CharacteristicPolynomial", IsMatrix );
-DeclareOperation( "CharacteristicPolynomial", [ IsMatrix, IsPosInt ] );
+DeclareAttribute( "CharacteristicPolynomial", IsMatrixOrMatrixObj );
+DeclareOperation( "CharacteristicPolynomial", [ IsMatrixOrMatrixObj, IsPosInt ] );
 DeclareOperation( "CharacteristicPolynomial",
-    [ IsRing, IsRing, IsMatrix, IsPosInt ] );
+    [ IsRing, IsRing, IsMatrixOrMatrixObj, IsPosInt ] );
 DeclareOperation( "CharacteristicPolynomial",
-    [ IsRing, IsRing, IsMatrix ] );
+    [ IsRing, IsRing, IsMatrixOrMatrixObj ] );
 
 
 #############################################################################
