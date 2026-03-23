@@ -308,8 +308,6 @@ InstallMethod( IsAntisymmetricMatrix,
     return true;
     end );
 
-InstallTrueMethod( IsAntisymmetricMatrix, IsMatrixOrMatrixObj and IsEmptyMatrix );
-
 
 #############################################################################
 ##
