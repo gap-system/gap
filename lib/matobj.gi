@@ -1906,8 +1906,9 @@ InstallMethod( AddMatrix, "for a mutable matrix object and a matrix object",
   [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj ],
   function( dstmat, srcmat )
     local i, j;
-    # Assert(0, NrRows(dstmat) = NrRows(srcmat));
-    # Assert(0, NrCols(dstmat) = NrCols(srcmat));
+    if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+      Error("AddMatrix: matrices must have the same dimensions");
+    fi;
     for i in [1..NrRows(dstmat)] do
       for j in [1..NrCols(dstmat)] do
         dstmat[i,j] := dstmat[i,j] + srcmat[i,j];
@@ -1919,8 +1920,9 @@ InstallEarlyMethod( AddMatrix,
   function( dstmat, srcmat )
     local i;
     if IsPlistRep(dstmat) and IsPlistRep(srcmat) then
-      # Assert(0, NrRows(dstmat) = NrRows(srcmat));
-      # Assert(0, NrCols(dstmat) = NrCols(srcmat));
+      if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+        Error("AddMatrix: matrices must have the same dimensions");
+      fi;
       for i in [1..NrRows(dstmat)] do
         AddRowVector(dstmat[i], srcmat[i]);
       od;
@@ -1932,11 +1934,12 @@ InstallEarlyMethod( AddMatrix,
 InstallMethod( AddMatrix, "for a mutable 8bit matrix and an 8bit matrix",
   [ Is8BitMatrixRep and IsMutable, Is8BitMatrixRep ],
   function( dstmat, srcmat )
-    local i, j;
-    # Assert(0, NrRows(dstmat) = NrRows(srcmat));
-    # Assert(0, NrCols(dstmat) = NrCols(srcmat));
+    local i;
+    if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+      Error("AddMatrix: matrices must have the same dimensions");
+    fi;
     for i in [1..NrRows(dstmat)] do
-      ADD_COEFFS_VEC8BIT_3(dstmat[i], srcmat[i]);
+      ADD_COEFFS_VEC8BIT_2(dstmat[i], srcmat[i]);
     od;
   end );
 
@@ -1949,8 +1952,9 @@ InstallMethod( AddMatrix, "for a mutable matrix object, a matrix object, and a s
   [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsScalar ],
   function( dstmat, srcmat, scalar )
     local i, j;
-    # Assert(0, NrRows(dstmat) = NrRows(srcmat));
-    # Assert(0, NrCols(dstmat) = NrCols(srcmat));
+    if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+      Error("AddMatrix: matrices must have the same dimensions");
+    fi;
     for i in [1..NrRows(dstmat)] do
       for j in [1..NrCols(dstmat)] do
         dstmat[i,j] := dstmat[i,j] + srcmat[i,j] * scalar;
@@ -1962,8 +1966,9 @@ InstallEarlyMethod( AddMatrix,
   function( dstmat, srcmat, scalar )
     local i;
     if IsPlistRep(dstmat) and IsPlistRep(srcmat) then
-      # Assert(0, NrRows(dstmat) = NrRows(srcmat));
-      # Assert(0, NrCols(dstmat) = NrCols(srcmat));
+      if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+        Error("AddMatrix: matrices must have the same dimensions");
+      fi;
       for i in [1..NrRows(dstmat)] do
         AddRowVector(dstmat[i], srcmat[i], scalar);
       od;
@@ -1975,9 +1980,10 @@ InstallEarlyMethod( AddMatrix,
 InstallMethod( AddMatrix, "for a mutable 8bit matrix, an 8bit matrix, and a scalar",
   [ Is8BitMatrixRep and IsMutable, Is8BitMatrixRep, IsFFE ],
   function( dstmat, srcmat, scalar )
-    local i, j;
-    # Assert(0, NrRows(dstmat) = NrRows(srcmat));
-    # Assert(0, NrCols(dstmat) = NrCols(srcmat));
+    local i;
+    if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+      Error("AddMatrix: matrices must have the same dimensions");
+    fi;
     for i in [1..NrRows(dstmat)] do
       ADD_COEFFS_VEC8BIT_3(dstmat[i], srcmat[i], scalar);
     od;
@@ -2046,4 +2052,3 @@ InstallMethod(DeterminantMatrix, ["IsMatrixObj"],
 function( mat )
   return DeterminantMat( Unpack( mat ) );
 end);
-

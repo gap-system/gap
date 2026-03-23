@@ -190,3 +190,63 @@ TestElementaryTransforms := function(mat, scalar)
         od;
     od;
 end;
+
+TestWholeMatrixTransforms := function(mat, scalar)
+    local i, j, src, copy, srccopy, basedomain, same_entries;
+    Assert(0, NrRows(mat) >= 1);
+    Assert(0, NrCols(mat) >= 1);
+
+    copy := [];
+    src := [];
+    for i in [1..NrRows(mat)] do
+        copy[i] := [];
+        src[i] := [];
+        for j in [1..NrCols(mat)] do
+            copy[i,j] := mat[i,j];
+            src[i,j] := mat[(i mod NrRows(mat)) + 1, (j mod NrCols(mat)) + 1];
+        od;
+    od;
+    basedomain := BaseDomain(mat);
+    if IsPlistMatrixRep(mat) then
+        src := NewMatrix(IsPlistMatrixRep, basedomain, NrCols(mat), src);
+    elif Is8BitMatrixRep(mat) then
+        ConvertToMatrixRep(src, basedomain);
+    fi;
+    srccopy := StructuralCopy(src);
+
+    # Compare entrywise because these tests mix plain list snapshots with
+    # matrix objects in specialized representations.
+    same_entries := function(a, b)
+        local i, j;
+        for i in [1..NrRows(a)] do
+            for j in [1..NrCols(a)] do
+                if a[i,j] <> b[i,j] then
+                    return false;
+                fi;
+            od;
+        od;
+        return true;
+    end;
+
+    AddMatrix(mat, src);
+    AddMatrix(copy, srccopy);
+    if not same_entries(mat, copy) then Error("AddMatrix(", scalar, ") failure"); fi;
+    if not same_entries(src, srccopy) then Error("AddMatrix source modified"); fi;
+
+    AddMatrix(mat, src, scalar);
+    AddMatrix(copy, srccopy, scalar);
+    if not same_entries(mat, copy) then Error("AddMatrix(_,_,", scalar, ") failure"); fi;
+    if not same_entries(src, srccopy) then Error("AddMatrix(_,_,scalar) source modified"); fi;
+
+    MultMatrixLeft(mat, scalar);
+    MultMatrixLeft(copy, scalar);
+    if not same_entries(mat, copy) then Error("MultMatrixLeft(", scalar, ") failure"); fi;
+
+    MultMatrixRight(mat, scalar);
+    MultMatrixRight(copy, scalar);
+    if not same_entries(mat, copy) then Error("MultMatrixRight(", scalar, ") failure"); fi;
+
+    MultMatrix(mat, scalar);
+    MultMatrix(copy, scalar);
+    if not same_entries(mat, copy) then Error("MultMatrix(", scalar, ") failure"); fi;
+end;
