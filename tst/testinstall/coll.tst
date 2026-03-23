@@ -317,6 +317,110 @@ gap> List(iter, x -> x+1);
 
 #############################################################################
 #
+# FoldLeft
+#
+gap> FoldLeft([1..10], \*) = Factorial(10);
+true
+gap> FoldLeft([1..10], \+) = Sum([1..10]);
+true
+gap> FoldLeft([1..10], \+, 5) = Sum([1..10], 5);
+true
+gap> FoldLeft([1,,3], function(a,b) return a+b; end);
+4
+gap> FoldLeft([,2,3], function(a,b) return a+b; end);
+5
+gap> FoldLeft([], function(a,b) return a+b; end, 10);
+10
+gap> FoldLeft([1..3], \-);
+-4
+gap> FoldLeft([1..3], \-, 0);
+-6
+gap> FoldLeft([], function(a,b) return a+b; end);
+Error, folding an empty collection without initial value is not supported
+
+#############################################################################
+#
+# FoldLeftX
+#
+gap> FoldLeftX([[1..2], [3..4]],
+>   function(acc, x)
+>     Display(x);
+>     return true;
+>   end, false, true);
+[ 1, 3 ]
+true
+gap> FoldLeftX(123, function(acc, x) return acc; end, 0);
+Error, usage: FoldLeftX( <gens>, <func>, <init>[, <abortValue>] )
+gap> FoldLeftX([1], 123, 0);
+Error, usage: FoldLeftX( <gens>, <func>, <init>[, <abortValue>] )
+gap> FoldLeftX([1], function(acc, x) return acc; end, 0, false, true);
+Error, usage: FoldLeftX( <gens>, <func>, <init>[, <abortValue>] )
+
+#############################################################################
+#
+# ForAllX
+#
+gap> ForAllX([1..2], [3..4], function(i,j) Display([i,j]); return true; end);
+[ 1, 3 ]
+[ 1, 4 ]
+[ 2, 3 ]
+[ 2, 4 ]
+true
+gap> # verify short circuit works
+gap> ForAllX([1..2], [3..4], function(i,j) Display([i,j]); return false; end);
+[ 1, 3 ]
+false
+gap> ForAllX([1], x -> 1);
+Error, <expr> must be 'true' or 'false' (not the integer 1)
+
+#############################################################################
+#
+# ForAnyX
+#
+gap> ForAnyX([1..2], [3..4], function(i,j) Display([i,j]); return false; end);
+[ 1, 3 ]
+[ 1, 4 ]
+[ 2, 3 ]
+[ 2, 4 ]
+false
+gap> # verify short circuit works
+gap> ForAnyX([1..2], [3..4], function(i,j) Display([i,j]); return true; end);
+[ 1, 3 ]
+true
+gap> ForAnyX([1], x -> 1);
+Error, <expr> must be 'true' or 'false' (not the integer 1)
+
+#############################################################################
+#
+# FilteredX
+#
+gap> FilteredX([1..4], IsEvenInt);
+[ [ 2 ], [ 4 ] ]
+gap> FilteredX([1..4], [1..4], \=);
+[ [ 1, 1 ], [ 2, 2 ], [ 3, 3 ], [ 4, 4 ] ]
+gap> FilteredX([1..6],[1..6],[1..6], {a,b,c} -> a+b+c<=4);
+[ [ 1, 1, 1 ], [ 1, 1, 2 ], [ 1, 2, 1 ], [ 2, 1, 1 ] ]
+
+#############################################################################
+#
+# NumberX
+#
+gap> NumberX([1..4], IsEvenInt);
+2
+gap> NumberX([1..4], [1..4], \=);
+4
+gap> NumberX([1..6],[1..6],[1..6], {a,b,c} -> a+b+c<=4);
+4
+
+#############################################################################
+#
+# PerformX
+#
+gap> PerformX([1..2], [3..4], Print); Print("\n");
+13142324
+
+#############################################################################
+#
 # List
 # SortedList
 # SSortedList = Set
@@ -512,6 +616,24 @@ gap> ListX([1..3], n -> [1..n], {a,b}->[a,b]);
 [ [ 1, 1 ], [ 2, 1 ], [ 2, 2 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ] ]
 gap> ListX([1..3], [1..3], \<, {a,b}->[a,b]);
 [ [ 1, 2 ], [ 1, 3 ], [ 2, 3 ] ]
+
+#
+gap> args:=[ [], Identity ];;
+gap> CallFuncList(SetX, args);
+[  ]
+gap> CallFuncList(SumX, args);
+fail
+gap> CallFuncList(ProductX, args);
+fail
+
+#
+gap> args:=[ [1..3], Identity ];;
+gap> CallFuncList(SetX, args) = Set(CallFuncList(ListX, args));
+true
+gap> CallFuncList(SumX, args) = Sum(CallFuncList(ListX, args));
+true
+gap> CallFuncList(ProductX, args) = Product(CallFuncList(ListX, args));
+true
 
 #
 gap> args:=[ [1..3], [1..3], \+ ];;
