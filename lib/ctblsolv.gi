@@ -657,7 +657,8 @@ InstallGlobalFunction( CoveringTriplesCharacters, function( G, z )
               CanonicalRepresentativeOfExternalSet( orb ) );
       if not zn in k then
         t:= StabilizerOfExternalSet( orb );
-        Assert( 1, IsIdenticalObj( Parent( t ), G ) );
+        Assert( 1, IsIdenticalObj( Parent( t ), G ),
+                "in CoveringTriplesCharacters" );
         h:= NaturalHomomorphismByNormalSubgroupNC( t, k );
         img:= ImagesSource( h );
         Append( r,
@@ -823,9 +824,11 @@ InstallMethod( Irr,
     "for a supersolvable group (Conlon's algorithm)",
     [ IsGroup and IsSupersolvableGroup, IsZeroCyc ],
     function( G, zero )
-    local irr;
+    local irr, tbl;
     irr:= IrrConlon( G );
-    SetIrr( OrdinaryCharacterTable( G ), irr );
+    tbl:= OrdinaryCharacterTable( G );
+    SetIrr( tbl, irr );
+    SetInfoText( tbl, "origin: Conlon's Algorithm" );
     return irr;
     end );
 
@@ -833,9 +836,11 @@ InstallMethod( Irr,
     "for a supersolvable group with known `IrrConlon'",
     [ IsGroup and IsSupersolvableGroup and HasIrrConlon, IsZeroCyc ],
     function( G, zero )
-    local irr;
+    local irr, tbl;
     irr:= IrrConlon( G );
-    SetIrr( OrdinaryCharacterTable( G ), irr );
+    tbl:= OrdinaryCharacterTable( G );
+    SetIrr( tbl, irr );
+    SetInfoText( tbl, "origin: Conlon's Algorithm" );
     return irr;
     end );
 
@@ -853,6 +858,7 @@ InstallMethod( Irr,
     tbl:= OrdinaryCharacterTable( G );
     SetIrr( tbl, irr );
     ComputeAllPowerMaps( tbl );
+    SetInfoText( tbl, "origin: Baum-Clausen Algorithm" );
     return irr;
     end );
 
@@ -865,6 +871,7 @@ InstallMethod( Irr,
     tbl:= OrdinaryCharacterTable( G );
     SetIrr( tbl, irr );
     ComputeAllPowerMaps( tbl );
+    SetInfoText( tbl, "origin: Baum-Clausen Algorithm" );
     return irr;
     end );
 
