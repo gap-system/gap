@@ -367,8 +367,8 @@ gap> SetX(ranges, sets, {r,s} -> not IsSubset(r,s));
 gap> lists:=[ [-2,-1], [], [-1,0,1], [0,1], [1,2], [-b,-1], [-b,0], [-b,1], [-1,b], [0,b], [1,b], [-b,b]];;
 
 #
-gap> SetX(ranges, lists, {r,s} -> IsSubset(s,r) = (IsEmpty(r) or (First(r) in s and Last(r) in s)));
+gap> SetX(lists, sets, {l,s} -> IsSubset(s,l) = ForAll(l, x -> x in s)));
 [ true ]
-gap> SetX(ranges, lists, {r,s} -> not IsSubset(r,s));
+gap> SetX(lists, sets, {l,s} -> not IsSubset(l,s));
 [ true ]
 gap> STOP_TEST("cyclotom.tst");
