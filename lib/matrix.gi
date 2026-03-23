@@ -260,8 +260,6 @@ InstallMethod( IsSquareMatrix,
     return NrRows( mat ) = NrCols( mat );
     end );
 
-InstallTrueMethod( IsSquareMatrix, IsMatrixOrMatrixObj and IsEmptyMatrix );
-
 
 #############################################################################
 ##
@@ -285,7 +283,6 @@ InstallMethod( IsSymmetricMatrix,
     return true;
     end );
 
-InstallTrueMethod( IsSymmetricMatrix, IsMatrixOrMatrixObj and IsEmptyMatrix );
 
 
 #############################################################################
@@ -302,10 +299,7 @@ InstallMethod( IsAntisymmetricMatrix,
     fi;
     zero := ZeroOfBaseDomain( mat );
     for i in [ 1 .. NrRows( mat ) ] do
-        if mat[i,i] <> zero then
-            return false;
-        fi;
-        for j in [ i+1 .. NrCols( mat ) ] do
+        for j in [ 1 .. i ] do
             if mat[i,j] <> -mat[j,i] then
                 return false;
             fi;
