@@ -2065,6 +2065,26 @@ function (A,B)
 end );
 
 
+InstallMethod( IsSubset, "for a cyclotomic semiring and a range",
+             [IsCyclotomicCollection and IsSemiringWithOne,
+              IsRange],
+function (D, R)
+  if IsEmpty(R) then return true; fi;
+  # Since D is a semiring-with-one, and thus in particular an additive magma,
+  # it suffices to check whether the start and end point of the given range
+  # are contained in it. Actually it suffices if the smaller one is contained
+  # in it, but figuring out which end is smaller is more work than just
+  # directly checking both end points.
+  return First(R) in D and Last(R) in D;
+end );
+
+
+InstallMethod( IsSubset, "for a finite list and a cyclotomic semiring",
+             [IsList and IsFinite,
+              IsCyclotomicCollection and IsSemiringWithOne],
+    ReturnFalse );
+
+
 InstallMethod( Intersection2, "for certain cyclotomic semirings",
              [IsCyclotomicCollection and IsSemiringWithOne,
               IsCyclotomicCollection and IsSemiringWithOne],
