@@ -357,11 +357,18 @@ gap> SetX(r, r, {i,j} -> (sets[i]=sets[j]) = (i=j));
 #
 gap> sets:=[ PositiveIntegers, NonnegativeIntegers, Integers, GaussianIntegers, GaussianRationals, Cyclotomics ];;
 gap> b:=2^(8*GAPInfo.BytesPerVariable - 6);;
-gap> ranges:=[ [-2..-1], [-1..0], [-1..1], [0..1], [1..2], [-b..-1], [-b..0], [-b..1], [-1..b], [0..b], [1..b], [-b,b]];;
+gap> ranges:=[ [-2..-1], [-1..0], [-1..1], [0..1], [1..2], [-b..-1], [-b..0], [-b..1], [-1..b], [0..b], [1..b], [-b..b]];;
 gap> SetX(ranges, sets, {r,s} -> IsSubset(s,r) = (IsEmpty(r) or (First(r) in s and Last(r) in s)));
 [ true ]
 gap> SetX(ranges, sets, {r,s} -> not IsSubset(r,s));
 [ true ]
 
 #
+gap> lists:=[ [-2,-1], [], [-1,0,1], [0,1], [1,2], [-b,-1], [-b,0], [-b,1], [-1,b], [0,b], [1,b], [-b,b]];;
+
+#
+gap> SetX(ranges, lists, {r,s} -> IsSubset(s,r) = (IsEmpty(r) or (First(r) in s and Last(r) in s)));
+[ true ]
+gap> SetX(ranges, lists, {r,s} -> not IsSubset(r,s));
+[ true ]
 gap> STOP_TEST("cyclotom.tst");
