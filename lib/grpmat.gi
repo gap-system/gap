@@ -536,14 +536,23 @@ end );
 BindGlobal( "IsomorphismPermGroupForMatrixGroup",
 function(G)
 local map;
-  if not HasNiceMonomorphism(G) or not IsPermGroup(Range(NiceMonomorphism(G))) then
-    if not HasIsFinite(G) then
-      Info(InfoWarning,1,
-           "IsomorphismPermGroup: The group is not known to be finite");
+
+  if HasNiceMonomorphism( G ) then
+    map:= NiceMonomorphism( G );
+    if not IsPermGroup( Range( map ) ) then
+      # Trust GAP that this map is still useful.
+      map:= CompositionMapping( IsomorphismPermGroup( Image( map ) ), map );
+    fi;
+  else
+    # We cannot be sure about `IsHandledByNiceMonomorphism` for `G`.
+    if not HasIsFinite( G ) then
+      Info( InfoWarning,1,
+            "IsomorphismPermGroup: The group is not known to be finite" );
     fi;
     map:=NicomorphismOfGeneralMatrixGroup(G,false,false);
     SetNiceMonomorphism(G,map);
   fi;
+  # Now `G` stores a `NiceMonomorphism`.
   if IsPermGroup(Range(NiceMonomorphism(G))) then
     map:=RestrictedNiceMonomorphism(G);
   fi;
