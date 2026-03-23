@@ -1700,113 +1700,122 @@ InstallMethod( ForAnyOp,
 ##
 #M  ListX(<obj>,...)
 ##
-DeclareGlobalName("ListXHelp");
-BIND_GLOBAL( "ListXHelp", function ( result, gens, i, vals, l )
-    local   gen, val;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := CallFuncList( gen, vals );
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return;
-        elif IsListOrCollection( gen )  then
-            for val  in gen  do
-                vals[l+1] := val;
-                ListXHelp( result, gens, i+1, vals, l+1 );
-            od;
-            Unbind( vals[l+1] );
-            return;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    Add( result, CallFuncList( gens[i+1], vals ) );
-end );
-
-BIND_GLOBAL( "ListXHelp2", function ( result, gens, i, val1, val2 )
-    local   gen, vals, val3;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := gen( val1, val2 );
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return;
-        elif IsListOrCollection( gen )  then
-            vals := [ val1, val2 ];
-            for val3  in gen  do
-                vals[3] := val3;
-                ListXHelp( result, gens, i+1, vals, 3 );
-            od;
-            Unbind( vals[3] );
-            return;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    Add( result, gens[i+1]( val1, val2 ) );
-end );
-
-BIND_GLOBAL( "ListXHelp1", function ( result, gens, i, val1 )
-    local   gen, val2;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := gen( val1 );
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return;
-        elif IsListOrCollection( gen )  then
-            for val2  in gen  do
-                ListXHelp2( result, gens, i+1, val1, val2 );
-            od;
-            return;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    Add( result, gens[i+1]( val1 ) );
-end );
-
-BIND_GLOBAL( "ListXHelp0", function ( result, gens, i )
-    local   gen, val1;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := gen();
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return;
-        elif IsListOrCollection( gen )  then
-            for val1  in gen  do
-                ListXHelp1( result, gens, i+1, val1 );
-            od;
-            return;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    Add( result, gens[i+1]() );
-end );
-
 InstallGlobalFunction( ListX, function ( arg )
-    local   result;
-    result := [];
-    ListXHelp0( result, arg, 0 );
+    local f;
+    f := Remove(arg);
+    return FoldLeftX(arg,
+            function(acc, x)
+                Add(acc, CallFuncList(f, x));
+                return acc;
+            end, []);
+end );
+
+
+#############################################################################
+##
+#F  FoldLeft( <coll>, <func> )
+#F  FoldLeft( <coll>, <func>, <init> )
+##
+InstallEarlyMethod( FoldLeft,
+    function( C, func )
+    local tnum, result, found, x;
+    if not IsFunction( func ) then
+      Error( "usage: FoldLeft( <C>, <func>[, <init>] )" );
+    fi;
+    tnum:= TNUM_OBJ( C );
+    if not ( FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM ) then
+      TryNextMethod();
+    fi;
+    found := false;
+    for x in C do
+      if found then
+        result := func( result, x );
+      else
+        result := x;
+        found := true;
+      fi;
+    od;
+    if not found then
+      Error("folding an empty collection without initial value is not supported");
+    fi;
     return result;
+ end );
+
+InstallEarlyMethod( FoldLeft,
+    function( C, func, init )
+    local tnum, result, x;
+    if not IsFunction( func ) then
+      Error( "usage: FoldLeft( <C>, <func>[, <init>] )" );
+    fi;
+    tnum:= TNUM_OBJ( C );
+    if not ( FIRST_LIST_TNUM <= tnum and tnum <= LAST_LIST_TNUM ) then
+      TryNextMethod();
+    fi;
+    result := init;
+    for x in C do
+      result := func( result, x );
+    od;
+    return result;
+ end );
+
+
+#############################################################################
+##
+#M  FoldLeft( <C>, <func> )  . . . . . . . . for a list/collection, and a function
+##
+InstallMethod( FoldLeft,
+    "for a list/collection, and a function",
+    [ IsListOrCollection, IsFunction ],
+    function ( C, func )
+    local iter, result, x;
+    iter := Iterator( C );
+    if IsDoneIterator( iter ) then
+      Error("folding an empty collection without initial value is not supported");
+    fi;
+    result := NextIterator( iter );
+    for x in iter do
+      result := func( result, x );
+    od;
+    return result;
+    end );
+
+
+#############################################################################
+##
+#M  FoldLeft( <C>, <func>, <init> )  . . for a list/coll., a func., and init. val.
+##
+InstallMethod( FoldLeft,
+    "for a list/collection, and a function, and an initial value",
+    [ IsListOrCollection, IsFunction, IsObject ],
+    function ( C, func, init )
+    local result, x;
+    result := init;
+    for x in C do
+      result := func( result, x );
+    od;
+    return result;
+    end );
+
+
+#############################################################################
+##
+#M  FoldLeftX(<obj>,...)
+##
+InstallGlobalFunction( FoldLeftX, function ( gens, f, init, extra... )
+    local abortValue;
+
+    if not IsPlistRep( gens ) or not IsFunction( f ) or Length(extra) > 1 then
+        Error( "usage: FoldLeftX( <gens>, <func>, <init>[, <abortValue>] )" );
+    fi;
+    if Length(extra) > 0 then
+        abortValue := extra[1];
+    else
+        # assign a globally unique bag: here, we take a new empty
+        # string, which is guaranteed to be different from any
+        # other string object
+        abortValue := "";
+    fi;
+    return FOLD_LEFT_X(gens, f, init, abortValue);
 end );
 
 
@@ -1814,113 +1823,14 @@ end );
 ##
 #M  SetX(<obj>,...)
 ##
-DeclareGlobalName("SetXHelp");
-BIND_GLOBAL( "SetXHelp", function ( result, gens, i, vals, l )
-    local   gen, val;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := CallFuncList( gen, vals );
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return;
-        elif IsListOrCollection( gen )  then
-            for val  in gen  do
-                vals[l+1] := val;
-                SetXHelp( result, gens, i+1, vals, l+1 );
-            od;
-            Unbind( vals[l+1] );
-            return;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    AddSet( result, CallFuncList( gens[i+1], vals ) );
-end );
-
-BIND_GLOBAL( "SetXHelp2", function ( result, gens, i, val1, val2 )
-    local   gen, vals, val3;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := gen( val1, val2 );
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return;
-        elif IsListOrCollection( gen )  then
-            vals := [ val1, val2 ];
-            for val3  in gen  do
-                vals[3] := val3;
-                SetXHelp( result, gens, i+1, vals, 3 );
-            od;
-            Unbind( vals[3] );
-            return;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    AddSet( result, gens[i+1]( val1, val2 ) );
-end );
-
-BIND_GLOBAL( "SetXHelp1", function ( result, gens, i, val1 )
-    local   gen, val2;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := gen( val1 );
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return;
-        elif IsListOrCollection( gen )  then
-            for val2  in gen  do
-                SetXHelp2( result, gens, i+1, val1, val2 );
-            od;
-            return;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    AddSet( result, gens[i+1]( val1 ) );
-end );
-
-BIND_GLOBAL( "SetXHelp0", function ( result, gens, i )
-    local   gen, val1;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := gen();
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return;
-        elif IsListOrCollection( gen )  then
-            for val1  in gen  do
-                SetXHelp1( result, gens, i+1, val1 );
-            od;
-            return;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    AddSet( result, gens[i+1]() );
-end );
-
 InstallGlobalFunction( SetX, function ( arg )
-    local   result;
-    result := [];
-    SetXHelp0( result, arg, 0 );
-    return result;
+    local f;
+    f := Remove(arg);
+    return FoldLeftX(arg,
+            function(acc, x)
+                AddSet(acc, CallFuncList(f, x));
+                return acc;
+            end, []);
 end );
 
 
@@ -1928,133 +1838,15 @@ end );
 ##
 #M  SumX(<obj>,...)
 ##
-DeclareGlobalName("SumXHelp");
-BIND_GLOBAL( "SumXHelp", function ( result, gens, i, vals, l )
-    local   gen, val;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := CallFuncList( gen, vals );
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return result;
-        elif IsListOrCollection( gen )  then
-            for val  in gen  do
-                vals[l+1] := val;
-                result := SumXHelp( result, gens, i+1, vals, l+1 );
-            od;
-            Unbind( vals[l+1] );
-            return result;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    if result = fail then
-        result := CallFuncList( gens[i+1], vals );
-    else
-        result := result + CallFuncList( gens[i+1], vals );
-    fi;
-    return result;
-end );
-
-BIND_GLOBAL( "SumXHelp2", function ( result, gens, i, val1, val2 )
-    local   gen, vals, val3;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := gen( val1, val2 );
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return result;
-        elif IsListOrCollection( gen )  then
-            vals := [ val1, val2 ];
-            for val3  in gen  do
-                vals[3] := val3;
-                result := SumXHelp( result, gens, i+1, vals, 3 );
-            od;
-            Unbind( vals[3] );
-            return result;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    if result = fail then
-        result := gens[i+1]( val1, val2 );
-    else
-        result := result + gens[i+1]( val1, val2 );
-    fi;
-    return result;
-end );
-
-BIND_GLOBAL( "SumXHelp1", function ( result, gens, i, val1 )
-    local   gen, val2;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := gen( val1 );
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return result;
-        elif IsListOrCollection( gen )  then
-            for val2  in gen  do
-                result := SumXHelp2( result, gens, i+1, val1, val2 );
-            od;
-            return result;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    if result = fail then
-        result := gens[i+1]( val1 );
-    else
-        result := result + gens[i+1]( val1 );
-    fi;
-    return result;
-end );
-
-BIND_GLOBAL( "SumXHelp0", function ( result, gens, i )
-    local   gen, val1;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := gen();
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return result;
-        elif IsListOrCollection( gen )  then
-            for val1  in gen  do
-                result := SumXHelp1( result, gens, i+1, val1 );
-            od;
-            return result;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    if result = fail then
-        result := gens[i+1]();
-    else
-        result := result + gens[i+1]();
-    fi;
-    return result;
-end );
-
 InstallGlobalFunction( SumX, function ( arg )
-    local   result;
-    result := fail;
-    result := SumXHelp0( result, arg, 0 );
-    return result;
+    local f;
+    f := Remove(arg);
+    return FoldLeftX(arg,
+            function(acc, x)
+                x := CallFuncList(f, x);
+                if acc = fail then return x; fi;
+                return acc + x;
+            end, fail);
 end );
 
 
@@ -2062,134 +1854,102 @@ end );
 ##
 #M  ProductX(<obj>,...)
 ##
-DeclareGlobalName("ProductXHelp");
-BIND_GLOBAL( "ProductXHelp", function ( result, gens, i, vals, l )
-    local   gen, val;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := CallFuncList( gen, vals );
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return result;
-        elif IsListOrCollection( gen )  then
-            for val  in gen  do
-                vals[l+1] := val;
-                result := ProductXHelp( result, gens, i+1, vals, l+1 );
-            od;
-            Unbind( vals[l+1] );
-            return result;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    if result = fail then
-        result := CallFuncList( gens[i+1], vals );
-    else
-        result := result * CallFuncList( gens[i+1], vals );
-    fi;
-    return result;
-end );
-
-BIND_GLOBAL( "ProductXHelp2", function ( result, gens, i, val1, val2 )
-    local   gen, vals, val3;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := gen( val1, val2 );
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return result;
-        elif IsListOrCollection( gen )  then
-            vals := [ val1, val2 ];
-            for val3  in gen  do
-                vals[3] := val3;
-                result := ProductXHelp( result, gens, i+1, vals, 3 );
-            od;
-            Unbind( vals[3] );
-            return result;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    if result = fail then
-        result := gens[i+1]( val1, val2 );
-    else
-        result := result * gens[i+1]( val1, val2 );
-    fi;
-    return result;
-end );
-
-BIND_GLOBAL( "ProductXHelp1", function ( result, gens, i, val1 )
-    local   gen, val2;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := gen( val1 );
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return result;
-        elif IsListOrCollection( gen )  then
-            for val2  in gen  do
-                result := ProductXHelp2( result, gens, i+1, val1, val2 );
-            od;
-            return result;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    if result = fail then
-        result := gens[i+1]( val1 );
-    else
-        result := result * gens[i+1]( val1 );
-    fi;
-    return result;
-end );
-
-BIND_GLOBAL( "ProductXHelp0", function ( result, gens, i )
-    local   gen, val1;
-    while i+1 < Length(gens)  do
-        gen := gens[i+1];
-        if IsFunction( gen )  then
-            gen := gen();
-        fi;
-        if gen = true  then
-            i := i + 1;
-        elif gen = false  then
-            return result;
-        elif IsListOrCollection( gen )  then
-            for val1  in gen  do
-                result := ProductXHelp1( result, gens, i+1, val1 );
-            od;
-            return result;
-        else
-            Error( "gens[",i+1,"] must be a collection, a list, a boolean, ",
-                   "or a function" );
-        fi;
-    od;
-    if result = fail then
-        result := gens[i+1]();
-    else
-        result := result * gens[i+1]();
-    fi;
-    return result;
-end );
-
 InstallGlobalFunction( ProductX, function ( arg )
-    local   result;
-    result := fail;
-    result := ProductXHelp0( result, arg, 0 );
-    return result;
+    local f;
+    f := Remove(arg);
+    return FoldLeftX(arg,
+            function(acc, x)
+                x := CallFuncList(f, x);
+                if acc = fail then return x; fi;
+                return acc * x;
+            end, fail);
 end );
+
+
+#############################################################################
+##
+#M  ForAllX(<obj>,...)
+##
+InstallGlobalFunction( ForAllX, function ( arg )
+    local f;
+    f := Remove(arg);
+    return FoldLeftX(arg,
+            function(acc, x)
+                if CallFuncList(f, x) then
+                    return true;
+                else
+                    return false;
+                fi;
+            end, true, false);
+end );
+
+
+#############################################################################
+##
+#M  ForAnyX(<obj>,...)
+##
+InstallGlobalFunction( ForAnyX, function ( arg )
+    local f;
+    f := Remove(arg);
+    return FoldLeftX(arg,
+            function(acc, x)
+                if CallFuncList(f, x) then
+                    return true;
+                else
+                    return false;
+                fi;
+            end, false, true);
+end );
+
+
+#############################################################################
+##
+#M  FilteredX(<obj>,...)
+##
+InstallGlobalFunction( FilteredX, function ( arg )
+    local f;
+    f := Remove(arg);
+    return FoldLeftX(arg,
+            function(acc, x)
+                if CallFuncList(f, x) then
+                    Add(acc, ShallowCopy(x));
+                fi;
+                return acc;
+            end, []);
+end);
+
+
+#############################################################################
+##
+#M  NumberX(<obj>,...)
+##
+InstallGlobalFunction( NumberX, function ( arg )
+    local f;
+    f := Remove(arg);
+    return FoldLeftX(arg,
+            function(acc, x)
+                if CallFuncList(f, x) then
+                    return acc + 1;
+                fi;
+                return acc;
+            end, 0);
+end);
+
+
+#############################################################################
+##
+#M  PerformX(<obj>,...)
+##
+InstallGlobalFunction( PerformX, function ( arg )
+    local f;
+    f := Remove(arg);
+    FoldLeftX(arg,
+            function(acc, x)
+                CallFuncList(f, x);
+                return 0;
+            end, 0);
+end);
+
 
 #############################################################################
 ##
