@@ -1374,6 +1374,16 @@ InstallOtherMethod( RepresentativeActionOp, "permgrp",true, [ IsPermGroup,
     # action on permgroups, use backtrack
     elif act = OnPoints and IsPermGroup( d ) and IsPermGroup( e )  then
 
+      # conjugate subgroups must have the same order
+      if HasSize(d) and HasSize(e) and Size(d) <> Size(e) then
+        return fail;
+      fi;
+
+      # conjugate subgroups must be both abelian or both non-abelian
+      if HasIsAbelian(d) and HasIsAbelian(e) and IsAbelian(d) <> IsAbelian(e) then
+        return fail;
+      fi;
+
       if Size(G)<10^5 or NrMovedPoints(G)<500
         # cyclic is handled special by backtrack
         or IsCyclic(d) or IsCyclic(e) or
