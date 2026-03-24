@@ -198,6 +198,22 @@ end);
 
 ###############################################################################
 ##
+#F  DirectSumGModule( module1, module2 )  . . direct sum of two G-modules
+##
+## DirectSumGModule calculates the direct sum of smash
+## modules module1 and module2.
+## They are assumed to be modules over the same algebra so, in particular,
+## they should have the same number of generators.
+##
+InstallGlobalFunction(DirectSumGModule,function(module1, module2)
+   TestModulesFitTogether(module1, module2);
+   return GModuleByMats(SMTX.MatrixSum(SMTX.Generators(module1),
+                                       SMTX.Generators(module2)),
+                        SMTX.Field(module1));
+end);
+
+###############################################################################
+##
 #F  WedgeGModule( module ) . . . . . wedge product of a G-module
 ##
 ## WedgeGModule calculates the wedge product of a G-module.
@@ -3554,4 +3570,3 @@ SMTX.OrthogonalSign:=function(gm)
         return -1;
     fi;
 end;
-
