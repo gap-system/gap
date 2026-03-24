@@ -50,6 +50,25 @@ rec( IsOverFiniteField := true, dimension := 1, field := GF(2),
       <an immutable 1x1 matrix over GF2> ], isMTXModule := true )
 
 #
+# argument compatibility checks
+#
+gap> M3:=GModuleByMats([[[Z(2)]]], GF(2));;
+gap> M4:=GModuleByMats([[[Z(2^2)^0]]], GF(2^2));;
+gap> M5:=GModuleByMats([[[Z(2^2)^0]],[[Z(2^2)^0]]], GF(2^2));;
+
+#
+gap> TensorProductGModule(M3, M4);
+Error, different fields
+gap> TensorProductGModule(M4, M5);
+Error, generators are different lengths
+
+#
+gap> DirectSumGModule(M3, M4);
+Error, different fields
+gap> DirectSumGModule(M4, M5);
+Error, generators are different lengths
+
+#
 #
 #
 gap> M2:=TensorProductGModule(M,M);

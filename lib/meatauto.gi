@@ -632,10 +632,8 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
   nv:=V.dimension;
   nw:=W.dimension;
 
+  TestModulesFitTogether(V,W);
   F:=V.field;
-  if F<>W.field then
-    Error("different fields");
-  fi;
   zero:=Zero(F);
 
   zeroW:=ListWithIdenticalEntries(nw,zero);
@@ -647,9 +645,6 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
 
   # <k> is the number of generators of the acting group
   k:=Length(gV);
-  if k<>Length(gW) then
-    Error("generator lengths");
-  fi;
 
   # <U> is the semi-ech basis for the currently known submodule, of
   # dimension <r>
