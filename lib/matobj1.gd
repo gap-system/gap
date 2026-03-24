@@ -274,14 +274,14 @@ DeclareCategory( "IsFFEVectorObj", IsVectorObj );
 DeclareCategory( "IsCyclotomicVectorObj", IsVectorObj );
 
 DeclareCategory( "IsFFEMatrixOrMatrixObj", IsMatrixOrMatrixObj );
-# DeclareSynonym( "IsFFEMatrix", IsFFEMatrixOrMatrixObj and IsMatrix );
+DeclareSynonym( "IsFFEMatrix", IsFFEMatrixOrMatrixObj and IsMatrix );
 DeclareSynonym( "IsFFEMatrixObj", IsFFEMatrixOrMatrixObj and IsMatrixObj );
 # or maybe
 # DeclareProperty( "IsFFEMatrix", IsMatrix );
 # DeclareProperty( "IsFFEMatrixObj", IsMatrixObj );
 
 DeclareCategory( "IsCyclotomicMatrixOrMatrixObj", IsMatrixOrMatrixObj );
-# DeclareSynonym( "IsCyclotomicMatrix", IsCyclotomicMatrixOrMatrixObj and IsMatrix );
+DeclareSynonym( "IsCyclotomicMatrix", IsCyclotomicMatrixOrMatrixObj and IsMatrix );
 DeclareSynonym( "IsCyclotomicMatrixObj", IsCyclotomicMatrixOrMatrixObj and IsMatrixObj );
 # or maybe have them be properties with methods so users are not confused ?!?
 # DeclareProperty( "IsCyclotomicMatrix", IsMatrix );
