@@ -614,24 +614,18 @@ InstallMethodWithRandomSource( Random,
     "for a random source and natural SL",
     [ IsRandomSource, IsFFEMatrixGroup and IsFinite and IsNaturalSL ],
 function(rs, G)
-    local d, m, F, det;
+    local d, m;
 
+#TODO: This code assumes that all elements in the group have the same
+#      'BaseDomain' value (hence we may take any 'Representative').
+#      If this assumption is not valid then we have to call the
+#      four argument variant of 'RandomInvertibleMatrix'.
+#      Moreover, the code assumes that 'ImmutableMatrix' is not needed
+#      in the situation that the result is in 'IsMatrix'.
     d:= DimensionOfMatrixGroup( G );
-    m:= Representative( G );
-    if IsMatrix( m ) then
-      F:= FieldOfMatrixGroup( G );
-      m:= RandomInvertibleMat( rs, d, F );
-      MultVector( m[1], DeterminantMat( m )^-1 );
-      m:= ImmutableMatrix( F, m, true );
-    else
-      m:= ZeroMatrix( d, d, m );
-      repeat
-        Randomize( rs, m );
-        det:= DeterminantMat( m );
-      until not IsZero( det );
-      MultMatrixRow( m, 1, det^-1 );
-      MakeImmutable( m );
-    fi;
+    m:= RandomInvertibleMatrix( rs, d, Representative( G ) );
+    MultMatrixRow( m, 1, DeterminantMatrix( m )^-1 );
+    MakeImmutable( m );
 
     return m;
 end);
