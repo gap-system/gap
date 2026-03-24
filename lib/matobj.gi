@@ -1931,15 +1931,24 @@ InstallEarlyMethod( AddMatrix,
     fi;
   end );
 
-InstallMethod( AddMatrix, "for a mutable 8bit matrix and an 8bit matrix",
-  [ Is8BitMatrixRep and IsMutable, Is8BitMatrixRep ],
+InstallMethod( AddMatrix, "for a mutable IsRowListMatrix and a IsRowListMatrix",
+  [ IsRowListMatrix and IsMutable, IsRowListMatrix ],
   function( dstmat, srcmat )
     local i;
     if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
       Error("AddMatrix: matrices must have the same dimensions");
     fi;
     for i in [1..NrRows(dstmat)] do
-      ADD_COEFFS_VEC8BIT_2(dstmat[i], srcmat[i]);
+      AddRowVector(dstmat[i], srcmat[i]);
+    od;
+  end );
+
+InstallMethod( AddMatrix, "for a mutable 8bit matrix and an 8bit matrix",
+  [ Is8BitMatrixRep and IsMutable, Is8BitMatrixRep ],
+  function( dstmat, srcmat )
+    local i;
+    for i in [1..NrRows(dstmat)] do
+      ADD_ROWVECTOR_VEC8BITS_2(dstmat[i], srcmat[i]);
     od;
   end );
 
@@ -1977,15 +1986,24 @@ InstallEarlyMethod( AddMatrix,
     fi;
   end );
 
-InstallMethod( AddMatrix, "for a mutable 8bit matrix, an 8bit matrix, and a scalar",
-  [ Is8BitMatrixRep and IsMutable, Is8BitMatrixRep, IsFFE ],
+InstallMethod( AddMatrix, "for a mutable IsRowListMatrix, an IsRowListMatrix, and a scalar",
+  [ IsRowListMatrix and IsMutable, IsRowListMatrix, IsScalar ],
   function( dstmat, srcmat, scalar )
     local i;
     if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
       Error("AddMatrix: matrices must have the same dimensions");
     fi;
     for i in [1..NrRows(dstmat)] do
-      ADD_COEFFS_VEC8BIT_3(dstmat[i], srcmat[i], scalar);
+      AddRowVector(dstmat[i], srcmat[i], scalar);
+    od;
+  end );
+
+InstallMethod( AddMatrix, "for a mutable 8bit matrix, an 8bit matrix, and a scalar",
+  [ Is8BitMatrixRep and IsMutable, Is8BitMatrixRep, IsFFE ],
+  function( dstmat, srcmat, scalar )
+    local i;
+    for i in [1..NrRows(dstmat)] do
+      ADD_ROWVECTOR_VEC8BITS_3(dstmat[i], srcmat[i], scalar);
     od;
   end );
 
@@ -2017,6 +2035,15 @@ InstallEarlyMethod( MultMatrixRight,
     fi;
   end );
 
+InstallMethod( MultMatrixRight, "for a mutable IsRowListMatrix and a scalar",
+  [ IsRowListMatrix and IsMutable, IsScalar ],
+  function( mat, scalar )
+    local i;
+    for i in [1..NrRows(mat)] do
+      MultMatrixRight(mat[i], scalar);
+    od;
+  end );
+
 #############################################################################
 ##
 #M  MultMatrixLeft( <mat>, <mult> )
@@ -2043,6 +2070,15 @@ InstallEarlyMethod( MultMatrixLeft,
     else
       TryNextMethod();
     fi;
+  end );
+
+InstallMethod( MultMatrixLeft, "for a mutable IsRowListMatrix and a scalar",
+  [ IsRowListMatrix and IsMutable, IsScalar ],
+  function( mat, scalar )
+    local i;
+    for i in [1..NrRows(mat)] do
+      MultVectorLeft(mat[i], scalar);
+    od;
   end );
 
 ############################################################################
