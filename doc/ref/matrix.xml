@@ -341,7 +341,9 @@ see&nbsp;<Ref Sect="Mutability and Copyability"/>.
 <Heading>Random Matrices</Heading>
 
 <#Include Label="RandomMat">
+<#Include Label="RandomMatrix">
 <#Include Label="RandomInvertibleMat">
+<#Include Label="RandomInvertibleMatrix">
 <#Include Label="RandomUnimodularMat">
 
 </Section>
