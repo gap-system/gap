@@ -1,4 +1,4 @@
-#@local G,M,M2,M3,M4,M5,V,bf,bo,cf,homs,m,mat,qf,randM,res,sf,subs,mats,Q,orig,S
+#@local G,M,M2,M3,M4,M5,M6,V,bf,bo,cf,homs,m,mat,qf,randM,res,sf,subs,mats,Q,orig,S
 gap> START_TEST("meataxe.tst");
 
 #
@@ -56,6 +56,12 @@ gap> M2:=TensorProductGModule(M,M);
 rec( IsOverFiniteField := true, dimension := 9, field := GF(2), 
   generators := [ <an immutable 9x9 matrix over GF2>, 
       <an immutable 9x9 matrix over GF2> ], isMTXModule := true )
+gap> M6:=DirectSumGModule(M,M);
+rec( IsOverFiniteField := true, dimension := 6, field := GF(2), 
+  generators := [ <an immutable 6x6 matrix over GF2>, 
+      <an immutable 6x6 matrix over GF2> ], isMTXModule := true )
+gap> M6.generators[1] = DirectSumMat(M.generators[1], M.generators[1]);
+true
 gap> IdGroup(MTX.ModuleAutomorphisms(M2));
 [ 1344, 11301 ]
 gap> cf:=MTX.CompositionFactors(M2);;
