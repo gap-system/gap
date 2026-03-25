@@ -6,7 +6,8 @@ gap> informproc0([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l(  ); at *stdin*:4 called from
+*[1] l(  );
+   @ *stdin*:4
 <function "informproc0">( <arguments> )
  called from read-eval loop at *stdin*:6
 type 'quit;' to quit to outer loop
@@ -22,7 +23,8 @@ gap> informproc1([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1 ); at *stdin*:9 called from
+*[1] l( 1 );
+   @ *stdin*:9
 <function "informproc1">( <arguments> )
  called from read-eval loop at *stdin*:11
 type 'quit;' to quit to outer loop
@@ -38,7 +40,8 @@ gap> informproc2([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1, 2 ); at *stdin*:14 called from
+*[1] l( 1, 2 );
+   @ *stdin*:14
 <function "informproc2">( <arguments> )
  called from read-eval loop at *stdin*:16
 type 'quit;' to quit to outer loop
@@ -54,7 +57,8 @@ gap> informproc3([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1, 2, 3 ); at *stdin*:19 called from
+*[1] l( 1, 2, 3 );
+   @ *stdin*:19
 <function "informproc3">( <arguments> )
  called from read-eval loop at *stdin*:21
 type 'quit;' to quit to outer loop
@@ -70,7 +74,8 @@ gap> informproc4([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1, 2, 3, 4 ); at *stdin*:24 called from
+*[1] l( 1, 2, 3, 4 );
+   @ *stdin*:24
 <function "informproc4">( <arguments> )
  called from read-eval loop at *stdin*:26
 type 'quit;' to quit to outer loop
@@ -86,7 +91,8 @@ gap> informproc5([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1, 2, 3, 4, 5 ); at *stdin*:29 called from
+*[1] l( 1, 2, 3, 4, 5 );
+   @ *stdin*:29
 <function "informproc5">( <arguments> )
  called from read-eval loop at *stdin*:31
 type 'quit;' to quit to outer loop
@@ -102,7 +108,8 @@ gap> informproc6([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1, 2, 3, 4, 5, 6 ); at *stdin*:34 called from
+*[1] l( 1, 2, 3, 4, 5, 6 );
+   @ *stdin*:34
 <function "informproc6">( <arguments> )
  called from read-eval loop at *stdin*:36
 type 'quit;' to quit to outer loop
@@ -118,7 +125,8 @@ gap> informprocmore([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1, 2, 3, 4, 5, 6, 7 ); at *stdin*:39 called from
+*[1] l( 1, 2, 3, 4, 5, 6, 7 );
+   @ *stdin*:39
 <function "informprocmore">( <arguments> )
  called from read-eval loop at *stdin*:41
 type 'quit;' to quit to outer loop
@@ -134,7 +142,8 @@ gap> informfunc0([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l(  ) at *stdin*:44 called from
+*[1] l(  )
+   @ *stdin*:44
 <function "informfunc0">( <arguments> )
  called from read-eval loop at *stdin*:46
 type 'quit;' to quit to outer loop
@@ -150,7 +159,8 @@ gap> informfunc1([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1 ) at *stdin*:49 called from
+*[1] l( 1 )
+   @ *stdin*:49
 <function "informfunc1">( <arguments> )
  called from read-eval loop at *stdin*:51
 type 'quit;' to quit to outer loop
@@ -166,7 +176,8 @@ gap> informfunc2([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1, 2 ) at *stdin*:54 called from
+*[1] l( 1, 2 )
+   @ *stdin*:54
 <function "informfunc2">( <arguments> )
  called from read-eval loop at *stdin*:56
 type 'quit;' to quit to outer loop
@@ -182,7 +193,8 @@ gap> informfunc3([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1, 2, 3 ) at *stdin*:59 called from
+*[1] l( 1, 2, 3 )
+   @ *stdin*:59
 <function "informfunc3">( <arguments> )
  called from read-eval loop at *stdin*:61
 type 'quit;' to quit to outer loop
@@ -198,7 +210,8 @@ gap> informfunc4([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1, 2, 3, 4 ) at *stdin*:64 called from
+*[1] l( 1, 2, 3, 4 )
+   @ *stdin*:64
 <function "informfunc4">( <arguments> )
  called from read-eval loop at *stdin*:66
 type 'quit;' to quit to outer loop
@@ -214,7 +227,8 @@ gap> informfunc5([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1, 2, 3, 4, 5 ) at *stdin*:69 called from
+*[1] l( 1, 2, 3, 4, 5 )
+   @ *stdin*:69
 <function "informfunc5">( <arguments> )
  called from read-eval loop at *stdin*:71
 type 'quit;' to quit to outer loop
@@ -230,7 +244,8 @@ gap> informfunc6([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1, 2, 3, 4, 5, 6 ) at *stdin*:74 called from
+*[1] l( 1, 2, 3, 4, 5, 6 )
+   @ *stdin*:74
 <function "informfunc6">( <arguments> )
  called from read-eval loop at *stdin*:76
 type 'quit;' to quit to outer loop
@@ -246,7 +261,8 @@ gap> informfuncmore([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
 Stack trace:
-*[1] l( 1, 2, 3, 4, 5, 6, 7 ) at *stdin*:79 called from
+*[1] l( 1, 2, 3, 4, 5, 6, 7 )
+   @ *stdin*:79
 <function "informfuncmore">( <arguments> )
  called from read-eval loop at *stdin*:81
 type 'quit;' to quit to outer loop

@@ -185,7 +185,8 @@ static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
 }
 
 static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
-                                       Obj activeContext, Obj level)
+                                       Obj activeContext, Obj level,
+                                       Obj totalDepth)
 {
     if (IsBottomLVars(context))
         return 0;
@@ -207,18 +208,49 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
     BOOL rethrow = FALSE;
     GAP_TRY
     {
+        UInt levelInt = INT_INTOBJ(level);
+        UInt totalDepthInt = INT_INTOBJ(totalDepth);
+        UInt prefixWidth = 0;
+        UInt levelWidth = 0;
+        UInt i;
+
+        char prefix[32];
         Obj func = FUNC_LVARS(context);
+        Obj funcname = NAME_FUNC(func);
+        Int line = -1;
         GAP_ASSERT(func);
         Stat call = STAT_LVARS(context);
         Obj  body = BODY_FUNC(func);
         Obj  filename = GET_FILENAME_BODY(body);
-        if (activeContext != Fail) {
-            Pr(context == activeContext ? "*[%d] " : " [%d] ",
-               INT_INTOBJ(level), 0);
+
+        while (totalDepthInt > 0) {
+            prefixWidth++;
+            totalDepthInt /= 10;
         }
-        if (IsKernelFunction(func)) {
+
+        if (activeContext != Fail) {
+            i = levelInt;
+            while (i > 0) {
+                levelWidth++;
+                i /= 10;
+            }
+            snprintf(prefix, sizeof(prefix), "%c%*s[%lu] ",
+                     context == activeContext ? '*' : ' ',
+                     (int)(prefixWidth - levelWidth), "",
+                     (unsigned long)levelInt);
+            Pr("%s", (Int)prefix, 0);
+        }
+        if (IsKernelFunction(func) && filename && GET_STARTLINE_BODY(body)) {
+            if (funcname) {
+                Pr("<<compiled GAP function \"%g\">>", (Int)funcname, 0);
+            }
+            else {
+                Pr("<<compiled GAP function>>", 0, 0);
+            }
+            line = GET_STARTLINE_BODY(body);
+        }
+        else if (IsKernelFunction(func)) {
             PrintKernelFunction(func);
-            Obj funcname = NAME_FUNC(func);
             if (funcname) {
                 Pr(" in function %g", (Int)funcname, 0);
             }
@@ -233,13 +265,20 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
             Int type = TNUM_STAT(call);
             if (FIRST_STAT_TNUM <= type && type <= LAST_STAT_TNUM) {
                 PrintStat(call);
-                Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
+                line = LINE_STAT(call);
             }
             else if (FIRST_EXPR_TNUM <= type && type <= LAST_EXPR_TNUM) {
                 PrintExpr(call);
-                Pr(" at %g:%d", (Int)filename, LINE_STAT(call));
+                line = LINE_STAT(call);
             }
             SWITCH_TO_OLD_LVARS(currLVars);
+        }
+        if (line > 0) {
+            Pr("\n", 0, 0);
+            for (i = 0; i < prefixWidth + 2; i++) {
+                Pr(" ", 0, 0);
+            }
+            Pr("@ %g:%d", (Int)filename, line);
         }
     }
     GAP_CATCH
@@ -644,8 +683,8 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_2ARGS(CALL_WITH_CATCH, func, args),
     GVAR_FUNC_1ARGS(JUMP_TO_CATCH, payload),
 
-    GVAR_FUNC_4ARGS(PRINT_CURRENT_STATEMENT, stream, context, activeContext,
-                    level),
+    GVAR_FUNC_5ARGS(PRINT_CURRENT_STATEMENT, stream, context, activeContext,
+                    level, totalDepth),
     GVAR_FUNC_1ARGS(CURRENT_STATEMENT_LOCATION, context),
 
     GVAR_FUNC_1ARGS(SetUserHasQuit, value),

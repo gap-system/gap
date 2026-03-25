@@ -5,7 +5,8 @@ gap> i:=0;
 gap> f(1);
 Error, bar
 Stack trace:
-*[1] Error( "bar" ); at *stdin*:3 called from
+*[1] Error( "bar" );
+   @ *stdin*:3
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:5
 you can 'quit;' to quit to outer loop, or

@@ -3,21 +3,31 @@ function(  ) ... end
 gap> f();
 Error, recursion depth trap (5000)
 Stack trace:
-*[1] f(  ); at *stdin*:2 called from
- [2] f(  ); at *stdin*:2 called from
- [3] f(  ); at *stdin*:2 called from
- [4] f(  ); at *stdin*:2 called from
- [5] f(  ); at *stdin*:2 called from
+*[1] f(  );
+   @ *stdin*:2
+ [2] f(  );
+   @ *stdin*:2
+ [3] f(  );
+   @ *stdin*:2
+ [4] f(  );
+   @ *stdin*:2
+ [5] f(  );
+   @ *stdin*:2
 ...  at *stdin*:3
 you may 'return;'
 brk> return; # try once more
 Error, recursion depth trap (10000)
 Stack trace:
-*[1] f(  ); at *stdin*:2 called from
- [2] f(  ); at *stdin*:2 called from
- [3] f(  ); at *stdin*:2 called from
- [4] f(  ); at *stdin*:2 called from
- [5] f(  ); at *stdin*:2 called from
+*[1] f(  );
+   @ *stdin*:2
+ [2] f(  );
+   @ *stdin*:2
+ [3] f(  );
+   @ *stdin*:2
+ [4] f(  );
+   @ *stdin*:2
+ [5] f(  );
+   @ *stdin*:2
 ...  at *stdin*:3
 you may 'return;'
 brk> QUIT;

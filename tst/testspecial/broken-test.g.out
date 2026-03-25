@@ -1,9 +1,12 @@
 gap> Test("broken-test-2.tst", rec(width := 800));
 Error, Invalid test file: #@ command found in the middle of a single test at broken-test-2.tst:5
 Stack trace:
-*[1] ErrorNoReturn( s, " at ", fnam, ":", i ); at GAPROOT/lib/test.gi:LINE called from
- [2] testError( "Invalid test file: #@ command found in the middle of a single test" ); at GAPROOT/lib/test.gi:LINE called from
- [3] ParseTestInput( full, opts.ignoreComments, fnam ) at GAPROOT/lib/test.gi:LINE called from
+*[1] ErrorNoReturn( s, " at ", fnam, ":", i );
+   @ GAPROOT/lib/test.gi:LINE
+ [2] testError( "Invalid test file: #@ command found in the middle of a single test" );
+   @ GAPROOT/lib/test.gi:LINE
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
+   @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
 type 'quit;' to quit to outer loop
@@ -11,9 +14,12 @@ brk> quit;
 gap> Test("broken-test-3.tst", rec(width := 800));
 Error, Invalid test file at broken-test-3.tst:5
 Stack trace:
-*[1] ErrorNoReturn( s, " at ", fnam, ":", i ); at GAPROOT/lib/test.gi:LINE called from
- [2] testError( "Invalid test file" ); at GAPROOT/lib/test.gi:LINE called from
- [3] ParseTestInput( full, opts.ignoreComments, fnam ) at GAPROOT/lib/test.gi:LINE called from
+*[1] ErrorNoReturn( s, " at ", fnam, ":", i );
+   @ GAPROOT/lib/test.gi:LINE
+ [2] testError( "Invalid test file" );
+   @ GAPROOT/lib/test.gi:LINE
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
+   @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
 type 'quit;' to quit to outer loop
@@ -21,9 +27,12 @@ brk> quit;
 gap> Test("broken-test-4.tst", rec(width := 800));
 Error, Invalid test file: Nested #@if at broken-test-4.tst:2
 Stack trace:
-*[1] ErrorNoReturn( s, " at ", fnam, ":", i ); at GAPROOT/lib/test.gi:LINE called from
- [2] testError( "Invalid test file: Nested #@if" ); at GAPROOT/lib/test.gi:LINE called from
- [3] ParseTestInput( full, opts.ignoreComments, fnam ) at GAPROOT/lib/test.gi:LINE called from
+*[1] ErrorNoReturn( s, " at ", fnam, ":", i );
+   @ GAPROOT/lib/test.gi:LINE
+ [2] testError( "Invalid test file: Nested #@if" );
+   @ GAPROOT/lib/test.gi:LINE
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
+   @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
 type 'quit;' to quit to outer loop
@@ -31,9 +40,12 @@ brk> quit;
 gap> Test("broken-test-5.tst", rec(width := 800));
 Error, Invalid test file: two #@else at broken-test-5.tst:7
 Stack trace:
-*[1] ErrorNoReturn( s, " at ", fnam, ":", i ); at GAPROOT/lib/test.gi:LINE called from
- [2] testError( "Invalid test file: two #@else" ); at GAPROOT/lib/test.gi:LINE called from
- [3] ParseTestInput( full, opts.ignoreComments, fnam ) at GAPROOT/lib/test.gi:LINE called from
+*[1] ErrorNoReturn( s, " at ", fnam, ":", i );
+   @ GAPROOT/lib/test.gi:LINE
+ [2] testError( "Invalid test file: two #@else" );
+   @ GAPROOT/lib/test.gi:LINE
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
+   @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
 type 'quit;' to quit to outer loop
@@ -41,9 +53,12 @@ brk> quit;
 gap> Test("broken-test-6.tst", rec(width := 800));
 Error, Invalid test file: Continuation prompt '> ' followed by a tab, expected a regular space at broken-test-6.tst:3
 Stack trace:
-*[1] ErrorNoReturn( s, " at ", fnam, ":", i ); at GAPROOT/lib/test.gi:LINE called from
- [2] testError( "Invalid test file: Continuation prompt '> ' followed by a tab, expected a regular space" ); at GAPROOT/lib/test.gi:LINE called from
- [3] ParseTestInput( full, opts.ignoreComments, fnam ) at GAPROOT/lib/test.gi:LINE called from
+*[1] ErrorNoReturn( s, " at ", fnam, ":", i );
+   @ GAPROOT/lib/test.gi:LINE
+ [2] testError( "Invalid test file: Continuation prompt '> ' followed by a tab, expected a regular space" );
+   @ GAPROOT/lib/test.gi:LINE
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
+   @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
 type 'quit;' to quit to outer loop
@@ -51,9 +66,12 @@ brk> quit;
 gap> Test("broken-test-7.tst", rec(width := 800));
 Error, Invalid test file: #@elif after #@else at broken-test-7.tst:7
 Stack trace:
-*[1] ErrorNoReturn( s, " at ", fnam, ":", i ); at GAPROOT/lib/test.gi:LINE called from
- [2] testError( "Invalid test file: #@elif after #@else" ); at GAPROOT/lib/test.gi:LINE called from
- [3] ParseTestInput( full, opts.ignoreComments, fnam ) at GAPROOT/lib/test.gi:LINE called from
+*[1] ErrorNoReturn( s, " at ", fnam, ":", i );
+   @ GAPROOT/lib/test.gi:LINE
+ [2] testError( "Invalid test file: #@elif after #@else" );
+   @ GAPROOT/lib/test.gi:LINE
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
+   @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
 type 'quit;' to quit to outer loop
@@ -61,9 +79,12 @@ brk> quit;
 gap> Test("broken-test-8.tst", rec(width := 800));
 Error, Invalid test file: #@elif without #@if at broken-test-8.tst:1
 Stack trace:
-*[1] ErrorNoReturn( s, " at ", fnam, ":", i ); at GAPROOT/lib/test.gi:LINE called from
- [2] testError( "Invalid test file: #@elif without #@if" ); at GAPROOT/lib/test.gi:LINE called from
- [3] ParseTestInput( full, opts.ignoreComments, fnam ) at GAPROOT/lib/test.gi:LINE called from
+*[1] ErrorNoReturn( s, " at ", fnam, ":", i );
+   @ GAPROOT/lib/test.gi:LINE
+ [2] testError( "Invalid test file: #@elif without #@if" );
+   @ GAPROOT/lib/test.gi:LINE
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
+   @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
 type 'quit;' to quit to outer loop
@@ -71,9 +92,12 @@ brk> quit;
 gap> Test("broken-test-9.tst", rec(width := 800));
 Error, Invalid test file: Unterminated #@if at broken-test-9.tst:7
 Stack trace:
-*[1] ErrorNoReturn( s, " at ", fnam, ":", i ); at GAPROOT/lib/test.gi:LINE called from
- [2] testError( "Invalid test file: Unterminated #@if" ); at GAPROOT/lib/test.gi:LINE called from
- [3] ParseTestInput( full, opts.ignoreComments, fnam ) at GAPROOT/lib/test.gi:LINE called from
+*[1] ErrorNoReturn( s, " at ", fnam, ":", i );
+   @ GAPROOT/lib/test.gi:LINE
+ [2] testError( "Invalid test file: Unterminated #@if" );
+   @ GAPROOT/lib/test.gi:LINE
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
+   @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
 type 'quit;' to quit to outer loop
@@ -81,9 +105,12 @@ brk> quit;
 gap> Test("invalidtestfile.tst", rec(width := 800));
 Error, Invalid test file at invalidtestfile.tst:7
 Stack trace:
-*[1] ErrorNoReturn( s, " at ", fnam, ":", i ); at GAPROOT/lib/test.gi:LINE called from
- [2] testError( "Invalid test file" ); at GAPROOT/lib/test.gi:LINE called from
- [3] ParseTestInput( full, opts.ignoreComments, fnam ) at GAPROOT/lib/test.gi:LINE called from
+*[1] ErrorNoReturn( s, " at ", fnam, ":", i );
+   @ GAPROOT/lib/test.gi:LINE
+ [2] testError( "Invalid test file" );
+   @ GAPROOT/lib/test.gi:LINE
+ [3] ParseTestInput( full, opts.ignoreComments, fnam )
+   @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
 type 'quit;' to quit to outer loop

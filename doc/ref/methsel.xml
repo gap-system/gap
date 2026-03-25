@@ -125,19 +125,15 @@ objecty, a "No Method Found" error will be returned.
 <Log><![CDATA[
 gap> XCons(IsFullTransformationMonoid,4);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `XCons' on 2 arguments called from
-<function "HANDLE_METHOD_NOT_FOUND">( <arguments> )
- called from read-eval loop at line 8 of *stdin*
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+Error, no 1st choice method found for `XCons' on 2 arguments
+called from read-eval loop at *stdin*:8
+type 'quit;' to quit to outer loop
 brk> quit;
 gap> XCons(IsNilpotentGroup,4);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `XCons' on 2 arguments called from
-<function "HANDLE_METHOD_NOT_FOUND">( <arguments> )
- called from read-eval loop at line 9 of *stdin*
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+Error, no 1st choice method found for `XCons' on 2 arguments
+called from read-eval loop at *stdin*:8
+type 'quit;' to quit to outer loop
 brk>
 ]]></Log>
 
@@ -435,4 +431,3 @@ the mathematical term <Q>centre</Q>.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-

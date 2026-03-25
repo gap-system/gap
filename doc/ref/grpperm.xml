@@ -652,11 +652,7 @@ gap> h:=Group(permutationlist);
 <permutation group with 5 generators>
 gap> StabChainOptions(h).random:=1;;
 gap> Size(h);
-exceeded the permitted memory (`-o' command line option) at
-mlimit := 1; called from
-SCRMakeStabStrong( S.stabilizer, [ g ], param, orbits, where, basesize,
- base, correct, missing, false ); called from
- SCRMakeStabStrong( S.stabilizer, [ g ], param, orbits, where, basesize,
+exceeded the permitted memory (`-o' command line option)
 ...
 ]]></Log>
 <P/>

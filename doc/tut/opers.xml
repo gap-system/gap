@@ -216,8 +216,9 @@ If no applicable method  (or no next applicable  method) is found, &GAP;
 stops with an error message of the form
 <Log><![CDATA[
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
-Error, no 1st choice method found for `Size' on 1 arguments called from
-... lines deleted here ...
+Error, no 1st choice method found for `Size' on 1 arguments
+called from read-eval loop at *stdin*:2
+type 'quit;' to quit to outer loop
 ]]></Log>
 <P/>
 You would get an error message as above if you asked for <C>Size( 1 )</C>.

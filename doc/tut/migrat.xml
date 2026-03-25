@@ -857,31 +857,50 @@ gap> test:= function( n )
 >    if n > 3 then Error( "!\n" ); fi; test( n+1 ); end;;
 gap> test( 1 );
 Error, !
-Entering break read-eval-print loop ...
+at *stdin*:6
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> Where();
- called from
-test( n + 1 ); called from
-test( n + 1 ); called from
-test( n + 1 ); called from
-<function>( <arguments> ) called from read-eval-loop
+*[1] Error( "!\n" );
+   @ *stdin*:4
+ [2] test( n + 1 );
+   @ *stdin*:4
+ [3] test( n + 1 );
+   @ *stdin*:4
+ [4] test( n + 1 );
+   @ *stdin*:4
+<function "test">( <arguments> )
+ called from read-eval loop at *errin*:1
 brk> n;
 4
 brk> DownEnv();
 brk> n;
 3
 brk> Where();
- called from
-test( n + 1 ); called from
-test( n + 1 ); called from
-<function>( <arguments> ) called from read-eval-loop
+ [1] Error( "!\n" );
+   @ *stdin*:4
+*[2] test( n + 1 );
+   @ *stdin*:4
+ [3] test( n + 1 );
+   @ *stdin*:4
+ [4] test( n + 1 );
+   @ *stdin*:4
+<function "test">( <arguments> )
+ called from read-eval loop at *errin*:5
 brk> DownEnv( 2 );
 brk> n;
 1
 brk> Where();
- called from
-<function>( <arguments> ) called from read-eval-loop
+ [1] Error( "!\n" );
+   @ *stdin*:4
+ [2] test( n + 1 );
+   @ *stdin*:4
+ [3] test( n + 1 );
+   @ *stdin*:4
+*[4] test( n + 1 );
+   @ *stdin*:4
+<function "test">( <arguments> )
+ called from read-eval loop at *errin*:8
 brk> DownEnv( -2 );
 brk> n;
 3
@@ -1205,4 +1224,3 @@ found in the file <F>tst/compat3.tst</F> of the &GAP;&nbsp;4 distribution.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-

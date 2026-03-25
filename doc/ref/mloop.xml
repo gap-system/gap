@@ -476,11 +476,9 @@ indicate that you are in a break loop.
 <P/>
 <Log><![CDATA[
 gap> 1/0;
-Rational operations: <divisor> must not be zero
-not in any function
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you can replace <divisor> via 'return <divisor>;' to continue
+Error, Rational operations: <divisor> must not be zero
+not in any function at *stdin*:2
+type 'quit;' to quit to outer loop
 ]]></Log>
 <P/>
 If errors occur within a break loop &GAP; enters another break loop at a
@@ -488,12 +486,10 @@ If errors occur within a break loop &GAP; enters another break loop at a
 <P/>
 <Log><![CDATA[
 brk> 1/0;
-Rational operations: <divisor> must not be zero
-not in any function
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you can replace <divisor> via 'return <divisor>;' to continue
-brk_02>
+Error, Rational operations: <divisor> must not be zero
+not in any function at *stdin*:2
+type 'quit;' to quit to outer loop
+brk_2>
 ]]></Log>
 <P/>
 There are two ways to leave a break loop,
@@ -511,7 +507,7 @@ Note that &GAP; code between <C>quit;</C> and the end of the input line
 is ignored.
 <P/>
 <Log><![CDATA[
-brk_02> quit;
+brk_2> quit;
 brk>
 ]]></Log>
 <P/>
@@ -750,25 +746,30 @@ same as <Ref Func="Where"/> while also showing the arguments and local
 variables of each function.
 <P/>
 <Log><![CDATA[
-gap> StabChain(SymmetricGroup(100)); # After this we typed ^C
-user interrupt at
-bpt := S.orbit[1];
- called from
-SiftedPermutation( S, (g * rep) ^ -1 ) called from
-StabChainStrong( S.stabilizer, [ sch ], options ); called from
-StabChainStrong( S.stabilizer, [ sch ], options ); called from
-StabChainStrong( S, GeneratorsOfGroup( G ), options ); called from
-StabChainOp( G, rec(
-     ) ) called from
-...
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+gap> StabChain(SymmetricGroup(1000)); # After this we typed ^C
+Error, user interrupt
+*[1] genlabels := Filtered( genlabels, function ( x )
+        return pnt ^ sgs[x] = pnt;
+    end );
+   @ GAPROOT/lib/stbc.gi:426
+ [2] StabChainBaseStrongGenerators( dom{[ 1 .. Length( dom ) - 1 ]}, sgs, () )
+   @ GAPROOT/lib/gpprmsya.gi:2006
+ [3] StabChainOp( G, rec(
+     ) )
+   @ GAPROOT/lib/stbc.gi:28
+ [4] StabChainImmutable( arg[1] )
+   @ GAPROOT/lib/stbc.gi:18
+<function "StabChain">( <arguments> )
+ called from read-eval loop at *stdin*:2
+you can 'return;'
 brk> Where(2);
- called from
-SiftedPermutation( S, (g * rep) ^ -1 ) called from
-StabChainStrong( S.stabilizer, [ sch ], options ); called from
-...
+*[1] genlabels := Filtered( genlabels, function ( x )
+        return pnt ^ sgs[x] = pnt;
+    end );
+   @ GAPROOT/lib/stbc.gi:426
+ [2] StabChainBaseStrongGenerators( dom{[ 1 .. Length( dom ) - 1 ]}, sgs, () )
+   @ GAPROOT/lib/gpprmsya.gi:2006
+...  at *errin*:1
 ]]></Log>
 <P/>
 Note that the variables displayed even in the first line of the
@@ -836,10 +837,14 @@ Error, !
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> Where();
-*[1] Error( "!\n" ); at *stdin*:3 called from
- [2] test( n + 1 ); at *stdin*:3 called from
- [3] test( n + 1 ); at *stdin*:3 called from
- [4] test( n + 1 ); at *stdin*:3 called from
+*[1] Error( "!\n" );
+   @ *stdin*:4
+ [2] test( n + 1 );
+   @ *stdin*:4
+ [3] test( n + 1 );
+   @ *stdin*:4
+ [4] test( n + 1 );
+   @ *stdin*:4
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> n;
@@ -848,20 +853,28 @@ brk> DownEnv();
 brk> n;
 3
 brk> Where();
- [1] Error( "!\n" ); at *stdin*:3 called from
-*[2] test( n + 1 ); at *stdin*:3 called from
- [3] test( n + 1 ); at *stdin*:3 called from
- [4] test( n + 1 ); at *stdin*:3 called from
+ [1] Error( "!\n" );
+   @ *stdin*:4
+*[2] test( n + 1 );
+   @ *stdin*:4
+ [3] test( n + 1 );
+   @ *stdin*:4
+ [4] test( n + 1 );
+   @ *stdin*:4
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:5
 brk> DownEnv( 2 );
 brk> n;
 1
 brk> Where();
- [1] Error( "!\n" ); at *stdin*:3 called from
- [2] test( n + 1 ); at *stdin*:3 called from
- [3] test( n + 1 ); at *stdin*:3 called from
-*[4] test( n + 1 ); at *stdin*:3 called from
+ [1] Error( "!\n" );
+   @ *stdin*:4
+ [2] test( n + 1 );
+   @ *stdin*:4
+ [3] test( n + 1 );
+   @ *stdin*:4
+*[4] test( n + 1 );
+   @ *stdin*:4
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:8
 brk> DownEnv( -2 );
@@ -894,10 +907,13 @@ gap> fun := function() local x; x := 3; bar(); end;
 function(  ) ... end
 gap> fun();
 Error, !!
- called from
-bar(  ); called from
-<function>( <arguments> ) called from read-eval-loop
-Entering break read-eval-print loop ...
+Stack trace:
+*[1] Error( "!!\n" );
+   @ *stdin*:4
+ [2] bar(  );
+   @ *stdin*:7
+<function "fun">( <arguments> )
+ called from read-eval loop at *stdin*:8
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> x;
