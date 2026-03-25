@@ -915,41 +915,33 @@ to terminate the calculation, or enter <B>Return</B><C>;</C> to continue it.
 gap> dive:= function(depth) if depth>1 then dive(depth-1); fi; return; end;
 function( depth ) ... end
 gap> dive(100);
-gap> OnBreak:= function() Where(1); end; # shorter traceback
-function(  ) ... end
+gap> OnBreak:= function() Where(2); end;; # shorter traceback
 gap> dive(6000);
-recursion depth trap (5000)
- at
-dive( depth - 1 );
- called from
-dive( depth - 1 ); called from
-...
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you may 'return;' to continue
+Error, recursion depth trap (5000)
+*[1] dive( depth - 1 );
+   @ *stdin*:1
+ [2] dive( depth - 1 );
+   @ *stdin*:1
+...  at *stdin*:4
+you may 'return;'
 brk> return;
 gap> dive(11000);
-recursion depth trap (5000)
- at
-dive( depth - 1 );
- called from
-dive( depth - 1 ); called from
-...
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you may 'return;' to continue
+Error, recursion depth trap (5000)
+*[1] dive( depth - 1 );
+   @ *stdin*:1
+ [2] dive( depth - 1 );
+   @ *stdin*:1
+...  at *stdin*:5
+you may 'return;'
 brk> return;
-recursion depth trap (10000)
- at
-dive( depth - 1 );
- called from
-dive( depth - 1 ); called from
-...
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you may 'return;' to continue
-brk> return;
-gap>
+Error, recursion depth trap (10000)
+*[1] dive( depth - 1 );
+   @ *stdin*:1
+ [2] dive( depth - 1 );
+   @ *stdin*:1
+...  at *stdin*:5
+you may 'return;'
+brk> return;gap>
 ]]></Log>
 <P/>
 
@@ -979,39 +971,29 @@ gap> dive := function(depth)
 >  fi;
 > end;;
 gap> SetRecursionTrapInterval(1000);
+gap> OnBreak:= function() Where(2); end;; # shorter traceback
 gap> dive(100);
 Depth 100
 gap> dive(2500);
-recursion depth trap (1000)
- at
-dive( depth - 1 );
- called from
-dive( depth - 1 ); called from
-...
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you may 'return;' to continue
+Error, recursion depth trap (1000)
+*[1] dive( depth - 1 );
+   @ *stdin*:4
+ [2] dive( depth - 1 );
+   @ *stdin*:4
+...  at *stdin*:12
+you may 'return;'
 brk> return;
-recursion depth trap (2000)
- at
-dive( depth - 1 );
- called from
-dive( depth - 1 ); called from
-...
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you may 'return;' to continue
+Error, recursion depth trap (2000)
+*[1] dive( depth - 1 );
+   @ *stdin*:4
+ [2] dive( depth - 1 );
+   @ *stdin*:4
+...  at *stdin*:12
+you may 'return;'
 brk> GetRecursionDepth();
 0
 brk> return;
-gap> SetRecursionTrapInterval(-1);
-Error, SetRecursionTrapInterval: <interval> must be a small integer greater than 5 (n\
-ot the integer -1)
-not in any function
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you can replace <interval> via 'return <interval>;' to continue
-brk> return 0;
+gap> SetRecursionTrapInterval(2^50);
 gap> dive(20000);
 Depth 20000
 gap> dive(2000000);

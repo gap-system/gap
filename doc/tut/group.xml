@@ -927,11 +927,12 @@ gap> Size( Image( hom, DerivedSubgroup(s4) ) );
 <P/>
 <Log><![CDATA[
 gap> PreImage( hom, (1,2,3) );
-Error, <map> must be an inj. and surj. mapping called from
+Error, <map> must be an injective and surjective mapping
+*[1] ErrorNoReturn( "<map> must be an injective and surjective ", "mapping" );
+   @ GAPROOT/lib/mapping.gi:262
 <function "PreImage">( <arguments> )
- called from read-eval loop at line 4 of *stdin*
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+ called from read-eval loop at *stdin*:7
+type 'quit;' to quit to outer loop
 brk> quit;
 ]]></Log>
 <P/>
@@ -1258,4 +1259,3 @@ Chapter&nbsp;<Ref Chap="Group Homomorphisms" BookName="ref"/>.
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <!-- %% -->
 <!-- %E -->
-

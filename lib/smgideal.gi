@@ -281,14 +281,7 @@ BindGlobal( "IsBound_SemigroupIdealEnumerator", function( enum, n )
 ##  s := f/r;
 ##  Size(s);
 ##
-##  recursion depth trap (5000)
-##  at
-##  return Size( UnderlyingCollection( enum ) );
-##  Length( Enumerator( C ) ) called from
-##  Size( UnderlyingCollection( enum ) ) called from
-##  Length( Enumerator( C ) ) called from
-##  Size( UnderlyingCollection( enum ) ) called from
-##  Length( Enumerator( C ) ) called from
+##  would otherwise end up in an infinite recursion.
 ##
 
 #############################################################################
