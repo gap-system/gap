@@ -105,15 +105,27 @@ DeclareOperation(
 ##
 ##  <#GAPDoc Label="MultVector">
 ##  <ManSection>
-##  <Oper Name="MultVector" Arg='list1, mul'/>
-##  <Oper Name="MultVectorLeft" Arg='list1, mul'/>
+##  <Oper Name="MultVector" Arg='list, mul'/>
+##  <Oper Name="MultVectorLeft" Arg='list, mul'/>
+##  <Oper Name="MultVectorRight" Arg='list, mul'/>
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  This operation calculates <A>mul</A>*<A>list1</A> in-place.
+##  The operation <Ref Oper="MultVectorLeft"/> multiplies the entries of <A>list</A>
+##  by the scalar <A>mul</A> from the left, in-place.
+##  <P/>
+##  The operation <Ref Oper="MultVectorRight"/> multiplies the entries of <A>list</A>
+##  by the scalar <A>mul</A> from the right, in-place.
 ##  <P/>
 ##  Note that <C>MultVector</C> is just a synonym for
 ##  <C>MultVectorLeft</C>.
+##  <Example><![CDATA[
+##  gap> A:= FreeAssociativeAlgebraWithOne( Rationals, "a", "b", "c" );;
+##  gap> l:=[A.1,A.2];; MultVectorLeft(l, A.3); l;
+##  [ (1)*c*a, (1)*c*b ]
+##  gap> l:=[A.1,A.2];; MultVectorRight(l, A.3); l;
+##  [ (1)*a*c, (1)*b*c ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -122,7 +134,10 @@ DeclareOperation(
     "MultVectorLeft",
         [ IsMutable and IsList,
           IsObject ] );
-# For VectorObj objects there also exists a MultVectorRight operation
+DeclareOperation(
+    "MultVectorRight",
+        [ IsMutable and IsList,
+          IsObject ] );
 DeclareSynonym( "MultVector", MultVectorLeft );
 
 #############################################################################
