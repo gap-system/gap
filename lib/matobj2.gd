@@ -2064,8 +2064,8 @@ DeclareOperationKernel( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable
 ##  <Description>
 ##  Computes the calculation <M>M + c \cdot N</M> in-place, storing the result in <A>M</A>.
 ##  If the optional argument <A>c</A> is omitted, then <A>N</A> is added directly.
-##  If both of the matrices are lists-of-lists, then the program utilises <Ref Oper="AddRowVector"/>
-##  to perform the operation even faster.
+##  If both of the matrices are lists-of-lists, then the operation is delegated
+##  row by row to <Ref Oper="AddRowVector"/>.
 ##  <Example><![CDATA[
 ##  gap> mat1 := [ [ 1, 2 ], [ 3, 4 ] ];
 ##  [ [ 1, 2 ], [ 3, 4 ] ]
@@ -2099,12 +2099,12 @@ DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMa
 ##
 ##  <Description>
 ##  These functions multiply the entries of <A>mat</A> by <A>c</A> in-place.
-##  <Ref Oper="MultMatrixRight"/> performs the operation <M>mat \cdot c</M>,
-##  whereas <Ref Oper="MultMatrixLeft"/> performs the operation <M>c \cdot mat</M>
+##  <Ref Oper="MultMatrixRight"/> performs the operation <A>mat</A><C>*</C><A>c</A>,
+##  whereas <Ref Oper="MultMatrixLeft"/> performs the operation <A>c</A><C>*</C><A>mat</A>
 ##  and <Ref Oper="MultMatrix"/> is an alias for <Ref Oper="MultMatrixLeft"/>.
-##  In all of these, if the matrix <A>mat</A> is a lists-of-lists, then the program
-##  utilises the fast in-place operations <Ref Oper="MultVectorRight"/> and
-##  <Ref Oper="MultVectorLeft"/> to perform the operation even faster.
+##  In all of these, if the matrix <A>mat</A> is a lists-of-lists, then the
+##  operation is delegated row by row to <Ref Oper="MultVectorRight"/> and
+##  <Ref Oper="MultVectorLeft"/>.
 ##  <Example><![CDATA[
 ##  gap> mat1 := [ [ 1, 2 ], [ 3, 4 ] ];
 ##  [ [ 1, 2 ], [ 3, 4 ] ]

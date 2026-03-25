@@ -192,7 +192,7 @@ TestElementaryTransforms := function(mat, scalar)
 end;
 
 TestWholeMatrixTransforms := function(mat, scalar)
-    local i, j, src, copy, srccopy, basedomain, same_entries;
+    local i, j, src, srcbefore, copy, srccopy, basedomain, same_entries;
     Assert(0, NrRows(mat) >= 1);
     Assert(0, NrCols(mat) >= 1);
 
@@ -212,6 +212,7 @@ TestWholeMatrixTransforms := function(mat, scalar)
     elif Is8BitMatrixRep(mat) then
         ConvertToMatrixRep(src, basedomain);
     fi;
+    srcbefore := StructuralCopy(src);
     srccopy := StructuralCopy(src);
 
     # Compare entrywise because these tests mix plain list snapshots with
@@ -231,12 +232,12 @@ TestWholeMatrixTransforms := function(mat, scalar)
     AddMatrix(mat, src);
     AddMatrix(copy, srccopy);
     if not same_entries(mat, copy) then Error("AddMatrix(", scalar, ") failure"); fi;
-    if not same_entries(src, srccopy) then Error("AddMatrix source modified"); fi;
+    if not same_entries(src, srcbefore) then Error("AddMatrix source modified"); fi;
 
     AddMatrix(mat, src, scalar);
     AddMatrix(copy, srccopy, scalar);
     if not same_entries(mat, copy) then Error("AddMatrix(_,_,", scalar, ") failure"); fi;
-    if not same_entries(src, srccopy) then Error("AddMatrix(_,_,scalar) source modified"); fi;
+    if not same_entries(src, srcbefore) then Error("AddMatrix(_,_,scalar) source modified"); fi;
 
     MultMatrixLeft(mat, scalar);
     MultMatrixLeft(copy, scalar);
