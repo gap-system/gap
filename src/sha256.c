@@ -95,8 +95,8 @@ static void be32decode(UInt4 * dst, const UInt1 * src, UInt len)
 {
     UInt i;
     for (i = 0; i < (len >> 2); i++) {
-        dst[i] = (src[i * 4] << 24) | (src[i * 4 + 1] << 16) |
-                 (src[i * 4 + 2] << 8) | (src[i * 4 + 3]);
+        dst[i] = (((UInt4)src[i * 4]) << 24) | (((UInt4)src[i * 4 + 1]) << 16) |
+                 (((UInt4)src[i * 4 + 2]) << 8) | ((UInt4)src[i * 4 + 3]);
     }
 }
 
