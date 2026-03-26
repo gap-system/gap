@@ -1636,7 +1636,7 @@ end;
 SMTX.AbsoluteIrreducibilityTest:=function(module)
 local dim, ndim, gcd, div, e, ct, F, q, ok,
       M, v, M0, v0, C, C0, centmat, one, zero,
-      pow, matrices, newmatrices, looking,
+      pow, matrices, newmatrices,
       basisN, basisB, basisBN, P, Pinv, i, offset, nblocks;
 
    if not SMTX.IsMTXModule(module) then
@@ -1777,15 +1777,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
          centmat := ImmutableMatrix(F, centmat);
          Info(InfoMeatAxe,2,"Checking that it centralises the generators.");
          # Check centralizing.
-         looking:=true;
-         i:=1;
-         while looking and i <= Length(newmatrices) do
-            if newmatrices[i] * centmat <> centmat * newmatrices[i] then
-               looking:=false;
-            fi;
-            i:=i + 1;
-         od;
-         if looking then
+         if ForAll(newmatrices, x -> x * centmat = centmat * x) then
             Info(InfoMeatAxe,2,"It did!");
             SMTX.SetDegreeFieldExt(module, e);
             SMTX.SetCentMat(module, Pinv * centmat * P); # get the base right
@@ -1833,7 +1825,7 @@ end;
 ## over the larger field.
 SMTX.FieldGenCentMat:=function(module)
    local e, F, R, q, qe, minpol, pp,
-         centmat, newcentmat, genpol, looking,
+         centmat, newcentmat, genpol,
          okd;
 
   if SMTX.FGCentMat(module)=fail then
@@ -1870,20 +1862,17 @@ SMTX.FieldGenCentMat:=function(module)
 
     genpol:=Indeterminate(F);
 
-    looking:=true;
-    while looking do
+    while true do
       if genpol <> minpol then
-      okd:=FFPOrderKnownDividend(R, genpol, minpol, pp);
-      if okd[1] * Order(One(F)*okd[2]) = qe then
-          looking:=false;
+        okd:=FFPOrderKnownDividend(R, genpol, minpol, pp);
+        if okd[1] * Order(One(F)*okd[2]) = qe then
+          break;
+        fi;
       fi;
-      fi;
-      if looking then
-          repeat
-            genpol:=RandomPol(F, e,1);
-          until DegreeOfUnivariateLaurentPolynomial(genpol) > 0;
-          genpol:=StandardAssociate(R, genpol);
-      fi;
+      repeat
+        genpol:=RandomPol(F, e, 1);
+      until DegreeOfUnivariateLaurentPolynomial(genpol) > 0;
+      genpol:=StandardAssociate(R, genpol);
     od;
     # Finally recalculate centmat and its minimal polynomial.
     centmat:=SMTX.CentMat(module);
@@ -2375,7 +2364,7 @@ SMTX.Homomorphisms:= function(module1, module2)
    local F, mats1, mats2, dim1, dim2, m1bas, imbases,
          el, genpair, fac, mat, N, imlen, subdim, leadpos, vec, imvecs,
          numrels, rels, leadposrels, newrels, bno, genno, colno, rowno,
-         zero, looking, ans, i, j, k;
+         zero, ans, i, j, k;
 
    if not SMTX.IsMTXModule(module1) then
       return Error("First argument is not a module.");
@@ -2533,11 +2522,8 @@ SMTX.Homomorphisms:= function(module1, module2)
    Info(InfoMeatAxe,2,"Done. Reducing spun up basis.");
 
    for colno in [1..dim1] do
-      rowno:=colno;
-      looking:=true;
-      while rowno <= dim1 and looking do
+      for rowno in [colno..dim1] do
          if m1bas[rowno,colno] <> zero then
-            looking:=false;
             if rowno <> colno then
                # swap rows rowno and colno
                SwapMatrixRows(m1bas, rowno, colno);
@@ -2556,8 +2542,8 @@ SMTX.Homomorphisms:= function(module1, module2)
                   od;
                fi;
             od;
+            break;
          fi;
-         rowno:=rowno + 1;
       od;
    od;
 
