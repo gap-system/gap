@@ -231,8 +231,8 @@ TestWholeMatrixTransforms := function(mat, scalar)
 
     AddMatrix(mat, src);
     AddMatrix(copy, srccopy);
-    if not same_entries(mat, copy) then Error("AddMatrix(", scalar, ") failure"); fi;
-    if not same_entries(src, srcbefore) then Error("AddMatrix source modified"); fi;
+    if not same_entries(mat, copy) then Error("AddMatrix(_,_) failure"); fi;
+    if not same_entries(src, srcbefore) then Error("AddMatrix(_,_) source modified"); fi;
 
     AddMatrix(mat, src, scalar);
     AddMatrix(copy, srccopy, scalar);
