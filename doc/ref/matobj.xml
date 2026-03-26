@@ -221,6 +221,8 @@ All rows of a matrix must have the same length and the same base domain.
 <#Include Label="AddMatrixColumnsLeft">
 <#Include Label="SwapMatrixRows">
 <#Include Label="SwapMatrixColumns">
+<#Include Label="AddMatrix">
+<#Include Label="MultMatrix">
 
 </Section>
 
@@ -376,4 +378,3 @@ described in this chapter is supported.
 </Section>
 
 </Chapter>
-

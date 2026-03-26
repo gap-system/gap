@@ -6,34 +6,66 @@ gap> ReadGapRoot("tst/testinstall/MatrixObj/testmatobj.g");
 #
 gap> TestElementaryTransforms( [[2,4,5],[7,11,-4],[-3,20,0]], -1 );
 gap> TestElementaryTransforms( Matrix( [[2,4,5],[7,11,-4],[-3,20,0]]), -1 );
+gap> TestWholeMatrixTransforms( [[2,4,5],[7,11,-4],[-3,20,0]], -1 );
+gap> TestWholeMatrixTransforms( Matrix( [[2,4,5],[7,11,-4],[-3,20,0]]), -1 );
 
 #
 gap> F := GF(2);;
 gap> mat := RandomInvertibleMat(4, F);; # list of compressed vectors
 gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+gap> TestWholeMatrixTransforms( mat, PrimitiveRoot(F) );
 gap> ConvertToMatrixRep(mat);;  # proper matrix obj
 gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+gap> TestWholeMatrixTransforms( mat, PrimitiveRoot(F) );
 
 #
 gap> F := GF(3);;
 gap> mat := RandomInvertibleMat(4, F);; # list of compressed vectors
 gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+gap> TestWholeMatrixTransforms( mat, PrimitiveRoot(F) );
 gap> ConvertToMatrixRep(mat);;  # proper matrix obj
 gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+gap> TestWholeMatrixTransforms( mat, PrimitiveRoot(F) );
 
 #
 gap> F := GF(4);;
 gap> mat := RandomInvertibleMat(4, F);; # list of compressed vectors
 gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+gap> TestWholeMatrixTransforms( mat, PrimitiveRoot(F) );
 gap> ConvertToMatrixRep(mat);;  # proper matrix obj
 gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+gap> TestWholeMatrixTransforms( mat, PrimitiveRoot(F) );
 
 #
 gap> F := GF(5);;
 gap> mat := RandomInvertibleMat(4, F);; # list of compressed vectors
 gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+gap> TestWholeMatrixTransforms( mat, PrimitiveRoot(F) );
 gap> ConvertToMatrixRep(mat);;  # proper matrix obj
 gap> TestElementaryTransforms( mat, PrimitiveRoot(F) );
+gap> TestWholeMatrixTransforms( mat, PrimitiveRoot(F) );
+
+#
+gap> F := GF(3);;
+gap> mat := [ [ Z(3)^0, 0*Z(3), Z(3) ],
+>            [ Z(3), Z(3)^0, 0*Z(3) ],
+>            [ 0*Z(3), Z(3), Z(3)^0 ] ];;
+gap> ConvertToMatrixRep(mat, F);;
+gap> Is8BitMatrixRep(mat);
+true
+gap> TestWholeMatrixTransforms( mat, PrimitiveRoot(F) );
+gap> ConvertToMatrixRep(mat);;
+gap> Is8BitMatrixRep(mat);
+true
+gap> TestWholeMatrixTransforms( mat, PrimitiveRoot(F) );
+
+#
+gap> mat := NewMatrix(IsPlistMatrixRep, Integers, 3,
+>                     [ [ 2, 4, 5 ], [ 7, 11, -4 ], [ -3, 20, 0 ] ] );;
+gap> IsPlistMatrixRep(mat);
+true
+gap> TestElementaryTransforms( mat, -1 );
+gap> TestWholeMatrixTransforms( mat, -1 );
 
 ##########
 #
@@ -119,4 +151,28 @@ gap> mat := Matrix( [[2,4,5],[7,11,-4],[-3,20,0]]);;
 gap> AddMatrixColumnsLeft(mat,1,3,-3);
 gap> mat= Matrix( [ [-13,4,5], [19,11,-4], [-3,20,0]]);
 true
+
+#
+gap> mat := Matrix( [ [ 1, 2 ], [ 3, 4 ] ] );;
+gap> AddMatrix( mat, [ [ 1, 0 ], [ 3, -1 ] ], 2 );
+gap> mat = Matrix( [ [ 3, 2 ], [ 9, 2 ] ] );
+true
+gap> AddMatrix( mat, [ [ 1, 0 ], [ 3, -1 ] ] );
+gap> mat = Matrix( [ [ 4, 2 ], [ 12, 1 ] ] );
+true
+
+#
+gap> A := FreeAssociativeAlgebraWithOne(Rationals, 2);;
+gap> mat := [ [ A.1, A.2 ], [ A.1 * 2, A.2 * 3 ] ];;
+gap> MultMatrixLeft(mat, A.1);
+gap> mat;
+[ [ (1)*x.1^2, (1)*x.1*x.2 ], [ (2)*x.1^2, (3)*x.1*x.2 ] ]
+gap> mat := [ [ A.1, A.2 ], [ A.1 * 2, A.2 * 3 ] ];;
+gap> MultMatrixRight(mat, A.1);
+gap> mat;
+[ [ (1)*x.1^2, (1)*x.2*x.1 ], [ (2)*x.1^2, (3)*x.2*x.1 ] ]
+gap> mat := [ [ 1, 2 ], [ 3, 4 ] ];;
+gap> MultMatrix(mat, -2);
+gap> mat;
+[ [ -2, -4 ], [ -6, -8 ] ]
 gap> STOP_TEST("ElementaryMatrices.tst");
