@@ -505,7 +505,7 @@ Obj ObjInt_Int( Int i )
   }
   else if (i < 0 ) {
     gmp = NewBag( T_INTNEG, sizeof(mp_limb_t) );
-    i = -i;
+    i = (Int)(0U - (UInt)i);
   }
   else {
     gmp = NewBag( T_INTPOS, sizeof(mp_limb_t) );
@@ -620,7 +620,7 @@ Int Int_ObjInt(Obj i)
     if ((!sign && (val > INT32_MAX)) || (sign && (val > (UInt)INT32_MIN)))
 #endif
         ErrorMayQuit("Conversion error: integer too large", 0, 0);
-    return sign ? -(Int)val : (Int)val;
+    return (Int)(sign ? (0U - val) : val);
 }
 
 UInt UInt_ObjInt(Obj i)
