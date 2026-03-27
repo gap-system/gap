@@ -3517,9 +3517,8 @@ InstallMethod( CentralIdempotentsOfAlgebra,
             sp:= MutableBasis( F, vv );
             x:= ShallowCopy( e );
 
-            while not IsContainedInSpan( sp, x ) do
+            while CloseMutableBasis( sp, x ) do
               Add( vv, x );
-              CloseMutableBasis( sp, x );
               x:= x*e;
             od;
             sp:= UnderlyingLeftModule( ImmutableBasis( sp ) );
@@ -3567,9 +3566,8 @@ InstallMethod( CentralIdempotentsOfAlgebra,
         # We calculate the minimum polynomial of `e'.
 
           x:= ShallowCopy( e );
-          while not IsContainedInSpan( sp, x ) do
+          while CloseMutableBasis( sp, x ) do
             Add( vv, x );
-            CloseMutableBasis( sp, x );
             x:= x*e;
           od;
           sp:= UnderlyingLeftModule( ImmutableBasis( sp ) );
@@ -3775,9 +3773,8 @@ InstallMethod( LeviMalcevDecomposition,
     for k in BasisVectors( Basis( L ) ) do
       if Length( bb ) = s then
         break;
-      elif not IsContainedInSpan( sp, k ) then
+      elif CloseMutableBasis( sp, k ) then
         Add( bb, k );
-        CloseMutableBasis( sp, k );
       fi;
     od;
 
@@ -3814,9 +3811,8 @@ InstallMethod( LeviMalcevDecomposition,
         k:= 1;
       else
         x:= BasisVectors( Basis( ser[i] ) )[k];
-        if not IsContainedInSpan( sp, x ) then
+        if CloseMutableBasis( sp, x ) then
           Add( Rbas, x );
-          CloseMutableBasis( sp, x );
         fi;
         k:= k+1;
       fi;

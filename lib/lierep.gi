@@ -3915,7 +3915,7 @@ InstallGlobalFunction( ExtendRepresentation,
                V:= MutableBasis( F, bb );
            fi;
 
-           if IsContainedInSpan( V, vv ) then
+           if not CloseMutableBasis( V, vv ) then
 
     # We take the next element of 'orb'.
 
@@ -3928,7 +3928,6 @@ InstallGlobalFunction( ExtendRepresentation,
 
              c:= c1;
              Add( orb1, c );
-             CloseMutableBasis( V, vv );
 
            fi;
 
@@ -4129,13 +4128,12 @@ InstallGlobalFunction( ExtendRepresentation,
 
         for j in [ Last(w)..Length( mats )] do
             m:= asbas[i]*mats[j];
-            if not IsContainedInSpan( sp, m ) then
+            if CloseMutableBasis( sp, m ) then
                 ready:= false;
                 Add( asbas, m );
                 w1:= ShallowCopy(w);
                 Add( w1, j );
                 Add( wds, w1 );
-                CloseMutableBasis( sp, m );
             fi;
         od;
 
@@ -4151,10 +4149,9 @@ InstallGlobalFunction( ExtendRepresentation,
 
           cf:= List( asbas, m -> m[j][i] );
 
-        if not IsContainedInSpan( sp, cf ) then
+        if CloseMutableBasis( sp, cf ) then
           Add( fcts, cf );
           Add( cc, [i,j] );
-          CloseMutableBasis( sp, cf );
         fi;
       od;
     od;

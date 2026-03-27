@@ -950,9 +950,7 @@ BindGlobal( "SimpleLieAlgebraTypeH", function( n, F )
       od;
       if not IsZero(cf) then
         if IsBound( sp ) then
-          if not IsContainedInSpan( sp, cf ) then
-            CloseMutableBasis( sp, cf );
-          fi;
+          CloseMutableBasis( sp, cf );
         else
           sp:= MutableBasis( F, [ cf ] );
         fi;

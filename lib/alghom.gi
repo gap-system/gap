@@ -364,10 +364,9 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
           gen:= origgenerators[i];
           for j in [ 1 .. Length( generators ) ] do
             prod:= generators[j] * gen;
-            if not IsContainedInSpan( MB, prod ) then
+            if CloseMutableBasis( MB, prod ) then
               Add( generators, prod );
               Add( genimages, genimages[j] * origgenimages[i] );
-              CloseMutableBasis( MB, prod );
             fi;
           od;
         od;
@@ -379,10 +378,9 @@ InstallMethod( AsLeftModuleGeneralMappingByImages,
             gen:= origgenerators[i];
             for j in [ 1 .. Length( generators ) ] do
               prod:= gen * generators[j];
-              if not IsContainedInSpan( MB, prod ) then
+              if CloseMutableBasis( MB, prod ) then
                 Add( generators, prod );
                 Add( genimages, origgenimages[i] * genimages[j] );
-                CloseMutableBasis( MB, prod );
               fi;
             od;
           od;
@@ -884,10 +882,9 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
         gen:= origgenimages[i];
         for j in [ 1 .. Length( genimages ) ] do
           prod:= genimages[j] * gen;
-          if not IsContainedInSpan( MB, prod ) then
+          if CloseMutableBasis( MB, prod ) then
             Add( genimages, prod );
             Add( preimages, preimages[j] * origgenerators[i] );
-            CloseMutableBasis( MB, prod );
           fi;
         od;
       od;
@@ -1059,10 +1056,9 @@ InstallMethod( MakePreImagesInfoOperationAlgebraHomomorphism,
         gen:= origgenimages[i];
         for j in [ 1 .. Length( genimages ) ] do
           prod:= genimages[j] * gen;
-          if not IsContainedInSpan( MB, prod ) then
+          if CloseMutableBasis( MB, prod ) then
             Add( genimages, prod );
             Add( preimages, preimages[j] * origgenerators[i] );
-            CloseMutableBasis( MB, prod );
           fi;
         od;
       od;
@@ -1435,9 +1431,8 @@ InstallMethod( NaturalHomomorphismByIdeal,
     mb:= MutableBasis( F, Ivectors );
     compl:= [];
     for gen in BasisVectors( Basis( A ) ) do
-      if not IsContainedInSpan( mb, gen ) then
+      if CloseMutableBasis( mb, gen ) then
         Add( compl, gen );
-        CloseMutableBasis( mb, gen );
       fi;
     od;
     B:= BasisNC( A, Concatenation( Ivectors, compl ) );
@@ -1671,10 +1666,9 @@ InstallMethod( IsomorphismFpFLMLOR,
         gen:= Agens[i];
         for j in [ 1 .. Length( generators ) ] do
           prod:= generators[j] * gen;
-          if not IsContainedInSpan( MB, prod ) then
+          if CloseMutableBasis( MB, prod ) then
             Add( generators, prod );
             Add( genimages, genimages[j] * Fgens[i] );
-            CloseMutableBasis( MB, prod );
           fi;
         od;
       od;
@@ -1686,10 +1680,9 @@ InstallMethod( IsomorphismFpFLMLOR,
           gen:= Agens[i];
           for j in [ 1 .. Length( generators ) ] do
             prod:= gen * generators[j];
-            if not IsContainedInSpan( MB, prod ) then
+            if CloseMutableBasis( MB, prod ) then
               Add( generators, prod );
               Add( genimages, Fgens[i] * genimages[j] );
-              CloseMutableBasis( MB, prod );
             fi;
           od;
         od;

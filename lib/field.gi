@@ -911,12 +911,11 @@ InstallMethod( MinimalPolynomial,
       coe:= Coefficients( B, pow );
       mat:= [ coe ];
       MB:= MutableBasis( F, [ coe ] );
-      repeat
-        CloseMutableBasis( MB, coe );
+      while CloseMutableBasis( MB, coe ) do
         pow:= pow * z;
         coe:= Coefficients( B, pow );
         Add( mat, coe );
-      until IsContainedInSpan( MB, coe );
+      od;
 
       # The coefficients of the minimal polynomial
       # are given by the linear relation.

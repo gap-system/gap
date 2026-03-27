@@ -1333,9 +1333,8 @@ InstallGlobalFunction( NaturalHomomorphismBySubspaceOntoFullRowSpace,
     fi;
     compl:= [];
     for gen in BasisVectors( Basis( V ) ) do
-      if not IsContainedInSpan( mb, gen ) then
+      if CloseMutableBasis( mb, gen ) then
         Add( compl, gen );
-        CloseMutableBasis( mb, gen );
       fi;
     od;
     B:= BasisNC( V, Concatenation( Wvectors, compl ) );
