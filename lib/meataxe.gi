@@ -3064,21 +3064,25 @@ end;
 
 SMTX.BasisSocle:=function(module)
 local cf, mat, i;
-   cf:=SMTX.CollectedFactors(module);
-   mat:=Concatenation(List(cf,i->SMTX.SpanOfMinimalSubGModules(i[1],module)));
-   if Length(cf) = 1 then
-     return ImmutableMatrix(module.field,mat);
+   if not IsBound(module.Socle) then
+     cf:=SMTX.CollectedFactors(module);
+     mat:=Concatenation(List(cf,i->SMTX.SpanOfMinimalSubGModules(i[1],module)));
+     if Length(cf) > 1 then
+       TriangulizeMat(mat);
+     fi;
+     module.Socle := ImmutableMatrix(module.field,mat);
    fi;
-   TriangulizeMat(mat);
-   mat:=ImmutableMatrix(module.field,mat);
-   return mat;
+   return module.Socle;
 end;
 
 SMTX.BasisRadical:=function(module)
 local d, bs;
-   d:=SMTX.DualModule(module);
-   bs:=SMTX.BasisSocle(d);
-   return SMTX.DualizedBasis(d,bs);
+   if not IsBound(module.Radical) then
+     d:=SMTX.DualModule(module);
+     bs:=SMTX.BasisSocle(d);
+     module.Radical := SMTX.DualizedBasis(d,bs);
+   fi;
+   return module.Radical;
 end;
 
 # the following assignment is for profiling
