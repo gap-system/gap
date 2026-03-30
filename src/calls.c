@@ -1081,11 +1081,20 @@ void PrintKernelFunction(Obj func)
     Obj body = BODY_FUNC(func);
     Obj filename = body ? GET_FILENAME_BODY(body) : 0;
     if (filename) {
+        // A "location" is a string attached exclusively to GAP kernel
+        // functions; it is derived from the function's "cookie" which has the
+        // form "FILENAME:FUNCNAME" where `FUNCNAME` is the name of the
+        // underlying C function. Or at least more or less: in the GAP kernel,
+        // generally the *real* C function name will be `FuncFUNCNAME`. This
+        // may be rectified in the future.
         if ( GET_LOCATION_BODY(body) ) {
             Pr("<<kernel code>> from %g:%g",
                 (Int)filename,
                 (Int)GET_LOCATION_BODY(body));
         }
+        // When compiling GAP code into C code, the gap compiler ("gac") attaches
+        // the filename and line number of the GAP code from which the C code was
+        // produced; that's the case we are running into here.
         else if ( GET_STARTLINE_BODY(body) ) {
             Pr("<<compiled GAP code>> from %g:%d",
                 (Int)filename,
@@ -1093,6 +1102,18 @@ void PrintKernelFunction(Obj func)
         }
     }
     else {
+        // Some kernel code produces custom kernel functions (via direct calls
+        // to NewFunction or one of its relatives), and quite commonly does not
+        // bother setting a filename, location, or startline. In many cases
+        // this may be irrelevant as the user cannot see the result; e.g. for
+        // filters we have custom print/view methods, etc. But one rare exception
+        // are the bitfield helper:
+        //     gap> Display(MakeBitfields(1).getters[1]);
+        //     function ( data )
+        //         <<kernel or compiled code>>
+        //     end
+        // TODO: add proper location info there, too, and audit all other uses
+        // of NewFunction* for this problem
         Pr("<<kernel or compiled code>>", 0, 0);
     }
 }

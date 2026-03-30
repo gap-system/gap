@@ -463,7 +463,7 @@ end );
 #M  <vec1> = <vec2>
 ##
 
-InstallMethod( \=, "for 2 8 bit vectors",
+InstallMethod( \=, "for two 8 bit vectors",
         IsIdenticalObj, [IsRowVector and Is8BitVectorRep,
                 IsRowVector and Is8BitVectorRep],
         0,
@@ -476,7 +476,7 @@ InstallMethod( \=, "for 2 8 bit vectors",
 ##  Usual lexicographic ordering
 ##
 
-InstallMethod( \<, "for 2 8 bit vectors",
+InstallMethod( \<, "for two 8 bit vectors",
         IsIdenticalObj, [IsRowVector and Is8BitVectorRep,
                 IsRowVector and Is8BitVectorRep],
         0,
@@ -488,7 +488,7 @@ InstallMethod( \<, "for 2 8 bit vectors",
 ##
 ##  scalar product
 #'
-InstallMethod( \*, "for 2 8 bit vectors",
+InstallMethod( \*, "for two 8 bit vectors",
         IsIdenticalObj, [IsRingElementList and Is8BitVectorRep,
                 IsRingElementList and Is8BitVectorRep],
         0,
@@ -525,7 +525,7 @@ end);
 ##  add <mult>*<vec2> to <vec1> in place
 ##
 
-InstallOtherMethod( AddRowVector, "for 2 8 bit vectors and a field element and from and to",
+InstallOtherMethod( AddRowVector, "for two 8 bit vectors and a field element and from and to",
         IsCollsCollsElmsXX, [ IsRowVector and Is8BitVectorRep,
                 IsRowVector and Is8BitVectorRep,
                 IsFFE and IsInternalRep, IsPosInt, IsPosInt ], 0,
@@ -538,7 +538,7 @@ InstallOtherMethod( AddRowVector, "for 2 8 bit vectors and a field element and f
 ##  add <mult>*<vec2> to <vec1> in place
 ##
 
-InstallOtherMethod( AddRowVector, "for 2 8 bit vectors and a field element",
+InstallOtherMethod( AddRowVector, "for two 8 bit vectors and a field element",
         IsCollsCollsElms, [ IsRowVector and Is8BitVectorRep,
                 IsRowVector and Is8BitVectorRep,
                 IsFFE and IsInternalRep ], 0,
@@ -551,7 +551,7 @@ InstallOtherMethod( AddRowVector, "for 2 8 bit vectors and a field element",
 ##  add <vec2> to <vec1> in place
 ##
 
-InstallOtherMethod( AddRowVector, "for 2 8 bit vectors",
+InstallOtherMethod( AddRowVector, "for two 8 bit vectors",
         IsIdenticalObj, [ IsRowVector and Is8BitVectorRep,
                 IsRowVector and Is8BitVectorRep], 0,
         ADD_ROWVECTOR_VEC8BITS_2);

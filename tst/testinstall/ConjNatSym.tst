@@ -5,6 +5,17 @@ true
 gap> IsConjugate( SymmetricGroup(5), Group((1,2)), Group((3,4,5)));
 false
 
+# Subgroups with different known orders in a non-natural symmetric group
+# (exercises the RepresentativeActionOp shortcut, not the natural sym method)
+gap> G:= SymmetricGroup( 1000 );;
+gap> H:= Subgroup( G, [ G.1 ] );; Size( H );
+1000
+gap> K:= Subgroup( G, [ G.2 ] );;  Size( K );
+2
+gap> G:= Group( GeneratorsOfGroup( G ) );;
+gap> IsConjugate( G, H, K );
+false
+
 # This runs into the TryNextMethod case
 gap> IsConjugate( SymmetricGroup(200),SymmetricGroup(200), AlternatingGroup(200));
 false

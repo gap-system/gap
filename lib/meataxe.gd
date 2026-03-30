@@ -64,6 +64,17 @@ DeclareGlobalFunction("TensorProductGModule");
 
 ###############################################################################
 ##
+#F  DirectSumGModule ( m1, m2 )  . . direct sum of two G-modules
+##
+## DirectSumGModule calculates the direct sum of smash
+## modules m1 and m2.
+## They are assumed to be modules over the same algebra so, in particular,
+## they should have the same number of generators.
+##
+DeclareGlobalFunction("DirectSumGModule");
+
+###############################################################################
+##
 #F  WedgeGModule ( module ) . . . . . wedge product of a G-module
 ##
 ## WedgeGModule calculates the wedge product of a G-module.
@@ -107,4 +118,3 @@ SMTX.Getter := function(string)
     fi;
   end;
 end;
-

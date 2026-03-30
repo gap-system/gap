@@ -2480,6 +2480,126 @@ DeclareGlobalFunction( "Elements" );
 
 #############################################################################
 ##
+#O  FoldLeft( <C>, <func>[, <init>] )
+##
+##  <#GAPDoc Label="FoldLeft">
+##  <ManSection>
+##  <Oper Name="FoldLeft" Arg='C, func[, init]'/>
+##
+##  <Description>
+##  <Ref Oper="FoldLeft"/> applies the binary function <A>func</A>
+##  left-associatively to the elements of the list or collection <A>C</A>.
+##  <P/>
+##  If no initial accumulator <A>init</A> is given, the first element of
+##  <A>C</A> is used as the initial accumulator and the remaining elements
+##  are combined with it from left to right. In that case <A>C</A> must not
+##  be empty.
+##  <P/>
+##  If <A>init</A> is given, the accumulator is initialized with
+##  <A>init</A>. Then an empty list or collection is allowed, and
+##  <A>init</A> is returned unchanged in that case.
+##  <P/>
+##  If <A>C</A> is a list with holes, these holes are ignored, just as when
+##  iterating over the list with a <C>for</C>-loop.
+##  <P/>
+##  This operation can be used to express reductions similar to
+##  <Ref Func="Sum"/> or <Ref Func="Product"/>, but it is more general
+##  because the accumulator is updated by an arbitrary binary function.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> FoldLeft( [ 1 .. 10 ], \+ );
+##  55
+##  gap> FoldLeft( [ 1 .. 4 ], \*, 2 );
+##  48
+##  gap> FoldLeft( [ 1,, 3 ], { a, b } -> a + b );
+##  4
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "FoldLeft", [ IsListOrCollection, IsFunction ] );
+DeclareOperation( "FoldLeft", [ IsListOrCollection, IsFunction, IsObject ] );
+
+
+#############################################################################
+##
+#O  FoldLeftX( <gens>, <func>, <init>[, <abortValue>] )
+##
+##  <#GAPDoc Label="FoldLeftX">
+##  <ManSection>
+##  <Func Name="FoldLeftX" Arg='gens, func, init[, abortValue]'/>
+##
+##  <Description>
+##  <Ref Func="FoldLeftX"/> is a generalization of <Ref Oper="FoldLeft"/>
+##  which applies an accumulation function <A>func</A> to a bunch of
+##  inputs which are derived from <A>gens</A>.
+##  <P/>
+##  The argument <A>gens</A> must be a plain list whose entries describe a
+##  sequence of nested loops and filters. Specifically, let <C>n</C> denote
+##  the length of <A>gens</A>. Then each of the entries
+##  <A>gens</A><C>[1]</C>, <M>\ldots</M> <A>gens</A><C>[n]</C>
+##  must be one of the following:
+##  <List>
+##  <Mark>a list or collection</Mark>
+##  <Item>
+##      this introduces a new for-loop in the sequence of nested
+##      for-loops and if-statements;
+##  </Item>
+##  <Mark>a function returning a list or collection</Mark>
+##  <Item>
+##      this introduces a new for-loop in the sequence of nested
+##      for-loops and if-statements, where the loop-range depends on
+##      the values of the outer loop-variables; or
+##  </Item>
+##  <Mark>a function returning <K>true</K> or <K>false</K></Mark>
+##  <Item>
+##      this introduces a new if-statement in the sequence of nested
+##      for-loops and if-statements.
+##  </Item>
+##  </List>
+##  <P/>
+##  Each function occurring in <A>gens</A> is called with the values selected
+##  by the preceding entries of <A>gens</A>, in order.
+##  Thus the function in <A>gens</A><C>[k]</C> receives one argument for each
+##  of <A>gens</A><C>[1]</C>, <M>\ldots</M>, <A>gens</A><C>[k-1]</C> that
+##  introduced a loop variable.
+##  <P/>
+##  The argument <A>func</A> must be a binary function, whose first
+##  argument is an accumulator variable, and the second argument is
+##  the tuple of values of the loop-variables.
+##  <P/>
+##  The accumulator is initialized with <A>init</A>. For every tuple that is
+##  produced by the loops and filters described by <A>gens</A>,
+##  <A>func</A> is called with the current accumulator and that tuple.
+##  Its return value becomes the new accumulator.
+##  <P/>
+##  If the optional argument <A>abortValue</A> is given, iteration stops as
+##  soon as the accumulator becomes identical to <A>abortValue</A>.
+##  This is useful for short-circuiting computations such as
+##  <Ref Func="ForAllX"/> and <Ref Func="ForAnyX"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> FoldLeftX( [ [ 1 .. 3 ], i -> [ 1 .. i ],
+##  >                { i, j } -> i <> j ],
+##  >              { acc, x } -> acc + 1, 0 );
+##  3
+##  gap> FoldLeftX( [ [ 1 .. 3 ], [ 1 .. 3 ], \< ],
+##  >              function( acc, x )
+##  >                Add( acc, ShallowCopy( x ) );
+##  >                return acc;
+##  >              end, [] );
+##  [ [ 1, 2 ], [ 1, 3 ], [ 2, 3 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "FoldLeftX" );
+
+
+#############################################################################
+##
 #F  Sum( <list>[, <init>] ) . . . . . . . . . . sum of the elements of a list
 #F  Sum( <C>[, <init>] )  . . . . . . . . sum of the elements of a collection
 #F  Sum( <list>, <func>[, <init>] ) . . . . .  sum of images under a function
@@ -2803,6 +2923,8 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##
 ##  <Description>
 ##  <Ref Func="ListX"/> returns a new list constructed from the arguments.
+##  The general mechanism underlying this and the related <Q>X</Q>-functions
+##  is described in <Ref Func="FoldLeftX"/>.
 ##  <P/>
 ##  Each of the arguments <A>arg1</A>, <A>arg2</A>, <M>\ldots</M> <A>argn</A>
 ##  must be one of the following:
@@ -2824,6 +2946,11 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##      for-loops and if-statements.
 ##  </Item>
 ##  </List>
+##  <P/>
+##  Each function occurring among the arguments is called with the values
+##  selected by the preceding arguments, in order.
+##  Thus the function in the <A>k</A>-th argument position receives one
+##  argument for each preceding argument that introduced a loop variable.
 ##  <P/>
 ##  The last argument <A>func</A> must be a function,
 ##  it is applied to the values of the loop-variables
@@ -2864,7 +2991,7 @@ DeclareOperation( "ForAnyOp", [ IsListOrCollection, IsFunction ] );
 ##  <Example><![CDATA[
 ##  gap> l:= [ 1, 2, 3, 4 ];;
 ##  gap> pair:= function( x, y ) return [ x, y ]; end;;
-##  gap> ListX( l, l, pair );
+##  gap> ListX( l, l, {x,y} -> [x,y] );
 ##  [ [ 1, 1 ], [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 1 ], [ 2, 2 ],
 ##    [ 2, 3 ], [ 2, 4 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], [ 3, 4 ],
 ##    [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ]
@@ -2895,6 +3022,11 @@ DeclareGlobalFunction( "ListX" );
 ##  <Description>
 ##  The only difference between <Ref Func="SetX"/> and <Ref Func="ListX"/>
 ##  is that the result list of <Ref Func="SetX"/> is strictly sorted.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> SetX( [ 1 .. 3 ], [ 1 .. 3 ], \+ );
+##  [ 2, 3, 4, 5, 6 ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2913,6 +3045,11 @@ DeclareGlobalFunction( "SetX" );
 ##  <Description>
 ##  <Ref Func="SumX"/> returns the sum of the elements in the list obtained
 ##  by <Ref Func="ListX"/> when this is called with the same arguments.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> SumX( [ 1 .. 3 ], [ 1 .. 3 ], \+ );
+##  36
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2932,11 +3069,155 @@ DeclareGlobalFunction( "SumX" );
 ##  <Ref Func="ProductX"/> returns the product of the elements in the list
 ##  obtained by <Ref Func="ListX"/> when this is called with the same
 ##  arguments.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ProductX( [ 1 .. 3 ], [ 1 .. 3 ], \+ );
+##  172800
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "ProductX" );
+
+
+#############################################################################
+##
+#O  ForAllX( <arg1>, <arg2>, ... <func> )
+##
+##  <#GAPDoc Label="ForAllX">
+##  <ManSection>
+##  <Func Name="ForAllX" Arg='arg1, arg2, ... func'/>
+##
+##  <Description>
+##  <Ref Func="ForAllX"/> returns <K>true</K> if all elements are
+##  <K>true</K> in the list obtained by calling <Ref Func="ListX"/> with the
+##  same arguments. Otherwise <K>false</K> is returned.
+##  As with <Ref Func="ForAll"/>, the last argument must return either
+##  <K>true</K> or <K>false</K>, and evaluation stops as soon as the result
+##  is known.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ForAllX( [ 1 .. 3 ], [ 1 .. 3 ], \< );
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "ForAllX" );
+
+
+#############################################################################
+##
+#O  ForAnyX( <arg1>, <arg2>, ... <func> )
+##
+##  <#GAPDoc Label="ForAnyX">
+##  <ManSection>
+##  <Func Name="ForAnyX" Arg='arg1, arg2, ... func'/>
+##
+##  <Description>
+##  <Ref Func="ForAnyX"/> returns <K>true</K> if any element is
+##  <K>true</K> in the list obtained by calling <Ref Func="ListX"/> with the
+##  same arguments. Otherwise <K>false</K> is returned.
+##  As with <Ref Func="ForAny"/>, the last argument must return either
+##  <K>true</K> or <K>false</K>, and evaluation stops as soon as the result
+##  is known.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> ForAnyX( [ 1 .. 3 ], [ 1 .. 3 ], \< );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "ForAnyX" );
+
+
+#############################################################################
+##
+#O  FilteredX( <arg1>, <arg2>, ... <func> )
+##
+##  <#GAPDoc Label="FilteredX">
+##  <ManSection>
+##  <Func Name="FilteredX" Arg='arg1, arg2, ... func'/>
+##
+##  <Description>
+##  <Ref Func="FilteredX"/> returns the tuples of loop-variable values for
+##  which the last argument returns <K>true</K>.
+##  In other words, it keeps precisely those tuples that would pass the
+##  filters when calling <Ref Func="ListX"/> with the same arguments.
+##  <P/>
+##  Even with only one generator, the result consists of singleton tuples.
+##  Thus <C>FilteredX( [ 1 .. 4 ], IsEvenInt )</C> returns
+##  <C>[ [ 2 ], [ 4 ] ]</C>, not <C>[ 2, 4 ]</C>.
+##  Use <Ref Func="Filtered"/> if you want to filter the elements of a single
+##  list or collection directly.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> FilteredX( [ 1 .. 4 ], IsEvenInt );
+##  [ [ 2 ], [ 4 ] ]
+##  gap> FilteredX( [ 1 .. 4 ], [ 1 .. 4 ], \< );
+##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 2, 4 ], [ 3, 4 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "FilteredX" );
+
+
+#############################################################################
+##
+#O  NumberX( <arg1>, <arg2>, ... <func> )
+##
+##  <#GAPDoc Label="NumberX">
+##  <ManSection>
+##  <Func Name="NumberX" Arg='arg1, arg2, ... func'/>
+##
+##  <Description>
+##  <Ref Func="NumberX"/> returns the number of tuples selected by the last
+##  argument, using the same arguments as <Ref Func="ListX"/>.
+##  Equivalently, it counts the entries of the result that
+##  <Ref Func="FilteredX"/> would return with the same arguments.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> NumberX( [ 1 .. 4 ], IsEvenInt );
+##  2
+##  gap> NumberX( [ 1 .. 4 ], [ 1 .. 4 ], \< );
+##  6
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "NumberX" );
+
+
+#############################################################################
+##
+#O  PerformX( <arg1>, <arg2>, ... <func> )
+##
+##  <#GAPDoc Label="PerformX">
+##  <ManSection>
+##  <Func Name="PerformX" Arg='arg1, arg2, ... func'/>
+##
+##  <Description>
+##  <Ref Func="PerformX"/> works like <Ref Func="ListX"/> except that it
+##  returns nothing and ignores the return values of <A>func</A>.
+##  It is useful for iterating through the tuples described by the arguments
+##  purely for their side effects.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> PerformX( [ 1 .. 2 ], [ 3 .. 4 ], Print );  Print( "\n" );
+##  13142324
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction( "PerformX" );
 
 
 #############################################################################

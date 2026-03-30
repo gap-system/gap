@@ -290,7 +290,7 @@ local b;
     b:=List(b,i->i{d.invpermlist}); # permuted back
     r.niceBasis:=Immutable(b);
   fi;
-  Assert(1,Length(r.niceBasis)=Length(r.base));
+  Assert(1,Length(r.niceBasis)=Length(r.base), "in DxNiceBasis");
   return r.niceBasis;
 end );
 
@@ -657,7 +657,7 @@ BindGlobal( "DxEigenbase", function(M)
 
   minpol:=MinimalPolynomial(BaseDomain(M),M);
 
-  Assert(2,IsDuplicateFree(RootsOfUPol(minpol)));
+  Assert(2,IsDuplicateFree(RootsOfUPol(minpol)), "in DxEigenbase, 1");
   eigenvalues:=Set(RootsOfUPol(minpol));
   dim:=0;
   bases:=[];
@@ -674,7 +674,8 @@ BindGlobal( "DxEigenbase", function(M)
     Error("Failed to calculate eigenspaces.");
   fi;
 
-  Assert(3, ForAll([1..Length(bases)],j->bases[j]*M = bases[j]*eigenvalues[j]));
+  Assert(3, ForAll([1..Length(bases)],j->bases[j]*M = bases[j]*eigenvalues[j]),
+         "in DxEigenbase, 2");
   return rec(base:=bases,
              values:=eigenvalues);
 end );
@@ -791,7 +792,7 @@ InstallGlobalFunction(SplitStep,function(D,bestMat)
       base:=Matrix(BaseDomain(base[1]),base);
       eigenbase:=List(eigen.base,i->List(i,j->j*base));
 
-      Assert(1,Length(eigenbase)>1);
+      Assert(1,Length(eigenbase)>1, "in SplitStep");
 
       ra:=List(eigenbase,i->rec(base:=i,dim:=Length(i)));
 
@@ -2286,7 +2287,7 @@ local k,C,D,dsp;
   od;
 
   C:=DixontinI(D);
-  Assert(1,Length(C)=D.klanz);
+  Assert(1,Length(C)=D.klanz, "in IrrDixonSchneider");
   # SetIrr(OrdinaryCharacterTable(G),C);
   # (if `IrrDixonSchneider' is called explicitly,
   # we want to ignore the attribute)
@@ -2326,6 +2327,19 @@ InstallMethod( Irr,
     return irr;
     end );
 
+InstallMethod( Irr,
+    "for a group with known `IrrDixonSchneider'",
+    [ IsGroup and HasIrrDixonSchneider, IsZeroCyc ],
+    function( G, zero )
+    local irr, tbl;
+    irr:= IrrDixonSchneider( G );
+    tbl:= OrdinaryCharacterTable( G );
+    SetIrr( tbl, irr );
+    ComputeAllPowerMaps( tbl );
+    SetInfoText( tbl, "origin: Dixon's Algorithm" );
+    return irr;
+    end );
+
 
 #############################################################################
 ##
@@ -2360,7 +2374,8 @@ InstallMethod( Irr,
         fi;
       od;
     od;
-    Assert( 1, IsCollection( bijection ) and IsEmpty( cclnice ) );
+    Assert( 1, IsCollection( bijection ) and IsEmpty( cclnice ),
+            "in Irr via niceomorphism" );
 
     # Compute the values of the irreducibles of the nice object.
     irr:= List( Irr( nice ), ValuesOfClassFunction );
@@ -2374,6 +2389,7 @@ InstallMethod( Irr,
     od;
     irr:= List( irr, x -> Character( tbl, x ) );
     SetIrr( tbl, irr );
+    SetInfoText( tbl, "origin: via the nice monomorphism of the group" );
     return irr;
 end );
 

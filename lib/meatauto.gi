@@ -632,10 +632,8 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
   nv:=V.dimension;
   nw:=W.dimension;
 
+  TestModulesFitTogether(V,W);
   F:=V.field;
-  if F<>W.field then
-    Error("different fields");
-  fi;
   zero:=Zero(F);
 
   zeroW:=ListWithIdenticalEntries(nw,zero);
@@ -647,9 +645,6 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
 
   # <k> is the number of generators of the acting group
   k:=Length(gV);
-  if k<>Length(gW) then
-    Error("generator lengths");
-  fi;
 
   # <U> is the semi-ech basis for the currently known submodule, of
   # dimension <r>
@@ -1320,6 +1315,10 @@ local n, hc1, hc2, nc, b1, b2, map, remain, j, found, hom, i, k;
     Length(SMTX.BasisEndomorphismsRadical(M2)) ) then
     # different endomorphism algebra dimensions
     return fail;
+  elif MTX.IsIrreducible(M1) and MTX.IsIrreducible(M2) then
+    return MTX.IsomorphismIrred(M1, M2);
+  elif MTX.IsIrreducible(M1) <> MTX.IsIrreducible(M2) then
+    return fail;
   fi;
 
   hc1:=SMTX.HomogeneousComponents(M1);
@@ -1637,7 +1636,9 @@ end;
 SMTX.BasisModuleHomomorphisms:=function(m1,m2)
 local b;
   TestModulesFitTogether(m1,m2);
-  if m1.dimension>5 then
+  if MTX.IsIrreducible(m1) then
+    b:=MTX.Homomorphisms(m1,m2);
+  elif m1.dimension>5 then
     b:= SpinHom(m1,m2);
     Assert(1,Length(b)=Length(SmalldimHomomorphismsModules(m1,m2)));
   else
