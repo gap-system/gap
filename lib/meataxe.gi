@@ -2973,13 +2973,16 @@ local cf;
 end;
 
 SMTX.DualModule:=function(module)
+local gens;
   if SMTX.IsZeroGens(module) then
-    return GModuleByMats([],module.dimension,SMTX.Field(module));
-  else
-    return GModuleByMats(List(SMTX.Generators(module),i->TransposedMat(i)^-1),
-                        module.dimension,
-                        SMTX.Field(module));
+    return module;
   fi;
+  if not IsBound(module.Dual) then
+    gens := List(SMTX.Generators(module),i->TransposedMat(i)^-1);
+    module.Dual := GModuleByMats(gens, module.dimension, SMTX.Field(module));
+    module.Dual.Dual := module;
+  fi;
+  return module.Dual;
 end;
 
 ###############################################################################
