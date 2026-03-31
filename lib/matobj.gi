@@ -2040,7 +2040,7 @@ InstallMethod( MultMatrixRight, "for a mutable IsRowListMatrix and a scalar",
   function( mat, scalar )
     local i;
     for i in [1..NrRows(mat)] do
-      MultMatrixRight(mat[i], scalar);
+      MultVectorRight(mat[i], scalar);
     od;
   end );
 
