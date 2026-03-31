@@ -554,7 +554,7 @@ end);
 # If a linearly dependent set of elements is supplied, this
 # routine will trim it down to a basis.
 BindGlobal("SMTX_EcheloniseMats",function (gens, F)
-local n, m, zero, ech, k, i, j, l;
+local n, m, zero, ech, k, i, j, l, entry;
 
   if Length(gens) = 0 then
     return [ [], [] ];
@@ -583,8 +583,9 @@ local n, m, zero, ech, k, i, j, l;
       Add(ech, [i,j]);
 
       # First normalise the [i,j] position to 1
-      if not IsOne(gens[k][i,j]) then
-        MultMatrix(gens[k], 1/gens[k][i,j]);
+      entry := gens[k][i,j];
+      if not IsOne(entry) then
+        MultMatrix(gens[k], 1/entry);
       fi;
 
       # Now zero position [i,j] in all further generators
@@ -621,7 +622,7 @@ end);
 # The code is heavily commented, and I appreciate suggestions on how to
 # improve it (particularly bits of code).
 BindGlobal("SpinHom",function (V, W)
-local nv, nw, F, zero, one, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
+local nv, nw, F, zero, minusone, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
       M, x, pos, z, echm, t, v, echv, a, u, e, start, oldlen, ag, m, uu, ret,
       c, s1, X, mat, uuc, uic, newhoms, hom, Uhom, imv0, imv0c, image, i, j, l;
 
@@ -639,7 +640,7 @@ local nv, nw, F, zero, one, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0
   TestModulesFitTogether(V,W);
   F:=V.field;
   zero:=Zero(F);
-  one:=One(F);
+  minusone:=-One(F);
 
   zeroW:=ListWithIdenticalEntries(nw,zero);
   zeroW:=ImmutableVector(F,zeroW);
@@ -755,7 +756,7 @@ local nv, nw, F, zero, one, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0
 
           ret:=EchResidueCoeffs(U, echu, x,3);
           x:=ret.residue;
-          AddVector(uu, ret.projection, -one);
+          AddVector(uu, ret.projection, minusone);
           # reduce modulo the new semi-ech basis elements in <v>,
           # storing the coefficients in <c>
           #
@@ -808,7 +809,7 @@ local nv, nw, F, zero, one, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0
             od;
 
             if Length(X) > 0 then
-              AddMatrix(X, ag, -one);
+              AddMatrix(X, ag, minusone);
             fi;
 
             mat:=[];
@@ -1385,7 +1386,7 @@ SMTX.IsomorphismModules:=SMTX_IsomorphismModules;
 # running down diagonals below the main diagonal:
 #   [2,1], [3,2], [4,3], ..., [3,1], [4,2], ..., [n-1,1], [n, 2], [n,1]
 BindGlobal("SMTX_EcheloniseNilpotentMatAlg",function (matalg, F)
-local zero, n, base, ech, k, diff, i, j, found, l;
+local zero, n, base, ech, k, diff, i, j, found, l, entry;
 
   zero:=Zero(F);
   n := NrCols(matalg[1]);
@@ -1417,8 +1418,9 @@ local zero, n, base, ech, k, diff, i, j, found, l;
       Add(ech, [i,j]);
 
       # First normalise the [i,j] position to 1
-      if not IsOne(base[k][i,j]) then
-        MultMatrix(base[k], 1/base[k][i,j]);
+      entry := base[k][i,j];
+      if not IsOne(entry) then
+        MultMatrix(base[k], 1/entry);
       fi;
 
       # Now zero position [i,j] in all other basis elements

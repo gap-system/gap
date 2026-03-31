@@ -1947,6 +1947,9 @@ InstallMethod( AddMatrix, "for a mutable 8bit matrix and an 8bit matrix",
   [ Is8BitMatrixRep and IsMutable, Is8BitMatrixRep ],
   function( dstmat, srcmat )
     local i;
+    if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+      Error("AddMatrix: matrices must have the same dimensions");
+    fi;
     for i in [1..NrRows(dstmat)] do
       ADD_ROWVECTOR_VEC8BITS_2(dstmat[i], srcmat[i]);
     od;
@@ -2002,6 +2005,9 @@ InstallMethod( AddMatrix, "for a mutable 8bit matrix, an 8bit matrix, and a scal
   [ Is8BitMatrixRep and IsMutable, Is8BitMatrixRep, IsFFE ],
   function( dstmat, srcmat, scalar )
     local i;
+    if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+      Error("AddMatrix: matrices must have the same dimensions");
+    fi;
     for i in [1..NrRows(dstmat)] do
       ADD_ROWVECTOR_VEC8BITS_3(dstmat[i], srcmat[i], scalar);
     od;

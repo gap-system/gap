@@ -2062,8 +2062,11 @@ DeclareOperationKernel( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  Computes the calculation <M>M + c \cdot N</M> in-place, storing the result in <A>M</A>.
+##  Computes the calculation <M>M + N \cdot c</M> in-place, storing the result in <A>M</A>.
 ##  If the optional argument <A>c</A> is omitted, then <A>N</A> is added directly.
+##  The matrices must have the same dimensions, otherwise the result is undefined.
+##  Specialized methods may be defined only when <A>M</A> and <A>N</A> have the same
+##  representation.
 ##  If both of the matrices are lists-of-lists, then the operation is delegated
 ##  row by row to <Ref Oper="AddRowVector"/>.
 ##  <Example><![CDATA[
