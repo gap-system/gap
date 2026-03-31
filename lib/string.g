@@ -326,6 +326,8 @@ InstallMethod( String,
 ##  function returns a new string with the leading <C>'~'</C> substituted by
 ##  the user's home directory as stored in <C>GAPInfo.UserHome</C>.
 ##  Otherwise <A>str</A> is returned unchanged.
+##  <P/>
+##  This function is the counterpart of <Ref Func="UserHomeShorten"/>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -337,6 +339,55 @@ BIND_GLOBAL("UserHomeExpand", function(str)
   else
     return str;
   fi;
+end);
+
+#############################################################################
+##
+#F  UserHomeShorten( <str> ) . . . . . . . . . . shorten leading user home
+##
+##  <#GAPDoc Label="UserHomeShorten">
+##  <ManSection>
+##  <Func Name="UserHomeShorten" Arg='str'/>
+##  <Description>
+##  If the string <A>str</A> starts with the user's home directory as stored
+##  in <C>GAPInfo.UserHome</C> then this function returns a new string with
+##  that prefix replaced by a leading <C>'~'</C> character.
+##  Otherwise <A>str</A> is returned unchanged.
+##  <P/>
+##  This function is the counterpart of <Ref Func="UserHomeExpand"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+BIND_GLOBAL("UserHomeShorten", function(str)
+  local homeLen;
+
+  if not IsString(str) or Length(str) = 0
+        or not IsString(GAPInfo.UserHome) or Length(GAPInfo.UserHome) = 0 then
+    return str;
+  fi;
+
+  if not IsMatchingSublist(str, GAPInfo.UserHome) then
+    return str;
+  fi;
+
+  homeLen := Length(GAPInfo.UserHome);
+  if Length(str) = homeLen then
+    return "~";
+  fi;
+
+  # Check that the string starts with GAPInfo.UserHome and that this is separate
+  # from the rest by a `/`. Otherwise if `GAPInfo.UserHome` is for example
+  # `/home/john` but str is `/home/johnny` we'd end up with `~ny`).
+  if str[homeLen + 1] <> '/' then
+    return str;
+  fi;
+
+  if Length(str) = homeLen + 1 then
+    return "~";
+  fi;
+
+  return Concatenation("~/", str{[homeLen + 2..Length(str)]});
 end);
 
 
