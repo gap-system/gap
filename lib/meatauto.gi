@@ -132,10 +132,12 @@ local n, weights, mat, vec, ReduceRow, t,
     if lead > n then
       return rhs;
     fi;
+    lhs := ShallowCopy(lhs);
     for i in [1..Length(weights)] do
       if weights[i] = lead then
         z := lhs[lead];
-        lhs := lhs - z * mat[i]; rhs := rhs - z * vec[i];
+        AddVector(lhs, mat[i], -z);  # lhs is a vector
+        rhs := rhs - z * vec[i];     # rhs is a scalar
         lead := PositionNonZero(lhs, lead);
         if lead > n then
           return rhs;
@@ -217,10 +219,10 @@ local m, n, zero, i, c, j, factor;
     for i in [1..m] do
       c := eqns.weights[i];
       for j in [1..i-1] do
-        if eqns.mat[j][c] <> zero then
+        factor := eqns.mat[j,c];
+        if factor <> zero then
           Info(InfoMtxHom,6,"solveEqns: kill mat[",j,",",c,"]");
-          factor := eqns.mat[j][c];
-          eqns.mat[j] := eqns.mat[j] - factor*eqns.mat[i];
+          AddVector(eqns.mat[j], eqns.mat[i], -factor);
           eqns.vec[j] := eqns.vec[j] - factor*eqns.vec[i];
         fi;
       od;
@@ -306,13 +308,13 @@ local n, coeffs, x, zero, z, i;
     coeffs:=[];
     x:=v;
   else
-    x:=v;
+    x:=ShallowCopy(v);
     zero:=x[1]*0;
     coeffs:=ListWithIdenticalEntries(n, zero);
     for i in [1..n] do
       z:=x[ech[i]];
       if z <> zero then
-        x:=x - z * base[i];
+        AddVector(x, base[i], -z);
         coeffs[i]:=z;
       fi;
     od;
@@ -552,13 +554,13 @@ end);
 # If a linearly dependent set of elements is supplied, this
 # routine will trim it down to a basis.
 BindGlobal("SMTX_EcheloniseMats",function (gens, F)
-local n, m, zero, ech, k, i, j, l;
+local n, m, zero, ech, k, i, j, l, entry;
 
   if Length(gens) = 0 then
     return [ [], [] ];
   fi;
   # copy the list to avoid destroying the original list
-  gens:=ShallowCopy(gens);
+  gens:=List(gens, MutableCopyMatrix);
 
   n:=NrRows(gens[1]);
   m:=NrCols(gens[1]);
@@ -581,12 +583,15 @@ local n, m, zero, ech, k, i, j, l;
       Add(ech, [i,j]);
 
       # First normalise the [i,j] position to 1
-      gens[k]:=gens[k] / gens[k][i,j];
+      entry := gens[k][i,j];
+      if not IsOne(entry) then
+        MultMatrix(gens[k], 1/entry);
+      fi;
 
       # Now zero position [i,j] in all further generators
       for l in [k+1..Length(gens)] do
         if (gens[l][i,j] <> zero) then
-          gens[l]:=gens[l] - gens[k] * gens[l][i,j];
+          AddMatrix(gens[l], gens[k], -gens[l][i,j]);
         fi;
       od;
       k:=k + 1;
@@ -617,7 +622,7 @@ end);
 # The code is heavily commented, and I appreciate suggestions on how to
 # improve it (particularly bits of code).
 BindGlobal("SpinHom",function (V, W)
-local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
+local nv, nw, F, zero, minusone, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
       M, x, pos, z, echm, t, v, echv, a, u, e, start, oldlen, ag, m, uu, ret,
       c, s1, X, mat, uuc, uic, newhoms, hom, Uhom, imv0, imv0c, image, i, j, l;
 
@@ -635,6 +640,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
   TestModulesFitTogether(V,W);
   F:=V.field;
   zero:=Zero(F);
+  minusone:=-One(F);
 
   zeroW:=ListWithIdenticalEntries(nw,zero);
   zeroW:=ImmutableVector(F,zeroW);
@@ -744,14 +750,13 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
           # create new element <x>, with its definition as the
           # difference between <v0^m> and <uu> in <U>.
           x:=v[i] * gV[j];
-          m:=ag;
+          m:=MutableCopyMat(ag);
           ConvertToMatrixRep(m, F);
           uu:=u[i] * gV[j];
 
           ret:=EchResidueCoeffs(U, echu, x,3);
           x:=ret.residue;
-          uu:=uu - ret.projection;
-
+          AddVector(uu, ret.projection, minusone);
           # reduce modulo the new semi-ech basis elements in <v>,
           # storing the coefficients in <c>
           #
@@ -759,12 +764,12 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
           for l in [1..Length(v)] do
             z:=x[echv[l]];
             if z <> zero then
-              x:=x - z * v[l];
+              AddVector(x, v[l], -z);
               if Length(m) > 0 then
-                  m:=m - z * a[l];
+                  AddMatrix(m, a[l], -z);
               fi;
               c[l]:=c[l] + z;
-              uu:=uu - z * u[l];
+              AddVector(uu, u[l], -z);
             fi;
           od;
           c:=ImmutableVector(F,c);
@@ -797,14 +802,14 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
             for l in [1..Length(v)] do
               if c[l] <> zero then
                 if Length(X) > 0 then
-                  X:=X + c[l] * a[l];
+                  AddMatrix(X, a[l], c[l]);
                 fi;
-                uu:=uu + c[l] * u[l];
+                AddVector(uu, u[l], c[l]);
               fi;
             od;
 
             if Length(X) > 0 then
-              X:=X - ag;
+              AddMatrix(X, ag, minusone);
             fi;
 
             mat:=[];
@@ -814,6 +819,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
               Add(mat, uuc * homs[l] - uic * homs[l] * gW[j]);
             od;
             Append(mat, X);
+            ConvertToMatrixRep(mat);
             SMTX_AddEqns(e, TransposedMat(mat), zeroW);
           fi;
         od;
@@ -848,7 +854,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
         ConvertToMatrixRep(Uhom, F);
         for l in [1..s] do
           if ans[i][l] <> zero then
-            Uhom:=Uhom + ans[i][l] * homs[l];
+            AddMatrix(Uhom, homs[l], ans[i][l]);
           fi;
         od;
         for l in [1..r] do
@@ -856,10 +862,10 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
         od;
       fi;
 
-      imv0:=zeroW * zero;
+      imv0:=ZeroMutable(zeroW);
       for l in [1..t] do
         if ans[i][s+l] <> zero then
-          imv0:=imv0 + ans[i][s+l] * M[l];
+          AddVector(imv0, M[l], ans[i][s+l]);
         fi;
       od;
       imv0c:=EchResidueCoeffs(M, echm, imv0,1);
@@ -867,7 +873,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
         if Length(imv0c)=0 then image:=[];
         else image:=imv0c * a[l];fi;
         if r > 0 then
-          image:=image + EchResidueCoeffs(U, echu, u[l],1) * Uhom;
+          AddVector(image, EchResidueCoeffs(U, echu, u[l],1) * Uhom);
         fi;
         Add(hom, image);
       od;
@@ -984,10 +990,12 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
   local i, r, c, k, done, l;
   # NB: <remain> and <nildim> and <cnt> are not local
 
+    a := MutableCopyMatrix(a);
     for i in [1..nildim] do
-      r:=echelon[nilech[i]][1]; c:=echelon[nilech[i]][2];
+      r:=echelon[nilech[i]][1];
+      c:=echelon[nilech[i]][2];
       if a[r,c] <> zero then
-        a:=a - a[r,c] * nilbase[i] / nilbase[i][r,c];
+        AddMatrix(a, nilbase[i], -a[r,c] / nilbase[i][r,c]);
       fi;
     od;
 
@@ -995,7 +1003,8 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
     k:=1; done:=false;
     while not done and k <= Length(remain) do
       l:=remain[k];
-      r:=echelon[l][1]; c:=echelon[l][2];
+      r:=echelon[l][1];
+      c:=echelon[l][2];
       if a[r,c] <> zero then
         done:=true;
       else
@@ -1377,12 +1386,12 @@ SMTX.IsomorphismModules:=SMTX_IsomorphismModules;
 # running down diagonals below the main diagonal:
 #   [2,1], [3,2], [4,3], ..., [3,1], [4,2], ..., [n-1,1], [n, 2], [n,1]
 BindGlobal("SMTX_EcheloniseNilpotentMatAlg",function (matalg, F)
-local zero, n, base, ech, k, diff, i, j, found, l;
+local zero, n, base, ech, k, diff, i, j, found, l, entry;
 
   zero:=Zero(F);
   n := NrCols(matalg[1]);
 
-  base := ShallowCopy(matalg);
+  base := List(matalg, MutableCopyMatrix);
   ech := [];
   k := 1;
 
@@ -1409,12 +1418,15 @@ local zero, n, base, ech, k, diff, i, j, found, l;
       Add(ech, [i,j]);
 
       # First normalise the [i,j] position to 1
-      base[k] := base[k] / base[k][i,j];
+      entry := base[k][i,j];
+      if not IsOne(entry) then
+        MultMatrix(base[k], 1/entry);
+      fi;
 
       # Now zero position [i,j] in all other basis elements
       for l in [1..Length(base)] do
         if (l <> k) and (base[l][i,j] <> zero) then
-          base[l] := base[l] - base[k] * base[l][i,j];
+          AddMatrix(base[l], base[k], -base[l][i,j]);
         fi;
       od;
       k := k + 1;
