@@ -91,13 +91,13 @@ cp native-build/build/c_*.c native-build/build/ffdata.* src/
 # Dynamically find and append ALL required files to the JS array
 # The flag -type f is safe because the only symbolic link is 'tst/mockpkg/Makefile.gappkg',
 # which is safe to ignore
-find pkg lib grp tst doc hpcgap dev benchmark -type f | python3 etc/emscripten/percentage_encoding.py
+find pkg lib grp tst doc hpcgap dev benchmark -type f | python3 etc/emscripten/generate_gap_fs_json.py
 
 if [ $? -ne 0 ]; then
-    echo "Build aborted: generate_mapping.py failed."
+    echo "Build aborted: generate_gap_fs_json.py failed."
     exit 1
 fi
 
 # The EXEEXT is usually for windows, but here it lets us set GAP's extension,
 # which lets us produce a html page to run GAP in.
-emmake make -j8 LDFLAGS="-lidbfs.js --pre-js lazy_fs.js -s ASYNCIFY=1 -sTOTAL_STACK=32mb -sASYNCIFY_STACK_SIZE=32000000 -sINITIAL_MEMORY=2048mb -O2" EXEEXT=".html"
+emmake make -j8 LDFLAGS="-lidbfs.js -s ASYNCIFY=1 -sTOTAL_STACK=32mb -sASYNCIFY_STACK_SIZE=32000000 -sINITIAL_MEMORY=2048mb -O2" EXEEXT=".html"
