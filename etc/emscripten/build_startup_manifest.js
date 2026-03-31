@@ -33,9 +33,9 @@ const server = http.createServer((req, res) => {
             return;
         }
 
-        const ignored = ['/favicon.ico', '/index.html', '/lazy_fs.js', '/startup_manifest.json'];
-        if (!ignored.includes(urlPath)) {
-            let manifestPath = urlPath.startsWith('/') ? urlPath.substring(1) : urlPath;
+        const ignored = ['/favicon.ico', '/index.html', '/startup_manifest.json', 'coi-serviceworker.js', 'gap-worker.js', 'gap-fs.js', 'gap.js', 'gap.wasm', 'gap-fs.json'];
+        if (!ignored.includes(localDiskPath)) {
+            let manifestPath = localDiskPath.startsWith('/') ? localDiskPath.substring(1) : localDiskPath;
             
             if (!requestedFiles.has(manifestPath)) {
                 requestedFiles.add(manifestPath);
