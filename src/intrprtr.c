@@ -2155,10 +2155,6 @@ void IntrListExprEnd(
 {
     Obj                 list;           // the list, result
     Obj                 old;            // old value of '~'
-    Int                 low;            // low value of range
-    Int                 inc;            // increment of range
-    Int                 high;           // high value of range
-    Obj                 val;            // temporary value
 
     // ignore or code
     SKIP_IF_RETURNING();
@@ -2182,55 +2178,16 @@ void IntrListExprEnd(
         // get the list
         list = PopObj(intr);
 
-        // get the low value
-        val = ELM_LIST( list, 1 );
-        low = GetSmallIntEx("Range", val, "<first>");
+        // get the first, second (if present), and last values
+        Obj first = ELM_LIST(list, 1);
+        Obj last = ELM_LIST(list, LEN_LIST(list));
 
-        // get the increment
-        if ( nr == 3 ) {
-            val = ELM_LIST( list, 2 );
-            Int v = GetSmallIntEx("Range", val, "<second>");
-            if ( v == low ) {
-                ErrorQuit("Range: <second> must not be equal to <first> (%d)",
-                          (Int)low, 0);
-            }
-            inc = v - low;
+        if (nr == 3) {
+            Obj second = ELM_LIST(list, 2);
+            list = Range3CheckBigInt(first, second, last);
         }
         else {
-            inc = 1;
-        }
-
-        // get and check the high value
-        val = ELM_LIST( list, LEN_LIST(list) );
-        Int v = GetSmallIntEx("Range", val, "<last>");
-        if ( (v - low) % inc != 0 ) {
-            ErrorQuit(
-                "Range: <last>-<first> (%d) must be divisible by <inc> (%d)",
-                (Int)(v-low), (Int)inc );
-        }
-        high = v;
-
-        // if <low> is larger than <high> the range is empty
-        if ( (0 < inc && high < low) || (inc < 0 && low < high) ) {
-            list = NewEmptyPlist();
-        }
-
-        // if <low> is equal to <high> the range is a singleton list
-        else if ( low == high ) {
-            list = NEW_PLIST( T_PLIST_CYC_SSORT, 1 );
-            SET_LEN_PLIST( list, 1 );
-            SET_ELM_PLIST( list, 1, INTOBJ_INT(low) );
-        }
-
-        // else make the range
-        else {
-            // length must be a small integer as well
-            if ((high-low) / inc >= INT_INTOBJ_MAX) {
-                ErrorQuit("Range: the length of a range must be a small integer",
-                           0, 0);
-            }
-
-            list = NEW_RANGE((high - low) / inc + 1, low, inc);
+            list = Range2CheckBigInt(first, last);
         }
 
         // push the list again
