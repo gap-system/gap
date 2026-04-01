@@ -51,6 +51,8 @@ DeclareRepresentation( "Is8BitMatrixRep",
     and HasNumberRows and HasNumberColumns
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);
 
+Add( ConstructingFiltersForMatrixGroupElements, Is8BitMatrixRep );
+
 
 #############################################################################
 ##

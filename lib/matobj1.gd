@@ -370,3 +370,14 @@ DeclareAttribute( "OneOfBaseDomain", IsVecOrMatObj );
 DeclareAttribute( "ZeroOfBaseDomain", IsVecOrMatObj );
 #DeclareAttribute( "ZeroOfBaseDomain", IsVectorObj );
 #DeclareAttribute( "ZeroOfBaseDomain", IsMatrixOrMatrixObj );
+
+
+#############################################################################
+##
+#V  ConstructingFiltersForMatrixGroupElements
+##
+##  This is a list of filters 'f' that are supported as the first argument
+##  of group constructors such as 'SymplecticGroup',
+##  meaning that one asks for a matrix group whose elements are in 'f'.
+##
+BIND_GLOBAL( "ConstructingFiltersForMatrixGroupElements", [] );
