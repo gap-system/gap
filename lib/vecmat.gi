@@ -2557,9 +2557,20 @@ InstallTagBasedMethod( NewZeroVector,
 InstallTagBasedMethod( NewMatrix,
   IsGF2MatrixRep,
   function( filter, f, rl, l )
-    local m;
+    local len, m;
     if Size(f) <> 2 then Error("IsGF2MatrixRep only supported over GF(2)"); fi;
-    m := List(l,ShallowCopy);
+
+    # If applicable then replace a flat list 'l' by a nested list
+    # of lists of length 'rl'.
+    len:= Length( l );
+    if len > 0 and not IsList( l[1] ) then
+      if len mod rl <> 0 then
+        Error( "NewMatrix: Length of <l> is not a multiple of <rl>" );
+      fi;
+      m := List([0, rl .. len-rl], i -> l{[i+1..i+rl]});
+    else
+      m := List(l,ShallowCopy);
+    fi;
     ConvertToMatrixRep(m,2);
     return m;
   end );
