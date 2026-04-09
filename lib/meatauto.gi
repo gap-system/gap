@@ -638,7 +638,7 @@ local nv, nw, F, zero, minusone, zeroW, gV, gW, k, U, echu, r, homs, s, work, an
           # create new element <x>, with its definition as the
           # difference between <v0^m> and <uu> in <U>.
           x:=v[i] * gV[j];
-          m:=MutableCopyMat(ag);
+          m:=MutableCopyMatrix(ag);
           ConvertToMatrixRep(m, F);
           uu:=u[i] * gV[j];
 
