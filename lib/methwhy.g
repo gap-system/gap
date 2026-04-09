@@ -514,16 +514,6 @@ BIND_GLOBAL("PageSource", function ( fun, nr... )
           l := STARTLINE_FUNC( fun );
           if l <> fail then
               l := Maximum(l-5, 1);
-          elif IsKernelFunction(fun) then
-              # page correct C source file and try to find line in C
-              # source starting `Obj Func<fun>`
-              s := String(fun);
-              ss:=SplitString(s,""," <>");
-              s := First(ss, a-> ':' in a);
-              if s <> fail then
-                ss := SplitString(s,":","");
-                l := Concatenation("Obj Func", ss[2]);
-              fi;
           fi;
         fi;
     fi;

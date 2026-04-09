@@ -197,32 +197,17 @@ void SET_GAPNAMEID_BODY(Obj body, UInt val)
     BODY_HEADER(body)->filename_or_id = INTOBJ_INT(val);
 }
 
-// location
-
-Obj GET_LOCATION_BODY(Obj body)
-{
-    Obj location = BODY_HEADER(body)->startline_or_location;
-    return (location && IS_STRING_REP(location)) ? location : 0;
-}
-
-void SET_LOCATION_BODY(Obj body, Obj val)
-{
-    GAP_ASSERT(IS_STRING_REP(val));
-    MakeImmutable(val);
-    BODY_HEADER(body)->startline_or_location = val;
-}
-
 // startline
 
 UInt GET_STARTLINE_BODY(Obj body)
 {
-    Obj line = BODY_HEADER(body)->startline_or_location;
+    Obj line = BODY_HEADER(body)->startline;
     return IS_POS_INTOBJ(line) ? INT_INTOBJ(line) : 0;
 }
 
 void SET_STARTLINE_BODY(Obj body, UInt val)
 {
-    BODY_HEADER(body)->startline_or_location = val ? INTOBJ_INT(val) : 0;
+    BODY_HEADER(body)->startline = val ? INTOBJ_INT(val) : 0;
 }
 
 // endline

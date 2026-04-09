@@ -1,10 +1,24 @@
+gap> INSTALL_METHOD_FLAGS;
+function( opr, info, rel, flags, baserank, method ) ... end
 gap> Print(INSTALL_METHOD_FLAGS,"\n");
 function ( opr, info, rel, flags, baserank, method )
     <<compiled GAP code>> from GAPROOT/lib/oper1.g:LINE
 end
-gap> Display(InstallMethod);
+gap> Display(INSTALL_METHOD_FLAGS);
 # GAPROOT/lib/oper1.g:LINE
-function ( arg... )
+function ( opr, info, rel, flags, baserank, method )
     <<compiled GAP code>> from GAPROOT/lib/oper1.g:LINE
+end
+gap> #
+gap> RETURN_FIRST;
+function( first, rest... ) ... end
+gap> Print(RETURN_FIRST,"\n");
+function ( first, rest... )
+    <<kernel code>> from GAPROOT/src/gap.c:LINE
+end
+gap> Display(RETURN_FIRST);
+# GAPROOT/src/gap.c:LINE
+function ( first, rest... )
+    <<kernel code>> from GAPROOT/src/gap.c:LINE
 end
 gap> QUIT;

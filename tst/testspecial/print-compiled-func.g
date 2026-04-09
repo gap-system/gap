@@ -1,2 +1,7 @@
+INSTALL_METHOD_FLAGS;
 Print(INSTALL_METHOD_FLAGS,"\n");
-Display(InstallMethod);
+Display(INSTALL_METHOD_FLAGS);
+#
+RETURN_FIRST;
+Print(RETURN_FIRST,"\n");
+Display(RETURN_FIRST);
