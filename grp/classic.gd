@@ -779,9 +779,9 @@ DeclareConstructor( "SymplecticGroupCons", [ IsGroup, IsPosInt, IsRing ] );
 ##  <P/>
 ##  If <A>filt</A> is not given it defaults to <Ref Filt="IsMatrixGroup"/>,
 ##  and the returned group is the symplectic group itself.
-##  Another supported value for <A>filt</A> is
-##  <Ref Filt="IsPermGroup"/>;
-##  in this case, the argument <A>form</A> is not supported.
+##  Other supported values for <A>filt</A> are <Ref Filt="IsPermGroup"/>
+##  (in this case, the argument <A>form</A> is not supported)
+##  and the entries of <Ref Var="ConstructingFiltersForMatrixGroupElements"/>.
 ##  <P/>
 ##  At the moment finite fields or residue class rings
 ##  <C>Integers mod <A>q</A></C>, with <A>q</A> an odd prime power, are

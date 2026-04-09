@@ -34,6 +34,12 @@
 ##  constructed over a specified field, which can be given as second argument
 ##  of the function that constructs the group;
 ##  The default field is <Ref Var="Rationals"/>.
+##  <P/>
+##  In the case of matrix groups, also the internal representation of the
+##  group elements can be prescribed.
+##  For convenience, one can enter one of the filters in the list
+##  <Ref Var="ConstructingFiltersForMatrixGroupElements"/>,
+##  which then implies <Ref Filt="IsMatrixGroup"/>.
 ##  <#/GAPDoc>
 
 

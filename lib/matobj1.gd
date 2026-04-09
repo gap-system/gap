@@ -376,8 +376,21 @@ DeclareAttribute( "ZeroOfBaseDomain", IsVecOrMatObj );
 ##
 #V  ConstructingFiltersForMatrixGroupElements
 ##
-##  This is a list of filters 'f' that are supported as the first argument
-##  of group constructors such as 'SymplecticGroup',
-##  meaning that one asks for a matrix group whose elements are in 'f'.
+##  <#GAPDoc Label="ConstructingFiltersForMatrixGroupElements">
+##  <ManSection>
+##  <Var Name="ConstructingFiltersForMatrixGroupElements"/>
+##
+##  <Description>
+##  This is a list of filters <C>f</C> that are supported as
+##  the first argument of group constructors such as
+##  <Ref Func="SymplecticGroup" Label="for dimension and a ring"/>,
+##  meaning that one asks for a matrix group whose elements are in <C>f</C>.
+##  <P/>
+##  If one creates a new representation of matrix objects such that it makes
+##  sense to create matrix groups from them then the underlying filter
+##  should be added to <Ref Var="ConstructingFiltersForMatrixGroupElements"/>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
 ##
 BIND_GLOBAL( "ConstructingFiltersForMatrixGroupElements", [] );
