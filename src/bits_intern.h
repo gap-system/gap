@@ -120,7 +120,7 @@ static ALWAYS_INLINE void CopyBits(const UInt * fromblock,
                        (tobit - frombit));
             fromblock++;
             CopyInWord(toblock, 0, tailbits + frombit - 1 - BIPEB,
-                       fromblock[1], tobit + BIPEB - frombit);
+                       *fromblock, tobit + BIPEB - frombit);
             frombit += tailbits - BIPEB;
         }
         toblock++;
