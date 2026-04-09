@@ -1565,6 +1565,23 @@ DeclareOperation( "MutableCopyMatrix", [ IsList ] );
 
 #############################################################################
 ##
+#O  MutableCopyMat( <mat> )
+##
+##  Declared obsolete in February 2023.
+##
+##  Still used in corelg, crisp, cryst, cubefree, cvec, fining, forms, genss,
+##  guava, hap, hapcryst, lpres, matricesforhomalg, modisom, polycyclic,
+##  recog, semigroups, smallsemi, sophus (02/2023)
+##
+##  (We cannot use 'DeclareObsoleteSynonym' because the cvec package wants to
+##  install a method for 'MutableCopyMat', thus 'MutableCopyMat' must be an
+##  operation.)
+##
+DeclareSynonym( "MutableCopyMat", MutableCopyMatrix );
+
+
+#############################################################################
+##
 #F  NullMat( <m>, <n> [, <R>] ) . . . . . . . . . null matrix of a given size
 ##
 ##  <#GAPDoc Label="NullMat">
