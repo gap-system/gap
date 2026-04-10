@@ -30,6 +30,9 @@ BindGlobal( "ObjWithMemory", function( slp, n, el )
     if IsMatrixObj( el ) then
       filt:= filt and IsMatrixObj;
     fi;
+    if IsRowListMatrix( el ) then
+      filt:= filt and IsRowListMatrix;
+    fi;
     if HasBaseDomain( el ) then
       filt:= filt and HasBaseDomain;
     fi;
