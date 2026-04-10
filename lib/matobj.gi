@@ -1865,6 +1865,46 @@ InstallEarlyMethod( AddMatrixColumnsLeft,
 
 ############################################################################
 
+InstallMethod( PositionNonZeroInRow,
+  "for a row list matrix and a row number",
+  [ IsRowListMatrix, IsPosInt ],
+  function( mat, row )
+    return PositionNonZero( mat[row] );
+  end );
+
+InstallMethod( PositionNonZeroInRow,
+  "for a row list matrix, a row number, and a start position",
+  [ IsRowListMatrix, IsPosInt, IsInt ],
+  function( mat, row, from )
+    return PositionNonZero( mat[row], from );
+  end );
+
+InstallMethod( PositionNonZeroInRow,
+  "for a matrix or matrix object and a row number",
+  [ IsMatrixOrMatrixObj, IsPosInt ],
+  function( mat, row )
+    return PositionNonZeroInRow( mat, row, 0 );
+  end );
+
+InstallMethod( PositionNonZeroInRow,
+  "for a matrix or matrix object, a row number, and a start position",
+  [ IsMatrixOrMatrixObj, IsPosInt, IsInt ],
+  function( mat, row, from )
+    local col, ncols, zero;
+
+    ncols := NrCols( mat );
+    zero := ZeroOfBaseDomain( mat );
+    for col in [ Maximum( 1, from + 1 ) .. ncols ] do
+      if mat[row, col] <> zero then
+        return col;
+      fi;
+    od;
+
+    return ncols + 1;
+  end );
+
+############################################################################
+
 InstallMethod( SwapMatrixRows, "for a mutable matrix object, and two row numbers",
   [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ],
   function( mat, row1, row2 )

@@ -219,6 +219,7 @@ All rows of a matrix must have the same length and the same base domain.
 <#Include Label="AddMatrixRowsRight">
 <#Include Label="AddMatrixColumns">
 <#Include Label="AddMatrixColumnsLeft">
+<#Include Label="PositionNonZeroInRow">
 <#Include Label="SwapMatrixRows">
 <#Include Label="SwapMatrixColumns">
 <#Include Label="AddMatrix">
