@@ -361,6 +361,19 @@ InstallGlobalFunction(CREATE_LOCAL_VARIABLES_BAG, function(namelist)
     return EvalString(func);
 end);
 
+BindGlobal("TEST_NICE_FILENAME", function(path)
+    local cwd;
+    cwd := GAP_getcwd();
+    if not EndsWith(cwd, "/") then
+        cwd := Concatenation(cwd, "/");
+    fi;
+
+    if StartsWith(path, cwd) then
+        return path{[Length(cwd)+1 .. Length(path)]};
+    fi;
+    return UserHomeShorten(path);
+end);
+
 ##
 ##  <#GAPDoc Label="Test">
 ##  <ManSection>
@@ -607,6 +620,7 @@ BindGlobal("DefaultReportDiff", function(inp, expout, found, fnam, line, time)
     if IsStream(fnam) then
       Print("test stream, line ",line,":");
     else
+      fnam:=TEST_NICE_FILENAME(fnam);
       Print(fnam,":",line);
     fi;
     Print(TextAttr.reset, "\n", DefaultReportDiffColors.message);
@@ -1008,7 +1022,7 @@ InstallGlobalFunction( "TestDirectory", function(arg)
 
   for i in [1..Length(files)] do
     if opts.showProgress then
-      Print("testing: ", files[i].name, "\n");
+      Print("testing: ", TEST_NICE_FILENAME(files[i].name), "\n");
     fi;
 
     startTime := Runtime();
