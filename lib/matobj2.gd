@@ -2021,6 +2021,27 @@ DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixOrMatrixObj and IsMutable, I
 
 ############################################################################
 ##
+##  <#GAPDoc Label="PositionNonZeroInRow">
+##  <ManSection>
+##  <Oper Name="PositionNonZeroInRow" Arg='M,i[,from]'/>
+##
+##  <Returns>a positive integer</Returns>
+##
+##  <Description>
+##  <P/>
+##  Returns the position of the first nonzero entry in the <A>i</A>-th row of
+##  the matrix <A>M</A>, or <C>NrCols( M ) + 1</C> if the row is zero.
+##  If the optional argument <A>from</A> is given, the search starts after
+##  position <A>from</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt ] );
+DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt, IsInt ] );
+
+############################################################################
+##
 ##  <#GAPDoc Label="SwapMatrixRows">
 ##  <ManSection>
 ##  <Oper Name="SwapMatrixRows" Arg='M,i,j'/>

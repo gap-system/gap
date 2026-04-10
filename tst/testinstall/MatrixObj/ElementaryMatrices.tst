@@ -67,6 +67,39 @@ true
 gap> TestElementaryTransforms( mat, -1 );
 gap> TestWholeMatrixTransforms( mat, -1 );
 
+#
+gap> TestPositionNonZeroInRow([ [ 1 ] ]);
+gap> TestPositionNonZeroInRow(Matrix([ [ 1 ] ]));
+gap> TestPositionNonZeroInRow(Matrix(GF(2), [ [ 1 ] ] * Z(2)));
+gap> TestPositionNonZeroInRow(Matrix(GF(5), [ [ 1 ] ] * Z(5)^0));
+
+#
+gap> mat := Matrix([ [ 1, 0, 0 ], [ 0, 2, 0 ] ]);;
+gap> IsDiagonalMatrix(mat);
+true
+gap> IsUpperTriangularMatrix(mat);
+true
+gap> IsLowerTriangularMatrix(mat);
+true
+
+#
+gap> mat := Matrix([ [ 1, 2, 0 ], [ 0, 3, 0 ] ]);;
+gap> IsDiagonalMatrix(mat);
+false
+gap> IsUpperTriangularMatrix(mat);
+true
+gap> IsLowerTriangularMatrix(mat);
+false
+
+#
+gap> mat := Matrix([ [ 1, 0, 0 ], [ 4, 3, 0 ] ]);;
+gap> IsDiagonalMatrix(mat);
+false
+gap> IsUpperTriangularMatrix(mat);
+false
+gap> IsLowerTriangularMatrix(mat);
+true
+
 ##########
 #
 gap> mat := Matrix( [[2,4,5],[7,11,-4],[-3,20,0]]);;
