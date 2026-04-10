@@ -1083,38 +1083,6 @@ InstallMethod( ZeroMutable,
   M -> MakeIsPlistMatrixRep( M![BDPOS], M![EMPOS], M![RLPOS],
            List( M![ROWSPOS], ZeroMutable ), false ) );
 
-InstallMethod( IsZero,
-  [ "IsPlistMatrixRep" ],
-  function( M )
-    local i;
-    for i in [1..Length(M![ROWSPOS])] do
-        if not IsZero(M![ROWSPOS][i]) then
-            return false;
-        fi;
-    od;
-    return true;
-  end );
-
-InstallMethod( IsOne,
-  [ "IsPlistMatrixRep" ],
-  function( M )
-    local n, i, row;
-    if Length(M![ROWSPOS]) <> M![RLPOS] then
-        #Error("IsOne: Matrix must be square");
-        return false;
-    fi;
-    n := M![RLPOS];
-    for i in [1..n] do
-      row:= M![ROWSPOS][i];
-      if PositionNonZero( row ) <> i or
-         not IsOne( row![ELSPOS][i] ) or
-         PositionNonZero( row, i ) <= n then
-        return false;
-      fi;
-    od;
-    return true;
-  end );
-
 InstallMethod( OneSameMutability,
   [ "IsPlistMatrixRep" ],
   function( M )
