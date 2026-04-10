@@ -260,6 +260,8 @@ DeclareRepresentation( "IsGF2MatrixRep",
     and HasNumberRows and HasNumberColumns
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);
 
+Add( ConstructingFiltersForMatrixGroupElements, IsGF2MatrixRep );
+
 
 #############################################################################
 ##

@@ -22,6 +22,8 @@ gap> m := Matrix( IsGF2MatrixRep, GF(2), [[1,2],[3,4]] * Z(2) );
 gap> Display(m);
  1 .
  1 .
+gap> m = Matrix( IsGF2MatrixRep, GF(2), [1,2,3,4] * Z(2), 2 );
+true
 
 #
 gap> m := Matrix( Is8BitMatrixRep, GF(4), [[1,2],[3,4]] * Z(2) );
@@ -29,6 +31,8 @@ gap> m := Matrix( Is8BitMatrixRep, GF(4), [[1,2],[3,4]] * Z(2) );
 gap> Display(m);
  1 .
  1 .
+gap> m = Matrix( Is8BitMatrixRep, GF(4), [1,2,3,4] * Z(2), 2 );
+true
 
 #
 gap> m := Matrix( IsPlistMatrixRep, GF(2), [[1,2],[3,4]] * Z(2) );
@@ -38,6 +42,8 @@ gap> Display(m);
 [[ Z(2)^0, 0*Z(2) ]
  [ Z(2)^0, 0*Z(2) ]
 ]>
+gap> m = Matrix( IsPlistMatrixRep, GF(2), [1,2,3,4] * Z(2), 2 );
+true
 
 #
 gap> STOP_TEST("Matrix.tst");
