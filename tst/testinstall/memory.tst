@@ -6,6 +6,12 @@ gap> START_TEST( "memory.tst" );
 gap> G := GroupWithMemory([ (1,2,3,4,5), (1,2) ]);;
 gap> H := GroupWithMemory(GL(IsMatrixGroup, 3, 3));;
 gap> g := H.1 ^ 2;; h := H.2 ^ 2;;
+gap> IsMatrix(g);
+true
+gap> IsMatrixObj(g);
+true
+gap> IsRowListMatrix(g);
+true
 gap> StripMemory(g);
 [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, 0*Z(3) ], 
   [ 0*Z(3), 0*Z(3), Z(3)^0 ] ]
