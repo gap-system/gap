@@ -283,21 +283,51 @@ jobs:
 
   cross_compile:
     # The host should always be linux
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     name: Cross compiler for s390x
 
     steps:
-      - name: Install Cross-Compile Support
-        uses: cyberjunk/gha-ubuntu-cross@v5
-        with:
-          arch: s390x
+      - name: Configure APT for amd64 host + s390x foreign arch
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          sudo dpkg --add-architecture s390x
+          . /etc/os-release
+
+          # Restrict the default runner sources to amd64, otherwise apt also tries
+          # to fetch s390x from security.ubuntu.com / archive.ubuntu.com and gets 404s.
+          if ! grep -q '^Architectures: amd64$' /etc/apt/sources.list.d/ubuntu.sources; then
+            sudo sed -i '/^Types: deb$/a Architectures: amd64' /etc/apt/sources.list.d/ubuntu.sources
+          fi
+
+          # Add the foreign-arch repositories from ubuntu-ports.
+          sudo tee /etc/apt/sources.list.d/s390x.sources >/dev/null <<EOF
+          Types: deb
+          URIs: http://ports.ubuntu.com/ubuntu-ports
+          Suites: ${UBUNTU_CODENAME} ${UBUNTU_CODENAME}-updates ${UBUNTU_CODENAME}-security ${UBUNTU_CODENAME}-backports
+          Components: main restricted universe multiverse
+          Architectures: s390x
+          Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+          EOF
+
+          sudo apt-get update
+
+      - name: Install cross toolchain
+        run: |
+          sudo apt-get install -y \
+            crossbuild-essential-s390x \
+            gcc-s390x-linux-gnu \
+            g++-s390x-linux-gnu \
+            libc6-dev-s390x-cross \
+            linux-libc-dev-s390x-cross
 
       - name: Install general build dependencies
         run: sudo apt-get install -q -y git autoconf
 
       - name: Install cross compile dependencies
-        run: sudo apt-get install -q -y git libgmp-dev:s390x libreadline-dev:s390x zlib1g-dev:s390x
+        run: sudo apt-get install -q -y libgmp-dev:s390x libreadline-dev:s390x zlib1g-dev:s390x
 
       - uses: actions/checkout@v6
 
@@ -331,7 +361,7 @@ jobs:
         uses: uraimo/run-on-arch-action@v3
         with:
           arch: s390x
-          distro: ubuntu22.04
+          distro: ubuntu24.04
 
           # Not required, but speeds up builds
           githubToken: ${{ github.token }}
