@@ -119,4 +119,11 @@ gap> IdentityMatrix(GF(4), -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #
+gap> m := [ [ 1, 0, 0 ], [ 0, 1, 0 ] ];;
+gap> IsOne(m);
+false
+gap> IsOne(Matrix(IsPlistMatrixRep, Integers, m));
+false
+
+#
 gap> STOP_TEST("IdentityMatrix.tst");
