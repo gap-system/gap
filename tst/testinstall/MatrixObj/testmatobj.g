@@ -251,3 +251,30 @@ TestWholeMatrixTransforms := function(mat, scalar)
     MultMatrix(copy, scalar);
     if not same_entries(mat, copy) then Error("MultMatrix(", scalar, ") failure"); fi;
 end;
+
+TestPositionNonZeroInRow := function(mat)
+    local ncols;
+
+    # Make a matrix with specific patter of the same kind as mat
+    mat := Matrix([ [ 0, 1, 0, 1 ], [ 0, 0, 0, 0 ], [ 0, 0, 1, 0 ] ], mat);
+
+    ncols := NrCols(mat);
+    if PositionNonZeroInRow(mat, 1) <> 2 then
+        Error("PositionNonZeroInRow(_,1) failure");
+    fi;
+    if PositionNonZeroInRow(mat, 1, 2) <> 4 then
+        Error("PositionNonZeroInRow(_,1,2) failure");
+    fi;
+    if PositionNonZeroInRow(mat, 1, 4) <> ncols + 1 then
+        Error("PositionNonZeroInRow(_,1,4) failure");
+    fi;
+    if PositionNonZeroInRow(mat, 2) <> ncols + 1 then
+        Error("PositionNonZeroInRow(_,2) zero-row failure");
+    fi;
+    if PositionNonZeroInRow(mat, 3) <> 3 then
+        Error("PositionNonZeroInRow(_,3) failure");
+    fi;
+    if PositionNonZeroInRow(mat, 3, 3) <> ncols + 1 then
+        Error("PositionNonZeroInRow(_,3,3) failure");
+    fi;
+end;

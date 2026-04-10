@@ -174,14 +174,16 @@ InstallMethod( IsDiagonalMatrix,
     "for a matrix",
     [ IsMatrixOrMatrixObj ],
     function( mat )
-    local  i, j, z;
-    z:=ZeroOfBaseDomain(mat);
+    local i, ncols, p;
+    ncols := NrCols( mat );
     for i  in [ 1 .. NrRows( mat ) ]  do
-        for j  in [ 1 .. NrCols( mat ) ]  do
-            if mat[i,j] <> z and i <> j  then
-                return false;
-            fi;
-        od;
+        p := PositionNonZeroInRow( mat, i );
+        if p <= ncols and p <> i then
+            return false;
+        fi;
+        if PositionNonZeroInRow( mat, i, i ) <= ncols then
+            return false;
+        fi;
     od;
     return true;
     end);
@@ -215,14 +217,13 @@ InstallMethod( IsUpperTriangularMatrix,
     "for a matrix",
     [ IsMatrixOrMatrixObj ],
     function( mat )
-    local  i, j, z;
-    z:=ZeroOfBaseDomain(mat);
-    for j  in [ 1 .. NrCols( mat ) ]  do
-        for i  in [ j+1 .. NrRows( mat ) ]  do
-            if mat[i,j] <> z  then
-                return false;
-            fi;
-        od;
+    local i, ncols, p;
+    ncols := NrCols( mat );
+    for i in [ 1 .. NrRows( mat ) ] do
+        p := PositionNonZeroInRow( mat, i );
+        if p <= ncols and p < i then
+            return false;
+        fi;
     od;
     return true;
     end);
@@ -236,14 +237,12 @@ InstallMethod( IsLowerTriangularMatrix,
     "for a matrix",
     [ IsMatrixOrMatrixObj ],
     function( mat )
-    local  i, j, z;
-    z:=ZeroOfBaseDomain(mat);
+    local i, ncols;
+    ncols := NrCols( mat );
     for i  in [ 1 .. NrRows( mat ) ]  do
-        for j  in [ i+1 .. NrCols( mat ) ]  do
-            if mat[i,j] <> z  then
-                return false;
-            fi;
-        od;
+        if PositionNonZeroInRow( mat, i, i ) <= ncols then
+            return false;
+        fi;
     od;
     return true;
     end);
