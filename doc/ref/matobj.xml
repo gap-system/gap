@@ -377,4 +377,28 @@ described in this chapter is supported.
 
 </Section>
 
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Groups Consisting of Matrix Objects">
+<Heading>Groups Consisting of Matrix Objects</Heading>
+
+One application of matrix objects is to construct groups whose elements
+are matrix objects.
+The following conventions hold for such a group <C>G</C>.
+
+<List>
+<Item>
+  All elements of <C>G</C> have the same
+  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
+  and the same <Ref Attr="BaseDomain" Label="for a matrix object"/>.
+  For a given matrix or matrix object <C>M</C>,
+  a matrix object that can be multiplied with elements of <C>G</C>
+  can be constructed as <C>Matrix( M, Representative( G ) )</C>,
+  and the result can be tested for membership in <C>G</C>.
+</Item>
+</List>
+
+<#Include Label="ConstructingFiltersForMatrixGroupElements">
+
+</Section>
+
 </Chapter>

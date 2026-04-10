@@ -111,6 +111,7 @@ DeclareRepresentation( "IsPlistMatrixRep",
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain,
     [] );
 
+Add( ConstructingFiltersForMatrixGroupElements, IsPlistMatrixRep );
 
 # Some constants for matrix access:
 BindGlobal( "BDPOS", 1 );
