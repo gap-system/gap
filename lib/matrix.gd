@@ -154,6 +154,36 @@ DeclareSynonym( "IsLowerTriangularMat", IsLowerTriangularMatrix );
 
 #############################################################################
 ##
+#P  IsSquareMatrix( <mat> )
+#P  IsSquareMat( <mat> )
+##
+##  <#GAPDoc Label="IsSquareMat">
+##  <ManSection>
+##  <Prop Name="IsSquareMatrix" Arg='mat'/>
+##  <Prop Name="IsSquareMat" Arg='mat'/>
+##
+##  <Description>
+##  return <K>true</K> if the matrix <A>mat</A> has the same number of rows
+##  and columns, and <K>false</K> otherwise.
+##  <Example><![CDATA[
+##  gap> IsSquareMatrix( [ [ 1 ] ] );
+##  true
+##  gap> IsSquareMatrix( [ [ 1, 2 ], [ 3, 4 ] ] );
+##  true
+##  gap> IsSquareMatrix( [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] );
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsSquareMatrix", IsMatrixOrMatrixObj );
+
+DeclareSynonym( "IsSquareMat", IsSquareMatrix );
+
+
+#############################################################################
+##
 #P  IsSymmetricMatrix( <mat> )
 #P  IsSymmetricMat( <mat> )
 ##
@@ -183,6 +213,44 @@ DeclareSynonym( "IsLowerTriangularMat", IsLowerTriangularMatrix );
 DeclareProperty( "IsSymmetricMatrix", IsMatrixOrMatrixObj );
 
 DeclareSynonym( "IsSymmetricMat", IsSymmetricMatrix );
+
+InstallTrueMethod( IsSquareMatrix, IsSymmetricMatrix );
+
+
+#############################################################################
+##
+#P  IsAntisymmetricMatrix( <mat> )
+#P  IsAntisymmetricMat( <mat> )
+##
+##  <#GAPDoc Label="IsAntisymmetricMat">
+##  <ManSection>
+##  <Prop Name="IsAntisymmetricMatrix" Arg='mat'/>
+##  <Prop Name="IsAntisymmetricMat" Arg='mat'/>
+##
+##  <Description>
+##  return <K>true</K> if the matrix <A>mat</A> is a square matrix and
+##  satisfies <C><A>mat</A>[i,j] = -<A>mat</A>[j,i]</C> for all
+##  <M>i, j</M>, and <K>false</K> otherwise.
+##  (In particular, the diagonal entries must be zero.)
+##  <Example><![CDATA[
+##  gap> IsAntisymmetricMatrix( [ [ 0 ] ] );
+##  true
+##  gap> IsAntisymmetricMatrix( [ [ 0, 1 ], [ -1, 0 ] ] );
+##  true
+##  gap> IsAntisymmetricMatrix( [ [ 0, 1 ], [ 1, 0 ] ] );
+##  false
+##  gap> IsAntisymmetricMatrix( [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] );
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsAntisymmetricMatrix", IsMatrixOrMatrixObj );
+
+DeclareSynonym( "IsAntisymmetricMat", IsAntisymmetricMatrix );
+
+InstallTrueMethod( IsSquareMatrix, IsAntisymmetricMatrix );
 
 
 #############################################################################

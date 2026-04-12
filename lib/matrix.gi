@@ -250,6 +250,18 @@ InstallMethod( IsLowerTriangularMatrix,
 
 #############################################################################
 ##
+#M  IsSquareMatrix(<mat>)
+##
+InstallMethod( IsSquareMatrix,
+    "for a matrix",
+    [ IsMatrixOrMatrixObj ],
+    function( mat )
+    return NrRows( mat ) = NrCols( mat );
+    end );
+
+
+#############################################################################
+##
 #M  IsSymmetricMatrix(<mat>)
 ##
 InstallMethod( IsSymmetricMatrix,
@@ -257,7 +269,7 @@ InstallMethod( IsSymmetricMatrix,
     [ IsMatrixOrMatrixObj ],
     function( mat )
     local i, j;
-    if NrRows( mat ) <> NrCols( mat ) then
+    if not IsSquareMatrix( mat ) then
         return false;
     fi;
     for i in [ 1 .. NrRows( mat ) ] do
@@ -270,7 +282,29 @@ InstallMethod( IsSymmetricMatrix,
     return true;
     end );
 
-InstallTrueMethod( IsSymmetricMatrix, IsMatrixOrMatrixObj and IsEmptyMatrix );
+
+
+#############################################################################
+##
+#M  IsAntisymmetricMatrix(<mat>)
+##
+InstallMethod( IsAntisymmetricMatrix,
+    "for a matrix",
+    [ IsMatrixOrMatrixObj ],
+    function( mat )
+    local i, j;
+    if not IsSquareMatrix( mat ) then
+        return false;
+    fi;
+    for i in [ 1 .. NrRows( mat ) ] do
+        for j in [ 1 .. i ] do
+            if mat[i,j] <> -mat[j,i] then
+                return false;
+            fi;
+        od;
+    od;
+    return true;
+    end );
 
 
 #############################################################################
