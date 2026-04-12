@@ -91,18 +91,23 @@ RunMatTest := function(desc, ring)
     TestCreatingMatrix(ring);
 end;
 
-RunMatTest("GF(2)", GF(2));
-RunMatTest("Rationals", Rationals);
-
 RunMatObjTest := function(desc, filter, ring)
     Print("\n");
     PrintBoxed(Concatenation("Testing ", desc));
     TestCreatingMatrixObj(filter, ring);
 end;
 
-RunMatObjTest("GF(2) IsPlistMatrixRep", IsPlistMatrixRep, GF(2));
+RunMatTest("GF(257)", GF(257));
+RunMatObjTest("GF(257) IsPlistMatrixRep", IsPlistMatrixRep, GF(257));
+RunMatObjTest("GF(257) IsFlatPlistMatrixRep", IsFlatPlistMatrixRep, GF(257));
+
+RunMatTest("Integers", Integers);
 RunMatObjTest("integer IsPlistMatrixRep", IsPlistMatrixRep, Integers);
+RunMatObjTest("integer IsFlatPlistMatrixRep", IsFlatPlistMatrixRep, Integers);
+
+RunMatTest("Rationals", Rationals);
 RunMatObjTest("rational IsPlistMatrixRep", IsPlistMatrixRep, Rationals);
+RunMatObjTest("rational IsFlatPlistMatrixRep", IsFlatPlistMatrixRep, Rationals);
 
 # TODO: other reps
 # TODO: other compare with creating plist-of-plist

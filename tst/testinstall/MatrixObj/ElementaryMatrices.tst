@@ -68,6 +68,14 @@ gap> TestElementaryTransforms( mat, -1 );
 gap> TestWholeMatrixTransforms( mat, -1 );
 
 #
+gap> mat := NewMatrix(IsFlatPlistMatrixRep, Integers, 3,
+>                     [ [ 2, 4, 5 ], [ 7, 11, -4 ], [ -3, 20, 0 ] ] );;
+gap> IsFlatPlistMatrixRep(mat);
+true
+gap> TestElementaryTransforms( mat, -1 );
+gap> TestWholeMatrixTransforms( mat, -1 );
+
+#
 gap> TestPositionNonZeroInRow([ [ 1 ] ]);
 gap> TestPositionNonZeroInRow(Matrix([ [ 1 ] ]));
 gap> TestPositionNonZeroInRow(Matrix(GF(2), [ [ 1 ] ] * Z(2)));
