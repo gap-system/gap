@@ -321,11 +321,13 @@ DeclareAttribute( "BaseDomain", IsVecOrMatObj );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "NumberRows", IsMatrixOrMatrixObj );
+DeclareAttributeKernel( "NumberRows", IsMatrixOrMatrixObj, NUMBER_ROWS );
 DeclareSynonymAttr( "NrRows", NumberRows );
+InstallTrueMethod( HasNumberRows, IsMatrixOrMatrixObj and IsPlistRep);
 
-DeclareAttribute( "NumberColumns", IsMatrixOrMatrixObj );
+DeclareAttributeKernel( "NumberColumns", IsMatrixOrMatrixObj, NUMBER_COLUMNS );
 DeclareSynonymAttr( "NrCols", NumberColumns );
+InstallTrueMethod( HasNumberColumns, IsMatrixOrMatrixObj and IsPlistRep );
 
 
 #############################################################################
