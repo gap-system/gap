@@ -1903,6 +1903,23 @@ InstallMethod( PositionNonZeroInRow,
     return ncols + 1;
   end );
 
+InstallEarlyMethod( PositionNonZeroInRow,
+    function ( mat, row )
+    if IsPlistRep( mat ) then
+      return PositionNonZero( mat[row] );
+    fi;
+    TryNextMethod();
+    end );
+
+InstallEarlyMethod( PositionNonZeroInRow,
+    function ( mat, row, from )
+    if IsPlistRep( mat ) then
+      return PositionNonZero( mat[row], from );
+    fi;
+    TryNextMethod();
+    end );
+
+
 ############################################################################
 
 InstallMethod( SwapMatrixRows, "for a mutable matrix object, and two row numbers",
