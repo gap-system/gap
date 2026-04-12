@@ -16,23 +16,6 @@
 
 #############################################################################
 ##
-#F  ADD_LIST_DEFAULT( <list>, <obj> ) . . . . . .  add an element to the list
-##
-##  <ManSection>
-##  <Func Name="ADD_LIST_DEFAULT" Arg='list, obj'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-ADD_LIST_DEFAULT := function ( list, obj )
-    list[ LEN_LIST(list)+1 ] := obj;
-end;
-
-
-
-#############################################################################
-##
 #F  AS_LIST_SORTED_LIST( <list> ) . . . . . . . . . . . . . . setify the list
 ##
 ##  <ManSection>
