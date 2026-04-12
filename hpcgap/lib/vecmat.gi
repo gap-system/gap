@@ -1926,6 +1926,22 @@ InstallOtherMethod(PositionNonZero,
   return Length(vec)+1;
 end);
 
+InstallOtherMethod(PositionNonZero,
+  "General method for a row vector with start",
+  true,[IsRowVector, IsInt],0,
+  function(vec, from)
+  local i,z;
+  if Length(vec)=0 then return 1;fi;
+  z:=Zero(vec[1]);
+  for i in [from+1..Length(vec)] do
+    if vec[i]<>z then return i;fi;
+  od;
+  if Length(vec) <= from then
+    return from + 1;
+  fi;
+  return Length(vec)+1;
+end);
+
 
 #############################################################################
 ##
