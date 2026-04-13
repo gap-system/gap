@@ -1,4 +1,5 @@
 #@local l1, v1, l2, v2, v3, v4, x, src, dst, expected, from, to, len, one
+#@local l3, l4
 gap> START_TEST("CopySubVector.tst");
 
 #
@@ -13,6 +14,18 @@ gap> v2 := Vector(IsPlistVectorRep, Rationals, l2);
 gap> CopySubVector( v2, v1, [1,2,4], [2,4,6] );
 gap> Unpack(v1);
 [ 1, 1, 3, 1, 5, 2 ]
+
+#
+gap> l3 := [10,20,30,40,50,60];
+[ 10, 20, 30, 40, 50, 60 ]
+gap> CopySubVector( l1, l3, [1,3,5], [6,4,2] );
+gap> l3;
+[ 10, 5, 30, 3, 50, 1 ]
+
+#
+gap> CopySubVector( l1, v1, [2,4,6], [1,3,5] );
+gap> Unpack(v1);
+[ 2, 1, 4, 1, 6, 2 ]
 
 #
 gap> v3 := Vector(GF(5), l1*One(GF(5)));
@@ -56,6 +69,17 @@ gap> for from in [1,2,63,64,65] do
 > od;
 > od;
 > od;
+
+#
+gap> l4 := [0,0,0,0,0,0,0,0,0];
+[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+gap> CopySubVector( v3, l4, [1,2,3], [2,4,6] );
+gap> l4;
+[ 0, Z(5)^0, 0, Z(5), 0, Z(5)^3, 0, 0, 0 ]
+
+#
+gap> CopySubVector( l1, l3, [1,2], [1] );
+Error, source and destination index lists must be of equal length
 
 #
 gap> STOP_TEST("CopySubVector.tst");
