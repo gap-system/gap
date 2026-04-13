@@ -21,6 +21,7 @@ TestZeroMatrix := function(filt, ring, rows, cols)
   Assert(0, BaseDomain(mat) = ring);
   Assert(0, NrRows(mat) = rows);
   Assert(0, NrCols(mat) = cols);
+  Assert(0, IsZero(mat));
   for i in [1..rows] do
     for j in [1..cols] do
       if not IsZero(mat[i,j]) then Error("entry ", i,",",j," is ", mat[i,j], " and not zero"); fi;
@@ -40,6 +41,7 @@ TestIdentityMatrix := function(filt, ring, degree)
   Assert(0, BaseDomain(mat) = ring);
   Assert(0, NrRows(mat) = degree);
   Assert(0, NrCols(mat) = degree);
+  Assert(0, IsOne(mat));
   for i in [1..degree] do
     for j in [1..degree] do
       if i<>j and not IsZero(mat[i,j]) then

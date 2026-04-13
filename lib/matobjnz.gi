@@ -232,11 +232,6 @@ InstallMethod( PositionNonZero, "for a zmodnz vector", [ IsZmodnZVectorRep ],
     return PositionNonZero( v![ELSPOS] );
   end );
 
-InstallMethod( PositionNonZero, "for a zmodnz vector", [ IsZmodnZVectorRep ],
-  function( v )
-    return PositionNonZero( v![ELSPOS] );
-  end );
-
 InstallOtherMethod( PositionNonZero, "for a zmodnz vector and start",
   [ IsZmodnZVectorRep,IsInt ],
   function( v,s )
@@ -1224,27 +1219,6 @@ InstallMethod( IsZero, "for a zmodnz matrix",
         if not IsZero(m![ROWSPOS][i]) then
             return false;
         fi;
-    od;
-    return true;
-  end );
-
-InstallMethod( IsOne, "for a zmodnz matrix",
-  [ IsZmodnZMatrixRep ],
-  function( m )
-    local i,j,n;
-    if Length(m![ROWSPOS]) <> m![RLPOS] then
-        #Error("IsOne: Matrix must be square");
-        return false;
-    fi;
-    n := m![RLPOS];
-    for i in [1..n] do
-        if not IsOne(m![ROWSPOS][i]![ELSPOS][i]) then return false; fi;
-        for j in [1..i-1] do
-            if not IsZero(m![ROWSPOS][i]![ELSPOS][j]) then return false; fi;
-        od;
-        for j in [i+1..n] do
-            if not IsZero(m![ROWSPOS][i]![ELSPOS][j]) then return false; fi;
-        od;
     od;
     return true;
   end );
