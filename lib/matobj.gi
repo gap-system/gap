@@ -775,13 +775,13 @@ function( m, poss1, poss2 )
 end );
 
 InstallMethod( CopySubVector,
-    "generic method for vector objects",
-  [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ],
+    "generic method for row vectors and vector objects",
+  [ IsRowVectorOrVectorObj, IsRowVectorOrVectorObj and IsMutable,
+    IsList, IsList ],
   function(src, dst, scols, dcols)
     local i;
-    if not Length( dcols ) = Length( scols ) then
-      Error( "source and destination index lists must be of equal length" );
-      return;
+    if Length( dcols ) <> Length( scols ) then
+      ErrorNoReturn( "source and destination index lists must be of equal length" );
     fi;
     for i in [ 1 .. Length( dcols ) ] do
       dst[dcols[i]] := src[scols[i]];
@@ -1258,9 +1258,17 @@ InstallMethod( MutableCopyMatrix,
 #M  CopySubMatrix( <src>, <dst>, <srcrows>, <dstrows>, <srccols>, <dstcols> )
 ##
 InstallMethod( CopySubMatrix,
-    [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsList, IsList, IsList, IsList ],
+    [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj and IsMutable,
+      IsList, IsList, IsList, IsList ],
     function( src, dst, srcrows, dstrows, srccols, dstcols )
     local i, j;
+
+    if Length( dstrows ) <> Length( srcrows ) then
+      ErrorNoReturn( "source and destination row lists must be of equal length" );
+    fi;
+    if Length( dstcols ) <> Length( srccols ) then
+      ErrorNoReturn( "source and destination column lists must be of equal length" );
+    fi;
 
     for i in [ 1 .. Length( srcrows ) ] do
       for j in [ 1 .. Length( srccols ) ] do

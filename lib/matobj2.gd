@@ -875,7 +875,7 @@ DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixOrMatrixObj and IsMutab
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  For two vector objects <A>src</A> and <A>dst</A>,
+##  For two row vectors or vector objects <A>src</A> and <A>dst</A>,
 ##  such that <A>dst</A> is mutable,
 ##  and two lists <A>scols</A> and <A>dcols</A> of positions,
 ##  <Ref Oper="CopySubVector"/> assigns the entries
@@ -897,8 +897,8 @@ DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixOrMatrixObj and IsMutab
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "CopySubVector",
-    [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ] );
-
+    [ IsRowVectorOrVectorObj, IsRowVectorOrVectorObj and IsMutable,
+      IsList, IsList ] );
 
 
 #############################################################################
