@@ -402,4 +402,90 @@ The following conventions hold for such a group <C>G</C>.
 
 </Section>
 
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="How to Write Code for Vector and Matrix Objects">
+<Heading>How to Write Code for Vector and Matrix Objects</Heading>
+
+Most &GAP; functions which deal with vector and matrix objects
+are intended to accept any kind of these objects,
+and if the output involves vector and matrix objects then these
+are expected to be compatible with the inputs.
+For example, a function that computes the Kronecker product of two
+matrix objects <C>mat1</C>, <C>mat2</C> may take the two inputs,
+which must have the same
+<Ref Filt="ConstructingFilter" Label="for a matrix object"/> value,
+create a new matrix object which also lies in this filter,
+for example by calling <C>ZeroMatrix( m, n, mat1 )</C>,
+and then set the entries in this matrix.
+
+<P/>
+
+Functions like
+<Ref Oper="ZeroMatrix" Label="for dimensions and matrix object"/>,
+<Ref Oper="IdentityMatrix" Label="for dimension and matrix object"/>,
+and <Ref Oper="Matrix" Label="for a list and a matrix object"/>
+admit different kinds of inputs,
+some of which leave the decision about the type of the output to &GAP;.
+For example, <C>ZeroMatrix( R, m, n )</C> returns a matrix object in an
+internal representation that is suitable for the base domain <C>R</C>.
+However, if we want a matrix object that is compatible with a given
+matrix object <C>M</C> then we are not allowed to call a variant
+that involves such choices,
+and we have to call <C>ZeroMatrix( m, n, M )</C>.
+
+<P/>
+
+This approach works also in many situation where the input involves
+the <Q>list of list</Q> matrices in the filter <Ref Filt="IsMatrix"/>.
+In practice, the question is often the other way round:
+One has old &GAP; code that was written for objects in <Ref Filt="IsMatrix"/>,
+and wants to rewrite it such that it works also for general matrix objects.
+In such cases, the following rules may be useful.
+
+<List>
+<Item>
+  Use <C>M[i, j]</C> not <C>M[i][j]</C>
+  for accessing/assigning matrix entries.
+</Item>
+<Item>
+  Use <C>ExtractSubMatrix( M, rows, cols )</C> not <C>M{ rows }{ cols }</C>
+  for accessing submatrices,
+  similarly use <C>CopySubMatrix( src, dst, srows, drows, scols, dcols )</C>.
+</Item>
+<Item>
+  Use <C>ZeroVector( R, n )</C> not <C>[ 1 .. n ] * Zero( R )</C> for a
+  given domain <C>R</C>.
+</Item>
+<Item>
+  Use <C>ZeroVector( n, M )</C> not <C>0 * M[1]</C> for a
+  given matrix object <C>M</C> with <C>n</C> columns.
+</Item>
+<Item>
+  Use <Ref Attr="BaseDomain" Label="for a matrix object"/>
+  not <Ref Attr="DefaultFieldOfMatrix"/>.
+</Item>
+<Item>
+  Do not use the unary versions of
+  <Ref Func="ConvertToVectorRep" Label="for a list (and a field)"/>
+  and <Ref Func="ConvertToMatrixRep" Label="for a list (and a field)"/>.
+</Item>
+<Item>
+  Use <Ref Func="ImmutableMatrix"/> and the binary versions of
+  <Ref Func="ConvertToVectorRep" Label="for a list (and a field)"/>
+  and <Ref Func="ConvertToMatrixRep" Label="for a list (and a field)"/>
+  only when creating initial objects
+  which need not be compatible with given vectors or matrices.
+</Item>
+</List>
+
+Conversely, do <E>not</E> use functions for vector and matrix objects
+when you want to create an object that shall be used just as a list.
+For example, use <C>ListWithIdenticalEntries( n, Zero( R ) )</C>
+not <C>Vector( R, n )</C> in this case.
+For creating a list with <C>n</C> entries, you can also first call
+<Ref Func="EmptyPlist"/> for creating a big enough list,
+and then enter the values.
+
+</Section>
+
 </Chapter>
