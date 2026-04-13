@@ -1925,7 +1925,9 @@ InstallOtherMethod( IsMatchingSublist,
 InstallMethod( Add,
     "for mutable list and list",
     [ IsList and IsMutable, IsObject ],
-    ADD_LIST_DEFAULT );
+    function ( list, obj )
+    list[ LEN_LIST(list)+1 ] := obj;
+end );
 
 InstallMethod( Add, "three arguments fast version",
         [ IsPlistRep and IsList and IsMutable, IsObject, IsPosInt],

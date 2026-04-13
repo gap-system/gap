@@ -334,14 +334,14 @@ CallAndInstallPostRestore( function()
       for i in [1..LENGTH(GAPInfo.SystemEnvironment.PATH)] do
         if GAPInfo.SystemEnvironment.PATH[i] = ':' then
           if i > j then
-            ADD_LIST_DEFAULT(GAPInfo.DirectoriesSystemPrograms,
+            ADD_LIST(GAPInfo.DirectoriesSystemPrograms,
                   MakeImmutable(GAPInfo.SystemEnvironment.PATH{[j..i-1]}));
           fi;
           j := i+1;
         fi;
       od;
       if j <= LENGTH( GAPInfo.SystemEnvironment.PATH ) then
-        ADD_LIST_DEFAULT( GAPInfo.DirectoriesSystemPrograms,
+        ADD_LIST( GAPInfo.DirectoriesSystemPrograms,
             MakeImmutable(GAPInfo.SystemEnvironment.PATH{ [ j ..
                 LENGTH( GAPInfo.SystemEnvironment.PATH ) ] } ));
       fi;
@@ -385,7 +385,7 @@ CallAndInstallPostRestore( function()
             CommandLineOptions.( opt ):= CommandLineOptions.( opt ) + 1;
           elif i <= LENGTH( line ) then
             if opt = "c" then
-              ADD_LIST_DEFAULT( InitFiles, rec( command := line[i] ) );
+              ADD_LIST( InitFiles, rec( command := line[i] ) );
               i := i+1;
             elif IS_STRING_REP( value ) then
               # string
@@ -393,7 +393,7 @@ CallAndInstallPostRestore( function()
               i := i+1;
             elif IS_LIST( value ) then
               # list of strings, starting from the empty list
-              ADD_LIST_DEFAULT( CommandLineOptions.( opt ), line[i] );
+              ADD_LIST( CommandLineOptions.( opt ), line[i] );
               i := i+1;
             fi;
           else
@@ -401,7 +401,7 @@ CallAndInstallPostRestore( function()
           fi;
         fi;
       else
-        ADD_LIST_DEFAULT( InitFiles, word );
+        ADD_LIST( InitFiles, word );
       fi;
     od;
     CommandLineOptions.g:= CommandLineOptions.g mod 3;
