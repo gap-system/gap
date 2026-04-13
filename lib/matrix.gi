@@ -1263,15 +1263,15 @@ end );
 #M  IsZero( <mat> )
 ##
 InstallMethod( IsZero,
-    "method for a matrix",
-    [ IsMatrix ],
+    "method for a matrix or matrix object",
+    [ IsMatrixOrMatrixObj ],
     function( mat )
-    local ncols,  # number of columns
-          row;    # loop over rows in 'obj'
+    local i,
+          ncols;
 
     ncols:= NrCols( mat );
-    for row in mat do
-      if PositionNonZero( row ) <= ncols then
+    for i in [1 .. NrRows( mat )] do
+      if PositionNonZeroInRow( mat, i ) <= ncols then
         return false;
       fi;
     od;
@@ -1284,20 +1284,20 @@ InstallMethod( IsZero,
 #M  IsOne( <mat> )
 ##
 InstallMethod( IsOne,
-    "method for a matrix",
-    [ IsMatrix ],
+    "method for a matrix or matrix object",
+    [ IsMatrixOrMatrixObj ],
     function( mat )
-    local ncols,  # number of columns
-          i,
-          row;    # loop over rows in 'obj'
+    local n, i;
 
-    ncols:= NrCols( mat );
-    for i in [1 .. NrRows( mat )] do
-      row := mat[i];
-      if PositionNonZero( row ) <> i or not IsOne( row[i] ) then
+    n:= NrCols( mat );
+    if NrRows( mat ) <> n then
+      return false;
+    fi;
+    for i in [1 .. n] do
+      if PositionNonZeroInRow( mat, i ) <> i or not IsOne( mat[i,i] ) then
         return false;
       fi;
-      if PositionNonZero( row, i ) <= ncols then
+      if PositionNonZeroInRow( mat, i, i ) <= n then
         return false;
       fi;
     od;
