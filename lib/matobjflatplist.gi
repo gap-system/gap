@@ -197,7 +197,7 @@ InstallMethod( MutableCopyMatrix,
 InstallMethod( ExtractSubMatrix,
   [ "IsFlatPlistMatrixRep", "IsList", "IsList" ],
   function( M, rowspos, colspos )
-    local list, i;
+    local list;
     list := M![FROWSPOS]{ rowspos }{ colspos };
     return MakeIsFlatPlistMatrixRep( BaseDomain(M), Length( colspos ), list, false );
   end );
@@ -206,7 +206,6 @@ InstallMethod( CopySubMatrix,
   [ "IsFlatPlistMatrixRep", "IsFlatPlistMatrixRep and IsMutable",
     "IsList", "IsList", "IsList", "IsList" ],
   function( M, N, srcrows, dstrows, srccols, dstcols )
-    local i;
     if ValueOption( "check" ) <> false and
        not IsIdenticalObj( BaseDomain(M), BaseDomain(N) ) then
       Error( "<M> and <N> are not compatible" );
@@ -313,7 +312,7 @@ InstallMethod( \*,
 InstallMethod( \*,
   [ "IsFlatPlistMatrixRep", "IsVectorObj" ],
   function( M, v )
-    local rows, cols, bd, res, i, j;
+    local rows, cols, bd, res;
 
     rows := NumberRows( M );
     cols := NumberColumns( M );
@@ -347,7 +346,7 @@ InstallMethod( \*,
 InstallMethod( \*,
   [ "IsVectorObj", "IsFlatPlistMatrixRep" ],
   function( v, M )
-    local rows, cols, bd, res, i, j;
+    local rows, cols, bd, res;
 
     rows := NumberRows( M );
     cols := NumberColumns( M );
@@ -442,7 +441,6 @@ InstallMethod( SwapMatrixColumns,
 InstallMethod( PostMakeImmutable,
   [ "IsFlatPlistMatrixRep" ],
   function( M )
-    local row;
     MakeImmutable( M![FROWSPOS] );
   end );
 
