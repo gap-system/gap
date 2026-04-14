@@ -406,14 +406,20 @@ The following conventions hold for such a group <C>G</C>.
 <Section Label="How to Write Code for Vector and Matrix Objects">
 <Heading>How to Write Code for Vector and Matrix Objects</Heading>
 
-Most &GAP; functions which deal with vector and matrix objects
-are intended to accept any kind of these objects,
-and if the output involves vector and matrix objects then these
-are expected to be compatible with the inputs.
+Vector and matrix objects have a number of different representations in &GAP;
+which are optimised for different things;
+see the list <Ref Var="ConstructingFiltersForMatrixGroupElements"/> for
+examples of available
+<Ref Attr="ConstructingFilter" Label="for a matrix object"/> values
+of matrix objects.
+Most &GAP; functions accepting vector or matrix objects as arguments
+do not depend on any particular representation for these objects.
+If the output of such a function involves vector and matrix objects,
+then these are expected to have the same representations as the inputs.
 For example, a function that computes the Kronecker product of two
 matrix objects <C>mat1</C>, <C>mat2</C> may take the two inputs,
 which must have the same
-<Ref Filt="ConstructingFilter" Label="for a matrix object"/> value,
+<Ref Attr="ConstructingFilter" Label="for a matrix object"/> value,
 create a new matrix object which also lies in this filter,
 for example by calling <C>ZeroMatrix( m, n, mat1 )</C>,
 and then set the entries in this matrix.
@@ -431,21 +437,25 @@ internal representation that is suitable for the base domain <C>R</C>.
 However, if we want a matrix object that is compatible with a given
 matrix object <C>M</C> then we are not allowed to call a variant
 that involves such choices,
-and we have to call <C>ZeroMatrix( m, n, M )</C>.
+and we have to call <C>ZeroMatrix( m, n, M )</C>
+or <C>ZeroMatrix( ConstructingFilter( M ), BaseDomain( M ), m, n )</C>.
 
 <P/>
 
 This approach works also in many situation where the input involves
 the <Q>list of list</Q> matrices in the filter <Ref Filt="IsMatrix"/>.
 In practice, the question is often the other way round:
-One has old &GAP; code that was written for objects in <Ref Filt="IsMatrix"/>,
-and wants to rewrite it such that it works also for general matrix objects.
-In such cases, the following rules may be useful.
+one has old &GAP; code that was written for objects in <Ref Filt="IsMatrix"/>,
+and wants to rewrite it such that it works for general matrix objects also.
+In such cases, the following guidelines may be useful.
 
 <List>
 <Item>
   Use <C>M[i, j]</C> not <C>M[i][j]</C>
   for accessing/assigning matrix entries.
+  <P/>
+  Note that <C>M[i][j]</C> means to fetch or even create <C>M[i]</C>
+  and then take the <C>j</C>-th entry of it.
 </Item>
 <Item>
   Use <C>ExtractSubMatrix( M, rows, cols )</C> not <C>M{ rows }{ cols }</C>
@@ -453,28 +463,66 @@ In such cases, the following rules may be useful.
   similarly use <C>CopySubMatrix( src, dst, srows, drows, scols, dcols )</C>.
 </Item>
 <Item>
-  Use <C>ZeroVector( R, n )</C> not <C>[ 1 .. n ] * Zero( R )</C> for a
-  given domain <C>R</C>.
+  Use <C>ZeroVector( R, n )</C> not <C>[ 1 .. n ] * Zero( R )</C> for
+  creating a zero vector over a given domain <C>R</C>.
+  <P/>
+  The latter syntax creates an unnecessary new object <C>[ 1 .. n ]</C>,
+  multiplies each of its entries with <C>Zero( R )</C>
+  (not knowing that the result will be <C>Zero( R )</C> in each case),
+  and creates not a vector object but a plain list of the results.
 </Item>
 <Item>
   Use <C>ZeroVector( n, M )</C> not <C>0 * M[1]</C> for a
   given matrix object <C>M</C> with <C>n</C> columns.
+  <P/>
+  Again, calling <C>M[1]</C> may have to create an unnecessary new object
+  <C>M[1]</C>.
 </Item>
 <Item>
   Use <Ref Attr="BaseDomain" Label="for a matrix object"/>
   not <Ref Attr="DefaultFieldOfMatrix"/>.
+  <P/>
+  This is just a conceptual issue, the results should in fact coincide.
+  A matrix object <C>M</C> which is not a list of lists stores its
+  <Ref Attr="BaseDomain" Label="for a matrix object"/> value.
+  For convenience, <C>DefaultFieldOfMatrix( M )</C> is defined
+  to return this value (although this need not be a field).
+  On the other hand, a list of lists <C>M</C> in <Ref Filt="IsMatrix"/>
+  does not store the two attribute values,
+  <Ref Attr="DefaultFieldOfMatrix"/> value is computed from the entries
+  of <C>M</C>,
+  and for convenience, <C>BaseDomain( M )</C> is defined to return the
+  <Ref Attr="DefaultFieldOfMatrix"/> value.
 </Item>
 <Item>
   Do not use the unary versions of
   <Ref Func="ConvertToVectorRep" Label="for a list (and a field)"/>
   and <Ref Func="ConvertToMatrixRep" Label="for a list (and a field)"/>.
+  <P/>
+  For example, consider the two matrices <C>M1 = [ [ Z(4) ] ]</C> and
+  <C>M2 = [ [ Z(4)^3 ] ]</C> over the field with four elements.
+  The latter is in fact a matrix over the field with two elements,
+  and <C>ConvertToMatrixRep( M2 )</C> turns it into a matrix in
+  <Ref Filt="IsGF2MatrixRep"/>, whereas <C>ConvertToMatrixRep( M1 )</C>
+  yields a matrix in <Ref Filt="Is8BitMatrixRep"/>.
+  Thus computing products or sums of these matrices is more expensive
+  than computations with two matrices in <Ref Filt="Is8BitMatrixRep"/>.
 </Item>
 <Item>
-  Use <Ref Func="ImmutableMatrix"/> and the binary versions of
+  Use <Ref Oper="ImmutableMatrix"/> and the binary versions of
   <Ref Func="ConvertToVectorRep" Label="for a list (and a field)"/>
   and <Ref Func="ConvertToMatrixRep" Label="for a list (and a field)"/>
   only when creating initial objects
   which need not be compatible with given vectors or matrices.
+  <P/>
+  The idea behind these functions is to choose a good representation
+  for initial data (for example for some expensive MeatAxe computations,
+  see Chapter <Ref Chap="The MeatAxe"/>).
+  The results of computations with these data should then automatically
+  be in the same representation.
+  If not then the code in question has problems,
+  and <Q>adjusting</Q> the representation of intermediate results by
+  calling the abovementioned conversion functions just hides these problems.
 </Item>
 </List>
 
