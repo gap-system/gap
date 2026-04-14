@@ -17,13 +17,10 @@ BindGlobal( "CopyFlatPlistMatrixRow",
   function( row )
     local copy, i, len;
     len := Length( row );
-    copy := [];
-    if 0 < len then
-      copy[len] := row[len];
-      for i in [ 1 .. len - 1 ] do
-        copy[i] := row[i];
-      od;
-    fi;
+    copy := EmptyPlist( len );
+    for i in [ 1 .. len ] do
+      copy[i] := row[i];
+    od;
     return copy;
   end );
 
@@ -104,13 +101,14 @@ InstallTagBasedMethod( NewMatrix,
       fi;
     fi;
 
-    rows := 0 * [ 1 .. Length( list ) ];
+    rows := EmptyPlist( Length( list ) );
     for i in [ 1 .. Length( list ) ] do
       row := list[i];
       if IsVectorObj( row ) then
-        row := Unpack( row );
+        rows[i] := Unpack( row );
+      else
+        rows[i] := CopyFlatPlistMatrixRow( row );
       fi;
-      rows[i] := CopyFlatPlistMatrixRow( row );
     od;
     if not IsMutable( list ) then
       MakeImmutable( rows );
@@ -123,7 +121,7 @@ InstallTagBasedMethod( NewZeroMatrix,
   IsFlatPlistMatrixRep,
   function( filter, basedomain, rows, cols )
     local list, row, i, z;
-    list := 0 * [ 1 .. rows ];
+    list := EmptyPlist( rows );
     z := Zero( basedomain );
     for i in [ 1 .. rows ] do
       row := ListWithIdenticalEntries( cols, z );
@@ -296,7 +294,7 @@ InstallMethod( \*,
     if rowsA = 0 or colsB = 0 then
       list := [];
     elif colsA = 0 then  # colsA = rowsB
-      list := 0 * [ 1 .. rowsA ];
+      list := EmptyPlist( rowsA );
       for i in [ 1 .. rowsA ] do
         list[i] := ListWithIdenticalEntries( colsB, Zero( bd ) );
       od;
