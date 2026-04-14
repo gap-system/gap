@@ -430,15 +430,24 @@ Functions like
 <Ref Oper="ZeroMatrix" Label="for dimensions and matrix object"/>,
 <Ref Oper="IdentityMatrix" Label="for dimension and matrix object"/>,
 and <Ref Oper="Matrix" Label="for a list and a matrix object"/>
-admit different kinds of inputs,
-some of which leave the decision about the type of the output to &GAP;.
-For example, <C>ZeroMatrix( R, m, n )</C> returns a matrix object in an
-internal representation that is suitable for the base domain <C>R</C>.
-However, if we want a matrix object that is compatible with a given
-matrix object <C>M</C> then we are not allowed to call a variant
-that involves such choices,
-and we have to call <C>ZeroMatrix( m, n, M )</C>
-or <C>ZeroMatrix( ConstructingFilter( M ), BaseDomain( M ), m, n )</C>.
+admit different kinds of inputs.
+<C>ZeroMatrix( R, m, n )</C> can be used, for example,
+if we want to leave the decision about the representation of the result
+to &GAP;.
+This might be useful if the result of <C>ZeroMatrix( R, m, n )</C> is
+the first matrix we create, and then later matrices are created
+relative to this matrix.
+If we already have a matrix object <C>M</C> and want <C>ZeroMatrix</C>
+to return a new matrix object that has the same representation as <C>M</C>,
+then <C>ZeroMatrix( R, m, n )</C> may not return a matrix with the expected
+representation.
+For example, even if we use the same <C>R</C> as before, &GAP; might decide
+to use a sparse representation for large enough <C>m</C> and <C>n</C>.
+It is possible to create a <C>ZeroMatrix</C> in the same representation
+as <C>M</C> by fully specifying this representation as follows
+<C>ZeroMatrix( ConstructingFilter( M ), BaseDomain( M ), m, n )</C>.
+It is also possible to produce the same result using the more convenient
+<C>ZeroMatrix( m, n, M )</C>.
 
 <P/>
 
@@ -454,18 +463,24 @@ In such cases, the following guidelines may be useful.
   Use <C>M[i, j]</C> not <C>M[i][j]</C>
   for accessing/assigning matrix entries.
   <P/>
-  Note that <C>M[i][j]</C> means to fetch or even create <C>M[i]</C>
+  <E>Reason:</E>
+  <C>M[i][j]</C> means to fetch or even create <C>M[i]</C>
   and then take the <C>j</C>-th entry of it.
 </Item>
 <Item>
   Use <C>ExtractSubMatrix( M, rows, cols )</C> not <C>M{ rows }{ cols }</C>
   for accessing submatrices,
   similarly use <C>CopySubMatrix( src, dst, srows, drows, scols, dcols )</C>.
+  <P/>
+  <E>Reason:</E>
+  The <C>M{ rows }</C> syntax is supported only for
+  row-list matrices, see <Ref Filt="IsRowListMatrix"/>.
 </Item>
 <Item>
   Use <C>ZeroVector( R, n )</C> not <C>[ 1 .. n ] * Zero( R )</C> for
   creating a zero vector over a given domain <C>R</C>.
   <P/>
+  <E>Reason:</E>
   The latter syntax creates an unnecessary new object <C>[ 1 .. n ]</C>,
   multiplies each of its entries with <C>Zero( R )</C>
   (not knowing that the result will be <C>Zero( R )</C> in each case),
@@ -475,13 +490,15 @@ In such cases, the following guidelines may be useful.
   Use <C>ZeroVector( n, M )</C> not <C>0 * M[1]</C> for a
   given matrix object <C>M</C> with <C>n</C> columns.
   <P/>
-  Again, calling <C>M[1]</C> may have to create an unnecessary new object
+  <E>Reason:</E>
+  Calling <C>M[1]</C> may have to create an unnecessary new object
   <C>M[1]</C>.
 </Item>
 <Item>
   Use <Ref Attr="BaseDomain" Label="for a matrix object"/>
   not <Ref Attr="DefaultFieldOfMatrix"/>.
   <P/>
+  <E>Reason:</E>
   This is just a conceptual issue, the results should in fact coincide.
   A matrix object <C>M</C> which is not a list of lists stores its
   <Ref Attr="BaseDomain" Label="for a matrix object"/> value.
@@ -499,6 +516,7 @@ In such cases, the following guidelines may be useful.
   <Ref Func="ConvertToVectorRep" Label="for a list (and a field)"/>
   and <Ref Func="ConvertToMatrixRep" Label="for a list (and a field)"/>.
   <P/>
+  <E>Reason:</E>
   For example, consider the two matrices <C>M1 = [ [ Z(4) ] ]</C> and
   <C>M2 = [ [ Z(4)^3 ] ]</C> over the field with four elements.
   The latter is in fact a matrix over the field with two elements,
@@ -515,6 +533,7 @@ In such cases, the following guidelines may be useful.
   only when creating initial objects
   which need not be compatible with given vectors or matrices.
   <P/>
+  <E>Reason:</E>
   The idea behind these functions is to choose a good representation
   for initial data (for example for some expensive MeatAxe computations,
   see Chapter <Ref Chap="The MeatAxe"/>).
