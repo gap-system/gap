@@ -13,17 +13,6 @@
 # Dense matrix objects backed by plain lists of plain row lists.
 #
 
-BindGlobal( "CopyFlatPlistMatrixRow",
-  function( row )
-    local copy, i, len;
-    len := Length( row );
-    copy := EmptyPlist( len );
-    for i in [ 1 .. len ] do
-      copy[i] := row[i];
-    od;
-    return copy;
-  end );
-
 BindGlobal( "InverseRowsForFlatPlistMatrix",
   function( M )
     local bd, rows;
@@ -107,7 +96,7 @@ InstallTagBasedMethod( NewMatrix,
       if IsVectorObj( row ) then
         rows[i] := Unpack( row );
       else
-        rows[i] := CopyFlatPlistMatrixRow( row );
+        rows[i] := PlainListCopy( row );
       fi;
     od;
     if not IsMutable( list ) then
@@ -180,17 +169,17 @@ InstallMethod( SetMatElm,
 
 InstallMethod( Unpack,
   [ "IsFlatPlistMatrixRep" ],
-  M -> List( M![FROWSPOS], CopyFlatPlistMatrixRow ) );
+  M -> List( M![FROWSPOS], ShallowCopy ) );
 
 InstallMethod( ShallowCopy,
   [ "IsFlatPlistMatrixRep" ],
   M -> MakeIsFlatPlistMatrixRep( BaseDomain(M), NrCols(M),
-           List( M![FROWSPOS], CopyFlatPlistMatrixRow ), false ) );
+           List( M![FROWSPOS], ShallowCopy ), false ) );
 
 InstallMethod( MutableCopyMatrix,
   [ "IsFlatPlistMatrixRep" ],
   M -> MakeIsFlatPlistMatrixRep( BaseDomain(M), NrCols(M),
-           List( M![FROWSPOS], CopyFlatPlistMatrixRow ), false ) );
+           List( M![FROWSPOS], ShallowCopy ), false ) );
 
 InstallMethod( ExtractSubMatrix,
   [ "IsFlatPlistMatrixRep", "IsList", "IsList" ],
