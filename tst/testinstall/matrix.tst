@@ -200,6 +200,10 @@ false
 
 #
 gap> m := Z(5)^0 * [[0, 1], [1, 0]];;
+gap> HasNumberRows(m);
+true
+gap> HasNumberColumns(m);
+true
 gap> m := GeneratorsWithMemory([m])[1];;
 gap> BaseDomain(m) = GF(5);
 true

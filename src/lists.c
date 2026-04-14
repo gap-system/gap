@@ -81,6 +81,8 @@ BOOL (*IsSmallListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 static Obj IsSmallListFilt;
 static Obj HasIsSmallListFilt;
 static Obj LengthAttr;
+static Obj NumberRowsAttr;
+static Obj NumberColumnsAttr;
 static Obj SetIsSmallList;
 
 static BOOL IsSmallListObject(Obj obj)
@@ -160,6 +162,41 @@ static Obj AttrLENGTH(Obj self, Obj list)
     else {
         return DoAttribute( LengthAttr, list );
     }
+}
+
+
+/****************************************************************************
+**
+*F  AttrNUMBER_ROWS( <self>, <mat> )  . . . . . .  'NumberRows' interface
+*/
+static Obj AttrNUMBER_ROWS(Obj self, Obj mat)
+{
+    if (IS_PLIST(mat)) {
+        return ObjInt_Int(LEN_PLIST(mat));
+    }
+
+    return DoAttribute(NumberRowsAttr, mat);
+}
+
+
+/****************************************************************************
+**
+*F  AttrNUMBER_COLUMNS( <self>, <mat> ) . . . .  'NumberColumns' interface
+*/
+static Obj AttrNUMBER_COLUMNS(Obj self, Obj mat)
+{
+    if (IS_PLIST(mat)) {
+        if (LEN_PLIST(mat) == 0) {
+            return INTOBJ_INT(0);
+        }
+
+        Obj row = ELM_PLIST(mat, 1);
+        if (row != 0) {
+            return AttrLENGTH(LengthAttr, row);
+        }
+    }
+
+    return DoAttribute(NumberColumnsAttr, mat);
 }
 
 
@@ -1874,6 +1911,8 @@ static StructGVarFilt GVarFilts [] = {
 static StructGVarAttr GVarAttrs [] = {
 
     GVAR_ATTR(LENGTH, "list", &LengthAttr),
+    GVAR_ATTR(NUMBER_ROWS, "mat", &NumberRowsAttr),
+    GVAR_ATTR(NUMBER_COLUMNS, "mat", &NumberColumnsAttr),
     { 0, 0, 0, 0, 0 }
 
 };
