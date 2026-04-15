@@ -251,6 +251,15 @@ DeclareObsoleteSynonym( "RadicalGroup", "SolvableRadical" );
 
 #############################################################################
 ##
+#A  RowLength( <matobj> )
+##
+##  Moved to obsolete in April 2026.
+##
+DeclareObsoleteSynonymAttr( "RowLength", "NumberColumns", 1 );
+
+
+#############################################################################
+##
 #F  SCRSiftOld( <S>, <g> )
 ##
 ##  Moved to obsoletes in August 2025.
