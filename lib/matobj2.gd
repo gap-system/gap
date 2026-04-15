@@ -1790,12 +1790,10 @@ DeclareAttribute( "DimensionsMat", IsMatrixOrMatrixObj );
 #############################################################################
 ##
 #A  Length( <matobj> )
-#A  RowLength( <matobj> )
 ##
 ##  They had been used in older versions.
 ##
 DeclareAttribute( "Length", IsMatrixOrMatrixObj );
-DeclareSynonymAttr( "RowLength", NumberColumns );
 
 
 #############################################################################
