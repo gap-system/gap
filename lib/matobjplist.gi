@@ -635,10 +635,6 @@ InstallMethod( NumberColumns,
   [ "IsPlistMatrixRep" ],
   M -> M![RLPOS] );
 
-InstallMethod( DimensionsMat,
-  [ "IsPlistMatrixRep" ],
-  M -> [ Length( M![ROWSPOS]), M![RLPOS] ] );
-
 
 ############################################################################
 # Representation preserving constructors:

@@ -688,27 +688,15 @@ InstallTagBasedMethod( NewIdentityMatrix,
 
 InstallOtherMethod( BaseDomain, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
-  function( m )
-    return m![BDPOS];
-  end );
+  M -> M![BDPOS] );
 
 InstallMethod( NumberRows, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
-  function( m )
-    return Length(m![ROWSPOS]);
-  end );
+  M -> Length( M![ROWSPOS] ) );
 
 InstallMethod( NumberColumns, "for a zmodnz matrix",
   [ IsZmodnZMatrixRep ],
-  function( m )
-    return m![RLPOS];
-  end );
-
-# InstallMethod( DimensionsMat, "for a zmodnz matrix",
-#   [ IsZmodnZMatrixRep ],
-#   function( m )
-#     return [Length(m![ROWSPOS]),m![RLPOS]];
-#   end );
+  M -> M![RLPOS] );
 
 
 ############################################################################
