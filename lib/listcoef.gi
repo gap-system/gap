@@ -1516,10 +1516,14 @@ InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
     q := Size(f);
     n := Length(mat[1]);
     m := Length(mat);
+    # The search below assumes the rows form a basis for an m-dimensional
+    # syndrome space, so reject dependent input before building the column data.
+    if RankMat(mat) <> m then
+        Error("CosetLeadersMatFFE: <mat> must have linearly independent rows");
+    fi;
     tofind := q^m;
     t := TransposedMat(mat);
     vl := [];
-    vl[m+1] := false;
     felts := AsSSortedList(f);
     Assert(2, felts[1] = Zero(f));
     nzfelts := felts{[2..q]};
