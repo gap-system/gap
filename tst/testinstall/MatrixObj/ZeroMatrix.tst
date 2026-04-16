@@ -80,21 +80,21 @@ gap> TestZeroMatrix(IsPlistMatrixRep, Integers mod 4, 0, 3);
 <0x3-matrix over (Integers mod 4)>
 
 #
-# IsFlatPlistMatrixRep
+# IsGenericMatrixRep
 #
-gap> TestZeroMatrix(IsFlatPlistMatrixRep, GF(2), 2, 3);
+gap> TestZeroMatrix(IsGenericMatrixRep, GF(2), 2, 3);
 <2x3-matrix over GF(2)>
-gap> TestZeroMatrix(IsFlatPlistMatrixRep, GF(2), 2, 0);
+gap> TestZeroMatrix(IsGenericMatrixRep, GF(2), 2, 0);
 <2x0-matrix over GF(2)>
-gap> TestZeroMatrix(IsFlatPlistMatrixRep, GF(2), 0, 3);
+gap> TestZeroMatrix(IsGenericMatrixRep, GF(2), 0, 3);
 <0x3-matrix over GF(2)>
 
 #
-gap> TestZeroMatrix(IsFlatPlistMatrixRep, Integers, 2, 3);
+gap> TestZeroMatrix(IsGenericMatrixRep, Integers, 2, 3);
 <2x3-matrix over Integers>
-gap> TestZeroMatrix(IsFlatPlistMatrixRep, Integers, 2, 0);
+gap> TestZeroMatrix(IsGenericMatrixRep, Integers, 2, 0);
 <2x0-matrix over Integers>
-gap> TestZeroMatrix(IsFlatPlistMatrixRep, Integers, 0, 3);
+gap> TestZeroMatrix(IsGenericMatrixRep, Integers, 0, 3);
 <0x3-matrix over Integers>
 
 #

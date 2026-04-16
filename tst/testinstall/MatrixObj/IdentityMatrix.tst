@@ -74,21 +74,21 @@ gap> TestIdentityMatrix(IsPlistMatrixRep, Integers mod 4, -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #
-# IsFlatPlistMatrixRep
+# IsGenericMatrixRep
 #
-gap> TestIdentityMatrix(IsFlatPlistMatrixRep, GF(2), 2);
+gap> TestIdentityMatrix(IsGenericMatrixRep, GF(2), 2);
 <2x2-matrix over GF(2)>
-gap> TestIdentityMatrix(IsFlatPlistMatrixRep, GF(2), 0);
+gap> TestIdentityMatrix(IsGenericMatrixRep, GF(2), 0);
 <0x0-matrix over GF(2)>
-gap> TestIdentityMatrix(IsFlatPlistMatrixRep, GF(2), -1);
+gap> TestIdentityMatrix(IsGenericMatrixRep, GF(2), -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #
-gap> TestIdentityMatrix(IsFlatPlistMatrixRep, Integers, 2);
+gap> TestIdentityMatrix(IsGenericMatrixRep, Integers, 2);
 <2x2-matrix over Integers>
-gap> TestIdentityMatrix(IsFlatPlistMatrixRep, Integers, 0);
+gap> TestIdentityMatrix(IsGenericMatrixRep, Integers, 0);
 <0x0-matrix over Integers>
-gap> TestIdentityMatrix(IsFlatPlistMatrixRep, Integers, -1);
+gap> TestIdentityMatrix(IsGenericMatrixRep, Integers, -1);
 Error, IdentityMatrix: the dimension must be non-negative
 
 #

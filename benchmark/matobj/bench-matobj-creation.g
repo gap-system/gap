@@ -99,15 +99,15 @@ end;
 
 RunMatTest("GF(257)", GF(257));
 RunMatObjTest("GF(257) IsPlistMatrixRep", IsPlistMatrixRep, GF(257));
-RunMatObjTest("GF(257) IsFlatPlistMatrixRep", IsFlatPlistMatrixRep, GF(257));
+RunMatObjTest("GF(257) IsGenericMatrixRep", IsGenericMatrixRep, GF(257));
 
 RunMatTest("Integers", Integers);
 RunMatObjTest("integer IsPlistMatrixRep", IsPlistMatrixRep, Integers);
-RunMatObjTest("integer IsFlatPlistMatrixRep", IsFlatPlistMatrixRep, Integers);
+RunMatObjTest("integer IsGenericMatrixRep", IsGenericMatrixRep, Integers);
 
 RunMatTest("Rationals", Rationals);
 RunMatObjTest("rational IsPlistMatrixRep", IsPlistMatrixRep, Rationals);
-RunMatObjTest("rational IsFlatPlistMatrixRep", IsFlatPlistMatrixRep, Rationals);
+RunMatObjTest("rational IsGenericMatrixRep", IsGenericMatrixRep, Rationals);
 
 # TODO: other reps
 # TODO: other compare with creating plist-of-plist

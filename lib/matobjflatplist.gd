@@ -15,12 +15,12 @@
 
 #############################################################################
 ##
-##  <#GAPDoc Label="IsFlatPlistMatrixRep">
+##  <#GAPDoc Label="IsGenericMatrixRep">
 ##  <ManSection>
-##  <Filt Name="IsFlatPlistMatrixRep" Arg='obj' Type="Representation"/>
+##  <Filt Name="IsGenericMatrixRep" Arg='obj' Type="Representation"/>
 ##
 ##  <Description>
-##  An object <A>obj</A> in <Ref Filt="IsFlatPlistMatrixRep"/> describes
+##  An object <A>obj</A> in <Ref Filt="IsGenericMatrixRep"/> describes
 ##  a matrix object (see <Ref Filt="IsMatrixObj"/>) whose entries are stored
 ##  as a dense plain list of dense plain row lists.
 ##  <P/>
@@ -31,7 +31,7 @@
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareRepresentation( "IsFlatPlistMatrixRep",
+DeclareRepresentation( "IsGenericMatrixRep",
         IsMatrixObj and IsPositionalObjectRep
     and IsCopyable
     and IsNoImmediateMethodsObject

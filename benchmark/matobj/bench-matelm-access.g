@@ -142,8 +142,8 @@ RunMatTest("GF(257) plist-of-plist matrix", m);
 m:=IdentityMatrix(GF(257), 10); # IsPlistMatrixRep
 RunMatTest("GF(257) IsPlistMatrixRep", m);
 
-m:=IdentityMatrix(GF(257), 10); # IsFlatPlistMatrixRep
-RunMatTest("GF(257) IsFlatPlistMatrixRep", m);
+m:=IdentityMatrix(GF(257), 10); # IsGenericMatrixRep
+RunMatTest("GF(257) IsGenericMatrixRep", m);
 
 m:=IdentityMat(10,GF(2));;      # plain list of IsGF2VectorRep
 RunMatTest("GF(2) rowlist", m);

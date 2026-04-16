@@ -14,33 +14,33 @@ gap> w:= MakeIsPlistVectorRep( Rationals, [ 1 ], true );
 <plist vector over Rationals of length 1>
 
 #
-gap> MakeIsFlatPlistMatrixRep( Integers, 2, [ v ], true );
+gap> MakeIsGenericMatrixRep( Integers, 2, [ v ], true );
 Error, the entries of <list> must be plain lists
-gap> M:= MakeIsFlatPlistMatrixRep( Integers, 2, [], true );
+gap> M:= MakeIsGenericMatrixRep( Integers, 2, [], true );
 <0x2-matrix over Integers>
-gap> MakeIsFlatPlistMatrixRep( Integers, 1, [ [ 1 ] ], true );
+gap> MakeIsGenericMatrixRep( Integers, 1, [ [ 1 ] ], true );
 <1x1-matrix over Integers>
-gap> MakeIsFlatPlistMatrixRep( Integers, 2, [ [ 1 ] ], true );
+gap> MakeIsGenericMatrixRep( Integers, 2, [ [ 1 ] ], true );
 Error, the entries of <list> must have length <ncols>
-gap> MakeIsFlatPlistMatrixRep( Integers, 1, [ [ 1/2 ] ], true );
+gap> MakeIsGenericMatrixRep( Integers, 1, [ [ 1/2 ] ], true );
 Error, the elements in <list> must lie in <basedomain>
-gap> MakeIsFlatPlistMatrixRep( GF(2), 1, [ [ Z(2) ] ], true );
+gap> MakeIsGenericMatrixRep( GF(2), 1, [ [ Z(2) ] ], true );
 <1x1-matrix over GF(2)>
-gap> MakeIsFlatPlistMatrixRep( GF(2), 1, [ [ Z(4) ] ], true );
+gap> MakeIsGenericMatrixRep( GF(2), 1, [ [ Z(4) ] ], true );
 Error, the elements in <list> must lie in <basedomain>
 
 #
-gap> NewMatrix( IsFlatPlistMatrixRep, Integers, 2, [] );
+gap> NewMatrix( IsGenericMatrixRep, Integers, 2, [] );
 <0x2-matrix over Integers>
-gap> NewMatrix( IsFlatPlistMatrixRep, Integers, 2, [ 1 ] );
+gap> NewMatrix( IsGenericMatrixRep, Integers, 2, [ 1 ] );
 Error, NewMatrix: Length of <list> is not a multiple of <ncols>
-gap> NewMatrix( IsFlatPlistMatrixRep, Integers, 2, [ [ 1 ] ] );
+gap> NewMatrix( IsGenericMatrixRep, Integers, 2, [ [ 1 ] ] );
 Error, the entries of <list> must have length <ncols>
-gap> NewMatrix( IsFlatPlistMatrixRep, Integers, 2, [ [ 1, 2 ] ] );
+gap> NewMatrix( IsGenericMatrixRep, Integers, 2, [ [ 1, 2 ] ] );
 <1x2-matrix over Integers>
-gap> NewMatrix( IsFlatPlistMatrixRep, Integers, 2, [ v ] );
+gap> NewMatrix( IsGenericMatrixRep, Integers, 2, [ v ] );
 Error, the entries of <list> must have length <ncols>
-gap> M:= NewMatrix( IsFlatPlistMatrixRep, Integers, 2, [ [ 1, 2 ], [ 3, 4 ] ] );
+gap> M:= NewMatrix( IsGenericMatrixRep, Integers, 2, [ [ 1, 2 ], [ 3, 4 ] ] );
 <2x2-matrix over Integers>
 gap> IsMutable( M );
 true
@@ -69,7 +69,7 @@ gap> rows[1][1];
 1
 
 #
-gap> M:= NewMatrix( IsFlatPlistMatrixRep, Integers, 2, [ v2, v2 ] );;
+gap> M:= NewMatrix( IsGenericMatrixRep, Integers, 2, [ v2, v2 ] );;
 gap> Unpack( M );
 [ [ 1, 0 ], [ 1, 0 ] ]
 
@@ -77,15 +77,15 @@ gap> Unpack( M );
 # Empty matrices and empty vectors
 #
 #
-gap> a:= NewZeroMatrix( IsFlatPlistMatrixRep, Integers, 2, 0 );
+gap> a:= NewZeroMatrix( IsGenericMatrixRep, Integers, 2, 0 );
 <2x0-matrix over Integers>
-gap> b:= NewZeroMatrix( IsFlatPlistMatrixRep, Integers, 0, 3 );
+gap> b:= NewZeroMatrix( IsGenericMatrixRep, Integers, 0, 3 );
 <0x3-matrix over Integers>
-gap> c:= NewZeroMatrix( IsFlatPlistMatrixRep, Integers, 0, 0 );
+gap> c:= NewZeroMatrix( IsGenericMatrixRep, Integers, 0, 0 );
 <0x0-matrix over Integers>
-gap> d:= NewZeroMatrix( IsFlatPlistMatrixRep, Integers, 0, 2 );
+gap> d:= NewZeroMatrix( IsGenericMatrixRep, Integers, 0, 2 );
 <0x2-matrix over Integers>
-gap> z:= NewZeroMatrix( IsFlatPlistMatrixRep, Integers, 2, 3 );
+gap> z:= NewZeroMatrix( IsGenericMatrixRep, Integers, 2, 3 );
 <2x3-matrix over Integers>
 gap> IsMutable( z );
 true
@@ -93,18 +93,18 @@ gap> Unpack( z );
 [ [ 0, 0, 0 ], [ 0, 0, 0 ] ]
 
 #
-gap> M:= NewIdentityMatrix( IsFlatPlistMatrixRep, Integers, 2 );;
+gap> M:= NewIdentityMatrix( IsGenericMatrixRep, Integers, 2 );;
 gap> Unpack( M );
 [ [ 1, 0 ], [ 0, 1 ] ]
 
 #
-gap> a = NewMatrix( IsFlatPlistMatrixRep, Integers, 0, [ [], [] ] );
+gap> a = NewMatrix( IsGenericMatrixRep, Integers, 0, [ [], [] ] );
 true
-gap> b = NewMatrix( IsFlatPlistMatrixRep, Integers, 3, [] );
+gap> b = NewMatrix( IsGenericMatrixRep, Integers, 3, [] );
 true
-gap> c = NewMatrix( IsFlatPlistMatrixRep, Integers, 0, [] );
+gap> c = NewMatrix( IsGenericMatrixRep, Integers, 0, [] );
 true
-gap> d = NewMatrix( IsFlatPlistMatrixRep, Integers, 2, [] );
+gap> d = NewMatrix( IsGenericMatrixRep, Integers, 2, [] );
 true
 
 #
@@ -160,7 +160,7 @@ gap> InverseSameMutability( c );
 <0x0-matrix over Integers>
 
 #
-gap> M:= NewMatrix( IsFlatPlistMatrixRep, Integers, 3, [ [ 0, 0, 2 ], [ 0, 0, 0 ] ] );;
+gap> M:= NewMatrix( IsGenericMatrixRep, Integers, 3, [ [ 0, 0, 2 ], [ 0, 0, 0 ] ] );;
 gap> PositionNonZeroInRow( M, 1 );
 3
 gap> PositionNonZeroInRow( M, 1, 2 );
@@ -169,7 +169,7 @@ gap> PositionNonZeroInRow( M, 2 );
 4
 
 #
-gap> M:= NewMatrix( IsFlatPlistMatrixRep, Integers, 3,
+gap> M:= NewMatrix( IsGenericMatrixRep, Integers, 3,
 >                   [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] );;
 gap> MultMatrixRowLeft( M, 1, -1 );;
 gap> Unpack( M );

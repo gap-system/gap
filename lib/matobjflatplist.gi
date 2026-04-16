@@ -31,19 +31,19 @@ BindGlobal( "InverseRowsForFlatPlistMatrix",
     return INV_MATRIX_MUTABLE( M![FROWSPOS] );
   end );
 
-BindGlobal( "MakeIsFlatPlistMatrixRep",
+BindGlobal( "MakeIsGenericMatrixRep",
   function( basedomain, ncols, list, check )
     local fam, types, typ, row;
 
     fam := CollectionsFamily( FamilyObj( basedomain ) );
     if not IsBound( fam!.FlatPlistMatrixRepTypes ) then
       fam!.FlatPlistMatrixRepTypes := [
-          NewType( fam, IsFlatPlistMatrixRep ),
-          NewType( fam, IsFlatPlistMatrixRep and IsMutable ),
+          NewType( fam, IsGenericMatrixRep ),
+          NewType( fam, IsGenericMatrixRep and IsMutable ),
       ];
       fam!.FlatPlistMatrixRepTypesEasyCompare := [
-          NewType( fam, IsFlatPlistMatrixRep and CanEasilyCompareElements ),
-          NewType( fam, IsFlatPlistMatrixRep and CanEasilyCompareElements and IsMutable ),
+          NewType( fam, IsGenericMatrixRep and CanEasilyCompareElements ),
+          NewType( fam, IsGenericMatrixRep and CanEasilyCompareElements and IsMutable ),
       ];
     fi;
     if HasCanEasilyCompareElements( Representative( basedomain ) ) and
@@ -75,7 +75,7 @@ BindGlobal( "MakeIsFlatPlistMatrixRep",
 
 
 InstallTagBasedMethod( NewMatrix,
-  IsFlatPlistMatrixRep,
+  IsGenericMatrixRep,
   function( filter, basedomain, ncols, list )
     local nd, rows, i, row;
 
@@ -102,12 +102,12 @@ InstallTagBasedMethod( NewMatrix,
     if not IsMutable( list ) then
       MakeImmutable( rows );
     fi;
-    return MakeIsFlatPlistMatrixRep( basedomain, ncols, rows, true );
+    return MakeIsGenericMatrixRep( basedomain, ncols, rows, true );
   end );
 
 
 InstallTagBasedMethod( NewZeroMatrix,
-  IsFlatPlistMatrixRep,
+  IsGenericMatrixRep,
   function( filter, basedomain, rows, cols )
     local list, row, i, z;
     list := EmptyPlist( rows );
@@ -116,43 +116,43 @@ InstallTagBasedMethod( NewZeroMatrix,
       row := ListWithIdenticalEntries( cols, z );
       list[i] := row;
     od;
-    return MakeIsFlatPlistMatrixRep( basedomain, cols, list, false );
+    return MakeIsGenericMatrixRep( basedomain, cols, list, false );
   end );
 
 
 InstallMethod( ConstructingFilter,
-  [ "IsFlatPlistMatrixRep" ],
-  M -> IsFlatPlistMatrixRep );
+  [ "IsGenericMatrixRep" ],
+  M -> IsGenericMatrixRep );
 
 InstallMethod( CompatibleVectorFilter,
-  [ "IsFlatPlistMatrixRep" ],
+  [ "IsGenericMatrixRep" ],
   M -> IsPlistVectorRep );
 
 
 InstallMethod( BaseDomain,
-  [ "IsFlatPlistMatrixRep" ],
+  [ "IsGenericMatrixRep" ],
   M -> M![FBDPOS] );
 
 InstallMethod( NumberRows,
-  [ "IsFlatPlistMatrixRep" ],
+  [ "IsGenericMatrixRep" ],
   M -> Length( M![FROWSPOS] ) );
 
 InstallMethod( NumberColumns,
-  [ "IsFlatPlistMatrixRep" ],
+  [ "IsGenericMatrixRep" ],
   M -> M![FCOLSPOS] );
 
 InstallMethod( \[\],
-  [ "IsFlatPlistMatrixRep", "IsPosInt" ],
+  [ "IsGenericMatrixRep", "IsPosInt" ],
   function( M, pos )
     ErrorNoReturn( "row access unsupported; use M[i,j] or RowsOfMatrix(M)" );
   end );
 
 InstallMethod( MatElm,
-  [ "IsFlatPlistMatrixRep", "IsPosInt", "IsPosInt" ],
+  [ "IsGenericMatrixRep", "IsPosInt", "IsPosInt" ],
   { M, row, col } -> M![FROWSPOS][row,col] );
 
 InstallMethod( SetMatElm,
-  [ "IsFlatPlistMatrixRep and IsMutable", "IsPosInt", "IsPosInt", "IsObject" ],
+  [ "IsGenericMatrixRep and IsMutable", "IsPosInt", "IsPosInt", "IsObject" ],
   function( M, row, col, ob )
     if ValueOption( "check" ) <> false then
       if not ob in BaseDomain( M ) then
@@ -168,29 +168,29 @@ InstallMethod( SetMatElm,
 
 
 InstallMethod( Unpack,
-  [ "IsFlatPlistMatrixRep" ],
+  [ "IsGenericMatrixRep" ],
   M -> List( M![FROWSPOS], ShallowCopy ) );
 
 InstallMethod( ShallowCopy,
-  [ "IsFlatPlistMatrixRep" ],
-  M -> MakeIsFlatPlistMatrixRep( BaseDomain(M), NrCols(M),
+  [ "IsGenericMatrixRep" ],
+  M -> MakeIsGenericMatrixRep( BaseDomain(M), NrCols(M),
            List( M![FROWSPOS], ShallowCopy ), false ) );
 
 InstallMethod( MutableCopyMatrix,
-  [ "IsFlatPlistMatrixRep" ],
-  M -> MakeIsFlatPlistMatrixRep( BaseDomain(M), NrCols(M),
+  [ "IsGenericMatrixRep" ],
+  M -> MakeIsGenericMatrixRep( BaseDomain(M), NrCols(M),
            List( M![FROWSPOS], ShallowCopy ), false ) );
 
 InstallMethod( ExtractSubMatrix,
-  [ "IsFlatPlistMatrixRep", "IsList", "IsList" ],
+  [ "IsGenericMatrixRep", "IsList", "IsList" ],
   function( M, rowspos, colspos )
     local list;
     list := M![FROWSPOS]{ rowspos }{ colspos };
-    return MakeIsFlatPlistMatrixRep( BaseDomain(M), Length( colspos ), list, false );
+    return MakeIsGenericMatrixRep( BaseDomain(M), Length( colspos ), list, false );
   end );
 
 InstallMethod( CopySubMatrix,
-  [ "IsFlatPlistMatrixRep", "IsFlatPlistMatrixRep and IsMutable",
+  [ "IsGenericMatrixRep", "IsGenericMatrixRep and IsMutable",
     "IsList", "IsList", "IsList", "IsList" ],
   function( M, N, srcrows, dstrows, srccols, dstcols )
     if ValueOption( "check" ) <> false and
@@ -201,15 +201,15 @@ InstallMethod( CopySubMatrix,
   end );
 
 InstallMethod( TransposedMatMutable,
-  [ "IsFlatPlistMatrixRep" ],
+  [ "IsGenericMatrixRep" ],
   function( M )
     local list;
     list := TransposedMatMutable(M![FROWSPOS]);
-    return MakeIsFlatPlistMatrixRep( BaseDomain(M), NrRows(M), list, false );
+    return MakeIsGenericMatrixRep( BaseDomain(M), NrRows(M), list, false );
   end );
 
 InstallMethod( \+,
-  [ "IsFlatPlistMatrixRep", "IsFlatPlistMatrixRep" ],
+  [ "IsGenericMatrixRep", "IsGenericMatrixRep" ],
   function( a, b )
     if ValueOption( "check" ) <> false and
        ( not IsIdenticalObj( BaseDomain( a ), BaseDomain( b ) ) or
@@ -217,12 +217,12 @@ InstallMethod( \+,
          NrCols( a ) <> NrCols( b ) ) then
       Error( "<a> and <b> are not compatible" );
     fi;
-    return MakeIsFlatPlistMatrixRep( BaseDomain( a ), NrCols( a ),
+    return MakeIsGenericMatrixRep( BaseDomain( a ), NrCols( a ),
                a![FROWSPOS] + b![FROWSPOS], false );
   end );
 
 InstallMethod( \-,
-  [ "IsFlatPlistMatrixRep", "IsFlatPlistMatrixRep" ],
+  [ "IsGenericMatrixRep", "IsGenericMatrixRep" ],
   function( a, b )
     if ValueOption( "check" ) <> false and
        ( not IsIdenticalObj( BaseDomain( a ), BaseDomain( b ) ) or
@@ -230,27 +230,27 @@ InstallMethod( \-,
          NrCols( a ) <> NrCols( b ) ) then
       Error( "<a> and <b> are not compatible" );
     fi;
-    return MakeIsFlatPlistMatrixRep( BaseDomain( a ), NrCols( a ),
+    return MakeIsGenericMatrixRep( BaseDomain( a ), NrCols( a ),
                a![FROWSPOS] - b![FROWSPOS], false );
   end );
 
 InstallMethod( AdditiveInverseMutable,
-  [ "IsFlatPlistMatrixRep" ],
-  M -> MakeIsFlatPlistMatrixRep( BaseDomain( M ), NrCols( M ),
+  [ "IsGenericMatrixRep" ],
+  M -> MakeIsGenericMatrixRep( BaseDomain( M ), NrCols( M ),
            AdditiveInverseMutable( M![FROWSPOS] ), false ) );
 
 InstallMethod( ZeroMutable,
-  [ "IsFlatPlistMatrixRep" ],
+  [ "IsGenericMatrixRep" ],
   function( M )
     local z;
-    z := MakeIsFlatPlistMatrixRep( BaseDomain( M ), NrCols( M ),
+    z := MakeIsGenericMatrixRep( BaseDomain( M ), NrCols( M ),
              ZeroMutable( M![FROWSPOS] ), false );
     SetIsZero( z, true );
     return z;
   end );
 
 InstallMethod( InverseMutable,
-  [ "IsFlatPlistMatrixRep" ],
+  [ "IsGenericMatrixRep" ],
   function( M )
     local rows;
 
@@ -258,11 +258,11 @@ InstallMethod( InverseMutable,
     if rows = fail then
       return fail;
     fi;
-    return MakeIsFlatPlistMatrixRep( BaseDomain( M ), NrCols( M ), rows, false );
+    return MakeIsGenericMatrixRep( BaseDomain( M ), NrCols( M ), rows, false );
   end );
 
 InstallMethod( \*,
-  [ "IsFlatPlistMatrixRep", "IsFlatPlistMatrixRep" ],
+  [ "IsGenericMatrixRep", "IsGenericMatrixRep" ],
   function( a, b )
     local rowsA, colsA, rowsB, colsB, bd, list, i;
 
@@ -293,11 +293,11 @@ InstallMethod( \*,
     if not IsMutable( a ) and not IsMutable( b ) then
       MakeImmutable( list );
     fi;
-    return MakeIsFlatPlistMatrixRep( bd, colsB, list, false );
+    return MakeIsGenericMatrixRep( bd, colsB, list, false );
   end );
 
 InstallMethod( \*,
-  [ "IsFlatPlistMatrixRep", "IsVectorObj" ],
+  [ "IsGenericMatrixRep", "IsVectorObj" ],
   function( M, v )
     local rows, cols, bd, res;
 
@@ -331,7 +331,7 @@ InstallMethod( \*,
   end );
 
 InstallMethod( \*,
-  [ "IsVectorObj", "IsFlatPlistMatrixRep" ],
+  [ "IsVectorObj", "IsGenericMatrixRep" ],
   function( v, M )
     local rows, cols, bd, res;
 
@@ -365,10 +365,10 @@ InstallMethod( \*,
   end );
 
 InstallMethod( ChangedBaseDomain,
-  [ "IsFlatPlistMatrixRep", "IsRing" ],
+  [ "IsGenericMatrixRep", "IsRing" ],
   function( M, r )
     local n;
-    n := NewMatrix( IsFlatPlistMatrixRep, r, NrCols(M), M![FROWSPOS] );
+    n := NewMatrix( IsGenericMatrixRep, r, NrCols(M), M![FROWSPOS] );
     if not IsMutable( M ) then
       MakeImmutable( n );
     fi;
@@ -377,62 +377,62 @@ InstallMethod( ChangedBaseDomain,
 
 
 InstallMethod( MultMatrixRowLeft,
-  [ "IsFlatPlistMatrixRep and IsMutable", "IsInt", "IsObject" ],
+  [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsObject" ],
   function( mat, row, scalar )
     MultMatrixRowLeft(mat![FROWSPOS], row, scalar);
   end );
 
 InstallMethod( MultMatrixRowRight,
-  [ "IsFlatPlistMatrixRep and IsMutable", "IsInt", "IsObject" ],
+  [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsObject" ],
   function( mat, row, scalar )
     MultMatrixRowRight(mat![FROWSPOS], row, scalar);
   end );
 
 InstallMethod( AddMatrixRowsLeft,
-  [ "IsFlatPlistMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
+  [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
   function( mat, row1, row2, scalar )
     AddMatrixRowsLeft( mat![FROWSPOS], row1, row2, scalar );
   end );
 
 InstallMethod( AddMatrixRowsRight,
-  [ "IsFlatPlistMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
+  [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsInt", "IsObject" ],
   function( mat, row1, row2, scalar )
     AddMatrixRowsRight( mat![FROWSPOS], row1, row2, scalar );
   end );
 
 InstallMethod( PositionNonZeroInRow,
-  [ "IsFlatPlistMatrixRep", "IsPosInt" ],
+  [ "IsGenericMatrixRep", "IsPosInt" ],
   function( mat, row )
     return PositionNonZero( mat![FROWSPOS][row] );
   end );
 
 InstallMethod( PositionNonZeroInRow,
-  [ "IsFlatPlistMatrixRep", "IsPosInt", "IsInt" ],
+  [ "IsGenericMatrixRep", "IsPosInt", "IsInt" ],
   function( mat, row, from )
     return PositionNonZero( mat![FROWSPOS][row], from );
   end );
 
 InstallMethod( SwapMatrixRows,
-  [ "IsFlatPlistMatrixRep and IsMutable", "IsInt", "IsInt" ],
+  [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsInt" ],
   function( mat, row1, row2 )
     SwapMatrixRows(mat![FROWSPOS], row1, row2);
   end );
 
 InstallMethod( SwapMatrixColumns,
-  [ "IsFlatPlistMatrixRep and IsMutable", "IsInt", "IsInt" ],
+  [ "IsGenericMatrixRep and IsMutable", "IsInt", "IsInt" ],
   function( mat, col1, col2 )
     SwapMatrixColumns(mat![FROWSPOS], col1, col2);
   end );
 
 
 InstallMethod( PostMakeImmutable,
-  [ "IsFlatPlistMatrixRep" ],
+  [ "IsGenericMatrixRep" ],
   function( M )
     MakeImmutable( M![FROWSPOS] );
   end );
 
 
-InstallMethod( ViewObj, [ "IsFlatPlistMatrixRep" ],
+InstallMethod( ViewObj, [ "IsGenericMatrixRep" ],
   function( M )
     Print( "<" );
     if not IsMutable( M ) then
@@ -442,9 +442,9 @@ InstallMethod( ViewObj, [ "IsFlatPlistMatrixRep" ],
            "-matrix over ", BaseDomain(M), ">" );
   end );
 
-InstallMethod( PrintObj, [ "IsFlatPlistMatrixRep" ],
+InstallMethod( PrintObj, [ "IsGenericMatrixRep" ],
   function( M )
-    Print( "NewMatrix(IsFlatPlistMatrixRep" );
+    Print( "NewMatrix(IsGenericMatrixRep" );
     if IsFinite( BaseDomain(M) ) and IsField( BaseDomain(M) ) then
       Print( ",GF(", Size( BaseDomain(M) ), ")," );
     else
@@ -453,7 +453,7 @@ InstallMethod( PrintObj, [ "IsFlatPlistMatrixRep" ],
     Print( NumberColumns( M ), ",", Unpack( M ), ")" );
   end );
 
-InstallMethod( Display, [ "IsFlatPlistMatrixRep" ],
+InstallMethod( Display, [ "IsGenericMatrixRep" ],
   function( M )
     local i;
     Print( "<" );
@@ -473,10 +473,10 @@ InstallMethod( Display, [ "IsFlatPlistMatrixRep" ],
     Print( "]>\n" );
   end );
 
-InstallMethod( String, [ "IsFlatPlistMatrixRep" ],
+InstallMethod( String, [ "IsGenericMatrixRep" ],
   function( M )
     local st;
-    st := "NewMatrix(IsFlatPlistMatrixRep";
+    st := "NewMatrix(IsGenericMatrixRep";
     Add( st, ',' );
     if IsFinite( BaseDomain(M) ) and IsField( BaseDomain(M) ) then
       Append( st, "GF(" );
