@@ -434,7 +434,8 @@ DeclareGlobalFunction( "ConcatenationOfVectors" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ExtractSubVector", [ IsVectorObj, IsList ] );
+DeclareOperationKernel( "ExtractSubVector",
+    [ IsRowVectorOrVectorObj, IsList ], EXTRACT_SUB_VECTOR );
 
 
 #############################################################################
@@ -896,9 +897,9 @@ DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixOrMatrixObj and IsMutab
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "CopySubVector",
+DeclareOperationKernel( "CopySubVector",
     [ IsRowVectorOrVectorObj, IsRowVectorOrVectorObj and IsMutable,
-      IsList, IsList ] );
+      IsList, IsList ], COPY_SUB_VECTOR );
 
 
 #############################################################################
@@ -956,7 +957,8 @@ DeclareOperation( "DistanceOfVectors", [ IsVectorObj, IsVectorObj ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ExtractSubMatrix", [ IsMatrixOrMatrixObj, IsList, IsList ] );
+DeclareOperationKernel( "ExtractSubMatrix",
+    [ IsMatrixOrMatrixObj, IsList, IsList ], EXTRACT_SUB_MATRIX );
 
 
 #############################################################################
@@ -1005,8 +1007,11 @@ DeclareOperation( "MutableCopyMatrix", [ IsMatrixOrMatrixObj ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "CopySubMatrix",
-    [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj, IsList, IsList, IsList, IsList ] );
+DeclareOperationKernel( "CopySubMatrix",
+    [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj, IsList, IsList, IsList, IsList ],
+    COPY_SUB_MATRIX );
+#T We intentionally keep the second argument declaration broad, mirroring
+#T the pre-existing operation declaration for compatibility with packages.
 
 
 #############################################################################
