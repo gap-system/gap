@@ -364,23 +364,6 @@ DeclareSynonym( "AsSSortedListList", AS_LIST_SORTED_LIST );
 
 #############################################################################
 ##
-#A  AsPlist( <l> )
-##
-##  <ManSection>
-##  <Attr Name="AsPlist" Arg='l'/>
-##
-##  <Description>
-##  <Ref Attr="AsPlist"/> returns a list in the representation
-##  <Ref Filt="IsPlistRep"/> that is equal to the list <A>l</A>.
-##  It is used before calling kernel functions to sort plists.
-##  </Description>
-##  </ManSection>
-##
-DeclareOperation( "AsPlist", [IsListOrCollection] );
-
-
-#############################################################################
-##
 #C  IsDenseList( <obj> )
 ##
 ##  <#GAPDoc Label="IsDenseList">

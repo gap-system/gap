@@ -632,28 +632,6 @@ InstallOtherMethod( AsList,
 
 #############################################################################
 ##
-#M  AsPlist( <list> )
-##
-InstallOtherMethod( AsPlist,
-    "for a plist",
-    [IsList and IsPlistRep],
-    x -> x );
-
-InstallOtherMethod( AsPlist,
-    "for a list",
-    [ IsList ],
-    function(l)
-    l:=AsList(l);
-    if not IsPlistRep(l) then
-      l:=PlainListCopy(l); # explicit copy for objects that claim to
-                                       # be constant time access but not plists.
-    fi;
-    return l;
-    end );
-
-
-#############################################################################
-##
 #M  AsSSortedList( <list> )
 ##
 ##  If <list> is a (not necessarily dense) list whose elements lie in the
@@ -672,7 +650,7 @@ InstallOtherMethod(AsSSortedList,
 InstallOtherMethod(AsSSortedList,
      "for a list",
      [ IsList ],
-     l -> AsSSortedListList( AsPlist( l ) ) );
+     l -> AsSSortedListList( PlainListCopy( l ) ) );
 
 InstallMethod( AsSSortedList,
     "for a strictly sorted list",
@@ -710,7 +688,7 @@ function(l)
     if IsSSortedList(l) then
       return l;
     fi;
-    return AsSSortedListList(AsPlist(l));
+    return AsSSortedListList(PlainListCopy(l));
 end);
 
 
@@ -724,7 +702,7 @@ InstallMethod( SSortedList, "for a plist",
 
 InstallMethod( SSortedList, "for a list",
     [ IsList ],
-    l->SSortedListList(AsPlist(l)) );
+    l->SSortedListList(PlainListCopy(l)) );
 
 
 #############################################################################

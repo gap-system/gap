@@ -2538,11 +2538,11 @@ InstallMethodWithRandomSource( Randomize,
 InstallMethod( Unpack, "for a gf2 matrix",
   [IsGF2MatrixRep],
   function( m )
-    return List(m,AsPlist);
+    return List(m, PlainListCopy);
   end );
 InstallMethod( Unpack, "for a gf2 vector",
   [IsGF2VectorRep],
-  AsPlist );
+  PlainListCopy );
 
 InstallOtherMethod( KroneckerProduct, "for two gf2 matrices",
   [IsGF2MatrixRep and IsMatrix, IsGF2MatrixRep and IsMatrix],
