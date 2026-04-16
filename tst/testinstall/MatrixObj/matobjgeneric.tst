@@ -1,5 +1,5 @@
 #@local e, v, v2, w, M, z, rows, a, b, c, d, p, ev, n, ai, inv, zm, zs
-gap> START_TEST( "matobjflatplist.tst" );
+gap> START_TEST( "matobjgeneric.tst" );
 
 #
 # MakeIsPlistVectorRep: test input validation
@@ -188,4 +188,4 @@ gap> Unpack( M );
 [ [ 54, 66, 78 ], [ 23, 28, 33 ] ]
 
 #
-gap> STOP_TEST( "matobjflatplist.tst" );
+gap> STOP_TEST( "matobjgeneric.tst" );
