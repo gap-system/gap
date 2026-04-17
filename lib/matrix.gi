@@ -1594,10 +1594,10 @@ InstallMethod( DeterminantMatDestructive,
 
     # check that the argument is a square matrix and get the size
     m := NrRows(mat);
-    zero := ZeroOfBaseDomain(mat);
-    if m <> NrCols(mat)  then
-        Error("DeterminantMat: <mat> must be a square matrix");
+    if m = 0 or not IsRectangularTable(mat) or m <> NrCols(mat)  then
+        Error("DeterminantMat: <mat> must be a nonempty square matrix");
     fi;
+    zero := ZeroOfBaseDomain(mat);
 
     # run through all columns of the matrix
     i := 0;  det := 1;  sgn := 1;
@@ -1667,8 +1667,8 @@ function( mat )
 
     # check that the argument is a square matrix, and get the size
     m := NrRows(mat);
-    if m = 0 or m <> NrCols(mat)  then
-        Error( "<mat> must be a square matrix at least 1x1" );
+    if m = 0 or m <> NrCols(mat) or not IsRectangularTable(mat) then
+        Error( "DeterminantMat: <mat> must be a nonempty square matrix" );
     fi;
     zero := ZeroOfBaseDomain(mat);
 
