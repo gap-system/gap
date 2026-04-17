@@ -19,21 +19,20 @@ BindGlobal( "MakeIsGenericMatrixRep",
 
     fam := CollectionsFamily( FamilyObj( basedomain ) );
     if not IsBound( fam!.FlatPlistMatrixRepTypes ) then
-      fam!.FlatPlistMatrixRepTypes := [
-          NewType( fam, IsGenericMatrixRep ),
-          NewType( fam, IsGenericMatrixRep and IsMutable ),
-      ];
-      fam!.FlatPlistMatrixRepTypesEasyCompare := [
-          NewType( fam, IsGenericMatrixRep and CanEasilyCompareElements ),
-          NewType( fam, IsGenericMatrixRep and CanEasilyCompareElements and IsMutable ),
-      ];
+      if HasCanEasilyCompareElements( Representative( basedomain ) ) and
+         CanEasilyCompareElements( Representative( basedomain ) ) then
+        fam!.FlatPlistMatrixRepTypes := [
+            NewType( fam, IsGenericMatrixRep and CanEasilyCompareElements ),
+            NewType( fam, IsGenericMatrixRep and CanEasilyCompareElements and IsMutable ),
+        ];
+      else
+        fam!.FlatPlistMatrixRepTypes := [
+            NewType( fam, IsGenericMatrixRep ),
+            NewType( fam, IsGenericMatrixRep and IsMutable ),
+        ];
+      fi;
     fi;
-    if HasCanEasilyCompareElements( Representative( basedomain ) ) and
-       CanEasilyCompareElements( Representative( basedomain ) ) then
-      types := fam!.FlatPlistMatrixRepTypesEasyCompare;
-    else
-      types := fam!.FlatPlistMatrixRepTypes;
-    fi;
+    types := fam!.FlatPlistMatrixRepTypes;
     if IsMutable( list ) then
       typ := types[2];
     else
