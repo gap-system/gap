@@ -41,6 +41,9 @@ BindGlobal( "MakeIsGenericMatrixRep",
     fi;
 
     if check and ValueOption( "check" ) <> false then
+      if not IsPlistRep( list ) then
+        Error( "<list> must be a plain list" );
+      fi;
       for row in list do
         if not IsPlistRep( row ) then
           Error( "the entries of <list> must be plain lists" );
