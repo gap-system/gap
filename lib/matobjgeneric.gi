@@ -282,9 +282,6 @@ InstallMethod( \*,
     else
       list := a![FROWSPOS] * b![FROWSPOS];
     fi;
-    if not IsMutable( a ) and not IsMutable( b ) then
-      MakeImmutable( list );
-    fi;
     return MakeIsGenericMatrixRep( bd, colsB, list, false );
   end );
 
@@ -361,12 +358,7 @@ InstallOtherMethod( \*,
 InstallMethod( ChangedBaseDomain,
   [ "IsGenericMatrixRep", "IsRing" ],
   function( M, r )
-    local n;
-    n := NewMatrix( IsGenericMatrixRep, r, NrCols(M), M![FROWSPOS] );
-    if not IsMutable( M ) then
-      MakeImmutable( n );
-    fi;
-    return n;
+    return NewMatrix( IsGenericMatrixRep, r, NrCols(M), M![FROWSPOS] );
   end );
 
 
