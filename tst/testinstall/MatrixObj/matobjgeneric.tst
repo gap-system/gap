@@ -1,4 +1,4 @@
-#@local e, v, v2, w, M, z, rows, a, b, c, d, p, ev, n, ai, inv, zm, zs, N, T, lp, lp0, s
+#@local e, v, v2, w, M, z, rows, a, b, c, d, p, ev, n, ai, inv, zm, zs, N, T, lp, lp0, s, R
 gap> START_TEST( "matobjgeneric.tst" );
 
 #
