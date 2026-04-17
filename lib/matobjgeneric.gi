@@ -13,24 +13,6 @@
 # Dense matrix objects backed by plain lists of plain row lists.
 #
 
-BindGlobal( "InverseRowsForFlatPlistMatrix",
-  function( M )
-    local bd, rows;
-
-    if NrRows( M ) <> NrCols( M ) then
-      return fail;
-    elif NrRows( M ) = 0 then
-      rows := [];
-      return rows;
-    fi;
-
-    bd := BaseDomain( M );
-    if IsFinite( bd ) and IsField( bd ) then
-      return INV_MAT_DEFAULT_MUTABLE( M![FROWSPOS] );
-    fi;
-    return INV_MATRIX_MUTABLE( M![FROWSPOS] );
-  end );
-
 BindGlobal( "MakeIsGenericMatrixRep",
   function( basedomain, ncols, list, check )
     local fam, types, typ, row;
@@ -252,13 +234,19 @@ InstallMethod( ZeroMutable,
 InstallMethod( InverseMutable,
   [ "IsGenericMatrixRep" ],
   function( M )
-    local rows;
+    local bd, rows;
 
-    rows := InverseRowsForFlatPlistMatrix( M );
-    if rows = fail then
+    bd := BaseDomain( M );
+    if NrRows( M ) <> NrCols( M ) then
       return fail;
+    elif NrRows( M ) = 0 then
+      rows := [];
+    elif IsFinite( bd ) and IsField( bd ) then
+      rows := INV_MAT_DEFAULT_MUTABLE( M![FROWSPOS] );
+    else
+      rows := INV_MATRIX_MUTABLE( M![FROWSPOS] );
     fi;
-    return MakeIsGenericMatrixRep( BaseDomain( M ), NrCols( M ), rows, false );
+    return MakeIsGenericMatrixRep( bd, NrCols( M ), rows, false );
   end );
 
 InstallMethod( \*,
