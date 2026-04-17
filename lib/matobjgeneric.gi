@@ -240,7 +240,7 @@ InstallMethod( InverseMutable,
 
     bd := BaseDomain( M );
     if NrRows( M ) <> NrCols( M ) then
-      return fail;
+      ErrorNoReturn( "InverseMutable: matrix must be square" );
     elif NrRows( M ) = 0 then
       rows := [];
     elif IsFinite( bd ) and IsField( bd ) then
