@@ -1,4 +1,4 @@
-#@local e, v, v2, w, M, z, rows, a, b, c, d, p, ev, n, ai, inv, zm, zs
+#@local e, v, v2, w, M, z, rows, a, b, c, d, p, ev, n, ai, inv, zm, zs, N, T, lp, lp0, s
 gap> START_TEST( "matobjgeneric.tst" );
 
 #
@@ -77,15 +77,15 @@ gap> Unpack( M );
 # Empty matrices and empty vectors
 #
 #
-gap> a:= NewZeroMatrix( IsGenericMatrixRep, Integers, 2, 0 );
+gap> a:= ZeroMatrix( IsGenericMatrixRep, Integers, 2, 0 );
 <2x0-matrix over Integers>
-gap> b:= NewZeroMatrix( IsGenericMatrixRep, Integers, 0, 3 );
+gap> b:= ZeroMatrix( IsGenericMatrixRep, Integers, 0, 3 );
 <0x3-matrix over Integers>
-gap> c:= NewZeroMatrix( IsGenericMatrixRep, Integers, 0, 0 );
+gap> c:= ZeroMatrix( IsGenericMatrixRep, Integers, 0, 0 );
 <0x0-matrix over Integers>
-gap> d:= NewZeroMatrix( IsGenericMatrixRep, Integers, 0, 2 );
+gap> d:= ZeroMatrix( IsGenericMatrixRep, Integers, 0, 2 );
 <0x2-matrix over Integers>
-gap> z:= NewZeroMatrix( IsGenericMatrixRep, Integers, 2, 3 );
+gap> z:= ZeroMatrix( IsGenericMatrixRep, Integers, 2, 3 );
 <2x3-matrix over Integers>
 gap> IsMutable( z );
 true
@@ -160,7 +160,7 @@ gap> InverseSameMutability( c );
 <0x0-matrix over Integers>
 
 #
-gap> M:= NewMatrix( IsGenericMatrixRep, Integers, 3, [ [ 0, 0, 2 ], [ 0, 0, 0 ] ] );;
+gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 0, 0, 2 ], [ 0, 0, 0 ] ] );;
 gap> PositionNonZeroInRow( M, 1 );
 3
 gap> PositionNonZeroInRow( M, 1, 2 );
@@ -169,8 +169,7 @@ gap> PositionNonZeroInRow( M, 2 );
 4
 
 #
-gap> M:= NewMatrix( IsGenericMatrixRep, Integers, 3,
->                   [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] );;
+gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] );;
 gap> MultMatrixRowLeft( M, 1, -1 );;
 gap> Unpack( M );
 [ [ -1, -2, -3 ], [ 4, 5, 6 ] ]
@@ -186,6 +185,114 @@ gap> Unpack( M );
 gap> SwapMatrixRows( M, 1, 2 );;
 gap> Unpack( M );
 [ [ 54, 66, 78 ], [ 23, 28, 33 ] ]
+
+#
+# Test Inverse / InverseMutable
+#
+gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ], [ 5, 6 ] ] );;
+gap> InverseMutable( M );
+Error, InverseMutable: matrix must be square
+gap> M:= Matrix( IsGenericMatrixRep, GF(2), [ [ Z(2)^0, Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] );;
+gap> Display( InverseMutable( M ) );
+<2x2-matrix over GF(2):
+[[ 0*Z(2), Z(2)^0 ]
+ [ Z(2)^0, Z(2)^0 ]
+]>
+gap> M:= Matrix( IsGenericMatrixRep, Rationals, [ [ 1, 2 ], [ 3, 5 ] ] );;
+gap> Display( InverseMutable( M ) );
+<2x2-matrix over Rationals:
+[[ -5, 2 ]
+ [ 3, -1 ]
+]>
+
+#
+gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] );;
+gap> M[1,1] := 1/2;
+Error, <ob> must lie in the base domain of <M>
+gap> M[3,1] := 1;
+Error, <row> is out of bounds
+gap> M[1,3] := 1;
+Error, <col> is out of bounds
+
+#
+gap> a:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ] ] );;
+gap> b:= Matrix( IsGenericMatrixRep, Rationals, [ [ 1, 2 ] ] );;
+gap> a + b;
+Error, <a> and <b> are not compatible
+gap> a - b;
+Error, <a> and <b> are not compatible
+gap> c:= Matrix( IsGenericMatrixRep, Integers, [ [ 1 ], [ 2 ] ] );;
+gap> c * c;
+Error, \*: Matrices do not fit together
+gap> d:= Matrix( IsGenericMatrixRep, Rationals, [ [ 1 ], [ 2 ] ] );;
+gap> a * d;
+Error, \*: Matrices not over same base domain
+
+#
+gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] );;
+gap> N:= ShallowCopy( M );;
+gap> N[1,1] := 99;;
+gap> Unpack( M );
+[ [ 1, 2 ], [ 3, 4 ] ]
+gap> Unpack( N );
+[ [ 99, 2 ], [ 3, 4 ] ]
+gap> N:= MutableCopyMatrix( M );;
+gap> N[1,2] := 77;;
+gap> Unpack( M );
+[ [ 1, 2 ], [ 3, 4 ] ]
+gap> Unpack( N );
+[ [ 1, 77 ], [ 3, 4 ] ]
+gap> Unpack( ExtractSubMatrix( M, [ 2, 1 ], [ 2 ] ) );
+[ [ 4 ], [ 2 ] ]
+gap> T:= ZeroMatrix( IsGenericMatrixRep, Integers, 2, 3 );;
+gap> CopySubMatrix( M, T, [ 2, 1 ], [ 1, 2 ], [ 2 ], [ 3 ] );;
+gap> Unpack( T );
+[ [ 0, 0, 4 ], [ 0, 0, 2 ] ]
+gap> CopySubMatrix( Matrix( IsGenericMatrixRep, Rationals, [ [ 1, 2 ] ] ),
+>                   T, [ 1 ], [ 1 ], [ 1 ], [ 1 ] );
+Error, <M> and <N> are not compatible
+gap> Unpack( TransposedMatMutable( M ) );
+[ [ 1, 3 ], [ 2, 4 ] ]
+gap> N:= ChangedBaseDomain( M, Rationals );;
+gap> BaseDomain( N );
+Rationals
+gap> Unpack( N );
+[ [ 1, 2 ], [ 3, 4 ] ]
+gap> IsMutable( N );
+true
+gap> MakeImmutable( M );;
+gap> N:= ChangedBaseDomain( M, Rationals );;
+gap> IsMutable( N );
+false
+gap> String( Matrix( IsGenericMatrixRep, GF(2), [ [ Z(2)^0, 0*Z(2) ] ] ) );
+"NewMatrix(IsGenericMatrixRep,GF(2),2,[ [ Z(2)^0, 0*Z(2) ] ])"
+gap> Print( Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] ), "\n" );
+NewMatrix(IsGenericMatrixRep,Integers,2,[ [ 1, 2 ], [ 3, 4 ] ])
+
+#
+gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] );;
+gap> v:= NewVector( IsPlistVectorRep, Integers, [ 1, 2 ] );;
+gap> Unpack( M * v );
+[ 5, 11 ]
+gap> Unpack( v * M );
+[ 7, 10 ]
+gap> lp:= [ 1, 2 ];;
+gap> M * lp;
+[ 5, 11 ]
+gap> lp * M;
+[ 7, 10 ]
+gap> a:= ZeroMatrix( IsGenericMatrixRep, Integers, 2, 0 );;
+gap> b:= ZeroMatrix( IsGenericMatrixRep, Integers, 0, 3 );;
+
+# multiplication with empty list is not well-defined: we don't know if
+# is meant to be a vector of length 0, or something else; so rather
+# error out
+gap> a * [];
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `BaseDomain' on 1 arguments
+gap> [] * b;
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `BaseDomain' on 1 arguments
 
 #
 gap> STOP_TEST( "matobjgeneric.tst" );
