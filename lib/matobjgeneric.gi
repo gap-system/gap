@@ -15,12 +15,15 @@
 
 BindGlobal( "MakeIsGenericMatrixRep",
   function( basedomain, ncols, list, check )
-    local fam, types, typ, row;
+    local fam, typ, row;
+    fam := CollectionsFamily( ElementsFamily( FamilyObj( basedomain ) ) );
 
-    fam := CollectionsFamily( FamilyObj( basedomain ) );
+    # Currently there is no special handling depending on 'basedomain',
+    # the types are always cached in 'fam'.
     if not IsBound( fam!.FlatPlistMatrixRepTypes ) then
-      if HasCanEasilyCompareElements( Representative( basedomain ) ) and
-         CanEasilyCompareElements( Representative( basedomain ) ) then
+      # initialize type cache
+      # TODO: make this thread safe for HPC-GAP
+      if CanEasilyCompareElementsFamily( fam ) then
         fam!.FlatPlistMatrixRepTypes := [
             NewType( fam, IsGenericMatrixRep and CanEasilyCompareElements ),
             NewType( fam, IsGenericMatrixRep and CanEasilyCompareElements and IsMutable ),
@@ -32,11 +35,10 @@ BindGlobal( "MakeIsGenericMatrixRep",
         ];
       fi;
     fi;
-    types := fam!.FlatPlistMatrixRepTypes;
     if IsMutable( list ) then
-      typ := types[2];
+      typ := fam!.FlatPlistMatrixRepTypes[2];
     else
-      typ := types[1];
+      typ := fam!.FlatPlistMatrixRepTypes[1];
     fi;
 
     if check and ValueOption( "check" ) <> false then

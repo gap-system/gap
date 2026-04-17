@@ -121,32 +121,29 @@ BindGlobal( "MakeIsPlistVectorRep",
 BindGlobal( "MakeIsPlistMatrixRep",
   function( basedomain, emptyvector, ncols, list, check )
     local fam, types, typ, row;
-    fam:= CollectionsFamily( FamilyObj( basedomain ) );
+    fam:= CollectionsFamily( ElementsFamily( FamilyObj( basedomain ) ) );
 
     # Currently there is no special handling depending on 'basedomain',
     # the types are always cached in 'fam'.
     if not IsBound( fam!.PlistMatrixRepTypes ) then
       # initialize type cache
       # TODO: make this thread safe for HPC-GAP
-      fam!.PlistMatrixRepTypes:= [
-          NewType( fam, IsPlistMatrixRep ),
-          NewType( fam, IsPlistMatrixRep and IsMutable ),
-      ];
-      fam!.PlistMatrixRepTypesEasyCompare:= [
-          NewType( fam, IsPlistMatrixRep and CanEasilyCompareElements ),
-          NewType( fam, IsPlistMatrixRep and CanEasilyCompareElements and IsMutable ),
-      ];
-    fi;
-    if HasCanEasilyCompareElements( Representative( basedomain ) ) and
-       CanEasilyCompareElements( Representative( basedomain ) ) then
-      types:= fam!.PlistMatrixRepTypesEasyCompare;
-    else
-      types:= fam!.PlistMatrixRepTypes;
+      if CanEasilyCompareElementsFamily( fam ) then
+        fam!.PlistMatrixRepTypes:= [
+            NewType( fam, IsPlistMatrixRep and CanEasilyCompareElements ),
+            NewType( fam, IsPlistMatrixRep and CanEasilyCompareElements and IsMutable ),
+        ];
+      else
+        fam!.PlistMatrixRepTypes:= [
+            NewType( fam, IsPlistMatrixRep ),
+            NewType( fam, IsPlistMatrixRep and IsMutable ),
+        ];
+      fi;
     fi;
     if IsMutable( list ) then
-      typ:= types[2];
+      typ:= fam!.PlistMatrixRepTypes[2];
     else
-      typ:= types[1];
+      typ:= fam!.PlistMatrixRepTypes[1];
     fi;
 
     if check and ValueOption( "check" ) <> false then
@@ -158,10 +155,10 @@ BindGlobal( "MakeIsPlistMatrixRep",
       for row in list do
         if not IsPlistVectorRep( row ) then
           Error( "the entries of <list> must be in 'IsPlistVectorRep'" );
-        elif not IsIdenticalObj( basedomain, row![BDPOS] ) then
-          Error( "the entries of <list> must have the given base domain" );
         elif Length( row![ELSPOS] ) <> ncols then
           Error( "the entries of <list> must have length <ncols>" );
+        elif not IsIdenticalObj( basedomain, row![BDPOS] ) then
+          Error( "the entries of <list> must have the given base domain" );
         fi;
       od;
     fi;
