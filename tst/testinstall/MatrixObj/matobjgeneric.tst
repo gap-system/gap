@@ -377,7 +377,8 @@ gap> String(M);
 # vec * mat, mat * vec
 #
 gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] );;
-gap> v:= NewVector( IsPlistVectorRep, Integers, [ 1, 2 ] );;
+gap> v:= Vector( Integers, [ 1, 2 ] );
+<plist vector over Integers of length 2>
 gap> Display( M * v );
 <a plist vector over Integers:
 [ 5, 11 ]
@@ -386,15 +387,35 @@ gap> Display( v * M );
 <a plist vector over Integers:
 [ 7, 10 ]
 >
+
+#
 gap> M * [ 1, 2 ];
 [ 5, 11 ]
 gap> [ 1, 2 ] * M;
 [ 7, 10 ]
 
+#
+gap> R:= Integers mod 6;;
+gap> M:= Matrix( IsGenericMatrixRep, R, One(R) * [ [ 1, 2 ], [ 3, 4 ] ] );;
+gap> v:= NewVector( IsZmodnZVectorRep, R, One(R) * [ 1, 2 ] );
+<vector mod 6: [ 1, 2 ]>
+gap> Display( M * v );
+<a zmodnz vector over (Integers mod 6):
+[ 5, 5 ]
+>
+gap> Display( v * M );
+<a zmodnz vector over (Integers mod 6):
+[ 1, 4 ]
+>
+
 # error handling
 gap> M * [ 1, 2, 3 ];
 Error, <M> and <v> are not compatible
 gap> [ 1, 2, 3 ] * M;
+Error, <v> and <M> are not compatible
+gap> M * [ Z(2), Z(2) ];
+Error, <M> and <v> are not compatible
+gap> [ Z(2), Z(2) ] * M;
 Error, <v> and <M> are not compatible
 
 # multiplication with empty list is not well-defined: we don't know if
