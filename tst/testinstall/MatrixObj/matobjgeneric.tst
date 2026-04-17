@@ -203,20 +203,49 @@ gap> IsOne( N * M );
 true
 gap> IsOne( M * N );
 true
-gap> IsMutable( M * N );
-true
-gap> MakeImmutable(M);;
-gap> IsMutable( M * N );
-true
-gap> MakeImmutable(N);;
-gap> IsMutable( M * N );
-false
 gap> M:= Matrix( IsGenericMatrixRep, Rationals, [ [ 1, 2 ], [ 3, 5 ] ] );;
-gap> Display( InverseMutable( M ) );
+gap> N:= InverseMutable( M );;
+gap> Display( N );
 <2x2-matrix over Rationals:
 [[ -5, 2 ]
  [ 3, -1 ]
 ]>
+
+#
+# mutability after operations
+#
+gap> M:= Matrix( IsGenericMatrixRep, Rationals, [ [ 1, 2 ], [ 3, 5 ] ] );;
+gap> IsMutable(M);
+true
+gap> N:= InverseSameMutability( M );;
+gap> IsMutable(N);
+true
+gap> IsMutable( M * N );
+true
+gap> IsMutable( M + N );
+true
+gap> IsMutable( M - N );
+true
+gap> IsMutable( -M );
+true
+gap> MakeImmutable(M);;
+gap> IsMutable( M * N );
+true
+gap> IsMutable( M + N );
+true
+gap> IsMutable( M - N );
+true
+gap> N:= InverseSameMutability( M );;
+gap> IsMutable(N);
+false
+gap> IsMutable( M * N );
+false
+gap> IsMutable( M + N );
+false
+gap> IsMutable( M - N );
+false
+gap> IsMutable( -M );
+false
 
 #
 gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] );;
@@ -379,6 +408,28 @@ Error, no 1st choice method found for `BaseDomain' on 1 arguments
 gap> [] * b;
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `BaseDomain' on 1 arguments
+
+#
+# families
+#
+gap> M:= NewZeroMatrix( IsGenericMatrixRep, Integers, 2, 3 );
+<2x3-matrix over Integers>
+gap> IsMutable( M );
+true
+gap> IsCyclotomicCollColl( M );
+true
+gap> IsFFECollColl( M );
+false
+
+#
+gap> M:= NewZeroMatrix( IsGenericMatrixRep, GF(257), 2, 3 );
+<2x3-matrix over GF(257)>
+gap> IsMutable( M );
+true
+gap> IsCyclotomicCollColl( M );
+false
+gap> IsFFECollColl( M );
+true
 
 #
 gap> STOP_TEST( "matobjgeneric.tst" );
