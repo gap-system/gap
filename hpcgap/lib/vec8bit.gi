@@ -1096,11 +1096,11 @@ InstallMethodWithRandomSource( Randomize,
 InstallMethod( Unpack, "for an 8bit matrix",
   [Is8BitMatrixRep],
   function( m )
-    return List(m,AsPlist);
+    return List(m, PlainListCopy);
   end );
 InstallMethod( Unpack, "for an 8bit vector",
   [Is8BitVectorRep],
-  AsPlist );
+  PlainListCopy );
 
 InstallOtherMethod( KroneckerProduct, "for two 8bit matrices", # priority to kernel code, if matrices have same field
   [Is8BitMatrixRep and IsMatrix, Is8BitMatrixRep and IsMatrix], 1,

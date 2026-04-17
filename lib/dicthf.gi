@@ -162,7 +162,7 @@ function(m, v)
   return function(x)
     Assert(1, IsPositionsList(x));
     if not IsPlistRep(x) then
-      x := AsPlist(x);
+      x := PlainListCopy(x);
     fi;
     return HashKeyBag(x, 1, 0, Length(x) * GAPInfo.BytesPerVariable);
   end;
