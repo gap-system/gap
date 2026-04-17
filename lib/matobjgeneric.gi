@@ -286,8 +286,9 @@ InstallMethod( \*,
     return MakeIsGenericMatrixRep( bd, colsB, list, false );
   end );
 
-InstallMethod( \*,
-  [ "IsGenericMatrixRep", "IsVectorObj" ],
+InstallOtherMethod( \*,
+  [ "IsGenericMatrixRep", "IsRowVectorOrVectorObj" ],
+  {} -> RankFilter(IsPlistVectorRep),  # rank above method for [IsScalar, IsPlistVectorRep]
   function( M, v )
     local rows, cols, bd, res;
 
@@ -320,8 +321,9 @@ InstallMethod( \*,
     return Vector( res, v );
   end );
 
-InstallMethod( \*,
-  [ "IsVectorObj", "IsGenericMatrixRep" ],
+InstallOtherMethod( \*,
+  [ "IsRowVectorOrVectorObj", "IsGenericMatrixRep" ],
+  {} -> RankFilter(IsPlistVectorRep),  # rank above method for [IsPlistVectorRep, IsScalar]
   function( v, M )
     local rows, cols, bd, res;
 
