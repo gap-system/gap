@@ -14,8 +14,6 @@ coverage:
       default:
         informational: true
 
-comment: false
-
 ignore:
  - "extern"
  - "hpcgap/extern"
