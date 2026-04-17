@@ -9,12 +9,12 @@
 #     For the actually new points and their ids act on them by all the generators
 #     make a list of triples: pt, parent id, gen used and cut it into blocks of
 #       some suitable size. Run task  on each block
-       
+
 #
 
 #
 #  dict is a thread-safe data structure (blocked hash table perhaps)
-#  it supports AddOrLookup(dict, obj) 
+#  it supports AddOrLookup(dict, obj)
 #  if obj is in dict already, it returns the id assigned when obj was added
 #  if  obj is not already in dict, it returns -(a new id)
 #  The IDs are small positive ints, and while they may not be contiguous they shouldn't be too huge.
@@ -27,12 +27,12 @@ NHASHTABLES := 17;
 
 newSplitHashTableDict := function(hash1, hash2, npieces, magic)
     local  r, tables, t, i;
-    r := rec(npieces := npieces, hash1 := hash1, hash2 := hash2, magic := magic, 
+    r := rec(npieces := npieces, hash1 := hash1, hash2 := hash2, magic := magic,
              tables := []);
     for i in [1..npieces] do
-        r.tables[i] := rec(next := 1 + (i-1)*magic, top := i*magic, table := 
+        r.tables[i] := rec(next := 1 + (i-1)*magic, top := i*magic, table :=
                            SparseHashTable(hash2));
-        
+
     od;
     for t in r.tables do
         ShareObj(t);
@@ -42,7 +42,7 @@ newSplitHashTableDict := function(hash1, hash2, npieces, magic)
 end;
 
 #
-# Two approaches to managing the hash tables. 
+# Two approaches to managing the hash tables.
 # optimum might well be to switch from 1 to 2
 # once the rediscovery rate gets high enough.
 #
@@ -78,7 +78,7 @@ SHTaddOrLookup2 := function(dict, obj)
     if ht = fail then
         atomic readwrite t do
            ht := GetHashEntry(t.table,obj);
-           if ht = fail then 
+           if ht = fail then
                ht := t.next;
                t.next := t.next+1;
                if  t.next > t.top then
@@ -89,7 +89,7 @@ SHTaddOrLookup2 := function(dict, obj)
                return -ht;
            fi;
        od;
-       
+
    fi;
    return ht;
 end;
@@ -105,7 +105,7 @@ task := function( points, parentids, gennos, gens, action, dict, addOrLookup, re
         MakeImmutable(parents);
         MakeImmutable(ngennos);
         ATOMIC_ADDITION(l,1,1);
-        ATOMIC_ADDITION(l,2,1);        
+        ATOMIC_ADDITION(l,2,1);
         RunAsyncTask(task, npts, parents, ngennos, gens, action, dict, addOrLookup, record, l, sem);
     end;
     npts := [];
@@ -130,8 +130,8 @@ task := function( points, parentids, gennos, gens, action, dict, addOrLookup, re
     od;
     if Length(parents) > 0 then
         emit();
-    fi;   
-    
+    fi;
+
    ATOMIC_ADDITION(l,1,-1);
    if l[1] = 0 then
        SignalSemaphore(sem);
@@ -154,7 +154,7 @@ HTaddOrLookup := function(ht, obj)
     return res;
 end;
 
-        
+
 
 seqorb := function( seeds, gens, action, dict, addOrLookup, record)
     local  queue, qids, i, ngens, pt, npt, newid,j ;
@@ -177,9 +177,9 @@ seqorb := function( seeds, gens, action, dict, addOrLookup, record)
     od;
 end;
 
-      
-             
-        
+
+
+
 parorb := function( seeds, gens, action, dict, addOrLookup, record)
     local  l, sem, fakes;
     l := FixedAtomicList([0,0]);
@@ -187,20 +187,24 @@ parorb := function( seeds, gens, action, dict, addOrLookup, record)
     seeds := Immutable(seeds);
     fakes := `List(seeds, s->fail);
     ATOMIC_ADDITION(l, 1, 1);
-    ATOMIC_ADDITION(l,2,1);        
+    ATOMIC_ADDITION(l,2,1);
     RunAsyncTask(task, seeds, fakes, fakes,  gens, action, dict, addOrLookup, record, l, sem);
 #    while true do Print(l[1]," ",l[2],"\n");
  #   od;
     if l[1] > 0 then
         WaitSemaphore(sem);
     fi;
-    
+
     return l[2];
 end;
 
-hash := function(s) 
+hash := function(s)
     local sp;
-    sp := AsPlist(s);
+    if IsPlistRep(x) then
+      sp := s;
+    else
+      sp := PlainListCopy(s);
+    fi;
     return HashKeyBag(sp, 0,0,SIZE_OBJ(sp));
 end;
 
@@ -252,35 +256,35 @@ actionViaParOrb := function(seeds, gens, action, hash)
     return realacts;
 end;
 
-    
+
 
 m24trial := function()
     local  d, gens, orb;
     orb := AtomicList([]);
     d := newSplitHashTableDict(x->x, x->x, NHASHTABLES, 100);
     gens := GeneratorsOfGroup(MathieuGroup(24));
-    parorb([1], gens, OnPoints, d, SHTaddOrLookup, function(a,b,c) 
+    parorb([1], gens, OnPoints, d, SHTaddOrLookup, function(a,b,c)
         end);
         return keysOfSHT(d);
-        
+
 end;
 
 m24trialn := function(n)
     local  d, gens;
     d := newSplitHashTableDict(hash, hash, NHASHTABLES, 100);
     gens := GeneratorsOfGroup(MathieuGroup(24));
-    parorb([`[1..n]], gens, OnSets, d, SHTaddOrLookup, function(a,b,c) 
+    parorb([`[1..n]], gens, OnSets, d, SHTaddOrLookup, function(a,b,c)
         end);
         return keysOfSHT(d);
-        
+
 end;
 
 m24seqtrialn := function(n)
     local  d, gens, orb;
     orb := [];
-    d := SeqDict(hash);    
+    d := SeqDict(hash);
     gens := GeneratorsOfGroup(MathieuGroup(24));
-    seqorb([AsPlist([1..n])], gens, OnSets, d, HTaddOrLookup, function(a,b,c) 
+    seqorb([PlainListCopy([1..n])], gens, OnSets, d, HTaddOrLookup, function(a,b,c)
     end);
     return Filtered(d.table!.KeyArray, x->x<>fail);
 end;
@@ -288,8 +292,8 @@ end;
 m24act := function(n)
     local gens;
     gens := GeneratorsOfGroup(MathieuGroup(24));
-    return actionViaParOrb([`AsPlist([1..n])], gens, OnSets, hash);
+    return actionViaParOrb([`PlainListCopy([1..n])], gens, OnSets, hash);
 end;
 
-    
-    
+
+

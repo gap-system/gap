@@ -315,10 +315,10 @@ InstallMethod( AsSSortedList,
     [ IsCollection ],
     coll -> ConstantTimeAccessList( EnumeratorSorted( coll ) ) );
 
-InstallOtherMethod( AsSSortedList,
+InstallMethod( AsSSortedList,
     "for a collection that is a constant time access list",
     [ IsCollection and IsConstantTimeAccessList ],
-    l->AsSSortedListList(AsPlist(l)) );
+    l->AsSSortedListList(PlainListCopy(l)) );
 
 #############################################################################
 ##
