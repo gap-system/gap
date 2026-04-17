@@ -193,11 +193,24 @@ gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ], [ 5, 6 ] ] 
 gap> InverseMutable( M );
 Error, InverseMutable: matrix must be square
 gap> M:= Matrix( IsGenericMatrixRep, GF(2), [ [ Z(2)^0, Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] );;
-gap> Display( InverseMutable( M ) );
+gap> N:= InverseMutable( M );;
+gap> Display( N );
 <2x2-matrix over GF(2):
 [[ 0*Z(2), Z(2)^0 ]
  [ Z(2)^0, Z(2)^0 ]
 ]>
+gap> IsOne( N * M );
+true
+gap> IsOne( M * N );
+true
+gap> IsMutable( M * N );
+true
+gap> MakeImmutable(M);;
+gap> IsMutable( M * N );
+true
+gap> MakeImmutable(N);;
+gap> IsMutable( M * N );
+false
 gap> M:= Matrix( IsGenericMatrixRep, Rationals, [ [ 1, 2 ], [ 3, 5 ] ] );;
 gap> Display( InverseMutable( M ) );
 <2x2-matrix over Rationals:
@@ -229,6 +242,8 @@ gap> a * d;
 Error, \*: Matrices not over same base domain
 
 #
+# ShallowCopy, MutableCopyMatrix
+#
 gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] );;
 gap> N:= ShallowCopy( M );;
 gap> N[1,1] := 99;;
@@ -242,6 +257,10 @@ gap> Unpack( M );
 [ [ 1, 2 ], [ 3, 4 ] ]
 gap> Unpack( N );
 [ [ 1, 77 ], [ 3, 4 ] ]
+
+#
+# ExtractSubMatrix, CopySubMatrix
+#
 gap> Unpack( ExtractSubMatrix( M, [ 2, 1 ], [ 2 ] ) );
 [ [ 4 ], [ 2 ] ]
 gap> T:= ZeroMatrix( IsGenericMatrixRep, Integers, 2, 3 );;
@@ -251,8 +270,16 @@ gap> Unpack( T );
 gap> CopySubMatrix( Matrix( IsGenericMatrixRep, Rationals, [ [ 1, 2 ] ] ),
 >                   T, [ 1 ], [ 1 ], [ 1 ], [ 1 ] );
 Error, <M> and <N> are not compatible
+
+#
+# TransposedMatMutable
+#
 gap> Unpack( TransposedMatMutable( M ) );
 [ [ 1, 3 ], [ 2, 4 ] ]
+
+#
+# ChangedBaseDomain
+#
 gap> N:= ChangedBaseDomain( M, Rationals );;
 gap> BaseDomain( N );
 Rationals
@@ -264,29 +291,88 @@ gap> MakeImmutable( M );;
 gap> N:= ChangedBaseDomain( M, Rationals );;
 gap> IsMutable( N );
 false
-gap> String( Matrix( IsGenericMatrixRep, GF(2), [ [ Z(2)^0, 0*Z(2) ] ] ) );
-"NewMatrix(IsGenericMatrixRep,GF(2),2,[ [ Z(2)^0, 0*Z(2) ] ])"
-gap> Print( Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] ), "\n" );
-NewMatrix(IsGenericMatrixRep,Integers,2,[ [ 1, 2 ], [ 3, 4 ] ])
 
+#
+# ViewObj, PrintObj, Display, String
+#
+gap> M := Matrix( IsGenericMatrixRep, GF(2), [ [ Z(2)^0, 0*Z(2) ] ] );
+<1x2-matrix over GF(2)>
+gap> Print(M, "\n");
+NewMatrix(IsGenericMatrixRep,GF(2),2,[ [ Z(2)^0, 0*Z(2) ] ])
+gap> Display(M);
+<1x2-matrix over GF(2):
+[[ Z(2)^0, 0*Z(2) ]
+]>
+gap> String(M);
+"NewMatrix(IsGenericMatrixRep,GF(2),2,[ [ Z(2)^0, 0*Z(2) ] ])"
+
+#
+gap> MakeImmutable( M );
+<immutable 1x2-matrix over GF(2)>
+gap> Print(M, "\n");
+NewMatrix(IsGenericMatrixRep,GF(2),2,[ [ Z(2)^0, 0*Z(2) ] ])
+gap> Display(M);
+<immutable 1x2-matrix over GF(2):
+[[ Z(2)^0, 0*Z(2) ]
+]>
+gap> String(M);
+"NewMatrix(IsGenericMatrixRep,GF(2),2,[ [ Z(2)^0, 0*Z(2) ] ])"
+
+#
+gap> M :=Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] );
+<2x2-matrix over Integers>
+gap> Print(M, "\n");
+NewMatrix(IsGenericMatrixRep,Integers,2,[ [ 1, 2 ], [ 3, 4 ] ])
+gap> Display(M);
+<2x2-matrix over Integers:
+[[ 1, 2 ]
+ [ 3, 4 ]
+]>
+gap> String(M);
+"NewMatrix(IsGenericMatrixRep,Integers,2,[ [ 1, 2 ], [ 3, 4 ] ])"
+
+#
+gap> MakeImmutable( M );
+<immutable 2x2-matrix over Integers>
+gap> Print(M, "\n");
+NewMatrix(IsGenericMatrixRep,Integers,2,[ [ 1, 2 ], [ 3, 4 ] ])
+gap> Display(M);
+<immutable 2x2-matrix over Integers:
+[[ 1, 2 ]
+ [ 3, 4 ]
+]>
+gap> String(M);
+"NewMatrix(IsGenericMatrixRep,Integers,2,[ [ 1, 2 ], [ 3, 4 ] ])"
+
+#
+# vec * mat, mat * vec
 #
 gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] );;
 gap> v:= NewVector( IsPlistVectorRep, Integers, [ 1, 2 ] );;
-gap> Unpack( M * v );
+gap> Display( M * v );
+<a plist vector over Integers:
 [ 5, 11 ]
-gap> Unpack( v * M );
+>
+gap> Display( v * M );
+<a plist vector over Integers:
 [ 7, 10 ]
-gap> lp:= [ 1, 2 ];;
-gap> M * lp;
+>
+gap> M * [ 1, 2 ];
 [ 5, 11 ]
-gap> lp * M;
+gap> [ 1, 2 ] * M;
 [ 7, 10 ]
-gap> a:= ZeroMatrix( IsGenericMatrixRep, Integers, 2, 0 );;
-gap> b:= ZeroMatrix( IsGenericMatrixRep, Integers, 0, 3 );;
+
+# error handling
+gap> M * [ 1, 2, 3 ];
+Error, <M> and <v> are not compatible
+gap> [ 1, 2, 3 ] * M;
+Error, <v> and <M> are not compatible
 
 # multiplication with empty list is not well-defined: we don't know if
 # is meant to be a vector of length 0, or something else; so rather
 # error out
+gap> a:= ZeroMatrix( IsGenericMatrixRep, Integers, 2, 0 );;
+gap> b:= ZeroMatrix( IsGenericMatrixRep, Integers, 0, 3 );;
 gap> a * [];
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `BaseDomain' on 1 arguments
