@@ -375,15 +375,15 @@ The following components of the record are <E>optional</E>.
   </Item>
   <Mark><C>NeededSystemPackages</C></Mark>
   <Item>
-    a record whose components describe operating systems or package managers,
-    e.g. <C>Ubuntu</C> or <C>Homebrew</C>, and whose values are lists of lists
-    <C>[ syspkgname, ... ]</C>, denoting the system packages needed by the
-    &GAP; package,
+    a record whose contents describe external dependencies of the package
+    in a machine-readable form (see <Ref Sect="External dependencies"/> for
+    more information),
   </Item>
   <Mark><C>ExternalConditions</C></Mark>
   <Item>
     a list of strings or of pairs <C>[ text, URL ]</C> of strings,
-    denoting conditions on external programs,
+    denoting conditions on external programs in a human-readable form
+    (see <Ref Sect="External dependencies"/> for more information),
   </Item>
   </List>
 </Item>
@@ -1271,6 +1271,10 @@ ExternalConditions := [
 ]
 ]]></Log>
 
+Note that the data in <C>ExternalConditions</C> is purely informational
+and meant to be human-readable, not machine-readable. &GAP; itself does
+not use it, but for packages distributed with &GAP;, the &GAP; website
+displays it in its package list.
 <P/>
 
 If this dependency is available through a package manager such as <C>apt</C>
