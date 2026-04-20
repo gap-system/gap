@@ -13,6 +13,54 @@ gap> TNAM_OBJ([1..10]{[]});
 "empty plain list"
 
 #
+# SumRangeInt / SumIntRange
+#
+gap> r := 5 + [1..5];
+[ 6 .. 10 ]
+gap> IsRangeRep(r);
+true
+gap> r := [1..5] + 5;
+[ 6 .. 10 ]
+gap> IsRangeRep(r);
+true
+gap> r := 5 + [1,3..9];
+[ 6, 8 .. 14 ]
+gap> IsRangeRep(r);
+true
+gap> r := [1,3..9] + 5;
+[ 6, 8 .. 14 ]
+gap> IsRangeRep(r);
+true
+gap> r := 5 + [9,7..1];
+[ 14, 12 .. 6 ]
+gap> IsRangeRep(r);
+true
+gap> r := [9,7..1] + 5;
+[ 14, 12 .. 6 ]
+gap> IsRangeRep(r);
+true
+gap> r := 1 + [INTOBJ_MAX-1..INTOBJ_MAX];;
+gap> r = [INTOBJ_MAX, INTOBJ_MAX+1];
+true
+gap> IsRangeRep(r);
+false
+gap> r := [INTOBJ_MAX-1..INTOBJ_MAX] + 1;;
+gap> r = [INTOBJ_MAX, INTOBJ_MAX+1];
+true
+gap> IsRangeRep(r);
+false
+gap> r := -1 + [-INTOBJ_MAX-1..-INTOBJ_MAX];;
+gap> r = [-INTOBJ_MAX-2, -INTOBJ_MAX-1];
+true
+gap> IsRangeRep(r);
+false
+gap> r := [-INTOBJ_MAX-1..-INTOBJ_MAX] + -1;;
+gap> r = [-INTOBJ_MAX-2, -INTOBJ_MAX-1];
+true
+gap> IsRangeRep(r);
+false
+
+#
 # UnbRange
 #
 
