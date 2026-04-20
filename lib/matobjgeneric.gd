@@ -40,7 +40,7 @@ DeclareRepresentation( "IsGenericMatrixRep",
     [] );
 
 
-# Internal positions for flat plist matrices.
-BindConstant( "FBDPOS", 1 );
-BindConstant( "FCOLSPOS", 2 );
-BindConstant( "FROWSPOS", 3 );
+# Internal positions for IsGenericMatrixRep:
+BindConstant( "FBDPOS", 1 );   # BaseDomain
+BindConstant( "FCOLSPOS", 2 ); # NumberColumns
+BindConstant( "FROWSPOS", 3 ); # "rows" as a plist-of-plists

@@ -21,22 +21,22 @@ BindGlobal( "MakeIsGenericMatrixRep",
 
     # Currently there is no special handling depending on 'basedomain',
     # the types are always cached in 'fam'.
-    if not IsBound( fam!.FlatPlistMatrixRepTypes ) then
+    if not IsBound( fam!.GenericMatrixRepTypes ) then
       # initialize type cache
       # TODO: make this thread safe for HPC-GAP
       filter := IsGenericMatrixRep;
       if CanEasilyCompareElementsFamily( efam ) then
         filter := filter and CanEasilyCompareElements;
       fi;
-      fam!.FlatPlistMatrixRepTypes := [
+      fam!.GenericMatrixRepTypes := [
           NewType( fam, filter ),
           NewType( fam, filter and IsMutable ),
       ];
     fi;
     if IsMutable( list ) then
-      typ := fam!.FlatPlistMatrixRepTypes[2];
+      typ := fam!.GenericMatrixRepTypes[2];
     else
-      typ := fam!.FlatPlistMatrixRepTypes[1];
+      typ := fam!.GenericMatrixRepTypes[1];
     fi;
 
     if check and ValueOption( "check" ) <> false then
@@ -135,17 +135,17 @@ InstallMethod( MatElm,
 
 InstallMethod( SetMatElm,
   [ "IsGenericMatrixRep and IsMutable", "IsPosInt", "IsPosInt", "IsObject" ],
-  function( M, row, col, ob )
+  function( M, row, col, val )
     if ValueOption( "check" ) <> false then
-      if not ob in BaseDomain( M ) then
-        Error( "<ob> must lie in the base domain of <M>" );
+      if not val in BaseDomain( M ) then
+        Error( "<val> must lie in the base domain of <M>" );
       elif not row in [1..NrRows(M)] then
         Error( "<row> is out of bounds" );
       elif not col in [1..NrCols(M)] then
         Error( "<col> is out of bounds" );
       fi;
     fi;
-    M![FROWSPOS][row,col] := ob;
+    M![FROWSPOS][row,col] := val;
   end );
 
 
