@@ -22,6 +22,53 @@ cf. Chapters <Ref Chap="Row Vectors"/> and <Ref Chap="Matrices"/>.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Some Elementary Examples">
+<Heading>Some Elementary Examples</Heading>
+Just to give a flavour of these new objects, we construct here a vector
+and a matrix in these new forms. 
+The elements should all belong to a semiring <M>R</M>
+(the <C>BaseDomain</C>).
+It is also necessary to specify their <E>type</E>, or <E>filter</E>.
+The simplest of these use plain lists, namely <Ref Oper="IsPlistVectorRep"/>
+and <Ref Oper="IsPlistMatrixRep"/>.
+Other available types are listed in Sections
+<Ref Sect="Available Representations of Vector Objects"/> and
+<Ref Sect="Available Representations of Matrix Objects"/>.
+<P/>
+To construct these objects we use the operations
+<Ref Oper="NewVector"/> and <Ref Oper="NewMatrix"/>, although operations
+<C>Vector</C> and <C>Matrix</C> are also available and are more flexible.
+<C>NewMatrix</C> requires the number of columns as third input.
+<P/>
+Basic arithmetic operations for vectors and matrices are available: 
+see Sections <Ref Sect="Arithmetical Operations for Vector Objects"/> and
+<Ref Sect="Arithmetical Operations for Matrix Objects"/>.
+<P/>
+<Example><![CDATA[
+gap> dom := Integers;;
+gap> filt1 := IsPlistVectorRep;;
+gap> filt2 := IsPlistMatrixRep;;
+gap> v1 := NewVector( filt1, dom, [3,4,7,8] );
+<plist vector over Integers of length 4>
+gap> Print( v1 );               
+NewVector(IsPlistVectorRep,Integers,[ 3, 4, 7, 8 ])
+gap> M := NewMatrix( filt2, dom, 4, [ [1,2,3,4], [6,7,8,9] ] );;
+gap> Display( M ); 
+<2x4-matrix over Integers:
+[[ 1, 2, 3, 4 ]
+ [ 6, 7, 8, 9 ]
+]>
+gap> v2 := NewVector( filt1, dom, [-7..-4] );;
+gap> Print( v1 + v2 );
+NewVector(IsPlistVectorRep,Integers,[ -4, -2, 2, 4 ])
+gap> Print( (v1+v2) * TransposedMat(M) );
+NewVector(IsPlistVectorRep,Integers,[ 14, 14 ])
+]]></Example>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Categories of Vector and Matrix Objects">
 <Heading>Categories of Vector and Matrix Objects</Heading>
 
