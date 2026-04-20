@@ -56,6 +56,8 @@
 #include "error.h"
 #include "gaputils.h"
 #include "io.h"
+#include "integer.h"
+#include "listoper.h"
 #include "lists.h"
 #include "modules.h"
 #include "opers.h"
@@ -820,6 +822,45 @@ Obj Range3Check (
 
 /****************************************************************************
 **
+*F  ShiftRange( <offset>, <range>)
+**
+**  'ShiftRange' preserves the range representation when shifting <range>
+**  by the integer <offset> keeps both endpoints in the small integer range.
+**  Otherwise it falls back to the generic scalar/list implementation.
+*/
+static Obj ShiftRange(Obj offset, Obj range)
+{
+    Obj low;
+    Obj high;
+    Obj shifted;
+
+    low = SUM(offset, INTOBJ_INT(GET_LOW_RANGE(range)));
+    high = SUM(offset, GET_ELM_RANGE(range, GET_LEN_RANGE(range)));
+    if (!IS_INTOBJ(low) || !IS_INTOBJ(high)) {
+        return SumSclList(offset, range);
+    }
+
+    shifted = NEW_RANGE(GET_LEN_RANGE(range), INT_INTOBJ(low),
+                        GET_INC_RANGE(range));
+    if (!IS_MUTABLE_OBJ(range)) {
+        MakeImmutableNoRecurse(shifted);
+    }
+    return shifted;
+}
+
+static Obj SumIntRange(Obj opL, Obj opR)
+{
+    return ShiftRange(opL, opR);
+}
+
+static Obj SumRangeInt(Obj opL, Obj opR)
+{
+    return ShiftRange(opR, opL);
+}
+
+
+/****************************************************************************
+**
 *F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
 */
 
@@ -1177,6 +1218,16 @@ static Int InitKernel (
     LtFuncs[ T_RANGE_NSORT ][ T_RANGE_SSORT ] = LtRange;
     LtFuncs[ T_RANGE_SSORT ][ T_RANGE_NSORT ] = LtRange;
     LtFuncs[ T_RANGE_SSORT ][ T_RANGE_SSORT ] = LtRange;
+
+    SumFuncs[ T_INT ][ T_RANGE_NSORT ] = SumIntRange;
+    SumFuncs[ T_INT ][ T_RANGE_NSORT + IMMUTABLE ] = SumIntRange;
+    SumFuncs[ T_INT ][ T_RANGE_SSORT ] = SumIntRange;
+    SumFuncs[ T_INT ][ T_RANGE_SSORT + IMMUTABLE ] = SumIntRange;
+
+    SumFuncs[ T_RANGE_NSORT ][ T_INT ] = SumRangeInt;
+    SumFuncs[ T_RANGE_NSORT + IMMUTABLE ][ T_INT ] = SumRangeInt;
+    SumFuncs[ T_RANGE_SSORT ][ T_INT ] = SumRangeInt;
+    SumFuncs[ T_RANGE_SSORT + IMMUTABLE ][ T_INT ] = SumRangeInt;
 
     // install the list functions in the tables
     LenListFuncs    [ T_RANGE_NSORT            ] = LenRange;
