@@ -669,7 +669,7 @@ InstallTagBasedMethod( NewZeroMatrix,
         m[i] := ZeroVector( cols, e );
     od;
     m := [basedomain,e,cols,m];
-    Objectify( NewType(CollectionsFamily(ElementsFamily(FamilyObj(basedomain))),
+    Objectify( NewType(CollectionsFamily(FamilyObj(basedomain)),
                        filter and IsMutable), m );
     return m;
   end );
