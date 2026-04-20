@@ -5,7 +5,7 @@ gap> START_TEST( "DeterminantMatrix.tst" );
 gap> mat:= [[1,2,1,2],[1,0,1,0],[2,2,2,2]];;
 gap> M:= NewMatrix( IsPlistMatrixRep, GF(5), 4, mat*Z(5)^0 );;
 gap> DeterminantMatrix( M );
-Error, <mat> must be a square matrix at least 1x1
+Error, DeterminantMat: <mat> must be a nonempty square matrix
 
 # 0x0 matrix
 gap> M:= ZeroMatrix( IsPlistRep, GF(9), 0, 0 );
