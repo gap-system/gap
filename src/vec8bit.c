@@ -2590,8 +2590,10 @@ static Obj FuncCOSET_LEADERS_INNER_8BITS(
     Obj  v, w;
     UInt lenv, lenw, q;
 
+    RequirePlainList(SELF_NAME, veclis);
     RequireSmallInt(SELF_NAME, weight);
     RequireSmallInt(SELF_NAME, tofind);
+    RequirePlainList(SELF_NAME, leaders);
 
     lenv = LEN_PLIST(veclis);
     q = LEN_PLIST(felts);
