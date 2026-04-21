@@ -1649,7 +1649,8 @@ Obj PLAIN_LIST_COPY(Obj list)
 
 Obj FuncPlainListCopy(Obj self, Obj list)
 {
-    RequireSmallList(SELF_NAME, list);
+    if (!IS_LIST(list))
+        RequireArgument(SELF_NAME, list, "must be a list");
     return PLAIN_LIST_COPY(list);
 }
 

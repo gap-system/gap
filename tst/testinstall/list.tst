@@ -336,15 +336,15 @@ true
 gap> checkPlainListCopy(NewZeroVector(Is8BitVectorRep, GF(3), 10));
 true
 gap> PlainListCopy(6);
-Error, PlainListCopy: <list> must be a small list (not the integer 6)
+Error, PlainListCopy: <list> must be a list (not the integer 6)
 gap> PlainListCopy((1,2,3));
-Error, PlainListCopy: <list> must be a small list (not a permutation (small))
+Error, PlainListCopy: <list> must be a list (not a permutation (small))
 #@if IsHPCGAP
 gap> PlainListCopy(Group((1,2)));
-Error, PlainListCopy: <list> must be a small list (not an atomic component object)
+Error, PlainListCopy: <list> must be a list (not an atomic component object)
 #@else
 gap> PlainListCopy(Group((1,2)));
-Error, PlainListCopy: <list> must be a small list (not a component object)
+Error, PlainListCopy: <list> must be a list (not a component object)
 #@fi
 
 # Check TNUM behaviours
