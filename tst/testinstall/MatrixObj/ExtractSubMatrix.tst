@@ -26,4 +26,8 @@ gap> m2 := ExtractSubMatrix( m1, [ 11..30 ], [ 11..30 ] );
 < mutable compressed matrix 20x20 over GF(3) >
 gap> IsOne(m2);
 true
+
+gap> m2 := IdentityMatrix( Integers, 4 );;
+gap> Unpack( ExtractSubMatrix( m2, [ 2, 4 ], [ 4, 2 ] ) );
+[ [ 0, 1 ], [ 1, 0 ] ]
 gap> STOP_TEST("ExtractSubMatrix.tst");
