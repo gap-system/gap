@@ -79,7 +79,8 @@ gap> l4;
 
 #
 gap> CopySubVector( l1, l3, [1,2], [1] );
-Error, source and destination index lists must be of equal length
+Error, List Assignments: <rhss> must have the same length as <poss> (lengths a\
+re 2 and 1)
 
 #
 gap> STOP_TEST("CopySubVector.tst");
