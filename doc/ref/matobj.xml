@@ -29,7 +29,7 @@ and a matrix in these new forms.
 The elements should all belong to a semiring <M>R</M>
 (the <C>BaseDomain</C>).
 It is also necessary to specify their <E>type</E>, or <E>filter</E>.
-The simplest of these use plain lists, namely <Ref Oper="IsPlistVectorRep"/>
+The simplest of these use plain lists, namely <Ref Filt="IsPlistVectorRep"/>
 and <Ref Oper="IsPlistMatrixRep"/>.
 Other available types are listed in Sections
 <Ref Sect="Available Representations of Vector Objects"/> and
