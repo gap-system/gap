@@ -616,12 +616,10 @@ InstallMethodWithRandomSource( Random,
 function(rs, G)
     local d, m;
 
-#TODO: This code assumes that all elements in the group have the same
-#      'BaseDomain' value (hence we may take any 'Representative').
-#      If this assumption is not valid then we have to call the
-#      four argument variant of 'RandomInvertibleMatrix'.
-#      Moreover, the code assumes that 'ImmutableMatrix' is not needed
-#      in the situation that the result is in 'IsMatrix'.
+    # We assume that all elements in the group have the same
+    # 'BaseDomain' value, hence we may take any 'Representative'.
+    # see the section "Groups Consisting of Matrix Objects"
+    # in the Reference Manual.
     d:= DimensionOfMatrixGroup( G );
     m:= RandomInvertibleMatrix( rs, d, Representative( G ) );
     MultMatrixRow( m, 1, DeterminantMatrix( m )^-1 );
