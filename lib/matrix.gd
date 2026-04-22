@@ -1900,8 +1900,9 @@ DeclareGlobalFunction( "ReflectionMat" );
 ##   Label="with example matrix"/>
 ##
 ##  <Returns>
-##  an invertible matrix or matrix object with <A>m</A> columns,
-##  with base domain <A>R</A> or equal to <C>BaseDomain( <A>M</A> )</C>.
+##  a matrix or matrix object <M>I</M> with <A>m</A> columns,
+##  with base domain <A>R</A> or equal to <C>BaseDomain( <A>M</A> )</C>,
+##  such that <M>I</M> is invertible over its base domain.
 ##  </Returns>
 ##  <Description>
 ##  If a semiring <A>R</A> is given then it will be the base domain
@@ -1939,6 +1940,9 @@ DeclareGlobalFunction( "ReflectionMat" );
 ##  gap> m2:= RandomInvertibleMatrix( 2, m1 );;
 ##  gap> IsPlistMatrixRep( m2 );
 ##  true
+##  gap> m:= RandomInvertibleMatrix( Integers, 2 );;
+##  gap> IsUnit( Integers, DeterminantMatrix( m ) );
+##  true
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1972,8 +1976,14 @@ DeclareOperation( "RandomInvertibleMatrix",
 ##  matrix with <A>m</A> rows and columns with elements taken from the ring
 ##  <A>R</A>, which defaults to <Ref Var="Integers"/>.
 ##  Optionally, a random source <A>rs</A> can be supplied.
+##  <P/>
+##  Note that the result need <E>not</E> be invertible over
+##  the prescribed ring <A>R</A>.
+##  Use <Ref Oper="RandomInvertibleMatrix" Label="with base domain"/>
+##  for creating random matrices with this stronger property.
+##  <P/>
 ##  <Example><![CDATA[
-##  gap> m := RandomInvertibleMat(4);
+##  gap> m := RandomInvertibleMat( 4, Integers );
 ##  [ [ 1, -4, 0, 1 ], [ 0, -2, 3, 1 ], [ 0, -2, -1, -1 ],
 ##    [ 0, -2, 2, 4 ] ]
 ##  gap> m^-1;
@@ -2099,13 +2109,13 @@ DeclareOperation( "RandomMatrix",
 ##  from <A>Integers</A>
 ##  <Example><![CDATA[
 ##  gap> m := RandomUnimodularMat(3);
-##  [ [ 11, 16, -11 ], [ -2, -3, 2 ], [ -1, 3, 0 ] ]
+##  [ [ 1, -5, 26 ], [ 0, 1, -6 ], [ 0, 0, 1 ] ]
 ##  gap> m^-1;
-##  [ [ -6, -33, -1 ], [ -2, -11, 0 ], [ -9, -49, -1 ] ]
+##  [ [ 1, 5, 4 ], [ 0, 1, 6 ], [ 0, 0, 1 ] ]
 ##  gap> RandomUnimodularMat(3:domain:=[-1000..1000]);
-##  [ [ -315847801, 117009136366294, -5631029155564 ],
-##    [ 726663524, -269200137227249, 12955174856287 ],
-##    [ -9171690, 3397748911844, -163515634591 ] ]
+##  [ [ 6001314, 239514853714734, -44705745791413 ],
+##    [ -1448123744, -57795200635226587, 10787546189680040 ],
+##    [ -671, -26780118200, 4998542420 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

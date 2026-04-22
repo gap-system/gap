@@ -3959,13 +3959,29 @@ end );
 ##
 InstallTagBasedMethod( RandomInvertibleMatrix,
     function( filt, rs, R, m )
-    local mat, det;
+    local mat, i, j;
 
-    mat:= ZeroMatrix( filt, R, m, m );
-    repeat
-      Randomize( rs, mat );
-      det:= DeterminantMat( mat );
-    until not IsZero( det );
+    if IsIntegers( R ) then
+      # We have a dedicated method for this case.
+      mat:= RandomUnimodularMat( rs, m );
+      if filt <> IsPlistRep then
+        mat:= Matrix( filt, R, mat );
+      fi;
+    else
+      # The following works if 'R' is a field or a residue class ring.
+      # If other rings become important,
+      # we have to think about a better approach.
+      mat:= ZeroMatrix( filt, R, m, m );
+      repeat
+        # 'Randomize' does not admit 'R' as an argument,
+        # and we want to cover also 'IsPlistRep'.
+        for i in [ 1 .. m ] do
+          for j in [ 1 .. m ] do
+            mat[i,j]:= Random( rs, R );
+          od;
+        od;
+      until IsUnit( DeterminantMat( mat ) );
+    fi;
 
     return mat;
     end );
