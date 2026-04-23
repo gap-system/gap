@@ -49,8 +49,10 @@ DeclareSynonym(   "AbsolutelyIrreducibleModules", AbsolutIrreducibleModules  );
 ##  <Description>
 ##  returns a list of length 2. The first entry is a generating system of
 ##  <A>G</A>. The second entry is a list of all irreducible modules of
-##  <A>G</A> over the field <A>F</A> in dimension <A>dim</A>, given as MeatAxe modules
+##  <A>G</A> over the field <A>F</A> of dimension at most <A>dim</A>,
+##  given as MeatAxe modules
 ##  (see&nbsp;<Ref Func="GModuleByMats" Label="for generators and a field"/>).
+##  Pass <C>0</C> for <A>dim</A> to impose no dimension bound.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
