@@ -769,7 +769,7 @@ InstallOtherMethod( ProductCoeffs,
 ##
 BindGlobal( "MakeIsZmodnZMatrixRep",
   function( basedomain, ncols, list, check )
-    local fam, filter, typ, filt, row, copied, i;
+    local fam, filter, typ, row, copied, i;
 
     # The types are always cached in 'fam'.
     fam:= CollectionsFamily( FamilyObj( basedomain ) );
@@ -957,10 +957,9 @@ InstallMethod( SetMatElm,
 InstallMethod( RowsOfMatrix,
   [ "IsZmodnZMatrixRep" ],
   function( M )
-    local R, f;
+    local R;
 
     R:= BaseDomain( M );
-    f:= CompatibleVectorFilter( M );
     return List( M![ZROWSPOS], row -> MakeIsZmodnZVectorRep( R, row, false ) );
   end );
 
@@ -1386,13 +1385,12 @@ InstallMethod( RankMat,
   M -> RankMat( Unpack( M ) ) );
 
 BindGlobal( "PLISTVECZMZMAT", function( v, m )
-    local i,res,s,r;
-    r:=BaseDomain(m);
+    local r, res;
+    r:= BaseDomain( m );
     # do arithmetic over Z first so that we reduce only once
-    res:= v * m![ZROWSPOS];
-    res:= ZNZVECREDUCE( res, Length( res ), Size( r ) );
-    res:= Vector( res, v );
-    return res;
+    res:= List( v, Int ) * m![ZROWSPOS];
+    return Vector( IsZmodnZVectorRep, r,
+                   ZNZVECREDUCE( res, Length( res ), Size( r ) ) );
   end );
 
 InstallOtherMethod( \*,
