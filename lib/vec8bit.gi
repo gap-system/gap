@@ -1094,10 +1094,16 @@ InstallMethod( BaseField, "for a compressed 8bit vector",
 InstallTagBasedMethod( NewVector,
   Is8BitVectorRep,
   function( filter, f, l )
-    if ValueOption( "check" ) <> false and not Size(f) in [3..256] then
+    local check, res;
+    check:= ValueOption( "check" ) <> false;
+    if check and not Size(f) in [3..256] then
         Error("Is8BitVectorRep only supports base fields with 3 to 256 elements");
     fi;
-    return CopyToVectorRep(l,Size(f));
+    res:= CopyToVectorRep( l, Size( f ) );
+    if check and res = fail then
+      Error( "cannot copy <l> to 'Is8BitVectorRep'" );
+    fi;
+    return res;
   end );
 
 # This is faster than the default method.
@@ -1131,7 +1137,9 @@ InstallTagBasedMethod( NewMatrix,
     else
       m := List(l,ShallowCopy);
     fi;
-    ConvertToMatrixRep(m,Size(f));
+    if ConvertToMatrixRep( m, Size( f ) ) = fail then
+      Error( "cannot convert <m> to 'Is8BitMatrixRep'" );
+    fi;
     return m;
   end );
 
