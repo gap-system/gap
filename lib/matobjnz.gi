@@ -367,18 +367,12 @@ InstallMethod( PostMakeImmutable,
 InstallMethod( ViewObj,
   [ "IsZmodnZVectorRep" ],
   function( v )
-    local l;
     Print( "<" );
     if not IsMutable( v ) then
       Print( "immutable " );
     fi;
-    Print( "vector mod ", Size( v![ZBDPOS] ) );
-    l:= Length( v![ZELSPOS] );
-    if 0 < l and l <= 8 then
-      Print( ": ", v![ZELSPOS], ">" );
-    else
-      Print( " of length ", Length( v![ZELSPOS] ), ">" );
-    fi;
+    Print( "vector over ", v![ZBDPOS], " of length ", Length( v![ZELSPOS] ),
+           ">" );
   end );
 
 InstallMethod( PrintObj,
@@ -1263,18 +1257,12 @@ InstallMethod( PostMakeImmutable,
 
 InstallMethod( ViewObj,
   [ "IsZmodnZMatrixRep" ],
-  function( m )
-    local l;
+  function( M )
     Print( "<" );
-    if not IsMutable( m ) then
+    if not IsMutable( M ) then
       Print( "immutable " );
     fi;
-    l:= [ Length( m![ZROWSPOS] ), m![ZCOLSPOS] ];
-    if Product( l ) <= 9 and Product( l ) <> 0 then
-      Print( "matrix mod ", Size( m![ZBDPOS] ), ": ", m![ZROWSPOS], ">" );
-    else
-      Print( l[1], "x", l[2], "-matrix mod ", Size( m![ZBDPOS] ), ">" );
-    fi;
+    Print( NrRows( M ), "x", M![ZCOLSPOS], "-matrix over ", M![ZBDPOS], ">" );
   end );
 
 InstallMethod( PrintObj,
