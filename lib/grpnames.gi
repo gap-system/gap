@@ -1208,7 +1208,7 @@ InstallMethod( IsAlternatingGroup,
         SetAlternatingDegree(G,0); return true;
       elif Size(G) = 3 then
         SetAlternatingDegree(G,3); return true;
-      elif Size(G) = 12 and IdGroup(G) = [ 12, 3 ] then
+      elif Size(G) = 12 and Size(DerivedSubgroup(G)) = 4 then
         SetAlternatingDegree(G,4); return true;
       else return false; fi;
     fi;
