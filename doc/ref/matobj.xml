@@ -26,7 +26,7 @@ cf. Chapters <Ref Chap="Row Vectors"/> and <Ref Chap="Matrices"/>.
 <Heading>Some Elementary Examples</Heading>
 Just to give a flavour of these new objects, we construct here two vectors
 and a matrix in these new forms. 
-The elements should all belong to a semiring <M>R</M>
+The elements should all belong to a semiring <A>R</A>
 (the <C>BaseDomain</C>).
 To construct these objects we use the operations
 <C>Vector</C> and <C>Matrix</C> which are described in Section
@@ -60,8 +60,8 @@ gap> Display( (v1+v2) * TransposedMat(M) );
 These objects need to know their <E>type</E>, or <E>filter</E>.
 The simplest of these use plain lists, namely <Ref Filt="IsPlistVectorRep"/>
 and <Ref Filt="IsPlistMatrixRep"/>, 
-which &GAP; chooses automatically for <M>v1</M> and <M>M</M>.
-Note that <M>v2</M> acquires its type by being defined relative to <M>v1</M>.
+which &GAP; chooses automatically for <A>v1</A> and <A>M</A>.
+Note that <A>v2</A> acquires its type by being defined relative to <A>v1</A>.
 Other available types are listed in Sections
 <Ref Sect="Available Representations of Vector Objects"/> and
 <Ref Sect="Available Representations of Matrix Objects"/>.

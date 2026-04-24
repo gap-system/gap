@@ -198,6 +198,11 @@ DeclareAttribute( "Length", IsVectorObj );
 ##  value of <A>v</A> or <A>M</A> implies <Ref Filt="IsCopyable"/> then
 ##  mutable versions of <A>v</A> or <A>M</A> can be created,
 ##  otherwise all vector or matrix objects with this filter are immutable.
+##  <P/>
+##  <Example><![CDATA[
+##  v := Vector( Rationals, [3,4,7,8] );;
+##  gap> ConstructingFilter( v );
+##  <Representation "IsPlistVectorRep">
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -222,6 +227,13 @@ DeclareAttribute( "ConstructingFilter", IsVecOrMatObj );
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> value
 ##  <C>f</C> are compatible in the sense that <A>M</A> can be multiplied with
 ##  these vector objects, of <K>fail</K> if no such filter is known.
+##  <P/>
+##  <Example><![CDATA[
+##  m := Matrix( Integers, [ [1,2,3,4], [6,7,8,9] ] );;
+##  gap> ConstructingFilter( m );
+##  <Representation "IsPlistMatrixRep">
+##  gap> CompatibleVectorFilter( m );
+##  <Representation "IsPlistVectorRep">
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

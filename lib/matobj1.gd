@@ -110,16 +110,12 @@ DeclareCategory( "IsVectorObj", IsVector and IsVecOrMatObj and IsRowVectorOrVect
 ##  argument.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> m:= IdentityMat( 2, GF(2) );;
-##  gap> IsMatrix( m );  IsMatrixObj( m ); IsMatrixOrMatrixObj( m );
-##  true
-##  false
-##  true
-##  gap> m:= NewIdentityMatrix( IsPlistMatrixRep, GF(2), 2 );;
-##  gap> IsMatrix( m );  IsMatrixObj( m ); IsMatrixOrMatrixObj( m );
-##  false
-##  true
-##  true
+##  m := [ [1,2,3,4], [6,7,8,9] ];;
+##  gap> [ IsMatrix( m ), IsMatrixObj( m ), IsMatrixOrMatrixObj( m ) ];
+##  [ true, false, true ]
+##  m := Matrix( Integers, [ [1,2,3,4], [6,7,8,9] ] );;
+##  gap> [ IsMatrix( m ), IsMatrixObj( m ), IsMatrixOrMatrixObj( m ) ];
+##  [ false, true, true ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -256,6 +252,14 @@ DeclareCategory( "IsMatrixObj", IsMatrixOrMatrixObj );
 ##  Matrix objects in <Ref Filt="IsRowListMatrix"/> are <E>not</E>
 ##  necessarily in <Ref Filt="IsList"/>,
 ##  and then they need not obey the general rules for lists.
+##  <P/>
+##  <Example><![CDATA[
+##  m := Matrix( Integers, [ [1,2,3,4], [6,7,8,9] ] );;
+##  gap> IsRowListMatrix( m );
+##  true
+##  gap> Print( m[2] );
+##  NewVector(IsPlistVectorRep,Integers,[ 6, 7, 8, 9 ])
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -283,6 +287,12 @@ DeclareCategory( "IsRowListMatrix", IsMatrixObj );
 ##  its base domain with respect to
 ##  <Ref Oper="\in" Label="for a collection"/>, see Section
 ##  <Ref Sect="Concepts and Rules for Vector and Matrix Objects"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  v := Vector( Rationals, [ [3,4,7,8] ] );;
+##  gap> BaseDomain( v );
+##  Rationals
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -317,6 +327,14 @@ DeclareAttribute( "BaseDomain", IsVecOrMatObj );
 ##  <Ref Attr="NrCols" Label="for a matrix object"/> are synonyms of
 ##  <Ref Attr="NumberRows" Label="for a matrix object"/> and
 ##  <Ref Attr="NumberColumns" Label="for a matrix object"/>, respectively.
+##  <P/>
+##  <Example><![CDATA[
+##  m := Matrix( Integers, [ [1,2,3,4], [6,7,8,9] ] );;
+##  gap> NumberRows( m );
+##  2
+##  gap> NrCols( m );
+##  4
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
