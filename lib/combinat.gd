@@ -970,7 +970,7 @@ DeclareGlobalFunction("NrPartitions");
 
 #############################################################################
 ##
-#F  PartitionsGreatestLE( <n>, <m> ) . . .  set of partitions of n parts <= n
+#F  PartitionsGreatestLE( <n>, <m> ) . . .  partitions of n with parts <= m
 ##
 ##  <#GAPDoc Label="PartitionsGreatestLE">
 ##  <ManSection>
@@ -979,6 +979,16 @@ DeclareGlobalFunction("NrPartitions");
 ##  <Description>
 ##  returns the set of all (unordered) partitions of the integer <A>n</A>
 ##  having parts less or equal to the integer <A>m</A>.
+##  For <M><A>n</A> = 0</M> and <M><A>m</A> \geq 0</M>, this returns the empty partition
+##  <C>[[]]</C>.
+##  Negative arguments yield the empty list.
+##  <Example><![CDATA[
+##  gap> PartitionsGreatestLE( 6, 3 );
+##  [ [ 1, 1, 1, 1, 1, 1 ], [ 2, 1, 1, 1, 1 ], [ 2, 2, 1, 1 ], [ 2, 2, 2 ],
+##    [ 3, 1, 1, 1 ], [ 3, 2, 1 ], [ 3, 3 ] ]
+##  gap> List( [ 0 .. 3 ], m -> PartitionsGreatestLE( 0, m ) );
+##  [ [ [  ] ], [ [  ] ], [ [  ] ], [ [  ] ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -988,7 +998,7 @@ DeclareGlobalFunction("PartitionsGreatestLE");
 
 #############################################################################
 ##
-#F  PartitionsGreatestEQ( <n>, <m> ) . . . . set of partitions of n parts = n
+#F  PartitionsGreatestEQ( <n>, <m> ) . . . . partitions of n with max part m
 ##
 ##  <#GAPDoc Label="PartitionsGreatestEQ">
 ##  <ManSection>
@@ -997,6 +1007,14 @@ DeclareGlobalFunction("PartitionsGreatestLE");
 ##  <Description>
 ##  returns the set of all (unordered) partitions of the integer <A>n</A>
 ##  having greatest part equal to the integer <A>m</A>.
+##  Since partitions use positive parts, this returns the empty list if
+##  <M><A>n</A> \leq 0</M> or <M><A>m</A> \leq 0</M>.
+##  <Example><![CDATA[
+##  gap> PartitionsGreatestEQ( 6, 3 );
+##  [ [ 3, 1, 1, 1 ], [ 3, 2, 1 ], [ 3, 3 ] ]
+##  gap> PartitionsGreatestEQ( 0, 1 );
+##  [  ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

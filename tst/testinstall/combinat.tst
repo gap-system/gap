@@ -388,6 +388,28 @@ gap> NrPartitions( 100 );
 gap> NrPartitions( 100, 10 );
 2977866
 
+#F  PartitionsGreatestLE( <n>, <m> ) . . . partitions with largest part <= m
+gap> List( [0..3], m -> PartitionsGreatestLE( 0, m ) );
+[ [ [  ] ], [ [  ] ], [ [  ] ], [ [  ] ] ]
+gap> Print(PartitionsGreatestLE( 6, 3 ),"\n");
+[ [ 1, 1, 1, 1, 1, 1 ], [ 2, 1, 1, 1, 1 ], [ 2, 2, 1, 1 ], [ 2, 2, 2 ], 
+  [ 3, 1, 1, 1 ], [ 3, 2, 1 ], [ 3, 3 ] ]
+gap> Partitions( 6 ) = PartitionsGreatestLE( 6, 6 );
+true
+gap> List( [1..4], k ->
+>      Difference( PartitionsGreatestLE( 6, k ),
+>                  PartitionsGreatestLE( 6, k-1 ) )
+>      = PartitionsGreatestEQ( 6, k ) );
+[ true, true, true, true ]
+gap> Difference( PartitionsGreatestLE( 0, 1 ),
+>                PartitionsGreatestLE( 0, 0 ) )
+>      = PartitionsGreatestEQ( 0, 1 );
+true
+gap> Print(PartitionsGreatestEQ( 6, 3 ),"\n");
+[ [ 3, 1, 1, 1 ], [ 3, 2, 1 ], [ 3, 3 ] ]
+gap> PartitionsGreatestEQ( 0, 1 );
+[  ]
+
 #F  OrderedPartitions( <n> ) . . . .  set of ordered partitions of an integer
 gap> OrderedPartitions( 0 );
 [ [  ] ]

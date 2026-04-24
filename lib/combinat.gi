@@ -1887,7 +1887,7 @@ end);
 
 #############################################################################
 ##
-#F  PartitionsGreatestLE( <n>, <m> ) . . .  set of partitions of n parts <= m
+#F  PartitionsGreatestLE( <n>, <m> ) . . .  partitions of n with parts <= m
 ##
 ##  returns the set of all (unordered) partitions of the integer <n> having
 ##  parts less or equal to the integer <m>.
@@ -1984,11 +1984,8 @@ function(n,m)
         parts := [];
     else
         if n = 0  then
-            if m = 0  then
-                parts := [ [  ] ];
-            else
-                parts := [  ];
-            fi;
+            # The empty partition satisfies every nonnegative upper bound.
+            parts := [ [  ] ];
         else
             if m = 0  then
                 parts := [  ];
@@ -2003,7 +2000,7 @@ end);
 
 #############################################################################
 ##
-#F  PartitionsGreatestEQ( <n>, <m> ) . . . . set of partitions of n parts = n
+#F  PartitionsGreatestEQ( <n>, <m> ) . . . . partitions of n with max part m
 ##
 ##  returns the set of all (unordered) partitions of the integer <n> having
 ##  greatest part equal to the integer <m>.
@@ -2041,7 +2038,6 @@ BindGlobal( "GPartitionsGreatestEQ", function(n,m)
   # This works exactly as `GPartitionsGreatestLE' for n-m and m and
   # adds a part m to all partitions. This is however done effectively
   # during the work.
-  # This is the same as `Partitions(n,m)' in the GAP library.
   # n and m must be a natural numbers >= 1.
   local B,j,k,l,p,res;
   if m > n then return []; fi;     # a special case
