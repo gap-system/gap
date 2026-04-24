@@ -1,4 +1,4 @@
-#@local R, z, pol, M, v, w, s, c, MM, S, T
+#@local R, p, z, pol, M, v, w, s, c, MM, S, T
 gap> START_TEST( "matobjnz.tst" );
 
 #
@@ -22,26 +22,27 @@ gap> Vector( GF(5), [ 1 ] );
 Error, cannot copy <l> to 'Is8BitVectorRep'
 gap> Vector( GF(257), [ 1 ] );
 Error, the elements in <list> must lie in <basedomain>
-gap> IsZmodnZVectorRep( Vector( GF( NextPrimeInt( 2^16 ) ), [] ) );
+gap> p:= NextPrimeInt( 2^16 );;
+gap> IsZmodnZVectorRep( Vector( IsZmodnZVectorRep, GF( p ), [] ) );
 true
-gap> IsZmodnZVectorRep( Vector( GF( NextPrimeInt( 2^16 ) ), [ 1 ] ) );
+gap> IsZmodnZVectorRep( Vector( IsZmodnZVectorRep, GF( p ), [ 1 ] ) );
 true
 
 # vectors over a residue class ring that is not a field
 gap> R:= Integers mod 6;;
 gap> TestZeroVector( IsZmodnZVectorRep, R, 0 );;
 gap> TestZeroVector( IsZmodnZVectorRep, R, 3 );;
-gap> Vector( R, [ 1/2 ] );
+gap> Vector( IsZmodnZVectorRep, R, [ 1/2 ] );
 Error, <list> must be a list of reduced integers or of elements in <basedomain\
 >
-gap> Vector( R, [ One( Integers mod 4 ) ] );
+gap> Vector( IsZmodnZVectorRep, R, [ One( Integers mod 4 ) ] );
 Error, <list> must be a list of reduced integers or of elements in <basedomain\
 >
 gap> z:= NewZeroVector( IsZmodnZVectorRep, R, 3 );;
 gap> Vector( [ 1 .. 10 ], z );
 Error, <list> must be a list of reduced integers or of elements in <basedomain\
 >
-gap> IsZmodnZVectorRep( Vector( R, [ 1 ] ) );
+gap> IsZmodnZVectorRep( Vector( IsZmodnZVectorRep, R, [ 1 ] ) );
 true
 
 # matrices over a prime field
@@ -73,9 +74,9 @@ gap> Matrix( GF(5), [ [ 1 ] ] );
 Error, cannot convert <m> to 'Is8BitMatrixRep'
 gap> Matrix( GF(257), [ [ 1 ] ], 1 );
 Error, the elements in <list> must lie in <basedomain>
-gap> IsZmodnZMatrixRep( Matrix( GF( NextPrimeInt( 2^16 ) ), [ [] ] ) );
+gap> IsZmodnZMatrixRep( Matrix( IsZmodnZMatrixRep, GF( p ), [ [] ] ) );
 true
-gap> IsZmodnZMatrixRep( Matrix( GF( NextPrimeInt( 2^16 ) ), [ [ 1 ] ] ) );
+gap> IsZmodnZMatrixRep( Matrix( IsZmodnZMatrixRep, GF( p ), [ [ 1 ] ] ) );
 true
 
 # matrices over a residue class ring that is not a field
@@ -164,7 +165,7 @@ gap> String( M );
 
 # vectors: access, arithmetics
 gap> R:= Integers mod 6;;
-gap> v:= Vector( R, [ 1, 2, 3 ] );
+gap> v:= Vector( IsZmodnZVectorRep, R, [ 1, 2, 3 ] );
 <vector over (Integers mod 6) of length 3>
 gap> v[1];
 ZmodnZObj( 1, 6 )
@@ -192,7 +193,7 @@ gap> MakeImmutable( v );
 <immutable vector over (Integers mod 6) of length 3>
 gap> Print( v + v, "\n" );
 NewVector(IsZmodnZVectorRep,(Integers mod 6),[ 2, 4, 0 ])
-gap> v + ZeroVector( Integers mod 4, 3 );
+gap> v + ZeroVector( IsZmodnZVectorRep, Integers mod 4, 3 );
 Error, <a> and <b> are not compatible
 gap> s:= v - w;;  Print( s, "\n" );
 NewVector(IsZmodnZVectorRep,(Integers mod 6),[ 0, 0, 0 ])
@@ -200,7 +201,7 @@ gap> IsMutable( s );
 true
 gap> v - v;
 <immutable vector over (Integers mod 6) of length 3>
-gap> v - ZeroVector( Integers mod 4, 3 );
+gap> v - ZeroVector( IsZmodnZVectorRep, Integers mod 4, 3 );
 Error, <a> and <b> are not compatible
 gap> Print( AdditiveInverseMutable( v ), "\n" );;
 NewVector(IsZmodnZVectorRep,(Integers mod 6),[ 5, 4, 3 ])
@@ -234,25 +235,25 @@ gap> List( v, Zero );
 gap> v < 2 * v;
 true
 gap> v:= ShallowCopy( v );;
-gap> AddRowVector( v, ZeroVector( Integers mod 4, 3 ) );
+gap> AddRowVector( v, ZeroVector( IsZmodnZVectorRep, Integers mod 4, 3 ) );
 Error, <a> and <b> are not compatible
 gap> AddRowVector( v, v );
 gap> Print( v, "\n" );
 NewVector(IsZmodnZVectorRep,(Integers mod 6),[ 2, 4, 0 ])
-gap> v:= Vector( R, [ 1, 2, 3 ] );;
+gap> v:= Vector( IsZmodnZVectorRep, R, [ 1, 2, 3 ] );;
 gap> AddRowVector( v, v, 2 );
 gap> Print( v, "\n" );
 NewVector(IsZmodnZVectorRep,(Integers mod 6),[ 3, 0, 3 ])
-gap> v:= Vector( R, [ 0 .. 5 ] );;  Print( v, "\n" );
+gap> v:= Vector( IsZmodnZVectorRep, R, [ 0 .. 5 ] );;  Print( v, "\n" );
 NewVector(IsZmodnZVectorRep,(Integers mod 6),[ 0, 1, 2, 3, 4, 5 ])
 gap> AddRowVector( v, v, 2, 3, 4 );
 gap> Print( v, "\n" );
 NewVector(IsZmodnZVectorRep,(Integers mod 6),[ 0, 1, 0, 3, 4, 5 ])
-gap> v:= Vector( R, [ 1, 2, 3 ] );;
+gap> v:= Vector( IsZmodnZVectorRep, R, [ 1, 2, 3 ] );;
 gap> MultVector( v, 2 );
 gap> Print( v, "\n" );
 NewVector(IsZmodnZVectorRep,(Integers mod 6),[ 2, 4, 0 ])
-gap> v:= Vector( R, [ 0 .. 5 ] );;
+gap> v:= Vector( IsZmodnZVectorRep, R, [ 0 .. 5 ] );;
 gap> MultVector( v, 2, 3, 4 );
 gap> Print( v, "\n" );
 NewVector(IsZmodnZVectorRep,(Integers mod 6),[ 0, 1, 4, 0, 4, 5 ])
@@ -310,16 +311,16 @@ gap> MakeImmutable( M );
 <immutable 2x2-matrix over (Integers mod 6)>
 gap> Print( M + M, "\n" );
 NewMatrix(IsZmodnZMatrixRep,(Integers mod 6),2,[ [ 2, 4 ], [ 0, 2 ] ])
-gap> M + ZeroMatrix( R, 3, 3 );
+gap> M + ZeroMatrix( IsZmodnZMatrixRep, R, 3, 3 );
 Error, <a> and <b> are not compatible
 gap> Print( M - M, "\n" );
 NewMatrix(IsZmodnZMatrixRep,(Integers mod 6),2,[ [ 0, 0 ], [ 0, 0 ] ])
-gap> M - ZeroMatrix( R, 3, 3 );
+gap> M - ZeroMatrix( IsZmodnZMatrixRep, R, 3, 3 );
 Error, <a> and <b> are not compatible
 gap> Print( AdditiveInverseMutable( M ), "\n" );
 NewMatrix(IsZmodnZMatrixRep,(Integers mod 6),2,[ [ 5, 4 ], [ 3, 5 ] ])
 gap> z:= ZeroMutable( M );;
-gap> z = ZeroMatrix( R, 2, 2 );
+gap> z = ZeroMatrix( IsZmodnZMatrixRep, R, 2, 2 );
 true
 gap> z < M;
 true
@@ -329,7 +330,7 @@ gap> InverseMutable( ZeroMatrix( R, 2, 2 ) );
 fail
 gap> Print( M * M, "\n" );
 NewMatrix(IsZmodnZMatrixRep,(Integers mod 6),2,[ [ 1, 4 ], [ 0, 1 ] ])
-gap> M * ZeroMatrix( R, 1, 1 );
+gap> M * ZeroMatrix( IsZmodnZMatrixRep, R, 1, 1 );
 Error, \*: Matrices do not fit together
 gap> M * ZeroMatrix( IsZmodnZMatrixRep, GF(2), 2, 2 );
 Error, \*: Matrices not over same base domain
@@ -385,7 +386,7 @@ gap> RankMat( M );
 fail
 gap> RankMat( IdentityMatrix( 3, M ) );                               
 3
-gap> R:= Integers mod NextPrimeInt( 2^16 );;
+gap> R:= Integers mod p;;
 gap> One( R );
 ZmodpZObj( 1, 65537 )
 gap> M:= Matrix( IsZmodnZMatrixRep, R, [ 1, 2, 3, 4 ], 2 );;
@@ -399,7 +400,7 @@ gap> CharacteristicPolynomialMatrixNC( R, M, 1 ) =
 >    CharacteristicPolynomialMatrixNC( R, Unpack( M ), 1 );
 true
 gap> R:= Integers mod 6;;
-gap> v:= Vector( R, [ 1, 2, 3 ] );;
+gap> v:= Vector( IsZmodnZVectorRep, R, [ 1, 2, 3 ] );;
 gap> ProductCoeffs( v, v ) = ProductCoeffs( Unpack( v ), Unpack( v ) );
 true
 
