@@ -220,7 +220,6 @@ gap> Display( N );
  [ 3, -1 ]
 ]>
 
-
 #
 # mutability after operations
 #
