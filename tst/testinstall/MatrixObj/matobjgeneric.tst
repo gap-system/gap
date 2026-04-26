@@ -259,7 +259,7 @@ false
 #
 gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ] ] );;
 gap> M[1,1] := 1/2;
-Error, <ob> must lie in the base domain of <M>
+Error, <val> must lie in the base domain of <M>
 gap> M[3,1] := 1;
 Error, <row> is out of bounds
 gap> M[1,3] := 1;
