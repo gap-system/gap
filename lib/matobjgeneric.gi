@@ -81,9 +81,6 @@ InstallTagBasedMethod( NewMatrix,
         rows[i] := PlainListCopy( row );
       fi;
     od;
-    if not IsMutable( list ) then
-      MakeImmutable( rows );
-    fi;
     return MakeIsGenericMatrixRep( basedomain, ncols, rows, true );
   end );
 
