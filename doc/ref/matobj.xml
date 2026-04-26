@@ -36,6 +36,9 @@ Basic arithmetic operations for vectors and matrices are available:
 see Sections <Ref Sect="Arithmetical Operations for Vector Objects"/> and
 <Ref Sect="Arithmetical Operations for Matrix Objects"/>.
 <P/>
+Note that if <A>M2</A>, like <A>M</A> had been defined over the integers
+then attempting to have displayed its inverse would have thrown an error. 
+<P/>
 <Example><![CDATA[
 gap> dom := Integers;;
 gap> v1 := Vector( dom, [3,4,7,8] );;
@@ -55,6 +58,12 @@ gap> Display( (v1+v2) * TransposedMat(M) );
 <a plist vector over Integers:
 [ 14, 14 ]
 >
+gap> M2 := Matrix( Rationals, [ [8,5], [7,4] ] );;
+gap> Display( M2^(-1) );
+<2x2-matrix over Rationals:
+[[ -4/3, 5/3 ]
+ [ 7/3, -8/3 ]
+]>
 ]]></Example>
 
 These objects need to know their <E>type</E>, or <E>filter</E>.
@@ -103,13 +112,13 @@ More can be added as soon as there is need for them.
 <Section Label="Constructing Vector and Matrix Objects">
 <Heading>Constructing Vector and Matrix Objects</Heading>
 
-<#Include Label="NewVector">
 <#Include Label="Vector">
 <#Include Label="VectorObj_ZeroVector">
-<#Include Label="NewMatrix">
+<#Include Label="NewVector">
 <#Include Label="MatObj_Matrix">
 <#Include Label="MatObj_ZeroMatrix">
 <#Include Label="MatObj_IdentityMatrix">
+<#Include Label="NewMatrix">
 
 </Section>
 
