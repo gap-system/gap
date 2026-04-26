@@ -192,6 +192,13 @@ gap> Unpack( M );
 gap> M:= Matrix( IsGenericMatrixRep, Integers, [ [ 1, 2 ], [ 3, 4 ], [ 5, 6 ] ] );;
 gap> InverseMutable( M );
 Error, InverseMutable: matrix must be square
+
+#
+gap> M:= ZeroMatrix( IsGenericMatrixRep, Integers, 2, 2 );;
+gap> InverseMutable( M );
+fail
+
+#
 gap> M:= Matrix( IsGenericMatrixRep, GF(2), [ [ Z(2)^0, Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] );;
 gap> N:= InverseMutable( M );;
 gap> Display( N );
@@ -203,6 +210,8 @@ gap> IsOne( N * M );
 true
 gap> IsOne( M * N );
 true
+
+#
 gap> M:= Matrix( IsGenericMatrixRep, Rationals, [ [ 1, 2 ], [ 3, 5 ] ] );;
 gap> N:= InverseMutable( M );;
 gap> Display( N );
@@ -210,6 +219,7 @@ gap> Display( N );
 [[ -5, 2 ]
  [ 3, -1 ]
 ]>
+
 
 #
 # mutability after operations

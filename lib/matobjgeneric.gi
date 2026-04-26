@@ -246,6 +246,9 @@ InstallMethod( InverseMutable,
     else
       rows := INV_MATRIX_MUTABLE( M![FROWSPOS] );
     fi;
+    if rows = fail then
+      return fail;
+    fi;
     return MakeIsGenericMatrixRep( bd, NrCols( M ), rows, false );
   end );
 
