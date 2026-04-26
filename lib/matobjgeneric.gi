@@ -354,7 +354,12 @@ InstallOtherMethod( \*,
 InstallMethod( ChangedBaseDomain,
   [ "IsGenericMatrixRep", "IsRing" ],
   function( M, r )
-    return NewMatrix( IsGenericMatrixRep, r, NrCols(M), M![FROWSPOS] );
+    local A;
+    A := NewMatrix( IsGenericMatrixRep, r, NrCols(M), M![FROWSPOS] );
+    if not IsMutable( M ) then
+      MakeImmutable(A);
+    fi;
+    return A;
   end );
 
 
