@@ -374,7 +374,7 @@ described in this chapter is supported.
 <#Include Label="IsGF2MatrixRep">
 <#Include Label="Is8BitMatrixRep">
 <#Include Label="IsPlistMatrixRep">
-<!-- <#Include Label="IsGenericMatrixRep"> TODO: enable this if we decide to keep IsGenericMatrixRep -->
+<#Include Label="IsGenericMatrixRep">
 <#Include Label="IsZmodnZMatrixRep">
 
 </Section>

@@ -119,7 +119,7 @@ GAPInfo.ManualDataRef:= rec(
     "../../lib/matobj2.gd",
     "../../lib/matobjnz.gd",
     "../../lib/matobjplist.gd",
-    #"../../lib/matobjgeneric.gd",  # TODO: enable this if we decide to keep IsGenericMatrixRep
+    "../../lib/matobjgeneric.gd",
     "../../lib/matrix.gd",
     "../../lib/meataxe.gi",
     "../../lib/memory.gd",
