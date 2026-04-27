@@ -224,7 +224,6 @@ InstallMethod( ZeroMutable,
     local z;
     z := MakeIsGenericMatrixRep( BaseDomain( M ), NrCols( M ),
              ZeroMutable( M![FROWSPOS] ), false );
-    SetIsZero( z, true );
     return z;
   end );
 
