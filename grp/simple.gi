@@ -968,15 +968,15 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
   local s;
     if IsCyclic(gp) then
       return String(Size(gp));
-    elif IdGroup(gp)=[4,2] then
+    elif Size(gp)=4 then
       return "2^2";
-    elif IdGroup(gp)=[6,1] then
+    elif Size(gp)=6 then
       return "3.2";
-    elif IdGroup(gp)=[8,3] then
+    elif Size(gp)=8 and IsDihedralGroup(gp) then
       return "2^2.2";
-    elif IdGroup(gp)=[9,2] then
+    elif Size(gp)=9 then
       return "3^2";
-    elif IdGroup(gp)=[18,3] then
+    elif Size(gp)=18 and Size(DerivedSubgroup(gp))=3 then
       return "3^2.2";
     elif Size(gp)<=31 or Size(gp) in [33..47] then
       s:=StructureDescription(gp);
@@ -1163,18 +1163,18 @@ local nam,e,efactors,par,expo,prime,result,aut,i,classical,classaut,shortname,
       if efactors<>fail and Size(classaut)<>Product(efactors) then
         Error("outer automorphism efactor fail");
       fi;
-      if IdGroup(classaut)=[4,2] then
+      if Size(classaut)=4 and not IsCyclic(classaut) then
         # subgroup classes V4
         e:=[[2,"2_1"],[2,"2_2"],[2,"2_3"],[4,"2^2"]];
-      elif IdGroup(classaut)=[6,1] then
+      elif Size(classaut)=6 and not IsCyclic(classaut) then
         # subgroup classes S_3
         e:=[  [ 2, "2" ], [ 3, "3" ], [ 6, "3.2" ] ];
-      elif IdGroup(classaut)=[12,4] then
+      elif Size(classaut)=12 and IsDihedralGroup(classaut) then
         # subgroup classes 2\times S_3 (since S3 cannot act on C2)
         e:=[ [ 2, "2_1" ], [ 2, "2_2" ], [ 2, "2_3" ], [ 3, "3" ],
              [ 4, "2^2" ], [ 6, "3.2_1" ], [ 6, "3.2_2" ], [ 6, "6" ],
              [ 12, "3.2^2" ] ];
-      elif IdGroup(classaut)=[24,12] then
+      elif Size(classaut)=24 and Size(DerivedSubgroup(classaut))=12 then
         # subgroup classes S_4
         e:=[  [ 2, "2_1" ],[ 2, "2_2" ], [ 3, "3" ],
               [ 4, "4" ], [ 4, "(2^2)_{111}" ], [4,"(2^2)_{122}"],
