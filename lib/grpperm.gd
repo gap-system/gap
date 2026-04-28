@@ -301,7 +301,7 @@ DeclareAttribute( "AllBlocks", IsPermGroup );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction( "TransitiveGroupsAvailable" );
+BindGlobal( "TransitiveGroupsAvailable", ReturnFalse );
 
 # dummy declarations to satisfy library references to transitive groups
 # library
@@ -356,7 +356,7 @@ DeclareAttribute( "TransitiveIdentification", IsPermGroup );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareGlobalFunction( "PrimitiveGroupsAvailable" );
+BindGlobal( "PrimitiveGroupsAvailable", ReturnFalse );
 
 #############################################################################
 ##

@@ -96,6 +96,8 @@ gap> TestMonomial( irr[2] );
 rec( comment := "whole group is monomial", isMonomial := true )
 gap> IsMonomial( irr[2] );
 true
+
+#
 gap> irr:= Irr( SL(2,3) );;
 gap> chi:= First( irr, x -> x[1] = 3 );;
 gap> TestMonomialQuick( chi );
@@ -104,6 +106,8 @@ gap> TestMonomial( chi );
 rec( comment := "codegree is prime power", isMonomial := true )
 gap> IsMonomial( chi );
 true
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> irr:= Irr( SmallGroup( 120, 15 ) );;
 gap> chi:= First( irr, x -> x[1] = 3 and
 >                           Length( ClassPositionsOfKernel( x ) ) = 2 );;
@@ -121,6 +125,9 @@ gap> TestMonomial( chi );
 rec( comment := "induced from monomial Hall subgroup", isMonomial := true )
 gap> IsMonomial( chi );
 true
+#@fi
+
+#
 gap> g:= DirectProduct( AlternatingGroup(5), SymmetricGroup(3),
 >                       SymmetricGroup(3) );;
 gap> chi:= First( Irr( g ), x -> x[1] = 2 and
@@ -131,6 +138,8 @@ gap> TestMonomial( chi );
 rec( comment := "kernel factor group is supersolvable", isMonomial := true )
 gap> IsMonomial( chi );
 true
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> irr:= Irr( SmallGroup( 144, 31 ) );;
 gap> chi:= First( irr, x -> x[1] = 6 );;
 gap> TestMonomialQuick( chi );
@@ -139,6 +148,9 @@ gap> TestMonomial( chi );
 rec( comment := "kernel factor group is monomial", isMonomial := true )
 gap> IsMonomial( chi );
 true
+#@fi
+
+#
 gap> irr:= Irr( SL(2,3) );;
 gap> chi:= First( irr, x -> x[1] = 2 );;
 gap> TestMonomialQuick( chi );
@@ -147,6 +159,8 @@ gap> TestMonomial( chi );
 rec( comment := "quasiprimitive character", isMonomial := false )
 gap> IsMonomial( chi );
 false
+
+#
 gap> irr:= Irr( AlternatingGroup( 5 ) );;
 gap> chi:= First( irr, x -> x[1] = 5 );;
 gap> TestMonomialQuick( chi );
@@ -166,6 +180,8 @@ gap> TestMonomial( chi, true ).comment;
 "lattice checked"
 gap> IsMonomial( chi );
 false
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> irr:= Irr( SmallGroup( 96, 204 ) );;
 gap> chi:= First( irr, x -> x[1] = 4 );;
 gap> TestMonomialQuick( chi );
@@ -174,6 +190,9 @@ gap> TestMonomial( chi ).comment;
 "induced from 'character'"
 gap> IsMonomial( chi );
 true
+#@fi
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> chi:= First( Irr( SmallGroup( 144, 31 ) ), x -> x[1] = 4 );;
 gap> TestMonomialQuick( chi );
 rec( comment := "no decision by cheap tests", isMonomial := "?" )
@@ -183,6 +202,9 @@ gap> TestMonomial( chi, true ).comment;
 "induced from 'character'"
 gap> IsMonomial( chi );
 true
+#@fi
+
+#
 gap> chi:= 0 * [ 1 .. NrConjugacyClasses( S4 ) ];;
 gap> chi[1]:= Size( S4 );;
 gap> chi:= ClassFunction( S4, chi );;
@@ -193,6 +215,8 @@ gap> TestMonomial( chi, true ).comment;
 gap> IsMonomial( chi );
 true
 gap> TestMonomialUseLattice:= TestMonomialUseLattice_Orig;;
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> chi:= First( Irr( SmallGroup( 48, 28 ) ), x -> x[1] = 4 );;
 gap> TestMonomialQuick( chi );
 rec( comment := "no decision by cheap tests", isMonomial := "?" )
@@ -200,6 +224,7 @@ gap> TestMonomial( chi ).comment;
 "induced from 'character'"
 gap> IsMonomial( chi );
 true
+#@fi
 
 ##
 gap> TestMonomialQuick( S4 );
@@ -214,6 +239,8 @@ gap> TestMonomial( Sl23 );
 rec( comment := "list Delta( G ) contains entry > 1", isMonomial := false )
 gap> IsMonomial( Sl23 );
 false
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> g:= SmallGroup( 96, 204 );;
 gap> TestMonomialQuick( g );
 rec( comment := "no decision by cheap tests", isMonomial := "?" )
@@ -239,6 +266,9 @@ gap> TestMonomial( g );
 rec( comment := "was already stored", isMonomial := true )
 gap> IsMonomial( g );
 true
+#@fi
+
+#
 gap> g:= AlternatingGroup( 5 );;
 gap> TestMonomialQuick( g );
 rec( comment := "non-solvable group", isMonomial := false )
@@ -246,6 +276,8 @@ gap> TestMonomial( g );
 rec( comment := "non-solvable group", isMonomial := false )
 gap> IsMonomial( g );
 false
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> g:= SmallGroup( 56, 10 );;
 gap> TestMonomialQuick( g );
 rec( comment := "group order is monomial", isMonomial := true )
@@ -274,6 +306,7 @@ gap> TestMonomial( g );
 rec( comment := "Sylow abelian by supersolvable group", isMonomial := true )
 gap> IsMonomial( g );
 true
+#@fi
 
 ##
 gap> TestSubnormallyMonomial( S4 );

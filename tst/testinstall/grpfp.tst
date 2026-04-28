@@ -162,6 +162,7 @@ false
 Error, the f.p. group <G> is not finite
 
 # RWS for G2(3) and S_6(2)
+#@if IsPackageMarkedForLoading( "primgrp", "" )
 gap> g:=SimpleGroup("G2(3)");;
 gap> hom:=IsomorphismFpGroupForRewriting(g);;
 gap> m:=Image(IsomorphismFpMonoid(Image(hom)));;
@@ -169,6 +170,9 @@ gap> F:=m!.rewritingSystem;;;
 gap> ReducedForm(F,UnderlyingElement(
 > Product(GeneratorsOfMonoid(m){[1,3..19]})));
 w1*B5*b6*b7*B8*w2*b1*B3*B4*b5*b6*b7
+#@fi
+
+#
 gap> g:=SimpleGroup("S6(2)");;
 gap> hom:=IsomorphismFpGroupForRewriting(g);;
 gap> m:=Image(IsomorphismFpMonoid(Image(hom)));;

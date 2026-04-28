@@ -5,7 +5,7 @@ gap> EulerianFunction( CyclicGroup(6), 1 );
 2
 gap> EulerianFunction( CyclicGroup(5), 1 );
 4
-gap> g:=SmallGroup(1,1);;
+gap> g:=TrivialGroup(IsPcGroup);;
 gap> ConjugacyClassesSubgroups(g);;
 gap> g:=Group([ (3,5), (1,3,5) ]);;
 gap> MaximalSubgroups(g);;
