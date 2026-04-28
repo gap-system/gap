@@ -104,16 +104,6 @@ InstallMethod( \in,
 ##  ring is needed since all generator dependent questions are handled in the
 ##  `IsTrivial' call.)
 ##
-InstallImmediateMethod( IsFinite,
-    IsFreeLeftModule and HasIsFiniteDimensional, 0,
-    function( V )
-    if not IsFiniteDimensional( V ) then
-      return false;
-    else
-      TryNextMethod();
-    fi;
-    end );
-
 InstallMethod( IsFinite,
     "for a free left module",
     [ IsFreeLeftModule ],
@@ -136,9 +126,6 @@ InstallMethod( IsFinite,
 ##
 #M  IsTrivial( <V> )
 ##
-InstallImmediateMethod( IsTrivial, IsFreeLeftModule and HasDimension, 0,
-    V -> Dimension( V ) = 0 );
-
 InstallMethod( IsTrivial,
     "for a free left module",
     [ IsFreeLeftModule ],
