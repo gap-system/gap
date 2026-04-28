@@ -717,12 +717,12 @@ DeclareOperation( "ZeroVector", [ IsOperation, IsSemiring, IsInt ] );
 ##  NewVector(IsPlistVectorRep,Integers,[ 11, 12, 13 ])
 ##  gap> v0 := [6..9];; IsVector( v0 );
 ##  true
-##  gap> Print( Vector( v0, v1 ) );    
+##  gap> Print( Vector( v0, v1 ) );
 ##  NewVector(IsPlistVectorRep,Integers,[ 6, 7, 8, 9 ])
 ##  gap> v4 := Vector( IsGF2VectorRep, GF(2), [ 0, 1, 2 ]*Z(2)^0 );;
 ##  gap> Print( v4 );
 ##  [ 0*Z(2), Z(2)^0, 0*Z(2) ]
-##. gap> v5 := Vector( IsZmodnZVectorRep, ZmodnZ(8), v1 );; Print( v5 );         
+##. gap> v5 := Vector( IsZmodnZVectorRep, ZmodnZ(8), v1 );; Print( v5 );
 ##  NewVector(IsZmodnZVectorRep,Monoid( ... ),[ 3, 4, 7, 8 ])
 ##  gap> BaseDomain( v5 );
 ##  (Integers mod 8)
@@ -757,7 +757,7 @@ DeclareOperation( "Vector", [ IsOperation, IsSemiring, IsVectorObj ] );
 ##  These two operations are <E>constructors</E>, and should only be used
 ##  when <Ref Oper="Vector" Label="for base domain and list"/> or
 ##  <Ref Oper="ZeroVector" Label="for filter, base domain and length"/>
-##  do not give the desired result. 
+##  do not give the desired result.
 ##  <P/>
 ##  For a filter <A>filt</A>, a semiring <A>R</A>, and a list <A>list</A>
 ##  of elements that belong to <A>R</A>,
@@ -814,9 +814,9 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  <Description>
 ##  These three operations are <E>constructors</E>, and should only be used
 ##  when <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>,
-##  <Ref Oper="ZeroMatrix" Label="for dimensions and matrix object"/> or 
+##  <Ref Oper="ZeroMatrix" Label="for dimensions and matrix object"/> or
 ##  <Ref Oper="IdentityMatrix" Label="for dimension and matrix object"/>
-##  do not give the desired result. 
+##  do not give the desired result.
 ##  <P/>
 ##  For a filter <A>filt</A>, a semiring <A>R</A>,
 ##  a positive integer <A>ncols</A>, and a list <A>list</A>,
