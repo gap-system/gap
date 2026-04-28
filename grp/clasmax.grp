@@ -25895,7 +25895,7 @@ local l,a,gf,conj,r,gp;
         (r^2=q and IsPrime(r) and r mod 10 in [3,7]) then
 
         # are the SL(2,5) in class S included ? (Depends on package status)
-        if not ForAny(l,x->Size(x)=120 and IdGroup(x)=[120,5]) then
+        if not ForAny(l,x->Size(x)=120 and IsPerfectGroup(x)) then
           # An A5, and its GL-conjugate
           gf:=GF(q);
           a:=Filtered(IrreducibleModules(TransitiveGroup(24,201),gf)[2],
