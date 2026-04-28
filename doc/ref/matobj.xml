@@ -25,7 +25,7 @@ cf. Chapters <Ref Chap="Row Vectors"/> and <Ref Chap="Matrices"/>.
 <Section Label="Some Elementary Examples">
 <Heading>Some Elementary Examples</Heading>
 Just to give a flavour of these new objects, we construct here two vectors
-and a matrix in these new forms. 
+and matrices in these new forms. 
 The elements should all belong to a semiring <A>R</A>
 (the <C>BaseDomain</C>).
 To construct these objects we use the operations
@@ -36,7 +36,7 @@ Basic arithmetic operations for vectors and matrices are available:
 see Sections <Ref Sect="Arithmetical Operations for Vector Objects"/> and
 <Ref Sect="Arithmetical Operations for Matrix Objects"/>.
 <P/>
-Note that if <A>M2</A>, like <A>M</A> had been defined over the integers
+Note that if <A>m2</A>, like <A>m2</A>, had been defined over the integers
 then attempting to have displayed its inverse would have thrown an error. 
 <P/>
 <Example><![CDATA[
@@ -44,8 +44,8 @@ gap> dom := Integers;;
 gap> v1 := Vector( dom, [3,4,7,8] );;
 gap> Print( v1 );               
 NewVector(IsPlistVectorRep,Integers,[ 3, 4, 7, 8 ])
-gap> M := Matrix( dom, [ [1,2,3,4], [6,7,8,9] ] );;
-gap> Display( M ); 
+gap> m1 := Matrix( dom, [ [1,2,3,4], [6,7,8,9] ] );;
+gap> Display( m1 ); 
 <2x4-matrix over Integers:
 [[ 1, 2, 3, 4 ]
  [ 6, 7, 8, 9 ]
@@ -54,12 +54,12 @@ gap> v2 := Vector( [-7..-4], v1 );
 <plist vector over Integers of length 4>
 gap> Print( v1 + v2 );
 NewVector(IsPlistVectorRep,Integers,[ -4, -2, 2, 4 ])
-gap> Display( (v1+v2) * TransposedMat(M) );
+gap> Display( (v1+v2) * TransposedMat( m1 ) );
 <a plist vector over Integers:
 [ 14, 14 ]
 >
-gap> M2 := Matrix( Rationals, [ [8,5], [7,4] ] );;
-gap> Display( M2^(-1) );
+gap> m2 := Matrix( Rationals, [ [8,5], [7,4] ] );;
+gap> Display( m2^(-1) );
 <2x2-matrix over Rationals:
 [[ -4/3, 5/3 ]
  [ 7/3, -8/3 ]

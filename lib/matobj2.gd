@@ -200,7 +200,7 @@ DeclareAttribute( "Length", IsVectorObj );
 ##  otherwise all vector or matrix objects with this filter are immutable.
 ##  <P/>
 ##  <Example><![CDATA[
-##  v := Vector( Rationals, [3,4,7,8] );;
+##  gap> v := Vector( Rationals, [3,4,7,8] );;
 ##  gap> ConstructingFilter( v );
 ##  <Representation "IsPlistVectorRep">
 ##  ]]></Example>
@@ -230,11 +230,12 @@ DeclareAttribute( "ConstructingFilter", IsVecOrMatObj );
 ##  these vector objects, of <K>fail</K> if no such filter is known.
 ##  <P/>
 ##  <Example><![CDATA[
-##  m := Matrix( Integers, [ [1,2,3,4], [6,7,8,9] ] );;
-##  gap> ConstructingFilter( m );
+##  gap> m1 := Matrix( Integers, [ [1,2,3,4], [6,7,8,9] ] );;
+##  gap> ConstructingFilter( m1 );
 ##  <Representation "IsPlistMatrixRep">
-##  gap> CompatibleVectorFilter( m );
+##  gap> CompatibleVectorFilter( m1 );
 ##  <Representation "IsPlistVectorRep">
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -718,13 +719,13 @@ DeclareOperation( "ZeroVector", [ IsOperation, IsSemiring, IsInt ] );
 ##  true
 ##  gap> Print( Vector( v0, v1 ) );    
 ##  NewVector(IsPlistVectorRep,Integers,[ 6, 7, 8, 9 ])
-##  gap> v4 := Vector( IsZmodnZVectorRep, ZmodnZ(8), [ 1, 4, 7 ] );;
-##  Print( v4 );
-##  NewVector(IsZmodnZVectorRep,Monoid( ... ),[ 1, 4, 7 ])
-##  gap> BaseDomain( v4 );
-##  (Integers mod 8)
-##  gap> v5 := Vector( IsZmodnZVectorRep, ZmodnZ(8), v1 );; Print( v5 );         
+##  gap> v4 := Vector( IsGF2VectorRep, GF(2), [ 0, 1, 2 ]*Z(2)^0 );;
+##  gap> Print( v4 );
+##  [ 0*Z(2), Z(2)^0, 0*Z(2) ]
+##. gap> v5 := Vector( IsZmodnZVectorRep, ZmodnZ(8), v1 );; Print( v5 );         
 ##  NewVector(IsZmodnZVectorRep,Monoid( ... ),[ 3, 4, 7, 8 ])
+##  gap> BaseDomain( v5 );
+##  (Integers mod 8)
 ##  gap> v5[4];
 ##  ZmodnZObj( 0, 8 )
 ##  ]]></Example>
@@ -754,7 +755,8 @@ DeclareOperation( "Vector", [ IsOperation, IsSemiring, IsVectorObj ] );
 ##
 ##  <Description>
 ##  These two operations are <E>constructors</E>, and should only be used
-##  when <Ref Oper="Vector"/> or <Ref Oper="ZeroVector"/>
+##  when <Ref Oper="Vector" Label="for base domain and list"/> or
+##  <Ref Oper="ZeroVector" Label="for filter, base domain and length"/>
 ##  do not give the desired result. 
 ##  <P/>
 ##  For a filter <A>filt</A>, a semiring <A>R</A>, and a list <A>list</A>
@@ -811,8 +813,10 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##
 ##  <Description>
 ##  These three operations are <E>constructors</E>, and should only be used
-##  when <Ref Oper="Matrix"/>, <Ref Oper="ZeroMatrix"/> or 
-##  <Ref Oper="IdentitytMatrix"/> do not give the desired result. 
+##  when <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>,
+##  <Ref Oper="ZeroMatrix" Label="for dimensions and matrix object"/> or 
+##  <Ref Oper="IdentityMatrix" Label="for dimension and matrix object"/>
+##  do not give the desired result. 
 ##  <P/>
 ##  For a filter <A>filt</A>, a semiring <A>R</A>,
 ##  a positive integer <A>ncols</A>, and a list <A>list</A>,
