@@ -722,7 +722,7 @@ DeclareOperation( "ZeroVector", [ IsOperation, IsSemiring, IsInt ] );
 ##  gap> v4 := Vector( IsGF2VectorRep, GF(2), [ 0, 1, 2 ]*Z(2)^0 );;
 ##  gap> Print( v4 );
 ##  [ 0*Z(2), Z(2)^0, 0*Z(2) ]
-##. gap> v5 := Vector( IsZmodnZVectorRep, ZmodnZ(8), v1 );; Print( v5 );
+##  gap> v5 := Vector( IsZmodnZVectorRep, ZmodnZ(8), v1 );; Print( v5 );
 ##  NewVector(IsZmodnZVectorRep,Monoid( ... ),[ 3, 4, 7, 8 ])
 ##  gap> BaseDomain( v5 );
 ##  (Integers mod 8)
