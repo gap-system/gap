@@ -4,30 +4,30 @@ gap> H := SymmetricGroup(4);;
 gap> A := CyclicGroup(6);;
 
 #
-gap> Set(SubdirectProducts(G, G), IdGroup);
-[ [ 6, 1 ], [ 18, 4 ], [ 36, 10 ] ]
-gap> Set(SubdirectProducts(H, H), IdGroup);
-[ [ 24, 12 ], [ 96, 227 ], [ 288, 1026 ], [ 576, 8653 ] ]
-gap> Set(SubdirectProducts(A, A), IdGroup);
-[ [ 6, 2 ], [ 12, 5 ], [ 18, 5 ], [ 36, 14 ] ]
+gap> Set(SubdirectProducts(G, G), StructureDescription);
+[ "(C3 x C3) : C2", "S3", "S3 x S3" ]
+gap> Set(SubdirectProducts(H, H), StructureDescription);
+[ "((C2 x C2 x C2 x C2) : C3) : C2", "(A4 x A4) : C2", "S4", "S4 x S4" ]
+gap> Set(SubdirectProducts(A, A), StructureDescription);
+[ "C6", "C6 x C2", "C6 x C3", "C6 x C6" ]
 
 #
-gap> Set(SubdirectProducts(G, H), IdGroup);
-[ [ 24, 12 ], [ 72, 43 ], [ 144, 183 ] ]
-gap> Set(SubdirectProducts(H, G), IdGroup);
-[ [ 24, 12 ], [ 72, 43 ], [ 144, 183 ] ]
+gap> Set(SubdirectProducts(G, H), StructureDescription);
+[ "(C3 x A4) : C2", "S4", "S4 x S3" ]
+gap> Set(SubdirectProducts(H, G), StructureDescription);
+[ "(C3 x A4) : C2", "S3 x S4", "S4" ]
 
 #
-gap> Set(SubdirectProducts(G, A), IdGroup);
-[ [ 18, 3 ], [ 36, 12 ] ]
-gap> Set(SubdirectProducts(A, G), IdGroup);
-[ [ 18, 3 ], [ 36, 12 ] ]
+gap> Set(SubdirectProducts(G, A), StructureDescription);
+[ "C3 x S3", "C6 x S3" ]
+gap> Set(SubdirectProducts(A, G), StructureDescription);
+[ "C3 x S3", "C6 x S3" ]
 
 #
-gap> Set(SubdirectProducts(H, A), IdGroup);
-[ [ 72, 42 ], [ 144, 188 ] ]
-gap> Set(SubdirectProducts(A, H), IdGroup);
-[ [ 72, 42 ], [ 144, 188 ] ]
+gap> Set(SubdirectProducts(H, A), StructureDescription);
+[ "C3 x S4", "C6 x S4" ]
+gap> Set(SubdirectProducts(A, H), StructureDescription);
+[ "C3 x S4", "C6 x S4" ]
 
 #
 gap> STOP_TEST("SubdirectProducts.tst");

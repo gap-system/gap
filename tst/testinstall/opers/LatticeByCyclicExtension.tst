@@ -1,8 +1,13 @@
 gap> START_TEST("LatticeByCyclicExtension.tst");
 
+# construct SmallGroup(500,1)
+gap> H:=CyclicGroup(4);;
+gap> N:=CyclicGroup(125);;
+gap> A:=AutomorphismGroup(N);;
+gap> alpha:=GroupHomomorphismByImages(H,A,[H.1],[A.1^50]);;
+gap> G:=SemidirectProduct(H, alpha, N);;
+
 #
-gap> G:=SmallGroup(500,1);
-<pc group of size 500 with 5 generators>
 gap> fun:=g->IsInt(4/Size(g));;
 gap> LatticeByCyclicExtension(G);
 <subgroup lattice of <pc group of size 500 with 5 generators>, 12 classes, 
