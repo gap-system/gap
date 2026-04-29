@@ -1018,7 +1018,7 @@ InstallMethod( Matrix, "for a list of vecs, an integer, and an 8bit mat",
   end );
 
 InstallMethod( ExtractSubMatrix, "for an 8bit matrix, and two lists",
-  [Is8BitMatrixRep, IsList, IsList],
+  [Is8BitMatrixRep and IsMatrix, IsList, IsList],
   function( m, rows, cols )
     local mm;
     mm := m{rows}{cols};
@@ -1027,14 +1027,8 @@ InstallMethod( ExtractSubMatrix, "for an 8bit matrix, and two lists",
     return mm;
   end );
 
-InstallMethod( CopySubVector, "for two 8bit vectors, and two lists",
-  [Is8BitVectorRep, Is8BitVectorRep and IsMutable, IsList, IsList],
-  function( v, w, f, t )
-    w{t} := v{f};
-  end );
-
 InstallMethod( CopySubMatrix, "for two 8bit matrices, and four lists",
-  [Is8BitMatrixRep, Is8BitMatrixRep, IsList, IsList, IsList, IsList],
+  [Is8BitMatrixRep and IsMatrix, Is8BitMatrixRep and IsMatrix, IsList, IsList, IsList, IsList],
   function( a, b, frows, trows, fcols, tcols )
     b{trows}{tcols} := a{frows}{fcols};
   end );

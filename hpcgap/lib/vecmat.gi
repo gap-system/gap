@@ -2470,7 +2470,7 @@ InstallMethod( Matrix, "for a list of vecs, an integer, and a gf2 mat",
   end );
 
 InstallMethod( ExtractSubMatrix, "for a gf2 matrix, and two lists",
-  [IsGF2MatrixRep, IsList, IsList],
+  [IsGF2MatrixRep and IsMatrix, IsList, IsList],
   function( m, rows, cols )
     local mm,r;
     mm := [];
@@ -2494,14 +2494,8 @@ InstallMethod( CopySubVector, "for two gf2 vectors, and two ranges",
     fi;
   end );
 
-  InstallMethod( CopySubVector, "for two gf2 vectors, and two lists",
-  [IsGF2VectorRep, IsGF2VectorRep and IsMutable, IsList, IsList],
-        function( v, w, f, t )
-    w{t} := v{f};
-  end );
-
 InstallMethod( CopySubMatrix, "for two gf2 matrices, and four lists",
-  [IsGF2MatrixRep, IsGF2MatrixRep, IsList, IsList, IsList, IsList],
+  [IsGF2MatrixRep and IsMatrix, IsGF2MatrixRep and IsMatrix, IsList, IsList, IsList, IsList],
         function( a, b, frows, trows, fcols, tcols )
     local   i;
     for i in [1..Length(frows)] do
@@ -2510,7 +2504,7 @@ InstallMethod( CopySubMatrix, "for two gf2 matrices, and four lists",
 end );
 
 InstallMethod( CopySubMatrix, "for two gf2 matrices, two lists and two ranges",
-  [IsGF2MatrixRep, IsGF2MatrixRep, IsList, IsList, IsRange, IsRange],
+  [IsGF2MatrixRep and IsMatrix, IsGF2MatrixRep and IsMatrix, IsList, IsList, IsRange, IsRange],
         function( a, b, frows, trows, fcols, tcols )
     local   l,  i;
     l := Length(fcols);
