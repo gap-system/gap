@@ -367,10 +367,23 @@ The following components of the record are <E>optional</E>.
     denoting the other packages which shall be loaded together with the
     current package if they are available,
   </Item>
+  <Mark><C>TestPackages</C></Mark>
+  <Item>
+    a list of pairs <C>[ pkgname, pkgversion ]</C> of strings,
+    denoting packages that are needed only to test the package, but not to
+    load the package,
+  </Item>
+  <Mark><C>NeededSystemPackages</C></Mark>
+  <Item>
+    a record whose contents describe external dependencies of the package
+    in a machine-readable form (see <Ref Sect="External dependencies"/> for
+    more information),
+  </Item>
   <Mark><C>ExternalConditions</C></Mark>
   <Item>
     a list of strings or of pairs <C>[ text, URL ]</C> of strings,
-    denoting conditions on external programs,
+    denoting conditions on external programs in a human-readable form
+    (see <Ref Sect="External dependencies"/> for more information),
   </Item>
   </List>
 </Item>
@@ -1169,6 +1182,19 @@ In this situation, loading <C>A</C> forces an attempt to load also <C>B</C>,
 but <C>A</C> is loaded even if <C>B</C> is not available.
 <P/>
 
+If <C>B</C> is not essential for <C>A</C> but is used in the package tests,
+(for example because <C>B</C> is a library of groups used to provide 
+testcases) then the name and the (least) version number of <C>B</C> should
+be added to the <C>TestPackages</C> component of the <C>Dependencies</C>
+component of the <F>PackageInfo.g</F> file of <C>A</C>. Note that &GAP;
+itself does not use this information at all. In particular, no attempts
+are made to actually load <C>B</C>, this should be done explicitly as
+part of the package tests. The benefit of specifying this component is
+for automated test runners (e.g. as part of the &GAP; package distribution)
+which can use this information to ensure all packages needed to run
+your package's tests are installed and ready.
+<P/>
+
 All package dependencies must be documented explicitly in the
 <F>PackageInfo.g</F> file. It is important to properly
 identify package dependencies and make the right decision
@@ -1220,6 +1246,60 @@ loading time (see above) then package B needs to be <E>deinstalled</E>
 <!-- TODO: write a new subsection telling how to uninstall GAP package
 or what are other ways to disable its loading -->
 <P/>
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="External dependencies">
+<Heading>External Dependencies (System packages needed by a &GAP; Package)</Heading>
+
+<Index>external dependency</Index>
+<Index>system package</Index>
+<Index Subkey="external">dependencies</Index>
+It is possible for a &GAP; package to require external software. If this
+software is not bundled together with the package, then this dependency
+should be documented. To do so, one may add either a string describing the
+dependency, or a list <C>[ description, URL ]</C>, to the
+<C>ExternalConditions</C> component of the <C>Dependencies</C> component of
+the <F>PackageInfo.g</F> file of the &GAP; package.
+
+<Log><![CDATA[
+ExternalConditions := [
+    [ "needs the PARI/GP computer algebra system Version 2.5 or higher",
+      "https://pari.math.u-bordeaux.fr/" ]
+]
+]]></Log>
+
+Note that the data in <C>ExternalConditions</C> is purely informational
+and meant to be human-readable, not machine-readable. &GAP; itself does
+not use it, but for packages distributed with &GAP;, the &GAP; website
+displays it in its package list.
+<P/>
+
+If this dependency is available through a package manager such as <C>apt</C>
+or <C>brew</C>, this should also be documented. This can be done by adding
+the system package to the relevant component (such as <C>Ubuntu</C> or
+<C>Homebrew</C>) of the <C>NeededSystemPackages</C> component of the 
+<F>PackageInfo.g</F> file of the &GAP; package. Each system package is added
+by means of a list whose first component is the name needed by the package
+manager. The other elements of this list are reserved for future usage.
+
+<Log><![CDATA[
+NeededSystemPackages := rec(
+    Ubuntu   := [["pari-gp"]],
+    Homebrew := [["pari"]]
+)
+]]></Log>
+
+Note that this mechanism is primarily intended for consumption by the
+&GAP; package distribution and by other testing tooling. It is deliberately
+kept very simple. For example, at this point there is no mechanism to
+prescribe a distribution version (basically, "Ubuntu" means whatever
+`ubuntu-latest` is referring to in GitHub actions), nor to specify a minimal
+version of a system package. Despite these strong limitations, this data may
+still be useful for people packaging &GAP; and its packages for a distribution,
+as it at least gives a hint which system packages may be needed.
 
 </Section>
 
