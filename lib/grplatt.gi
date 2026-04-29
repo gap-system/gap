@@ -2762,10 +2762,10 @@ local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,emb,u,pos,
   local idx,hom,l,f;
     idx:=Index(gp,nor);
     hom:=NaturalHomomorphismByNormalSubgroup(gp,nor);
-    if idx>1000 or idx=512 or not uselib then
-      l:=[idx,fail];
-    else
+    if uselib and ID_AVAILABLE(idx) <> fail then
       l:=ShallowCopy(IdGroup(gp/nor));
+    else
+      l:=[idx,fail];
     fi;
     f:=Image(hom,gp);
     Add(l,hom);
@@ -2835,7 +2835,7 @@ local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,emb,u,pos,
         for k in no do
           hom:=NaturalHomomorphismByNormalSubgroup(j[1],k.representative);
           f:=Image(hom);
-          if Size(f)<1000 and Size(f)<>512 and uselib then
+          if uselib and ID_AVAILABLE(Size(f)) <> fail then
             myid:=ShallowCopy(IdGroup(f));
           else
             myid:=[Size(f),fail];
