@@ -127,6 +127,11 @@ DeclareGlobalFunction( "EXReducePermutationActionPairs" );
 ##  <A>G</A>-module <A>M</A> as subgroup of the direct product
 ##  Aut(<A>G</A>) <M>\times</M> Aut(<A>M</A>).
 ##  Here Aut(<A>M</A>) is considered as subgroup of a general linear group.
+##  If <A>G</A> is solvable, then the generators of <A>M</A> must correspond
+##  to the <Ref Attr="Pcgs"/> value of <A>G</A>,
+##  otherwise the generators of <A>M</A> must correspond to the
+##  <Ref Attr="GeneratorsOfGroup"/> value of <A>G</A>.
+##  <P/>
 ##  The optional argument <A>D</A> should be a subgroup of
 ##  Aut(<A>G</A>) <M>\times</M> Aut(<A>M</A>).
 ##  If it is given, then only the compatible pairs in <A>D</A> are computed.

@@ -721,11 +721,11 @@ local G, M, Mgrp, oper, A, B, D, translate, gens, genimgs, triso, K, K1,
             #return DirectProductElement( [tup[1], gens] );
           end;
 
-      elif Size(G)>20000 then
-        # if G is too large we cannot write out elements
-        elmlist:=fail;
-        f:=basicact;
-      else
+    elif Size(G)>20000 then
+      # if G is too large we cannot write out elements
+      elmlist:=fail;
+      f:=basicact;
+    else
 
       elmlist:=[];
 
