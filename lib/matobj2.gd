@@ -1792,6 +1792,185 @@ DeclareOperation( "CompanionMatrix",
 
 #############################################################################
 ##
+#O  Matrix( <R>, <list> )
+#O  Matrix( <R>, <list>, <ncols> )
+#O  Matrix( <R>, <M> )
+#O  Matrix( <list>, <M> )
+#O  Matrix( <list>, <ncols>, <M> )
+#O  Matrix( <M1>, <M2> )
+#O  Matrix( <list> )
+#O  Matrix( <list>, <ncols> )
+#O  Matrix( <filt>, <R>, <list> )
+#O  Matrix( <filt>, <R>, <list>, <ncols> )
+#O  Matrix( <filt>, <R>, <M> )
+##
+##  <#GAPDoc Label="MatObj_Matrix">
+##  <ManSection>
+##  <Heading>Matrix</Heading>
+##  <Oper Name="Matrix" Arg='[filt,]R,list[,ncols]' Label="for filter, base domain, list, ncols"/>
+##  <Oper Name="Matrix" Arg='[filt,]R,matobj' Label="for filter, base domain, and matrix object"/>
+##  <Oper Name="Matrix" Arg='list[,ncols],example_matobj' Label="for a list, ncols, and a matrix object"/>
+##  <Oper Name="Matrix" Arg='matobj,example_matobj' Label="for two matrix objects"/>
+##  <Oper Name="Matrix" Arg='list[,ncols]' Label="for a list and ncols"/>
+##
+##  <Returns>a matrix object</Returns>
+##  <Description>
+##  If a semiring <A>R</A> is given as the first argument then
+##  a matrix object is returned whose
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
+##  value <A>filt</A>, is defined over the base domain <A>R</A>,
+##  and has the entries given by the list <A>list</A> or the matrix object
+##  <A>matobj</A>, respectively.
+##  Here <A>list</A> can be either a list of plain lists that describe the
+##  entries of the rows, or a flat list of the entries in row major order,
+##  where <A>ncols</A> defines the number of columns.
+##  <P/>
+##  In those cases where the last argument is a matrix object,
+##  the first argument is a list or a matrix object
+##  that defines (together with <A>ncols</A> if applicable) the entries of
+##  the result, and the
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> of the last argument
+##  are taken for the result.
+##  <P/>
+##  If only a list <A>list</A> and perhaps <A>ncols</A> is given
+##  then both the
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and the
+##  <Ref Attr="BaseDomain" Label="for a vector object"/> are guessed from
+##  the list.
+##  <P/>
+##  In the remaining cases a filter <A>filt</A> is given as the
+##  first argument and a matrix object is returned that has
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
+##  value <A>filt</A>, is defined over the base domain <A>R</A>,
+##  and has the entries given by the list <A>list</A> or the matrix object
+##  <A>M</A>, respectively.
+##  <P/>
+##  If the global option <C>check</C> is set to <K>false</K> then
+##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
+##  need not perform consistency checks.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
+##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  mutable if and only if the argument that determines the entries of the
+##  result (<A>list</A> or <A>matobj</A>) is mutable.
+##  <P/>
+##  In the case of a mutable result, it is guaranteed that the given list
+##  <A>list</A> is copied in the sense of <Ref Oper="ShallowCopy"/>,
+##  and if <A>list</A> is a nested list then it is <E>not</E> guaranteed
+##  that also the entries of <A>list</A> are copied.
+##  <P/>
+##  Default methods for
+##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
+##  delegate to <Ref Oper="NewMatrix"/>.
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [3,4,5], [6,7,8] ] );; Print( m1 );
+##  NewMatrix(IsPlistMatrixRep,Integers,3,[ [ 3, 4, 5 ], [ 6, 7, 8 ] ])
+##  gap> m2 := Matrix( Rationals, [10..30], 7 );; Display( m2 );
+##  <3x7-matrix over Rationals:
+##  [[ 10 .. 16 ]
+##   [ 17 .. 23 ]
+##   [ 24 .. 30 ]
+##  ]>
+gap> Print( Matrix( Integers, m2 ) );  
+NewMatrix(IsPlistMatrixRep,Integers,7,
+[ [ 10 .. 16 ], [ 17 .. 23 ], [ 24 .. 30 ] ])
+gap> m3 := Matrix( [[7,6],[4,3]], m2 );; Print(m3);
+NewMatrix(IsPlistMatrixRep,Rationals,2,[ [ 7, 6 ], [ 4, 3 ] ])
+gap> m4 := Matrix( [-7..-2], 3, m2 );; Print(m4);  
+NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ -7, -6, -5 ], [ -4, -3, -2 ] ])
+gap> m0 := [[-1,-2],[-3,-4]];; IsMatrix(m0);
+true
+gap> Print( Matrix( m0, m1 ) );
+NewMatrix(IsPlistMatrixRep,Integers,2,[ [ -1, -2 ], [ -3, -4 ] ])
+gap> Print( Matrix( [-9..-4], 3, m1 ) );
+NewMatrix(IsPlistMatrixRep,Integers,3,[ [ -9, -8, -7 ], [ -6, -5, -4 ] ])
+gap> m5 := Matrix( [ [0,1,2], [7,8,9] ] );; Print( m5 );
+NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ 0, 1, 2 ], [ 7, 8, 9 ] ])
+gap> m6 := Matrix( IsGF2MatrixRep, GF(2), [[1,0,1],[0,1,0]]*Z(2)^0 );;
+gap> Display( m6 );                                                   
+ 1 . 1
+ . 1 .
+gap> m7 := Matrix( IsZmodnZMatrixRep, ZmodnZ(8), [1..6], 3 );
+<matrix mod 8: [ [ 1 .. 3 ], [ 4 .. 6 ] ]>
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "Matrix", [ IsOperation, IsSemiring, IsList, IsInt ] );
+DeclareOperation( "Matrix", [ IsOperation, IsSemiring, IsList ] );
+DeclareOperation( "Matrix", [ IsOperation, IsSemiring, IsMatrixOrMatrixObj ] );
+DeclareOperation( "Matrix", [ IsSemiring, IsList, IsInt ] );
+DeclareOperation( "Matrix", [ IsSemiring, IsList ] );
+DeclareOperation( "Matrix", [ IsSemiring, IsMatrixOrMatrixObj ] );
+DeclareOperation( "Matrix", [ IsList, IsInt, IsMatrixOrMatrixObj ] );
+DeclareOperation( "Matrix", [ IsList, IsMatrixOrMatrixObj ] );
+DeclareOperation( "Matrix", [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj ] );
+DeclareOperation( "Matrix", [ IsList, IsInt ] );
+DeclareOperation( "Matrix", [ IsList ]);
+
+
+############################################################################
+##
+#A  CompatibleVector( <M> )
+##
+##  <#GAPDoc Label="CompatibleVector">
+##  <ManSection>
+##  <Oper Name="CompatibleVector" Arg='M' Label="for a matrix object"/>
+##
+##  <Returns>a vector object</Returns>
+##
+##  <Description>
+##  Called with a matrix object <A>M</A> with <M>m</M> rows,
+##  this operation returns a mutable zero vector object <M>v</M> of length
+##  <M>m</M> and in the representation given by the
+##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
+##  of <A>M</A> (provided that such a representation exists).
+##  <P/>
+##  The idea is that there should be an efficient way to
+##  form the product <M>v</M><A>M</A>.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "CompatibleVector", [ IsMatrixOrMatrixObj ] );
+
+
+############################################################################
+##
+#A  RowsOfMatrix( <M> )
+##
+##  <#GAPDoc Label="RowsOfMatrix">
+##  <ManSection>
+##  <Attr Name="RowsOfMatrix" Arg='M' Label="for a matrix object"/>
+##
+##  <Returns>a plain list</Returns>
+##
+##  <Description>
+##  Called with a matrix object <A>M</A>, this operation
+##  returns a plain list of objects in the representation given by the
+##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
+##  of <A>M</A> (provided that such a representation exists),
+##  where the <M>i</M>-th entry describes the <M>i</M>-th row of the input.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+##  This function is used for creating an isomorphic permutation group
+##  of a matrix group that consists of matrix objects.
+##  <!-- If 'NicomorphismOfGeneralMatrixGroup' would be documented then
+##  one could insert a reference to it. -->
+##
+##  We assume that the matrix knows how to create suitable vector objects;
+##  entering a template vector as the second argument is not an option
+##  in this situation.
+##
+DeclareAttribute( "RowsOfMatrix", IsMatrixOrMatrixObj );
+
+
+#############################################################################
+##
 #F  DefaultVectorRepForBaseDomain( <D> )
 #F  DefaultMatrixRepForBaseDomain( <D> )
 ##
