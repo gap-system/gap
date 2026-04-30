@@ -92,10 +92,6 @@ InstallMethod( PrintObj,
 ##
 #M  IsEmpty(<C>)  . . . . . . . . . . . . . . . test if a collection is empty
 ##
-InstallImmediateMethod( IsEmpty,
-    IsCollection and HasSize, 0,
-    C -> Size( C ) = 0 );
-
 InstallMethod( IsEmpty,
     "for a collection",
     [ IsCollection ],
@@ -111,10 +107,6 @@ InstallMethod( IsEmpty,
 ##
 #M  IsTrivial(<C>)  . . . . . . . . . . . . . test if a collection is trivial
 ##
-InstallImmediateMethod( IsTrivial,
-    IsCollection and HasSize, 0,
-    C -> Size( C ) = 1 );
-
 InstallMethod( IsTrivial,
     "for a collection",
     [ IsCollection ],
@@ -143,10 +135,6 @@ InstallMethod( IsNonTrivial,
 ##
 #M  IsFinite(<C>) . . . . . . . . . . . . . .  test if a collection is finite
 ##
-InstallImmediateMethod( IsFinite,
-    IsCollection and HasSize, 0,
-    C -> not IsIdenticalObj( Size( C ), infinity ) );
-
 InstallMethod( IsFinite,
     "for a collection",
     [ IsCollection ],
@@ -2879,17 +2867,27 @@ local filt;
   fi;
 
   # some sanity checks
-  Assert(0, not HasIsEmpty(obj) or (IsEmpty(obj) = (sz=0)));
-  Assert(0, not HasIsNonTrivial(obj) or (IsNonTrivial(obj) = (sz<>1)));
-  Assert(0, not HasIsTrivial(obj) or (IsTrivial(obj) = (sz=1)));
-  Assert(0, not HasIsFinite(obj) or (IsFinite(obj) = (sz<>infinity)));
+  Assert(1, not HasIsEmpty(obj) or (IsEmpty(obj) = (sz=0)));
+  Assert(1, not HasIsNonTrivial(obj) or (IsNonTrivial(obj) = (sz<>1)));
+  Assert(1, not HasIsTrivial(obj) or (IsTrivial(obj) = (sz=1)));
+  Assert(1, not HasIsFinite(obj) or (IsFinite(obj) = (sz<>infinity)));
 
-  if sz=0 then filt:=IsEmpty;
-  elif sz=1 then filt:=IsTrivial;
-  elif sz=infinity then filt:=IsNonTrivial and HasIsFinite;
-  else filt:=IsNonTrivial and IsFinite;
+  filt:=HasSize;
+  if sz=0 then
+    filt:=filt and IsEmpty;
+  else
+    filt:=filt and HasIsEmpty;
   fi;
-  filt:=filt and HasSize;
+  if sz=1 then
+    filt:=filt and IsTrivial;
+  else
+    filt:=filt and IsNonTrivial;
+  fi;
+  if sz=infinity then
+    filt:=filt and HasIsFinite;
+  else
+    filt:=filt and IsFinite;
+  fi;
   obj!.Size:=sz;
   SetFilterObj(obj,filt);
 end);
