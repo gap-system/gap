@@ -370,6 +370,9 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
         ErrorLVars := errorLVars;
         ErrorTracebackLVars := errorTracebackLVars;
         SET_ERROR_LVARS(kernelErrorLVars);
+        if IsBound(OnQuit) and IsFunction(OnQuit) then
+            OnQuit();
+        fi;
         if ErrorLevel = 0 then LEAVE_ALL_NAMESPACES(); fi;
         JUMP_TO_CATCH(0);
     fi;
