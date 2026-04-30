@@ -2759,15 +2759,14 @@ local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,emb,u,pos,
   fi;
 
   fgi:=function(gp,nor)
-  local idx,hom,l,f;
-    idx:=Index(gp,nor);
+  local hom,l,f;
     hom:=NaturalHomomorphismByNormalSubgroup(gp,nor);
-    if uselib and ID_AVAILABLE(idx) <> fail then
-      l:=ShallowCopy(IdGroup(gp/nor));
+    f:=Image(hom);
+    if uselib and ID_AVAILABLE(Size(f)) <> fail then
+      l:=ShallowCopy(IdGroup(f));
     else
-      l:=[idx,fail];
+      l:=[Size(f),fail];
     fi;
-    f:=Image(hom,gp);
     Add(l,hom);
     Add(l,f);
     Add(l,AutomorphismGroup(f));
