@@ -216,7 +216,7 @@ static Obj DoCopyBlist(Obj list, Int mut)
     Obj copy;
 
     // make a copy
-    copy = NewBag(MUTABLE_TNUM(TNUM_OBJ(list)), SIZE_OBJ(list));
+    copy = NewBag(TNUM_OBJ(list), SIZE_OBJ(list));
     if (!mut)
         MakeImmutableNoRecurse(copy);
 
@@ -1701,11 +1701,8 @@ static void MakeImmutableBlist(Obj blist)
 */
 static StructBagNames BagNames[] = {
   { T_BLIST,                           "list (boolean)"                  },
-  { T_BLIST       +IMMUTABLE,          "list (boolean,imm)"              },
   { T_BLIST_NSORT,                     "list (boolean,nsort)"            },
-  { T_BLIST_NSORT +IMMUTABLE,          "list (boolean,nsort,imm)"        },
   { T_BLIST_SSORT,                     "list (boolean,ssort)"            },
-  { T_BLIST_SSORT +IMMUTABLE,          "list (boolean,ssort,imm)"        },
   { -1,                                ""                                }
 };
 
@@ -1890,25 +1887,14 @@ static Int InitKernel (
     // GASMAN marking functions and GASMAN names
     InitBagNamesFromTable( BagNames );
 
-    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
+    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1++ ) {
         InitMarkFuncBags( t1                     , MarkNoSubBags  );
-        InitMarkFuncBags( t1 +IMMUTABLE          , MarkNoSubBags  );
     }
 
     // Make immutable blists public
-#ifdef HPCGAP
-    for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
-        MakeBagTypePublic( t1 + IMMUTABLE );
-    }
-#endif
-
-    // install the type methods
     TypeObjFuncs[ T_BLIST            ] = TypeBlist;
-    TypeObjFuncs[ T_BLIST +IMMUTABLE ] = TypeBlist;
     TypeObjFuncs[ T_BLIST_NSORT            ] = TypeBlistNSort;
-    TypeObjFuncs[ T_BLIST_NSORT +IMMUTABLE ] = TypeBlistNSort;
     TypeObjFuncs[ T_BLIST_SSORT            ] = TypeBlistSSort;
-    TypeObjFuncs[ T_BLIST_SSORT +IMMUTABLE ] = TypeBlistSSort;
 
     // initialise list tables
     InitClearFiltsTNumsFromTable   ( ClearFiltsTab );
@@ -1918,74 +1904,52 @@ static Int InitKernel (
 
 #ifdef GAP_ENABLE_SAVELOAD
     // Install the saving functions -- cannot save while copying
-    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
+    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1++ ) {
         SaveObjFuncs[ t1            ] = SaveBlist;
-        SaveObjFuncs[ t1 +IMMUTABLE ] = SaveBlist;
         LoadObjFuncs[ t1            ] = LoadBlist;
-        LoadObjFuncs[ t1 +IMMUTABLE ] = LoadBlist;
     }
 #endif
 
     // install the copy functions
-    for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
+    for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1++ ) {
 #if !defined(USE_THREADSAFE_COPYING)
         CopyObjFuncs [ t1                     ] = CopyBlist;
-        CopyObjFuncs [ t1 +IMMUTABLE          ] = CopyBlist;
         CleanObjFuncs[ t1                     ] = 0;
-        CleanObjFuncs[ t1 +IMMUTABLE          ] = 0;
 #endif
         ShallowCopyObjFuncs[ t1               ] = ShallowCopyBlist;
-        ShallowCopyObjFuncs[ t1 +IMMUTABLE    ] = ShallowCopyBlist;
     }
 
     // install the comparison methods
-    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT+IMMUTABLE;  t1++ ) {
-        for ( t2 = T_BLIST;  t2 <= T_BLIST_SSORT+IMMUTABLE;  t2++ ) {
+    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1++ ) {
+        for ( t2 = T_BLIST;  t2 <= T_BLIST_SSORT;  t2++ ) {
             EqFuncs[ t1 ][ t2 ] = EqBlist;
         }
     }
 
     // install the list functions in the tables
-    for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
+    for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 ++ ) {
         LenListFuncs    [ t1            ] = LenBlist;
-        LenListFuncs    [ t1 +IMMUTABLE ] = LenBlist;
         IsbListFuncs    [ t1            ] = IsbBlist;
-        IsbListFuncs    [ t1 +IMMUTABLE ] = IsbBlist;
         Elm0ListFuncs   [ t1            ] = Elm0Blist;
-        Elm0ListFuncs   [ t1 +IMMUTABLE ] = Elm0Blist;
         Elm0vListFuncs  [ t1            ] = Elm0vBlist;
-        Elm0vListFuncs  [ t1 +IMMUTABLE ] = Elm0vBlist;
         ElmListFuncs    [ t1            ] = ElmBlist;
-        ElmListFuncs    [ t1 +IMMUTABLE ] = ElmBlist;
         ElmvListFuncs   [ t1            ] = ElmvBlist;
-        ElmvListFuncs   [ t1 +IMMUTABLE ] = ElmvBlist;
         ElmwListFuncs   [ t1            ] = ElmvBlist;
-        ElmwListFuncs   [ t1 +IMMUTABLE ] = ElmvBlist;
         ElmsListFuncs   [ t1            ] = ElmsBlist;
-        ElmsListFuncs   [ t1 +IMMUTABLE ] = ElmsBlist;
         UnbListFuncs    [ t1            ] = UnbBlist;
         AssListFuncs    [ t1            ] = AssBlist;
         AsssListFuncs   [ t1            ] = AsssListDefault;
         IsDenseListFuncs[ t1            ] = AlwaysYes;
-        IsDenseListFuncs[ t1 +IMMUTABLE ] = AlwaysYes;
         IsHomogListFuncs[ t1            ] = IsHomogBlist;
-        IsHomogListFuncs[ t1 +IMMUTABLE ] = IsHomogBlist;
         IsTableListFuncs[ t1            ] = AlwaysNo;
-        IsTableListFuncs[ t1 +IMMUTABLE ] = AlwaysNo;
         IsPossListFuncs [ t1            ] = IsPossBlist;
-        IsPossListFuncs [ t1 +IMMUTABLE ] = IsPossBlist;
         PosListFuncs    [ t1            ] = PosBlist;
-        PosListFuncs    [ t1 +IMMUTABLE ] = PosBlist;
         PlainListFuncs  [ t1            ] = PlainBlist;
-        PlainListFuncs  [ t1 +IMMUTABLE ] = PlainBlist;
         MakeImmutableObjFuncs [ t1      ] = MakeImmutableBlist;
     }
     IsSSortListFuncs[ T_BLIST            ] = IsSSortBlist;
-    IsSSortListFuncs[ T_BLIST +IMMUTABLE ] = IsSSortBlist;
     IsSSortListFuncs[ T_BLIST_NSORT            ] = AlwaysNo;
-    IsSSortListFuncs[ T_BLIST_NSORT +IMMUTABLE ] = AlwaysNo;
     IsSSortListFuncs[ T_BLIST_SSORT            ] = AlwaysYes;
-    IsSSortListFuncs[ T_BLIST_SSORT +IMMUTABLE ] = AlwaysYes;
 
     // Import the types of blists:
     ImportGVarFromLibrary( "TYPE_BLIST_MUT", &TYPE_BLIST_MUT );

@@ -640,7 +640,7 @@ static Obj ZeroVector(Obj vec)
     UInt i, len;
     Obj res;
     GAP_ASSERT(TNUM_OBJ(vec) >= T_PLIST_CYC &&
-               TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT + IMMUTABLE);
+               TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT);
     len = LEN_PLIST(vec);
     res = NEW_PLIST_WITH_MUTABILITY(IS_MUTABLE_OBJ(vec), T_PLIST_CYC, len);
     SET_LEN_PLIST(res, len);
@@ -654,7 +654,7 @@ static Obj ZeroMutVector(Obj vec)
     UInt i, len;
     Obj res;
     GAP_ASSERT(TNUM_OBJ(vec) >= T_PLIST_CYC &&
-               TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT + IMMUTABLE);
+               TNUM_OBJ(vec) <= T_PLIST_CYC_SSORT);
     len = LEN_PLIST(vec);
     res = NEW_PLIST(T_PLIST_CYC, len);
     SET_LEN_PLIST(res, len);
@@ -695,11 +695,11 @@ static Int InitKernel (
     InitHdlrFuncsFromTable(GVarFuncs);
 
     // install the arithmetic operation methods
-    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT + IMMUTABLE; t1++) {
+    for (t1 = T_PLIST_CYC; t1 <= T_PLIST_CYC_SSORT; t1++) {
         ZeroSameMutFuncs[t1] = ZeroVector;
         ZeroMutFuncs[ t1 ] = ZeroMutVector;
 
-        for (t2 = T_PLIST_CYC; t2 <= T_PLIST_CYC_SSORT + IMMUTABLE; t2++) {
+        for (t2 = T_PLIST_CYC; t2 <= T_PLIST_CYC_SSORT; t2++) {
             SumFuncs [ T_INT     ][ t2        ] = SumIntVector;
             SumFuncs [ t1        ][ T_INT     ] = SumVectorInt;
             SumFuncs [ t1        ][ t2        ] = SumVectorVector;
