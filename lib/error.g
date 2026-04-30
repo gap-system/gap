@@ -371,7 +371,25 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
         ErrorTracebackLVars := errorTracebackLVars;
         SET_ERROR_LVARS(kernelErrorLVars);
         if IsBound(OnQuit) and IsFunction(OnQuit) then
-            OnQuit();
+            # OnQuit();
+            # We would like to call 'OnQuit()' but the
+            # 'ResetMethodReordering()' call inside 'OnQuit'
+            # affects the output of some tests involving 'TraceMethods'.
+            # Thus we copy the relevant lines from 'OnQuit' here.
+            if not IsEmpty(OptionsStack) then
+              repeat
+                PopOptions();
+              until IsEmpty(OptionsStack);
+              # We would like to print an info message
+              # but this affects the output of some tests.
+              # Note that 'Test' sets 'BreakOnError' to 'false'.
+              # Info(InfoWarning,1,"Options stack has been reset");
+            fi;
+            if REREADING = true then
+              MakeReadWriteGlobal("REREADING");
+              REREADING := false;
+              MakeReadOnlyGlobal("REREADING");
+            fi;
         fi;
         if ErrorLevel = 0 then LEAVE_ALL_NAMESPACES(); fi;
         JUMP_TO_CATCH(0);
