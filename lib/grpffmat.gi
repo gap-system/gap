@@ -313,6 +313,12 @@ InstallMethod( \in, "general linear group", IsElmsColls,
     return     n = NumberColumns( mat )
            and n = DimensionOfMatrixGroup( G )
            and n = RankMat( mat )
+#TODO:
+# Currently we cannot force the rule that all matrices in a matrix
+# group consisting of matrix objects have the same 'BaseDomain',
+# and that this common 'BaseDomain' is equal to the 'FieldOfMatrixGroup'
+# of the group.
+# Eventually we want 'true' only if 'F = BaseDomain( mat )' holds.
            and ( IsSubset( F, BaseDomain( mat ) ) or
                  ForAll( Unpack( mat ), row -> IsSubset( F, row ) ) );
 end );
