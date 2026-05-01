@@ -857,6 +857,11 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  <P/>
 ##  The returned object is mutable if and only if <A>filt</A> implies
 ##  <Ref Filt="IsCopyable"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> Matrix( IsPlistMatrixRep, Integers, [ [4,5,6], [7,8,9] ] );
+##  <2x3-matrix over Integers>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1198,6 +1203,20 @@ DeclareSynonym( "SetMatElm", ASS_MAT );
 ##  Default methods for
 ##  <Ref Oper="ZeroMatrix" Label="for dimensions and matrix object"/>
 ##  delegate to <Ref Oper="NewZeroMatrix"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m7 := Matrix( IsZmodnZMatrixRep, ZmodnZ(8), [1..6], 3 );;
+##  gap> z7 := ZeroMatrix( 2, 2, m7 );; Print( z7 );              
+##  NewMatrix(IsZmodnZMatrixRep,Monoid( ... ),2,
+##  [ [ ZmodnZObj( 0, 8 ), ZmodnZObj( 0, 8 ) ], 
+##    [ ZmodnZObj( 0, 8 ), ZmodnZObj( 0, 8 ) ] ])
+##  gap> z23 := ZeroMatrix( Rationals, 2, 3 );; Print( z23 );
+##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ 0, 0, 0 ], [ 0, 0, 0 ] ])
+##  gap> z5 := ZeroMatrix( IsGF2MatrixRep, GF(2), 2, 5 );; Display( z5 );
+##   . . . . .
+##   . . . . .
+##  ]>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1245,6 +1264,21 @@ DeclareOperation( "ZeroMatrix", [ IsOperation, IsSemiring, IsInt, IsInt ] );
 ##  Default methods for
 ##  <Ref Oper="IdentityMatrix" Label="for dimension and matrix object"/>
 ##  delegate to <Ref Oper="NewIdentityMatrix"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m7 := Matrix( IsZmodnZMatrixRep, ZmodnZ(8), [1..6], 3 );;
+##  gap> id7 := IdentityMatrix( 2, m7 );; Print( id7 );              
+##  NewMatrix(IsZmodnZMatrixRep,Monoid( ... ),2,
+##  [ [ ZmodnZObj( 1, 8 ), ZmodnZObj( 0, 8 ) ], 
+##    [ ZmodnZObj( 0, 8 ), ZmodnZObj( 1, 8 ) ] ])
+##  gap> id2 := IdentityMatrix( Rationals, 2 );; Print( id2 );
+##  NewMatrix(IsPlistMatrixRep,Rationals,2,[ [ 1, 0 ], [ 0, 1 ] ])
+##  gap> id3 := IdentityMatrix( IsGF2MatrixRep, GF(2), 3 );; Display( id3 );
+##   1 . .
+##   . 1 .
+##   . . 1
+##  ]>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1406,6 +1440,7 @@ DeclareOperation( "CompanionMatrix",
 ##  Default methods for
 ##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
 ##  delegate to <Ref Oper="NewMatrix"/>.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> m1 := Matrix( Integers, [ [3,4,5], [6,7,8] ] );; Print( m1 );
 ##  NewMatrix(IsPlistMatrixRep,Integers,3,[ [ 3, 4, 5 ], [ 6, 7, 8 ] ])
@@ -1415,27 +1450,29 @@ DeclareOperation( "CompanionMatrix",
 ##   [ 17 .. 23 ]
 ##   [ 24 .. 30 ]
 ##  ]>
-gap> Print( Matrix( Integers, m2 ) );  
-NewMatrix(IsPlistMatrixRep,Integers,7,
-[ [ 10 .. 16 ], [ 17 .. 23 ], [ 24 .. 30 ] ])
-gap> m3 := Matrix( [[7,6],[4,3]], m2 );; Print(m3);
-NewMatrix(IsPlistMatrixRep,Rationals,2,[ [ 7, 6 ], [ 4, 3 ] ])
-gap> m4 := Matrix( [-7..-2], 3, m2 );; Print(m4);  
-NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ -7, -6, -5 ], [ -4, -3, -2 ] ])
-gap> m0 := [[-1,-2],[-3,-4]];; IsMatrix(m0);
-true
-gap> Print( Matrix( m0, m1 ) );
-NewMatrix(IsPlistMatrixRep,Integers,2,[ [ -1, -2 ], [ -3, -4 ] ])
-gap> Print( Matrix( [-9..-4], 3, m1 ) );
-NewMatrix(IsPlistMatrixRep,Integers,3,[ [ -9, -8, -7 ], [ -6, -5, -4 ] ])
-gap> m5 := Matrix( [ [0,1,2], [7,8,9] ] );; Print( m5 );
-NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ 0, 1, 2 ], [ 7, 8, 9 ] ])
-gap> m6 := Matrix( IsGF2MatrixRep, GF(2), [[1,0,1],[0,1,0]]*Z(2)^0 );;
-gap> Display( m6 );                                                   
- 1 . 1
- . 1 .
-gap> m7 := Matrix( IsZmodnZMatrixRep, ZmodnZ(8), [1..6], 3 );
-<matrix mod 8: [ [ 1 .. 3 ], [ 4 .. 6 ] ]>
+##  gap> Print( Matrix( Integers, m2 ) );  
+##  NewMatrix(IsPlistMatrixRep,Integers,7,
+##  [ [ 10 .. 16 ], [ 17 .. 23 ], [ 24 .. 30 ] ])
+##  gap> m3 := Matrix( [[7,6],[4,3]], m2 );; Print(m3);
+##  NewMatrix(IsPlistMatrixRep,Rationals,2,[ [ 7, 6 ], [ 4, 3 ] ])
+##  gap> m4 := Matrix( [-7..-2], 3, m2 );; Print(m4);  
+##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ -7, -6, -5 ], [ -4, -3, -2 ] ])
+##  gap> m0 := [[-1,-2],[-3,-4]];; IsMatrix(m0);
+##  true
+##  gap> Print( Matrix( m0, m1 ) );
+##  NewMatrix(IsPlistMatrixRep,Integers,2,[ [ -1, -2 ], [ -3, -4 ] ])
+##  gap> m5 := Matrix( [ [0,1,2], [7,8,9] ] );; Print( m5 );
+##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ 0, 1, 2 ], [ 7, 8, 9 ] ])
+##  gap> Print( Matrix( [-9..-4], 3, m1 ) );
+##  NewMatrix(IsPlistMatrixRep,Integers,3,[ [ -9, -8, -7 ], [ -6, -5, -4 ] ])
+##  gap> m6 := Matrix( IsGF2MatrixRep, GF(2), [[1,0,1],[0,1,0]]*Z(2)^0 );;
+##  gap> Display( m6 );                                                   
+##   1 . 1
+##   . 1 .
+##  gap> m7 := Matrix( IsZmodnZMatrixRep, ZmodnZ(8), [1..6], 3 );
+##  <matrix mod 8: [ [ 1 .. 3 ], [ 4 .. 6 ] ]>
+##  gap> m8 := Matrix( IsZmodnZMatrixRep, ZmodnZ(12), m0 );       
+##  <matrix mod 12: [ [ -1, -2 ], [ -3, -4 ] ]>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
