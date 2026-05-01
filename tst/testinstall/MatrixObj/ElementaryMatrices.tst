@@ -60,8 +60,8 @@ true
 gap> TestWholeMatrixTransforms( mat, PrimitiveRoot(F) );
 
 #
-gap> mat := NewMatrix(IsPlistMatrixRep, Integers, 3,
->                     [ [ 2, 4, 5 ], [ 7, 11, -4 ], [ -3, 20, 0 ] ] );;
+gap> mat := NewMatrix(IsPlistMatrixRep, Integers,
+>                     [ [ 2, 4, 5 ], [ 7, 11, -4 ], [ -3, 20, 0 ] ], 3 );;
 gap> IsPlistMatrixRep(mat);
 true
 gap> TestElementaryTransforms( mat, -1 );

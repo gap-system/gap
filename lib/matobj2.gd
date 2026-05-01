@@ -736,14 +736,14 @@ DeclareTagBasedOperation( "NewZeroVector",
 
 #############################################################################
 ##
-#O  NewMatrix( <filt>, <R>, <ncols>, <list> )
+#O  NewMatrix( <filt>, <R>, <list>, <ncols> )
 #O  NewZeroMatrix( <filt>, <R>, <m>, <n> )
 #O  NewIdentityMatrix( <filt>, <R>, <n> )
 ##
 ##  <#GAPDoc Label="NewMatrix">
 ##  <ManSection>
 ##  <Heading>NewMatrix, NewZeroMatrix, NewIdentityMatrix</Heading>
-##  <Oper Name="NewMatrix" Arg='filt,R,ncols,list'/>
+##  <Oper Name="NewMatrix" Arg='filt,R,list,ncols'/>
 ##  <Oper Name="NewZeroMatrix" Arg='filt,R,m,n'/>
 ##  <Oper Name="NewIdentityMatrix" Arg='filt,R,n'/>
 ##
@@ -754,10 +754,10 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
 ##  <A>filt</A>,
 ##  the <Ref Attr="BaseDomain" Label="for a matrix object"/> <A>R</A>,
-##  <A>n</A> columns
-##  (see <Ref Attr="NumberColumns" Label="for a matrix object"/>),
-##  and the entries described by <A>list</A>,
-##  which can be either a plain list of vector objects of length <A>ncols</A>
+##  the entries described by <A>list</A> and <A>ncols</A> columns
+##  (see <Ref Attr="NumberColumns" Label="for a matrix object"/>).
+##  The <A<list</A> can be either a plain list of vector objects,
+##  each of length <A>ncols</A>,
 ##  or a plain list of plain lists of length <A>ncols</A>
 ##  or a plain list of length a multiple of <A>ncols</A> containing the
 ##  entries in row major order.
@@ -790,7 +790,7 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  <#/GAPDoc>
 ##
 DeclareTagBasedOperation( "NewMatrix",
-    [ IsOperation, IsSemiring, IsInt, IsList] );
+    [ IsOperation, IsSemiring, IsList, IsInt ] );
 
 DeclareTagBasedOperation( "NewZeroMatrix",
     [ IsOperation, IsSemiring, IsInt, IsInt ] );

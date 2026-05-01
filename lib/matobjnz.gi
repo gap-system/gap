@@ -608,7 +608,7 @@ end);
 
 InstallTagBasedMethod( NewMatrix,
   IsZmodnZMatrixRep,
-  function( filter, basedomain, rl, l )
+  function( filter, basedomain, l, rl )
     local check, nd, filterVectors, m, e, filter2, i;
 
     check:= ValueOption( "check" ) <> false;
@@ -793,7 +793,7 @@ InstallMethod( PrintObj, "for a zmodnz matrix", [ IsZmodnZMatrixRep ],
     else
         Print(",",String(m![BDPOS]),",");
     fi;
-    Print(NumberColumns(m),",",Unpack(m),")");
+    Print(Unpack(m),",",NumberColumns(m),")");
   end );
 
 InstallMethod( Display, "for a zmodnz matrix", [ IsZmodnZMatrixRep ],
@@ -826,10 +826,10 @@ InstallMethod( String, "for zmodnz matrix", [ IsZmodnZMatrixRep ],
         Append(st,String(m![BDPOS]));
         Append(st,",");
     fi;
-    Append(st,String(NumberColumns(m)));
-    Add(st,',');
     Append(st,String(Unpack(m)));
     Add(st,')');
+    Append(st,String(NumberColumns(m)));
+    Add(st,',');
     return st;
   end );
 

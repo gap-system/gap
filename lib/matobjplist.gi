@@ -190,7 +190,7 @@ InstallTagBasedMethod( NewZeroVector,
 
 InstallTagBasedMethod( NewMatrix,
   IsPlistMatrixRep,
-  function( filter, basedomain, ncols, list )
+  function( filter, basedomain, list, ncols )
     local nd, filterVectors, m, e, i;
 
     # If applicable then replace a flat list 'list' by a nested list
@@ -913,7 +913,7 @@ InstallMethod( PrintObj, [ "IsPlistMatrixRep" ],
     else
         Print(",",String(M![BDPOS]),",");
     fi;
-    Print(NumberColumns(M),",",Unpack(M),")");
+    Print(Unpack(M),",",NumberColumns(M),")");
   end );
 
 InstallMethod( Display, [ "IsPlistMatrixRep" ],
@@ -946,10 +946,10 @@ InstallMethod( String, [ "IsPlistMatrixRep" ],
         Append(st,String(M![BDPOS]));
         Append(st,",");
     fi;
-    Append(st,String(NumberColumns(M)));
-    Add(st,',');
     Append(st,String(Unpack(M)));
     Add(st,')');
+    Append(st,String(NumberColumns(M)));
+    Add(st,',');
     return st;
   end );
 
@@ -1303,8 +1303,8 @@ InstallMethod( ChangedBaseDomain,
 InstallMethod( ChangedBaseDomain,
   [ "IsPlistMatrixRep", "IsRing" ],
   function( M, r )
-    r:= NewMatrix( IsPlistMatrixRep, r, M![RLPOS],
-                   List( M![ROWSPOS], x-> x![ELSPOS] ) );
+    r:= NewMatrix( IsPlistMatrixRep, r,
+                   List( M![ROWSPOS], x-> x![ELSPOS] ), M![RLPOS] );
     if not IsMutable( M ) then
       MakeImmutable( r );
     fi;

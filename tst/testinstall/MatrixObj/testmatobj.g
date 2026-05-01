@@ -210,7 +210,7 @@ TestWholeMatrixTransforms := function(mat, scalar)
     od;
     basedomain := BaseDomain(mat);
     if IsPlistMatrixRep(mat) then
-        src := NewMatrix(IsPlistMatrixRep, basedomain, NrCols(mat), src);
+        src := NewMatrix(IsPlistMatrixRep, basedomain, src, NrCols(mat));
     elif Is8BitMatrixRep(mat) then
         ConvertToMatrixRep(src, basedomain);
     fi;

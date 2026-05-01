@@ -1488,7 +1488,7 @@ InstallOtherMethod( ConstructingFilter,
 ##
 InstallTagBasedMethod( NewMatrix,
   IsPlistRep,
-  function( filter, basedomain, ncols, list )
+  function( filter, basedomain, list, ncols )
     local copied, nd;
 
     # If applicable then replace a flat list 'list' by a nested list

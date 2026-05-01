@@ -1,5 +1,5 @@
-gap> m := NewMatrix( IsPlistMatrixRep, GF(3), 2,
->                    [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ] );;
+gap> m := NewMatrix( IsPlistMatrixRep, GF(3),
+>                    [ [ 0*Z(3), Z(3) ], [ Z(3)^0, 0*Z(3) ] ], 2 );;
 gap> l := Unpack( m );;
 gap> IsMatrix( m );
 false

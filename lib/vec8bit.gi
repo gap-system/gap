@@ -1109,7 +1109,7 @@ InstallTagBasedMethod( NewZeroVector,
 
 InstallTagBasedMethod( NewMatrix,
   Is8BitMatrixRep,
-  function( filter, f, rl, l )
+  function( filter, f, l, rl )
     local len, m;
     if ValueOption( "check" ) <> false and not Size(f) in [3..256] then
         Error("Is8BitMatrixRep only supports base fields with 3 to 256 elements");

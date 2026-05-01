@@ -2566,7 +2566,7 @@ InstallTagBasedMethod( NewZeroVector,
 
 InstallTagBasedMethod( NewMatrix,
   IsGF2MatrixRep,
-  function( filter, f, rl, l )
+  function( filter, f, l, rl )
     local len, m;
     if Size(f) <> 2 then Error("IsGF2MatrixRep only supported over GF(2)"); fi;
 

@@ -43,15 +43,15 @@ gap> IsMutable( z );
 true
 
 #
-gap> NewMatrix( IsPlistMatrixRep, Integers, 2, [] );;
-gap> NewMatrix( IsPlistMatrixRep, Integers, 2, [ 1 ] );;
+gap> NewMatrix( IsPlistMatrixRep, Integers, [], 2 );;
+gap> NewMatrix( IsPlistMatrixRep, Integers, [ 1 ], 2 );;
 Error, NewMatrix: Length of <list> is not a multiple of <ncols>
-gap> NewMatrix( IsPlistMatrixRep, Integers, 2, [ [ 1 ] ] );;
+gap> NewMatrix( IsPlistMatrixRep, Integers, [ [ 1 ] ], 2 );;
 Error, the entries of <list> must have length <ncols>
-gap> NewMatrix( IsPlistMatrixRep, Integers, 2, [ [ 1, 2 ] ] );;
-gap> NewMatrix( IsPlistMatrixRep, Integers, 2, [ v ] );;
+gap> NewMatrix( IsPlistMatrixRep, Integers, [ [ 1, 2 ] ], 2 );;
+gap> NewMatrix( IsPlistMatrixRep, Integers, [ v ], 2 );;
 Error, the entries of <list> must have length <ncols>
-gap> M:= NewMatrix( IsPlistMatrixRep, Integers, 2, [ v2, v2 ] );;
+gap> M:= NewMatrix( IsPlistMatrixRep, Integers, [ v2, v2 ], 2 );;
 gap> IsMutable( M ) and ForAll( [ 1 .. Length( M ) ], i -> IsMutable( M[i] ) );
 true
 
