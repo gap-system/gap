@@ -756,7 +756,7 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  the <Ref Attr="BaseDomain" Label="for a matrix object"/> <A>R</A>,
 ##  the entries described by <A>list</A> and <A>ncols</A> columns
 ##  (see <Ref Attr="NumberColumns" Label="for a matrix object"/>).
-##  The <A<list</A> can be either a plain list of vector objects,
+##  The <A>list</A> can be either a plain list of vector objects,
 ##  each of length <A>ncols</A>,
 ##  or a plain list of plain lists of length <A>ncols</A>
 ##  or a plain list of length a multiple of <A>ncols</A> containing the
