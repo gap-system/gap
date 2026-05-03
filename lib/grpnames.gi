@@ -1278,12 +1278,20 @@ InstallMethod( IsSymmetricGroup,
       return true;
     fi;
 
+    # the derived subgroup must be alternating and have index 2
     G1 := DerivedSubgroup(G);
-    if   not (IsAlternatingGroup(G1) and Index(G,G1) = 2)
-      # this requires deg>=4
-      or not IsTrivial(Centralizer(G,G1))
-      or Size(G) = 720 and IdGroup(G) <> [ 720, 763 ]
-    then return false; fi;
+    if not (IsAlternatingGroup(G1) and Index(G,G1) = 2) then
+      return false;
+    fi;
+    # the derived subgroup must have trivial centralizer (since degree >= 4)
+    if not IsTrivial(Centralizer(G,G1)) then
+      return false;
+    fi;
+    # one more special case: there are three groups of order 720 which satisfy
+    # the above, so here we need extra work to pick the correct one
+    if Size(G) = 720 and IdGroup(G) <> [ 720, 763 ] then
+      return false;
+    fi;
     SetSymmetricDegree(G,AlternatingDegree(G1));
     return true;
   end );
