@@ -1288,8 +1288,9 @@ InstallMethod( IsSymmetricGroup,
       return false;
     fi;
     # one more special case: there are three groups of order 720 which satisfy
-    # the above, so here we need extra work to pick the correct one
-    if Size(G) = 720 and IdGroup(G) <> [ 720, 763 ] then
+    # the above, so here we need extra work to pick the correct one: it is
+    # only one in which all elements have order <= 6
+    if Size(G) = 720 and not ForAll(G,x->Order(x)<=6) then
       return false;
     fi;
     SetSymmetricDegree(G,AlternatingDegree(G1));
