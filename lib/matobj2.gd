@@ -1262,28 +1262,11 @@ DeclareOperation( "CompanionMatrix",
 ##  <#GAPDoc Label="MatObj_Matrix">
 ##  <ManSection>
 ##  <Heading>Matrix</Heading>
-##  <Oper Name="Matrix" Arg='filt,R,list,ncols'
-##   Label="for filter, base domain, list, ncols"/>
-##  <Oper Name="Matrix" Arg='filt,R,list'
-##   Label="for filter, base domain, and list"/>
-##  <Oper Name="Matrix" Arg='filt,R,M'
-##   Label="for filter, base domain, and matrix object"/>
-##  <Oper Name="Matrix" Arg='R,list,ncols'
-##   Label="for base domain, list, ncols"/>
-##  <Oper Name="Matrix" Arg='R,list'
-##   Label="for base domain and list"/>
-##  <Oper Name="Matrix" Arg='R,M'
-##   Label="for base domain and matrix object"/>
-##  <Oper Name="Matrix" Arg='list,ncols,M'
-##   Label="for a list, ncols, and a matrix object"/>
-##  <Oper Name="Matrix" Arg='list,M'
-##   Label="for a list and a matrix object"/>
-##  <Oper Name="Matrix" Arg='M1,M2'
-##   Label="for two matrix objects"/>
-##  <Oper Name="Matrix" Arg='list,ncols'
-##   Label="for a list and ncols"/>
-##  <Oper Name="Matrix" Arg='list'
-##   Label="for a list"/>
+##  <Oper Name="Matrix" Arg='[filt,]R,list[,ncols]' Label="for filter, base domain, list, ncols"/>
+##  <Oper Name="Matrix" Arg='[filt,]R,matobj' Label="for filter, base domain, and matrix object"/>
+##  <Oper Name="Matrix" Arg='list[,ncols],example_matobj' Label="for a list, ncols, and a matrix object"/>
+##  <Oper Name="Matrix" Arg='matobj,example_matobj' Label="for two matrix objects"/>
+##  <Oper Name="Matrix" Arg='list[,ncols]' Label="for a list and ncols"/>
 ##
 ##  <Returns>a matrix object</Returns>
 ##  <Description>
@@ -1292,7 +1275,7 @@ DeclareOperation( "CompanionMatrix",
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
 ##  value <A>filt</A>, is defined over the base domain <A>R</A>,
 ##  and has the entries given by the list <A>list</A> or the matrix object
-##  <A>M</A>, respectively.
+##  <A>matobj</A>, respectively.
 ##  Here <A>list</A> can be either a list of plain lists that describe the
 ##  entries of the rows, or a flat list of the entries in row major order,
 ##  where <A>ncols</A> defines the number of columns.
@@ -1324,7 +1307,7 @@ DeclareOperation( "CompanionMatrix",
 ##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
 ##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
 ##  mutable if and only if the argument that determines the entries of the
-##  result (<A>list</A>, <A>M</A>, <A>M1</A>) is mutable.
+##  result (<A>list</A> or <A>matobj</A>) is mutable.
 ##  <P/>
 ##  In the case of a mutable result, it is guaranteed that the given list
 ##  <A>list</A> is copied in the sense of <Ref Oper="ShallowCopy"/>,
