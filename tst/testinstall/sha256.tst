@@ -32,6 +32,17 @@ gap> HexSHA256("abcd\r\n");
 gap> HexSHA256("");
 "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 
+# Inputs whose SHA256 starts with one or more zero hex digits: the result
+# must still be 64 hex characters (the digest is always 256 bits).
+gap> HexSHA256("39");
+"0b918943df0962bc7a1824c0555a389347b4febdc7cf9d1254406d80ce44e3f9"
+gap> HexSHA256("286");
+"00328ce57bbc14b33bd6695bc8eb32cdf2fb5f3a7d89ec14a42825e15d39df60"
+gap> HexSHA256("886");
+"000f21ac06aceb9cdd0575e82d0d85fc39bed0a7a1d71970ba1641666a44f530"
+gap> ForAll(["", "abcd", "39", "286", "886"], s -> Length(HexSHA256(s)) = 64);
+true
+
 #
 gap> HexSHA256(InputTextString("abcd"));
 "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589"
