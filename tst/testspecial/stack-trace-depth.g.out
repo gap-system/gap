@@ -47,7 +47,8 @@ Stack trace:
 ...  at *stdin*:35
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
-brk> Where(12);
+brk> SetUserPreference("WhereDepth", 12);
+brk> Where();
 * [1] Error( "foo" );
     @ *stdin*:3
   [2] f11(  )
@@ -71,6 +72,19 @@ brk> Where(12);
  [11] f2(  )
     @ *stdin*:33
 <function "f1">( <arguments> )
- called from read-eval loop at *errin*:1
+ called from read-eval loop at *errin*:2
+brk> SetUserPreference("WhereDepth", 5);
+brk> Where();
+*[1] Error( "foo" );
+   @ *stdin*:3
+ [2] f11(  )
+   @ *stdin*:6
+ [3] f10(  )
+   @ *stdin*:9
+ [4] f9(  )
+   @ *stdin*:12
+ [5] f8(  )
+   @ *stdin*:15
+...  at *errin*:4
 brk> quit;
 gap> QUIT;
