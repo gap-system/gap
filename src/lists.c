@@ -81,6 +81,8 @@ BOOL (*IsSmallListFuncs[LAST_REAL_TNUM + 1])(Obj obj);
 static Obj IsSmallListFilt;
 static Obj HasIsSmallListFilt;
 static Obj LengthAttr;
+static Obj NumberRowsAttr;
+static Obj NumberColumnsAttr;
 static Obj SetIsSmallList;
 
 static BOOL IsSmallListObject(Obj obj)
@@ -160,6 +162,41 @@ static Obj AttrLENGTH(Obj self, Obj list)
     else {
         return DoAttribute( LengthAttr, list );
     }
+}
+
+
+/****************************************************************************
+**
+*F  AttrNUMBER_ROWS( <self>, <mat> )  . . . . . .  'NumberRows' interface
+*/
+static Obj AttrNUMBER_ROWS(Obj self, Obj mat)
+{
+    if (IS_PLIST(mat)) {
+        return ObjInt_Int(LEN_PLIST(mat));
+    }
+
+    return DoAttribute(NumberRowsAttr, mat);
+}
+
+
+/****************************************************************************
+**
+*F  AttrNUMBER_COLUMNS( <self>, <mat> ) . . . .  'NumberColumns' interface
+*/
+static Obj AttrNUMBER_COLUMNS(Obj self, Obj mat)
+{
+    if (IS_PLIST(mat)) {
+        if (LEN_PLIST(mat) == 0) {
+            return INTOBJ_INT(0);
+        }
+
+        Obj row = ELM_PLIST(mat, 1);
+        if (row != 0) {
+            return AttrLENGTH(LengthAttr, row);
+        }
+    }
+
+    return DoAttribute(NumberColumnsAttr, mat);
 }
 
 
@@ -1576,6 +1613,99 @@ void            AsssListLevel (
 
 /****************************************************************************
 **
+*F  FuncEXTRACT_SUB_VECTOR( <self>, <vec>, <poss> ) . . `EXTRACT_SUB_VECTOR'
+*/
+static Obj ExtractSubVectorOper;
+
+static Obj FuncEXTRACT_SUB_VECTOR(Obj self, Obj vec, Obj poss)
+{
+    if (IS_PLIST(vec)) {
+        CheckIsPossList("List Elements", poss);
+        return ELMS_LIST(vec, poss);
+    }
+
+    return DoOperation2Args(ExtractSubVectorOper, vec, poss);
+}
+
+
+/****************************************************************************
+**
+*F  FuncCOPY_SUB_VECTOR( <self>, <src>, <dst>, <scols>, <dcols> )
+*/
+static Obj CopySubVectorOper;
+
+static Obj FuncCOPY_SUB_VECTOR(
+    Obj self, Obj src, Obj dst, Obj scols, Obj dcols)
+{
+    if (IS_PLIST(src) && IS_PLIST(dst)) {
+        Obj rhss;
+
+        CheckIsPossList("List Assignments", scols);
+        CheckIsPossList("List Assignments", dcols);
+        rhss = ELMS_LIST(src, scols);
+        AsssListCheck(dst, dcols, rhss);
+        return 0;
+    }
+
+    return DoOperation4Args(CopySubVectorOper, src, dst, scols, dcols);
+}
+
+
+/****************************************************************************
+**
+*F  FuncEXTRACT_SUB_MATRIX( <self>, <mat>, <rows>, <cols> )
+*/
+static Obj ExtractSubMatrixOper;
+
+static Obj FuncEXTRACT_SUB_MATRIX(Obj self, Obj mat, Obj rows, Obj cols)
+{
+    if (IS_PLIST(mat)) {
+        Obj submat;
+
+        CheckIsPossList("List Elements", rows);
+        CheckIsPossList("List Elements", cols);
+        submat = ELMS_LIST(mat, rows);
+        ElmsListLevel(submat, cols, 1);
+        return submat;
+    }
+
+    return DoOperation3Args(ExtractSubMatrixOper, mat, rows, cols);
+}
+
+
+/****************************************************************************
+**
+*F  FuncCOPY_SUB_MATRIX( <self>, <src>, <dst>, <srows>, <drows>, <scols>,
+*F  <dcols> )
+*/
+static Obj CopySubMatrixOper;
+
+static Obj FuncCOPY_SUB_MATRIX(
+    Obj self, Obj src, Obj dst, Obj srows, Obj drows, Obj scols, Obj dcols)
+{
+    if (IS_PLIST(src) && IS_PLIST(dst)) {
+        Obj srcsub;
+        Obj dstsub;
+
+        CheckIsPossList("List Assignments", srows);
+        CheckIsPossList("List Assignments", drows);
+        CheckIsPossList("List Assignments", scols);
+        CheckIsPossList("List Assignments", dcols);
+
+        srcsub = ELMS_LIST(src, srows);
+        ElmsListLevel(srcsub, scols, 1);
+        dstsub = ELMS_LIST(dst, drows);
+        AsssListLevel(dstsub, dcols, srcsub, 1);
+        return 0;
+    }
+
+    return DoOperation6Args(CopySubMatrixOper, src, dst, srows, drows, scols,
+                            dcols);
+}
+
+
+/****************************************************************************
+**
 *F  PLAIN_LIST(<list>)  . . . . . . . . . . .  convert a list to a plain list
 *V  PlainListFuncs[<type>]  . . . . . . . . . . table of conversion functions
 *F  PlainListError(<list>)  . . . . . . . . . . . . error conversion function
@@ -1612,7 +1742,8 @@ Obj PLAIN_LIST_COPY(Obj list)
 
 Obj FuncPlainListCopy(Obj self, Obj list)
 {
-    RequireSmallList(SELF_NAME, list);
+    if (!IS_LIST(list))
+        RequireArgument(SELF_NAME, list, "must be a list");
     return PLAIN_LIST_COPY(list);
 }
 
@@ -1874,6 +2005,8 @@ static StructGVarFilt GVarFilts [] = {
 static StructGVarAttr GVarAttrs [] = {
 
     GVAR_ATTR(LENGTH, "list", &LengthAttr),
+    GVAR_ATTR(NUMBER_ROWS, "mat", &NumberRowsAttr),
+    GVAR_ATTR(NUMBER_COLUMNS, "mat", &NumberColumnsAttr),
     { 0, 0, 0, 0, 0 }
 
 };
@@ -1913,6 +2046,13 @@ static StructGVarOper GVarOpers[] = {
 
     GVAR_OPER_4ARGS(ASS_MAT, mat, row, col, obj, &AssMatOper),
     GVAR_OPER_3ARGS(ELM_MAT, mat, row, col, &ElmMatOper),
+    GVAR_OPER_2ARGS(EXTRACT_SUB_VECTOR, vec, poss, &ExtractSubVectorOper),
+    GVAR_OPER_4ARGS(COPY_SUB_VECTOR, src, dst, scols, dcols,
+                    &CopySubVectorOper),
+    GVAR_OPER_3ARGS(EXTRACT_SUB_MATRIX, mat, rows, cols,
+                    &ExtractSubMatrixOper),
+    GVAR_OPER_6ARGS(COPY_SUB_MATRIX, src, dst, srows, drows, scols, dcols,
+                    &CopySubMatrixOper),
 
     GVAR_OPER_3ARGS(SWAP_MAT_ROWS, mat, row1, row2, &SwapMatRows),
     GVAR_OPER_3ARGS(SWAP_MAT_COLS, mat, col1, col2, &SwapMatCols),

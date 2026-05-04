@@ -749,9 +749,9 @@ InstallMethod( \{\},
     return Vector( Unpack( v ){ poss }, v );
     end );
 
-InstallMethod( ExtractSubVector,
-    "generic method for a vector object and a list",
-    [ IsVectorObj, IsList ],
+InstallOtherMethod( ExtractSubVector,
+    "generic method for a row vector or vector object and a list",
+    [ IsRowVectorOrVectorObj, IsList ],
     { v, l } -> v{ l } );
 
 InstallMethod( ExtractSubMatrix,
@@ -759,33 +759,30 @@ InstallMethod( ExtractSubMatrix,
     [ IsMatrixObj, IsList, IsList ],
     { M, rowpos, colpos } -> Matrix( Unpack( M ){ rowpos }{ colpos }, M ) );
 
-# Hack from recog package
-InstallOtherMethod( ExtractSubMatrix, "hack: for lists of compressed vectors",
-[ IsList, IsList, IsList ],
-function( m, poss1, poss2 )
-  local i,n;
-  n := [];
-  for i in poss1 do
-      Add(n,ShallowCopy(m[i]{poss2}));
-  od;
-  if IsFFE(m[1,1]) then
-      ConvertToMatrixRep(n);
-  fi;
-  return n;
-end );
+InstallOtherMethod( ExtractSubMatrix,
+    "generic method for a matrix and two lists",
+    [ IsMatrix, IsList, IsList ],
+    { M, rowpos, colpos } -> M{ rowpos }{ colpos } );
 
 InstallMethod( CopySubVector,
-    "generic method for vector objects",
-  [ IsVectorObj, IsVectorObj and IsMutable, IsList, IsList ],
+    "generic method for row vectors and vector objects",
+  [ IsRowVectorOrVectorObj, IsRowVectorOrVectorObj and IsMutable,
+    IsList, IsList ],
   function(src, dst, scols, dcols)
     local i;
-    if not Length( dcols ) = Length( scols ) then
-      Error( "source and destination index lists must be of equal length" );
-      return;
+    if Length( dcols ) <> Length( scols ) then
+      ErrorNoReturn( "source and destination index lists must be of equal length" );
     fi;
     for i in [ 1 .. Length( dcols ) ] do
       dst[dcols[i]] := src[scols[i]];
     od;
+end );
+
+InstallMethod( CopySubVector,
+    "generic method for row vectors",
+  [ IsRowVector, IsRowVector and IsMutable, IsList, IsList ],
+  function(src, dst, scols, dcols)
+    dst{dcols} := src{scols};
 end );
 
 
@@ -1258,9 +1255,17 @@ InstallMethod( MutableCopyMatrix,
 #M  CopySubMatrix( <src>, <dst>, <srcrows>, <dstrows>, <srccols>, <dstcols> )
 ##
 InstallMethod( CopySubMatrix,
-    [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsList, IsList, IsList, IsList ],
+    [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj and IsMutable,
+      IsList, IsList, IsList, IsList ],
     function( src, dst, srcrows, dstrows, srccols, dstcols )
     local i, j;
+
+    if Length( dstrows ) <> Length( srcrows ) then
+      ErrorNoReturn( "source and destination row lists must be of equal length" );
+    fi;
+    if Length( dstcols ) <> Length( srccols ) then
+      ErrorNoReturn( "source and destination column lists must be of equal length" );
+    fi;
 
     for i in [ 1 .. Length( srcrows ) ] do
       for j in [ 1 .. Length( srccols ) ] do
@@ -1496,46 +1501,6 @@ InstallMethod( InverseSameMutability,
       return InverseImmutable( M );
     fi;
     end );
-
-InstallMethod( IsZero,
-    [ IsRowListMatrix and IsMatrixObj ],
-    function( mat )
-    local ncols, row;
-
-    ncols:= NrCols( mat );
-    for row in mat do
-      if PositionNonZero( row ) <= ncols then
-        return false;
-      fi;
-    od;
-    return true;
-    end );
-
-InstallMethod( IsOne,
-    [ IsRowListMatrix and IsMatrixObj ],
-    function( mat )
-    local ncols, i, row;
-
-    ncols:= NrCols( mat );
-    for i in [1 .. NrRows( mat )] do
-      row := mat[i];
-      if PositionNonZero( row ) <> i or not IsOne( row[i] ) then
-        return false;
-      fi;
-      if PositionNonZero( row, i ) <= ncols then
-        return false;
-      fi;
-    od;
-    return true;
-    end );
-
-InstallMethod( IsZero,
-    [ IsMatrixObj ],
-    M -> IsZero( Unpack( M ) ) );
-
-InstallMethod( IsOne,
-    [ IsMatrixObj ],
-    M -> IsOne( Unpack( M ) ) );
 
 InstallMethod( Characteristic,
     [ IsMatrixOrMatrixObj ],
@@ -1865,6 +1830,63 @@ InstallEarlyMethod( AddMatrixColumnsLeft,
 
 ############################################################################
 
+InstallMethod( PositionNonZeroInRow,
+  "for a row list matrix and a row number",
+  [ IsRowListMatrix, IsPosInt ],
+  function( mat, row )
+    return PositionNonZero( mat[row] );
+  end );
+
+InstallMethod( PositionNonZeroInRow,
+  "for a row list matrix, a row number, and a start position",
+  [ IsRowListMatrix, IsPosInt, IsInt ],
+  function( mat, row, from )
+    return PositionNonZero( mat[row], from );
+  end );
+
+InstallMethod( PositionNonZeroInRow,
+  "for a matrix or matrix object and a row number",
+  [ IsMatrixOrMatrixObj, IsPosInt ],
+  function( mat, row )
+    return PositionNonZeroInRow( mat, row, 0 );
+  end );
+
+InstallMethod( PositionNonZeroInRow,
+  "for a matrix or matrix object, a row number, and a start position",
+  [ IsMatrixOrMatrixObj, IsPosInt, IsInt ],
+  function( mat, row, from )
+    local col, ncols, zero;
+
+    ncols := NrCols( mat );
+    zero := ZeroOfBaseDomain( mat );
+    for col in [ Maximum( 1, from + 1 ) .. ncols ] do
+      if mat[row, col] <> zero then
+        return col;
+      fi;
+    od;
+
+    return ncols + 1;
+  end );
+
+InstallEarlyMethod( PositionNonZeroInRow,
+    function ( mat, row )
+    if IsPlistRep( mat ) then
+      return PositionNonZero( mat[row] );
+    fi;
+    TryNextMethod();
+    end );
+
+InstallEarlyMethod( PositionNonZeroInRow,
+    function ( mat, row, from )
+    if IsPlistRep( mat ) then
+      return PositionNonZero( mat[row], from );
+    fi;
+    TryNextMethod();
+    end );
+
+
+############################################################################
+
 InstallMethod( SwapMatrixRows, "for a mutable matrix object, and two row numbers",
   [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ],
   function( mat, row1, row2 )
@@ -1897,11 +1919,200 @@ InstallMethod( SwapMatrixColumns, "for a mutable matrix object, and two column n
 
   end );
 
+#############################################################################
+##
+#M  AddMatrix( <mat1>, <mat2> )
+##
+
+InstallMethod( AddMatrix, "for a mutable matrix object and a matrix object",
+  [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj ],
+  function( dstmat, srcmat )
+    local i, j;
+    if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+      Error("AddMatrix: matrices must have the same dimensions");
+    fi;
+    for i in [1..NrRows(dstmat)] do
+      for j in [1..NrCols(dstmat)] do
+        dstmat[i,j] := dstmat[i,j] + srcmat[i,j];
+      od;
+    od;
+  end );
+
+InstallEarlyMethod( AddMatrix,
+  function( dstmat, srcmat )
+    local i;
+    if IsPlistRep(dstmat) and IsPlistRep(srcmat) then
+      if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+        Error("AddMatrix: matrices must have the same dimensions");
+      fi;
+      for i in [1..NrRows(dstmat)] do
+        AddRowVector(dstmat[i], srcmat[i]);
+      od;
+    else
+      TryNextMethod();
+    fi;
+  end );
+
+InstallMethod( AddMatrix, "for a mutable IsRowListMatrix and a IsRowListMatrix",
+  [ IsRowListMatrix and IsMutable, IsRowListMatrix ],
+  function( dstmat, srcmat )
+    local i;
+    if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+      Error("AddMatrix: matrices must have the same dimensions");
+    fi;
+    for i in [1..NrRows(dstmat)] do
+      AddRowVector(dstmat[i], srcmat[i]);
+    od;
+  end );
+
+InstallMethod( AddMatrix, "for a mutable 8bit matrix and an 8bit matrix",
+  [ Is8BitMatrixRep and IsMutable, Is8BitMatrixRep ],
+  function( dstmat, srcmat )
+    local i;
+    if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+      Error("AddMatrix: matrices must have the same dimensions");
+    fi;
+    for i in [1..NrRows(dstmat)] do
+      ADD_ROWVECTOR_VEC8BITS_2(dstmat[i], srcmat[i]);
+    od;
+  end );
+
+#############################################################################
+##
+#M  AddMatrix( <mat1>, <mat2>, <mult> )
+##
+
+InstallMethod( AddMatrix, "for a mutable matrix object, a matrix object, and a scalar",
+  [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsScalar ],
+  function( dstmat, srcmat, scalar )
+    local i, j;
+    if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+      Error("AddMatrix: matrices must have the same dimensions");
+    fi;
+    for i in [1..NrRows(dstmat)] do
+      for j in [1..NrCols(dstmat)] do
+        dstmat[i,j] := dstmat[i,j] + srcmat[i,j] * scalar;
+      od;
+    od;
+  end );
+
+InstallEarlyMethod( AddMatrix,
+  function( dstmat, srcmat, scalar )
+    local i;
+    if IsPlistRep(dstmat) and IsPlistRep(srcmat) then
+      if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+        Error("AddMatrix: matrices must have the same dimensions");
+      fi;
+      for i in [1..NrRows(dstmat)] do
+        AddRowVector(dstmat[i], srcmat[i], scalar);
+      od;
+    else
+      TryNextMethod();
+    fi;
+  end );
+
+InstallMethod( AddMatrix, "for a mutable IsRowListMatrix, an IsRowListMatrix, and a scalar",
+  [ IsRowListMatrix and IsMutable, IsRowListMatrix, IsScalar ],
+  function( dstmat, srcmat, scalar )
+    local i;
+    if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+      Error("AddMatrix: matrices must have the same dimensions");
+    fi;
+    for i in [1..NrRows(dstmat)] do
+      AddRowVector(dstmat[i], srcmat[i], scalar);
+    od;
+  end );
+
+InstallMethod( AddMatrix, "for a mutable 8bit matrix, an 8bit matrix, and a scalar",
+  [ Is8BitMatrixRep and IsMutable, Is8BitMatrixRep, IsFFE ],
+  function( dstmat, srcmat, scalar )
+    local i;
+    if DimensionsMat(dstmat) <> DimensionsMat(srcmat) then
+      Error("AddMatrix: matrices must have the same dimensions");
+    fi;
+    for i in [1..NrRows(dstmat)] do
+      ADD_ROWVECTOR_VEC8BITS_3(dstmat[i], srcmat[i], scalar);
+    od;
+  end );
+
+#############################################################################
+##
+#M  MultMatrixRight( <mat>, <mult> )
+##
+
+InstallMethod( MultMatrixRight, "for a mutable matrix object and a scalar",
+  [ IsMatrixOrMatrixObj and IsMutable, IsScalar ],
+  function( mat, scalar )
+    local i, j;
+    for i in [1..NrRows(mat)] do
+      for j in [1..NrCols(mat)] do
+        mat[i,j] := mat[i,j] * scalar;
+      od;
+    od;
+  end );
+
+InstallEarlyMethod( MultMatrixRight,
+  function( mat, scalar )
+    local i;
+    if IsPlistRep(mat) and IsScalar(scalar) then
+      for i in [1..NrRows(mat)] do
+        MultVectorRight(mat[i], scalar);
+      od;
+    else
+      TryNextMethod();
+    fi;
+  end );
+
+InstallMethod( MultMatrixRight, "for a mutable IsRowListMatrix and a scalar",
+  [ IsRowListMatrix and IsMutable, IsScalar ],
+  function( mat, scalar )
+    local i;
+    for i in [1..NrRows(mat)] do
+      MultVectorRight(mat[i], scalar);
+    od;
+  end );
+
+#############################################################################
+##
+#M  MultMatrixLeft( <mat>, <mult> )
+##
+
+InstallMethod( MultMatrixLeft, "for a mutable matrix object and a scalar",
+  [ IsMatrixOrMatrixObj and IsMutable, IsScalar ],
+  function( mat, scalar )
+    local i, j;
+    for i in [1..NrRows(mat)] do
+      for j in [1..NrCols(mat)] do
+        mat[i,j] := scalar * mat[i,j];
+      od;
+    od;
+  end );
+
+InstallEarlyMethod( MultMatrixLeft,
+  function( mat, scalar )
+    local i;
+    if IsPlistRep(mat) and IsScalar(scalar) then
+      for i in [1..NrRows(mat)] do
+        MultVectorLeft(mat[i], scalar);
+      od;
+    else
+      TryNextMethod();
+    fi;
+  end );
+
+InstallMethod( MultMatrixLeft, "for a mutable IsRowListMatrix and a scalar",
+  [ IsRowListMatrix and IsMutable, IsScalar ],
+  function( mat, scalar )
+    local i;
+    for i in [1..NrRows(mat)] do
+      MultVectorLeft(mat[i], scalar);
+    od;
+  end );
 
 ############################################################################
 ##  Fallback method for DeterminantMatrix
+
 InstallMethod(DeterminantMatrix, ["IsMatrixObj"],
 function( mat )
   return DeterminantMat( Unpack( mat ) );
 end);
-

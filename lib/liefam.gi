@@ -389,6 +389,11 @@ InstallMethod( Position,
     [ IsLieMatrix and IsPackedElementDefaultRep, IsRowVector, IsInt ],
     function( mat, v, pos ) return Position( mat![1], v, pos ); end );
 
+InstallOtherMethod( BaseDomain,
+    "for Lie matrix in default representation",
+    [ IsLieMatrix and IsPackedElementDefaultRep ],
+    mat -> BaseDomain( mat![1] ) );
+
 
 #############################################################################
 ##

@@ -105,15 +105,27 @@ DeclareOperation(
 ##
 ##  <#GAPDoc Label="MultVector">
 ##  <ManSection>
-##  <Oper Name="MultVector" Arg='list1, mul'/>
-##  <Oper Name="MultVectorLeft" Arg='list1, mul'/>
+##  <Oper Name="MultVector" Arg='list, mul'/>
+##  <Oper Name="MultVectorLeft" Arg='list, mul'/>
+##  <Oper Name="MultVectorRight" Arg='list, mul'/>
 ##  <Returns>nothing</Returns>
 ##
 ##  <Description>
-##  This operation calculates <A>mul</A>*<A>list1</A> in-place.
+##  The operation <Ref Oper="MultVectorLeft"/> multiplies the entries of <A>list</A>
+##  by the scalar <A>mul</A> from the left, in-place.
+##  <P/>
+##  The operation <Ref Oper="MultVectorRight"/> multiplies the entries of <A>list</A>
+##  by the scalar <A>mul</A> from the right, in-place.
 ##  <P/>
 ##  Note that <C>MultVector</C> is just a synonym for
 ##  <C>MultVectorLeft</C>.
+##  <Example><![CDATA[
+##  gap> A:= FreeAssociativeAlgebraWithOne( Rationals, "a", "b", "c" );;
+##  gap> l:=[A.1,A.2];; MultVectorLeft(l, A.3); l;
+##  [ (1)*c*a, (1)*c*b ]
+##  gap> l:=[A.1,A.2];; MultVectorRight(l, A.3); l;
+##  [ (1)*a*c, (1)*b*c ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -122,7 +134,10 @@ DeclareOperation(
     "MultVectorLeft",
         [ IsMutable and IsList,
           IsObject ] );
-# For VectorObj objects there also exists a MultVectorRight operation
+DeclareOperation(
+    "MultVectorRight",
+        [ IsMutable and IsList,
+          IsObject ] );
 DeclareSynonym( "MultVector", MultVectorLeft );
 
 #############################################################################
@@ -669,13 +684,30 @@ DeclareOperation("AClosestVectorCombinationsMatFFEVecFFECoords",
 ##  <Oper Name="CosetLeadersMatFFE" Arg='mat, f'/>
 ##
 ##  <Description>
-##  returns a list of representatives of minimal weight for the cosets of a
-##  code.
-##  <A>mat</A> must be a <E>check matrix</E> for the code,
-##  the code is defined over the finite field <A>f</A>.
-##  All rows of <A>mat</A> must have the same length, and all elements must
-##  lie in the field <A>f</A>.
-##  The rows of <A>mat</A> must be linearly independent.
+##  Let <M>C</M> be the linear code over <A>f</A> with check matrix
+##  <A>mat</A>, that is, <M>C</M> is the right null space of <A>mat</A>:
+##  <Display>
+##  C = \{ v \mid mat \cdot v = 0 \}.
+##  </Display>
+##  For each syndrome <M>s</M>, the solutions of the non-homogeneous system
+##  <M><A>mat</A> * v = s</M> form one coset of <M>C</M>. Equivalently, two vectors
+##  lie in the same coset if their difference lies in <M>C</M>, just as in
+##  group theory.
+##  <P/>
+##  <Ref Oper="CosetLeadersMatFFE"/> returns, for each coset of <M>C</M>, a
+##  vector of smallest Hamming weight in that coset. Such a vector is called
+##  a <E>coset leader</E>.
+##  <P/>
+##  If <C>L := CosetLeadersMatFFE( <A>mat</A>, <A>f</A> )</C> and
+##  <C>q := Size( <A>f</A> )</C>, then <C>L[i]</C> is the coset leader whose
+##  syndrome is the vector with number <C>i-1</C>; in other words,
+##  <C>NumberFFVector( mat * L[i], q ) = i - 1</C>
+##  for all valid indices <C>i</C>.
+##  <P/>
+##  Thus the list is indexed by syndromes, not by codewords.
+##  <P/>
+##  All rows of <A>mat</A> must have the same length, all entries must lie in
+##  <A>f</A>, and the rows of <A>mat</A> must be linearly independent.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>

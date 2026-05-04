@@ -922,10 +922,9 @@ InstallMethod( AdjointBasis,
     inds:= [];
     for i in [1..n] do
       adi:= AdjointMatrix( B, bb[i] );
-      if not IsContainedInSpan( adLsp, adi ) then
+      if CloseMutableBasis( adLsp, adi ) then
         Add( adL, adi );
         Add( inds, i );
-        CloseMutableBasis( adLsp, adi );
       fi;
     od;
 
@@ -1859,8 +1858,7 @@ InstallMethod( DirectSumDecomposition,
         while k<=Length(bas) do
           if Length(bas)=Dimension(L)-Dimension(H) then break; fi;
           M:= bas[ k ]*bas[ l ];
-          if not IsContainedInSpan( sp, M ) then
-            CloseMutableBasis( sp, M );
+          if CloseMutableBasis( sp, M ) then
             Add( bas, M );
           fi;
           if l < Length(bas) then l:=l+1;
@@ -1910,11 +1908,7 @@ InstallMethod( DirectSumDecomposition,
                   Add( mat, Coefficients( Basis( B[k], b ), x ) );
                 od;
                 mat:= TransposedMat( mat );
-
-                if not IsContainedInSpan( sp, mat ) then
-                  CloseMutableBasis( sp, mat );
-                fi;
-
+                CloseMutableBasis( sp, mat );
               od;
               res:= BasisVectors( sp );
 
@@ -2047,9 +2041,8 @@ InstallMethod( DirectSumDecomposition,
                    BasisVectors( Basis( CD ) ), Zero( CD ) );
           while Length( B1 ) + Dimension( CD ) <> Dimension( C ) do
             x:= bvc[k];
-            if not IsContainedInSpan( sp, x ) then
+            if CloseMutableBasis( sp, x ) then
               Add( B1, x );
-              CloseMutableBasis( sp, x );
             fi;
             k:=k+1;
           od;
@@ -2064,9 +2057,8 @@ InstallMethod( DirectSumDecomposition,
           sp:= MutableBasis( F, b );
           while Length( B2 )+Length( B1 ) <> n do
             x:= bvl[k];
-            if not IsContainedInSpan( sp, x ) then
+            if CloseMutableBasis( sp, x ) then
               Add( B2, x );
-              CloseMutableBasis( sp, x );
             fi;
             k:= k+1;
           od;
@@ -2392,9 +2384,8 @@ InstallMethod( SemiSimpleType,
     bvl:= BasisVectors( Basis( L ) );
     while Length( bas ) < Dimension( L ) do
       a:= bvl[k];
-      if not IsContainedInSpan( sp, a ) then
+      if CloseMutableBasis( sp, a ) then
         Add( bas, a );
-        CloseMutableBasis( sp, a );
       fi;
       k:= k+1;
     od;
@@ -2585,9 +2576,8 @@ InstallMethod( SemiSimpleType,
             r:= R[i];
             k:= Position( R, -r );
             h:= Rvecs[i] * Rvecs[k];
-            if not IsContainedInSpan( sp, h ) then
+            if CloseMutableBasis( sp, h ) then
               Add( basH, h );
-              CloseMutableBasis( sp, h );
               Add( basR, r );
             fi;
             i:= i+1;
@@ -2975,8 +2965,7 @@ InstallMethod( RootSystem,
       a:= S[i];
       j:= Position( S, -a );
       h:= B[i][1]*B[j][1];
-      if not IsContainedInSpan( sp, h ) then
-        CloseMutableBasis( sp, h );
+      if CloseMutableBasis( sp, h ) then
         Add( basR, a );
         Add( basH, h );
       fi;
@@ -4083,8 +4072,7 @@ InstallMethod( PreImagesRepresentative,
                         if c <> [] then
 
                             imz:= Image( f, z );
-                            if not IsContainedInSpan( sp, imz ) then
-                                CloseMutableBasis( sp, imz );
+                            if CloseMutableBasis( sp, imz ) then
                                 Add( b1, z );
                                 Add( newlev, z );
                                 Add( newbracks, c );

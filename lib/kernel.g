@@ -16,23 +16,6 @@
 
 #############################################################################
 ##
-#F  ADD_LIST_DEFAULT( <list>, <obj> ) . . . . . .  add an element to the list
-##
-##  <ManSection>
-##  <Func Name="ADD_LIST_DEFAULT" Arg='list, obj'/>
-##
-##  <Description>
-##  </Description>
-##  </ManSection>
-##
-ADD_LIST_DEFAULT := function ( list, obj )
-    list[ LEN_LIST(list)+1 ] := obj;
-end;
-
-
-
-#############################################################################
-##
 #F  AS_LIST_SORTED_LIST( <list> ) . . . . . . . . . . . . . . setify the list
 ##
 ##  <ManSection>
@@ -139,36 +122,37 @@ end;
 
 #############################################################################
 ##
-#F  POSITION_NOT( <list>, <val> [,<from-minus-one>] ) . . . .  find not <val>
+#F  POSITION_NOT( <list>, <val> [,<from>] ) . . . .  find not <val>
 ##
 ##  <ManSection>
-##  <Func Name="POSITION_NOT" Arg='list, val [,from-minus-one]'/>
+##  <Func Name="POSITION_NOT" Arg='list, val [,from]'/>
 ##
 ##  <Description>
 ##  </Description>
 ##  </ManSection>
 ##
-POSITION_NOT := function( arg )
+POSITION_NOT := function( list, val, from... )
     local i;
 
-    if LENGTH(arg) = 2  then
-        for i  in [ 1 .. LENGTH(arg[1]) ]  do
-            if arg[1][i] <> arg[2] then
+    if LENGTH(from) = 0  then
+        for i  in [ 1 .. LENGTH(list) ]  do
+            if list[i] <> val then
                 return i;
             fi;
         od;
-        return LENGTH(arg[1]) + 1;
+        return LENGTH(list) + 1;
 
-    elif LENGTH(arg) = 3 then
-        for i  in [ arg[3]+1 .. LENGTH(arg[1]) ]  do
-            if arg[1][i] <> arg[2] then
+    elif LENGTH(from) = 1 then
+        from := from[1];
+        for i  in [ from+1 .. LENGTH(list) ]  do
+            if list[i] <> val then
                 return i;
             fi;
         od;
-        if LENGTH( arg[1] ) <= arg[3] then
-          return arg[3] + 1;
+        if LENGTH( list ) <= from then
+          return from + 1;
         else
-          return LENGTH(arg[1]) + 1;
+          return LENGTH(list) + 1;
         fi;
     else
       Error( "usage: PositionNot( <list>, <val>[, <from>] )" );

@@ -452,7 +452,7 @@ end );
 #M  <vec1> = <vec2>
 ##
 
-InstallMethod( \=, "for 2 8 bit vectors",
+InstallMethod( \=, "for two 8 bit vectors",
         IsIdenticalObj, [IsRowVector and Is8BitVectorRep,
                 IsRowVector and Is8BitVectorRep],
         0,
@@ -465,7 +465,7 @@ InstallMethod( \=, "for 2 8 bit vectors",
 ##  Usual lexicographic ordering
 ##
 
-InstallMethod( \<, "for 2 8 bit vectors",
+InstallMethod( \<, "for two 8 bit vectors",
         IsIdenticalObj, [IsRowVector and Is8BitVectorRep,
                 IsRowVector and Is8BitVectorRep],
         0,
@@ -477,7 +477,7 @@ InstallMethod( \<, "for 2 8 bit vectors",
 ##
 ##  scalar product
 #'
-InstallMethod( \*, "for 2 8 bit vectors",
+InstallMethod( \*, "for two 8 bit vectors",
         IsIdenticalObj, [IsRingElementList and Is8BitVectorRep,
                 IsRingElementList and Is8BitVectorRep],
         0,
@@ -514,7 +514,7 @@ end);
 ##  add <mult>*<vec2> to <vec1> in place
 ##
 
-InstallOtherMethod( AddRowVector, "for 2 8 bit vectors and a field element and from and to",
+InstallOtherMethod( AddRowVector, "for two 8 bit vectors and a field element and from and to",
         IsCollsCollsElmsXX, [ IsRowVector and Is8BitVectorRep,
                 IsRowVector and Is8BitVectorRep,
                 IsFFE and IsInternalRep, IsPosInt, IsPosInt ], 0,
@@ -527,7 +527,7 @@ InstallOtherMethod( AddRowVector, "for 2 8 bit vectors and a field element and f
 ##  add <mult>*<vec2> to <vec1> in place
 ##
 
-InstallOtherMethod( AddRowVector, "for 2 8 bit vectors and a field element",
+InstallOtherMethod( AddRowVector, "for two 8 bit vectors and a field element",
         IsCollsCollsElms, [ IsRowVector and Is8BitVectorRep,
                 IsRowVector and Is8BitVectorRep,
                 IsFFE and IsInternalRep ], 0,
@@ -540,7 +540,7 @@ InstallOtherMethod( AddRowVector, "for 2 8 bit vectors and a field element",
 ##  add <vec2> to <vec1> in place
 ##
 
-InstallOtherMethod( AddRowVector, "for 2 8 bit vectors",
+InstallOtherMethod( AddRowVector, "for two 8 bit vectors",
         IsIdenticalObj, [ IsRowVector and Is8BitVectorRep,
                 IsRowVector and Is8BitVectorRep], 0,
         ADD_ROWVECTOR_VEC8BITS_2);
@@ -1018,7 +1018,7 @@ InstallMethod( Matrix, "for a list of vecs, an integer, and an 8bit mat",
   end );
 
 InstallMethod( ExtractSubMatrix, "for an 8bit matrix, and two lists",
-  [Is8BitMatrixRep, IsList, IsList],
+  [Is8BitMatrixRep and IsMatrix, IsList, IsList],
   function( m, rows, cols )
     local mm;
     mm := m{rows}{cols};
@@ -1027,14 +1027,8 @@ InstallMethod( ExtractSubMatrix, "for an 8bit matrix, and two lists",
     return mm;
   end );
 
-InstallMethod( CopySubVector, "for two 8bit vectors, and two lists",
-  [Is8BitVectorRep, Is8BitVectorRep and IsMutable, IsList, IsList],
-  function( v, w, f, t )
-    w{t} := v{f};
-  end );
-
 InstallMethod( CopySubMatrix, "for two 8bit matrices, and four lists",
-  [Is8BitMatrixRep, Is8BitMatrixRep, IsList, IsList, IsList, IsList],
+  [Is8BitMatrixRep and IsMatrix, Is8BitMatrixRep and IsMatrix, IsList, IsList, IsList, IsList],
   function( a, b, frows, trows, fcols, tcols )
     b{trows}{tcols} := a{frows}{fcols};
   end );
@@ -1051,11 +1045,11 @@ InstallMethodWithRandomSource( Randomize,
 InstallMethod( Unpack, "for an 8bit matrix",
   [Is8BitMatrixRep],
   function( m )
-    return List(m,AsPlist);
+    return List(m, PlainListCopy);
   end );
 InstallMethod( Unpack, "for an 8bit vector",
   [Is8BitVectorRep],
-  AsPlist );
+  PlainListCopy );
 
 InstallOtherMethod( KroneckerProduct, "for two 8bit matrices", # priority to kernel code, if matrices have same field
   [Is8BitMatrixRep and IsMatrix, Is8BitMatrixRep and IsMatrix], 1,
@@ -1116,11 +1110,21 @@ InstallTagBasedMethod( NewZeroVector,
 InstallTagBasedMethod( NewMatrix,
   Is8BitMatrixRep,
   function( filter, f, rl, l )
-    local m;
+    local len, m;
     if ValueOption( "check" ) <> false and not Size(f) in [3..256] then
         Error("Is8BitMatrixRep only supports base fields with 3 to 256 elements");
     fi;
-    m := List(l,ShallowCopy);
+    # If applicable then replace a flat list 'l' by a nested list
+    # of lists of length 'rl'.
+    len:= Length( l );
+    if len > 0 and not IsList( l[1] ) then
+      if len mod rl <> 0 then
+        Error( "NewMatrix: Length of <l> is not a multiple of <rl>" );
+      fi;
+      m := List([0, rl .. len-rl], i -> l{[i+1..i+rl]});
+    else
+      m := List(l,ShallowCopy);
+    fi;
     ConvertToMatrixRep(m,Size(f));
     return m;
   end );

@@ -1924,6 +1924,22 @@ InstallOtherMethod(PositionNonZero,
   return Length(vec)+1;
 end);
 
+InstallOtherMethod(PositionNonZero,
+  "General method for a row vector with start",
+  true,[IsRowVector, IsInt],0,
+  function(vec, from)
+  local i,z;
+  if Length(vec)=0 then return 1;fi;
+  z:=Zero(vec[1]);
+  for i in [from+1..Length(vec)] do
+    if vec[i]<>z then return i;fi;
+  od;
+  if Length(vec) <= from then
+    return from + 1;
+  fi;
+  return Length(vec)+1;
+end);
+
 
 #############################################################################
 ##
@@ -2452,7 +2468,7 @@ InstallMethod( Matrix, "for a list of vecs, an integer, and a gf2 mat",
   end );
 
 InstallMethod( ExtractSubMatrix, "for a gf2 matrix, and two lists",
-  [IsGF2MatrixRep, IsList, IsList],
+  [IsGF2MatrixRep and IsMatrix, IsList, IsList],
   function( m, rows, cols )
     local mm,r;
     mm := [];
@@ -2476,14 +2492,8 @@ InstallMethod( CopySubVector, "for two gf2 vectors, and two ranges",
     fi;
   end );
 
-  InstallMethod( CopySubVector, "for two gf2 vectors, and two lists",
-  [IsGF2VectorRep, IsGF2VectorRep and IsMutable, IsList, IsList],
-        function( v, w, f, t )
-    w{t} := v{f};
-  end );
-
 InstallMethod( CopySubMatrix, "for two gf2 matrices, and four lists",
-  [IsGF2MatrixRep, IsGF2MatrixRep, IsList, IsList, IsList, IsList],
+  [IsGF2MatrixRep and IsMatrix, IsGF2MatrixRep and IsMatrix, IsList, IsList, IsList, IsList],
         function( a, b, frows, trows, fcols, tcols )
     local   i;
     for i in [1..Length(frows)] do
@@ -2492,7 +2502,7 @@ InstallMethod( CopySubMatrix, "for two gf2 matrices, and four lists",
 end );
 
 InstallMethod( CopySubMatrix, "for two gf2 matrices, two lists and two ranges",
-  [IsGF2MatrixRep, IsGF2MatrixRep, IsList, IsList, IsRange, IsRange],
+  [IsGF2MatrixRep and IsMatrix, IsGF2MatrixRep and IsMatrix, IsList, IsList, IsRange, IsRange],
         function( a, b, frows, trows, fcols, tcols )
     local   l,  i;
     l := Length(fcols);
@@ -2520,11 +2530,11 @@ InstallMethodWithRandomSource( Randomize,
 InstallMethod( Unpack, "for a gf2 matrix",
   [IsGF2MatrixRep],
   function( m )
-    return List(m,AsPlist);
+    return List(m, PlainListCopy);
   end );
 InstallMethod( Unpack, "for a gf2 vector",
   [IsGF2VectorRep],
-  AsPlist );
+  PlainListCopy );
 
 InstallOtherMethod( KroneckerProduct, "for two gf2 matrices",
   [IsGF2MatrixRep and IsMatrix, IsGF2MatrixRep and IsMatrix],
@@ -2557,9 +2567,20 @@ InstallTagBasedMethod( NewZeroVector,
 InstallTagBasedMethod( NewMatrix,
   IsGF2MatrixRep,
   function( filter, f, rl, l )
-    local m;
+    local len, m;
     if Size(f) <> 2 then Error("IsGF2MatrixRep only supported over GF(2)"); fi;
-    m := List(l,ShallowCopy);
+
+    # If applicable then replace a flat list 'l' by a nested list
+    # of lists of length 'rl'.
+    len:= Length( l );
+    if len > 0 and not IsList( l[1] ) then
+      if len mod rl <> 0 then
+        Error( "NewMatrix: Length of <l> is not a multiple of <rl>" );
+      fi;
+      m := List([0, rl .. len-rl], i -> l{[i+1..i+rl]});
+    else
+      m := List(l,ShallowCopy);
+    fi;
     ConvertToMatrixRep(m,2);
     return m;
   end );

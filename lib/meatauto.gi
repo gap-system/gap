@@ -70,124 +70,15 @@ local f, d1, d2, e, z, g1, g2, r, b, n, a, gp, i, j, k;
 end);
 
 
-# the following code is essentially due to Michael Smith
+BindGlobal("SMTX_AddEqns", function(eqns, newmat)
+local newrow;
 
-# These routines are designed to accumulate a system of linear equations
-#
-#    M_1 X = V_1,  M_2 X = V_2 ...  M_t X = V_t
-#
-# Where each M_i is an m_i*n matrix, X is the unknown length n vector, and
-# each V is an length m_i vector.  The equations can be added as each batch
-# is calculated. Here is some pseudo-code to demonstrate:
-#
-#   eqns := newEqns (n, field);
-#   i := 1;
-#   repeat
-#     <calculate M_i and V_i>
-#     addEqns(M_i, V_i)
-#     increment i;
-#   until  i > t  or  eqns.failed;
-#   if not eqns.failed then
-#     S := solveEqns(eqns);
-#   fi;
-#
-# As demonstrated by the example, an early notification of failure is
-# available by checking ".failed".  All new equations are sifted with respect
-# to the current set, and only added if they are independent of the current
-# set. If a new equation reduces to the zero row and a nonzero vector
-# entry, then there is no solution and this is immediately returned by
-# setting eqns.failed to true.  The function solveEqns has an already
-# triangulised system of equations, so it simply reduces above the pivots
-# and returns the solution vector.
+  Info(InfoMtxHom,6,"addEqns: entering (n = ", eqns.dim, ", rank = ", NrBasisVectors(eqns.mb), ")" );
 
-
-BindGlobal("SMTX_AddEqns",function ( eqns, newmat, newvec)
-local n, weights, mat, vec, ReduceRow, t,
-      newweight, newrow, newrhs, i, l, k;
-
-# Add a bunch of equations to the system of equations in <eqns>.  Each
-# row of <newmat> is the left-hand side of a new equation, and the
-# corresponding row of <newvec> the right-hand side. Each equation in
-# filtered against the current echelonised system stored in <eqns> and
-# then added if it is independent of the system.  As soon as a
-# left-hand side reduces to 0 with a non-zero right-hand side, the flag
-# <eqns.failed> is set.
-
-  Info(InfoMtxHom,6,"addEqns: entering" );
-
-  n := eqns.dim;
-  weights := eqns.weights;
-  mat := eqns.mat;
-  vec := eqns.vec;
-
-  # reduce the (lhs,rhs) against the semi-echelonised current matrix,
-  # and return either: (1) the reduced rhs if the lhs reduces to zero,
-  # or (2) a list containing the new echelon weight, the new row and
-  # the new rhs for the system, and the row number that this
-  # equation should placed.
-  ReduceRow := function (lhs, rhs)
-  local lead, i, z;
-    lead := PositionNonZero(lhs);
-    Assert(0, n = Length(lhs));
-    if lead > n then
-      return rhs;
-    fi;
-    for i in [1..Length(weights)] do
-      if weights[i] = lead then
-        z := lhs[lead];
-        lhs := lhs - z * mat[i]; rhs := rhs - z * vec[i];
-        lead := PositionNonZero(lhs, lead);
-        if lead > n then
-          return rhs;
-        fi;
-      elif weights[i] > lead then
-        return [lead, lhs, rhs, i];
-      fi;
-    od;
-    return [lead, lhs, rhs, Length(weights)+1];
-  end;
-
-  for k in [1..Length(newmat)] do
-    t := ReduceRow(newmat[k], newvec[k]);
-
-    if IsList(t) then
-      # new equation
-      newweight := t[1];
-      newrow := t[2];
-      newrhs := t[3];
-      i := t[4]; # position for new row
-
-      # normalise so that leading entry is 1
-      newrhs := newrhs / newrow[newweight];
-      newrow := newrow / newrow[newweight]; # NB: in this order
-
-      if i = Length(mat)+1 then
-        # add new equation to end of list
-        Add(mat, newrow);
-        Add(vec, newrhs);
-        Add(weights, newweight);
-      else
-        l := Length(mat);
-        # move down other rows to make space for this new one...
-        mat{[i+1..l+1]} := mat{[i..l]};
-        vec{[i+1..l+1]} := vec{[i..l]};
-        # and then slot it in
-        mat[i] := newrow;
-        vec[i] := newrhs;
-        weights{[i+1..l+1]} := weights{[i..l]};
-        weights[i] := newweight;
-      fi;
-
-    else
-      # no new equation, check whether inconsistent due to
-      # nonzero rhs reduction
-
-      if not IsZero(t) then
-        Info(InfoMtxHom,6,"addEqns: FAIL!" );
-        eqns.failed := true;
-        return eqns; # return immediately
-      fi;
-    fi;
+  # reduce each row of newmat against the semi-echelonised current matrix;
+  # if we find any new pivots, insert them
+  for newrow in newmat do
+    CloseMutableBasis(eqns.mb, newrow);
   od;
 end);
 
@@ -195,11 +86,7 @@ BindGlobal("SMTX_NewEqns",function (dim, field)
   return rec(
     dim := dim,         # number of variables
     field := field,     # field over which the equation hold
-    mat := [],          # left-hand sides of system
-    weights := [],      # echelon weights for lhs matrix
-    vec := [],          # right-hand sides of system
-    failed := false,    # flag to indicate inconsistent system
-    index := [],        # index for row ordering
+    mb := MutableBasis(field, [], ZeroVector(field, dim)),
   );
 end);
 
@@ -207,25 +94,22 @@ BindGlobal("SMTX_KillAbovePivotsEqns",function (eqns)
 # Eliminate entries above pivots. Note that the pivot entries are
 # all 1 courtesy of SMTX_AddEqns.
 
-local m, n, zero, i, c, j, factor;
+local m, i, c, j, factor;
 
   Info(InfoMtxHom,6,"killAbovePivotsEqns: entering" );
+
   m := Length(eqns.mat);
-  n := eqns.dim;
-  if m > 0 then
-    zero := Zero(eqns.field);
-    for i in [1..m] do
-      c := eqns.weights[i];
-      for j in [1..i-1] do
-        if eqns.mat[j][c] <> zero then
-          Info(InfoMtxHom,6,"solveEqns: kill mat[",j,",",c,"]");
-          factor := eqns.mat[j][c];
-          eqns.mat[j] := eqns.mat[j] - factor*eqns.mat[i];
-          eqns.vec[j] := eqns.vec[j] - factor*eqns.vec[i];
-        fi;
-      od;
+  for i in [1..m] do
+    c := eqns.pivots[i];
+    Assert(0, IsOne(eqns.mat[i,c]));
+    for j in [1..i-1] do
+      factor := eqns.mat[j,c];
+      if not IsZero(factor) then
+        Info(InfoMtxHom,6,"solveEqns: kill mat[",j,",",c,"]");
+        AddVector(eqns.mat[j], eqns.mat[i], -factor);
+      fi;
     od;
-  fi;
+  od;
   Info(InfoMtxHom,6,"killAbovePivotsEqns: leaving" );
 end);
 
@@ -240,6 +124,11 @@ BindGlobal("SMTX_NullspaceEqns",function(e)
 # This function is a modified version NullspaceMat in matrix.g
 
 local mat, n, one, zerovec, i, k, nullspace, row;
+
+  # HACK: convert MutableBasis into the "old" format expected by this code
+  e.mat := ShallowCopy(e.mb!.basisVectors);
+  e.pivots := List(e.mat, PositionNonZero);
+  SortParallel(e.pivots, e.mat);
 
   SMTX_KillAbovePivotsEqns(e);
   mat := e.mat;
@@ -306,13 +195,13 @@ local n, coeffs, x, zero, z, i;
     coeffs:=[];
     x:=v;
   else
-    x:=v;
+    x:=ShallowCopy(v);
     zero:=x[1]*0;
     coeffs:=ListWithIdenticalEntries(n, zero);
     for i in [1..n] do
       z:=x[ech[i]];
       if z <> zero then
-        x:=x - z * base[i];
+        AddVector(x, base[i], -z);
         coeffs[i]:=z;
       fi;
     od;
@@ -552,13 +441,13 @@ end);
 # If a linearly dependent set of elements is supplied, this
 # routine will trim it down to a basis.
 BindGlobal("SMTX_EcheloniseMats",function (gens, F)
-local n, m, zero, ech, k, i, j, l;
+local n, m, zero, ech, k, i, j, l, entry;
 
   if Length(gens) = 0 then
     return [ [], [] ];
   fi;
   # copy the list to avoid destroying the original list
-  gens:=ShallowCopy(gens);
+  gens:=List(gens, MutableCopyMatrix);
 
   n:=NrRows(gens[1]);
   m:=NrCols(gens[1]);
@@ -581,12 +470,15 @@ local n, m, zero, ech, k, i, j, l;
       Add(ech, [i,j]);
 
       # First normalise the [i,j] position to 1
-      gens[k]:=gens[k] / gens[k][i,j];
+      entry := gens[k][i,j];
+      if not IsOne(entry) then
+        MultMatrix(gens[k], 1/entry);
+      fi;
 
       # Now zero position [i,j] in all further generators
       for l in [k+1..Length(gens)] do
         if (gens[l][i,j] <> zero) then
-          gens[l]:=gens[l] - gens[k] * gens[l][i,j];
+          AddMatrix(gens[l], gens[k], -gens[l][i,j]);
         fi;
       od;
       k:=k + 1;
@@ -617,12 +509,13 @@ end);
 # The code is heavily commented, and I appreciate suggestions on how to
 # improve it (particularly bits of code).
 BindGlobal("SpinHom",function (V, W)
-local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
+local nv, nw, F, zero, minusone, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
       M, x, pos, z, echm, t, v, echv, a, u, e, start, oldlen, ag, m, uu, ret,
-      c, s1, X, mat, uuc, uic, newhoms, hom, Uhom, imv0, imv0c, image, i, j, l;
+      c, s1, X, mat, uuc, uic, newhoms, hom, Uhom, imv0, imv0c, image, i, j, l,
+      nullspace, nullspace_row;
 
 # Compute Hom(V,W) for G-modules <V> and <W>. The algorithm starts with
-# the trivial submodule <U> of <V> for which Hom(U,V) is trivial.  It
+# the trivial submodule <U> of <V> for which Hom(U,W) is trivial.  It
 # then computes Hom(U',W) for U' a submodule generated by <U> and a
 # single element <v0> in <V>. This U' becomes the next <U> as the process
 # is iterated, ending when <U'> = <V>. The element <v0> is chosen in a
@@ -632,11 +525,10 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
   nv:=V.dimension;
   nw:=W.dimension;
 
+  TestModulesFitTogether(V,W);
   F:=V.field;
-  if F<>W.field then
-    Error("different fields");
-  fi;
   zero:=Zero(F);
+  minusone:=-One(F);
 
   zeroW:=ListWithIdenticalEntries(nw,zero);
   zeroW:=ImmutableVector(F,zeroW);
@@ -647,9 +539,6 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
 
   # <k> is the number of generators of the acting group
   k:=Length(gV);
-  if k<>Length(gW) then
-    Error("generator lengths");
-  fi;
 
   # <U> is the semi-ech basis for the currently known submodule, of
   # dimension <r>
@@ -749,14 +638,13 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
           # create new element <x>, with its definition as the
           # difference between <v0^m> and <uu> in <U>.
           x:=v[i] * gV[j];
-          m:=ag;
+          m:=MutableCopyMatrix(ag);
           ConvertToMatrixRep(m, F);
           uu:=u[i] * gV[j];
 
           ret:=EchResidueCoeffs(U, echu, x,3);
           x:=ret.residue;
-          uu:=uu - ret.projection;
-
+          AddVector(uu, ret.projection, minusone);
           # reduce modulo the new semi-ech basis elements in <v>,
           # storing the coefficients in <c>
           #
@@ -764,12 +652,12 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
           for l in [1..Length(v)] do
             z:=x[echv[l]];
             if z <> zero then
-              x:=x - z * v[l];
+              AddVector(x, v[l], -z);
               if Length(m) > 0 then
-                  m:=m - z * a[l];
+                  AddMatrix(m, a[l], -z);
               fi;
               c[l]:=c[l] + z;
-              uu:=uu - z * u[l];
+              AddVector(uu, u[l], -z);
             fi;
           od;
           c:=ImmutableVector(F,c);
@@ -802,14 +690,14 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
             for l in [1..Length(v)] do
               if c[l] <> zero then
                 if Length(X) > 0 then
-                  X:=X + c[l] * a[l];
+                  AddMatrix(X, a[l], c[l]);
                 fi;
-                uu:=uu + c[l] * u[l];
+                AddVector(uu, u[l], c[l]);
               fi;
             od;
 
             if Length(X) > 0 then
-              X:=X - ag;
+              AddMatrix(X, ag, minusone);
             fi;
 
             mat:=[];
@@ -819,7 +707,8 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
               Add(mat, uuc * homs[l] - uic * homs[l] * gW[j]);
             od;
             Append(mat, X);
-            SMTX_AddEqns(e, TransposedMat(mat), zeroW);
+            ConvertToMatrixRep(mat);
+            SMTX_AddEqns(e, TransposedMat(mat));
           fi;
         od;
       od;
@@ -832,15 +721,14 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
     until oldlen = Length(v);
 
     # we have the system of equations, so find its solution space
-
-    ans:=SMTX_NullspaceEqns(e);
+    nullspace:=SMTX_NullspaceEqns(e);
 
     # Now build the homomorphisms
 
     newhoms:=[];
-    for i in [1..Length(ans)] do
+    for nullspace_row in nullspace do
 
-      # Each row of ans is of the form:
+      # Each row of nullspace is of the form:
       #
       #     [ b_1, b_2, ..., b_s, c_1, c_2, ..., c_t ]
       #
@@ -852,8 +740,8 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
         Uhom:=NullMat(r, nw, F);
         ConvertToMatrixRep(Uhom, F);
         for l in [1..s] do
-          if ans[i][l] <> zero then
-            Uhom:=Uhom + ans[i][l] * homs[l];
+          if nullspace_row[l] <> zero then
+            AddMatrix(Uhom, homs[l], nullspace_row[l]);
           fi;
         od;
         for l in [1..r] do
@@ -861,10 +749,10 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
         od;
       fi;
 
-      imv0:=zeroW * zero;
+      imv0:=ZeroMutable(zeroW);
       for l in [1..t] do
-        if ans[i][s+l] <> zero then
-          imv0:=imv0 + ans[i][s+l] * M[l];
+        if nullspace_row[s+l] <> zero then
+          AddVector(imv0, M[l], nullspace_row[s+l]);
         fi;
       od;
       imv0c:=EchResidueCoeffs(M, echm, imv0,1);
@@ -872,7 +760,7 @@ local nv, nw, F, zero, zeroW, gV, gW, k, U, echu, r, homs, s, work, ans, v0,
         if Length(imv0c)=0 then image:=[];
         else image:=imv0c * a[l];fi;
         if r > 0 then
-          image:=image + EchResidueCoeffs(U, echu, u[l],1) * Uhom;
+          AddVector(image, EchResidueCoeffs(U, echu, u[l],1) * Uhom);
         fi;
         Add(hom, image);
       od;
@@ -989,10 +877,12 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
   local i, r, c, k, done, l;
   # NB: <remain> and <nildim> and <cnt> are not local
 
+    a := MutableCopyMatrix(a);
     for i in [1..nildim] do
-      r:=echelon[nilech[i]][1]; c:=echelon[nilech[i]][2];
+      r:=echelon[nilech[i]][1];
+      c:=echelon[nilech[i]][2];
       if a[r,c] <> zero then
-        a:=a - a[r,c] * nilbase[i] / nilbase[i][r,c];
+        AddMatrix(a, nilbase[i], -a[r,c] / nilbase[i][r,c]);
       fi;
     od;
 
@@ -1000,7 +890,8 @@ local proveIndecomposability, addnilpotent, n, F, zero, basis, enddim,
     k:=1; done:=false;
     while not done and k <= Length(remain) do
       l:=remain[k];
-      r:=echelon[l][1]; c:=echelon[l][2];
+      r:=echelon[l][1];
+      c:=echelon[l][2];
       if a[r,c] <> zero then
         done:=true;
       else
@@ -1320,6 +1211,10 @@ local n, hc1, hc2, nc, b1, b2, map, remain, j, found, hom, i, k;
     Length(SMTX.BasisEndomorphismsRadical(M2)) ) then
     # different endomorphism algebra dimensions
     return fail;
+  elif MTX.IsIrreducible(M1) and MTX.IsIrreducible(M2) then
+    return MTX.IsomorphismIrred(M1, M2);
+  elif MTX.IsIrreducible(M1) <> MTX.IsIrreducible(M2) then
+    return fail;
   fi;
 
   hc1:=SMTX.HomogeneousComponents(M1);
@@ -1378,12 +1273,12 @@ SMTX.IsomorphismModules:=SMTX_IsomorphismModules;
 # running down diagonals below the main diagonal:
 #   [2,1], [3,2], [4,3], ..., [3,1], [4,2], ..., [n-1,1], [n, 2], [n,1]
 BindGlobal("SMTX_EcheloniseNilpotentMatAlg",function (matalg, F)
-local zero, n, base, ech, k, diff, i, j, found, l;
+local zero, n, base, ech, k, diff, i, j, found, l, entry;
 
   zero:=Zero(F);
   n := NrCols(matalg[1]);
 
-  base := ShallowCopy(matalg);
+  base := List(matalg, MutableCopyMatrix);
   ech := [];
   k := 1;
 
@@ -1410,12 +1305,15 @@ local zero, n, base, ech, k, diff, i, j, found, l;
       Add(ech, [i,j]);
 
       # First normalise the [i,j] position to 1
-      base[k] := base[k] / base[k][i,j];
+      entry := base[k][i,j];
+      if not IsOne(entry) then
+        MultMatrix(base[k], 1/entry);
+      fi;
 
       # Now zero position [i,j] in all other basis elements
       for l in [1..Length(base)] do
         if (l <> k) and (base[l][i,j] <> zero) then
-          base[l] := base[l] - base[k] * base[l][i,j];
+          AddMatrix(base[l], base[k], -base[l][i,j]);
         fi;
       od;
       k := k + 1;
@@ -1637,7 +1535,9 @@ end;
 SMTX.BasisModuleHomomorphisms:=function(m1,m2)
 local b;
   TestModulesFitTogether(m1,m2);
-  if m1.dimension>5 then
+  if MTX.IsIrreducible(m1) then
+    b:=MTX.Homomorphisms(m1,m2);
+  elif m1.dimension>5 then
     b:= SpinHom(m1,m2);
     Assert(1,Length(b)=Length(SmalldimHomomorphismsModules(m1,m2)));
   else

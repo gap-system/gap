@@ -251,19 +251,11 @@ DeclareObsoleteSynonym( "RadicalGroup", "SolvableRadical" );
 
 #############################################################################
 ##
-#O  MutableCopyMat( <mat> )
+#A  RowLength( <matobj> )
 ##
-##  Moved to obsoletes in February 2023.
+##  Moved to obsolete in April 2026.
 ##
-##  Still used in corelg, crisp, cryst, cubefree, cvec, fining, forms, genss,
-##  guava, hap, hapcryst, lpres, matricesforhomalg, modisom, polycyclic,
-##  recog, semigroups, smallsemi, sophus (02/2023)
-##
-##  (We cannot use 'DeclareObsoleteSynonym' because the cvec package wants to
-##  install a method for 'MutableCopyMat', thus 'MutableCopyMat' must be an
-##  operation.)
-##
-DeclareSynonym( "MutableCopyMat", MutableCopyMatrix );
+DeclareObsoleteSynonymAttr( "RowLength", "NumberColumns", 1 );
 
 
 #############################################################################

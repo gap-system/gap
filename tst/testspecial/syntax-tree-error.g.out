@@ -1,5 +1,5 @@
 gap> func := function ( )
->     Error( );
+>     Error( "oops" );
 > end;
 function(  ) ... end
 gap> 
@@ -7,9 +7,9 @@ gap> func := SYNTAX_TREE_CODE( SYNTAX_TREE( func ) );
 function(  ) ... end
 gap> 
 gap> func( );
-Error,
+Error, oops
 Stack trace:
-*[1]  called from
+*[1] 
 <function "func">( <arguments> )
  called from read-eval loop at *stdin*:8
 you can 'quit;' to quit to outer loop, or

@@ -154,6 +154,36 @@ DeclareSynonym( "IsLowerTriangularMat", IsLowerTriangularMatrix );
 
 #############################################################################
 ##
+#P  IsSquareMatrix( <mat> )
+#P  IsSquareMat( <mat> )
+##
+##  <#GAPDoc Label="IsSquareMat">
+##  <ManSection>
+##  <Prop Name="IsSquareMatrix" Arg='mat'/>
+##  <Prop Name="IsSquareMat" Arg='mat'/>
+##
+##  <Description>
+##  return <K>true</K> if the matrix <A>mat</A> has the same number of rows
+##  and columns, and <K>false</K> otherwise.
+##  <Example><![CDATA[
+##  gap> IsSquareMatrix( [ [ 1 ] ] );
+##  true
+##  gap> IsSquareMatrix( [ [ 1, 2 ], [ 3, 4 ] ] );
+##  true
+##  gap> IsSquareMatrix( [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] );
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsSquareMatrix", IsMatrixOrMatrixObj );
+
+DeclareSynonym( "IsSquareMat", IsSquareMatrix );
+
+
+#############################################################################
+##
 #P  IsSymmetricMatrix( <mat> )
 #P  IsSymmetricMat( <mat> )
 ##
@@ -183,6 +213,44 @@ DeclareSynonym( "IsLowerTriangularMat", IsLowerTriangularMatrix );
 DeclareProperty( "IsSymmetricMatrix", IsMatrixOrMatrixObj );
 
 DeclareSynonym( "IsSymmetricMat", IsSymmetricMatrix );
+
+InstallTrueMethod( IsSquareMatrix, IsSymmetricMatrix );
+
+
+#############################################################################
+##
+#P  IsAntisymmetricMatrix( <mat> )
+#P  IsAntisymmetricMat( <mat> )
+##
+##  <#GAPDoc Label="IsAntisymmetricMat">
+##  <ManSection>
+##  <Prop Name="IsAntisymmetricMatrix" Arg='mat'/>
+##  <Prop Name="IsAntisymmetricMat" Arg='mat'/>
+##
+##  <Description>
+##  return <K>true</K> if the matrix <A>mat</A> is a square matrix and
+##  satisfies <C><A>mat</A>[i,j] = -<A>mat</A>[j,i]</C> for all
+##  <M>i, j</M>, and <K>false</K> otherwise.
+##  (In particular, the diagonal entries must be zero.)
+##  <Example><![CDATA[
+##  gap> IsAntisymmetricMatrix( [ [ 0 ] ] );
+##  true
+##  gap> IsAntisymmetricMatrix( [ [ 0, 1 ], [ -1, 0 ] ] );
+##  true
+##  gap> IsAntisymmetricMatrix( [ [ 0, 1 ], [ 1, 0 ] ] );
+##  false
+##  gap> IsAntisymmetricMatrix( [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] );
+##  false
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareProperty( "IsAntisymmetricMatrix", IsMatrixOrMatrixObj );
+
+DeclareSynonym( "IsAntisymmetricMat", IsAntisymmetricMatrix );
+
+InstallTrueMethod( IsSquareMatrix, IsAntisymmetricMatrix );
 
 
 #############################################################################
@@ -750,7 +818,7 @@ DeclareOperation( "Eigenvectors", [ IsRing, IsMatrix ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "ProjectiveOrder", IsMatrix );
+DeclareAttribute( "ProjectiveOrder", IsMatrixOrMatrixObj );
 
 #############################################################################
 ##
@@ -1565,6 +1633,23 @@ DeclareOperation( "MutableCopyMatrix", [ IsList ] );
 
 #############################################################################
 ##
+#O  MutableCopyMat( <mat> )
+##
+##  Declared obsolete in February 2023.
+##
+##  Still used in corelg, crisp, cryst, cubefree, cvec, fining, forms, genss,
+##  guava, hap, hapcryst, lpres, matricesforhomalg, modisom, polycyclic,
+##  recog, semigroups, smallsemi, sophus (02/2023)
+##
+##  (We cannot use 'DeclareObsoleteSynonym' because the cvec package wants to
+##  install a method for 'MutableCopyMat', thus 'MutableCopyMat' must be an
+##  operation.)
+##
+DeclareSynonym( "MutableCopyMat", MutableCopyMatrix );
+
+
+#############################################################################
+##
 #F  NullMat( <m>, <n> [, <R>] ) . . . . . . . . . null matrix of a given size
 ##
 ##  <#GAPDoc Label="NullMat">
@@ -2120,12 +2205,12 @@ DeclareSynonym("OnSubspacesByCanonicalBasisGF2",OnSubspacesByCanonicalBasis);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "CharacteristicPolynomial", IsMatrix );
-DeclareOperation( "CharacteristicPolynomial", [ IsMatrix, IsPosInt ] );
+DeclareAttribute( "CharacteristicPolynomial", IsMatrixOrMatrixObj );
+DeclareOperation( "CharacteristicPolynomial", [ IsMatrixOrMatrixObj, IsPosInt ] );
 DeclareOperation( "CharacteristicPolynomial",
-    [ IsRing, IsRing, IsMatrix, IsPosInt ] );
+    [ IsRing, IsRing, IsMatrixOrMatrixObj, IsPosInt ] );
 DeclareOperation( "CharacteristicPolynomial",
-    [ IsRing, IsRing, IsMatrix ] );
+    [ IsRing, IsRing, IsMatrixOrMatrixObj ] );
 
 
 #############################################################################

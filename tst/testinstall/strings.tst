@@ -2,7 +2,7 @@
 ##
 ##  This file tests output methods (mainly for strings)
 ##
-#@local x, str, len
+#@local hadHome, len, savedHome, str, x
 gap> START_TEST("strings.tst");
 
 # FFE
@@ -224,6 +224,26 @@ gap> Length(x);
 7
 gap> Print(x, "\n");
 abcdef
+
+# UserHomeShorten
+gap> hadHome := IsBound(GAPInfo.UserHome);;
+gap> if hadHome then savedHome := GAPInfo.UserHome; fi;;
+gap> GAPInfo.UserHome := "/tmp/gap-home";;
+gap> UserHomeShorten("/tmp/gap-home");
+"~"
+gap> UserHomeShorten("/tmp/gap-home/.gap");
+"~/.gap"
+gap> UserHomeShorten("/tmp/gap-homedir");
+"/tmp/gap-homedir"
+gap> UserHomeShorten("/tmp/gap-home-extra");
+"/tmp/gap-home-extra"
+gap> UserHomeShorten("~/already");
+"~/already"
+gap> UserHomeExpand(UserHomeShorten("/tmp/gap-home/.gap"));
+"/tmp/gap-home/.gap"
+gap> UserHomeShorten(1234);
+1234
+gap> if hadHome then GAPInfo.UserHome := savedHome; else Unbind(GAPInfo.UserHome); fi;;
 
 #
 gap> STOP_TEST("strings.tst");

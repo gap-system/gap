@@ -174,14 +174,16 @@ InstallMethod( IsDiagonalMatrix,
     "for a matrix",
     [ IsMatrixOrMatrixObj ],
     function( mat )
-    local  i, j, z;
-    z:=ZeroOfBaseDomain(mat);
+    local i, ncols, p;
+    ncols := NrCols( mat );
     for i  in [ 1 .. NrRows( mat ) ]  do
-        for j  in [ 1 .. NrCols( mat ) ]  do
-            if mat[i,j] <> z and i <> j  then
-                return false;
-            fi;
-        od;
+        p := PositionNonZeroInRow( mat, i );
+        if p <= ncols and p <> i then
+            return false;
+        fi;
+        if PositionNonZeroInRow( mat, i, i ) <= ncols then
+            return false;
+        fi;
     od;
     return true;
     end);
@@ -215,14 +217,13 @@ InstallMethod( IsUpperTriangularMatrix,
     "for a matrix",
     [ IsMatrixOrMatrixObj ],
     function( mat )
-    local  i, j, z;
-    z:=ZeroOfBaseDomain(mat);
-    for j  in [ 1 .. NrCols( mat ) ]  do
-        for i  in [ j+1 .. NrRows( mat ) ]  do
-            if mat[i,j] <> z  then
-                return false;
-            fi;
-        od;
+    local i, ncols, p;
+    ncols := NrCols( mat );
+    for i in [ 1 .. NrRows( mat ) ] do
+        p := PositionNonZeroInRow( mat, i );
+        if p <= ncols and p < i then
+            return false;
+        fi;
     od;
     return true;
     end);
@@ -236,17 +237,27 @@ InstallMethod( IsLowerTriangularMatrix,
     "for a matrix",
     [ IsMatrixOrMatrixObj ],
     function( mat )
-    local  i, j, z;
-    z:=ZeroOfBaseDomain(mat);
+    local i, ncols;
+    ncols := NrCols( mat );
     for i  in [ 1 .. NrRows( mat ) ]  do
-        for j  in [ i+1 .. NrCols( mat ) ]  do
-            if mat[i,j] <> z  then
-                return false;
-            fi;
-        od;
+        if PositionNonZeroInRow( mat, i, i ) <= ncols then
+            return false;
+        fi;
     od;
     return true;
     end);
+
+
+#############################################################################
+##
+#M  IsSquareMatrix(<mat>)
+##
+InstallMethod( IsSquareMatrix,
+    "for a matrix",
+    [ IsMatrixOrMatrixObj ],
+    function( mat )
+    return NrRows( mat ) = NrCols( mat );
+    end );
 
 
 #############################################################################
@@ -258,7 +269,7 @@ InstallMethod( IsSymmetricMatrix,
     [ IsMatrixOrMatrixObj ],
     function( mat )
     local i, j;
-    if NrRows( mat ) <> NrCols( mat ) then
+    if not IsSquareMatrix( mat ) then
         return false;
     fi;
     for i in [ 1 .. NrRows( mat ) ] do
@@ -271,7 +282,29 @@ InstallMethod( IsSymmetricMatrix,
     return true;
     end );
 
-InstallTrueMethod( IsSymmetricMatrix, IsMatrixOrMatrixObj and IsEmptyMatrix );
+
+
+#############################################################################
+##
+#M  IsAntisymmetricMatrix(<mat>)
+##
+InstallMethod( IsAntisymmetricMatrix,
+    "for a matrix",
+    [ IsMatrixOrMatrixObj ],
+    function( mat )
+    local i, j;
+    if not IsSquareMatrix( mat ) then
+        return false;
+    fi;
+    for i in [ 1 .. NrRows( mat ) ] do
+        for j in [ 1 .. i ] do
+            if mat[i,j] <> -mat[j,i] then
+                return false;
+            fi;
+        od;
+    od;
+    return true;
+    end );
 
 
 #############################################################################
@@ -720,7 +753,7 @@ InstallMethod( Display,
 ##
 InstallMethod( CharacteristicPolynomial,
     "supply field and indeterminate 1",
-    [ IsMatrix ],
+    [ IsMatrixOrMatrixObj ],
     mat -> CharacteristicPolynomialMatrixNC(
             DefaultFieldOfMatrix( mat ), mat, 1 ) );
 
@@ -739,7 +772,7 @@ InstallMethod( CharacteristicPolynomial,
         fi;
         return false;
     end,
-    [ IsField, IsField, IsMatrix ],
+    [ IsField, IsField, IsMatrixOrMatrixObj ],
     function( F, E, mat )
     return CharacteristicPolynomial( F, E, mat, 1);
     end );
@@ -794,6 +827,39 @@ InstallMethod( CharacteristicPolynomialMatrixNC, "spinning over field",
     [ IsField, IsOrdinaryMatrix, IsPosInt ],
   Matrix_CharacteristicPolynomialSameField);
 
+InstallOtherMethod( CharacteristicPolynomial,
+    "matrix object, supply field",
+    [ IsMatrixObj, IsPosInt ],
+    function( mat, indnum )
+        local F;
+        F := DefaultFieldOfMatrix( mat );
+        return CharacteristicPolynomial( F, F, mat, indnum );
+    end );
+
+InstallOtherMethod( CharacteristicPolynomial,
+    "matrix object, spinning over field",
+    function( famF, famE, fammat, famid )
+        local fam;
+        if HasElementsFamily( fammat ) then
+            fam := ElementsFamily( fammat );
+            return IsIdenticalObj( famF, fam )
+               and IsIdenticalObj( famE, fam );
+        fi;
+        return false;
+    end,
+    [ IsField, IsField, IsMatrixObj, IsPosInt ],
+    function( F, E, mat, inum )
+        return CharacteristicPolynomial( F, E, Unpack( mat ), inum );
+    end );
+
+InstallOtherMethod( CharacteristicPolynomialMatrixNC,
+    "matrix object, spinning over field",
+    IsElmsCollsX,
+    [ IsField, IsMatrixObj, IsPosInt ],
+    function( F, mat, inum )
+        return CharacteristicPolynomialMatrixNC( F, Unpack( mat ), inum );
+    end );
+
 
 #############################################################################
 ##
@@ -825,14 +891,14 @@ end );
 
 InstallOtherMethod( MinimalPolynomial,
     "supply field",
-    [ IsMatrix,IsPosInt ],
+    [ IsMatrixOrMatrixObj, IsPosInt ],
 function(m,n)
   return MinimalPolynomial( DefaultFieldOfMatrix( m ), m, n );
 end);
 
 InstallOtherMethod( MinimalPolynomial,
     "supply field and indeterminate 1",
-    [ IsMatrix ],
+    [ IsMatrixOrMatrixObj ],
 function(m)
   return MinimalPolynomial( DefaultFieldOfMatrix( m ), m, 1 );
 end);
@@ -841,6 +907,22 @@ InstallMethod( MinimalPolynomialMatrixNC, "spinning over field",
     IsElmsCollsX,
     [ IsField, IsOrdinaryMatrix, IsPosInt ],
   Matrix_MinimalPolynomialSameField);
+
+InstallOtherMethod( MinimalPolynomial,
+    "matrix object, spinning over field",
+    IsElmsCollsX,
+    [ IsField, IsMatrixObj, IsPosInt ],
+    function( F, mat, inum )
+        return MinimalPolynomial( F, Unpack( mat ), inum );
+    end );
+
+InstallOtherMethod( MinimalPolynomialMatrixNC,
+    "matrix object, spinning over field",
+    IsElmsCollsX,
+    [ IsField, IsMatrixObj, IsPosInt ],
+    function( F, mat, inum )
+        return MinimalPolynomialMatrixNC( F, Unpack( mat ), inum );
+    end );
 
 
 #############################################################################
@@ -881,6 +963,11 @@ function ( mat )
     # loop over the standard basis vectors
     return OrderMatTrial(mat,infinity);
 end );
+
+InstallOtherMethod( Order,
+    "matrix objects",
+    [ IsMatrixObj ],
+    mat -> Order( Unpack( mat ) ) );
 
 
 #############################################################################
@@ -1176,15 +1263,15 @@ end );
 #M  IsZero( <mat> )
 ##
 InstallMethod( IsZero,
-    "method for a matrix",
-    [ IsMatrix ],
+    "method for a matrix or matrix object",
+    [ IsMatrixOrMatrixObj ],
     function( mat )
-    local ncols,  # number of columns
-          row;    # loop over rows in 'obj'
+    local i,
+          ncols;
 
     ncols:= NrCols( mat );
-    for row in mat do
-      if PositionNonZero( row ) <= ncols then
+    for i in [1 .. NrRows( mat )] do
+      if PositionNonZeroInRow( mat, i ) <= ncols then
         return false;
       fi;
     od;
@@ -1197,20 +1284,20 @@ InstallMethod( IsZero,
 #M  IsOne( <mat> )
 ##
 InstallMethod( IsOne,
-    "method for a matrix",
-    [ IsMatrix ],
+    "method for a matrix or matrix object",
+    [ IsMatrixOrMatrixObj ],
     function( mat )
-    local ncols,  # number of columns
-          i,
-          row;    # loop over rows in 'obj'
+    local n, i;
 
-    ncols:= NrCols( mat );
-    for i in [1 .. NrRows( mat )] do
-      row := mat[i];
-      if PositionNonZero( row ) <> i or not IsOne( row[i] ) then
+    n:= NrCols( mat );
+    if NrRows( mat ) <> n then
+      return false;
+    fi;
+    for i in [1 .. n] do
+      if PositionNonZeroInRow( mat, i ) <> i or not IsOne( mat[i,i] ) then
         return false;
       fi;
-      if PositionNonZero( row, i ) <= ncols then
+      if PositionNonZeroInRow( mat, i, i ) <= n then
         return false;
       fi;
     od;
@@ -1507,10 +1594,10 @@ InstallMethod( DeterminantMatDestructive,
 
     # check that the argument is a square matrix and get the size
     m := NrRows(mat);
-    zero := ZeroOfBaseDomain(mat);
-    if m <> NrCols(mat)  then
-        Error("DeterminantMat: <mat> must be a square matrix");
+    if m = 0 or not IsRectangularTable(mat) or m <> NrCols(mat)  then
+        Error("DeterminantMat: <mat> must be a nonempty square matrix");
     fi;
+    zero := ZeroOfBaseDomain(mat);
 
     # run through all columns of the matrix
     i := 0;  det := 1;  sgn := 1;
@@ -1580,8 +1667,8 @@ function( mat )
 
     # check that the argument is a square matrix, and get the size
     m := NrRows(mat);
-    if m = 0 or m <> NrCols(mat)  then
-        Error( "<mat> must be a square matrix at least 1x1" );
+    if m = 0 or m <> NrCols(mat) or not IsRectangularTable(mat) then
+        Error( "DeterminantMat: <mat> must be a nonempty square matrix" );
     fi;
     zero := ZeroOfBaseDomain(mat);
 
@@ -2436,6 +2523,11 @@ function( mat )
     # compute the order of <p>
     return ProjectiveOrder(p);
 end );
+
+InstallOtherMethod( ProjectiveOrder,
+    "matrix objects over finite fields",
+    [ IsMatrixObj and IsFFECollColl ],
+    mat -> ProjectiveOrder( Unpack( mat ) ) );
 
 
 #############################################################################

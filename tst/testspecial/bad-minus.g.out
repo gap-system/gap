@@ -6,9 +6,12 @@ gap> f();
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `AdditiveInverseMutable' on 1 arguments
 Stack trace:
-*[1] AdditiveInverseMutable( elm ) at GAPROOT/lib/arith.gi:LINE called from
- [2] AdditiveInverseImmutable( elm ) at GAPROOT/lib/arith.gi:LINE called from
- [3] 1 - "abc" at *stdin*:3 called from
+*[1] AdditiveInverseMutable( elm )
+   @ GAPROOT/lib/arith.gi:LINE
+ [2] AdditiveInverseImmutable( elm )
+   @ GAPROOT/lib/arith.gi:LINE
+ [3] 1 - "abc"
+   @ *stdin*:3
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:5
 type 'quit;' to quit to outer loop

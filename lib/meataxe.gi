@@ -12,7 +12,7 @@
 ##  standard MeatAxe interface.  It defines the MeatAxe SMTX.
 ##
 
-InstallGlobalFunction(GModuleByMats,function(arg)
+InstallGlobalFunction(GModuleByMats, function(arg)
 local l,f,dim,m;
   if Length(arg)<>2 and Length(arg)<>3 then
     Error("Usage: GModuleByMats(<mats>,[<dim>,]<field>)");
@@ -52,7 +52,7 @@ end);
 
 # variant of Value: if we evaluate the polynomial `f` at a matrix `x`, then it
 # is usually beneficial to first factor `f` and evaluate at the factors
-BindGlobal("SMTX_Value",function(f,x,one)
+BindGlobal("SMTX_Value", function(f, x, one)
 local fa;
   fa:=Factors(f);
   if Length(fa)>1 then
@@ -67,7 +67,7 @@ end);
 #F  TrivialGModule( g, F ) . . . trivial G-module
 ##
 ##  g is a finite group, F a field, trivial smash G-module computed.
-InstallGlobalFunction(TrivialGModule,function(g, F)
+InstallGlobalFunction(TrivialGModule, function(g, F)
 local mats;
   mats:=List(GeneratorsOfGroup(g),i->[[One(F)]]);
   return GModuleByMats(mats,F);
@@ -80,7 +80,7 @@ end);
 ## h should be a subgroup of a finite group g, and m a smash
 ## GModule for h.
 ## The induced module for g is calculated.
-InstallGlobalFunction(InducedGModule,function(g, h, m)
+InstallGlobalFunction(InducedGModule, function(g, h, m)
    local  gensh, mats, ghom, gdim, hdim, F, index, gen, genim,
          gensim, r, i, j, k, l, elt, im;
 
@@ -139,7 +139,7 @@ end);
 ##
 ## g is a matrix group, F a field.
 ## The corresponding natural module is output.
-InstallGlobalFunction(NaturalGModule,function(group, field...)
+InstallGlobalFunction(NaturalGModule, function(group, field...)
   if not IsMatrixGroup(group) then
     Error("<group> must be a matrix group");
   fi;
@@ -159,7 +159,7 @@ end);
 ##
 ## g is a permutation group, F a field.
 ## The corresponding permutation module is output.
-InstallGlobalFunction(PermutationGModule,function(g, F)
+InstallGlobalFunction(PermutationGModule, function(g, F)
    local gens, deg;
    gens:=GeneratorsOfGroup(g);
    deg:=LargestMovedPoint(gens);
@@ -175,25 +175,30 @@ end);
 ## They are assumed to be modules over the same algebra so, in particular,
 ## they  should have the same number of generators.
 ##
-InstallGlobalFunction(TensorProductGModule,function( module1, module2)
-   local mat1, mat2, F1, F2,  gens, i, l;
+InstallGlobalFunction(TensorProductGModule, function(module1, module2)
+   local mat1, mat2, gens;
 
-   mat1:=SMTX.Generators(module1); mat2:=SMTX.Generators(module2);
-   F1:=SMTX.Field(module1); F2:=SMTX.Field(module2);
-   if F1 <> F2 then
-      Error("GModules are defined over different fields.\n");
-   fi;
-   l:=Length(mat1);
-   if l <> Length(mat2) then
-      Error("GModules have different numbers of generators.");
-   fi;
+   TestModulesFitTogether(module1, module2);
+   mat1:=SMTX.Generators(module1);
+   mat2:=SMTX.Generators(module2);
+   gens:=List([1..Length(mat1)], i -> KroneckerProduct(mat1[i], mat2[i]));
+   return GModuleByMats(gens, SMTX.Field(module1));
+end);
 
-   gens:=[];
-   for i in [1..l] do
-      gens[i]:=KroneckerProduct(mat1[i], mat2[i]);
-   od;
-
-   return GModuleByMats(gens, F1);
+###############################################################################
+##
+#F  DirectSumGModule( module1, module2 )  . . direct sum of two G-modules
+##
+## DirectSumGModule calculates the direct sum of smash
+## modules module1 and module2.
+## They are assumed to be modules over the same algebra so, in particular,
+## they should have the same number of generators.
+##
+InstallGlobalFunction(DirectSumGModule, function(module1, module2)
+   TestModulesFitTogether(module1, module2);
+   return GModuleByMats(SMTX.MatrixSum(SMTX.Generators(module1),
+                                       SMTX.Generators(module2)),
+                        SMTX.Field(module1));
 end);
 
 ###############################################################################
@@ -203,7 +208,7 @@ end);
 ## WedgeGModule calculates the wedge product of a G-module.
 ## That is the action on antisymmetrix tensors.
 ##
-InstallGlobalFunction(WedgeGModule,function( module)
+InstallGlobalFunction(WedgeGModule, function(module)
    local mats, mat, newmat, row, F, gens, dim, nmats, i, j, k, m, n, x;
 
    mats:=SMTX.Generators(module);
@@ -272,7 +277,7 @@ SMTX.Generators:=function(module)
   fi;
 end;
 
-SMTX.SetIsIrreducible:=function(module,b)
+SMTX.SetIsIrreducible:=function(module, b)
   module.IsIrreducible:=b;
 end;
 
@@ -291,7 +296,7 @@ SMTX.IsAbsolutelyIrreducible:=function(module)
   return module.IsAbsolutelyIrreducible;
 end;
 
-SMTX.SetIsAbsolutelyIrreducible:=function(module,b)
+SMTX.SetIsAbsolutelyIrreducible:=function(module, b)
   module.IsAbsolutelyIrreducible:=b;
 end;
 
@@ -334,7 +339,7 @@ SMTX.SetDegreeFieldExt:=SMTX.Setter("degreeFieldExt");
 ##  N.B. subbasis is assumed to consist of normed vectors,
 ##  submodule is assumed proper.
 ##
-SMTX.OrthogonalVector:=function( subbasis )
+SMTX.OrthogonalVector:=function(subbasis)
    local zero, one, v, i, j, k, x, dim, len;
    subbasis:=ShallowCopy(subbasis);
    Sort(subbasis);
@@ -390,7 +395,7 @@ end );
 ## It is returned as a list of normed vectors.
 ## If the optional fourth argument is present, then only the first ngens
 ## matrices in the list are used.
-SMTX.SpinnedBasis:=function( v, matrices, F, ngens... )
+SMTX.SpinnedBasis:=function(v, matrices, F, ngens...)
    local   zero, ldim, step, ans, dim, subdim, leadpos, w, i, j, k, l, m;
 
    if Length(ngens) > 1 then
@@ -658,7 +663,7 @@ end;
 ## SMTX.InducedActionSubmoduleNB( module, sub ) computes the submodule of
 ## module for which sub is the basis.
 ## If sub does not generate a submodule then fail is returned.
-SMTX.InducedActionSubmoduleNB:=function( module, sub )
+SMTX.InducedActionSubmoduleNB:=function(module, sub)
    local   ans;
 
    if Length(sub) = 0 then
@@ -675,7 +680,7 @@ SMTX.InducedActionSubmoduleNB:=function( module, sub )
 end;
 
 # Ditto, but allowing also unnormed modules
-SMTX.InducedActionSubmodule:=function(module,sub)
+SMTX.InducedActionSubmodule:=function(module, sub)
 local nb,ans;
 
    nb:=SMTX.NormedBasisAndBaseChange(sub);
@@ -743,7 +748,7 @@ end;
 #F  SMTX.InducedActionFactorModuleWithBasis( module, sub )
 ##
 # FIXME: this function is never used and undocumented. Keep it or remove it?
-SMTX.InducedActionFactorModuleWithBasis:=function(module,sub)
+SMTX.InducedActionFactorModuleWithBasis:=function(module, sub)
 local ans, qmodule;
 
    sub:=TriangulizedMat(sub);
@@ -783,7 +788,7 @@ end;
 ##                                        C  B
 ## corresponding matrices of smodule and qmodule resepctively.
 ## If sub is not the basis of a submodule then fail is returned.
-SMTX.InducedAction:=function(module, sub, typ... )
+SMTX.InducedAction:=function(module, sub, typ...)
 local ans,erg;
 
    if Length(typ)>0 then
@@ -823,7 +828,7 @@ end;
 ##
 ##  as InducedActionSubmoduleNB but for a matrix.
 # FIXME: this function is never used and undocumented. Keep it or remove it?
-SMTX.InducedActionSubMatrixNB:=function( mat, sub )
+SMTX.InducedActionSubMatrixNB:=function(mat, sub)
 local module, ans;
 
    if Length(sub) = 0 then
@@ -843,7 +848,7 @@ end;
 
 # Ditto, but allowing also unnormed modules
 # FIXME: this function is never used and undocumented. Keep it or remove it?
-SMTX.InducedActionSubMatrix:=function(mat,sub)
+SMTX.InducedActionSubMatrix:=function(mat, sub)
 local nb, module, ans;
 
    nb:=SMTX.NormedBasisAndBaseChange(sub);
@@ -898,7 +903,7 @@ local module, ans;
    return ans.qmatrices[1];
 end;
 
-SMTX.SMCoRaEl:=function(matrices,ngens,newgenlist,dim,F)
+SMTX.SMCoRaEl:=function(matrices, ngens, newgenlist, dim, F)
 local g1,g2,coefflist,M,pol;
   g1:=Random(1, ngens);
   g2:=g1;
@@ -979,7 +984,7 @@ SMTX.RAND_ELM_LIMIT:=5000;
 ##
 ## This function can also be used to get a random submodule. Therefore it
 ## is not an end-user function but only called internally
-SMTX.IrreducibilityTest:=function( module )
+SMTX.IrreducibilityTest:=function(module)
    local matrices, tmatrices, ngens, ans,  M, mat, g1, g2, maxdeg,
          newgenlist, coefflist, zero,
          N, NT, v, subbasis, fac, sfac, pol, orig_pol, q, dim, ndim, i,
@@ -1249,7 +1254,7 @@ end;
 ## submodule of module, and return that basis and the submodule, with all
 ## the irreducibility flags set.
 ## Returns false if module is irreducible.
-SMTX.RandomIrreducibleSubGModule:=function( module )
+SMTX.RandomIrreducibleSubGModule:=function(module)
    local  ranSub, subbasis, submodule, subbasis2, submodule2,
    F, el, M, fac, N, i, matrices, genpair;
 
@@ -1334,7 +1339,7 @@ end;
 ## minimal possible dimension. This dimension is 1 if the module is absolutely
 ## irreducible, and the degree of the relevant field extension otherwise.
 ## This is needed for testing for equivalence of modules.
-SMTX.GoodElementGModule:=function( module )
+SMTX.GoodElementGModule:=function(module)
 local matrices, M, mat,  N, newgenlist, coefflist,
       fac, pol, oldpol,  q, deg, i, l,
       trying, dim, mindim, F, R, count, rt0, idmat;
@@ -1455,7 +1460,7 @@ end;
 ## It is based on code of MinPolCoeffsMat.
 ## The optional fourth argument is for returning the basis for this block.
 ##
-SMTX.FrobeniusAction:=function( fld, A, v, basis... )
+SMTX.FrobeniusAction:=function(fld, A, v, basis...)
 local   L, d, p, M, one, zero, R, h, w, i, j, nd, ans;
 
    if Length(basis) = 0  then
@@ -1539,7 +1544,7 @@ end;
 ##  true or false according to whether it succeeds.
 ##  It is called by IsAbsolutelyIrreducible()
 ##
-SMTX.CompleteBasis:=function( matrices, basis )
+SMTX.CompleteBasis:=function(matrices, basis)
 local  L, d, subd, subd0, h, v, w, i, bno, gno, vno, newb, ngens;
 
    subd:=Length(basis);
@@ -1628,10 +1633,10 @@ end;
 ## The function shouldn't be called if the module has not already been
 ## shown to be irreducible, using IsIrreducible.
 ##
-SMTX.AbsoluteIrreducibilityTest:=function( module )
+SMTX.AbsoluteIrreducibilityTest:=function(module)
 local dim, ndim, gcd, div, e, ct, F, q, ok,
       M, v, M0, v0, C, C0, centmat, one, zero,
-      pow, matrices, newmatrices, looking,
+      pow, matrices, newmatrices,
       basisN, basisB, basisBN, P, Pinv, i, offset, nblocks;
 
    if not SMTX.IsMTXModule(module) then
@@ -1772,15 +1777,7 @@ local dim, ndim, gcd, div, e, ct, F, q, ok,
          centmat := ImmutableMatrix(F, centmat);
          Info(InfoMeatAxe,2,"Checking that it centralises the generators.");
          # Check centralizing.
-         looking:=true;
-         i:=1;
-         while looking and i <= Length(newmatrices) do
-            if newmatrices[i] * centmat <> centmat * newmatrices[i] then
-               looking:=false;
-            fi;
-            i:=i + 1;
-         od;
-         if looking then
+         if ForAll(newmatrices, x -> x * centmat = centmat * x) then
             Info(InfoMeatAxe,2,"It did!");
             SMTX.SetDegreeFieldExt(module, e);
             SMTX.SetCentMat(module, Pinv * centmat * P); # get the base right
@@ -1826,9 +1823,9 @@ end;
 ## is q^e - 1, where e is the degree of the centralizing field. This is not
 ## yet used, but maybe in future, if we wish to reduce the group to matrices
 ## over the larger field.
-SMTX.FieldGenCentMat:=function( module )
+SMTX.FieldGenCentMat:=function(module)
    local e, F, R, q, qe, minpol, pp,
-         centmat, newcentmat, genpol, looking,
+         centmat, newcentmat, genpol,
          okd;
 
   if SMTX.FGCentMat(module)=fail then
@@ -1865,20 +1862,17 @@ SMTX.FieldGenCentMat:=function( module )
 
     genpol:=Indeterminate(F);
 
-    looking:=true;
-    while looking do
+    while true do
       if genpol <> minpol then
-      okd:=FFPOrderKnownDividend(R, genpol, minpol, pp);
-      if okd[1] * Order(One(F)*okd[2]) = qe then
-          looking:=false;
+        okd:=FFPOrderKnownDividend(R, genpol, minpol, pp);
+        if okd[1] * Order(One(F)*okd[2]) = qe then
+          break;
+        fi;
       fi;
-      fi;
-      if looking then
-          repeat
-            genpol:=RandomPol(F, e,1);
-          until DegreeOfUnivariateLaurentPolynomial(genpol) > 0;
-          genpol:=StandardAssociate(R, genpol);
-      fi;
+      repeat
+        genpol:=RandomPol(F, e, 1);
+      until DegreeOfUnivariateLaurentPolynomial(genpol) > 0;
+      genpol:=StandardAssociate(R, genpol);
     od;
     # Finally recalculate centmat and its minimal polynomial.
     centmat:=SMTX.CentMat(module);
@@ -1905,7 +1899,7 @@ end;
 ## where m is an irreducible composition factor of module, and n is the
 ## number of times it occurs in module.
 ##
-SMTX.CollectedFactors:= function( module )
+SMTX.CollectedFactors:= function(module)
   local field,dim, factors, factorsout, queue, cmod, new,
       d, i, j, l, lf, q, smod, ds, homs, mat;
    if SMTX.IsMTXModule(module) = false then
@@ -2014,7 +2008,7 @@ SMTX.CollectedFactors:= function( module )
 
 end;
 
-SMTX.CompositionFactors:=function( module )
+SMTX.CompositionFactors:=function(module)
   if SMTX.IsIrreducible(module) then
     return [module];
   else
@@ -2036,7 +2030,7 @@ end;
 ## Once this is done, it is easy to find submodules containing this
 ## composition factor.
 ##
-SMTX.Distinguish:=function( cf, i )
+SMTX.Distinguish:=function(cf, i)
    local el, genpair, ngens, mat, matsi, mats, M, idmat,
          dim, F, fac, p, q, oldp, found, extdeg, j, k,
          lcf, lf, x, y, wno, deg, trying, N, fact, R;
@@ -2182,7 +2176,7 @@ end;
 ## A basis of a minimal submodule of module containing the composition factor
 ## cf[i][1] is calculated and returned - i.e. if cf[i][2] = 1.
 ##
-SMTX.MinimalSubGModule:=function( module, cf, i )
+SMTX.MinimalSubGModule:=function(module, cf, i)
    local el, genpair, mat, mats, M, F,
          k, N, fact;
 
@@ -2233,9 +2227,8 @@ SMTX.IsomorphismComp:=function(module1, module2, action)
       Error("Argument is not a module.");
    elif SMTX.IsMTXModule(module2) = false then
       Error("Argument is not a module.");
-   elif SMTX.Field(module1) <> SMTX.Field(module2) then
-      Error("GModules are defined over different fields.");
    fi;
+   TestModulesFitTogether(module1, module2);
 
    swapped:=false;
    if not SMTX.HasIsIrreducible(module1) then
@@ -2265,9 +2258,6 @@ SMTX.IsomorphismComp:=function(module1, module2, action)
    SMTX.GoodElementGModule(module1);
    mats1:=module1.generators;
    mats2:=ShallowCopy(module2.generators);
-   if Length(mats1) <> Length(mats2) then
-      Error("GModules have different numbers of defining matrices.");
-   fi;
 
    # Now we calculate the element in the group algebra of module2 that
    # corresponds to that in module1. This is done using the AlgEl flag
@@ -2333,13 +2323,13 @@ SMTX.IsomorphismComp:=function(module1, module2, action)
    fi;
 end;
 
-SMTX.IsomorphismIrred:=function(module1,module2)
+SMTX.IsomorphismIrred:=function(module1, module2)
   return SMTX.IsomorphismComp(module1,module2,true);
 end;
 
 SMTX.Isomorphism:=SMTX.IsomorphismIrred;
 
-SMTX.IsEquivalent:=function(module1,module2)
+SMTX.IsEquivalent:=function(module1, module2)
   return SMTX.IsomorphismComp(module1,module2,false)<>fail;
 end;
 
@@ -2374,7 +2364,7 @@ SMTX.Homomorphisms:= function(module1, module2)
    local F, mats1, mats2, dim1, dim2, m1bas, imbases,
          el, genpair, fac, mat, N, imlen, subdim, leadpos, vec, imvecs,
          numrels, rels, leadposrels, newrels, bno, genno, colno, rowno,
-         zero, looking, ans, i, j, k;
+         zero, ans, i, j, k;
 
    if not SMTX.IsMTXModule(module1) then
       return Error("First argument is not a module.");
@@ -2385,16 +2375,10 @@ SMTX.Homomorphisms:= function(module1, module2)
    if not SMTX.IsMTXModule(module2) then
       return Error("Second argument is not a module.");
    fi;
+   TestModulesFitTogether(module1, module2);
    mats1:=module1.generators;
    mats2:=ShallowCopy(module2.generators);
-   if Length(mats1) <> Length(mats2) then
-      return Error("GModules have different numbers of generators.");
-   fi;
-
    F:=SMTX.Field(module1);
-   if F <> SMTX.Field(module2) then
-      return Error("GModules are defined over different fields.");
-   fi;
    zero:=Zero(F);
 
    dim1:=SMTX.Dimension(module1); dim2:=SMTX.Dimension(module2);
@@ -2538,11 +2522,8 @@ SMTX.Homomorphisms:= function(module1, module2)
    Info(InfoMeatAxe,2,"Done. Reducing spun up basis.");
 
    for colno in [1..dim1] do
-      rowno:=colno;
-      looking:=true;
-      while rowno <= dim1 and looking do
+      for rowno in [colno..dim1] do
          if m1bas[rowno,colno] <> zero then
-            looking:=false;
             if rowno <> colno then
                # swap rows rowno and colno
                SwapMatrixRows(m1bas, rowno, colno);
@@ -2561,8 +2542,8 @@ SMTX.Homomorphisms:= function(module1, module2)
                   od;
                fi;
             od;
+            break;
          fi;
-         rowno:=rowno + 1;
       od;
    od;
 
@@ -2710,16 +2691,11 @@ end;
 
 SMTX.Homomorphism:=function(module1, module2, mat)
   local F, gens1, gens2, ng, dim1, dim2, i, j;
+  TestModulesFitTogether(module1, module2);
   F:=SMTX.Field(module1);
-  if F <> SMTX.Field(module2) then
-    Error("Modules are over different fields");
-  fi;
   gens1:=SMTX.Generators(module1); gens2:=SMTX.Generators(module2);
   dim1:=SMTX.Dimension(module1); dim2:=SMTX.Dimension(module2);
   ng:=Length(gens1);
-  if ng <> Length(gens2) then
-    Error("Modules are not over the same algebra");
-  fi;
   if Length(mat) <> dim1 or Length(mat[1]) <> dim2 then
     Error("matrix has wrong size for a homomorphism");
   fi;
@@ -2997,13 +2973,16 @@ local cf;
 end;
 
 SMTX.DualModule:=function(module)
+local gens;
   if SMTX.IsZeroGens(module) then
-    return GModuleByMats([],module.dimension,SMTX.Field(module));
-  else
-    return GModuleByMats(List(SMTX.Generators(module),i->TransposedMat(i)^-1),
-                        module.dimension,
-                        SMTX.Field(module));
+    return module;
   fi;
+  if not IsBound(module.Dual) then
+    gens := List(SMTX.Generators(module),i->TransposedMat(i)^-1);
+    module.Dual := GModuleByMats(gens, module.dimension, SMTX.Field(module));
+    module.Dual.Dual := module;
+  fi;
+  return module.Dual;
 end;
 
 ###############################################################################
@@ -3013,11 +2992,11 @@ end;
 ## DualGModule calculates the dual of a G-module.
 ## The matrices of the module are inverted and transposed.
 ##
-InstallGlobalFunction(DualGModule,function( module)
+InstallGlobalFunction(DualGModule, function(module)
    return SMTX.DualModule(module);
 end);
 
-SMTX.DualizedBasis:=function(module,sub)
+SMTX.DualizedBasis:=function(module, sub)
 local F,M;
   F:=DefaultFieldOfMatrix(sub);
   M:=TransposedMatMutable(sub);
@@ -3033,7 +3012,7 @@ local d,u;
   return List(u,i->SMTX.DualizedBasis(d,i));
 end;
 
-SMTX.BasesMinimalSupermodules:=function(m,sub)
+SMTX.BasesMinimalSupermodules:=function(m, sub)
 local a,u,i,nb;
   a:=SMTX.InducedAction(m,sub,2);
   u:=SMTX.BasesMinimalSubmodules(a[1]);
@@ -3088,21 +3067,25 @@ end;
 
 SMTX.BasisSocle:=function(module)
 local cf, mat, i;
-   cf:=SMTX.CollectedFactors(module);
-   mat:=Concatenation(List(cf,i->SMTX.SpanOfMinimalSubGModules(i[1],module)));
-   if Length(cf) = 1 then
-     return ImmutableMatrix(module.field,mat);
+   if not IsBound(module.Socle) then
+     cf:=SMTX.CollectedFactors(module);
+     mat:=Concatenation(List(cf,i->SMTX.SpanOfMinimalSubGModules(i[1],module)));
+     if Length(cf) > 1 then
+       TriangulizeMat(mat);
+     fi;
+     module.Socle := ImmutableMatrix(module.field,mat);
    fi;
-   TriangulizeMat(mat);
-   mat:=ImmutableMatrix(module.field,mat);
-   return mat;
+   return module.Socle;
 end;
 
 SMTX.BasisRadical:=function(module)
 local d, bs;
-   d:=SMTX.DualModule(module);
-   bs:=SMTX.BasisSocle(d);
-   return SMTX.DualizedBasis(d,bs);
+   if not IsBound(module.Radical) then
+     d:=SMTX.DualModule(module);
+     bs:=SMTX.BasisSocle(d);
+     module.Radical := SMTX.DualizedBasis(d,bs);
+   fi;
+   return module.Radical;
 end;
 
 # the following assignment is for profiling
@@ -3123,7 +3106,7 @@ SMTX.funcs:=[SMTX.OrthogonalVector,SMTX.SpinnedBasis,SMTX.SubQuotActions,
 # The special basis is used for finding invariant quadratic forms when
 # the characteristic of the field is 2.
 
-SMTX.SetBasisInOrbit:=function(module,b)
+SMTX.SetBasisInOrbit:=function(module, b)
   module.BasisInOrbit:=b;
 end;
 
@@ -3134,7 +3117,7 @@ end;
 ## Find a basis of the irrecucible GModule module that is contained in
 ## an orbit of the action of G.
 ## The code is similar to that of SpinnedBasis.
-SMTX.BasisInOrbit:=function( module  )
+SMTX.BasisInOrbit:=function(module)
    local   v, matrices, zero,  ans, normedans,
            dim, subdim, leadpos, w, normedw, i, j, k, m, F;
 
@@ -3191,7 +3174,7 @@ SMTX.BasisInOrbit:=function( module  )
    return ans;
 end;
 
-SMTX.SetInvariantBilinearForm:=function(module,b)
+SMTX.SetInvariantBilinearForm:=function(module, b)
   module.InvariantBilinearForm:=b;
 end;
 
@@ -3201,7 +3184,7 @@ end;
 ##
 ## Look for an invariant bilinear form of the absolutely irreducible
 ## GModule module. Return fail, or the matrix of the form.
-SMTX.InvariantBilinearForm:=function( module  )
+SMTX.InvariantBilinearForm:=function(module)
    local DM, iso;
 
    if not SMTX.IsMTXModule(module) or
@@ -3248,7 +3231,7 @@ SMTX.TwistedDualModule:=function(module)
   fi;
 end;
 
-SMTX.SetInvariantSesquilinearForm:=function(module,b)
+SMTX.SetInvariantSesquilinearForm:=function(module, b)
   module.InvariantSesquilinearForm:=b;
 end;
 
@@ -3258,7 +3241,7 @@ end;
 ##
 ## Look for an invariant sesquililinear form of the absolutely irreducible
 ## GModule module. Return fail, or the matrix of the form.
-SMTX.InvariantSesquilinearForm:=function( module  )
+SMTX.InvariantSesquilinearForm:=function(module)
    local DM, q, r, iso, isot, l;
 
    if not SMTX.IsMTXModule(module) or
@@ -3296,7 +3279,7 @@ SMTX.InvariantSesquilinearForm:=function( module  )
 end;
 
 
-SMTX.SetInvariantQuadraticForm:=function(module,b)
+SMTX.SetInvariantQuadraticForm:=function(module, b)
   module.InvariantQuadraticForm:=b;
 end;
 
@@ -3346,7 +3329,7 @@ end;
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-SMTX.InvariantQuadraticForm:=function( module  )
+SMTX.InvariantQuadraticForm:=function(module)
    local iso, bas, cgens, ciso, dim, f, z, x, i, j, qf, g, id, cqf, fix;
 
    if not SMTX.IsMTXModule(module) or
@@ -3452,7 +3435,7 @@ end;
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-SMTX.SetOrthogonalSign:=function(module,s)
+SMTX.SetOrthogonalSign:=function(module, s)
   module.OrthogonalSign:=s;
 end;
 
@@ -3554,4 +3537,3 @@ SMTX.OrthogonalSign:=function(gm)
         return -1;
     fi;
 end;
-

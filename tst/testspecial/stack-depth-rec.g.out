@@ -71,21 +71,31 @@ rec(
 gap> String(r);
 Error, recursion depth trap (5000)
 Stack trace:
-*[1] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
- [2] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
- [3] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
- [4] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
- [5] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
+*[1] String( record.(nam) )
+   @ GAPROOT/lib/record.gi:LINE
+ [2] String( record.(nam) )
+   @ GAPROOT/lib/record.gi:LINE
+ [3] String( record.(nam) )
+   @ GAPROOT/lib/record.gi:LINE
+ [4] String( record.(nam) )
+   @ GAPROOT/lib/record.gi:LINE
+ [5] String( record.(nam) )
+   @ GAPROOT/lib/record.gi:LINE
 ...  at *stdin*:4
 you may 'return;'
 brk> return; # try once more
 Error, recursion depth trap (5000)
 Stack trace:
-*[1] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
- [2] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
- [3] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
- [4] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
- [5] String( record.(nam) ) at GAPROOT/lib/record.gi:LINE called from
+*[1] String( record.(nam) )
+   @ GAPROOT/lib/record.gi:LINE
+ [2] String( record.(nam) )
+   @ GAPROOT/lib/record.gi:LINE
+ [3] String( record.(nam) )
+   @ GAPROOT/lib/record.gi:LINE
+ [4] String( record.(nam) )
+   @ GAPROOT/lib/record.gi:LINE
+ [5] String( record.(nam) )
+   @ GAPROOT/lib/record.gi:LINE
 ...  at *stdin*:4
 you may 'return;'
 brk> QUIT;

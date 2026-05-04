@@ -412,5 +412,11 @@ function(str)
     GAP_SHA256_UPDATE(s, str);
     res := GAP_SHA256_FINAL(s);
     res := Sum([0..7], i -> res[8-i]*2^(32*i));;
-    return LowercaseString(HexStringInt(res));
+    res := LowercaseString(HexStringInt(res));
+    # HexStringInt drops leading zero digits, but a SHA256 digest is always
+    # 256 bits = 64 hex digits, so left-pad with '0' if the top byte(s) were 0.
+    if Length(res) < 64 then
+        res := Concatenation(ListWithIdenticalEntries(64 - Length(res), '0'), res);
+    fi;
+    return res;
 end);
