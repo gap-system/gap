@@ -2482,6 +2482,7 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
     UInt          elts;
     UInt1 *       ptr, *ptrw;
     const UInt1 * gettab;
+    const Obj *   gapseq;
     const UInt1 * feltffe;
     Obj           x;
     Obj           vp;
@@ -2491,6 +2492,7 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     settab = SETELT_FIELDINFO_8BIT(info);
     gettab = GETELT_FIELDINFO_8BIT(info);
+    gapseq = GAPSEQ_FELT_FIELDINFO_8BIT(info);
     ptrw = BYTES_VEC8BIT(w);
     if (weight == 1) {
         for (i = pos; i <= len; i++) {
@@ -2498,13 +2500,21 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
             u = ELM_PLIST(vp, 1);
             AddVec8BitVec8BitInner(w, w, u, 1, lenw);
             ptr = BYTES_VEC8BIT(v) + (i - 1) / elts;
-            *ptr = settab[*ptr + 256 * (elts + ((i - 1) % elts))];
+            // Keep the coefficient vector in the same sorted field-element
+            // order that NumberFFVector uses for list indices.
+            feltffe = FELT_FFE_FIELDINFO_8BIT(info);
+            x = ELM_PLIST(felts, 2);
+            *ptr = settab[*ptr + 256 * (elts * feltffe[VAL_FFE(x)] +
+                                        ((i - 1) % elts))];
             sy = 0;
             for (j = 0; j < lenw; j++) {
                 UInt xxxx;
                 sy *= q;
                 xxxx = gettab[ptrw[j / elts] + 256 * (j % elts)];
-                sy += xxxx;
+                // The packed 8-bit representation uses a different internal
+                // field ordering, so translate back to GAP's sequence before
+                // using the syndrome number as a plain-list position.
+                sy += INT_INTOBJ(gapseq[xxxx]);
             }
             if ((Obj)0 == ELM_PLIST(leaders, sy + 1)) {
                 UInt k;
@@ -2517,10 +2527,13 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
                 wc = ZeroVec8Bit(q, lenw, 1);
                 settab = SETELT_FIELDINFO_8BIT(info);
                 gettab = GETELT_FIELDINFO_8BIT(info);
+                gapseq = GAPSEQ_FELT_FIELDINFO_8BIT(info);
                 ptr = BYTES_VEC8BIT(v) + (i - 1) / elts;
                 ptrw = BYTES_VEC8BIT(w);
-                for (k = 2; k < q; k++) {
-                    qk = FFE_FELT_FIELDINFO_8BIT(info, k);
+                for (k = 3; k <= q; k++) {
+                    // Record scalar multiples in the same order as the GAP
+                    // fallback, namely the sorted field elements in 'felts'.
+                    qk = ELM_PLIST(felts, k);
                     MultVec8BitFFEInner(wc, w, qk, 1, lenw);
                     ptrw = BYTES_VEC8BIT(wc);
                     sy = 0;
@@ -2528,11 +2541,12 @@ static UInt CosetLeadersInner8Bits(Obj  veclis,
                         UInt xxxx;
                         sy *= q;
                         xxxx = gettab[ptrw[j / elts] + 256 * (j % elts)];
-                        sy += xxxx;
+                        sy += INT_INTOBJ(gapseq[xxxx]);
                     }
                     vc = ZeroVec8Bit(q, len, 0);
                     settab = SETELT_FIELDINFO_8BIT(info);
                     gettab = GETELT_FIELDINFO_8BIT(info);
+                    gapseq = GAPSEQ_FELT_FIELDINFO_8BIT(info);
                     ptr = BYTES_VEC8BIT(v) + (i - 1) / elts;
                     ptrw = BYTES_VEC8BIT(w);
                     MultVec8BitFFEInner(vc, v, qk, 1, len);
