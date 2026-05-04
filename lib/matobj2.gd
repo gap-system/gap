@@ -872,12 +872,12 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> m1 := NewMatrix( IsPlistMatrixRep, Integers, 3, [ [4,5,6], [7,8,9] ] );;
-##  gap> Display( m1 );                                                          
+##  gap> Display( m1 );
 ##  <2x3-matrix over Integers:
 ##  [[ 4, 5, 6 ]
 ##   [ 7, 8, 9 ]
 ##  ]>
-##  gap> NewZeroMatrix( IsPlistMatrixRep, Rationals, 5, 3 );                     
+##  gap> NewZeroMatrix( IsPlistMatrixRep, Rationals, 5, 3 );
 ##  <5x3-matrix over Rationals>
 ##  gap> NewIdentityMatrix( IsGF2MatrixRep, GF(2), 4 );
 ##  <a 4x4 matrix over GF2>
@@ -1232,9 +1232,9 @@ DeclareSynonym( "SetMatElm", ASS_MAT );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> m7 := Matrix( IsZmodnZMatrixRep, ZmodnZ(8), [1..6], 3 );;
-##  gap> z7 := ZeroMatrix( 2, 2, m7 );; Print( z7 );              
+##  gap> z7 := ZeroMatrix( 2, 2, m7 );; Print( z7 );
 ##  NewMatrix(IsZmodnZMatrixRep,Monoid( ... ),2,
-##  [ [ ZmodnZObj( 0, 8 ), ZmodnZObj( 0, 8 ) ], 
+##  [ [ ZmodnZObj( 0, 8 ), ZmodnZObj( 0, 8 ) ],
 ##    [ ZmodnZObj( 0, 8 ), ZmodnZObj( 0, 8 ) ] ])
 ##  gap> z23 := ZeroMatrix( Rationals, 2, 3 );; Print( z23 );
 ##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ 0, 0, 0 ], [ 0, 0, 0 ] ])
@@ -1293,9 +1293,9 @@ DeclareOperation( "ZeroMatrix", [ IsOperation, IsSemiring, IsInt, IsInt ] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> m7 := Matrix( IsZmodnZMatrixRep, ZmodnZ(8), [1..6], 3 );;
-##  gap> id7 := IdentityMatrix( 2, m7 );; Print( id7 );              
+##  gap> id7 := IdentityMatrix( 2, m7 );; Print( id7 );
 ##  NewMatrix(IsZmodnZMatrixRep,Monoid( ... ),2,
-##  [ [ ZmodnZObj( 1, 8 ), ZmodnZObj( 0, 8 ) ], 
+##  [ [ ZmodnZObj( 1, 8 ), ZmodnZObj( 0, 8 ) ],
 ##    [ ZmodnZObj( 0, 8 ), ZmodnZObj( 1, 8 ) ] ])
 ##  gap> id2 := IdentityMatrix( Rationals, 2 );; Print( id2 );
 ##  NewMatrix(IsPlistMatrixRep,Rationals,2,[ [ 1, 0 ], [ 0, 1 ] ])
@@ -1476,12 +1476,12 @@ DeclareOperation( "CompanionMatrix",
 ##   [ 17 .. 23 ]
 ##   [ 24 .. 30 ]
 ##  ]>
-##  gap> Print( Matrix( Integers, m2 ) );  
+##  gap> Print( Matrix( Integers, m2 ) );
 ##  NewMatrix(IsPlistMatrixRep,Integers,7,
 ##  [ [ 10 .. 16 ], [ 17 .. 23 ], [ 24 .. 30 ] ])
 ##  gap> m3 := Matrix( [[7,6],[4,3]], m2 );; Print(m3);
 ##  NewMatrix(IsPlistMatrixRep,Rationals,2,[ [ 7, 6 ], [ 4, 3 ] ])
-##  gap> m4 := Matrix( [-7..-2], 3, m2 );; Print(m4);  
+##  gap> m4 := Matrix( [-7..-2], 3, m2 );; Print(m4);
 ##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ -7, -6, -5 ], [ -4, -3, -2 ] ])
 ##  gap> m0 := [[-1,-2],[-3,-4]];; IsMatrix(m0);
 ##  true
@@ -1492,12 +1492,12 @@ DeclareOperation( "CompanionMatrix",
 ##  gap> Print( Matrix( [-9..-4], 3, m1 ) );
 ##  NewMatrix(IsPlistMatrixRep,Integers,3,[ [ -9, -8, -7 ], [ -6, -5, -4 ] ])
 ##  gap> m6 := Matrix( IsGF2MatrixRep, GF(2), [[1,0,1],[0,1,0]]*Z(2)^0 );;
-##  gap> Display( m6 );                                                   
+##  gap> Display( m6 );
 ##   1 . 1
 ##   . 1 .
 ##  gap> m7 := Matrix( IsZmodnZMatrixRep, ZmodnZ(8), [1..6], 3 );
 ##  <matrix mod 8: [ [ 1 .. 3 ], [ 4 .. 6 ] ]>
-##  gap> m8 := Matrix( IsZmodnZMatrixRep, ZmodnZ(12), m0 );       
+##  gap> m8 := Matrix( IsZmodnZMatrixRep, ZmodnZ(12), m0 );
 ##  <matrix mod 12: [ [ -1, -2 ], [ -3, -4 ] ]>
 ##  ]]></Example>
 ##  </Description>
