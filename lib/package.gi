@@ -1750,7 +1750,7 @@ InstallGlobalFunction( LoadPackage, function( arg )
             "start reading file 'init.g'",
             info.PackageName );
         GAPInfo.PackageCurrent:= info;
-        ReadPackage( pkgname, "init.g" );
+        ReadPackage( pkgname, "init.g" : ReadingPackageFiles:= true );
         Unbind( GAPInfo.PackageCurrent );
         LogPackageLoadingMessage( PACKAGE_DEBUG,
             "finish reading file 'init.g'",
@@ -1766,7 +1766,8 @@ InstallGlobalFunction( LoadPackage, function( arg )
       # (We have delayed this until now because it uses functionality
       # from the package GAPDoc.)
       # Note that no banners are printed during autoloading.
-      LoadPackage_ReadImplementationParts( secondrun, banner );
+      LoadPackage_ReadImplementationParts( secondrun, banner
+        : ReadingPackageFiles:= true );
       secondrun:= [];
 
     od;
