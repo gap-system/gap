@@ -3262,8 +3262,10 @@ static Obj FuncCOSET_LEADERS_INNER_GF2(
     Obj  v, w;
     UInt lenv, lenw;
 
+    RequirePlainList(SELF_NAME, veclis);
     RequireSmallInt(SELF_NAME, weight);
     RequireSmallInt(SELF_NAME, tofind);
+    RequirePlainList(SELF_NAME, leaders);
 
     lenv = LEN_PLIST(veclis);
     NEW_GF2VEC(v, TYPE_LIST_GF2VEC, lenv);
