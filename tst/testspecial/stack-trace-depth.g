@@ -32,5 +32,8 @@ f1 := function()
     return f2();
 end;;
 f1();
-Where(12);
+SetUserPreference("WhereDepth", 12);
+Where();
+SetUserPreference("WhereDepth", 5);
+Where();
 quit;
