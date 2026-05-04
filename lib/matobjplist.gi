@@ -188,6 +188,17 @@ InstallTagBasedMethod( NewZeroVector,
     return MakeIsPlistVectorRep(basedomain, list, false);
   end );
 
+# these two methods align NewMatrix with Matrix
+InstallMethod( NewMatrix, [ IsOperation, IsSemiring, IsList, IsInt ],
+  function( filter, basedomain, list, ncols )
+    return NewMatrix( filter, basedomain, ncols, list );
+  end);
+
+InstallMethod( NewMatrix, [ IsOperation, IsSemiring, IsList ],
+  function( filter, basedomain, list )
+    return NewMatrix( filter, basedomain, Length( list[1] ), list );
+  end);
+
 InstallTagBasedMethod( NewMatrix,
   IsPlistMatrixRep,
   function( filter, basedomain, ncols, list )

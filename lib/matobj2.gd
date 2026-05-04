@@ -803,6 +803,8 @@ DeclareTagBasedOperation( "NewZeroVector",
 #############################################################################
 ##
 #O  NewMatrix( <filt>, <R>, <ncols>, <list> )
+#O  NewMatrix( <filt>, <R>, <list>, <ncols> )
+#O  NewMatrix( <filt>, <R>, <list> )
 #O  NewZeroMatrix( <filt>, <R>, <m>, <n> )
 #O  NewIdentityMatrix( <filt>, <R>, <n> )
 ##
@@ -810,15 +812,21 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  <ManSection>
 ##  <Heading>NewMatrix, NewZeroMatrix, NewIdentityMatrix</Heading>
 ##  <Oper Name="NewMatrix" Arg='filt,R,ncols,list'/>
+##  <Oper Name="NewMatrix" Arg='filt,R,list,ncols'
+##   Label="for filter, base domain, list and ncols"/>
+##  <Oper Name="NewMatrix" Arg='filt,R,list'
+##   Label="for filter, base domain and list"/>
 ##  <Oper Name="NewZeroMatrix" Arg='filt,R,m,n'/>
 ##  <Oper Name="NewIdentityMatrix" Arg='filt,R,n'/>
 ##
 ##  <Description>
 ##  These three operations are <E>constructors</E>, and should only be used
-##  when <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>,
+##  by those implementing new material for matrix objects.
+##  Most users should find
+##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>,
 ##  <Ref Oper="ZeroMatrix" Label="for dimensions and matrix object"/> or
 ##  <Ref Oper="IdentityMatrix" Label="for dimension and matrix object"/>
-##  do not give the desired result.
+##  sufficient for their requirements.
 ##  <P/>
 ##  For a filter <A>filt</A>, a semiring <A>R</A>,
 ##  a positive integer <A>ncols</A>, and a list <A>list</A>,
@@ -837,6 +845,10 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  <P/>
 ##  The corresponding entries must be in or compatible with <A>R</A>.
 ##  If <A>list</A> already contains vector objects, they are copied.
+##  <P/>
+##  The second and third alternatives for <C>NewMatrix</C> have been added
+##  for consistency with the corresponding versions of <C>Matrix</C>.
+##  They just call the first version.
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="NewMatrix"/> need not perform consistency checks.
@@ -859,8 +871,16 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  <Ref Filt="IsCopyable"/>.
 ##  <P/>
 ##  <Example><![CDATA[
-##  gap> Matrix( IsPlistMatrixRep, Integers, [ [4,5,6], [7,8,9] ] );
-##  <2x3-matrix over Integers>
+##  gap> m1 := NewMatrix( IsPlistMatrixRep, Integers, 3, [ [4,5,6], [7,8,9] ] );;
+##  gap> Display( m1 );                                                          
+##  <2x3-matrix over Integers:
+##  [[ 4, 5, 6 ]
+##   [ 7, 8, 9 ]
+##  ]>
+##  gap> NewZeroMatrix( IsPlistMatrixRep, Rationals, 5, 3 );                     
+##  <5x3-matrix over Rationals>
+##  gap> NewIdentityMatrix( IsGF2MatrixRep, GF(2), 4 );
+##  <a 4x4 matrix over GF2>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -868,6 +888,12 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##
 DeclareTagBasedOperation( "NewMatrix",
     [ IsOperation, IsSemiring, IsInt, IsList] );
+
+DeclareOperation( "NewMatrix",
+    [ IsOperation, IsSemiring, IsList, IsInt] );
+
+DeclareOperation( "NewMatrix",
+    [ IsOperation, IsSemiring, IsList] );
 
 DeclareTagBasedOperation( "NewZeroMatrix",
     [ IsOperation, IsSemiring, IsInt, IsInt ] );
