@@ -429,7 +429,7 @@ and then set the entries in this matrix.
 Functions like
 <Ref Oper="ZeroMatrix" Label="for dimensions and matrix object"/>,
 <Ref Oper="IdentityMatrix" Label="for dimension and matrix object"/>,
-and <Ref Oper="Matrix" Label="for a list and a matrix object"/>
+and <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
 admit different kinds of inputs.
 <C>ZeroMatrix( R, m, n )</C> can be used, for example,
 if we want to leave the decision about the representation of the result
