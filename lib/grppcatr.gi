@@ -543,6 +543,27 @@ RedispatchOnCondition( MaximalNormalSubgroups, true,
 
 #############################################################################
 ##
+#F  ReduceMinGens( <pcgs>, <pcgsN>, <min> )
+##
+BindGlobal( "ReduceMinGens", function( pcgs, pcgsN, min )
+    local i, new;
+
+    # Later layer refinements can make a previously appended generator
+    # redundant. Re-test the current candidates against the bottom layer.
+    i := 1;
+    while i <= Length( min ) do
+        new := min{Filtered([1..Length( min )], j -> j <> i)};
+        if Length( InducedPcgsByPcSequenceAndGenerators( pcgs, pcgsN, new ) )
+           = Length( pcgs ) then
+            Remove( min, i );
+        else
+            i := i + 1;
+        fi;
+    od;
+end );
+
+#############################################################################
+##
 #F  ModifyMinGens( <pcgsG>, <pcgsS>, <pcgsL>, <min> )
 ##
 BindGlobal( "ModifyMinGens", function( pcgs, pcgsS, pcgsL, min )
@@ -551,7 +572,8 @@ BindGlobal( "ModifyMinGens", function( pcgs, pcgsS, pcgsL, min )
     # set up
     pcgsF := pcgsS mod pcgsL;
 
-    # try to modify mingens
+    # Try to absorb a generator from the current factor into one of the
+    # existing candidates before growing the generating set.
     for g in pcgsF do
         for i in [1..Length( min )] do
             new := ShallowCopy( min );
@@ -598,8 +620,13 @@ BindGlobal( "MinimalGensLayer", function( pcgs, pcgsS, pcgsN, min )
         pcgsV := InducedPcgsByPcSequenceAndGenerators( pcgs, pcgsL, min );
         pcgsU := InducedPcgsByPcSequenceAndGenerators( pcgs, pcgsN, min );
         if Length( pcgs ) = Length( pcgsV ) then
+            # Once the current candidates span the whole layer, continue with
+            # the next smaller layer and revisit any earlier append decisions.
             pcgsS := pcgsL;
             Remove(series);
+            ReduceMinGens( pcgs, pcgsN, min );
+            pcgsV := InducedPcgsByPcSequenceAndGenerators( pcgs, pcgsS, min );
+            pcgsU := InducedPcgsByPcSequenceAndGenerators( pcgs, pcgsN, min );
         fi;
     od;
     return min;
