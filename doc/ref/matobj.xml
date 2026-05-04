@@ -22,6 +22,63 @@ cf. Chapters <Ref Chap="Row Vectors"/> and <Ref Chap="Matrices"/>.
 
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+<Section Label="Some Elementary Examples">
+<Heading>Some Elementary Examples</Heading>
+Just to give a flavour of these new objects, we construct here two vectors
+and matrices in these new forms. 
+The elements should all belong to a semiring <A>R</A>
+(the <C>BaseDomain</C>).
+To construct these objects we use the operations
+<C>Vector</C> and <C>Matrix</C> which are described in Section
+<Ref Sect="Constructing Vector and Matrix Objects"/>.
+<P/>
+Basic arithmetic operations for vectors and matrices are available: 
+see Sections <Ref Sect="Arithmetical Operations for Vector Objects"/> and
+<Ref Sect="Arithmetical Operations for Matrix Objects"/>.
+<P/>
+Note that if <A>m2</A>, like <A>m2</A>, had been defined over the integers
+then attempting to have displayed its inverse would have thrown an error. 
+<P/>
+<Example><![CDATA[
+gap> dom := Integers;;
+gap> v1 := Vector( dom, [3,4,7,8] );;
+gap> Print( v1 );               
+NewVector(IsPlistVectorRep,Integers,[ 3, 4, 7, 8 ])
+gap> m1 := Matrix( dom, [ [1,2,3,4], [6,7,8,9] ] );;
+gap> Display( m1 ); 
+<2x4-matrix over Integers:
+[[ 1, 2, 3, 4 ]
+ [ 6, 7, 8, 9 ]
+]>
+gap> v2 := Vector( [-7..-4], v1 );
+<plist vector over Integers of length 4>
+gap> Print( v1 + v2 );
+NewVector(IsPlistVectorRep,Integers,[ -4, -2, 2, 4 ])
+gap> Display( (v1+v2) * TransposedMat( m1 ) );
+<a plist vector over Integers:
+[ 14, 14 ]
+>
+gap> m2 := Matrix( Rationals, [ [8,5], [7,4] ] );;
+gap> Display( m2^(-1) );
+<2x2-matrix over Rationals:
+[[ -4/3, 5/3 ]
+ [ 7/3, -8/3 ]
+]>
+]]></Example>
+
+These objects need to know their <E>type</E>, or <E>filter</E>.
+The simplest of these use plain lists, namely <Ref Filt="IsPlistVectorRep"/>
+and <Ref Filt="IsPlistMatrixRep"/>, 
+which &GAP; chooses automatically for <A>v1</A> and <A>M</A>.
+Note that <A>v2</A> acquires its type by being defined relative to <A>v1</A>.
+Other available types are listed in Sections
+<Ref Sect="Available Representations of Vector Objects"/> and
+<Ref Sect="Available Representations of Matrix Objects"/>.
+
+</Section>
+
+
+<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 <Section Label="Categories of Vector and Matrix Objects">
 <Heading>Categories of Vector and Matrix Objects</Heading>
 
@@ -55,13 +112,13 @@ More can be added as soon as there is need for them.
 <Section Label="Constructing Vector and Matrix Objects">
 <Heading>Constructing Vector and Matrix Objects</Heading>
 
-<#Include Label="NewVector">
 <#Include Label="Vector">
 <#Include Label="VectorObj_ZeroVector">
-<#Include Label="NewMatrix">
+<#Include Label="NewVector">
 <#Include Label="MatObj_Matrix">
 <#Include Label="MatObj_ZeroMatrix">
 <#Include Label="MatObj_IdentityMatrix">
+<#Include Label="NewMatrix">
 
 </Section>
 

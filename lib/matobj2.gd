@@ -198,6 +198,12 @@ DeclareAttribute( "Length", IsVectorObj );
 ##  value of <A>v</A> or <A>M</A> implies <Ref Filt="IsCopyable"/> then
 ##  mutable versions of <A>v</A> or <A>M</A> can be created,
 ##  otherwise all vector or matrix objects with this filter are immutable.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> v := Vector( Rationals, [3,4,7,8] );;
+##  gap> ConstructingFilter( v );
+##  <Representation "IsPlistVectorRep">
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -222,6 +228,14 @@ DeclareAttribute( "ConstructingFilter", IsVecOrMatObj );
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> value
 ##  <C>f</C> are compatible in the sense that <A>M</A> can be multiplied with
 ##  these vector objects, of <K>fail</K> if no such filter is known.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [1,2,3,4], [6,7,8,9] ] );;
+##  gap> ConstructingFilter( m1 );
+##  <Representation "IsPlistMatrixRep">
+##  gap> CompatibleVectorFilter( m1 );
+##  <Representation "IsPlistVectorRep">
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -553,27 +567,25 @@ DeclareOperation( "ScalarProduct", [ IsVectorObj, IsVectorObj ] );
 
 #############################################################################
 ##
-#O  ZeroVector( <filt>, <R>, <len> )
 #O  ZeroVector( <R>, <len> )
 #O  ZeroVector( <len>, <v> )
 #O  ZeroVector( <len>, <M> )
+#O  ZeroVector( <filt>, <R>, <len> )
 ##
 ##  <#GAPDoc Label="VectorObj_ZeroVector">
 ##  <ManSection>
 ##  <Heading>ZeroVector</Heading>
-##  <Oper Name="ZeroVector" Arg="filt,R,len" Label="for filter, base domain and length"/>
 ##  <Oper Name="ZeroVector" Arg="R,len" Label="for base domain and length"/>
 ##  <Oper Name="ZeroVector" Arg="len,v" Label="for length and vector object"/>
 ##  <Oper Name="ZeroVector" Arg="len,M" Label="for length and matrix object"/>
+##  <Oper Name="ZeroVector" Arg="filt,R,len" Label="for filter, base domain and length"/>
 ##
 ##  <Returns>a vector object</Returns>
 ##  <Description>
-##  For a filter <A>filt</A>, a semiring <A>R</A> and a nonnegative integer <A>len</A>,
-##  this operation returns a new vector object of length <A>len</A> over <A>R</A>
-##  in the representation <A>filt</A> containing only zeros.
-##  <P/>
-##  If only <A>R</A> and <A>len</A> are given,
-##  then &GAP; guesses a suitable representation.
+##  For a semiring <A>R</A> and a nonnegative integer <A>len</A>,
+##  this operation returns a new vector object of length <A>len</A>
+##  over <A>R</A> in the representation <A>filt</A> containing only zeros.
+##  &GAP; guesses a suitable representation.
 ##  <P/>
 ##  For a vector object <A>v</A> and a nonnegative integer <A>len</A>,
 ##  this operation returns a new vector object of length <A>len</A>
@@ -585,6 +597,11 @@ DeclareOperation( "ScalarProduct", [ IsVectorObj, IsVectorObj ] );
 ##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
 ##  of <A>M</A>, provided that such a representation exists.
 ##  <P/>
+##  For a filter <A>filt</A>, a semiring <A>R</A> and a nonnegative integer
+##  <A>len</A>, this operation returns a new vector object of length
+##  <A>len</A> over <A>R</A> in the representation <A>filt</A>
+##  containing only zeros.
+##  <P/>
 ##  If the <Ref Attr="ConstructingFilter" Label="for a vector object"/>
 ##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
 ##  mutable.
@@ -592,33 +609,40 @@ DeclareOperation( "ScalarProduct", [ IsVectorObj, IsVectorObj ] );
 ##  Default methods for
 ##  <Ref Oper="ZeroVector" Label="for filter, base domain and length"/>
 ##  delegate to <Ref Oper="NewZeroVector"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> z1 := ZeroVector( Rationals, 4 );; Print( z1 );
+##  NewVector(IsPlistVectorRep,Rationals,[ 0, 0, 0, 0 ])
+##  gap> v5 := Vector( GF(5), [3,4]*Z(5) );; z5 := ZeroVector(3,v5);; Print(z5);
+##  [ 0*Z(5), 0*Z(5), 0*Z(5) ]
+##  gap> m6:=Matrix(Integers,[[1,3],[5,7]]);; z6:=ZeroVector(6,m6);; Print(z6);
+##  NewVector(IsPlistVectorRep,Integers,[ 0, 0, 0, 0, 0, 0 ])
+##  gap> z8 := ZeroVector( IsZmodnZVectorRep, ZmodnZ(8), 4 );; Print( z8 );
+##  NewVector(IsZmodnZVectorRep,Monoid( ... ),[ 0, 0, 0, 0 ])
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ZeroVector", [ IsOperation, IsSemiring, IsInt ] );
 DeclareOperation( "ZeroVector", [ IsSemiring, IsInt ] );
 DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
+DeclareOperation( "ZeroVector", [ IsOperation, IsSemiring, IsInt ] );
 #DeclareOperation( "ZeroVector", [ IsInt, IsVectorObj ] );
 #DeclareOperation( "ZeroVector", [ IsInt, IsMatrixOrMatrixObj ] );
 
 
 #############################################################################
 ##
-#O  Vector( <filt>, <R>, <list> )
-#O  Vector( <filt>, <R>, <v> )
 #O  Vector( <R>, <list> )
 #O  Vector( <R>, <v> )
 #O  Vector( <list>, <v> )
 #O  Vector( <v1>, <v2> )
+#O  Vector( <filt>, <R>, <list> )
+#O  Vector( <filt>, <R>, <v> )
 ##
 ##  <#GAPDoc Label="Vector">
 ##  <ManSection>
 ##  <Heading>Vector</Heading>
-##  <Oper Name="Vector" Arg='filt,R,list'
-##   Label="for filter, base domain, and list"/>
-##  <Oper Name="Vector" Arg='filt,R,v'
-##   Label="for filter, base domain, and vector object"/>
 ##  <Oper Name="Vector" Arg='R,list'
 ##   Label="for base domain and list"/>
 ##  <Oper Name="Vector" Arg='R,v'
@@ -629,20 +653,17 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 ##   Label="for two vector objects"/>
 ##  <Oper Name="Vector" Arg='list'
 ##   Label="for a list"/>
+##  <Oper Name="Vector" Arg='filt,R,list'
+##   Label="for filter, base domain, and list"/>
+##  <Oper Name="Vector" Arg='filt,R,v'
+##   Label="for filter, base domain, and vector object"/>
 ##
 ##  <Returns>a vector object</Returns>
 ##  <Description>
-##  If a filter <A>filt</A> is given as the first argument then
-##  a vector object is returned that has
-##  <Ref Attr="ConstructingFilter" Label="for a vector object"/>
-##  value <A>filt</A>, is defined over the base domain <A>R</A>,
-##  and has the entries given by the list <A>list</A> or the vector object
-##  <A>v</A>, respectively.
-##  <P/>
 ##  If a semiring <A>R</A> is given as the first argument then
 ##  a vector object is returned whose
 ##  <Ref Attr="ConstructingFilter" Label="for a vector object"/>
-##  value is guessed from <A>R</A>, again with base domain <A>R</A>
+##  value is guessed from <A>R</A>, with base domain <A>R</A>
 ##  and entries given by the last argument.
 ##  <P/>
 ##  In the remaining cases with two arguments,
@@ -653,16 +674,23 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> are taken for the
 ##  result.
 ##  <P/>
-##  If only a list <A>list</A> is given then both the
-##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and the
-##  <Ref Attr="BaseDomain" Label="for a vector object"/> are guessed from
-##  this list.
-##  <P/>
 ##  The variant <C>Vector( </C><A>v1</A><C>, </C><A>v2</A><C> )</C>
 ##  is supported also for the case that <A>v2</A> is a row vector but not
 ##  a vector object.
 ##  In this situation, the result is a row vector that is equal to
 ##  <A>v1</A> and whose internal representation fits to that of <A>v2</A>.
+##  <P/>
+##  If only a list <A>list</A> is given then both the
+##  <Ref Attr="ConstructingFilter" Label="for a vector object"/> and the
+##  <Ref Attr="BaseDomain" Label="for a vector object"/> are guessed from
+##  this list.
+##  <P/>
+##  If a filter <A>filt</A> is given as the first argument then
+##  a vector object is returned that has
+##  <Ref Attr="ConstructingFilter" Label="for a vector object"/>
+##  value <A>filt</A>, is defined over the base domain <A>R</A>,
+##  and has the entries given by the list <A>list</A> or the vector object
+##  <A>v</A>, respectively.
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="Vector" Label="for filter, base domain, and list"/>
@@ -679,17 +707,41 @@ DeclareOperation( "ZeroVector", [ IsInt, IsVecOrMatObj ] );
 ##  Default methods for
 ##  <Ref Oper="Vector" Label="for filter, base domain, and list"/>
 ##  delegate to <Ref Oper="NewVector"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> v1 := Vector( Integers, [3,4,7,8] );; Print( v1 );
+##  NewVector(IsPlistVectorRep,Integers,[ 3, 4, 7, 8 ])
+##  gap> v2 := Vector( Rationals, v1 );; Print( v2 );
+##  NewVector(IsPlistVectorRep,Rationals,[ 3, 4, 7, 8 ])
+##  gap> v3 := Vector( [ 11..13], v1) ;; Print( v3 );
+##  NewVector(IsPlistVectorRep,Integers,[ 11, 12, 13 ])
+##  gap> v0 := [6..9];; IsVector( v0 );
+##  true
+##  gap> Print( Vector( v0, v1 ) );
+##  NewVector(IsPlistVectorRep,Integers,[ 6, 7, 8, 9 ])
+##  gap> v4 := Vector( [ 2, 5/2, 7/3, 3 ] );; Print( v4 );
+##  NewVector(IsPlistVectorRep,Rationals,[ 2, 5/2, 7/3, 3 ])
+##  gap> v5 := Vector( IsGF2VectorRep, GF(2), [ 0, 1, 2 ]*Z(2)^0 );;
+##  gap> Print( v5 );
+##  [ 0*Z(2), Z(2)^0, 0*Z(2) ]
+##  gap> v6 := Vector( IsZmodnZVectorRep, ZmodnZ(8), v1 );
+##  <vector mod 8: [ 3, 4, 7, 8 ]>
+##  gap> BaseDomain( v6 );
+##  (Integers mod 8)
+##  gap> v7 := Vector( IsZmodnZVectorRep, ZmodnZ(12), v0 );
+##  <vector mod 12: [ 6 .. 9 ]>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "Vector", [ IsOperation, IsSemiring, IsList ] );
-DeclareOperation( "Vector", [ IsOperation, IsSemiring, IsVectorObj ] );
 DeclareOperation( "Vector", [ IsSemiring, IsList ] );
 DeclareOperation( "Vector", [ IsSemiring, IsVectorObj ] );
 DeclareOperation( "Vector", [ IsList, IsVectorObj ] );
 DeclareOperation( "Vector", [ IsVectorObj, IsVectorObj ] );
 DeclareOperation( "Vector", [ IsList ] );
+DeclareOperation( "Vector", [ IsOperation, IsSemiring, IsList ] );
+DeclareOperation( "Vector", [ IsOperation, IsSemiring, IsVectorObj ] );
 
 
 #############################################################################
@@ -704,6 +756,11 @@ DeclareOperation( "Vector", [ IsList ] );
 ##  <Oper Name="NewZeroVector" Arg='filt,R,n'/>
 ##
 ##  <Description>
+##  These two operations are <E>constructors</E>, and should only be used
+##  when <Ref Oper="Vector" Label="for base domain and list"/> or
+##  <Ref Oper="ZeroVector" Label="for filter, base domain and length"/>
+##  do not give the desired result.
+##  <P/>
 ##  For a filter <A>filt</A>, a semiring <A>R</A>, and a list <A>list</A>
 ##  of elements that belong to <A>R</A>,
 ##  <Ref Oper="NewVector"/> returns a vector object which has
@@ -724,6 +781,15 @@ DeclareOperation( "Vector", [ IsList ] );
 ##  <P/>
 ##  The returned object is mutable if and only if <A>filt</A> implies
 ##  <Ref Filt="IsCopyable"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> v := NewVector( IsGF2VectorRep, GF(2), [1,0,1,0,1]*Z(2) );
+##  <a GF2 vector of length 5>
+##  gap> Print(v);
+##  [ Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0 ]
+##  gap> NewZeroVector( IsZmodnZVectorRep, ZmodnZ(7), 5 );
+##  <vector mod 7: [ 0, 0, 0, 0, 0 ]>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -737,6 +803,8 @@ DeclareTagBasedOperation( "NewZeroVector",
 #############################################################################
 ##
 #O  NewMatrix( <filt>, <R>, <ncols>, <list> )
+#O  NewMatrix( <filt>, <R>, <list>, <ncols> )
+#O  NewMatrix( <filt>, <R>, <list> )
 #O  NewZeroMatrix( <filt>, <R>, <m>, <n> )
 #O  NewIdentityMatrix( <filt>, <R>, <n> )
 ##
@@ -744,10 +812,22 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  <ManSection>
 ##  <Heading>NewMatrix, NewZeroMatrix, NewIdentityMatrix</Heading>
 ##  <Oper Name="NewMatrix" Arg='filt,R,ncols,list'/>
+##  <Oper Name="NewMatrix" Arg='filt,R,list,ncols'
+##   Label="for filter, base domain, list and ncols"/>
+##  <Oper Name="NewMatrix" Arg='filt,R,list'
+##   Label="for filter, base domain and list"/>
 ##  <Oper Name="NewZeroMatrix" Arg='filt,R,m,n'/>
 ##  <Oper Name="NewIdentityMatrix" Arg='filt,R,n'/>
 ##
 ##  <Description>
+##  These three operations are <E>constructors</E>, and should only be used
+##  by those implementing new material for matrix objects.
+##  Most users should find
+##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>,
+##  <Ref Oper="ZeroMatrix" Label="for dimensions and matrix object"/> or
+##  <Ref Oper="IdentityMatrix" Label="for dimension and matrix object"/>
+##  sufficient for their requirements.
+##  <P/>
 ##  For a filter <A>filt</A>, a semiring <A>R</A>,
 ##  a positive integer <A>ncols</A>, and a list <A>list</A>,
 ##  <Ref Oper="NewMatrix"/> returns a matrix object which has
@@ -765,6 +845,10 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  <P/>
 ##  The corresponding entries must be in or compatible with <A>R</A>.
 ##  If <A>list</A> already contains vector objects, they are copied.
+##  <P/>
+##  The second and third alternatives for <C>NewMatrix</C> have been added
+##  for consistency with the corresponding versions of <C>Matrix</C>.
+##  They just call the first version.
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="NewMatrix"/> need not perform consistency checks.
@@ -785,12 +869,31 @@ DeclareTagBasedOperation( "NewZeroVector",
 ##  <P/>
 ##  The returned object is mutable if and only if <A>filt</A> implies
 ##  <Ref Filt="IsCopyable"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := NewMatrix( IsPlistMatrixRep, Integers, 3, [ [4,5,6], [7,8,9] ] );;
+##  gap> Display( m1 );
+##  <2x3-matrix over Integers:
+##  [[ 4, 5, 6 ]
+##   [ 7, 8, 9 ]
+##  ]>
+##  gap> NewZeroMatrix( IsPlistMatrixRep, Rationals, 5, 3 );
+##  <5x3-matrix over Rationals>
+##  gap> NewIdentityMatrix( IsGF2MatrixRep, GF(2), 4 );
+##  <a 4x4 matrix over GF2>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareTagBasedOperation( "NewMatrix",
     [ IsOperation, IsSemiring, IsInt, IsList] );
+
+DeclareOperation( "NewMatrix",
+    [ IsOperation, IsSemiring, IsList, IsInt] );
+
+DeclareOperation( "NewMatrix",
+    [ IsOperation, IsSemiring, IsList] );
 
 DeclareTagBasedOperation( "NewZeroMatrix",
     [ IsOperation, IsSemiring, IsInt, IsInt ] );
@@ -1126,6 +1229,20 @@ DeclareSynonym( "SetMatElm", ASS_MAT );
 ##  Default methods for
 ##  <Ref Oper="ZeroMatrix" Label="for dimensions and matrix object"/>
 ##  delegate to <Ref Oper="NewZeroMatrix"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m7 := Matrix( IsZmodnZMatrixRep, ZmodnZ(8), [1..6], 3 );;
+##  gap> z7 := ZeroMatrix( 2, 2, m7 );; Print( z7 );
+##  NewMatrix(IsZmodnZMatrixRep,Monoid( ... ),2,
+##  [ [ ZmodnZObj( 0, 8 ), ZmodnZObj( 0, 8 ) ],
+##    [ ZmodnZObj( 0, 8 ), ZmodnZObj( 0, 8 ) ] ])
+##  gap> z23 := ZeroMatrix( Rationals, 2, 3 );; Print( z23 );
+##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ 0, 0, 0 ], [ 0, 0, 0 ] ])
+##  gap> z5 := ZeroMatrix( IsGF2MatrixRep, GF(2), 2, 5 );; Display( z5 );
+##   . . . . .
+##   . . . . .
+##  ]>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1173,6 +1290,21 @@ DeclareOperation( "ZeroMatrix", [ IsOperation, IsSemiring, IsInt, IsInt ] );
 ##  Default methods for
 ##  <Ref Oper="IdentityMatrix" Label="for dimension and matrix object"/>
 ##  delegate to <Ref Oper="NewIdentityMatrix"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m7 := Matrix( IsZmodnZMatrixRep, ZmodnZ(8), [1..6], 3 );;
+##  gap> id7 := IdentityMatrix( 2, m7 );; Print( id7 );
+##  NewMatrix(IsZmodnZMatrixRep,Monoid( ... ),2,
+##  [ [ ZmodnZObj( 1, 8 ), ZmodnZObj( 0, 8 ) ],
+##    [ ZmodnZObj( 0, 8 ), ZmodnZObj( 1, 8 ) ] ])
+##  gap> id2 := IdentityMatrix( Rationals, 2 );; Print( id2 );
+##  NewMatrix(IsPlistMatrixRep,Rationals,2,[ [ 1, 0 ], [ 0, 1 ] ])
+##  gap> id3 := IdentityMatrix( IsGF2MatrixRep, GF(2), 3 );; Display( id3 );
+##   1 . .
+##   . 1 .
+##   . . 1
+##  ]>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1247,63 +1379,56 @@ DeclareOperation( "CompanionMatrix",
 
 #############################################################################
 ##
-#O  Matrix( <filt>, <R>, <list>, <ncols> )
-#O  Matrix( <filt>, <R>, <list> )
-#O  Matrix( <filt>, <R>, <M> )
-#O  Matrix( <R>, <list>, <ncols> )
 #O  Matrix( <R>, <list> )
+#O  Matrix( <R>, <list>, <ncols> )
 #O  Matrix( <R>, <M> )
-#O  Matrix( <list>, <ncols>, <M> )
 #O  Matrix( <list>, <M> )
+#O  Matrix( <list>, <ncols>, <M> )
 #O  Matrix( <M1>, <M2> )
-#O  Matrix( <list>, <ncols> )
 #O  Matrix( <list> )
+#O  Matrix( <list>, <ncols> )
+#O  Matrix( <filt>, <R>, <list> )
+#O  Matrix( <filt>, <R>, <list>, <ncols> )
+#O  Matrix( <filt>, <R>, <M> )
 ##
 ##  <#GAPDoc Label="MatObj_Matrix">
 ##  <ManSection>
 ##  <Heading>Matrix</Heading>
-##  <Oper Name="Matrix" Arg='filt,R,list,ncols'
-##   Label="for filter, base domain, list, ncols"/>
-##  <Oper Name="Matrix" Arg='filt,R,list'
-##   Label="for filter, base domain, and list"/>
-##  <Oper Name="Matrix" Arg='filt,R,M'
-##   Label="for filter, base domain, and matrix object"/>
-##  <Oper Name="Matrix" Arg='R,list,ncols'
-##   Label="for base domain, list, ncols"/>
 ##  <Oper Name="Matrix" Arg='R,list'
 ##   Label="for base domain and list"/>
+##  <Oper Name="Matrix" Arg='R,list,ncols'
+##   Label="for base domain, list, ncols"/>
 ##  <Oper Name="Matrix" Arg='R,M'
 ##   Label="for base domain and matrix object"/>
-##  <Oper Name="Matrix" Arg='list,ncols,M'
-##   Label="for a list, ncols, and a matrix object"/>
 ##  <Oper Name="Matrix" Arg='list,M'
 ##   Label="for a list and a matrix object"/>
+##  <Oper Name="Matrix" Arg='list,ncols,M'
+##   Label="for a list, ncols, and a matrix object"/>
 ##  <Oper Name="Matrix" Arg='M1,M2'
 ##   Label="for two matrix objects"/>
-##  <Oper Name="Matrix" Arg='list,ncols'
-##   Label="for a list and ncols"/>
 ##  <Oper Name="Matrix" Arg='list'
 ##   Label="for a list"/>
+##  <Oper Name="Matrix" Arg='list,ncols'
+##   Label="for a list and ncols"/>
+##  <Oper Name="Matrix" Arg='filt,R,list'
+##   Label="for filter, base domain, and list"/>
+##  <Oper Name="Matrix" Arg='filt,R,list,ncols'
+##   Label="for filter, base domain, list, ncols"/>
+##  <Oper Name="Matrix" Arg='filt,R,M'
+##   Label="for filter, base domain, and matrix object"/>
 ##
 ##  <Returns>a matrix object</Returns>
 ##  <Description>
-##  If a filter <A>filt</A> is given as the first argument then
-##  a matrix object is returned that has
+##  If a semiring <A>R</A> is given as the first argument then
+##  a matrix object is returned whose
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
-##  value <A>filt</A>, is defined over the base domain <A>R</A>,
-##  and has the entries given by the list <A>list</A> or the matrix object
-##  <A>M</A>, respectively.
+##  value is guessed from <A>R</A>, with base domain <A>R</A>
+##  and entries given by the argument <A>list</A>.
 ##  Here <A>list</A> can be either a list of plain lists that describe the
 ##  entries of the rows, or a flat list of the entries in row major order,
 ##  where <A>ncols</A> defines the number of columns.
 ##  <P/>
-##  If a semiring <A>R</A> is given as the first argument then
-##  a matrix object is returned whose
-##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
-##  value is guessed from <A>R</A>, again with base domain <A>R</A>
-##  and entries given by the last argument.
-##  <P/>
-##  In those remaining cases where the last argument is a matrix object,
+##  In those cases where the last argument is a matrix object,
 ##  the first argument is a list or a matrix object
 ##  that defines (together with <A>ncols</A> if applicable) the entries of
 ##  the result, and the
@@ -1311,11 +1436,18 @@ DeclareOperation( "CompanionMatrix",
 ##  <Ref Attr="BaseDomain" Label="for a matrix object"/> of the last argument
 ##  are taken for the result.
 ##  <P/>
-##  Finally, if only a list <A>list</A> and perhaps <A>ncols</A> is given
+##  If only a list <A>list</A> and perhaps <A>ncols</A> is given
 ##  then both the
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and the
 ##  <Ref Attr="BaseDomain" Label="for a vector object"/> are guessed from
 ##  the list.
+##  <P/>
+##  In the remaining cases a filter <A>filt</A> is given as the
+##  first argument and a matrix object is returned that has
+##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
+##  value <A>filt</A>, is defined over the base domain <A>R</A>,
+##  and has the entries given by the list <A>list</A> or the matrix object
+##  <A>M</A>, respectively.
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
@@ -1334,6 +1466,40 @@ DeclareOperation( "CompanionMatrix",
 ##  Default methods for
 ##  <Ref Oper="Matrix" Label="for filter, base domain, list, ncols"/>
 ##  delegate to <Ref Oper="NewMatrix"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [3,4,5], [6,7,8] ] );; Print( m1 );
+##  NewMatrix(IsPlistMatrixRep,Integers,3,[ [ 3, 4, 5 ], [ 6, 7, 8 ] ])
+##  gap> m2 := Matrix( Rationals, [10..30], 7 );; Display( m2 );
+##  <3x7-matrix over Rationals:
+##  [[ 10 .. 16 ]
+##   [ 17 .. 23 ]
+##   [ 24 .. 30 ]
+##  ]>
+##  gap> Print( Matrix( Integers, m2 ) );
+##  NewMatrix(IsPlistMatrixRep,Integers,7,
+##  [ [ 10 .. 16 ], [ 17 .. 23 ], [ 24 .. 30 ] ])
+##  gap> m3 := Matrix( [[7,6],[4,3]], m2 );; Print(m3);
+##  NewMatrix(IsPlistMatrixRep,Rationals,2,[ [ 7, 6 ], [ 4, 3 ] ])
+##  gap> m4 := Matrix( [-7..-2], 3, m2 );; Print(m4);
+##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ -7, -6, -5 ], [ -4, -3, -2 ] ])
+##  gap> m0 := [[-1,-2],[-3,-4]];; IsMatrix(m0);
+##  true
+##  gap> Print( Matrix( m0, m1 ) );
+##  NewMatrix(IsPlistMatrixRep,Integers,2,[ [ -1, -2 ], [ -3, -4 ] ])
+##  gap> m5 := Matrix( [ [0,1,2], [7,8,9] ] );; Print( m5 );
+##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ 0, 1, 2 ], [ 7, 8, 9 ] ])
+##  gap> Print( Matrix( [-9..-4], 3, m1 ) );
+##  NewMatrix(IsPlistMatrixRep,Integers,3,[ [ -9, -8, -7 ], [ -6, -5, -4 ] ])
+##  gap> m6 := Matrix( IsGF2MatrixRep, GF(2), [[1,0,1],[0,1,0]]*Z(2)^0 );;
+##  gap> Display( m6 );
+##   1 . 1
+##   . 1 .
+##  gap> m7 := Matrix( IsZmodnZMatrixRep, ZmodnZ(8), [1..6], 3 );
+##  <matrix mod 8: [ [ 1 .. 3 ], [ 4 .. 6 ] ]>
+##  gap> m8 := Matrix( IsZmodnZMatrixRep, ZmodnZ(12), m0 );
+##  <matrix mod 12: [ [ -1, -2 ], [ -3, -4 ] ]>
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2093,6 +2259,7 @@ DeclareOperationKernel( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable
 ##  representation.
 ##  If both of the matrices are lists-of-lists, then the operation is delegated
 ##  row by row to <Ref Oper="AddRowVector"/>.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> mat1 := [ [ 1, 2 ], [ 3, 4 ] ];
 ##  [ [ 1, 2 ], [ 3, 4 ] ]
@@ -2132,6 +2299,7 @@ DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMa
 ##  In all of these, if the matrix <A>mat</A> is a lists-of-lists, then the
 ##  operation is delegated row by row to <Ref Oper="MultVectorRight"/> and
 ##  <Ref Oper="MultVectorLeft"/>.
+##  <P/>
 ##  <Example><![CDATA[
 ##  gap> mat1 := [ [ 1, 2 ], [ 3, 4 ] ];
 ##  [ [ 1, 2 ], [ 3, 4 ] ]
