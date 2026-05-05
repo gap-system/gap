@@ -388,6 +388,12 @@ DeclareOperation( "ListOp", [ IsVectorObj, IsFunction ] );
 ##  <P/>
 ##  Changing the result does not change <A>v</A> or <A>M</A>, respectively.
 ##  The entries themselves are not copied.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [1,2,3,4], [6,7,8,9] ] );;
+##  gap> Unpack( m1 );
+##  [ [ 1, 2, 3, 4 ], [ 6, 7, 8, 9 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -927,6 +933,17 @@ DeclareTagBasedOperation( "NewIdentityMatrix",
 ##  <P/>
 ##  For example, one can create a vector defined over <C>GF(4)</C>
 ##  from a vector defined over <C>GF(2)</C> with this operation.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> v1 := Vector( Integers, [ 3, 5, 7, 9 ] );;
+##  gap> ChangedBaseDomain( v1, Rationals );                     
+##  <plist vector over Rationals of length 4>
+##  gap> m6 := Matrix( IsGF2MatrixRep, GF(2), [[1,0,1],[0,1,0]]*Z(2)^0 );;
+##  gap> m64 := ChangedBaseDomain( m6, GF(4) );
+##  [ [ Z(2)^0, 0*Z(2), Z(2)^0 ], [ 0*Z(2), Z(2)^0, 0*Z(2) ] ]
+##  gap> ConstructingFilter( m64 );
+##  <Representation "Is8BitMatrixRep">
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -996,6 +1013,13 @@ DeclareOperation( "Randomize", [ IsRandomSource, IsMatrixOrMatrixObj and IsMutab
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="CopySubVector"/> need not perform consistency checks.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> v1 := Vector( Integers, [ 2,3,5,6,8,9 ] );;
+##  gap> v2 := Vector( Integers, [ 9,8,6,5,3,2 ] );;
+##  gap> CopySubVector( v1, v2, [2..4], [3..5] ); Print( v2 );
+##  NewVector(IsPlistVectorRep,Integers,[ 9, 8, 3, 5, 6, 2 ])
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1303,7 +1327,6 @@ DeclareOperation( "ZeroMatrix", [ IsOperation, IsSemiring, IsInt, IsInt ] );
 ##   1 . .
 ##   . 1 .
 ##   . . 1
-##  ]>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
