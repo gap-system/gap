@@ -204,6 +204,13 @@ SYSINFO_CPPFLAGS += -I$(abs_srcdir)/src/extra
 GAP_CPPFLAGS += $(GAP_DEFINES)
 SYSINFO_CPPFLAGS += $(GAP_DEFINES)
 
+# Normalize __FILE__ expansions so installed binaries do not embed absolute
+# source or build paths from out-of-tree builds.
+GAP_CPPFLAGS += -fmacro-prefix-map=$(abs_srcdir)/=
+GAP_CPPFLAGS += -fmacro-prefix-map=$(abs_builddir)/=
+GAP_CPPFLAGS += -ffile-prefix-map=$(abs_srcdir)/=
+GAP_CPPFLAGS += -ffile-prefix-map=$(abs_builddir)/=
+
 # Add flags for dependencies
 GAP_CPPFLAGS += $(GMP_CPPFLAGS)
 GAP_CPPFLAGS += $(ZLIB_CPPFLAGS)
@@ -301,6 +308,7 @@ GAP_LIBS += $(LIBS)
 ifneq (,$(findstring cygwin,$(host_os)))
   GAC_CFLAGS =
   GAC_LDFLAGS = -shared -Wl,$(abs_builddir)/bin/$(GAPARCH)/gap.dll -Wl,--enable-auto-image-base
+  GAC_LDFLAGS_FOR_INSTALL = $(GAC_LDFLAGS)
   # Note: the above won't be correct after "make install"; but then I am not
   # sure we care about "make install" on Cygwin, so I am not going to work on
   # this until someone specifically asks for it (and even then I'll require
@@ -308,10 +316,12 @@ ifneq (,$(findstring cygwin,$(host_os)))
 else
   ifneq (,$(findstring darwin,$(host_os)))
     GAC_CFLAGS = -fno-common
-    GAC_LDFLAGS = -bundle -undefined dynamic_lookup -Wl,-no_fixup_chains
+    GAC_LDFLAGS = -bundle $(LIBGAP_BUILD_LDFLAGS)
+    GAC_LDFLAGS_FOR_INSTALL = -bundle $(LIBGAP_INSTALL_LDFLAGS)
   else
     GAC_CFLAGS = -fPIC
-    GAC_LDFLAGS = -shared -fPIC
+    GAC_LDFLAGS = -shared -fPIC $(LIBGAP_BUILD_LDFLAGS)
+    GAC_LDFLAGS_FOR_INSTALL = -shared -fPIC $(LIBGAP_INSTALL_LDFLAGS)
   endif
 endif
 
@@ -431,7 +441,6 @@ build/obj/%.c.o: %.c cnf/GAP-CFLAGS cnf/GAP-CPPFLAGS $(obj_deps)
 ########################################################################
 
 LINK=$(CC)
-GAP_INSTALL_EXTRAFLAGS =
 SHLIB_MAJOR = $(GAP_KERNEL_MAJOR_VERSION)
 ifneq (,$(findstring cygwin,$(host_os)))
   SHLIB_EXT=.dll
@@ -447,8 +456,7 @@ else ifneq (,$(findstring darwin,$(host_os)))
   LINK_SHLIB_FLAGS += -compatibility_version $(LIBGAP_COMPAT_VER)
   LINK_SHLIB_FLAGS += -current_version $(LIBGAP_CURRENT_VER)
   LINK_SHLIB_FLAGS += -Wl,-single_module
-  LINK_SHLIB_FLAGS += -Wl,-headerpad_max_install_names
-  GAP_INSTALL_EXTRAFLAGS = -Wl,-headerpad_max_install_names
+  LINK_SHLIB_FLAGS += -Wl,-install_name,@rpath/$(LIBGAP_FULL)
 
   GAP_CPPFLAGS += -DPIC
   GAP_CFLAGS += -fno-common
@@ -466,10 +474,18 @@ else
   GAP_LDFLAGS += -Wl,--export-dynamic
 endif
 
-ifneq (,$(findstring darwin,$(host_os)))
-INSTALL_NAME_TOOL = @install_name_tool
+# Build-tree and installed targets intentionally use different runtime search
+# paths, but both link against libgap through these centralized variables.
+LIBGAP_BUILD_LDFLAGS = $(abs_builddir)/libgap$(SHLIB_EXT)
+LIBGAP_INSTALL_LDFLAGS = -L$(libdir) -lgap
+LIBGAP_BUILD_RPATH =
+LIBGAP_INSTALL_RPATH =
+
+ifneq (,$(findstring cygwin,$(host_os)))
+  LIBGAP_BUILD_LDFLAGS = -L$(abs_builddir) -lgap
 else
-INSTALL_NAME_TOOL = @echo > /dev/null
+  LIBGAP_BUILD_RPATH = -Wl,-rpath,$(abs_builddir)
+  LIBGAP_INSTALL_RPATH = -Wl,-rpath,$(libdir)
 endif
 
 libgap: libgap$(SHLIB_EXT) $(LIBGAP_FULL)
@@ -499,7 +515,7 @@ bin/$(GAPARCH)/gap.dll: libgap$(SHLIB_EXT)
 
 # build rule for the main gap executable
 gap$(EXEEXT): build/obj/src/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) -Wl,--export-all-symbols $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) -Wl,--export-all-symbols $< $(GAP_LIBS) $(LIBGAP_BUILD_RPATH) $(LIBGAP_BUILD_LDFLAGS) -o $@
 	@( if which peflags > /dev/null ; then peflags --cygwin-heap=2048 gap$(EXEEXT) ; fi )
 
 else
@@ -510,8 +526,8 @@ libgap$(SHLIB_EXT): $(LIBGAP_FULL)
 	ln -sf $< $@
 
 # build rule for the main gap executable
-gap$(EXEEXT): build/obj/src/main.c.o $(OBJS) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(OBJS) $(GAP_LIBS) -o $@
+gap$(EXEEXT): build/obj/src/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(GAP_LIBS) $(LIBGAP_BUILD_RPATH) $(LIBGAP_BUILD_LDFLAGS) -o $@
 
 # generate a special main.c which sets SYS_DEFAULT_PATHS and then includes
 # regular main.c; this is used to build the `gap-install` binary
@@ -521,8 +537,7 @@ build/main.c: sysinfo.gap
 
 # build rule for the gap executable used by the `install-bin` target
 build/gap-install: build/obj/build/main.c.o libgap$(SHLIB_EXT) cnf/GAP-LDFLAGS cnf/GAP-LIBS cnf/GAP-OBJS
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(GAP_INSTALL_EXTRAFLAGS) $< $(GAP_LIBS) -L${abs_builddir} -lgap -o $@
-	$(INSTALL_NAME_TOOL) -change $(LIBGAP_FULL) $(libdir)/$(LIBGAP_FULL) $@
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $< $(GAP_LIBS) $(LIBGAP_INSTALL_RPATH) $(LIBGAP_BUILD_LDFLAGS) -o $@
 
 endif
 
@@ -674,6 +689,7 @@ install-sysinfo: SYSINFO_CPPFLAGS = -I${includedir}/gap/extra $(GAP_DEFINES)
 install-sysinfo: SYSINFO_LDFLAGS = $(ABI_CFLAGS)
 install-sysinfo: SYSINFO_GAP = $(bindir)/gap
 install-sysinfo: SYSINFO_GAC = $(bindir)/gac
+install-sysinfo: GAC_LDFLAGS = $(GAC_LDFLAGS_FOR_INSTALL)
 install-sysinfo: GMP_PREFIX =
 install-sysinfo: install-dirs
 	@echo "$$sysinfo_gap" > $(DESTDIR)$(libdir)/gap/sysinfo.gap
@@ -1002,7 +1018,7 @@ build-testlibgap: ${LIBGAPTESTS}
 
 # run a test in tst/testlibgap
 tst/testlibgap/%: build/obj/tst/testlibgap/%.c.o build/obj/tst/testlibgap/common.c.o libgap$(SHLIB_EXT)
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) -Wl,-rpath,$(abs_builddir) $^ $(GAP_LIBS) -o $@
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(LIBGAP_BUILD_RPATH) $^ $(GAP_LIBS) -o $@
 
 clean: clean-testlibgap
 clean-testlibgap:
@@ -1032,7 +1048,7 @@ testpkgconfigbuild: install-libgap install-headers
 	$(eval com := "tst/testlibgap/common")
 	$(CC) -c $(v).c -o $(v).o $(PKG_REPORTED_CFLAGS)
 	$(CC) -c $(com).c -o $(com).o $(PKG_REPORTED_CFLAGS)
-	$(QUIET_LINK)$(LINK) $(v).o -o $(v) $(com).o $(PKG_REPORTED_LDFLAGS) -Wl,-rpath,$(abs_builddir)
+	$(QUIET_LINK)$(LINK) $(v).o -o $(v) $(com).o $(PKG_REPORTED_LDFLAGS) $(LIBGAP_INSTALL_RPATH)
 	$(v) -A -l $(top_srcdir) -q -T --nointeract >$(v).out && \
         diff $(top_srcdir)/$(v).expect $(v).out
 
@@ -1043,7 +1059,7 @@ build-testkernel: ${KERNELTESTS}
 
 # run a test in tst/testkernel
 tst/testkernel/%: build/obj/tst/testkernel/%.c.o libgap$(SHLIB_EXT)
-	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) -Wl,-rpath,$(abs_builddir) $^ $(GAP_LIBS) -o $@
+	$(QUIET_LINK)$(LINK) $(GAP_LDFLAGS) $(LIBGAP_BUILD_RPATH) $^ $(GAP_LIBS) -o $@
 
 clean: clean-testkernel
 clean-testkernel:
