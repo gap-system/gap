@@ -147,13 +147,66 @@ BindGlobal( "EmptyDirectProductElementsFamily",
 #O  DirectProductElementNC( <fam>, <objlist> )  . . . . omits check on object
 #O                                                families and objlist length
 ##
+##  <#GAPDoc Label="DirectProductElement">
 ##  <ManSection>
 ##  <Oper Name="DirectProductElement" Arg='[fam, ]objlist'/>
 ##  <Oper Name="DirectProductElementNC" Arg='fam, objlist'/>
 ##
 ##  <Description>
+##  <Ref Oper="DirectProductElement"/> returns a direct product element
+##  whose components are the entries of the list <A>objlist</A>.
+##  If the optional argument <A>fam</A> is given, it must be the family of
+##  direct product elements with the appropriate component families;
+##  otherwise the family is determined from <A>objlist</A>.
+##  <P/>
+##  <Ref Oper="DirectProductElementNC"/> does the same but omits the checks
+##  that <A>fam</A> is consistent with <A>objlist</A>.
+##  <P/>
+##  Direct product elements behave like lists: they can be indexed with
+##  <C><A>elm</A>[i]</C> to access the <M>i</M>-th component, and
+##  <Ref Attr="Length"/> returns the number of components.
+##  Arithmetic operations (multiplication, powering, one, inverse,
+##  addition, zero, additive inverse) are performed componentwise.
+##  <Example><![CDATA[
+##  gap> a := (1,2,3);; b := (1,2);;
+##  gap> elm := DirectProductElement([a, b]);
+##  DirectProductElement( [ (1,2,3), (1,2) ] )
+##  gap> elm[1];
+##  (1,2,3)
+##  gap> elm[2];
+##  (1,2)
+##  gap> Length(elm);
+##  2
+##  gap> elm2 := DirectProductElement([b, a]);;
+##  gap> elm * elm2;
+##  DirectProductElement( [ (2,3), (1,3) ] )
+##  gap> One(elm);
+##  DirectProductElement( [ (), () ] )
+##  gap> Inverse(elm);
+##  DirectProductElement( [ (1,3,2), (1,2) ] )
+##  ]]></Example>
+##  <P/>
+##  The following example shows <Ref Oper="DirectProductElement"/> in the
+##  context of a direct product <M>K = G \times H</M> built with
+##  <Ref Func="DirectProduct"/>, where <M>G</M> is a permutation group and
+##  <M>H</M> is a pc group.  The projections of <M>K</M> are
+##  used to move between the direct product and its component groups.
+##  <Example><![CDATA[
+##  gap> G := DihedralGroup(IsPermGroup, 8);;
+##  gap> H := CyclicGroup(IsPcGroup, 4);;
+##  gap> K := DirectProduct(G, H);;
+##  gap> proj1 := Projection(K, 1);; proj2 := Projection(K, 2);;
+##  gap> g := (1,2,3,4);; h := GeneratorsOfGroup(H)[1];;
+##  gap> elm := DirectProductElement([g, h]);
+##  DirectProductElement( [ (1,2,3,4), f1 ] )
+##  gap> Image(proj1, elm) = g;
+##  true
+##  gap> Image(proj2, elm) = h;
+##  true
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
+##  <#/GAPDoc>
 ##
 DeclareOperation( "DirectProductElement", [ IsList ]);
 DeclareOperation( "DirectProductElementNC",
