@@ -32,13 +32,14 @@ ERROR_OUTPUT := MakeImmutable("*errout*");
 Unbind(OnQuit);
 BIND_GLOBAL( "OnQuit", function()
     if not IsEmpty(OptionsStack) then
+      if IsBound(ResetMethodReordering) and IsFunction(ResetMethodReordering)
+         and ValueOption( "ReadingPackageFiles" ) = true then
+        ResetMethodReordering();
+      fi;
       repeat
         PopOptions();
       until IsEmpty(OptionsStack);
-      Info(InfoWarning,1,"Options stack has been reset");
-    fi;
-    if IsBound(ResetMethodReordering) and IsFunction(ResetMethodReordering) then
-        ResetMethodReordering();
+      Info(InfoWarning,2,"Options stack has been reset");
     fi;
     if REREADING = true then
         MakeReadWriteGlobal("REREADING");
@@ -373,6 +374,9 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
         ErrorLVars := errorLVars;
         ErrorTracebackLVars := errorTracebackLVars;
         SET_ERROR_LVARS(kernelErrorLVars);
+        if IsBound(OnQuit) and IsFunction(OnQuit) then
+            OnQuit();
+        fi;
         if ErrorLevel = 0 then LEAVE_ALL_NAMESPACES(); fi;
         JUMP_TO_CATCH(0);
     fi;
