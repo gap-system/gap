@@ -434,7 +434,7 @@ function( prefix, values, suffix )
 end);
 
 BindGlobal( "ShowKernelInformation", function()
-  local sysdate, btop, vert, bbot, config, str, gap;
+  local sysdate, btop, bmid, bbot, config, str, gap;
 
   if GAPInfo.Date <> "today" then
     sysdate := " of ";
@@ -447,19 +447,25 @@ BindGlobal( "ShowKernelInformation", function()
   fi;
 
   if GAPInfo.TermEncoding = "UTF-8" then
-    btop := "┌───────┐\c"; vert := "│"; bbot := "└───────┘\c";
+    btop := "   ● G";
+    bmid := "● ●  A";
+    bbot := "   ● P";
   else
-    btop := "*********"; vert := "*"; bbot := btop;
+    btop := "   o G";
+    bmid := "o o  A";
+    bbot := "   o P";
   fi;
   if IsHPCGAP then
     gap := "HPC-GAP";
   else
     gap := "GAP";
   fi;
-  Print( " ",btop,"   ",gap," ", GAPInfo.BuildVersion,
+  Print( "\n",  # Could remove first and last newlines for a more compact look
+         "  ",btop,"  ",gap," ", GAPInfo.BuildVersion,
          sysdate, "\n",
-         " ",vert,"  GAP  ",vert,"   https://www.gap-system.org\n",
-         " ",bbot,"   Architecture: ", GAPInfo.Architecture, "\n" );
+         "  ",bmid,"  https://www.gap-system.org\n",
+         "  ",bbot,"  Architecture: ", GAPInfo.Architecture, "\n",
+         "\n" );
   if IsHPCGAP then
     Print( "             Maximum concurrent threads: ",
        GAPInfo.KernelInfo.NUM_CPUS, "\n");
