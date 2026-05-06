@@ -107,5 +107,21 @@ true
 gap> IsSubset( Source( nice2 ), G2 );
 true
 
+# 'NiceMonomorphism' behaves well w.r.t. 'ConstructingFilter'
+gap> G:= SP( 4, 2 );;
+gap> nice:= NiceMonomorphism( G );;
+gap> G2:= SP( 4, 2 : ConstructingFilter:= IsPlistMatrixRep );;
+gap> nice2:= NiceMonomorphism( G2 );;
+gap> IsPlistMatrixRep( One( G ) );
+false
+gap> IsPlistMatrixRep( One( G2 ) );
+true
+gap> IsIdenticalObj( nice, nice2 );
+false
+gap> IsSubset( Source( nice ), G );
+true
+gap> IsSubset( Source( nice2 ), G2 );
+true
+
 #
 gap> STOP_TEST( "grpmat.tst" );
