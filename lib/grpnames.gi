@@ -1861,7 +1861,7 @@ BindGlobal( "StructureDescriptionForFiniteGroups", # for finite groups
 
     # fetch name from precomputed list, if available
     if ValueOption("recompute") <> true and Size(G) <= 2000 then
-      if IsBound(NAMES_OF_SMALL_GROUPS[Size(G)]) then
+      if IsBound(NAMES_OF_SMALL_GROUPS[Size(G)]) and ID_AVAILABLE(Size(G)) <> fail then
         i := IdGroup(G)[2];
         if IsBound(NAMES_OF_SMALL_GROUPS[Size(G)][i]) then
           name := ShallowCopy(NAMES_OF_SMALL_GROUPS[Size(G)][i]);
