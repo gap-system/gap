@@ -2815,17 +2815,21 @@ DeclareGlobalFunction("OnSetsTuples");
 
 #############################################################################
 ##
-#F  OnTuplesSets( <set>, <g> )
+#F  OnTuplesSets( <tup>, <g> )
 ##
 ##  <#GAPDoc Label="OnTuplesSets">
 ##  <ManSection>
-##  <Func Name="OnTuplesSets" Arg='set, g'/>
+##  <Func Name="OnTuplesSets" Arg='tup, g'/>
 ##
 ##  <Description>
 ##  implements the action on tuples of sets.
-##  <A>set</A> must be a list whose entries are again sorted lists,
-##  otherwise an error is triggered
-##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
+##  <A>tup</A> must be a list whose entries are proper sets,
+##  otherwise an error is triggered.
+##  <P/>
+##  <Ref Func="OnTuplesSets"/> returns the tuple of 
+##  the corresponding images obtained by applying the action function
+##  <Ref Func="OnSets"/> to <M>x</M> and <A>g</A>,
+##  for each element <M>x</M> of <A>tup</A>.
 ##  <Example><![CDATA[
 ##  gap> OnTuplesSets( [ [ 2, 3 ], [ 3, 4 ] ], (1,2,3) );
 ##  [ [ 1, 3 ], [ 1, 4 ] ]
