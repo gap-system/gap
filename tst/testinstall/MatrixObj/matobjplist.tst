@@ -3,6 +3,8 @@ gap> START_TEST( "matobjplist.tst" );
 
 #
 gap> e:= MakeIsPlistVectorRep( Integers, [], true );;
+gap> MakeIsPlistVectorRep( Integers, [ 1 .. 4 ], true );;
+Error, <list> must be in 'IsPlistRep'
 gap> v:= MakeIsPlistVectorRep( Integers, [ 1 ], true );;
 gap> MakeIsPlistVectorRep( Integers, [ 1/2 ], true );;
 Error, the elements in <list> must lie in <basedomain>
