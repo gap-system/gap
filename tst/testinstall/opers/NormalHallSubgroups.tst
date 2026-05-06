@@ -1,4 +1,5 @@
 gap> START_TEST("NormalHallSubgroups.tst");
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> for G in AllSmallGroups(60) do Print(List(NormalHallSubgroups(G), IdGroup), "\n"); od;
 [ [ 1, 1 ], [ 5, 1 ], [ 3, 1 ], [ 15, 1 ], [ 12, 1 ], [ 60, 1 ] ]
 [ [ 1, 1 ], [ 3, 1 ], [ 5, 1 ], [ 15, 1 ], [ 20, 1 ], [ 60, 2 ] ]
@@ -40,11 +41,18 @@ gap> List(AllSmallGroups(168), G -> List(NormalHallSubgroups(G), Size));
   [ 1, 8, 7, 56, 168 ], [ 1, 3, 7, 56, 21, 168 ], [ 1, 7, 3, 24, 21, 168 ], 
   [ 1, 3, 7, 21, 168 ], [ 1, 8, 3, 24, 7, 56, 21, 168 ] ]
 gap> for G in AllSmallGroups(168) do primes := PrimeDivisors(Size(G)); l := []; for pi in IteratorOfCombinations(primes) do N := HallSubgroup(G, pi); if N<>fail and IsGroup(N) and IsNormal(G, N) then AddSet(l, N); fi; od; if l <> NormalHallSubgroups(G) then Print(IdGroup(G), "\n"); fi; od;
+#@fi
+
+#
+#@if IsPackageMarkedForLoading( "primgrp", "" )
 gap> List(AllPrimitiveGroups(DegreeAction, 8), G -> List(NormalHallSubgroups(G), Size));
 [ [ 1, 56, 8 ], [ 1, 168, 56, 8 ], [ 1, 1344 ], [ 1, 168 ], [ 1, 336 ], 
   [ 1, 20160 ], [ 1, 40320 ] ]
 gap> List(NormalHallSubgroups(PrimitiveGroup(8,2)), Size);
 [ 1, 168, 56, 8 ]
+#@fi
+
+#
 gap> grps := [ [ (1,2,3,4,5,6) ], [ (1,3,5)(2,4,6), (1,4)(2,3)(5,6) ],
 >  [ (1,2,3,4,5,6), (1,4)(2,3)(5,6) ], [ (1,4)(2,5), (1,3,5)(2,4,6) ],
 >  [ (2,4,6), (1,4)(2,5)(3,6) ], [ (3,6), (1,3,5)(2,4,6) ],

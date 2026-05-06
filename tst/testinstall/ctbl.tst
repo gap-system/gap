@@ -434,19 +434,19 @@ gap> HasIsIrreducibleCharacter( TrivialCharacter( SymmetricGroup( 4 ) ) );
 true
 
 # concurring 'Irr' methods
-gap> G:= SmallGroup( 24, 5 );;
+gap> G:= DirectProduct(CyclicGroup(4), DihedralGroup(6));;
 gap> IsSupersolvable( G );
 true
 gap> Irr( G );;
 gap> InfoText( OrdinaryCharacterTable( G ) );
 "origin: Baum-Clausen Algorithm"
-gap> G:= SmallGroup( 24, 5 );;
+gap> G:= DirectProduct(CyclicGroup(4), DihedralGroup(6));;
 gap> IsSupersolvable( G );
 true
 gap> IrrConlon( G );;  Irr( G );;
 gap> InfoText( OrdinaryCharacterTable( G ) );
 "origin: Conlon's Algorithm"
-gap> G:= SmallGroup( 24, 5 );;
+gap> G:= DirectProduct(CyclicGroup(4), DihedralGroup(6));;
 gap> IrrDixonSchneider( G );;  Irr( G );;
 gap> InfoText( OrdinaryCharacterTable( G ) );
 "origin: Dixon's Algorithm"

@@ -16,12 +16,12 @@ gap> HasIsAbelian(FrattiniSubgroup(G));
 true
 gap> GeneratorsOfGroup(FrattiniSubgroup(G));
 [ (x^-195*y^196)^6, (x^-1*y)^630, (x^-1*y)^840 ]
-gap> G := DirectProduct(DihedralGroup(IsPcGroup,8), SmallGroup(27,4));;
+gap> G := DirectProduct(DihedralGroup(8), ExtraspecialGroup(27,9));;
 gap> IsNilpotentGroup(G);
 true
 gap> F := FrattiniSubgroup(G);;
-gap> IdGroup(F);
-[ 6, 2 ]
+gap> StructureDescription(F);
+"C6"
 gap> HasIsNilpotentGroup(F);
 true
 
@@ -43,11 +43,12 @@ Group([  ])
 gap> AsSet( FrattiniSubgroup(CyclicGroup(IsPcGroup, 9)) );
 [ <identity> of ..., f2, f2^2 ]
 
-#
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> List(AllSmallGroups(60), g -> Size(FrattiniSubgroup(g)));
 [ 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
 gap> ForAll(AllSmallGroups(60), g -> IsNormal(g, FrattiniSubgroup(g)));
 true
+#@fi
 
 #
 gap> g := SL(2,5);;

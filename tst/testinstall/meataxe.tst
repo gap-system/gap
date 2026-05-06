@@ -77,8 +77,10 @@ gap> M2:=TensorProductGModule(M,M);
 rec( IsOverFiniteField := true, dimension := 9, field := GF(2), 
   generators := [ <an immutable 9x9 matrix over GF2>, 
       <an immutable 9x9 matrix over GF2> ], isMTXModule := true )
-gap> IdGroup(MTX.ModuleAutomorphisms(M2));
-[ 1344, 11301 ]
+gap> G:=MTX.ModuleAutomorphisms(M2);
+<matrix group of size 1344 with 9 generators>
+gap> StructureDescription(G);
+"PSL(3,2) x D8"
 gap> cf:=MTX.CompositionFactors(M2);;
 gap> ForAll(cf, MTX.IsAbsolutelyIrreducible);
 true
@@ -138,8 +140,8 @@ false
 
 #
 gap> M2:=First(MTX.CompositionFactors(M), m -> m.dimension = 4);;
-gap> IdGroup(MTX.ModuleAutomorphisms(M2));
-[ 48, 2 ]
+gap> StructureDescription(MTX.ModuleAutomorphisms(M2));
+"C48"
 gap> MTX.IsIndecomposable(M2);
 true
 gap> MTX.IsAbsolutelyIrreducible(M2);

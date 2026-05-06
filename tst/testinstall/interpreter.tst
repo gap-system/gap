@@ -39,8 +39,10 @@ gap> QUIT;
 #
 # help system
 #
+#@if IsPackageMarkedForLoading( "gapdoc", "" )
 gap> ?qwert_asdf
 Help: no matching entry found
+#@fi
 
 #
 # function call with options

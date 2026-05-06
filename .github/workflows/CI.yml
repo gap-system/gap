@@ -47,7 +47,7 @@ jobs:
         test-suites:
           [
             # base test: fast first test
-            "testinstall",
+            "testinstall-bare",
 
             "teststandard",
 

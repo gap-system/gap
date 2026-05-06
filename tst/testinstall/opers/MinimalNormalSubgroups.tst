@@ -7,42 +7,49 @@ gap> G := Group(());; NormalSubgroups(G);; MinimalNormalSubgroups(G);
 gap> D := DihedralGroup(8);;
 gap> MinimalNormalSubgroups(D) = [ Center(D) ];
 true
-gap> List(MinimalNormalSubgroups(D), IdGroup);
-[ [ 2, 1 ] ]
+gap> List(MinimalNormalSubgroups(D), Size);
+[ 2 ]
 gap> D := DihedralGroup(IsFpGroup, 8);;
 gap> MinimalNormalSubgroups(D) = [ Center(D) ];
 true
-gap> List(MinimalNormalSubgroups(D), IdGroup);
-[ [ 2, 1 ] ]
+gap> List(MinimalNormalSubgroups(D), Size);
+[ 2 ]
 gap> D := Group((1,3),(1,2,3,4));;
 gap> MinimalNormalSubgroups(D) = [ Center(D) ];
 true
-gap> List(MinimalNormalSubgroups(D), IdGroup);
-[ [ 2, 1 ] ]
+gap> List(MinimalNormalSubgroups(D), Size);
+[ 2 ]
 gap> DDD := DirectProduct(D, D, D);;
-gap> List(MinimalNormalSubgroups(DDD), IdGroup);
-[ [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ] ]
+gap> List(MinimalNormalSubgroups(DDD), Size);
+[ 2, 2, 2, 2, 2, 2, 2 ]
 gap> Q := QuaternionGroup(8);;
 gap> MinimalNormalSubgroups(Q) = [ Center(Q) ];
 true
-gap> List(MinimalNormalSubgroups(Q), IdGroup);
-[ [ 2, 1 ] ]
+gap> List(MinimalNormalSubgroups(Q), Size);
+[ 2 ]
 gap> MinimalNormalSubgroups(SymmetricGroup(4)) = [ Group((1,2)(3,4),(1,3)(2,4)) ];
 true
-gap> List(MinimalNormalSubgroups(SymmetricGroup(5)), IdGroup);
-[ [ 60, 5 ] ]
-gap> List(MinimalNormalSubgroups(AlternatingGroup(5)), IdGroup);
-[ [ 60, 5 ] ]
+gap> MinimalNormalSubgroups(SymmetricGroup(5)) = [ AlternatingGroup(5) ];
+true
+gap> MinimalNormalSubgroups(AlternatingGroup(5)) = [ AlternatingGroup(5) ];
+true
+
+#
 gap> G := Group((1,2),(3,4),(5,6),(7,8));;
 gap> IsElementaryAbelian(G);
 true
 gap> Size(MinimalNormalSubgroups(G));
 15
-gap> MinimalNormalSubgroups(PrimitiveGroup(8,3)) = [ Group([ (1,7)(2,8)(3,5)(4,6), (1,3)(2,4)(5,7)(6,8), (1,2)(3,4)(5,6)(7,8) ]) ];
+
+#
+gap> G := Group((2,7,4,8,6,5,3), (2,3)(6,7), (1,2)(3,4)(5,6)(7,8));; # = PrimitiveGroup(8,3)
+gap> MinimalNormalSubgroups(G) = [ Group([ (1,7)(2,8)(3,5)(4,6), (1,3)(2,4)(5,7)(6,8), (1,2)(3,4)(5,6)(7,8) ]) ];
 true
 gap> k := 5;; P := SylowSubgroup(SymmetricGroup(4*k), 2);; A := Group((4*k+1, 4*k+2, 4*k+3));; G := ClosureGroup(P, A);; IsNilpotentGroup(G);;
 gap> Set(MinimalNormalSubgroups(G)) = Set([ Group([ (1,2)(3,4)(5,6)(7,8)(9,10)(11,12)(13,14)(15,16) ]), Group([ (17,18)(19,20) ]), Group([ (1,2)(3,4)(5,6)(7,8)(9,10)(11,12)(13,14)(15,16)(17,18)(19,20) ]), Group([ (21,22,23) ]) ]);
 true
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> G := SmallGroup(24,12);;
 gap> SortedList(List(MinimalNormalSubgroups(G), IdGroup));
 [ [ 4, 2 ] ]
@@ -50,13 +57,16 @@ gap> A := DihedralGroup(16);;
 gap> B := SmallGroup(27, 3);;
 gap> C := SmallGroup(125, 4);;
 gap> D := DirectProduct(A, B, C, SmallGroup(1536, 2));;
-gap> SortedList(List(MinimalNormalSubgroups(D), IdGroup));
-[ [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], 
-  [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], 
-  [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], 
-  [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], 
-  [ 2, 1 ], [ 2, 1 ], [ 2, 1 ], [ 3, 1 ], [ 3, 1 ], [ 3, 1 ], [ 3, 1 ], 
-  [ 5, 1 ] ]
+gap> SortedList(List(MinimalNormalSubgroups(D), Size));
+[ 2, 2, 2, 2, 2, 2, 2, 
+  2, 2, 2, 2, 2, 2, 2, 
+  2, 2, 2, 2, 2, 2, 2, 
+  2, 2, 2, 2, 2, 2, 2, 
+  2, 2, 2, 3, 3, 3, 3, 
+  5 ]
+#@fi
+
+#
 gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)(7,11), (3,5)(4,6,10,8,12)(9,11), (1,3,11,9,5)(4,6,10,8,12) ]);;
 gap> Set(MinimalNormalSubgroups(G)) = Set([ Group([ (6,12)(8,10), (2,10)(4,12), (2,12)(6,10) ]), Group([ (5,11)(7,9), (3,9)(7,11), (1,9,5,11,7) ]) ]);
 true
@@ -69,6 +79,8 @@ gap> G := F/[x^2, y^2, x^(-1)*y^(-1)*x*y, z];;
 gap> IsFinite(G);;
 gap> Size(MinimalNormalSubgroups(G));
 3
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> for G in AllSmallGroups(60) do NormalSubgroups(G);; Print(Collected(List(Set(MinimalNormalSubgroups(G)), IdGroup)), "\n"); od;
 [ [ [ 2, 1 ], 1 ], [ [ 3, 1 ], 1 ], [ [ 5, 1 ], 1 ] ]
 [ [ [ 2, 1 ], 1 ], [ [ 3, 1 ], 1 ], [ [ 5, 1 ], 1 ] ]
@@ -105,6 +117,9 @@ gap> for G in AllSmallGroups(360) do if not IsSolvable(G) then NormalSubgroups(G
 [ [ 3, 1 ], [ 60, 5 ] ]
 [ [ 3, 1 ], [ 60, 5 ] ]
 [ [ 2, 1 ], [ 3, 1 ], [ 60, 5 ] ]
+#@fi
+
+#
 gap> G := AbelianGroup([2, 3, 4, 5, 6, 7, 8, 9, 10]);;
 gap> Collected(List(Set(MinimalNormalSubgroups(G)), Size));
 [ [ 2, 31 ], [ 3, 13 ], [ 5, 6 ], [ 7, 1 ] ]
@@ -114,4 +129,6 @@ gap> Collected(List(Set(MinimalNormalSubgroups(G)), Size));
 gap> G := ElementaryAbelianGroup(7^4);;
 gap> Collected(List(Set(MinimalNormalSubgroups(G)), Size));
 [ [ 7, 400 ] ]
+
+#
 gap> STOP_TEST("Socle.tst");

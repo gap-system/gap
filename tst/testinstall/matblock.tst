@@ -138,7 +138,7 @@ gap> MinimalPolynomial( R, m2 ) = MinimalPolynomial( R, MatrixByBlockMatrix( m2 
 true
 
 # Groups that consist of block matrices
-gap> G:= SmallGroup( 24, 12 );;
+gap> G:= SymmetricGroup(IsPcGroup, 4);;
 gap> H:= SylowSubgroup( G, 2 );;
 gap> reps:= IrreducibleRepresentations( H );;
 gap> ind:= InducedRepresentation( reps[5], G );;

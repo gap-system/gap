@@ -86,7 +86,7 @@ gap> One( hom );
 fail
 
 # Check that group homomorphisms created by a function can compute preimages.
-gap> for G in [ SymmetricGroup(5), SmallGroup( 24, 12 ), GL(2,3) ] do
+gap> for G in [ SymmetricGroup(5), DihedralGroup(8), GL(2,3) ] do
 >      hom:= GroupHomomorphismByFunction( G, G, x -> x );
 >      PreImagesRepresentative( hom, G.1 );
 >    od;
