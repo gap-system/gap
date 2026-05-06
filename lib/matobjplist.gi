@@ -1218,7 +1218,13 @@ InstallMethod( InverseSameMutability,
 
 InstallMethod( RankMat,
   [ "IsPlistMatrixRep" ],
-  M -> RankMat( List( M![ROWSPOS], x -> x![ELSPOS] ) ) );
+  function( M )
+    M:= M![ROWSPOS];
+    if Length( M ) = 0 then
+      return 0;
+    fi;
+    return RankMat( List( M, x -> x![ELSPOS] ) );
+  end );
 
 InstallMethodWithRandomSource( Randomize,
   "for a random source and a mutable plist matrix",

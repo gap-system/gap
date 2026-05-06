@@ -1889,6 +1889,82 @@ DeclareGlobalFunction( "ReflectionMat" );
 
 #############################################################################
 ##
+#O  RandomInvertibleMatrix( [<filt>, ][<rs>, ]<R>, <m> )
+#O  RandomInvertibleMatrix( [<rs>, ]<m>, <M> )
+##
+##  <#GAPDoc Label="RandomInvertibleMatrix">
+##  <ManSection>
+##  <Oper Name="RandomInvertibleMatrix" Arg='[filt, ][rs, ]R, m'
+##   Label="with base domain"/>
+##  <Oper Name="RandomInvertibleMatrix" Arg='[rs, ]m, M'
+##   Label="with example matrix"/>
+##
+##  <Returns>
+##  a matrix or matrix object <M>I</M> with <A>m</A> columns,
+##  with base domain <A>R</A> or equal to <C>BaseDomain( <A>M</A> )</C>,
+##  such that <M>I</M> is invertible over its base domain.
+##  </Returns>
+##  <Description>
+##  If a semiring <A>R</A> is given then it will be the base domain
+##  (see <Ref Attr="BaseDomain" Label="for a matrix object"/>)
+##  of the returned matrix.
+##  In this case, a filter <A>filt</A> can be specified that defines the
+##  internal representation of the result
+##  (see <Ref Attr="ConstructingFilter" Label="for a matrix object"/>).
+##  The default value for <A>filt</A> is determined from <A>R</A>.
+##  <P/>
+##  If a matrix object <A>M</A> is given then the returned matrix will have
+##  the same internal representation and the same base domain as <A>M</A>.
+##  <P/>
+##  If a random source <A>rs</A> is given (see <Ref Sect="Random Sources"/>)
+##  then the entries of the result are computed using <A>rs</A>,
+##  the default random source is <Ref Var="GlobalMersenneTwister"/>.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/> value
+##  of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  fully mutable.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m:= RandomInvertibleMatrix( GF(9), 2 );;
+##  gap> RankMatrix( m );
+##  2
+##  gap> DimensionsMat( m );
+##  [ 2, 2 ]
+##  gap> BaseDomain( m );
+##  GF(3^2)
+##  gap> Is8BitMatrixRep( m );
+##  true
+##  gap> m1:= RandomInvertibleMatrix( IsPlistMatrixRep, GF(9), 2 );;
+##  gap> IsPlistMatrixRep( m1 );
+##  true
+##  gap> m2:= RandomInvertibleMatrix( 2, m1 );;
+##  gap> IsPlistMatrixRep( m2 );
+##  true
+##  gap> m:= RandomInvertibleMatrix( Integers, 2 );;
+##  gap> IsUnit( Integers, DeterminantMatrix( m ) );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareTagBasedOperation( "RandomInvertibleMatrix",
+    [ IsOperation, IsRandomSource, IsSemiring, IsInt ] );
+DeclareOperation( "RandomInvertibleMatrix",
+    [ IsRandomSource, IsSemiring, IsInt ] );
+DeclareOperation( "RandomInvertibleMatrix",
+    [ IsOperation, IsSemiring, IsInt ] );
+DeclareOperation( "RandomInvertibleMatrix",
+    [ IsSemiring, IsInt ] );
+
+DeclareOperation( "RandomInvertibleMatrix",
+    [ IsRandomSource, IsInt, IsMatrixOrMatrixObj ] );
+DeclareOperation( "RandomInvertibleMatrix",
+    [ IsInt, IsMatrixOrMatrixObj ] );
+
+
+#############################################################################
+##
 #F  RandomInvertibleMat( [rs ,] <m> [, <R>] ) . . .  random invertible matrix
 ##
 ##  <#GAPDoc Label="RandomInvertibleMat">
@@ -1900,13 +1976,19 @@ DeclareGlobalFunction( "ReflectionMat" );
 ##  matrix with <A>m</A> rows and columns with elements taken from the ring
 ##  <A>R</A>, which defaults to <Ref Var="Integers"/>.
 ##  Optionally, a random source <A>rs</A> can be supplied.
+##  <P/>
+##  Note that the result need <E>not</E> be invertible over
+##  the prescribed ring <A>R</A>.
+##  Use <Ref Oper="RandomInvertibleMatrix" Label="with base domain"/>
+##  for creating random matrices with this stronger property.
+##  <P/>
 ##  <Example><![CDATA[
-##  gap> m := RandomInvertibleMat(4);
-##  [ [ -4, 1, 0, -1 ], [ -1, -1, 1, -1 ], [ 1, -2, -1, -2 ],
-##    [ 0, -1, 2, -2 ] ]
+##  gap> m := RandomInvertibleMat( 4, Integers );
+##  [ [ 1, -4, 0, 1 ], [ 0, -2, 3, 1 ], [ 0, -2, -1, -1 ],
+##    [ 0, -2, 2, 4 ] ]
 ##  gap> m^-1;
-##  [ [ -1/8, -11/24, 1/24, 1/4 ], [ 1/4, -13/12, -1/12, 1/2 ],
-##    [ -1/8, 5/24, -7/24, 1/4 ], [ -1/4, 3/4, -1/4, -1/2 ] ]
+##  [ [ 1, -1/14, -19/14, -4/7 ], [ 0, -1/14, -5/14, -1/14 ],
+##    [ 0, 5/14, -3/14, -1/7 ], [ 0, -3/14, -1/14, 2/7 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1941,6 +2023,78 @@ DeclareGlobalFunction( "RandomMat" );
 
 #############################################################################
 ##
+#O  RandomMatrix( [<filt>, ][<rs>, ]<R>, <m>, <n> )
+#O  RandomMatrix( [<rs>, ]<m>, <n>, <M> )
+##
+##  <#GAPDoc Label="RandomMatrix">
+##  <ManSection>
+##  <Oper Name="RandomMatrix" Arg='[filt, ][rs, ]R, m, n'
+##   Label="with base domain"/>
+##  <Oper Name="RandomMatrix" Arg='[rs, ]m, n, M'
+##   Label="with example matrix"/>
+##
+##  <Returns>
+##  a matrix or matrix object with <A>m</A> rows and <A>n</A> columns,
+##  with base domain <A>R</A> or equal to <C>BaseDomain( <A>M</A> )</C>.
+##  </Returns>
+##  <Description>
+##  If a semiring <A>R</A> is given then it will be the base domain
+##  (see <Ref Attr="BaseDomain" Label="for a matrix object"/>)
+##  of the returned matrix.
+##  In this case, a filter <A>filt</A> can be specified that defines the
+##  internal representation of the result
+##  (see <Ref Attr="ConstructingFilter" Label="for a matrix object"/>).
+##  The default value for <A>filt</A> is determined from <A>R</A>.
+##  <P/>
+##  If a matrix object <A>M</A> is given then the returned matrix will have
+##  the same internal representation and the same base domain as <A>M</A>.
+##  <P/>
+##  If a random source <A>rs</A> is given (see <Ref Sect="Random Sources"/>)
+##  then the entries of the result are computed using <A>rs</A>,
+##  the default random source is <Ref Var="GlobalMersenneTwister"/>.
+##  <P/>
+##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/> value
+##  of the result implies <Ref Filt="IsCopyable"/> then the result is
+##  fully mutable.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m:= RandomMatrix( GF(9), 2, 3 );;
+##  gap> DimensionsMat( m );
+##  [ 2, 3 ]
+##  gap> BaseDomain( m );
+##  GF(3^2)
+##  gap> Is8BitMatrixRep( m );
+##  true
+##  gap> m1:= RandomMatrix( IsPlistMatrixRep, GF(9), 2, 3 );;
+##  gap> IsPlistMatrixRep( m1 );
+##  true
+##  gap> m2:= RandomMatrix( 3, 4, m1 );;
+##  gap> DimensionsMat( m2 );
+##  [ 3, 4 ]
+##  gap> IsPlistMatrixRep( m2 );
+##  true
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareTagBasedOperation( "RandomMatrix",
+    [ IsOperation, IsRandomSource, IsSemiring, IsInt, IsInt ] );
+DeclareOperation( "RandomMatrix",
+    [ IsRandomSource, IsSemiring, IsInt, IsInt ] );
+DeclareOperation( "RandomMatrix",
+    [ IsOperation, IsSemiring, IsInt, IsInt ] );
+DeclareOperation( "RandomMatrix",
+    [ IsSemiring, IsInt, IsInt ] );
+
+DeclareOperation( "RandomMatrix",
+    [ IsRandomSource, IsInt, IsInt, IsMatrixOrMatrixObj ] );
+DeclareOperation( "RandomMatrix",
+    [ IsInt, IsInt, IsMatrixOrMatrixObj ] );
+
+
+#############################################################################
+##
 #F  RandomUnimodularMat( [rs ,] <m> ) . . . . . . . . random unimodular matrix
 ##
 ##  <#GAPDoc Label="RandomUnimodularMat">
@@ -1955,13 +2109,13 @@ DeclareGlobalFunction( "RandomMat" );
 ##  from <A>Integers</A>
 ##  <Example><![CDATA[
 ##  gap> m := RandomUnimodularMat(3);
-##  [ [ -5, 1, 0 ], [ 12, -2, -1 ], [ -14, 3, 0 ] ]
+##  [ [ 1, -5, 26 ], [ 0, 1, -6 ], [ 0, 0, 1 ] ]
 ##  gap> m^-1;
-##  [ [ -3, 0, 1 ], [ -14, 0, 5 ], [ -8, -1, 2 ] ]
+##  [ [ 1, 5, 4 ], [ 0, 1, 6 ], [ 0, 0, 1 ] ]
 ##  gap> RandomUnimodularMat(3:domain:=[-1000..1000]);
-##  [ [ 312330173, 15560030349, -125721926670 ],
-##  [ -307290, -15309014, 123693281 ],
-##  [ -684293792, -34090949551, 275448039848 ] ]
+##  [ [ 6001314, 239514853714734, -44705745791413 ],
+##    [ -1448123744, -57795200635226587, 10787546189680040 ],
+##    [ -671, -26780118200, 4998542420 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>

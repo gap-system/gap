@@ -3954,6 +3954,71 @@ end );
 
 #########################################################################
 ##
+#M  RandomInvertibleMatrix( [<filt>, ][<rs>, ]<R>, <m> )
+#M  RandomInvertibleMatrix( [<rs>, ]<m>, <M> )
+##
+InstallTagBasedMethod( RandomInvertibleMatrix,
+    function( filt, rs, R, m )
+    local mat, i, j;
+
+    if IsIntegers( R ) then
+      # We have a dedicated method for this case.
+      mat:= RandomUnimodularMat( rs, m );
+      if filt <> IsPlistRep then
+        mat:= Matrix( filt, R, mat );
+      fi;
+    else
+      # The following works if 'R' is a field or a residue class ring.
+      # If other rings become important,
+      # we have to think about a better approach.
+      mat:= ZeroMatrix( filt, R, m, m );
+      repeat
+        # 'Randomize' does not admit 'R' as an argument,
+        # and we want to cover also 'IsPlistRep'.
+        for i in [ 1 .. m ] do
+          for j in [ 1 .. m ] do
+            mat[i,j]:= Random( rs, R );
+          od;
+        od;
+      until IsUnit( DeterminantMat( mat ) );
+    fi;
+
+    return mat;
+    end );
+
+InstallMethod( RandomInvertibleMatrix,
+    [ IsRandomSource, IsSemiring, IsInt ],
+    function( rs, R, m )
+    return RandomInvertibleMatrix( DefaultMatrixRepForBaseDomain( R ), rs, R, m );
+    end );
+
+InstallMethod( RandomInvertibleMatrix,
+    [ IsOperation, IsSemiring, IsInt ],
+    function( filt, R, m )
+    return RandomInvertibleMatrix( filt, GlobalMersenneTwister, R, m );
+    end );
+
+InstallMethod( RandomInvertibleMatrix,
+    [ IsSemiring, IsInt ],
+    function( R, m )
+    return RandomInvertibleMatrix( DefaultMatrixRepForBaseDomain( R ), GlobalMersenneTwister, R, m );
+    end );
+
+InstallMethod( RandomInvertibleMatrix,
+    [ IsRandomSource, IsInt, IsMatrixOrMatrixObj ],
+    function( rs, m, M )
+    return RandomInvertibleMatrix( ConstructingFilter( M ), rs, BaseDomain( M ), m );
+    end );
+
+InstallMethod( RandomInvertibleMatrix,
+    [ IsInt, IsMatrixOrMatrixObj ],
+    function( m, M )
+    return RandomInvertibleMatrix( ConstructingFilter( M ), GlobalMersenneTwister, BaseDomain( M ), m );
+    end );
+
+
+#########################################################################
+##
 #F  RandomInvertibleMat( [rs ,] <m> [, <R>] ) . . . make a random invertible matrix
 ##
 ##  'RandomInvertibleMat' returns a invertible   random matrix with  <m> rows
@@ -3999,6 +4064,52 @@ InstallGlobalFunction( RandomInvertibleMat, function ( arg )
 
     return mat;
 end );
+
+
+#########################################################################
+##
+#M  RandomMatrix( [<filt>, ][<rs>, ]<R>, <m>, <n> )
+#M  RandomMatrix( [<rs>, ]<m>, <n>, <M> )
+##
+InstallTagBasedMethod( RandomMatrix,
+    function( filt, rs, R, m, n )
+    local mat;
+
+    mat:= ZeroMatrix( filt, R, m, n );
+    Randomize( rs, mat );
+
+    return mat;
+    end );
+
+InstallMethod( RandomMatrix,
+    [ IsRandomSource, IsSemiring, IsInt, IsInt ],
+    function( rs, R, m, n )
+    return RandomMatrix( DefaultMatrixRepForBaseDomain( R ), rs, R, m, n );
+    end );
+
+InstallMethod( RandomMatrix,
+    [ IsOperation, IsSemiring, IsInt, IsInt ],
+    function( filt, R, m, n )
+    return RandomMatrix( filt, GlobalMersenneTwister, R, m, n );
+    end );
+
+InstallMethod( RandomMatrix,
+    [ IsSemiring, IsInt, IsInt ],
+    function( R, m, n )
+    return RandomMatrix( DefaultMatrixRepForBaseDomain( R ), GlobalMersenneTwister, R, m, n );
+    end );
+
+InstallMethod( RandomMatrix,
+    [ IsRandomSource, IsInt, IsInt, IsMatrixOrMatrixObj ],
+    function( rs, m, n, M )
+    return RandomMatrix( ConstructingFilter( M ), rs, BaseDomain( M ), m, n );
+    end );
+
+InstallMethod( RandomMatrix,
+    [ IsInt, IsInt, IsMatrixOrMatrixObj ],
+    function( m, n, M )
+    return RandomMatrix( ConstructingFilter( M ), GlobalMersenneTwister, BaseDomain( M ), m, n );
+    end );
 
 
 #############################################################################
