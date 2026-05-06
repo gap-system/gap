@@ -836,7 +836,7 @@ BindGlobal( "SymplecticGroup", function ( arg )
     rep:= filt;
     filt:= IsMatrixGroup;
   else
-    rep:= fail;
+    rep:= ValueOption( "ConstructingFilter" );
   fi;
   if DescribesInvariantBilinearForm( Last( arg ) ) then
     form:= Remove( arg );
