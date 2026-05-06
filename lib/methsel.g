@@ -253,6 +253,30 @@ BIND_GLOBAL( "NewTagBasedOperation",
 
         return method( req1, req2, req3, req4 );
         end );
+    elif LENGTH( requirements ) = 5 then
+      InstallEarlyMethod( oper,
+        function( req1, req2, req3, req4, req5 )
+        local method;
+
+        if not ( requirements[1]( req1 ) and
+                 requirements[2]( req2 ) and
+                 requirements[3]( req3 ) and
+                 requirements[4]( req4 ) and
+                 requirements[5]( req5 ) ) then
+          TryNextMethod();
+        fi;
+
+        method:= FIND_OBJ_MAP( methods, req1, fail );
+        if method = fail then
+          # Take the default method if there is one.
+          method:= FIND_OBJ_MAP( methods, IS_OBJECT, fail );
+        fi;
+        if method = fail then
+          Error( "no default installed for tag based operation <oper>" );
+        fi;
+
+        return method( req1, req2, req3, req4, req5 );
+        end );
     else
       Error( "tag based operations for ", LENGTH( requirements ),
              " arguments are currently not supported" );
