@@ -1476,7 +1476,14 @@ InstallMethod( ZeroSameMutability,
 
 InstallMethod( OneMutable,
     [ IsMatrixObj ],
-    M -> IdentityMatrix( NumberRows( M ), M ) );
+    function( M )
+    local nrows;
+    nrows:= NrRows( M );
+    if nrows <> NrCols( M ) then
+      Error( "<M> must be square (not ", nrows, " by ", NrCols( M ), ")" );
+    fi;
+    return IdentityMatrix( nrows, M );
+    end );
 
 InstallMethod( OneSameMutability,
     [ IsMatrixOrMatrixObj ],
