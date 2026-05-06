@@ -296,7 +296,7 @@ DeclareSynonym( "DiagonalOfMat", DiagonalOfMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "BaseMat", IsMatrix );
+DeclareAttribute( "BaseMat", IsMatrixOrMatrixObj );
 
 #############################################################################
 ##
@@ -323,7 +323,7 @@ DeclareAttribute( "BaseMat", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "BaseMatDestructive", [ IsMatrix ] );
+DeclareOperation( "BaseMatDestructive", [ IsMatrixOrMatrixObj ] );
 
 #############################################################################
 ##
@@ -345,7 +345,7 @@ DeclareOperation( "BaseMatDestructive", [ IsMatrix ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "BaseOrthogonalSpaceMat", IsMatrix );
+DeclareAttribute( "BaseOrthogonalSpaceMat", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -372,7 +372,7 @@ DeclareAttribute( "BaseOrthogonalSpaceMat", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "DefaultFieldOfMatrix", IsMatrix );
+DeclareAttribute( "DefaultFieldOfMatrix", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -396,7 +396,7 @@ DeclareAttribute( "DefaultFieldOfMatrix", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "DepthOfUpperTriangularMatrix", IsMatrix );
+DeclareAttribute( "DepthOfUpperTriangularMatrix", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -503,7 +503,7 @@ DeclareSynonym( "DeterminantMatDivFree", DeterminantMatrixDivFree );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "DimensionsMat", IsMatrix );
+DeclareAttribute( "DimensionsMat", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -550,7 +550,7 @@ DeclareAttribute( "DimensionsMat", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ElementaryDivisorsMat", [IsRing,IsMatrix] );
+DeclareOperation( "ElementaryDivisorsMat", [IsRing, IsMatrixOrMatrixObj] );
 DeclareGlobalFunction( "ElementaryDivisorsMatDestructive" );
 
 #############################################################################
@@ -623,7 +623,7 @@ DeclareGlobalFunction( "ElementaryDivisorsMatDestructive" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "ElementaryDivisorsTransformationsMat", [IsRing,IsMatrix] );
+DeclareOperation( "ElementaryDivisorsTransformationsMat", [IsRing, IsMatrixOrMatrixObj] );
 DeclareGlobalFunction( "ElementaryDivisorsTransformationsMatDestructive" );
 
 #############################################################################
@@ -640,7 +640,7 @@ DeclareGlobalFunction( "ElementaryDivisorsTransformationsMatDestructive" );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareOperation( "TriangulizedNullspaceMatNT", [ IsMatrix ] );
+DeclareOperation( "TriangulizedNullspaceMatNT", [ IsMatrixOrMatrixObj ] );
 
 
 #############################################################################
@@ -666,8 +666,8 @@ DeclareOperation( "TriangulizedNullspaceMatNT", [ IsMatrix ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "NullspaceMat", IsMatrix );
-DeclareAttribute( "TriangulizedNullspaceMat", IsMatrix );
+DeclareAttribute( "NullspaceMat", IsMatrixOrMatrixObj );
+DeclareAttribute( "TriangulizedNullspaceMat", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -706,8 +706,8 @@ DeclareAttribute( "TriangulizedNullspaceMat", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "NullspaceMatDestructive", [ IsMatrix and IsMutable] );
-DeclareOperation( "TriangulizedNullspaceMatDestructive", [ IsMatrix and IsMutable] );
+DeclareOperation( "NullspaceMatDestructive", [ IsMatrixOrMatrixObj and IsMutable] );
+DeclareOperation( "TriangulizedNullspaceMatDestructive", [ IsMatrixOrMatrixObj and IsMutable] );
 
 
 #############################################################################
@@ -779,7 +779,7 @@ DeclareOperation( "Eigenvalues", [ IsRing, IsMatrixOrMatrixObj ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "Eigenspaces", [ IsRing, IsMatrix ] );
+DeclareOperation( "Eigenspaces", [ IsRing, IsMatrixOrMatrixObj ] );
 
 #############################################################################
 ##
@@ -795,7 +795,7 @@ DeclareOperation( "Eigenspaces", [ IsRing, IsMatrix ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "Eigenvectors", [ IsRing, IsMatrix ] );
+DeclareOperation( "Eigenvectors", [ IsRing, IsMatrixOrMatrixObj ] );
 
 
 #############################################################################
@@ -926,7 +926,7 @@ DeclareSynonymAttr( "RankMatDestructive", RankMatrixDestructive );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "SemiEchelonMat", IsMatrix );
+DeclareAttribute( "SemiEchelonMat", IsMatrixOrMatrixObj );
 
 #############################################################################
 ##
@@ -950,7 +950,7 @@ DeclareAttribute( "SemiEchelonMat", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "SemiEchelonMatDestructive", [ IsMatrix and IsMutable] );
+DeclareOperation( "SemiEchelonMatDestructive", [ IsMatrixOrMatrixObj and IsMutable] );
 
 
 #############################################################################
@@ -987,7 +987,7 @@ DeclareOperation( "SemiEchelonMatDestructive", [ IsMatrix and IsMutable] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "SemiEchelonMatTransformation", IsMatrix );
+DeclareAttribute( "SemiEchelonMatTransformation", IsMatrixOrMatrixObj );
 
 #############################################################################
 ##
@@ -1003,7 +1003,7 @@ DeclareAttribute( "SemiEchelonMatTransformation", IsMatrix );
 ##  </ManSection>
 ##
 DeclareOperation( "SemiEchelonMatTransformationDestructive", [
-        IsMatrix and IsMutable ] );
+        IsMatrixOrMatrixObj and IsMutable ] );
 
 
 #############################################################################
@@ -1135,7 +1135,7 @@ DeclareSynonym( "MutableTransposedMat", TransposedMatMutable ); # needed?
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareOperation( "MutableTransposedMatDestructive", [IsMatrix and IsMutable] );
+DeclareOperation( "MutableTransposedMatDestructive", [IsMatrixOrMatrixObj and IsMutable] );
 
 
 #############################################################################
@@ -1163,7 +1163,7 @@ DeclareOperation( "MutableTransposedMatDestructive", [IsMatrix and IsMutable] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "TransposedMatDestructive", [ IsMatrix ] );
+DeclareOperation( "TransposedMatDestructive", [ IsMatrixOrMatrixObj ] );
 
 
 
@@ -1186,7 +1186,7 @@ DeclareOperation( "TransposedMatDestructive", [ IsMatrix ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareProperty( "IsMonomialMatrix", IsMatrix );
+DeclareProperty( "IsMonomialMatrix", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -1211,7 +1211,7 @@ DeclareProperty( "IsMonomialMatrix", IsMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "InverseMatMod", [ IsMatrix, IsObject ] );
+DeclareOperation( "InverseMatMod", [ IsMatrixOrMatrixObj, IsObject ] );
 
 
 #############################################################################
@@ -1246,11 +1246,11 @@ DeclareOperation( "KroneckerProduct", [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj
 ##  <Oper Name="SolutionMatNoCo" Arg='mat, vec'/>
 ##
 ##  <Description>
-##  Does thework for <C>SolutionMat</C> and <C>SolutionMatDestructive</C>.
+##  Does the work for <C>SolutionMat</C> and <C>SolutionMatDestructive</C>.
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareOperation( "SolutionMatNoCo", [ IsMatrix, IsRowVector ] );
+DeclareOperation( "SolutionMatNoCo", [ IsMatrixOrMatrixObj, IsRowVector ] );
 
 
 #############################################################################
@@ -1268,7 +1268,7 @@ DeclareOperation( "SolutionMatNoCo", [ IsMatrix, IsRowVector ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "SolutionMat", [ IsMatrix, IsRowVector ] );
+DeclareOperation( "SolutionMat", [ IsMatrixOrMatrixObj, IsRowVector ] );
 
 #############################################################################
 ##
@@ -1300,7 +1300,7 @@ DeclareOperation( "SolutionMat", [ IsMatrix, IsRowVector ] );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "SolutionMatDestructive",
-    [ IsMatrix and IsMutable, IsRowVector ] );
+    [ IsMatrixOrMatrixObj and IsMutable, IsRowVector ] );
 
 
 ############################################################################
@@ -1326,7 +1326,7 @@ DeclareOperation( "SolutionMatDestructive",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "SumIntersectionMat", [ IsMatrix, IsMatrix ] );
+DeclareOperation( "SumIntersectionMat", [ IsMatrixOrMatrixObj, IsMatrixOrMatrixObj ] );
 
 
 
@@ -1349,7 +1349,7 @@ DeclareOperation( "SumIntersectionMat", [ IsMatrix, IsMatrix ] );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "TriangulizedMat", [ IsMatrix ] );
+DeclareOperation( "TriangulizedMat", [ IsMatrixOrMatrixObj ] );
 DeclareSynonym( "RREF", TriangulizedMat);
 
 #############################################################################
@@ -1380,7 +1380,7 @@ DeclareSynonym( "RREF", TriangulizedMat);
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "TriangulizeMat", [ IsMatrix and IsMutable ] );
+DeclareOperation( "TriangulizeMat", [ IsMatrixOrMatrixObj and IsMutable ] );
 
 
 #############################################################################
@@ -1574,7 +1574,7 @@ DeclareGlobalFunction( "BlownUpVector" );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "DiagonalizeMat", [IsRing,IsMatrix and IsMutable] );
+DeclareOperation( "DiagonalizeMat", [IsRing, IsMatrixOrMatrixObj and IsMutable] );
 
 
 #############################################################################
@@ -2199,7 +2199,7 @@ DeclareSynonymAttr( "TraceMat", TraceMatrix );
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareAttribute( "JordanDecomposition", IsMatrix );
+DeclareAttribute( "JordanDecomposition", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -2382,7 +2382,7 @@ DeclareOperation( "CharacteristicPolynomial",
 ##
 DeclareOperation("CharacteristicPolynomialMatrixNC",
   #IsField is not yet known
-  [IsRing,IsOrdinaryMatrix,IsPosInt]);
+  [IsRing,IsMatrixOrMatrixObj,IsPosInt]);
 
 
 #############################################################################
@@ -2400,7 +2400,7 @@ DeclareOperation("CharacteristicPolynomialMatrixNC",
 ##
 DeclareOperation("MinimalPolynomialMatrixNC",
   #IsField is not yet known
-  [IsRing,IsOrdinaryMatrix,IsPosInt]);
+  [IsRing,IsMatrixOrMatrixObj,IsPosInt]);
 
 #############################################################################
 ##
