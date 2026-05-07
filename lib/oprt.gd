@@ -2743,11 +2743,16 @@ DeclareGlobalFunction("OnLines");
 ##
 ##  <Description>
 ##  implements the action on sets of sets.
-##  For the special case that the sets are pairwise disjoint,
+##  <A>set</A> must be a proper set whose entries are again proper sets
+##  (see&nbsp;<Ref Sect="Sorted Lists and Sets"/>).
+##  <P/>
+##  <Ref Func="OnSetsSets"/> returns the proper set whose elements are
+##  the images obtained by applying the action function
+##  <Ref Func="OnSets"/> to <M>x</M> and <A>g</A>,
+##  for each element <M>x</M> of <A>set</A>.
+##  <P/>
+##  For the special case that the elements of <A>set</A> are pairwise disjoint,
 ##  it is possible to use <Ref Func="OnSetsDisjointSets"/>.
-##  <A>set</A> must be a sorted list whose entries are again sorted lists,
-##  otherwise an error is triggered
-##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
 ##  <Example><![CDATA[
 ##  gap> OnSetsSets( [ [ 1, 2 ], [ 3, 4 ] ], (1,2,3) );
 ##  [ [ 1, 4 ], [ 2, 3 ] ]
@@ -2774,9 +2779,16 @@ DeclareGlobalFunction( "OnSetsSets" );
 ##  <Description>
 ##  implements the action on sets of pairwise disjoint sets
 ##  (see also&nbsp;<Ref Func="OnSetsSets"/>).
-##  <A>set</A> must be a sorted list whose entries are again sorted lists,
-##  otherwise an error is triggered
-##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
+##  <A>set</A> must be a proper set whose entries are pairwise
+##  disjoint proper sets.
+##  However, it is <E>not</E> checked that the entries of 
+##  <A>set</A> are indeed pairwise disjoint.
+##  <P/>
+##  <Ref Func="OnSetsDisjointSets"/> returns the proper
+##  set whose elements are
+##  the images obtained by applying the action function
+##  <Ref Func="OnSets"/> to <M>x</M> and <A>g</A>,
+##  for each element <M>x</M> of <A>set</A>.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -2794,9 +2806,13 @@ DeclareGlobalFunction( "OnSetsDisjointSets" );
 ##
 ##  <Description>
 ##  implements the action on sets of tuples.
-##  <A>set</A> must be a sorted list,
-##  otherwise an error is triggered
-##  (see&nbsp;<Ref Sect="Action on canonical representatives"/>).
+##  <A>set</A> must be a proper set of lists without holes
+##  (see&nbsp;<Ref Sect="Sorted Lists and Sets"/>).
+##  <P/>
+##  <Ref Func="OnSetsTuples"/> returns the proper set whose elements are
+##  the images obtained by applying the action function
+##  <Ref Func="OnTuples"/> to <M>x</M> and <A>g</A>,
+##  for each element <M>x</M> of <A>set</A>.
 ##  <Example><![CDATA[
 ##  gap> OnSetsTuples( [ [ 1, 2 ], [ 3, 4 ] ], (1,2,3) );
 ##  [ [ 1, 4 ], [ 2, 3 ] ]
@@ -2823,13 +2839,13 @@ DeclareGlobalFunction("OnSetsTuples");
 ##
 ##  <Description>
 ##  implements the action on tuples of sets.
-##  <A>tup</A> must be a list whose entries are proper sets,
-##  otherwise an error is triggered.
+##  <A>tup</A> must be a list without holes whose entries are proper sets
+##  (see&nbsp;<Ref Sect="Sorted Lists and Sets"/>).
 ##  <P/>
-##  <Ref Func="OnTuplesSets"/> returns the tuple of 
+##  <Ref Func="OnTuplesSets"/> returns the list of 
 ##  the corresponding images obtained by applying the action function
 ##  <Ref Func="OnSets"/> to <M>x</M> and <A>g</A>,
-##  for each element <M>x</M> of <A>tup</A>.
+##  for each entry <M>x</M> of <A>tup</A>.
 ##  <Example><![CDATA[
 ##  gap> OnTuplesSets( [ [ 2, 3 ], [ 3, 4 ] ], (1,2,3) );
 ##  [ [ 1, 3 ], [ 1, 4 ] ]
@@ -2848,14 +2864,21 @@ DeclareGlobalFunction("OnTuplesSets");
 
 #############################################################################
 ##
-#F  OnTuplesTuples( <set>, <g> )
+#F  OnTuplesTuples( <tup>, <g> )
 ##
 ##  <#GAPDoc Label="OnTuplesTuples">
 ##  <ManSection>
-##  <Func Name="OnTuplesTuples" Arg='set, g'/>
+##  <Func Name="OnTuplesTuples" Arg='tup, g'/>
 ##
 ##  <Description>
 ##  implements the action on tuples of tuples.
+##  <A>tup</A> must be a list without holes whose entries are again
+##  lists without holes.
+##  <P/>
+##  <Ref Func="OnTuplesTuples"/> returns the list of 
+##  the corresponding images obtained by applying the action function
+##  <Ref Func="OnTuples"/> to <M>x</M> and <A>g</A>,
+##  for each entry <M>x</M> of the list <A>tup</A>.
 ##  <Example><![CDATA[
 ##  gap> OnTuplesTuples( [ [ 2, 3 ], [ 3, 4 ] ], (1,2,3) );
 ##  [ [ 3, 1 ], [ 1, 4 ] ]
