@@ -652,7 +652,6 @@ DeclareOperation( "Matrix", [ IsList ]);
 ##  gap> z5 := ZeroMatrix( IsGF2MatrixRep, GF(2), 2, 5 );; Display( z5 );
 ##   . . . . .
 ##   . . . . .
-##  ]>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1611,7 +1610,7 @@ DeclareOperationKernel( "CopySubMatrix",
 ##  gap> m1 := Matrix( Integers, [ [2,3], [5,6], [8,9] ] );;
 ##  gap> v1 := CompatibleVector( m1 );; Unpack( v1 );
 ##  [ 0, 0, 0 ]
-##  gap> v1[1] := -1;; v1[3] := -1;; Unpack( v1 );         
+##  gap> v1[1] := -1;; v1[3] := -1;; Unpack( v1 );
 ##  [ -1, 0, -1 ]
 ##  gap> Print( v1 * m1 );
 ##  NewVector(IsPlistVectorRep,Integers,[ -10, -12 ])
@@ -2101,7 +2100,7 @@ DeclareOperation( "ListOp", [ IsRowListMatrix, IsFunction ] );
 ##  Multiplies the <A>i</A>-th row of the mutable matrix <A>mat</A>
 ##  with the scalar <A>elm</A> from the left in-place.
 ##  <P/>
-##  <Ref Oper="MultMatrixRow"/> is a synonym of <Ref Oper="MultMatrixRowLeft"/>. 
+##  <Ref Oper="MultMatrixRow"/> is a synonym of <Ref Oper="MultMatrixRowLeft"/>.
 ##  This was chosen because linear combinations of rows of matrices are usually
 ##  written as <M> v \cdot A = [v_1, ... ,v_n] \cdot A</M>
 ##  which multiplies scalars from the left.
