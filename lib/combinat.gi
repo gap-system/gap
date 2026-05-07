@@ -2488,13 +2488,13 @@ InstallGlobalFunction(EnumeratorOfPartitionsSet , function(s, arg...)
         np := ((np - 1) mod t) + 1;
       fi;
     od;
-    return res;
+    return List(res, Reversed);
   end;
 
   NumberElement := function(enu, p, k)
     local res, kp, ks, sp, perm, i, j, jp;
 
-    if not IsList(p) or Length(p) <> k then
+    if not IsSet(p) or Length(p) <> k then
       return fail;
     fi;
 
@@ -2509,8 +2509,9 @@ InstallGlobalFunction(EnumeratorOfPartitionsSet , function(s, arg...)
     # end of the i-th part of p in the flattened
     # version of p (stored as sp)
     ks := [];
+    sp := [];
     for kp in [1 .. k] do
-      if not IsList(p[kp]) then
+      if not IsSet(p[kp]) then
         return fail;
       fi;
       if kp = 1 then
@@ -2518,8 +2519,8 @@ InstallGlobalFunction(EnumeratorOfPartitionsSet , function(s, arg...)
       else
         Add(ks, ks[Length(ks)] + Length(p[kp]));
       fi;
+      Append(sp, p[kp]);
     od;
-    sp := Flat(p);
 
     # Every partition of s must store all of the same elements as s.
     perm := PermListList(sp, s);
@@ -2534,15 +2535,15 @@ InstallGlobalFunction(EnumeratorOfPartitionsSet , function(s, arg...)
       # i is the part of p that s[j] is in
       i := PositionSorted(ks, jp);
 
-      # jp = ks[i] if and only if s[j] is the last element of the i-th
+      # Check passes if and only if s[j] is the first element of the i-th
       # part of p. According to our encoding convention in ElementNumber,
       # this means that the remaining partition is a (kp-1)-partition.
-      if (jp = ks[i]) then
+      if jp = 1 or (i > 1 and ks[i - 1] + 1 = jp) then
         kp := kp - 1;
       else
         # Otherwise, we perform the reverse manipulation to the one
         # modifying np in ElementNumber
-        res := res + i * Stirling2(j-1, kp) + Stirling2(j-1, kp-1);
+        res := res + (i-1) * Stirling2(j-1, kp) + Stirling2(j-1, kp-1);
       fi;
     od;
 
@@ -2585,7 +2586,7 @@ InstallGlobalFunction(EnumeratorOfPartitionsSet , function(s, arg...)
       if Length(p) > k then
         return fail;
       fi;
-      return NumberElement(enu, p, Length(p));
+      return cumulative_stirling[Length(p)] + NumberElement(enu, p, Length(p));
     end;
     r.Length := x -> cumulative_stirling[k + 1];
   elif (Length(arg) = 2 and arg[2] = false) or (Length(arg) = 1) then
