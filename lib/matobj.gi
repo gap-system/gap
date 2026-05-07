@@ -1151,9 +1151,17 @@ InstallMethod( MultVectorRight,
 ##  [ [ 3, 0, 3 ], [ 0, 3, 0 ] ]
 ##  [ [ 5, 0, 5 ], [ 0, 5, 0 ] ]
 ##  [ [ 1/2, 0, 1/2 ], [ 0, 1/2, 0 ] ]
-##  gap> m3 := Matrix( [ [1,1], [0,1] ], m1 );;
-##  gap> Print( m3 * m1 );
-##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ 9, 11, 13 ], [ 6, 7, 8 ] ])
+##  gap> m3 := Matrix( Integers, [ [1,1], [0,1] ] );
+##  <2x2-matrix over Integers>
+##  gap> m3 := Matrix( Integers, [ [1,1], [0,1] ] );;
+##  gap> m4 := Matrix( Integers, [ [3,5], [4,7] ] );;
+##  gap> Print( m3 * m4 );
+##  NewMatrix(IsPlistMatrixRep,Integers,2,[ [ 7, 12 ], [ 4, 7 ] ])
+##  gap> Unpack( m3 * m4 );
+##  [ [ 7, 12 ], [ 4, 7 ] ]
+##  gap> Unpack( m3^6 );  Unpack( m4^-1 ); 
+##  [ [ 1, 6 ], [ 0, 1 ] ]
+##  [ [ 7, -5 ], [ -4, 3 ] ]
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
@@ -1436,7 +1444,7 @@ InstallMethod( Characteristic,
 ##
 ##  <Returns>a matrix object</Returns>
 ##  <Description>
-##  For a vector object <A>M</A>,
+##  For a matrix object <A>M</A>,
 ##  the operations for computing the additive inverse with prescribed
 ##  mutability return a matrix object with the same
 ##  <Ref Attr="ConstructingFilter" Label="for a matrix object"/> and

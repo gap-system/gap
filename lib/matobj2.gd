@@ -899,7 +899,7 @@ DeclareOperation( "Unpack", [ IsVecOrMatObj ] );
 ##  <P/>
 ##  <Example><![CDATA[
 ##  gap> v1 := Vector( Integers, [ 3, 5, 7, 9 ] );;
-##  gap> ChangedBaseDomain( v1, Rationals );                     
+##  gap> ChangedBaseDomain( v1, Rationals );
 ##  <plist vector over Rationals of length 4>
 ##  gap> m6 := Matrix( IsGF2MatrixRep, GF(2), [[1,0,1],[0,1,0]]*Z(2)^0 );;
 ##  gap> m64 := ChangedBaseDomain( m6, GF(4) );
@@ -1407,6 +1407,91 @@ DeclareOperation( "DistanceOfVectors", [ IsVectorObj, IsVectorObj ] );
 
 #############################################################################
 ##
+#O  MatElm( <M>, <row>, <col> )  . . . . . .  select an entry from a matrix
+#O  <M>[ <row>, <col> ]  . . . . . . . . . .  select an entry from a matrix
+##
+##  <#GAPDoc Label="MatObj_MatElm">
+##  <ManSection>
+##  <Oper Name="MatElm" Arg='M, row, col'/>
+##
+##  <Returns>an entry of the matrix object</Returns>
+##
+##  <Description>
+##  For a matrix object <A>M</A>, this operation returns the entry in
+##  row <A>row</A> and column <A>col</A>.
+##  <P/>
+##  Also the syntax <A>M</A><C>[ </C><A>row</A><C>, </C><A>col</A><C> ]</C>
+##  is supported.
+##  <P/>
+##  Note that this is <E>not</E> equivalent to
+##  <A>M</A><C>[ </C><A>row</A><C> ][ </C><A>col</A><C> ]</C>,
+##  which would first try to access <A>M</A><C>[ </C><A>row</A><C> ]</C>,
+##  and this is in general not possible.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Rationals, [ [3,4,5], [6,7,8] ] );;
+##  gap> [ MatElm( m1, 2, 2 ), m1[2,3] ];
+##  [ 7, 8 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperationKernel( "[,]", [ IsMatrixOrMatrixObj, IS_INT, IS_INT ], ELM_MAT );
+DeclareSynonym( "MatElm", ELM_MAT );
+
+
+#############################################################################
+##
+#O  SetMatElm( <M>, <row>, <col>, <obj> )  . . . . set an entry in a matrix
+#O  <M>[ <row>, <col> ]:= <obj>  . . . . . . . . . set an entry in a matrix
+##
+##  <#GAPDoc Label="MatObj_SetMatElm">
+##  <ManSection>
+##  <Oper Name="SetMatElm" Arg='M, row, col, obj'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  For a mutable matrix object <A>M</A>, this operation assigns the object
+##  <A>obj</A> to the position in row <A>row</A> and column <A>col</A>,
+##  provided that <A>obj</A> is compatible with the
+##  <Ref Attr="BaseDomain" Label="for a matrix object"/> value of <A>M</A>.
+##  <P/>
+##  Also the syntax
+##  <A>M</A><C>[ </C><A>row</A><C>, </C><A>col</A><C> ]:= </C><A>obj</A>
+##  is supported.
+##  <P/>
+##  Note that this is <E>not</E> equivalent to
+##  <A>M</A><C>[ </C><A>row</A><C> ][ </C><A>col</A><C> ]:= </C><A>obj</A>,
+##  which would first try to access <A>M</A><C>[ </C><A>row</A><C> ]</C>,
+##  and this is in general not possible.
+##  <P/>
+##  If the global option <C>check</C> is set to <K>false</K> then
+##  <Ref Oper="SetMatElm"/> need not perform consistency checks.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Rationals, [ [3,4,5], [6,7,8] ] );;
+##  gap> SetMatElm( m1, 1, 3, 0 );
+##  gap> m1[2,1] := 0;;  Unpack( m1 );
+##  [ [ 3, 4, 0 ], [ 0, 7, 8 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperationKernel( "[,]:=", [ IsMatrixOrMatrixObj, IsInt, IsInt, IsObject ],
+    ASS_MAT );
+#T We want to require also 'IsMutable' for the first argument,
+#T but some package may have installed methods without this requirement.
+#T Note that if we declare the operation twice, once with requirement
+#T 'IsMutable' and once without, each method installation will show
+#T a complaint that it matches more than one declaration.
+DeclareSynonym( "SetMatElm", ASS_MAT );
+
+
+#############################################################################
+##
 #O  ExtractSubMatrix( <M>, <rows>, <cols> )
 ##
 ##  <#GAPDoc Label="ExtractSubMatrix">
@@ -1422,6 +1507,15 @@ DeclareOperation( "DistanceOfVectors", [ IsVectorObj, IsVectorObj ] );
 ##  If the <Ref Attr="ConstructingFilter" Label="for a matrix object"/>
 ##  value of the result implies <Ref Filt="IsCopyable"/> then the result is
 ##  fully mutable.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [1..20], 5 );;  Unpack( m1 );
+##  [ [ 1 .. 5 ], [ 6 .. 10 ], [ 11 .. 15 ], [ 16 .. 20 ] ]
+##  gap> m2 := ExtractSubMatrix( m1, [2,3], [2..4] );;  Unpack( m2 );
+##  [ [ 7 .. 9 ], [ 12 .. 14 ] ]
+##  gap> m3 := ExtractSubMatrix( m1, [4,1], [5,1] );;  Unpack( m3 );
+##  [ [ 20, 16 ], [ 5, 1 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1472,6 +1566,16 @@ DeclareOperation( "MutableCopyMatrix", [ IsMatrixOrMatrixObj ] );
 ##  <P/>
 ##  If the global option <C>check</C> is set to <K>false</K> then
 ##  <Ref Oper="CopySubMatrix"/> need not perform consistency checks.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [1..20], 5 );;  Unpack( m1 );
+##  [ [ 1 .. 5 ], [ 6 .. 10 ], [ 11 .. 15 ], [ 16 .. 20 ] ]
+##  gap> m0 := ZeroMatrix( Integers, 2, 9 );;
+##  gap> CopySubMatrix( m1, m0, [2,3], [1,2], [2..4], [3..5] );  Unpack( m0 );
+##  [ [ 0, 0, 7, 8, 9, 0, 0, 0, 0 ], [ 0, 0, 12, 13, 14, 0, 0, 0, 0 ] ]
+##  gap> CopySubMatrix( m1, m0, [4,1], [1,2], [5,1], [7,8] );  Unpack( m0 );
+##  [ [ 0, 0, 7, 8, 9, 0, 20, 16, 0 ], [ 0, 0, 12, 13, 14, 0, 5, 1, 0 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1483,76 +1587,79 @@ DeclareOperationKernel( "CopySubMatrix",
 #T the pre-existing operation declaration for compatibility with packages.
 
 
-#############################################################################
+############################################################################
 ##
-#O  MatElm( <M>, <row>, <col> )  . . . . . .  select an entry from a matrix
-#O  <M>[ <row>, <col> ]  . . . . . . . . . .  select an entry from a matrix
+#A  CompatibleVector( <M> )
 ##
-##  <#GAPDoc Label="MatObj_MatElm">
+##  <#GAPDoc Label="CompatibleVector">
 ##  <ManSection>
-##  <Oper Name="MatElm" Arg='M, row, col'/>
+##  <Oper Name="CompatibleVector" Arg='M' Label="for a matrix object"/>
 ##
-##  <Returns>an entry of the matrix object</Returns>
+##  <Returns>a vector object</Returns>
 ##
 ##  <Description>
-##  For a matrix object <A>M</A>, this operation returns the entry in
-##  row <A>row</A> and column <A>col</A>.
+##  Called with a matrix object <A>M</A> with <M>m</M> rows,
+##  this operation returns a mutable zero vector object <M>v</M> of length
+##  <M>m</M> and in the representation given by the
+##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
+##  of <A>M</A> (provided that such a representation exists).
 ##  <P/>
-##  Also the syntax <A>M</A><C>[ </C><A>row</A><C>, </C><A>col</A><C> ]</C>
-##  is supported.
+##  The idea is that there should be an efficient way to
+##  form the product <M>v</M><A>M</A>.
 ##  <P/>
-##  Note that this is <E>not</E> equivalent to
-##  <A>M</A><C>[ </C><A>row</A><C> ][ </C><A>col</A><C> ]</C>,
-##  which would first try to access <A>M</A><C>[ </C><A>row</A><C> ]</C>,
-##  and this is in general not possible.
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [2,3], [5,6], [8,9] ] );;
+##  gap> v1 := CompatibleVector( m1 );; Unpack( v1 );
+##  [ 0, 0, 0 ]
+##  gap> v1[1] := -1;; v1[3] := -1;; Unpack( v1 );         
+##  [ -1, 0, -1 ]
+##  gap> Print( v1 * m1 );
+##  NewVector(IsPlistVectorRep,Integers,[ -10, -12 ])
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperationKernel( "[,]", [ IsMatrixOrMatrixObj, IS_INT, IS_INT ], ELM_MAT );
-DeclareSynonym( "MatElm", ELM_MAT );
+DeclareOperation( "CompatibleVector", [ IsMatrixOrMatrixObj ] );
 
 
-#############################################################################
+############################################################################
 ##
-#O  SetMatElm( <M>, <row>, <col>, <obj> )  . . . . set an entry in a matrix
-#O  <M>[ <row>, <col> ]:= <obj>  . . . . . . . . . set an entry in a matrix
+#A  RowsOfMatrix( <M> )
 ##
-##  <#GAPDoc Label="MatObj_SetMatElm">
+##  <#GAPDoc Label="RowsOfMatrix">
 ##  <ManSection>
-##  <Oper Name="SetMatElm" Arg='M, row, col, obj'/>
+##  <Attr Name="RowsOfMatrix" Arg='M' Label="for a matrix object"/>
 ##
-##  <Returns>nothing</Returns>
+##  <Returns>a plain list</Returns>
 ##
 ##  <Description>
-##  For a mutable matrix object <A>M</A>, this operation assigns the object
-##  <A>obj</A> to the position in row <A>row</A> and column <A>col</A>,
-##  provided that <A>obj</A> is compatible with the
-##  <Ref Attr="BaseDomain" Label="for a matrix object"/> value of <A>M</A>.
+##  Called with a matrix object <A>M</A>, this operation
+##  returns a plain list of objects in the representation given by the
+##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
+##  of <A>M</A> (provided that such a representation exists),
+##  where the <M>i</M>-th entry describes the <M>i</M>-th row of the input.
 ##  <P/>
-##  Also the syntax
-##  <A>M</A><C>[ </C><A>row</A><C>, </C><A>col</A><C> ]:= </C><A>obj</A>
-##  is supported.
-##  <P/>
-##  Note that this is <E>not</E> equivalent to
-##  <A>M</A><C>[ </C><A>row</A><C> ][ </C><A>col</A><C> ]:= </C><A>obj</A>,
-##  which would first try to access <A>M</A><C>[ </C><A>row</A><C> ]</C>,
-##  and this is in general not possible.
-##  <P/>
-##  If the global option <C>check</C> is set to <K>false</K> then
-##  <Ref Oper="SetMatElm"/> need not perform consistency checks.
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [3,4,5], [7,8,9] ] );;
+##  gap> Print( RowsOfMatrix( m1 ) );
+##  [ NewVector(IsPlistVectorRep,Integers,[ 3, 4, 5 ]),
+##    NewVector(IsPlistVectorRep,Integers,[ 7, 8, 9 ]) ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperationKernel( "[,]:=", [ IsMatrixOrMatrixObj, IsInt, IsInt, IsObject ],
-    ASS_MAT );
-#T We want to require also 'IsMutable' for the first argument,
-#T but some package may have installed methods without this requirement.
-#T Note that if we declare the operation twice, once with requirement
-#T 'IsMutable' and once without, each method installation will show
-#T a complaint that it matches more than one declaration.
-DeclareSynonym( "SetMatElm", ASS_MAT );
+##  This function is used for creating an isomorphic permutation group
+##  of a matrix group that consists of matrix objects.
+##  <!-- If 'NicomorphismOfGeneralMatrixGroup' would be documented then
+##  one could insert a reference to it. -->
+##
+##  We assume that the matrix knows how to create suitable vector objects;
+##  entering a template vector as the second argument is not an option
+##  in this situation.
+##
+DeclareAttribute( "RowsOfMatrix", IsMatrixOrMatrixObj );
 
 
 #############################################################################
@@ -1618,64 +1725,6 @@ DeclareOperation( "CompanionMatrix",
     [ IsUnivariatePolynomial, IsSemiring ] );
 
 
-############################################################################
-##
-#A  CompatibleVector( <M> )
-##
-##  <#GAPDoc Label="CompatibleVector">
-##  <ManSection>
-##  <Oper Name="CompatibleVector" Arg='M' Label="for a matrix object"/>
-##
-##  <Returns>a vector object</Returns>
-##
-##  <Description>
-##  Called with a matrix object <A>M</A> with <M>m</M> rows,
-##  this operation returns a mutable zero vector object <M>v</M> of length
-##  <M>m</M> and in the representation given by the
-##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
-##  of <A>M</A> (provided that such a representation exists).
-##  <P/>
-##  The idea is that there should be an efficient way to
-##  form the product <M>v</M><A>M</A>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "CompatibleVector", [ IsMatrixOrMatrixObj ] );
-
-
-############################################################################
-##
-#A  RowsOfMatrix( <M> )
-##
-##  <#GAPDoc Label="RowsOfMatrix">
-##  <ManSection>
-##  <Attr Name="RowsOfMatrix" Arg='M' Label="for a matrix object"/>
-##
-##  <Returns>a plain list</Returns>
-##
-##  <Description>
-##  Called with a matrix object <A>M</A>, this operation
-##  returns a plain list of objects in the representation given by the
-##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
-##  of <A>M</A> (provided that such a representation exists),
-##  where the <M>i</M>-th entry describes the <M>i</M>-th row of the input.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-##  This function is used for creating an isomorphic permutation group
-##  of a matrix group that consists of matrix objects.
-##  <!-- If 'NicomorphismOfGeneralMatrixGroup' would be documented then
-##  one could insert a reference to it. -->
-##
-##  We assume that the matrix knows how to create suitable vector objects;
-##  entering a template vector as the second argument is not an option
-##  in this situation.
-##
-DeclareAttribute( "RowsOfMatrix", IsMatrixOrMatrixObj );
-
-
 #############################################################################
 ##
 #F  DefaultVectorRepForBaseDomain( <D> )
@@ -1691,7 +1740,6 @@ DeclareGlobalFunction( "DefaultMatrixRepForBaseDomain" );
 ##
 ##  Operations for Row List Matrix Objects
 ##
-
 
 ############################################################################
 ##
@@ -1710,6 +1758,12 @@ DeclareGlobalFunction( "DefaultMatrixRepForBaseDomain" );
 ##  this operation returns the <A>pos</A>-th row of <A>M</A>.
 ##  <P/>
 ##  It is not specified what happens if <A>pos</A> is larger.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [2,3], [5,6], [8,9] ] );;
+##  gap> Print( m1[2] );
+##  NewVector(IsPlistVectorRep,Integers,[ 5, 6 ])
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1740,6 +1794,13 @@ DeclareOperation( "[]", [ IsRowListMatrix, IsPosInt ] );
 ##  <A>M</A>.
 ##  <P/>
 ##  In all other situations, it is not specified what happens.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [2,3], [5,6], [8,9] ] );;
+##  gap> v1 := ZeroVector( 2, m1 );;
+##  gap> m1[2] := v1;; Unpack( m1 );
+##  [ [ 2, 3 ], [ 0, 0 ], [ 8, 9 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1764,6 +1825,12 @@ DeclareOperation( "[]:=", [ IsRowListMatrix, IsPosInt, IsVectorObj ] );
 ##  row list matrix with the same representation as <A>M</A>,
 ##  whose rows are identical to the rows at the positions
 ##  in the list <A>poss</A> in <A>M</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [0,1], [3,4], [6,7], [9,0] ] );;
+##  gap> m2 := m1{ [2..3] };; Print( m2 );
+##  NewMatrix(IsPlistMatrixRep,Integers,2,[ [ 3, 4 ], [ 6, 7 ] ])
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1792,6 +1859,13 @@ DeclareOperation( "{}", [IsRowListMatrix,IsList] );
 ##  <P/>
 ##  It is not specified what happens if the resulting range of row positions
 ##  is not dense.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [1,1], [2,2], [3,3], [4,4], [5,5] ] );;
+##  gap> m2 := Matrix( [ [7,7], [8,8], [9,9] ], m1 );;
+##  gap> ## the following appears to fail at present
+##  gap> ## m1{ [2..4] } := m2;
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1814,6 +1888,12 @@ DeclareOperation( "{}:=", [IsRowListMatrix,IsList,IsRowListMatrix] );
 ##  <C>IsBound( </C><A>M</A><C>[ </C><A>pos</A><C> ] )</C> returns
 ##  <K>true</K> if <A>pos</A> is at most the number of rows of <A>M</A>,
 ##  and <K>false</K> otherwise.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [3,4,5], [7,8,9] ] );;
+##  gap> [ IsBound( m1[2] ), IsBound( m1[3] ) ];
+##  [ true, false ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1836,6 +1916,12 @@ DeclareOperation( "IsBound[]", [ IsRowListMatrix, IsPosInt ] );
 ##  <C>Unbind( </C><A>M</A><C>[ </C><A>pos</A><C> ] )</C> removes the last
 ##  row.
 ##  It is not specified what happens if <A>pos</A> has another value.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [2,3], [5,6], [8,9] ] );;
+##  gap> Unbind( m1[3] ); Unpack( m1 );
+##  [ [ 2, 3 ], [ 5, 6 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1862,6 +1948,14 @@ DeclareOperation( "Unbind[]", [ IsRowListMatrix, IsPosInt ] );
 ##  <P/>
 ##  If a positive integer <A>pos</A> is given then <A>v</A> is added in
 ##  position <A>pos</A>, and all later rows are shifted up by one position.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [2,3], [5,6], [8,9] ] );;
+##  gap> Add( m1, v1 ); Unpack( m1 );
+##  [ [ 2, 3 ], [ 5, 6 ], [ 8, 9 ], [ 0, 0 ] ]
+##  gap> Add( m1, v1, 2 ); Unpack( m1 );
+##  [ [ 2, 3 ], [ 0, 0 ], [ 5, 6 ], [ 8, 9 ], [ 0, 0 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1884,11 +1978,21 @@ DeclareOperation( "Add", [ IsRowListMatrix, IsVectorObj, IsPosInt ] );
 ##  <Description>
 ##  For a mutable row list matrix <A>M</A>,
 ##  this operation removes the <A>pos</A>-th row and shifts the later rows
-##  down by one position.
+##  up by one position.
 ##  The default for <A>pos</A> is the number of rows of <A>M</A>.
 ##  <P/>
 ##  If the <A>pos</A>-th row existed in <A>M</A> then it is returned,
 ##  otherwise nothing is returned.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [1,1], [2,2], [3,3], [4,4], [5,5] ] );;
+##  gap> v1 := Remove( m1 );; Unpack( v1 );
+##  [ 5, 5 ]
+##  gap> Unpack( m1 );
+##  [ [ 1, 1 ], [ 2, 2 ], [ 3, 3 ], [ 4, 4 ] ]
+##  gap> Remove( m1, 2 );; Unpack( m1 );
+##  [ [ 1, 1 ], [ 3, 3 ], [ 4, 4 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1914,6 +2018,13 @@ DeclareOperation( "Remove", [ IsRowListMatrix, IsPosInt ] );
 ##  <Ref Attr="BaseDomain" Label="for a matrix object"/> values are equal,
 ##  this operation appends the rows of <A>M2</A> to the
 ##  rows of <A>M1</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [3,4,5], [7,8,9] ] );;
+##  gap> m2 := Matrix( Integers, [ [1,0,1], [0,1,0] ] );;
+##  gap> Append( m1, m2 ); Unpack( m1 );
+##  [ [ 3, 4, 5 ], [ 7, 8, 9 ], [ 1, 0, 1 ], [ 0, 1, 0 ] ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1959,12 +2070,384 @@ DeclareOperation( "Append", [ IsRowListMatrix, IsRowListMatrix ] );
 ##  (see <Ref Filt="IsPlistRep"/>) of its rows,
 ##  and the variant with two arguments returns the plain list of values
 ##  of these rows under the function <A>func</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  ## having problems getting this to work
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "ListOp", [ IsRowListMatrix ] );
 DeclareOperation( "ListOp", [ IsRowListMatrix, IsFunction ] );
+
+
+############################################################################
+# Elementary matrix operations
+############################################################################
+#
+
+############################################################################
+##
+##  <#GAPDoc Label="MultMatrixRow">
+##  <ManSection>
+##  <Oper Name="MultMatrixRowLeft" Arg='mat,i,elm'/>
+##  <Oper Name="MultMatrixRow" Arg='mat,i,elm'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Multiplies the <A>i</A>-th row of the mutable matrix <A>mat</A>
+##  with the scalar <A>elm</A> from the left in-place.
+##  <P/>
+##  <Ref Oper="MultMatrixRow"/> is a synonym of <Ref Oper="MultMatrixRowLeft"/>. 
+##  This was chosen because linear combinations of rows of matrices are usually
+##  written as <M> v \cdot A = [v_1, ... ,v_n] \cdot A</M>
+##  which multiplies scalars from the left.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [2,3], [5,6], [8,9] ] );;
+##  gap> MultMatrixRow( m1, 2, -10 ); Unpack( m1 );
+##  [ [ 2, 3 ], [ -50, -60 ], [ 8, 9 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "MultMatrixRowLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
+DeclareSynonym( "MultMatrixRow", MultMatrixRowLeft);
+
+############################################################################
+##
+##  <#GAPDoc Label="MultMatrixRowRight">
+##  <ManSection>
+##  <Oper Name="MultMatrixRowRight" Arg='M,i,elm'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Multiplies the <A>i</A>-th row of the mutable matrix <A>M</A> with the scalar
+##  <A>elm</A> from the right in-place.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "MultMatrixRowRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ]);
+
+############################################################################
+##
+##  <#GAPDoc Label="MultMatrixColumn">
+##  <ManSection>
+##  <Oper Name="MultMatrixColumnRight" Arg='M,i,elm'/>
+##  <Oper Name="MultMatrixColumn" Arg='M,i,elm'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Multiplies the <A>i</A>-th column of the mutable matrix <A>M</A>
+##  with the scalar <A>elm</A> from the right in-place.
+##  <P/>
+##  <Ref Oper="MultMatrixColumn"/> is a synonym of
+##  <Ref Oper="MultMatrixColumnRight"/>.
+##  This was chosen because linear combinations of columns of matrices
+##  are usually written as <M>A \cdot v^T = A \cdot [v_1, ... ,v_n]^T</M>
+##  which multiplies scalars from the right.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [3,4,5], [7,8,9] ] );;
+##  gap> MultMatrixColumn( m1, 2, -10 ); Unpack( m1 );
+##  [ [ 3, -40, 5 ], [ 7, -80, 9 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "MultMatrixColumnRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
+DeclareSynonym( "MultMatrixColumn",  MultMatrixColumnRight);
+
+############################################################################
+##
+##  <#GAPDoc Label="MultMatrixColumnLeft">
+##  <ManSection>
+##  <Oper Name="MultMatrixColumnLeft" Arg='M,i,elm'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Multiplies the <A>i</A>-th column of the mutable matrix <A>M</A>
+##  with the scalar <A>elm</A> from the left in-place.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
+
+############################################################################
+##
+##  <#GAPDoc Label="AddMatrixRows">
+##  <ManSection>
+##  <Oper Name="AddMatrixRowsLeft" Arg='M,i,j,elm'/>
+##  <Oper Name="AddMatrixRows" Arg='M,i,j,elm'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable
+##   matrix <A>M</A> to its <A>i</A>-th row in-place.
+##  The <A>j</A>-th row is multiplied with <A>elm</A> from the left.
+##  <P/>
+##  <Ref Oper="AddMatrixRows"/> is a synonym of <Ref Oper="AddMatrixRowsLeft"/>.
+##  This was chosen because linear combinations of rows of matrices are usually
+##  written as <M> v \cdot A = [v_1, ... ,v_n] \cdot A</M>
+##  which multiplies scalars from the left.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [1,1,1], [2,2,2], [3,3,3] ] );;
+##  gap> AddMatrixRows( m1, 1, 3, 10 ); Unpack( m1 );
+##  [ [ 31, 31, 31 ], [ 2, 2, 2 ], [ 3, 3, 3 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "AddMatrixRowsLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareSynonym( "AddMatrixRows", AddMatrixRowsLeft);
+
+############################################################################
+##
+##  <#GAPDoc Label="AddMatrixRowsRight">
+##  <ManSection>
+##  <Oper Name="AddMatrixRowsRight" Arg='M,i,j,elm'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable
+##  matrix <A>M</A> to its <A>i</A>-th row in-place.
+##  The <A>j</A>-th row is multiplied with <A>elm</A> from the right.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "AddMatrixRowsRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+
+############################################################################
+##
+##  <#GAPDoc Label="AddMatrixColumns">
+##  <ManSection>
+##  <Oper Name="AddMatrixColumnsRight" Arg='M,i,j,elm'/>
+##  <Oper Name="AddMatrixColumns" Arg='M,i,j,elm'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable
+##  matrix <A>M</A> to its <A>i</A>-th column in-place.
+##  The <A>j</A>-th column is multiplied with <A>elm</A> from the right.
+##  <P/>
+##  <Ref Oper="AddMatrixColumns"/> is a synonym of
+##  <Ref Oper="AddMatrixColumnsRight"/>.
+##  This was chosen because linear combinations of columns of matrices are
+##  usually written as <M>A \cdot v^T = A \cdot [v_1, ... ,v_n]^T</M>
+##  which multiplies scalars from the right.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [1,1,1], [2,2,2], [3,3,3] ] );;
+##  gap> AddMatrixColumns( m1, 1, 3, 10 ); Unpack( m1 );
+##  [ [ 11, 1, 1 ], [ 22, 2, 2 ], [ 33, 3, 3 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "AddMatrixColumnsRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+DeclareSynonym( "AddMatrixColumns", AddMatrixColumnsRight);
+
+############################################################################
+##
+##  <#GAPDoc Label="AddMatrixColumnsLeft">
+##  <ManSection>
+##  <Oper Name="AddMatrixColumnsLeft" Arg='M,i,j,elm'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>M</A> to its <A>i</A>-th
+##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the left.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
+
+############################################################################
+##
+##  <#GAPDoc Label="PositionNonZeroInRow">
+##  <ManSection>
+##  <Oper Name="PositionNonZeroInRow" Arg='M,i[,from]'/>
+##
+##  <Returns>a positive integer</Returns>
+##
+##  <Description>
+##  <P/>
+##  Returns the position of the first nonzero entry in the <A>i</A>-th row of
+##  the matrix <A>M</A>, or <C>NrCols( M ) + 1</C> if the row is zero.
+##  If the optional argument <A>from</A> is given, the search starts after
+##  position <A>from</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [0,0,1,1,1], [1,0,0,1,1] ] );;
+##  gap> [ PositionNonZeroInRow( m1, 1 ), PositionNonZeroInRow( m1, 2, 2 ) ];
+##  [ 3, 4 ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt ] );
+DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt, IsInt ] );
+
+############################################################################
+##
+##  <#GAPDoc Label="SwapMatrixRows">
+##  <ManSection>
+##  <Oper Name="SwapMatrixRows" Arg='M,i,j'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Swaps the <A>i</A>-th row and <A>j</A>-th row of a mutable matrix <A>M</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [1,1], [2,2], [3,3], [4,4], [5,5] ] );;
+##  gap> SwapMatrixRows( m1, 2, 4 ); Unpack( m1 );
+##  [ [ 1, 1 ], [ 4, 4 ], [ 3, 3 ], [ 2, 2 ], [ 5, 5 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperationKernel( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ], SWAP_MAT_ROWS );
+
+############################################################################
+##
+##  <#GAPDoc Label="SwapMatrixColumns">
+##  <ManSection>
+##  <Oper Name="SwapMatrixColumns" Arg='M,i,j'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  <P/>
+##  Swaps the <A>i</A>-th column and <A>j</A>-th column of a mutable matrix <A>M</A>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Integers, [ [1,2,3,4,5], [6,7,8,9,10] ] );;
+##  gap> SwapMatrixColumns( m1, 2, 4 ); Unpack( m1 );
+##  [ [ 1, 4, 3, 2, 5 ], [ 6, 9, 8, 7, 10 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperationKernel( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ], SWAP_MAT_COLS );
+
+############################################################################
+##
+##  <#GAPDoc Label="AddMatrix">
+##  <ManSection>
+##  <Oper Name="AddMatrix" Arg='M, N[, c]'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  Computes the calculation <M>M + N \cdot c</M> in-place, storing the result in <A>M</A>.
+##  If the optional argument <A>c</A> is omitted, then <A>N</A> is added directly.
+##  The matrices must have the same dimensions, otherwise the result is undefined.
+##  Specialized methods may be defined only when <A>M</A> and <A>N</A> have the same
+##  representation.
+##  If both of the matrices are lists-of-lists, then the operation is delegated
+##  row by row to <Ref Oper="AddRowVector"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> mat1 := [ [ 1, 2 ], [ 3, 4 ] ];
+##  [ [ 1, 2 ], [ 3, 4 ] ]
+##  gap> mat2 := [ [ 1, 0 ], [ 3, -1 ] ];
+##  [ [ 1, 0 ], [ 3, -1 ] ]
+##  gap> AddMatrix( mat1, mat2, 2 );
+##  gap> mat1;
+##  [ [ 3, 2 ], [ 9, 2 ] ]
+##  gap> mat2;
+##  [ [ 1, 0 ], [ 3, -1 ] ]
+##  gap> AddMatrix( mat1, [ [ 1, 0], [ 3, -1] ] );
+##  gap> mat1;
+##  [ [ 4, 2 ], [ 12, 1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj ] );
+DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsScalar ] );
+
+############################################################################
+##
+##  <#GAPDoc Label="MultMatrix">
+##  <ManSection>
+##  <Oper Name="MultMatrix" Arg='mat, c'/>
+##  <Oper Name="MultMatrixLeft" Arg='mat, c'/>
+##  <Oper Name="MultMatrixRight" Arg='mat, c'/>
+##
+##  <Returns>nothing</Returns>
+##
+##  <Description>
+##  These functions multiply the entries of <A>mat</A> by <A>c</A> in-place.
+##  <Ref Oper="MultMatrixRight"/> performs the operation <A>mat</A><C>*</C><A>c</A>,
+##  whereas <Ref Oper="MultMatrixLeft"/> performs the operation <A>c</A><C>*</C><A>mat</A>
+##  and <Ref Oper="MultMatrix"/> is an alias for <Ref Oper="MultMatrixLeft"/>.
+##  In all of these, if the matrix <A>mat</A> is a lists-of-lists, then the
+##  operation is delegated row by row to <Ref Oper="MultVectorRight"/> and
+##  <Ref Oper="MultVectorLeft"/>.
+##  <P/>
+##  <Example><![CDATA[
+##  gap> mat1 := [ [ 1, 2 ], [ 3, 4 ] ];
+##  [ [ 1, 2 ], [ 3, 4 ] ]
+##  gap> MultMatrixRight(mat1, -2);
+##  gap> mat1;
+##  [ [ -2, -4 ], [ -6, -8 ] ]
+##  gap> MultMatrix(mat1, -2);
+##  gap> # Note that this is the same as calling MultMatrixLeft(mat1, -2)
+##  gap> mat1;
+##  [ [ 4, 8 ], [ 12, 16 ] ]
+##  gap> A := FreeAssociativeAlgebra(Rationals, 2);
+##  <algebra over Rationals, with 2 generators>
+##  gap> mat2 := [ [ A.1, A.2 ], [ A.1 * 2, A.2 * 3 ] ];
+##  [ [ (1)*x.1, (1)*x.2 ], [ (2)*x.1, (3)*x.2 ] ]
+##  gap> MultMatrixLeft(mat2, A.1);
+##  gap> mat2;
+##  [ [ (1)*x.1^2, (1)*x.1*x.2 ], [ (2)*x.1^2, (3)*x.1*x.2 ] ]
+##  gap> mat2 := [ [ A.1, A.2 ], [ A.1 * 2, A.2 * 3 ] ];
+##  [ [ (1)*x.1, (1)*x.2 ], [ (2)*x.1, (3)*x.2 ] ]
+##  gap> MultMatrixRight(mat2, A.1);
+##  gap> mat2;
+##  [ [ (1)*x.1^2, (1)*x.2*x.1 ], [ (2)*x.1^2, (3)*x.2*x.1 ] ]
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareOperation( "MultMatrixRight", [ IsMatrixOrMatrixObj and IsMutable, IsScalar ] );
+DeclareOperation( "MultMatrixLeft", [ IsMatrixOrMatrixObj and IsMutable, IsScalar ] );
+DeclareSynonym( "MultMatrix", MultMatrixLeft );
 
 
 #############################################################################
@@ -2117,316 +2600,3 @@ DeclareOperation( "[]", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt ] );
 DeclareOperation( "[]:=", [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt, IsObject ] );
 
 
-############################################################################
-# Elementary matrix operations
-############################################################################
-#
-############################################################################
-##
-##  <#GAPDoc Label="MultMatrixRow">
-##  <ManSection>
-##  <Oper Name="MultMatrixRowLeft" Arg='mat,i,elm'/>
-##  <Oper Name="MultMatrixRow" Arg='mat,i,elm'/>
-##
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Multiplies the <A>i</A>-th row of the mutable matrix <A>mat</A> with the scalar
-##  <A>elm</A> from the left in-place.
-##  <P/>
-##  <Ref Oper="MultMatrixRow"/> is a synonym of <Ref Oper="MultMatrixRowLeft"/>. This was chosen
-##  because linear combinations of rows of matrices are usually written as
-##  <M> v \cdot A = [v_1, ... ,v_n] \cdot A</M> which multiplies scalars from the left.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "MultMatrixRowLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
-DeclareSynonym( "MultMatrixRow", MultMatrixRowLeft);
-
-############################################################################
-##
-##  <#GAPDoc Label="MultMatrixRowRight">
-##  <ManSection>
-##  <Oper Name="MultMatrixRowRight" Arg='M,i,elm'/>
-##
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Multiplies the <A>i</A>-th row of the mutable matrix <A>M</A> with the scalar
-##  <A>elm</A> from the right in-place.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "MultMatrixRowRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ]);
-
-############################################################################
-##
-##  <#GAPDoc Label="MultMatrixColumn">
-##  <ManSection>
-##  <Oper Name="MultMatrixColumnRight" Arg='M,i,elm'/>
-##  <Oper Name="MultMatrixColumn" Arg='M,i,elm'/>
-##
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Multiplies the <A>i</A>-th column of the mutable matrix <A>M</A> with the scalar
-##  <A>elm</A> from the right in-place.
-##  <P/>
-##  <Ref Oper="MultMatrixColumn"/> is a synonym of <Ref Oper="MultMatrixColumnRight"/>. This was
-##  chosen because linear combinations of columns of matrices are usually written as
-##  <M>A \cdot v^T = A \cdot [v_1, ... ,v_n]^T</M> which multiplies scalars from the right.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "MultMatrixColumnRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
-DeclareSynonym( "MultMatrixColumn",  MultMatrixColumnRight);
-
-############################################################################
-##
-##  <#GAPDoc Label="MultMatrixColumnLeft">
-##  <ManSection>
-##  <Oper Name="MultMatrixColumnLeft" Arg='M,i,elm'/>
-##
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Multiplies the <A>i</A>-th column of the mutable matrix <A>M</A> with the scalar
-##  <A>elm</A> from the left in-place.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "MultMatrixColumnLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsObject ] );
-
-############################################################################
-##
-##  <#GAPDoc Label="AddMatrixRows">
-##  <ManSection>
-##  <Oper Name="AddMatrixRowsLeft" Arg='M,i,j,elm'/>
-##  <Oper Name="AddMatrixRows" Arg='M,i,j,elm'/>
-##
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>M</A> to its <A>i</A>-th
-##  row in-place. The <A>j</A>-th row is multiplied with <A>elm</A> from the left.
-##  <P/>
-##  <Ref Oper="AddMatrixRows"/> is a synonym of <Ref Oper="AddMatrixRowsLeft"/>. This was chosen
-##  because linear combinations of rows of matrices are usually written as
-##  <M> v \cdot A = [v_1, ... ,v_n] \cdot A</M> which multiplies scalars from the left.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "AddMatrixRowsLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
-DeclareSynonym( "AddMatrixRows", AddMatrixRowsLeft);
-
-############################################################################
-##
-##  <#GAPDoc Label="AddMatrixRowsRight">
-##  <ManSection>
-##  <Oper Name="AddMatrixRowsRight" Arg='M,i,j,elm'/>
-##
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th row of the mutable matrix <A>M</A> to its <A>i</A>-th
-##  row in-place. The <A>j</A>-th row is multiplied with <A>elm</A> from the right.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "AddMatrixRowsRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
-
-############################################################################
-##
-##  <#GAPDoc Label="AddMatrixColumns">
-##  <ManSection>
-##  <Oper Name="AddMatrixColumnsRight" Arg='M,i,j,elm'/>
-##  <Oper Name="AddMatrixColumns" Arg='M,i,j,elm'/>
-##
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>M</A> to its <A>i</A>-th
-##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the right.
-##  <P/>
-##  <Ref Oper="AddMatrixColumns"/> is a synonym of <Ref Oper="AddMatrixColumnsRight"/>. This was
-##  chosen because linear combinations of columns of matrices are usually written as
-##  <M>A \cdot v^T = A \cdot [v_1, ... ,v_n]^T</M> which multiplies scalars from the right.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "AddMatrixColumnsRight", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
-DeclareSynonym( "AddMatrixColumns", AddMatrixColumnsRight);
-
-############################################################################
-##
-##  <#GAPDoc Label="AddMatrixColumnsLeft">
-##  <ManSection>
-##  <Oper Name="AddMatrixColumnsLeft" Arg='M,i,j,elm'/>
-##
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Adds the product of <A>elm</A> with the <A>j</A>-th column of the mutable matrix <A>M</A> to its <A>i</A>-th
-##  column in-place. The <A>j</A>-th column is multiplied with <A>elm</A> from the left.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "AddMatrixColumnsLeft", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt, IsObject ] );
-
-############################################################################
-##
-##  <#GAPDoc Label="PositionNonZeroInRow">
-##  <ManSection>
-##  <Oper Name="PositionNonZeroInRow" Arg='M,i[,from]'/>
-##
-##  <Returns>a positive integer</Returns>
-##
-##  <Description>
-##  <P/>
-##  Returns the position of the first nonzero entry in the <A>i</A>-th row of
-##  the matrix <A>M</A>, or <C>NrCols( M ) + 1</C> if the row is zero.
-##  If the optional argument <A>from</A> is given, the search starts after
-##  position <A>from</A>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt ] );
-DeclareOperation( "PositionNonZeroInRow", [ IsMatrixOrMatrixObj, IsPosInt, IsInt ] );
-
-############################################################################
-##
-##  <#GAPDoc Label="SwapMatrixRows">
-##  <ManSection>
-##  <Oper Name="SwapMatrixRows" Arg='M,i,j'/>
-##
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Swaps the <A>i</A>-th row and <A>j</A>-th row of a mutable matrix <A>M</A>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperationKernel( "SwapMatrixRows", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ], SWAP_MAT_ROWS );
-
-############################################################################
-##
-##  <#GAPDoc Label="SwapMatrixColumns">
-##  <ManSection>
-##  <Oper Name="SwapMatrixColumns" Arg='M,i,j'/>
-##
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  <P/>
-##  Swaps the <A>i</A>-th column and <A>j</A>-th column of a mutable matrix <A>M</A>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperationKernel( "SwapMatrixColumns", [ IsMatrixOrMatrixObj and IsMutable, IsInt, IsInt ], SWAP_MAT_COLS );
-
-############################################################################
-##
-##  <#GAPDoc Label="AddMatrix">
-##  <ManSection>
-##  <Oper Name="AddMatrix" Arg='M, N[, c]'/>
-##
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  Computes the calculation <M>M + N \cdot c</M> in-place, storing the result in <A>M</A>.
-##  If the optional argument <A>c</A> is omitted, then <A>N</A> is added directly.
-##  The matrices must have the same dimensions, otherwise the result is undefined.
-##  Specialized methods may be defined only when <A>M</A> and <A>N</A> have the same
-##  representation.
-##  If both of the matrices are lists-of-lists, then the operation is delegated
-##  row by row to <Ref Oper="AddRowVector"/>.
-##  <P/>
-##  <Example><![CDATA[
-##  gap> mat1 := [ [ 1, 2 ], [ 3, 4 ] ];
-##  [ [ 1, 2 ], [ 3, 4 ] ]
-##  gap> mat2 := [ [ 1, 0 ], [ 3, -1 ] ];
-##  [ [ 1, 0 ], [ 3, -1 ] ]
-##  gap> AddMatrix( mat1, mat2, 2 );
-##  gap> mat1;
-##  [ [ 3, 2 ], [ 9, 2 ] ]
-##  gap> mat2;
-##  [ [ 1, 0 ], [ 3, -1 ] ]
-##  gap> AddMatrix( mat1, [ [ 1, 0], [ 3, -1] ] );
-##  gap> mat1;
-##  [ [ 4, 2 ], [ 12, 1 ] ]
-##  ]]></Example>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj ] );
-DeclareOperation( "AddMatrix", [ IsMatrixOrMatrixObj and IsMutable, IsMatrixOrMatrixObj, IsScalar ] );
-
-############################################################################
-##
-##  <#GAPDoc Label="MultMatrix">
-##  <ManSection>
-##  <Oper Name="MultMatrix" Arg='mat, c'/>
-##  <Oper Name="MultMatrixLeft" Arg='mat, c'/>
-##  <Oper Name="MultMatrixRight" Arg='mat, c'/>
-##
-##  <Returns>nothing</Returns>
-##
-##  <Description>
-##  These functions multiply the entries of <A>mat</A> by <A>c</A> in-place.
-##  <Ref Oper="MultMatrixRight"/> performs the operation <A>mat</A><C>*</C><A>c</A>,
-##  whereas <Ref Oper="MultMatrixLeft"/> performs the operation <A>c</A><C>*</C><A>mat</A>
-##  and <Ref Oper="MultMatrix"/> is an alias for <Ref Oper="MultMatrixLeft"/>.
-##  In all of these, if the matrix <A>mat</A> is a lists-of-lists, then the
-##  operation is delegated row by row to <Ref Oper="MultVectorRight"/> and
-##  <Ref Oper="MultVectorLeft"/>.
-##  <P/>
-##  <Example><![CDATA[
-##  gap> mat1 := [ [ 1, 2 ], [ 3, 4 ] ];
-##  [ [ 1, 2 ], [ 3, 4 ] ]
-##  gap> MultMatrixRight(mat1, -2);
-##  gap> mat1;
-##  [ [ -2, -4 ], [ -6, -8 ] ]
-##  gap> MultMatrix(mat1, -2); # Note that this is the same as calling MultMatrixLeft(mat1, -2)
-##  gap> mat1;
-##  [ [ 4, 8 ], [ 12, 16 ] ]
-##  gap> A := FreeAssociativeAlgebra(Rationals, 2);
-##  <algebra over Rationals, with 2 generators>
-##  gap> mat2 := [ [ A.1, A.2 ], [ A.1 * 2, A.2 * 3 ] ];
-##  [ [ (1)*x.1, (1)*x.2 ], [ (2)*x.1, (3)*x.2 ] ]
-##  gap> MultMatrixLeft(mat2, A.1);
-##  gap> mat2;
-##  [ [ (1)*x.1^2, (1)*x.1*x.2 ], [ (2)*x.1^2, (3)*x.1*x.2 ] ]
-##  gap> mat2 := [ [ A.1, A.2 ], [ A.1 * 2, A.2 * 3 ] ];
-##  [ [ (1)*x.1, (1)*x.2 ], [ (2)*x.1, (3)*x.2 ] ]
-##  gap> MultMatrixRight(mat2, A.1);
-##  gap> mat2;
-##  [ [ (1)*x.1^2, (1)*x.2*x.1 ], [ (2)*x.1^2, (3)*x.2*x.1 ] ]
-##  ]]></Example>
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "MultMatrixRight", [ IsMatrixOrMatrixObj and IsMutable, IsScalar ] );
-DeclareOperation( "MultMatrixLeft", [ IsMatrixOrMatrixObj and IsMutable, IsScalar ] );
-DeclareSynonym( "MultMatrix", MultMatrixLeft );
