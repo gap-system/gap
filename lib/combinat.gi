@@ -2429,6 +2429,185 @@ InstallGlobalFunction( "IteratorOfPartitions", function( n )
              next           := 0 * [ 1 .. n ] + 1 ) );
     end );
 
+#############################################################################
+##
+#F  EnumeratorOfPartitionsSet( <set> [, <k> [, <flag> ] ]  )
+##
+
+
+InstallGlobalFunction(EnumeratorOfPartitionsSet , function(s, arg...)
+  local k, r, l, j, cumulative_stirling, ElementNumber, NumberElement;
+
+  if not IsSet(s) then
+    Error( "EnumeratorOfPartitionsSet: <s> must be a set" );
+  fi;
+
+  l := Length(s);
+
+  # Method for finding n-th k-partition of s, does not
+  # do argument checking, this is done further down when
+  # instantiating the enumerators.
+  ElementNumber := function(enu, n, k)
+    local res, j, kp, np, t, i;
+    if l = 0 and n = 0 and k = 0 then
+      return [];
+    fi;
+
+    res := List([1 .. k], x -> []);
+    # kp is the largest index of still active parts.
+    # Every time kp is decremented, we guarantee that
+    # res[kp + 1] will not be changed anymore.
+    kp := k;
+    # np keeps track of the part of n that we still need
+    # to process. Use it to avoid recursive calls.
+    np := n;
+    for j in [l, l - 1 .. 1] do
+      # Intuitively, we use identity
+      #   Stirling2(j, k') = Stirling2(j-1, k'-1) + k' * Stirling2(j-1, k')
+      # to recursively encode partitions in the following manner:
+      # If n < Stirling2(j-1, k'-1), then we recursively construct
+      # the (k'-1)-partition corresponding to n and add a new singleton part
+      # consisting solely of s[j] to it.
+      # Otherwise, we can write n = Stirling2(j-1, k'-1) + i * Stirling(j-1, k') + n'
+      # for some numbers i and n' such that
+      #   i < k' and n' < Stirling2(j-1, k').
+      # We then recursively construct the k'-partition corresponding to n' and
+      # add s[j] to the i-th part.
+      t := Stirling2(j - 1, kp - 1);
+      if np <= t then
+        # Add last element to part kp, and
+        # decrement kp to mark res[kp] as complete.
+        Add(res[kp], s[j]);
+        kp := kp - 1;
+      else
+        # np and i are the numbers n' and i described above.
+        np := np - t;
+        t := Stirling2(j - 1, kp);
+        i := QuoInt(np - 1, t) + 1;
+        Add(res[i], s[j]);
+        np := ((np - 1) mod t) + 1;
+      fi;
+    od;
+    return res;
+  end;
+
+  NumberElement := function(enu, p, k)
+    local res, kp, ks, sp, perm, i, j, jp;
+
+    if not IsList(p) or Length(p) <> k then
+      return fail;
+    fi;
+
+    if Length(p) = 0 then
+      if l = 0 and k = 0 then
+        return 1;
+      fi;
+      return fail;
+    fi;
+
+    # ks[i] is the index corresponding to the
+    # end of the i-th part of p in the flattened
+    # version of p (stored as sp)
+    ks := [];
+    for kp in [1 .. k] do
+      if not IsList(p[kp]) then
+        return fail;
+      fi;
+      if kp = 1 then
+        Add(ks, Length(p[kp]));
+      else
+        Add(ks, ks[Length(ks)] + Length(p[kp]));
+      fi;
+    od;
+    sp := Flat(p);
+
+    # Every partition of s must store all of the same elements as s.
+    perm := PermListList(sp, s);
+    if perm = fail then
+      return fail;
+    fi;
+
+    res := 1;
+    kp := k;
+    for j in [l, l - 1 .. 1] do
+      jp := j^perm;
+      # i is the part of p that s[j] is in
+      i := PositionSorted(ks, jp);
+
+      # jp = ks[i] if and only if s[j] is the last element of the i-th
+      # part of p. According to our encoding convention in ElementNumber,
+      # this means that the remaining partition is a (kp-1)-partition.
+      if (jp = ks[i]) then
+        kp := kp - 1;
+      else
+        # Otherwise, we perform the reverse manipulation to the one
+        # modifying np in ElementNumber
+        res := res + i * Stirling2(j-1, kp) + Stirling2(j-1, kp-1);
+      fi;
+    od;
+
+    return res;
+  end;
+
+  r := rec(s := s, l := l);
+  if Length(arg) = 1 or Length(arg) = 2 then
+    k := arg[1];
+    if not IsInt(k) then
+      Error("EnumeratorOfPartitionsSet: <k> must be an integer");
+    fi;
+  fi;
+
+  if (Length(arg) = 2 and arg[2] = true) or (Length(arg) = 0) then
+    # k parts or less, also handles all partition case.
+    if Length(arg) = 0 then
+      k := l;
+    else
+      k := Minimum(k, l);
+    fi;
+
+    cumulative_stirling := [Stirling2(l, 0)];
+    for j in [1 .. k] do
+      Add(cumulative_stirling, cumulative_stirling[j] + Stirling2(l, j));
+    od;
+    r.cumulative_stirling := cumulative_stirling;
+    r.ElementNumber := function(enu, n)
+      local kp;
+      if n > cumulative_stirling[k + 1] then
+        Error("Index ", n, " not bound.");
+      fi;
+      kp := PositionSorted(cumulative_stirling, n) - 1;
+      if kp = 0 then
+        return ElementNumber(enu, n, kp);
+      fi;
+      return ElementNumber(enu, n - cumulative_stirling[kp], kp);
+    end;
+    r.NumberElement := function(enu, p)
+      if Length(p) > k then
+        return fail;
+      fi;
+      return NumberElement(enu, p, Length(p));
+    end;
+    r.Length := x -> cumulative_stirling[k + 1];
+  elif (Length(arg) = 2 and arg[2] = false) or (Length(arg) = 1) then
+    r.ElementNumber := function(enu, n)
+      if n > Stirling2(l, k) then
+        Error("Index ", n, " not bound.");
+      fi;
+      return ElementNumber(enu, n, k);
+    end;
+    r.NumberElement := function(enu, p)
+      return NumberElement(enu, p, k);
+    end;
+    r.Length := x -> Stirling2(l, k);
+  elif Length(arg) = 2 then
+    Error("EnumeratorOfPartitionsSet: <flag> must be true or false");
+  else
+    Error( "usage: EnumeratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )" );
+  fi;
+
+  r.k := k;
+  return EnumeratorByFunctions(ListsFamily, r);
+end);
 
 #############################################################################
 ##
