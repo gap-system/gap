@@ -24,7 +24,11 @@
 #include <setjmp.h>
 
 enum {
-    STATE_SLOTS_SIZE = 32768 - 1024,
+    // On some platforms (e.g., powerpc64), sizeof(jmp_buf) is much larger
+    // than ~200 bytes on x86_64/aarch64. Subtract the excess so that
+    // GAPState stays within the 32767-byte 16-bit signed offset limit.
+    GAP_JMP_BUF_EXTRA = (int)sizeof(jmp_buf) > 200 ? (int)sizeof(jmp_buf) - 200 : 0,
+    STATE_SLOTS_SIZE = 32768 - 1024 - GAP_JMP_BUF_EXTRA,
 };
 
 typedef struct GAPState {
