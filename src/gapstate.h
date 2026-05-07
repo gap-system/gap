@@ -23,31 +23,35 @@
 
 #include <setjmp.h>
 
+#ifdef HPCGAP
 enum {
     STATE_SLOTS_SIZE = 32768 - 1024,
 };
 
+#define DECL_GAP_STATE
+
 typedef struct GAPState {
-#ifdef HPCGAP
     // TLS data -- this *must* come first, so that we can safely
     // cast a GAPState pointer into a ThreadLocalStorage pointer
     ThreadLocalStorage tls;
+#elif !defined(DECL_GAP_STATE)
+#define DECL_GAP_STATE extern
 #endif
 
     // for Boehm GC
 #if defined(USE_BOEHM_GC)
     #define MAX_GC_PREFIX_DESC 4
-    void ** FreeList[MAX_GC_PREFIX_DESC + 2];
+    DECL_GAP_STATE void ** FreeList[MAX_GC_PREFIX_DESC + 2];
 #endif
 
     // From intrprtr.c
-    Obj  Tilde;
+    DECL_GAP_STATE Obj Tilde;
 
     // The current assertion level for use in Assert
-    Int CurrentAssertionLevel;
+    DECL_GAP_STATE Int CurrentAssertionLevel;
 
     // From gvar.c
-    Obj CurrNamespace;
+    DECL_GAP_STATE Obj CurrNamespace;
 
     // From vars.c
 
@@ -57,19 +61,19 @@ typedef struct GAPState {
     // Assignments to the local variables change this bag. We do not call
     // 'CHANGED_BAG' for each of such change. Instead we wait until a garbage
     // collection begins and then call 'CHANGED_BAG' in 'BeginCollectBags'.
-    Bag   CurrLVars;
+    DECL_GAP_STATE Bag CurrLVars;
 
     // 'PtrLVars' is a pointer to the 'STATE(CurrLVars)' bag. This makes it
     // faster to access local variables.
     //
     // Since a garbage collection may move this bag around, the pointer
     // 'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
-    Obj * PtrLVars;
+    DECL_GAP_STATE Obj * PtrLVars;
 
-    Bag   LVarsPool[16];
+    DECL_GAP_STATE Bag LVarsPool[16];
 
     // From read.c
-    jmp_buf ReadJmpError;
+    DECL_GAP_STATE jmp_buf ReadJmpError;
 
     // 'Prompt' holds the string that is to be printed if a new line is read
     // from the interactive files '*stdin*' or '*errin*'.
@@ -77,19 +81,19 @@ typedef struct GAPState {
     // It is set to 'gap> ' or 'brk> ' in the read-eval-print loops and
     // changed to the partial prompt '> ' in 'Read' after the first symbol is
     // read.
-    char Prompt[80];
+    DECL_GAP_STATE char Prompt[80];
 
     // From stats.c
 
     // `ReturnObjStat` is the result of the return-statement that was last
     // executed. It is set in `ExecReturnObj` and used in the handlers that
     // interpret functions.
-    Obj  ReturnObjStat;
+    DECL_GAP_STATE Obj ReturnObjStat;
 
-    ExecStatFunc * CurrExecStatFuncs;
+    DECL_GAP_STATE ExecStatFunc * CurrExecStatFuncs;
 
     // From code.c
-    void * PtrBody;
+    DECL_GAP_STATE void * PtrBody;
 
     // From opers.c
 #ifdef HPCGAP
@@ -99,36 +103,37 @@ typedef struct GAPState {
 #endif
 
     // for use by GAP_TRY / GAP_CATCH and related code
-    int TryCatchDepth;
+    DECL_GAP_STATE int TryCatchDepth;
 
     // Set by `FuncJUMP_TO_CATCH` to the value of its second argument, and
     // and then later extracted by `CALL_WITH_CATCH`. Not currently used by
     // the GAP kernel itself, as far as I can tell.
-    Obj ThrownObject;
+    DECL_GAP_STATE Obj ThrownObject;
 
     // Set to TRUE when a read-eval-loop encounters a `quit` statement.
-    BOOL UserHasQuit;
+    DECL_GAP_STATE BOOL UserHasQuit;
 
     // Set to TRUE when a read-eval-loop encounters a `QUIT` statement.
-    BOOL UserHasQUIT;
+    DECL_GAP_STATE BOOL UserHasQUIT;
 
     // Set by the primary read-eval loop in `FuncSHELL`, based on the value of
     // `ErrorLLevel`. Also, `ReadEvalCommand` saves and restores this value
     // before executing code.
-    Obj ErrorLVars;
+    DECL_GAP_STATE Obj ErrorLVars;
 
     // Records where on the stack `ErrorLVars` is relative to the top; this is
     // modified by `FuncDownEnv` / `FuncUpEnv`, and ultimately used and
     // controlled by the primary read-eval loop in `FuncSHELL`.
-    Int ErrorLLevel;
+    DECL_GAP_STATE Int ErrorLLevel;
 
     // This callback is called in FuncJUMP_TO_CATCH, this is not used by GAP
     // itself but by programs that use GAP as a library to handle errors
-    void (*JumpToCatchCallback)(void);
+    DECL_GAP_STATE void (*JumpToCatchCallback)(void);
 
     // From info.c
-    Int ShowUsedInfoClassesActive;
+    DECL_GAP_STATE Int ShowUsedInfoClassesActive;
 
+#ifdef HPCGAP
     UInt1 StateSlots[STATE_SLOTS_SIZE];
 } GAPState;
 
@@ -136,26 +141,25 @@ typedef struct GAPState {
 // so that all its members can be access with a 16 bit signed offset
 GAP_STATIC_ASSERT(sizeof(GAPState) < 32768, "GAPState is too big");
 
-#ifdef HPCGAP
+#define DECL_MODULE_STATE
 
 EXPORT_INLINE GAPState * ActiveGAPState(void)
 {
     return (GAPState *)GetTLS();
 }
 
+#define STATE(x) (ActiveGAPState()->x)
+
 #else
 
-extern GAPState MainGAPState;
+#define DECL_MODULE_STATE static
 
-EXPORT_INLINE GAPState * ActiveGAPState(void)
-{
-    return &MainGAPState;
-}
+#define STATE(x) (x)
 
 #endif
 
-#define STATE(x) (ActiveGAPState()->x)
 
+#ifdef HPCGAP
 
 // Offset into StateSlots
 typedef Int ModuleStateOffset;
@@ -167,7 +171,9 @@ EXPORT_INLINE void * StateSlotsAtOffset(ModuleStateOffset offset)
 }
 
 // Access a module's registered state
-#define MODULE_STATE(module) \
-    (*(module ## ModuleState *)StateSlotsAtOffset(module ## StateOffset))
+#define MODULE_STATE(module, ident) \
+    (((module ## ModuleState *)StateSlotsAtOffset(module ## StateOffset))->ident)
+
+#endif
 
 #endif    // GAP_GAPSTATE_H

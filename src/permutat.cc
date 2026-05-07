@@ -84,9 +84,11 @@ Obj             IdentityPerm;
 
 static const UInt MAX_DEG_PERM4 = ((Int)1 << (sizeof(UInt) == 8 ? 32 : 28)) - 1;
 
+#ifdef HPCGAP
 static ModuleStateOffset PermutatStateOffset = -1;
 
 typedef struct {
+#endif
 
 /****************************************************************************
 **
@@ -102,11 +104,13 @@ typedef struct {
 **  costs (particularly when starting new threads).
 **  Use the UseTmpPerm(<size>) utility function to ensure it is constructed!
 */
-Obj TmpPerm;
+DECL_MODULE_STATE Obj TmpPerm;
 
+#ifdef HPCGAP
 } PermutatModuleState;
 
-#define  TmpPerm MODULE_STATE(Permutat).TmpPerm
+#define TmpPerm MODULE_STATE(Permutat, TmpPerm)
+#endif
 
 
 static UInt1 * UseTmpPerm(UInt size)
@@ -3039,8 +3043,13 @@ static StructInitInfo module = {
  /* preSave     = */ 0,
  /* postSave    = */ 0,
  /* postRestore = */ PostRestore,
+#ifdef HPCGAP
  /* moduleStateSize      = */ sizeof(PermutatModuleState),
  /* moduleStateOffsetPtr = */ &PermutatStateOffset,
+#else
+ /* moduleStateSize      = */ 0,
+ /* moduleStateOffsetPtr = */ 0,
+#endif
  /* initModuleState      = */ InitModuleState,
  /* destroyModuleState   = */ 0,
 };
