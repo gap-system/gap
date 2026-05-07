@@ -1755,14 +1755,14 @@ void CodeListExprEnd(
     }
 
     // allocate the list expression
-    if ( ! range && ! (top && tilde) ) {
-        list = NewExpr(cs, EXPR_LIST, INT_INTEXPR(pos) * sizeof(Expr));
+    if (range) {
+        list = NewExpr(cs, EXPR_RANGE, INT_INTEXPR(pos) * sizeof(Expr));
     }
-    else if ( ! range && (top && tilde) ) {
+    else if (top && tilde) {
         list = NewExpr(cs, EXPR_LIST_TILDE, INT_INTEXPR(pos) * sizeof(Expr));
     }
-    else /* if ( range && ! (top && tilde) ) */ {
-        list = NewExpr(cs, EXPR_RANGE, INT_INTEXPR(pos) * sizeof(Expr));
+    else {
+        list = NewExpr(cs, EXPR_LIST, INT_INTEXPR(pos) * sizeof(Expr));
     }
 
     // enter the entries

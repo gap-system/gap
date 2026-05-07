@@ -587,10 +587,9 @@ end );
 ##
 #M  ActionHomomorphismConstructor( <xset>, <surj> )
 ##
-InstallGlobalFunction( ActionHomomorphismConstructor, function(arg)
-local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i,blockacttest;
+InstallGlobalFunction( ActionHomomorphismConstructor, function(xset, surj, arg...)
+local   G,  D,  act,  fam,  filter,  hom,  i,blockacttest;
 
-    xset:=arg[1];surj:=arg[2];
     G := ActingDomain( xset );
     D := HomeEnumerator( xset );
     act := FunctionAction( xset );
@@ -650,8 +649,8 @@ local   xset,surj,G,  D,  act,  fam,  filter,  hom,  i,blockacttest;
     end;
 
     hom := rec(  );
-    if Length(arg)>2 then
-      filter:=arg[3];
+    if Length(arg)>0 then
+      filter:=arg[1];
     elif IsExternalSetByActorsRep( xset )  then
         filter := filter and IsActionHomomorphismByActors;
     elif     IsMatrixGroup( G )

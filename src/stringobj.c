@@ -1062,7 +1062,7 @@ static BOOL IsSSortString(Obj list)
     len = GET_LEN_STRING( list );
     ptr = CONST_CHARS_STRING(list);
     for ( i = 1; i < len; i++ ) {
-        if ( ! (ptr[i-1] < ptr[i]) )
+        if (ptr[i - 1] >= ptr[i])
             break;
     }
 
@@ -1468,7 +1468,7 @@ static Obj FuncPOSITION_SUBSTRING(Obj self, Obj string, Obj substr, Obj off)
   for (i = ipos; i < max; i++) {
     if (c == s[i]) {
       for (j = 1; j < lenss; j++) {
-        if (! (s[i+j] == ss[j]))
+        if (s[i + j] != ss[j])
           break;
       }
       if (j == lenss)
