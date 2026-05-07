@@ -10,6 +10,7 @@ gap> ExtractSubMatrix( m1, [ 2, 1 ], [ 3, 1 ] );
 gap> m2 := IdentityMatrix( Integers, 4 );;
 gap> Unpack( ExtractSubMatrix( m2, [ 2, 4 ], [ 4, 2 ] ) );
 [ [ 0, 1 ], [ 1, 0 ] ]
+
 # IsGF2MatrixRep
 gap> m1 := IdentityMatrix( GF(2), 100 );
 <a 100x100 matrix over GF2>
@@ -17,6 +18,7 @@ gap> m2 := ExtractSubMatrix( m1, [ 11..30 ], [ 11..30 ] );
 <a 20x20 matrix over GF2>
 gap> IsOne(m2);
 true
+
 # Is8BitMatrixRep
 gap> m1 := IdentityMatrix( GF(3), 100 );
 < mutable compressed matrix 100x100 over GF(3) >
