@@ -885,6 +885,23 @@ end );
 ##  otherwise it is not specified what happens.
 ##  If the result is a vector object then it has the same representation and
 ##  the same base domain as the given vector object(s).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> v1 := Vector( Rationals, [-1,-1/2,0,1/2,1] );; Print( v1 );
+##  NewVector(IsPlistVectorRep,Rationals,[ -1, -1/2, 0, 1/2, 1 ])
+##  gap> v2 := Vector( [0,1,2,4,8], v1 );; Print( v2 );
+##  NewVector(IsPlistVectorRep,Rationals,[ 0, 1, 2, 4, 8 ])
+##  gap> Print( v1 + v2 );
+##  NewVector(IsPlistVectorRep,Rationals,[ -1, 1/2, 2, 9/2, 9 ])
+##  gap> Unpack( v2 - v1 );
+##  [ 1, 3/2, 2, 7/2, 7 ]
+##  gap> Unpack( 2 * v1 );  Unpack( v1 * 4 );  Unpack( v2 / 4 );
+##  [ -2, -1, 0, 1, 2 ]
+##  [ -4, -2, 0, 2, 4 ]
+##  [ 0, 1/4, 1/2, 1, 2 ]
+##  gap> v1 * v2;
+##  19/2
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
@@ -1123,6 +1140,21 @@ InstallMethod( MultVectorRight,
 ##  otherwise it is not specified what happens.
 ##  If the result is a matrix object then it has the same representation and
 ##  the same base domain as the given matrix object(s).
+##  <P/>
+##  <Example><![CDATA[
+##  gap> m1 := Matrix( Rationals, [ [3,4,5], [6,7,8] ] );;
+##  gap> m2 := Matrix( [ [1,0,1], [0,1,0] ], m1 );;
+##  gap> Print( m1 + m2, "\n",  m1 - m2 );
+##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ 4, 4, 6 ], [ 6, 8, 8 ] ])
+##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ 2, 4, 4 ], [ 6, 6, 8 ] ])
+##  gap> Unpack( 3 * m2 );  Unpack( m2 * 5 );  Unpack( m2 / 2 );
+##  [ [ 3, 0, 3 ], [ 0, 3, 0 ] ]
+##  [ [ 5, 0, 5 ], [ 0, 5, 0 ] ]
+##  [ [ 1/2, 0, 1/2 ], [ 0, 1/2, 0 ] ]
+##  gap> m3 := Matrix( [ [1,1], [0,1] ], m1 );;
+##  gap> Print( m3 * m1 );
+##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ 9, 11, 13 ], [ 6, 7, 8 ] ])
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
