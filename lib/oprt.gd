@@ -2781,7 +2781,7 @@ DeclareGlobalFunction( "OnSetsSets" );
 ##  (see also&nbsp;<Ref Func="OnSetsSets"/>).
 ##  <A>set</A> must be a proper set whose entries are pairwise
 ##  disjoint proper sets.
-##  However, it is <E>not</E> checked that the entries of 
+##  However, it is <E>not</E> checked that the entries of
 ##  <A>set</A> are indeed pairwise disjoint.
 ##  <P/>
 ##  <Ref Func="OnSetsDisjointSets"/> returns the proper
@@ -2842,7 +2842,7 @@ DeclareGlobalFunction("OnSetsTuples");
 ##  <A>tup</A> must be a list without holes whose entries are proper sets
 ##  (see&nbsp;<Ref Sect="Sorted Lists and Sets"/>).
 ##  <P/>
-##  <Ref Func="OnTuplesSets"/> returns the list of 
+##  <Ref Func="OnTuplesSets"/> returns the list of
 ##  the corresponding images obtained by applying the action function
 ##  <Ref Func="OnSets"/> to <M>x</M> and <A>g</A>,
 ##  for each entry <M>x</M> of <A>tup</A>.
@@ -2875,7 +2875,7 @@ DeclareGlobalFunction("OnTuplesSets");
 ##  <A>tup</A> must be a list without holes whose entries are again
 ##  lists without holes.
 ##  <P/>
-##  <Ref Func="OnTuplesTuples"/> returns the list of 
+##  <Ref Func="OnTuplesTuples"/> returns the list of
 ##  the corresponding images obtained by applying the action function
 ##  <Ref Func="OnTuples"/> to <M>x</M> and <A>g</A>,
 ##  for each entry <M>x</M> of the list <A>tup</A>.
