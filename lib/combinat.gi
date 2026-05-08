@@ -2583,10 +2583,15 @@ InstallGlobalFunction(EnumeratorOfPartitionsSet , function(s, arg...)
       return ElementNumber(enu, n - cumulative_stirling[kp], kp);
     end;
     r.NumberElement := function(enu, p)
-      if Length(p) > k then
+      local t;
+      if not IsSet(p) or Length(p) > k then
         return fail;
       fi;
-      return cumulative_stirling[Length(p)] + NumberElement(enu, p, Length(p));
+      t := NumberElement(enu, p, Length(p));
+      if t = fail then
+        return fail;
+      fi;
+      return cumulative_stirling[Length(p)] + t;
     end;
     r.Length := x -> cumulative_stirling[k + 1];
   elif (Length(arg) = 2 and arg[2] = false) or (Length(arg) = 1) then

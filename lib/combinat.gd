@@ -1199,17 +1199,19 @@ DeclareGlobalFunction( "IteratorOfPartitions" );
 ##  also different from the list returned by <Ref Func="PartitionsSet"/>.
 ##  <P/>
 ##  <Example>
-##  gap> m:=[1..15];; Add(m, 15);
-##  gap> NrCombinations(m);
-##  49152
-##  gap> i := 0;; for c in Combinations(m) do i := i+1; od;
+##  gap> m:=[1..9];;
+##  gap> Bell(9);
+##  21147
+##  gap> i := 0;; for c in PartitionsSet(m) do i := i+1; od;
 ##  gap> i;
-##  49152
-##  gap> cm := EnumeratorOfCombinations(m);;
+##  21147
+##  gap> cm := EnumeratorOfPartitionsSet(m);;
 ##  gap> cm[1000];
-##  [ 1, 2, 3, 6, 7, 8, 9, 10 ]
-##  gap> Position(cm, [1,13,15,15]);
-##  36866
+##  [ [ 1, 2, 4, 9 ], [ 3, 6, 8 ], [ 5, 7 ] ]
+##  gap> Position(cm, [[1, 3], [2, 5], [4], [6, 7, 8, 9]]);
+##  11001
+##  gap> cm[11001];
+##  [ [ 1, 3 ], [ 2, 5 ], [ 4 ], [ 6, 7, 8, 9 ] ]
 ##  </Example>
 ##  </Description>
 ##  </ManSection>
