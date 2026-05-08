@@ -1,0 +1,36 @@
+gap> # Regression test for a 0xFF byte leak in syntax-error context lines.
+gap> #
+gap> # When a syntax error fires after the scanner has advanced past EOF
+gap> # (e.g. parsing "h := ;" via READ_ALL_COMMANDS from a string with no
+gap> # trailing newline), the input-line buffer is replaced with the
+gap> # scanner's end-of-input sentinel (0xFF). Before the fix in
+gap> # src/scanner.c the SyntaxErrorOrWarning() pretty-printer would dump
+gap> # that sentinel verbatim alongside the error message — visible as a
+gap> # stray `ÿ` glyph in any UTF-8 / log-file consumer of *errout*
+gap> # (e.g. the JupyterKernel package).
+gap> errFile := Filename(DirectoryTemporary(), "syntax.log");;
+gap> errStream := OutputTextFile(errFile, false);;
+gap> SetPrintFormattingStatus(errStream, false);;
+gap> 
+gap> MakeReadWriteGlobal("ERROR_OUTPUT");;
+gap> saved := ERROR_OUTPUT;;
+gap> ERROR_OUTPUT := errStream;;
+gap> MakeReadOnlyGlobal("ERROR_OUTPUT");;
+gap> 
+gap> READ_ALL_COMMANDS(InputTextString("h := ;"), false, false, IdFunc);;
+gap> 
+gap> MakeReadWriteGlobal("ERROR_OUTPUT");;
+gap> ERROR_OUTPUT := saved;;
+gap> MakeReadOnlyGlobal("ERROR_OUTPUT");;
+gap> CloseStream(errStream);;
+gap> 
+gap> inStream := InputTextFile(errFile);;
+gap> captured := ReadAll(inStream);;
+gap> CloseStream(inStream);;
+gap> 
+gap> Print("contains-eof-sentinel: ", '\377' in captured, "\n");
+contains-eof-sentinel: false
+gap> Print("contains-error-message: ",
+>       PositionSublist(captured, "expression expected") <> fail, "\n");
+contains-error-message: true
+gap> QUIT;
