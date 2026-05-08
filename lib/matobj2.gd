@@ -1788,64 +1788,6 @@ DeclareOperation( "CompanionMatrix",
     [ IsUnivariatePolynomial, IsSemiring ] );
 
 
-############################################################################
-##
-#A  CompatibleVector( <M> )
-##
-##  <#GAPDoc Label="CompatibleVector">
-##  <ManSection>
-##  <Oper Name="CompatibleVector" Arg='M' Label="for a matrix object"/>
-##
-##  <Returns>a vector object</Returns>
-##
-##  <Description>
-##  Called with a matrix object <A>M</A> with <M>m</M> rows,
-##  this operation returns a mutable zero vector object <M>v</M> of length
-##  <M>m</M> and in the representation given by the
-##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
-##  of <A>M</A> (provided that such a representation exists).
-##  <P/>
-##  The idea is that there should be an efficient way to
-##  form the product <M>v</M><A>M</A>.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-DeclareOperation( "CompatibleVector", [ IsMatrixOrMatrixObj ] );
-
-
-############################################################################
-##
-#A  RowsOfMatrix( <M> )
-##
-##  <#GAPDoc Label="RowsOfMatrix">
-##  <ManSection>
-##  <Attr Name="RowsOfMatrix" Arg='M' Label="for a matrix object"/>
-##
-##  <Returns>a plain list</Returns>
-##
-##  <Description>
-##  Called with a matrix object <A>M</A>, this operation
-##  returns a plain list of objects in the representation given by the
-##  <Ref Attr="CompatibleVectorFilter" Label="for a matrix object"/> value
-##  of <A>M</A> (provided that such a representation exists),
-##  where the <M>i</M>-th entry describes the <M>i</M>-th row of the input.
-##  </Description>
-##  </ManSection>
-##  <#/GAPDoc>
-##
-##  This function is used for creating an isomorphic permutation group
-##  of a matrix group that consists of matrix objects.
-##  <!-- If 'NicomorphismOfGeneralMatrixGroup' would be documented then
-##  one could insert a reference to it. -->
-##
-##  We assume that the matrix knows how to create suitable vector objects;
-##  entering a template vector as the second argument is not an option
-##  in this situation.
-##
-DeclareAttribute( "RowsOfMatrix", IsMatrixOrMatrixObj );
-
-
 #############################################################################
 ##
 #F  DefaultVectorRepForBaseDomain( <D> )
