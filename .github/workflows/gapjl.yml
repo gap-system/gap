@@ -56,7 +56,7 @@ jobs:
         run: |
           using Pkg
           if "${{ matrix.gapjl-version }}" == "latest-release"
-            Pkg.add("GAP")
+            Pkg.develop("GAP")
           else
             Pkg.add(;name="GAP", rev="${{ matrix.gapjl-version }}")
           end
