@@ -1232,7 +1232,7 @@ InstallMethod( Irr,
     # Compute the correspondence of classes.
     cp:= gentbl.classparam[1]( deg );
     perm:= [];
-    for i in ConjugacyClasses( G ) do
+    for i in ConjugacyClasses( cG ) do
       i:= List( Orbits( SubgroupNC( G, [ Representative(i) ] ), dom ),
                 Length );
       Sort( i );
