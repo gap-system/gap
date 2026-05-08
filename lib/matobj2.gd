@@ -1870,27 +1870,27 @@ DeclareOperation( "CompanionMatrix",
 ##   [ 17 .. 23 ]
 ##   [ 24 .. 30 ]
 ##  ]>
-gap> Print( Matrix( Integers, m2 ) );  
-NewMatrix(IsPlistMatrixRep,Integers,7,
-[ [ 10 .. 16 ], [ 17 .. 23 ], [ 24 .. 30 ] ])
-gap> m3 := Matrix( [[7,6],[4,3]], m2 );; Print(m3);
-NewMatrix(IsPlistMatrixRep,Rationals,2,[ [ 7, 6 ], [ 4, 3 ] ])
-gap> m4 := Matrix( [-7..-2], 3, m2 );; Print(m4);  
-NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ -7, -6, -5 ], [ -4, -3, -2 ] ])
-gap> m0 := [[-1,-2],[-3,-4]];; IsMatrix(m0);
-true
-gap> Print( Matrix( m0, m1 ) );
-NewMatrix(IsPlistMatrixRep,Integers,2,[ [ -1, -2 ], [ -3, -4 ] ])
-gap> Print( Matrix( [-9..-4], 3, m1 ) );
-NewMatrix(IsPlistMatrixRep,Integers,3,[ [ -9, -8, -7 ], [ -6, -5, -4 ] ])
-gap> m5 := Matrix( [ [0,1,2], [7,8,9] ] );; Print( m5 );
-NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ 0, 1, 2 ], [ 7, 8, 9 ] ])
-gap> m6 := Matrix( IsGF2MatrixRep, GF(2), [[1,0,1],[0,1,0]]*Z(2)^0 );;
-gap> Display( m6 );                                                   
- 1 . 1
- . 1 .
-gap> m7 := Matrix( IsZmodnZMatrixRep, ZmodnZ(8), [1..6], 3 );
-<matrix mod 8: [ [ 1 .. 3 ], [ 4 .. 6 ] ]>
+##  gap> Print( Matrix( Integers, m2 ) );  
+##  NewMatrix(IsPlistMatrixRep,Integers,7,
+##  [ [ 10 .. 16 ], [ 17 .. 23 ], [ 24 .. 30 ] ])
+##  gap> m3 := Matrix( [[7,6],[4,3]], m2 );; Print(m3);
+##  NewMatrix(IsPlistMatrixRep,Rationals,2,[ [ 7, 6 ], [ 4, 3 ] ])
+##  gap> m4 := Matrix( [-7..-2], 3, m2 );; Print(m4);  
+##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ -7, -6, -5 ], [ -4, -3, -2 ] ])
+##  gap> m0 := [[-1,-2],[-3,-4]];; IsMatrix(m0);
+##  true
+##  gap> Print( Matrix( m0, m1 ) );
+##  NewMatrix(IsPlistMatrixRep,Integers,2,[ [ -1, -2 ], [ -3, -4 ] ])
+##  gap> Print( Matrix( [-9..-4], 3, m1 ) );
+##  NewMatrix(IsPlistMatrixRep,Integers,3,[ [ -9, -8, -7 ], [ -6, -5, -4 ] ])
+##  gap> m5 := Matrix( [ [0,1,2], [7,8,9] ] );; Print( m5 );
+##  NewMatrix(IsPlistMatrixRep,Rationals,3,[ [ 0, 1, 2 ], [ 7, 8, 9 ] ])
+##  gap> m6 := Matrix( IsGF2MatrixRep, GF(2), [[1,0,1],[0,1,0]]*Z(2)^0 );;
+##  gap> Display( m6 );                                                   
+##   1 . 1
+##   . 1 .
+##  gap> m7 := Matrix( IsZmodnZMatrixRep, ZmodnZ(8), [1..6], 3 );
+##  <matrix mod 8: [ [ 1 .. 3 ], [ 4 .. 6 ] ]>
 ##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
