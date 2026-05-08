@@ -584,9 +584,13 @@ clean:
 	rm -rf .libs
 	rm -f doc/wsp.g
 	rm -f cnf/GAP-*
+	rm -f configure~ src/config.h.in~
 	rmdir bin cnf dev doc extern src 2>/dev/null || : # remove dirs if they are now empty
 
-.PHONY: clean distclean
+cleanall: clean distclean clean-doc
+	rm -f src/config.h.in
+
+.PHONY: clean distclean cleanall
 
 
 ########################################################################
@@ -976,6 +980,7 @@ clean-doc:
 	rm -f doc/*/chooser.html doc/*/manual*.pdf
 	rm -f doc/*/*.{aux,bbl,blg,brf,idx,ilg,ind,lab,log,out,pnr,six,tex,toc}
 	rm -f doc/manualbib.xml.bib
+	rm -f doc/ref/user_pref_list.xml
 
 # FIXME: we currently build the manual inside $srcdir; so we don't want "make clean"
 # to remove it, as other builds might share the manual.
@@ -1007,6 +1012,7 @@ tst/testlibgap/%: build/obj/tst/testlibgap/%.c.o build/obj/tst/testlibgap/common
 clean: clean-testlibgap
 clean-testlibgap:
 	rm -f ${LIBGAPTESTS}
+	rm -f $(addsuffix .out,$(LIBGAPTESTS))
 
 # run all the tests in tst/testlibgap
 testlibgap: ${LIBGAPTESTS}
@@ -1048,6 +1054,7 @@ tst/testkernel/%: build/obj/tst/testkernel/%.c.o libgap$(SHLIB_EXT)
 clean: clean-testkernel
 clean-testkernel:
 	rm -f ${KERNELTESTS}
+	rm -f $(addsuffix .out,$(KERNELTESTS))
 
 # run all the tests in tst/testkernel
 testkernel: ${KERNELTESTS}
