@@ -56,7 +56,7 @@ jobs:
         run: |
           using Pkg
           if "${{ matrix.gapjl-version }}" == "latest-release"
-            Pkg.add("GAP")
+            Pkg.develop("GAP")
           else
             Pkg.add(;name="GAP", rev="${{ matrix.gapjl-version }}")
           end
@@ -77,7 +77,7 @@ jobs:
           make -j`nproc`
       - name: "Override bundled GAP"
         run: |
-          julia --proj=override $GAPJLPATH/etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override --enable-Werror
+          julia --project=$GAPJLPATH $GAPJLPATH/etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override --enable-Werror
       - name: "Run tests"
         run: |
-          julia --proj=override $GAPJLPATH/etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
+          julia --project=$GAPJLPATH $GAPJLPATH/etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
