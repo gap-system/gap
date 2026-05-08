@@ -88,8 +88,8 @@ def test_is_dependabot_pr_detects_dependabot_author():
     }
 
     assert release_notes.is_dependabot_pr(pr)
-    
-        pr = {
+
+    pr = {
         "author": {"login": "dependabot[bot]"},
         "labels": [
             {"name": "github_actions"},
