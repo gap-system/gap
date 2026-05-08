@@ -1301,6 +1301,8 @@ DeclareGlobalFunction( "ConcatenationOfVectors" );
 ##  gap> v1 := Vector( Rationals, [-5..5] );;
 ##  gap> v2 := ExtractSubVector( v1, [1,3,5,7,9,11] );; Print( v2 );
 ##  NewVector(IsPlistVectorRep,Rationals,[ -5, -3, -1, 1, 3, 5 ])
+##  ]]></Example>
+##  <P/>
 ##  In the remaining cases with two arguments,
 ##  the first argument is a list or a vector object
 ##  that defines the entries of the result,
