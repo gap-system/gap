@@ -1151,15 +1151,12 @@ InstallMethod( MultVectorRight,
 ##  [ [ 3, 0, 3 ], [ 0, 3, 0 ] ]
 ##  [ [ 5, 0, 5 ], [ 0, 5, 0 ] ]
 ##  [ [ 1/2, 0, 1/2 ], [ 0, 1/2, 0 ] ]
-##  gap> m3 := Matrix( Integers, [ [1,1], [0,1] ] );
-##  <2x2-matrix over Integers>
 ##  gap> m3 := Matrix( Integers, [ [1,1], [0,1] ] );;
 ##  gap> m4 := Matrix( Integers, [ [3,5], [4,7] ] );;
 ##  gap> Print( m3 * m4 );
 ##  NewMatrix(IsPlistMatrixRep,Integers,2,[ [ 7, 12 ], [ 4, 7 ] ])
-##  gap> Unpack( m3 * m4 );
+##  gap> Unpack( m3 * m4 ); Unpack( m3^6 ); Unpack( m4^-1 );
 ##  [ [ 7, 12 ], [ 4, 7 ] ]
-##  gap> Unpack( m3^6 ); Unpack( m4^-1 );
 ##  [ [ 1, 6 ], [ 0, 1 ] ]
 ##  [ [ 7, -5 ], [ -4, 3 ] ]
 ##  ]]></Example>
