@@ -77,7 +77,7 @@ jobs:
           make -j`nproc`
       - name: "Override bundled GAP"
         run: |
-          julia --project $GAPJLPATH/etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override --enable-Werror
+          julia --project=$GAPJLPATH $GAPJLPATH/etc/setup_override_dir.jl /tmp/GAPROOT /tmp/gap_jll_override --enable-Werror
       - name: "Run tests"
         run: |
-          julia --project $GAPJLPATH/etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
+          julia --project=$GAPJLPATH $GAPJLPATH/etc/run_with_override.jl /tmp/gap_jll_override --depwarn=error -e "using Pkg; Pkg.test(\"GAP\")"
