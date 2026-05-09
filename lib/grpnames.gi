@@ -1288,9 +1288,11 @@ InstallMethod( IsSymmetricGroup,
       return false;
     fi;
     # one more special case: there are three groups of order 720 which satisfy
-    # the above, so here we need extra work to pick the correct one: it is
-    # only one in which all elements have order <= 6
-    if Size(G) = 720 and not ForAll(G,x->Order(x)<=6) then
+    # the above (those with small group ids 763, 764, 765). So here we need
+    # extra work to pick the correct one: it is only one in which all elements
+    # have order <= 6. Conversely, the other two groups contain elements of
+    # order 8 or 10, but none of order 6
+    if Size(G) = 720 and Order(First(G,x->Order(x)>=6)) > 6 then
       return false;
     fi;
     SetSymmetricDegree(G,AlternatingDegree(G1));
