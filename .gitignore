@@ -31,6 +31,17 @@
 /libgap*.dll*
 /libgap*.so*
 
+# emscripten / wasm build outputs (etc/emscripten/build.sh and friends)
+/native-build/
+/extern/emscripten/
+/web-example/
+/packages.tar.gz
+/gap.html
+/gap.js
+/gap.wasm
+/gap.worker.js
+/gap-fs.json
+
 /bin/gap*.sh
 /bin/*-*/
 # Compiling the `xgap` package creates the file `xgap.sh`
