@@ -22,6 +22,14 @@ default: all
 
 
 ########################################################################
+# Developer helper targets
+########################################################################
+test_release_notes:
+	cd dev/releases && python3 -m pytest test_release_notes.py
+.PHONY: test_release_notes
+
+
+########################################################################
 # Source files
 #
 # We avoid line continuations, instead use repeatedly "SOURCES+=". This

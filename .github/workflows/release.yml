@@ -56,8 +56,8 @@ jobs:
       #- name: "Validate types"
       #  run: python -m mypy --disallow-untyped-calls --disallow-untyped-defs dev/releases/*.py
 
-      #- name: "Run tests"
-      #  run: python -m pytest tools/tests/dev/releases*.py -vv
+      - name: "Run tests"
+        run: cd dev/releases && python -m pytest test_release_notes.py
 
   unix:
     name: "Create Unix archives and data"
