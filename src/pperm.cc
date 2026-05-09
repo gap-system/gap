@@ -4001,9 +4001,6 @@ static StructInitInfo module = {
 #ifdef HPCGAP
  /* moduleStateSize      = */ sizeof(PPermModuleState),
  /* moduleStateOffsetPtr = */ &PPermStateOffset,
-#else
- /* moduleStateSize      = */ 0,
- /* moduleStateOffsetPtr = */ 0,
 #endif
  /* initModuleState      = */ InitModuleState,
  /* destroyModuleState   = */ 0,

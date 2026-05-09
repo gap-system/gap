@@ -3903,8 +3903,10 @@ static StructInitInfo module = {
  /* preSave     = */ 0,
  /* postSave    = */ 0,
  /* postRestore = */ PostRestore,
+#ifdef HPCGAP
  /* moduleStateSize      = */ 0,
  /* moduleStateOffsetPtr = */ 0,
+#endif
  /* initModuleState      = */ InitModuleState,
  /* destroyModuleState   = */ 0,
 };
