@@ -221,7 +221,7 @@ def get_pr_list(date: str, extra: str) -> List[Dict[str, Any]]:
             "--search",
             query,
             "--json",
-            "number,title,closedAt,labels,mergedAt",
+            "number,title,closedAt,labels,mergedAt,author",
             "--limit",
             "200",
         ],
@@ -243,6 +243,14 @@ def pr_to_md(pr: Dict[str, Any]) -> str:
 
 def has_label(pr: Dict[str, Any], label: str) -> bool:
     return any(x["name"] == label for x in pr["labels"])
+
+
+def is_dependabot_pr(pr: Dict[str, Any]) -> bool:
+    author = pr.get("author") or {}
+    login = author.get("login")
+    if login in ("app/dependabot", "dependabot[bot]"):
+        return True
+    return author.get("is_bot", False) and has_label(pr, "dependencies")
 
 
 def changes_overview(
@@ -361,6 +369,7 @@ def main(new_version: str) -> None:
 
     print("Downloading filtered PR list")
     prs = get_pr_list(startdate, extra)
+    prs = [pr for pr in prs if not is_dependabot_pr(pr)]
     # print(json.dumps(prs, sort_keys=True, indent=4))
 
     changes_overview(prs, startdate, new_version)
