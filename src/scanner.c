@@ -62,13 +62,23 @@ static void SyntaxErrorOrWarning(ScannerState * s,
             Pr(" in %g:%d", (Int)name, GetInputLineNumber(s->input));
         Pr("\n", 0, 0);
 
-        // print the current line
+        // print the current line — but skip the line print, and the
+        // caret below, if the buffer has been replaced by the scanner's
+        // end-of-input sentinel (0xFF). That happens when the syntax
+        // error fires after parsing has advanced past the offending
+        // line (e.g. `h := ;` parsed from a string with no trailing
+        // newline): the line buffer is refilled at EOF before the
+        // error is reported, so the pretty-printed context would leak
+        // a literal 0xFF byte to *errout* with no caret to anchor it.
         const char * line = GetInputLineBuffer(s->input);
         const UInt len = strlen(line);
-        if (len > 0 && line[len-1] != '\n')
-            Pr("%s\n", (Int)line, 0);
-        else
-            Pr("%s", (Int)line, 0);
+        const int line_is_sentinel = (len == 0 || line[0] == '\377');
+        if (!line_is_sentinel) {
+            if (line[len-1] != '\n')
+                Pr("%s\n", (Int)line, 0);
+            else
+                Pr("%s", (Int)line, 0);
+        }
 
         // print a '^' pointing to the current position
         Int startPos = s->SymbolStartPos[tokenoffset];
@@ -83,7 +93,7 @@ static void SyntaxErrorOrWarning(ScannerState * s,
             pos = GetInputLinePosition(s->input);
         }
 
-        if (0 < pos && startPos <= pos) {
+        if (!line_is_sentinel && 0 < pos && startPos <= pos) {
             Int i;
             for (i = 0; i < startPos; i++) {
                 if (line[i] == '\t')
