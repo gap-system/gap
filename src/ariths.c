@@ -20,7 +20,7 @@
 
 #define RequireValue(funcname, val)                                          \
     do {                                                                     \
-        if (!val)                                                            \
+        if (!(val))                                                          \
             ErrorMayQuit(funcname ": method should have returned a value",   \
                          0, 0);                                              \
     } while (0)
