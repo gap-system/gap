@@ -381,6 +381,15 @@ true
 gap> IsPerfectCharacterTable( t );
 false
 
+# test another bugfix
+gap> G:= SymmetricGroup( 2 );;
+gap> SetConjugacyClasses( G,
+>        List( [ (1,2), () ], x -> ConjugacyClass( G, x ) ) );
+gap> t:= CharacterTable( G );;
+gap> lin:= Irr( t );;
+gap> lin[1][1];
+1
+
 # compute indicators
 gap> t:= CharacterTable( SymmetricGroup( 4 ) );;
 gap> Indicator( t, 2 );
@@ -434,19 +443,19 @@ gap> HasIsIrreducibleCharacter( TrivialCharacter( SymmetricGroup( 4 ) ) );
 true
 
 # concurring 'Irr' methods
-gap> G:= SmallGroup( 24, 5 );;
+gap> G:= PcGroupCode( 221729, 24 );;
 gap> IsSupersolvable( G );
 true
 gap> Irr( G );;
 gap> InfoText( OrdinaryCharacterTable( G ) );
 "origin: Baum-Clausen Algorithm"
-gap> G:= SmallGroup( 24, 5 );;
+gap> G:= PcGroupCode( 221729, 24 );;
 gap> IsSupersolvable( G );
 true
 gap> IrrConlon( G );;  Irr( G );;
 gap> InfoText( OrdinaryCharacterTable( G ) );
 "origin: Conlon's Algorithm"
-gap> G:= SmallGroup( 24, 5 );;
+gap> G:= PcGroupCode( 221729, 24 );;
 gap> IrrDixonSchneider( G );;  Irr( G );;
 gap> InfoText( OrdinaryCharacterTable( G ) );
 "origin: Dixon's Algorithm"
