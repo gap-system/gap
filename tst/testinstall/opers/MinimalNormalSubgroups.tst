@@ -58,12 +58,8 @@ gap> B := SmallGroup(27, 3);;
 gap> C := SmallGroup(125, 4);;
 gap> D := DirectProduct(A, B, C, SmallGroup(1536, 2));;
 gap> SortedList(List(MinimalNormalSubgroups(D), Size));
-[ 2, 2, 2, 2, 2, 2, 2, 
-  2, 2, 2, 2, 2, 2, 2, 
-  2, 2, 2, 2, 2, 2, 2, 
-  2, 2, 2, 2, 2, 2, 2, 
-  2, 2, 2, 3, 3, 3, 3, 
-  5 ]
+[ 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
+  2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 5 ]
 #@fi
 
 #
