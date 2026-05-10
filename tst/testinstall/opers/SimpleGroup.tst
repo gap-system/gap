@@ -31,7 +31,7 @@ M11
 rec( name := "M(11)", series := "Spor", shortname := "M11" )
 
 #
-#@if IsPackageMarkedForLoading( "primggrp", "" )
+#@if IsPackageMarkedForLoading( "primgrp", "" )
 gap> SimpleGroup("J1"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
 J_1
 175560
@@ -45,7 +45,7 @@ gap> SimpleGroup("J5");
 Error, illegal parameter for Janko groups
 
 #
-#@if IsPackageMarkedForLoading( "primggrp", "" )
+#@if IsPackageMarkedForLoading( "primgrp", "" )
 gap> SimpleGroup("CO3"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
 Co_3
 495766656000
@@ -63,7 +63,7 @@ gap> SimpleGroup("Fi20");
 Error, illegal parameter for Fischer groups
 
 #
-#@if IsPackageMarkedForLoading( "primggrp", "" )
+#@if IsPackageMarkedForLoading( "primgrp", "" )
 gap> SimpleGroup("SuZ"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
 Suz
 448345497600
@@ -111,7 +111,7 @@ gap> SimpleGroup("Ree(16)");
 Error, illegal parameter for Ree groups
 
 #
-#@if IsPackageMarkedForLoading( "primggrp", "" )
+#@if IsPackageMarkedForLoading( "primgrp", "" )
 gap> SimpleGroup("HE"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
 He
 4030387200
@@ -271,7 +271,7 @@ Error, Can't do yet
 #
 gap> SimpleGroup("G3(3)");
 Error, G(n,q) needs n=2
-#@if IsPackageMarkedForLoading( "primggrp", "" )
+#@if IsPackageMarkedForLoading( "primgrp", "" )
 gap> SimpleGroup("G2(2)"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
 PSU(3,3)
 6048
@@ -294,7 +294,7 @@ rec( name := "G(2,5)", parameter := 5, series := "G", shortname := "G2(5)" )
 #
 gap> SimpleGroup("3D(3,4)");
 Error, 3D(n,q) needs n=4
-#@if IsPackageMarkedForLoading( "primggrp", "" )
+#@if IsPackageMarkedForLoading( "primgrp", "" )
 gap> SimpleGroup("3D(4,2)"); Size(last); IsomorphismTypeInfoFiniteSimpleGroup(last2);
 3D(4, 2)
 211341312
