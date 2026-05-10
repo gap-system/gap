@@ -4,29 +4,29 @@ gap> H := SymmetricGroup(4);;
 gap> A := CyclicGroup(6);;
 
 #
-gap> Set(SubdirectProducts(G, G), StructureDescription);
+gap> SortedList(List(SubdirectProducts(G, G), StructureDescription));
 [ "(C3 x C3) : C2", "S3", "S3 x S3" ]
-gap> Set(SubdirectProducts(H, H), StructureDescription);
-[ "((C2 x C2 x C2 x C2) : C3) : C2", "(A4 x A4) : C2", "S4", "S4 x S4" ]
-gap> Set(SubdirectProducts(A, A), StructureDescription);
-[ "C6", "C6 x C2", "C6 x C3", "C6 x C6" ]
+gap> SortedList(List(SubdirectProducts(H, H), Size));
+[ 24, 96, 288, 576 ]
+gap> SortedList(List(SubdirectProducts(A, A), StructureDescription));
+[ "C6", "C6", "C6 x C2", "C6 x C2", "C6 x C3", "C6 x C6" ]
 
 #
-gap> Set(SubdirectProducts(G, H), StructureDescription);
+gap> SortedList(List(SubdirectProducts(G, H), StructureDescription));
 [ "(C3 x A4) : C2", "S4", "S4 x S3" ]
-gap> Set(SubdirectProducts(H, G), StructureDescription);
+gap> SortedList(List(SubdirectProducts(H, G), StructureDescription));
 [ "(C3 x A4) : C2", "S3 x S4", "S4" ]
 
 #
-gap> Set(SubdirectProducts(G, A), StructureDescription);
+gap> SortedList(List(SubdirectProducts(G, A), StructureDescription));
 [ "C3 x S3", "C6 x S3" ]
-gap> Set(SubdirectProducts(A, G), StructureDescription);
+gap> SortedList(List(SubdirectProducts(A, G), StructureDescription));
 [ "C3 x S3", "C6 x S3" ]
 
 #
-gap> Set(SubdirectProducts(H, A), StructureDescription);
+gap> SortedList(List(SubdirectProducts(H, A), StructureDescription));
 [ "C3 x S4", "C6 x S4" ]
-gap> Set(SubdirectProducts(A, H), StructureDescription);
+gap> SortedList(List(SubdirectProducts(A, H), StructureDescription));
 [ "C3 x S4", "C6 x S4" ]
 
 #
