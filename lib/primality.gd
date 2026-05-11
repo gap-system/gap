@@ -97,8 +97,6 @@ DeclareGlobalFunction("IsSquareInt");
 
 DeclareGlobalFunction("IsStrongPseudoPrimeBaseA");
 DeclareGlobalFunction("IsBPSWLucasPseudoPrime");
-DeclareGlobalFunction("IsLucasPseudoPrimeDP");
-DeclareGlobalFunction("IsStrongLucasPseudoPrimeDP");
 DeclareGlobalFunction("IsBPSWPseudoPrime");
 DeclareGlobalFunction("IsBPSWPseudoPrime_VerifyCorrectness");
 
