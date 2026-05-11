@@ -1,6 +1,7 @@
 gap> START_TEST("StructureDescription.tst");
 
 ## Examples from manual
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> l := AllSmallGroups(12);;
 gap> List(l, StructureDescription);; l;
 [ C3 : C4, C12, A4, D12, C6 x C2 ]
@@ -42,9 +43,15 @@ gap> List(AllSmallGroups(60), G -> StructureDescription(G:recompute));
 [ "C5 x (C3 : C4)", "C3 x (C5 : C4)", "C3 : (C5 : C4)", "C60", "A5", 
   "C3 x (C5 : C4)", "C3 : (C5 : C4)", "S3 x D10", "C5 x A4", "C6 x D10", 
   "C10 x S3", "D60", "C30 x C2" ]
+#@fi
+
+#@if IsPackageMarkedForLoading( "primgrp", "" )
 gap> List(AllPrimitiveGroups(DegreeAction, 8), StructureDescription);
 [ "(C2 x C2 x C2) : C7", "(C2 x C2 x C2) : (C7 : C3)", 
   "(C2 x C2 x C2) : PSL(3,2)", "PSL(3,2)", "PSL(3,2) : C2", "A8", "S8" ]
+#@fi
+
+#
 gap> StructureDescription(AbelianGroup([0,0,0,2,3,6]):short);
 "Z^3x6^2"
 gap> G := Group([ (4,8)(6,10), (4,6,10,8,12), (2,4,12)(6,10,8), (3,9)(4,6,10,8,12)(7,11), (3,5)(4,6,10,8,12)(9,11), (1,3,11,9,5)(4,6,10,8,12) ]);;
@@ -71,6 +78,7 @@ gap> G := PerfectGroup(IsPermGroup,1344,1);; StructureDescription(G);
 "(C2 x C2 x C2) : PSL(3,2)"
 gap> G := PerfectGroup(IsPermGroup,1344,2);; StructureDescription(G);
 "(C2 x C2 x C2) . PSL(3,2)"
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> StructureDescription(SmallGroup(32,15):recompute);
 "C4 . D8 = C4 . (C4 x C2)"
 gap> List(AllSmallNonabelianSimpleGroups([1..1000000]), StructureDescription);
@@ -84,6 +92,9 @@ gap> List(AllSmallNonabelianSimpleGroups([1..1000000]), StructureDescription);
   "PSL(2,89)", "PSL(3,5)", "M22", "PSL(2,97)", "PSL(2,101)", "PSL(2,103)", 
   "HJ", "PSL(2,107)", "PSL(2,109)", "PSL(2,113)", "PSL(2,121)", "PSL(2,125)", 
   "O(5,4)" ]
+#@fi
+
+#
 gap> G := FactorGroup(Sp(6,3), Center(Sp(6,3)));;
 gap> StructureDescription(G);
 "PSp(6,3)"
@@ -91,8 +102,13 @@ gap> StructureDescription(Omega(1,8,2));
 "O+(8,2)"
 gap> StructureDescription(Omega(-1,8,2));
 "O-(8,2)"
+
+#@if IsPackageMarkedForLoading( "primgrp", "" )
 gap> List(AllPrimitiveGroups(DegreeAction, 819, Size, 211341312, IsSimple, true), StructureDescription);
 [ "3D(4,2)" ]
+#@fi
+
+#
 gap> G := Ree(27);;
 gap> HasIsFinite(G) and IsFinite(G) and HasIsSimpleGroup(G) and IsSimple(G);
 true
@@ -102,6 +118,8 @@ gap> StructureDescription(AbelianGroup([0,0,0,2,3,4,5,6,7,8,9,10]));
 "Z x Z x Z x C2520 x C60 x C6 x C2 x C2"
 gap> StructureDescription(AbelianGroup([0,0,0,2,3,4,5,6,7,8,9,10]):short);
 "Z^3x2520x60x6x2^2"
+
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> infolevel:=InfoLevel(InfoWarning);; SetInfoLevel(InfoWarning,2);
 gap> StructureDescription(SmallGroup(48,16):recompute,nice);
 #I  Warning! Non-unique semidirect product:
@@ -112,6 +130,9 @@ gap> StructureDescription(SmallGroup(64,17):recompute,nice);
 #I  [ [ "C4 x C2", "C8" ], [ "C8 x C2", "C4" ] ]
 "(C4 x C2) : C8"
 gap> SetInfoLevel(InfoWarning,infolevel);
+#@fi
+
+#
 gap> F := FreeGroup("r", "s");; r := F.1;; s := F.2;;
 gap> G := F/[s^2, r^3, s*r*s*r];;
 gap> StructureDescription(G);

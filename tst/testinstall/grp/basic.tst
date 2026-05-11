@@ -271,10 +271,10 @@ true
 #
 # dicyclic groups
 #
-gap> IdGroup(DicyclicGroup(4));
-[ 4, 1 ]
-gap> IdGroup(DicyclicGroup(IsFpGroup,4));
-[ 4, 1 ]
+gap> StructureDescription(DicyclicGroup(4));
+"C4"
+gap> StructureDescription(DicyclicGroup(IsFpGroup,4));
+"C4"
 gap> DicyclicGroup(8);
 <pc group of size 8 with 3 generators>
 gap> DicyclicGroup(IsPcGroup,8);
@@ -340,10 +340,12 @@ gap> for n in [ 4, 12, 20, 24 ] do
 >        Error( "gen. quat. group?" );
 >      fi;
 >    od;
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> Number( AllSmallGroups( [  1 .. 32 ], IsDicyclicGroup ) );
 8
 gap> Number( AllSmallGroups( [  1 .. 32 ], IsGeneralisedQuaternionGroup ) );
 3
+#@fi
 
 #
 gap> Q:= DicyclicGroup( 20 );;

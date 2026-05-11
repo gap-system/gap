@@ -137,7 +137,7 @@ gap> List( sys, Size );
 [ 4, 7 ]
 gap> List(sys,i->Length(AsList(i)));
 [ 4, 7 ]
-gap> G := SmallGroup( 144, 183 );;
+gap> G := DirectProduct(SymmetricGroup(IsPcGroup, 3), SymmetricGroup(IsPcGroup, 4));;
 gap> F := FittingSubgroup( G );;
 gap> S := SylowSubgroup( F, 2 );;
 gap> Display(Image(IsomorphismPcGroup(S)));
@@ -166,7 +166,7 @@ gap> RepresentativeAction(G,x,x^2)<>fail;
 true
 gap> RepresentativeAction(G,x,x^2);
 f1*f2
-gap> g := SmallGroup(243,27);;
+gap> g := PcGroupCode(14055476799225975, 243);; # = SmallGroup(243,27)
 gap> AsSet(Omega(g,3,1)) = Set(Filtered(g, g -> IsOne(g^3)));
 true
 gap> AsSet(Omega(g,3,2)) = Set(Filtered(g, g -> IsOne(g^9)));
