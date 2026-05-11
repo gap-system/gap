@@ -142,10 +142,11 @@ static inline void SET_NOF_CYC(Obj cyc, Obj val)
 
 // #define XXX_CYC(cyc,len)        (EXPOS_CYC(cyc,len)[0])
 
-
+#ifdef HPCGAP
 static ModuleStateOffset CycStateOffset = -1;
 
 struct CycModuleState {
+#endif
 
 /****************************************************************************
 **
@@ -158,7 +159,7 @@ struct CycModuleState {
 **  It is created in 'InitCyc' with room for up to 1000 coefficients  and  is
 **  resized when need arises.
 */
-Obj ResultCyc;
+DECL_MODULE_STATE Obj ResultCyc;
 
 /****************************************************************************
 **
@@ -178,9 +179,10 @@ Obj ResultCyc;
 **  is called to compute $e_n^i$ and can then do this easier by just  putting
 **  1 at the <i>th place in 'ResultCyc' and then calling 'Cyclotomic'.
 */
-Obj  LastECyc;
-UInt LastNCyc;
+DECL_MODULE_STATE Obj  LastECyc;
+DECL_MODULE_STATE UInt LastNCyc;
 
+#ifdef HPCGAP
 }; // end of struct CycModuleState
 
 extern inline struct CycModuleState *CycState(void)
@@ -189,10 +191,10 @@ extern inline struct CycModuleState *CycState(void)
 }
 
 // For convenience and readability
-#define ResultCyc   CycState()->ResultCyc
-#define LastECyc    CycState()->LastECyc
-#define LastNCyc    CycState()->LastNCyc
-
+#define ResultCyc   (CycState()->ResultCyc)
+#define LastECyc    (CycState()->LastECyc)
+#define LastNCyc    (CycState()->LastNCyc)
+#endif
 
 static void GrowResultCyc(UInt size)
 {
@@ -2201,8 +2203,10 @@ static StructInitInfo module = {
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
 
+#ifdef HPCGAP
     .moduleStateSize = sizeof(struct CycModuleState),
     .moduleStateOffsetPtr = &CycStateOffset,
+#endif
     .initModuleState = InitModuleState,
 };
 

@@ -32,19 +32,28 @@
 #include "plist.h"
 
 
+#ifdef HPCGAP
 static ModuleStateOffset CFTLStateOffset = -1;
 
 struct CFTLModuleState {
-    Obj WORD_STACK;
-    Obj WORD_EXPONENT_STACK;
-    Obj SYLLABLE_STACK;
-    Obj EXPONENT_STACK;
+#endif
+    DECL_MODULE_STATE Obj WORD_STACK;
+    DECL_MODULE_STATE Obj WORD_EXPONENT_STACK;
+    DECL_MODULE_STATE Obj SYLLABLE_STACK;
+    DECL_MODULE_STATE Obj EXPONENT_STACK;
+#ifdef HPCGAP
 };
 
 extern inline struct CFTLModuleState *CFTLState(void)
 {
     return (struct CFTLModuleState *)StateSlotsAtOffset(CFTLStateOffset);
 }
+
+#define WORD_STACK  (CFTLState()->WORD_STACK)
+#define WORD_EXPONENT_STACK  (CFTLState()->WORD_EXPONENT_STACK)
+#define SYLLABLE_STACK  (CFTLState()->SYLLABLE_STACK)
+#define EXPONENT_STACK  (CFTLState()->EXPONENT_STACK)
+#endif
 
 static inline Obj IncInt(Obj x)
 {
@@ -133,10 +142,10 @@ static Obj CollectPolycyc(Obj pcp, Obj list, Obj word)
     Obj    ipow    = CONST_ADDR_OBJ(pcp)[ PC_INVERSEPOWERS ];
     Obj    exp     = CONST_ADDR_OBJ(pcp)[ PC_EXPONENTS ];
 
-    Obj    wst  = CFTLState()->WORD_STACK;
-    Obj    west = CFTLState()->WORD_EXPONENT_STACK;
-    Obj    sst  = CFTLState()->SYLLABLE_STACK;
-    Obj    est  = CFTLState()->EXPONENT_STACK;
+    Obj    wst  = WORD_STACK;
+    Obj    west = WORD_EXPONENT_STACK;
+    Obj    sst  = SYLLABLE_STACK;
+    Obj    est  = EXPONENT_STACK;
 
     Obj    conj=0, iconj=0;   /*QQ initialize to please compiler */
 
@@ -411,15 +420,15 @@ static Int InitLibrary (
 
 static Int InitModuleState(void)
 {
-    InitGlobalBag( &CFTLState()->WORD_STACK, "WORD_STACK" );
-    InitGlobalBag( &CFTLState()->WORD_EXPONENT_STACK, "WORD_EXPONENT_STACK" );
-    InitGlobalBag( &CFTLState()->SYLLABLE_STACK, "SYLLABLE_STACK" );
-    InitGlobalBag( &CFTLState()->EXPONENT_STACK, "EXPONENT_STACK" );
+    InitGlobalBag( &WORD_STACK, "WORD_STACK" );
+    InitGlobalBag( &WORD_EXPONENT_STACK, "WORD_EXPONENT_STACK" );
+    InitGlobalBag( &SYLLABLE_STACK, "SYLLABLE_STACK" );
+    InitGlobalBag( &EXPONENT_STACK, "EXPONENT_STACK" );
 
-    CFTLState()->WORD_STACK = NEW_PLIST( T_PLIST, 4096 );
-    CFTLState()->WORD_EXPONENT_STACK = NEW_PLIST( T_PLIST, 4096 );
-    CFTLState()->SYLLABLE_STACK = NEW_PLIST( T_PLIST, 4096 );
-    CFTLState()->EXPONENT_STACK = NEW_PLIST( T_PLIST, 4096 );
+    WORD_STACK = NEW_PLIST( T_PLIST, 4096 );
+    WORD_EXPONENT_STACK = NEW_PLIST( T_PLIST, 4096 );
+    SYLLABLE_STACK = NEW_PLIST( T_PLIST, 4096 );
+    EXPONENT_STACK = NEW_PLIST( T_PLIST, 4096 );
 
     return 0;
 }
@@ -436,8 +445,10 @@ static StructInitInfo module = {
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
 
+#ifdef HPCGAP
     .moduleStateSize = sizeof(struct CFTLModuleState),
     .moduleStateOffsetPtr = &CFTLStateOffset,
+#endif
     .initModuleState = InitModuleState,
 };
 

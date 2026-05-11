@@ -120,9 +120,11 @@ static Obj EmptyPartialPerm;
                              "must be a partial permutation")
 
 
+#ifdef HPCGAP
 static ModuleStateOffset PPermStateOffset = -1;
 
 typedef struct {
+#endif
 
     /**************************************************************************
      *
@@ -136,12 +138,13 @@ typedef struct {
      * The buffer is *not* guaranteed to have any particular value, routines
      * that require a zero-initialization need to do this at the start.
      */
-    Obj TmpPPerm;
+    DECL_MODULE_STATE Obj TmpPPerm;
 
+#ifdef HPCGAP
 } PPermModuleState;
 
-
-#define TmpPPerm MODULE_STATE(PPerm).TmpPPerm
+#define TmpPPerm MODULE_STATE(PPerm, TmpPPerm)
+#endif
 
 static inline void ResizeTmpPPerm(UInt len)
 {
@@ -3995,8 +3998,10 @@ static StructInitInfo module = {
  /* preSave     = */ 0,
  /* postSave    = */ 0,
  /* postRestore = */ 0,
+#ifdef HPCGAP
  /* moduleStateSize      = */ sizeof(PPermModuleState),
  /* moduleStateOffsetPtr = */ &PPermStateOffset,
+#endif
  /* initModuleState      = */ InitModuleState,
  /* destroyModuleState   = */ 0,
 };

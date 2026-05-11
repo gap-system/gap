@@ -44,12 +44,14 @@ enum {
     MAXPRINTDEPTH = 64,
 };
 
+#ifdef HPCGAP
 static ModuleStateOffset ObjectsStateOffset = -1;
 
 typedef struct {
-    UInt  PrintObjDepth;
-    Obj   PrintObjThiss[MAXPRINTDEPTH];
-    Int   PrintObjIndices[MAXPRINTDEPTH];
+#endif
+    DECL_MODULE_STATE UInt PrintObjDepth;
+    DECL_MODULE_STATE Obj  PrintObjThiss[MAXPRINTDEPTH];
+    DECL_MODULE_STATE Int  PrintObjIndices[MAXPRINTDEPTH];
 
     // This variable is used to allow a ViewObj method to call PrintObj on the
     // same object without triggering use of '~'. It contains one of the
@@ -57,10 +59,16 @@ typedef struct {
     // 0: there is no enclosing call to PrintObj or ViewObj still open, or
     // 1: the innermost such is PrintObj, or
     // 2: the innermost such is ViewObj.
-    UInt LastPV;
+    DECL_MODULE_STATE UInt LastPV;
 
+#ifdef HPCGAP
 } ObjectsModuleState;
 
+#define PrintObjDepth MODULE_STATE(Objects, PrintObjDepth)
+#define PrintObjThiss MODULE_STATE(Objects, PrintObjThiss)
+#define PrintObjIndices MODULE_STATE(Objects, PrintObjIndices)
+#define LastPV MODULE_STATE(Objects, LastPV)
+#endif
 
 static Int lastFreePackageTNUM = FIRST_PACKAGE_TNUM;
 
@@ -895,13 +903,13 @@ static Obj FuncGET_TNAM_FROM_TNUM(Obj self, Obj obj)
 
 // This function is used to keep track of which objects are already
 // being printed or viewed to trigger the use of ~ when needed.
-static inline BOOL IS_ON_PRINT_STACK(const ObjectsModuleState * os, Obj obj)
+static inline BOOL IS_ON_PRINT_STACK(Obj obj)
 {
     if (!(FIRST_RECORD_TNUM <= TNUM_OBJ(obj) &&
           TNUM_OBJ(obj) <= LAST_LIST_TNUM))
         return FALSE;
-    for (UInt i = 0; i < os->PrintObjDepth; i++)
-        if (os->PrintObjThiss[i] == obj)
+    for (UInt i = 0; i < PrintObjDepth; i++)
+        if (PrintObjThiss[i] == obj)
             return TRUE;
     return FALSE;
 }
@@ -961,46 +969,44 @@ void PrintObj(Obj obj)
     }
 #endif
 
-    ObjectsModuleState * os = &MODULE_STATE(Objects);
-
     // First check if <obj> is actually the current object being viewed, since
     // ViewObj(<obj>) may result in a call to PrintObj(<obj>); in that case,
     // we should not put <obj> on the print stack
-    if ((os->PrintObjDepth > 0) && (os->LastPV == 2) &&
-        (obj == os->PrintObjThiss[os->PrintObjDepth - 1])) {
-        os->LastPV = 1;
+    if ((PrintObjDepth > 0) && (LastPV == 2) &&
+        (obj == PrintObjThiss[PrintObjDepth - 1])) {
+        LastPV = 1;
         PRINT_OBJ(obj);
-        os->LastPV = 2;
+        LastPV = 2;
     }
 
     // print the path if <obj> is on the stack
-    else if (IS_ON_PRINT_STACK(os, obj)) {
+    else if (IS_ON_PRINT_STACK(obj)) {
         Pr("~", 0, 0);
-        for (int i = 0; obj != os->PrintObjThiss[i]; i++) {
-            PRINT_PATH(os->PrintObjThiss[i], os->PrintObjIndices[i]);
+        for (int i = 0; obj != PrintObjThiss[i]; i++) {
+            PRINT_PATH(PrintObjThiss[i], PrintObjIndices[i]);
         }
     }
 
     // dispatch to the appropriate printing function
-    else if (os->PrintObjDepth < MAXPRINTDEPTH) {
+    else if (PrintObjDepth < MAXPRINTDEPTH) {
 
-        Obj oldThis = os->PrintObjThiss[os->PrintObjDepth];
-        Int oldIndx = os->PrintObjIndices[os->PrintObjDepth];
+        Obj oldThis = PrintObjThiss[PrintObjDepth];
+        Int oldIndx = PrintObjIndices[PrintObjDepth];
 
         // push obj on the stack
-        os->PrintObjThiss[os->PrintObjDepth] = obj;
-        os->PrintObjIndices[os->PrintObjDepth] = 0;
-        os->PrintObjDepth++;
+        PrintObjThiss[PrintObjDepth] = obj;
+        PrintObjIndices[PrintObjDepth] = 0;
+        PrintObjDepth++;
 
-        UInt lastPV = os->LastPV;
-        os->LastPV = 1;
+        UInt lastPV = LastPV;
+        LastPV = 1;
         PRINT_OBJ(obj);
-        os->LastPV = lastPV;
+        LastPV = lastPV;
 
         // pop <obj> from the stack
-        os->PrintObjDepth--;
-        os->PrintObjThiss[os->PrintObjDepth] = oldThis;
-        os->PrintObjIndices[os->PrintObjDepth] = oldIndx;
+        PrintObjDepth--;
+        PrintObjThiss[PrintObjDepth] = oldThis;
+        PrintObjIndices[PrintObjDepth] = oldIndx;
     }
     else {
         Pr("\nprinting stopped, too many recursion levels!\n", 0, 0);
@@ -1044,19 +1050,19 @@ static Obj FuncPRINT_OBJ(Obj self, Obj obj)
 
 UInt SetPrintObjState(UInt state)
 {
-    UInt oldDepth = MODULE_STATE(Objects).PrintObjDepth;
-    UInt oldLastPV = MODULE_STATE(Objects).LastPV;
-    MODULE_STATE(Objects).PrintObjDepth = state >> 2;
-    MODULE_STATE(Objects).LastPV = state & 3;
+    UInt oldDepth = PrintObjDepth;
+    UInt oldLastPV = LastPV;
+    PrintObjDepth = state >> 2;
+    LastPV = state & 3;
     return (oldDepth << 2) | oldLastPV;
 }
 
 void SetPrintObjIndex(Int index)
 {
-    UInt depth = MODULE_STATE(Objects).PrintObjDepth;
+    UInt depth = PrintObjDepth;
     if (depth == 0)
         ErrorQuit("SetPrintObjIndex: bad state, PrintObjDepth is 0", 0, 0);
-    MODULE_STATE(Objects).PrintObjIndices[depth - 1] = index;
+    PrintObjIndices[depth - 1] = index;
 }
 
 static Obj FuncSET_PRINT_OBJ_INDEX(Obj self, Obj index)
@@ -1087,36 +1093,34 @@ void ViewObj(Obj obj)
     }
 #endif
 
-    ObjectsModuleState * os = &MODULE_STATE(Objects);
-
     // print the path if <obj> is on the stack
-    if (IS_ON_PRINT_STACK(os, obj)) {
+    if (IS_ON_PRINT_STACK(obj)) {
         Pr("~", 0, 0);
-        for (int i = 0; obj != os->PrintObjThiss[i]; i++) {
-            PRINT_PATH(os->PrintObjThiss[i], os->PrintObjIndices[i]);
+        for (int i = 0; obj != PrintObjThiss[i]; i++) {
+            PRINT_PATH(PrintObjThiss[i], PrintObjIndices[i]);
         }
     }
 
     // dispatch to the appropriate viewing function
-    else if (os->PrintObjDepth < MAXPRINTDEPTH) {
+    else if (PrintObjDepth < MAXPRINTDEPTH) {
 
-        Obj oldThis = os->PrintObjThiss[os->PrintObjDepth];
-        Int oldIndx = os->PrintObjIndices[os->PrintObjDepth];
+        Obj oldThis = PrintObjThiss[PrintObjDepth];
+        Int oldIndx = PrintObjIndices[PrintObjDepth];
 
         // push obj on the stack
-        os->PrintObjThiss[os->PrintObjDepth] = obj;
-        os->PrintObjIndices[os->PrintObjDepth] = 0;
-        os->PrintObjDepth++;
+        PrintObjThiss[PrintObjDepth] = obj;
+        PrintObjIndices[PrintObjDepth] = 0;
+        PrintObjDepth++;
 
-        UInt lastPV = os->LastPV;
-        os->LastPV = 2;
+        UInt lastPV = LastPV;
+        LastPV = 2;
         DoOperation1Args(ViewObjOper, obj);
-        os->LastPV = lastPV;
+        LastPV = lastPV;
 
         // pop <obj> from the stack
-        os->PrintObjDepth--;
-        os->PrintObjThiss[os->PrintObjDepth] = oldThis;
-        os->PrintObjIndices[os->PrintObjDepth] = oldIndx;
+        PrintObjDepth--;
+        PrintObjThiss[PrintObjDepth] = oldThis;
+        PrintObjIndices[PrintObjDepth] = oldIndx;
     }
     else {
         Pr("\nviewing stopped, too many recursion levels!\n", 0, 0);
@@ -2341,8 +2345,10 @@ static StructInitInfo module = {
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
 
+#ifdef HPCGAP
     .moduleStateSize = sizeof(ObjectsModuleState),
     .moduleStateOffsetPtr = &ObjectsStateOffset,
+#endif
 };
 
 StructInitInfo * InitInfoObjects ( void )

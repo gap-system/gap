@@ -40,7 +40,9 @@
 #include "hpc/aobjects.h"
 #endif
 
+#ifdef HPCGAP
 struct ExprsState {
+#endif
 
 /****************************************************************************
 **
@@ -55,10 +57,11 @@ struct ExprsState {
 **  This sometimes puts in superfluous parenthesis: 2 * f( (3 + 4) ), since it
 **  doesn't know that a function call adds automatically parenthesis.
 */
-UInt PrintPrecedence;
+DECL_MODULE_STATE UInt PrintPrecedence;
 
-UInt OldPrintPrecedence;
+DECL_MODULE_STATE UInt OldPrintPrecedence;
 
+#ifdef HPCGAP
 };
 
 static ModuleStateOffset ExprsStateOffset = -1;
@@ -70,6 +73,7 @@ extern inline struct ExprsState * ExprsState(void)
 
 #define PrintPrecedence ExprsState()->PrintPrecedence
 #define OldPrintPrecedence ExprsState()->OldPrintPrecedence
+#endif
 
 /****************************************************************************
 **
@@ -1814,9 +1818,10 @@ static StructInitInfo module = {
     .name = "exprs",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
-
+#ifdef HPCGAP
     .moduleStateSize = sizeof(struct ExprsState),
     .moduleStateOffsetPtr = &ExprsStateOffset,
+#endif
 };
 
 StructInitInfo * InitInfoExprs ( void )
