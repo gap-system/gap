@@ -1490,10 +1490,13 @@ InstallMethod( IsPSL,
       if Size(DerivedSubgroup(G)) <> 4 then return false; fi;
       SetParametersOfGroupViewedAsPSL(G,npe); return true;
 
-   # PSL(3, 4) / PSL(4, 2)
+   # PSL(3, 4) / PSL(4, 2) \cong A_8
     elif npes = [ [ 4, 2, 1 ], [ 3, 2, 2 ] ] then
-      if   IdGroup(SylowSubgroup(G,2)) = [64,138] then npe := npes[1];
-      elif IdGroup(SylowSubgroup(G,2)) = [64,242] then npe := npes[2]; fi;
+      if IsAlternatingGroup(G) then
+        npe := npes[1];
+      else
+        npe := npes[2];
+      fi;
       SetParametersOfGroupViewedAsPSL(G,npe); return true;
 
     # other cases
@@ -1650,7 +1653,21 @@ InstallMethod( IsGL,
 
     # GL(2, 3)
     elif npes = [2, 3, 1] then
-      if IdGroup(G) <> [48,29] then return false; fi;
+      # necessary condition: must have derived subgroup of index 2 (i.e., SL(2,3))
+      if AbelianInvariants(G) <> [2] then return false; fi;
+
+      # there are two groups order 48 with derived subgroup of index 2:
+      # - SmallGroup(48,28) is C2 . S4 = SL(2,3) . C2
+      # - SmallGroup(48,29) is GL(2,3)
+      # These two groups are quite similar: they have
+      # - isomorphic centers (C2),
+      # - isomorphic derived subgroups (SL(2,3)),
+      # - same number of conjugacy classes (8),
+      # - same conjugacy class sizes ([ 1, 12, 8, 6, 1, 6, 8, 6 ])
+      # One difference is that the conjugacy class of size 12 consists of
+      # elements of order 4 in one case, and 2 in the other; this is also
+      # how e.g. IdGroup distinguishes them
+      if Number(G, g -> Order(g) = 2) < 13 then return false; fi;
       SetParametersOfGroupViewedAsGL(G,npes); return true;
 
     # other cases, in which contained PSL is simple
