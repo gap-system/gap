@@ -212,13 +212,6 @@ SYSINFO_CPPFLAGS += -I$(abs_srcdir)/src/extra
 GAP_CPPFLAGS += $(GAP_DEFINES)
 SYSINFO_CPPFLAGS += $(GAP_DEFINES)
 
-# Normalize __FILE__ expansions so installed binaries do not embed absolute
-# source or build paths from out-of-tree builds.
-GAP_CPPFLAGS += -fmacro-prefix-map=$(abs_srcdir)/=
-GAP_CPPFLAGS += -fmacro-prefix-map=$(abs_builddir)/=
-GAP_CPPFLAGS += -ffile-prefix-map=$(abs_srcdir)/=
-GAP_CPPFLAGS += -ffile-prefix-map=$(abs_builddir)/=
-
 # Add flags for dependencies
 GAP_CPPFLAGS += $(GMP_CPPFLAGS)
 GAP_CPPFLAGS += $(ZLIB_CPPFLAGS)
