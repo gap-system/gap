@@ -18,10 +18,10 @@
 #include "compiler.h"
 #include "error.h"
 #include "funcs.h"
-#include "gapstate.h"
 #ifdef USE_GASMAN
 #include "gasman_intern.h"
 #endif
+#include "gapstate.h"
 #include "gaptime.h"
 #include "gvars.h"
 #include "integer.h"
@@ -123,11 +123,18 @@ static UInt Time;
 */
 static UInt MemoryAllocated;
 
-
 #ifndef HPCGAP
-GAPState MainGAPState;
-#endif
 
+// HACK: include gapstate a second time, but with DECL_GAP_STATE
+// defined to be empty, to root the global variables here; i.e.,
+// `DECL_GAP_STATE Obj Tilde;` is turned into just `Obj Tilde;`
+// and so on.
+#undef GAP_GAPSTATE_H
+#undef DECL_GAP_STATE
+#define DECL_GAP_STATE
+#include "gapstate.h"
+
+#endif
 
 /****************************************************************************
 **
