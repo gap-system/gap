@@ -23,7 +23,7 @@ dnl 2. Otherwise (i.e., if no interfaces have been removed or changed),
 dnl    if any interfaces have been added since the last public release, then
 dnl    increment minor.
 dnl
-m4_define([kernel_major_version], [10])
+m4_define([kernel_major_version], [11])
 m4_define([kernel_minor_version], [0])
 
 m4_define([GAP_DEFINE], [GAP_DEFINES="$GAP_DEFINES -D$1"])
