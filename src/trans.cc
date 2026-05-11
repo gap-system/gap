@@ -4121,7 +4121,8 @@ static StructGVarFilt GVarFilts[] = {
 
 };
 
-/******************************************************************************
+/****************************************************************************
+**
 *V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
 static StructGVarFunc GVarFuncs[] = {
@@ -4183,7 +4184,8 @@ static StructGVarFunc GVarFuncs[] = {
 };
 
 
-/******************************************************************************
+/****************************************************************************
+**
 *F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
 static Int InitKernel(StructInitInfo * module)
@@ -4271,7 +4273,8 @@ static Int InitKernel(StructInitInfo * module)
     return 0;
 }
 
-/******************************************************************************
+/****************************************************************************
+**
 *F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
 static Int InitLibrary(StructInitInfo * module)
@@ -4285,9 +4288,8 @@ static Int InitLibrary(StructInitInfo * module)
     // code which would not otherwise be accessible, since no other
     // transformation created in this file is a T_TRANS4 unless its internal
     // degree is > 65536. Such transformation can be created by packages with
-    // a
-    // kernel module, and so we introduce the next transformation for testing
-    // purposes.
+    // a kernel module, and so we introduce the next transformation for
+    // testing purposes.
     Obj ID_TRANS4 = NEW_TRANS4(0);
     AssReadOnlyGVar(GVarName("ID_TRANS4"), ID_TRANS4);
 
