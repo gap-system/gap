@@ -1758,8 +1758,8 @@ FuncADD_TO_LIST_ENTRIES_PLIST_RANGE(Obj self, Obj list, Obj range, Obj x)
 **
 **  Examples:      x^2y^3 < y^7,   x^4 y^5 < x^3 y^6
 */
-static Obj  FuncMONOM_TOT_DEG_LEX ( Obj self, Obj u, Obj  v ) {
-
+static Obj FuncMONOM_TOT_DEG_LEX(Obj self, Obj u, Obj v)
+{
   Int4 i, lu, lv;
 
   Obj  total;
@@ -1835,8 +1835,8 @@ static Obj  FuncMONOM_TOT_DEG_LEX ( Obj self, Obj u, Obj  v ) {
 **
 **  Examples:      x^2y^3 < y^7,   x^4 y^5 < x^3 y^6
 */
-static Obj  FuncMONOM_GRLEX( Obj self, Obj u, Obj  v ) {
-
+static Obj FuncMONOM_GRLEX(Obj self, Obj u, Obj v)
+{
   Int4 i, lu, lv;
 
   Obj  total,ai,bi;
@@ -1902,8 +1902,8 @@ static Obj  FuncMONOM_GRLEX( Obj self, Obj u, Obj  v ) {
 **  representation. This is time critical and thus in the kernel.
 **  the function assumes that all lists are plists.
 */
-static Obj  FuncZIPPED_SUM_LISTS( Obj self, Obj z1, Obj  z2, Obj zero, Obj f ) {
-
+static Obj FuncZIPPED_SUM_LISTS(Obj self, Obj z1, Obj z2, Obj zero, Obj f)
+{
   Int l1,l2,i;
   Int i1,i2;
   Obj sum,x,y;
@@ -1981,8 +1981,8 @@ static Obj  FuncZIPPED_SUM_LISTS( Obj self, Obj z1, Obj  z2, Obj zero, Obj f ) {
 **  implements the multiplication of monomials. Both must be plain lists
 **  of integers.
 */
-static Obj  FuncMONOM_PROD( Obj self, Obj m1, Obj m2 ) {
-
+static Obj FuncMONOM_PROD(Obj self, Obj m1, Obj m2)
+{
    UInt a,b,l1,l2,i1,i2,i;
    Obj e,f,c,prod;
 
