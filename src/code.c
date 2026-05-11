@@ -44,12 +44,15 @@
 
 GAP_STATIC_ASSERT(sizeof(StatHeader) == 8, "StatHeader has wrong size");
 
+#ifdef HPCGAP
 struct CodeModuleState {
-    Bag StackStat;
-    Int CountStat;
+#endif
+DECL_MODULE_STATE Bag StackStat;
+DECL_MODULE_STATE Int CountStat;
 
-    Bag StackExpr;
-    Int CountExpr;
+DECL_MODULE_STATE Bag StackExpr;
+DECL_MODULE_STATE Int CountExpr;
+#ifdef HPCGAP
 };
 
 static ModuleStateOffset CodeStateOffset = -1;
@@ -60,6 +63,9 @@ extern inline struct CodeModuleState * CShelper(void)
 }
 
 #define CS(x) (CShelper()->x)
+#else
+#define CS(x) (x)
+#endif
 
 
 /****************************************************************************
@@ -3250,8 +3256,10 @@ static StructInitInfo module = {
     .preSave = PreSave,
     .postRestore = PostRestore,
 
+#ifdef HPCGAP
     .moduleStateSize = sizeof(struct CodeModuleState),
     .moduleStateOffsetPtr = &CodeStateOffset,
+#endif
     .initModuleState = InitModuleState,
 };
 

@@ -175,21 +175,22 @@ static Int GetPositiveListEntryEx(const char * funcname,
     GetPositiveListEntryEx(funcname, list, idx, NICE_ARGNAME(list))
 
 
+#ifdef HPCGAP
 static ModuleStateOffset TransStateOffset = -1;
 
 typedef struct {
+#endif
     // TmpTrans is essentially the same as TmpPerm
-    Obj TmpTrans;
+    DECL_MODULE_STATE Obj TmpTrans;
+#ifdef HPCGAP
 } TransModuleState;
 
-static inline Obj GetTmpTrans(void)
-{
-    return MODULE_STATE(Trans).TmpTrans;
-}
+#define TmpTrans MODULE_STATE(Trans, TmpTrans)
+#endif
 
 static inline UInt4 * AddrTmpTrans(void)
 {
-    return ADDR_TRANS4(GetTmpTrans());
+    return ADDR_TRANS4(TmpTrans);
 }
 
 
@@ -255,9 +256,9 @@ static inline void SET_EXT_TRANS(Obj f, Obj deg)
 
 static inline void ResizeTmpTrans(UInt len)
 {
-    Obj tmpTrans = GetTmpTrans();
+    Obj tmpTrans = TmpTrans;
     if (tmpTrans == (Obj)0) {
-        MODULE_STATE(Trans).TmpTrans = NewBag(T_TRANS4, len * sizeof(UInt4) + 3 * sizeof(Obj));
+        TmpTrans = NewBag(T_TRANS4, len * sizeof(UInt4) + 3 * sizeof(Obj));
     }
     else if (SIZE_OBJ(tmpTrans) < len * sizeof(UInt4) + 3 * sizeof(Obj)) {
         ResizeBag(tmpTrans, len * sizeof(UInt4) + 3 * sizeof(Obj));
@@ -4211,7 +4212,7 @@ static Int InitKernel(StructInitInfo * module)
     InitHdlrFuncsFromTable(GVarFuncs);
 
     // register global bags with the garbage collector
-    InitGlobalBag(&MODULE_STATE(Trans).TmpTrans, "src/trans.c:TmpTrans");
+    InitGlobalBag(&TmpTrans, "src/trans.c:TmpTrans");
     InitGlobalBag(&IdentityTrans, "src/trans.c:IdentityTrans");
 
 #ifdef GAP_ENABLE_SAVELOAD
@@ -4295,7 +4296,7 @@ static Int InitLibrary(StructInitInfo * module)
 
 static Int InitModuleState(void)
 {
-    MODULE_STATE(Trans).TmpTrans = 0;
+    TmpTrans = 0;
 
     return 0;
 }
@@ -4317,8 +4318,10 @@ static StructInitInfo module = {
  /* preSave     = */ 0,
  /* postSave    = */ 0,
  /* postRestore = */ 0,
+#ifdef HPCGAP
  /* moduleStateSize      = */ sizeof(TransModuleState),
  /* moduleStateOffsetPtr = */ &TransStateOffset,
+#endif
  /* initModuleState      = */ InitModuleState,
  /* destroyModuleState   = */ 0,
 };

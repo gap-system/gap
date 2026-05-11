@@ -97,6 +97,8 @@ static Int                 NrImportedGVars;
 static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
 static Int                 NrImportedFuncs;
 
+#ifdef HPCGAP
+
 static Int StateNextFreeOffset = 0; // Start of next free memory area (as offset into GAPState.StateSlots)
 
 static void RegisterModuleState(StructInitInfo * info)
@@ -123,6 +125,7 @@ static void RegisterModuleState(StructInitInfo * info)
     StateNextFreeOffset = (StateNextFreeOffset + sizeof(Obj)-1) & ~(sizeof(Obj)-1);
 }
 
+#endif
 
 /*************************************************************************
 **
@@ -149,7 +152,9 @@ Int ActivateModule(StructInitInfo * info)
 {
     Int res = 0;
 
+#ifdef HPCGAP
     RegisterModuleState(info);
+#endif
 
     if (info->initKernel) {
         res = info->initKernel(info);
@@ -941,7 +946,9 @@ void ModulesSetup(void)
             fputs(")\n", stderr);
         }
 
+#ifdef HPCGAP
         RegisterModuleState(info);
+#endif
     }
     NrBuiltinModules = NrModules;
 }

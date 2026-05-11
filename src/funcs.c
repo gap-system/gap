@@ -41,10 +41,13 @@
 #endif
 
 
+#ifdef HPCGAP
 static ModuleStateOffset FuncsStateOffset = -1;
 
 struct FuncsModuleState {
-    Int RecursionDepth;
+#endif
+    DECL_MODULE_STATE Int RecursionDepth;
+#ifdef HPCGAP
 };
 
 extern inline struct FuncsModuleState *FuncsState(void)
@@ -52,32 +55,35 @@ extern inline struct FuncsModuleState *FuncsState(void)
     return (struct FuncsModuleState *)StateSlotsAtOffset(FuncsStateOffset);
 }
 
+#define RecursionDepth (FuncsState()->RecursionDepth)
+#endif
+
 Int IncRecursionDepth(void)
 {
-    int depth = ++(FuncsState()->RecursionDepth);
+    int depth = ++RecursionDepth;
     return depth;
 }
 
 void DecRecursionDepth(void)
 {
-    FuncsState()->RecursionDepth--;
+    RecursionDepth--;
     /* FIXME: According to a comment in the function
               RecursionDepthTrap below, RecursionDepth
               can become "slightly" negative. This
               needs some investigation.
-    GAP_ASSERT(FuncsState()->RecursionDepth >= 0);
+    GAP_ASSERT(RecursionDepth >= 0);
     */
 }
 
 Int GetRecursionDepth(void)
 {
-    return FuncsState()->RecursionDepth;
+    return RecursionDepth;
 }
 
 void SetRecursionDepth(Int depth)
 {
     GAP_ASSERT(depth >= 0);
-    FuncsState()->RecursionDepth = depth;
+    RecursionDepth = depth;
 }
 
 /****************************************************************************
@@ -879,7 +885,7 @@ static Int InitKernel (
 
 static Int InitModuleState(void)
 {
-    FuncsState()->RecursionDepth = 0;
+    RecursionDepth = 0;
 
     return 0;
 }
@@ -895,9 +901,10 @@ static StructInitInfo module = {
     .name = "funcs",
     .initKernel = InitKernel,
     .initLibrary = InitLibrary,
-
+#ifdef HPCGAP
     .moduleStateSize = sizeof(struct FuncsModuleState),
     .moduleStateOffsetPtr = &FuncsStateOffset,
+#endif
     .initModuleState = InitModuleState,
 };
 
