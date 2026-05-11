@@ -257,8 +257,9 @@ end;
 TestPositionNonZeroInRow := function(mat)
     local ncols;
 
-    # Make a matrix with specific patter of the same kind as mat
-    mat := Matrix([ [ 0, 1, 0, 1 ], [ 0, 0, 0, 0 ], [ 0, 0, 1, 0 ] ], mat);
+    # Make a matrix with specific pattern of the same kind as mat
+    mat := Matrix([ [ 0, 1, 0, 1 ], [ 0, 0, 0, 0 ], [ 0, 0, 1, 0 ] ]
+                  * One( BaseDomain( mat ) ), mat);
 
     ncols := NrCols(mat);
     if PositionNonZeroInRow(mat, 1) <> 2 then
