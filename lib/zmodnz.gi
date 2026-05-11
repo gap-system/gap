@@ -869,6 +869,7 @@ InstallMethod( TriangulizeMat,
 ##
 #M  ViewObj( <R> )  . . . . . . . . . . . . . . . . method for full ring Z/nZ
 #M  PrintObj( <R> ) . . . . . . . . . . . . . . . . method for full ring Z/nZ
+#M  String( <R> ) . . . . . . . . . . . . . . . . . method for full ring Z/nZ
 ##
 InstallMethod( ViewObj,
     "for full ring Z/nZ",
@@ -883,6 +884,11 @@ InstallMethod( PrintObj,
     function( obj )
     Print( "(Integers mod ", Size( obj ), ")" );
     end );
+
+InstallMethod( String,
+    "for full ring Z/nZ",
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], SUM_FLAGS,
+    obj -> Concatenation( "(Integers mod ", String( Size( obj ) ), ")" ) );
 
 
 #############################################################################
