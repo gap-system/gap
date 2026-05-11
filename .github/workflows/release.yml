@@ -94,7 +94,7 @@ jobs:
 
       - name: "Install autoconf 2.72"   # for compatibility with GCC 14 & clang versions
         run: |
-          wget https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.xz
+          wget https://ftpmirror.gnu.org/gnu/autoconf/autoconf-2.72.tar.xz
           tar xvf autoconf-2.72.tar.xz
           cd autoconf-2.72
           ./configure
