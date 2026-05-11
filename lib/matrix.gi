@@ -3040,8 +3040,7 @@ InstallOtherMethod( SolutionMatDestructive,
     local i,ncols,sem, vno, z,x, sol;
     ncols := Length(vec);
     z := ZeroOfBaseDomain(mat);
-    sol := ListWithIdenticalEntries(NrRows(mat),z);
-    ConvertToVectorRepNC(sol);
+    sol:= ZeroVector( NrRows( mat ), vec );
     if ncols <> NrCols(mat) then
         Error("SolutionMat: matrix and vector incompatible");
     fi;

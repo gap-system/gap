@@ -88,6 +88,8 @@ BindGlobal( "MakeIsPlistVectorRep",
     if check and ValueOption( "check" ) <> false then
       if not IsSubset( basedomain, list ) then
         Error( "the elements in <list> must lie in <basedomain>" );
+      elif not IsPlistRep( list ) then
+        Error( "<list> must be in 'IsPlistRep'" );
       fi;
     fi;
 
@@ -177,7 +179,7 @@ BindGlobal( "MakeIsPlistMatrixRep",
 InstallTagBasedMethod( NewVector,
   IsPlistVectorRep,
   function( filter, basedomain, list )
-    return MakeIsPlistVectorRep(basedomain, ShallowCopy(list), true);
+    return MakeIsPlistVectorRep(basedomain, PlainListCopy( list ), true);
   end );
 
 InstallTagBasedMethod( NewZeroVector,
@@ -343,6 +345,9 @@ InstallMethod( \[\],
 InstallMethod( \[\]\:\=,
   [ "IsPlistVectorRep", "IsPosInt", "IsObject" ],
   function( v, p, ob )
+    if ValueOption( "check" ) <> false and Length( v![ELSPOS] ) < p then
+      Error( "<p> is out of bounds" );
+    fi;
     v![ELSPOS][p] := ob;
   end );
 
@@ -699,7 +704,7 @@ InstallMethod( Matrix,
     else
         l := [];
     fi;
-    # The result shall be mutable iff 'rows' is mutable.
+    # The result shall be mutable iff 'list' is mutable.
     if not IsMutable( list ) then
       MakeImmutable( l );
     fi;

@@ -2555,8 +2555,13 @@ InstallMethod( BaseField, "for a compressed gf2 vector",
 InstallTagBasedMethod( NewVector,
   IsGF2VectorRep,
   function( filter, f, l )
+    local res;
     if Size(f) <> 2 then Error("IsGF2VectorRep only supported over GF(2)"); fi;
-    return CopyToVectorRep(l,2);
+    res:= CopyToVectorRep( l, 2 );
+    if res = fail then
+      Error( "cannot copy <l> to 'IsGF2VectorRep'" );
+    fi;
+    return res;
   end );
 
 InstallTagBasedMethod( NewZeroVector,
@@ -2583,7 +2588,9 @@ InstallTagBasedMethod( NewMatrix,
     else
       m := List(l,ShallowCopy);
     fi;
-    ConvertToMatrixRep(m,2);
+    if ConvertToMatrixRep( m, 2 ) = fail then
+      Error( "cannot convert <m> to 'IsGF2MatrixRep'" );
+    fi;
     return m;
   end );
 
