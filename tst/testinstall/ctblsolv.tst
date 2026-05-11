@@ -1,7 +1,7 @@
 #@local G, pair, mth, all, rks, tbl
 gap> START_TEST("ctblsolv.tst");
 
-##
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> CharacterDegrees( SmallGroup( 256, 529 ) );
 [ [ 1, 8 ], [ 2, 30 ], [ 4, 8 ] ]
 gap> for pair in [ [ 18, 3 ], [ 27, 3 ], [ 36, 7 ], [ 50, 3 ], [ 54, 4 ] ] do
@@ -11,6 +11,7 @@ gap> for pair in [ [ 18, 3 ], [ 27, 3 ], [ 36, 7 ], [ 50, 3 ], [ 54, 4 ] ] do
 >        Error( IdGroup( G ) );
 >      fi;
 >    od;
+#@fi
 
 ##
 gap> mth:= [];;
@@ -18,11 +19,11 @@ gap> G:= AbelianGroup( [ 2, 3, 5 ] );;
 gap> Add( mth, ApplicableMethod( CharacterDegrees, [ G ] ) );
 gap> CharacterDegrees( G ) = [ [ 1, 30 ] ];
 true
-gap> G:= SmallGroup( 24, 12 );;  Irr( G );;
+gap> G:= SymmetricGroup(IsPcGroup, 4);;  Irr( G );;
 gap> Add( mth, ApplicableMethod( CharacterDegrees, [ G ] ) );
 gap> CharacterDegrees( G ) = [ [ 1, 2 ], [ 2, 1 ], [ 3, 2 ] ];
 true
-gap> G:= SmallGroup( 24, 12 );;  CharacterTable( G );;
+gap> G:= SymmetricGroup(IsPcGroup, 4);;  CharacterTable( G );;
 gap> Add( mth, ApplicableMethod( CharacterDegrees, [ G ] ) );
 gap> CharacterDegrees( G ) = [ [ 1, 2 ], [ 2, 1 ], [ 3, 2 ] ];
 true
@@ -34,7 +35,7 @@ gap> G:= Group( [ [ E(3) ] ], [ [ E(4) ] ] );;
 gap> Add( mth, ApplicableMethod( CharacterDegrees, [ G ] ) );
 gap> CharacterDegrees( G ) = [ [ 1, 12 ] ];
 true
-gap> G:= SmallGroup( 24, 12 );;  # hier: auch überaufl.!!!
+gap> G:= SymmetricGroup(IsPcGroup, 4);;  # hier: auch überaufl.!!!
 gap> Add( mth, ApplicableMethod( CharacterDegrees, [ G ] ) );
 gap> CharacterDegrees( G ) = [ [ 1, 2 ], [ 2, 1 ], [ 3, 2 ] ];
 true
