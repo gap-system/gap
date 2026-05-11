@@ -1,9 +1,11 @@
 gap> START_TEST("IsSolvableGroup.tst");
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> List(AllSmallGroups(120), IsSolvableGroup);
 [ true, true, true, true, false, true, true, true, true, true, true, true, 
   true, true, true, true, true, true, true, true, true, true, true, true, 
   true, true, true, true, true, true, true, true, true, false, false, true, 
   true, true, true, true, true, true, true, true, true, true, true ]
+#@fi
 gap> grps := [
 >  [ (1,2,3,4,5,6,7,8) ], [ (1,2,3,8)(4,5,6,7), (1,5)(2,6)(3,7)(4,8) ],
 >  [ (1,8)(2,3)(4,5)(6,7), (1,3)(2,8)(4,6)(5,7), (1,5)(2,6)(3,7)(4,8) ],

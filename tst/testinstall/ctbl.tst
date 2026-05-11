@@ -443,19 +443,19 @@ gap> HasIsIrreducibleCharacter( TrivialCharacter( SymmetricGroup( 4 ) ) );
 true
 
 # concurring 'Irr' methods
-gap> G:= PcGroupCode( 221729, 24 );;
+gap> G:= PcGroupCode( 221729, 24 );;  # = SmallGroup( 24, 5 )
 gap> IsSupersolvable( G );
 true
 gap> Irr( G );;
 gap> InfoText( OrdinaryCharacterTable( G ) );
 "origin: Baum-Clausen Algorithm"
-gap> G:= PcGroupCode( 221729, 24 );;
+gap> G:= PcGroupCode( 221729, 24 );;  # = SmallGroup( 24, 5 )
 gap> IsSupersolvable( G );
 true
 gap> IrrConlon( G );;  Irr( G );;
 gap> InfoText( OrdinaryCharacterTable( G ) );
 "origin: Conlon's Algorithm"
-gap> G:= PcGroupCode( 221729, 24 );;
+gap> G:= PcGroupCode( 221729, 24 );;  # = SmallGroup( 24, 5 )
 gap> IrrDixonSchneider( G );;  Irr( G );;
 gap> InfoText( OrdinaryCharacterTable( G ) );
 "origin: Dixon's Algorithm"

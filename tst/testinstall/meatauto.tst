@@ -12,7 +12,7 @@ gap> SMTX_NullspaceEqns(e);
 #
 # MTX.BasisModuleEndomorphisms
 #
-gap> G:=SmallGroup(24, 3);;
+gap> G:=SL(2, 3);;
 gap> p:=NextPrimeInt(100);;
 gap> M:=RegularModule(G, GF(p))[2];;
 gap> MTX.BasisModuleEndomorphisms(M);
@@ -44,7 +44,7 @@ gap> MTX.BasisModuleEndomorphisms(M);
 #
 # MTX.HomogeneousComponents
 #
-gap> G:=SmallGroup(24, 3);;
+gap> G:=SL(2, 3);;
 gap> p:=NextPrimeInt(100);;
 gap> M:=RegularModule(G, GF(p))[2];;
 gap> hc := MTX.HomogeneousComponents(M);;
