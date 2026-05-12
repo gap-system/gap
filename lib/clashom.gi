@@ -1217,7 +1217,6 @@ local cs,       # chief series of G
 	fi;
 
 
-	C:=KernelOfMultiplicativeGeneralMapping(Fhom);
 	F:=Image(Fhom,G);
 
 	clF:=ClassesFromClassical(F);
@@ -1315,7 +1314,6 @@ local cs,       # chief series of G
 	else
 	  Fhom:=GroupHomomorphismByImagesNC(G,F,GeneratorsOfGroup(G),genimages);
 	fi;
-	C:=KernelOfMultiplicativeGeneralMapping(Fhom);
 
 	Info(InfoHomClass,1,"constructed Fhom");
 
