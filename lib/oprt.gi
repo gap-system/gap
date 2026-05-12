@@ -3379,7 +3379,7 @@ end );
 InstallMethod( PreImagesRepresentative,"IsLinearActionHomomorphism",
   FamRangeEqFamElm, [ IsLinearActionHomomorphism, IsPerm ], 0,
 function( hom, elm )
-  local   V, G, Grep, xset,lab,f;
+  local   V, G, Grep, filt, R, xset,lab,f;
 
   # is this method applicable? Test whether the domain contains a vector
   # space basis (respectively just get this basis).
@@ -3394,19 +3394,26 @@ function( hom, elm )
   V := HomeEnumerator(xset);
   G:= Source( hom );
   Grep:= Representative( G );
+  filt:= ConstructingFilter( Grep );
   f:=DefaultFieldOfMatrixGroup(G);
-
+  if IsMatrixObj( Grep ) then
+    R:= BaseDomain( Grep );
+  else
+    R:= f;
+  fi;
+#TODO: Here `BaseDomain( G )` should be used.
   if not IsBound(hom!.linActBasisPositions) then
     hom!.linActBasisPositions:=List(lab,i->PositionCanonical(V,i));
   fi;
   if not IsBound(hom!.linActInverse) then
-    lab:=ImmutableMatrix(f, Matrix( lab, Grep ));
+    # Create a matrix whose `BaseDomain` is the same as that of the group.
+    lab:=ImmutableMatrix(f, Matrix( filt, R, lab ));
     hom!.linActInverse:=Inverse(lab);
   fi;
 
   elm:=OnTuples(hom!.linActBasisPositions,elm); # image points
   elm:=V{elm}; # the corresponding vectors
-  elm:=ImmutableMatrix(f, Matrix( elm, Grep ));
+  elm:=ImmutableMatrix(f, Matrix( filt, R, elm ));
 
   return hom!.linActInverse*elm;
 end );
@@ -3437,7 +3444,7 @@ end );
 InstallMethod( PreImagesRepresentative,"IsProjectiveActionHomomorphism",
   FamRangeEqFamElm, [ IsProjectiveActionHomomorphism, IsPerm ], 0,
 function( hom, elm )
-  local   V,  G, Grep, mat, xset,lab,dim,sol,i;
+  local   V,  G, Grep, filt, R, mat, xset,lab,dim,sol,i;
 
   # is this method applicable? Test whether field
   # finite, that the domain contains a vector
@@ -3456,12 +3463,18 @@ function( hom, elm )
   V := HomeEnumerator(xset);
   G:= Source( hom );
   Grep:= Representative( G );
+  filt:= ConstructingFilter( Grep );
+  if IsMatrixObj( Grep ) then
+    R:= BaseDomain( Grep );
+  else
+    R:= DefaultFieldOfMatrixGroup(G);
+  fi;
   dim:=DimensionOfMatrixGroup(G);
 
   elm:=OnTuples(hom!.projActBasisPositions,elm); # image points
   elm:=V{elm}; # the corresponding vectors
 
-  mat:= Matrix( List( elm{ [ 1 .. dim ] }, ShallowCopy ), Grep );
+  mat:= Matrix( filt, R, List( elm{ [ 1 .. dim ] }, ShallowCopy ) );
   sol:=SolutionMat(mat,elm[dim+1]);
   for i in [1..dim] do
     MultMatrixRow( mat, i, sol[i] );
@@ -3487,7 +3500,7 @@ end);
 InstallMethod(LinearActionBasis,"find basis in domain",true,
   [IsLinearActionHomomorphism],0,
 function(hom)
-local xset, base, M, D, b, t, i, r, pos, v;
+local xset, base, M, filt, R, D, b, t, i, r, pos, v;
   xset:=UnderlyingExternalSet(hom);
   if Size(xset)=0 then
     return fail;
@@ -3498,7 +3511,12 @@ local xset, base, M, D, b, t, i, r, pos, v;
     if IsMatrix( base ) then
       M:= base;
     elif ForAll( base, IsVectorObj ) then
-      M:= Matrix( BaseOfGroup( xset ), One( ActingDomain( xset ) ) );
+      # All entries of 'base' have the same 'BaseDomain'.
+      filt:= ConstructingFilter( Representative( ActingDomain( xset ) ) );
+      R:= BaseDomain( base[1] );
+      M:= Matrix( filt, R, base );
+    else
+      Error( "unsupported 'BaseOfGroup' value for <xset>" );
     fi;
     if RankMat( M ) = NrCols( M ) then
       # this implies injectivity
@@ -3561,7 +3579,7 @@ end);
 InstallOtherMethod(LinearActionBasis,"projective with extra vector",true,
   [IsProjectiveActionHomomorphism],0,
 function(hom)
-local xset,G,Grep,D,b,t,i,r,binv,pos,dets,roots,dim,f,v;
+local xset,G,Grep,filt,R,D,b,t,i,r,binv,pos,dets,roots,dim,f,v;
   xset:=UnderlyingExternalSet(hom);
   if Size(xset)=0 then
     return fail;
@@ -3570,9 +3588,14 @@ local xset,G,Grep,D,b,t,i,r,binv,pos,dets,roots,dim,f,v;
   # will the determinants suffice to get suitable scalars?
   G:= Source(hom);
   Grep:= Representative( G );
+  filt:= ConstructingFilter( Grep );
   dim:=DimensionOfMatrixGroup(G);
   f:=DefaultFieldOfMatrixGroup(G);
-
+  if IsMatrixObj( Grep ) then
+    R:= BaseDomain( Grep );
+  else
+    R:= f;
+  fi;
   roots:=Set(RootsOfUPol(f,X(f)^dim-1));
   D:=List(GeneratorsOfGroup(G),DeterminantMat);
 
@@ -3621,7 +3644,7 @@ local xset,G,Grep,D,b,t,i,r,binv,pos,dets,roots,dim,f,v;
   fi;
 
   # try to find a vector that has nonzero coefficients for all b
-  binv:= Inverse( ImmutableMatrix( f, Matrix( b, Grep ) ) );
+  binv:= Inverse( ImmutableMatrix( f, Matrix( filt, R, b ) ) );
   while i<=Length(D) do
     if ForAll( Unpack( D[i] * binv ), x -> not IsZero(x) ) then
 #TODO: get rid of 'Unpack'?
