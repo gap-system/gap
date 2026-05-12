@@ -1966,8 +1966,9 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   a:=Group(SmallGeneratingSet(group)); # so nothing stores
   csetperm:=List(GeneratorsOfGroup(a),x->Permutation(x,rt,OnRight));
   iso:=EpimorphismFromFreeGroup(a);
-  borela:=List(bgens,x->MappedWord(PreImagesRepresentativeNC(iso,x),MappingGeneratorsImages(iso)[1],borela));
-  act:=Group(borela,());
+  csetperm:=List(bgens,x->MappedWord(PreImagesRepresentative(iso,x),
+    MappingGeneratorsImages(iso)[1],csetperm));
+  act:=Group(csetperm,());
 
   bhom:=GroupHomomorphismByImagesNC(borel,act,bgens,csetperm);
   #Assert(0,bhom<>fail);
@@ -2052,7 +2053,7 @@ local isob,isos,iso,gens,a,rels,l,i,j,bgens,cb,cs,b,f,k,w,monoid,
   relab:=true;
 
   decomp:=function(elm)
-  local rep,a;
+  local rep,pos;
     if elm in borel then return [elm,One(borel),One(borel)];fi;
     #pos:=PositionProperty(dc,y->elm in y);
     pos:=rti[PositionCanonical(rt,elm)];
