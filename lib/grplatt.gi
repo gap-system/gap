@@ -2832,16 +2832,16 @@ local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,emb,u,pos,
         no:=NormalSubgroups(j[1]);
         no:=SubgroupsOrbitsAndNormalizers(j[2],no,false);
   #Print("Try",j," ",Length(no),"\n");
-	for k in no do
-	  hom:=NaturalHomomorphismByNormalSubgroup(j[1],k.representative);
-	  f:=Image(hom);
-	  if Size(f)<1000 and Size(f)<>512 and uselib then
-	    myid:=ShallowCopy(IdGroup(f));
-	  else
-	    myid:=[Size(f),fail];
-	  fi;
-	  for s in subs do
-	    for t in s[3] do # look over normals of subgroup
+        for k in no do
+          hom:=NaturalHomomorphismByNormalSubgroup(j[1],k.representative);
+          f:=Image(hom);
+          if uselib and Size(f) < 1000 and ID_AVAILABLE(Size(f)) <> fail then
+            myid:=ShallowCopy(IdGroup(f));
+          else
+            myid:=[Size(f),fail];
+          fi;
+          for s in subs do
+            for t in s[3] do # look over normals of subgroup
               #Print(t,"\n");
 	      if t{[3,4]}=myid then
 		if false and myid=[1,1] then
