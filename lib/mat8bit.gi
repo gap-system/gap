@@ -269,7 +269,7 @@ InstallMethod( \-, "for two 8 bit matrices in same characteristic",
 
 InstallGlobalFunction(ConvertToMatrixRep,
         function( arg )
-    local m,qs, v,  q, givenq, q1, LeastCommonPower, lens;
+    local m,qs, v,  q, givenq, q1, LeastCommonPower, lens, d;
 
     LeastCommonPower := function(qs)
         local p, d, x, i;
@@ -389,19 +389,32 @@ InstallGlobalFunction(ConvertToMatrixRep,
         fi;
 
         if givenq and q1 <> q then
-            Error("ConvertToMatrixRep( <mat>, <q> ): not all entries of <mat> written over <q>");
-        fi;
+          # It may be possible to write the matrix over the field
+          # with 'q1' elements.
+          # We are not allowed to call 'ConvertToVectorRep( v, q1 )'
+          # in order to *test* whether the row 'v' lives over the desired
+          # field, but we may call it once we *know* that this is the case.
+          d:= Length( Factors( q1 ) );
+          for v in m do
+            if d mod DegreeFFE( v ) <> 0 then
+              Error("ConvertToMatrixRep( <mat>, <q> ): not all entries of <mat> written over <q>");
+            elif q1 <> ConvertToVectorRep( v, q1 ) then
+              return fail;
+            fi;
+          od;
+          q:= q1;
+        else
+          #
+          # Now try and rewrite all the rows over this field
+          # this may fail if some rows are locked over a smaller field
+          #
 
-        #
-        # Now try and rewrite all the rows over this field
-        # this may fail if some rows are locked over a smaller field
-        #
-
-        for v in m do
+          for v in m do
             if q <> ConvertToVectorRepNC(v,q) then
                 return fail;
             fi;
-        od;
+          od;
+        fi;
     fi;
 
     if q <= 256 then
