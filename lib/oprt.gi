@@ -3396,7 +3396,7 @@ function( hom, elm )
   Grep:= Representative( G );
   filt:= ConstructingFilter( Grep );
   f:=DefaultFieldOfMatrixGroup(G);
-  if IsMatrixObj( Grep ) then
+  if HasBaseDomain( Grep ) then
     R:= BaseDomain( Grep );
   else
     R:= f;
@@ -3464,7 +3464,7 @@ function( hom, elm )
   G:= Source( hom );
   Grep:= Representative( G );
   filt:= ConstructingFilter( Grep );
-  if IsMatrixObj( Grep ) then
+  if HasBaseDomain( Grep ) then
     R:= BaseDomain( Grep );
   else
     R:= DefaultFieldOfMatrixGroup(G);
@@ -3510,7 +3510,7 @@ local xset, base, M, filt, R, D, b, t, i, r, pos, v;
     base:= BaseOfGroup(xset);
     if IsMatrix( base ) then
       M:= base;
-    elif ForAll( base, IsVectorObj ) then
+    elif ForAll( base, IsVectorObj and HasBaseDomain ) then
       # All entries of 'base' have the same 'BaseDomain'.
       filt:= ConstructingFilter( Representative( ActingDomain( xset ) ) );
       R:= BaseDomain( base[1] );
@@ -3591,7 +3591,7 @@ local xset,G,Grep,filt,R,D,b,t,i,r,binv,pos,dets,roots,dim,f,v;
   filt:= ConstructingFilter( Grep );
   dim:=DimensionOfMatrixGroup(G);
   f:=DefaultFieldOfMatrixGroup(G);
-  if IsMatrixObj( Grep ) then
+  if HasBaseDomain( Grep ) then
     R:= BaseDomain( Grep );
   else
     R:= f;
