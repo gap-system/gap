@@ -3415,7 +3415,8 @@ end );
 ##
 #M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . .  build matrix
 ##
-#### InstallMethod( PreImagesRepresentativeNC,"IsProjectiveActionHomomorphism",
+##<<<< fixed a clash with #6232 (12/5/26)?
+##<< InstallMethod( PreImagesRepresentativeNC,"IsProjectiveActionHomomorphism",
 ##  The idea is as follows.
 ##  We have an $F$-basis $(v_1, \ldots, v_n)$.
 ##  The matrix $M \in GL(n, F)$ acts first by right multiplication,
