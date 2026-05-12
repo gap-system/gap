@@ -2860,7 +2860,7 @@ local fgi,inducedfactorautos,projs,psubs,info,n,l,nl,emb,u,pos,
 			    x->x*Image(emb,PreImagesRepresentativeNC(t[5],
 			      Image(dc[1],Image(iso,x))) ));
 		      Append(g,List(GeneratorsOfGroup(t[1]),x->Image(emb,x)));
-		      g:=Subgroup(D,g);>>>>>>> dbb7e8565 (replaced PreImRep by PreImRepNC in files from a... to g...)
+		      g:=Subgroup(D,g);
 if Size(g)<>Size(j[1])*Size(s[1])/Size(f) then Error("sudi\n");fi;
                       Add(nl,[g,Normalizer(D,g)]);
                     od;
