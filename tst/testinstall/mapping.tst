@@ -255,7 +255,7 @@ gap> PreImagesSetNC( map, [ 0*Z(3), Z(3) ] );
 [ 0*Z(3), Z(3)^0 ]
 gap> PreImagesSetNC( map, GF(3) );
 [ 0*Z(3), Z(3)^0 ]
-gap> PreImagesRepresentativeNC( map, Z(3) );
+gap> PreImagesRepresentative( map, Z(3) );
 Z(3)^0
 
 # ImageElm, ImagesSet for IsMapping
@@ -310,7 +310,7 @@ gap> PreImagesSetNC( map, [ 0*Z(3), Z(3) ] );
 [ 0*Z(3), Z(3)^0 ]
 gap> PreImagesSetNC( map, GF(3) );
 [ 0*Z(3), Z(3)^0, Z(3) ]
-gap> PreImagesRepresentativeNC( map, Z(3) );
+gap> PreImagesRepresentative( map, Z(3) );
 0*Z(3)
 gap> ImagesSource( map );
 [ 0*Z(3), Z(3)^0, Z(3) ]

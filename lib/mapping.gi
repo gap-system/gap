@@ -1173,17 +1173,16 @@ InstallMethod( PreImagesRange,
 #M  PreImagesRepresentative( <map>, <elm> ) . . . for s.p. gen. mapping & elm
 #M  PreImagesRepresentativeNC( <map>, <elm> ) . . for s.p. gen. mapping & elm
 ##
-## InstallMethod( PreImagesRepresentative,
-##     "for s.p. general mapping, and element",
-##     FamRangeEqFamElm,
-##     [ IsSPGeneralMapping, IsObject ], 0,
-##     function( map, elm )
-## test will be included at a later stage of the change of name
-##      if not elm in Image( map ) then
-##        return fail;
-##      fi;
-##       return PreImagesRepresentativeNC( map, elm );
-##     end );
+InstallMethod( PreImagesRepresentative,
+    "for s.p. general mapping, and element",
+    FamRangeEqFamElm,
+    [ IsSPGeneralMapping, IsObject ], 0,
+    function( map, elm )
+    if not elm in Image( map ) then
+      return fail;
+    fi;
+      return PreImagesRepresentativeNC( map, elm );
+    end );
 
 InstallMethod( PreImagesRepresentativeNC,
     "for s.p. general mapping, and element",
@@ -1198,18 +1197,17 @@ InstallMethod( PreImagesRepresentativeNC,
 ##
 #M  PreImagesRepresentative( <map>, <elm> )
 #M  PreImagesRepresentativeNC( <map>, <elm> )
-##
-## InstallMethod( PreImagesRepresentative,
-##     "for total non-s.p. general mapping, and element",
-##     FamRangeEqFamElm,
-##     [ IsNonSPGeneralMapping, IsObject ], 0,
-##     function( map, elm )
-## test will be included at a later stage of the change of name
-##      if not elm in Image( map ) then
-##        return fail;
-##      fi;
-##       return PreImagesRepresentativeNC( map, elm );
-##     end );
+
+InstallMethod( PreImagesRepresentative,
+    "for total non-s.p. general mapping, and element",
+    FamRangeEqFamElm,
+    [ IsNonSPGeneralMapping, IsObject ], 0,
+    function( map, elm )
+      if not elm in Image( map ) then
+        return fail;
+      fi;
+      return PreImagesRepresentativeNC( map, elm );
+    end );
 
 InstallMethod( PreImagesRepresentativeNC,
     "for total non-s.p. general mapping, and element",

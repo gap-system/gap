@@ -1070,11 +1070,11 @@ DeclareOperation( "PreImageElm",
 ##  <#/GAPDoc>
 ##
 
-## DeclareOperation( "PreImagesRepresentative",
-##     [ IsGeneralMapping, IsObject ] );
 DeclareOperation( "PreImagesRepresentativeNC",
     [ IsGeneralMapping, IsObject ] );
-DeclareSynonym( "PreImagesRepresentative", PreImagesRepresentativeNC );
+## DeclareSynonym( "PreImagesRepresentative", PreImagesRepresentativeNC );
+DeclareOperation( "PreImagesRepresentative",
+    [ IsGeneralMapping, IsObject ] );
 
 #############################################################################
 ##
