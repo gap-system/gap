@@ -588,15 +588,16 @@ InstallMethod( PreImagesRepresentativeNC,
                    AsLeftModuleGeneralMappingByImages(map), elm );
     end );
 
-InstallMethod( PreImagesRepresentativeNC,
-    "for algebra g.m.b.i. knowing inverse, and element",
-    FamRangeEqFamElm,
-    [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep
-      and HasInverseGeneralMapping,
-      IsObject ],
-    function( map, elm )
-        return ImagesRepresentative( InverseGeneralMapping(map), elm );
-    end );
+## (13/05/26) commented this out to prevent infinite recursion in alghom.tst
+## InstallMethod( PreImagesRepresentativeNC,
+##     "for algebra g.m.b.i. knowing inverse, and element",
+##     FamRangeEqFamElm,
+##     [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep
+##       and HasInverseGeneralMapping,
+##       IsObject ],
+##     function( map, elm )
+##         return ImagesRepresentative( InverseGeneralMapping(map), elm );
+##     end );
 
 
 #############################################################################
