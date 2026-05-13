@@ -1075,6 +1075,7 @@ InstallMethod( PreImageElm,
 #############################################################################
 ##
 #M  PreImagesElmNC( <map>, <elm> )  . . . . . for general mapping and element
+#M  PreImagesElm( <map>, <elm> )  . . . . . . for general mapping and element
 ##
 ##  more or less delegate to `ImagesElm'
 ##
@@ -1095,10 +1096,24 @@ InstallMethod( PreImagesElmNC,
     fi;
     end );
 
+InstallMethod( PreImagesElm,
+    "for general mapping with finite source, and element",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping, IsObject ], 0,
+    function ( map, elm )
+
+    if not ( elm in Image( map ) ) then
+        return fail;
+    else
+        return PreImagesElmNC( map, elm );
+    fi;
+    end );
+
 
 #############################################################################
 ##
 #M  PreImagesElmNC( <map>, <elm> ) for const. time access gen. map., and elm.
+#M  PreImagesElm( <map>, <elm> ) . for const. time access gen. map., and elm.
 ##
 InstallMethod( PreImagesElmNC,
     "for constant time access general mapping, and element",
@@ -1115,6 +1130,18 @@ InstallMethod( PreImagesElmNC,
     return preimgs;
     end );
 
+InstallMethod( PreImagesElm,
+    "for constant time access general mapping, and element",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsConstantTimeAccessGeneralMapping, IsObject ], 0,
+    function( map, elm )
+    if not ( elm in Image( map ) ) then
+        return fail;
+    else
+        return PreImagesElmNC( map, elm );
+    fi;
+    end );
+
 
 #############################################################################
 ##
@@ -1126,9 +1153,6 @@ InstallMethod( PreImagesSetNC,
     [ IsGeneralMapping, IsCollection ], 0,
     function( map, elms )
     local primgs, elm;
-    if not IsFinite( elms ) then
-      TryNextMethod();
-    fi;
     primgs:= [];
     for elm in Enumerator( elms ) do
       UniteSet( primgs, AsList( PreImagesElmNC( map, elm ) ) );
@@ -1151,7 +1175,7 @@ InstallMethod( PreImagesSet,
         return fail;
       fi;
     od;
-    return PreImagesSet( map, elms );
+    return PreImagesSetNC( map, elms );
     end );
 
 InstallMethod( PreImagesSetNC,

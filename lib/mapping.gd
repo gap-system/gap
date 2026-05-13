@@ -1003,7 +1003,8 @@ DeclareGlobalFunction( "Images" );
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "PreImagesElmNC", [ IsGeneralMapping, IsObject ] );
-DeclareSynonym( "PreImagesElm", PreImagesElmNC );
+##  DeclareSynonym( "PreImagesElm", PreImagesElmNC );
+DeclareOperation( "PreImagesElm", [ IsGeneralMapping, IsObject ] );
 
 
 #############################################################################
