@@ -3401,7 +3401,7 @@ function( hom, elm )
   else
     R:= f;
   fi;
-#TODO: Here `BaseDomain( G )` should be used.
+#TODO: Here `BaseDomain( G )` should be used, once it is implemented.
   if not IsBound(hom!.linActBasisPositions) then
     hom!.linActBasisPositions:=List(lab,i->PositionCanonical(V,i));
   fi;
