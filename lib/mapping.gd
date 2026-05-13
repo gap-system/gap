@@ -1247,7 +1247,8 @@ DeclareGlobalFunction( "PreImage" );
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PreImagesNC" );
-DeclareSynonym( "PreImages", PreImagesNC );
+##  DeclareSynonym( "PreImages", PreImagesNC );
+DeclareGlobalFunction( "PreImages" );
 
 
 #############################################################################

@@ -359,6 +359,61 @@ InstallGlobalFunction( PreImagesNC, function ( arg )
                    "PreImagesNC(<map>,<coll>)" );
 end );
 
+InstallGlobalFunction( PreImages, function ( arg )
+
+    local   map,        # mapping <map>, first argument
+            img;        # element <img>, second argument
+
+    # preimage of the range under <map>
+    if Length( arg ) = 1  then
+
+        return PreImagesRange( arg[1] );
+
+    elif Length( arg ) = 2 then
+
+        map := arg[1];
+        img := arg[2];
+
+        if not IsGeneralMapping( map ) then
+          ErrorNoReturn( "<map> must be a general mapping" );
+        fi;
+
+        # preimage of a single element <img> under <map>
+        if     FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) ) then
+            if not img in Range( map ) then
+                ErrorNoReturn( "<elm> must be an element of Range(<map>)" );
+            fi;
+            return PreImagesElm( map, img );
+
+        # preimage of a collection of elements <img> under <map>
+        elif CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) ) then
+          if not IsSubset( Range( map ), img ) then
+            ErrorNoReturn( "the collection <elm> must be contained in ",
+                           "Range(<map>)" );
+          fi;
+
+          if IsDomain( img ) or IsSSortedList( img ) then
+            return PreImagesSet( map, img );
+          elif IsHomogeneousList( img ) then
+            return PreImagesSet( map, Set( img ) );
+          fi;
+
+        # preimage of the empty list
+        elif IsList( img ) and IsEmpty( img ) then
+
+          return [];
+
+        else
+          ErrorNoReturn( "the families of the element or collection <elm> ",
+                         "and Range(<map>) don't match, ",
+                         "maybe <elm> is not contained in Range(<map>) or ",
+                         "is not a homogeneous list or collection" );
+        fi;
+    fi;
+    ErrorNoReturn( "usage: PreImages(<map>), PreImages(<map>,<img>), ",
+                   "PreImages(<map>,<coll>)" );
+end );
+
 #############################################################################
 ##
 #F  CompositionMapping(<map1>,<map2>, ... ) . . . . . composition of mappings
