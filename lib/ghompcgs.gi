@@ -505,7 +505,7 @@ end);
 ##
 #M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . .  via images
 ##
-InstallMethod( PreImagesRepresentativeNC, "method for pcgs hom", 
+InstallMethod( PreImagesRepresentativeNC, "method for pcgs hom",
   FamRangeEqFamElm,
   [ IsToPcGroupHomomorphismByImages,IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )

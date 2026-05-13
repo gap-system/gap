@@ -1195,9 +1195,9 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
       norm:=n);
     for j in [2..Length(i)] do
       c[i[j]]:=rec(orbit:=i,orbitpos:=j,
-	rep:=PreImagesRepresentativeNC(act,
-	  RepresentativeAction(Image(act),i[1],i[j])),
-	component:=d[i[j]],hall:=h, norm:=n);
+      rep:=PreImagesRepresentativeNC(act,
+               RepresentativeAction(Image(act),i[1],i[j])),
+      component:=d[i[j]],hall:=h, norm:=n);
     od;
   od;
 

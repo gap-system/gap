@@ -1120,7 +1120,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
     # if reduction is suppressed
     elif IsBound( arg[3] ) and not arg[3] then
         all := NormedRowVectors( Image(cc.cohom) );
-        all := List( all, x -> ExtensionSQ(cohom.collector, G, M, 
+        all := List( all, x -> ExtensionSQ(cohom.collector, G, M,
                                PreImagesRepresentativeNC(cc.cohom,x )));
         red := false;
 
@@ -1131,7 +1131,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
         and not HasAutomorphismGroup( G )
     then
         all := NormedRowVectors( Image(cc.cohom) );
-        all := List( all, x -> ExtensionSQ(cc.collector, G, M, 
+        all := List( all, x -> ExtensionSQ(cc.collector, G, M,
                                PreImagesRepresentativeNC(cc.cohom, x )));
         red := false;
 
@@ -1150,7 +1150,7 @@ BindGlobal( "NonSplitExtensions", function( arg )
         Info( InfoExtReps, 2, "   Ext: found ",Length(all)," orbits ");
 
         # create extensions and add info
-        all := List( all, x -> ExtensionSQ(cc.collector, G, M, 
+        all := List( all, x -> ExtensionSQ(cc.collector, G, M,
                                PreImagesRepresentativeNC(cc.cohom, x )));
     fi;
 

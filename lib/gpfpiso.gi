@@ -90,10 +90,10 @@ local l,iso,fp,stbc,gens;
       if iso<>fail then
         fp:=IsomorphismFpGroup(l);
         iso:=GroupHomomorphismByImagesNC(G,Range(fp),
-	       List(MappingGeneratorsImages(fp)[1],
-	            i->PreImagesRepresentativeNC(iso,i)),
-	       MappingGeneratorsImages(fp)[2]);
-	SetIsBijective(iso,true);
+           List(MappingGeneratorsImages(fp)[1],
+                i->PreImagesRepresentativeNC(iso,i)),
+           MappingGeneratorsImages(fp)[2]);
+    SetIsBijective(iso,true);
         return iso;
       fi;
     od;
@@ -166,12 +166,12 @@ function( G, str )
         #     gensH := Filtered( gensH, x -> x <> One(H) );
         # fi;
 
-	# compute presentation of H
-	IsNonabelianSimpleGroup(H);
-	IsNaturalAlternatingGroup(H);
-	new:=IsomorphismFpGroup(H,"@");
-	gensH:=List(GeneratorsOfGroup(Image(new)),
-	              i->PreImagesRepresentativeNC(new,i));
+    # compute presentation of H
+    IsNonabelianSimpleGroup(H);
+    IsNaturalAlternatingGroup(H);
+    new:=IsomorphismFpGroup(H,"@");
+    gensH:=List(GeneratorsOfGroup(Image(new)),
+                  i->PreImagesRepresentativeNC(new,i));
         preiH := List( gensH, x -> PreImagesRepresentativeNC( hom, x ) );
 
         c     := Length( gensH );
@@ -396,8 +396,8 @@ function(g,str,N)
       # calculate automorphisms of f induced by G
       fgens:=GeneratorsOfGroup(f);
       auts:=List(GeneratorsOfGroup(g),i->
-	     GroupHomomorphismByImagesNC(f,f,fgens,
-	       List(fgens,j->Image(hom,PreImagesRepresentativeNC(hom,j)^i)):noassert));
+         GroupHomomorphismByImagesNC(f,f,fgens,
+           List(fgens,j->Image(hom,PreImagesRepresentativeNC(hom,j)^i)):noassert));
       for j in auts do
         SetIsBijective(j,true);
       od;
@@ -1320,7 +1320,7 @@ local pcgs,iso,fp,i,j,gens,numi,ord,fm,fam,mword,k,r,addrule,a,e,m;
   pcgs:=Pcgs(G);
   iso:=IsomorphismFpGroup(G);
   fp:=Range(iso);
-  if List(GeneratorsOfGroup(fp),x->PreImagesRepresentativeNC(iso,x))<>pcgs then 
+  if List(GeneratorsOfGroup(fp),x->PreImagesRepresentativeNC(iso,x))<>pcgs then
     Error("pcgs");
   fi;
   gens:=[];

@@ -1418,12 +1418,12 @@ InstallGlobalFunction(AutomorphismGroupSolvableGroup,function( G )
             hom  := ActionHomomorphism( xset, "surjective");
             P    := Image( hom );
             if IsSolvableGroup( P ) then
-                pcsA := List( Pcgs(P), 
+                pcsA := List( Pcgs(P),
                               x -> PreImagesRepresentativeNC( hom, x ));
                 TransferPcgsInfo( A, pcsA, RelativeOrders( Pcgs(P) ) );
             else
                 imgs := SmallGeneratingSet( P );
-                gens := List( imgs, 
+                gens := List( imgs,
                               x -> PreImagesRepresentativeNC( hom, x ) );
                 tmp  := Size( A );
                 A := GroupByGenerators( gens, One( A ) );

@@ -85,8 +85,8 @@ local f;
               Image( epi, ConjugatorOfConjugatorIsomorphism( aut ) ) );
   else
     aut:= GroupHomomorphismByImagesNC(f,f,GeneratorsOfGroup(f),
-				   List(GeneratorsOfGroup(f),
-	       i->Image(epi,Image(aut,PreImagesRepresentativeNC(epi,i)))));
+                                      List(GeneratorsOfGroup(f),
+               i->Image(epi,Image(aut,PreImagesRepresentativeNC(epi,i)))));
     SetIsInjective(aut,true);
     SetIsSurjective(aut,true);
   fi;
@@ -788,7 +788,7 @@ local g,        # group
 
     hom:= GroupHomomorphismByImagesNC(f,fa,GeneratorsOfGroup(f),
            List(GeneratorsOfGroup(f),i->
-	     Image(hom,PreImagesRepresentativeNC(epi,i))));
+             Image(hom,PreImagesRepresentativeNC(epi,i))));
     Assert(2,KernelOfMultiplicativeGeneralMapping(hom)=n);
 
     # lift the known groups
