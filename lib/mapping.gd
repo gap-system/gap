@@ -1042,7 +1042,7 @@ DeclareOperation( "PreImageElm",
 ##
 ##  <Description>
 ##  If <A>elm</A> is an element of the range of the general mapping
-##  <A>map</A> then these operations return either a representative 
+##  <A>map</A> then these operations return either a representative
 ##  of the set of preimages of <A>elm</A> under <A>map</A> or <K>fail</K>,
 ##  the latter if and only if <A>elm</A> has no preimages under <A>map</A>.
 ##  <P/>
@@ -1069,12 +1069,6 @@ DeclareOperation( "PreImageElm",
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-
-## DeclareOperation( "PreImagesRepresentative",
-##     [ IsGeneralMapping, IsObject ] );
-DeclareOperation( "PreImagesRepresentativeNC",
-    [ IsGeneralMapping, IsObject ] );
-DeclareSynonym( "PreImagesRepresentative", PreImagesRepresentativeNC );
 
 ## DeclareOperation( "PreImagesRepresentative",
 ##     [ IsGeneralMapping, IsObject ] );
@@ -1234,7 +1228,7 @@ DeclareGlobalFunction( "PreImage" );
 ##  If the second argument is not an element or a subset of the range of
 ##  the first argument, incorrect results may be returned.
 ##  In order to improve this state of affairs,
-##  <C>PreImages</C> has been renamed <C>PreImagesNC</C> throughout the library, 
+##  <C>PreImages</C> has been renamed <C>PreImagesNC</C> throughout the library,
 ##  and <C>PreImages</C> has been declared a synonym for <C>PreImagesNC</C>.
 ##  <P/>
 ##  In future versions of &GAP; <C>PreImages</C>

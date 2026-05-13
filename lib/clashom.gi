@@ -1298,7 +1298,7 @@ local cs,       # chief series of G
         # we get this by looking at the action of
         #   reps[k] *   j    *   reps[k^img]^-1
         # 1   ->    k  ->  k^img    ->           1
-        # on the first component. 
+        # on the first component.
         act:=reps[k]*j*(reps[k^img]^-1);
         # this must be multiplied *before* permuting
         gimg:=ImageElm(emb[k],ImageElm(Thom,act))*gimg;
