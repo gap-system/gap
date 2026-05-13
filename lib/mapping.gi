@@ -1136,12 +1136,38 @@ InstallMethod( PreImagesSetNC,
     return primgs;
     end );
 
+InstallMethod( PreImagesSet,
+    "for general mapping, and finite collection",
+    CollFamRangeEqFamElms,
+    [ IsGeneralMapping, IsCollection ], 0,
+    function( map, elms )
+    local im, elm;
+    if not IsFinite( elms ) then
+      TryNextMethod();
+    fi;
+    im:= Image( map );
+    for elm in Enumerator( elms ) do
+      if not (elm in im ) then
+        return fail;
+      fi;
+    od;
+    return PreImagesSet( map, elms );
+    end );
+
 InstallMethod( PreImagesSetNC,
     "for general mapping, and empty list",
     true,
     [ IsGeneralMapping, IsList and IsEmpty ], 0,
     function( map, elms )
-    return [];
+      return [];
+    end );
+
+InstallMethod( PreImagesSet,
+    "for general mapping, and empty list",
+    true,
+    [ IsGeneralMapping, IsList and IsEmpty ], 0,
+    function( map, elms )
+      return [];
     end );
 
 

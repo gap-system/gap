@@ -1113,7 +1113,8 @@ DeclareOperation( "PreImagesRepresentative",
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "PreImagesSetNC", [ IsGeneralMapping, IsListOrCollection ] );
-DeclareSynonym( "PreImagesSet", PreImagesSetNC );
+##  DeclareSynonym( "PreImagesSet", PreImagesSetNC );
+DeclareOperation( "PreImagesSet", [ IsGeneralMapping, IsListOrCollection ] );
 
 
 #############################################################################
