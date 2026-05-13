@@ -642,7 +642,7 @@ static Obj SumFFEFFE(Obj opL, Obj opR)
     return NEW_FFE( fX, vX );
 }
 
-static Obj SumFFEInt(Obj opL, Obj opR)
+static inline Obj SumFFEInt(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
@@ -673,31 +673,7 @@ static Obj SumFFEInt(Obj opL, Obj opR)
 
 static Obj SumIntFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     // value of left, right, result
-    FF                  fX;             // field of result
-    Int                 pX;             // char. of result
-    const FFV*          sX;             // successor table of result field
-
-    // get the field for the result
-    fX = FLD_FFE( opR );
-    pX = CHAR_FF( fX );
-    sX = SUCC_FF( fX );
-
-    // get the left operand
-    vX = ((INT_INTOBJ( opL ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vL = 0;
-    }
-    else {
-        vL = 1;
-        for ( ; 1 < vX; vX-- )  vL = sX[vL];
-    }
-
-    // get the right operand
-    vR = VAL_FFE( opR );
-
-    vX = SUM_FFV( vL, vR, sX );
-    return NEW_FFE( fX, vX );
+    return SumFFEInt(opR, opL);
 }
 
 
@@ -916,7 +892,7 @@ static Obj ProdFFEFFE(Obj opL, Obj opR)
     return NEW_FFE( fX, vX );
 }
 
-static Obj ProdFFEInt(Obj opL, Obj opR)
+static inline Obj ProdFFEInt(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
@@ -947,31 +923,7 @@ static Obj ProdFFEInt(Obj opL, Obj opR)
 
 static Obj ProdIntFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     // value of left, right, result
-    FF                  fX;             // field of result
-    Int                 pX;             // char. of result
-    const FFV*          sX;             // successor table of result field
-
-    // get the field for the result
-    fX = FLD_FFE( opR );
-    pX = CHAR_FF( fX );
-    sX = SUCC_FF( fX );
-
-    // get the left operand
-    vX = ((INT_INTOBJ( opL ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vL = 0;
-    }
-    else {
-        vL = 1;
-        for ( ; 1 < vX; vX-- )  vL = sX[vL];
-    }
-
-    // get the right operand
-    vR = VAL_FFE( opR );
-
-    vX = PROD_FFV( vL, vR, sX );
-    return NEW_FFE( fX, vX );
+    return ProdFFEInt(opR, opL);
 }
 
 
