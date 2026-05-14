@@ -642,27 +642,41 @@ static Obj SumFFEFFE(Obj opL, Obj opR)
     return NEW_FFE( fX, vX );
 }
 
+static inline FFV IntToFFE(Obj op, FF fX)
+{
+    FFV        vX;
+    const FFV* sX;
+    Int        pX;
+
+    pX = CHAR_FF( fX );
+    sX = SUCC_FF( fX );
+
+    vX = ((INT_INTOBJ( op ) % pX) + pX) % pX;
+    if ( vX == 0 ) {
+        return 0;
+    }
+
+    {
+        FFV v = 1;
+        for ( ; 1 < vX; vX-- ) {
+            v = sX[v];
+        }
+        return v;
+    }
+}
+
 static inline Obj SumFFEInt(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
-    Int                 pX;             // char. of result
     const FFV*          sX;             // successor table of result field
 
     // get the field for the result
     fX = FLD_FFE( opL );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     // get the right operand
-    vX = ((INT_INTOBJ( opR ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vR = 0;
-    }
-    else {
-        vR = 1;
-        for ( ; 1 < vX; vX-- )  vR = sX[vR];
-    }
+    vR = IntToFFE( opR, fX );
 
     // get the left operand
     vL = VAL_FFE( opL );
@@ -777,23 +791,14 @@ static Obj DiffFFEInt(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
-    Int                 pX;             // char. of result
     const FFV*          sX;             // successor table of result field
 
     // get the field for the result
     fX = FLD_FFE( opL );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     // get the right operand
-    vX = ((INT_INTOBJ( opR ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vR = 0;
-    }
-    else {
-        vR = 1;
-        for ( ; 1 < vX; vX-- )  vR = sX[vR];
-    }
+    vR = IntToFFE( opR, fX );
 
     // get the left operand
     vL = VAL_FFE( opL );
@@ -807,23 +812,14 @@ static Obj DiffIntFFE(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
-    Int                 pX;             // char. of result
     const FFV*          sX;             // successor table of result field
 
     // get the field for the result
     fX = FLD_FFE( opR );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     // get the left operand
-    vX = ((INT_INTOBJ( opL ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vL = 0;
-    }
-    else {
-        vL = 1;
-        for ( ; 1 < vX; vX-- )  vL = sX[vL];
-    }
+    vL = IntToFFE( opL, fX );
 
     // get the right operand
     vR = VAL_FFE( opR );
@@ -896,23 +892,14 @@ static inline Obj ProdFFEInt(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
-    Int                 pX;             // char. of result
     const FFV*          sX;             // successor table of result field
 
     // get the field for the result
     fX = FLD_FFE( opL );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     // get the right operand
-    vX = ((INT_INTOBJ( opR ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vR = 0;
-    }
-    else {
-        vR = 1;
-        for ( ; 1 < vX; vX-- )  vR = sX[vR];
-    }
+    vR = IntToFFE( opR, fX );
 
     // get the left operand
     vL = VAL_FFE( opL );
@@ -1030,23 +1017,14 @@ static Obj QuoFFEInt(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
-    Int                 pX;             // char. of result
     const FFV*          sX;             // successor table of result field
 
     // get the field for the result
     fX = FLD_FFE( opL );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     // get the right operand
-    vX = ((INT_INTOBJ( opR ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vR = 0;
-    }
-    else {
-        vR = 1;
-        for ( ; 1 < vX; vX-- )  vR = sX[vR];
-    }
+    vR = IntToFFE( opR, fX );
 
     // get the left operand
     vL = VAL_FFE( opL );
@@ -1062,23 +1040,14 @@ static Obj QuoIntFFE(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
-    Int                 pX;             // char. of result
     const FFV*          sX;             // successor table of result field
 
     // get the field for the result
     fX = FLD_FFE( opR );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     // get the left operand
-    vX = ((INT_INTOBJ( opL ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vL = 0;
-    }
-    else {
-        vL = 1;
-        for ( ; 1 < vX; vX-- )  vL = sX[vL];
-    }
+    vL = IntToFFE( opL, fX );
 
     // get the right operand
     vR = VAL_FFE( opR );
