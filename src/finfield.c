@@ -644,6 +644,8 @@ static Obj SumFFEFFE(Obj opL, Obj opR)
 
 static inline FFV IntToFFE(Obj op, FF fX)
 {
+    FFV        base;
+    FFV        res;
     FFV        vX;
     const FFV* sX;
     Int        pX;
@@ -656,13 +658,18 @@ static inline FFV IntToFFE(Obj op, FF fX)
         return 0;
     }
 
-    {
-        FFV v = 1;
-        for ( ; 1 < vX; vX-- ) {
-            v = sX[v];
+    base = 1;
+    res = 0;
+    while ( vX != 0 ) {
+        if ( vX & 1 ) {
+            res = SUM_FFV( res, base, sX );
         }
-        return v;
+        vX >>= 1;
+        if ( vX != 0 ) {
+            base = SUM_FFV( base, base, sX );
+        }
     }
+    return res;
 }
 
 static inline Obj SumFFEInt(Obj opL, Obj opR)
