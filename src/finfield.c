@@ -597,7 +597,7 @@ static void PrFFE(Obj ffe)
 **  field before the addition.
 **
 **  'SumFFEFFE' just does the conversions mentioned  above and then calls the
-**  macro 'SUM_FFV' to do the actual addition.
+**  function 'SUM_FFV' to do the actual addition.
 */
 static Obj SUM_FFE_LARGE;
 
@@ -748,7 +748,7 @@ static Obj AInvFFE(Obj op)
 **  field before the subtraction.
 **
 **  'DiffFFEFFE' just does the conversions mentioned above and then calls the
-**  macros 'NEG_FFV' and 'SUM_FFV' to do the actual subtraction.
+**  functions 'NEG_FFV' and 'SUM_FFV' to do the actual subtraction.
 */
 static Obj DIFF_FFE_LARGE;
 
@@ -850,7 +850,7 @@ static Obj DiffIntFFE(Obj opL, Obj opR)
 **  field before the multiplication.
 **
 **  'ProdFFEFFE' just does the conversions mentioned above and then calls the
-**  macro 'PROD_FFV' to do the actual multiplication.
+**  function 'PROD_FFV' to do the actual multiplication.
 */
 static Obj PROD_FFE_LARGE;
 
@@ -972,7 +972,7 @@ static Obj InvFFE(Obj op)
 **  field before the division.
 **
 **  'QuoFFEFFE' just does the conversions mentioned  above and then calls the
-**  macro 'QUO_FFV' to do the actual division.
+**  function 'QUO_FFV' to do the actual division.
 */
 static Obj QUO_FFE_LARGE;
 
@@ -1076,7 +1076,7 @@ static Obj QuoIntFFE(Obj opL, Obj opR)
 **  left operand is represented, even if it lies in a much smaller field.
 **
 **  'PowFFEInt' just does the conversions mentioned  above and then calls the
-**  macro 'POW_FFV' to do the actual exponentiation.
+**  function 'POW_FFV' to do the actual exponentiation.
 */
 static Obj PowFFEInt(Obj opL, Obj opR)
 {
