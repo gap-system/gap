@@ -4797,7 +4797,7 @@ BindGlobal("POW_MAT_INT", function(mat, n)
     b := rec(vectors := [], pivots := [], heads := []);
     t := [];
     # maybe better start with a random vector?
-    for a in id do
+    for a in RowsOfMatrix( id ) do
       r := addb(b,a);
       if r = true then
         repeat
