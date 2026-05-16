@@ -2893,6 +2893,8 @@ static Obj FuncELMS_VEC8BIT_RANGE(Obj self, Obj list, Obj range)
     UInt1         byte;
 
     RequireVec8BitRep(SELF_NAME, list);
+    RequireArgumentCondition(SELF_NAME, range, IS_RANGE(range), "must be a range");
+
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(list));
     elts = ELS_BYTE_FIELDINFO_8BIT(info);
     len = GET_LEN_RANGE(range);
@@ -4551,6 +4553,7 @@ static Obj FuncADD_COEFFS_VEC8BIT_3(Obj self, Obj vec1, Obj vec2, Obj mult)
 {
     RequireVec8BitRep(SELF_NAME, vec1);
     RequireVec8BitRep(SELF_NAME, vec2);
+    RequireFFE(SELF_NAME, mult);
 
     UInt q;
     UInt len;
@@ -4904,6 +4907,12 @@ static Obj FuncPROD_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vr, Obj lr)
     Obj  res;
     UInt lenp;
     UInt last;
+
+    RequireVec8BitRep(SELF_NAME, vl);
+    RequireVec8BitRep(SELF_NAME, vr);
+    RequireNonnegativeSmallInt(SELF_NAME, ll);
+    RequireNonnegativeSmallInt(SELF_NAME, lr);
+
     q = FIELD_VEC8BIT(vl);
     if (q != FIELD_VEC8BIT(vr)) {
         Obj  info1;
@@ -4934,8 +4943,6 @@ static Obj FuncPROD_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vr, Obj lr)
         q = q0;
     }
 
-    RequireNonnegativeSmallInt(SELF_NAME, ll);
-    RequireNonnegativeSmallInt(SELF_NAME, lr);
     ll1 = INT_INTOBJ(ll);
     lr1 = INT_INTOBJ(lr);
     if (0 > ll1 || ll1 > LEN_VEC8BIT(vl))
@@ -4952,7 +4959,8 @@ static Obj FuncPROD_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vr, Obj lr)
     else
         lenp = ll1 + lr1 - 1;
     res = ZeroVec8Bit(q, lenp, 1);
-    ProdCoeffsVec8Bit(res, vl, ll1, vr, lr1);
+    if (lenp > 0)
+        ProdCoeffsVec8Bit(res, vl, ll1, vr, lr1);
     last = RightMostNonZeroVec8Bit(res);
     if (last != lenp)
         ResizeVec8Bit(res, last, 1);
@@ -5157,10 +5165,11 @@ static Obj FuncREDUCE_COEFFS_VEC8BIT(Obj self, Obj vl, Obj ll, Obj vrshifted)
     UInt last;
 
     RequireVec8BitRep(SELF_NAME, vl);
+    RequireNonnegativeSmallInt(SELF_NAME, ll);
+    RequirePlainList(SELF_NAME, vrshifted);
     q = FIELD_VEC8BIT(vl);
     if (q != FIELD_VEC8BIT(ELM_PLIST(vrshifted, 1)))
         return Fail;
-    RequireNonnegativeSmallInt(SELF_NAME, ll);
     if (INT_INTOBJ(ll) > LEN_VEC8BIT(vl)) {
         ErrorQuit("ReduceCoeffs: given length <ll> of left argt (%d) is "
                   "longer than the argt (%d)",
