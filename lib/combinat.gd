@@ -1169,14 +1169,16 @@ DeclareGlobalFunction("NrRestrictedPartitions");
 ##
 DeclareGlobalFunction( "IteratorOfPartitions" );
 
-
 #############################################################################
 ##
-#F  IteratorOfPartitionsSet( <set> [, <k> [ <flag> ] ] )
+#F  IteratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )
+#F  EnumeratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )
 ##
 ##  <#GAPDoc Label="IteratorOfPartitionsSet">
 ##  <ManSection>
-##  <Func Name="IteratorOfPartitionsSet" Arg='set [, k [ flag ] ]'/>
+##  <Heading>Iterator and enumerator of unordered set partitions</Heading>
+##  <Func Name="IteratorOfPartitionsSet" Arg='set [, k [, flag ] ]'/>
+##  <Func Name="EnumeratorOfPartitionsSet" Arg='set [, k [, flag ] ]'/>
 ##
 ##  <Description>
 ##  <Ref Func="IteratorOfPartitionsSet" /> returns an iterator
@@ -1187,12 +1189,33 @@ DeclareGlobalFunction( "IteratorOfPartitions" );
 ##  then only partitions of size <A>k</A> are computed.
 ##  If <A>k</A> is given and <A>flag</A> is equal to <K>true</K>,
 ##  then only partitions of size at most <A>k</A> are computed.
+##  <P/>
+##  <Ref Func="EnumeratorOfPartitionsSet"/> returns an enumerator
+##  (see&nbsp;<Ref Attr="Enumerator" />) for all unordered partitions of the
+##  set <A>set</A>. The arguments <A>k</A> and <A>flag</A> function in the
+##  same manner as for the iterator.
+##  <P/>
+##  The ordering of the partitions from these functions can be different and
+##  also different from the list returned by <Ref Func="PartitionsSet"/>.
+##  <P/>
+##  <Example>
+##  gap> m:=[1..9];;
+##  gap> Bell(9);
+##  21147
+##  gap> Length(PartitionsSet(m));
+##  21147
+##  gap> cm := EnumeratorOfPartitionsSet(m);;
+##  gap> cm[1000];
+##  [ [ 1, 2, 4, 9 ], [ 3, 6, 8 ], [ 5, 7 ] ]
+##  gap> Position(cm, last);
+##  1000
+##  </Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "IteratorOfPartitionsSet" );
-
+DeclareGlobalFunction( "EnumeratorOfPartitionsSet" );
 
 #############################################################################
 ##

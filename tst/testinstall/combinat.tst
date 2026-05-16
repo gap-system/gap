@@ -2,7 +2,7 @@
 ##
 ##  This  file  tests  the functions that  mainly  deal  with  combinatorics.
 ##
-#@local n,mset,comb1,comb2,comb3,it,pn1,pn2,s,k,x
+#@local n,mset,comb1,comb2,comb3,it,pn1,pn2,s,k,x,y
 
 gap> START_TEST("combinat.tst");
 
@@ -548,6 +548,143 @@ gap> for s in [[], [5], [1,2,3,4], [2,5,7], ["a","b","c","d","e"], [3..9]] do
 >        fi;
 >      od;
 >    od;
+
+#F  EnumeratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )
+gap> EnumeratorOfPartitionsSet();
+Error, Function: number of arguments must be at least 1 (not 0)
+gap> EnumeratorOfPartitionsSet(fail);
+Error, EnumeratorOfPartitionsSet: <s> must be a set
+gap> EnumeratorOfPartitionsSet([],fail);
+Error, EnumeratorOfPartitionsSet: <k> must be an integer
+gap> EnumeratorOfPartitionsSet([1],1,fail);
+Error, EnumeratorOfPartitionsSet: <flag> must be true or false
+gap> EnumeratorOfPartitionsSet([1],1,true,"too many");
+Error, usage: EnumeratorOfPartitionsSet( <set> [, <k> [, <flag> ] ] )
+gap> for s in [
+>        [], [5], [1, 2, 3, 4], [2, 5, 7], ["a", "b", "c", "d", "e"], [3 .. 9],
+>        [[1], [1, 2], [2, 3], [4]], ["a", "ab", "c"], "abcd"
+>      ] do
+>      pn1 := PartitionsSet(s);
+>      pn2 := List(EnumeratorOfPartitionsSet(s));
+>      if Length(pn1) <> Length(pn2) then
+>        Error("wrong number of elements for s = ", s);
+>      elif Set(pn1) <> Set(pn2) then
+>        Error("different elements for s = ", s);
+>      fi;
+>      for y in pn1 do
+>        if Position(pn2, y) = fail then
+>          Error("did not find position of element y = ", y, " when s = ", s);
+>        fi;
+>        if pn2[Position(pn2, y)] <> y then
+>          Error("position does not cancel for y = ", y, " when s = ", s);
+>        fi;
+>      od;
+>      for k in [0 .. Size(s) + 1] do
+>        pn1 := PartitionsSet(s, k);
+>        pn2 := List(EnumeratorOfPartitionsSet(s, k));
+>        if Length(pn1) <> Length(pn2) then
+>          Error("wrong number of elements for s = ", s, ", k = ", k);
+>        elif Set(pn1) <> Set(pn2) then
+>          Error("different elements for s = ", s, ", k = ", k);
+>        fi;
+>        for y in pn1 do
+>          if Position(pn2, y) = fail then
+>            Error("did not find position of element y = ", y, " when s = ", s);
+>          fi;
+>          if pn2[Position(pn2, y)] <> y then
+>            Error("position does not cancel for y = ", y, " when s = ", s);
+>          fi;
+>        od;
+>      od; 
+>      for k in [0 .. Size(s) + 1] do
+>        pn1:= [];
+>        for x in [0 .. k] do
+>          Append(pn1, PartitionsSet(s, x));
+>        od;
+>        pn2:= List(IteratorOfPartitionsSet(s, k, true));
+>        if Length(pn1) <> Length(pn2) then
+>          Error("wrong number of elements for s = ", s, ", k <= ", k);
+>        elif Set(pn1) <> Set(pn2) then
+>          Error("different elements for s = ", s, ", k <= ", k);
+>        fi;
+>        for y in pn1 do
+>          if Position(pn2, y) = fail then
+>            Error("did not find position of element y = ", y, " when s = ", s);
+>          fi;
+>          if pn2[Position(pn2, y)] <> y then
+>            Error("position does not cancel for y = ", y, " when s = ", s);
+>          fi;
+>        od;
+>      od;
+>    od;
+gap> pn2 := EnumeratorOfPartitionsSet(["a", "ab", "c", "cd"]);;
+gap> Position(pn2, [["a", "ab", "c"], ["cd"]]);
+2
+gap> Position(pn2, [["a", "ab"], ["c"], ["cd"]]);
+9
+gap> Position(pn2, [["cd"], ["a", "ab", "c"]]);
+fail
+gap> Position(pn2, [["a", "c", "ab"], ["cd"]]);
+fail
+gap> Position(pn2, [["a", "ab", "c"], ["d"]]);
+fail
+gap> Position(pn2, [["a", "ab", "c"], "cd"]);
+fail
+gap> Position(pn2, [1, 2]);
+fail
+gap> Position(pn2, 1);
+fail
+gap> pn2 := EnumeratorOfPartitionsSet(["a", "ab", "c", "cd"], 2);;
+gap> Position(pn2, [["a", "ab", "c"], ["cd"]]);
+1
+gap> Position(pn2, [["a", "ab"], ["c"], ["cd"]]);
+fail
+gap> Position(pn2, [["cd"], ["a", "ab", "c"]]);
+fail
+gap> Position(pn2, [["a", "c", "ab"], ["cd"]]);
+fail
+gap> Position(pn2, [["a", "ab", "c"], ["d"]]);
+fail
+gap> Position(pn2, [["a", "ab", "c"], "cd"]);
+fail
+gap> Position(pn2, [1, 2]);
+fail
+gap> Position(pn2, 1);
+fail
+gap> pn2 := EnumeratorOfPartitionsSet(["a", "ab", "c", "cd"], 2, false);;
+gap> Position(pn2, [["a", "ab", "c"], ["cd"]]);
+1
+gap> Position(pn2, [["a", "ab"], ["c"], ["cd"]]);
+fail
+gap> Position(pn2, [["cd"], ["a", "ab", "c"]]);
+fail
+gap> Position(pn2, [["a", "c", "ab"], ["cd"]]);
+fail
+gap> Position(pn2, [["a", "ab", "c"], ["d"]]);
+fail
+gap> Position(pn2, [["a", "ab", "c"], "cd"]);
+fail
+gap> Position(pn2, [1, 2]);
+fail
+gap> Position(pn2, 1);
+fail
+gap> pn2 := EnumeratorOfPartitionsSet(["a", "ab", "c", "cd"], 2, true);;
+gap> Position(pn2, [["a", "ab", "c"], ["cd"]]);
+2
+gap> Position(pn2, [["a", "ab"], ["c"], ["cd"]]);
+fail
+gap> Position(pn2, [["cd"], ["a", "ab", "c"]]);
+fail
+gap> Position(pn2, [["a", "c", "ab"], ["cd"]]);
+fail
+gap> Position(pn2, [["a", "ab", "c"], ["d"]]);
+fail
+gap> Position(pn2, [["a", "ab", "c"], "cd"]);
+fail
+gap> Position(pn2, [1, 2]);
+fail
+gap> Position(pn2, 1);
+fail
 
 #F  Lucas(<P>,<Q>,<k>)  . . . . . . . . . . . . . . value of a lucas sequence
 gap> Print(List( [0..10], i->Lucas(1,-2,i)[1] ),"\n");
