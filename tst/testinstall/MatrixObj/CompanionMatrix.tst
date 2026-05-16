@@ -68,6 +68,22 @@ gap> TestCompanionMatrix(IsPlistMatrixRep, x^2+x+1, F);
 <2x2-matrix over Rationals>
 
 #
+# IsGenericMatrixRep
+#
+gap> F:= GF(251);;  x:= X(F);;
+gap> TestCompanionMatrix(IsGenericMatrixRep, x+1, F);
+<1x1-matrix over GF(251)>
+gap> TestCompanionMatrix(IsGenericMatrixRep, x^2+x+1, F);
+<2x2-matrix over GF(251)>
+
+#
+gap> F:= Integers;;  x:= X(F);;
+gap> TestCompanionMatrix(IsGenericMatrixRep, x+1, F);
+<1x1-matrix over Integers>
+gap> TestCompanionMatrix(IsGenericMatrixRep, x^2+x+1, F);
+<2x2-matrix over Integers>
+
+#
 # IsPlistRep
 #
 gap> F:= GF(251);;  x:= X(F);;
