@@ -3031,6 +3031,8 @@ static Obj FuncDIST_GF2VEC_GF2VEC(Obj self, Obj vl, Obj vr)
         ErrorMayQuit("DIST_GF2VEC_GF2VEC: vectors must have the same length",
                      0, 0);
     }
+    if (len == 0)
+        return INTOBJ_INT(0);
 
     // calculate the offsets
     ptL = BLOCKS_GF2VEC(vl);
