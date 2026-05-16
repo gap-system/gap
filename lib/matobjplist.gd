@@ -71,6 +71,16 @@ DeclareRepresentation( "IsPlistVectorRep",
 ##  a matrix object (see <Ref Filt="IsMatrixObj"/>) that behaves similar to
 ##  a list of its rows, in the sense of <Ref Filt="IsRowListMatrix"/>.
 ##  <P/>
+##  In particular, the rows can be accessed via <M>M[i]</M>,
+##  and they are vector objects in <Ref Filt="IsPlistVectorRep"/>.
+##  This representation is useful if one wants to work explicitly with
+##  such row objects.
+##  <P/>
+##  For most purposes, <Ref Filt="IsGenericMatrixRep"/> is the better choice.
+##  Unlike <Ref Filt="IsPlistMatrixRep"/>, it does not support direct row
+##  access, but it is intended as the general-purpose representation for
+##  matrix objects.
+##  <P/>
 ##  <Ref Filt="IsPlistMatrixRep"/> implies <Ref Filt="IsCopyable"/>,
 ##  thus matrix objects in this representation can be mutable.
 ##  </Description>
@@ -126,4 +136,3 @@ BindConstant( "ELSPOS", 2 );
 # Two filters to speed up some methods:
 DeclareFilter( "IsIntVector" );
 DeclareFilter( "IsFFEVector" );
-
