@@ -1202,16 +1202,13 @@ DeclareGlobalFunction( "IteratorOfPartitions" );
 ##  gap> m:=[1..9];;
 ##  gap> Bell(9);
 ##  21147
-##  gap> i := 0;; for c in PartitionsSet(m) do i := i+1; od;
-##  gap> i;
+##  gap> Length(PartitionsSet(m));
 ##  21147
 ##  gap> cm := EnumeratorOfPartitionsSet(m);;
 ##  gap> cm[1000];
 ##  [ [ 1, 2, 4, 9 ], [ 3, 6, 8 ], [ 5, 7 ] ]
-##  gap> Position(cm, [[1, 3], [2, 5], [4], [6, 7, 8, 9]]);
-##  11001
-##  gap> cm[11001];
-##  [ [ 1, 3 ], [ 2, 5 ], [ 4 ], [ 6, 7, 8, 9 ] ]
+##  gap> Position(cm, last);
+##  1000
 ##  </Example>
 ##  </Description>
 ##  </ManSection>
