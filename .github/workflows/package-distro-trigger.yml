@@ -1,0 +1,186 @@
+#
+# This workflow lets GAP collaborators request a full PackageDistro test run
+# from a GAP pull request comment.
+#
+# Usage:
+#   1. Open a pull request on gap-system/gap.
+#   2. Comment exactly:
+#        @gap-package-distribution-bot test
+#   3. The workflow checks that the commenter has at least triage permission,
+#      creates or updates a marker comment on the PR, and dispatches the
+#      PackageDistro `test-gap-pr.yml` workflow.
+#   4. PackageDistro tests the current PR head against all packages and updates
+#      the same marker comment with the result.
+#
+name: PackageDistro PR trigger
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  dispatch-package-distro:
+    name: Dispatch PackageDistro test
+    if: ${{ github.event.issue.pull_request != null }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check command
+        id: command
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          expected='@gap-package-distribution-bot test'
+          if [[ "${COMMENT_BODY}" == "${expected}" ]]; then
+            echo "matches=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "matches=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/create-github-app-token@v3
+        id: gap-token
+        if: ${{ steps.command.outputs.matches == 'true' }}
+        with:
+          client-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: gap-system
+          repositories: gap
+
+      - name: Check commenter permission
+        id: permission
+        if: ${{ steps.command.outputs.matches == 'true' }}
+        env:
+          GH_TOKEN: ${{ steps.gap-token.outputs.token }}
+          REPO: ${{ github.repository }}
+          ACTOR: ${{ github.event.comment.user.login }}
+        run: |
+          api_url="https://api.github.com/repos/${REPO}/collaborators/${ACTOR}/permission"
+          http_code=$(
+            curl -sSL \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              -o permission.json \
+              -w '%{http_code}' \
+              "${api_url}"
+          )
+          if [[ "${http_code}" == "200" ]]; then
+            permission=$(jq -r '.permission // "none"' permission.json)
+          else
+            permission="none"
+          fi
+          echo "permission=${permission}" >> "$GITHUB_OUTPUT"
+          case "${permission}" in
+            admin|maintain|write|triage)
+              echo "authorized=true" >> "$GITHUB_OUTPUT"
+            ;;
+            *)
+              echo "authorized=false" >> "$GITHUB_OUTPUT"
+            ;;
+          esac
+
+      - name: Find prior bot comment
+        id: find-comment
+        if: ${{ steps.command.outputs.matches == 'true' }}
+        uses: peter-evans/find-comment@v4
+        with:
+          token: ${{ steps.gap-token.outputs.token }}
+          issue-number: ${{ github.event.issue.number }}
+          body-includes: "<!-- gap-package-distribution-bot:gap-pr-test -->"
+
+      - name: Reply to unauthorized request
+        if: >-
+          ${{
+            steps.command.outputs.matches == 'true' &&
+            steps.permission.outputs.authorized != 'true'
+          }}
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          token: ${{ steps.gap-token.outputs.token }}
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.issue.number }}
+          edit-mode: replace
+          body: |
+            <!-- gap-package-distribution-bot:gap-pr-test -->
+            `@gap-package-distribution-bot test` may only be used by GAP collaborators with at least triage access.
+
+      - uses: actions/create-github-app-token@v3
+        id: pkgdistro-token
+        if: >-
+          ${{
+            steps.command.outputs.matches == 'true' &&
+            steps.permission.outputs.authorized == 'true'
+          }}
+        with:
+          client-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: gap-system
+          repositories: PackageDistro
+
+      - name: Acknowledge accepted request
+        id: acknowledge-request
+        if: >-
+          ${{
+            steps.command.outputs.matches == 'true' &&
+            steps.permission.outputs.authorized == 'true'
+          }}
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          token: ${{ steps.gap-token.outputs.token }}
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.issue.number }}
+          edit-mode: replace
+          body: |
+            <!-- gap-package-distribution-bot:gap-pr-test -->
+            Accepted `@gap-package-distribution-bot test`.
+
+            PackageDistro was asked to run the full package test suite against the current head of this pull request. This comment will be updated with the result.
+
+      - name: Dispatch PackageDistro workflow
+        if: >-
+          ${{
+            steps.command.outputs.matches == 'true' &&
+            steps.permission.outputs.authorized == 'true'
+          }}
+        env:
+          GH_TOKEN: ${{ steps.pkgdistro-token.outputs.token }}
+          PR_URL: ${{ github.event.issue.html_url }}
+          COMMENT_ID: ${{ steps.acknowledge-request.outputs.comment-id }}
+          REQUESTER: ${{ github.event.comment.user.login }}
+          COMMAND: ${{ github.event.comment.body }}
+        run: |
+          comment_id_json=null
+          if [[ -n "${COMMENT_ID}" ]]; then
+            comment_id_json=${COMMENT_ID}
+          fi
+          jq -n \
+            --arg ref main \
+            --arg pr_url "${PR_URL}" \
+            --arg requester "${REQUESTER}" \
+            --arg command "${COMMAND}" \
+            --arg callback_repo "${GITHUB_REPOSITORY}" \
+            --arg callback_pr_number "${{ github.event.issue.number }}" \
+            --argjson callback_comment_id "${comment_id_json}" \
+            '{
+              ref: $ref,
+              inputs: {
+                "gap-pr-url": $pr_url,
+                "callback-repo": $callback_repo,
+                "callback-pr-number": $callback_pr_number,
+                requester: $requester,
+                command: $command
+              } + (if $callback_comment_id == null then {} else {"callback-comment-id": ($callback_comment_id | tostring)} end)
+            }' > payload.json
+          curl -fsSL \
+            -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/gap-system/PackageDistro/actions/workflows/test-gap-pr.yml/dispatches \
+            -d @payload.json
