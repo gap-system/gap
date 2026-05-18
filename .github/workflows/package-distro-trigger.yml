@@ -12,10 +12,11 @@
 #   4. PackageDistro tests the current PR head against all packages and updates
 #      the same marker comment with the result.
 #
-# The same-repository GAP checks and comments use `github.token`. The dispatch
-# to PackageDistro still needs GitHub App credentials: configure
-# `APP_CLIENT_ID` as an organization or repository variable (or secret) and
-# `APP_PRIVATE_KEY` as a secret available to this repository.
+# The GAP comments and the dispatch to PackageDistro use GitHub App tokens:
+# configure `APP_CLIENT_ID` as an organization or repository variable (or
+# secret) and `APP_PRIVATE_KEY` as a secret available to this repository. The
+# app must be installed on both `gap-system/gap` and
+# `gap-system/PackageDistro`.
 #
 name: PackageDistro PR trigger
 
@@ -50,11 +51,20 @@ jobs:
             echo "matches=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - uses: actions/create-github-app-token@v3
+        id: gap-token
+        if: ${{ steps.command.outputs.matches == 'true' }}
+        with:
+          client-id: ${{ vars.APP_CLIENT_ID || secrets.APP_CLIENT_ID || secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: gap-system
+          repositories: gap
+
       - name: Check commenter permission
         id: permission
         if: ${{ steps.command.outputs.matches == 'true' }}
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.gap-token.outputs.token }}
           REPO: ${{ github.repository }}
           ACTOR: ${{ github.event.comment.user.login }}
         run: |
@@ -87,7 +97,7 @@ jobs:
         if: ${{ steps.command.outputs.matches == 'true' }}
         uses: peter-evans/find-comment@v4
         with:
-          token: ${{ github.token }}
+          token: ${{ steps.gap-token.outputs.token }}
           issue-number: ${{ github.event.issue.number }}
           body-includes: "<!-- gap-package-distribution-bot:gap-pr-test -->"
 
@@ -99,7 +109,7 @@ jobs:
           }}
         uses: peter-evans/create-or-update-comment@v5
         with:
-          token: ${{ github.token }}
+          token: ${{ steps.gap-token.outputs.token }}
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
           edit-mode: replace
@@ -129,7 +139,7 @@ jobs:
           }}
         uses: peter-evans/create-or-update-comment@v5
         with:
-          token: ${{ github.token }}
+          token: ${{ steps.gap-token.outputs.token }}
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
           edit-mode: replace
