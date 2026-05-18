@@ -39,15 +39,15 @@ WR_POOL:=[[4,3,2,2],[6,11,2,3],[6,13,3,2],[8,44,2,4],
 [14,57,2,7],[14,61,7,2],[15,93,3,5],[15,102,5,3],
 [ 16, 1948, 2, 8 ], [ 16, 1947, 4, 4 ],
 [ 16, 1952, 8, 2 ], [ 18, 968, 2, 9 ], [ 18, 962, 3, 6 ], [ 18, 977, 6, 3 ],
-[ 18, 981, 9, 2 ], [ 20, 1110, 2, 10 ], [ 20, 1101, 4, 5 ], 
-[ 20, 1111, 5, 4 ], [ 20, 1115, 10, 2 ], [ 21, 152, 3, 7 ], 
-[ 21, 162, 7, 3 ], [ 22, 53, 2, 11 ], [ 22, 57, 11, 2 ], 
-[ 24, 24979, 2, 12 ], [ 24, 24932, 3, 8 ], [ 24, 24944, 4, 6 ], 
-[ 24, 24984, 6, 4 ], [ 24, 24994, 8, 3 ], [ 24, 24998, 12, 2 ], 
+[ 18, 981, 9, 2 ], [ 20, 1110, 2, 10 ], [ 20, 1101, 4, 5 ],
+[ 20, 1111, 5, 4 ], [ 20, 1115, 10, 2 ], [ 21, 152, 3, 7 ],
+[ 21, 162, 7, 3 ], [ 22, 53, 2, 11 ], [ 22, 57, 11, 2 ],
+[ 24, 24979, 2, 12 ], [ 24, 24932, 3, 8 ], [ 24, 24944, 4, 6 ],
+[ 24, 24984, 6, 4 ], [ 24, 24994, 8, 3 ], [ 24, 24998, 12, 2 ],
 [ 25, 209, 5, 5 ], [ 26, 90, 2, 13 ], [ 26, 94, 13, 2 ], [ 27, 2380, 3, 9 ],
-[ 27, 2390, 9, 3 ], [ 28, 1834, 2, 14 ], [ 28, 1798, 4, 7 ], 
-[ 28, 1848, 7, 4 ], [ 28, 1852, 14, 2 ], [ 30, 5696, 2, 15 ], 
-[ 30, 5666, 3, 10 ], [ 30, 5685, 5, 6 ], [ 30, 5695, 6, 5 ], 
+[ 27, 2390, 9, 3 ], [ 28, 1834, 2, 14 ], [ 28, 1798, 4, 7 ],
+[ 28, 1848, 7, 4 ], [ 28, 1852, 14, 2 ], [ 30, 5696, 2, 15 ],
+[ 30, 5666, 3, 10 ], [ 30, 5685, 5, 6 ], [ 30, 5695, 6, 5 ],
 [ 30, 5706, 10, 3 ], [ 30, 5710, 15, 2 ] ];
 
 
@@ -79,7 +79,7 @@ local m,o,i,s,no,te;
     if Number(l{[2..Length(l)]},i->Size(i)=s)>0 then
       no:=Normalizer(G,l[1]);
       if Index(G,no)>500 then
-	o:=GroupOnSubgroupsOrbit(G,l[1]); 
+	o:=GroupOnSubgroupsOrbit(G,l[1]);
       else
         o:=List(RightTransversal(G,no),i->ConjugateGroup(l[1],i));
 	#o:=[];
@@ -165,7 +165,7 @@ local fun;
     if IsInt(gens) then
       return gens;
     fi;
-  
+
     pnt:=[1..Minimum(Length(gens),Length(gl))];
     if gl{pnt}<>gens then
       # then we have a difference
@@ -361,7 +361,7 @@ Signatures:=function(sys,grp)
 local l,m,mm,i;
   m:=ShallowCopy(UnorderedSignatures(sys,grp));
   l:=[1..Length(m)];
-  for i in l do 
+  for i in l do
     mm:=m[i];
     mm:=mm{Difference(l,[i])};
     Sort(mm);
@@ -435,7 +435,7 @@ local mm,sign,z,p,m,l,d,i,s,r,j,k,freedom,f,b,Setze,Close;
 	    f:=Position(p,f[1]);
 	    flag:=false;
 	    # we know how to fill
-	    for j in [1..d] do 
+	    for j in [1..d] do
 	      if m[j][i]=0  then
 		Setze(i,j,f);
 	      fi;
@@ -475,7 +475,7 @@ local mm,sign,z,p,m,l,d,i,s,r,j,k,freedom,f,b,Setze,Close;
   # if we force further entries
   if Length(arg)>2 then
     for i in arg[3] do
-      Setze(i[1],i[2],Position(z,i[3])); 
+      Setze(i[1],i[2],Position(z,i[3]));
     od;
   fi;
 
@@ -488,7 +488,7 @@ local mm,sign,z,p,m,l,d,i,s,r,j,k,freedom,f,b,Setze,Close;
 
   # fix numbers as long as this serves to select the additional rows/columns
   freedom:=l+1;
-  
+
   while freedom<d do #freedom=d case is always a consequence
     repeat
     # search for the column which has the most diversity of entries while
@@ -571,7 +571,7 @@ local m,z,k,i,j,l,s,e,ergs,sys,g,pool,lev,dran;
   if lev<0 and Sum(k)=Length(m) then
     return -Length(m);
   fi;
- 
+
   if 0<lev and lev<=Length(m[1]) then
     Error("no extension needed");
   fi;
@@ -718,7 +718,7 @@ local min,ming,i,lg,comp;
   od;
   return [min,ming];
 end;
-    
+
 Canonize:=function(repres,sys,wrg,lev,sdps,typ)
 local cand,ncand,   # candidates in orbit
       repsz,	    # size of representative
@@ -753,7 +753,7 @@ local cand,ncand,   # candidates in orbit
   # special case: diagonal
   g:=Image(sys.projs[1],repres);
   if IsBound(sys.noouts) and sys.noouts and Size(g)=Size(repres) then
-    g:=DiagonalGroup(sys,g,lev); 
+    g:=DiagonalGroup(sys,g,lev);
     if typ=1 then
       return g=repres;
     else
@@ -808,7 +808,7 @@ local cand,ncand,   # candidates in orbit
     ncand:=[];
 
     for cnd in cand do
-      
+
       if step=1 then
 	prevnor:=TrivialSubgroup(cnd);
       else
@@ -856,7 +856,7 @@ local cand,ncand,   # candidates in orbit
 	  U:=ConjugateGroup(U,conj);
 	  anfst:=ConjugateGroup(anfst,conj);
 	  M:=OnTuples(gim,conj);
-	  
+
 	  # force K1
 	  no:=Normalizer(U,anfst);
 	  conj:=RightTransversalOp(U,no);
@@ -864,7 +864,7 @@ local cand,ncand,   # candidates in orbit
 	  # special treatment for diagonal case
 	  if step>1 and IsBound(sys.noouts) and sys.noouts
 	      and Size(g)=Size(anfst) then
-	    p:=DiagonalGroup(sys,g,step); 
+	    p:=DiagonalGroup(sys,g,step);
 	    min:=First([1..Length(conj)],i->ConjugateGroup(anfst,conj[i])=p);
 	    min:=[min,p];
 	  else
@@ -943,7 +943,7 @@ local cand,ncand,   # candidates in orbit
                   fmin:=ClosureGroup(fmin,ConjugateGroup(Mno,rt));
 
 #Print("|fg|=",Size(fg)," ind:",Index(cno,fmin),"\n");
-	
+
 		  conj:=Concatenation(conj,List(
 		    RightTransversalOp(cno,fmin),i->rt*i));
 
@@ -966,7 +966,7 @@ local cand,ncand,   # candidates in orbit
 
     Info(InfoAli,3,Length(cand),"->",Length(ncand));
 
-    Assert(1,not (typ=1 and not repres in ncand)); 
+    Assert(1,not (typ=1 and not repres in ncand));
 
     cand:=ncand; #"andere auf Set?
     #disabled duplicate removal -- too expensive
@@ -1021,7 +1021,7 @@ local cand,ncand,   # candidates in orbit
   if typ=1 then
     return true;
   else
-    #return MinGrpInd(sys.parent,cand,false)[2][1];   
+    #return MinGrpInd(sys.parent,cand,false)[2][1];
     return Minimum(cand);
   fi;
 end;
@@ -1200,16 +1200,16 @@ local asys,bsys,n,nest,i,l,z,u;
   fi;
 
   if typ=1 and Length(nest[2][1])<bsys.b then
-    # kleinere Verschachtelung 
+    # kleinere Verschachtelung
     return false;
   fi;
-  
+
   # now get the different canonical forms
   l:=[];
   for i in nest[2] do
     if not IsRange(Concatenation(i)) then
       z:=PreCanonizingPerm(ker,List(i,j->Concatenation(asys.blocks{j})),
-			   bsys,asys); 
+			   bsys,asys);
       u:=ker^z;
       u:=Canonize(u,bsys,bsys.wrg,bsys.b,allsdps[nest[1]],2);
       Add(l,u);
@@ -1294,7 +1294,7 @@ local anz,g,d,no,s,o,
       Print("Warning: Bad luck\n");
     fi;
 
-  else 
+  else
     eastep:=false;
     dag:=false;
     isopc:=false;
@@ -1407,12 +1407,12 @@ local anz,g,d,no,s,o,
        # At the moment we just recognize an outer group of size 2 if the
        # whole group is large
 
-       if Size(i)=1 and istrans and Size(fa)>20000 and Size(s)=Size(fa) 
+       if Size(i)=1 and istrans and Size(fa)>20000 and Size(s)=Size(fa)
          and Length(out)=1 and
 	 ForAll(GeneratorsOfGroup(s),
 	   i->RepresentativeAction(fa,GeneratorsOfGroup(fa),
 	     List(GeneratorsOfGroup(fa),j->j^i),OnTuples)<>false) then
-         
+
 	 out:=out[1];
 	 # find the power of out that is inner
 	 aut:=2;
@@ -1642,7 +1642,7 @@ local anz,g,d,no,s,o,
 	  for k in fid do
 	    fhom:=IsomorphismGroups(Image(j),f[k]);
 	    if fhom<>fail then
-	      Add(l,[k,fhom]); 
+	      Add(l,[k,fhom]);
 	    fi;
 	  od;
 	  if Length(l)>0 then
@@ -1662,7 +1662,7 @@ local anz,g,d,no,s,o,
 
 	  # all possible correspondents
 	  for k in faid[j] do
-	    # we will need a further loop for automorphisms 
+	    # we will need a further loop for automorphisms
 	    for l in fsg[k[1]] do
 	      # the glueing homomorphism
 	      hom:=k[2]*l;
@@ -1690,7 +1690,7 @@ fi;
 	      # check, whether necessary properties are fulfilled (if we want
 	      # this)
 	      if transflag=false
-		  or (NewTransKgVLength(sys,gens,ntsiz,anz)<=anz 
+		  or (NewTransKgVLength(sys,gens,ntsiz,anz)<=anz
 		  and (lev<anz or HasConjugateKernels(sys,gens)))
 	       then
 
@@ -1704,7 +1704,7 @@ fi;
 		  conjg:=Image(sys.emb[lev],n[k[1]]!.localnorm);
 		  conjg:=SubgroupNC(sys.parent,Union(GeneratorsOfGroup(conjg),
 				  GeneratorsOfGroup(fa[j]!.kernnormalizer)));
-		  gens:=MinimumGroupOnSubgroupsOrbit(conjg,gens); 
+		  gens:=MinimumGroupOnSubgroupsOrbit(conjg,gens);
 		fi;
 
 		if eastep<>false then
@@ -1736,7 +1736,7 @@ fi;
 		if
 		  lev<anz or transflag=false or (not
 		  HasGrKrnormalizer(gens)) or
-		  (IsTransitive(GrKrnormalizer(gens),sys.opdomain) 
+		  (IsTransitive(GrKrnormalizer(gens),sys.opdomain)
 		   and ( (IsBound(sys.localsys) and
 		   ForAll(AllBlocks(GrKrnormalizer(gens)),
 			  i->Length(i)>=sys.globalsys.a) and
@@ -1763,16 +1763,16 @@ fi;
 		fi;
 
 
-		if 
-		  # we take it if: lower level 
+		if
+		  # we take it if: lower level
 		  lev<anz
 		  or
 		  # we don't care about transitivity
-		  transflag=false 
+		  transflag=false
 		  or
 		  (
 		   # the normalizer acts transitively
-		   IsTransitive(GrKrnormalizer(gens),sys.opdomain) 
+		   IsTransitive(GrKrnormalizer(gens),sys.opdomain)
 		   and (
 		   # if we use block projections
 		   (IsBound(sys.localsys) and
@@ -1782,7 +1782,7 @@ fi;
 		    # It is possibly "nice"
 		    ForAny(List(ValidNestings(sys.globalsys,GrKrnormalizer(gens),gens)[2],
 				Concatenation),IsRange)
-		    ) 
+		    )
 		    or
 		   # we don't use block projections
 		   ((not IsBound(sys.localsys)) and
@@ -1863,7 +1863,7 @@ if gens<>false and Set(MovedPoints(gens))<>[1..sys.a*lev] then
   Error("unmoved3!");
 fi;
 
-	    od;	
+	    od;
 	  od;
 	  Info(InfoAli,2,"|prae|=",Length(prae));
 	od;
@@ -2032,7 +2032,7 @@ local g,b,i,bs,op,s,x,y,sx,sy,p,g2,xt,yt,t,bp,dom,r,u,v,pairs;
   if Length(arg)<3 then
     if x<15 then
       xt:=TransitiveGroup(x,TransitiveIdentification(t));
-    else 
+    else
       xt:=t;
     fi;
     if y<15 then
@@ -2108,7 +2108,7 @@ local b,x,y,sx,sy,w,l,hom1,hom2,p,p1,q,m,r,ce,cx,cy,id,ie,u,v,op,
   l:=Length(GeneratorsOfGroup(sx));
   for i in [1..y] do
     hom2:=GroupHomomorphismByImagesNC(sx,w,GeneratorsOfGroup(sx),
-					GeneratorsOfGroup(w){[l*(i-1)+1..l*i]});   
+					GeneratorsOfGroup(w){[l*(i-1)+1..l*i]});
     Add(hom1,hom2);
   od;
   hom2:=GroupHomomorphismByImagesNC(sy,w,GeneratorsOfGroup(sy),
@@ -2159,7 +2159,7 @@ local b,x,y,sx,sy,w,l,hom1,hom2,p,p1,q,m,r,ce,cx,cy,id,ie,u,v,op,
 
   # now get the classes of subgroups of w
   t:=TransitiveSubgroupsWreathProductSymm(w,x,y);
-  
+
   l:=[];
   for i in t do
 
@@ -2173,7 +2173,7 @@ local b,x,y,sx,sy,w,l,hom1,hom2,p,p1,q,m,r,ce,cx,cy,id,ie,u,v,op,
       pq:=Filtered([1..Length(ie)],x->ie[x]=tx);
       if Length(pq)>0 then
        for p in pp do
-       for q in pq do 
+       for q in pq do
         # it might embed, so take the 'clean' version
 	r:=KuK(i,b,v[q],u[p]);
 	r:=Subgroup(w,List(GeneratorsOfGroup(i),j->j^r));
@@ -2190,7 +2190,7 @@ local b,x,y,sx,sy,w,l,hom1,hom2,p,p1,q,m,r,ce,cx,cy,id,ie,u,v,op,
 	else
 	  ce:=[()];
 	fi;
-	
+
 	if Length(cy[p])>0 then
 	  ce:=List(Cartesian(ce,cy[p]),i->i[1]*Image(hom2,i[2]));
 	fi;
@@ -2205,7 +2205,7 @@ local b,x,y,sx,sy,w,l,hom1,hom2,p,p1,q,m,r,ce,cx,cy,id,ie,u,v,op,
 	    fi;
 	  od;
 	fi;
-	
+
 	m:=List(m,i->ConjugacyClassSubgroups(g,i));
 	r:=[];
 	for j in m do
@@ -2274,7 +2274,7 @@ local pmp,b,s,u,w,n,g,op,oh,hom,omp,k,f,v,co,i,j,jj,new,cl,sug,nsug,fg,pi,
     Info(InfoAli,3,"reducing normalizer generators");
   fi;
   g:=Group(op); #always make a new group to permit throwing away all permrep.
-  # information 
+  # information
 
   oh:=ActionHomomorphism(g,b,OnSets,"surjective");
   op:=Image(oh);
@@ -2327,9 +2327,9 @@ local pmp,b,s,u,w,n,g,op,oh,hom,omp,k,f,v,co,i,j,jj,new,cl,sug,nsug,fg,pi,
     # A_n
     Error("A_n");
   # special case: full wreath products
-  elif ForAny(WR_POOL,i->i[1]=dop and 
+  elif ForAny(WR_POOL,i->i[1]=dop and
 			 i[2]=TransitiveIdentification(op)) then
-    u:=First(WR_POOL,i->i[1]=dop and 
+    u:=First(WR_POOL,i->i[1]=dop and
 			 i[2]=TransitiveIdentification(op));
     Info(InfoAli,2,"transitive subgroups of S(",u[3],") wr S(",u[4],")");
     u:=TransitiveSubgroupsWreathProductSymm(op,u[3],u[4]);
@@ -2351,7 +2351,7 @@ local pmp,b,s,u,w,n,g,op,oh,hom,omp,k,f,v,co,i,j,jj,new,cl,sug,nsug,fg,pi,
     #pi:=AsSubgroup(MySymmetricGroup(dop),op);
     pi:=op;
     v:=Normalizer(MySymmetricGroup(dop),pi);
-    if Index(v,pi)=2 and ForAny(WR_POOL,i->i[1]=dop and 
+    if Index(v,pi)=2 and ForAny(WR_POOL,i->i[1]=dop and
 			 i[2]=TransitiveIdentification(v)) then
       u:=First(WR_POOL,i->i[1]=dop and i[2]=TransitiveIdentification(v));
       Info(InfoAli,2,"transitive subgroups of NT of S(",u[3],") wr S(",
@@ -2420,7 +2420,7 @@ local pmp,b,s,u,w,n,g,op,oh,hom,omp,k,f,v,co,i,j,jj,new,cl,sug,nsug,fg,pi,
 	  ino:=Normalizer(ino,co[j]);
 	  j:=j-1;
 	od;
-	
+
       else
 	ino:=Normalizer(op,i);
       fi;
@@ -2508,14 +2508,14 @@ local pmp,b,s,u,w,n,g,op,oh,hom,omp,k,f,v,co,i,j,jj,new,cl,sug,nsug,fg,pi,
 
 
 #    # fusion only takes place in the normalizer (as k\lhd f)
-# 
+#
 #    if IsPcGroup(ino) then
 #
 #    elif largedeg=true then
 #
 #    else
 
-#        
+#
 #      else
 #	for j in co do
 #	  cl:=ConjugacyClassSubgroups(ino,j);
@@ -2610,7 +2610,7 @@ local el,oldnorm,cen,to,erg,Recurse;
       # now collect fusion classes
       orcl:=[];
       while Length(o)>0 do
-	if true or Size(cen)/Size(o[1][1])<30000 
+	if true or Size(cen)/Size(o[1][1])<30000
 	 or Index(cen,Centralizer(cen,o[1][1]))<30000 then
 	  bahn:=Orbit(cen,o[1][1]);
 	  cen2:=Filtered([2..Length(o)],i->ForAny(o[i],j->j in bahn));
@@ -2714,7 +2714,7 @@ local el,oldnorm,cen,to,erg,Recurse;
 
   Recurse(no,cen,to,el,oldnorm);
 
-  if Length(erg)>1 then 
+  if Length(erg)>1 then
     erg:=[Minimum(erg)];
   fi;
   return erg[1];;
@@ -2769,7 +2769,7 @@ local no,grp,sys,v,nopa;
     # it's cheaper to take the transversal
     return MinimumGroupOnSubgroupsOrbit(grp,v,no);
   else
-    nopa:=SmallSubgroupCanonizer(sys,no,v); 
+    nopa:=SmallSubgroupCanonizer(sys,no,v);
     if nopa=fail then
       if ForAny(AllBlocks(no),i->Length(i)<sys.a) then
 	# we don't need it
@@ -2827,7 +2827,7 @@ local co,no,nco,nno,i,j,a,b,cs,new,hom,ag,nh,gr,orb;
 	  orb:=Orbit(ag,a);
 	  #Print("orbitlen ",Length(orb),"\n");
 	  for j in [1..Length(new)] do
-	    if IsBound(new[j]) and new[j] in orb then 
+	    if IsBound(new[j]) and new[j] in orb then
 	      Unbind(new[j]);
 	    fi;
 	  od;
@@ -2875,7 +2875,7 @@ local b,w,a;
 #Add(COMPL,[w,b]);
   t:=ComplementClassesRepresentatives(w,b);
 
-  # further fusion 
+  # further fusion
   b:=[];
   for a in t do
     if ForAll(b,i->RepresentativeAction(sys.kr,i,a)=fail) then
@@ -3127,7 +3127,7 @@ local d,u,i,ii,homs,v,o,j,sz,a,sym,dd,prms,p,weg,itra,abi,jind,abig,ag;
       fi;
 
     od;
-    
+
 #Exec("cp sdpstmp1 sdpstmp1.bak");
 #PrintTo("sdpstmp1",u,"\n",weg,"\n");
 
@@ -3202,7 +3202,7 @@ local n,o,bl,i,b,flag,nt,op,fil,z,id,bo;
 	    #nt:=Subgroup(sys.parent,List(GeneratorsOfGroup(nt),i->i^z));
 
 	    nt:=ConjugateGroup(nt,z);
-            
+
 	    # and canonize
 	    Info(InfoAli,2,"Block canonizing");
   TIMING.canon:=Runtime()-TIMING.canon;
@@ -3228,7 +3228,7 @@ local n,o,bl,i,b,flag,nt,op,fil,z,id,bo;
 		nt:=Subgroup(sys.parent,List(GeneratorsOfGroup(grp),i->i^z));
 		TIMING.ctest:=Runtime()-TIMING.ctest;
 		Info(InfoAli,2,"Conj. test, ");
-		
+
 		# special case: regular groups (for which the conj. test
 		#  is extremely expensive)
 		if IsRegular(nt,[1..sys.a*sys.b]) then
@@ -3395,7 +3395,7 @@ local i,j,l,p,sup,dom,use,lcl;
   od;
 
   p:=List(p,i->TransitiveIdentification(Representative(lcl[i])));
-  return p; 
+  return p;
 end;
 
 # get the minimal transitive groups whose point stabilizer is divides by siz
@@ -3483,12 +3483,12 @@ local bls, # block size
     for i in p do
       Add(n,TransitiveGroup(bls,TransitiveIdentification(i)));
       if Size(i)<Factorial(bls) # the symmetric group yields nothing new
-	and not IsSimple(i) then 
+	and not IsSimple(i) then
 	nt:=Filtered(NormalSubgroups(i),
 		 j->IsTransitive(j,[1..bls]) and not IsPrimitive(j,[1..bls]));
 	for j in nt do
 	  id:=TransitiveIdentification(j);
-	  if not id in nids and 
+	  if not id in nids and
 	     # index divides one stab size
 	     ForAny(indices,x->x mod Index(i,j)=0) then
 	    Add(nids,id);
@@ -3532,7 +3532,7 @@ local bls, # block size
       Info(InfoAli,1,"not primitive, actions changed from ",MINTRANSIND[bla],
                " to ",minops);
       minops:=List(minops,i->TransitiveGroup(bla,i));
-      
+
     else
       # test, whether it is sufficient to use for invariants:
       minops:=trueminops;
@@ -3596,7 +3596,7 @@ local bls, # block size
 	# get all characteristic subgroups which are transitive and index
 	# coprime to sizes of minimal transitive factor groups
 	nt:=NormalSubgroups(i);
-	nt:=Filtered(nt,j->IsAbelian(j) and Index(i,j)>1 
+	nt:=Filtered(nt,j->IsAbelian(j) and Index(i,j)>1
 	                  and IsTransitive(j,MovedPoints(i))
 			  and ForAll(minops,k->Gcd(Index(i,j),Size(k))=1));
 	nt:=Filtered(nt,j->IsCharacteristicSubgroup(i,j));
@@ -3612,7 +3612,7 @@ local bls, # block size
 	  Info(InfoAli,1,"Get actgroups bottom");
 	  nt:=nt[1]; # will give the smallest number of sdps
 	  # construct the sdp's for nt
-	  actgroups:=TGInvariantSubgroups(sys,GeneratorsOfGroup(nt),trueminops); 
+	  actgroups:=TGInvariantSubgroups(sys,GeneratorsOfGroup(nt),trueminops);
 	  Info(InfoAli,1,"Get actgroups top");
 	  # get the groups which act on them, select those whose block
 	  # action is small
@@ -3694,7 +3694,7 @@ TIMING.sdp:=Runtime()-TIMING.sdp;
 	    #Auskommentiert, da: tests already for no smaller local operation !!!!
 	    #Print("TRANSFLAG!\n");
 	    #gsys.transflag:=true;
-	    neu:=ConstructSubdirectProducts(gsys,lplbs[j]); 
+	    neu:=ConstructSubdirectProducts(gsys,lplbs[j]);
 
 	    Info(InfoAli,3,"supos=",neu);
 	    # remember all for future tests
@@ -3827,7 +3827,7 @@ TIMING.cheat:=Runtime()-TIMING.cheat;
 	  # test, whether we might need automorphism fuse
 	  if ForAny(blopid,i->i=j) then
 	    flag:=1;
-	  fi; 
+	  fi;
 	else
 	  Info(InfoAli,2,"inappropriate operation");
 	fi;
@@ -3853,7 +3853,7 @@ TIMING.cheat:=Runtime()-TIMING.cheat;
       # we have to test g^(an)=u, i.e. a has to be determined only up to
       # right multiplication by the normalizer -- that is left coset
       # representatives of the normalizer
-      l:=RightTransversal(au,l); 
+      l:=RightTransversal(au,l);
       l:=List(l,Inverse);
 
       s:=[];
@@ -3867,7 +3867,7 @@ TIMING.cheat:=Runtime()-TIMING.cheat;
 	  Info(InfoAli,1,"old 'cheating' group");
 	fi;
       od;
-    else 
+    else
       if Length(r)=0 then
 	Info(InfoAli,1,"no blow-ups");
       elif Length(r)=1 then

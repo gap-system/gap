@@ -738,9 +738,9 @@ end);
 
 #############################################################################
 ##
-#F  HELP_SHOW_BOOKS( ignored... ) . . . . . . . . . . .  show available books
+#F  HELP_SHOW_BOOKS() . . . . . . . . . . . . . . . . .  show available books
 ##
-InstallGlobalFunction(HELP_SHOW_BOOKS, function( arg )
+InstallGlobalFunction(HELP_SHOW_BOOKS, function()
   local books;
 
   books := ["             Table of currently available help books",

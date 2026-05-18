@@ -65,13 +65,13 @@
 ##    (:digraph in vi).
 ##
 ##  These are the proposed steps for translating a manual.
-##  
+##
 ##  1. By hand:
 ##     Copy the old style `doc/manual.six' file to `doc/manual.six.old'
 ##     (Note that processing the GAPDoc format manual will create
 ##     `doc/manual.six' but in GAPDoc format, which is not supported by
 ##     the functions for switching to GAPDoc.)
-##  
+##
 ##  2. By hand:
 ##     Create a new main file `main.xml' that will replace
 ##     the old main file `manual.tex'.
@@ -81,16 +81,16 @@
 ##     \FrontMatter -> <Bibliography>
 ##     for chapters: \Input -> <#Include>
 ##     etc.)
-##  
+##
 ##  3. By hand:
 ##     Create `makedocrel.g' that will replace `buildman.config'.
 ##     (Copy it from an existing package that uses GAPDoc;
 ##     the call to `MakeGAPDocDoc' is the main ingredient.)
-##  
+##
 ##  4. Semi-automatically:
 ##     Create `doc/*.xml' files from the corresponding `doc/*.msk' files,
 ##     by calling the function `TranslateMSK2XML' for each `doc/*.msk' file.
-## 
+##
 ##  5. Semi-automatically:
 ##     Create `lib/*.g*.new' files corresponding to `lib/*.g*' files,
 ##     by calling the function `TranslateLib2XML' for each relevant
@@ -99,13 +99,13 @@
 ##     The code in the old and the new file should be unchanged,
 ##     just the documentation is rewritten.
 ##     (Test this!)
-## 
+##
 ##  6. Read the file `makedocrel.g', in order to process the documentation
 ##     with GAPDoc, and correct the errors reported by GAPDoc.
 ##     (Since the main manuals were translated, GAPDoc was improved a lot
 ##     w.r.t. debugging, so this should be much easier than it was at the
 ##     beginning of 2007.)
-## 
+##
 ##  7. By hand:
 ##     Edit the new files, in order to
 ##     - improve formulations around <Ref .../>
@@ -114,7 +114,7 @@
 ##     - reformat the paragraphs,
 ##     - fix places that were not handled optimally.
 ##     Check for `???' in html files, which indicate broken references.
-## 
+##
 ##  8. By hand:
 ##     Start using GAPDoc's facilities:
 ##     - insert "Where" in <Cite ... />,
@@ -123,7 +123,7 @@
 ##     - change the bibliography to the XML based format,
 ##     - introduce subsections (beyond <ManSection>) for structuring purposes,
 ##     - ...
-## 
+##
 ##  9. By hand:
 ##     - Convince yourself that GAP code was not changed by the conversions.
 ##     - Convince yourself that nothing from the old version of the manual
@@ -340,7 +340,7 @@ RewriteText:= function( str )
         [ [ "\\Declaration{", "}" ], [ "<#Include Label=<DQUOTE/>", "<DQUOTE/>>" ] ],
         [ [ "\\Mailto{", "}" ], [ "<Email>", "</Email>" ] ],
         [ [ "\n#T", "\n" ], [ "\n<!--", "-->\n" ] ],
-      ]; 
+      ];
 
     for pair in replacementpairs do
       newstr:= "";
@@ -413,7 +413,7 @@ RewriteText:= function( str )
         [ "<C>for</C>", "<K>for</K>" ],
         [ "<C>while</C>", "<K>while</K>" ],
     #   [ "%\n", "\n" ],
-      ]; 
+      ];
 
     for pair in replacements do
       str:= ReplacedString( str, pair[1], pair[2] );
@@ -531,7 +531,7 @@ SplitLibFile:= function( filename )
         code:= not code;
       else
         Add( partlines, line );
-      fi; 
+      fi;
     od;
     return parts;
 end;
@@ -554,10 +554,10 @@ TranslatedIndentedText:= function( str )
           Append( newstr, pair[2][1] );
           for i in [ 2 .. Length( pair[2] ) ] do
             Append( newstr, cand[3] );
-            Append( newstr, pair[2][i] ); 
+            Append( newstr, pair[2][i] );
           od;
           str:= Concatenation( newstr, cand[4] );
-        fi; 
+        fi;
       until cand = fail;
     od;
 
@@ -565,7 +565,7 @@ TranslatedIndentedText:= function( str )
     str:= ReplacedString( str, "\n##  ", "\n" );
     str:= ReplacedString( str, "\n## \n", "\n\n" );
     str:= ReplacedString( str, "\n##\n", "\n\n" );
-    
+
     # translate
     str:= str{ [ 2 .. Length( str )-1 ] };
     str:= Concatenation( "\n", TranslateText( str ), "\n" );
@@ -638,7 +638,7 @@ RewriteNonCodePart:= function( str, filename )
               "\n##\n",
               "##  <#GAPDoc Label=\"", name, "\">\n",
               "##  <ManSection>\n" );
-          fi;  
+          fi;
           Append( declstr, Concatenation(
               "##  <Var Name=\"", name, "\"/>\n" ) );
           startpos:= pos2-1;
@@ -922,7 +922,7 @@ end;
 
 TranslateLib2XML:= function( filename )
     local str, entry, size, target;
- 
+
     str:= "";
     for entry in SplitLibFile( filename ) do
       if str <> "" then

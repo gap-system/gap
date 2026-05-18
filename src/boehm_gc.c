@@ -544,14 +544,9 @@ UInt ResizeBag(Bag bag, UInt new_size)
 }
 
 
-/*****************************************************************************
-** The following functions are not required respectively supported, so empty
-** implementations are provided
-**
-*/
-
 void InitGlobalBag(Bag * addr, const Char * cookie)
 {
+    // No need to track globals with Boehm GC
 }
 
 void SwapMasterPoint(Bag bag1, Bag bag2)
