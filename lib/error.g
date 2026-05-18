@@ -135,7 +135,8 @@ BIND_GLOBAL("PRETTY_PRINT_VARS", function(context)
 end);
 
 BIND_GLOBAL("WHERE", function(depth, context, activecontext, showlocals)
-    local bottom, lastcontext, f, level, totaldepth, countcontext;
+    local bottom, lastcontext, f, level, totaldepth, countcontext,
+          prefixwidth, location;
     if depth <= 0 then
         return;
     fi;
@@ -151,14 +152,20 @@ BIND_GLOBAL("WHERE", function(depth, context, activecontext, showlocals)
         totaldepth := totaldepth + 1;
         countcontext := ParentLVars(countcontext);
     od;
+    prefixwidth := Length(String(totaldepth));
     level := 1;
     while depth > 0  and context <> bottom do
-        PRINT_CURRENT_STATEMENT(
+        location := PRINT_CURRENT_STATEMENT(
             ERROR_OUTPUT,
             context,
             activecontext,
             level,
-            totaldepth);
+            prefixwidth);
+        if location <> fail then
+            PrintTo(ERROR_OUTPUT, "\n",
+                    ListWithIdenticalEntries(prefixwidth+2, ' '),
+                    "@ ", location[1], ":", location[2]);
+        fi;
         if showlocals then
             PRETTY_PRINT_VARS(context);
         else

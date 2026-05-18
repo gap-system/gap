@@ -184,12 +184,17 @@ static Obj FuncCURRENT_STATEMENT_LOCATION(Obj self, Obj context)
     return retlist;
 }
 
-static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
-                                       Obj activeContext, Obj level,
-                                       Obj totalDepth)
+static Obj FuncPRINT_CURRENT_STATEMENT(Obj self,
+                                       Obj stream,
+                                       Obj context,
+                                       Obj activeContext,
+                                       Obj level,
+                                       Obj prefixWidth)
 {
+    volatile Obj location = Fail;
+
     if (IsBottomLVars(context))
-        return 0;
+        return Fail;
 
     // HACK: we want to redirect output
     // Try to print the output to stream. Use *errout* as a fallback.
@@ -208,35 +213,26 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
     BOOL rethrow = FALSE;
     GAP_TRY
     {
-        UInt levelInt = INT_INTOBJ(level);
-        UInt totalDepthInt = INT_INTOBJ(totalDepth);
-        UInt prefixWidth = 0;
-        UInt levelWidth = 0;
-        UInt i;
-
-        char prefix[32];
         Obj func = FUNC_LVARS(context);
         Obj funcname = NAME_FUNC(func);
         Int line = -1;
-        GAP_ASSERT(func);
+
         Stat call = STAT_LVARS(context);
         Obj  body = BODY_FUNC(func);
         Obj  filename = GET_FILENAME_BODY(body);
 
-        while (totalDepthInt > 0) {
-            prefixWidth++;
-            totalDepthInt /= 10;
-        }
-
         if (activeContext != Fail) {
-            i = levelInt;
+            char prefix[32];
+            UInt levelInt = INT_INTOBJ(level);
+            UInt levelWidth = 0;
+            UInt i = levelInt;
             while (i > 0) {
                 levelWidth++;
                 i /= 10;
             }
             snprintf(prefix, sizeof(prefix), "%c%*s[%lu] ",
                      context == activeContext ? '*' : ' ',
-                     (int)(prefixWidth - levelWidth), "",
+                     (int)(INT_INTOBJ(prefixWidth) - levelWidth), "",
                      (unsigned long)levelInt);
             Pr("%s", (Int)prefix, 0);
         }
@@ -274,11 +270,7 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
             SWITCH_TO_OLD_LVARS(currLVars);
         }
         if (line > 0) {
-            Pr("\n", 0, 0);
-            for (i = 0; i < prefixWidth + 2; i++) {
-                Pr(" ", 0, 0);
-            }
-            Pr("@ %g:%d", (Int)filename, line);
+            location = NewPlistFromArgs(filename, INTOBJ_INT(line));
         }
     }
     GAP_CATCH
@@ -292,7 +284,7 @@ static Obj FuncPRINT_CURRENT_STATEMENT(Obj self, Obj stream, Obj context,
     if (rethrow)
         GAP_THROW();
 
-    return 0;
+    return location;
 }
 
 /****************************************************************************
