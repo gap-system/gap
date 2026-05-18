@@ -460,8 +460,7 @@ BindGlobal( "ShowKernelInformation", function()
   else
     gap := "GAP";
   fi;
-  Print( "\n",  # Could remove first and last newlines for a more compact look
-         "  ",btop,"  ",gap," ", GAPInfo.BuildVersion,
+  Print( "  ",btop,"  ",gap," ", GAPInfo.BuildVersion,
          sysdate, "\n",
          "  ",bmid,"  https://www.gap-system.org\n",
          "  ",bbot,"  Architecture: ", GAPInfo.Architecture, "\n",
