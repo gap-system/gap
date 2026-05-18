@@ -174,15 +174,16 @@ jobs:
             --arg callback_repo "${GITHUB_REPOSITORY}" \
             --arg callback_pr_number "${{ github.event.issue.number }}" \
             --argjson callback_comment_id "${comment_id_json}" \
-            '{
-              ref: $ref,
-              inputs: {
+            '({
                 "gap-pr-url": $pr_url,
                 "callback-repo": $callback_repo,
                 "callback-pr-number": $callback_pr_number,
                 requester: $requester,
                 command: $command
-              } + (if $callback_comment_id == null then {} else {"callback-comment-id": ($callback_comment_id | tostring)} end)
+              } + (if $callback_comment_id == null then {} else {"callback-comment-id": ($callback_comment_id | tostring)} end)) as $inputs
+            | {
+              ref: $ref,
+              inputs: $inputs
             }' > payload.json
           curl -fsSL \
             -X POST \
