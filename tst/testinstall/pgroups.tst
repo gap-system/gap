@@ -203,6 +203,7 @@ gap> IsRegularPGroup(G);
 false
 
 #
+#@if IsPackageMarkedForLoading( "smallgrp", "" )
 gap> G:=SmallGroup(243,11);;
 gap> HasIsPowerfulPGroup(G);
 false
@@ -268,6 +269,7 @@ gap> IsRegularPGroup(DirectProduct(List([[27,3],[243,22],[27,3]],SmallGroup)));
 true
 gap> IsRegularPGroup(DirectProduct(List([[27,3],[243,25]],SmallGroup)));
 false
+#@fi
 
 #
 gap> STOP_TEST("pgroups.tst");
