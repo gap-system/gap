@@ -597,7 +597,7 @@ static void PrFFE(Obj ffe)
 **  field before the addition.
 **
 **  'SumFFEFFE' just does the conversions mentioned  above and then calls the
-**  macro 'SUM_FFV' to do the actual addition.
+**  function 'SUM_FFV' to do the actual addition.
 */
 static Obj SUM_FFE_LARGE;
 
@@ -642,27 +642,48 @@ static Obj SumFFEFFE(Obj opL, Obj opR)
     return NEW_FFE( fX, vX );
 }
 
-static Obj SumFFEInt(Obj opL, Obj opR)
+static inline FFV IntToFFE(Obj op, FF fX)
+{
+    FFV         base;
+    FFV         res;
+    FFV         vX;
+    const FFV * sX;
+    Int         pX;
+
+    pX = CHAR_FF( fX );
+    sX = SUCC_FF( fX );
+
+    vX = ((INT_INTOBJ(op) % pX) + pX) % pX;
+    if ( vX == 0 ) {
+        return 0;
+    }
+
+    base = 1;
+    res = 0;
+    while (vX != 0) {
+        if (vX & 1) {
+            res = SUM_FFV(res, base, sX);
+        }
+        vX >>= 1;
+        if (vX != 0) {
+            base = SUM_FFV(base, base, sX);
+        }
+    }
+    return res;
+}
+
+static inline Obj SumFFEInt(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
-    Int                 pX;             // char. of result
     const FFV*          sX;             // successor table of result field
 
     // get the field for the result
     fX = FLD_FFE( opL );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     // get the right operand
-    vX = ((INT_INTOBJ( opR ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vR = 0;
-    }
-    else {
-        vR = 1;
-        for ( ; 1 < vX; vX-- )  vR = sX[vR];
-    }
+    vR = IntToFFE( opR, fX );
 
     // get the left operand
     vL = VAL_FFE( opL );
@@ -673,31 +694,7 @@ static Obj SumFFEInt(Obj opL, Obj opR)
 
 static Obj SumIntFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     // value of left, right, result
-    FF                  fX;             // field of result
-    Int                 pX;             // char. of result
-    const FFV*          sX;             // successor table of result field
-
-    // get the field for the result
-    fX = FLD_FFE( opR );
-    pX = CHAR_FF( fX );
-    sX = SUCC_FF( fX );
-
-    // get the left operand
-    vX = ((INT_INTOBJ( opL ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vL = 0;
-    }
-    else {
-        vL = 1;
-        for ( ; 1 < vX; vX-- )  vL = sX[vL];
-    }
-
-    // get the right operand
-    vR = VAL_FFE( opR );
-
-    vX = SUM_FFV( vL, vR, sX );
-    return NEW_FFE( fX, vX );
+    return SumFFEInt(opR, opL);
 }
 
 
@@ -751,7 +748,7 @@ static Obj AInvFFE(Obj op)
 **  field before the subtraction.
 **
 **  'DiffFFEFFE' just does the conversions mentioned above and then calls the
-**  macros 'NEG_FFV' and 'SUM_FFV' to do the actual subtraction.
+**  functions 'NEG_FFV' and 'SUM_FFV' to do the actual subtraction.
 */
 static Obj DIFF_FFE_LARGE;
 
@@ -801,23 +798,14 @@ static Obj DiffFFEInt(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
-    Int                 pX;             // char. of result
     const FFV*          sX;             // successor table of result field
 
     // get the field for the result
     fX = FLD_FFE( opL );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     // get the right operand
-    vX = ((INT_INTOBJ( opR ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vR = 0;
-    }
-    else {
-        vR = 1;
-        for ( ; 1 < vX; vX-- )  vR = sX[vR];
-    }
+    vR = IntToFFE( opR, fX );
 
     // get the left operand
     vL = VAL_FFE( opL );
@@ -831,23 +819,14 @@ static Obj DiffIntFFE(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
-    Int                 pX;             // char. of result
     const FFV*          sX;             // successor table of result field
 
     // get the field for the result
     fX = FLD_FFE( opR );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     // get the left operand
-    vX = ((INT_INTOBJ( opL ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vL = 0;
-    }
-    else {
-        vL = 1;
-        for ( ; 1 < vX; vX-- )  vL = sX[vL];
-    }
+    vL = IntToFFE( opL, fX );
 
     // get the right operand
     vR = VAL_FFE( opR );
@@ -871,7 +850,7 @@ static Obj DiffIntFFE(Obj opL, Obj opR)
 **  field before the multiplication.
 **
 **  'ProdFFEFFE' just does the conversions mentioned above and then calls the
-**  macro 'PROD_FFV' to do the actual multiplication.
+**  function 'PROD_FFV' to do the actual multiplication.
 */
 static Obj PROD_FFE_LARGE;
 
@@ -916,27 +895,18 @@ static Obj ProdFFEFFE(Obj opL, Obj opR)
     return NEW_FFE( fX, vX );
 }
 
-static Obj ProdFFEInt(Obj opL, Obj opR)
+static inline Obj ProdFFEInt(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
-    Int                 pX;             // char. of result
     const FFV*          sX;             // successor table of result field
 
     // get the field for the result
     fX = FLD_FFE( opL );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     // get the right operand
-    vX = ((INT_INTOBJ( opR ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vR = 0;
-    }
-    else {
-        vR = 1;
-        for ( ; 1 < vX; vX-- )  vR = sX[vR];
-    }
+    vR = IntToFFE( opR, fX );
 
     // get the left operand
     vL = VAL_FFE( opL );
@@ -947,31 +917,7 @@ static Obj ProdFFEInt(Obj opL, Obj opR)
 
 static Obj ProdIntFFE(Obj opL, Obj opR)
 {
-    FFV                 vL, vR, vX;     // value of left, right, result
-    FF                  fX;             // field of result
-    Int                 pX;             // char. of result
-    const FFV*          sX;             // successor table of result field
-
-    // get the field for the result
-    fX = FLD_FFE( opR );
-    pX = CHAR_FF( fX );
-    sX = SUCC_FF( fX );
-
-    // get the left operand
-    vX = ((INT_INTOBJ( opL ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vL = 0;
-    }
-    else {
-        vL = 1;
-        for ( ; 1 < vX; vX-- )  vL = sX[vL];
-    }
-
-    // get the right operand
-    vR = VAL_FFE( opR );
-
-    vX = PROD_FFV( vL, vR, sX );
-    return NEW_FFE( fX, vX );
+    return ProdFFEInt(opR, opL);
 }
 
 
@@ -1026,7 +972,7 @@ static Obj InvFFE(Obj op)
 **  field before the division.
 **
 **  'QuoFFEFFE' just does the conversions mentioned  above and then calls the
-**  macro 'QUO_FFV' to do the actual division.
+**  function 'QUO_FFV' to do the actual division.
 */
 static Obj QUO_FFE_LARGE;
 
@@ -1078,23 +1024,14 @@ static Obj QuoFFEInt(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
-    Int                 pX;             // char. of result
     const FFV*          sX;             // successor table of result field
 
     // get the field for the result
     fX = FLD_FFE( opL );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     // get the right operand
-    vX = ((INT_INTOBJ( opR ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vR = 0;
-    }
-    else {
-        vR = 1;
-        for ( ; 1 < vX; vX-- )  vR = sX[vR];
-    }
+    vR = IntToFFE( opR, fX );
 
     // get the left operand
     vL = VAL_FFE( opL );
@@ -1110,23 +1047,14 @@ static Obj QuoIntFFE(Obj opL, Obj opR)
 {
     FFV                 vL, vR, vX;     // value of left, right, result
     FF                  fX;             // field of result
-    Int                 pX;             // char. of result
     const FFV*          sX;             // successor table of result field
 
     // get the field for the result
     fX = FLD_FFE( opR );
-    pX = CHAR_FF( fX );
     sX = SUCC_FF( fX );
 
     // get the left operand
-    vX = ((INT_INTOBJ( opL ) % pX) + pX) % pX;
-    if ( vX == 0 ) {
-        vL = 0;
-    }
-    else {
-        vL = 1;
-        for ( ; 1 < vX; vX-- )  vL = sX[vL];
-    }
+    vL = IntToFFE( opL, fX );
 
     // get the right operand
     vR = VAL_FFE( opR );
@@ -1148,7 +1076,7 @@ static Obj QuoIntFFE(Obj opL, Obj opR)
 **  left operand is represented, even if it lies in a much smaller field.
 **
 **  'PowFFEInt' just does the conversions mentioned  above and then calls the
-**  macro 'POW_FFV' to do the actual exponentiation.
+**  function 'POW_FFV' to do the actual exponentiation.
 */
 static Obj PowFFEInt(Obj opL, Obj opR)
 {
