@@ -4807,6 +4807,9 @@ BindGlobal("POW_MAT_INT", function(mat, n)
     t := [];
     # maybe better start with a random vector?
     for a in RowsOfMatrix( id ) do
+#TODO: 'RowsOfMatrix' is not what we want to call here.
+#      In fact, we should better create standard basis vectors
+#      as we need them, instead of creating 'id' .
       r := addb(b,a);
       if r = true then
         repeat
