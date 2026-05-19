@@ -1456,6 +1456,15 @@ InstallMethod( RowsOfMatrix,
     [ IsMatrix and IsPlistRep ],
     Immutable );
 
+# The following should be better than the generic method for
+# matrix objects for 'IsMatrixOrMatrixObj',
+# which first 'Unpack's the matrix and then
+# creates new vector objects from the rows of the result.
+InstallMethod( RowsOfMatrix,
+    "generic method for a matrix that is a list",
+    [ IsMatrix ],
+    PlainListCopy );
+
 InstallMethod( NumberRows,
     "generic method for a (perhaps empty) matrix",
     [ IsMatrix ],
@@ -4797,7 +4806,10 @@ BindGlobal("POW_MAT_INT", function(mat, n)
     b := rec(vectors := [], pivots := [], heads := []);
     t := [];
     # maybe better start with a random vector?
-    for a in id do
+    for a in RowsOfMatrix( id ) do
+#TODO: 'RowsOfMatrix' is not what we want to call here.
+#      In fact, we should better create standard basis vectors
+#      as we need them, instead of creating 'id' .
       r := addb(b,a);
       if r = true then
         repeat
