@@ -450,9 +450,10 @@ new global functions:
 
 new global variables:
   mockpkg_ExtensionData*
+  mockpkg_Vararg( first, rest... )*
 
 new operations:
-  mockpkg_Operation( arg )*
+  mockpkg_Operation( ... )*
 
 new attributes:
   mockpkg_Attribute( ... )*

@@ -3348,12 +3348,13 @@ InstallGlobalFunction( PackageVariablesInfo, function( pkgname, version )
       fi;
       num:= NumberArgumentsFunction( func );
       nam:= NamesLocalVariablesFunction( func );
-      if num = -1 then
-        str:= "arg";
-      elif nam = fail then
+      if nam = fail then
         str:= "...";
       else
-        str:= JoinStringsWithSeparator( nam{ [ 1 .. num ] }, ", " );
+        str:= JoinStringsWithSeparator( nam{ [ 1 .. AbsInt(num) ] }, ", " );
+        if num < 0 then
+          Append( str, "..." );
+        fi;
       fi;
       return Concatenation( "( ", str, " )" );
     end;
