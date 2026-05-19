@@ -1030,7 +1030,7 @@ InstallMethodWithRandomSource( Randomize,
     for i in [1..Length(v)] do v[i] := Random(rs,l); od;
     return v;
   end );
-InstallMethod( MutableCopyMatrix, "for an 8bit matrix",
+InstallOtherMethod( MutableCopyMatrix, "for an 8bit matrix",
   [ Is8BitMatrixRep ],
   function( m )
     local mm;

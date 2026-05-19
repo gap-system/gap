@@ -50,7 +50,7 @@ BIND_GLOBAL( "GF2Zero", 0*Z(2) );
 ##  <Ref Filt="IsDataObjectRep"/>, the entries are packed into bits.
 ##
 DeclareRepresentation( "IsGF2VectorRep",
-        IsDataObjectRep and IsVectorObj
+        IsDataObjectRep and IsVectorObj and IsList
     and IsCopyable
     and IsNoImmediateMethodsObject
     and HasBaseDomain and HasOneOfBaseDomain and HasZeroOfBaseDomain);
@@ -254,7 +254,7 @@ DeclareGlobalFunction( "ConvertToMatrixRep" );
 ##  <M>i+1</M>.
 ##
 DeclareRepresentation( "IsGF2MatrixRep",
-        IsPositionalObjectRep and IsRowListMatrix
+        IsPositionalObjectRep and IsRowListMatrix and IsMatrix
     and IsCopyable
     and IsNoImmediateMethodsObject
     and HasNumberRows and HasNumberColumns
