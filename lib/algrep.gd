@@ -172,7 +172,7 @@ InstallTrueMethod( IsLeftModule, IsLeftAlgebraModule );
 ##  </Description>
 ##  </ManSection>
 ##
-DeclareProperty( "IsRightAlgebraModule", IsLeftModule );
+DeclareProperty( "IsRightAlgebraModule", IsRightModule );
 
 ##############################################################################
 ##
