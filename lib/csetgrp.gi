@@ -199,7 +199,7 @@ local cla,clb,i,j,k,bd,r,rep,b2,dc,
     r:=SmallerDegreePermutationRepresentation(b:cheap);
     k:=Image(r,b);
     gens:=MorFindGeneratingSystem(k,MorMaxFusClasses(MorRatClasses(k)));
-    gens:=List(gens,x->PreImagesRepresentative(r,x));
+    gens:=List(gens,x->PreImagesRepresentativeNC(r,x));
   else
     gens:=MorFindGeneratingSystem(b,MorMaxFusClasses(MorRatClasses(b)));
   fi;
@@ -1064,7 +1064,7 @@ local c, flip, maxidx, cano, tryfct, p, r, t,
     Assert(2,Size(a2)*Size(tra)=Size(b));
     SetKernelOfMultiplicativeGeneralMapping(r,a2);
 
-    dcs:=List(dcs,x->[PreImagesRepresentative(quot,x[1]),Size(a1)*x[2],
+    dcs:=List(dcs,x->[PreImagesRepresentativeNC(quot,x[1]),Size(a1)*x[2],
       PreImage(r,x[3])]);
     r:=List(dcs,x->x[1]);
     stabs:=List(dcs,x->x[3]);

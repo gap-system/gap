@@ -143,9 +143,10 @@ end);
 
 #############################################################################
 ##
-#M  PreImagesRepresentative(<emb>,<g>) . . . . . . . . . . .  of embedding
+#M  PreImagesRepresentativeNC(<emb>,<g>) . . . . . . . . . . .  of embedding
+#M  PreImagesRepresentative(<emb>,<g>) . . . . . . . . . . . .  of embedding
 ##
-InstallMethod(PreImagesRepresentative,"matrix direct product embedding",
+InstallMethod(PreImagesRepresentativeNC,"matrix direct product embedding",
   FamRangeEqFamElm,
         [ IsEmbeddingDirectProductMatrixGroup,
           IsMultiplicativeElementWithInverse ],
@@ -160,6 +161,17 @@ local info,a,b;
   else
     return fail;
   fi;
+end);
+
+InstallMethod(PreImagesRepresentative,"matrix direct product embedding",
+  FamRangeEqFamElm,
+        [ IsEmbeddingDirectProductMatrixGroup,
+          IsMultiplicativeElementWithInverse ],
+function(emb,g)
+  if not (g in Range(emb)) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC(emb,g);
 end);
 
 #############################################################################
@@ -206,9 +218,10 @@ end);
 
 #############################################################################
 ##
-#M  PreImagesRepresentative(<prj>,<g>) . . . . . . . . . . . of projection
+#M  PreImagesRepresentativeNC(<prj>,<g>) . . . . . . . . . . . of projection
+#M  PreImagesRepresentative(<prj>,<g>) . . . . . . . . . . . . of projection
 ##
-InstallMethod(PreImagesRepresentative,"matrix direct product projection",
+InstallMethod(PreImagesRepresentativeNC,"matrix direct product projection",
   FamRangeEqFamElm,
         [ IsProjectionDirectProductMatrixGroup,
           IsMultiplicativeElementWithInverse ],0,
@@ -218,6 +231,17 @@ local info,a;
   a:=IdentityMat(info.dimension,info.field);
   a{prj!.range}{prj!.range}:=m;
   return ImmutableMatrix(info.field,a);
+end);
+
+InstallMethod(PreImagesRepresentative,"matrix direct product projection",
+  FamRangeEqFamElm,
+        [ IsProjectionDirectProductMatrixGroup,
+          IsMultiplicativeElementWithInverse ],0,
+function(prj,m)
+  if not (m in Range(prj)) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC(prj,m);
 end);
 
 #############################################################################
@@ -382,9 +406,10 @@ end);
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <emb>, <g> ) . . . . . . . . . . .  of embedding
+#M  PreImagesRepresentativeNC( <emb>, <g> ) . . . . . . . . . . of embedding
+#M  PreImagesRepresentative( <emb>, <g> ) . . . . . . . . . . . of embedding
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
   "imprim matrix wreath product embedding", FamRangeEqFamElm,
         [ IsEmbeddingImprimitiveWreathProductMatrixGroup,
           IsMultiplicativeElementWithInverse ], 0,
@@ -401,6 +426,16 @@ local info,a,b;
   fi;
 end);
 
+InstallMethod( PreImagesRepresentative,
+  "imprim matrix wreath product embedding", FamRangeEqFamElm,
+        [ IsEmbeddingImprimitiveWreathProductMatrixGroup,
+          IsMultiplicativeElementWithInverse ], 0,
+function( emb, g )
+  if not (g in Range(emb)) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC(emb,g);
+end);
 
 #############################################################################
 ##

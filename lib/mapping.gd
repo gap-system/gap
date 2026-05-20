@@ -968,7 +968,8 @@ DeclareGlobalFunction( "Images" );
 
 #############################################################################
 ##
-#O  PreImagesElm( <map>, <elm> )  . all preimages of elm under a gen. mapping
+#O  PreImagesElm( <map>, <elm> ) . . . . . . . . . . . . all preimages of elm
+#O  PreImagesElmNC( <map>, <elm> ) . . . . . . . . . . . under a gen. mapping
 ##
 ##  <#GAPDoc Label="PreImagesElm">
 ##  <ManSection>
@@ -979,13 +980,20 @@ DeclareGlobalFunction( "Images" );
 ##  <A>map</A> then <Ref Oper="PreImagesElm"/> returns the set of all
 ##  preimages of <A>elm</A> under <A>map</A>.
 ##  <P/>
-##  Anything may happen if <A>elm</A> is not an element of the range of
-##  <A>map</A>.
+##  From &GAP; version 4.16.0
+##  <C>PreImagesElm</C> was renamed <C>PreImagesElmNC</C>
+##  throughout the library, and <C>PreImagesElm</C> now checks that
+##  <A>elm</A> is an element of the range before calling <C>PreImagesElmNC</C>.
+##  <P/>
+##  When using <C>PreImagesElmNC</C> anything may happen if <A>elm</A>
+##  is not an element of the range of <A>map</A>.
+##  <P/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "PreImagesElm", [ IsGeneralMapping, IsObject ] );
+DeclareOperation( "PreImagesElmNC", [ IsGeneralMapping, IsObject ] );
 
 
 #############################################################################
@@ -1015,11 +1023,12 @@ DeclareOperation( "PreImageElm",
 #############################################################################
 ##
 #O  PreImagesRepresentative( <map>, <elm> ) . . .  one preimage of an element
-##                                                       under a gen. mapping
+#O  PreImagesRepresentativeNC( <map>, <elm> ) . . . . under a general mapping
 ##
 ##  <#GAPDoc Label="PreImagesRepresentative">
 ##  <ManSection>
 ##  <Oper Name="PreImagesRepresentative" Arg='map, elm'/>
+##  <Oper Name="PreImagesRepresentativeNC" Arg='map, elm'/>
 ##
 ##  <Description>
 ##  If <A>elm</A> is an element of the range of the general mapping
@@ -1028,36 +1037,51 @@ DeclareOperation( "PreImageElm",
 ##  <K>fail</K>, the latter if and only if <A>elm</A>
 ##  has no preimages under <A>map</A>.
 ##  <P/>
-##  Anything may happen if <A>elm</A> is not an element of the range of
-##  <A>map</A>.
+##  From &GAP; version 4.16.0 <C>PreImagesRepresentative</C>
+##  was renamed <C>PreImagesRepresentativeNC</C> throughout the library,
+##  and <C>PreImagesRepresentative</C> now checks that <A>elm</A> is an
+##  element of the range before calling <C>PreImagesRepresentativeNC</C>.
+##  <P/>
+##  When using <C>PreImagesRepresentativeNC</C> anything may happen if
+##  <A>elm</A> is not an element of the range of <A>map</A>.
+##  <P/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
-DeclareOperation( "PreImagesRepresentative",
-    [ IsGeneralMapping, IsObject ] );
+DeclareOperation( "PreImagesRepresentative", [ IsGeneralMapping, IsObject ] );
+DeclareOperation( "PreImagesRepresentativeNC", [ IsGeneralMapping, IsObject ] );
 
 
 #############################################################################
 ##
 #O  PreImagesSet( <map>, <elms> )
+#O  PreImagesSetNC( <map>, <elms> )
 ##
 ##  <#GAPDoc Label="PreImagesSet">
 ##  <ManSection>
 ##  <Oper Name="PreImagesSet" Arg='map, elms'/>
+##  <Oper Name="PreImagesSetNC" Arg='map, elms'/>
 ##
 ##  <Description>
 ##  If <A>elms</A> is a subset of the range of the general mapping <A>map</A>
 ##  then <Ref Oper="PreImagesSet"/> returns the set of all preimages of
 ##  <A>elms</A> under <A>map</A>.
 ##  <P/>
-##  Anything may happen if <A>elms</A> is not a subset of the range of
-##  <A>map</A>.
+##  From &GAP; version 4.16.0 <C>PreImagesSet</C>
+##  has been renamed <C>PreImagesSetNC</C> throughout the library,
+##  and <C>PreImagesSet</C> now checks that <A>elms</A> is a
+##  subset of the range before calling <C>PreImagesSetNC</C>.
+##  <P/>
+##  When using <C>PreImagesSetNC</C> anything may happen if <A>elms</A>
+##  is not a subset of the range of <A>map</A>.
+##  <P/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareOperation( "PreImagesSet", [ IsGeneralMapping, IsListOrCollection ] );
+DeclareOperation( "PreImagesSetNC", [ IsGeneralMapping, IsListOrCollection ] );
 
 
 #############################################################################
@@ -1119,17 +1143,26 @@ DeclareGlobalFunction( "PreImage" );
 #############################################################################
 ##
 #F  PreImages( <map> )  . . . set of preimages of the range of a gen. mapping
+#F  PreImagesNC( <map> )  . . set of preimages of the range of a gen. mapping
 #F  PreImages(<map>,<elm>)  . set of preimages of an elm under a gen. mapping
-#F  PreImages(<map>,<coll>)  set of preimages of a coll. under a gen. mapping
+#F  PreImagesNC(<map>,<elm>)  set of preimages of an elm under a gen. mapping
+#F  PreImages(<map>,<coll>)   set of preimages of a coll. under a gen. mapping
+#F  PreImagesNC(<map>,<coll>) set of preimages of a coll. under a gen. mapping
 ##
 ##  <#GAPDoc Label="PreImages">
 ##  <ManSection>
 ##  <Heading>PreImages</Heading>
 ##  <Func Name="PreImages" Arg='map'
 ##   Label="set of preimages of the range of a general mapping"/>
+##  <Func Name="PreImagesNC" Arg='map'
+##   Label="set of preimages of the range of a general mapping"/>
 ##  <Func Name="PreImages" Arg='map, elm'
 ##   Label="set of preimages of an elm under a general mapping"/>
+##  <Func Name="PreImagesNC" Arg='map, elm'
+##   Label="set of preimages of an elm under a general mapping"/>
 ##  <Func Name="PreImages" Arg='map, coll'
+##   Label="set of preimages of a collection under a general mapping"/>
+##  <Func Name="PreImagesNC" Arg='map, coll'
 ##   Label="set of preimages of a collection under a general mapping"/>
 ##
 ##  <Description>
@@ -1152,18 +1185,24 @@ DeclareGlobalFunction( "PreImage" );
 ##  entries do in general <E>not</E> correspond.)
 ##  <P/>
 ##  <Ref Func="PreImages" Label="set of preimages of the range of a general mapping"/>
-##  delegates to <Ref Attr="PreImagesRange"/> when
-##  called with one argument,
+##  delegates to <Ref Attr="PreImagesRange"/> when called with one argument,
 ##  and to <Ref Oper="PreImagesElm"/> resp. <Ref Oper="PreImagesSet"/> when
 ##  called with two arguments.
 ##  <P/>
-##  If the second argument is not an element or a subset of the range of
-##  the first argument, an error is signalled.
+##  From &GAP; version 4.16.0 <C>PreImages</C>
+##  has been renamed <C>PreImagesNC</C> throughout the library,
+##  and <C>PreImages</C> now checks that <A>elm</A> or <A>coll</A>
+##  belong to the range before calling <C>PreImagesNC</C>.
+##  <P/>
+##  When using <C>PreImagesNC</C> anything may happen if <A>elm</A>
+##  or <A>coll</A> do not belong to the range of <A>map</A>.
+##  <P/>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
 ##
 DeclareGlobalFunction( "PreImages" );
+DeclareGlobalFunction( "PreImagesNC" );
 
 
 #############################################################################

@@ -1918,9 +1918,10 @@ InstallMethod( PreImageElm,
 
 #############################################################################
 ##
+#M  PreImagesElmNC( <aut>, <cyc> )  . . . . . for autom. of ab. number fields
 #M  PreImagesElm( <aut>, <cyc> )  . . . . . . for autom. of ab. number fields
 ##
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "for ANF automorphism and scalar",
     FamRangeEqFamElm,
     [ IsFieldHomomorphism and IsANFAutomorphismRep, IsScalar ],
@@ -1929,12 +1930,23 @@ InstallMethod( PreImagesElm,
                              mod Conductor( Range( aut ) ) ) ];
     end );
 
+InstallMethod( PreImagesElm,
+    "for ANF automorphism and scalar",
+    FamRangeEqFamElm,
+    [ IsFieldHomomorphism and IsANFAutomorphismRep, IsScalar ],
+    function ( aut, elm )
+    if not ( elm in Range(aut) ) then
+        return [];
+    fi;
+    return PreImagesElmNC( aut, elm );
+    end );
 
 #############################################################################
 ##
-#M  PreImagesSet( <aut>, <field> )  . . . . . for autom. of ab. number fields
+#M  PreImagesSetNC( <aut>, <field> )  . . . . . for autom. of ab. number fields
+#M  PreImagesSet( <aut>, <field> )  . . . . . . for autom. of ab. number fields
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "for ANF automorphism and scalar",
     CollFamRangeEqFamElms,
     [ IsFieldHomomorphism and IsANFAutomorphismRep, IsField ],
@@ -1942,12 +1954,23 @@ InstallMethod( PreImagesSet,
     return F;
     end );
 
+InstallMethod( PreImagesSet,
+    "for ANF automorphism and scalar",
+    CollFamRangeEqFamElms,
+    [ IsFieldHomomorphism and IsANFAutomorphismRep, IsField ],
+    function ( aut, F )
+    if not IsSubset( Range(aut), F ) then
+        return [];
+    fi;
+    return PreImagesSetNC( aut, F );
+    end );
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <aut>, <cyc> ) for autom. of ab. number fields
 #M  PreImagesRepresentative( <aut>, <cyc> ) . for autom. of ab. number fields
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for ANF automorphism and scalar",
     FamRangeEqFamElm,
     [ IsFieldHomomorphism and IsANFAutomorphismRep, IsScalar ],
@@ -1956,6 +1979,16 @@ InstallMethod( PreImagesRepresentative,
                            mod Conductor( Range( aut ) ) );
     end );
 
+InstallMethod( PreImagesRepresentative,
+    "for ANF automorphism and scalar",
+    FamRangeEqFamElm,
+    [ IsFieldHomomorphism and IsANFAutomorphismRep, IsScalar ],
+    function ( aut, elm )
+    if not ( elm in Range( aut ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( aut, elm );
+    end );
 
 #############################################################################
 ##

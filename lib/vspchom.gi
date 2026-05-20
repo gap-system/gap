@@ -486,8 +486,9 @@ InstallMethod( ImagesRepresentative,
 #############################################################################
 ##
 #M  PreImagesRepresentative( <map>, <elm> ) . . . .  for left module g.m.b.i.
+#M  PreImagesRepresentativeNC( <map>, <elm> ) . . .  for left module g.m.b.i.
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for left module g.m.b.i., and element",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep,
@@ -503,6 +504,17 @@ InstallMethod( PreImagesRepresentative,
     return LinearCombination( map!.preimagesbasisimage, elm );
     end );
 
+InstallMethod( PreImagesRepresentative,
+    "for left module g.m.b.i., and element",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep,
+      IsObject ],
+    function( map, elm )
+    if not ( elm in Image( map ) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( map, elm );
+    end );
 
 #############################################################################
 ##
@@ -1221,9 +1233,9 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <map>, <elm> ) . . . . .  for left module m.b.m.
+#M  PreImagesRepresentativeNC( <map>, <elm> ) . . . .  for left module m.b.m.
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for left module m.b.m., and element",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep,
@@ -1237,6 +1249,18 @@ InstallMethod( PreImagesRepresentative,
       return fail;
     fi;
     return LinearCombination( map!.preimagesbasisimage, elm );
+    end );
+
+InstallMethod( PreImagesRepresentative,
+    "for left module m.b.m., and element",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep,
+      IsObject ],
+    function( map, elm )
+    if not ( elm in Image( map ) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( map, elm );
     end );
 
 

@@ -224,7 +224,7 @@ local acts,gps,clusters,conj,ncl,nacts,i,j,new,q,hom,lhom,c,n,r,len,
         Info(InfoLattice,5,"reduced (factor) by ",Size(q)/Size(n));
         Add(nacts,PreImage(lhom,n));
         for k in new.clusters[j] do
-          r:=PreImagesRepresentative(lhom,new.conjugators[k]);
+          r:=PreImagesRepresentativeNC(lhom,new.conjugators[k]);
           conj[c[k]]:=conj[c[k]]*r;
           gps[c[k]]:=gps[c[k]]^r;
         od;

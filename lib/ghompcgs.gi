@@ -503,9 +503,10 @@ end);
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . .  via images
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
 ##
-InstallMethod( PreImagesRepresentative, "method for pcgs hom",
+InstallMethod( PreImagesRepresentativeNC, "method for pcgs hom",
   FamRangeEqFamElm,
   [ IsToPcGroupHomomorphismByImages,IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
@@ -529,6 +530,16 @@ function( hom, elm )
     od;
     return pre;
 end);
+
+InstallMethod( PreImagesRepresentative, "method for pcgs hom",
+  FamRangeEqFamElm,
+  [ IsToPcGroupHomomorphismByImages,IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+    if not ( elm in Range( hom ) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( hom, elm );
+end );
 
 #############################################################################
 ##
@@ -627,9 +638,9 @@ end );
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . via depth map
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . via depth map
 ##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+InstallMethod( PreImagesRepresentativeNC, FamRangeEqFamElm,
   [ IsPcgsToPcgsHomomorphism,IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
 local   exp;

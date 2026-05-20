@@ -253,9 +253,10 @@ end );
 
 #############################################################################
 ##
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . .  via images
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
-##
-InstallMethod( PreImagesRepresentative, "for PBG-Hom", FamRangeEqFamElm,
+
+InstallMethod( PreImagesRepresentativeNC, "for PBG-Hom", FamRangeEqFamElm,
   [ IsPreimagesByAsGroupGeneralMappingByImages,
     IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
@@ -264,8 +265,18 @@ function( hom, elm )
     # group
     return ImagesRepresentative( RestrictedInverseGeneralMapping( hom ), elm );
   else
-    return PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ), elm );
+    return PreImagesRepresentativeNC( AsGroupGeneralMappingByImages( hom ), elm );
   fi;
+end );
+
+InstallMethod( PreImagesRepresentative, "for PBG-Hom", FamRangeEqFamElm,
+  [ IsPreimagesByAsGroupGeneralMappingByImages,
+    IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+  if not ( elm in Range( hom ) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, elm );
 end );
 
 InstallAttributeMethodByGroupGeneralMappingByImages( CoKernelOfMultiplicativeGeneralMapping );
@@ -875,9 +886,9 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . . .  for GHBI
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for GHBI and mult.-elm.-with-inverse",
     FamRangeEqFamElm,
     [ IsGroupGeneralMappingByImages,
@@ -1225,9 +1236,9 @@ InstallMethod( ImagesSet,
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <hom>, <g> ) . . . .  for conjugator isomorphism
+#M  PreImagesRepresentativeNC( <hom>, <g> ) . . . .  for conjugator isomorphism
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for conjugator isomorphism",
     FamRangeEqFamElm,
     [ IsConjugatorIsomorphism, IsMultiplicativeElementWithInverse ], 0,
@@ -1238,9 +1249,9 @@ InstallMethod( PreImagesRepresentative,
 
 #############################################################################
 ##
-#M  PreImagesSet( <hom>, <U> )  . . . . . . . . .  for conjugator isomorphism
+#M  PreImagesSetNC( <hom>, <U> )  . . . . . . . . .  for conjugator isomorphism
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "for conjugator isomorphism, and group",
     CollFamRangeEqFamElms,
     [ IsConjugatorIsomorphism, IsGroup ], 0,
