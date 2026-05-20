@@ -977,7 +977,7 @@ DeclareGlobalFunction( "Images" );
 ##
 ##  <Description>
 ##  If <A>elm</A> is an element of the range of the general mapping
-##  <A>map</A> then <Ref Oper="PreImagesElm"/> returns the set of all
+##  <A>map</A> then <Ref Oper="PreImagesElmNC"/> returns the set of all
 ##  preimages of <A>elm</A> under <A>map</A>.
 ##  <P/>
 ##  From &GAP; version 4.16.1

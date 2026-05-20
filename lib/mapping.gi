@@ -333,8 +333,6 @@ InstallGlobalFunction( PreImagesNC, function ( arg )
 
         # preimage of the empty list
         elif IsList( img ) and IsEmpty( img ) then
-          return [];
-
         fi;
     fi;
     ErrorNoReturn( "usage: PreImagesNC(<map>), PreImagesNC(<map>,<img>), ",
@@ -1202,6 +1200,33 @@ InstallMethod( PreImagesSetNC,
     return primgs;
     end );
 
+
+InstallMethod( PreImagesSet,
+    "for general mapping, and finite collection",
+    CollFamRangeEqFamElms,
+    [ IsGeneralMapping, IsCollection ], 0,
+    function( map, elms )
+    local im, elm;
+    if not IsFinite( elms ) then
+      TryNextMethod();
+    fi;
+    im:= Image( map );
+    for elm in Enumerator( elms ) do
+      if not (elm in im ) then
+        return [];
+      fi;
+    od;
+    return PreImagesSetNC( map, elms );
+    end );
+
+InstallMethod( PreImagesSetNC,
+    "for general mapping, and empty list",
+    true,
+    [ IsGeneralMapping, IsList and IsEmpty ], 0,
+    function( map, elms )
+    return [];
+    end );
+
 InstallMethod( PreImagesSet,
     "for general mapping, and finite collection",
     CollFamRangeEqFamElms,
@@ -1228,7 +1253,7 @@ InstallMethod( PreImagesSet,
     true,
     [ IsGeneralMapping, IsList and IsEmpty ], 0,
     function( map, elms )
-    return [];
+      return [];
     end );
 
 
@@ -1272,6 +1297,14 @@ InstallMethod( PreImagesRepresentative,
     else
       return PreImagesRepresentativeNC( map, elm );
     fi;
+    end );
+
+InstallMethod( PreImagesRepresentativeNC,
+    "for s.p. general mapping, and element",
+    FamRangeEqFamElm,
+    [ IsSPGeneralMapping, IsObject ], 0,
+    function( map, elm )
+    Error( "no default method for s.p. general mapping" );
     end );
 
 InstallMethod( PreImagesRepresentativeNC,
