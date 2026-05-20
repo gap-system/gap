@@ -325,7 +325,7 @@ InstallMethod( PreImagesElm,
     [ IsCompositionMappingRep, IsObject ], 0,
     function( com, elm )
     if not ( elm in Range(com) ) then
-      return [];
+      return fail;
     fi;
     return PreImagesElmNC( com, elm );
     end );
@@ -2022,7 +2022,7 @@ InstallMethod( PreImagesElm,
     [ IsGeneralRestrictedMappingRep, IsObject ], 0,
     function( res, elm )
     if not ( elm in Range(res) ) then
-      return [];
+      return fail;
     fi;
     return PreImagesElmNC( res, elm );
     end );
