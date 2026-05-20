@@ -392,12 +392,10 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
     # allow deducing corresponding module aut.
     t:=ocr.trickrels;
     phom:=IdentityMapping(ocr.moduleauts);
-
-    #s:=List(t.gens,x->PreImagesRepresentative(nat,x));
-    #l:=List(t.gens,x->PreImagesRepresentative(nat,ImagesRepresentative(fhom,x)));
-
+    #s:=List(t.gens,x->PreImagesRepresentativeNC(nat,x));
+    #l:=List(t.gens,x->PreImagesRepresentativeNC(nat,ImagesRepresentative(fhom,x)));
     # word expression for images (to have some "hom-like" property
-    ws:=List(t.gens,x->PreImagesRepresentative(t.epi,ImagesRepresentative(fhom,x)));
+    ws:=List(t.gens,x->PreImagesRepresentativeNC(t.epi,ImagesRepresentative(fhom,x)));
     # evaluated in pregens
     l:=List(ws,x->MappedWord(x,GeneratorsOfGroup(t.free),t.pregens));
 

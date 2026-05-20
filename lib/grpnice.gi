@@ -1007,7 +1007,7 @@ function( hom, elm )
 local p;
   # avoid the double dispatch for `AsGroupGeneralMappingByImages'
   PushOptions( rec( Run_In_GGMBI:= true ) );
-  p:=PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ), elm );
+  p:=PreImagesRepresentativeNC( AsGroupGeneralMappingByImages( hom ), elm );
   PopOptions();
   return p;
 end );

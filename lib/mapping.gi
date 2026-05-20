@@ -1323,6 +1323,14 @@ InstallMethod( PreImagesRepresentativeNC,
     Error( "no default method for s.p. general mapping" );
     end );
 
+InstallMethod( PreImagesRepresentativeNC,
+    "for s.p. general mapping, and element",
+    FamRangeEqFamElm,
+    [ IsSPGeneralMapping, IsObject ], 0,
+    function( map, elm )
+    Error( "no default method for s.p. general mapping" );
+    end );
+
 
 #############################################################################
 ##
