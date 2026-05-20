@@ -348,6 +348,16 @@ and for those methods of
 that do not delegate to <Ref Oper="NewVector"/> and
 <Ref Oper="NewMatrix"/>, respectively.
 
+<P/>
+
+For the implementation of new vector and matrix object types,
+we recommend that the low level function <Ref Func="Objectify"/> gets called
+only by some helper functions that handle the choice of the type of
+the desired object and the consistency checks for the internal data.
+An example can be found in the file <F>lib/matobjplist.gi</F>,
+the helper functions are <C>MakeIsPlistVectorRep</C> and
+<C>MakeIsPlistMatrixRep</C>.
+
 </Section>
 
 <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
