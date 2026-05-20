@@ -4018,6 +4018,7 @@ InstallMethod( ImagesRepresentative,
 ###########################################################################
 ##
 #M   PreImagesRepresentativeNC( f, x )
+#M   PreImagesRepresentative( f, x )
 ##
 InstallMethod( PreImagesRepresentativeNC,
     "for Fp to SCA mapping, and element",
@@ -4094,6 +4095,19 @@ InstallMethod( PreImagesRepresentativeNC,
     return cf*f!.bases[1];
 
 end);
+
+InstallMethod( PreImagesRepresentative,
+    "for Fp to SCA mapping, and element",
+    FamRangeEqFamElm,
+    [ IsFptoSCAMorphism, IsSCAlgebraObj ], 0,
+
+    function( f, x )
+    if not ( x in Range( f ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentative( f, x );
+
+end );
 
 #############################################################################
 ##

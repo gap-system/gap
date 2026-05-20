@@ -254,6 +254,7 @@ end );
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . .  via images
+#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
 
 InstallMethod( PreImagesRepresentativeNC, "for PBG-Hom", FamRangeEqFamElm,
   [ IsPreimagesByAsGroupGeneralMappingByImages,
@@ -266,6 +267,16 @@ function( hom, elm )
   else
     return PreImagesRepresentativeNC( AsGroupGeneralMappingByImages( hom ), elm );
   fi;
+end );
+
+InstallMethod( PreImagesRepresentative, "for PBG-Hom", FamRangeEqFamElm,
+  [ IsPreimagesByAsGroupGeneralMappingByImages,
+    IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+  if not ( elm in Range( hom ) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, elm );
 end );
 
 InstallAttributeMethodByGroupGeneralMappingByImages( CoKernelOfMultiplicativeGeneralMapping );

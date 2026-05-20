@@ -973,6 +973,7 @@ end);
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . .  via images
+#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . .  via images
 ##
 InstallMethod( PreImagesRepresentativeNC, "for PBG-Niceo",
     FamRangeEqFamElm,
@@ -986,6 +987,17 @@ local p, tmp;
   p:=PreImagesRepresentativeNC( AsGroupGeneralMappingByImages( hom ), elm );
   RUN_IN_GGMBI:=tmp;
   return p;
+end );
+
+InstallMethod( PreImagesRepresentative, "for PBG-Niceo",
+    FamRangeEqFamElm,
+    [ IsPreimagesByAsGroupGeneralMappingByImages and IsNiceMonomorphism,
+      IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+  if not ( elm in Range(hom) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, elm );
 end );
 
 #############################################################################

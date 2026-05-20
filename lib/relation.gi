@@ -984,6 +984,7 @@ InstallMethod(ImagesElm,
 #############################################################################
 ##
 #M  PreImagesElmNC( <rel>, <n> )
+#M  PreImagesElm( <rel>, <n> )
 ##
 ##  For binary relations over [1..n] represented as a list of images
 ##
@@ -994,6 +995,16 @@ InstallMethod(PreImagesElmNC,
         return Filtered([1..DegreeOfBinaryRelation(rel)],
             i->n in Successors(rel)[i]);
     end);
+
+InstallMethod(PreImagesElm,
+        "for binary rels over [1..n] with images list",
+        true, [IsBinaryRelation and IsBinaryRelationOnPointsRep, IsPosInt], 0,
+    function( rel, n )
+        if not ( n in Range(rel) ) then
+            return [];
+        fi;
+        return PreImagesElm( rel, n );
+    end );
 
 #############################################################################
 ##
@@ -1782,10 +1793,20 @@ InstallMethod( ImagesRepresentative, "equivalence relations",
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <rel>, <elm> ) . . . for equivalence relations
+#M  PreImagesRepresentative( <rel>, <elm> ) . . . . for equivalence relations
 ##
 InstallMethod( PreImagesRepresentativeNC, "equivalence relations",
         FamRangeEqFamElm, [IsEquivalenceRelation, IsObject], 0,
     function( map, elm )
+        return elm;
+    end);
+
+InstallMethod( PreImagesRepresentative, "equivalence relations",
+        FamRangeEqFamElm, [IsEquivalenceRelation, IsObject], 0,
+    function( map, elm )
+        if not ( elm in Range(map) ) then
+            return fail;
+        fi;
         return elm;
     end);
 
@@ -1814,6 +1835,7 @@ InstallMethod( ImagesElm,
 #############################################################################
 ##
 #M  PreImagesElmNC( <rel>, <elm> ) . for equivalence relations with partition
+#M  PreImagesElm( <rel>, <elm> ) . . for equivalence relations with partition
 ##
 InstallMethod( PreImagesElmNC,
         "equivalence relations with partition and element",
@@ -1824,6 +1846,18 @@ InstallMethod( PreImagesElmNC,
         ## Images and preimages are the same
         ##
         return ImagesElm(rel, elm);
+    end);
+
+InstallMethod( PreImagesElm,
+        "equivalence relations with partition and element",
+        FamRangeEqFamElm,
+        [IsEquivalenceRelation and HasEquivalenceRelationPartition,
+         IsObject],0,
+    function( rel, elm )
+        if not ( elm in Range( rel ) ) then ##?? is there a Range(rel)?
+            return [];
+        fi;
+        return PreImagesElmNC( rel, elm );
     end);
 
 #############################################################################

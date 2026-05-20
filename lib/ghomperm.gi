@@ -1163,12 +1163,23 @@ end);
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . .  for perm group range
+#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . .  for perm group range
 ##
 InstallMethod( PreImagesRepresentativeNC, FamRangeEqFamElm,
         [ IsToPermGroupGeneralMappingByImages,
           IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
     return ImagesRepresentative( RestrictedInverseGeneralMapping( hom ), elm );
+end );
+
+InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+        [ IsToPermGroupGeneralMappingByImages,
+          IsMultiplicativeElementWithInverse ], 0,
+    function( hom, elm )
+    if not ( elm in Range( hom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( hom, elm );
 end );
 
 #############################################################################

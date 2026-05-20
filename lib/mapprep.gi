@@ -303,6 +303,7 @@ InstallMethod( ImagesRepresentative,
 #############################################################################
 ##
 #M  PreImagesElmNC( <map>, <elm> )  . . . . . . . . . for composition mapping
+#M  PreImagesElm( <map>, <elm> )  . . . . . . . . . . for composition mapping
 ##
 InstallMethod( PreImagesElmNC,
     "for a composition mapping, and an element",
@@ -318,10 +319,22 @@ InstallMethod( PreImagesElmNC,
     fi;
     end );
 
+InstallMethod( PreImagesElm,
+    "for a composition mapping, and an element",
+    FamRangeEqFamElm,
+    [ IsCompositionMappingRep, IsObject ], 0,
+    function( com, elm )
+    if not ( elm in Range(com) ) then
+      return [];
+    fi;
+    return PreImagesElmNC( com, elm );
+    end );
+
 
 #############################################################################
 ##
 #M  PreImagesSetNC( <map>, <elm> )  . . . . . . . . . for composition mapping
+#M  PreImagesSet( <map>, <elm> )  . . . . . . . . . . for composition mapping
 ##
 InstallMethod( PreImagesSetNC,
     "for a composition mapping, and a collection",
@@ -337,10 +350,22 @@ InstallMethod( PreImagesSetNC,
     fi;
     end );
 
+InstallMethod( PreImagesSet,
+    "for a composition mapping, and a collection",
+    CollFamRangeEqFamElms,
+    [ IsCompositionMappingRep, IsCollection ], 0,
+    function( com, elms )
+    if not IsSubset( Range(com), elms ) then
+        return [];
+    fi;
+    return PreImagesSetNC( com, elms );
+    end );
+
 
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <map>, <elm> ) . . . . for composition mapping
+#M  PreImagesRepresentative( <map>, <elm> ) . . . . . for composition mapping
 ##
 InstallMethod( PreImagesRepresentativeNC,
     "for a composition mapping, and an element",
@@ -367,6 +392,17 @@ InstallMethod( PreImagesRepresentativeNC,
       od;
       return fail;
     fi;
+    end );
+
+InstallMethod( PreImagesRepresentative,
+    "for a composition mapping, and an element",
+    FamRangeEqFamElm,
+    [ IsCompositionMappingRep, IsObject ], 0,
+    function( com, elm )
+    if not ( elm in Range(com) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( com, elm );
     end );
 
 
@@ -629,7 +665,8 @@ end );
 
 #############################################################################
 ##
-#M  PreImagesRepresentativeNC( <map>, <elm> ) . . . . . for mapping by function
+#M  PreImagesRepresentativeNC( <map>, <elm> ) . . . . for mapping by function
+#M  PreImagesRepresentative( <map>, <elm> ) . . . . . for mapping by function
 ##
 InstallMethod( PreImagesRepresentativeNC,
     "for mapping by function",
@@ -641,6 +678,17 @@ InstallMethod( PreImagesRepresentativeNC,
       TryNextMethod();
     fi;
     return map!.prefun( elm );
+  end );
+
+InstallMethod( PreImagesRepresentative,
+    "for mapping by function",
+    FamRangeEqFamElm,
+    [ IsMappingByFunctionRep, IsObject ], 0,
+  function ( map, elm )
+    if not ( elm in Range(map) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( map, elm );
   end );
 
 
@@ -660,6 +708,7 @@ InstallMethod( PreImageElm,
 #############################################################################
 ##
 #M  PreImagesElmNC( <map>, <elm> )  . . . . . . . . . . for mapping by function
+#M  PreImagesElm( <map>, <elm> )  . . . . . . . . . . . for mapping by function
 ##
 InstallMethod( PreImagesElmNC,
     "for mapping by function",
@@ -669,9 +718,22 @@ InstallMethod( PreImagesElmNC,
     return [ map!.invFun( elm ) ];
     end );
 
+InstallMethod( PreImagesElm,
+    "for mapping by function",
+    FamRangeEqFamElm,
+    [ IsMappingByFunctionWithInverseRep, IsObject ], 0,
+    function ( map, elm )
+    if not ( elm in Range(map) ) then
+        return [];
+    fi;
+    return PreImagesElmNC( map, elm );
+    end );
+
+
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <map>, <elm> ) . . . . for mapping by function
+#M  PreImagesRepresentative( <map>, <elm> ) . . . . . for mapping by function
 ##
 InstallMethod( PreImagesRepresentativeNC,
     "for mapping by function with inverse",
@@ -681,6 +743,16 @@ InstallMethod( PreImagesRepresentativeNC,
     return map!.invFun( elm );
     end );
 
+InstallMethod( PreImagesRepresentative,
+    "for mapping by function with inverse",
+    FamRangeEqFamElm,
+    [ IsMappingByFunctionWithInverseRep, IsObject ], 0,
+    function ( map, elm )
+    if not ( elm in Range(map) ) then
+        return fail;
+    fi;
+      return PreImagesRepresentativeNC( map, elm );
+    end );
 
 
 #############################################################################
@@ -1055,6 +1127,7 @@ InstallMethod( PreImageElm,
 #############################################################################
 ##
 #M  PreImagesElmNC( <invmap>, <elm> ) . . . . for inverse mapping and element
+#M  PreImagesElm( <invmap>, <elm> ) . . . . . for inverse mapping and element
 ##
 InstallMethod( PreImagesElmNC,
     "for an inverse mapping and an element",
@@ -1064,10 +1137,22 @@ InstallMethod( PreImagesElmNC,
     return ImagesElm( InverseGeneralMapping( inv ), elm );
     end );
 
+InstallMethod( PreImagesElm,
+    "for an inverse mapping and an element",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep, IsObject ], 0,
+    function ( inv, elm )
+    if not ( elm in Range(inv) ) then
+        return [];
+    fi;
+    return PreImagesElmNC( inv, elm );
+    end );
+
 
 #############################################################################
 ##
 #M  PreImagesSetNC( <invmap>, <coll> ) . . for inverse mapping and collection
+#M  PreImagesSet( <invmap>, <coll> ) . . . for inverse mapping and collection
 ##
 InstallMethod( PreImagesSetNC,
     "for an inverse mapping and a collection",
@@ -1077,10 +1162,22 @@ InstallMethod( PreImagesSetNC,
     return ImagesSet( InverseGeneralMapping( inv ), elms );
     end );
 
+InstallMethod( PreImagesSet,
+    "for an inverse mapping and a collection",
+    CollFamRangeEqFamElms,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep, IsCollection ], 0,
+    function ( inv, elms )
+    if not IsSubset( Range(inv), elms ) then
+        return [];
+    fi;
+    return PreImagesSetNC( inv, elms );
+    end );
+
 
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <invmap>, <elm> ) . . for inv. mapping and elm.
+#M  PreImagesRepresentative( <invmap>, <elm> ) . . . for inv. mapping and elm.
 ##
 InstallMethod( PreImagesRepresentativeNC,
     "for an inverse mapping and an element",
@@ -1088,6 +1185,17 @@ InstallMethod( PreImagesRepresentativeNC,
     [ IsInverseGeneralMappingRep, IsObject ], 0,
     function ( inv, elm )
     return ImagesRepresentative( InverseGeneralMapping( inv ), elm );
+    end );
+
+InstallMethod( PreImagesRepresentative,
+    "for an inverse mapping and an element",
+    FamRangeEqFamElm,
+    [ IsInverseGeneralMappingRep, IsObject ], 0,
+    function ( inv, elm )
+    if not ( elm in Range(inv) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( inv, elm );
     end );
 
 
@@ -1294,6 +1402,7 @@ InstallMethod( PreImageElm,
 #############################################################################
 ##
 #M  PreImagesElmMC( <idmap>, <elm> )  . . .  for identity mapping and element
+#M  PreImagesElm( <idmap>, <elm> )  . . . .  for identity mapping and element
 ##
 InstallMethod( PreImagesElmNC,
     "for identity mapping and object",
@@ -1304,10 +1413,23 @@ InstallMethod( PreImagesElmNC,
     return [ elm ];
   end );
 
+InstallMethod( PreImagesElm,
+    "for identity mapping and object",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsOne, IsObject ],
+    SUM_FLAGS, # can't do better
+  function ( id, elm )
+    if not ( elm in Range(id) ) then
+        return [];
+    fi;
+    return PreImagesElmNC( id, elm );
+  end );
+
 
 #############################################################################
 ##
 #M  PreImagesSetNC( <idmap>, <coll> ) . . for identity mapping and collection
+#M  PreImagesSet( <idmap>, <coll> ) . . . for identity mapping and collection
 ##
 InstallMethod( PreImagesSetNC,
     "for identity mapping and collection",
@@ -1318,10 +1440,23 @@ InstallMethod( PreImagesSetNC,
     return elms;
   end );
 
+InstallMethod( PreImagesSet,
+    "for identity mapping and collection",
+    CollFamRangeEqFamElms,
+    [ IsGeneralMapping and IsOne, IsCollection ],
+    SUM_FLAGS, # can't do better
+  function ( id, elms )
+    if not IsSubset( Range(id), elms ) then
+      return [];
+    fi;
+    return PreImagesSetNC( id, elms );
+  end );
+
 
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <idmap>, <elm> )
+#M  PreImagesRepresentative( <idmap>, <elm> )
 ##
 InstallMethod( PreImagesRepresentativeNC,
     "for identity mapping and object",
@@ -1332,6 +1467,17 @@ InstallMethod( PreImagesRepresentativeNC,
     return elm;
   end );
 
+InstallMethod( PreImagesRepresentative,
+    "for identity mapping and object",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsOne, IsObject ],
+    SUM_FLAGS, # can't do better
+  function ( id, elm )
+    if not ( elm in Range(id) ) then
+      return fail;
+    fi;
+    return elm;
+  end );
 
 #############################################################################
 ##
@@ -1582,6 +1728,7 @@ InstallMethod( ImagesRepresentative,
 #############################################################################
 ##
 #M  PreImagesElmNC( <zeromap>, <elm> )  . . . .  for zero mapping and element
+#M  PreImagesElm( <zeromap>, <elm> )  . . . . .  for zero mapping and element
 ##
 InstallMethod( PreImagesElmNC,
     "for zero mapping and object",
@@ -1595,10 +1742,22 @@ InstallMethod( PreImagesElmNC,
     fi;
     end );
 
+InstallMethod( PreImagesElm,
+    "for zero mapping and object",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsZero, IsObject ], SUM_FLAGS,
+    function( zero, elm )
+    if not ( elm in Range(zero) ) then
+      return [];
+    fi;
+    return PreImagesElmNC( zero, elm );
+    end );
+
 
 #############################################################################
 ##
 #M  PreImagesSetNC( <zeromap>, <elms> ) . . . for zero mapping and collection
+#M  PreImagesSet( <zeromap>, <elms> ) . . . . for zero mapping and collection
 ##
 InstallMethod( PreImagesSetNC,
     "for zero mapping and collection",
@@ -1612,10 +1771,22 @@ InstallMethod( PreImagesSetNC,
     fi;
     end );
 
+InstallMethod( PreImagesSet,
+    "for zero mapping and collection",
+    CollFamRangeEqFamElms,
+    [ IsGeneralMapping and IsZero, IsCollection ], SUM_FLAGS,
+    function( zero, elms )
+    if not IsSubset( Range(zero), elms ) then
+      return [];
+    fi;
+    return PreImagesSetNC( zero, elms );
+    end );
+
 
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <zeromap>, <elm> )
+#M  PreImagesRepresentative( <zeromap>, <elm> )
 ##
 InstallMethod( PreImagesRepresentativeNC,
     "for zero mapping and object",
@@ -1627,6 +1798,17 @@ InstallMethod( PreImagesRepresentativeNC,
     else
       return fail;
     fi;
+    end );
+
+InstallMethod( PreImagesRepresentative,
+    "for zero mapping and object",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsZero, IsObject ], SUM_FLAGS,
+    function( zero, elm )
+    if not ( elm in Range(zero) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( zero, elm );
     end );
 
 
@@ -1818,6 +2000,7 @@ end );
 #############################################################################
 ##
 #M  PreImagesElmNC( <map>, <elm> )  . . . . . . . . . for restricted mapping
+#M  PreImagesElm( <map>, <elm> )  . . . . . . . . . . for restricted mapping
 ##
 InstallMethod( PreImagesElmNC,
     "for a restricted mapping, and an element",
@@ -1831,12 +2014,24 @@ InstallMethod( PreImagesElmNC,
       preim:=Intersection(Source(res),preim);
     fi;
     return preim;
-end );
+    end );
+
+InstallMethod( PreImagesElm,
+    "for a restricted mapping, and an element",
+    FamRangeEqFamElm,
+    [ IsGeneralRestrictedMappingRep, IsObject ], 0,
+    function( res, elm )
+    if not ( elm in Range(res) ) then
+      return [];
+    fi;
+    return PreImagesElmNC( res, elm );
+    end );
 
 
 #############################################################################
 ##
 #M  PreImagesSetNC( <map>, <elm> )  . . . . . . . . . for restricted mapping
+#M  PreImagesSet( <map>, <elm> )  . . . . . . . . . . for restricted mapping
 ##
 InstallMethod( PreImagesSetNC,
     "for a restricted mapping, and a collection",
@@ -1852,10 +2047,22 @@ InstallMethod( PreImagesSetNC,
     return preim;
     end );
 
+InstallMethod( PreImagesSet,
+    "for a restricted mapping, and a collection",
+    CollFamRangeEqFamElms,
+    [ IsGeneralRestrictedMappingRep, IsCollection ], 0,
+    function( res, elms )
+    if not IsSubset( Range(res), elms ) then
+      return [];
+    fi;
+    return PreImagesSetNC( res, elms );
+    end );
+
 
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <map>, <elm> ) . . . . for restricted mapping
+#M  PreImagesRepresentative( <map>, <elm> ) . . . . . for restricted mapping
 ##
 InstallMethod( PreImagesRepresentativeNC,
     "for a restricted mapping, and an element",
@@ -1875,6 +2082,17 @@ InstallMethod( PreImagesRepresentativeNC,
       preim:= PreImagesNC( res!.map, elm );
       return First(preim,x->x in Source(res));
     fi;
+    end );
+
+InstallMethod( PreImagesRepresentative,
+    "for a restricted mapping, and an element",
+    FamRangeEqFamElm,
+    [ IsGeneralRestrictedMappingRep, IsObject ], 0,
+    function( res, elm )
+    if not ( elm in Range(res) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( res, elm );
     end );
 
 

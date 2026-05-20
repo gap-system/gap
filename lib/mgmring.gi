@@ -1236,6 +1236,17 @@ InstallMethod( PreImagesElmNC,
     fi;
     end );
 
+InstallMethod( PreImagesElm,
+    "for embedding of ring into magma ring, and free magma ring element",
+    FamRangeEqFamElm,
+    [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
+    function ( emb, elm )
+    if not ( elm in Range( emb ) ) then
+      return fail;
+    fi;
+    return PreImagesElm( emb, elm );
+    end );
+
 InstallMethod( PreImagesRepresentativeNC,
     "for embedding of ring into magma ring, and free magma ring element",
     FamRangeEqFamElm,
@@ -1250,6 +1261,17 @@ InstallMethod( PreImagesRepresentativeNC,
     else
       return fail;
     fi;
+    end );
+
+InstallMethod( PreImagesRepresentative,
+    "for embedding of ring into magma ring, and free magma ring element",
+    FamRangeEqFamElm,
+    [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
+    function ( emb, elm )
+    if not ( elm in Range( emb ) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( emb, elm );
     end );
 
 
@@ -1340,6 +1362,17 @@ InstallMethod( PreImagesElmNC,
     fi;
     end );
 
+InstallMethod( PreImagesElm,
+    "for embedding of magma into magma ring, and free magma ring element",
+    FamRangeEqFamElm,
+    [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
+    function ( emb, elm )
+    if not ( elm in Range( emb ) ) then
+      return fail;
+    fi;
+    return PreImagesElmNC( emb, elm );
+    end );
+
 InstallMethod( PreImagesRepresentativeNC,
     "for embedding of magma into magma ring, and free magma ring element",
     FamRangeEqFamElm,
@@ -1356,6 +1389,16 @@ InstallMethod( PreImagesRepresentativeNC,
     fi;
     end );
 
+InstallMethod( PreImagesRepresentative,
+    "for embedding of magma into magma ring, and free magma ring element",
+    FamRangeEqFamElm,
+    [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
+    function ( emb, elm )
+    if not ( elm in Range( emb ) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( emb, elm );
+    end );
 
 #############################################################################
 ##

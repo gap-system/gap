@@ -528,6 +528,7 @@ end);
 #############################################################################
 ##
 #M  PreImagesSetNC( <hom>, <u> )
+#M  PreImagesSet( <hom>, <u> )
 ##
 InstallMethod( PreImagesSetNC, "map from (sub)group of fp group",
   CollFamRangeEqFamElms,
@@ -622,6 +623,16 @@ local s,gens,t,p,w,c,q,chom,tg,thom,hi,i,lp,max;
   fi;
 
   return SubgroupOfWholeGroupByQuotientSubgroup(FamilyObj(s),u,Stabilizer(u,1));
+end);
+
+InstallMethod( PreImagesSet, "map from (sub)group of fp group",
+  CollFamRangeEqFamElms,
+  [ IsFromFpGroupHomomorphism,IsGroup ],0,
+function(hom,u)
+  if not (u in Range(hom)) then
+    return [];
+  fi;
+  return PreImagesSetNC(hom,u);
 end);
 
 
@@ -719,6 +730,7 @@ end);
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC
+#M  PreImagesRepresentative
 ##
 InstallMethod( PreImagesRepresentativeNC,
   "hom. to standard generators of fp group, using 'MappedWord'",
@@ -746,6 +758,19 @@ local mapi;
   fi;
   return mapi;
 end);
+
+InstallMethod( PreImagesRepresentative,
+  "hom. to standard generators of fp group, using 'MappedWord'",
+  FamRangeEqFamElm,
+  [IsToFpGroupHomomorphismByImages,IsMultiplicativeElementWithInverse],
+  1,
+function(hom,elm)
+  if not (elm in Range(hom)) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC(hom,elm);
+end);
+
 
 #############################################################################
 ##

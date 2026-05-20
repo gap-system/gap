@@ -3375,6 +3375,7 @@ end );
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . .  build matrix
+#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . .  build matrix
 ##
 InstallMethod( PreImagesRepresentativeNC,"IsLinearActionHomomorphism",
   FamRangeEqFamElm, [ IsLinearActionHomomorphism, IsPerm ], 0,
@@ -3418,9 +3419,19 @@ function( hom, elm )
   return hom!.linActInverse*elm;
 end );
 
+InstallMethod( PreImagesRepresentative,"IsLinearActionHomomorphism",
+  FamRangeEqFamElm, [ IsLinearActionHomomorphism, IsPerm ], 0,
+function( hom, elm )
+  if not ( elm in Range( hom ) ) then
+    return fail;
+  fi;
+  return PreImagesRepresentativeNC( hom, elm );
+end );
+
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . .  build matrix
+#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . .  build matrix
 ##
 ##  The idea is as follows.
 ##  We have an $F$-basis $(v_1, \ldots, v_n)$.
@@ -3491,6 +3502,15 @@ function( hom, elm )
   fi;
 
   return MakeImmutable( mat );
+end);
+
+InstallMethod( PreImagesRepresentative,"IsProjectiveActionHomomorphism",
+  FamRangeEqFamElm, [ IsProjectiveActionHomomorphism, IsPerm ], 0,
+function( hom, elm )
+    if not ( elm in Range( hom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( hom, elm );
 end);
 
 #############################################################################

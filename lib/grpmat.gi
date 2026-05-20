@@ -1203,6 +1203,7 @@ InstallMethod( ImagesRepresentative,
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <iso>, <mat> ) . . . for a blow up isomorphism
+#M  PreImagesRepresentative( <iso>, <mat> ) . . . . for a blow up isomorphism
 ##
 InstallMethod( PreImagesRepresentativeNC,
     "for a blow up isomorphism, and a matrix in the range",
@@ -1255,6 +1256,17 @@ InstallMethod( PreImagesRepresentativeNC,
     od;
 
     return preim;
+    end );
+
+InstallMethod( PreImagesRepresentative,
+    "for a blow up isomorphism, and a matrix in the range",
+    FamRangeEqFamElm,
+    [ IsBlowUpIsomorphism, IsMatrix ],
+    function( iso, mat )
+    if not ( mat in Range(iso) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( iso, mat );
     end );
 
 

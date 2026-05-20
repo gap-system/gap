@@ -1316,6 +1316,7 @@ InstallMethod( ImagesSet,
 #############################################################################
 ##
 #M  PreImagesElmNC( <hom>, <elm> )  . . . . . . . . . . . .  preimage of an elm
+#M  PreImagesElm( <hom>, <elm> )  . . . . . . . . . . . . .  preimage of an elm
 ##
 InstallMethod( PreImagesElmNC,
     "for field homomorphism and element",
@@ -1331,10 +1332,22 @@ InstallMethod( PreImagesElmNC,
     fi;
     end );
 
+InstallMethod( PreImagesElm,
+    "for field homomorphism and element",
+    FamRangeEqFamElm,
+    [ IsFieldHomomorphism, IsObject ],
+    function ( hom, elm )
+    if not (elm in Range(hom)) then
+      return [];
+    fi;
+    return PreImagesElm( hom, elm );
+    end );
 
 #############################################################################
 ##
 #M  PreImagesSetNC
+#M  PreImagesSet
+##
 InstallMethod( PreImagesSetNC,
     "for field homomorphism and field",
     CollFamRangeEqFamElms,
@@ -1345,3 +1358,15 @@ InstallMethod( PreImagesSetNC,
     UseSubsetRelation( Source( hom ), elms );
     return elms;
     end );
+
+InstallMethod( PreImagesSet,
+    "for field homomorphism and field",
+    CollFamRangeEqFamElms,
+    [ IsFieldHomomorphism, IsField ],
+    function ( hom, elms )
+    if not IsSubset( Range(hom), elms ) then
+        return [];
+    fi;
+    return PreImagesSet( hom, elms );
+    end );
+

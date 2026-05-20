@@ -170,6 +170,7 @@ end );
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <emb>, <g> ) . . . . . . . . . .  of embedding
+#M  PreImagesRepresentative( <emb>, <g> ) . . . . . . . . . . .  of embedding
 ##
 InstallMethod( PreImagesRepresentativeNC, "perm direct product embedding",
   FamRangeEqFamElm,
@@ -189,6 +190,17 @@ InstallMethod( PreImagesRepresentativeNC, "perm direct product embedding",
     else
       return fail;
     fi;
+end );
+
+InstallMethod( PreImagesRepresentative, "perm direct product embedding",
+  FamRangeEqFamElm,
+        [ IsEmbeddingDirectProductPermGroup,
+          IsMultiplicativeElementWithInverse ],
+    function( emb, g )
+    if not ( g in Range( emb ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( emb, g );
 end );
 
 #############################################################################
@@ -293,6 +305,7 @@ end );
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <prj>, <g> ) . . . . . . . . . . of projection
+#M  PreImagesRepresentative( <prj>, <g> ) . . . . . . . . . . . of projection
 ##
 InstallMethod( PreImagesRepresentativeNC,"perm direct product projection",
   FamRangeEqFamElm,
@@ -300,6 +313,17 @@ InstallMethod( PreImagesRepresentativeNC,"perm direct product projection",
           IsMultiplicativeElementWithInverse ], 0,
     function( prj, g )
     return g ^ DirectProductInfo( Source( prj ) ).perms[ prj!.component ];
+end );
+
+InstallMethod( PreImagesRepresentative,"perm direct product projection",
+  FamRangeEqFamElm,
+        [ IsProjectionDirectProductPermGroup,
+          IsMultiplicativeElementWithInverse ], 0,
+    function( prj, g )
+    if not ( g in Range( prj ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( prj, g );
 end );
 
 #############################################################################
@@ -467,6 +491,7 @@ end );
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <prj>, <g> ) . . . . . . . . . . of projection
+#M  PreImagesRepresentative( <prj>, <g> ) . . . . . . . . . . . of projection
 ##
 InstallMethod( PreImagesRepresentativeNC,"perm subdirect product projection",
   FamRangeEqFamElm,
@@ -496,6 +521,17 @@ InstallMethod( PreImagesRepresentativeNC,"perm subdirect product projection",
 
     # return the preimage
     return elm;
+end );
+
+InstallMethod( PreImagesRepresentative,"perm subdirect product projection",
+  FamRangeEqFamElm,
+        [ IsProjectionSubdirectProductPermGroup,
+          IsMultiplicativeElementWithInverse ], 0,
+    function( prj, img )
+    if not ( img in Range( prj ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( prj, img );
 end );
 
 #############################################################################
@@ -800,6 +836,7 @@ end );
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <emb>, <g> ) . . . . . . . . . .  of embedding
+#M  PreImagesRepresentative( <emb>, <g> ) . . . . . . . . . . .  of embedding
 ##
 InstallMethod( PreImagesRepresentativeNC,
   "imprim perm wreath product embedding", FamRangeEqFamElm,
@@ -820,6 +857,16 @@ InstallMethod( PreImagesRepresentativeNC,
           ^ (info.perms[ emb!.component ] ^ -1);
 end );
 
+InstallMethod( PreImagesRepresentative,
+  "imprim perm wreath product embedding", FamRangeEqFamElm,
+        [ IsEmbeddingImprimitiveWreathProductPermGroup,
+          IsMultiplicativeElementWithInverse ], 0,
+    function( emb, g )
+    if not ( g in Range( emb ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( emb, g );
+end );
 
 #############################################################################
 ##
