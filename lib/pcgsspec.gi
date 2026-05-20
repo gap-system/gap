@@ -752,6 +752,9 @@ InstallMethod( IsomorphismSpecialPcGroup, "generic method for groups",
 function(G)
 local iso;
   iso:=IsomorphismPcGroup(G);
+  if iso = fail then
+    return fail;
+  fi;
   return iso*IsomorphismSpecialPcGroup(Range(iso));
 end);
 

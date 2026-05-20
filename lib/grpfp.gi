@@ -4332,7 +4332,7 @@ local s, a, hom;
   fi;
   hom:=EpimorphismSolvableQuotient(G,s);
   if Size(Image(hom))<>s then
-    Error("group is not solvable");
+    return fail;
   else
     SetIsInjective(hom, true);
   fi;
