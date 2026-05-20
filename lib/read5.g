@@ -116,6 +116,7 @@ ReadLib( "mat8bit.gi"  );
 ReadLib( "matobjplist.gi" );
 ReadLib( "matobjgeneric.gi" );
 ReadLib( "matobjnz.gi" );
+ReadLib( "matobjminimal.gi" );
 ReadLib( "meataxe.gi"  );
 ReadLib( "meatauto.gi" );
 
