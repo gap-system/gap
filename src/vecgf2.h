@@ -20,6 +20,13 @@
 #define IS_GF2VEC_REP(obj)                                                   \
     (TNUM_OBJ(obj) == T_DATOBJ && DoFilter(IsGF2VectorRep, obj) == True)
 
+/****************************************************************************
+**
+*F  IS_GF2MAT_REP( <obj> )  . . . . . . check that <obj> is in GF2 matrix rep
+*/
+#define IS_GF2MAT_REP(obj)                                                   \
+    (TNUM_OBJ(obj) == T_POSOBJ && DoFilter(IsGF2MatrixRep, obj) == True)
+
 
 /****************************************************************************
 **
@@ -234,6 +241,7 @@ extern Obj TYPE_LIST_GF2MAT_IMM;
 
 
 extern Obj IsGF2VectorRep;
+extern Obj IsGF2MatrixRep;
 
 Obj ShallowCopyVecGF2(Obj vec);
 
