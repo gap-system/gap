@@ -34,7 +34,7 @@ InstallMethod( LieUpperCentralSeries,
       # under the natural homomorphism.
       Add( S, C );
       hom:= NaturalHomomorphismByIdeal( L, C );
-      C:= PreImages( hom, LieCentre( Range( hom ) ) );
+      C:= PreImagesNC( hom, LieCentre( Range( hom ) ) );
 #T we would like to get ideals!
 #T is it possible to teach the hom. that the preimage of an ideal is an ideal?
 
@@ -1706,7 +1706,7 @@ InstallMethod( LieSolvableRadical,
       quo:= ImagesSource( hom );
       r1:= LieSolvableRadical( quo );
       B:= BasisVectors( Basis( r1 ) );
-      B:= List( B, x -> PreImagesRepresentative( hom, x ) );
+      B:= List( B, x -> PreImagesRepresentativeNC( hom, x ) );
       Append( B, BasisVectors( Basis( n ) ) );
 
     fi;
@@ -2092,7 +2092,7 @@ InstallMethod( DirectSumDecomposition,
       SetRadicalOfAlgebra( Q, Subalgebra( Q, [ Zero( Q ) ] ) );
 
       id:= List( CentralIdempotentsOfAlgebra( Q ),
-                                x->PreImagesRepresentative(hom,x));
+                                x->PreImagesRepresentativeNC(hom,x));
 
       # Now we lift the idempotents to the big algebra `A'. The
       # first idempotent is lifted as follows:
@@ -4017,9 +4017,9 @@ InstallMethod( ImagesRepresentative,
 
 ###########################################################################
 ##
-#M   PreImagesRepresentative( f, x )
+#M   PreImagesRepresentativeNC( f, x )
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for Fp to SCA mapping, and element",
     FamRangeEqFamElm,
     [ IsFptoSCAMorphism, IsSCAlgebraObj ], 0,
@@ -5592,8 +5592,8 @@ InstallMethod( JenningsLieAlgebra,
     T:= EmptySCTable( dim , Zero(F) , "antisymmetric" );
     pimgs := [];
     for i in [1..dim] do
-        a:= PreImagesRepresentative( Homs[pos[i]] ,
-                    PreImagesRepresentative( hom_pcg[pos[i]], gens[i] ) );
+        a:= PreImagesRepresentativeNC( Homs[pos[i]] ,
+                    PreImagesRepresentativeNC( hom_pcg[pos[i]], gens[i] ) );
 
         # calculate the p-th power image of `a':
 
@@ -5610,8 +5610,8 @@ InstallMethod( JenningsLieAlgebra,
                # Calculate the commutator [a,b], and map the result into
                # the correct homogeneous component.
 
-                b:= PreImagesRepresentative( Homs[pos[j]],
-                         PreImagesRepresentative( hom_pcg[pos[j]], gens[j] ));
+                b:= PreImagesRepresentativeNC( Homs[pos[j]],
+                       PreImagesRepresentativeNC( hom_pcg[pos[j]], gens[j] ));
                 c:= Image( hom_pcg[pos[i] + pos[j]],
                            Image(Homs[pos[i] + pos[j]], a^-1*b^-1*a*b) );
                 e:= ExtRepOfObj(c);
@@ -5788,8 +5788,8 @@ InstallMethod( PCentralLieAlgebra,
     T:= EmptySCTable( dim , Zero(F) , "antisymmetric" );
     pimgs := [];
     for i in [1..dim] do
-        a:= PreImagesRepresentative( Homs[pos[i]] ,
-                    PreImagesRepresentative( hom_pcg[pos[i]], gens[i] ) );
+        a:= PreImagesRepresentativeNC( Homs[pos[i]] ,
+                    PreImagesRepresentativeNC( hom_pcg[pos[i]], gens[i] ) );
 
 
         # calculate the p-th power image of `a':
@@ -5807,8 +5807,8 @@ InstallMethod( PCentralLieAlgebra,
                # Calculate the commutator [a,b], and map the result into
                # the correct homogeneous component.
 
-                b:= PreImagesRepresentative( Homs[pos[j]],
-                         PreImagesRepresentative( hom_pcg[pos[j]], gens[j] ));
+                b:= PreImagesRepresentativeNC( Homs[pos[j]],
+                       PreImagesRepresentativeNC( hom_pcg[pos[j]], gens[j] ));
                 c:= Image( hom_pcg[pos[i] + pos[j]],
                            Image(Homs[pos[i] + pos[j]], a^-1*b^-1*a*b) );
                 e:= ExtRepOfObj(c);

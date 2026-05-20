@@ -964,7 +964,7 @@ InstallMethod( Earns, "G, ints, gens, perms, act", true,
                 fi;
                 gens := [  ];
                 for gen  in GeneratorsOfGroup( Centre( P ) )  do
-                    pre := PreImagesRepresentative( f, gen );
+                    pre := PreImagesRepresentativeNC( f, gen );
                     ord := Order( pre );  pa := 1;
                     while ord mod p = 0  do
                         ord := ord / p;

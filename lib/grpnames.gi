@@ -173,7 +173,7 @@ InstallMethod( NormalComplementNC,
       i:=0;
       for gF in IndependentGeneratorsOfAbelianGroup(F) do
         i := i+1;
-        g := PreImagesRepresentative(nat, gF);
+        g := PreImagesRepresentativeNC(nat, gF);
         R := RightCoset(N, g);
         # DirectFactorsOfGroup already computed Center and RationalClasses
         # when calling NormalComplement

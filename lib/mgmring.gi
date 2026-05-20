@@ -1220,7 +1220,7 @@ InstallMethod( ImagesRepresentative,
     end );
 
 
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "for embedding of ring into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
@@ -1236,7 +1236,7 @@ InstallMethod( PreImagesElm,
     fi;
     end );
 
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for embedding of ring into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
@@ -1324,7 +1324,7 @@ InstallMethod( ImagesRepresentative,
     end );
 
 
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "for embedding of magma into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
@@ -1340,7 +1340,7 @@ InstallMethod( PreImagesElm,
     fi;
     end );
 
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for embedding of magma into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],

@@ -2920,7 +2920,7 @@ local   G,  D,  d,  e,  gens,  acts,  act,  xset,  hom,  p,  rep;
       rep := RepresentativeActionOp( ImagesSource( hom ), d, e,
                       OnPoints );
       if rep <> fail  then
-        rep := PreImagesRepresentative( hom, rep );
+        rep := PreImagesRepresentativeNC( hom, rep );
       fi;
       return rep;
     elif IsBound( D )  then
@@ -3374,9 +3374,9 @@ end );
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . .  build matrix
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . .  build matrix
 ##
-InstallMethod( PreImagesRepresentative,"IsLinearActionHomomorphism",
+InstallMethod( PreImagesRepresentativeNC,"IsLinearActionHomomorphism",
   FamRangeEqFamElm, [ IsLinearActionHomomorphism, IsPerm ], 0,
 function( hom, elm )
   local   V, G, Grep, filt, R, xset,lab,f;
@@ -3388,7 +3388,7 @@ function( hom, elm )
     TryNextMethod();
   fi;
 
-  # PreImagesRepresentative does not test membership
+  # PreImagesRepresentativeNC does not test membership
   #if not elm in Image( hom )  then return fail; fi;
   xset:=UnderlyingExternalSet(hom);
   V := HomeEnumerator(xset);
@@ -3420,7 +3420,7 @@ end );
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . .  build matrix
+#M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . .  build matrix
 ##
 ##  The idea is as follows.
 ##  We have an $F$-basis $(v_1, \ldots, v_n)$.
@@ -3441,7 +3441,7 @@ end );
 ##  matrix group contains all scalar matrices, or we know that the preimage
 ##  has determinant $1$ and taking the root in question is unique.
 ##
-InstallMethod( PreImagesRepresentative,"IsProjectiveActionHomomorphism",
+InstallMethod( PreImagesRepresentativeNC,"IsProjectiveActionHomomorphism",
   FamRangeEqFamElm, [ IsProjectiveActionHomomorphism, IsPerm ], 0,
 function( hom, elm )
   local   V,  G, Grep, filt, R, mat, xset,lab,dim,sol,i;
@@ -3457,7 +3457,7 @@ function( hom, elm )
     TryNextMethod();
   fi;
 
-  # PreImagesRepresentative does not test membership
+  # PreImagesRepresentativeNC does not test membership
   #if not elm in Image( hom )  then return fail; fi;
   xset:=UnderlyingExternalSet(hom);
   V := HomeEnumerator(xset);
