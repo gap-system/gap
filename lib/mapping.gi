@@ -273,9 +273,9 @@ InstallGlobalFunction( PreImage, function ( arg )
           fi;
 
           if IsDomain( img ) or IsSSortedList( img ) then
-            return PreImagesSet( map, img );
+            return PreImagesSetNC( map, img );
           elif IsHomogeneousList( img ) then
-            return PreImagesSet( map, Set( img ) );
+            return PreImagesSetNC( map, Set( img ) );
           fi;
 
         # preimage of the empty list
@@ -297,10 +297,68 @@ end );
 
 #############################################################################
 ##
-#F  PreImages( <map> )  . . . set of preimages of the range of a gen. mapping
-#F  PreImages(<map>,<elm>)  . set of preimages of an elm under a gen. mapping
-#F  PreImages(<map>,<coll>)  set of preimages of a coll. under a gen. mapping
+#F  PreImages(<map>)
+#F  PreImagesNC(<map>)  . . . set of preimages of the range of a gen. mapping
+#F  PreImages(<map>,<elm>)
+#F  PreImagesNC(<map>,<elm>)  set of preimages of an elm under a gen. mapping
+#F  PreImages(<map>,<coll>)
+#F  PreImagesNC(<map>,<coll>) set of preimages of a coll. under a gen. mapping
 ##
+InstallGlobalFunction( PreImagesNC, function ( arg )
+
+    local   map,        # mapping <map>, first argument
+            img;        # element <img>, second argument
+
+    # preimage of the range under <map>
+    if Length( arg ) = 1  then
+
+        return PreImagesRange( arg[1] );
+
+    elif Length( arg ) = 2 then
+
+        map := arg[1];
+        img := arg[2];
+
+        if not IsGeneralMapping( map ) then
+          ErrorNoReturn( "<map> must be a general mapping" );
+        fi;
+
+        # preimage of a single element <img> under <map>
+        if     FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) ) then
+            if not img in Range( map ) then
+                ErrorNoReturn( "<elm> must be an element of Range(<map>)" );
+            fi;
+            return PreImagesElmNC( map, img );
+
+        # preimage of a collection of elements <img> under <map>
+        elif CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) ) then
+          if not IsSubset( Range( map ), img ) then
+            ErrorNoReturn( "the collection <elm> must be contained in ",
+                           "Range(<map>)" );
+          fi;
+
+          if IsDomain( img ) or IsSSortedList( img ) then
+            return PreImagesSetNC( map, img );
+          elif IsHomogeneousList( img ) then
+            return PreImagesSetNC( map, Set( img ) );
+          fi;
+
+        # preimage of the empty list
+        elif IsList( img ) and IsEmpty( img ) then
+
+          return [];
+
+        else
+          ErrorNoReturn( "the families of the element or collection <elm> ",
+                         "and Range(<map>) don't match, ",
+                         "maybe <elm> is not contained in Range(<map>) or ",
+                         "is not a homogeneous list or collection" );
+        fi;
+    fi;
+    ErrorNoReturn( "usage: PreImagesNC(<map>), PreImagesNC(<map>,<img>), ",
+                   "PreImagesNC(<map>,<coll>)" );
+end );
+
 InstallGlobalFunction( PreImages, function ( arg )
 
     local   map,        # mapping <map>, first argument
@@ -355,7 +413,6 @@ InstallGlobalFunction( PreImages, function ( arg )
     ErrorNoReturn( "usage: PreImages(<map>), PreImages(<map>,<img>), ",
                    "PreImages(<map>,<coll>)" );
 end );
-
 
 #############################################################################
 ##
@@ -1067,16 +1124,17 @@ InstallMethod( PreImageElm,
     "for inj. & surj. general mapping, and element",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsInjective and IsSurjective, IsObject ], 0,
-    PreImagesRepresentative );
+    PreImagesRepresentativeNC );
 
 
 #############################################################################
 ##
+#M  PreImagesElmNC( <map>, <elm> )  . . . . . for general mapping and element
 #M  PreImagesElm( <map>, <elm> )  . . . . . . for general mapping and element
 ##
 ##  more or less delegate to `ImagesElm'
 ##
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "for general mapping with finite source, and element",
     FamRangeEqFamElm,
     [ IsGeneralMapping, IsObject ], 0,
@@ -1093,12 +1151,26 @@ InstallMethod( PreImagesElm,
     fi;
     end );
 
+InstallMethod( PreImagesElm,
+    "for general mapping with finite source, and element",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping, IsObject ], 0,
+    function ( map, elm )
+
+    if not ( elm in Image( map ) ) then
+        return fail;
+    else
+        return PreImagesElmNC( map, elm );
+    fi;
+    end );
+
 
 #############################################################################
 ##
-#M  PreImagesElm( <map>, <elm> )   for const. time access gen. map., and elm.
+#M  PreImagesElmNC( <map>, <elm> ) for const. time access gen. map., and elm.
+#M  PreImagesElm( <map>, <elm> ) . for const. time access gen. map., and elm.
 ##
-InstallMethod( PreImagesElm,
+InstallMethod( PreImagesElmNC,
     "for constant time access general mapping, and element",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsConstantTimeAccessGeneralMapping, IsObject ], 0,
@@ -1113,25 +1185,60 @@ InstallMethod( PreImagesElm,
     return preimgs;
     end );
 
+InstallMethod( PreImagesElm,
+    "for constant time access general mapping, and element",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping and IsConstantTimeAccessGeneralMapping, IsObject ], 0,
+    function( map, elm )
+    if not ( elm in Image( map ) ) then
+        return fail;
+    else
+        return PreImagesElmNC( map, elm );
+    fi;
+    end );
+
 
 #############################################################################
 ##
-#M  PreImagesSet( <map>, <elms> ) . for general mapping and finite collection
+#M  PreImagesSetNC( <map>, <elms> ) for general mapping and finite collection
 ##
-InstallMethod( PreImagesSet,
+InstallMethod( PreImagesSetNC,
     "for general mapping, and finite collection",
     CollFamRangeEqFamElms,
     [ IsGeneralMapping, IsCollection ], 0,
     function( map, elms )
     local primgs, elm;
+    primgs:= [];
+    for elm in Enumerator( elms ) do
+      UniteSet( primgs, AsList( PreImagesElmNC( map, elm ) ) );
+    od;
+    return primgs;
+    end );
+
+InstallMethod( PreImagesSet,
+    "for general mapping, and finite collection",
+    CollFamRangeEqFamElms,
+    [ IsGeneralMapping, IsCollection ], 0,
+    function( map, elms )
+    local im, elm;
     if not IsFinite( elms ) then
       TryNextMethod();
     fi;
-    primgs:= [];
+    im:= Image( map );
     for elm in Enumerator( elms ) do
-      UniteSet( primgs, AsList( PreImagesElm( map, elm ) ) );
+      if not (elm in im ) then
+        return fail;
+      fi;
     od;
-    return primgs;
+    return PreImagesSetNC( map, elms );
+    end );
+
+InstallMethod( PreImagesSetNC,
+    "for general mapping, and empty list",
+    true,
+    [ IsGeneralMapping, IsList and IsEmpty ], 0,
+    function( map, elms )
+      return [];
     end );
 
 InstallMethod( PreImagesSet,
@@ -1139,7 +1246,7 @@ InstallMethod( PreImagesSet,
     true,
     [ IsGeneralMapping, IsList and IsEmpty ], 0,
     function( map, elms )
-    return [];
+      return [];
     end );
 
 
@@ -1151,7 +1258,7 @@ InstallMethod( PreImagesRange,
     "for general mapping",
     true,
     [ IsGeneralMapping ], 0,
-    map -> PreImagesSet( map, Range( map ) ) );
+    map -> PreImagesSetNC( map, Range( map ) ) );
 
 
 #############################################################################
@@ -1168,9 +1275,21 @@ InstallMethod( PreImagesRange,
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <map>, <elm> )  . .  for s.p. gen. mapping & elm
+#M  PreImagesRepresentative( <map>, <elm> ) . . . for s.p. gen. mapping & elm
+#M  PreImagesRepresentativeNC( <map>, <elm> ) . . for s.p. gen. mapping & elm
 ##
 InstallMethod( PreImagesRepresentative,
+    "for s.p. general mapping, and element",
+    FamRangeEqFamElm,
+    [ IsSPGeneralMapping, IsObject ], 0,
+    function( map, elm )
+    if not elm in Image( map ) then
+      return fail;
+    fi;
+      return PreImagesRepresentativeNC( map, elm );
+    end );
+
+InstallMethod( PreImagesRepresentativeNC,
     "for s.p. general mapping, and element",
     FamRangeEqFamElm,
     [ IsSPGeneralMapping, IsObject ], 0,
@@ -1182,16 +1301,28 @@ InstallMethod( PreImagesRepresentative,
 #############################################################################
 ##
 #M  PreImagesRepresentative( <map>, <elm> )
-##
+#M  PreImagesRepresentativeNC( <map>, <elm> )
+
 InstallMethod( PreImagesRepresentative,
     "for total non-s.p. general mapping, and element",
     FamRangeEqFamElm,
     [ IsNonSPGeneralMapping, IsObject ], 0,
-    function ( map, elm )
+    function( map, elm )
+      if not elm in Image( map ) then
+        return fail;
+      fi;
+      return PreImagesRepresentativeNC( map, elm );
+    end );
+
+InstallMethod( PreImagesRepresentativeNC,
+    "for total non-s.p. general mapping, and element",
+    FamRangeEqFamElm,
+    [ IsNonSPGeneralMapping, IsObject ], 0,
+    function( map, elm )
     local   pres;       # all preimages of <elm> under <map>
 
     # get all preimages of <elm> under <map>
-    pres := PreImagesElm( map, elm );
+    pres := PreImagesElmNC( map, elm );
 
     # check that <elm> has at least one preimage under <map>
     if IsEmpty( pres ) then
@@ -1459,7 +1590,7 @@ InstallMethod( Enumerator,
       return enum;
     elif IsFinite( R ) then
       for elm in Enumerator( R ) do
-        imgs:= PreImagesElm( map, elm );
+        imgs:= PreImagesElmNC( map, elm );
         if IsFinite( imgs ) then
           UniteSet( enum, List( imgs, im -> DirectProductElement( [ im, elm ] ) ) );
         else

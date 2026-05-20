@@ -16,7 +16,7 @@ gap> tmpSolvableResiduum:= function( G )
 >        return TrivialSubgroup( G );
 >      fi;
 >      iso:= IsomorphismFpGroup( G );
->      return PreImages( iso, Kernel(
+>      return PreImagesNC( iso, Kernel(
 >        EpimorphismSolvableQuotient( ImagesSource( iso ), Size( G ) ) ) );
 >    end;;
 gap> for n in [ 1 .. 150 ] do

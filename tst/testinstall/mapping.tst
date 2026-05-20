@@ -231,6 +231,11 @@ gap> ImagesRepresentative( map, Z(3) );
 Z(3)^0
 gap> (0*Z(3)) ^ map;
 0*Z(3)
+gap> ## test new PreImagesRepresentative
+gap> PreImagesRepresentative( map, Z(3) );
+fail
+gap> PreImagesRepresentative( map, Z(3)^0 );
+Z(3)
 
 # PreImage(s)Elm, PreImagesSet for
 # bijective but neither IsSingleValued nor IsTotal
@@ -249,7 +254,7 @@ gap> IsTotal( map );
 false
 gap> PreImageElm( map, Z(3) );
 Z(3)^0
-gap> PreImagesElm( map, Z(3) );
+gap> PreImagesElmNC( map, Z(3) );
 [ Z(3)^0 ]
 gap> PreImagesSet( map, [ 0*Z(3), Z(3) ] );
 [ 0*Z(3), Z(3)^0 ]
@@ -304,7 +309,7 @@ gap> IsTotal( map );
 true
 gap> PreImageElm( map, Z(3) );
 0*Z(3)
-gap> PreImagesElm( map, Z(3) );
+gap> PreImagesElmNC( map, Z(3) );
 [ 0*Z(3) ]
 gap> PreImagesSet( map, [ 0*Z(3), Z(3) ] );
 [ 0*Z(3), Z(3)^0 ]

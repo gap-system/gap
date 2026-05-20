@@ -576,17 +576,28 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <map>, <elm> ) . . . . . .  for algebra g.m.b.i.
+#M  PreImagesRepresentativeNC( <map>, <elm> ) . . . . .  for algebra g.m.b.i.
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for algebra g.m.b.i., and element",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep,
       IsObject ],
     function( map, elm )
-    return PreImagesRepresentative( AsLeftModuleGeneralMappingByImages(map),
-                                    elm );
+        return PreImagesRepresentativeNC(
+                   AsLeftModuleGeneralMappingByImages(map), elm );
     end );
+
+## (13/05/26) commented this out to prevent infinite recursion in alghom.tst
+## InstallMethod( PreImagesRepresentativeNC,
+##     "for algebra g.m.b.i. knowing inverse, and element",
+##     FamRangeEqFamElm,
+##     [ IsGeneralMapping and IsAlgebraGeneralMappingByImagesDefaultRep
+##       and HasInverseGeneralMapping,
+##       IsObject ],
+##     function( map, elm )
+##         return ImagesRepresentative( InverseGeneralMapping(map), elm );
+##     end );
 
 
 #############################################################################
@@ -902,7 +913,7 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <ophom>, <mat> )
+#M  PreImagesRepresentativeOperationAlgebraHomomorphism( <ophom>, <mat> )
 ##
 BindGlobal( "PreImagesRepresentativeOperationAlgebraHomomorphism", function( ophom, mat )
     if not IsBound( ophom!.basisImage ) then
@@ -915,7 +926,7 @@ BindGlobal( "PreImagesRepresentativeOperationAlgebraHomomorphism", function( oph
     return mat;
 end );
 
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for an operation algebra homomorphism, and an element",
     FamRangeEqFamElm,
     [ IsOperationAlgebraHomomorphismDefaultRep, IsMatrix ],
@@ -1076,9 +1087,9 @@ InstallMethod( ImagesRepresentative,
 
 #############################################################################
 ##
-#M  PreImagesRepresentative( <ophom>, <mat> )
+#M  PreImagesRepresentativeNC( <ophom>, <mat> )
 ##
-InstallMethod( PreImagesRepresentative,
+InstallMethod( PreImagesRepresentativeNC,
     "for an alg. hom. from f. p. algebra, and an element",
     FamRangeEqFamElm,
     [ IsAlgebraHomomorphismFromFpRep, IsMatrix ],

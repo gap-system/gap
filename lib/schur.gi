@@ -130,7 +130,7 @@ InstallMethod(EpimorphismSchurCover,"generic, via fp group",true,[IsGroup],1,
                              j->One(F)))));
 
   hom:=GroupHomomorphismByImagesNC(D,G,GeneratorsOfGroup(D),
-   List(Dgens,i->PreImagesRepresentative(iso,i)));
+   List(Dgens,i->PreImagesRepresentativeNC(iso,i)));
   Dgens:=TzImagesOldGens(p);
   Dgens:=List(Dgens{[Length(Fgens)+1..Length(Dgens)]},
            i->MappedWord(i,p!.generators,GeneratorsOfGroup(D)));
@@ -201,7 +201,7 @@ local s,pcgs,n,l,cov,pco,ng,gens,imgs,ran,zer,i,j,e,a,
   fi;
 
   # get a decent pcgs for the cover
-  pco:=List(pcgs,i->Image(epi,PreImagesRepresentative(de,i)));
+  pco:=List(pcgs,i->Image(epi,PreImagesRepresentativeNC(de,i)));
   Append(pco,Pcgs(mul));
   pco:=PcgsByPcSequenceNC(FamilyObj(One(cov)),pco);
 
@@ -261,7 +261,8 @@ local s,pcgs,n,l,cov,pco,ng,gens,imgs,ran,zer,i,j,e,a,
         # factor generators
         gens:=GeneratorsOfGroup(qs);
         # their conjugates
-        imgs:=List(gens,j->PreImagesRepresentative(epi,Image(epi,j)^dc[i]));
+        imgs:=List(gens,
+                  j->PreImagesRepresentativeNC(epi,Image(epi,j)^dc[i]));
         rels:=ClosureGroup(rels,CommutGenImgs(pco,gens,imgs,
                             Intersection(mul,DerivedSubgroup(qs))));
       fi;
@@ -306,7 +307,7 @@ BindGlobal("PositiveExponentsPresentationFpHom",function(hom)
 local G,F,geni,ro,fam,r,i,j,rel,n,e;
   G:=Image(hom);
   F:=FreeGeneratorsOfFpGroup(G);
-  geni:=List(GeneratorsOfGroup(G),i->PreImagesRepresentative(hom,i));
+  geni:=List(GeneratorsOfGroup(G),i->PreImagesRepresentativeNC(hom,i));
   ro:=List(geni,Order);
   fam:=FamilyObj(F[1]);
   r:=[];
@@ -351,7 +352,7 @@ local G,H,D,T,i,j,k,l,a,h,nk,evals,rels,gens,r,np,g,invlist,el,elp,TL,rp,pos;
 
   # this will guarantee we always take the same preimages
   el:=AsSSortedListNonstored(H);
-  elp:=List(el,i->PreImagesRepresentative(s,i));
+  elp:=List(el,i->PreImagesRepresentativeNC(s,i));
   #ensure the preimage of identity is one
   if IsOne(el[1]) then
     pos:=1;
@@ -485,7 +486,7 @@ local G,B,P,s,D,i,j,v,ri,rank,bas,basr,row,rel,sol,snf,mat;
   j:=NaturalHomomorphismByNormalSubgroupNC(D,v);
   i:=GeneratorsOfGroup(Image(j));
   i:=GroupHomomorphismByImagesNC(Image(j),P,i,
-       List(i,k->ImageElm(s,PreImagesRepresentative(j,k))));
+       List(i,k->ImageElm(s,PreImagesRepresentativeNC(j,k))));
   SetKernelOfMultiplicativeGeneralMapping(i,
     Image(j,KernelOfMultiplicativeGeneralMapping(s)));
   return i;
@@ -558,7 +559,7 @@ local hom,      #isomorphism fp
     s:=sl[pp];
     mg:=IsomorphismPermGroup(KernelOfMultiplicativeGeneralMapping(s));
     mg:=List(IndependentGeneratorsOfAbelianGroup(Image(mg)),
-          i->PreImagesRepresentative(mg,i));
+          i->PreImagesRepresentativeNC(mg,i));
     sdc:=ListWithIdenticalEntries(Last(ngl),One(Source(s)));
     sdc{[ngl[pp]+1..ngl[pp+1]]}:=mg;
 
@@ -579,7 +580,7 @@ local hom,      #isomorphism fp
 
     q:=[];
     for i in ce do
-      Add(q,PreImagesRepresentative(sdc,i[2]));
+      Add(q,PreImagesRepresentativeNC(sdc,i[2]));
     od;
     rel2[pp]:=q;
   od;

@@ -1299,7 +1299,7 @@ end);
 ########
 ########
 
-InstallMethod(PreImagesRepresentative,  "for semigroup homomorphism by images",
+InstallMethod(PreImagesRepresentativeNC,"for semigroup homomorphism by images",
               FamRangeEqFamElm,
               [IsSemigroupHomomorphism and IsSemigroupHomomorphismByImagesRep, IsMultiplicativeElement],
 function(hom, x)

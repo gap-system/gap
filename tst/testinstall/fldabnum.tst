@@ -288,7 +288,7 @@ gap> ImagesRepresentative( aut, E(45) );
 E(45)^2
 gap> PreImageElm( aut, E(45) );
 -E(45)^8-E(45)^38
-gap> Print(PreImagesSet( aut, Conjugates( f, E(45) ) ),"\n");
+gap> Print(PreImagesSetNC( aut, Conjugates( f, E(45) ) ),"\n");
 [ -E(45)-E(45)^16, -E(45)^2-E(45)^17, -E(45)^7-E(45)^37, -E(45)^8-E(45)^38, 
   -E(45)^11-E(45)^26, -E(45)^19-E(45)^34, -E(45)^28-E(45)^43, 
   -E(45)^29-E(45)^44, E(45)^44, E(45)^43, E(45)^38, E(45)^37, E(45)^34, 
