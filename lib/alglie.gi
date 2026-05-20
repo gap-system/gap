@@ -3964,7 +3964,8 @@ InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
            Append( tlist, todo[i] );
          od;
 
-         return ObjByExtRep( Fam, [ zero, tlist ] );
+         tlist := ObjByExtRep( Fam, [ zero, tlist ] );
+         return [ zero, tlist![2] ];
 
      end );
 
