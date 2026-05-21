@@ -4251,7 +4251,7 @@ DeclareGlobalFunction( "AllSmallNonabelianSimpleGroups" );
 ##  The series chosen for this pc representation depends on
 ##  the method chosen.
 ##  <A>G</A> must be a finite polycyclic group of any kind, for example a solvable
-##  permutation group. Otherwise <K>fail</K> is returned.
+##  permutation group. If <A>G</A> is finite but not solvable, <K>fail</K> is returned.
 ##  <Example><![CDATA[
 ##  gap> G := Group( (1,2,3), (3,4,1) );;
 ##  gap> iso := IsomorphismPcGroup( G );
@@ -4279,7 +4279,7 @@ DeclareAttribute( "IsomorphismPcGroup", IsGroup );
 ##  whose family pcgs is a special pcgs.
 ##  (This can be beneficial to the runtime of calculations.)
 ##  <A>G</A> must be a finite polycyclic group of any kind, for example a solvable
-##  permutation group. Otherwise <K>fail</K> is returned.
+##  permutation group. If <A>G</A> is finite but not solvable, <K>fail</K> is returned.
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
