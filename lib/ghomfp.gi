@@ -629,7 +629,7 @@ InstallMethod( PreImagesSet, "map from (sub)group of fp group",
   CollFamRangeEqFamElms,
   [ IsFromFpGroupHomomorphism,IsGroup ],0,
 function(hom,u)
-  if not (u in Range(hom)) then
+  if not IsSubset( Range(hom), u ) then
     return [];
   fi;
   return PreImagesSetNC(hom,u);
