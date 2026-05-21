@@ -1109,7 +1109,7 @@ InstallMethod( PreImagesRepresentativeNC,
     [ IsAlgebraHomomorphismFromFpRep, IsMatrix ],
     PreImagesRepresentativeOperationAlgebraHomomorphism );
 
-InstallMethod( PreImagesRepresentativeNC,
+InstallMethod( PreImagesRepresentative,
     "for an alg. hom. from f. p. algebra, and an element",
     FamRangeEqFamElm,
     [ IsAlgebraHomomorphismFromFpRep, IsMatrix ],
