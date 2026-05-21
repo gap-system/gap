@@ -916,6 +916,7 @@ InstallMethod( ImagesRepresentative,
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <ophom>, <mat> )
+#M  PreImagesRepresentative( <ophom>, <mat> )
 ##
 BindGlobal( "PreImagesRepresentativeOperationAlgebraHomomorphism", function( ophom, mat )
     if not IsBound( ophom!.basisImage ) then
@@ -928,6 +929,22 @@ BindGlobal( "PreImagesRepresentativeOperationAlgebraHomomorphism", function( oph
     return mat;
 end );
 
+InstallMethod( PreImagesRepresentativeNC,
+    "for an operation algebra homomorphism, and an element",
+    FamRangeEqFamElm,
+    [ IsOperationAlgebraHomomorphismDefaultRep, IsMatrix ],
+    PreImagesRepresentativeOperationAlgebraHomomorphism );
+
+InstallMethod( PreImagesRepresentative,
+    "for an operation algebra homomorphism, and an element",
+    FamRangeEqFamElm,
+    [ IsOperationAlgebraHomomorphismDefaultRep, IsMatrix ],
+    function( ophom, mat )
+    if not ( mat in Range( ophom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeOperationAlgebraHomomorphism( ophom, mat );
+end );
 
 #############################################################################
 ##
@@ -1080,6 +1097,28 @@ InstallMethod( ImagesRepresentative,
     return MappedExpression( elm, ophom!.Agenerators, ophom!.Agenimages );
     end );
 
+
+#############################################################################
+##
+#M  PreImagesRepresentativeNC( <ophom>, <mat> )
+#M  PreImagesRepresentative( <ophom>, <mat> )
+##
+InstallMethod( PreImagesRepresentativeNC,
+    "for an alg. hom. from f. p. algebra, and an element",
+    FamRangeEqFamElm,
+    [ IsAlgebraHomomorphismFromFpRep, IsMatrix ],
+    PreImagesRepresentativeOperationAlgebraHomomorphism );
+
+InstallMethod( PreImagesRepresentativeNC,
+    "for an alg. hom. from f. p. algebra, and an element",
+    FamRangeEqFamElm,
+    [ IsAlgebraHomomorphismFromFpRep, IsMatrix ],
+    function( ophom, mat );
+    if not ( mat in Range( ophom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeOperationAlgebraHomomorphism( ophom, mat );
+    end );
 
 #############################################################################
 ##
