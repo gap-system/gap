@@ -1,17 +1,25 @@
 #@local F,G,S,c,cl,f,g,g1,g10,g3,gens,h,hh,i,m,n,pcgs,r,rws,sys,u,v,x,y,iso
 gap> START_TEST("grppc.tst");
+
+#
 gap> Display(TrivialGroup(IsPcGroup));
 trivial pc-group
+
+#
 gap> Display(CyclicGroup(IsPcGroup, 10));
 pc-group with 2 pc-generators and relations:
 g1^2 = g2
 g2^5 = id
 all generators commute, the groups is abelian
+
+#
 gap> Display(SymmetricGroup(IsPcGroup, 3));
 pc-group with 2 pc-generators and relations:
 g1^2 = id
 g2^3 = id
 g2^g1 = g2^2
+
+#
 gap> h:=Group((1,2,3,4),(1,2));;
 gap> m:=IsomorphismPcGroup(h);;
 gap> hh:=Image(m,h);;
@@ -30,6 +38,8 @@ all other pairs of generators commute
 gap> pcgs:=Pcgs(hh);;
 gap> ForAll(pcgs,i->PreImagesRepresentative(m,i) in h);
 true
+
+#
 gap> g:=WreathProduct(Group((1,2,3),(1,2)),Group((1,2,3,4,5,6,7)));;
 gap> i:=IsomorphismPcGroup(g);;
 gap> g:=Range(i);;
@@ -182,6 +192,21 @@ gap> HasImagesSource( iso );
 true
 gap> IsIdenticalObj( Range( iso ), ImagesSource( iso ) );
 true
+
+#
+gap> G:=AlternatingGroup(5);;
+gap> IsomorphismPcGroup(G);
+fail
+gap> IsomorphismSpecialPcGroup(G);
+fail
+gap> G:=Range(IsomorphismFpGroup(G));;
+gap> IsomorphismPcGroup(G);
+fail
+gap> IsomorphismSpecialPcGroup(G);
+fail
+gap> IsomorphismPcGroup(FreeGroup(1));
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 3rd choice method found for `IsomorphismPcGroup' on 1 arguments
 
 #
 gap> G:= AbelianGroup( IsPcGroup, [ 3, 3, 3 ] );;
