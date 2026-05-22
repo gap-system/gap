@@ -893,9 +893,11 @@ InstallMethod( DecompositionTypesOfGroup,
     # abelian special case
     if IsAbelian(G) then
       AG := AbelianInvariants(G);
-      if Length(AG) = 1 then DTypes := Set([AG[1]]); else
+      if Length(AG) = 1 then
+        DTypes := Set([AG[1]]);
+      else
         T := ["x"];
-        for a in AG do Add(T,a); od;
+        Append(T, AG);
         DTypes := Set([T]);
       fi;
       return DTypes;
@@ -942,7 +944,9 @@ InstallMethod( DecompositionTypesOfGroup,
     od;
 
     # default: a non-split extension
-    if Length(DTypes) = 0 then DTypes := Set([["non-split",Size(G)]]); fi;
+    if Length(DTypes) = 0 then
+      DTypes := Set([["non-split",Size(G)]]);
+    fi;
 
     return DTypes;
   end );
@@ -999,9 +1003,8 @@ function(G)
     gens := DoComputeDihedralGenerators(G);
     if gens = fail then
         return false;
-    else
-        SetDihedralGenerators(G, gens);
     fi;
+    SetDihedralGenerators(G, gens);
     return true;
 end);
 
@@ -1198,27 +1201,31 @@ InstallMethod( IsAlternatingGroup,
 
   function ( G )
 
-    local  n, ids, info;
+    local  info;
 
     if not IsFinite(G) then TryNextMethod(); fi;
 
-    if IsNaturalAlternatingGroup(G) then return true;fi;
-    if Size(G) < 60 then
+    if IsNaturalAlternatingGroup(G) then
+      return true;
+    elif Size(G) < 60 then
       if Size(G) = 1 then
-        SetAlternatingDegree(G,0); return true;
+        SetAlternatingDegree(G,0);
+        return true;
       elif Size(G) = 3 then
-        SetAlternatingDegree(G,3); return true;
+        SetAlternatingDegree(G,3);
+        return true;
       elif Size(G) = 12 and Size(DerivedSubgroup(G)) = 4 then
-        SetAlternatingDegree(G,4); return true;
-      else return false; fi;
+        SetAlternatingDegree(G,4);
+        return true;
+      fi;
+    elif IsSimpleGroup(G) then
+      info := IsomorphismTypeInfoFiniteSimpleGroup(G);
+      if info.series = "A" then
+        SetAlternatingDegree(G,info.parameter);
+        return true;
+      fi;
     fi;
-
-    if not IsSimpleGroup(G) then return false; fi;
-
-    info := IsomorphismTypeInfoFiniteSimpleGroup(G);
-    if   info.series = "A"
-    then SetAlternatingDegree(G,info.parameter); return true;
-    else return false; fi;
+    return false;
   end );
 
 #############################################################################
@@ -1272,7 +1279,9 @@ InstallMethod( IsSymmetricGroup,
     if not IsFinite(G) then TryNextMethod(); fi;
 
     # special treatment of small cases
-    if Size(G)<=2 then SetSymmetricDegree(G,Size(G)); return true;
+    if Size(G)<=2 then
+      SetSymmetricDegree(G,Size(G));
+      return true;
     elif Size(G)=6 and not IsAbelian(G) then
       SetSymmetricDegree(G,3);
       return true;
@@ -1407,15 +1416,15 @@ InstallGlobalFunction( LinearGroupParameters,
 
     if not IsPosInt(N) then Error("<N> must be positive integer"); fi;
 
-    # Formeln:
+    # Formulas:
     # |GL(n, q)|  = Product(q^n - q^k : k in [0..n-1])
     # |SL(n, q)|  = |GL(n, q)| / (q - 1)
     # |PSL(n, q)| = |SL(n, q)| / gcd(n, q - 1)
-    #   mit q = p^e f"ur p prim, e >= 1, n >= 1.
+    #   where q = p^e for p prime, e >= 1, n >= 1.
 
-    # Betrachte N = |GL(n,q)|. Dann gilt f"ur n >= 2
-    #   (1) nu_p(N) = e * Binomial(n,2) und
-    #   (2) (q - 1)^n teilt N.
+    # Consider N = |GL(n,q)|. Then we have for n >= 2
+    #   (1) nu_p(N) = e * Binomial(n,2) and
+    #   (2) (q - 1)^n divides N.
     npeGL := [ ]; npeSL := [ ]; npePSL := [ ];
     if N = 1 then
       return rec( npeGL := npeGL, npeSL := npeSL, npePSL := npePSL );
@@ -1470,8 +1479,9 @@ InstallMethod( IsPSL,
 
     # more than one npe-triple should only
     # occur in the cases |G| in [60, 168, 20160]
-    if   Length(npes) > 1 and not( Size(G) in [60, 168, 20160] )
-    then Error("algebraic panic! probably npe does not work"); fi;
+    if Length(npes) > 1 and not( Size(G) in [60, 168, 20160] ) then
+      Error("algebraic panic! probably npe does not work");
+    fi;
 
     # set the parameters
     npe := npes[1];
@@ -1483,12 +1493,10 @@ InstallMethod( IsPSL,
     # PSL(2, 2)
     if npes[1] = [2, 2, 1] then
       if IsAbelian(G) then return false; fi;
-      SetParametersOfGroupViewedAsPSL(G,npe); return true;
 
     # PSL(2, 3)
     elif npes[1] = [2, 3, 1] then
       if Size(DerivedSubgroup(G)) <> 4 then return false; fi;
-      SetParametersOfGroupViewedAsPSL(G,npe); return true;
 
    # PSL(3, 4) / PSL(4, 2) \cong A_8
     elif npes = [ [ 4, 2, 1 ], [ 3, 2, 2 ] ] then
@@ -1497,13 +1505,13 @@ InstallMethod( IsPSL,
       else
         npe := npes[2];
       fi;
-      SetParametersOfGroupViewedAsPSL(G,npe); return true;
 
     # other cases
-    else
-      if not IsSimpleGroup(G) then return false; fi;
-      SetParametersOfGroupViewedAsPSL(G,npe); return true;
+    elif not IsSimpleGroup(G) then
+      return false;
     fi;
+    SetParametersOfGroupViewedAsPSL(G,npe);
+    return true;
   end );
 
 #############################################################################
@@ -1563,12 +1571,10 @@ InstallMethod( IsSL,
     # SL(2, 2)
     if npes = [2, 2, 1] then
       if IsAbelian(G) then return false; fi;
-      SetParametersOfGroupViewedAsSL(G,npes); return true;
 
     # SL(2, 3)
     elif npes = [2, 3, 1] then
       if Size(DerivedSubgroup(G)) <> 8 then return false; fi;
-      SetParametersOfGroupViewedAsSL(G,npes); return true;
 
     # other cases, in which the contained PSL is simple
     else
@@ -1583,8 +1589,9 @@ InstallMethod( IsSL,
       then return false; fi;
      if   IsomorphismGroups(G,SL(npes[1],npes[2]^npes[3])) = fail
      then return false; fi;
-     SetParametersOfGroupViewedAsSL(G,npes); return true;
     fi;
+    SetParametersOfGroupViewedAsSL(G,npes);
+    return true;
   end );
 
 #############################################################################
@@ -1649,7 +1656,6 @@ InstallMethod( IsGL,
     # GL(2, 2)
     if npes = [2, 2, 1] then
       if IsAbelian(G) then return false; fi;
-      SetParametersOfGroupViewedAsGL(G,npes); return true;
 
     # GL(2, 3)
     elif npes = [2, 3, 1] then
@@ -1668,7 +1674,6 @@ InstallMethod( IsGL,
       # elements of order 4 in one case, and 2 in the other; this is also
       # how e.g. IdGroup distinguishes them
       if Number(G, g -> Order(g) = 2) < 13 then return false; fi;
-      SetParametersOfGroupViewedAsGL(G,npes); return true;
 
     # other cases, in which contained PSL is simple
     else
@@ -1687,8 +1692,9 @@ InstallMethod( IsGL,
       then return false; fi;
       if   IsomorphismGroups(G,GL(npes[1],npes[2]^npes[3])) = fail
       then return false; fi;
-      SetParametersOfGroupViewedAsGL(G,npes); return true;
     fi;
+    SetParametersOfGroupViewedAsGL(G,npes);
+    return true;
   end );
 
 #############################################################################
@@ -1728,23 +1734,21 @@ InstallMethod( GLUnderlyingField,
 BindGlobal( "SD_insertsep", # function to join parts of name
     function ( strs, sep, brack )
 
-      local  short, s, i;
-
-      short := ValueOption("short") = true;
+      local  s, i;
 
       if strs = [] then return ""; fi;
       strs := Filtered(strs,str->str<>"");
       if Length(strs) > 1 then
         for i in [1..Length(strs)] do
-          if   Intersection(strs[i],brack) <> ""
-          then strs[i] := Concatenation("(",strs[i],")"); fi;
+          if Intersection(strs[i],brack) <> "" then
+            strs[i] := Concatenation("(",strs[i],")");
+          fi;
         od;
       fi;
-      s := strs[1];
-      for i in [2..Length(strs)] do
-        s := Concatenation(s,sep,strs[i]);
-      od;
-      if short then RemoveCharacters(s," "); fi;
+      s := JoinStringsWithSeparator(strs,sep);
+      if ValueOption("short") = true then
+        RemoveCharacters(s," ");
+      fi;
       return s;
     end);
 
@@ -1759,27 +1763,29 @@ BindGlobal( "SD_cyclic",
 BindGlobal( "SD_cycsaspowers", # function to write C2 x C2 x C2 as 2^3, etc.
     function ( name, cycsizes )
 
-      local  short, g, d, k, j, n;
+      local  g, d, k, j, n;
 
-      short := ValueOption("short") = true;
-      if not short then return name; fi;
+      if ValueOption("short") <> true then
+        return name;
+      fi;
       RemoveCharacters(name," ");
-        cycsizes := Collected(cycsizes);
-        for n in cycsizes do
-          d := n[1]; k := n[2];
-          g := SD_cyclic(d);
-          if d = 0 then
-            d := "Z";
-          else
-            d := String(d);
-          fi;
-          if k > 1 then
-            for j in Reversed([2..k]) do
-              name := ReplacedString(name,SD_insertsep(List([1..j],i->g),"x",""),
-                        Concatenation(d,"^",String(j)));
-            od;
-          fi;
-        od;
+      cycsizes := Collected(cycsizes);
+      for n in cycsizes do
+        d := n[1];
+        k := n[2];
+        g := SD_cyclic(d);
+        if d = 0 then
+          d := "Z";
+        else
+          d := String(d);
+        fi;
+        if k > 1 then
+          for j in Reversed([2..k]) do
+            name := ReplacedString(name,SD_insertsep(List([1..j],i->g),"x",""),
+                      Concatenation(d,"^",String(j)));
+          od;
+        fi;
+      od;
       RemoveCharacters(name,"C");
       return name;
     end);
@@ -1810,11 +1816,14 @@ BindGlobal( "StructureDescriptionForFiniteSimpleGroups", # for simple groups
            parameter;    # parameters of G in series
 
     # special case abelian group
-    if IsAbelian(G) then return StructureDescriptionForAbelianGroups(G); fi;
+    if IsAbelian(G) then
+      return StructureDescriptionForAbelianGroups(G);
+    fi;
 
     # special case alternating group
-    if   IsAlternatingGroup(G)
-    then return Concatenation("A",String(AlternatingDegree(G))); fi;
+    if IsAlternatingGroup(G) then
+      return Concatenation("A",String(AlternatingDegree(G)));
+    fi;
 
     # special case PSL
     if IsPSL(G) then
@@ -1913,30 +1922,39 @@ BindGlobal( "StructureDescriptionForFiniteGroups", # for finite groups
     fi;
 
     # special case trivial group
-    if IsTrivial(G) then return "1"; fi;
+    if IsTrivial(G) then
+      return "1";
+    fi;
 
     # special case abelian group
-    if IsAbelian(G) then return StructureDescriptionForAbelianGroups(G); fi;
+    if IsAbelian(G) then
+      return StructureDescriptionForAbelianGroups(G);
+    fi;
 
     # special case alternating group
-    if   IsAlternatingGroup(G)
-    then return Concatenation("A",String(AlternatingDegree(G))); fi;
+    if IsAlternatingGroup(G) then
+      return Concatenation("A",String(AlternatingDegree(G)));
+    fi;
 
     # special case symmetric group
-    if   IsSymmetricGroup(G)
-    then return Concatenation("S",String(SymmetricDegree(G))); fi;
+    if IsSymmetricGroup(G) then
+      return Concatenation("S",String(SymmetricDegree(G)));
+    fi;
 
     # special case dihedral group
-    if   IsDihedralGroup(G) and Size(G) > 6
-    then return Concatenation("D",String(Size(G))); fi;
+    if IsDihedralGroup(G) and Size(G) > 6 then
+      return Concatenation("D",String(Size(G)));
+    fi;
 
     # special case quaternion group
-    if   IsQuaternionGroup(G)
-    then return Concatenation("Q",String(Size(G))); fi;
+    if IsQuaternionGroup(G) then
+      return Concatenation("Q",String(Size(G)));
+    fi;
 
     # special case quasidihedral group
-    if   IsQuasiDihedralGroup(G)
-    then return Concatenation("QD",String(Size(G))); fi;
+    if IsQuasiDihedralGroup(G) then
+      return Concatenation("QD",String(Size(G)));
+    fi;
 
     # special case PSL
     if IsPSL(G) then
@@ -1975,7 +1993,9 @@ BindGlobal( "StructureDescriptionForFiniteGroups", # for finite groups
         cycsizes := Filtered(cycsizes,n->n<>1);
         cycname  := SD_cycsaspowers(SD_insertsep(List(cycsizes, SD_cyclic),
                                     " x ",":."), cycsizes);
-      else cycname := ""; fi;
+      else
+        cycname := "";
+      fi;
       noncyclics := Difference(Gs,cyclics);
       noncycname := SD_insertsep(List(noncyclics,StructureDescription),
                                  " x ",":.");
@@ -2049,32 +2069,33 @@ BindGlobal( "StructureDescriptionForFiniteGroups", # for finite groups
     # non-splitting, non-simple group
     if not IsTrivial(Centre(G)) then
       cname := SD_insertsep([StructureDescription(Centre(G)),
-                             StructureDescription(G/Centre(G))]," . ","x:.");
+                             StructureDescription(G/Centre(G))],
+                            " . ","x:.");
     fi;
     if not IsPerfectGroup(G) then
       dname := SD_insertsep([StructureDescription(DerivedSubgroup(G)),
                              StructureDescription(G/DerivedSubgroup(G))],
                             " . ","x:.");
     fi;
-    if   IsBound(cname) and IsBound(dname) and cname <> dname
-    then return Concatenation(cname," = ",dname);
-    elif IsBound(cname) then return cname;
-    elif IsBound(dname) then return dname;
-    elif not IsTrivial(FrattiniSubgroup(G))
-    then return SD_insertsep([StructureDescription(FrattiniSubgroup(G)),
-                              StructureDescription(G/FrattiniSubgroup(G))],
-                             " . ","x:.");
-    elif     IsPosInt(NrPerfectGroups(Size(G)))
-         and not Size(G) in [ 86016, 368640, 737280 ]
-    # this does not happen for Size(G)<10^6
-    then
-         id := PerfectIdentification(G);
-         return Concatenation("PerfectGroup(",String(id[1]),",",
-                                              String(id[2]),")");
-    else return Concatenation("<a non-simple perfect group of order ",
-                Size(G)," with trivial centre and trivial Frattini ",
-                "subgroup, which cannot be written as a direct or ",
-                "semidirect product of smaller groups>");
+    if IsBound(cname) and IsBound(dname) and cname <> dname then
+      return Concatenation(cname," = ",dname);
+    elif IsBound(cname) then
+      return cname;
+    elif IsBound(dname) then
+      return dname;
+    elif not IsTrivial(FrattiniSubgroup(G)) then
+      return SD_insertsep([StructureDescription(FrattiniSubgroup(G)),
+                           StructureDescription(G/FrattiniSubgroup(G))],
+                          " . ","x:.");
+    elif IsPosInt(NrPerfectGroups(Size(G))) then
+      id := PerfectIdentification(G);
+      return Concatenation("PerfectGroup(",String(id[1]),",",
+                                           String(id[2]),")");
+    else
+      return Concatenation("<a non-simple perfect group of order ",
+             Size(G)," with trivial centre and trivial Frattini ",
+             "subgroup, which cannot be written as a direct or ",
+             "semidirect product of smaller groups>");
     fi;
   end );
 
