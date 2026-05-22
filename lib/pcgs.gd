@@ -782,7 +782,7 @@ DeclareAttribute( "RefinedPcGroup", IsPcGroup );
 ##
 ##  <Description>
 ##  <Index Subkey="pc group">isomorphic</Index>
-##  returns an isomorphism from <A>G</A> onto an isomorphic pc group
+##  returns an isomorphism from a pc group <A>G</A> onto an isomorphic pc group
 ##  whose family pcgs is a prime order pcgs.
 ##  </Description>
 ##  </ManSection>
