@@ -463,8 +463,7 @@ BindGlobal( "ShowKernelInformation", function()
   Print( "  ",btop,"  ",gap," ", GAPInfo.BuildVersion,
          sysdate, "\n",
          "  ",bmid,"  https://www.gap-system.org\n",
-         "  ",bbot,"  Architecture: ", GAPInfo.Architecture, "\n",
-         "\n" );
+         "  ",bbot,"  Architecture: ", GAPInfo.Architecture, "\n" );
   if IsHPCGAP then
     Print( "             Maximum concurrent threads: ",
        GAPInfo.KernelInfo.NUM_CPUS, "\n");
