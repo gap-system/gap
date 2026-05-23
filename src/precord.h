@@ -39,7 +39,7 @@ Obj NEW_PREC(UInt len);
 EXPORT_INLINE BOOL IS_PREC(Obj rec)
 {
     UInt tnum = TNUM_OBJ(rec);
-    return tnum == T_PREC || tnum == T_PREC+IMMUTABLE;
+    return tnum == T_PREC;
 }
 
 
@@ -58,7 +58,7 @@ EXPORT_INLINE BOOL IS_PREC(Obj rec)
 EXPORT_INLINE BOOL IS_PREC_OR_COMOBJ(Obj rec)
 {
     UInt tnum = TNUM_OBJ(rec);
-    return tnum == T_PREC || tnum == T_PREC+IMMUTABLE || tnum == T_COMOBJ;
+    return tnum == T_PREC || tnum == T_COMOBJ;
 }
 
 

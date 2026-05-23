@@ -532,7 +532,7 @@ static Obj FuncUNITE_SET(Obj self, Obj set1, Obj set2)
 
     // fix up the type of the result
     if ( 0 == LEN_PLIST(set1) ) {
-        RetypeBag( set1, MUTABLE_TNUM(TNUM_OBJ(set2)) );
+        RetypeBag( set1, TNUM_OBJ(set2) );
     } else if ( 0 != LEN_PLIST(set2)) {
       if (HAS_FILT_LIST(set1, FN_IS_HOMOG)) {
         if( !HAS_FILT_LIST(set2, FN_IS_HOMOG))
@@ -695,7 +695,7 @@ static Obj FuncINTER_SET(Obj self, Obj set1, Obj set2)
     else
       {
         if ( TNUM_OBJ(set2) >= T_PLIST_CYC )
-          RetypeBag(set1, MUTABLE_TNUM( TNUM_OBJ(set2)));
+          RetypeBag(set1, TNUM_OBJ(set2));
         else
           {
             RESET_FILT_LIST(set1, FN_IS_NHOMOG);
