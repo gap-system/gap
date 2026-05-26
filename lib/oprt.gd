@@ -1550,8 +1550,22 @@ OrbitsishOperation( "OrbitLengthsDomain", OrbitsishReq, false, NewAttribute );
 ##  <Description>
 ##  computes the orbit and the stabilizer of <A>pnt</A> simultaneously in a
 ##  single orbit-stabilizer algorithm.
+##  Returns an immutable record with components <C>orbit</C> (the orbit as
+##  a list) and <C>stabilizer</C> (the point stabilizer, a subgroup of
+##  <A>G</A>).
 ##  <P/>
 ##  The stabilizer will have <A>G</A> as its parent.
+##  <Example><![CDATA[
+##  gap> g:=Group((1,3,2),(2,4,3));;
+##  gap> orbstab:=OrbitStabilizer(g,[1,2],OnSets);
+##  rec(
+##    orbit := [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ],
+##        [ 2, 4 ] ], stabilizer := Group([ (1,2)(3,4) ]) )
+##  gap> orbstab.orbit;
+##  [ [ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 2, 3 ], [ 3, 4 ], [ 2, 4 ] ]
+##  gap> orbstab.stabilizer;
+##  Group([ (1,2)(3,4) ])
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
