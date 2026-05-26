@@ -1396,15 +1396,8 @@ InstallGlobalFunction( RereadPackage, function( arg )
 ##
 #F  LoadPackageDocumentation( <info> )
 ##
-##  In versions before 4.5, a second argument was required.
-##  For the sake of backwards compatibility, we do not forbid a second
-##  argument, but we ignore it.
-##  (In later versions, we may forbid the second argument.)
-##
-InstallGlobalFunction( LoadPackageDocumentation, function( arg )
-    local info, short, pkgdoc, long, sixfile;
-
-    info:= arg[1];
+InstallGlobalFunction( LoadPackageDocumentation, function( info )
+    local short, pkgdoc, long, sixfile;
 
     # Load all books for the package.
     for pkgdoc in info.PackageDoc do
