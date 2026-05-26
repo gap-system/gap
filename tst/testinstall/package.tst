@@ -435,9 +435,11 @@ false
 gap> IsPackageLoaded("mockpkg", ">=2.0");
 false
 
+#
 # instruct GAP to load the package, and record all its declarations
 # the help book of mockpkg might already have been loaded in other tests
 # -> we suppress a warning about this
+#@if IsPackageMarkedForLoading( "gapdoc", "" )
 gap> old_warning_level := InfoLevel( InfoWarning );;
 gap> SetInfoLevel( InfoWarning, 0 );
 gap> PackageVariablesInfo("mockpkg", "0.1");;
@@ -481,9 +483,14 @@ gap> IsDateFormatValid := function( datestring )
 >    end;;
 gap> IsDateFormatValid( GAPInfo.Date );
 true
+#@else
+gap> LoadPackage("mockpkg", false);
+oops, should not print here
+true
+#@fi
 
 # Test the Cite() command (output changed with GAPDoc 1.6.6 and again with 1.6.7)
-#@if CompareVersionNumbers(InstalledPackageVersion("gapdoc"), "1.6.7")
+#@if IsPackageMarkedForLoading( "gapdoc", "1.6.7" )
 gap> Cite("mockpkg");
 Please use one of the following samples
 to cite mockpkg version from this installation
@@ -538,7 +545,7 @@ rg/}}},
 }
 
 
-#@else
+#@elif IsPackageMarkedForLoading( "gapdoc", "" )
 gap> Cite("mockpkg");
 Please use one of the following samples
 to cite mockpkg version from this installation
