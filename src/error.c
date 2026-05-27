@@ -498,18 +498,6 @@ void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual)
 
 /****************************************************************************
 **
-*F  ErrorReturnObj( <msg>, <arg1>, <arg2>, <msg2> ) . .  print and return obj
-*/
-Obj ErrorReturnObj(const Char * msg, Int arg1, Int arg2, const Char * msg2)
-{
-    Obj LateMsg;
-    LateMsg = MakeString(msg2);
-    return CallErrorInner(msg, arg1, arg2, 0, 0, 1, LateMsg);
-}
-
-
-/****************************************************************************
-**
 *F  ErrorReturnVoid( <msg>, <arg1>, <arg2>, <msg2> )  . . .  print and return
 */
 void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
