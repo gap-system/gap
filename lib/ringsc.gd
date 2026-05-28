@@ -47,6 +47,14 @@ DeclareSynonym("IsSubringSCRing",IsRing and IsSCRingObjCollection);
 ##  it can be either a string <A>name</A>
 ##  (then <A>name</A><C>1</C>, <A>name</A><C>2</C> etc. are chosen)
 ##  or a list of strings which are then chosen.
+##  <Example><![CDATA[
+##  gap> T:=EmptySCTable( 1, 0 );;
+##  gap> SetEntrySCTable( T, 1, 1, [ 1, 1 ] );
+##  gap> R:=RingByStructureConstants([9], T);   # Z/9Z
+##  <ring with 1 generator>
+##  gap> Elements(R);
+##  [ 0*r.1, r.1, 2*r.1, 3*r.1, 4*r.1, 5*r.1, 6*r.1, 7*r.1, -r.1 ]
+##  ]]></Example>
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
