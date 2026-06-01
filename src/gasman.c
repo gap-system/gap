@@ -129,7 +129,7 @@
 #include <setjmp.h>
 #include <string.h>
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
 
@@ -1957,7 +1957,7 @@ static NOINLINE void GenStackFuncBags(void)
     DisableMarkBagValidation = 1;
 #endif
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
     emscripten_scan_stack(ScanRange);
     emscripten_scan_registers(ScanRange);
 // The standard scanning may not be required with
