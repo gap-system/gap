@@ -52,12 +52,7 @@ function( S, R, gens, imgs )
   fi;
 
   # Make the general mapping.
-  map:= Objectify( TypeOfDefaultGeneralMapping( S, R,
-                            IsSPGeneralMapping
-                        and IsRingGeneralMapping
-                        and IsSCRingGeneralMappingByImagesDefaultRep ),
-                    rec(
-                        ) );
+  map:= Objectify( TypeOfDefaultGeneralMapping( S, R, filter ), rec( ) );
 
     SetMappingGeneratorsImages(map,[Immutable(gens),Immutable(imgs)]);
     # return the general mapping
