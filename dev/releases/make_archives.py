@@ -29,6 +29,7 @@ from typing import List, Optional
 from utils import (
     download_with_sha256,
     error,
+    normalize_archive_permissions,
     notice,
     patchfile,
     verify_command_available,
@@ -211,14 +212,11 @@ with working_directory(tmpdir + "/" + basename):
     notice("Extracting package tarballs")
     with tarfile.open(tmpdir + "/" + all_packages_tarball) as tar:
         tar.extractall(path="pkg")
-    # for some reason pkg sometimes ends up with permission 0700 so
-    # we make sure to fix that here
-    subprocess.run(["chmod", "0755", "pkg"], check=True)
-    # ensure all files are at readable by everyone
-    subprocess.run(["chmod", "-R", "a+r", "."], check=True)
 
     with tarfile.open(tmpdir + "/" + req_packages_tarball) as tar:
         tar.extractall(path=tmpdir + "/" + req_packages)
+    notice("Normalizing permissions in required packages")
+    normalize_archive_permissions(tmpdir + "/" + req_packages)
 
     notice("Building GAP's manuals")
     run_with_log(["make", "doc"], "gapdoc", "building the manuals")
@@ -277,6 +275,9 @@ with working_directory(tmpdir + "/" + basename):
 
     notice("Removing generated files we don't want to distribute")
     run_with_log(["make", "distclean"], "make-distclean", "make distclean")
+
+    notice("Normalizing permissions in GAP archive tree")
+    normalize_archive_permissions(".")
 
 
 # Create an archive in the current directory with shutil.make_archive, and
