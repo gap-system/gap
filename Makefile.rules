@@ -24,8 +24,11 @@ default: all
 ########################################################################
 # Developer helper targets
 ########################################################################
-test_release_notes:
-	cd dev/releases && python3 -m pytest test_release_notes.py
+test_release_scripts:
+	cd dev/releases && python3 -m pytest
+.PHONY: test_release_scripts
+
+test_release_notes: test_release_scripts
 .PHONY: test_release_notes
 
 
