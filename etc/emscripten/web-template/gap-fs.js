@@ -1,3 +1,29 @@
+// Instrument fetch and XMLHttpRequest so the page can collect the list of
+// URLs the worker actually requests, for rebuilding startup_manifest.json
+// without scraping the browser network panel. Each unique URL is posted
+// to the main thread as { type: "gap-fetched", url: ... }.
+(function instrumentFetches() {
+    const seen = new Set();
+    const report = (raw) => {
+        if (typeof raw !== "string") return;
+        if (seen.has(raw)) return;
+        seen.add(raw);
+        self.postMessage({ type: "gap-fetched", url: raw });
+    };
+
+    const origFetch = self.fetch;
+    self.fetch = function(input, init) {
+        report(typeof input === "string" ? input : input && input.url);
+        return origFetch.apply(this, arguments);
+    };
+
+    const origOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url) {
+        report(url);
+        return origOpen.apply(this, arguments);
+    };
+})();
+
 self.Module = self.Module || {};
 self.Module.preRun = self.Module.preRun || [];
 
@@ -43,8 +69,12 @@ self.Module.preRun.push(function() {
                             if (p.startsWith('/')) p = p.substring(1);
                             startupSet.add(p);
                         });
+                    } else {
+                        console.info("startup_manifest.json not present; falling back to fully lazy loading");
                     }
-                } catch (e) {}
+                } catch (e) {
+                    console.warn("Failed to load startup_manifest.json:", e);
+                }
 
                 var fetchPromises = fileList.map(async function(appPath) {
                     var fetchRelativePath = appPath.split('/').map(encodeURIComponent).join('/');
@@ -58,16 +88,15 @@ self.Module.preRun.push(function() {
                             FS.stat(idbfsPath);
                             FS.writeFile(finalAppPath, FS.readFile(idbfsPath));
                         } catch (e) {
-                            try {
-                                const response = await fetch(fetchPath);
-                                if (response.ok) {
-                                    const buffer = await response.arrayBuffer();
-                                    const data = new Uint8Array(buffer);
-                                    FS.writeFile(finalAppPath, data);
-                                    FS.writeFile(idbfsPath, data);
-                                    needsSave = true;
-                                }
-                            } catch (fetchErr) {}
+                            const response = await fetch(fetchPath);
+                            if (!response.ok) {
+                                throw new Error("Failed to fetch startup file " + fetchPath + ": " + response.status);
+                            }
+                            const buffer = await response.arrayBuffer();
+                            const data = new Uint8Array(buffer);
+                            FS.writeFile(finalAppPath, data);
+                            FS.writeFile(idbfsPath, data);
+                            needsSave = true;
                         }
                     } else {
                         var parts = appPath.split('/');
