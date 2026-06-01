@@ -1,103 +1,137 @@
 #!/usr/bin/env bash
+#
+# Build GAP as a WebAssembly module using emscripten.
+# Run from the GAP source root: etc/emscripten/build.sh
+#
+# Most people will want etc/emscripten/build-in-docker.sh instead, which
+# wraps this in a pinned emsdk container.
 
-set -eux
+set -euxo pipefail
 
 BASEDIR="$(pwd)"
+JOBS=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 
-if ! command -v emmake &> /dev/null; then
-    echo Please install, and source, emscripten
-    echo This script was tested with version 3.1.23
-    echo See https://emscripten.org/docs/getting_started/downloads.html for install instructions
+if ! command -v emmake >/dev/null 2>&1; then
+    echo "Please install and source emscripten." >&2
+    echo "This script is tested with emsdk 3.1.23." >&2
+    echo "See https://emscripten.org/docs/getting_started/downloads.html" >&2
     exit 1
-fi;
+fi
 
 # Build the configure script if this is a fresh git checkout
 if [[ ! -f ./configure ]]; then
     ./autogen.sh
 fi
 
-# First build a standard GAP install, for some files
-# we will need during building
+# First build a standard GAP install: we need ffgen and gap-nocomp on the
+# host to generate sources that the wasm build cannot run itself.
+#
+# We copy those generated sources (build/c_*.c, build/ffdata.*) into src/
+# further down, so the wasm build picks them up as overrides. GAP's
+# Makefile.rules, however, also treats src/c_oper1.c, src/ffdata.c etc. as
+# overrides during THIS native build -- so leftovers from a previous run
+# would stop the native build regenerating them in native-build/build/, and
+# the copy below would then fail. Remove any leftovers so the native build
+# regenerates them cleanly (keeps the script idempotent across re-runs).
+rm -f src/c_oper1.c src/c_type1.c src/ffdata.c src/ffdata.h
 (
     mkdir -p native-build
     cd native-build
     if [[ ! -f config.status ]]; then
         ../configure
     fi
-    make -j8
+    make -j"$JOBS"
 )
 
 AUX_BUILD=$PWD/extern/emscripten/build
 AUX_PREFIX=$PWD/extern/emscripten/install
 
-mkdir -p "$AUX_BUILD"
-mkdir -p "$AUX_PREFIX"
+mkdir -p "$AUX_BUILD" "$AUX_PREFIX"
 
+# A 32-bit build is required by GAP's small-integer representation, so we
+# pin --build to i686-pc-linux-gnu. This may need revisiting if GAP ever
+# moves to a 64-bit-friendly small-integer encoding.
 (
     mkdir -p "$AUX_BUILD/gmp"
-    cd "$AUX_BUILD/gmp" &&
+    cd "$AUX_BUILD/gmp"
     if [[ ! -f config.status ]]; then
         CC_FOR_BUILD=/usr/bin/gcc ABI=standard \
-        emconfigure $BASEDIR/extern/gmp/configure \
-        --build i686-pc-linux-gnu --host none \
-        --disable-assembly --enable-cxx \
-        --prefix=$AUX_PREFIX
-    fi &&
-    emmake make -j8 &&
+        emconfigure "$BASEDIR/extern/gmp/configure" \
+            --build i686-pc-linux-gnu --host none \
+            --disable-assembly --enable-cxx \
+            --prefix="$AUX_PREFIX"
+    fi
+    emmake make -j"$JOBS"
     emmake make install
 )
 
 (
     mkdir -p "$AUX_BUILD/zlib"
-    cd "$AUX_BUILD/zlib" &&
+    cd "$AUX_BUILD/zlib"
     if [[ ! -f Makefile ]]; then
-        emconfigure $BASEDIR/extern/zlib/configure --prefix=$AUX_PREFIX
-    fi;
-    emmake make -j8 &&
+        # --static: skip the shared library. Newer emscripten's wasm-ld
+        # rejects linking zlib's .so test programs (examplesh) with
+        # "unknown file type: libz.so"; GAP only needs the static libz.a.
+        emconfigure "$BASEDIR/extern/zlib/configure" --static --prefix="$AUX_PREFIX"
+    fi
+    emmake make -j"$JOBS"
     emmake make install
 )
 
-# There are two problems with building GAP
-# 1) GAP builds some executables (ffgen and gap-nocomp), which it wants to
-#    execute while building. We get these files from 'native-build'.
-# 2) 'configure' gets confused by some of the LDFLAGS we need, so we have to pass
-#     them in to 'make'
+# Two quirks of building GAP under emscripten:
+# 1) GAP runs ffgen and gap-nocomp during the build. We copy the host-built
+#    versions in from native-build/ further down.
+# 2) configure rejects some LDFLAGS we need at link time, so we pass them
+#    only at make-time.
 #
-# These options are:
-# -sASYNCIFY -- we don't care about ASYNC, but this forces the compiler to output
-# all variables onto the stack, which is required for GASMAN
-# Note we could use 'ALLOW_MEMORY_GROWTH', both we don't currently, we instead set
-# a big memory window.
-# -O2 : Some optimisation
-# EXEEXT=.html -- this is actually a GAP makefile option, it lets us make the
-# output 'gap.html', which makes emscripten output a html page we can load
-# --pre-js lazy_fs.js : Prepend lazy_fs.js that is generated for lazy loading
+# Link-time flags worth noting:
+#   -sASYNCIFY       forces variables onto the stack (required by GASMAN).
+#   -O2              enables some optimisation.
+#   EXEEXT=.html     a GAP makefile knob that produces gap.html, the html
+#                    shim emscripten generates for loading the wasm module.
 
-# Run configure if we don't have a makefile, or someone configured this
-# GAP for standard building (emscripten builds will use 'emcc')
-if [[ ! -f GNUmakefile ]] || ! grep '/emcc' GNUmakefile > /dev/null; then
+if [[ ! -f GNUmakefile ]] || ! grep -q '/emcc' GNUmakefile; then
+    # Wipe any in-tree state from a prior native (or mismatched) build.
+    # Stale build/deps/*.d files reference build/ffdata.h, which under
+    # emcc would be regenerated by a non-executable JS shim; stale .o
+    # files have the wrong architecture. Configure regenerates build/.
+    rm -rf build ffgen
     emconfigure ./configure ABI=32 \
-    --with-gmp=$AUX_PREFIX \
-    --with-zlib=$AUX_PREFIX \
-    LDFLAGS="-s ASYNCIFY=1 -O2"
-fi;
-
-# Get full required packages
-emmake make bootstrap-pkg-full
-
-# Copy in files from native_build
-cp native-build/build/c_*.c native-build/build/ffdata.* src/
-
-# Dynamically find and append ALL required files to the JS array
-# The flag -type f is safe because the only symbolic link is 'tst/mockpkg/Makefile.gappkg',
-# which is safe to ignore
-find pkg lib grp tst doc hpcgap dev benchmark -type f | python3 etc/emscripten/generate_gap_fs_json.py
-
-if [ $? -ne 0 ]; then
-    echo "Build aborted: generate_gap_fs_json.py failed."
-    exit 1
+        --with-gmp="$AUX_PREFIX" \
+        --with-zlib="$AUX_PREFIX" \
+        LDFLAGS="-s ASYNCIFY=1 -O2"
 fi
 
-# The EXEEXT is usually for windows, but here it lets us set GAP's extension,
-# which lets us produce a html page to run GAP in.
-emmake make -j8 LDFLAGS="-lidbfs.js -s ASYNCIFY=1 -sTOTAL_STACK=32mb -sASYNCIFY_STACK_SIZE=32000000 -sINITIAL_MEMORY=2048mb -O2" EXEEXT=".html"
+# Provide the GAP package distribution without re-downloading it on every
+# build. Preference order:
+#   1. An existing pkg/ directory.
+#   2. packages.tar.gz already on the host (carried in the source mount).
+#   3. The tarball baked into the docker image at /opt/gap-packages.tar.gz.
+#   4. As a last resort, GAP's own bootstrap-pkg-full target downloads it.
+# Skipping straight to tar avoids `bootstrap-pkg-full`, which calls
+# curl -L -O unconditionally and overwrites packages.tar.gz on every run.
+if [[ ! -d pkg ]]; then
+    if [[ ! -f packages.tar.gz && -f /opt/gap-packages.tar.gz ]]; then
+        cp /opt/gap-packages.tar.gz packages.tar.gz
+    fi
+    if [[ -f packages.tar.gz ]]; then
+        mkdir pkg
+        (cd pkg && tar xzf ../packages.tar.gz)
+    else
+        emmake make bootstrap-pkg-full
+    fi
+fi
+
+# Copy host-built generated sources into place
+cp native-build/build/c_*.c native-build/build/ffdata.* src/
+
+# Build the file list that will be served. -L follows symlinks so that
+# users' local development setups (e.g. replacing pkg/foo with a symlink
+# to a git checkout under git/foo) are picked up; -type f then drops any
+# symlinks themselves.
+find -L pkg lib grp tst doc hpcgap dev benchmark -type f ! -path 'pkg/log/*' \
+    | python3 etc/emscripten/generate_gap_fs_json.py
+
+emmake make -j"$JOBS" \
+    LDFLAGS="-lidbfs.js -s ASYNCIFY=1 -sTOTAL_STACK=32mb -sASYNCIFY_STACK_SIZE=32000000 -sINITIAL_MEMORY=2048mb -O2" \
+    EXEEXT=".html"
