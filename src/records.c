@@ -214,7 +214,7 @@ static BOOL IsRecObject(Obj obj)
 */
 Obj             (*ElmRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
-static Obj ElmRecOper;
+static Obj ElmRecOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj ElmRecHandler(Obj self, Obj rec, Obj rnam)
 {
@@ -247,7 +247,7 @@ static Obj ElmRecObject(Obj obj, UInt rnam)
 */
 BOOL (*IsbRecFuncs[LAST_REAL_TNUM + 1])(Obj rec, UInt rnam);
 
-static Obj IsbRecOper;
+static Obj IsbRecOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj IsbRecHandler(Obj self, Obj rec, Obj rnam)
 {
@@ -276,7 +276,7 @@ static BOOL IsbRecObject(Obj obj, UInt rnam)
 */
 void            (*AssRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam, Obj obj );
 
-static Obj AssRecOper;
+static Obj AssRecOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj AssRecHandler(Obj self, Obj rec, Obj rnam, Obj obj)
 {
@@ -304,7 +304,7 @@ static void AssRecObject(Obj obj, UInt rnam, Obj val)
 */
 void            (*UnbRecFuncs[LAST_REAL_TNUM+1]) ( Obj rec, UInt rnam );
 
-static Obj UnbRecOper;
+static Obj UnbRecOper GAP_GC_GLOBALLY_ROOTED;
 
 static Obj UnbRecHandler(Obj self, Obj rec, Obj rnam)
 {
