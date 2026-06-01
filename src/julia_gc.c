@@ -67,6 +67,8 @@
 // should not be enabled by default.
 // #define VALIDATE_MARKING
 
+// if DISABLE_STACK_SCAN is defined, all stack scanning is disabled
+// #define DISABLE_STACK_SCAN
 
 // if USE_GAP_INSIDE_JULIA is defined, then some hacks which are needed
 // to make julia-inside-gap work are disabled. This is mainly for use in
@@ -166,13 +168,15 @@ static jl_datatype_t * DatatypeGapObj;
 static jl_datatype_t * DatatypeSmallBag;
 static jl_datatype_t * DatatypeLargeBag;
 
+#ifndef DISABLE_STACK_SCAN
 static jl_task_t * ScannedRootTask;
+#endif
 
 static size_t MaxPoolObjSize;
 static int    FullGC;
 static UInt   StartTime, TotalTime;
 
-#if !defined(USE_GAP_INSIDE_JULIA)
+#if !defined(USE_GAP_INSIDE_JULIA) && !defined(DISABLE_STACK_SCAN)
 static Bag *       GapStackBottom;
 static jl_task_t * RootTaskOfMainThread;
 #endif
@@ -184,8 +188,10 @@ static TNumFreeFuncBags TabFreeFuncBags[NUM_TYPES];
 // HACK: TabMarkFuncBags is accessed by MarkCopyingSubBags in src/objects.c
 TNumMarkFuncBags TabMarkFuncBags[NUM_TYPES];
 
+#ifndef DISABLE_STACK_SCAN
 static TaskInfoTree * TaskStacks;
 static pthread_mutex_t TaskStacksMutex;
+#endif
 
 //
 // global bags
@@ -324,6 +330,8 @@ void MarkJuliaWeakRef(void * p, void * ref)
         ((MarkData *)ref)->youngRef++;
 }
 
+
+#ifndef DISABLE_STACK_SCAN
 
 // Overview of conservative stack scanning
 //
@@ -627,6 +635,8 @@ static void GapTaskScanner(jl_task_t * task, int root_task)
     }
 }
 
+#endif // DISABLE_STACK_SCAN
+
 // Julia callback
 static void PreGCHook(int full)
 {
@@ -653,7 +663,9 @@ static void PreGCHook(int full)
 // Julia callback
 static void PostGCHook(int full)
 {
+#ifndef DISABLE_STACK_SCAN
     ScannedRootTask = 0;
+#endif
     TotalTime += SyTime() - StartTime;
 #ifdef COLLECT_MARK_CACHE_STATS
     /* printf("\n>>>Attempts: %ld\nHit rate: %lf\nCollision rate: %lf\n",
@@ -758,6 +770,7 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     jl_init();
 #endif
 
+#ifndef DISABLE_STACK_SCAN
     if (jl_n_gcthreads > 1)
         pthread_mutex_init(&TaskStacksMutex, NULL);
     TaskStacks = TaskInfoTreeMake();
@@ -766,6 +779,7 @@ void GAP_InitJuliaMemoryInterface(jl_module_t *   module,
     // TLS and thus need to be installed after initialization.
     jl_gc_set_cb_root_scanner(GapRootScanner, 1);
     jl_gc_set_cb_task_scanner(GapTaskScanner, 1);
+#endif
     jl_gc_set_cb_pre_gc(PreGCHook, 1);
     jl_gc_set_cb_post_gc(PostGCHook, 1);
     // jl_gc_enable(0); /// DEBUGGING
@@ -816,7 +830,7 @@ void InitBags(UInt initial_size, Bag * stack_bottom)
 {
     TotalTime = 0;
 
-#if !defined(USE_GAP_INSIDE_JULIA)
+#if !defined(USE_GAP_INSIDE_JULIA) && !defined(DISABLE_STACK_SCAN)
     // initialize Julia memory interface. Note that this is only necessary
     // when we run standalone. In contrast, when GAP is loaded from GAP.jl
     // then GAP.jl invokes `GAP_InitJuliaMemoryInterface` at an appropriate
