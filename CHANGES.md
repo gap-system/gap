@@ -1,6 +1,6 @@
 # GAP - history of changes
 
-## GAP 4.16.0 (May 2026)
+## GAP 4.16.0 (June 2026)
 
 The following gives an overview of the changes compared to the previous
 release. This list is not complete, many more internal or minor changes
@@ -91,6 +91,7 @@ affect some users directly.
 
 ### Fixed bugs that could lead to unexpected errors
 
+- [#6418](https://github.com/gap-system/gap/pull/6418) Fix `RingGeneralMappingByImages` for non-SCRing
 - [#6196](https://github.com/gap-system/gap/pull/6196) Fix an inconsistency problem in `IsFinite` for matrix groups over cycl. fields.
 - [#6159](https://github.com/gap-system/gap/pull/6159) Fix a potential error message about data types when computing extensions
 
@@ -116,10 +117,10 @@ affect some users directly.
 
 #### Updated packages redistributed with GAP
 
-The GAP 4.16.0 distribution contains 172 packages, of which 68 have been
+The GAP 4.16.0 distribution contains 172 packages, of which 69 have been
 updated since GAP 4.15.1. The full list of updated packages is given below:
 
-- [**4ti2Interface**](https://homalg-project.github.io/pkg/4ti2Interface): 2024.11-01 -> 2025.12-01
+- [**4ti2Interface**](https://homalg-project.github.io/pkg/4ti2Interface): 2024.11-01 -> 2026.05-01
 - [**Alnuth**](https://gap-packages.github.io/alnuth): 3.2.1 -> 4.0.0
 - [**ANUPQ**](https://gap-packages.github.io/anupq/): 3.3.2 -> 3.3.3
 - [**AtlasRep**](https://www.math.rwth-aachen.de/~Thomas.Breuer/atlasrep): 2.1.9 -> 2.1.11
@@ -137,6 +138,7 @@ updated since GAP 4.15.1. The full list of updated packages is given below:
 - [**Digraphs**](https://digraphs.github.io/Digraphs): 1.13.1 -> 1.14.0
 - [**ExamplesForHomalg**](https://homalg-project.github.io/pkg/ExamplesForHomalg): 2023.10-01 -> 2025.12-01
 - [**ferret**](https://gap-packages.github.io/ferret/): 1.0.15 -> 1.0.16
+- [**float**](https://gap-packages.github.io/float/): 1.0.9 -> 1.0.10
 - [**FORMAT**](https://gap-packages.github.io/format/): 1.4.4 -> 1.4.5
 - [**Forms**](https://gap-packages.github.io/forms): 1.2.13 -> 1.3.0
 - [**FPLSA**](https://gap-packages.github.io/FPLSA): 1.2.7 -> 1.2.8
@@ -157,7 +159,7 @@ updated since GAP 4.15.1. The full list of updated packages is given below:
 - [**IO_ForHomalg**](https://homalg-project.github.io/pkg/IO_ForHomalg): 2023.02-04 -> 2025.12-01
 - [**json**](https://gap-packages.github.io/json/): 2.2.3 -> 2.4.0
 - [**LinearAlgebraForCAP**](https://homalg-project.github.io/pkg/LinearAlgebraForCAP): 2025.09-01 -> 2026.05-04
-- [**LocalizeRingForHomalg**](https://homalg-project.github.io/pkg/LocalizeRingForHomalg): 2023.10-01 -> 2026.04-01
+- [**LocalizeRingForHomalg**](https://homalg-project.github.io/pkg/LocalizeRingForHomalg): 2023.10-01 -> 2026.05-01
 - [**lpres**](https://gap-packages.github.io/lpres): 1.1.1 -> 1.1.2
 - [**matgrp**](https://www.math.colostate.edu/~hulpke/matgrp): 0.72 -> 0.73
 - [**MatricesForHomalg**](https://homalg-project.github.io/pkg/MatricesForHomalg): 2025.09-01 -> 2026.04-01
@@ -174,7 +176,7 @@ updated since GAP 4.15.1. The full list of updated packages is given below:
 - [**qpa**](https://gap-packages.github.io/qpa): 1.35 -> 1.37
 - [**RCWA**](https://gap-packages.github.io/rcwa/): 4.8.0 -> 4.9.0
 - [**recog**](https://gap-packages.github.io/recog): 1.4.4 -> 1.5.1
-- [**RingsForHomalg**](https://homalg-project.github.io/pkg/RingsForHomalg): 2024.11-02 -> 2025.12-01
+- [**RingsForHomalg**](https://homalg-project.github.io/pkg/RingsForHomalg): 2024.11-02 -> 2026.05-01
 - [**SCO**](https://homalg-project.github.io/pkg/SCO): 2023.08-01 -> 2025.12-01
 - [**Semigroups**](https://semigroups.github.io/Semigroups): 5.5.4 -> 5.6.3
 - [**singular**](https://gap-packages.github.io/singular/): 2025.08.26 -> 2026.05.05
