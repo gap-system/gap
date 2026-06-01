@@ -1,22 +1,185 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <title>gap-wasm</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GAP in the browser</title>
     <script src="coi-serviceworker.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.17.0/css/xterm.css">
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                     "Helvetica Neue", Arial, sans-serif;
+        color: #1d1d1f;
+        background: #f5f5f7;
+      }
+      header, footer {
+        padding: 12px 20px;
+        background: #fff;
+        border-color: #d2d2d7;
+        border-style: solid;
+      }
+      header { border-width: 0 0 1px 0; }
+      footer { border-width: 1px 0 0 0; font-size: 13px; color: #555; }
+      header h1 { margin: 0 0 4px 0; font-size: 20px; }
+      header p   { margin: 0; font-size: 14px; max-width: 90ch; color: #444; }
+      header a, footer a { color: #0066cc; }
+      .notice {
+        margin: 12px 20px;
+        padding: 12px 16px;
+        background: #fff;
+        border: 1px solid #d2d2d7;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      #unsupported { display: none; color: #b00020; border-color: #b00020; }
+      details.about {
+        margin: 12px 20px;
+        padding: 10px 16px;
+        background: #fff;
+        border: 1px solid #d2d2d7;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      details.about summary { cursor: pointer; font-weight: 600; }
+      details.about[open] summary { margin-bottom: 8px; }
+      details.about p { margin: 8px 0; line-height: 1.45; }
+      details.about a { color: #0066cc; }
+      #terminal-wrap {
+        display: inline-block;
+        margin: 12px 20px;
+        background: #000;
+        padding: 6px;
+        border-radius: 4px;
+      }
+      code { background: #eee; padding: 1px 4px; border-radius: 3px; }
+    </style>
   </head>
   <body>
-    <div id="terminal"></div>
+    <header>
+      <h1>GAP in the browser</h1>
+      <p>
+        A WebAssembly build of <a href="https://www.gap-system.org">GAP</a>
+        running entirely in your browser — useful for trying things out
+        without installing. Not all packages work, working memory is
+        capped, and performance is reduced compared to a native build.
+        For real work, install GAP from
+        <a href="https://www.gap-system.org">www.gap-system.org</a>.
+      </p>
+    </header>
+
+    <details class="about">
+      <summary>What is this? &middot; Licensing</summary>
+      <p>
+        <a href="https://www.gap-system.org">GAP</a> is a system for
+        computational discrete algebra, with particular emphasis on
+        computational group theory. This page is a self-contained
+        WebAssembly build, served as a static site and run inside a
+        Web Worker; you interact with it through an
+        <a href="https://github.com/mame/xterm-pty">xterm-pty</a>
+        terminal in the page below.
+      </p>
+      <p>
+        To get started, try <code>1+1;</code>,
+        <code>Factorial(20);</code>, or <code>SymmetricGroup(5);</code>.
+        The full <a href="https://www.gap-system.org/doc/">GAP
+        manuals</a> apply, with two caveats: some packages won't load
+        (anything that needs a native compiler or system library), and
+        anything that wants the local filesystem won't work.
+      </p>
+      <p>
+        Files downloaded on first visit are cached in your browser's
+        IndexedDB, so subsequent visits start much faster. Clear the
+        site data to reset the cache.
+      </p>
+      <p>
+        GAP is free software, distributed under the
+        <a href="LICENSE">GNU General Public License</a> (version 2 or
+        later). See the <a href="COPYRIGHT">copyright notice</a> for
+        the full statement.
+      </p>
+    </details>
+
+    <div id="loading" class="notice">
+      Loading GAP… The first visit downloads several tens of megabytes;
+      subsequent visits are cached in your browser and load much faster.
+    </div>
+
+    <div id="unsupported" class="notice">
+      This page needs <code>SharedArrayBuffer</code>, which is only
+      available when the page is served with the headers
+      <code>Cross-Origin-Opener-Policy: same-origin</code> and
+      <code>Cross-Origin-Embedder-Policy: require-corp</code>. The
+      bundled service worker handles this on hosts where you can't set
+      headers (e.g. GitHub Pages); for local hosting use
+      <code>etc/emscripten/serve.py</code>.
+    </div>
+
+    <div id="terminal-wrap">
+      <div id="terminal"></div>
+    </div>
+
+    <footer>
+      <a href="https://www.gap-system.org">GAP main site</a> ·
+      <a href="https://www.gap-system.org/doc/">Documentation</a> ·
+      <a href="https://github.com/gap-system/gap">Source on GitHub</a>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/xterm@4.17.0/lib/xterm.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xterm-pty@0.9.4/index.js"></script>
     <script>
-      const xterm = new Terminal();
-      xterm.open(document.getElementById("terminal"));
+      const loadingEl = document.getElementById("loading");
+      const unsupportedEl = document.getElementById("unsupported");
 
-      const { master, slave } = openpty();
-      xterm.loadAddon(master);
+      // Without SharedArrayBuffer the worker can't talk to the page
+      // synchronously; xterm-pty would stall on every read.
+      if (typeof SharedArrayBuffer === "undefined") {
+        loadingEl.style.display = "none";
+        unsupportedEl.style.display = "block";
+      } else {
+        const xterm = new Terminal({
+          cols: 85,
+          rows: 40,
+          fontFamily: "Menlo, Consolas, monospace",
+          fontSize: 14,
+          cursorBlink: true,
+          theme: { background: "#000000", foreground: "#e6e6e6" },
+        });
+        xterm.open(document.getElementById("terminal"));
 
-      const worker = new Worker("gap-worker.js");
-      new TtyServer(slave).start(worker);
+        const { master, slave } = openpty();
+        xterm.loadAddon(master);
+
+        const worker = new Worker("gap-worker.js");
+
+        // Capture URLs reported by gap-fs.js's fetch/XHR instrumentation,
+        // for rebuilding startup_manifest.json. Exposed on window so it
+        // can be inspected/copied from the devtools console:
+        //     copy(JSON.stringify(fetchedUrls))
+        // Use addEventListener so xterm-pty's TtyServer (which sets
+        // worker.onmessage) keeps working alongside our listener.
+        window.fetchedUrls = [];
+        const fetchedSet = new Set();
+        worker.addEventListener("message", (e) => {
+          const data = e.data;
+          if (data && data.type === "gap-fetched" && !fetchedSet.has(data.url)) {
+            fetchedSet.add(data.url);
+            window.fetchedUrls.push(data.url);
+          }
+        });
+
+        // Hide the loading notice as soon as GAP's banner appears.
+        let firstOutput = false;
+        xterm.onRender(() => {
+          if (!firstOutput) {
+            firstOutput = true;
+            loadingEl.style.display = "none";
+          }
+        });
+
+        new TtyServer(slave).start(worker);
+      }
     </script>
   </body>
 </html>
