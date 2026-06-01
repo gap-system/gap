@@ -381,11 +381,13 @@ static Obj FuncALL_RNAMES(Obj self)
     const UInt          countRNam = LEN_PLIST(NamesRNam);
 
     copy = NEW_PLIST_IMM( T_PLIST, countRNam );
+    GAP_GC_PUSH2(&copy, &s);
     for ( i = 1;  i <= countRNam;  i++ ) {
         name = NAME_RNAM( i );
         s = CopyToStringRep(name);
         SET_ELM_PLIST( copy, i, s );
     }
+    GAP_GC_POP();
     SET_LEN_PLIST( copy, countRNam );
     return copy;
 }
