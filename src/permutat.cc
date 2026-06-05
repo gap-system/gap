@@ -113,13 +113,12 @@ DECL_MODULE_STATE Obj TmpPerm;
 #endif
 
 
-static UInt1 * UseTmpPerm(UInt size)
+static void UseTmpPerm(UInt size)
 {
     if (TmpPerm == (Obj)0)
         TmpPerm  = NewBag(T_PERM4, size);
     else if (SIZE_BAG(TmpPerm) < size)
         ResizeBag(TmpPerm, size);
-    return (UInt1 *)(ADDR_OBJ(TmpPerm) + 1);
 }
 
 template <typename T>
