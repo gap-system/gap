@@ -1073,8 +1073,9 @@ static Obj FuncTzSearchC(Obj self, Obj args)
        inv = 109109 * inv;
 
     // initialize the hash table
-    for ( i = 0; i < 2048; i++ )
-       ((UInt4 *)keys1)[i] = ((UInt4 *)keys2)[i] = ((UInt4 *)keys3)[i] = 0;
+    memset(keys1, 0, sizeof(keys1));
+    memset(keys2, 0, sizeof(keys2));
+    memset(keys3, 0, sizeof(keys3));
 
     // loop over the Tietze relators, starting at position pos1
     for ( y = pos1;  y < numrels;  ) {
