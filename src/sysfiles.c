@@ -1207,7 +1207,7 @@ void SyFputs (
     const Char *        line,
     Int                 fid )
 {
-    UInt                i;
+    size_t i;
 
     // if outputting to the terminal compute the cursor position and length
     if ( fid == 1 || fid == 3 ) {
