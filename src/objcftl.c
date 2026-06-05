@@ -44,6 +44,7 @@ struct CFTLModuleState {
 #ifdef HPCGAP
 };
 
+// for debugging from GDB / lldb, we mark this as extern inline
 extern inline struct CFTLModuleState *CFTLState(void)
 {
     return (struct CFTLModuleState *)StateSlotsAtOffset(CFTLStateOffset);
