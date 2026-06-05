@@ -9,8 +9,8 @@ gap> testfunctionA;
 function( args... ) ... end
 gap> Print(testfunctionA,"\n");
 function ( args... )
-    <<kernel code>> from the global function "testfunctionA" is not yet define\
-d:
+    <<kernel or compiled code>> from the global function "testfunctionA" is no\
+t yet defined
 end
 gap> InstallGlobalFunction(testfunctionA, x -> x);
 gap> testfunctionA;
@@ -23,15 +23,15 @@ gap> name := List([1..100], x -> 'a');;
 gap> func := NEW_GLOBAL_FUNCTION(name);;
 gap> Print(func,"\n");
 function ( args... )
-    <<kernel code>> from the global function "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" is not y\
-et defined:
+    <<kernel or compiled code>> from the global function "aaaaaaaaaaaaaaaaaaaa\
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+aa" is not yet defined
 end
 gap> name := List([1..1000], x -> 'a');;
 gap> func := NEW_GLOBAL_FUNCTION(name);;
 gap> Print(func,"\n");
 function ( args... )
-    <<kernel code>> from the global function "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
+    <<kernel or compiled code>> from the global function "aaaaaaaaaaaaaaaaaaaa\
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
@@ -44,6 +44,6 @@ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\
-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" is not yet defined:
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" is not yet defined
 end
 gap> STOP_TEST("declarefunction.tst");

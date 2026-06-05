@@ -1347,11 +1347,8 @@ void PrintKernelFunction(Obj func)
                 Pr("<<compiled GAP code>> from %g:%d", (Int)filename,
                    startline);
         }
-        else if (location != Fail) {
-            Pr("<<kernel code>> from %g:%g", (Int)filename, (Int)location);
-        }
         else {
-            Pr("<<kernel or compiled code>>", 0, 0);
+            Pr("<<kernel or compiled code>> from %g", (Int)filename, 0);
         }
     }
     else {
@@ -1731,13 +1728,6 @@ static Obj FuncENDLINE_FUNC(Obj self, Obj func)
     return Fail;
 }
 
-static Obj FuncLOCATION_FUNC(Obj self, Obj func)
-{
-    RequireFunction(SELF_NAME, func);
-
-    return IsKernelFunction(func) ? KernelLocationOfFunction(func) : Fail;
-}
-
 /****************************************************************************
 **
 *F  FuncUNPROFILE_FUNC( <self>, <func> )  . . . . . . . . . . .  stop profile
@@ -1955,7 +1945,6 @@ static StructGVarFunc GVarFuncs[] = {
     GVAR_FUNC_1ARGS(UNPROFILE_FUNC, func),
     GVAR_FUNC_1ARGS(IsKernelFunction, func),
     GVAR_FUNC_1ARGS(FILENAME_FUNC, func),
-    GVAR_FUNC_1ARGS(LOCATION_FUNC, func),
     GVAR_FUNC_1ARGS(STARTLINE_FUNC, func),
     GVAR_FUNC_1ARGS(ENDLINE_FUNC, func),
 

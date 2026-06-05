@@ -347,13 +347,6 @@ BIND_GLOBAL( "LocationFunc", function(func)
         APPEND_LIST(ret, STRING_INT(line));
         return ret;
     fi;
-    line := LOCATION_FUNC(func);
-    if line <> fail then
-        APPEND_LIST(ret, nam);
-        APPEND_LIST(ret, ":");
-        APPEND_LIST(ret, line);
-        return ret;
-    fi;
     return fail;
 end);
 

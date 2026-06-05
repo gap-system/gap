@@ -111,12 +111,6 @@ gap> ENDLINE_FUNC(f);
 1
 gap> ENDLINE_FUNC(IS_OBJECT);
 fail
-gap> LOCATION_FUNC(fail);
-Error, LOCATION_FUNC: <func> must be a function (not the value 'fail')
-gap> LOCATION_FUNC(f);
-fail
-gap> LOCATION_FUNC(IS_OBJECT);
-fail
 
 #
 gap> UNPROFILE_FUNC(fail);
