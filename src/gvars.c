@@ -675,7 +675,7 @@ void MakeThreadLocalVar (
     if (IS_INTOBJ(ExprGVar(gvar)))
        value = (Obj) 0;
     SET_ELM_GVAR_LIST( ExprGVars, gvar, INTOBJ_INT(rnam) );
-    SetHasExprCopiesFopies(gvar, 1);
+    SetHasExprCopiesFopies(gvar, TRUE);
     CHANGED_GVAR_LIST( ExprGVars, gvar );
     if (value && TLVars)
         SetTLDefault(TLVars, rnam, value);
@@ -690,7 +690,7 @@ void MakeThreadLocalVar (
 Obj FuncDeclareGlobalName(Obj self, Obj name)
 {
     RequireStringRep("DeclareGlobalName", name);
-    SetIsDeclaredName(GVarName(CONST_CSTR_STRING(name)), 1);
+    SetIsDeclaredName(GVarName(CONST_CSTR_STRING(name)), TRUE);
     return 0;
 }
 
@@ -849,7 +849,7 @@ static Obj FuncAUTO(Obj self, Obj args)
         gvar = GVarName( CONST_CSTR_STRING(name) );
         SET_ELM_GVAR_LIST( ValGVars, gvar, 0 );
         SET_ELM_GVAR_LIST( ExprGVars, gvar, list );
-        SetHasExprCopiesFopies(gvar, 1);
+        SetHasExprCopiesFopies(gvar, TRUE);
         CHANGED_GVAR_LIST( ExprGVars, gvar );
     }
 
@@ -1058,7 +1058,7 @@ static Obj FuncUNB_GVAR(Obj self, Obj gvar)
 */
 typedef struct  {
     Obj *               copy;
-    UInt                isFopy;
+    BOOL                isFopy;
     const Char *        name;
 } StructCopyGVar;
 
@@ -1100,7 +1100,7 @@ void InitCopyGVar (
         Panic("no room to record CopyGVar");
     }
     CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
-    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 0;
+    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = FALSE;
     CopyAndFopyGVars[NCopyAndFopyGVars].name = name;
     NCopyAndFopyGVars++;
 #ifdef HPCGAP
@@ -1137,7 +1137,7 @@ void InitFopyGVar (
         Panic("no room to record FopyGVar");
     }
     CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
-    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 1;
+    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = TRUE;
     CopyAndFopyGVars[NCopyAndFopyGVars].name = name;
     NCopyAndFopyGVars++;
 #ifdef HPCGAP
@@ -1181,7 +1181,7 @@ void UpdateCopyFopyInfo ( void )
                 MakeBagPublic(cops);
 #endif
                 SET_ELM_GVAR_LIST( FopiesGVars, gvar, cops );
-                SetHasExprCopiesFopies(gvar, 1);
+                SetHasExprCopiesFopies(gvar, TRUE);
                 CHANGED_GVAR_LIST( FopiesGVars, gvar );
             }
         }
@@ -1193,7 +1193,7 @@ void UpdateCopyFopyInfo ( void )
                 MakeBagPublic(cops);
 #endif
                 SET_ELM_GVAR_LIST( CopiesGVars, gvar, cops );
-                SetHasExprCopiesFopies(gvar, 1);
+                SetHasExprCopiesFopies(gvar, TRUE);
                 CHANGED_GVAR_LIST( CopiesGVars, gvar );
             }
         }

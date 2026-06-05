@@ -279,7 +279,7 @@ static Obj FuncWeakPointerObj(Obj self, Obj list)
 
 static Int LengthWPObj(Obj wp)
 {
-  Int changed = 0;
+  BOOL changed = FALSE;
   Int len = STORED_LEN_WPOBJ(wp);
 #ifdef HPCGAP
   if (!CheckExclusiveWriteAccess(wp))
@@ -291,7 +291,7 @@ static Int LengthWPObj(Obj wp)
     elm = ELM_WPOBJ(wp, len);
     if (elm)
         break;
-    changed = 1;
+    changed = TRUE;
     len--;
   }
   if (changed)

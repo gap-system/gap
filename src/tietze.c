@@ -289,7 +289,7 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
     Int                 total;          // total length of relators
     Int                 old, new;       // generators or inverses
     Int                 leng, reduced;  // relator lengths
-    Int                 altered;        // flag
+    BOOL                altered;        // flag
     Int                 i, j;           // loop variables
 
     // check the Tietze stack
@@ -317,7 +317,7 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
         rel = ptRels[i];
         pt2 = ptRel = ADDR_OBJ( rel );
         leng = INT_INTOBJ( ptLens[i] );
-        altered = 0;
+        altered = FALSE;
 
         // don't change a square relator defining a valid involution
         if (ELM_PLIST(flags, i) == INTOBJ_INT(3) && leng == 2 &&
@@ -336,16 +336,18 @@ static Obj FuncTzReplaceGens(Obj self, Obj tietze)
 
             new = INT_INTOBJ( ptInvs[-old] );
             if ( ! new ) {
-                altered = 1;
+                altered = TRUE;
                 continue;  // loop over j
             }
 
             if ( pt2 > ptRel && *pt2 == ptInvs[new] ) {
-                altered = 1;
+                altered = TRUE;
                 --pt2;
             }
             else {
-                if ( new != old )  { altered = 1; }
+                if ( new != old ) {
+                    altered = TRUE;
+                }
                 *++pt2 = INTOBJ_INT( new );
             }
         }
@@ -973,9 +975,8 @@ static Obj FuncTzSearchC(Obj self, Obj args)
     Int                 n, m;           // subword lengths
     Int                 count;          // number of altered relators
     Int                 i, j, jj, x, y; // loop variables
-    Int                 lasty;          // flag
-    Int                 altered;        // flag
-    Int                 equal;          // flag
+    Int                 lasty;          // previous value of y
+    BOOL                altered;        // flag
 
     // get and check arguments
     if ( ! IS_SMALL_LIST(args) || 4 < LEN_LIST(args) || LEN_LIST(args) < 3 ) {
@@ -1036,7 +1037,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
             ErrorQuit("<equal> must be false or true", 0, 0);
         }
     }
-    equal = ( equ == True );
+    const BOOL equal = ( equ == True );
 
     // Skip relators of inconvenient lengths or with inconvenient flags,
     // and return if the remaining range is empty
@@ -1130,7 +1131,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
        ylen    = INT_INTOBJ( ptLens[y] );
        yflag   = INT_INTOBJ( ptFlags[y] );
        ylen1   = ylen - 1;
-       altered = 0;
+       altered = FALSE;
 
        // Loop to the next relator, if the current relator is too short
        if ( y > lasty
@@ -1238,7 +1239,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                       }
 
                       ptFlags[y] = INTOBJ_INT( newflag );
-                      altered = 1;
+                      altered = TRUE;
                       ++count;
                       break;  // loop over i
                    }
@@ -1285,7 +1286,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                    ptFlags = ADDR_OBJ( flags);
                    ptInvs  = ADDR_OBJ( invs ) + (numgens + 1);
 
-                   altered = 1;
+                   altered = TRUE;
                    ++count;
                    --y;
                    break;  // loop over i
@@ -1331,7 +1332,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                       }
 
                       ptFlags[y] = INTOBJ_INT( newflag );
-                      altered = 1;
+                      altered = TRUE;
                       ++count;
                       break;  // loop over i
                    }
@@ -1378,7 +1379,7 @@ static Obj FuncTzSearchC(Obj self, Obj args)
                    ptFlags = ADDR_OBJ( flags);
                    ptInvs  = ADDR_OBJ( invs ) + numgens + 1;
 
-                   altered = 1;
+                   altered = TRUE;
                    ++count;
                    --y;
                    break;  // loop over i
