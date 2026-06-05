@@ -1341,7 +1341,12 @@ InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
     if HasIsSubgroupSL( G ) then
       SetIsSubgroupSL( H, IsSubgroupSL( G ) );
     fi;
-    F:= FieldOfMatrixList( [ g ] );
+
+    F:= DefaultScalarDomainOfMatrixList( [ g ] );
+    if not IsField( F ) then
+      return H;
+    fi;
+
     if HasInvariantBilinearForm( G ) then
       if not IsBound( ginv ) then
         ginv := g^-1;
