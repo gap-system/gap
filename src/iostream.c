@@ -30,6 +30,7 @@
 #include "io.h"
 #include "lists.h"
 #include "modules.h"
+#include "plist.h"
 #include "stringobj.h"
 #include "sysenv.h"
 #include "sysfiles.h"
@@ -858,13 +859,14 @@ static Obj FuncCREATE_PTY_IOSTREAM(Obj self, Obj dir, Obj prog, Obj args)
     Char * argv[MAX_ARGS + 2];
     UInt   i, len;
     Int    pty;
-    len = LEN_LIST(args);
+    RequirePlainList(SELF_NAME, args);
+    len = LEN_PLIST(args);
     if (len > MAX_ARGS)
         ErrorQuit("Too many arguments", 0, 0);
     ConvString(dir);
     ConvString(prog);
     for (i = 1; i <= len; i++) {
-        allargs[i] = ELM_LIST(args, i);
+        allargs[i] = ELM_PLIST(args, i);
         ConvString(allargs[i]);
     }
     // From here we cannot afford to have a garbage collection
@@ -1098,13 +1100,13 @@ FuncExecuteProcess(Obj self, Obj dir, Obj prg, Obj in, Obj out, Obj args)
     RequireStringRep(SELF_NAME, prg);
     Int iin = GetSmallInt(SELF_NAME, in);
     Int iout = GetSmallInt(SELF_NAME, out);
-    RequireSmallList(SELF_NAME, args);
+    RequirePlainList(SELF_NAME, args);
 
     // create an argument array
-    for (i = 1; i <= LEN_LIST(args); i++) {
+    for (i = 1; i <= LEN_PLIST(args); i++) {
         if (i == 1023)
             break;
-        tmp = ELM_LIST(args, i);
+        tmp = ELM_PLIST(args, i);
         RequireStringRep(SELF_NAME, tmp);
         ExecArgs[i] = tmp;
     }
