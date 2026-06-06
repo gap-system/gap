@@ -301,9 +301,6 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
 
     printAutomaticTraceback := function()
         if IsBound(OnBreak) and IsFunction(OnBreak) then
-            if OnBreak = Where or OnBreak = WhereWithVars then
-                PrintTo(ERROR_OUTPUT, "Stack trace:\n");
-            fi;
             OnBreak();
         fi;
     end;

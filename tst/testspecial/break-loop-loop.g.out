@@ -4,7 +4,6 @@ gap> i:=0;
 0
 gap> f(1);
 Error, bar
-Stack trace:
 *[1] Error( "bar" );
    @ *stdin*:3
 <function "f">( <arguments> )

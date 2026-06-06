@@ -716,7 +716,6 @@ gap> xx := 15;
 gap> MakeReadOnlyGlobal("xx");
 gap> xx := 16;
 Error, Variable: 'xx' is read only
-Stack trace:
 not in any function at *stdin*:3
 type 'quit;' to quit to outer loop
 brk> quit;
@@ -1562,7 +1561,6 @@ gap> f2:= function( x ) return f1( x ); end;;
 gap> f2( 4 );
 value: 4
 Error, Function Calls: <func> must return a value
-Stack trace:
 *[1] f1( x )
    @ *stdin*:2
 <function "f2">( <arguments> )

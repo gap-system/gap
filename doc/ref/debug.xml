@@ -42,7 +42,6 @@ error as in the following example occurs and a break loop is entered:
 gap> IsNormal(2,2);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `IsNormal' on 2 arguments
-Stack trace:
 called from read-eval loop at *stdin*:1
 type 'quit;' to quit to outer loop
 brk>

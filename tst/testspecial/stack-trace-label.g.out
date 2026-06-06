@@ -3,7 +3,6 @@ gap> f := function()
 > end;;
 gap> f();
 Error, foo
-Stack trace:
 *[1] Error( "foo" );
    @ *stdin*:3
 <function "f">( <arguments> )

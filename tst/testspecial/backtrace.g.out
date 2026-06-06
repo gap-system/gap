@@ -13,7 +13,6 @@ function(  ) ... end
 gap> f();
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `[]:=' on 3 arguments
-Stack trace:
 *[1] l[[ 1 .. 3 ]] := 1;
    @ *stdin*:11
 <function "f">( <arguments> )
@@ -38,7 +37,6 @@ gap> ###########################################################################
 gap> f:=function() if true = 1/0 then return 1; fi; return 2; end;;
 gap> f();
 Error, Rational operations: <divisor> must not be zero
-Stack trace:
 *[1] 1 / 0
    @ *stdin*:15
 <function "f">( <arguments> )
@@ -62,7 +60,6 @@ gap> ###########################################################################
 gap> f:=function() local x; if x then return 1; fi; return 2; end;;
 gap> f();
 Error, Variable: 'x' must have an assigned value
-Stack trace:
 *[1] if x then
     return 1;
 fi;
@@ -93,7 +90,6 @@ gap> ###########################################################################
 gap> f:=function() if 1 then return 1; fi; return 2; end;;
 gap> f();
 Error, <expr> must be 'true' or 'false' (not the integer 1)
-Stack trace:
 *[1] if 1 then
     return 1;
 fi;
@@ -123,7 +119,6 @@ gap> ###########################################################################
 gap> f:=function() if 1 < 0 then return 1; elif 1 then return 2; fi; return 3; end;;
 gap> f();
 Error, <expr> must be 'true' or 'false' (not the integer 1)
-Stack trace:
 *[1] if 1 < 0 then
     return 1;
 elif 1 then
@@ -159,7 +154,6 @@ gap> ###########################################################################
 gap> f:=function() while 1 do return 1; od; return 2; end;;
 gap> f();
 Error, <expr> must be 'true' or 'false' (not the integer 1)
-Stack trace:
 *[1] while 1 do
     return 1;
 od;
@@ -189,7 +183,6 @@ gap> ###########################################################################
 gap> f:=function() local i; for i in 1 do return 1; od; return 2; end;;
 gap> f();
 Error, You cannot loop over the integer 1 did you mean the range [1..1]
-Stack trace:
 *[1] Error( "You cannot loop over the integer ", n, " did you mean the range [1..", n, "]" );
    @ GAPROOT/lib/integer.gi:LINE
  [2] for i in 1 do
@@ -231,7 +224,6 @@ gap> f:=function() local i; for i in true do return 1; od; return 2; end;;
 gap> f();
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Iterator' on 1 arguments
-Stack trace:
 *[1] for i in true do
     return 1;
 od;
@@ -262,7 +254,6 @@ gap> f:=function(x) local i,j; for i in true do return 1; od; return 2; end;;
 gap> f([1,2,3]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Iterator' on 1 arguments
-Stack trace:
 *[1] for i in true do
     return 1;
 od;
@@ -295,7 +286,6 @@ gap> f:=function(x) local i,j; Unbind(x); for i in true do return 1; od; return 
 gap> f([1,2,3]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Iterator' on 1 arguments
-Stack trace:
 *[1] for i in true do
     return 1;
 od;
@@ -328,7 +318,6 @@ gap> f:=function(x) local i,j; Unbind(x); j := 4; for i in true do return 1; od;
 gap> f([1,2,3]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `Iterator' on 1 arguments
-Stack trace:
 *[1] for i in true do
     return 1;
 od;
@@ -360,7 +349,6 @@ gap>
 gap> f:=function() local x; repeat x:=1; until 1; return 2; end;;
 gap> f();
 Error, <expr> must be 'true' or 'false' (not the integer 1)
-Stack trace:
 *[1] repeat
     x := 1;
 until 1;
@@ -391,7 +379,6 @@ gap> ###########################################################################
 gap> f:=function() local x; Assert(0, 1); return 2; end;;
 gap> f();
 Error, Assert: <cond> must be 'true' or 'false' (not the integer 1)
-Stack trace:
 *[1] Assert( 0, 1 );
    @ *stdin*:44
 <function "f">( <arguments> )
@@ -416,7 +403,6 @@ gap> ###########################################################################
 gap> f:=function() local x; Assert(0, 1, "hello"); return 2; end;;
 gap> f();
 Error, Assert: <cond> must be 'true' or 'false' (not the integer 1)
-Stack trace:
 *[1] Assert( 0, 1, "hello" );
    @ *stdin*:47
 <function "f">( <arguments> )
@@ -446,7 +432,6 @@ gap> InstallMethod( \[\,\], [ IsMatrixOrMatrixObj, IsPosInt, IsPosInt ],
 gap> l := [[1]];; f := {} -> l[2,1];;
 gap> f();
 Error, List Element: <list>[2] must have an assigned value
-Stack trace:
 *[1] return m[i][j];
    @ GAPROOT/lib/matrix.gi:LINE
  [2] ELM_LIST( m, row, col )
@@ -494,7 +479,6 @@ gap> ##  Verify issue #1373 is fixed
 gap> ##
 gap> InstallMethod( Matrix, [IsFilter, IsSemiring, IsMatrixObj], {a,b,c} -> fail );
 Error, FLAGS_FILTER: <oper> must be an operation (not a function)
-Stack trace:
 *[1] <<compiled GAP function "INSTALL_METHOD">>
    @ GAPROOT/lib/oper1.g:LINE
  [2] <<compiled GAP function "InstallMethod">>

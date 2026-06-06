@@ -12,7 +12,6 @@ gap> f:=function(a)
 > end;;
 gap> f(1);
 Error, breakpoint
-Stack trace:
 *[1] Error( "breakpoint" );
    @ *stdin*:9
  [2] g( 10 )
@@ -37,7 +36,6 @@ Syntax warning: Unbound global variable in *errin*:6
 unbound_global;
 ^^^^^^^^^^^^^^
 Error, Variable: 'unbound_global' must have a value
-Stack trace:
 *[1] Error( "breakpoint" );
    @ *stdin*:9
  [2] g( 10 )
@@ -54,7 +52,6 @@ brk> IsBound(y);
 true
 brk> unbound_higher;
 Error, Variable: 'unbound_higher' must have an assigned value
-Stack trace:
 *[1] Error( "breakpoint" );
    @ *stdin*:9
  [2] g( 10 )
@@ -73,7 +70,6 @@ brk> IsBound(z);
 true
 brk> unbound_local;
 Error, Variable: 'unbound_local' must have an assigned value
-Stack trace:
 *[1] Error( "breakpoint" );
    @ *stdin*:9
  [2] g( 10 )
@@ -89,7 +85,6 @@ gap> x;
 42
 gap> y;
 Error, Variable: 'y' must have a value
-Stack trace:
 not in any function at *stdin*:16
 gap> 
 gap> h:=function(p)
@@ -100,7 +95,6 @@ gap> h:=function(p)
 function( p ) ... end
 gap> f(1);
 Error, breakpoint
-Stack trace:
 *[1] Error( "breakpoint" );
    @ *stdin*:9
  [2] g( 10 )
@@ -111,7 +105,6 @@ you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> h(2);
 Error, foobar
-Stack trace:
 *[1] Error( "foobar" );
    @ *stdin*:20
  [2] Error( "breakpoint" );
@@ -132,7 +125,6 @@ brk_2> IsBound(y);
 true
 brk_2> unbound_higher;
 Error, Variable: <debug-variable-1-4> must have a value
-Stack trace:
 *[1] Error( "foobar" );
    @ *stdin*:20
  [2] Error( "breakpoint" );
@@ -145,7 +137,6 @@ brk_2>
 brk_2> # check coding of dvars
 brk_2> function() return unbound_higher; end;
 Error, Variable: <debug-variable-1-4> cannot be used here
-Stack trace:
 *[1] Error( "foobar" );
    @ *stdin*:20
  [2] Error( "breakpoint" );
@@ -156,7 +147,6 @@ Stack trace:
  called from read-eval loop at *errin*:9
 brk_2> function() return IsBound(unbound_higher); end;
 Error, Variable: <debug-variable-1-4> cannot be used here
-Stack trace:
 *[1] Error( "foobar" );
    @ *stdin*:20
  [2] Error( "breakpoint" );
@@ -167,7 +157,6 @@ Stack trace:
  called from read-eval loop at *errin*:10
 brk_2> function() Unbind(unbound_higher); end;
 Error, Variable: <debug-variable-1-4> cannot be used here
-Stack trace:
 *[1] Error( "foobar" );
    @ *stdin*:20
  [2] Error( "breakpoint" );
@@ -178,7 +167,6 @@ Stack trace:
  called from read-eval loop at *errin*:11
 brk_2> function() unbound_higher:=0; end;
 Error, Variable: <debug-variable-1-4> cannot be used here
-Stack trace:
 *[1] Error( "foobar" );
    @ *stdin*:20
  [2] Error( "breakpoint" );

@@ -342,7 +342,6 @@ gap> list[3][5] := 'w';; list; copy;
 [ 1, 2, "three", [ 4 ] ]
 gap> copy[3][5] := 'w';
 Error, List Assignment: <list> must be a mutable list
-Stack trace:
 not in any function at *stdin*:3
 type 'quit;' to quit to outer loop
 brk> quit;

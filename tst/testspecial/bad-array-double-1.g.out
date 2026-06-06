@@ -5,7 +5,6 @@ function(  ) ... end
 gap> f();
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `[,]' on 3 arguments
-Stack trace:
 *[1] return "abc"[1, 1];
    @ *stdin*:3
 <function "f">( <arguments> )

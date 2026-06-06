@@ -477,7 +477,6 @@ indicate that you are in a break loop.
 <Log><![CDATA[
 gap> 1/0;
 Error, Rational operations: <divisor> must not be zero
-Stack trace:
 not in any function at *stdin*:2
 type 'quit;' to quit to outer loop
 ]]></Log>
@@ -488,7 +487,6 @@ If errors occur within a break loop &GAP; enters another break loop at a
 <Log><![CDATA[
 brk> 1/0;
 Error, Rational operations: <divisor> must not be zero
-Stack trace:
 not in any function at *errin*:1
 type 'quit;' to quit to outer loop
 brk_2>
@@ -898,7 +896,6 @@ gap> fun := function() local x; x := 3; bar(); end;
 function(  ) ... end
 gap> fun();
 Error, !!
-Stack trace:
 *[1] Error( "!!\n" );
    @ *stdin*:4
  [2] bar(  );

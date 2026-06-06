@@ -5,7 +5,6 @@ gap> informproc0 := function(l)
 gap> informproc0([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l(  );
    @ *stdin*:4
 <function "informproc0">( <arguments> )
@@ -22,7 +21,6 @@ gap> informproc1 := function(l)
 gap> informproc1([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1 );
    @ *stdin*:9
 <function "informproc1">( <arguments> )
@@ -39,7 +37,6 @@ gap> informproc2 := function(l)
 gap> informproc2([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1, 2 );
    @ *stdin*:14
 <function "informproc2">( <arguments> )
@@ -56,7 +53,6 @@ gap> informproc3 := function(l)
 gap> informproc3([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1, 2, 3 );
    @ *stdin*:19
 <function "informproc3">( <arguments> )
@@ -73,7 +69,6 @@ gap> informproc4 := function(l)
 gap> informproc4([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1, 2, 3, 4 );
    @ *stdin*:24
 <function "informproc4">( <arguments> )
@@ -90,7 +85,6 @@ gap> informproc5 := function(l)
 gap> informproc5([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1, 2, 3, 4, 5 );
    @ *stdin*:29
 <function "informproc5">( <arguments> )
@@ -107,7 +101,6 @@ gap> informproc6 := function(l)
 gap> informproc6([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1, 2, 3, 4, 5, 6 );
    @ *stdin*:34
 <function "informproc6">( <arguments> )
@@ -124,7 +117,6 @@ gap> informprocmore := function(l)
 gap> informprocmore([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1, 2, 3, 4, 5, 6, 7 );
    @ *stdin*:39
 <function "informprocmore">( <arguments> )
@@ -141,7 +133,6 @@ gap> informfunc0 := function(l)
 gap> informfunc0([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l(  )
    @ *stdin*:44
 <function "informfunc0">( <arguments> )
@@ -158,7 +149,6 @@ gap> informfunc1 := function(l)
 gap> informfunc1([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1 )
    @ *stdin*:49
 <function "informfunc1">( <arguments> )
@@ -175,7 +165,6 @@ gap> informfunc2 := function(l)
 gap> informfunc2([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1, 2 )
    @ *stdin*:54
 <function "informfunc2">( <arguments> )
@@ -192,7 +181,6 @@ gap> informfunc3 := function(l)
 gap> informfunc3([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1, 2, 3 )
    @ *stdin*:59
 <function "informfunc3">( <arguments> )
@@ -209,7 +197,6 @@ gap> informfunc4 := function(l)
 gap> informfunc4([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1, 2, 3, 4 )
    @ *stdin*:64
 <function "informfunc4">( <arguments> )
@@ -226,7 +213,6 @@ gap> informfunc5 := function(l)
 gap> informfunc5([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1, 2, 3, 4, 5 )
    @ *stdin*:69
 <function "informfunc5">( <arguments> )
@@ -243,7 +229,6 @@ gap> informfunc6 := function(l)
 gap> informfunc6([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1, 2, 3, 4, 5, 6 )
    @ *stdin*:74
 <function "informfunc6">( <arguments> )
@@ -260,7 +245,6 @@ gap> informfuncmore := function(l)
 gap> informfuncmore([]);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `CallFuncList' on 2 arguments
-Stack trace:
 *[1] l( 1, 2, 3, 4, 5, 6, 7 )
    @ *stdin*:79
 <function "informfuncmore">( <arguments> )

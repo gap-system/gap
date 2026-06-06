@@ -78,7 +78,6 @@ fi;
 ##  Group([ b ])
 ##  gap> Index( f, u );
 ##  Error, the coset enumeration has defined more than 4096000 cosets
-##  Stack trace:
 ##  *[1] Error( "the coset enumeration has defined more ", "than ", limit, " cosets\n" );
 ##     @ GAPROOT/lib/grpfp.gi:1230
 ##   [2] TCENUM.CosetTableFromGensAndRels( fgens, grels, fsgens )

@@ -33,7 +33,6 @@ gap> f1 := function()
 > end;;
 gap> f1();
 Error, foo
-Stack trace:
 *[1] Error( "foo" );
    @ *stdin*:3
  [2] f11(  )

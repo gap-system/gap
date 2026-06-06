@@ -26,7 +26,6 @@ gap> test:= function( n )
 > end;;
 gap> test( 1 );
 Error, !
-Stack trace:
 *[1] Error( "!\n" );
    @ *stdin*:24
  [2] test( n + 1 );
@@ -121,7 +120,6 @@ gap> test:= function( n )
 > end;;
 gap> test( 1 );
 Error, Rational operations: <divisor> must not be zero
-Stack trace:
 *[1] 1 / 0
    @ *stdin*:35
  [2] test( n + 1 );
@@ -217,7 +215,6 @@ gap> test:= function( n )
 gap> test( 1 );
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `IsCommutative' on 1 arguments
-Stack trace:
 *[1] IsAbelian( 1 )
    @ *stdin*:47
  [2] test( n + 1 );

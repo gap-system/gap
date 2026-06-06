@@ -70,7 +70,6 @@ rec(
                                                                                                                                                                                                                                                                  ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) ) )
 gap> String(r);
 Error, recursion depth trap (5000)
-Stack trace:
 *[1] String( record.(nam) )
    @ GAPROOT/lib/record.gi:LINE
  [2] String( record.(nam) )
@@ -86,7 +85,6 @@ you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> return; # try once more
 Error, recursion depth trap (5000)
-Stack trace:
 *[1] String( record.(nam) )
    @ GAPROOT/lib/record.gi:LINE
  [2] String( record.(nam) )

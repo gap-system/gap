@@ -4,7 +4,6 @@ gap> f := function()
 function(  ) ... end
 gap> f();
 Error, List Element: <list> must be a list (not the integer 1)
-Stack trace:
 *[1] return 1[1];
    @ *stdin*:3
 <function "f">( <arguments> )

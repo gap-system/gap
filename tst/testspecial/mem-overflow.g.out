@@ -2,7 +2,6 @@ gap> # double a list until there is a memory overflow
 gap> l:=[1];; while true do Append(l,l); od;
 Error, reached the pre-set memory limit
 (change it with the -o command line option)
-Stack trace:
 *[1] Append( l, l );
    @ *stdin*:3
 <function "unknown">( <arguments> )
