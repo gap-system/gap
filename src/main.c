@@ -97,7 +97,6 @@ static void SetupGAPLocation(const char * argv0, char * GAPExecLocation)
     // In the code below, we keep resetting locBuf, as some of the methods we
     // try do not promise to leave the buffer empty on a failed return.
     char locBuf[GAP_PATH_MAX] = "";
-    Int4 length = 0;
 
 #if defined(__APPLE__) && defined(__MACH__)
     uint32_t len = sizeof(locBuf);
@@ -137,7 +136,7 @@ static void SetupGAPLocation(const char * argv0, char * GAPExecLocation)
         *GAPExecLocation = 0;    // reset buffer after error
 
     // now strip the executable name off
-    length = strlen(GAPExecLocation);
+    size_t length = strlen(GAPExecLocation);
     while (length > 0 && GAPExecLocation[length] != '/') {
         GAPExecLocation[length] = 0;
         length--;

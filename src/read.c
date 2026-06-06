@@ -319,7 +319,7 @@ GAP_STATIC_ASSERT(sizeof(LHSRef) <= 8, "LHSRef is too big");
 /****************************************************************************
 **
 */
-static UInt EvalRef(ReaderState * rs, const LHSRef ref, Int needExpr)
+static UInt EvalRef(ReaderState * rs, const LHSRef ref, BOOL needExpr)
 {
     TRY_IF_NO_ERROR
     {
@@ -643,7 +643,7 @@ static void ReadReferenceModifiers(ReaderState * rs, TypSymbolSet follow)
     // read one or more selectors
     while (IS_IN(rs->s.Symbol, S_LPAREN | S_LBRACK | S_LBRACE | S_DOT)) {
         LHSRef ref = ReadSelector(rs, follow, level);
-        level = EvalRef(rs, ref, 1);
+        level = EvalRef(rs, ref, TRUE);
     }
 }
 
@@ -864,13 +864,13 @@ static void ReadCallVarAss(ReaderState * rs, TypSymbolSet follow, Char mode)
     while (IS_IN(rs->s.Symbol, S_LPAREN | S_LBRACK | S_LBRACE | S_DOT)) {
 
         // so the prefix was a reference
-        UInt level = EvalRef(rs, ref, 1);
+        UInt level = EvalRef(rs, ref, TRUE);
         ref = ReadSelector(rs, follow, level);
     }
 
     // if we need a reference
     if (mode == 'r' || (mode == 'x' && rs->s.Symbol != S_ASSIGN)) {
-        Int needExpr = mode == 'r' || !IS_IN(rs->s.Symbol, S_SEMICOLON);
+        BOOL needExpr = mode == 'r' || !IS_IN(rs->s.Symbol, S_SEMICOLON);
         EvalRef(rs, ref, needExpr);
     }
 
@@ -2065,7 +2065,7 @@ static void ReadFor(ReaderState * rs, TypSymbolSet follow)
     // <Var>
     volatile LHSRef ref = ReadVar(rs, follow);
     if (ref.type != R_INVALID)
-        EvalRef(rs, ref, 1);
+        EvalRef(rs, ref, TRUE);
     CheckUnboundGlobal(rs, ref);
 
     // 'in' <Expr>

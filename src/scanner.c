@@ -71,7 +71,7 @@ static void SyntaxErrorOrWarning(ScannerState * s,
         // error is reported, so the pretty-printed context would leak
         // a literal 0xFF byte to *errout* with no caret to anchor it.
         const char * line = GetInputLineBuffer(s->input);
-        const UInt len = strlen(line);
+        const size_t len = strlen(line);
         const int line_is_sentinel = (len == 0 || line[0] == '\377');
         if (!line_is_sentinel) {
             if (line[len-1] != '\n')
