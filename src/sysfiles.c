@@ -250,7 +250,7 @@ Int4 SyGAPCRC( const Char * name )
     UInt4       new;
     Int4        ch;
     Int         fid;
-    Int         seen_nl;
+    BOOL        seen_nl;
 
     // the CRC of a non existing file is 0
     fid = SyFopen(name, "r", TRUE);
@@ -260,7 +260,7 @@ Int4 SyGAPCRC( const Char * name )
 
     // read in the file byte by byte and compute the CRC
     crc = 0x12345678L;
-    seen_nl = 0;
+    seen_nl = FALSE;
 
     while ( (ch = SyGetch(fid) )!= EOF ) {
         if ( ch == '\377' || ch == '\n' || ch == '\r' )
@@ -269,10 +269,10 @@ Int4 SyGAPCRC( const Char * name )
             if ( seen_nl )
                 continue;
             else
-                seen_nl = 1;
+                seen_nl = TRUE;
         }
         else
-            seen_nl = 0;
+            seen_nl = FALSE;
         old = (crc >> 8) & 0x00FFFFFFL;
         new = syCcitt32[ ( (UInt4)( crc ^ ch ) ) & 0xff ];
         crc = old ^ new;
@@ -321,14 +321,14 @@ static Obj FuncCrcString(Obj self, Obj str)
     UInt4       i, len;
     const Char  *ptr;
     Int4        ch;
-    Int         seen_nl;
+    BOOL        seen_nl;
 
     RequireStringRep(SELF_NAME, str);
 
     ptr = CONST_CSTR_STRING(str);
     len = GET_LEN_STRING(str);
     crc = 0x12345678L;
-    seen_nl = 0;
+    seen_nl = FALSE;
     for (i = 0; i < len; i++) {
         ch = (Int4)(ptr[i]);
         if ( ch == '\377' || ch == '\n' || ch == '\r' )
@@ -337,10 +337,10 @@ static Obj FuncCrcString(Obj self, Obj str)
             if ( seen_nl )
                 continue;
             else
-                seen_nl = 1;
+                seen_nl = TRUE;
         }
         else
-            seen_nl = 0;
+            seen_nl = FALSE;
         old = (crc >> 8) & 0x00FFFFFFL;
         new = syCcitt32[ ( (UInt4)( crc ^ ch ) ) & 0xff ];
         crc = old ^ new;
@@ -981,7 +981,7 @@ static UInt syLastIntr; // time of the last interrupt
 
 
 #ifdef HAVE_LIBREADLINE
-static Int doingReadline;
+static BOOL doingReadline;
 #endif
 
 static void syAnswerIntr(int signr)
@@ -1207,7 +1207,7 @@ void SyFputs (
     const Char *        line,
     Int                 fid )
 {
-    UInt                i;
+    size_t i;
 
     // if outputting to the terminal compute the cursor position and length
     if ( fid == 1 || fid == 3 ) {
@@ -2089,9 +2089,9 @@ static Char * readlineFgets(Char * line, UInt length, Int fid, UInt block)
   rl_event_hook = (OnCharReadHookActiveCheck()) ? charreadhook_rl : 0;
 #endif
   // now do the real work
-  doingReadline = 1;
+  doingReadline = TRUE;
   rlres = readline(STATE(Prompt));
-  doingReadline = 0;
+  doingReadline = FALSE;
   // we get a NULL pointer on EOF, say by pressing Ctr-d
   if (!rlres) {
     if (!SyCTRD) {

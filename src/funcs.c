@@ -50,6 +50,7 @@ struct FuncsModuleState {
 #ifdef HPCGAP
 };
 
+// for debugging from GDB / lldb, we mark this as extern inline
 extern inline struct FuncsModuleState *FuncsState(void)
 {
     return (struct FuncsModuleState *)StateSlotsAtOffset(FuncsStateOffset);

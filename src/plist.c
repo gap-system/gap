@@ -255,19 +255,19 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
     // look at the first element
     elm = ELM_PLIST( list, 1 );
     if ( elm == 0 ) {
-        isDense = 0;
+        isDense = FALSE;
     }
 #ifdef HPCGAP
     else if ( !CheckReadAccess(elm) ) {
-      isHom = 0;
-      areMut = 1;
-      isTable = 0;
+      isHom = FALSE;
+      areMut = TRUE;
+      isTable = FALSE;
     }
 #endif
     else if (TEST_OBJ_FLAG(elm, OBJ_FLAG_TESTING)) {
-        isHom   = 0;
+        isHom   = FALSE;
         areMut  = IS_PLIST_MUTABLE(elm);
-        isTable = 0;
+        isTable = FALSE;
     }
     else {
 #ifdef HPCGAP
@@ -285,20 +285,20 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
             family  = FAMILY_TYPE( typeObj );
             ktnumFirst = 0;
         }
-        isHom   = 1;
+        isHom   = TRUE;
         areMut = IS_MUTABLE_OBJ(elm);
 
         // if entry is a homogeneous list this might be a table or list
         if (ktnumFirst >= T_PLIST_HOM) {
-            isTable = 1;
-            isRect = 1;
+            isTable = TRUE;
+            isRect = TRUE;
             len = LEN_PLIST(elm);
         }
         else if (ktnumFirst == 0 && IS_HOMOG_LIST(elm)) {
-            isTable = 1;
+            isTable = TRUE;
             // only handle small lists as rectangular
             if (IS_SMALL_LIST(elm)) {
-                isRect = 1;
+                isRect = TRUE;
                 len = LEN_LIST(elm);
             }
         }
@@ -319,45 +319,45 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
     for ( ; isDense && (isHom || ! areMut) && i <= lenList; i++ ) {
         elm = ELM_PLIST( list, i );
         if ( elm == 0 ) {
-            isDense = 0;
+            isDense = FALSE;
         }
 #ifdef HPCGAP
         else if ( !CheckReadAccess(elm) ) {
-            isHom = 0;
-            areMut = 1;
-            isTable = 0;
-            isRect = 0;
+            isHom = FALSE;
+            areMut = TRUE;
+            isTable = FALSE;
+            isRect = FALSE;
         }
 #endif
         else if (TEST_OBJ_FLAG(elm, OBJ_FLAG_TESTING)) {
-            isHom   = 0;
+            isHom   = FALSE;
             areMut  = (areMut || IS_PLIST_MUTABLE(elm));
-            isTable = 0;
-            isRect = 0;
+            isTable = FALSE;
+            isRect = FALSE;
         }
         else {
             if (isHom) {
                 loopTypeObj = TYPE_OBJ(elm);
                 if ( loopTypeObj != typeObj && FAMILY_TYPE(loopTypeObj) != family ) {
-                    isHom = 0;
-                    isTable = 0;
-                    isRect = 0;
+                    isHom = FALSE;
+                    isTable = FALSE;
+                    isRect = FALSE;
                 }
                 if ( isTable ) {
                     // check IS_PLIST first, as it is much cheaper
                     if (IS_PLIST(elm)) {
                         if (isRect && LEN_PLIST(elm) != len) {
-                            isRect = 0;
+                            isRect = FALSE;
                         }
                     }
                     else if (IS_SMALL_LIST(elm)) {
                         if (isRect && LEN_LIST(elm) != len) {
-                            isRect = 0;
+                            isRect = FALSE;
                         }
                     }
                     else {
-                        isTable = 0;
-                        isRect = 0;
+                        isTable = FALSE;
+                        isRect = FALSE;
                     }
                 }
             }
@@ -367,13 +367,13 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
 
     // if we know it is not dense
     if (knownNDense)
-      isDense = 0;
+      isDense = FALSE;
     // otherwise if we don't know that it IS dense
     else if (!knownDense)
       for ( ;  isDense && i <= lenList;  i++ ) {
         elm = ELM_PLIST( list, i );
         if ( elm == 0 ) {
-          isDense = 0;
+          isDense = FALSE;
         }
       }
 
@@ -403,13 +403,13 @@ static Int KTNumPlist(Obj list, Obj * famfirst)
         else if (IS_FFE(ELM_PLIST(list,1)))
           {
             FF fld = FLD_FFE(ELM_PLIST(list,1));
-            UInt isFFE = 1;
+            BOOL isFFE = TRUE;
             for (i = 2; i <= lenList; i++)
               {
                 x = ELM_PLIST(list,i);
                 if (!IS_FFE(x) || FLD_FFE(x) != fld)
                   {
-                    isFFE = 0;
+                    isFFE = FALSE;
                     break;
                   }
               }
@@ -446,8 +446,8 @@ static Int KTNumHomPlist(Obj list)
     Obj  elm, x;            // one element of <list>
     Int  i;                 // loop variable
     Int  res;               // result
-    Int  isSSort;           // list is (known to be) SSorted
-    Int  isNSort;           // list is (known to be) non-sorted
+    BOOL isSSort;           // list is (known to be) SSorted
+    BOOL isNSort;           // list is (known to be) non-sorted
 
 #ifdef HPCGAP
     if (!CheckWriteAccess(list)) {
@@ -486,13 +486,13 @@ static Int KTNumHomPlist(Obj list)
     if (IS_FFE(elm))
       {
         FF fld = FLD_FFE(ELM_PLIST(list,1));
-        UInt isFFE = 1;
+        BOOL isFFE = TRUE;
         for (i = 2; i <= lenList; i++)
           {
             x = ELM_PLIST(list,i);
             if (!IS_FFE(x) || FLD_FFE(x) != fld)
               {
-                isFFE = 0;
+                isFFE = FALSE;
                 break;
               }
           }
@@ -509,10 +509,10 @@ static Int KTNumHomPlist(Obj list)
     if (!HAS_FILT_LIST(list, FN_IS_TABLE ))
       {
         if ( IS_HOMOG_LIST(elm) ) {
-          isTable = 1;
+          isTable = TRUE;
           if (IS_PLIST(elm))
               {
-                isRect = 1;
+                isRect = TRUE;
                 len     = LEN_PLIST(elm);
               }
         }
@@ -528,7 +528,7 @@ static Int KTNumHomPlist(Obj list)
       }
     else
       {
-        isTable = 1;
+        isTable = TRUE;
         isRect = HAS_FILT_LIST(list, FN_IS_RECT);
       }
     if (isTable && !isRect)
@@ -1961,10 +1961,10 @@ static BOOL IsSSortPlist(Obj list)
     Int                 lenList;
     Obj elm1;
     Obj elm2;
-    Int                 areMut;
+    BOOL                areMut;
     Int                 i;
     Obj                 fam=0;    // initialize to help compiler
-    Int                 isHom;
+    BOOL                isHom;
 
     // get the length
     lenList = LEN_PLIST( list );
@@ -1987,10 +1987,10 @@ static BOOL IsSSortPlist(Obj list)
     if (!SyInitializing)
       {
         fam = FAMILY_OBJ(elm1);
-        isHom = 1;
+        isHom = TRUE;
       }
     else
-      isHom = 0;
+      isHom = FALSE;
 
     // loop over the other elements
     for ( i = 2; i <= lenList; i++ ) {
@@ -2047,10 +2047,10 @@ static BOOL IsSSortPlistDense(Obj list)
     Int                 lenList;
     Obj elm1;
     Obj elm2;
-    Int                 areMut;
+    BOOL                areMut;
     Int                 i;
     Obj                 fam=0;     // initialize to help compiler
-    Int                 isHom;
+    BOOL                isHom;
 
     // get the length
     lenList = LEN_PLIST( list );
@@ -2071,10 +2071,10 @@ static BOOL IsSSortPlistDense(Obj list)
     if (!SyInitializing)
       {
         fam = FAMILY_OBJ(elm1);
-        isHom = 1;
+        isHom = TRUE;
       }
     else
-      isHom = 0;
+      isHom = FALSE;
 
     // loop over the other elements
     for ( i = 2; i <= lenList; i++ ) {
@@ -2453,7 +2453,7 @@ static Obj FuncIsRectangularTablePlist(Obj self, Obj plist)
   Obj len;
   UInt lenlist;
   UInt i;
-  UInt hasMut = 0;
+  BOOL hasMut = FALSE;
   Obj elm;
 
   assert(!HAS_FILT_LIST(plist, FN_IS_RECT));

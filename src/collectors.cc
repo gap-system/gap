@@ -63,6 +63,7 @@ DECL_MODULE_STATE UInt SC_MAX_STACK_SIZE;
 
 static ModuleStateOffset CollectorsStateOffset = -1;
 
+// for debugging from GDB / lldb, we mark this as extern inline
 extern inline struct CollectorsState_ * CollectorsState(void)
 {
     return (struct CollectorsState_ *)StateSlotsAtOffset(CollectorsStateOffset);
@@ -380,7 +381,7 @@ static Int SingleCollectWord(Obj sc, Obj vv, Obj w)
 
     Obj         tmp;        // temporary obj for power
 
-    Int         resized = 0;// indicates whether a Resize() happened
+    BOOL        resized = FALSE;// indicates whether a Resize() happened
 
     // <start> is the first non-trivial entry in <v>
     start = SC_NUMBER_RWS_GENERATORS(sc);
@@ -421,23 +422,23 @@ static Int SingleCollectWord(Obj sc, Obj vv, Obj w)
     const UInt desiredStackSize = sizeof(Obj) * (max + 2);
     if ( SIZE_OBJ(vnw) < desiredStackSize ) {
         ResizeBag( vnw, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vlw) < desiredStackSize ) {
         ResizeBag( vlw, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vpw) < desiredStackSize ) {
         ResizeBag( vpw, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vew) < desiredStackSize ) {
         ResizeBag( vew, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vge) < desiredStackSize ) {
         ResizeBag( vge, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if( resized ) return -1;
 
@@ -891,7 +892,7 @@ static Int CombiCollectWord(Obj sc, Obj vv, Obj w)
 
     Obj         tmp;        // temporary obj for power
 
-    Int         resized = 0;// indicates whether a Resize() happened
+    BOOL        resized = FALSE;// indicates whether a Resize() happened
 
     // if <w> is the identity return now
     if ( NPAIRS_WORD(w) == 0 ) {
@@ -929,23 +930,23 @@ static Int CombiCollectWord(Obj sc, Obj vv, Obj w)
     const UInt desiredStackSize = sizeof(Obj) * (max + 2);
     if ( SIZE_OBJ(vnw) < desiredStackSize ) {
         ResizeBag( vnw, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vlw) < desiredStackSize ) {
         ResizeBag( vlw, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vpw) < desiredStackSize ) {
         ResizeBag( vpw, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vew) < desiredStackSize ) {
         ResizeBag( vew, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if ( SIZE_OBJ(vge) < desiredStackSize ) {
         ResizeBag( vge, desiredStackSize );
-        resized = 1;
+        resized = TRUE;
     }
     if( resized ) return -1;
 
