@@ -1367,6 +1367,9 @@ InstallGlobalFunction( InputOutputLocalProcess,
         Error("Can't handle new rep for directories");
     fi;
     dirname := cdir![1];
+    if not IsPlistRep(argts) then
+        argts := PlainListCopy(argts);
+    fi;
     ptynum := CREATE_PTY_IOSTREAM( dirname, exec, argts);
     if ptynum = fail then
         return fail;

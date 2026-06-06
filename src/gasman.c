@@ -2026,7 +2026,7 @@ static UInt CollectBags_Mark(UInt FullBags)
         // For old bags, we invoke the marking function for bags with the
         // given TNUM.
         // Young bags normally are never put onto the changed list, because
-        // CHANGED_BAGS ignores young bags. However, it can happen if we
+        // CHANGED_BAG ignores young bags. However, it can happen if we
         // resize an old bag and it needs to be moved as a result, or if we
         // swap the masterpointers of an old and a young bag. In that case,
         // we must be careful to not collect the young bag (which was old
@@ -2566,7 +2566,7 @@ void CheckMasterPointers( void )
 //    we must make sure to mark the new bag2 as changed, too (and vice-versa).
 //
 // 2. Both bags are young. Then they typically will not be on the list of
-//    changed bags, as CHANGED_BAGS just skips them.
+//    changed bags, as CHANGED_BAG just skips them.
 //    However, while CHANGED_BAG will never put a young bag on the list of
 //    changed bags, young bags can still be put on the ChangedBags list in
 //    step 3, so we need to do something similar as in step 1.
