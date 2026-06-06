@@ -715,7 +715,7 @@ static void JFinalizer(jl_value_t * obj)
     UInt        tnum = hdr->type;
 
     // if a bag needing a finalizer is retyped to a new tnum which no longer
-    // needs one, it may happen that JFinalize is called even though
+    // needs one, it may happen that JFinalizer is called even though
     // TabFreeFuncBags[tnum] is NULL
     if (TabFreeFuncBags[tnum])
         TabFreeFuncBags[tnum]((Bag)&contents);
