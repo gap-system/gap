@@ -422,7 +422,6 @@ static Obj CallErrorInner(const Char * msg,
                           Int          arg2,
                           UInt         justQuit,
                           UInt         mayReturnVoid,
-                          UInt         mayReturnObj,
                           Obj          lateMessage)
 {
     // Must do this before creating any other GAP objects,
@@ -447,7 +446,6 @@ static Obj CallErrorInner(const Char * msg,
 #endif
     AssPRec(r, RNamName("context"), STATE(CurrLVars));
     AssPRec(r, RNamName("justQuit"), justQuit ? True : False);
-    AssPRec(r, RNamName("mayReturnObj"), mayReturnObj ? True : False);
     AssPRec(r, RNamName("mayReturnVoid"), mayReturnVoid ? True : False);
     AssPRec(r, RNamName("lateMessage"), lateMessage);
     l = NewPlistFromArgs(EarlyMsg);
@@ -469,7 +467,7 @@ static Obj CallErrorInner(const Char * msg,
 
 void ErrorQuit(const Char * msg, Int arg1, Int arg2)
 {
-    CallErrorInner(msg, arg1, arg2, 1, 0, 0, False);
+    CallErrorInner(msg, arg1, arg2, 1, 0, False);
     Panic("ErrorQuit must not return");
 }
 
@@ -498,25 +496,13 @@ void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual)
 
 /****************************************************************************
 **
-*F  ErrorReturnObj( <msg>, <arg1>, <arg2>, <msg2> ) . .  print and return obj
-*/
-Obj ErrorReturnObj(const Char * msg, Int arg1, Int arg2, const Char * msg2)
-{
-    Obj LateMsg;
-    LateMsg = MakeString(msg2);
-    return CallErrorInner(msg, arg1, arg2, 0, 0, 1, LateMsg);
-}
-
-
-/****************************************************************************
-**
 *F  ErrorReturnVoid( <msg>, <arg1>, <arg2>, <msg2> )  . . .  print and return
 */
 void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
 {
     Obj LateMsg;
     LateMsg = MakeString(msg2);
-    CallErrorInner(msg, arg1, arg2, 0, 1, 0, LateMsg);
+    CallErrorInner(msg, arg1, arg2, 0, 1, LateMsg);
     // ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' );
 }
 
@@ -527,7 +513,7 @@ void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
 void ErrorMayQuit(const Char * msg, Int arg1, Int arg2)
 {
     Obj LateMsg = MakeString("type 'quit;' to quit to outer loop");
-    CallErrorInner(msg, arg1, arg2, 0, 0, 0, LateMsg);
+    CallErrorInner(msg, arg1, arg2, 0, 0, LateMsg);
     Panic("ErrorMayQuit must not return");
 }
 
