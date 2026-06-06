@@ -185,6 +185,7 @@ DECL_MODULE_STATE UInt LastNCyc;
 #ifdef HPCGAP
 }; // end of struct CycModuleState
 
+// for debugging from GDB / lldb, we mark this as extern inline
 extern inline struct CycModuleState *CycState(void)
 {
     return (struct CycModuleState *)StateSlotsAtOffset(CycStateOffset);

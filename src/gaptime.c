@@ -267,17 +267,17 @@ static Obj FuncNanosecondsSinceEpochInfo(Obj self)
     Obj          res, tmp;
     Int8         resolution;
     const char * method = "unsupported";
-    Int          monotonic = 0;
+    BOOL         monotonic = FALSE;
 
 #if defined(__APPLE__) && defined(__MACH__)
     method = "mach_absolute_time";
-    monotonic = 1;
+    monotonic = TRUE;
 #elif defined(HAVE_CLOCK_GETTIME) && defined(CLOCK_MONOTONIC)
     method = "clock_gettime";
-    monotonic = 1;
+    monotonic = TRUE;
 #elif defined(HAVE_GETTIMEOFDAY)
     method = "gettimeofday";
-    monotonic = 0;
+    monotonic = FALSE;
 #endif
 
     res = NEW_PREC(4);

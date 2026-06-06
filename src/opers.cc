@@ -755,7 +755,8 @@ static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 #ifdef HPCGAP
     RegionWriteLock(REGION(WITH_HIDDEN_IMPS_FLAGS_CACHE));
 #endif
-    Int changed, i, lastand, stop;
+    BOOL changed;
+    Int i, lastand, stop;
     Int hidden_imps_length = LEN_PLIST(HIDDEN_IMPS) / 2;
     Int hash =
         INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % HIDDEN_IMPS_CACHE_LENGTH;
@@ -777,18 +778,18 @@ static Obj FuncWITH_HIDDEN_IMPS_FLAGS(Obj self, Obj flags)
 #ifdef COUNT_OPERS
     WITH_HIDDEN_IMPS_MISS++;
 #endif
-    changed = 1;
+    changed = TRUE;
     lastand = 0;
-    while(changed)
+    while (changed)
     {
-      changed = 0;
+      changed = FALSE;
       for (i = hidden_imps_length, stop = lastand; i > stop; i--)
       {
         if( IS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2)) &&
            !IS_SUBSET_FLAGS(with, ELM_PLIST(HIDDEN_IMPS, i*2-1)) )
         {
           with = FuncAND_FLAGS(0, with, ELM_PLIST(HIDDEN_IMPS, i*2-1));
-          changed = 1;
+          changed = TRUE;
           stop = 0;
           lastand = i;
         }
@@ -847,7 +848,8 @@ static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 #ifdef HPCGAP
     RegionWriteLock(REGION(IMPLICATIONS_SIMPLE));
 #endif
-    Int changed, lastand, i, j, stop, imps_length;
+    BOOL changed;
+    Int lastand, i, j, stop, imps_length;
     Int hash = INT_INTOBJ(FuncHASH_FLAGS(0, flags)) % IMPS_CACHE_LENGTH;
     Obj cacheval;
     Obj with = flags;
@@ -886,11 +888,11 @@ static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
 
     // the other implications have to be considered in a loop
     imps_length = LEN_PLIST(IMPLICATIONS_COMPOSED);
-    changed = 1;
+    changed = TRUE;
     lastand = imps_length+1;
     while(changed)
     {
-      changed = 0;
+      changed = FALSE;
       for (i = 1, stop = lastand; i < stop; i++)
       {
         imp = ELM_PLIST(IMPLICATIONS_COMPOSED, i);
@@ -898,7 +900,7 @@ static Obj FuncWITH_IMPS_FLAGS(Obj self, Obj flags)
            !IS_SUBSET_FLAGS(with, ELM_PLIST(imp, 1)) )
         {
           with = FuncAND_FLAGS(0, with, ELM_PLIST(imp, 1));
-          changed = 1;
+          changed = TRUE;
           stop = imps_length+1;
           lastand = i;
         }
@@ -1607,7 +1609,6 @@ static UInt CacheMissStatistics[CACHE_SIZE + 1][7];
 template <Int n>
 static Obj GetMethodCached(Obj cacheBag, Int prec, Obj ids[])
 {
-    UInt  typematch;
     Obj * cache;
     Obj   method = 0;
     UInt  i;
@@ -1625,11 +1626,11 @@ static Obj GetMethodCached(Obj cacheBag, Int prec, Obj ids[])
         for (i = target; i < cacheEntrySize * CACHE_SIZE;
              i += cacheEntrySize) {
             if (cache[i + 1] == INTOBJ_INT(prec)) {
-                typematch = 1;
+                BOOL typematch = TRUE;
                 // This loop runs over the arguments, should be compiled away
                 for (int j = 0; j < n; j++) {
                     if (cache[i + j + 2] != ids[j]) {
-                        typematch = 0;
+                        typematch = FALSE;
                         break;
                     }
                 }

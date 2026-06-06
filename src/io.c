@@ -471,7 +471,7 @@ UInt CloseInput(TypInputFile * input)
         // if the input stream supports seeking, update its position to
         // reflect the actual state of things: we may have read and buffered
         // more bytes than we actually processed
-        int offset = strlen(input->ptr);
+        size_t offset = strlen(input->ptr);
         // check for EOF
         if (input->ptr[0] == '\377' && input->ptr[1] == '\0')
             offset = 0;
