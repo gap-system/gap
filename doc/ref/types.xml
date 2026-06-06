@@ -601,12 +601,10 @@ for an object.
 <P/>
 <Log><![CDATA[
 gap> Setter( prop )( Rationals, false );
-You cannot set an "and-filter" except to true
-not in any function
-Entering break read-eval-print loop ...
-you can 'quit;' to quit to outer loop, or
-you can type 'return true;' to set all components true
-(but you might really want to reset just one component) to continue
+Error, You cannot set an "and-filter" except to true
+Stack trace:
+not in any function at *stdin*:8
+type 'quit;' to quit to outer loop
 brk>
 ]]></Log>
 </Description>
