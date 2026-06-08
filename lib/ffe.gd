@@ -119,8 +119,8 @@
 ##  <Log><![CDATA[
 ##  gap> Z(11,40);
 ##  Error, Conway Polynomial 11^40 will need to computed and might be slow
-##  return to continue
-##  *[1] Error( "Conway Polynomial ", p, "^", d, " will need to computed and might be slow\n", "return to continue" );
+##  Stack trace:
+##  *[1] Error( "Conway Polynomial ", p, "^", d, " will need to computed and might be slow" );
 ##     @ GAPROOT/lib/ffeconway.gi:81
 ##   [2] FFECONWAY.SetUpConwayStuff( p, d );
 ##     @ GAPROOT/lib/ffeconway.gi:140
