@@ -815,6 +815,8 @@ static const Char * CookieOfFunc(Obj func)
 
 static const Char * CookieSuffix(const Char * cookie)
 {
+    if (!cookie)
+        return NULL;
     const Char * pos = strchr(cookie, ':');
     return pos ? pos + 1 : NULL;
 }
@@ -1013,18 +1015,6 @@ static BOOL FindKernelDefinitionLine(const char * path,
     return found;
 }
 
-static Obj KernelLocationOfFunction(Obj func)
-{
-    const Char * cookie = CookieOfFunc(func);
-    const Char * suffix = cookie ? CookieSuffix(cookie) : NULL;
-
-    // Only standard GVAR cookies map cleanly to Func<name> definitions.
-    if (!IsStandardKernelCookieSuffix(suffix))
-        return Fail;
-
-    return MakeImmString(suffix);
-}
-
 static UInt FindKernelFunctionStartLine(Obj func)
 {
     UInt line = 0;
@@ -1034,15 +1024,16 @@ static UInt FindKernelFunctionStartLine(Obj func)
     if (line)
         return line;
 
-    Obj symbol = KernelLocationOfFunction(func);
-    if (symbol == Fail)
+    const Char * cookie = CookieOfFunc(func);
+    const Char * suffix = CookieSuffix(cookie);
+    if (!IsStandardKernelCookieSuffix(suffix))
         return 0;
 
-    const Char * cookie = CookieOfFunc(func);
     Char path[GAP_PATH_MAX];
     if (!ResolveKernelCookiePath(cookie, path, sizeof(path)))
         return 0;
 
+    Obj symbol = MakeImmString(suffix);
     if (!FindKernelDefinitionLine(path, symbol, &line))
         return 0;
 
@@ -1338,10 +1329,10 @@ void PrintKernelFunction(Obj func)
     Obj body = BODY_FUNC(func);
     Obj filename = body ? GET_FILENAME_BODY(body) : 0;
     if (filename) {
-        Obj location = KernelLocationOfFunction(func);
         UInt startline = FindKernelFunctionStartLine(func);
         if (startline) {
-            if (location != Fail)
+            const Char * cookie = CookieOfFunc(func);
+            if (IsStandardKernelCookieSuffix(CookieSuffix(cookie)))
                 Pr("<<kernel code>> from %g:%d", (Int)filename, startline);
             else
                 Pr("<<compiled GAP code>> from %g:%d", (Int)filename,
