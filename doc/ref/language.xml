@@ -717,7 +717,7 @@ gap> MakeReadOnlyGlobal("xx");
 gap> xx := 16;
 Error, Variable: 'xx' is read only
 not in any function at *stdin*:3
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> IsReadOnlyGlobal("xx");
 true
@@ -1566,7 +1566,7 @@ Stack trace:
    @ *stdin*:2
 <function "f2">( <arguments> )
  called from read-eval loop at *stdin*:3
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk>
 ]]></Log>
 <P/>

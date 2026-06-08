@@ -90,9 +90,9 @@ fi;
 ##   [5] CosetTableInWholeGroup( H )
 ##     @ GAPROOT/lib/grpfp.gi:1733
 ##  ...  at *stdin*:3
-##  type 'return;' if you want to continue with a new limit of 8192000 cosets,
-##  type 'quit;' if you want to quit the coset enumeration,
-##  type 'maxlimit := 0; return;' in order to continue without a limit
+##  you can enter 'return;' continue with a new limit of 8192000 cosets,
+##  you can enter 'quit;' to abort the coset enumeration,
+##  you can enter 'maxlimit := 0; return;' in order to continue without a limit
 ##  brk> quit;
 ##  ]]></Log>
 ##  <P/>
