@@ -500,10 +500,13 @@ void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual)
 */
 void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
 {
-    Obj LateMsg;
-    LateMsg = MakeString(msg2);
-    CallErrorInner(msg, arg1, arg2, 0, 1, LateMsg);
-    // ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' );
+    if (msg2 == 0) {
+        msg2 = "you can 'return;' to continue";
+    }
+
+    Obj lateMsg = MakeString("you can 'quit;' to quit to outer loop, or\n");
+    AppendString(lateMsg, MakeString(msg2));
+    CallErrorInner(msg, arg1, arg2, 0, 1, lateMsg);
 }
 
 /****************************************************************************
@@ -634,7 +637,7 @@ void ErrorBoundedInt(
 
 void AssertionFailure(void)
 {
-    ErrorReturnVoid("Assertion failure", 0, 0, "you may 'return;'");
+    ErrorReturnVoid("Assertion failure", 0, 0, 0);
 }
 
 void AssertionFailureWithMessage(Obj message)
@@ -645,7 +648,7 @@ void AssertionFailureWithMessage(Obj message)
         AssertionFailure();
     }
     else if (IS_STRING_REP(message)) {
-        ErrorReturnVoid("Assertion failure: %g", (Int)message, 0, "you may 'return;'");
+        ErrorReturnVoid("Assertion failure: %g", (Int)message, 0, 0);
     }
     else {
         PrintObj(message);

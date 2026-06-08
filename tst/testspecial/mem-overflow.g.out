@@ -7,7 +7,8 @@ Stack trace:
    @ *stdin*:3
 <function "unknown">( <arguments> )
  called from read-eval loop at *stdin*:3
-you can 'return;'
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
 brk> # ... then we should be in a break loop. Exit that, perform some other computations.
 brk> quit;
 gap> Factorial(42);

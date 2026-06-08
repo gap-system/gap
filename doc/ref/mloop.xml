@@ -477,6 +477,7 @@ indicate that you are in a break loop.
 <Log><![CDATA[
 gap> 1/0;
 Error, Rational operations: <divisor> must not be zero
+Stack trace:
 not in any function at *stdin*:2
 type 'quit;' to quit to outer loop
 ]]></Log>
@@ -487,7 +488,8 @@ If errors occur within a break loop &GAP; enters another break loop at a
 <Log><![CDATA[
 brk> 1/0;
 Error, Rational operations: <divisor> must not be zero
-not in any function at *stdin*:2
+Stack trace:
+not in any function at *errin*:1
 type 'quit;' to quit to outer loop
 brk_2>
 ]]></Log>
@@ -537,25 +539,11 @@ purpose of this function.
 <Index Key="return"><K>return</K></Index>
 <Index>return from break loop</Index>
 The other way to leave a break loop is to <E>return</E> from a break loop.
-To do this you type <C>return;</C> or <C>return <A>obj</A>;</C>.
 If the break loop was entered because you interrupted &GAP;,
 then you can continue by typing <C>return;</C>.
-If the break loop was entered due to an error,
-you may have to modify the value of a variable before typing <C>return;</C>
-(see the example for&nbsp;<Ref Filt="IsDenseList"/>) or you may have to
-return an object <A>obj</A>
-(by typing: <C>return <A>obj</A>;</C>) to continue the computation;
-in any case, the message printed on entering the break loop will
-tell you which of these alternatives is possible.
-For example, if the break loop was entered because a variable had no
-assigned value, the value to be returned is often a value that this
-variable should have to continue the computation.
-<P/>
-<Log><![CDATA[
-brk> return 9;  # we had tried to enter the divisor 9 but typed 0 ...
-1/9
-gap> 
-]]></Log>
+If the break loop was entered due to an error, this option may or may not
+be available, depending on the kind of error. The message printed on entering
+the break loop will tell you whether this possible.
 
 </Subsection>
 
@@ -581,7 +569,6 @@ function(  ) ... end
 gap> Error("!\n");
 Error, !
 Hello
-Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> quit;
@@ -606,8 +593,7 @@ emitted at <Ref InfoClass="InfoWarning"/> level 1
 <!-- %may make it obsolete. -->
 <P/>
 Note that for break loops entered by a call to <Ref Func="Error"/>,
-the lines after <Q><C>Entering break read-eval-print loop ...</C></Q>
-and before the <C>brk></C> prompt can also be customised,
+the lines just before the <C>brk></C> prompt can also be customised,
 namely by redefining <Ref Func="OnBreakMessage"/>.
 <P/>
 <Index Key="ErrorNoTraceBack"><C>ErrorNoTraceBack</C></Index>
@@ -649,7 +635,6 @@ Here is a somewhat trivial demonstration of the use of
 <Log><![CDATA[
 gap> ErrorNoTraceBack("Gidday!", " How's", " it", " going?\n");
 Error, Gidday! How's it going?
-Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> quit;
@@ -661,7 +646,6 @@ Now we call <Ref Func="Error"/> with the same arguments to show the difference.
 gap> Error("Gidday!", " How's", " it", " going?\n");
 Error, Gidday! How's it going?
 Hello
-Entering break read-eval-print loop ...
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> quit;
@@ -685,9 +669,8 @@ gap> OnBreak := Where;;
 <Description>
 <Index>Break loop message</Index>
 When a break loop is entered by a call to <Ref Func="Error"/>
-the message after the
-<Q><C>Entering break read-eval-print loop ...</C></Q> line is produced
-by the function <C>OnBreakMessage</C>,
+the message at the end starting with <Q><C>you can 'quit;' to ...</C></Q>
+is produced by the function <C>OnBreakMessage</C>,
 which just like <Ref Func="OnBreak"/>
 is a user-configurable global variable
 that is a <E>function</E> with <E>no arguments</E>.
@@ -718,7 +701,6 @@ calling <Ref Func="Error"/> as we did above, now produces:
 gap> Error("!\n");
 Error, !
 Hello
-Entering break read-eval-print loop ...
 brk> quit; # to get back to outer loop
 ]]></Log>
 <P/>

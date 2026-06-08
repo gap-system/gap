@@ -517,8 +517,7 @@ static Obj FuncLOG_TO(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
     if ( ! OpenLog( CONST_CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid("LogTo: cannot log to %g", (Int)filename, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("LogTo: cannot log to %g", (Int)filename, 0, 0);
         return False;
     }
     return True;
@@ -533,8 +532,7 @@ static Obj FuncLOG_TO_STREAM(Obj self, Obj stream)
 {
     RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenLogStream(stream) ) {
-        ErrorReturnVoid("LogTo: cannot log to stream", 0, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("LogTo: cannot log to stream", 0, 0, 0);
         return False;
     }
     return True;
@@ -578,8 +576,7 @@ static Obj FuncINPUT_LOG_TO(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
     if ( ! OpenInputLog( CONST_CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid("InputLogTo: cannot log to %g", (Int)filename, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("InputLogTo: cannot log to %g", (Int)filename, 0, 0);
         return False;
     }
     return True;
@@ -594,8 +591,7 @@ static Obj FuncINPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
     RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenInputLogStream(stream) ) {
-        ErrorReturnVoid("InputLogTo: cannot log to stream", 0, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("InputLogTo: cannot log to stream", 0, 0, 0);
         return False;
     }
     return True;
@@ -639,8 +635,7 @@ static Obj FuncOUTPUT_LOG_TO(Obj self, Obj filename)
 {
     RequireStringRep(SELF_NAME, filename);
     if ( ! OpenOutputLog( CONST_CSTR_STRING(filename) ) ) {
-        ErrorReturnVoid("OutputLogTo: cannot log to %g", (Int)filename, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("OutputLogTo: cannot log to %g", (Int)filename, 0, 0);
         return False;
     }
     return True;
@@ -655,8 +650,7 @@ static Obj FuncOUTPUT_LOG_TO_STREAM(Obj self, Obj stream)
 {
     RequireOutputStream(SELF_NAME, stream);
     if ( ! OpenOutputLogStream(stream) ) {
-        ErrorReturnVoid("OutputLogTo: cannot log to stream", 0, 0,
-                        "you can 'return;'");
+        ErrorReturnVoid("OutputLogTo: cannot log to stream", 0, 0, 0);
         return False;
     }
     return True;
