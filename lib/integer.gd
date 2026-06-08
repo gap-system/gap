@@ -249,6 +249,7 @@ DeclareGlobalFunction( "BestQuoInt" );
 ##  <Log><![CDATA[
 ##  gap> ChineseRem( [ 6, 10, 14 ], [ 1, 2, 3 ] );
 ##  Error, the residues must be equal modulo 2
+##  Stack trace:
 ##  *[1] Error( "the residues must be equal modulo ", g.gcd );
 ##     @ GAPROOT/lib/integer.gi:391
 ##  <function "ChineseRem">( <arguments> )
