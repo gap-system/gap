@@ -72,6 +72,18 @@ extern EvalExprFunc EvalExprFuncs[256];
 
 /****************************************************************************
 **
+*V  EvalExprFuncs[<type>]  . . . . . evaluator for expressions of type <type>
+**
+**  'EvalExprFuncs'  is the dispatch table   that contains for  every type of
+**  expressions a pointer  to the  evaluator  for expressions of this   type,
+**  i.e., the function that should be  called to evaluate expressions of this
+**  type.
+*/
+extern  Obj             (* EvalExprFuncs [256]) ( Expr expr );
+
+
+/****************************************************************************
+**
 *F  EVAL_EXPR(<expr>) . . . . . . . . . . . . . . . .  evaluate an expression
 **
 **  'EVAL_EXPR' evaluates the expression <expr>.
@@ -85,7 +97,6 @@ extern EvalExprFunc EvalExprFuncs[256];
 **  Note that 'EVAL_EXPR' does not use 'TNUM_EXPR', since it also handles the
 **  two special cases that 'TNUM_EXPR' handles.
 */
-
 EXPORT_INLINE Obj EVAL_EXPR(Expr expr)
 {
     if (IS_REF_LVAR(expr)) {
@@ -94,9 +105,12 @@ EXPORT_INLINE Obj EVAL_EXPR(Expr expr)
     else if (IS_INTEXPR(expr)) {
         return OBJ_INTEXPR(expr);
     }
-    else {
-        return (*EvalExprFuncs[TNUM_STAT(expr)])(expr);
-    }
+    Stat oldStat = STAT_LVARS_PTR(STATE(PtrLVars));
+    SET_BRK_CALL_TO(expr);
+    UInt tnum = TNUM_STAT(expr);
+    Obj val = (*EvalExprFuncs[tnum])( expr );
+    SET_BRK_CALL_TO(oldStat);
+    return val;
 }
 
 
@@ -123,11 +137,20 @@ extern EvalBoolFunc EvalBoolFuncs[256];
 **  'EVAL_BOOL_EXPR' returns the  value of <expr> (which  is either 'true' or
 **  'false').
 */
+extern Obj EvalUnknownBool(Expr expr);
+
 EXPORT_INLINE Obj EVAL_BOOL_EXPR(Expr expr)
 {
-    return (*EvalBoolFuncs[TNUM_EXPR(expr)])(expr);
+    UInt tnum = TNUM_STAT(expr);
+    if (EvalUnknownBool == EvalBoolFuncs[tnum]) {
+        return EvalUnknownBool(expr);
+    }
+    Stat oldStat = STAT_LVARS_PTR(STATE(PtrLVars));
+    SET_BRK_CALL_TO(expr);
+    Obj val = (*EvalBoolFuncs[tnum])( expr );
+    SET_BRK_CALL_TO(oldStat);
+    return val;
 }
-
 
 /****************************************************************************
 **
