@@ -751,7 +751,8 @@ Error, user interrupt
    @ GAPROOT/lib/stbc.gi:18
 <function "StabChain">( <arguments> )
  called from read-eval loop at *stdin*:2
-you can 'return;'
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
 brk> Where(2);
 *[1] genlabels := Filtered( genlabels, function ( x )
         return pnt ^ sgs[x] = pnt;
