@@ -80,7 +80,7 @@ FFECONWAY.SetUpConwayStuff := function(p,d)
 
     if not IsCheapConwayPolynomial(p,d) then
         Error("Conway Polynomial ",p,"^",d,
-              " will need to computed and might be slow");
+              " will need to be computed and might be slow");
     fi;
     cp := CoefficientsOfUnivariatePolynomial(ConwayPolynomial(p,d));
 
