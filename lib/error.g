@@ -145,6 +145,7 @@ BIND_GLOBAL("WHERE", function(depth, context, activecontext, showlocals)
         PrintTo(ERROR_OUTPUT, "called from read-eval loop ");
         return;
     fi;
+    PrintTo(ERROR_OUTPUT, "Stack trace:\n");
     lastcontext := context;
     totaldepth := 0;
     countcontext := context;
@@ -308,9 +309,6 @@ BIND_GLOBAL("ErrorInner", function(options, earlyMessage)
 
     printAutomaticTraceback := function()
         if IsBound(OnBreak) and IsFunction(OnBreak) then
-            if OnBreak = Where or OnBreak = WhereWithVars then
-                PrintTo(ERROR_OUTPUT, "Stack trace:\n");
-            fi;
             OnBreak();
         fi;
     end;

@@ -929,6 +929,7 @@ end);
 ##  <Log><![CDATA[
 ##  gap> SylowSubgroup( s4, 6 );
 ##  Error, SylowSubgroup: <p> must be a prime
+##  Stack trace:
 ##  *[1] <<compiled GAP function>>
 ##     @ GAPROOT/lib/oper1.g:964
 ##   [2] <<compiled GAP function "SylowSubgroup default method">>

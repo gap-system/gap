@@ -716,7 +716,6 @@ gap> xx := 15;
 gap> MakeReadOnlyGlobal("xx");
 gap> xx := 16;
 Error, Variable: 'xx' is read only
-Stack trace:
 not in any function at *stdin*:3
 type 'quit;' to quit to outer loop
 brk> quit;

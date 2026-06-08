@@ -42,7 +42,6 @@ error as in the following example occurs and a break loop is entered:
 gap> IsNormal(2,2);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `IsNormal' on 2 arguments
-Stack trace:
 called from read-eval loop at *stdin*:1
 type 'quit;' to quit to outer loop
 brk>
@@ -918,6 +917,7 @@ gap> dive(100);
 gap> OnBreak:= function() Where(2); end;; # shorter traceback
 gap> dive(6000);
 Error, recursion depth trap (5000)
+Stack trace:
 *[1] dive( depth - 1 );
    @ *stdin*:1
  [2] dive( depth - 1 );
@@ -928,6 +928,7 @@ you can 'return;' to continue
 brk> return;
 gap> dive(11000);
 Error, recursion depth trap (5000)
+Stack trace:
 *[1] dive( depth - 1 );
    @ *stdin*:1
  [2] dive( depth - 1 );
@@ -937,6 +938,7 @@ you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> return;
 Error, recursion depth trap (10000)
+Stack trace:
 *[1] dive( depth - 1 );
    @ *stdin*:1
  [2] dive( depth - 1 );
@@ -980,6 +982,7 @@ gap> dive(100);
 Depth 100
 gap> dive(2500);
 Error, recursion depth trap (1000)
+Stack trace:
 *[1] dive( depth - 1 );
    @ *stdin*:4
  [2] dive( depth - 1 );
@@ -989,6 +992,7 @@ you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> return;
 Error, recursion depth trap (2000)
+Stack trace:
 *[1] dive( depth - 1 );
    @ *stdin*:4
  [2] dive( depth - 1 );
