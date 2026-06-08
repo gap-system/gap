@@ -851,24 +851,23 @@ When interrupting, the first line printed by <C>Where</C> actually may be
 one level higher, as shown below.
 <P/>
 <Log><![CDATA[
-gap> OnBreak := function() Where(0); end;; # eliminate back-tracing on
-gap>                                       # entry to break loop
+gap> OnBreak := function() end;; # eliminate back-tracing on entry to break loop
 gap> test:= function( n )
 >    if n > 3 then Error( "!\n" ); fi; test( n+1 ); end;;
 gap> test( 1 );
 Error, !
-at *stdin*:6
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> Where();
+Stack trace:
 *[1] Error( "!\n" );
-   @ *stdin*:4
+   @ *stdin*:3
  [2] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
  [3] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
  [4] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> n;
@@ -877,28 +876,30 @@ brk> DownEnv();
 brk> n;
 3
 brk> Where();
+Stack trace:
  [1] Error( "!\n" );
-   @ *stdin*:4
+   @ *stdin*:3
 *[2] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
  [3] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
  [4] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:5
 brk> DownEnv( 2 );
 brk> n;
 1
 brk> Where();
+Stack trace:
  [1] Error( "!\n" );
-   @ *stdin*:4
+   @ *stdin*:3
  [2] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
  [3] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
 *[4] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:8
 brk> DownEnv( -2 );

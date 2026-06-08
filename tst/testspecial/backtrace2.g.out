@@ -39,6 +39,7 @@ you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> n; Where();
 3
+Stack trace:
 *[1] Error( "!\n" );
    @ *stdin*:24
  [2] test( n + 1 );
@@ -49,6 +50,7 @@ brk> n; Where();
  called from read-eval loop at *errin*:1
 brk> DownEnv(); n; Where();
 2
+Stack trace:
  [1] Error( "!\n" );
    @ *stdin*:24
 *[2] test( n + 1 );
@@ -59,6 +61,7 @@ brk> DownEnv(); n; Where();
  called from read-eval loop at *errin*:2
 brk> DownEnv(); n; Where();
 1
+Stack trace:
  [1] Error( "!\n" );
    @ *stdin*:24
  [2] test( n + 1 );
@@ -69,6 +72,7 @@ brk> DownEnv(); n; Where();
  called from read-eval loop at *errin*:3
 brk> DownEnv(); n; Where();
 1
+Stack trace:
  [1] Error( "!\n" );
    @ *stdin*:24
  [2] test( n + 1 );
@@ -79,6 +83,7 @@ brk> DownEnv(); n; Where();
  called from read-eval loop at *errin*:4
 brk> UpEnv(); n; Where();
 2
+Stack trace:
  [1] Error( "!\n" );
    @ *stdin*:24
 *[2] test( n + 1 );
@@ -89,6 +94,7 @@ brk> UpEnv(); n; Where();
  called from read-eval loop at *errin*:5
 brk> UpEnv(); n; Where();
 3
+Stack trace:
 *[1] Error( "!\n" );
    @ *stdin*:24
  [2] test( n + 1 );
@@ -99,6 +105,7 @@ brk> UpEnv(); n; Where();
  called from read-eval loop at *errin*:6
 brk> UpEnv(); n; Where();
 3
+Stack trace:
 *[1] Error( "!\n" );
    @ *stdin*:24
  [2] test( n + 1 );
@@ -133,6 +140,7 @@ Stack trace:
 type 'quit;' to quit to outer loop
 brk> n; Where();
 3
+Stack trace:
 *[1] 1 / 0
    @ *stdin*:35
  [2] test( n + 1 );
@@ -143,6 +151,7 @@ brk> n; Where();
  called from read-eval loop at *errin*:1
 brk> DownEnv(); n; Where();
 2
+Stack trace:
  [1] 1 / 0
    @ *stdin*:35
 *[2] test( n + 1 );
@@ -153,6 +162,7 @@ brk> DownEnv(); n; Where();
  called from read-eval loop at *errin*:2
 brk> DownEnv(); n; Where();
 1
+Stack trace:
  [1] 1 / 0
    @ *stdin*:35
  [2] test( n + 1 );
@@ -163,6 +173,7 @@ brk> DownEnv(); n; Where();
  called from read-eval loop at *errin*:3
 brk> DownEnv(); n; Where();
 1
+Stack trace:
  [1] 1 / 0
    @ *stdin*:35
  [2] test( n + 1 );
@@ -173,6 +184,7 @@ brk> DownEnv(); n; Where();
  called from read-eval loop at *errin*:4
 brk> UpEnv(); n; Where();
 2
+Stack trace:
  [1] 1 / 0
    @ *stdin*:35
 *[2] test( n + 1 );
@@ -183,6 +195,7 @@ brk> UpEnv(); n; Where();
  called from read-eval loop at *errin*:5
 brk> UpEnv(); n; Where();
 3
+Stack trace:
 *[1] 1 / 0
    @ *stdin*:35
  [2] test( n + 1 );
@@ -193,6 +206,7 @@ brk> UpEnv(); n; Where();
  called from read-eval loop at *errin*:6
 brk> UpEnv(); n; Where();
 3
+Stack trace:
 *[1] 1 / 0
    @ *stdin*:35
  [2] test( n + 1 );
@@ -229,6 +243,7 @@ Stack trace:
 type 'quit;' to quit to outer loop
 brk> n; Where();
 3
+Stack trace:
 *[1] IsAbelian( 1 )
    @ *stdin*:47
  [2] test( n + 1 );
@@ -239,6 +254,7 @@ brk> n; Where();
  called from read-eval loop at *errin*:1
 brk> DownEnv(); n; Where();
 3
+Stack trace:
 *[1] IsAbelian( 1 )
    @ *stdin*:47
  [2] test( n + 1 );
@@ -249,6 +265,7 @@ brk> DownEnv(); n; Where();
  called from read-eval loop at *errin*:2
 brk> DownEnv(); n; Where();
 2
+Stack trace:
  [1] IsAbelian( 1 )
    @ *stdin*:47
 *[2] test( n + 1 );
@@ -259,6 +276,7 @@ brk> DownEnv(); n; Where();
  called from read-eval loop at *errin*:3
 brk> DownEnv(); n; Where();
 1
+Stack trace:
  [1] IsAbelian( 1 )
    @ *stdin*:47
  [2] test( n + 1 );
@@ -269,6 +287,7 @@ brk> DownEnv(); n; Where();
  called from read-eval loop at *errin*:4
 brk> UpEnv(); n; Where();
 2
+Stack trace:
  [1] IsAbelian( 1 )
    @ *stdin*:47
 *[2] test( n + 1 );
@@ -279,6 +298,7 @@ brk> UpEnv(); n; Where();
  called from read-eval loop at *errin*:5
 brk> UpEnv(); n; Where();
 3
+Stack trace:
 *[1] IsAbelian( 1 )
    @ *stdin*:47
  [2] test( n + 1 );
@@ -289,6 +309,7 @@ brk> UpEnv(); n; Where();
  called from read-eval loop at *errin*:6
 brk> UpEnv(); n; Where();
 3
+Stack trace:
 *[1] IsAbelian( 1 )
    @ *stdin*:47
  [2] test( n + 1 );

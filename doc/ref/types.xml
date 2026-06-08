@@ -602,7 +602,6 @@ for an object.
 <Log><![CDATA[
 gap> Setter( prop )( Rationals, false );
 Error, You cannot set an "and-filter" except to true
-Stack trace:
 not in any function at *stdin*:8
 type 'quit;' to quit to outer loop
 brk>
