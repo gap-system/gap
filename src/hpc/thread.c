@@ -975,7 +975,7 @@ static void InterruptCurrentThread(int locked, Stat stat)
     if (handler)
         CALL_WITH_CATCH(handler, NEW_PLIST(T_PLIST, 0));
     else
-        ErrorReturnVoid("system interrupt", 0, 0, "you can 'return;'");
+        ErrorReturnVoid("system interrupt", 0, 0, 0);
     if (!locked)
         pthread_mutex_unlock(thread->lock);
 }
