@@ -55,7 +55,6 @@ brk> ##  start a fresh execution context
 brk> ##
 brk> Read("top-level-error.g");
 Error, foo
-Stack trace:
 not in any function at top-level-error.g:1
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
@@ -63,7 +62,6 @@ brk_2> Where(20);
 not in any function at *errin*:1
 brk_2> lvl; # since `Read` started a fresh execution context, we can't access lvl here
 Error, Variable: 'lvl' must have a value
-Stack trace:
 not in any function at *errin*:2
 brk_2> quit;
 brk> lvl;

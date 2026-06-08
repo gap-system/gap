@@ -49,6 +49,7 @@ you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> SetUserPreference("WhereDepth", 12);
 brk> Where();
+Stack trace:
 * [1] Error( "foo" );
     @ *stdin*:3
   [2] f11(  )
@@ -75,6 +76,7 @@ brk> Where();
  called from read-eval loop at *errin*:2
 brk> SetUserPreference("WhereDepth", 5);
 brk> Where();
+Stack trace:
 *[1] Error( "foo" );
    @ *stdin*:3
  [2] f11(  )

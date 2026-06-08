@@ -89,7 +89,6 @@ gap> x;
 42
 gap> y;
 Error, Variable: 'y' must have a value
-Stack trace:
 not in any function at *stdin*:16
 gap> 
 gap> h:=function(p)
