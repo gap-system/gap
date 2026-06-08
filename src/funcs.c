@@ -387,8 +387,7 @@ void RecursionDepthTrap( void )
     if (GetRecursionDepth() > 0) {
         recursionDepth = GetRecursionDepth();
         SetRecursionDepth(0);
-        ErrorReturnVoid("recursion depth trap (%d)", (Int)recursionDepth, 0,
-                        "you may 'return;'");
+        ErrorReturnVoid("recursion depth trap (%d)", (Int)recursionDepth, 0, 0);
         SetRecursionDepth(recursionDepth);
     }
 }

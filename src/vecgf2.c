@@ -3826,7 +3826,7 @@ FuncREDUCE_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
 
     if (len2a == 0) {
         ErrorReturnVoid("ReduceCoeffs: second argument must not be zero", 0,
-                        0, "you may 'return;' to skip the reduction");
+                        0, "you can 'return;' to skip the reduction");
         return 0;
     }
 
@@ -3872,7 +3872,7 @@ FuncQUOTREM_COEFFS_GF2VEC(Obj self, Obj vec1, Obj len1, Obj vec2, Obj len2)
     }
     if (len2a == 0) {
         ErrorReturnVoid("QuotremCoeffs: second argument must not be zero", 0,
-                        0, "you may 'return;' to skip the reduction");
+                        0, "you can 'return;' to skip the reduction");
         return 0;
     }
 

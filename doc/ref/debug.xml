@@ -923,7 +923,8 @@ Error, recursion depth trap (5000)
  [2] dive( depth - 1 );
    @ *stdin*:1
 ...  at *stdin*:4
-you may 'return;'
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
 brk> return;
 gap> dive(11000);
 Error, recursion depth trap (5000)
@@ -932,7 +933,8 @@ Error, recursion depth trap (5000)
  [2] dive( depth - 1 );
    @ *stdin*:1
 ...  at *stdin*:5
-you may 'return;'
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
 brk> return;
 Error, recursion depth trap (10000)
 *[1] dive( depth - 1 );
@@ -940,8 +942,10 @@ Error, recursion depth trap (10000)
  [2] dive( depth - 1 );
    @ *stdin*:1
 ...  at *stdin*:5
-you may 'return;'
-brk> return;gap>
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
+brk> return;
+gap>
 ]]></Log>
 <P/>
 
@@ -981,7 +985,8 @@ Error, recursion depth trap (1000)
  [2] dive( depth - 1 );
    @ *stdin*:4
 ...  at *stdin*:12
-you may 'return;'
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
 brk> return;
 Error, recursion depth trap (2000)
 *[1] dive( depth - 1 );
@@ -989,7 +994,8 @@ Error, recursion depth trap (2000)
  [2] dive( depth - 1 );
    @ *stdin*:4
 ...  at *stdin*:12
-you may 'return;'
+you can 'quit;' to quit to outer loop, or
+you can 'return;' to continue
 brk> GetRecursionDepth();
 0
 brk> return;

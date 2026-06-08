@@ -379,7 +379,7 @@ DeclareSynonym( "AsSSortedListList", AS_LIST_SORTED_LIST );
 ##  Lists with holes are sometimes convenient when the list represents
 ##  a mapping from a finite, but not consecutive,
 ##  subset of the positive integers.
-##  <Log><![CDATA[
+##  <Example><![CDATA[
 ##  gap> IsDenseList( [ 1, 2, 3 ] );
 ##  true
 ##  gap> l := [ , 4, 9,, 25,, 49,,,, 121 ];;  IsDenseList( l );
@@ -387,22 +387,12 @@ DeclareSynonym( "AsSSortedListList", AS_LIST_SORTED_LIST );
 ##  gap> l[3];
 ##  9
 ##  gap> l[4];
-##  List Element: <list>[4] must have an assigned value
-##  not in any function
-##  Entering break read-eval-print loop ...
-##  you can 'quit;' to quit to outer loop, or
-##  you can 'return;' after assigning a value to continue
-##  brk> l[4] := 16;;  # assigning a value
-##  brk> return;       # to escape the break-loop
-##  16
-##  gap>
-##  ]]></Log>
+##  Error, List Element: <list>[4] must have an assigned value
+##  ]]></Example>
 ##  <P/>
 ##  Observe that requesting the value of <C>l[4]</C>, which was not
 ##  assigned, caused the entry of a <K>break</K>-loop
 ##  (see Section&nbsp;<Ref Sect="Break Loops"/>).
-##  After assigning a value and typing <C>return;</C>, &GAP; is finally
-##  able to comply with our request (by responding with <C>16</C>).
 ##  </Description>
 ##  </ManSection>
 ##  <#/GAPDoc>
