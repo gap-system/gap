@@ -13,6 +13,7 @@ brk> ShowMethods(1);
 #I  Searching Method for IsDiagonalMatrix with 1 argument:
 #I  Total: 3 entries
 brk> Where(5);
+Stack trace:
 *[1] IsDiagonalMat( a )
    @ *stdin*:3
 <function "f">( <arguments> )

@@ -477,7 +477,6 @@ indicate that you are in a break loop.
 <Log><![CDATA[
 gap> 1/0;
 Error, Rational operations: <divisor> must not be zero
-Stack trace:
 not in any function at *stdin*:2
 type 'quit;' to quit to outer loop
 ]]></Log>
@@ -488,7 +487,6 @@ If errors occur within a break loop &GAP; enters another break loop at a
 <Log><![CDATA[
 brk> 1/0;
 Error, Rational operations: <divisor> must not be zero
-Stack trace:
 not in any function at *errin*:1
 type 'quit;' to quit to outer loop
 brk_2>
@@ -634,7 +632,8 @@ Here is a somewhat trivial demonstration of the use of
 <P/>
 <Log><![CDATA[
 gap> ErrorNoTraceBack("Gidday!", " How's", " it", " going?\n");
-Error, Gidday! How's it going?
+Error,
+Gidday! How's it going?
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> quit;
@@ -828,14 +827,15 @@ Error, !
 you can 'quit;' to quit to outer loop, or
 you can 'return;' to continue
 brk> Where();
+Stack trace:
 *[1] Error( "!\n" );
-   @ *stdin*:4
+   @ *stdin*:3
  [2] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
  [3] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
  [4] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:1
 brk> n;
@@ -844,28 +844,30 @@ brk> DownEnv();
 brk> n;
 3
 brk> Where();
+Stack trace:
  [1] Error( "!\n" );
-   @ *stdin*:4
+   @ *stdin*:3
 *[2] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
  [3] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
  [4] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:5
 brk> DownEnv( 2 );
 brk> n;
 1
 brk> Where();
+Stack trace:
  [1] Error( "!\n" );
-   @ *stdin*:4
+   @ *stdin*:3
  [2] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
  [3] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
 *[4] test( n + 1 );
-   @ *stdin*:4
+   @ *stdin*:3
 <function "test">( <arguments> )
  called from read-eval loop at *errin*:8
 brk> DownEnv( -2 );
