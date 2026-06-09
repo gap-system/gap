@@ -45,8 +45,8 @@ Stack trace:
  [5] f8(  )
    @ *stdin*:15
 ...  at *stdin*:35
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> SetUserPreference("WhereDepth", 12);
 brk> Where();
 Stack trace:
