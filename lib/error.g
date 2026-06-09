@@ -449,7 +449,7 @@ BIND_GLOBAL("ErrorNoReturn", function(arg)
         rec(
             context := ParentLVars(GetCurrentLVars()),
             mayReturnVoid := false,
-            lateMessage := "type 'quit;' to quit to outer loop",
+            lateMessage := "you can enter 'quit;' to quit to outer loop",
         ),
         arg);
 end);
