@@ -836,7 +836,7 @@ static UInt FindCommonField(UInt nl, UInt nr, UInt *ml, UInt *mr)
           "This computation requires a cyclotomic field of degree %d, larger "
           "than the current limit of %d",
           n, (Int)CyclotomicsLimit,
-          "you can 'return;' after raising the limit with SetCyclotomicsLimit");
+          "you can enter 'return;' after raising the limit with SetCyclotomicsLimit");
   }
 
   // Finish up

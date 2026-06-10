@@ -43,7 +43,7 @@ gap> IsNormal(2,2);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `IsNormal' on 2 arguments
 called from read-eval loop at *stdin*:1
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk>
 ]]></Log>
 <P/>
@@ -923,8 +923,8 @@ Stack trace:
  [2] dive( depth - 1 );
    @ *stdin*:1
 ...  at *stdin*:4
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> return;
 gap> dive(11000);
 Error, recursion depth trap (5000)
@@ -934,8 +934,8 @@ Stack trace:
  [2] dive( depth - 1 );
    @ *stdin*:1
 ...  at *stdin*:5
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> return;
 Error, recursion depth trap (10000)
 Stack trace:
@@ -944,8 +944,8 @@ Stack trace:
  [2] dive( depth - 1 );
    @ *stdin*:1
 ...  at *stdin*:5
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> return;
 gap>
 ]]></Log>
@@ -988,8 +988,8 @@ Stack trace:
  [2] dive( depth - 1 );
    @ *stdin*:4
 ...  at *stdin*:12
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> return;
 Error, recursion depth trap (2000)
 Stack trace:
@@ -998,8 +998,8 @@ Stack trace:
  [2] dive( depth - 1 );
    @ *stdin*:4
 ...  at *stdin*:12
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> GetRecursionDepth();
 0
 brk> return;

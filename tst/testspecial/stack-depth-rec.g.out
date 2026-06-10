@@ -82,8 +82,8 @@ Stack trace:
  [5] String( record.(nam) )
    @ GAPROOT/lib/record.gi:LINE
 ...  at *stdin*:4
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> return; # try once more
 Error, recursion depth trap (5000)
 Stack trace:
@@ -98,6 +98,6 @@ Stack trace:
  [5] String( record.(nam) )
    @ GAPROOT/lib/record.gi:LINE
 ...  at *stdin*:4
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> QUIT;

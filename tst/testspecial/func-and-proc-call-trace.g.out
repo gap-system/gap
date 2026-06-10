@@ -10,7 +10,7 @@ Stack trace:
    @ *stdin*:4
 <function "informproc0">( <arguments> )
  called from read-eval loop at *stdin*:6
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -27,7 +27,7 @@ Stack trace:
    @ *stdin*:9
 <function "informproc1">( <arguments> )
  called from read-eval loop at *stdin*:11
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -44,7 +44,7 @@ Stack trace:
    @ *stdin*:14
 <function "informproc2">( <arguments> )
  called from read-eval loop at *stdin*:16
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -61,7 +61,7 @@ Stack trace:
    @ *stdin*:19
 <function "informproc3">( <arguments> )
  called from read-eval loop at *stdin*:21
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit; 
 gap> Print("\n\n");
 
@@ -78,7 +78,7 @@ Stack trace:
    @ *stdin*:24
 <function "informproc4">( <arguments> )
  called from read-eval loop at *stdin*:26
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -95,7 +95,7 @@ Stack trace:
    @ *stdin*:29
 <function "informproc5">( <arguments> )
  called from read-eval loop at *stdin*:31
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -112,7 +112,7 @@ Stack trace:
    @ *stdin*:34
 <function "informproc6">( <arguments> )
  called from read-eval loop at *stdin*:36
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -129,7 +129,7 @@ Stack trace:
    @ *stdin*:39
 <function "informprocmore">( <arguments> )
  called from read-eval loop at *stdin*:41
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -146,7 +146,7 @@ Stack trace:
    @ *stdin*:44
 <function "informfunc0">( <arguments> )
  called from read-eval loop at *stdin*:46
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -163,7 +163,7 @@ Stack trace:
    @ *stdin*:49
 <function "informfunc1">( <arguments> )
  called from read-eval loop at *stdin*:51
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -180,7 +180,7 @@ Stack trace:
    @ *stdin*:54
 <function "informfunc2">( <arguments> )
  called from read-eval loop at *stdin*:56
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -197,7 +197,7 @@ Stack trace:
    @ *stdin*:59
 <function "informfunc3">( <arguments> )
  called from read-eval loop at *stdin*:61
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -214,7 +214,7 @@ Stack trace:
    @ *stdin*:64
 <function "informfunc4">( <arguments> )
  called from read-eval loop at *stdin*:66
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -231,7 +231,7 @@ Stack trace:
    @ *stdin*:69
 <function "informfunc5">( <arguments> )
  called from read-eval loop at *stdin*:71
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -248,7 +248,7 @@ Stack trace:
    @ *stdin*:74
 <function "informfunc6">( <arguments> )
  called from read-eval loop at *stdin*:76
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 
@@ -265,7 +265,7 @@ Stack trace:
    @ *stdin*:79
 <function "informfuncmore">( <arguments> )
  called from read-eval loop at *stdin*:81
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Print("\n\n");
 

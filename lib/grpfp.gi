@@ -1113,10 +1113,10 @@ BindGlobal("GTC_CosetTableFromGensAndRels",function(arg)
     # to give tidy instructions if one enters a break-loop
     SavedOnBreakMessage := OnBreakMessage;
     TCEOnBreakMessage := function(n)
-      Print( "type 'return;' if you want to continue with a new limit of ",
+      Print( "you can enter 'return;' to continue with a new limit of ",
              n, " cosets,\n",
-             "type 'quit;' if you want to quit the coset enumeration,\n",
-             "type 'maxlimit := 0; return;' in order to continue without a ",
+             "you can enter 'quit;' to abort the coset enumeration,\n",
+             "you can enter 'maxlimit := 0; return;' in order to continue without a ",
              "limit\n" );
       OnBreakMessage := SavedOnBreakMessage;
     end;

@@ -19,8 +19,8 @@ Stack trace:
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:14
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> 
 brk> x; # access global
 1
@@ -61,7 +61,7 @@ Stack trace:
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:12
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk_2> quit;
 brk> 
 brk> z; # access local
@@ -80,7 +80,7 @@ Stack trace:
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:17
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk_2> quit;
 brk> 
 brk> return;
@@ -106,8 +106,8 @@ Stack trace:
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:23
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> h(2);
 Error, foobar
 Stack trace:
@@ -119,8 +119,8 @@ Stack trace:
    @ *stdin*:12
 <function "f">( <arguments> )
  called from read-eval loop at *errin*:1
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk_2> 
 brk_2> y; # access higher local as debug var
 2

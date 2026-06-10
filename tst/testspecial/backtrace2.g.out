@@ -35,8 +35,8 @@ Stack trace:
    @ *stdin*:26
 <function "test">( <arguments> )
  called from read-eval loop at *stdin*:28
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> n; Where();
 3
 Stack trace:
@@ -137,7 +137,7 @@ Stack trace:
    @ *stdin*:37
 <function "test">( <arguments> )
  called from read-eval loop at *stdin*:39
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> n; Where();
 3
 Stack trace:
@@ -240,7 +240,7 @@ Stack trace:
    @ *stdin*:49
 <function "test">( <arguments> )
  called from read-eval loop at *stdin*:51
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> n; Where();
 3
 Stack trace:

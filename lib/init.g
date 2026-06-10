@@ -34,8 +34,8 @@ OnBreak := function() Print("An error has occurred before the traceback ",
 ##  break loop.
 ##
 OnBreakMessage := function()
-  Print("you can 'quit;' to quit to outer loop, or\n",
-        "you can 'return;' to continue\n");
+  Print("you can enter 'quit;' to quit to outer loop, or\n",
+        "you can enter 'return;' to continue\n");
 end;
 
 #############################################################################

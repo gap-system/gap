@@ -493,10 +493,10 @@ void ErrorMayQuitNrAtLeastArgs(Int narg, Int actual)
 void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
 {
     if (msg2 == 0) {
-        msg2 = "you can 'return;' to continue";
+        msg2 = "you can enter 'return;' to continue";
     }
 
-    Obj lateMsg = MakeString("you can 'quit;' to quit to outer loop, or\n");
+    Obj lateMsg = MakeString("you can enter 'quit;' to quit to outer loop, or\n");
     AppendString(lateMsg, MakeString(msg2));
     CallErrorInner(msg, arg1, arg2, 0, 1, lateMsg);
 }
@@ -507,7 +507,7 @@ void ErrorReturnVoid(const Char * msg, Int arg1, Int arg2, const Char * msg2)
 */
 void ErrorMayQuit(const Char * msg, Int arg1, Int arg2)
 {
-    Obj LateMsg = MakeString("type 'quit;' to quit to outer loop");
+    Obj LateMsg = MakeString("you can enter 'quit;' to quit to outer loop");
     CallErrorInner(msg, arg1, arg2, 0, 0, LateMsg);
     Panic("ErrorMayQuit must not return");
 }

@@ -343,7 +343,7 @@ gap> list[3][5] := 'w';; list; copy;
 gap> copy[3][5] := 'w';
 Error, List Assignment: <list> must be a mutable list
 not in any function at *stdin*:3
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 ]]></Log>
 <P/>
