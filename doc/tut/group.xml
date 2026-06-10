@@ -933,7 +933,7 @@ Stack trace:
    @ GAPROOT/lib/mapping.gi:262
 <function "PreImage">( <arguments> )
  called from read-eval loop at *stdin*:7
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 ]]></Log>
 <P/>

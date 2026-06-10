@@ -12,5 +12,5 @@ Stack trace:
    @ *stdin*:5
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:7
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> QUIT;

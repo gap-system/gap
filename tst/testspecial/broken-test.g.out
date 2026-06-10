@@ -9,7 +9,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Test("broken-test-3.tst", rec(width := 800));
 Error, Invalid test file at broken-test-3.tst:5
@@ -22,7 +22,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Test("broken-test-4.tst", rec(width := 800));
 Error, Invalid test file: Nested #@if at broken-test-4.tst:2
@@ -35,7 +35,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Test("broken-test-5.tst", rec(width := 800));
 Error, Invalid test file: two #@else at broken-test-5.tst:7
@@ -48,7 +48,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Test("broken-test-6.tst", rec(width := 800));
 Error, Invalid test file: Continuation prompt '> ' followed by a tab, expected a regular space at broken-test-6.tst:3
@@ -61,7 +61,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Test("broken-test-7.tst", rec(width := 800));
 Error, Invalid test file: #@elif after #@else at broken-test-7.tst:7
@@ -74,7 +74,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Test("broken-test-8.tst", rec(width := 800));
 Error, Invalid test file: #@elif without #@if at broken-test-8.tst:1
@@ -87,7 +87,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Test("broken-test-9.tst", rec(width := 800));
 Error, Invalid test file: Unterminated #@if at broken-test-9.tst:7
@@ -100,7 +100,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Test("invalidtestfile.tst", rec(width := 800));
 Error, Invalid test file at invalidtestfile.tst:7
@@ -113,7 +113,7 @@ Stack trace:
    @ GAPROOT/lib/test.gi:LINE
 <function "Test">( <arguments> )
  called from read-eval loop at *stdin*:2
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> Test("empty.tst", rec(width := 800));
 #I  Test: File does not contain any tests!

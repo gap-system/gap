@@ -478,7 +478,7 @@ indicate that you are in a break loop.
 gap> 1/0;
 Error, Rational operations: <divisor> must not be zero
 not in any function at *stdin*:2
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 ]]></Log>
 <P/>
 If errors occur within a break loop &GAP; enters another break loop at a
@@ -488,7 +488,7 @@ If errors occur within a break loop &GAP; enters another break loop at a
 brk> 1/0;
 Error, Rational operations: <divisor> must not be zero
 not in any function at *errin*:1
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk_2>
 ]]></Log>
 <P/>
@@ -567,8 +567,8 @@ function(  ) ... end
 gap> Error("!\n");
 Error, !
 Hello
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> quit;
 ]]></Log>
 <P/>
@@ -634,8 +634,8 @@ Here is a somewhat trivial demonstration of the use of
 gap> ErrorNoTraceBack("Gidday!", " How's", " it", " going?\n");
 Error,
 Gidday! How's it going?
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> quit;
 ]]></Log>
 <P/>
@@ -645,8 +645,8 @@ Now we call <Ref Func="Error"/> with the same arguments to show the difference.
 gap> Error("Gidday!", " How's", " it", " going?\n");
 Error, Gidday! How's it going?
 Hello
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> quit;
 ]]></Log>
 <P/>
@@ -668,7 +668,7 @@ gap> OnBreak := Where;;
 <Description>
 <Index>Break loop message</Index>
 When a break loop is entered by a call to <Ref Func="Error"/>
-the message at the end starting with <Q><C>you can 'quit;' to ...</C></Q>
+the message at the end starting with <Q><C>you can enter 'quit;' to ...</C></Q>
 is produced by the function <C>OnBreakMessage</C>,
 which just like <Ref Func="OnBreak"/>
 is a user-configurable global variable
@@ -676,8 +676,8 @@ that is a <E>function</E> with <E>no arguments</E>.
 <P/>
 <Example><![CDATA[
 gap> OnBreakMessage(); # By default, OnBreakMessage prints the following
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 ]]></Example>
 <P/>
 Perhaps you are familiar with what's possible in a break loop, and so
@@ -751,8 +751,8 @@ Error, user interrupt
    @ GAPROOT/lib/stbc.gi:18
 <function "StabChain">( <arguments> )
  called from read-eval loop at *stdin*:2
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> Where(2);
 *[1] genlabels := Filtered( genlabels, function ( x )
         return pnt ^ sgs[x] = pnt;
@@ -825,8 +825,8 @@ gap> test:= function( n )
 >    if n > 3 then Error( "!\n" ); fi; test( n+1 ); end;;
 gap> test( 1 );
 Error, !
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> Where();
 Stack trace:
 *[1] Error( "!\n" );
@@ -908,8 +908,8 @@ Stack trace:
    @ *stdin*:7
 <function "fun">( <arguments> )
  called from read-eval loop at *stdin*:8
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> x;
 1
 brk> DownEnv(1);

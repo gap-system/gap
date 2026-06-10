@@ -128,8 +128,8 @@
 ##     @ GAPROOT/lib/ffeconway.gi:167
 ##  <function "ZOp method">( <arguments> )
 ##   called from read-eval loop at *stdin*:2
-##  you can 'quit;' to quit to outer loop, or
-##  you can 'return;' to continue
+##  you can enter 'quit;' to quit to outer loop, or
+##  you can enter 'return;' to continue
 ##  brk>
 ##  ]]></Log>
 ##  </Description>

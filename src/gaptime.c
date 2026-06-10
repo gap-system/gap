@@ -315,7 +315,7 @@ static Obj FuncSleep(Obj self, Obj secs)
     if (HaveInterrupt()) {
         ClearError(); // The interrupt may still be pending
         ErrorReturnVoid("user interrupt in sleep", 0, 0,
-                        "you can 'return;' as if the sleep was finished");
+                        "you can enter 'return;' as if the sleep was finished");
     }
 
     return 0;
@@ -339,7 +339,7 @@ static Obj FuncMicroSleep(Obj self, Obj msecs)
         ClearError(); // The interrupt may still be pending
         ErrorReturnVoid(
             "user interrupt in microsleep", 0, 0,
-            "you can 'return;' as if the microsleep was finished");
+            "you can enter 'return;' as if the microsleep was finished");
     }
 
     return 0;
