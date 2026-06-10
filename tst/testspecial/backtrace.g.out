@@ -18,7 +18,7 @@ Stack trace:
    @ *stdin*:11
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:13
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] l[[ 1 .. 3 ]] := 1;
@@ -45,7 +45,7 @@ Stack trace:
    @ *stdin*:15
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:16
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] 1 / 0
@@ -73,7 +73,7 @@ fi;
    @ *stdin*:18
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:19
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] if x then
@@ -106,7 +106,7 @@ fi;
    @ *stdin*:21
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:22
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] if 1 then
@@ -140,7 +140,7 @@ fi;
    @ *stdin*:24
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:25
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] if 1 < 0 then
@@ -176,7 +176,7 @@ od;
    @ *stdin*:27
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:28
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] while 1 do
@@ -210,8 +210,8 @@ od;
    @ *stdin*:30
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:31
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> Where();
 Stack trace:
 *[1] Error( "You cannot loop over the integer ", n, " did you mean the range [1..", n, "]" );
@@ -252,7 +252,7 @@ od;
    @ *stdin*:33
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:34
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] for i in true do
@@ -285,7 +285,7 @@ od;
    @ *stdin*:35
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:36
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] for i in true do
@@ -320,7 +320,7 @@ od;
    @ *stdin*:37
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:38
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] for i in true do
@@ -355,7 +355,7 @@ od;
    @ *stdin*:39
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:40
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] for i in true do
@@ -389,7 +389,7 @@ until 1;
    @ *stdin*:41
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:42
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] repeat
@@ -420,7 +420,7 @@ Stack trace:
    @ *stdin*:44
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:45
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] Assert( 0, 1 );
@@ -447,7 +447,7 @@ Stack trace:
    @ *stdin*:47
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:48
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] Assert( 0, 1, "hello" );
@@ -483,7 +483,7 @@ Stack trace:
    @ *stdin*:55
 <function "f">( <arguments> )
  called from read-eval loop at *stdin*:56
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> Where();
 Stack trace:
 *[1] return m[i][j];
@@ -531,5 +531,5 @@ Stack trace:
    @ GAPROOT/lib/oper1.g:LINE
 <function "InstallMethod">( <arguments> )
  called from read-eval loop at *stdin*:61
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> QUIT;

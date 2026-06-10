@@ -856,8 +856,8 @@ gap> test:= function( n )
 >    if n > 3 then Error( "!\n" ); fi; test( n+1 ); end;;
 gap> test( 1 );
 Error, !
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> Where();
 Stack trace:
 *[1] Error( "!\n" );

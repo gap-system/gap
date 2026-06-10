@@ -3002,7 +3002,7 @@ void ASS_VEC8BIT(Obj list, Obj pos, Obj elm)
                 ErrorReturnVoid("List assignment would increase length of "
                                 "locked compressed vector",
                                 0, 0,
-                                "you can 'return;' to ignore the assignment");
+                                "you can enter 'return;' to ignore the assignment");
                 return;
             }
             ResizeWordSizedBag(list, SIZE_VEC8BIT(p, elts));
@@ -3094,7 +3094,7 @@ static Obj FuncUNB_VEC8BIT(Obj self, Obj list, Obj pos)
     if (True == DoFilter(IsLockedRepresentationVector, list)) {
         ErrorReturnVoid(
             "Unbind of entry of locked compressed vector is forbidden", 0, 0,
-            "you can 'return;' to ignore the assignment");
+            "you can enter 'return;' to ignore the assignment");
         return 0;
     }
 
@@ -3220,7 +3220,7 @@ static Obj FuncAPPEND_VEC8BIT(Obj self, Obj vecl, Obj vecr)
     lenr = LEN_VEC8BIT(vecr);
     if (True == DoFilter(IsLockedRepresentationVector, vecl) && lenr > 0) {
         ErrorReturnVoid("Append to locked compressed vector is forbidden", 0,
-                        0, "you can 'return;' to ignore the operation");
+                        0, "you can enter 'return;' to ignore the operation");
         return 0;
     }
     info = GetFieldInfo8Bit(FIELD_VEC8BIT(vecl));
@@ -4369,7 +4369,7 @@ static void ResizeVec8Bit(Obj vec, UInt newlen, UInt knownclean)
 
     if (True == DoFilter(IsLockedRepresentationVector, vec)) {
         ErrorReturnVoid("Resize of locked compressed vector is forbidden", 0,
-                        0, "you can 'return;' to ignore the operation");
+                        0, "you can enter 'return;' to ignore the operation");
         return;
     }
 

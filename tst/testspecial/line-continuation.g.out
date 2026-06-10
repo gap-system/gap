@@ -11,8 +11,8 @@ Stack trace:
    @ GAPROOT/lib/string.gi:LINE
 <function "EvalString">( <arguments> )
  called from read-eval loop at *stdin*:6
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> quit;
 gap> EvalString("123\\\r\n45x;");
 Error, Variable: '12345x' must have a value
@@ -23,7 +23,7 @@ Stack trace:
    @ GAPROOT/lib/string.gi:LINE
 <function "EvalString">( <arguments> )
  called from read-eval loop at *stdin*:6
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> quit;
 gap> QUIT;

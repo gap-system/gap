@@ -8,8 +8,8 @@ gap> # fixed.
 gap> Error(""):
 Error, 
 not in any function at *stdin*:9
-you can 'quit;' to quit to outer loop, or
-you can 'return;' to continue
+you can enter 'quit;' to quit to outer loop, or
+you can enter 'return;' to continue
 brk> quit;
 Syntax error: ; expected
 Error(""):

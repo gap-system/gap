@@ -127,13 +127,13 @@ gap> XCons(IsFullTransformationMonoid,4);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `XCons' on 2 arguments
 called from read-eval loop at *stdin*:8
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk> quit;
 gap> XCons(IsNilpotentGroup,4);
 Error, no method found! For debugging hints type ?Recovery from NoMethodFound
 Error, no 1st choice method found for `XCons' on 2 arguments
 called from read-eval loop at *stdin*:8
-type 'quit;' to quit to outer loop
+you can enter 'quit;' to quit to outer loop
 brk>
 ]]></Log>
 
