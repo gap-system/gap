@@ -409,7 +409,6 @@ int realmain(int argc, const char * argv[])
 {
   UInt                type;                   // result of compile
   Obj                 func;                   // function (compiler)
-  Int4                crc;                    // crc of file to compile
 
   // initialize everything and read init.g which runs the GAP session
   InitializeGap(&argc, argc, argv, 1);
@@ -425,12 +424,11 @@ int realmain(int argc, const char * argv[])
       if (!CloseInput(&input)) {
           return 2;
       }
-      crc  = SyGAPCRC(SyCompileInput);
       type = CompileFunc(
                          MakeImmString(SyCompileOutput),
                          func,
                          MakeImmString(SyCompileName),
-                         crc,
+                         SyGAPCRC(SyCompileInput),
                          MakeImmString(SyCompileMagic1) );
       return ( type == 0 ) ? 1 : 0;
     }
