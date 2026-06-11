@@ -71,8 +71,6 @@ DeclareFilter( "IsDefaultRhsTypeSingleCollector" );
 ##  describing the polycyclic presentation, an exponent vector <v> and a word
 ##  <w> in the corresponding free group.  It collects <w> into <v>.
 ##
-SingleCollector_CollectWordRunning := false;
-
 BindGlobal( "SingleCollector_CollectWord", function( sc, v, w )
 
     local   cnj,        # <cnj>[g][h] contains g^h for g > h
@@ -92,13 +90,7 @@ BindGlobal( "SingleCollector_CollectWord", function( sc, v, w )
             tmp,        # temporary
             avc;        # g_i .. g_n commutes with g_avc[i]+1 .. g_n
 
-    # the collector is not reentrant
-    if SingleCollector_CollectWordRunning  then
-        SingleCollector_CollectWordRunning := false;
-        Error( "collector is not reentrant" );
-    fi;
     #Print( "#I  using the GAP level single collector\n" );
-    SingleCollector_CollectWordRunning := true;
 
     # <nw> contains the stack of words to insert
     nw := [];  nw[1] := w;
@@ -108,7 +100,6 @@ BindGlobal( "SingleCollector_CollectWord", function( sc, v, w )
 
     # if we got the identity return
     if lw[1] = 0  then
-        SingleCollector_CollectWordRunning := false;
         return true;
     fi;
 
@@ -238,7 +229,6 @@ BindGlobal( "SingleCollector_CollectWord", function( sc, v, w )
             fi;
         fi;
     od;
-    SingleCollector_CollectWordRunning := false;
     return true;
 
 end );
