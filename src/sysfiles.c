@@ -191,10 +191,7 @@ static ssize_t echoandcheck(int fid, const char *buf, size_t count)
 **
 *F  SyGAPCRC( <name> )  . . . . . . . . . . . . . . . . . . crc of a GAP file
 **
-**  This function should  be clever and handle  white spaces and comments but
-**  one has to make certain that such characters are not ignored in strings.
-**
-**  This function *never* returns a 0 unless an error occurred.
+**  This function returns 0 for missing or unreadable files.
 */
 static const UInt4 syCcitt32[ 256 ] =
 {
@@ -248,7 +245,7 @@ Int4 SyGAPCRC( const Char * name )
     UInt4       crc;
     UInt4       old;
     UInt4       new;
-    Int4        ch;
+    Int         ch;
     Int         fid;
     BOOL        seen_nl;
 
@@ -273,21 +270,18 @@ Int4 SyGAPCRC( const Char * name )
         }
         else
             seen_nl = FALSE;
-        old = (crc >> 8) & 0x00FFFFFFL;
-        new = syCcitt32[ ( (UInt4)( crc ^ ch ) ) & 0xff ];
+        old = crc >> 8;
+        new = syCcitt32[(crc ^ ch) & 0xff];
         crc = old ^ new;
-    }
-    if ( crc == 0 ) {
-        crc = 1;
     }
 
     // and close it again
     SyFclose( fid );
-    // Emulate a signed shift:
-    if (crc & 0x80000000L)
-        return (Int4) ((crc >> 4) | 0xF0000000L);
-    else
-        return (Int4) (crc >> 4);
+
+    // Emulate a signed shift (the C compiler does not specify whether right
+    // shifts preserve signs or not; it seems more or less all compilers in
+    // active use these days do, but better safe than sorry)
+    return ((Int)((crc >> 4) ^ 0x08000000U)) - 0x08000000;
 }
 
 
@@ -320,7 +314,7 @@ static Obj FuncCrcString(Obj self, Obj str)
     UInt4       new;
     UInt4       i, len;
     const Char  *ptr;
-    Int4        ch;
+    Int         ch;
     BOOL        seen_nl;
 
     RequireStringRep(SELF_NAME, str);
@@ -330,7 +324,7 @@ static Obj FuncCrcString(Obj self, Obj str)
     crc = 0x12345678L;
     seen_nl = FALSE;
     for (i = 0; i < len; i++) {
-        ch = (Int4)(ptr[i]);
+        ch = (Int)(ptr[i]);
         if ( ch == '\377' || ch == '\n' || ch == '\r' )
             ch = '\n';
         if ( ch == '\n' ) {
@@ -341,14 +335,15 @@ static Obj FuncCrcString(Obj self, Obj str)
         }
         else
             seen_nl = FALSE;
-        old = (crc >> 8) & 0x00FFFFFFL;
-        new = syCcitt32[ ( (UInt4)( crc ^ ch ) ) & 0xff ];
+        old = crc >> 8;
+        new = syCcitt32[(crc ^ ch) & 0xff];
         crc = old ^ new;
     }
-    if ( crc == 0 ) {
-        crc = 1;
-    }
-    return INTOBJ_INT(((Int4) crc) >> 4);
+
+    // Emulate a signed shift (the C compiler does not specify whether right
+    // shifts preserve signs or not; it seems more or less all compilers in
+    // active use these days do, but better safe than sorry)
+    return INTOBJ_INT(((Int)((crc >> 4) ^ 0x08000000U)) - 0x08000000);
 }
 
 // Get OS Kernel version. Used to discover if GAP is running inside
