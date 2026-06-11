@@ -23,8 +23,7 @@
 **
 *F  SyGAPCRC( <name> )  . . . . . . . . . . . . . . . . . . crc of a GAP file
 **
-**  This function should  be clever and handle  white spaces and comments but
-**  one has to certain that such characters are not ignored in strings.
+**  This function returns 0 for missing or unreadable files.
 */
 Int4 SyGAPCRC(const Char * name);
 
