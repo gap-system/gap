@@ -30,6 +30,13 @@ self.Module.preRun = self.Module.preRun || [];
 self.Module.preRun.push(function() {
     addRunDependency('gap_fs_init');
 
+    // GAP starts in /home/web_user, which stays empty here, so anything
+    // under it is user-created (uploads, PrintTo output, ...). That keeps
+    // user files cleanly apart from the GAP tree at /; gap-worker.js
+    // passes "-l /" so GAP still finds its root.
+    FS.mkdirTree('/home/web_user');
+    FS.chdir('/home/web_user');
+
     async function initFS() {
         try {
             const mapRes = await fetch('gap-fs.json');

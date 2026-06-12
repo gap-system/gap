@@ -26,7 +26,7 @@ done
 rm -rf "$OUT_DIR"
 mkdir -p "$OUT_DIR"
 
-cp "$SCRIPT_DIR"/web-template/* "$OUT_DIR"/
+cp -R "$SCRIPT_DIR"/web-template/* "$OUT_DIR"/
 cp "$SCRIPT_DIR"/startup_manifest.json "$OUT_DIR"/
 cp gap.js gap.wasm gap-fs.json "$OUT_DIR"/
 # Emscripten only emits a separate gap.worker.js for pthread builds; this
@@ -41,14 +41,15 @@ cp LICENSE COPYRIGHT "$OUT_DIR"/
 # loaded (if listed in startup_manifest.json) or lazily fetched on first
 # read by Emscripten's createLazyFile.
 #
-# -L dereferences symlinks so the output tree is self-contained (a setup
-# where pkg/X is a symlink into a separate checkout still works). Some
-# packages ship dangling symlinks as build artefacts (e.g. pkg/vole's
-# rust/target/*.dSYM); cp prints those and exits non-zero but still copies
-# everything else, so we don't let that abort the run. The assertion below
-# catches a genuinely incomplete copy.
+# tar -h dereferences symlinks so the output tree is self-contained (a
+# setup where pkg/X is a symlink into a separate checkout still works);
+# --exclude .git keeps such checkouts' git internals out of the shipped
+# site. Some packages ship dangling symlinks as build artefacts (e.g.
+# pkg/vole's rust/target/*.dSYM); tar reports those and exits non-zero
+# but still copies everything else, so we don't let that abort the run.
+# The assertion below catches a genuinely incomplete copy.
 for d in pkg lib grp tst doc hpcgap dev benchmark; do
-    cp -RL "$d" "$OUT_DIR"/ 2>/dev/null || true
+    tar -c -h --exclude '.git' -f - "$d" 2>/dev/null | tar -x -C "$OUT_DIR" -f - || true
 done
 
 # pkg/log holds package test logs (.log/.err/.out) that are never read at

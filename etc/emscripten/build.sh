@@ -130,6 +130,7 @@ cp native-build/build/c_*.c native-build/build/ffdata.* src/
 # to a git checkout under git/foo) are picked up; -type f then drops any
 # symlinks themselves.
 find -L pkg lib grp tst doc hpcgap dev benchmark -type f ! -path 'pkg/log/*' \
+        ! -path '*/.git/*' \
     | python3 etc/emscripten/generate_gap_fs_json.py
 
 emmake make -j"$JOBS" \
