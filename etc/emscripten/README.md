@@ -86,6 +86,17 @@ channel itself) always works. Hence:
   *without* a newline; the user always presses Enter, so nothing is
   auto-executed.
 
+### Cache invalidation across redeployments
+
+Library files are cached in the browser's IndexedDB and reused on later
+visits without revalidation. To stop a redeployment from pairing a new
+kernel with stale cached library files, `assemble-website.sh` writes a
+fresh `build-id` file into the site; `gap-fs.js` compares it (fetched
+with `cache: no-cache`) against the copy stored in the cache and
+discards the cache when it differs. The page footer also has a "Reset
+cached data" link that drops the cache and any registered service
+worker and reloads — the escape hatch for any stuck client state.
+
 Known limitations, all consequences of the same architecture:
 
 - Ctrl-C cannot interrupt a running computation: there are no signals,

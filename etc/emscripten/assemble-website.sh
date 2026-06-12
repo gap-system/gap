@@ -56,6 +56,12 @@ done
 # runtime; keep them out of the shipped site.
 rm -rf "$OUT_DIR/pkg/log"
 
+# A fresh id per assembled site. gap-fs.js compares it against the copy
+# stored in the browser's IndexedDB cache and discards the cache when it
+# differs, so a redeployment can never pair a new kernel with stale
+# cached library files.
+echo "$(date -u +%Y%m%dT%H%M%SZ)-$$" > "$OUT_DIR/build-id"
+
 # The library bootstrap must be present, or GAP 404s during startup.
 if [[ ! -f "$OUT_DIR/lib/init.g" ]]; then
     echo "Error: lib/init.g missing from $OUT_DIR after copy." >&2

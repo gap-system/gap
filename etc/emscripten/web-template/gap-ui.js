@@ -397,6 +397,27 @@ restartBtn.addEventListener("click", () => {
   if (session !== null) restartSession();
 });
 
+// Escape hatch for stale state: drop the IndexedDB file cache and any
+// registered service worker, then reload from the network. (gap-fs.js
+// also discards the cache automatically when the site's build-id
+// changes; this covers everything else.)
+document.getElementById("reset-site").addEventListener("click", async (ev) => {
+  ev.preventDefault();
+  if (session !== null) {
+    session.dead = true;
+    session.worker.terminate();
+  }
+  if (navigator.serviceWorker) {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map((r) => r.unregister()));
+  }
+  await new Promise((resolve) => {
+    const req = indexedDB.deleteDatabase("/gap_idb_cache");
+    req.onsuccess = req.onerror = req.onblocked = resolve;
+  });
+  location.reload();
+});
+
 // Without SharedArrayBuffer the worker can't talk to the page
 // synchronously; xterm-pty would stall on every read.
 if (typeof SharedArrayBuffer === "undefined") {
