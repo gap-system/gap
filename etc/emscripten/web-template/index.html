@@ -7,6 +7,13 @@
           content="GAP — Groups, Algorithms, Programming — running entirely in your browser via WebAssembly.">
     <title>GAP in your browser</title>
     <link rel="icon" href="vendor/favicon.svg" type="image/svg+xml">
+    <script>
+      // Configure coi-serviceworker (see below): everything this site
+      // loads is same-origin, so plain COEP require-corp suffices.
+      // Requesting "credentialless" first would break the first load on
+      // WebKit (Safari/iOS), which doesn't support that COEP value.
+      window.coi = { coepCredentialless: () => false };
+    </script>
     <script src="coi-serviceworker.js"></script>
     <link rel="stylesheet" href="vendor/xterm.css">
     <style>
@@ -277,8 +284,9 @@
       <code>Cross-Origin-Opener-Policy: same-origin</code> and
       <code>Cross-Origin-Embedder-Policy: require-corp</code>. The
       bundled service worker handles this on hosts where you can't set
-      headers (e.g. GitHub Pages); for local hosting use
-      <code>etc/emscripten/serve.py</code>.
+      headers (e.g. GitHub Pages) — its first activation needs a reload,
+      so if you see this message, try reloading once. For local hosting
+      use <code>etc/emscripten/serve.py</code>.
     </div>
 
     <main>
