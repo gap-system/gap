@@ -277,9 +277,12 @@ function handleWorkerMessage(ev) {
         window.fetchedUrls.push(data.url);
         if (/^(pkg|lib|grp|tst|doc|hpcgap|dev|benchmark)\//.test(data.url)) {
           session.fetchCount++;
-          if (manifestTotal > 0 && !session.started) {
-            loadingEl.textContent = "Loading GAP… fetched " +
-              session.fetchCount + " of ~" + manifestTotal + " files.";
+          if (!session.started) {
+            const progress = "fetched " + session.fetchCount +
+              (manifestTotal > 0 ? " of ~" + manifestTotal : "") + " files";
+            loadingEl.textContent = "Loading GAP… " + progress + ".";
+            // \r keeps overwriting one progress line in the terminal.
+            session.xterm.write("\rLoading GAP… " + progress);
           }
         }
       }
@@ -351,16 +354,27 @@ function startSession() {
   };
   const s = session;
 
-  // Hide the loading notice as soon as GAP's banner appears.
-  xterm.onRender(() => {
-    if (!s.started) {
+  // GAP's first terminal output arrives as the worker's first "write"
+  // tty request. Detect it here (this listener is registered before
+  // TtyServer.start assigns worker.onmessage, so it runs first) and
+  // reset the terminal, so the waiting/progress text below is wiped
+  // and the GAP banner starts on a clean screen.
+  worker.addEventListener("message", (ev) => {
+    const d = ev.data;
+    if (d && d.ttyRequestType === "write" && !s.started) {
       s.started = true;
+      s.xterm.reset();
       loadingEl.style.display = "none";
     }
   });
 
   session.ttyServer = new TtyServer(slave);
   session.ttyServer.start(worker, handleWorkerMessage);
+
+  xterm.write(
+    "\x1b[2mPlease wait — downloading and starting GAP.\r\n" +
+    "The first visit can take a few minutes; repeat visits are cached " +
+    "by your browser and start much faster.\x1b[0m\r\n\r\n");
 }
 
 function restartSession() {
