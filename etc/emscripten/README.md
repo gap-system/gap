@@ -53,6 +53,24 @@ TTY device so `tcsetattr()` reaches the line discipline. Both are sensitive
 to the toolchain version (a newer emsdk leaves `tcsetattr` unhonoured, so
 typed input is echoed twice), so re-test the REPL when changing emsdk.
 
+## The `io` package
+
+The wasm build has no `dlopen`, so a package kernel extension cannot be
+loaded the usual way. `build.sh` works around this for `io` by compiling
+its single C file into the GAP kernel and registering it in the
+static-module table (`src/compstat.c`), so `LoadKernelExtension("io")`
+finds it without `dlopen`. This is the GASMAN-safe approach: `io` ends up
+in the one wasm module, so ASYNCIFY's link-time pass instruments it
+uniformly and `emscripten_scan_registers()` sees its frames (unlike a
+dynamically loaded side module). The mechanism is detailed in the
+comments in `build.sh` around the `IO_OBJ` block, with the registration
+helper in `register_static_module.py`.
+
+`io` is the kernel dependency of several otherwise pure-GAP packages
+(simpcomp, fr, rcwa, unitlib, …), so linking it in lets them load. Its
+file/directory/time functions work; its socket/fork/select functions
+compile but fail at runtime, since wasm has no such facilities.
+
 ## The page: file transfer, examples, restart
 
 GAP runs with its working directory set to `/home/web_user` in the
@@ -131,7 +149,7 @@ re-fetches resources through a service worker that adds the headers).
 | ---- | ---- |
 | `build-in-docker.sh` | One-stop entry point. Builds the image, runs `build.sh` inside, then `assemble-website.sh`. |
 | `Dockerfile` | Pinned `emscripten/emsdk:3.1.23` with autotools, python3, bison/byacc/m4, and a baked-in copy of the GAP package distribution tarball at `/opt/gap-packages.tar.gz`. |
-| `build.sh` | Configures and builds GMP, zlib, and GAP itself for wasm. |
+| `build.sh` | Configures and builds GMP, zlib, and GAP itself for wasm. Also statically links the `io` package's kernel module into the kernel (see below). |
 | `assemble-website.sh` | Copies the build outputs and data directories (`pkg`, `lib`, `grp`, …) into `web-example/`. |
 | `generate_gap_fs_json.py` | Reads file paths on stdin, writes `gap-fs.json` (the manifest of every file in the virtual FS). |
 | `startup_manifest.json` | List of files to fetch eagerly at startup, captured from a real GAP run. Anything not in this list is fetched lazily on first read. See "Updating the startup manifest" below for how to refresh it. |
