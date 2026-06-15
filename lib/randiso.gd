@@ -24,7 +24,9 @@ DeclareAttribute( "OmegaAndLowerPCentralSeries", IsGroup );
 ##  returns the non-negative integer code corresponding to the finite pcgs
 ##  <A>pcgs</A>. The code stores the relative orders of <A>pcgs</A> and
 ##  the right hand sides of the nontrivial power and commutator relations
-##  of the pc presentation defined by <A>pcgs</A>.
+##  of the pc presentation defined by <A>pcgs</A>. This integer encoding of
+##  pc groups underlies the group construction method described in
+##  <Cite Key="BescheEick98"/>.
 ##  <P/>
 ##  More precisely, let
 ##  <M>g_1,\ldots,g_l</M> be the entries of <A>pcgs</A>, and let
