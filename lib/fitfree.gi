@@ -54,10 +54,10 @@ local ffs,pcisom,rest,kpc,k,x,ker,r,pool,i,xx,pregens,iso;
     rest:=GroupHomomorphismByImages(U,Range(ffs.factorhom),GeneratorsOfGroup(U),
       List(GeneratorsOfGroup(U),x->ImagesRepresentative(ffs.factorhom,x)));
   else
-    RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+    PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
     rest:=GroupHomomorphismByImagesNC(U,Range(ffs.factorhom),GeneratorsOfGroup(U),
       List(GeneratorsOfGroup(U),x->ImagesRepresentative(ffs.factorhom,x)));
-    RUN_IN_GGMBI:=false;
+    PopOptions();
   fi;
   Assert(1,rest<>fail);
 
@@ -276,9 +276,9 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom,subsz,pcimgs;
   if IsPermGroup(U) and AssertionLevel()>1 then
     rest:=GroupHomomorphismByImages(U,Range(hom),gens,imgs);
   else
-    RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+    PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
     rest:=GroupHomomorphismByImagesNC(U,Range(hom),gens,imgs);
-    RUN_IN_GGMBI:=false;
+    PopOptions();
   fi;
   Assert(1,rest<>fail);
 
@@ -319,11 +319,11 @@ local ffs,hom,U,rest,ker,r,p,l,i,depths,pcisom,subsz,pcimgs;
       else
         r:=SubgroupNC(G,ipcgs);
       fi;
-      RUN_IN_GGMBI:=true;
+      PushOptions( rec( Run_In_GGMBI:= true ) );
       pcisom:=GroupHomomorphismByImagesNC(r,
         SubgroupNC(Range(ffs.pcisom),pcisom),
         ipcgs,pcisom);
-      RUN_IN_GGMBI:=false;
+      PopOptions();
     fi;
     r:=rec(inducedfrom:=ffs,
           pcgs:=ipcgs,
@@ -919,10 +919,10 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,gens;
   sf:=List(GeneratorsOfGroup(Image(fphom)),x->PreImagesRepresentative(fphom,x));
   sg:=List(sf,x->PreImagesRepresentative(hom,x));
   sp:=[];
-  RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+  PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
   fphom:=GroupGeneralMappingByImagesNC(Group(sg,One(G)),fp,sg,
     GeneratorsOfGroup(fp));
-  RUN_IN_GGMBI:=false;
+  PopOptions();
 
 
 
@@ -939,9 +939,9 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,gens;
         Append(sp,mpcgs);
       else
         # extend presentation
-        RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+        PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
         fphom:=LiftFactorFpHom(fphom,Source(fphom),false,mpcgs);
-        RUN_IN_GGMBI:=false;
+        PopOptions();
         fp:=Image(fphom);
         sp:=Concatenation(sp,mpcgs);
       fi;
@@ -953,10 +953,10 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,gens;
       gens:=GeneratorsOfGroup(ocr.complement);
       sg:=gens{[1..Length(sg)]};
       sp:=gens{[Length(sg)+1..Length(gens)]};
-      RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+      PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
       fphom:=GroupGeneralMappingByImagesNC(ocr.complement,fp,gens,
         GeneratorsOfGroup(fp));
-      RUN_IN_GGMBI:=false;
+      PopOptions();
 
     fi;
   od;
@@ -1240,11 +1240,11 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
       # now do complements one by one
       for j in [1..Length(pcgs)] do
         h:=ClosureGroup(dser[j],gens);
-        RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+        PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
         fphom:=GroupGeneralMappingByImagesNC(h,fp,
                 Concatenation(GeneratorsOfGroup(dser[j]),gens),
                 Concatenation(List(GeneratorsOfGroup(dser[j]),x->One(fp)),imgs));
-        RUN_IN_GGMBI:=false;
+        PopOptions();
 
         ocr:=rec(group:=h,modulePcgs:=pcgs[j],
                 factorfphom:=fphom);
@@ -1256,18 +1256,18 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
       if Size(b)>Size(s) then
 
         h:=ClosureGroup(b,gens);
-        RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+        PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
         fphom:=GroupGeneralMappingByImagesNC(h,fp,
                 Concatenation(GeneratorsOfGroup(b),gens),
                 Concatenation(List(GeneratorsOfGroup(b),x->One(fp)),imgs));
-        RUN_IN_GGMBI:=false;
+        PopOptions();
         # get elementary abelian series from b to s
         dser:=elabser(b,s);
         pcgs:=List([2..Length(dser)],x->ModuloPcgs(dser[x-1],dser[x]));
         for j in pcgs do
-          RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+          PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
           fphom:=LiftFactorFpHom(fphom,Source(fphom),false,j);
-          RUN_IN_GGMBI:=false;
+          PopOptions();
         od;
         gens:=MappingGeneratorsImages(fphom);
         imgs:=gens[2];gens:=gens[1];
@@ -1325,12 +1325,12 @@ local s,d,c,act,o,i,j,h,p,hf,img,n,k,ns,all,hl,hcomp,
         # now do complement to NS(k)/k
         for z in [1..Length(pcgs)] do
           h:=ClosureGroup(dser[z],cgens);
-          RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+          PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
           fphom:=GroupGeneralMappingByImagesNC(h,fp,
                   Concatenation(GeneratorsOfGroup(dser[z]),cgens),
                   Concatenation(List(GeneratorsOfGroup(dser[z]),x->One(fp)),
                     imgs));
-          RUN_IN_GGMBI:=false;
+          PopOptions();
 
           ocr:=rec(group:=h,modulePcgs:=pcgs[z],
                   factorfphom:=fphom);
@@ -1411,10 +1411,10 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,
     sf:=List(GeneratorsOfGroup(Image(fphom)),x->PreImagesRepresentative(fphom,x));
     sg:=List(sf,x->PreImagesRepresentative(hom,x));
     sp:=[];
-    RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+    PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
     fphom:=GroupGeneralMappingByImagesNC(Group(sg,One(G)),fp,sg,
       GeneratorsOfGroup(fp));
-    RUN_IN_GGMBI:=false;
+    PopOptions();
 
     for d in [2..Length(ser.depths)] do
       mran:=[ser.depths[d-1]..len];
@@ -1429,9 +1429,9 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,
           Append(sp,mpcgs);
         else
           # extend presentation
-          RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+          PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
           fphom:=LiftFactorFpHom(fphom,Source(fphom),false,mpcgs);
-          RUN_IN_GGMBI:=false;
+          PopOptions();
           fp:=Image(fphom);
           sp:=Concatenation(sp,mpcgs);
         fi;
@@ -1443,10 +1443,10 @@ local ser,hom,s,fphom,sf,sg,sp,fp,d,head,mran,nran,mpcgs,ocr,len,pcgs,
         gens:=GeneratorsOfGroup(ocr.complement);
         sg:=gens{[1..Length(sg)]};
         sp:=gens{[Length(sg)+1..Length(gens)]};
-        RUN_IN_GGMBI:=true; # hack to skip Nice treatment
+        PushOptions( rec( Run_In_GGMBI:= true ) ); # hack to skip Nice treatment
         fphom:=GroupGeneralMappingByImagesNC(ocr.complement,fp,gens,
           GeneratorsOfGroup(fp));
-        RUN_IN_GGMBI:=false;
+        PopOptions();
 
       fi;
     od;
