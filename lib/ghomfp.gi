@@ -630,7 +630,7 @@ InstallMethod( PreImagesSet, "map from (sub)group of fp group",
   [ IsFromFpGroupHomomorphism,IsGroup ],0,
 function(hom,u)
   if not IsSubset( Range(hom), u ) then
-    return [];
+    return fail;
   fi;
   return PreImagesSetNC(hom,u);
 end);

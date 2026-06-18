@@ -1001,7 +1001,7 @@ InstallMethod(PreImagesElm,
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep, IsPosInt], 0,
     function( rel, n )
         if not ( n in Range(rel) ) then
-            return [];
+            return fail;
         fi;
         return PreImagesElm( rel, n );
     end );
@@ -1855,7 +1855,7 @@ InstallMethod( PreImagesElm,
          IsObject],0,
     function( rel, elm )
         if not ( elm in Range( rel ) ) then ##?? is there a Range(rel)?
-            return [];
+            return fail;
         fi;
         return PreImagesElmNC( rel, elm );
     end);

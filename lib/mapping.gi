@@ -1159,7 +1159,7 @@ InstallMethod( PreImagesElm,
     function ( map, elm )
 
     if not ( elm in Image( map ) ) then
-        return [];
+        return fail;
     else
         return PreImagesElmNC( map, elm );
     fi;
@@ -1192,7 +1192,7 @@ InstallMethod( PreImagesElm,
     [ IsGeneralMapping and IsConstantTimeAccessGeneralMapping, IsObject ], 0,
     function( map, elm )
     if not ( elm in Image( map ) ) then
-        return [];
+        return fail;
     else
         return PreImagesElmNC( map, elm );
     fi;
@@ -1233,7 +1233,7 @@ InstallMethod( PreImagesSet,
     im:= Image( map );
     for elm in Enumerator( elms ) do
       if not (elm in im ) then
-        return [];
+        return fail;
       fi;
     od;
     return PreImagesSetNC( map, elms );
@@ -1331,7 +1331,7 @@ InstallMethod( PreImagesRepresentative,
     [ IsNonSPGeneralMapping, IsObject ], 0,
     function( map, elm )
       if not elm in Image( map ) then
-        return [];
+        return fail;
       fi;
       return PreImagesRepresentativeNC( map, elm );
     end );

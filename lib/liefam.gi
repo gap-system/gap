@@ -463,7 +463,7 @@ InstallMethod( PreImagesElm,
       IsLieObject and IsPackedElementDefaultRep ], 0,
     function( emb, elm )
     if not ( elm in Range(emb) ) then
-        return [];
+        return fail;
     fi;
     return PreImagesElm( emb, elm );
     end );

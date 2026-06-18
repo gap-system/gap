@@ -1338,7 +1338,7 @@ InstallMethod( PreImagesElm,
     [ IsFieldHomomorphism, IsObject ],
     function ( hom, elm )
     if not (elm in Range(hom)) then
-      return [];
+      return fail;
     fi;
     return PreImagesElm( hom, elm );
     end );
@@ -1365,7 +1365,7 @@ InstallMethod( PreImagesSet,
     [ IsFieldHomomorphism, IsField ],
     function ( hom, elms )
     if not IsSubset( Range(hom), elms ) then
-        return [];
+        return fail;
     fi;
     return PreImagesSet( hom, elms );
     end );

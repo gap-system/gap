@@ -1936,7 +1936,7 @@ InstallMethod( PreImagesElm,
     [ IsFieldHomomorphism and IsANFAutomorphismRep, IsScalar ],
     function ( aut, elm )
     if not ( elm in Range(aut) ) then
-        return [];
+        return fail;
     fi;
     return PreImagesElmNC( aut, elm );
     end );
@@ -1960,7 +1960,7 @@ InstallMethod( PreImagesSet,
     [ IsFieldHomomorphism and IsANFAutomorphismRep, IsField ],
     function ( aut, F )
     if not IsSubset( Range(aut), F ) then
-        return [];
+        return fail;
     fi;
     return PreImagesSetNC( aut, F );
     end );
