@@ -67,11 +67,31 @@ jobs:
       - name: "Install dependencies (for macOS)"
         if: runner.os == 'macOS'
         run: |
-          brew install autoconf zlib # gmp pkg-config
+          # - autoconf, gmp, zlib are needed by GAP's build system
+          # - coreutils provides nproc
+          # - force use of Homebrew gcc to build GAP for proper stacktrace support
+          #   Homebrew installs versioned binaries such as gcc-14 and g++-14,
+          #   while later scripts expect unversioned gcc and g++ in PATH.
+          brew install autoconf gmp zlib gcc@14 coreutils
+
+          # ensure gcc and g++ are available under those names (on macOS,
+          # these names are aliases for clang / clang++ out of the box)
+          shimdir="${HOME}/bin"
+          mkdir -p "${shimdir}"
+          ln -sf "$(brew --prefix)/bin/gcc-14" "${shimdir}/gcc"
+          ln -sf "$(brew --prefix)/bin/g++-14" "${shimdir}/g++"
+          echo "${shimdir}" >> "${GITHUB_PATH}"
       - name: "Build GAP"
         run: |
           mv GAPROOT /tmp/GAPROOT
           cd /tmp/GAPROOT
+          patchdir=.github/workflows/GAP_patches/master
+          if [ -d $patchdir ]; then
+            for f in $patchdir/*.patch; do
+              echo "Applying patch ${f}"
+              patch -p1 -d . < ${f}
+            done
+          fi
           ./autogen.sh
           ./configure --enable-Werror
           make -j`nproc`
