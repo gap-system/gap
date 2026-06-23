@@ -85,7 +85,7 @@ jobs:
         run: |
           mv GAPROOT /tmp/GAPROOT
           cd /tmp/GAPROOT
-          patchdir=.github/workflows/GAP_patches/master
+          patchdir=$GAPJLPATH/.github/workflows/GAP_patches/master
           if [ -d $patchdir ]; then
             for f in $patchdir/*.patch; do
               echo "Applying patch ${f}"
