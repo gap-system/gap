@@ -93,7 +93,7 @@ jobs:
             done
           fi
           ./autogen.sh
-          ./configure
+          ./configure --enable-Werror
           make -j`nproc`
       - name: "Override bundled GAP"
         run: |
