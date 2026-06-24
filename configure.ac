@@ -727,12 +727,12 @@ for READLINE_PREFIX in ${READLINE_SEARCH_PATH} ; do
     [DEFAULTS_EREADLINE],[
       dnl ereadline is the name of GNU readline library on OpenBSD
       READLINE_PREFIX=""
-      READLINE_CPPFLAGS="-I/usr/local/include/ereadline"
+      READLINE_CPPFLAGS="-isystem /usr/local/include/ereadline"
       READLINE_LDFLAGS=""
       READLINE_LIBS="-lereadline"
     ],
     [*],[
-      READLINE_CPPFLAGS="-I${READLINE_PREFIX}/include"
+      READLINE_CPPFLAGS="-isystem ${READLINE_PREFIX}/include"
       READLINE_LDFLAGS="-L${READLINE_PREFIX}/lib"
       READLINE_LIBS="-lreadline"
     ]
