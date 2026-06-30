@@ -696,7 +696,8 @@ local fp,n,pat,pools,i,sel;
 end);
 
 # form a characterististic series through radical with elab factors
-BindGlobal("AGSRCharacteristicSeries",function(G,r)
+
+InstallGlobalFunction(AGSRCharacteristicSeries,function(G,r)
 local somechar,d,i,j,u,v;
   d:=Filtered(StructuralSeriesOfGroup(G),x->IsSubset(r,x));
   # refine
