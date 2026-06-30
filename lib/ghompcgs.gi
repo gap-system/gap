@@ -700,3 +700,180 @@ end );
 InstallMethod( IsomorphismPcGroup,
     [ IsPcGroup ], SUM_FLAGS,
     IdentityMapping );
+
+
+#############################################################################
+##
+#A  SpeedupDataPcHom( <hom> )
+##
+BindGlobal("SPHPatternEnumerateFunction",function(pat)
+local c;   # vector of suffix products linearizing a multiadic index
+  c:=List([1..Length(pat)],x->Product(pat{[x+1..Length(pat)]}));
+  return a->a*c;
+end);
+
+InstallMethod(SpeedupDataPcHom,"pcgs",true,
+  [IsGroupGeneralMappingByPcgs and IsTotal],0,
+function(hom)
+local g,       # Source(hom)
+      r,       # the speedup-data record (cached or freshly computed)
+      pcgs,    # the source pcgs hom!.sourcePcgs
+      ro,      # relative orders of pcgs
+      n,       # length of pcgs
+      s,       # characteristic series, then its bottom elem.-abelian layer
+      field,   # field of that bottom layer (or fail if none)
+      depths,  # the chosen chunk-boundary depths within pcgs
+      pats,    # the per-chunk PatternEnumerateFunction list
+      mat,     # the bottom-level action matrix (or fail)
+      a,       # chunk-size target / exponent-vector temporary
+      i;       # working depth / loop index
+
+  g:=Source(hom);
+  if g<>Range(hom) or not IsBijective(hom) then
+    TryNextMethod();
+  fi;
+  r:=fail;
+  if IsBound(g!.automSpeedupData) then
+    r:=g!.automSpeedupData;
+    if r.pcgs<>hom!.sourcePcgs then
+      r:=fail;
+      g:=Group(hom!.sourcePcgs);
+    fi;
+  fi;
+  if r=fail then
+    pcgs:=hom!.sourcePcgs;
+    ro:=RelativeOrders(pcgs);
+    n:=Length(pcgs);
+    # bottom characteristic elab level -- this can be done by matrix
+    s:=AGSRCharacteristicSeries(g,g);
+    s:=Filtered(s,x->Size(x)=1 or x=SubgroupNC(g,pcgs{[Minimum(
+      List(GeneratorsOfGroup(x),y->DepthOfPcElement(pcgs,y)))..n]}));
+    s:=Filtered(s,x->IsElementaryAbelian(x) and Size(x)>1);
+    if Length(s)>0 then
+      s:=s[1];
+      i:=Minimum(List(GeneratorsOfGroup(s),x->DepthOfPcElement(pcgs,x)));
+      field:=GF(ro[i]);
+      depths:=[i,n+1];
+    else
+      field:=fail;
+      depths:=[n+1];
+      i:=n+1;
+    fi;
+
+    if i>1 then
+      # how to split further?
+      a:=Product(ro{[1..n]});
+      if a<1000 then
+        a:=1000;
+      else
+        # we want to store about 1000 images, so rounded down log base 1000/10
+        a:=RootInt(a,LogInt(a,100))*ro[1];
+      fi;
+
+      # now chunks
+      while i>1 do
+        i:=i-1;
+        s:=i;
+        while s>1 and Product(ro{[s..i]})<a do
+          s:=s-1;
+        od;
+        AddSet(depths,s);
+        i:=s;
+      od;
+    fi;
+
+    if not 1 in depths then Error("EEE");fi;
+
+    pats:=[];
+    for i in [1..Length(depths)-1] do
+      Add(pats,SPHPatternEnumerateFunction(ro{[depths[i]..depths[i+1]-1]}));
+    od;
+
+    r:=rec(pcgs:=pcgs,
+            field:=field,
+            pats:=pats,
+            depths:=depths);
+
+    g!.automSpeedupData:=r;
+
+  fi;
+
+  if r.field<>fail then
+    # set mat to lowest level change
+    n:=Length(r.pcgs);
+    i:=r.depths[Length(r.depths)-1];
+    mat:=List(hom!.sourcePcgsImages{[i..n]},
+      x->ExponentsOfPcElement(r.pcgs,x){[i..n]});
+    mat:=ImmutableMatrix(r.field,mat*One(r.field));
+  else
+    mat:=fail;
+  fi;
+
+  r:=rec(groupData:=r,mat:=mat,vals:=List(r.pats,x->[]));
+  return r;
+end);
+
+InstallMethod( ImagesRepresentative,
+    "for sped-up pc hom",FamSourceEqFamElm,
+        [ IsGroupGeneralMappingByPcgs and IsTotal
+          and HasSpeedupDataPcHom,
+          IsMultiplicativeElementWithInverse and IsNBitsPcWordRep],100,
+function(hom,elm)
+local r,       # SpeedupDataPcHom(hom): the per-hom speedup data
+      rg,      # r.groupData: shared pcgs/depths/field/pattern data
+      depths,  # rg.depths: the chunk boundaries
+      pcgs,    # rg.pcgs
+      n,       # length of pcgs
+      ld,      # length of depths
+      top,     # highest chunk index handled via cached linear combinations
+      v,       # the accumulating image element
+      e,       # exponent vector of elm w.r.t. pcgs
+      a,       # current chunk's exponents, then its matrix image
+      b,       # pattern index into the value cache / a depth bound
+      i;       # loop index
+
+  r:=SpeedupDataPcHom(hom);
+  if r=fail then TryNextMethod();fi;
+  rg:=r.groupData;
+  depths:=rg.depths;
+  # in next line subtract 1 to use the lowest level matrix
+  ld:=Length(depths);
+  pcgs:=rg.pcgs;
+  n:=Length(pcgs);
+
+  v:=OneOfPcgs(pcgs);
+  e:=ExponentsOfPcElement(pcgs,elm);
+
+  if rg.field=fail then
+    top:=ld;
+  else
+    top:=ld-1;
+  fi;
+
+  for i in [1..top-1] do
+    a:=e{[depths[i]..depths[i+1]-1]};
+    b:=rg.pats[i](a)+1; # patterns start at 0
+    if not IsBound(r.vals[i][b]) then
+      r.vals[i][b]:=LinearCombinationPcgs(
+        hom!.sourcePcgsImages{[depths[i]..depths[i+1]-1]},a);
+    fi;
+    v:=v*r.vals[i][b];
+  od;
+  if rg.field=fail then return v;fi;
+  b:=depths[ld-1];
+  a:=e{[b..n]};
+  #a:=ImmutableVector(rg.field,a*One(rg.field))*r.mat;
+  a:=a*One(rg.field);
+  ConvertToVectorRep(a,Size(rg.field));
+  a:=a*r.mat;
+
+  b:=b-1;
+  e:=0*e;
+  for i in [1..Length(a)] do
+    e[b+i]:=Int(a[i]);
+  od;
+  return v*PcElementByExponentsNC(pcgs,e);
+
+end);
+
+
