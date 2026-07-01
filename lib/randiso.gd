@@ -22,7 +22,8 @@ DeclareAttribute( "OmegaAndLowerPCentralSeries", IsGroup );
 ##
 ##  <Description>
 ##  returns the non-negative integer code corresponding to the finite pcgs
-##  <A>pcgs</A>. The code stores the relative orders of <A>pcgs</A> and
+##  <A>pcgs</A>, which must be in <Ref Prop="IsPrimeOrdersPcgs"/>.
+The code stores the relative orders of <A>pcgs</A> and
 ##  the right hand sides of the nontrivial power and commutator relations
 ##  of the pc presentation defined by <A>pcgs</A>. This integer encoding of
 ##  pc groups underlies the group construction method described in
@@ -56,8 +57,8 @@ DeclareAttribute( "OmegaAndLowerPCentralSeries", IsGroup );
 ##  <M>0 \leq e_i &lt; r_i</M>, then the digit for <M>x</M> is
 ##  <M>\sum_{i=1}^l e_i\prod_{k=i+1}^l r_k</M>. Equivalently, this is
 ##  the zero-based position of <M>x</M> in the canonical list
-##  <M>g_1^{e_1}\cdots g_l^{e_l}</M>, ordered with <M>e_l</M> varying
-##  fastest, then <M>e_{l-1}</M>, and so on.
+##  <M>g_1^{e_1}\cdots g_l^{e_l}</M>, ordered according to the
+##  lexicographic order of the tuples <M>e_1,\dots,e_l</M>.
 ##  <P/>
 ##  Thus if <M>b</M> is <M>m^l</M> when the relative order part is present
 ##  and <M>1</M> otherwise, if <M>u</M> is the bit mask, and if
