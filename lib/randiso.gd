@@ -23,7 +23,7 @@ DeclareAttribute( "OmegaAndLowerPCentralSeries", IsGroup );
 ##  <Description>
 ##  returns the non-negative integer code corresponding to the finite pcgs
 ##  <A>pcgs</A>, which must be in <Ref Prop="IsPrimeOrdersPcgs"/>.
-The code stores the relative orders of <A>pcgs</A> and
+##  The code stores the relative orders of <A>pcgs</A> and
 ##  the right hand sides of the nontrivial power and commutator relations
 ##  of the pc presentation defined by <A>pcgs</A>. This integer encoding of
 ##  pc groups underlies the group construction method described in
