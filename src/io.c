@@ -1513,8 +1513,6 @@ static Obj FuncALL_KEYWORDS(Obj self)
 **  '%g'    the corresponding argument is the address of a T_STRING string
 **          object which is printed. This is similar to using '%s' to print
 **          CSTR_STRING(arg), but is safe during garbage collection.
-**  '%G'    the corresponding argument is the address of an Obj which points
-**          to a string in STRING_REP format which is printed in '%S' format
 **  '%C'    the corresponding argument is the address of an Obj which points
 **          to a string in STRING_REP format which is printed with C escapes
 **  '%d'    the corresponding argument is a signed integer, which is printed.
@@ -1556,7 +1554,7 @@ static inline void FormatOutput(
     }
 
     // handle the case of a missing argument
-    if (arg1 == 0 && (*p == 's' || *p == 'S' || *p == 'C' || *p == 'I')) {
+    if (arg1 == 0 && (*p == 's' || *p == 'g' || *p == 'C' || *p == 'I')) {
       put_a_char(state, '<');
       put_a_char(state, 'n');
       put_a_char(state, 'u');
@@ -1566,6 +1564,7 @@ static inline void FormatOutput(
 
       // on to the next argument
       arg1 = arg2;
+      arg2 = 0;
     }
 
     // '%d' print an integer
@@ -1591,6 +1590,7 @@ static inline void FormatOutput(
 
       // on to the next argument
       arg1 = arg2;
+      arg2 = 0;
     }
 
     // '%s' or '%g' print a string
@@ -1650,6 +1650,7 @@ static inline void FormatOutput(
 
       // on to the next argument
       arg1 = arg2;
+      arg2 = 0;
     }
 
     // '%C' print a string with the necessary C escapes
@@ -1699,6 +1700,7 @@ static inline void FormatOutput(
 
       // on to the next argument
       arg1 = arg2;
+      arg2 = 0;
     }
 
     // '%I' print an identifier
@@ -1742,12 +1744,14 @@ static inline void FormatOutput(
 
       // on to the next argument
       arg1 = arg2;
+      arg2 = 0;
     }
 
     // '%c' print a character
     else if ( *p == 'c' ) {
       put_a_char(state, (Char)arg1);
       arg1 = arg2;
+      arg2 = 0;
     }
 
     // '%%' print a '%' character
