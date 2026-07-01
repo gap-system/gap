@@ -424,13 +424,11 @@ local field, dict, acts, start, j, zerov, zero, dim, base, partbas, heads,
   SetRange(hom,R);
   SetImagesSource(hom,R);
   SetMappingGeneratorsImages(hom,[acts,permimg]);
-#  p:=RUN_IN_GGMBI; # no niceomorphism translation here
-#  RUN_IN_GGMBI:=true;
+#  # no niceomorphism translation here
 #  SetAsGroupGeneralMappingByImages ( hom, GroupHomomorphismByImagesNC
-#            ( G, R, acts, permimg ) );
+#            ( G, R, acts, permimg : Run_In_GGMBI:= true ) );
 #
 #  SetFilterObj( hom, IsActionHomomorphismByBase );
-#  RUN_IN_GGMBI:=p;
   if act=OnRight or act=OnPoints then
     # only store for action on right. projective action needs is own call to
     # `LinearActionBase' as this will set other needed parameters.
