@@ -372,6 +372,17 @@ are satisfied.
 </Item>
 </List>
 
+<E>A technical remark:</E><Index>Run_In_GGMBI</Index>
+
+<P/>
+
+In order to avoid infinite recursions when constructing nice monomorphisms,
+the global option <C>Run_In_GGMBI</C> is set to <K>true</K> in certain
+situations.
+The value of this option is checked in methods for the operations
+<Ref Oper="GroupGeneralMappingByImagesNC"/> and
+<Ref Attr="AsGroupGeneralMappingByImages"/>.
+
 <#Include Label="IsHandledByNiceMonomorphism">
 <#Include Label="NiceMonomorphism">
 <#Include Label="NiceObject">
