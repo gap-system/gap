@@ -927,16 +927,22 @@ InstallMethod( GroupGeneralMappingByImagesNC,
    "from a group handled by a niceomorphism",true,
     [ IsGroup and IsHandledByNiceMonomorphism, IsGroup, IsList, IsList ], 0,
 function( G, H, gens, imgs )
-local nice,geni,map2,tmp;
-  if RUN_IN_GGMBI=true then
+local nice,geni,map2;
+  if ValueOption( "Run_In_GGMBI" ) = true then
+    TryNextMethod();
+  elif RUN_IN_GGMBI = true then
+    # Code was called that does not know about the global option.
+    # Make it work but print a warning.
+    Info( InfoWarning, 1,
+          "use the global option 'Run_In_GGMBI' not the global variable ",
+          "'RUN_IN_GGMBI', see '?Run_In_GGMBI'" );
     TryNextMethod();
   fi;
-  tmp := RUN_IN_GGMBI;
-  RUN_IN_GGMBI:=true;
+  PushOptions( rec( Run_In_GGMBI:= true ) );
   nice:=RestrictedNiceMonomorphism(G);
   geni:=List(gens,i->ImageElm(nice,i));
   map2:=GroupGeneralMappingByImagesNC(NiceObject(G),H,geni,imgs);
-  RUN_IN_GGMBI:=tmp;
+  PopOptions();
   return CompositionMapping(map2,nice);
 end );
 
@@ -956,18 +962,20 @@ InstallMethod( AsGroupGeneralMappingByImages,
   [IsGroupGeneralMapping and IsNiceMonomorphism],
   {} -> RankFilter( IsHandledByNiceMonomorphism ),
 function(hom)
-local h, tmp;
-  # we actually want to use the next method with `RUN_IN_GGMBI' set to
+  # we actually want to use the next method with `Run_In_GGMBI' set to
   # `true'. Therefore we redispatch, but will skip this method the second
   # time.
-  if RUN_IN_GGMBI=true then
+  if ValueOption( "Run_In_GGMBI" ) = true then
+    TryNextMethod();
+  elif RUN_IN_GGMBI = true then
+    # Code was called that does not know about the global option.
+    # Make it work but print a warning.
+    Info( InfoWarning, 1,
+          "use the global option 'Run_In_GGMBI' not the global variable ",
+          "'RUN_IN_GGMBI', see '?Run_In_GGMBI'" );
     TryNextMethod();
   fi;
-  tmp := RUN_IN_GGMBI;
-  RUN_IN_GGMBI:=true;
-  h:=AsGroupGeneralMappingByImages(hom);
-  RUN_IN_GGMBI:=tmp;
-  return h;
+  return AsGroupGeneralMappingByImages( hom : Run_In_GGMBI:= true );
 end);
 
 #############################################################################
@@ -979,12 +987,11 @@ InstallMethod( PreImagesRepresentative, "for PBG-Niceo",
     [ IsPreimagesByAsGroupGeneralMappingByImages and IsNiceMonomorphism,
       IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
-local p, tmp;
+local p;
   # avoid the double dispatch for `AsGroupGeneralMappingByImages'
-  tmp := RUN_IN_GGMBI;
-   RUN_IN_GGMBI:=true;
+  PushOptions( rec( Run_In_GGMBI:= true ) );
   p:=PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ), elm );
-  RUN_IN_GGMBI:=tmp;
+  PopOptions();
   return p;
 end );
 

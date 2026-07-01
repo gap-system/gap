@@ -1788,8 +1788,7 @@ local   list,  ps,  p,  i,  gen,  img,  pos,  imgs,  hom,orb,ran,xset;
   imgs := List( list, PermList );
   xset := ExternalSet( G, D{orb}, gens, acts, act);
   SetBaseOfGroup( xset, start );
-  p:=RUN_IN_GGMBI; # no niceomorphism translation here
-  RUN_IN_GGMBI:=true;
+  PushOptions( rec( Run_In_GGMBI:= true ) ); # no niceomorphism translation here
   hom := ActionHomomorphism(xset,"surjective" );
     ran:= Group( imgs, () );  # `imgs' has been created with `PermList'
   SetRange(hom,ran);
@@ -1801,7 +1800,7 @@ local   list,  ps,  p,  i,  gen,  img,  pos,  imgs,  hom,orb,ran,xset;
   # this to get images quickly, using a stabilizer chain in the permutation
   # group
   SetFilterObj( hom, IsActionHomomorphismByBase );
-  RUN_IN_GGMBI:=p;
+  PopOptions();
   return hom;
 end );
 
@@ -1919,8 +1918,7 @@ local dict,p,i,img,imgs,hom,permimg,orb,imgn,ran,D,xset;
     fi;
   fi;
 
-  p:=RUN_IN_GGMBI; # no niceomorphism translation here
-  RUN_IN_GGMBI:=true;
+  PushOptions( rec( Run_In_GGMBI:= true ) ); # no niceomorphism translation here
   hom := ActionHomomorphism( xset,"surjective" );
   SetRange(hom,ran);
   SetImagesSource(hom,ran);
@@ -1931,7 +1929,7 @@ local dict,p,i,img,imgs,hom,permimg,orb,imgn,ran,D,xset;
   if HasBaseOfGroup(xset) then
     SetFilterObj( hom, IsActionHomomorphismByBase );
   fi;
-  RUN_IN_GGMBI:=p;
+  PopOptions();
 
   return hom;
 end);
