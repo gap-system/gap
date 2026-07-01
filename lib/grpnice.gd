@@ -193,6 +193,7 @@ InstallSubsetMaintenance( IsHandledByNiceMonomorphism,
 # instead of the global variable `RUN_IN_GGMBI`,
 # but `RUN_IN_GGMBI` is still supported because GAP packages might use it.
 RUN_IN_GGMBI:=fail;  # If somebody would call `GHBI' to make a
+`Run_In_GGMBI` (#6442))
                      # NiceMonomorphism, we would get an infinite recursion.
                      # This flag can be set to avoid GHBIs to be translated
                      # via the niceo. If it is set, the method which does
