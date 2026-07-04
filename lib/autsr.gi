@@ -117,6 +117,7 @@ local
           # obtain generators, and (2) a subgroup of M accumulating the
           # module elements already hit by relators
   gens,   # a small generating set of the factor `sub`
+  pregens,# preImages of these elements in C
   free,   # a free group on `gens`, in which the relators are recorded
   epi,    # map free->gens
   q,      # the group on `gens`, to be mapped to a finitely presented group
@@ -136,20 +137,24 @@ local
   fi;
   p:=SmallestPrimeDivisor(Size(M));
   all:=[];
-  if newgens=true then
-    # so generators new
-    sub:=TrivialSubgroup(Image(nat));
-    while Size(sub)<Size(Image(nat)) do
-      sub:=ClosureGroup(sub,ImagesRepresentative(nat,Random(C)));
-    od;
-  else
-    sub:=Image(nat,C);
-  fi;
+  pregens:=SmallGeneratingSet(C);
+  gens:=List(pregens,x->ImagesRepresentative(nat,x));
+  sub:=SubgroupNC(Image(nat),gens);
 
-  gens:=SmallGeneratingSet(sub);
+  #if newgens=true then
+  #  # so generators new
+  #  sub:=TrivialSubgroup(Image(nat));
+  #  while Size(sub)<Size(Image(nat)) do
+  #    sub:=ClosureGroup(sub,ImagesRepresentative(nat,Random(C)));
+  #  od;
+  #else
+  #  sub:=Image(nat,C);
+  #fi;
+#
+  #gens:=SmallGeneratingSet(sub);
 
-  free:=FreeGroup(Length(gens));
-
+  epi:=EpimorphismFromFreeGroup(sub);
+  free:=Source(epi);
   sub:=TrivialSubgroup(M);
   cnt:=0;
   while Size(sub)<Size(M) do
@@ -172,7 +177,7 @@ local
     cnt:=cnt+1;
     if cnt>5 then return fail;fi;
   od;
-  return rec(gens:=gens,free:=free,rels:=all);
+  return rec(gens:=gens,pregens:=pregens,epi:=epi,free:=free,rels:=all);
 end);
 
 BindGlobal("AGSRPrepareAutomLift",function(G,pcgs,nat)
@@ -386,9 +391,16 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
     # allow to deduce corresponding module aut.
     t:=ocr.trickrels;
     phom:=IdentityMapping(ocr.moduleauts);
-    s:=List(t.gens,x->PreImagesRepresentative(nat,x));
-    l:=List(t.gens,x->PreImagesRepresentative(nat,ImagesRepresentative(fhom,x)));
-    s:=List(t.rels,x->MappedWord(x,GeneratorsOfGroup(t.free),s));
+
+    #s:=List(t.gens,x->PreImagesRepresentative(nat,x));
+    #l:=List(t.gens,x->PreImagesRepresentative(nat,ImagesRepresentative(fhom,x)));
+
+    # word expression for images (to have some "hom-like" property
+    ws:=List(t.gens,x->PreImagesRepresentative(t.epi,ImagesRepresentative(fhom,x)));
+    # evaluated in pregens
+    l:=List(ws,x->MappedWord(x,GeneratorsOfGroup(t.free),t.pregens));
+
+    s:=List(t.rels,x->MappedWord(x,GeneratorsOfGroup(t.free),t.pregens));
     l:=List(t.rels,x->MappedWord(x,GeneratorsOfGroup(t.free),l));
 
     s:=List(s,x->ExponentsOfPcElement(ocr.modulePcgs,x))*One(ocr.field);
@@ -397,14 +409,22 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
     if RankMat(l)<Length(l) then
       return fail;
     fi;
-    enum:=[s^-1*l];
+    trick:=s^-1*l/miso;
+    enum:=[trick];
 
   else
+    trick:=fail;
     phom:=IsomorphismPermGroup(ocr.moduleauts);
     enum:=Enumerator(Image(phom,ocr.moduleauts));
     Info(InfoMorph,5,"Search through module automorphisms of size ",
       Size(Image(phom)));
   fi;
+
+  #if trick<>fail then
+  #  t:=ImagesRepresentative(phom,trick);
+  #  # try the trickrels result first
+  #  enum:=Concatenation([t],AsList(enum));
+  #fi;
 
   for ep in enum do
     e:=PreImagesRepresentative(phom,ep);
