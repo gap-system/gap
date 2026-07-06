@@ -1247,6 +1247,30 @@ end);
 
 ##############################################################################
 ##
+#M  ChiefLength( <G> ) . . . . . . . . . . . . . . . . chief length of a group
+##
+##  For small groups, computing the 'IsSupersolvableGroup' flag is more
+##  expensive than computing a chief series,
+##  but the flag helps if it is known.
+##
+InstallMethod( ChiefLength,
+    "generic method for groups",
+    [ IsGroup ],
+    G -> Length( ChiefSeries( G ) ) - 1 );
+
+InstallMethod( ChiefLength,
+    "for a supersolvable group",
+    [ IsGroup and IsSupersolvableGroup ],
+    function( G )
+    if Size( G ) = 1 then
+      return 0;
+    fi;
+    return Length( Factors( Size( G ) ) );
+    end );
+
+
+##############################################################################
+##
 #M  DerivedLength( <G> ) . . . . . . . . . . . . . . derived length of a group
 ##
 InstallMethod( DerivedLength,

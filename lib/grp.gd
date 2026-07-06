@@ -1511,6 +1511,31 @@ DeclareAttribute( "LatticeSubgroups", IsGroup );
 
 #############################################################################
 ##
+#A  ChiefLength( <G> )
+##
+##  <#GAPDoc Label="ChiefLength">
+##  <ManSection>
+##  <Attr Name="ChiefLength" Arg='G'/>
+##
+##  <Description>
+##  The chief length of a group is the number of steps in any of its chief
+##  series, see <Ref Attr="ChiefSeries"/>.
+##  <Example><![CDATA[
+##  gap> List( ChiefSeries( g ), Size );
+##  [ 24, 12, 4, 1 ]
+##  gap> ChiefLength( g );
+##  3
+##  ]]></Example>
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareAttribute( "ChiefLength", IsGroup );
+InstallIsomorphismMaintenance( ChiefLength, IsGroup, IsGroup );
+
+
+#############################################################################
+##
 #A  DerivedLength( <G> )
 ##
 ##  <#GAPDoc Label="DerivedLength">
@@ -1531,6 +1556,8 @@ DeclareAttribute( "LatticeSubgroups", IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "DerivedLength", IsGroup );
+InstallIsomorphismMaintenance( DerivedLength, IsGroup, IsGroup );
+
 
 #############################################################################
 ##
@@ -1636,6 +1663,7 @@ DeclareAttribute( "MaximalAbelianQuotient",IsGroup);
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "CommutatorLength", IsGroup );
+InstallIsomorphismMaintenance( CommutatorLength, IsGroup, IsGroup );
 
 
 #############################################################################
