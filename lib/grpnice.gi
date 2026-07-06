@@ -990,10 +990,9 @@ InstallMethod( PreImagesRepresentativeNC, "for PBG-Niceo",
 function( hom, elm )
 local p;
   # avoid the double dispatch for `AsGroupGeneralMappingByImages'
-  tmp := RUN_IN_GGMBI;
-   RUN_IN_GGMBI:=true;
-  p:=PreImagesRepresentativeNC( AsGroupGeneralMappingByImages( hom ), elm );
-  RUN_IN_GGMBI:=tmp;
+  PushOptions( rec( Run_In_GGMBI:= true ) );
+  p:=PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ), elm );
+  PopOptions();
   return p;
 end );
 
