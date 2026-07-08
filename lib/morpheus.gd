@@ -592,3 +592,39 @@ DeclareOperation("GQuotients",[IsGroup,IsGroup]);
 DeclareOperation("IsomorphicSubgroups",[IsGroup,IsGroup]);
 
 DeclareGlobalFunction("PatheticIsomorphism");
+
+#############################################################################
+##
+#F  AGSRCharacteristicSeries( <G>, <r> )
+##
+##  <#GAPDoc Label="AGSRCharacteristicSeries">
+##  <ManSection>
+##  <Func Name="AGSRCharacteristicSeries" Arg='G, r'/>
+##
+##  <Description>
+##  For a group <A>G</A> and a solvable normal subgroup <A>r</A> of
+##  <A>G</A> (e.g. the radical of <A>G</A>), this function computes a
+##  subnormal series of <A>G</A> through <A>r</A> all of whose factors
+##  below <A>r</A> are characteristic in <A>G</A> -- in particular it is
+##  invariant under <C>AutomorphismGroup(G)</C>.
+##  <P/>
+##  The series starts from the structural series of <A>G</A>, restricted
+##  to the subgroups it contains in <A>r</A>, and is then refined by the
+##  centres of <A>G</A> and of <A>r</A>. If the option
+##  <C>someCharacteristics</C> is given (either as a list of subgroups, or
+##  as a record with component <C>subgroups</C>), the series is further
+##  refined by these subgroups.
+##  <P/>
+##  If the resulting series does not yet have elementary abelian factors
+##  throughout, it is refined further within <A>r</A> using, for every
+##  prime <M>p</M> dividing <C>Size(r)</C>, the <M>p</M>-core of <A>r</A>
+##  together with its agemo and omega subgroups, all of which are
+##  characteristic in <A>r</A> and hence in <A>G</A>.
+##  <P/>
+##  The function returns the resulting list of subgroups, sorted by
+##  decreasing size, with consecutive subgroups guaranteed to be distinct.
+##  </Description>
+##  </ManSection>
+##  <#/GAPDoc>
+##
+DeclareGlobalFunction("AGSRCharacteristicSeries");
