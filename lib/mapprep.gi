@@ -2069,7 +2069,7 @@ InstallMethod( PreImagesSet,
     [ IsGeneralRestrictedMappingRep, IsCollection ], 0,
     function( res, elms )
     if not IsSubset( Range(res), elms ) then
-      Error( <elms> is not in the range of mapping <res>" );
+      Error( "<elms> is not in the range of mapping <res>" );
     elif not IsSubset( Image(res), elms ) then
       return fail;
     fi;
