@@ -335,7 +335,7 @@ InstallGlobalFunction( PreImagesNC, function ( arg )
         elif IsList( img ) and IsEmpty( img ) then
           return [];
 
-        else
+        fi;
     fi;
     ErrorNoReturn( "usage: PreImagesNC(<map>), PreImagesNC(<map>,<img>), ",
                    "PreImagesNC(<map>,<coll>)" );

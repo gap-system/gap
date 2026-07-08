@@ -1172,7 +1172,7 @@ InstallMethod( PreImagesSet,
     [ IsGeneralMapping and IsInverseGeneralMappingRep, IsCollection ], 0,
     function ( inv, elms )
     if not IsSubset( Range(inv), elms ) then
-      Error( "<elms" is nn ot a subset of the range of mapping <inv>" );
+      Error( "<elms> is not a subset of the range of mapping <inv>" );
     elif not IsSubset( Image(inv), elms ) then
       return fail;
     fi;
@@ -1759,7 +1759,7 @@ InstallMethod( PreImagesElm,
     function( zero, elm )
     if not elm in Range(zero) then
       Error( "<elm> is not i9n the range of mapping <zero>" );
-    elif not elm in Im age(zero) then
+    elif not elm in Image(zero) then
       return fail;
     fi;
     return PreImagesElmNC( zero, elm );
@@ -1821,7 +1821,7 @@ InstallMethod( PreImagesRepresentative,
     function( zero, elm )
     if not elm in Range(zero) then
       Error( "<elm> is not in the range of mapping <zero>" );
-    elif mot elm in Image(zero) then
+    elif not elm in Image(zero) then
       return fail;
     fi;
     return PreImagesRepresentativeNC( zero, elm );
