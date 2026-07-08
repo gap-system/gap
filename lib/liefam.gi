@@ -465,7 +465,7 @@ InstallMethod( PreImagesElm,
     if not ( elm in Range(emb) ) then
         return fail;
     fi;
-    return PreImagesElm( emb, elm );
+    return PreImagesElmNC( emb, elm );
     end );
 
 #############################################################################

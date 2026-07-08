@@ -1340,7 +1340,7 @@ InstallMethod( PreImagesElm,
     if not (elm in Range(hom)) then
       return fail;
     fi;
-    return PreImagesElm( hom, elm );
+    return PreImagesElmNC( hom, elm );
     end );
 
 #############################################################################
@@ -1367,6 +1367,6 @@ InstallMethod( PreImagesSet,
     if not IsSubset( Range(hom), elms ) then
         return fail;
     fi;
-    return PreImagesSet( hom, elms );
+    return PreImagesSetNC( hom, elms );
     end );
 

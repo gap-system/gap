@@ -510,7 +510,7 @@ InstallMethod( PreImagesRepresentative,
     [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep,
       IsObject ],
     function( map, elm )
-    if not ( elm in Image( map ) ) then
+    if not ( elm in Range( map ) ) then
       return fail;
     fi;
     return PreImagesRepresentativeNC( map, elm );
@@ -1257,7 +1257,7 @@ InstallMethod( PreImagesRepresentative,
     [ IsGeneralMapping and IsLinearMappingByMatrixDefaultRep,
       IsObject ],
     function( map, elm )
-    if not ( elm in Image( map ) ) then
+    if not ( elm in Range( map ) ) then
       return fail;
     fi;
     return PreImagesRepresentativeNC( map, elm );

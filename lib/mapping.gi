@@ -319,24 +319,12 @@ InstallGlobalFunction( PreImagesNC, function ( arg )
         map := arg[1];
         img := arg[2];
 
-        if not IsGeneralMapping( map ) then
-          ErrorNoReturn( "<map> must be a general mapping" );
-        fi;
-
         # preimage of a single element <img> under <map>
-        if     FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) ) then
-            if not img in Range( map ) then
-                ErrorNoReturn( "<elm> must be an element of Range(<map>)" );
-            fi;
+        if FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) ) then
             return PreImagesElmNC( map, img );
 
         # preimage of a collection of elements <img> under <map>
         elif CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) ) then
-          if not IsSubset( Range( map ), img ) then
-            ErrorNoReturn( "the collection <elm> must be contained in ",
-                           "Range(<map>)" );
-          fi;
-
           if IsDomain( img ) or IsSSortedList( img ) then
             return PreImagesSetNC( map, img );
           elif IsHomogeneousList( img ) then
@@ -345,15 +333,9 @@ InstallGlobalFunction( PreImagesNC, function ( arg )
 
         # preimage of the empty list
         elif IsList( img ) and IsEmpty( img ) then
-
           return [];
 
         else
-          ErrorNoReturn( "the families of the element or collection <elm> ",
-                         "and Range(<map>) don't match, ",
-                         "maybe <elm> is not contained in Range(<map>) or ",
-                         "is not a homogeneous list or collection" );
-        fi;
     fi;
     ErrorNoReturn( "usage: PreImagesNC(<map>), PreImagesNC(<map>,<img>), ",
                    "PreImagesNC(<map>,<coll>)" );
@@ -1158,7 +1140,7 @@ InstallMethod( PreImagesElm,
     [ IsGeneralMapping, IsObject ], 0,
     function ( map, elm )
 
-    if not ( elm in Image( map ) ) then
+    if not ( elm in Range( map ) ) then
         return fail;
     else
         return PreImagesElmNC( map, elm );
@@ -1191,7 +1173,7 @@ InstallMethod( PreImagesElm,
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsConstantTimeAccessGeneralMapping, IsObject ], 0,
     function( map, elm )
-    if not ( elm in Image( map ) ) then
+    if not ( elm in Range( map ) ) then
         return fail;
     else
         return PreImagesElmNC( map, elm );
@@ -1226,16 +1208,14 @@ InstallMethod( PreImagesSet,
     CollFamRangeEqFamElms,
     [ IsGeneralMapping, IsCollection ], 0,
     function( map, elms )
-    local im, elm;
     if not IsFinite( elms ) then
       TryNextMethod();
     fi;
-    im:= Image( map );
-    for elm in Enumerator( elms ) do
-      if not (elm in im ) then
-        return fail;
-      fi;
-    od;
+    if not IsSubset( Range( map ), elms ) then
+      Error( "<elms> is not a subset of the range of <map>" );
+    elif not IsSubset( Image( map ), elms ) then
+      return fail;
+    fi;
     return PreImagesSetNC( map, elms );
     end );
 
@@ -1252,7 +1232,7 @@ InstallMethod( PreImagesSet,
     true,
     [ IsGeneralMapping, IsList and IsEmpty ], 0,
     function( map, elms )
-      return [];
+    return [];
     end );
 
 
@@ -1289,7 +1269,13 @@ InstallMethod( PreImagesRepresentative,
     FamRangeEqFamElm,
     [ IsSPGeneralMapping, IsObject ], 0,
     function( map, elm )
-    Error( "no default method for s.p. general mapping" );
+    if not elm in Range( map ) then
+      Error( "<elm> is not in the range of <map>" );
+    elif not elm in Image( map )  then
+      return fail;
+    else
+      return PreImagesRepresentativeNC( map, elm );
+    fi;
     end );
 
 InstallMethod( PreImagesRepresentativeNC,
@@ -1330,7 +1316,9 @@ InstallMethod( PreImagesRepresentative,
     FamRangeEqFamElm,
     [ IsNonSPGeneralMapping, IsObject ], 0,
     function( map, elm )
-      if not elm in Image( map ) then
+      if not elm in Range( map ) then
+        Error( "<elm> is not in the range of <map>" );
+      elif not elm in Image( map ) then
         return fail;
       fi;
       return PreImagesRepresentativeNC( map, elm );

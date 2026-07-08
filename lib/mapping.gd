@@ -980,10 +980,13 @@ DeclareGlobalFunction( "Images" );
 ##  <A>map</A> then <Ref Oper="PreImagesElm"/> returns the set of all
 ##  preimages of <A>elm</A> under <A>map</A>.
 ##  <P/>
-##  From &GAP; version 4.16.0
+##  From &GAP; version 4.16.1
 ##  <C>PreImagesElm</C> was renamed <C>PreImagesElmNC</C>
 ##  throughout the library, and <C>PreImagesElm</C> now checks that
-##  <A>elm</A> is an element of the range before calling <C>PreImagesElmNC</C>.
+##  <A>elm</A> is an element of the image before calling <C>PreImagesElmNC</C>.
+##  If <A>elm</A> is not in the range then an error is thrown.
+##  If <A>elm</A> is in the range but not in the image then <A>fail</A>
+##  is returned.
 ##  <P/>
 ##  When using <C>PreImagesElmNC</C> anything may happen if <A>elm</A>
 ##  is not an element of the range of <A>map</A>.
@@ -1037,10 +1040,13 @@ DeclareOperation( "PreImageElm",
 ##  <K>fail</K>, the latter if and only if <A>elm</A>
 ##  has no preimages under <A>map</A>.
 ##  <P/>
-##  From &GAP; version 4.16.0 <C>PreImagesRepresentative</C>
+##  From &GAP; version 4.16.1 <C>PreImagesRepresentative</C>
 ##  was renamed <C>PreImagesRepresentativeNC</C> throughout the library,
 ##  and <C>PreImagesRepresentative</C> now checks that <A>elm</A> is an
-##  element of the range before calling <C>PreImagesRepresentativeNC</C>.
+##  element of the image before calling <C>PreImagesRepresentativeNC</C>.
+##  If <A>elm</A> is not in the range then an error is thrown.
+##  If <A>elm</A> is in the range but not in the image then <A>fail</A>
+##  is returned.
 ##  <P/>
 ##  When using <C>PreImagesRepresentativeNC</C> anything may happen if
 ##  <A>elm</A> is not an element of the range of <A>map</A>.
@@ -1068,10 +1074,13 @@ DeclareOperation( "PreImagesRepresentativeNC", [ IsGeneralMapping, IsObject ] );
 ##  then <Ref Oper="PreImagesSet"/> returns the set of all preimages of
 ##  <A>elms</A> under <A>map</A>.
 ##  <P/>
-##  From &GAP; version 4.16.0 <C>PreImagesSet</C>
+##  From &GAP; version 4.16.1 <C>PreImagesSet</C>
 ##  has been renamed <C>PreImagesSetNC</C> throughout the library,
 ##  and <C>PreImagesSet</C> now checks that <A>elms</A> is a
-##  subset of the range before calling <C>PreImagesSetNC</C>.
+##  subset of the image before calling <C>PreImagesSetNC</C>.
+##  If <A>elms</A> is not a subset of the range then an error is thrown.
+##  If <A>elm</A> is a subset the range but not a subset of the image then
+##  <A>fail</A> is returned.
 ##  <P/>
 ##  When using <C>PreImagesSetNC</C> anything may happen if <A>elms</A>
 ##  is not a subset of the range of <A>map</A>.
@@ -1189,10 +1198,14 @@ DeclareGlobalFunction( "PreImage" );
 ##  and to <Ref Oper="PreImagesElm"/> resp. <Ref Oper="PreImagesSet"/> when
 ##  called with two arguments.
 ##  <P/>
-##  From &GAP; version 4.16.0 <C>PreImages</C>
+##  From &GAP; version 4.16.1 <C>PreImages</C>
 ##  has been renamed <C>PreImagesNC</C> throughout the library,
 ##  and <C>PreImages</C> now checks that <A>elm</A> or <A>coll</A>
-##  belong to the range before calling <C>PreImagesNC</C>.
+##  belong to the image before calling <C>PreImagesNC</C>.
+##  If <A>elm</A> or <A>coll</A> are not contained in the range
+##  then an error is thrown.
+##  If <A>elm</A> or <A>coll</A> are contained in the range but not in the
+##  image then <A>fail</A> is returned.
 ##  <P/>
 ##  When using <C>PreImagesNC</C> anything may happen if <A>elm</A>
 ##  or <A>coll</A> do not belong to the range of <A>map</A>.

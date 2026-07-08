@@ -206,9 +206,9 @@ InstallGlobalFunction(BinaryRelationByElements,
 ##
 #P  IsReflexiveBinaryRelation(<rel>)
 ##
-InstallMethod(IsReflexiveBinaryRelation,
-              "reflexive test binary relation", true,
-              [IsBinaryRelation], 0,
+InstallMethod( IsReflexiveBinaryRelation,
+               "reflexive test binary relation", true,
+               [IsBinaryRelation], 0,
     function(m)
         local e;
 
@@ -233,7 +233,7 @@ InstallMethod(IsReflexiveBinaryRelation,
 ##  Depends on Images and PreimagesNC returning SSorted lists.
 ##
 
-InstallMethod(IsSymmetricBinaryRelation,
+InstallMethod( IsSymmetricBinaryRelation,
         "symmetric test binary relation", true, [IsBinaryRelation], 0,
     function(m)
         local e,el;
@@ -263,7 +263,7 @@ InstallMethod(IsSymmetricBinaryRelation,
 ##
 ##  Assumes that Images returns a sorted list
 ##
-InstallMethod(IsTransitiveBinaryRelation,
+InstallMethod( IsTransitiveBinaryRelation,
         "transitive test binary relation", true, [IsBinaryRelation], 0,
     function(m)
         local e,el,i,im;
@@ -294,7 +294,7 @@ InstallMethod(IsTransitiveBinaryRelation,
 ##
 #P  IsAntisymmetricBinaryRelation(<rel>)
 ##
-InstallMethod(IsAntisymmetricBinaryRelation,
+InstallMethod( IsAntisymmetricBinaryRelation,
         "test for Antisymmetry of a binary relation", true,
         [IsBinaryRelation], 0,
     function(rel)
@@ -325,7 +325,7 @@ InstallMethod(IsAntisymmetricBinaryRelation,
 ##
 #P  IsPreOrderBinaryRelation(<rel>)
 ##
-InstallMethod(IsPreOrderBinaryRelation,
+InstallMethod( IsPreOrderBinaryRelation,
         "test for whether a binary relation is a preorder", true,
         [IsBinaryRelation], 0,
     function(rel)
@@ -339,7 +339,7 @@ InstallMethod(IsPreOrderBinaryRelation,
 ##
 #P  IsPartialOrderBinaryRelation(<rel>)
 ##
-InstallMethod(IsPartialOrderBinaryRelation,
+InstallMethod( IsPartialOrderBinaryRelation,
         "test for whether a binary relation is a partial order", true,
         [IsBinaryRelation], 0,
     function(rel)
@@ -354,7 +354,7 @@ InstallMethod(IsPartialOrderBinaryRelation,
 ##
 #P  IsPartialOrderBinaryRelation(<rel>)
 ##
-InstallMethod(IsLatticeOrderBinaryRelation,
+InstallMethod( IsLatticeOrderBinaryRelation,
         "test for whether a binary relation is a lattice order", true,
         [IsBinaryRelation],0,
 function(rel)
@@ -394,7 +394,7 @@ end);
 ##
 #P  IsEquivalenceRelation(<rel>)
 ##
-InstallMethod(IsEquivalenceRelation,
+InstallMethod( IsEquivalenceRelation,
         "test for equivalence relation", true,
         [IsBinaryRelation], 0,
     function(rel)
@@ -424,7 +424,7 @@ InstallMethod(IsEquivalenceRelation,
 ##  is not finite. Can install more specific methods for relations over
 ##  infinite domains where we can do better.
 ##
-InstallMethod(ReflexiveClosureBinaryRelation,
+InstallMethod( ReflexiveClosureBinaryRelation,
         "for binary relation", true, [IsBinaryRelation], 0,
     function(r)
         local ur,i,d, newrel;
@@ -469,7 +469,7 @@ InstallMethod(ReflexiveClosureBinaryRelation,
 ##  is not finite. Can install more specific methods for relations over
 ##  infinite domains where we can do better.
 ##
-InstallMethod(SymmetricClosureBinaryRelation,
+InstallMethod( SymmetricClosureBinaryRelation,
         "for binary relation", true, [IsBinaryRelation], 0,
     function(r)
         local ur,i,t,d, newrel;
@@ -513,7 +513,7 @@ InstallMethod(SymmetricClosureBinaryRelation,
 ##  is not finite. Can install more specific methods for relations over
 ##  infinite domains where we can do better.
 ##
-InstallMethod(TransitiveClosureBinaryRelation,
+InstallMethod( TransitiveClosureBinaryRelation,
         "for binary relation", true,
         [IsBinaryRelation], 0,
     function(r)
@@ -583,7 +583,7 @@ InstallMethod(TransitiveClosureBinaryRelation,
 ##  If <rel> is a partial order then return the smallest relation contained
 ##  in <rel> whose reflexive and transitive closure is equal to <rel>
 ##
-InstallMethod(HasseDiagramBinaryRelation,
+InstallMethod( HasseDiagramBinaryRelation,
         "for binary relation", true,
         [IsBinaryRelation], 0,
     function(rel)
@@ -690,7 +690,7 @@ InstallGlobalFunction(PartialOrderByOrderingFunction,
 ##
 ##  returns an equivalence relation on the vertices of the relation.
 ##
-InstallMethod(StronglyConnectedComponents, "for general binary relations",
+InstallMethod( StronglyConnectedComponents, "for general binary relations",
         true, [IsBinaryRelation],0,
     function(rel)
         local r,        # representation of rel as a binary relation on points
@@ -854,43 +854,43 @@ InstallGlobalFunction(RandomBinaryRelationOnPoints,
 #P  IsEquivalenceRelation(<rel>)
 ##
 ##
-InstallMethod(IsReflexiveBinaryRelation, "for binary relations on points",
+InstallMethod( IsReflexiveBinaryRelation, "for binary relations on points",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     rel -> ForAll([1..DegreeOfBinaryRelation(rel)],
                i->i in Successors(rel)[i])
     );
 
-InstallMethod(IsSymmetricBinaryRelation, "for binary relations on points",
+InstallMethod( IsSymmetricBinaryRelation, "for binary relations on points",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     rel -> ForAll([1..DegreeOfBinaryRelation(rel)],
              i-> ForAll(Successors(rel)[i], j-> i in Successors(rel)[j] ))
     );
 
-InstallMethod(IsTransitiveBinaryRelation, "for binary relations on points",
+InstallMethod( IsTransitiveBinaryRelation, "for binary relations on points",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     rel -> ForAll([1..DegreeOfBinaryRelation(rel)], i->
                ForAll(Successors(rel)[i], j->
                    IsSubset(Successors(rel)[i],Successors(rel)[j])))
     );
 
-InstallMethod(IsAntisymmetricBinaryRelation, "for binary relations on points",
+InstallMethod( IsAntisymmetricBinaryRelation, "for binary relations on points",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     rel -> ForAll([1..DegreeOfBinaryRelation(rel)], i->
                ForAll(Successors(rel)[i],
                    j-> j=i or (not j=i and not i in Successors(rel)[j])))
     );
 
-InstallMethod(IsPreOrderBinaryRelation, "for binary relations on points",
+InstallMethod( IsPreOrderBinaryRelation, "for binary relations on points",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     rel -> IsReflexiveBinaryRelation(rel) and IsTransitiveBinaryRelation(rel)
     );
 
-InstallMethod(IsPartialOrderBinaryRelation, "for binary relations on points",
+InstallMethod( IsPartialOrderBinaryRelation, "for binary relations on points",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     rel -> IsPreOrderBinaryRelation(rel) and IsAntisymmetricBinaryRelation(rel)
     );
 
-InstallMethod(IsEquivalenceRelation, "for binary relations on points",
+InstallMethod( IsEquivalenceRelation, "for binary relations on points",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     rel -> IsReflexiveBinaryRelation(rel) and IsSymmetricBinaryRelation(rel)
                and IsTransitiveBinaryRelation(rel)
@@ -909,14 +909,14 @@ InstallMethod(IsEquivalenceRelation, "for binary relations on points",
 #O  TransitiveClosureBinaryRelation(<rel>)
 ##
 ##
-InstallMethod(ReflexiveClosureBinaryRelation, "for binary relations on points",
+InstallMethod( ReflexiveClosureBinaryRelation, "for binary relations on points",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     rel -> BinaryRelationOnPointsNC(
         List([1..DegreeOfBinaryRelation(rel)], i->
             Union2(Successors(rel)[i],[i])))
     );
 
-InstallMethod(SymmetricClosureBinaryRelation, "for binary relations on points",
+InstallMethod( SymmetricClosureBinaryRelation, "for binary relations on points",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     function(rel)
         local suc,     #successors of given relation
@@ -938,7 +938,7 @@ InstallMethod(SymmetricClosureBinaryRelation, "for binary relations on points",
         return newrel;
     end);
 
-InstallMethod(TransitiveClosureBinaryRelation, "for binary relations on points",
+InstallMethod( TransitiveClosureBinaryRelation, "for binary relations on pts",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     function(rel)
         local i,j,    #index variables
@@ -971,7 +971,7 @@ InstallMethod(TransitiveClosureBinaryRelation, "for binary relations on points",
 ##
 ##  For binary relations over [1..n] represented as a list of images
 ##
-InstallMethod(ImagesElm,
+InstallMethod( ImagesElm,
         "for binary relations over [1..n] with images list",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep, IsPosInt], 0,
     function( rel, n )
@@ -988,7 +988,7 @@ InstallMethod(ImagesElm,
 ##
 ##  For binary relations over [1..n] represented as a list of images
 ##
-InstallMethod(PreImagesElmNC,
+InstallMethod( PreImagesElmNC,
         "for binary rels over [1..n] with images list",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep, IsPosInt], 0,
     function( rel, n )
@@ -996,14 +996,16 @@ InstallMethod(PreImagesElmNC,
             i->n in Successors(rel)[i]);
     end);
 
-InstallMethod(PreImagesElm,
+InstallMethod( PreImagesElm,
         "for binary rels over [1..n] with images list",
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep, IsPosInt], 0,
     function( rel, n )
         if not ( n in Range(rel) ) then
+            Error( "n is not in the range of <rel>" );
+        elif not ( n in Image(rel) ) then
             return fail;
         fi;
-        return PreImagesElm( rel, n );
+        return PreImagesElmNC( rel, n );
     end );
 
 #############################################################################
@@ -1013,7 +1015,7 @@ InstallMethod(PreImagesElm,
 ##  Returns the list of images of a binary relation.   If the underlying
 ##  domain of the relation is not [1..n] then an error is signalled.
 ##
-InstallMethod(Successors, "for a generic relation", true,
+InstallMethod( Successors, "for a generic relation", true,
         [IsBinaryRelation], 0,
     function(r)
         local eldom;   # Elements of the domain
@@ -1267,7 +1269,7 @@ InstallMethod( One, "for binary relation on points and a set of integers",true,
 ##
 ##      Display binary relation on n points.
 ##
-InstallMethod(PrintObj, "for a binary relation on  n points", true,
+InstallMethod( PrintObj, "for a binary relation on  n points", true,
         [IsBinaryRelation and IsBinaryRelationOnPointsRep],0,
     function(rel)
         Print("Binary Relation on ",DegreeOfBinaryRelation(rel)," points");
@@ -1663,7 +1665,7 @@ InstallMethod( MeetEquivalenceRelations,
 #A  GeneratorsOfEquivalenceRelationPartition( <equiv> )
 ##
 ##
-InstallMethod(GeneratorsOfEquivalenceRelationPartition,
+InstallMethod( GeneratorsOfEquivalenceRelationPartition,
         "generators for an equivalence with a partition", true,
         [IsEquivalenceRelation], 0,
     function(equiv)
@@ -1684,7 +1686,7 @@ InstallMethod(GeneratorsOfEquivalenceRelationPartition,
 ##
 #M  \= for equivalence relations
 ##
-InstallMethod(\=, "for eqivalence relations", IsIdenticalObj,
+InstallMethod( \=, "for eqivalence relations", IsIdenticalObj,
         [IsEquivalenceRelation, IsEquivalenceRelation], 0,
     function(x, y)
 
@@ -1751,7 +1753,7 @@ InstallMethod(\=, "for eqivalence relations", IsIdenticalObj,
 ##  It has been given a +1 rank which WILL NEED TUNING when  the
 ##  other methods are in.
 ##
-InstallMethod(\in, "for eq relation with partition", true,
+InstallMethod( \in, "for eq relation with partition", true,
         [IsList, IsEquivalenceRelation and HasEquivalenceRelationPartition], 1,
     function(tup, rel)
         local f;   # first block that contains first tuple component
@@ -1805,6 +1807,8 @@ InstallMethod( PreImagesRepresentative, "equivalence relations",
         FamRangeEqFamElm, [IsEquivalenceRelation, IsObject], 0,
     function( map, elm )
         if not ( elm in Range(map) ) then
+            Error( "<elm> is not in the range of <map>" );
+        elif not ( elm in Image(map) ) then
             return fail;
         fi;
         return elm;
@@ -1854,7 +1858,9 @@ InstallMethod( PreImagesElm,
         [IsEquivalenceRelation and HasEquivalenceRelationPartition,
          IsObject],0,
     function( rel, elm )
-        if not ( elm in Range( rel ) ) then ##?? is there a Range(rel)?
+        if not ( elm in Range( rel ) ) then ## ?? is there a Range(rel)?
+            Error( "<elm> not in the range of <rel>" );
+        elif not ( elm in Image( rel ) ) then ## ?? is there an Image(rel)?
             return fail;
         fi;
         return PreImagesElmNC( rel, elm );
@@ -1876,7 +1882,7 @@ InstallMethod( PrintObj, "for an equivalence relation", true,
 ##
 ##  Wraparound function which calls the two-argument method
 ##
-InstallMethod(EquivalenceClasses, "wraparound to call 2-argument version",
+InstallMethod( EquivalenceClasses, "wraparound to call 2-argument version",
         true, [IsEquivalenceRelation], 0,
     e->EquivalenceClasses(e, UnderlyingDomainOfBinaryRelation(e))
     );
@@ -1889,7 +1895,7 @@ InstallMethod(EquivalenceClasses, "wraparound to call 2-argument version",
 ##  This generic method will not terminate for an equivalence over an
 ##  infinite set.
 ##
-InstallOtherMethod(EquivalenceClasses, "for a generic equivalence relation",
+InstallOtherMethod( EquivalenceClasses, "for a generic equivalence relation",
         true, [IsEquivalenceRelation, IsCollection], 0,
     function(E, D)
 
@@ -1956,7 +1962,7 @@ InstallOtherMethod(EquivalenceClasses, "for a generic equivalence relation",
 ##  membership tests (for example when checking membership of a
 ##  transformation in a monoid, we use Greens relations and classes).
 ##
-InstallMethod(EquivalenceClassOfElementNC, "no check", true,
+InstallMethod( EquivalenceClassOfElementNC, "no check", true,
         [IsEquivalenceRelation, IsObject], 0,
    function(rel, rep)
 
@@ -1971,7 +1977,7 @@ InstallMethod(EquivalenceClassOfElementNC, "no check", true,
        return new;
    end);
 
-InstallMethod(EquivalenceClassOfElement, "with checking", true,
+InstallMethod( EquivalenceClassOfElement, "with checking", true,
         [IsEquivalenceRelation, IsObject], 0,
     function(rel, rep)
 
@@ -1988,7 +1994,7 @@ InstallMethod(EquivalenceClassOfElement, "with checking", true,
 ##
 ##  Display an equivalence class.
 ##
-InstallMethod(PrintObj, "for an eq. class", true,
+InstallMethod( PrintObj, "for an eq. class", true,
         [IsEquivalenceClass],0,
     function(c)
         Print("{", Representative(c),"}");
@@ -2001,7 +2007,7 @@ InstallMethod(PrintObj, "for an eq. class", true,
 ##  Checks whether <x> is contained in the equivalence class <C>
 ##  If <C> is infinite, this will not necessarily terminate.
 ##
-InstallMethod(\in, "for element and equivalence class", true,
+InstallMethod( \in, "for element and equivalence class", true,
         [IsObject, IsEquivalenceClass], 0,
     function(x, C)
         local  iter;       # iterator of the equivalence class
@@ -2061,7 +2067,7 @@ InstallMethod( Enumerator, "for equivalence classes", true,
 ##
 ##  Equality of equivalence classes
 ##
-InstallMethod(\=, "for two equivalence classes",
+InstallMethod( \=, "for two equivalence classes",
         IsIdenticalObj, [IsEquivalenceClass, IsEquivalenceClass], 0,
     function(x, y)
         return Representative(x) in y;
@@ -2083,7 +2089,7 @@ InstallMethod( \<, "for two equivalence classes", IsIdenticalObj,
         return RepresentativeSmallest(x1) < RepresentativeSmallest(x2);
     end );
 
-InstallMethod(AsPermutation, "for binary relations on points", true,
+InstallMethod( AsPermutation, "for binary relations on points", true,
         [IsBinaryRelation and IsBinaryRelationOnPointsRep], 0,
 function(rel)
     if not IsMapping(rel) then

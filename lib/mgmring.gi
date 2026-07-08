@@ -1242,9 +1242,11 @@ InstallMethod( PreImagesElm,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
     if not ( elm in Range( emb ) ) then
+      Error( "<elm> is not in the range of mapping <emb>" );
+    elif not ( elm in Image( emb ) ) then
       return fail;
     fi;
-    return PreImagesElm( emb, elm );
+    return PreImagesElmNC( emb, elm );
     end );
 
 InstallMethod( PreImagesRepresentativeNC,
@@ -1269,6 +1271,8 @@ InstallMethod( PreImagesRepresentative,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
     if not ( elm in Range( emb ) ) then
+      Error( "<elm> is not in the range of the mapping <emb>" );
+    elif not ( elm in Image( emb ) ) then
       return fail;
     fi;
     return PreImagesRepresentativeNC( emb, elm );
@@ -1368,6 +1372,8 @@ InstallMethod( PreImagesElm,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
     if not ( elm in Range( emb ) ) then
+      Error( "<elm> is not in the range of mapping <emb>" );
+    elif not ( elm in Image( emb ) ) then
       return fail;
     fi;
     return PreImagesElmNC( emb, elm );
@@ -1395,6 +1401,8 @@ InstallMethod( PreImagesRepresentative,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ],
     function ( emb, elm )
     if not ( elm in Range( emb ) ) then
+      Error( "<elm> is not in the range of mapping <emb>" );
+    elif not ( elm in Image( emb ) ) then
       return fail;
     fi;
     return PreImagesRepresentativeNC( emb, elm );

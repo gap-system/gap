@@ -4105,7 +4105,7 @@ InstallMethod( PreImagesRepresentative,
     if not ( x in Range( f ) ) then
         return fail;
     fi;
-    return PreImagesRepresentative( f, x );
+    return PreImagesRepresentativeNC( f, x );
 
 end );
 
