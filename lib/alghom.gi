@@ -596,6 +596,8 @@ InstallMethod( PreImagesRepresentative,
       IsObject ],
     function( map, elm )
       if not ( elm in Range( map ) ) then
+        Error( "<elm> is not in the range of <map>" );
+      elif not ( elm in Image( map ) ) then
         return fail;
     fi;
     return PreImagesRepresentativeNC( map, elm );
@@ -941,6 +943,8 @@ InstallMethod( PreImagesRepresentative,
     [ IsOperationAlgebraHomomorphismDefaultRep, IsMatrix ],
     function( ophom, mat )
     if not ( mat in Range( ophom ) ) then
+        Error( "<mat> not in the range of mapping <ophom>" );
+    elif not ( mat in Image( ophom ) ) then
         return fail;
     fi;
     return PreImagesRepresentativeOperationAlgebraHomomorphism( ophom, mat );
@@ -1115,6 +1119,8 @@ InstallMethod( PreImagesRepresentative,
     [ IsAlgebraHomomorphismFromFpRep, IsMatrix ],
     function( ophom, mat );
     if not ( mat in Range( ophom ) ) then
+        Error( "<mat> is not in the range of mapping <ophom>" );
+    elif not ( mat in Image( ophom ) ) then
         return fail;
     fi;
     return PreImagesRepresentativeOperationAlgebraHomomorphism( ophom, mat );

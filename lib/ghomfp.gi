@@ -630,6 +630,8 @@ InstallMethod( PreImagesSet, "map from (sub)group of fp group",
   [ IsFromFpGroupHomomorphism,IsGroup ],0,
 function(hom,u)
   if not IsSubset( Range(hom), u ) then
+    Error( "<u> is not a subset of the range of <hom>" );
+  elif not IsSubset( Image(hom), u ) then
     return fail;
   fi;
   return PreImagesSetNC(hom,u);
@@ -766,6 +768,8 @@ InstallMethod( PreImagesRepresentative,
   1,
 function(hom,elm)
   if not (elm in Range(hom)) then
+    Error( "<elm> is not in the range of mapping <hom>" );
+  elif not (elm in Image(hom)) then
     return fail;
   fi;
   return PreImagesRepresentativeNC(hom,elm);

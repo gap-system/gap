@@ -198,6 +198,8 @@ InstallMethod( PreImagesRepresentative, "perm direct product embedding",
           IsMultiplicativeElementWithInverse ],
     function( emb, g )
     if not ( g in Range( emb ) ) then
+        Error( "<g> is not in the range of mapping <emb>" );
+    elif not ( g in Image( emb ) ) then
         return fail;
     fi;
     return PreImagesRepresentativeNC( emb, g );
@@ -321,6 +323,8 @@ InstallMethod( PreImagesRepresentative,"perm direct product projection",
           IsMultiplicativeElementWithInverse ], 0,
     function( prj, g )
     if not ( g in Range( prj ) ) then
+        Error( "<g> is not in the range of mapping <prj>" );
+    elif not ( g in Image( prj ) ) then
         return fail;
     fi;
     return PreImagesRepresentativeNC( prj, g );
@@ -529,6 +533,8 @@ InstallMethod( PreImagesRepresentative,"perm subdirect product projection",
           IsMultiplicativeElementWithInverse ], 0,
     function( prj, img )
     if not ( img in Range( prj ) ) then
+        Error( "<img> is not in the range of mapping <prj>" );
+    elif not ( img in Image( prj ) ) then
         return fail;
     fi;
     return PreImagesRepresentativeNC( prj, img );
@@ -863,6 +869,8 @@ InstallMethod( PreImagesRepresentative,
           IsMultiplicativeElementWithInverse ], 0,
     function( emb, g )
     if not ( g in Range( emb ) ) then
+        Error( "<g> is not in the range of mapping <emb>" );
+    elif not ( g in Image( emb ) ) then
         return fail;
     fi;
     return PreImagesRepresentativeNC( emb, g );

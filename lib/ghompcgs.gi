@@ -536,6 +536,8 @@ InstallMethod( PreImagesRepresentative, "method for pcgs hom",
   [ IsToPcGroupHomomorphismByImages,IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
     if not ( elm in Range( hom ) ) then
+      Error( "<elm> is not in the range of mapping <hom>" );
+    elif not ( elm in Image( hom ) ) then
       return fail;
     fi;
     return PreImagesRepresentativeNC( hom, elm );
@@ -639,6 +641,7 @@ end );
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . . . via depth map
+#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . . via depth map
 ##
 InstallMethod( PreImagesRepresentativeNC, FamRangeEqFamElm,
   [ IsPcgsToPcgsHomomorphism,IsMultiplicativeElementWithInverse ], 0,
@@ -646,6 +649,17 @@ function( hom, elm )
 local   exp;
     exp := ExponentsOfPcElement( hom!.rangePcgs, elm );
     return PcElementByExponentsNC( hom!.rangePcgsPreImages, exp );
+end );
+
+InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+  [ IsPcgsToPcgsHomomorphism,IsMultiplicativeElementWithInverse ], 0,
+function( hom, elm )
+    if not ( elm in Range( hom ) ) then
+      Error( "<elm> is not in the range of mapping <hom>" );
+    elif not ( elm in Image( hom ) ) then
+      return fail;
+    fi;
+    return PreImagesRepresentativeNC( hom, elm );
 end );
 
 #############################################################################

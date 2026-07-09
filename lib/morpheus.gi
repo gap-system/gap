@@ -1091,6 +1091,8 @@ InstallMethod(PreImagesRepresentative,"AutomGroup Niceomorphism",
   FamRangeEqFamElm,[IsActionHomomorphismAutomGroup,IsPerm],0,
 function(hom,elm)
   if not (elm in Range(hom)) then
+    Error( "<elm> not in the range of mapping <hom>" );
+  elif not (elm in Image(hom)) then
     return fail;
   fi;
   return PreImagesRepresentativeNC(hom,elm);

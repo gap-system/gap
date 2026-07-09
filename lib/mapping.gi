@@ -1122,7 +1122,6 @@ InstallMethod( PreImagesElmNC,
     FamRangeEqFamElm,
     [ IsGeneralMapping, IsObject ], 0,
     function ( map, elm )
-
     # for a finite source simply run over the elements of the source
     if IsFinite( Source( map ) )  then
         return Filtered( Source( map ),
@@ -1139,12 +1138,12 @@ InstallMethod( PreImagesElm,
     FamRangeEqFamElm,
     [ IsGeneralMapping, IsObject ], 0,
     function ( map, elm )
-
     if not ( elm in Range( map ) ) then
+        Error( "<elm> is not in the range of <map>" );
+    elif not ( elm in Image( map ) ) then
         return fail;
-    else
-        return PreImagesElmNC( map, elm );
     fi;
+    return PreImagesElmNC( map, elm );
     end );
 
 
@@ -1174,10 +1173,11 @@ InstallMethod( PreImagesElm,
     [ IsGeneralMapping and IsConstantTimeAccessGeneralMapping, IsObject ], 0,
     function( map, elm )
     if not ( elm in Range( map ) ) then
+        Error( "<elm> is not in the range of <map>" );
+    elif not ( elm in Image( map ) ) then
         return fail;
-    else
-        return PreImagesElmNC( map, elm );
     fi;
+    return PreImagesElmNC( map, elm );
     end );
 
 
@@ -1202,15 +1202,11 @@ InstallMethod( PreImagesSetNC,
     return primgs;
     end );
 
-
 InstallMethod( PreImagesSet,
     "for general mapping, and finite collection",
     CollFamRangeEqFamElms,
     [ IsGeneralMapping, IsCollection ], 0,
     function( map, elms )
-    if not IsFinite( elms ) then
-      TryNextMethod();
-    fi;
     if not IsSubset( Range( map ), elms ) then
       Error( "<elms> is not a subset of the range of <map>" );
     elif not IsSubset( Image( map ), elms ) then

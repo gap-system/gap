@@ -463,6 +463,8 @@ InstallMethod( PreImagesElm,
       IsLieObject and IsPackedElementDefaultRep ], 0,
     function( emb, elm )
     if not ( elm in Range(emb) ) then
+        Error( "<elm> is not in the range of mapping <emb>" );
+    elif not ( elm in Image(emb) ) then
         return fail;
     fi;
     return PreImagesElmNC( emb, elm );

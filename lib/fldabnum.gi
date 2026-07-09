@@ -1936,6 +1936,8 @@ InstallMethod( PreImagesElm,
     [ IsFieldHomomorphism and IsANFAutomorphismRep, IsScalar ],
     function ( aut, elm )
     if not ( elm in Range(aut) ) then
+        Error( "<elm> is not in the range of mapping <aut>" );
+    elif not ( elm in Image(aut) ) then
         return fail;
     fi;
     return PreImagesElmNC( aut, elm );
@@ -1960,6 +1962,8 @@ InstallMethod( PreImagesSet,
     [ IsFieldHomomorphism and IsANFAutomorphismRep, IsField ],
     function ( aut, F )
     if not IsSubset( Range(aut), F ) then
+        Error( "<F> is not a subset of the range of mapping <aut>" );
+    elif not IsSubset( Image(aut), F ) then
         return fail;
     fi;
     return PreImagesSetNC( aut, F );
@@ -1985,6 +1989,8 @@ InstallMethod( PreImagesRepresentative,
     [ IsFieldHomomorphism and IsANFAutomorphismRep, IsScalar ],
     function ( aut, elm )
     if not ( elm in Range( aut ) ) then
+        Error( "<elm> is not in the range of mapping <aut>" );
+    elif not ( elm in Image( aut ) ) then
         return fail;
     fi;
     return PreImagesRepresentativeNC( aut, elm );

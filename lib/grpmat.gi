@@ -1262,6 +1262,8 @@ InstallMethod( PreImagesRepresentative,
     [ IsBlowUpIsomorphism, IsMatrix ],
     function( iso, mat )
     if not ( mat in Range(iso) ) then
+        Error( "<mat> is not in the range of mapping <iso>" );
+    elif not ( mat in Image(iso) ) then
         return fail;
     fi;
     return PreImagesRepresentativeNC( iso, mat );

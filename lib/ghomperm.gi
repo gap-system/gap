@@ -12,6 +12,7 @@
 #############################################################################
 ##
 #M  PreImagesSetNC( <map>, <elms> ) . for s.p. gen. mapping resp. mult. & inv.
+#M  PreImagesSet( <map>, <elms> ) . . for s.p. gen. mapping resp. mult. & inv.
 ##
 InstallMethod( PreImagesSetNC,
     "method for permgroup homs",
@@ -76,6 +77,19 @@ local genpreimages,  pre,kg,sz,ol,orb,pos,dom,one;
     fi;
   fi;
   return pre;
+end );
+
+InstallMethod( PreImagesSet,
+    "method for permgroup homs",
+    CollFamRangeEqFamElms,
+    [ IsPermGroupHomomorphism, IsGroup ],
+function( map, elms )
+    if not IsSubset( Range( map ), elms ) then
+        Error( "<elms> is not a subset of the range of <map>" );
+    elif not IsSubset( Image( map ), elms ) then
+        return fail;
+    fi;
+    return PreImagesSetNC( map, elms );
 end );
 
 #############################################################################
@@ -1177,6 +1191,8 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
           IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
     if not ( elm in Range( hom ) ) then
+        Error( "<elm> is not in the range of mapping <hom>" );
+    elif not ( elm in Image( hom ) ) then
         return fail;
     fi;
     return PreImagesRepresentativeNC( hom, elm );
@@ -1574,6 +1590,7 @@ InstallMethod( ImagesSource,"constituent homomorphism",true,
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <hom>, <elm> )
+#M  PreImagesRepresentative( <hom>, <elm> )
 ##
 InstallMethod( PreImagesRepresentativeNC,"constituent homomorphism",
   FamRangeEqFamElm,[IsConstituentHomomorphism,IsPerm], 0,
@@ -1588,9 +1605,21 @@ local D,DP;
   return RepresentativeAction(Source(hom),D,DP,OnTuples);
 end);
 
+InstallMethod( PreImagesRepresentative,"constituent homomorphism",
+  FamRangeEqFamElm,[IsConstituentHomomorphism,IsPerm], 0,
+function( hom, elm )
+    if not ( elm in Range( hom ) ) then
+        Error( "<elm> is not in the range of mapping <hom>" );
+    elif not ( elm in Image( hom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( hom, elm );
+end );
+
 #############################################################################
 ##
 #M  PreImagesSetNC( <hom>, <I> )  . . . . . . . . . . . . . . . for const hom
+#M  PreImagesSet( <hom>, <I> )  . . . . . . . . . . . . . . . . for const hom
 ##
 InstallMethod( PreImagesSetNC, "constituent homomorphism",CollFamRangeEqFamElms,
         [ IsConstituentHomomorphism, IsPermGroup ], 0,
@@ -1619,6 +1648,17 @@ InstallMethod( PreImagesSetNC, "constituent homomorphism",CollFamRangeEqFamElms,
     od;
 
     return GroupStabChain( Source( hom ), H, true );
+end );
+
+InstallMethod( PreImagesSet, "constituent homomorphism",CollFamRangeEqFamElms,
+        [ IsConstituentHomomorphism, IsPermGroup ], 0,
+    function( hom, I )
+    if not IsSubset( Range( hom ), I ) then
+        Error( "<I> is not a subset of the range of mapping <hom>" );
+    elif not IsSubset( Image( hom ), I ) then
+        return fail;
+    fi;
+    return PreImagesSetNC( hom, I );
 end );
 
 #############################################################################
@@ -1829,6 +1869,7 @@ end );
 #############################################################################
 ##
 #M  PreImagesRepresentativeNC( <hom>, <elm> ) . . . . . . . .  for blocks hom
+#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . .  for blocks hom
 ##
 InstallMethod( PreImagesRepresentativeNC, "blocks homomorphism",
         FamRangeEqFamElm,
@@ -1878,9 +1919,22 @@ InstallMethod( PreImagesRepresentativeNC, "blocks homomorphism",
     return pre;
 end) ;
 
+InstallMethod( PreImagesRepresentative, "blocks homomorphism",
+        FamRangeEqFamElm,
+        [ IsBlocksHomomorphism, IsMultiplicativeElementWithInverse ], 0,
+    function( hom, elm )
+    if not ( elm in Range( hom ) ) then
+        Error( "<elm> is not in the range of mapping <hom>" );
+    elif not ( elm in Image( hom ) ) then
+        return fail;
+    fi;
+    return PreImagesRepresentativeNC( hom, elm );
+end );
+
 #############################################################################
 ##
 #M  PreImagesSetNC( <hom>, <I> )  . . . . . . . . . . . . . .  for blocks hom
+#M  PreImagesSet( <hom>, <I> )  . . . . . . . . . . . . . . .  for blocks hom
 ##
 InstallMethod( PreImagesSetNC, CollFamRangeEqFamElms,
         [ IsBlocksHomomorphism, IsPermGroup ], 0,
@@ -1889,6 +1943,17 @@ InstallMethod( PreImagesSetNC, CollFamRangeEqFamElms,
 
     H := PreImageSetStabBlocksHomomorphism( hom, StabChainMutable( I ) );
     return GroupStabChain( Source( hom ), H, true );
+end );
+
+InstallMethod( PreImagesSet, CollFamRangeEqFamElms,
+        [ IsBlocksHomomorphism, IsPermGroup ], 0,
+    function( hom, I )
+    if not IsSubset( Range( hom ), I ) then
+        Error( "<I> is not a subset of the range of mapping <hom>" );
+    elif not IsSubset( Image( hom ), I ) then
+        return fail;
+    fi;
+    return PreImagesSetNC( hom, I );
 end );
 
 #############################################################################

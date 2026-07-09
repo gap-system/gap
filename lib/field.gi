@@ -1338,6 +1338,8 @@ InstallMethod( PreImagesElm,
     [ IsFieldHomomorphism, IsObject ],
     function ( hom, elm )
     if not (elm in Range(hom)) then
+      Error( "<elm> is not in the range of <hom>" );
+    elif not (elm in Image(hom)) then
       return fail;
     fi;
     return PreImagesElmNC( hom, elm );
@@ -1365,8 +1367,9 @@ InstallMethod( PreImagesSet,
     [ IsFieldHomomorphism, IsField ],
     function ( hom, elms )
     if not IsSubset( Range(hom), elms ) then
+        Error( "<elms> is not a subset of the range of <hom>" );
+    elif not IsSubset( Image(hom), elms ) then
         return fail;
     fi;
     return PreImagesSetNC( hom, elms );
     end );
-

@@ -169,6 +169,8 @@ InstallMethod(PreImagesRepresentative,"matrix direct product embedding",
           IsMultiplicativeElementWithInverse ],
 function(emb,g)
   if not (g in Range(emb)) then
+    Error( "<g> is not in the range of mapping <emb>" );
+  elif not ( g in Image(emb) ) then
     return fail;
   fi;
   return PreImagesRepresentativeNC(emb,g);
@@ -238,7 +240,9 @@ InstallMethod(PreImagesRepresentative,"matrix direct product projection",
         [ IsProjectionDirectProductMatrixGroup,
           IsMultiplicativeElementWithInverse ],0,
 function(prj,m)
-  if not (m in Range(prj)) then
+  if not ( m in Range(prj) ) then
+    Error( "<m> not in the range of mapping <prj>" );
+  elif not ( m in Image(prj) ) then
     return fail;
   fi;
   return PreImagesRepresentativeNC(prj,m);
@@ -432,6 +436,8 @@ InstallMethod( PreImagesRepresentative,
           IsMultiplicativeElementWithInverse ], 0,
 function( emb, g )
   if not (g in Range(emb)) then
+    Error( "<g> is not in the range of mapping <emb>" );
+  elif not (g in Image(emb)) then
     return fail;
   fi;
   return PreImagesRepresentativeNC(emb,g);

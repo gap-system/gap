@@ -1001,7 +1001,7 @@ InstallMethod( PreImagesElm,
         true, [IsBinaryRelation and IsBinaryRelationOnPointsRep, IsPosInt], 0,
     function( rel, n )
         if not ( n in Range(rel) ) then
-            Error( "n is not in the range of <rel>" );
+            Error( "<n> is not in the range of <rel>" );
         elif not ( n in Image(rel) ) then
             return fail;
         fi;

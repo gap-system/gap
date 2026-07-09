@@ -4103,6 +4103,8 @@ InstallMethod( PreImagesRepresentative,
 
     function( f, x )
     if not ( x in Range( f ) ) then
+        Error( "<x> is not in the range of mapping <f>" );
+    elif not ( x in Image( f ) ) then
         return fail;
     fi;
     return PreImagesRepresentativeNC( f, x );

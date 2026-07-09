@@ -1002,6 +1002,8 @@ InstallMethod( PreImagesRepresentative, "for PBG-Niceo",
       IsMultiplicativeElementWithInverse ], 0,
 function( hom, elm )
   if not ( elm in Range(hom) ) then
+    Error( "<elm> is not in the range of mapping <hom>" );
+  elif not ( elm in Image(hom) ) then
     return fail;
   fi;
   return PreImagesRepresentativeNC( hom, elm );
