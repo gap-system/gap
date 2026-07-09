@@ -439,7 +439,7 @@ InstallMethod( PreImagesSet,
     function( map, elms )
       if not IsSubset( Range( map ), elms ) then
         Error( "<elms> is not a subset of the range of <map>" );
-      elif not IsSubset( Image( map ), elms ) then 
+      elif not IsSubset( Image( map ), elms ) then
         return fail;
       fi;
       return PreImagesSetNC( map, elms );
