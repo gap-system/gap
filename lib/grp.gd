@@ -1531,7 +1531,6 @@ DeclareAttribute( "LatticeSubgroups", IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "ChiefLength", IsGroup );
-InstallIsomorphismMaintenance( ChiefLength, IsGroup, IsGroup );
 
 
 #############################################################################
@@ -1556,7 +1555,6 @@ InstallIsomorphismMaintenance( ChiefLength, IsGroup, IsGroup );
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "DerivedLength", IsGroup );
-InstallIsomorphismMaintenance( DerivedLength, IsGroup, IsGroup );
 
 
 #############################################################################
@@ -1663,7 +1661,6 @@ DeclareAttribute( "MaximalAbelianQuotient",IsGroup);
 ##  <#/GAPDoc>
 ##
 DeclareAttribute( "CommutatorLength", IsGroup );
-InstallIsomorphismMaintenance( CommutatorLength, IsGroup, IsGroup );
 
 
 #############################################################################
