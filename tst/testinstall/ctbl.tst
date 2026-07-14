@@ -1,5 +1,9 @@
-#@local g,t,lin,G
+#@local g,t,lin,G,attr
 gap> START_TEST("ctbl.tst");
+
+# Reset the counter of automatically assigned identifiers,
+# in order to admit reading this file several times in a GAP session.
+gap> LARGEST_IDENTIFIER_NUMBER[1]:= 0;;
 
 # `ClassPositionsOf...' for the trivial group (which usually causes trouble)
 gap> g:= TrivialGroup( IsPermGroup );;
@@ -459,6 +463,40 @@ gap> G:= PcGroupCode( 221729, 24 );;  # = SmallGroup( 24, 5 )
 gap> IrrDixonSchneider( G );;  Irr( G );;
 gap> InfoText( OrdinaryCharacterTable( G ) );
 "origin: Dixon's Algorithm"
+
+# group attributes for character tables
+gap> for G in [ TrivialGroup(), CyclicGroup( 5 ), DihedralGroup( 12 ),
+>               SymmetricGroup( 4 ), AlternatingGroup( 6 ), SL( 2, 5 ) ] do
+>      t:= CharacterTable( G );
+>      for attr in [
+>                    AbelianInvariants,
+>                    ChiefLength,
+>                    CommutatorLength,
+>                    Exponent,
+>                    IsAbelian,
+>                    IsAlmostSimple,
+>                    IsCyclic,
+>                    IsElementaryAbelian,
+>                    IsFinite,
+>                    IsMonomial,
+>                    IsNilpotent,
+>                    IsPerfect,
+>                    IsQuasisimple,
+>                    IsSimple,
+>                    IsSporadicSimple,
+>                    IsSupersolvable,
+>                    NrConjugacyClasses,
+>                    Size,
+>                  ] do
+>        if attr( G ) <> attr( t ) then
+>          Error( "difference for '", attr, "'" );
+>        fi;
+>      od;
+>      if IsSimple( G ) and IsomorphismTypeInfoFiniteSimpleGroup( G ) <>
+>                           IsomorphismTypeInfoFiniteSimpleGroup( t ) then
+>        Error( "difference for '", IsomorphismTypeInfoFiniteSimpleGroup, "'" );
+>      fi;
+>    od;
 
 ##
 gap> STOP_TEST( "ctbl.tst" );

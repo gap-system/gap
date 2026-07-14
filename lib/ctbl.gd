@@ -1083,6 +1083,7 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 #############################################################################
 ##
 #A  AbelianInvariants( <tbl> )
+#A  ChiefLength( <tbl> )
 #A  CommutatorLength( <tbl> )
 #A  Exponent( <tbl> )
 #P  IsAbelian( <tbl> )
@@ -1105,6 +1106,7 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  <ManSection>
 ##  <Heading>Group Operations Applicable to Character Tables</Heading>
 ##  <Attr Name="AbelianInvariants" Arg='tbl' Label="for a character table"/>
+##  <Attr Name="ChiefLength" Arg='tbl' Label="for a character table"/>
 ##  <Attr Name="CommutatorLength" Arg='tbl' Label="for a character table"/>
 ##  <Attr Name="Exponent" Arg='tbl' Label="for a character table"/>
 ##  <Prop Name="IsAbelian" Arg='tbl' Label="for a character table"/>
@@ -1139,6 +1141,8 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  >               CharacterTable( SL( 2, 5 ) ) ];;
 ##  gap> List( tables, AbelianInvariants );
 ##  [ [ 3 ], [ 2 ], [  ], [  ] ]
+##  gap> List( tables, ChiefLength );
+##  [ 1, 3, 1, 2 ]
 ##  gap> List( tables, CommutatorLength );
 ##  [ 1, 1, 1, 1 ]
 ##  gap> List( tables, Exponent );
@@ -1192,6 +1196,7 @@ DeclareAttributeSuppCT( "OrdinaryCharacterTable", IsGroup, [] );
 ##  <#/GAPDoc>
 ##
 DeclareAttributeSuppCT( "AbelianInvariants", IsNearlyCharacterTable, [] );
+DeclareAttributeSuppCT( "ChiefLength", IsNearlyCharacterTable, [] );
 DeclareAttributeSuppCT( "CommutatorLength", IsNearlyCharacterTable, [] );
 DeclareAttributeSuppCT( "Exponent", IsNearlyCharacterTable, [] );
 DeclarePropertySuppCT( "IsAbelian", IsNearlyCharacterTable );

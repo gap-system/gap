@@ -807,6 +807,36 @@ AttributeMethodByNiceMonomorphism( CharacterDegrees, [ IsGroup ] );
 
 #############################################################################
 ##
+#F  ChiefLength( <tbl> )  . . . . . . . . . . . . . . . for a character table
+##
+InstallMethod( ChiefLength,
+    "for a character table",
+    [ IsCharacterTable ],
+    function( tbl )
+    local n, prev, N;
+
+    if Size( tbl ) = 1 then
+      return 0;
+    elif IsPrimePowerInt( Size( tbl ) ) or IsAbelian( tbl ) then
+      # Avoid computing all normal subgroups in obvious cases.
+      return Length( Factors( Size( tbl ) ) );
+    fi;
+
+    n:= -1;
+    prev:= [];
+    for N in ClassPositionsOfNormalSubgroups( tbl ) do
+      # The list is sorted according to increasing number of classes.
+      if IsSubset( N, prev ) then
+        prev:= N;
+        n:= n + 1;
+      fi;
+    od;
+    return n;
+    end );
+
+
+#############################################################################
+##
 #F  CommutatorLength( <tbl> ) . . . . . . . . . . . . . for a character table
 ##
 InstallMethod( CommutatorLength,
