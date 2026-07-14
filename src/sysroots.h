@@ -25,7 +25,24 @@
 */
 extern char SyDefaultRootPath[GAP_PATH_MAX];
 
-#include <stddef.h>
+
+/****************************************************************************
+**
+*V  SyGapRootPaths  . . . . . . . . . . . . . . . . . . . array of root paths
+**
+**  'SyGapRootPaths' contains the  names   of the directories where   the GAP
+**  files are located.
+**
+**  It is modified by the command line option -l.
+**
+**  It is copied into the GAP variable 'GAPInfo.RootPaths' and used by
+**  'SyFindGapRootFile'.
+**
+**  Each entry must end  with the pathname separator, e.g. if 'init.g' is the
+**  name of a library file 'strcat( SyGapRootPaths[i], "lib/init.g" );'  must
+**  be a valid filename.
+*/
+extern Obj SyGapRootPaths;
 
 
 /****************************************************************************
@@ -45,15 +62,13 @@ void SySetGapRootPath(const Char * string);
 
 /****************************************************************************
 **
-*F  SyFindGapRootFile( <filename>, <buf>, <size> ) . find file in system area
+*F  SyFindGapRootFile( <filename> ) . . . . . . . .  find file in system area
 **
-**  <buf> must point to a buffer of at least <size> characters. This function
-**  then searches for a readable file with the name <filename> in the system
-**  area. If sich a file is found then its absolute path is copied into
-**  <buf>, and <buf> is returned. If no file is found or if <buf> is not big
-**  enough, then <buf> is set to an empty string and NULL is returned.
+**  This function searches for a readable file with the name <filename> in
+**  the system area. If such a file is found then its absolute path is
+**  returned as a string object. If no file is found then NULL is returned.
 */
-Char * SyFindGapRootFile(const Char * filename, Char * buf, size_t size);
+Obj SyFindGapRootFile(const Char * filename);
 
 
 /****************************************************************************

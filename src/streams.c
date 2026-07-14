@@ -358,10 +358,8 @@ Obj READ_AS_FUNC(TypInputFile * input)
 */
 Int READ_GAP_ROOT ( const Char * filename )
 {
-    char path[GAP_PATH_MAX];
-
     // try to find the GAP file
-    SyFindGapRootFile(filename, path, sizeof(path));
+    Obj path = SyFindGapRootFile(filename);
 
     // try to find compiled version of the GAP file
     if (SyUseModule) {
@@ -378,7 +376,7 @@ Int READ_GAP_ROOT ( const Char * filename )
         if (info) {
             // found a matching statically linked module; if there is also
             // a GAP file, compare their CRC
-            if (*path && info->crc != SyGAPCRC(path)) {
+            if (path && info->crc != SyGAPCRC(CSTR_STRING(path))) {
                 Pr("#W Static module %s has CRC mismatch, ignoring\n",
                    (Int)filename, 0);
             }
@@ -395,7 +393,7 @@ Int READ_GAP_ROOT ( const Char * filename )
     }
 
     // not found?
-    if (*path == 0)
+    if (path == 0)
         return 0;
 
 #ifdef GAP_ENABLE_SAVELOAD
@@ -415,7 +413,7 @@ Int READ_GAP_ROOT ( const Char * filename )
     }
 
     TypInputFile input;
-    if (!OpenInput(&input, path))
+    if (!OpenInput(&input, CSTR_STRING(path)))
         return 0;
 
     GAP_TRY
