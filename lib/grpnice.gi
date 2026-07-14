@@ -365,6 +365,22 @@ GroupMethodByNiceMonomorphismCollColl( CoreOp,
 
 ##############################################################################
 ##
+#M  ChiefLength( <G> ) . . . . . . . . . . length of a chief series of a group
+##
+AttributeMethodByNiceMonomorphism( ChiefLength,
+    [ IsGroup ] );
+
+
+##############################################################################
+##
+#M  CommutatorLength( <G> )  . . . . . . . . . .  commutator length of a group
+##
+AttributeMethodByNiceMonomorphism( CommutatorLength,
+    [ IsGroup ] );
+
+
+##############################################################################
+##
 #M  DerivedLength( <G> ) . . . . . . . . . . . . . . derived length of a group
 ##
 AttributeMethodByNiceMonomorphism( DerivedLength,

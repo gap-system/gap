@@ -405,6 +405,7 @@ the series without destroying the properties of the series.
 <P/>
 <#Include Label="[1]{grp}">
 <#Include Label="ChiefSeries">
+<#Include Label="ChiefLength">
 <#Include Label="ChiefSeriesThrough">
 <#Include Label="ChiefSeriesUnderAction">
 <#Include Label="SubnormalSeries">
