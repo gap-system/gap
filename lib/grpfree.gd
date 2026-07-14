@@ -79,14 +79,14 @@ DeclareSynonym( "IsElementOfFreeGroupFamily",IsAssocWordWithInverseFamily );
 ##    </Item>
 ##    <Mark>2: For given generator names</Mark>
 ##    <Item>
-##      Called with various nonempty strings,
+##      Called with various distinct nonempty strings,
 ##      <Ref Func="FreeGroup" Label="for various names"/> returns
 ##      a free group on as many generators as arguments, which are labelled
 ##      <A>name1</A>, <A>name2</A>, etc.
 ##    </Item>
 ##    <Mark>3: For a given list of generator names</Mark>
 ##    <Item>
-##      Called with a finite list <A>names</A> of
+##      Called with a finite duplicate-free list <A>names</A> of
 ##      nonempty strings,
 ##      <Ref Func="FreeGroup" Label="for a list of names"/> returns
 ##      a free group on <C>Length(<A>names</A>)</C> generators, whose
@@ -104,11 +104,12 @@ DeclareSynonym( "IsElementOfFreeGroupFamily",IsAssocWordWithInverseFamily );
 ##      The optional argument <A>name</A> must be a string; its default value is
 ##      <C>"f"</C>,
 ##      and the optional argument <A>init</A> must be a finite list of
-##      nonempty strings; its default value is an empty list.
+##      distinct nonempty strings; its default value is an empty list.
 ##      The generators are initially labelled according to the list <A>init</A>,
 ##      followed by
 ##      <A>name</A><C>i</C> for each <C>i</C> in the range from
-##      <C>Length(<A>init</A>)+1</C> to <K>infinity</K>.
+##      <C>Length(<A>init</A>)+1</C> to <K>infinity</K>; such a label is not
+##      allowed to appear in <A>init</A>.
 ##    </Item>
 ##  </List>
 ##  If the optional first argument <A>wfilt</A> is given, then it must be either

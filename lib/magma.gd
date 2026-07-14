@@ -818,7 +818,7 @@ DeclareGlobalFunction("FreeXArgumentProcessor");
 ##    </Item>
 ##    <Mark>2: For given generator names</Mark>
 ##    <Item>
-##      Called with various (at least one) nonempty strings,
+##      Called with various (one or more) distinct nonempty strings,
 ##      <Ref Func="FreeMagma" Label="for various names"/> returns
 ##      a free magma on as many generators as arguments, which are labelled
 ##      <A>name1</A>, <A>name2</A>, etc.
@@ -826,7 +826,7 @@ DeclareGlobalFunction("FreeXArgumentProcessor");
 ##    <Mark>3: For a given list of generator names</Mark>
 ##    <Item>
 ##      Called with a finite nonempty list <A>names</A> of
-##      nonempty strings,
+##      distinct nonempty strings,
 ##      <Ref Func="FreeMagma" Label="for a list of names"/> returns
 ##      a free magma on <C>Length(<A>names</A>)</C> generators, whose
 ##      <C>i</C>-th generator is labelled <A>names</A><C>[i]</C>.
@@ -843,11 +843,12 @@ DeclareGlobalFunction("FreeXArgumentProcessor");
 ##      The optional argument <A>name</A> must be a string; its default value is
 ##      <C>"x"</C>,
 ##      and the optional argument <A>init</A> must be a finite list of
-##      nonempty strings; its default value is an empty list.
+##      distinct nonempty strings; its default value is an empty list.
 ##      The generators are initially labelled according to the list <A>init</A>,
 ##      followed by
 ##      <A>name</A><C>i</C> for each <C>i</C> in the range from
-##      <C>Length(<A>init</A>)+1</C> to <K>infinity</K>.
+##      <C>Length(<A>init</A>)+1</C> to <K>infinity</K>; such a label is not
+##      allowed to appear in <A>init</A>.
 ##    </Item>
 ##  </List>
 ##  <Example><![CDATA[
@@ -931,7 +932,7 @@ DeclareGlobalFunction( "FreeMagma" );
 ##    </Item>
 ##    <Mark>2: For given generator names</Mark>
 ##    <Item>
-##      Called with various nonempty strings,
+##      Called with various (one or more) distinct nonempty strings,
 ##      <Ref Func="FreeMagmaWithOne" Label="for various names"/> returns
 ##      a free magma-with-one on as many generators as arguments, which are
 ##      labelled <A>name1</A>, <A>name2</A>, etc.
@@ -939,7 +940,7 @@ DeclareGlobalFunction( "FreeMagma" );
 ##    <Mark>3: For a given list of generator names</Mark>
 ##    <Item>
 ##      Called with a finite list <A>names</A> of
-##      nonempty strings,
+##      distinct nonempty strings,
 ##      <Ref Func="FreeMagmaWithOne" Label="for a list of names"/> returns
 ##      a free magma-with-one on <C>Length(<A>names</A>)</C> generators, whose
 ##      <C>i</C>-th generator is labelled <A>names</A><C>[i]</C>.
@@ -956,11 +957,12 @@ DeclareGlobalFunction( "FreeMagma" );
 ##      The optional argument <A>name</A> must be a string; its default value is
 ##      <C>"x"</C>,
 ##      and the optional argument <A>init</A> must be a finite list of
-##      nonempty strings; its default value is an empty list.
+##      distinct nonempty strings; its default value is an empty list.
 ##      The generators are initially labelled according to the list <A>init</A>,
 ##      followed by
 ##      <A>name</A><C>i</C> for each <C>i</C> in the range from
-##      <C>Length(<A>init</A>)+1</C> to <K>infinity</K>.
+##      <C>Length(<A>init</A>)+1</C> to <K>infinity</K>; such a label is not
+##      allowed to appear in <A>init</A>.
 ##    </Item>
 ##  </List>
 ##  <Example><![CDATA[

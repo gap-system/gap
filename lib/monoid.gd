@@ -231,7 +231,7 @@ DeclareSynonymAttr( "TrivialSubmonoid", TrivialSubmagmaWithOne );
 ##    </Item>
 ##    <Mark>2: For given generator names</Mark>
 ##    <Item>
-##      Called with various nonempty strings,
+##      Called with various (one or more) distinct nonempty strings,
 ##      <Ref Func="FreeMonoid" Label="for various names"/> returns
 ##      a free monoid on as many generators as arguments, which are labelled
 ##      <A>name1</A>, <A>name2</A>, etc.
@@ -239,7 +239,7 @@ DeclareSynonymAttr( "TrivialSubmonoid", TrivialSubmagmaWithOne );
 ##    <Mark>3: For a given list of generator names</Mark>
 ##    <Item>
 ##      Called with a finite list <A>names</A> of
-##      nonempty strings,
+##      distinct nonempty strings,
 ##      <Ref Func="FreeMonoid" Label="for a list of names"/> returns
 ##      a free monoid on <C>Length(<A>names</A>)</C> generators, whose
 ##      <C>i</C>-th generator is labelled <A>names</A><C>[i]</C>.
@@ -256,11 +256,12 @@ DeclareSynonymAttr( "TrivialSubmonoid", TrivialSubmagmaWithOne );
 ##      The optional argument <A>name</A> must be a string; its default value is
 ##      <C>"m"</C>,
 ##      and the optional argument <A>init</A> must be a finite list of
-##      nonempty strings; its default value is an empty list.
+##      distinct nonempty strings; its default value is an empty list.
 ##      The generators are initially labelled according to the list <A>init</A>,
 ##      followed by
 ##      <A>name</A><C>i</C> for each <C>i</C> in the range from
-##      <C>Length(<A>init</A>)+1</C> to <K>infinity</K>.
+##      <C>Length(<A>init</A>)+1</C> to <K>infinity</K>; such a label is not
+##      allowed to appear in <A>init</A>.
 ##    </Item>
 ##  </List>
 ##
