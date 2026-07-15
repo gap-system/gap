@@ -1068,7 +1068,7 @@ DeclareOperation( "PreImagesRepresentativeNC", [ IsGeneralMapping, IsObject ] );
 ##  <Oper Name="PreImagesSetNC" Arg='map, elms'/>
 ##
 ##  <Description>
-##  If <A>elms</A> is a subset of the image of the general mapping <A>map</A>
+##  If <A>elms</A> is a subset of the range of the general mapping <A>map</A>
 ##  then <Ref Oper="PreImagesSet"/> returns the set of all preimages of
 ##  <A>elms</A> under <A>map</A>.
 ##  <P/>
