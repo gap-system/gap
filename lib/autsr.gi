@@ -155,6 +155,7 @@ local
 
   epi:=EpimorphismFromFreeGroup(sub);
   free:=Source(epi);
+
   sub:=TrivialSubgroup(M);
   cnt:=0;
   while Size(sub)<Size(M) do
@@ -419,12 +420,6 @@ BindGlobal("AGSRAutomLift",function(ocr,nat,fhom,miso)
     Info(InfoMorph,5,"Search through module automorphisms of size ",
       Size(Image(phom)));
   fi;
-
-  #if trick<>fail then
-  #  t:=ImagesRepresentative(phom,trick);
-  #  # try the trickrels result first
-  #  enum:=Concatenation([t],AsList(enum));
-  #fi;
 
   for ep in enum do
     e:=PreImagesRepresentative(phom,ep);
