@@ -1990,7 +1990,7 @@ local r,z,ogens,n,gens,str,dim,i,j,f,rels,new,quot,g,p,collect,m,e,fp,sim,
     fi;
     # if we used factor perm rep, be bolder
     if IsPermGroup(p) then
-      new:=new*SmallerDegreePermutationRepresentation(p:cheap);
+      new:=new*SmallerDegreePermutationRepresentation(p:cheap:=(wasbold=wasbold)); # always true, just so gaplint won't whine
       SetIsomorphismPermGroup(fp,new);
     elif IsPcGroup(p) then
       SetIsomorphismPcGroup(fp,new);
