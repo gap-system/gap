@@ -313,7 +313,7 @@ InstallMethod( PreImagesElmNC,
     local im;
     im:= PreImagesElmNC( com!.map2, elm );
     if not IsEmpty( im ) then
-      return PreImagesSetNC( com!.map1, im );
+      return PreImagesSetNC( com!.map1, im );  ## why Set and not Elm here ??
     else
       return [];
     fi;
@@ -359,10 +359,8 @@ InstallMethod( PreImagesSet,
     function( com, elms )
     if not IsSubset( Range(com), elms ) then
       Error( "<elms> is not a subset of the range of mapping <com>" );
-    elif not IsSubset( Image(com), elms ) then
-      return fail;
     fi;
-    return PreImagesSetNC( com, elms );
+    return PreImagesSetNC( com, Intersection( elms, Range( com ) ) );
     end );
 
 
@@ -1183,10 +1181,8 @@ InstallMethod( PreImagesSet,
     function ( inv, elms )
     if not IsSubset( Range(inv), elms ) then
       Error( "<elms> is not a subset of the range of mapping <inv>" );
-    elif not IsSubset( Image(inv), elms ) then
-      return fail;
     fi;
-    return PreImagesSetNC( inv, elms );
+    return PreImagesSetNC( inv, Intersection( elms, Range( inv ) ) );
     end );
 
 
@@ -1468,10 +1464,8 @@ InstallMethod( PreImagesSet,
   function ( id, elms )
     if not IsSubset( Range(id), elms ) then
       Error( "<elms> is not a subset of the range of mapping <id>" );
-    elif not IsSubset( Image(id), elms ) then
-      return fail;
     fi;
-    return PreImagesSetNC( id, elms );
+    return PreImagesSetNC( id, Intersection( elms, Range( id ) ) );
   end );
 
 
@@ -1804,10 +1798,8 @@ InstallMethod( PreImagesSet,
     function( zero, elms )
     if not IsSubset( Range(zero), elms ) then
       Error( "<elms> is not a subset of the range of mapping <zero>" );
-    elif not IsSubset( Image(zero), elms ) then
-      return fail;
     fi;
-    return PreImagesSetNC( zero, elms );
+    return PreImagesSetNC( zero, Intersection( elms, Range( zero ) ) );
     end );
 
 
@@ -2086,10 +2078,8 @@ InstallMethod( PreImagesSet,
     function( res, elms )
     if not IsSubset( Range(res), elms ) then
       Error( "<elms> is not a subset of the range of mapping <res>" );
-    elif not IsSubset( Image(res), elms ) then
-      return fail;
     fi;
-    return PreImagesSetNC( res, elms );
+    return PreImagesSetNC( res, Intersection( elms, Range( res ) ) );
     end );
 
 

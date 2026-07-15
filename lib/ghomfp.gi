@@ -631,10 +631,8 @@ InstallMethod( PreImagesSet, "map from (sub)group of fp group",
 function(hom,u)
   if not IsSubset( Range(hom), u ) then
     Error( "<u> is not a subset of the range of <hom>" );
-  elif not IsSubset( Image(hom), u ) then
-    return fail;
   fi;
-  return PreImagesSetNC(hom,u);
+  return PreImagesSetNC( hom, Intersection( u, Range(hom) ) );
 end);
 
 

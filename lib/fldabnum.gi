@@ -1963,10 +1963,8 @@ InstallMethod( PreImagesSet,
     function ( aut, F )
     if not IsSubset( Range(aut), F ) then
         Error( "<F> is not a subset of the range of mapping <aut>" );
-    elif not IsSubset( Image(aut), F ) then
-        return fail;
     fi;
-    return PreImagesSetNC( aut, F );
+    return PreImagesSetNC( aut, Intersection( F, Range( aut ) ) );
     end );
 
 #############################################################################

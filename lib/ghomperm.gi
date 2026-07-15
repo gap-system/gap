@@ -86,10 +86,8 @@ InstallMethod( PreImagesSet,
 function( map, elms )
     if not IsSubset( Range( map ), elms ) then
         Error( "<elms> is not a subset of the range of <map>" );
-    elif not IsSubset( Image( map ), elms ) then
-        return fail;
     fi;
-    return PreImagesSetNC( map, elms );
+    return PreImagesSetNC( map, Intersection( elms, Range( map ) ) );
 end );
 
 #############################################################################
@@ -1655,10 +1653,8 @@ InstallMethod( PreImagesSet, "constituent homomorphism",CollFamRangeEqFamElms,
     function( hom, I )
     if not IsSubset( Range( hom ), I ) then
         Error( "<I> is not a subset of the range of mapping <hom>" );
-    elif not IsSubset( Image( hom ), I ) then
-        return fail;
     fi;
-    return PreImagesSetNC( hom, I );
+    return PreImagesSetNC( hom, Intersection( I, Range( hom ) ) );
 end );
 
 #############################################################################
@@ -1950,10 +1946,8 @@ InstallMethod( PreImagesSet, CollFamRangeEqFamElms,
     function( hom, I )
     if not IsSubset( Range( hom ), I ) then
         Error( "<I> is not a subset of the range of mapping <hom>" );
-    elif not IsSubset( Image( hom ), I ) then
-        return fail;
     fi;
-    return PreImagesSetNC( hom, I );
+    return PreImagesSetNC( hom, Intersection( I, Range( hom ) ) );
 end );
 
 #############################################################################

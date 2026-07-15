@@ -239,7 +239,8 @@ end );
 InstallGlobalFunction( PreImage, function ( arg )
 
     local   map,        # gen. mapping <map>, first argument
-            img;        # element <img>, second argument
+            img,        # element <img>, second argument
+            rng;        # the range of map
 
     if Length( arg ) > 0 and not IsGeneralMapping( arg[1] ) then
       ErrorNoReturn( "<map> must be a general mapping" );
@@ -254,28 +255,29 @@ InstallGlobalFunction( PreImage, function ( arg )
 
         map := arg[1];
         img := arg[2];
+        rng := Range( map );
 
         # preimage of a single element <img> under <map>
         if     FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) ) then
           if not ( IsInjective( map ) and IsSurjective( map ) ) then
             ErrorNoReturn( "<map> must be an injective and surjective ",
                            "mapping" );
-          elif not img in Range( map ) then
+          elif not img in rng then
             ErrorNoReturn( "<elm> must be an element of Range(<map>)" );
           fi;
           return PreImageElm( map, img );
 
         # preimage of a collection of elements <img> under <map>
         elif CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) ) then
-          if not IsSubset( Range( map ), img ) then
+          if not IsSubset( rng, img ) then
             ErrorNoReturn( "the collection <elm> must be contained in ",
                            "Range(<map>)" );
           fi;
 
           if IsDomain( img ) or IsSSortedList( img ) then
-            return PreImagesSetNC( map, img );
+            return PreImagesSetNC( map, Intersection( img, rng ) );
           elif IsHomogeneousList( img ) then
-            return PreImagesSetNC( map, Set( img ) );
+            return PreImagesSetNC( map, Intersection( Set( img ), rng ) );
           fi;
 
         # preimage of the empty list
@@ -342,7 +344,12 @@ end );
 InstallGlobalFunction( PreImages, function ( arg )
 
     local   map,        # mapping <map>, first argument
-            img;        # element <img>, second argument
+            img,        # element <img>, second argument
+            rng;        # the range of map
+
+    if Length( arg ) > 0 and not IsGeneralMapping( arg[1] ) then
+      ErrorNoReturn( "<map> must be a general mapping" );
+    fi;
 
     # preimage of the range under <map>
     if Length( arg ) = 1  then
@@ -353,6 +360,7 @@ InstallGlobalFunction( PreImages, function ( arg )
 
         map := arg[1];
         img := arg[2];
+        rng := Range( map );
 
         if not IsGeneralMapping( map ) then
           ErrorNoReturn( "<map> must be a general mapping" );
@@ -360,22 +368,22 @@ InstallGlobalFunction( PreImages, function ( arg )
 
         # preimage of a single element <img> under <map>
         if     FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) ) then
-            if not img in Range( map ) then
+            if not img in rng then
                 ErrorNoReturn( "<elm> must be an element of Range(<map>)" );
             fi;
             return PreImagesElm( map, img );
 
         # preimage of a collection of elements <img> under <map>
         elif CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) ) then
-          if not IsSubset( Range( map ), img ) then
+          if not IsSubset( rng, img ) then
             ErrorNoReturn( "the collection <elm> must be contained in ",
                            "Range(<map>)" );
           fi;
 
           if IsDomain( img ) or IsSSortedList( img ) then
-            return PreImagesSet( map, img );
+            return PreImagesSetNC( map, Intersection( img, rng ) );
           elif IsHomogeneousList( img ) then
-            return PreImagesSet( map, Set( img ) );
+            return PreImagesSet( map, Intersection( Set( img ), rng ) );
           fi;
 
         # preimage of the empty list
@@ -1232,12 +1240,12 @@ InstallMethod( PreImagesSet,
     CollFamRangeEqFamElms,
     [ IsGeneralMapping, IsCollection ], 0,
     function( map, elms )
+    local inter;
     if not IsSubset( Range( map ), elms ) then
       Error( "<elms> is not a subset of the range of <map>" );
-    elif not IsSubset( Image( map ), elms ) then
-      return fail;
     fi;
-    return PreImagesSetNC( map, elms );
+    inter := Intersection( elms, Image( map ) );
+    return PreImagesSetNC( map, inter );
     end );
 
 InstallMethod( PreImagesSetNC,
