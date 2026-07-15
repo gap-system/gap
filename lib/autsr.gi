@@ -1116,6 +1116,7 @@ local
           a:=List(b,x->ConjugatorAutomorphism(Source(AQ.1),x));
           b:=Filtered(GeneratorsOfGroup(AQ),x->not HasConjugatorOfConjugatorIsomorphism(x));
           a:=Concatenation(a,b);
+          SetIsAutomorphismGroup(AQ,true);
           b:=InnerAutomorphismsAutomorphismGroup(AQ);
           AQ:=Group(a,One(AQ));
           SetInnerAutomorphismsAutomorphismGroup(AQ,b);
