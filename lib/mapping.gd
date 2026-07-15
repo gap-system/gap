@@ -1075,14 +1075,13 @@ DeclareOperation( "PreImagesRepresentativeNC", [ IsGeneralMapping, IsObject ] );
 ##  From &GAP; version 4.16.1 <C>PreImagesSet</C>
 ##  has been renamed <C>PreImagesSetNC</C> throughout the library,
 ##  and the new <C>PreImagesSet</C> checks that <A>elms</A> is a
-##  subset of the image before calling <C>PreImagesSetNC</C>.
+##  subset of the range before calling <C>PreImagesSetNC</C>.
 ##  If <A>elm</A> is a subset the range but not a subset of the image then
-##  <A>fail</A> is returned.
-##  (Mathematically, this is not correct.)
+##  <C>PreImagesSetNC( map, Intersection( elms, Range(map) )</C> is returned.
 ##  If <A>elms</A> is not a subset of the range then an error is signalled.
 ##  <P/>
 ##  When using <C>PreImagesSetNC</C> anything may happen if <A>elms</A>
-##  is not a subset of the image of <A>map</A>.
+##  is not a subset of the range of <A>map</A>.
 ##  <P/>
 ##  </Description>
 ##  </ManSection>
