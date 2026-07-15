@@ -1118,7 +1118,7 @@ local m,s,g,i,j,gen,img,hom,d,pos;
 end);
 
 InstallMethod(MaximalAbelianQuotient,
-        "for subgroups of finitely presented groups, fallback",
+        "for subgroups of finitely presented groups, through new fp",
         true, [IsSubgroupFpGroup], -1,
 function(U)
 local phi, m;
@@ -1133,7 +1133,7 @@ local phi, m;
 end);
 
 InstallMethod(MaximalAbelianQuotient,
-        "subgroups of fp., rewrite", true, [IsSubgroupFpGroup], 0,
+        "subgroups of fp., rewrite", true, [IsSubgroupFpGroup], 2,
 function(u)
 local iso;
   if (HasIsWholeFamily(u) and IsWholeFamily(u))
@@ -1245,12 +1245,20 @@ end);
 # u must be a subgroup of the image of home
 InstallGlobalFunction(
 LargerQuotientBySubgroupAbelianization,function(hom,u)
-local v,aiu,aiv,G,primes,irrel,ma,mau,a,k,gens,imgs,q,dec,deco,piv,co;
+local v,aiu,aiv,G,primes,irrel,ma,mao,mau,a,k,gens,imgs,q,dec,deco,piv,co;
   v:=PreImage(hom,u);
   aiu:=AbelianInvariants(u);
 
-  G:= FamilyObj(v)!.wholeGroup;
-  aiv:=AbelianInvariantsSubgroupFpGroup( G, v:cheap:=false );
+  if IsBound(FamilyObj(v)!.wholeGroup) then
+    G:= FamilyObj(v)!.wholeGroup;
+  else
+    G:=Source(hom);
+  fi;
+  if IsFpGroup(v) then
+    aiv:=AbelianInvariantsSubgroupFpGroup( G, v:cheap:=false );
+  else
+    aiv:=AbelianInvariants(v);
+  fi;
   if aiv=fail then
     ma:=MaximalAbelianQuotient(v);
     aiv:=AbelianInvariants(Image(ma,v));
@@ -1265,14 +1273,22 @@ local v,aiu,aiv,G,primes,irrel,ma,mau,a,k,gens,imgs,q,dec,deco,piv,co;
 
   Info(InfoFpGroup,1,"Larger by factor ",Product(aiv)/Product(aiu));
   ma:=MaximalAbelianQuotient(v);
-  mau:=MaximalAbelianQuotient(u);
+  mao:=ma; # keep ortignioal one, as pre image of subgroup will be easier.
   a:=Image(ma);
+  k:=List(GeneratorsOfGroup(v),x->ImagesRepresentative(ma,x));
+
+  # rebuild on standard generators, to avoid word length explosion
+  ma:=GroupHomomorphismByImagesNC(v,a,GeneratorsOfGroup(v),k);
+
+  mau:=MaximalAbelianQuotient(u);
   k:=TrivialSubgroup(a);
   for primes in irrel do
     k:=ClosureGroup(k,GeneratorsOfGroup(SylowSubgroup(a,primes)));
   od;
   if Size(k)>1 then
-    ma:=ma*NaturalHomomorphismByNormalSubgroup(a,k);
+    k:=NaturalHomomorphismByNormalSubgroup(a,k);
+    ma:=ma*k;
+    mao:=mao*k;
     a:=Image(ma);
     k:=TrivialSubgroup(Image(mau));
     for primes in irrel do
@@ -1314,7 +1330,7 @@ local v,aiu,aiv,G,primes,irrel,ma,mau,a,k,gens,imgs,q,dec,deco,piv,co;
     co:=ClosureSubgroup(co,gens{piv{[1..Length(piv)-1]}});
   fi;
   Info(InfoFpGroup,2,"Degree larger ",Index(a,co));
-  return PreImage(ma,co);
+  return PreImage(mao,co);
 end);
 
 DeclareRepresentation("IsModuloPcgsFpGroupRep",
