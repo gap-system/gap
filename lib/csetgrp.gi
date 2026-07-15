@@ -191,7 +191,7 @@ local cla,clb,i,j,k,bd,r,rep,b2,dc,idx,clu,
           fi;
         od;
         if onlyone then return fail; #otherwise would have found and stopped
-        else 
+        else
           if ForAny(clu,x->Length(x)>1) then
             # there are potential conjugates left
             r:=rep;
