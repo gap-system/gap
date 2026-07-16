@@ -1,6 +1,6 @@
 # Larger quotient finder hangs
 gap> f:=FreeGroup("F1","F2","F3","F5");;
-gap> F1:=f.1;;F2:=f.2;;F3:=F.3;;F5:=F.4;;
+gap> F1:=f.1;;F2:=f.2;;F3:=f.3;;F5:=f.4;;
 gap> rels:=[ F2^4, F3^-2*F2^2, F1^-1*F5*F1*F5^-1, F3^-1*F5^-1*F3*F5, F5^4,
 >   F2^-1*F5^-1*F2*F5, F3^-1*F5*F1^-1*F3*F5*F1^-1, F2^2*F1*F3^2*F1^-1,
 >   F2*F3^-1*(F2*F3)^2, (F1*F2)^2*F1*F2^-1, F5^2*F1^-6,
