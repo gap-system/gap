@@ -1273,7 +1273,7 @@ local v,aiu,aiv,G,primes,irrel,ma,mao,mau,a,k,gens,imgs,q,dec,deco,piv,co;
 
   Info(InfoFpGroup,1,"Larger by factor ",Product(aiv)/Product(aiu));
   ma:=MaximalAbelianQuotient(v);
-  mao:=ma; # keep ortignioal one, as pre image of subgroup will be easier.
+  mao:=ma; # keep original one, as preimage of subgroup will be easier.
   a:=Image(ma);
   k:=List(GeneratorsOfGroup(v),x->ImagesRepresentative(ma,x));
 
