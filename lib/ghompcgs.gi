@@ -799,7 +799,8 @@ local g,       # Source(hom)
   fi;
 
   if r.field<>fail then
-    # set mat to lowest level change
+    # Compute the matrix describing the action of hom on the bottom
+    # elementary abelian layer.
     n:=Length(r.pcgs);
     i:=r.depths[Length(r.depths)-1];
     mat:=List(hom!.sourcePcgsImages{[i..n]},
