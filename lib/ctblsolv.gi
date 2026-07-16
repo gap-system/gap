@@ -992,6 +992,7 @@ InstallMethod( BaumClausenInfo,
           invX,          # inverse of `X'
           D_gi,          #
           hom,           # homomorphism to adjust the composition series
+          ds,            # series in the image of `hom'
           orb,           #
           Forb,          #
           sigma, pi,     # permutations needed in the fusion case
@@ -1064,15 +1065,14 @@ InstallMethod( BaumClausenInfo,
       # a list of subgroups such that any composition series through
       # `ds' from `G' down to the residuum is a chief series.
       pcgs:= [];
+      ds:= List( ssr.ds, U -> ImagesSet( hom, U ) );
       for i in [ 2 .. Length( ssr.ds ) ] do
-        j:= NaturalHomomorphismByNormalSubgroupNC( ssr.ds[ i-1 ], ssr.ds[i] );
+        j:= NaturalHomomorphismByNormalSubgroupNC( ds[ i-1 ], ds[i] );
         Append( pcgs, List( SpecialPcgs( ImagesSource( j ) ),
                             x -> PreImagesRepresentative( j, x ) ) );
       od;
-      Append( pcgs, SpecialPcgs( Last(ssr.ds) ) );
+      Append( pcgs, SpecialPcgs( Last( ds ) ) );
       G:= ImagesSource( hom );
-      pcgs:= List( pcgs, x -> ImagesRepresentative( hom, x ) );
-      pcgs:= Filtered( pcgs, x -> Order( x ) <> 1 );
       pcgs:= PcgsByPcSequence( ElementsFamily( FamilyObj( G ) ), pcgs );
       cs:= PcSeries( pcgs );
       lg:= Length( pcgs );
