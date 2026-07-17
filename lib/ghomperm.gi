@@ -1947,7 +1947,7 @@ InstallMethod( PreImagesSet, CollFamRangeEqFamElms,
     if not IsSubset( Range( hom ), I ) then
         Error( "<I> is not a subset of the range of mapping <hom>" );
     fi;
-    return PreImagesSetNC( hom, Intersection( I, Range( hom ) ) );
+    return PreImagesSetNC( hom, Intersection( I, Image( hom ) ) );
 end );
 
 #############################################################################
