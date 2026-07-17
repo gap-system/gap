@@ -1298,7 +1298,7 @@ function( hom, U )
   if not IsSubset( Range( hom ), U ) then
     Error( "<U> is not a subset of the range of mapping <hom>" );
   fi;
-  return PreImagesSetNC( hom, Intersection( U, Range( hom ) ) );
+  return PreImagesSetNC( hom, Intersection( U, Image( hom ) ) );
 end );
 
 
