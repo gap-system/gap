@@ -313,7 +313,7 @@ InstallMethod( PreImagesElmNC,
     local im;
     im:= PreImagesElmNC( com!.map2, elm );
     if not IsEmpty( im ) then
-      return PreImagesSetNC( com!.map1, im );  ## why Set and not Elm here ??
+      return PreImagesSetNC( com!.map1, im );
     else
       return [];
     fi;
