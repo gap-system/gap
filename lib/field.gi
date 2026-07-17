@@ -1369,5 +1369,5 @@ InstallMethod( PreImagesSet,
     if not IsSubset( Range(hom), elms ) then
         Error( "<elms> is not a subset of the range of <hom>" );
     fi;
-    return PreImagesSetNC( hom, Intersection( elms, Range( hom ) ) );
+    return PreImagesSetNC( hom, Intersection( elms, Image( hom ) ) );
     end );
