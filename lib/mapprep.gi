@@ -2079,7 +2079,7 @@ InstallMethod( PreImagesSet,
     if not IsSubset( Range(res), elms ) then
       Error( "<elms> is not a subset of the range of mapping <res>" );
     fi;
-    return PreImagesSetNC( res, Intersection( elms, Range( res ) ) );
+    return PreImagesSetNC( res, Intersection( elms, Image( res ) ) );
     end );
 
 
