@@ -1077,7 +1077,7 @@ DeclareOperation( "PreImagesRepresentativeNC", [ IsGeneralMapping, IsObject ] );
 ##  and the new <C>PreImagesSet</C> checks that <A>elms</A> is a
 ##  subset of the range before calling <C>PreImagesSetNC</C>.
 ##  If <A>elm</A> is a subset the range but not a subset of the image then
-##  <C>PreImagesSetNC( map, Intersection( elms, Range(map) )</C> is returned.
+##  <C>PreImagesSetNC( map, Intersection( elms, Image(map) )</C> is returned.
 ##  If <A>elms</A> is not a subset of the range then an error is signalled.
 ##  <P/>
 ##  When using <C>PreImagesSetNC</C> anything may happen if <A>elms</A>
