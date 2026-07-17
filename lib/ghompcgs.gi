@@ -744,7 +744,9 @@ local g,       # Source(hom)
     pcgs:=hom!.sourcePcgs;
     ro:=RelativeOrders(pcgs);
     n:=Length(pcgs);
-    # bottom characteristic elab level -- this can be done by matrix
+    # Find the largest characteristic elementary abelian subgroup
+    # that is a tail of this pcgs. The automorphism acts on this tail
+    # as a matrix over the corresponding prime field.
     s:=AGSRCharacteristicSeries(g,g);
     s:=Filtered(s,x->Size(x)=1 or x=SubgroupNC(g,pcgs{[Minimum(
       List(GeneratorsOfGroup(x),y->DepthOfPcElement(pcgs,y)))..n]}));
@@ -782,7 +784,7 @@ local g,       # Source(hom)
       od;
     fi;
 
-    if not 1 in depths then Error("EEE");fi;
+    Assert(0, 1 in depths);
 
     pats:=[];
     for i in [1..Length(depths)-1] do
@@ -863,7 +865,6 @@ local r,       # SpeedupDataPcHom(hom): the per-hom speedup data
   if rg.field=fail then return v;fi;
   b:=depths[ld-1];
   a:=e{[b..n]};
-  #a:=ImmutableVector(rg.field,a*One(rg.field))*r.mat;
   a:=a*One(rg.field);
   ConvertToVectorRep(a,Size(rg.field));
   a:=a*r.mat;

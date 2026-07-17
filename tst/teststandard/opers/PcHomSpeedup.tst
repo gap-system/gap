@@ -51,7 +51,8 @@ gap> a:=GroupHomomorphismByImages(g,g,pcgs,List(mat,x->
 gap> IsBijective(a);
 true
 gap> r:=List([1..1000],x->Random(g));;
-gap> List(r,x->ImagesRepresentative(a,x));;
-gap> SpeedupDataPcHom(a);; # force caching
-gap> List(r,x->ImagesRepresentative(a,x));;
+gap> expected:=List(r,x->ImagesRepresentative(a,x));;
+gap> SpeedupDataPcHom(a);;
+gap> expected=List(r,x->ImagesRepresentative(a,x));
+true
 gap> STOP_TEST("PcHomSpeedup.tst");
