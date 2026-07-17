@@ -381,7 +381,7 @@ InstallGlobalFunction( PreImages, function ( arg )
           fi;
 
           if IsDomain( img ) or IsSSortedList( img ) then
-            return PreImagesSetNC( map, Intersection( img, rng ) );
+            return PreImagesSetNC( map, Intersection( img, Image( map ) ) );
           elif IsHomogeneousList( img ) then
             return PreImagesSet( map, Intersection( Set( img ), rng ) );
           fi;
