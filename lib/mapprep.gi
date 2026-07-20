@@ -1415,7 +1415,7 @@ InstallMethod( PreImageElm,
 
 #############################################################################
 ##
-#M  PreImagesElmMC( <idmap>, <elm> )  . . .  for identity mapping and element
+#M  PreImagesElmNC( <idmap>, <elm> )  . . .  for identity mapping and element
 #M  PreImagesElm( <idmap>, <elm> )  . . . .  for identity mapping and element
 ##
 InstallMethod( PreImagesElmNC,
